@@ -439,7 +439,7 @@ elseif($_POST['deleteTC'])
 
 		//Refresh the left frame
 
-		$page = "archiveLeft.php?product=" . $product;
+		$page = $basehref . "/manage/archiveLeft.php?product=" . $product;
 
 		refreshFrame($page); //call the function below to refresh the left frame
 
@@ -500,7 +500,7 @@ elseif($_POST['deleteTC'])
 
 		//Refresh the left frame
 
-		$page = "archiveLeft.php?product=" . $product;
+		$page = $basehref . "/manage/archiveLeft.php?product=" . $product;
 
 		refreshFrame($page); //call the function below to refresh the left frame
 
@@ -582,7 +582,7 @@ elseif($_POST['deleteTC'])
 
 		//Refresh the left frame
 
-		$page = "archiveLeft.php?product=" . $product;
+		$page = $basehref . "/manage/archiveLeft.php?product=" . $product;
 
 		refreshFrame($page); //call the function below to refresh the left frame
 

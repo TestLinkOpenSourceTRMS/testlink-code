@@ -16,10 +16,6 @@ require_once("../functions/orderArray.php"); //I need this function to reorder t
 
 ?>
 
-<head>
-
-<LINK REL="stylesheet" TYPE="text/css" HREF="kenny.css">
-
 <?
 
 require_once('../htmlarea/textArea.php');
@@ -203,7 +199,7 @@ elseif($_POST['archive'])
 
 }
 
-	$page = "archiveLeft.php?product=" . $product;
+	$page =  $basehref . "/manage/archiveLeft.php?product=" . $product;
 
 	refreshFrame($page); //call the function below to refresh the left frame
 

@@ -87,7 +87,7 @@ if($_GET['edit'] == 'com') //Reordering a component's categories
 
 }
 
-$page = "archiveLeft.php?prodid=" . $_SESSION['product'];
+$page = $basehref . "/manage/archiveLeft.php?prodid=" . $_SESSION['product'];
 
 refreshFrame($page); //call the function below to refresh the left frame
 	

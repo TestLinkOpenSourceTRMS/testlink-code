@@ -156,6 +156,7 @@ if($_POST['submit'] == 'moveCOM') //user wants to move a component to another pr
 
 	//Refresh the left frame
 	
-	$page = "archiveLeft.php?product=" . $_SESSION['product'];
+	$page = $basehref . "/manage/archiveLeft.php?product=" . $_SESSION['product'];
+
 
 	refreshFrame($page); //call the function below to refresh the left frame

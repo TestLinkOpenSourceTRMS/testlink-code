@@ -80,7 +80,7 @@ elseif($_POST['editUser'])
 
 			echo "Welcome to TestLink " . $login . "!<br><br>";
 			
-			echo "Please return to the <a href='" . $loginurl . "'>Home</a> and login. If you have any questions please contact Chad Rosen";
+			echo "Please return to the <a href='" . $loginurl . "'>Home</a> and login. If you have any questions please contact your TestLink administrator";
 
 
 			

@@ -14,12 +14,8 @@ $result = mysql_query($sql);
 
 while ($myrow = mysql_fetch_row($result)) 
 {
-
 	$priority[] = $myrow[0];
-
 }
-
-//print_r($priority);
 
 $L1 = $priority[0]; 
 $L2 = $priority[1];
@@ -44,18 +40,15 @@ $passC = 0;
 $failC = 0;
 $blockedC = 0;
 
-//
-
-$sql = "select category.risk, category.id, category.importance from project,component, category where project.id = '" . $_SESSION['project'] . "' and project.id = component.projid and component.id = category.compid";
+$sql = "select testcase.risk, testcase.id, testcase.importance from project,component,category,testcase where project.id = '" . $_SESSION['project'] . "' and project.id = component.projid and component.id = category.compid and category.id=testcase.catid";
 
 $result = mysql_query($sql);
 
 while ($myrow = mysql_fetch_row($result)) 
 {
-
 	//Code to grab the entire amount of test cases per project
 	
-	$sql = "select count(testcase.id) from project,component,category,testcase where project.id = '" . $_SESSION['project'] . "' and category.id='" . $myrow[1] . "' and project.id = component.projid and component.id = category.compid and category.id = testcase.catid";
+	$sql = "select count(testcase.id) from project,component,category,testcase where project.id = '" . $_SESSION['project'] . "' and project.id = component.projid and component.id = category.compid and category.id = testcase.catid";
 
 	$totalTCResult = mysql_query($sql);
 
@@ -63,7 +56,7 @@ while ($myrow = mysql_fetch_row($result))
 
 	//Code to grab the results of the test case execution
 
-	$sql = "select tcid,status from results,project,component,category,testcase where project.id = '" . $_SESSION['project'] . "' and category.id='" . $myrow[1] . "' and project.id = component.projid and component.id = category.compid and category.id = testcase.catid and testcase.id = results.tcid and results.build = '" . $_POST['build'] . "'";
+	$sql = "select tcid,status from results,project,component,category,testcase where project.id = '" . $_SESSION['project'] . "' and project.id = component.projid and component.id = category.compid and category.id = testcase.catid and testcase.id = results.tcid and results.build = '" . $_POST['build'] . "'";
 
 	$totalResult = mysql_query($sql);
 
@@ -78,34 +71,19 @@ while ($myrow = mysql_fetch_row($result))
 
 	while($totalRow = mysql_fetch_row($totalResult))
 	{
-
 		if($totalRow[1] == 'p')
-
 		{
-			
 			$pass++;
-			
-
 		}
-
 		if($totalRow[1] == 'f')
-
-
 		{
-
 			$fail++;
-
 		}
-
 		if($totalRow[1] == 'b')
-
-
 		{
 
 			$blocked++;
-
 		}
-
 	}
 
 	$priStatus = $myrow[2] . $myrow[0];
@@ -367,8 +345,6 @@ while ($myrow = mysql_fetch_row($result))
 		$percentCompleteC = ($passC + $failC + $blockedC) / $totalC; //Getting total percent complete
 		$percentCompleteC = round((100 * ($percentCompleteC)),2); //Rounding the number so it looks pretty
 	}
-
-
 
 //Get the total # of testcases for the project
 

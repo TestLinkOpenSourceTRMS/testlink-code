@@ -30,6 +30,7 @@ else
 	$owner = "None";
 }
 
+
 if($edit == "component")
 {
 	$sqlCom = "select testcase.id,mgttcid,title from component,category,testcase where component.id=$id and component.id=category.compid and category.id=testcase.catid";
@@ -59,7 +60,7 @@ if($edit == "testcase")
 
 function editTestCase($result)
 {
-	global $owner, $importance, $risk;
+	global $owner, $importance, $risk, $ownerId;
 	
 	?>
 	<table border = 1 width='100%'>
@@ -93,7 +94,7 @@ function editTestCase($result)
 	while($row = mysql_fetch_array($result))
 	{
 
-		$sqlUpdate = "update testcase set importance='$importance', risk='$risk', owner='$owner' where id=$row[0]";
+		$sqlUpdate = "update testcase set importance='$importance', risk='$risk', owner='$ownerId' where id=$row[0]";
 		@mysql_query($sqlUpdate) or die("could not edit testcase $row[0]");
 
 		?>

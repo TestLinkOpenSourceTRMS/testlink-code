@@ -48,16 +48,15 @@ $blockedC = 0;
 
 //Begin code to display the component
 
-$sql = "select category.risk, category.id, category.importance from project,component, category where project.id = '" . $_SESSION['project'] . "' and project.id = component.projid and component.id = category.compid";
+$sql = "select testcase.risk, testcase.id, testcase.importance from project,component,category,testcase where project.id = '" . $_SESSION['project'] . "' and project.id = component.projid and component.id = category.compid and category.id=testcase.catid";
 
 $result = mysql_query($sql);
 
 while ($myrow = mysql_fetch_row($result)) 
 {
-
 	//Code to grab the entire amount of test cases per project
 	
-	$sql = "select count(testcase.id) from project,component,category,testcase where project.id = '" . $_SESSION['project'] . "' and category.id='" . $myrow[1] . "' and project.id = component.projid and component.id = category.compid and category.id = testcase.catid";
+	$sql = "select count(testcase.id) from project,component,category,testcase where project.id = '" . $_SESSION['project'] . "' and testcase.id='" . $myrow[1] . "' and project.id = component.projid and component.id = category.compid and category.id = testcase.catid";
 
 
 	$totalTCResult = mysql_query($sql);
@@ -66,7 +65,7 @@ while ($myrow = mysql_fetch_row($result))
 
 	//Code to grab the results of the test case execution
 
-	$sql = "select tcid,status from results,project,component,category,testcase where project.id = '" . $_SESSION['project'] . "' and category.id='" . $myrow[1] . "' and project.id = component.projid and component.id = category.compid and category.id = testcase.catid and testcase.id = results.tcid order by build";
+	$sql = "select tcid,status from results,project,component,category,testcase where project.id = '" . $_SESSION['project'] . "' and testcase.id='" . $myrow[1] . "' and project.id = component.projid and component.id = category.compid and category.id = testcase.catid and testcase.id = results.tcid order by build";
 
 	//echo $sql . "<br>";
 

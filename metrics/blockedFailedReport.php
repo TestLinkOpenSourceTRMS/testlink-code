@@ -148,7 +148,7 @@ while($totalRow = mysql_fetch_row($totalResult))
 
 			if($rights)
 			{
-				echo "<a href='execution/execution.php?keyword=All&edit=testcase&tc=" . $testCaseStatus . "&build=" . $testCaseBuildArray[$testCaseStatus] . "' target='_blank'>" . "<b>" . $myrow[9] . "</b>:" . htmlspecialchars($myrow[3]);//test case title
+				echo "<a href='execution/execution.php?edit=testcase&data=" . $testCaseStatus . "&build=" . $testCaseBuildArray[$testCaseStatus] . "' target='_blank'>" . "<b>" . $myrow[9] . "</b>:" . htmlspecialchars($myrow[3]);//test case title
 
 			}else
 

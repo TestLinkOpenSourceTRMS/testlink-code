@@ -556,25 +556,33 @@ function TCHeader($tcid,$comName,$catName,$versionFlag,$mgttcid,$tcTitle)
 
 function TCBody($summary,$steps,$exresult,$keywords, $riskImportance)
 {
+	?>
+	
+	<table class=tctable width=100% align='top'>
 
-	echo "<table class=tctable width=100% align='top'>";
-
-	echo "<tr><td class=tctable><b>Summary:</b> " . htmlspecialchars(nl2br($summary)) . "</td></tr>";
+	<tr><td class=tctable><b>Summary:</b><? echo htmlspecialchars(nl2br($summary)) ?></td></tr>
 								
-	echo "<tr><td class=tctable><b>Steps:</b><br>" . nl2br($steps) . "</td></tr>";
+	<tr><td class=tctable><b>Steps:</b><br><? nl2br($steps) ?></td></tr>
 								
-	echo "<tr><td class=tctable><b>Expected Result:</b><br>" . nl2br($exresult) . "</td></tr>";
+	<tr><td class=tctable><b>Expected Result:</b><br><? nl2br($exresult) ?></td></tr>
 
-	//Chop the trailing comma off of the end of the keywords field
+	<tr><td class=tctable><b>Keywords:</b><br><? $keywords ?></td></tr>
 
-	echo "<tr><td class=tctable><b>Keywords:</b><br>" . $keywords . "</td></tr>";
+	<tr><td class=tctable><b>Priority (Risk/Importance):</b><br>
 
-	echo "<tr><td class=tctable><b>Priority and Risk/Importance:</b><br>";
+	<?
 
-	echo $riskImportance;
+	$sqlGetPri = "select priority from priority where projid=" . $_SESSION['project'] . " and riskimp='" . strtoupper($riskImportance) . "'";
 
-	echo "</table>";
+	$priResult = mysql_fetch_row(mysql_query($sqlGetPri)); //Run the query
 
+	echo strtoupper($priResult[0]) . " (" . strtoupper($riskImportance) . ")"; 
+	
+	?>
+
+	</table>
+
+	<?
 
 }
 
@@ -614,22 +622,11 @@ function results($tcid)
 
 	}
 	
-	//display the row	
+	//display the row
+	
+	$sqlRecent = "select build,status,runby,daterun from results where tcid='" . $tcid . "' and status != 'n' order by build desc limit 1";
 
-	if($_GET['build'])
-	{
-		echo "<tr><td bgcolor=" . $bgcolor . ">&nbsp</td></tr>";
-
-		echo "<tr><td class=tctable><b>Build Result:</b><br>Run by " . $resultQuery[3] . " on " . $resultQuery[4] . " against Build " . $resultQuery[2] . " (".  $resultQuery[5] . ")</td></tr>";
-
-	}
-	else
-	{
-		//This query grabs the most recent result
-
-		$sqlRecent = "select build,status,runby,daterun from results where tcid='" . $tcid . "' and status != 'n' order by build desc limit 1";
-		
-		$resultRecent = mysql_query($sqlRecent);
+			$resultRecent = mysql_query($sqlRecent);
 
 		$numRecent = mysql_num_rows($resultRecent);
 
@@ -638,7 +635,6 @@ function results($tcid)
 		if($numRecent > 0)
 		{
 			$rowRecent = mysql_fetch_row($resultRecent);
-
 
 			echo "<tr><td class=tctable><b>Most recent result:</b><br>";
 			
@@ -655,7 +651,6 @@ function results($tcid)
 
 		}
 
-	}
 
 	echo "<tr><td class=tctable><b>Notes:</b><br><textarea name='notes" . $tcid . "' cols=35 rows=4>" . $resultQuery[0] . "</textarea></td></tr>";
 						

@@ -25,7 +25,6 @@ if($projectCount > 0)
 {			
 	while ($myrow = mysql_fetch_row($projectResult))
 	{
-		
 		$completed = totalTCs($myrow[1]);
 		$myTCs = myTCs($myrow[1],$_SESSION['userID']);
 		
@@ -34,7 +33,6 @@ if($projectCount > 0)
 		echo "<a href='metrics/metricsFrameSet.php?projectId=" . $myrow[1] . "&nav= > Test Plan Metrics'>" . $myrow[0] . "</a>"; 
 			
 		echo "</td><td class='mainMenu'>" . $completed . "</td><td class='mainMenu'>" . $myTCs . "</td></tr>";
-	
 	}
 
 }else
@@ -70,15 +68,15 @@ function myTCs($projectID,$owner)
 
 		//This is really stupid.. I store the category owner as a string and not a key.. WHY?
 
-		$sqlName = "select login from user where id=" . $owner;
+		$sqlName = "select login,id from user where id=" . $owner;
 		$sqlResult = mysql_query($sqlName);
 		$ownerArray = mysql_fetch_row($sqlResult);
 
-		$owner = $ownerArray[0];
+		$owner = $ownerArray[1];
 
 		//Code to grab the entire amount of test cases per project
 		
-		$sql = "select count(testcase.id) from project,component,category,testcase where project.id = '" . $projectID . "' and project.id = component.projid and category.owner ='" . $owner . "' and component.id = category.compid and category.id = testcase.catid";
+		$sql = "select count(testcase.id) from project,component,category,testcase where project.id = '" . $projectID . "' and project.id = component.projid and testcase.owner ='" . $owner . "' and component.id = category.compid and category.id = testcase.catid";
 
 		$totalTCResult = mysql_query($sql);
 
@@ -86,7 +84,7 @@ function myTCs($projectID,$owner)
 
 		//Code to grab the results of the test case execution
 
-		$sql = "select tcid,status from results,project,component,category,testcase where project.id = '" . $projectID . "' and category.owner='" . $owner . "' and project.id = component.projid and component.id = category.compid and category.id = testcase.catid and testcase.id = results.tcid order by build";
+		$sql = "select tcid,status from results,project,component,category,testcase where project.id = '" . $projectID . "' and testcase.owner='" . $owner . "' and project.id = component.projid and component.id = category.compid and category.id = testcase.catid and testcase.id = results.tcid order by build";
 		
 		$totalResult = mysql_query($sql);
 
@@ -108,13 +106,10 @@ function countResults($total, $exResult)
 		
 		if($totalRow[1] == 'n')
 		{
-
 		}
 		else
 		{
-		
-		$testCaseArray[$totalRow[0]] = $totalRow[1];
-		
+			$testCaseArray[$totalRow[0]] = $totalRow[1];
 		}
 
 	}
@@ -144,28 +139,18 @@ if(count($testCaseArray) > 0)
 
 			if($tc == 'p')
 			{
-				
 				$pass++;
-				
-
 			}
 
 			elseif($tc == 'f')
 			{
-
 				$fail++;
-
 			}
 
 			elseif($tc == 'b')
-
 			{
-
 				$blocked++;
-
 			}
-
-
 		}//end foreach
 
 	}//end if

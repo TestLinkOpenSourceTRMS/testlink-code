@@ -256,42 +256,7 @@ END;
 
 <?
 	require_once("myTPInfo.php");
-?>
-
-<!--	
-	<table width=100% border=1 align=center class="mainTable">
-        <tr>
-          <td bgcolor=#CC3366><font color="#FFFFFF" size=4>Your Test Plan Metrics</font></td>
-        </tr>
-      </table>
-      <table width=100% border=1 align=center class="mainTable">
-        <tr>
-          <td width=50% class=mainSubHeader>Name</td>
-          <td width=25% class=mainSubHeader>% Complete</td>
-          <td width=25% class=mainSubHeader>Your % Complete</td>
-        </tr>
-        <tr>
-          <td class='mainMenu'>Bob</td>
-          <td class='mainMenu'>50</td>
-          <td class='mainMenu'>30</td>
-        </tr>
-        <tr>
-          <td class='mainMenu'>Foo</td>
-          <td class='mainMenu'>14.7</td>
-          <td class='mainMenu'>16.6</td>
-        </tr>
-        <tr>
-          <td class='mainMenu'> </td>
-          <td class='mainMenu'>50</td>
-          <td class='mainMenu'>30</td>
-        </tr>
-      </table>
-
-	 -->
-	  
-	  
-	  
-	  
+?>	  
 	  </td>
   </tr>
 </table>

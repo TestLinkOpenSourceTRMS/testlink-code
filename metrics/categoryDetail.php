@@ -8,35 +8,11 @@
 
 //Code below grabs the priority that the user has assigned
 
-$sql = "select priority from project,priority where project.id = '" . $_SESSION['project'] . "' and project.id = priority.projid";
-
-$result = mysql_query($sql);
-
-while ($myrow = mysql_fetch_row($result)) 
-{
-
-	$priority[] = $myrow[0];
-
-}
-
-//print_r($priority);
-
-$L1 = $priority[0]; 
-$L2 = $priority[1];
-$L3 = $priority[2];
-$M1 = $priority[3];
-$M2 = $priority[4];
-$M3 = $priority[5];
-$H1 = $priority[6];
-$H2 = $priority[7];
-$H3 = $priority[8];
-
-
 //Stats per component
 
 echo "<table class=userinfotable width = '100%'><tr><td bgcolor='#FFFFCC'>Build Status: Category</td></tr></table>";
 
-echo "<table class=userinfotable width='100%'><tr><td  bgcolor='#99CCFF'>Com Name</td><td  bgcolor='#99CCFF'>Cat Name</td><td  bgcolor='#99CCFF'>Risk</td><td  bgcolor='#99CCFF'>Importance</td><td  bgcolor='#99CCFF'>Priority</td><td  bgcolor='#99CCFF'>Total</td><td  bgcolor='#99CCFF'>Passed</td><td  bgcolor='#99CCFF'>Failed</td><td  bgcolor='#99CCFF'>Blocked</td><td  bgcolor='#99CCFF'>Not Run</td><td bgcolor='#99CCFF'>% Complete</td><tr>";
+echo "<table class=userinfotable width='100%'><tr><td  bgcolor='#99CCFF'>Com Name</td><td  bgcolor='#99CCFF'>Cat Name</td><td  bgcolor='#99CCFF'>Total</td><td  bgcolor='#99CCFF'>Passed</td><td  bgcolor='#99CCFF'>Failed</td><td  bgcolor='#99CCFF'>Blocked</td><td  bgcolor='#99CCFF'>Not Run</td><td bgcolor='#99CCFF'>% Complete</td><tr>";
 
 $sql = "select component.name, component.id from project,component where project.id = '" . $_SESSION['project'] . "' and project.id = component.projid";
 
@@ -81,15 +57,12 @@ while ($myrow = mysql_fetch_row($result))
 
 ////////////Displaying each of the categories for the components
 	
-	$categoryQuery = "select category.name, category.id, risk, importance from project,component,category where project.id = '" . $_SESSION['project'] . "' and project.id = component.projid and component.id = category.compid and component.id =" . $myrow[1];
+	$categoryQuery = "select category.name, category.id from project,component,category where project.id = '" . $_SESSION['project'] . "' and project.id = component.projid and component.id = category.compid and component.id =" . $myrow[1];
 
 	$categoryResult = mysql_query($categoryQuery);
 
 	while ($categoryRow = mysql_fetch_row($categoryResult)) 
-	
 	{
-
-		
 		$catAllSql = "select count(testcase.id) from project,component,category,testcase where project.id = '" . $_SESSION['project'] . "' and project.id = component.projid and component.id = category.compid and category.id = testcase.catid and component.id ='" . $myrow[1] . "' and category.id='" . $categoryRow[1] . "'";
 
 		$catTotalResult = mysql_query($catAllSql);
@@ -132,75 +105,7 @@ while ($myrow = mysql_fetch_row($result))
 		{
 	
 			$percentComplete = ($passedRow[0] + $failedRow[0] + $blockedRow[0]) / $totalRow[0]; //Getting total percent complete
-			$percentComplete = round((100 * ($percentComplete)),2); //Rounding the number so it looks pretty
-		
-		}
-
-		//Determining Priority from risk and importance
-
-		$priorityStatus = $categoryRow[3] . $categoryRow[2];
-
-	
-		if($priorityStatus == 'L1')
-		{
-
-		$priority = $L1;
-
-		}
-
-		elseif($priorityStatus == 'L2')
-		{
-
-		$priority = $L2;
-
-		}
-
-		elseif($priorityStatus == 'L3')
-		{
-
-		$priority = $L3;
-
-		}
-
-		elseif($priorityStatus == 'M1')
-		{
-
-		$priority = $M1;
-
-		}
-
-		elseif($priorityStatus == 'M2')
-		{
-
-		$priority = $M2;
-
-		}
-
-		elseif($priorityStatus == 'M3')
-		{
-
-		$priority = $M3;
-
-		}
-
-		elseif($priorityStatus == 'H1')
-		{
-
-		$priority = $H1;
-
-		}
-		elseif($priorityStatus == 'H2')
-		{
-
-		$priority = $H2;
-
-		}
-
-		elseif($priorityStatus == 'H3')
-		{
-
-		$priority = $H3;
-
+			$percentComplete = round((100 * ($percentComplete)),2); //Rounding the number so it looks pretty		
 		}
 
 		echo "<td  bgcolor='#CCCCCC'>" . $componentName . "</td>"; //prints the component name
@@ -208,13 +113,6 @@ while ($myrow = mysql_fetch_row($result))
 		//echo "<td>" . $categoryRow[0] . "</td>"; //prints the category name
 
 		echo "<td>" . $categoryRow[0] . "</td>";	
-
-
-		echo "<td>" . $categoryRow[2] . "</td>"; //prints the risk
-
-		echo "<td>" . $categoryRow[3] . "</td>"; //prints the importance
-
-		echo "<td>" . $priority . "</td>";
 		
 		echo "<td>" . $totalRow[0] . "</td>"; //prints the total test cases per category
 

@@ -54,13 +54,11 @@ while ($myrow = mysql_fetch_row($result))
 			$statusQuery = "select bug_status from bugs where bug_id=" . $myrowBug[0];
 
 			//run the query
-
-			$statusResult = mysql_query($statusQuery,$dbPesky);
+			$statusResult = mysql_query($statusQuery,$bzHost);
 				
 			//fetch the data
 
 			$status = mysql_fetch_row($statusResult);
-
 		
 			//Check what the status is.. If it's the line below then strike through the bug
 
@@ -68,17 +66,13 @@ while ($myrow = mysql_fetch_row($result))
 
 			if('RESOLVED' == $status[0] || 'VERIFIED' == $status[0] || 'CLOSED' == $status[0])
 			{
-
 				$bugString .= "<s>" . $myrowBug[0] . "</s></a>,";
-
 
 				//if the bug is still open the display it normally
 
 			}else
 			{
-
 				$bugString .= $myrowBug[0] . "</a>,";
-
 			}
 
 

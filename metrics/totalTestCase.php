@@ -77,7 +77,7 @@ while ($myrow = mysql_fetch_row($result)) //Cycle through all of the test cases
 			if(has_rights("tp_execute"))
 			{
 
-				echo "<a href='execution/execution.php?keyword=All&edit=testcase&tc=" . $myrow[3] . "&build=" . $myrowBuild[0] . "' target='_blank'>";
+				echo "<a href='execution/execution.php?edit=testcase&data=" . $myrow[3] . "&build=" . $myrowBuild[0] . "' target='_blank'>";
 
 			}
 

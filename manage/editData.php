@@ -230,45 +230,38 @@ elseif($tc)
 	//Echo out a html select. Notice how the keywords has a set of brackets after it. This is necesarry for the
 	//Multiple to work
 
+	//Get the test cases list of keywords
+
+	$sqlKeywordCSV = "select keywords from mgttestcase where id='" . $data . "'";
+
+	$resultKeywordCSV = mysql_query($sqlKeywordCSV);
+
+	$keywordCSV = mysql_fetch_row($resultKeywordCSV);
+
+	$keywordArray = explode(",", $keywordCSV[0]);
+
 	echo "<tr><td><select name='keywords[]' size='" . $keySize . "' MULTIPLE>";
 
-	//Begin to echo out all of the keys
 
 	while ($keys = mysql_fetch_row($resultKeys))
 	{
-							
-		//This next block of code will search through the testcase and see if any of the products keywords are being used. If they are I highlight them
+		//check to see if the key being looped over is in the test case
 
-		//SQL statement to do the grab the test cases keys
-		$sqlCompare = "select keywords from mgttestcase where id='" . $data . "' and keywords like '%" . $keys[0] . "%'";
+		//if it is highlight it
 
-		//Execute the query
-		$resultCompare = mysql_query($sqlCompare);
-
-		//Using the mysql_num_rows function to see how many results are returned
-		$compareResult = mysql_num_rows($resultCompare);
-
-		if($compareResult > 0) //If we find a match I highlight the value
+		if (in_array($keys[0], $keywordArray)) 
 		{
 
 			echo "<OPTION VALUE='" . $keys[0] ."' SELECTED>" . $keys[0];
-
-		}else //If there isnt a match just display the value without highlight
+		}else
 		{
-
 			echo "<OPTION VALUE='" . $keys[0] ."'>" . $keys[0];
-
-		}//end else
+		}
 								
 	}//ened while
 
 	echo "</select></td></tr>";
-
-
-		
 	
-
-
 	echo "</table>";
 	echo "</form>";
 
@@ -939,7 +932,6 @@ elseif($_POST['deleteTC'])
 	echo "</form>";
 
 }
-
 
 ?>
 

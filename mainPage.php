@@ -521,7 +521,7 @@ echo <<<END
 			<tr bordercolor='#000000'>
             <td class='mainMenu'><img src='icons/arrow_org.gif' width='16' height='9'>
 		  
-		  	<a href="admin/user/projectRightsFrameset.php?nav= > Define User/Project Rights">Define User/Project Rights</a>
+		  	<a href="admin/user/projectRightsFrameSet.php?nav= > Define User/Project Rights">Define User/Project Rights</a>
 			
 			</td>
             </tr>

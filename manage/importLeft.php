@@ -15,6 +15,7 @@ doDBConnect();
 doHeader();
 require_once("../functions/stripTree.php"); //require_once the function that strips the javascript tree
 
+require_once(_ROOT_PATH . "functions/generateTreeMenu.php");
 
 ?>
 
@@ -95,245 +96,65 @@ if($numPROD > 0) //if there are existing products then allow the user to import
 
 
 if($_POST['submit']) 
-	{
-
-	
-		//this next block of code shows the keywords selection table. I don't show it on default because the keywords are contingent on the product
-
-		//Select all of the keywords for the chosen product
-		$sqlKEY = "select id, keyword from keywords where prodid='" . $_POST['product'] . "' order by keyword";
-
-		$resultKEY = mysql_query($sqlKEY); //execute query
-
-		echo "<form method='post' ACTION='manage/importLeft.php'>";
-
-		echo "<table width='100%' class=userinfotable>";
-		
-		echo "<tr><td width='50%' bgcolor='#EEEEEE'><b>Import By Keyword</td><td bgcolor='#EEEEEE'><b>Sort Cases</td></tr>";
-
-		echo "<tr><td width='50%'>";
-
-		echo "<SELECT NAME='keyword'>";
-
-		echo "<OPTION VALUE='NONE'>NONE</OPTION>";
-		
-		while ($myrowKEY = mysql_fetch_row($resultKEY)) 
-		{
-			
-			if($_POST['keyword'] == $myrowKEY[1])
-			{
-				echo "<OPTION VALUE='" . $myrowKEY[1] ."' SELECTED>" . $myrowKEY[1];
-
-			}else
-			{
-			
-				echo "<OPTION VALUE='" . $myrowKEY[1] ."'>" . $myrowKEY[1];
-
-			}
-
-		}//END WHILE
-
-		echo "</SELECT></td>";
-
-		echo "<td>";
-		
-		echo "<input type='hidden' value='" . $_POST['product'] . "' name='product'>";
-		
-		echo "<input type='submit' value='submit' name='sort'></td></tr>";
-
-		echo "</table>";
-		
-		echo "</form>";
-		
-
-
-//////////////////////////////////////////////////////////////Start the display of the components
-		
-		//The query to grab all of the products
-
-		$sqlPROD = "select id, name from mgtproduct where id=" . $_POST['product'] . " order by name";
-		$resultPROD = mysql_query($sqlPROD);
-
-		echo "<script language='JavaScript'> var TREE_ITEMS = [\n\n";
-
-		while ($myrowPROD = mysql_fetch_row($resultPROD)) //loop through all products
-		{
-
-			//Code to strip commas and apostraphies
-				
-			$name = stripTree($myrowPROD[1]); //function that removes harmful characters
-
-			echo "['" . $name . "',null,\n\n";
-
-			//Displays the component info
-
-			$sqlCOM = "select id, name from mgtcomponent where prodid='" . $myrowPROD[0] . "' order by name";
-			$resultCOM = mysql_query($sqlCOM);
-			
-			while ($myrowCOM = mysql_fetch_row($resultCOM)) //loop through all Components
-			{
-
-				//Code to strip commas and apostraphies
-
-				$name = stripTree($myrowCOM[1]); //function that removes harmful characters
-				
-				echo "['" . $name . "','manage/importData.php?key=NONE&edit=component&com=" . $myrowCOM[0] . "',\n\n";
-
-				//Displays the category info
-
-				$sqlCAT = "select id, name from mgtcategory where compid='" . $myrowCOM[0] . "' order by CATorder,id";
-				$resultCAT = mysql_query($sqlCAT);
-
-				while ($myrowCAT = mysql_fetch_row($resultCAT)) //loop through all Categories
-				{
-
-					//Code to strip commas and apostraphies
-				
-					$name = stripTree($myrowCAT[1]); //function that removes harmful characters
-					
-					echo "['" . $name . "','manage/importData.php?key=NONE&edit=category&cat=" . $myrowCAT[0] . "'],\n\n";
-			
-				
-				}
-
-				echo "],"; //end the component block
-
-
-			}
-
-			echo "]"; //end the product block
-
-		}
-
-		echo "];</script>\n\n"; //end the whole tree
-
-
-	echo "<script language='JavaScript'>";
-	echo "new tree (TREE_ITEMS, TREE_TPL);";
-	echo "</script>";
-
-}
-
-
- //Commenting out until I can fix this
-elseif($_POST['sort'])
 {
-		//echo $_
-
-		//this next block of code shows the keywords selection table. I don't show it on default because the keywords are contingent on the product
-
-		//Select all of the keywords for the chosen product
-		$sqlKEY = "select id, keyword from keywords where prodid='" . $_POST['product'] . "' order by keyword";
-
-		$resultKEY = mysql_query($sqlKEY); //execute query
-
-		echo "<form method='post' ACTION='manage/importLeft.php'>";
-
-		echo "<table width='100%' class=userinfotable>";
-		
-		echo "<tr><td width='50%' bgcolor='#EEEEEE'><b>Sort By Keyword</td><td bgcolor='#EEEEEE'><b>Sort Cases</td></tr>";
-
-		echo "<tr><td width='50%'>";
-
-		echo "<SELECT NAME='keyword'>";
-
-		echo "<OPTION VALUE='NONE'>NONE</OPTION>";
-		
-		while ($myrowKEY = mysql_fetch_row($resultKEY)) 
-		{
-			if($_POST['keyword'] == $myrowKEY[1])
-			{
-				echo "<OPTION VALUE='" . $myrowKEY[1] ."' SELECTED>" . $myrowKEY[1];
-
-			}else
-			{
-			
-				echo "<OPTION VALUE='" . $myrowKEY[1] ."'>" . $myrowKEY[1];
-
-			}
-
-		}//END WHILE
-
-		echo "</SELECT></td>";
-
-		echo "<td>";
-		
-		echo "<input type='hidden' value='" . $_POST['product'] . "' name='product'>";
-		
-		echo "<input type='submit' value='submit' name='sort'></td></tr>";
-
-		echo "</table>";
-		
-		echo "</form>";
-
 
 //////////////////////////////////////////////////////////////Start the display of the components
 		
-		//The query to grab all of the products
+	//The query to grab all of the products
 
-		$sqlPROD = "select id, name from mgtproduct where id=" . $_POST['product'] . " order by name";
-		$resultPROD = mysql_query($sqlPROD);
+	$sqlPROD = "select id, name from mgtproduct where id=" . $_POST['product'] . " order by name";
+	$resultPROD = mysql_query($sqlPROD);
 
-		echo "<script language='JavaScript'> var TREE_ITEMS = [\n\n";
+	//echo "<script language='JavaScript'> var TREE_ITEMS = [\n\n";
 
-		while ($myrowPROD = mysql_fetch_row($resultPROD)) //loop through all products
+	while ($myrowPROD = mysql_fetch_row($resultPROD)) //loop through all products
+	{
+		$menustring = ".|" . $myrowPROD[1] . "||||mainFrame|\n";
+
+		//Displays the component info
+		$sqlCOM = "select id, name from mgtcomponent where prodid='" . $myrowPROD[0] . "' order by name";
+		$resultCOM = mysql_query($sqlCOM);
+			
+		while ($myrowCOM = mysql_fetch_row($resultCOM)) //loop through all Components
 		{
 
 			//Code to strip commas and apostraphies
+
+			//$name = stripTree($myrowCOM[1]); //function that removes harmful characters
 				
-			$name = stripTree($myrowPROD[1]); //function that removes harmful characters
-			
-			echo "['" . $name . "','',\n\n";
+			//echo "['" . $name . "','manage/importData.php?key=NONE&edit=component&com=" . $myrowCOM[0] . "',\n\n";
 
-			//Displays the component info
+			//Displays the category info
 
-			$sqlCOM = "select id, name from mgtcomponent where prodid='" . $myrowPROD[0] . "' order by name";
-			$resultCOM = mysql_query($sqlCOM);
-			
-			while ($myrowCOM = mysql_fetch_row($resultCOM)) //loop through all Components
+			$menustring = $menustring . "..|" . $myrowCOM[1] . "|manage/importData.php?key=NONE&edit=component&com=" . $myrowCOM[0] . "|||mainFrame|\n";
+
+			$sqlCAT = "select id, name from mgtcategory where compid='" . $myrowCOM[0] . "' order by CATorder,id";
+			$resultCAT = mysql_query($sqlCAT);
+
+			while ($myrowCAT = mysql_fetch_row($resultCAT)) //loop through all Categories
 			{
 
 				//Code to strip commas and apostraphies
 				
-				$name = stripTree($myrowCOM[1]); //function that removes harmful characters
-				
-				echo "['" . $name . "','manage/importData.php?key=" . $_POST['keyword'] . "&edit=component&com=" . $myrowCOM[0] . "',\n\n";
-
-				//Displays the category info
-
-				$sqlCAT = "select id, name from mgtcategory where compid='" . $myrowCOM[0] . "' order by CATorder";
-				$resultCAT = mysql_query($sqlCAT);
-
-				while ($myrowCAT = mysql_fetch_row($resultCAT)) //loop through all Categories
-				{
-
-					//Code to strip commas and apostraphies
-
-					$name = stripTree($myrowCAT[1]); //function that removes harmful characters
+				//	$name = stripTree($myrowCAT[1]); //function that removes harmful characters
 					
-					echo "['" . $name . "','manage/importData.php?key=" . $_POST['keyword'] . "&edit=category&cat=" . $myrowCAT[0] . "'],\n\n";
+				//echo "['" . $name . "','manage/importData.php?key=NONE&edit=category&cat=" . $myrowCAT[0] . "'],\n\n";
+
+				$menustring = $menustring . "...|" . $myrowCAT[1] . "|manage/importData.php?key=NONE&edit=category&cat=" . $myrowCAT[0] . "|||mainFrame|\n";
 			
 				
-				}
+			}//end cat loop
+		}//end comp loop
+	}//end product loop
 
-				echo "],"; //end the component block
+	//Table title
+	$tableTitle = "Import Test Cases into a Test Plan";
+	//Help link
+	$helpInfo = "Click <a href='manage/importData.php?edit=info' target='mainFrame'>here</a> for help";
 
+	invokeMenu($menustring, $tableTitle, $helpInfo);
+	
 
-			}
-
-			echo "]"; //end the product block
-
-		}
-
-		echo "];</script>\n\n"; //end the whole tree
-
-
-	echo "<script language='JavaScript'>";
-	echo "new tree (TREE_ITEMS, TREE_TPL);";
-	echo "</script>";
-
-
-
-}
+}//end if submit
 
 ?>

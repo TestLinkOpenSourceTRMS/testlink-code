@@ -16,7 +16,8 @@ require_once("../functions/header.php");
   doHeader();
 
 
-require_once("../functions/stripTree.php"); //require_once the function that strips the javascript tree
+//require_once("../functions/stripTree.php"); //require_once the function that strips the javascript tree
+require_once("../functions/generateTreeMenu.php");
 
 ?>
 
@@ -147,28 +148,20 @@ echo "</tr></table>";
 			$sql = "select mgtcomponent.id, mgtcomponent.name from mgtcomponent,mgtproduct where mgtproduct.id = " . $proID . " and mgtcomponent.prodid = mgtproduct.id order by mgtcomponent.name";
 
 		}
-		
-
-		  
-		    
+				  
+		$menustring =   ".|" . $myRowProj[0] . "|print/printData.php?type=" . $_GET['type'] . "&edit=pro&proj=" . $proID . "&header=" . $header . "&title=" . $title . "&summary=" . $summary . "|test||mainFrame|\n";
 	
-
 		$comResult = mysql_query($sql);
 
 
 		//Second Tree that contains all the data
 
-		echo "<script language='JavaScript'> var TREE_ITEMS = [\n\n";
-
-		echo "['" . $myRowProj[0] . "','print/printData.php?type=" . $_GET['type'] . "&edit=pro&proj=" . $proID . "&header=" . $header . "&title=" . $title . "&summary=" . $summary . "',";
-
 		while ($myrowCOM = mysql_fetch_row($comResult)) { //display all the components until we run out
 
 			//Code to strip commas and apostraphies
-				
-			$name = stripTree($myrowCOM[1]); //function that removes harmful characters
-				
-			echo "['" . $name . "','print/printData.php?type=" . $_GET['type'] . "&edit=component&com=" . $myrowCOM[0] . "&header=" . $header . "&title=" . $title . "&summary=" . $summary . "',\n\n";
+
+			$menustring =  $menustring . "..|" . $myrowCOM[1] . "|print/printData.php?type=" . $_GET['type'] . "&edit=component&com=" . $myrowCOM[0] . "&header=" . $header . "&title=" . $title . "&summary=" . $summary . "|test||mainFrame|\n";
+	
 
 		//Here I create a query that will grab every category or mgt depending on the component the user picked
 
@@ -183,33 +176,24 @@ echo "</tr></table>";
 			$catResult = mysql_query("select mgtcategory.id, mgtcategory.name from mgtcomponent,mgtcategory where mgtcomponent.id = " . $myrowCOM[0] . " and mgtcomponent.id = mgtcategory.compid order by CATorder",$db);
 
 		}
-
-			
-			
+	
 			while ($myrowCAT = mysql_fetch_row($catResult)) {  //display all the categories until we run out
 				
 				//Code to strip commas and apostraphies
 				
-				$name = stripTree($myrowCAT[1]); //function that removes harmful characters
+				//$name = stripTree($myrowCAT[1]); //function that removes harmful characters
 				
-				echo "['" . $name . "','print/printData.php?type=" . $_GET['type'] . "&edit=category&cat=" . $myrowCAT[0] . "&header=" . $header . "&title=" . $title . "&summary=" . $summary . "'],\n\n";
+				$menustring =  $menustring . "...|" . $myrowCAT[1] . "|print/printData.php?type=" . $_GET['type'] . "&edit=category&cat=" . $myrowCAT[0] . "&header=" . $header . "&title=" . $title . "&summary=" . $summary . "|test||mainFrame|\n";
 
 			}
-
-			echo "],\n\n";
-
 		}
 
-			echo "]";
+	//Table title
+	$tableTitle = "Print Your Test Case Repository";
+	//Help link
+	$helpInfo = "Click <a href='print/printData.php' target='mainFrame'>here</a> for help";
 
-			echo "];</script>\n\n";
+	invokeMenu($menustring, $tableTitle, $helpInfo);
 
 	
 ?>
-
-<!--This code will build the javascript tree with the all of the test cases new tree (TREE_ITEMS2, tree_tpl2);
--->
-
-	<script language='JavaScript'>
-		new tree (TREE_ITEMS, TREE_TPL);
-	</script>

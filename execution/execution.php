@@ -65,7 +65,7 @@ if($_GET['edit'] == 'component') //if the user has selected to view by component
 
 	//build the header
 
-	executionHeader($_GET['build'],$_GET['keyword'],$_GET['owner']);
+	executionHeader($_GET['build']);
 
 	//Start the display of the components
 		
@@ -136,7 +136,7 @@ if($_GET['edit'] == 'category') //if the user has selected to view by category
 
 		//build the header
 
-		executionHeader($_GET['build'],$_GET['keyword'],$_GET['owner']);
+		executionHeader($_GET['build']);
 
 		//Here begins the meat of the tool. This next line grabs the category that the user selected from the left pane
 
@@ -185,7 +185,7 @@ if($_GET['edit'] == 'testcase')
 
 	//build the header
 
-	executionHeader($_GET['build'],$_GET['keyword'],$_GET['owner']);
+	executionHeader($_GET['build']);
 
 	$COMCATResult = mysql_query("select component.name,category.name from component,category,testcase where testcase.id='" . $_GET['tc'] . "' and category.id=testcase.catid and component.id=category.compid",$db);
 
@@ -223,20 +223,16 @@ if($_GET['edit'] == 'testcase')
 
 }
 
-function executionHeader($build,$keyword,$owner)
+function executionHeader($build)
 {
 		
 		//This section builds the top table with the date and build selection
 
 		echo "<table width='100%' class=titletable>";
 
-		echo "<tr><td class=titletablehdr width='25%'><img align=top src=icons/sym_question.gif onclick=javascript:open_popup('../help/ex_main.php');>Owner</td>";
-
-		echo "<td class=titletablehdr width='25%'>Keyword</td>";
-
-		echo "<td class=titletablehdr width='25%'>Build</td>";
+		echo "<td class=titletablehdr width='50%'>Build</td>";
 		
-		echo "<td class=titletablehdr width='25%'>Click To Record Results</b></td></tr>";
+		echo "<td class=titletablehdr width='50%'>Click To Record Results</b></td></tr>";
 
 
 		//Setting up the form that will post to the execution results page
@@ -246,18 +242,32 @@ function executionHeader($build,$keyword,$owner)
 		echo "<tr><input type='hidden' readonly name='date' value='" . date ("Y-m-d") . "'>";
 
 
-		//This time I post the build in a readonly text box
-		echo "<td class=titletable>" . $owner . "</td>";
-
-		//Show the keyword the user selected.. If any
-
-		echo "<td class=titletable>" . $keyword . "</td>";
-
-		echo "<td class=titletable>" . $build;
+		echo "<td class=titletable>";
 		
-		echo "<input type='hidden' name='build' value='" . $build . "'></td>";
+		if($build)
+		{
+			echo $build;
+			echo "<input type='hidden' name='build' value='" . $build . "'>";
+		}
+		else
+		{
+			$sqlResult = "select build from build where projid=" . $_SESSION['project'];		
+			$buildResult = mysql_query($sqlResult);
 
+			echo "<select name='build'>";
 
+			while ($myrowResult = mysql_fetch_row($buildResult)) 
+			{
+				echo "<option value=" . $myrowResult[0] . ">" . $myrowResult[0] . "</option>";
+			}
+
+			echo "</select>";
+		}
+
+		echo "</td>";
+
+		
+		//echo "<input type='hidden' name='build' value='" . $build . "'></td>";
 
 		//Display all the available builds
 				

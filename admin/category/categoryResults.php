@@ -12,18 +12,43 @@ require_once("../../functions/header.php");
   doDBConnect();
   doHeader();
 
-
 if($_POST['submit'])
 {
 
-$i = 0; //start a counter
+	$i = 0; //start a counter
 
-//It is necessary to turn the $_POST map into a number valued array
+	//It is necessary to turn the $_POST map into a number valued array
 
-echo "<table border = 1 width='100%'><tr><td bgcolor='#CCCCCC'><h2>Results</h2></td></tr></table>";
+	?>
+	
+	<table border = 1 width='100%'>
+		<tr>
+			<td bgcolor='#CCCCCC'>
+				<h2>Results</h2>
+			</td>
+		</tr>
+	</table>
 
-echo "<table border=1 width='100%'>";
-echo "<tr><td bgcolor='#99CCFF'><b>Category ID</td><td bgcolor='#99CCFF'><b>Submitted Importance</td><td bgcolor='#99CCFF'><b>Submitted Risk</td><td bgcolor='#99CCFF'><b>Submitted Owner</td><td bgcolor='#99CCFF'><b>Change</td></tr>";
+	<table border=1 width='100%'>
+		<tr>
+			<td bgcolor='#99CCFF'>
+				<b>Category ID
+			</td>
+			<td bgcolor='#99CCFF'>
+				<b>Submitted Importance
+			</td>
+			<td bgcolor='#99CCFF'>
+				<b>Submitted Risk
+			</td>
+			<td bgcolor='#99CCFF'>
+				<b>Submitted Owner
+			</td>
+			<td bgcolor='#99CCFF'>
+				<b>Change
+			</td>
+		</tr>";
+
+	<?
 
 //print_r($_POST);
 
@@ -95,19 +120,7 @@ while ($i < count($newArray)) //Loop for the entire size of the array
 		//If the (notes, status) information is different.. then update the record
 
 		}
-
-
-		else //If there is no entry for the build or the build is different
-
-		{
-
-		
-
 	
-
-		}
-	
-
 		$i = $i + 4; //Increment 4 values to the next catID
 
 
@@ -120,10 +133,6 @@ echo "</table>";
 
 elseif($_POST['AllCOM'])
 {
-
-//echo "all com";
-
-//print_r($_POST);
 
 $id = $_POST['COMID'];
 $risk = $_POST['risk'];

@@ -14,7 +14,8 @@ doSessionStart();
 doDBConnect();
 doHeader();
 
-require_once("../functions/stripTree.php"); //require_once the function that strips the javascript tree
+//require_once("../functions/stripTree.php"); //require_once the function that strips the javascript tree
+require_once(_ROOT_PATH . "functions/generateTreeMenu.php");
 
 ?>
 
@@ -32,10 +33,51 @@ $product = $_SESSION['product'];
 
 if($product)
 {
+	$prodSql = "select id,name from mgtproduct where id=" . $product;
 
-	genManageTree($product, "manage/archiveData.php", 0,1);
+	$prodResult = mysql_query($prodSql);
+
+	while ($myrowPROD = mysql_fetch_row($prodResult))
+	{
+		$menustring = $menustring . ".|" . $myrowPROD[1] . "|manage/archiveData.php?edit=product&data=" . $myrowPROD[0] . "|test||mainFrame|\n";
+
+		$sqlCom = "select id, name from mgtcomponent where prodid=" . $myrowPROD[0];
+
+		$comResult = mysql_query($sqlCom);
+
+		while ($myrowCOM = mysql_fetch_row($comResult))
+		{
+			$menustring = $menustring . "..|" . $myrowCOM[1] . "|manage/archiveData.php?prodid=" . $myrowPROD[0] . "&edit=component&data=" . $myrowCOM[0] . "|test||mainFrame\n";
+
+			$sqlCat = "select id, name from mgtcategory where compid=" . $myrowCOM[0];
+
+			$catResult = mysql_query($sqlCat);
+
+			while ($myrowCAT = mysql_fetch_row($catResult))
+			{
+				$menustring = $menustring . "...|" . $myrowCAT[1] . "|manage/archiveData.php?prodid=" . $myrowPROD[0] . "&edit=category&data=" . $myrowCAT[0] . "|test||mainFrame\n";
+
+				$sqlTc = "select id, title from mgttestcase where catid=" . $myrowCAT[0];
+
+				$tcResult = mysql_query($sqlTc);
+
+				while ($myrowTC = mysql_fetch_row($tcResult))
+				{
+					$menustring = $menustring . "....|" . $myrowTC[1] . "|manage/archiveData.php?prodid=" . $myrowPROD[0] . "&edit=testcase&data=" . $myrowTC[0] . "|test||mainFrame\n";
+				}
+
+			}
+
+		}
 
 
+	}
+	//Table title
+	$tableTitle = "Mange Your Repository";
+	//Help link
+	$helpInfo = "Click <a href='manage/archiveData.php' target='mainFrame'>here</a> for help";
+
+	invokeMenu($menustring, $tableTitle, $helpInfo);
 }
 
 ?>

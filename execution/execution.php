@@ -230,7 +230,7 @@ function executionHeader($build,$keyword,$owner)
 
 		//Setting up the form that will post to the execution results page
 
-		echo "<form method='post' ACTION='execution/executionResults.php'>";
+		echo "<form method='post' ACTION='execution/ExecutionResults.php'>";
 
 		echo "<tr><input type='hidden' readonly name='date' value='" . date ("Y-m-d") . "'>";
 

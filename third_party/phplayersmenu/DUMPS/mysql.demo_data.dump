@@ -1,0 +1,62 @@
+--
+-- Do not use these beginning line...
+--
+USE phplayersmenu;
+--
+-- ... if you are importing the dump through phpMyAdmin :^)
+--
+
+INSERT INTO phplayersmenu VALUES ('10', '1', '...GNU\'s Not Unix!', 'http://www.gnu.org/', 'The Free Software Foundation', '', '', '10', '0');
+INSERT INTO phplayersmenu VALUES ('20', '1', 'Open Source', '', '', '', '', '20', '0');
+INSERT INTO phplayersmenu VALUES ('30', '20', 'Portals', '', '', '', '', '30', '0');
+INSERT INTO phplayersmenu VALUES ('40', '30', 'O.S. Devel. Network', 'http://www.osdn.com/', '', '', '', '40', '0');
+INSERT INTO phplayersmenu VALUES ('50', '30', 'Source Forge', 'http://sourceforge.net/', '', 'sourceforge.net_images_favicon.png', '', '50', '0');
+INSERT INTO phplayersmenu VALUES ('60', '30', 'Freshmeat', 'http://freshmeat.net/', '', 'freshmeat.net_favicon.png', '', '60', '0');
+INSERT INTO phplayersmenu VALUES ('70', '20', '---', '', '', '', '', '70', '0');
+INSERT INTO phplayersmenu VALUES ('80', '20', 'Software for the web...', '', '', '', '', '80', '0');
+INSERT INTO phplayersmenu VALUES ('90', '80', 'The Apache Web Server', 'http://www.apache.org/', '', '', '', '90', '0');
+INSERT INTO phplayersmenu VALUES ('100', '80', 'Scripting languages', '', '', '', '', '100', '0');
+INSERT INTO phplayersmenu VALUES ('110', '100', 'PERL', 'http://www.perl.org/', '', '', '', '110', '0');
+INSERT INTO phplayersmenu VALUES ('120', '100', 'PHP: Hypertext Preprocessor', 'http://www.php.net/', '', 'www.php.net_favicon.png', '', '120', '0');
+INSERT INTO phplayersmenu VALUES ('130', '120', 'Downloads', 'http://www.php.net/downloads.php', '', '', '', '130', '0');
+INSERT INTO phplayersmenu VALUES ('140', '120', 'Documentation', 'http://www.php.net/docs.php', '', '', '', '140', '0');
+INSERT INTO phplayersmenu VALUES ('150', '120', 'FAQ', 'http://www.php.net/FAQ.php', '', '', '', '150', '0');
+INSERT INTO phplayersmenu VALUES ('160', '120', 'Support', 'http://www.php.net/support.php', '', '', '', '160', '0');
+INSERT INTO phplayersmenu VALUES ('170', '120', 'Bugs...', 'http://www.php.net/bugs.php', '', 'php-bugs-icon-mini.png', '', '170', '0');
+INSERT INTO phplayersmenu VALUES ('180', '120', 'Links', 'http://www.php.net/links.php', '', '', '', '180', '0');
+INSERT INTO phplayersmenu VALUES ('190', '120', '---', '', '', '', '', '190', '0');
+INSERT INTO phplayersmenu VALUES ('200', '120', 'PHPLib - PHP Base Library', 'http://sourceforge.net/projects/phplib/', '', 'phplib-logo-mini.png', '', '200', '0');
+INSERT INTO phplayersmenu VALUES ('210', '80', '---', '', '', '', '', '210', '0');
+INSERT INTO phplayersmenu VALUES ('220', '80', 'Databases', '', '', '', '', '220', '0');
+INSERT INTO phplayersmenu VALUES ('230', '220', 'PostgreSQL', 'http://www.postgresql.org/', '', '', '', '230', '0');
+INSERT INTO phplayersmenu VALUES ('240', '220', 'MySQL', 'http://www.mysql.com/', '', 'www.mysql.com_favicon.png', '', '240', '0');
+INSERT INTO phplayersmenu VALUES ('250', '80', '---', '', '', '', '', '250', '0');
+INSERT INTO phplayersmenu VALUES ('260', '80', 'Quanta / KDE Web Dev', 'http://quanta.sourceforge.net/', '', 'quanta.png', '', '260', '0');
+INSERT INTO phplayersmenu VALUES ('270', '80', 'The GIMP', 'http://www.gimp.org/', '', 'www.gimp.org_icons_wilber16.png', '', '270', '0');
+INSERT INTO phplayersmenu VALUES ('280', '1', 'Browsers', '', '', 'mozilla.org_images_mozilla-16.png', '', '500', '0');
+INSERT INTO phplayersmenu VALUES ('290', '280', 'Mozilla', 'http://www.mozilla.org/', 'The Mozilla browser', 'mozilla.org_images_mozilla-16.png', 'Mozilla', '510', '0');
+INSERT INTO phplayersmenu VALUES ('300', '280', 'Epiphany', 'http://epiphany.mozdev.org/', 'The web browser of the GNOME Desktop', 'epiphany-16.png', 'Epiphany', '520', '0');
+INSERT INTO phplayersmenu VALUES ('310', '280', 'Konqueror', 'http://www.kde.org/', 'The KDE browser', 'www.kde.org_favicon.png', 'The_KDE_Desktop_Environment', '530', '0');
+INSERT INTO phplayersmenu VALUES ('320', '280', '---', '', '', '', '', '540', '0');
+INSERT INTO phplayersmenu VALUES ('330', '280', 'Non free browsers', '', '', '', '', '550', '0');
+INSERT INTO phplayersmenu VALUES ('340', '330', 'Netscape', 'http://www.netscape.com/', 'Netscape Communicator', 'netscape-icon-mini.png', 'Netscape', '560', '0');
+INSERT INTO phplayersmenu VALUES ('350', '330', 'Opera', 'http://www.opera.com/', '', '', 'Opera', '570', '0');
+INSERT INTO phplayersmenu VALUES ('360', '330', 'Internet Explorer', 'http://www.microsoft.com/', '', '', 'Microsoft', '580', '0');
+INSERT INTO phplayersmenu VALUES ('370', '1', 'DOM, layers...', '', 'Some interesting URLs about the Document Object Model, layers, browsers...', '', '', '590', '0');
+INSERT INTO phplayersmenu VALUES ('380', '370', 'Document Object Model (DOM)', 'http://www.w3.org/DOM/', 'W3C standards about the Document Object Model', '', 'DOM', '600', '0');
+INSERT INTO phplayersmenu VALUES ('390', '370', '---', '', '', '', '', '610', '0');
+INSERT INTO phplayersmenu VALUES ('400', '370', 'Netscape 4, layers and forms...', 'http://www.geocrawler.com/mail/msg.php3?msg_id=4426606&amp;list=119', 'A Netscape 4 limitation about layers', '', 'DOM', '620', '0');
+INSERT INTO phplayersmenu VALUES ('410', '370', 'Layers, OS, Applets and Plug-ins', 'http://www.webreference.com/dhtml/diner/seethru/', 'Some known problems in using layers with applets and plug-ins', '', 'DOM', '630', '0');
+INSERT INTO phplayersmenu VALUES ('420', '370', 'Re: Layers &amp; drop-down menu\'s', 'http://www.intranetjournal.com/ix/msg/36271.html', '', '', 'DOM', '640', '0');
+INSERT INTO phplayersmenu VALUES ('430', '370', '---', '', '', '', '', '650', '0');
+INSERT INTO phplayersmenu VALUES ('440', '370', 'About doctype switching...', 'http://www.evolt.org/article/document_body_doctype_switching_and_more/17/30655/', '', '', 'DOM', '660', '0');
+INSERT INTO phplayersmenu VALUES ('450', '370', 'About the browser window size...', 'http://www.howtocreate.co.uk/tutorials/index.php?tut=0&amp;part=16', '', '', 'DOM', '670', '0');
+INSERT INTO phplayersmenu VALUES ('460', '370', 'DOM Samples List Page', 'http://cgi.din.or.jp/~hagi3/JavaScript/Mozilla/SampleList.cgi?fmt=html', '', '', 'DOM', '680', '0');
+INSERT INTO phplayersmenu VALUES ('470', '370', 'Class DOMMouseEvent', 'http://www-sop.inria.fr/koala/domjuan/javadoc/koala/dom/events/DOMMouseEvent.html', '', '', 'DOM', '690', '0');
+INSERT INTO phplayersmenu VALUES ('480', '370', 'Client Object Cross References', 'http://devedge.netscape.com/library/xref/2002/client-data/', '', '', 'DOM', '700', '0');
+INSERT INTO phplayersmenu VALUES ('490', '370', 'The DOM Event Model', 'http://www.brainjar.com/dhtml/events/default4.asp', '', '', 'DOM', '710', '0');
+INSERT INTO phplayersmenu VALUES ('500', '370', 'Opera JS Support', 'http://www.opera.com/docs/specs/js/', '', '', 'DOM', '720', '0');
+
+INSERT INTO phplayersmenu_i18n VALUES ('it', '280', 'Navigatori', '');
+INSERT INTO phplayersmenu_i18n VALUES ('it', '330', 'Navigatori non liberi', '');
+

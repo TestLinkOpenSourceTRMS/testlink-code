@@ -19,14 +19,14 @@ require_once("../functions/header.php");
 <?
 
 $section_number = 0;
-
+$CONTENT = "";
 //this function prints the table of contents before the rest of the data
 function table_of_contents($type,$data) {
 
   //print the Table Of Contents
-
+  global $CONTENT;
   echo "Table Of Contents";
-
+  $CONTENT .= "Table Of Contents";
   if($type == 'project') { //display the entire project 
 
     //display the project name
@@ -64,55 +64,78 @@ function table_of_contents($type,$data) {
 
 //this function prints the header
 function print_header($title) {
+  echo "<head>";
+  echo "<a href='./print/generateDoc.php'><b>Generate Report(.doc format)</b></a>";
+  global $CONTENT;
   echo "<title>Test Plan for " . $title . "</title>";
   echo "</head>";
   echo "<h1 class=print>" . $title . "</h1>";
   echo "<address>Printed by TestLink on " . date('Y-m-d H:i:s', time()) . "</address>";
   echo "<hr class=print>";
+  $CONTENT .= "<title>Test Plan for " . $title . "</title>";
+  $CONTENT .= "</head>";
+  $CONTENT .= "<h1 class=print>" . $title . "</h1>";
+  $CONTENT .= "<address>Printed by TestLink on " . date('Y-m-d H:i:s', time()) . "</address>";
+  $CONTENT .= "<hr class=print>";
 }
 
 
 //when I need to print a component I call this function
-function print_component($component, $master) 
-{
-  
+function print_component($component, $master) {
+  global $CONTENT;
   echo "<h2 class=print>" . $master . ": " . $component[0] . "</h2>";
-  
-  if ($_GET['header'] == 'y')
-	  {
-    	
-		echo "<h3 class=print>Introduction</h3>" .  $component[1];
-		echo "<h4 class=print>Scope of this Document</h4>" .  $component[2];
-		echo "<h4 class=print>References</h4>" .  $component[3];
-		echo "<h3 class=print>Test Methodology</h3>" . $component[4];
-		echo "<h4 class=print>Test Limitations</h4>" . $component[5];
+  $CONTENT .=  "<h2 class=print>" . $master . ": " . $component[0] . "</h2>";
+  if ($_GET['header'] == 'y') {
+    global $section_number;
+    $section_number = 1;
+    echo "<h3 class=print>" . $section_number . ".0 Introduction</h3>" .  $component[1];
+    $CONTENT .= "<h3 class=print>" . $section_number . ".0 Introduction</h3>" .  $component[1];
 
-  }
+    $section_number ++;
+    echo "<h4 class=print>" . $section_number . ".1 Scope of this Document</h4>" .  $component[2];
+    echo "<h4 class=print>" . $section_number . ".2 References</h4>" .  $component[3];
+    echo "<h3 class=print>" . $section_number . ".0 Test Methodology</h3>" . $component[4];
+    echo "<h4 class=print>" . $section_number . ".1 Test Limitations</h4>" . $component[5];
+    $CONTENT .= "<h4 class=print>" . $section_number . ".1 Scope of this Document</h4>" .  $component[2];
+    $CONTENT .= "<h4 class=print>" . $section_number . ".2 References</h4>" .  $component[3];
+    $CONTENT .= "<h3 class=print>" . $section_number . ".0 Test Methodology</h3>" . $component[4];
+    $CONTENT .= "<h4 class=print>" . $section_number . ".1 Test Limitations</h4>" . $component[5];
+	 
+ }
 } 
 
 
 //when I need to print a category I call this function
 function print_category($category) {
+  global $CONTENT;
   if ($_GET['header'] == 'y') {
-    
-    echo "<h3 class=print>Category: " . $category[0] . "</h3>";
+    global $section_number;
+    $section_number++;
+    echo "<h3 class=print>" . $section_number . ".0 Category: " . $category[0] . "</h3>";
     echo $category[1];
-    echo "<h4 class=print>Setup and Configuration</h4>" .  $category[2];
-    echo "<h4 class=print>Test Data</h4>" .  $category[3];
-    echo "<h4 class=print>Tools</h4>" .  $category[4];
-    echo "<h4 class=print>Test Procedures</h4>";
+    echo "<h4 class=print>" . $section_number . ".1 Setup and Configuration</h4>" .  $category[2];
+    echo "<h4 class=print>" . $section_number . ".2 Test Data</h4>" .  $category[3];
+    echo "<h4 class=print>" . $section_number . ".3 Tools</h4>" .  $category[4];
+    echo "<h4 class=print>" . $section_number . ".4 Test Procedures</h4>";
     echo "<P>";
+    $CONTENT .= "<h3 class=print>" . $section_number . ".0 Category: " . $category[0] . "</h3>";
+    $CONTENT .= $category[1];
+    $CONTENT .= "<h4 class=print>" . $section_number . ".1 Setup and Configuration</h4>" .  $category[2];
+    $CONTENT .= "<h4 class=print>" . $section_number . ".2 Test Data</h4>" .  $category[3];
+    $CONTENT .= "<h4 class=print>" . $section_number . ".3 Tools</h4>" .  $category[4];
+    $CONTENT .= "<h4 class=print>" . $section_number . ".4 Test Procedures</h4>";
+    $CONTENT .= "<P>";
+
   } else {
     echo "<h3 class=print>Category: " . $category[0] . "</h3>";
+    $CONTENT .= "<h3 class=print>Category: " . $category[0] . "</h3>";
   }
-	
-
-
 }
 
 
 //when I need to print a test case I call this function
 function print_testcase($testcase) {
+  global $CONTENT;
   if ($_GET['title'] == 'y') {
     echo "<table width=100% class=print>";
     echo "<tr><td class=printhdr>Test Case " . htmlspecialchars($testcase[5]) . ": " . $testcase[1] . "</td></tr>";
@@ -121,15 +144,32 @@ function print_testcase($testcase) {
     echo "<tr><td class=print><u>Expected Results</u>:<br>" .  $testcase[4] . "</td></tr>";
     echo "<tr><td class=print><u>Keywords</u>:<br>" . $testcase[6] . "</td></tr>";
     echo "</table><br>";
+    $CONTENT .= "<table width=100% class=print>";
+    $CONTENT .= "<tr><td class=printhdr>Test Case " . htmlspecialchars($testcase[5]) . ": " . $testcase[1] . "</td></tr>";
+    $CONTENT .= "<tr><td class=print><u>Summary</u>: " .  htmlspecialchars(nl2br($testcase[2])) . "</td></tr>";
+    $CONTENT .= "<tr><td class=print><u>Steps</u>:<br>" .  $testcase[3] . "</td></tr>";
+    $CONTENT .= "<tr><td class=print><u>Expected Results</u>:<br>" .  $testcase[4] . "</td></tr>";
+    $CONTENT .= "<tr><td class=print><u>Keywords</u>:<br>" . $testcase[6] . "</td></tr>";
+    $CONTENT .= "</table><br>";
+
   } else if (($_GET['title'] == 'n') and ($_GET['summary'] == 'y')) {
     echo "<table width=100% class=print>";
     echo "<tr><td class=printhdr>Test Case " . htmlspecialchars($testcase[5]) . ": " . $testcase[1] . "</td></tr>";
     echo "<tr><td class=print><u>Summary</u>: " .  htmlspecialchars(nl2br($testcase[2])) . "</td></tr>";
     echo "</table><br>";
+    $CONTENT .= "<table width=100% class=print>";
+    $CONTENT .= "<tr><td class=printhdr>Test Case " . htmlspecialchars($testcase[5]) . ": " . $testcase[1] . "</td></tr>";
+    $CONTENT .= "<tr><td class=print><u>Summary</u>: " .  htmlspecialchars(nl2br($testcase[2])) . "</td></tr>";
+    $CONTENT .= "</table><br>";
+
   } else if (($_GET['title'] == 'n') and ($_GET['summary'] == 'n')) {
     echo "<table width=100% class=print>";
     echo "<tr><td class=printhdr>Test Case " . htmlspecialchars($testcase[5]) . ": " . $testcase[1] . "</td></tr>";
     echo "</table><br>";
+    $CONTENT .= "<table width=100% class=print>";
+    $CONTENT .= "<tr><td class=printhdr>Test Case " . htmlspecialchars($testcase[5]) . ": " . $testcase[1] . "</td></tr>";
+    $CONTENT .= "</table><br>";
+
   }
 }
 
@@ -391,6 +431,20 @@ if($_GET['edit'] == 'component')
   echo "<ol><li>Click on a component,category, or test cases to see all of the corresponding test cases below it.<li>EX:Clicking on a category will only show that categories test cases.";
   echo "<li>Use your browsers print functionality to actually print the test cases. <li>Note: Make sure to only print the right frame</ol></td></tr>";
   echo "</table>";
+  $CONTENT .= "<table class=helptable width=100%>";
+  $CONTENT .= "<tr><td class=helptablehdr><h2>Printing Test Cases</td></tr></table>";
+  $CONTENT .= "<table class=helptable width=100%>";
+  $CONTENT .= "<tr><td class=helptablehdr><b>Purpose:</td><td class=helptable><ul><li>This Page allows the user to print test cases by either their components or their categories</ul></td></tr>";
+  $CONTENT .= "<tr><td class=helptablehdr><b>Getting Started:</td><td class=helptable>";
+  $CONTENT .= "<ol><li>Click on a component,category, or test cases to see all of the corresponding test cases below it.<li>EX:Clicking on a category will only show that categories test cases.";
+  $CONTENT .= "<li>Use your browsers print functionality to actually print the test cases. <li>Note: Make sure to only print the right frame</ol></td></tr>";
+  $CONTENT .= "</table>";
 }
-
 ?>
+<?
+	$CONTENT .= "<table></table>";
+	$f1=fopen("report.html","w"); 
+	fputs($f1,$CONTENT); 
+	fclose($f1); 
+?>
+<a href="./print/generateDoc.php"><b>Generate Report(.doc format)</b></a>

@@ -447,4 +447,3 @@ if($_GET['edit'] == 'component')
 	fputs($f1,$CONTENT); 
 	fclose($f1); 
 ?>
-<a href="./print/generateDoc.php"><b>Generate Report(.doc format)</b></a>

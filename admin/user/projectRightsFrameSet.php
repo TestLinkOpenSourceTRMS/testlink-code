@@ -7,15 +7,14 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 require_once("../../functions/header.php");
-
+  
   session_start();
   doDBConnect();
   doHeader();
-
-
+  
 	echo "<frameset rows='70,*' frameborder='NO' border='0' framespacing='0'>";
   
-	echo "<frame src='navBar.php?type=project&nav=" . $_GET['nav'] . "' name='topFrame' scrolling='NO' noresize MARGINWIDTH=1 MARGINHEIGHT=1>";
+	echo "<frame src='navBar.php?nav=" . $_GET['nav'] . "' name='topFrame' scrolling='NO' noresize MARGINWIDTH=1 MARGINHEIGHT=1>";
 	
 	echo "<frameset cols='35%,*' frameborder='NO' border='0' framespacing='0'>";
 	echo "<frame src='admin/user/projectRightsLeft.php' scrolling='yes' name='left'>";

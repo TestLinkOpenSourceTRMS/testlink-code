@@ -49,15 +49,7 @@ if($_POST['submit'] == 'moveCOM') //user wants to move a component to another pr
 
 	//Insert the component data from above into the component table
 	
-	$myrowCopyCom[0] = mysql_escape_string($myrowCopyCom[0]);
-	$myrowCopyCom[1] = mysql_escape_string($myrowCopyCom[1]); 
-	$myrowCopyCom[2] = mysql_escape_string($myrowCopyCom[2]);
-	$myrowCopyCom[3] = mysql_escape_string($myrowCopyCom[3]);
-	$myrowCopyCom[4] = mysql_escape_string($myrowCopyCom[4]);
-	$myrowCopyCom[5] = mysql_escape_string($myrowCopyCom[5]);
-	$myrowCopyCom[6] = mysql_escape_string($myrowCopyCom[6]);
-
-	$sqlInsertCom = "insert into mgtcomponent (name,intro,scope,ref,method,lim,prodid) values ('" . $myrowCopyCom[1] . "','" . $myrowCopyCom[2] . "','" . $myrowCopyCom[3] . "','" . $myrowCopyCom[4] . "','" . $myrowCopyCom[5] . "','" . $myrowCopyCom[6] . "','" . $_POST['moveCopy'] . "')";
+	$sqlInsertCom = "insert into mgtcomponent (name,intro,scope,ref,method,lim,prodid) values ('" . mysql_escape_string($myrowCopyCom[1]) . "','" . mysql_escape_string($myrowCopyCom[2]) . "','" . mysql_escape_string($myrowCopyCom[3]) . "','" . mysql_escape_string($myrowCopyCom[4]) . "','" . mysql_escape_string($myrowCopyCom[5]) . "','" . mysql_escape_string($myrowCopyCom[6]) . "','" . $_POST['moveCopy'] . "')";
 	
 	$resultInsertCom = mysql_query($sqlInsertCom);
 	
@@ -74,16 +66,8 @@ if($_POST['submit'] == 'moveCOM') //user wants to move a component to another pr
 	{
 
 		//Insert the category info
-	
-		$myrowCopyCat[0] = mysql_escape_string($myrowCopyCat[0]);
-		$myrowCopyCat[1] = mysql_escape_string($myrowCopyCat[1]); 
-		$myrowCopyCat[2] = mysql_escape_string($myrowCopyCat[2]);
-		$myrowCopyCat[3] = mysql_escape_string($myrowCopyCat[3]);
-		$myrowCopyCat[4] = mysql_escape_string($myrowCopyCat[4]);
-		$myrowCopyCat[5] = mysql_escape_string($myrowCopyCat[5]);
-		$myrowCopyCat[6] = mysql_escape_string($myrowCopyCat[6]);
 
-		$sqlInsertCat = "insert into mgtcategory (name,objective,config,data,tools,compid,CATorder) values ('" . $myrowCopyCat[0] . "','" . $myrowCopyCat[1] . "','" . $myrowCopyCat[2] . "','" . $myrowCopyCat[3] . "','" . $myrowCopyCat[4] . "','" . $comID . "','" . $myrowCopyCat[6] . "')";
+		$sqlInsertCat = "insert into mgtcategory (name,objective,config,data,tools,compid,CATorder) values ('" . mysql_escape_string($myrowCopyCat[0]) . "','" . mysql_escape_string($myrowCopyCat[1]) . "','" . mysql_escape_string($myrowCopyCat[2]) . "','" . mysql_escape_string($myrowCopyCat[3]) . "','" . mysql_escape_string($myrowCopyCat[4]) . "','" . $comID . "','" . mysql_escape_string($myrowCopyCat[6]) . "')";
 
 		$resultInsertCAT = mysql_query($sqlInsertCat);
 		
@@ -99,19 +83,9 @@ if($_POST['submit'] == 'moveCOM') //user wants to move a component to another pr
 
 		while($myrowMoveCopy = mysql_fetch_row($resultMoveCopy))
 		{
-			$myrowMoveCopy[0] = mysql_escape_string($myrowMoveCopy[0]);
-			$myrowMoveCopy[1] = mysql_escape_string($myrowMoveCopy[1]); 
-			$myrowMoveCopy[2] = mysql_escape_string($myrowMoveCopy[2]);
-			$myrowMoveCopy[3] = mysql_escape_string($myrowMoveCopy[3]);
-			$myrowMoveCopy[4] = mysql_escape_string($myrowMoveCopy[4]);
-			$myrowMoveCopy[5] = mysql_escape_string($myrowMoveCopy[5]);
-			$myrowMoveCopy[6] = mysql_escape_string($myrowMoveCopy[6]);
-			$myrowMoveCopy[7] = mysql_escape_string($myrowMoveCopy[7]);
-			$myrowMoveCopy[8] = mysql_escape_string($myrowMoveCopy[8]);
-		
 			//Insert the data from above into the test case table
 
-			$sqlInsert = "insert into mgttestcase (title,summary,steps,exresult,keywords,catid,version,author,TCorder) values ('". $myrowMoveCopy[0]  . "','" . $myrowMoveCopy[1] . "','". $myrowMoveCopy[2] . "','" . $myrowMoveCopy[3] . "','" . $myrowMoveCopy[4] ."','". $catID ."','". $myrowMoveCopy[6] ."','". $myrowMoveCopy[7] . "','". $myrowMoveCopy[8] . "')";
+			$sqlInsert = "insert into mgttestcase (title,summary,steps,exresult,keywords,catid,version,author,TCorder) values ('". mysql_escape_string($myrowMoveCopy[0])  . "','" . mysql_escape_string($myrowMoveCopy[1]) . "','". mysql_escape_string($myrowMoveCopy[2]) . "','" . mysql_escape_string($myrowMoveCopy[3]) . "','" . mysql_escape_string($myrowMoveCopy[4]) ."','". $catID ."','". mysql_escape_string($myrowMoveCopy[6]) ."','". mysql_escape_string($myrowMoveCopy[7]) . "','". mysql_escape_string($myrowMoveCopy[8]) . "')";
 
 			$resultInsert = mysql_query($sqlInsert);
 
@@ -132,15 +106,7 @@ if($_POST['submit'] == 'moveCOM') //user wants to move a component to another pr
 
 	//Insert the category info
 
-	$myrowCopyCat[0] = mysql_escape_string($myrowCopyCat[0]);
-	$myrowCopyCat[1] = mysql_escape_string($myrowCopyCat[1]); 
-	$myrowCopyCat[2] = mysql_escape_string($myrowCopyCat[2]);
-	$myrowCopyCat[3] = mysql_escape_string($myrowCopyCat[3]);
-	$myrowCopyCat[4] = mysql_escape_string($myrowCopyCat[4]);
-	$myrowCopyCat[5] = mysql_escape_string($myrowCopyCat[5]);
-	$myrowCopyCat[6] = mysql_escape_string($myrowCopyCat[6]);
-
-	$sqlInsertCat = "insert into mgtcategory (name,objective,config,data,tools,compid,CATorder) values ('" . $myrowCopyCat[0] . "','" . $myrowCopyCat[1] . "','" . $myrowCopyCat[2] . "','" . $myrowCopyCat[3] . "','" . $myrowCopyCat[4] . "','" . $_POST['moveCopy'] . "','" . $myrowCopyCat[6] . "')";
+	$sqlInsertCat = "insert into mgtcategory (name,objective,config,data,tools,compid,CATorder) values ('" . mysql_escape_string($myrowCopyCat[0]) . "','" . mysql_escape_string($myrowCopyCat[1]) . "','" . mysql_escape_string($myrowCopyCat[2]) . "','" . mysql_escape_string($myrowCopyCat[3]) . "','" . mysql_escape_string($myrowCopyCat[4]) . "','" . $_POST['moveCopy'] . "','" . mysql_escape_string($myrowCopyCat[6]) . "')";
 	
 	$resultInsertCAT = mysql_query($sqlInsertCat);
 	
@@ -156,19 +122,9 @@ if($_POST['submit'] == 'moveCOM') //user wants to move a component to another pr
 
 	while($myrowMoveCopy = mysql_fetch_row($resultMoveCopy))
 	{
-		$myrowMoveCopy[0] = mysql_escape_string($myrowMoveCopy[0]);
-		$myrowMoveCopy[1] = mysql_escape_string($myrowMoveCopy[1]); 
-		$myrowMoveCopy[2] = mysql_escape_string($myrowMoveCopy[2]);
-		$myrowMoveCopy[3] = mysql_escape_string($myrowMoveCopy[3]);
-		$myrowMoveCopy[4] = mysql_escape_string($myrowMoveCopy[4]);
-		$myrowMoveCopy[5] = mysql_escape_string($myrowMoveCopy[5]);
-		$myrowMoveCopy[6] = mysql_escape_string($myrowMoveCopy[6]);
-		$myrowMoveCopy[7] = mysql_escape_string($myrowMoveCopy[7]);
-		$myrowMoveCopy[8] = mysql_escape_string($myrowMoveCopy[8]);
-		
 		//Insert the data from above into the test case table
 
-		$sqlInsert = "insert into mgttestcase (title,summary,steps,exresult,keywords,catid,version,author,TCorder) values ('". $myrowMoveCopy[0]  . "','" . $myrowMoveCopy[1] . "','". $myrowMoveCopy[2] . "','" . $myrowMoveCopy[3] . "','" . $myrowMoveCopy[4] ."','". $catID ."','". $myrowMoveCopy[6] ."','". $myrowMoveCopy[7] . "','". $myrowMoveCopy[8] . "')";
+		$sqlInsert = "insert into mgttestcase (title,summary,steps,exresult,keywords,catid,version,author,TCorder) values ('". mysql_escape_string($myrowMoveCopy[0])  . "','" . mysql_escape_string($myrowMoveCopy[1]) . "','". mysql_escape_string($myrowMoveCopy[2]) . "','" . mysql_escape_string($myrowMoveCopy[3]) . "','" . mysql_escape_string($myrowMoveCopy[4]) ."','". $catID ."','". mysql_escape_string($myrowMoveCopy[6]) ."','". mysql_escape_string($myrowMoveCopy[7]) . "','". mysql_escape_string($myrowMoveCopy[8]) . "')";
 
 		$resultInsert = mysql_query($sqlInsert);
 
@@ -190,17 +146,7 @@ if($_POST['submit'] == 'moveCOM') //user wants to move a component to another pr
 
 	//Insert the data from above into the test case table
 
-	$myrowMoveCopy[0] = mysql_escape_string($myrowMoveCopy[0]);
-	$myrowMoveCopy[1] = mysql_escape_string($myrowMoveCopy[1]); 
-	$myrowMoveCopy[2] = mysql_escape_string($myrowMoveCopy[2]);
-	$myrowMoveCopy[3] = mysql_escape_string($myrowMoveCopy[3]);
-	$myrowMoveCopy[4] = mysql_escape_string($myrowMoveCopy[4]);
-	$myrowMoveCopy[5] = mysql_escape_string($myrowMoveCopy[5]);
-	$myrowMoveCopy[6] = mysql_escape_string($myrowMoveCopy[6]);
-	$myrowMoveCopy[7] = mysql_escape_string($myrowMoveCopy[7]);
-	$myrowMoveCopy[8] = mysql_escape_string($myrowMoveCopy[8]);
-
-	$sqlInsert = "insert into mgttestcase (title,summary,steps,exresult,keywords,catid,version,author,TCorder) values ('". $myrowMoveCopy[0]  . "','" . $myrowMoveCopy[1] . "','". $myrowMoveCopy[2] . "','" . $myrowMoveCopy[3] . "','" . $myrowMoveCopy[4] ."','". $_POST['moveCopy'] ."','". $myrowMoveCopy[6] ."','". $myrowMoveCopy[7] . "','". $myrowMoveCopy[8] . "')";
+	$sqlInsert = "insert into mgttestcase (title,summary,steps,exresult,keywords,catid,version,author,TCorder) values ('". mysql_escape_string($myrowMoveCopy[0])  . "','" . mysql_escape_string($myrowMoveCopy[1]) . "','". mysql_escape_string($myrowMoveCopy[2]) . "','" . mysql_escape_string($myrowMoveCopy[3]) . "','" . mysql_escape_string($myrowMoveCopy[4]) ."','". $_POST['moveCopy'] ."','". mysql_escape_string($myrowMoveCopy[6]) ."','". mysql_escape_string($myrowMoveCopy[7]) . "','". mysql_escape_string($myrowMoveCopy[8]) . "')";
 
 	$resultInsert = mysql_query($sqlInsert);
 

@@ -30,13 +30,13 @@ if(!$_POST['editUser'] && !$_POST['newUser'])
 
 	echo "<table class=userinfotable width='100%'><tr><td bgcolor='#CCCCCC'><b>Existing Users</td></tr></table>\n";
 
-	echo "<table class=userinfotable width='100%'><tr><td bgcolor='#99CCFF'>Login</td><td bgcolor='#99CCFF'>First</td><td bgcolor='#99CCFF'>Last</td><td bgcolor='#99CCFF'>Email</td><td bgcolor='#99CCFF'>Role</td><td bgcolor='#99CCFF'>Delete?</td></tr>\n\n";
+	echo "<table class=userinfotable width='100%'><tr><td bgcolor='#99CCFF'></td><td bgcolor='#99CCFF'>Login</td><td bgcolor='#99CCFF'>First</td><td bgcolor='#99CCFF'>Last</td><td bgcolor='#99CCFF'>Email</td><td bgcolor='#99CCFF'>Role</td><td bgcolor='#99CCFF'>Delete?</td></tr>\n\n";
 
 	$result = mysql_query($sql);
 
 	echo "<FORM method='post' ACTION='admin/user/newEditUser.php'>";
 	
-
+	$userCount = 1; //it's interesting to add a count of the users here
 
 	while ($myrow = mysql_fetch_row($result)) 
 		{
@@ -59,7 +59,9 @@ if(!$_POST['editUser'] && !$_POST['newUser'])
 			$rights = mysql_fetch_row($rightsResult);
 
 			
-			echo "<tr><td><input type='hidden' name='id" . $id . "' " .  "value='" . $id . "'><textarea rows='1' cols='10' name='name" . $id . "'>" . $login . "</textarea></td><td><textarea rows='1' name='first" . $id. "'>" . $first . "</textarea></td></td><td><textarea rows='1' name='last" . $id. "'>" . $last . "</textarea></td></td><td><textarea rows='1' name='email" . $id. "'>" . $email . "</textarea><td>";
+			echo "<tr><td>" . $userCount . ".<td><input type='hidden' name='id" . $id . "' " .  "value='" . $id . "'><textarea rows='1' cols='10' name='name" . $id . "'>" . $login . "</textarea></td><td><textarea rows='1' name='first" . $id. "'>" . $first . "</textarea></td></td><td><textarea rows='1' name='last" . $id. "'>" . $last . "</textarea></td></td><td><textarea rows='1' name='email" . $id. "'>" . $email . "</textarea><td>";
+
+			$userCount++; //increment the user number counter
 
 
 			//This code below fills in the select box of all the possible rights accounts and highlights

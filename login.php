@@ -11,17 +11,9 @@
 //Include the header file and start the session
 
 require_once('functions/header.php');
-doSessionStart();
 
+echo "<LINK REL='stylesheet' TYPE='text/css' HREF='kenny.css'>";
 
-
-?>
-
-
-<LINK REL='stylesheet' TYPE='text/css' HREF='kenny.css'>
-
-
-<?
 
 
 //This next section just creates a form with a username and password section
@@ -29,11 +21,11 @@ doSessionStart();
 if(!$_POST['submit'])
 {
 
-echo "<table width='35%' class=mainTable>";
+echo<<<END
+<table width='35%' class=mainTable>
 
-echo "<tr><td class=mainHeader><h2>TestLink</H2></td></tr>";
-
-echo "
+<tr><td
+class=mainHeader><h2>TestLink</H2></td></tr>
 
 <form method='post' action=$basehref/doAuthorize.php>
 <table width='35%' class=mainTable>
@@ -45,7 +37,8 @@ echo "
 </table>
 </form>
 
-";
+END;
+
 
 }
 	

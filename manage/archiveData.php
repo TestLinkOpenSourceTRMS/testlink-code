@@ -141,9 +141,9 @@ if($_GET['edit'] == 'product')
 	echo "<option value=3>3</option>";
 	echo "<option value=4>4</option>";
 	echo "<option value=5>5</option>";
-	echo "<option value=6>10</option>";
-	echo "<option value=7>15</option>";
-	echo "<option value=8>20</option>";
+	echo "<option value=10>10</option>";
+	echo "<option value=15>15</option>";
+	echo "<option value=20>20</option>";
 	
 	echo "</select>";
 

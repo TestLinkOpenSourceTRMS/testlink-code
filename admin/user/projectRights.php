@@ -184,7 +184,19 @@ if($_GET['view'] == 'user') //view all projects which this user has rights to
 
 }else
 {
-	echo "This page allows you to define the list of approved users for each project";
+		echo "<table class=helptable width=100%>";
+		echo "<tr><td class=helptabletitle>Project/User Rights</td></tr></table>";
+
+		echo "<table class=helptable width=100%>";
+
+		echo "<tr><td class=helptablehdr><b>Purpose:</td><td class=helptable>This page allows users to define the list of approved users for each project</td></tr>";
+		echo "<tr><td class=helptablehdr><b>Getting Started:</td><td class=helptable>";
+		
+		echo "<ol><li>Choose to either manage rights by users or projects<li>Clicking on a user will allow you to select all of the projects that the user is able to see<li>Selecting a project allows you to select all of the users that are a part of that project</td></tr>";
+		
+		echo "</table>";
+	
+	
 }
 
 

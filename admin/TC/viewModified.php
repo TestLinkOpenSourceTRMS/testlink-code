@@ -94,13 +94,14 @@ function TCHeader()
 	echo "<table width='100%' class=navtable >\n";
 		
 	echo "  <tr>\n";
-	echo "    <td width='5%'><b>TCID</td>\n";
-	echo "    <td width='15%'><b>Component</td>\n";
-	echo "    <td width='20%'><b>Category</td>\n";
-	echo "    <td width='36%'><b>Test Case</td>\n";
-	echo "    <td width='9%'><b>Prod Ver</td>\n";
-	echo "    <td width='9%'><b>Proj Ver</td>\n";
-	echo "    <td width='6%'><b>Update</td>\n";
+	echo "    <td width='12.5%'><b>TCID</td>\n";
+	echo "    <td width='12.5%'><b>Component</td>\n";
+	echo "    <td width='12.5%'><b>Category</td>\n";
+	echo "    <td width='12.5%'><b>Test Case</td>\n";
+	echo "    <td width='12.5%'><b>Status</td>\n";
+	echo "    <td width='12.5%'><b>Prod Ver</td>\n";
+	echo "    <td width='12.5%'><b>Proj Ver</td>\n";
+	echo "    <td width='12.5%'><b>Update</td>\n";
 	echo "  </tr>\n";
 
 }
@@ -158,13 +159,27 @@ function displayTC($id, $tcCounter)
 			}
 
 			echo "  <tr>\n";
-			echo "    <td width='5%' class=tctable onclick=javascript:open_tc('./viewTestCases.php?id=" . $id . "');><b><font color=blue>" . $mgtID . "</font></td>\n";
-			echo "    <td width='15%' class=tctable><b>" . $compName . "</td>\n";
-			echo "    <td width='20%' class=tctable><b>" . $catName . "</td>\n";
-			echo "    <td width='36%' class=tctable><b>" . $title . "</td>\n";
-			echo "    <td width='9%' class=tctable><b>" . $mgtVersion . "</td>\n";
-			echo "    <td width='9%' class=tctable><b>" . $version . "</td>\n";
-			echo "    <td width='6%' class=tctable>\n";
+			echo "    <td class=tctable onclick=javascript:open_tc('./viewTestCases.php?id=" . $id . "');><b><font color=blue>" . $mgtID . "</font></td>\n";
+			echo "    <td class=tctable><b>" . $compName . "</td>\n";
+			echo "    <td class=tctable><b>" . $catName . "</td>\n";
+			echo "    <td class=tctable><b>" . $title . "</td>\n";
+			
+			if($mgtVersion == "") //check to see if the test case was deleted and not old
+			{
+				//if it is deleted set status to deleted and the version to ---
+				$status = "deleted";
+				$mgtVersion = "---";
+			
+			}else
+			{
+				$status = "old";
+				
+			}
+			
+			echo "    <td class=tctable><b>" . $status . "</td>\n";
+			echo "    <td class=tctable><b>" . $mgtVersion . "</td>\n";
+			echo "    <td class=tctable><b>" . $version . "</td>\n";
+			echo "    <td class=tctable>\n";
 			echo "      <input type=hidden name=tcid" . $id . " value=" . $id . ">\n";
 			echo "      <input type=checkbox name=update" . $id . " value=yes" . $id . ">\n";
 			echo "      <input type=hidden name=break" . $id . " value=break>\n";

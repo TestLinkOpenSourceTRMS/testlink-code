@@ -54,23 +54,47 @@ if($_POST['updateSelected'])
 			$mgtResult = mysql_query($mgtSQL); //Run the query
 			$mgtRow= mysql_fetch_row($mgtResult);
 
-			$mgtTitle=stripTree($mgtRow[0]);
-			$mgtSteps=stripTree($mgtRow[1]);
-			$mgtExresult=stripTree($mgtRow[2]);
+			$mgtTitle=mysql_escape_string($mgtRow[0]);
+			$mgtSteps=mysql_escape_string($mgtRow[1]);
+			$mgtExresult=mysql_escape_string($mgtRow[2]);
 			$mgtKeywords=$mgtRow[3];
 			$mgtCatid=$mgtRow[4];
 			$mgtVersion=$mgtRow[5];
-			$mgtSummary=stripTree($mgtRow[6]);
+			$mgtSummary=mysql_escape_string($mgtRow[6]);
 			$mgtTCorder = $mgtRow[7];
+			
+			if($mgtVersion == "")
+			{
+				$SQLDeleteTC = "delete from testcase where id=" . $tcID;
+
+				$updateResult = mysql_query($SQLDeleteTC); //Run the query
+
+				$SQLdeleteResults = "delete from results where tcid=" . $tcID;
+				
+				$updateResult2 = mysql_query($SQLdeleteResults); //Run the query
+
+				$SQLdeleteBugs = "delete from bugs where tcid=" . $tcID;
+
+				$updateResult3 = mysql_query($SQLdeleteBugs); //Run the query	
+
+				echo "Test Case <b>" . $tcID . "</b>:" . $mgtTitle . " has been deleted<br>";
+
+
+			}else
+			{
 			
 			//Update the testcase with the new data
 
-			$updateSQL = 'update testcase set TCorder=' . $mgtTCorder . ',title="' . $mgtTitle . '", steps="' . $mgtSteps . '", exresult="' . $mgtExresult . '", keywords="' . $mgtKeywords . '", version="' . $mgtVersion . '", summary="' . $mgtSummary . '" where id=' . $tcID;	
+			$updateSQL = 'update testcase set TCorder=' . $mgtTCorder . ',title="' . $mgtTitle . '", steps="' . $mgtSteps . '", exresult="' . $mgtExresult . '", keywords="' . $mgtKeywords . '", version="' . $mgtVersion . '", summary="' . $mgtSummary . '" where id=' . $tcID;
+			
 			
 			$updateResult = mysql_query($updateSQL); //Run the query
 			
+			
 			echo "Test Case <b>" . $tcID . "</b>:" . $mgtTitle . " has been updated<br>";
+			}
 
+			
 			$i = $i + 3; // go to the next result - skip the break
 
 			$oneEdited = 1;
@@ -86,14 +110,5 @@ if (!$oneEdited) {
 	echo "<b>No test cases were updated.</b>\n";
 }
 
-function stripTree($name)
-{
-
-$name = str_replace ( "'", "", $name); //remove apostraphy
-$name = str_replace ( '"', '', $name); //remove apostraphy
-
-return $name;
-
-}
 
 ?>

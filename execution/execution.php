@@ -6,7 +6,6 @@
 //Purpose:  The page builds the detailed test case execution frame
 ////////////////////////////////////////////////////////////////////////////////
 
-
 require_once("../functions/header.php");
 
   session_start();
@@ -125,7 +124,7 @@ if($edit == 'component' && $build) //if the user has selected to view by compone
 			//Note.. I have to pass the bugzillaOn variable all over the place because it loses
 			//its scope in the functions. This is a result of globals being turned off by default by php
 
-			displayTestCase($TCResult,$bugzillaOn);				
+			displayTestCase($TCResult);				
 						
 		}//end category (TP) loop
 					
@@ -159,7 +158,7 @@ if($edit == 'category' && $build) //if the user has selected to view by category
 			//Note.. I have to pass the bugzillaOn variable all over the place because it loses
 			//its scope in the functions. This is a result of globals being turned off by default by php
 
-			displayTestCase($TCResult,$bugzillaOn);				
+			displayTestCase($TCResult);				
 		}
 
 }
@@ -178,7 +177,7 @@ if($edit == 'testcase' && $build)
 	//Note.. I have to pass the bugzillaOn variable all over the place because it loses
 	//its scope in the functions. This is a result of globals being turned off by default by php
 
-	displayTestCase($TCResult,$bugzillaOn);				
+	displayTestCase($TCResult);				
 }
 
 echo "</form>"; //end the form
@@ -349,7 +348,7 @@ function radioResult($tcid,$result)
 
 //This function actually displays the test case
 
-function displayTestCase($resultTC,$bugzillaOn)
+function displayTestCase($resultTC)
 {
 
 	while ($myrow = mysql_fetch_row($resultTC)){ //display all the test cases until we run out
@@ -412,7 +411,7 @@ function displayTestCase($resultTC,$bugzillaOn)
 
 		echo "</td><td width=50%>";
 
-		results($myrow[0],$bugzillaOn);
+		results($myrow[0]);
 
 		echo "</td><tr>";
 						
@@ -579,8 +578,10 @@ function TCBody($summary,$steps,$exresult,$keywords, $riskImportance)
 
 }
 
-function results($tcid,$bugzillaOn)
+function results($tcid)
 {
+	global $bugzillaOn;
+
 	echo "<table class=tctable width=100% align='top'>";
 
 	//This query grabs the results from the build passed in

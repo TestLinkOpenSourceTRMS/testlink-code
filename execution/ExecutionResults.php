@@ -130,7 +130,7 @@ while ($i < count($newArray)) //Loop for the entire size of the array
 	
 			$result = mysql_query($sql); //Execute query
 
-			updateBugs($tcId, $build, $tcBugs);
+			updateBugs($tcID, $build, $tcBugs);
 
 		}
 
@@ -173,16 +173,15 @@ $page =  _BASE_HREF . "execution/executionFrameLeft.php";
 refreshFrame($page); //call the function below to refresh the left frame
 
 
-function updateBugs($tcId, $build, $bugs)
+function updateBugs($tcID, $build, $bugs)
 {
-
 	$sqlDelete = "DELETE from bugs where tcid=" . $tcID . " and build=" . $build;
 
 	$result = mysql_query($sqlDelete); //Execute query
 
 	//Grabbing the bug info from the results table
 
-	$bugArray = csv_split($tcBugs);
+	$bugArray = csv_split($bugs);
 
 	$counter = 0;
 
@@ -190,7 +189,7 @@ function updateBugs($tcId, $build, $bugs)
 	{
 
 		$sqlBugs = "insert into bugs (tcid,build,bug) values ('" . $tcID . "','" . $build . "','" . $bugArray[$counter] . "')";
-
+	
 		$result = mysql_query($sqlBugs); //Execute query
 
 		$counter++;

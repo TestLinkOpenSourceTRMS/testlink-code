@@ -115,7 +115,7 @@ if($edit == 'component' && $build) //if the user has selected to view by compone
 				
 			//Start the display of the Categories	
 
-			$TCsql = "select testcase.id, title, summary, steps, exresult, keywords,mgttcid,version, testcase.risk, testcase.importance from testcase,category where category.id = " . $myrowCAT[0] . " and testcase.catid = category.id order by TCorder";
+			$TCsql = "select testcase.id, title, summary, steps, exresult, keywords,mgttcid,version, testcase.risk, testcase.importance from testcase,category where category.id = " . $myrowCAT[0] . " and testcase.catid = category.id order by TCorder,mgttcid";
 
 			$TCResult = mysql_query($TCsql,$db);
 			
@@ -145,7 +145,7 @@ if($edit == 'category' && $build) //if the user has selected to view by category
 
 		//If the user chose None for the keyword selection I show every keyword
 
-		$TCsql = "select testcase.id, title, summary, steps, exresult, keywords, mgttcid, version, testcase.risk, testcase.importance  from testcase,category where category.id = " . $myrowCAT[0] . " and testcase.catid = category.id order by TCorder";
+		$TCsql = "select testcase.id, title, summary, steps, exresult, keywords, mgttcid, version, testcase.risk, testcase.importance  from testcase,category where category.id = " . $myrowCAT[0] . " and testcase.catid = category.id order by TCorder,mgttcid";
 
 		$TCResult = mysql_query($TCsql,$db);
 
@@ -166,7 +166,7 @@ if($edit == 'testcase' && $build)
 
 	//If the user chose None for the keyword selection I show every keyword
 
-	$TCResult = mysql_query("select testcase.id, title, summary, steps, exresult, keywords,mgttcid,version,risk, importance from testcase where testcase.id = " . $data . " and testcase.active='on' order by mgttcid",$db);
+	$TCResult = mysql_query("select testcase.id, title, summary, steps, exresult, keywords,mgttcid,version,risk, importance from testcase where testcase.id = " . $data . " and testcase.active='on'",$db);
 
 	//Display the test case
 
@@ -521,7 +521,7 @@ function TCHeader($tcid,$comName,$catName,$versionFlag,$mgttcid,$tcTitle)
 
 	if(has_rights("tp_planning"))
 	{
-		echo "<b onclick=javascript:open_tc('../admin/TC/viewTestCases.php?id=" . $tcid . "');><font color=blue>" . $mgttcid . "</font>: </b>\n";
+		echo "<b onclick=javascript:open_tc('admin/TC/viewTestCases.php?id=" . $tcid . "');><font color=blue>" . $mgttcid . "</font>: </b>\n";
 	} else {
 		echo "<b>" . $mgttcid . ": </b>\n";
 	}

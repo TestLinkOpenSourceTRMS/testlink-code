@@ -422,11 +422,13 @@ echo <<<END
 <tr>
 <td class="mainSubHeader">Execution Status</td>
 </tr>
-
-<tr bordercolor='#000000'>
 		        
-<td class='mainMenu'><img src='icons/arrow_org.gif' width='16' height='9'><$planLinkTag href="metrics/metricsFrameSet.php?nav= > Test Plan Metrics">View Metrics</a></td></tr>
-
+<tr bordercolor='#000000'>
+	<td class='mainMenu'>
+		<img src='icons/arrow_org.gif' width='16' height='9'>
+			<$planLinkTag href="metrics/metricsFrameSet.php?nav= > Test Plan Metrics">View Metrics</a>
+	</td>
+</tr>
 
 END;
 

@@ -26,7 +26,7 @@ if($project)
 	
 	$menustring = ".|" . $projectResult[1] . "|" . "platform/manageData.php?edit=project&data=" . $projectResult[0] .  "|Product||mainFrame|\n";
 
-	$pcSql = "select id,name from platformContainer where projId=" . $project;
+	$pcSql = "select id,name from platformcontainer where projId=" . $project;
 	
 	$platConResult = mysql_query($pcSql);
 

@@ -8,7 +8,7 @@ $myWwwPath = _TREE_WWW_PATH;
 ?>
 
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"></meta>
-<!--<link rel="stylesheet" href="<?php print $myWwwPath; ?>layersmenu-demo.css" type="text/css"></link>-->
+<link rel="stylesheet" href="<?php print $myWwwPath; ?>layersmenu-demo.css" type="text/css"></link>
 <link rel="stylesheet" href="<?php print $myWwwPath; ?>layerstreemenu.css" type="text/css"></link>
 <style type="text/css">
 <!--

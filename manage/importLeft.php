@@ -152,7 +152,7 @@ if($_POST['submit'])
 	//Help link
 	$helpInfo = "Click <a href='manage/importData.php?edit=info' target='mainFrame'>here</a> for help";
 
-	invokeMenu($menustring, $tableTitle, $helpInfo);
+	invokeMenu($menustring, $tableTitle, $helpInfo, "");
 	
 
 }//end if submit

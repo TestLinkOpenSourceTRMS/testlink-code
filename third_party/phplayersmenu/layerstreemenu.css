@@ -1,3 +1,10 @@
+body	{
+	color: #000000;
+	background-color: #f1eee9;
+	margin: 0;
+	padding: 0;
+}
+
 .treemenudiv	{
 	display: block;
 	white-space: nowrap;
@@ -38,6 +45,7 @@ a.phplm:hover	{
 	color: #841212;
 	background-color: #fff0c0;
 	text-decoration: none;
+ 
 }
 
 a.phplm:active	{
@@ -51,7 +59,8 @@ a.phplmselected:link	{
 	font-family: bitstream vera sans, luxi sans, verdana, geneva, arial, helvetica, sans-serif;
 	font-size: 10px;
 	color: #dd0000;
-	background-color: #ffdd76;
+	/*background-color: #ffdd76;*/
+    background-color: BLUE;
 	text-decoration: none;
 }
 

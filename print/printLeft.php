@@ -193,7 +193,7 @@ echo "</tr></table>";
 	//Help link
 	$helpInfo = "Click <a href='print/printData.php' target='mainFrame'>here</a> for help";
 
-	invokeMenu($menustring, $tableTitle, $helpInfo);
+	invokeMenu($menustring, $tableTitle, $helpInfo, "");
 
 	
 ?>

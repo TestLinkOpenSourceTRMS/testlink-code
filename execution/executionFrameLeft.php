@@ -95,7 +95,7 @@ $comResult = mysql_query($sql);
 	//Help link
 	$helpInfo = "Click <a href='execution/execution.php?edit=info' target='mainFrame'>here</a> for help";
 
-	invokeMenu($menustring, $tableTitle, $helpInfo);
+	invokeMenu($menustring, $tableTitle, $helpInfo, "");
 
 function getResultFont($result)
 {

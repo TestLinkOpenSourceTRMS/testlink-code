@@ -168,6 +168,8 @@ function newTreeMenu(
 		if ($this->tree[$cnt]['text'] == '---') {
 			continue;	// separators are significant only for layers-based menus
 		}
+		
+		//print_r($this->tree[$cnt]) . "<br>";
 
 		if (isset($this->tree[$cnt]['selected']) && $this->tree[$cnt]['selected']) {
 			$linkstyle = 'phplmselected';

@@ -65,5 +65,5 @@ require_once(_ROOT_PATH . "functions/generateTreeMenu.php");
 		//Help link
 		$helpInfo = "Click <a href='admin/category/categorySelect.php?edit=info' target='mainFrame'>here</a> for help";
 
-		invokeMenu($menustring, $tableTitle, $helpInfo);
+		invokeMenu($menustring, $tableTitle, $helpInfo, "");
 ?>

@@ -81,7 +81,7 @@ if($product)
 	//Help link
 	$helpInfo = "Click <a href='manage/keyword/keywordData.php' target='mainFrame'>here</a> for help";
 
-	invokeMenu($menustring, $tableTitle, $helpInfo);
+	invokeMenu($menustring, $tableTitle, $helpInfo, "");
 }
 
 ?>

@@ -68,7 +68,7 @@ $i = 3; //Start the counter at 3 because the first three variables are build,dat
 while ($i < count($newArray)) //Loop for the entire size of the array
 {
 
-	$tcID = $newArray[$i]; //Then the first value is the ID
+	$tcId = $newArray[$i]; //Then the first value is the ID
 	$tcNotes = $newArray[$i + 1]; //The second value is the notes
 	$tcStatus = $newArray[$i + 2]; //The 3rd value is the status
 	
@@ -83,29 +83,27 @@ while ($i < count($newArray)) //Loop for the entire size of the array
 		
 	//SQL statement to look for the same record (tcid, build = tcid, build)
 
-	$sql = "select tcid, build, notes, status, title from results,testcase where tcid='" . $tcID . "' and build='" . $build . "' and results.tcid=testcase.id";
+	$sql = "select tcid, build, notes, status, title, mgttcid from results,testcase where tcid='" . $tcId . "' and build='" . $build . "' and results.tcid=testcase.id";
 	
 	$result = mysql_query($sql); //Run the query
 	$num = mysql_num_rows($result); //How many results
 
 	if($num == 1) //If we find a matching record
-	{
-						
+	{					
 		//Grabbing the values from the query above
 			
 		$myrow = mysql_fetch_row($result);
 		
-		$queryNotes = $myrow[2];
-		$queryStatus = $myrow[3];
-		$tcTitle = $myrow[4];
+		$queryNotes		= $myrow[2];
+		$queryStatus	= $myrow[3];
+		$tcTitle		= $myrow[4];
+		$mgttcid		= $myrow[5];
 			
 		//If the (notes, status) information is the same.. Do nothing
 			
 		if($queryNotes == $tcNotes && $queryStatus == $tcStatus)
 		{
-			updateBugs($tcID, $build, $tcBugs);
-
-			displayResult($tcID, $build, $tcStatus, $tcNotes, $tcBugs,$tcTitle);
+			updateBugs($tcId, $build, $tcBugs);
 
 			//Don't display anything if there are no changes			
 		}
@@ -114,26 +112,20 @@ while ($i < count($newArray)) //Loop for the entire size of the array
 			//I think that from now on it may just be easier to delete the result row in the db if the status is
 			//not run
 
-			$sql = "delete from results where tcid=" . $tcID . " and build=" . $build;
+			$sql = "delete from results where tcid=" . $tcId . " and build=" . $build;
 			$result = mysql_query($sql);
-
-			displayResult($tcID, $build, $tcStatus, $tcNotes, $tcBugs,$tcTitle);
-
 		}
 		else
 		{
 			//update the old result
 	
-			$sql = "UPDATE results set runby ='" . $_SESSION['user'] . "', status ='" .  $tcStatus . "', notes='" . $tcNotes . "' where tcid='" . $tcID . "' and build='" . $build . "'";
+			$sql = "UPDATE results set runby ='" . $_SESSION['user'] . "', status ='" .  $tcStatus . "', notes='" . $tcNotes . "' where tcid='" . $tcId . "' and build='" . $build . "'";
 			
-			displayResult($tcID, $build, $tcStatus, $tcNotes, $tcBugs,$tcTitle);
-	
 			$result = mysql_query($sql); //Execute query
 
-			updateBugs($tcID, $build, $tcBugs);
+			updateBugs($tcId, $build, $tcBugs);
 
 		}
-
 		
 	//If the (notes, status) information is different.. then update the record
 
@@ -143,7 +135,6 @@ while ($i < count($newArray)) //Loop for the entire size of the array
 		
 		if($tcNotes == "" && $tcStatus == "n") //If the notes are blank and the status is n then do nothing
 		{
-			displayResult($tcID, $build, $tcStatus, $tcNotes, $tcBugs,$tcTitle);
 			updateBugs($tcId, $build, $tcBugs);
 			
 			//I dont want to display anything if no data was submitted
@@ -152,9 +143,7 @@ while ($i < count($newArray)) //Loop for the entire size of the array
 		else //Else enter a new row
 		{
 			
-			$sql = "insert into results (build,daterun,status,tcid,notes,runby) values ('" . $build . "','" . $date . "','" . $tcStatus . "','" . $tcID . "','" . $tcNotes . "','" . $_SESSION['user'] . "')";
-
-			displayResult($tcID, $build, $tcStatus, $tcNotes, $tcBugs,$tcTitle);
+			$sql = "insert into results (build,daterun,status,tcid,notes,runby) values ('" . $build . "','" . $date . "','" . $tcStatus . "','" . $tcId . "','" . $tcNotes . "','" . $_SESSION['user'] . "')";
 
 			$result = mysql_query($sql);
 
@@ -162,6 +151,8 @@ while ($i < count($newArray)) //Loop for the entire size of the array
 
 		}
 	}
+
+	displayResult($tcId, $build, $tcStatus, $tcNotes, $tcBugs,$tcTitle,$mgttcid);
 		
 
 }//end while
@@ -197,7 +188,7 @@ function updateBugs($tcID, $build, $bugs)
 
 }
 
-function displayResult($tcID, $build, $tcStatus, $tcNotes, $tcBugs, $tcTitle)
+function displayResult($tcID, $build, $tcStatus, $tcNotes, $tcBugs, $tcTitle, $mgttcid)
 {
 	//get the test case's name
 
@@ -205,7 +196,7 @@ function displayResult($tcID, $build, $tcStatus, $tcNotes, $tcBugs, $tcTitle)
 	{
 	?>
 		<tr>
-			<td align="center"><? echo $tcID ?></td>
+			<td align="center"><? echo $mgttcid ?></td>
 			<td>Test Case Name</td>
 			<td align="center"><? echo $build ?></td>
 			<td align="center">Not Run</td>
@@ -221,10 +212,10 @@ function displayResult($tcID, $build, $tcStatus, $tcNotes, $tcBugs, $tcTitle)
 
 	?>
 		<tr>
-			<td align="center"><? echo $tcID ?></td>
+			<td align="center"><? echo $mgttcid ?></td>
 			<td><? echo $tcTitle ?></td>
 			<td align="center">
-				<a href='execution/execution.php?edit=testcase&tc=<? echo $tcID ?>&build=<? echo $build[0] ?>'>
+				<a href='execution/execution.php?edit=testcase&data=<? echo $tcID ?>&build=<? echo $build[0] ?>'>
 					<? echo $build ?>
 				</a>
 			</td>

@@ -24,9 +24,7 @@ echo "<head>";
 
 function showDetail(data)
 {
-
-document.write(data);
-
+	document.write(data);
 }
 
 </script>
@@ -38,79 +36,89 @@ require_once('../htmlarea/textArea.php');
 
 echo "</head>";
 
-if($_GET['edit'] == 'info') //Displayed the first time the user enters the page or if they click the info button
+//The build that the user is viewing
+$build = $_GET['build'];
+
+//the level that the user chose (component,category,testcase)
+$edit = $_GET['edit'];
+
+//the level's id (ex: testcase id 144677)
+$data = $_GET['data'];
+
+if($build && $edit != 'info')
 {
-
-		echo "<table class=helptable width=100%>";
-		echo "<tr><td class=helptabletitle>Test Case Execution</td></tr></table>";
-
-		echo "<table class=helptable width=100%>";
-
-		echo "<tr><td class=helptablehdr><b>Purpose:</td><td class=helptable>This Page allows the user to execute test cases by either their components or their category levels</td></tr>";
-		echo "<tr><td class=helptablehdr><b>Getting Started:</td><td class=helptable>";
-		
-		echo "<ol><li>Click on a component to see all of its categories and all of its test cases.<li>Clicking on a category will only show that categories test cases.<li>Select a build from the drop down box above.<li>Fill out the test case result and any applicable notes or bugs</td></tr>";
-		
-		echo "<tr><td class=helptablehdr><b>Note:</td><td class=helptable>If there are no test cases imported into a test plan, only the info icon will be available</td></tr>";
-		
-		
-		echo "</table>";
+	executionHeaderWithBuild($build);
 
 }
-
-if($_GET['edit'] == 'component') //if the user has selected to view by component
+else if(!$build && $edit != 'info')
 {
+	executionHeaderWithoutBuild();
+	//no build yet
+}
 
-	//build the header
+if($edit == 'info') //Displayed the first time the user enters the page or if they click the info button
+{
+		?>
 
-	executionHeader($_GET['build']);
+		<table class=helptable width=100%>
+		<tr><td class=helptabletitle>Test Case Execution</td></tr></table>
+		<table class=helptable width=100%>
+		<tr>
+			<td class=helptablehdr><b>Purpose:</td>
+			<td class=helptable>This Page allows the user to execute test cases by either their components or their category levels
+			</td>
+		</tr>
+		<tr>
+			<td class=helptablehdr><b>Getting Started:</td>
+			<td class=helptable>
+				<ol>
+					<li>
+						Click on a component to see all of its categories and all of its test cases.
+					<li>
+						Clicking on a category will only show that categories test cases.
+					<li>
+						Select a build from the drop down box above.
+					<li>
+						Fill out the test case result and any applicable notes or bugs
+				</ol>
+			</td>
+		</tr>
+		
+		<tr>
+			<td class=helptablehdr><b>Note:</td>
+			<td class=helptable>
+				If there are no test cases imported into a test plan, only the info icon will be available
+			</td>
+		</tr>
+		</table>
+
+		<?
+}
+
+if($edit == 'component' && $build) //if the user has selected to view by component
+{
 
 	//Start the display of the components
 		
 	//Here I create a query that will grab every component depending on the project the user picked
 		
-	$comResult = mysql_query("select component.id, component.name from component,project where project.id = " . $_SESSION['project'] . " and component.projId = project.id and component.id='" . $_GET['com'] . "' order by component.name",$db);
+	$comResult = mysql_query("select component.id, component.name from component,project where project.id = " . $_SESSION['project'] . " and component.projId = project.id and component.id='" . $data . "' order by component.name",$db);
 		
 	while ($myrowCOM = mysql_fetch_row($comResult)) { //display all the components until we run out
 
 		//Display the each component in a table
 
-		//Here I create a query that will grab every category depending on the component the user picked
-
-		if($_GET['owner']) //check to see if the user sorted the list by owner
-		{
-
-			$catResult = mysql_query("select category.id, category.name from component,category where component.id = " . $myrowCOM[0] . " and component.id = category.compid and owner='" . $_SESSION['user'] . "' order by CATorder",$db);
-
-		}else
-		{
-
-			$catResult = mysql_query("select category.id, category.name from component,category where component.id = " . $myrowCOM[0] . " and component.id = category.compid order by CATorder",$db);
-
-		}
+		$catResult = mysql_query("select category.id, category.name from component,category where component.id = " . $myrowCOM[0] . " and component.id = category.compid order by CATorder",$db);	
 			
-			
-		while ($myrowCAT = mysql_fetch_row($catResult)) {  //display all the categories until we run out
+		while ($myrowCAT = mysql_fetch_row($catResult)) 
+		{  
+			//display all the categories until we run out
 				
-//////////////////////////////////////////////////////////////Start the display of the Categories	
+			//Start the display of the Categories	
 
-			//Here I create a query that will grab every testcase depending on the category the user picked
+			$TCsql = "select testcase.id, title, summary, steps, exresult, keywords,mgttcid,version, testcase.risk, testcase.importance from testcase,category where category.id = " . $myrowCAT[0] . " and testcase.catid = category.id order by TCorder";
 
-			if($_GET['keyword'] == 'All')
-			{
-
-				$TCsql = "select testcase.id, title, summary, steps, exresult, keywords,mgttcid,version, testcase.risk, testcase.importance from testcase,category where category.id = " . $myrowCAT[0] . " and testcase.catid = category.id order by TCorder";
-
-				$TCResult = mysql_query($TCsql,$db);
-
-			}else //I show them only the keywords they selected
-			{
-
-				$TCsql = "select testcase.id, title, summary, steps, exresult, keywords,mgttcid,version,testcase.risk,testcase.importance from testcase,category where category.id = " . $myrowCAT[0] . " and testcase.catid = category.id and testcase.keywords like '%" . $_GET['keyword'] . "%'  order by TCorder";
-
-				$TCResult = mysql_query($TCsql,$db);
-
-			}
+			$TCResult = mysql_query($TCsql,$db);
 			
 			//Display the test case
 
@@ -118,97 +126,52 @@ if($_GET['edit'] == 'component') //if the user has selected to view by component
 			//its scope in the functions. This is a result of globals being turned off by default by php
 
 			displayTestCase($TCResult,$bugzillaOn);				
-					
-				
+						
 		}//end category (TP) loop
 					
 		
 	}//end component loop
 
-	echo "</form>";
-
 }
 
-if($_GET['edit'] == 'category') //if the user has selected to view by category
+if($edit == 'category' && $build) //if the user has selected to view by category
 {
-
-		//build the header
-
-		executionHeader($_GET['build']);
 
 		//Here begins the meat of the tool. This next line grabs the category that the user selected from the left pane
 
-		$compName = mysql_query("select component.name from category,component where category.id=" . $_GET['cat'] . " and category.compid=component.id",$db);
-
-		$compNameResult = mysql_fetch_row($compName);
-
-
-		$catResult = mysql_query("select category.id, category.name from category where category.id = " . $_GET['cat'] . " order by CATorder",$db);
+		$catResult = mysql_query("select category.id, category.name from category where category.id = " . $data . " order by CATorder",$db);
 	
-		$myrowCAT = mysql_fetch_row($catResult);  //display all the categories until we run out
-				
-		//Here I create a query that will grab every testcase depending on the category the user picked
+		//$myrowCAT = mysql_fetch_row($catResult);  //display all the categories until we run out
+		
+		while ($myrowCAT = mysql_fetch_row($catResult)) 
+		{	
 
-		//If the user chose None for the keyword selection I show every keyword
+			//Here I create a query that will grab every testcase depending on the category the user picked
 
-		if($_GET['keyword'] == 'All')
-		{
+			//If the user chose None for the keyword selection I show every keyword
 
-			$TCsql = "select testcase.id, title, summary, steps, exresult, keywords,mgttcid,version,risk,importance  from testcase,category where category.id = " . $myrowCAT[0] . " and testcase.catid = category.id order by TCorder";
-
-			$TCResult = mysql_query($TCsql,$db);
-
-		}else //I show them only the keywords they selected
-		{
-
-			$TCsql = "select testcase.id, title, summary, steps, exresult, keywords,mgttcid,version,testcase.risk,testcase.importance from testcase,category where category.id = " . $myrowCAT[0] . " and testcase.catid = category.id and testcase.keywords like '%" . $_GET['keyword'] . "%'  order by TCorder";
+			$TCsql = "select testcase.id, title, summary, steps, exresult, keywords, mgttcid, version, testcase.risk, testcase.importance  from testcase,category where category.id = " . $myrowCAT[0] . " and testcase.catid = category.id order by TCorder";
 
 			$TCResult = mysql_query($TCsql,$db);
 
+			//display the test case
+
+			//Note.. I have to pass the bugzillaOn variable all over the place because it loses
+			//its scope in the functions. This is a result of globals being turned off by default by php
+
+			displayTestCase($TCResult,$bugzillaOn);				
 		}
-
-		//display the test case
-
-		//Note.. I have to pass the bugzillaOn variable all over the place because it loses
-		//its scope in the functions. This is a result of globals being turned off by default by php
-
-		displayTestCase($TCResult,$bugzillaOn);				
-
-		echo "</form>"; //end the form
 
 }
 
-if($_GET['edit'] == 'testcase')
+if($edit == 'testcase' && $build)
 {
-
-	//build the header
-
-	executionHeader($_GET['build']);
-
-	$COMCATResult = mysql_query("select component.name,category.name from component,category,testcase where testcase.id='" . $_GET['tc'] . "' and category.id=testcase.catid and component.id=category.compid",$db);
-
-	//Grab the result
-
-	$myrowCOMCAT = mysql_fetch_row($COMCATResult);
-
-	//Here begins the meat of the tool. This next line grabs the category that the user selected from the left pane
 
 	//Here I create a query that will grab every testcase depending on the category the user picked
 
 	//If the user chose None for the keyword selection I show every keyword
 
-	if($_GET['keyword'] == 'All')
-	{
-
-		$TCResult = mysql_query("select testcase.id, title, summary, steps, exresult, keywords,mgttcid,version,risk, importance from testcase where testcase.id = " . $_GET['tc'] . " and testcase.active='on'",$db);
-
-	}else //I show them only the keywords they selected
-	{
-
-		$TCResult = mysql_query("select testcase.id, title, summary, steps, exresult, keywords,mgttcid,version,risk, importance from testcase where testcase.id = " . $_GET['tc'] . " and testcase.active='on' and testcase.keywords like '%" . $_GET['keyword'] . "%'",$db);
-
-
-	}
+	$TCResult = mysql_query("select testcase.id, title, summary, steps, exresult, keywords,mgttcid,version,risk, importance from testcase where testcase.id = " . $data . " and testcase.active='on'",$db);
 
 	//Display the test case
 
@@ -216,60 +179,132 @@ if($_GET['edit'] == 'testcase')
 	//its scope in the functions. This is a result of globals being turned off by default by php
 
 	displayTestCase($TCResult,$bugzillaOn);				
-
-	echo "</form>"; //end the form
-
 }
 
-function executionHeader($build)
+echo "</form>"; //end the form
+
+function executionHeaderWithBuild($build)
 {
-		
+		global $edit, $data;
 		//This section builds the top table with the date and build selection
-
-		echo "<table width='100%' class=titletable>";
-
-		echo "<td class=titletablehdr width='50%'>Select build to record results for</td>";
 		
-		echo "<td class=titletablehdr width='50%'>Click to record results</b></td></tr>";
+		?>
+		
+		<table width='50%' class=titletable align='center'>
+		<form method='post' ACTION='execution/ExecutionResults.php'>
+		
+		<td class=titletablehdr width='33%'>Click to record results against build: <? echo $build ?></b> 
+		: (<a href='execution/execution.php?edit=<? echo $edit ?>&data=<? echo $data ?>'>back</a>)
+		
+		</td></tr>
 
-
+		<?
 		//Setting up the form that will post to the execution results page
 
-		echo "<form method='post' ACTION='execution/ExecutionResults.php'>";
-
 		echo "<tr><input type='hidden' readonly name='date' value='" . date ("Y-m-d") . "'>";
-
-
-		echo "<td class=titletable>";
 		
-		if($build)
-		{
-			echo $build;
-			echo "<input type='hidden' name='build' value='" . $build . "'>";
-		}
-		else
-		{
-			$sqlResult = "select build from build where projid=" . $_SESSION['project'] . " order by build desc";		
-			$buildResult = mysql_query($sqlResult);
-
-			echo "<select name='build'>";
-
-			while ($myrowResult = mysql_fetch_row($buildResult)) 
-			{
-				echo "<option value=" . $myrowResult[0] . ">" . $myrowResult[0] . "</option>";
-			}
-
-			echo "</select>";
-		}
-
+		echo "<input type='hidden' name='build' value='" . $build . "'>";		
 		echo "</td>";
 
-		
-		//echo "<input type='hidden' name='build' value='" . $build . "'></td>";
 
 		//Display all the available builds
 				
 		echo "<td class=titletable><input type='submit' NAME='submit' value='submit'></td>";
+		
+		echo "</tr></table><P>";
+}
+
+function executionHeaderWithoutBuild()
+{
+	global $edit, $data;
+		//This section builds the top table with the date and build selection
+
+		echo "<table width='50%' class=titletable align='center'>";
+		echo "<form method='get' ACTION='execution/execution.php'>";
+		echo "<tr><td class=titletablehdr colspan='2'>Select Execution Parameters:</td></tr>";
+		
+		//Setting up the form that will post to the execution results page
+		
+		echo "<input type='hidden' name='edit' value='$edit'>";
+		echo "<input type='hidden' name='data' value='$data'>";
+		
+		$sqlResult = "select build from build where projid=" . $_SESSION['project'] . " order by build desc";		
+		$buildResult = mysql_query($sqlResult);
+		
+		echo "<td class=titletable align='left' width='33%'>Build:</td><td class=titletable>";
+		?>
+			<select name='build' onchange="Javascript:submit()">
+		<?
+		
+		while ($myrowResult = mysql_fetch_row($buildResult)) 
+		{
+			echo "<option value=" . $myrowResult[0] . ">" . $myrowResult[0] . "</option>";
+		}
+
+		?>
+		</select></td></tr>
+
+		<tr>
+			<td class=titletable align='left'>Keyword:</td>
+			<td class=titletable align='left'>
+				<select name='keyword'>
+				<?
+					//get a list of all the keywords
+					$sqlKeywords = "select id, keyword from keywords";
+					$resultKeyword = mysql_query($sqlKeywords);
+
+					while ($myrowKeyword = mysql_fetch_row($resultKeyword)) 
+					{
+						echo "<option value=" . $myrowKeyword[0] . ">" . $myrowKeyword[1] . "</option>";
+					}
+				?>
+				</select>
+			</td>
+		</tr>
+		<tr><td class=titletable>Owner:</td>
+			<td class=titletable>
+			<select name='owner'>
+			<?
+				
+				//get all of the users that have rights to the project so that the test cases can
+				//be sorted by them
+
+				$sqlOwner = "select user.id, user.login from user,projrights where projrights.projid=" . $_SESSION['project'];
+
+				
+				$resultOwner = mysql_query($sqlOwner);
+
+				while ($myrowOwner = mysql_fetch_row($resultOwner)) 
+				{
+					echo "<option value=" . $myrowOwner[0] . ">" . $myrowOwner[1] . "</option>";
+				}
+
+			?>
+			</select>
+
+
+			</td>
+		</tr>
+		
+		<tr><td class=titletable>Priority:</td><td class=titletable>
+		
+		<select name='priority'>
+		<option value='L1'>L1</option>
+		<option value='L1'>L2</option>
+		<option value='L1'>L3</option>
+		<option value='L1'>M1</option>
+		<option value='L1'>M2</option>
+		<option value='L1'>M3</option>
+		<option value='L1'>H1</option>
+		<option value='L1'>H2</option>
+		<option value='L1'>H3</option>
+		</select>
+		<?
+		echo "</td></tr>";
+				
+		//Display all the available builds
+				
+		echo "<tr><td colspan='2' align='center'><input type='submit' NAME='submit' value='submit'></td>";
 		
 		echo "</tr></table><P>";
 
@@ -283,25 +318,25 @@ function radioResult($tcid,$result)
 	if($result == 'p') //passed
 	{
 					
-		echo "<input type='radio' name='status" . $tcid . "' value='n'>Not Run<br><input type='radio' name='status" . $tcid . "' value='p' CHECKED>Passed<br><input type='radio' name='status" . $tcid . "' value='f'>Failed<br><input type='radio' name='status" . $tcid . "' value='b'>Blocked</td>\n\n";
+		echo "<input type='radio' name='status" . $tcid . "' value='n'>Not Run<br><input type='radio' name='status" . $tcid . "' value='p' CHECKED>Passed<br><input type='radio' name='status" . $tcid . "' value='f'>Failed<br><input type='radio' name='status" . $tcid . "' value='b'>Blocked\n\n";
 							
 
 	}elseif($result == 'f') //failed
 	{
 					
-		echo "<input type='radio' name='status" . $tcid . "' value='n'>Not Run<br><input type='radio' name='status" . $tcid . "' value='p'>Passed<br><input type='radio' name='status" . $tcid . "' value='f' CHECKED>Failed<br><input type='radio' name='status" . $tcid . "' value='b'>Blocked</td>\n\n";
+		echo "<input type='radio' name='status" . $tcid . "' value='n'>Not Run<br><input type='radio' name='status" . $tcid . "' value='p'>Passed<br><input type='radio' name='status" . $tcid . "' value='f' CHECKED>Failed<br><input type='radio' name='status" . $tcid . "' value='b'>Blocked\n\n";
 								
 
 	}elseif($result == 'b') //blocked
 	{
 													
-		echo "<input type='radio' name='status" . $tcid . "' value='n'>Not Run<br><input type='radio' name='status" . $tcid . "' value='p'>Passed<br><input type='radio' name='status" . $tcid . "' value='f'>Failed<br><input type='radio' name='status" . $tcid . "' value='b' CHECKED>Blocked</td>\n\n";	
+		echo "<input type='radio' name='status" . $tcid . "' value='n'>Not Run<br><input type='radio' name='status" . $tcid . "' value='p'>Passed<br><input type='radio' name='status" . $tcid . "' value='f'>Failed<br><input type='radio' name='status" . $tcid . "' value='b' CHECKED>Blocked\n\n";	
 								
 							
 	}else //not run
 	{
 								
-		echo "<input type='radio' name='status" . $tcid . "' value='n' CHECKED>Not Run<br><input type='radio' name='status" . $tcid . "' value='p'>Passed<br><input type='radio' name='status" . $tcid . "' value='f'>Failed<br><input type='radio' name='status" . $tcid . "' value='b'>Blocked</td>\n\n";
+		echo "<input type='radio' name='status" . $tcid . "' value='n' CHECKED>Not Run<br><input type='radio' name='status" . $tcid . "' value='p'>Passed<br><input type='radio' name='status" . $tcid . "' value='f'>Failed<br><input type='radio' name='status" . $tcid . "' value='b'>Blocked\n\n";
 								
 							
 	}
@@ -586,8 +621,6 @@ function results($tcid,$bugzillaOn)
 	}
 	else
 	{
-		//echo "<tr><td bgcolor=" . $bgcolor . ">&nbsp</td></tr>";
-
 		//This query grabs the most recent result
 
 		$sqlRecent = "select build,status,runby,daterun from results where tcid='" . $tcid . "' and status != 'n' order by build desc limit 1";
@@ -605,12 +638,12 @@ function results($tcid,$bugzillaOn)
 
 			echo "<tr><td class=tctable><b>Most recent result:</b><br>";
 			
-			echo "<a href='execution/execution.php?edit=testcase&tc=" . $tcid . "&build=" . $rowRecent[0] . "'>";
+			echo "<a href='execution/executionResultHistory.php?tc=" . $tcid . "' target='_blank'>";
 
 			echo "Run by " . $rowRecent[2] . " on " . $rowRecent[3] . " against Build " . $rowRecent[0] . " (".  $rowRecent[1] . ")";
 
 			echo "</a></td></tr>";
-
+			
 		}else //else display not run
 		{
 
@@ -619,7 +652,6 @@ function results($tcid,$bugzillaOn)
 		}
 
 	}
-
 
 	echo "<tr><td class=tctable><b>Notes:</b><br><textarea name='notes" . $tcid . "' cols=35 rows=4>" . $resultQuery[0] . "</textarea></td></tr>";
 						

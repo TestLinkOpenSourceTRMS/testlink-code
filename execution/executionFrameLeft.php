@@ -48,7 +48,7 @@ $comResult = mysql_query($sql);
 	{ 
 		//display all the components until we run out
 			
-		$menustring =  $menustring . "..|" . $myrowCOM[1] . "|execution/execution.php?edit=component&com=" . $myrowCOM[0] . "|||mainFrame|\n";
+		$menustring =  $menustring . "..|" . $myrowCOM[1] . "|execution/execution.php?edit=component&data=" . $myrowCOM[0] . "|||mainFrame|\n";
 
 		//Here I create a query that will grab every category depending on the component the user picked
 
@@ -56,9 +56,9 @@ $comResult = mysql_query($sql);
 			
 		while ($myrowCAT = mysql_fetch_row($catResult)) 
 		{  
-			$menustring =  $menustring . "...|" . $myrowCAT[1] . "|execution/execution.php?edit=category&cat=" . $myrowCAT[0] . "|||mainFrame|\n";
+			$menustring =  $menustring . "...|" . $myrowCAT[1] . "|execution/execution.php?edit=category&data=" . $myrowCAT[0] . "|||mainFrame|\n";
 		
-			$sqlTC = "select testcase.id, title from testcase where catid=" . $myrowCAT[0] . " order by id";
+			$sqlTC = "select testcase.id, title, mgttcid from testcase where catid=" . $myrowCAT[0] . " order by id";
 			$resultTC = mysql_query($sqlTC);
 
 			while ($myrowTC = mysql_fetch_row($resultTC)) 
@@ -75,12 +75,12 @@ $comResult = mysql_query($sql);
 					 $lastRanDate = $myrowResult[3];
 					 $lastRanBuild = "B:" . $myrowResult[1] . " ";
 				
-					$menustringResult =  $menustringResult . ".....|<font color=" . $font . ">Build:" . $myrowResult[1] . " (" . $myrowResult[3] . ")" .  "|execution/execution.php?edit=testcase&tc=" . $myrowTC[0] . "&build=" . $myrowResult[1] . "|||mainFrame|\n";
+					$menustringResult =  $menustringResult . ".....|<font color=" . $font . ">Build:" . $myrowResult[1] . " (" . $myrowResult[3] . ")" .  "|execution/execution.php?edit=testcase&data=" . $myrowTC[0] . "&build=" . $myrowResult[1] . "|||mainFrame|\n";
 				}
 
 				//build the test case tree
 
-				$menustring =  $menustring . "....|<font color=" . $font . "><b>" . $myrowTC[0] . ":</b>" . $myrowTC[1] . " (" . $lastRanBuild . $lastRanDate . ")"  .  "|execution/execution.php?edit=testcase&tc=" . $myrowTC[0] . "|||mainFrame|\n";
+				$menustring =  $menustring . "....|<font color=" . $font . "><b>" . $myrowTC[2] . ":</b>" . $myrowTC[1] . " (" . $lastRanBuild . $lastRanDate . ")"  .  "|execution/execution.php?edit=testcase&data=" . $myrowTC[0] . "|||mainFrame|\n";
 				
 				$menustring = $menustring . $menustringResult;
 				$font = "black";

@@ -25,20 +25,10 @@ require_once("../../functions/header.php");
 if(!$_POST['submit'])
  {
 
-	echo "<table border=0 width=100%>";
+	newBuild();
 
-	echo "<tr valign=top><td width=25%>";
-
-existingBuilds();
+	existingBuilds();
   
-	//////////////////////////////////////////////////////////////////////////
-
-  echo "</td><td width=75%>";
-
-newBuild();
-
-  echo "</td></tr>";
-
 }
 
 elseif($_POST['submit'])
@@ -63,22 +53,10 @@ elseif($_POST['submit'])
 	}//end if $_POST['build']
 
 
-	echo "<table border=0 width=100%>";
+	newBuild();
 
-	echo "<tr valign=top><td width=25%>";
-
-existingBuilds();
+	existingBuilds();
   
-	//////////////////////////////////////////////////////////////////////////
-
-  echo "</td><td width=75%>";
-
-newBuild();
-
-  echo "</td></tr>";
-
-
-
 }
 
 function existingBuilds()
@@ -94,7 +72,7 @@ function existingBuilds()
 
   echo "<table class=userinfotable  width='50%'>";
 
-  echo "<tr class='subTitle'><td bgcolor='#CCCCCC'>Existing Builds for project " . $myrow[0] . "</td></tr>";
+  echo "<tr class='subTitle'><td bgcolor='#CCCCCC'><b>Existing Builds for project " . $myrow[0] . "</b></td></tr>";
 
   echo "</table>";
 
@@ -136,7 +114,7 @@ function newBuild()
 
   echo "<table class=userinfotable  width='50%'>\n\n";
   
-  echo "<tr><td bgcolor='#CCCCCC' class='subTitle'>Enter New Build Identifier:</td></tr>";
+  echo "<tr><td bgcolor='#CCCCCC' class='subTitle'><b>Enter New Build Identifier:</b></td></tr>";
   echo "<tr><td bgcolor='#99CCFF' class='boldFont'>Note: You cannot name a new build the same as an existing build</td></tr>";  
   echo "</table>";
   

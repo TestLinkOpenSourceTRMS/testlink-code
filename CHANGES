@@ -1,5 +1,33 @@
 Special thanks to all of the people who have contributed solutions to problems they have found as well as those who filed bugs and feature requests.
 
+Version 1_0_3
+
+General
+
+I removed the save and archive button. Since I don't use this functionality I decided to remove it 
+
+857074 undefined indexes on php pages. I added info to docs.
+
+843792 DB Schema not in printable view.
+
+841759 More descriptive header help. Ok.. I tried to explain a few things better. I'm not sure there is anything else I can do
+
+Bug Fixes
+
+824541 refresh code breaks in netscape
+
+876484 newUserEdit.php needs common header for easy nav
+
+828338 selecting new product or testplan is broken for mozilla
+
+848550 Executing multiple test cases fails to update all test cases
+
+860121 Permissions are not set by default
+
+860496 After first login says to contact Chad for problems
+
+871700 Can't import TC that have more than 1000 characters
+
 Version 1_0_2
 
 General

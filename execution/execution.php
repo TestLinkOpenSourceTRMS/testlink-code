@@ -114,7 +114,12 @@ if($_GET['edit'] == 'component') //if the user has selected to view by component
 
 			}
 			
-			displayTestCase($TCResult);				
+			//Display the test case
+
+			//Note.. I have to pass the bugzillaOn variable all over the place because it loses
+			//its scope in the functions. This is a result of globals being turned off by default by php
+
+			displayTestCase($TCResult,$bugzillaOn);				
 					
 				
 		}//end category (TP) loop
@@ -166,7 +171,10 @@ if($_GET['edit'] == 'category') //if the user has selected to view by category
 
 		//display the test case
 
-		displayTestCase($TCResult);
+		//Note.. I have to pass the bugzillaOn variable all over the place because it loses
+		//its scope in the functions. This is a result of globals being turned off by default by php
+
+		displayTestCase($TCResult,$bugzillaOn);				
 
 		echo "</form>"; //end the form
 
@@ -206,7 +214,10 @@ if($_GET['edit'] == 'testcase')
 
 	//Display the test case
 
-	displayTestCase($TCResult);
+	//Note.. I have to pass the bugzillaOn variable all over the place because it loses
+	//its scope in the functions. This is a result of globals being turned off by default by php
+
+	displayTestCase($TCResult,$bugzillaOn);				
 
 	echo "</form>"; //end the form
 
@@ -292,7 +303,7 @@ function radioResult($tcid,$result)
 
 //This function actually displays the test case
 
-function displayTestCase($resultTC)
+function displayTestCase($resultTC,$bugzillaOn)
 {
 
 	while ($myrow = mysql_fetch_row($resultTC)){ //display all the test cases until we run out
@@ -355,7 +366,7 @@ function displayTestCase($resultTC)
 
 		echo "</td><td width=50%>";
 
-		results($myrow[0]);
+		results($myrow[0],$bugzillaOn);
 
 		echo "</td><tr>";
 						
@@ -520,7 +531,7 @@ function TCBody($summary,$steps,$exresult,$keywords)
 
 }
 
-function results($tcid)
+function results($tcid,$bugzillaOn)
 {
 	echo "<table class=tctable width=100% align='top'>";
 
@@ -613,14 +624,22 @@ function results($tcid)
 
 		echo "</td></tr>";
 
-		echo "<tr><td class=tctable><b>Bugs (Enter As CSV ex: 1235,11718,1892):</b>";
 							
-		//Call the function that displays the test cases bugs							
+		//Call the function that displays the test cases bugs.
+		
+		//Check to see if the user is using a bug system
 
-		displayBugs($tcid);
+		if($bugzillaOn == true)
+		{
+			echo "<tr><td class=tctable><b>Bugs (Enter As CSV ex: 1235,11718,1892):</b>";
+		
+			displayBugs($tcid); //call the display bugs function
 
-		echo "</td></tr>"; //End the row
+			echo "</td></tr>"; //End the row
 
+		}
+
+		
 
 	echo "</table><br>";
 

@@ -8,14 +8,14 @@ $myWwwPath = _TREE_WWW_PATH;
 ?>
 
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"></meta>
-<link rel="stylesheet" href="<?php print $myWwwPath; ?>layersmenu-demo.css" type="text/css"></link>
+<!--<link rel="stylesheet" href="<?php print $myWwwPath; ?>layersmenu-demo.css" type="text/css"></link>-->
 <link rel="stylesheet" href="<?php print $myWwwPath; ?>layerstreemenu.css" type="text/css"></link>
 <style type="text/css">
 <!--
 @import url("layerstreemenu-hidden.css");
 //-->
 </style>
-<link rel="shortcut icon" href="LOGOS/shortcut_icon_phplm.png"></link>
+
 <script language="JavaScript" type="text/javascript">
 <!--
 <?php require_once $myDirPath . 'libjs/layersmenu-browser_detection.js'; ?>
@@ -25,7 +25,7 @@ $myWwwPath = _TREE_WWW_PATH;
 
 <?php
 
-function invokeMenu($menustring, $tableTitle, $helpInfo)
+function invokeMenu($menustring, $tableTitle, $helpInfo, $highLight)
 {
 	//define variables as global so that we can use them in the function
 	global $myDirPath, $myWwwPath;
@@ -67,12 +67,18 @@ function invokeMenu($menustring, $tableTitle, $helpInfo)
 	$mid->setImgwww($myWwwPath . 'menuimages/');
 	$mid->setIcondir($myDirPath . '/menuicons/');
 	$mid->setIconwww($myWwwPath . 'menuicons/');
-	$mid->setMenuStructureFile( $myDirPath . 'layersmenu-vertical-1.txt');
 
 	$mid->setMenuStructureString($menustring);
 
-	$mid->setIconsize(16, 16);
+	//$mid->setIconsize(16, 16);
 	$mid->parseStructureForMenu('treemenu1');
+	
+	//I had to figure this one out on my own.
+	//The method I'm using will color an item in the tree if you pass it a value
+	if($highLight != "")
+	{
+		$mid->setSelectedItemByUrl('treemenu1', $highLight);
+	}
 
 	print $mid->newTreeMenu('treemenu1');
 }

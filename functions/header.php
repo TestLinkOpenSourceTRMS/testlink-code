@@ -29,11 +29,14 @@ ini_set('include_path', '.');
 //
 ///////////////////////////////////////////////
 
-$dbhost     = "mercury";
-$dbuser     = "root";
-$dbpasswd   = "root";
-$dbname     = "kenny";
-$basehref   = "http://www.qagood.com/kenny/";
+$dbhost     = "mercury"; //the host name for the server. Use either localhost,server name, or IP
+
+$dbuser     = "root"; //the mysql user
+$dbpasswd   = "root"; //the mysql password
+$dbname     = "testlink"; //the name of the database
+
+$basehref   = "http://www.qagood.com/kenny/"; //Sets the basehref variable. Important to note that a forward slash "/" is needed in the end
+
 $loginurl   = "http://www.qagood.com";  // where you go back to login
 
 //If you want to use bugzilla then you'll need to set these variables

@@ -33,30 +33,14 @@ require_once("../functions/generateTreeMenu.php");
 			
 		while ($myrowCOM = mysql_fetch_row($resultCOM)) //loop through all Components
 		{
-
-			//Code to strip commas and apostraphies
-
-			//$name = stripTree($myrowCOM[1]); //function that removes harmful characters
-				
-			//echo "['" . $name . "','manage/importData.php?key=NONE&edit=component&com=" . $myrowCOM[0] . "',\n\n";
-
-			//Displays the category info
-
-			$menustring = $menustring . "..|" . $myrowCOM[1] . "|manage/importData.php?key=NONE&edit=component&com=" . $myrowCOM[0] . "|||mainFrame|\n";
+			$menustring = $menustring . "..|" . $myrowCOM[1] . "|manage/importData.php?product=" . $myrowPROD[0] . "&edit=component&id=" . $myrowCOM[0] . "|||mainFrame|\n";
 
 			$sqlCAT = "select id, name from mgtcategory where compid='" . $myrowCOM[0] . "' order by CATorder,id";
 			$resultCAT = mysql_query($sqlCAT);
 
 			while ($myrowCAT = mysql_fetch_row($resultCAT)) //loop through all Categories
 			{
-
-				//Code to strip commas and apostraphies
-				
-				//	$name = stripTree($myrowCAT[1]); //function that removes harmful characters
-					
-				//echo "['" . $name . "','manage/importData.php?key=NONE&edit=category&cat=" . $myrowCAT[0] . "'],\n\n";
-
-				$menustring = $menustring . "...|" . $myrowCAT[1] . "|manage/importData.php?key=NONE&edit=category&cat=" . $myrowCAT[0] . "|||mainFrame|\n";
+				$menustring = $menustring . "...|" . $myrowCAT[1] . "|manage/importData.php?product=" . $myrowPROD[0] . "&edit=category&id=" . $myrowCAT[0] . "|||mainFrame|\n";
 			
 				
 			}//end cat loop
@@ -69,6 +53,4 @@ require_once("../functions/generateTreeMenu.php");
 	$helpInfo = "Click <a href='manage/importData.php?edit=info' target='mainFrame'>here</a> for help";
 
 	invokeMenu($menustring, $tableTitle, $helpInfo, "");
-	
-
 ?>

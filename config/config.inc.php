@@ -2,7 +2,7 @@
 
 ///////////////////////////////////////////////
 //
-// Globals you should change for your environment
+// DB Globals you should change for your environment
 //
 ///////////////////////////////////////////////
 
@@ -10,6 +10,31 @@ $dbhost     = "localhost"; //the host name for the server. Use either localhost,
 $dbuser     = ""; //the mysql user
 $dbpasswd   = ""; //the mysql password
 $dbname     = "testlink"; //the name of the testlink database
+
+//TODO:replace above values with constants
+
+//to use mysql
+define(_TESTLINK_DB_TYPE, "mysql");
+
+//db connection info
+define(_TESTLINK_DB_HOST, "localhost");
+define(_TESTLINK_DB_USER, "");
+define(_TESTLINK_DB_PASSWORD, "");
+define(_TESTLINK_DB_NAME, "testlink");
+
+///////////////////////////////////////////////
+//
+// TestLink Globals you should change for your environment
+//
+///////////////////////////////////////////////
+
+/*
+	This is the location of your testlink setup. By default I set the location off of your 
+	server's doc root. You'll want to change this if you want to set the tool 
+	up somewhere else
+*/
+
+define("_LOCATION_OF_TESTLINK_SETUP", $_SERVER[DOCUMENT_ROOT] . "/testlink/");
 
 ///////////////////////////////////////////////
 //
@@ -33,7 +58,7 @@ $loginurl = $basehref . "login.php";
 define("_LOGIN_URL", _BASE_HREF . "login.php");
 
 //This is the root path of the server. It is used whenever we need an absolute path
-define("_ROOT_PATH", $_SERVER[DOCUMENT_ROOT] . "/testlink/");
+define("_ROOT_PATH", _LOCATION_OF_TESTLINK_SETUP);
 
 ///////////////////////////////////////////////
 //
@@ -41,15 +66,28 @@ define("_ROOT_PATH", $_SERVER[DOCUMENT_ROOT] . "/testlink/");
 //
 ///////////////////////////////////////////////
 
+//directory path of the tree
+
 define("_TREE_DIR_PATH", _ROOT_PATH . "third_party/phplayersmenu/");
 
-//echo _TREE_DIR_PATH;
+//www path of the tree
 
 define("_TREE_WWW_PATH", $basehref . "third_party/phplayersmenu/");
 
+/*
+	The tree code that I am using has the ability to either be rendered on the client side 
+	or on the server side. If your dataset is large or users are comming in through methods that
+	have limited bandwidth then you should try the php/serverside rendering. Otherwise use the
+	default
+*/
 
-//$myDirPath = '../third_party/phplayersmenu/';
-//$myWwwPath =  'third_party/phplayersmenu/';
+//should the tree be javascript of php based
+
+//javascript
+define("_TREE_TYPE", "JAVASCRIPT");
+
+//php
+//define("_TREE_TYPE", "PHP");
 
 ///////////////////////////////////////////////
 //
@@ -62,6 +100,14 @@ define("_TREE_WWW_PATH", $basehref . "third_party/phplayersmenu/");
 
 $bugzillaOn = false; // To turn on bugzilla. By default this is false.
 
+//TODO: go through app and set this
+//define("_BUG_TRACKING_SYSTEM", "BUGZILLA");
+
+//bug tracking system configuration
+
+//if(_BUG_TRACKING_SYSTEM == "BUGZILLA")
+//if(_BUG_TRACKING_SYSTEM == "MANTIS")
+
 if($bugzillaOn == true) //if the user wants to use bugzilla
 {
 	//Set the bug tracking system info
@@ -71,11 +117,22 @@ if($bugzillaOn == true) //if the user wants to use bugzilla
 	$bzPasswd= "dvanhorn"; //bugzilla password
 	$bzName = "bugs"; //bugzilla default db
 
+	//TODO: replace above values
+	
+	define(_BUG_DB_HOST, "localhost");
+	define(_BUG_DB_USER, "");
+	define(_BUG_DB_PASSWORD, "");
+	define(_BUG_DB_NAME, "");
+
+	//TODO: Figure out why i have these here
 	//$dbPesky = mysql_connect($bzHost, $bzUser , $bzPasswd); //connect to bugzilla
 
 	//mysql_select_db($bzName,$dbPesky); //use the bugs DB
 	
 	$bzUrl = "http://box.good.com/bugzilla/show_bug.cgi?id="; //this line creates the link to bugzilla
+	
+	//TODO: Replace the string above
+	define(_BUG_TRACKING_SYSTEM_BUG_VIEW, "http://box.good.com/bugzilla/show_bug.cgi?id=");
 
 }
 
@@ -85,14 +142,47 @@ if($bugzillaOn == true) //if the user wants to use bugzilla
 //
 ///////////////////////////////////////////////
 
-//I've seen some serious include path weirdness when trying to install on a couple servers
-//It seems that setting the include path variable (at least locally) stops this problem from happening
+//setting the include path so that it automatically 
 
-ini_set('include_path', '.');
+// Include path seperator different on Windows
+if (strtoupper(substr(PHP_OS, 0,3) == 'WIN'))
+{
+    define(_PATH_SEPERATOR, ';');
+} 
+else 
+{
+    define(_PATH_SEPERATOR, ':');
+}
+
+
+$includePath = '.';
+$includePath = $includePath . _PATH_SEPERATOR . _ROOT_PATH . "src/beans/";
+$includePath = $includePath . _PATH_SEPERATOR . _ROOT_PATH . "src/businessLogic";
+$includePath = $includePath . _PATH_SEPERATOR . _ROOT_PATH . "src/actions/";
+$includePath = $includePath . _PATH_SEPERATOR . _ROOT_PATH . "src/util/";
+$includePath = $includePath . _PATH_SEPERATOR . _ROOT_PATH . "config/";
+
+$includePath = $includePath . _PATH_SEPERATOR . _ROOT_PATH . "third_party/DB-1.6.8/";
+$includePath = $includePath . _PATH_SEPERATOR . _ROOT_PATH . "third_party/PEAR-1.3.3/";
+$includePath = $includePath . _PATH_SEPERATOR . _ROOT_PATH . "third_party/Smarty-2.6.6/libs/";
+
+//ini_set('include_path', $includePath);
+set_include_path($includePath); 
 
 //Not sure if this works or not.. A lot of servers have a default session expire of like 3 minutes. This can be agrivating to users. Users can set their servers cache expire here
 
 //ini_set('session.cache_expire',900);
+
+///////////////////////////////////////////////
+//
+//Smarty Template setup
+//
+///////////////////////////////////////////////
+
+define(_SMARTY_TEMPLATE_DIR, _ROOT_PATH . "src/smarty/templates/");
+define(_SMARTY_COMPILE_DIR, _ROOT_PATH . "src/smarty/templates_c/");
+define(_SMARTY_CONFIG_DIR, _ROOT_PATH . "src/smarty/configs/");
+define(_SMARTY_CACHE_DIR, _ROOT_PATH . "src/smarty/cache/");
 
 ///////////////////////////////////////////////
 //
@@ -101,5 +191,9 @@ ini_set('include_path', '.');
 ///////////////////////////////////////////////
 
 $TLVersion = "v1.0.4";
+
+//TODO: replace string version
+define(_TESTLINK_VERSION, "1.0.5")
+
 
 ?>

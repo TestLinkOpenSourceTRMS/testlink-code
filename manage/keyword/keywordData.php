@@ -43,7 +43,7 @@ elseif($_GET['edit'] == 'component')
 {
 
 	echo "<table width=100% class=userinfotable>";
-	echo "<tr><td  bgcolor='#0066CC' align='center'><font color='#FFFFFF' size='4'>Assign Keywords Every Test Case In This Component</td></tr>";
+	echo "<tr><td  bgcolor='#0066CC' align='center'><font color='#FFFFFF' size='4'>Assign Keywords To Every Test Case In This Component</td></tr>";
 	echo "</table>";
 	
 	echo "<form method='post' ACTION='manage/keyword/keywordResults.php?type=COM&ID=" . $_GET['data'] . "'>";
@@ -78,16 +78,27 @@ elseif($_GET['edit'] == 'component')
 
 		
 		echo "</td></tr>";
-	
 
+		?>
+
+	<tr>
+		<td colspan='2'>
+			
+				<br>
+				<INPUT TYPE=CHECKBOX NAME='overwrite' value='overwrite' CHECKED>Overwrite existing keyword values?
+				<br>
+				<font color="red"><b>Note:</b> If you check this box and submit the form you will <b>overwrite existing keyword values</b>. Not checking the box will add these values to the existing ones. All keywords that have been overwritten cannot be recovered</font>
+		</td>
+	</tr>
+
+	</table>
+
+	<input type=submit></form>
+	
+	<?
 
 	}
-
-	echo "</table>";
-
-	echo "<input type=submit></form>";
-
-
+	
 }
 
 //If the user has chosen to edit a category then show this code
@@ -96,7 +107,7 @@ elseif($_GET['edit'] == 'category')
 {
 
 	echo "<table width=100% class=userinfotable>";
-	echo "<tr><td  bgcolor='#0066CC' align='center'><font color='#FFFFFF' size='4'>Assign Keywords Every Test Case In This Category</td></tr>";
+	echo "<tr><td  bgcolor='#0066CC' align='center'><font color='#FFFFFF' size='4'>Assign Keywords To Every Test Case In This Category</td></tr>";
 	echo "</table>";
 	
 	echo "<form method='post' ACTION='manage/keyword/keywordResults.php?type=CAT&ID=" . $_GET['data'] . "'>";
@@ -127,18 +138,29 @@ elseif($_GET['edit'] == 'category')
 		}
 
 		echo "</select>";
-		
-
-		
+			
 		echo "</td></tr>";
 	
-
-
 	}
 
-	echo "</table>";
+?>
 
-	echo "<input type=submit></form>";
+
+	<tr>
+		<td colspan='2'>
+			
+				<br>
+				<INPUT TYPE=CHECKBOX NAME='overwrite' value='overwrite' CHECKED>Overwrite existing keyword values?
+				<br>
+				<font color="red"><b>Note:</b> If you check this box and submit the form you will <b>overwrite existing keyword values</b>. Not checking the box will add these values to the existing ones. All keywords that have been overwritten cannot be recovered</font>
+		</td>
+	</tr>
+
+	</table>
+
+	<input type=submit></form>
+	
+	<?
 
 }
 
@@ -208,83 +230,6 @@ elseif($_GET['edit'] == 'testcase')
 		}//ened while
 
 		echo "</select>";
-
-
-	/*	$sqlKeys = "select id,keyword from keywords where prodid='" . $_GET['prodid'] . "'";
-		$resultKeys = mysql_query($sqlKeys);
-
-		$resultSize = mysql_num_rows($resultKeys);
-		
-		echo "<select name=keywords[] multiple size=" . $resultSize . ">";
-		
-		while($rowKeys = mysql_fetch_array($resultKeys)) //Display all Components
-		{
-
-			//This next block of code will search through the testcase and see if any of the products keywords are being used. If they are I highlight them
-
-			//SQL statement to do the grab the test cases keys
-		
-			//Get the test cases list of keywords
-
-			$sqlKeywordCSV = "select keywords from mgttestcase where id='" . $data . "'";
-
-			$resultKeywordCSV = mysql_query($sqlKeywordCSV);
-
-			$keywordCSV = mysql_fetch_row($resultKeywordCSV);
-
-			$keywordArray = explode(",", $keywordCSV[0]);
-
-			echo "<tr><td><select name='keywords[]' size='" . $keySize . "' MULTIPLE>";
-
-
-			while ($keys = mysql_fetch_row($resultKeys))
-			{
-				//check to see if the key being looped over is in the test case
-
-				//if it is highlight it
-
-				if (in_array($keys[0], $keywordArray)) 
-				{
-
-					echo "<OPTION VALUE='" . $keys[0] ."' SELECTED>" . $keys[0];
-				}else
-				{
-					echo "<OPTION VALUE='" . $keys[0] ."'>" . $keys[0];
-				}
-										
-			}//ened while
-
-			echo "</select>";
-		
-		
-		/*	$sqlCompare = "select keywords from mgttestcase where id='" . $rowCOM[0] . "' and keywords like '%" . $rowKeys[1] . "%'";
-
-			//Execute the query
-			$resultCompare = mysql_query($sqlCompare);
-
-			//Using the mysql_num_rows function to see how many results are returned
-			$compareResult = mysql_num_rows($resultCompare);
-
-			if($compareResult > 0) //If we find a match I highlight the value
-			{
-
-				echo "<OPTION VALUE='" . $rowKeys[1] ."' SELECTED>" . $rowKeys[1];
-
-			}else //If there isnt a match just display the value without highlight
-			{
-
-				echo "<OPTION VALUE='" . $rowKeys[1] ."'>" . $rowKeys[1];
-
-			}//end else
-				
-			//echo "<option>" . $rowKeys[1] . "</option>";
-
-
-		}
-
-		echo "</select>";*/
-		
-
 		
 		echo "</td></tr>";
 	
@@ -292,9 +237,23 @@ elseif($_GET['edit'] == 'testcase')
 
 	}
 
-	echo "</table>";
+?>
+
+	<tr>
+		<td colspan='2'>
+			
+				<br>
+				<INPUT TYPE=CHECKBOX NAME='overwrite' value='overwrite' CHECKED>Overwrite existing keyword values?
+				<br>
+				<font color="red"><b>Note:</b> If you check this box and submit the form you will <b>overwrite existing keyword values</b>. Not checking the box will add these values to the existing ones. All keywords that have been overwritten cannot be recovered</font>
+		</td>
+	</tr>
+
+	</table>
+
+	<input type=submit></form>
 	
-	echo "<input type=submit></form>";
+	<?
 
 }
 

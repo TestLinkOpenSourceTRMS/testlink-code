@@ -230,9 +230,9 @@ function executionHeader($build)
 
 		echo "<table width='100%' class=titletable>";
 
-		echo "<td class=titletablehdr width='50%'>Build</td>";
+		echo "<td class=titletablehdr width='50%'>Select build to record results for</td>";
 		
-		echo "<td class=titletablehdr width='50%'>Click To Record Results</b></td></tr>";
+		echo "<td class=titletablehdr width='50%'>Click to record results</b></td></tr>";
 
 
 		//Setting up the form that will post to the execution results page

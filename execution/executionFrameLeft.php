@@ -16,12 +16,6 @@ require_once("../functions/header.php");
   doDBConnect();
   doHeader();
 
-//require_once("../functions/stripTree.php"); //include the function that strips the javascript tree
-
-//I need the csv split function
-
-//require_once('../functions/csvSplit.php');
-
 ?>
 
 <head>
@@ -34,8 +28,6 @@ require_once("../functions/header.php");
 <?
 
 require_once(_ROOT_PATH . "functions/generateTreeMenu.php");
-
-//require_once("../../functions/stripTree.php"); //require_once the function that strips the javascript tree
 
 $sqlProject = "select name from project where id=" . $_SESSION['project'];
 $resultProject = mysql_query($sqlProject);
@@ -76,24 +68,27 @@ $comResult = mysql_query($sql);
 				{
 					
 					 $font = getResultFont($myrowResult[2]);
+					 $lastRanDate = $myrowResult[3];
+					 $lastRanBuild = "B:" . $myrowResult[1] . " ";
 				
 					$menustringResult =  $menustringResult . ".....|<font color=" . $font . ">Build:" . $myrowResult[1] . " (" . $myrowResult[3] . ")" .  "|execution/execution.php?edit=testcase&tc=" . $myrowTC[0] . "&build=" . $myrowResult[1] . "|||mainFrame|\n";
 				}
 
-				$menustring =  $menustring . "....|<font color=" . $font . ">" . $myrowTC[1] . "|execution/execution.php?edit=testcase&tc=" . $myrowTC[0] . "|||mainFrame|\n";
+				//build the test case tree
+
+				$menustring =  $menustring . "....|<font color=" . $font . "><b>" . $myrowTC[0] . ":</b>" . $myrowTC[1] . " (" . $lastRanBuild . $lastRanDate . ")"  .  "|execution/execution.php?edit=testcase&tc=" . $myrowTC[0] . "|||mainFrame|\n";
 				
 				$menustring = $menustring . $menustringResult;
 				$font = "black";
 				$menustringResult = "";
-
+				$lastRanDate = "NR";
+				$lastRanBuild = "";
 
 			}
 		
 		}
 
 	}
-
-	//execution/execution.php?keyword=" . $_POST['keyword'] . "&build=" . $_POST['build'] . "&owner=" . $_POST['owner'] . "&edit=component&com=" . $myrowCOM[0] . "
 
 	//Table title
 	$tableTitle = " Test Case Execution";

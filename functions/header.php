@@ -14,11 +14,29 @@
 //            5. draw the breadcrumb
 ////////////////////////////////////////////////////////////////////////////////
 
+//include the configuration file
 require_once($_SERVER[DOCUMENT_ROOT] . "/testlink/config/config.inc.php");
-require_once("getRights.php");
+
+//inport the get rights function
+require_once("getRights.php");	
+
+//import the db class
+require_once("DBControl.php");
 
 // db is a global used throughout the code when accessing the db.
 $db = 0;
+
+function doDBPearConnect()
+{
+	$DBControl = new DBControl;
+
+	$dbHandle = $DBControl->connectDB();
+
+	return $dbHandle;
+
+}
+
+doDBPearConnect();
 
 // doDBConnect
 // How TestLink connects to the database

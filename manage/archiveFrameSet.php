@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 require_once("../functions/header.php");
+
 doDBConnect();
 doHeader();
 
@@ -18,6 +19,5 @@ doHeader();
 	echo "<frame src='manage/archiveLeft.php' scrolling='yes' name='left'>";
 	echo "<frame src='manage/archiveData.php' name='mainFrame'>";
 	echo "</frameset>'";
-
 
 ?>

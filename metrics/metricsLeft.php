@@ -65,6 +65,14 @@ echo "<tr><td class=userinfotable ><a href='metrics/bugDetail.php' target='mainF
 
 echo "<tr><td class=userinfotable ><a href='metrics/emailData.php' target='mainFrame'>Email Test Plan Info</td></tr>";
 
+echo "<tr><td class=userinfotable >&nbsp</td></tr>";
+
+echo "<tr><td class=userinfotable ><a href='metrics/detailedPlatform.php' target='mainFrame'>Detailed Platform Metrics</td></tr>";
+
+echo "<tr><td class=userinfotable ><a href='metrics/summaryPlatform.php' target='mainFrame'>Platform Metrics Summary</td></tr>";
+
+
+
 echo "</table>";
 
 

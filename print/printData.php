@@ -73,19 +73,20 @@ function print_header($title) {
 
 
 //when I need to print a component I call this function
-function print_component($component, $master) {
+function print_component($component, $master) 
+{
+  
   echo "<h2 class=print>" . $master . ": " . $component[0] . "</h2>";
-  if ($_GET['header'] == 'y') {
-    global $section_number;
-    $section_number = 1;
+  
+  if ($_GET['header'] == 'y')
+	  {
+    	
+		echo "<h3 class=print>Introduction</h3>" .  $component[1];
+		echo "<h4 class=print>Scope of this Document</h4>" .  $component[2];
+		echo "<h4 class=print>References</h4>" .  $component[3];
+		echo "<h3 class=print>Test Methodology</h3>" . $component[4];
+		echo "<h4 class=print>Test Limitations</h4>" . $component[5];
 
-    echo "<h3 class=print>" . $section_number . ".0 Introduction</h3>" .  $component[1];
-    echo "<h4 class=print>" . $section_number . ".1 Scope of this Document</h4>" .  $component[2];
-    echo "<h4 class=print>" . $section_number . ".2 References</h4>" .  $component[3];
-    echo "<h3 class=print>" . $section_number . ".0 Test Methodology</h3>" . $component[4];
-    echo "<h4 class=print>" . $section_number . ".1 Test Limitations</h4>" . $component[5];
-
-	$section_number++;
   }
 } 
 
@@ -93,19 +94,20 @@ function print_component($component, $master) {
 //when I need to print a category I call this function
 function print_category($category) {
   if ($_GET['header'] == 'y') {
-    global $section_number;
-    $section_number++;
-
-    echo "<h3 class=print>" . $section_number . ".0 Category: " . $category[0] . "</h3>";
+    
+    echo "<h3 class=print>Category: " . $category[0] . "</h3>";
     echo $category[1];
-    echo "<h4 class=print>" . $section_number . ".1 Setup and Configuration</h4>" .  $category[2];
-    echo "<h4 class=print>" . $section_number . ".2 Test Data</h4>" .  $category[3];
-    echo "<h4 class=print>" . $section_number . ".3 Tools</h4>" .  $category[4];
-    echo "<h4 class=print>" . $section_number . ".4 Test Procedures</h4>";
+    echo "<h4 class=print>Setup and Configuration</h4>" .  $category[2];
+    echo "<h4 class=print>Test Data</h4>" .  $category[3];
+    echo "<h4 class=print>Tools</h4>" .  $category[4];
+    echo "<h4 class=print>Test Procedures</h4>";
     echo "<P>";
   } else {
     echo "<h3 class=print>Category: " . $category[0] . "</h3>";
   }
+	
+
+
 }
 
 

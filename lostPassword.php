@@ -53,7 +53,7 @@ elseif($_POST['editUser'])
 		if($userExists == 0)
 		{
 
-			echo "<a href='http://www.qagood.com'>Return to www.qagood.com</a><br>";
+			echo "<a href='" . $loginurl . "'>Home</a><br>";
 
 			echo "<b>I'm sorry but that user does not exist. Please try again</b>";
 			
@@ -79,9 +79,9 @@ elseif($_POST['editUser'])
 		else
 		{
 
-			echo "<a href='http://www.qagood.com'>Return to www.qagood.com</a><br><br>";
+			echo "<a href='" . $loginurl . "'>Home</a><br>";
 
-			echo "Your password has been mailed to the email account you specified during your user creation.<br><br>If you have other problems please contact <a href='mailto:crosen@good.com'>Chad Rosen</a>"; 
+			echo "Your password has been mailed to the email account you specified during your user creation.<br><br>If you have other problems please contact your TestLink administrator</a>"; 
 
 			$sql = "select email,password from user where login='" . $login . "'";
 
@@ -101,7 +101,7 @@ If you have any further problems please contact Chad Rosen at crosen@good.com";
 
 			//php mail function
 
-			mail($myrow[0], "Your TestLink password", $msgBody);
+			mail($myrow[0], "Your TestLink password", $msgBody) or die("You do not have mail installed correctly. Please Contact your administrator");
 
 			
 		}

@@ -1,0 +1,22 @@
+
+These patches are based on code changes contributed by Alex Pagnoni
+<alex@ampoliros.com>
+They allow to obtain different behaviours for the layers menus.
+
+We suggest to use example-hormenu.php as the demo of these patches
+and to *click* on the menu bar items to understand what is going on.
+
+The two patches differ w.r.t. the shutdown of visible layers.
+onclick.patch:
+        click to shutdown the visible layers.
+onclick-simple.patch:
+        the shutdown of visible layers relies on the timeout feature.
+
+To obtain yet another different behaviour, you can use the onclick.patch
+and then set
+useTimeouts = 1;
+in layersmenu.js
+
+Alex Pagnoni
+Marco Pratesi
+

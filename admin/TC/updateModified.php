@@ -77,7 +77,7 @@ if($_POST['updateSelected'])
 
 				$updateResult3 = mysql_query($SQLdeleteBugs); //Run the query	
 
-				echo "Test Case <b>" . $tcID . "</b>:" . $mgtTitle . " has been deleted<br>";
+				echo "Test Case <b>" . $idRow[0] . "</b>:" . $mgtTitle . " has been deleted<br>";
 
 
 			}else
@@ -91,7 +91,7 @@ if($_POST['updateSelected'])
 			$updateResult = mysql_query($updateSQL); //Run the query
 			
 			
-			echo "Test Case <b>" . $tcID . "</b>:" . $mgtTitle . " has been updated<br>";
+			echo "Test Case <b>" . $idRow[0] . "</b>:" . $mgtTitle . " has been updated<br>";
 			}
 
 			

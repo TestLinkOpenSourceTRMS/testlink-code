@@ -55,7 +55,7 @@ if($_GET['edit'] == 'product')
 
 	echo "<Form Method='POST' ACTION='manage/editData.php?data=" . $data . "&product=" . $data . "'>";
 	
-	echo "<tr><td align=right><input type='submit' name='newCOM' value='New'></td></tr>";
+	echo "<tr><td align=right><input type='submit' name='newCOM' value='Create Component'></td></tr>";
 
 	echo "</form>";
 
@@ -86,7 +86,7 @@ if($_GET['edit'] == 'product')
 
 	echo "<Form Method='POST' ACTION='manage/editData.php?product=" . $product . "&data=" . $data . "'>";
 	
-	echo "<tr><td align=right><td align=right><input type='submit' name='newCAT' value='New'><input type='submit' name='editCOM' value='Edit'><input type='submit' name='deleteCOM' value='Delete'><input type='submit' name='reorderCAT' value='Reorder Categories'><input type='submit' name='moveCom' value='Move'><input type='submit' name='copyCom' value='Copy'>";
+	echo "<tr><td align=right><td align=right><input type='submit' name='newCAT' value='Create Category'><input type='submit' name='editCOM' value='Edit'><input type='submit' name='deleteCOM' value='Delete'><input type='submit' name='reorderCAT' value='Reorder Categories'><input type='submit' name='moveCom' value='Move'><input type='submit' name='copyCom' value='Copy'>";
 
 	echo "</td></tr></form>";
 

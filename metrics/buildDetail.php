@@ -161,7 +161,7 @@ echo "<br>";
 
 			//This loop will cycle through the arrays and count the amount of p,f,b,n
 
-			while($arrayCounter < $TTRC[0])
+			while($arrayCounter <= $TTRC[0])
 			{
 
 				if($testCaseArray[$arrayCounter] == 'p')

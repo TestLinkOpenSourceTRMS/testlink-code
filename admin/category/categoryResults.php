@@ -12,15 +12,56 @@ require_once("../../functions/header.php");
   doDBConnect();
   doHeader();
 
-if($_POST['submit'])
+$edit = $_GET['edit'];
+$id = $_POST['id'];
+$ownerId = $_POST['owner'];
+$importance = $_POST['importance'];
+$risk = $_POST['risk'];
+
+if($ownerId != 0)
 {
-
-	$i = 0; //start a counter
-
-	//It is necessary to turn the $_POST map into a number valued array
-
-	?>
+	$sqlOwner = "select login from user where id=$ownerId";
+	$result = mysql_fetch_array(@mysql_query($sqlOwner)) or die ("cannot get owner");
+	$owner = $result[0];
 	
+}
+else
+{
+	$owner = "None";
+}
+
+if($edit == "component")
+{
+	$sqlCom = "select testcase.id,mgttcid,title from component,category,testcase where component.id=$id and component.id=category.compid and category.id=testcase.catid";
+
+	$result = @mysql_query($sqlCom);
+
+	editTestCase($result);
+
+}
+
+if($edit == "category")
+{
+	$sqlCat = "select testcase.id,mgttcid,title from category,testcase where category.id=$id and category.id=testcase.catid";
+	
+	$result = @mysql_query($sqlCat);
+
+	editTestCase($result);
+
+}
+
+if($edit == "testcase")
+{
+	$sqlTc = "select testcase.id,mgttcid,title from testcase where id=$id";
+	$result = @mysql_query($sqlTc);
+	editTestCase($result);
+}
+
+function editTestCase($result)
+{
+	global $owner, $importance, $risk;
+	
+	?>
 	<table border = 1 width='100%'>
 		<tr>
 			<td bgcolor='#CCCCCC'>
@@ -32,140 +73,50 @@ if($_POST['submit'])
 	<table border=1 width='100%'>
 		<tr>
 			<td bgcolor='#99CCFF'>
-				<b>Category ID
+				<b>Id
 			</td>
 			<td bgcolor='#99CCFF'>
-				<b>Submitted Importance
+				<b>Test Case Name
 			</td>
 			<td bgcolor='#99CCFF'>
-				<b>Submitted Risk
+				<b>Importance
 			</td>
 			<td bgcolor='#99CCFF'>
-				<b>Submitted Owner
+				<b>Risk
 			</td>
 			<td bgcolor='#99CCFF'>
-				<b>Change
+				<b>Owner
 			</td>
-		</tr>";
-
+		</tr>
 	<?
 
-//print_r($_POST);
+	while($row = mysql_fetch_array($result))
+	{
 
-foreach ($_POST as $key)
-    {
-	
-	$newArray[$i] = $key;
-	$i++;
+		$sqlUpdate = "update testcase set importance='$importance', risk='$risk', owner='$owner' where id=$row[0]";
+		@mysql_query($sqlUpdate) or die("could not edit testcase $row[0]");
 
+		?>
+		<tr>
+			<td>
+				<? echo $row[1] ?>
+			</td>
+			<td>
+				<? echo $row[2] ?>
+			</td>
+			<td>
+				<? echo $importance?>
+			</td>
+			<td>
+				<? echo $risk ?>
+			</td>
+			<td>
+				<? echo $owner ?>
+			</td>
+		</tr>
+		<?
 	}
-
-
-$i = 1; //Start the counter at 1 because the first variable is the submit button
-
-while ($i < count($newArray)) //Loop for the entire size of the array
-{
-
-		$catID = $newArray[$i]; //Then the first value is the ID
-		$catImp = $newArray[$i + 1]; //The second value is the notes
-		$catRisk = $newArray[$i + 2]; //The 3rd value is the status
-		$catOwner = $newArray[$i + 3]; //And the 4th value is owner
-		
-		//SQL statement to look for the same record (tcid, build = tcid, build)
-
-		$sql = "select id, importance, risk, owner from category where id='" . $catID . "'";
 	
-		$result = mysql_query($sql); //Run the query
-		$num = mysql_num_rows($result); //How many results
-
-		//echo $num;
-
-		
-		if($num == 1) //If we find a matching record
-		{
-			
-	
-			$myrow = mysql_fetch_row($result);
-			
-			//$queryID = $myRow[0];
-			$queryImp = $myrow[1];
-			$queryRisk = $myrow[2];
-			$queryOwner = $myrow[3];
-	
-			//If the (notes, status) information is the same.. Do nothing
-			
-			if($queryImp == $catImp && $queryRisk == $catRisk && $queryOwner == $catOwner)
-			{
-				
-			}
-
-			else
-
-			{
-
-				//update the old result
-	
-				$sql = "UPDATE category set importance ='" . $catImp . "', risk ='" .  $catRisk . "', owner='" . $catOwner . "' where id='" . $catID . "'";
-
-				$result = mysql_query($sql);
-
-				//echo $sql;
-
-				echo "<tr><td>" . $catID . "</td><td>" . $catImp . "</td><td>" . $catRisk . "</td><td>" . $catOwner . "</td><td>" . $sql . "</td></tr>\n\n";
-
-
-			}
-
-		
-		//If the (notes, status) information is different.. then update the record
-
-		}
-	
-		$i = $i + 4; //Increment 4 values to the next catID
-
-
-}//end while
-
-
-echo "</table>";
-
-}//end _POST['submit']
-
-elseif($_POST['AllCOM'])
-{
-
-$id = $_POST['COMID'];
-$risk = $_POST['risk'];
-$imp = $_POST['importance'];
-$owner = $_POST['owner'];
-
-$sqlCAT = "select id,name from category where compid='" . $id . "'";
-
-$resultCAT = mysql_query($sqlCAT);
-
-while($rowCAT = mysql_fetch_array($resultCAT))
-{
-	//echo $rowCAT[0] . " " . $rowCAT[1] . "<br>";
-
-	$sqlUpdate = "UPDATE category set importance ='" . $imp . "', risk ='" .  $risk . "', owner='" . $owner . "' where id='" . $rowCAT[0] . "'";
-
-	//cho $sqlUpdate . "<br>";
-
-	$resultUpdate = mysql_query($sqlUpdate);
-	
-
-
+	?> </table> <?
 }
-
-echo "<br>All Categories have been changed.<br><br>";
-
-echo "Risk:" . $risk . "<br>";
-
-echo "Importance: " . $imp . "<br>";
-
-echo "Owner: " . $owner . "<br>";
-
-
-}//end elseif
-
 ?>

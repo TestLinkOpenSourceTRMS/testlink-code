@@ -60,8 +60,8 @@ if($_GET['edit'] == 'component')
 {
 
 	?>
-		<form name='categorySelect' method='post' ACTION='admin/category/categoryResults.php'>
-		<input type='submit' name='submit' value='Edit Categories'>
+	<form name='categorySelect' method='post' ACTION='admin/category/categoryResults.php?edit=component'>
+	<input type='submit' name='submit' value='Edit This Components Test Cases'>
 	<?
 
 	$sql = "select id, name from component where id=" . $_GET['com'];
@@ -70,66 +70,10 @@ if($_GET['edit'] == 'component')
 
 	$rowCOMP = mysql_fetch_row($result);
 
+	displayPriorityRow($rowCOMP[1]);
 	?>
-
-	<table class=userinfotable width='100%'>
-		<tr>
-			<td class=edittablehdr>Component Name</td>
-			<td class=edittablehdr>Importance (L/M/H)</td>
-			<td  class=edittablehdr>Risk (3/2/1)</td>
-			<td class=edittablehdr>Owner</td>
-		</tr>
-		<tr>
-			<td><? echo $rowCOMP[1] ?></td>
-			<td>
-				<select name="">
-					<option>L</option>
-					<option SELECTED>M</option>
-					<option>H</option>
-				</select>
-			</td>
-			<td>
-				<select name="">
-					<option>3</option>
-					<option SELECTED>2</option>
-					<option>1</option>
-				</select>
-			</td>
-			<td>
-				<?
-			
-				//Code to give the user a dropdown box to select from
-			
-				$sqlUser = "select login from user";
-
-				$resultUser = @mysql_query($sqlUser);
-
-				echo "<select name='owner" . $id . "'>";
-
-				echo "<option value='None'>None</option>";
-
-				while($rowUser = mysql_fetch_array($resultUser))	
-				{
-
-					if($rowUser[0] == $owner)
-					{
-						echo "<option value='" . $rowUser[0] . "' Selected>" . $rowUser[0] . "</option>"; 
-					
-					}else
-					{
-						echo "<option value='" . $rowUser[0] . "'>" . $rowUser[0] . "</option>"; 
-					}
-
-
-				}
-
-				echo "</select>";
-
-			?>
-			</td>
-		</tr>
-	</table>
-</form>
+	<input type="hidden" name="id" value="<? echo $rowCOMP[0] ?>"/>
+	</form>
 
 <?
 
@@ -138,8 +82,8 @@ if($_GET['edit'] == 'component')
 if($_GET['edit'] == 'category')
 {
 	?>
-		<form name='categorySelect' method='post' ACTION='admin/category/categoryResults.php'>
-		<input type='submit' name='submit' value='Edit Categories'>
+	<form name='categorySelect' method='post' ACTION='admin/category/categoryResults.php?edit=category'>
+	<input type='submit' name='submit' value='Edit This Categories Test Cases'>
 	<?
 
 	$sql = "select id, name from category where id=" . $_GET['cat'];
@@ -148,66 +92,11 @@ if($_GET['edit'] == 'category')
 
 	$rowCOMP = mysql_fetch_row($result);
 
+	displayPriorityRow($rowCOMP[1]);
+
 	?>
-
-	<table class=userinfotable width='100%'>
-		<tr>
-			<td class=edittablehdr>Component Name</td>
-			<td class=edittablehdr>Importance (L/M/H)</td>
-			<td  class=edittablehdr>Risk (3/2/1)</td>
-			<td class=edittablehdr>Owner</td>
-		</tr>
-		<tr>
-			<td><? echo $rowCOMP[1] ?></td>
-			<td>
-				<select name="">
-					<option>L</option>
-					<option SELECTED>M</option>
-					<option>H</option>
-				</select>
-			</td>
-			<td>
-				<select name="">
-					<option>3</option>
-					<option SELECTED>2</option>
-					<option>1</option>
-				</select>
-			</td>
-			<td>
-			<?
-			
-				//Code to give the user a dropdown box to select from
-			
-				$sqlUser = "select login from user";
-
-				$resultUser = @mysql_query($sqlUser);
-
-				echo "<select name='owner" . $id . "'>";
-
-				echo "<option value='None'>None</option>";
-
-				while($rowUser = mysql_fetch_array($resultUser))	
-				{
-
-					if($rowUser[0] == $owner)
-					{
-						echo "<option value='" . $rowUser[0] . "' Selected>" . $rowUser[0] . "</option>"; 
-					
-					}else
-					{
-						echo "<option value='" . $rowUser[0] . "'>" . $rowUser[0] . "</option>"; 
-					}
-
-
-				}
-
-				echo "</select>";
-
-			?>
-			</td>
-		</tr>
-	</table>
-</form>
+	<input type="hidden" name="id" value="<? echo $rowCOMP[0] ?>"/>
+	</form>
 
 <?
 
@@ -217,8 +106,8 @@ if($_GET['edit'] == 'testcase')
 {
 
 	?>
-		<form name='categorySelect' method='post' ACTION='admin/category/categoryResults.php'>
-		<input type='submit' name='submit' value='Edit Test Cases'>
+		<form name='categorySelect' method='post' ACTION='admin/category/categoryResults.php?edit=testcase'>
+		<input type='submit' name='submit' value='Edit Test Case'>
 	<?
 
 	$sql = "select id, title, risk, importance, owner from testcase where id=" . $_GET['tc'];
@@ -226,17 +115,15 @@ if($_GET['edit'] == 'testcase')
 	$result = @mysql_query($sql);
 
 	?>
-
 	<table class=userinfotable width='100%'>
 		<tr>
 			<td class=edittablehdr>Test Case Name</td>
 			<td class=edittablehdr>Importance (L/M/H)</td>
-			<td  class=edittablehdr>Risk (3/2/1)</td>
+			<td class=edittablehdr>Risk (3/2/1)</td>
 			<td class=edittablehdr>Owner</td>
 		</tr>
+	<?
 
-<?
-	
 	while($row = mysql_fetch_row($result)){ //loop through all categories
 
 			//Getting and setting the variables from the query
@@ -247,12 +134,9 @@ if($_GET['edit'] == 'testcase')
 			$risk = $row[2];
 			$owner = $row[4];
 
-
-			$riskArray = array("1", "2", "3");
-
 			//Print out the owner stuff
 
-			echo "<tr><td><input type='hidden' name='id" . $id . "' value='" . $id . "'>" . $name . "</td>";
+			echo "<tr><td><input type='hidden' name='id' value='" . $id . "'>" . $name . "</td>";
 
 			$importanceArray = array("L", "M", "H");
 	
@@ -267,20 +151,19 @@ if($_GET['edit'] == 'testcase')
 				{
 					echo "<option value=$imp>$imp</option>";
 				}
-
 			}
 			
 			echo "</select></td>";
 
 			echo "<td><select name='risk'>";
 
-			$riskArray = array("1", "2", "3");
+			$riskArray = array("3", "2", "1");
 
 			foreach($riskArray as $riskValue)
 			{
 				if($riskValue == $risk)
 				{
-					echo "<option value=$$riskValue SELECTED>$riskValue</option>";
+					echo "<option value=$riskValue SELECTED>$riskValue</option>";
 				}else
 				{
 					echo "<option value=$riskValue>$riskValue</option>";
@@ -292,27 +175,25 @@ if($_GET['edit'] == 'testcase')
 
 			//Code to give the user a dropdown box to select from
 			
-			$sqlUser = "select login from user";
+			$sqlUser = "select login,id from user";
 
 			$resultUser = @mysql_query($sqlUser);
 
-			echo "<td><select name='owner" . $id . "'>";
+			echo "<td><select name='owner'>";
 
-			echo "<option value='None'>None</option>";
+			echo "<option value='0'>None</option>";
 
 			while($rowUser = mysql_fetch_array($resultUser))	
 			{
 
-				if($rowUser[0] == $owner)
+				if($rowUser[1] == $owner)
 				{
-					echo "<option value='" . $rowUser[0] . "' Selected>" . $rowUser[0] . "</option>"; 
+					echo "<option value='" . $rowUser[1] . "' Selected>" . $rowUser[0] . "</option>"; 
 				
 				}else
 				{
-					echo "<option value='" . $rowUser[0] . "'>" . $rowUser[0] . "</option>"; 
+					echo "<option value='" . $rowUser[1] . "'>" . $rowUser[0] . "</option>"; 
 				}
-
-
 			}
 
 			echo "</select>";
@@ -320,9 +201,62 @@ if($_GET['edit'] == 'testcase')
 			echo "</td></tr>\n\n";
 		
 		}//end category display
-
-
 }
 
+function displayPriorityRow($name)
+{
+	?>
+	
+	<table class=userinfotable width='100%'>
+		<tr>
+			<td class=edittablehdr>Component Name</td>
+			<td class=edittablehdr>Importance (L/M/H)</td>
+			<td  class=edittablehdr>Risk (3/2/1)</td>
+			<td class=edittablehdr>Owner</td>
+		</tr>
+		<tr>
+			<td><? echo $name ?></td>
+			<td>
+				<select name="importance">
+					<option>L</option>
+					<option SELECTED>M</option>
+					<option>H</option>
+				</select>
+			</td>
+			<td>
+				<select name="risk">
+					<option>3</option>
+					<option SELECTED>2</option>
+					<option>1</option>
+				</select>
+			</td>
+			<td>
+			<?
+			
+				//Code to give the user a dropdown box to select from
+			
+				$sqlUser = "select login,id from user";
+
+				$resultUser = @mysql_query($sqlUser);
+
+				echo "<select name='owner" . $id . "'>";
+
+				echo "<option value='0'>None</option>";
+
+				while($rowUser = mysql_fetch_array($resultUser))	
+				{
+					echo "<option value='" . $rowUser[1] . "'>" . $rowUser[0] . "</option>"; 
+				}
+
+				echo "</select>";
+
+			?>
+			</td>
+		</tr>
+	</table>
+
+	<?
+
+}
 
 ?>

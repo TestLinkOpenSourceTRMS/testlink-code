@@ -27,12 +27,17 @@ if($product)
 {
 	$prodSql = "select id,name from mgtproduct where id=" . $product;
 
+	//get the count of test cases for this product
+	$prodTCCountSql = "select count(mgttestcase.id) from mgtproduct,mgtcomponent,mgtcategory,mgttestcase where mgtproduct.id=mgtcomponent.prodid and mgtcomponent.id=mgtcategory.compid and mgtcategory.id=mgttestcase.catid";
+
+	$prodTCCount = mysql_fetch_row(mysql_query($prodTCCountSql));
+	
 	$prodResult = mysql_query($prodSql);
 
 	while ($myrowPROD = mysql_fetch_row($prodResult))
 	{
 
-		$menustring = ".|" . $myrowPROD[1] . "|" . "manage/archiveData.php?edit=product&data=" . $myrowPROD[0] .  "|Product||mainFrame|\n";
+		$menustring = ".|" . $myrowPROD[1] . " (" . $prodTCCount[0] .  ")|" . "manage/archiveData.php?edit=product&data=" . $myrowPROD[0] .  "|Product||mainFrame|\n";
 
 		$sqlCom = "select id, name from mgtcomponent where prodid=" . $myrowPROD[0] . " order by name";
 
@@ -40,7 +45,13 @@ if($product)
 
 		while ($myrowCOM = mysql_fetch_row($comResult))
 		{
-			$menustring = $menustring . "..|" . $myrowCOM[1] . "|" . "manage/archiveData.php?prodid=" . $myrowPROD[0] . "&edit=component&data=" . $myrowCOM[0] .  "|Component||mainFrame|\n";
+			//get the count of test cases for this product
+			
+			$compTCCountSql = "select count(mgttestcase.id) from mgtcomponent,mgtcategory,mgttestcase where mgtcomponent.id=mgtcategory.compid and mgtcategory.id=mgttestcase.catid and mgtcomponent.id=" . $myrowCOM[0];
+
+			$compTCCount = mysql_fetch_row(mysql_query($compTCCountSql));
+
+			$menustring = $menustring . "..|" . $myrowCOM[1] . " (" . $compTCCount[0] . ")|" . "manage/archiveData.php?prodid=" . $myrowPROD[0] . "&edit=component&data=" . $myrowCOM[0] .  "|Component||mainFrame|\n";
 
 			$sqlCat = "select id, name from mgtcategory where compid=" . $myrowCOM[0] . " order by CATorder, name";
 
@@ -48,7 +59,11 @@ if($product)
 
 			while ($myrowCAT = mysql_fetch_row($catResult))
 			{
-				$menustring = $menustring . "...|" . $myrowCAT[1] . "|" . "manage/archiveData.php?prodid=" . $myrowPROD[0] . "&edit=category&data=" . $myrowCAT[0] .  "|Category||mainFrame|\n";
+				$catTCCountSql = "select count(mgttestcase.id) from mgtcategory,mgttestcase where mgtcategory.id=mgttestcase.catid and mgtcategory.id=" . $myrowCAT[0];
+
+				$catTCCount = mysql_fetch_row(mysql_query($catTCCountSql));
+				
+				$menustring = $menustring . "...|" . $myrowCAT[1] . " (" . $catTCCount[0] .  ")|" . "manage/archiveData.php?prodid=" . $myrowPROD[0] . "&edit=category&data=" . $myrowCAT[0] .  "|Category||mainFrame|\n";
 
 				$sqlTc = "select id, title from mgttestcase where catid=" . $myrowCAT[0] . " order by TCorder, id";
 

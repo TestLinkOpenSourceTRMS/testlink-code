@@ -44,12 +44,12 @@ require_once("../../functions/generateTreeMenu.php");
 			{  
 				$menustring =  $menustring . "...|" . $myrowCAT[1] . "|admin/TC/editData.php?level=cat&data=" . $myrowCAT[0] . "|||mainFrame|\n";
 
-				$sqlTestCase = "select id,title from testcase where catid=" . $myrowCAT[0] . " order by id";
+				$sqlTestCase = "select id,title,mgttcid from testcase where catid=" . $myrowCAT[0] . " order by id";
 				$resultTestCase = mysql_query($sqlTestCase);
 
 				while ($myrowTC = mysql_fetch_row($resultTestCase)) 
 				{
-					$menustring =  $menustring . "....|<b>" . $myrowTC[0] . ":</b>" . $myrowTC[1] . "|admin/TC/editData.php?level=tc&data=" . $myrowTC[0] . "|||mainFrame|\n";
+					$menustring =  $menustring . "....|<b>" . $myrowTC[2] . ":</b>" . $myrowTC[1] . "|admin/TC/editData.php?level=tc&data=" . $myrowTC[0] . "|||mainFrame|\n";
 						
 				}
 		

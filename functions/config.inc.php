@@ -84,7 +84,7 @@ define("_TREE_WWW_PATH", $basehref . "third_party/phplayersmenu/");
 	NOTE: If the variable is set to anything other than SERVER it will be compiled on the client
 */
 
-define("_MENU_COMPILE_SOURCE", "SERVER");
+define("_MENU_COMPILE_SOURCE", "CLIENT");
 
 
 ///////////////////////////////////////////////

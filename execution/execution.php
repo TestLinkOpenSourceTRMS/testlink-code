@@ -248,6 +248,7 @@ function executionHeaderWithoutBuild()
 			<td class=titletable align='left'>Keyword:</td>
 			<td class=titletable align='left'>
 				<select name='keyword'>
+				<option value='all'>All</option>
 				<?
 					//get a list of all the keywords
 					$sqlKeywords = "select id, keyword from keywords";
@@ -264,6 +265,7 @@ function executionHeaderWithoutBuild()
 		<tr><td class=titletable>Owner:</td>
 			<td class=titletable>
 			<select name='owner'>
+			<option value='all'>All</option>
 			<?
 				
 				//get all of the users that have rights to the project so that the test cases can
@@ -289,6 +291,7 @@ function executionHeaderWithoutBuild()
 		<tr><td class=titletable>Priority:</td><td class=titletable>
 		
 		<select name='priority'>
+		<option value='all'>All</option>
 		<option value='L1'>L1</option>
 		<option value='L1'>L2</option>
 		<option value='L1'>L3</option>

@@ -65,6 +65,8 @@ $build = $newArray[1];
 
 $i = 3; //Start the counter at 3 because the first three variables are build,date, and submit
 
+// Get all of the platform info
+
 while ($i < count($newArray)) //Loop for the entire size of the array
 {
 

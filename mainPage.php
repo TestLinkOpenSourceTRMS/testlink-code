@@ -378,10 +378,17 @@ echo <<<END
         <tr bordercolor="#000000">
           <td class='mainMenu'><img src="icons/arrow_org.gif" width="16" height="9"><$planLinkTag href="execution/frameSet.php?nav= > Execution&page=detailed">Execute Test Cases</a></td>
         </tr>
-        <tr bordercolor="#000000">
+		<tr bordercolor="#000000">
+          <td bordercolor="#000000" class='mainMenu'><img src="icons/arrow_org.gif" width="16" height="9"><$planLinkTag href="platform/manageFrameSet.php?type=project&nav= > Manage Platforms");>Manage Platforms</a></td>
+        </tr>
+		<tr bordercolor="#000000">
+          <td bordercolor="#000000" class='mainMenu'><img src="icons/arrow_org.gif" width="16" height="9"><$planLinkTag href="platform/executionFrameSet.php?type=project&nav= > Execution By Platform");>Execution By Platform</a></td>
+        </tr>
+		<tr bordercolor="#000000">
           <td bordercolor="#000000" class='mainMenu'><img src="icons/arrow_org.gif" width="16" height="9"><$planLinkTag href="print/printFrameSet.php?type=project&nav= > Print Test Cases&page=detailed");>Print
               Test Plan Test Cases</a></td>
         </tr>
+
 
 END;
 

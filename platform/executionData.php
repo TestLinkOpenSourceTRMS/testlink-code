@@ -427,7 +427,7 @@ function checkVersion($mgttcid,$tcVersion)
 
 function platformResults($tcid)
 {
-	global $build;
+	global $build,$edit,$data;
 	$i = 3;
 
 	$sqlPlatformTC	= "select dateRun, result, runBy, platformList from platformresults where tcid=" . $tcid . " and buildId=" . $build;
@@ -444,22 +444,34 @@ function platformResults($tcid)
 			<tr><td class="tctable">
 			<b>Previous Platform Results for This Test Case</b><br>
 			<?
-			
+
 			while($platformTCRow = mysql_fetch_array($platformTCResult)) //Display all Categories
 			{
-				echo $platformTCRow[0] . " " . $platformTCRow[1] . " " . $platformTCRow[2] . " ";
-						
+				$platformInfo = $platformTCRow[0] . " " . $platformTCRow[1] . " " . $platformTCRow[2] . " ";
+				
 				$platformNameArray = explode(",",$platformTCRow[3]);
 
 				foreach ($platformNameArray as $platformId)
 				{	
-					$sqlPlatformName = "select name from platform where id=" . $platformId;
+					$sqlPlatformName = "select name,containerId,id from platform where id=" . $platformId;
 					$platformNameRow = mysql_fetch_row(mysql_query($sqlPlatformName)); //Run the query
+
+					$sqlContainerName = "select name from platformcontainer where id=" . $platformNameRow[1];
+					$containerResult = mysql_query($sqlContainerName);
 					
-					echo $platformNameRow[0] . " ";
+					while($myrowContainer = mysql_fetch_row($containerResult))
+					{
+						$platformHref .= "&" . $myrowContainer[0] . "=" . $platformNameRow[2];
+					}
+					
+					$platformNames .= $platformNameRow[0] . " ";
 				}
+
+				echo "<a href='platform/executionData.php?edit=" . $edit . "&data=" . $data . "&build=" . $build . $platformHref . "&submit=submit'>";
+
+				echo $platformInfo . $platformNames;
 				
-				echo "<br>";
+				echo "</a><br>";
 			}
 			?>
 			

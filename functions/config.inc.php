@@ -7,8 +7,8 @@
 ///////////////////////////////////////////////
 
 $dbhost     = "localhost"; //the host name for the server. Use either localhost,server name, or IP
-$dbuser     = ""; //the mysql user
-$dbpasswd   = ""; //the mysql password
+$dbuser     = "root"; //the mysql user
+$dbpasswd   = "root"; //the mysql password
 $dbname     = "testlink"; //the name of the testlink database
 
 //TODO:replace above values with constants
@@ -18,8 +18,8 @@ define(_TESTLINK_DB_TYPE, "mysql");
 
 //db connection info
 define(_TESTLINK_DB_HOST, "localhost");
-define(_TESTLINK_DB_USER, "");
-define(_TESTLINK_DB_PASSWORD, "");
+define(_TESTLINK_DB_USER, "root");
+define(_TESTLINK_DB_PASSWORD, "root");
 define(_TESTLINK_DB_NAME, "testlink");
 
 ///////////////////////////////////////////////

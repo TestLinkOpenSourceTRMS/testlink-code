@@ -14,14 +14,18 @@
 require_once("functions/header.php");
 testLinkPageStart();
 
-//print_r($_SESSION);
-
 require_once("functions/getRights.php");
 
 ?>
 
 <script language='javascript' src='functions/popupHelp.js'></script>
 
+
+<table width="250" height="100%" border="0" align="left">
+  <tr>
+    <td valign="top" bgcolor="#EEEEEE">
+	
+					<!--Begin product section -->
 <?
 
 $planLinkTag = "FAKE"; //initializing planLinkTag variable
@@ -30,12 +34,12 @@ if(has_rights("mgt_view_product"))//if user can view products
 {
 
 echo <<<END
-<table width="100%" border="0" align="center">
+<table border="0" align="center" height="100%" width="100%">
 <form NAME="productForm" ACTION="mainPage.php">
 <tr>
-<td height="124" valign="top"><table width="100%" class="mainTable" align="center">
+<td height="124" valign="top"><table class="mainTable" align="center" width="100%">
 <tr>
-<td width="34%" class="mainHeader myproduct"><img align=top src=icons/sym_question.gif onclick=javascript:open_popup('help/mainProduct.php');>Product
+<td width="34%" class="mainHeader myproduct"><img align=top src=icons/sym_question.gif onclick=javascript:open_popup('help/mainProduct.php');>Product 
 END;
  
 
@@ -113,13 +117,7 @@ END;
 			}
 
 
-
-
-
-
-echo "</td>";
-echo "</form>";
-echo "</table>";
+echo "</td></form></table>";
  
       
 
@@ -128,7 +126,7 @@ if(has_rights("mgt_view_tc") || has_rights("mgt_modify_tc")) //user can view tcs
 
 echo <<<END
 
-		<table width="34%" align="left" class=subTable>
+		<table width="100%" class=subTable>
         
 		<tr>
           <td class="mainSubHeader">Test Case Management</td>
@@ -156,16 +154,9 @@ echo <<<END
         </tr>
 END;
 
-	}else
-	{
-
-		echo "<tr><td class='mainMenu'>&nbsp;</td></tr>";
-
-
 	}
 
-
-echo "</table>";
+echo "</table><br>";
 
 }
 
@@ -176,7 +167,7 @@ if(has_rights("mgt_view_key") || has_rights("mgt_modify_key"))//user can view ke
 
 echo <<<END
 
-	     <table width='33%' align='left' class=subTable>
+	     <table width='100%' class=subTable>
         <tr>
           <td class="mainSubHeader">Keyword Management</td>
        </tr>
@@ -201,17 +192,8 @@ END;
 
 
 
-	}else //if they cant modify keys show two blank rows to fill out the whole table
-	{
-
-		echo "<tr><td class='mainMenu'>&nbsp</td></tr>";
-		echo "<tr><td class='mainMenu'>&nbsp;</td></tr>";
-
-
-
 	}
-
-echo "</table>";
+echo "</table><br>";
 
 
 }
@@ -225,7 +207,7 @@ if(has_rights("mgt_modify_product"))//can the user modify products
 
 echo <<<END
 
-<table width='33%' class=subTable align='left'>
+<table width='100%' class=subTable >
 <tr>
 <td class='mainSubHeader'>Product Management</td>
 </tr>
@@ -250,74 +232,85 @@ echo <<<END
 </table>
 
 END;
-
-/*			  echo "<table width='33%' class=subTable align='left'>";
-              echo "<tr>"; 
-              echo "<td class='mainSubHeader'>Product Management</td>";
-              echo "</tr>";
-              echo "<tr> ";
-              echo "<td class='mainMenu'><img src='icons/arrow_org.gif' width='16' height='9'>";
-		echo "<a href='admin/product/newProduct.php?nav= > New Products'>Create new Products</a></td>";
-              echo "</td>";
-              echo "</tr>";
-              echo "<tr> ";
-              echo "<td class='mainMenu'> <img src='icons/arrow_org.gif' width='16' height='9'>";
-		echo "<a href='admin/product/editProduct.php?type=product&nav= > Edit/Delete Product'>Edit/Delete Product</a></td>";
-              echo "</td>";
-              echo "</tr>";
-              echo "<tr>"; 
-              echo "<td class='mainMenu'><img src='icons/arrow_org.gif' width='16' height='9'>"; 
-		  
-			  echo "<a href='admin/product/importProduct.php?nav= > Import Products'>Import Product Data from CSV</a>";
 			
-              echo "</td>";
-              echo "</tr>";
-			  
-              echo "</table>";*/
-			
-			
-			}else //if not show a blank table
-			{
-				
-				echo "<table width='33%' align='left' class=subTable>";
-
-				echo "<tr><td class='mainSubHeader'>&nbsp</td></tr>";
-				
-				echo "<tr><td class='mainMenu'>&nbsp;</td></tr>";
-				echo "<tr><td class='mainMenu'>&nbsp;</td></tr>";
-				echo "<tr><td class='mainMenu'>&nbsp;</td></tr>";
-
-				
-				
-				echo "</table>";
-
-
-
-
-			}
+}//end if
 			
 
 }
 
 ?>
 
-
-<!--Begin the Test Plan Section-->
-
-
-
-      </table>
-    </td>
+	</table>
+	
+	
+	
+	</td>
   </tr>
 </table>
-<table width="100%" border="0" align="center">
+
+<!-- Middle table -->
+
+<table width="450" height="100%" border="0" align="left">
+  <tr>
+    <td valign="top">
+
+<?
+	require_once("myTPInfo.php");
+?>
+
+<!--	
+	<table width=100% border=1 align=center class="mainTable">
+        <tr>
+          <td bgcolor=#CC3366><font color="#FFFFFF" size=4>Your Test Plan Metrics</font></td>
+        </tr>
+      </table>
+      <table width=100% border=1 align=center class="mainTable">
+        <tr>
+          <td width=50% class=mainSubHeader>Name</td>
+          <td width=25% class=mainSubHeader>% Complete</td>
+          <td width=25% class=mainSubHeader>Your % Complete</td>
+        </tr>
+        <tr>
+          <td class='mainMenu'>Bob</td>
+          <td class='mainMenu'>50</td>
+          <td class='mainMenu'>30</td>
+        </tr>
+        <tr>
+          <td class='mainMenu'>Foo</td>
+          <td class='mainMenu'>14.7</td>
+          <td class='mainMenu'>16.6</td>
+        </tr>
+        <tr>
+          <td class='mainMenu'> </td>
+          <td class='mainMenu'>50</td>
+          <td class='mainMenu'>30</td>
+        </tr>
+      </table>
+
+	 -->
+	  
+	  
+	  
+	  
+	  </td>
+  </tr>
+</table>
+
+<!--Right table -->
+
+<table width="250" height="100%" border="0" align="left">
+  <tr> 
+    <td valign="top" bgcolor="#EEEEEE">
+	
+<table width="100%" border="0" align="center" height=100%>
 <FORM NAME='projectForm' ACTION='mainPage.php'>
   <tr>
-    <td height="103" valign="top"><table width="100%" class='mainTable'>
+    <td height="103" valign="top"><table width="100%" border=0 class="mainTable">
       <tr>
         <td height="20" class="mainHeader myproject">
             <img align=top src=icons/sym_question.gif onclick=javascript:open_popup('help/mainTestPlan.php');>Test Plan
-                <?php
+
+<?php
 			
 		//This is the code that displays the select box with all the available projects
 
@@ -406,16 +399,14 @@ END;
 		}//end testplan count
 
 		
-        echo "</td>";
-        echo "</form>";
-        echo "</table>";
+        echo "</td></tr></form></table>";
 
 if(has_rights("tp_execute") || has_rights("tp_create_build")) //if the user has either execute or create build rights
 {
 
 echo <<<END
 	  
-	  <table width="34%" align="left" class=subTable>
+	  <table width="100%" class=subTable>
         <tr>
           <td class="mainSubHeader">Test Case Execution</td>
         </tr>
@@ -436,11 +427,6 @@ echo <<<END
 		  
 <td bordercolor='#000000' class='mainMenu'><img src='icons/arrow_org.gif' width='16' height='9'><$planLinkTag href="admin/build/createBuild.php?type=project&nav= > Create Build">Create New Build</a>
 
-<tr><td class='mainMenu'>&nbsp;</td></tr>
-<tr><td class='mainMenu'>&nbsp;</td></tr>
-<tr><td class='mainMenu'>&nbsp;</td></tr>
-
-		
 </td>
 </tr>
 
@@ -451,34 +437,16 @@ END;
 	}
 
 
-echo "</table>";
-
-}else //If the user does not have permissions to see any of the execution pages then show a blank table
-{
-
-echo <<<END
-	  
-	  <table width="34%" align="left" class=subTable>
-        <tr>
-          <td class="mainSubHeader">&nbsp;</td>
-        </tr>
-		  <tr><td class='mainMenu'>&nbsp;</td></tr>
-<tr><td class='mainMenu'>&nbsp;</td></tr>
-		  </table>
-
-END;
-
+echo "</table><br>";
 
 }
-
-
 
 if(has_rights("tp_metrics") || has_rights("tp_planning"))//user has metrics and planning rights
 {
 
 echo <<<END
 
-<table width="33%" class=subTable align="left">
+<table width="100%" class=subTable>
 <tr>
 <td class="mainSubHeader">Execution Status</td>
 </tr>
@@ -501,15 +469,10 @@ echo <<<END
 			
 	<tr><td class='mainMenu'><img src='icons/arrow_org.gif' width='16' height='9'><$planLinkTag href="metrics/newEditMilestone.php?type=project&nav= > Manage Milestones">Create/Edit/Delete 
 			Milestones</a></td</tr>
-	
-	<tr><td class='mainMenu'>&nbsp;</td></tr>
-	<tr><td class='mainMenu'>&nbsp;</td></tr>
 		
-	<tr><td class='mainMenu'>&nbsp;</td></tr>
-	
-	</table>
+	</table><br>
 
-	<table class=subTable width='33%' align='left'>
+	<table class=subTable width='100%'>
             <tr>
   			<td class='mainSubHeader'>Test Plan Management</td>
             </tr>
@@ -558,57 +521,25 @@ echo <<<END
 			<tr bordercolor='#000000'>
             <td class='mainMenu'><img src='icons/arrow_org.gif' width='16' height='9'>
 		  
-		  	<a href="admin/user/projectRights.php?nav= > Define User/Project Rights">Define User/Project Rights</a>
+		  	<a href="admin/user/projectRightsFrameset.php?nav= > Define User/Project Rights">Define User/Project Rights</a>
 			
 			</td>
             </tr>
 END;
 
 
-}else
-
-{
-
-//if the user doesnt have planning rights show this blank table
-
-
-echo <<<END
-		<tr><td class='mainMenu'>&nbsp</td></tr>
-		</table>		
-
-	     <table width='33%' align='left' class=subTable>
-        <tr>
-       <td class="mainSubHeader">&nbsp</td>
-       </tr>
-
-	<tr><td class='mainMenu'>&nbsp</td></tr>
-
-	<tr><td class='mainMenu'>&nbsp</td></tr>
-
-
-END;
-
-
-}//end else
-
+}
 echo "</table>";
 
 
 
 }//end metrics and tp planning section
 
-
 ?>
 
-<!--Code that cleans up the big table all of the smaller tables reside in-->
 
-</td>
-</tr>
+
+	
+	</td>
+  </tr>
 </table>
-
-</body>
-</html>
-
-<?php
-
-?>

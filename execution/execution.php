@@ -17,6 +17,7 @@ echo "<head>";
 
 ?>
 
+
 <script language='javascript' src='functions/popupHelp.js'></script>
 <script language='javascript' src='functions/popTestCase.js'></script>
 
@@ -31,8 +32,15 @@ document.write(data);
 
 </script>
 
-
 <?
+
+$testCases = array();
+global $testCases;
+
+function addTCToList($tcid)
+{
+	array_push($GLOBALS['testCases'], $tcid);
+}
 
 require_once('../htmlarea/textArea.php');
 
@@ -82,12 +90,12 @@ if($_GET['edit'] == 'component') //if the user has selected to view by component
 		if($_GET['owner']) //check to see if the user sorted the list by owner
 		{
 
-			$catResult = mysql_query("select category.id, category.name from component,category where component.id = " . $myrowCOM[0] . " and component.id = category.compid and owner='" . $_SESSION['user'] . "' order by CATorder",$db);
+			$catResult = mysql_query("select category.id, category.name from component,category where component.id = " . $myrowCOM[0] . " and component.id = category.compid and owner='" . $_SESSION['user'] . "' order by CATorder, category.id",$db);
 
 		}else
 		{
 
-			$catResult = mysql_query("select category.id, category.name from component,category where component.id = " . $myrowCOM[0] . " and component.id = category.compid order by CATorder",$db);
+			$catResult = mysql_query("select category.id, category.name from component,category where component.id = " . $myrowCOM[0] . " and component.id = category.compid order by CATorder, category.id",$db);
 
 		}
 			
@@ -101,7 +109,7 @@ if($_GET['edit'] == 'component') //if the user has selected to view by component
 			if($_GET['keyword'] == 'All')
 			{
 
-				$TCsql = "select testcase.id, title, summary, steps, exresult, keywords,mgttcid,version from testcase,category where category.id = " . $myrowCAT[0] . " and testcase.catid = category.id order by TCorder";
+				$TCsql = "select testcase.id, title, summary, steps, exresult, keywords,mgttcid,version from testcase,category where category.id = " . $myrowCAT[0] . " and testcase.catid = category.id order by TCorder, testcase.id";
 
 				$TCResult = mysql_query($TCsql,$db);
 
@@ -145,7 +153,7 @@ if($_GET['edit'] == 'category') //if the user has selected to view by category
 		$compNameResult = mysql_fetch_row($compName);
 
 
-		$catResult = mysql_query("select category.id, category.name from category where category.id = " . $_GET['cat'] . " order by CATorder",$db);
+		$catResult = mysql_query("select category.id, category.name from category where category.id = " . $_GET['cat'] . " order by CATorder, category.id",$db);
 	
 		$myrowCAT = mysql_fetch_row($catResult);  //display all the categories until we run out
 				
@@ -156,14 +164,20 @@ if($_GET['edit'] == 'category') //if the user has selected to view by category
 		if($_GET['keyword'] == 'All')
 		{
 
-			$TCsql = "select testcase.id, title, summary, steps, exresult, keywords,mgttcid,version from testcase,category where category.id = " . $myrowCAT[0] . " and testcase.catid = category.id order by TCorder";
+			$TCsql = "select testcase.id, title, summary, steps, exresult, keywords,mgttcid,version from testcase,category where category.id = " . $myrowCAT[0] . " and testcase.catid = category.id order by TCorder, testcase.id";
 
 			$TCResult = mysql_query($TCsql,$db);
+
+			while($result = mysql_fetch_assoc($TCResult))
+			{
+				addTCToList($result['id']);
+			}
+			mysql_data_seek($TCResult, 0);
 
 		}else //I show them only the keywords they selected
 		{
 
-			$TCsql = "select testcase.id, title, summary, steps, exresult, keywords,mgttcid,version from testcase,category where category.id = " . $myrowCAT[0] . " and testcase.catid = category.id and testcase.keywords like '%" . $_GET['keyword'] . "%'  order by TCorder";
+			$TCsql = "select testcase.id, title, summary, steps, exresult, keywords,mgttcid,version from testcase,category where category.id = " . $myrowCAT[0] . " and testcase.catid = category.id and testcase.keywords like '%" . $_GET['keyword'] . "%'  order by TCorder, testcase.id";
 
 			$TCResult = mysql_query($TCsql,$db);
 
@@ -268,36 +282,41 @@ function executionHeader($build,$keyword,$owner)
 
 }
 
+function createChangeAllStatusButton($pos)
+{
+	foreach( $GLOBALS['testCases'] as $tc )
+	{
+		$text .= "document.getElementsByName(\"status". $tc ."\")[". $pos ."].checked = true;";
+	}
+	return $text;
+}
+
 //This next function checks to see if the user has selected anything for the status. If they have I check the appropriate selection box
 
 function radioResult($tcid,$result)
 {
 	if($result == 'p') //passed
 	{
-					
 		echo "<input type='radio' name='status" . $tcid . "' value='n'>Not Run<br><input type='radio' name='status" . $tcid . "' value='p' CHECKED>Passed<br><input type='radio' name='status" . $tcid . "' value='f'>Failed<br><input type='radio' name='status" . $tcid . "' value='b'>Blocked</td>\n\n";
-							
+
 
 	}elseif($result == 'f') //failed
 	{
-					
+				
 		echo "<input type='radio' name='status" . $tcid . "' value='n'>Not Run<br><input type='radio' name='status" . $tcid . "' value='p'>Passed<br><input type='radio' name='status" . $tcid . "' value='f' CHECKED>Failed<br><input type='radio' name='status" . $tcid . "' value='b'>Blocked</td>\n\n";
-								
+							
 
 	}elseif($result == 'b') //blocked
 	{
-													
+												
 		echo "<input type='radio' name='status" . $tcid . "' value='n'>Not Run<br><input type='radio' name='status" . $tcid . "' value='p'>Passed<br><input type='radio' name='status" . $tcid . "' value='f'>Failed<br><input type='radio' name='status" . $tcid . "' value='b' CHECKED>Blocked</td>\n\n";	
-								
 							
+						
 	}else //not run
 	{
-								
 		echo "<input type='radio' name='status" . $tcid . "' value='n' CHECKED>Not Run<br><input type='radio' name='status" . $tcid . "' value='p'>Passed<br><input type='radio' name='status" . $tcid . "' value='f'>Failed<br><input type='radio' name='status" . $tcid . "' value='b'>Blocked</td>\n\n";
-								
-							
 	}
-						
+					
 }//end function radioDisplay
 
 
@@ -306,9 +325,17 @@ function radioResult($tcid,$result)
 function displayTestCase($resultTC,$bugzillaOn)
 {
 
-	while ($myrow = mysql_fetch_row($resultTC)){ //display all the test cases until we run out
-					
-	//This makes every test case its own table
+	echo "<div id=TC>";
+	echo "Change Status of All test cases<br />";
+	echo "<input type='button' value='Not Run' onclick='". createChangeAllStatusButton(0) ."'>&nbsp;";
+	echo "<input type='button' value='Passed' onclick='". createChangeAllStatusButton(1) ."'>&nbsp;";
+	echo "<input type='button' value='Failed' onclick='". createChangeAllStatusButton(2) ."'>&nbsp;";
+	echo "<input type='button' value='Blocked' onclick='". createChangeAllStatusButton(3) ."'><br /><br />";
+
+	while ($myrow = mysql_fetch_row($resultTC))
+	{ //display all the test cases until we run out
+				
+		//This makes every test case its own table
 											
 		//I decided to add the ability to show results of the test case if there already were some. This next query looks to see if there are any previous results for the current build
 
@@ -369,10 +396,12 @@ function displayTestCase($resultTC,$bugzillaOn)
 		results($myrow[0],$bugzillaOn);
 
 		echo "</td><tr>";
-						
-		}//end TC loop
-			
+					
+	}//end TC loop
+
+echo "</div>";
 		
+	
 }//end function displayTestCase
 
 //This function takes a test case id and displays all of the test cases bugs
@@ -388,16 +417,11 @@ function displayBugs($tcid)
 						
 	$sqlBugs = "select bug from bugs where tcid='" . $tcid . "' and build='" . $_GET['build'] . "'";
 							
-							
 	$resultBugs = mysql_query($sqlBugs); //Execute the query
-
 
 	while ($myrowBugs = mysql_fetch_row($resultBugs)) //For each bug that is found
 	{
-								
 		echo $myrowBugs[0] . ","; //Display the bug and a comma after it
-						
-
 	}
 													
 	echo "'>"; //End the text area and show example
@@ -429,11 +453,8 @@ function checkVersion($mgttcid,$tcVersion)
 
 		if($mgtRow[0] > $tcVersion)
 		{
-
 			//Display the flag
-
 			$flag = 1;
-								
 		}
 					
 	}else
@@ -602,7 +623,7 @@ function results($tcid,$bugzillaOn)
 						
 	echo "<tr><td class=tctable width=50%><b>Result:</b><br>";
 
-		////If we find that a test case has a result record	
+		//If we find that a test case has a result record	
 	
 
 		if($num == 1) //Found a test case result
@@ -639,10 +660,7 @@ function results($tcid,$bugzillaOn)
 
 		}
 
-		
-
 	echo "</table><br>";
-
 
 }
 

@@ -223,7 +223,8 @@ CREATE TABLE `project` (
   `name` text,
   `notes` text,
   `active` enum('y','n') NOT NULL default 'y',
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY  (`id`),
+  KEY `id` (`id`)
 ) TYPE=MyISAM COMMENT='This table holds all of the project information' AUTO_INCREMENT=113 ;
 
 
@@ -251,7 +252,8 @@ CREATE TABLE `results` (
   `tcid` int(10) unsigned NOT NULL default '0',
   `notes` text,
   PRIMARY KEY  (`tcid`,`build`),
-  KEY `tcid` (`tcid`)
+  KEY `tcid` (`tcid`),
+  KEY `status` (`status`)
 ) TYPE=MyISAM;
 
 
@@ -295,7 +297,9 @@ CREATE TABLE `testcase` (
   `keywords` text,
   `TCorder` int(11) NOT NULL default '0',
   PRIMARY KEY  (`id`),
-  KEY `id` (`id`)
+  KEY `id` (`id`),
+  KEY `mgttcid` (`mgttcid`),
+  KEY `catid` (`catid`)
 ) TYPE=MyISAM COMMENT='This table holds all of the test case information' AUTO_INCREMENT=9 ;
 
 

@@ -19,7 +19,7 @@ if(!$_POST['editUser'])
 
 	//Find all rows where the posted username and password are correct
 
-	displayForm($message);
+	displayForm($message, $loginurl);
 
 
 }
@@ -48,7 +48,7 @@ elseif($_POST['editUser'])
 						
 			$message = "<b>I'm sorry but you must enter a valid user name. Please Select another one</b>";
 
-			displayForm($message);
+			displayForm($message, $loginurl);
 			
 
 		}		
@@ -58,7 +58,7 @@ elseif($_POST['editUser'])
 			
 			$message = "<b>I'm sorry but that login name is already in use. Please Select another one</b>";
 
-			displayForm($message);
+			displayForm($message, $loginurl);
 
 
 
@@ -68,7 +68,7 @@ elseif($_POST['editUser'])
 
 			$message = "<b>The two passwords entered did not match. Note that comparison is case sensative. Please try again</b>";
 
-			displayForm($message);
+			displayForm($message, $loginurl);
 			
 
 		}else
@@ -80,7 +80,7 @@ elseif($_POST['editUser'])
 
 			echo "Welcome to TestLink " . $login . "!<br><br>";
 			
-			echo "Please return to the <a href='http://www.qagood.com'>QA Homepage</a> and login. If you have any questions please contact Chad Rosen";
+			echo "Please return to the <a href='" . $loginurl . "'>Home</a> and login. If you have any questions please contact Chad Rosen";
 
 
 			
@@ -89,10 +89,10 @@ elseif($_POST['editUser'])
 		
 }
 
-function displayForm($message)
+function displayForm($message, $loginurl)
 {
 
-			echo "<a href='http://www.qagood.com'>Return to www.qagood.com</a><br>";
+			echo "<a href='" . $loginurl . "'>Home</a><br>";
 
 			echo $message;
 			

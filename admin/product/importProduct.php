@@ -34,7 +34,7 @@ require_once("../../functions/header.php");
   
   //This next variable shows where you can import data from
 
-  $location = 'http://www.qagood.com/kenny/admin/product/';
+  $location =  $basehref . 'admin/product/';
 
   echo "<tr><td bgcolor='#99CCFF'><b>Enter Location of Data:</td><td><textarea name='location' cols='70' rows='1'>" . $location . "</textarea></td></tr>\n\n";
 

@@ -18,7 +18,7 @@ if(!$_POST['editUser'])
 
 	//Find all rows where the posted username and password are correct
 
-	echo "<a href='http://www.qagood.com'>Return to www.qagood.com</a><br>";
+	echo "<a href='" . $loginurl . "'>Home</a><br>";
 
 	echo "<FORM method='post' ACTION='lostPassword.php'>";
 

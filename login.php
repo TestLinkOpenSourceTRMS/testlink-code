@@ -25,7 +25,7 @@ echo<<<END
 <table width='35%' class=mainTable>
 
 <tr><td
-class=mainHeader><h2>TestLink</H2></td></tr>
+class=mainHeader><h2>TestLink</H2>$TLVersion</td></tr>
 
 <form method='post' action=$basehref/doAuthorize.php>
 <table width='35%' class=mainTable>
@@ -37,7 +37,12 @@ class=mainHeader><h2>TestLink</H2></td></tr>
 </table>
 </form>
 
+<a href='firstLogin.php'>New User?</a><br>
+<a href='lostPassword.php'>Lost Password?</a>
+
 END;
+
+
 
 
 }

@@ -52,6 +52,11 @@ if ($num !=0) {
 		$_SESSION['email'] = $userResult[4]; //Set the user's email address for easy lookup later
 		$_SESSION['userID'] = $userResult[0];
 
+		//PHP is annoying in the fact that it has globals off by default.. So, if I want to show this in different
+		//places i need to store it in session
+
+		$_SESSION['version'] = $TLVersion; 
+
 
 		//forwarding user to the mainpage
 		

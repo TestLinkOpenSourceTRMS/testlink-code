@@ -14,39 +14,28 @@
 //            5. draw the breadcrumb
 ////////////////////////////////////////////////////////////////////////////////
 
-//I've seen some serious include path weirdness when trying to install on a couple servers
-//It seems that setting the include path variable (at least locally) stops this problem from happening
-
-ini_set('include_path', '.');
-
-//Not sure if this works or not.. A lot of servers have a default session expire of like 3 minutes. This can be agrivating to users. Users can set their servers cache expire here
-
-//ini_set('session.cache_expire',900);
-
 ///////////////////////////////////////////////
 //
 // Globals you should change for your environment
 //
 ///////////////////////////////////////////////
 
-$dbhost     = "mercury"; //the host name for the server. Use either localhost,server name, or IP
-
-$dbuser     = "root"; //the mysql user
-$dbpasswd   = "root"; //the mysql password
+$dbhost     = "localhost"; //the host name for the server. Use either localhost,server name, or IP
+$dbuser     = ""; //the mysql user
+$dbpasswd   = ""; //the mysql password
 $dbname     = "testlink"; //the name of the database
 
-$basehref   = "http://www.qagood.com/kenny/"; //Sets the basehref variable. Important to note that a forward slash "/" is needed in the end
+$basehref   = "http://localhost/testlink/"; //Sets the basehref variable. Important to note that a forward slash "/" is needed in the end
 
-$loginurl   = "http://www.qagood.com";  // where you go back to login
+$loginurl   = "http://localhost/testlink/login.php";  // where you go back to login
 
 //If you want to use bugzilla then you'll need to set these variables
 
-
-$bugzillaOn = true; //do you want to use bugzilla to strike through resolved, verified, and closed bugs. By default this is on.
+$bugzillaOn = false; //do you want to use bugzilla to strike through resolved, verified, and closed bugs. By default this is on.
 
 if($bugzillaOn == true) //if the user wants to use bugzilla
 {
-	
+	//Set the bug tracking system info
 			
 	$bzHost= "pesky.good.com"; //bugzilla host
 	$bzUser= "dvanhorn"; //bugzilla user
@@ -61,6 +50,28 @@ if($bugzillaOn == true) //if the user wants to use bugzilla
 
 }
 
+///////////////////////////////////////////////
+//
+//Other stuff.. Some you may want to change
+//
+///////////////////////////////////////////////
+
+//I've seen some serious include path weirdness when trying to install on a couple servers
+//It seems that setting the include path variable (at least locally) stops this problem from happening
+
+ini_set('include_path', '.');
+
+//Not sure if this works or not.. A lot of servers have a default session expire of like 3 minutes. This can be agrivating to users. Users can set their servers cache expire here
+
+//ini_set('session.cache_expire',900);
+
+///////////////////////////////////////////////
+//
+//TestLink version number. Don't change.. Well you can but why would you?
+//
+///////////////////////////////////////////////
+
+$TLVersion = "v1.0.1";
 
 
 ///////////////////////////////////////////////
@@ -258,12 +269,19 @@ function doNavBar()
 		exit;
 	}
 
+	//This is annoying.. PHP has no globlals and I wanted to display the version in the header..
+	//so to get around the problem i now store the version in a session variable..
+
+	//Also, when I tried to simply use the session variable below in the header it barfs.
+	//So, I needed to set it to another variable..
+
+	 $ver = $_SESSION['version'];
 
 	// Print out the navbar
 	echo <<<END
 <table width=100% class=navbar valign='top'>
   <tr bgcolor="#999999"> 
-    <td width="22%" rowspan="2" align="left"><font size="6">TestLink</font></td>
+    <td width="22%" rowspan="2" align="left"><font size="6">TestLink</font> $ver </td>
     <td width="78%" align="right"> 
         <b>Welcome <font color='#FF0000' size='+1'> $user </font><br>
     </td>

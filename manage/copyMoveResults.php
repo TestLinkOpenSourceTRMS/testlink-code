@@ -22,11 +22,15 @@ if($_POST['submit'] == 'moveCOM') //user wants to move a component to another pr
 	$sqlMoveCopy = "update mgtcomponent set prodid='" . $_POST['moveCopy'] . "' where id='" . $_POST['id'] . "'";
 	$resultMoveCopy = mysql_query($sqlMoveCopy);
 
+	echo "<hr>Click <a href='manage/archiveData.php?&edit=component&data=" . $_POST['id'] .  "'>here</a> to return to Component just edited";
+
 }elseif($_POST['submit'] == 'moveCAT') //user wants to move a category to another component
 {
 	echo "Category has been moved";
 	$sqlMoveCopy = "update mgtcategory set compid='" . $_POST['moveCopy'] . "' where id='" . $_POST['id'] . "'";
 	$resultMoveCopy = mysql_query($sqlMoveCopy);
+
+	echo "<hr>Click <a href='manage/archiveData.php?&edit=category&data=" . $_POST['id'] .  "'>here</a> to return to Category just edited";
 
 }elseif($_POST['submit'] == 'moveTC') //user wants to move a test case to another category
 {
@@ -34,6 +38,7 @@ if($_POST['submit'] == 'moveCOM') //user wants to move a component to another pr
 	$sqlMoveCopy = "update mgttestcase set catid='" . $_POST['moveCopy'] . "' where id='" . $_POST['id'] . "'";
 	$resultMoveCopy = mysql_query($sqlMoveCopy);
 
+	echo "<hr>Click <a href='manage/archiveData.php?&edit=testcase&data=" . $_POST['id'] .  "'>here</a> to return to TestCase just edited";
 
 }elseif($_POST['submit'] == 'copyCOM')
 {
@@ -94,6 +99,10 @@ if($_POST['submit'] == 'moveCOM') //user wants to move a component to another pr
 
 	}//end the insertion of categories
 
+	echo "<hr>Click <a href='manage/archiveData.php?&edit=component&data=" . $comID.  "'>here</a> to return to Component just edited";
+
+	$highLight = "&edit=component&data=" . $comID;
+
 }elseif($_POST['submit'] == 'copyCAT')
 {
 	echo "Category has been copied";
@@ -131,6 +140,10 @@ if($_POST['submit'] == 'moveCOM') //user wants to move a component to another pr
 
 	}
 
+	echo "<hr>Click <a href='manage/archiveData.php?&edit=category&data=" . $catID .  "'>here</a> to return to Category just edited";
+
+	$highLight = "&edit=category&data=" . $catID;
+
 }elseif($_POST['submit'] == 'copyTC')
 {
 
@@ -150,11 +163,28 @@ if($_POST['submit'] == 'moveCOM') //user wants to move a component to another pr
 
 	$resultInsert = mysql_query($sqlInsert);
 
+	$tcID =  mysql_insert_id(); //Grab the id of the test case just entered
+
+	echo "<hr>Click <a href='manage/archiveData.php?&edit=testcase&data=" . $tcID .  "'>here</a> to return to Test Case just edited";
+
+	$highLight = "&edit=testcase&data=" . $tcID;
+
 }
 
-	//Refresh the left frame
-	
-	$page = $basehref . "/manage/archiveLeft.php?product=" . $_SESSION['product'];
+	if($_POST['submit'] == 'moveCOM')
+	{
+		$highLight = "&edit=component&data=" . $_POST['id'];
+	}
+	else if($_POST['submit'] == 'moveCAT')
+	{
+		$highLight = "&edit=category&data=" . $_POST['id'];	
+	}
+	else if($_POST['submit'] == 'moveTC')
+	{
+		$highLight = "&edit=testcase&data=" . $_POST['id'];
+	}
 
+
+	$page =  $basehref . "/manage/archiveLeft.php?product=" . $product . $highLight;
 
 	refreshFrame($page); //call the function below to refresh the left frame

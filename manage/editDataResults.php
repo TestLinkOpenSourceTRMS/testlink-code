@@ -34,12 +34,14 @@ if($_POST['newCOM'])
 {
 	$sql = "insert into mgtcomponent (name,intro,scope,ref,method,lim,prodid) values ('" . $_POST['name'] . "','" . $_POST['intro'] . "','" . $_POST['scope'] . "','" . $_POST['ref'] . "','" . $_POST['method'] . "','" . $_POST['lim'] . "','" . $product . "')";
 
-	//echo $sql;
-
-	echo "Component Has Been Added";
 
 	$result = mysql_query($sql); //Execute query
 
+	$newCOMID =  mysql_insert_id();	 //Grab the id of the Component just entered
+
+	echo "<hr>Click <a href='manage/archiveData.php?&edit=component&data=" . $newCOMID .  "'>here</a> to return to Component just edited";
+
+	$highLight = "&edit=component&data=" . $newCOMID;
 
 
 }elseif($_POST['newCAT'])
@@ -53,6 +55,11 @@ if($_POST['newCOM'])
 
 	$result = mysql_query($sql); //Execute query
 
+	$newCATID =  mysql_insert_id();	 //Grab the id of the Component just entered
+
+	echo "<hr>Click <a href='manage/archiveData.php?&edit=category&data=" . $newCATID .  "'>here</a> to return to Component just edited";
+
+	$highLight = "&edit=category&data=" . $newCATID;
 
 }elseif($_POST['newTC'])
 {
@@ -87,7 +94,6 @@ if($_POST['newCOM'])
 			$newTCID =  mysql_insert_id();	 //Grab the id of the Component just entered
 
 			echo "Test Case " . $newTCID . ": " . $title . " Has Been Added<br>";
-
 			
 		
 		}
@@ -95,8 +101,11 @@ if($_POST['newCOM'])
 
 	}
 
+	echo "<hr>Click <a href='manage/archiveData.php?&edit=testcase&data=" . $newTCID .  "'>here</a> to return to Test Case just edited";
+
 	echo "<br><br><a href='manage/archiveData.php?prodid=" . $_SESSION['product'] . "&edit=category&data=" . $_GET['data'] . "' target='mainFrame'>Add more cases to this category?</a>";
 
+	$highLight = "&edit=testcase&data=" . $newTCID;
 
 }
 
@@ -113,6 +122,8 @@ if($_POST['editCOM']) //editing a component
 	$result = mysql_query($sql); //Execute query
 
 	echo "Component has been edited";
+
+	echo "<hr>Click <a href='manage/archiveData.php?edit=component&data=" . $_POST['id'] .  "'>here</a> to return to Component just edited";
 	
 
 }elseif($_POST['editCAT']) //Editing a category
@@ -123,6 +134,8 @@ if($_POST['editCOM']) //editing a component
 	$result = mysql_query($sql); //Execute query
 
 	echo "Category has been edited";
+
+	echo "<hr>Click <a href='manage/archiveData.php?prodid=" . $foo . "&edit=category&data=" . $_POST['id'] .  "'>here</a> to return to Category just edited";
 	
 
 }elseif($_POST['editTC']) //saving a test case but not archiving it
@@ -154,7 +167,9 @@ if($_POST['editCOM']) //editing a component
 
 	$result = mysql_query($sql); //Execute query
 
-	echo "Test case has been edited";
+	echo "Test Case has been edited";
+
+	echo "<hr>Click <a href='manage/archiveData.php?&edit=testcase&data=" . $_POST['id'] .  "'>here</a> to return to Test Case just edited";
 
 }
 
@@ -199,7 +214,22 @@ elseif($_POST['archive'])
 
 }
 
-	$page =  $basehref . "/manage/archiveLeft.php?product=" . $product;
+	if($_POST['editCOM'])
+	{
+		$highLight = "&edit=component&data=" . $_POST['id'];
+	}
+	else if($_POST['editCAT'])
+	{
+		$highLight = "&edit=category&data=" . $_POST['id'];
+	}
+	else if($_POST['editTC'])
+	{
+		$highLight = "&edit=testcase&data=" . $_POST['id'];
+
+
+	}
+
+	$page =  $basehref . "/manage/archiveLeft.php?product=" . $product . $highLight;
 
 	refreshFrame($page); //call the function below to refresh the left frame
 

@@ -16,18 +16,6 @@ doHeader();
 //require_once("../../functions/stripTree.php"); //require_once the function that strips the javascript tree
 require_once(_ROOT_PATH . "functions/generateTreeMenu.php");
 
-?>
-
-<head>
-
-<script language='JavaScript' src='jtree/tree.js'></script>
-<script language='JavaScript' src='jtree/tree_tpl.js'></script>
-<link rel="stylesheet" href="jtree/tree.css">
-
-</head>
-
-<?
-
 if ($_SESSION['product']) {
 	$product = $_SESSION['product'];
 }
@@ -83,7 +71,7 @@ if($product)
 	//Help link
 	$helpInfo = "Click <a href='manage/keyword/keywordData.php' target='mainFrame'>here</a> for help";
 
-	invokeMenu($menustring, $tableTitle, $helpInfo);
+	invokeMenu($menustring, $tableTitle, $helpInfo, "edit=" . $_GET['edit'] . "&data=" . $_GET['data']);
 }
 
 ?>

@@ -310,7 +310,7 @@ elseif($_POST['importData']) //If the user submits the import form
 						$exresult = stripTree($rowMGTAddTC[3]);
 						$summary = stripTree($rowMGTAddTC[1]);
 										
-						$sqlAddTC = "insert into testcase(title,mgttcid,catid,summary,steps,exresult,version,keywords,TCorder) values ('" . $rowMGTAddTC[0] . "','" . $tcid . "','" . $rowResultCATID[1] . "','" . $summary . "','" . $steps . "','" . $exresult . "','" . $rowMGTAddTC[4] . "','" . $rowMGTAddTC[5] . "','" . $rowMGTAddTC[6] . "')";
+						$sqlAddTC = "insert into testcase(title,mgttcid,catid,summary,steps,exresult,version,keywords,TCorder) values ('" . mysql_escape_string($rowMGTAddTC[0]) . "','" . $tcid . "','" . mysql_escape_string($rowResultCATID[1]) . "','" . mysql_escape_string($summary) . "','" . mysql_escape_string($steps) . "','" . mysql_escape_string($exresult) . "','" . mysql_escape_string($rowMGTAddTC[4]) . "','" . mysql_escape_string($rowMGTAddTC[5]) . "','" . mysql_escape_string($rowMGTAddTC[6]) . "')";
 					
 
 						$resultAddTC = mysql_query($sqlAddTC);
@@ -344,7 +344,7 @@ elseif($_POST['importData']) //If the user submits the import form
 
 					//Add the category to the project
 					
-					$sqlAddCAT = "insert into category(name,mgtcatid,compid,CATorder) values ('" . $rowMGTAddCAT[0] . "','" . $rowMGTCATID[0] . "','" . $rowResultCOMID[1] . "','" . $rowMGTAddCAT[1] . "')";
+					$sqlAddCAT = "insert into category(name,mgtcatid,compid,CATorder) values ('" . mysql_escape_string($rowMGTAddCAT[0]) . "','" . mysql_escape_string($rowMGTCATID[0]) . "','" . mysql_escape_string($rowResultCOMID[1]) . "','" . mysql_escape_string($rowMGTAddCAT[1]) . "')";
 					
 					$resultAddCAT = mysql_query($sqlAddCAT); //execute the query
 
@@ -362,7 +362,7 @@ elseif($_POST['importData']) //If the user submits the import form
 					$summary = stripTree($rowMGTAddTC[1]);
 
 					//Add the testcase to the project					
-					$sqlAddTC = "insert into testcase(title,mgttcid,catid,summary,steps,exresult,version,keywords,TCorder) values ('" . $rowMGTAddTC[0] . "','" . $tcid . "','" . $addCATID  . "','" . $summary . "','" . $steps . "','" . $exresult . "','" . $rowMGTAddTC[4] . "','" . $rowMGTAddTC[5] . "','" . $rowMGTAddTC[6] . "')";
+					$sqlAddTC = "insert into testcase(title,mgttcid,catid,summary,steps,exresult,version,keywords,TCorder) values ('" . mysql_escape_string($rowMGTAddTC[0]) . "','" . mysql_escape_string($tcid) . "','" . mysql_escape_string($addCATID)  . "','" . mysql_escape_string($summary) . "','" . mysql_escape_string($steps) . "','" . mysql_escape_string($exresult) . "','" . mysql_escape_string($rowMGTAddTC[4]) . "','" . mysql_escape_string($rowMGTAddTC[5]) . "','" . mysql_escape_string($rowMGTAddTC[6]) . "')";
 					
 					$resultAddTC = mysql_query($sqlAddTC); //execute query
 				
@@ -387,7 +387,7 @@ elseif($_POST['importData']) //If the user submits the import form
 					$rowMGTAddCOM = mysql_fetch_array($resultAddMgtCOM); //Grab the COMID
 
 					//Add the component to the project					
-					$sqlAddCOM = "insert into component (name,mgtcompid,projid) values ('" . $rowMGTAddCOM[0] . "','" . $rowMGTCOMID[0] . "','" . $_SESSION['project'] . "')";
+					$sqlAddCOM = "insert into component (name,mgtcompid,projid) values ('" . mysql_escape_string($rowMGTAddCOM[0]) . "','" . mysql_escape_string($rowMGTCOMID[0]) . "','" . $_SESSION['project'] . "')";
 
 
 					$resultAddCOM = mysql_query($sqlAddCOM); //execute query
@@ -400,7 +400,7 @@ elseif($_POST['importData']) //If the user submits the import form
 					$rowMGTAddCAT = mysql_fetch_array($resultAddMgtCAT); //Grab the CATID
 
 					//Add the category to the project					
-					$sqlAddCAT = "insert into category(name,mgtcatid,compid,CATorder) values ('" . $rowMGTAddCAT[0] . "','" . $rowMGTCATID[0] . "','" . $addCOMID . "','" . $rowMGTAddCAT[1] . "')";
+					$sqlAddCAT = "insert into category(name,mgtcatid,compid,CATorder) values ('" . mysql_escape_string($rowMGTAddCAT[0]) . "','" . mysql_escape_string($rowMGTCATID[0]) . "','" . mysql_escape_string($addCOMID) . "','" . mysql_escape_string($rowMGTAddCAT[1]) . "')";
 
 					$resultAddCAT = mysql_query($sqlAddCAT); //execute the query
 
@@ -420,7 +420,7 @@ elseif($_POST['importData']) //If the user submits the import form
 					$exresult = stripTree($rowMGTAddTC[3]);
 					$summary = stripTree($rowMGTAddTC[1]);
 					
-					$sqlAddTC = "insert into testcase(title,mgttcid,catid,summary,steps,exresult,version,keywords,TCorder) values ('" . $rowMGTAddTC[0] . "','" . $tcid . "','" . $addCATID  . "','" . $summary . "','" . $steps . "','" . $exresult . "','" . $rowMGTAddTC[4] . "','" . $rowMGTAddTC[5] . "','" . $rowMGTAddTC[6] . "')";
+					$sqlAddTC = "insert into testcase(title,mgttcid,catid,summary,steps,exresult,version,keywords,TCorder) values ('" . mysql_escape_string($rowMGTAddTC[0]) . "','" . mysql_escape_string($tcid) . "','" . mysql_escape_string($addCATID)  . "','" . mysql_escape_string($summary) . "','" . mysql_escape_string($steps) . "','" . mysql_escape_string($exresult) . "','" . mysql_escape_string($rowMGTAddTC[4]) . "','" . mysql_escape_string($rowMGTAddTC[5]) . "','" . mysql_escape_string($rowMGTAddTC[6]) . "')";
 					
 
 					$resultAddTC = mysql_query($sqlAddTC); //execute the query

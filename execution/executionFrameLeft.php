@@ -87,14 +87,14 @@ if($_POST['submitBuild'])
 		if($owner == 'All')
 		{
 			
-			$catSql = "select category.id, category.name from component,category where component.id = " . $myrowCOM[0] . " and component.id = category.compid order by CATorder,category.mgttcid";
+			$catSql = "select category.id, category.name from component,category where component.id = " . $myrowCOM[0] . " and component.id = category.compid order by CATorder,category.id";
 
 			$catResult = mysql_query($catSql);
 
 		}else //if the user selected a user to sort by
 		{
 
-			$catSql = "select category.id, category.name from component,category where component.id = " . $myrowCOM[0] . " and component.id = category.compid and category.owner='" . $owner . "' order by CATorder,category.mgttcid";
+			$catSql = "select category.id, category.name from component,category where component.id = " . $myrowCOM[0] . " and component.id = category.compid and category.owner='" . $owner . "' order by CATorder,category.id";
 
 			$catResult = mysql_query($catSql);
 
@@ -124,7 +124,7 @@ if($_POST['submitBuild'])
 
 						//user passed in a result that isnt the default "all" and didnt select a keyword to sort by
 
-						$TCsql = "select testcase.id, testcase.title, testcase.mgttcid from testcase where testcase.catid = " . $myrowCAT[0] . " order by TCorder,testcase.id";				
+						$TCsql = "select testcase.id, testcase.title, testcase.mgttcid from testcase where testcase.catid = " . $myrowCAT[0] . " order by TCorder,testcase.mgttcid";				
 
 
 
@@ -133,7 +133,7 @@ if($_POST['submitBuild'])
 
 						//user has selected to view a specific result and didnt select a keyword to sort by
 
-						$TCsql = "select testcase.id, testcase.title, testcase.mgttcid from testcase where testcase.catid = " . $myrowCAT[0] . " and keywords like '%" . $_POST['keyword'] . "%' order by TCorder,testcase.id";
+						$TCsql = "select testcase.id, testcase.title, testcase.mgttcid from testcase where testcase.catid = " . $myrowCAT[0] . " and keywords like '%" . $_POST['keyword'] . "%' order by TCorder,testcase.mgttcid";
 
 
 

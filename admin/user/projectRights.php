@@ -11,136 +11,182 @@ require_once("../../functions/header.php");
   session_start();
   doDBConnect();
   doHeader();
-  doNavBar();
+  //doNavBar();
 
 ?>
 
 <LINK REL='stylesheet' TYPE='text/css' HREF='kenny.css'>
 
+<script>
+
+
+//This function takes a div tag and whether or not you want the checkboxes checked or not
+//The function then goes through all of the elements of the div tag that is passed in and
+//if they are checkboxes
+
+function box(myDiv, checkBoxStatus){
+	var frm;
+	var elemType;
+
+	frm = document.getElementById(myDiv).getElementsByTagName('input');
+	for(var i = 0; i < frm.length; i++){
+		elemType = frm[i].type;		
+		
+		if(elemType == "checkbox"){
+			frm[i].checked = checkBoxStatus;
+		}
+	}
+}
+
+
+</script>
+
 <?
 
 ////////Building the header with the correct projects
 
-echo "<Form Method='POST' ACTION='admin/user/projRightsResult.php'>";
 
-echo "<table class=userinfotable width='100%'>";
-
-echo "<tr><td class=userinfotablehdr></td>";
-
-//Grab all of the projects and list them across the top bar and then store them in an array for later
-
-$sql = "select name,id from project where active='y'";
-
-$result = mysql_query($sql);
-
-$projectCount = mysql_num_rows($result);
-
-//I need to check if there are any available project. Before it was throwing errors up
-
-if($projectCount > 0)
-
+if($_GET['view'] == 'user') //view all projects which this user has rights to
 {
+	$sqlName = "select login from user where id=" . $_GET['id'];
+	$sqlNameResult = mysql_query($sqlName);
+	$sqlNameRow = mysql_fetch_row($sqlNameResult);
+
+	echo "<div id=checkAll>";
+	echo "<b>Assign project rights for user " . $sqlNameRow[0] . "</b>";
 	
-	while ($myrowProj = mysql_fetch_row($result)) 
+	echo "<Form Method='POST' ACTION='admin/user/projRightsResult.php?view=user&id=" . $_GET['id'] . "'>";
+
+	echo "<input type=submit name=submit value=save>";
+	echo "<input type='button' name='foo' onclick='box(\"checkAll\", true)' value='Check All'>";
+	echo "<input type='button' name='foo' onclick='box(\"checkAll\", false)' value='Uncheck All'><br>";
+	
+	echo "<table class=userinfotable width='100%'>";
+
+	$sql = "select id,name from project where active='y'";
+	$projectResult = mysql_query($sql);
+	$showProject = mysql_num_rows($projectResult);
+	
+	if($showProject > 0)
 	{
+		echo "<tr><td class=userinfotablehdr>Project</td><td class=userinfotablehdr>Rights?</td><br>";
 
-		echo "<td class=userinfotablehdr>" . $myrowProj[0] . "</td>"; //display the 
+		//Run the query
 
-		$projArray[] = $myrowProj[1];
+		$userResult = mysql_query($sql);
 
-	}
-
-}
-
-//Count the number of users and list the number next to them
-
-$userCount = 0;
-
-//Grabbing all the users to list along the left column
-
-$sql = "select id,login from user";
-
-//Run the query
-
-$userResult = mysql_query($sql);
-
-while ($myrowUser = mysql_fetch_row($userResult)) //Display all the users until we run out
-{
-		//increment the userCount
-
-		$userCount++;
-
-		if($userCount%2) //Using the mod function to determine if it's even or odd
-
+		while ($myrowProject = mysql_fetch_row($userResult)) //Display all the users until we run out
 		{
-			$cellColor = '#FFFFFF'; // If even set to yellow
 			
-		} else 
+			//Query the projrights table
 
-		{
-			$cellColor = '#EEEEEE'; //If odd set to gray
+			$sql = "select userid from projrights where userid=" . $_GET['id'] . " and projid = " . $myrowProject[0];
 
-		}
+			$rightsResult = mysql_query($sql);
+			$numRows = mysql_num_rows($rightsResult);
 
+			//does the user/project exist
 
-		echo "<tr><td bgcolor=" . $cellColor. "><b>" . $userCount . ". " . $myrowUser[1] . "</b></td>"; //Display the user
-
-		//This next loop will check to see if the user already has rights for a particular project. If they do then I will check the checkbox. If not I leave it blank
-
-		
-
-		
-		//first I need to check if there actually are any projects created
-
-		if($projectCount > 0)
-
-		{
-		
-			foreach($projArray as $project) //loop through project array
+			if($numRows > 0) //yes
 			{
 
-				//Query the projrights table
+				echo "<tr><td bgcolor=" . $cellColor. ">" . $myrowProject[1] . "</td><td bgcolor=" . $cellColor. "><input type=checkbox name='proj" . $myrowProject[0] . "' value=" . $myrowProject[0] . " checked></td></tr>";
 
-				$sql = "select userid from projrights where userid=" . $myrowUser[0] . " and projid = " . $project;
+			}else //no
+			{
+					
+				echo "<tr><td bgcolor=" . $cellColor. ">" . $myrowProject[1] . "</td><td bgcolor=" . $cellColor. "><input type=checkbox name='proj" . $myrowProject[0] . "' value=" . $myrowProject[0] . " ></td></tr>";
 
-				$rightsResult = mysql_query($sql);
 
-				$numRows = mysql_num_rows($rightsResult);
+			}//end else
+					
+		}
+	}		
 
-				//does the user/project exist
+	echo "</table>";
 
-				if($numRows > 0) //yes
-				{
+
+	echo "<br><input type=submit name=submit value=save>";
+
+
+	echo "</form>";
+
+	echo "</div>";
+
+}elseif($_GET['view'] == 'project') //view all of the users that can currently see this project
+{
+		
+	$sqlName = "select name from project where id=" . $_GET['id'];
+	$sqlNameResult = mysql_query($sqlName);
+	$sqlNameRow = mysql_fetch_row($sqlNameResult);
+
+	echo "<div id=checkAll>";
+	echo "<b>Assign these users the rights to see project " . $sqlNameRow[0] . "</b>";
+	
+	echo "<Form Method='POST' ACTION='admin/user/projRightsResult.php?view=project&id=" . $_GET['id'] . "'>";
+
+	echo "<input type=submit name=submit value=save>";
+	echo "<input type='button' name='foo' onclick='box(\"checkAll\", true)' value='Check All'>";
+	echo "<input type='button' name='foo' onclick='box(\"checkAll\", false)' value='Uncheck All'><br>";
+	
+	echo "<table class=userinfotable width='100%'>";
+
+	$sql = "select id,login from user";
+	$userResult = mysql_query($sql);
+	$showUser = mysql_num_rows($userResult);
+	
+	if($showUser > 0)
+	{
+		echo "<tr><td class=userinfotablehdr>User</td><td class=userinfotablehdr>Rights?</td><br>";
+
+		//Run the query
+
+		$projResult = mysql_query($sql);
+
+		while ($myrowProject = mysql_fetch_row($userResult)) //Display all the users until we run out
+		{
 			
-					echo "<td bgcolor=" . $cellColor. "><input type=checkbox name=proj" . $project . "user" . $myrowUser[0] . " value=" . $myrowUser[0] . "," . $project . " checked></td>";
+			//Query the projrights table
 
-				}else //no
-				{
+			$sql = "select userid from projrights where projid=" . $_GET['id'] . " and userid = " . $myrowProject[0];
+
+			$rightsResult = mysql_query($sql);
+			$numRows = mysql_num_rows($rightsResult);
+
+			//does the user/project exist
+
+			if($numRows > 0) //yes
+			{
 				
-					echo "<td bgcolor=" . $cellColor. "><input type=checkbox name=proj" . $project . "user" . $myrowUser[0] . " value=" . $myrowUser[0] . "," . $project . "></td>";
+				echo "<tr><td bgcolor=" . $cellColor. ">" . $myrowProject[1] . "</td><td bgcolor=" . $cellColor. "><input type=checkbox name='proj" . $myrowProject[0] . "' value=" . $myrowProject[0] . " checked></td></tr>";
 
-				}//end else
+			}else //no
+			{
+					
+				echo "<tr><td bgcolor=" . $cellColor. ">" . $myrowProject[1] . "</td><td bgcolor=" . $cellColor. "><input type=checkbox name='proj" . $myrowProject[0] . "' value=" . $myrowProject[0] . "></td></tr>";
 
-				
-
-
-			}//end foreach
-		
-		
-		}//end if 
-
-
-
+			}//end else
+					
+		}
 	}
 
-
-echo "</table>";
-
-
-echo "<br><input type=submit name=submit value=save>";
+	echo "</table>";
 
 
-echo "</form>";
+	echo "<br><input type=submit name=submit value=save>";
+
+
+	echo "</form>";
+
+	echo "</div>";
+
+	
+
+}else
+{
+	echo "This page allows you to define the list of approved users for each project";
+}
+
 
 
 ?>

@@ -11,11 +11,10 @@ require_once("../../functions/header.php");
   session_start();
   doDBConnect();
   doHeader();
-  doNavBar();
+ // doNavBar();
 
 require_once("../../functions/orderArray.php"); //this reorders the post array
 
-require_once("../../functions/csvSplit.php"); //I need this to split the comma seperated array
 
 ?>
 
@@ -26,43 +25,76 @@ require_once("../../functions/csvSplit.php"); //I need this to split the comma s
 $projRightsArray = orderArray($_POST);
 
 
-//First we need to delete everything from the projRights table
-
-$sqlDelete = "delete from projrights";
-
-$resultDelete = @mysql_query($sqlDelete);
 
 
-//Then we loop through the data that was passed in
-
-foreach($projRightsArray as $projRights)
+if($_GET['view'] == 'user')
 {
+	//First we need to delete everything from the projRights table for that user
+
+	$sqlDelete = "delete from projrights where userid=" . $_GET['id'];
+
+	$resultDelete = @mysql_query($sqlDelete);
+
+	//Then we loop through the data that was passed in
+
+	foreach($projRightsArray as $projRights)
+	{
 
 	 //ignore the first value because it is the submit button
 	
 	if($projRights != 'save')
 	{
 	
-		//echo $projRights . "<br>";
-
-		//I'm passing the data as a comma seperated value so we need to split them apart
-
-		$projArray = csv_split($projRights);
-
 		//We then need to add the new data to the projRights table
 
-		$sqlInsert = "insert into projrights (userid,projid) values ('" . $projArray[0] . "','" . $projArray[1] . "')";
+		$sqlInsert = "insert into projrights (userid,projid) values ('" . $_GET['id'] . "','" . $projRights . "')";
 
 		$resultDelete = @mysql_query($sqlInsert);
-
-
 		
 	}
 	
 
-
 }
 
 echo "<br>User's Project Rights Have Been Assigned";
+
+
+}elseif($_GET['view'] == 'project')
+{
+	//First we need to delete everything from the projRights table for that project
+
+	$sqlDelete = "delete from projrights where projid=" . $_GET['id'];
+
+	$resultDelete = @mysql_query($sqlDelete);
+
+	//Then we loop through the data that was passed in
+
+	foreach($projRightsArray as $projRights)
+	{
+
+		 //ignore the first value because it is the submit button
+	
+		if($projRights != 'save')
+		{
+			//We then need to add the new data to the projRights table
+
+			$sqlInsert = "insert into projrights (userid,projid) values ('" . $projRights . "','" . $_GET['id'] . "')";
+
+			$resultDelete = @mysql_query($sqlInsert);
+			
+		}
+
+	}
+
+	echo "<br>User's Project Rights Have Been Assigned";
+
+
+}else
+{
+	echo "do nothing";
+}
+
+
+
 
 ?>

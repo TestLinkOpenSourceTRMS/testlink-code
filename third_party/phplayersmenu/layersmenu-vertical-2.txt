@@ -1,0 +1,19 @@
+.|Linus B. Torvalds|http://www.cs.Helsinki.FI/u/torvalds/|The father of Linux||Linus
+.|Linux Kernel Archives|http://www.kernel.org/|Here you can download the Linux kernel sources|www.kernel.org_images_tux16-16.png|kernelorg
+.|---
+.|Linux Distributions|http://flashnet.linux.tucows.com/distribution.html|Here you can find a list of the major Linux distributions||Linux|1
+..|Debian GNU/Linux|http://www.debian.org/|Enjoy the exciting world of Debian GNU/Linux!|debian-icon-mini.png|Linux|1
+...|About|http://www.debian.org/intro/about|||Linux
+...|News|http://www.debian.org/News/|||Linux
+...|Distribution|http://www.debian.org/distrib/|||Linux
+...|Support|http://www.debian.org/support|||Linux
+...|Development|http://www.debian.org/devel/|||Linux
+...|Search|http://search.debian.org/|||Linux
+...|A Debian Mirror|http://ftp.mirror.ac.uk/sites/ftp.debian.org/|||Linux
+..|---
+..|Mandrake|http://www.mandrakelinux.com/|Mandrake Linux||Linux
+...|Errata|http://www.mandrakelinux.com/en/errata.php3|||Linux
+...|Download|http://www.mandrakelinux.com/en/ftp.php3|||Linux
+...|Mandrake Expert|http://www.mandrakeexpert.com/index1.php|||Linux
+...|Bugzilla|http://qa.mandrakesoft.com/|||Linux
+..|Slackware|http://www.freesoftware.org/|Slackware Linux||Linux

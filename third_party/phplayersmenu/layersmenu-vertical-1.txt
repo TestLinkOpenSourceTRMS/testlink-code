@@ -1,0 +1,8 @@
+.|PHPLM Complete Demo|demo.php|The PHP Layers Menu System complete demo|shortcut_icon_phplm.png
+.|Some PHPLM examples|||||1
+..|Only tree menus|||||1
+...|Only a tree menu|example-treemenu.php|Example with only one tree menu
+...|Two tree menus|example-two_treemenus.php|Example with 2 tree menus
+..|Layers + tree menus|||||1
+...|Hor. menu + tree|example-hormenu_and_treemenu.php|Example with a horizontal menu and a tree menu
+...|Layers + trees|example-layersmenus_and_treemenus.php|Example with hor. menu, ver. menu, 2 tree menus

@@ -1,0 +1,29 @@
+.|Home|index.php|PHP Layers Menu Home Page|kfm_home.png
+..|Layers-based menus|index.php#layersmenus
+..|JavaScript-based tree menus|index.php#treemenus
+..|Accessibility solutions|index.php#accessibilitymenus
+..|Features and standards|index.php#featuresandstds
+..|Customizations|index.php#customizations
+..|SiteBar and PHPLM|http://www.sitebar.org|SiteBar can act as a backend for PHPLM|sitebar_root_transparent.png|sitebar
+.|Demo|demo.php|Complete Demo of the PHP Layers Menu System|shortcut_icon_phplm.png|demo
+..|Complete demo|demo.php|Complete Demo of the PHP Layers Menu System|shortcut_icon_phplm.png|demo
+..|---
+..|Examples|examples-frame.html|PHP Layers Menu examples
+.|Download|http://prdownloads.sourceforge.net/phplayersmenu/phplayersmenu-3.2.0-rc.tar.gz?download|Download the package|downloadManager16.png|download
+..|Download the package|http://prdownloads.sourceforge.net/phplayersmenu/phplayersmenu-3.2.0-rc.tar.gz?download|Download the package|tgz.png|download
+..|---
+..|Download the manual|http://prdownloads.sourceforge.net/phplayersmenu/phplm-manual-3.0.pdf?download|Download the manual|misc_doc.png|download
+.|Project page on sf.net|http://sourceforge.net/projects/phplayersmenu/|The project's home page on sourceforge.net|sourceforge.net_images_favicon.png
+..|Forums on sourceforge.net|http://sourceforge.net/forum/?group_id=33447
+...|Help|http://sourceforge.net/forum/forum.php?forum_id=104941
+...|Open Discussion|http://sourceforge.net/forum/forum.php?forum_id=104940
+..|Trackers|http://sourceforge.net/tracker/?group_id=33447
+...|Bugs|http://sourceforge.net/tracker/?atid=408327&amp;group_id=33447&amp;func=browse||bug-small.png
+...|Support Requests|http://sourceforge.net/tracker/?atid=408328&amp;group_id=33447&amp;func=browse
+...|Patches|http://sourceforge.net/tracker/?atid=408329&amp;group_id=33447&amp;func=browse
+...|Feature Requests|http://sourceforge.net/tracker/?atid=408330&amp;group_id=33447&amp;func=browse
+..|---
+..|News|http://sourceforge.net/news/?group_id=33447
+..|File List|http://sourceforge.net/project/showfiles.php?group_id=33447
+.|Donations|http://sourceforge.net/project/project_donations.php?group_id=33447|Donate to PHP Layers Menu to support development
+.|E-mail|http://www.marcopratesi.it/email.php|My e-mail address|email.png|marcopratesidotit

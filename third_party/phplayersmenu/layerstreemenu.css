@@ -1,0 +1,79 @@
+.treemenudiv	{
+	display: block;
+	white-space: nowrap;
+}
+
+.phplmnormal	{
+	font-family: bitstream vera sans, luxi sans, verdana, geneva, arial, helvetica, sans-serif;
+	font-size: 13px;
+	color: #000000;
+	text-decoration: none;
+}
+
+a.phplmnormal:hover	{
+	font-family: bitstream vera sans, luxi sans, verdana, geneva, arial, helvetica, sans-serif;
+	font-size: 13px;
+	color: #000000;
+	background-color: #fff0c0;
+	text-decoration: none;
+}
+
+a.phplm:link	{
+	font-family: bitstream vera sans, luxi sans, verdana, geneva, arial, helvetica, sans-serif;
+	font-size: 13px;
+	color: #003300;
+	text-decoration: none;
+}
+
+a.phplm:visited	{
+	font-family: bitstream vera sans, luxi sans, verdana, geneva, arial, helvetica, sans-serif;
+	font-size: 13px;
+	color: #726461;
+	text-decoration: none;
+}
+
+a.phplm:hover	{
+	font-family: bitstream vera sans, luxi sans, verdana, geneva, arial, helvetica, sans-serif;
+	font-size: 13px;
+	color: #841212;
+	background-color: #fff0c0;
+	text-decoration: none;
+}
+
+a.phplm:active	{
+	font-family: bitstream vera sans, luxi sans, verdana, geneva, arial, helvetica, sans-serif;
+	font-size: 13px;
+	color: #ff0000;
+	text-decoration: none;
+}
+
+a.phplmselected:link	{
+	font-family: bitstream vera sans, luxi sans, verdana, geneva, arial, helvetica, sans-serif;
+	font-size: 13px;
+	color: #dd0000;
+	background-color: #ffdd76;
+	text-decoration: none;
+}
+
+a.phplmselected:visited	{
+	font-family: bitstream vera sans, luxi sans, verdana, geneva, arial, helvetica, sans-serif;
+	font-size: 13px;
+	color: #dd0000;
+	background-color: #ffdd76;
+	text-decoration: none;
+}
+
+a.phplmselected:hover	{
+	font-family: bitstream vera sans, luxi sans, verdana, geneva, arial, helvetica, sans-serif;
+	font-size: 13px;
+	color: #841212;
+	background-color: #fff0c0;
+	text-decoration: none;
+}
+
+a.phplmselected:active	{
+	font-family: bitstream vera sans, luxi sans, verdana, geneva, arial, helvetica, sans-serif;
+	font-size: 13px;
+	color: #ff0000;
+	text-decoration: none;
+}

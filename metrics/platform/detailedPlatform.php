@@ -59,7 +59,14 @@ while ($myrowCOM = mysql_fetch_row($comResult))
 				echo "<tr><td class='userinfotable'><b>Build</td>";
 				echo "<td class='userinfotable'><b>Platforms</td>";
 				echo "<td class='userinfotable'><b>Result</td>";
-				echo "<td class='userinfotable'><b>Date Ran</td></tr>";
+				echo "<td class='userinfotable'><b>Date Ran</td>";
+				
+				if($bugzillaOn == "true")
+				{
+					echo "<td class='userinfotable'><b>Bugs</td>";
+				}
+
+				echo "</tr>";
 			}
 			else
 			{
@@ -85,6 +92,17 @@ while ($myrowCOM = mysql_fetch_row($comResult))
 				echo "</td>";
 				echo "<td>" . $myrowResult[2] . "</td>";
 				echo "<td>" . $myrowResult[3] . "</td>";
+
+				if($bugzillaOn == "true")
+				{
+					$platformBugsSql = "select buglist from platformbugs where tcid='" . $myrowTC[0] . "' and buildid='" . $myrowResult[0] . "' and platformlist='" . $myrowResult[1] . "'";
+
+					$bugsResult = mysql_fetch_row(mysql_query($platformBugsSql));
+
+					echo "<td>" . $bugsResult[0] . "</td>";
+
+				}
+
 				echo "</tr>";
 			}
 

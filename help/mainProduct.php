@@ -1,10 +1,12 @@
+<?
+
 ////////////////////////////////////////////////////////////////////////////////
-//File:     executionFrameLeft.php
+//File:     mainProduct.php
 //Author:   Chad Rosen
-//Purpose:  This page is the left frame of the execution pages. It builds the
-//          javascript trees that allow the user to jump around to any point
-//          on the screen
+//Purpose:  Documentation for the main product section
 ////////////////////////////////////////////////////////////////////////////////
+
+?>
 
 <html>
 

@@ -70,10 +70,14 @@ echo "</SELECT>";
 
 <tr><td class=userinfotable >&nbsp</td></tr>
 
-<tr><td class=userinfotable ><a href='metrics/platform/detailedPlatform.php' target='mainFrame'>Platform Metrics By Component</td></tr>
+<tr><td class=userinfotable ><a href='metrics/platform/percentComplete.php' target='mainFrame'>Percentage complete by platform / build</td></tr>
 
 <tr><td class=userinfotable ><a href='metrics/platform/executionByPlatform.php' target='mainFrame'>Platform Metrics By Platform Container</td></tr>
 
 <tr><td class=userinfotable ><a href='metrics/platform/notRunPlatformTestCases.php' target='mainFrame'>Test Cases not run in any platform</td></tr>
+
+<tr><td class=userinfotable ><a href='metrics/platform/failingByPlatform.php' target='mainFrame'>Failing Test Cases by platform</td></tr>
+
+<tr><td class=userinfotable ><a href='metrics/platform/detailedPlatform.php' target='mainFrame'>Platform Metrics By Component</td></tr>
 
 </table>

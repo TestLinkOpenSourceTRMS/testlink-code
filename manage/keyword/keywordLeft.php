@@ -45,7 +45,7 @@ if($product)
 	{
 		$menustring = $menustring . ".|" . $myrowPROD[1] . "||test||mainFrame|\n";
 
-		$sqlCom = "select id, name from mgtcomponent where prodid=" . $myrowPROD[0];
+		$sqlCom = "select id, name from mgtcomponent where prodid=" . $myrowPROD[0] . " order by name";
 
 		$comResult = mysql_query($sqlCom);
 
@@ -53,7 +53,7 @@ if($product)
 		{
 			$menustring = $menustring . "..|" . $myrowCOM[1] . "|manage/keyword/keywordData.php?prodid=" . $myrowPROD[0] . "&edit=component&data=" . $myrowCOM[0] . "|test||mainFrame\n";
 
-			$sqlCat = "select id, name from mgtcategory where compid=" . $myrowCOM[0];
+			$sqlCat = "select id, name from mgtcategory where compid=" . $myrowCOM[0] . " order by CATorder, name";
 
 			$catResult = mysql_query($sqlCat);
 
@@ -61,7 +61,7 @@ if($product)
 			{
 				$menustring = $menustring . "...|" . $myrowCAT[1] . "|manage/keyword/keywordData.php?prodid=" . $myrowPROD[0] . "&edit=category&data=" . $myrowCAT[0] . "|test||mainFrame\n";
 
-				$sqlTc = "select id, title from mgttestcase where catid=" . $myrowCAT[0];
+				$sqlTc = "select id, title from mgttestcase where catid=" . $myrowCAT[0] . " order by TCorder, id";
 
 				$tcResult = mysql_query($sqlTc);
 

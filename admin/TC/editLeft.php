@@ -10,6 +10,66 @@
 
 
 require_once("../../functions/header.php");
+doSessionStart();
+doDBConnect();
+doHeader();
+require_once("../../functions/generateTreeMenu.php");
+
+
+//////////////////////////////////////////////////////////////Start the display of the components
+		
+			$sqlProject = "select name from project where id=" . $_SESSION['project'];
+		$resultProject = mysql_query($sqlProject);
+		$myrowProj = mysql_fetch_row($resultProject);
+
+		$menustring =  ".|" . $myrowProj[0] . "||||mainFrame|\n";
+
+		//Here I create a query that will grab every component depending on the project the user picked
+		
+		$sql = "select component.id, component.name from component,project where project.id = " . $_SESSION['project'] . " and component.projid = project.id order by name";
+
+		$comResult = mysql_query($sql);
+
+		while ($myrowCOM = mysql_fetch_row($comResult)) 
+		{ 
+			//display all the components until we run out
+			
+			$menustring =  $menustring . "..|" . $myrowCOM[1] . "|admin/TC/editData.php?level=com&data=" . $myrowCOM[0] . "|||mainFrame|\n";
+
+			//Here I create a query that will grab every category depending on the component the user picked
+
+			$catResult = mysql_query("select category.id, category.name from component,category where component.id = " . $myrowCOM[0] . " and component.id = category.compid order by CATorder,category.id",$db);
+			
+			while ($myrowCAT = mysql_fetch_row($catResult)) 
+			{  
+				$menustring =  $menustring . "...|" . $myrowCAT[1] . "|admin/TC/editData.php?level=cat&data=" . $myrowCAT[0] . "|||mainFrame|\n";
+
+				$sqlTestCase = "select id,title from testcase where catid=" . $myrowCAT[0] . " order by id";
+				$resultTestCase = mysql_query($sqlTestCase);
+
+				while ($myrowTC = mysql_fetch_row($resultTestCase)) 
+				{
+					$menustring =  $menustring . "....|<b>" . $myrowTC[0] . ":</b>" . $myrowTC[1] . "|admin/TC/editData.php?level=tc&data=" . $myrowTC[0] . "|||mainFrame|\n";
+						
+				}
+		
+
+
+
+			}
+
+		}
+
+		//Table title
+		$tableTitle = "Active/Inactive Test Case";
+		//Help link
+		$helpInfo = "Click <a href='admin/TC/editData.php?edit=info' target='mainFrame'>here</a> for help";
+
+		invokeMenu($menustring, $tableTitle, $helpInfo, "");
+
+
+/*
+require_once("../../functions/header.php");
 
   session_start();
   doDBConnect();
@@ -17,18 +77,6 @@ require_once("../../functions/header.php");
 
 require_once("../../functions/stripTree.php"); //require_once the function that strips the javascript tree
 
-
-?>
-
-<head>
-
-<script language='JavaScript' src='jtree/tree.js'></script>
-<script language='JavaScript' src='jtree/tree_tpl.js'></script>
-<link rel="stylesheet" href="jtree/tree.css">
-
-</head>
-
-<?
 
 				
 //////////////////////////////////////////////////////////////Start the display of the components
@@ -105,14 +153,5 @@ if($_SESSION['project'])
 			echo "]\n\n";
 
 			echo "];</script>\n\n";
-
-	
+*/
 ?>
-
-<!--This code will build the home link on the javascript tree-->
-
-<!--This code will build the javascript tree with the all of the test cases new tree (TREE_ITEMS2, tree_tpl2);
--->
-	<script language='JavaScript'>
-		new tree (TREE_ITEMS, TREE_TPL);
-	</script>

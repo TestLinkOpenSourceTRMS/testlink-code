@@ -98,7 +98,7 @@ define("_TREE_TYPE", "JAVASCRIPT");
 //Currently the only bug tracking system I allow is bugzilla. 
 //TestLink uses bugzilla to check if displayed bugs resolved, verified, and closed bugs. If they are it will strike through them
 
-$bugzillaOn = false; // To turn on bugzilla. By default this is false.
+$bugzillaOn = true; // To turn on bugzilla. By default this is false.
 
 //TODO: go through app and set this
 //define("_BUG_TRACKING_SYSTEM", "BUGZILLA");

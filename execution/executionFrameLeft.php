@@ -53,7 +53,7 @@ $comResult = mysql_query($sql);
 		{  
 			$menustring =  $menustring . "...|" . $myrowCAT[1] . "|execution/execution.php?edit=category&cat=" . $myrowCAT[0] . "|||mainFrame|\n";
 		
-			$sqlTC = "select testcase.id, title from testcase where catid=" . $myrowCAT[0];
+			$sqlTC = "select testcase.id, title from testcase where catid=" . $myrowCAT[0] . " order by id";
 			$resultTC = mysql_query($sqlTC);
 
 			while ($myrowTC = mysql_fetch_row($resultTC)) 

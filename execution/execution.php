@@ -251,7 +251,7 @@ function executionHeader($build)
 		}
 		else
 		{
-			$sqlResult = "select build from build where projid=" . $_SESSION['project'];		
+			$sqlResult = "select build from build where projid=" . $_SESSION['project'] . " order by build desc";		
 			$buildResult = mysql_query($sqlResult);
 
 			echo "<select name='build'>";
@@ -547,8 +547,8 @@ function results($tcid,$bugzillaOn)
 
 	//This query grabs the results from the build passed in
 
-	$sql = "select notes, status from results where tcid='" . $tcid . "' and build='" . $_GET['build'] . "'";
-			
+	$sql = "select notes,status,build,runby,daterun,status from results where tcid='" . $tcid . "' and build='" . $_GET['build'] . "'";
+
 	$result = mysql_query($sql); //Run the query
 	$num = mysql_num_rows($result); //How many results
 
@@ -577,29 +577,46 @@ function results($tcid,$bugzillaOn)
 	
 	//display the row	
 
-	echo "<tr><td bgcolor=" . $bgcolor . ">&nbsp</td></tr>";
-
-	//This query grabs the most recent result
-
-	$sqlRecent = "select build,status,runby,daterun from results where tcid='" . $tcid . "' and status != 'n' order by build desc limit 1";
-	
-	$resultRecent = mysql_query($sqlRecent);
-
-	$numRecent = mysql_num_rows($resultRecent);
-
-	//If there is a result then display it
-
-	if($numRecent > 0)
+	if($_GET['build'])
 	{
-		$rowRecent = mysql_fetch_row($resultRecent);
+		echo "<tr><td bgcolor=" . $bgcolor . ">&nbsp</td></tr>";
 
+		echo "<tr><td class=tctable><b>Build Result:</b><br>Run by " . $resultQuery[3] . " on " . $resultQuery[4] . " against Build " . $resultQuery[2] . " (".  $resultQuery[5] . ")</td></tr>";
 
-		echo "<tr><td class=tctable><b>Most recent result:</b><br>Run by " . $rowRecent[2] . " on " . $rowRecent[3] . " against Build " . $rowRecent[0] . " (".  $rowRecent[1] . ")</td></tr>";
-
-	}else //else display not run
+	}
+	else
 	{
+		//echo "<tr><td bgcolor=" . $bgcolor . ">&nbsp</td></tr>";
 
-		echo "<tr><td class=tctable><b>Most recent result:</b><br>Not Run</td></tr>";
+		//This query grabs the most recent result
+
+		$sqlRecent = "select build,status,runby,daterun from results where tcid='" . $tcid . "' and status != 'n' order by build desc limit 1";
+		
+		$resultRecent = mysql_query($sqlRecent);
+
+		$numRecent = mysql_num_rows($resultRecent);
+
+		//If there is a result then display it
+
+		if($numRecent > 0)
+		{
+			$rowRecent = mysql_fetch_row($resultRecent);
+
+
+			echo "<tr><td class=tctable><b>Most recent result:</b><br>";
+			
+			echo "<a href='execution/execution.php?edit=testcase&tc=" . $tcid . "&build=" . $rowRecent[0] . "'>";
+
+			echo "Run by " . $rowRecent[2] . " on " . $rowRecent[3] . " against Build " . $rowRecent[0] . " (".  $rowRecent[1] . ")";
+
+			echo "</a></td></tr>";
+
+		}else //else display not run
+		{
+
+			echo "<tr><td class=tctable><b>Most recent result:</b><br>Not Run</td></tr>";
+
+		}
 
 	}
 

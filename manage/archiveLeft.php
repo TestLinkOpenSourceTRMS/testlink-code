@@ -14,7 +14,7 @@ doSessionStart();
 doDBConnect();
 doHeader();
 //require_once("../../functions/stripTree.php"); //require_once the function that strips the javascript tree
-require_once(_ROOT_PATH . "functions/generateTreeMenu.php");
+require_once("../functions/generateTreeMenu.php");
 
 if ($_SESSION['product']) {
 	$product = $_SESSION['product'];
@@ -50,13 +50,13 @@ if($product)
 			{
 				$menustring = $menustring . "...|" . $myrowCAT[1] . "|" . "manage/archiveData.php?prodid=" . $myrowPROD[0] . "&edit=category&data=" . $myrowCAT[0] .  "|Category||mainFrame|\n";
 
-				$sqlTc = "select id, title from mgttestcase where catid=" . $myrowCAT[0] . " order by TCorder, title";
+				$sqlTc = "select id, title from mgttestcase where catid=" . $myrowCAT[0] . " order by TCorder, id";
 
 				$tcResult = mysql_query($sqlTc);
 
 				while ($myrowTC = mysql_fetch_row($tcResult))
 				{
-					$menustring = $menustring . "....|" . $myrowTC[1] . "|" . "manage/archiveData.php?prodid=" . $myrowPROD[0] . "&edit=testcase&data=" . $myrowTC[0] .  "|Test Case||mainFrame|\n";
+					$menustring = $menustring . "....|<b>" . $myrowTC[0] . "</b>: " . $myrowTC[1] . "|" . "manage/archiveData.php?prodid=" . $myrowPROD[0] . "&edit=testcase&data=" . $myrowTC[0] .  "|Test Case||mainFrame|\n";
 				
 				}
 

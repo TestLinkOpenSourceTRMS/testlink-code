@@ -17,20 +17,6 @@ require_once("../../functions/header.php");
 
 require_once(_ROOT_PATH . "functions/generateTreeMenu.php");
 
-//require_once("../../functions/stripTree.php"); //require_once the function that strips the javascript tree
-
-
-?>
-
-<head>
-
-<script language='JavaScript' src='jtree/tree.js'></script>
-<script language='JavaScript' src='jtree/tree_tpl.js'></script>
-<link rel="stylesheet" href="jtree/tree.css">
-
-</head>
-
-<?
 		$sqlProject = "select name from project where id=" . $_SESSION['project'];
 		$resultProject = mysql_query($sqlProject);
 		$myrowProj = mysql_fetch_row($resultProject);
@@ -56,6 +42,19 @@ require_once(_ROOT_PATH . "functions/generateTreeMenu.php");
 			while ($myrowCAT = mysql_fetch_row($catResult)) 
 			{  
 				$menustring =  $menustring . "...|" . $myrowCAT[1] . "|admin/category/categorySelect.php?edit=category&cat=" . $myrowCAT[0] . "|||mainFrame|\n";
+
+				$sqlTestCase = "select id,title from testcase where catid=" . $myrowCAT[0] . " order by id";
+				$resultTestCase = mysql_query($sqlTestCase);
+
+				while ($myrowTC = mysql_fetch_row($resultTestCase)) 
+				{
+					$menustring =  $menustring . "....|<b>" . $myrowTC[0] . ":</b>" . $myrowTC[1] . "|admin/category/categorySelect.php?edit=testcase&tc=" . $myrowTC[0] . "|||mainFrame|\n";
+						
+				}
+		
+
+
+
 			}
 
 		}

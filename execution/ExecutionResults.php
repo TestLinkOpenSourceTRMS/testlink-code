@@ -1,3 +1,24 @@
+<?php
+
+////////////////////////////////////////////////////////////////////////////////
+//File:     ExecutionResults.php
+//Author:   Chad Rosen
+//Purpose:  This incredibly importatnt page takes the data submitted from 
+//          the user from the execution page and adds it to the database.
+////////////////////////////////////////////////////////////////////////////////
+
+
+require_once("../functions/header.php");
+
+  session_start();
+  doDBConnect();
+  doHeader();
+
+require_once("../functions/csvSplit.php");
+require_once("../functions/refreshLeft.php"); //This adds the function that refreshes the left hand frame
+
+?>
+
 Your results have been submitted
 
 <hr/>
@@ -24,24 +45,7 @@ Your results have been submitted
 	</th>
 </tr>
 
-<?php
-
-////////////////////////////////////////////////////////////////////////////////
-//File:     ExecutionResults.php
-//Author:   Chad Rosen
-//Purpose:  This incredibly importatnt page takes the data submitted from 
-//          the user from the execution page and adds it to the database.
-////////////////////////////////////////////////////////////////////////////////
-
-
-require_once("../functions/header.php");
-
-  session_start();
-  doDBConnect();
-  doHeader();
-
-require_once("../functions/csvSplit.php");
-require_once("../functions/refreshLeft.php"); //This adds the function that refreshes the left hand frame
+<?
 	
 $i = 0; //start a counter
 
@@ -79,7 +83,7 @@ while ($i < count($newArray)) //Loop for the entire size of the array
 		
 	//SQL statement to look for the same record (tcid, build = tcid, build)
 
-	$sql = "select tcid, build, notes, status from results where tcid='" . $tcID . "' and build='" . $build . "'";
+	$sql = "select tcid, build, notes, status, title from results,testcase where tcid='" . $tcID . "' and build='" . $build . "' and results.tcid=testcase.id";
 	
 	$result = mysql_query($sql); //Run the query
 	$num = mysql_num_rows($result); //How many results
@@ -93,12 +97,15 @@ while ($i < count($newArray)) //Loop for the entire size of the array
 		
 		$queryNotes = $myrow[2];
 		$queryStatus = $myrow[3];
+		$tcTitle = $myrow[4];
 			
 		//If the (notes, status) information is the same.. Do nothing
 			
 		if($queryNotes == $tcNotes && $queryStatus == $tcStatus)
 		{
-			updateBugs($tcId, $build, $tcBugs);
+			updateBugs($tcID, $build, $tcBugs);
+
+			displayResult($tcID, $build, $tcStatus, $tcNotes, $tcBugs,$tcTitle);
 
 			//Don't display anything if there are no changes			
 		}
@@ -110,7 +117,7 @@ while ($i < count($newArray)) //Loop for the entire size of the array
 			$sql = "delete from results where tcid=" . $tcID . " and build=" . $build;
 			$result = mysql_query($sql);
 
-			displayResult($tcID, $build, $tcStatus, $tcNotes, $tcBugs);
+			displayResult($tcID, $build, $tcStatus, $tcNotes, $tcBugs,$tcTitle);
 
 		}
 		else
@@ -119,7 +126,7 @@ while ($i < count($newArray)) //Loop for the entire size of the array
 	
 			$sql = "UPDATE results set runby ='" . $_SESSION['user'] . "', status ='" .  $tcStatus . "', notes='" . $tcNotes . "' where tcid='" . $tcID . "' and build='" . $build . "'";
 			
-			displayResult($tcID, $build, $tcStatus, $tcNotes, $tcBugs);
+			displayResult($tcID, $build, $tcStatus, $tcNotes, $tcBugs,$tcTitle);
 	
 			$result = mysql_query($sql); //Execute query
 
@@ -131,32 +138,30 @@ while ($i < count($newArray)) //Loop for the entire size of the array
 	//If the (notes, status) information is different.. then update the record
 
 	}
-
-
 	else //If there is no entry for the build or the build is different
 	{
 		
 		if($tcNotes == "" && $tcStatus == "n") //If the notes are blank and the status is n then do nothing
 		{
+			displayResult($tcID, $build, $tcStatus, $tcNotes, $tcBugs,$tcTitle);
 			updateBugs($tcId, $build, $tcBugs);
 			
 			//I dont want to display anything if no data was submitted
 			
-			}
-			else //Else enter a new row
-			{
+		}
+		else //Else enter a new row
+		{
 			
-				$sql = "insert into results (build,daterun,status,tcid,notes,runby) values ('" . $build . "','" . $date . "','" . $tcStatus . "','" . $tcID . "','" . $tcNotes . "','" . $_SESSION['user'] . "')";
+			$sql = "insert into results (build,daterun,status,tcid,notes,runby) values ('" . $build . "','" . $date . "','" . $tcStatus . "','" . $tcID . "','" . $tcNotes . "','" . $_SESSION['user'] . "')";
 
-				displayResult($tcID, $build, $tcStatus, $tcNotes, $tcBugs);
+			displayResult($tcID, $build, $tcStatus, $tcNotes, $tcBugs,$tcTitle);
 
-				$result = mysql_query($sql);
+			$result = mysql_query($sql);
 
-				updateBugs($tcId, $build, $tcBugs);
-
-			}
+			updateBugs($tcId, $build, $tcBugs);
 
 		}
+	}
 		
 
 }//end while
@@ -193,7 +198,7 @@ function updateBugs($tcId, $build, $bugs)
 
 }
 
-function displayResult($tcID, $build, $tcStatus, $tcNotes, $tcBugs)
+function displayResult($tcID, $build, $tcStatus, $tcNotes, $tcBugs, $tcTitle)
 {
 	//get the test case's name
 
@@ -218,11 +223,15 @@ function displayResult($tcID, $build, $tcStatus, $tcNotes, $tcBugs)
 	?>
 		<tr>
 			<td align="center"><? echo $tcID ?></td>
-			<td>Test Case Name</td>
-			<td align="center"><? echo $build ?></td>
+			<td><? echo $tcTitle ?></td>
+			<td align="center">
+				<a href='execution/execution.php?edit=testcase&tc=<? echo $tcID ?>&build=<? echo $build[0] ?>'>
+					<? echo $build ?>
+				</a>
+			</td>
 			<td align="center"><? echo $tcStatus ?></td>
-			<td align="center"><? echo $tcNotes ?>&nbsp</td>
-			<td align="center"><? echo $tcBugs ?>&nbsp</td>
+			<td ><? echo $tcNotes ?>&nbsp</td>
+			<td ><? echo $tcBugs ?>&nbsp</td>
 		</tr>
 	<?
 	}

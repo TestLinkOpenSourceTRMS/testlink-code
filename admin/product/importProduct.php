@@ -19,11 +19,6 @@ require_once("../../functions/header.php");
 
 <?
 
-//session_start();
-
-//if($_GET['project'])
-//{
-
   echo "<form method='post' action='admin/product/importProduct.php'>\n\n";
   
   echo "<table class=userinfotable width='100%'>";
@@ -48,7 +43,6 @@ require_once("../../functions/header.php");
 
   echo "</table>";
 
-//}
 
 if($_POST['showFiles'])
 {
@@ -138,7 +132,7 @@ if($_POST['showIMP'])
 
 	//Need to grab the first row of data
 
-	while ($data = fgetcsv ($handle, 1000, ",")) {
+	while ($data = fgetcsv ($handle, 3000, ",")) {
 
 		$arrayCom = $data[0];
 		$arrayCat = $data[1];
@@ -146,12 +140,7 @@ if($_POST['showIMP'])
 
 		//Strips off quotation marks (") needed to import data correctly
 
-		//$arrayCom = substr($arrayCom, 1, (count($arrayCom) - 2));
-		//$arrayCat = substr($arrayCat, 1, (count($arrayCat) - 2));
-		$arrayTC = substr($arrayTC, 1, (count($arrayTC) - 2));
-		//$arraySummary = $data[3];
-		//$arrayTCSteps = $data[4];
-		//$arrayResults = $data[5];
+		$arrayTC = preg_replace("/^['\"](.*?)['\"]$/","\\1", $arrayTC); // strip out possible quotes at beginning and end of string
 
 		if(strcmp($arrayCom,$oldCom) != 0) //Is the current value equal to the old value?
 		{
@@ -219,9 +208,7 @@ if($_POST['import'])
 	$handle = fopen ($_POST['location'],"r");
 	//Need to grab the first row of data
 
-	$data = fgetcsv ($handle, 1000, ",");
-
-	//$projID = $_SESSION['project']; //Setting the project ID which is from a previous form
+	$data = fgetcsv ($handle, 3000, ",");
 
 	$prodID = $_POST['product'];
 
@@ -235,79 +222,37 @@ if($_POST['import'])
 	$arrayResults = $data[5];
 	
 	//Removing the quotation marks around the stings
+	//Harry: only stip out quotes if they are really there (M$ Excel CVS export compatibility)
+	//Harry: replace any M$ Excel CVS single quotes "'" inside key with double "''"
 
-	//$arrayCom = substr($arrayCom, 1, (count($arrayCom) - 2));
-	//$arrayCat = substr($arrayCat, 1, (count($arrayCat) - 2));
-	$arrayTC = substr($arrayTC, 1, (count($arrayTC) - 2));
-	$arraySummary = substr($arraySummary, 1, (count($arraySummary) - 2)); 	
-	$arrayTCSteps= substr($arrayTCSteps, 1, (count($arrayTCSteps) - 2));
-	$arrayResults= substr($arrayResults, 1, (count($arrayResults) - 2));
+	$arrayTC = stripQuotes($arrayTC);
+		
+	$arraySummary = stripQuotes($arraySummary);
+
+	$arrayTCSteps = stripQuotes($arrayTCSteps);
+	
+	$arrayResults = stripQuotes($arrayResults);
 
 	//Grabbing the Key information from the excel sheets
 
-	$key6 = $data[6];
-	$key7 = $data[7];
-	$key8 = $data[8];
-	$key9 = $data[9];
-	$key10 = $data[10];
-	$key11 = $data[11];
-	$key12 = $data[12];
+	//Harry: assign variables $key6 through $key12 using "eval"
+	for ($i = 6; $i <= 12; $i++) {
+		eval ("\$key$i = \$data[$i];"); // Assign $key6 through $key12
+	}
 		
-		//Need to reinitialize the keys variable
+	//Need to reinitialize the keys variable
+	$keys = "";
+
+	// Harry: use keyI to run through for loop and assign $key6 through $key12 to $key string
+	for ($i = 6; $i <= 12; $i++) {
+		eval ("\$keyI = \$key$i;");
+		if( $keyI )
+		{
+			$keyI = preg_replace("/^['\"](.*?)['\"]$/","\\1", $keyI); // strip out possible quotes at beginning and end of string and assign to $keyI
+			$keys .= $keyI . ",";
+		}
+	}
 		
-		$keys = "";
-
-		//This if block checks to see if the key exists. If it does I strip the quotes from around it and add it
-		//to the keys string (which is later inserted into the DB)
-
-		if($key6)
-		{
-			$key6 = substr($data[6], 1, (count($data[6]) - 2)); //Removing the quotes around the string
-			$keys .= "," . $key6;
-
-		}
-		
-		if($key7)
-		{
-
-			$key7 = substr($data[7], 1, (count($data[7]) - 2)); //Removing the quotes around the string
-			$keys .= "," . $key7;
-
-		}
-
-		if($key8)
-		{
-
-			$key8 = substr($data[8], 1, (count($data[8]) - 2)); //Removing the quotes around the string
-			$keys .= "," . $key8;
-
-		}
-		
-		if($key9)
-		{
-			$key9 = substr($data[9], 1, (count($data[9]) - 2)); //Removing the quotes around the string
-			$keys .= "," . $key9;
-		}
-		
-		if($key10)
-		{
-			$key10 = substr($data[10], 1, (count($data[10]) - 2)); //Removing the quotes around the string
-			$keys .= "," . $key10;
-		}
-		
-		if($key11)
-		{
-			$key11 = substr($data[11], 1, (count($data[11]) - 2)); //Removing the quotes around the string
-			$keys .= "," . $key11;
-		}
-		
-		if($key12)
-		{
-
-			$key12 = substr($data[12], 1, (count($data[12]) - 2)); //Removing the quotes around the string
-			$keys .= "," . $key12;
-		}
-
 
 
 	//Insert arrayCom into component where projID == projIDSubmit 
@@ -346,7 +291,7 @@ if($_POST['import'])
 
 	//Next start the loop!!
 
-	while ($data = fgetcsv ($handle, 1000, ",")) {
+	while ($data = fgetcsv ($handle, 3000, ",")) {
 
 		$arrayCom = $data[0];
 		$arrayCat = $data[1];
@@ -356,82 +301,44 @@ if($_POST['import'])
 		$arrayResults = $data[5];
 
 		//Removing the quotation marks around the stings
+		//Harry: only stip out quotes if they are really there (M$ Excel CVS export compatibility)
+		//Harry: replace any M$ Excel CVS single quotes "'" inside key with double "''"
+		
+		$arrayTC = stripQuotes($arrayTC);
+		
+		$arraySummary = stripQuotes($arraySummary);
 
-		//$arrayCom = substr($arrayCom, 1, (count($arrayCom) - 2));
-		//$arrayCat = substr($arrayCat, 1, (count($arrayCat) - 2));
-		$arrayTC = substr($arrayTC, 1, (count($arrayTC) - 2));
-		$arraySummary = substr($arraySummary, 1, (count($arraySummary) - 2)); 	
-		$arrayTCSteps= substr($arrayTCSteps, 1, (count($arrayTCSteps) - 2));
-		$arrayResults= substr($arrayResults, 1, (count($arrayResults) - 2));
+		$arrayTCSteps = stripQuotes($arrayTCSteps);
+	
+		$arrayResults = stripQuotes($arrayResults);
+
 
 		//Grabbing the Key information from the excel sheets
 
-		$key6 = $data[6];
-		$key7 = $data[7];
-		$key8 = $data[8];
-		$key9 = $data[9];
-		$key10 = $data[10];
-		$key11 = $data[11];
-		$key12 = $data[12];
+		// assign variables $key6 through $key12 using "eval"
+		for ($i = 6; $i <= 12; $i++) {
+			eval ("\$key$i = \$data[$i];");
+		}
 
 		//I need to initialize the variable
-
 		$keys = "";
 
-		
+
 		//This if block checks to see if the key exists. If it does I strip the quotes from around it and add it
 		//to the keys string (which is later inserted into the DB)
 
-		if($key6)
-		{
-			$key6 = substr($data[6], 1, (count($data[6]) - 2)); //Removing the quotes around the string
-			$keys .= "," . $key6;
-
+		//Harry: use keyI and eval to run through for loop and assign $key6 through $key12 to $key string
+		for ($i = 6; $i <= 12; $i++) {
+			eval ("\$keyI = \$key$i;");
+			if( $keyI )
+			{
+				$keyI = preg_replace("/^['\"](.*?)['\"]$/","\\1", $keyI); // strip out possible quotes at beginning and end of string
+				$keys .= $keyI . ",";
+			}
 		}
 		
-		if($key7)
-		{
-
-			$key7 = substr($data[7], 1, (count($data[7]) - 2)); //Removing the quotes around the string
-			$keys .= "," . $key7;
-
-		}
-
-		if($key8)
-		{
-
-			$key8 = substr($data[8], 1, (count($data[8]) - 2)); //Removing the quotes around the string
-			$keys .= "," . $key8;
-
-		}
-		
-		if($key9)
-		{
-			$key9 = substr($data[9], 1, (count($data[9]) - 2)); //Removing the quotes around the string
-			$keys .= "," . $key9;
-		}
-		
-		if($key10)
-		{
-			$key10 = substr($data[10], 1, (count($data[10]) - 2)); //Removing the quotes around the string
-			$keys .= "," . $key10;
-		}
-		
-		if($key11)
-		{
-			$key11 = substr($data[11], 1, (count($data[11]) - 2)); //Removing the quotes around the string
-			$keys .= "," . $key11;
-		}
-		
-		if($key12)
-		{
-
-			$key12 = substr($data[12], 1, (count($data[12]) - 2)); //Removing the quotes around the string
-			$keys .= "," . $key12;
-		}
 		
 
-		//Is arrayCom = tempCom
 
 		if($arrayCom == $oldCom)
 		{
@@ -524,6 +431,15 @@ if($_POST['import'])
 	fclose ($handle);
 
 	echo "Data Imported";
+}
+
+function stripQuotes($data)
+{
+	$data = preg_replace("/^['\"](.*?)['\"]$/","\\1", $data); // strip out possible quotes at beginning and end of string
+
+	$data = preg_replace("/'/","''", $data); // replace any M$ Excel CVS single quotes "'" inside key with double "''"
+	return $data;
+
 }
 
 

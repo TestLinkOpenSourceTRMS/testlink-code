@@ -1,0 +1,57 @@
+
+/* Style for tree item text */
+.t0i {
+    font-family: Tahoma, Verdana, Geneva, Arial, Helvetica, sans-serif;
+    font-size: 11px; color: #000000;
+    background-color: #ffffff;
+    text-decoration: none;
+}
+
+/* Style for tree item image */
+.t0im {
+    border: 0px;
+    width: 19px;
+    height: 16px;
+}
+
+.mout {
+    font-family: Tahoma, Verdana, Geneva, Arial, Helvetica, sans-serif;
+    font-size: 11px;
+    color: #000000;
+    background-color: #ffffff;
+    text-decoration: none;
+    width: 100%;
+    padding: 0px;
+}
+
+.mover {
+    font-family: Tahoma, Verdana, Geneva, Arial, Helvetica, sans-serif;
+    font-size: 11px;
+    color: #FFFFFF;
+    background-color: #EEEEEE;
+    text-decoration: none;
+    width: 100%;
+    padding: 0px;
+}
+
+a, A:link, a:visited {
+    color: #0000aa;
+    text-decoration: none;
+    font-family: Tahoma, Verdana;
+    font-size: 11px;
+}
+
+A:hover {
+    color: #ff0000;
+    text-decoration: none;
+    font-family: Tahoma, Verdana;
+    font-size: 11px;
+}
+
+A:a:active {
+    color: #ff0000;
+    font-weight: bold;
+    text-decoration: none;
+    font-family: Tahoma, Verdana;
+    font-size: 11px;
+}

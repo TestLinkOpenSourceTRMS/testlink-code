@@ -1,0 +1,30 @@
+<html>
+<head>
+	<title>JavaScript Navigation Tree</title>
+	<style>
+	/* Style for tree item text */
+	.t0i {
+		font-family: Tahoma, Verdana, Geneva, Arial, Helvetica, sans-serif;
+		font-size: 11px;
+		color: #000000;
+		background-color: #ffffff;
+		text-decoration: none;
+	}
+	/* Style for tree item image */
+	.t0im {
+		border: 0px;
+		width: 19px;
+		height: 16px;
+	}
+	</style>
+</head>
+
+<body bgcolor="#ffffff" leftmargin="15" marginheight="2" marginwidth="15" topmargin="2">
+<script language="JavaScript" src="tree.js"></script>
+<script language="JavaScript" src="tree_items.js"></script>
+<script language="JavaScript" src="tree_tpl.js"></script>
+<script language="JavaScript">
+	new tree (TREE_ITEMS, tree_tpl);
+</script>
+</body>
+</html>

@@ -1,0 +1,301 @@
+/*
+* Set the default color of links throughout TestLink
+*/
+
+A:visited  {color: #0000cc; text-decoration: none} /*A Visited link is blue*/
+A:link  {color: #0000cc; text-decoration: none} /*A normal link is blue*/
+A:active  {color: #0000cc; text-decoration: none} /*An active link is blue*/
+A:hover   {color: #990000; text-decoration: none} /*A link being hovered over is red*/
+
+body {
+	font-family:	arial;
+}
+
+/*
+* This Group is for the main page
+*/
+
+table.mainTable{
+
+	border: 1px solid black;
+	border-collapse:collapse;
+
+}
+
+table.subTable{
+
+	border: 0px;
+	border-collapse:collapse;
+
+
+}
+
+td.mainHeader{
+
+	font-family:     arial;
+	font-size:       22px;
+	font-weight:     bold;
+	background:      #0066CC;
+	color:			 #FFFFFF;
+
+
+}
+
+td.mainSubHeader{
+
+	font-family:     arial;
+	font-size:       18px;
+	font-weight:     bold;
+	background:      #FFFFCC;
+
+}
+
+td.mainMenu{
+
+	font-family:     arial;
+	background:      #EEEEEE;
+	font-size:       12px;
+
+
+}
+
+/* 
+ * NavTable - Display a navigation table
+ */
+
+table.navtable {
+	font-family:     arial;
+	border: 1px solid black;
+	border-collapse:collapse;
+}
+
+td.navtable {
+	font-family:     arial;
+	text-align:      center;
+	background:      #ffeeee;
+}
+
+td.navtablehdr {
+	font-family:     arial;
+	font-weight:     bold;
+	text-align:      center;
+	background:      #ffcc99;
+}
+
+td.navtablelft { 
+        font=family:     arial;
+        font-weight:     bold;
+        text-align:      left;
+        background:      #ffcc99;
+}
+
+td.navtablergt { 
+        font=family:     arial;
+        font-weight:     bold;
+        text-align:      right;
+        background:      #ffcc99;
+}
+
+/*
+ * TC Table - display a test case
+ */
+
+table.tctable {
+	font-family:     arial;
+	border: 1px solid black;
+	border-collapse:collapse;
+}
+
+td.tctable {
+	font-family:     arial;
+	font-size:     12px;
+	text-align:      left;
+	background:      threedface;
+}
+
+td.tctablehdr {
+	font-family:     arial;
+	font-size:     12px;
+/*	text-align:      left;*/
+	background:      #ffffcc;
+}
+
+td.tctablehdrCenter{
+
+	font-family:     arial;
+	font-size:		 12px;
+	font-weight:     bold;
+	text-align:      center;
+	background:      #ffffcc;
+
+
+}
+
+/* 
+ * TitleTable - A Title table
+ */
+
+table.titletable {
+	font-family:     arial;
+	font-size:       12px;
+	border: 1px solid black;
+	border-collapse:collapse;
+}
+
+td.titletable {
+	font-family:     arial;
+	font-size:       12px;
+	text-align:      center;
+	background:      #eeeeff;
+}
+
+td.titletablehdr {
+	font-family:     arial;
+	font-weight:     bold;
+	font-size:       12px;
+	text-align:      center;
+	background:      #ccccff;
+}
+
+/* 
+ * HelpTable - A Help table
+ */
+
+table.helptable {
+	font-family:     arial;
+}
+
+td.helptable {
+	font-family:     arial;
+	font-size:       12px;
+	text-align:      left;
+	background:      #eeeeff;
+}
+
+td.helptablehdr {
+	font-family:     arial;
+	font-weight:     bold;
+	text-align:      center;
+	background:      #ccccff;
+}
+
+td.helptabletitle {
+	font-family:     arial;
+	font-size:       large;
+	font-weight:     bold;
+	text-align:      center;
+	background:      #ccccff;
+}
+
+/* 
+ * EditTable - Display a table with editable contents
+ */
+
+table.edittable {
+	font-family:     arial;
+	border: 1px solid black;
+	border-collapse:collapse;
+}
+
+td.edittable {
+	font-family:     arial;
+	text-align:      left;
+	background:      #eeeeee;
+}
+
+td.edittablehdr {
+	font-family:     arial;
+	font-weight:     bold;
+	text-align:      left;
+	background:      #99ccff;
+}
+
+td.edittablesubhdr {
+	font-family:     arial;
+	font-weight:     bold;
+	text-align:      left;
+	background:      #cccccc;
+}
+
+/*
+ * User Info Table - user information
+ */
+
+table.userinfotable {
+	font-family:     arial;
+	border: 1px solid black;
+	border-collapse:collapse;
+}
+
+td.userinfotable {
+	font-family:     arial;
+	font-size:     12px;
+	text-align:      left;
+	background:      threedface;
+}
+
+td.userinfotablehdr {
+	font-family:     arial;
+	font-size:       14px;
+	font-weight:     bold;
+	text-align:      left;
+	background:      #ffffcc;
+}
+
+/*
+ * Print style options
+ */
+
+table.print {
+	font-family:     arial;
+	border: 1px solid black;
+	border-collapse:collapse;
+}
+
+td.printhdr {
+	font-family:     arial;
+        font-weight:     bold;
+	background:      #eeeeee;
+}
+
+h3.print {
+	background: #cccccc;
+}
+
+/*
+ * Search table options
+ */
+table.searchtable {
+	font-family:     arial;
+	font-size:       12px;
+	border: 1px solid black;
+	border-collapse:collapse;
+}
+
+td.searchtable {
+	font-family:     arial;
+	font-size:       12px;
+	text-align:      left;
+	background:      #eeeeff;
+}
+
+td.searchtablehdr {
+	font-family:     arial;
+	font-weight:     bold;
+	font-size:       12px;
+	text-align:      left;
+	background:      #33cccc;
+}
+
+/*
+*
+*/
+
+table.navBar{
+
+	font-family:     arial;
+	border: 1px solid black;
+	border-collapse:collapse;
+	text-align:     top;
+
+}

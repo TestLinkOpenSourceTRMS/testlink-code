@@ -1,0 +1,760 @@
+<html><head><title>htmlArea Help</title>
+<style type="text/css"><!--
+  body, td  { font-family: arial; font-size: x-small; }
+  a         { color: #0000BB; text-decoration: none; }
+  a:hover   { color: #FF0000; text-decoration: underline; }
+  .headline { font-family: arial black, arial; font-size: 28px; letter-spacing: -1px; }
+  .headline2{ font-family: verdana, arial; font-size: 12px; }
+  .subhead  { font-family: arial, arial; font-size: 18px; font-weight: bold; font-style: italic; }
+  .backtotop     { font-family: arial, arial; font-size: xx-small;  }
+  .code     { background-color: #EEEEEE; font-family: Courier New; font-size: x-small;
+              margin: 5px 0px 5px 0px; padding: 5px;
+              border: black 1px dotted;
+            }
+
+--></style>
+
+<script><!-- // load htmlArea files
+_editor_url = "";
+document.write('<scr'+'ipt src="' +_editor_url+ 'editor.js" language="JavaScript1.2"></scr'+'ipt>');
+//--></script>
+
+</head>
+<body>
+<a name="top"></a>
+
+<div align=center>
+<span class="headline">htmlArea v2.03</span><br>
+<span class="headline2">Turn any &lt;textarea&gt; into a WYSIWYG editor, a free script<br><a href="http://www.interactivetools.com/">from your friends at interactivetools.com</a></span>
+<hr>
+</div>
+
+<!-- TOC -->
+
+<p class="subhead">Introduction</p>
+
+<a href="#intro1">What is htmlArea?</a><br>
+<a href="#intro2">Is it really free? What's the catch?</a><br>
+<a href="#intro3">What are the browser requirements?</a><br>
+<a href="#intro4">Can I see an example of what it looks like?</a><br>
+<a href="#intro5">Where can I find out more info, download the latest version, and talk to other htmlArea users?</a><br>
+
+<p class="subhead">Installation / Setup</p>
+
+<a href="#setup1">How do I add htmlArea to my web page?</a><br>
+<a href="#setup2">I want to change the editor settings, how do I do that?</a><br>
+<a href="#setup3">How can I change what controls are displayed on the toolbar?</a><br>
+<a href="#setup4">How can I change what fonts are in the font list?</a><br>
+<a href="#setup5">How can I change what sizes are in the font size?</a><br>
+<a href="#setup6">How can I change what styles are in the font style (CSS) list?</a><br>
+<a href="#setup7">How can I specify an external stylesheet for my styles?</a><br>
+
+<p class="subhead">Frequently Asked Questions</p>
+
+<a href="#faq-goals">What the project goals for htmlArea?</a><br>
+<a href="#faq1">This editor is pretty neat, so how does it actually work?</a><br>
+<a href="#faq2">You don't happen to have one of these for (Netscape, Mozilla, Opera, Mac IE, etc) do you?</a><br>
+<a href="#faq3">Why doesn't htmlArea output XHTML instead of regular HTML? Can you make it do that?</a><br>
+<a href="#faq4">I'd like to be able to upload images from my hard drive, can you add that feature?</a><br>
+<a href="#faq6">I'd like to &lt;insert idea here&gt;, can you add that feature?</a><br>
+<a href="#faq7">Can I change the toolbar/button colors?</a><br>
+<a href="#faq8" style="color: red"><b>I love htmlArea,</b> is there anything I can do to help the project?</a><br>
+<a href="#faq_slow_images">Why do the toolbar buttons take so long to load when I have multiple htmlArea editors on the same page?</a><br>
+
+
+<p class="subhead">Known Bugs & Issues</p>
+
+<a href="#bugs1">Undo/Redo doesn't work</a><br>
+<a href="#bugs2">Relative paths are converted to absolute paths</a><br>
+<a href="#bugs3">HTML header info (eg: &lt;head&gt;, &lt;body&gt;, etc) doesn't get preserved</a><br>
+<a href="#bugs4">Some tags (eg: noframes, noscript, etc) doesn't get preserved</a><br>
+<a href="#bugs5">htmlArea doesn't work when multiple textareas that have the same name</a><br>
+<a href="#bugs_ssl">Why do I get "non secure items" warnings when using htmlarea on a secure (SSL) https:// page?</a><br>
+
+<p class="subhead">Change Log</p>
+
+<a href="#changelog">View Change Log</a><br>
+
+
+
+<br><br>
+
+<!-- INTRODUCTION -->
+
+<hr><p><span class="subhead">Introduction</span> <a href="#top" class="backtotop">back to top</a></p>
+<dl>
+
+<a name="intro1"></a>
+<p><dt><b>What is htmlArea?</b></dt>
+<dd>htmlArea is a free WYSIWYG (what you see is what you get) editor replacement for &lt;textarea&gt; fields.  By adding a few
+simple lines of JavaScript to your web page you can replace a regular textarea with a rich text
+editor that let your users do the following:
+<p><ul>
+<li>Format text to be bold, italicized, or underlined.</li>
+<li>Change the face, size, style and colour.</li>
+<li>Left, centre, or right-justify paragraphs. </li>
+<li>Make bulleted or numbered lists. </li>
+<li>Indent or un-indent paragraphs. </li>
+<li>Insert a horizontal line. </li>
+<li>Insert hyperlinks and images. </li>
+<li>View the raw HTML source of what they're editing. </li>
+<li>and much more... </li>
+</ul>
+
+<p>Some of the interesting features of htmlArea that set's it apart from other web based WYSIWYG editors are as follows:
+
+<p><ul>
+<li>It's lightweight, fast loading and can transform a regular textarea into a rich-text editor with a single line of JavaScript.</li>
+<li>It's 100% backwards compatible with older or non-supported browsers (they get the original textarea field).</li>
+<li>It's free and can be incorporated into any free or commercial program.</li>
+<li>It works with any programming language (ASP, PHP, Perl, Java, etc).</li>
+<li>It's written in simple JavaScript and can be easily viewed, modified or extended.</li>
+<li>It remembers entered content when a user navigates away and then hits "back" in their browser.</li>
+<li>Since it replaces existing textareas it doesn't require a lot of code to add it to your pages (just one line).</li>
+<li>Did we mention it was free? : )</li>
+</ul>
+
+
+</dd></p>
+
+<a name="intro2"></a>
+<p><dt><b>Is it really free? What's the catch?</b></dt>
+<dd>Yes! It's really free.  You can use it, modify it, distribute it with your software,
+or do just about anything you like with it. 
+</dd></p>
+
+
+<a name="intro3"></a>
+<p><dt><b>What are the browser requirements?</b></dt>
+<dd>htmlArea requires Internet Explorer 5.5 or better on Windows to run.  This is because it
+makes use of some advanced features of IE5.5 that aren't available in other browsers yet.
+It <i>is</i> backwards compatible with other browsers, though.  They will get a regular textarea
+field instead of a WYSIWYG editor.</dd></p>
+
+
+<a name="intro4"></a>
+<p><dt><b>Can I see an example of what it looks like?</b></dt>
+<dd>Sure, make sure you're using IE5.5 or better on windows and see below.
+
+<p>Here is a regular &lt;textarea&gt; field.<br>
+<textarea name="textbox1" style="height: 110px; width: 700px;">
+Here is some sample text in a regular &lt;textarea&gt;.
+There's not much you can do besides, well, enter plain text...
+</textarea>
+
+<p>And here is a &lt;textarea&gt; transformed with htmlArea (with a single line of JavaScript code).</p>
+<textarea name="textbox2" style="height: 110px; width: 700px;">
+Here is some sample text in textarea thats been transformed with <font color="#0000CC"><b>htmlArea</b></font>.<br>
+You can make things <b>bold</b>, <i>italic</i>, <u>underline</u>.  You can change the
+<font size=3>size</font> and <b><font color="#0000CC">c</font><font color="#00CC00">o</font><font color="#00CCCC">l</font><font color="#CC0000">o</font><font color="#CC00CC">r</font><font color="#CCCC00">s</font><font color="#CCCCCC">!</font></b>
+And lots more...
+
+<P align=center><FONT size=4 color=#ff0000><b><U>Try htmlArea today!</U></b></FONT><BR>
+</textarea>
+  
+<script language="JavaScript1.2" defer>
+editor_generate('textbox2');
+</script>
+
+</dd></p>
+
+<a name="intro5"></a>
+<p><dt><b>Where can I find out more info, download the latest version, and talk to other htmlArea users?</b></dt>
+<dd>You can find out more about htmlArea and download the latest version on the
+<a href="http://www.interactivetools.com/products/htmlarea/">htmlArea homepage</a>
+and you can talk to other htmlArea users and post any comments or suggestions you have in the
+<a href="http://www.interactivetools.com/forum/forum.cgi?forum=18">htmlArea forum</a>.
+
+</dl>
+
+<!-- INSTALLATION / SETUP -->
+
+<hr><p><span class="subhead">Installation / Setup</span> <a href="#top" class="backtotop">back to top</a></p>
+<dl>
+
+<a name="setup1"></a>
+<p><dt><b>How do I add htmlArea to my web page?</b></dt>
+<dd>It's easy, first you need to upload the htmlArea files to your website.  Just follow these steps:
+
+<p><ol>
+<li>Download the latest version from the <a href="http://www.interactivetools.com/products/htmlarea/">htmlArea homepage</a>.</li>
+<li>Unzip the files onto your local computer (making sure to maintain the directory structure contained in the zip).</li>
+<li>Create a new folder on your website called /htmlarea/ (make sure it's NOT inside the cgi-bin).</li>
+<li>Transfer all the htmlArea files from your local computer into the /htmlarea/ folder on your website.</li>
+<li>Open the example page /htmlarea/example.html with your browser to make sure everything works.</li>
+</ol></p>
+
+Once htmlArea is on your website all you need to do is add some JavaScript to any pages that you want to
+add WYSIWYG editors to.  Here's how to do that.
+
+<p><ol>
+<li>Open the page you want to add a WYSIWYG editor to.  Add the following to the top of 
+the page in the &lt;head&gt;&lt;/head&gt; of the HTML document.
+<div class="code">
+&lt;script language="Javascript1.2"&gt;&lt;!-- // load htmlarea<br>
+_editor_url = ""; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; // URL to htmlarea files<br>
+var win_ie_ver = parseFloat(navigator.appVersion.split("MSIE")[1]);<br>
+if (navigator.userAgent.indexOf('Mac') &nbsp; &nbsp; &nbsp; &nbsp;&gt;= 0) { win_ie_ver = 0; }<br>
+if (navigator.userAgent.indexOf('Windows CE') &gt;= 0) { win_ie_ver = 0; }<br>
+if (navigator.userAgent.indexOf('Opera') &nbsp; &nbsp; &nbsp;&gt;= 0) { win_ie_ver = 0; }<br>
+if (win_ie_ver &gt;= 5.5) {<br>
+ &nbsp;document.write('&lt;scr' + 'ipt src="' +_editor_url+ 'editor.js"');<br>
+ &nbsp;document.write(' language="Javascript1.2"&gt;&lt;/scr' + 'ipt&gt;'); &nbsp;<br>
+} else { document.write('&lt;scr'+'ipt&gt;function editor_generate() { return false; }&lt;/scr'+'ipt&gt;'); }<br>
+// --&gt;&lt;/script&gt;
+</div>
+If you've installed htmlArea anywhere other than /htmlarea/ then <b>be sure to change _editor_url</b> to point to
+your htmlarea directory (ending with a forward slash "/").</li>
+
+<p><li>For each &lt;textarea&gt; that you want to change, add the following code to the page.
+<div class="code">
+&lt;script language="JavaScript1.2" defer&gt;<br>
+editor_generate('<i>fieldname</i>');<br>
+&lt;/script&gt;<br>
+</div>
+Be sure to change "<b><i>fieldname</i></b>" to be the name (not id) of the textarea you want to change.</li>
+
+<p><li>And you're done, open your page in your browser and see if it worked.  If you run into
+any problems, keep trying and feel free to visit the 
+<a href="http://www.interactivetools.com/forum/forum.cgi?forum=18">htmlArea forum</a>.</li>
+</ol></p>
+
+<a name="setup2"></a>
+<p><dt><b>I want to change the editor settings, how do I do that?</b></dt>
+<dd>While it's true that all you need is one line of JavaScript to create an htmlArea WYSIWYG editor
+you can also specify more config settings in the code to control how the editor works and looks.  Here's an
+example of some of the available settings:
+<div class="code">
+&lt;script language="JavaScript1.2" defer&gt;<br>
+var config = new Object();    // create new config object<br><br>
+
+config.width = "90%";<br>
+config.height = "200px";<br>
+config.bodyStyle = 'background-color: white; font-family: "Verdana"; font-size: x-small;';<br>
+config.debug = 0;<br><br>
+
+// Add additional editor config settings here...<br><br>
+
+editor_generate('<i>fieldname</i>',config);<br>
+&lt;/script&gt;<br>
+</div>
+See below for even more configuration options that can be added.  All of these settings will use
+default values in editor.js if you don't specify them yourself.  
+<p><table border=1 cellspacing=0 cellpadding=2 width=600>
+ <tr><td><b>Width</b></td><td>specifies the width of the editor (in pixels or as a percentage).</td></tr>
+ <tr><td><b>Height</b></td><td>specifies the height of the editor (in pixels or as a percentage).</td></tr>
+ <tr><td><b>bodyStyle</b></td><td>specifies CSS style of the editor window including color, default font face, and size.  Note, the default font information isn't saved, it just controls how text is displayed if no other font formatting has been applied.</td></tr>
+ <tr><td><b>debug</b></td><td>if set to 1, displays a debug field with the actual contents of the editor (in raw html) which is updated as your type.</td></tr>
+</table>
+</dd></p>
+
+<a name="setup3"></a>
+<p><dt><b>How can I change what controls are displayed on the toolbar?</b></dt>
+<dd>You can add a config.toolbar config setting to control exactly what's shown on the toolbar.
+Here's an example.
+<div class="code">
+config.toolbar = [<br>
+ &nbsp; ['fontname'],<br>
+ &nbsp; ['fontsize'],<br>
+ &nbsp; ['fontstyle'],<br>
+ &nbsp; ['linebreak'],<br>
+ &nbsp; ['bold','italic','underline','separator'],<br>
+ &nbsp; ['strikethrough','subscript','superscript','separator'],<br>
+ &nbsp; ['justifyleft','justifycenter','justifyright','separator'],<br>
+ &nbsp; ['OrderedList','UnOrderedList','Outdent','Indent','separator'],<br>
+ &nbsp; ['forecolor','backcolor','separator'],<br>
+//['custom1','custom2','custom3','separator'],<br>
+ &nbsp; ['HorizontalRule','Createlink','InsertImage','htmlmode','separator'],<br>
+ &nbsp; ['about','help']<br>
+];
+</div>
+The square brackets control how the buttons are "grouped" together. You can either erase
+or comment out (by adding // to the beginning of the line) buttons or button groups you don't
+want displayed. Most of the buttons do pretty much just what you'd expect, but here's a few
+odd ones for reference.
+<p><table border=1 cellspacing=0 cellpadding=2 width=600>
+ <tr><td><b>linebreak</b></td><td>adds a linebreak to the toolbar, all buttons after this are on the next line.</td></tr>
+ <tr><td><b>separator</b></td><td>adds a vertical separator between buttons, helps to visually group buttons together</td></tr>
+ <tr><td><b>custom<i>N</i></b></td><td>these are custom buttons that can be defined by JavaScript programmers who want to extend htmlArea.</td></tr>
+</table>
+</dd></p>
+
+<a name="setup4"></a>
+<p><dt><b>How can I change what fonts are in the font list?</b></dt>
+<dd>There is a config.fontnames setting that lets you control this.  See below.
+<div class="code">
+config.fontnames = {<br>
+ &nbsp; "Arial": &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "arial, helvetica, sans-serif",<br>
+ &nbsp; "Courier New": &nbsp; &nbsp; "courier new, courier, mono",<br>
+ &nbsp; "Georgia": &nbsp; &nbsp; &nbsp; &nbsp; "Georgia, Times New Roman, Times, Serif",<br>
+ &nbsp; "Tahoma": &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;"Tahoma, Arial, Helvetica, sans-serif",<br>
+ &nbsp; "Times New Roman": "times new roman, times, serif",<br>
+ &nbsp; "Verdana": &nbsp; &nbsp; &nbsp; &nbsp; "Verdana, Arial, Helvetica, sans-serif",<br>
+ &nbsp; "impact": &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;"impact",<br>
+ &nbsp; "WingDings": &nbsp; &nbsp; &nbsp; "WingDings"<br>
+};<br>
+</div>
+The name on the left is what is displayed to the user.  The list of fonts on the right is what is
+actually put into the font tag in the code.</dd></p>
+
+<a name="setup5"></a>
+<p><dt><b>How can I change what sizes are in the font size?</b></dt>
+<dd>There is a config.fontsizes setting that lets you control this.  See below.
+<div class="code">
+config.fontsizes = {<br>
+ &nbsp; "1 (8 pt)": &nbsp;"1",<br>
+ &nbsp; "2 (10 pt)": "2",<br>
+ &nbsp; "3 (12 pt)": "3",<br>
+ &nbsp; "4 (14 pt)": "4",<br>
+ &nbsp; "5 (18 pt)": "5",<br>
+ &nbsp; "6 (24 pt)": "6",<br>
+ &nbsp; "7 (36 pt)": "7"<br>
+  };<br>
+</div>
+The value on the right is what the user sees, the value on the left is the actual font size used.
+</dd></p>
+
+<a name="setup6"></a>
+<p><dt><b>How can I change what styles are in the font style (CSS) list?</b></dt>
+<dd>As you can probably guess, there's a config.fontstyles setting for this. Now remember, the
+styles defined here control how the text looks in the editor.  These styles ALSO have to be defined
+on any page where you display content created with the editor.  htmlArea will save the class name
+with the content but nothing else.  It's up to you to define the class style in your pages.
+<div class="code">
+  
+config.fontstyles = [{<br>
+ &nbsp; name: "headline",<br>
+ &nbsp; className: "headline",<br>
+ &nbsp; classStyle: "font-family: arial; font-size: 28px;"<br>
+ },{<br>
+ &nbsp; name: "red text",<br>
+ &nbsp; className: "saletext2",<br>
+ &nbsp; classStyle: ""<br>
+}];<br>
+</div>
+The "name" is what's displayed to users, "className" is the name of the CSS class to use, and
+classStyle defines the attributes of the style in the editor.  If you leave classStyle blank
+you have to be sure to also specify an external stylesheet with all the style information (and
+matching classNames!).  See the next question on how to do that.
+</dd></p>
+
+
+
+<a name="setup7"></a>
+<p><dt><b>How can I specify an external stylesheet for my styles?</b></dt>
+<dd>You can specify a stylesheet to avoid entering the class style data for each class name.
+You STILL have to specify which classNames you want to have available though, see the previous
+question for information on that.
+<div class="code">
+config.stylesheet = "/style.css";<br>
+</div>
+</dd></p>
+
+</dl>
+
+<!-- FREQUENTLY ASKED QUESTIONS -->
+
+<hr><p><span class="subhead">Frequently Asked Questions</span> <a href="#top" class="backtotop">back to top</a></p>
+<dl>
+
+<a name="faq-goals"></a>
+<p><dt><b>What are the project goals for htmlArea?</b></dt>
+<dd>When we originally started the htmlArea project we had some pretty specific
+goals in mind for how it would work and what issues were important to us.  Those
+goals still lead the direction of development today and are listed below in order
+of priority.
+
+<ol>
+<p><li><b>Compatibility</b></li>
+<dd>htmlArea has to always be backwards compatible with older and unsupported browsers.  This
+ensures that even if a user with an older and unsupported browser can't use htmlArea, they'll always be able to, at a minimum,
+enter text in a plain textarea like they would have done before.
+
+htmlArea should also be compatible with as many programming languages as possible by being
+completely DHTML and JavaScript based.
+
+</dd>
+
+<p><li><b>Ease of Use</b></li>
+<dd>htmlArea needs to be easy for developers to 
+integrate into their applications and customize, easy for programmers to extend 
+and modify, and easy for end users to "use".  That's why you only have to add a 
+single line of JavaScript for each textarea you want to convert, and why all the 
+code is stored in a single, easy to follow JavaScript file. That's why htmlArea 
+can be used with almost any programming language (ASP, PHP, Perl, Java, etc), 
+and that the toolbar is streamlined, customizable by developers, and follows the 
+conventions of common word processing programs.</dd>
+
+<p><li><b>Lightweight</b></li>
+<dd>htmlArea needs to be fast loading, allow the user to perform word processing functions at a
+reasonable speed, and not put a lot of strain on a user's browser.  To these ends we've
+managed to keep the main editor program in a single file of only 40k and we've written the editor
+in such a way that it has a minimal impact on the resources of the browser it is running in.
+In addition, where we make use of popup windows to perform additional functions we try to put as
+much code as possible in the popup window so it doesn't increase the size of the base editor.</dd>
+
+</ol>
+
+</dd></p>
+
+
+<a name="faq1"></a>
+<p><dt><b>This editor is pretty neat, so how does it actually work?</b></dt>
+<dd>htmlArea is based on the <a href="http://msdn.microsoft.com/library/en-us/dnmshtml/html/mshtmleditplatf.asp">MSHTML Editing Platform</a>
+in Internet Explorer 5.5+ on windows.  Basically, Internet Explorer includes some functionality to make sections of a 
+webpage editable by defining a "contentEditable" attribute or "designMode" property.  It also provides some built in
+<a href="http://msdn.microsoft.com/workshop/author/dhtml/reference/commandids.asp">commands</a>
+for performing common web editing operations (bold, italic, center, insert image, etc).
+
+<p>htmlArea builds on the features provided by Internet Explorer and adds its own user definable toolbar,
+an easy method to include a WYSIWYG editor in a web page (replacing textareas), an easy way to save user
+changes, as well as a number of custom web editing commands of its own.
+
+<p>How htmlArea actually works is it replaces a textarea with an (user definable) toolbar, an iframe that
+has the "contentEditable" attribute set to true, and a hidden field with the same name as your original
+textarea that gets updated automatically when you modify content in the editor.
+
+<p>The user can enter or modify text as well as use keyboard shortcuts and toolbar buttons to perform operations
+on the content.  A lot of the editor commands are built into IE and called via
+the <a href="http://msdn.microsoft.com/workshop/author/dhtml/reference/methods/execcommand.asp">execCommand</a>
+method, but htmlArea also includes other custom commands and functions written in JavaScript and stored in
+the editor.js file or the popup windows (in the /popups/ folder).
+
+
+</dd></p>
+
+<a name="faq2"></a>
+<p><dt><b>You don't happen to have one of these for (Netscape, Mozilla, Opera, Mac IE, etc) do you?</b></dt>
+<dd>No.  None of these other browsers (including IE for Mac) support "contentEditable" or a way to make
+existing content in the page editable.  It might be possible to emulate this in JavaScript, but it would
+be a lot of work.  Other problems include displaying or emulating the flashing | bar cursor you see when
+editing.  The cross-platform Mozilla browser has some bug entries related to adding contentEditable
+functionality, and perhaps in the future it may be possible to create something for that browser.
+<p>Although it's a long shot, you might want to send a friendly letter to Microsoft to encourage them to
+make the "contentEditable" functionality work on IE for the Macintosh.  Once they implement it, we can offer it.
+
+
+</dd></p>
+
+<a name="faq3"></a>
+<p><dt><b>Why doesn't htmlArea output XHTML instead of regular HTML? Can you make it do that?</b></dt>
+<dd>The HTML output by htmlArea is generated by the built in functionality of Internet Explorer.
+For that reason, there is no easy way to have it output XHTML.  If we were going to do it, the way 
+to do so would be to parse the HTML after it's output by IE and convert it to XHTML.  That's something
+we hope to do at some point.
+
+</dd></p>
+
+<a name="faq4"></a>
+<p><dt><b>I'd like to be able to upload images from my hard drive, can you add that feature?</b></dt>
+<dd>No.  We want htmlArea to be compatible with as many programming languages as possible. Because it's
+written in client side JavaScript, it should work with any programming language.  If we start adding 
+language specific features htmlArea won't be as useful to as many people.  That said, there's a lot of
+free "file upload" scripts available, and htmlArea does include a function called editor_insertHTML()\
+for inserting text or HTML tags.  If you want to write your own program for doing this it should be
+that hard.  Alternatively, you might check in the forum to see if someone already has.
+</dd></p>
+
+<a name="faq6"></a>
+<p><dt><b>I'd like to &lt;insert idea here&gt;, can you add that feature?</b></dt>
+<dd>Maybe, maybe not.  If it's a good feature and it fits in with the goals of our project we'll
+likely consider it.  The best thing to do is post your suggestions to the
+<a href="http://www.interactivetools.com/forum/forum.cgi?forum=18">forum</a>.  At the very least
+we'll try to give you some suggestions and point you in the right direction.  At best you might
+find somebody else has already implemented the feature you were hoping for.
+
+
+</dd></p>
+
+<a name="faq7"></a>
+<p><dt><b>Can I change the toolbar/button colors?</b></dt>
+<dd>Yes, just search for "buttonface" and "buttonhighlight" in editor.js and change those to whatever colors
+you like.  If you haven't heard of those colors before, it's because they're special windows colors
+that match whatever color scheme the user has selected for their desktop.  For example, if someone
+has changed their desktop color scheme to "lilac", the WYSIWYG editor toolbar and buttons will match that
+theme.  Try it, it's really neat.</dd></p>
+
+<a name="faq8"></a>
+<p><dt><b style="color: red">I love htmlArea, is there anything I can do to help the project?</b></dt>
+<dd>The number one thing you can do to help is also the easiest thing to do;  give us a link on your website.
+The more people who can find out about htmlArea the better it will be.
+
+<p>The next best thing you can do is participate in our
+<a href="http://www.interactivetools.com/forum/forum.cgi?forum=18">forum</a> and post a message or two to
+help other htmlArea users (or learn something new yourself).
+
+<p>Lastly, any code improvements you want to share would certainly be welcome as well.</dd></p>
+
+<a name="faq_slow_images"></a>
+<p><dt><b>Why do the toolbar buttons take so long to load when I have multiple htmlArea editors on the same page?</b></dt>
+<dd>This is a bug/feature of Internet Explorer.  htmlArea dynamically updates the content of your page to replace
+a textarea with the WYSIWYG editor.  In Internet Explorer, when you update the content of a page after it has loaded
+and insert an image it will load the image from the server EVEN if has the image in it's cache.  This means if you have 10
+htmlareas on the same page the "bold" toolbar button will be loaded 10 times.
+
+<p>One workaround for this is to move all your editor_generate() scripts to the bottom of the page, combine them
+into one script tag, and remove the "defer" attribute from that script tag.  This will cause them all to run just
+as the page is finishing loading and the cached images WILL be used.  Meaning, the browser will only need to load each
+image once.
+
+
+</dl>
+
+<!-- KNOWN BUGS AND ISSUES -->
+
+<hr><p><span class="subhead">Known Bugs and Issues</span> <a href="#top" class="backtotop">back to top</a></p>
+<dl>
+
+<a name="bugs1"></a>
+<p><dt><b>Undo/Redo doesn't work</b></dt>
+<dd>We update a hidden field every time you make a change in the editor so the hidden field will be 
+submitted when you submit the form.  The way undo/redo works in Internet Explorer it seems to reset
+the undo buffer every time you use JavaScript to set the value of a form element or otherwise make
+changes to the page.  Because of this the built in undo/redo functionality of the browser doesn't
+work.  We hope to implement our own undo/redo functionality at a future point.</dd></p>
+
+<a name="bugs2"></a>
+<p><dt><b>Relative paths are converted to absolute paths</b></dt>
+<dd>Internet Explorer has a tendency to convert relative paths into absolute paths.  We've seen some
+implementations of WYSIWYG editors that maintain relative paths "better" than others but certain operations
+(such as dragging and dropping, etc) still convert relative paths to absolute paths.  We hope to find a
+workaround for this in a future version.
+</dd></p>
+
+<a name="bugs3"></a>
+<p><dt><b>HTML header info (eg: &lt;head&gt;, &lt;body&gt;, etc) doesn't get preserved</b></dt>
+<dd>This is due to Internet Explorer and the way the editor works.  The editor already has a
+HTML header of its own so inserting another one confuses the browser and the content gets thrown
+away.  The best solution is to have another plain text textarea field for HTML header information.</dd></p>
+
+<a name="bugs4"></a>
+<p><dt><b>Some tags (eg: noframes, noscript, etc) doesn't get preserved</b></dt>
+<dd>This is a result of how Internet Explorer works.  It seems to discard certain tags that it
+doesn't need to display.  Because htmlArea reads the content back from the browser it cannot
+preserve content the browser has "thrown away".</dd></p>
+
+<a name="bugs5"></a>
+<p><dt><b>htmlArea doesn't work with multiple textareas that have the same name</b></dt>
+<dd>If you have two or more textareas with the same name on the same page and you try
+to convert one or more of them into a WYSIWYG editor htmlArea won't work.  This is because htmlArea
+looks up the textareas by name in the entire page, not just inside a specific form.  There's currently
+no workaround for this.  We hope to resolve it in a future release.</dd></p>
+
+<a name="bugs_ssl"></a>
+<p><dt><b>Why do I get "non secure items" warnings when using htmlarea on a secure (SSL) https:// page?</b></dt>
+<dd>This is a bug/feature of Internet Explorer.  Even if you get unsecure warnings your form contents should
+still be submitted securely.  
+
+<p>htmlArea uses an &lt;iframe&gt; to contain the editor and because the contents of the iframe isn't being
+loaded off a secure site, Internet Explorer thinks the iframe is unsecure.  The problem is, the iframe doesn't
+load anything off any site, it's blank, it doesn't even have a src attribute.  We just create an empty iframe
+and then use javascript to update it.  We hope to have this fixed in a future release.
+
+<p>Note: There's a clever workaround for this problem posted in the forum <a href="http://www.interactivetools.com/iforum/P3686/">here</a>.
+The only issue with it is that can cause the back button to not work as intended (it goes back in the iframe first).  
+
+</dl>
+
+<!-- CHANGE LOG -->
+
+<hr>
+<a name="changelog"></a>
+<p><span class="subhead">Change Log</span> <a href="#top" class="backtotop">back to top</a></p>
+<dl>
+
+<!-- ---------------------------------------------------------------------------- -->
+
+<!-- 
+<p><dt><b>Version 2.00 (beta1)</b> (Released: August 19, 2002)</dt><ul>
+<li>Initial Release</li>
+</ul></p>
+-->
+
+<!-- ---------------------------------------------------------------------------- -->
+
+
+
+<p><dt><b>Version 2.03</b> (Released: December 17, 2002)</dt>
+
+<p><ul>
+<li><b>new license</b> - switched to "BSD style" software license.  The "About this editor" button is no longer required.
+<li>readme updates - minor updates, spelling, and grammer fixes.
+ </ul>
+
+</ul></p>
+
+<!-- ---------------------------------------------------------------------------- -->
+
+
+<p><dt><b>Version 2.02a</b> (Released: December 5, 2002)</dt>
+
+<p><ul>
+<li>fixed error in readme.html example code under "How do I add htmlArea to my web page?".
+ </ul>
+
+</ul></p>
+
+<!-- ---------------------------------------------------------------------------- -->
+
+
+
+<p><dt><b>Version 2.02</b> (Released: December 5, 2002)</dt><ul>
+
+<p><dt><b>Bug Fixes</b> (Thanks to everybody in the forum for contributing and reporting bugs!)</dt>
+
+<li>fix nested script tag error (thanks to Phil Revill)
+
+<p><dt><b>New Features</b></dt>
+<li>added 'replaceNextlines' config option to replace nextlines with spaces on output
+<li>added 'plaintextInput' config option to replace nextlines with &lt;br&gt; tags on input
+ </ul>
+
+</ul></p>
+
+<!-- ---------------------------------------------------------------------------- -->
+
+
+
+<p><dt><b>Version 2.01</b> (Released: December 3, 2002)</dt><ul>
+
+<p><dt><b>Bug Fixes</b> (Thanks to everybody in the forum for contributing and reporting bugs!)</dt>
+
+<li>fixed "function not found" error for non IE5.5+ browsers (thanks to slowhand)
+<li>popup editor - fixed javascript error caused during launch of popup (thanks to slowhand and Chlorel)
+<li>popup editor - fixed toolbar 'linebreak' error (thanks to fbridge9 and RekiM)
+
+<p><dt><b>Documentation Updates</b></dt>
+<li>Add two new questions to readme.html
+  <ul>
+  <li> Why do the toolbar buttons take so long to load when I have multiple htmlArea editors on the same page?<br>
+  <li>Why do I get "non secure items" warnings when using htmlarea on a secure (SSL) https:// page?<br>
+ </ul>
+
+</p>
+
+<!-- ---------------------------------------------------------------------------- -->
+
+<p><dt><b>Version 2.00 (official release)</b> (Released: November 25, 2002)</dt><ul>
+
+<p><dt><b>New Javascript Functions</b></dt>
+<li>editor_getHTML(objname) - return HTML content of editor
+<li>editor_setHTML(objname) - set HTML content of editor
+<li>editor_appendHTML(objname) - add HTML content to editor
+
+<p><dt><b>New Features</b></dt>
+<li>Popup "fullscreen" editor now has minimize and maximize buttons (switched from ModalDialog to popup window)
+
+<p><dt><b>Bug Fixes</b> (Thanks to everybody in the forum for contributing and reporting bugs!)</dt>
+<li>"Create Table" popup now creates tables with the correct number of cols and rows (thanks to Corey)
+<li>Clicking on images no longer causes error when you have "CSS style pulldown" enabled (thanks to Virrdo)
+<li>Fixed bug that prevented external stylesheets from working properly (thanks to slowhand)
+<li>fixed javascript errors in Mozilla 1.0 (thanks to slowhand)
+<li>moved browser detection code to editor page to prevent javascript errors from older browsers and prevent the editor from being loaded unless it's needed.
+<li>submitting empty htmlarea now submits nothing "" instead of "&lt;p&gt;&amp;nbsp;&lt;/p&gt;"
+<li>Popup "fullscreen" editor no longer generates error on "&lt;&gt;" html mode change
+
+</ul></p>
+
+<!-- ---------------------------------------------------------------------------- -->
+
+<p><dt><b>Version 2.00 (beta2)</b> (Released: October 16, 2002)</dt><ul>
+
+<p><dt><b>New Docs</b></dt>
+<li>created new readme.html with install instructions, faq, and lots of information
+
+<p><dt><b>New Features</b></dt>
+<li>added support for stylesheets
+<li>get enlarge/shrink window working
+<li>get context menu working (still disabled by default, needs more code for functionality)
+<li>allow user to change ANY option in internal config from calling page
+<li>added _editor_filterOutput function that's called on form submit
+<li>added insert table button
+  
+<p><dt><b>Bug Fixes / Optimizations</b></dt>
+<li>organized associated files into directories
+<li>fixed bug that caused htmlarea to sometimes not display last entered content when user pressed back in their browser.
+<li>moved about window into a separate file to reduce size of editor
+
+</ul></p>
+<!-- ---------------------------------------------------------------------------- -->
+
+<p><dt><b>Version 2.00 (beta1)</b> (Released: August 19, 2002)</dt><ul>
+
+<p><dt><b>visual changes</b></dt>
+<li>added mouseover/mouseoff events and style for toolbar ui buttons 
+<li>update toolbar to take up less space and be smaller 
+<li>display point sizes beside HTML font sizes (eg: 7 (36px) 
+<li>change "about this editor" icon to an "i" 
+<li>created a help popup (content still needs to be written). 
+<li>added version number to about page. 
+
+<p><dt><b>code changes</b></dt>
+<li>added "defer" to script tag to prevent editor from being created until page loads 
+<li>simplified header that needs to be added to pages that contain editor 
+<li>generated script include tag using _editor_url so users don't have to enter URL twice 
+<li>moved CSS for editor toolbar buttons into editor.js 
+<li>switched to using object to pass configuration arguments to editor_generate 
+<li>general code improvements, optimizations and re-organization 
+<li>added hooks for keypress events for future use 
+
+<p><dt><b>new features</b></dt>
+<li>added pulldown for CSS style classnames 
+<li>added many many more config options including: 
+<li>ability to select which toolbar elements you want displayed 
+<li>ability to specify the order of toolbar elements 
+<li>ability to specify fonts, sizes, and CSS styles for pulldowns 
+<li>ability to set default font and style used in editor window 
+<li>debug flag that lets you see the source of the WYSIWYG field at all times 
+<li>add more sample code and comments showing how to add custom buttons 
+
+<p><dt><b>bug fixes</b></dt>
+<li>fixed error caused when height/width were manually specified (reported by jpeto, thanks!) 
+<li>"about this editor" window now works when in textedit mode 
+</ul></p>
+
+
+<!-- ---------------------------------------------------------------------------- -->
+
+<p><dt><b>Version 1.05</b> (Released: August 28, 2002)</dt><ul>
+<li>- Added support for textareas with underscores ("_") in their names.</li>
+</ul></p>
+
+<!-- ---------------------------------------------------------------------------- -->
+
+<p><dt><b>Version 1.04</b> (Released: August 27, 2002)</dt><ul>
+<li>Even more speed improvements (WYSIWYG editor is now much faster on older computers).</li>
+<li>General code improvements and optimizations.</li>
+</ul></p>
+
+<!-- ---------------------------------------------------------------------------- -->
+
+<p><dt><b>Version 1.03</b> (Released: August 26, 2002)</dt><ul>
+<li>Beta release only</li>
+</ul></p>
+
+<!-- ---------------------------------------------------------------------------- -->
+
+<p><dt><b>Version 1.02</b> (Released: August 21, 2002)</dt><ul>
+<li>added editor_insertHTML() function. Developers can now easily add buttons that insert HTML or surround selected text with HTML.</li>
+<li>removed unneeded debug code and comments to reduce editor.js file size (and load time). </li>
+</ul></p>
+
+<!-- ---------------------------------------------------------------------------- -->
+
+<p><dt><b>Version 1.01</b> (Released: August 20, 2002)</dt><ul>
+<li>optimized code to improve speed (WYSIWYG editor is now much faster)</li>
+<li>added addition event handlers to update UI on mouse events.</li>
+</ul></p>
+
+<!-- ---------------------------------------------------------------------------- -->
+
+<p><dt><b>Version 1.00</b> (Released: August 19, 2002)</dt><ul>
+<li>Initial Release</li>
+</ul></p>
+
+<!-- ---------------------------------------------------------------------------- -->
+
+</dl>
+
+<br><br><br>
+</body></html>

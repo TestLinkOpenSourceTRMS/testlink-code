@@ -1,0 +1,345 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <title>Project TestLink Meeting Minutes</title></head>
+<h1>Testlink Meeting Minutes</h1>
+<a href=#meeting7>Meeting 7 - 06/16/2003</a><br>
+<a href=#meeting6>Meeting 6 - 06/11/2003</a><br>
+<a href=#meeting5>Meeting 5 - 06/09/2003</a><br>
+<a href=#meeting4>Meeting 4 - 06/04/2003</a><br>
+<a href=#goodinfo>Meeting with GoodInfo QA - 06/03/2003</a><br>
+<a href=#meeting3>Meeting 3 - 06/02/2003</a><br>
+<a href=#meeting2>Meeting 2 - 05/30/2003</a><br>
+<a href=#meeting1>Meeting 1 - 05/29/2003</a><br>
+
+
+<h3><a name=meeting1>Meeting 1: 05/29/2003</a></h3>
+
+
+<h4>Meeting Goals:</h4> 
+<ul>
+<li>Discuss usage of TCTT for Orca team. Specifically the short term goal of getting 1.3.1 data into TCTT.
+<li>Introduce Glenda to the utility (demo)
+<li>Get feedback for keys, categorization, other questions.
+</ul>
+<h4>Attendees:</h4>
+<ul><li>Mike Belshe, Glenda Boja, David Hoffman, Chad Rosen, Darren Merritt</li></ul>
+
+<h4>Meeting Notes</h4>
+<ul>
+<li>Chad/Darren presented background of TCTT. Origin, and early development.
+<li>Mike discussed his vision of the project and potential for it's future usage.
+<li>Background given on specifics of TCTT
+    <ul><li>Tests organized by: Product, Component, Category, Test Case
+        <li>Mercury (NT Box) hosts MySQL database and web server
+    </ul>
+<pre>
+Overview of Testing Process
+
+Phase I: Test Case Management
+	Importing
+	Have database of test cases
+Phase II:  Test Plan Creation 
+	Can bring in test cases in multiple components
+Phase III:  Run Test Plan
+	Tack results
+Phase IV:  Results
+
+How do we handle environment testing?
+1.	Different test cases
+2.	Different test plans, with the same test cases.
+3.	Test plans with environment-specific settings stored in db.
+</pre>
+<li>How would GoodInfo import our existing tests into this system?  
+<li>How long does this take?
+<li>What fields does the importer look at?  
+<li>What kind of files does it take?  xls, doc, txt, html?
+<li>As things change - data must be migrated to the new format.
+<li>Backward/Forward compatibility must be maintained.
+<li>Need a backup plan.  All code is in cvs, but the data is also copied over to qanas.  Details/Backgrounds of test plans need to get into the system.  Currently this cannot be parsed automatically.  This is a manual process.
+<li>Want an easy lookup to generate test plan.  What are the ways to identify tests that may be optimized?
+<li>How do we track test results?  Can we dump a set of results on a build-by-build basis?  Can we sort by time, component?
+<li>How might external resources make use of this?
+<li>key support must be added
+<li>Production instance should be created for usage by Orca Team. Dev instance for continuing development
+<li>talk to mary about how to build keyword db structure.
+<li>be sure to import of existing test plan keys (baseline, regression, etc)
+<li>provide search on multiple keys...
+<li>Need to complete current Orca docs. Glenda's test plans not quite finished (ipgw, wdpgw)
+<li>How to handle more dynamic information...1 testcase specific to a build
+    <ul>
+    <li>individual test cases (957 vs. G100) (allows identifiable results per device)
+    <li>individual test plans (957 vs. G100). copy testcases into a "957 test plan"; copy into a "G100 test plan" (defect - is that this doesn't allow different results per device)
+    </ul>
+<li>Future Features: more dynamic test plan creation, searching, dump text to a file
+<li>New name adopted: "TestLink"
+</ul>
+
+<h4>Unplanned Actions</h4> 
+<ul>
+<li>import data from existing word documents.
+<li>Get Keyword support going
+<li>use it (Orca team) provide feedback
+<li>what is our exposure? Will Chad update the data if we need a redesign
+<li>what about 9i type tests
+</ul>
+
+<h4>Short Term Actions</h4> 
+<ul>
+<li>Schedule meetings for project M,W: 9:30am - Chad.
+<li>Try to get a workable version with keys ready for Orca 1.5 - Chad/Darren
+</ul>
+
+
+<h3><a name=meeting2>Meeting 2: 05/30/2003</a></h3>
+
+<h4>Meeting Goals</h4>
+<ul><li>Comments/Feedback from demo of Kenny to David Hoffman and Glenda Boja (05/30/03)</li></ul>
+
+<h4>Meeting Notes</h4>
+<ul>
+<li>Deletion of Test Cases, Categories, Components
+    <ul>
+        <li>How can this be handled? Should test cases be deleted permanently, or made obsolete by archiving
+        <li>How can we keep a history AND allow for removal of old test cases
+    </ul>
+</ul>
+<ul><li>Changes to Test Cases
+    <ul>
+    <li>User should be able to determine whether or not a new version of a test should be created based on changes.
+    <li>Must figure out how to keep relationship between previous results and test case if changes are made.
+    <li>Once tests are imported from Cartman to Kenny, how do you continue to bind results to that testcase.
+    <li>Proposal: Cartman TestCaseVersion1 gets imported into Kenny TestCaseVersion1; TestCaseVersion1 is executed, results are generated, notes are added. Tester determines updates are needed to TestCaseVersion1. Tester goes to Cartman TestCaseVersion1, makes modifications, creates a new version, TestCaseVersion2. Tester imports TestCaseVersion2 into Kenny. TestCaseVersion2 will now not really have any history (it is new; however it is not new really). There should be some way to bind TestCaseVersion1 to TestCaseVersion2 in Kenny such that results histories will illustrate the transition. No one said this was a well formed proposal...
+    </ul>
+</ul>
+<ul><li>GUI</li>
+    <ul>
+    <li>Carryover of un-executed test cases from one build to another. Request for showing the un-run tests only...probably not practical
+    <li>one test per frame? in right hand frame (perhaps with a Next Test button)
+    </ul>
+</ul>
+<ul><li>Metrics</li>
+    <ul>
+    <li>Change "across all builds" to "latest build"
+    <li>Add a link from test category and test case to the actual test category and case.
+    <li>Export results to excel and offer graphing capabilities.
+    <li>Add colors to p, f, etc
+    <li>If a test case is updated and not bound to a previous version, you'll lose the distinct history of results that may be useful...
+    </ul>
+</ul>
+
+<ul><li>Keywords</li>
+    <ul>
+    <li>needed for test categorization
+    <li>Design db storage for keys.
+    <li>Request made for keywords applicable to a product level. Possibly filtered by access rights. Applied at different levels (categories, etc)
+    </ul>
+</ul>
+
+<ul><li>Automated Test Results</li>
+    <ul>
+    <li>What is required to get these into Kenny?
+    <li>Should they be kept in a separate area from the manually executed tests? They certainly don't need steps, etc.
+    <li>They need an area to enter notes, and bug data for failed cases.
+    </ul>
+</ul>
+
+<ul><li>Views</li>
+    <ul>
+    <li>Only users of "products" can get access to certain areas
+    <li>Need a way to get them Views that are limited in what they get access to. 
+    <li>Similar to "Access Rights" in the Orca Admin Console.
+    </ul>
+</ul>
+
+<h3><a name=meeting3>Meeting 3: 06/02/2003</a></h3>
+
+<h4>Meeting Goals</h4>
+<ul><li>Standard meeting</li></ul>
+
+<h4>Meeting Notes</h4>
+<ul>
+<li>Visual map of codebase is being developed by Chad
+<li>Work on import of baseline only test cases just in case keys not available. Will this get us into trouble for later imports? 
+<li>Discussion of Classification: ABC classification scheme seems to require too much maintenance. Mike favors a more static classification approach, where test priority is set once and then not frequently changed.
+<li>Glenda to complete WDPGW test plan for import this week. IPGW test plan may not be ready this week.
+<li>GoodInfo FC scheduled for August
+<li>Feature Request: Need "Canned" links that give specific results similar to pre-scripted bugzilla queries. We'll need this to attach to results emails so users can get a "one-click" view of results.
+
+</ul>
+
+<h4>Action Items</h4>
+<ul>
+<li><b>Chad/Darren: </b>Target end of week (6/6) for completion of Keyword work
+<li><b>Darren/Chad: </b>Need to cut and paste data from documents into Test Plan portion of TestLink since there are no keys. TestLink only supports auto import of test category, test case, steps, keys, and expected results.
+<li><b>Darren: </b>Schedule time with GoodInfo team tomorrow. Discuss: GoodInfo test milestones; Automated Tests, Document structure, ability to leverage TestLink import and tracking.
+<li><b>Chad: </b>Change instances of "Kenny" to "TestLink"
+<li><b>Darren: </b>Need migration plan and schedule for moving from current test case docs to TestLink for 1.5 timeframe
+</ul>
+<h3><a name=goodinfo>Meeting with GoodInfo QA: 06/03/2003</a></h3>
+
+<h4>Meeting Goals</h4>
+<ul><li>Information Exchange and TestLink Demo</li></ul>
+
+<h4>Meeting Notes</h4>
+<ul>
+<li>Attendees: Erik Spencer, Mikhail Granovskiy, Darren Merritt
+
+<li>Initial meeting to discuss GoodInfo team usage of TestLink.
+    <ul>
+    <li>Discussed TestLink background
+    <li>Demonstration of TestLink functionality
+    <li>Discussed keyword functionality: Usage for outsourcing sort criteria in addition to categorization.
+    <li>Discussed Metrics currently used and need for future types
+    <li>Discussed GoodInfo automated tests
+    <li>Discussed GoodInfo current test document structure
+    </ul>
+<li>Comments/Feedback:
+    <ul>
+    <li>Metrics: Would like to see a way to track test status for a product against current bugs. For example, during a test cycle, when testing is 50% complete, there would be a way to see what bugs have been attributed to that testing so far. In addition, bug trends across builds could be linked to test cases.
+    <li>Metrics: Estimates on duration of a test case (initial number entered by a tester) vs. actual duration of test case completion. This will allow visibility into how long future tests will take...and how accurate QA is at setting targets for future test completion.
+    <li>Feature Request: Add a link to bugzilla from results window. For example, user fills in notes and enters a status of failed. There could be a window that pops up asking if you want to enter a bug now?, and if so, then it pops up bugzilla in a new window. Alternatively, it could just pop up a new window with "enter new bug" in bugzilla with the project/component data already "seeded". Or it could be as simple as a link to the enter new bug page...
+    <li>Keys: Ability to add keys "retroactively" to a testcase or group of testcases. For example: a user realizes during testing that several tests need to be included that are not. The keys could be added and the testcases made available for that cycle as part of that keyword "category"
+    <li>GoodInfo automation tests are separate from the Word document based tests. Results from automation are generated by comparison to "baseline" output that is periodically updated when baseline (expected result) changes. Results could be imported directly into results section of TestLink.
+    </ul>
+</ul>
+<h4>Action Items</h4>
+<ul>
+<li><b>Darren:</b> Schedule Meeting to discuss metrics ideas/preferences. Orca QA, GoodInfo QA, TestLink Team
+<li><b>Darren:</b> Add applicable comments/feedback to bugzilla under project TestLink
+<li><b>Darren:</b> Work with GoodInfo QA team to investigate automated tests/results in detail.
+<li><b>Darren:</b> Work with GoodInfo QA team to determine best solution for Word document data extraction. No styles currently available in docs.
+</ul>
+
+<h3><a name=meeting4>Meeting 4: 06/04/2003</a></h3>
+
+
+<h4>Meeting Goals:</h4> 
+<ul>
+<li>Discuss Project Outline (Plan) for initial testing/usage of TestLink
+</ul>
+<h4>Attendees:</h4>
+<ul><li>Glenda Boja, David Hoffman, Chad Rosen, Darren Merritt</li></ul>
+
+<h4>Meeting Notes</h4>
+<ul>
+<li>A request has been made by Mike to drop the management data for the initial usage of TestLink. This means only data that can be extracted via the automated Visual Basic scripts will be imported. Need to focus on getting results into the system for 1.5. Focus on blocking bugs.
+<li>A "Smoke Test" needs to be created and testing completed prior to usage by the Orca team. This could impact the schedule since it was expected that the Orca team would write bugs on TestLink during 1.5 testing. That is true, but Orca Team has pushed back that some testing needs to be done. Action Item below.
+<li>Keywords for the management side has been prototyped. Chad is working to complete this by Friday. Currently the understood workload is:
+    <ul>
+    <li>import keywords from CSV generated by VB from Word docs
+    <li>import into "test plan" by keyword
+    <li>sort "test plan" by keyword
+    </ul>
+<li>GoodInfo team will work with Darren/Chad to get the initial data extracted from their test plans.
+<li>System Limitations need to be clear to users of initial release. Action Item below
+<li>Initial understanding by Chad of Orca 1.5 data import was as follows:
+    <ol>
+    <li>Import all data from word documents via CSV import tool
+    <li>Allow Orca team to run through 1.5 tests and enter results
+    <li>If Orca team needs to create new tests, have them update word docs
+    <li>File bugs on TestLink while using it for 1.5
+    <li>Re-import all tests from the "updated" Word documents.
+    </ol>
+Unfortunately this approach will mean that all Orca 1.5 data would be "lost" unless saved off prior to the "Re-import" step. This is because re-importing is not supported. If performed without first purging the db, we'll end up with duplicate identical tests. This is a problem. I do not feel that re-import is a good idea. I would rather manually enter new tests into the system vs. into Word docs, and keep the results from Orca 1.5 testing intact. (Solution TBD)
+<li>Chad feels that the test management side is "weak" currently
+<li>New Names: Test Management Side = "TestMan"; Test Result Side = "Trackster"; entire project = "TestLink"
+<li>Feature Request: Streamline Import mechanisms. Might be "throw away" work.
+<li>Should draw up some use cases for keyword usage
+<li>Original "Project Outline" needs to incorporate pre-Alpha Smoke Testing, and impact of missing TestMan support.
+
+<h4>Action Items</h4>
+<ul>
+<li><b>Darren:</b>Draw up Release Notes for TestLink. Include features, limitations, bug fixes, etc
+<li><b>Darren:</b>Create a TestLink webpage as the source for all info
+<li><b>Darren:</b>Create TestLink Smoke Test and execute.
+<li><b>Darren/Chad/Mike:</b>Determine solution for 1.5 Orca Data (see notes above)
+</ul>
+</ul>
+
+<h3><a name=meeting5>Meeting 5: 06/09/2003</a></h3>
+
+
+<h4>Meeting Goals:</h4> 
+<ul>
+<li>Scheduled Meeting
+</ul>
+<h4>Attendees:</h4>
+<ul><li>Mike Belshe, David Hoffman, Chad Rosen, Darren Merritt</li></ul>
+
+<h4>Meeting Notes</h4>
+<ul>
+<li>TestLink Alpha is in progress for the next 2 weeks or so with orca 
+<li>Need to solidify the project plan (exact bug list and schedule).  Do this on weds 
+<li>Solicit feedback from the other QA teams (goodinfo, client, etc) 
+<li>Plan for review meeting with mgmt (mbelshe to schedule for next week) 
+<li>Get buy-in from the QA leads. 
+<li>Move scheduled meeting to Wednesday only
+<li>Feature Request: Allow recategorization, deletes, moving, etc of test cases
+<li>GoodInfo Team: Manual tests are the focus for importing in the short term
+</ul>
+
+<h3><a name=meeting6>Meeting 6: 06/11/2003</a></h3>
+
+
+<h4>Meeting Goals:</h4> 
+<ul>
+<li>Scheduled Weekly Meeting
+</ul>
+<h4>Attendees:</h4>
+<ul><li>Mike Belshe, Erik Spencer, Chad Rosen, Darren Merritt</li></ul>
+
+<h4>Meeting Notes</h4>
+<ul>
+<li>Discussed Glenda's feedback (bugs to be written as needed)
+<li>Darren to look at missing test cases 
+<li>Chad to fix the html import problems with <> 
+<li>The data formatting and mixed data problems are intrinsic problems that need more work.  The import utility won't be perfect.  Need to figure out how far we can get. 
+<li>Question: can we move forward with the mixed imported/word document for now and test the next set of functionality? 
+<li>Bug triage: Will create a new bugilla category for documentation (lots of doc bugs) 
+<li>10 alpha bugs 
+<li>did bug triage on alpha and beta bugs.  
+<li>Mbelshe to generate schedule
+<li>Complete the "Getting started guide to TestLink".  Add a page about terminology to the guide
+<li>Make documentation component in bugzilla (done)
+<li>File bug on changing A,B,C prioritization to keywords. Big issue that needs client and server team review
+<li>File bug on "how do we delete test cases, categories, components"
+<li>Darren to review GoodInfo test plans and see how their tests fit into our tables
+<li>Investigate new icons for J Tree stuff.
+</ul>
+ 
+<h3><a name=meeting7>Meeting 7: 06/16/2003</a></h3>
+
+
+<h4>Meeting Goals:</h4> 
+<ul>
+<li>Scheduled Weekly Meeting
+</ul>
+<h4>Attendees:</h4>
+<ul><li>Mike Belshe, Erik Spencer, Chad Rosen, Darren Merritt, Glenda Boja</li></ul>
+
+<h4>Meeting Notes</h4>
+<ul>
+<li>chad on vacation: 07-03 through 07-11 (schedule should reflect) 
+<li>free text searching added
+<li>schedules up to date except Chad's vacation
+<li>re-import of test plans. creates duplicates currently. no solution at this point. suggestions:
+<ul><li>moving (staging) area. for re-import?
+    <li>solve with delete functionality? What level? Test Case? leverage this to solve the import problem with dupes.
+    <li>could import be "smarter"? to check for same data as existing test?
+    <li>several technical issues with deleting on the TestMan side...possibly solve via Chad's "inactive" issue...
+    <li>Deletes are on the alpha schedule
+</ul>
+<li>Imports for Glenda's IPGW: blow away TestMan side. Since it' hasn't been
+  linked into Trackster yet.
+
+<li>Presentation
+<ul><li>what is testlink
+    <li>results tracking, db storage, screen shots (3 to 4 slides)
+    <li>alpha/beta plans, resources
+    <li>demo...(chad/darren)
+    <li>disadvantages (rewrite test plans - required)
+    <li>add Kaiann to meeting
+    <li>send project plan to mike
+</ul>
+</ul>

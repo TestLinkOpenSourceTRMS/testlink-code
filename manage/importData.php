@@ -112,7 +112,7 @@ function displayHeader()
 
 			if($keySize > 0)
 			{
-				echo "<select name='keywords' size='" . $keySize . "'>";
+				echo "<select name='keywords' size='5'>";
 				echo "<OPTION VALUE='ALL' SELECTED>All</OPTION>";
 
 			while ($keys = mysql_fetch_row($resultKeys))
@@ -242,8 +242,6 @@ function dispTestCases($idCAT)
 		//Displays the test case name and a checkbox next to it
 
 		$sqlCheck = "select mgttcid from project,component,category,testcase where mgttcid=" . $idTC . " and project.id=component.projid and component.id=category.compid and category.id=testcase.catid and project.id=" . $_SESSION['project'];
-
-
 
 		$checkResult = @mysql_query($sqlCheck);
 		$checkRow = mysql_num_rows($checkResult);

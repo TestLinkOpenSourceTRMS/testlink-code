@@ -172,7 +172,7 @@ function displayTC($id, $tcCounter)
 			
 			}else
 			{
-				$status = "old";
+				$status = "updated";
 				
 			}
 			

@@ -95,13 +95,18 @@ while ($i < count($newArray)) //Loop for the entire size of the array
 	$tcNotes = $newArray[$i + 1];//$newArray[$i + 1]; //The second value is the notes
 	$tcStatus = $newArray[$i + 2]; //The 3rd value is the status
 
-	$i = $i + 3;
-			
+	if($bugzillaOn == true)
+	{
+		$bugs = $newArray[$i + 3]; //The 4th value is the CSV of bugs
+		$i = $i + 4; //Increment 3 values to the next tcID
+	}else
+	{
+		$i = $i + 3;
+	}
+		
 	//SQL statement to look for the same record (tcid, build = tcid, build)
 
-//	$sql = "select tcid, buildId, notes, result, title, mgttcid, platformList from platformResults,testcase where tcid='" . $tcId . "' and buildId='" . $build . "' and platformResults.tcid=testcase.id and platformList='" . $platformCSV . "'";
-
-	$sql = "select tcid, buildId, notes, result, platformList from platformResults where tcid='" . $tcId . "' and buildId='" . $build . "' and platformList='" . $platformCSV . "'";
+	$sql = "select tcid, buildId, notes, result, platformList from platformresults where tcid='" . $tcId . "' and buildId='" . $build . "' and platformList='" . $platformCSV . "'";
 	
 	$result			= mysql_query($sql); //Run the query
 	$num			= mysql_num_rows($result); //How many results
@@ -126,7 +131,7 @@ while ($i < count($newArray)) //Loop for the entire size of the array
 			
 		if($queryNotes == $tcNotes && $queryStatus == $tcStatus)
 		{
-			//updateBugs($tcId, $build, $tcBugs);
+			updateBugs($tcId, $build, $platformCSV, $bugs);
 
 			//Don't display anything if there are no changes
 	
@@ -136,7 +141,7 @@ while ($i < count($newArray)) //Loop for the entire size of the array
 			//I think that from now on it may just be easier to delete the result row in the db if the status is
 			//not run
 
-			$sql = "delete from platformResults where tcid=" . $tcId . " and buildId=" . $build . " and platformList='" . $platformCSV . "'";
+			$sql = "delete from platformresults where tcid=" . $tcId . " and buildId=" . $build . " and platformList='" . $platformCSV . "'";
 			
 			$result = mysql_query($sql);
 		}
@@ -144,9 +149,11 @@ while ($i < count($newArray)) //Loop for the entire size of the array
 		{
 			//update the old result
 	
-			$sql = "UPDATE platformResults set runBy ='" . $_SESSION['user'] . "', result ='" .  $tcStatus . "', notes='" . $tcNotes . "' where tcid='" . $tcId . "' and buildId='" . $build . "' and platformList='" . $platformCSV . "'";
+			$sql = "UPDATE platformresults set runBy ='" . $_SESSION['user'] . "', result ='" .  $tcStatus . "', notes='" . $tcNotes . "' where tcid='" . $tcId . "' and buildId='" . $build . "' and platformList='" . $platformCSV . "'";
 			
 			$result = mysql_query($sql); //Execute query
+
+			updateBugs($tcId, $build, $platformCSV, $bugs);
 		}
 		
 	//If the (notes, status) information is different.. then update the record
@@ -157,14 +164,16 @@ while ($i < count($newArray)) //Loop for the entire size of the array
 		
 		if($tcStatus != "n") //Else enter a new row
 		{
-			$sqlInsert = "insert into platformResults (buildId,dateRun,result,tcId,notes,runBy,platformList) values (" . $build . ",'" . $date . "','" . $tcStatus . "'," . $tcId . ",'" . $tcNotes . "','" . $_SESSION['user'] . "','" . $platformCSV  . "')";
+			$sqlInsert = "insert into platformresults (buildId,dateRun,result,tcId,notes,runBy,platformList) values (" . $build . ",'" . $date . "','" . $tcStatus . "'," . $tcId . ",'" . $tcNotes . "','" . $_SESSION['user'] . "','" . $platformCSV  . "')";
 
 			$result = mysql_query($sqlInsert);
+
+			updateBugs($tcId, $build, $platformCSV, $bugs);
 
 		}
 	}
 
-	displayResult($tcId, $build, $tcStatus, $tcNotes, $tcTitle,$mgttcid,$platformCSV);
+	displayResult($tcId, $build, $tcStatus, $tcNotes, $tcTitle,$mgttcid,$platformCSV, $bugs);
 		
 }//end while
 
@@ -201,9 +210,9 @@ function displayResult($tcId, $build, $tcStatus, $tcNotes, $tcTitle, $mgttcid,$p
 			<td align="center"><? echo $mgttcid ?></td>
 			<td><? echo $tcTitle ?></td>
 			<td align="center">
-				<a href='platform/executionData.php?edit=testcase&data=<? echo $tcId ?>&build=<? echo $build[0] ?>'>
+				<!--<a href='platform/executionData.php?edit=testcase&data=<? echo $tcId ?>&build=<? echo $build[0] ?>'>-->
 					<? echo $build ?>
-				</a>
+				<!--</a>-->
 			</td>
 			<td align="center">
 				<?
@@ -246,6 +255,22 @@ function displayResult($tcId, $build, $tcStatus, $tcNotes, $tcTitle, $mgttcid,$p
 		</tr>
 	<?
 	}
+}
+
+function updateBugs($tcID, $build, $platformCSV, $bugs)
+{
+	$sqlDelete = "DELETE from platformbugs where tcid=" . $tcID . " and buildid=" . $build . " and platformlist='" . $platformCSV . "'";
+
+	$result = mysql_query($sqlDelete); //Execute query
+
+	//Grabbing the bug info from the results table
+	
+	if($bugs != "")
+	{
+		$sqlBugs = "insert into platformbugs (tcid,buildid,buglist,platformlist) values ('" . $tcID . "','" . $build . "','" . $bugs . "','" . $platformCSV . "')";
+	}
+	
+	$result = mysql_query($sqlBugs); //Execute query
 }
 
 ?>

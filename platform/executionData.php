@@ -360,27 +360,6 @@ function displayTestCase($resultTC)
 		
 }//end function displayTestCase
 
-//This function takes a test case id and displays all of the test cases bugs
-
-function displayBugs($tcid)
-{
-	//Create a textarea field to hold the bugs
-
-	echo "<br><input type=text name='bugs" . $tcid . "' size=30 value='";
-
-	//sql code to grab the appropriate bugs for the test case and build
-						
-	$sqlBugs = "select bug from bugs where tcid='" . $tcid . "' and build='" . $_GET['build'] . "'";
-														
-	$resultBugs = mysql_query($sqlBugs); //Execute the query
-
-	while ($myrowBugs = mysql_fetch_row($resultBugs)) //For each bug that is found
-	{
-		echo $myrowBugs[0] . ","; //Display the bug and a comma after it
-	}
-													
-	echo "'>"; //End the text area and show example
-}
 
 //This function checks the version of the current test case vs. the version of the management test case
 //If the test case has been updated set the flag variable to true. If it has been deleted on the management side
@@ -651,6 +630,13 @@ function results($tcid)
 		echo " <input type='radio' name='status" . $tcid . "' value='b'>Blocked";
 	}//end else
 
+	if($bugzillaOn == true)
+	{
+		echo "<br><br><b>Bugs (comma seperated):</b>";
+
+		displayBugs($tcid,$platformCSV);
+	}
+
 	echo "</td></tr>";
 
 	?>
@@ -693,5 +679,25 @@ function radioResult($tcid,$result)
 	}
 						
 }//end function radioDisplay
+
+function displayBugs($tcid,$platformList)
+{
+	global $build;
+
+	//Create a textarea field to hold the bugs
+
+	echo "<br><input type=text name='bugs" . $tcid . "' size='45' value='";
+
+	//sql code to grab the appropriate bugs for the test case and build
+						
+	$sqlBugs = "select buglist from platformbugs where tcid='" . $tcid . "' and buildid='" . $build. "' and platformlist='" . $platformList . "'";
+														
+	$resultBugs = mysql_query($sqlBugs); //Execute the query
+
+	$myrowBugs = mysql_fetch_row($resultBugs); //For each bug that is found
+	echo $myrowBugs[0]; //Display the bug and a comma after it
+													
+	echo "'>"; //End the text area and show example
+}
 
 ?>

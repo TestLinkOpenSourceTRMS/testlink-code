@@ -56,3 +56,5 @@ function has_rights($roleQuestion)
 
 	return $permission;
 }
+
+?>

@@ -44,9 +44,56 @@ $edit = $_GET['edit'];
 //the level's id (ex: testcase id 144677)
 $data = $_GET['data'];
 
+//The list of platform arrays
+$platformArray;
+
 if($build && $edit != 'info')
 {
-	executionHeaderWithBuild($build);
+	$arrayKeys = array_keys($_GET);
+
+	$i = 0; //start a counter
+	$platformCounter = 0;
+
+	//It is necessary to turn the $_GET map into an array
+
+	foreach ($_GET as $key)
+	{	
+		if(($i > 2) && ($key != 'submit')) 
+		{
+			if($key != "-")
+			{
+				$platformArray[] = $key;
+			}
+		}
+		$i++;
+	}
+
+	if(count($platformArray) > 0)
+	{
+		sort($platformArray);
+		reset($platformArray);
+
+		executionHeaderWithBuild($build);
+
+		if($edit == 'testcase')
+		{
+			displayTestCaseSection();
+		}
+		elseif($edit == 'category')
+		{
+			displayCategorySection();
+		}
+		else if($edit == 'component')
+		{
+			displayComponentSection();
+		}
+	}
+	else
+	{
+		executionHeaderWithoutBuild();
+
+		echo "<center><font color='red'>You must pick at least one platform from the list</font>";
+	}
 
 }
 else if(!$build && $edit != 'info')
@@ -54,6 +101,7 @@ else if(!$build && $edit != 'info')
 	executionHeaderWithoutBuild();
 	//no build yet
 }
+
 
 if($edit == 'info') //Displayed the first time the user enters the page or if they click the info button
 {
@@ -94,20 +142,21 @@ if($edit == 'info') //Displayed the first time the user enters the page or if th
 		<?
 }
 
-if($edit == 'component' && $build) //if the user has selected to view by component
+function displayComponentSection()
 {
+	global $data;
 
 	//Start the display of the components
 		
 	//Here I create a query that will grab every component depending on the project the user picked
 		
-	$comResult = mysql_query("select component.id, component.name from component,project where project.id = " . $_SESSION['project'] . " and component.projId = project.id and component.id='" . $data . "' order by component.name",$db);
+	$comResult = mysql_query("select component.id, component.name from component,project where project.id = " . $_SESSION['project'] . " and component.projId = project.id and component.id='" . $data . "' order by component.name");
 		
 	while ($myrowCOM = mysql_fetch_row($comResult)) { //display all the components until we run out
 
 		//Display the each component in a table
 
-		$catResult = mysql_query("select category.id, category.name from component,category where component.id = " . $myrowCOM[0] . " and component.id = category.compid order by CATorder",$db);	
+		$catResult = mysql_query("select category.id, category.name from component,category where component.id = " . $myrowCOM[0] . " and component.id = category.compid order by CATorder");	
 			
 		while ($myrowCAT = mysql_fetch_row($catResult)) 
 		{  
@@ -117,7 +166,7 @@ if($edit == 'component' && $build) //if the user has selected to view by compone
 
 			$TCsql = "select testcase.id, title, summary, steps, exresult, keywords,mgttcid,version, testcase.risk, testcase.importance from testcase,category where category.id = " . $myrowCAT[0] . " and testcase.catid = category.id order by TCorder,mgttcid";
 
-			$TCResult = mysql_query($TCsql,$db);
+			$TCResult = mysql_query($TCsql);
 			
 			//Display the test case
 
@@ -130,11 +179,14 @@ if($edit == 'component' && $build) //if the user has selected to view by compone
 	}//end component loop
 }
 
-if($edit == 'category' && $build) //if the user has selected to view by category
+
+function displayCategorySection()
 {
+	global $data;
+
 	//Here begins the meat of the tool. This next line grabs the category that the user selected from the left pane
 
-	$catResult = mysql_query("select category.id, category.name from category where category.id = " . $data . " order by CATorder",$db);
+	$catResult = mysql_query("select category.id, category.name from category where category.id = " . $data . " order by CATorder");
 	
 	//$myrowCAT = mysql_fetch_row($catResult);  //display all the categories until we run out
 		
@@ -147,7 +199,7 @@ if($edit == 'category' && $build) //if the user has selected to view by category
 
 		$TCsql = "select testcase.id, title, summary, steps, exresult, keywords, mgttcid, version, testcase.risk, testcase.importance  from testcase,category where category.id = " . $myrowCAT[0] . " and testcase.catid = category.id order by TCorder,mgttcid";
 
-		$TCResult = mysql_query($TCsql,$db);
+		$TCResult = mysql_query($TCsql);
 
 		//display the test case
 
@@ -159,14 +211,17 @@ if($edit == 'category' && $build) //if the user has selected to view by category
 
 }
 
-if($edit == 'testcase' && $build)
+function displayTestCaseSection()
 {
+	global $data;
 
 	//Here I create a query that will grab every testcase depending on the category the user picked
 
+	$sql = "select testcase.id, title, summary, steps, exresult, keywords,mgttcid,version,risk, importance from testcase where testcase.id = " . $data . " and testcase.active='on'";
+
 	//If the user chose None for the keyword selection I show every keyword
 
-	$TCResult = mysql_query("select testcase.id, title, summary, steps, exresult, keywords,mgttcid,version,risk, importance from testcase where testcase.id = " . $data . " and testcase.active='on'",$db);
+	$TCResult = mysql_query($sql);
 
 	//Display the test case
 
@@ -180,7 +235,7 @@ echo "</form>"; //end the form
 
 function executionHeaderWithBuild($build)
 {
-	global $edit, $data;
+	global $edit, $data, $platformArray;
 	//This section builds the top table with the date and build selection
 		
 	?>
@@ -211,12 +266,10 @@ function executionHeaderWithBuild($build)
 
 	$i = 0; //start a counter
 
-	foreach ($_GET as $key)
+	foreach ($platformArray as $key)
 	{	
-		if(($i > 2) && ($key != 'submit')) 
-		{
-			echo  "<input type='hidden' name='" . $arrayKeys[$i] . "' value='" . $key . "'/>";
-		}
+		echo  "<input type='hidden' name='" . $arrayKeys[$i] . "' value='" . $key . "'/>";
+
 		$i++;
 	}
 
@@ -271,6 +324,7 @@ function executionHeaderWithoutBuild()
 				
 			//echo "<input type='hidden' name='" . $myrowContainer[0] . "' value='" . $myrowContainer[1] . "'/>";
 			echo "<select name='" . $myrowContainer[1] . "'>";
+			echo "<option value='-'>-</option>";
 			
 			while ($myrowPlatform = mysql_fetch_row($platformResult)) 
 			{
@@ -424,7 +478,7 @@ function platformResults($tcid)
 			<b>Previous Platform Results for This Test Case</b><br>
 			<?
 
-			while($platformTCRow = mysql_fetch_array($platformTCResult)) //Display all Categories
+			while($platformTCRow = mysql_fetch_array($platformTCResult))
 			{
 				$platformInfo = $platformTCRow[0] . " " . $platformTCRow[1] . " " . $platformTCRow[2] . " ";
 				
@@ -449,6 +503,11 @@ function platformResults($tcid)
 				echo "<a href='platform/executionData.php?edit=" . $edit . "&data=" . $data . "&build=" . $build . $platformHref . "&submit=submit'>";
 
 				echo $platformInfo . $platformNames;
+
+				//Reset the variables
+				$platformHref="";
+				$platformInfo="";
+				$platformNames="";
 				
 				echo "</a><br>";
 			}
@@ -547,7 +606,7 @@ function TCBody($summary,$steps,$exresult,$keywords, $riskImportance)
 
 function results($tcid)
 {
-	global $bugzillaOn,$build;
+	global $bugzillaOn,$build,$platformArray;
 
 	?>
 		<table class=tctable width=100% align='top'>
@@ -561,26 +620,15 @@ function results($tcid)
 
 		//It is necessary to turn the $_GET map into an array
 
-		foreach ($_GET as $key)
+		foreach ($platformArray as $key)
 		{	
-			if(($i > 2) && ($key != 'submit')) 
-			{
-				$platformSql = "select name from platform where id=" . $key;
+			$platformSql = "select platform.name,platformcontainer.name from platform,platformcontainer where platform.id=" . $key . " and platformcontainer.id=platform.containerId";
 
-				$platform = mysql_fetch_row(mysql_query($platformSql)); //Run the query
+			$platform = mysql_fetch_row(mysql_query($platformSql)); //Run the query
 
-				echo  "<BLOCKQUOTE><b>" . $arrayKeys[$i] . "</b>: " . $platform[0] . "<br></BLOCKQUOTE>";
-
-				//create the platform array
-				$platformArray[] = $key;
-
-			}
+			echo  "<BLOCKQUOTE><b>" . $platform[1] . "</b>: " . $platform[0] . "<br></BLOCKQUOTE>";
 			$i++;
 		}
-
-		//sort platforms
-		sort($platformArray);
-		reset($platformArray);
 
 	?>
 

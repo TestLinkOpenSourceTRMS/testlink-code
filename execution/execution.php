@@ -36,8 +36,6 @@ document.write(data);
 
 require_once('../htmlarea/textArea.php');
 
-echo "<LINK REL='stylesheet' TYPE='text/css' HREF='kenny.css'>";
-
 echo "</head>";
 
 if($_GET['edit'] == 'info') //Displayed the first time the user enters the page or if they click the info button
@@ -101,14 +99,14 @@ if($_GET['edit'] == 'component') //if the user has selected to view by component
 			if($_GET['keyword'] == 'All')
 			{
 
-				$TCsql = "select testcase.id, title, summary, steps, exresult, keywords,mgttcid,version from testcase,category where category.id = " . $myrowCAT[0] . " and testcase.catid = category.id order by TCorder";
+				$TCsql = "select testcase.id, title, summary, steps, exresult, keywords,mgttcid,version, testcase.risk, testcase.importance from testcase,category where category.id = " . $myrowCAT[0] . " and testcase.catid = category.id order by TCorder";
 
 				$TCResult = mysql_query($TCsql,$db);
 
 			}else //I show them only the keywords they selected
 			{
 
-				$TCsql = "select testcase.id, title, summary, steps, exresult, keywords,mgttcid,version from testcase,category where category.id = " . $myrowCAT[0] . " and testcase.catid = category.id and testcase.keywords like '%" . $_GET['keyword'] . "%'  order by TCorder";
+				$TCsql = "select testcase.id, title, summary, steps, exresult, keywords,mgttcid,version,testcase.risk,testcase.importance from testcase,category where category.id = " . $myrowCAT[0] . " and testcase.catid = category.id and testcase.keywords like '%" . $_GET['keyword'] . "%'  order by TCorder";
 
 				$TCResult = mysql_query($TCsql,$db);
 
@@ -156,14 +154,14 @@ if($_GET['edit'] == 'category') //if the user has selected to view by category
 		if($_GET['keyword'] == 'All')
 		{
 
-			$TCsql = "select testcase.id, title, summary, steps, exresult, keywords,mgttcid,version from testcase,category where category.id = " . $myrowCAT[0] . " and testcase.catid = category.id order by TCorder";
+			$TCsql = "select testcase.id, title, summary, steps, exresult, keywords,mgttcid,version,risk,importance  from testcase,category where category.id = " . $myrowCAT[0] . " and testcase.catid = category.id order by TCorder";
 
 			$TCResult = mysql_query($TCsql,$db);
 
 		}else //I show them only the keywords they selected
 		{
 
-			$TCsql = "select testcase.id, title, summary, steps, exresult, keywords,mgttcid,version from testcase,category where category.id = " . $myrowCAT[0] . " and testcase.catid = category.id and testcase.keywords like '%" . $_GET['keyword'] . "%'  order by TCorder";
+			$TCsql = "select testcase.id, title, summary, steps, exresult, keywords,mgttcid,version,testcase.risk,testcase.importance from testcase,category where category.id = " . $myrowCAT[0] . " and testcase.catid = category.id and testcase.keywords like '%" . $_GET['keyword'] . "%'  order by TCorder";
 
 			$TCResult = mysql_query($TCsql,$db);
 
@@ -202,12 +200,12 @@ if($_GET['edit'] == 'testcase')
 	if($_GET['keyword'] == 'All')
 	{
 
-		$TCResult = mysql_query("select testcase.id, title, summary, steps, exresult, keywords,mgttcid,version from testcase where testcase.id = " . $_GET['tc'] . " and testcase.active='on'",$db);
+		$TCResult = mysql_query("select testcase.id, title, summary, steps, exresult, keywords,mgttcid,version,risk, importance from testcase where testcase.id = " . $_GET['tc'] . " and testcase.active='on'",$db);
 
 	}else //I show them only the keywords they selected
 	{
 
-		$TCResult = mysql_query("select testcase.id, title, summary, steps, exresult, keywords,mgttcid,version from testcase where testcase.id = " . $_GET['tc'] . " and testcase.active='on' and testcase.keywords like '%" . $_GET['keyword'] . "%'",$db);
+		$TCResult = mysql_query("select testcase.id, title, summary, steps, exresult, keywords,mgttcid,version,risk, importance from testcase where testcase.id = " . $_GET['tc'] . " and testcase.active='on' and testcase.keywords like '%" . $_GET['keyword'] . "%'",$db);
 
 
 	}
@@ -370,7 +368,7 @@ function displayTestCase($resultTC,$bugzillaOn)
 
 		echo "<tr valign=top><td width=50%>";
 
-		TCBody($myrow[2],$myrow[3],$myrow[4],$myrow[5]);
+		TCBody($myrow[2],$myrow[3],$myrow[4],$myrow[5], $myrow[9] . $myrow[8]);
 
 		//Begin to display the build related stuff (notes,results,bugs)
 
@@ -519,7 +517,7 @@ function TCHeader($tcid,$comName,$catName,$versionFlag,$mgttcid,$tcTitle)
 
 //displays the test case body
 
-function TCBody($summary,$steps,$exresult,$keywords)
+function TCBody($summary,$steps,$exresult,$keywords, $riskImportance)
 {
 
 	echo "<table class=tctable width=100% align='top'>";
@@ -532,9 +530,11 @@ function TCBody($summary,$steps,$exresult,$keywords)
 
 	//Chop the trailing comma off of the end of the keywords field
 
-	$keywords = substr("$keywords", 0, -1); 
-
 	echo "<tr><td class=tctable><b>Keywords:</b><br>" . $keywords . "</td></tr>";
+
+	echo "<tr><td class=tctable><b>Priority and Risk/Importance:</b><br>";
+
+	echo $riskImportance;
 
 	echo "</table>";
 
@@ -622,23 +622,17 @@ function results($tcid,$bugzillaOn)
 
 
 	echo "<tr><td class=tctable><b>Notes:</b><br><textarea name='notes" . $tcid . "' cols=35 rows=4>" . $resultQuery[0] . "</textarea></td></tr>";
-
-	//echo "<script language='javascript1.2'>";
-	//echo "editor_generate('notes" . $tcid . "',config);";
-	//echo "</script>";
 						
 	echo "<tr><td class=tctable width=50%><b>Result:</b><br>";
 
 		////If we find that a test case has a result record	
 	
-
 		if($num == 1) //Found a test case result
 		{
 
 			//Calls the radio result function which will return the status radio buttons
 
-			radioResult($tcid,$resultQuery[1]);
-							
+			radioResult($tcid,$resultQuery[1]);						
 		}
 						
 		else //If the test case has no result associated with it then I display nothing in the status and notes fields

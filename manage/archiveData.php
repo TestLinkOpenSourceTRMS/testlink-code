@@ -231,42 +231,7 @@ if($_GET['edit'] == 'product')
 
 	echo "<tr><td class=tctable><a href='manage/keyword/viewKeywords.php?product=" . $prodID[0] . "' target='_blank'><b>Keywords</b></a>: " . $myrowTC[6] . "</td></tr>";
 
-		
 	echo "</table>";
-
-
-}elseif($_GET['edit'] == 'archive')
-{
-
-	$sqlTC = "select id,title,summary,steps,exresult,version,keywords from mgttcarchive where id='" . $_GET['id'] . "' and version='" . $_GET['ver'] . "'";
-
-	$resultTC = mysql_query($sqlTC);
-	$myrowTC = mysql_fetch_row($resultTC);
-
-	echo "<table width='100%' class=tctable>";
-	
-	echo "<tr><td class=tctable><b>Title</td></tr>";
-	echo "<tr><td class=tctable>" . htmlspecialchars($myrowTC[1]) . "";
-		
-	echo "</td></tr>";
-	
-	echo "<tr><td class=tctable><b>Summary</td></tr>";
-	echo "<tr><td class=tctable>" . htmlspecialchars(nl2br($myrowTC[2])) . "</td></tr>";
-
-	echo "<tr><td class=tctable><b>Steps</td></tr>";
-	echo "<tr><td class=tctable>" . nl2br($myrowTC[3]) . "</td></tr>";
-
-	echo "<tr><td class=tctable><b>Expected Result</td></tr>";
-	echo "<tr><td class=tctable>" . nl2br($myrowTC[4]) . "</td></tr>";
-		
-	echo "<tr><td class=tctable><b>Keywords</td></tr>";
-	echo "<tr><td class=tctable>" . $myrowTC[6] . "</td></tr>";
-
-	echo "<tr><td class=tctable><b>Version</td></tr>";
-	echo "<tr><td class=tctable>" . $myrowTC[5] . "</td></tr>";
-		
-	echo "</table>";
-
 }
 
 

@@ -63,6 +63,12 @@ require_once(_ROOT_PATH . "functions/generateTreeMenu.php");
 		$tableTitle = " Defining Category Ownership/Priority";
 		//Help link
 		$helpInfo = "Click <a href='admin/category/categorySelect.php?edit=info' target='mainFrame'>here</a> for help";
+		
+		//This variable is used when the user is using a server side tree. Ignore otherwise
+		if(isset($_GET['p']))
+		{
+			$_SESSION['p'] = $_GET['p'];
+		}
 
-		invokeMenu($menustring, $tableTitle, $helpInfo, "");
+		invokeMenu($menustring, $tableTitle, $helpInfo, "", "");
 ?>

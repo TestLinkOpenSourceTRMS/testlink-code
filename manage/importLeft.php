@@ -52,5 +52,11 @@ require_once("../functions/generateTreeMenu.php");
 	//Help link
 	$helpInfo = "Click <a href='manage/importData.php?edit=info' target='mainFrame'>here</a> for help";
 
-	invokeMenu($menustring, $tableTitle, $helpInfo, "");
+	//This variable is used when the user is using a server side tree. Ignore otherwise
+	if(isset($_GET['p']))
+	{
+		$_SESSION['p'] = $_GET['p'];
+	}
+
+	invokeMenu($menustring, $tableTitle, $helpInfo, "", "");
 ?>

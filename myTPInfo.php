@@ -29,7 +29,11 @@ if($projectCount > 0)
 		$completed = totalTCs($myrow[1]);
 		$myTCs = myTCs($myrow[1],$_SESSION['userID']);
 		
-		echo "<tr><td class='mainMenu'>" . $myrow[0] . "</td><td class='mainMenu'>" . $completed . "</td><td class='mainMenu'>" . $myTCs . "</td></tr>";
+		echo "<tr><td class='mainMenu'>";
+		
+		echo "<a href='metrics/metricsFrameSet.php?projectId=" . $myrow[1] . "&nav= > Test Plan Metrics'>" . $myrow[0] . "</a>"; 
+			
+		echo "</td><td class='mainMenu'>" . $completed . "</td><td class='mainMenu'>" . $myTCs . "</td></tr>";
 	
 	}
 

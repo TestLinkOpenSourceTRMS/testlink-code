@@ -27,6 +27,11 @@ require_once("../functions/header.php");
 
 <?
 
+$font = "black";
+$menustringResult = "";
+$lastRanDate = "NR";
+$lastRanBuild = "";
+
 require_once(_ROOT_PATH . "functions/generateTreeMenu.php");
 
 $sqlProject = "select name from project where id=" . $_SESSION['project'];
@@ -58,7 +63,6 @@ $comResult = mysql_query($sql);
 
 			while ($myrowTC = mysql_fetch_row($resultTC)) 
 			{  
-				//$menustring =  $menustring . "....|" . $myrowTC[1] . "|execution/execution.php?edit=testcase&tc=" . $myrowTC[0] . "|||mainFrame|\n";
 				
 				$sqlResult = "select tcid, build, status, daterun from results where tcid=" . $myrowTC[0] . " order by build";
 
@@ -95,7 +99,13 @@ $comResult = mysql_query($sql);
 	//Help link
 	$helpInfo = "Click <a href='execution/execution.php?edit=info' target='mainFrame'>here</a> for help";
 
-	invokeMenu($menustring, $tableTitle, $helpInfo, "");
+	//This variable is used when the user is using a server side tree. Ignore otherwise
+	if(isset($_GET['p']))
+	{
+		$_SESSION['p'] = $_GET['p'];
+	}
+
+	invokeMenu($menustring, $tableTitle, $helpInfo, "", "");
 
 function getResultFont($result)
 {

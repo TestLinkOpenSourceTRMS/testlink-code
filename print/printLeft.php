@@ -188,12 +188,18 @@ echo "</tr></table>";
 			}
 		}
 
+	//This variable is used when the user is using a server side tree. Ignore otherwise
+	if(isset($_GET['p']))
+	{
+		$_SESSION['p'] = $_GET['p'];
+	}
+
 	//Table title
 	$tableTitle = "Print Your Test Case Repository";
 	//Help link
 	$helpInfo = "Click <a href='print/printData.php' target='mainFrame'>here</a> for help";
 
-	invokeMenu($menustring, $tableTitle, $helpInfo, "");
+	invokeMenu($menustring, $tableTitle, $helpInfo, "", "");
 
 	
 ?>

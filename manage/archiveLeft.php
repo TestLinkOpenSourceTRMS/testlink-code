@@ -66,12 +66,19 @@ if($product)
 
 
 	}
+
+	//This variable is used when the user is using a server side tree. Ignore otherwise
+	if(isset($_GET['p']))
+	{
+		$_SESSION['p'] = $_GET['p'];
+	}
+
 	//Table title
 	$tableTitle = "Mange Your Test Case Repository";
 	//Help link
 	$helpInfo = "Click <a href='manage/keyword/keywordData.php' target='mainFrame'>here</a> for help";
 
-	invokeMenu($menustring, $tableTitle, $helpInfo, "edit=" . $_GET['edit'] . "&data=" . $_GET['data']);
+	invokeMenu($menustring, $tableTitle, $helpInfo, "edit=" . $_GET['edit'] . "&data=" . $_GET['data'], "");
 }
 
 ?>

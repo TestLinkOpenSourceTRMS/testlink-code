@@ -59,80 +59,236 @@ if($_GET['edit'] == 'info')
 if($_GET['edit'] == 'component')
 {
 
-?>
-
-	<form name='categorySelect' method='post' ACTION='admin/category/categoryResults.php'>
+	?>
+		<form name='categorySelect' method='post' ACTION='admin/category/categoryResults.php'>
 		<input type='submit' name='submit' value='Edit Categories'>
-	
 	<?
 
-	$sql = "select id, name from component where projid ='" . $_SESSION['project'] . "' and component.id='" . $_GET['com'] . "' order by name";
+	$sql = "select id, name from component where id=" . $_GET['com'];
 
 	$result = @mysql_query($sql);
 
+	$rowCOMP = mysql_fetch_row($result);
 
-	//Selecting all components from the selected project
+	?>
+
+	<table class=userinfotable width='100%'>
+		<tr>
+			<td class=edittablehdr>Component Name</td>
+			<td class=edittablehdr>Importance (L/M/H)</td>
+			<td  class=edittablehdr>Risk (3/2/1)</td>
+			<td class=edittablehdr>Owner</td>
+		</tr>
+		<tr>
+			<td><? echo $rowCOMP[1] ?></td>
+			<td>
+				<select name="">
+					<option>L</option>
+					<option SELECTED>M</option>
+					<option>H</option>
+				</select>
+			</td>
+			<td>
+				<select name="">
+					<option>3</option>
+					<option SELECTED>2</option>
+					<option>1</option>
+				</select>
+			</td>
+			<td>
+				<?
+			
+				//Code to give the user a dropdown box to select from
+			
+				$sqlUser = "select login from user";
+
+				$resultUser = @mysql_query($sqlUser);
+
+				echo "<select name='owner" . $id . "'>";
+
+				echo "<option value='None'>None</option>";
+
+				while($rowUser = mysql_fetch_array($resultUser))	
+				{
+
+					if($rowUser[0] == $owner)
+					{
+						echo "<option value='" . $rowUser[0] . "' Selected>" . $rowUser[0] . "</option>"; 
+					
+					}else
+					{
+						echo "<option value='" . $rowUser[0] . "'>" . $rowUser[0] . "</option>"; 
+					}
 
 
-while($rowCOMP = mysql_fetch_array($result)){ //loop through all components
-	{
+				}
+
+				echo "</select>";
+
+			?>
+			</td>
+		</tr>
+	</table>
+</form>
+
+<?
+
+}
+
+if($_GET['edit'] == 'category')
+{
+	?>
+		<form name='categorySelect' method='post' ACTION='admin/category/categoryResults.php'>
+		<input type='submit' name='submit' value='Edit Categories'>
+	<?
+
+	$sql = "select id, name from category where id=" . $_GET['cat'];
+
+	$result = @mysql_query($sql);
+
+	$rowCOMP = mysql_fetch_row($result);
+
+	?>
+
+	<table class=userinfotable width='100%'>
+		<tr>
+			<td class=edittablehdr>Component Name</td>
+			<td class=edittablehdr>Importance (L/M/H)</td>
+			<td  class=edittablehdr>Risk (3/2/1)</td>
+			<td class=edittablehdr>Owner</td>
+		</tr>
+		<tr>
+			<td><? echo $rowCOMP[1] ?></td>
+			<td>
+				<select name="">
+					<option>L</option>
+					<option SELECTED>M</option>
+					<option>H</option>
+				</select>
+			</td>
+			<td>
+				<select name="">
+					<option>3</option>
+					<option SELECTED>2</option>
+					<option>1</option>
+				</select>
+			</td>
+			<td>
+			<?
+			
+				//Code to give the user a dropdown box to select from
+			
+				$sqlUser = "select login from user";
+
+				$resultUser = @mysql_query($sqlUser);
+
+				echo "<select name='owner" . $id . "'>";
+
+				echo "<option value='None'>None</option>";
+
+				while($rowUser = mysql_fetch_array($resultUser))	
+				{
+
+					if($rowUser[0] == $owner)
+					{
+						echo "<option value='" . $rowUser[0] . "' Selected>" . $rowUser[0] . "</option>"; 
+					
+					}else
+					{
+						echo "<option value='" . $rowUser[0] . "'>" . $rowUser[0] . "</option>"; 
+					}
+
+
+				}
+
+				echo "</select>";
+
+			?>
+			</td>
+		</tr>
+	</table>
+</form>
+
+<?
+
+}
+
+if($_GET['edit'] == 'testcase')
+{
+
+	?>
+		<form name='categorySelect' method='post' ACTION='admin/category/categoryResults.php'>
+		<input type='submit' name='submit' value='Edit Test Cases'>
+	<?
+
+	$sql = "select id, title, risk, importance, owner from testcase where id=" . $_GET['tc'];
+
+	$result = @mysql_query($sql);
+
+	?>
+
+	<table class=userinfotable width='100%'>
+		<tr>
+			<td class=edittablehdr>Test Case Name</td>
+			<td class=edittablehdr>Importance (L/M/H)</td>
+			<td  class=edittablehdr>Risk (3/2/1)</td>
+			<td class=edittablehdr>Owner</td>
+		</tr>
+
+<?
 	
-		//Selecting all categories from the components selected above
-
-		$sqlCAT = "select id, name, importance, risk, owner from category where compid ='" . $rowCOMP[0] . "' order by CATorder";
-		$resultCAT = @mysql_query($sqlCAT);
-		
-
-		
-		echo "<table class=userinfotable width='100%'>";
-
-		echo "<tr><td class=edittablehdr>Category Name</td><td class=edittablehdr>Importance (L/M/H)</td><td  class=edittablehdr>Risk (3/2/1)</td><td class=edittablehdr>Owner</td></tr>\n\n";
-
-		while($row = mysql_fetch_array($resultCAT)){ //loop through all categories
+	while($row = mysql_fetch_row($result)){ //loop through all categories
 
 			//Getting and setting the variables from the query
 
-			$id = $row['id'];
-			$name = $row['name'];
-			$importance = $row['importance'];
-			$risk = $row['risk'];
-			$owner = $row['owner'];
-
-			if($importance == 'L') //If the user has selected a risk of three check the L radio button
-			{
-				$impRadio = "<td><input type='radio' name='importance" . $id . "' value='L' CHECKED><input type='radio' name='importance" . $id . "' value='M'><input type='radio' name='importance" . $id . "' value='H'></td>";
-			
-			}elseif($importance == 'M') //If the user has selected a risk of three check the M radio button
-			{
-
-				$impRadio = "<td><input type='radio' name='importance" . $id . "' value='L'><input type='radio' name='importance" . $id . "' value='M' CHECKED><input type='radio' name='importance" . $id . "' value='H'></td>";
-
-			}elseif($importance == 'H') //If the user has selected a risk of three check the H radio button
-			{
-
-				$impRadio = "<td><input type='radio' name='importance" . $id . "' value='L'><input type='radio' name='importance" . $id . "' value='M'><input type='radio' name='importance" . $id . "' value='H' CHECKED></td>";
-
-			}
-			if($risk == '3') //If the user has selected a risk of three check the 3 radio button
-			{
-
-				$riskRadio = "<td><input type='radio' name='risk" . $id . "' value='3' CHECKED><input type='radio' name='risk" . $id . "' value='2'><input type='radio' name='risk" . $id . "' value='1'></td>";
+			$id = $row[0];
+			$name = $row[1];
+			$importance = $row[3];
+			$risk = $row[2];
+			$owner = $row[4];
 
 
-			}elseif($risk == '2') //If the user has selected a risk of three check the 2 radio button
-			{
-
-				$riskRadio = "<td><input type='radio' name='risk" . $id . "' value='3'><input type='radio' name='risk" . $id . "' value='2' CHECKED><input type='radio' name='risk" . $id . "' value='1'></td>";
-
-			}elseif($risk == '1') //If the user has selected a risk of three check the 1 radio button
-			{
-
-				$riskRadio = "<td><input type='radio' name='risk" . $id . "' value='3'><input type='radio' name='risk" . $id . "' value='2'><input type='radio' name='risk" . $id . "' value='1' CHECKED></td>";
-			}
+			$riskArray = array("1", "2", "3");
 
 			//Print out the owner stuff
 
-			echo "<tr><td><input type='hidden' name='id" . $id . "' value='" . $id . "'>" . $name . "</td>" . $impRadio . $riskRadio . "<td>";
+			echo "<tr><td><input type='hidden' name='id" . $id . "' value='" . $id . "'>" . $name . "</td>";
+
+			$importanceArray = array("L", "M", "H");
+	
+			echo "<td><select name='importance'>";
+
+			foreach($importanceArray as $imp)
+			{
+				if($imp == $importance)
+				{
+					echo "<option value=$imp SELECTED>$imp</option>";
+				}else
+				{
+					echo "<option value=$imp>$imp</option>";
+				}
+
+			}
+			
+			echo "</select></td>";
+
+			echo "<td><select name='risk'>";
+
+			$riskArray = array("1", "2", "3");
+
+			foreach($riskArray as $riskValue)
+			{
+				if($riskValue == $risk)
+				{
+					echo "<option value=$$riskValue SELECTED>$riskValue</option>";
+				}else
+				{
+					echo "<option value=$riskValue>$riskValue</option>";
+				}
+
+			}
+
+			echo "</select></td>";
 
 			//Code to give the user a dropdown box to select from
 			
@@ -140,7 +296,7 @@ while($rowCOMP = mysql_fetch_array($result)){ //loop through all components
 
 			$resultUser = @mysql_query($sqlUser);
 
-			echo "<select name='owner" . $id . "'>";
+			echo "<td><select name='owner" . $id . "'>";
 
 			echo "<option value='None'>None</option>";
 
@@ -160,127 +316,11 @@ while($rowCOMP = mysql_fetch_array($result)){ //loop through all components
 			}
 
 			echo "</select>";
-
-			//echo "<textarea name='owner" . $id . "' cols='10' rows='1'>" . $owner . "</textarea></td>";
-			
 			
 			echo "</td></tr>\n\n";
 		
 		}//end category display
 
-		echo "</table>";
-
-	}//end component display
-
-	
-
-	}
-
-	echo "</form>";
-
-}
-
-if($_GET['edit'] == 'category')
-{
-	?>
-	
-	<form name='categorySelect' method='post' ACTION='admin/category/categoryResults.php'>
-		<input type="submit" name="submit" value="Edit This Category's test cases">
-
-		<table class=userinfotable width='100%'>
-			<tr>
-				<td class=edittablehdr>
-					Test Case Name
-				</td>
-				<td class=edittablehdr >
-					Importance (L/M/H)
-				</td>
-				<td class=edittablehdr >
-					Risk (3/2/1)
-				</td>
-				<td class=edittablehdr >
-					Owner
-				</td>
-			</tr>
-
-	<?
-	
-	$sqlTC = "select id, title from testcase where catid='" . $_GET['cat'] . "' order by TCOrder";
-
-	echo $sqlTC;
-	$resultCAT = @mysql_query($sqlTC);
-
-	while($row = mysql_fetch_array($resultCAT))
-	{ //loop through all categories
-
-		//Getting and setting the variables from the query
-
-			$id = $row['id'];
-			$name = $row['title'];
-			$risk = "1";
-			$importance = "H";
-			$owner = "none";
-
-			echo "id:" . $id . " title: " . $name . "<br>";
-
-			?> 
-				<tr><td><? echo $name ?></td><td>
-			<?
-
-			if($importance == 'L') //If the user has selected a risk of three check the L radio button
-			{
-				echo "<input type='radio' name='importance" . $id . "' value='L' CHECKED>";
-				echo "<input type='radio' name='importance" . $id . "' value='M'>";
-				echo "<input type='radio' name='importance" . $id . "' value='H'>";
-			
-			}elseif($importance == 'M') //If the user has selected a risk of three check the M radio button
-			{
-
-				echo "<input type='radio' name='importance" . $id . "' value='L' CHECKED>";
-				echo "<input type='radio' name='importance" . $id . "' value='M'>";
-				echo "<input type='radio' name='importance" . $id . "' value='H'>";
-
-			}elseif($importance == 'H') //If the user has selected a risk of three check the H radio button
-			{
-
-				echo "<input type='radio' name='importance" . $id . "' value='L' CHECKED>";
-				echo "<input type='radio' name='importance" . $id . "' value='M'>";
-				echo "<input type='radio' name='importance" . $id . "' value='H'>";
-
-			}
-			
-			?></td><td><?
-
-			if($risk == '3') //If the user has selected a risk of three check the 3 radio button
-			{
-
-				echo "<input type='radio' name='risk" . $id . "' value='3' CHECKED>";
-				echo "<input type='radio' name='risk" . $id . "' value='2'>";
-				echo "<input type='radio' name='risk" . $id . "' value='1'>";
-
-			}elseif($risk == '2') //If the user has selected a risk of three check the 2 radio button
-			{
-				echo "<input type='radio' name='risk" . $id . "' value='3' CHECKED>";
-				echo "<input type='radio' name='risk" . $id . "' value='2'>";
-				echo "<input type='radio' name='risk" . $id . "' value='1'>";
-
-			}elseif($risk == '1') //If the user has selected a risk of three check the 1 radio button
-			{
-				echo "<input type='radio' name='risk" . $id . "' value='3' CHECKED>";
-				echo "<input type='radio' name='risk" . $id . "' value='2'>";
-				echo "<input type='radio' name='risk" . $id . "' value='1'>";
-			}
-			
-			?> 
-			
-			</td>
-			<td>
-				<? echo $owner ?>
-			</td>
-			
-			</tr> <?
-
-	}
 
 }
 

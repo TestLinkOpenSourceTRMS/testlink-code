@@ -75,19 +75,17 @@ define("_TREE_DIR_PATH", _ROOT_PATH . "third_party/phplayersmenu/");
 define("_TREE_WWW_PATH", $basehref . "third_party/phplayersmenu/");
 
 /*
-	The tree code that I am using has the ability to either be rendered on the client side 
-	or on the server side. If your dataset is large or users are comming in through methods that
-	have limited bandwidth then you should try the php/serverside rendering. Otherwise use the
-	default
+
+	The user can also choose to set every single tree menu to compile 
+	on the server (PHP) or clientside (Javascript) by setting the variable below.
+
+	To change the menu across the to compile on the server change the define value below to SERVER.
+
+	NOTE: If the variable is set to anything other than SERVER it will be compiled on the client
 */
 
-//should the tree be javascript of php based
+define("_MENU_COMPILE_SOURCE", "SERVER");
 
-//javascript
-define("_TREE_TYPE", "JAVASCRIPT");
-
-//php
-//define("_TREE_TYPE", "PHP");
 
 ///////////////////////////////////////////////
 //

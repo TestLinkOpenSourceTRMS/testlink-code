@@ -14,12 +14,37 @@ doHeader();
 $keywordArray = $_POST['keywords'];
 $overwrite = $_POST['overwrite'];
 
-echo $overwrite;
+echo "<font color='red'>Results submitted.</font> <br><br>You have chosen to ";
+
+if($overwrite == "true")
+{
+	echo "<b>overwrite</b> your old keywords";
+}
+else
+{
+	echo "<b>add</b> these new keywords";
+}
+
+echo "<br><br><b>New keywords</b>:";
+
+if(count($keywordArray) > 0)
+{
+	//if yes then put them in csv format
+	echo implode(",", $keywordArray);
+}else
+{
+	//otherwise set the values to null
+	echo "null";
+}
+
+echo "<hr>";
+
+
+echo "<table border='1' width='100%'>";
 
 if($_GET['type'] == 'COM') //editing a component
 {
 	//print_r($keywordArray);
-	
 	iterateOverCat($_GET['ID']);
 
 }else if($_GET['type'] == 'CAT')
@@ -28,7 +53,8 @@ if($_GET['type'] == 'COM') //editing a component
 
 }else if($_GET['type'] == 'TC')
 {
-	//echo "tc";
+
+	testCaseHeader();
 	updateTC($_GET['ID']);
 }
 
@@ -45,37 +71,36 @@ function returnKeywordCSV($newKeywordArray, $existingKeywords)
 	if(count($newKeywordArray) > 0)
 	{
 
-
-		echo "new: ";
+/*		echo "new: ";
 		print_r($newKeywordArray);
 
 		echo "<br><br>existing: ";
 		print_r($existingKeywords);
-		
+*/		
 		if($existingKeywords != null)
 		{
 			$comma_separated = explode(",", $existingKeywords);
 		}
 		
-		var_dump(array_intersect($newKeywordArray, $comma_separated));
+	//	var_dump(array_intersect($newKeywordArray, $comma_separated));
 		
-		echo "<br><br>";
+	//	echo "<br><br>";
 
-		var_dump(array_diff($newKeywordArray, $comma_separated));
+	//	var_dump(array_diff($newKeywordArray, $comma_separated));
 
 		$mergedArray = array_merge($newKeywordArray, $comma_separated);
 
-		echo "<br><br>";
+	//	echo "<br><br>";
 
-		print_r($mergedArray);
+	//	print_r($mergedArray);
 
-		echo "<br><br>unique";
+	//	echo "<br><br>unique";
 		$uniqueArray = (array_unique($mergedArray));
 
-		echo "<br><br>implode";
+	//	echo "<br><br>implode";
 		$imploded = implode(",", $uniqueArray);
 
-		echo "<Br><Br>" . $imploded;
+	//	echo "<Br><Br>" . $imploded;
 	}else
 	{
 		$imploded = $existingKeywords;
@@ -87,7 +112,7 @@ function returnKeywordCSV($newKeywordArray, $existingKeywords)
 
 function iterateOverCat($id)
 {
-	$sqlCAT = "select id from mgtcategory where compid='" . $id . "'";
+	$sqlCAT = "select id,name from mgtcategory where compid='" . $id . "'";
 
 	$resultCAT = mysql_query($sqlCAT);
 
@@ -100,10 +125,12 @@ function iterateOverCat($id)
 
 function iterateOverTC($id)
 {
-	$sqlTC = "select id from mgttestcase where catid='" . $id . "'";
+	$sqlTC = "select id,title from mgttestcase where catid='" . $id . "'";
 
 	$resultTC = mysql_query($sqlTC);
 
+	testCaseHeader();
+	
 	while($rowTC = mysql_fetch_array($resultTC)) //Display all Categories
 	{
 		updateTC($rowTC[0]);
@@ -122,7 +149,7 @@ function updateTC($id)
 		//did the user choose to overwrite the keys?
 		if($overwrite == "true")
 		{
-			echo "ow <br>";
+		//	echo "ow <br>";
 			//did the user pass in key words?
 			if(count($keywordArray) > 0)
 			{
@@ -137,7 +164,7 @@ function updateTC($id)
 		}else
 		{
 			//the user chose to add keys instead of overwrite
-			echo "no ow<br><br>";
+		//	echo "no ow<br><br>";
 
 			//get the keywords from the db
 			$sqlGetKeywordCSV = "select keywords from mgttestcase where id=" . $id;
@@ -145,7 +172,7 @@ function updateTC($id)
 	
 			$rowKeyword = mysql_fetch_array($getKeywordCSVResult);
 
-			echo "kwRow: " + $rowKeyword[0] . "::<br><br>";
+		//	echo "kwRow: " + $rowKeyword[0] . "::<br><br>";
 
 			//if the user actually passed in values for the keyword array
 			if(count($keywordArray) > 0)
@@ -162,12 +189,23 @@ function updateTC($id)
 
 		
 
-		echo "<br><br>" . $newKeywordCSV . "<br><br>";
+	//	echo "<br><br>" . $newKeywordCSV . "<br><br>";
 
 		//update the db
 		$sqlUpdate = "update mgttestcase set keywords='" . $newKeywordCSV . "' where id='" . $id . "'";
 		
-		echo "sql: " . $sqlUpdate;
+		echo "<tr><td>" . $id . "</td><td>" . $newKeywordCSV . "</td></tr>";
+
+		//echo "sql: " . $sqlUpdate;
 		$resultUpdate = mysql_query($sqlUpdate);
+
+}
+
+function testCaseHeader()
+{
+	?>
+		<tr><th bgcolor="#eeeeee">Test Case Id</th><th bgcolor="#eeeeee">New Keywords</th></tr>
+
+	<?
 
 }

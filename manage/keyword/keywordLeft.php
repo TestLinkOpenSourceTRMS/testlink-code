@@ -67,7 +67,7 @@ if($product)
 
 				while ($myrowTC = mysql_fetch_row($tcResult))
 				{
-					$menustring = $menustring . "....|" . $myrowTC[1] . "|manage/keyword/keywordData.php?prodid=" . $myrowPROD[0] . "&edit=testcase&data=" . $myrowTC[0] . "|test||mainFrame\n";
+					$menustring = $menustring . "....|<b>" . $myrowTC[0] . "</b>: " . $myrowTC[1] . "|manage/keyword/keywordData.php?prodid=" . $myrowPROD[0] . "&edit=testcase&data=" . $myrowTC[0] . "|test||mainFrame\n";
 				}
 
 			}

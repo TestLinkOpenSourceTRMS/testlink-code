@@ -64,31 +64,74 @@ $comResult = mysql_query($sql);
 			while ($myrowTC = mysql_fetch_row($resultTC)) 
 			{  
 				
-				/*$sqlResult = "select tcid, build, status, daterun from results where tcid=" . $myrowTC[0] . " order by build";
+				$menustring =  $menustring . "....|<b>" . $myrowTC[2] . ":</b>" . $myrowTC[1] .  "|platform/executionData.php?edit=testcase&data=" . $myrowTC[0] . "|||mainFrame|\n";
 
-				$resultResult = mysql_query($sqlResult);
+				$sqlPlatform = "select buildId, platformList, result, dateRun from platformresults where tcId=" . $myrowTC[0] . " order by buildId, platformList";
 
-				while ($myrowResult = mysql_fetch_row($resultResult)) 
+				//echo $sqlPlatform;
+
+				$resultPlatform = mysql_query($sqlPlatform);
+				
+				$buildId="";
+
+				while ($myrowPlatform = mysql_fetch_row($resultPlatform)) 
 				{
+					if($buildId != $myrowPlatform[0])
+					{
+						$menustring =  $menustring . ".....|<b>Build:" . $myrowPlatform[0] . "</b>| |||mainFrame|\n";
+
+						$buildId = $myrowPlatform[0];
+
+					}
 					
-					 $font = getResultFont($myrowResult[2]);
-					 $lastRanDate = $myrowResult[3];
-					 $lastRanBuild = "B:" . $myrowResult[1] . " ";
-				
-					$menustringResult =  $menustringResult . ".....|<font color=" . $font . ">Build:" . $myrowResult[1] . " (" . $myrowResult[3] . ")" .  "|execution/execution.php?edit=testcase&data=" . $myrowTC[0] . "&build=" . $myrowResult[1] . "|||mainFrame|\n";
-				}*/
+					//make the color correspond to the result
 
-				//build the test case tree
+					$font = "black";
 
-				//$menustring =  $menustring . "....|<font color=" . $font . "><b>" . $myrowTC[2] . ":</b>" . $myrowTC[1] . " (" . $lastRanBuild . $lastRanDate . ")"  .  "|execution/execution.php?edit=testcase&data=" . $myrowTC[0] . "|||mainFrame|\n";
+					if($myrowPlatform[2] == "p")
+					{
+						$font = "green";
+					}
+					elseif($myrowPlatform[2] == "f")
+					{
+						$font = "red";
+					}
+					elseif($myrowPlatform[2] == "b")
+					{
+						$font = "blue";
+					}
 
-				$menustring =  $menustring . "....|<font color=" . $font . "><b>" . $myrowTC[2] . ":</b>" . $myrowTC[1] .  "|platform/executionData.php?edit=testcase&data=" . $myrowTC[0] . "|||mainFrame|\n";
-				
-				//$menustring = $menustring . $menustringResult;
-				/*$font = "black";
-				$menustringResult = "";
-				$lastRanDate = "NR";
-				$lastRanBuild = "";*/
+					$platformNameArray = explode(",",$myrowPlatform[1]);
+
+					foreach ($platformNameArray as $platformId)
+					{	
+						$sqlPlatformName = "select name,containerId,id from platform where id=" . $platformId;
+						$platformNameRow = mysql_fetch_row(mysql_query($sqlPlatformName)); //Run the query
+
+						$sqlContainerName = "select name from platformcontainer where id=" . $platformNameRow[1];
+						$containerResult = mysql_query($sqlContainerName);
+						
+						while($myrowContainer = mysql_fetch_row($containerResult))
+						{
+							$platformHref .= "&" . $myrowContainer[0] . "=" . $platformNameRow[2];
+						}
+						
+						$platformNames .= $platformNameRow[0] . " ";
+					}
+
+					//echo "<a href='platform/executionData.php?edit=" . $edit . "&data=" . $data . "&build=" . $build . $platformHref . "&submit=submit'>";
+
+					//echo $platformInfo . $platformNames;
+
+					$menustring =  $menustring . "......|<font color=" . $font . ">" . $myrowPlatform[3] . " " . $platformNames .  "|platform/executionData.php?build=" . $myrowPlatform[0] . "&edit=testcase&data=" . $myrowTC[0] . $platformHref . "|||mainFrame|\n";
+
+					//Reset the variables
+					$platformHref="";
+					$platformInfo="";
+					$platformNames="";
+					$font = "black";
+
+				}
 
 			}
 		

@@ -16,10 +16,6 @@ doHeader();
 //require_once("../../functions/stripTree.php"); //require_once the function that strips the javascript tree
 require_once("../functions/generateTreeMenu.php");
 
-if ($_SESSION['product']) {
-	$product = $_SESSION['product'];
-}
-
 
 $product = $_SESSION['product'];
 
@@ -28,7 +24,7 @@ if($product)
 	$prodSql = "select id,name from mgtproduct where id=" . $product;
 
 	//get the count of test cases for this product
-	$prodTCCountSql = "select count(mgttestcase.id) from mgtproduct,mgtcomponent,mgtcategory,mgttestcase where mgtproduct.id=mgtcomponent.prodid and mgtcomponent.id=mgtcategory.compid and mgtcategory.id=mgttestcase.catid";
+	$prodTCCountSql = "select count(mgttestcase.id) from mgtproduct,mgtcomponent,mgtcategory,mgttestcase where mgtproduct.id=mgtcomponent.prodid and mgtcomponent.id=mgtcategory.compid and mgtcategory.id=mgttestcase.catid and mgtproduct.id=" . $product;
 
 	$prodTCCount = mysql_fetch_row(mysql_query($prodTCCountSql));
 	

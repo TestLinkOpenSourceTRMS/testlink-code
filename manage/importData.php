@@ -6,6 +6,80 @@
 //Purpose:  This page manages the importation of test cases into testlink.
 ////////////////////////////////////////////////////////////////////////////////
 
+function dispCategories($keyword, $resultCat) {
+  while($rowCAT = mysql_fetch_array($resultCat)) { //loop through all categories
+
+    $idCAT = $rowCAT[0];
+    $nameCAT = $rowCAT[1];
+
+    echo "\n\n<div id=CAT_$idCAT>\n\n";
+
+    echo "<hr><font size='4' color='#0000FF'>$nameCAT</font><br>";
+
+    echo "<input type='button' name='$nameCAT' onclick='box(\"CAT_$idCAT\", true)' value='Check'>Select All Test Cases<br>";
+
+    echo "<input type='button' name='$nameCAT' onclick='box(\"CAT_$idCAT\", false)' value='Uncheck'>Unselect All Test Cases<br><br>";	
+    
+    //Check the keyword that the user has submitted.
+
+    if($keyword == 'NONE') {
+      //If they keyword is NONE then just do a regular query
+
+      $sqlTC = "select id, title from mgttestcase where catid='" . $idCAT . "' order by TCorder,id";
+
+    } else {
+
+      //If they keyword is anything else query based on keyword
+
+      $sqlTC = "select id, title from mgttestcase where catid='" . $idCAT . "' and keywords like '%" . $keyword . "%' order by TCorder,id";
+
+    }
+    
+    $resultTC = @mysql_query($sqlTC);
+    dispTestCases($resultTC);						
+    echo "\n\n</div>\n\n";
+
+
+  }//End while CAT
+  
+  echo "</div>\n\n";
+
+  echo "<hr>";
+}
+
+
+function dispTestCases($result) {
+  while($rowTC = mysql_fetch_array($result)) { //Display all test cases
+
+    $idTC = $rowTC[0]; //Get the test case ID
+    $titleTC = $rowTC[1]; //Get the test case title
+
+    //Displays the test case name and a checkbox next to it
+
+    $sqlCheck = "select mgttcid from project,component,category,testcase where mgttcid=" . $idTC . " and project.id=component.projid and component.id=category.compid and category.id=testcase.catid and project.id=" . $_SESSION['project'];
+
+    $checkResult = @mysql_query($sqlCheck);
+    $checkRow = mysql_num_rows($checkResult);
+
+    if($checkRow > 0) {
+      echo "<input type='checkbox' name='C" . $idTC . "'><b>" . $idTC . "</b>:" . htmlspecialchars($titleTC);
+
+      echo "<img src='icons/checkmark.gif'>";
+
+      echo "<input type='hidden' name='H" . $idTC . "' value='" . $idTC. "'>";
+      echo "<br>";
+
+    } else {
+
+      echo "<input type='checkbox' name='C" . $idTC . "'><b>" . $idTC . "</b>:" . htmlspecialchars($titleTC);
+
+      echo "<input type='hidden' name='H" . $idTC . "' value='" . $idTC. "'>";
+      echo "<br>";
+      }
+
+  }//End while TC
+}
+
 require_once("../functions/header.php");
 doSessionStart();
 doDBConnect();
@@ -15,34 +89,24 @@ doHeader();
 
 <script>
 
+
 //This function takes a div tag and whether or not you want the checkboxes checked or not
 //The function then goes through all of the elements of the div tag that is passed in and
 //if they are checkboxes
 
-function checkIT(oDiv, checkStatus)
-{
-	var obj = null; //create a obj object and set it to null
+function box(myDiv, checkBoxStatus){
+	var frm;
+	var elemType;
 
-
-	for(var i=0; i < oDiv.all.length; i++) //loop through the length of all the oDiv object's children
-	{
+	frm = document.getElementById(myDiv).getElementsByTagName('input');
+	for(var i = 0; i < frm.length; i++){
+		elemType = frm[i].type;		
 		
-		obj= oDiv.all.item(i); //set the obj var to the current oDiv object
-			
-		if(obj.type == "checkbox") //if the current object is a checkbox
-		{
-			
-			obj.checked = checkStatus; //Set its status to the checkStatus variable (aka True,False)
-
-
-		}//end if
-
-
-	}//end for
-
-
-
-}//end function
+		if(elemType == "checkbox"){
+			frm[i].checked = checkBoxStatus;
+		}
+	}
+}
 
 
 </script>
@@ -74,19 +138,20 @@ if($_GET['edit'] == 'info')
 
 }
 
+$projectSQL = "select name from project where id=" . $_SESSION['project'];
+$resultProject = @mysql_query($projectSQL);
+$rowProject = mysql_fetch_row($resultProject);
+
+echo "<Form name='importForm' Method='POST' ACTION='manage/importData.php'>";
+
+//Display the header table
+
+echo "<table width='100%' class=userinfotable>";
+
 //If the user has selected a component
 
 if($_GET['edit'] == 'component')
 {
-
-		
-	$projectSQL = "select name from project where id=" . $_SESSION['project'];
-	$resultProject = @mysql_query($projectSQL);
-	$rowProject = mysql_fetch_row($resultProject);
-
-	echo "<Form name='importForm' Method='POST' ACTION='manage/importData.php'>";
-	
-	echo "<table width='100%' class=userinfotable>";
 	echo "<tr><td bgcolor='#CCCCCC'><b>Import Into Project</td><td bgcolor='#CCCCCC'><b>Import By Keyword</td><td bgcolor='#CCCCCC'><b>Import Data</td>";
 	
 	echo "<tr><td>" . $rowProject[0] . "</td><td>" . $keyword . "</td><td><input type='submit' name='importData' value='Import'></td></tr></table>";
@@ -99,209 +164,45 @@ if($_GET['edit'] == 'component')
 				$idCOM = $rowCOM[0];
 				$nameCOM = $rowCOM[1];
 
-				echo "<div name='COM'>\n\n";
+				echo "<div id=COM>\n\n";
 				
 				echo "<font size='4' color='#FF0000'>" . $nameCOM . "</font></b><br>";
 				
-				echo "<input type='radio' name='" . $nameCOM . "' value='Check' onclick='checkIT(this.parentNode,true)'><b>Select All Categories</b><br>";
+				echo "<input type='button' name='" . $nameCOM . "' value='Check' onclick='box(\"COM\", true)'><b>Select All Categories</b><br>";
 				
-				echo "<input type='radio' name='" . $nameCOM . "' onclick='checkIT(this.parentNode,false)' value='Uncheck' CHECKED><b>Unselect All Categories</b>";
+				echo "<input type='button' name='" . $nameCOM . "' onclick='box(\"COM\", false)' value='Uncheck' CHECKED><b>Unselect All Categories</b>";
 
 
 				$sqlCAT = "select id, name from mgtcategory where compid='" . $idCOM . "' order by CATorder,id";
 				$resultCAT = @mysql_query($sqlCAT);
-
-				
-				while($rowCAT = mysql_fetch_array($resultCAT)){
-
-					$idCAT = $rowCAT[0];
-					$nameCAT = $rowCAT[1];
-									
-					echo "\n\n<div name='CAT'>\n\n";
-					
-					echo "<hr><font size='4' color='#0000FF'>" .  $nameCAT . "</font><br>";
-					
-					echo "<input type='radio' name='" . $nameCAT . "' value='Check' onclick='checkIT(this.parentNode,true)'><b>Select All Test Cases</b><br>";
-					
-					echo "<input type='radio' name='" . $nameCAT . "' value='Uncheck' onclick='checkIT(this.parentNode,false)' CHECKED><b>Unselect All Test Cases</b><br><br>";	
-					
-					if($keyword == 'NONE')
-					{
-						$sqlTC = "select id, title from mgttestcase where catid='" . $idCAT . "' order by TCorder,id";
-						
-					}else
-					{
-
-						$sqlTC = "select id, title from mgttestcase where catid='" . $idCAT . "' and keywords like '%" . $keyword . "%' order by TCorder,id";
-
-					}
-
-
-					$resultTC = @mysql_query($sqlTC);
-						
-						while($rowTC = mysql_fetch_array($resultTC)){ //Display all test cases
-
-							$idTC = $rowTC[0]; //Get the test case ID
-							$titleTC = $rowTC[1]; //Get the test case title
-
-							//Displays the test case name and a checkbox next to it
-							
-							$sqlCheck = "select mgttcid from project,component,category,testcase where mgttcid=" . $idTC . " and project.id=component.projid and component.id=category.compid and category.id=testcase.catid and project.id=" . $_SESSION['project'];
-
-							$checkResult = @mysql_query($sqlCheck);
-							$checkRow = mysql_num_rows($checkResult);
-
-							if($checkRow > 0)
-							{
-								echo "<input type='checkbox' name='C" . $idTC . "'><b>" . $idTC . "</b>:" . htmlspecialchars($titleTC);
-
-								echo "<img src='icons/checkmark.gif'>";
-								
-								echo "<input type='hidden' name='H" . $idTC . "' value='" . $idTC. "'>";
-								echo "<br>";
-
-							}else
-							{
-
-								echo "<input type='checkbox' name='C" . $idTC . "'><b>" . $idTC . "</b>:" . htmlspecialchars($titleTC);
-								
-								echo "<input type='hidden' name='H" . $idTC . "' value='" . $idTC. "'>";
-								echo "<br>";
-							}
-
-
-							}//End while TC
-							
-					echo "\n\n</div>\n\n";
-							
-
-				}//End while CAT
-				
-				echo "</div>\n\n";
-
-				echo "<hr>";
+				dispCategories($keyword, $resultCAT);
 
 			}//End while COM
 
 	echo "</form>";
-
-
-
 }
 
 
 //If the user has selected a category
 
-if($_GET['edit'] == 'category')
+elseif($_GET['edit'] == 'category')
 {
 
-				$projectSQL = "select name from project where id=" . $_SESSION['project'];
-				$resultProject = @mysql_query($projectSQL);
-				$rowProject = mysql_fetch_row($resultProject);
+  //Start to display the form
 
-				//Start to display the form
+  echo "<tr><td bgcolor='#CCCCCC'><b>Insert Into Project</td><td bgcolor='#CCCCCC'><b>Sorted By Keyword</td><td bgcolor='#CCCCCC'><b>Import Data</td>";
 
-				echo "<Form name='importForm' Method='POST' ACTION='manage/importData.php'>";
-				
-				//Display the header table
+  //Display the actual info in the table
 
-				echo "<table width='100%' class=userinfotable>";
-				echo "<tr><td bgcolor='#CCCCCC'><b>Insert Into Project</td><td bgcolor='#CCCCCC'><b>Sorted By Keyword</td><td bgcolor='#CCCCCC'><b>Import Data</td>";
-				
-				//Display the actual info in the table
+  echo "<tr><td><b>" . $rowProject[0] . "</td><td>" . $keyword . "</td><td><input type='submit' name='importData' value='Import'></td></tr></table>";
 
-				echo "<tr><td><b>" . $rowProject[0] . "</td><td>" . $keyword . "</td><td><input type='submit' name='importData' value='Import'></td></tr></table>";
+  //Query to grab all of the category information based on what was passed in by the user
 
-				//Query to grab all of the category information based on what was passed in by the user
+  $sqlCAT = "select id, name from mgtcategory where id='" . $_GET['cat'] . "' order by CATorder,id";
+  $resultCAT = @mysql_query($sqlCAT);
+  dispCategories($keyword, $resultCAT);
 
-				$sqlCAT = "select id, name from mgtcategory where id='" . $_GET['cat'] . "' order by CATorder,id";
-				$resultCAT = @mysql_query($sqlCAT);
-
-				
-				while($rowCAT = mysql_fetch_array($resultCAT)){ //loop through all categories
-
-					$idCAT = $rowCAT[0];
-					$nameCAT = $rowCAT[1];
-									
-					echo "\n\n<div name='CAT'>\n\n";
-					
-					echo "<hr><font size='4' color='#0000FF'>" .  $nameCAT . "</font><br>";
-					
-					echo "<input type='radio' name='" . $nameCAT . "' value='Check' onclick='checkIT(this.parentNode,true)'>Select All Test Cases<br>";
-					
-					echo "<input type='radio' name='" . $nameCAT . "' value='Uncheck' onclick='checkIT(this.parentNode,false)' CHECKED>Unselect All Test Cases<br><br>";	
-					
-					//Check the keyword that the user has submitted.
-							
-					if($keyword == 'NONE')
-					{
-						//If they keyword is NONE then just do a regular query
-
-						$sqlTC = "select id, title from mgttestcase where catid='" . $idCAT . "' order by TCorder,id";
-						
-					}else
-					{
-
-						//If they keyword is anything else query based on keyword
-
-						$sqlTC = "select id, title from mgttestcase where catid='" . $idCAT . "' and keywords like '%" . $keyword . "%' order by TCorder,id";
-
-					}
-
-		
-
-
-					$resultTC = @mysql_query($sqlTC);
-
-						
-						while($rowTC = mysql_fetch_array($resultTC)){ //Display all test cases
-
-							$idTC = $rowTC[0]; //Get the test case ID
-							$titleTC = $rowTC[1]; //Get the test case title
-
-							//Displays the test case name and a checkbox next to it
-
-							//Displays the test case name and a checkbox next to it
-							
-							$sqlCheck = "select mgttcid from project,component,category,testcase where mgttcid=" . $idTC . " and project.id=component.projid and component.id=category.compid and category.id=testcase.catid and project.id=" . $_SESSION['project'];
-
-							$checkResult = @mysql_query($sqlCheck);
-							$checkRow = mysql_num_rows($checkResult);
-
-							if($checkRow > 0)
-							{
-								echo "<input type='checkbox' name='C" . $idTC . "'><b>" . $idTC . "</b>:" . htmlspecialchars($titleTC);
-
-								echo "<img src='icons/checkmark.gif'>";
-								
-								echo "<input type='hidden' name='H" . $idTC . "' value='" . $idTC. "'>";
-								echo "<br>";
-
-							}else
-							{
-
-								echo "<input type='checkbox' name='C" . $idTC . "'><b>" . $idTC . "</b>:" . htmlspecialchars($titleTC);
-								
-								echo "<input type='hidden' name='H" . $idTC . "' value='" . $idTC. "'>";
-								echo "<br>";
-							}
-							
-						}//End while TC
-							
-					echo "\n\n</div>\n\n";
-							
-
-				}//End while CAT
-				
-				echo "</div>\n\n";
-
-				echo "<hr>";
-
-				echo "</form>";
-
-
-
-
+  echo "</form>";
 }
 
 

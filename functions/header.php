@@ -15,11 +15,12 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 //include the configuration file
-require_once($_SERVER[DOCUMENT_ROOT] . "/testlink/config/config.inc.php");
+require_once("config.inc.php");
 
 //inport the get rights function
 require_once("getRights.php");	
 
+/*
 //import the db class
 require_once("DBControl.php");
 
@@ -37,6 +38,7 @@ function doDBPearConnect()
 }
 
 doDBPearConnect();
+*/
 
 // doDBConnect
 // How TestLink connects to the database

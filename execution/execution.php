@@ -170,7 +170,7 @@ if($edit == 'testcase' && $build)
 
 	//If the user chose None for the keyword selection I show every keyword
 
-	$TCResult = mysql_query("select testcase.id, title, summary, steps, exresult, keywords,mgttcid,version,risk, importance from testcase where testcase.id = " . $data . " and testcase.active='on'",$db);
+	$TCResult = mysql_query("select testcase.id, title, summary, steps, exresult, keywords,mgttcid,version,risk, importance from testcase where testcase.id = " . $data . " and testcase.active='on' order by mgttcid",$db);
 
 	//Display the test case
 
@@ -350,41 +350,22 @@ function radioResult($tcid,$result)
 
 function displayTestCase($resultTC)
 {
+	global $build;
 
-	while ($myrow = mysql_fetch_row($resultTC)){ //display all the test cases until we run out
-					
-	//This makes every test case its own table
-											
-		//I decided to add the ability to show results of the test case if there already were some. This next query looks to see if there are any previous results for the current build
-
-		$sql = "select notes, status from results where tcid='" . $myrow[0] . "' and build='" . $_GET['build'] . "'";
+	while ($myrow = mysql_fetch_row($resultTC))
+	{ 
+		//display all the test cases until we run out
+		$id			= $myrow[0];
+		$title		= $myrow[1];
+		$summary	= $myrow[2];
+		$steps		= $myrow[3];
+		$exresult	= $myrow[4];
+		$keywords	= $myrow[5];
+		$mgttcid	= $myrow[6];
+		$version	= $myrow[7];
+		$risk		= $myrow[8];
+		$imp		= $myrow[9];
 			
-		$result = mysql_query($sql); //Run the query
-		$num = mysql_num_rows($result); //How many results
-
-		//If the result is empty it leaves the box blank.. This looks weird. Entering a space if it's blank
-
-		if($myrow[1] == "")
-		{
-			$myrow[1] = "none";
-		}
-
-		if($myrow[2] == "")
-		{
-			$myrow[2] = "none";
-		}
-
-		if($myrow[3] == "")
-		{
-			$myrow[3] = "none";
-		}
-
-		if($myrow[4] == "")
-		{
-			$myrow[4] = "none";
-
-		}
-
 		//Set the version flag to zero.
 		//If it is set to 1 that means the test case has been updated
 		//If it is set to 2 that means the test case has been deleted
@@ -393,11 +374,11 @@ function displayTestCase($resultTC)
 		
 		//call the checkVersion function which will set the version flag correcly
 
-		$versionFlag = checkVersion($myrow[6],$myrow[7]);
+		$versionFlag = checkVersion($mgttcid,$id);
 
 		//displays the test case header
 
-		TCHeader($myrow[0],$myrowCOMCAT[0],$myrowCOMCAT[1],$versionFlag,$myrow[6],$myrow[1]);
+		TCHeader($id,$myrowCOMCAT[0],$myrowCOMCAT[1],$versionFlag,$mgttcid,$title);
 
 		//displays the test case body
 		
@@ -405,18 +386,17 @@ function displayTestCase($resultTC)
 
 		echo "<tr valign=top><td width=50%>";
 
-		TCBody($myrow[2],$myrow[3],$myrow[4],$myrow[5], $myrow[9] . $myrow[8]);
+		TCBody($summary,$steps,$exresult,$keywords, $risk . $imp);
 
 		//Begin to display the build related stuff (notes,results,bugs)
 
 		echo "</td><td width=50%>";
 
-		results($myrow[0]);
+		results($id);
 
 		echo "</td><tr>";
 						
-		}//end TC loop
-			
+		}//end TC loop	
 		
 }//end function displayTestCase
 
@@ -424,7 +404,6 @@ function displayTestCase($resultTC)
 
 function displayBugs($tcid)
 {
-
 	//Create a textarea field to hold the bugs
 
 	echo "<br><input type=text name='bugs" . $tcid . "' size=30 value='";
@@ -432,21 +411,15 @@ function displayBugs($tcid)
 	//sql code to grab the appropriate bugs for the test case and build
 						
 	$sqlBugs = "select bug from bugs where tcid='" . $tcid . "' and build='" . $_GET['build'] . "'";
-							
-							
+														
 	$resultBugs = mysql_query($sqlBugs); //Execute the query
-
 
 	while ($myrowBugs = mysql_fetch_row($resultBugs)) //For each bug that is found
 	{
-								
 		echo $myrowBugs[0] . ","; //Display the bug and a comma after it
-						
-
 	}
 													
 	echo "'>"; //End the text area and show example
-
 }
 
 //This function checks the version of the current test case vs. the version of the management test case
@@ -455,7 +428,6 @@ function displayBugs($tcid)
 
 function checkVersion($mgttcid,$tcVersion)
 {
-
 	//SQL query that grabs the latest version of the currently viewed test case
 			
 	$sqlVersion = "select version from mgttestcase where mgttestcase.id='" . $mgttcid . "'";
@@ -474,20 +446,15 @@ function checkVersion($mgttcid,$tcVersion)
 
 		if($mgtRow[0] > $tcVersion)
 		{
-
 			//Display the flag
-
-			$flag = 1;
-								
+			$flag = 1;							
 		}
 					
 	}else
 	{
-
 		//We want to show the x icon so that the user knows the tc has been deleted
 							
 		$flag = 2;
-
 	}
 						
 	//Return the result of the version check
@@ -526,10 +493,8 @@ function TCHeader($tcid,$comName,$catName,$versionFlag,$mgttcid,$tcTitle)
 							
 	if($versionFlag == 1) //if the test case has been updated
 	{
-
 		echo "<img border='0' src='icons/flag.gif'></a>";
-							
-
+						
 	}elseif($versionFlag == 2) //If the management side test case has been deleted
 	{
 		echo "<img border='0' src='icons/x-icon.gif'></a>";
@@ -548,8 +513,6 @@ function TCHeader($tcid,$comName,$catName,$versionFlag,$mgttcid,$tcTitle)
 
 	echo "</table>";
 
-
-
 }//end function TCHeader
 
 //displays the test case body
@@ -562,11 +525,11 @@ function TCBody($summary,$steps,$exresult,$keywords, $riskImportance)
 
 	<tr><td class=tctable><b>Summary:</b><? echo htmlspecialchars(nl2br($summary)) ?></td></tr>
 								
-	<tr><td class=tctable><b>Steps:</b><br><? nl2br($steps) ?></td></tr>
+	<tr><td class=tctable><b>Steps:</b><br><? echo nl2br($steps) ?></td></tr>
 								
-	<tr><td class=tctable><b>Expected Result:</b><br><? nl2br($exresult) ?></td></tr>
+	<tr><td class=tctable><b>Expected Result:</b><br><? echo nl2br($exresult) ?></td></tr>
 
-	<tr><td class=tctable><b>Keywords:</b><br><? $keywords ?></td></tr>
+	<tr><td class=tctable><b>Keywords:</b><br><? echo $keywords ?></td></tr>
 
 	<tr><td class=tctable><b>Priority (Risk/Importance):</b><br>
 

@@ -51,25 +51,29 @@ echo "<SELECT NAME='build'>";
 
 echo "</SELECT>";
 
-echo "<input type='submit' NAME='submit' value='submit'></td></tr>";
-
-echo "<tr><td class=userinfotable ><a href='metrics/allBuildMetrics.php' target='mainFrame'>View The Overall Build Status</td></tr>";
-
-echo "<tr><td class=userinfotable ><a href='metrics/totalTestCase.php' target='mainFrame'>View Status By Individual Test Cases</td></tr>";
-
-echo "<tr><td class=userinfotable ><a href='metrics/blockedFailedReport.php?type=b' target='mainFrame'>Blocked Test Cases</td></tr>";
-
-echo "<tr><td class=userinfotable ><a href='metrics/blockedFailedReport.php?type=f' target='mainFrame'>Failed Test Cases</td></tr>";
-
-echo "<tr><td class=userinfotable ><a href='metrics/bugDetail.php' target='mainFrame'>Total Bugs For Each Test Case</td></tr>";
-
-echo "<tr><td class=userinfotable ><a href='metrics/emailData.php' target='mainFrame'>Email Test Plan Info</td></tr>";
-
-echo "<tr><td class=userinfotable >&nbsp</td></tr>";
-
-echo "<tr><td class=userinfotable ><a href='metrics/detailedPlatform.php' target='mainFrame'>Detailed Platform Metrics</td></tr>";
-
-echo "</table>";
-
 
 ?>
+
+<input type='submit' NAME='submit' value='submit'></td></tr>
+
+<tr><td class=userinfotable ><a href='metrics/allBuildMetrics.php' target='mainFrame'>View The Overall Build Status</td></tr>
+
+<tr><td class=userinfotable ><a href='metrics/totalTestCase.php' target='mainFrame'>View Status By Individual Test Cases</td></tr>
+
+<tr><td class=userinfotable ><a href='metrics/blockedFailedReport.php?type=b' target='mainFrame'>Blocked Test Cases</td></tr>
+
+<tr><td class=userinfotable ><a href='metrics/blockedFailedReport.php?type=f' target='mainFrame'>Failed Test Cases</td></tr>
+
+<tr><td class=userinfotable ><a href='metrics/bugDetail.php' target='mainFrame'>Total Bugs For Each Test Case</td></tr>
+
+<tr><td class=userinfotable ><a href='metrics/emailData.php' target='mainFrame'>Email Test Plan Info</td></tr>
+
+<tr><td class=userinfotable >&nbsp</td></tr>
+
+<tr><td class=userinfotable ><a href='metrics/platform/detailedPlatform.php' target='mainFrame'>Platform Metrics By Component</td></tr>
+
+<tr><td class=userinfotable ><a href='metrics/platform/executionByPlatform.php' target='mainFrame'>Platform Metrics By Platform Container</td></tr>
+
+<tr><td class=userinfotable ><a href='metrics/platform/notRunPlatformTestCases.php' target='mainFrame'>Test Cases not run in any platform</td></tr>
+
+</table>

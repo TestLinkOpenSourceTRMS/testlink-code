@@ -21,12 +21,8 @@ $dbname     = "testlink"; //the name of the testlink database
 
 $basehref = "http://" . $_SERVER[SERVER_NAME] . "/testlink/";
 
-//echo $basehref;
-
-//print_r($_ENV);
-
 //TODO: replace above line with this constant
-//define("_BASE_HREF", $_ENV[SERVER_NAME] . "/testlink/");
+define("_BASE_HREF", "http://" . $_SERVER[SERVER_NAME] . "/testlink/");
 
 //$basehref   = "http://localhost/testlink/"; 
 
@@ -34,9 +30,9 @@ $basehref = "http://" . $_SERVER[SERVER_NAME] . "/testlink/";
 
 $loginurl = $basehref . "login.php";
 //TODO: replace above line with this constant
-//define("_LOGIN_URL", _BASE_HREF . "login.php");
+define("_LOGIN_URL", _BASE_HREF . "login.php");
 
-
+//This is the root path of the server. It is used whenever we need an absolute path
 define("_ROOT_PATH", $_SERVER[DOCUMENT_ROOT] . "/testlink/");
 
 ///////////////////////////////////////////////

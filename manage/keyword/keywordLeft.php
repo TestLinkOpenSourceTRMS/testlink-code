@@ -33,16 +33,6 @@ if ($_SESSION['product']) {
 }
 
 
-
-
-/*if($product) {
-	genManageTree($product, "manage/keyword/keywordData.php", 0,1);
-}*/
-
-?>
-
-<?
-
 $product = $_SESSION['product'];
 
 if($product)
@@ -53,7 +43,7 @@ if($product)
 
 	while ($myrowPROD = mysql_fetch_row($prodResult))
 	{
-		$menustring = $menustring . ".|" . $myrowPROD[1] . "|manage/keyword/keywordData.php?edit=product&data=" . $myrowPROD[0] . "|test||mainFrame|\n";
+		$menustring = $menustring . ".|" . $myrowPROD[1] . "||test||mainFrame|\n";
 
 		$sqlCom = "select id, name from mgtcomponent where prodid=" . $myrowPROD[0];
 

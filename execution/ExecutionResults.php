@@ -1,3 +1,29 @@
+Your results have been submitted
+
+<hr/>
+
+<table width="100%" border="1">
+<tr>
+	<th width="5%">
+		Test Case ID
+	</th>
+	<th width="20%">
+		Test Case
+	</th>
+	<th width="5%">
+		Build
+	</th>
+	<th width="5%">
+		Result
+	</th>
+	<th width="50%">
+		Notes
+	</th>
+	<th width="25%">
+		Bugs
+	</th>
+</tr>
+
 <?php
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -15,8 +41,8 @@ require_once("../functions/header.php");
   doHeader();
 
 require_once("../functions/csvSplit.php");
+require_once("../functions/refreshLeft.php"); //This adds the function that refreshes the left hand frame
 	
-echo "bz: " + $bugzillaOn . "<br>";
 $i = 0; //start a counter
 
 //It is necessary to turn the $_POST map into a number valued array
@@ -76,16 +102,29 @@ while ($i < count($newArray)) //Loop for the entire size of the array
 
 			//Don't display anything if there are no changes			
 		}
+		else if($tcStatus == 'n')
+		{
+			//I think that from now on it may just be easier to delete the result row in the db if the status is
+			//not run
+
+			$sql = "delete from results where tcid=" . $tcID . " and build=" . $build;
+			$result = mysql_query($sql);
+
+			displayResult($tcID, $build, $tcStatus, $tcNotes, $tcBugs);
+
+		}
 		else
 		{
-
 			//update the old result
 	
 			$sql = "UPDATE results set runby ='" . $_SESSION['user'] . "', status ='" .  $tcStatus . "', notes='" . $tcNotes . "' where tcid='" . $tcID . "' and build='" . $build . "'";
-
+			
+			displayResult($tcID, $build, $tcStatus, $tcNotes, $tcBugs);
+	
 			$result = mysql_query($sql); //Execute query
 
 			updateBugs($tcId, $build, $tcBugs);
+
 		}
 
 		
@@ -109,6 +148,8 @@ while ($i < count($newArray)) //Loop for the entire size of the array
 			
 				$sql = "insert into results (build,daterun,status,tcid,notes,runby) values ('" . $build . "','" . $date . "','" . $tcStatus . "','" . $tcID . "','" . $tcNotes . "','" . $_SESSION['user'] . "')";
 
+				displayResult($tcID, $build, $tcStatus, $tcNotes, $tcBugs);
+
 				$result = mysql_query($sql);
 
 				updateBugs($tcId, $build, $tcBugs);
@@ -120,9 +161,12 @@ while ($i < count($newArray)) //Loop for the entire size of the array
 
 }//end while
 
-echo "Results Submitted<br><br>";
+echo "</table>";
+//refresh the page
+$page =  _BASE_HREF . "execution/executionFrameLeft.php";
 
-echo "To continue executing test cases select another component, category, or test case from the left frame";
+refreshFrame($page); //call the function below to refresh the left frame
+
 
 function updateBugs($tcId, $build, $bugs)
 {
@@ -149,5 +193,39 @@ function updateBugs($tcId, $build, $bugs)
 
 }
 
+function displayResult($tcID, $build, $tcStatus, $tcNotes, $tcBugs)
+{
+	//get the test case's name
+
+	if($result == "n")
+	{
+	?>
+		<tr>
+			<td align="center"><? echo $tcID ?></td>
+			<td>Test Case Name</td>
+			<td align="center"><? echo $build ?></td>
+			<td align="center">Not Run</td>
+			<td>None</td>
+			<td align="center">None</td>
+		</tr>
+
+	<?
+
+	}
+	else
+	{
+
+	?>
+		<tr>
+			<td align="center"><? echo $tcID ?></td>
+			<td>Test Case Name</td>
+			<td align="center"><? echo $build ?></td>
+			<td align="center"><? echo $tcStatus ?></td>
+			<td align="center"><? echo $tcNotes ?>&nbsp</td>
+			<td align="center"><? echo $tcBugs ?>&nbsp</td>
+		</tr>
+	<?
+	}
+}
 
 ?>

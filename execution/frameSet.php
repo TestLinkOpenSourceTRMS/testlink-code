@@ -63,7 +63,7 @@ require_once("../functions/header.php");
 	else
 	{
 		
-		echo "<frame src='execution/executionFrameLeft.php?page=" . $_GET['page'] . "' name='leftFrame' scrolling='yes'>\n\n";
+		echo "<frame src='execution/executionFrameLeft.php?page=" . $_GET['page'] . "' name='left' scrolling='yes'>\n\n";
 
 		echo "<frame src='execution/execution.php?edit=info' name='mainFrame'>\n\n";
 	

@@ -56,7 +56,7 @@ elseif($_GET['edit'] == 'component')
 	while($rowCOM = mysql_fetch_array($resultCOM)) //Display all Components
 	{ 
 
-		echo "<tr><td align='center'><b>" . $rowCOM[1] . "</td><td>";
+		echo "<tr><td align='center' width='50%'><b>" . $rowCOM[1] . "</td><td>";
 		
 		$sqlKeys = "select id,keyword from keywords where prodid='" . $_GET['prodid'] . "'";
 		$resultKeys = mysql_query($sqlKeys);
@@ -109,7 +109,7 @@ elseif($_GET['edit'] == 'category')
 	while($rowCOM = mysql_fetch_array($resultCOM)) //Display all Components
 	{ 
 
-		echo "<tr><td align='center'><b>" . $rowCOM[1] . "</td><td>";
+		echo "<tr><td align='center' width='50%'><b>" . $rowCOM[1] . "</td><td>";
 		
 		$sqlKeys = "select id,keyword from keywords where prodid='" . $_GET['prodid'] . "'";
 		$resultKeys = mysql_query($sqlKeys);
@@ -161,9 +161,56 @@ elseif($_GET['edit'] == 'testcase')
 	while($rowCOM = mysql_fetch_array($resultCOM)) //Display all Components
 	{ 
 
-		echo "<tr><td align='center'><b>" . htmlspecialchars($rowCOM[1]) . "</td><td>";
+		echo "<tr><td align='center' width='50%'><b>" . htmlspecialchars($rowCOM[1]) . "</td><td>";
+	
 		
-		$sqlKeys = "select id,keyword from keywords where prodid='" . $_GET['prodid'] . "'";
+		//SQL query to grab all of the available keywords from the product the user has selected
+		$sqlKeys = "select keyword from keywords where prodid='" . $_GET['prodid'] . "'";
+
+		//Execute the query
+		$resultKeys = mysql_query($sqlKeys);
+
+		//Find the amount of keys so that I can make the select box the right size
+		
+		$keySize = mysql_num_rows($resultKeys);
+
+		//Echo out a html select. Notice how the keywords has a set of brackets after it. This is necesarry for the
+		//Multiple to work
+
+		//Get the test cases list of keywords
+
+		$sqlKeywordCSV = "select keywords from mgttestcase where id='" . $rowCOM[0] . "'";
+
+		$resultKeywordCSV = mysql_query($sqlKeywordCSV);
+
+		$keywordCSV = mysql_fetch_row($resultKeywordCSV);
+
+		$keywordArray = explode(",", $keywordCSV[0]);
+
+		echo "<select name='keywords[]' size='" . $keySize . "' MULTIPLE>";
+
+
+		while ($keys = mysql_fetch_row($resultKeys))
+		{
+			//check to see if the key being looped over is in the test case
+
+			//if it is highlight it
+
+			if (in_array($keys[0], $keywordArray)) 
+			{
+
+				echo "<OPTION VALUE='" . $keys[0] ."' SELECTED>" . $keys[0];
+			}else
+			{
+				echo "<OPTION VALUE='" . $keys[0] ."'>" . $keys[0];
+			}
+									
+		}//ened while
+
+		echo "</select>";
+
+
+	/*	$sqlKeys = "select id,keyword from keywords where prodid='" . $_GET['prodid'] . "'";
 		$resultKeys = mysql_query($sqlKeys);
 
 		$resultSize = mysql_num_rows($resultKeys);
@@ -176,7 +223,41 @@ elseif($_GET['edit'] == 'testcase')
 			//This next block of code will search through the testcase and see if any of the products keywords are being used. If they are I highlight them
 
 			//SQL statement to do the grab the test cases keys
-			$sqlCompare = "select keywords from mgttestcase where id='" . $rowCOM[0] . "' and keywords like '%" . $rowKeys[1] . "%'";
+		
+			//Get the test cases list of keywords
+
+			$sqlKeywordCSV = "select keywords from mgttestcase where id='" . $data . "'";
+
+			$resultKeywordCSV = mysql_query($sqlKeywordCSV);
+
+			$keywordCSV = mysql_fetch_row($resultKeywordCSV);
+
+			$keywordArray = explode(",", $keywordCSV[0]);
+
+			echo "<tr><td><select name='keywords[]' size='" . $keySize . "' MULTIPLE>";
+
+
+			while ($keys = mysql_fetch_row($resultKeys))
+			{
+				//check to see if the key being looped over is in the test case
+
+				//if it is highlight it
+
+				if (in_array($keys[0], $keywordArray)) 
+				{
+
+					echo "<OPTION VALUE='" . $keys[0] ."' SELECTED>" . $keys[0];
+				}else
+				{
+					echo "<OPTION VALUE='" . $keys[0] ."'>" . $keys[0];
+				}
+										
+			}//ened while
+
+			echo "</select>";
+		
+		
+		/*	$sqlCompare = "select keywords from mgttestcase where id='" . $rowCOM[0] . "' and keywords like '%" . $rowKeys[1] . "%'";
 
 			//Execute the query
 			$resultCompare = mysql_query($sqlCompare);
@@ -201,7 +282,7 @@ elseif($_GET['edit'] == 'testcase')
 
 		}
 
-		echo "</select>";
+		echo "</select>";*/
 		
 
 		

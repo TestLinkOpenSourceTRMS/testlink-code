@@ -87,14 +87,14 @@ if($_POST['submitBuild'])
 		if($owner == 'All')
 		{
 			
-			$catSql = "select category.id, category.name from component,category where component.id = " . $myrowCOM[0] . " and component.id = category.compid order by CATorder,category.id";
+			$catSql = "select category.id, category.name from component,category where component.id = " . $myrowCOM[0] . " and component.id = category.compid order by CATorder,category.mgttcid";
 
 			$catResult = mysql_query($catSql);
 
 		}else //if the user selected a user to sort by
 		{
 
-			$catSql = "select category.id, category.name from component,category where component.id = " . $myrowCOM[0] . " and component.id = category.compid and category.owner='" . $owner . "' order by CATorder,category.id";
+			$catSql = "select category.id, category.name from component,category where component.id = " . $myrowCOM[0] . " and component.id = category.compid and category.owner='" . $owner . "' order by CATorder,category.mgttcid";
 
 			$catResult = mysql_query($catSql);
 

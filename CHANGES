@@ -1,5 +1,38 @@
 Special thanks to all of the people who have contributed solutions to problems they have found as well as those who filed bugs and feature requests.
 
+Version 1_0_4
+
+Bug	Contributor	Description
+
+None	Xe.saf		Added the ability to export test plan docs to word docs from the 
+			print page
+
+None	Xe.saf		Added the ability to export total metrics to excel docs
+
+912884	eisvik		Fixed the problem where deletion of test plans would delete other 	
+			projects results
+
+None	None		Updated the UI of the user/projects rights page. It was really hard 	
+			to use the page when there were a lot of users/projects
+
+
+894866  Michael Smith	The view modified test case page now has a status field that tells 	
+			the user what the change of the test cases was. The page will also 
+			delete test cases from projects that were deleted from products 
+			when they are updated.
+
+None	None		Cleaned up the build UI so that it's consistent throughout the app
+
+
+None	None		Updated the main page UI.. Moved the product and project tables 	
+			and added user metrics to the middle section
+
+None	None		Projects are being added to the breadcrumb trail although they 		
+			weren't supposed to be there.
+
+None    Art Eschenlauer	The buildDetail.php reports the last test plan test case in the 
+			table as having never been run, even when there are results for it.
+
 Version 1_0_3
 
 General

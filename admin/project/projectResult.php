@@ -198,6 +198,8 @@ if($_POST['newProject']) //if the user has pressed the create new button
 				
 				//Delete all of the results associated with the project		
 
+				//$sqlRES = "delete from results where build='" . $myrowBUI[0] . "'";
+
 				$sqlRES = "delete from results where build='" . $myrowBUI[0] . "' and results.tcid=testcase.id and testcase.catid=category.id and category.compid=component.id and component.projid='".$id."'";
 				
 				$resultRES = mysql_query($sqlRES);

@@ -50,7 +50,7 @@ if($_POST['updateSelected'])
 			
 			//Grab the relevent data from the mgtTestCase table
 
-			$mgtSQL = "select title, steps, exresult, keywords, catid, version, summary,TCorder from mgtTestCase where id=" . $idRow[0];
+			$mgtSQL = "select title, steps, exresult, keywords, catid, version, summary,TCorder from mgttestcase where id=" . $idRow[0];
 			$mgtResult = mysql_query($mgtSQL); //Run the query
 			$mgtRow= mysql_fetch_row($mgtResult);
 

@@ -31,7 +31,7 @@ if(has_rights("mgt_view_product"))//if user can view products
 
 echo <<<END
 <table width="100%" border="0" align="center">
-<form NAME="productForm" ACTION="">
+<form NAME="productForm" ACTION="mainPage.php">
 <tr>
 <td height="124" valign="top"><table width="100%" class="mainTable" align="center">
 <tr>
@@ -311,7 +311,7 @@ END;
   </tr>
 </table>
 <table width="100%" border="0" align="center">
-<FORM NAME='projectForm' ACTION=''>
+<FORM NAME='projectForm' ACTION='mainPage.php'>
   <tr>
     <td height="103" valign="top"><table width="100%" class='mainTable'>
       <tr>

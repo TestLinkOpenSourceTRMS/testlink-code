@@ -179,7 +179,7 @@ elseif($tc)
 
 	echo "<table width='100%' border=0>";
 
-	echo "<tr><td align=right><input type='submit' name='editTC' value='Save'><input type='submit' name='archive' value='Save and Archive'></td></tr>";
+	echo "<tr><td align=right><input type='submit' name='editTC' value='Save'></td></tr>";
 
 	echo "</table>";
 

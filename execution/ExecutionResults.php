@@ -296,7 +296,7 @@ while ($i < count($newArray)) //Loop for the entire size of the array
 		}
 	
 
-		$i = $i + 4; //Increment 3 values to the next tcID
+		$i = $i + 3; //Increment 3 values to the next tcID
 
 }//end while
 

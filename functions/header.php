@@ -23,15 +23,24 @@
 $dbhost     = "localhost"; //the host name for the server. Use either localhost,server name, or IP
 $dbuser     = ""; //the mysql user
 $dbpasswd   = ""; //the mysql password
-$dbname     = "testlink"; //the name of the database
+$dbname     = "testlink"; //the name of the testlink database
 
-$basehref   = "http://localhost/testlink/"; //Sets the basehref variable. Important to note that a forward slash "/" is needed in the end
+$basehref   = "http://localhost/testlink/"; //Sets the basehref variable which is your testlink directory location seen through your websever. So, if your testlink is installed in htdocs/testlink on your local host you would use the variable that is there by default
+
+//Important to note that a forward slash "/" is needed in the end of the basehref
 
 $loginurl   = "http://localhost/testlink/login.php";  // where you go back to login
 
-//If you want to use bugzilla then you'll need to set these variables
+///////////////////////////////////////////////
+//
+//Bug Tracking systems
+//
+///////////////////////////////////////////////
 
-$bugzillaOn = false; //do you want to use bugzilla to strike through resolved, verified, and closed bugs. By default this is on.
+//Currently the only bug tracking system I allow is bugzilla. 
+//TestLink uses bugzilla to check if displayed bugs resolved, verified, and closed bugs. If they are it will strike through them
+
+$bugzillaOn = false; // To turn on bugzilla. By default this is false.
 
 if($bugzillaOn == true) //if the user wants to use bugzilla
 {
@@ -71,7 +80,7 @@ ini_set('include_path', '.');
 //
 ///////////////////////////////////////////////
 
-$TLVersion = "v1.0.2";
+$TLVersion = "v1.0.3";
 
 
 ///////////////////////////////////////////////
@@ -226,7 +235,7 @@ function doNavBar()
 
 	// Figure out if the user can do user admin
 	if (has_rights("mgt_users")) {
-		$useradmin = "<a href='admin/user/newEditUser.php' target='main'> User Administration</a> | ";
+		$useradmin = "<a href='admin/user/newEditUser.php'> User Administration</a> | ";
 	} else {
 		$useradmin = "";
 	}
@@ -289,7 +298,7 @@ function doNavBar()
   <tr> 
     <td align="right" bgcolor="#999999">
       $useradmin
-      <a href='userInfo.php' target='main'>My User Info</a> 
+      <a href='userInfo.php'>My User Info</a> 
       | <a href='http://testlink.sourceforge.net' target='_blank'>Documentation</a> 
       | <a href='logout.php' target='_parent'>Log Out</a></td>
   </tr>

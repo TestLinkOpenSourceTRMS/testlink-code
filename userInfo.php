@@ -6,13 +6,19 @@
 //Purpose:  This file generates and displays the users' information.
 ////////////////////////////////////////////////////////////////////////////////
 
-   require_once("functions/header.php");
+  require_once("functions/header.php");
 
   session_start();
   doDBConnect();
   doHeader();
+  doNavBar();
 
-echo "<LINK REL='stylesheet' TYPE='text/css' HREF='kenny.css'>";
+?>
+
+<br>
+
+<?
+
 
 if(!$_POST['editUser'])
 {

@@ -10,16 +10,20 @@ function refreshFrame($page)
 {
 
 
-	echo "<script language='javascript'>";
-	
-	echo "if(parent.left){";
 
-	echo "parent.left.window.location.href='" . $page . "';";
+echo <<<END
 
-	echo "}";
+<script language='javascript'>
 
-	echo "</script>";
+if(parent.left)
+{
 
+parent.left.window.location.href='$page';
+
+}
+</script>
+
+END;
 
 }
 

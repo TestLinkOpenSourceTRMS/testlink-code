@@ -12,12 +12,11 @@
   session_start();
   doDBConnect();
   doHeader();
+  doNavBar();
 
 ?>
 
-
-<LINK REL="stylesheet" TYPE="text/css" HREF="kenny.css">
-
+<br>
 
 <?
 

@@ -228,9 +228,8 @@ if($_GET['edit'] == 'product')
 	
 	//Chop the trailing comma off of the end of the keywords field
 
-	$keywords = substr("$myrowTC[6]", 0, -1); 
 
-	echo "<tr><td class=tctable><a href='manage/keyword/viewKeywords.php?product=" . $prodID[0] . "' target='_blank'><b>Keywords</b></a>: " . $keywords . "</td></tr>";
+	echo "<tr><td class=tctable><a href='manage/keyword/viewKeywords.php?product=" . $prodID[0] . "' target='_blank'><b>Keywords</b></a>: " . $myrowTC[6] . "</td></tr>";
 
 		
 	echo "</table>";

@@ -83,11 +83,16 @@ elseif($_GET['edit'] == 'component')
 
 	<tr>
 		<td colspan='2'>
-			
 				<br>
-				<INPUT TYPE=CHECKBOX NAME='overwrite' value='overwrite' CHECKED>Overwrite existing keyword values?
+				<INPUT TYPE='radio' NAME='overwrite' value='true' CHECKED>Overwrite existing keyword values</radio>
 				<br>
-				<font color="red"><b>Note:</b> If you check this box and submit the form you will <b>overwrite existing keyword values</b>. Not checking the box will add these values to the existing ones. All keywords that have been overwritten cannot be recovered</font>
+				<input type="radio" NAME='overwrite' value='false'>Add keywords to existing values</radio>
+				<hr>
+				<font color="red"><b>Note:</b><br>
+				Choosing to <b>overwrite existing keyword values</b> will replace all existing values. All keywords that have been overwritten cannot be recovered
+				<br><br>
+				Choosing to <b>add keywords to existing values</b> will compare the choices that you've made with the existing keyword values and add them to the list.
+				</font>
 		</td>
 	</tr>
 
@@ -148,11 +153,16 @@ elseif($_GET['edit'] == 'category')
 
 	<tr>
 		<td colspan='2'>
-			
 				<br>
-				<INPUT TYPE=CHECKBOX NAME='overwrite' value='overwrite' CHECKED>Overwrite existing keyword values?
+				<INPUT TYPE='radio' NAME='overwrite' value='true' CHECKED>Overwrite existing keyword values</radio>
 				<br>
-				<font color="red"><b>Note:</b> If you check this box and submit the form you will <b>overwrite existing keyword values</b>. Not checking the box will add these values to the existing ones. All keywords that have been overwritten cannot be recovered</font>
+				<input type="radio" NAME='overwrite' value='false'>Add keywords to existing values</radio>
+				<hr>
+				<font color="red"><b>Note:</b><br>
+				Choosing to <b>overwrite existing keyword values</b> will replace all existing values. All keywords that have been overwritten cannot be recovered
+				<br><br>
+				Choosing to <b>add keywords to existing values</b> will compare the choices that you've made with the existing keyword values and add them to the list.
+				</font>
 		</td>
 	</tr>
 
@@ -241,11 +251,16 @@ elseif($_GET['edit'] == 'testcase')
 
 	<tr>
 		<td colspan='2'>
-			
+							<br>
+				<INPUT TYPE='radio' NAME='overwrite' value='true' CHECKED>Overwrite existing keyword values</radio>
 				<br>
-				<INPUT TYPE=CHECKBOX NAME='overwrite' value='overwrite' CHECKED>Overwrite existing keyword values?
-				<br>
-				<font color="red"><b>Note:</b> If you check this box and submit the form you will <b>overwrite existing keyword values</b>. Not checking the box will add these values to the existing ones. All keywords that have been overwritten cannot be recovered</font>
+				<input type="radio" NAME='overwrite' value='false'>Add keywords to existing values</radio>
+				<hr>
+				<font color="red"><b>Note:</b><br>
+				Choosing to <b>overwrite existing keyword values</b> will replace all existing values. All keywords that have been overwritten cannot be recovered
+				<br><br>
+				Choosing to <b>add keywords to existing values</b> will compare the choices that you've made with the existing keyword values and add them to the list.
+				</font>
 		</td>
 	</tr>
 

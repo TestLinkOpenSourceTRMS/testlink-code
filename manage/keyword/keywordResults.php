@@ -14,22 +14,17 @@ doHeader();
 $keywordArray = $_POST['keywords'];
 $overwrite = $_POST['overwrite'];
 
-$comma_separated = implode(",", $keywordArray);
-echo "cs:" . $comma_seperated . "::";
-
-
-//echo "foo" . $keywordArray . "<br>";
-//echo "foo2" . $overwrite;
+echo $overwrite;
 
 if($_GET['type'] == 'COM') //editing a component
 {
-	print_r($keywordArray);
+	//print_r($keywordArray);
 	
-	//iterateOverCat($_GET['ID']);
+	iterateOverCat($_GET['ID']);
 
 }else if($_GET['type'] == 'CAT')
 {
-	//iterateOverTC($_GET['ID']);
+	iterateOverTC($_GET['ID']);
 
 }else if($_GET['type'] == 'TC')
 {
@@ -39,44 +34,55 @@ if($_GET['type'] == 'COM') //editing a component
 
 function returnKeywordCSV($newKeywordArray, $existingKeywords)
 {
-
-	//first check if the existing keywords are empty
-
-	if($existingKeywords == "")
-	{
-		$i=0; //counter
-
-		foreach($newKeywordArray as $bob) //for each of the array values
-		{
-			$keywords .= $newKeywordArray[$i] . ","; //Build this string	
-			$i++; //increment
-		}
-
-		return $keywords;
-
-	}
+	/*
 	
-	echo "existingKeywords: " . $existingKeywords . "<br>";
+		This method is used only if the user is adding keywords and not overwriting
+	
+		The method looks at the two arrays (existing and new), finds the intersection, throws away the dups in the new array, and adds the new keywords (if any) to the existing array
+	*/
 
-
-	$existingKeywordArray = explode(",", $existingKeywords);
-
-	$newKeywordCSV = array_diff($existingKeywordArray, $newKeywordArray);
-
-
-	print_r($newKeywordCSV);
-
-	foreach($newKeywordCSV as $bob) //for each of the array values
+	//if the new array is empty then do nothing
+	if(count($newKeywordArray) > 0)
 	{
-		$keywords .= $bob . ","; //Build this string	
-		echo "next word: " . $bob . "<br>";
+
+
+		echo "new: ";
+		print_r($newKeywordArray);
+
+		echo "<br><br>existing: ";
+		print_r($existingKeywords);
 		
-		//$i++; //increment
+		if($existingKeywords != null)
+		{
+			$comma_separated = explode(",", $existingKeywords);
+		}
+		
+		var_dump(array_intersect($newKeywordArray, $comma_separated));
+		
+		echo "<br><br>";
+
+		var_dump(array_diff($newKeywordArray, $comma_separated));
+
+		$mergedArray = array_merge($newKeywordArray, $comma_separated);
+
+		echo "<br><br>";
+
+		print_r($mergedArray);
+
+		echo "<br><br>unique";
+		$uniqueArray = (array_unique($mergedArray));
+
+		echo "<br><br>implode";
+		$imploded = implode(",", $uniqueArray);
+
+		echo "<Br><Br>" . $imploded;
+	}else
+	{
+		$imploded = $existingKeywords;
 	}
 
-	echo "<br><br>new array: " . $keywords . "<br><br>";
 
-	return $keywords;
+	return $imploded;
 }
 
 function iterateOverCat($id)
@@ -113,19 +119,27 @@ function updateTC($id)
 	global $keywordArray;
 	global $overwrite;
 
-	//echo "<br><br>" . count($keywordArray) . "<br><br>";
-
-	//print_r($keywordArray) . "<br><br>";
-	//echo $overwrite . "<br><br>";
-
-	if(count($keywordArray) > 0) //if there actually are values passed in
-	{
-	//	echo "true";
-
-		if($overwrite != "overwrite")
+		//did the user choose to overwrite the keys?
+		if($overwrite == "true")
 		{
-	//		echo "foooooo";
+			echo "ow <br>";
+			//did the user pass in key words?
+			if(count($keywordArray) > 0)
+			{
+				//if yes then put them in csv format
+				$newKeywordCSV = implode(",", $keywordArray);
+			}else
+			{
+				//otherwise set the values to null
+				$newKeywordCSV = null;
+			}
 
+		}else
+		{
+			//the user chose to add keys instead of overwrite
+			echo "no ow<br><br>";
+
+			//get the keywords from the db
 			$sqlGetKeywordCSV = "select keywords from mgttestcase where id=" . $id;
 			$getKeywordCSVResult = mysql_query($sqlGetKeywordCSV);
 	
@@ -133,157 +147,27 @@ function updateTC($id)
 
 			echo "kwRow: " + $rowKeyword[0] . "::<br><br>";
 
-			$newKeywordCSV = returnKeywordCSV($keywordArray, $rowKeyword[0]);
-
-			//echo $newKeywordCSV;
-		}else
-		{
-		//	echo "no ow<br>";
-			$i=0; //counter
-
-			foreach($keywordArray as $bob) //for each of the array values
+			//if the user actually passed in values for the keyword array
+			if(count($keywordArray) > 0)
 			{
-				$newKeywordCSV .= $keywordArray[$i] . ","; //Build this string	
-				$i++; //increment
+				//call the return kw CSV function
+				$newKeywordCSV = returnKeywordCSV($keywordArray, $rowKeyword[0]);
+			}else
+			{	
+				//otherwise set the new keywords to the values in the db
+				$newKeywordCSV = $rowKeyword[0];
 			}
 			
 		}
 
+		
+
 		echo "<br><br>" . $newKeywordCSV . "<br><br>";
 
+		//update the db
 		$sqlUpdate = "update mgttestcase set keywords='" . $newKeywordCSV . "' where id='" . $id . "'";
 		
 		echo "sql: " . $sqlUpdate;
 		$resultUpdate = mysql_query($sqlUpdate);
 
-	}
-
-	
 }
-
-//This page displays the result of the user picking to edit something
-/*
-if(count($_POST['keywords']) > 0) //if there actually are values passed in
-{
-
-	$i=0; //counter
-
-	foreach($_POST['keywords'] as $bob) //for each of the array values
-	{
-		$keywords .= $_POST['keywords'][$i] . ","; //Build this string	
-			$i++; //increment
-	}
-
-}
-
-/*
-if($_GET['type'] == 'COM') //editing a component
-{
-
-	$sqlCAT = "select id from mgtcategory where compid='" . $_GET['ID'] . "'";
-
-	$resultCAT = mysql_query($sqlCAT);
-
-	while($rowCAT = mysql_fetch_array($resultCAT)) //Display all Categories
-		{	
-			$sqlTC = "select id from mgttestcase where catid='" . $rowCAT[0] . "'";
-
-			$resultTC = mysql_query($sqlTC);
-
-			while($rowTC = mysql_fetch_array($resultTC)) //Display all Categories
-			{
-
-				//echo $rowTC[0] . " " . $rowTC[1] . "<br>";
-
-				$sqlUpdate = "update mgttestcase set keywords='" . $keywords . "' where id='" . $rowTC[0] . "'";
-
-				$resultUpdate = mysql_query($sqlUpdate);
-
-				//echo $sqlUpdate . "<br>";
-
-			}
-	
-
-		}
-	
-
-	//echo $keywords . "<br><br>";
-
-	echo "All Test Cases In This Component Have Been Edited";
-
-		
-
-}elseif($_GET['type'] =='CAT') //Editing a category
-{
-
-//print_r($_POST);
-	
-	if(count($_POST['keywords']) > 0) //if there actually are values passed in
-	{
-
-		$i=0; //counter
-
-		foreach($_POST['keywords'] as $bob) //for each of the array values
-		{
-			$keywords .= $_POST['keywords'][$i] . ","; //Build this string
-				
-				$i++; //increment
-		}
-
-	}
-
-			
-			$sqlTC = "select id from mgttestcase where catid='" . $_GET['ID'] . "'";
-
-			$resultTC = mysql_query($sqlTC);
-
-			while($rowTC = mysql_fetch_array($resultTC)) //Display all Categories
-			{
-
-				//echo $rowTC[0] . " " . $rowTC[1] . "<br>";
-
-				$sqlUpdate = "update mgttestcase set keywords='" . $keywords . "' where id='" . $rowTC[0] . "'";
-				
-				$resultUpdate = mysql_query($sqlUpdate);
-
-				
-				//echo $sqlUpdate . "<br>";
-
-			}
-	
-	
-
-	//echo $keywords . "<br><br>";
-
-	echo "All Test Cases In This Category Have Edited";
-
-
-}elseif($_GET['type'] == 'TC') //saving a test case but not archiving it
-{
-
-	//print_r($_POST);
-	
-	if(count($_POST['keywords']) > 0) //if there actually are values passed in
-	{
-
-		$i=0; //counter
-
-		foreach($_POST['keywords'] as $bob) //for each of the array values
-		{
-			$keywords .= $_POST['keywords'][$i] . ","; //Build this string
-				
-				$i++; //increment
-		}
-
-	}
-
-	$sqlUpdate = "update mgttestcase set keywords='" . $keywords . "' where id='" . $_GET['ID'] . "'";
-
-	$resultUpdate = mysql_query($sqlUpdate);
-
-
-	//echo $sqlUpdate . "<br>";
-
-	echo "Test Case's Keyword Has Been Edited";
-	
-}*/

@@ -556,7 +556,7 @@ function TCBody($summary,$steps,$exresult,$keywords, $riskImportance)
 
 function results($tcid)
 {
-	global $bugzillaOn;
+	global $bugzillaOn,$build;
 
 	?>
 		<table class=tctable width=100% align='top'>
@@ -568,7 +568,7 @@ function results($tcid)
 
 		$i = 0; //start a counter
 
-		//It is necessary to turn the $_POST map into a number valued array
+		//It is necessary to turn the $_GET map into an array
 
 		foreach ($_GET as $key)
 		{	
@@ -579,52 +579,67 @@ function results($tcid)
 				$platform = mysql_fetch_row(mysql_query($platformSql)); //Run the query
 
 				echo  "<BLOCKQUOTE><b>" . $arrayKeys[$i] . "</b>: " . $platform[0] . "<br></BLOCKQUOTE>";
+
+				//create the platform array
+				$platformArray[] = $key;
+
 			}
 			$i++;
 		}
 
+		//sort platforms
+		sort($platformArray);
+		reset($platformArray);
+
 	?>
+
+
 	</td></tr>
 
 	<?
 
-	//This query grabs the results from the build passed in
+	if(count($platformArray > 1))
+	{
+		$platformCSV = implode(",", $platformArray);
+	}else
+	{
+		$platformCSV = $platformArray[0];
+	}
 
-	/*$sql = "select notes,status,build,runby,daterun,status from results where tcid='" . $tcid . "' and build='" . $_GET['build'] . "'";
+	//This query grabs the results from the build/platform/tcid
 
-	$result = mysql_query($sql); //Run the query
-	$num = mysql_num_rows($result); //How many results
+	$sqlPlatformStatus = "select notes,result from platformresults where tcid='" . $tcid . "' and buildId='" . $build. "' and platformList='" . $platformCSV . "'";
 
-	$resultQuery = mysql_fetch_row($result); //grab the data
+	//echo $sqlPlatformStatus;
+
+	$resultPlatformStatus = mysql_query($sqlPlatformStatus); //Run the query
+	$num = mysql_num_rows($resultPlatformStatus); //How many results
+
+	$myrowPlatformStatus = mysql_fetch_row($resultPlatformStatus); //grab the data
 
 	//check the result of the current build and give it a corresponding color
 
-	echo "<tr><td class=tctable><b>Notes:</b><br><textarea name='notes" . $tcid . "' cols=35 rows=2>" . $resultQuery[0] . "</textarea></td></tr>";
-*/						
+	echo "<tr><td class=tctable><b>Notes:</b><br><textarea name='notes" . $tcid . "' cols=35 rows=2>" . $myrowPlatformStatus[0] . "</textarea></td></tr>";
+						
 	echo "<tr><td class=tctable width=50%><b>Result:</b><br>";
 
-		////If we find that a test case has a result record	
+	////If we find that a test case has a result record	
 	
-/*		if($num == 1) //Found a test case result
-		{
-
-			//Calls the radio result function which will return the status radio buttons
-
-			radioResult($tcid,$resultQuery[1]);						
-		}
+	if($num == 1) //Found a test case result
+	{
+		//Calls the radio result function which will return the status radio buttons
+		radioResult($tcid,$myrowPlatformStatus[1]);						
+	}
 						
-		else //If the test case has no result associated with it then I display nothing in the status and notes fields
-		{
-			
-			*/
-			echo "<input type='radio' name='status" . $tcid . "' value='n' CHECKED>Not Run";
-			echo " <input type='radio' name='status" . $tcid . "' value='p'>Passed";
-			echo " <input type='radio' name='status" . $tcid . "' value='f'>Failed";
-			echo " <input type='radio' name='status" . $tcid . "' value='b'>Blocked";
+	else //If the test case has no result associated with it then I display nothing in the status and notes fields
+	{			
+		echo "<input type='radio' name='status" . $tcid . "' value='n' CHECKED>Not Run";
+		echo " <input type='radio' name='status" . $tcid . "' value='p'>Passed";
+		echo " <input type='radio' name='status" . $tcid . "' value='f'>Failed";
+		echo " <input type='radio' name='status" . $tcid . "' value='b'>Blocked";
+	}//end else
 
-		//}//end else
-
-		echo "</td></tr>";
+	echo "</td></tr>";
 
 	?>
 	</table><br>
@@ -632,5 +647,39 @@ function results($tcid)
 	<?
 
 }
+
+//This next function checks to see if the user has selected anything for the status. If they have I check the appropriate selection box
+
+function radioResult($tcid,$result)
+{
+	if($result == 'p') //passed
+	{
+		echo "<input type='radio' name='status" . $tcid . "' value='n'>Not Run";
+		echo " <input type='radio' name='status" . $tcid . "' value='p' CHECKED>Passed";
+		echo " <input type='radio' name='status" . $tcid . "' value='f'>Failed";
+		echo " <input type='radio' name='status" . $tcid . "' value='b'>Blocked";
+						
+	}elseif($result == 'f') //failed
+	{			
+		echo "<input type='radio' name='status" . $tcid . "' value='n' >Not Run";
+		echo " <input type='radio' name='status" . $tcid . "' value='p'>Passed";
+		echo " <input type='radio' name='status" . $tcid . "' value='f' CHECKED>Failed";
+		echo " <input type='radio' name='status" . $tcid . "' value='b'>Blocked";
+
+	}elseif($result == 'b') //blocked
+	{
+		echo "<input type='radio' name='status" . $tcid . "' value='n' CHECKED>Not Run";
+		echo " <input type='radio' name='status" . $tcid . "' value='p'>Passed";
+		echo " <input type='radio' name='status" . $tcid . "' value='f'>Failed";
+		echo " <input type='radio' name='status" . $tcid . "' value='b' CHECKED>Blocked";				
+	}else //not run
+	{
+		echo "<input type='radio' name='status" . $tcid . "' value='n' CHECKED>Not Run";
+		echo " <input type='radio' name='status" . $tcid . "' value='p'>Passed";
+		echo " <input type='radio' name='status" . $tcid . "' value='f'>Failed";
+		echo " <input type='radio' name='status" . $tcid . "' value='b'>Blocked";				
+	}
+						
+}//end function radioDisplay
 
 ?>

@@ -19,6 +19,7 @@ require_once("../functions/refreshLeft.php"); //This adds the function that refr
 
 ?>
 
+Results
 <hr/>
 
 <table width="100%" border="1">
@@ -75,6 +76,9 @@ reset($platformArray);
 if(count($platformArray > 1))
 {
 	$platformCSV = implode(",", $platformArray);
+}else
+{
+	$platformCSV = $platformArray[0];
 }
 
 //increment over the break
@@ -88,10 +92,10 @@ $build = $newArray[1];
 while ($i < count($newArray)) //Loop for the entire size of the array
 {
 	$tcId = $newArray[$i]; //Then the first value is the ID
-	$tcNotes = "foo";//$newArray[$i + 1]; //The second value is the notes
-	$tcStatus = $newArray[$i + 1]; //The 3rd value is the status
+	$tcNotes = $newArray[$i + 1];//$newArray[$i + 1]; //The second value is the notes
+	$tcStatus = $newArray[$i + 2]; //The 3rd value is the status
 
-	$i = $i + 2;
+	$i = $i + 3;
 			
 	//SQL statement to look for the same record (tcid, build = tcid, build)
 
@@ -201,9 +205,44 @@ function displayResult($tcId, $build, $tcStatus, $tcNotes, $tcTitle, $mgttcid,$p
 					<? echo $build ?>
 				</a>
 			</td>
-			<td align="center"><? echo $tcStatus ?></td>
+			<td align="center">
+				<?
+				
+				if($tcStatus == "p")
+				{
+					echo "Passed";
+				}
+				else if($tcStatus == "f")
+				{
+					echo "Failed";
+				}
+				else if($tcStatus == "b")
+				{
+					echo "Blocked";
+				}
+				else if($tcStatus == "n")
+				{
+					echo "Not run";
+				}
+					
+				?>
+			</td>
 			<td><? echo $tcNotes ?>&nbsp</td>
-			<td><? echo $platformCSV ?>&nbsp</td>
+			<td><?
+
+				$platformNameArray = explode(",",$platformCSV);
+		
+				foreach ($platformNameArray as $platformId)
+				{	
+					$sqlPlatformName = "select name from platform where id=" . $platformId;
+					$platformNameRow = mysql_fetch_row(mysql_query($sqlPlatformName)); //Run the query
+					
+					echo $platformNameRow[0] . " ";
+				}
+			
+				?>
+				&nbsp	
+			</td>
 		</tr>
 	<?
 	}

@@ -1,0 +1,24 @@
+Special thanks to all of the people who have contributed solutions to problems they have found as well as those who filed bugs and feature requests.
+
+Version 1_0_2
+
+General
+
+Added schema file to both zip and tar instead of being a seperate file
+Added readme file so that users know what to do after a download
+
+Bug Fixes
+
+828665: Icons have been readded as cvs -kb
+
+835434: Added lost password and new user links to the login page
+
+832150:Added version number to the login and main page
+
+836238: Removed print page counting since it was plain wrong. I don't feel that it's that important. If it is I can readd it later
+
+389791: Fixed update SQL error where mgtTestCase has case issues
+
+836236: Execute page is now sorting correctly by mgttcid instead of tcid
+
+828667: I added a check to the bug field in the execution page. It will only show up if bugZillaOn = true

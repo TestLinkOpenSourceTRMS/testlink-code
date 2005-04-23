@@ -90,17 +90,17 @@ while ($i < count($newArray)) //Loop for the entire size of the array
 	$result = mysql_query($sql); //Run the query
 	$num = mysql_num_rows($result); //How many results
 
+	$myrow = mysql_fetch_row($result);
+		
+
 	if($num == 1) //If we find a matching record
 	{					
 		//Grabbing the values from the query above
-			
-		$myrow = mysql_fetch_row($result);
-		
 		$queryNotes		= $myrow[2];
 		$queryStatus	= $myrow[3];
 		$tcTitle		= $myrow[4];
 		$mgttcid		= $myrow[5];
-			
+				
 		//If the (notes, status) information is the same.. Do nothing
 			
 		if($queryNotes == $tcNotes && $queryStatus == $tcStatus)
@@ -134,6 +134,15 @@ while ($i < count($newArray)) //Loop for the entire size of the array
 	}
 	else //If there is no entry for the build or the build is different
 	{
+
+		$sqlNoResult = "select title, mgttcid from testcase where id=" . $tcId;
+
+		$resultNoResult = mysql_query($sqlNoResult); //Run the query
+		$myrowNoResult = mysql_fetch_row($resultNoResult);
+		
+		//Grabbing the values from the query above
+		$tcTitle		= $myrowNoResult[0];
+		$mgttcid		= $myrowNoResult[1];
 		
 		if($tcNotes == "" && $tcStatus == "n") //If the notes are blank and the status is n then do nothing
 		{
@@ -166,9 +175,9 @@ $page =  _BASE_HREF . "execution/executionFrameLeft.php";
 refreshFrame($page); //call the function below to refresh the left frame
 
 
-function updateBugs($tcID, $build, $bugs)
+function updateBugs($tcId, $build, $bugs)
 {
-	$sqlDelete = "DELETE from bugs where tcid=" . $tcID . " and build=" . $build;
+	$sqlDelete = "DELETE from bugs where tcid=" . $tcId . " and build=" . $build;
 
 	$result = mysql_query($sqlDelete); //Execute query
 
@@ -181,7 +190,7 @@ function updateBugs($tcID, $build, $bugs)
 	while($counter < count($bugArray))
 	{
 
-		$sqlBugs = "insert into bugs (tcid,build,bug) values ('" . $tcID . "','" . $build . "','" . $bugArray[$counter] . "')";
+		$sqlBugs = "insert into bugs (tcid,build,bug) values ('" . $tcId . "','" . $build . "','" . $bugArray[$counter] . "')";
 	
 		$result = mysql_query($sqlBugs); //Execute query
 
@@ -190,7 +199,7 @@ function updateBugs($tcID, $build, $bugs)
 
 }
 
-function displayResult($tcID, $build, $tcStatus, $tcNotes, $tcBugs, $tcTitle, $mgttcid)
+function displayResult($tcId, $build, $tcStatus, $tcNotes, $tcBugs, $tcTitle, $mgttcid)
 {
 	//get the test case's name
 
@@ -217,7 +226,7 @@ function displayResult($tcID, $build, $tcStatus, $tcNotes, $tcBugs, $tcTitle, $m
 			<td align="center"><? echo $mgttcid ?></td>
 			<td><? echo $tcTitle ?></td>
 			<td align="center">
-				<a href='execution/execution.php?edit=testcase&data=<? echo $tcID ?>&build=<? echo $build[0] ?>'>
+				<a href='execution/execution.php?edit=testcase&data=<? echo $tcId ?>&build=<? echo $build[0] ?>'>
 					<? echo $build ?>
 				</a>
 			</td>

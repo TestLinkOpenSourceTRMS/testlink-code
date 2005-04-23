@@ -46,6 +46,8 @@ Results
 
 <?
 	
+print_r($_POST);
+
 $i = 0; //start a counter
 
 //It is necessary to turn the $_POST map into a number valued array

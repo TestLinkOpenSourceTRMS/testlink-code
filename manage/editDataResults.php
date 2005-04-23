@@ -28,12 +28,29 @@ echo "\n\n\n";
 
 <?
 
+$name		= str_replace("|"," " ,$_POST['name']);
+$intro		= str_replace("|"," " ,$_POST['intro']);
+$scope		= str_replace("|"," " ,$_POST['scope']);
+$ref		= str_replace("|"," " ,$_POST['ref']);
+$method		= str_replace("|"," " ,$_POST['method']);
+$lim		= str_replace("|"," " ,$_POST['lim']);
+
+$objective	= str_replace("|"," " ,$_POST['objective']);
+$config		= str_replace("|"," " ,$_POST['config']);
+$data		= str_replace("|"," " ,$_POST['data']);
+$tools		= str_replace("|"," " ,$_POST['tools']);
+
+$title		= str_replace("|"," " ,$_POST['title']);
+$steps		= str_replace("|"," " ,$_POST['steps']);
+$exresult	= str_replace("|"," " ,$_POST['exresult']);
+$summary	= str_replace("|"," " ,$_POST['summary']);
+
 $product = $_SESSION['product'];
 
 if($_POST['newCOM'])
 {
-	$sql = "insert into mgtcomponent (name,intro,scope,ref,method,lim,prodid) values ('" . $_POST['name'] . "','" . $_POST['intro'] . "','" . $_POST['scope'] . "','" . $_POST['ref'] . "','" . $_POST['method'] . "','" . $_POST['lim'] . "','" . $product . "')";
 
+	$sql = "insert into mgtcomponent (name,intro,scope,ref,method,lim,prodid) values ('" . $name . "','" . $intro . "','" . $scope . "','" . $ref . "','" . $method . "','" . $lim . "','" . $product . "')";
 
 	$result = mysql_query($sql); //Execute query
 
@@ -47,7 +64,7 @@ if($_POST['newCOM'])
 }elseif($_POST['newCAT'])
 {
 
-	$sql = "insert into mgtcategory (name,objective,config,data,tools,compid) values ('" . $_POST['name'] . "','" . $_POST['objective'] . "','" . $_POST['config'] . "','" . $_POST['data'] . "','" . $_POST['tools'] . "','" . $_GET['catID'] . "')";
+	$sql = "insert into mgtcategory (name,objective,config,data,tools,compid) values ('" . $name . "','" . $objective . "','" . $config . "','" . $data . "','" . $tools . "','" . $_GET['catID'] . "')";
 
 	//echo $sql;
 
@@ -74,10 +91,10 @@ if($_POST['newCOM'])
 	for($i = 1; $i < count($tcArray); $i = $i + 4)
 	{
 
-		$title = $tcArray[$i]; //title
-		$summary = $tcArray[$i + 1]; //summary
-		$steps = $tcArray[$i + 2]; //steps
-		$exResult = $tcArray[$i + 3]; //expected result
+		$title = str_replace("|"," " , $tcArray[$i]); //title
+		$summary = str_replace("|"," " ,$tcArray[$i + 1]); //summary
+		$steps = str_replace("|"," " , $tcArray[$i + 2]); //steps
+		$exResult = str_replace("|"," " , $tcArray[$i + 3]); //expected result
 
 		if($title == "") //if the user didn't put in a tile ignore the case
 		{
@@ -117,7 +134,7 @@ if($_POST['editCOM']) //editing a component
 {
 
 	
-	$sql = "UPDATE mgtcomponent set name ='" . $_POST['name'] . "', intro ='" .  $_POST['intro'] . "', scope='" . $_POST['scope'] . "', ref='" . $_POST['ref'] . "', method='" . $_POST['method'] . "', lim='" . $_POST['lim'] . "' where id='" . $_POST['id'] . "'";
+	$sql = "UPDATE mgtcomponent set name ='" . $name . "', intro ='" .  $intro . "', scope='" . $scope . "', ref='" . $ref . "', method='" . $method . "', lim='" . $lim . "' where id='" . $_POST['id'] . "'";
 
 	$result = mysql_query($sql); //Execute query
 
@@ -129,7 +146,7 @@ if($_POST['editCOM']) //editing a component
 }elseif($_POST['editCAT']) //Editing a category
 {
 
-	$sql = "UPDATE mgtcategory set name ='" . $_POST['name'] . "', objective ='" . $_POST['objective'] . "', config='" . $_POST['config'] . "', data='" . $_POST['data'] . "', tools='" . $_POST['tools'] . "' where id='" . $_POST['id'] . "'";
+	$sql = "UPDATE mgtcategory set name ='" . $name . "', objective ='" . $objective . "', config='" . $config . "', data='" . $data . "', tools='" . $tools . "' where id='" . $_POST['id'] . "'";
 
 	$result = mysql_query($sql); //Execute query
 
@@ -163,7 +180,7 @@ if($_POST['editCOM']) //editing a component
 
 	//SQL Code to update the testcase with its new values
 
-	$sql = "UPDATE mgttestcase set keywords='" . $keywords . "', version='" . $version . "', title='" . $_POST['title'] . "', author ='" . $_SESSION['user'] . "', summary='" . $_POST['summary'] . "', steps='" . $_POST['steps'] . "', exresult='" . $_POST['exresult'] . "' where id='" . $_POST['id'] . "'";
+	$sql = "UPDATE mgttestcase set keywords='" . $keywords . "', version='" . $version . "', title='" . $title . "', author ='" . $_SESSION['user'] . "', summary='" . $summary . "', steps='" . $steps . "', exresult='" . $exresult . "' where id='" . $_POST['id'] . "'";
 
 	$result = mysql_query($sql); //Execute query
 
@@ -194,14 +211,14 @@ elseif($_POST['archive'])
 
 	$version = 1 + $_POST['version'];
 
-	$sql = "UPDATE mgttestcase set keywords='" . $keywords ."', version='" . $version . "', title='" . $_POST['title'] . "', author ='" . $_SESSION['user'] . "', summary='" . $_POST['summary'] . "', steps='" . $_POST['steps'] . "', exresult='" . $_POST['exresult'] . "' where id='" . $_POST['id'] . "'";
+	$sql = "UPDATE mgttestcase set keywords='" . $keywords ."', version='" . $version . "', title='" . $title . "', author ='" . $_SESSION['user'] . "', summary='" . $summary . "', steps='" . $steps . "', exresult='" . $exresult . "' where id='" . $_POST['id'] . "'";
 
 	$result = mysql_query($sql); //Execute query
 
 
 	//This block of code will add a new to the test case archive
 
-	$sql = "insert into mgttcarchive (title,author,summary,steps,exresult,version,id,keywords) values ('" . $_POST['title'] . "','" . $_SESSION['user'] . "','" . $_POST['summary'] . "','" . $_POST['steps'] . "','" . $_POST['exresult'] . "','" . $version . "','" . $_POST['id'] . "','" . $keywords . "')";
+	$sql = "insert into mgttcarchive (title,author,summary,steps,exresult,version,id,keywords) values ('" . $title . "','" . $_SESSION['user'] . "','" . $summary . "','" . $steps . "','" . $exresult . "','" . $version . "','" . $_POST['id'] . "','" . $keywords . "')";
 
 	//echo $sql;
 
@@ -232,6 +249,3 @@ elseif($_POST['archive'])
 	$page =  $basehref . "/manage/archiveLeft.php?product=" . $product . $highLight;
 
 	refreshFrame($page); //call the function below to refresh the left frame
-
-
-//This section displays the result of the user picking to create a new object

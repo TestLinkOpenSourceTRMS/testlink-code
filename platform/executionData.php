@@ -252,7 +252,7 @@ function executionHeaderWithBuild($build)
 	//Setting up the form that will post to the execution results page
 
 	echo "<tr><input type='hidden' readonly name='date' value='" . date ("Y-m-d") . "'>";
-		
+
 	echo "<input type='hidden' name='build' value='" . $build . "'>";
 		
 	echo "</td>";
@@ -266,10 +266,11 @@ function executionHeaderWithBuild($build)
 
 	$i = 0; //start a counter
 
+	print_r($platformArray);
+
 	foreach ($platformArray as $key)
 	{	
-		echo  "<input type='hidden' name='" . $arrayKeys[$i] . "' value='" . $key . "'/>";
-
+		echo  "<input type='hidden' name='platform" . $i . "' value='" . $key . "'/>";
 		$i++;
 	}
 

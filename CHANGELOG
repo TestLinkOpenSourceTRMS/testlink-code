@@ -1,0 +1,233 @@
+
+***************************************************************
+   Changelog for TestLink
+***************************************************************
+
+TestLink development team:
+
+	Andreas  Morsing  (scs)
+	Martin  Havlat  (mht)
+	Asiel    (azl)
+	Francisco  Mancardi  (fm)
+	Chad  Rosen  (chad)
+
+
+
+===============================================================
+2005/07/XX	Version: 1.6.Beta
+===============================================================
+
+Bugfixes:
+
+* 900437 table results -- incoherent data ?
+* 887818 Imported Keywords aren't added to KW
+      table
+* Tiki: CSV import (date in text)
+* 1200582 Cannot see test cases in Test Case Execution
+      page
+
+Enhancements:
+
+* product delete causes also delete of related  data
+* activate/deactivate product added
+* 953388 requirement coverage
+* 1181609 available copy TC to the same  category
+* added I18N,L10N support at user interface level.
+      (partially implemented)
+* added global array to manage test case status
+      (partially implemented)
+* added automatic base href generation
+* Created an initially general bugtracking interface
+* Added mantis 0.19.1 support (works also for 1.0.0.a3)
+
+Changes:
+
+* refactorized priority reports
+* test Plans are ordered according the name
+* updated menuBar (added the most important links, clean
+      code and smarty template)
+* changes in $g_tc_status
+* refactoring regarding use of $g_tc_status, instead of
+      MAGIC LETTERS (p,f,n,b)
+* the instruction pages has been moved to
+      gui\help\<LOCALE>\
+* the HTML pages has been moved to
+      gui\help\<LOCALE>\
+* changes in config.inc.php
+* Cleaned up config.inc.php (removed TL_TABLE_PREFIX,
+      removed $delim)
+* Moved the TLSmarty class out of the config.inc.php to
+      lib/general/tlsmarty.inc.php
+* Changed bugzilla configuration to the new bugtracking
+      interface
+===============================================================
+2005/08/01	Version: 1.5.1 (build 3)
+===============================================================
+
+Bugfixes:
+
+* 1242462 test plan not updated when test case category
+      changed
+* 1243287 long test case names don't display nice in
+      mozilla, firefox
+* update $_SESSION data after admin all accounts
+      modification
+* 1243285 version of test case not incremented when
+      keyword is added
+* 1242971 Treeview testexecution - Testcases
+      quoted
+* 1233490 Metrics based upon priority wrong
+      assignment
+* Verify session availability in every page
+* Execute-Tree shows wrong status
+* Create TestPlan from existing TestPlan didnt work at
+      all
+
+Enhancements:
+
+
+Changes:
+
+===============================================================
+2005/05/24	Version: 1.5.0
+===============================================================
+
+Bugfixes:
+
+* Not all chars could be entered in edit field for tcs
+* 1200582 Keywords are not saved when test cases are
+      copied.
+* 1182025 Edit/Delete Product does not work
+* 1198855 Display nug when execute testcase
+* Corrected problems with enlarging the HTMLArea Component
+      with IE5.5
+* Corrected the display of categories,components and tcs
+      regarding to formatting
+* Changed the charset for some tpls to UTF-8
+* 1164017 View Modified Test Cases is missing
+* 898500 Word 'Array' is written to database for
+      Keywords
+* 891860 archiveData.php chops off last character of
+      keyword
+* 1158626 Help Screens
+* create TC page: htmlarea cannot be in 'p' tag
+* submit serveral (executing) tcs at once
+* dbUpgrade.php: addapted for linux
+* testcase versioning
+* tcPrint.html: Missing closing script tag , page not
+      displayed
+* testsetremove.php: Access to $_SESSION before session
+      started
+* 1173981 Entering bugs not possible?
+* 1182022 "Send results via e-mail" does not show
+      correct values
+* 1182025 "Edit/Delete Product" does not work
+
+Enhancements:
+
+
+Changes:
+
+===============================================================
+2005/03/23	Version: 1.5.RC1
+===============================================================
+
+Bugfixes:
+
+* 1076468 Create/Edit Test Cases that contain '
+      character
+* 1045740 user table fields login and email too
+      short
+* 1121007 errors in new install of testlink 1.5
+      beta
+* 1158629 Php error printing test cases
+* Performance improvement of several pages
+* Lost password - solved the problem with encryption
+
+Enhancements:
+
+* 1094857 TOC for printed
+      documents
+* Three kinds of tree menu are
+      implemented
+* Improved process and verification of input
+      values
+* script: add simple test data
+
+Changes:
+
+===============================================================
+2005/10/02	Version: 1.5.Beta1
+===============================================================
+
+Bugfixes:
+
+* 956526 Submitting multiple test cases doesn't always
+      work
+* 956526 I got error while generate report(print
+      product test cases)
+* 956526 kenny.css should be modified to support text
+      background
+* 956526 1_0_4 Define User rights link not found
+* 1182022 report.html is not generating valid
+      html
+* 964874 All web pages are totally messed
+* 873742 TestCase body in
+* 904355 keywords not reslected in TC edit
+* 1096110 Generating valid html for exported
+      document
+* 958843 newProduct.php: Products must not have unique
+      names
+
+Enhancements:
+
+* 1030004 Passwords should be stored
+      encrypted
+* 948899 Upgrade textArea
+* New physical structure
+* 827242 Use smarty templates
+* 825227 Logging
+* 902613 Record owner of test
+      cases
+* Upload local file for CSV Import
+* New GUI design, XHTML + CSS
+* Product driven background color
+* dbUpgrade.php script (from TL 1.0.4 to
+      1.5)
+
+Changes:
+
+* Configuration moved from header.php to
+      config.inc.php
+* removal of multiple test entry
+===============================================================
+2004/05/16	Version: 1.0.4
+===============================================================
+
+Bugfixes:
+
+* deletion of test plans would delete other projects
+      results
+* Cleaned up the build UI so that it's consistent
+* The buildDetail.php reports the last test plan test case
+      in the table as having never been run, even when there are results for
+      it.
+
+Enhancements:
+
+* Export test plan docs to word docs from the print
+      page
+* Export total metrics to excel docs
+* Updated the UI of the user/projects rights
+      page
+* The view modified test case page now has a status
+      field that tells the user what the change of the test cases was. The
+      page will also delete test cases from projects that were deleted from
+      products when they are updated
+* Projects are being added to the breadcrumb trail
+      although they weren't supposed to be there.
+
+Changes:
+
+* Updated the main page UI.. Moved the product and
+      project tables and added user metrics to the middle section

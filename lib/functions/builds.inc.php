@@ -1,0 +1,67 @@
+<?
+/** TestLink Open Source Project - http://testlink.sourceforge.net/ 
+* $Id: builds.inc.php,v 1.2 2005/08/16 18:00:55 franciscom Exp $
+* 
+* @author Martin Havlat
+*
+* Functions for Test Plan management - build related
+*/
+require_once('../../config.inc.php');
+require_once("../functions/common.php");
+
+/**
+ * Collect all builds for the Test Plan
+ */
+function getBuilds($idPlan)
+{
+  	$sql = "SELECT build,name FROM build WHERE projid = " . $idPlan . " ORDER BY id DESC";
+	return getBuildInfo($sql);
+}
+
+function getBuildsAndNotes($idPlan)
+{
+  	$sql = "SELECT build,note FROM build WHERE projid = " . $idPlan . " ORDER BY id DESC";
+	return getBuildInfo($sql);
+}
+
+function getBuildInfo($sql)
+{
+	$arrBuilds = array();
+  	$result = do_mysql_query($sql) or die(mysql_error());
+
+	while ($myrow = mysql_fetch_array($result))
+		$arrBuilds[$myrow[0]] = $myrow[1];
+
+  	return $arrBuilds;
+}
+
+function deleteTestPlanBuild($testPlanID,$buildID)
+{
+	$result = 1;
+	if ($testPlanID)
+	{ 
+		$catIDs = null;
+		getProjectCategories($testPlanID,$catIDs);
+	
+		$tcIDs = null;
+		getCategoriesTestcases($catIDs,$tcIDs);	
+		
+		if (sizeof($tcIDs))
+		{
+			$tcIDList = implode(",",$tcIDs);
+			
+			$query = "DELETE FROM bugs WHERE tcid IN ({$tcIDList}) AND build = '{$buildID}'";
+			$result = $result && do_mysql_query($query);
+			
+			
+			$query = "DELETE FROM results WHERE tcid IN ({$tcIDList}) AND build = '{$buildID}'";
+			$result = $result && do_mysql_query($query);
+		}
+	
+		$query = "DELETE FROM build WHERE build='{$buildID}' AND projid=" . $testPlanID;
+		$result = $result && do_mysql_query($query);
+	}
+	return $result ? 1 : 0;
+}
+
+?>

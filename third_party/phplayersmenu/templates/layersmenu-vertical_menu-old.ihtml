@@ -1,0 +1,62 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-15"></meta>
+<title>The PHP Layers Menu - Templates</title>
+<link rel="StyleSheet" href="../layersmenu-old.css" type="text/css"></link>
+</head>
+<body>
+
+<pre>
+This is a vertical menu template.
+This comment does not appear on the resulting page.
+--
+</pre>
+
+<!-- BEGIN template -->
+<!-- beginning of vertical menu bar -->
+
+<table border="0" cellpadding="3" cellspacing="0" class="darkbordertable">
+<tr>
+<td>
+<table border="0" cellpadding="10" cellspacing="0" width="{abscissaStep}">
+<tr>
+<td class="phplmbodytable" align="left">
+<!-- BEGIN vertical_menu_box -->
+<div id="{menu_name}" style="position: relative; visibility: visible;" onmouseover="clearLMTO();" onmouseout="setLMTO();">
+<script language="JavaScript" type="text/javascript">
+<!--
+if (IE) fixieflm("{menu_name}");
+// -->
+</script>
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<!-- BEGIN vertical_menu_cell -->
+<tr>
+<td><!-- BEGIN cell_icon --><img
+align="top" src="{iconsrc}" width="{iconwidth}" height="{iconheight}" border="0"
+alt="{iconalt}" />&nbsp;<!-- END cell_icon --></td>
+<td class="phplmbodytable" valign="middle" nowrap="nowrap"><a href="{href}"
+id="{refid}"{onmouseover}{title}{target} class="phplmold">{text}</a><!-- BEGIN cell_arrow -->&nbsp;<img
+class="fwdarr" src="{imgwww}{arrowsrc}" width="{arrowwidth}" height="{arrowheight}"
+border="0" alt=">>" /><!-- END cell_arrow --></td>
+</tr>
+<!-- END vertical_menu_cell -->
+<!-- BEGIN separator -->
+
+<!-- END separator -->
+</table>
+</div>
+<!-- END vertical_menu_box -->
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+
+<!-- end of vertical menu bar -->
+<!-- END template -->
+
+</body>
+</html>

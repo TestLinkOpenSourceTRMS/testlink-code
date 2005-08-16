@@ -1,0 +1,51 @@
+.|...GNU's Not Unix!|http://www.gnu.org/|The Free Software Foundation
+.|Open Source
+..|Portals
+...|O. S. Devel. Network|http://www.osdn.com/
+...|Source Forge|http://sourceforge.net/||sourceforge.net_images_favicon.png
+...|Freshmeat|http://freshmeat.net/||freshmeat.net_favicon.png
+..|---
+..|Software for the web...
+...|The Apache Web Server|http://www.apache.org/
+...|Scripting languages
+....|PERL|http://www.perl.org/
+....|PHP: Hypertext Preprocessor|http://www.php.net/||www.php.net_favicon.png
+.....|Downloads|http://www.php.net/downloads.php
+.....|Documentation|http://www.php.net/docs.php
+.....|FAQ|http://www.php.net/FAQ.php
+.....|Support|http://www.php.net/support.php
+.....|Bugs...|http://www.php.net/bugs.php||php-bugs-icon-mini.png
+.....|Links|http://www.php.net/links.php
+.....|---
+.....|PHPLib - PHP Base Library|http://sourceforge.net/projects/phplib/||phplib-logo-mini.png
+...|---
+...|Databases
+....|PostgreSQL|http://www.postgresql.org/
+....|MySQL|http://www.mysql.com/||www.mysql.com_favicon.png
+...|---
+...|Quanta / KDE Web Dev|http://quanta.sourceforge.net/||quanta.png
+...|The GIMP|http://www.gimp.org/||www.gimp.org_icons_wilber16.png
+.|Browsers|||mozilla.org_images_mozilla-16.png
+..|Mozilla|http://www.mozilla.org/|The Mozilla browser|mozilla.org_images_mozilla-16.png|Mozilla
+..|Epiphany|http://epiphany.mozdev.org/|The web browser of the GNOME Desktop|epiphany-16.png|Epiphany
+#..|Konqueror|http://www.konqueror.org/|The KDE browser|www.kde.org_favicon.png|The_KDE_Desktop_Environment
+..|Konqueror|http://www.kde.org/|The KDE browser|www.kde.org_favicon.png|The_KDE_Desktop_Environment
+..|---
+..|Non free browsers
+...|Netscape|http://www.netscape.com/|Netscape Communicator|netscape-icon-mini.png|Netscape
+...|Opera|http://www.opera.com/|||Opera
+...|Internet Explorer|http://www.microsoft.com/|||Microsoft
+.|DOM, layers...||Some interesting URLs about the Document Object Model, layers, browsers...
+..|Document Object Model (DOM)|http://www.w3.org/DOM/|W3C standards about the Document Object Model||DOM
+..|---
+..|Netscape 4, layers and forms...|http://www.geocrawler.com/mail/msg.php3?msg_id=4426606&amp;list=119|A Netscape 4 limitation about layers||DOM
+..|Layers, OS, Applets and Plug-ins|http://www.webreference.com/dhtml/diner/seethru/|Some known problems in using layers with applets and plug-ins||DOM
+..|Re: Layers &amp; drop-down menu's|http://www.intranetjournal.com/ix/msg/36271.html|||DOM
+..|---
+..|About doctype switching...|http://www.evolt.org/article/document_body_doctype_switching_and_more/17/30655/|||DOM
+..|About the browser window size...|http://www.howtocreate.co.uk/tutorials/index.php?tut=0&amp;part=16|||DOM
+..|DOM Samples List Page|http://cgi.din.or.jp/~hagi3/JavaScript/Mozilla/SampleList.cgi?fmt=html|||DOM
+..|Class DOMMouseEvent|http://www-sop.inria.fr/koala/domjuan/javadoc/koala/dom/events/DOMMouseEvent.html|||DOM
+..|Client Object Cross References|http://devedge.netscape.com/library/xref/2002/client-data/|||DOM
+..|The DOM Event Model|http://www.brainjar.com/dhtml/events/default4.asp|||DOM
+..|Opera JS Support|http://www.opera.com/docs/specs/js/|||DOM

@@ -1,0 +1,21 @@
+
+CREATE TABLE phplayersmenu (
+	id INTEGER PRIMARY KEY,
+	parent_id INTEGER DEFAULT '1' NOT NULL,
+	text TEXT,
+	href TEXT,
+	title TEXT,
+	icon TEXT,
+	target TEXT,
+	orderfield INTEGER DEFAULT '0',
+	expanded INTEGER DEFAULT '0'
+);
+
+CREATE TABLE phplayersmenu_i18n (
+	language VARCHAR(15) NOT NULL,
+	id INTEGER NOT NULL,
+	text TEXT,
+	title TEXT,
+	PRIMARY KEY (language, id)
+);
+

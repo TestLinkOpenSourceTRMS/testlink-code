@@ -1,0 +1,29 @@
+
+------------
+BEFORE 3.2.0
+------------
+
+Re-add the "onclick" patches that were bundled with PHPLM 3.0.
+
+Test with PHP 5.
+
+Check compatibility with the latest version of PHPDocumentor.
+
+-----------
+AFTER 3.2.0
+-----------
+
+Add the swapping of arrow images when the mouse passes over an item.
+
+"Rollover" of icons (?)
+
+"retain hover over style highlighting on parent menu" (?)
+
+Possibility of changing the default behaviour of the treemenu,
+eventually applying suited patches (?)
+
+Add a consistent default name for menus, to avoid to force people
+to choose a menu name when they have to use only one menu on the page (?)
+
+...
+

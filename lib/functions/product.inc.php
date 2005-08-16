@@ -1,0 +1,192 @@
+<?
+/** TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ * 
+ * @filesource $RCSfile: product.inc.php,v $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2005/08/16 18:00:55 $
+ * @author Martin Havlat
+ *
+ * Functions for Product management (create,update,delete)
+ * Functions for get data see product.core.inc.php
+ * 
+ * @ author: francisco mancardi - 20050810 deprecated $_SESSION['product'] removed
+ *
+ */
+
+require_once('product.core.inc.php');
+
+
+/**
+ * Update Product data
+ */
+function updateProduct($id, $name, $color, $optRequirements)
+{
+	$sql = "UPDATE mgtproduct SET name='" . mysql_escape_string($name) . "', color='" . 
+			mysql_escape_string($color) . "', option_reqs=" .  
+			mysql_escape_string($optRequirements) . " WHERE id=" . $id;
+	$result = do_mysql_query($sql);
+	
+	if ($result)
+	{
+		// update session data
+		$_SESSION['productColor'] = $color;
+		$_SESSION['productName'] = $name;
+		$_SESSION['productOptReqs'] = $optRequirements;
+
+		$sqlResult = 'ok';
+		tLog('Product ' . $name . ' update: Ok.', 'INFO');
+	}
+	else
+	{
+		$sqlResult = 'Update product FAILED!';
+		tLog('FAILED SQL: ' . $sql . "\n Result: " . mysql_error(), 'ERROR');
+	}
+	
+	return $sqlResult;
+}
+
+
+/** 
+ * create a new product 
+ * @param string $name
+ * @param string $color
+ * @param string $optReq [1,0]
+ * @return boolean result
+ */
+//MHT 20050630 added color and optReq; refactorization 
+function createProduct($name,$color,$optReq)
+{
+	$sql = "INSERT INTO mgtproduct (name,color,option_reqs) VALUES ('" . 
+			mysql_escape_string($name) . "','" . mysql_escape_string($color) . 
+			"'," . $optReq . ")";
+	$result = do_mysql_query($sql);
+
+	if ($result)
+	{
+		tLog('The new product '.$name.' was succesfully created.', 'INFO');
+		$output = 1;
+	} else {
+		$output = 0;
+	}
+		
+	return $output;
+}
+
+/**
+ * delete a product including all dependent data
+ * 
+ * @param integer $id
+ * @param pointer Problem message
+ * @return boolean 1=ok || 0=ko
+ */
+// MHT 20050630 added to delete all nested data
+/** @todo the function are not able to delete test plan data from another product (i.e. test case suite) */
+function deleteProduct($id, &$error)
+{
+	$error = ''; //clear error string
+	
+	// list of sql commands + fail info id
+	// be aware order of delete commands (there are dependencies)
+	$arrExecSql = array (
+		// delete bugs
+		array ("DELETE bugs FROM bugs,project,build WHERE build.projid=project.id" .
+			" AND bugs.build=build.build AND project.prodid=" . $id, 
+			'info_bugs_delete_fails'),
+		// delete builds
+		array ("DELETE build FROM project,build WHERE build.projid=project.id" .
+			" AND project.prodid=" . $id, 
+			'info_build_delete_fails'),
+		// delete milestones
+		array ("DELETE milestone FROM project,milestone WHERE milestone.projid=project.id" .
+				" AND project.prodid=" . $id, 
+			'info_milestones_delete_fails'),
+		// delete priority
+		array ("DELETE priority FROM project,priority WHERE priority.projid=project.id" .
+				" AND project.prodid=" . $id, 
+			'info_priority_delete_fails'),
+		// delete Test Plan rights
+		array ("DELETE projrights FROM project,projrights WHERE projrights.projid=project.id" .
+				" AND project.prodid=" . $id, 
+			'info_plan_rights_delete_fails'),
+		// delete test plans - should not be deleted if nested data were not deleted
+		array ("DELETE FROM project WHERE prodid=" . $id, 
+			'info_testplan_delete_fails'),
+
+		// delete results
+		array ("DELETE results FROM results,testcase," .
+			"mgtcomponent,mgtcategory,mgttestcase WHERE mgtcomponent.prodid=" . $id .
+			" AND mgtcomponent.id=mgtcategory.compid AND mgtcategory.id=mgttestcase.catid" .
+			" AND testcase.mgttcid=mgttestcase.id AND results.tcid=testcase.id", 
+			'info_results_delete_fails'),
+		// delete test case suites
+		array ("DELETE testcase,category,component FROM testcase,category,component," .
+			"mgtcomponent,mgtcategory,mgttestcase WHERE mgtcomponent.prodid=" . $id .
+			" AND mgtcomponent.id=mgtcategory.compid AND mgtcategory.id=mgttestcase.catid" .
+			" AND testcase.mgttcid=mgttestcase.id AND mgtcategory.id=category.mgtcatid" .
+			" AND component.mgtcompid=mgtcomponent.id", 
+			'info_testsuite_delete_fails'),
+		// delete test specification
+		array ("DELETE mgttestcase,mgtcategory,mgtcomponent FROM mgtcomponent," .
+			"mgtcategory,mgttestcase WHERE mgtcomponent.prodid=" . $id .
+			" AND mgtcomponent.id=mgtcategory.compid AND mgtcategory.id=mgttestcase.catid", 
+			'info_testspec_delete_fails'),
+
+		// delete keywords
+		array ("DELETE FROM keywords WHERE id=" . $id, 
+			'info_keywords_delete_fails'),
+		// delete requirements
+		array ("DELETE req_spec,requirements,req_coverage FROM req_spec,requirements,req_coverage " .
+			"WHERE req_spec.id_product=" . $id . " AND req_spec.id=requirements.id_srs" .
+			" AND req_coverage.id_req=requirements.id", 
+			'info_reqs_delete_fails')
+	); 
+
+	// delete all nested data over array $arrExecSql
+	foreach ($arrExecSql as $oneSQL)
+	{
+		if (empty($error))
+		{
+			tLog($oneSQL[0]);
+			$sql = $oneSQL[0];
+			$result = do_mysql_query($sql);	
+			if (!$result) {
+				$error .= lang_get($oneSQL[1]);
+			}
+		}
+	}	
+
+	// delete product itself
+	if (empty($error))
+	{
+		$sql = "DELETE FROM mgtproduct WHERE id=" . $id;
+		$result = do_mysql_query($sql);
+
+		if ($result) {
+			$sessProduct = isset($_SESSION['product']) ? $_SESSION['product'] : $id;
+			if ($id == $sessProduct) {
+				setSessionProduct(null);
+			}
+		} else {
+			$error .= lang_get('info_product_delete_fails');
+		}
+	}
+
+	return empty($error) ? 1 : 0;
+}
+
+/** allow deactive a product 
+ * @param integer $id Product ID
+ * @param integer $status 1=active || 0=inactive 
+ */
+// MHT 20050622 created
+function activateProduct($id, $status)
+{
+	$sql = "UPDATE mgtproduct SET active='" . $status . "' WHERE id=" . $id;
+	$result = do_mysql_query($sql);
+
+	return $result ? 1 : 0;
+}
+
+// ----------- END ------------------------------------------
+
+?>

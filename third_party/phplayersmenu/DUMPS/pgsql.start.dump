@@ -1,0 +1,30 @@
+--
+-- Do not use this beginning line...
+--
+\connect - postgres
+--
+-- ... if you are importing the dump through phpPgAdmin :^)
+--
+
+CREATE SEQUENCE phplayersmenu_id_seq start 100 increment 1 maxvalue 2147483647 minvalue 1  cache 1 ;
+CREATE TABLE phplayersmenu (
+	id int2 DEFAULT nextval('phplayersmenu_id_seq') NOT NULL,
+	parent_id int2 DEFAULT 1 NOT NULL,
+	text text,
+	href text,
+	title text,
+	icon text,
+	target text,
+	orderfield int2 DEFAULT 0,
+	expanded int2 DEFAULT 0,
+	PRIMARY KEY (id)
+);
+
+CREATE TABLE phplayersmenu_i18n (
+	language varchar(15) NOT NULL,
+	id int2 NOT NULL,
+	text text,
+	title text,
+	PRIMARY KEY (language, id)
+);
+

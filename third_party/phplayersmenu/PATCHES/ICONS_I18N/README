@@ -1,0 +1,9 @@
+
+Icons internationalization (i18n)
+---------------------------------
+
+This patch adds internationalization (i18n) for the "icon" field
+of the "phplayersmenu_i18n" table, beside the "text" and "title" fields.
+
+Marco Pratesi
+

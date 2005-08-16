@@ -1,0 +1,109 @@
+.mdkhorbar	{
+	color: black;
+	background-color: #e6e7e6;
+	border: 1px outset #525252;
+}
+
+.mdkhorbaritem	{
+	float: left;
+	white-space: nowrap;
+	font-family: bitstream vera sans, luxi sans, verdana, geneva, arial, helvetica, sans-serif;
+	font-size: 13px;
+}
+
+.mdkhorbaritem a	{
+	display: block;
+	text-decoration: none;
+}
+
+.mdkhorbaritem a:link	{
+	color: #000000;
+	text-decoration: none;
+}
+
+.mdkhorbaritem a:visited	{
+	color: #000000;
+	text-decoration: none;
+}
+
+.mdkhorbaritem a:hover	{
+	color: #ffffff;
+	background-color: #21459c;
+	text-decoration: none;
+}
+
+.mdkhorbaritem a:active	{
+	color: #ff0000;
+	text-decoration: none;
+}
+
+.mdkverbar	{
+	color: black;
+	background-color: #e6e7e6;
+	border: 1px outset #fdfefd;
+}
+
+.mdksubmenu	{
+	position: absolute;
+	left: 0;
+	top: 0;
+	visibility: hidden;
+}
+
+.mdksubframe	{
+	position: relative;
+	display: block;
+	background-color: #e6e7e6;
+	border: 2px outset #fdfefd;
+}
+
+.mdkitem	{
+	text-align: left;
+	white-space: nowrap;
+	font-family: bitstream vera sans, luxi sans, verdana, geneva, arial, helvetica, sans-serif;
+	font-size: 13px;
+}
+
+.mdkitem a	{
+	position: relative;
+	display: block;
+	text-decoration: none;
+}
+
+.mdkitem a:link	{
+	color: #000000;
+	text-decoration: none;
+}
+
+.mdkitem a:visited	{
+	color: #000000;
+	text-decoration: none;
+}
+
+.mdkitem a:hover	{
+	color: #ffffff;
+	background-color: #21459c;
+	text-decoration: none;
+}
+
+.mdkitem a:active	{
+	color: #ff0000;
+	text-decoration: none;
+}
+
+.mdkitem .mdkfwdarr	{
+	position: absolute;
+	top: 5px;
+	right: 12px;
+}
+
+.mdkseparator	{
+	background-color: #ff0000;
+	border-top: 1px solid #cdcecd;
+	border-bottom: 1px solid #ffffff;
+	margin: 2px 0px 2px 0px;	/* top right bottom left */
+	height: 0;
+	font-size: 1px;
+	line-height: 0;
+}
+

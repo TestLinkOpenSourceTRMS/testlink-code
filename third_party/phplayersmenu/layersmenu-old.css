@@ -1,0 +1,64 @@
+a.phplmold:link	{
+	font-family: bitstream vera sans, luxi sans, verdana, geneva, arial, helvetica, sans-serif;
+	font-size: 13px;
+	text-decoration: none;
+	color: #003300;
+}
+
+a.phplmold:visited	{
+	font-family: bitstream vera sans, luxi sans, verdana, geneva, arial, helvetica, sans-serif;
+	font-size: 13px;
+	text-decoration: none;
+	color: #726461;
+}
+
+a.phplmold:hover	{
+	font-family: bitstream vera sans, luxi sans, verdana, geneva, arial, helvetica, sans-serif;
+	font-size: 13px;
+	text-decoration: none;
+	color: #841212;
+	background-color: #fff0c0;
+}
+
+a.phplmold:active	{
+	font-family: bitstream vera sans, luxi sans, verdana, geneva, arial, helvetica, sans-serif;
+	font-size: 13px;
+	text-decoration: none;
+	color: #ff0000;
+}
+
+.phplmbodytable	{
+	font-family: bitstream vera sans, luxi sans, verdana, geneva, arial, helvetica, sans-serif;
+	font-size: 13px;
+	background-color: #fffefc;
+}
+
+.ivorybodytable	{
+	font-family: bitstream vera sans, luxi sans, verdana, geneva, arial, helvetica, sans-serif;
+	font-size: 13px;
+	background-color: #fffff8;
+}
+
+.darkbordertable	{
+	background-color: #660000;
+}
+
+.blackbordertable	{
+	background-color: #000000;
+}
+
+.greenbordertable	{
+	background-color: #839983;
+}
+
+.darkgreenbordertable	{
+	background-color: #839983;
+}
+
+.redbordertable	{
+	background-color: #aa5859;
+}
+
+.orangebordertable	{
+	background-color: #df9500;
+}

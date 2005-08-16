@@ -1,0 +1,205 @@
+<?php
+/**
+ * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ *
+ * Filename $RCSfile: config.inc.php,v $
+ *
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2005/08/16 17:57:41 $
+ *
+ * @author Chad Rosen
+ *
+ * Constants used throughout TestLink are defined within this file
+ * they should be changed for your environment
+ * 20050806 - fm - Changes to support the installer
+ * 
+**/
+
+// with the use of the installer, the file config_db.inc.php
+// will be generated automatically.
+// The following parameters regarding the TestLink Database (DB) 
+// are defined in config_db.inc.php
+//
+// DB user and password to use for connecting to the testlink db  
+// (DB_USER, DB_PASS)
+//
+// DB host to use when connecting to the testlink db 
+// (DB_HOST)
+//
+// Name of the database that contains the testlink tables
+// (DB_NAME);
+//
+// DB type being used by testlink (only mysql currently supported)
+// (DB_TYPE)
+//
+require_once('config_db.inc.php');
+
+
+/** root of testlink directory location seen through the web server */
+define('TL_BASE_HREF', get_home_url()); 
+
+/** Set this to TRUE if your MySQL DB supports UTF8 (MySQL version >= 4.1) */
+define('DB_SUPPORTS_UTF8', TRUE);
+
+/** Don't change these values or you will have problems! */
+/* CHARSET */
+define('TL_TPL_CHARSET', DB_SUPPORTS_UTF8  ? 'UTF-8' : 'ISO-8859-1');
+/* Directory separator */
+define('DS', DIRECTORY_SEPARATOR);
+
+/** set the delimeter properly for the include_path */
+define('DELIM', (PHP_OS == "WIN32" || PHP_OS == "WINNT") ? ';' : ':');
+
+/** The root dir for the testlink installation with trailing slash */
+define('TL_ABS_PATH', dirname(__FILE__) . DS);
+
+/** The temporary dir for temporary files */
+define('TL_TEMP_PATH', TL_ABS_PATH . 'gui/templates_c/');
+
+/** Logging  @see logging.inc.php for more */
+/** path for testlink logs; e.g. /tmp */
+define('TL_LOG_PATH', TL_TEMP_PATH );
+
+
+/** Default level of logging (NONE, ERROR, INFO, DEBUG, EXTENDED) */
+define('TL_LOG_LEVEL_DEFAULT', 'NONE');
+require_once(TL_ABS_PATH.'/lib/functions/logging.inc.php');
+
+/** Is the metrics table displayed on the main page enabled? Accepts TRUE or FALSE values */
+define('MAIN_PAGE_METRICS_ENABLED', 'FALSE');
+
+
+
+/** Bug Tracking systems */////////////////////////////////////////////////////
+/** 
+* TestLink uses bugtracking systems to check if displayed bugs resolved, verified, 
+* and closed bugs. If they are it will strike through them
+*/
+
+/** 
+* @var STRING TL_INTERFACE_BUGS = ['NO', 'BUGZILLA','MANTIS']
+* BUGZILLA: edit configuration in TL_ABS_PATH/cfg/bugzilla.cfg.php
+* MANTIS: edit configuration in TL_ABS_PATH/cfg/mantis.cfg.php
+*/
+define('TL_INTERFACE_BUGS', 'NO');
+require_once(TL_ABS_PATH . 'lib/bugtracking/int_bugtracking.php');
+
+/** Setting up the global include path for testlink */
+ini_set('include_path', '.' . DELIM . TL_ABS_PATH . 'lib' . DS . 'functions' . DS . DELIM);
+
+/**
+* Set the session timeout value (in seconds).
+* This will prevent sessions timing out after very short periods of time
+*/
+//ini_set('session.cache_expire',900);
+
+/** Error reporting - do we want php errors to show up for users */
+error_reporting(E_ALL & ~E_NOTICE);
+ 
+/** GUI related constants *///////////////////////////////////////////////////
+
+define('TL_VERSION', '1.6.0'); 
+define('TL_BACKGROUND_DEFAULT', "#9BD");
+
+/** 
+*	Definition of tree menu component: dTree, jTree or phplayersmenu.
+*	jTree has the best performance but others have a better functionality  
+*	@varstatic string TL_TREE_KIND = [LAYERSMENU, DTREE, JTREE]
+*/
+define('TL_TREE_KIND', 'JTREE');
+
+/* Some defines for I18N,L10N, don't touch */
+define('TL_LOCALE_PATH',TL_ABS_PATH . 'locale/');
+define('TL_HELP_RPATH','gui/help/');
+define('TL_INSTRUCTIONS_RPATH','gui/help/');
+
+/* These are the supported locales */
+$g_locales = array('en_US' => 'American (US)',
+				   'en_GB' => 'English (UK)',
+				   'it_IT' => 'Italian',
+				   'es_AR' => 'Spanish (Argentine)',
+				   'es_ES' => 'Spanish',
+				   'de_DE' => 'German',
+				  );
+
+/* Set this to your default locale, this must be one of $g_locales */
+define('TL_DEFAULT_LOCALE','en_GB');
+
+/* These are the possible TestCase statuses */
+$g_tc_status = array ( "failed"        => 'f',
+                       "blocked"       => 'b',
+                       "passed"        => 'p',
+                       "not_run"       => 'n',
+                       "not_available" => 'x',
+                       "all"           => 'all'
+                      ); 
+
+/* 20050508 - fm - enhancement */
+/* TestCase Status Description -> color */
+$g_tc_sd_color = array ( "failed"        => 'red',
+                         "blocked"       => 'blue',
+                         "passed"        => 'green',
+                         "not_run"       => 'white',
+                         "not_available" => 'yellow',
+                         "all"           => 'all'
+                       ); 
+
+
+/** 
+* Testlink Smarty class sets up the default smarty settings for testlink
+*/
+require_once(TL_ABS_PATH . 'third_party/smarty/Smarty.class.php'); 
+require_once(TL_ABS_PATH . 'lib/general/tlsmarty.inc.php'); 
+
+/** 
+ * Next constants are used in printed documents.
+ * Leave them empty if you would not to use.
+ */ 
+define('TL_COMPANY', '');
+define('TL_DOC_COPYRIGHT', '');
+define('TL_DOC_CONFIDENT', '');
+// ----- End of Config ------------------------------------------------
+
+
+// -------------------------------------------------------------------
+function get_home_url()
+{
+if ( isset ( $_SERVER['PHP_SELF'] ) ) {
+	$t_protocol = 'http';
+	if ( isset( $_SERVER['HTTPS'] ) && ( strtolower( $_SERVER['HTTPS'] ) != 'off' ) ) {
+		$t_protocol = 'https';
+	}
+
+	// $_SERVER['SERVER_PORT'] is not defined in case of php-cgi.exe
+	if ( isset( $_SERVER['SERVER_PORT'] ) ) {
+		$t_port = ':' . $_SERVER['SERVER_PORT'];
+		if ( ( ':80' == $t_port && 'http' == $t_protocol )
+		  || ( ':443' == $t_port && 'https' == $t_protocol )) {
+			$t_port = '';
+		}
+	} else {
+		$t_port = '';
+	}
+
+	if ( isset( $_SERVER['HTTP_HOST'] ) ) {
+		$t_host = $_SERVER['HTTP_HOST'];
+	} else if ( isset( $_SERVER['SERVER_NAME'] ) ) {
+		$t_host = $_SERVER['SERVER_NAME'] . $t_port;
+	} else if ( isset( $_SERVER['SERVER_ADDR'] ) ) {
+		$t_host = $_SERVER['SERVER_ADDR'] . $t_port;
+	} else {
+		$t_host = 'www.example.com';
+	}
+
+	$t_path = dirname( $_SERVER['PHP_SELF'] );
+	if ( '/' == $t_path || '\\' == $t_path ) {
+		$t_path = '';
+	}
+
+	$t_url	= $t_protocol . '://' . $t_host . $t_path.'/';
+	
+	return ($t_url);
+}
+
+}
+?>

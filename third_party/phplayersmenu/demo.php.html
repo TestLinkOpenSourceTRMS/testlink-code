@@ -1,0 +1,1718 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"></meta>
+<link rel="stylesheet" href="layersmenu-demo.css" type="text/css"></link>
+<link rel="stylesheet" href="layersmenu-old.css" type="text/css"></link>
+<link rel="stylesheet" href="layersmenu-gtk2.css" type="text/css"></link>
+<link rel="stylesheet" href="layersmenu-keramik.css" type="text/css"></link>
+<link rel="stylesheet" href="layersmenu-galaxy.css" type="text/css"></link>
+<link rel="stylesheet" href="layerstreemenu.css" type="text/css"></link>
+<style type="text/css">
+<!--
+@import url("layerstreemenu-hidden.css");
+//-->
+</style>
+<link rel="shortcut icon" href="LOGOS/shortcut_icon_phplm.png"></link>
+<title>Complete Demo of the PHP Layers Menu System</title>
+<script language="JavaScript" type="text/javascript">
+<!--
+// PHP Layers Menu 3.2.0-rc (C) 2001-2004 Marco Pratesi - http://www.marcopratesi.it/
+
+DOM = (document.getElementById) ? 1 : 0;
+NS4 = (document.layers) ? 1 : 0;
+// We need to explicitly detect Konqueror
+// because Konqueror 3 sets IE = 1 ... AAAAAAAAAARGHHH!!!
+Konqueror = (navigator.userAgent.indexOf('Konqueror') > -1) ? 1 : 0;
+// We need to detect Konqueror 2.2 as it does not handle the window.onresize event
+Konqueror22 = (navigator.userAgent.indexOf('Konqueror 2.2') > -1 || navigator.userAgent.indexOf('Konqueror/2.2') > -1) ? 1 : 0;
+Konqueror30 =
+	(
+		navigator.userAgent.indexOf('Konqueror 3.0') > -1
+		|| navigator.userAgent.indexOf('Konqueror/3.0') > -1
+		|| navigator.userAgent.indexOf('Konqueror 3;') > -1
+		|| navigator.userAgent.indexOf('Konqueror/3;') > -1
+		|| navigator.userAgent.indexOf('Konqueror 3)') > -1
+		|| navigator.userAgent.indexOf('Konqueror/3)') > -1
+	)
+	? 1 : 0;
+Konqueror31 = (navigator.userAgent.indexOf('Konqueror 3.1') > -1 || navigator.userAgent.indexOf('Konqueror/3.1') > -1) ? 1 : 0;
+// We need to detect Konqueror 3.2 and 3.3 as they are affected by the see-through effect only for 2 form elements
+Konqueror32 = (navigator.userAgent.indexOf('Konqueror 3.2') > -1 || navigator.userAgent.indexOf('Konqueror/3.2') > -1) ? 1 : 0;
+Konqueror33 = (navigator.userAgent.indexOf('Konqueror 3.3') > -1 || navigator.userAgent.indexOf('Konqueror/3.3') > -1) ? 1 : 0;
+Opera = (navigator.userAgent.indexOf('Opera') > -1) ? 1 : 0;
+Opera5 = (navigator.userAgent.indexOf('Opera 5') > -1 || navigator.userAgent.indexOf('Opera/5') > -1) ? 1 : 0;
+Opera6 = (navigator.userAgent.indexOf('Opera 6') > -1 || navigator.userAgent.indexOf('Opera/6') > -1) ? 1 : 0;
+Opera56 = Opera5 || Opera6;
+IE = (navigator.userAgent.indexOf('MSIE') > -1) ? 1 : 0;
+IE = IE && !Opera;
+IE5 = IE && DOM;
+IE4 = (document.all) ? 1 : 0;
+IE4 = IE4 && IE && !DOM;
+
+// -->
+</script>
+<script language="JavaScript" type="text/javascript" src="libjs/layersmenu-library.js"></script>
+<script language="JavaScript" type="text/javascript" src="libjs/layersmenu.js"></script>
+<script language="JavaScript" type="text/javascript" src="libjs/layerstreemenu-cookies.js"></script>
+
+<!-- beginning of menu header - PHP Layers Menu 3.2.0-rc (C) 2001-2004 Marco Pratesi - http://www.marcopratesi.it/ -->
+
+<script language="JavaScript" type="text/javascript">
+<!--
+
+menuTopShift = 6;
+menuRightShift = 7;
+menuLeftShift = 2;
+
+var thresholdY = 5;
+var abscissaStep = 140;
+
+toBeHidden = new Array();
+toBeHiddenLeft = new Array();
+toBeHiddenTop = new Array();
+
+listl = ['L2','L3','L8','L10','L12','L22','L28','L33','L37','L52','L53','L56','L62','L63','L72','L78','L79','L83','L89','L94','L98'];
+var numl = listl.length;
+
+father = new Array();
+for (i=1; i<=102; i++) {
+	father['L' + i] = '';
+}
+father_keys = ['L3','L4','L5','L6','L7','L8','L9','L10','L11','L12','L13','L14','L15','L16','L17','L18','L19','L20','L21','L22','L23','L24','L25','L26','L27','L29','L30','L31','L32','L33','L34','L35','L36','L38','L39','L40','L41','L42','L43','L44','L45','L46','L47','L48','L49','L50','L53','L54','L55','L56','L57','L58','L63','L64','L65','L66','L67','L68','L69','L70','L71','L72','L73','L74','L75','L76','L77','L79','L80','L81','L82','L83','L84','L85','L86','L87','L88','L90','L91','L92','L93','L94','L95','L96','L97','L99','L100','L101','L102'];
+father_vals = ['L2','L3','L3','L3','L2','L2','L8','L8','L10','L10','L12','L12','L12','L12','L12','L12','L12','L12','L8','L8','L22','L22','L8','L8','L8','L28','L28','L28','L28','L28','L33','L33','L33','L37','L37','L37','L37','L37','L37','L37','L37','L37','L37','L37','L37','L37','L52','L53','L53','L52','L56','L56','L62','L63','L63','L63','L63','L63','L63','L63','L62','L62','L72','L72','L72','L72','L62','L78','L79','L79','L79','L78','L83','L83','L83','L83','L83','L89','L89','L89','L89','L89','L94','L94','L94','L98','L98','L98','L98'];
+for (i=0; i<father_keys.length; i++) {
+	father[father_keys[i]] = father_vals[i];
+}
+
+lwidth = new Array();
+var lwidthDetected = 0;
+
+function moveLayers()
+{
+	if (!lwidthDetected) {
+		for (i=0; i<numl; i++) {
+			lwidth[listl[i]] = getOffsetWidth(listl[i]);
+		}
+		lwidthDetected = 1;
+	}
+	if (IE4) {
+		for (i=0; i<numl; i++) {
+			setWidth(listl[i], abscissaStep);
+		}
+	}
+	var hormenu1TOP = getOffsetTop('hormenu1L1');
+	var hormenu1HEIGHT = getOffsetHeight('hormenu1L1');
+	setTop('L2', hormenu1TOP + hormenu1HEIGHT);
+	moveLayerX1('L2', 'hormenu1');
+	setTop('L28', hormenu1TOP + hormenu1HEIGHT);
+	moveLayerX1('L28', 'hormenu1');
+	setTop('L37', hormenu1TOP + hormenu1HEIGHT);
+	moveLayerX1('L37', 'hormenu1');
+	var vermenu1TOP = getOffsetTop('vermenu1');
+	var vermenu1LEFT = getOffsetLeft('vermenu1');
+	var vermenu1WIDTH = getOffsetWidth('vermenu1');
+	setLeft('L52', vermenu1LEFT + vermenu1WIDTH - menuRightShift);
+	var vermenu2TOP = getOffsetTop('vermenu2');
+	var vermenu2LEFT = getOffsetLeft('vermenu2');
+	var vermenu2WIDTH = getOffsetWidth('vermenu2');
+	setLeft('L62', vermenu2LEFT + vermenu2WIDTH - menuRightShift);
+	var hormenu2TOP = getOffsetTop('hormenu2L78');
+	var hormenu2HEIGHT = getOffsetHeight('hormenu2L78');
+	setTop('L78', hormenu2TOP + hormenu2HEIGHT);
+	moveLayerX1('L78', 'hormenu2');
+	setTop('L89', hormenu2TOP + hormenu2HEIGHT);
+	moveLayerX1('L89', 'hormenu2');
+	setTop('L98', hormenu2TOP + hormenu2HEIGHT);
+	moveLayerX1('L98', 'hormenu2');
+
+}
+
+back = new Array();
+for (i=1; i<=102; i++) {
+	back['L' + i] = 0;
+}
+
+// -->
+</script>
+
+<!-- end of menu header - PHP Layers Menu 3.2.0-rc (C) 2001-2004 Marco Pratesi - http://www.marcopratesi.it/ -->
+
+</head>
+<body>
+
+<!-- beginning of horizontal menu bar -->
+
+<div class="horbar">
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td>
+<div id="hormenu1L1" class="horbaritem" onmouseover="clearLMTO();" onmouseout="setLMTO();">
+<a href="http://www.gnu.org/" onmouseover="shutdown();" title="The Free Software Foundation"><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" />...GNU's Not Unix!&nbsp;&nbsp;&nbsp;</a>
+</div>
+</td>
+<td>
+<div id="hormenu1L2" class="horbaritem" onmouseover="clearLMTO();" onmouseout="setLMTO();">
+<a href="#" onmouseover="moveLayerX1('L2', 'hormenu1') ; LMPopUp('L2', false);"><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" />Open Source&nbsp;<img
+src="menuimages/down-arrow.png" width="9" height="5"
+border="0" alt=">>" />&nbsp;&nbsp;&nbsp;</a>
+</div>
+</td>
+<td>
+<div id="hormenu1L28" class="horbaritem" onmouseover="clearLMTO();" onmouseout="setLMTO();">
+<a href="#" onmouseover="moveLayerX1('L28', 'hormenu1') ; LMPopUp('L28', false);"><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" /><img
+align="top" src="menuicons/mozilla.org_images_mozilla-16.png" width="16" height="16" border="0"
+alt="O" />&nbsp;Browsers&nbsp;<img
+src="menuimages/down-arrow.png" width="9" height="5"
+border="0" alt=">>" />&nbsp;&nbsp;&nbsp;</a>
+</div>
+</td>
+<td>
+<div id="hormenu1L37" class="horbaritem" onmouseover="clearLMTO();" onmouseout="setLMTO();">
+<a href="#" onmouseover="moveLayerX1('L37', 'hormenu1') ; LMPopUp('L37', false);" title="Some interesting URLs about the Document Object Model, layers, browsers..."><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" />DOM, layers...&nbsp;<img
+src="menuimages/down-arrow.png" width="9" height="5"
+border="0" alt=">>" />&nbsp;&nbsp;&nbsp;</a>
+</div>
+</td>
+</tr>
+</table>
+</div>
+
+<!-- end of horizontal menu bar -->
+
+<div class="normalbox">
+<div class="h1">Complete Demo of the PHP Layers Menu System (demo.php)</div>
+</div>
+
+<table width="100%" border="0" cellpadding="0" cellspacing="0">
+<tr>
+<td width="20%" valign="top">
+
+<div class="normalbox">
+<div class="normal">
+A vertical menu...
+</div>
+</div>
+<center>
+<!-- beginning of vertical menu bar -->
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td nowrap="nowrap">
+<div id="vermenu1" class="mdkverbar" onmouseover="clearLMTO();" onmouseout="setLMTO();">
+<div id="refL51" class="mdkitem">
+<a href="demo.php" onmouseover="shutdown();" title="The PHP Layers Menu System complete demo"><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" /><img
+align="top" src="menuicons/shortcut_icon_phplm.png" width="16" height="16" border="0"
+alt="O" />&nbsp;PHPLM Complete Demo&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+</div>
+<div id="refL52" class="mdkitem">
+<a href="#" onmouseover="moveLayerX('L52') ; moveLayerY('L52') ; LMPopUp('L52', false);"><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" /><img
+align="top" src="menuimages/transparent.png" width="16" height="16" border="0"
+alt=" " />&nbsp;Some PHPLM examples&nbsp;<img
+class="mdkfwdarr" src="menuimages/forward-galaxy.png" width="4" height="7"
+border="0" alt=">>" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+</div>
+</div>
+</td>
+</tr>
+</table>
+<!-- end of vertical menu bar -->
+</center>
+
+<div class="normalbox">
+<div class="normal">
+Tree Menu version
+</div>
+<script language="JavaScript" type="text/javascript">
+<!--
+// PHP Layers Menu 3.2.0-rc (C) 2001-2004 Marco Pratesi - http://www.marcopratesi.it/
+
+function toggletreemenu1(nodeid)
+{
+	if ((!DOM || Opera56 || Konqueror22) && !IE4) {
+		return;
+	}
+	layersMoved = 0;
+	parseExpandString();
+	parseCollapseString();
+	if (!IE4) {
+		sonLayer = document.getElementById('jt' + nodeid + 'son');
+		nodeLayer = document.getElementById('jt' + nodeid + 'node');
+		folderLayer = document.getElementById('jt' + nodeid + 'folder');
+	} else {
+		sonLayer = document.all('jt' + nodeid + 'son');
+		nodeLayer = document.all('jt' + nodeid + 'node');
+		folderLayer = document.all('jt' + nodeid + 'folder');
+	}
+	if (sonLayer.style.display == 'none') {
+		sonLayer.style.display = 'block';
+		if (nodeLayer.src.indexOf('menuimages/tree_expand.png') > -1) {
+			nodeLayer.src = 'menuimages/tree_collapse.png';
+		} else if (nodeLayer.src.indexOf('menuimages/tree_expand_first.png') > -1) {
+			nodeLayer.src = 'menuimages/tree_collapse_first.png';
+		} else if (nodeLayer.src.indexOf('menuimages/tree_expand_corner.png') > -1) {
+			nodeLayer.src = 'menuimages/tree_collapse_corner.png';
+		} else {
+			nodeLayer.src = 'menuimages/tree_collapse_corner_first.png';
+		}
+		folderLayer.src = 'menuimages/tree_folder_open.png';
+		phplm_expand[nodeid] = 1;
+		phplm_collapse[nodeid] = 0;
+	} else {
+		sonLayer.style.display = 'none';
+		if (nodeLayer.src.indexOf('menuimages/tree_collapse.png') > -1) {
+			nodeLayer.src = 'menuimages/tree_expand.png';
+		} else if (nodeLayer.src.indexOf('menuimages/tree_collapse_first.png') > -1) {
+			nodeLayer.src = 'menuimages/tree_expand_first.png';
+		} else if (nodeLayer.src.indexOf('menuimages/tree_collapse_corner.png') > -1) {
+			nodeLayer.src = 'menuimages/tree_expand_corner.png';
+		} else {
+			nodeLayer.src = 'menuimages/tree_expand_corner_first.png';
+		}
+		folderLayer.src = 'menuimages/tree_folder_closed.png';
+		phplm_expand[nodeid] = 0;
+		phplm_collapse[nodeid] = 1;
+	}
+	saveExpandString();
+	saveCollapseString();
+}
+
+// -->
+</script>
+
+<table cellspacing="0" cellpadding="0" border="0">
+<tr>
+<td class="phplmnormal" nowrap="nowrap">
+<div id="jt1" class="treemenudiv">
+<img align="top" border="0" class="imgs" id="jt1node" src="menuimages/tree_split_first.png" alt="|-" /><a href="demo.php" title="The PHP Layers Menu System complete demo"><img align="top" border="0" src="menuicons/shortcut_icon_phplm.png" width="16" height="16" alt="->" /></a>&nbsp;<a href="demo.php" title="The PHP Layers Menu System complete demo" class="phplmselected">PHPLM Complete Demo</a>
+</div>
+<div id="jt2" class="treemenudiv">
+<a onmousedown="toggletreemenu1('2')"><img align="top" border="0" class="imgs" id="jt2node" src="menuimages/tree_collapse_corner.png" alt="--" /></a><img align="top" border="0" class="imgs" id="jt2folder" src="menuimages/tree_folder_open.png" alt="->" />&nbsp;<a class="phplmnormal">Some PHPLM examples</a>
+</div>
+<div id="jt2son" class="treemenudiv">
+<div id="jt3" class="treemenudiv">
+<img align="top" border="0" class="imgs" src="menuimages/tree_space.png" alt="  " /><a onmousedown="toggletreemenu1('3');"><img align="top" border="0" class="imgs" id="jt3node" src="menuimages/tree_collapse.png" alt="--" /></a><img align="top" border="0" class="imgs" id="jt3folder" src="menuimages/tree_folder_open.png" alt="->" />&nbsp;<a class="phplmnormal">Only tree menus</a>
+</div>
+<div id="jt3son" class="treemenudiv">
+<div id="jt4" class="treemenudiv">
+<img align="top" border="0" class="imgs" src="menuimages/tree_space.png" alt="  " /><img align="top" border="0" class="imgs" src="menuimages/tree_vertline.png" alt="| " /><img align="top" border="0" class="imgs" id="jt4node" src="menuimages/tree_split.png" alt="|-" /><a href="example-treemenu.php" title="Example with only one tree menu"><img align="top" border="0" class="imgs" src="menuimages/tree_leaf.png" alt="->" /></a>&nbsp;<a href="example-treemenu.php" title="Example with only one tree menu" class="phplm">Only a tree menu</a>
+</div>
+<div id="jt5" class="treemenudiv">
+<img align="top" border="0" class="imgs" src="menuimages/tree_space.png" alt="  " /><img align="top" border="0" class="imgs" src="menuimages/tree_vertline.png" alt="| " /><img align="top" border="0" class="imgs" src="menuimages/tree_corner.png" alt="`-" /><a href="example-two_treemenus.php" title="Example with 2 tree menus"><img align="top" border="0" class="imgs" src="menuimages/tree_leaf.png" alt="->" /></a>&nbsp;<a href="example-two_treemenus.php" title="Example with 2 tree menus" class="phplm">Two tree menus</a>
+</div>
+</div>
+<div id="jt6" class="treemenudiv">
+<img align="top" border="0" class="imgs" src="menuimages/tree_space.png" alt="  " /><a onmousedown="toggletreemenu1('6')"><img align="top" border="0" class="imgs" id="jt6node" src="menuimages/tree_collapse_corner.png" alt="--" /></a><img align="top" border="0" class="imgs" id="jt6folder" src="menuimages/tree_folder_open.png" alt="->" />&nbsp;<a class="phplmnormal">Layers + tree menus</a>
+</div>
+<div id="jt6son" class="treemenudiv">
+<div id="jt7" class="treemenudiv">
+<img align="top" border="0" class="imgs" src="menuimages/tree_space.png" alt="  " /><img align="top" border="0" class="imgs" src="menuimages/tree_space.png" alt="  " /><img align="top" border="0" class="imgs" id="jt7node" src="menuimages/tree_split.png" alt="|-" /><a href="example-hormenu_and_treemenu.php" title="Example with a horizontal menu and a tree menu"><img align="top" border="0" class="imgs" src="menuimages/tree_leaf.png" alt="->" /></a>&nbsp;<a href="example-hormenu_and_treemenu.php" title="Example with a horizontal menu and a tree menu" class="phplm">Hor. menu + tree</a>
+</div>
+<div id="jt8" class="treemenudiv">
+<img align="top" border="0" class="imgs" src="menuimages/tree_space.png" alt="  " /><img align="top" border="0" class="imgs" src="menuimages/tree_space.png" alt="  " /><img align="top" border="0" class="imgs" src="menuimages/tree_corner.png" alt="`-" /><a href="example-layersmenus_and_treemenus.php" title="Example with hor. menu, ver. menu, 2 tree menus"><img align="top" border="0" class="imgs" src="menuimages/tree_leaf.png" alt="->" /></a>&nbsp;<a href="example-layersmenus_and_treemenus.php" title="Example with hor. menu, ver. menu, 2 tree menus" class="phplm">Layers + trees</a>
+</div>
+</div>
+</div>
+</td>
+</tr>
+</table>
+
+<script language="JavaScript" type="text/javascript">
+<!--
+if ((DOM && !Opera56 && !Konqueror22) || IE4) {
+if (phplm_collapse[2] == 1) toggletreemenu1('2');
+if (phplm_collapse[3] == 1) toggletreemenu1('3');
+if (phplm_collapse[6] == 1) toggletreemenu1('6');
+}
+if (NS4) alert("Only the accessibility is provided to Netscape 4 on the JavaScript Tree Menu.\nWe *strongly* suggest you to upgrade your browser.");
+// -->
+</script>
+</div>
+
+<div class="normalbox">
+<div class="normal">
+PHP Tree - No JavaScript
+</div>
+<table cellspacing="0" cellpadding="0" border="0">
+<tr>
+<td class="phplmnormal" nowrap="nowrap">
+<div class="treemenudiv">
+<img align="top" border="0" class="imgs" src="menuimages/nautilus_tree_split_first.png" alt="|-" /><a href="demo.php" title="The PHP Layers Menu System complete demo"><img align="top" border="0" src="menuicons/shortcut_icon_phplm.png" width="16" height="16" alt="->" /></a>&nbsp;<a href="demo.php" title="The PHP Layers Menu System complete demo" class="phplm">PHPLM Complete Demo</a>
+</div>
+<div class="treemenudiv">
+<a name="2" class="phplm" href="http://localhost/~pratesi/phplayersmenu/demo.php?p=3|6#2"><img align="top" border="0" class="imgs" src="menuimages/nautilus_tree_collapse_corner.png" alt="--" /></a><img align="top" border="0" class="imgs" src="menuimages/nautilus_tree_folder_open.png" alt="->" />&nbsp;<a class="phplmnormal">Some PHPLM examples</a>
+</div>
+<div class="treemenudiv">
+<img align="top" border="0" class="imgs" src="menuimages/nautilus_tree_space.png" alt="  " /><a name="3" class="phplm" href="http://localhost/~pratesi/phplayersmenu/demo.php?p=2|6#3"><img align="top" border="0" class="imgs" src="menuimages/nautilus_tree_collapse.png" alt="--" /></a><img align="top" border="0" class="imgs" src="menuimages/nautilus_tree_folder_open.png" alt="->" />&nbsp;<a class="phplmnormal">Only tree menus</a>
+</div>
+<div class="treemenudiv">
+<img align="top" border="0" class="imgs" src="menuimages/nautilus_tree_space.png" alt="  " /><img align="top" border="0" class="imgs" src="menuimages/nautilus_tree_vertline.png" alt="| " /><img align="top" border="0" class="imgs" src="menuimages/nautilus_tree_split.png" alt="|-" /><a href="example-treemenu.php" title="Example with only one tree menu"><img align="top" border="0" class="imgs" src="menuimages/nautilus_tree_leaf.png" alt="->" /></a>&nbsp;<a href="example-treemenu.php" title="Example with only one tree menu" class="phplm">Only a tree menu</a>
+</div>
+<div class="treemenudiv">
+<img align="top" border="0" class="imgs" src="menuimages/nautilus_tree_space.png" alt="  " /><img align="top" border="0" class="imgs" src="menuimages/nautilus_tree_vertline.png" alt="| " /><img align="top" border="0" class="imgs" src="menuimages/nautilus_tree_corner.png" alt="`-" /><a href="example-two_treemenus.php" title="Example with 2 tree menus"><img align="top" border="0" class="imgs" src="menuimages/nautilus_tree_leaf.png" alt="->" /></a>&nbsp;<a href="example-two_treemenus.php" title="Example with 2 tree menus" class="phplm">Two tree menus</a>
+</div>
+<div class="treemenudiv">
+<img align="top" border="0" class="imgs" src="menuimages/nautilus_tree_space.png" alt="  " /><a name="6" class="phplm" href="http://localhost/~pratesi/phplayersmenu/demo.php?p=2|3#6"><img align="top" border="0" class="imgs" src="menuimages/nautilus_tree_collapse_corner.png" alt="--" /></a><img align="top" border="0" class="imgs" src="menuimages/nautilus_tree_folder_open.png" alt="->" />&nbsp;<a class="phplmnormal">Layers + tree menus</a>
+</div>
+<div class="treemenudiv">
+<img align="top" border="0" class="imgs" src="menuimages/nautilus_tree_space.png" alt="  " /><img align="top" border="0" class="imgs" src="menuimages/nautilus_tree_space.png" alt="  " /><img align="top" border="0" class="imgs" src="menuimages/nautilus_tree_split.png" alt="|-" /><a href="example-hormenu_and_treemenu.php" title="Example with a horizontal menu and a tree menu"><img align="top" border="0" class="imgs" src="menuimages/nautilus_tree_leaf.png" alt="->" /></a>&nbsp;<a href="example-hormenu_and_treemenu.php" title="Example with a horizontal menu and a tree menu" class="phplm">Hor. menu + tree</a>
+</div>
+<div class="treemenudiv">
+<img align="top" border="0" class="imgs" src="menuimages/nautilus_tree_space.png" alt="  " /><img align="top" border="0" class="imgs" src="menuimages/nautilus_tree_space.png" alt="  " /><img align="top" border="0" class="imgs" src="menuimages/nautilus_tree_corner.png" alt="`-" /><a href="example-layersmenus_and_treemenus.php" title="Example with hor. menu, ver. menu, 2 tree menus"><img align="top" border="0" class="imgs" src="menuimages/nautilus_tree_leaf.png" alt="->" /></a>&nbsp;<a href="example-layersmenus_and_treemenus.php" title="Example with hor. menu, ver. menu, 2 tree menus" class="phplm">Layers + trees</a>
+</div>
+</td>
+</tr>
+</table>
+</div>
+
+<div class="normalbox">
+<div class="normal">
+Plain - No JavaScript
+</div>
+</div>
+<center>
+
+<table border="0" cellpadding="3" cellspacing="0" class="darkbordertable">
+<tr>
+<td>
+<table border="0" cellpadding="10" cellspacing="0">
+<tr>
+<td class="phplmbodytable" align="left">
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td class="phplmbodytable" valign="middle" nowrap="nowrap"><a href="demo.php" title="The PHP Layers Menu System complete demo" class="phplm">PHPLM Complete Demo</a></td>
+</tr>
+<tr>
+<td class="phplmbodytable" valign="middle" nowrap="nowrap"><a href="#" class="phplm">Some PHPLM examples</a></td>
+</tr>
+<tr>
+<td class="phplmbodytable" valign="middle" nowrap="nowrap">&nbsp;&nbsp;&nbsp;<a href="#" class="phplm">Only tree menus</a></td>
+</tr>
+<tr>
+<td class="phplmbodytable" valign="middle" nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="example-treemenu.php" title="Example with only one tree menu" class="phplm">Only a tree menu</a></td>
+</tr>
+<tr>
+<td class="phplmbodytable" valign="middle" nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="example-two_treemenus.php" title="Example with 2 tree menus" class="phplm">Two tree menus</a></td>
+</tr>
+<tr>
+<td class="phplmbodytable" valign="middle" nowrap="nowrap">&nbsp;&nbsp;&nbsp;<a href="#" class="phplm">Layers + tree menus</a></td>
+</tr>
+<tr>
+<td class="phplmbodytable" valign="middle" nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="example-hormenu_and_treemenu.php" title="Example with a horizontal menu and a tree menu" class="phplm">Hor. menu + tree</a></td>
+</tr>
+<tr>
+<td class="phplmbodytable" valign="middle" nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="example-layersmenus_and_treemenus.php" title="Example with hor. menu, ver. menu, 2 tree menus" class="phplm">Layers + trees</a></td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</center>
+
+<br />
+
+<div class="normalbox">
+<div class="normal">
+Another vertical menu...
+</div>
+</div>
+<center>
+<!-- beginning of vertical menu bar -->
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td nowrap="nowrap">
+<div id="vermenu2" class="verbar" onmouseover="clearLMTO();" onmouseout="setLMTO();">
+<div id="refL59" class="item">
+<a href="http://www.cs.Helsinki.FI/u/torvalds/" onmouseover="shutdown();" title="The father of Linux" target="Linus"><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" /><img
+align="top" src="menuimages/transparent.png" width="16" height="16" border="0"
+alt=" " />&nbsp;Linus B. Torvalds&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+</div>
+<div id="refL60" class="item">
+<a href="http://www.kernel.org/" onmouseover="shutdown();" title="Here you can download the Linux kernel sources" target="kernelorg"><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" /><img
+align="top" src="menuicons/www.kernel.org_images_tux16-16.png" width="16" height="16" border="0"
+alt="O" />&nbsp;Linux Kernel Archives&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+</div>
+<div class="separator">&nbsp;</div>
+<div id="refL62" class="item">
+<a href="http://flashnet.linux.tucows.com/distribution.html" onmouseover="moveLayerX('L62') ; moveLayerY('L62') ; LMPopUp('L62', false);" title="Here you can find a list of the major Linux distributions" target="Linux"><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" /><img
+align="top" src="menuimages/transparent.png" width="16" height="16" border="0"
+alt=" " />&nbsp;Linux Distributions&nbsp;<img
+class="fwdarr" src="menuimages/forward-gtk2.png" width="4" height="7"
+border="0" alt=">>" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+</div>
+</div>
+</td>
+</tr>
+</table>
+<!-- end of vertical menu bar -->
+</center>
+
+<div class="normalbox">
+<div class="normal">
+Tree Menu version
+</div>
+<script language="JavaScript" type="text/javascript">
+<!--
+// PHP Layers Menu 3.2.0-rc (C) 2001-2004 Marco Pratesi - http://www.marcopratesi.it/
+
+function toggletreemenu2(nodeid)
+{
+	if ((!DOM || Opera56 || Konqueror22) && !IE4) {
+		return;
+	}
+	layersMoved = 0;
+	parseExpandString();
+	parseCollapseString();
+	if (!IE4) {
+		sonLayer = document.getElementById('jt' + nodeid + 'son');
+		nodeLayer = document.getElementById('jt' + nodeid + 'node');
+		folderLayer = document.getElementById('jt' + nodeid + 'folder');
+	} else {
+		sonLayer = document.all('jt' + nodeid + 'son');
+		nodeLayer = document.all('jt' + nodeid + 'node');
+		folderLayer = document.all('jt' + nodeid + 'folder');
+	}
+	if (sonLayer.style.display == 'none') {
+		sonLayer.style.display = 'block';
+		if (nodeLayer.src.indexOf('menuimages/tree_expand.png') > -1) {
+			nodeLayer.src = 'menuimages/tree_collapse.png';
+		} else if (nodeLayer.src.indexOf('menuimages/tree_expand_first.png') > -1) {
+			nodeLayer.src = 'menuimages/tree_collapse_first.png';
+		} else if (nodeLayer.src.indexOf('menuimages/tree_expand_corner.png') > -1) {
+			nodeLayer.src = 'menuimages/tree_collapse_corner.png';
+		} else {
+			nodeLayer.src = 'menuimages/tree_collapse_corner_first.png';
+		}
+		folderLayer.src = 'menuimages/tree_folder_open.png';
+		phplm_expand[nodeid] = 1;
+		phplm_collapse[nodeid] = 0;
+	} else {
+		sonLayer.style.display = 'none';
+		if (nodeLayer.src.indexOf('menuimages/tree_collapse.png') > -1) {
+			nodeLayer.src = 'menuimages/tree_expand.png';
+		} else if (nodeLayer.src.indexOf('menuimages/tree_collapse_first.png') > -1) {
+			nodeLayer.src = 'menuimages/tree_expand_first.png';
+		} else if (nodeLayer.src.indexOf('menuimages/tree_collapse_corner.png') > -1) {
+			nodeLayer.src = 'menuimages/tree_expand_corner.png';
+		} else {
+			nodeLayer.src = 'menuimages/tree_expand_corner_first.png';
+		}
+		folderLayer.src = 'menuimages/tree_folder_closed.png';
+		phplm_expand[nodeid] = 0;
+		phplm_collapse[nodeid] = 1;
+	}
+	saveExpandString();
+	saveCollapseString();
+}
+
+// -->
+</script>
+
+<table cellspacing="0" cellpadding="0" border="0">
+<tr>
+<td class="phplmnormal" nowrap="nowrap">
+<div id="jt9" class="treemenudiv">
+<img align="top" border="0" class="imgs" id="jt9node" src="menuimages/tree_split_first.png" alt="|-" /><a href="http://www.cs.Helsinki.FI/u/torvalds/" title="The father of Linux" target="Linus"><img align="top" border="0" class="imgs" src="menuimages/tree_leaf.png" alt="->" /></a>&nbsp;<a href="http://www.cs.Helsinki.FI/u/torvalds/" title="The father of Linux" target="Linus" class="phplm">Linus B. Torvalds</a>
+</div>
+<div id="jt10" class="treemenudiv">
+<img align="top" border="0" class="imgs" id="jt10node" src="menuimages/tree_split.png" alt="|-" /><a href="http://www.kernel.org/" title="Here you can download the Linux kernel sources" target="kernelorg"><img align="top" border="0" src="menuicons/www.kernel.org_images_tux16-16.png" width="16" height="16" alt="->" /></a>&nbsp;<a href="http://www.kernel.org/" title="Here you can download the Linux kernel sources" target="kernelorg" class="phplm">Linux Kernel Archives</a>
+</div>
+<div id="jt12" class="treemenudiv">
+<a onmousedown="toggletreemenu2('12')"><img align="top" border="0" class="imgs" id="jt12node" src="menuimages/tree_collapse_corner.png" alt="--" /></a><a href="http://flashnet.linux.tucows.com/distribution.html" title="Here you can find a list of the major Linux distributions" target="Linux"><img align="top" border="0" class="imgs" id="jt12folder" src="menuimages/tree_folder_open.png" alt="->" /></a>&nbsp;<a href="http://flashnet.linux.tucows.com/distribution.html" title="Here you can find a list of the major Linux distributions" target="Linux" class="phplm">Linux Distributions</a>
+</div>
+<div id="jt12son" class="treemenudiv">
+<div id="jt13" class="treemenudiv">
+<img align="top" border="0" class="imgs" src="menuimages/tree_space.png" alt="  " /><a onmousedown="toggletreemenu2('13');"><img align="top" border="0" class="imgs" id="jt13node" src="menuimages/tree_collapse.png" alt="--" /></a><a href="http://www.debian.org/" title="Enjoy the exciting world of Debian GNU/Linux!" target="Linux"><img align="top" border="0" class="imgs" id="jt13folder" src="menuimages/tree_folder_open.png" alt="->" /></a>&nbsp;<a href="http://www.debian.org/" title="Enjoy the exciting world of Debian GNU/Linux!" target="Linux" class="phplm">Debian GNU/Linux</a>
+</div>
+<div id="jt13son" class="treemenudiv">
+<div id="jt14" class="treemenudiv">
+<img align="top" border="0" class="imgs" src="menuimages/tree_space.png" alt="  " /><img align="top" border="0" class="imgs" src="menuimages/tree_vertline.png" alt="| " /><img align="top" border="0" class="imgs" id="jt14node" src="menuimages/tree_split.png" alt="|-" /><a href="http://www.debian.org/intro/about" target="Linux"><img align="top" border="0" class="imgs" src="menuimages/tree_leaf.png" alt="->" /></a>&nbsp;<a href="http://www.debian.org/intro/about" target="Linux" class="phplm">About</a>
+</div>
+<div id="jt15" class="treemenudiv">
+<img align="top" border="0" class="imgs" src="menuimages/tree_space.png" alt="  " /><img align="top" border="0" class="imgs" src="menuimages/tree_vertline.png" alt="| " /><img align="top" border="0" class="imgs" id="jt15node" src="menuimages/tree_split.png" alt="|-" /><a href="http://www.debian.org/News/" target="Linux"><img align="top" border="0" class="imgs" src="menuimages/tree_leaf.png" alt="->" /></a>&nbsp;<a href="http://www.debian.org/News/" target="Linux" class="phplm">News</a>
+</div>
+<div id="jt16" class="treemenudiv">
+<img align="top" border="0" class="imgs" src="menuimages/tree_space.png" alt="  " /><img align="top" border="0" class="imgs" src="menuimages/tree_vertline.png" alt="| " /><img align="top" border="0" class="imgs" id="jt16node" src="menuimages/tree_split.png" alt="|-" /><a href="http://www.debian.org/distrib/" target="Linux"><img align="top" border="0" class="imgs" src="menuimages/tree_leaf.png" alt="->" /></a>&nbsp;<a href="http://www.debian.org/distrib/" target="Linux" class="phplm">Distribution</a>
+</div>
+<div id="jt17" class="treemenudiv">
+<img align="top" border="0" class="imgs" src="menuimages/tree_space.png" alt="  " /><img align="top" border="0" class="imgs" src="menuimages/tree_vertline.png" alt="| " /><img align="top" border="0" class="imgs" id="jt17node" src="menuimages/tree_split.png" alt="|-" /><a href="http://www.debian.org/support" target="Linux"><img align="top" border="0" class="imgs" src="menuimages/tree_leaf.png" alt="->" /></a>&nbsp;<a href="http://www.debian.org/support" target="Linux" class="phplm">Support</a>
+</div>
+<div id="jt18" class="treemenudiv">
+<img align="top" border="0" class="imgs" src="menuimages/tree_space.png" alt="  " /><img align="top" border="0" class="imgs" src="menuimages/tree_vertline.png" alt="| " /><img align="top" border="0" class="imgs" id="jt18node" src="menuimages/tree_split.png" alt="|-" /><a href="http://www.debian.org/devel/" target="Linux"><img align="top" border="0" class="imgs" src="menuimages/tree_leaf.png" alt="->" /></a>&nbsp;<a href="http://www.debian.org/devel/" target="Linux" class="phplm">Development</a>
+</div>
+<div id="jt19" class="treemenudiv">
+<img align="top" border="0" class="imgs" src="menuimages/tree_space.png" alt="  " /><img align="top" border="0" class="imgs" src="menuimages/tree_vertline.png" alt="| " /><img align="top" border="0" class="imgs" id="jt19node" src="menuimages/tree_split.png" alt="|-" /><a href="http://search.debian.org/" target="Linux"><img align="top" border="0" class="imgs" src="menuimages/tree_leaf.png" alt="->" /></a>&nbsp;<a href="http://search.debian.org/" target="Linux" class="phplm">Search</a>
+</div>
+<div id="jt20" class="treemenudiv">
+<img align="top" border="0" class="imgs" src="menuimages/tree_space.png" alt="  " /><img align="top" border="0" class="imgs" src="menuimages/tree_vertline.png" alt="| " /><img align="top" border="0" class="imgs" src="menuimages/tree_corner.png" alt="`-" /><a href="http://ftp.mirror.ac.uk/sites/ftp.debian.org/" target="Linux"><img align="top" border="0" class="imgs" src="menuimages/tree_leaf.png" alt="->" /></a>&nbsp;<a href="http://ftp.mirror.ac.uk/sites/ftp.debian.org/" target="Linux" class="phplm">A Debian Mirror</a>
+</div>
+</div>
+<div id="jt22" class="treemenudiv">
+<img align="top" border="0" class="imgs" src="menuimages/tree_space.png" alt="  " /><a onmousedown="toggletreemenu2('22');"><img align="top" border="0" class="imgs" id="jt22node" src="menuimages/tree_collapse.png" alt="--" /></a><a href="http://www.mandrakelinux.com/" title="Mandrake Linux" target="Linux"><img align="top" border="0" class="imgs" id="jt22folder" src="menuimages/tree_folder_open.png" alt="->" /></a>&nbsp;<a href="http://www.mandrakelinux.com/" title="Mandrake Linux" target="Linux" class="phplm">Mandrake</a>
+</div>
+<div id="jt22son" class="treemenudiv">
+<div id="jt23" class="treemenudiv">
+<img align="top" border="0" class="imgs" src="menuimages/tree_space.png" alt="  " /><img align="top" border="0" class="imgs" src="menuimages/tree_vertline.png" alt="| " /><img align="top" border="0" class="imgs" id="jt23node" src="menuimages/tree_split.png" alt="|-" /><a href="http://www.mandrakelinux.com/en/errata.php3" target="Linux"><img align="top" border="0" class="imgs" src="menuimages/tree_leaf.png" alt="->" /></a>&nbsp;<a href="http://www.mandrakelinux.com/en/errata.php3" target="Linux" class="phplm">Errata</a>
+</div>
+<div id="jt24" class="treemenudiv">
+<img align="top" border="0" class="imgs" src="menuimages/tree_space.png" alt="  " /><img align="top" border="0" class="imgs" src="menuimages/tree_vertline.png" alt="| " /><img align="top" border="0" class="imgs" id="jt24node" src="menuimages/tree_split.png" alt="|-" /><a href="http://www.mandrakelinux.com/en/ftp.php3" target="Linux"><img align="top" border="0" class="imgs" src="menuimages/tree_leaf.png" alt="->" /></a>&nbsp;<a href="http://www.mandrakelinux.com/en/ftp.php3" target="Linux" class="phplm">Download</a>
+</div>
+<div id="jt25" class="treemenudiv">
+<img align="top" border="0" class="imgs" src="menuimages/tree_space.png" alt="  " /><img align="top" border="0" class="imgs" src="menuimages/tree_vertline.png" alt="| " /><img align="top" border="0" class="imgs" id="jt25node" src="menuimages/tree_split.png" alt="|-" /><a href="http://www.mandrakeexpert.com/index1.php" target="Linux"><img align="top" border="0" class="imgs" src="menuimages/tree_leaf.png" alt="->" /></a>&nbsp;<a href="http://www.mandrakeexpert.com/index1.php" target="Linux" class="phplm">Mandrake Expert</a>
+</div>
+<div id="jt26" class="treemenudiv">
+<img align="top" border="0" class="imgs" src="menuimages/tree_space.png" alt="  " /><img align="top" border="0" class="imgs" src="menuimages/tree_vertline.png" alt="| " /><img align="top" border="0" class="imgs" src="menuimages/tree_corner.png" alt="`-" /><a href="http://qa.mandrakesoft.com/" target="Linux"><img align="top" border="0" class="imgs" src="menuimages/tree_leaf.png" alt="->" /></a>&nbsp;<a href="http://qa.mandrakesoft.com/" target="Linux" class="phplm">Bugzilla</a>
+</div>
+</div>
+<div id="jt27" class="treemenudiv">
+<img align="top" border="0" class="imgs" src="menuimages/tree_space.png" alt="  " /><img align="top" border="0" class="imgs" src="menuimages/tree_corner.png" alt="`-" /><a href="http://www.freesoftware.org/" title="Slackware Linux" target="Linux"><img align="top" border="0" class="imgs" src="menuimages/tree_leaf.png" alt="->" /></a>&nbsp;<a href="http://www.freesoftware.org/" title="Slackware Linux" target="Linux" class="phplm">Slackware</a>
+</div>
+</div>
+</td>
+</tr>
+</table>
+
+<script language="JavaScript" type="text/javascript">
+<!--
+if ((DOM && !Opera56 && !Konqueror22) || IE4) {
+if (phplm_collapse[12] == 1) toggletreemenu2('12');
+if (phplm_collapse[13] == 1) toggletreemenu2('13');
+if (phplm_expand[22] != 1) toggletreemenu2('22');
+}
+if (NS4) alert("Only the accessibility is provided to Netscape 4 on the JavaScript Tree Menu.\nWe *strongly* suggest you to upgrade your browser.");
+// -->
+</script>
+</div>
+
+<div class="normalbox">
+<div class="normal">
+PHP Tree - No JavaScript
+</div>
+<table cellspacing="0" cellpadding="0" border="0">
+<tr>
+<td class="phplmnormal" nowrap="nowrap">
+<div class="treemenudiv">
+<img align="top" border="0" class="imgs" src="menuimages/tree_split_first.png" alt="|-" /><a href="http://www.cs.Helsinki.FI/u/torvalds/" title="The father of Linux" target="Linus"><img align="top" border="0" class="imgs" src="menuimages/tree_leaf.png" alt="->" /></a>&nbsp;<a href="http://www.cs.Helsinki.FI/u/torvalds/" title="The father of Linux" target="Linus" class="phplm">Linus B. Torvalds</a>
+</div>
+<div class="treemenudiv">
+<img align="top" border="0" class="imgs" src="menuimages/tree_split.png" alt="|-" /><a href="http://www.kernel.org/" title="Here you can download the Linux kernel sources" target="kernelorg"><img align="top" border="0" src="menuicons/www.kernel.org_images_tux16-16.png" width="16" height="16" alt="->" /></a>&nbsp;<a href="http://www.kernel.org/" title="Here you can download the Linux kernel sources" target="kernelorg" class="phplm">Linux Kernel Archives</a>
+</div>
+<div class="treemenudiv">
+<a name="12" class="phplm" href="http://localhost/~pratesi/phplayersmenu/demo.php?p=12#12"><img align="top" border="0" class="imgs" src="menuimages/tree_expand_corner.png" alt="+-" /></a><a href="http://flashnet.linux.tucows.com/distribution.html" title="Here you can find a list of the major Linux distributions" target="Linux"><img align="top" border="0" class="imgs" src="menuimages/tree_folder_closed.png" alt="->" /></a>&nbsp;<a href="http://flashnet.linux.tucows.com/distribution.html" title="Here you can find a list of the major Linux distributions" target="Linux" class="phplm">Linux Distributions</a>
+</div>
+</td>
+</tr>
+</table>
+</div>
+
+<br />
+<center>
+<a href="http://phplayersmenu.sourceforge.net/"><img border="0"
+src="LOGOS/powered_by_phplm.png" alt="Powered by PHP Layers Menu" height="31" width="88" /></a>
+</center>
+<br />
+<center>
+<a href="http://validator.w3.org/check/referer"><img border="0"
+src="images/valid-xhtml10.png" alt="Valid XHTML 1.0!" height="31" width="88" /></a>
+</center>
+<br />
+<center>
+<a href="http://jigsaw.w3.org/css-validator/"><img border="0"
+src="images/vcss.png" alt="Valid CSS!" height="31" width="88" /></a>
+</center>
+
+</td>
+<td valign="top">
+
+<div class="normalbox">
+
+<div class="normal" align="center">
+Another horizontal menu... and its <a href="layersmenu-horizontal-2.txt" target="TheMenuStructureFile">Menu Structure File</a>
+<div style="height: 2px"></div>
+<!-- beginning of horizontal menu bar -->
+
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td>
+<div class="khorbar">
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td>
+<div id="hormenu2L78" class="khorbaritem" onmouseover="clearLMTO();" onmouseout="setLMTO();">
+<a href="#" onmouseover="moveLayerX1('L78', 'hormenu2') ; LMPopUp('L78', false);"><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" /><img
+align="top" src="menuicons/desktop.png" width="16" height="16" border="0"
+alt="O" />&nbsp;Desktops&nbsp;<img
+src="menuimages/down-keramik.png" width="8" height="5"
+border="0" alt=">>" />&nbsp;&nbsp;&nbsp;</a>
+</div>
+</td>
+<td>
+<div id="hormenu2L89" class="khorbaritem" onmouseover="clearLMTO();" onmouseout="setLMTO();">
+<a href="#" onmouseover="moveLayerX1('L89', 'hormenu2') ; LMPopUp('L89', false);"><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" /><img
+align="top" src="menuicons/mozilla.org_images_mozilla-16.png" width="16" height="16" border="0"
+alt="O" />&nbsp;Browsers&nbsp;<img
+src="menuimages/down-keramik.png" width="8" height="5"
+border="0" alt=">>" />&nbsp;&nbsp;&nbsp;</a>
+</div>
+</td>
+<td>
+<div id="hormenu2L98" class="khorbaritem" onmouseover="clearLMTO();" onmouseout="setLMTO();">
+<a href="#" onmouseover="moveLayerX1('L98', 'hormenu2') ; LMPopUp('L98', false);"><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" /><img
+align="top" src="menuicons/office_suites.png" width="16" height="16" border="0"
+alt="O" />&nbsp;Office Suites&nbsp;<img
+src="menuimages/down-keramik.png" width="8" height="5"
+border="0" alt=">>" />&nbsp;&nbsp;&nbsp;</a>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</td>
+</tr>
+</table>
+
+<!-- end of horizontal menu bar -->
+</div>
+
+<div class="normal" align="center">
+Horizontal Plain version - No JavaScript
+
+<table border="0" cellpadding="2" cellspacing="0" class="darkbordertable">
+<tr>
+<td>
+<table border="0" cellpadding="5" cellspacing="1" width="100%">
+<tr>
+<td class="phplmbodytable" align="left" valign="top">
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td class="phplmbodytable" valign="middle" nowrap="nowrap"><a href="#" class="phplm">Desktops</a></td>
+</tr>
+<tr>
+<td class="phplmbodytable" valign="middle" nowrap="nowrap">&nbsp;&nbsp;&nbsp;<a href="http://www.gnome.org/" title="The Gnome Desktop" class="phplm">Gnome</a></td>
+</tr>
+<tr>
+<td class="phplmbodytable" valign="middle" nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://news.gnome.org/gnome-news/" class="phplm">Gnome News</a></td>
+</tr>
+<tr>
+<td class="phplmbodytable" valign="middle" nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://www.gnome.org/applist/listrecent.php3?entrylimit=20" class="phplm">Recent software</a></td>
+</tr>
+<tr>
+<td class="phplmbodytable" valign="middle" nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://www.ximian.com/" class="phplm">The Ximian Desktop</a></td>
+</tr>
+<tr>
+<td class="phplmbodytable" valign="middle" nowrap="nowrap">&nbsp;&nbsp;&nbsp;<a href="http://www.kde.org/" title="The KDE Desktop Environment" class="phplm">KDE</a></td>
+</tr>
+<tr>
+<td class="phplmbodytable" valign="middle" nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://www.kde.org/mailinglists.html" class="phplm">Mailing Lists</a></td>
+</tr>
+<tr>
+<td class="phplmbodytable" valign="middle" nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://www.kde.org/faq.html" class="phplm">FAQ</a></td>
+</tr>
+<tr>
+<td class="phplmbodytable" valign="middle" nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://www.kde.org/download.html" class="phplm">Download</a></td>
+</tr>
+<tr>
+<td class="phplmbodytable" valign="middle" nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://www.kde.org/screenshots/index.html" class="phplm">Screenshots</a></td>
+</tr>
+<tr>
+<td class="phplmbodytable" valign="middle" nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://dot.kde.org" class="phplm">News</a></td>
+</tr>
+</table>
+</td>
+<td class="phplmbodytable" align="left" valign="top">
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td class="phplmbodytable" valign="middle" nowrap="nowrap"><a href="#" class="phplm">Browsers</a></td>
+</tr>
+<tr>
+<td class="phplmbodytable" valign="middle" nowrap="nowrap">&nbsp;&nbsp;&nbsp;<a href="http://www.mozilla.org/" title="The Mozilla browser" target="Mozilla" class="phplm">Mozilla</a></td>
+</tr>
+<tr>
+<td class="phplmbodytable" valign="middle" nowrap="nowrap">&nbsp;&nbsp;&nbsp;<a href="http://epiphany.mozdev.org/" title="The web browser of the GNOME Desktop" target="Epiphany" class="phplm">Epiphany</a></td>
+</tr>
+<tr>
+<td class="phplmbodytable" valign="middle" nowrap="nowrap">&nbsp;&nbsp;&nbsp;<a href="http://www.kde.org/" title="The KDE browser" target="The_KDE_Desktop_Environment" class="phplm">Konqueror</a></td>
+</tr>
+<tr>
+<td class="phplmbodytable" valign="middle" nowrap="nowrap">&nbsp;&nbsp;&nbsp;<a href="#" class="phplm">Non free browsers</a></td>
+</tr>
+<tr>
+<td class="phplmbodytable" valign="middle" nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://www.netscape.com/" title="Netscape Communicator" target="Netscape" class="phplm">Netscape</a></td>
+</tr>
+<tr>
+<td class="phplmbodytable" valign="middle" nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://www.opera.com/" target="Opera" class="phplm">Opera</a></td>
+</tr>
+<tr>
+<td class="phplmbodytable" valign="middle" nowrap="nowrap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://www.microsoft.com/" target="Microsoft" class="phplm">Internet Explorer</a></td>
+</tr>
+</table>
+</td>
+<td class="phplmbodytable" align="left" valign="top">
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td class="phplmbodytable" valign="middle" nowrap="nowrap"><a href="#" class="phplm">Office Suites</a></td>
+</tr>
+<tr>
+<td class="phplmbodytable" valign="middle" nowrap="nowrap">&nbsp;&nbsp;&nbsp;<a href="http://www.openoffice.org/" title="The OpenOffice.org Suite" target="OpenOfficeOrg" class="phplm">OpenOffice.org</a></td>
+</tr>
+<tr>
+<td class="phplmbodytable" valign="middle" nowrap="nowrap">&nbsp;&nbsp;&nbsp;<a href="http://www.kde.org/" title="The KDE Office Suite" target="The_KDE_Desktop_Environment" class="phplm">KOffice</a></td>
+</tr>
+<tr>
+<td class="phplmbodytable" valign="middle" nowrap="nowrap">&nbsp;&nbsp;&nbsp;<a href="http://www.sun.com/products/staroffice/" class="phplm">Star Office</a></td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</div>
+
+</div>
+
+<div class="normalbox">
+<div class="normal">
+<div class="titlebox">
+<div class="h1">
+The PHP Layers Menu System 3.2.0-rc
+</div>
+</div>
+
+<p>
+<b>PHP Layers Menu</b> is a hierarchical menu system
+to prepare &quot;on the fly&quot; DHTML menus
+relying on the PHP scripting engine for the processing of data items.
+</p>
+<p>
+It is released under the GNU Lesser General Public License (LGPL),
+either Version 2.1, or (at your option) any later version.
+</p>
+<p>
+It supports a wide range of browsers: Mozilla, Konqueror, Netscape, Safari,
+Opera, Internet Explorer; rather old browser versions are supported, too;
+accessibility is provided for text-only browsers.
+</p>
+<p>
+It achieves a compact layout and a compact output code also for menus
+with a large number of entries.
+</p>
+<p>
+It provides horizontal and vertical layers-based menus whose behavior
+is analogous to menus of commonly used GUI-based applications.
+It also provides JavaScript-based tree menus, whose look is analogous
+to the most widely used file managers and bookmark handling tools.
+</p>
+<p>
+<b>Note:</b> <a href="http://www.sitebar.org" target="sitebar">SiteBar</a> can act as a backend for PHPLM;
+visit <a href="http://www.sitebar.org" target="sitebar">the SiteBar web site</a> for details.
+</p>
+<hr />
+<p>
+<a name="layersmenus"></a>
+<b>Layers-based menus</b> require JavaScript and work at least
+on the following browsers:
+</p>
+<ul>
+<li><div class="phplmnormal">Mozilla 0.6+ (versions 0.9.2+ are suggested)</div></li>
+<li><div class="phplmnormal">Netscape 6.0+ and other browsers based on Mozilla, e.g. Epiphany and Galeon</div></li>
+<li><div class="phplmnormal">Konqueror 2.2+ and browsers based on it, e.g. Safari</div></li>
+<li><div class="phplmnormal">Opera 6.x for Linux</div></li>
+<li><div class="phplmnormal">Opera 7.x</div></li>
+<li><div class="phplmnormal">Internet Explorer 5, 5.5, 6.</div></li>
+</ul>
+<p>
+If <b>old-style templates</b> are used instead of the default ones, layers-based
+menus work also on the following browsers:
+</p>
+<ul>
+<li><div class="phplmnormal">Netscape 4.07+</div></li>
+<li><div class="phplmnormal">Opera 5.x and 6.x</div></li>
+<li><div class="phplmnormal">Internet Explorer 4</div></li>
+</ul>
+<hr />
+<p>
+<a name="treemenus"></a>
+The PHP Layers Menu System also provides <b>JavaScript-based tree menus</b>,
+whose nodes can be expanded and collapsed on sufficiently DOM-compliant
+browsers (they remain completely expanded for the other browsers).
+They have more strict requirements w.r.t. the layers menus and provide
+complete functionality only to browsers sufficiently DOM-compliant
+for the purpose at hand, i.e.:
+</p>
+<ul>
+<li><div class="phplmnormal">Mozilla (versions 0.9.2+ are suggested)</div></li>
+<li><div class="phplmnormal">Netscape 6.0+ and other browsers based on Mozilla, e.g. Epiphany and Galeon</div></li>
+<li><div class="phplmnormal">Konqueror 3.0+ and browsers based on it, e.g. Safari</div></li>
+<li><div class="phplmnormal">Opera 7.x</div></li>
+<li><div class="phplmnormal">Internet Explorer 4, 5, 5.5, 6</div></li>
+</ul>
+<p>
+The following browsers are not supported, as supporting them is either not possible at all or really too hard:
+</p>
+<ul>
+<li><div class="phplmnormal">Netscape 4.x</div></li>
+<li><div class="phplmnormal">Konqueror 2.x</div></li>
+<li><div class="phplmnormal">Lynx and Links</div></li>
+<li><div class="phplmnormal">Opera 5.x and 6.x</div></li>
+</ul>
+<p>
+However, full accessibility is provided for the above browsers:
+the Tree Menus always appear completely exploded (and no node can be collapsed)
+on them, and this guarantees a rather good accessibility for them.
+</p>
+<hr />
+<p>
+<a name="accessibilitymenus"></a>
+Two classes are provided to prepare also <b>accessibility solutions</b>,
+i.e. &quot;server-side based&quot; tree menus
+(that have just the same look of the above mentioned
+JavaScript-based tree menus, but require the PHP support on the web server)
+and plain menus that do not require the JavaScript support to the browser.
+</p>
+<hr />
+<a name="featuresandstds"></a>
+<p>
+An arbitrary number of vertical and horizontal menus can be used
+on the same page.
+</p>
+<p>
+As much levels as needed can be used and each menu is dynamically generated
+using data retrieved from a file, a string, or a database table;
+the data format is rather simple and intuitive.
+</p>
+<p>
+Multiple languages are supported (i18n) if data are retrieved from a database.
+</p>
+<p>
+PHPLM is compliant with current recommendations for PHP developers:
+it works correctly with the following settings
+</p>
+<ul>
+<li><div class="preformatted">register_globals = Off</div></li>
+<li><div class="preformatted">safe_mode = On</div></li>
+<li><div class="preformatted">error_reporting = E_ALL</div></li>
+<li><div class="preformatted">allow_call_time_pass_reference = Off</div></li>
+<li><div class="preformatted">short_open_tag = Off</div></li>
+</ul>
+<p>
+To use the DB support, PEAR DB is required;
+obviously, if the open_basedir restriction is in effect,
+PEAR must be installed somewhere inside the allowed path.
+</p>
+<p>
+PHPLM is compliant with the following web standards:
+</p>
+<ul>
+<li><div class="phplmnormal">XHTML 1.0 Transitional</div></li>
+<li><div class="phplmnormal">CSS 2.0</div></li>
+</ul>
+<hr />
+<a name="customizations"></a>
+<p class="phplmnormal">
+Some interesting <b>customizations</b> are bundled in the PATCHES directory.
+</p>
+
+<pre class="preformatted">
+--
+Marco Pratesi - <a href="http://www.marcopratesi.it/" target="marcopratesi.it">http://www.marcopratesi.it/</a>
+</pre>
+</div>
+</div>
+
+</td>
+</tr>
+</table>
+
+<!-- beginning of menu footer - PHP Layers Menu 3.2.0-rc (C) 2001-2004 Marco Pratesi - http://www.marcopratesi.it/ -->
+
+
+<div id="L2" class="submenu" onmouseover="clearLMTO();" onmouseout="setLMTO();">
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td nowrap="nowrap">
+<div class="subframe">
+<div id="refL3" class="item">
+<a href="#" onmouseover="moveLayerX('L3') ; moveLayerY('L3') ; LMPopUp('L3', false);"><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" />Portals&nbsp;<img
+class="fwdarr" src="menuimages/forward-arrow.png" width="4" height="7"
+border="0" alt=">>" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+</div>
+<div class="separator">&nbsp;</div>
+<div id="refL8" class="item">
+<a href="#" onmouseover="moveLayerX('L8') ; moveLayerY('L8') ; LMPopUp('L8', false);"><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" />Software for the web...&nbsp;<img
+class="fwdarr" src="menuimages/forward-arrow.png" width="4" height="7"
+border="0" alt=">>" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+</div>
+</div>
+</td>
+</tr>
+</table>
+</div>
+
+<div id="L3" class="submenu" onmouseover="clearLMTO();" onmouseout="setLMTO();">
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td nowrap="nowrap">
+<div class="subframe">
+<div id="refL4" class="item">
+<a href="http://www.osdn.com/" onmouseover="LMPopUp('L3', true);"><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" /><img
+align="top" src="menuimages/transparent.png" width="16" height="16" border="0"
+alt=" " />&nbsp;O. S. Devel. Network&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+</div>
+<div id="refL5" class="item">
+<a href="http://sourceforge.net/" onmouseover="LMPopUp('L3', true);"><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" /><img
+align="top" src="menuicons/sourceforge.net_images_favicon.png" width="16" height="16" border="0"
+alt="O" />&nbsp;Source Forge&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+</div>
+<div id="refL6" class="item">
+<a href="http://freshmeat.net/" onmouseover="LMPopUp('L3', true);"><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" /><img
+align="top" src="menuicons/freshmeat.net_favicon.png" width="16" height="16" border="0"
+alt="O" />&nbsp;Freshmeat&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+</div>
+</div>
+</td>
+</tr>
+</table>
+</div>
+
+<div id="L8" class="submenu" onmouseover="clearLMTO();" onmouseout="setLMTO();">
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td nowrap="nowrap">
+<div class="subframe">
+<div id="refL9" class="item">
+<a href="http://www.apache.org/" onmouseover="LMPopUp('L8', true);"><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" /><img
+align="top" src="menuimages/transparent.png" width="16" height="16" border="0"
+alt=" " />&nbsp;The Apache Web Server&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+</div>
+<div id="refL10" class="item">
+<a href="#" onmouseover="moveLayerX('L10') ; moveLayerY('L10') ; LMPopUp('L10', false);"><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" /><img
+align="top" src="menuimages/transparent.png" width="16" height="16" border="0"
+alt=" " />&nbsp;Scripting languages&nbsp;<img
+class="fwdarr" src="menuimages/forward-arrow.png" width="4" height="7"
+border="0" alt=">>" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+</div>
+<div class="separator">&nbsp;</div>
+<div id="refL22" class="item">
+<a href="#" onmouseover="moveLayerX('L22') ; moveLayerY('L22') ; LMPopUp('L22', false);"><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" /><img
+align="top" src="menuimages/transparent.png" width="16" height="16" border="0"
+alt=" " />&nbsp;Databases&nbsp;<img
+class="fwdarr" src="menuimages/forward-arrow.png" width="4" height="7"
+border="0" alt=">>" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+</div>
+<div class="separator">&nbsp;</div>
+<div id="refL26" class="item">
+<a href="http://quanta.sourceforge.net/" onmouseover="LMPopUp('L8', true);"><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" /><img
+align="top" src="menuicons/quanta.png" width="16" height="16" border="0"
+alt="O" />&nbsp;Quanta / KDE Web Dev&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+</div>
+<div id="refL27" class="item">
+<a href="http://www.gimp.org/" onmouseover="LMPopUp('L8', true);"><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" /><img
+align="top" src="menuicons/www.gimp.org_icons_wilber16.png" width="16" height="16" border="0"
+alt="O" />&nbsp;The GIMP&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+</div>
+</div>
+</td>
+</tr>
+</table>
+</div>
+
+<div id="L10" class="submenu" onmouseover="clearLMTO();" onmouseout="setLMTO();">
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td nowrap="nowrap">
+<div class="subframe">
+<div id="refL11" class="item">
+<a href="http://www.perl.org/" onmouseover="LMPopUp('L10', true);"><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" /><img
+align="top" src="menuimages/transparent.png" width="16" height="16" border="0"
+alt=" " />&nbsp;PERL&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+</div>
+<div id="refL12" class="item">
+<a href="http://www.php.net/" onmouseover="moveLayerX('L12') ; moveLayerY('L12') ; LMPopUp('L12', false);"><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" /><img
+align="top" src="menuicons/www.php.net_favicon.png" width="16" height="16" border="0"
+alt="O" />&nbsp;PHP: Hypertext Preprocessor&nbsp;<img
+class="fwdarr" src="menuimages/forward-arrow.png" width="4" height="7"
+border="0" alt=">>" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+</div>
+</div>
+</td>
+</tr>
+</table>
+</div>
+
+<div id="L12" class="submenu" onmouseover="clearLMTO();" onmouseout="setLMTO();">
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td nowrap="nowrap">
+<div class="subframe">
+<div id="refL13" class="item">
+<a href="http://www.php.net/downloads.php" onmouseover="LMPopUp('L12', true);"><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" /><img
+align="top" src="menuimages/transparent.png" width="16" height="16" border="0"
+alt=" " />&nbsp;Downloads&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+</div>
+<div id="refL14" class="item">
+<a href="http://www.php.net/docs.php" onmouseover="LMPopUp('L12', true);"><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" /><img
+align="top" src="menuimages/transparent.png" width="16" height="16" border="0"
+alt=" " />&nbsp;Documentation&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+</div>
+<div id="refL15" class="item">
+<a href="http://www.php.net/FAQ.php" onmouseover="LMPopUp('L12', true);"><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" /><img
+align="top" src="menuimages/transparent.png" width="16" height="16" border="0"
+alt=" " />&nbsp;FAQ&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+</div>
+<div id="refL16" class="item">
+<a href="http://www.php.net/support.php" onmouseover="LMPopUp('L12', true);"><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" /><img
+align="top" src="menuimages/transparent.png" width="16" height="16" border="0"
+alt=" " />&nbsp;Support&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+</div>
+<div id="refL17" class="item">
+<a href="http://www.php.net/bugs.php" onmouseover="LMPopUp('L12', true);"><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" /><img
+align="top" src="menuicons/php-bugs-icon-mini.png" width="16" height="16" border="0"
+alt="O" />&nbsp;Bugs...&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+</div>
+<div id="refL18" class="item">
+<a href="http://www.php.net/links.php" onmouseover="LMPopUp('L12', true);"><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" /><img
+align="top" src="menuimages/transparent.png" width="16" height="16" border="0"
+alt=" " />&nbsp;Links&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+</div>
+<div class="separator">&nbsp;</div>
+<div id="refL20" class="item">
+<a href="http://sourceforge.net/projects/phplib/" onmouseover="LMPopUp('L12', true);"><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" /><img
+align="top" src="menuicons/phplib-logo-mini.png" width="16" height="16" border="0"
+alt="O" />&nbsp;PHPLib - PHP Base Library&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+</div>
+</div>
+</td>
+</tr>
+</table>
+</div>
+
+<div id="L22" class="submenu" onmouseover="clearLMTO();" onmouseout="setLMTO();">
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td nowrap="nowrap">
+<div class="subframe">
+<div id="refL23" class="item">
+<a href="http://www.postgresql.org/" onmouseover="LMPopUp('L22', true);"><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" /><img
+align="top" src="menuimages/transparent.png" width="16" height="16" border="0"
+alt=" " />&nbsp;PostgreSQL&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+</div>
+<div id="refL24" class="item">
+<a href="http://www.mysql.com/" onmouseover="LMPopUp('L22', true);"><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" /><img
+align="top" src="menuicons/www.mysql.com_favicon.png" width="16" height="16" border="0"
+alt="O" />&nbsp;MySQL&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+</div>
+</div>
+</td>
+</tr>
+</table>
+</div>
+
+<div id="L28" class="submenu" onmouseover="clearLMTO();" onmouseout="setLMTO();">
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td nowrap="nowrap">
+<div class="subframe">
+<div id="refL29" class="item">
+<a href="http://www.mozilla.org/" onmouseover="LMPopUp('L28', true);" title="The Mozilla browser" target="Mozilla"><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" /><img
+align="top" src="menuicons/mozilla.org_images_mozilla-16.png" width="16" height="16" border="0"
+alt="O" />&nbsp;Mozilla&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+</div>
+<div id="refL30" class="item">
+<a href="http://epiphany.mozdev.org/" onmouseover="LMPopUp('L28', true);" title="The web browser of the GNOME Desktop" target="Epiphany"><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" /><img
+align="top" src="menuicons/epiphany-16.png" width="16" height="16" border="0"
+alt="O" />&nbsp;Epiphany&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+</div>
+<div id="refL31" class="item">
+<a href="http://www.kde.org/" onmouseover="LMPopUp('L28', true);" title="The KDE browser" target="The_KDE_Desktop_Environment"><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" /><img
+align="top" src="menuicons/www.kde.org_favicon.png" width="16" height="16" border="0"
+alt="O" />&nbsp;Konqueror&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+</div>
+<div class="separator">&nbsp;</div>
+<div id="refL33" class="item">
+<a href="#" onmouseover="moveLayerX('L33') ; moveLayerY('L33') ; LMPopUp('L33', false);"><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" /><img
+align="top" src="menuimages/transparent.png" width="16" height="16" border="0"
+alt=" " />&nbsp;Non free browsers&nbsp;<img
+class="fwdarr" src="menuimages/forward-arrow.png" width="4" height="7"
+border="0" alt=">>" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+</div>
+</div>
+</td>
+</tr>
+</table>
+</div>
+
+<div id="L33" class="submenu" onmouseover="clearLMTO();" onmouseout="setLMTO();">
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td nowrap="nowrap">
+<div class="subframe">
+<div id="refL34" class="item">
+<a href="http://www.netscape.com/" onmouseover="LMPopUp('L33', true);" title="Netscape Communicator" target="Netscape"><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" /><img
+align="top" src="menuicons/netscape-icon-mini.png" width="16" height="16" border="0"
+alt="O" />&nbsp;Netscape&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+</div>
+<div id="refL35" class="item">
+<a href="http://www.opera.com/" onmouseover="LMPopUp('L33', true);" target="Opera"><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" /><img
+align="top" src="menuimages/transparent.png" width="16" height="16" border="0"
+alt=" " />&nbsp;Opera&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+</div>
+<div id="refL36" class="item">
+<a href="http://www.microsoft.com/" onmouseover="LMPopUp('L33', true);" target="Microsoft"><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" /><img
+align="top" src="menuimages/transparent.png" width="16" height="16" border="0"
+alt=" " />&nbsp;Internet Explorer&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+</div>
+</div>
+</td>
+</tr>
+</table>
+</div>
+
+<div id="L37" class="submenu" onmouseover="clearLMTO();" onmouseout="setLMTO();">
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td nowrap="nowrap">
+<div class="subframe">
+<div id="refL38" class="item">
+<a href="http://www.w3.org/DOM/" onmouseover="LMPopUp('L37', true);" title="W3C standards about the Document Object Model" target="DOM"><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" />Document Object Model (DOM)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+</div>
+<div class="separator">&nbsp;</div>
+<div id="refL40" class="item">
+<a href="http://www.geocrawler.com/mail/msg.php3?msg_id=4426606&amp;list=119" onmouseover="LMPopUp('L37', true);" title="A Netscape 4 limitation about layers" target="DOM"><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" />Netscape 4, layers and forms...&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+</div>
+<div id="refL41" class="item">
+<a href="http://www.webreference.com/dhtml/diner/seethru/" onmouseover="LMPopUp('L37', true);" title="Some known problems in using layers with applets and plug-ins" target="DOM"><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" />Layers, OS, Applets and Plug-ins&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+</div>
+<div id="refL42" class="item">
+<a href="http://www.intranetjournal.com/ix/msg/36271.html" onmouseover="LMPopUp('L37', true);" target="DOM"><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" />Re: Layers &amp; drop-down menu's&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+</div>
+<div class="separator">&nbsp;</div>
+<div id="refL44" class="item">
+<a href="http://www.evolt.org/article/document_body_doctype_switching_and_more/17/30655/" onmouseover="LMPopUp('L37', true);" target="DOM"><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" />About doctype switching...&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+</div>
+<div id="refL45" class="item">
+<a href="http://www.howtocreate.co.uk/tutorials/index.php?tut=0&amp;part=16" onmouseover="LMPopUp('L37', true);" target="DOM"><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" />About the browser window size...&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+</div>
+<div id="refL46" class="item">
+<a href="http://cgi.din.or.jp/~hagi3/JavaScript/Mozilla/SampleList.cgi?fmt=html" onmouseover="LMPopUp('L37', true);" target="DOM"><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" />DOM Samples List Page&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+</div>
+<div id="refL47" class="item">
+<a href="http://www-sop.inria.fr/koala/domjuan/javadoc/koala/dom/events/DOMMouseEvent.html" onmouseover="LMPopUp('L37', true);" target="DOM"><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" />Class DOMMouseEvent&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+</div>
+<div id="refL48" class="item">
+<a href="http://devedge.netscape.com/library/xref/2002/client-data/" onmouseover="LMPopUp('L37', true);" target="DOM"><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" />Client Object Cross References&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+</div>
+<div id="refL49" class="item">
+<a href="http://www.brainjar.com/dhtml/events/default4.asp" onmouseover="LMPopUp('L37', true);" target="DOM"><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" />The DOM Event Model&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+</div>
+<div id="refL50" class="item">
+<a href="http://www.opera.com/docs/specs/js/" onmouseover="LMPopUp('L37', true);" target="DOM"><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" />Opera JS Support&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+</div>
+</div>
+</td>
+</tr>
+</table>
+</div>
+
+<div id="L52" class="mdksubmenu" onmouseover="clearLMTO();" onmouseout="setLMTO();">
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td nowrap="nowrap">
+<div class="mdksubframe">
+<div id="refL53" class="mdkitem">
+<a href="#" onmouseover="moveLayerX('L53') ; moveLayerY('L53') ; LMPopUp('L53', false);"><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" />Only tree menus&nbsp;<img
+class="mdkfwdarr" src="menuimages/forward-galaxy.png" width="4" height="7"
+border="0" alt=">>" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+</div>
+<div id="refL56" class="mdkitem">
+<a href="#" onmouseover="moveLayerX('L56') ; moveLayerY('L56') ; LMPopUp('L56', false);"><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" />Layers + tree menus&nbsp;<img
+class="mdkfwdarr" src="menuimages/forward-galaxy.png" width="4" height="7"
+border="0" alt=">>" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+</div>
+</div>
+</td>
+</tr>
+</table>
+</div>
+
+<div id="L53" class="mdksubmenu" onmouseover="clearLMTO();" onmouseout="setLMTO();">
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td nowrap="nowrap">
+<div class="mdksubframe">
+<div id="refL54" class="mdkitem">
+<a href="example-treemenu.php" onmouseover="LMPopUp('L53', true);" title="Example with only one tree menu"><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" />Only a tree menu&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+</div>
+<div id="refL55" class="mdkitem">
+<a href="example-two_treemenus.php" onmouseover="LMPopUp('L53', true);" title="Example with 2 tree menus"><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" />Two tree menus&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+</div>
+</div>
+</td>
+</tr>
+</table>
+</div>
+
+<div id="L56" class="mdksubmenu" onmouseover="clearLMTO();" onmouseout="setLMTO();">
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td nowrap="nowrap">
+<div class="mdksubframe">
+<div id="refL57" class="mdkitem">
+<a href="example-hormenu_and_treemenu.php" onmouseover="LMPopUp('L56', true);" title="Example with a horizontal menu and a tree menu"><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" />Hor. menu + tree&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+</div>
+<div id="refL58" class="mdkitem">
+<a href="example-layersmenus_and_treemenus.php" onmouseover="LMPopUp('L56', true);" title="Example with hor. menu, ver. menu, 2 tree menus"><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" />Layers + trees&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+</div>
+</div>
+</td>
+</tr>
+</table>
+</div>
+
+<div id="L62" class="submenu" onmouseover="clearLMTO();" onmouseout="setLMTO();">
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td nowrap="nowrap">
+<div class="subframe">
+<div id="refL63" class="item">
+<a href="http://www.debian.org/" onmouseover="moveLayerX('L63') ; moveLayerY('L63') ; LMPopUp('L63', false);" title="Enjoy the exciting world of Debian GNU/Linux!" target="Linux"><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" /><img
+align="top" src="menuicons/debian-icon-mini.png" width="16" height="16" border="0"
+alt="O" />&nbsp;Debian GNU/Linux&nbsp;<img
+class="fwdarr" src="menuimages/forward-gtk2.png" width="4" height="7"
+border="0" alt=">>" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+</div>
+<div class="separator">&nbsp;</div>
+<div id="refL72" class="item">
+<a href="http://www.mandrakelinux.com/" onmouseover="moveLayerX('L72') ; moveLayerY('L72') ; LMPopUp('L72', false);" title="Mandrake Linux" target="Linux"><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" /><img
+align="top" src="menuimages/transparent.png" width="16" height="16" border="0"
+alt=" " />&nbsp;Mandrake&nbsp;<img
+class="fwdarr" src="menuimages/forward-gtk2.png" width="4" height="7"
+border="0" alt=">>" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+</div>
+<div id="refL77" class="item">
+<a href="http://www.freesoftware.org/" onmouseover="LMPopUp('L62', true);" title="Slackware Linux" target="Linux"><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" /><img
+align="top" src="menuimages/transparent.png" width="16" height="16" border="0"
+alt=" " />&nbsp;Slackware&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+</div>
+</div>
+</td>
+</tr>
+</table>
+</div>
+
+<div id="L63" class="submenu" onmouseover="clearLMTO();" onmouseout="setLMTO();">
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td nowrap="nowrap">
+<div class="subframe">
+<div id="refL64" class="item">
+<a href="http://www.debian.org/intro/about" onmouseover="LMPopUp('L63', true);" target="Linux"><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" />About&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+</div>
+<div id="refL65" class="item">
+<a href="http://www.debian.org/News/" onmouseover="LMPopUp('L63', true);" target="Linux"><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" />News&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+</div>
+<div id="refL66" class="item">
+<a href="http://www.debian.org/distrib/" onmouseover="LMPopUp('L63', true);" target="Linux"><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" />Distribution&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+</div>
+<div id="refL67" class="item">
+<a href="http://www.debian.org/support" onmouseover="LMPopUp('L63', true);" target="Linux"><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" />Support&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+</div>
+<div id="refL68" class="item">
+<a href="http://www.debian.org/devel/" onmouseover="LMPopUp('L63', true);" target="Linux"><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" />Development&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+</div>
+<div id="refL69" class="item">
+<a href="http://search.debian.org/" onmouseover="LMPopUp('L63', true);" target="Linux"><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" />Search&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+</div>
+<div id="refL70" class="item">
+<a href="http://ftp.mirror.ac.uk/sites/ftp.debian.org/" onmouseover="LMPopUp('L63', true);" target="Linux"><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" />A Debian Mirror&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+</div>
+</div>
+</td>
+</tr>
+</table>
+</div>
+
+<div id="L72" class="submenu" onmouseover="clearLMTO();" onmouseout="setLMTO();">
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td nowrap="nowrap">
+<div class="subframe">
+<div id="refL73" class="item">
+<a href="http://www.mandrakelinux.com/en/errata.php3" onmouseover="LMPopUp('L72', true);" target="Linux"><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" />Errata&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+</div>
+<div id="refL74" class="item">
+<a href="http://www.mandrakelinux.com/en/ftp.php3" onmouseover="LMPopUp('L72', true);" target="Linux"><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" />Download&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+</div>
+<div id="refL75" class="item">
+<a href="http://www.mandrakeexpert.com/index1.php" onmouseover="LMPopUp('L72', true);" target="Linux"><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" />Mandrake Expert&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+</div>
+<div id="refL76" class="item">
+<a href="http://qa.mandrakesoft.com/" onmouseover="LMPopUp('L72', true);" target="Linux"><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" />Bugzilla&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+</div>
+</div>
+</td>
+</tr>
+</table>
+</div>
+
+<div id="L78" class="ksubmenu" onmouseover="clearLMTO();" onmouseout="setLMTO();">
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td nowrap="nowrap">
+<div class="ksubframe">
+<div id="refL79" class="kitem">
+<a href="http://www.gnome.org/" onmouseover="moveLayerX('L79') ; moveLayerY('L79') ; LMPopUp('L79', false);" title="The Gnome Desktop"><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" /><img
+align="top" src="menuicons/www.gnome.org_images_gnome-16.png" width="16" height="16" border="0"
+alt="O" />&nbsp;Gnome&nbsp;<img
+class="kfwdarr" src="menuimages/forward-keramik.png" width="5" height="8"
+border="0" alt=">>" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+</div>
+<div id="refL83" class="kitem">
+<a href="http://www.kde.org/" onmouseover="moveLayerX('L83') ; moveLayerY('L83') ; LMPopUp('L83', false);" title="The KDE Desktop Environment"><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" /><img
+align="top" src="menuicons/www.kde.org_favicon.png" width="16" height="16" border="0"
+alt="O" />&nbsp;KDE&nbsp;<img
+class="kfwdarr" src="menuimages/forward-keramik.png" width="5" height="8"
+border="0" alt=">>" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+</div>
+</div>
+</td>
+</tr>
+</table>
+</div>
+
+<div id="L79" class="ksubmenu" onmouseover="clearLMTO();" onmouseout="setLMTO();">
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td nowrap="nowrap">
+<div class="ksubframe">
+<div id="refL80" class="kitem">
+<a href="http://news.gnome.org/gnome-news/" onmouseover="LMPopUp('L79', true);"><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" /><img
+align="top" src="menuicons/pan-icon-mini.png" width="16" height="16" border="0"
+alt="O" />&nbsp;Gnome News&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+</div>
+<div id="refL81" class="kitem">
+<a href="http://www.gnome.org/applist/listrecent.php3?entrylimit=20" onmouseover="LMPopUp('L79', true);"><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" /><img
+align="top" src="menuicons/gnome-starthere-mini.png" width="16" height="16" border="0"
+alt="O" />&nbsp;Recent software&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+</div>
+<div id="refL82" class="kitem">
+<a href="http://www.ximian.com/" onmouseover="LMPopUp('L79', true);"><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" /><img
+align="top" src="menuicons/www.ximian.com_favicon.png" width="16" height="16" border="0"
+alt="O" />&nbsp;The Ximian Desktop&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+</div>
+</div>
+</td>
+</tr>
+</table>
+</div>
+
+<div id="L83" class="ksubmenu" onmouseover="clearLMTO();" onmouseout="setLMTO();">
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td nowrap="nowrap">
+<div class="ksubframe">
+<div id="refL84" class="kitem">
+<a href="http://www.kde.org/mailinglists.html" onmouseover="LMPopUp('L83', true);"><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" />Mailing Lists&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+</div>
+<div id="refL85" class="kitem">
+<a href="http://www.kde.org/faq.html" onmouseover="LMPopUp('L83', true);"><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" />FAQ&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+</div>
+<div id="refL86" class="kitem">
+<a href="http://www.kde.org/download.html" onmouseover="LMPopUp('L83', true);"><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" />Download&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+</div>
+<div id="refL87" class="kitem">
+<a href="http://www.kde.org/screenshots/index.html" onmouseover="LMPopUp('L83', true);"><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" />Screenshots&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+</div>
+<div id="refL88" class="kitem">
+<a href="http://dot.kde.org" onmouseover="LMPopUp('L83', true);"><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" />News&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+</div>
+</div>
+</td>
+</tr>
+</table>
+</div>
+
+<div id="L89" class="ksubmenu" onmouseover="clearLMTO();" onmouseout="setLMTO();">
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td nowrap="nowrap">
+<div class="ksubframe">
+<div id="refL90" class="kitem">
+<a href="http://www.mozilla.org/" onmouseover="LMPopUp('L89', true);" title="The Mozilla browser" target="Mozilla"><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" /><img
+align="top" src="menuicons/mozilla.org_images_mozilla-16.png" width="16" height="16" border="0"
+alt="O" />&nbsp;Mozilla&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+</div>
+<div id="refL91" class="kitem">
+<a href="http://epiphany.mozdev.org/" onmouseover="LMPopUp('L89', true);" title="The web browser of the GNOME Desktop" target="Epiphany"><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" /><img
+align="top" src="menuicons/epiphany-16.png" width="16" height="16" border="0"
+alt="O" />&nbsp;Epiphany&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+</div>
+<div id="refL92" class="kitem">
+<a href="http://www.kde.org/" onmouseover="LMPopUp('L89', true);" title="The KDE browser" target="The_KDE_Desktop_Environment"><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" /><img
+align="top" src="menuicons/www.kde.org_favicon.png" width="16" height="16" border="0"
+alt="O" />&nbsp;Konqueror&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+</div>
+<div class="kseparator">&nbsp;</div>
+<div id="refL94" class="kitem">
+<a href="#" onmouseover="moveLayerX('L94') ; moveLayerY('L94') ; LMPopUp('L94', false);"><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" /><img
+align="top" src="menuimages/transparent.png" width="16" height="16" border="0"
+alt=" " />&nbsp;Non free browsers&nbsp;<img
+class="kfwdarr" src="menuimages/forward-keramik.png" width="5" height="8"
+border="0" alt=">>" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+</div>
+</div>
+</td>
+</tr>
+</table>
+</div>
+
+<div id="L94" class="ksubmenu" onmouseover="clearLMTO();" onmouseout="setLMTO();">
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td nowrap="nowrap">
+<div class="ksubframe">
+<div id="refL95" class="kitem">
+<a href="http://www.netscape.com/" onmouseover="LMPopUp('L94', true);" title="Netscape Communicator" target="Netscape"><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" /><img
+align="top" src="menuicons/netscape-icon-mini.png" width="16" height="16" border="0"
+alt="O" />&nbsp;Netscape&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+</div>
+<div id="refL96" class="kitem">
+<a href="http://www.opera.com/" onmouseover="LMPopUp('L94', true);" target="Opera"><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" /><img
+align="top" src="menuimages/transparent.png" width="16" height="16" border="0"
+alt=" " />&nbsp;Opera&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+</div>
+<div id="refL97" class="kitem">
+<a href="http://www.microsoft.com/" onmouseover="LMPopUp('L94', true);" target="Microsoft"><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" /><img
+align="top" src="menuimages/transparent.png" width="16" height="16" border="0"
+alt=" " />&nbsp;Internet Explorer&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+</div>
+</div>
+</td>
+</tr>
+</table>
+</div>
+
+<div id="L98" class="ksubmenu" onmouseover="clearLMTO();" onmouseout="setLMTO();">
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td nowrap="nowrap">
+<div class="ksubframe">
+<div id="refL99" class="kitem">
+<a href="http://www.openoffice.org/" onmouseover="LMPopUp('L98', true);" title="The OpenOffice.org Suite" target="OpenOfficeOrg"><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" /><img
+align="top" src="menuicons/ooo-icon-mini.png" width="16" height="16" border="0"
+alt="O" />&nbsp;OpenOffice.org&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+</div>
+<div id="refL100" class="kitem">
+<a href="http://www.kde.org/" onmouseover="LMPopUp('L98', true);" title="The KDE Office Suite" target="The_KDE_Desktop_Environment"><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" /><img
+align="top" src="menuicons/www.kde.org_favicon.png" width="16" height="16" border="0"
+alt="O" />&nbsp;KOffice&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+</div>
+<div class="kseparator">&nbsp;</div>
+<div id="refL102" class="kitem">
+<a href="http://www.sun.com/products/staroffice/" onmouseover="LMPopUp('L98', true);"><img
+align="top" src="menuimages/transparent.png" width="1" height="16" border="0"
+alt="" /><img
+align="top" src="menuimages/transparent.png" width="16" height="16" border="0"
+alt=" " />&nbsp;Star Office&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+</div>
+</div>
+</td>
+</tr>
+</table>
+</div>
+
+
+<script language="JavaScript" type="text/javascript">
+<!--
+loaded = 1;
+// -->
+</script>
+
+<!-- end of menu footer - PHP Layers Menu 3.2.0-rc (C) 2001-2004 Marco Pratesi - http://www.marcopratesi.it/ -->
+
+</body>
+</html>

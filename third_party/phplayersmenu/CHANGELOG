@@ -1,0 +1,1258 @@
+
+---------------------------------------
+PHP Layers Menu 3.2.0-rc (Aug 17, 2004)
+---------------------------------------
+
+Successfully tested with PHP 5.0.
+
+Added support for SQLite and PHP5 scripts for importing corresponding
+DUMPS/sqlite.*.dump; bundled a demo SQLite DB file: DUMPS/phplayersmenu
+Affected files:
+DUMPS/sqlite.*.dump
+DUMPS/sqlite.*.dump.php5
+DUMPS/phplayersmenu
+lib/layersmenu-process.inc.php (see the getSQLDump() method)
+DB-related examples, in particular example-filetodb.php
+
+Added a simple check in scanTableForMenu() method
+(i.e. in lib/layersmenu-common.inc.php) to avoid troubles
+if the 'phplayersmenu_i18n' table contains items not matching any item
+(i.e., any 'id') of the 'phplayersmenu' table.
+
+Updated the browser detection and the see-through workaround to account
+for Konqueror 3.3, that, just as Konqueror 3.2, is affected by the
+see-through effect only for 2 form elements:
+- the select list with size greater than 1
+- the textarea
+Alas, at the time of this writing (Konqueror 3.2.3 and 3.3.0-rc2),
+hiding of such two form elements on Konqueror 3.2 and 3.3 does not work,
+as it is still affected by the following bug:
+http://bugs.kde.org/72885
+
+A minor change to the getWindowWidth() and getWindowHeight() functions
+in lib/layersmenu-library.js to obtain a correct behaviour also when
+the page containing a layers-based menu is inside a frame.
+
+Added the DTD declaration to framed documents.
+
+Minor code clean up: removed inclusion of PHPLIB.php in
+example-dbtofile.php and example-filetodb.php, where it was not needed.
+
+Added 'class="normal"' here and there in example-see-through.php
+(Konqueror 3.3)
+
+Increased the suggested minimal version of Mozilla from 0.9.1 to 0.9.2:
+everything should work correctly also on 0.9.1, but the precompiled
+tarball of 0.9.1 downloaded from mozilla.org does not install
+on the distribution I am currently using (Mandrake 10.0 Official)
+and I am not happy to reboot to an older distribution only for testing
+on Mozilla 0.9.1; anyway, I suppose that really no one is still using
+such an old version of Mozilla and, if my memory does not fail,
+Mozilla 0.9.2.1 corresponds to Netscape 6.1... who is still using
+Netscape 6.0 nowadays??? >:-)
+
+Reorganized the home page (now the demo is demo.php) and the examples.
+Added a server-side (written in PHP) browser detection
+( lib/layersmenu-browser_detection.php )
+for the home page of the project, that now provides different menus
+for different browsers.
+Some minor changes to README.ihtml
+Added the "bitstream vera sans" fonts option and reduced font sizes
+in the stylesheets.
+
+Readded in the PATCHES/ONCLICK/ directory the patches based on code
+changes contributed by Alex Pagnoni.
+
+Added in the PATCHES/ICONS_I18N/ directory the icons_i18n.patch,
+that adds internationalization (i18n) for the "icon" field
+of the "phplayersmenu_i18n" table, beside the "text" and "title" fields.
+
+Added in the PATCHES/FIXEDMENU/ directory the fixedmenu.patch,
+that allows to keep the horizontal menu in a fixed position
+when the page is scrolled.
+
+---------------------------------------
+PHP Layers Menu 3.2beta (July 27, 2004)
+---------------------------------------
+
+Added the possibility of highlighting the current item in the tree menus.
+Four methods are provided in the LayersMenuCommon class to allow
+selection of the current item:
+setSelectedItemByCount() -- to select the current item in terms of its
+        line number in the corresponding menu structure file
+setSelectedItemById() -- to select the current item in terms of the
+        corresponding id in the DB table
+setSelectedItemByUrl() -- to select the current item specifying a string
+        that occurs in the current URL
+setSelectedItemByUrlEregi() -- to select the current item of $menu_name
+        specifying a regular expression that matches (a substring of)
+        the current URL; just the same as the setSelectedItemByUrl()
+        method, but using eregi() instead of strpos()
+This should close feature request 946429:
+http://sourceforge.net/tracker/index.php?func=detail&aid=946429&group_id=33447&atid=408330
+Affected files:
+layerstreemenu.css
+lib/layersmenu-common.inc.php
+lib/phptreemenu.inc.php
+lib/treemenu.inc.php
+
+Added the setLinksTargets() method to the LayersMenuCommon class to allow
+to set the same target for all links of a menu; this method was already
+introduced in PgMarket 2.3.1 (shopping/navigation.php) to extend
+the bundled version of PHPLM (3.0.0).
+Affected file: lib/layersmenu-common.inc.php
+
+A minor change to lib/treemenu.inc.php to fix bug 989437
+eliminating "onmousedown" where it was not sensed:
+http://sourceforge.net/tracker/index.php?func=detail&aid=989437&group_id=33447&atid=408327
+
+Fixed bug 980509, that affected treemenus containing only one
+first-level item (being both the first one and the last one):
+http://sourceforge.net/tracker/index.php?func=detail&aid=980509&group_id=33447&atid=408327
+Affected files:
+lib/phptreemenu.inc.php
+lib/treemenu.inc.php
+libjs/layerstreemenu.ijs
+THEMES/*
+menuimages/*tree_collapse_corner_first* (new images)
+menuimages/*tree_expand_corner_first* (new images)
+
+Replaced "addslashes" with "stripslashes" in lib/layersmenu-common.inc.php
+for the "title" field.
+
+In horizontal layers menus, first-level separators were not ignored.
+FIXED.
+Affected file:
+lib/layersmenu.inc.php
+
+Added some "text-decoration: none;" lines to the CSSs, to avoid problems
+with msie.
+Affected files:
+layersmenu-galaxy.css
+layersmenu-gtk2.css
+layersmenu-keramik.css
+layerstreemenu.css
+
+------------------------------------
+PHP Layers Menu 3.1.5 (July 4, 2004)
+------------------------------------
+
+Fixed detection of Konqueror 3.0 in libjs/layersmenu-browser_detection.js
+
+In libjs/layersmenu-see-through.js , in function scanChildren() ,
+there was an error in the condition for Konqueror 3.2, that affected
+also the condition for IE; fixed.
+
+Extended the see-through workaround to cope with resizing
+of the browsing window.
+
+Separators: the solution proposed by Mihai Bazon is very clever,
+but it seems that separators are invisible (transparent) on msie 5.2.3
+for MacOSX (no comment...).
+The Mihai's solution has been replaced with the solution proposed
+by Bruno in
+http://www.brunildo.org/test/separa3d2px.html
+that seems to be working also on msie 5.2.3 for MacOSX.
+Note: changes have affected the templates and the stylesheets.
+
+Added methods setIconsize() and unsetIconsize() to allow to avoid detection
+of width and height of icons, setting them to fixed values.
+
+Implemented feature request 941152 ("URI icons"), to allow to use
+also icons specified as URLs, e.g. to link shortcut icons of web sites
+without downloading them:
+http://sourceforge.net/tracker/index.php?func=detail&aid=941152&group_id=33447&atid=408330
+Changes applied to implement this feature are analogous to the changes
+provided in the uri_icons-3.1.1.patch attached to the mentioned
+feature request.
+Note: such changes have affected also the templates.
+
+The "images" directory has been split in the "menuimages" and "menuicons"
+directories; menuicons/ contains icons of menu items; menuimages/ contains
+images needed by the menu system, i.e. arrows, treemenu themes,
+and transparent.png; methods setIcondir() and setIconwww(), analogous to
+setImgdir() and setImgwww(), have been added.
+This change was needed to cope with the situation explained in the
+"Help" discussion forum - "absolute path for icons":
+http://sourceforge.net/forum/forum.php?thread_id=1097355&forum_id=104941
+
+Added the replaceStringInUrls() method, to allow to replace a given string
+in all URLs (hrefs) of menu items.
+As an example, this allows to use constant strings such as 'WWWROOT'
+in the menu structure, only for items linking pages in the site
+(not for items linking other sites), and then replace 'WWWROOT'
+with the corresponding "path", that may have different values
+on the development workstation and on the production server.
+
+Many people were confused about getHeader() returning the header
+but not preparing it; the same for getFooter().
+Now getHeader() prepares the header (calling makeHeader()) if it has not
+been prepared yet, then it returns it; now printHeader() simply relies
+on getHeader() and does not call makeHeader() anymore; the same changes
+have been made for the footer.
+This slight change should eliminate the abovementioned misunderstanding.
+
+-------------------------------------
+PHP Layers Menu 3.1.4 (June 27, 2004)
+-------------------------------------
+
+lib/layersmenu-common.inc.php does not include PEAR.php and DB.php anymore.
+With this choice, if PEAR is not installed and the DB support is not used,
+no change to the code of the class is needed to avoid errors.
+This change implies that now, to use the DB support, the script using
+the class must include also PEAR.php and DB.php, just as lib/PHPLIB.php
+(whose inclusion was already needed before this change); an example
+is in the code of example-db-hormenu.php, that now includes also PEAR.php
+and DB.php:
+...
+require_once 'lib/PHPLIB.php';
+require_once 'PEAR.php';
+require_once 'DB.php';
+require_once 'lib/layersmenu-common.inc.php';
+require_once 'lib/layersmenu.inc.php';
+...
+whereas, in previous versions, example-db-hormenu.php did not include
+PEAR.php and DB.php
+
+Some minor "cosmetic" changes to the code to match almost all PEAR
+coding standards:
+http://pear.php.net/manual/en/standards.php
+Currently, the PHPLM code is almost completely compliant with PEAR coding
+standards; basically, currently non compliance is in the following point:
+http://pear.php.net/manual/en/standards.php#standards.indenting
+PHPLM is not compliant with this point, as its indentation is made
+using "classical" 8-columns tabs.
+I absolutely do not want to restart here the "eternal holy war" about
+"tabs versus spaces" :-) , I simply point out that I prefer using tabs.
+As currently PHPLM is not included in the PEAR repository, in my opinion
+this non-compliance is not a problem.
+BTW, it has to be noted that PHPLM does not use PEAR_error, it uses
+its own error() method; furthermore, the PHPLIB.php bundled with PHPLM
+is slightly different from the original Template_PHPLIB PEAR class
+(but it is compatible with it).  The rationale is the following one:
+to provide a PHPLM library that requires PEAR only if the DB support
+is used and that does not require PEAR otherwise.  The slight changes
+to PHPLIB.php make it just independent from PEAR.
+
+-------------------------------------
+PHP Layers Menu 3.1.3 (June 20, 2004)
+-------------------------------------
+
+Replaced double quotes with single quotes in the PHP code
+where it was advisable.  Replaced double quotes with single quotes
+also in many lines of JavaScript code.
+
+Updated the ACKNOWLEDGEMENTS
+
+Added the possibility of using separators in layers-based menus.
+The hint proposed by Mihai Bazon in
+http://dynarch.com/mishoo/articles.epl?art_id=620
+has been used.
+Separators have to be indicated with three dashes, i.e. with "---",
+see layersmenu-horizontal-1.txt and DUMPS/[mysql|pgsql].demo_data.dump
+as an example.
+
+Updated links to style sheets in the templates, to obtain
+significant previews of templates in Quanta Plus.
+
+Updated CHANGE_TEMPLATE_CLASS_NAME.sh
+
+-------------------------------------
+PHP Layers Menu 3.1.2 (June 13, 2004)
+-------------------------------------
+
+Applied hover_background_color_fix_for_safari.patch
+to fix a rendering problem on Safari
+and to workaround yet another one of the countless stupid bugs
+of msie 5.5 and 6.0.
+References:
+http://sourceforge.net/tracker/index.php?func=detail&aid=878361&group_id=33447&atid=408327
+http://sourceforge.net/tracker/index.php?func=detail&aid=878367&group_id=33447&atid=408329
+http://sourceforge.net/forum/forum.php?thread_id=1075576&forum_id=104941
+http://sourceforge.net/tracker/index.php?func=detail&aid=963072&group_id=33447&atid=408329
+http://sourceforge.net/tracker/index.php?func=detail&aid=963477&group_id=33447&atid=408327
+
+Applied code_clean_up-3.1.1-1.patch , that removes unused $menu_name
+from the _depthFirstSearch() method in lib/layersmenu-common.inc.php
+Reference:
+http://sourceforge.net/tracker/index.php?func=detail&aid=878607&group_id=33447&atid=408329
+
+Applied galaxy-mdk92-3.1.1.patch , that updates a color of the Galaxy theme
+to match Mandrake 9.2.
+Reference:
+http://sourceforge.net/tracker/index.php?func=detail&aid=878610&group_id=33447&atid=408329
+
+Applied typos_fixes-3.1.1-1.patch , that fixes some typos in templates.
+Reference:
+http://sourceforge.net/tracker/index.php?func=detail&aid=878612&group_id=33447&atid=408329
+
+Fixed bug 913550: the example-filetodb.php script did not give correct
+parent id's.
+The bug has been fixed with a patch simpler than filetodb-fix-3.1.1.patch ,
+i.e. changing layersmenu-process.inc.php but leaving unchanged
+example-filetodb.php
+References:
+http://sourceforge.net/tracker/index.php?func=detail&aid=913550&group_id=33447&atid=408327
+http://sourceforge.net/tracker/index.php?func=detail&aid=931586&group_id=33447&atid=408329
+
+Applied phplm_expand-3.1.1.patch, that changes the 'expand' and 'collapse'
+variable/cookie names to 'phplm_expand' and 'phplm_collapse' respectively,
+because 'expand' is a very generic term, that can cause conflicts
+with certain web applications.
+References:
+http://sourceforge.net/tracker/index.php?func=detail&aid=931661&group_id=33447&atid=408330
+http://sourceforge.net/tracker/index.php?func=detail&aid=931697&group_id=33447&atid=408329
+
+Applied treemenus_themeability-3.1.1.patch , that adds the possibility
+of using different themes for distinct tree menus on a page.
+Changed accordingly the filenames of images contained in THEMES/*.tar.gz
+Extended index.php , example-layersmenus_and_treemenus.php ,
+and example-two_treemenus.php , to evidence the added feature.
+Reference:
+http://sourceforge.net/tracker/index.php?func=detail&aid=962053&group_id=33447&atid=408329
+
+Minor code clean up: removed lines 535 and 721 of lib/layersmenu.inc.php
+
+Re-added the PATCHES directory.
+Added to the PATCHES directory the icons_i18n-3.1.1.patch ,
+that adds internationalization (i18n) for the "icon" field
+beside the "text" and "title" fields.
+Reference:
+http://sourceforge.net/tracker/index.php?func=detail&aid=962059&group_id=33447&atid=408329
+
+Fixed bug 940086,
+[Tree] "Menu open/closes for local dirs in an unpredictable way"
+through a small change to libjs/layerstreemenu-cookies.js
+Reference:
+http://sourceforge.net/tracker/index.php?func=detail&aid=940086&group_id=33447&atid=408327
+Many thanks to Sasha Kushnirenko for this bug fix.
+
+Updated the see-through workaround for Konqueror 3.2.x, that is affected
+by the see-through effect only for 2 form elements:
+- the select list with size greater than 1
+- the textarea
+Alas, at the time of this writing (Konqueror 3.2.2), hiding of such
+two form elements on Konqueror 3.2.x does not work, as it is affected
+by the following bug:
+http://bugs.kde.org/72885
+
+------------------------------------
+PHP Layers Menu 3.1.1 (Nov 15, 2003)
+------------------------------------
+
+Eliminated from the code libdir and libjswww, that were no more used.
+
+Fixed a bug in the setTpldirCommon() method.
+Changed/extended some parts of code (and updated the examples
+accordingly) to allow to change all directory paths using only
+the setDirroot() method.
+Thanks to Morten Poulsen for his bug report and his suggestion.
+
+Removed the JavaScript tag from lib/layersmenu-browser_detection.js
+and updated the examples accordingly.
+Thanks to Philipp Kamps for his report.
+
+Changed HTML:default:default with HTML:frames:default in README.PHPDOC
+to avoid a warning with phpDocumentor 1.2.2; you have to undo this change
+if you are still using phpDocumentor 1.1.
+
+------------------------------------
+PHP Layers Menu 3.1.0 (Sep 21, 2003)
+------------------------------------
+
+I wish to start the changelog of this new development branch with
+some clarifications about choices I have done with this release.
+Recently, I have said many times that I would have eliminated the support
+of some old browsers (mainly Netscape 4 and Internet Explorer 4)
+starting from just *this* release; however, I have still not done this
+because a middle-ground solution has rather easily allowed to mantain
+support for them.
+Such middle-ground solution has consisted of reorganizing some stuff,
+so that now incompatibility with old browsers is due only to the code
+of templates and style sheets, and of providing, beside the default
+templates and style sheets, some old-style templates and style sheets
+that still allow you to preserve compatibility if you *really* need.
+Please consider that this also implies that, to avoid of accidentally
+loosing the support of some browsers, now you must be *much more careful*
+if you customize templates and style sheets.
+Please also consider that probably, starting from now, the old-style
+stuff will not be tested as widely and deeply as the new one,
+as now the focus is on non-ancient browsers... the need of abandoning
+support for Netscape 4, that has disclosed me the world of Internet,
+makes me sad, but it's life: time goes on, and too old software
+has to be abandoned at a given time.
+
+Upgraded to HTML_Template_PHPLIB-1.3.1.
+
+Reorganized the PHP code to split the classes in more classes:
+LayersMenu --> LayersMenuCommon, LayersMenu, TreeMenu
+XLayersMenu --> PHPTreeMenu, PlainMenu
+
+Switched to the look anticipated in version 3.0.0 by the NEW_GENERATION
+patch; now ancient browsers are no more supported unless you use
+old-style templates and style sheets instead of the default ones
+(look at example-hormenu-old.php to see an "old-style" example).
+Support for Mozilla 0.6 and Netscape 6.0 is available again.
+Support of Konqueror 2.1 has been definitively dropped, also
+in old-style templates and style sheets.
+
+Added a workaround for the see-through problem, as loudly and longly
+requested by many people.
+To avail of the workaround, surround the "dangerous" form elements with
+a div with id="phplmseethrough" and include layersmenu-see-through.js,
+just as in example-see-through.php.
+"Dangerous" elements are automatically found relying on the DOM tree
+properties; they are not searched for outside the "phplmseethrough" div:
+I have chosen this approach for performance and simplicity reasons.
+If you do not need this workaround, you do not have to add any such div.
+The workaround is available for Konqueror and Internet Explorer 5+.
+As Mozilla 1.4 and Opera 7 have solved the problem, I have decided
+to avoid any workaround for both Mozilla (that was alredy almost
+not affected by this weird problem) and Opera, and I *strongly*
+advise Mozilla and Opera users to upgrade to the new versions if possible.
+I do not have added any workaround for Netscape 4 and Internet Explorer 4,
+as it seems more difficult (they are both strongly non DOM-compliant)
+and as in my opinion it is not worth the effort, also because
+in the long term I will drop any support for both them.
+On Konqueror 3.x and IE 5+ I have found a reliable way[*] to hide only
+elements that actually overlap with popped up layers, but, alas,
+on the contrary, since now I have not found a way to check *reliably*
+for such overlaps also on Konqueror 2.2, hence the workaround is rather
+rough for Konqueror 2.2: each time a layer of the menu is popped up,
+*all* "dangerous" form elements are hidden.
+
+[*] According to the performed tests, it *seems* reliable enough ^_^
+
+Changed the name of the "link" field: for better overall coherence,
+now it is called "href"; this change affects the DB and the templates
+(and the internal code of the classes, but this is not visible to
+final users).
+Anyway, the API allow to use data put in tables and tables fields
+with non default names, hence this change should not cause too many
+troubles.
+
+Temporarily dropped the PATCHES directory: the corresponding patches
+will be either integrated during this development branch (if it will
+appear advisable) or restored later, after needed changes.
+
+Other undocumented changes and improvements to the code.
+
+Be aware that version 3.0 of the manual is not completely suited
+to PHPLM 3.1.x and that, in general, version 3.0 of the manual
+has to be considered valid only for PHPLM 3.0.x.
+
+--------------------------------------
+PHP Layers Menu 3.0.0 (Aug 31st, 2003)
+--------------------------------------
+
+Added and changed many examples; a comprehensive manual has been added,
+as loudly and longly requested by many people; the manual is not
+bundled with the package, it is released as a separate document.
+
+Added a "Keramik-like" patch based on suggestions and contributions
+of Shai Coleman (shai@eurotexte.fr).
+This patch is a sort of "preview" of the future versions of PHPLM.
+Many thanks, Shai.
+
+Michele Antonecchia has prepared logos and shortcut icons for the
+PHP Layers Menu System; they have been added under the LOGOS directory.
+Many thanks, Michele.
+
+A minor change to the setTpldir() method; now the default filenames
+of templates are updated when the template directory is changed.
+
+A minor bug fix related to a workaround needed for Mozilla < 1.4
+for MS Windows.
+
+A minor bug fix to the layersmenu-sub_menu*.ihtml templates (a missing
+'colspan="2"').
+
+Fixed an incompatibility with PostgreSQL 7.3 in
+lib/layersmenu-process.inc.php
+
+Added some checks to avoid that a new menu is requested before that
+its menu menu data are parsed.
+
+Renamed the _parseCommon method as parseCommon, as it can be useful
+with the ProcessLayersMenu extended class and hence it has to be
+considered a public (not private) method.
+
+Minor changes to README.PHPDOC and to lib/layersmenu*.inc.php to make
+things work without warnings with phpDocumentor 1.2.2.
+
+Added CHANGE_TEMPLATE_CLASS_NAME.sh to change the name of the template
+class from "Template" to "Template_PHPLIB" (or to something else)
+if needed.
+
+Commented out the first "if" statement in the _filename() method
+of the Template class, to workaround problems that can arise
+due to the buggy and stupid "file system" notation of the MS Windows
+environments.
+
+Some minor undocumented changes.
+
+-----------------------------------------
+PHP Layers Menu 3.0beta2 (May 18th, 2003)
+-----------------------------------------
+
+Added the timeout feature to the Layers Menu; this feature is enabled
+by default; it can be disabled setting
+useTimeouts = 0;
+in libjs/layersmenu.js; this feature is automatically disabled for
+browsers that have troubles with it.
+Now the shutdown of all layers onclick is disabled by default; it can
+be reenabled setting
+shutdownOnClick = 1;
+in libjs/layersmenu.js; this feature is automatically enabled for
+browsers that either have troubles with the timeout feature or
+are not able to use it.
+The old behaviour (no timeout, shutdown onclick) is easily restored
+setting
+useTimeouts = 0;
+and
+shutdownOnClick = 1;
+in libjs/layersmenu.js
+Thanks to Paul Adams and Shai Coleman for their suggestions about
+this topic.
+
+Some minor changes to the JS Tree Menu and to the PHP Tree Menu
+to improve the resulting html code and reduce its size.
+Thanks to Stephan Slabihoud for his suggestions.
+
+Added the PATCHES directory to collect some interesting contributed
+patches that can be used to change/customize the menu system behaviour.
+
+Added the DOCS directory where documentation has to be added;
+currently, it provides only a document about performed tests.
+
+---------------------------------------
+PHP Layers Menu 3.0beta (May 4th, 2003)
+---------------------------------------
+
+Split the "lib" directory in "lib" and "libjs"; libdir and libwww
+become libdir, libjsdir, libjswww.
+
+Fixed a mistake in lib/layersmenu.inc.php, line 1438 and in
+lib/layersmenu-noscript.inc.php, line 175.
+Thanks to Stepan Kadlec (steve@students.zcu.cz) for his bug report.
+
+Added the following images for the first item of the Tree Menus:
+tree_collapse_first.png
+tree_expand_first.png
+tree_split_first.png
+Thanks to Paulo R. Bagatini (arkanon@ceat.net) for his suggestion.
+
+Minor changes to layersmenu.css to obtain a better look for fonts
+with Mozilla 1.3 and Konqueror 3.1 on Mandrake Linux 9.1.
+
+-------------------------------------
+PHP Layers Menu 2.3.5 (Mar 9th, 2003)
+UNSTABLE BRANCH
+-------------------------------------
+
+Some little changes to obtain a better imitation of the Gnome, KDE,
+and MS Windows main menus' behaviour for the layers menus w.r.t.
+turning off popped up layers.
+Added setVisibility() and isVisible() to lib/layersmenu-library.js
+to extend the browser abstraction layer and to reduce the amount
+of browser-dependent code in lib/layersmenu.js
+
+A minor change to moveLayerX() (lib/layersmenu.js) and to getWindowWidth()
+(lib/layersmenu-library.js) to handle Netscape 4 just like Mozilla,
+as Netscape 4 seems able to return a correct value of the window width.
+
+Renamed popUp() as LMPopUp() and popUpL() as LMPopUpL(), to allow to use
+the "popUp" function name (that seems to be rather widely used) for other
+purposes in the same page.
+
+Added a workaround to overcome an annoying behaviour of Mozilla on
+MS Windows for the layers menus: now layers popped up for the first time
+appear on the right place without appearing with abscissa = 0 before.
+
+Added an extended class (ProcessLayersMenu) providing methods useful
+to process/convert menus data, e.g. to output a menu structure and
+a DB SQL dump corresponding to already parsed data and hence also
+to convert a menu structure file to a DB SQL dump and viceversa.
+File: lib/layersmenu-process.inc.php
+Some examples of use of this extended class have been added to the package.
+
+Added some examples of use of this package.
+
+-------------------------------------
+PHP Layers Menu 2.3.4 (Mar 2nd, 2003)
+UNSTABLE BRANCH
+-------------------------------------
+
+Server-side speed improvement: now the depth-first recursive search
+of items stored in the DB is performed on a PHP array obtained querying
+the DB *only once*; this strongly reduces the time needed to retrieve
+and process data stored in the DB.
+Thanks to Iacopo Spalletti for this fine suggestion.
+
+Added i18n support for items stored in the DB.
+Correspondingly, a non mandatory argument ($language) has been added
+to the scanTableForMenu() method.
+
+Improvements for the DB-related user interface.
+Now the customization of field names allows to disable not available
+(not wanted) fields and should be more comfortable and intuitive and
+less error prone.
+Now field names can be passed in whatever order and their specification
+is mandatory only for non-default field names; not available (not wanted)
+fields can be disabled simply passing empty field names.
+
+Added error handling for the DB connection request.
+
+Added $prependedUrl (and the corresponding setPrependedUrl() method)
+to the LayersMenu class, to allow to prepend the same string to the
+content of all links if needed.
+As an example, this is needed if the complete URLs of the links depend
+on the settings of the package for which you are using the PHP Layers
+Menu System and/or when the storing in the DB of $prependedUrl for each
+link item either makes no sense or is not really viable/advisable.
+
+********
+* NOTE *
+********
+Extended the menu structure format to foresee the default expansion state
+for each item:
+[dots]|[text]|[link]|[title]|[icon]|[target]|[expanded]
+The DB dumps have been changed accordingly.
+Due to this change, the setTreeMenuDefaultExpansion() method is no more
+needed and hence it has been eliminated... now you do not need anymore
+to guess the numerical ids of items to be expanded by default ;-)
+The corresponding method is still used for the PHP Tree Menu, as this
+new approach would be not easily viable in this case and as the default
+expansion of the PHP Tree Menu can be easily obtained simply looking
+and the URL query string.
+
+Noticeable client-side performance improvement through the use of a
+smarter approach in the popUp() function of lib/layersmenu.js
+To evidence the difference w.r.t. previous versions, you can compare
+versions 2.3.3 and 2.3.4; load the demos of these versions in two
+distinct browser tabs (if you are using a browser that *still* does not
+provide tabs *nowadays*, you have to load the demos in two distinct
+browser windows), then go to the last item of the first horizontal menu
+("DOM, layers...") and, when the corresponding layer is popped up,
+move the mouse up and down over all the links shown in the layer;
+you will notice that switching of highlighting of links backgrounds
+now is fast, so much faster w.r.t. version 2.3.3.
+(You cannot note any difference if you are using Netscape 4)
+
+********
+* NOTE *
+********
+Some changes to functions and variables names for lib/layersmenu.js,
+that has been split in the following way.
+-------------------------
+lib/layersmenu-library.js
+-------------------------
+General purpose cross-browser functions, whose code provides a browser
+abstraction layer that can be useful also for the development of other
+projects.
+You do not need anymore to load this code if you want to provide only
+JavaScript Tree Menus on your pages.
+----------------------
+lib/layersmenu.js
+----------------------
+Code used just by the Layers Menus.
+You do not need anymore to load this code if you want to provide only
+JavaScript Tree Menus on your pages.
+-----------------------------
+lib/layerstreemenu-cookies.js
+-----------------------------
+Code needed to handle cookies for the JavaScript Tree Menus.
+You do not need anymore to load this code if you want to provide only
+Layer Menus on your pages.
+********
+* NOTE *
+********
+Coherently with the above change, the makeHeader() and printHeader()
+methods do not provide anymore the browser detection code; include
+layersmenu-browser_detection.js in your pages as shown in the examples;
+do not include it as you do for layersmenu-library.js, layersmenu.js,
+and layerstreemenu-cookies.js; embed it *statically* in your page's code
+as in the examples, otherwise you can trigger errors in Netscape 4
+if loading of lib/layersmenu-browser_detection.js is completed too late.
+
+Added some simple examples related to the use of items stored in a DB:
+example-db-1.php, example-db-2.php, example-db-3.php
+
+A minor change in layersmenu.css to have on Konqueror, for the demo title,
+the same look provided by Mozilla.
+
+-------------------------------------
+PHP Layers Menu 2.3.3 (Feb 9th, 2003)
+UNSTABLE BRANCH
+-------------------------------------
+
+Minor improvements to the JS Tree Menu code to obtain a correct
+behaviour on Konqueror 3.1.
+
+Changes to the JS Tree Menu code to show icons specified for leaf items
+in the menu structure.
+The images/tree* images have been changed too: now their size is 16x18,
+no more 20x18, to match better the size of shortcut icons (16x16).
+BTW, 16x18 is just the image size that leads to a perfect imitation
+of the "Manage Bookmarks..." window of Mozilla.
+
+Added for the Tree Menus some themes consisting of tarballs of images
+that can be used replacing the default ones; available themes
+are in the "THEMES" directory: galeon-theme, gmc-theme (the one used
+until version 2.3.2), kde-theme, mozilla-theme (the new default one),
+nautilus-gnome-theme.
+
+Abandoned the use of tables for the PHP Tree Menu; now it uses exactly
+the same tags (layers) used for the JavaScript Tree Menu and it has
+*exactly* the same look, also w.r.t. icons specified for leaf items.
+This solves also some formatting problems that can occur on Netscape 4
+and that seem to be non solvable without abandoning the use of tables.
+Please note that Netscape 4 ignores the "white-space: nowrap" CSS
+property, hence, if you want to be sure to obtain a correct formatting
+also on Netscape 4, you may need to use the tree inside a nowrap
+environment, as in the index.php example bundled with the package.
+Thanks to Paulo R. Bagatini, that has evidenced the problem.
+
+Minor changes to handle correctly Opera >= 7, which provides a much
+better DOM support w.r.t. previous versions.
+
+A minor improvement to sub-menu templates of the layers menu.
+
+Completely switched to XHTML 1.0 Transitional.
+
+Added the possibility to get the menu content from a DB table.
+PEAR DB is used to provide independence of the PHP code from the DBMS;
+dumps for PostgreSQL and MySQL are bundled with the package together
+with demo data dumps, and an example script is provided, too:
+example-db.php
+
+Renamed the parseMenuStructure() method as parseStructureForMenu()
+hoping that now its name is less misleading ;^)
+
+Changed debian-icon-mini.png, php-bugs-icon-mini.png, and
+phplib-logo-mini.png to obtain corresponding 16x16 icons.
+
+--------------------------------------
+PHP Layers Menu 2.3.2 (Jan 12nd, 2003)
+UNSTABLE BRANCH
+--------------------------------------
+
+Some look improvements, especially for the JavaScript Tree Menu
+on Netscape 4, IE 4.0, IE 5.0, Opera 5 and 6.
+In particular, now the JavaScript Tree Menu is well formatted
+on all browsers and, in particular, on Netscape 4.
+********
+* NOTE *
+********
+Now two stylesheets are used: layersmenu.css has been split
+in layersmenu.css and layerstreemenu.css; layerstreemenu.css
+is included with a different syntax (see the demo example, i.e.
+index.php) because it has to be used *only* by newer browsers and,
+in particular, it must *not* be used by Netscape 4, to avoid the
+Tree Menu formatting problems that can be noted on version 2.3.1.
+
+Added support for IE 4.0 to the JavaScript Tree Menu.
+
+Added cookies to the JavaScript Tree Menu to allow the browser
+to remember the expansion state of the tree during a browsing session.
+
+-------------------------------------
+PHP Layers Menu 2.3.1 (Jan 4th, 2003)
+UNSTABLE BRANCH
+-------------------------------------
+
+Added a JavaScript Tree Menu to the LayersMenu() class, to provide
+tree menus that work completely on the client side.
+Only browser sufficiently compliant to the DOM are supported, i.e.
+Mozilla (and Mozilla-based browsers, such as Galeon and Netscape >= 6),
+Konqueror >= 3.0, IE 5.0, 5.5, and 6.0; everything should run rather
+well also on Opera 7.
+The following browsers are *not* supported, as supporting them is either
+not possible at all or really too hard, even though full accessibility
+is provided for them: Netscape 4.x, Konqueror 2.x, lynx, links,
+Opera 5 and 6, IE 4.0.
+Sorry for Netscape 4; my choice of not supporting it for the JavaScript
+Tree Menu makes me very sad, also because it has been the browser
+that has disclosed me the world of Internet; but, alas, it is time
+to begin abandoning it... thank you so much, and goodbye...
+
+Note: due to the addition of the JavaScript Tree Menu, some name changes
+have occurred in the code of the PHP Tree Menu, to avoid conflicts.
+
+Now the Tree Menu uses the text label without any link if the link field
+is empty in the menu structure.
+Added treeMenuImagesType and setTreeMenuImagesType() to the XLayersMenu
+class to allow to use image types different from png in the Tree Menu
+without changing the code of the class.
+Added treeMenuDefaultExpansion and setTreeMenuDefaultExpansion() to the
+XLayersMenu class to allow to set which nodes have to be expanded
+by default in the Tree Menu.
+Thanks to Paulo R. Bagatini <arkanon@ceat.net> for his suggestions.
+
+Fixed the use of "name=" tags in the Tree Menu.
+
+Some undocumented minor changes and code clean up.
+
+--------------------------------------
+PHP Layers Menu 2.3.0 (Dec 15th, 2002)
+UNSTABLE BRANCH
+--------------------------------------
+
+Dropped support of Mozilla 0.6 and Netscape 6.0; supported versions
+are Mozilla >= 0.7 and Netscape >= 6.1.
+
+Dropped support of PHP < 4.1.
+
+Moved to the PEARified version of the PHPLib Template class.
+
+Changed the code to use a PEAR-like syntax:
+
+----------------
+LayersMenu class
+----------------
+----------------------------------------------------------------------
+methods:
+--------
+set_abscissa_step	-> setAbscissaStep
+set_ordinate_step	-> setOrdinateStep
+set_thresholdY		-> setThresholdY
+set_dirroot		-> setDirroot
+set_libdir		-> setLibdir
+set_libwww		-> setLibwww
+set_tpldir		-> setTpldir
+set_imgdir		-> setImgdir
+set_imgwww		-> setImgwww
+set_horizontal_menu_tpl	-> setHorizontalMenuTpl
+set_vertical_menu_tpl	-> setVerticalMenuTpl
+set_sub_menu_tpl	-> setSubMenuTpl
+set_forward_arrow_img	-> setForwardArrowImg
+set_forward_arrow	-> setForwardArrow
+set_down_arrow_img	-> setDownArrowImg
+set_down_arrow		-> setDownArrow
+set_menu_structure_file	-> setMenuStructureFile
+set_menu_structure_string -> setMenuStructureString
+set_separator		-> setSeparator
+parse_menu_structure	-> parseMenuStructure
+parse_common		-> _parseCommon
+update_footer		-> _updateFooter
+new_horizontal_menu	-> newHorizontalMenu
+new_vertical_menu	-> newVerticalMenu
+make_header		-> makeHeader
+get_header		-> getHeader
+print_header		-> printHeader
+get_menu		-> getMenu
+print_menu		-> printMenu
+make_footer		-> makeFooter
+get_footer		-> getFooter
+print_footer		-> printFooter
+----------------------------------------------------------------------
+variables:
+----------
+package_name		-> _packageName
+halt_on_error		-> haltOnError
+horizontal_menu_tpl	-> horizontalMenuTpl
+vertical_menu_tpl	-> verticalMenuTpl
+sub_menu_tpl		-> subMenuTpl
+menu_structure		-> menuStructure
+nodes_count		-> _nodesCount
+max_level		-> _maxLevel
+first_level_cnt		-> _firstLevelCnt
+first_item		-> _firstItem
+last_item		-> _lastItem
+first_level_menu	-> _firstLevelMenu
+forward_arrow_img	-> forwardArrowImg
+forward_arrow		-> forwardArrow
+down_arrow_img		-> downArrowImg
+down_arrow		-> downArrow
+abscissa_step		-> abscissaStep
+ordinate_step		-> ordinateStep
+----------------------------------------------------------------------
+
+-----------------
+XLayersMenu class
+-----------------
+----------------------------------------------------------------------
+methods:
+--------
+set_tree_menu_separator		-> setTreeMenuSeparator
+set_tree_menu_images_width	-> setTreeMenuImagesWidth
+new_tree_menu			-> newTreeMenu
+get_tree_menu			-> getTreeMenu
+print_tree_menu			-> printTreeMenu
+set_plain_menu_separator	-> setPlainMenuSeparator
+set_plain_menu_tpl		-> setPlainMenuTpl
+new_plain_menu			-> newPlainMenu
+get_plain_menu			-> getPlainMenu
+print_plain_menu		-> printPlainMenu
+set_horizontal_plain_menu_separator	-> setHorizontalPlainMenuSeparator
+set_horizontal_plain_menu_tpl		-> setHorizontalPlainMenuTpl
+new_horizontal_plain_menu		-> newHorizontalPlainMenu
+get_horizontal_plain_menu		-> getHorizontalPlainMenu
+print_horizontal_plain_menu		-> printHorizontalPlainMenu
+----------------------------------------------------------------------
+variables:
+----------
+tree_menu_separator	-> treeMenuSeparator
+tree_menu_images_width	-> treeMenuImagesWidth
+tree_menu		-> _treeMenu
+plain_menu_separator	-> plainMenuSeparator
+plain_menu_tpl		-> plainMenuTpl
+plain_menu		-> _plainMenu
+horizontal_plain_menu_separator	-> horizontalPlainMenuSeparator
+horizontal_plain_menu_tpl	-> horizontalPlainMenuTpl
+horizontal_plain_menu		-> _horizontalPlainMenu
+----------------------------------------------------------------------
+
+Fixed a bug that caused an incorrect behaviour on the Tree Menu links
+for the [+] and [-] icons when the http port was not 80.
+Thanks to Yves Mettier <ymettier@libertysurf.fr> and
+Jesus M. Castagnetto <jmcastagnetto@php.net> for their bug reports
+and fixes.
+
+Other undocumented changes and improvements, e.g. to the templates
+and to the style sheet.
+
+--------------------------------------
+PHP Layers Menu 2.2.0 (Oct 13th, 2002)
+--------------------------------------
+
+lib/layersmenu-noscript.inc.php3, new_tree_menu():
+fixed the detection of the https protocol.
+Thanks to Danny Jovica <danny@e-pc.com.au> for his bug report.
+
+----------------------------------------
+PHP Layers Menu 2.2beta (Sep 29th, 2002)
+UNSTABLE BRANCH
+----------------------------------------
+
+Moved the browser detection from lib/layersmenu.js to the body
+of the HTML code returned by the PHP parsing.
+This change has been needed to avoid JavaScript errors that
+on Netscape 4 often occurred loading the page for the first time
+(a reload was needed to make things work).
+To this end, the browser detection code has been put in a new file,
+i.e. lib/layersmenu-browser_detection.js , which is included
+by the template lib/layersmenu-header.ijs , and a minor change
+to the make_header() method of the LayersMenu class has been needed
+in lib/layersmenu.inc.php3 .
+
+Some minor changes to provide compliance with XHTML 1.0 Transitional.
+Now PHP Layers Menu is compliant at least with the following DTDs:
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+A minor "cosmetic" change in the setX() function in lib/layersmenu.js
+
+A minor change in the yaresizeHandler() function in lib/layersmenu.js
+
+Changed all the Tree Menu images to use all 20x18 images and provide
+a better look, especially on Konqueror.
+
+--------------------------------------
+PHP Layers Menu 2.1.0 (Sep 21st, 2002)
+UNSTABLE BRANCH
+--------------------------------------
+
+Now the vertical coordinates of links are obtained simply
+as DOM properties.
+Hence it is no more needed to estimate their coordinates
+through the detection of the position of the mouse pointer,
+and it is no more necessary to compute and set reasonable
+coordinates for the layers (this was needed for browsers
+not able to detect the mouse pointer position).
+Detection of the position of the mouse pointer is still employed,
+but only for Netscape 4, which does not seem able to return
+the vertical coordinate of links relying on the DOM tree.
+Many thanks to Iacopo Spalletti for this very fine hint,
+which strongly improves the behaviour of this menu system.
+
+A clean up in lib/layersmenu.js for the code handling the
+document.onmousedown and the document.onclick events.
+
+Changed the default value of $ordinate_margin, that now is 12
+and no more 20.
+
+Updated the README and some comments in the code.
+Minor corrections to the README.
+
+--------------------------------------
+PHP Layers Menu 2.0.0 (Sep 15th, 2002)
+--------------------------------------
+
+Functions setwidth() and setheight(): the bug fix provided in version
+2.0beta3 causes problems to IE 5.5 and IE 6.0, and Mozilla does not
+need it in that functions (it needs it only in functions setleft()
+and settop()); hence the same code used in version 2.0beta2 has been
+restored for that functions.
+
+The bug fix provided in version 2.0beta3 also prevents the menu system
+from working on Opera 5; extended functions setleft() and settop()
+to handle Opera 5 as a distinct case and use the non-fixed code for it.
+
+Some extensions to lib/layersmenu.js and minor changes to the templates
+to obtain also with IE 6.0 a correct behaviour with the long DTD for
+HTML 4.01 Transitional.
+
+----------------------------------------
+PHP Layers Menu 2.0beta3 (Sep 1st, 2002)
+UNSTABLE BRANCH
+----------------------------------------
+
+A bug fix in lib/layersmenu.js (functions setleft(), settop(),
+setwidth(), setheight()); now the menu system works also on Mozilla
+also with the long DTD for HTML 4.01 Transitional, i.e. with
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+Many thanks to Iacopo Spalletti for this fine bug fix.
+
+Changed the Tree Menu images according to Debian Woody's Gmc and Galeon.
+
+-----------------------------------------
+PHP Layers Menu 2.0beta2 (Aug 11th, 2002)
+UNSTABLE BRANCH
+-----------------------------------------
+
+Fixed some typos.
+
+-----------------------------------------
+PHP Layers Menu 2.0beta (July 28th, 2002)
+UNSTABLE BRANCH
+-----------------------------------------
+
+Commented the code of PHP classes according to the PHPDocumentor syntax.
+
+Added the set_separator() method to allow to change the separator,
+that by default is still "|".
+
+Added the possibility of commenting out a line in the menu structure
+inserting a "#" as the first character of the line, in analogy with
+shell scripts.
+Thanks to Normando Marcolongo <normando@lugroma.org> for his suggestion.
+
+Some other minor undocumented changes.
+
+Added an extended class to provide menu solutions not requiring
+JavaScript, i.e. Tree Menu (based on the Tree Menu 1.1 package
+by Bjorge Dijkstra), Plain Menu, and Horizontal Plain Menu.
+
+Slightly changed the menu structure format: added a separator between
+dots and text to allow text of links to begin with one or more dots;
+now the menu structure format is
+[dots]|[text]|[link]|[title]|[icon]|[target]
+(obviously, the separator can be different from "|", which is the default,
+if the set_separator() method is used).
+More precisely, now only the number of chars before the first separator
+is counted, hence it is also possible to use chars different from dots,
+even though I discommend to do this and I suggest to continue considering
+a format that foresees usage of dots.
+
+--------------------------------------
+PHP Layers Menu 1.1.7 (May 26th, 2002)
+UNSTABLE BRANCH
+--------------------------------------
+
+Reorganization and extension of code, data structures, variables names,
+and templates.
+Clean up of the style sheet.
+
+Added some variables to the class, in particular, dirroot and libdir.
+Thanks to Claudio Bandaloukas <rdfm@lugroma.org>
+for his bug report.
+
+Added titles to links and support for icons;
+this implies a format change for the menu structure, that now is
+[dots][text]|[link]|[title]|[icon]|[target]
+
+Now horizontal menus cells can have arbitrary widths.
+This allows to save space in the browser window, with menu layers
+still correctly placed.
+
+--------------------------------------
+PHP Layers Menu 1.1.6 (May 19th, 2002)
+UNSTABLE BRANCH
+--------------------------------------
+
+Renamed the class as LayersMenu; renamed methods and added some useful
+new methods.
+
+Added the possibility of reading each menu structure from a string
+instead of from a file; this is useful if, e.g., the menu structure
+is returned by some code that retrieves informations from a data base.
+
+Eliminated inclusion of template.inc.php3 from layersmenu.inc.php3;
+now template.inc.php3 has to be included by the script that employs
+the LayersMenu class.
+
+Moved some files in suited sub directories and added methods to choose
+paths and to choose templates for each menu; changed the demo script
+to make more evident this change.
+
+Eliminated $abscissa_stepx5, which was not used.
+
+Added the JavaScript variable IE, to indicate *each version* of IE
+(>= 4.0); now the IE4 variable indicates *only* version 4 of IE.
+Some minor changes to adapt the code to this choice.
+
+Added an elementary error handling.
+
+Other undocumented changes and improvements.
+
+--------------------------------------
+PHP Layers Menu 1.1.5 (May 12th, 2002)
+UNSTABLE BRANCH
+--------------------------------------
+
+Added handling of window resizing.
+
+Better handling of horizontal autorepositioning of layers.
+
+Some little changes to validate as HTML 4.01 Transitional.
+
+Added methods to allow a more clean use of the menu system
+in pages using templating.
+
+Other undocumented improvements and changes.
+
+-------------------------------------
+PHP Layers Menu 1.1.4 (May 5th, 2002)
+UNSTABLE BRANCH
+-------------------------------------
+
+Added the LICENSE file and changed the license to include the option
+of later versions of the GNU LGPL.
+
+Added detection of layers widths (for browsers able to detect them),
+and then set the position of each layer just in correspondence
+of the "father" layer.
+
+Added detection of the document width and of width and scroll
+of the browsing window, and then implemented horizontal
+and vertical "autowrap" of menu layers.
+
+Added explicit detection of Konqueror, as Konqueror 3 implements
+useful features but sets IE4 = 1 ... AAAAAAAAAARGHHH!!!
+
+Extended Opera detection, as Opera 6 provides useful features
+not available or completely unreliable in Opera 5.
+
+Some code cleanups in layermenu.js
+
+Provided methods makeheader() and makefooter() beside printheader()
+and printfooter(), to allow the use of the menu system in pages
+using templating (now $this->header and $this->footer can be used).
+
+A minor change to README to avoid problems with e-mail addresses
+inside the "pre" tag.
+
+Updated README and corrected some typos.
+
+Minor changes to the demo menu structure files to evidence new features.
+
+Minor undocumented changes.
+
+----------------------------------------
+PHP Layers Menu 1.1.3.1 (Apr 14th, 2002)
+UNSTABLE BRANCH
+----------------------------------------
+
+Restored popUp calls in leaf node links, they were needed!!!
+Thanks to Hanno Saks <hanno@lv.parnu.ee> for his bug report.
+Eliminated a spurious tag.
+Affected file: layersmenu.inc.php3
+
+--------------------------------------
+PHP Layers Menu 1.1.3 (Feb 24th, 2002)
+UNSTABLE BRANCH
+--------------------------------------
+
+A better and more reliable choice of the layer identifying
+the first level menu both for horizontal and vertical menus.
+Now the layer is defined inside a td tag to avoid problems
+with menus not left aligned.
+New workarounds to cope with IE's oddities related to this choice.
+Centered the menu hormenu1 in the demo to make more evident
+the effects of the change.
+
+Eliminated the no more useful moveLayerY() call in links belonging
+to the first level menu of horizontal menus; consequently added
+the call of moveLayers() in popUp() when needed (it results to be needed
+if the first submenu popped up belongs to a horizontal menu).
+
+Eliminated from the templates the tags identifying layers,
+to avoid accidental removal of tags essential for the menus operation;
+now such tags are inserted through the PHP code.
+
+Some speed enhancements obtained minimizing the number of function calls
+in moveLayers() and removing unuseful popUp calls in leaf nodes links
+(such enhancements can be noted mainly on Mozilla and IE4).
+
+Renamed layersmenu-footer.ihtml as layersmenu-submenu.ihtml
+Renamed the printfirstleveltable() method as printfirstlevelmenu()
+
+Minor undocumented changes.
+
+--------------------------------------
+PHP Layers Menu 1.1.2 (Feb 17th, 2002)
+UNSTABLE BRANCH
+--------------------------------------
+
+Extended the set of functions provided in layersmenu.js.
+Now the menu system is able to detect itself the position of menus.
+Hence it is no more needed to estimate and provide the corresponding
+coordinates when defining a menu, and the phplm() and newmenu() calls
+are simpler.
+Thanks to this ability, a better support is provided for Konqueror.
+Support for Netscape 4: version >= 4.07 is required now
+(version 4.05 simply crashes).
+Delayed the positioning of hidden layers after the page loading
+to preserve support of Mozilla < 0.9 and Netscape 6.0; this also
+provides a better support for Opera.
+Now setwidth() is no more used in layersmenu.inc.php3
+(it resulted to be unnecessary); some changes have been made
+to layersmenu-footer.ihtml; these changes achieve a better support
+for Netscape 6.0 and a better look of layers for the other browsers.
+
+Some changes to provide correct working of the package also if
+in php.ini it is set
+error_reporting = E_ALL
+("error_reporting = 8" in PHP3)
+Thanks to Tomas J. Fulopp <Tomi@uia.be> - <tomas.fulopp@skynet.be>
+for his bug report.
+
+-------------------------------------
+PHP Layers Menu 1.1.1 (Feb 3rd, 2002)
+UNSTABLE BRANCH
+-------------------------------------
+
+Fixed a bug in the detection of non leaf nodes.
+On version 1.1.0, the bug can be evidenced deleting
+the last line of layersmenu.txt and realizing that the link
+"Find Files" does not pop up the corresponding layer, 
+that contains the link "RPM Find". 
+In practice, in version 1.1.0, if the last entry of the menu
+structure file is the only child of the previous entry,
+it is not possible to pop up the corresponding layer.
+Thanks to Michele Conte <ceu@libero.it>
+for his bug report.
+
+Renamed phplayersmenu.inc.php3 as layersmenu.inc.php3
+
+Documentation fixes.
+
+Minor undocumented changes.
+
+--------------------------------------
+PHP Layers Menu 1.1.0 (Jan 13th, 2002)
+UNSTABLE BRANCH
+--------------------------------------
+
+Object Oriented rewrite of the package.
+Now an arbitrary number of vertical and horizontal menus
+can be used on the same page, and the package's use should be easier.
+

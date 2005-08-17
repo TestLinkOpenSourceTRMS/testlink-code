@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.2 $
- * @modified $Date: 2005/08/16 18:00:05 $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2005/08/17 19:03:03 $
  *
  * @author Andreas Morsing
  *
@@ -745,7 +745,7 @@ $TLS_trep_owner = "Besitzer";
 
 
 // gui/templates/inc_res_by_prio.tpl
-$TLS_tit_end_date = "Enddatum";
+$TLS_tit_end_date = "Endedatum";
 $TLS_tit_milestone = "Meilenstein";
 $TLS_title_res_by_prio = "Resultat nach Priorität";
 $TLS_trep_milestone_goal = "Meilenstein Ziel [%]";

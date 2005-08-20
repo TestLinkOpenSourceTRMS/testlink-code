@@ -1,18 +1,23 @@
 <?php
 /**
-* TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* @version $Id: archive.inc.php,v 1.2 2005/08/16 18:00:59 franciscom Exp $
-* 
-* Purpose:  functions for test specification management have three parts:
-*		1. grab data from db
-*		2. show test specification
-*		3. copy/move data within test specification         
-*
-*//////////////////////////////////////////////////////////////////////////////
+ * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ *
+ * Filename $RCSfile: archive.inc.php,v $
+ *
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2005/08/20 18:39:13 $
+ *
+ * @author Martin Havlat
+ * Purpose:  functions for test specification management have three parts:
+ *		1. grab data from db
+ *		2. show test specification
+ *		3. copy/move data within test specification         
+ *
+ * @todo deactive users instead of delete
+ *
+**/
 
-////////////////////////////////////////////////////////////////////////////////
 /** 1. functions for grab container and test case data from database */ 
-
 function getComponent($id)
 {
 	$sqlCOM = "SELECT id,name,intro,scope,ref,method,lim FROM mgtcomponent " .
@@ -458,14 +463,12 @@ function insertTestcase($catID,$title,$summary,$steps,$outcome,$user,$tcOrder = 
 	
 	return $result ? mysql_insert_id() : 0;
 }
-
+// 20050819 - am - fix for bug Mantis 59 Use of term "created by" is not enforced---
 function updateTestcase($tcID,$title,$summary,$steps,$outcome,$user,$keywords,$version)
 {
-	//SQL Code to update the testcase with its new values
-	
 	$sql = "UPDATE mgttestcase SET keywords='" . mysql_escape_string($keywords) . "', version='" . 
-		mysql_escape_string($version) . "', title='" . mysql_escape_string($title) . "', author ='" . 
-		mysql_escape_string($user) . "', summary='" . mysql_escape_string($summary) . "', steps='" . 
+		mysql_escape_string($version) . "', title='" . mysql_escape_string($title) . "'".
+		",summary='" . mysql_escape_string($summary) . "', steps='" . 
 		mysql_escape_string($steps) . "', exresult='" . mysql_escape_string($outcome) . 
 		"', reviewer='" . mysql_escape_string($user) . "', modified_date=CURRENT_DATE()" .
 		" WHERE id=" . $tcID;

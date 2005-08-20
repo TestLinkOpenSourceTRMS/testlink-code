@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.2 $
- * @modified $Date: 2005/08/16 18:00:55 $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2005/08/20 18:39:13 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -319,12 +319,32 @@ function testlinkInitPage($initProduct = FALSE,$bDontCheckSession = false)
 	{
 		checkSessionValid();
 	}	
+	checkUserRights();
+		
 	if ($initProduct){
 		doInitSelection() or die("Could not set session variables");
 	}
 }
 
+function checkUserRights()
+{
+	global $g_userRights;
+	$self = $_SERVER['PHP_SELF'];
+	$fName = strtolower(basename($self));
 
+	if (isset($g_userRights[$fName]))
+	{
+		$fRights = $g_userRights[$fName];
+		if (has_rights($fRights) != 'yes')
+		{
+			tLog("Warning: Insufficient rights for ".$self);
+			die("Insufficient rights");
+		}
+		else
+			tLog("Sufficient rights for ".$self);
+	}
+
+}
 /**
  * Redirect page to another one
  *

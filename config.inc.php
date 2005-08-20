@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.2 $
- * @modified $Date: 2005/08/16 17:57:41 $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2005/08/20 18:39:12 $
  *
  * @author Chad Rosen
  *
@@ -202,4 +202,10 @@ if ( isset ( $_SERVER['PHP_SELF'] ) ) {
 }
 
 }
+
+
+
+//includes needed for userright checking
+require_once(TL_ABS_PATH . 'lib/functions/getRights.php');
+require_once(TL_ABS_PATH . 'cfg/userrightmatrix.php');
 ?>

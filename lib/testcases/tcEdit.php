@@ -1,17 +1,19 @@
 <?php
 /**
-* TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* @version $Id: tcEdit.php,v 1.2 2005/08/16 18:00:59 franciscom Exp $
-*
-* This page manages all the editing of test cases.
-* 
-*
-* rev :
-*       20050810 - fm
-*       refactoring
-*       deprecated $_SESSION['product'] removed
-*
-*////////////////////////////////////////////////////////////////////////////////
+ * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ *
+ * Filename $RCSfile: tcEdit.php,v $
+ *
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2005/08/20 18:39:13 $
+ * This page manages all the editing of test cases.
+ *
+ * @author Martin Havlat
+ *
+ * @todo deactive users instead of delete
+ * 
+ * 20050810 - fm - refactoring, deprecated $_SESSION['product'] removed
+**/
 require_once("../../config.inc.php");
 require_once("../functions/common.php");
 require('archive.inc.php');
@@ -30,21 +32,14 @@ else if (isset($_GET['editTC']))
 $product = $_SESSION['productID'];
 $data = isset($_GET['data']) ? intval($_GET['data']) : 0;
 
-
-
-$smarty = new TLSmarty;
-
-// 20050810 - fm
-// from 3 to only 1 assignment
+$smarty = new TLSmarty();
+// 20050810 - fm - from 3 to only 1 assignment
 $smarty->assign('path_htmlarea', $_SESSION['basehref'] . 'third_party/htmlarea/');
-	
 	
 //If the user has chosen to edit a testcase then show this code
 if($tc)
 {
 	$setOfKeys = array();
-	
-	// get TC data
 	$myrowTC = getTestcase($data,false);
 
 	$tcKeywords = null;
@@ -68,7 +63,6 @@ if($tc)
 	$smarty->assign('keys', $setOfKeys);
 	$smarty->assign('keysize', $keySize);
 	$smarty->display('tcEdit.tpl');
-	//saving a test case but not archiving it
 } 
 else if(isset($_POST['updateTC']))
 {

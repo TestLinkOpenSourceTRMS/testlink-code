@@ -1,5 +1,5 @@
 {* Testlink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: adminUserNew.tpl,v 1.2 2005/08/16 17:59:13 franciscom Exp $ *}
+{* $Id: adminUserNew.tpl,v 1.3 2005/08/20 18:39:13 schlundus Exp $ *}
 {* Purpose: smarty template - Add new user *}
 {include file="inc_head.tpl" popup="yes"}
 
@@ -17,7 +17,7 @@
 <div class="workBack">
 
 {* user was added *}
-{include file="inc_update.tpl" result=$sqlResult item="User" action="add" name=$name}
+{include file="inc_update.tpl" result=$sqlResult item="user" action="add" name=$name}
 
 {* new user form *}
 <div>

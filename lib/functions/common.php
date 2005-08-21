@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.3 $
- * @modified $Date: 2005/08/20 18:39:13 $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2005/08/21 20:46:52 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -329,8 +329,8 @@ function testlinkInitPage($initProduct = FALSE,$bDontCheckSession = false)
 function checkUserRights()
 {
 	global $g_userRights;
-	$self = $_SERVER['PHP_SELF'];
-	$fName = strtolower(basename($self));
+	$self = strtolower($_SERVER['SCRIPT_FILENAME']);
+	$fName = str_replace(strtolower(str_replace("\\","/",TL_ABS_PATH)),"",$self);
 
 	if (isset($g_userRights[$fName]))
 	{

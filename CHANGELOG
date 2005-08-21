@@ -20,6 +20,10 @@ TestLink development team:
 
 Bugfixes:
 
+* [Mantis 37] Unable to copy a category into the same component it is in
+* [Mantis 38] Little question mark icons by  [Save REsults] are broken links
+* [Mantis 59] Use of term "created by" is not enforced, the information displayed is 
+	the "last modified by" user
 * [Mantis 4] Keywords of imported TC are not added to the product
 * [Mantis 5] Saving personal data, partially invalidates session
 * [Mantis 15] Using HTML TAG in the product name breaks the page

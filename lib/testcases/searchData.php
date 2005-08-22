@@ -1,9 +1,14 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: searchData.php,v 1.2 2005/08/16 18:00:59 franciscom Exp $ */
-/* Purpose:  This page presents the search results. */
-/* 
- * @ author: francisco mancardi - 20050810
+/* $Id: searchData.php,v 1.3 2005/08/22 07:00:51 franciscom Exp $ */
+/* Purpose:  This page presents the search results. 
+ *
+ * 
+ * @ author: Francisco Mancardi - 20050821
+ * changes to use template customization
+ * (trying to reduce code redundancy)
+ *
+ * @ author: Francisco Mancardi - 20050810
  * deprecated $_SESSION['product'] removed
  */
 require('../../config.inc.php');
@@ -26,33 +31,54 @@ $TCID = isset($_POST['TCID']) ? mysql_escape_string(strings_stripSlashes($_POST[
 $product = isset($_SESSION['productID']) ? $_SESSION['productID'] : 0;
 if ($product)
 {
-	$sqlTC = "SELECT mgttestcase.id,title,summary,steps,exresult,keywords,version FROM mgttestcase,mgtcategory,		mgtcomponent WHERE prodid = ".$product.
- 			 " AND mgtcategory.compID = mgtcomponent.id AND mgttestcase.catID = mgtcategory.id AND mgttestcase.id like '%" . 	$TCID . 
-			 "%' AND title like '%" . $title . "%' AND summary like '%" . $summary . "%' AND steps like '%" . $steps . 
-			 "%' AND exresult like '%" . $exresult."%'";
-	//keywordlist always have a trailing slash, so there are only two cases to consider the keyword is the first in the 	list
+	$sqlTC = " SELECT mgttestcase.id,title,summary,steps,exresult,keywords,version," .
+	         " author,create_date,reviewer,modified_date,catid,TCorder " .
+	         " FROM mgttestcase, mgtcategory,	mgtcomponent " .
+	         " WHERE prodid = ".$product.
+ 			     " AND mgtcategory.compID = mgtcomponent.id " .
+ 			     " AND mgttestcase.catID = mgtcategory.id " .
+ 			     " AND mgttestcase.id like '%" . 	$TCID . "%' " .
+ 			     " AND title like '%" . $title . "%' " .
+ 			     " AND summary like '%" . $summary . "%' " . 
+ 			     " AND steps like '%" . $steps . "%' " .
+ 			     " AND exresult like '%" . $exresult."%'";
+
+	//keywordlist always have a trailing slash, so there are only two cases 
+	//to consider the keyword is the first in the 	list
 	//or its in the middle of list 		 
 	if($key != 'none')
+	{
 		$sqlTC .= " AND (keywords LIKE '%,{$key},%' OR keywords like '{$key},%')";
+	}	
 	$sqlTC .= " ORDER BY title";
 
 	$result = do_mysql_query($sqlTC);
-	while ($row = mysql_fetch_row($result)) //loop through all categories
+	
+	
+	while ($row = mysql_fetch_assoc($result)) //loop through all categories
 	{
-		array_push($arrTc, array( 	'id' => $row[0],
-									'title' => $row[1], 
-									'summary' => $row[2],
-									'steps' => $row[3], 
-									'expected' => $row[4],
-									'keys' => substr($row[5], 0, -1)));
+		$row['keywords'] = substr($row['keywords'], 0, -1);
+		array_push($arrTc, $row);
 	}
 }
+
+/* 20050821 - fm
 if (!sizeof($arrTc))
+{
 	$arrTc = null;
+}
+*/
 
 $smarty = new TLSmarty;
+$smarty->assign('modify_tc_rights', 'no');
 if(has_rights("mgt_modify_tc"))
+{
 	$smarty->assign('modify_tc_rights', 'yes');
-$smarty->assign('arrTc', $arrTc);
-$smarty->display('tcSearchView.tpl');
+}
+
+$smarty->assign('testcase', $arrTc);
+
+// 20050821 - fm
+global $tpl;
+$smarty->display($tpl['tcSearchView']);
 ?>

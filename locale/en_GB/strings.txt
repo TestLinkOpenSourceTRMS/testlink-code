@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.2 $
- * @modified $Date: 2005/08/16 18:00:11 $
+ * @version $Revision: 1.3 $
+ * @modified on $Date: 2005/08/22 07:00:51 $ by $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
@@ -201,7 +201,7 @@ $TLS_introduction = "Introduction";
 $TLS_limitations = "Limitations";
 $TLS_methodology = "Methodology";
 $TLS_not_defined = "Not defined.";
-$TLS_objective = "Objective";
+$TLS_objective = "Objective-----";
 $TLS_references = "References";
 $TLS_scope = "Scope";
 $TLS_th_product_name = "Product Name";
@@ -1009,7 +1009,7 @@ $TLS_title_test_report_all_builds = "Test Report: Results of Test cases for all 
 // lib/testcases/containerEdit.php
 $TLS_error_cat_add = "Category was not added!";
 $TLS_error_update_catorder = "Failed to update order for category";
-$TLS_warning_empty_com_name = "You cannot enter a component without a name!";
+$TLS_warning_empty_com_name = "Please give a name to component";
 
 
 
@@ -1029,5 +1029,24 @@ $TLS_req_msg_noselect = "Nothing selected";
 
 // lib/req/reqTcAssign.php
 $TLS_req_msg_notupdated_coverage = "Coverage was not updated for Requirements: ";
+
+
+//
+// 20050820
+// containerNew.tpl
+$TLS_alert_please_cat_name="Please give a name to the category";
+$TLS_alert_please_comp_name="Please give a name to the component";
+
+
+// tcnew.tpl
+$TLS_alert_please_tc_name="Please give a name to test case";
+
+
+$TLS_warning_empty_cat_name = "Please give a name to category";
+$TLS_warning_empty_tc_title = "Please give a title to test case";
+
+
+$TLS_th_test_case_id = "ID ";
+
 
 ?>

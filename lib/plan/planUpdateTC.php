@@ -1,13 +1,14 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: planUpdateTC.php,v 1.2 2005/08/16 18:00:57 franciscom Exp $
+ * @version $Id: planUpdateTC.php,v 1.3 2005/08/22 07:00:51 franciscom Exp $
  * @author Martin Havlat
  * 
  * Update Test Cases within Test Case Suite 
  * 
  *
- *
+ * @author Francisco Mancardi - 20050821
+ * corrected autogol exresults KO, exresult OK
  *
  */         
 require('../../config.inc.php');
@@ -50,13 +51,11 @@ if(isset($_POST['updateSelected']))
 		// Grab the relevant data from tc specs (mgt* Tables)
 		// mgtTestCase table
 		$tc_specs = get_tc_specs($specId);
-			
-		//echo "<pre> \$tc_specs<br> on loop <br>"; print_r($tc_specs); echo "-------------</pre>"; 
 
     $mgtRow = $tc_specs;
 		$mgtTitle=mysql_escape_string($mgtRow['title']);
 		$mgtSteps=mysql_escape_string($mgtRow['steps']);
-		$mgtExresult=mysql_escape_string($mgtRow['exresults']);
+		$mgtExresult=mysql_escape_string($mgtRow['exresult']);
 		$mgtKeywords=$mgtRow['keywords'];
 		$mgtCatid=$mgtRow['catid'];
 		$mgtVersion=$mgtRow['version'];
@@ -83,7 +82,6 @@ if(isset($_POST['updateSelected']))
 			              '", keywords="' . $mgtKeywords . 
 			              '", version="'  . $mgtVersion . 
 			              '", summary="'  . $mgtSummary . '" '; 
-
 
 			// --------------------------------------------------------------------------
 			if( $mgtCatid != $tctp_data['cat_mgtcatid'])

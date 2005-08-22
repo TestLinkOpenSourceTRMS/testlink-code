@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: exec.inc.php,v $
  *
- * @version $Revision: 1.2 $
- * @modified $Date: 2005/08/16 18:00:55 $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2005/08/22 07:00:50 $
  *
  * @author Martin Havlat
  *
@@ -261,31 +261,41 @@ function editTestResults($tcData)
  * @param string $build Build Id
  * @return array $arrTC
  *
+ * @author Francisco Mancardi
+ * from mysql_fetch_row -> mysq_fetch_assoc
+ * refactoring removing global coupling (Test Plan ID)
+ *
  * @author Andreas Morsing - removed unnecessary code
  */
-function createTestInput($resultTC,$build)
+function createTestInput($resultTC,$build,$tpID)
 {
 	global $g_bugInterfaceOn;
 	$arrTC = array();
-	while ($myrow = mysql_fetch_row($resultTC)){ 
+	while ($myrow = mysql_fetch_array($resultTC)){ 
 
 		//display all the test cases until we run out
 		//If the result is empty it leaves the box blank.. This looks weird. 
 		//Entering a space if it's blank
-		for ($i = 1; $i <= 4; $i++)
-		{
-			if($myrow[$i] == "")
-				$myrow[$i] = "none";
+ 	  $a_keys = array('title','summary','steps','exresult');
+    foreach($a_keys as $field_name)
+    {
+		  if(trim($myrow[$field_name]) == "")
+		  {
+		    $myrow[$field_name] = "none";
+		  }
 		}
+	
+		
 		//This query grabs the results from the build passed in
-		$sql = "SELECT notes, status FROM results WHERE tcid='" . $myrow[0]. "' AND build='" . $build . "'";
+		$sql = " SELECT notes, status FROM results WHERE tcid='" . $myrow['id']. "' " .
+		       " AND build='" . $build . "'";
 		$resultStatus = do_mysql_query($sql);
 		$dataStatus = mysql_fetch_row($resultStatus);
 
 		//This query grabs the most recent result
 		$sqlRecentResult = "SELECT build.name AS build,status,runby,daterun FROM results,build " .
 				"WHERE tcid='" . $myrow[0] . "' AND status != 'n' AND results.build = build.build AND projid = " . 
-				$_SESSION['testPlanId'] ." ORDER by build.build " .
+				$tpID ." ORDER by build.build " .
 				"DESC limit 1";
 		$dataRecentResult = do_mysql_query($sqlRecentResult);
 		$rowRecent = mysql_fetch_assoc($dataRecentResult);

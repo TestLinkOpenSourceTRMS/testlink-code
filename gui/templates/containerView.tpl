@@ -1,6 +1,8 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: containerView.tpl,v 1.2 2005/08/16 17:59:13 franciscom Exp $ *}
-{* Purpose: smarty template - view test specification containers *}
+{* $Id: containerView.tpl,v 1.3 2005/08/22 07:00:49 franciscom Exp $ *}
+{* 
+Purpose: smarty template - view test specification containers 
+*}
 {include file="inc_head.tpl"}
 
 <body>
@@ -99,7 +101,7 @@
 			<th>{lang_get s='category'}: {$data[1]|escape}</th>
 		</tr>
 		<tr>
-			<td class="bold">{lang_get s='objective'}</td>
+			<td class="bold">{lang_get s='cat_scope'}</td>
 		</tr>
 	{if $data[2] ne ''}
     	<tr>

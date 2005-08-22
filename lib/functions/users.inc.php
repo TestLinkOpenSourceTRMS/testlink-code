@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: users.inc.php,v $
  *
- * @version $Revision: 1.2 $
- * @modified $Date: 2005/08/16 18:00:55 $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2005/08/22 07:00:50 $
  *
  * @author Chad Rosen, Martin Havlat
  * @author Martin Havlat
@@ -159,8 +159,8 @@ function getUserPassword($userID)
 	$pwd = null;
 	if ($result)
 	{
-		$pwd = mysql_fetch_row($result);
-		$pwd = $pwd[0];
+		$pwd = mysql_fetch_assoc($result);
+		$pwd = $pwd['password'];
 	}
 	
 	return $pwd;

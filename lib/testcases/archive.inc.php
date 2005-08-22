@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: archive.inc.php,v $
  *
- * @version $Revision: 1.3 $
- * @modified $Date: 2005/08/20 18:39:13 $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2005/08/22 07:30:19 $ by $Author: franciscom $
  *
  * @author Martin Havlat
  * Purpose:  functions for test specification management have three parts:
@@ -13,11 +13,16 @@
  *		2. show test specification
  *		3. copy/move data within test specification         
  *
- * @todo deactive users instead of delete
+ * @todo deactive users???? instead of delete
  *
-**/
+ *
+ * @author Francisco Mancardi - 20050820
+ * refactoring getTestcase(), getTestcaseTitle()
+**//////////////////////////////////////////////////////////////////////////////
 
+////////////////////////////////////////////////////////////////////////////////
 /** 1. functions for grab container and test case data from database */ 
+
 function getComponent($id)
 {
 	$sqlCOM = "SELECT id,name,intro,scope,ref,method,lim FROM mgtcomponent " .
@@ -46,20 +51,27 @@ function getCategory($id)
 function getTestcase($id, $convert = TRUE)
 {
 	// execute SQL request
-	$sqlTC = "select id,title,summary,steps,exresult,version,keywords," .
-			"author,create_date,reviewer,modified_date,catid,TCorder from mgttestcase " .
-			"where id=" . $id ;
+	$sqlTC = " select id,title,summary,steps,exresult,version,keywords," .
+			     " author,create_date,reviewer,modified_date,catid,TCorder " .
+			     " from mgttestcase" .
+			     " where id=" . $id ;
+			     
 	$resultTC = do_mysql_query($sqlTC);
 	$myrowTC = mysql_fetch_array($resultTC);
 	
 	if ($convert)
 	{
-		// prepare data
-		for ($i = 2; $i <= 4; $i++)
-			$myrowTC[$i] = stripslashes($myrowTC[$i]);
+		// 20050820 - fm - refactoring
+		$a_keys = array('title','summary','steps','exresult');
 
-		//Chop the trailing comma off of the end of the keywords field
-		$myrowTC[6] = substr($myrowTC[6], 0, -1);
+		// prepare data
+    foreach($a_keys as $field_name)
+    {
+    	$myrowTC[$field_name] = stripslashes($myrowTC[$field_name]);
+		}
+		
+		//Chop the trailing comma off of the end of field
+		$myrowTC['keywords'] = substr($myrowTC['keywords'], 0, -1);
 	} 
 
 	return $myrowTC;
@@ -69,16 +81,17 @@ function getTestcase($id, $convert = TRUE)
 * function get converted TC title
 *
 * @var integer $id
+* @var boolean [$convert]
 * @return string TC Title
+*
+* 20050820 - fm
+* refactoring call to getTestcase
+*
 */
 function getTestcaseTitle($id, $convert = TRUE)
 {
-	// execute SQL request
-	$sqlTC = "SELECT title FROM mgttestcase WHERE id=" . $id ;
-	$resultTC = do_mysql_query($sqlTC);
-	$myrowTC = mysql_fetch_array($resultTC);
-	
-	return stripslashes($myrowTC[0]);
+	$tc_data=getTestcase($id, $convert);
+	return ($tc_data['title']);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -90,7 +103,7 @@ function showProduct($id, $sqlResult = '', $sqlAction = 'update',$moddedItem = 0
 	$product = getProduct($id);
 
 	$smarty = new TLSmarty;
-  	$smarty->assign('modify_tc_rights', has_rights("mgt_modify_tc"));
+  $smarty->assign('modify_tc_rights', has_rights("mgt_modify_tc"));
 
 	if($sqlResult)
 	{ 
@@ -128,6 +141,7 @@ function showComponent($id, $sqlResult = '', $sqlAction = 'update',$moddedItem =
 	$smarty->display('containerView.tpl');
 }
 
+
 function showCategory($id, $sqlResult = '', $sqlAction = 'update',$moddedItem = 0)
 {
 	$smarty = new TLSmarty;
@@ -149,19 +163,51 @@ function showCategory($id, $sqlResult = '', $sqlAction = 'update',$moddedItem = 
 }
 
 
-/** function display testcase data include possibility of edit */
-function showTestcase($id)
-{
-	$myrowTC = getTestcase($id,false);
+/*
+  display testcase data include possibility of edit
+  
+  id: test case id
+  [allow_edit]: 1 controls modify_tc_rights
+                  to enable/disable editing
+                  
+                0 disables editing  
+                default: 1 
+                 
 
-	$len = strlen($myrowTC[6])-1;
-	if (strrpos($myrowTC[6],',') === $len)
-		$myrowTC[6] = substr($myrowTC[6],0,$len);
+*/
+function showTestcase($id,$allow_edit=1)
+{
+	define('DO_NOT_CONVERT',false);
+	global $tpl;
+	
+	
+	$can_edit='no';
+	if( $allow_edit )
+	{
+		$can_edit = has_rights("mgt_modify_tc");
+	}
+	
+	$myrowTC = getTestcase($id,DO_NOT_CONVERT);
+
+
+	$len = strlen($myrowTC['keywords'])-1;
+	if (strrpos($myrowTC['keywords'],',') === $len)
+	{
+		$myrowTC['keywords'] = substr($myrowTC['keywords'],0,$len);
+	}
+	
+	// 20050820 - fm
+	$tc_array = array($myrowTC);
 	
 	$smarty = new TLSmarty;
-	$smarty->assign('modify_tc_rights', has_rights("mgt_modify_tc"));
-	$smarty->assign('testcase', $myrowTC);
-	$smarty->display('tcView.tpl');
+	$smarty->assign('modify_tc_rights', $can_edit);
+
+	// $smarty->assign('testcase', $myrowTC);
+
+	$smarty->assign('testcase',$tc_array);
+	
+	// 20050821 - fm
+	$smarty->display($tpl['tcView']);
 }
 
 
@@ -177,17 +223,27 @@ function moveTc($newCat, $id)
 	return $result ?'ok' : mysql_error();
 }
 
-function copyTc($newCat, $id)
+
+/*
+
+rev :
+     20050821 - fm
+     inteface changes, added $user to reduce global coupling 
+*/
+function copyTc($newCat, $id, $user)
 {
+  $msg_status = 'ok';
+
 	$tc = getTestcase($id,false);
 
-	$sqlTC = "SELECT id,title,summary,steps,exresult,version,keywords," .
-			"author,create_date,reviewer,modified_date,catid,TCorder FROM mgttestcase " .
-			"WHERE id=" . $id ;
-	if (insertTestcase($newCat,$tc[1],$tc[2],$tc[3],$tc[4],$_SESSION['user'],$tc[12],$tc[6]))
-		return 'ok';
-   	else
-		return mysql_error();
+	if (!insertTestcase($newCat,$tc['title'],$tc['summary'],
+	                            $tc['steps'],$tc['exresult'],
+	                            $user,$tc['TCorder'],$tc['keywords']))
+	{
+		$msq_status=mysql_error();
+	}	
+	
+	return ($msg_status);
 }
 
 function copyCategoryToComponent($newParent, $id, $nested)
@@ -220,7 +276,9 @@ function copyCategoryToComponent($newParent, $id, $nested)
 	
 		//Insert nested test cases 
 		while($myrowMoveCopy = mysql_fetch_row($resultMoveCopy)) {
-			copyTc($catID, $myrowMoveCopy[0]);
+			
+			// 20050821 - fm - interface changes
+			copyTc($catID, $myrowMoveCopy[0], $_SESSION['user']);
 		}
 	}
 
@@ -463,6 +521,7 @@ function insertTestcase($catID,$title,$summary,$steps,$outcome,$user,$tcOrder = 
 	
 	return $result ? mysql_insert_id() : 0;
 }
+
 // 20050819 - am - fix for bug Mantis 59 Use of term "created by" is not enforced---
 function updateTestcase($tcID,$title,$summary,$steps,$outcome,$user,$keywords,$version)
 {

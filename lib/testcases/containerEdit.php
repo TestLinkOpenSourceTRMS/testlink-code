@@ -1,9 +1,13 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: containerEdit.php,v 1.3 2005/08/21 20:46:52 schlundus Exp $ */
+/* $Id: containerEdit.php,v 1.4 2005/08/22 07:38:28 franciscom Exp $ */
 /* Purpose:  This page manages all the editing of test specification containers. */
 /*
- * @ author: francisco mancardi - 20050810
+ *
+ * @author: francisco mancardi - 20050820
+ * added missing control con category name length
+ *
+ * @author: francisco mancardi - 20050810
  * deprecated $_SESSION['product'] removed
 */
 require_once("../../config.inc.php");
@@ -51,6 +55,8 @@ else if(isset($_POST['newCOM'])) //Creating a new component
 }
 else if(isset($_POST['addCOM']))
 {
+  // we will arrive here after submit in containerNew.tpl
+  //
 	$name = isset($_POST['name']) ? strings_stripSlashes($_POST['name']) : null;
 	$intro = isset($_POST['intro']) ? strings_stripSlashes($_POST['intro']) : null;
 	$scope = isset($_POST['scope']) ? strings_stripSlashes($_POST['scope']) : null;
@@ -67,7 +73,7 @@ else if(isset($_POST['addCOM']))
 			$result = mysql_error();
 	}
 	else
-		$result = lang_get('warning_empty_com_name');;
+		$result = lang_get('warning_empty_com_name');
 		
 	$smarty->assign('sqlResult',$result);
 	$smarty->assign('path_htmlarea', $_SESSION['basehref'] . 'third_party/htmlarea/');
@@ -159,16 +165,27 @@ else if(isset($_POST['addCAT']))
 	$testdata = isset($_POST['testdata']) ? strings_stripSlashes($_POST['testdata']) : null;
 	$tools = isset($_POST['tools']) ? strings_stripSlashes($_POST['tools']) : null;
 
-	if (insertComponentCategory($data,$name,$objective,$config,$testdata,$tools))
-		$sqlResult = 'ok';
-	else
-		$sqlResult = lang_get('error_cat_add');
+  // 20050820 - fm 
+  if (strlen($name))
+	{
+		$result = lang_get('error_cat_add');
+	 	if (insertComponentCategory($data,$name,$objective,$config,$testdata,$tools))
+	 	{
+  		$result = 'ok';
+  	}	
+  }
+  else
+  {
+  	$result = lang_get('warning_empty_cat_name');	
+  }
+		
 		
 	$smarty->assign('path_htmlarea', $_SESSION['basehref'] . 'third_party/htmlarea/');
-	$smarty->assign('sqlResult', $sqlResult);
+	$smarty->assign('sqlResult',$result);
 	$smarty->assign('data', $data);
 	$smarty->assign('name', $name);
 	$smarty->assign('level', 'category');
+
 	// show again a new container form
 	$smarty->display('containerNew.tpl');
 }

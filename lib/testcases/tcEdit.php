@@ -4,15 +4,20 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.3 $
- * @modified $Date: 2005/08/20 18:39:13 $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2005/08/22 07:35:30 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
  * @author Martin Havlat
  *
  * @todo deactive users instead of delete
  * 
- * 20050810 - fm - refactoring, deprecated $_SESSION['product'] removed
+ * @author Francisco Mancardi - 20050821
+ * added missing control in tc title len
+ * interface - reduce global coupling
+ *
+ * @author Francisco Mancardi - 20050810
+ * refactoring, deprecated $_SESSION['product'] removed
 **/
 require_once("../../config.inc.php");
 require_once("../functions/common.php");
@@ -32,14 +37,20 @@ else if (isset($_GET['editTC']))
 $product = $_SESSION['productID'];
 $data = isset($_GET['data']) ? intval($_GET['data']) : 0;
 
-$smarty = new TLSmarty();
-// 20050810 - fm - from 3 to only 1 assignment
+
+
+$smarty = new TLSmarty;
+
+// 20050810 - fm
+// from 3 to only 1 assignment
 $smarty->assign('path_htmlarea', $_SESSION['basehref'] . 'third_party/htmlarea/');
 	
 //If the user has chosen to edit a testcase then show this code
 if($tc)
 {
 	$setOfKeys = array();
+	
+	// get TC data
 	$myrowTC = getTestcase($data,false);
 
 	$tcKeywords = null;
@@ -58,11 +69,14 @@ if($tc)
 			$setOfKeys[] = array( 'key' => $keyword, 'selected' => $selected);
 		}
 	}
+
+
 	$smarty->assign('tc', $myrowTC);
 	$smarty->assign('data', $data);
 	$smarty->assign('keys', $setOfKeys);
 	$smarty->assign('keysize', $keySize);
 	$smarty->display('tcEdit.tpl');
+	//saving a test case but not archiving it
 } 
 else if(isset($_POST['updateTC']))
 {
@@ -93,7 +107,11 @@ else if(isset($_POST['updateTC']))
 		$sqlResult =  mysql_error();
 
 	// show testcase
-	showTestcase($data, $sqlResult);
+	// 20050820 - fm
+	$allow_edit=1;
+	// wrong call
+	// showTestcase($data, $sqlResult);
+	showTestcase($data, $allow_edit);
 }
 else if(isset($_POST['newTC']))
 {
@@ -107,12 +125,24 @@ else if(isset($_POST['addTC']))
 	$summary 	= isset($_POST['summary']) ? strings_stripSlashes($_POST['summary']) : null;
 	$steps 		= isset($_POST['steps']) ? strings_stripSlashes($_POST['steps']) : null;
 	$outcome 	= isset($_POST['exresult']) ? strings_stripSlashes($_POST['exresult']) : null;
-	
-	if (insertTestcase($data,$title,$summary,$steps,$outcome,$_SESSION['user']))
-		$smarty->assign('sqlResult', 'ok');
-   	else
-		$smarty->assign('sqlResult', mysql_error());
 
+
+  // 20050820 - fm
+  if (strlen($title))
+	{
+		$result = lang_get('error_tc_add');
+	  if (insertTestcase($data,$title,$summary,$steps,$outcome,$_SESSION['user']))
+	  {
+			$result = 'ok';
+		}
+  }
+  else
+  {
+  	$result = lang_get('warning_empty_tc_title');	
+  }
+  	
+  $smarty->assign('sqlResult', $result);
+	
 	$smarty->assign('name', $title);
 	$smarty->assign('item', 'Test case');
 	$smarty->assign('data', $data);
@@ -163,7 +193,9 @@ else if(isset($_POST['updateTCcopy']))
 	$catID = isset($_POST['moveCopy']) ? intval($_POST['moveCopy']) : 0;
 	$oldCat = isset($_POST['oldCat']) ? intval($_POST['oldCat']) : 0;
 
-	$result = copyTc($catID, $data);
+  // 20050821 - fm - interface - reduce global coupling
+	$result = copyTc($catID, $data, $_SESSION['user']);
+	
 	showCategory($oldCat, $result,'update',$catID);
 }
 else

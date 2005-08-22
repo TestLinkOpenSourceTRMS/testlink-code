@@ -4,14 +4,21 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.3 $
- * @modified $Date: 2005/08/20 18:39:12 $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2005/08/22 07:07:47 $ by $Author: franciscom $
  *
  * @author Chad Rosen
  *
  * Constants used throughout TestLink are defined within this file
  * they should be changed for your environment
- * 20050806 - fm - Changes to support the installer
+ *
+ *
+ * @author Francisco Mancardi - 20050821
+ * template configuration/customization
+ *
+ * @author Francisco Mancardi - 20050806 
+ * Changes to support the installer
+ * 
  * 
 **/
 
@@ -158,6 +165,22 @@ require_once(TL_ABS_PATH . 'lib/general/tlsmarty.inc.php');
 define('TL_COMPANY', '');
 define('TL_DOC_COPYRIGHT', '');
 define('TL_DOC_CONFIDENT', '');
+
+/*
+20050821 - fm
+configurable templates
+This help is you want to use a non standard template 
+*/
+$tpl=array();
+
+// Standard
+$tpl['tcView'] = "tcView.tpl";
+$tpl['tcSearchView'] = "tcSearchView.tpl";
+
+// Custom
+$tpl['tcView'] = "tcView.tpl";
+$tpl['tcSearchView'] = $tpl['tcView'];
+
 // ----- End of Config ------------------------------------------------
 
 

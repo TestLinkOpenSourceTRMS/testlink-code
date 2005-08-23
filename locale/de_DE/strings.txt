@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.3 $
- * @modified $Date: 2005/08/17 19:03:03 $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2005/08/23 18:29:24 $
  *
  * @author Andreas Morsing
  *
@@ -202,7 +202,6 @@ $TLS_introduction = "Einführung";
 $TLS_limitations = "Einschränkungen";
 $TLS_methodology = "Methodologie";
 $TLS_not_defined = "Nicht definiert.";
-$TLS_objective = "Ziel";
 $TLS_references = "Referenzen";
 $TLS_scope = "Bereich";
 $TLS_th_product_name = "Produktname";
@@ -583,6 +582,7 @@ $TLS_no_tc_spec_av = "Keine Test-Spezifikation verfügbar!";
 $TLS_btn_edit = "Editieren";
 $TLS_btn_mv_cp = "Verschieben/Kopieren";
 $TLS_by = "von";
+$TLS_th_test_case_id = "ID ";
 $TLS_title_created = "Erstellt";
 $TLS_title_last_mod = "Letzte Änderung";
 $TLS_title_test_case = "TestCase";
@@ -1010,6 +1010,7 @@ $TLS_title_test_report_all_builds = "Test Report: Resultate der Test Cases für a
 // lib/testcases/containerEdit.php
 $TLS_error_cat_add = "Die Kategorie wurde nicht hinzugefügt!";
 $TLS_error_update_catorder = "Die Reihenfolge der Kategorien konnte nicht aktualisiert werden!";
+$TLS_warning_empty_cat_name = "Please give a name to category";
 $TLS_warning_empty_com_name = "Sie können keine Komponente ohne Namen erstellen";
 
 
@@ -1020,6 +1021,8 @@ $TLS_warning_empty_com_name = "Sie können keine Komponente ohne Namen erstellen"
 
 // lib/testcases/tcEdit.php
 $TLS_current = "aktuell";
+$TLS_error_tc_add = "LOCALIZE: TLS_error_tc_add";
+$TLS_warning_empty_tc_title = "Please give a title to test case";
 
 
 

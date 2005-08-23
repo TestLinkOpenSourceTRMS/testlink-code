@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.3 $
- * @modified on $Date: 2005/08/22 07:00:51 $ by $Author: franciscom $
+ * @version $Revision: 1.4 $
+ * @modified on $Date: 2005/08/23 18:29:24 $ by $Author: schlundus $
  *
  * @author Francisco Mancardi
  *
@@ -201,7 +201,6 @@ $TLS_introduction = "Introduction";
 $TLS_limitations = "Limitations";
 $TLS_methodology = "Methodology";
 $TLS_not_defined = "Not defined.";
-$TLS_objective = "Objective-----";
 $TLS_references = "References";
 $TLS_scope = "Scope";
 $TLS_th_product_name = "Product Name";
@@ -582,6 +581,7 @@ $TLS_no_tc_spec_av = "No Test Specification available!";
 $TLS_btn_edit = "Edit";
 $TLS_btn_mv_cp = "Move / Copy";
 $TLS_by = "by";
+$TLS_th_test_case_id = "ID ";
 $TLS_title_created = "Created on";
 $TLS_title_last_mod = "Last modified on ";
 $TLS_title_test_case = "Test Case";
@@ -1009,6 +1009,7 @@ $TLS_title_test_report_all_builds = "Test Report: Results of Test cases for all 
 // lib/testcases/containerEdit.php
 $TLS_error_cat_add = "Category was not added!";
 $TLS_error_update_catorder = "Failed to update order for category";
+$TLS_warning_empty_cat_name = "Please give a name to category";
 $TLS_warning_empty_com_name = "Please give a name to component";
 
 
@@ -1019,6 +1020,8 @@ $TLS_warning_empty_com_name = "Please give a name to component";
 
 // lib/testcases/tcEdit.php
 $TLS_current = "current";
+$TLS_error_tc_add = "LOCALIZE: TLS_error_tc_add";
+$TLS_warning_empty_tc_title = "Please give a title to test case";
 
 
 
@@ -1036,17 +1039,6 @@ $TLS_req_msg_notupdated_coverage = "Coverage was not updated for Requirements: "
 // containerNew.tpl
 $TLS_alert_please_cat_name="Please give a name to the category";
 $TLS_alert_please_comp_name="Please give a name to the component";
-
-
 // tcnew.tpl
 $TLS_alert_please_tc_name="Please give a name to test case";
-
-
-$TLS_warning_empty_cat_name = "Please give a name to category";
-$TLS_warning_empty_tc_title = "Please give a title to test case";
-
-
-$TLS_th_test_case_id = "ID ";
-
-
 ?>

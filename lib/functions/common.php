@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.4 $
- * @modified $Date: 2005/08/21 20:46:52 $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2005/08/23 18:29:24 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -332,7 +332,7 @@ function checkUserRights()
 	$self = strtolower($_SERVER['SCRIPT_FILENAME']);
 	$fName = str_replace(strtolower(str_replace("\\","/",TL_ABS_PATH)),"",$self);
 
-	if (isset($g_userRights[$fName]))
+	if (isset($g_userRights[$fName]) && !is_null($g_userRights[$fName]))
 	{
 		$fRights = $g_userRights[$fName];
 		if (has_rights($fRights) != 'yes')

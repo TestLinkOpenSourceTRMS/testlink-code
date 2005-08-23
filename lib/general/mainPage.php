@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: mainPage.php,v $
  *
- * @version $Revision: 1.2 $
- * @modified $Date: 2005/08/16 18:00:55 $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2005/08/23 18:29:24 $
  *
  * @author Martin Havlat
  * 
@@ -43,8 +43,6 @@ if(has_rights("mgt_view_tc"))
     
     //users can modify tcs
     $smarty->assign('modify_tc_rights', has_rights("mgt_modify_tc")); 
-    
-    //martin: users can work with requirements
 }
 
 // REQS

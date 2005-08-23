@@ -1,13 +1,18 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: containerEdit.tpl,v 1.2 2005/08/16 17:59:13 franciscom Exp $ *}
+{* $Id: containerEdit.tpl,v 1.3 2005/08/23 20:25:55 schlundus Exp $ *}
 {* Purpose: smarty template - edit test specification: containers *}
 {* Note: htmlarea cannot be within tag <p> *}
+{*
+	20050823 - am - localized title
+			lang_get('component');
+			lang_get('category');
+*}
 {include file="inc_head.tpl"}
 
 <body>
 <div class="workBack">
 
-<h1>Edit {$level}</h1> 
+<h1>{lang_get s='title_edit_level'} {$level}</h1> 
 
 {if $level == 'category'}
 

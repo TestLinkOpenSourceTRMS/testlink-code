@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.4 $
- * @modified on $Date: 2005/08/23 18:29:24 $ by $Author: schlundus $
+ * @version $Revision: 1.5 $
+ * @modified on $Date: 2005/08/23 20:25:56 $ by $Author: schlundus $
  *
  * @author Francisco Mancardi
  *
@@ -139,6 +139,7 @@ $TLS_cat_data = "Data";
 $TLS_cat_name = "Category Name";
 $TLS_cat_scope = "Scope and Objective";
 $TLS_cat_tools = "Tools";
+$TLS_category = "Category";
 $TLS_comp_alt_name = "Add component name. This value is mandatory.";
 $TLS_comp_alt_scope = "There should be described scope and objectives of included tests";
 $TLS_comp_intro = "Intro";
@@ -147,6 +148,8 @@ $TLS_comp_method = "Methodology";
 $TLS_comp_name = "Component Name";
 $TLS_comp_ref = "References";
 $TLS_comp_scope = "Scope";
+$TLS_component = "Component";
+$TLS_title_edit_level = "Edit";
 
 
 
@@ -171,7 +174,6 @@ $TLS_title_create = "Create";
 
 
 // gui/templates/containerOrder.tpl
-$TLS_category = "Category";
 $TLS_no_cat_to_reorder = "I'm sorry there are no categories to reorder!";
 $TLS_th_id = "ID";
 $TLS_th_order = "Order";
@@ -194,7 +196,6 @@ $TLS_btn_new_com = "New Component";
 $TLS_btn_new_tc = "Create Test Cases";
 $TLS_btn_reorder_cat = "Reorder Categories";
 $TLS_btn_reorder_tc = "Reorder Test Cases";
-$TLS_component = "Component";
 $TLS_configuration = "Configuration";
 $TLS_data = "Data";
 $TLS_introduction = "Introduction";
@@ -573,6 +574,7 @@ $TLS_test_case = "Test Case";
 
 
 // gui/templates/tcTree.tpl
+$TLS_button_refresh = "Refresh";
 $TLS_no_tc_spec_av = "No Test Specification available!";
 
 

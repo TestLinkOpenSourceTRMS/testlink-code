@@ -68,11 +68,11 @@ function lang_get_smarty($params, &$smarty)
 	// 20050508 - fm
 	if(	isset($params['var']) )
 	{
-	  $smarty->assign($params['var'], $the_ret);
+		$smarty->assign($params['var'], $the_ret);
 	}
 	else
 	{
-	  return $the_ret;
+		return $the_ret;
 	}
 }
 // -----------------------------------------------

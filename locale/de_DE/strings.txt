@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.4 $
- * @modified $Date: 2005/08/23 18:29:24 $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2005/08/23 20:25:55 $
  *
  * @author Andreas Morsing
  *
@@ -140,6 +140,7 @@ $TLS_cat_data = "Daten";
 $TLS_cat_name = "Name";
 $TLS_cat_scope = "Bereich";
 $TLS_cat_tools = "Tools";
+$TLS_category = "Kategorie";
 $TLS_comp_alt_name = "Bitte fügen Sie einen Namen hinzu. Die Wert ist notwendig.";
 $TLS_comp_alt_scope = "Hier sollten der Bereich und die Ziele des Tests beschrieben werden";
 $TLS_comp_intro = "Einführung";
@@ -148,6 +149,8 @@ $TLS_comp_method = "Methoden";
 $TLS_comp_name = "Name";
 $TLS_comp_ref = "Referenzen";
 $TLS_comp_scope = "Bereich";
+$TLS_component = "Komponente";
+$TLS_title_edit_level = "Bearbeiten: ";
 
 
 
@@ -172,7 +175,6 @@ $TLS_title_create = "Erstellen";
 
 
 // gui/templates/containerOrder.tpl
-$TLS_category = "Kategorie";
 $TLS_no_cat_to_reorder = "Es gibt keine Kategorie zu sortieren!";
 $TLS_th_id = "ID";
 $TLS_th_order = "Reihenfolge";
@@ -195,7 +197,6 @@ $TLS_btn_new_com = "Neue Komponente";
 $TLS_btn_new_tc = "Test Cases erstellen";
 $TLS_btn_reorder_cat = "Kategorien umordnen";
 $TLS_btn_reorder_tc = "Test Cases umordnen";
-$TLS_component = "Komponente";
 $TLS_configuration = "Konfiguration";
 $TLS_data = "Daten";
 $TLS_introduction = "Einführung";
@@ -574,6 +575,7 @@ $TLS_test_case = "Test Case";
 
 
 // gui/templates/tcTree.tpl
+$TLS_button_refresh = "Aktualisieren";
 $TLS_no_tc_spec_av = "Keine Test-Spezifikation verfügbar!";
 
 

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: logging.inc.php,v $
  *
- * @version $Revision: 1.2 $
- * @modified $Date: 2005/08/16 18:00:55 $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2005/08/23 20:25:55 $
  *
  * @author Martin Havlat
  *
@@ -77,7 +77,7 @@ function tLog ($message, $level = 'DEBUG')
 		if ($bExtendedLogLevel)
 		{
 			echo "\n<!--\n";
-			echo $message."\n";
+			echo $message;
 			echo "\n-->\n";
 		}
     	return true;
@@ -90,12 +90,13 @@ function tLog ($message, $level = 'DEBUG')
  * @return string returns the name of the logfile
  *
  * @author Andreas Morsing
+ * 20050821 - am - used directory_separator instead of slash
  **/
 function tlGetLogFileName()
 {
 	$uID = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
 		
-	return TL_LOG_PATH.'/userlog'.$uID.".log";
+	return TL_LOG_PATH.DIRECTORY_SEPARATOR.'userlog'.$uID.".log";
 }
 /**
 * You can empty the log at any time with:

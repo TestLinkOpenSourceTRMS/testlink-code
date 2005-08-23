@@ -1,6 +1,9 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: tcTree.tpl,v 1.2 2005/08/16 17:59:13 franciscom Exp $ *}
+{* $Id: tcTree.tpl,v 1.3 2005/08/23 20:25:55 schlundus Exp $ *}
 {* Purpose: smarty template - show test specification tree menu *}
+{*
+	20050821 - am - localized the refresh button
+*}
 {include file="inc_head.tpl" jsTree="yes"}
 
 <body>
@@ -15,7 +18,7 @@
 </div>
 
 <form style="margin-left: 20px;">
-	<input type="button" value="Refresh" onClick="javascript: parent.treeframe.location.reload();" />
+	<input type="button" value="{lang_get s='button_refresh'}" onClick="javascript: parent.treeframe.location.reload();" />
 </form>
 
 </body>

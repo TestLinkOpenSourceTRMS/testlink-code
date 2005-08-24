@@ -1,11 +1,12 @@
 <?php
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: index.php,v $
  *
- * @version $Revision: 1.3 $
- * @modified $Date: 2005/08/24 06:28:15 $ by $Author: franciscom $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2005/08/24 12:05:30 $ by $Author: havlat $
  *
  * @author Martin Havlat
  *
@@ -17,30 +18,10 @@
  * @author Francisco Mancardi - 20050806 - Installer
 **/
 
-// check if we need to run the install program
-clearstatcache();
-$file_to_check = "config_db.inc.php";
-if(is_file($file_to_check))
-{
-	require_once "config.inc.php";
-}
-else
-{
-	echo "Fatal Error. You haven't configured TestLink yet.<br/><a href='./install/index.php'>
-		Click Here To Start Installation/Setup!</a></body></html>";
-	exit();
-}
-
-// 20050823
-$installer_dir="./install/";
-clearstatcache();
-if(is_dir($installer_dir))
-{
-	echo "TestLink Security Issue: <br> Please remove the install directory " . $installer_dir;
-	exit();
-}
 // ---------------------------------------------------------------------------------------------------
-
+//200508 MHT - moved code to procedure
+require_once('lib/functions/configCheck.php');
+checkConfiguration();
 
 require_once('config.inc.php');
 require_once('doAuthorize.php');

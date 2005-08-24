@@ -1,16 +1,24 @@
 <?php
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: login.php,v $
  *
- * @version $Revision: 1.5 $
- * @modified $Date: 2005/08/16 17:57:41 $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2005/08/24 12:05:30 $ by $Author: havlat $
  *
  * @author Martin Havlat
- *
+ * 
+ * The page allows adjust login data
  * 
 **/
+
+//200508 MHT - added config check
+require_once('lib/functions/configCheck.php');
+checkConfiguration();
+
+
 require('config.inc.php');
 require_once('lib/functions/lang_api.php');
 

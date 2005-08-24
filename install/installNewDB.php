@@ -1,10 +1,17 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: installNewDB.php,v 1.2 2005/08/16 17:59:48 franciscom Exp $ */
+/* $Id: installNewDB.php,v 1.3 2005/08/24 17:05:28 franciscom Exp $ */
 /*
 Parts of this file has been taken from:
 Etomite Content Management System
 Copyright 2003, 2004 Alexander Andrew Butter
+*/
+
+/*
+@author Francisco Mancardi - 20050824
+moved mysql version check here
+
+
 */
 
 require_once("installUtils.php");
@@ -149,9 +156,25 @@ if(!@$conn = mysql_connect($host, $db_admin_name, $db_admin_pass))
 } 
 else 
 {
-	echo "<span class='ok'>OK!</span>";
+	echo "<span class='ok'>OK!</span><p />";
 }
 // ------------------------------------------------------------------------------------------------
+
+// ------------------------------------------------------------------------------------------------
+// 20050824 - fm
+// Succesful Connection, now try to check MySQL Version
+$check=check_mysql_version($conn);
+if($check['errors'] > 0) 
+{
+	echo '<span class="notok">' . $check['msg'] .'</span><p />';
+	close_html_and_exit();
+}
+else
+{
+	echo "<span class='ok'>OK!", $check['msg'], "</span><p />" ;
+}	 
+// ------------------------------------------------------------------------------------------------
+
 
 // ------------------------------------------------------------------------------------------------
 // Succesful Connection, now try to select the database

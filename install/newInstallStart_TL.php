@@ -1,6 +1,9 @@
 <?php 
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: newInstallStart_TL.php,v 1.2 2005/08/16 17:59:48 franciscom Exp $ */
+/* $Id: newInstallStart_TL.php,v 1.3 2005/08/24 17:05:28 franciscom Exp $ */
+
+// 20050824 - fm
+require_once("installUtils.php");
 
 session_start(); 
 ?>
@@ -52,9 +55,11 @@ $check = check_php_version();
 $errors += $check['errors'];
 echo $check['msg'];
 
+/*
 $check = check_mysql_version();
 $errors += $check['errors'];
 echo $check['msg'];
+*/
 
 $check = check_session();
 $errors += $check['errors'];
@@ -237,237 +242,5 @@ exit;
 </table>
 </body>
 </html>
-
-
-<?php
-function check_with_feedback()
-{
-$errors=0;	
-$final_msg ='';
-
-$msg_ko = "<span class='notok'>Failed!</span>";
-$msg_ok = "<span class='ok'>OK!</span>";
-
-$msg_check_dir_existence = "</b><br />Checking if <span class='mono'>PLACE_HOLDER</span> directory exists:<b> ";
-$msg_check_dir_is_w = "</b><br />Checking if <span class='mono'>PLACE_HOLDER</span> directory is writable:<b> ";
-
-
-$awtc = array('../gui/templates_c');
-
-
-foreach ($awtc as $the_d) 
-{
-	
-  $final_msg .= str_replace('PLACE_HOLDER',$the_d,$msg_check_dir_existence);
-  
-  if(!file_exists($the_d)) {
-  	$errors += 1;
-  	$final_msg .= $msg_ko; 
-  } 
-  else 
-  {
-  	$final_msg .= $msg_ok;
-    $final_msg .= str_replace('PLACE_HOLDER',$the_d,$msg_check_dir_is_w);
-  	if(!is_writable($the_d)) 
-    {
-    	$errors += 1;
-  	  $final_msg .= $msg_ko;  
-  	}
-    else
-    {
-  	  $final_msg .= $msg_ok;  
-    }
-   }
-
-}
-
-
-$ret = array ('errors' => $errors,
-              'msg' => $final_msg);
-              
-return($ret);
-
-}  //function end
-
-
-
-// 
-function check_php_version()
-{
-$min_ver = "4.1.0";
-
-$errors=0;	
-$final_msg = "<br />Checking PHP version:<b> ";
-$my_version = phpversion();
-// version_compare:
-// -1 if left is less, 0 if equal, +1 if left is higher
-$php_ver_comp =  version_compare($my_version, $min_ver);
-
-if($php_ver_comp < 0) 
-{
-	$final_msg .= "<span class='notok'>Failed!</span> - You are running on PHP " . 
-	        $my_version . ", and TestLink requires PHP " . $min_ver . " or greater";
-	$errors += 1;
-} 
-else 
-{
-	$final_msg .= "<span class='ok'>OK! (" . $my_version . " >= " . $min_ver . ")</span>";
-}
-
-$ret = array ('errors' => $errors,
-              'msg' => $final_msg);
-
-
-return ($ret);
-}  //function end
-
-
-
-function check_mysql_version()
-{
-$min_ver = "4.0.0";
-
-$errors=0;	
-$final_msg = "</b><br/>Checking MySQL version:<b> ";
-
-// As stated in PHP Manual:
-//
-// string mysql_get_server_info ( [resource link_identifier] )
-// link_identifier: The MySQL connection. 
-//                  If the link identifier is not specified, 
-//                  the last link opened by mysql_connect() is assumed. 
-//                  If no such link is found, it will try to create one as if mysql_connect() 
-//                  was called with no arguments. 
-//                  If by chance no connection is found or established, an E_WARNING level warning is generated.
-//
-// In my experience thi will succed only if anonymous connection to MySQL is allowed
-// 
-
-$my_version = @mysql_get_server_info();
-
-if( $my_version !== FALSE )
-{
-
-  // version_compare:
-  // -1 if left is less, 0 if equal, +1 if left is higher
-  $php_ver_comp =  version_compare($my_version, $min_ver);
-  
-  if($php_ver_comp < 0) 
-  {
-  	$final_msg .= "<span class='notok'>Failed!</span> - You are running on MySQL " . 
-  	        $my_version . ", and TestLink requires MySQL " . $min_ver . " or greater";
-  	$errors += 1;
-  } 
-  else 
-  {
-  	$final_msg .= "<span class='ok'>OK! (" . $my_version . " >= " . $min_ver . ")</span>";
-  }
-}
-else
-{
-	$final_msg .= "<span class='notok'>Warning!: Unable to get MySQL version (may be due to security restrictions) - " .
-	              "Remember that Testlink requires MySQL >= " . $min_ver . ")</span>";
-}	  
-
-$ret = array ('errors' => $errors,
-              'msg' => $final_msg);
-
-
-return ($ret);
-}  //function end
-
-
-
-function check_session()
-{
-$errors = 0;
-$final_msg = "</b><br />Checking if sessions are properly configured:<b> ";
-
-if($_SESSION['session_test']!=1 ) 
-{
-	$final_msg .=  "<span class='notok'>Failed!</span>";
-	$errors += 1;
-} 
-else 
-{
-	$final_msg .= "<span class='ok'>OK!</span>";
-}
-
-$ret = array ('errors' => $errors,
-              'msg' => $final_msg);
-
-
-return ($ret);
-}  //function end
-
-
-
-/*
-Explain What is Going To Happen 
-*/
-function ewigth($inst_type)
-{
-
-$msg = '';
-if ($inst_type == "upgrade" )
-{
-	$many_warnings =  "<center><h1>Warning!!! Warning!!! Warning!!! Warning!!! Warning!!!</h1></center>";
-	$msg ='';
-  $msg .= $many_warnings; 
-
-  $msg .= "<h1>You have requested an Upgrade, " .
-          "this process WILL MODIFY your TestLink Database <br>" .
-          "We STRONGLY recomend you to backup your Database Before starting this upgrade process"; 
-  
-  
-  $msg .= "<br><br> During the Upgrade the name of testcases, categories, ecc WILL BE TRUNCATED to 100 chars</h1>";
-  $msg .= '<br>' . $many_warnings . "<br><br>"; 
-        
-
-
-}
-
-return($msg);
-}  //function end
-
-
-function db_msg($inst_type)
-{
-
-$msg = '';
-
-$msg .=	"Please enter the name of the database you want to use for TestLink. <br>" .
-				"If you haven't created a database yet, the installer will attempt to do so for you, <br>" . 
-				"but this may fail depending on the MySQL setup your host uses.<br>";
-
-if ($inst_type == "upgrade" )
-{
-  $msg =	"Please enter the name of the TestLink database you want to UPGRADE. <br>";
- 
-}
-
-return($msg);
-}  //function end
-
-
-function tl_admin_msg($inst_type)
-{
-
-$msg = '';
-$msg .= 'After installation You will have the following login for TestLink Administrator.<br />' .
-        'login name: admin <br /> password  : admin <br />';
-
-if ($inst_type == "upgrade" )
-{
-	$msg = '';
-}
-
-
-return($msg);
-}  //function end
-
-
-
-?>
 
 

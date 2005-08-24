@@ -4,14 +4,17 @@
  *
  * Filename $RCSfile: index.php,v $
  *
- * @version $Revision: 1.2 $
- * @modified $Date: 2005/08/16 17:57:41 $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2005/08/24 06:28:15 $ by $Author: franciscom $
  *
  * @author Martin Havlat
  *
  * This file is main window. Include authorization of user and define frames (navBar and main).
  * 
- * 20050806 - fm - Installer
+ * @author Francisco Mancardi - 20050823
+ * if installer directory exists,  block login
+ *
+ * @author Francisco Mancardi - 20050806 - Installer
 **/
 
 // check if we need to run the install program
@@ -27,6 +30,17 @@ else
 		Click Here To Start Installation/Setup!</a></body></html>";
 	exit();
 }
+
+// 20050823
+$installer_dir="./install/";
+clearstatcache();
+if(is_dir($installer_dir))
+{
+	echo "TestLink Security Issue: <br> Please remove the install directory " . $installer_dir;
+	exit();
+}
+// ---------------------------------------------------------------------------------------------------
+
 
 require_once('config.inc.php');
 require_once('doAuthorize.php');

@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: searchData.php,v 1.3 2005/08/22 07:00:51 franciscom Exp $ */
+/* $Id: searchData.php,v 1.4 2005/08/24 06:26:59 franciscom Exp $ */
 /* Purpose:  This page presents the search results. 
  *
  * 
@@ -79,6 +79,6 @@ if(has_rights("mgt_modify_tc"))
 $smarty->assign('testcase', $arrTc);
 
 // 20050821 - fm
-global $tpl;
-$smarty->display($tpl['tcSearchView']);
+global $g_tpl;
+$smarty->display($g_tpl['tcSearchView']);
 ?>

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: archive.inc.php,v $
  *
- * @version $Revision: 1.4 $
- * @modified $Date: 2005/08/22 07:30:19 $ by $Author: franciscom $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2005/08/24 06:26:59 $ by $Author: franciscom $
  *
  * @author Martin Havlat
  * Purpose:  functions for test specification management have three parts:
@@ -178,7 +178,7 @@ function showCategory($id, $sqlResult = '', $sqlAction = 'update',$moddedItem = 
 function showTestcase($id,$allow_edit=1)
 {
 	define('DO_NOT_CONVERT',false);
-	global $tpl;
+	global $g_tpl;
 	
 	
 	$can_edit='no';
@@ -207,7 +207,7 @@ function showTestcase($id,$allow_edit=1)
 	$smarty->assign('testcase',$tc_array);
 	
 	// 20050821 - fm
-	$smarty->display($tpl['tcView']);
+	$smarty->display($g_tpl['tcView']);
 }
 
 

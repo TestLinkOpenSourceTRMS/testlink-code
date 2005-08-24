@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.4 $
- * @modified $Date: 2005/08/22 07:07:47 $ by $Author: franciscom $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2005/08/24 06:26:59 $ by $Author: franciscom $
  *
  * @author Chad Rosen
  *
@@ -13,6 +13,8 @@
  * they should be changed for your environment
  *
  *
+ * @author Francisco Mancardi - 20050822 - $tpl -> $g_tpl
+ * 
  * @author Francisco Mancardi - 20050821
  * template configuration/customization
  *
@@ -171,15 +173,15 @@ define('TL_DOC_CONFIDENT', '');
 configurable templates
 This help is you want to use a non standard template 
 */
-$tpl=array();
+$g_tpl=array();
 
 // Standard
-$tpl['tcView'] = "tcView.tpl";
-$tpl['tcSearchView'] = "tcSearchView.tpl";
+$g_tpl['tcView'] = "tcView.tpl";
+$g_tpl['tcSearchView'] = "tcSearchView.tpl";
 
 // Custom
-$tpl['tcView'] = "tcView.tpl";
-$tpl['tcSearchView'] = $tpl['tcView'];
+$g_tpl['tcView'] = "tcView.tpl";
+$g_tpl['tcSearchView'] = $g_tpl['tcView'];
 
 // ----- End of Config ------------------------------------------------
 

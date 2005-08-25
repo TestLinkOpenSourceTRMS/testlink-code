@@ -1,0 +1,78 @@
+<!--
+ * FCKeditor - The text editor for internet
+ * Copyright (C) 2003-2005 Frederico Caldeira Knabben
+ * 
+ * Licensed under the terms of the GNU Lesser General Public License:
+ * 		http://www.opensource.org/licenses/lgpl-license.php
+ * 
+ * For further information visit:
+ * 		http://www.fckeditor.net/
+ * 
+ * File Name: sampleslist.html
+ * 	Page used to select the sample to view.
+ * 
+ * File Authors:
+ * 		Frederico Caldeira Knabben (fredck@fckeditor.net)
+-->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+	<head>
+		<title>FCKeditor - Sample Selection</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<meta name="robots" content="noindex, nofollow">
+		<link href="sample.css" rel="stylesheet" type="text/css" />
+		<script language="javascript">
+<!--
+
+if ( window.top == window )
+	document.location = 'default.html' ;
+
+function OpenSample( sample )
+{
+	if ( sample.length > 0 )
+		window.open( sample, 'Sample' ) ;
+}
+
+//-->
+		</script>
+	</head>
+	<body bottommargin="0" topmargin="0">
+		<table height="100%" border="0" cellpadding="0" cellspacing="0">
+			<tr>
+				<td>
+					Please select the sample you want to view:
+					<br>
+					<select onchange="OpenSample(this.value);">
+						<option value="html/sample01.html" selected>Javascript : Sample 01 : Editor with all features</option>
+						<option value="html/sample02.html">Javascript : Sample 02 : Replacement of a TEXTAREA</option>
+						<option value="html/sample03.html">Javascript : Sample 03 : Multi-language support</option>
+						<option value="html/sample04.html">Javascript : Sample 04 : Toolbar selection</option>
+						<option value="html/sample05.html">Javascript : Sample 05 : Skins support</option>
+						<option value="html/sample06.html">Javascript : Sample 06 : Plugins support</option>
+						<option value="html/sample07.html">Javascript : Sample 07 : Full Page editing</option>
+						<option value="html/sample08.html">Javascript : Sample 08 : Editor API usage</option>
+						<option value="html/sample09.html">Javascript : Sample 09 : Complex form (multiple editors)</option>
+						<option value=""> </option>
+						<option value="cfm/sample01.cfm">ColdFusion : Sample 01 : Editor with all features</option>
+						<option value="cfm/sample02_mx.cfm">ColdFusion : Sample 02 : Advanced version for ColdFusion MX</option>
+						<option value=""> </option>
+						<option value="asp/sample01.asp">ASP : Sample 01 : Editor with all features</option>
+						<option value="asp/sample02.asp">ASP : Sample 02 : Multi-language support</option>
+						<option value="asp/sample03.asp">ASP : Sample 03 : Toolbar selection</option>
+						<option value="asp/sample04.asp">ASP : Sample 04 : Skins support</option>
+						<option value=""> </option>
+						<option value="perl/sample01.cgi">Perl : Sample 01 : Editor with all features</option>
+						<option value="perl/sample02.cgi">Perl : Sample 02 : Multi-language support</option>
+						<option value="perl/sample03.cgi">Perl : Sample 03 : Toolbar selection</option>
+						<option value="perl/sample04.cgi">Perl : Sample 04 : Skins support</option>
+						<option value=""> </option>
+						<option value="php/sample01.php">PHP : Sample 01 : Editor with all features</option>
+						<option value="php/sample02.php">PHP : Sample 02 : Multi-language support</option>
+						<option value="php/sample03.php">PHP : Sample 03 : Toolbar selection</option>
+						<option value="php/sample04.php">PHP : Sample 04 : Skins support</option>
+					</select>
+				</td>
+			</tr>
+		</table>
+	</body>
+</html>

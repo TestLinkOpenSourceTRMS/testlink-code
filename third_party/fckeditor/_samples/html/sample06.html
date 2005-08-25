@@ -1,0 +1,59 @@
+<!--
+ * FCKeditor - The text editor for internet
+ * Copyright (C) 2003-2005 Frederico Caldeira Knabben
+ * 
+ * Licensed under the terms of the GNU Lesser General Public License:
+ * 		http://www.opensource.org/licenses/lgpl-license.php
+ * 
+ * For further information visit:
+ * 		http://www.fckeditor.net/
+ * 
+ * File Name: sample06.html
+ * 	Sample page.
+ * 
+ * File Authors:
+ * 		Frederico Caldeira Knabben (fredck@fckeditor.net)
+-->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+	<head>
+		<title>FCKeditor - Sample</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<meta name="robots" content="noindex, nofollow">
+		<link href="../sample.css" rel="stylesheet" type="text/css" />
+		<script type="text/javascript" src="../../fckeditor.js"></script>
+	</head>
+	<body>
+		<h1>FCKeditor - Javascript - 6</h1>
+		This sample shows a sample plugin implementation.
+		<br>
+		These are sample "Find" and "Replace" plugin that do exactly the same thing that the built in ones do. Use the green toolbar buttons the test then.
+		<br>
+		There is also another sample plugin that is available in the package: the "Placeholder" command (use the yellow icon).
+		<hr>
+		<form action="sampleposteddata.asp" method="post" target="_blank">
+			<script type="text/javascript">
+<!--
+// Automatically calculates the editor base path based on the _samples directory.
+// This is usefull only for these samples. A real application should use something like this:
+// oFCKeditor.BasePath = '/fckeditor/' ;	// '/fckeditor/' is the default value.
+var sBasePath = document.location.pathname.substring(0,document.location.pathname.lastIndexOf('/_samples/')+1) ;
+
+var oFCKeditor = new FCKeditor( 'FCKeditor1' ) ;
+oFCKeditor.BasePath	= sBasePath ;
+
+// Set the custom configurations file path (in this way the original file is mantained).
+oFCKeditor.Config['CustomConfigurationsPath'] = sBasePath + '_samples/html/sample06.config.js' ;
+
+// Let's use a custom toolbar for this sample.
+oFCKeditor.ToolbarSet	= 'PluginTest' ;
+
+oFCKeditor.Value		= 'This is some <strong>sample text</strong>. You are using <a href="http://www.fckeditor.net/">FCKeditor</a>.' ;
+oFCKeditor.Create() ;
+//-->
+			</script>
+			<br>
+			<input type="submit" value="Submit">
+		</form>
+	</body>
+</html>

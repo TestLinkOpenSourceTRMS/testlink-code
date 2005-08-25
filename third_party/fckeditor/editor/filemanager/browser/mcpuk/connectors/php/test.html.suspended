@@ -1,0 +1,7 @@
+<html><head><title>File Upload Test</title></head>
+<body>
+<form enctype="multipart/form-data" method="post" action="/cgi-bin/upload.cgi?uploadID=58484&Connector=/FCKeditor/editor/filemanager/browser/default/connectors/php/connector.php&Command=FileUpload&Type=Image&CurrentFolder=/&ExtraParams=313131323934373331357c5e5345505e7c3139322e3136382e302e327c5e5345505e7c61646d696e7c5e5345505e7c3338316139376339633638303937393566343665313463613738383230626439">
+<input type="file" name="NewFile" />
+<input type="submit" value="Upload" />
+</form>
+</body></html> 

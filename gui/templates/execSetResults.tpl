@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execSetResults.tpl,v 1.2 2005/08/16 17:59:13 franciscom Exp $ *}
+{* $Id: execSetResults.tpl,v 1.3 2005/08/25 17:40:59 schlundus Exp $ *}
 {* Purpose: smarty template - show tests to add results *}
 {* 20050815 - scs - small changes because of code changes in execSetResults.php *}
 {include file="inc_head.tpl" popup='yes'}
@@ -96,7 +96,15 @@
 			<td colspan="2">
 				<br />
 				<span class="title">{lang_get s='test_exec_bug_report'}</span>
-				<input name='bugs{$arrTC[Row].id}' value='{$arrTC[Row].bugs}' />
+				<input name='bugs{$arrTC[Row].id}' value='{$arrTC[Row].bugs}' /><a style="font-weight:normal" target="_blank" href="{$g_bugInterface->getEnterBugURL()}">{lang_get s='button_enter_bug'}</a>
+				<table class="simple" width="100%">
+				<caption style="text-align:left">{lang_get s='caption_bugtable'}</caption>
+					{section name=link loop=$arrTC[Row].bugLinkList}
+					<tr>
+						<td>{$arrTC[Row].bugLinkList[link]}</td>
+					</tr>
+				{/section}
+				</table>
 			</td>
 		</tr>
 		{/if}

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: int_bugtracking.php,v $
  *
- * @version $Revision: 1.2 $
- * @modified $Date: 2005/08/16 18:00:53 $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2005/08/25 17:40:59 $
  *
  * @author Andreas Morsing
  *
@@ -44,6 +44,7 @@ class bugtrackingInterface
 	var $m_dbUser = null;
 	var $m_dbPass = null;
 	var $m_showBugURL = null;
+	var $m_enterBugURL = null;
 	
 	//private vars don't touch
 	var $m_dbConnection = null;	
@@ -61,7 +62,7 @@ class bugtrackingInterface
 	 * put special initialization in here
 	 * 
 	 * @version 1.0
-	 * @author Andreas Morsing <schlundus@web.de>
+	 * @author Andreas Morsing 
 	 * @since 22.04.2005, 21:03:32
 	 **/
 	function bugtrackingInterface()
@@ -76,7 +77,7 @@ class bugtrackingInterface
 	 * db could be selected, false else
 	 *
 	 * @version 1.0
-	 * @author Andreas Morsing <schlundus@web.de>
+	 * @author Andreas Morsing 
 	 * @since 22.04.2005, 21:05:25
 	 **/
 	function connect()
@@ -106,7 +107,7 @@ class bugtrackingInterface
 	 * @return bool returns true if the db connection is established, false else
 	 *
 	 * @version 1.0
-	 * @author Andreas Morsing <schlundus@web.de>
+	 * @author Andreas Morsing 
 	 * @since 22.04.2005, 21:05:25
 	 **/
 	function isConnected()
@@ -118,7 +119,7 @@ class bugtrackingInterface
 	 * this function closes the db connection (if any) 
 	 *
 	 * @version 1.0
-	 * @author Andreas Morsing <schlundus@web.de>
+	 * @author Andreas Morsing 
 	 * @since 22.04.2005, 21:05:25
 	 **/
 	function disconnect()
@@ -136,15 +137,16 @@ class bugtrackingInterface
 	 *
 	 * @param int id the bug id
 	 * 
-	 * @return string returns a complete URL to view the given bug
+	 * @return string returns a complete URL to view the given bug, or false if the bug 
+	 * 			wasnt found
 	 *
 	 * @version 1.0
-	 * @author Andreas Morsing <schlundus@web.de>
+	 * @author Andreas Morsing 
 	 * @since 22.04.2005, 21:05:25
 	 **/
 	function buildViewBugURL($id)
 	{
-		return null;		
+		return false;		
 	}
 	
 	/**
@@ -153,15 +155,15 @@ class bugtrackingInterface
 	 *
 	 * @param int id the bug id
 	 * 
-	 * @return any returns the status of the given bug
-	 *
+	 * @return any returns the status of the given bug, or false if the bug
+	 *			was not found
 	 * @version 1.0
-	 * @author Andreas Morsing <schlundus@web.de>
+	 * @author Andreas Morsing 
 	 * @since 22.04.2005, 21:05:25
 	 **/
 	function getBugStatus($id)
 	{
-		return null;
+		return false;
 	}
 		
 	/**
@@ -170,22 +172,56 @@ class bugtrackingInterface
 	 *
 	 * @param int id the bug id
 	 * 
-	 * @return any returns the status (in a readable form) of the given bug 
+	 * @return any returns the status (in a readable form) of the given bug, or false
+	 * 			if the bug is not found
 	 *
 	 * @version 1.0
-	 * @author Andreas Morsing <schlundus@web.de>
+	 * @author Andreas Morsing 
 	 * @since 22.04.2005, 21:05:25
 	 **/
 	function getBugStatusString($id)
 	{
-		return null;
+		return false;
 	}
 	
+	
+
 	/*
 	* 
 	* FUNCTIONS CALLED BY TestLink:
 	* 
 	**/
+	/**
+	 * default implementation for fetching the bug summary from the 
+	 * bugtracking system
+	 *
+	 * @param int id the bug id
+	 * 
+	 * @return string returns the bug summary (if bug is found), or false
+	 *
+	 * @version 1.0
+	 * @author Andreas Morsing 
+	 * @since 22.04.2005, 21:05:25
+	 **/
+	function getBugSummaryString($id)
+	{
+		return false;
+	}
+	
+	/**
+	 * simply returns the URL which should be displayed for entering bugs 
+	 * 
+	 * @return string returns a complete URL 
+	 *
+	 * @version 1.0
+	 * @author Andreas Morsing 
+	 * @since 25.08.2005, 21:05:25
+	 **/
+	function getEnterBugURL()
+	{
+		return $this->m_enterBugURL;
+	}
+	
 	
 	/**
 	 * default implementation for generating a link to the bugtracking page for viewing 
@@ -196,13 +232,19 @@ class bugtrackingInterface
 	 * @return string returns a complete URL to view the bug (if found in db)
 	 *
 	 * @version 1.0
-	 * @author Andreas Morsing <schlundus@web.de>
+	 * @author Andreas Morsing 
 	 * @since 22.04.2005, 21:05:25
 	 **/
-	function buildViewBugLink($bugID)
+	function buildViewBugLink($bugID,$bWithSummary = false)
 	{
 		$link = "<a href='" .$this->buildViewBugURL($bugID) . "' target='_blank'>";
 		$link .= $this->getBUGStatusString($bugID);
+		if ($bWithSummary)
+		{
+			$summary = $this->getBugSummaryString($bugID);
+			if (!is_null($summary))
+				$link .= " - ".htmlspecialchars($summary);
+		}
 		$link .= "</a>";
 		
 		return $link;

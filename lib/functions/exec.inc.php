@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: exec.inc.php,v $
  *
- * @version $Revision: 1.3 $
- * @modified $Date: 2005/08/22 07:00:50 $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2005/08/25 17:41:00 $
  *
  * @author Martin Havlat
  *
@@ -303,8 +303,11 @@ function createTestInput($resultTC,$build,$tpID)
 		//routine that collect the test cases bugs.
 		//Check to see if the user is using a bug system
 		$resultBugList = null;
+		//20050825 - am - added code to show the related bugs of the tc
+		$bugLinkList = null;
 		if($g_bugInterfaceOn)
 		{
+			global $g_bugInterface ;
 			//sql code to grab the appropriate bugs for the test case and build
 			$sqlBugs = "SELECT bug FROM bugs WHERE tcid='" . $myrow[0] . "' and build='" . $build . "'";
 			$resultBugs = do_mysql_query($sqlBugs);
@@ -314,7 +317,9 @@ function createTestInput($resultTC,$build,$tpID)
 			{ 
 				if (!is_null($resultBugList))
 					$resultBugList .= ",";
-				$resultBugList .= $myrowBugs['bug'];
+				$bugID = $myrowBugs['bug'];
+				$resultBugList .= $bugID;
+				$bugLinkList[] = $g_bugInterface->buildViewBugLink($bugID,true);
 			}
 		}
 		// add to output array
@@ -329,6 +334,7 @@ function createTestInput($resultTC,$build,$tpID)
    						'note' => $dataStatus[0], 
    						'bugs' => $resultBugList, 
 						'recentResult' => $rowRecent,
+						'bugLinkList' => $bugLinkList,
 						);
 	}
 			

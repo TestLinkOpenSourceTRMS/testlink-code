@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: int_mantis.php,v $
  *
- * @version $Revision: 1.2 $
- * @modified $Date: 2005/08/16 18:00:54 $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2005/08/25 17:40:59 $
  *
  * @author Andreas Morsing
  *
@@ -24,7 +24,7 @@ class mantisInterface extends bugtrackingInterface
 	var $m_dbUser = BUG_TRACK_DB_USER;
 	var $m_dbPass = BUG_TRACK_DB_PASS;
 	var $m_showBugURL = BUG_TRACK_HREF;
-
+	var $m_enterBugURL = BUG_TRACK_ENTER_BUG_HREF;
 	
 	/**
 	 * Return the URL to the bugtracking page for viewing 
@@ -47,7 +47,7 @@ class mantisInterface extends bugtrackingInterface
 	 * Returns the status of the bug with the given id
 	 * this function is not directly called by TestLink. 
 	 *
-	 * @return string returns the status of the given bug (if found in the db), or null else
+	 * @return string returns the status of the given bug (if found in the db), or false else
 	 *
 	 * @version 1.0
 	 * @author Andreas Morsing <schlundus@web.de>
@@ -56,9 +56,9 @@ class mantisInterface extends bugtrackingInterface
 	function getBugStatus($id)
 	{
 		if (!$this->isConnected())
-			return null;
+			return false;
 
-		$status = null;
+		$status = false;
 		$query = "SELECT status FROM {$this->m_dbName}.mantis_bug_table WHERE id=" . $id;
 		$result = do_mysql_query($query,$this->m_dbConnection);
 		if ($result)
@@ -76,7 +76,8 @@ class mantisInterface extends bugtrackingInterface
 	 *
 	 * @param int id the bug id
 	 * 
-	 * @return string returns the status (in a readable form) of the given bug 
+	 * @return string returns the status (in a readable form) of the given bug if the bug
+	 * 		was found , else false
 	 *
 	 * @version 1.0
 	 * @author Andreas Morsing <schlundus@web.de>
@@ -88,7 +89,7 @@ class mantisInterface extends bugtrackingInterface
 		
 		$str = htmlspecialchars($id);
 		//if the bug wasn't found the status is null and we simply display the bugID
-		if (!is_null($status))
+		if ($status !== false)
 		{
 			//the status values depends on your mantis configuration at config_inc.php in $g_status_enum_string, 
 			//below is the default:
@@ -97,7 +98,35 @@ class mantisInterface extends bugtrackingInterface
 			if ($status == 80 || $status == 90)
 				$str = "<del>" . $id . "</del>";
 		}
+			
 		return $str;
+	}
+	/**
+	 * Fetches the bug summary from the matnis db
+	 *
+	 * @param int id the bug id
+	 * 
+	 * @return string returns the bug summary if bug is found, else false
+	 *
+	 * @version 1.0
+	 * @author Andreas Morsing 
+	 * @since 22.04.2005, 21:05:25
+	 **/
+	function getBugSummaryString($id)
+	{
+		if (!$this->isConnected())
+			return false;
+
+		$status = null;
+		$query = "SELECT summary FROM {$this->m_dbName}.mantis_bug_table WHERE id=" . $id;
+		$result = do_mysql_query($query,$this->m_dbConnection);
+		if ($result)
+		{
+			$summary = mysql_fetch_row($result);
+			if ($summary)
+				$summary = $summary[0];
+		}
+		return $summary;
 	}
 }
 ?>

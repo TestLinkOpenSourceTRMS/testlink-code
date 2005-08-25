@@ -1,7 +1,8 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: planNew.tpl,v 1.2 2005/08/16 17:59:13 franciscom Exp $ *}
+{* $Id: planNew.tpl,v 1.3 2005/08/25 17:40:59 schlundus Exp $ *}
 {* Purpose: smarty template - create Test Plan *}
 {* I18N 20050528 - fm *}
+{* 20050824 - am - changed item to TestPlan *}
 
 {include file="inc_head.tpl"}
 
@@ -14,7 +15,7 @@
 	<span class="unselected"><a href="lib/plan/planEdit.php">{lang_get s='menu_edit_del'}</a></span> 
 </div>
 
-{include file="inc_update.tpl" result=$sqlResult item="Test Plan" action="add"}
+{include file="inc_update.tpl" result=$sqlResult item="TestPlan" action="add"}
 
 <div class="workBack">
 

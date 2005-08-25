@@ -1,7 +1,7 @@
 <?php
 /**
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: mantis.cfg.php,v 1.2 2005/08/16 17:58:30 franciscom Exp $ 
+* $Id: mantis.cfg.php,v 1.3 2005/08/25 17:40:56 schlundus Exp $ 
 * 
 * Constants used throughout TestLink are defined within this file
 * they should be changed for your environment
@@ -26,4 +26,6 @@ define('BUG_TRACK_DB_PASS', '<mantisdbhost>');
 	$g_anonymous_account		= 'dummy';
 */
 define('BUG_TRACK_HREF', "http://localhost/mantis/view.php?id="); 
+/** link to the bugtracking system, for entering new bugs */
+define('BUG_TRACK_ENTER_BUG_HREF',"http://localhost/mantis-1.0.0a3/");
 ?>

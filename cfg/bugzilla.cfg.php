@@ -1,7 +1,7 @@
 <?php
 /**
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: bugzilla.cfg.php,v 1.2 2005/08/16 17:58:30 franciscom Exp $ 
+* $Id: bugzilla.cfg.php,v 1.3 2005/08/25 17:40:56 schlundus Exp $ 
 * 
 * Currently the only bug tracking system is bugzilla. 
 * TestLink uses bugzilla to check if displayed bugs resolved, verified, 
@@ -19,4 +19,6 @@ define('BUG_TRACK_DB_USER', '<bugzilladbuser>');
 define('BUG_TRACK_DB_PASS', '<bugzilladbpass>');
 /** link of the web server */
 define('BUG_TRACK_HREF', "http://<bugzillaserver>/bugzilla/show_bug.cgi?id="); 
+/** link to the bugtracking system, for entering new bugs */
+define('BUG_TRACK_ENTER_BUG_HREF',"http://<bugzillaserver>/bugzilla/");
 ?>

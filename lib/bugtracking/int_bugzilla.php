@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: int_bugzilla.php,v $
  *
- * @version $Revision: 1.2 $
- * @modified $Date: 2005/08/16 18:00:54 $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2005/08/25 17:40:59 $
  *
  * @author Andreas Morsing
  *
@@ -24,6 +24,7 @@ class bugzillaInterface extends bugtrackingInterface
 	var $m_dbUser = BUG_TRACK_DB_USER;
 	var $m_dbPass = BUG_TRACK_DB_PASS;
 	var $m_showBugURL = BUG_TRACK_HREF;
+	var $m_enterBugURL = BUG_TRACK_ENTER_BUG_HREF;
 	
 	/**
 	 * Return the URL to the bugtracking page for viewing 
@@ -34,7 +35,7 @@ class bugzillaInterface extends bugtrackingInterface
 	 * @return string returns a complete URL to view the bug
 	 *
 	 * @version 1.0
-	 * @author Andreas Morsing <schlundus@web.de>
+	 * @author Andreas Morsing 
 	 * @since 22.04.2005, 21:05:25
 	 **/
 	function buildViewBugURL($id)
@@ -49,7 +50,7 @@ class bugzillaInterface extends bugtrackingInterface
 	 * @return string returns the status of the given bug (if found in the db), or null else
 	 *
 	 * @version 1.0
-	 * @author Andreas Morsing <schlundus@web.de>
+	 * @author Andreas Morsing 
 	 * @since 22.04.2005, 21:05:25
 	 **/
 	function getBugStatus($id)
@@ -76,7 +77,7 @@ class bugzillaInterface extends bugtrackingInterface
 	 * @return string returns the status (in a readable form) of the given bug 
 	 *
 	 * @version 1.0
-	 * @author Andreas Morsing <schlundus@web.de>
+	 * @author Andreas Morsing 
 	 * @since 22.04.2005, 21:05:25
 	 **/
 	function getBugStatusString($id)

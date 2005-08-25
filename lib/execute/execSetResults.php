@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.3 $
- * @modified $Date: 2005/08/22 07:00:50 $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2005/08/25 17:40:59 $
  *
  * @author Martin Havlat
  *
@@ -17,7 +17,8 @@
  * @author Francisco Mancardi - 20050807 
  * refactoring:  removed deprecated: $_SESSION['project']
  *
- * @author 20050815 - code optimization
+ * @author 20050815 - am - code optimization
+ * @author 20050825 - am - added buginterface to smarty
  *
 **/
 require_once('../../config.inc.php');
@@ -129,5 +130,6 @@ $smarty->assign('arrTC', $testdata);
 $smarty->assign('build', $buildName);
 $smarty->assign('owner', $owner);
 $smarty->assign('updated', $submitResult);
+$smarty->assign('g_bugInterface', $g_bugInterface);
 $smarty->display('execSetResults.tpl');
 ?>

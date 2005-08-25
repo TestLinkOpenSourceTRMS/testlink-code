@@ -1,13 +1,14 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: tcNew.tpl,v 1.2 2005/08/16 17:59:13 franciscom Exp $ *}
+{* $Id: tcNew.tpl,v 1.3 2005/08/25 17:40:59 schlundus Exp $ *}
 {* Purpose: smarty template - create new testcase *}
+{* 20050825 - am - changed item to testcase *}
 {include file="inc_head.tpl"}
 
 <body>
 
 <h1>{lang_get s='title_new_tc'}</h1>
 
-{include file="inc_update.tpl" result=$sqlResult item="Test case" name=$name}
+{include file="inc_update.tpl" result=$sqlResult item="TestCase" name=$name}
 
 <div class="workBack">
 

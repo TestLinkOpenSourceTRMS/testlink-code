@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.5 $
- * @modified on $Date: 2005/08/23 20:25:56 $ by $Author: schlundus $
+ * @version $Revision: 1.6 $
+ * @modified on $Date: 2005/08/25 15:53:02 $ by $Author: havlat $
  *
  * @author Francisco Mancardi
  *
@@ -667,6 +667,24 @@ $TLS_coverage = "Coverage";
 $TLS_req_edit = "Edit Requirement";
 $TLS_req_msg_notestcase = "No connected testcase";
 
+
+// gui/templates/reqImport.tpl
+$TLS_title_req_import_to = "Import requirements to document:";
+$TLS_title_choose_file_type = "Choose file type";
+$TLS_req_import_type = "Type:";
+$TLS_req_import_format_description1 = " - CSV type requires two fields for each row: 'title','description'";
+$TLS_req_import_format_description2 = " - CSV exported from DOORS requires header row.";
+$TLS_local_file = "File:";
+$TLS_max_size_cvs_file1 = "Max. size of the file is";
+$TLS_max_size_cvs_file2 = "kB";
+$TLS_title_req_import_check_input = "Check import data";
+$TLS_req_import_check_note = "Please, verify a possible conflicts, set an appropriate solution and then start import process.";
+$TLS_req_import_option_double = "Add a new one with the same title";
+$TLS_req_import_option_overwrite = "Update an existing one";
+$TLS_req_import_option_skip = "Skip import of doubled requirements";
+$TLS_req_import_option_header = "Set conflict solution";
+$TLS_req_import_dont_empty = "Do not import items with empty Scope";
+$TLS_btn_back2srs = "Back to Req. Specification";
 
 
 // gui/templates/reqSpecEdit.tpl

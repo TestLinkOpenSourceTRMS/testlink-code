@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.6 $
- * @modified on $Date: 2005/08/25 15:53:02 $ by $Author: havlat $
+ * @version $Revision: 1.7 $
+ * @modified on $Date: 2005/08/26 13:40:30 $ by $Author: havlat $
  *
  * @author Francisco Mancardi
  *
@@ -61,7 +61,7 @@ $TLS_btn_inactivate = "Inactivate";
 $TLS_btn_upd = "Update";
 $TLS_caption_edit_product = "Edit Product";
 $TLS_color = "Color";
-$TLS_enable_requirements = "Enable Requirements functionality";
+$TLS_enable_requirements = "Enable Requirements based testing";
 $TLS_info_failed_loc_prod = "Failed to localize the product.";
 $TLS_invalid_query = "Invalid query";
 $TLS_name = "Name";
@@ -681,10 +681,16 @@ $TLS_title_req_import_check_input = "Check import data";
 $TLS_req_import_check_note = "Please, verify a possible conflicts, set an appropriate solution and then start import process.";
 $TLS_req_import_option_double = "Add a new one with the same title";
 $TLS_req_import_option_overwrite = "Update an existing one";
-$TLS_req_import_option_skip = "Skip import of doubled requirements";
+$TLS_req_import_option_skip = "Skip import of existing requirements";
 $TLS_req_import_option_header = "Set conflict solution";
 $TLS_req_import_dont_empty = "Do not import items with empty Scope";
 $TLS_btn_back2srs = "Back to Req. Specification";
+$TLS_req_import_finished = "The import is finished. Please, see results bellow for more.";
+$TLS_req_import_result_skipped = "skipped";
+$TLS_req_import_result_overwritten = "overwritten";
+$TLS_req_import_result_added = "added a new requirement with the same title";
+$TLS_conflict = "conflict";
+$TLS_ok = "ok";
 
 
 // gui/templates/reqSpecEdit.tpl
@@ -730,7 +736,7 @@ $TLS_href_upd_mod_tc = "Update modified Test Cases";
 $TLS_msg_no_rights_for_tp = "- unavailable (You have rights for no Test Plan)";
 $TLS_th_my_perc_completed = "My completed [%]";
 $TLS_th_perc_completed = "Completed [%]";
-$TLS_title_requirements = "Requirements";
+$TLS_title_requirements = "Requirements based testing";
 $TLS_title_test_execution = "Test Execution";
 $TLS_title_test_plan_mgmt = "Test Plan Management";
 $TLS_title_test_spec = "Test Specification";

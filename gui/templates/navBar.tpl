@@ -1,7 +1,9 @@
 {* Testlink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: navBar.tpl,v 1.2 2005/08/16 17:59:13 franciscom Exp $ *}
+{* $Id: navBar.tpl,v 1.3 2005/08/26 21:01:27 schlundus Exp $ *}
 {* Purpose: smarty template - title bar + menu *}
 {* Andreas Morsing: changed the product selection *}
+{* 20050826 - scs - added input for entering tcid *}
+
 {*******************************************************************}
 {include file="inc_head.tpl"}
 <body>
@@ -13,8 +15,8 @@
 	<img alt="TestLink icon" src="icons/twist.gif" width="15px" 
 			height="15px" style="margin-left: 5px; vertical-align: middle;" />
 	<span class="bold">TestLink {$tlVersion|escape} : {$user|escape}</span>
-</div>
 
+</div>
 <div class="menu">
 
 	{if $arrayProducts ne ""}
@@ -24,6 +26,14 @@
 		<select class="tlcombo1" name="product" onchange="this.form.submit();">
 			{html_options options=$arrayProducts selected=$currentProduct}
 		</select>
+		</form>
+	</div>
+	<div style="float: right;margin-right:5px">
+		<form style="display:inline" target="mainframe" name="searchTC" action="lib/testcases/archiveData.php" method="get"> 
+		<span style="font-size: 80%">{lang_get s='th_tcid'}: </span>
+		<input style="font-size: 75%" type="text" name="data" value="" size="5" maxlength="10"/>
+		<input type="hidden" name="edit" value="testcase"/>
+		<input type="hidden" name="allow_edit" value="0"/>
 		</form>
 	</div>
 	{/if}

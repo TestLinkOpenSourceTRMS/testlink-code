@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: doAuthorize.php,v $
- * @version $Revision: 1.2 $
- * @modified $Date: 2005/08/16 18:00:55 $ by $Author: franciscom $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2005/08/26 21:01:27 $ by $Author: schlundus $
  * @author Chad Rosen, Martin Havlat
  *
  * This file handles the initial login and creates all user session variables.
@@ -19,7 +19,6 @@ require_once("users.inc.php");
 /** authorization function verifies login & password and set user session data */
 function doAuthorize()
 {
-	tlTimingStart();
 	$bSuccess = false;
 	
 	$pwd = isset($_POST['password']) ? strings_stripSlashes($_POST['password']) : null;

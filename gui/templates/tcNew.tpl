@@ -1,7 +1,7 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: tcNew.tpl,v 1.3 2005/08/25 17:40:59 schlundus Exp $ *}
+{* $Id: tcNew.tpl,v 1.4 2005/08/26 21:01:27 schlundus Exp $ *}
 {* Purpose: smarty template - create new testcase *}
-{* 20050825 - am - changed item to testcase *}
+{* 20050825 - scs - changed item to testcase *}
 {include file="inc_head.tpl"}
 
 <body>

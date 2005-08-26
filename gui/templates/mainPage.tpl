@@ -1,5 +1,5 @@
 {* Testlink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: mainPage.tpl,v 1.2 2005/08/16 17:59:13 franciscom Exp $ *}
+{* $Id: mainPage.tpl,v 1.3 2005/08/26 21:01:27 schlundus Exp $ *}
 {* Purpose: smarty template - main page / site map                 *}
 {*                                                                 *}
 {*                                                                 *}
@@ -197,6 +197,14 @@
     </div>
 {/if}
 
+	{if $securityNotes}
+	
+	<div class="bold" style="color:red">
+		{foreach from=$securityNotes item=secNote}
+			<br/>{lang_get s='sec_note_prefix'} : {$secNote|escape}
+		{/foreach}
+	</div>
+	{/if}
 
 </body>
 </html>

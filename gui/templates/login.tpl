@@ -1,6 +1,7 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: login.tpl,v 1.2 2005/08/16 17:59:13 franciscom Exp $ *}
+{* $Id: login.tpl,v 1.3 2005/08/26 21:01:27 schlundus Exp $ *}
 {* Purpose: smarty template - login page *}
+{* 20050826 - scs - added display of security note *}
 {include file="inc_head.tpl" title="TestLink - Login" }
 
 <body onload="document.forms[0].elements[0].focus()">
@@ -25,6 +26,14 @@
 	<a href="firstLogin.php">{lang_get s='new_user_q'}</a><br />
 	<a href="lostPassword.php">{lang_get s='lost_password_q'}</a>
 	</p>
+
+	{if $securityNotes}
+	<div class="bold" style="color:red">
+		{foreach from=$securityNotes item=secNote}
+		<br/>{lang_get s='sec_note_prefix'} : {$secNote|escape}
+		{/foreach}
+	</div>
+	{/if}
 	
 	{include file="inc_copyrightnotice.tpl"}
 

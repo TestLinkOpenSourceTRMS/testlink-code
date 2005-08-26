@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: navBar.php,v $
  *
- * @version $Revision: 1.2 $
- * @modified $Date: 2005/08/16 18:00:55 $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2005/08/26 21:01:27 $
  *
  * @author Martin Havlat
  *
@@ -16,8 +16,6 @@
 require('../../config.inc.php');
 require_once("common.php");
 require_once("plan.core.inc.php");
-
-
 testlinkInitPage(true);
 
 // Load data for combo box with all the available projects

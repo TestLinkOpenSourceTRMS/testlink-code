@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: logging.inc.php,v $
  *
- * @version $Revision: 1.3 $
- * @modified $Date: 2005/08/23 20:25:55 $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2005/08/26 21:01:27 $
  *
  * @author Martin Havlat
  *
@@ -90,7 +90,7 @@ function tLog ($message, $level = 'DEBUG')
  * @return string returns the name of the logfile
  *
  * @author Andreas Morsing
- * 20050821 - am - used directory_separator instead of slash
+ * 20050821 - scs - used directory_separator instead of slash
  **/
 function tlGetLogFileName()
 {

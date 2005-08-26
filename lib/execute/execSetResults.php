@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.4 $
- * @modified $Date: 2005/08/25 17:40:59 $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2005/08/26 21:01:27 $
  *
  * @author Martin Havlat
  *
@@ -17,8 +17,8 @@
  * @author Francisco Mancardi - 20050807 
  * refactoring:  removed deprecated: $_SESSION['project']
  *
- * @author 20050815 - am - code optimization
- * @author 20050825 - am - added buginterface to smarty
+ * @author 20050815 - scs - code optimization
+ * @author 20050825 - scs - added buginterface to smarty
  *
 **/
 require_once('../../config.inc.php');

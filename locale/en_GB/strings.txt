@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.8 $
- * @modified on $Date: 2005/08/26 14:54:27 $ by $Author: havlat $
+ * @version $Revision: 1.9 $
+ * @modified on $Date: 2005/08/26 21:01:28 $ by $Author: schlundus $
  *
  * @author Francisco Mancardi
  *
@@ -39,6 +39,9 @@ $TLS_first_name = "First name:";
 $TLS_last_name = "Last name";
 $TLS_link_back_to_login = "Back to login";
 $TLS_password_again = "Password again:";
+$TLS_sec_note_remove_install_dir = "Install directory should be removed!";
+$TLS_sec_note_prefix = "TestLink Security Issue";
+$TLS_sec_note_admin_default_pwd = "You should change the default password for the \"admin\" account!";
 
 
 // gui/templates/loginLost.tpl

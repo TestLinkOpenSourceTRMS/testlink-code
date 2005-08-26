@@ -1,9 +1,9 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: containerNew.tpl,v 1.3 2005/08/23 20:25:55 schlundus Exp $ *}
+{* $Id: containerNew.tpl,v 1.4 2005/08/26 21:01:27 schlundus Exp $ *}
 {* Purpose: smarty template - create containers *}
 {* I18N: 20050528 - fm *}
 {*
-	20050821 - am - changed p-tags to div-tags because there arent alloed for htmlarea
+	20050821 - scs - changed p-tags to div-tags because there arent alloed for htmlarea
 
 	lang_get('component');
 	lang_get('category');

@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
  * @filesource $RCSfile: getRights.php,v $
- * @version $Revision: 1.3 $
- * @modified $Date: 2005/08/20 18:39:13 $ by $Author: schlundus $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2005/08/26 21:01:27 $ by $Author: schlundus $
  * @author Martin Havlat, Chad Rosen
  * 
  * This script provides the get_rights and has_rights functions for
@@ -41,7 +41,7 @@
  * @param string $role 
  * @return string comma separated user rights
  * 
- * 20050819 - am - small cosmetic changes
+ * 20050819 - scs - small cosmetic changes
  */
 function getRoleRights($role)
 {
@@ -73,14 +73,14 @@ function getRoleRights($role)
 */
 function has_rights($roleQuestion)
 {
-	// 20050819 - am - we dont need to query the db for the rights every call
+	// 20050819 - scs - we dont need to query the db for the rights every call
 	//				 - so the rights are fetched only once per script 
 	static $rights = null;
 	if (is_null($rights))
 		$rights = getRoleRights($_SESSION['role']);
 	
 	//check to see if the $roleQuestion variable appears in the $roles variable
-	// 20050819 - am - extended to so we can check for the presence multiple rights
+	// 20050819 - scs - extended to so we can check for the presence multiple rights
 	if (is_array($roleQuestion))
 	{
 		$r = array_intersect($roleQuestion,$rights);

@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: buildNew.php,v 1.3 2005/08/26 15:08:39 franciscom Exp $ */
+/* $Id: buildNew.php,v 1.4 2005/08/26 21:01:27 schlundus Exp $ */
 /* Purpose:  admins create new builds for a project 
 
 @author Francisco Mancardi - 20050826
@@ -36,7 +36,7 @@ if(isset($_POST['newBuild']))
 	$notes = isset($_POST['notes']) ? strings_stripSlashes($_POST['notes']) : null;
 
 
-	//SCHLUNDUS, we should avoid duplicate build identifiers per product
+	//we should avoid duplicate build identifiers per product
 	if (strlen($build))
 	{
 		$projID = $_SESSION['testPlanId'];

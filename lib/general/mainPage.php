@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: mainPage.php,v $
  *
- * @version $Revision: 1.3 $
- * @modified $Date: 2005/08/23 18:29:24 $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2005/08/26 21:01:27 $
  *
  * @author Martin Havlat
  * 
@@ -20,8 +20,8 @@
 require_once('../../config.inc.php');
 require_once('common.php');
 require_once('plan.core.inc.php');
-
-
+require_once('configCheck.php');
+require_once('users.inc.php');
 // 20050811 - fm 
 // it's realy ok ??? testlinkInitPage(TRUE);
 testlinkInitPage(TRUE);
@@ -73,22 +73,20 @@ if(MAIN_PAGE_METRICS_ENABLED == "TRUE")
 // 20050809 - fm - get only test plan for the selected product
 $arrPlans = getTestPlans($_SESSION['productID'], $_SESSION['userID']);
 
+//20050826 - scs - added displaying of security notes
+$securityNotes = getSecurityNotes();
 
+$smarty->assign('securityNotes',$securityNotes);
 $smarty->assign('arrPlans', $arrPlans);
 $smarty->assign('countPlans', count($arrPlans));
-
 //can the user test
 $smarty->assign('tp_execute', has_rights("tp_execute"));
-
 //can the user create build
 $smarty->assign('tp_create_build', has_rights("tp_create_build"));
-
 //can the user view metrics
 $smarty->assign('tp_metrics', has_rights("tp_metrics"));
-
 //can the user manage Test Plan
 $smarty->assign('tp_planning', has_rights("tp_planning"));
 $smarty->assign('launcher','lib/general/frmWorkArea.php');
-
 $smarty->display('mainPage.tpl');
 ?>

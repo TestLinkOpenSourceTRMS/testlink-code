@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: archive.inc.php,v $
  *
- * @version $Revision: 1.5 $
- * @modified $Date: 2005/08/24 06:26:59 $ by $Author: franciscom $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2005/08/26 21:01:27 $ by $Author: schlundus $
  *
  * @author Martin Havlat
  * Purpose:  functions for test specification management have three parts:
@@ -522,7 +522,7 @@ function insertTestcase($catID,$title,$summary,$steps,$outcome,$user,$tcOrder = 
 	return $result ? mysql_insert_id() : 0;
 }
 
-// 20050819 - am - fix for bug Mantis 59 Use of term "created by" is not enforced---
+// 20050819 - scs - fix for bug Mantis 59 Use of term "created by" is not enforced---
 function updateTestcase($tcID,$title,$summary,$steps,$outcome,$user,$keywords,$version)
 {
 	$sql = "UPDATE mgttestcase SET keywords='" . mysql_escape_string($keywords) . "', version='" . 

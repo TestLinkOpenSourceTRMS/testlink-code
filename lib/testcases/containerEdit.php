@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: containerEdit.php,v 1.4 2005/08/22 07:38:28 franciscom Exp $ */
+/* $Id: containerEdit.php,v 1.5 2005/08/26 21:01:27 schlundus Exp $ */
 /* Purpose:  This page manages all the editing of test specification containers. */
 /*
  *
@@ -228,7 +228,7 @@ elseif(isset($_POST['moveCat']))
 	$prodID = 0;
 	getCategoryComponentAndProduct($data,$compID,$prodID);
 	$comps = null;
-	//20050821 - am - fix for Mantis 37, unable to copy a category into the same component it is in
+	//20050821 - scs - fix for Mantis 37, unable to copy a category into the same component it is in
 	$compID = 0;
 	getAllProductComponentsBut($compID,$prodID,$comps);
 

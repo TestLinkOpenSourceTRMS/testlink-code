@@ -1,9 +1,9 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: containerEdit.tpl,v 1.3 2005/08/23 20:25:55 schlundus Exp $ *}
+{* $Id: containerEdit.tpl,v 1.4 2005/08/26 21:01:27 schlundus Exp $ *}
 {* Purpose: smarty template - edit test specification: containers *}
 {* Note: htmlarea cannot be within tag <p> *}
 {*
-	20050823 - am - localized title
+	20050823 - scs - localized title
 			lang_get('component');
 			lang_get('category');
 *}

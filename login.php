@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: login.php,v $
  *
- * @version $Revision: 1.6 $
- * @modified $Date: 2005/08/24 12:05:30 $ by $Author: havlat $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2005/08/26 21:01:26 $ by $Author: schlundus $
  *
  * @author Martin Havlat
  * 
@@ -18,9 +18,10 @@
 require_once('lib/functions/configCheck.php');
 checkConfiguration();
 
-
 require('config.inc.php');
-require_once('lib/functions/lang_api.php');
+require_once('lib/functions/common.php');
+require_once('lib/functions/users.inc.php');
+doDBConnect();
 
 $note = isset($_GET['note']) ? $_GET['note'] : null;
 
@@ -41,8 +42,12 @@ switch($note)
 		$message = lang_get('passwd_lost');
 		break;
 }
+
+//20050826 - scs - added displaying of security notes
+$securityNotes = getSecurityNotes();
 	
 $smarty = new TLSmarty;
+$smarty->assign('securityNotes',$securityNotes);
 $smarty->assign('note',$message);
 $smarty->assign('css', TL_BASE_HREF . 'gui/css/tl_login.css');
 $smarty->display('login.tpl');

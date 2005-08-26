@@ -1,8 +1,8 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: tcTree.tpl,v 1.3 2005/08/23 20:25:55 schlundus Exp $ *}
+{* $Id: tcTree.tpl,v 1.4 2005/08/26 21:01:27 schlundus Exp $ *}
 {* Purpose: smarty template - show test specification tree menu *}
 {*
-	20050821 - am - localized the refresh button
+	20050821 - scs - localized the refresh button
 *}
 {include file="inc_head.tpl" jsTree="yes"}
 

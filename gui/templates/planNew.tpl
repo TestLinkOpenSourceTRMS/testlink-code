@@ -1,8 +1,8 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: planNew.tpl,v 1.3 2005/08/25 17:40:59 schlundus Exp $ *}
+{* $Id: planNew.tpl,v 1.4 2005/08/26 21:01:27 schlundus Exp $ *}
 {* Purpose: smarty template - create Test Plan *}
 {* I18N 20050528 - fm *}
-{* 20050824 - am - changed item to TestPlan *}
+{* 20050824 - scs - changed item to TestPlan *}
 
 {include file="inc_head.tpl"}
 

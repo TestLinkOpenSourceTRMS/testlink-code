@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.5 $
- * @modified $Date: 2005/08/23 20:25:55 $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2005/08/26 21:01:27 $
  *
  * @author Andreas Morsing
  *
@@ -38,7 +38,9 @@ $TLS_passwd_lost = "Ihr Passwort wurde an den Email Account, welcher bei der Ben
 $TLS_please_login = "Bitte melden Sie sich an...";
 $TLS_session_expired = "Ihre Session ist abgelaufen, bitte melden Sie sich neu an!";
 $TLS_your_first_login = "Willkommen bei TestLink! Sie haben jetzt Gast-Zugang. Bitte melden Sie sich an...";
-
+$TLS_sec_note_remove_install_dir = "Bitte entfernen Sie das install-Verzeichnis!";
+$TLS_sec_note_prefix = "TestLink Sicherheitswarnung";
+$TLS_sec_note_admin_default_pwd = "Sie sollten das Standard-Passwort für den \"admin\" Account ändern!";
 
 
 // lostPassword.php
@@ -243,6 +245,8 @@ $TLS_test_status_not_run = "nicht getestet";
 $TLS_test_status_passed = "OK";
 $TLS_title_t_r_on_build = "Test Results on Build";
 $TLS_title_t_r_owner = "Besitzer:";
+$TLS_button_enter_bug = "Neuen Bug eingeben";
+$TLS_caption_bugtable = "Relevante Bugs";
 
 
 

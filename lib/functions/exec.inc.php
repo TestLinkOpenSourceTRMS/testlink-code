@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: exec.inc.php,v $
  *
- * @version $Revision: 1.4 $
- * @modified $Date: 2005/08/25 17:41:00 $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2005/08/26 21:01:27 $
  *
  * @author Martin Havlat
  *
@@ -303,7 +303,7 @@ function createTestInput($resultTC,$build,$tpID)
 		//routine that collect the test cases bugs.
 		//Check to see if the user is using a bug system
 		$resultBugList = null;
-		//20050825 - am - added code to show the related bugs of the tc
+		//20050825 - scs - added code to show the related bugs of the tc
 		$bugLinkList = null;
 		if($g_bugInterfaceOn)
 		{

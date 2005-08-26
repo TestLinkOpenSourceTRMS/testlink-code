@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: reqSpecList.php,v $
- * @version $Revision: 1.2 $
- * @modified $Date: 2005/08/16 18:00:57 $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2005/08/26 13:41:17 $
  * 
  * @author Martin Havlat
  * 
@@ -49,6 +49,7 @@ $arrSpec = getReqSpec('product');
 
 $smarty = new TLSmarty;
 $smarty->assign('arrSpec', $arrSpec);
+$smarty->assign('arrSpecCount', count($arrSpec));
 $smarty->assign('sqlResult', $sqlResult);
 $smarty->assign('action', $action);
 $smarty->assign('name',$title); // of created doc

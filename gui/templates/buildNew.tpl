@@ -1,6 +1,11 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: buildNew.tpl,v 1.2 2005/08/16 17:59:13 franciscom Exp $ *}
-{* Purpose: smarty template - Add new build and show existing *}
+{* $Id: buildNew.tpl,v 1.3 2005/08/26 15:08:39 franciscom Exp $ *}
+{* Purpose: smarty template - Add new build and show existing 
+
+ @author Francisco Mancardi - fm
+ replace html with fckedit
+
+*}
 {include file="inc_head.tpl"}
 
 <body>
@@ -24,14 +29,14 @@ var warning_delete_build = "{lang_get s='warning_delete_build'}";
 	<p>{lang_get s='msg_build'}</p>
 	<form method="post">
 
-	<table class="common" width="50%">
+	<table class="common" width="80%">
 		<tr>
 			<td>{lang_get s='enter_build'}</td>
 			<td><input type="text" name="build" maxlength="100" size="30"/></td>
 		</tr>
 		<tr>
 			<td>{lang_get s='enter_build_notes'}</td>
-			<td width="75%"><textarea id="notes" name="notes" class="w99h300"></textarea></td>
+			<td width="80%">{$notes}</td>
 		</tr>
 	</table>
 	<div class="groupBtn">	
@@ -42,7 +47,7 @@ var warning_delete_build = "{lang_get s='warning_delete_build'}";
 
 <div> {* existing builds *}
 {if $arrBuilds ne ""}
-	<table class="simple" width="40%" style="table-layout:fixed">
+	<table class="simple" width="80%" style="table-layout:fixed">
 		<tr>
 			<th>{lang_get s='th_existing_builds'} {$TPname|escape}</th>
 			<th>{lang_get s='th_build_notes'}</th>
@@ -65,10 +70,6 @@ var warning_delete_build = "{lang_get s='warning_delete_build'}";
 	<input type="hidden" name="buildLabel" id="buildLabel">
 </form>
 </div>
-{include file="inc_htmlArea.tpl"}
-<script type="text/javascript" defer="1">
-   	HTMLArea.replace('notes', config);
-</script>
 
 </body>
 </html>

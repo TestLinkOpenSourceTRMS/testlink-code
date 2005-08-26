@@ -85,9 +85,7 @@ FCKConfig.ToolbarSets["Basic"] = [
 ] ;
 
 FCKConfig.ToolbarSets["TL_Medium"] = [
-	['Preview','Cut','Copy','Paste','Undo','Redo','Find','Replace','SelectAll','Link','Unlink','Anchor'],
-	'/',	
-	['Bold','Italic','Underline','OrderedList','UnorderedList','-','Outdent','Indent','JustifyLeft','JustifyCenter','JustifyRight','JustifyFull','Image','Table','Rule','Smiley'],
+	['Cut','Copy','Paste','Find','Replace','SelectAll','Link','Unlink','Anchor','Bold','Italic','Underline','OrderedList','UnorderedList','-','JustifyLeft','Image','Table','Rule'],
 	'/',
 	['FontName','FontSize','TextColor','BGColor']
 ] ;

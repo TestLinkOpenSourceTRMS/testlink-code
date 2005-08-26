@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecAnalyse.tpl,v 1.2 2005/08/16 17:59:13 franciscom Exp $ *}
+{* $Id: reqSpecAnalyse.tpl,v 1.3 2005/08/26 15:06:02 havlat Exp $ *}
 {* Purpose: smarty template - Analyse REQ coverage *}
 {include file="inc_head.tpl"}
 
@@ -41,7 +41,7 @@
 
 
 <div class="workBack">
-<h2>{lang_get s='req_title_covered'}</h2>
+<h2>{lang_get s='req_title_covered'} - {$arrMetrics.coveredTestPlan}</h2>
 
 {section name=row loop=$arrCoverage.covered}
 {if $smarty.section.row.first}
@@ -68,7 +68,7 @@
 
 
 <div class="workBack">
-<h2>{lang_get s='req_title_uncovered'}</h2>
+<h2>{lang_get s='req_title_uncovered'} - {$arrMetrics.coveredTestPlan}</h2>
 {section name=row2 loop=$arrCoverage.uncovered}
 {if $smarty.section.row2.first}
 <table class="simple">

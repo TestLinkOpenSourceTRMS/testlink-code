@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecList.tpl,v 1.2 2005/08/16 17:59:13 franciscom Exp $ *}
+{* $Id: reqSpecList.tpl,v 1.3 2005/08/26 13:52:40 havlat Exp $ *}
 {* Purpose: smarty template - create view and create a new req document *}
 {include file="inc_head.tpl"}
 
@@ -22,8 +22,10 @@
 <div class="groupBtn">
 	<input type="button" name="createSRS" value="{lang_get s='btn_create'}" 
 		onclick="javascript: location.href=fRoot + 'lib/req/reqSpecList.php?createForm=';" />
+	{if $arrSpecCount > 0}
 	<input type="button" name="assign" value="{lang_get s='btn_assign_tc'}" 
 		onclick="javascript: location.href=fRoot + 'lib/general/frmWorkArea.php?feature=assignReqs';" />
+	{/if}
 </div>
 {/if}
 

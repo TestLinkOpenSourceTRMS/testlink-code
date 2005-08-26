@@ -1,22 +1,29 @@
 <?php
 /** 
-* TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: planTestersEdit.php,v 1.2 2005/08/16 18:00:57 franciscom Exp $ 
-*
-* @author	Martin Havlat <havlat@users.sourceforge.net>
-* 
-* This page allows assignment Users to Test Plan. 
-* 
-*
-* rev :
-*      20050810 - fm
-*      I18N
-*/
+ * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ * This script is distributed under the GNU General Public License 2 or later. 
+ *
+ * Filename $RCSfile: planTestersEdit.php,v ${file_name} $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2005/08/26 09:49:39 ${date} ${time} $ by $Author: havlat $
+ * 
+ * @author Martin Havlat
+ * 
+ * This page allows assignment Users to Test Plan. 
+ * 
+ *
+ * rev :
+ * 20050810 - fm	I18N
+ * 200508	MHT		Corrected syntax bugs, wrong variable using, updated header
+ * 
+ * @todo move functions to included script
+ * 
+ */
 require('../../config.inc.php');
 require_once('common.php');
 require_once('users.inc.php');
 require_once('plan.inc.php');
-require_once("../../lib/functions/lang_api.php");
+
 testlinkInitPage();
 
 
@@ -88,13 +95,14 @@ $smarty->display('planTesters.tpl');
 
 // =================================================================================
 // 20050810 - fm - refactoring
+// 20050824	MHT	corrected syntax bug, wrong variable using
 function getUserTestPlans1($id,&$arrPlans)
 {
 	$arrPlans = null;
 	$userTestplans = getUserTestplans($id);
 	$Testplans = getAllTestplans();
 	$num_of_tp = sizeof($Testplans);
-	$num_of_usertp = sizeof($userProjects);
+	$num_of_usertp = sizeof($userTestplans);
 	
 	for($i = 0; $i < $num_of_tp ;$i++)
 	{
@@ -102,7 +110,7 @@ function getUserTestPlans1($id,&$arrPlans)
 		$checked = '';
 		if ($userTestplans)
 		{
-			for($j = 0;$j < $num_of_usertp );$j++)
+			for($j = 0;$j < $num_of_usertp; $j++)
 			{
 				if ($userTestplans[$j][0] == $tp[0])
 				{

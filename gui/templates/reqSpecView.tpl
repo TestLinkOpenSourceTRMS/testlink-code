@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecView.tpl,v 1.2 2005/08/16 17:59:13 franciscom Exp $ *}
+{* $Id: reqSpecView.tpl,v 1.3 2005/08/26 13:53:07 havlat Exp $ *}
 {* Purpose: smarty template - view a requirement specification *}
 {include file="inc_head.tpl" openHead="yes"}
 {include file="inc_jsCheckboxes.tpl"}
@@ -36,7 +36,7 @@
 		onclick="javascript: location.href=fRoot+'lib/req/reqSpecAnalyse.php?idSRS={$arrSpec[0].id}';" />
 	{if $modify_req_rights == "yes"}
 	<input type="button" name="importReq" value="{lang_get s='btn_import'}"
-		onclick="javascript: alert('{lang_get s="popup_feature_unavailable"}');" />
+		onclick="javascript: location.href=fRoot+'lib/req/reqImport.php';" />
 	{/if}
 	<input type="button" name="backToSRSList" value="{lang_get s='btn_spec_list'}" 
 		onclick="javascript: location.href=fRoot+'lib/req/reqSpecList.php';" />

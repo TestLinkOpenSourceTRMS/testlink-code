@@ -20,8 +20,10 @@ TestLink development team:
 
 Bugfixes:
 
+* [Mantis 58] Add link to bugzilla
+* [Mantis 59] Use of term "created" is not enforced, the information displayed is the "last modified by" user
 * [Mantis 37] Unable to copy a category into the same component it is in
-* [Mantis 38] Little question mark icons by  [Save REsults] are broken links
+* [Mantis 38] Little question mark icons by  [Save Results] are broken links
 * [Mantis 59] Use of term "created by" is not enforced, the information displayed is 
 	the "last modified by" user
 * [Mantis 4] Keywords of imported TC are not added to the product
@@ -37,6 +39,12 @@ Bugfixes:
 
 Enhancements:
 
+* Added the possibility to import tcs directly to a specific category
+* [Mantis 62] Keywords are now sorted alphanumeric
+* [Mantis 50] Adding searching for tcID while in execution mode
+* [Mantis 65] Adding displaying of the tcID while in execution mode
+* Adding security checks
+* Adding input fields for searching tcs by tcID in the navbar
 * optimized executeNavigator.php
 * refactorized priority reports
 * product delete causes also delete of related data
@@ -52,6 +60,7 @@ Enhancements:
 
 Changes:
 
+* changed file upload size of importing tc to 1000000bytes, max line size is now 30000bytes
 * test Plans are ordered according the name
 * updated menuBar (added the most important links, clean code and smarty template)
 * changes in $g_tc_status

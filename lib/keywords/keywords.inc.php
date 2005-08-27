@@ -1,7 +1,7 @@
 <?
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* @version $Id: keywords.inc.php,v 1.2 2005/08/16 18:00:55 franciscom Exp $
+* @version $Id: keywords.inc.php,v 1.3 2005/08/27 20:53:31 schlundus Exp $
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author	Chad Rosen
@@ -23,7 +23,8 @@ function selectKeywords ($selectedKey = '')
 		return $arrKeywords;
 
 	// grab keywords from db
-	$sql = "SELECT id,keyword,notes FROM keywords WHERE prodid = " . $product;
+	//20050827 - scs - added sorting of keyword
+	$sql = "SELECT id,keyword,notes FROM keywords WHERE prodid = " . $product . " ORDER BY keyword ASC";
 	$result = do_mysql_query($sql);
 	
 	if ($result)

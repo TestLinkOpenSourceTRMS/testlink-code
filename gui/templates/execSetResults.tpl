@@ -1,7 +1,8 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execSetResults.tpl,v 1.3 2005/08/25 17:40:59 schlundus Exp $ *}
+{* $Id: execSetResults.tpl,v 1.4 2005/08/27 20:53:30 schlundus Exp $ *}
 {* Purpose: smarty template - show tests to add results *}
 {* 20050815 - scs - small changes because of code changes in execSetResults.php *}
+{* 20050827 - scs - added display of tcID  *}
 {include file="inc_head.tpl" popup='yes'}
 
 <body>
@@ -22,7 +23,7 @@
 	{* display test cases from array $arrTC*}
 	{section name=Row loop=$arrTC}
 		<input type='hidden' name='tc{$arrTC[Row].id}' value='{$arrTC[Row].id}' />
-			<h2>{$arrTC[Row].title|escape}</h2>
+			<h2>{lang_get s='th_test_case_id'}{$arrTC[Row].mgttcid} :: {lang_get s='title_test_case'} {$arrTC[Row].title|escape}</h2>
 		<div>
  		{if $arrTC[Row].recentResult.status != '' and $arrTC[Row].recentResult.status != 'n'}			
 			{if $arrTC[Row].recentResult.status == $g_tc_status.passed}
@@ -97,13 +98,17 @@
 				<br />
 				<span class="title">{lang_get s='test_exec_bug_report'}</span>
 				<input name='bugs{$arrTC[Row].id}' value='{$arrTC[Row].bugs}' /><a style="font-weight:normal" target="_blank" href="{$g_bugInterface->getEnterBugURL()}">{lang_get s='button_enter_bug'}</a>
+				{if $arrTC[Row].bugLinkList}
 				<table class="simple" width="100%">
-				<caption style="text-align:left">{lang_get s='caption_bugtable'}</caption>
+					<tr>
+						<th style="text-align:left">{lang_get s='caption_bugtable'}</th>
+					</tr>
 					{section name=link loop=$arrTC[Row].bugLinkList}
 					<tr>
 						<td>{$arrTC[Row].bugLinkList[link]}</td>
 					</tr>
-				{/section}
+					{/section}
+				{/if}
 				</table>
 			</td>
 		</tr>

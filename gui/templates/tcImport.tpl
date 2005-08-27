@@ -1,7 +1,8 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: tcImport.tpl,v 1.2 2005/08/16 17:59:13 franciscom Exp $ *}
+{* $Id: tcImport.tpl,v 1.3 2005/08/27 20:53:30 schlundus Exp $ *}
 {* Purpose: smarty template - show Test Results and Metrics *}
 {* I18N: 20050528 - fm *}
+{* 20050828 - scs - changes for importing tc to a specific category *}
 {include file="inc_head.tpl"}
 
 <body>
@@ -22,6 +23,7 @@
 <form method='post' action='{$SCRIPT_NAME}'>
 	<input type='submit' name='import' value="{lang_get s='btn_import_cvs'}">
 	<input type='hidden' value='{$uploadedFile}' name='location'>
+	<input type='hidden' value='{$catIDForImport}' name='catID'>
 </form>
 <p>{lang_get s='info_imp_data_line1'}<br> 
 {lang_get s='info_imp_data_line2'}</p>
@@ -35,15 +37,17 @@
 <h2>{lang_get s='title_choose_local_file'}</h2>
 
 <form method="post" enctype="multipart/form-data" action="{$SCRIPT_NAME}">
-<input type="hidden" name="MAX_FILE_SIZE" value="30000" /> {* restrict file size *}
-	<p>Local File:
+<input type="hidden" name="MAX_FILE_SIZE" value="1000000" /> {* restrict file size *}
+	<p>{lang_get s='local_file'}:
+		<input type='hidden' value='{$catIDForImport}' name='catID'>
 		<input type="file" name="uploadedFile" size="30" />
 		<input type="submit" value="{lang_get s='btn_upload_file'}" />
 	</p>
 </form>
 <p>{lang_get s='max_size_cvs_file'}</p>
-<p>{lang_get s='required_cvs_format'}<br /> 
-{lang_get s='the_format'}</p>
+<p>
+{lang_get s='required_cvs_format'}<br /> 
+{$fileFormatString}</p>
 {/if}
 
 </div>

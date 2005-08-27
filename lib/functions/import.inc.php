@@ -1,6 +1,6 @@
 <?
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: import.inc.php,v 1.2 2005/08/16 18:00:55 franciscom Exp $
+* $Id: import.inc.php,v 1.3 2005/08/27 20:53:31 schlundus Exp $
 * 
 * @author Martin Havlat
 *
@@ -9,6 +9,7 @@
 * @ author: francisco mancardi - 20050810
 * deprecated $_SESSION['product'] removed 
 *
+* 20050828 - scs - changes for importing tc to a specific category
 */
 require_once('../../config.inc.php');
 require_once("../functions/common.php");
@@ -18,8 +19,9 @@ require_once("../keywords/keywords.inc.php");
 * Create table to show imported data at first
 *
 * @param string $location
+* @param int catIDForImport optional parameter for importing tc directly to a specific catID
 */
-function showTcImport($location)
+function showTcImport($location,$catIDForImport = 0)
 {
 	$overview = "<table class='simple' width='80%'>";
 
@@ -29,32 +31,43 @@ function showTcImport($location)
 	$oldCom = null;
 	$oldCat = null;
 	//Need to grab the first row of data
-	while ($data = fgetcsv ($handle, 3000, ",")) {
-		$arrayCom = $data[0];
-		$arrayCat = $data[1];
-		$arrayTC = $data[2];
-
-		//Strips off quotation marks (") needed to import data correctly
-		$arrayTC = preg_replace("/^['\"](.*?)['\"]$/","\\1", $arrayTC); // strip out possible quotes at beginning and end of string
-		if(strcmp($arrayCom,$oldCom) != 0){ //Is the current value equal to the old value?
-			$overview .= "<tr><td bgcolor='#CCCCCC' width='3'>COM:</td><td bgcolor='#CCCCCC'>" . $arrayCom . "</td></tr>"; //No
-
-			if(strcmp($arrayCat,$oldCat) != 0){ //Is the current value equal to the old value?
-				$overview .= "<tr><td bgcolor='#99CCFF' width='3'>CAT:</td><td  bgcolor='#99CCFF'>" . $arrayCat . "</td></tr>"; //No
-				$overview .= "<tr><td bgcolor='#FFFFCC' width='3'>TC:</td><td bgcolor='#FFFFCC'>" . $arrayTC . "</td></tr>"; //display TC
-			}
-
-		} else {
-
-			if (strcmp($arrayCat,$oldCat) == 0)	{
-				$overview .= "<tr><td bgcolor='#FFFFCC' width='3'>TC:</td><td bgcolor='#FFFFCC'>" . $arrayTC . "</td></tr>";
+	if (!$catIDForImport)
+	{
+		while ($data = fgetcsv ($handle, 30000, ",")) {
+			$arrayCom = $data[0];
+			$arrayCat = $data[1];
+			$arrayTC = $data[2];
+	
+			//Strips off quotation marks (") needed to import data correctly
+			$arrayTC = preg_replace("/^['\"](.*?)['\"]$/","\\1", $arrayTC); // strip out possible quotes at beginning and end of string
+			if(strcmp($arrayCom,$oldCom) != 0){ //Is the current value equal to the old value?
+				$overview .= "<tr><td bgcolor='#CCCCCC' width='3'>COM:</td><td bgcolor='#CCCCCC'>" . $arrayCom . "</td></tr>"; //No
+	
+				if(strcmp($arrayCat,$oldCat) != 0){ //Is the current value equal to the old value?
+					$overview .= "<tr><td bgcolor='#99CCFF' width='3'>CAT:</td><td  bgcolor='#99CCFF'>" . $arrayCat . "</td></tr>"; //No
+					$overview .= "<tr><td bgcolor='#FFFFCC' width='3'>TC:</td><td bgcolor='#FFFFCC'>" . $arrayTC . "</td></tr>"; //display TC
+				}
+	
 			} else {
-				$overview .= "<tr><td bgcolor='#99CCFF' width='3'>CAT:</td><td  bgcolor='#99CCFF'>" . $arrayCat . "</td></tr>"; //No
-				$overview .= "<tr><td bgcolor='#FFFFCC' width='3'>TC:</td><td bgcolor='#FFFFCC'>" . $arrayTC . "</td></tr>"; //display TC
+	
+				if (strcmp($arrayCat,$oldCat) == 0)	{
+					$overview .= "<tr><td bgcolor='#FFFFCC' width='3'>TC:</td><td bgcolor='#FFFFCC'>" . $arrayTC . "</td></tr>";
+				} else {
+					$overview .= "<tr><td bgcolor='#99CCFF' width='3'>CAT:</td><td  bgcolor='#99CCFF'>" . $arrayCat . "</td></tr>"; //No
+					$overview .= "<tr><td bgcolor='#FFFFCC' width='3'>TC:</td><td bgcolor='#FFFFCC'>" . $arrayTC . "</td></tr>"; //display TC
+				}
 			}
+			$oldCom = $arrayCom;
+			$oldCat = $arrayCat;
 		}
-		$oldCom = $arrayCom;
-		$oldCat = $arrayCat;
+	}
+	else
+	{
+		while ($data = fgetcsv ($handle, 3000, ","))
+		{
+			$arrayTC = $data[0];
+			$overview .= "<tr><td bgcolor='#FFFFCC' width='3'>TC:</td><td bgcolor='#FFFFCC'>" . $arrayTC . "</td></tr>"; //display TC
+		}
 	}
 
 	fclose ($handle);
@@ -62,12 +75,12 @@ function showTcImport($location)
 	$overview .= "</table>";
 	return $overview;
 }
-
-function buildKeywordListAndInsertKeywords($data,$prodID)
+//20050828 - scs - added optional parameter for the offset in data where the keywords beging
+function buildKeywordListAndInsertKeywords($data,$prodID,$slice = 6)
 {
 	//Grabbing the Key information from the excel sheets
 	$keywords = null;
-	$keywords = array_slice($data,6);
+	$keywords = array_slice($data,$slice);
 
 	//Need to reinitialize the keys variable
 	if (sizeof($keywords))
@@ -94,8 +107,9 @@ function buildKeywordListAndInsertKeywords($data,$prodID)
 /**
 * Import TCs from CSV
 *
+* @param int catIDForImport optional parameter for importing tc directly to a specific catID
 */
-function exeTcImport($fileLocation)
+function exeTcImport($fileLocation,$catIDForImport = 0)
 {
 	// 20050810 - fm
 	// $_SESSION['product'] -> $_SESSION['productID']
@@ -120,17 +134,29 @@ function exeTcImport($fileLocation)
 	$arraySummary = $data[3];
 	$arrayTCSteps = $data[4];
 	$arrayResults = $data[5];
-	
-	$keys = buildKeywordListAndInsertKeywords($data,$prodID);
 
-	//Insert arrayCom into component where projID == projIDSubmit 
-	$comID = insertProductComponent($prodID,$arrayCom,null,null,null,null,null);
-	
-	//Select comID from component where comName == arrayCom store as comID
-	$catID = insertComponentCategory($comID,$arrayCat,null,null,null,null);
-	
-	$tcID = insertTestcase($catID,$arrayTC,$arraySummary,$arrayTCSteps,$arrayResults,$_SESSION['user'],null,$keys);
 
+	if (!$catIDForImport)
+	{
+		$keys = buildKeywordListAndInsertKeywords($data,$prodID);
+		//Insert arrayCom into component where projID == projIDSubmit 
+		$comID = insertProductComponent($prodID,$arrayCom,null,null,null,null,null);
+		
+		//Select comID from component where comName == arrayCom store as comID
+		$catID = insertComponentCategory($comID,$arrayCat,null,null,null,null);
+	
+		$tcID = insertTestcase($catID,$arrayTC,$arraySummary,$arrayTCSteps,$arrayResults,$_SESSION['user'],null,$keys);
+	}
+	else
+	{
+		$arrayTC = $data[0];
+		$arraySummary = $data[1];
+		$arrayTCSteps = $data[2];
+		$arrayResults = $data[3];	
+
+		$keys = buildKeywordListAndInsertKeywords($data,$prodID,4);
+		$tcID = insertTestcase($catIDForImport,$arrayTC,$arraySummary,$arrayTCSteps,$arrayResults,$_SESSION['user'],null,$keys);
+	}	
 	//Store all the old vales into a new array
 	$oldCom = $arrayCom;
 	$oldComNumber = $comID;
@@ -143,36 +169,48 @@ function exeTcImport($fileLocation)
 		for($i = 0;$i < sizeof($data);$i++)
 			$data[$i] = stripQuotes($data[$i]);
 	
-		$arrayCom = $data[0];
-		$arrayCat = $data[1];
-		$arrayTC = $data[2];
-		$arraySummary = $data[3];
-		$arrayTCSteps = $data[4];
-		$arrayResults = $data[5];
-
-		$keys = buildKeywordListAndInsertKeywords($data,$prodID);
-		
-		if($arrayCom == $oldCom)
+		if ($catIDForImport)
 		{
-			if($arrayCat == $oldCat)
-				$tcID = insertTestcase($oldCatNumber,$arrayTC,$arraySummary,$arrayTCSteps,$arrayResults,$_SESSION['user'],null,$keys);
-			else
-			{
-				$catID = insertComponentCategory($oldComNumber,$arrayCat,null,null,null,null);
-				$tcID = insertTestcase($catID,$arrayTC,$arraySummary,$arrayTCSteps,$arrayResults,$_SESSION['user'],null,$keys);
-			}
+			$arrayTC = $data[0];
+			$arraySummary = $data[1];
+			$arrayTCSteps = $data[2];
+			$arrayResults = $data[3];
+			$keys = buildKeywordListAndInsertKeywords($data,$prodID,4);
+			$tcID = insertTestcase($catIDForImport,$arrayTC,$arraySummary,$arrayTCSteps,$arrayResults,$_SESSION['user'],null,$keys);
 		}
 		else
 		{
-			$comID = insertProductComponent($prodID,$arrayCom,null,null,null,null,null);
-			$catID = insertComponentCategory($comID,$arrayCat,null,null,null,null);
-			$tcID = insertTestcase($catID,$arrayTC,$arraySummary,$arrayTCSteps,$arrayResults,$_SESSION['user'],null,$keys);
+			$arrayCom = $data[0];
+			$arrayCat = $data[1];
+			$arrayTC = $data[2];
+			$arraySummary = $data[3];
+			$arrayTCSteps = $data[4];
+			$arrayResults = $data[5];
+	
+			$keys = buildKeywordListAndInsertKeywords($data,$prodID);
+			
+			if($arrayCom == $oldCom)
+			{
+				if($arrayCat == $oldCat)
+					$tcID = insertTestcase($oldCatNumber,$arrayTC,$arraySummary,$arrayTCSteps,$arrayResults,$_SESSION['user'],null,$keys);
+				else
+				{
+					$catID = insertComponentCategory($oldComNumber,$arrayCat,null,null,null,null);
+					$tcID = insertTestcase($catID,$arrayTC,$arraySummary,$arrayTCSteps,$arrayResults,$_SESSION['user'],null,$keys);
+				}
+			}
+			else
+			{
+				$comID = insertProductComponent($prodID,$arrayCom,null,null,null,null,null);
+				$catID = insertComponentCategory($comID,$arrayCat,null,null,null,null);
+				$tcID = insertTestcase($catID,$arrayTC,$arraySummary,$arrayTCSteps,$arrayResults,$_SESSION['user'],null,$keys);
+			}
+	
+			$oldCom = $arrayCom;
+			$oldComNumber = $comID;
+			$oldCat = $arrayCat;
+			$oldCatNumber = $catID;
 		}
-
-		$oldCom = $arrayCom;
-		$oldComNumber = $comID;
-		$oldCat = $arrayCat;
-		$oldCatNumber = $catID;
 	}
 	
 	//Close the CSV

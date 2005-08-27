@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.6 $
- * @modified $Date: 2005/08/26 21:01:27 $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2005/08/27 20:53:31 $
  *
  * @author Andreas Morsing
  *
@@ -224,7 +224,7 @@ $TLS_opt_build = "Build";
 $TLS_opt_last_result = "Letztes Resultat";
 $TLS_title_tc_suite_navigator = "TestCase Suite Navigator";
 $TLS_tree_colored_to = "TestCase gefärbt nach ";
-
+$TLS_filter_tcID = "Filter: TestCase ID";
 
 
 // gui/templates/execSetResults.tpl
@@ -521,16 +521,18 @@ $TLS_title_edit_tc = "Test case editieren";
 // gui/templates/tcImport.tpl
 $TLS_btn_import_cvs = "Importiere cvs";
 $TLS_btn_upload_file = "Datei hochladen";
-$TLS_check_imp_data = "Checke Importierte Daten";
+$TLS_check_imp_data = "Checke zu importierenden Daten";
 $TLS_cvs_import_ok = "Der CVS Import war OK";
 $TLS_info_imp_data_line1 = "Hinweis: TestLink hat keine Möglichkeit festzustellen, ob die zu importierenden Daten bereits bestehen.";
 $TLS_info_imp_data_line2 = "D.h. falls die Daten bereits bestehen, haben Sie nach dem Import zwei Kopien.";
-$TLS_max_size_cvs_file = "Maximale Dateigröße ist 30Kb";
+$TLS_max_size_cvs_file = "Maximale Dateigröße ist 1000000 Bytes";
 $TLS_required_cvs_format = "Erfordliches Dateiformat:";
 $TLS_the_format = "component1,category1,'testcase1','summary','steps','results','key1','key2','key...'";
 $TLS_title_choose_local_file = "Wählen Sie eine Datei zum Importieren";
 $TLS_title_imp_cvs = "CVS Datenimport";
-
+$TLS_the_format_by_cat = "'testcase1','summary','steps','results','key1','key2','key...'";
+$TLS_btn_import_tc = "TestCases importieren";
+$TLS_local_file = "Lokale Datei";
 
 
 // gui/templates/tcMove.tpl
@@ -565,7 +567,7 @@ $TLS_btn_find = "Suchen";
 $TLS_caption_search_form = "Suche nach:";
 $TLS_keyword = "Keyword";
 $TLS_not_applied = "Nicht angewandt";
-$TLS_th_tcid = "ID";
+$TLS_th_tcid = "TestCase ID";
 $TLS_title_search_tcs = "Navigation - TestCases suchen";
 
 

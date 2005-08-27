@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execNavigator.php,v $
  *
- * @version $Revision: 1.2 $
- * @modified $Date: 2005/08/16 18:00:54 $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2005/08/27 20:53:31 $
  *
  * @author Martin Havlat
  *
@@ -14,8 +14,9 @@
  *
  * 20050807 - fm changes in filterKeyword() call.
  * 20050807 - fm changes in createBuildMenu() call.
- * 20050815 - scs optimized and reducing Sql statements
- *
+ * 20050815 - scs - optimized and reducing Sql statements
+ * 20050828 - scs - reduced the code
+ * 20050828 - scs - added searching for tcID
 **/
 require_once('../../config.inc.php');
 require_once('common.php');
@@ -30,6 +31,7 @@ $dtreeCounter = 0;
 $treeColored = (isset($_POST['colored']) && ($_POST['colored'] == 'result')) ? 'selected="selected"' : null;
 $selectOwner = (isset($_POST['owner']) && ($_POST['owner'] == $_SESSION['user'])) ? 'selected="selected"' : null;
 $filterOwner = array (array('id' => $_SESSION['user'], 'selected' => $selectOwner));
+$tcID = isset($_POST['tcID']) ? intval($_POST['tcID']) : null;
 
 // 20050807 - fm - function interface changed
 $optBuild = createBuildMenu($_SESSION['testPlanId']);
@@ -41,8 +43,19 @@ $optResultSelected = isset($_POST['result']) ? $_POST['result'] : 'All';
 $menuUrl = null;
 
 $SP_html_help_file = TL_INSTRUCTIONS_RPATH . $_SESSION['locale'] . "/executeTest.html";
-$sMenu = generateExecTree($optBuildSelected,$SP_html_help_file,$menuUrl);
+$sMenu = generateExecTree($optBuildSelected,$SP_html_help_file,$menuUrl,$tcID);
 $tree = invokeMenu($sMenu);
+
+//20050828 - scs - quick check to see if the wanted tc is in the testplan
+$tcData = null;
+$testCaseID = null;
+if ($tcID)
+{
+	$query = "SELECT testcase.id from component,category,testcase WHERE projID = {$_SESSION['testPlanId']} AND compid = component.id AND category.id = testcase.catid AND mgttcid = {$tcID}";
+	$tcData = selectData($query);
+	if ($tcData)
+		$testCaseID = $tcData[0]['id'];
+}
 
 $smarty = new TLSmarty;
 $smarty->assign('treeKind', TL_TREE_KIND);
@@ -54,6 +67,9 @@ $smarty->assign('optResultSelected', $optResultSelected);
 $smarty->assign('arrOwner', $filterOwner);
 // 20050807 - fm - function interface changed
 $smarty->assign('filterKeyword', filterKeyword($_SESSION['testPlanId']));
+$smarty->assign('tcID',$tcID);
+$smarty->assign('testCaseID',$testCaseID);
+$smarty->assign('tcIDFound', $tcData ? 1 : 0);
 $smarty->assign('tree', $tree);
 $smarty->assign('menuUrl',$menuUrl);
 $smarty->assign('SP_html_help_file',$SP_html_help_file);
@@ -68,7 +84,7 @@ $smarty->display('execNavigator.tpl');
 * 	20050528 - fm added purl_to_help argument
 *
 */
-function generateExecTree($build,$purl_to_help,&$menuUrl)
+function generateExecTree($build,$purl_to_help,&$menuUrl,$tcIDFilter = null)
 {
 	global	$dtreeCounter;
 	
@@ -161,16 +177,16 @@ function generateExecTree($build,$purl_to_help,&$menuUrl)
 			{  //display all the categories until we run out
 					
 				//This next section displays test cases. However I need to check if there are actually are any test cases available first
-				if($bKeyWordAll)
-				{
-					//user passed in a result that isnt the default "all" and didnt select a keyword to sort by
-					$TCsql = "select testcase.id, testcase.title, testcase.mgttcid from testcase where testcase.catid = " . $myrowCAT[0] . " order by TCorder,testcase.mgttcid";				
-				}
-				else
+				$TCsql = "select testcase.id, testcase.title, testcase.mgttcid from testcase where testcase.catid = " . $myrowCAT[0];
+				//user passed in a result that isnt the default "all" and didnt select a keyword to sort by
+				if(!$bKeyWordAll)
 				{
 					//user has selected to view a specific result and did select a keyword to sort by
-					$TCsql = "select testcase.id, testcase.title, testcase.mgttcid from testcase where testcase.catid = " . $myrowCAT[0] . " AND (keywords LIKE '%,{$keyword},%' OR keywords like '{$keyword},%') order by TCorder,testcase.mgttcid";
+					$TCsql .= " AND (keywords LIKE '%,{$keyword},%' OR keywords like '{$keyword},%')";
 				}
+				if ($tcIDFilter)
+					$TCsql .= " AND testcase.mgttcid = {$tcIDFilter} ";
+				$TCsql .= " order by TCorder,testcase.mgttcid";				
 
 				$TCResult = do_mysql_query($TCsql); //run the query
 				$numRowsTC = mysql_num_rows($TCResult); //count the rows

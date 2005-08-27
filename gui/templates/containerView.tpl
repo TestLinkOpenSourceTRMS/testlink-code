@@ -1,7 +1,8 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: containerView.tpl,v 1.3 2005/08/22 07:00:49 franciscom Exp $ *}
+{* $Id: containerView.tpl,v 1.4 2005/08/27 20:53:30 schlundus Exp $ *}
 {* 
-Purpose: smarty template - view test specification containers 
+	Purpose: smarty template - view test specification containers 
+	20050828 - scs - adding import of tcs to a specific category
 *}
 {include file="inc_head.tpl"}
 
@@ -90,9 +91,16 @@ Purpose: smarty template - view test specification containers
 		</form>
 		</div>
 		<div>
-		<form method="post" action="lib/testcases/tcEdit.php?data={$data[0]}" />
+		<form style=method="post" action="lib/testcases/tcEdit.php?data={$data[0]}" />
 			<input type="submit" name="newTC" value="{lang_get s='btn_new_tc'}" />  
 		</form>
+		</div>
+		<div>
+		<form method="post" action="lib/testcases/tcImport.php"/>
+			<input type="hidden" name="catID" value="{$data[0]}"/>
+			<input type="submit" name="tcImport" value="{lang_get s='btn_import_tc'}" />
+		</form>
+
 		</div>
 	{/if}
 

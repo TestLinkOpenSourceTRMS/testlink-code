@@ -1,6 +1,7 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execNavigator.tpl,v 1.2 2005/08/16 17:59:13 franciscom Exp $ *}
+{* $Id: execNavigator.tpl,v 1.3 2005/08/27 20:53:30 schlundus Exp $ *}
 {* Purpose: smarty template - show test set tree *}
+{* 20050828 - scs - added searching for tcID *}
 {include file="inc_head.tpl" jsTree="yes"}
 
 <body>
@@ -13,10 +14,13 @@
 
 	<table class="smallGrey" >
 		<caption>
-			
 			{lang_get s='caption_nav_filter_settings'}
 			{include file="inc_help.tpl" filename="execFilter.html"}
 		</caption>
+		<tr>
+			<td>{lang_get s='filter_tcID'}</td>
+			<td><input type="text" name="tcID" value="{$tcID}" maxlength="10" size="5"/></td>
+		</tr>
 		<tr>
 			<td>{lang_get s='filter_owner'}</td>
 			<td><select name="owner">
@@ -28,13 +32,6 @@
 		</tr>
 		<tr>
 			<td>{lang_get s='filter_keyword'}</td>
-{*			<td><select name="keyword">
-				<option value="All">{lang_get s='opt_all'}</option>
-			{section name=Row loop=$arrKeyword}
-				<option value="{$arrKeyword[Row].id}" {$arrKeyword[Row].selected}>{$arrKeyword[Row].name}</option>
-			{/section}
-			</select></td>
-*}
 			<td>{$filterKeyword}</td>
 		</tr>
 		<tr>
@@ -52,9 +49,6 @@
 
 		<tr>
 			<td>{lang_get s='tree_colored_to'}</td>
-{*			
-			<td><input type="checkbox" name="colored" {$treeColored}/></td> 
-*}
 			<td><select name="colored">
 				<option value="build">{lang_get s='opt_build'}</option>
 				<option value="result" {$treeColored}>{lang_get s='opt_last_result'}</option>
@@ -76,6 +70,15 @@
 {$tree}
 </div>
 
-
+{* 20050828 - scs - added searching for tcID *}
+{if $tcIDFound}
+	{literal}
+		<script language="javascript">
+	{/literal}
+		ST({$testCaseID});
+	{literal}
+		</script>
+	{/literal}
+{/if}
 </body>
 </html>

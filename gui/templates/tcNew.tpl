@@ -1,18 +1,24 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: tcNew.tpl,v 1.4 2005/08/26 21:01:27 schlundus Exp $ *}
+{* $Id: tcNew.tpl,v 1.5 2005/08/29 07:59:03 franciscom Exp $ *}
 {* Purpose: smarty template - create new testcase *}
-{* 20050825 - scs - changed item to testcase *}
+{* 
+20050829 - fm
+data -> categoryID 
+fckeditor
+20050825 - scs - changed item to testcase 
+*}
+
 {include file="inc_head.tpl"}
 
 <body>
 
 <h1>{lang_get s='title_new_tc'}</h1>
 
-{include file="inc_update.tpl" result=$sqlResult item="TestCase" name=$name}
+{include file="inc_update.tpl" result=$sqlResult item="Test case" name=$name}
 
 <div class="workBack">
 
-<form method="post" action="lib/testcases/tcEdit.php?data={$data}">
+<form method="post" action="lib/testcases/tcEdit.php?categoryID={$categoryID}">
 
 	<div style="float: right;">
 			<input id="submit" type="submit" name="addTC" value="{lang_get s='btn_create'}" />
@@ -24,22 +30,14 @@
 	
 	<div style="width: 95%;">
 	<div>{lang_get s='summary'}<br />
-	<textarea id="summary" name="summary" style="width: 99%; height: 150px;"></textarea></div>
+	{$summary}</div>
 	<div>{lang_get s='steps'}<br />
-	<textarea id="scenario" name="steps" style="width: 99%; height: 200px;"></textarea></div>
+	{$steps}
 	<div>{lang_get s='expected_results'}<br />
-	<textarea id="exresult" name="exresult" style="width: 99%; height: 170px;"></textarea></div>
+	{$exresult}</div>
 	</div>
 	
 </form>
-
-{include file="inc_htmlArea.tpl"} 
-<script type="text/javascript" defer="1">
-   	HTMLArea.replace('exresult', config);
-   	HTMLArea.replace('scenario', config);
-   	HTMLArea.replace('summary', config);
-</script>
-	
 
 </div>
 

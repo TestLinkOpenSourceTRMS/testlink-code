@@ -1,6 +1,11 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execSetResults.tpl,v 1.4 2005/08/27 20:53:30 schlundus Exp $ *}
+{* $Id: execSetResults.tpl,v 1.5 2005/08/29 08:22:39 franciscom Exp $ *}
 {* Purpose: smarty template - show tests to add results *}
+{*	
+	20050828 - fm
+	localize_date 
+	use $g_tc_status.not_run instead of magic letter 
+*}	
 {* 20050815 - scs - small changes because of code changes in execSetResults.php *}
 {* 20050827 - scs - added display of tcID  *}
 {include file="inc_head.tpl" popup='yes'}
@@ -25,7 +30,7 @@
 		<input type='hidden' name='tc{$arrTC[Row].id}' value='{$arrTC[Row].id}' />
 			<h2>{lang_get s='th_test_case_id'}{$arrTC[Row].mgttcid} :: {lang_get s='title_test_case'} {$arrTC[Row].title|escape}</h2>
 		<div>
- 		{if $arrTC[Row].recentResult.status != '' and $arrTC[Row].recentResult.status != 'n'}			
+ 		{if $arrTC[Row].recentResult.status != '' and $arrTC[Row].recentResult.status != $g_tc_status.not_run}			
 			{if $arrTC[Row].recentResult.status == $g_tc_status.passed}
 				<div class="passBox">
 			{elseif $arrTC[Row].recentResult.status == $g_tc_status.failed}
@@ -34,7 +39,8 @@
 				<div class="blockedBox">
 			{/if}
 			
-			{lang_get s='test_exec_last_run_date'} {$arrTC[Row].recentResult.daterun} {lang_get s='test_exec_by'} {$arrTC[Row].recentResult.runby|escape} 
+			{lang_get s='test_exec_last_run_date'} {localize_date d=$arrTC[Row].recentResult.daterun}
+			{lang_get s='test_exec_by'} {$arrTC[Row].recentResult.runby|escape} 
 			{lang_get s='test_exec_on_build'} {$arrTC[Row].recentResult.build|escape}: 
 			{if $arrTC[Row].recentResult.status == $g_tc_status.passed}
 				{lang_get s='test_status_passed'}

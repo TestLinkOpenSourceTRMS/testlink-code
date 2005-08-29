@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.7 $
- * @modified $Date: 2005/08/27 20:53:31 $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2005/08/29 19:25:07 $
  *
  * @author Andreas Morsing
  *
@@ -38,9 +38,7 @@ $TLS_passwd_lost = "Ihr Passwort wurde an den Email Account, welcher bei der Ben
 $TLS_please_login = "Bitte melden Sie sich an...";
 $TLS_session_expired = "Ihre Session ist abgelaufen, bitte melden Sie sich neu an!";
 $TLS_your_first_login = "Willkommen bei TestLink! Sie haben jetzt Gast-Zugang. Bitte melden Sie sich an...";
-$TLS_sec_note_remove_install_dir = "Bitte entfernen Sie das install-Verzeichnis!";
-$TLS_sec_note_prefix = "TestLink Sicherheitswarnung";
-$TLS_sec_note_admin_default_pwd = "Sie sollten das Standard-Passwort für den \"admin\" Account ändern!";
+
 
 
 // lostPassword.php
@@ -135,22 +133,7 @@ $TLS_question_del = "Löschen?";
 
 // gui/templates/containerEdit.tpl
 $TLS_btn_update_cat = "Kategorie aktualisieren";
-$TLS_cat_alt_name = "Sie müssen einen Namen für die Kategorie eingeben";
-$TLS_cat_alt_scope = "Hier sollten der Bereich und die Ziele des Tests beschrieben werden";
-$TLS_cat_config = "Konfiguration";
-$TLS_cat_data = "Daten";
-$TLS_cat_name = "Name";
-$TLS_cat_scope = "Bereich";
-$TLS_cat_tools = "Tools";
 $TLS_category = "Kategorie";
-$TLS_comp_alt_name = "Bitte fügen Sie einen Namen hinzu. Die Wert ist notwendig.";
-$TLS_comp_alt_scope = "Hier sollten der Bereich und die Ziele des Tests beschrieben werden";
-$TLS_comp_intro = "Einführung";
-$TLS_comp_lim = "Einschränkungen";
-$TLS_comp_method = "Methoden";
-$TLS_comp_name = "Name";
-$TLS_comp_ref = "Referenzen";
-$TLS_comp_scope = "Bereich";
 $TLS_component = "Komponente";
 $TLS_title_edit_level = "Bearbeiten: ";
 
@@ -192,6 +175,7 @@ $TLS_btn_del_cat = "Löschen";
 $TLS_btn_del_com = "Löschen";
 $TLS_btn_edit_cat = "Ändern";
 $TLS_btn_edit_com = "Ändern";
+$TLS_btn_import_tc = "TestCases importieren";
 $TLS_btn_move_cp_cat = "Verschieben/Kopieren";
 $TLS_btn_move_cp_com = "Verschieben/Kopieren";
 $TLS_btn_new_cat = "Neue Kategorie";
@@ -199,16 +183,7 @@ $TLS_btn_new_com = "Neue Komponente";
 $TLS_btn_new_tc = "Test Cases erstellen";
 $TLS_btn_reorder_cat = "Kategorien umordnen";
 $TLS_btn_reorder_tc = "Test Cases umordnen";
-$TLS_configuration = "Konfiguration";
-$TLS_data = "Daten";
-$TLS_introduction = "Einführung";
-$TLS_limitations = "Einschränkungen";
-$TLS_methodology = "Methodologie";
-$TLS_not_defined = "Nicht definiert.";
-$TLS_references = "Referenzen";
-$TLS_scope = "Bereich";
 $TLS_th_product_name = "Produktname";
-$TLS_tools = "Tools";
 
 
 
@@ -219,16 +194,19 @@ $TLS_filter_build = "Filter: Build";
 $TLS_filter_keyword = "Filter: Keyword";
 $TLS_filter_owner = "Filter: Besitzer";
 $TLS_filter_result = "Filter: Resultat";
+$TLS_filter_tcID = "Filter: TestCase ID";
 $TLS_opt_all = "Alle";
 $TLS_opt_build = "Build";
 $TLS_opt_last_result = "Letztes Resultat";
 $TLS_title_tc_suite_navigator = "TestCase Suite Navigator";
 $TLS_tree_colored_to = "TestCase gefärbt nach ";
-$TLS_filter_tcID = "Filter: TestCase ID";
+
 
 
 // gui/templates/execSetResults.tpl
 $TLS_btn_save_tc_exec_results = "Resultate speichern";
+$TLS_button_enter_bug = "Neuen Bug eingeben";
+$TLS_caption_bugtable = "Relevante Bugs";
 $TLS_tc_not_tested_yet = "Test nicht durchgeführt";
 $TLS_test_exec_bug_report = "Bug / Problem Report";
 $TLS_test_exec_by = "durch";
@@ -243,10 +221,10 @@ $TLS_test_status_blocked = "Blockiert";
 $TLS_test_status_failed = "Fehlgeschlagen";
 $TLS_test_status_not_run = "nicht getestet";
 $TLS_test_status_passed = "OK";
+$TLS_th_test_case_id = "ID ";
 $TLS_title_t_r_on_build = "Test Results on Build";
 $TLS_title_t_r_owner = "Besitzer:";
-$TLS_button_enter_bug = "Neuen Bug eingeben";
-$TLS_caption_bugtable = "Relevante Bugs";
+$TLS_title_test_case = "TestCase";
 
 
 
@@ -259,6 +237,10 @@ $TLS_licensed_under = "TestLink ist lizenziert unter der";
 
 
 // gui/templates/inc_update.tpl
+$TLS_Build = "Build";
+$TLS_Keyword = "Keyword";
+$TLS_Product = "Produkt";
+$TLS_TestCase = "testcase";
 $TLS_TestPlan = "TestPlan";
 $TLS_add = "hinzugefügt";
 $TLS_assigned = "assigned";
@@ -266,7 +248,6 @@ $TLS_delete = "gelöscht";
 $TLS_info_failed_db_upd = "Die Datenbank konnte nicht aktualisiert werden!";
 $TLS_info_failed_db_upd_details = "Die Datenbank konnte nicht aktualisiert werden! - details:";
 $TLS_item = "Eintrag";
-$TLS_testcase = "TestCase";
 $TLS_update = "Aktualisierung";
 $TLS_updated = "aktualisiert";
 $TLS_user = "Benutzer";
@@ -322,6 +303,7 @@ $TLS_login_name = "Benutzerlogin:";
 $TLS_lost_password_q = "Passwort vergessen?";
 $TLS_new_user_q = "Neuer Benutzer?";
 $TLS_password = "Passwort:";
+$TLS_sec_note_prefix = "TestLink Sicherheitswarnung";
 
 
 
@@ -525,14 +507,12 @@ $TLS_check_imp_data = "Checke zu importierenden Daten";
 $TLS_cvs_import_ok = "Der CVS Import war OK";
 $TLS_info_imp_data_line1 = "Hinweis: TestLink hat keine Möglichkeit festzustellen, ob die zu importierenden Daten bereits bestehen.";
 $TLS_info_imp_data_line2 = "D.h. falls die Daten bereits bestehen, haben Sie nach dem Import zwei Kopien.";
+$TLS_local_file = "Lokale Datei";
 $TLS_max_size_cvs_file = "Maximale Dateigröße ist 1000000 Bytes";
 $TLS_required_cvs_format = "Erfordliches Dateiformat:";
-$TLS_the_format = "component1,category1,'testcase1','summary','steps','results','key1','key2','key...'";
 $TLS_title_choose_local_file = "Wählen Sie eine Datei zum Importieren";
 $TLS_title_imp_cvs = "CVS Datenimport";
-$TLS_the_format_by_cat = "'testcase1','summary','steps','results','key1','key2','key...'";
-$TLS_btn_import_tc = "TestCases importieren";
-$TLS_local_file = "Lokale Datei";
+
 
 
 // gui/templates/tcMove.tpl
@@ -590,10 +570,8 @@ $TLS_no_tc_spec_av = "Keine Test-Spezifikation verfügbar!";
 $TLS_btn_edit = "Editieren";
 $TLS_btn_mv_cp = "Verschieben/Kopieren";
 $TLS_by = "von";
-$TLS_th_test_case_id = "ID ";
 $TLS_title_created = "Erstellt";
 $TLS_title_last_mod = "Letzte Änderung";
-$TLS_title_test_case = "TestCase";
 $TLS_version = "Version";
 
 
@@ -646,7 +624,6 @@ $TLS_btn_spec_list = "Liste der Spec.";
 $TLS_checked = "Ausgewählt";
 $TLS_help = "Hilfe";
 $TLS_last_edit = "Zuletzt geändert durch ";
-$TLS_popup_feature_unavailable = "Dieses Feature ist noch nicht verfügbar";
 $TLS_popup_sure_delete = "Sind Sie sicher, dass die Anforderungsspezifikation wirklich löschen wollen?";
 $TLS_req_edit_spec = "Anforderungsspezifikation editieren";
 $TLS_req_msg_norequirement = "Keine Anforderung";
@@ -655,6 +632,7 @@ $TLS_req_select_delete = "Anforderungen löschen";
 $TLS_req_spec = "Anforderungsspezifikation";
 $TLS_req_title_list = "Liste der Anforderungen";
 $TLS_req_total_count = "Gesamtanzahl der Anforderungen";
+$TLS_scope = "Bereich";
 
 
 
@@ -805,6 +783,66 @@ $TLS_title_specification = "Spezifikation";
 
 
 
+// gui/templates/reqImport.tpl
+$TLS_btn_back2srs = "Back to Req. Specification";
+$TLS_max_size_cvs_file1 = "Max. size of the file is";
+$TLS_max_size_cvs_file2 = "kB";
+$TLS_req_import_check_note = "Please, verify a possible conflicts, set an appropriate solution and then start import process.";
+$TLS_req_import_dont_empty = "Do not import items with empty Scope";
+$TLS_req_import_format_description1 = " - CSV type requires two fields for each row: 'title','description'";
+$TLS_req_import_format_description2 = " - CSV exported from DOORS requires header row.";
+$TLS_req_import_option_double = "Add a new one with the same title";
+$TLS_req_import_option_header = "Set conflict solution";
+$TLS_req_import_option_overwrite = "Update an existing one";
+$TLS_req_import_option_skip = "Skip import of doubled requirements";
+$TLS_req_import_type = "Type:";
+$TLS_title_choose_file_type = "Choose file type";
+$TLS_title_req_import_check_input = "Check import data";
+$TLS_title_req_import_to = "Import requirements to document:";
+
+
+
+// gui/templates/inc_cat_viewer_ro_m0.tpl
+$TLS_cat_scope = "Bereich";
+$TLS_configuration = "Konfiguration";
+$TLS_data = "Daten";
+$TLS_not_defined = "Nicht definiert.";
+$TLS_tools = "Tools";
+
+
+
+// gui/templates/inc_cat_viewer_rw.tpl
+$TLS_cat_alt_name = "Sie müssen einen Namen für die Kategorie eingeben";
+$TLS_cat_config = "Konfiguration";
+$TLS_cat_data = "Daten";
+$TLS_cat_name = "Name";
+$TLS_cat_tools = "Tools";
+
+
+
+// gui/templates/inc_comp_viewer_ro.tpl
+$TLS_introduction = "Einführung";
+$TLS_limitations = "Einschränkungen";
+$TLS_methodology = "Methodologie";
+$TLS_references = "Referenzen";
+
+
+
+// gui/templates/inc_comp_viewer_rw.tpl
+$TLS_comp_alt_name = "Bitte fügen Sie einen Namen hinzu. Die Wert ist notwendig.";
+$TLS_comp_intro = "Einführung";
+$TLS_comp_lim = "Einschränkungen";
+$TLS_comp_method = "Methoden";
+$TLS_comp_name = "Name";
+$TLS_comp_ref = "Referenzen";
+$TLS_comp_scope = "Bereich";
+
+
+
+// gui/templates/tcEdit_m2.tpl
+
+
+
 // lib/admin/adminProductEdit.php
 $TLS_info_no_more_prods = "Keine weiteren Produkte.";
 $TLS_info_product_activated = "Das Produkt wurde aktiviert.";
@@ -851,6 +889,21 @@ $TLS_trep_status_for_ts = "Status für Test Suite";
 
 
 // lib/functions/requirements.inc.php
+
+
+
+// lib/functions/configCheck.php
+$TLS_sec_note_admin_default_pwd = "Sie sollten das Standard-Passwort für den 'admin' Account ändern!";
+$TLS_sec_note_remove_install_dir = "Bitte entfernen Sie das install-Verzeichnis!";
+
+
+
+// lib/functions/requirementsImport.inc.php
+$TLS_conflict = "Konflikt";
+$TLS_ok = "OK";
+$TLS_req_import_result_added = "LOCALIZE: TLS_req_import_result_added";
+$TLS_req_import_result_overwritten = "LOCALIZE: TLS_req_import_result_overwritten";
+$TLS_req_import_result_skipped = "LOCALIZE: TLS_req_import_result_skipped";
 
 
 
@@ -1034,6 +1087,12 @@ $TLS_warning_empty_tc_title = "Please give a title to test case";
 
 
 
+// lib/testcases/tcImport.php
+$TLS_the_format = "component1,category1,'testcase1','summary','steps','results','key1','key2','key...'";
+$TLS_the_format_by_cat = "'testcase1','summary','steps','results','key1','key2','key...'";
+
+
+
 // lib/req/reqSpecView.php
 $TLS_req_msg_noselect = "nicht ausgewählt";
 
@@ -1041,5 +1100,10 @@ $TLS_req_msg_noselect = "nicht ausgewählt";
 
 // lib/req/reqTcAssign.php
 $TLS_req_msg_notupdated_coverage = "Abdeckung für die Anfordungen konnte nicht aktualisiert werden: ";
+
+
+
+// lib/req/reqImport.php
+$TLS_req_import_finished = "Der Import ist abgeschlossen";
 
 ?>

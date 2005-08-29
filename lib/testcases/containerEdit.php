@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: containerEdit.php,v 1.7 2005/08/29 11:13:46 schlundus Exp $ */
+/* $Id: containerEdit.php,v 1.8 2005/08/29 12:02:17 franciscom Exp $ */
 /* Purpose:  This page manages all the editing of test specification containers. */
 /*
  *
@@ -19,7 +19,7 @@ require_once("../../config.inc.php");
 require_once("../functions/common.php");
 require('archive.inc.php');
 require_once("../../lib/functions/lang_api.php");
-require_once("../../third_party/FCKeditor/fckeditor.php");
+require_once("../../third_party/fckeditor/fckeditor.php");
 require('containerComp.inc.php');
 require('containerCat.inc.php');
 

@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: reqSpecList.php,v $
- * @version $Revision: 1.4 $
- * @modified $Date: 2005/08/29 06:39:36 $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2005/08/29 11:58:10 $
  * 
  * @author Martin Havlat
  * 
@@ -15,7 +15,7 @@
 require_once("../../config.inc.php");
 require_once("common.php");
 require_once('requirements.inc.php');
-require_once("../../third_party/FCKeditor/fckeditor.php");
+require_once("../../third_party/fckeditor/fckeditor.php");
 
 
 testlinkInitPage();

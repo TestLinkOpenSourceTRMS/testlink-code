@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.5 $
- * @modified $Date: 2005/08/29 06:42:14 $  by $Author: franciscom $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2005/08/29 11:58:10 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
  * @author Martin Havlat
@@ -28,7 +28,7 @@ require('archive.inc.php');
 require('../keywords/keywords.inc.php');
 require_once("../../lib/functions/lang_api.php");
 
-require_once("../../third_party/FCKeditor/fckeditor.php");
+require_once("../../third_party/fckeditor/fckeditor.php");
 
 testlinkInitPage();
 

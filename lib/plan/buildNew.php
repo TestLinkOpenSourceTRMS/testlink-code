@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: buildNew.php,v 1.4 2005/08/26 21:01:27 schlundus Exp $ */
+/* $Id: buildNew.php,v 1.5 2005/08/29 11:58:08 franciscom Exp $ */
 /* Purpose:  admins create new builds for a project 
 
 @author Francisco Mancardi - 20050826
@@ -14,7 +14,7 @@ require("../functions/builds.inc.php");
 require_once("../../lib/functions/lang_api.php");
 
 // 20050826 - fm
-require_once("../../third_party/FCKeditor/fckeditor.php");
+require_once("../../third_party/fckeditor/fckeditor.php");
 testlinkInitPage();
 
 

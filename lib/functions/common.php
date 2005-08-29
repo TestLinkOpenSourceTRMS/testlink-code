@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.5 $
- * @modified $Date: 2005/08/23 18:29:24 $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2005/08/29 06:35:09 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -17,6 +17,7 @@
  * email, userID, productID, productName, project (use rather testPlanID),
  * testPlanID, testPlanName
  *
+ * @ author: francisco mancardi - 20050813 - added localize_date_smarty()
  * @ author: francisco mancardi - 20050813 - added TP filtered by Product *
  * @ author: francisco mancardi - 20050810 - added function to_boolean($alt_boolean)
  *
@@ -491,4 +492,37 @@ function to_boolean($alt_boolean)
 	
 	return $the_val;
 }
+
+
+/* 
+-------------------------------------------------------------------------------------------
+20050708 - fm
+Modified to cope with situation where you need to assign a Smarty Template variable instead
+of generate output.
+Now you can use this function in both situatuons.
+
+if the key 'var' is found in the associative array instead of return a value, 
+this value is assigned to $params['var`]
+
+usage: Important: if registered as localize_date()
+       {localize_date d='the date to localize'} 
+------------------------------------------------------------------------------------------
+*/
+function localize_date_smarty($params, &$smarty)
+{
+	global $g_date_format;
+
+  $the_d = strftime($g_date_format, strtotime($params['d']));	
+	if(	isset($params['var']) )
+	{
+		$smarty->assign($params['var'], $the_ret);
+	}
+	else
+	{
+		return $the_d;
+		//return $params['d'];
+		//return $g_date_format;
+	}
+}
+
 ?>

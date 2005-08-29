@@ -1,15 +1,20 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: containerView.tpl,v 1.4 2005/08/27 20:53:30 schlundus Exp $ *}
+{* $Id: containerView.tpl,v 1.5 2005/08/29 08:27:54 franciscom Exp $ *}
 {* 
-	Purpose: smarty template - view test specification containers 
-	20050828 - scs - adding import of tcs to a specific category
+Purpose: smarty template - view test specification containers 
+20050829 - fm
+1. remove |escape on all data fields that use fckeditor during the input phase.
+2. remove pre for the same fields
+3. use associative array instead of ordinal
+
+20050828 - scs - adding import of tcs to a specific category
 *}
 {include file="inc_head.tpl"}
 
 <body>
 <div class="workBack">
 
-<h1>{$level|capitalize}: {$data[1]|escape}</h1>
+<h1>{$level|capitalize}: containerView.tpl {$container_data.name|escape}</h1>
 
 {include file="inc_update.tpl" result=$sqlResult item=$level name=$moddedItem[1] refresh='yes'}
 
@@ -27,7 +32,7 @@
 			<th>{lang_get s='th_product_name'}</th>
 		</tr>
 		<tr>
-			<td>{$data[1]|escape}</td>
+			<td>{$container_data.name|escape}</td>
 		</tr>
 	</table>
 
@@ -36,7 +41,7 @@
 
 	{if $modify_tc_rights == 'yes' || $sqlResult ne ''}
 		<div>
-		<form method="post" action="lib/testcases/containerEdit.php?data={$data[0]}" />
+		<form method="post" action="lib/testcases/containerEdit.php?componentID={$container_data.id}" />
 			<input type="submit" name="editCOM" value="{lang_get s='btn_edit_com'}"
 				     alt="{lang_get s='alt_edit_com'}" />
 			<input type="submit" name="deleteCOM" value="{lang_get s='btn_del_com'}" 
@@ -47,43 +52,19 @@
 		</form>
 		</div>
 		<div>
-		<form method="post" action="lib/testcases/containerEdit.php?data={$data[0]}" />
+		<form method="post" action="lib/testcases/containerEdit.php?componentID={$container_data.id}" />
 			<input type="submit" name="newCAT" value="{lang_get s='btn_new_cat'}" />
 		</form>
 		</div>
 	{/if}
 
-	<table class="simple" style="width: 90%">
-		<tr><th>{lang_get s='component'}: {$data[1]|escape}</th></tr>
-	{if $data[2] ne ''}
-		<tr><td class="bold">{lang_get s='introduction'}</td></tr>
-    	<tr><td><pre>{$data[2]|escape}</pre></td></tr>
-    {/if}
-	<tr><td class="bold">{lang_get s='scope'}</td></tr>
-	{if $data[3] ne ''}
-	    <tr><td>{$data[3]}</td></tr>
-	{else}
-	    <tr><td>{lang_get s='not_defined'}</td></tr>
-    {/if}
-	{if $data[4] ne ''}
-		<tr><td class="bold">{lang_get s='references'}</td></tr>
-    	<tr><td><pre>{$data[4]|escape}</pre></td></tr>
-    {/if}
-	{if $data[5] ne ''}
-		<tr><td class="bold">{lang_get s='methodology'}</td></tr>
-    	<tr><td><pre>{$data[5]|escape}</pre></td></tr>
-    {/if}
-	{if $data[6] ne ''}
-		<tr><td class="bold">{lang_get s='limitations'}</td></tr>
-		<tr><td><pre>{$data[6]|escape}</pre></td></tr>
-    {/if}
-	</table>
+  {include file="inc_comp_viewer_ro.tpl"}
 
 {***** CATEGORY ************************************************}
 {elseif $level == 'category'}
 	{if $modify_tc_rights == 'yes' || $sqlResult ne ''}
 		<div>
-		<form method="post" action="lib/testcases/containerEdit.php?data={$data[0]}" />
+		<form method="post" action="lib/testcases/containerEdit.php?categoryID={$container_data.id}" />
 			<input type="submit" name="editCat"   value="{lang_get s='btn_edit_cat'}" />  
 			<input type="submit" name="deleteCat" value="{lang_get s='btn_del_cat'}" />   
 			<input type="submit" name="moveCat"   value="{lang_get s='btn_move_cp_cat'}" />
@@ -91,60 +72,22 @@
 		</form>
 		</div>
 		<div>
-		<form style=method="post" action="lib/testcases/tcEdit.php?data={$data[0]}" />
+		<form method="post" action="lib/testcases/tcEdit.php?categoryID={$container_data.id}" />
 			<input type="submit" name="newTC" value="{lang_get s='btn_new_tc'}" />  
 		</form>
 		</div>
+		
 		<div>
 		<form method="post" action="lib/testcases/tcImport.php"/>
-			<input type="hidden" name="catID" value="{$data[0]}"/>
+			<input type="hidden" name="catID" value="{$container_data.id}"/>
 			<input type="submit" name="tcImport" value="{lang_get s='btn_import_tc'}" />
 		</form>
-
 		</div>
+
+		
 	{/if}
 
-	<table class="simple" style="width: 90%">
-		<tr>
-			<th>{lang_get s='category'}: {$data[1]|escape}</th>
-		</tr>
-		<tr>
-			<td class="bold">{lang_get s='cat_scope'}</td>
-		</tr>
-	{if $data[2] ne ''}
-    	<tr>
-			<td>{$data[2]}</td>
-		</tr>
-	{else}
-	    <tr>
-			<td>{lang_get s='not_defined'}</td>
-		</tr>
-    {/if}
-	{if $data[3] ne ''}
-		<tr>
-			<td class="bold">{lang_get s='configuration'}</td>
-		</tr>
-	    <tr>
-			<td><pre>{$data[3]|escape}</pre></td>
-		</tr>
-    {/if}
-	{if $data[4] ne ''}
-		<tr>
-			<td class="bold">{lang_get s='data'}</td>
-		</tr>
-    	<tr>
-			<td><pre>{$data[4]|escape}</pre></td>
-		</tr>
-    {/if}
-	{if $data[5] ne ''}
-		<tr>
-			<td class="bold">{lang_get s='tools'}</td>
-		</tr>
-    	<tr>
-			<td><pre>{$data[5]|escape}</pre></td>
-		</tr>
-    {/if}
-	</table>
+ {include file="inc_cat_viewer_ro_m0.tpl"}
 {/if}
 
 </div>

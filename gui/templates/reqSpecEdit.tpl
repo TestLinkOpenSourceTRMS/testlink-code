@@ -1,10 +1,9 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecEdit.tpl,v 1.2 2005/08/16 17:59:13 franciscom Exp $ *}
+{* $Id: reqSpecEdit.tpl,v 1.3 2005/08/29 07:09:40 franciscom Exp $ *}
 {* Purpose: smarty template - edit a req specification *}
 {include file="inc_head.tpl"}
 
 <body onload="document.forms[0].elements[0].focus()">
-
 <h1>{lang_get s='edit'} {lang_get s='req_spec'}: {$arrSpec[0].title}
 	<img alt="{lang_get s='help'}: {lang_get s='req_spec'}" class="help" 
 	src="icons/sym_question.gif" 
@@ -28,7 +27,7 @@
 	</tr>
 	<tr>
 		<th>{lang_get s='scope'}</th>
-		<td><textarea id="scope" name="scope" class="w99h300">{$arrSpec[0].scope}</textarea></td>
+		<td>{$scope}</td>
 	</tr>
 	<tr>
 		<th>{lang_get s='req_total'}</th>
@@ -48,10 +47,6 @@
 
 </div>
 
-{include file="inc_htmlArea.tpl"}
-<script type="text/javascript" defer="1">
-   	HTMLArea.replace('scope', config);
-</script>
 
 </body>
 </html>

@@ -1,11 +1,12 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqCreate.tpl,v 1.2 2005/08/16 17:59:13 franciscom Exp $ *}
+{* $Id: reqCreate.tpl,v 1.3 2005/08/29 07:09:40 franciscom Exp $ *}
 {* Purpose: smarty template - create / edit a req  *}
 {include file="inc_head.tpl"}
 
 <body onload="document.forms[0].elements[0].focus()">
 
 <h1>
+  
 	<img alt="{lang_get s='help'}: {lang_get s='reqs'}" class="help" 
 	src="icons/sym_question.gif" 
 	onclick="javascript:open_popup('{$helphref}requirementsCoverage.html#req');" />
@@ -28,7 +29,7 @@
 	</tr>
 	<tr>
 		<th>{lang_get s='scope'}</th>
-		<td><textarea id="scope" name="scope" class="w99h300"></textarea></td>
+		<td>{$scope}</td>
 	</tr>
 	<tr>
 		<th>{lang_get s='status'}</th>
@@ -48,11 +49,6 @@
 </div>
 
 </div>
-
-{include file="inc_htmlArea.tpl"}
-<script type="text/javascript" defer="1">
-   	HTMLArea.replace('scope', config);
-</script>
 
 </body>
 </html>

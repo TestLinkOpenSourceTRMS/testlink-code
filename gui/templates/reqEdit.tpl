@@ -1,6 +1,11 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqEdit.tpl,v 1.2 2005/08/16 17:59:13 franciscom Exp $ *}
-{* Purpose: smarty template - create / edit a req  *}
+{* $Id: reqEdit.tpl,v 1.3 2005/08/29 07:09:40 franciscom Exp $ *}
+{* 
+Purpose: smarty template - create / edit a req  
+
+20050828 - fm - fckeditor, localize_date
+
+*}
 {include file="inc_head.tpl"}
 
 <body onload="document.forms[0].elements[0].focus()">
@@ -43,7 +48,8 @@
 	<tr>
 		<th>{lang_get s='scope'}</th>
 		<td>{if $modify_req_rights == "yes"}
-				<textarea id="scope" name="scope" class="w99h300">{$arrReq.scope|escape}</textarea>
+		    {* 20050826 - fm*}
+				{$scope}
 			{else}
 				{$arrReq.scope}
 			{/if}
@@ -84,16 +90,10 @@
 </form>
 
 
-<p>{lang_get s="last_edit"}: {$arrReq.edit_by} [{$arrReq.edit_date}]</p>
+<p>{lang_get s="last_edit"}: {$arrReq.edit_by} [{localize_date d=$arrReq.edit_date}]</p>
 
 </div>
 
-{if $modify_req_rights == "yes"}
-{include file="inc_htmlArea.tpl"}
-<script type="text/javascript" defer="1">
-   	HTMLArea.replace('scope', config);
-</script>
-{/if}
 
 </body>
 </html>

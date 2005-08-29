@@ -1,7 +1,9 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: tcView.tpl,v 1.3 2005/08/22 07:00:49 franciscom Exp $ *}
+{* $Id: tcView.tpl,v 1.4 2005/08/29 07:12:03 franciscom Exp $ *}
 {* Purpose: smarty template - view test case in test specification *}
 {* 
+20050828 - fm - localize_date
+
 20050820 - fm 
 access $testcase by name not by ordinal
 layout
@@ -23,7 +25,7 @@ layout
 
 	{include file="inc_update.tpl" result=$sqlResult item="test case" refresh="yes"}
 
-	<form method="post" action="lib/testcases/tcEdit.php?&data={$testcase[row].id}">
+	<form method="post" action="lib/testcases/tcEdit.php?&testcaseID={$testcase[row].id}">
 		<input type="submit" name="editTC"   value="{lang_get s='btn_edit'}">
 		<input type="submit" name="deleteTC" value="{lang_get s='btn_del'}">
 		<input type="submit" name="moveTC"   value="{lang_get s='btn_mv_cp'}">
@@ -60,10 +62,10 @@ layout
 	</table>
 	
 	<div>
-		<p>{lang_get s='title_created'}&nbsp;{$testcase[row].create_date|escape}&nbsp;{lang_get s='by'}&nbsp;
+		<p>{lang_get s='title_created'}&nbsp;{localize_date d=$testcase[row].create_date }&nbsp;{lang_get s='by'}&nbsp;
 		   {$testcase[row].author|escape}
 		{if $testcase[row].reviewer ne ""}
-		<br />{lang_get s='title_last_mod'}&nbsp;{$testcase[row].modified_date|escape}&nbsp;{lang_get s='by'}&nbsp;
+		<br />{lang_get s='title_last_mod'}&nbsp;{localize_date d=$testcase[row].modified_date}&nbsp;{lang_get s='by'}&nbsp;
 		      {$testcase[row].reviewer|escape}
 		{/if}
 		</p>

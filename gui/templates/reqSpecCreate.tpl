@@ -1,10 +1,9 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecCreate.tpl,v 1.2 2005/08/16 17:59:13 franciscom Exp $ *}
+{* $Id: reqSpecCreate.tpl,v 1.3 2005/08/29 07:09:40 franciscom Exp $ *}
 {* Purpose: smarty template - create a new req document *}
 {include file="inc_head.tpl"}
 
 <body>
-
 <h1> 
 	<img alt="{lang_get s='help'}: {lang_get s='req_spec'}" class="help" 
 	src="icons/sym_question.gif" 
@@ -27,7 +26,7 @@
 	</tr>
 	<tr>
 		<th>{lang_get s='scope'}</th>
-		<td><textarea id="scope" name="scope" class="w99h300"></textarea></td>
+		<td>{$scope}</td>
 	</tr>
 	<tr>
 		<th><img alt="{lang_get s='help'}: {lang_get s='req_total_count'}"
@@ -50,9 +49,8 @@
 </div>
 {/if}
 
-{include file="inc_htmlArea.tpl"}
+
 <script type="text/javascript" defer="1">
-   	HTMLArea.replace("scope", config);
    	document.forms[0].title.focus()
 </script>
 

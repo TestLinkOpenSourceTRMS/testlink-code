@@ -1,7 +1,12 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecView.tpl,v 1.4 2005/08/26 14:08:06 havlat Exp $ *}
-{* Purpose: smarty template - view a requirement specification *}
-{* Author: Martin Havlat *}
+{* $Id: reqSpecView.tpl,v 1.5 2005/08/29 07:09:40 franciscom Exp $ *}
+{* 
+   Purpose: smarty template - view a requirement specification
+   Author: Martin Havlat 
+
+   20050828 - fm - localize_date
+
+*}
 {include file="inc_head.tpl" openHead="yes"}
 {include file="inc_jsCheckboxes.tpl"}
 </head>
@@ -49,7 +54,7 @@
 {if $arrSpec[0].total_req != 'n/a'}
 <p>{lang_get s="req_total_count"}: {$arrSpec[0].total_req}</p>
 {/if}
-<p>{lang_get s="last_edit"}: {$arrSpec[0].edit_by} [{$arrSpec[0].edit_date}]</p>
+<p>{lang_get s="last_edit"}: {$arrSpec[0].edit_by} [{localize_date d=$arrSpec[0].edit_date}]</p>
 </div>
 
 

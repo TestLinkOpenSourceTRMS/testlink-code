@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: containerEdit.php,v 1.9 2005/08/29 12:16:38 franciscom Exp $ */
+/* $Id: containerEdit.php,v 1.10 2005/08/29 14:19:02 franciscom Exp $ */
 /* Purpose:  This page manages all the editing of test specification containers. */
 /*
  *
@@ -25,14 +25,15 @@ require('containerCat.inc.php');
 
 testlinkInitPage();
 
+
 // 20050826 - fm - $data has been replaced with the corresponding container ID
-$componentID = isset($_GET['componentID']) ? intval($_GET['componentID']) : null;
-$categoryID  = isset($_GET['categoryID']) ? intval($_GET['categoryID']) : null;
+$my_componentID = isset($_GET['componentID']) ? intval($_GET['componentID']) : null;
+$my_categoryID  = isset($_GET['categoryID']) ? intval($_GET['categoryID']) : null;
 // ----------------------------------------------------------------------------
-$productID   = isset($_GET['productID']) ? intval($_GET['productID']) : null;
-if( !$productID )
+$my_productID   = isset($_GET['productID']) ? intval($_GET['productID']) : null;
+if( !$my_productID )
 {
-  $productID = $_SESSION['productID'];	
+  $my_productID = $_SESSION['productID'];	
 }
 // ----------------------------------------------------------------------------
 
@@ -114,19 +115,19 @@ foreach ($amy_keys as $key)
 //If the user has chosen to edit a component then show this code
 if( $action == 'editCOM' || $action == 'newCOM')
 {
-	viewer_edit_new_com($amy_keys, $oFCK, $action,$productID, $componentID);
+	viewer_edit_new_com($amy_keys, $oFCK, $action,$my_productID, $my_componentID);
 }
 else if($action == 'updateCOM')
 {
 	$c_data=get_comp_values_from_post($amy_keys);
 	$SQLResult = 'ok';
-	if (!updateComponent($componentID,
+	if (!updateComponent($my_componentID,
 	                     $c_data['name'],$c_data['intro'],$c_data['scope'],
 		                   $c_data['ref'],$c_data['method'],$c_data['lim']))
 	{
 		$SQLResult = mysql_error();
 	}	
-	showComponent($componentID, $SQLResult);
+	showComponent($my_componentID, $SQLResult);
 }
 else if($action == 'addCOM')
 {
@@ -137,7 +138,7 @@ else if($action == 'addCOM')
 	if (strlen($c_data['name']))
 	{
 		$result = 'ok';
-		if (!insertProductComponent($productID,
+		if (!insertProductComponent($my_productID,
 		                            $c_data['name'],$c_data['intro'],$c_data['scope'],
 		                            $c_data['ref'],$c_data['method'],$c_data['lim']))
 		{	
@@ -167,38 +168,38 @@ else if ($action == 'deleteCOM')
 	{
 
 		$cats = null;
-		getComponentCategoryIDs($componentID,$cats);
+		getComponentCategoryIDs($my_componentID,$cats);
 		if (sizeof($cats))
 		{
 			$catIDs = "'".implode(",",$cats)."'";
 			deleteCategoriesTestCases($catIDs);
-			deleteComponentCategories($componentID);
+			deleteComponentCategories($my_componentID);
 		}
-		if (deleteComponent($componentID))
+		if (deleteComponent($my_componentID))
 			$smarty->assign('sqlResult', 'ok');
 	   	else
 			$smarty->assign('sqlResult', mysql_error());
 	}
 	else //if the user has clicked the delete button on the archive page show the delete confirmation page
-		$smarty->assign('data', $componentID);
+		$smarty->assign('data', $my_componentID);
 	
 }
 else if( $action == 'moveCom') 
 {
 	$products = null;
-	getAllProductsBut($productID,$products);
+	getAllProductsBut($my_productID,$products);
 
-	$smarty->assign('old_containerID', $productID); // original container
+	$smarty->assign('old_containerID', $my_productID); // original container
 	$smarty->assign('arraySelect', $products);
-	$smarty->assign('objectID', $componentID);
+	$smarty->assign('objectID', $my_componentID);
 }
 else if($action == 'reorderCAT') //user has chosen the reorder CAT page
 {
 	$cats = null;
-	getOrderedComponentCategories($componentID,$cats);
+	getOrderedComponentCategories($my_componentID,$cats);
 
 	$smarty->assign('arraySelect', $cats);
-	$smarty->assign('data', $componentID);
+	$smarty->assign('data', $my_componentID);
 }
 else if($action == 'updateCategoryOrder') //Execute update categories order
 {
@@ -216,11 +217,11 @@ else if($action == 'updateCategoryOrder') //Execute update categories order
 			$generalResult .= lang_get('error_update_catorder')." {$catID}";
 	}
 
-	showComponent($componentID, $generalResult);
+	showComponent($my_componentID, $generalResult);
 }
 else if($action == 'editCat' || $action == 'newCAT')
 {
-	viewer_edit_new_cat($amy_keys, $oFCK, $action, $componentID, $categoryID);
+	viewer_edit_new_cat($amy_keys, $oFCK, $action, $my_componentID, $my_categoryID);
 }
 else if($action == 'addCAT')
 {
@@ -231,7 +232,7 @@ else if($action == 'addCAT')
   if (strlen($c_data['name']))
 	{
 		$result = lang_get('error_cat_add');
-	 	if (insertComponentCategory($componentID,
+	 	if (insertComponentCategory($my_componentID,
 	 	                            $c_data['name'], $c_data['objective'],
 	 	                            $c_data['config'],$c_data['data'],$c_data['tools']))
 	 	{
@@ -256,12 +257,12 @@ else if ($action == 'deleteCat')
 	/** @todo delete also tests in test plan(?) */
 	if(isset($_GET['sure']) && ($_GET['sure'] == 'yes'))
 	{
-		deleteCategoriesTestCases($categoryID);
-		$smarty->assign('sqlResult',  deleteCategory($categoryID) ? 'ok' : mysql_error());
+		deleteCategoriesTestCases($my_categoryID);
+		$smarty->assign('sqlResult',  deleteCategory($my_categoryID) ? 'ok' : mysql_error());
 	}
 	else
 	{
-		$smarty->assign('data', $categoryID);
+		$smarty->assign('data', $my_categoryID);
 	}	
 	
 }
@@ -269,12 +270,12 @@ elseif($action == 'updateCat') //Update a category (from edit window)
 {
 
   $c_data = get_comp_values_from_post($amy_keys);
-	$sqlResult = updateCategory($categoryID,
+	$sqlResult = updateCategory($my_categoryID,
 	                            $c_data['name'], $c_data['objective'],$c_data['config'],
 	                            $c_data['data'],$c_data['tools']) ? 'ok' : mysql_error();
 	
 	// display updated component
-	showCategory($categoryID, $sqlResult);
+	showCategory($my_categoryID, $sqlResult);
 }
 elseif($action == 'moveCat')
 {
@@ -283,22 +284,22 @@ elseif($action == 'moveCat')
 	$comps = null;
 
 	//20050821 - scs - fix for Mantis 37, unable to copy a category into the same component it is in
-	getCategoryComponentAndProduct($categoryID,$compID,$prodID);
+	getCategoryComponentAndProduct($my_categoryID,$compID,$prodID);
 	$compID = 0;
 	getAllProductComponentsBut($compID,$prodID,$comps);
 
 	$smarty->assign('old_containerID', $compID); // original container
 	$smarty->assign('arraySelect', $comps);
-	$smarty->assign('objectID', $categoryID);
+	$smarty->assign('objectID', $my_categoryID);
 }
 else if($action == 'reorderTC') 
 {
 	//user has chosen to reorder the test cases of this category
 	$tcs = null;
-	getOrderedCategoryTestcases($categoryID,$tcs);
+	getOrderedCategoryTestcases($my_categoryID,$tcs);
 
 	$smarty->assign('arrTC', $tcs);
-	$smarty->assign('data', $categoryID);
+	$smarty->assign('data', $my_categoryID);
 	
 } //Update db according to a category's reordered test cases
 else if($action == 'updateTCorder') 
@@ -317,7 +318,7 @@ else if($action == 'updateTCorder')
 	}
 
 	$smarty->assign('sqlResult', $generalResult);
-	$smarty->assign('data', getCategory($categoryID));
+	$smarty->assign('data', getCategory($my_categoryID));
 }
 else if($action == 'categoryCopy' || $action == 'categoryMove')
 {

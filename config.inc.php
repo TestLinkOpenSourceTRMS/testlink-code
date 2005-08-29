@@ -4,13 +4,17 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.5 $
- * @modified $Date: 2005/08/24 06:26:59 $ by $Author: franciscom $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2005/08/29 06:32:31 $ by $Author: franciscom $
  *
  * @author Chad Rosen
  *
  * Constants used throughout TestLink are defined within this file
  * they should be changed for your environment
+ *
+ * @author Francisco Mancardi - 20050827 
+ * changes in $g_tc_status, $g_tc_sd_color
+ * new config parameters: $g_date_format, $g_fckeditor_toolbar
  *
  *
  * @author Francisco Mancardi - 20050822 - $tpl -> $g_tpl
@@ -122,6 +126,20 @@ define('TL_LOCALE_PATH',TL_ABS_PATH . 'locale/');
 define('TL_HELP_RPATH','gui/help/');
 define('TL_INSTRUCTIONS_RPATH','gui/help/');
 
+
+/* Configure frmWorkArea frameset */
+define('TL_FRMWORKAREA_LEFT_FRAME_WIDTH', "30%"); 
+
+/* fckeditor Toolbar */
+//$g_fckeditor_toolbar = "TL_Medium";
+$g_fckeditor_toolbar = "TL_Medium_2";
+
+// see strftime() in PHP manual
+$g_date_format ="%d/%m/%Y";
+//$g_date_format ="%d/%m/%Y %H:%M";
+// $g_date_format ="%Y%m%d"; // pseudo iso
+
+
 /* These are the supported locales */
 $g_locales = array('en_US' => 'American (US)',
 				   'en_GB' => 'English (UK)',
@@ -140,6 +158,7 @@ $g_tc_status = array ( "failed"        => 'f',
                        "passed"        => 'p',
                        "not_run"       => 'n',
                        "not_available" => 'x',
+                       "unknown"       => 'u',
                        "all"           => 'all'
                       ); 
 
@@ -148,9 +167,10 @@ $g_tc_status = array ( "failed"        => 'f',
 $g_tc_sd_color = array ( "failed"        => 'red',
                          "blocked"       => 'blue',
                          "passed"        => 'green',
-                         "not_run"       => 'white',
+                         "not_run"       => 'black',
                          "not_available" => 'yellow',
-                         "all"           => 'all'
+                         "unknown"       => 'black',
+                         "all"           => 'cyan'
                        ); 
 
 
@@ -178,6 +198,9 @@ $g_tpl=array();
 // Standard
 $g_tpl['tcView'] = "tcView.tpl";
 $g_tpl['tcSearchView'] = "tcSearchView.tpl";
+$g_tpl['tcEdit'] = "tcEdit.tpl";
+$g_tpl['tcNew'] = "tcNew.tpl";
+
 
 // Custom
 $g_tpl['tcView'] = "tcView.tpl";

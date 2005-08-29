@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: tcDelete.tpl,v 1.2 2005/08/16 17:59:13 franciscom Exp $ *}
+{* $Id: tcDelete.tpl,v 1.3 2005/08/29 07:08:57 franciscom Exp $ *}
 {* Purpose: smarty template - delete test case in test specification *}
 {* I18N: 20050528 - fm *}
 
@@ -13,7 +13,7 @@
 
 {if $sqlResult == ''}
 	<p>{lang_get s='question_del_tc'}</p>
-	<form method="post" action="lib/testcases/tcEdit.php?sure=yes&data={$data}"> 
+	<form method="post" action="lib/testcases/tcEdit.php?sure=yes&testcaseID={$testcaseID}"> 
 		<input type="submit" name="deleteTC" value="{lang_get s='btn_yes_iw2del'}" />
 	</form>
 {/if}

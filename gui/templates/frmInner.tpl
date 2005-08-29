@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: frmInner.tpl,v 1.2 2005/08/16 17:59:13 franciscom Exp $ *}
+{* $Id: frmInner.tpl,v 1.3 2005/08/29 07:11:37 franciscom Exp $ *}
 {* Purpose: smarty template - inner frame for workarea *}
 {*******************************************************************}
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">
@@ -18,7 +18,8 @@
 	<style media="all" type="text/css">@import "{$css}";</style>
 </head>
 
-<frameset cols="{$treewidth|default:"30%"},*" border="1" frameborder="1" framespacing="0">
+<frameset cols="{$treewidth|default:"30%"},*" border="1" 
+          frameborder="1" framespacing="0">
 	<frame src="{$treeframe}" name="treeframe" scrolling="auto" />
 	<frame src="{$workframe}" name="workframe" scrolling="auto" />
 </frameset>

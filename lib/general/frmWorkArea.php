@@ -4,12 +4,15 @@
  *
  * Filename $RCSfile: frmWorkArea.php,v $
  *
- * @version $Revision: 1.2 $
- * @modified $Date: 2005/08/16 18:00:55 $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2005/08/29 06:37:01 $ by $Author: franciscom $
  *
  * @author Martin Havlat
  *
  *This page is window for navigation and working area (eg tree + edit page).
+ *
+ * @author Francisco Mancardi - 20050828
+ * get default value for treewidth from config.inc.php DEFINE
  *
 **/
 require_once('../../config.inc.php');
@@ -85,8 +88,11 @@ if (in_array($showFeature,array('executeTest','metrics')))
 ///    naming convention.
 /// </enhancement>
 $smarty = new TLSmarty();
+
+
 /** default width of left pane */
-$smarty->assign('treewidth', '30%');
+// 20050828 - fm
+$smarty->assign('treewidth', TL_FRMWORKAREA_LEFT_FRAME_WIDTH);
 $smarty->assign('treeframe', $aa_tfp[$showFeature]);
 $smarty->assign('workframe', $g_rpath['help'] . "/{$showFeature}" . ".html");
 $smarty->display('frmInner.tpl');

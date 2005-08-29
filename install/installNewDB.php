@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: installNewDB.php,v 1.6 2005/08/29 10:35:22 franciscom Exp $ */
+/* $Id: installNewDB.php,v 1.7 2005/08/29 10:43:38 franciscom Exp $ */
 /*
 Parts of this file has been taken from:
 Etomite Content Management System
@@ -10,6 +10,7 @@ Copyright 2003, 2004 Alexander Andrew Butter
 /*
 @author Francisco Mancardi - 20050829
 BUGID Mantis: 0000073: DB Creation fails with no message
+wrong call to create_user_for_db()
 
 @author Francisco Mancardi - 20050824
 moved mysql version check here
@@ -246,7 +247,7 @@ if ($inst_type == "upgrade" )
 
 // ------------------------------------------------------------------------------------------------
 // Now proceed with user checks and user creation (if needed)
-$msg = create_user_for_db($conn, $db, $tl_db_login, $tl_db_passwd, $db_server='localhost');
+$msg = create_user_for_db($conn, $db, $tl_db_login, $tl_db_passwd, $db_server);
 
 echo "</b><br />Creating Testlink DB user `".$tl_db_login."`:<b> ";
 

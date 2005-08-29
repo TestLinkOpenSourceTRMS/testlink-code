@@ -90,6 +90,12 @@ FCKConfig.ToolbarSets["TL_Medium"] = [
 	['FontName','FontSize','TextColor','BGColor']
 ] ;
 
+FCKConfig.ToolbarSets["TL_Medium_2"] = [
+	['Cut','Copy','Paste','Find','Replace','Link','Unlink','Bold','Italic','Underline','OrderedList','UnorderedList','-','Image','Table'],
+	'/',
+	['FontName','FontSize','TextColor','BGColor']
+] ;
+
 
 FCKConfig.ContextMenu = ['Generic','Link','Anchor','Image','Flash','Select','Textarea','Checkbox','Radio','TextField','HiddenField','ImageButton','Button','BulletedList','NumberedList','TableCell','Table','Form'] ;
 

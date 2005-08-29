@@ -1,8 +1,13 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: containerEdit.php,v 1.5 2005/08/26 21:01:27 schlundus Exp $ */
+/* $Id: containerEdit.php,v 1.6 2005/08/29 08:14:29 franciscom Exp $ */
 /* Purpose:  This page manages all the editing of test specification containers. */
 /*
+ *
+ *  
+ * @author: francisco mancardi - 20050820/20050826
+ * fckeditor
+ * refactoring
  *
  * @author: francisco mancardi - 20050820
  * added missing control con category name length
@@ -14,129 +19,195 @@ require_once("../../config.inc.php");
 require_once("../functions/common.php");
 require('archive.inc.php');
 require_once("../../lib/functions/lang_api.php");
+require_once("../../third_party/FCKeditor/fckeditor.php");
+require('containerComp.inc.php');
+require('containerCat.inc.php');
+
 testlinkInitPage();
 
-$data = isset($_GET['data']) ? intval($_GET['data']) : null;
+// 20050826 - fm - $data has been replaced with the corresponding container ID
+$componentID = isset($_GET['componentID']) ? intval($_GET['componentID']) : null;
+$categoryID  = isset($_GET['categoryID']) ? intval($_GET['categoryID']) : null;
+// ----------------------------------------------------------------------------
+$productID   = isset($_GET['productID']) ? intval($_GET['productID']) : null;
+if( !$productID )
+{
+  $productID = $_SESSION['productID'];	
+}
+// ----------------------------------------------------------------------------
+
+$objectID = isset($_GET['objectID']) ? intval($_GET['objectID']) : null;
 $smarty = new TLSmarty;
 
+// 20050822 - fm
+// name/key of fck objects to create and table column name
+$a_keys['component'] = array('intro','scope','ref','method','lim');
+$a_keys['category']  = array('objective','config','data','tools');
+
+$a_tpl = array( 'moveCom' => 'containerMove.tpl',
+                'addCOM' => 'containerNew.tpl',
+                'deleteCOM' => 'containerDelete.tpl',
+                'moveCat' => 'containerMove.tpl',
+                'addCAT'  => 'containerNew.tpl',
+                'deleteCat' => 'containerDelete.tpl',
+                'reorderCAT' => 'containerOrder.tpl',
+                'updateTCorder' => 'containerView.tpl',
+                'reorderTC' => 'tcReorder.tpl'); 
+
+
+$a_com_actions = array ('editCOM', 'newCOM', 'addCOM', 'deleteCOM',
+                        'moveCom','updateCOM', 'componentCopy', 'componentMove' );
+
+$a_cat_actions = array ('reorderCAT','updateCategoryOrder','newCAT','addCAT',
+                        'deleteCat','editCat','updateCat','moveCat','categoryCopy',
+                        'categoryMove', 'updateTCorder', 'reorderTC');
+
+// ----------------------------------------------------------------------------
+$the_tpl=null;
+
+$do_search=1;                    
+foreach ($a_com_actions as $the_key)
+{
+  if (isset($_POST[$the_key]) )
+  {
+    $the_tpl = $a_tpl[$the_key];
+    $action = $the_key;
+    $level = 'component';
+    $do_search = 0;
+    break;
+  }
+}                    
+
+if ($do_search)
+{
+  foreach ($a_cat_actions as $the_key)
+  {
+    if (isset($_POST[$the_key]) )
+    {
+      $the_tpl = $a_tpl[$the_key];
+      $level = 'category';
+      $action = $the_key;
+      $do_search = 0;
+      break;
+    }
+  }                    
+}
+// ----------------------------------------------------------------------------
+$smarty->assign('level', $level);
+ 
+
+// --------------------------------------------------------------------
+// create  fckedit objects
+//
+$amy_keys = $a_keys[$level];
+$oFCK = array();
+foreach ($amy_keys as $key)
+{
+ $oFCK[$key] = new FCKeditor($key) ;
+ $of = &$oFCK[$key];
+ $of->BasePath = $_SESSION['basehref'] . 'third_party/FCKeditor/';
+ $of->ToolbarSet=$g_fckeditor_toolbar;;
+}
+// --------------------------------------------------------------------
+
+
 //If the user has chosen to edit a component then show this code
-if(isset($_POST['editCOM']))
+if( $action == 'editCOM' || $action == 'newCOM')
 {
-	$smarty->assign('path_htmlarea', $_SESSION['basehref'] . 'third_party/htmlarea/');
-	$smarty->assign('level', 'component');
-	$smarty->assign('data',getComponent($data));
-	$smarty->display('containerEdit.tpl');
-//update a component
+	viewer_edit_new_com($amy_keys, $oFCK, $action,$productID, $componentID);
 }
-else if(isset($_POST['updateCOM']))
+else if($action == 'updateCOM')
 {
-	$name = isset($_POST['name']) ? strings_stripSlashes($_POST['name']) : null;
-	$intro = isset($_POST['intro']) ? strings_stripSlashes($_POST['intro']) : null;
-	$scope = isset($_POST['scope']) ? strings_stripSlashes($_POST['scope']) : null;
-	$ref = isset($_POST['ref']) ? strings_stripSlashes($_POST['ref']) : null;
-	$method = isset($_POST['method']) ? strings_stripSlashes($_POST['method']) : null;
-	$lim = isset($_POST['lim']) ? strings_stripSlashes($_POST['lim']) : null;
-	
-	// display updated component
-	if (updateComponent($data,$name,$intro,$scope,$ref,$method,$lim))
-		$SQLResult = 'ok';
-   	else
-		$SQLResult = mysql_error();
-
-	showComponent($data, $SQLResult);
-}
-else if(isset($_POST['newCOM'])) //Creating a new component
-{
-	// display smarty
-	$smarty->assign('path_htmlarea', $_SESSION['basehref'] . 'third_party/htmlarea/');
-	$smarty->assign('level', 'component');
-	$smarty->assign('sqlResult', null);
-	$smarty->display('containerNew.tpl');
-}
-else if(isset($_POST['addCOM']))
-{
-  // we will arrive here after submit in containerNew.tpl
-  //
-	$name = isset($_POST['name']) ? strings_stripSlashes($_POST['name']) : null;
-	$intro = isset($_POST['intro']) ? strings_stripSlashes($_POST['intro']) : null;
-	$scope = isset($_POST['scope']) ? strings_stripSlashes($_POST['scope']) : null;
-	$ref = isset($_POST['ref']) ? strings_stripSlashes($_POST['ref']) : null;
-	$method = isset($_POST['method']) ? strings_stripSlashes($_POST['method']) : null;
-	$lim = isset($_POST['lim']) ? strings_stripSlashes($_POST['lim']) : null;
-
-	// display smarty
-	if (strlen($name))
+	$c_data=get_comp_values_from_post($amy_keys);
+	$SQLResult = 'ok';
+	if (!updateComponent($componentID,
+	                     $c_data['name'],$c_data['intro'],$c_data['scope'],
+		                   $c_data['ref'],$c_data['method'],$c_data['lim']))
 	{
-		if (insertProductComponent($_SESSION['productID'],$name,$intro,$scope,$ref,$method,$lim))
-			$result = 'ok';
-	   	else
-			$result = mysql_error();
-	}
-	else
-		$result = lang_get('warning_empty_com_name');
-		
-	$smarty->assign('sqlResult',$result);
-	$smarty->assign('path_htmlarea', $_SESSION['basehref'] . 'third_party/htmlarea/');
-	$smarty->assign('level', 'component');
-	$smarty->assign('name', $name);
-	$smarty->display('containerNew.tpl');
-
-// delete component and inner data (cat + tc) 
+		$SQLResult = mysql_error();
+	}	
+	showComponent($componentID, $SQLResult);
 }
-else if (isset($_POST['deleteCOM']))
+else if($action == 'addCOM')
 {
+  // we will arrive here after submit in containerNew.tpl (newCOM)
+	$c_data=get_comp_values_from_post($amy_keys);
+
+	$result = lang_get('warning_empty_com_name');
+	if (strlen($c_data['name']))
+	{
+		$result = 'ok';
+		if (!insertProductComponent($productID,
+		                            $c_data['name'],$c_data['intro'],$c_data['scope'],
+		                            $c_data['ref'],$c_data['method'],$c_data['lim']))
+		{	
+	   $result = mysql_error();
+		}	
+	}
+
+  // setup for displaying an empty form
+	foreach ($amy_keys as $key)
+  {
+  	// Warning:
+  	// the data assignment will work while the keys in $the_data are identical
+  	// to the keys used on $oFCK.
+  	$of = &$oFCK[$key];
+  	$smarty->assign($key, $of->CreateHTML());
+	}
+			
+	$smarty->assign('sqlResult',$result);
+	//$smarty->assign('name', $c_data['name']);
+
+}
+else if ($action == 'deleteCOM')
+{
+  // delete component and inner data (cat + tc) 
 	//check to see if the user said he was sure he wanted to delete
 	if(isset($_GET['sure']) && ($_GET['sure'] == 'yes'))
 	{
-		$compID = $data;
 
 		$cats = null;
-		getComponentCategoryIDs($compID,$cats);
+		getComponentCategoryIDs($componentID,$cats);
 		if (sizeof($cats))
 		{
 			$catIDs = "'".implode(",",$cats)."'";
 			deleteCategoriesTestCases($catIDs);
-			deleteComponentCategories($compID);
+			deleteComponentCategories($componentID);
 		}
-		if (deleteComponent($compID))
+		if (deleteComponent($componentID))
 			$smarty->assign('sqlResult', 'ok');
 	   	else
 			$smarty->assign('sqlResult', mysql_error());
 	}
 	else //if the user has clicked the delete button on the archive page show the delete confirmation page
-		$smarty->assign('data', $data);
+		$smarty->assign('data', $componentID);
 	
-	$smarty->assign('level', 'component');
-	$smarty->display('containerDelete.tpl');
-//user has chosen to move/copy a component to a different product
 }
-else if(isset($_POST['moveCom'])) 
+else if( $action == 'moveCom') 
 {
 	$products = null;
-	getAllProductsBut($_SESSION['productID'],$products);
+	getAllProductsBut($productID,$products);
 
-	$smarty->assign('old', $_SESSION['productID']); // original container
+	$smarty->assign('old_containerID', $productID); // original container
 	$smarty->assign('arraySelect', $products);
-	$smarty->assign('data', $data);
-	$smarty->assign('level', 'component');
-	$smarty->display('containerMove.tpl');
+	$smarty->assign('objectID', $componentID);
 }
-else if(isset($_POST['reorderCAT'])) //user has chosen the reorder CAT page
+else if($action == 'reorderCAT') //user has chosen the reorder CAT page
 {
 	$cats = null;
-	getOrderedComponentCategories($data,$cats);
+	getOrderedComponentCategories($componentID,$cats);
 
 	$smarty->assign('arraySelect', $cats);
-	$smarty->assign('data', $data);
-	$smarty->display('containerOrder.tpl');
+	$smarty->assign('data', $componentID);
 }
-else if(isset($_POST['updateCategoryOrder'])) //Execute update categories order
+else if($action == 'updateCategoryOrder') //Execute update categories order
 {
 	$newArray = extractInput($_POST);
 	$generalResult = 'ok';
 	
 	//skip the first one, this is the submit button
-	for($i = 1;$i < sizeof($newArray);$i++)
+	$qta_loops=sizeof($newArray);
+	for($i = 1;$i < $qta_loops ;$i++)
 	{
 		$catID = intval($newArray[$i++]);
 		$order = intval($newArray[$i]);
@@ -145,111 +216,92 @@ else if(isset($_POST['updateCategoryOrder'])) //Execute update categories order
 			$generalResult .= lang_get('error_update_catorder')." {$catID}";
 	}
 
-	showComponent($data, $generalResult);
+	showComponent($componentID, $generalResult);
 }
-elseif(isset($_POST['newCAT'])) //Creating a new category
+else if($action == 'editCat' || $action == 'newCAT')
 {
-	// display smarty
-	$smarty->assign('path_htmlarea', $_SESSION['basehref'] . 'third_party/htmlarea/');
-	$smarty->assign('sqlResult', null);
-	$smarty->assign('level', 'category');
-	$smarty->assign('data', $data);
-	$smarty->display('containerNew.tpl');
+	viewer_edit_new_cat($amy_keys, $oFCK, $action, $componentID, $categoryID);
 }
-else if(isset($_POST['addCAT']))
+else if($action == 'addCAT')
 {
-	//Execute query 'Add Category'
-	$name = isset($_POST['name']) ? strings_stripSlashes($_POST['name']) : null;
-	$objective = isset($_POST['objective']) ? strings_stripSlashes($_POST['objective']) : null;
-	$config = isset($_POST['config']) ? strings_stripSlashes($_POST['config']) : null;
-	$testdata = isset($_POST['testdata']) ? strings_stripSlashes($_POST['testdata']) : null;
-	$tools = isset($_POST['tools']) ? strings_stripSlashes($_POST['tools']) : null;
+  // we will arrive here after submit in containerNew.tpl (newCAT)
+  $c_data = get_comp_values_from_post($amy_keys);
+ 	$result = lang_get('warning_empty_cat_name');	
 
-  // 20050820 - fm 
-  if (strlen($name))
+  if (strlen($c_data['name']))
 	{
 		$result = lang_get('error_cat_add');
-	 	if (insertComponentCategory($data,$name,$objective,$config,$testdata,$tools))
+	 	if (insertComponentCategory($componentID,
+	 	                            $c_data['name'], $c_data['objective'],
+	 	                            $c_data['config'],$c_data['data'],$c_data['tools']))
 	 	{
   		$result = 'ok';
   	}	
   }
-  else
-  {
-  	$result = lang_get('warning_empty_cat_name');	
-  }
-		
-		
-	$smarty->assign('path_htmlarea', $_SESSION['basehref'] . 'third_party/htmlarea/');
-	$smarty->assign('sqlResult',$result);
-	$smarty->assign('data', $data);
-	$smarty->assign('name', $name);
-	$smarty->assign('level', 'category');
 
-	// show again a new container form
-	$smarty->display('containerNew.tpl');
+	// show again a new empty container form
+	foreach ($amy_keys as $key)
+  {
+  	// Warning:
+  	// the data assignment will work while the keys in $the_data are identical
+  	// to the keys used on $oFCK.
+  	$of = &$oFCK[$key];
+  	$smarty->assign($key, $of->CreateHTML());
+	}
+	$smarty->assign('sqlResult',$result);
+
 }
-else if (isset($_POST['deleteCat']))
+else if ($action == 'deleteCat')
 {
 	/** @todo delete also tests in test plan(?) */
 	if(isset($_GET['sure']) && ($_GET['sure'] == 'yes'))
 	{
-		deleteCategoriesTestCases($data);
-		$smarty->assign('sqlResult',  deleteCategory($data) ? 'ok' : mysql_error());
+		deleteCategoriesTestCases($categoryID);
+		$smarty->assign('sqlResult',  deleteCategory($categoryID) ? 'ok' : mysql_error());
 	}
 	else
-		$smarty->assign('data', $data);
+	{
+		$smarty->assign('data', $categoryID);
+	}	
 	
-	$smarty->assign('level', 'category');
-	$smarty->display('containerDelete.tpl');
 }
-else if(isset($_POST['editCat']))
+elseif($action == 'updateCat') //Update a category (from edit window)
 {
-	$smarty->assign('path_htmlarea', $_SESSION['basehref'] . 'third_party/htmlarea/');
-	$smarty->assign('level', 'category');
-	$smarty->assign('data', getCategory($data));
-	$smarty->display('containerEdit.tpl');
-}
-elseif(isset($_POST['updateCat'])) //Update a category (from edit window)
-{
-	$name = isset($_POST['name']) ? strings_stripSlashes($_POST['name']) : null;
-	$objective = isset($_POST['objective']) ? strings_stripSlashes($_POST['objective']) : null;
-	$config = isset($_POST['config']) ? strings_stripSlashes($_POST['config']) : null;
-	$pdata = isset($_POST['data']) ? strings_stripSlashes($_POST['data']) : null;
-	$tools = isset($_POST['tools']) ? strings_stripSlashes($_POST['tools']) : null;
+
+  $c_data = get_comp_values_from_post($amy_keys);
+	$sqlResult = updateCategory($categoryID,
+	                            $c_data['name'], $c_data['objective'],$c_data['config'],
+	                            $c_data['data'],$c_data['tools']) ? 'ok' : mysql_error();
 	
-	$sqlResult = updateCategory($data,$name,$objective,$config,$pdata,$tools) ? 'ok' : mysql_error();
 	// display updated component
-	showCategory($data, $sqlResult);
+	showCategory($categoryID, $sqlResult);
 }
-elseif(isset($_POST['moveCat']))
+elseif($action == 'moveCat')
 {
 	$compID = 0;
 	$prodID = 0;
-	getCategoryComponentAndProduct($data,$compID,$prodID);
 	$comps = null;
-	//20050821 - scs - fix for Mantis 37, unable to copy a category into the same component it is in
+
+	//20050821 - am - fix for Mantis 37, unable to copy a category into the same component it is in
 	$compID = 0;
+	getCategoryComponentAndProduct($categoryID,$compID,$prodID);
 	getAllProductComponentsBut($compID,$prodID,$comps);
 
-	$smarty->assign('old', $compID); // original container
+	$smarty->assign('old_containerID', $compID); // original container
 	$smarty->assign('arraySelect', $comps);
-	$smarty->assign('data', $data);
-	$smarty->assign('level', 'category');
-	$smarty->display('containerMove.tpl');
-	// reorder test cases form	
+	$smarty->assign('objectID', $categoryID);
 }
-else if(isset($_POST['reorderTC'])) //user has chosen to reorder the test cases of this category
+else if($action == 'reorderTC') 
 {
+	//user has chosen to reorder the test cases of this category
 	$tcs = null;
-	getOrderedCategoryTestcases($data,$tcs);
+	getOrderedCategoryTestcases($categoryID,$tcs);
 
 	$smarty->assign('arrTC', $tcs);
-	$smarty->assign('data', $data);
-	$smarty->display('tcReorder.tpl');
+	$smarty->assign('data', $categoryID);
 	
 } //Update db according to a category's reordered test cases
-else if(isset($_POST['updateTCorder'])) 
+else if($action == 'updateTCorder') 
 {
 	$newArray = extractInput($_POST); //Reorder the POST array to numeric
 	$generalResult = 'ok';
@@ -265,50 +317,42 @@ else if(isset($_POST['updateTCorder']))
 	}
 
 	$smarty->assign('sqlResult', $generalResult);
-	$smarty->assign('level', 'category');
-	$smarty->assign('data', getCategory($data));
-	$smarty->display('containerView.tpl');
+	$smarty->assign('data', getCategory($categoryID));
 }
-else if(isset($_POST['categoryCopy']))
+else if($action == 'categoryCopy' || $action == 'categoryMove')
 {
-	$compID = isset($_POST['moveCopy']) ? intval($_POST['moveCopy']) : 0;
-	$nested = isset($_POST['nested']) ? $_POST['nested'] : "no";
-	$old = isset($_POST['old']) ? intval($_POST['old']): 0;
-	
-	if ($compID)
-		$result = copyCategoryToComponent($compID, $data, $nested);
-	showComponent($old, $result,'update',$compID);
+	copy_or_move_cat( $action, $objectID, $_POST);
 }
-else if(isset($_POST['categoryMove']))
+else if( $action == 'componentCopy' || $action == 'componentMove')
 {
-	$compID = isset($_POST['moveCopy']) ? intval($_POST['moveCopy']) : 0;
-	$old = isset($_POST['old']) ? intval($_POST['old']): 0;
-	
-	if ($compID)
-		$result = moveCategoryToComponent($compID, $data);
-	showComponent($old, $result);
-}
-else if(isset($_POST['componentCopy']))
-{
-	$prodID = isset($_POST['moveCopy']) ? intval($_POST['moveCopy']) : 0;
-	$nested = isset($_POST['nested']) ? $_POST['nested'] : "no";
-	$result = 0;
-	if ($prodID)
-		$result = copyComponentToProduct($prodID, $data, $nested);
-	
-	showProduct($_SESSION['productID'], $result,'update',$prodID);
-}
-else if(isset($_POST['componentMove']))
-{
-	$prodID = isset($_POST['moveCopy']) ? intval($_POST['moveCopy']) : 0;
-	$result = 0;
-	if ($prodID)
-		$result = moveComponentToProduct($prodID, $data);
-	showProduct($_SESSION['productID'], $result);
-}
+	$prodID=$_SESSION['productID'];
+	copy_or_move_comp( $action, $objectID, $prodID ,$_POST);
+}	
 else 
 {
 	trigger_error("containerEdit.php - No correct GET/POST data", E_USER_ERROR);
 } // end of main if
+
+
+if ($the_tpl)
+{
+	$smarty->display($the_tpl);
+} 
+?>
+
+
+
+<?php
+function get_comp_values_from_post($akeys2get)
+{
+  $amy_post = $akeys2get;
+	$amy_post[] = 'name';
+	$c_data=array();
+  foreach ($amy_post as $key)
+  {
+  	$c_data[$key] = isset($_POST[$key]) ? strings_stripSlashes($_POST[$key]) : null;
+  }
+  return ($c_data);
+}	
 ?>
 

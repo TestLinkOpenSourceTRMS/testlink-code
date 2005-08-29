@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: archive.inc.php,v $
  *
- * @version $Revision: 1.6 $
- * @modified $Date: 2005/08/26 21:01:27 $ by $Author: schlundus $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2005/08/29 08:17:17 $ by $Author: franciscom $
  *
  * @author Martin Havlat
  * Purpose:  functions for test specification management have three parts:
@@ -17,6 +17,9 @@
  *
  *
  * @author Francisco Mancardi - 20050820
+ * $data -> container_data (to avoid problems with field data table mgmtcategory)
+ *
+ * @author Francisco Mancardi - 20050820
  * refactoring getTestcase(), getTestcaseTitle()
 **//////////////////////////////////////////////////////////////////////////////
 
@@ -26,7 +29,7 @@
 function getComponent($id)
 {
 	$sqlCOM = "SELECT id,name,intro,scope,ref,method,lim FROM mgtcomponent " .
-			"WHERE id=" . $id;
+			      "WHERE id=" . $id;
 	$resultCOM = do_mysql_query($sqlCOM);
 
 	return mysql_fetch_array($resultCOM);
@@ -114,7 +117,7 @@ function showProduct($id, $sqlResult = '', $sqlAction = 'update',$moddedItem = 0
 	$moddedItem = ($moddedItem  ? getProduct($moddedItem) : $product);
 	$smarty->assign('moddedItem',$moddedItem);
 	$smarty->assign('level', 'product');
-	$smarty->assign('data', $product);
+	$smarty->assign('container_data', $product);
 	$smarty->display('containerView.tpl');
 }
 
@@ -136,8 +139,9 @@ function showComponent($id, $sqlResult = '', $sqlAction = 'update',$moddedItem =
 	
 	$moddedItem = ($moddedItem  ? getComponent($moddedItem) : $component);
 	$smarty->assign('moddedItem',$moddedItem);
+	
 	// get data
-	$smarty->assign('data', $component);
+	$smarty->assign('container_data', $component);
 	$smarty->display('containerView.tpl');
 }
 
@@ -158,7 +162,7 @@ function showCategory($id, $sqlResult = '', $sqlAction = 'update',$moddedItem = 
 	$smarty->assign('moddedItem',$moddedItem);
 	
 	$smarty->assign('level', 'category');
-	$smarty->assign('data', $category);
+	$smarty->assign('container_data', $category);
 	$smarty->display('containerView.tpl');
 }
 
@@ -201,9 +205,6 @@ function showTestcase($id,$allow_edit=1)
 	
 	$smarty = new TLSmarty;
 	$smarty->assign('modify_tc_rights', $can_edit);
-
-	// $smarty->assign('testcase', $myrowTC);
-
 	$smarty->assign('testcase',$tc_array);
 	
 	// 20050821 - fm
@@ -522,7 +523,7 @@ function insertTestcase($catID,$title,$summary,$steps,$outcome,$user,$tcOrder = 
 	return $result ? mysql_insert_id() : 0;
 }
 
-// 20050819 - scs - fix for bug Mantis 59 Use of term "created by" is not enforced---
+// 20050819 - am - fix for bug Mantis 59 Use of term "created by" is not enforced---
 function updateTestcase($tcID,$title,$summary,$steps,$outcome,$user,$keywords,$version)
 {
 	$sql = "UPDATE mgttestcase SET keywords='" . mysql_escape_string($keywords) . "', version='" . 

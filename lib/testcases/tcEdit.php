@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.6 $
- * @modified $Date: 2005/08/29 11:58:10 $  by $Author: franciscom $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2005/08/29 12:16:38 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
  * @author Martin Havlat
@@ -39,9 +39,9 @@ $a_ofck = array('summary','steps','exresult');
 $oFCK = array();
 foreach ($a_ofck as $key)
 {
- $oFCK[$key] = new FCKeditor($key) ;
+ $oFCK[$key] = new fckeditor($key) ;
  $of = &$oFCK[$key];
- $of->BasePath = $_SESSION['basehref'] . 'third_party/FCKeditor/';
+ $of->BasePath = $_SESSION['basehref'] . 'third_party/fckeditor/';
  $of->ToolbarSet=$g_fckeditor_toolbar;;
 }
 // --------------------------------------------------------------------

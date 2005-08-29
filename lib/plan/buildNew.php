@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: buildNew.php,v 1.5 2005/08/29 11:58:08 franciscom Exp $ */
+/* $Id: buildNew.php,v 1.6 2005/08/29 12:16:38 franciscom Exp $ */
 /* Purpose:  admins create new builds for a project 
 
 @author Francisco Mancardi - 20050826
@@ -23,8 +23,8 @@ $builds = getBuilds($_SESSION['testPlanId']);
 $smarty = new TLSmarty;
 
 
-$of = new FCKeditor('notes') ;
-$of->BasePath = $_SESSION['basehref'] . 'third_party/FCKeditor/';
+$of = new fckeditor('notes') ;
+$of->BasePath = $_SESSION['basehref'] . 'third_party/fckeditor/';
 $of->ToolbarSet='TL_Medium';
 
 

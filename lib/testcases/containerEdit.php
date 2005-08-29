@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: containerEdit.php,v 1.8 2005/08/29 12:02:17 franciscom Exp $ */
+/* $Id: containerEdit.php,v 1.9 2005/08/29 12:16:38 franciscom Exp $ */
 /* Purpose:  This page manages all the editing of test specification containers. */
 /*
  *
@@ -105,7 +105,7 @@ foreach ($amy_keys as $key)
 {
  $oFCK[$key] = new FCKeditor($key) ;
  $of = &$oFCK[$key];
- $of->BasePath = $_SESSION['basehref'] . 'third_party/FCKeditor/';
+ $of->BasePath = $_SESSION['basehref'] . 'third_party/fckeditor/';
  $of->ToolbarSet=$g_fckeditor_toolbar;;
 }
 // --------------------------------------------------------------------

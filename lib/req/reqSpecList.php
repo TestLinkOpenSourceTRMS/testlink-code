@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: reqSpecList.php,v $
- * @version $Revision: 1.5 $
- * @modified $Date: 2005/08/29 11:58:10 $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2005/08/29 12:16:38 $
  * 
  * @author Martin Havlat
  * 
@@ -56,8 +56,8 @@ $arrSpec = getReqSpec('product');
 
 
 // 20050826 - fm
-$of = new FCKeditor('scope') ;
-$of->BasePath = $_SESSION['basehref'] . 'third_party/FCKeditor/';
+$of = new fckeditor('scope') ;
+$of->BasePath = $_SESSION['basehref'] . 'third_party/fckeditor/';
 $of->ToolbarSet=$g_fckeditor_toolbar;;
 
 

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tlsmarty.inc.php,v $
  *
- * @version $Revision: 1.2 $
- * @modified $Date: 2005/08/16 18:00:55 $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2005/08/29 06:36:30 $
  *
  * @author Martin Havlat
  *
@@ -53,6 +53,10 @@ class TLSmarty extends Smarty
 		global $g_locales;
 		$this->assign('optLocale',$g_locales);
 		$this->register_function("lang_get", "lang_get_smarty");
+		
+		// 20050828 - fm
+		$this->register_function("localize_date", "localize_date_smarty");
+
 		
 		// define a select structure for {html_options ...}
 		$this->assign('option_yes_no', array(0 => lang_get('No'), 1 => lang_get('Yes')));

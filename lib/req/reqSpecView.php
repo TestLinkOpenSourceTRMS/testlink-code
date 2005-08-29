@@ -3,18 +3,22 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: reqSpecView.php,v $
- * @version $Revision: 1.2 $
- * @modified $Date: 2005/08/16 18:00:57 $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2005/08/29 06:39:36 $
  * 
  * @author Martin Havlat
  * 
  * Screen to view existing requirements within a req. specification.
  * 
+ * @author Francisco Mancardi - fm - fckeditor
+ *
  */
 ////////////////////////////////////////////////////////////////////////////////
 require_once("../../config.inc.php");
 require_once("common.php");
 require_once('requirements.inc.php');
+require_once("../../third_party/FCKeditor/fckeditor.php");
+
 
 // init page 
 tLog('POST: ' . implode(',',$_POST));
@@ -37,12 +41,25 @@ $reqStatus = isset($_POST['reqStatus']) ? strings_stripSlashes($_POST['reqStatus
 $countReq = isset($_POST['countReq']) ? strings_stripSlashes($_POST['countReq']) : null;
 
 $arrCov = null;
+
+
+
+
+// 20050826 - fm
+$of = new FCKeditor('scope') ;
+$of->BasePath = $_SESSION['basehref'] . 'third_party/FCKeditor/';
+$of->ToolbarSet=$g_fckeditor_toolbar;;
+
+
 // create a new spec.
 if(isset($_POST['createReq']))
 {
 	if (isset($_POST['title'])) {
 		$sqlResult = createRequirement($title,$scope,$reqStatus,$idSRS);
 		$action = 'create';
+		
+		//
+		$scope='';
 	}
 	
 	$template = 'reqCreate.tpl';
@@ -55,6 +72,9 @@ elseif (isset($_GET['editReq']))
 	$arrReq = getReqData($idReq);
 	$arrReq['coverage'] = getTc4Req($idReq);
 
+  // 20050826
+  $scope = $arrReq['scope']; 
+  $action ='editReq';
 	$template = 'reqEdit.tpl';
 	$bGetReqs = FALSE;
 }
@@ -75,7 +95,9 @@ elseif (isset($_POST['deleteReq']))
 elseif (isset($_POST['editSRS']))
 {
 	$template = 'reqSpecEdit.tpl';
-//	$set = $id;
+	$action="editRSR";
+	
+  //	$set = $id;
 }
 // update spec.
 elseif (isset($_POST['updateSRS']))
@@ -133,8 +155,23 @@ $smarty->assign('sqlItem', $sqlItem);
 $smarty->assign('action', $action);
 $smarty->assign('name',$title); // of updated item
 $smarty->assign('selectReqStatus', array('Normal' => 'Normal',
-		'Not testable' => 'Not testable'));
+		                                     'Not testable' => 'Not testable'));
 $smarty->assign('modify_req_rights', has_rights("mgt_modify_req")); 
 
+if($scope)
+{
+	$of->Value=$scope;
+}
+else if ($action && $action != 'create')
+{
+	$of->Value=$arrSpec[0]['scope'];
+}
+else
+{
+	$of->Value="";
+}
+
+
+$smarty->assign('scope',$of->CreateHTML());
 $smarty->display($template);
 ?>

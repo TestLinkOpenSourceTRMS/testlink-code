@@ -4,14 +4,17 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.4 $
- * @modified $Date: 2005/08/22 07:35:30 $  by $Author: franciscom $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2005/08/29 06:42:14 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
  * @author Martin Havlat
  *
  * @todo deactive users instead of delete
  * 
+ * @author Francisco Mancardi - 20050827
+ * fckeditor
+ *
  * @author Francisco Mancardi - 20050821
  * added missing control in tc title len
  * interface - reduce global coupling
@@ -24,9 +27,28 @@ require_once("../functions/common.php");
 require('archive.inc.php');
 require('../keywords/keywords.inc.php');
 require_once("../../lib/functions/lang_api.php");
+
+require_once("../../third_party/FCKeditor/fckeditor.php");
+
 testlinkInitPage();
 
 // set variables
+// --------------------------------------------------------------------
+// create  fckedit objects
+$a_ofck = array('summary','steps','exresult');
+$oFCK = array();
+foreach ($a_ofck as $key)
+{
+ $oFCK[$key] = new FCKeditor($key) ;
+ $of = &$oFCK[$key];
+ $of->BasePath = $_SESSION['basehref'] . 'third_party/FCKeditor/';
+ $of->ToolbarSet=$g_fckeditor_toolbar;;
+}
+// --------------------------------------------------------------------
+//echo "<pre>"; print_r($oFCK); echo "</pre>";
+
+
+
 $tc = null;
 $keySize = null;
 if (isset($_POST['editTC']))
@@ -35,8 +57,12 @@ else if (isset($_GET['editTC']))
 	$tc = $_GET['editTC'];
 
 $product = $_SESSION['productID'];
-$data = isset($_GET['data']) ? intval($_GET['data']) : 0;
+//$data = isset($_GET['data']) ? intval($_GET['data']) : 0;
 
+// 20050827
+$categoryID = isset($_GET['categoryID']) ? intval($_GET['categoryID']) : 0;
+$testcaseID = isset($_GET['testcaseID']) ? intval($_GET['testcaseID']) : 0;
+$show_newTC_form = 0;
 
 
 $smarty = new TLSmarty;
@@ -51,10 +77,10 @@ if($tc)
 	$setOfKeys = array();
 	
 	// get TC data
-	$myrowTC = getTestcase($data,false);
+	$myrowTC = getTestcase($testcaseID,false);
 
 	$tcKeywords = null;
-	getTCKeywords($data,$tcKeywords);
+	getTCKeywords($testcaseID,$tcKeywords);
 	$prodKeywords = null;
 	getProductKeywords($_SESSION['productID'],$prodKeywords);
 	if (sizeof($prodKeywords))
@@ -70,12 +96,25 @@ if($tc)
 		}
 	}
 
+	foreach ($a_ofck as $key)
+  {
+  	// Warning:
+  	// the data assignment will work while the keys in $the_data are identical
+  	// to the keys used on $oFCK.
+  	$of = &$oFCK[$key];
+  	$of->Value = $myrowTC[$key];
+  	$smarty->assign($key, $of->CreateHTML());
+	}
 
 	$smarty->assign('tc', $myrowTC);
-	$smarty->assign('data', $data);
+	$smarty->assign('testcaseID', $testcaseID);
 	$smarty->assign('keys', $setOfKeys);
 	$smarty->assign('keysize', $keySize);
-	$smarty->display('tcEdit.tpl');
+
+   global $g_tpl;
+	$smarty->display($g_tpl['tcEdit']);
+	
+	
 	//saving a test case but not archiving it
 } 
 else if(isset($_POST['updateTC']))
@@ -101,7 +140,7 @@ else if(isset($_POST['updateTC']))
 	$version = isset($_POST['version']) ? intval($_POST['version']) : 0; 
 	$version++;
 	
-	if (updateTestcase($data,$title,$summary,$steps,$outcome,$_SESSION['user'],$updatedKeywords,$version))
+	if (updateTestcase($testcaseID,$title,$summary,$steps,$outcome,$_SESSION['user'],$updatedKeywords,$version))
 		$sqlResult = 'ok';
    	else
 		$sqlResult =  mysql_error();
@@ -109,55 +148,49 @@ else if(isset($_POST['updateTC']))
 	// show testcase
 	// 20050820 - fm
 	$allow_edit=1;
-	// wrong call
-	// showTestcase($data, $sqlResult);
-	showTestcase($data, $allow_edit);
+	showTestcase($testcaseID, $allow_edit);
 }
 else if(isset($_POST['newTC']))
 {
-	//Creating a new test case
-	$smarty->assign('data', $data);
-	$smarty->display('tcNew.tpl');
+	$show_newTC_form = 1;
+	
+
 }
 else if(isset($_POST['addTC']))
 {
+	$show_newTC_form=1;
+	 
 	$title 		= isset($_POST['title']) ? strings_stripSlashes($_POST['title']) : null;
 	$summary 	= isset($_POST['summary']) ? strings_stripSlashes($_POST['summary']) : null;
 	$steps 		= isset($_POST['steps']) ? strings_stripSlashes($_POST['steps']) : null;
 	$outcome 	= isset($_POST['exresult']) ? strings_stripSlashes($_POST['exresult']) : null;
 
 
-  // 20050820 - fm
+  $result = lang_get('warning_empty_tc_title');	
   if (strlen($title))
 	{
 		$result = lang_get('error_tc_add');
-	  if (insertTestcase($data,$title,$summary,$steps,$outcome,$_SESSION['user']))
+	  if (insertTestcase($categoryID,$title,$summary,$steps,$outcome,$_SESSION['user']))
 	  {
 			$result = 'ok';
 		}
   }
-  else
-  {
-  	$result = lang_get('warning_empty_tc_title');	
-  }
-  	
+  
   $smarty->assign('sqlResult', $result);
-	
 	$smarty->assign('name', $title);
 	$smarty->assign('item', 'Test case');
-	$smarty->assign('data', $data);
-	$smarty->display('tcNew.tpl');
+
 }
 else if(isset($_POST['deleteTC']))
 {
 	if(isset($_GET['sure']) && $_GET['sure'] == 'yes') //check to see if the user said he was sure he wanted to delete
 	{
-		if (deleteTestcase($data))
+		if (deleteTestcase($testcaseID))
 			$smarty->assign('sqlResult', 'ok');
 	   	else
 			$smarty->assign('sqlResult', mysql_error());
 	}
-	$smarty->assign('data', $data);
+	$smarty->assign('testcaseID', $testcaseID);
 	$smarty->display('tcDelete.tpl');
 }
 else if(isset($_POST['moveTC']))
@@ -166,15 +199,15 @@ else if(isset($_POST['moveTC']))
 	$compID = 0;
 	$arrOptCategories = null;
 	
-	getTestCaseCategoryAndComponent($data,$catID,$compID);
+	getTestCaseCategoryAndComponent($testcaseID,$catID,$compID);
 	getOptionCategoriesOfComponent($compID, $arrOptCategories);
 	$arrOptCategories[$catID] .= ' (' . lang_get('current') . ')'; 
 
-	$tcTitle = getTestcaseTitle($data);
+	$tcTitle = getTestcaseTitle($testcaseID);
 
 	$smarty->assign('oldCat', $catID); // original Category
 	$smarty->assign('arrayCat', $arrOptCategories);
-	$smarty->assign('data', $data);
+	$smarty->assign('testcaseID', $testcaseID);
 	$smarty->assign('title', $tcTitle);
 	$smarty->display('tcMove.tpl');
 
@@ -185,7 +218,7 @@ else if(isset($_POST['updateTCmove']))
 	$catID = isset($_POST['moveCopy']) ? intval($_POST['moveCopy']) : 0;
 	$oldCat = isset($_POST['oldCat']) ? intval($_POST['oldCat']) : 0;
 	
-	$result = moveTc($catID, $data);
+	$result = moveTc($catID, $testcaseID);
 	showCategory($oldCat, $result);
 }
 else if(isset($_POST['updateTCcopy']))
@@ -194,7 +227,7 @@ else if(isset($_POST['updateTCcopy']))
 	$oldCat = isset($_POST['oldCat']) ? intval($_POST['oldCat']) : 0;
 
   // 20050821 - fm - interface - reduce global coupling
-	$result = copyTc($catID, $data, $_SESSION['user']);
+	$result = copyTc($catID, $testcaseID, $_SESSION['user']);
 	
 	showCategory($oldCat, $result,'update',$catID);
 }
@@ -203,4 +236,26 @@ else
 	// ERROR
 	tlog("A correct POST argument is not found.");
 }
+
+// --------------------------------------------------------------------------
+if ($show_newTC_form)
+{
+	//Creating a new test case
+	$smarty->assign('categoryID', $categoryID);
+	
+	foreach ($a_ofck as $key)
+  {
+  	// Warning:
+  	// the data assignment will work while the keys in $the_data are identical
+  	// to the keys used on $oFCK.
+  	$of = &$oFCK[$key];
+  	$of->Value = "";
+  	$smarty->assign($key, $of->CreateHTML());
+	}
+	$smarty->display($g_tpl['tcNew']);
+}
+
+
+
+
 ?>

@@ -3,17 +3,21 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: reqSpecList.php,v $
- * @version $Revision: 1.3 $
- * @modified $Date: 2005/08/26 13:41:17 $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2005/08/29 06:39:36 $
  * 
  * @author Martin Havlat
  * 
  * Screen to view existing and create a new req. specification.
  * 
+ * @author Francisco Mancardi - fm - fckeditor
  */
 require_once("../../config.inc.php");
 require_once("common.php");
 require_once('requirements.inc.php');
+require_once("../../third_party/FCKeditor/fckeditor.php");
+
+
 testlinkInitPage();
 
 $sqlResult = null;
@@ -21,6 +25,10 @@ $action = null;
 $template = 'reqSpecList.tpl';
 
 $title = null;
+
+// 20050826 - fm
+$scope = null;
+
 // create a new spec.
 if(isset($_POST['createSRS']))
 {
@@ -40,11 +48,31 @@ elseif(isset($_GET['deleteSRS']))
 } 
 elseif(isset($_GET['createForm']))
 {
-	$template = 'reqSpecCreate.tpl';
+  $template = 'reqSpecCreate.tpl';
 } 
 
 // collect all existing documents for the product
 $arrSpec = getReqSpec('product');
+
+
+// 20050826 - fm
+$of = new FCKeditor('scope') ;
+$of->BasePath = $_SESSION['basehref'] . 'third_party/FCKeditor/';
+$of->ToolbarSet=$g_fckeditor_toolbar;;
+
+
+if( $scope )
+{
+	$of->Value=$scope;
+}
+else if ($action && ($action != 'create'))
+{
+	$of->Value=$arrSpec[0]['scope'];
+}
+else
+{
+	$of->Value="";
+}
 
 
 $smarty = new TLSmarty;
@@ -55,5 +83,7 @@ $smarty->assign('action', $action);
 $smarty->assign('name',$title); // of created doc
 $smarty->assign('productName', $_SESSION['productName']);
 $smarty->assign('modify_req_rights', has_rights("mgt_modify_req")); 
+$smarty->assign('scope',$of->CreateHTML());
+
 $smarty->display($template);
 ?>

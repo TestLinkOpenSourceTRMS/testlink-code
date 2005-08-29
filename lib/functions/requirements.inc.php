@@ -1,23 +1,35 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: requirements.inc.php,v $
- * @version $Revision: 1.2 $
- * @modified $Date: 2005/08/16 18:00:55 $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2005/08/29 15:23:34 $ by $Author: havlat $
  *
- * @author	Martin Havlat <havlat@users.sourceforge.net>
+ * @author Martin Havlat <havlat@users.sourceforge.net>
  * 
- * Functions for support test coverage; i.e. requirements traceability. 
+ * Functions for support requirement based testing 
  *
- * @ author: francisco mancardi - 20050810
- * deprecated $_SESSION['product'] removed
+ * 20050810	- francisco mancardi - deprecated $_SESSION['product'] removed
+ * 20050925 - Martin Havlat - updated global header;
+ * 20050929 - Martin Havlat - updated function headers 
  * 
  */
 ////////////////////////////////////////////////////////////////////////////////
+
 require_once('print.inc.php');
 
-/** create a new System Requirements Specification */
+/** 
+ * create a new System Requirements Specification 
+ * 
+ * @param string $title
+ * @param string $scope
+ * @param string $countReq
+ * 
+ * @version 1.0
+ * @author Martin Havlat 
+ */
 function createReqSpec ($title,$scope,$countReq)
 {
 	tLog('Create SRS requested: ' . $title);
@@ -41,7 +53,18 @@ function createReqSpec ($title,$scope,$countReq)
 }
 
 
-/** update System Requiements Specification */
+/** 
+ * update System Requiements Specification
+ *  
+ * @param integer $id
+ * @param string $title
+ * @param string $scope
+ * @param string $countReq
+ * @return string result
+ * 
+ * @version 1.0
+ * @author Martin Havlat 
+ */
 function updateReqSpec ($id,$title,$scope,$countReq)
 {
 	if (strlen($title)) {
@@ -63,7 +86,15 @@ function updateReqSpec ($id,$title,$scope,$countReq)
 	return $result; 
 }
 
-/** delete System Requirement Specification*/
+/** 
+ * delete System Requirement Specification
+ *  
+ * @param integer $idSRS
+ * @return string result comment
+ * 
+ * @version 1.0
+ * @author Martin Havlat 
+ **/
 function deleteReqSpec ($idSRS)
 {
 	// delete requirements and coverage
@@ -87,10 +118,15 @@ function deleteReqSpec ($idSRS)
 	return $result; 
 }
 
-/** collect information about current list of Requirements Specification 
+/** 
+ * collect information about current list of Requirements Specification
+ *  
  * @param string $set range of collection 'product' (default) or 'all' or '<id>'
  * @return assoc_array list of SRS
- */
+ * 
+ * @version 1.0
+ * @author Martin Havlat 
+ **/
 function getReqSpec($set = 'product')
 {
 	$sql = "SELECT * FROM req_spec";
@@ -104,7 +140,14 @@ function getReqSpec($set = 'product')
 	return selectData($sql);
 }
 
-/** get list of all SRS for the current product */
+/** 
+ * get list of all SRS for the current product 
+ * 
+ * @return associated array List of titles according to IDs
+ * 
+ * @version 1.0
+ * @author Martin Havlat 
+ **/
 function getOptionReqSpec()
 {
 	$sql = "SELECT id,title FROM req_spec WHERE id_product=" . $_SESSION['productID'] . 
@@ -114,13 +157,18 @@ function getOptionReqSpec()
 }
 
 
-/** collect information about current list of Requirements in req. Specification 
+/** 
+ * collect information about current list of Requirements in req. Specification
+ *  
  * @param string $idSRS ID of req. specification
  * @param string range = ["all" (default), "assigned"] (optional)
  * 			"unassign" is not implemented because requires subquery 
  * 			which is not available in MySQL 4.0.x
  * @param string Test case ID - required if assigned or unassigned scope is used
  * @return assoc_array list of requirements
+ * 
+ * @version 1.0
+ * @author Martin Havlat 
  */
 function getRequirements($idSRS, $range = 'all', $idTc = null)
 {
@@ -136,7 +184,12 @@ function getRequirements($idSRS, $range = 'all', $idTc = null)
 	return selectData($sql);
 }
 
-/** function allows to obtain unassigned requirements */
+/** 
+ * function allows to obtain unassigned requirements 
+ * 
+ * @version 1.0
+ * @author Martin Havlat 
+ **/
 // MHT: I'm not able find a simple SQL (subquery is not supported 
 // in MySQL 4.0.x); probably temporary table should be used instead of the next
 function array_diff_byId ($arrAll, $arrPart)
@@ -262,7 +315,9 @@ function getReqCoverageMetrics($idSRS)
 }
 
 
-/** collect information about one Requirement 
+/** 
+ * collect information about one Requirement
+ *  
  * @param string $idREQ ID of req.
  * @return assoc_array list of requirements
  */
@@ -309,7 +364,9 @@ function getSuite4Req($idReq, $idPlan)
 	return selectData($sql);
 }
 
-/** collect coverage of TC 
+/** 
+ * collect coverage of TC
+ *  
  * @param string $idTC ID of req.
  * @param string SRS ID (optional)
  * @return assoc_array list of test cases [id, title]
@@ -327,7 +384,17 @@ function getReq4Tc($idTc, $idSRS = 'all')
 	return selectData($sql);
 }
 
-/** create a new Requiement */
+/** 
+ * create a new Requiement 
+ * 
+ * @param string $title
+ * @param string $scope
+ * @param integer $status
+ * @param integer $idSRS
+ * 
+ * @version 1.0
+ * @author Martin Havlat 
+ **/
 function createRequirement ($title,$scope,$status,$idSRS)
 {
 	if (strlen($title)) {
@@ -346,7 +413,17 @@ function createRequirement ($title,$scope,$status,$idSRS)
 }
 
 
-/** update Requiement */
+/** 
+ * update Requirement 
+ * 
+ * @param integer $id
+ * @param string $title
+ * @param string $scope
+ * @param integer $status
+ * 
+ * @version 1.0
+ * @author Martin Havlat 
+ **/
 function updateRequirement ($id,$title,$scope,$status)
 {
 	if (strlen($title)) {
@@ -359,7 +436,7 @@ function updateRequirement ($id,$title,$scope,$status)
 			$result = 'ok';
 		} else {
 			 $result = 'The UPDATE request fails with these values:' . 
-					$title . ', ' . $scope . ', ' . $countReq;
+					$title . ', ' . $scope;
 			tLog('SQL: ' . $sql . ' fails: ' . mysql_error(), 'ERROR');
 		}
 	} else {
@@ -368,7 +445,14 @@ function updateRequirement ($id,$title,$scope,$status)
 	return $result; 
 }
 
-/** delete Requirement */
+/** 
+ * delete Requirement
+ *  
+ * @param integer $id
+ * 
+ * @version 1.0
+ * @author Martin Havlat 
+ **/
 function deleteRequirement($id)
 {
 	// delete dependencies with test specification
@@ -388,7 +472,14 @@ function deleteRequirement($id)
 	return $result; 
 }
 
-/** print Requirement Specification */
+/** 
+ * print Requirement Specification 
+ * 
+ * @param integer $idSRS
+ * 
+ * @version 1.0
+ * @author Martin Havlat 
+ **/
 function printSRS($idSRS)
 {
 	$arrSpec = getReqSpec($idSRS);
@@ -402,7 +493,14 @@ function printSRS($idSRS)
 	echo $output;
 }
 
-/** print Requirement for SRS */
+/** 
+ * print Requirement for SRS 
+ * 
+ * @param integer $idSRS
+ * 
+ * @version 1.0
+ * @author Martin Havlat 
+ **/
 function printRequirements($idSRS)
 {
 	$arrReq = getRequirements($idSRS);
@@ -426,6 +524,9 @@ function printRequirements($idSRS)
  * @param integer test case ID
  * @param integer requirement ID
  * @return integer 1 = ok / 0 = problem
+ * 
+ * @version 1.0
+ * @author Martin Havlat 
  */
 function assignTc2Req($idTc, $idReq)
 {
@@ -473,6 +574,9 @@ function assignTc2Req($idTc, $idReq)
  * @param integer test case ID
  * @param integer requirement ID
  * @return integer 1 = ok / 0 = problem
+ * 
+ * @version 1.0
+ * @author Martin Havlat 
  */
 function unassignTc2Req($idTc, $idReq)
 {
@@ -502,6 +606,10 @@ function unassignTc2Req($idTc, $idReq)
 /** 
  * function generate testcases with name and summary for requirements
  * @param array or integer list of REQ id's 
+ * @return string Result description
+ * 
+ * @version 1.0
+ * @author Martin Havlat 
  */
 function createTcFromRequirement($mixIdReq)
 {

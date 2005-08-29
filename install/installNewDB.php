@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: installNewDB.php,v 1.5 2005/08/26 21:01:27 schlundus Exp $ */
+/* $Id: installNewDB.php,v 1.6 2005/08/29 10:35:22 franciscom Exp $ */
 /*
 Parts of this file has been taken from:
 Etomite Content Management System
@@ -8,6 +8,9 @@ Copyright 2003, 2004 Alexander Andrew Butter
 */
 
 /*
+@author Francisco Mancardi - 20050829
+BUGID Mantis: 0000073: DB Creation fails with no message
+
 @author Francisco Mancardi - 20050824
 moved mysql version check here
 
@@ -197,7 +200,10 @@ if($create)
 	
 	echo "</b><br />Creating database `".$db."`:<b> ";
 
-	if(!@mysql_create_db($db, $conn)) 
+  // 20050826 - fm
+  // BUGID Mantis: 0000073: DB Creation fails with no message
+  $sql_create = "CREATE DATABASE " . $db . " CHARACTER SET utf8 "; 
+	if(!@mysql_query($sql_create, $conn)) 
 	{
 		echo "<span class='notok'>Failed!</span></b> - Could not create database: $db!";
 		$errors += 1;

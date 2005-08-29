@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: adminUsers.php,v $
  *
- * @version $Revision: 1.2 $
- * @modified $Date: 2005/08/16 18:00:53 $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2005/08/29 11:13:46 $
  *
  * @author Martin Havlat
  *
@@ -14,14 +14,14 @@
  * @author Andreas Morsing - added user_is_name_valid whenever a new user will be modified
 **/
 include('../../config.inc.php');
-require_once("../../lib/functions/lang_api.php");
 require_once("users.inc.php");
 testlinkInitPage();
 
 $arrResults = null;
 $_POST = strings_stripSlashes($_POST);
-$editUser = isset($_POST['editUser']) ? $_POST['editUser'] : null;
-if($editUser)
+$bEditUser = isset($_POST['editUser']) ? $_POST['editUser'] : null;
+
+if($bEditUser)
 {
 	$user_qty = count($_POST['id']);
 	for($idx = 0;$idx < $user_qty;$idx++)
@@ -55,10 +55,10 @@ if($editUser)
 $users = null;
 getAllUsers_assoc($users);
 
-$smarty = new TLSmarty;
+$smarty = new TLSmarty();
 $smarty->assign('optRights', getListOfRights());
 $smarty->assign('arrResults', $arrResults);
-$smarty->assign('updated', $editUser ? 'yes' :null);
+$smarty->assign('updated', $bEditUser ? 'yes' :null);
 $smarty->assign('users', $users);
 $smarty->display('adminUsers.tpl');
 ?>

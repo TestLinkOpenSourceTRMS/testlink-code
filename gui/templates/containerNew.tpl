@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: containerNew.tpl,v 1.5 2005/08/29 08:06:54 franciscom Exp $ *}
+{* $Id: containerNew.tpl,v 1.6 2005/08/29 11:13:46 schlundus Exp $ *}
 {* Purpose: smarty template - create containers *}
 {* I18N: 20050528 - fm *}
 {*
@@ -7,7 +7,7 @@
   htmlarea replaced with fckedit
   data -> componentID and ProductID
   
-	20050821 - am - changed p-tags to div-tags because there arent alloed for htmlarea
+	20050821 - scs - changed p-tags to div-tags because there arent alloed for htmlarea
 	lang_get('component');
 	lang_get('category');
 *}

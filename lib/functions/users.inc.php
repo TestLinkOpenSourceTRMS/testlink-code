@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: users.inc.php,v $
  *
- * @version $Revision: 1.3 $
- * @modified $Date: 2005/08/22 07:00:50 $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2005/08/29 11:13:46 $
  *
  * @author Chad Rosen, Martin Havlat
  * @author Martin Havlat
@@ -69,6 +69,8 @@ Array
 }
 
 /**
+ * 20050829 - scs - added param for locale
+ * 
  * Function inserts new user to db
  * @param string login
  * @param string password
@@ -76,13 +78,14 @@ Array
  * @param string last name
  * @param string email
  * @param string rights (optional; default is guest)
+ * @param string locale (optional; locale for the user)
  */
-function userInsert($login, $password, $first, $last, $email, $rights = 5)
+function userInsert($login, $password, $first, $last, $email, $rights = 5,$locale = TL_DEFAULT_LOCALE)
 {
 	$password = md5($password);
-	$sqlInsert = "INSERT INTO user (login,password,first,last,email,rightsid) VALUES ('" . 
+	$sqlInsert = "INSERT INTO user (login,password,first,last,email,rightsid,locale) VALUES ('" . 
 				mysql_escape_string($login) . "','" . mysql_escape_string($password) . "','" . mysql_escape_string($first) . "','" . mysql_escape_string($last) .
-				 "','" . mysql_escape_string($email) . "'," . $rights . ")";
+				 "','" . mysql_escape_string($email) . "'," . $rights . ",'".mysql_escape_string($locale)."')";
 	$insertResult = do_mysql_query($sqlInsert);
 	
 	return $insertResult ? 1 : 0;

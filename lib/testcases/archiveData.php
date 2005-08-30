@@ -1,13 +1,21 @@
 <?php
-/* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: archiveData.php,v 1.3 2005/08/26 21:01:27 schlundus Exp $ */
-/* Purpose:  This page allows you to show data (test cases, categories, and
- *         components. This is refered by tree.
-*/
-require_once("../../config.inc.php");
-require_once("../functions/common.php");
-require('archive.inc.php');
-require_once("../../lib/functions/lang_api.php");
+/** 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ * This script is distributed under the GNU General Public License 2 or later. 
+ *  
+ * @version $Id: archiveData.php,v 1.4 2005/08/30 09:17:47 havlat Exp $
+ * @author Martin Havlat
+ *  
+ * This page allows you to show data (test cases, categories, and
+ * components. This is refered by tree.
+ * 
+ * 20050830 - MHT - formal update
+ */
+ 
+require_once('../../config.inc.php');
+require_once('common.php');
+require_once('archive.inc.php');
+
 testlinkInitPage();
 
 // parse input
@@ -32,6 +40,8 @@ switch($feature)
 		showTestcase($id,$allow_edit);	
 		break;
 	default:
-		trigger_error($_SESSION['user']."> GET argument 'edit' is wrong.", E_USER_ERROR);
+		tLog('$_GET["edit"] has invalid value: ' . $feature , 'ERROR');
+		trigger_error($_SESSION['user'].'> $_GET["edit"] has invalid value.', E_USER_ERROR);
 }
+
 ?>

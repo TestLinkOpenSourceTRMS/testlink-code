@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.6 $
- * @modified $Date: 2005/08/29 06:35:09 $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2005/08/30 12:44:31 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -445,6 +445,19 @@ function selectOptionData($sql)
 	
 	return $output;
 }
+
+/** 
+ * pick one value from SQL request
+ * @param string $sql SQL request
+ * @return string required value
+ * @author havlatm
+ */
+function do_mysql_selectOne($sql)
+{
+	$result = do_mysql_query($sql);
+	return $result ? mysql_result($result, 0) : null;
+}
+
 
 // --------------------------------------------------------------
 // returns an array of messages, one element for every

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: users.inc.php,v $
  *
- * @version $Revision: 1.4 $
- * @modified $Date: 2005/08/29 11:13:46 $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2005/08/30 11:29:41 $
  *
  * @author Chad Rosen, Martin Havlat
  * @author Martin Havlat
@@ -307,6 +307,41 @@ function user_is_name_valid( $p_username ) {
 }
 
 
+/**
+ * get User Name from ID
+ * @param integer $id_user
+ * @return string user name
+ * 
+ * @author havlatm
+ **/
+function getUserName($id_user)
+{
+	$sql = "SELECT login, first, last FROM user WHERE id=" . $id_user;
+	$result = do_mysql_query($sql);
+	
+	if ($result && (mysql_num_rows($result) > 0))
+	{
+		$row = mysql_fetch_array($result);
+		if (empty($row['first']) && empty($row['last']))
+		{
+			// return login (name was not defined)
+			$username = $row['login'];
+		}
+		else
+		{
+			// return first + last name
+			$username = $row['first'] . ' ' . $row['last'];
+		}	
+	}
+	else
+	{
+		// user is unknown
+		$username = lang_get('Unknown');
+	}
+	
+	tLog('username = ' . $username);
+	return $username;
+}
 
 
 

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: archive.inc.php,v $
  *
- * @version $Revision: 1.8 $
- * @modified $Date: 2005/08/29 11:13:46 $ by $Author: schlundus $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2005/08/30 09:17:26 $ by $Author: havlat $
  *
  * @author Martin Havlat
  * Purpose:  functions for test specification management have three parts:
@@ -24,6 +24,9 @@
 **//////////////////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////////////////////
+
+require_once('requirements.inc.php');
+
 /** 1. functions for grab container and test case data from database */ 
 
 function getComponent($id)
@@ -167,19 +170,16 @@ function showCategory($id, $sqlResult = '', $sqlAction = 'update',$moddedItem = 
 }
 
 
-/*
-  display testcase data include possibility of edit
-  
-  id: test case id
-  [allow_edit]: 1 controls modify_tc_rights
-                  to enable/disable editing
-                  
-                0 disables editing  
-                default: 1 
-                 
-
-*/
-function showTestcase($id,$allow_edit=1)
+/**
+ * display testcase data include possibility of edit
+ * 
+ * @param integer id: test case id
+ * @param boolean [allow_edit]: 1 = controls modify_tc_rights to enable/disable editing;
+ *                 0 = disables editing;  default: 1 
+ *     
+ * @modified 20050829 - Martin Havlat - added REQ support            
+ */
+function showTestcase ($id,$allow_edit = 1)
 {
 	define('DO_NOT_CONVERT',false);
 	global $g_tpl;
@@ -200,13 +200,18 @@ function showTestcase($id,$allow_edit=1)
 		$myrowTC['keywords'] = substr($myrowTC['keywords'],0,$len);
 	}
 	
+	// get assigned REQs
+	$arrReqs = getReq4Tc($id);
+	
 	// 20050820 - fm
 	$tc_array = array($myrowTC);
 	
 	$smarty = new TLSmarty;
 	$smarty->assign('modify_tc_rights', $can_edit);
 	$smarty->assign('testcase',$tc_array);
-	
+	$smarty->assign('arrReqs',$arrReqs);
+	$smarty->assign('view_req_rights', has_rights("mgt_view_req")); 
+	$smarty->assign('opt_requirements', $_SESSION['productOptReqs']); 	
 	// 20050821 - fm
 	$smarty->display($g_tpl['tcView']);
 }

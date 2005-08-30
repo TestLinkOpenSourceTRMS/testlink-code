@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecView.tpl,v 1.5 2005/08/29 07:09:40 franciscom Exp $ *}
+{* $Id: reqSpecView.tpl,v 1.6 2005/08/30 15:18:58 havlat Exp $ *}
 {* 
    Purpose: smarty template - view a requirement specification
    Author: Martin Havlat 
@@ -54,7 +54,10 @@
 {if $arrSpec[0].total_req != 'n/a'}
 <p>{lang_get s="req_total_count"}: {$arrSpec[0].total_req}</p>
 {/if}
-<p>{lang_get s="last_edit"}: {$arrSpec[0].edit_by} [{localize_date d=$arrSpec[0].edit_date}]</p>
+<p>{lang_get s="Author"}: {$arrSpec[0].author} [{localize_date d=$arrSpec[0].create_date}]</p>
+{if $arrSpec[0].id_modifier <> ''}
+<p>{lang_get s="last_edit"}: {$arrSpec[0].modifier} [{localize_date d=$arrSpec[0].modified_date}]</p>
+{/if}
 </div>
 
 
@@ -77,7 +80,7 @@
 		<td>{$arrReq[row].scope|truncate:100|regex_replace:"/<.*>/":" "}</td>
 	</tr>
 	{sectionelse}
-	<tr><td><span class="bold">{lang_get s='req_msg_norequirement'}</span></td></tr>
+	<tr><td></td><td><span class="bold">{lang_get s='req_msg_norequirement'}</span></td></tr>
 	{/section}
 </table>
 

@@ -1,7 +1,10 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqImport.tpl,v 1.1 2005/08/26 13:51:56 havlat Exp $ *}
+{* $Id: reqImport.tpl,v 1.2 2005/08/30 15:18:58 havlat Exp $ *}
 {* Purpose: smarty template - requirements import initial page *}
 {* Author: Martin Havlat *}
+{* revisions:
+20050830 - MHT - result presentation updated
+*}
 {include file="inc_head.tpl"}
 
 <body>
@@ -17,11 +20,22 @@
 			onclick="javascript: location.href='lib/req/reqSpecView.php?idSRS={$reqSpec.id}';" />
 	</div>
 	<p class="info">{$importResult}</p>
-	<p>
+	
+	<table class="simple">
+	<tr>
+		<th>{lang_get s="Title"}</th>
+		<th style="width: 20%;">{lang_get s="Result"}</th>
+	</tr>
 	{section name=result loop=$arrImport}
-	{$arrImport[result]|escape}<br />
+	<tr>
+		<td>{$arrImport[result][0]|escape}</td>
+		<td>{$arrImport[result][1]|escape}</td>
+	</tr>
+	{sectionelse}
+	<tr><td>{lang_get s='req_msg_norequirement'}</td></tr>
 	{/section}
-	</p>
+	</table>
+	
 
 
 {elseif $importType != ''}

@@ -1,5 +1,5 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
-# $Id: testlink_create_tables.sql,v 1.2 2005/08/16 17:59:49 franciscom Exp $
+# $Id: testlink_create_tables.sql,v 1.3 2005/08/30 15:18:05 havlat Exp $
 # SQL script - create db tables for TL 1.6.0  
 #
 # default rights & admin account are created via testlink_create_default_data.sql
@@ -273,8 +273,11 @@ CREATE TABLE `req_spec` (
   `title` VARCHAR( 100 ) NOT NULL ,
   `scope` TEXT,
   `total_req` VARCHAR( 5 ) DEFAULT 'n/a' NOT NULL ,
-  `edit_by` varchar(30) default NULL,
-  `edit_date` date NOT NULL default '0000-00-00',
+  `type` char(1) default 'n',
+  `id_author` INT( 10 ) UNSIGNED NULL,
+  `create_date` date NOT NULL default '0000-00-00',
+  `id_modifier` INT( 10 ) UNSIGNED NULL,
+  `modified_date` date NOT NULL default '0000-00-00',
 PRIMARY KEY ( `id` ) ,
 INDEX ( `id_product` )
 ) TYPE=MyISAM COMMENT='Dev. Documents (e.g. System Requirements Specification)';
@@ -290,9 +293,13 @@ CREATE TABLE `requirements` (
   `id_srs` INT( 10 ) UNSIGNED NOT NULL ,
   `title` VARCHAR( 100 ) NOT NULL ,
   `scope` TEXT,
-  `status` ENUM( 'Normal', 'Not testable' ) DEFAULT 'Normal' NOT NULL ,
-  `edit_by` varchar(30) default NULL,
-  `edit_date` date NOT NULL default '0000-00-00',
+#  `status` ENUM( 'Normal', 'Not testable' ) DEFAULT 'Normal' NOT NULL ,
+  `status` char(1) default 'v' NOT NULL,
+  `type` char(1) default NULL,
+  `id_author` INT( 10 ) UNSIGNED NULL,
+  `create_date` date NOT NULL default '0000-00-00',
+  `id_modifier` INT( 10 ) UNSIGNED NULL,
+  `modified_date` date NOT NULL default '0000-00-00',
 PRIMARY KEY ( `id` ) ,
 INDEX ( `id_srs` , `status` )
 ) TYPE=MyISAM;

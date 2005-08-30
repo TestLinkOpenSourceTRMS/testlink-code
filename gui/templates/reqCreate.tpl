@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqCreate.tpl,v 1.3 2005/08/29 07:09:40 franciscom Exp $ *}
+{* $Id: reqCreate.tpl,v 1.4 2005/08/30 15:18:58 havlat Exp $ *}
 {* Purpose: smarty template - create / edit a req  *}
 {include file="inc_head.tpl"}
 
@@ -34,8 +34,7 @@
 	<tr>
 		<th>{lang_get s='status'}</th>
 		<td><select name="reqStatus">
-			<option selected="selected">{lang_get s='req_opt_normal'}</option>
-			<option>{lang_get s='req_opt_notest'}</option>
+			{html_options options=$selectReqStatus selected=$arrReq.status}
 		</select></td>
 	</tr>
 </table>

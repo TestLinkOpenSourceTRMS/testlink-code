@@ -1,21 +1,23 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqSpecView.php,v $
- * @version $Revision: 1.5 $
- * @modified $Date: 2005/08/29 12:16:38 $
- * 
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2005/08/30 15:19:33 $ by $Author: havlat $
  * @author Martin Havlat
  * 
  * Screen to view existing requirements within a req. specification.
  * 
  * @author Francisco Mancardi - fm - fckeditor
+ * 20050930 - MHT - Database schema changed (author, modifier, status, etc.)
  *
  */
 ////////////////////////////////////////////////////////////////////////////////
 require_once("../../config.inc.php");
 require_once("common.php");
+require_once("users.inc.php");
 require_once('requirements.inc.php');
 require_once("../../third_party/fckeditor/fckeditor.php");
 
@@ -38,11 +40,10 @@ $idReq = isset($_POST['idReq']) ? strings_stripSlashes($_POST['idReq']) : null;
 $title = isset($_POST['title']) ? strings_stripSlashes($_POST['title']) : null;
 $scope = isset($_POST['scope']) ? strings_stripSlashes($_POST['scope']) : null;
 $reqStatus = isset($_POST['reqStatus']) ? strings_stripSlashes($_POST['reqStatus']) : null;
+$reqType = isset($_POST['reqType']) ? strings_stripSlashes($_POST['reqType']) : null;
 $countReq = isset($_POST['countReq']) ? strings_stripSlashes($_POST['countReq']) : null;
 
 $arrCov = null;
-
-
 
 
 // 20050826 - fm
@@ -55,21 +56,24 @@ $of->ToolbarSet=$g_fckeditor_toolbar;;
 if(isset($_POST['createReq']))
 {
 	if (isset($_POST['title'])) {
-		$sqlResult = createRequirement($title,$scope,$reqStatus,$idSRS);
+		$sqlResult = createRequirement($title, $scope, $idSRS, $reqStatus); // used default type=n
 		$action = 'create';
 		
-		//
 		$scope='';
 	}
 	
 	$template = 'reqCreate.tpl';
 	$bGetReqs = FALSE;
 } 
+
 // edit REQ
 elseif (isset($_GET['editReq']))
 {
 	$idReq = strings_stripSlashes($_GET['editReq']);
 	$arrReq = getReqData($idReq);
+	// 20050930 - MHT - Added audit
+	$arrReq['author'] = getUserName($arrReq['id_author']);
+	$arrReq['modifier'] = getUserName($arrReq['id_modifier']);
 	$arrReq['coverage'] = getTc4Req($idReq);
 
   // 20050826
@@ -78,33 +82,38 @@ elseif (isset($_GET['editReq']))
 	$template = 'reqEdit.tpl';
 	$bGetReqs = FALSE;
 }
+
 // update REQ
 elseif (isset($_POST['updateReq']))
 {
-	$sqlResult = updateRequirement($idReq, $title, $scope, $reqStatus);
+	$sqlResult = updateRequirement($idReq, $title, $scope, $reqStatus, $reqStatus);
 	$action = 'update';
 	$sqlItem = 'Requirement';
 }
+
 // delete REQ
 elseif (isset($_POST['deleteReq']))
 {
 	$sqlResult = deleteRequirement($idReq);
 	$action = 'delete';
 }
+
 // edit spec.
 elseif (isset($_POST['editSRS']))
 {
 	$template = 'reqSpecEdit.tpl';
-	$action="editRSR";
+	$action="editSRS";
 	
   //	$set = $id;
 }
+
 // update spec.
 elseif (isset($_POST['updateSRS']))
 {
 	$sqlResult = updateReqSpec($idSRS,$title,$scope,$countReq);
 	$action = 'update';
 }
+
 elseif (isset($_POST['multiAction']))
 {
 	$arrIdReq = array_keys($_POST); // obtain names(id) of REQs
@@ -141,9 +150,11 @@ elseif (isset($_POST['multiAction']))
 if ($bGetReqs) {
 	$arrReq = getRequirements($idSRS);
 }
-// collect existing documents
+// collect existing document data
 $arrSpec = getReqSpec($idSRS);
-
+// 20050930 - MHT - Added audit
+$arrSpec[0]['author'] = getUserName($arrSpec[0]['id_author']);
+$arrSpec[0]['modifier'] = getUserName($arrSpec[0]['id_modifier']);
 
 // smarty
 $smarty = new TLSmarty;
@@ -154,8 +165,7 @@ $smarty->assign('sqlResult', $sqlResult);
 $smarty->assign('sqlItem', $sqlItem);
 $smarty->assign('action', $action);
 $smarty->assign('name',$title); // of updated item
-$smarty->assign('selectReqStatus', array('Normal' => 'Normal',
-		                                     'Not testable' => 'Not testable'));
+$smarty->assign('selectReqStatus', $arrReqStatus);
 $smarty->assign('modify_req_rights', has_rights("mgt_modify_req")); 
 
 if($scope)

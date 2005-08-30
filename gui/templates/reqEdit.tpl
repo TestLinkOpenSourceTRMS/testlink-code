@@ -1,10 +1,10 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqEdit.tpl,v 1.3 2005/08/29 07:09:40 franciscom Exp $ *}
-{* 
-Purpose: smarty template - create / edit a req  
-
+{* $Id: reqEdit.tpl,v 1.4 2005/08/30 15:18:58 havlat Exp $ *}
+{* Purpose: smarty template - create / edit a req *}
+{* Author: Martin Havlat *}
+{* Revisions:
 20050828 - fm - fckeditor, localize_date
-
+20050830 - MHT - result presentation updated
 *}
 {include file="inc_head.tpl"}
 
@@ -29,7 +29,7 @@ Purpose: smarty template - create / edit a req
 		{ldelim}formSRSDelete.submit();{rdelim};" />
 	{/if}
 	<input type="button" name="cancel" value="{lang_get s='btn_cancel'}" 
-		onClick="history.back();" />
+		onclick="javascript: location.href=fRoot+'lib/req/reqSpecView.php?idSRS={$arrSpec[0].id}';" />
 </div>
 
 <form name="formSRSUpdate" method="post" 
@@ -78,6 +78,7 @@ Purpose: smarty template - create / edit a req
 	</tr>
 </table>
 	<input type="hidden" name="idReq" value="{$arrReq.id}" />
+	<input type="hidden" name="reqStatus" value="{$arrReq.type}" />
 	<input type="hidden" name="updateReq" />
 </form>
 
@@ -90,7 +91,10 @@ Purpose: smarty template - create / edit a req
 </form>
 
 
-<p>{lang_get s="last_edit"}: {$arrReq.edit_by} [{localize_date d=$arrReq.edit_date}]</p>
+<p>{lang_get s="Author"}: {$arrReq.author} [{localize_date d=$arrReq.create_date}]</p>
+{if $arrReq.id_modifier <> ''}
+<p>{lang_get s="last_edit"}: {$arrReq.modifier} [{localize_date d=$arrReq.modified_date}]</p>
+{/if}
 
 </div>
 

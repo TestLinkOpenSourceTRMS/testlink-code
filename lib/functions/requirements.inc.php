@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: requirements.inc.php,v $
- * @version $Revision: 1.3 $
- * @modified $Date: 2005/08/29 15:23:34 $ by $Author: havlat $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2005/08/30 15:17:25 $ by $Author: havlat $
  *
  * @author Martin Havlat <havlat@users.sourceforge.net>
  * 
@@ -18,6 +18,8 @@
  */
 ////////////////////////////////////////////////////////////////////////////////
 
+$arrReqStatus = array('v' => 'Valid', 'n' => 'Not testable');
+
 require_once('print.inc.php');
 
 /** 
@@ -26,18 +28,20 @@ require_once('print.inc.php');
  * @param string $title
  * @param string $scope
  * @param string $countReq
+ * @param string $type
  * 
  * @version 1.0
  * @author Martin Havlat 
  */
-function createReqSpec ($title,$scope,$countReq)
+function createReqSpec ($title, $scope, $countReq, $type = 'n')
 {
 	tLog('Create SRS requested: ' . $title);
 	if (strlen($title)) {
-		$sql = "INSERT INTO req_spec (id_product, title, scope, total_req, edit_by, edit_date) " .
+		$sql = "INSERT INTO req_spec (id_product, title, scope, type, total_req, id_author, create_date) " .
 				"VALUES (" . $_SESSION['productID'] . ",'" . mysql_escape_string($title) . 
-				"','" . mysql_escape_string($scope) . "','" . mysql_escape_string($countReq) . "','" .
-				mysql_escape_string($_SESSION['user']) . "', CURRENT_DATE)";
+				"','" . mysql_escape_string($scope) . "','" . mysql_escape_string($type) . "','" . 
+				mysql_escape_string($countReq) . "'," . mysql_escape_string($_SESSION['userID']) . 
+				", CURRENT_DATE)";
 		$result = do_mysql_query($sql); 
 		if ($result) {
 			$result = 'ok';
@@ -60,18 +64,19 @@ function createReqSpec ($title,$scope,$countReq)
  * @param string $title
  * @param string $scope
  * @param string $countReq
+ * @param string $type
  * @return string result
  * 
  * @version 1.0
  * @author Martin Havlat 
  */
-function updateReqSpec ($id,$title,$scope,$countReq)
+function updateReqSpec ($id, $title, $scope, $countReq, $type = 'n')
 {
 	if (strlen($title)) {
 		$sql = "UPDATE req_spec SET title='" . mysql_escape_string($title) . 
-				"', scope='" . mysql_escape_string($scope) . 
-				"', total_req ='" . mysql_escape_string($countReq) . "', edit_by='" . mysql_escape_string($_SESSION['user']) . 
-				"', edit_date=CURRENT_DATE WHERE id=" . $id;
+				"', scope='" . mysql_escape_string($scope) . "', type='" . mysql_escape_string($type) .
+				"', total_req ='" . mysql_escape_string($countReq) . "', id_modifier='" . 
+				mysql_escape_string($_SESSION['userID']) . "', modified_date=CURRENT_DATE WHERE id=" . $id;
 		$result = do_mysql_query($sql); 
 		if ($result) {
 			$result = 'ok';
@@ -230,12 +235,12 @@ function getSRSCoverage($idSRS, $idPlan)
 	
 	// get requirements
 	$sql = "SELECT id,title FROM requirements WHERE id_srs=" . $idSRS . 
-			" AND status='Normal' ORDER BY title";
+			" AND status='v' ORDER BY title";
 	$arrReq = selectData($sql);
 
 	// get not-testable requirements
 	$sql = "SELECT id,title FROM requirements WHERE id_srs=" . $idSRS . 
-			" AND status='Not testable' ORDER BY title";
+			" AND status='n' ORDER BY title";
 	$output['nottestable'] = selectData($sql);
 	
 	// get coverage
@@ -257,32 +262,31 @@ function getSRSCoverage($idSRS, $idPlan)
 	return $output;
 }
 
-function selectOne($sql)
-{
-	$result = do_mysql_query($sql);
-	return $result ? mysql_result($result, 0) : null;
-}
 
-function getReqCoverageMetrics($idSRS)
+/**
+ * get requirement coverage metrics
+ * @param integer $idSRS
+ * @return array results
+ * @author havlatm
+ */
+function getReqMetrics_general($idSRS)
 {
 	$output = array();
 	
 	$sql = "SELECT count(*) FROM requirements WHERE id_srs=" . $idSRS . 
-			" AND status='Not testable'";
-	$output['notTestable'] = selectOne($sql);
+			" AND status='n'";
+	$output['notTestable'] = do_mysql_selectOne($sql);
 
 	$sql = "SELECT count(*) FROM requirements WHERE id_srs=" . $idSRS;
-	$output['total'] = selectOne($sql);
+	$output['total'] = do_mysql_selectOne($sql);
 
 	$sql = "SELECT req_total FROM req_spec WHERE id_srs=" . $idSRS;
-	$output['expectedTotal'] = selectOne($sql);;
+	$output['expectedTotal'] = do_mysql_selectOne($sql);;
 	
 	if ($output['expectedTotal'] == 'n/a') {
 		$output['expectedTotal'] = $output['total'];
-	} else {
-		$output['expectedTotal'] = $output['total'];
 	}
-
+	
 	$sql = "SELECT DISTINCT requirements.id FROM requirements, req_coverage WHERE" .
 				" requirements.id_srs=" . $idSRS .
 				" AND requirements.id=req_coverage.id_req";
@@ -291,9 +295,26 @@ function getReqCoverageMetrics($idSRS)
 		$output['covered'] = mysql_num_rows($result);
 	}
 
+	$output['uncovered'] = $output['expectedTotal'] - $output['covered'] 
+			- $output['notTestable'];
+
+	return $output;
+}
+
+/**
+ * get requirement coverage metrics for a Test Plan
+ * @param integer $idSRS
+ * @param integer $idTestPlan
+ * @return array results
+ * @author havlatm
+ */
+function getReqMetrics_testPlan($idSRS, $idTestPlan)
+{
+	$output = getReqMetrics_general($idSRS);
+	
 	$sql = "SELECT DISTINCT requirements.id FROM requirements,testcase," .
 			"req_coverage,category,component WHERE requirements.id_srs=" . $idSRS .
-				" AND component.projid=" . $_SESSION['testPlanId'] .
+				" AND component.projid=" . $idTestPlan /*$_SESSION['testPlanId']*/ .
 				" AND category.compid=component.id AND category.id=testcase.catid" .
 				" AND testcase.mgttcid = req_coverage.id_tc AND id_req=requirements.id"; 
 	$result = do_mysql_query($sql);
@@ -301,13 +322,7 @@ function getReqCoverageMetrics($idSRS)
 		$output['coveredByTestPlan'] = mysql_num_rows($result);
 	}
 	
-	// 20050810 - fm
-	// there are problems after a complete delete of all product
-	// how to solve it ??
 	$output['coveredTestPlan'] = $_SESSION['testPlanName'];
-	
-	$output['uncovered'] = $output['expectedTotal'] - $output['covered'] 
-			- $output['notTestable'];
 	$output['uncoveredByTestPlan'] = $output['expectedTotal'] 
 			- $output['coveredByTestPlan'] - $output['notTestable'];
 
@@ -389,20 +404,20 @@ function getReq4Tc($idTc, $idSRS = 'all')
  * 
  * @param string $title
  * @param string $scope
- * @param integer $status
  * @param integer $idSRS
+ * @param char $status
+ * @param char $type
  * 
- * @version 1.0
  * @author Martin Havlat 
  **/
-function createRequirement ($title,$scope,$status,$idSRS)
+function createRequirement ($title, $scope, $idSRS, $status = 'v', $type = 'n')
 {
 	if (strlen($title)) {
-		$sql = "INSERT INTO requirements (id_srs, title, scope, status, edit_by, edit_date)" .
+		$sql = "INSERT INTO requirements (id_srs, title, scope, status, type, id_author, create_date)" .
 				" VALUES (" . $idSRS . ",'" . mysql_escape_string($title) . 
-				"','" . mysql_escape_string($scope) . "','" . 
-				mysql_escape_string($status) . "','" . mysql_escape_string($_SESSION['user']) . 
-				"', CURRENT_DATE)";
+				"','" . mysql_escape_string($scope) . "','" . mysql_escape_string($status) . 
+				"','" . mysql_escape_string($type) ."'," . mysql_escape_string($_SESSION['userID']) . 
+				", CURRENT_DATE)";
 		$result = do_mysql_query($sql); 
 		$result = $result ? 'ok' : 'The INSERT request fails with these values:' . 
 			$title . ', ' . $scope . ', ' . $status;
@@ -419,18 +434,19 @@ function createRequirement ($title,$scope,$status,$idSRS)
  * @param integer $id
  * @param string $title
  * @param string $scope
- * @param integer $status
+ * @param string $status
+ * @param string $type
  * 
- * @version 1.0
  * @author Martin Havlat 
  **/
-function updateRequirement ($id,$title,$scope,$status)
+function updateRequirement ($id, $title, $scope, $status, $type)
 {
 	if (strlen($title)) {
 		$sql = "UPDATE requirements SET title='" . mysql_escape_string($title) . 
 				"', scope='" . mysql_escape_string($scope) . "', status='" . mysql_escape_string($status) . 
-				"', edit_by='" . mysql_escape_string($_SESSION['user']) . 
-				"', edit_date=CURRENT_DATE WHERE id=" . $id;
+				"', type='" . mysql_escape_string($type) . 
+				"', id_modifier=" . mysql_escape_string($_SESSION['userID']) . 
+				", modified_date=CURRENT_DATE WHERE id=" . $id;
 		$result = do_mysql_query($sql); 
 		if ($result) {
 			$result = 'ok';

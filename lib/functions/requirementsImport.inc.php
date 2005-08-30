@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: requirementsImport.inc.php,v $
- * @version $Revision: 1.1 $
- * @modified $Date: 2005/08/26 13:41:50 $ by $Author: havlat $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2005/08/30 15:17:25 $ by $Author: havlat $
  * @author Martin Havlat
  * 
  * Functions for Import requirements to a specification. 
@@ -68,25 +68,29 @@ function executeImportedReqs($arrImportSource, $arrReqTitles, $conflictSolution,
 			{
 				// process conflick according to choosen solution
 				tLog('Conflict found. solution: ' . $conflictSolution);
+
 				if ($conflictSolution == 'overwrite') {
 					$arrOldReq = getReqDataByTitle($title);
-					//$status = createRequirement ($title, $scope, 'Normal', $idSRS);
-					$status = updateRequirement ($arrOldReq[0]['id'],$title,$scope,$arrOldReq[0]['status']);
+					$status = updateRequirement ($arrOldReq[0]['id'],$title,$scope,
+							$arrOldReq[0]['status'],$arrOldReq[0]['type']);
 					if ($status == 'ok') {
 						$status = lang_get('req_import_result_overwritten');
 					}
 				} 
+
 				elseif ($conflictSolution == 'double') 
 				{
-					$status = createRequirement ($title, $scope, 'Normal', $idSRS);
+					$status = createRequirement ($title, $scope, $idSRS); // default status and type
 					if ($status == 'ok') {
 						$status = lang_get('req_import_result_added');
 					}
 				} 
+
 				elseif ($conflictSolution == 'skip') {
 					// no work
 					$status = lang_get('req_import_result_skipped');
 				}
+
 				else
 				{
 					$status = 'Error';
@@ -94,9 +98,9 @@ function executeImportedReqs($arrImportSource, $arrReqTitles, $conflictSolution,
 
 			} else {
 				// no conflict - just add requirement
-				$status = createRequirement ($title, $scope, 'Normal', $idSRS);
+				$status = createRequirement ($title, $scope, $idSRS); // default status and type
 			}
-			$arrImport[] = $title . " -> " . $status;
+			$arrImport[] = array($title, $status);
 		}
 	}
 	

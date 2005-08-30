@@ -1,14 +1,11 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: tcView.tpl,v 1.4 2005/08/29 07:12:03 franciscom Exp $ *}
+{* $Id: tcView.tpl,v 1.5 2005/08/30 08:44:57 havlat Exp $ *}
 {* Purpose: smarty template - view test case in test specification *}
-{* 
+{* Revisions:
 20050828 - fm - localize_date
-
-20050820 - fm 
-access $testcase by name not by ordinal
-layout
-
+20050820 - fm - access $testcase by name not by ordinal layout
 20050528 - fm - I18N
+20050830 - MHT - Added REQs
 *}
 
 {include file="inc_head.tpl"}
@@ -59,6 +56,16 @@ layout
 				target="mainframe" class="bold">{lang_get s='keywords'}</a> {$testcase[row].keywords|escape}
 			</td>
 		</tr>
+	{if $opt_requirements == TRUE && $view_req_rights == "yes"}
+		<tr>
+			<td>{lang_get s='Requirements'}</td>
+			<td>{section name=item loop=$arrReqs}
+				{$arrReqs[item].title|escape}<br />
+			{sectionelse}
+				{lang_get s='none'}
+			{/section}</td>
+		</tr>
+	{/if}
 	</table>
 	
 	<div>

@@ -11,12 +11,12 @@ function toggleSection(elem)
 		return;
 	if (elem.className == '' || elem.className == 'plus')
 	{
-		elem.src = "http://qa/testlink/icons/minus.gif";
+		elem.src = "icons/minus.gif";
 		elem.className = "minus";
 	}
 	else
 	{
-		elem.src = "http://qa/testlink/icons/plus.gif";
+		elem.src = "icons/plus.gif";
 		elem.className = "plus";
 		d = "none";
 	}

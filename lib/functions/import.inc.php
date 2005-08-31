@@ -1,6 +1,6 @@
 <?
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: import.inc.php,v 1.4 2005/08/31 11:35:12 schlundus Exp $
+* $Id: import.inc.php,v 1.5 2005/08/31 15:49:26 franciscom Exp $
 * 
 * @author Martin Havlat
 *
@@ -10,6 +10,8 @@
 * deprecated $_SESSION['product'] removed 
 *
 * 20050828 - scs - changes for importing tc to a specific category
+*
+* 20050831 - fm - reduce global coupling
 */
 require_once('../../config.inc.php');
 require_once("../functions/common.php");
@@ -107,14 +109,15 @@ function buildKeywordListAndInsertKeywords($data,$prodID,$slice = 6)
 /**
 * Import TCs from CSV
 *
+* @param 
+* @param $prodID
+* @param $login_name
 * @param int catIDForImport optional parameter for importing tc directly to a specific catID
+*
+* 20050831 - fm - reduce Global Coupling
 */
-function exeTcImport($fileLocation,$catIDForImport = 0)
+function exeTcImport($fileLocation,$prodID, $login_name, $catIDForImport = 0)
 {
-	// 20050810 - fm
-	// $_SESSION['product'] -> $_SESSION['productID']
-	$prodID = $_SESSION['productID']; // just active product is used
-
 	//command to open a csv for read
 	$handle = fopen($fileLocation, "r");
 
@@ -145,7 +148,7 @@ function exeTcImport($fileLocation,$catIDForImport = 0)
 		//Select comID from component where comName == arrayCom store as comID
 		$catID = insertComponentCategory($comID,$arrayCat,null,null,null,null);
 	
-		$tcID = insertTestcase($catID,$arrayTC,$arraySummary,$arrayTCSteps,$arrayResults,$_SESSION['user'],null,$keys);
+		$tcID = insertTestcase($catID,$arrayTC,$arraySummary,$arrayTCSteps,$arrayResults,$login_name,null,$keys);
 	}
 	else
 	{
@@ -155,7 +158,7 @@ function exeTcImport($fileLocation,$catIDForImport = 0)
 		$arrayResults = $data[3];	
 
 		$keys = buildKeywordListAndInsertKeywords($data,$prodID,4);
-		$tcID = insertTestcase($catIDForImport,$arrayTC,$arraySummary,$arrayTCSteps,$arrayResults,$_SESSION['user'],null,$keys);
+		$tcID = insertTestcase($catIDForImport,$arrayTC,$arraySummary,$arrayTCSteps,$arrayResults,$login_name,null,$keys);
 	}	
 	//Store all the old vales into a new array
 	$oldCom = $arrayCom;
@@ -176,7 +179,7 @@ function exeTcImport($fileLocation,$catIDForImport = 0)
 			$arrayTCSteps = $data[2];
 			$arrayResults = $data[3];
 			$keys = buildKeywordListAndInsertKeywords($data,$prodID,4);
-			$tcID = insertTestcase($catIDForImport,$arrayTC,$arraySummary,$arrayTCSteps,$arrayResults,$_SESSION['user'],null,$keys);
+			$tcID = insertTestcase($catIDForImport,$arrayTC,$arraySummary,$arrayTCSteps,$arrayResults,$login_name,null,$keys);
 		}
 		else
 		{
@@ -192,18 +195,18 @@ function exeTcImport($fileLocation,$catIDForImport = 0)
 			if($arrayCom == $oldCom)
 			{
 				if($arrayCat == $oldCat)
-					$tcID = insertTestcase($oldCatNumber,$arrayTC,$arraySummary,$arrayTCSteps,$arrayResults,$_SESSION['user'],null,$keys);
+					$tcID = insertTestcase($oldCatNumber,$arrayTC,$arraySummary,$arrayTCSteps,$arrayResults,$login_name,null,$keys);
 				else
 				{
 					$catID = insertComponentCategory($oldComNumber,$arrayCat,null,null,null,null);
-					$tcID = insertTestcase($catID,$arrayTC,$arraySummary,$arrayTCSteps,$arrayResults,$_SESSION['user'],null,$keys);
+					$tcID = insertTestcase($catID,$arrayTC,$arraySummary,$arrayTCSteps,$arrayResults,$login_name,null,$keys);
 				}
 			}
 			else
 			{
 				$comID = insertProductComponent($prodID,$arrayCom,null,null,null,null,null);
 				$catID = insertComponentCategory($comID,$arrayCat,null,null,null,null);
-				$tcID = insertTestcase($catID,$arrayTC,$arraySummary,$arrayTCSteps,$arrayResults,$_SESSION['user'],null,$keys);
+				$tcID = insertTestcase($catID,$arrayTC,$arraySummary,$arrayTCSteps,$arrayResults,$login_name,null,$keys);
 			}
 	
 			$oldCom = $arrayCom;

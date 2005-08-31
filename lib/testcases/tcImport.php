@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: tcImport.php,v $
  *
- * @version $Revision: 1.4 $
- * @modified $Date: 2005/08/31 11:35:12 $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2005/08/31 15:49:26 $
  *
  * @author	Martin Havlat
  * @author	Chad Rosen
@@ -42,8 +42,10 @@ if ( ($source != 'none') && ($source != '' ))
 } 
 
 if(isset($_POST['import']))
-	$imported = exeTcImport($_POST['location'],$catIDForImport);
-
+{
+	// 20050831 - fm - interface changes to reduce global coupling
+	$imported = exeTcImport($_POST['location'],$_SESSION['productID'], $_SESSION['user'],$catIDForImport);
+}
 $fileFormatString = lang_get('the_format');
 if ($catIDForImport)
 	$fileFormatString = lang_get('the_format_by_cat');

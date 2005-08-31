@@ -1,25 +1,34 @@
+# 
+DROP TABLE IF EXISTS `req_spec`;
 CREATE TABLE `req_spec` (
   `id` INT( 10 ) UNSIGNED NOT NULL AUTO_INCREMENT ,
   `id_product` INT( 10 ) UNSIGNED NOT NULL ,
-  `title` VARCHAR( 100 ) NOT NULL default 'undefined',
+  `title` VARCHAR( 100 ) NOT NULL ,
   `scope` TEXT,
   `total_req` VARCHAR( 5 ) DEFAULT 'n/a' NOT NULL ,
-  `edit_by` varchar(30) default NULL,
-  `edit_date` date NOT NULL default '0000-00-00',
+  `type` char(1) default 'n',
+  `id_author` INT( 10 ) UNSIGNED NULL,
+  `create_date` date NOT NULL default '0000-00-00',
+  `id_modifier` INT( 10 ) UNSIGNED NULL,
+  `modified_date` date NOT NULL default '0000-00-00',
 PRIMARY KEY ( `id` ) ,
 INDEX ( `id_product` )
 ) TYPE=MyISAM COMMENT='Dev. Documents (e.g. System Requirements Specification)';
 # --------------------------------------------------------
 
 # --------------------------------------------------------
+DROP TABLE IF EXISTS `requirements`;
 CREATE TABLE `requirements` (
   `id` INT( 10 ) UNSIGNED NOT NULL AUTO_INCREMENT ,
   `id_srs` INT( 10 ) UNSIGNED NOT NULL ,
-  `title` VARCHAR( 100 ) NOT NULL default 'undefined',
+  `title` VARCHAR( 100 ) NOT NULL ,
   `scope` TEXT,
-  `status` ENUM( 'Normal', 'Not testable' ) DEFAULT 'Normal' NOT NULL ,
-  `edit_by` varchar(30) default NULL,
-  `edit_date` date NOT NULL default '0000-00-00',
+  `status` char(1) default 'v' NOT NULL,
+  `type` char(1) default NULL,
+  `id_author` INT( 10 ) UNSIGNED NULL,
+  `create_date` date NOT NULL default '0000-00-00',
+  `id_modifier` INT( 10 ) UNSIGNED NULL,
+  `modified_date` date NOT NULL default '0000-00-00',
 PRIMARY KEY ( `id` ) ,
 INDEX ( `id_srs` , `status` )
 ) TYPE=MyISAM;

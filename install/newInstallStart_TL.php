@@ -1,6 +1,6 @@
 <?php 
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: newInstallStart_TL.php,v 1.3 2005/08/24 17:05:28 franciscom Exp $ */
+/* $Id: newInstallStart_TL.php,v 1.4 2005/08/31 08:44:13 franciscom Exp $ */
 
 // 20050824 - fm
 require_once("installUtils.php");
@@ -55,11 +55,11 @@ $check = check_php_version();
 $errors += $check['errors'];
 echo $check['msg'];
 
-/*
-$check = check_mysql_version();
+/* 20050830 - fm  */
+$check = check_php_settings();
 $errors += $check['errors'];
 echo $check['msg'];
-*/
+
 
 $check = check_session();
 $errors += $check['errors'];

@@ -1,6 +1,13 @@
 <?php
-/* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: installUtils.php,v 1.3 2005/08/24 17:05:28 franciscom Exp $ */
+/* 
+TestLink Open Source Project - http://testlink.sourceforge.net/ 
+$Id: installUtils.php,v 1.4 2005/08/31 08:44:13 franciscom Exp $ 
+
+20050830 - fm - added check_php_settings()
+
+*/
+
+
 // Code extracted from several places:
 
 // +----------------------------------------------------------------------+
@@ -45,7 +52,7 @@ if ( $add_dirpath )
 // | Authors: João Prado Maia <jpm@mysql.com>                             |
 // +----------------------------------------------------------------------+
 //
-// @(#) $Id: installUtils.php,v 1.3 2005/08/24 17:05:28 franciscom Exp $
+// @(#) $Id: installUtils.php,v 1.4 2005/08/31 08:44:13 franciscom Exp $
 //
 
 
@@ -411,6 +418,29 @@ if ($inst_type == "upgrade" )
 return($msg);
 }  //function end
 
+
+
+function check_php_settings()
+{
+$errors = 0;
+$final_msg = "</b><br />Checking if Register Globals = OFF:<b> ";
+
+if(ini_get('register_globals')) 
+{
+	$final_msg .=  "<span class='notok'>Failed! is ON - Please change the setting in your php.ini file</span>";
+	$errors += 1;
+} 
+else 
+{
+	$final_msg .= "<span class='ok'>OK!</span>";
+}
+
+$ret = array ('errors' => $errors,
+              'msg' => $final_msg);
+
+
+return ($ret);
+}  //function end
 
 
 ?>

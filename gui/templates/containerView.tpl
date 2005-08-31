@@ -1,7 +1,10 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: containerView.tpl,v 1.6 2005/08/29 11:13:46 schlundus Exp $ *}
+{* $Id: containerView.tpl,v 1.7 2005/08/31 08:46:28 franciscom Exp $ *}
 {* 
 Purpose: smarty template - view test specification containers 
+
+20050830 - fm - added hidden input fields to convey component or category name
+
 20050829 - fm
 1. remove |escape on all data fields that use fckeditor during the input phase.
 2. remove pre for the same fields
@@ -42,6 +45,9 @@ Purpose: smarty template - view test specification containers
 	{if $modify_tc_rights == 'yes' || $sqlResult ne ''}
 		<div>
 		<form method="post" action="lib/testcases/containerEdit.php?componentID={$container_data.id}" />
+		  {* 20050830 - fm *}
+			<input type="hidden" name="componentName" value="{$container_data.name}" />
+
 			<input type="submit" name="editCOM" value="{lang_get s='btn_edit_com'}"
 				     alt="{lang_get s='alt_edit_com'}" />
 			<input type="submit" name="deleteCOM" value="{lang_get s='btn_del_com'}" 
@@ -65,6 +71,9 @@ Purpose: smarty template - view test specification containers
 	{if $modify_tc_rights == 'yes' || $sqlResult ne ''}
 		<div>
 		<form method="post" action="lib/testcases/containerEdit.php?categoryID={$container_data.id}" />
+			{* 20050830 - fm *}
+			<input type="hidden" name="categoryName" value="{$container_data.name}" />
+
 			<input type="submit" name="editCat"   value="{lang_get s='btn_edit_cat'}" />  
 			<input type="submit" name="deleteCat" value="{lang_get s='btn_del_cat'}" />   
 			<input type="submit" name="moveCat"   value="{lang_get s='btn_move_cp_cat'}" />

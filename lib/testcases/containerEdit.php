@@ -1,10 +1,12 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: containerEdit.php,v 1.10 2005/08/29 14:19:02 franciscom Exp $ */
+/* $Id: containerEdit.php,v 1.11 2005/08/31 08:46:28 franciscom Exp $ */
 /* Purpose:  This page manages all the editing of test specification containers. */
 /*
  *
- *  
+ * @author: francisco mancardi - 20050830
+ * bug in deleteCOM e deleteCAT 
+ *
  * @author: francisco mancardi - 20050820/20050826
  * fckeditor
  * refactoring
@@ -36,6 +38,11 @@ if( !$my_productID )
   $my_productID = $_SESSION['productID'];	
 }
 // ----------------------------------------------------------------------------
+
+// 20050830 - fm 
+$compName = isset($_REQUEST['componentName']) ? stripslashes($_REQUEST['componentName']) : null;
+$catName = isset($_REQUEST['categoryName']) ? stripslashes($_REQUEST['categoryName']) : null;
+
 
 $objectID = isset($_GET['objectID']) ? intval($_GET['objectID']) : null;
 $smarty = new TLSmarty;
@@ -168,21 +175,28 @@ else if ($action == 'deleteCOM')
 	{
 
 		$cats = null;
-		getComponentCategoryIDs($my_componentID,$cats);
+		$smarty->assign('sqlResult', 'ok');
+
+		getComponentCategoryIDs($objectID,$cats);
 		if (sizeof($cats))
 		{
 			$catIDs = "'".implode(",",$cats)."'";
 			deleteCategoriesTestCases($catIDs);
-			deleteComponentCategories($my_componentID);
+			deleteComponentCategories($objectID);
 		}
-		if (deleteComponent($my_componentID))
-			$smarty->assign('sqlResult', 'ok');
-	   	else
-			$smarty->assign('sqlResult', mysql_error());
+		
+		if (!deleteComponent($objectID))
+		{
+		  $smarty->assign('sqlResult', mysql_error());
+		}
+			
 	}
-	else //if the user has clicked the delete button on the archive page show the delete confirmation page
-		$smarty->assign('data', $my_componentID);
-	
+	else
+	{
+	  //if the user has clicked the delete button on the archive page show the delete confirmation page
+	  $smarty->assign('objectName', $compName);
+		$smarty->assign('objectID', $my_componentID);
+	}
 }
 else if( $action == 'moveCom') 
 {
@@ -257,12 +271,14 @@ else if ($action == 'deleteCat')
 	/** @todo delete also tests in test plan(?) */
 	if(isset($_GET['sure']) && ($_GET['sure'] == 'yes'))
 	{
-		deleteCategoriesTestCases($my_categoryID);
-		$smarty->assign('sqlResult',  deleteCategory($my_categoryID) ? 'ok' : mysql_error());
+		deleteCategoriesTestCases($objectID);
+		$smarty->assign('sqlResult',  deleteCategory($objectID) ? 'ok' : mysql_error());
 	}
 	else
 	{
-		$smarty->assign('data', $my_categoryID);
+		// 20050830 - fm 
+	  $smarty->assign('objectName', $catName);
+		$smarty->assign('objectID', $my_categoryID);
 	}	
 	
 }

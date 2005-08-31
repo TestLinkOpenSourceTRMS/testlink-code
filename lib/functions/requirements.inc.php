@@ -4,16 +4,17 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: requirements.inc.php,v $
- * @version $Revision: 1.4 $
- * @modified $Date: 2005/08/30 15:17:25 $ by $Author: havlat $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2005/08/31 08:45:11 $ by $Author: franciscom $
  *
  * @author Martin Havlat <havlat@users.sourceforge.net>
  * 
  * Functions for support requirement based testing 
  *
+ * 20050830 - francisco mancardi - changes in printSRS()
+ * 20050829 - Martin Havlat - updated function headers 
+ * 20050825 - Martin Havlat - updated global header;
  * 20050810	- francisco mancardi - deprecated $_SESSION['product'] removed
- * 20050925 - Martin Havlat - updated global header;
- * 20050929 - Martin Havlat - updated function headers 
  * 
  */
 ////////////////////////////////////////////////////////////////////////////////
@@ -490,18 +491,24 @@ function deleteRequirement($id)
 
 /** 
  * print Requirement Specification 
+ *
  * 
  * @param integer $idSRS
- * 
+ * @param string $prodName
+ * @param string $userID
+ *
+ * @version 1.1 - 20050830
+ * @author Francisco Mancardi
+ *
  * @version 1.0
  * @author Martin Havlat 
  **/
-function printSRS($idSRS)
+function printSRS($idSRS, $prodName, $userID)
 {
 	$arrSpec = getReqSpec($idSRS);
 	
 	$output = printHeader($arrSpec[0]['title']);
-	$output .= printFirstPage($arrSpec[0]['title']);
+	$output .= printFirstPage($arrSpec[0]['title'], $prodName, $userID);
 	$output .= "<h2>" . lang_get('scope') . "</h2>\n<div>" . $arrSpec[0]['scope'] . "</div>\n";
 	$output .= printRequirements($idSRS);
 	$output .= "\n</body>\n</html>";

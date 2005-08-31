@@ -3,25 +3,34 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: print.inc.php,v $
- * @version $Revision: 1.2 $
- * @modified $Date: 2005/08/16 18:00:55 $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2005/08/31 08:45:11 $ by $Author: franciscom $
  *
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
  * Functions for support printing of documents. 
+ *
+ * 20050830 - fm - refactoring
  * 
  */
-/** @return string First + Last name */
-function getAuthor()
+/** 
+
+@parameter $userID
+@return string First + Last name 
+*/
+function getAuthor($userID)
 {
-    $sql = "select first,last from user where id=" . $_SESSION['userID'];
+    $sql = "select first,last,login from user where id=" . $userID;
     $result = do_mysql_query($sql);
-    $myrow = mysql_fetch_row($result);
+    $myrow = mysql_fetch_assoc($result);
     
-    if ($myrow[1])
-    	return $myrow[0] . ' ' . $myrow[1];
-    else
-    	return $_SESSION['user'];
+    $ret_val = $myrow['first'] . ' ' . $myrow['last'];
+    if (strlen(trim($ret_val)) == 0 )
+    {
+    	
+    	$ret_val = $myrow['login'];
+    }	
+    return($ret_val); 
 }
 
 /** 
@@ -40,20 +49,28 @@ function printHeader($title, $cssTemplate = 'gui/css/tl_doc_basic.css')
 	return $output;
 }
 
-/** print HTML - initial page of document */
-function printFirstPage($title)
+/** 
+  print HTML - initial page of document 
+
+  20050830 - fm
+  added $g_date_format
+*/
+function printFirstPage($title, $prodName, $userID)
 {
+	global $g_date_format;
+	
+	$the_prodName = htmlspecialchars($prodName);
 	$output = '<div class="pageheader">';
-	$output .= '<span style="float: right;">'. htmlspecialchars($_SESSION['productName']) ."</span>";
+	$output .= '<span style="float: right;">'. $the_prodName ."</span>";
 	if (TL_COMPANY != '') {
 		$output .= '<span>'. htmlspecialchars(TL_COMPANY) ."</span>\n";
 	}
 	$output .= "</div>\n";
 	$output .= '<h1>'.$title."</h1>\n";
 	$output .= "<div style='margin: 50px;'>" .
-			"<p>Product: " . htmlspecialchars($_SESSION['productName']) . "</p>" .
-			"<p>Author: " . htmlspecialchars(getAuthor()) . "</p>" .
-			"<p>Printed by TestLink on " . date('Y-m-d H:i:s', time()) . "</p></div>";
+			"<p>Product: " . $the_prodName . "</p>" .
+			"<p>Author: " . htmlspecialchars(getAuthor($userID)) . "</p>" .
+			"<p>Printed by TestLink on " . 	strftime($g_date_format, time()) . "</p></div>";
 	if (TL_DOC_COPYRIGHT != '') {
 		$output .= '<div class="pagefooter">'.htmlspecialchars(TL_DOC_COPYRIGHT)."</div>\n";
 	}

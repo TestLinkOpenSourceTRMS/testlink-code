@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: reqSpecPrint.php,v $
- * @version $Revision: 1.2 $
- * @modified $Date: 2005/08/16 18:00:57 $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2005/08/31 08:45:11 $
  * 
  * @author Martin Havlat
  * 
@@ -17,7 +17,11 @@ require_once("common.php");
 require_once('requirements.inc.php');
 testlinkInitPage();
 
-$idSRS = isset($_GET['idSRS']) ? strings_stripSlashes($_GET['idSRS']) : null;
+$idSRS = isset($_REQUEST['idSRS']) ? strings_stripSlashes($_REQUEST['idSRS']) : null;
 
-print printSRS($idSRS);
+// 20050830 - fm
+$prodName = isset($_SESSION['productName']) ? strings_stripSlashes($_SESSION['productName']) : null;
+$my_userID = isset($_SESSION['userID']) ? intval($_SESSION['userID']) : null;
+
+print printSRS($idSRS, $prodName, $my_userID);
 ?>

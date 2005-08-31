@@ -2,7 +2,7 @@
 /**
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/ 
 *
-* 	@version 	$Id: printData.php,v 1.2 2005/08/16 18:00:57 franciscom Exp $
+* 	@version 	$Id: printData.php,v 1.3 2005/08/31 08:45:11 franciscom Exp $
 *	@author 	Martin Havlat
 * 
 * 	This page shows the data that will be printed.
@@ -13,6 +13,9 @@
 * db calls for Test Set includes wrong SQL; I expect that update for containers solve this problem
 * 	- solved in 1.1.2.6
 *
+*
+* @ author: francisco mancardi - 20050830
+* refactoring print_header()
 *
 * @ author: francisco mancardi - 20050810
 * deprecated $_SESSION['product'] removed
@@ -38,10 +41,17 @@ function print_header($title, $toc)
 {
   global $CONTENT_HEAD;
   
+  // 20050830 - fm
+  $prodName = isset($_SESSION['productName']) ? strings_stripSlashes($_SESSION['productName']) : null;
+  $my_userID = isset($_SESSION['userID']) ? intval($_SESSION['userID']) : null;
+
+  
   $title = lang_get('title_test_spec') . "-" . $title;
   
   $CONTENT_HEAD .= printHeader($title);
-  $CONTENT_HEAD .= printFirstPage($title);
+  
+  // 20050830 - fm
+  $CONTENT_HEAD .= printFirstPage($title, $prodName, $my_userID);
 
   if ($toc)
   	$CONTENT_HEAD .= '<div class="toc"><h2>'.lang_get('title_toc').'</h2>';

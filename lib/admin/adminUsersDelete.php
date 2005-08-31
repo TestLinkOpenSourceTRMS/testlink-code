@@ -1,11 +1,12 @@
 <?php
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: adminUsersDelete.php,v $
  *
- * @version $Revision: 1.3 $
- * @modified $Date: 2005/08/29 11:13:46 $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2005/08/31 19:21:38 $
  *
  * @author Martin Havlat
  *

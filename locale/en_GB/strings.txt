@@ -229,6 +229,8 @@ $TLS_licensed_under = "TestLink is licensed under the";
 $TLS_Build = "Build";
 $TLS_Keyword = "Keyword";
 $TLS_Product = "Product";
+$TLS_Requirement = "Requirement";
+$TLS_Requirements = "Requirements";
 $TLS_TestCase = "TestCase";
 $TLS_TestPlan = "TestPlan";
 $TLS_add = "Add";
@@ -602,6 +604,7 @@ $TLS_title_upd_mod_tc = "Update Modified Test Cases in ";
 
 
 // gui/templates/reqSpecView.tpl
+$TLS_Author = "LOCALIZE: TLS_Author";
 $TLS_btn_analyse = "Analyse";
 $TLS_btn_check_all = "Check All";
 $TLS_btn_delete_spec = "Delete spec.";
@@ -628,8 +631,6 @@ $TLS_scope = "Scope";
 // gui/templates/reqCreate.tpl
 $TLS_btn_cancel = "Cancel";
 $TLS_req_create = "Create a new Requirement";
-$TLS_req_opt_normal = "Normal";
-$TLS_req_opt_notest = "Not testable";
 $TLS_reqs = "Requirements";
 
 
@@ -773,6 +774,8 @@ $TLS_title_specification = "Specification";
 
 
 // gui/templates/reqImport.tpl
+$TLS_Result = "Result";
+$TLS_Title = "Title";
 $TLS_btn_back2srs = "Back to Req. Specification";
 $TLS_max_size_cvs_file1 = "Max. size of the file is";
 $TLS_max_size_cvs_file2 = "kB";
@@ -874,6 +877,11 @@ $TLS_trep_failing = "Failing";
 $TLS_trep_passing = "Passing";
 $TLS_trep_status_for_build = "Status for build";
 $TLS_trep_status_for_ts = "Status for test suite";
+
+
+
+// lib/functions/users.inc.php
+$TLS_Unknown = "Unknown";
 
 
 
@@ -1040,7 +1048,9 @@ $TLS_link_report_excel = "&#8195;&#8594; Excel export";
 $TLS_link_report_failed = "Failed Test Cases";
 $TLS_link_report_general_tp_metrics = "General Test Plan Metrics";
 $TLS_link_report_metrics_active_build = "Metrics of active Build";
+$TLS_link_report_metrics_more_builds = "LOCALIZE: TLS_link_report_metrics_more_builds";
 $TLS_link_report_overall_build = "The Overall Build Status";
+$TLS_link_report_reqs_coverage = "LOCALIZE: TLS_link_report_reqs_coverage";
 $TLS_link_report_test = "Test Report";
 $TLS_link_report_total_bugs = "Total Bugs For Each Test Case";
 

@@ -10,6 +10,10 @@ var TREE_TPL = {
 	'icon_e'  : 'third_party/jtree/icons/empty.gif', // empty image
 	'icon_l'  : 'third_party/jtree/icons/line.gif',  // vertical line
 	
+	//20050831 - scs - added two item in the case where a product doesnt contain anything
+	'icon_32' : 'third_party/jtree/icons/base.gif',   // root icon normal
+	'icon_36' : 'third_party/jtree/icons/base.gif',   // root icon selected
+	
 	'icon_48' : 'third_party/jtree/icons/base.gif',   // root icon normal
 	'icon_52' : 'third_party/jtree/icons/base.gif',   // root icon selected
 	'icon_56' : 'third_party/jtree/icons/base.gif',   // root icon opened

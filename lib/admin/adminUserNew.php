@@ -1,11 +1,12 @@
 <?php
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: adminUserNew.php,v $
  *
- * @version $Revision: 1.3 $
- * @modified $Date: 2005/08/29 11:13:46 $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2005/08/31 19:21:38 $
  *
  * @author Martin Havlat
  *
@@ -20,14 +21,15 @@ include('../../config.inc.php');
 require_once('users.inc.php');
 testlinkInitPage();
 
+$_POST = strings_stripSlashes($_POST);
 $bNewUser = isset($_POST['newUser']) ? $_POST['newUser'] : null;
-$login = isset($_POST['login']) ? strings_stripSlashes($_POST['login']) : null;
-$password = isset($_POST['password']) ? strings_stripSlashes($_POST['password']) : null;
+$login = isset($_POST['login']) ? $_POST['login'] : null;
+$password = isset($_POST['password']) ? $_POST['password'] : null;
 $rightsid = isset($_POST['rights']) ? intval($_POST['rights']) : 5;
-$first = isset($_POST['first']) ? strings_stripSlashes($_POST['first']) : null;
-$last = isset($_POST['last']) ? strings_stripSlashes($_POST['last']) : null;
-$email = isset($_POST['email']) ? strings_stripSlashes($_POST['email']) : null;
-$locale = isset($_POST['locale']) ? strings_stripSlashes($_POST['locale']) : null;
+$first = isset($_POST['first']) ? $_POST['first'] : null;
+$last = isset($_POST['last']) ? $_POST['last'] : null;
+$email = isset($_POST['email']) ? $_POST['email'] : null;
+$locale = isset($_POST['locale']) ? $_POST['locale'] : null;
 
 $sqlResult = null;
 if($bNewUser)

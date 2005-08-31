@@ -1,6 +1,7 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: tcNew.tpl,v 1.5 2005/08/29 07:59:03 franciscom Exp $ *}
+{* $Id: tcNew.tpl,v 1.6 2005/08/31 19:21:37 schlundus Exp $ *}
 {* Purpose: smarty template - create new testcase *}
+{* 20050831 - scs - change item to TestCase *}
 {* 
 20050829 - fm
 data -> categoryID 
@@ -14,7 +15,7 @@ fckeditor
 
 <h1>{lang_get s='title_new_tc'}</h1>
 
-{include file="inc_update.tpl" result=$sqlResult item="Test case" name=$name}
+{include file="inc_update.tpl" result=$sqlResult item="TestCase" name=$name}
 
 <div class="workBack">
 

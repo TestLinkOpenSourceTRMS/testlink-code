@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.9 $
- * @modified $Date: 2005/08/31 11:35:12 $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2005/08/31 19:21:38 $
  *
  * @author Andreas Morsing
  *
@@ -147,7 +147,7 @@ $TLS_cont_move_first = "Verschiebe diese";
 $TLS_cont_move_second = "nach einem anderen";
 $TLS_defined_exclam = "definiert !";
 $TLS_include_nested = "Inklusive Daten (nur Kopieren).";
-$TLS_sorry_further = "Es gibt keine weiteren ";
+$TLS_sorry_further = "Es sind keine weiteren ";
 $TLS_title_move_cp = "Verschieben/Kopieren";
 
 
@@ -240,6 +240,8 @@ $TLS_licensed_under = "TestLink ist lizenziert unter der";
 $TLS_Build = "Build";
 $TLS_Keyword = "Keyword";
 $TLS_Product = "Produkt";
+$TLS_Requirement = "Anforderung";
+$TLS_Requirements = "Anforderungen";
 $TLS_TestCase = "testcase";
 $TLS_TestPlan = "TestPlan";
 $TLS_add = "hinzugefügt";
@@ -613,6 +615,7 @@ $TLS_title_upd_mod_tc = "Aktualisiere geänderte Test Cases in ";
 
 
 // gui/templates/reqSpecView.tpl
+$TLS_Author = "Autor";
 $TLS_btn_analyse = "Analysieren";
 $TLS_btn_check_all = "Alle auswählen";
 $TLS_btn_delete_spec = "Spec. löschen";
@@ -639,8 +642,6 @@ $TLS_scope = "Bereich";
 // gui/templates/reqCreate.tpl
 $TLS_btn_cancel = "Abbrechen";
 $TLS_req_create = "Anforderung erstellen";
-$TLS_req_opt_normal = "Normal";
-$TLS_req_opt_notest = "Nicht testbar";
 $TLS_reqs = "Anforderungen";
 
 
@@ -784,6 +785,8 @@ $TLS_title_specification = "Spezifikation";
 
 
 // gui/templates/reqImport.tpl
+$TLS_Result = "Resultat";
+$TLS_Title = "Title";
 $TLS_btn_back2srs = "Back to Req. Specification";
 $TLS_max_size_cvs_file1 = "Max. size of the file is";
 $TLS_max_size_cvs_file2 = "kB";
@@ -885,6 +888,11 @@ $TLS_trep_failing = "Fehlgeschlagen";
 $TLS_trep_passing = "Erfolgreich";
 $TLS_trep_status_for_build = "Status für Build";
 $TLS_trep_status_for_ts = "Status für Test Suite";
+
+
+
+// lib/functions/users.inc.php
+$TLS_Unknown = "Unbekannt";
 
 
 
@@ -1051,7 +1059,9 @@ $TLS_link_report_excel = "&#8195;&#8594; Excel export";
 $TLS_link_report_failed = "Fehlgeschlagene TestCases";
 $TLS_link_report_general_tp_metrics = "Generelle Test Plan Metriken";
 $TLS_link_report_metrics_active_build = "Metriken des Aktiven Build";
+$TLS_link_report_metrics_more_builds = "LOCALIZE: TLS_link_report_metrics_more_builds";
 $TLS_link_report_overall_build = "Gesamter Buildstatus";
+$TLS_link_report_reqs_coverage = "LOCALIZE: TLS_link_report_reqs_coverage";
 $TLS_link_report_test = "Test Report";
 $TLS_link_report_total_bugs = "Gesamtanzahl Bugs für jeden TestCase";
 
@@ -1071,7 +1081,7 @@ $TLS_title_test_report_all_builds = "Test Report: Resultate der Test Cases für a
 // lib/testcases/containerEdit.php
 $TLS_error_cat_add = "Die Kategorie wurde nicht hinzugefügt!";
 $TLS_error_update_catorder = "Die Reihenfolge der Kategorien konnte nicht aktualisiert werden!";
-$TLS_warning_empty_cat_name = "Please give a name to category";
+$TLS_warning_empty_cat_name = "Sie können keine Kategorie ohne Namen erstellen";
 $TLS_warning_empty_com_name = "Sie können keine Komponente ohne Namen erstellen";
 
 

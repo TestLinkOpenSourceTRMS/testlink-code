@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: tcView.tpl,v 1.5 2005/08/30 08:44:57 havlat Exp $ *}
+{* $Id: tcView.tpl,v 1.6 2005/08/31 19:21:37 schlundus Exp $ *}
 {* Purpose: smarty template - view test case in test specification *}
 {* Revisions:
 20050828 - fm - localize_date
@@ -20,7 +20,7 @@
 
 {if $modify_tc_rights == "yes" }
 
-	{include file="inc_update.tpl" result=$sqlResult item="test case" refresh="yes"}
+	{include file="inc_update.tpl" result=$sqlResult item="TestCase" refresh="yes"}
 
 	<form method="post" action="lib/testcases/tcEdit.php?&testcaseID={$testcase[row].id}">
 		<input type="submit" name="editTC"   value="{lang_get s='btn_edit'}">

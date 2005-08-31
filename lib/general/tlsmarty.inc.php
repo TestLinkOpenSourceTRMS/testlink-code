@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tlsmarty.inc.php,v $
  *
- * @version $Revision: 1.3 $
- * @modified $Date: 2005/08/29 06:36:30 $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2005/08/31 19:21:38 $
  *
  * @author Martin Havlat
  *
@@ -48,7 +48,8 @@ class TLSmarty extends Smarty
 		$this->assign('jsValidate', null);
 		$this->assign('jsTree', null);
 		$this->assign('sqlResult', null);
-		$this->assign('action', 'update');
+		//20050831 - scs - changed default action to updated
+		$this->assign('action', 'updated');
 	
 		global $g_locales;
 		$this->assign('optLocale',$g_locales);

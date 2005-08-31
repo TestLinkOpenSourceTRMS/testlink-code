@@ -4,17 +4,19 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: requirements.inc.php,v $
- * @version $Revision: 1.5 $
- * @modified $Date: 2005/08/31 08:45:11 $ by $Author: franciscom $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2005/08/31 16:14:57 $ by $Author: havlat $
  *
  * @author Martin Havlat <havlat@users.sourceforge.net>
  * 
  * Functions for support requirement based testing 
  *
+ * Revisions:
  * 20050830 - francisco mancardi - changes in printSRS()
  * 20050829 - Martin Havlat - updated function headers 
  * 20050825 - Martin Havlat - updated global header;
  * 20050810	- francisco mancardi - deprecated $_SESSION['product'] removed
+ * 20050901 - Martin Havlat - updated metrics/results related functions 
  * 
  */
 ////////////////////////////////////////////////////////////////////////////////
@@ -31,7 +33,6 @@ require_once('print.inc.php');
  * @param string $countReq
  * @param string $type
  * 
- * @version 1.0
  * @author Martin Havlat 
  */
 function createReqSpec ($title, $scope, $countReq, $type = 'n')
@@ -68,7 +69,6 @@ function createReqSpec ($title, $scope, $countReq, $type = 'n')
  * @param string $type
  * @return string result
  * 
- * @version 1.0
  * @author Martin Havlat 
  */
 function updateReqSpec ($id, $title, $scope, $countReq, $type = 'n')
@@ -98,7 +98,6 @@ function updateReqSpec ($id, $title, $scope, $countReq, $type = 'n')
  * @param integer $idSRS
  * @return string result comment
  * 
- * @version 1.0
  * @author Martin Havlat 
  **/
 function deleteReqSpec ($idSRS)
@@ -130,7 +129,6 @@ function deleteReqSpec ($idSRS)
  * @param string $set range of collection 'product' (default) or 'all' or '<id>'
  * @return assoc_array list of SRS
  * 
- * @version 1.0
  * @author Martin Havlat 
  **/
 function getReqSpec($set = 'product')
@@ -151,7 +149,6 @@ function getReqSpec($set = 'product')
  * 
  * @return associated array List of titles according to IDs
  * 
- * @version 1.0
  * @author Martin Havlat 
  **/
 function getOptionReqSpec()
@@ -173,7 +170,6 @@ function getOptionReqSpec()
  * @param string Test case ID - required if assigned or unassigned scope is used
  * @return assoc_array list of requirements
  * 
- * @version 1.0
  * @author Martin Havlat 
  */
 function getRequirements($idSRS, $range = 'all', $idTc = null)
@@ -193,7 +189,6 @@ function getRequirements($idSRS, $range = 'all', $idTc = null)
 /** 
  * function allows to obtain unassigned requirements 
  * 
- * @version 1.0
  * @author Martin Havlat 
  **/
 // MHT: I'm not able find a simple SQL (subquery is not supported 
@@ -230,7 +225,41 @@ function array_diff_byId ($arrAll, $arrPart)
 	return $arrTemp4;
 }
 
-function getSRSCoverage($idSRS, $idPlan)
+function getReqCoverage_general($idSRS)
+{
+	$output = array('covered' => array(), 'uncovered' => array(), 'nottestable' => array());
+	
+	// get requirements
+	$sql = "SELECT id,title FROM requirements WHERE id_srs=" . $idSRS . 
+			" AND status='v' ORDER BY title";
+	$arrReq = selectData($sql);
+
+	// get not-testable requirements
+	$sql = "SELECT id,title FROM requirements WHERE id_srs=" . $idSRS . 
+			" AND status='n' ORDER BY title";
+	$output['nottestable'] = selectData($sql);
+	
+	// get coverage
+	if (sizeof($arrReq))
+	{
+		foreach ($arrReq as $req) 
+		{
+			// collect TC for REQ
+			$arrCoverage = getTc4Req($req['id']);
+	
+			if (count($arrCoverage) > 0) {
+				// add information about coverage
+				$req['coverage'] = $arrCoverage;
+				$output['covered'][] = $req;
+			} else {
+				$output['uncovered'][] = $req;
+			}
+		}
+	}	
+	return $output;
+}
+
+function getReqCoverage_testPlan($idSRS, $idPlan)
 {
 	$output = array('covered' => array(), 'uncovered' => array(), 'nottestable' => array());
 	
@@ -263,9 +292,9 @@ function getSRSCoverage($idSRS, $idPlan)
 	return $output;
 }
 
-
 /**
  * get requirement coverage metrics
+ * 
  * @param integer $idSRS
  * @return array results
  * @author havlatm
@@ -274,15 +303,18 @@ function getReqMetrics_general($idSRS)
 {
 	$output = array();
 	
+	// get nottestable REQs
 	$sql = "SELECT count(*) FROM requirements WHERE id_srs=" . $idSRS . 
 			" AND status='n'";
 	$output['notTestable'] = do_mysql_selectOne($sql);
 
 	$sql = "SELECT count(*) FROM requirements WHERE id_srs=" . $idSRS;
 	$output['total'] = do_mysql_selectOne($sql);
+	tLog('Count of total REQ in DB for id_SRS:'.$idSRS.' = '.$output['total']);
 
-	$sql = "SELECT req_total FROM req_spec WHERE id_srs=" . $idSRS;
+	$sql = "SELECT total_req FROM req_spec WHERE id=" . $idSRS;
 	$output['expectedTotal'] = do_mysql_selectOne($sql);;
+	tLog(' Redefined Count of total REQ in DB for id_SRS:'.$idSRS.' = '.$output['total']);
 	
 	if ($output['expectedTotal'] == 'n/a') {
 		$output['expectedTotal'] = $output['total'];
@@ -467,7 +499,6 @@ function updateRequirement ($id, $title, $scope, $status, $type)
  *  
  * @param integer $id
  * 
- * @version 1.0
  * @author Martin Havlat 
  **/
 function deleteRequirement($id)

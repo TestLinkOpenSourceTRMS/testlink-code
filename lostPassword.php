@@ -1,27 +1,29 @@
 <?php
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: lostPassword.php,v $
  *
- * @version $Revision: 1.5 $
- * @modified $Date: 2005/08/16 17:57:41 $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2005/08/31 11:35:11 $
  *
  * @author Chad Rosen
  *
  * 
+ * 20050831 - scs - cosmetic changes
 **/
 require_once('config.inc.php');
 require_once('common.php');
-include('users.inc.php');
-require_once('lib/functions/lang_api.php');
+require_once('users.inc.php');
 
-$login = isset($_POST['login']) ? strings_stripSlashes($_POST['login']): null;
+$_POST = strings_stripSlashes($_POST);
+$login = isset($_POST['login']) ? $_POST['login']: null;
 
-$smarty = new TLSmarty;
 $op = doDBConnect();
 if ($op['status'] == 0)
 {
+	$smarty = new TLSmarty();
 	$smarty->assign('title', lang_get('fatal_page_title'));
 	$smarty->assign('msg', $op['dbms_msg']);
 	$smarty->display('fatal_error.tpl');
@@ -63,6 +65,7 @@ if (strlen($login))
 	}
 }
 
+$smarty = new TLSmarty();
 $smarty->assign('css', TL_BASE_HREF . 'gui/css/tl_login.css');
 $smarty->assign('note',$message);
 $smarty->assign('page_title',lang_get('page_title_lost_passwd'));

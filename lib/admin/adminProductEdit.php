@@ -1,40 +1,53 @@
 <?php
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: adminProductEdit.php,v $
  *
- * @version $Revision: 1.2 $
- * @modified $Date: 2005/08/16 18:00:53 $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2005/08/31 11:35:12 $
  *
  * @author Martin Havlat
  *
  * This page allows users to edit/delete products.
  * 
  * @todo Verify dependency before delete project 
- * @todo Enable inactivate a product instead of delete
  *
+ * 20050831 - scs - moved POST to top, some small changes
 **/
 include('../../config.inc.php');
 require_once('common.php');
 require_once('product.inc.php');
-
 testlinkInitPage(true);
 
 $updateResult = null;
 $action = 'no';
 $error = null;
-$smarty = new TLSmarty;
+$smarty = new TLSmarty();
+
+$_GET = strings_stripSlashes($_GET);
+$_POST = strings_stripSlashes($_POST);
+$bDeleteProduct = isset($_GET['deleteProduct']) ? 1 :  0;
+$bEditProduct = isset($_POST['editProduct']) ? 1 : 0;
+$bInactivateProduct = isset($_POST['inactivateProduct']) ? 1 : 0;
+$bActivateProduct = isset($_POST['activateProduct']) ? 1 : 0;
+
+$name = isset($_GET['name']) ? $_GET['name'] : null;
+if (is_null($name))
+	$name = isset($_POST['name']) ? $_POST['name'] : null;
+$id = isset($_GET['id']) ? intval($_GET['id']) : null;
+if (is_null($id))
+	$id = isset($_POST['id']) ? intval($_POST['id']) : 0;
+$color = isset($_POST['color']) ? $_POST['color'] : null;
+$optReq = isset($_POST['optReq']) ? intval($_POST['optReq']) : 0;
 
 if (isset($_SESSION['productID']))
 	tLog('Edit product: ' . $_SESSION['productID'] . ': ' . $_SESSION['productName']);
 
-if (isset($_GET['deleteProduct']))
+if ($bDeleteProduct)
 {
-	$name = isset($_GET['name']) ? strings_stripSlashes($_GET['name']) : null;
-	$id = isset($_GET['id']) ? intval($_GET['id']) : 0;
-		
-	if (deleteProduct($id, &$error))
+	if (deleteProduct($id,$error))
 	{
 		$updateResult = lang_get('info_product_was_deleted');
 		tLog('Product: [' . $id . '] ' . $name . ' was deleted.', 'INFO');
@@ -48,35 +61,28 @@ if (isset($_GET['deleteProduct']))
 }
 else
 {
-	$name = isset($_POST['name']) ? strings_stripSlashes($_POST['name']) : null;
-	$id = isset($_POST['id']) ? intval($_POST['id']) : 0;
-
-	if (isset($_POST['editProduct']))
+	if ($bEditProduct)
 	{
-		$action = 'updated';
-
 		if (strlen($name) && $id)
 		{
-			$color = isset($_POST['color']) ? strings_stripSlashes($_POST['color']) : null;
-			$optReq = isset($_POST['optReq']) ? intval($_POST['optReq']) : 0;
-		
 			$updateResult = updateProduct($id, $name, $color, $optReq);
 		}
-		else {
+		else
+		{
 			$updateResult = lang_get('info_product_name_empty');
 		}
+		$action = 'updated';
 	}
-	else if (isset($_POST['inactivateProduct']))
+	else if ($bInactivateProduct)
 	{
 		if (activateProduct($id, 0))
 		{
 			$updateResult = lang_get('info_product_inactivated');
 			tLog('Product: ' . $id . ': ' . $name . 'was inactivated.', 'INFO');
 		}
-
 		$action = 'inactivate';
 	}
-	else if (isset($_POST['activateProduct']))
+	else if ($bActivateProduct)
 	{
 		if (activateProduct($id, 1))
 		{
@@ -88,7 +94,6 @@ else
 	if (isset($_SESSION['productID']))
 	{
 		$productData = getProduct($_SESSION['productID']);
-	
 		if ($productData)
 		{
 			$smarty->assign('founded', 'yes');

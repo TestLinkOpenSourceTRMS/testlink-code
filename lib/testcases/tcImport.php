@@ -1,24 +1,29 @@
 <?php
-/** 
-* TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* @version $Id: tcImport.php,v 1.3 2005/08/27 20:53:31 schlundus Exp $ 
-*
-* @author	Martin Havlat <havlat@users.sourceforge.net>
-* @author	Chad Rosen
-* 
-* This page manages the importation of product data from a csv file.
-* 20050828 - scs - changes for importing tc to a specific category
-* 
+/**
+ * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ * This script is distributed under the GNU General Public License 2 or later. 
+ *
+ * Filename $RCSfile: tcImport.php,v $
+ *
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2005/08/31 11:35:12 $
+ *
+ * @author	Martin Havlat
+ * @author	Chad Rosen
+ *
+ * This page manages the importation of product data from a csv file.
+ * 20050828 - scs - changes for importing tc to a specific category
+ * 20050831 - scs - import limits are now define in config.inc.php
 */
 require('../../config.inc.php');
 require_once('common.php');
 require_once('import.inc.php');
-require_once("../../lib/functions/lang_api.php");
 testlinkInitPage();
 
 // Contains the full path and filename of the uploaded file as stored on the server.
 $source = isset($HTTP_POST_FILES['uploadedFile']['tmp_name']) ? $HTTP_POST_FILES['uploadedFile']['tmp_name'] : null;
-$dest = TL_TEMP_PATH . "importTc.csv";
+//20050831 - scs - import now import not to a single file only
+$dest = TL_TEMP_PATH . session_id()."-importTc.csv";
 $catIDForImport = isset($_POST['catID']) ? intval($_POST['catID']) : 0;
 
 $uploadedFile = null;
@@ -50,5 +55,6 @@ $smarty->assign('uploadedFile', $uploadedFile);
 $smarty->assign('overview', $overview);
 $smarty->assign('catIDForImport', $catIDForImport);
 $smarty->assign('imported', $imported);
+$smarty->assign('import_limit',TL_IMPORT_LIMIT);
 $smarty->display('tcImport.tpl');
 ?>

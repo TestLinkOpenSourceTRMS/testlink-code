@@ -1,6 +1,6 @@
 <?
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: import.inc.php,v 1.3 2005/08/27 20:53:31 schlundus Exp $
+* $Id: import.inc.php,v 1.4 2005/08/31 11:35:12 schlundus Exp $
 * 
 * @author Martin Havlat
 *
@@ -33,7 +33,7 @@ function showTcImport($location,$catIDForImport = 0)
 	//Need to grab the first row of data
 	if (!$catIDForImport)
 	{
-		while ($data = fgetcsv ($handle, 30000, ",")) {
+		while ($data = fgetcsv ($handle, TL_IMPORT_ROW_MAX, ",")) {
 			$arrayCom = $data[0];
 			$arrayCat = $data[1];
 			$arrayTC = $data[2];
@@ -63,7 +63,7 @@ function showTcImport($location,$catIDForImport = 0)
 	}
 	else
 	{
-		while ($data = fgetcsv ($handle, 3000, ","))
+		while ($data = fgetcsv ($handle, TL_IMPORT_ROW_MAX, ","))
 		{
 			$arrayTC = $data[0];
 			$overview .= "<tr><td bgcolor='#FFFFCC' width='3'>TC:</td><td bgcolor='#FFFFCC'>" . $arrayTC . "</td></tr>"; //display TC
@@ -119,7 +119,7 @@ function exeTcImport($fileLocation,$catIDForImport = 0)
 	$handle = fopen($fileLocation, "r");
 
 	//Need to grab the first row of data
-	$data = fgetcsv ($handle, 3000, ",");
+	$data = fgetcsv ($handle, TL_IMPORT_ROW_MAX, ",");
 
 	//Data taken from the csv
 	//Removing the quotation marks around the stings
@@ -164,7 +164,7 @@ function exeTcImport($fileLocation,$catIDForImport = 0)
 	$oldCatNumber = $catID;
 
 	//Next start the loop!!
-	while ($data = fgetcsv ($handle, 3000, ","))
+	while ($data = fgetcsv ($handle, TL_IMPORT_ROW_MAX, ","))
 	{
 		for($i = 0;$i < sizeof($data);$i++)
 			$data[$i] = stripQuotes($data[$i]);

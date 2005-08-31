@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: index.php,v $
  *
- * @version $Revision: 1.4 $
- * @modified $Date: 2005/08/24 12:05:30 $ by $Author: havlat $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2005/08/31 11:35:11 $ by $Author: schlundus $
  *
  * @author Martin Havlat
  *
@@ -17,8 +17,6 @@
  *
  * @author Francisco Mancardi - 20050806 - Installer
 **/
-
-// ---------------------------------------------------------------------------------------------------
 //200508 MHT - moved code to procedure
 require_once('lib/functions/configCheck.php');
 checkConfiguration();
@@ -29,7 +27,9 @@ require_once('common.php');
 doSessionStart();
 setPaths();
 
+$_POST = strings_stripSlashes($_POST);
 $login = isset($_POST['login']) ? $_POST['login'] : null;
+
 if (!is_null($login))
 {
 	$op = doDBConnect();
@@ -38,7 +38,7 @@ if (!is_null($login))
 		doAuthorize();
 	else
 	{
-		$smarty = new TLSmarty;
+		$smarty = new TLSmarty();
 		$smarty->assign('title', lang_get('fatal_page_title'));
 		$smarty->assign('content', $op['dbms_msg']);
 		// MHT 200507 corrected template filename
@@ -54,7 +54,7 @@ if (!isset($_SESSION['user']))
 	exit;
 }
 
-$smarty = new TLSmarty;
+$smarty = new TLSmarty();
 $smarty->assign('title', lang_get('main_page_title'));
 $smarty->assign('titleframe', 'lib/general/navBar.php');
 $smarty->assign('mainframe', 'lib/general/mainPage.php');

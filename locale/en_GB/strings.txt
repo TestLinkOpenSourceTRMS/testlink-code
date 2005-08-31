@@ -226,10 +226,10 @@ $TLS_licensed_under = "TestLink is licensed under the";
 
 
 // gui/templates/inc_update.tpl
-$TLS_Build = "LOCALIZE: TLS_Build";
-$TLS_Keyword = "LOCALIZE: TLS_Keyword";
-$TLS_Product = "LOCALIZE: TLS_Product";
-$TLS_TestCase = "LOCALIZE: TLS_TestCase";
+$TLS_Build = "Build";
+$TLS_Keyword = "Keyword";
+$TLS_Product = "Product";
+$TLS_TestCase = "TestCase";
 $TLS_TestPlan = "TestPlan";
 $TLS_add = "Add";
 $TLS_assigned = "assigned";
@@ -497,7 +497,7 @@ $TLS_cvs_import_ok = "CVS import was ok";
 $TLS_info_imp_data_line1 = "Note: TestLink has no way to determine that the data being imported already exists.";
 $TLS_info_imp_data_line2 = "Therefore, if the data that is being imported already exists you will have two copies.";
 $TLS_local_file = "File:";
-$TLS_max_size_cvs_file = "Max. size of the file is 1000000 Bytes.";
+$TLS_max_size_cvs_file = "Max. size of the file is";
 $TLS_required_cvs_format = "The required file format:";
 $TLS_title_choose_local_file = "Choose a Local File to Upload";
 $TLS_title_imp_cvs = "Import CVS data";
@@ -888,11 +888,11 @@ $TLS_sec_note_remove_install_dir = "Install directory should be removed!";
 
 
 // lib/functions/requirementsImport.inc.php
-$TLS_conflict = "LOCALIZE: TLS_conflict";
-$TLS_ok = "LOCALIZE: TLS_ok";
-$TLS_req_import_result_added = "LOCALIZE: TLS_req_import_result_added";
-$TLS_req_import_result_overwritten = "LOCALIZE: TLS_req_import_result_overwritten";
-$TLS_req_import_result_skipped = "LOCALIZE: TLS_req_import_result_skipped";
+$TLS_conflict = "Conflict";
+$TLS_ok = "OK";
+$TLS_req_import_result_added = "The results have been added!";
+$TLS_req_import_result_overwritten = "The results have been overwritte!";
+$TLS_req_import_result_skipped = "The results are skipped";
 
 
 
@@ -1071,8 +1071,8 @@ $TLS_warning_empty_com_name = "Please give a name to component";
 
 // lib/testcases/tcEdit.php
 $TLS_current = "current";
-$TLS_error_tc_add = "LOCALIZE: TLS_error_tc_add";
-$TLS_warning_empty_tc_title = "Please give a title to test case";
+$TLS_error_tc_add = "There was an error while adding the TestCase";
+$TLS_warning_empty_tc_title = "Please give a title to TestCase";
 
 
 
@@ -1093,6 +1093,6 @@ $TLS_req_msg_notupdated_coverage = "Coverage was not updated for Requirements: "
 
 
 // lib/req/reqImport.php
-$TLS_req_import_finished = "LOCALIZE: TLS_req_import_finished";
+$TLS_req_import_finished = "The import is finished!";
 
 ?>

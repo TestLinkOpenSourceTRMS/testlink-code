@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* @version $Id: userInfo.php,v 1.3 2005/08/29 11:13:46 schlundus Exp $ 
+* @version $Id: userInfo.php,v 1.4 2005/08/31 11:35:12 schlundus Exp $ 
 *
 * @author	Asiel Brumfield <asielb@users.sourceforge.net>
 * @author 	Martin Havlat
@@ -17,13 +17,14 @@ require_once('users.inc.php');
 require_once("../../lib/functions/lang_api.php");
 testlinkInitPage();
 
+$_POST = strings_stripSlashes($_POST);
 $id = isset($_POST['id']) ? intval($_POST['id']) : 0;
-$first = isset($_POST['first']) ? strings_stripSlashes($_POST['first']) : null;
-$last = isset($_POST['last']) ? strings_stripSlashes($_POST['last']) : null;
-$email = isset($_POST['email']) ? strings_stripSlashes($_POST['email']) : null;
-$locale = isset($_POST['locale']) ? strings_stripSlashes($_POST['locale']) : null;
-$old = isset($_POST['old']) ? strings_stripSlashes($_POST['old']) : null;
-$new = isset($_POST['new1']) ? strings_stripSlashes($_POST['new1']) : null;
+$first = isset($_POST['first']) ? $_POST['first'] : null;
+$last = isset($_POST['last']) ? $_POST['last'] : null;
+$email = isset($_POST['email']) ? $_POST['email'] : null;
+$locale = isset($_POST['locale']) ? $_POST['locale'] : null;
+$old = isset($_POST['old']) ? $_POST['old'] : null;
+$new = isset($_POST['new1']) ? $_POST['new1'] : null;
 $bEdit = isset($_POST['editUser']) ? 1 : 0;
 $bChangePwd = isset($_POST['changePasswd']) ? 1 : 0;
 

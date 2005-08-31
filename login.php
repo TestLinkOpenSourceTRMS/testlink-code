@@ -5,15 +5,15 @@
  *
  * Filename $RCSfile: login.php,v $
  *
- * @version $Revision: 1.7 $
- * @modified $Date: 2005/08/26 21:01:26 $ by $Author: schlundus $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2005/08/31 11:35:11 $ by $Author: schlundus $
  *
  * @author Martin Havlat
  * 
  * The page allows adjust login data
  * 
+ * 20050831 - scs - cosmetic changes
 **/
-
 //200508 MHT - added config check
 require_once('lib/functions/configCheck.php');
 checkConfiguration();
@@ -23,6 +23,7 @@ require_once('lib/functions/common.php');
 require_once('lib/functions/users.inc.php');
 doDBConnect();
 
+$_GET = strings_stripSlashes($_GET);
 $note = isset($_GET['note']) ? $_GET['note'] : null;
 
 $message = lang_get('please_login');
@@ -41,12 +42,14 @@ switch($note)
 	case 'lost':
 		$message = lang_get('passwd_lost');
 		break;
+	default:
+		break;
 }
 
 //20050826 - scs - added displaying of security notes
 $securityNotes = getSecurityNotes();
 	
-$smarty = new TLSmarty;
+$smarty = new TLSmarty();
 $smarty->assign('securityNotes',$securityNotes);
 $smarty->assign('note',$message);
 $smarty->assign('css', TL_BASE_HREF . 'gui/css/tl_login.css');

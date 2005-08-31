@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqImport.php,v $
- * @version $Revision: 1.1 $
- * @modified $Date: 2005/08/26 13:41:17 $ by $Author: havlat $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2005/08/31 11:35:12 $ by $Author: schlundus $
  * @author Martin Havlat
  * 
  * Import requirements to a specification. 
@@ -13,10 +13,6 @@
  * 
  */
 ////////////////////////////////////////////////////////////////////////////////
-
-define('TL_IMPORT_LIMIT', '200000'); // in bytes
-define('TL_IMPORT_ROW_MAX', '10000'); // in chars
-
 require_once("../../config.inc.php");
 require_once("common.php");
 require_once('requirementsImport.inc.php');

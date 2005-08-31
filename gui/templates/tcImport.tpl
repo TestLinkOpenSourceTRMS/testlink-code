@@ -1,8 +1,9 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: tcImport.tpl,v 1.3 2005/08/27 20:53:30 schlundus Exp $ *}
+{* $Id: tcImport.tpl,v 1.4 2005/08/31 11:35:12 schlundus Exp $ *}
 {* Purpose: smarty template - show Test Results and Metrics *}
 {* I18N: 20050528 - fm *}
 {* 20050828 - scs - changes for importing tc to a specific category *}
+{* 20050831 - scs - import limits are now define in config.inc.php *}
 {include file="inc_head.tpl"}
 
 <body>
@@ -37,14 +38,14 @@
 <h2>{lang_get s='title_choose_local_file'}</h2>
 
 <form method="post" enctype="multipart/form-data" action="{$SCRIPT_NAME}">
-<input type="hidden" name="MAX_FILE_SIZE" value="1000000" /> {* restrict file size *}
+<input type="hidden" name="MAX_FILE_SIZE" value="{$import_limit}" /> {* restrict file size *}
 	<p>{lang_get s='local_file'}:
 		<input type='hidden' value='{$catIDForImport}' name='catID'>
 		<input type="file" name="uploadedFile" size="30" />
 		<input type="submit" value="{lang_get s='btn_upload_file'}" />
 	</p>
 </form>
-<p>{lang_get s='max_size_cvs_file'}</p>
+<p>{lang_get s='max_size_cvs_file'}: {$import_limit} Bytes</p>
 <p>
 {lang_get s='required_cvs_format'}<br /> 
 {$fileFormatString}</p>

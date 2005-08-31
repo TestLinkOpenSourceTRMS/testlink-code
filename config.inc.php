@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.6 $
- * @modified $Date: 2005/08/29 06:32:31 $ by $Author: franciscom $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2005/08/31 11:35:11 $ by $Author: schlundus $
  *
  * @author Chad Rosen
  *
@@ -67,7 +67,7 @@ define('DELIM', (PHP_OS == "WIN32" || PHP_OS == "WINNT") ? ';' : ':');
 define('TL_ABS_PATH', dirname(__FILE__) . DS);
 
 /** The temporary dir for temporary files */
-define('TL_TEMP_PATH', TL_ABS_PATH . 'gui/templates_c/');
+define('TL_TEMP_PATH', TL_ABS_PATH . 'gui'.DS.'templates_c'.DS);
 
 /** Logging  @see logging.inc.php for more */
 /** path for testlink logs; e.g. /tmp */
@@ -81,6 +81,11 @@ require_once(TL_ABS_PATH.'/lib/functions/logging.inc.php');
 /** Is the metrics table displayed on the main page enabled? Accepts TRUE or FALSE values */
 define('MAIN_PAGE_METRICS_ENABLED', 'FALSE');
 
+/** some maxmima related to importing stuff in TL */
+/** maximum uploadfile size */
+define('TL_IMPORT_LIMIT', '200000'); // in bytes
+/** maximum line size of the imported file */
+define('TL_IMPORT_ROW_MAX', '10000'); // in chars
 
 
 /** Bug Tracking systems */////////////////////////////////////////////////////

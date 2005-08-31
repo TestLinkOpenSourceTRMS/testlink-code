@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.8 $
- * @modified $Date: 2005/08/29 19:25:07 $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2005/08/31 11:35:12 $
  *
  * @author Andreas Morsing
  *
@@ -508,7 +508,7 @@ $TLS_cvs_import_ok = "Der CVS Import war OK";
 $TLS_info_imp_data_line1 = "Hinweis: TestLink hat keine Möglichkeit festzustellen, ob die zu importierenden Daten bereits bestehen.";
 $TLS_info_imp_data_line2 = "D.h. falls die Daten bereits bestehen, haben Sie nach dem Import zwei Kopien.";
 $TLS_local_file = "Lokale Datei";
-$TLS_max_size_cvs_file = "Maximale Dateigröße ist 1000000 Bytes";
+$TLS_max_size_cvs_file = "Maximale Dateigröße ist";
 $TLS_required_cvs_format = "Erfordliches Dateiformat:";
 $TLS_title_choose_local_file = "Wählen Sie eine Datei zum Importieren";
 $TLS_title_imp_cvs = "CVS Datenimport";
@@ -901,9 +901,9 @@ $TLS_sec_note_remove_install_dir = "Bitte entfernen Sie das install-Verzeichnis!
 // lib/functions/requirementsImport.inc.php
 $TLS_conflict = "Konflikt";
 $TLS_ok = "OK";
-$TLS_req_import_result_added = "LOCALIZE: TLS_req_import_result_added";
-$TLS_req_import_result_overwritten = "LOCALIZE: TLS_req_import_result_overwritten";
-$TLS_req_import_result_skipped = "LOCALIZE: TLS_req_import_result_skipped";
+$TLS_req_import_result_added = "Die Ergebnisse wurden hinzugefügt";
+$TLS_req_import_result_overwritten = "Die Ergebnisse wurden überschrieben";
+$TLS_req_import_result_skipped = "Die Ergebnisse wurden übersprungen";
 
 
 
@@ -1082,7 +1082,7 @@ $TLS_warning_empty_com_name = "Sie können keine Komponente ohne Namen erstellen"
 
 // lib/testcases/tcEdit.php
 $TLS_current = "aktuell";
-$TLS_error_tc_add = "LOCALIZE: TLS_error_tc_add";
+$TLS_error_tc_add = "Es trat ein Fehler beim Hinzufügen des TestCase auf!";
 $TLS_warning_empty_tc_title = "Please give a title to test case";
 
 

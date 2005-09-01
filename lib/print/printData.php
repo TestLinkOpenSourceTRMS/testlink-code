@@ -2,7 +2,7 @@
 /**
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/ 
 *
-* 	@version 	$Id: printData.php,v 1.3 2005/08/31 08:45:11 franciscom Exp $
+* 	@version 	$Id: printData.php,v 1.4 2005/09/01 10:02:27 franciscom Exp $
 *	@author 	Martin Havlat
 * 
 * 	This page shows the data that will be printed.
@@ -57,7 +57,15 @@ function print_header($title, $toc)
   	$CONTENT_HEAD .= '<div class="toc"><h2>'.lang_get('title_toc').'</h2>';
 }
 
-/** print a component */
+/** 
+print a component 
+
+
+20050831 - fm -
+After adding fckeditor to all fields in category,
+I need to remove htmlspecialchars() calls and <pre></pre>
+
+*/
 function print_component($component) 
 {
 	global $CONTENT;
@@ -70,23 +78,35 @@ function print_component($component)
 
 	if ($toc) 
 	{
-	  	$CONTENT_HEAD .= '<p><a href="#com' . $component[0] . '">' . htmlspecialchars($component[1]) . '</a></p>';
+  	$CONTENT_HEAD .= '<p><a href="#com' . $component[0] . '">' . htmlspecialchars($component[1]) . '</a></p>';
 		$CONTENT .= "<a name='com" . $component[0] . "'></a>";
 	}
    	$CONTENT .= "<h1>" . $component_number . " ".lang_get('component')." " . htmlspecialchars($component[1]) . "</h1>";
 
   	if ($_GET['header'] == 'y') 
   	{
-    	$CONTENT .= "<h2>" . $component_number . ".0 ".lang_get('introduction')."</h2><div><pre>" .  htmlspecialchars($component[2]) . "</pre></div>";
+    	$CONTENT .= "<h2>" . $component_number . ".0 ". lang_get('introduction') . "</h2><div>" .  
+    	            $component[2] . "</div>";
     	$CONTENT .= "<h3>" . $component_number . ".0.1 ".lang_get('scope')."</h3><div>" .  $component[3] . "</div>";
-    	$CONTENT .= "<h3>" . $component_number . ".0.2 ".lang_get('references')."</h3><div><pre>" .  htmlspecialchars($component[4]) . "</pre></div>";
-    	$CONTENT .= "<h2>" . $component_number . ".1 ".lang_get('methodology')."</h2><div><pre>" . htmlspecialchars($component[5]) . "</pre></div>";
-    	$CONTENT .= "<h3>" . $component_number . ".1.1 ".lang_get('limitations')."</h3><div><pre>" . htmlspecialchars($component[6]) . "</pre></div>";
+    	$CONTENT .= "<h3>" . $component_number . ".0.2 ".lang_get('references') . "</h3><div>" .  
+    	            $component[4] . "</div>";
+    	$CONTENT .= "<h2>" . $component_number . ".1 " . lang_get('methodology') . "</h2><div>" . 
+    	            $component[5] . "</div>";
+    	$CONTENT .= "<h3>" . $component_number . ".1.1 ".lang_get('limitations')."</h3><div>" . 
+    	            $component[6] . "</pre></div>";
     	$CONTENT .= "<h2>" . $component_number . ".2 ".lang_get('categories')."</h2>";
  	}
 } 
 
-/** print a category */
+/** 
+print a category 
+
+20050831 - fm 
+After adding fckeditor to all fields in category,
+I need to remove htmlspecialchars() calls and <pre></pre>
+
+*/
+
 function print_category($category) 
 {
   	global $CONTENT;
@@ -98,21 +118,34 @@ function print_category($category)
 
 	if ($toc) 
 	{
-	  	$CONTENT_HEAD .= '<p style="padding-left: 10px;"><a href="#cat' . $category[0] . '">' . htmlspecialchars($category[1]) . '</a></p>';
-		$CONTENT .= "<a name='cat" . $category[0] . "'></a>";
+	 	$CONTENT_HEAD .= '<p style="padding-left: 10px;"><a href="#cat' . $category['id'] . '">' . 
+	 	                 htmlspecialchars($category['name']) . '</a></p>';
+		$CONTENT .= "<a name='cat" . $category['id'] . "'></a>";
 	}
-    $CONTENT .= "<h3>" . $component_number . ".2." . $category_number . " " . htmlspecialchars($category[1]) . "</h3>";
+    $CONTENT .= "<h3>" . $component_number . ".2." . $category_number . " " . 
+                         htmlspecialchars($category['name']) . "</h3>";
 
   	if ($_GET['header'] == 'y') 
   	{
-		$CONTENT .= "<p>" . $category[2] . "</p>";
-	    $CONTENT .= "<h4>" . $component_number . ".2." . $category_number . ".1 ".lang_get('setup_and_config')."</h4><div><pre>" .  htmlspecialchars($category[3])."</pre></div>";
-    	$CONTENT .= "<h4>" . $component_number . ".2." . $category_number . ".2 ".lang_get('test_data')."</h4><div><pre>" .  htmlspecialchars($category[4])."</pre></div>";
-	    $CONTENT .= "<h4>" . $component_number . ".2." . $category_number . ".3 ".lang_get('tools')."</h4><div><pre>" .  htmlspecialchars($category[5])."</pre></div>";
-    	$CONTENT .= "<h4>" . $component_number . ".2." . $category_number . ".4 ".lang_get('test_cases')."</h4>";
+		  $CONTENT .= "<p>" .  $category['objective'] . "</p>";
+	    $CONTENT .= "<h4>" . $component_number . ".2." . 
+	                         $category_number . ".1 ". lang_get('setup_and_config')."</h4><div>" .  
+	                         $category['config']."</div>";
+	                         
+    	$CONTENT .= "<h4>" . $component_number . ".2." . 
+    	                     $category_number . ".2 ". lang_get('test_data')."</h4><div>" .  
+    	                     $category['data'] . "</div>";
+    	                     
+	    $CONTENT .= "<h4>" . $component_number . ".2." . 
+	                         $category_number . ".3 ". lang_get('tools')."</h4><div>" .  
+	                         $category['tools'] . "</div>";
+	                         
+    	$CONTENT .= "<h4>" . $component_number . ".2." . $category_number . ".4 " . 
+    	                     lang_get('test_cases')."</h4>";
     	$CONTENT .= "<p>";
   	}
 }
+
 
 /** print a test case data */
 function print_testcase($testcase) 
@@ -141,85 +174,96 @@ function print_testcase($testcase)
   	$CONTENT .= "</table></div>";
 }
 
+
+/*
+
+20050831 - fm - logic reuse
+
+*/
+function generate_TCs($rs)
+{
+  global $CONTENT;
+  
+	if (mysql_num_rows($rs) > 0)
+	{
+	    while ($myrow = mysql_fetch_array($rs))
+		{
+			print_testcase($myrow);
+		}
+	}
+	else
+	{
+    	$CONTENT .= "<p>" . lang_get('no_test_case') . "</p>";
+	}
+}
+
+
 /** print Test Specification data within category */
 function generate_product_TCs($idCategory)
 {
-	$sqlTC = "select id,title, summary, steps, exresult from " .
-				"mgttestcase where catid=" . $idCategory . " order by TCorder, id";
-    $resultTC = do_mysql_query($sqlTC);
+	$sqlTC = " select id,title, summary, steps, exresult from " .
+				   " mgttestcase where catid=" . $idCategory . 
+				   " order by TCorder, id";
+  
+  $resultTC = do_mysql_query($sqlTC);
 
 	if (!$resultTC)
-		tLog($sqlTC . ' | error: ' . mysql_error(), 'ERROR');
-
-	if (mysql_num_rows($resultTC) > 0)
 	{
-	    while ($myrowTC = mysql_fetch_row($resultTC))
-		{
-			print_testcase($myrowTC);
-		}
-	}
-  	else
-    	$CONTENT .= "<p>".lang_get('no_test_case')."</p>";
+		tLog($sqlTC . ' | error: ' . mysql_error(), 'ERROR');
+  }
+  generate_TCs($resultTC);
 }
 
 /** print Test Case Suite data within category */
 function generate_testSuite_TCs($idCategory)
 {
-/* commented query use mgttestcase instead of testcase table
-	  	$sqlTC = "select mgttestcase.id ,mgttestcase.title, mgttestcase.summary, " .
-	  			"mgttestcase.steps, mgttestcase.exresult from " .
-	    		"mgttestcase,testcase where testcase.mgttcid=mgttestcase.id" .  
-				" and testcase.catid=" . $idCategory . " order by testcase.TCorder, testcase.mgttcid";
-*/
 	$sqlTC = "select id,title, summary, steps, exresult,mgttcid, keywords from " .
- 	   		"testcase where catid=" . $idCategory . " order by TCorder, mgttcid";
+ 	   		   "testcase where catid=" . $idCategory . " order by TCorder, mgttcid";
 	$resultTC = do_mysql_query($sqlTC);
 
 	if (!$resultTC)
-		tLog($sqlTC . ' | error: ' . mysql_error(), 'ERROR');
-
-	if (mysql_num_rows($resultTC) > 0)
 	{
-		while ($myrowTC = mysql_fetch_row($resultTC))
-		{
-	   		print_testcase($myrowTC);
-		}
-	}
-  	else
-    	$CONTENT .= "<p>".lang_get('no_test_case')."</p>";
+		tLog($sqlTC . ' | error: ' . mysql_error(), 'ERROR');
+  }
+  generate_TCs($resultTC);
 }
 
+/*
+
+20050831 - fm - switch to mysql_fetch_array()
+*/
 function generate_testSuite_Categories($idComponent)
 {
 	  	//Display all of the categories of the COM above
 	    $sqlCAT = "select id from category where compid=" . $idComponent . 
-				" order by CATorder, id";
+				        " order by CATorder, id";
 	  	$resultCAT = do_mysql_query($sqlCAT);
 	
-	  	while ($myrowCAT = mysql_fetch_row($resultCAT))
-		{ //display all the categories until we run out
+	   while ($myrowCAT = mysql_fetch_array($resultCAT))
+		 { //display all the categories until we run out
 	    	//Select the id and name from the com that was passed in
 	    	$sqlMGTCAT = "select mgtcategory.id,mgtcategory.name,mgtcategory.objective," .
-	    			"mgtcategory.config,mgtcategory.data,mgtcategory.tools from " .
-	      			"mgtcategory,category where mgtcatid=mgtcategory.id and " .
-	      			"category.id=" . $myrowCAT[0];
-			$resultMGTCAT = do_mysql_query($sqlMGTCAT);
-	    	$myrowMGTCAT = mysql_fetch_row($resultMGTCAT); //display components until we run out
+	    			         "mgtcategory.config,mgtcategory.data,mgtcategory.tools from " .
+	      			       "mgtcategory,category where mgtcatid=mgtcategory.id and " .
+	      			       "category.id=" . $myrowCAT['id'];
+			  $resultMGTCAT = do_mysql_query($sqlMGTCAT);
+	    	$myrowMGTCAT = mysql_fetch_array($resultMGTCAT); 
 	
 	    	print_category($myrowMGTCAT);
-	    	generate_testSuite_TCs($myrowCAT[0]);
+	    	generate_testSuite_TCs($myrowCAT['id']);
 	  	}
 }
 
 function generate_product_CATs($idComponent)
 {
-    $sqlCAT = "select id,name,objective,config,data,tools from mgtcategory where compid=" . 
-	    		$idComponent .	" order by CATorder, id";
+    $sqlCAT = " select id,name,objective,config,data,tools " .
+              " from mgtcategory where compid=" . $idComponent .	
+              " order by CATorder, id";
   	$resultCAT = do_mysql_query($sqlCAT);
-	while ($myrowCAT = mysql_fetch_row($resultCAT))
-	{ //display all the categories until we run out
-	   	print_category($myrowCAT);
-		generate_product_TCs($myrowCAT[0]);
+	while ($myrowCAT = mysql_fetch_array($resultCAT))
+	{   
+	  print_category($myrowCAT);
+		generate_product_TCs($myrowCAT['id']);
 	}
 }
 
@@ -248,11 +292,12 @@ if($_GET['type'] == 'product')
 	  	$myrowCOM = getComponent($_GET['data']);
 	  	print_header("Component: " . $myrowCOM[1], $toc);
 	  	print_component($myrowCOM);
-		generate_product_CATs($_GET['data']);
-	//if the user wants to print only a category they will enter here
+		  generate_product_CATs($_GET['data']);
+	
 	}
 	else if($_GET['edit'] == 'category')
 	{
+	    //if the user wants to print only a category they will enter here
 	  	$myrowCAT = getCategory($_GET['data']); 
 	  	$myrowCOM = getComponent($myrowCAT[0]);
 	
@@ -261,11 +306,12 @@ if($_GET['type'] == 'product')
 	  	print_category($myrowCAT);
 	
 	  	//Print TCs
-		generate_product_TCs($_GET['data']);
-		//if the user didn't pick anything this statement will be run
+	 	  generate_product_TCs($_GET['data']);
+		
 	}
 	else if(!$_GET['edit'])
 	{ 
+		//if the user didn't pick anything this statement will be run
 		tLog("GET['edit'] has invalid value.", 'ERROR');
 		exit();
 	}
@@ -273,7 +319,6 @@ if($_GET['type'] == 'product')
 
 
 // ---------- Test Case Suite Print --------------------------------------
-
 if($_GET['type'] == 'testSet')
 {
 	//if the user wants to print the entire test plan they have chosen this if statement
@@ -284,10 +329,10 @@ if($_GET['type'] == 'testSet')
 	
 	    //Select the id and name from the com that was passed in
 	    $sqlMGTCOM = "select mgtcomponent.id,mgtcomponent.name,mgtcomponent.intro," .
-	    		"mgtcomponent.scope,mgtcomponent.ref,mgtcomponent.method,mgtcomponent.lim," .
-	    		"component.id from mgtcomponent,component where mgtcompid=mgtcomponent.id" .
-	    		" and component.projid=" . $_SESSION['testPlanId'] . 
-				" order by mgtcomponent.name";
+	    		         "mgtcomponent.scope,mgtcomponent.ref,mgtcomponent.method,mgtcomponent.lim," .
+	    		         "component.id from mgtcomponent,component where mgtcompid=mgtcomponent.id" .
+	    		         " and component.projid=" . $_SESSION['testPlanId'] . 
+				           " order by mgtcomponent.name";
 
   	  	$resultMGTCOM = do_mysql_query($sqlMGTCOM);
 	  	while($myrowMGTCOM = mysql_fetch_row($resultMGTCOM))
@@ -296,29 +341,31 @@ if($_GET['type'] == 'testSet')
 	    	print_component($myrowMGTCOM);
 	    	generate_testSuite_Categories($myrowMGTCOM[7]);
 	  	}
-	//if the user wants to print only a component they will enter here
+	
 	}
 	else if($_GET['level'] == 'component')
 	{
+	    //if the user wants to print only a component they will enter here  
 	  	// get component data
 	    $sqlMGTCOM = "select mgtcomponent.id,mgtcomponent.name,mgtcomponent.intro," .
-	    		"mgtcomponent.scope,mgtcomponent.ref,mgtcomponent.method,mgtcomponent.lim from " .
-	    		"mgtcomponent,component where mgtcompid=mgtcomponent.id and component.id=" . 
-	    		$_GET['data'];
+	    	           "mgtcomponent.scope,mgtcomponent.ref,mgtcomponent.method,mgtcomponent.lim from " .
+	    		         "mgtcomponent,component where mgtcompid=mgtcomponent.id and component.id=" . 
+	    		         $_GET['data'];
 	    $resultMGTCOM = do_mysql_query($sqlMGTCOM);
-	    $myrowMGTCOM = mysql_fetch_row($resultMGTCOM); //display components until we run out
+	    $myrowMGTCOM = mysql_fetch_row($resultMGTCOM);
 	
 	    // print
 	    print_header("Test Case Suite: " . $_SESSION['testPlanName'] . " - " . $myrowMGTCOM[1], $toc);
 	  	print_component($myrowMGTCOM);
-		generate_testSuite_Categories($_GET['data']);
-	//if the user wants to print only a category they will enter here
+		  generate_testSuite_Categories($_GET['data']);
 	}
 	else if($_GET['level'] == 'category')
 	{
+	  //if the user wants to print only a category they will enter here
 		// Get category
+	
 	    $sqlCAT = "select id,name,compid from category where id=" . $_GET['data'] . 
-				" order by CATorder, id";
+				        " order by CATorder, id";
 	  	$resultCAT = do_mysql_query($sqlCAT);
 	  	$myrowCAT = mysql_fetch_row($resultCAT); //display all the components until we run out
 	  	tLog($sqlCAT . " ===>>> " . implode(",", $myrowCAT));
@@ -339,12 +386,12 @@ if($_GET['type'] == 'testSet')
 	    		"mgtcategory,category where category.mgtcatid=mgtcategory.id and category.id=" . 
 	    		$myrowCAT[0];
 	  	$resultMGTCAT = do_mysql_query($sqlMGTCAT);
-	  	$myrowMGTCAT = mysql_fetch_row($resultMGTCAT); //display components until we run out
+	  	$myrowMGTCAT = mysql_fetch_array($resultMGTCAT); 
 	
 	  	print_header("Test Case Suite: " . $_SESSION['testPlanName'] . " - " . $myrowMGTCAT[1], $toc);
 	  	print_component($myrowMGTCOM);
 	  	print_category($myrowMGTCAT);
-		generate_testSuite_TCs($myrowCAT[0]);
+		  generate_testSuite_TCs($myrowCAT['id']);
 	}
 	else
 	{
@@ -352,6 +399,12 @@ if($_GET['type'] == 'testSet')
 		tLog("GET['level'] has invalid value.", 'ERROR');
 		exit();
 	}
+	
+	
+	
+	
+	
+	
 } // if project
 
 

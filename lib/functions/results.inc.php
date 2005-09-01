@@ -2,8 +2,8 @@
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: results.inc.php,v $
- * @version $Revision: 1.2 $
- * @modified $Date: 2005/08/16 18:00:55 $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2005/09/01 14:25:45 $
  * 
  * @author 	Martin Havlat 
  * @author 	Chad Rosen (original report definition)
@@ -191,29 +191,29 @@ function getTestSuiteReport($idPlan, $build = 'all')
 				"WHERE component.projid = " . $idPlan . 
 				" AND component.id=" . $myrow[1] . 
 				" AND component.id = category.compid AND category.id = testcase.catid";
-		$totalTCResult = do_mysql_query($sql);
-		$totalTCs = mysql_fetch_row($totalTCResult);
+		// 20050901 - MHT - used generalication
+		$totalTCs = do_mysql_selectOne($sql);
 
 		//Code to grab the results of the test case execution
 		if ($build == 'all') {
 			
 			// 20050807 - fm
 			// $idPlan
-			$sql = "select tcid,status from results,project,component,category,testcase " .
-				"where project.id = '" . $idPlan . 
+			// 20050901 - MHT - removed unnecesary table project
+			$sql = "select tcid,status from results,component,category,testcase " .
+				"where component.projid = '" . $idPlan . 
 				"' and component.id='" . $myrow[1] . 
-				"' and project.id = component.projid and " .
-				"component.id = category.compid and category.id = testcase.catid and " .
+				"' AND component.id = category.compid and category.id = testcase.catid and " .
 				"testcase.id = results.tcid order by build";
 		} else {
 			// 20050807 - fm
 			// $idPlan
-			$sql = "select tcid,status from results,project,component,category,testcase " .
-				"where project.id = '" . $idPlan . 
+			// 20050901 - MHT - removed unnecesary table project
+			$sql = "select tcid,status from results, component, category, testcase " .
+				"where component.projid = '" . $idPlan . 
 				"' and results.build='" . $build . 
 				"' and component.id='" . $myrow[1] . 
-				"' and project.id = component.projid " .
-				" and component.id = category.compid and category.id = testcase.catid" .
+				"' and component.id = category.compid and category.id = testcase.catid" .
 				" and testcase.id = results.tcid";
 		}
 		$totalResult = do_mysql_query($sql);

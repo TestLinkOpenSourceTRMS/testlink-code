@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execNavigator.php,v $
  *
- * @version $Revision: 1.3 $
- * @modified $Date: 2005/08/27 20:53:31 $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2005/09/01 20:39:06 $
  *
  * @author Martin Havlat
  *
@@ -259,10 +259,12 @@ function displayTCTree($TCResult, $build, $owner, $colored, $menuUrl, $filteredR
 			$sqlResult .= " ORDER BY build DESC";
 		else
 			$sqlResult .= " AND build = '" . $build . "'";
+		//20050901 - scs - colored by last result doesnt color the testcase right	
+		$sqlResult .= " LIMIT 1";
 		
 		$sqlBuildResult = do_mysql_query($sqlResult);
 		//I need the num results so I can do the check below on not run test cases
-		while($myrowTC = mysql_fetch_row($sqlBuildResult))
+		if ($myrowTC = mysql_fetch_row($sqlBuildResult))
 		{
 			$tcID = $myrowTC[0];
 			$status = $myrowTC[1];

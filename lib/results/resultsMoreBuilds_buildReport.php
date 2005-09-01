@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsMoreBuilds_buildReport.php,v 1.1 2005/08/31 21:44:47 kevinlevy Exp $ 
+* $Id: resultsMoreBuilds_buildReport.php,v 1.2 2005/09/01 20:39:06 schlundus Exp $ 
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 * 
@@ -13,6 +13,7 @@
 require('../../config.inc.php');
 require_once('common.php');
 require_once('../functions/resultsMoreBuilds.inc.php');
+require_once('../functions/builds.inc.php');
 
 // init
 testlinkInitPage();
@@ -23,7 +24,6 @@ if (isset($_REQUEST['build'])){
     $buildsSelected[] = $val;
   }
 }
-
 if (!isset($_GET['build'])) {
 	tlog('$_GET["build"] is not defined');
 	exit;
@@ -44,11 +44,6 @@ if (!isset($_GET['projectid'])) {
 	exit;
 }
 
-if (!isset($_GET['projectid'])) {
-	tlog('$_GET["projectid"] is not defined');
-	exit;
-}
-
 if (!isset($_GET['testPlanName'])) {
 	tlog('$_GET["testPlanName"] is not defined');
 	exit;
@@ -59,20 +54,18 @@ if (!isset($_GET['lastStatus'])) {
 	exit;
 }
 
-$reportData = createResultsForTestPlan($_GET['testPlanName'],$_GET['projectid'], $buildsSelected, $_GET['keyword'], $_GET['owner'], $_GET['lastStatus']);
-
+tlTimingStart();
+$reportData = createResultsForTestPlan($_GET['testPlanName'],$_SESSION['testPlanId'], $buildsSelected, $_GET['keyword'], $_GET['owner'], $_GET['lastStatus']);
+tlTimingStop();
 $queryParameters = $reportData[0];
 $summaryOfResults = $reportData[1];
 $allComponentData = $reportData[2];
-
+//echo tlTimingCurrent();
+//var_dump(strlen($allComponentData));
 // display smarty
-$smarty = new TLSmarty;
+$smarty = new TLSmarty();
 $smarty->assign('queryParameters', $queryParameters);
 $smarty->assign('summaryOfResults', $summaryOfResults);
 $smarty->assign('allComponentData', $allComponentData);
-
 $smarty->display('resultsMoreBuilds_report.tpl');
-
-
-
 ?>

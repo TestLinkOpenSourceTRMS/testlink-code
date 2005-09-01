@@ -13,11 +13,10 @@
 		<tr>
 			<td>
 				<select name='build[]' size=10 multiple>
-					{* by default have the start build be the first build *}
-					<option selected=true>{$arrBuilds[0]}</option>
-					{section name=startbuildIndex loop=$arrBuilds start=1}
-						<option>{$arrBuilds[startbuildIndex]}</option>
-					{/section}				
+					{foreach key=build item=buildid from=$arrBuilds}
+						{* by default have the start build be the first build *}
+						<option value="{$build}">{$buildid|escape}</option>
+					{/foreach}				
 				</select>
 			</td>
 		</tr>

@@ -1,17 +1,14 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{include file="inc_head.tpl"}
+{include file="inc_head.tpl" openHead='yes'}
 <!-- added by Kevin Levy 8/27 -->
-<head>
-		<title></title>
 		<script language="JavaScript" src="gui/javascript/expandAndCollapseFunctions.js" type="text/javascript"></script>
 		<script language="JavaScript">
-	var bAllShown = false;
-	var g_progress = null;
-	var g_pCount = 0;
-	progress();
-	</script>
-		<style></style>
-	</head>
+		var bAllShown = false;
+		var g_progress = null;
+		var g_pCount = 0;
+		progress();
+		</script>
+</head>
 	<!-- kl : I'm having a hard time getting the initial report to show up with all collapsable <div>'s to be
 	in collapsed position, calling showOrCollapseAll() twice seems to help  -->
 	<body onLoad="onLoad();showOrCollapseAll();showOrCollapseAll()">

@@ -53,9 +53,7 @@ function progress()
 }
 
 function onLoad()
-{
-	clearTimeout(g_progress);
-	var o = document.getElementById('teaser');
+{	clearTimeout(g_progress);	var o = document.getElementById('teaser');
 	if (o)
 		o.style.display = "none";
 	o = document.getElementById('content');

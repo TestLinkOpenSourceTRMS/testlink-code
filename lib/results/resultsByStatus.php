@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsByStatus.php,v 1.2 2005/08/16 18:00:58 franciscom Exp $ 
+* $Id: resultsByStatus.php,v 1.3 2005/09/01 20:39:06 schlundus Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -12,7 +12,7 @@
 * refactoring:  
 * removed deprecated: $_SESSION['project']
 * 
-* 
+* 20050901 - scs - added fix for Mantis 81
 */
 require('../../config.inc.php');
 require_once('common.php');
@@ -32,6 +32,7 @@ else
 	exit();
 }
 $arrBuilds = getBuilds($_SESSION['testPlanId']);
+
 //SQL to select the most current status of all the current test cases
 
 // 20050807 - fm - $_SESSION['testPlanId']
@@ -39,52 +40,69 @@ $sql = "select tcid,status,build,runby,daterun,title,results.notes,component.nam
 		"from results,project,component,category,testcase ".
 		"where project.id = " . $_SESSION['testPlanId'] . 
 		" and project.id = component.projid and component.id = category.compid and " .
-		"category.id = testcase.catid and testcase.id = results.tcid and status = '{$type}' " .
-		"order by tcid,build";
+		"category.id = testcase.catid and testcase.id = results.tcid " .
+		"order by tcid,build DESC";
 $totalResult = do_mysql_query($sql,$db);
 
+reset($arrBuilds);
+$maxBuild = each($arrBuilds);
+$maxBuild = $maxBuild[0];
 $testCaseNumArray = null;
 //Looping through all of the test cases that we found
 $arrData = null;
+$tcIDArray = null;
 while($myrow = mysql_fetch_row($totalResult))
 {
-	///This statement builds an array with the most current status
-	$testCaseStatus = $myrow[0];
-	//the component and category 
-	$testSuite = $myrow[7] . "/" . $myrow[8];	
-
-	//Display the test case with a hyper link to the execution pages
-	$build = $myrow[2]; //Build
-	$testTitle = getTCLink(has_rights("tp_execute"), $testCaseStatus, $myrow[11], $myrow[5], $build); // TC title
-	$tester = $myrow[3]; //Run By
-	$testDate = $myrow[4]; //Date run
-	$notes = $myrow[6]; //notes
-	
-	//Grab all of the bugs for the test case in the build
-	$sqlBugs = "SELECT bug FROM bugs WHERE tcid='" . $testCaseStatus . 
-			"' AND build='" . $build . "'";
-	$resultBugs = do_mysql_query($sqlBugs,$db);
-	$bugString = null;
-	while ($myrowBug = mysql_fetch_row($resultBugs))
+	$tcID = $myrow[0];
+	$status = $myrow[1];
+	if ($status == 'n' || isset($tcIDArray[$tcID]))
+		continue;
+	$tcIDArray[$tcID] = $myrow;
+}
+if (sizeof($tcIDArray))
+{
+	foreach($tcIDArray as $tcID => $myrow)
 	{
-		if (!is_null($bugString))
-			$bugString .= ","; 
-		$bugID = $myrowBug[0];
-		if($g_bugInterfaceOn)
-			$bugString .= $g_bugInterface->buildViewBugLink($bugID);
-		else
-			$bugString .= $bugID;
+		$status = $myrow[1];
+		if ($status != $type)
+			continue;
+		$build = $myrow[2];
+		///This statement builds an array with the most current status
+		//the component and category 
+		$testSuite = $myrow[7] . "/" . $myrow[8];	
+	
+		//Display the test case with a hyper link to the execution pages
+		$testTitle = getTCLink(has_rights("tp_execute"), $tcID, $myrow[11], $myrow[5], $build); // TC title
+		$tester = $myrow[3]; //Run By
+		$testDate = $myrow[4]; //Date run
+		$notes = $myrow[6]; //notes
+		
+		//Grab all of the bugs for the test case in the build
+		$sqlBugs = "SELECT bug FROM bugs WHERE tcid='" . $tcID . 
+				"' AND build='" . $build . "'";
+		$resultBugs = do_mysql_query($sqlBugs,$db);
+		$bugString = null;
+		while ($myrowBug = mysql_fetch_row($resultBugs))
+		{
+			if (!is_null($bugString))
+				$bugString .= ","; 
+			$bugID = $myrowBug[0];
+			if($g_bugInterfaceOn)
+				$bugString .= $g_bugInterface->buildViewBugLink($bugID);
+			else
+				$bugString .= $bugID;
+		}
+		$arrData[] = 	array(
+								htmlspecialchars($testSuite), 
+								$testTitle, 
+								//20050815 - scs - added escaping of build identifiers
+								htmlspecialchars($arrBuilds[$build]),
+								htmlspecialchars($tester), 
+								htmlspecialchars($testDate), 
+								htmlspecialchars($notes),	
+								$bugString,
+							);
 	}
-	$arrData[] = 	array(
-							htmlspecialchars($testSuite), 
-							$testTitle, 
-							//20050815 - scs - added escaping of build identifiers
-							htmlspecialchars($arrBuilds[$build]),
-							htmlspecialchars($tester), 
-							htmlspecialchars($testDate), 
-							htmlspecialchars($notes),	
-							$bugString,
-						);
 }
 
 $smarty = new TLSmarty;

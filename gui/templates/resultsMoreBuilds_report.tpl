@@ -32,7 +32,7 @@
 
 		<div id="detailsOfReport" class="workBack">
 			<a href="javascript:showOrCollapseAll()">Show/Hide all</a>
-			<h2 onClick="plusMinus_onClick(this);"><img class="plus" src="http://qa/testlink/icons/plus.gif">Results By Component</h2>
+			<h2 onClick="plusMinus_onClick(this);"><img class="plus" src="icons/plus.gif">Results By Component</h2>
 			<div class="workBack">
 				{$allComponentData}
 			</div>

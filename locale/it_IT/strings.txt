@@ -426,7 +426,9 @@ $TLS_test_exec_on_build = "on Build";
 
 
 // copied from de_DE 20050504 - fm
-$TLS_info_product_name_empty = 'Product Name can't be empty';
+// There was a apostrophe which caused a parse error - kl
+// Changed can't to can not - kl
+$TLS_info_product_name_empty = 'Product Name can not be empty';
 $TLS_info_no_more_prods = 'There are no more products';
 $TLS_link_logout = 'Logout';
 $TLS_product = 'Product';

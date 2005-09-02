@@ -12,6 +12,7 @@
 		<tr>
 			<td>
 				<select name='build[]' size=10 multiple>
+					<option value="0" selected>0</option>
 					{foreach key=build item=buildid from=$arrBuilds}
 						{* by default have the start build be the first build *}
 						<option value="{$build}">{$buildid|escape}</option>
@@ -25,6 +26,7 @@
 		<tr><th>select keyword </th></tr>
 		<tr><td>
         	        <select name="keyword" size=5>
+			<option value="" selected></option>
                         {section name=Row loop=$arrKeywords}
                         <option value="{$arrKeywords[Row].keyword|escape}">{$arrKeywords[Row].keyword|escape}</option>
                         {/section}
@@ -36,6 +38,7 @@
 		<tr>
 			<td>
 				<select name='owner' size=5 >
+					<option value="" selected></option>
 					{foreach key=owner item=ownerid from=$arrOwners}
 						{* by default the owner should be the current user *}
 						<option value="{$ownerid|escape}">{$ownerid|escape}</option>
@@ -49,7 +52,7 @@
 		<tr><th>select last result </th></tr>	
 		<tr><td> 
 			<select name='lastStatus' size=5>
-				<option selected=true>any</option>
+				<option selected>any</option>
 				<option>passed</option>
 				<option>failed</option>
 				<option>blocked</option>

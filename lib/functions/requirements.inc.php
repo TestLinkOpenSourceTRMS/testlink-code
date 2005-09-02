@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: requirements.inc.php,v $
- * @version $Revision: 1.6 $
- * @modified $Date: 2005/08/31 16:14:57 $ by $Author: havlat $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2005/09/02 09:54:03 $ by $Author: havlat $
  *
  * @author Martin Havlat <havlat@users.sourceforge.net>
  * 
@@ -225,6 +225,13 @@ function array_diff_byId ($arrAll, $arrPart)
 	return $arrTemp4;
 }
 
+/**
+ * get analyse based on requirements and test specification
+ * 
+ * @param integer $idSRS
+ * @return array Coverage in three internal arrays: covered, uncovered, nottestable REQ
+ * @author martin havlat
+ */
 function getReqCoverage_general($idSRS)
 {
 	$output = array('covered' => array(), 'uncovered' => array(), 'nottestable' => array());
@@ -246,39 +253,6 @@ function getReqCoverage_general($idSRS)
 		{
 			// collect TC for REQ
 			$arrCoverage = getTc4Req($req['id']);
-	
-			if (count($arrCoverage) > 0) {
-				// add information about coverage
-				$req['coverage'] = $arrCoverage;
-				$output['covered'][] = $req;
-			} else {
-				$output['uncovered'][] = $req;
-			}
-		}
-	}	
-	return $output;
-}
-
-function getReqCoverage_testPlan($idSRS, $idPlan)
-{
-	$output = array('covered' => array(), 'uncovered' => array(), 'nottestable' => array());
-	
-	// get requirements
-	$sql = "SELECT id,title FROM requirements WHERE id_srs=" . $idSRS . 
-			" AND status='v' ORDER BY title";
-	$arrReq = selectData($sql);
-
-	// get not-testable requirements
-	$sql = "SELECT id,title FROM requirements WHERE id_srs=" . $idSRS . 
-			" AND status='n' ORDER BY title";
-	$output['nottestable'] = selectData($sql);
-	
-	// get coverage
-	if (sizeof($arrReq))
-	{
-		foreach ($arrReq as $req) 
-		{
-			$arrCoverage = getSuite4Req($req['id'], $idPlan);
 	
 			if (count($arrCoverage) > 0) {
 				// add information about coverage
@@ -336,26 +310,29 @@ function getReqMetrics_general($idSRS)
 
 /**
  * get requirement coverage metrics for a Test Plan
+ * 
  * @param integer $idSRS
  * @param integer $idTestPlan
- * @return array results
+ * @return array Results
  * @author havlatm
  */
 function getReqMetrics_testPlan($idSRS, $idTestPlan)
 {
 	$output = getReqMetrics_general($idSRS);
+	$output['coveredByTestPlan'] = 0;
 	
 	$sql = "SELECT DISTINCT requirements.id FROM requirements,testcase," .
 			"req_coverage,category,component WHERE requirements.id_srs=" . $idSRS .
-				" AND component.projid=" . $idTestPlan /*$_SESSION['testPlanId']*/ .
+				" AND component.projid=" . $idTestPlan .
 				" AND category.compid=component.id AND category.id=testcase.catid" .
-				" AND testcase.mgttcid = req_coverage.id_tc AND id_req=requirements.id"; 
+				" AND testcase.mgttcid = req_coverage.id_tc AND id_req=requirements.id" .
+				" AND requirements.status = 'v'"; 
 	$result = do_mysql_query($sql);
 	if (!empty($result)) {
 		$output['coveredByTestPlan'] = mysql_num_rows($result);
 	}
 	
-	$output['coveredTestPlan'] = $_SESSION['testPlanName'];
+//	$output['coveredTestPlan'] = $_SESSION['testPlanName'];
 	$output['uncoveredByTestPlan'] = $output['expectedTotal'] 
 			- $output['coveredByTestPlan'] - $output['notTestable'];
 
@@ -400,6 +377,7 @@ function getTc4Req($idReq)
  * @param string $idREQ ID of req.
  * @param string $idPlan ID of Test Plan
  * @return assoc_array list of test cases [id, title]
+ * @author martin havlat
  */
 function getSuite4Req($idReq, $idPlan)
 {

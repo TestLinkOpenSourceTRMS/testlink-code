@@ -2,8 +2,8 @@
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: results.inc.php,v $
- * @version $Revision: 1.3 $
- * @modified $Date: 2005/09/01 14:25:45 $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2005/09/02 09:54:03 $
  * 
  * @author 	Martin Havlat 
  * @author 	Chad Rosen (original report definition)
@@ -1105,4 +1105,123 @@ function reportSuiteStatus($comID)
 
 	return $msgBody;
 }
+
+/**
+ * get last result for test case (order by build)
+ * 
+ * @param integer $idSuiteTC (in Test Plan)
+ * @return string last test result
+ * @author martin havlat
+ **/
+function getLastResult($idSuiteTC)
+{
+	global $g_tc_status;
+	
+	$sql = "SELECT status FROM results WHERE tcid = " . $idSuiteTC . " AND status <> '" . 
+				$g_tc_status['not_run'] . "' ORDER BY build DESC LIMIT 1";
+	$result = do_mysql_selectOne($sql);
+
+	// add not run result if any other result is not available
+	if (empty($result))
+	{
+		$result = $g_tc_status['not_run'];
+	}
+	
+	tLog('getLastResult: ID SpecTC ' . $idSuiteTC . ' result = ' . $result);
+	return $result;
+}
+
+/**
+ * get report based on requirements
+ * all related TC results are collected for each REQ; if one of them failed -> REQ failed
+ * Req status priority: 1. Failed, 2. Blocked, 3. Not tested, 4. Passed
+ * E.g. REQ has two TC (blocked and passed) and final result is Blocked.
+ * 
+ * @param integer $idSRS
+ * @param integer $idPlan
+ * @return array Results (idReq, titleReq, tcList, reqResult) in fourth internal arrays: 
+ * 		failed, passed, blocked, not_run REQ (include related TC)
+ * @author martin havlat
+ */
+function getReqCoverage_testPlan($idSRS, $idPlan)
+{
+	global $g_tc_status, $g_tc_sd_color;
+	$output = array('passed' => array(), 'failed' => array(), 
+				'blocked' => array(), 'not_run' => array());
+	
+	// get requirements
+	$sql = "SELECT id,title FROM requirements WHERE id_srs=" . $idSRS . 
+			" AND status='v' ORDER BY title";
+	$arrReq = selectData($sql);
+
+	// parse each valid requirement
+	if (sizeof($arrReq))
+	{
+		foreach ($arrReq as $req) 
+		{
+			tLog('getReqCoverage_testPlan - Process '.$req['id'].' - '.$req['title']);
+			// init counters
+			$counterFail = 0;
+			$counterBlocked = 0;
+			$counterPassed = 0;
+			$counterNotRun = 0;
+			$sTCList = '';
+
+			// get coverage
+			$arrCoverage = getSuite4Req($req['id'], $idPlan);
+			
+			// select result with highest priority
+			if (count($arrCoverage) > 0) {
+				foreach ($arrCoverage as $tmpTC)
+				{
+					// get last results
+					$tcResult = getLastResult($tmpTC['id']);
+					tLog('Last result for '.$tmpTC['title'].' is '.$tcResult);
+					
+					// parse particular TC
+					if ($tcResult == $g_tc_status['failed']) {
+						$counterFail++;
+						$htmlClass = $g_tc_sd_color['failed'];
+					} elseif ($tcResult == $g_tc_status['blocked']) {
+						$counterBlocked++;
+						$htmlClass = $g_tc_sd_color['blocked'];
+					} elseif ($tcResult == $g_tc_status['passed']) {
+						$counterPassed++;
+						$htmlClass = $g_tc_sd_color['passed'];
+					} elseif ($tcResult == $g_tc_status['not_run']) {
+						$counterNotRun++;
+						$htmlClass = $g_tc_sd_color['not_run'];
+					} else {
+						tLog('getReqCoverage_testPlan: Invalid $tcResult', 'ERROR');
+					}
+					$sTCList .= '<span class="' . $htmlClass . '">' . $tmpTC['title'] . '</span>, ';
+				}
+				
+				// add collored list of TC into output without the last comma
+				$req['tcList'] = substr($sTCList, 0, -2);
+				tLog("Counters: f=$counterFail, b=$counterBlocked, n=$counterNotRun, p=$counterPassed");
+				
+				// add req to result group according to a TC result with the highest priority result
+				if ($counterFail) {
+					$output['failed'][] = $req;
+				} elseif ($counterBlocked) {
+					$output['blocked'][] = $req;
+				} elseif ($counterNotRun) {
+					$output['not_run'][] = $req;
+				} elseif ($counterPassed) {
+					$output['passed'][] = $req;
+				} 
+			} 
+			else 
+			{
+				// not designed TC means automatically not run
+				$output['not_run'][] = $req;
+			}
+		}
+	}	
+	return $output;
+}
+
+
+
 ?>

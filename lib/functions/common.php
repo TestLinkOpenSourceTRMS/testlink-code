@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.7 $
- * @modified $Date: 2005/08/30 12:44:31 $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2005/09/02 09:54:03 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -448,14 +448,23 @@ function selectOptionData($sql)
 
 /** 
  * pick one value from SQL request
+ * 
  * @param string $sql SQL request
- * @return string required value
+ * @return string required value or null
  * @author havlatm
  */
 function do_mysql_selectOne($sql)
 {
+	$output = null;
+	
 	$result = do_mysql_query($sql);
-	return $result ? mysql_result($result, 0) : null;
+
+	// return null for error or no data
+	if ($result && (mysql_num_rows($result) > 0)) {
+		$output = mysql_result($result, 0);
+	}
+	
+	return $output;
 }
 
 

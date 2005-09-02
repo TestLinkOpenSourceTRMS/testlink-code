@@ -5,7 +5,6 @@
 <h1>Test Plan = {$testPlanName}</h1>
 <div class="workBack">	
 <form action="lib/results/resultsMoreBuilds_buildReport.php" method='get'>
-
 	<INPUT TYPE=HIDDEN NAME=projectid VALUE={$projectid}>
 	<INPUT TYPE=HIDDEN NAME=testPlanName VALUE="{$testPlanName}">
 	<table class="simple" style="width: 100%; text-align: center; margin-left: 0px;">
@@ -23,10 +22,31 @@
 	</table>
 
 	<table class="simple" style="width: 100%; text-align: center; margin-left: 0px;">
-		<tr><td>closest match will be used for these query parameters</td></tr>
-		<tr><td>keyword : </td><td><INPUT TYPE=textinput NAME=keyword /></td></tr>
-		<tr><td>owner : </td><td><INPUT TYPE=textinput NAME=owner /></td></tr>
-		<tr><td>View Only Test Cases With Last Status of: </td></tr>	
+		<tr><th>select keyword </th></tr>
+		<tr><td>
+        	        <select name="keyword" size=5>
+                        {section name=Row loop=$arrKeywords}
+                        <option value="{$arrKeywords[Row].keyword|escape}">{$arrKeywords[Row].keyword|escape}</option>
+                        {/section}
+		</td></tr>
+	</table>
+		
+	<table class="simple" style="width: 100%; text-align: center; margin-left: 0px;">
+		<tr><th>select owner </th></tr>
+		<tr>
+			<td>
+				<select name='owner' size=5 >
+					{foreach key=owner item=ownerid from=$arrOwners}
+						{* by default the owner should be the current user *}
+						<option value="{$ownerid|escape}">{$ownerid|escape}</option>
+					{/foreach}				
+				</select>
+			</td>
+		</tr>
+	</table>
+
+	<table class="simple" style="width: 100%; text-align: center; margin-left: 0px;">
+		<tr><th>select last result </th></tr>	
 		<tr><td> 
 			<select name='lastStatus' size=5>
 				<option selected=true>any</option>

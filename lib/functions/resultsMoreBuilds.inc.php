@@ -72,7 +72,7 @@ function createResultsForTestPlan($testPlanName, $projectId, $buildsArray, $keyw
 		$totalLastResultBlockedForTestPlan += $componentSummary[3];
 		$totalUnexecutedTestCases += $componentSummary[4];
 		$testCasesReturnedByQuery = $componentData[2];
-	
+
 		// only print component information if test cases are part of the query
 		if (($componentSummary[0] != 0) && $testCasesReturnedByQuery)
 		{
@@ -99,7 +99,9 @@ function createResultsForComponent($componentId, $owner, $keyword, $buildsArray,
 	$totalLastResultFailuresForComponent = 0;
 	$totalLastResultBlockedForComponent = 0;
 	$totalUnexecutedTestCases = 0;
-	
+	// flags found test cases which match query
+	$testCasesReturnedByQuery = false;
+
 	$componentRowArray = array($myrow[0],$myrow[1],$myrow[2],$myrow[3]);
 	$componentName = $componentRowArray[1];
 	$componentHeader = "Component :"  . $componentName ;
@@ -122,7 +124,13 @@ function createResultsForComponent($componentId, $owner, $keyword, $buildsArray,
 		$totalLastResultBlockedForComponent += $categorySummary[3];
 		$totalUnexecutedTestCases += $categorySummary[4];
 		$categoryDataToPrint = $categoryData[1];
-		$testCasesReturnedByQuery = $categoryData[2];
+		
+		// do not reset this value each time!
+		// only flag once if we find any category with a test case
+		if ($categoryData[2]){
+		  $testCasesReturnedByQuery = $categoryData[2];
+		}
+
 		// only print category information if test cases are part of the query
 		if ($categorySummary[0] != 0)
 		{
@@ -153,10 +161,16 @@ function createResultsForCategory($categoryId, $keyword, $buildsArray, $lastResu
 	$totalLastResultFailuresForCategory = 0;
 	$totalLastResultBlockedForCategory = 0;
 	$totalUnexecutedTestCases = 0;
+
+	// this needs to be initialized outside the while loop
+	// otherwise it keeps getting set to false even though there is a prior
+	// result that matches the specified query
+	$testCasesReturnedByQuery = false;
 	
 	$categoryRowArray = array($myrow[0],$myrow[1],$myrow[2],$myrow[3],$myrow[4],$myrow[5],$myrow[6],$myrow[7]);
 	$categoryName = $categoryRowArray[1];
 	$owner = $categoryRowArray[5];
+
   
 	$categoryHeader = "Category = " . htmlspecialchars($categoryName) . " Owner = " . htmlspecialchars($owner);
 	$sql = "select testcase.id, testcase.title, testcase.summary, testcase.steps, testcase.exresult, testcase.catid, testcase.active, testcase.version, testcase.mgttcid, testcase.keywords, testcase.TCorder from testcase where (catid='" . $categoryId . "') AND (keywords LIKE '%" . $keyword . "%') ";
@@ -165,6 +179,8 @@ function createResultsForCategory($categoryId, $keyword, $buildsArray, $lastResu
 	$result = do_mysql_query($sql);
   
   $testCaseTables;
+
+
   while ($myrow = mysql_fetch_row($result)){
     $totalCasesForCategory++;
     $testCaseData = createResultsForTestCase($myrow[0], $buildsArray,$myrow,$arrBuilds);
@@ -191,27 +207,32 @@ function createResultsForCategory($categoryId, $keyword, $buildsArray, $lastResu
     */
 
     // additionally track if category contains any test cases returned by query
-    $testCasesReturnedByQuery = false;
+
         
     if ($lastResultToQueryFor == 'any'){
       $testCaseTables = $testCaseTables . $testCaseInfoToPrint;
+
       $testCasesReturnedByQuery = true;
     }
     elseif (($lastResult == 'p') && ($lastResultToQueryFor == 'passed')){
       $testCaseTables = $testCaseTables . $testCaseInfoToPrint;
+
       $testCasesReturnedByQuery = true;
     }
     elseif (($lastResult == 'f') && ($lastResultToQueryFor == 'failed')){
+
       $testCaseTables = $testCaseTables . $testCaseInfoToPrint;
       $testCasesReturnedByQuery = true;
     }
     elseif (($lastResult == 'b') && ($lastResultToQueryFor == 'blocked')){
+
       $testCaseTables = $testCaseTables . $testCaseInfoToPrint;
       $testCasesReturnedByQuery = true;
     }
     elseif (($lastResult == 'n') && ($lastResultToQueryFor == 'unexecuted')){
+
       $testCaseTables = $testCaseTables . $testCaseInfoToPrint;
-            $testCasesReturnedByQuery = true;
+      $testCasesReturnedByQuery = true;
     }
   }
 

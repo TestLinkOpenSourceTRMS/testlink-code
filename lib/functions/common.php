@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.8 $
- * @modified $Date: 2005/09/02 09:54:03 $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2005/09/03 08:17:08 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -98,8 +98,6 @@ function setSessionTestPlan($tpInfo)
 {
 	if ($tpInfo)
 	{
-		// 20050807 - fm
-		//$_SESSION['project'] = $tpInfo[0]; /** @todo this var should be removed */
 		$_SESSION['testPlanId'] = $tpInfo[0];
 		$_SESSION['testPlanName'] = $tpInfo[2];
 		
@@ -107,9 +105,6 @@ function setSessionTestPlan($tpInfo)
 	}
 	else
 	{
-		// 20050807 - fm
-		// unset($_SESSION['project']); /* todo: this should be removed */
-		
 		unset($_SESSION['testPlanId']);
 		unset($_SESSION['testPlanName']);
 	}

@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsMoreBuilds_buildReport.php,v 1.3 2005/09/03 00:58:41 kevinlevy Exp $ 
+* $Id: resultsMoreBuilds_buildReport.php,v 1.4 2005/09/03 19:42:37 kevinlevy Exp $ 
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 * 
@@ -71,7 +71,7 @@ if (!isset($_GET['lastStatus'])) {
 }
 
 tlTimingStart();
-$reportData = createResultsForTestPlan($_GET['testPlanName'],$_SESSION['testPlanId'], $buildsSelected, $_GET['keyword'], $_GET['owner'], $_GET['lastStatus']);
+$reportData = createResultsForTestPlan($_GET['testPlanName'],$_SESSION['testPlanId'], $buildsSelected, $_GET['keyword'], $_GET['owner'], $_GET['lastStatus'], $xls);
 tlTimingStop();
 $queryParameters = $reportData[0];
 $summaryOfResults = $reportData[1];
@@ -87,6 +87,7 @@ $smarty->assign('allComponentData', $allComponentData);
 // for excel send header
 if ($xls) {
   sendXlsHeader();
+ 
   $smarty->assign('printDate', date('"F j, Y, H:m"'));
   $smarty->assign('user', $_SESSION['user']);
  }
@@ -94,6 +95,7 @@ if ($xls) {
 // this contains example of how this excel data gets used
 // $smarty->display('resultsTC.tpl');
 
+$smarty->assign('xls', $xls);
 
 $smarty->display('resultsMoreBuilds_report.tpl');
 ?>

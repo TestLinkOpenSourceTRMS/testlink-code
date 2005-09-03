@@ -1,12 +1,14 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsMoreBuilds.php,v 1.4 2005/09/03 00:58:02 kevinlevy Exp $ 
+* $Id: resultsMoreBuilds.php,v 1.5 2005/09/03 08:15:28 franciscom Exp $ 
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 * 
 * This page will forward the user to a form where they can select
 * the builds they would like to query results against.
+*
+* 20050903 - fm - refactoring 
 *
 */
 require('../../config.inc.php');
@@ -22,7 +24,9 @@ $arrOwners = getProjectUsers();
 $arrKeywords = selectKeywords();
 $smarty = new TLSmarty();
 $smarty->assign('testPlanName',$_SESSION['testPlanName']);
-$smarty->assign('projectid', $_SESSION['project']);
+
+// 20050903 - fm
+$smarty->assign('projectid', $_SESSION['testPlanId']);
 $smarty->assign('arrBuilds', $arrBuilds); 
 $smarty->assign('arrOwners', $arrOwners);
 $smarty->assign('arrKeywords', $arrKeywords);
@@ -39,10 +43,5 @@ if ($xls) {
 // $smarty->display('resultsTC.tpl');
 
 $smarty->display('resultsMoreBuilds_query_form.tpl');
-
-
-  
-
-
 
 ?>

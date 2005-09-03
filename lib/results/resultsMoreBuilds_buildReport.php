@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsMoreBuilds_buildReport.php,v 1.2 2005/09/01 20:39:06 schlundus Exp $ 
+* $Id: resultsMoreBuilds_buildReport.php,v 1.3 2005/09/03 00:58:41 kevinlevy Exp $ 
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 * 
@@ -15,10 +15,26 @@ require_once('common.php');
 require_once('../functions/resultsMoreBuilds.inc.php');
 require_once('../functions/builds.inc.php');
 
+// I'm not sure which one of these contains
+// the excel libraries
+require_once('builds.inc.php');
+require_once('results.inc.php');
+require_once("../../lib/functions/lang_api.php");
+
 // init
 testlinkInitPage();
 
 $buildsSelected = array();
+
+$xls = null;
+
+if (isset($_GET['format']) && $_GET['format'] =='excel'){
+  $xls = TRUE;
+ } else {
+  $xls = FALSE;
+ }
+
+
 if (isset($_REQUEST['build'])){
   foreach($_REQUEST['build'] AS $val){
     $buildsSelected[] = $val;
@@ -67,5 +83,17 @@ $smarty = new TLSmarty();
 $smarty->assign('queryParameters', $queryParameters);
 $smarty->assign('summaryOfResults', $summaryOfResults);
 $smarty->assign('allComponentData', $allComponentData);
+
+// for excel send header
+if ($xls) {
+  sendXlsHeader();
+  $smarty->assign('printDate', date('"F j, Y, H:m"'));
+  $smarty->assign('user', $_SESSION['user']);
+ }
+
+// this contains example of how this excel data gets used
+// $smarty->display('resultsTC.tpl');
+
+
 $smarty->display('resultsMoreBuilds_report.tpl');
 ?>

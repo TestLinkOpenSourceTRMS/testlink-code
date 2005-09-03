@@ -61,6 +61,16 @@
 		</td></tr>
 	</table>
 
+	<table class="simple" style="width: 100%; text-align: center; margin-left: 0px;">
+		<tr><th>select format</th></tr>	
+		<tr><td> 
+			<select name='format' size=2>
+				<option selected>html</option>
+				<option>excel</option>
+			</select>
+		</td></tr>
+	</table>
+
 	<INPUT TYPE=submit VALUE='submit query'/>
 </form>
 </div>

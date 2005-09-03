@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsMoreBuilds.php,v 1.3 2005/09/02 05:11:07 kevinlevy Exp $ 
+* $Id: resultsMoreBuilds.php,v 1.4 2005/09/03 00:58:02 kevinlevy Exp $ 
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 * 
@@ -26,5 +26,23 @@ $smarty->assign('projectid', $_SESSION['project']);
 $smarty->assign('arrBuilds', $arrBuilds); 
 $smarty->assign('arrOwners', $arrOwners);
 $smarty->assign('arrKeywords', $arrKeywords);
+
+
+// for excel send header
+if ($xls) {
+  sendXlsHeader();
+  $smarty->assign('printDate', date('"F j, Y, H:m"'));
+  $smarty->assign('user', $_SESSION['user']);
+ }
+
+// this contains example of how this excel data gets used
+// $smarty->display('resultsTC.tpl');
+
 $smarty->display('resultsMoreBuilds_query_form.tpl');
+
+
+  
+
+
+
 ?>

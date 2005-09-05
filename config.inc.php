@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.8 $
- * @modified $Date: 2005/09/05 07:14:27 $ by $Author: franciscom $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2005/09/05 14:39:13 $ by $Author: havlat $
  *
  * @author Chad Rosen
  *
@@ -118,7 +118,7 @@ error_reporting(E_ALL & ~E_NOTICE);
  
 /** GUI related constants *///////////////////////////////////////////////////
 
-define('TL_VERSION', '1.6.0'); 
+define('TL_VERSION', '1.6.Beta1'); 
 define('TL_BACKGROUND_DEFAULT', "#9BD");
 
 /** 
@@ -126,7 +126,7 @@ define('TL_BACKGROUND_DEFAULT', "#9BD");
 *	jTree has the best performance but others have a better functionality  
 *	@varstatic string TL_TREE_KIND = [LAYERSMENU, DTREE, JTREE]
 */
-define('TL_TREE_KIND', 'JTREE');
+define('TL_TREE_KIND', 'LAYERSMENU');
 
 /* Some defines for I18N,L10N, don't touch */
 define('TL_LOCALE_PATH',TL_ABS_PATH . 'locale/');

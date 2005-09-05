@@ -1,4 +1,4 @@
-TestLink 1.5.1 - ReadMe
+TestLink 1.6.Beta - ReadMe
 
 1. Introduction
 ===============================================================
@@ -13,15 +13,16 @@ TestLink is a web based test management and test execution system.
 2. System Requirements and Installation
 ===============================================================
 TestLink environment includes PHP4, MySQL and a Web-server (e.g.
-    functional WAMP installation).Download: You can get the newest version at sourceforge.net at https://sourceforge.net/projects/testlink/.Installation, update and configuration is described in Installation
-    and Configuration manual  at http://testlink.sourceforge.net/docs/documents/installation.html . The procedure for TL 1.5.1 is
-    identical as for TL 1.5.0.Update from TestLink 1.5.0: Database requires no change. Just unpack
-    and configure this new release.
+    functional EasyPHP, WAMP installation).Download: You can get the newest version at sourceforge.net at https://sourceforge.net/projects/testlink/.Installation, update and configuration is described in Installation
+    and Configuration manual  at http://testlink.sourceforge.net/docs/documents/installation.html . Update from previous versions of TestLink : Database schema was
+    changed. We recommend to use installation script.
 
-3. Release notes TestLink 1.5.1
+3. Release notes TestLink 1.6.Beta
 ===============================================================
-This release is only a bug fixing release for
-    TestLink 1.5.0.See CHANGELOG for more information about new
+This release is a testing release for
+    TestLink 1.6.0. The
+    development of this version is stoped now. Only bug fixing will be applied
+    until official release.See CHANGELOG for more information about new
     features, bug fixes and changes.
 
 4. Known problems
@@ -32,7 +33,12 @@ There are known issues:
       
 
       
-        Several small issues is listed in SourceForge: Bugs.
+        Several minor issues are listed in TestLink Bug Tracking
+        System.
+      
+
+      
+        Documentation is not ready yet.
       
     
 
@@ -40,8 +46,8 @@ There are known issues:
 ===============================================================
 The Bug Overview on the TestLink web site lets you search for and
     examine existing bug reports, submit your own bug reports, and tell us
-    which bug fixes matter most to you.To submit a bug or a feature, please use our 
-    Mantis installation at http://www.testlink.org/mantis/ for TestLinkFor historical reasons you can still look to existing bugs at
+    which bug fixes matter most to you.To submit a bug or a feature, please use our  Mantis installation at http://www.testlink.org/mantis/ for
+    TestLinkFor historical reasons you can still look to existing bugs at
     SourceForge at https://sourceforge.net/tracker/?group_id=90976&atid=595494For the same reason you can browse the existing REF's at 
     SourceForge at https://sourceforge.net/tracker/?group_id=90976&atid=595497You may also contact us at the TestLink forum at http://www.testlink.org/tiki/tiki-forums.php
     .

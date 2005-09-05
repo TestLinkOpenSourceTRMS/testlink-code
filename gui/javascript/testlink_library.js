@@ -1,9 +1,14 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/ 
-// $Id: testlink_library.js,v 1.2 2005/08/16 17:59:13 franciscom Exp $ 
+// This script is distributed under the GNU General Public License 2 or later. 
+//
+// $Id: testlink_library.js,v 1.3 2005/09/05 11:37:58 havlat Exp $ 
 //
 // Javascript functions commonly used through the GUI
-// This library is loaded with inc_header.tpl
+// This library is automatically loaded with inc_header.tpl
 //
+// DO NOT ADD FUNCTIONS FOR ONE USING
+//
+
 
 // help popup
 function open_popup(page) 
@@ -20,11 +25,11 @@ function open_top(page)
 }
 
 
+// test specification related functions
 function ST(id)
 {
 	parent.workframe.location = fRoot+'/'+menuUrl+"&level=testcase&id="+id;
 }
-
 
 function SCO(id)
 {
@@ -104,7 +109,7 @@ function my_show_div(itm)
 	itm.style.display = "";
 }
 
-
+// MHT: TODO move it to validate.js
 function deleteBuild_onClick(buildID,build)
 {
 	if (confirm(warning_delete_build))

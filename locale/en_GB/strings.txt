@@ -1111,4 +1111,11 @@ $TLS_req_msg_notupdated_coverage = "Coverage was not updated for Requirements: "
 // lib/req/reqImport.php
 $TLS_req_import_finished = "The import is finished!";
 
+
+
+// inc_reqView.tpl
+$TLS_Author = "Author";
+$TLS_btn_close = "Close";
+
+
 ?>

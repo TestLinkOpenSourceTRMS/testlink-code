@@ -833,6 +833,12 @@ $TLS_comp_scope = "Scope";
 
 // gui/templates/tcEdit_m2.tpl
 
+// gui/templates/resultsReqs.tpl
+$TLS_title_result_req_testplan = "Test Results based on Requirements Specification";
+$TLS_req_title_passed = "Passed Requirements";
+$TLS_req_title_failed = "Failed Requirements";
+$TLS_req_title_blocked = "Blocked Requirements";
+$TLS_req_title_notrun = "Unexecuted Requirements";
 
 
 // lib/admin/adminProductEdit.php
@@ -1050,7 +1056,7 @@ $TLS_link_report_general_tp_metrics = "General Test Plan Metrics";
 $TLS_link_report_metrics_active_build = "Metrics of active Build";
 $TLS_link_report_metrics_more_builds = "Query Metrics";
 $TLS_link_report_overall_build = "The Overall Build Status";
-$TLS_link_report_reqs_coverage = "LOCALIZE: TLS_link_report_reqs_coverage";
+$TLS_link_report_reqs_coverage = "Requirements based Report";
 $TLS_link_report_test = "Test Report";
 $TLS_link_report_total_bugs = "Total Bugs For Each Test Case";
 

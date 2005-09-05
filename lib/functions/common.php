@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.9 $
- * @modified $Date: 2005/09/03 08:17:08 $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2005/09/05 07:14:27 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -17,9 +17,12 @@
  * email, userID, productID, productName, project (use rather testPlanID),
  * testPlanID, testPlanName
  *
- * @ author: francisco mancardi - 20050813 - added localize_date_smarty()
- * @ author: francisco mancardi - 20050813 - added TP filtered by Product *
- * @ author: francisco mancardi - 20050810 - added function to_boolean($alt_boolean)
+ * @author: francisco mancardi - 20050904
+ * TL 1.5.1 compatibility, get also Test Plans without product id.
+ *
+ * @author: francisco mancardi - 20050813 - added localize_date_smarty()
+ * @author: francisco mancardi - 20050813 - added TP filtered by Product *
+ * @author: francisco mancardi - 20050810 - added function to_boolean($alt_boolean)
  *
 **/
 require_once("getRights.php");
@@ -252,9 +255,13 @@ function getUserTestPlans($userID,$tpID = null,$p_bActive = null)
 	return selectData($sql);
 }
 
+// 20050904 - fm - TL 1.5.1 compatibility, get also Test Plans without product id.
 // 20050813 - fm - new
+// 
 function getUserProdTestPlans($userID,$prodID,$p_bActive = null)
 {
+  global $g_show_tp_without_prodid;
+  
 	$sql = " SELECT project.*, userID FROM project,projrights " .
 	       " WHERE projrights.projid = project.id " .
 	       " AND userID={$userID}";
@@ -263,6 +270,14 @@ function getUserProdTestPlans($userID,$prodID,$p_bActive = null)
 	if (!is_null($prodID))
 	{
 		$sql .= " AND project.prodid = {$prodID}";
+
+		
+		// 20050904 - fm - 
+		// TL 1.5.1 compatibility, get also Test Plans without product id.
+    if ($g_show_tp_without_prodid)
+    {
+			$sql .= " OR project.prodid=0";
+    }
 	}	 
 	
 	if (!is_null($p_bActive))

@@ -3,8 +3,8 @@
  * TestLink Open Source Project - @link http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: plan.core.inc.php,v $
- * @version $Revision: 1.3 $
- * @modified $Date: 2005/09/03 08:17:08 $ $Author: franciscom $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2005/09/05 07:14:27 $ $Author: franciscom $
  *  
  * 
  * @author 	Martin Havlat
@@ -13,16 +13,15 @@
  * @todo common.php includes related function getUserTestPlan (move it here)
  *
  *
+ * @author 20050904 - fm 
+ * TL 1.5.1 compatibility, get also Test Plans without product id.
+ *
  * @author 20050813 - fm product filter, added getCountTestPlans4UserProd()
- *
- *
  * @author 20050809 - fm added getCountTestPlans4UserProd()
- *
  * @author 20050809 - fm getTestPlans(), added filter on prodid
- *
- *
  * @author 20050807 - fm refactoring:  removed deprecated: $_SESSION['project']
 **/
+
 /**
  * Take data of all the available Test Plans
  * @return array select list 
@@ -30,6 +29,8 @@
  *
  *
  * rev :
+ *      20050904 - fm 
+ *      TL 1.5.1 compatibility, get also Test Plans without product id.
  *
  *      20050810 - fm
  *      Removed Global Coupling:
@@ -43,17 +44,25 @@
  */
 function getTestPlans($productID, $userID)
 {
-	
+	global $g_show_tp_without_prodid;
  	$arrPlans = array();
 	
 	// 20050809 - fmm
 	// added filter by product id
 	//
-	$queryString = " SELECT DISTINCT id,name,notes,active,prodid FROM project,projrights " .
-			           " WHERE active=1 AND prodid=" . $productID .
-			           " ORDER BY name";
+	$sql = " SELECT DISTINCT id,name,notes,active,prodid FROM project,projrights " .
+			           " WHERE active=1 AND prodid=" . $productID;
 			           
-	$result = do_mysql_query($queryString);
+			           
+	// 20050904 - fm - TL 1.5.1 compatibility, get also Test Plans without product id.		           
+  if ($g_show_tp_without_prodid)
+  {
+  	$sql .= " OR prodid=0 ";
+	}
+	
+	$sql .= " ORDER BY name";
+			           
+	$result = do_mysql_query($sql);
 
 	if ($result) {
     	$testplanCount = mysql_num_rows($result);
@@ -131,6 +140,9 @@ function getCountTestPlans4User($userID)
  * get count Test Plans available for user and Product
  *
  *
+ * 20050904 - fm
+ * TL 1.5.1 compatibility, show also Test Plans without product id.
+ *
  * 20050813 - fm
  * product filter
  * 
@@ -141,12 +153,21 @@ function getCountTestPlans4User($userID)
  */
 function getCountTestPlans4UserProd($userID,$prodID=null)
 {
+	global $g_show_tp_without_prodid;
+	
 	$sql = "SELECT count(project.id) FROM project,projrights WHERE active=1" .  
 			   " AND projid=project.id AND userid=" . $userID;
 			   
 	if (!$prodID)
 	{		   
 		$sql .= " AND project.prodid=" . $prodID;
+		
+		// 20050904 - fm - 
+		// TL 1.5.1 compatibility, get also Test Plans without product id.
+    if ($g_show_tp_without_prodid)
+    {
+    	$sql .= " OR project.prodid=0";
+    }  	
 	}		   
 	$result = do_mysql_query($sql);
 	

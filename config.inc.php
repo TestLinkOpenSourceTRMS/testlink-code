@@ -4,18 +4,20 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.7 $
- * @modified $Date: 2005/08/31 11:35:11 $ by $Author: schlundus $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2005/09/05 07:14:27 $ by $Author: franciscom $
  *
  * @author Chad Rosen
  *
  * Constants used throughout TestLink are defined within this file
  * they should be changed for your environment
  *
+ * @author Francisco Mancardi - 20050904 
+ * added $g_show_tp_without_prodid to manage TL 1.5.1 compatibility.
+ *
  * @author Francisco Mancardi - 20050827 
  * changes in $g_tc_status, $g_tc_sd_color
  * new config parameters: $g_date_format, $g_fckeditor_toolbar
- *
  *
  * @author Francisco Mancardi - 20050822 - $tpl -> $g_tpl
  * 
@@ -134,6 +136,9 @@ define('TL_INSTRUCTIONS_RPATH','gui/help/');
 
 /* Configure frmWorkArea frameset */
 define('TL_FRMWORKAREA_LEFT_FRAME_WIDTH', "30%"); 
+
+/* 1 -> TL 1.5.1 compatibility, get also Test Plans without product id. */
+$g_show_tp_without_prodid=1;
 
 /* fckeditor Toolbar */
 //$g_fckeditor_toolbar = "TL_Medium";

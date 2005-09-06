@@ -503,22 +503,19 @@ function retrieveArrayOfResults($tcid, $builds)
 	       " ') AND (build IN (" . $build_list . ")) order by build DESC;";
 	
 	$result = do_mysql_query($sql);
-	$arrayOfResultArrays; // multidimensional array - array of all result sets
+	$arrayOfResultArrays=null; // multidimensional array - array of all result sets
 	
 	while ($myrow = mysql_fetch_row($result))
 	{
 		$results_build = $myrow[0];
-		$arrayOfResultArrays[$results_build][0] = $myrow[0];
-		$arrayOfResultArrays[$results_build][1] = $myrow[1];
-		$arrayOfResultArrays[$results_build][2] = $myrow[2];
-		$arrayOfResultArrays[$results_build][3] = $myrow[3];
-		$arrayOfResultArrays[$results_build][4] = $myrow[4];
-		$arrayOfResultArrays[$results_build][5] = $myrow[5];
-		$arrayOfResultArrays[$results_build][6] = $myrow[6];
+		$arrayOfResultArrays[$results_build] = $myrow;
 	}
 	
 	return $arrayOfResultArrays;
 }
+
+
+
 
 function constructTestCaseInfo($tcid,$myrow)
 {

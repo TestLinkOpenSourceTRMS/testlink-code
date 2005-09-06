@@ -401,22 +401,22 @@ function createSummaryOfTestCaseResults($arrayOfResults){
     // iterate across arrayOfResults
     while ($buildTested = key($arrayOfResults)){
       $result = $arrayOfResults[$buildTested][3];
-      if ($result == 'p'){
+   if ($result == $g_tc_status['passed']){
 	$numberOfPasses++;
 	$totalExecutions++;
-	$lastResult = 'p';
+	$lastResult = $result;
       }
-      elseif ($result == 'f'){
+      elseif ($result == $g_tc_status['failed']){
 	$numberOfFailures++;
 	$totalExecutions++;
-	$lastResult = 'f';
+	$lastResult = $result;
       }
-      elseif ($result == 'b'){
+      elseif ($result == $g_tc_status['blocked']){
 	$numberOfBlocked++;
 	$totalExecutions++;
-	$lastResult = 'b';
+	$lastResult = $result;
       }
-      elseif ($result == 'n'){
+      elseif ($result == $g_tc_status['not_run']){
 	// don't increment anything if test case not marked as executed
 	// also do not set the lastResult
       }
@@ -427,6 +427,8 @@ function createSummaryOfTestCaseResults($arrayOfResults){
   $returnArray = array($totalExecutions,$numberOfPasses,$numberOfFailures,$numberOfBlocked,$lastResult);
   return $returnArray;
 }
+
+
 /**
  * Function createTableOfTestCaseResults
  * @param $arrayOfResults - 2 dimention array containing build number 
@@ -435,7 +437,10 @@ function createSummaryOfTestCaseResults($arrayOfResults){
  */
 
 function createTableOfTestCaseResults($arrayOfResults,$arrBuilds){
-  // if case passed paint row green, if failed paint red, if blocked paint blue, if not run paint yellow
+	
+	global $g_tc_status;
+	
+  //  if case passed paint row green, if failed paint red, if blocked paint blue, if not run paint yellow
   $colorToPaintRow;
   $notRunColor = "#ffff00";
   $passedColor = "#90ee90";
@@ -446,12 +451,16 @@ function createTableOfTestCaseResults($arrayOfResults,$arrBuilds){
   $numberOfFailures = 0;
   $numberOfBlocked = 0;
 
-  $returnData = $numberOfBuildsWithResults . "<table class=\"simple\" style=\"width: 100%; text-align: center; margin-left: 0px;\"><tr><th>build</th><th>runby</th><th>daterun</th><th>status</th><th>bugs</th><th>notes</th></tr>";
+  $returnData = $numberOfBuildsWithResults . 
+                "<table class=\"simple\" style=\"width: 100%; text-align: center; margin-left: 0px;\">" .
+                "<tr><th>build</th><th>runby</th><th>daterun</th><th>status</th><th>bugs</th><th>notes</th></tr>";
 
   // if test case was never executed the array will be empty
   // notify user of this
   if (!is_array($arrayOfResults)){
-    $returnData = $returnData . "<tr bgcolor=" . $notRunColor . "><td>THIS CASE HAS NOT BEEN EXECUTED</td><td></td><td></td><td></td><td></td><td></td></tr></table>";
+    $returnData = $returnData . "<tr bgcolor=" . $notRunColor . 
+                  "><td>THIS CASE HAS NOT BEEN EXECUTED</td><td></td><td>" .
+                  "</td><td></td><td></td><td></td></tr></table>";
     // exit method
     return $returnData;
   }
@@ -459,22 +468,27 @@ function createTableOfTestCaseResults($arrayOfResults,$arrBuilds){
   // iterate accross arrayOfResults
   while ($buildTested = key($arrayOfResults)){
     $results_status = $arrayOfResults[$buildTested][3];
-    if ($results_status == 'p'){
+    if ($results_status == $g_tc_status['passed']){
       $colorToPaintRow = $passedColor;
       $numberOfPasses++;
     }
-    elseif ($results_status == 'f'){
+    elseif ($results_status == $g_tc_status['failed']){
       $colorToPaintRow = $failedColor;
       $numberOfFailures++;
     }
-    elseif ($results_status == 'b'){
+    elseif ($results_status == $g_tc_status['blocked']){
       $colorToPaintRow = $blockedColor;
       $numberOfBlocked++;
     }
-    elseif ($results_status == 'n'){
+    elseif ($results_status == $g_tc_status['not_run']){
       $colorToPaintRow = $notRunColor;
     }
-    $returnData = $returnData . "<tr bgcolor='" . $colorToPaintRow . "'><td>" . htmlspecialchars($arrBuilds[$arrayOfResults[$buildTested][0]])  . "</td><td>" . $arrayOfResults[$buildTested][1] . "</td><td>" . $arrayOfResults[$buildTested][2] . "</td><td>" . $arrayOfResults[$buildTested][3] . "</td><td>" . $arrayOfResults[$buildTested][4]  . "</td><td>" . $arrayOfResults[$buildTested][6] . "</td></tr>";
+    $returnData = $returnData . "<tr bgcolor='" . $colorToPaintRow . 
+                  "'><td>" . htmlspecialchars($arrBuilds[$arrayOfResults[$buildTested][0]])  .
+                   "</td><td>" . $arrayOfResults[$buildTested][1] . "</td><td>" .
+                    $arrayOfResults[$buildTested][2] . "</td><td>" . $arrayOfResults[$buildTested][3] . 
+                    "</td><td>" . $arrayOfResults[$buildTested][4]  . 
+                    "</td><td>" . $arrayOfResults[$buildTested][6] . "</td></tr>";
     next($arrayOfResults);
   }
   $returnData = $returnData . "</table>";

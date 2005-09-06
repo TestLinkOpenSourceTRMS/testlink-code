@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: containerComp.inc.php,v 1.1 2005/08/29 06:40:57 franciscom Exp $ */
+/* $Id: containerComp.inc.php,v 1.2 2005/09/06 06:42:43 franciscom Exp $ */
 /* Purpose:  This page manages all the editing of test specification containers. */
 /*
  *
@@ -58,21 +58,12 @@ function viewer_edit_new_com($amy_keys, $oFCK, $action, $productID, $id=null)
 }
 
 
-// 
-function copy_or_move_comp( $action, $compID, $prodID ,$hash)
+// 20050905 - fm
+function copy_or_move_comp( $action, $compID, $prodID ,$hash, $login_name)
 {
-
-
 $dest_prodID = isset($hash['containerID']) ? intval($hash['containerID']) : 0;
 $result = 0;
 $update = null;	
-
-echo "<pre>\$hash"; print_r($hash); echo "</pre>";
-
-echo "<pre>\$prodID"; print_r($prodID); echo "</pre>";
-echo "<pre>\$compID"; print_r($compID); echo "</pre>";
-echo "<pre>\$dest_prodID"; print_r($dest_prodID); echo "</pre>";
-
 
 if( $action == 'componentCopy')
 {
@@ -80,7 +71,7 @@ if( $action == 'componentCopy')
 	$nested = isset($hash['nested']) ? $hash['nested'] : "no";
 	if ($dest_prodID)
 	{
-		$result = copyComponentToProduct($dest_prodID, $compID, $nested);
+		$result = copyComponentToProduct($dest_prodID, $compID, $nested, $login_name);
 	}
 }
 else if( $action == 'componentMove')

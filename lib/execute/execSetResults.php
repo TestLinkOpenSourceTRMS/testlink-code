@@ -4,21 +4,24 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.5 $
- * @modified $Date: 2005/08/26 21:01:27 $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2005/09/06 06:43:19 $
  *
  * @author Martin Havlat
  *
  * @todo bugs and owner are not working	    
  *
+ * @author Francisco Mancardi - 20050807 - refactoring 
+ * @author 20050825 - scs - added buginterface to smarty
+ *
  * @author Francisco Mancardi - 20050821 
  * refactoring decrease level of global coupling 
+ *
+ * @author 20050815 - scs - code optimization
  *
  * @author Francisco Mancardi - 20050807 
  * refactoring:  removed deprecated: $_SESSION['project']
  *
- * @author 20050815 - scs - code optimization
- * @author 20050825 - scs - added buginterface to smarty
  *
 **/
 require_once('../../config.inc.php');
@@ -33,7 +36,10 @@ testlinkInitPage();
 $testdata = array();
 $submitResult = null;
 if (isset($_POST['submitTestResults']))
-	$submitResult = editTestResults($_POST);
+{
+	// 20050905 - fm
+	$submitResult = editTestResults($_SESSION['user'],$_POST,$_GET['build']);
+}
 
 $keyword = isset($_GET['keyword']) ? strings_stripSlashes($_GET['keyword']) : 'All';
 if ($keyword != 'All')

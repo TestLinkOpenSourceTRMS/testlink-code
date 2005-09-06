@@ -3,12 +3,14 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: reqSpecPrint.php,v $
- * @version $Revision: 1.3 $
- * @modified $Date: 2005/08/31 08:45:11 $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2005/09/06 06:46:13 $
  * 
  * @author Martin Havlat
  * 
  * print a req. specification.
+ *
+ * @author Francisco Mancardi - 20050906 - reduce global coupling
  * 
  */
 ////////////////////////////////////////////////////////////////////////////////
@@ -19,9 +21,11 @@ testlinkInitPage();
 
 $idSRS = isset($_REQUEST['idSRS']) ? strings_stripSlashes($_REQUEST['idSRS']) : null;
 
-// 20050830 - fm
+// 20050906 - fm
 $prodName = isset($_SESSION['productName']) ? strings_stripSlashes($_SESSION['productName']) : null;
+$prodID = isset($_SESSION['productID']) ? intval($_SESSION['productID']) : 0;
 $my_userID = isset($_SESSION['userID']) ? intval($_SESSION['userID']) : null;
 
-print printSRS($idSRS, $prodName, $my_userID);
+// 20050905 - fm reduce global coupling
+print printSRS($idSRS, $prodName, $prodID, $my_userID,$_SESSION['basehref']);
 ?>

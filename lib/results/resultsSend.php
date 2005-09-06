@@ -1,12 +1,14 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsSend.php,v 1.2 2005/08/16 18:00:58 franciscom Exp $ 
+* $Id: resultsSend.php,v 1.3 2005/09/06 06:42:04 franciscom Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author	Chad Rosen
 * 
-* This page shows and processes the form for sending a Test Report.
+* Shows and processes the form for sending a Test Report.
+*
+* @author Francisco Mancardi - 20050906 - reduce global coupling
 *
 */
 require('../../config.inc.php');
@@ -34,7 +36,7 @@ if(isset($_POST['submit']))
 		{
 			 //if the user has chosen to sent the entire project priority info
 			//grab all of the priority info and stuff it into the message body
-			$msgBody .= reportGeneralStatus();
+			$msgBody .= reportGeneralStatus($_SESSION['testPlanId']);
 		} 
 		else if($status == 'comAll') //user has chosen to send a specific component status across all builds
 			$msgBody .= reportSuiteStatus($_POST['comSelectAll']);
@@ -45,9 +47,12 @@ if(isset($_POST['submit']))
 		// Send mail
 		$headers = null;
 		if (isset($_POST['cc']))
+		{
 			$headers = "Cc: " . $_SESSION['email'] . "\r\n";
-
-		$message = sendMail($_POST['to'], $_POST['subject'], $msgBody, $headers);
+    }
+    
+    // 20050906 - fm 
+		$message = sendMail($_SESSION['email'],$_POST['to'], $_POST['subject'], $msgBody, $headers);
 	}
 }
 

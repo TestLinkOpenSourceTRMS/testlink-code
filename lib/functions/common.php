@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.10 $
- * @modified $Date: 2005/09/05 07:14:27 $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2005/09/06 06:44:07 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -16,6 +16,8 @@
  * - has next values: valid (yes/no), user (login name), role (e.g. admin),
  * email, userID, productID, productName, project (use rather testPlanID),
  * testPlanID, testPlanName
+ *
+ * @author: francisco mancardi - 20050904 - added check_hash_keys()
  *
  * @author: francisco mancardi - 20050904
  * TL 1.5.1 compatibility, get also Test Plans without product id.
@@ -552,9 +554,40 @@ function localize_date_smarty($params, &$smarty)
 	else
 	{
 		return $the_d;
-		//return $params['d'];
-		//return $g_date_format;
 	}
+}
+
+
+/*
+check the existence of every element of $akeys2check, in the hash.
+For every key not found a call to tlog() is done. 
+
+@param associative array: $hash
+@param array: $akeys2check
+@param string: [$msg] append to key name to use as tlog message
+                      
+
+@returns 1: all keys can be found
+         0: at least one key not found  
+
+@author Francisco Mancardi - 20050905 - creation
+
+*/
+function check_hash_keys($hash, $akeys2check, $msg='')
+{
+$tlog_msg = " is not defined";
+$status=1;
+
+foreach ($a2check as $key)
+{
+  if (!isset($hash[$key])) 
+  {
+    $status = 0;
+    tlog( $key . $tlog_msg);
+  }
+}
+
+return ($status);
 }
 
 ?>

@@ -2,7 +2,7 @@
 /**
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/ 
 *
-* 	@version 	$Id: printData.php,v 1.4 2005/09/01 10:02:27 franciscom Exp $
+* 	@version 	$Id: printData.php,v 1.5 2005/09/06 06:45:42 franciscom Exp $
 *	@author 	Martin Havlat
 * 
 * 	This page shows the data that will be printed.
@@ -48,7 +48,8 @@ function print_header($title, $toc)
   
   $title = lang_get('title_test_spec') . "-" . $title;
   
-  $CONTENT_HEAD .= printHeader($title);
+  // 20050905 - fm
+  $CONTENT_HEAD .= printHeader($title,$_SESSION['basehref']);
   
   // 20050830 - fm
   $CONTENT_HEAD .= printFirstPage($title, $prodName, $my_userID);

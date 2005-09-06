@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.7 $
- * @modified $Date: 2005/08/29 12:16:38 $  by $Author: franciscom $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2005/09/06 06:42:43 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
  * @author Martin Havlat
@@ -45,9 +45,6 @@ foreach ($a_ofck as $key)
  $of->ToolbarSet=$g_fckeditor_toolbar;;
 }
 // --------------------------------------------------------------------
-//echo "<pre>"; print_r($oFCK); echo "</pre>";
-
-
 
 $tc = null;
 $keySize = null;

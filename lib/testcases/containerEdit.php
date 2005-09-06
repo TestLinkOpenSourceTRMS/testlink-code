@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: containerEdit.php,v 1.11 2005/08/31 08:46:28 franciscom Exp $ */
+/* $Id: containerEdit.php,v 1.12 2005/09/06 06:42:43 franciscom Exp $ */
 /* Purpose:  This page manages all the editing of test specification containers. */
 /*
  *
@@ -338,12 +338,15 @@ else if($action == 'updateTCorder')
 }
 else if($action == 'categoryCopy' || $action == 'categoryMove')
 {
-	copy_or_move_cat( $action, $objectID, $_POST);
+	// 20050905 - fm
+	copy_or_move_cat( $action, $objectID, $_POST, $_SESSION['user']);
 }
 else if( $action == 'componentCopy' || $action == 'componentMove')
 {
 	$prodID=$_SESSION['productID'];
-	copy_or_move_comp( $action, $objectID, $prodID ,$_POST);
+	
+	// 20050905 - fm
+	copy_or_move_comp( $action, $objectID, $prodID ,$_POST,$_SESSION['user']);
 }	
 else 
 {

@@ -2,7 +2,7 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: listTestCases.php,v 1.2 2005/08/16 18:00:59 franciscom Exp $
+* 	@version 	$Id: listTestCases.php,v 1.3 2005/09/06 06:42:43 franciscom Exp $
 * 	@author 	Martin Havlat
 * 
 * 	This page generates tree menu with test specification. It builds the
@@ -14,6 +14,11 @@ require('../../config.inc.php');
 require_once("common.php");
 require_once("treeMenu.inc.php");
 testlinkInitPage();
+
+// 20050905 - fm
+$prodID   = isset($_SESSION['productID']) ? $_SESSION['productID'] : 0;
+$prodName = isset($_SESSION['productName']) ? $_SESSION['productName'] : 'xxx';
+
 
 // set using data
 $title = lang_get('title_navigator'). ' - ' . lang_get('title_test_spec'); //'Navigator - Test Specification';
@@ -43,8 +48,10 @@ else
 	tLog("Missing argument 'feature'.", 'ERROR');
 	exit();
 }
+
+
 // generate tree 
-$treeString = generateTestSpecTree($workPath, 0);
+$treeString = generateTestSpecTree($prodID, $prodName,$workPath, 0);
 $tree = null;
 if (strlen($treeString))
 	$tree = invokeMenu($treeString);

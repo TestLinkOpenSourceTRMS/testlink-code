@@ -1,11 +1,13 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsBuild.php,v 1.2 2005/08/16 18:00:58 franciscom Exp $ 
+* $Id: resultsBuild.php,v 1.3 2005/09/06 06:42:04 franciscom Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * 
 * This page show Metrics of one Build.
+*
+* @author Francisco Mancardi - fm - reduce global coupling
 *
 */
 require('../../config.inc.php');
@@ -22,15 +24,17 @@ if (!isset($_GET['build']))
 	exit();
 }
 
+$tpID = $_SESSION['testPlanId'];
+
 // get Priority data
-$arrDataPriority = getPriorityReport($build);
+$arrDataPriority = getPriorityReport($tpID,$build);
 
 // get Test Suite data
-$arrDataSuite = getBuildMetricsComponent($build);
-$arrDataCategory = getBuildMetricsCategory($build);
-$arrDataKeys = getKeywordsReport($build);
+$arrDataSuite = getBuildMetricsComponent($tpID,$build);
+$arrDataCategory = getBuildMetricsCategory($tpID, $build);
+$arrDataKeys = getKeywordsReport($tpID, $build);
 
-$builds = getBuilds($_SESSION['testPlanId']);
+$builds = getBuilds($tpID);
 
 $smarty = new TLSmarty;
 $smarty->assign('tpName', $_SESSION['testPlanName']);

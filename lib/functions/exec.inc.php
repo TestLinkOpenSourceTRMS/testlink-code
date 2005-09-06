@@ -4,12 +4,14 @@
  *
  * Filename $RCSfile: exec.inc.php,v $
  *
- * @version $Revision: 1.5 $
- * @modified $Date: 2005/08/26 21:01:27 $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2005/09/06 06:44:07 $
  *
  * @author Martin Havlat
  *
  * Functions for execution feature (add test results) 
+ *
+ * 20050905 - fm - reduce global coupling
  *
  * 20050807 - fm
  * filterKeyword()   : added $idPlan to remove global coupling via _SESSION
@@ -23,11 +25,13 @@ require_once('../functions/common.php');
 
 /**
  * Function just grabs number of builds
+ *
+ * @param numeric test plan ID
  * @return integer Count of Builds
  */  
-function buildsNumber()
+function buildsNumber($tpID)
 {
-	$result = do_mysql_query("SELECT count(*) FROM build WHERE build.projid = " . $_SESSION['testPlanId']);
+	$result = do_mysql_query("SELECT count(*) FROM build WHERE build.projid = " . $tpID);
 	$buildCount = mysql_result($result, 0);
 	if ($buildCount){
 		return $buildCount;
@@ -75,13 +79,15 @@ function filterKeyword($idPlan)
 		$data .= "<option>All</option>"; //Add a none value to the array in case the user doesn't want to sort
 
 		$keyword = isset($_POST['keyword']) ? strings_stripSlashes($_POST['keyword']) : null;
-		//For each of the unique values in the keyword array I want to loop through and display them as an option to select
+		//For each of the unique values in the keyword array 
+		//I want to loop through and display them as an option to select
 		foreach($keyArray as $key=>$word)
 		{
 			//For some reason I'm getting a space.. Now I'll ignore any spaces
 			if($word != "")
 			{
-				//This next if statement makes the keyword field "sticky" if the user has already selected a keyword and submitted the form
+				//This next if statement makes the keyword field "sticky" 
+				//if the user has already selected a keyword and submitted the form
 				$sel = '';
 				if($word == $keyword)
 					$sel = ' selected="selected"';
@@ -121,18 +127,23 @@ function createBuildMenu($idPlan)
 
 
 /**
- * This function add editted test results to database
+ * Add editted test results to database
+ *
+ * 20050905 - fm
+ * interface changes
+ *
  */
 // MHT 200507	added conversion of special chars on input - [ 900437 ] table results -- incoherent data ?
-function editTestResults($tcData)
+function editTestResults($login_name, $tcData, $build)
 {
 	global $g_bugInterfaceOn;
 	
 	//It is necessary to turn the $_POST map into a number valued array
-	unset($_POST['submitTestResults']);
+	// 20050905 - fm
+	unset($tcData['submitTestResults']);
 	$newArray = extractInput();
-	//Grab the build 
-	$build = mysql_escape_string($_GET['build']);
+	
+	$build = mysql_escape_string($build);
 
 	// todo: change this is use an associative array...
 	//		already fixed bug because of not using one :)
@@ -145,7 +156,8 @@ function editTestResults($tcData)
 			$tcBugs = '';
 			if ($g_bugInterfaceOn)
 			{
-				$tcBugs = isset($newArray[$i + 3]) ? mysql_escape_string($newArray[$i + 3]) : ''; //The 4th value is the CSV of bugs
+				//The 4th value is the CSV of bugs
+				$tcBugs = isset($newArray[$i + 3]) ? mysql_escape_string($newArray[$i + 3]) : ''; 
 				$i++;
 			}
 
@@ -181,7 +193,7 @@ function editTestResults($tcData)
 				} else {
 	
 					//update the old result
-					$sql = "UPDATE results SET runby ='" . $_SESSION['user'] . "', status ='" .  
+					$sql = "UPDATE results SET runby ='" . $login_name . "', status ='" .  
 							$tcStatus . "', notes='" . $tcNotes . "' where tcid='" . $tcID . 
 							"' and build='" . $build . "'";
 					$result = do_mysql_query($sql); //Execute query
@@ -221,14 +233,17 @@ function editTestResults($tcData)
 					$counter = 0;
 					while($counter < count($bugArray))	{
 
-						$sql = "insert into bugs (tcid,build,bug) values ('" . $tcID . "','" . $build . "','" . $bugArray[$counter] . "')";
+						$sql = " INSERT INTO bugs (tcid,build,bug) "
+						       " VALUES ('" . $tcID . "','" . $build . "','" . $bugArray[$counter] . "')";
 						$result = do_mysql_query($sql); //Execute query
 						$counter++;
 					}
 	
 				} else { //Else enter a new row
 				
-					$sql = "insert into results (build,daterun,status,tcid,notes,runby) values ('" . $build . "',CURRENT_DATE(),'" . $tcStatus . "','" . $tcID . "','" . $tcNotes . "','" . $_SESSION['user'] . "')";
+					$sql = " INSERT INTO results (build,daterun,status,tcid,notes,runby) "
+					       " VALUES ('" . $build . "',CURRENT_DATE(),'" . $tcStatus . 
+					       "','" . $tcID . "','" . $tcNotes . "','" . $login_name . "')";
 					$result = do_mysql_query($sql);
 	
 					$sqlDelete = "DELETE from bugs where tcid=" . $tcID . " and build=" . $build;
@@ -239,7 +254,8 @@ function editTestResults($tcData)
 					$bugArray = strlen($tcBugs) ?  explode(",",$tcBugs) : null;
 					$counter = 0;
 					while($counter < count($bugArray)){
-						$sqlBugs = "insert into bugs (tcid,build,bug) values ('" . $tcID . "','" . $build . "','" . $bugArray[$counter] . "')";
+						$sqlBugs = " INSERT INTO bugs (tcid,build,bug) "
+						           " VALUES ('" . $tcID . "','" . $build . "','" . $bugArray[$counter] . "')";
 						$result = do_mysql_query($sqlBugs); //Execute query
 						$counter++;
 					}

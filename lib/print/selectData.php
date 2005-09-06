@@ -1,7 +1,7 @@
 <?
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* @version 	$Id: selectData.php,v 1.2 2005/08/16 18:00:57 franciscom Exp $
+* @version 	$Id: selectData.php,v 1.3 2005/09/06 06:45:42 franciscom Exp $
 * @author 	Martin Havlat
 * 
 * 	Navigator for print/export functionality. 
@@ -16,6 +16,11 @@ require_once("common.php");
 require_once("treeMenu.inc.php");
 require_once("../../lib/functions/lang_api.php");
 testlinkInitPage();
+
+
+// 20050905 - fm
+$prodID   = isset($_SESSION['productID']) ? $_SESSION['productID'] : 0;
+$prodName = isset($_SESSION['productName']) ? $_SESSION['productName'] : '';
 
 // parse wrong type
 $type = isset($_GET['type']) ? $_GET['type'] : '';
@@ -57,9 +62,13 @@ $args = "&format=" . $selFormat . "&header=" . $arrCheckboxes[0]['checked'] .
 
 // generate tree 
 if ($type == 'product')
-	$treeString = generateTestSpecTree($workPath, 1, $args);
+{
+	$treeString = generateTestSpecTree($prodID, $prodName,$workPath, 1, $args);
+}	
 else if ($type == 'testSet')
+{
 	$treeString = generateTestSuiteTree($workPath, 1, $args);
+}
 
 $tree = invokeMenu($treeString);
 

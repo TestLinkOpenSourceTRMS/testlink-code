@@ -37,7 +37,7 @@ require_once("common.php");
 * @return string returnData - report based on query parameters  
 */
 // default start and end builds are specified 
-function createResultsForTestPlan($testPlanName, $projectId, $buildsArray, $keyword, $owner, $lastStatus)
+function createResultsForTestPlan($testPlanName, $testPlanID, $buildsArray, $keyword, $owner, $lastStatus)
 {
 	$totalCasesForTestPlan = 0;
 	$totalLastResultPassesForTestPlan = 0;
@@ -45,7 +45,7 @@ function createResultsForTestPlan($testPlanName, $projectId, $buildsArray, $keyw
 	$totalLastResultBlockedForTestPlan = 0;
 	$totalUnexecutedTestCases = 0;
 	
-	$arrBuilds = getBuilds($projectId);
+	$arrBuilds = getBuilds($testPlanID);
 	$commaDelimitedBuilds = null;
 	for($i = 0;$i < sizeof($buildsArray);$i++)
 	{
@@ -54,16 +54,25 @@ function createResultsForTestPlan($testPlanName, $projectId, $buildsArray, $keyw
 		$commaDelimitedBuilds .= $arrBuilds[$buildsArray[$i]];
 	}
   
-	$testPlanReportHeader = "<table class=\"simple\" style=\"width: 100%; text-align: center; margin-left: 0px;\"><tr><th>Test Plan Name</th><th>Builds Selected</th><th>Keyword</th><th>Owner</th><th>Last Status</th></tr>";
-	$testPlanReportHeader = $testPlanReportHeader . "<tr><td>".htmlspecialchars($testPlanName)."</td><td>" . htmlspecialchars($commaDelimitedBuilds) . "</td><td>".htmlspecialchars($keyword)."</td><td>".htmlspecialchars($owner)."</td><td>".htmlspecialchars($lastStatus)."</td></tr></table>";
+	$testPlanReportHeader = "<table class=\"simple\" style=\"width: 100%; " .
+	                        "text-align: center; margin-left: 0px;\">" .
+	                        "<tr><th>Test Plan Name</th><th>Builds Selected</th>" .
+	                        "<th>Keyword</th><th>Owner</th><th>Last Status</th></tr>";
+	$testPlanReportHeader = $testPlanReportHeader . 
+	                        "<tr><td>".htmlspecialchars($testPlanName)."</td><td>" . 
+	                        htmlspecialchars($commaDelimitedBuilds) . "</td><td>".
+	                        htmlspecialchars($keyword) . "</td><td>" . htmlspecialchars($owner) . 
+	                        "</td><td>".htmlspecialchars($lastStatus)."</td></tr></table>";
 
-	$sql = "select component.id,component.name, component.projid, component.mgtcompid from component where projid='" . $projectId . "'";
+	$sql = " SELECT component.id,component.name, component.projid, component.mgtcompid from component "
+	       " WHERE projid='" . $testPlanID . "'";
 	$result = do_mysql_query($sql);
 
 	$aggregateComponentDataToPrint = null;
 	while($myrow = mysql_fetch_row($result))
 	{
-		$componentData = createResultsForComponent($myrow[0], $owner, $keyword, $buildsArray, $lastStatus,$myrow,$arrBuilds);
+		$componentData = createResultsForComponent($myrow[0], $owner, $keyword, 
+		                                           $buildsArray, $lastStatus,$myrow,$arrBuilds);
 		
 		$componentSummary = $componentData[0];
 		$totalCasesForTestPlan += $componentSummary[0];
@@ -153,6 +162,9 @@ function createResultsForComponent($componentId, $owner, $keyword, $buildsArray,
 	}
 	return array($summaryOfComponentArray, $componentDataToPrint, $testCasesReturnedByQuery);
 }
+
+
+
 
 function createResultsForCategory($categoryId, $keyword, $buildsArray, $lastResultToQueryFor,$myrow,$arrBuilds)
 {
@@ -425,8 +437,10 @@ function createTableOfTestCaseResults($arrayOfResults,$arrBuilds){
 
 function retrieveArrayOfResults($tcid, $builds)
 {
-	$commaDelimitedBuilds = implode(",",$builds);
-	$sql = "select results.build, results.runby, results.daterun, results.status, results.bugs, results.tcid, results.notes from results where (tcid='" . $tcid . " ') AND (build IN (" . $commaDelimitedBuilds . ")) order by build DESC;";
+	$build_list = implode(",",$builds);
+	$sql = " SELECT results.build, results.runby, results.daterun, results.status, results.bugs, "
+	       " results.tcid, results.notes FROM results WHERE (tcid='" . $tcid . 
+	       " ') AND (build IN (" . $build_list . ")) order by build DESC;";
 	
 	$result = do_mysql_query($sql);
 	$arrayOfResultArrays; // multidimensional array - array of all result sets

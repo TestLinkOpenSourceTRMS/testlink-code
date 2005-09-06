@@ -1,6 +1,6 @@
 <?
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: info.inc.php,v 1.2 2005/08/16 18:00:55 franciscom Exp $
+* $Id: info.inc.php,v 1.3 2005/09/06 06:44:07 franciscom Exp $
 * 
 * @author Martin Havlat
 *
@@ -29,22 +29,26 @@ function displayInfo($title, $message)
 /**
 * Display simple info and exit
 *
+* @param string $from
 * @param string $to
 * @param string $title
 * @param string $message
 * @param string $cc (optional) yes = send a copy myself
 *
 * @return string Ok message.
+*
+* 20050906 - fm - added from
 */
-function sendMail($to, $title, $message, $cc = 'no')
+function sendMail($from,$to, $title, $message, $cc = 'no')
 {
 	// Create headers 
 	$headers  = "MIME-Version: 1.0\r\n";
 	$headers .= "Content-type: text/plain; charset=utf-8\r\n"; // Content-type: text/html
-	$headers .= "From: " . $_SESSION['email'] . "\r\n";
+	$headers .= "From: " . $from . "\r\n";
 	if ($cc == 'yes')
-		$headers = "Cc: " . $_SESSION['email'] . "\r\n";
-	
+	{
+		$headers = "Cc: " . $from . "\r\n";
+	}
 	$sendResult = mail($to, $title, $message, $headers);
 	if ($sendResult)
 		return lang_get('email_sent_message');

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: keywordsEdit.php,v $
  *
- * @version $Revision: 1.2 $
- * @modified $Date: 2005/08/16 18:00:55 $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2005/09/06 06:45:02 $
  *
  * @author	Martin Havlat
  * 
@@ -18,6 +18,9 @@ require_once("keywords.inc.php");
 require_once("../../lib/functions/lang_api.php");
 testlinkInitPage();
 
+// 20050905 - fm
+$prodID = isset($_SESSION['productID']) ? $_SESSION['productID'] : 0;
+
 $updated = null;
 $arrUpdate = null;
 if (isset($_POST['editKey']))
@@ -29,6 +32,6 @@ if (isset($_POST['editKey']))
 $smarty = new TLSmarty();
 $smarty->assign('updated', $updated);
 $smarty->assign('arrUpdate', $arrUpdate);
-$smarty->assign('arrKeywords', selectKeywords());
+$smarty->assign('arrKeywords', selectKeywords($prodID));
 $smarty->display('keywordsEdit.tpl');
 ?>

@@ -1,7 +1,7 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: planUpdateTC.php,v 1.3 2005/08/22 07:00:51 franciscom Exp $
+ * @version $Id: planUpdateTC.php,v 1.4 2005/09/06 06:45:23 franciscom Exp $
  * @author Martin Havlat
  * 
  * Update Test Cases within Test Case Suite 
@@ -252,8 +252,7 @@ $sql = " SELECT tc.id as tcid,  catid, compid,  tc.title , " .
        " and cat.id = tc.catid " .
        " and comp.id = cat.compid ";
 
-//echo "The sql=>" . $sql;
-       
+      
 $result = do_mysql_query($sql);
 $row = mysql_fetch_array($result);
           
@@ -340,7 +339,6 @@ if (mysql_num_rows($result) == 0)
   }
   else
   {
-    // echo "Only MGT Cat has to be added to Test Plan<br>";      
     // get mgtcategory data
     // 
     $sql = " SELECT mgtcat.id as mgtcat_id, mgtcat.name mgtcat_name, " .
@@ -353,8 +351,6 @@ if (mysql_num_rows($result) == 0)
     $result = do_mysql_query($sql);
     $mgtcatRow = mysql_fetch_assoc($result);
 
-    // echo "<pre> \$mgtcatRow<br>"; print_r($mgtcatRow); echo "-------------</pre>";     
-      
     // excerpt from planAddTC.php
 		$sqlAddCAT = "insert into category(name,mgtcatid,compid,CATorder) " .
 		             "values ('" . mysql_escape_string($mgtcatRow['mgtcat_name']) . "','" . 

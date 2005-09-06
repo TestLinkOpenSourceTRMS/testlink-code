@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: archive.inc.php,v $
  *
- * @version $Revision: 1.9 $
- * @modified $Date: 2005/08/30 09:17:26 $ by $Author: havlat $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2005/09/06 06:42:43 $ by $Author: franciscom $
  *
  * @author Martin Havlat
  * Purpose:  functions for test specification management have three parts:
@@ -252,11 +252,12 @@ function copyTc($newCat, $id, $user)
 	return ($msg_status);
 }
 
-function copyCategoryToComponent($newParent, $id, $nested)
+// 20050905 - fm
+function copyCategoryToComponent($newParent, $id, $nested, $login_name)
 {
 	//Select the category info so that we can copy it
-	$sqlCopyCat = "select name,objective,config,data,tools,compid,CATorder,id " .
-			"from mgtcategory where id='" . $id . "'";
+	$sqlCopyCat = " SELECT name,objective,config,data,tools,compid,CATorder,id " .
+			          " FROM mgtcategory WHERE id=" . $id;
 	$resultCopyCat = do_mysql_query($sqlCopyCat);
 	$myrowCopyCat = mysql_fetch_row($resultCopyCat);
 
@@ -284,7 +285,7 @@ function copyCategoryToComponent($newParent, $id, $nested)
 		while($myrowMoveCopy = mysql_fetch_row($resultMoveCopy)) {
 			
 			// 20050821 - fm - interface changes
-			copyTc($catID, $myrowMoveCopy[0], $_SESSION['user']);
+			copyTc($catID, $myrowMoveCopy[0], $login_name);
 		}
 	}
 
@@ -311,10 +312,12 @@ function moveComponentToProduct($newParent, $id)
 	return $result ? 'ok' : mysql_error();
 }
 
-function copyComponentToProduct($newParent, $id, $nested)
+// 20050905 - fm
+function copyComponentToProduct($newParent, $id, $nested, $login_name)
 {
 	$component = getComponent($id);
-	$comID = insertProductComponent($newParent,$component[1],$component[2],$component[3],$component[4],$component[5],$component[6]);
+	$comID = insertProductComponent($newParent,$component[1],$component[2],$component[3],
+	                                $component[4],$component[5],$component[6]);
 	// copy also categories
 	if ($nested == 'yes')
 	{
@@ -322,7 +325,7 @@ function copyComponentToProduct($newParent, $id, $nested)
 		$catIDs = null;
 		getComponentCategoryIDs($id,$catIDs);
 		for($i = 0;$i < sizeof($catIDs);$i++)
-			copyCategoryToComponent($comID, $catIDs[$i], $nested);
+			copyCategoryToComponent($comID, $catIDs[$i], $nested, $login_name);
 	}
 	return $comID ? 'ok' : mysql_error();
 }

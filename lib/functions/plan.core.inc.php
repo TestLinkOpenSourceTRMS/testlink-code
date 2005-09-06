@@ -3,8 +3,8 @@
  * TestLink Open Source Project - @link http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: plan.core.inc.php,v $
- * @version $Revision: 1.4 $
- * @modified $Date: 2005/09/05 07:14:27 $ $Author: franciscom $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2005/09/06 06:44:07 $ $Author: franciscom $
  *  
  * 
  * @author 	Martin Havlat
@@ -246,13 +246,6 @@ function check_tp_father($prodID,$tpID)
 	       
 	$rs = selectData($sql);
 	
-	/*
-	echo "<pre> check_tp";
-	echo $sql;
-	print_r($rs);
-	echo "</pre>";
-	exit;
-	*/
 	if( sizeof($rs) == 1)
   {
   	$ret = 1;

@@ -3,14 +3,14 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: reqSpecList.php,v $
- * @version $Revision: 1.6 $
- * @modified $Date: 2005/08/29 12:16:38 $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2005/09/06 06:46:13 $
  * 
  * @author Martin Havlat
  * 
  * Screen to view existing and create a new req. specification.
  * 
- * @author Francisco Mancardi - fm - fckeditor
+ * @author Francisco Mancardi - 20050906 - reduce global coupling, fckeditor
  */
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -25,9 +25,12 @@ $action = null;
 $template = 'reqSpecList.tpl';
 
 $title = null;
-
-// 20050826 - fm
 $scope = null;
+
+// 20050906 - fm
+$prodID = isset($_SESSION['productID']) ? $_SESSION['productID'] : 0;
+$userID = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
+
 
 // create a new spec.
 if(isset($_POST['createSRS']))
@@ -36,7 +39,7 @@ if(isset($_POST['createSRS']))
 	$scope = isset($_POST['scope']) ? strings_stripSlashes($_POST['scope']) : null;
 	$countReq = isset($_POST['countReq']) ? strings_stripSlashes($_POST['countReq']) : null;
 	
-	$sqlResult = createReqSpec($title,$scope,$countReq);
+	$sqlResult = createReqSpec($title,$scope,$countReq, $prodID, $userID);
 	$action = 'create';
 } 
 elseif(isset($_GET['deleteSRS']))

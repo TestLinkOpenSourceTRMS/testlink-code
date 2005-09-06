@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqSpecView.php,v $
- * @version $Revision: 1.6 $
- * @modified $Date: 2005/08/30 15:19:33 $ by $Author: havlat $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2005/09/06 06:46:13 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Screen to view existing requirements within a req. specification.
@@ -42,6 +42,15 @@ $scope = isset($_POST['scope']) ? strings_stripSlashes($_POST['scope']) : null;
 $reqStatus = isset($_POST['reqStatus']) ? strings_stripSlashes($_POST['reqStatus']) : null;
 $reqType = isset($_POST['reqType']) ? strings_stripSlashes($_POST['reqType']) : null;
 $countReq = isset($_POST['countReq']) ? strings_stripSlashes($_POST['countReq']) : null;
+
+
+// 20050906 - fm
+$prodID = isset($_SESSION['productID']) ? $_SESSION['productID'] : 0;
+$userID = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
+$login_name = isset($_SESSION['user']) ? strings_stripSlashes($_SESSION['user']) : null;
+
+
+
 
 $arrCov = null;
 
@@ -110,7 +119,8 @@ elseif (isset($_POST['editSRS']))
 // update spec.
 elseif (isset($_POST['updateSRS']))
 {
-	$sqlResult = updateReqSpec($idSRS,$title,$scope,$countReq);
+	// 20050906 - fm
+	$sqlResult = updateReqSpec($idSRS,$title,$scope,$countReq,$userID);
 	$action = 'update';
 }
 
@@ -136,7 +146,8 @@ elseif (isset($_POST['multiAction']))
 		} 
 		elseif ($_POST['multiAction'] == lang_get('req_select_create_tc')) 
 		{
-			$sqlResult = createTcFromRequirement($arrIdReq);
+			// 20050906 - fm
+			$sqlResult = createTcFromRequirement($arrIdReq, $prodID, $login_name);
 			$action = 'create';
 			$sqlItem = 'test case(s)';
 		}

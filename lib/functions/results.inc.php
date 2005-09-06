@@ -2,13 +2,15 @@
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: results.inc.php,v $
- * @version $Revision: 1.4 $
- * @modified $Date: 2005/09/02 09:54:03 $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2005/09/06 06:44:07 $
  * 
  * @author 	Martin Havlat 
  * @author 	Chad Rosen (original report definition)
  *
  * Functions for Test Reporting and Metrics
+ *
+ * @author 20050905 - fm - refactoring - remove global coupling
  *
  * @author 20050807 - fm
  * refactoring:  
@@ -40,15 +42,17 @@ function sendXlsHeader()
 * @param string Test Id
 * @param string Build Number
 * @return string Status  
+*
+* @author Francisco Mancardi - 20050905 - refactoring fetch_assoc
 */
 function getStatus($tcId, $build)
 {
-	$sqlStatus = "select status from results where results.tcid='" . 
-			$tcId . "' and results.build='" . $build  . "'";
+	$sqlStatus = "SELECT status FROM results WHERE results.tcid=" . $tcId . 
+	             " AND results.build='" . $build  . "'";
 	$resultStatus = do_mysql_query($sqlStatus);
-	$myrowStatus = mysql_fetch_row($resultStatus);
+	$myrowStatus = mysql_fetch_assoc($resultStatus);
 
-	return $myrowStatus[0];
+	return $myrowStatus['status'];
 }
 
 
@@ -84,8 +88,8 @@ function getStatusName($status)
 */
 function getPlanTCNumber($idPlan)
 {
-	$sql = "select count(testcase.id) from project,component,category,testcase where " .
-			"project.id =" . $idPlan . " and project.id = component.projid " .
+	$sql = "SELECT count(testcase.id) FROM  project,component,category,testcase WHERE " .
+			"project.id =" . $idPlan . " AND project.id = component.projid " .
 			"and component.id = category.compid and category.id = testcase.catid";
 	$sumResult = do_mysql_query($sql);
 	$sumTCs = mysql_fetch_row($sumResult); 
@@ -104,7 +108,8 @@ function getTCLink($rights, $result, $id, $title, $build)
 
 	// a hyper link to the execution pages
 	if ($rights)
-		$testTitle = '<a href="lib/execute/execSetResults.php?keyword=All&level=testcase&owner=All&build='. $build . '&id=' . $suffix;
+		$testTitle = '<a href="lib/execute/execSetResults.php?keyword=All&level=testcase&owner=All&build='. 
+		             $build . '&id=' . $suffix;
 	else // link to test specification
 		$testTitle = '<a href="lib/testcases/archiveData.php?edit=testcase&data=' . $suffix;
 		
@@ -115,7 +120,7 @@ function getTCLink($rights, $result, $id, $title, $build)
 /**
 * Function collect build results 
 *
-* @param string $idPlan Test Plan ID; e.g. $_SESSION['project'] 
+* @param string $idPlan Test Plan ID; 
 * @param string $build Build number
 * @return array $totalPassed, $totalFailed, $totalBlocked
 */
@@ -188,34 +193,33 @@ function getTestSuiteReport($idPlan, $build = 'all')
 		// $idPlan
 		//
 		$sql = "SELECT COUNT(testcase.id) FROM component,category,testcase " .
-				"WHERE component.projid = " . $idPlan . 
-				" AND component.id=" . $myrow[1] . 
-				" AND component.id = category.compid AND category.id = testcase.catid";
+				   "WHERE component.projid = " . $idPlan . 
+				   " AND component.id=" . $myrow[1] . 
+				   " AND component.id = category.compid AND category.id = testcase.catid";
+				
 		// 20050901 - MHT - used generalication
 		$totalTCs = do_mysql_selectOne($sql);
 
+    // ------------------------------------------------------------------------------
 		//Code to grab the results of the test case execution
-		if ($build == 'all') {
-			
-			// 20050807 - fm
-			// $idPlan
-			// 20050901 - MHT - removed unnecesary table project
-			$sql = "select tcid,status from results,component,category,testcase " .
-				"where component.projid = '" . $idPlan . 
-				"' and component.id='" . $myrow[1] . 
-				"' AND component.id = category.compid and category.id = testcase.catid and " .
-				"testcase.id = results.tcid order by build";
-		} else {
-			// 20050807 - fm
-			// $idPlan
-			// 20050901 - MHT - removed unnecesary table project
-			$sql = "select tcid,status from results, component, category, testcase " .
-				"where component.projid = '" . $idPlan . 
-				"' and results.build='" . $build . 
-				"' and component.id='" . $myrow[1] . 
-				"' and component.id = category.compid and category.id = testcase.catid" .
-				" and testcase.id = results.tcid";
-		}
+    // 20050905 - fm 
+  	$sql = " SELECT tcid,status FROM  results,component,category,testcase " .
+  		     " WHERE component.projid = " . $idPlan . 
+  		     " AND component.id=" . $myrow[1] . 
+  		     " AND component.id = category.compid " .
+  		     " AND category.id = testcase.catid " .
+  		     " AND testcase.id = results.tcid " .
+  	
+  	if ($build == 'all') 
+  	{
+  	    $sql .= " ORDER BY build";
+  	} 
+  	else 
+  	{
+  			$sql .= " AND results.build='" . $build .	"' ";
+  	}
+  	// ------------------------------------------------------------------------------
+  	
 		$totalResult = do_mysql_query($sql);
 
 		//Setting the results to an array.. Only taking the most recent results and displaying them
@@ -230,7 +234,7 @@ function getTestSuiteReport($idPlan, $build = 'all')
 		}
 
 		//This is the code that determines the pass,fail,blocked amounts
-		$arrayCounter = 0; //Counter
+		$arrayCounter = 0; 
 
 		//Initializing variables
 		$pass = 0;
@@ -273,19 +277,20 @@ function getTestSuiteReport($idPlan, $build = 'all')
 /**
 * Function generates stats based on Keywords
 *
+* @param numeric tpID (Test Plan ID)
 * @param string build ID (optional)
 * @return array $keyword, $totalTCs, $pass, $fail, $blocked,
 *				$notRunTCs, $percentComplete
 */
 
-function getKeywordsReport($build = 'all')
+function getKeywordsReport($tpID, $build = 'all')
 {
 	global $g_tc_status;
   
 	$arrOutput = array();
 	// MHT 200507 improved SQL
 	$sqlKeyword = "SELECT DISTINCT(keywords) FROM component, category, testcase WHERE" .
-			" component.projid = " .  $_SESSION['testPlanId'] . " AND component.id = category.compid" .
+			" component.projid = " .  $tpID . " AND component.id = category.compid" .
 			" AND category.id = testcase.catid ORDER BY keywords";
 	$resultKeyword = do_mysql_query($sqlKeyword);
 
@@ -300,8 +305,9 @@ function getKeywordsReport($build = 'all')
 
 	//I need to make sure there are elements in the result 2 array. I was getting an error when I didn't check
 	if(count($keyArray))
+	{
 		$keyArray = array_unique ($keyArray);
-
+  }
 	
 	foreach($keyArray as $key=>$word)
 	{
@@ -312,25 +318,25 @@ function getKeywordsReport($build = 'all')
 			//Code to grab the entire amount of test cases per project
 			$keyWord = $word;
 			$word = mysql_escape_string($word);
-			$sql = "select count(testcase.id) from project,component,category,testcase where project.id = '" . $_SESSION['testPlanId'] . "' and project.id = component.projid and component.id = category.compid and category.id = testcase.catid AND (testcase.keywords LIKE '%,{$word},%' OR testcase.keywords LIKE '{$word},%')";
+			$sql = " SELECT count(testcase.id) FROM  project,component,category,testcase "
+			       " WHERE project.id = " . $tpID . " AND project.id = component.projid " .
+			       " AND component.id = category.compid AND category.id = testcase.catid AND " .
+			       " (testcase.keywords LIKE '%,{$word},%' OR testcase.keywords LIKE '{$word},%')";
 			$totalTCResult = do_mysql_query($sql);
 			$totalTCs = mysql_fetch_row($totalTCResult);
 
 			//Code to grab the results of the test case execution
 			if ($build == 'all') {
-				$sql = "select tcid,status from results,project,component,category,testcase" .
-					" where project.id = '" . $_SESSION['testPlanId'] . 
-					"' and project.id = component.projid" .
-					" and component.id = category.compid" .
-					" and category.id = testcase.catid and testcase.id = results.tcid" .
+				$sql = "SELECT tcid,status FROM  results,project,component,category,testcase" .
+					" WHERE project.id = " . $tpID . " AND project.id = component.projid" .
+					" AND component.id = category.compid" .
+					" AND category.id = testcase.catid and testcase.id = results.tcid" .
 					" AND (keywords LIKE '%,{$word},%' OR keywords LIKE '{$word},%') order by build";
 			} else {
-				$sql = "select tcid,status from results,project,component,category,testcase" .
-					" where project.id = '" . $_SESSION['testPlanId'] . 
-					"' and results.build = '" . $build . 
-					"' and project.id = component.projid" .
-					" and component.id = category.compid" .
-					" and category.id = testcase.catid and testcase.id = results.tcid" .
+				$sql = "SELECT tcid,status FROM  results,project,component,category,testcase" .
+					" WHERE project.id = " . $tpID . " AND results.build = '" . $build . "' AND project.id = component.projid" .
+					" AND component.id = category.compid" .
+					" AND category.id = testcase.catid AND testcase.id = results.tcid" .
 					" AND (keywords LIKE '%,{$word},%' OR keywords LIKE '{$word},%')";
 			}
 			$totalResult = do_mysql_query($sql);
@@ -338,7 +344,10 @@ function getKeywordsReport($build = 'all')
 			//Setting the results to an array.. Only taking the most recent results and displaying them
 			while($totalRow = mysql_fetch_row($totalResult)){
 
-				//This is a test.. I've got a problem if the user goes and sets a previous p,f,b value to a 'n' value. The program then sees the most recent value as an not run. I think we want the user to then see the most recent p,f,b value
+				//This is a test.. I've got a problem if the user goes and sets a 
+				//previous p,f,b value to a 'n' value. 
+				//The program then sees the most recent value as an not run. 
+				//I think we want the user to then see the most recent p,f,b value
 				if($totalRow[1] != $g_tc_status['not_run']){
 					$testCaseArray[$totalRow[0]] = $totalRow[1];
 				}
@@ -347,13 +356,14 @@ function getKeywordsReport($build = 'all')
 			//This is the code that determines the pass,fail,blocked amounts
 
 			//Initializing variables
-			$arrayCounter = 0; //Counter
+			$arrayCounter = 0; 
 			$pass = 0;
 			$fail = 0;
 			$blocked = 0;
 			$notRun = 0;
 
-			//I had to write this code so that the loop before would work.. I'm sure there is a better way to do it but hell if I know how to figure it out..
+			//I had to write this code so that the loop before would work.. 
+			//I'm sure there is a better way to do it but hell if I know how to figure it out..
 			if(count($testCaseArray) > 0){
 				foreach($testCaseArray as $tc){
 					if($tc == $g_tc_status['passed']){
@@ -391,33 +401,40 @@ function getKeywordsReport($build = 'all')
 * @return array $owner, $totalTCs, $pass, $fail, $blocked,
 *				$notRunTCs, $percentComplete
 */
-function getOwnerReport()
+function getOwnerReport($tpID)
 {
 	global $g_tc_status;
 
 	$testCaseArray = null;
 	$arrOutput = array();
-	$sql = "select category.owner, category.id from project,component, category where project.id = '" . $_SESSION['testPlanId'] . "' and project.id = component.projid and component.id = category.compid group by owner";
+	$sql = " SELECT category.owner, category.id FROM  project,component, category " .
+	       " WHERE project.id = " . $tpID . " and project.id = component.projid " .
+	       " AND component.id = category.compid group by owner";
 	$result = do_mysql_query($sql);
 
 	while ($myrow = mysql_fetch_row($result)) {
 		//Code to grab the entire amount of test cases per project
-		$sql = "select count(testcase.id) from project,component,category,testcase where project.id = '" . $_SESSION['testPlanId'] . "' and project.id = component.projid and category.owner ='" . $myrow[0] . "' and component.id = category.compid and category.id = testcase.catid";
+		$sql = " SELECT count(testcase.id) FROM  project,component,category,testcase " .
+		       " WHERE project.id =" . $tpID . " AND project.id = component.projid " .
+		       " AND category.owner ='" . $myrow[0] . "' and component.id = category.compid " .
+		       " AND category.id = testcase.catid";
 		$totalTCResult = do_mysql_query($sql);
 		$totalTCs = mysql_fetch_row($totalTCResult);
 
 		//Code to grab the results of the test case execution
-		$sql = "select tcid,status from results,project,component,category,testcase " .
-				"where project.id = '" . $_SESSION['testPlanId'] . 
-				"' and category.owner='" . $myrow[0] . 
-				"' and project.id = component.projid and component.id = category.compid" .
-				" and category.id = testcase.catid and testcase.id = results.tcid" .
-				" order by build";
+		$sql = " SELECT tcid,status FROM  results,project,component,category,testcase " .
+				   " where project.id = " . $tpID . " and category.owner='" . $myrow[0] . 
+				   "' and project.id = component.projid and component.id = category.compid" .
+				   " and category.id = testcase.catid and testcase.id = results.tcid" .
+				   " order by build";
 		$totalResult = do_mysql_query($sql);
 
 		//Setting the results to an array.. Only taking the most recent results and displaying them
 		while($totalRow = mysql_fetch_row($totalResult)){
-			//This is a test.. I've got a problem if the user goes and sets a previous p,f,b value to a 'n' value. The program then sees the most recent value as an not run. I think we want the user to then see the most recent p,f,b value
+			//This is a test.. 
+			// I've got a problem if the user goes and sets a previous p,f,b value to a 'n' value.
+			// The program then sees the most recent value as an not run.
+			// I think we want the user to then see the most recent p,f,b value
 			if($totalRow[1] != $g_tc_status['not_run']){
 				$testCaseArray[$totalRow[0]] = $totalRow[1];
 			}
@@ -432,7 +449,8 @@ function getOwnerReport()
 		$blocked = 0;
 		$notRun = 0;
 
-		//I had to write this code so that the loop before would work.. I'm sure there is a better way to do it but hell if I know how to figure it out..
+		//I had to write this code so that the loop before would work.. 
+		//I'm sure there is a better way to do it but hell if I know how to figure it out..
 
 		if(count($testCaseArray) > 0){
 			//This loop will cycle through the arrays and count the amount of p,f,b,n
@@ -469,11 +487,15 @@ function getOwnerReport()
 /**
 * Function generates Metrics based on priority
 *
+* @param int tpID (test plan ID)
 * @param string build ID (optional)
 * @return array 
+*
+* @author Francisco Mancardi - fm - reduce global coupling
+*
 */
 // MHT 200507 GENERAL REFACTORIZATION (use array through the function); SQL improve
-function getPriorityReport($build = 'all')
+function getPriorityReport($tpID, $build = 'all')
 {
 	global $g_tc_status;
   
@@ -491,10 +513,10 @@ function getPriorityReport($build = 'all')
 	);
 	
 	//Begin code to display the component
-	$sql = "SELECT category.risk, category.id, category.importance " .
-			"FROM project,component, category WHERE project.id = '" . 
-			$_SESSION['testPlanId'] . "' AND project.id = component.projid " .
-			"AND component.id = category.compid";
+	$sql = " SELECT category.risk, category.id, category.importance " .
+			   " FROM project,component, category WHERE project.id = " .  $tpID . 
+			   " AND project.id = component.projid " .
+			   " AND component.id = category.compid";
 	$result = do_mysql_query($sql);
 	
 	while ($myrow = mysql_fetch_row($result)) {
@@ -506,7 +528,7 @@ function getPriorityReport($build = 'all')
 		
 		//Code to grab the entire amount of test cases per project
 		$sql = "SELECT count(testcase.id) FROM component,category,testcase WHERE " .
-				"component.projid = " . $_SESSION['testPlanId'] . " AND category.id=" . 
+				"component.projid = " . $tpID . " AND category.id=" . 
 				$myrow[1] .	" AND component.id = category.compid AND category.id = testcase.catid";
 		$totalTCResult = do_mysql_query($sql);
 		$totalTCs = mysql_fetch_row($totalTCResult);
@@ -514,13 +536,13 @@ function getPriorityReport($build = 'all')
 		//Code to grab the results of the test case execution
 		if ($build == 'all'){
 			$sql = "SELECT tcid,status FROM results,component,category,testcase" .
-				" WHERE component.projid = " . $_SESSION['testPlanId'] . 
+				" WHERE component.projid = " . $tpID . 
 				" AND category.id=" . $myrow[1] .
 				" AND component.id = category.compid AND category.id = testcase.catid" .
 				" AND testcase.id = results.tcid ORDER BY build";
 		} else {
 			$sql = "SELECT tcid,status FROM results,project,component,category,testcase" .
-				" WHERE component.projid = " . $_SESSION['testPlanId'] .
+				" WHERE component.projid = " . $tpID .
 				" AND results.build='" . $build . "' AND category.id=" . $myrow[1] . 
 				" AND component.id = category.compid AND category.id = testcase.catid" .
 				" AND testcase.id = results.tcid";
@@ -586,9 +608,9 @@ function getPriorityReport($build = 'all')
 	}
 
 	//This next section gets the milestones information
-	$sql = "select name,date,A,B,C from milestone where projid='" . 
-			$_SESSION['testPlanId'] . "' and to_days(date) >= to_days(now()) " .
-			"order by date limit 1";
+	$sql = " SELECT name,date,A,B,C FROM milestone " .
+	       " WHERE projid=" . $tpID . " AND to_days(date) >= to_days(now()) " .
+			   " order by date limit 1";
 	$result = do_mysql_query($sql); //Run the query
 	$numRows = mysql_num_rows($result); //How many rows
 	
@@ -637,9 +659,9 @@ function getPriorityReport($build = 'all')
 * @return array 
 */
 // MHT 200507 refactorization, improved sql query
-function getPriorityDefine()
+function getPriorityDefine($tpID)
 {
-	$sql = "SELECT  riskImp,priority FROM priority WHERE priority.projid = " . $_SESSION['testPlanId'];
+	$sql = "SELECT  riskImp,priority FROM priority WHERE priority.projid = " . $tpID];
 	return selectOptionData($sql);
 }
 
@@ -655,47 +677,52 @@ function getPriority($priorityStatus, $dependencies)
 * @param string build ID 
 * @return array 
 */
-function getBuildMetricsCategory($build)
+function getBuildMetricsCategory($tpID, $build)
 {
 	global $g_tc_status;
 	
 	$arrOutput = array();
 	// grabs the defined priority 
-	$dependencies = getPriorityDefine();
+	$dependencies = getPriorityDefine($tpIDs);
 
 	//get Component
-	$sql = "select component.name, component.id from project,component" .
-			" where project.id = '" . $_SESSION['testPlanId'] . 
-			"' and project.id = component.projid";
+	$sql = "SELECT component.name, component.id FROM project,component" .
+			   " WHERE project.id = " . $tpID . " AND project.id = component.projid";
 	$result = do_mysql_query($sql);
 
 	while ($myrow = mysql_fetch_row($result)) {
 
 		//Proceed each of the categories for the components
-		$categoryQuery = "select category.name, category.id, risk, importance from project,component,category where project.id = '" . $_SESSION['testPlanId'] . "' and project.id = component.projid and component.id = category.compid and component.id =" . $myrow[1];
+		$categoryQuery = " SELECT category.name, category.id, risk, importance "
+		                 " FROM project,component,category where project.id = " . $tpID . 
+		                 " AND project.id = component.projid AND component.id = category.compid " .
+		                 " AND component.id =" . $myrow[1];
 		$categoryResult = do_mysql_query($categoryQuery);
 	
 		while ($categoryRow = mysql_fetch_row($categoryResult)) {
 			
-			$catAllSql = "select count(testcase.id) from project,component,category,testcase where project.id = '" . $_SESSION['testPlanId'] . "' and project.id = component.projid and component.id = category.compid and category.id = testcase.catid and component.id ='" . $myrow[1] . "' and category.id='" . $categoryRow[1] . "'";
+			$catAllSql = " SELECT count(testcase.id) FROM project,component,category,testcase " .
+			             " WHERE project.id = " . $tpID . " AND project.id = component.projid " .
+			             " AND component.id = category.compid AND category.id = testcase.catid " .
+			             " AND component.id ='" . $myrow[1] . "' and category.id='" . $categoryRow[1] . "'";
 			$catTotalResult = do_mysql_query($catAllSql);
 			$totalRow = mysql_fetch_row($catTotalResult);
 			
 			// 20050425 - fm
 			$base_sql = "SELECT count(testcase.id) " .
 		            "FROM project,component,category,testcase,results " .
-			          "WHERE project.id = '" . $_SESSION['testPlanId'] . "' " .
+			          "WHERE project.id = " . $tpID .
 			          "AND project.id = component.projid " .
 			          "AND component.id = category.compid " .
 			          "AND category.id = testcase.catid " .
-			          "AND component.id ='" . $myrow[1] . "' " .
+			          "AND component.id =" . $myrow[1] .
 			          "AND testcase.id = results.tcid " .
 			          "AND results.build='" . $build . "' " .
-			          "AND category.id='" . $categoryRow[1] . "' ";
+			          "AND category.id=" . $categoryRow[1];
 			
 			
 			//Passed TCs per category
-			$sql = $base_sql . " and results.status='" . $g_tc_status['passed'] ."'";
+			$sql = $base_sql . " AND results.status='" . $g_tc_status['passed'] ."'";
 			$passedResult = do_mysql_query($sql);
 			$passedRow = mysql_fetch_row($passedResult);
 	
@@ -715,7 +742,8 @@ function getBuildMetricsCategory($build)
 			if($totalRow[0] == 0) { //if we try to divide by 0 we get an error
 				$percentComplete = 0;
 			} else {
-				$percentComplete = ($passedRow[0] + $failedRow[0] + $blockedRow[0]) / $totalRow[0]; //Getting total percent complete
+				//Getting total percent complete
+				$percentComplete = ($passedRow[0] + $failedRow[0] + $blockedRow[0]) / $totalRow[0]; 
 				$percentComplete = round((100 * ($percentComplete)),2); //Rounding the number so it looks pretty
 			}
 	
@@ -742,39 +770,38 @@ function getBuildMetricsCategory($build)
 * @param string build ID 
 * @return array 
 */
-function getBuildMetricsComponent($build)
+function getBuildMetricsComponent($tpID,$build)
 {
 	global $g_tc_status;
 
 	$arrOutput = array();
 
 	//get Component
-	$sql = "select component.name, component.id from project,component" .
-			" where project.id = '" . $_SESSION['testPlanId'] . 
-			"' and project.id = component.projid";
+	$sql = "SELECT component.name, component.id from project,component" .
+			" where project.id = " . $tpID . " AND project.id = component.projid";
 	$result = do_mysql_query($sql);
 
 	while ($myrow = mysql_fetch_row($result)) {
 		$componentName = $myrow[0];
 				
 		//How many TCs per component
-		$sql = "select count(testcase.id) from project,component,category,testcase" .
-				" where project.id = '" . $_SESSION['testPlanId'] . 
-				"' and project.id = component.projid and component.id = category.compid" .
-				" and category.id = testcase.catid and component.id ='" . $myrow[1] . "'";
+		$sql = " SELECT count(testcase.id) from project,component,category,testcase" .
+				   " WHERE project.id = " . $tpID . 
+				   " AND project.id = component.projid AND component.id = category.compid" .
+				   " AND category.id = testcase.catid AND component.id =" . $myrow[1];
 		$totalResult = do_mysql_query($sql);
 		$totalRow = mysql_fetch_row($totalResult);
 		
 		//Passed TCs per component
-		$base_sql = "select count(testcase.id) " .
-		       "from project,component,category,testcase,results " . 
-		       "where project.id = '" . $_SESSION['testPlanId'] . "' " .
-		       "and project.id = component.projid " .
-		       "and component.id = category.compid " .
-		       "and category.id = testcase.catid " .
-		       "and component.id ='" . $myrow[1] . "' " .
-		       "and testcase.id = results.tcid " .
-		       "and results.build='" . $build . "' " ;
+		$base_sql = " SELECT count(testcase.id) " .
+		            " FROM project,component,category,testcase,results " . 
+		            " WHERE project.id = " . $tpID  .
+		            " AND project.id = component.projid " .
+		            " AND component.id = category.compid " .
+		            " AND category.id = testcase.catid " .
+		            " AND component.id =" . $myrow[1] . 
+		            " AND testcase.id = results.tcid " .
+		            " AND results.build='" . $build . "' " ;
 		
 		$sql = $base_sql .  " and results.status='" . $g_tc_status['passed'] . "'";
 		$passedResult = do_mysql_query($sql);
@@ -795,7 +822,8 @@ function getBuildMetricsComponent($build)
 		if($totalRow[0] == 0) { //if we try to divide by 0 we get an error
 			$percentComplete = 0;
 		} else {
-			$percentComplete = ($passedRow[0] + $failedRow[0] + $blockedRow[0]) / $totalRow[0]; //Getting total percent complete
+			//Getting total percent complete
+			$percentComplete = ($passedRow[0] + $failedRow[0] + $blockedRow[0]) / $totalRow[0]; 
 			$percentComplete = round((100 * ($percentComplete)),2); //Rounding the number so it looks pretty
 		}
 
@@ -811,22 +839,23 @@ function getBuildMetricsComponent($build)
 
 
 /** @todo add build relation */
-function getBugsReport($build = 'all')
+function getBugsReport($tpID, $build = 'all')
 {
 	global $g_bugInterfaceOn;
 	global $g_bugInterface;
 	
 	$arrOutput = array();
 
-	$sql = "select title, component.name, category.name, testcase.id, mgttcid" .
-			" from project,component,category,testcase where project.id='" . 
-			$_SESSION['testPlanId'] . "' and project.id=component.projid" .
-			" and component.id=category.compid and category.id=testcase.catid" .
-			" order by testcase.id";
+	$sql = " SELECT title, component.name, category.name, testcase.id, mgttcid" .
+			   " FROM project,component,category,testcase WHERE project.id=" . $tpID . 
+			   " AND project.id=component.projid" .
+			   " AND component.id=category.compid and category.id=testcase.catid" .
+			   " ORDER BY testcase.id";
 	$result = do_mysql_query($sql);
+	
 	while ($myrow = mysql_fetch_row($result)) {
 		$bugString = null;
-		$sqlBugs = "select bug from bugs where tcid='" . $myrow[3] . "'";
+		$sqlBugs = "SELECT bug from bugs where tcid=" . $myrow['id'];
 		$resultBugs = do_mysql_query($sqlBugs);
 		while ($myrowBug = mysql_fetch_row($resultBugs))
 		{
@@ -873,19 +902,21 @@ function getPercentageCompleted($total, $run)
 * create Test Suite list (Component)
 *
 * @return array associated $id => $name
+*
+* @author Francisco Mancardi - fm - reduce global coupling
 */
-function listTPComponent()
+function listTPComponent($tpID)
 {
 	$suites = array();
 	//Gather all of the current projects components for the dropdown box
-	$sqlCom = "select component.id,component.name from component, project" .
-			" where component.projid='" . $_SESSION['testPlanId'] . 
-			"' and project.id='" . $_SESSION['testPlanId'] . "'";
+	$sqlCom = " SELECT component.id,component.name FROM component, project" .
+			      " WHERE component.projid=project.id " .  
+			      " AND project.id=" . $tpID;
 	$result = do_mysql_query($sqlCom);
 
-	//loop through all of the components and build the options for the select box			
-	while ($myrow = mysql_fetch_row($result)){
-		$suites[$myrow[0]] = $myrow[1];
+	//Build the options for the select box			
+	while ($myrow = mysql_fetch_assoc($result)){
+		$suites[$myrow['id']] = $myrow['name'];
 	}
 	return $suites;
 }
@@ -893,11 +924,14 @@ function listTPComponent()
 
 // ---- FUNCTIONS FOR MAIL -------------------------------------------------------------
 /**
-* this function takes all of the priority info and puts it in a variable.. 
+* Takes all of the priority info and puts it in a variable.. 
+*
+* @author Francisco Mancardi - 20050905 - add parameter
+*
 */
-function reportGeneralStatus()
+function reportGeneralStatus($tpID)
 {
-	$arrData = getPriorityReport();
+	$arrData = getPriorityReport($tpID);
 	// array('A', $totalA, $AStatus, $passA, $failA, $blockedA, $notRunTCsA, $percentCompleteA, $MA),
 	
 	$msgBody = null;
@@ -921,19 +955,21 @@ function reportGeneralStatus()
 }
 
 
-function reportBuildStatus($build,$buildName)
+function reportBuildStatus($tpID, $build,$buildName)
 {
 	global $g_tc_status;
 	
-	$sql = "select count(testcase.id) from project,component,category,testcase where project.id =" . 
-	       $_SESSION['testPlanId'] . " and project.id = component.projid and component.id = category.compid and category.id = testcase.catid";
+	$sql = " SELECT count(testcase.id) "
+	       " FROM project,component,category,testcase WHERE project.id =" . $$tpID . 
+	       " AND project.id = component.projid AND component.id = category.compid AND category.id = testcase.catid";
+	       
 	$sumResult = do_mysql_query($sql);
 	$sumTCs = mysql_fetch_row($sumResult); 
 	$total = $sumTCs[0];
 
 	$base_sql = "SELECT count(results.tcid) " .
               "FROM project,component,category,testcase,results " .
-              "WHERE project.id =" . $_SESSION['testPlanId'] . 
+              "WHERE project.id =" . $tpID . 
               " AND project.id = component.projid " .
               " AND component.id = category.compid " .
               " AND category.id = testcase.catid " .
@@ -978,12 +1014,15 @@ function reportBuildStatus($build,$buildName)
 	return $msgBody;
 }
 
-function reportSuiteBuildStatus($comID, $build,$buildName)
+function reportSuiteBuildStatus($tpID, $comID, $build,$buildName)
 {
 	global  $g_tc_status;  
 	
-	$sql = "select count(testcase.id) from project,component,category,testcase where project.id =" . 
-	       $_SESSION['testPlanId'] . " and project.id = component.projid and component.id = category.compid and category.id = testcase.catid and component.id=" . $comID;
+	$sql = " SELECT count(testcase.id) " .
+	       " FROM project,component,category,testcase WHERE project.id =" . $$tpID . 
+	       " AND project.id = component.projid AND component.id = category.compid AND "
+	       " category.id = testcase.catid and component.id=" . $comID;
+	       
 	$sumResult = do_mysql_query($sql);
 	$sumTCs = mysql_fetch_row($sumResult); 
 	$total = $sumTCs[0];
@@ -991,7 +1030,7 @@ function reportSuiteBuildStatus($comID, $build,$buildName)
 	//Get the total # of passed testcases for the project and build
 	$base_sql = "SELECT count(results.tcid) " .
 	            "FROM project,component,category,testcase,results " .
-	            "WHERE project.id =" . $_SESSION['testPlanId'] . 
+	            "WHERE project.id =" . $tpID . 
 	            " AND project.id = component.projid " .
 	            " AND component.id = category.compid " .
 	            " AND category.id = testcase.catid " .
@@ -1023,7 +1062,7 @@ function reportSuiteBuildStatus($comID, $build,$buildName)
 	$notRun = $total - $run;
 	$percentComplete = getPercentageCompleted($total, $run);
 
-	$sqlCOMName = "select component.name from component where id=" . $comID;
+	$sqlCOMName = "SELECT component.name from component where id=" . $comID;
 	$resultCOMName = do_mysql_query($sqlCOMName);
 	$COMName = mysql_fetch_row($resultCOMName);
 
@@ -1039,24 +1078,30 @@ function reportSuiteBuildStatus($comID, $build,$buildName)
 }
 
 
-function reportSuiteStatus($comID)
+function reportSuiteStatus($tpID, $comID)
 {
 	global $g_tc_status;
   
 	//Code to grab the entire amount of test cases per project
-	$sql = "select count(testcase.id) from project,component,category,testcase where project.id = '" . 
-	       $_SESSION['testPlanId'] . "' and component.id='" . $comID . "' and project.id = component.projid and component.id = category.compid and category.id = testcase.catid";
+	$sql = " SELECT count(testcase.id) " .
+	       " FROM project,component,category,testcase WHERE project.id = " . $tpID . 
+	       " AND component.id=" . $comID . " AND project.id = component.projid " .
+	       " AND component.id = category.compid AND category.id = testcase.catid";
+	       
 	$totalTCResult = do_mysql_query($sql);
 	$totalTCs = mysql_fetch_row($totalTCResult);
 
 	//Code to grab the results of the test case execution
-	$sql = "select tcid,status from results,project,component,category,testcase where project.id = '" . 
-	       $_SESSION['testPlanId'] . "' and component.id='" . $comID . "' and project.id = component.projid and component.id = category.compid and category.id = testcase.catid and testcase.id = results.tcid order by build";
+	$sql = " SELECT tcid,status FROM results,project,component,category,testcase "
+	       " WHERE project.id =" . $tpID . 
+	       " AND component.id=" . $comID . 
+	       " AND project.id = component.projid AND component.id = category.compid " .
+	       " AND category.id = testcase.catid AND testcase.id = results.tcid order by build";
+	       
 	$totalResult = do_mysql_query($sql);
 
 	//Setting the results to an array.. Only taking the most recent results and displaying them
 	while($totalRow = mysql_fetch_row($totalResult))	{
-		//This is a test.. I've got a problem if the user goes and sets a previous p,f,b value to a 'n' value. The program then sees the most recent value as an not run. I think we want the user to then see the most recent p,f,b value
 		if($totalRow[1] != $g_tc_status['not_run']){
 			$testCaseArray[$totalRow[0]] = $totalRow[1];
 		}
@@ -1070,8 +1115,6 @@ function reportSuiteStatus($comID)
 	$blocked = 0;
 	$notRun = 0;
 
-	//I had to write this code so that the loop before would work.. I'm sure there is a better way to do it but hell if I know how to figure it out..
-	
 	if(count($testCaseArray) > 0) {
 		foreach($testCaseArray as $tc) {
 			if($tc == $g_tc_status['passed']) {
@@ -1091,7 +1134,7 @@ function reportSuiteStatus($comID)
 	$percentComplete = getPercentageCompleted($totalTCs[0], $run);
 
 	//Grab the component's name
-	$sqlCOMName = "select component.name from component where id=" . $comID;
+	$sqlCOMName = "SELECT component.name from component where id=" . $comID;
 	$resultCOMName = do_mysql_query($sqlCOMName);
 	$COMName = mysql_fetch_row($resultCOMName);
 

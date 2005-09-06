@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: containerCat.inc.php,v 1.1 2005/08/29 06:40:57 franciscom Exp $ */
+/* $Id: containerCat.inc.php,v 1.2 2005/09/06 06:42:43 franciscom Exp $ */
 /* Purpose:  This page manages all the editing of test specification containers. */
 /*
  *
@@ -65,23 +65,23 @@ function viewer_edit_new_cat($amy_keys, $oFCK, $action, $componentID, $id=null)
 }
 
 
-//
-function copy_or_move_cat( $action, $catID, $hash)
+// 20050905 - fm
+function copy_or_move_cat( $action, $catID, $hash, $login_name)
 {
 	
 $update = null;
 $result = 0;	
-$dest_compID    = isset($_POST['containerID']) ? intval($_POST['containerID']) : 0;
-$old_compID = isset($_POST['old_containerID']) ? intval($_POST['old_containerID']): 0;
+$dest_compID    = isset($hash['containerID']) ? intval($hash['containerID']) : 0;
+$old_compID = isset($hash['old_containerID']) ? intval($hash['old_containerID']): 0;
 	
 	
 if ($action == 'categoryCopy')
 {	
   $update ='update';
-  $nested    = isset($_POST['nested']) ? $_POST['nested'] : "no";
+  $nested    = isset($hash['nested']) ? $hash['nested'] : "no";
   if ($dest_compID)
   {
-  		$result = copyCategoryToComponent($dest_compID, $catID, $nested);
+  		$result = copyCategoryToComponent($dest_compID, $catID, $nested, $login_name);
   }
 }
 else if( $action == 'categoryMove')

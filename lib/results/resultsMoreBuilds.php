@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsMoreBuilds.php,v 1.5 2005/09/03 08:15:28 franciscom Exp $ 
+* $Id: resultsMoreBuilds.php,v 1.6 2005/09/06 06:42:04 franciscom Exp $ 
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 * 
@@ -14,15 +14,22 @@
 require('../../config.inc.php');
 require_once('common.php');
 require_once('builds.inc.php');
+
 // allow us to retreive array of users 
 require_once('plan.core.inc.php');
 require_once('../keywords/keywords.inc.php');
 testlinkInitPage();
 
+// 20050905 - fm
+$prodID = isset($_SESSION['productID']) ? $_SESSION['productID'] : 0;
+
 $arrBuilds = getBuilds($_SESSION['testPlanId']); // get Builds
 $arrOwners = getProjectUsers();
-$arrKeywords = selectKeywords();
+$arrKeywords = selectKeywords($prodID);
+
+
 $smarty = new TLSmarty();
+
 $smarty->assign('testPlanName',$_SESSION['testPlanName']);
 
 // 20050903 - fm
@@ -37,7 +44,7 @@ if ($xls) {
   sendXlsHeader();
   $smarty->assign('printDate', date('"F j, Y, H:m"'));
   $smarty->assign('user', $_SESSION['user']);
- }
+}
 
 // this contains example of how this excel data gets used
 // $smarty->display('resultsTC.tpl');

@@ -1,12 +1,12 @@
 <?
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: priority.inc.php,v 1.2 2005/08/16 18:00:55 franciscom Exp $ */
+/* $Id: priority.inc.php,v 1.3 2005/09/06 06:44:07 franciscom Exp $ */
 /**
  * Functions for Priority management 
  * Precondition: require init db + session verification done (testlinkInitPage();) 
  *
  *
- *
+ * @author 20050905 - fm - reduce global cpupling
  *
  * @author 20050807 - fm
  * refactoring:  
@@ -21,12 +21,12 @@ require_once("../functions/common.php");
  * Collect information about rules for priority within actual Plan
  * @return array of array: id, priority, name of item 
  */
-function getPriority()
+function getPriority($tpID)
 {
 	$arrData = array();
 	
 	// 20050807 - fm
-	$sql = "select id, riskImp, priority from priority where projid='" . $_SESSION['testPlanId'] . "'";
+	$sql = "select id, riskImp, priority from priority where projid=" . $tpID;
 	$result = do_mysql_query($sql); //Run the query
 
 	while($row = mysql_fetch_array($result)){

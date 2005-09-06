@@ -1,10 +1,11 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: planPriority.php,v 1.2 2005/08/16 18:00:57 franciscom Exp $ */
+/* $Id: planPriority.php,v 1.3 2005/09/06 06:45:23 franciscom Exp $ */
 /**
  * This feature allows to define rules for priority dependecy 
  * to importance/risk for actual Test Plan
  *          
+ * @author Francisco Mancardi - 20050905 - reduce global coupling
  */
 ////////////////////////////////////////////////////////////////////////////////
 require('../../config.inc.php');
@@ -21,7 +22,8 @@ if(isset($_POST['updatePriorityRules'])){
 }
 
 // get actual values
-$data = getPriority();
+// 20050905 - fm
+$data = getPriority($_SESSION['testPlanId']);
 
 $smarty = new TLSmarty;
 $smarty->assign('optionPriority', array(

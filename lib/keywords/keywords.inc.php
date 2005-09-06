@@ -1,7 +1,7 @@
 <?
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* @version $Id: keywords.inc.php,v 1.3 2005/08/27 20:53:31 schlundus Exp $
+* @version $Id: keywords.inc.php,v 1.4 2005/09/06 06:45:02 franciscom Exp $
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author	Chad Rosen
@@ -15,32 +15,32 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 /** collect all keywords for the product and return as associative array */
-function selectKeywords ($selectedKey = '')
+function selectKeywords($prodID, $selectedKey = '')
 {
 	$arrKeywords = null;
-	$product = isset($_SESSION['productID']) ? $_SESSION['productID'] : 0;
-	if (!$product)
-		return $arrKeywords;
-
-	// grab keywords from db
-	//20050827 - scs - added sorting of keyword
-	$sql = "SELECT id,keyword,notes FROM keywords WHERE prodid = " . $product . " ORDER BY keyword ASC";
-	$result = do_mysql_query($sql);
 	
-	if ($result)
-	{
-		while ($myrow = mysql_fetch_row($result)) 
-		{
-			// add selected string for an appropriate row
-			$selData = '';
-			if (!is_null($selectedKey) && ($selectedKey == $myrow[1]))
-				$selData = 'selected="selected"';
-			$arrKeywords[] = array( 'id' => $myrow[0],
-									'keyword' => $myrow[1], 
-									'notes' => $myrow[2], 
-				   					'selected' => $selData,
-								   );
-		}
+	if ($prodID)
+	{	
+  	// grab keywords from db
+  	//20050827 - scs - added sorting of keyword
+  	$sql = "SELECT id,keyword,notes FROM keywords WHERE prodid = " . $prodID . " ORDER BY keyword ASC";
+  	$result = do_mysql_query($sql);
+  	
+  	if ($result)
+  	{
+  		while ($myrow = mysql_fetch_row($result)) 
+  		{
+  			// add selected string for an appropriate row
+  			$selData = '';
+  			if (!is_null($selectedKey) && ($selectedKey == $myrow[1]))
+  				$selData = 'selected="selected"';
+  			$arrKeywords[] = array( 'id' => $myrow[0],
+  									'keyword' => $myrow[1], 
+  									'notes' => $myrow[2], 
+  				   					'selected' => $selData,
+  								   );
+  		}
+  	}
 	}
 	return $arrKeywords;
 }

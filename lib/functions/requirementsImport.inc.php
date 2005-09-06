@@ -4,26 +4,32 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: requirementsImport.inc.php,v $
- * @version $Revision: 1.2 $
- * @modified $Date: 2005/08/30 15:17:25 $ by $Author: havlat $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2005/09/06 06:44:07 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Functions for Import requirements to a specification. 
- * 
+ *
+ * @author Francisco Mancardi - 20050905 - trim_title() refactoring 
  */
 
 require_once('requirements.inc.php');
 
 
 /** 
- * trim title to 100 chars
+ * trim title to N chars
  * @param string title
- * @return string title
+ * @param int [len]: how many chars return
+ *
+ * @return string trimmed title
+ *
+ * @author Francisco Mancardi - 20050905 - refactoring
+ *
  */
-function trim_title($title)
+function trim_title($title, $len=100)
 {
-	if (strlen($title) > 100 ) {
-		$title = substr($title, 0, 100);
+	if (strlen($title) > $len ) {
+		$title = substr($title, 0, $len);
 	}
 	return $title;
 }
@@ -59,7 +65,7 @@ function executeImportedReqs($arrImportSource, $arrReqTitles, $conflictSolution,
 		}
 		else
 		{
-			// max length is 100 chars
+			// 
 			$title = trim_title($data[0]);
 			$scope = nl2br($data[1]);
 			tLog('REQ: '.$title. "\n scope: ".$scope);

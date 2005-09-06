@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: keywordsAssign.php,v $
  *
- * @version $Revision: 1.2 $
- * @modified $Date: 2005/08/16 18:00:55 $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2005/09/06 06:45:02 $
  *
  * Purpose:  Assign keywords to set of testcases in tree structure
  *
@@ -19,9 +19,13 @@ require_once("../../lib/functions/lang_api.php");
 testlinkInitPage();
 
 $id = isset($_GET['data']) ? intval($_GET['data']) : null;
-$keysOfProduct = selectKeywords();
 $keyword = isset($_POST['keywords']) ? strings_stripSlashes($_POST['keywords']) : null;
 $edit = isset($_GET['edit']) ? strings_stripSlashes($_GET['edit']) : null;
+
+// 20050905 - fm
+$prodID = isset($_SESSION['productID']) ? $_SESSION['productID'] : 0;
+$keysOfProduct = selectKeywords($prodID);
+
 
 $smarty = new TLSmarty();
 $smarty->assign('data', $id);

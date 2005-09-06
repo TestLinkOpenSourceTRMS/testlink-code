@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: treeMenu.inc.php,v $
  *
- * @version $Revision: 1.2 $
- * @modified $Date: 2005/08/16 18:00:55 $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2005/09/06 06:44:07 $
  *
  * 	This file generates tree menu for test specification.
  *
@@ -100,15 +100,20 @@ function filterString($str)
 /** 
 * 	generate data for tree menu of Test Specification
 *
-* 	@param string $linkto path for generated URL
+* @param numeric prodID
+* @param string  prodName
+* @param string $linkto path for generated URL
 *	@param integer $hidetc [0: show TCs, 1: disable TCs ]
 *	@param string $getArguments additional $_GET arguments
-* 	@return string input string for layersmenu
+* @return string input string for layersmenu
+*
+* @author Francisco Mancardi - fm - reduce global coupling
+*
 */
-function generateTestSpecTree($linkto, $hidetc, $getArguments = '')
+function generateTestSpecTree($prodID, $prodName, $linkto, $hidetc, $getArguments = '')
 {
-	$product = isset($_SESSION['productID']) ? $_SESSION['productID'] : 0;
-	if (!$product)
+	
+	if (!$prodID)
 		return null;
 	$menustring = null; // storage for output
 	
@@ -116,30 +121,30 @@ function generateTestSpecTree($linkto, $hidetc, $getArguments = '')
 	$sqlProdCount = "select count(mgttestcase.id) from mgtproduct,mgtcomponent," .
 			"mgtcategory,mgttestcase where mgtproduct.id = mgtcomponent.prodid " .
 			"and mgtcomponent.id=mgtcategory.compid and " .
-			"mgtcategory.id=mgttestcase.catid and mgtproduct.id=" . $product;
+			"mgtcategory.id=mgttestcase.catid and mgtproduct.id=" . $prodID;
 	$resultProdCount = do_mysql_query($sqlProdCount);
 	if ($resultProdCount)
 		$prodCount = mysql_fetch_row($resultProdCount);
 	else
 		$prodCount = 0;
 	
-	$productName = filterString($_SESSION['productName']);
+	$productName = filterString($prodName);
 	if (TL_TREE_KIND == 'LAYERSMENU')
 	{ 
-		$menustring .= ".|" . $productName . " (" . $prodCount[0] . ")|" . $linkto . "?edit=product&data=" . $product . $getArguments . "|Product||workframe|\n";
+		$menustring .= ".|" . $productName . " (" . $prodCount[0] . ")|" . $linkto . "?edit=product&data=" . $prodID . $getArguments . "|Product||workframe|\n";
 	}
  	elseif (TL_TREE_KIND == 'JTREE')
 	{		
-		$menustring .=  "['" . $productName . " (" . $prodCount[0] . ")','EP({$product})',\n";
+		$menustring .=  "['" . $productName . " (" . $prodCount[0] . ")','EP({$prodID})',\n";
 	}
 	elseif (TL_TREE_KIND == 'DTREE')
 	{
 		$dtreeCounter = 0;
-		$menustring .= "tlTree.add(" . $dtreeCounter++ . ",-1,'" . $productName . " (" . $prodCount[0] . ")','" . $linkto . "?edit=product&data=" . $product . $getArguments . "');\n";
+		$menustring .= "tlTree.add(" . $dtreeCounter++ . ",-1,'" . $productName . " (" . $prodCount[0] . ")','" . $linkto . "?edit=product&data=" . $prodID . $getArguments . "');\n";
 	}
 	
 	//Parse components
-	$sqlCOM = "select id, name from mgtcomponent where prodid='" . $product . "' order by name";
+	$sqlCOM = "select id, name from mgtcomponent where prodid='" . $prodID . "' order by name";
 	$resultCOM = do_mysql_query($sqlCOM);
 		
 	while ($myrowCOM = mysql_fetch_row($resultCOM)) //loop through all Components

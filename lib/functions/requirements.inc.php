@@ -4,19 +4,22 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: requirements.inc.php,v $
- * @version $Revision: 1.7 $
- * @modified $Date: 2005/09/02 09:54:03 $ by $Author: havlat $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2005/09/06 06:44:07 $ by $Author: franciscom $
  *
  * @author Martin Havlat <havlat@users.sourceforge.net>
  * 
  * Functions for support requirement based testing 
  *
  * Revisions:
+ *
+ * 20050906 - francisco mancardi - reduce global coupling 
+ * 20050901 - Martin Havlat - updated metrics/results related functions 
  * 20050830 - francisco mancardi - changes in printSRS()
  * 20050829 - Martin Havlat - updated function headers 
  * 20050825 - Martin Havlat - updated global header;
  * 20050810	- francisco mancardi - deprecated $_SESSION['product'] removed
- * 20050901 - Martin Havlat - updated metrics/results related functions 
+ *
  * 
  */
 ////////////////////////////////////////////////////////////////////////////////
@@ -31,18 +34,20 @@ require_once('print.inc.php');
  * @param string $title
  * @param string $scope
  * @param string $countReq
+ * @param numeric $prodID
+ * @param numeric $userID
  * @param string $type
  * 
  * @author Martin Havlat 
  */
-function createReqSpec ($title, $scope, $countReq, $type = 'n')
+function createReqSpec($title, $scope, $countReq, $prodID, $userID, $type = 'n')
 {
 	tLog('Create SRS requested: ' . $title);
 	if (strlen($title)) {
 		$sql = "INSERT INTO req_spec (id_product, title, scope, type, total_req, id_author, create_date) " .
-				"VALUES (" . $_SESSION['productID'] . ",'" . mysql_escape_string($title) . 
+				"VALUES (" . $prodID . ",'" . mysql_escape_string($title) . 
 				"','" . mysql_escape_string($scope) . "','" . mysql_escape_string($type) . "','" . 
-				mysql_escape_string($countReq) . "'," . mysql_escape_string($_SESSION['userID']) . 
+				mysql_escape_string($countReq) . "'," . mysql_escape_string($userID) . 
 				", CURRENT_DATE)";
 		$result = do_mysql_query($sql); 
 		if ($result) {
@@ -66,18 +71,19 @@ function createReqSpec ($title, $scope, $countReq, $type = 'n')
  * @param string $title
  * @param string $scope
  * @param string $countReq
+ * @param integer $userID
  * @param string $type
  * @return string result
  * 
  * @author Martin Havlat 
  */
-function updateReqSpec ($id, $title, $scope, $countReq, $type = 'n')
+function updateReqSpec($id, $title, $scope, $countReq, $userID, $type = 'n')
 {
 	if (strlen($title)) {
 		$sql = "UPDATE req_spec SET title='" . mysql_escape_string($title) . 
 				"', scope='" . mysql_escape_string($scope) . "', type='" . mysql_escape_string($type) .
 				"', total_req ='" . mysql_escape_string($countReq) . "', id_modifier='" . 
-				mysql_escape_string($_SESSION['userID']) . "', modified_date=CURRENT_DATE WHERE id=" . $id;
+				mysql_escape_string($userID) . "', modified_date=CURRENT_DATE WHERE id=" . $id;
 		$result = do_mysql_query($sql); 
 		if ($result) {
 			$result = 'ok';
@@ -126,16 +132,17 @@ function deleteReqSpec ($idSRS)
 /** 
  * collect information about current list of Requirements Specification
  *  
+ * @param numeric prodID
  * @param string $set range of collection 'product' (default) or 'all' or '<id>'
  * @return assoc_array list of SRS
  * 
  * @author Martin Havlat 
  **/
-function getReqSpec($set = 'product')
+function getReqSpec($prodID, $set = 'product')
 {
 	$sql = "SELECT * FROM req_spec";
 	if ($set == 'product') {
-		$sql .= " WHERE id_product=" . $_SESSION['productID'] . " ORDER BY title";
+		$sql .= " WHERE id_product=" . $prodID . " ORDER BY title";
 	} elseif (intval($set)) {
 		$sql .= " WHERE id=" . $set;
 	}
@@ -151,9 +158,9 @@ function getReqSpec($set = 'product')
  * 
  * @author Martin Havlat 
  **/
-function getOptionReqSpec()
+function getOptionReqSpec($prodID)
 {
-	$sql = "SELECT id,title FROM req_spec WHERE id_product=" . $_SESSION['productID'] . 
+	$sql = "SELECT id,title FROM req_spec WHERE id_product=" . $prodID . 
 			" ORDER BY title";
 	
 	return selectOptionData($sql);
@@ -505,6 +512,10 @@ function deleteRequirement($id)
  * @param integer $idSRS
  * @param string $prodName
  * @param string $userID
+ * @param string $base_href
+ *
+ * @version 1.2 - 20050905
+ * @author Francisco Mancardi
  *
  * @version 1.1 - 20050830
  * @author Francisco Mancardi
@@ -512,11 +523,11 @@ function deleteRequirement($id)
  * @version 1.0
  * @author Martin Havlat 
  **/
-function printSRS($idSRS, $prodName, $userID)
+function printSRS($idSRS, $prodName, $prodID, $userID, $base_href)
 {
-	$arrSpec = getReqSpec($idSRS);
+	$arrSpec = getReqSpec($prodID,$idSRS);
 	
-	$output = printHeader($arrSpec[0]['title']);
+	$output = printHeader($arrSpec[0]['title'],$base_href);
 	$output .= printFirstPage($arrSpec[0]['title'], $prodName, $userID);
 	$output .= "<h2>" . lang_get('scope') . "</h2>\n<div>" . $arrSpec[0]['scope'] . "</div>\n";
 	$output .= printRequirements($idSRS);
@@ -637,13 +648,18 @@ function unassignTc2Req($idTc, $idReq)
 
 /** 
  * function generate testcases with name and summary for requirements
+ *
+ * @param numeric prodID
  * @param array or integer list of REQ id's 
  * @return string Result description
  * 
+ * @version 1.1
+ * @author Francisco Mancardi - reduce global coupling
+ *
  * @version 1.0
  * @author Martin Havlat 
  */
-function createTcFromRequirement($mixIdReq)
+function createTcFromRequirement($mixIdReq, $prodID, $login_name)
 {
 	require_once("../testcases/archive.inc.php");
 	
@@ -657,7 +673,7 @@ function createTcFromRequirement($mixIdReq)
 	
 	//find component
 	$sqlCOM = "SELECT id FROM mgtcomponent WHERE name='TODO' AND " .
-			"prodid=" . $_SESSION['productID'];
+			"prodid=" . $prodID;
 	$resultCOM = do_mysql_query($sqlCOM);
 	if (mysql_num_rows($resultCOM) == 1) {
 		$idCom = mysql_result($resultCOM,0);
@@ -666,8 +682,7 @@ function createTcFromRequirement($mixIdReq)
 		// not found -> create
 		tLog('Component TODO was not found.');
 		$sqlInsertCOM = 'INSERT INTO mgtcomponent (name,scope,prodid) VALUES ' .
-				"('TODO','Test Cases generated from Requirements'," . 
-				$_SESSION['productID'] . ")";
+				            "('TODO','Test Cases generated from Requirements'," .  $prodID . ")";
 		$resultCOM = do_mysql_query($sqlInsertCOM);
 		if (mysql_affected_rows()) {
 			$resultCOM = do_mysql_query($sqlCOM);
@@ -715,7 +730,7 @@ function createTcFromRequirement($mixIdReq)
 		
 		// create TC
 		$tcID =  insertTestcase($idCat,$reqData['title'],"Verify requirement: \n" . 
-				$reqData['scope'],$_SESSION['user'],null,null);
+				                    $reqData['scope'],$login_name,null,null);
 		
 		// create coverage dependency
 		if (!assignTc2Req($tcID, $reqData['id'])) {

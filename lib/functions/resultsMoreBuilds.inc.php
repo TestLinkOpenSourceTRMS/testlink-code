@@ -188,6 +188,8 @@ function createResultsForComponent($componentId, $owner, $keyword, $buildsArray,
 
 function createResultsForCategory($categoryId, $keyword, $buildsArray, $lastResultToQueryFor,$myrow,$arrBuilds)
 {
+	global $g_tc_status;
+	
 	$totalCasesForCategory = 0;
 	$totalLastResultPassesForCategory = 0;
 	$totalLastResultFailuresForCategory = 0;
@@ -205,7 +207,10 @@ function createResultsForCategory($categoryId, $keyword, $buildsArray, $lastResu
 
   
 	$categoryHeader = "Category = " . htmlspecialchars($categoryName) . " Owner = " . htmlspecialchars($owner);
-	$sql = "select testcase.id, testcase.title, testcase.summary, testcase.steps, testcase.exresult, testcase.catid, testcase.active, testcase.version, testcase.mgttcid, testcase.keywords, testcase.TCorder from testcase where (catid='" . $categoryId . "') AND (keywords LIKE '%" . $keyword . "%') ";
+	$sql = " SELECT testcase.id, testcase.title, testcase.summary, testcase.steps, " .
+	       " testcase.exresult, testcase.catid, testcase.active, testcase.version, " .
+	       " testcase.mgttcid, testcase.keywords, testcase.TCorder " .
+	       " FROM testcase WHERE (catid='" . $categoryId . "') AND (keywords LIKE '%" . $keyword . "%') ";
 	
 	$sql .= " ORDER by TCorder ASC";
 	$result = do_mysql_query($sql);
@@ -219,16 +224,16 @@ function createResultsForCategory($categoryId, $keyword, $buildsArray, $lastResu
     $testCaseInfoToPrint = $testCaseData[0];
     $summaryOfTestCaseInfo = $testCaseData[1];
     $lastResult = $summaryOfTestCaseInfo[4];
-    if ($lastResult == 'p'){
+    if ($lastResult == $g_tc_status['passed']){
       $totalLastResultPassesForCategory++;
     }
-    elseif ($lastResult == 'f'){
+    elseif ($lastResult == $g_tc_status['failed']){
       $totalLastResultFailuresForCategory++;
     }
-    elseif ($lastResult == 'b'){
+    elseif ($lastResult == $g_tc_status['blocked']){
       $totalLastResultBlockedForCategory++;      
     }
-    elseif ($lastResult == 'n'){
+    elseif ($lastResult == $g_tc_status['not_run']){
       $totalUnexecutedTestCases++;
     }
     
@@ -246,46 +251,58 @@ function createResultsForCategory($categoryId, $keyword, $buildsArray, $lastResu
 
       $testCasesReturnedByQuery = true;
     }
-    elseif (($lastResult == 'p') && ($lastResultToQueryFor == 'passed')){
+    elseif (($lastResult == $g_tc_status['passed']) && ($lastResultToQueryFor == 'passed')){
       $testCaseTables = $testCaseTables . $testCaseInfoToPrint;
 
       $testCasesReturnedByQuery = true;
     }
-    elseif (($lastResult == 'f') && ($lastResultToQueryFor == 'failed')){
+    elseif (($lastResult == $g_tc_status['failed']) && ($lastResultToQueryFor == 'failed')){
 
       $testCaseTables = $testCaseTables . $testCaseInfoToPrint;
       $testCasesReturnedByQuery = true;
     }
-    elseif (($lastResult == 'b') && ($lastResultToQueryFor == 'blocked')){
+    elseif (($lastResult == $g_tc_status['blocked']) && ($lastResultToQueryFor == 'blocked')){
 
       $testCaseTables = $testCaseTables . $testCaseInfoToPrint;
       $testCasesReturnedByQuery = true;
     }
-    elseif (($lastResult == 'n') && ($lastResultToQueryFor == 'unexecuted')){
+    elseif (($lastResult == $g_tc_status['not_run']) && ($lastResultToQueryFor == 'unexecuted')){
 
       $testCaseTables = $testCaseTables . $testCaseInfoToPrint;
       $testCasesReturnedByQuery = true;
     }
   }
 
-  $summaryOfCategoryTable = "<table class=\"simple\" style=\"width: 100%; text-align: center; margin-left: 0px;\"><tr><th># Cases</td><th># Passed</td><th># Failed</td><th># Blocked</td><th># Unexecuted</td></tr>";
+  $summaryOfCategoryTable = "<table class=\"simple\" style=\"width: 100%; " .
+                            "text-align: center; margin-left: 0px;\"><tr>" .
+                            "<th># Cases</td><th># Passed</td><th># Failed</td>" .
+                            "<th># Blocked</td><th># Unexecuted</td></tr>";
 
-  $summaryOfCategoryTable = $summaryOfCategoryTable . "<tr><td>" . $totalCasesForCategory  . "</td><td>" . $totalLastResultPassesForCategory . "</td><td>" . $totalLastResultFailuresForCategory . "</td><td>" . $totalLastResultBlockedForCategory . "</td><td>" . $totalUnexecutedTestCases . "</td></tr></table>";
+  $summaryOfCategoryTable = $summaryOfCategoryTable . "<tr><td>" . $totalCasesForCategory  . "</td><td>" . 
+                            $totalLastResultPassesForCategory . "</td><td>" . 
+                            $totalLastResultFailuresForCategory . "</td><td>" . 
+                            $totalLastResultBlockedForCategory . "</td><td>" . 
+                            $totalUnexecutedTestCases . "</td></tr></table>";
 
   // only display an option to expand the category info if there is any test cases which match the query parameters
   $categoryDataToPrint = null;
   if ($testCasesReturnedByQuery)
   {
-    $categoryDataToPrint = "<h2 onClick=\"plusMinus_onClick(this);\"><img class=\"plus\" src=\"icons/plus.gif\">" . $categoryHeader . $summaryOfCategoryTable  . "</h2><div class=\"workBack\">" . $testCaseTables . "</div>";
+    $categoryDataToPrint = "<h2 onClick=\"plusMinus_onClick(this);\"><img class=\"plus\" src=\"icons/plus.gif\">" . 
+                           $categoryHeader . $summaryOfCategoryTable  . "</h2><div class=\"workBack\">" . 
+                           $testCaseTables . "</div>";
   }
   
-  $summaryOfCategory = array($totalCasesForCategory, $totalLastResultPassesForCategory, $totalLastResultFailuresForCategory, $totalLastResultBlockedForCategory, $totalUnexecutedTestCases);
+  $summaryOfCategory = array($totalCasesForCategory, $totalLastResultPassesForCategory, 
+                             $totalLastResultFailuresForCategory, $totalLastResultBlockedForCategory, 
+                             $totalUnexecutedTestCases);
   return array($summaryOfCategory, $categoryDataToPrint, $testCasesReturnedByQuery); 
 }
 
 /*
 function retrieve_component_table_info($myrow){
-  $sql = "select component.id, component.name, component.projid, component.mgtcompid from component where id='" . $componentId . "';";
+  $sql = "SELECT component.id, component.name, component.projid, " . 
+         "component.mgtcompid FROM component WHERE id=" . $componentId;
   $result = do_mysql_query($sql);
   $returnRowArray;
   while ($myrow = mysql_fetch_row($result)){
@@ -322,7 +339,10 @@ function retrieve_category_table_info($categoryId){
   return $returnRowArray;
 }
 */
-function createResultsForTestCase($tcid, $buildsArray,$myrow,$arrBuilds){
+function createResultsForTestCase($tcid, $buildsArray,$myrow,$arrBuilds)
+{
+  global $g_tc_status;
+  
   $testcaseHeader = constructTestCaseInfo($tcid,$myrow);
   $arrayOfResults = retrieveArrayOfResults($tcid, $buildsArray);
   $tableOfResultData = createTableOfTestCaseResults($arrayOfResults,$arrBuilds);
@@ -333,21 +353,23 @@ function createResultsForTestCase($tcid, $buildsArray,$myrow,$arrBuilds){
   $passedColor = "#90ee90";
   $blockedColor = "#add8e6";
   $failedColor = "#ff0000";
-  if ($lastResult == 'p'){
+  if ($lastResult == $g_tc_status['passed']){
     $colorToPaintRow = $passedColor;
   }
-  elseif ($lastResult == 'f'){
+  elseif ($lastResult == $g_tc_status['failed']){
     $colorToPaintRow = $failedColor;
   }
-  elseif ($lastResult == 'b'){
+  elseif ($lastResult == $g_tc_status['blocked']){
     $colorToPaintRow = $blockedColor;
   }
-  elseif ($lastResult == 'n'){
+  elseif ($lastResult == $g_tc_status['not_run']){
     $colorToPaintRow = $notRunColor;
   }
   $summaryTable = "<table class=\"simple\" style=\"width: 100%; text-align: center; margin-left: 0px;\">";
   $summaryTable = $summaryTable . "<tr><th># executions</th><th># passed</th><th># failures</th><th># blocked</th></tr>";
-  $summaryTable = $summaryTable . "<tr bgcolor='$colorToPaintRow'><td>" . $summaryOfResultData[0]  . "</td><td>" . $summaryOfResultData[1] . "</td><td>" . $summaryOfResultData[2] . "</td><td>" . $summaryOfResultData[3] . "</td></tr></table>";
+  $summaryTable = $summaryTable . "<tr bgcolor='$colorToPaintRow'><td>" . $summaryOfResultData[0]  . 
+                  "</td><td>" . $summaryOfResultData[1] . "</td><td>" . $summaryOfResultData[2] . "</td><td>" . 
+                  $summaryOfResultData[3] . "</td></tr></table>";
   $textToDisplay = "<div class=\"workBack\">" . $testcaseHeader . $summaryTable . $tableOfResultData . "</div>"; 
   // return both the text to diplay and the summary of results in order for category to produce
   // an aggregate summary
@@ -360,6 +382,10 @@ function createResultsForTestCase($tcid, $buildsArray,$myrow,$arrBuilds){
  * @return summaryArray [totalexecutions, totalPassed, totalFailed, totalBlocked, lastResult]
  */
 function createSummaryOfTestCaseResults($arrayOfResults){
+	
+	global $g_tc_status;
+	
+	
   $totalExecutions = 0;
   $numberOfPasses = 0;
   $numberOfFailures = 0;

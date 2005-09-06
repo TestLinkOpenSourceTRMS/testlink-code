@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsSend.php,v 1.3 2005/09/06 06:42:04 franciscom Exp $ 
+* $Id: resultsSend.php,v 1.4 2005/09/06 20:19:40 schlundus Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author	Chad Rosen
@@ -31,7 +31,7 @@ if(isset($_POST['submit']))
 		$msgBody = (isset($_POST['body']) ? $_POST['body'] : null) . "\n\n";
 		$status = isset($_POST['status']) ? $_POST['status'] : null;
 		$builds = getBuilds($_SESSION['testPlanId']);
-		
+
 		if($status == 'projAll')
 		{
 			 //if the user has chosen to sent the entire project priority info
@@ -57,11 +57,10 @@ if(isset($_POST['submit']))
 }
 
 //Gather all of the current TP components for the dropdown box
-$suites = listTPComponent();
+$suites = listTPComponent($_SESSION['testPlanId']);
 
 // Gather info for the build dropdown box
 $builds = getBuilds($_SESSION['testPlanId']);
-
 // warning if no build or component
 if(count($suites) == 0 || count($builds) == 0)
 	displayInfo($_SESSION['testPlanName'], lang_get("warning_create_build_first"));

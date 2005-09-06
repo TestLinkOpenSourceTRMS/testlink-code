@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: exec.inc.php,v $
  *
- * @version $Revision: 1.6 $
- * @modified $Date: 2005/09/06 06:44:07 $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2005/09/06 20:19:39 $
  *
  * @author Martin Havlat
  *
@@ -233,7 +233,7 @@ function editTestResults($login_name, $tcData, $build)
 					$counter = 0;
 					while($counter < count($bugArray))	{
 
-						$sql = " INSERT INTO bugs (tcid,build,bug) "
+						$sql = " INSERT INTO bugs (tcid,build,bug) " .
 						       " VALUES ('" . $tcID . "','" . $build . "','" . $bugArray[$counter] . "')";
 						$result = do_mysql_query($sql); //Execute query
 						$counter++;
@@ -241,7 +241,7 @@ function editTestResults($login_name, $tcData, $build)
 	
 				} else { //Else enter a new row
 				
-					$sql = " INSERT INTO results (build,daterun,status,tcid,notes,runby) "
+					$sql = " INSERT INTO results (build,daterun,status,tcid,notes,runby) " .
 					       " VALUES ('" . $build . "',CURRENT_DATE(),'" . $tcStatus . 
 					       "','" . $tcID . "','" . $tcNotes . "','" . $login_name . "')";
 					$result = do_mysql_query($sql);
@@ -254,7 +254,7 @@ function editTestResults($login_name, $tcData, $build)
 					$bugArray = strlen($tcBugs) ?  explode(",",$tcBugs) : null;
 					$counter = 0;
 					while($counter < count($bugArray)){
-						$sqlBugs = " INSERT INTO bugs (tcid,build,bug) "
+						$sqlBugs = " INSERT INTO bugs (tcid,build,bug) " .
 						           " VALUES ('" . $tcID . "','" . $build . "','" . $bugArray[$counter] . "')";
 						$result = do_mysql_query($sqlBugs); //Execute query
 						$counter++;

@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: plan.inc.php,v $
- * @version $Revision: 1.2 $
- * @modified $Date: 2005/08/16 18:00:57 $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2005/09/06 20:19:39 $
  * @author 	Martin Havlat
  *
  * Functions for management: Test Plans, Test Case Suites, Milestones, 
@@ -325,11 +325,13 @@ function getUsersOfPlan($id,&$arrUsers)
 	}
 	return $result ? 1 : 0;
 }
-// 20050815 - Andreas Morsing - $notes now became a default parameter
+// 20050815 - scs - $notes now became a default parameter
+// 20050905 - scs - function now returns the build value
 function insertProjectBuild($build,$projID,$notes = '')
 {
 	$sql = "INSERT INTO build (projid,name,note) VALUES ('". $projID . "','" . mysql_escape_string($build) . "','" . mysql_escape_string($notes) . "')";
 	$result = do_mysql_query($sql);
+	$buildID = 0;
 	if ($result)
 	{
 		$id = mysql_insert_id();
@@ -346,7 +348,7 @@ function insertProjectBuild($build,$projID,$notes = '')
 		}
 	}
 	
-	return $result ? 1 : 0;
+	return $buildID;
 }
 
 function getAllTestPlanComponentCategories($testPlanID,$compID,&$categories)

@@ -32,14 +32,7 @@ function showOrCollapseAll()
 	var imgs = document.getElementsByTagName('img');
 	if (!imgs || !imgs.length)
 		return;
-	var i = 0;
-	for(i = 0; i < imgs.length;i++)
-	{
-		if (imgs[i].className == 'plus' || imgs[i].className == 'minus')
-			toggleSection(imgs[i]);
-	}
-}
-function progress()
+	var i = 0;	var len = imgs.length;	for(i = 0; i < len;i++)	{		var img = imgs[i];		var imgClassName = img.className;		if (imgClassName == 'plus' || imgClassName == 'minus')			toggleSection(img);	}}function progress()
 {
 	var o  = document.getElementById('progress');
 	if (o)

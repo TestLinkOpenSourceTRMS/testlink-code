@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.11 $
- * @modified $Date: 2005/09/06 06:44:07 $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2005/09/06 20:19:39 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -571,23 +571,24 @@ For every key not found a call to tlog() is done.
          0: at least one key not found  
 
 @author Francisco Mancardi - 20050905 - creation
-
+ 20050905 - scs - corrected and refactored
 */
 function check_hash_keys($hash, $akeys2check, $msg='')
 {
-$tlog_msg = " is not defined";
-$status=1;
-
-foreach ($a2check as $key)
-{
-  if (!isset($hash[$key])) 
-  {
-    $status = 0;
-    tlog( $key . $tlog_msg);
-  }
+	$status = 1;
+	if (sizeof($akeys2check))
+	{
+		$tlog_msg = $msg . " is not defined";
+		foreach($akeys2check as $key)
+		{
+			if (!isset($hash[$key])) 
+			{
+				$status = 0;
+				tlog( $key . $tlog_msg);
+			}
+		}
+	}
+	
+	return ($status);
 }
-
-return ($status);
-}
-
 ?>

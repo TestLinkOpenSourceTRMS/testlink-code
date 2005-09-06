@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: logging.inc.php,v $
  *
- * @version $Revision: 1.4 $
- * @modified $Date: 2005/08/26 21:01:27 $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2005/09/06 20:19:39 $
  *
  * @author Martin Havlat
  *
@@ -163,10 +163,12 @@ function tlTimingCurrent ($name = 'default')
  * @return resource result handle of the db query
  *
  * @author Andreas Morsing
+ * 20050905 - scs - added overall duration
  **/
 function do_mysql_query($query,$resource = null)
 {
 	static $nQuery = 0;
+	static $overallDuration = 0;
 	
 	$nQuery++;
 	//execute query and profile execution time
@@ -177,10 +179,10 @@ function do_mysql_query($query,$resource = null)
 		$result = mysql_query($query);
 	tlTimingStop('mysqlquery');
 	$duration = tlTimingCurrent('mysqlquery');
-	
+	$overallDuration += $duration;
 	//build loginfo
 	$logLevel = 'DEBUG';
-	$message = "SQL [".$nQuery."] executed [took {$duration} secs]:\n\t".$query;
+	$message = "SQL [".$nQuery."] executed [took {$duration} secs][all took {$overallDuration} secs]:\n\t".$query;
 	if (!$result)
 	{
 		$ec = $resource ? mysql_errno($resource) : mysql_errno();

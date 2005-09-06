@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: resultsGeneral.php,v $
- * @version $Revision: 1.3 $
- * @modified $Date: 2005/09/06 06:42:04 $ by $Author: franciscom $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2005/09/06 20:19:40 $ by $Author: schlundus $
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
  * This page show Test Results over all Builds.
@@ -19,12 +19,11 @@
 require('../../config.inc.php');
 require_once('common.php');
 require_once('results.inc.php');
-
 testlinkInitPage();
 
-$arrDataPriority = getPriorityReport();
 
 $tpID = $_SESSION['testPlanId']; 
+$arrDataPriority = getPriorityReport($tpID);
 $arrDataSuite = getTestSuiteReport($tpID);
 $arrDataKeys = getKeywordsReport($tpID);
 $arrDataOwner = getOwnerReport($tpID);

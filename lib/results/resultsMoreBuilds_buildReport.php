@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsMoreBuilds_buildReport.php,v 1.5 2005/09/06 06:42:04 franciscom Exp $ 
+* $Id: resultsMoreBuilds_buildReport.php,v 1.6 2005/09/06 20:19:40 schlundus Exp $ 
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 * 
@@ -41,8 +41,8 @@ if (isset($_REQUEST['build'])){
   }
 }
 
-$a2check = array('build','keyword','owner','testPlanID','testPlanName',"lastStatus");
-if( !check_hash_keys($_GET, $a2check, "is not defined in \$GET")
+$a2check = array('build','keyword','owner','testPlanName',"lastStatus");
+if(!check_hash_keys($_GET, $a2check, "is not defined in \$GET"))
 {
 	exit;
 }
@@ -55,6 +55,11 @@ tlTimingStop();
 $queryParameters = $reportData[0];
 $summaryOfResults = $reportData[1];
 $allComponentData = $reportData[2];
+/*
+var_dump(strlen($summaryOfResults));
+var_dump(strlen($allComponentData));
+var_dump(tlTimingCurrent());
+*/
 $smarty = new TLSmarty();
 $smarty->assign('queryParameters', $queryParameters);
 $smarty->assign('summaryOfResults', $summaryOfResults);

@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsBugs.php,v 1.2 2005/08/16 18:00:58 franciscom Exp $ 
+* $Id: resultsBugs.php,v 1.3 2005/09/06 20:19:40 schlundus Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * 
@@ -15,7 +15,7 @@ require_once("../../lib/functions/lang_api.php");
 testlinkInitPage();
 
 // get Priority data
-$arrData = getBugsReport();
+$arrData = getBugsReport($_SESSION['testPlanId']);
 
 $smarty = new TLSmarty;
 $smarty->assign('tpName', $_SESSION['testPlanName']);

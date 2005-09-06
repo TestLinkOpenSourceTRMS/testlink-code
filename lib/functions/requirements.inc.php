@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: requirements.inc.php,v $
- * @version $Revision: 1.8 $
- * @modified $Date: 2005/09/06 06:44:07 $ by $Author: franciscom $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2005/09/06 09:41:39 $ by $Author: franciscom $
  *
  * @author Martin Havlat <havlat@users.sourceforge.net>
  * 
@@ -338,8 +338,7 @@ function getReqMetrics_testPlan($idSRS, $idTestPlan)
 	if (!empty($result)) {
 		$output['coveredByTestPlan'] = mysql_num_rows($result);
 	}
-	
-//	$output['coveredTestPlan'] = $_SESSION['testPlanName'];
+
 	$output['uncoveredByTestPlan'] = $output['expectedTotal'] 
 			- $output['coveredByTestPlan'] - $output['notTestable'];
 
@@ -423,18 +422,20 @@ function getReq4Tc($idTc, $idSRS = 'all')
  * @param string $title
  * @param string $scope
  * @param integer $idSRS
+ * @param integer $userID
+ 
  * @param char $status
  * @param char $type
  * 
  * @author Martin Havlat 
  **/
-function createRequirement ($title, $scope, $idSRS, $status = 'v', $type = 'n')
+function createRequirement($title, $scope, $idSRS, $userID, $status = 'v', $type = 'n')
 {
 	if (strlen($title)) {
 		$sql = "INSERT INTO requirements (id_srs, title, scope, status, type, id_author, create_date)" .
 				" VALUES (" . $idSRS . ",'" . mysql_escape_string($title) . 
 				"','" . mysql_escape_string($scope) . "','" . mysql_escape_string($status) . 
-				"','" . mysql_escape_string($type) ."'," . mysql_escape_string($_SESSION['userID']) . 
+				"','" . mysql_escape_string($type) ."'," . mysql_escape_string($userID) . 
 				", CURRENT_DATE)";
 		$result = do_mysql_query($sql); 
 		$result = $result ? 'ok' : 'The INSERT request fails with these values:' . 
@@ -452,18 +453,20 @@ function createRequirement ($title, $scope, $idSRS, $status = 'v', $type = 'n')
  * @param integer $id
  * @param string $title
  * @param string $scope
+ * @param integer $userID
+ 
  * @param string $status
  * @param string $type
  * 
  * @author Martin Havlat 
  **/
-function updateRequirement ($id, $title, $scope, $status, $type)
+function updateRequirement($id, $title, $scope, $userID, $status, $type)
 {
 	if (strlen($title)) {
 		$sql = "UPDATE requirements SET title='" . mysql_escape_string($title) . 
 				"', scope='" . mysql_escape_string($scope) . "', status='" . mysql_escape_string($status) . 
 				"', type='" . mysql_escape_string($type) . 
-				"', id_modifier=" . mysql_escape_string($_SESSION['userID']) . 
+				"', id_modifier=" . mysql_escape_string($userID) . 
 				", modified_date=CURRENT_DATE WHERE id=" . $id;
 		$result = do_mysql_query($sql); 
 		if ($result) {

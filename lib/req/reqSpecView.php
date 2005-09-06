@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqSpecView.php,v $
- * @version $Revision: 1.7 $
- * @modified $Date: 2005/09/06 06:46:13 $ by $Author: franciscom $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2005/09/06 09:41:40 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Screen to view existing requirements within a req. specification.
@@ -65,7 +65,9 @@ $of->ToolbarSet=$g_fckeditor_toolbar;;
 if(isset($_POST['createReq']))
 {
 	if (isset($_POST['title'])) {
-		$sqlResult = createRequirement($title, $scope, $idSRS, $reqStatus); // used default type=n
+		
+		// 20050906 - fm
+		$sqlResult = createRequirement($title, $scope, $idSRS, $userID, $reqStatus); // used default type=n
 		$action = 'create';
 		
 		$scope='';
@@ -95,7 +97,7 @@ elseif (isset($_GET['editReq']))
 // update REQ
 elseif (isset($_POST['updateReq']))
 {
-	$sqlResult = updateRequirement($idReq, $title, $scope, $reqStatus, $reqStatus);
+	$sqlResult = updateRequirement($idReq, $title, $scope, $userID, $reqStatus, $reqStatus);
 	$action = 'update';
 	$sqlItem = 'Requirement';
 }

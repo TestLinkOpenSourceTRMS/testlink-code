@@ -50,7 +50,9 @@ function createResultsForTestPlan($testPlanName, $testPlanID, $buildsArray, $key
 	for($i = 0;$i < sizeof($buildsArray);$i++)
 	{
 		if ($i)
+		{
 			$commaDelimitedBuilds .= ",";
+		}	
 		$commaDelimitedBuilds .= $arrBuilds[$buildsArray[$i]];
 	}
   
@@ -88,8 +90,14 @@ function createResultsForTestPlan($testPlanName, $testPlanID, $buildsArray, $key
 			$aggregateComponentDataToPrint .= $componentData[1];
 		}
 	}
-	$summaryOfTestPlanTable = "<table class=\"simple\" style=\"width: 100%; text-align: center; margin-left: 0px;\"><tr><th># Cases</td><th># Passed</td><th># Failed</td><th># Blocked</td><th># Unexecuted</td></tr>";
-	$summaryOfTestPlanTable = $summaryOfTestPlanTable . "<tr><td>" . $totalCasesForTestPlan  . "</td><td>" . $totalLastResultPassesForTestPlan . "</td><td>" . $totalLastResultFailuresForTestPlan . "</td><td>" . $totalLastResultBlockedForTestPlan . "</td><td>" . $totalUnexecutedTestCases . "</td></tr></table>";
+	$summaryOfTestPlanTable = "<table class=\"simple\" style=\"width: 100%; " .
+	                          "text-align: center; margin-left: 0px;\"><tr><th># Cases</td>" .
+	                          "<th># Passed</td><th># Failed</td><th># Blocked</td><th># Unexecuted</td></tr>";
+	$summaryOfTestPlanTable = $summaryOfTestPlanTable . "<tr><td>" . $totalCasesForTestPlan  . 
+	                          "</td><td>" . $totalLastResultPassesForTestPlan . "</td><td>" . 
+	                          $totalLastResultFailuresForTestPlan . "</td><td>" . 
+	                          $totalLastResultBlockedForTestPlan . "</td><td>" . 
+	                          $totalUnexecutedTestCases . "</td></tr></table>";
 	// The $linksToAllComponents functionality does not work because something keeps screwing up
 	// my href values and prepending the root testlink url to the string
 	//  return  $testPlanReportHeader . $summaryOfTestPlanTable . $linksToAllComponents .$aggregateComponentDataToPrint;
@@ -116,7 +124,9 @@ function createResultsForComponent($componentId, $owner, $keyword, $buildsArray,
 	$componentHeader = "Component :"  . $componentName ;
 	
 	// @toDo I'm not sure if I should use this LIKE in my sql statement
-	$sql = "select category.id,category.name, category.compid, category.importance, category.risk, category.owner, category.mgtcatid, category.CATorder from category where (category.compid='" . $componentId .  "')";
+	$sql = " SELECT category.id,category.name, category.compid, category.importance, category.risk, "
+	       " category.owner, category.mgtcatid, category.CATorder FROM "
+	       " category WHERE (category.compid='" . $componentId .  "')";
 	if (strlen($owner))
 		$sql .= " AND (category.owner = '" . mysql_escape_string($owner) . "');";
 	$sql .= " ORDER by CATorder ASC ";
@@ -147,14 +157,24 @@ function createResultsForComponent($componentId, $owner, $keyword, $buildsArray,
 		}
 	}
 
-	$summaryOfComponentTable = "<table class=\"simple\" style=\"width: 100%; text-align: center; margin-left: 0px;\"><tr><th># Cases</td><th># Passed</td><th># Failed</td><th># Blocked</td><th># Unexecuted</td></tr>";
-	$summaryOfComponentTable = $summaryOfComponentTable . "<tr><td>" . $totalCasesForComponent  . "</td><td>" . $totalLastResultPassesForComponent . "</td><td>" . $totalLastResultFailuresForComponent . "</td><td>" . $totalLastResultBlockedForComponent . "</td><td>" . $totalUnexecutedTestCases . "</td></tr></table>";
+	$summaryOfComponentTable = "<table class=\"simple\" style=\"width: 100%; " .
+	                           "text-align: center; margin-left: 0px;\"><tr><th># Cases</td>" .
+	                           "<th># Passed</td><th># Failed</td><th># Blocked</td><th># Unexecuted</td></tr>";
+	$summaryOfComponentTable = $summaryOfComponentTable . "<tr><td>" . $totalCasesForComponent  . "</td><td>" . 
+	                           $totalLastResultPassesForComponent . "</td><td>" . 
+	                           $totalLastResultFailuresForComponent . "</td><td>" . 
+	                           $totalLastResultBlockedForComponent . "</td><td>" . 
+	                           $totalUnexecutedTestCases . "</td></tr></table>";
 	
-	$summaryOfComponentArray = array($totalCasesForComponent, $totalLastResultPassesForComponent, $totalLastResultFailuresForComponent, $totalLastResultBlockedForComponent, $totalUnexecutedTestCases);
+	$summaryOfComponentArray = array($totalCasesForComponent, $totalLastResultPassesForComponent,
+	                                 $totalLastResultFailuresForComponent, $totalLastResultBlockedForComponent, 
+	                                 $totalUnexecutedTestCases);
 
 	if ($testCasesReturnedByQuery)
 	{
-		$componentDataToPrint = "<h2 onClick=\"plusMinus_onClick(this);\"><img class=\"plus\" src=\"icons/plus.gif\">" . $componentHeader  . $summaryOfComponentTable . "</h2><div class=\"workBack\">" .  $aggregateCategoryDataToPrint . "</div>";
+		$componentDataToPrint = "<h2 onClick=\"plusMinus_onClick(this);\"><img class=\"plus\" src=\"icons/plus.gif\">" . 
+		                        $componentHeader  . $summaryOfComponentTable . "</h2><div class=\"workBack\">" .  
+		                        $aggregateCategoryDataToPrint . "</div>";
 	}
 	else
 	{

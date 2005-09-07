@@ -218,15 +218,46 @@ function createResultsForCategory($categoryId, $keyword, $commaDelimitedBuilds, 
 	$sql .= " ORDER by TCorder ASC";
 	$result = do_mysql_query($sql);
   
-  $testCaseTables;
+	$testCaseTables;
+  	$tcInfo = null;
+	$tcIDList = null;
+	while ($myrow = mysql_fetch_row($result))
+	{
+	    $totalCasesForCategory++;
+		$tcID = $myrow[0];
+		$tcInfo[$tcID] = $myrow;
+		if($tcIDList)
+			$tcIDList .= ",";
+		$tcIDList .= $tcID;
+	}
+	$build_list = str_replace(",","','",mysql_escape_string($commaDelimitedBuilds));
+	$sql = " SELECT results.build, results.runby, results.daterun, results.status, results.bugs, " .
+	       " results.tcid, results.notes FROM results WHERE tcid IN (" . $tcIDList . ")".
+	       " AND (build IN ('" . $build_list . "')) order by build DESC;";
 
+	$sqlBuildResult = do_mysql_query($sql);
+	$tcBuildInfo = null;
+	//I need the num results so I can do the check below on not run test cases
+	while($myrowTC = mysql_fetch_row($sqlBuildResult))
+	{
+		$tcID = $myrowTC[5];
+		$status = $myrowTC[3];
+		$build = $myrowTC[0];
+		$tcBuildInfo[$tcID][$build] = $myrowTC;
+		if ($status == $notRunStatus || isset($tcStatusInfo[$tcID]))
+			continue;
+		$tcStatusInfo[$tcID] = $status;
+	}
+  //while ($myrow = mysql_fetch_row($result)){
+  foreach ($tcInfo as $tcID => $myrow)
+  {
+  	$lastResult = isset($tcStatusInfo[$tcID]) ? $tcStatusInfo[$tcID] : 'n';
+	$results = isset($tcBuildInfo[$tcID]) ? $tcBuildInfo[$tcID] : null;
 
-  while ($myrow = mysql_fetch_row($result)){
-    $totalCasesForCategory++;
-    $testCaseData = createResultsForTestCase($myrow[0], $commaDelimitedBuilds,$myrow,$arrBuilds);
+	
+    $testCaseData = createResultsForTestCase($myrow[0], $myrow,$arrBuilds,$results,$lastResult);
     $testCaseInfoToPrint = $testCaseData[0];
     $summaryOfTestCaseInfo = $testCaseData[1];
-    $lastResult = $summaryOfTestCaseInfo[4];
     if ($lastResult == $g_tc_status['passed']){
       $totalLastResultPassesForCategory++;
     }
@@ -302,14 +333,12 @@ function createResultsForCategory($categoryId, $keyword, $commaDelimitedBuilds, 
   return array($summaryOfCategory, $categoryDataToPrint, $testCasesReturnedByQuery); 
 }
 
-function createResultsForTestCase($tcid, $commaDelimitedBuilds,$myrow,$arrBuilds)
+function createResultsForTestCase($tcid, $myrow,$arrBuilds,$arrayOfResults,$lastResult)
 {
 	$testcaseHeader = constructTestCaseInfo($tcid,$myrow);
-	$arrayOfResults = retrieveArrayOfResults($tcid, $commaDelimitedBuilds);
-	$tableOfResultData = createTableOfTestCaseResults($arrayOfResults,$arrBuilds);
-	$summaryOfResultData = createSummaryOfTestCaseResults($arrayOfResults);
-  
-	$className = getTCClassNameByStatus($summaryOfResultData[4]);
+	$summaryOfResultData = null;
+	$tableOfResultData = createTableOfTestCaseResults($arrayOfResults,$arrBuilds,$summaryOfResultData);
+	$className = getTCClassNameByStatus($lastResult);
 	
 	$summaryTable = "<table class=\"simple white\">";
 	$summaryTable .= "<tr class=\"black\"><th># executions</th><th># passed</th><th># failures</th><th># blocked</th></tr>";
@@ -353,90 +382,33 @@ function getTCClassNameByStatus($status)
 }
 
 /**
- * Function createSummaryOfTestCaseResults
- * @param $arrayOfResults - 2 dimention array containing build number 
- * @return summaryArray [totalexecutions, totalPassed, totalFailed, totalBlocked, lastResult]
- */
-function createSummaryOfTestCaseResults($arrayOfResults){
-	
-	global $g_tc_status;
-	
-	
-  $totalExecutions = 0;
-  $numberOfPasses = 0;
-  $numberOfFailures = 0;
-  $numberOfBlocked = 0;
-  $result;
-  $lastResult = 'n';
-  
-  // do not enter this block if there are no results
-  // if there are no results, this var will not be an array
-  if (is_array($arrayOfResults)){
-    // retrieve keys - which are build numbers, ordered in incrementing order
-    $arrayOfBuildNumbersTested = key($arrayOfResults);
-    // iterate across arrayOfResults
-    while ($buildTested = key($arrayOfResults)){
-      $result = $arrayOfResults[$buildTested][3];
-   if ($result == $g_tc_status['passed']){
-	$numberOfPasses++;
-	$totalExecutions++;
-	$lastResult = $result;
-      }
-      elseif ($result == $g_tc_status['failed']){
-	$numberOfFailures++;
-	$totalExecutions++;
-	$lastResult = $result;
-      }
-      elseif ($result == $g_tc_status['blocked']){
-	$numberOfBlocked++;
-	$totalExecutions++;
-	$lastResult = $result;
-      }
-      elseif ($result == $g_tc_status['not_run']){
-	// don't increment anything if test case not marked as executed
-	// also do not set the lastResult
-      }
-      next($arrayOfResults);
-    }
-  }
-    
-  $returnArray = array($totalExecutions,$numberOfPasses,$numberOfFailures,$numberOfBlocked,$lastResult);
-  return $returnArray;
-}
-
-
-/**
  * Function createTableOfTestCaseResults
  * @param $arrayOfResults - 2 dimention array containing build number 
  * mapped to result row [buildNumber][resultRowArray] 
  * @return $returnData table of test case results
  */
-
-function createTableOfTestCaseResults($arrayOfResults,$arrBuilds){
+function createTableOfTestCaseResults($arrayOfResults,$arrBuilds,&$returnArray){
 	
-	global $g_tc_status;
 	
-	//  if case passed paint row green, if failed paint red, if blocked paint blue, if not run paint yellow
-	$notRunColor = "bgBlack";
-
-	$numberOfPasses = 0;
-	$numberOfFailures = 0;
-	$numberOfBlocked = 0;
-
-	$returnData = $numberOfBuildsWithResults . 
-                "<table class=\"simple white\">" .
-                "<tr class=\"black\"><th>build</th><th>runby</th><th>daterun</th><th>status</th><th>bugs</th><th>notes</th></tr>";
+	$returnData = "<table class=\"simple white\">" .
+                  "<tr class=\"black\"><th>build</th><th>runby</th><th>daterun</th>".
+				  "<th>status</th><th>bugs</th><th>notes</th></tr>";
 
 	// if test case was never executed the array will be empty
 	// notify user of this
 	if (!is_array($arrayOfResults))
 	{
-		$returnData .= "<tr class=\"" . $notRunColor . "\"><td>THIS CASE HAS NOT BEEN EXECUTED</td><td></td><td>" .
+		$returnData .= "<tr class=\"black\"><td>THIS CASE HAS NOT BEEN EXECUTED</td><td></td><td>" .
 		              "</td><td></td><td></td><td></td></tr></table>";
 		// exit method
 		return $returnData;
 	}
-	$arrayOfBuildNumbersTested = key($arrayOfResults);
+	
+	global $g_tc_status;
+	$numberOfPasses = 0;
+	$numberOfFailures = 0;
+	$numberOfBlocked = 0;
+
 	// iterate accross arrayOfResults
 	while ($buildTested = key($arrayOfResults))
 	{
@@ -455,39 +427,21 @@ function createTableOfTestCaseResults($arrayOfResults,$arrBuilds){
 				$numberOfBlocked++;
 				break;
 		}
-	  
+	  	$resultInfo = $arrayOfResults[$buildTested];
 		$data = "<tr class=\"" . $className . "\"><td>" .
-		htmlspecialchars($arrBuilds[$arrayOfResults[$buildTested][0]])  . 
-		"</td><td>" . $arrayOfResults[$buildTested][1] . 
-		"</td><td>" . $arrayOfResults[$buildTested][2] .
-		"</td><td>" . $arrayOfResults[$buildTested][3] .
-		"</td><td>" . $arrayOfResults[$buildTested][4] . 
-		"</td><td>" . $arrayOfResults[$buildTested][6] . 
-		"</td></tr>";
+				htmlspecialchars($arrBuilds[$resultInfo[0]])  . 
+				"</td><td>" . $resultInfo[1] . 
+				"</td><td>" . $resultInfo[2] .
+				"</td><td>" . $resultInfo[3] .
+				"</td><td>" . $resultInfo[4] . 
+				"</td><td>" . $resultInfo[6] . 
+				"</td></tr>";
 		$returnData .= $data;
 		next($arrayOfResults);
 	}
-	$returnData = $returnData . "</table>";
+ 	$returnArray = array($numberOfPasses+$numberOfFailures+$numberOfBlocked,$numberOfPasses,$numberOfFailures,$numberOfBlocked);
+ 	$returnData .= "</table>";
 	return $returnData;
-}
-
-function retrieveArrayOfResults($tcid, $build_list)
-{
-	$build_list = str_replace(",","','",mysql_escape_string($build_list));
-	$sql = " SELECT results.build, results.runby, results.daterun, results.status, results.bugs, " .
-	       " results.tcid, results.notes FROM results WHERE (tcid='" . $tcid . 
-	       " ') AND (build IN ('" . $build_list . "')) order by build DESC;";
-
-	$arrayOfResultArrays = null;
-	$result = do_mysql_query($sql);
-	if ($result)
-	{
-		while ($myrow = mysql_fetch_row($result))
-		{
-			$arrayOfResultArrays[$myrow[0]]= $myrow;
-		}
-	}	
-	return $arrayOfResultArrays;
 }
 
 function constructTestCaseInfo($tcid,$myrow)

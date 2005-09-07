@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execNavigator.php,v $
  *
- * @version $Revision: 1.4 $
- * @modified $Date: 2005/09/01 20:39:06 $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2005/09/07 20:19:24 $
  *
  * @author Martin Havlat
  *
@@ -17,6 +17,7 @@
  * 20050815 - scs - optimized and reducing Sql statements
  * 20050828 - scs - reduced the code
  * 20050828 - scs - added searching for tcID
+ * 20050907 - scs - fixed problem with wrong coloring
 **/
 require_once('../../config.inc.php');
 require_once('common.php');
@@ -236,6 +237,7 @@ function generateExecTree($build,$purl_to_help,&$menuUrl,$tcIDFilter = null)
  */
 function displayTCTree($TCResult, $build, $owner, $colored, $menuUrl, $filteredResult, $dtreeCategoryId)
 {
+	global $g_tc_status;
 	$data = null;
 	
 	$bFilteredResultAll = ($filteredResult == 'all');
@@ -250,35 +252,39 @@ function displayTCTree($TCResult, $build, $owner, $colored, $menuUrl, $filteredR
 		$tcIDs[] = $tcID;	
 		$tcInfo[$tcID] = array($name,$mgttcid);
 	}
+	$notRunStatus = $g_tc_status['not_run'];
 	$tcStatusInfo = null;
 	if ($tcIDs)
 	{
 		$tcIDsList = implode(",",$tcIDs);
 		$sqlResult = "SELECT tcid,status FROM results WHERE tcid IN (" . $tcIDsList . ")";
 		if($colored == 'result')
+		{
 			$sqlResult .= " ORDER BY build DESC";
+		}
 		else
+		{
 			$sqlResult .= " AND build = '" . $build . "'";
-		//20050901 - scs - colored by last result doesnt color the testcase right	
-		$sqlResult .= " LIMIT 1";
+		}
 		
 		$sqlBuildResult = do_mysql_query($sqlResult);
 		//I need the num results so I can do the check below on not run test cases
-		if ($myrowTC = mysql_fetch_row($sqlBuildResult))
+		while($myrowTC = mysql_fetch_row($sqlBuildResult))
 		{
 			$tcID = $myrowTC[0];
 			$status = $myrowTC[1];
+			if ($status == $notRunStatus || isset($tcStatusInfo[$tcID]))
+				continue;
 			$font = defineColor($status);
 			$tcStatusInfo[$tcID] = array($status,$font);
 		}
 	}
-	
 	for($i = 0;$i < sizeof($tcIDs);$i++)
 	{
 		$tcID = $tcIDs[$i];
 		
 		$tc = $tcInfo[$tcID];
-		$status = 'n';
+		$status = $notRunStatus;
 		$font = 'black';
 		$mgttcid = $tc[1];
 		$name = $tc[0];
@@ -294,7 +300,7 @@ function displayTCTree($TCResult, $build, $owner, $colored, $menuUrl, $filteredR
 		//add all the test cases and their status colors
 		if ( ($bFilteredResultAll) ||
 			 ($filteredResult == $status) || // eg for pass: p == p
-			 ($filteredResult == 'n' && ($numResults == 0)))
+			 ($filteredResult == $notRunStatus && ($numResults == 0)))
 		{ 
 			$data .= displayTC($font,$mgttcid,$name,$tcID,$menuUrl,$dtreeCategoryId);
 		}
@@ -351,7 +357,7 @@ function catCount($catID,$colored,$build)
 		$testCaseArray = null;
 		
 		//Now grab all of the test cases and their results	
-		$sql = "select tcid,status from results,category,testcase where category.id='" . $catID . "' and category.id = testcase.catid and testcase.id = results.tcid order by build";
+		$sql = "select tcid,status from results,category,testcase where category.id='" . $catID . "' and category.id = testcase.catid and testcase.id = results.tcid order by build ASC";
 		$totalResult = do_mysql_query($sql);
 
 		//Setting the results to an array.. Only taking the most recent results and displaying them
@@ -379,7 +385,6 @@ function catCount($catID,$colored,$build)
 				}
 			}//end foreach
 		}//end if
-
 		//setup the return values
 		$returnValues = '<span class="green">' . $pass . "</span>"; //pass
 		$returnValues .= ',<span class="red">' . $fail . "</span>"; //fail

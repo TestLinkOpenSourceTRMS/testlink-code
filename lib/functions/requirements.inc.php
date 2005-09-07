@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: requirements.inc.php,v $
- * @version $Revision: 1.10 $
- * @modified $Date: 2005/09/07 06:23:36 $ by $Author: franciscom $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2005/09/07 20:19:25 $ by $Author: schlundus $
  *
  * @author Martin Havlat <havlat@users.sourceforge.net>
  * 
@@ -49,8 +49,6 @@ function createReqSpec($title, $scope, $countReq, $prodID, $userID, $type = 'n')
 				"','" . mysql_escape_string($type) . "','" . 
 				mysql_escape_string($countReq) . "'," . mysql_escape_string($userID) . 
 				", CURRENT_DATE)";
-				
-				
 		$result = do_mysql_query($sql); 
 		if ($result) {
 			$result = 'ok';

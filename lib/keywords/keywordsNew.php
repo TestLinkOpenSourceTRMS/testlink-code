@@ -4,36 +4,42 @@
  *
  * Filename $RCSfile: keywordsNew.php,v $
  *
- * @version $Revision: 1.2 $
- * @modified $Date: 2005/08/16 18:00:55 $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2005/09/07 20:19:25 $
  *
  * @author Martin Havlat
  * 
  * Page create new keywords for the actual product.
  *
  * @author: francisco mancardi - 20050810 - deprecated $_SESSION['product'] removed
+ * 20050907 - scs - moved POST parms to the top
  *
 **/
 require_once("../../config.inc.php");
 require_once("../functions/common.php");
 require_once('keywords.inc.php');
-require_once("../../lib/functions/lang_api.php");
 testlinkInitPage();
 
+$_POST = strings_stripSlashes($_POST);
+$keyword = isset($_POST['keyword']) ? $_POST['keyword'] : null;
+$bNewKey = isset($_POST['newKey']) ? 1 : 0;
+$notes = isset($_POST['notes']) ? $_POST['notes'] : null;
+$prodID = isset($_SESSION['productID']) ? $_SESSION['productID'] : 0;
+
 $sqlResult = null;
-$keyword = isset($_POST['keyword']) ? strings_stripSlashes($_POST['keyword']) : null;
-if(isset($_POST['newKey']))
+if($bNewKey)
 {
 	if (strlen($keyword))
 	{
-		//scs: we shouldnt allow " and , in keywords any longer
+		//we shouldnt allow " and , in keywords any longer
 		if (!preg_match("/(\"|,)/",$keyword,$m))
 		{
-			$notes = isset($_POST['notes']) ? strings_stripSlashes($_POST['notes']) : null;
-			$sqlResult = addNewKeyword($_SESSION['productID'],$keyword,$notes);
+			$sqlResult = addNewKeyword($prodID,$keyword,$notes);
 		}
 		else
+		{
 			$sqlResult = lang_get('keywords_char_not_allowed'); 
+		}
 	}
 	else
 		$sqlResult = lang_get('empty_keyword_no');

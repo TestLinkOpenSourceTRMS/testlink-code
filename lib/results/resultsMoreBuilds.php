@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsMoreBuilds.php,v 1.7 2005/09/07 12:27:37 franciscom Exp $ 
+* $Id: resultsMoreBuilds.php,v 1.8 2005/09/07 20:19:25 schlundus Exp $ 
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 * 
@@ -14,8 +14,6 @@
 require('../../config.inc.php');
 require_once('common.php');
 require_once('builds.inc.php');
-
-// allow us to retreive array of users 
 require_once('plan.core.inc.php');
 require_once('../keywords/keywords.inc.php');
 testlinkInitPage();
@@ -29,26 +27,19 @@ $arrKeywords = selectKeywords($prodID);
 
 
 $smarty = new TLSmarty();
-
 $smarty->assign('testPlanName',$_SESSION['testPlanName']);
-
-// 20050903 - fm
 $smarty->assign('projectid', $_SESSION['testPlanId']);
 $smarty->assign('arrBuilds', $arrBuilds); 
 $smarty->assign('arrOwners', $arrOwners);
 $smarty->assign('arrKeywords', $arrKeywords);
 
-
 // for excel send header
-if ($xls) {
-  sendXlsHeader();
-  $smarty->assign('printDate', strftime($g_date_format, time()) );
-  $smarty->assign('user', $_SESSION['user']);
+if ($xls)
+{
+	sendXlsHeader();
+	$smarty->assign('printDate', strftime($g_date_format, time()) );
+	$smarty->assign('user', $_SESSION['user']);
 }
 
-// this contains example of how this excel data gets used
-// $smarty->display('resultsTC.tpl');
-
 $smarty->display('resultsMoreBuilds_query_form.tpl');
-
 ?>

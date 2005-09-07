@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: exec.inc.php,v $
  *
- * @version $Revision: 1.7 $
- * @modified $Date: 2005/09/06 20:19:39 $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2005/09/07 09:23:03 $
  *
  * @author Martin Havlat
  *
@@ -141,13 +141,13 @@ function editTestResults($login_name, $tcData, $build)
 	//It is necessary to turn the $_POST map into a number valued array
 	// 20050905 - fm
 	unset($tcData['submitTestResults']);
-	$newArray = extractInput();
+	$newArray = hash2array($tcData);
 	
 	$build = mysql_escape_string($build);
 
 	// todo: change this is use an associative array...
 	//		already fixed bug because of not using one :)
-	$i = 0; //Start the counter after submit value
+	$i = 0; 
 	while ($i < count($newArray)){ //Loop for the entire size of the array
 	
 			$tcID = $newArray[$i]; //Then the first value is the ID
@@ -285,7 +285,7 @@ function editTestResults($login_name, $tcData, $build)
  */
 function createTestInput($resultTC,$build,$tpID)
 {
-	global $g_bugInterfaceOn;
+	global $g_bugInterfaceOn,$g_tc_status;;
 	$arrTC = array();
 	while ($myrow = mysql_fetch_array($resultTC)){ 
 
@@ -300,8 +300,7 @@ function createTestInput($resultTC,$build,$tpID)
 		    $myrow[$field_name] = "none";
 		  }
 		}
-	
-		
+			
 		//This query grabs the results from the build passed in
 		$sql = " SELECT notes, status FROM results WHERE tcid='" . $myrow['id']. "' " .
 		       " AND build='" . $build . "'";
@@ -310,7 +309,8 @@ function createTestInput($resultTC,$build,$tpID)
 
 		//This query grabs the most recent result
 		$sqlRecentResult = "SELECT build.name AS build,status,runby,daterun FROM results,build " .
-				"WHERE tcid='" . $myrow[0] . "' AND status != 'n' AND results.build = build.build AND projid = " . 
+				"WHERE tcid=" . $myrow[0] . " AND status != '" . $g_tc_status['not_run'] . 
+				"' AND results.build = build.build AND projid = " . 
 				$tpID ." ORDER by build.build " .
 				"DESC limit 1";
 		$dataRecentResult = do_mysql_query($sqlRecentResult);

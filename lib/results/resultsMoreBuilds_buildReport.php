@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsMoreBuilds_buildReport.php,v 1.6 2005/09/06 20:19:40 schlundus Exp $ 
+* $Id: resultsMoreBuilds_buildReport.php,v 1.7 2005/09/07 12:24:38 franciscom Exp $ 
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 * 
@@ -55,11 +55,6 @@ tlTimingStop();
 $queryParameters = $reportData[0];
 $summaryOfResults = $reportData[1];
 $allComponentData = $reportData[2];
-/*
-var_dump(strlen($summaryOfResults));
-var_dump(strlen($allComponentData));
-var_dump(tlTimingCurrent());
-*/
 $smarty = new TLSmarty();
 $smarty->assign('queryParameters', $queryParameters);
 $smarty->assign('summaryOfResults', $summaryOfResults);
@@ -69,7 +64,7 @@ $smarty->assign('allComponentData', $allComponentData);
 if ($xls) {
   sendXlsHeader();
  
-  $smarty->assign('printDate', date('"F j, Y, H:m"'));
+  $smarty->assign('printDate', strftime($g_date_format, time()) );
   $smarty->assign('user', $_SESSION['user']);
  }
 

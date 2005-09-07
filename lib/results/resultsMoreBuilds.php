@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsMoreBuilds.php,v 1.6 2005/09/06 06:42:04 franciscom Exp $ 
+* $Id: resultsMoreBuilds.php,v 1.7 2005/09/07 12:27:37 franciscom Exp $ 
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 * 
@@ -42,7 +42,7 @@ $smarty->assign('arrKeywords', $arrKeywords);
 // for excel send header
 if ($xls) {
   sendXlsHeader();
-  $smarty->assign('printDate', date('"F j, Y, H:m"'));
+  $smarty->assign('printDate', strftime($g_date_format, time()) );
   $smarty->assign('user', $_SESSION['user']);
 }
 

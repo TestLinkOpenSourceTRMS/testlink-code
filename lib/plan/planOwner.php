@@ -1,9 +1,10 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: planOwner.php,v 1.2 2005/08/16 18:00:57 franciscom Exp $ */
+/* $Id: planOwner.php,v 1.3 2005/09/07 06:23:06 franciscom Exp $ */
 /**
- * This feature allows to manage the ownership and priority of test suite
- *          
+ * Manage the ownership and priority of test suite
+ *
+ * @author Francisco Mancardi - 20050907 - bug on help          
  */
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -19,14 +20,19 @@ $updated = null;
 
 // process update request
 if(isset($_POST['updateSuiteAttribute']) && $_POST['updateSuiteAttribute'])
+{
 	$updated = updateSuiteAttributes($_POST);
+}
 
 // collect data
 $level = isset($_GET['level']) ? $_GET['level'] : null;
 $data = isset($_GET['data']) ? intval($_GET['data']) : null;
 $arrSuites = null;
 if($level == 'root')
-	redirect('../../gui/instructions/planOwnerAndPriority.html');
+{
+	// 20050906 - fm
+	redirect(TL_INSTRUCTIONS_RPATH . $_SESSION['locale'] . './planOwnerAndPriority.html');
+}	
 else if($level == 'component')
 {
 	//Selecting all categories from the components selected above

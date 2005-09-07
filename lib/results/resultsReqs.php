@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: resultsReqs.php,v $
- * @version $Revision: 1.1 $
- * @modified $Date: 2005/09/02 09:54:37 $ by $Author: havlat $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2005/09/07 12:22:40 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Report requirement based results
@@ -23,8 +23,11 @@ testlinkInitPage();
 
 $idSRS = isset($_GET['idSRS']) ? strings_stripSlashes($_GET['idSRS']) : null;
 
+// 20050906 - fm
+$prodID = isset($_SESSION['productID']) ? $_SESSION['productID'] : 0;
+
 //get list of available Req Specification
-$arrReqSpec = getOptionReqSpec();
+$arrReqSpec = getOptionReqSpec($prodID);
 
 //set the first ReqSpec if not defined via $_GET
 if (!$idSRS && count($arrReqSpec)) {

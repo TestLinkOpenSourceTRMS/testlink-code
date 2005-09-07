@@ -2,8 +2,8 @@
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: results.inc.php,v $
- * @version $Revision: 1.6 $
- * @modified $Date: 2005/09/06 20:19:39 $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2005/09/07 12:14:46 $
  * 
  * @author 	Martin Havlat 
  * @author 	Chad Rosen (original report definition)
@@ -223,20 +223,17 @@ function getTestSuiteReport($idPlan, $build = 'all')
 		$totalResult = do_mysql_query($sql);
 
 		//Setting the results to an array.. Only taking the most recent results and displaying them
-		while($totalRow = mysql_fetch_row($totalResult)){
+		while($totalRow = mysql_fetch_assoc($totalResult)){
 			// This is a test.. I've got a problem if the user goes and sets a previous p,f,b 
 			// value to a 'n' value. 
 			// The program then sees the most recent value as an not run. 
 			// I think we want the user to then see the most recent p,f,b value
-			if($totalRow[1] != $g_tc_status['not_run']){
-				$testCaseArray[$totalRow[0]] = $totalRow[1];
+			if($totalRow['status'] != $g_tc_status['not_run']){
+				$testCaseArray[$totalRow['tcid']] = $totalRow['status'];
 			}
 		}
 
 		//This is the code that determines the pass,fail,blocked amounts
-		$arrayCounter = 0; 
-
-		//Initializing variables
 		$pass = 0;
 		$fail = 0;
 		$blocked = 0;
@@ -342,21 +339,18 @@ function getKeywordsReport($tpID, $build = 'all')
 			$totalResult = do_mysql_query($sql);
 
 			//Setting the results to an array.. Only taking the most recent results and displaying them
-			while($totalRow = mysql_fetch_row($totalResult)){
+			while($totalRow = mysql_fetch_assoc($totalResult)){
 
 				//This is a test.. I've got a problem if the user goes and sets a 
 				//previous p,f,b value to a 'n' value. 
 				//The program then sees the most recent value as an not run. 
 				//I think we want the user to then see the most recent p,f,b value
-				if($totalRow[1] != $g_tc_status['not_run']){
-					$testCaseArray[$totalRow[0]] = $totalRow[1];
+				if($totalRow['status'] != $g_tc_status['not_run']){
+					$testCaseArray[$totalRow['tcid']] = $totalRow['status'];
 				}
 			}
 
 			//This is the code that determines the pass,fail,blocked amounts
-
-			//Initializing variables
-			$arrayCounter = 0; 
 			$pass = 0;
 			$fail = 0;
 			$blocked = 0;
@@ -430,20 +424,17 @@ function getOwnerReport($tpID)
 		$totalResult = do_mysql_query($sql);
 
 		//Setting the results to an array.. Only taking the most recent results and displaying them
-		while($totalRow = mysql_fetch_row($totalResult)){
+		while($totalRow = mysql_fetch_assoc($totalResult)){
 			//This is a test.. 
 			// I've got a problem if the user goes and sets a previous p,f,b value to a 'n' value.
 			// The program then sees the most recent value as an not run.
 			// I think we want the user to then see the most recent p,f,b value
-			if($totalRow[1] != $g_tc_status['not_run']){
-				$testCaseArray[$totalRow[0]] = $totalRow[1];
+			if($totalRow['status'] != $g_tc_status['not_run']){
+				$testCaseArray[$totalRow['tcid']] = $totalRow['status'];
 			}
 		}
 
 		//This is the code that determines the pass,fail,blocked amounts
-
-		//Initializing variables
-		$arrayCounter = 0; //Counter
 		$pass = 0;
 		$fail = 0;
 		$blocked = 0;
@@ -549,18 +540,15 @@ function getPriorityReport($tpID, $build = 'all')
 		}
 		$totalResult = do_mysql_query($sql);
 		//Setting the results to an array.. Only taking the most recent results and displaying them
-		while($totalRow = mysql_fetch_row($totalResult)){
+		while($totalRow = mysql_fetch_assoc($totalResult)){
 	
 			//This is a test.. I've got a problem if the user goes and sets a previous p,f,b value to a 'n' value. The program then sees the most recent value as an not run. I think we want the user to then see the most recent p,f,b value
-			if($totalRow[1] != $g_tc_status['not_run']){
-				$testCaseArray[$totalRow[0]] = $totalRow[1];
+			if($totalRow['status'] != $g_tc_status['not_run']){
+				$testCaseArray[$totalRow['tcid']] = $totalRow['status'];
 			}
 		}
 	
 		//This is the code that determines the pass,fail,blocked amounts
-		$arrayCounter = 0; //Counter
-	
-		//Initializing variables
 		$pass = 0;
 		$fail = 0;
 		$blocked = 0;
@@ -852,9 +840,9 @@ function getBugsReport($tpID, $build = 'all')
 			   " ORDER BY testcase.id";
 	$result = do_mysql_query($sql);
 	
-	while ($myrow = mysql_fetch_row($result)) {
+	while ($myrow = mysql_fetch_assoc($result)) {
 		$bugString = null;
-		$sqlBugs = "SELECT bug from bugs where tcid=" . $myrow[3];
+		$sqlBugs = "SELECT bug from bugs where tcid=" . $myrow['id'];
 		$resultBugs = do_mysql_query($sqlBugs);
 		while ($myrowBug = mysql_fetch_row($resultBugs))
 		{
@@ -959,7 +947,7 @@ function reportBuildStatus($tpID, $build,$buildName)
 	global $g_tc_status;
 	
 	$sql = " SELECT count(testcase.id) " .
-	       " FROM project,component,category,testcase WHERE project.id =" . $$tpID . 
+	       " FROM project,component,category,testcase WHERE project.id =" . $tpID . 
 	       " AND project.id = component.projid AND component.id = category.compid AND category.id = testcase.catid";
 	       
 	$sumResult = do_mysql_query($sql);
@@ -1018,7 +1006,7 @@ function reportSuiteBuildStatus($tpID, $comID, $build,$buildName)
 	global  $g_tc_status;  
 	
 	$sql = " SELECT count(testcase.id) " .
-	       " FROM project,component,category,testcase WHERE project.id =" . $$tpID . 
+	       " FROM project,component,category,testcase WHERE project.id =" . $tpID . 
 	       " AND project.id = component.projid AND component.id = category.compid AND " .
 	       " category.id = testcase.catid and component.id=" . $comID;
 	       
@@ -1107,8 +1095,6 @@ function reportSuiteStatus($tpID, $comID)
 	}
 
 	//This is the code that determines the pass,fail,blocked amounts
-	//Initializing variables
-	$arrayCounter = 0;
 	$pass = 0;
 	$fail = 0;
 	$blocked = 0;

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: requirements.inc.php,v $
- * @version $Revision: 1.9 $
- * @modified $Date: 2005/09/06 09:41:39 $ by $Author: franciscom $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2005/09/07 06:23:36 $ by $Author: franciscom $
  *
  * @author Martin Havlat <havlat@users.sourceforge.net>
  * 
@@ -45,10 +45,12 @@ function createReqSpec($title, $scope, $countReq, $prodID, $userID, $type = 'n')
 	tLog('Create SRS requested: ' . $title);
 	if (strlen($title)) {
 		$sql = "INSERT INTO req_spec (id_product, title, scope, type, total_req, id_author, create_date) " .
-				"VALUES (" . $prodID . ",'" . mysql_escape_string($title) . 
-				"','" . mysql_escape_string($scope) . "','" . mysql_escape_string($type) . "','" . 
+				"VALUES (" . $prodID . ",'" . mysql_escape_string($title) . "','" . mysql_escape_string($scope) . 
+				"','" . mysql_escape_string($type) . "','" . 
 				mysql_escape_string($countReq) . "'," . mysql_escape_string($userID) . 
 				", CURRENT_DATE)";
+				
+				
 		$result = do_mysql_query($sql); 
 		if ($result) {
 			$result = 'ok';

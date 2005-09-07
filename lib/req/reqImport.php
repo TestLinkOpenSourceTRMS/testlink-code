@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqImport.php,v $
- * @version $Revision: 1.2 $
- * @modified $Date: 2005/08/31 11:35:12 $ by $Author: schlundus $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2005/09/07 06:23:36 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Import requirements to a specification. 
@@ -22,7 +22,12 @@ testlinkInitPage();
 
 $idSRS = isset($_GET['idSRS']) ? strings_stripSlashes($_GET['idSRS']) : null;
 $importType = isset($_POST['importType']) ? strings_stripSlashes($_POST['importType']) : null;
+
+// 20050906 - fm
+$userID = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
+
 $CSVfile = TL_TEMP_PATH . "importReq.csv";
+
 /** @var string $importResult declares that import was done */
 $importResult = null;
 /** @var array $arrImport carries the information about particular imported requirements */
@@ -73,7 +78,8 @@ elseif (isset($_POST['executeImport']))
 		$arrReqTitles = getReqTitles($idSRS);
 				
 		// process import
-		$arrImport = executeImportedReqs($arrImportSource, $arrReqTitles, $conflictSolution, $emptyScope, $idSRS);
+		$arrImport = executeImportedReqs($arrImportSource, $arrReqTitles, 
+		                                 $conflictSolution, $emptyScope, $idSRS, $userID);
 	}
 
 	$importResult = lang_get('req_import_finished');

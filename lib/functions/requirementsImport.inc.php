@@ -4,11 +4,13 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: requirementsImport.inc.php,v $
- * @version $Revision: 1.3 $
- * @modified $Date: 2005/09/06 06:44:07 $ by $Author: franciscom $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2005/09/07 06:24:03 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Functions for Import requirements to a specification. 
+ *
+ * @author Francisco Mancardi - 20050906 - reduce global coupling
  *
  * @author Francisco Mancardi - 20050905 - trim_title() refactoring 
  */
@@ -53,8 +55,12 @@ function getReqDataByTitle($title)
 
 /** function process CVS file with requirements into TL and creates an array with reports 
  * @return array_of_strings list of particular REQ titles with resolution 
+ *
+ *
+ * @author Francisco Mancardi - 20050906 - added $userID
  **/
-function executeImportedReqs($arrImportSource, $arrReqTitles, $conflictSolution, $emptyScope, $idSRS)
+function executeImportedReqs($arrImportSource, $arrReqTitles, 
+                             $conflictSolution, $emptyScope, $idSRS, $userID)
 {
 	foreach ($arrImportSource as $data)
 	{
@@ -77,8 +83,8 @@ function executeImportedReqs($arrImportSource, $arrReqTitles, $conflictSolution,
 
 				if ($conflictSolution == 'overwrite') {
 					$arrOldReq = getReqDataByTitle($title);
-					$status = updateRequirement ($arrOldReq[0]['id'],$title,$scope,
-							$arrOldReq[0]['status'],$arrOldReq[0]['type']);
+					$status = updateRequirement($arrOldReq[0]['id'],$title,$scope,$userID,
+							                        $arrOldReq[0]['status'],$arrOldReq[0]['type']);
 					if ($status == 'ok') {
 						$status = lang_get('req_import_result_overwritten');
 					}
@@ -86,7 +92,7 @@ function executeImportedReqs($arrImportSource, $arrReqTitles, $conflictSolution,
 
 				elseif ($conflictSolution == 'double') 
 				{
-					$status = createRequirement ($title, $scope, $idSRS); // default status and type
+					$status = createRequirement($title, $scope, $idSRS, $userID); // default status and type
 					if ($status == 'ok') {
 						$status = lang_get('req_import_result_added');
 					}
@@ -104,7 +110,7 @@ function executeImportedReqs($arrImportSource, $arrReqTitles, $conflictSolution,
 
 			} else {
 				// no conflict - just add requirement
-				$status = createRequirement ($title, $scope, $idSRS); // default status and type
+				$status = createRequirement ($title, $scope, $idSRS, $userID); // default status and type
 			}
 			$arrImport[] = array($title, $status);
 		}

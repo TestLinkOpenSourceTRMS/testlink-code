@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: reqSpecList.php,v $
- * @version $Revision: 1.7 $
- * @modified $Date: 2005/09/06 06:46:13 $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2005/09/07 06:23:36 $
  * 
  * @author Martin Havlat
  * 
@@ -55,7 +55,7 @@ elseif(isset($_GET['createForm']))
 } 
 
 // collect all existing documents for the product
-$arrSpec = getReqSpec('product');
+$arrSpec = getReqSpec($prodID,'product');
 
 
 // 20050826 - fm

@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsTC.php,v 1.2 2005/08/16 18:00:58 franciscom Exp $ 
+* $Id: resultsTC.php,v 1.3 2005/09/07 08:50:48 franciscom Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -78,7 +78,7 @@ $smarty->assign('title', lang_get('title_test_report_all_builds'));
 $smarty->assign('arrData', $arrData);
 $smarty->assign('arrBuilds', $arrBuilds);
 if ($xls) {
-	$smarty->assign('printDate', date('"F j, Y, H:m"'));
+	$smarty->assign('printDate', strftime($g_date_format, time()) );
 	$smarty->assign('user', $_SESSION['user']);
 }
 $smarty->display('resultsTC.tpl');

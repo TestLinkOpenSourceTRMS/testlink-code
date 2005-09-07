@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.9 $
- * @modified $Date: 2005/09/05 14:39:13 $ by $Author: havlat $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2005/09/07 06:21:13 $ by $Author: franciscom $
  *
  * @author Chad Rosen
  *
@@ -77,7 +77,7 @@ define('TL_LOG_PATH', TL_TEMP_PATH );
 
 
 /** Default level of logging (NONE, ERROR, INFO, DEBUG, EXTENDED) */
-define('TL_LOG_LEVEL_DEFAULT', 'NONE');
+define('TL_LOG_LEVEL_DEFAULT', 'DEBUG');
 require_once(TL_ABS_PATH.'/lib/functions/logging.inc.php');
 
 /** Is the metrics table displayed on the main page enabled? Accepts TRUE or FALSE values */

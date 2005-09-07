@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.12 $
- * @modified $Date: 2005/09/06 20:19:39 $
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2005/09/07 08:58:37 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -17,6 +17,7 @@
  * email, userID, productID, productName, project (use rather testPlanID),
  * testPlanID, testPlanName
  *
+ * @author: francisco mancardi - 20050907 - added hash2array()
  * @author: francisco mancardi - 20050904 - added check_hash_keys()
  *
  * @author: francisco mancardi - 20050904
@@ -591,4 +592,23 @@ function check_hash_keys($hash, $akeys2check, $msg='')
 	
 	return ($status);
 }
+
+
+
+/**
+ * Turn a hash into a number valued array
+ *
+ * 
+ * @return  array    number valued array of posted input 
+ */
+function hash2array($hash, $bStripInput = false)
+{
+	$newArray = null;
+	foreach ($hash as $key)
+	{
+		$newArray[] = $bStripInput ? strings_stripSlashes($key) : $key;
+  }
+	return $newArray;
+}
+
 ?>

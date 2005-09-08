@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: archive.inc.php,v $
  *
- * @version $Revision: 1.10 $
- * @modified $Date: 2005/09/06 06:42:43 $ by $Author: franciscom $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2005/09/08 12:25:26 $ by $Author: franciscom $
  *
  * @author Martin Havlat
  * Purpose:  functions for test specification management have three parts:
@@ -312,35 +312,97 @@ function moveComponentToProduct($newParent, $id)
 	return $result ? 'ok' : mysql_error();
 }
 
+// 20050908 - fm due to changes in insertProductComponent()
 // 20050905 - fm
 function copyComponentToProduct($newParent, $id, $nested, $login_name)
 {
 	$component = getComponent($id);
-	$comID = insertProductComponent($newParent,$component[1],$component[2],$component[3],
-	                                $component[4],$component[5],$component[6]);
-	// copy also categories
-	if ($nested == 'yes')
-	{
-		// Select the categories for copy
-		$catIDs = null;
-		getComponentCategoryIDs($id,$catIDs);
-		for($i = 0;$i < sizeof($catIDs);$i++)
-			copyCategoryToComponent($comID, $catIDs[$i], $nested, $login_name);
-	}
+
+	$ret = insertProductComponent($newParent,$component[1],$component[2],$component[3],
+	                              $component[4],$component[5],$component[6]);
+	
+	$comID = $ret['id'];
+	if ( $ret['status_ok'] )                             
+	{	
+  	// copy also categories
+  	if ($nested == 'yes')
+  	{
+  		// Select the categories for copy
+  		$catIDs = null;
+  		getComponentCategoryIDs($id,$catIDs);
+  		for($i = 0;$i < sizeof($catIDs);$i++)
+  		{
+  			copyCategoryToComponent($comID, $catIDs[$i], $nested, $login_name);
+  		}	
+  	}
+  }	
 	return $comID ? 'ok' : mysql_error();
 }
 
-function insertProductComponent($prodID,$name,$intro,$scope,$ref,$method,$lim)
+
+/*
+ 20050908 - fm
+ added possibility to check for existent name and refuse to insert
+*/
+function insertProductComponent($prodID,$name,$intro,$scope,$ref,$method,$lim,
+                                $check_duplicate_name=0,
+                                $action_on_duplicate_name='allow_repeat')
 {
-	$sql = "INSERT INTO mgtcomponent (name,intro,scope,ref,method,lim,prodid) " .
-			"VALUES ('" . mysql_escape_string($name) . "','" . mysql_escape_string($intro) . "','" . 
-			mysql_escape_string($scope) . "','" . mysql_escape_string($ref) . "','" . mysql_escape_string($method) . 
-			"','" . mysql_escape_string($lim) . "'," . $prodID . ")";
-			
-	$result = do_mysql_query($sql);
 	
-	return $result ? mysql_insert_id() : 0;
+	global $g_prefix_name_for_copy;
+	
+	echo "<pre>345" . $g_prefix_name_for_copy; echo "</pre>";
+	
+	$name = trim($name);
+  $ret=array('status_ok' => 1, 'id' => 0, 'msg' => 'ok');
+	if ($check_duplicate_name)
+	{
+	  $sql = " SELECT count(*) AS qty FROM mgtcomponent " .
+	         " WHERE name = '" . mysql_escape_string($name) . "'" . 
+	         " AND prodid={$prodID} "; 
+	  $result = do_mysql_query($sql);
+	  $myrow = mysql_fetch_assoc($result);
+
+
+	  if ($action_on_duplicate_name == 'block')
+	  {
+  	  if( $myrow['qty'] > 0 )
+  	  {
+  	    $ret['status_ok'] = 0;
+  	    $ret['msg'] = lang_get('component_name_already_exists');	
+  	  }
+	  }
+	  else
+	  {
+	  	$ret['status_ok'] = 1;      
+	  	if ($action_on_duplicate_name == 'generate_new')
+	  	{ 
+	  		$ret['status_ok'] = 1;      
+	  		$name = $g_prefix_name_for_copy . " " . $name ;      
+	  		echo "<pre>name 369"; print_r($name); echo "</pre>";
+	  	}
+	  }       
+	}
+	
+	if ( $ret['status_ok'] )
+	{
+		$sql = "INSERT INTO mgtcomponent (name,intro,scope,ref,method,lim,prodid) " .
+		     	 "VALUES ('" . mysql_escape_string($name) . "','" . mysql_escape_string($intro) . "','" . 
+			     mysql_escape_string($scope) . "','" . mysql_escape_string($ref) . "','" . mysql_escape_string($method) . 
+			     "','" . mysql_escape_string($lim) . "'," . $prodID . ")";
+			
+	  $result = do_mysql_query($sql);
+		if( $result ) {
+	    $ret['id'] = mysql_insert_id();
+		}
+		else {
+   		$ret['msg'] = mysql_error();
+		}
+	}
+	return($ret);
 }
+
+
 
 function insertComponentCategory($compID,$name,$objective,$config,$testdata,$tools)
 {

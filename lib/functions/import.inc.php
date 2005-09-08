@@ -1,6 +1,6 @@
 <?
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: import.inc.php,v 1.5 2005/08/31 15:49:26 franciscom Exp $
+* $Id: import.inc.php,v 1.6 2005/09/08 12:25:26 franciscom Exp $
 * 
 * @author Martin Havlat
 *
@@ -142,8 +142,11 @@ function exeTcImport($fileLocation,$prodID, $login_name, $catIDForImport = 0)
 	if (!$catIDForImport)
 	{
 		$keys = buildKeywordListAndInsertKeywords($data,$prodID);
+		
 		//Insert arrayCom into component where projID == projIDSubmit 
-		$comID = insertProductComponent($prodID,$arrayCom,null,null,null,null,null);
+    // 20050908 - fm - changes in insertProductComponent()
+		$ret = insertProductComponent($prodID,$arrayCom,null,null,null,null,null);
+		$comID = $ret['id'];
 		
 		//Select comID from component where comName == arrayCom store as comID
 		$catID = insertComponentCategory($comID,$arrayCat,null,null,null,null);

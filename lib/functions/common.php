@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.13 $
- * @modified $Date: 2005/09/07 08:58:37 $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2005/09/08 12:25:26 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -611,4 +611,29 @@ function hash2array($hash, $bStripInput = false)
 	return $newArray;
 }
 
+
+/**
+ * Turn a hash into a number valued array
+ *
+ * @param string $str2check
+ * @param string  $ereg_forbidden_chars: regular expression
+ * 
+ * @return  1: check ok, 0:check KO
+ *
+ * @author Francisco Mancardi - 20050907 
+ *
+ */
+function check_string($str2check, $ereg_forbidden_chars)
+{
+$status_ok=1;
+
+if( $ereg_forbidden_chars != '' and !is_null($ereg_forbidden_chars))
+{
+  if (eregi($ereg_forbidden_chars, $str2check))
+  {
+    $status_ok=0;	
+  } 	
+}	
+return $status_ok;
+}
 ?>

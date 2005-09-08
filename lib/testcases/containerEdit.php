@@ -1,8 +1,11 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: containerEdit.php,v 1.12 2005/09/06 06:42:43 franciscom Exp $ */
+/* $Id: containerEdit.php,v 1.13 2005/09/08 12:25:26 franciscom Exp $ */
 /* Purpose:  This page manages all the editing of test specification containers. */
 /*
+ *
+ * @author: Francisco Mancardi - 20050907
+ * BUGID 0000086
  *
  * @author: francisco mancardi - 20050830
  * bug in deleteCOM e deleteCAT 
@@ -29,10 +32,10 @@ testlinkInitPage();
 
 
 // 20050826 - fm - $data has been replaced with the corresponding container ID
-$my_componentID = isset($_GET['componentID']) ? intval($_GET['componentID']) : null;
-$my_categoryID  = isset($_GET['categoryID']) ? intval($_GET['categoryID']) : null;
+$my_componentID = isset($_REQUEST['componentID']) ? intval($_REQUEST['componentID']) : null;
+$my_categoryID  = isset($_REQUEST['categoryID']) ? intval($_REQUEST['categoryID']) : null;
 // ----------------------------------------------------------------------------
-$my_productID   = isset($_GET['productID']) ? intval($_GET['productID']) : null;
+$my_productID   = isset($_REQUEST['productID']) ? intval($_REQUEST['productID']) : null;
 if( !$my_productID )
 {
   $my_productID = $_SESSION['productID'];	
@@ -63,24 +66,31 @@ $a_tpl = array( 'moveCom' => 'containerMove.tpl',
                 'reorderTC' => 'tcReorder.tpl'); 
 
 
-$a_com_actions = array ('editCOM', 'newCOM', 'addCOM', 'deleteCOM',
-                        'moveCom','updateCOM', 'componentCopy', 'componentMove' );
+// 20050907 - fm
+$a_com_actions = array ('editCOM' => 0, 'newCOM' => 0,                       
+                        'deleteCOM' => 0, 'moveCom' => 0, 
+                        'componentCopy' => 0, 'componentMove' => 0,
+                        'addCOM' => 1,  'updateCOM' => 1);
 
-$a_cat_actions = array ('reorderCAT','updateCategoryOrder','newCAT','addCAT',
-                        'deleteCat','editCat','updateCat','moveCat','categoryCopy',
-                        'categoryMove', 'updateTCorder', 'reorderTC');
+$a_cat_actions = array ('reorderCAT' => 0,'updateCategoryOrder' => 0,'newCAT' => 0,
+                        'deleteCat' => 0,'editCat' => 0,'moveCat' => 0,
+                        'categoryCopy' => 0, 'categoryMove' => 0, 
+                        'updateTCorder' => 0, 'reorderTC' => 0,
+                        'addCAT' => 1,'updateCat' => 1);
 
 // ----------------------------------------------------------------------------
 $the_tpl=null;
 
 $do_search=1;                    
-foreach ($a_com_actions as $the_key)
+foreach ($a_com_actions as $the_key => $the_val)
 {
   if (isset($_POST[$the_key]) )
   {
     $the_tpl = $a_tpl[$the_key];
     $action = $the_key;
+    $get_c_data = $the_val;
     $level = 'component';
+    $warning_empty_name = lang_get('warning_empty_com_name');
     $do_search = 0;
     break;
   }
@@ -88,13 +98,15 @@ foreach ($a_com_actions as $the_key)
 
 if ($do_search)
 {
-  foreach ($a_cat_actions as $the_key)
+  foreach ($a_cat_actions as $the_key => $the_val)
   {
     if (isset($_POST[$the_key]) )
     {
       $the_tpl = $a_tpl[$the_key];
-      $level = 'category';
       $action = $the_key;
+      $get_c_data = $the_val;
+      $level = 'category';
+      $warning_empty_name = lang_get('warning_empty_cat_name');
       $do_search = 0;
       break;
     }
@@ -119,37 +131,63 @@ foreach ($amy_keys as $key)
 // --------------------------------------------------------------------
 
 
-//If the user has chosen to edit a component then show this code
+if($get_c_data)
+{
+
+  $name_ok = 1;
+	$c_data=get_comp_values_from_post($amy_keys);
+
+  // BUGID 0000086
+	if( $name_ok && !check_string($c_data['name'],$g_ereg_forbidden) )
+	{
+		$msg = lang_get('string_contains_bad_chars');
+		$name_ok = 0;
+	}
+	
+  if( $name_ok && strlen($c_data['name']) == 0)
+  {
+    $msg = $warning_empty_name;
+    $name_ok = 0;
+  }
+}
+
+
+
+
 if( $action == 'editCOM' || $action == 'newCOM')
 {
 	viewer_edit_new_com($amy_keys, $oFCK, $action,$my_productID, $my_componentID);
 }
 else if($action == 'updateCOM')
 {
-	$c_data=get_comp_values_from_post($amy_keys);
-	$SQLResult = 'ok';
-	if (!updateComponent($my_componentID,
-	                     $c_data['name'],$c_data['intro'],$c_data['scope'],
-		                   $c_data['ref'],$c_data['method'],$c_data['lim']))
+	// 20050907 - fm
+	if( $name_ok )
 	{
-		$SQLResult = mysql_error();
+    $msg = 'ok';
+  	if (!updateComponent($my_componentID,
+  	                     $c_data['name'],$c_data['intro'],$c_data['scope'],
+  		                   $c_data['ref'],$c_data['method'],$c_data['lim']))
+  	{
+  		$msg = mysql_error();
+  	}
 	}	
-	showComponent($my_componentID, $SQLResult);
+	showComponent($my_componentID, $msg);
 }
 else if($action == 'addCOM')
 {
   // we will arrive here after submit in containerNew.tpl (newCOM)
-	$c_data=get_comp_values_from_post($amy_keys);
-
-	$result = lang_get('warning_empty_com_name');
-	if (strlen($c_data['name']))
+  echo "<pre>"; print_r($c_data); echo "</pre>";
+	if ($name_ok)
 	{
-		$result = 'ok';
-		if (!insertProductComponent($my_productID,
-		                            $c_data['name'],$c_data['intro'],$c_data['scope'],
-		                            $c_data['ref'],$c_data['method'],$c_data['lim']))
+		$msg = 'ok';
+		$ret =insertProductComponent($my_productID,
+		                             $c_data['name'],$c_data['intro'],$c_data['scope'],
+		                             $c_data['ref'],$c_data['method'],$c_data['lim'],
+		                             $g_check_names_for_duplicates,'generate_new');
+		                             
+		if (!$ret['status_ok'] )                             
 		{	
-	   $result = mysql_error();
+	   $msg = $ret['msg'];
 		}	
 	}
 
@@ -162,10 +200,8 @@ else if($action == 'addCOM')
   	$of = &$oFCK[$key];
   	$smarty->assign($key, $of->CreateHTML());
 	}
-			
-	$smarty->assign('sqlResult',$result);
-	//$smarty->assign('name', $c_data['name']);
-
+	$smarty->assign('sqlResult',$msg);
+	$smarty->assign('containerID',$my_productID);
 }
 else if ($action == 'deleteCOM')
 {
@@ -240,17 +276,14 @@ else if($action == 'editCat' || $action == 'newCAT')
 else if($action == 'addCAT')
 {
   // we will arrive here after submit in containerNew.tpl (newCAT)
-  $c_data = get_comp_values_from_post($amy_keys);
- 	$result = lang_get('warning_empty_cat_name');	
-
-  if (strlen($c_data['name']))
+  if ($name_ok)
 	{
-		$result = lang_get('error_cat_add');
+		$msg = lang_get('error_cat_add');
 	 	if (insertComponentCategory($my_componentID,
 	 	                            $c_data['name'], $c_data['objective'],
 	 	                            $c_data['config'],$c_data['data'],$c_data['tools']))
 	 	{
-  		$result = 'ok';
+  		$msg = 'ok';
   	}	
   }
 
@@ -263,8 +296,19 @@ else if($action == 'addCAT')
   	$of = &$oFCK[$key];
   	$smarty->assign($key, $of->CreateHTML());
 	}
-	$smarty->assign('sqlResult',$result);
-
+	$smarty->assign('sqlResult',$msg);
+  $smarty->assign('containerID',$my_componentID);
+}
+elseif($action == 'updateCat') // Update a category (from edit window)
+{
+	if( $name_ok )
+	{
+	  $msg = updateCategory($my_categoryID,
+	                        $c_data['name'], $c_data['objective'],$c_data['config'],
+	                        $c_data['data'],$c_data['tools']) ? 'ok' : mysql_error();
+  }	
+	// display updated values
+	showCategory($my_categoryID, $msg);
 }
 else if ($action == 'deleteCat')
 {
@@ -281,17 +325,6 @@ else if ($action == 'deleteCat')
 		$smarty->assign('objectID', $my_categoryID);
 	}	
 	
-}
-elseif($action == 'updateCat') //Update a category (from edit window)
-{
-
-  $c_data = get_comp_values_from_post($amy_keys);
-	$sqlResult = updateCategory($my_categoryID,
-	                            $c_data['name'], $c_data['objective'],$c_data['config'],
-	                            $c_data['data'],$c_data['tools']) ? 'ok' : mysql_error();
-	
-	// display updated component
-	showCategory($my_categoryID, $sqlResult);
 }
 elseif($action == 'moveCat')
 {

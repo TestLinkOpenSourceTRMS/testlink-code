@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: adminProductEdit.php,v $
  *
- * @version $Revision: 1.3 $
- * @modified $Date: 2005/08/31 11:35:12 $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2005/09/08 12:25:26 $
  *
  * @author Martin Havlat
  *
@@ -14,6 +14,7 @@
  * 
  * @todo Verify dependency before delete project 
  *
+ * 20050908 - fm - BUGID 0000086
  * 20050831 - scs - moved POST to top, some small changes
 **/
 include('../../config.inc.php');
@@ -63,13 +64,26 @@ else
 {
 	if ($bEditProduct)
 	{
-		if (strlen($name) && $id)
+		
+		// ----------------------------------------------------------
+		$name_ok = 1;
+	  if( $name_ok && !strlen($name) )
+	  {
+		 $updateResult = lang_get('info_product_name_empty');
+		 $name_ok = 0;
+	  }
+		
+		// BUGID 0000086
+		if( $name_ok && !check_string($name,$g_ereg_forbidden) )
+	  {
+		 $updateResult = lang_get('string_contains_bad_chars');
+		 $name_ok = 0;
+	  }
+		// ----------------------------------------------------------
+		
+		if ($name_ok && $id)
 		{
 			$updateResult = updateProduct($id, $name, $color, $optReq);
-		}
-		else
-		{
-			$updateResult = lang_get('info_product_name_empty');
 		}
 		$action = 'updated';
 	}

@@ -5,13 +5,14 @@
  *
  * Filename $RCSfile: adminProductNew.php,v $
  *
- * @version $Revision: 1.4 $
- * @modified $Date: 2005/08/31 19:21:38 $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2005/09/08 12:25:26 $
  *
  * @author Martin Havlat
  *
- * This page create New products.
+ * Create New products.
  *
+ * 20050908 - fm - BUGID 0000086
  * 20050829 - scs - moved POST params to the top of the script
  *
 **/
@@ -29,19 +30,32 @@ $optReq = isset($_POST['optReq']) ? intval($_POST['optReq']) : 0;
 $createResult = null;
 if ($bNewProduct)
 {
-	if (strlen($name))
+	$name_ok = 1;
+	if( $name_ok && !strlen($name) )
 	{
-		if (createProduct($name,$color,$optReq))
-			$createResult = 'ok';
-		else
-			$createResult = lang_get('refer_to_log');
+		$msg = lang_get('info_product_name_empty');
+		$name_ok = 0;
 	}
-	else
-		$createResult = lang_get('info_product_name_empty');
+	
+	// BUGID 0000086
+	if( $name_ok && !check_string($name,$g_ereg_forbidden) )
+	{
+		$msg = lang_get('string_contains_bad_chars');
+		$name_ok = 0;
+	}
+	
+	if ($name_ok)
+	{
+		$msg = 'ok';
+		if (!createProduct($name,$color,$optReq))
+		{
+			$msg = lang_get('refer_to_log');
+		}	
+	}
 }
 
 $smarty = new TLSmarty();
-$smarty->assign('sqlResult', $createResult);
+$smarty->assign('sqlResult', $msg);
 $smarty->assign('name', $name);
 $smarty->assign('defaultColor', TL_BACKGROUND_DEFAULT);
 $smarty->display('adminProductNew.tpl');

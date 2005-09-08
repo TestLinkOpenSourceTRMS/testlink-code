@@ -4,14 +4,17 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.8 $
- * @modified $Date: 2005/09/06 06:42:43 $  by $Author: franciscom $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2005/09/08 12:25:26 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
  * @author Martin Havlat
  *
  * @todo deactive users instead of delete
  * 
+ * @author Francisco Mancardi - 20050827
+ * BUGID 0000086
+ *
  * @author Francisco Mancardi - 20050827
  * fckeditor
  *
@@ -48,10 +51,11 @@ foreach ($a_ofck as $key)
 
 $tc = null;
 $keySize = null;
-if (isset($_POST['editTC']))
-	$tc = $_POST['editTC'];
-else if (isset($_GET['editTC']))
-	$tc = $_GET['editTC'];
+
+if (isset($_REQUEST['editTC']))
+{
+	$tc = $_REQUEST['editTC'];
+}	
 
 $product = $_SESSION['productID'];
 //$data = isset($_GET['data']) ? intval($_GET['data']) : 0;
@@ -67,6 +71,38 @@ $smarty = new TLSmarty;
 // 20050810 - fm
 // from 3 to only 1 assignment
 $smarty->assign('path_htmlarea', $_SESSION['basehref'] . 'third_party/htmlarea/');
+
+
+// -------------------------------------------------------------------------------------------
+// 20050908 - fm
+$name_ok = 1;
+if( isset($_POST['addTC']) || isset($_POST['updateTC']) )
+{
+	$title 		= isset($_POST['title']) ? strings_stripSlashes($_POST['title']) : null;
+	$summary 	= isset($_POST['summary']) ? strings_stripSlashes($_POST['summary']) : null;
+	$steps 		= isset($_POST['steps']) ? strings_stripSlashes($_POST['steps']) : null;
+	$outcome 	= isset($_POST['exresult']) ? strings_stripSlashes($_POST['exresult']) : null;
+
+  // BUGID 0000086
+  $result = lang_get('warning_empty_tc_title');	
+	if( $name_ok && !check_string($title,$g_ereg_forbidden) )
+	{
+		$msg = lang_get('string_contains_bad_chars');
+		$name_ok = 0;
+	}
+	
+  if( $name_ok && strlen($title) == 0)
+  {
+    $msg = lang_get('warning_empty_tc_title');
+    $name_ok = 0;
+  }
+}
+// -------------------------------------------------------------------------------------------
+
+
+
+
+
 	
 //If the user has chosen to edit a testcase then show this code
 if($tc)
@@ -116,12 +152,9 @@ if($tc)
 } 
 else if(isset($_POST['updateTC']))
 {
-	$title 		= isset($_POST['title']) ? strings_stripSlashes($_POST['title']) : null;
-	$summary 	= isset($_POST['summary']) ? strings_stripSlashes($_POST['summary']) : null;
-	$steps 		= isset($_POST['steps']) ? strings_stripSlashes($_POST['steps']) : null;
-	$outcome 	= isset($_POST['exresult']) ? strings_stripSlashes($_POST['exresult']) : null;
-	
+
 	$updatedKeywords = null;
+
 	// Since the keywords are being passed in as an array I need to seperate them 
 	// into a comma separated string
 	if(isset($_POST['keywords']) && count($_POST['keywords']) > 0)
@@ -136,11 +169,17 @@ else if(isset($_POST['updateTC']))
 	//everytime a test case is saved I update its version
 	$version = isset($_POST['version']) ? intval($_POST['version']) : 0; 
 	$version++;
-	
-	if (updateTestcase($testcaseID,$title,$summary,$steps,$outcome,$_SESSION['user'],$updatedKeywords,$version))
-		$sqlResult = 'ok';
-   	else
+
+  $sqlResult = $msg;
+  if( $name_ok)
+  {
+   $sqlResult = 'ok';
+   if (!updateTestcase($testcaseID,$title,$summary,$steps,$outcome,$_SESSION['user'],$updatedKeywords,$version))
+   {
 		$sqlResult =  mysql_error();
+   }
+    
+  }	
 
 	// show testcase
 	// 20050820 - fm
@@ -150,37 +189,29 @@ else if(isset($_POST['updateTC']))
 else if(isset($_POST['newTC']))
 {
 	$show_newTC_form = 1;
-	
-
 }
 else if(isset($_POST['addTC']))
 {
 	$show_newTC_form=1;
 	 
-	$title 		= isset($_POST['title']) ? strings_stripSlashes($_POST['title']) : null;
-	$summary 	= isset($_POST['summary']) ? strings_stripSlashes($_POST['summary']) : null;
-	$steps 		= isset($_POST['steps']) ? strings_stripSlashes($_POST['steps']) : null;
-	$outcome 	= isset($_POST['exresult']) ? strings_stripSlashes($_POST['exresult']) : null;
-
-
-  $result = lang_get('warning_empty_tc_title');	
-  if (strlen($title))
+  if ($name_ok)
 	{
-		$result = lang_get('error_tc_add');
+		$msg = lang_get('error_tc_add');
 	  if (insertTestcase($categoryID,$title,$summary,$steps,$outcome,$_SESSION['user']))
 	  {
-			$result = 'ok';
+			$msg = 'ok';
 		}
   }
   
-  $smarty->assign('sqlResult', $result);
+  $smarty->assign('sqlResult', $msg);
 	$smarty->assign('name', $title);
 	$smarty->assign('item', 'Test case');
 
 }
 else if(isset($_POST['deleteTC']))
 {
-	if(isset($_GET['sure']) && $_GET['sure'] == 'yes') //check to see if the user said he was sure he wanted to delete
+	//check to see if the user said he was sure he wanted to delete
+	if(isset($_GET['sure']) && $_GET['sure'] == 'yes') 
 	{
 		if (deleteTestcase($testcaseID))
 			$smarty->assign('sqlResult', 'ok');

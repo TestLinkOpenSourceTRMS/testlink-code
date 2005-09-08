@@ -4,13 +4,21 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.10 $
- * @modified $Date: 2005/09/07 06:21:13 $ by $Author: franciscom $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2005/09/08 12:11:43 $ by $Author: franciscom $
  *
  * @author Chad Rosen
  *
  * Constants used throughout TestLink are defined within this file
  * they should be changed for your environment
+ *
+ * @author Francisco Mancardi - 20050908
+ * New configuration parameters:
+ * $g_check_names_for_duplicates
+ * $g_action_on_duplicate_name
+ * $g_prefix_name_for_copy
+ *
+ * Fixed BUGID 0000086: Using "|" in the component or category name causes malformed URLs
  *
  * @author Francisco Mancardi - 20050904 
  * added $g_show_tp_without_prodid to manage TL 1.5.1 compatibility.
@@ -136,6 +144,38 @@ define('TL_INSTRUCTIONS_RPATH','gui/help/');
 
 /* Configure frmWorkArea frameset */
 define('TL_FRMWORKAREA_LEFT_FRAME_WIDTH', "30%"); 
+
+
+/* 1 -> Check if:
+        a. Product Name                   is unique
+        b. Component Name Inside Product  is unique
+        c. Category Name Inside Component is unique
+        d. Test Case Name inside Category is unique 
+   0 -> don't check
+*/
+//$g_check_names_for_duplicates=0;
+$g_check_names_for_duplicates=1;
+
+/* 
+if you have choose to check for unique names, what to do
+when a duplicate name is found
+
+'allow_repeat': allow the name to be repeated (backward compatibility)
+'generate_new': generate a new name using $g_prefix_name_for_copy
+'block'       : return with an error 
+
+*/    
+$g_action_on_duplicate_name='allow_repeat';
+
+/*  */
+$g_prefix_name_for_copy= strftime("%Y%m%d-%H:%M:%S", time());
+        
+/* 
+BUGID 0000086: Using "|" in the component or category name causes malformed URLs
+regexp used to check for chars not allowed in product, component , category name, 
+and testcase title 
+*/
+$g_ereg_forbidden ="[|]";
 
 /* 1 -> TL 1.5.1 compatibility, get also Test Plans without product id. */
 $g_show_tp_without_prodid=1;

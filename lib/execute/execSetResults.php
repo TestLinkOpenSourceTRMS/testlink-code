@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.6 $
- * @modified $Date: 2005/09/06 06:43:19 $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2005/09/08 16:25:09 $
  *
  * @author Martin Havlat
  *
@@ -38,6 +38,8 @@ $submitResult = null;
 if (isset($_POST['submitTestResults']))
 {
 	// 20050905 - fm
+	// 20060908 - scs - fixed 90
+	$_POST = strings_stripSlashes($_POST);
 	$submitResult = editTestResults($_SESSION['user'],$_POST,$_GET['build']);
 }
 

@@ -1,5 +1,5 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
-# $Id: testlink_create_tables.sql,v 1.3 2005/08/30 15:18:05 havlat Exp $
+# $Id: testlink_create_tables.sql,v 1.4 2005/09/09 08:29:46 franciscom Exp $
 # SQL script - create db tables for TL 1.6.0  
 #
 # default rights & admin account are created via testlink_create_default_data.sql
@@ -17,6 +17,11 @@
 #
 # --------------------------------------------------------
 
+
+DROP TABLE IF EXISTS `db_version`;
+CREATE TABLE `db_version` (
+  `version` varchar(50) NOT NULL default '1.6 BETA 1',
+)
 #
 # Table structure for table `bugs`
 #

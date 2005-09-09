@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: installNewDB.php,v 1.7 2005/08/29 10:43:38 franciscom Exp $ */
+/* $Id: installNewDB.php,v 1.8 2005/09/09 08:29:46 franciscom Exp $ */
 /*
 Parts of this file has been taken from:
 Etomite Content Management System
@@ -40,16 +40,7 @@ $sql_update_data   = array();
 $sql_create_schema[1] = 'sql/testlink_create_tables.sql';
 $sql_default_data [1] = 'sql/testlink_create_default_data.sql';
 
-
-$sql_upd_dir = 'sql/alter_tables/1.0.4_to_1.6/';
-
-/*
-$sql_file_newdb_schema = 'sql/testlink_create_tables.sql';
-$sql_file_default_data = 'sql/testlink_create_default_data.sql';
-$sql_file_upddb_schema = 'sql/bugs.sql';
-
-
-*/
+//$sql_upd_dir = 'sql/alter_tables/1.0.4_to_1.6/';
 
 
 
@@ -61,23 +52,20 @@ $msg_process_data = "</b><br />Importing StartUp data<b> ";
 
 if ($inst_type == "upgrade" )
 {
-	
 	$msg_process_data = "</b><br />Updating Database Contents<b> ";
 	
-  $sql_schema = getDirFiles($sql_upd_dir,ADD_DIR);
+  // $sql_schema = getDirFiles($sql_upd_dir,ADD_DIR);
   $sql_data   = array();
 }
 // -------------------------------------------------------------------
 
 
 $the_title = "TestLink Install" . $inst_type;
-
-/*
-print_r ($_SESSION);
-echo "\$sql_file_schema" . $sql_file_schema;
-*/
-
 ?>
+
+
+
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" 
   "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
@@ -118,7 +106,8 @@ TestLink setup will now attempt to setup the database:<br />
 
 <?php
 
-$update_pwd=0;  
+$update_pwd=0;
+  
  
 $create = false;
 $errors = 0;
@@ -195,10 +184,10 @@ else
 }
 // ------------------------------------------------------------------------------------------------
 
+
 // ------------------------------------------------------------------------------------------------
 if($create) 
 {
-	
 	echo "</b><br />Creating database `".$db."`:<b> ";
 
   // 20050826 - fm
@@ -219,7 +208,6 @@ if($create)
 		echo "<span class='ok'>OK!</span>";
 	}
 }
-
 
 // 20050806 - fm
 // in upgrade mode we detect the lenght of user password field
@@ -244,6 +232,35 @@ if ($inst_type == "upgrade" )
 }
 // ------------------------------------------------------------------------------------------------
 
+// ------------------------------------------------------------------------------------------------
+// 20050908 - fm
+if ($update_pwd)
+{
+	$sql_upd_dir = 'sql/alter_tables/1.0.4_to_1.6/';
+}
+else
+{
+  // try to guess TL version
+  $sql = "SHOW TABLES LIKE 'db_version' ";
+  $res = mysql_query($sql);
+  
+  if( mysql_num_rows($res) == 0 )
+  {
+    // We are upgrading from a pre 1.6 version
+	  $sql_upd_dir = 'sql/alter_tables/1.5_to_1.6/';
+  }
+}
+
+if ($inst_type == "upgrade" )
+{
+  $sql_schema = getDirFiles($sql_upd_dir,ADD_DIR);
+  //echo "<pre>\$sql_schema"; print_r($sql_schema); echo "</pre>";
+  //exit();
+}
+// ------------------------------------------------------------------------------------------------
+
+
+
 
 // ------------------------------------------------------------------------------------------------
 // Now proceed with user checks and user creation (if needed)
@@ -262,11 +279,9 @@ else
 }
 // ------------------------------------------------------------------------------------------------
 
-//exit;
 
 //  ------------------------------------------------------------------------------------------
 include "sqlParser.class.php";
-
 
 // 20050804 - fm
 // Schema Operations (CREATE, ALTER, ecc).
@@ -276,8 +291,10 @@ $sqlParser = new SqlParser($host, $db_admin_name, $db_admin_pass,
 $sqlParser->connect();
 foreach ($sql_schema as $sql_file) 
 {
+	echo "<br>Processing:" . $sql_file;
 	$sqlParser->process($sql_file);
 }
+echo "<br>";
 $sqlParser->close();
 
 
@@ -310,7 +327,6 @@ if ( count($sql_data > 0) )
 // 20050806 - fm
 if ($update_pwd)
 {
-
   $conn = mysql_connect($host, $db_admin_name, $db_admin_pass);
   mysql_select_db($db, $conn);
 

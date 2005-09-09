@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: planNew.php,v 1.2 2005/08/16 18:00:57 franciscom Exp $ */
+/* $Id: planNew.php,v 1.3 2005/09/09 08:36:07 franciscom Exp $ */
 /* Purpose:  Add new Test Plan */
 /*
  * @ author: francisco mancardi - 20050810
@@ -29,10 +29,10 @@ if(isset($_POST['newTestPlan']))
 			$sqlResult = 'ok';
 		else
 			$sqlResult =  mysql_error();
-		$result = insertProjectPriorities($projID);
+		$result = insertTestPlanPriorities($projID);
 		$rights = isset($_POST['rights']) ? $_POST['rights'] : '';
 		if($rights == 'on')
-			$result = insertProjectUserRight($projID,$_SESSION['userID']);
+			$result = insertTestPlanUserRight($projID,$_SESSION['userID']);
 		//user has decided to copy an existing project. What this code does is loops through each of the components, inserts the component info, loops through the categories from the component and then adds the category, and the same thing as before with test cases.
 		if($copy) //if the user chose to copy then go through this code
 		{
@@ -41,7 +41,7 @@ if(isset($_POST['newTestPlan']))
 			{
 				//insert it into the component table with new ids
 				$component = $cInfo[$i];
-				$COMID = insertProjectComponent($projID,$component[1],$component[2]);
+				$COMID = insertTestPlanComponent($projID,$component[1],$component[2]);
 				//Grab all of the currently looping components categories
 				$sqlCat = "select id,name,compid,mgtcatid,CATorder from category where " .
 						"compid='" . $component[0] . "'";

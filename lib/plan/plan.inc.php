@@ -2,12 +2,12 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: plan.inc.php,v $
- * @version $Revision: 1.3 $
- * @modified $Date: 2005/09/06 20:19:39 $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2005/09/09 08:36:07 $
  * @author 	Martin Havlat
  *
- * Functions for management: Test Plans, Test Case Suites, Milestones, 
- * 		Testers assignment
+ * Functions for management: 
+ * Test Plans, Test Case Suites, Milestones, Testers assignment
  */
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -58,7 +58,7 @@ function getTestSuiteParameters($testSuite)
 // 20050809 - fm
 // changes must be made due to active field type changed to boolean
 //
-function updateProject($id,$name,$notes,$p_active)
+function updateTestPlan($id,$name,$notes,$p_active)
 {
 
 // 20050810 - fm	
@@ -74,14 +74,14 @@ $sql = "UPDATE project SET active='" . $active .
 	return $result ? 1 : 0;
 }
 
-function deleteProject($id)
+function deleteTestPlan($id)
 {
 	$sql = "DELETE FROM project WHERE id=" . $id;
 	$result = do_mysql_query($sql);
 
 	return $result ? 1 : 0;
 }
-function deleteProjectComponents($id)
+function deleteTestPlanComponents($id)
 {
 	$sql = "DELETE FROM component WHERE projid=" . $id;
 	$result = do_mysql_query($sql);
@@ -150,7 +150,7 @@ function deleteTestCasesByCategories($catIDs)
 	return $result ? 1 : 0;
 }
 
-function deleteProjectBuilds($id)
+function deleteTestPlanBuilds($id)
 {
 	$sql = "DELETE FROM build WHERE projid=" . $id;
 	$result = do_mysql_query($sql);
@@ -158,7 +158,7 @@ function deleteProjectBuilds($id)
 	return $result ? 1: 0;		
 }
 
-function deleteProjectRightsForProject($id)
+function deleteTestPlanRightsForProject($id)
 {
 	$sql = "DELETE FROM projrights WHERE projid = ".$id;	
 	$result = do_mysql_query($sql);
@@ -184,7 +184,7 @@ function deleteResultsForBuilds($id,$builds)
 	return $result ? 1 : 0;
 }
 
-function deleteProjectPriorityFields($id)
+function deleteTestPlanPriorityFields($id)
 {
 	$sql = "DELETE FROM priority WHERE projid=" . $id;
 	$result = do_mysql_query($sql);
@@ -192,7 +192,7 @@ function deleteProjectPriorityFields($id)
 	return $result ? 1 : 0;
 }
 
-function deleteProjectMilestones($id)
+function deleteTestPlanMilestones($id)
 {
 	$sql = "DELETE FROM milestone WHERE projid=" . $id;
 	$result = do_mysql_query($sql);
@@ -201,11 +201,11 @@ function deleteProjectMilestones($id)
 }
 
 
-function insertPlan(&$id,$name,$notes,$prodID)
+function insertPlan(&$id,$name,$notes,$tpID)
 {
 	$sql = "INSERT INTO project (name,notes,prodID) VALUES ('" . 
 	       mysql_escape_string($name) . "','" . 
-	       mysql_escape_string($notes) . "'," . $prodID .")";
+	       mysql_escape_string($notes) . "'," . $tpID .")";
 	$result = do_mysql_query($sql);
 	
 	$id = 0;
@@ -215,19 +215,19 @@ function insertPlan(&$id,$name,$notes,$prodID)
 	return $result ? 1 : 0;
 }
 
-function insertProjectPriorities($projID)
+function insertTestPlanPriorities($projID)
 {
 	//Create the priority table
 	$arrSql = array('L1', 'L2', 'L3','M1', 'M2', 'M3','H1', 'H2', 'H3');
 	
 	$result = 1;
 	foreach ($arrSql as $risk)
-		$result = $result && insertProjectPriority($projID,$risk);
+		$result = $result && insertTestPlanPriority($projID,$risk);
 	
 	return $result ? 1 : 0;
 }
 
-function insertProjectPriority($projID,$risk)
+function insertTestPlanPriority($projID,$risk)
 {
 	$sql = "INSERT into priority (projid,riskImp) values (" . $projID . ",'" . $risk. "')";
 	$result = do_mysql_query($sql);		
@@ -236,7 +236,7 @@ function insertProjectPriority($projID,$risk)
 }
 
 
-function insertProjectUserRight($projID,$userID)
+function insertTestPlanUserRight($projID,$userID)
 {
 	$sql = "INSERT INTO projrights (projid,userid) values (".$projID.",".$userID.")";
 	$result = do_mysql_query($sql);
@@ -244,7 +244,7 @@ function insertProjectUserRight($projID,$userID)
 	return $result ? 1 : 0;
 }
 
-function insertProjectComponent($projID,$name,$mgtCompID)
+function insertTestPlanComponent($projID,$name,$mgtCompID)
 {
 	$sql = "INSERT INTO component (name,projid,mgtcompid) VALUES ('" . 
 					mysql_escape_string($name) . "'," . $projID . "," . $mgtCompID . ")";
@@ -252,12 +252,15 @@ function insertProjectComponent($projID,$name,$mgtCompID)
 	$resultCom = do_mysql_query($sql);
 	$compID = 0;
 	if ($resultCom)
-		$compID = mysql_insert_id(); //Grab the id of the project just entered so that the priority table can be filled out
+	{
+		//Grab the id of the project just entered so that the priority table can be filled out
+		$compID = mysql_insert_id(); 
+	}	
 	
 	return $compID;
 }
 
-function insertProjectMileStone($projID,$name,$date,$A,$B,$C)
+function insertTestPlanMileStone($projID,$name,$date,$A,$B,$C)
 {
 	$sql = "INSERT INTO milestone (projid,name,date,A,B,C) VALUES (" . 
 			$projID . ",'" . mysql_escape_string($name) . "','" . mysql_escape_string($date) . "'," . $A . "," . 
@@ -269,7 +272,9 @@ function insertProjectMileStone($projID,$name,$date,$A,$B,$C)
 
 function updateMileStone($id,$name,$date,$A,$B,$C)
 {
-	$sql = "UPDATE milestone SET name='" . mysql_escape_string($name) . "', date='" . mysql_escape_string($date) . "', A=" . $A . ", B=" . $B . ", C=" . $C . " WHERE id=" . $id;
+	$sql = "UPDATE milestone SET name='" . mysql_escape_string($name) . "', " .
+	       " date='" . mysql_escape_string($date) . "', " . 
+	       " A=" . $A . ", B=" . $B . ", C=" . $C . " WHERE id=" . $id;
 	$result = do_mysql_query($sql);
 		
 	return $result ? 1 : 0;
@@ -286,7 +291,11 @@ function deleteMileStone($id)
 function getProjectMileStones($projID,&$mileStones)
 {
 	// load existing milestones
-	$sql = "SELECT id,name,date,A,B,C FROM milestone WHERE projid=" . $projID . " AND to_days(date) >= to_days(now()) ORDER BY date";
+	$sql = " SELECT id,name,date,A,B,C " .
+	       " FROM milestone " .
+	       " WHERE projid=" . $projID . 
+	       " AND to_days(date) >= to_days(now()) ORDER BY date";
+	       
 	$result = do_mysql_query($sql);
 	
 	$mileStones = null;
@@ -310,7 +319,8 @@ function getUsersOfPlan($id,&$arrUsers)
 {
 	// query users
 	$arrUsers = array();
-	$sql = "SELECT user.id,login,projrights.projid FROM user LEFT OUTER JOIN projrights ON projrights.userid = user.id AND projid = ".$id;
+	$sql = "SELECT user.id,login,projrights.projid " . 
+	       "FROM user LEFT OUTER JOIN projrights ON projrights.userid = user.id AND projid = ".$id;
 	$result = do_mysql_query($sql);
 	while ($myrow = mysql_fetch_row($result))
 	{ 
@@ -327,9 +337,13 @@ function getUsersOfPlan($id,&$arrUsers)
 }
 // 20050815 - scs - $notes now became a default parameter
 // 20050905 - scs - function now returns the build value
-function insertProjectBuild($build,$projID,$notes = '')
+// 20050909 - fm - From Project to TestPlan
+function insertTestPlanBuild($build,$testplanID,$notes = '')
 {
-	$sql = "INSERT INTO build (projid,name,note) VALUES ('". $projID . "','" . mysql_escape_string($build) . "','" . mysql_escape_string($notes) . "')";
+	$sql = " INSERT INTO build (projid,name,note) " .
+	       " VALUES ('". $testplanID . "','" . mysql_escape_string($build) . "','" . 
+	       mysql_escape_string($notes) . "')";
+	       
 	$result = do_mysql_query($sql);
 	$buildID = 0;
 	if ($result)
@@ -351,10 +365,15 @@ function insertProjectBuild($build,$projID,$notes = '')
 	return $buildID;
 }
 
+
 function getAllTestPlanComponentCategories($testPlanID,$compID,&$categories)
 {
-	$query = "SELECT category.id, category.name, importance, risk, owner FROM component,category WHERE component.projid = " .
-	$testPlanID  . " AND component.id = ".$compID." AND category.compid = component.id ORDER BY component.name,CATorder";
+	$query = " SELECT category.id, category.name, importance, risk, owner " .
+	         " FROM component,category " .
+	         " WHERE component.projid = " .	$testPlanID  . 
+	         " AND component.id = " . $compID . 
+	         " AND category.compid = component.id ORDER BY component.name,CATorder";
+	         
 	$result = do_mysql_query($query);
 	
 	$categories = null;
@@ -366,6 +385,7 @@ function getAllTestPlanComponentCategories($testPlanID,$compID,&$categories)
 	
 	return $result ? 1 : 0;
 }
+
 
 function getCategoriesTestcases($catIDs,&$tcIDs)
 {

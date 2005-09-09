@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: planTestersEdit.php,v ${file_name} $
- * @version $Revision: 1.3 $
- * @modified $Date: 2005/08/26 09:49:39 ${date} ${time} $ by $Author: havlat $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2005/09/09 08:36:07 ${date} ${time} $ by $Author: franciscom $
  * 
  * @author Martin Havlat
  * 
@@ -48,13 +48,13 @@ if ($submit)
 		{
 			 //ignore the first value because it is the submit button
 			if($projRights != 'Save')
-				$resultDelete = insertProjectUserRight($projRights,$id);
+				$resultDelete = insertTestPlanUserRight($projRights,$id);
 		}
 	}
 	elseif($type == 'plans')
 	{
 		//First we need to delete everything from the projRights table for that project
-		$resultDelete = deleteProjectRightsForProject($id);
+		$resultDelete = deleteTestPlanRightsForProject($id);
 
 		//Then we loop through the data that was passed in
 		foreach($projRightsArray as $projRights)
@@ -63,7 +63,7 @@ if ($submit)
 			if($projRights != 'Save')
 			{
 				//We then need to add the new data to the projRights table
-				$resultDelete = insertProjectUserRight($id,$projRights);
+				$resultDelete = insertTestPlanUserRight($id,$projRights);
 			}
 		}
 	}

@@ -1,7 +1,11 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: buildNew.php,v 1.6 2005/08/29 12:16:38 franciscom Exp $ */
-/* Purpose:  admins create new builds for a project 
+/* $Id: buildNew.php,v 1.7 2005/09/09 08:36:07 franciscom Exp $ */
+/* 
+Purpose:  admins create new builds for a project 
+
+@author Francisco Mancardi - 20050909
+refactoring from project to testplan
 
 @author Francisco Mancardi - 20050826
 htmlarea replaced with fckeditor
@@ -18,15 +22,15 @@ require_once("../../third_party/fckeditor/fckeditor.php");
 testlinkInitPage();
 
 
+$tpID = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0;
+$buildID = isset($_POST['buildID']) ? intval($_POST['buildID']) : 0;
 
-$builds = getBuilds($_SESSION['testPlanId']);
+$builds = getBuilds($tpID);
 $smarty = new TLSmarty;
-
 
 $of = new fckeditor('notes') ;
 $of->BasePath = $_SESSION['basehref'] . 'third_party/fckeditor/';
 $of->ToolbarSet='TL_Medium';
-
 
 
 if(isset($_POST['newBuild']))
@@ -39,31 +43,28 @@ if(isset($_POST['newBuild']))
 	//we should avoid duplicate build identifiers per product
 	if (strlen($build))
 	{
-		$projID = $_SESSION['testPlanId'];
 		if (!sizeof($builds) || !in_array($build,$builds))
 		{
-			if (!insertProjectBuild($build,$projID,$notes))
+			if (!insertTestPlanBuild($build,$tpID,$notes))
 				$sqlResult = lang_get("cannot_add_build");
 		}
-		else
+		else{
 			$sqlResult = lang_get("warning_duplicate_build");
+		}	
 	}
-	else
+	else{
 		$sqlResult =  lang_get("invalid_build_id");
+  }
 
-
-  
 	
 	$smarty->assign('sqlResult', $sqlResult);
 	$smarty->assign('name', $build);
 	
 
 }
-$buildID = isset($_POST['buildID']) ? intval($_POST['buildID']) : 0;
 
 if ($buildID)
 {
-	$testPlanID = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0;
 	$build = isset($_POST['buildLabel']) ? strings_stripSlashes($_POST['buildLabel']) : null;
 	$sqlResult = 'ok';
 	if (!deleteTestPlanBuild($testPlanID,$buildID))
@@ -76,14 +77,13 @@ if ($buildID)
 	$smarty->assign('action', 'Delete');
 }
 
-$builds = getBuilds($_SESSION['testPlanId']);
-$notes = getBuildsAndNotes($_SESSION['testPlanId']);
+$builds = getBuilds($tpID);
+$notes = getBuildsAndNotes($tpID);
 
 $smarty->assign('TPname', $_SESSION['testPlanName']);
 $smarty->assign('arrBuilds', $builds);
 $smarty->assign('buildNotes', $notes);
 
-// 20050826
 $smarty->assign('notes', $of->CreateHTML());
 
 

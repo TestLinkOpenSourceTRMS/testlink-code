@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: planMilestones.php,v 1.2 2005/08/16 18:00:57 franciscom Exp $ */
+/* $Id: planMilestones.php,v 1.3 2005/09/09 08:36:07 franciscom Exp $ */
 /** 
  * Purpose:  This page allows the creation and editing of milestones.
  * @author Chad Rosen, Martin Havlat 
@@ -42,7 +42,7 @@ if($newMileStone)
 				$B = isset($_POST['B']) ? intval($_POST['B']) : 0;
 				$C = isset($_POST['C']) ? intval($_POST['C']) : 0;
 			
-				$result = insertProjectMileStone($idPlan,$name,$date,$A,$B,$C);
+				$result = insertTestPlanMileStone($idPlan,$name,$date,$A,$B,$C);
 				if ($result)
 					$sqlResult = 'ok';
 				else

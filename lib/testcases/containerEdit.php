@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: containerEdit.php,v 1.13 2005/09/08 12:25:26 franciscom Exp $ */
+/* $Id: containerEdit.php,v 1.14 2005/09/12 07:34:42 franciscom Exp $ */
 /* Purpose:  This page manages all the editing of test specification containers. */
 /*
  *
@@ -176,7 +176,6 @@ else if($action == 'updateCOM')
 else if($action == 'addCOM')
 {
   // we will arrive here after submit in containerNew.tpl (newCOM)
-  echo "<pre>"; print_r($c_data); echo "</pre>";
 	if ($name_ok)
 	{
 		$msg = 'ok';

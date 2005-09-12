@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: archive.inc.php,v $
  *
- * @version $Revision: 1.13 $
- * @modified $Date: 2005/09/12 07:34:42 $ by $Author: franciscom $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2005/09/12 07:35:49 $ by $Author: franciscom $
  *
  * @author Martin Havlat
  * Purpose:  functions for test specification management have three parts:
@@ -353,8 +353,6 @@ function insertProductComponent($prodID,$name,$intro,$scope,$ref,$method,$lim,
 {
 	
 	global $g_prefix_name_for_copy;
-	
-	echo "<pre>345" . $g_prefix_name_for_copy; echo "</pre>";
 	
 	$name = trim($name);
   $ret=array('status_ok' => 1, 'id' => 0, 'msg' => 'ok');

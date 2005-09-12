@@ -350,11 +350,12 @@ function createResultsForTestCase($tcid, $buildsArray,$myrow,$arrBuilds,$xls){
   if ($xls){
     $textToDisplay = $testcaseHeader . $summaryTable . $tableOfResultData;
     // debug purposes only : 
-    $textToDisplay .= "xls is turned on!";
+    //$textToDisplay .= "xls is turned on!";
   }
   else {
     $textToDisplay = "<div class=\"workBack\">" . $testcaseHeader . $summaryTable . $tableOfResultData . "</div>"; 
-    $textToDisplay .= "xls is turned off ";
+    // debug purposes only :
+    //$textToDisplay .= "xls is turned off ";
   }
 
   // return both the text to diplay and the summary of results in order for category to produce

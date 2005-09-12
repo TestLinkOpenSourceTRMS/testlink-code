@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.14 $
- * @modified $Date: 2005/09/08 12:25:26 $
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2005/09/12 06:22:55 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -17,6 +17,10 @@
  * email, userID, productID, productName, project (use rather testPlanID),
  * testPlanID, testPlanName
  *
+ * @author: francisco mancardi - 
+ * created updateSessionTp_Prod() and changed doInitSelection() to solve: 
+ * BUGID  0000092: Two products each with one active test plan incorrectly prints the wrong plan
+ * 
  * @author: francisco mancardi - 20050907 - added hash2array()
  * @author: francisco mancardi - 20050904 - added check_hash_keys()
  *
@@ -52,10 +56,10 @@ function doDBConnect()
 {
 	global $db;
 	$result = array('status' => 1, 'dbms_msg' => 'ok');
-	
 	$db = mysql_connect(DB_HOST, DB_USER, DB_PASS);
 	if (!$db or !mysql_select_db(DB_NAME,$db) )
 	{
+		echo $result['dbms_msg'];
 	  $result['status'] = 0;
 	  $result['dbms_msg'] = mysql_error();
 	  tLog('Connect to database fails!!! ' . $result['dbms_msg'], 'ERROR');
@@ -140,21 +144,22 @@ function setPaths()
 	return 1;
 }
 
-// If we rx TestPlan ID in the _GET 
+// If we receive TestPlan ID in the _GET 
 //    the user has changed the selection
 //    Set this value at Session Level, to set it available in other
 //    pieces of the application
 //
 function checkTestPlanSelection()
 {
-	$testPlanID = isset($_GET['project']) ? intval($_GET['project']) : 0;
-	if ($testPlanID)
+	$tpID = isset($_GET['project']) ? intval($_GET['project']) : 0;
+	if ($tpID)
 	{
-		setSessionTestPlan(getUserTestPlan($_SESSION['userID'],$testPlanID));
+		// Test Plan selection changed -> update SESSION INFO
+		setSessionTestPlan(getUserTestPlan($_SESSION['userID'],$tpID));
 	}	
 }
 
-// If we rx Product ID in the _GET 
+// If we receive Product ID in the _GET 
 //    the user has changed the selection
 //    Set this value at Session Level, to set it available in other
 //    pieces of the application
@@ -169,7 +174,7 @@ function checkProductSelection()
 	}
 }
 
-// If we rx TestPlan ID in the _SESSION
+// If we receive TestPlan ID in the _SESSION
 //    then do some checks and if everything OK
 //    Update this value at Session Level, to set it available in other
 //    pieces of the application
@@ -184,6 +189,7 @@ function checkSessionTestPlan()
 	// 20050813 - fm - added TP filtered by Product
 	$prodID = isset($_SESSION['productID']) ? $_SESSION['productID'] : null;
 	$sTestPlanID = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : null;
+	
 	if (!$sTestPlanID || ($sTestPlanID && !getUserTestPlan($_SESSION['userID'],$sTestPlanID,true)))
 	{
 	 	// 20050813 - fm
@@ -197,7 +203,7 @@ function checkSessionTestPlan()
 
 
 
-// If we rx Product ID in the _SESSION
+// If we receive Product ID in the _SESSION
 //    then do some checks and if everything OK
 //    Update this value at Session Level, to set it available in other
 //    pieces of the application
@@ -294,13 +300,23 @@ function getUserProdTestPlans($userID,$prodID,$p_bActive = null)
 
 /** 
 * Function adjust Product and Test Plan to $_SESSION
+*
 */
 function doInitSelection()
 {
+	
+	/*
 	checkTestPlanSelection();
 	checkProductSelection();
+	
+	
 	checkSessionProduct();
 	checkSessionTestPlan();	
+  */
+  // 20050910 - fm - 
+  // BUGID  0000092: Two products each with one active test plan incorrectly prints the wrong plan
+  updateSessionTp_Prod($_GET);
+
 
 	return 1;
 }
@@ -324,11 +340,14 @@ function doSessionStart()
 * @param boolean $bDontCheckSession (optional) Set to true if no session should be
 * 		 started
 */
-function testlinkInitPage($initProduct = FALSE,$bDontCheckSession = false)
+function testlinkInitPage($initProduct = FALSE, $bDontCheckSession = false)
 {
 	doDBConnect() or die("Could not connect to DB");
 	doSessionStart() or die("Could not start session");
 	setPaths();
+	
+	//echo "<pre>GET in initpage"; print_r($_GET); echo "</pre>";
+	
 	if (!$bDontCheckSession)
 	{
 		checkSessionValid();
@@ -635,5 +654,96 @@ if( $ereg_forbidden_chars != '' and !is_null($ereg_forbidden_chars))
   } 	
 }	
 return $status_ok;
+}
+
+
+
+
+
+
+
+// If we receive TestPlan ID in the _SESSION
+//    then do some checks and if everything OK
+//    Update this value at Session Level, to set it available in other
+//    pieces of the application
+//
+//
+// Calling getUserProdTestPlans() instead of getUserTestPlans()
+//         to add ptoduct filtering of TP
+//
+function updateSessionTp_Prod($hash_user_sel)
+{
+	$user_sel = array("tpID" => 0, "prodID" => 0 );
+
+	$user_sel["prodID"] = isset($hash_user_sel['product']) ? intval($hash_user_sel['product']) : 0;
+	$user_sel["tpID"] = isset($hash_user_sel['project']) ? intval($hash_user_sel['project']) : 0;
+
+  $prodID = isset($_SESSION['productID']) ? $_SESSION['productID'] : 0;
+	$tpID   = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0;
+	
+	/* 
+  echo "<pre> SESSION in UPD"; print_r($_SESSION); echo "</pre>"; 
+  echo "<pre> USEL in UPD"; print_r($user_sel); echo "</pre>"; 
+  */
+	
+	// Now what to do ???
+	// Product is TestPlan container, then we start checking the container
+	if( $user_sel["prodID"] != 0 )
+	{
+    $prodID = $user_sel["prodID"];
+	} 
+  $prodData=getProduct($prodID);
+
+  // We need to do checks before updating the SESSION
+	if (!$prodID || !$prodData)
+	{
+		$products = getProducts();
+		if ($products)
+		{
+			$prodData = $products[0];
+		}	
+	}
+	// echo "<br>This is the prodID=" . $prodID . "<br>";
+	setSessionProduct($prodData);
+
+  // Now we need to validate the TestPlan
+  if( $user_sel["tpID"] != 0 )
+	{
+    $tpID = $user_sel["tpID"];
+	} 
+  
+  // Wee need to check:
+  // 1. $tpID belongs to prodID
+  // 2. User has rights on $tpID
+  // If any check fails we try to show the first TP in the Product, allowed to the user
+  $redo = 1;
+  $tpData = null;
+  
+  // echo "<br>This is the tpID=" . $tpID . "<br>";
+	
+  if (check_tp_father($prodID,$tpID))
+  {
+    // Good! first check OK
+    $tpData = getUserTestPlan($_SESSION['userID'],$tpID);
+    if( !is_null($tpData) )
+    { 
+      $redo = 0;
+    }
+    setSessionTestPlan(getUserTestPlan($_SESSION['userID'],$tpID));
+  }
+  
+  if ( $redo )
+  {
+    // Houston we have a problem
+    $tpInfo = getUserProdTestPlans($_SESSION['userID'],$prodID,true);
+		
+		// echo "<pre>tpInfo"; print_r($tpInfo); echo "</pre>";
+		if ($tpInfo)
+		{
+			$tpData = $tpInfo[0];
+		}
+  }
+  setSessionTestPlan($tpData);
+
 }
 ?>

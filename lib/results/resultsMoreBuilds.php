@@ -1,12 +1,14 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsMoreBuilds.php,v 1.10 2005/09/12 01:31:58 kevinlevy Exp $ 
+* $Id: resultsMoreBuilds.php,v 1.11 2005/09/12 16:51:34 franciscom Exp $ 
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 * 
 * This page will forward the user to a form where they can select
 * the builds they would like to query results against.
+*
+* @author Francisco Mancardi - 20050912 - remove unused code
 *
 */
 require('../../config.inc.php');
@@ -32,16 +34,6 @@ $smarty->assign('arrBuilds', $arrBuilds);
 $smarty->assign('arrOwners', $arrOwners);
 $smarty->assign('arrKeywords', $arrKeywords);
 $smarty->assign('arrComponents', $arrComponents);
-
-// for excel send header
-if ($xls) {
-  sendXlsHeader();
-  $smarty->assign('printDate', date('"F j, Y, H:m"'));
-  $smarty->assign('user', $_SESSION['user']);
- }
-
-// this contains example of how this excel data gets used
-// $smarty->display('resultsTC.tpl');
 
 $smarty->display('resultsMoreBuilds_query_form.tpl');
 

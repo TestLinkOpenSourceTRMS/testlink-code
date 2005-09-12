@@ -1,7 +1,7 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: resultsMoreBuilds_query_form.tpl,v 1.7 2005/09/12 17:01:43 franciscom Exp $
-@author Francisco Mancardi - fm - BUGID 97/98
+$Id: resultsMoreBuilds_query_form.tpl,v 1.8 2005/09/12 17:13:38 franciscom Exp $
+@author Francisco Mancardi - fm - start solving BUGID 97/98
 *}
 {include file="inc_head.tpl"}
 
@@ -16,7 +16,7 @@ $Id: resultsMoreBuilds_query_form.tpl,v 1.7 2005/09/12 17:01:43 franciscom Exp $
 		<tr>
 			<td>
 				<select name='build[]' size=10 multiple>
-					<option value="0" selected>all</option>
+					<option value="0" selected></option>
 					{foreach key=build item=buildid from=$arrBuilds}
 						{* by default have the start build be the first build *}
 						<option value="{$build}">{$buildid|escape}</option>
@@ -35,14 +35,14 @@ $Id: resultsMoreBuilds_query_form.tpl,v 1.7 2005/09/12 17:01:43 franciscom Exp $
     <tr><th>select keyword </th><th>select owner </th></tr>
 		<tr><td>
         	        <select name="keyword" size=5>
-			<option value="" selected>all</option>
+			<option value="" selected></option>
                         {section name=Row loop=$arrKeywords}
                         <option value="{$arrKeywords[Row].keyword|escape}">{$arrKeywords[Row].keyword|escape}</option>
                         {/section}
 		</td>
 			<td>
 				<select name='owner' size=5 >
-					<option value="" selected>all</option>
+					<option value="" selected></option>
 					{foreach key=owner item=ownerid from=$arrOwners}
 						{* by default the owner should be the current user *}
 						<option value="{$ownerid|escape}">{$ownerid|escape}</option>

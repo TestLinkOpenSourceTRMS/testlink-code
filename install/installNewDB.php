@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: installNewDB.php,v 1.8 2005/09/09 08:29:46 franciscom Exp $ */
+/* $Id: installNewDB.php,v 1.9 2005/09/12 06:19:07 franciscom Exp $ */
 /*
 Parts of this file has been taken from:
 Etomite Content Management System
@@ -8,6 +8,9 @@ Copyright 2003, 2004 Alexander Andrew Butter
 */
 
 /*
+@author Francisco Mancardi - 20050910
+refactoring
+
 @author Francisco Mancardi - 20050829
 BUGID Mantis: 0000073: DB Creation fails with no message
 wrong call to create_user_for_db()
@@ -53,8 +56,6 @@ $msg_process_data = "</b><br />Importing StartUp data<b> ";
 if ($inst_type == "upgrade" )
 {
 	$msg_process_data = "</b><br />Updating Database Contents<b> ";
-	
-  // $sql_schema = getDirFiles($sql_upd_dir,ADD_DIR);
   $sql_data   = array();
 }
 // -------------------------------------------------------------------
@@ -113,7 +114,7 @@ $create = false;
 $errors = 0;
 
 // get db info from session
-$host = $_SESSION['databasehost'];
+$db_server = $_SESSION['databasehost'];
 
 // 20050723 - fm
 $db_admin_name = $_SESSION['databaseloginname'];
@@ -142,9 +143,11 @@ echo "</b><br />Creating connection to Database Server:<b> ";
 
 // ------------------------------------------------------------------------------------------------
 // Connect to DB Server without choosing an specific database
-if(!@$conn = mysql_connect($host, $db_admin_name, $db_admin_pass)) 
+if(!@$conn = mysql_connect($db_server, $db_admin_name, $db_admin_pass)) 
 {
 	echo '<span class="notok">Failed!</span><p />Please check the database login details and try again.';
+	echo '<br>MySQL Error Message: ' . mysql_error() . "<br>";
+	
 	close_html_and_exit();
 } 
 else 
@@ -234,28 +237,32 @@ if ($inst_type == "upgrade" )
 
 // ------------------------------------------------------------------------------------------------
 // 20050908 - fm
-if ($update_pwd)
+if ( $inst_type == "upgrade") 
 {
-	$sql_upd_dir = 'sql/alter_tables/1.0.4_to_1.6/';
-}
-else
-{
-  // try to guess TL version
-  $sql = "SHOW TABLES LIKE 'db_version' ";
-  $res = mysql_query($sql);
-  
-  if( mysql_num_rows($res) == 0 )
+  if ($update_pwd)
   {
-    // We are upgrading from a pre 1.6 version
-	  $sql_upd_dir = 'sql/alter_tables/1.5_to_1.6/';
+  	$sql_upd_dir = 'sql/alter_tables/1.0.4_to_1.6/';
   }
-}
+  else
+  {
+    // try to guess TL version
+    $sql = "SHOW TABLES FROM {$db} LIKE 'db_version' ";
+    $res = mysql_query($sql);
+    
+    if (!$res)
+    {
+      echo "MySQL ERROR:" . mysql_error();
+      exit(); 
+    }
+    if( mysql_num_rows($res) == 0 )
+    {
+      // We are upgrading from a pre 1.6 version
+  	  $sql_upd_dir = 'sql/alter_tables/1.5_to_1.6/';
+    }
+  }
 
-if ($inst_type == "upgrade" )
-{
+  //
   $sql_schema = getDirFiles($sql_upd_dir,ADD_DIR);
-  //echo "<pre>\$sql_schema"; print_r($sql_schema); echo "</pre>";
-  //exit();
 }
 // ------------------------------------------------------------------------------------------------
 
@@ -264,9 +271,19 @@ if ($inst_type == "upgrade" )
 
 // ------------------------------------------------------------------------------------------------
 // Now proceed with user checks and user creation (if needed)
+//
+// 20050910 - fm
+// Added support for different types of architecture/installations:
+// 
+// webserver and dbserver on same machines => user must be created as user@dbserver
+// webserver and dbserver on DIFFERENT machines => user must be created as user@webserver
+//  
+// if @ in username -> get the hostname splitting, ignoring argument db_server
+//
 $msg = create_user_for_db($conn, $db, $tl_db_login, $tl_db_passwd, $db_server);
 
-echo "</b><br />Creating Testlink DB user `".$tl_db_login."`:<b> ";
+
+echo "</b><br />Creating Testlink DB user `" . $tl_db_login . "`:<b> ";
 
 if ( strpos($msg,'ok -') === FALSE )
 {
@@ -285,7 +302,7 @@ include "sqlParser.class.php";
 
 // 20050804 - fm
 // Schema Operations (CREATE, ALTER, ecc).
-$sqlParser = new SqlParser($host, $db_admin_name, $db_admin_pass, 
+$sqlParser = new SqlParser($db_server, $db_admin_name, $db_admin_pass, 
                            $db, $table_prefix, $adminname, $adminpass);
 
 $sqlParser->connect();
@@ -312,7 +329,7 @@ if ( count($sql_data > 0) )
 {
 	echo $msg_process_data;
 
-	$sqlParser = new SqlParser($host, $db_admin_name, $db_admin_pass, 
+	$sqlParser = new SqlParser($db_server, $db_admin_name, $db_admin_pass, 
   	                         $db, $table_prefix, $adminname, $adminpass);
 	$sqlParser->connect();
 	
@@ -327,7 +344,7 @@ if ( count($sql_data > 0) )
 // 20050806 - fm
 if ($update_pwd)
 {
-  $conn = mysql_connect($host, $db_admin_name, $db_admin_pass);
+  $conn = mysql_connect($db_server, $db_admin_name, $db_admin_pass);
   mysql_select_db($db, $conn);
 
 	echo "Password Conversion ...";
@@ -357,7 +374,7 @@ else
 
 // -----------------------------------------------------------------------------
 echo "</b><br />Writing configuration file:<b> ";
-$data['db_host']=$host;
+$data['db_host']=$db_server;
 
 // 20050723 - fm
 $data['db_login']=$tl_db_login;
@@ -395,6 +412,7 @@ close_html_and_exit();
 
 <?php
 // -----------------------------------------------------------
+// 20050910 - fm
 function write_config_db($filename, $data)
 {
 
@@ -404,6 +422,15 @@ $ret = array('status'     => 'ok',
                
 $db_host = $data['db_host'];
 $db_login = $data['db_login'];
+
+// 20050910 - fm
+// if @ present in db_login, explode an take user name WITHOUT HOST
+$the_host = $db_login;
+if (count($user_host) > 1 )
+{
+  $db_login = $user_host[0];    
+}
+
 $db_passwd = $data['db_passwd'];
 $db_name = $data['db_name'];
 

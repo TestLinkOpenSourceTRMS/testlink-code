@@ -1,8 +1,9 @@
 <?php
 /* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: installUtils.php,v 1.4 2005/08/31 08:44:13 franciscom Exp $ 
+$Id: installUtils.php,v 1.5 2005/09/12 06:19:07 franciscom Exp $ 
 
+20050910 - fm - refactoring
 20050830 - fm - added check_php_settings()
 
 */
@@ -52,7 +53,7 @@ if ( $add_dirpath )
 // | Authors: João Prado Maia <jpm@mysql.com>                             |
 // +----------------------------------------------------------------------+
 //
-// @(#) $Id: installUtils.php,v 1.4 2005/08/31 08:44:13 franciscom Exp $
+// @(#) $Id: installUtils.php,v 1.5 2005/09/12 06:19:07 franciscom Exp $
 //
 
 
@@ -130,9 +131,26 @@ Function: create_user_for_db
           Else
              do nothing
                 
+20050910 - fm
+webserver and dbserver on same machines => user must be created as user@dbserver
+webserver and dbserver on DIFFERENT machines => user must be created as user@webserver
+
+if @ in username -> get the hostname splitting, ignoring argument db_server
+                
+                
 */
-function create_user_for_db($conn, $db, $login, $passwd, $db_server='localhost')
+function create_user_for_db($conn, $db, $login, $passwd, $client_host='localhost')
 {
+
+// 20050910 - fm
+$user_host = explode('@',$login);
+$the_host = $client_host;
+
+if ( count($user_host) > 1 )
+{
+  $the_host = $user_host[1];  
+  $login = $user_host[0];    
+}
 
 $user_list = getUserList($conn);
 $login_lc = strtolower($login);
@@ -146,14 +164,20 @@ if (count($user_list) > 0)
     {
     	$msg = 'ok - new user';
       $stmt = "GRANT SELECT, UPDATE, DELETE, INSERT ON " . 
-              $db . ".* TO '" . $login . "'" . "@" . $db_server . 
-              " IDENTIFIED BY '" .  $passwd . "'";
+              $db . ".* TO '" . $login . "'";
+              
+      if (strlen(trim($the_host)) != 0)
+      {
+        $stmt .= "@" . "'" . $the_host . "'";
+      }         
+      $stmt .= " IDENTIFIED BY '" .  $passwd . "'";
+      
       if (!@mysql_query($stmt, $conn)) 
       {
           $msg = "ko - " . mysql_error();
       }
+
     }
-    
 }
 
 return $msg;
@@ -236,6 +260,15 @@ return($ret);
 
 
 // 
+/*
+            <td align="left"><?php echo (strtoupper(substr(PHP_OS, 0, 3)) != 'WIN') ? '<b class="ok">'.$okImg.'</b><span class="item"> ('.php_uname().')</span>' : '<b class="error">'.$failedImg.'</b><span class="warning">
+            It seems you are using a proprietary operating system.  You might want to consider a Free Open Source operating system such as Linux.  dotProject is usually tested on Linux first and will always have better support for Linux than other operating systems.
+            </span>';?></td>
+*/
+// 20050910 - fm
+// added warning regarding possible problems between MySQL and PHP on windows systems
+// due to MySQL password algorithm.
+//
 function check_php_version()
 {
 $min_ver = "4.1.0";
@@ -256,6 +289,16 @@ if($php_ver_comp < 0)
 else 
 {
 	$final_msg .= "<span class='ok'>OK! (" . $my_version . " >= " . $min_ver . ")</span>";
+}
+
+// 20050910 - fm
+$os_id = strtoupper(substr(PHP_OS, 0, 3));
+if( strcmp('WIN',$os_id) == 0 )
+{
+  $final_msg .= "<p><center><span class='notok'>" . 
+  	            "Warning!: You are using a M$ Operating System, be careful to authetication problems <br>" .
+  	            "          between PHP 4 and the new MySQL 4.1.x passwords" . 
+  	            "</span></center><p>";
 }
 
 $ret = array ('errors' => $errors,

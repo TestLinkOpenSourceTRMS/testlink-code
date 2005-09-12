@@ -4,22 +4,21 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.7 $
- * @modified $Date: 2005/09/08 16:25:09 $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2005/09/12 06:37:36 $
  *
  * @author Martin Havlat
  *
  * @todo bugs and owner are not working	    
  *
- * @author Francisco Mancardi - 20050807 - refactoring 
- * @author 20050825 - scs - added buginterface to smarty
+ * @author 20050911 - Francisco Mancardi - refactoring  
  *
- * @author Francisco Mancardi - 20050821 
+ * @author 20050825 - scs - added buginterface to smarty
+ * @author 20050821 - Francisco Mancardi  
  * refactoring decrease level of global coupling 
  *
  * @author 20050815 - scs - code optimization
- *
- * @author Francisco Mancardi - 20050807 
+ * @author 20050807 - Francisco Mancardi  
  * refactoring:  removed deprecated: $_SESSION['project']
  *
  *
@@ -31,35 +30,31 @@ require_once("../../lib/functions/lang_api.php");
 require_once("../../lib/functions/builds.inc.php");
 testlinkInitPage();
 
-
-
 $testdata = array();
 $submitResult = null;
-if (isset($_POST['submitTestResults']))
+
+
+$_REQUEST = strings_stripSlashes($_REQUEST);
+
+$id = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0;
+$build = isset($_REQUEST['build']) ? intval($_REQUEST['build']) : 0;
+$level = isset($_REQUEST['level']) ? strings_stripSlashes($_REQUEST['level']) : '';
+$owner = isset($_REQUEST['owner']) ? strings_stripSlashes($_REQUEST['owner']) : '';
+
+$keyword = 'All';
+if( isset($_REQUEST['keyword']) )
+{
+	$keyword = mysql_escape_string($keyword);
+}
+
+
+if (isset($_REQUEST['submitTestResults']))
 {
 	// 20050905 - fm
 	// 20060908 - scs - fixed 90
-	$_POST = strings_stripSlashes($_POST);
-	$submitResult = editTestResults($_SESSION['user'],$_POST,$_GET['build']);
+	$submitResult = editTestResults($_SESSION['user'],$_REQUEST,$_GET['build']);
 }
 
-$keyword = isset($_GET['keyword']) ? strings_stripSlashes($_GET['keyword']) : 'All';
-if ($keyword != 'All')
-	$keyword = mysql_escape_string($keyword);
-
-//parse input; two possibilities: GET and POST (tree menu and update)
-if (isset($_GET['build']))
-	$_INPUT = $_GET;
-else
-{
-	tLog('Missing input arguments GET', 'ERROR');
-	exit();
-}
-
-$id = isset($_INPUT['id']) ? intval($_INPUT['id']) : 0;
-$level = isset($_INPUT['level']) ? strings_stripSlashes($_INPUT['level']) : '';
-$owner = isset($_INPUT['owner']) ? strings_stripSlashes($_INPUT['owner']) : '';
-$build = isset($_GET['build']) ? intval($_GET['build']) : 0;
 
 // 20050821 - fm
 $tpID = $_SESSION['testPlanId'];
@@ -139,5 +134,6 @@ $smarty->assign('build', $buildName);
 $smarty->assign('owner', $owner);
 $smarty->assign('updated', $submitResult);
 $smarty->assign('g_bugInterface', $g_bugInterface);
-$smarty->display('execSetResults.tpl');
+
+$smarty->display($g_tpl['execSetResults']);
 ?>

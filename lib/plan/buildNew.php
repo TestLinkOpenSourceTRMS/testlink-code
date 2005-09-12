@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: buildNew.php,v 1.7 2005/09/09 08:36:07 franciscom Exp $ */
+/* $Id: buildNew.php,v 1.8 2005/09/12 06:36:03 franciscom Exp $ */
 /* 
 Purpose:  admins create new builds for a project 
 
@@ -67,7 +67,11 @@ if ($buildID)
 {
 	$build = isset($_POST['buildLabel']) ? strings_stripSlashes($_POST['buildLabel']) : null;
 	$sqlResult = 'ok';
-	if (!deleteTestPlanBuild($testPlanID,$buildID))
+
+  echo "<pre>"; print_r($_POST); echo "</pre>";
+  
+  // 20050910 - fm - (my typo bug)
+	if (!deleteTestPlanBuild($tpID,$buildID))
 	{
 		$sqlResult = lang_get("cannot_delete_build");
 	}

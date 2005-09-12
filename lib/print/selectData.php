@@ -1,7 +1,7 @@
 <?
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* @version 	$Id: selectData.php,v 1.3 2005/09/06 06:45:42 franciscom Exp $
+* @version 	$Id: selectData.php,v 1.4 2005/09/12 06:36:03 franciscom Exp $
 * @author 	Martin Havlat
 * 
 * 	Navigator for print/export functionality. 
@@ -9,6 +9,8 @@
 *	test specification.
 *
 * 	@todo export to XML, PDF
+*
+* 20050911 - fm - different titles
 *
 */////////////////////////////////////////////////////////////////////////////////
 require('../../config.inc.php');
@@ -60,20 +62,26 @@ $args = "&format=" . $selFormat . "&header=" . $arrCheckboxes[0]['checked'] .
 			$arrCheckboxes[2]['checked'] . "&type=" . $type . "&toc=" . 
 			$arrCheckboxes[3]['checked'];
 
+
+
+
+$smarty = new TLSmarty;
+
 // generate tree 
 if ($type == 'product')
 {
 	$treeString = generateTestSpecTree($prodID, $prodName,$workPath, 1, $args);
+  $smarty->assign('title', lang_get('title_tc_print_navigator'));
 }	
 else if ($type == 'testSet')
 {
 	$treeString = generateTestSuiteTree($workPath, 1, $args);
-}
+	$smarty->assign('title', lang_get('title_tp_print_navigator'));
+}	
+
 
 $tree = invokeMenu($treeString);
 
-$smarty = new TLSmarty;
-$smarty->assign('title', lang_get('title_tc_print_navigator'));
 $smarty->assign('treeKind', TL_TREE_KIND);
 $smarty->assign('arrCheckboxes', $arrCheckboxes);
 $smarty->assign('arrFormat', $arrFormat);

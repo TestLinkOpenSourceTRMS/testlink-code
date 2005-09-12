@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: archive.inc.php,v $
  *
- * @version $Revision: 1.11 $
- * @modified $Date: 2005/09/08 12:25:26 $ by $Author: franciscom $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2005/09/12 06:34:47 $ by $Author: franciscom $
  *
  * @author Martin Havlat
  * Purpose:  functions for test specification management have three parts:
@@ -15,7 +15,9 @@
  *
  * @todo deactive users???? instead of delete
  *
- *
+ * @author Francisco Mancardi - 20050910
+ * bug on insertProductC
+ * 
  * @author Francisco Mancardi - 20050820
  * $data -> container_data (to avoid problems with field data table mgmtcategory)
  *
@@ -341,6 +343,7 @@ function copyComponentToProduct($newParent, $id, $nested, $login_name)
 
 
 /*
+ 20050910 - fm - correct (my) bug
  20050908 - fm
  added possibility to check for existent name and refuse to insert
 */
@@ -363,24 +366,24 @@ function insertProductComponent($prodID,$name,$intro,$scope,$ref,$method,$lim,
 	  $result = do_mysql_query($sql);
 	  $myrow = mysql_fetch_assoc($result);
 
-
-	  if ($action_on_duplicate_name == 'block')
-	  {
-  	  if( $myrow['qty'] > 0 )
+    // 20050910 - fm
+    if( $myrow['qty'] > 0 )
+    {
+  	  if ($action_on_duplicate_name == 'block')
   	  {
-  	    $ret['status_ok'] = 0;
-  	    $ret['msg'] = lang_get('component_name_already_exists');	
+    	    $ret['status_ok'] = 0;
+    	    $ret['msg'] = lang_get('component_name_already_exists');	
+    	} 
+  	  else
+  	  {
+  	  	$ret['status_ok'] = 1;      
+  	  	if ($action_on_duplicate_name == 'generate_new')
+  	  	{ 
+  	  		$ret['status_ok'] = 1;      
+  	  		$name = $g_prefix_name_for_copy . " " . $name ;      
+  	  		echo "<pre>name 369"; print_r($name); echo "</pre>";
+  	  	}
   	  }
-	  }
-	  else
-	  {
-	  	$ret['status_ok'] = 1;      
-	  	if ($action_on_duplicate_name == 'generate_new')
-	  	{ 
-	  		$ret['status_ok'] = 1;      
-	  		$name = $g_prefix_name_for_copy . " " . $name ;      
-	  		echo "<pre>name 369"; print_r($name); echo "</pre>";
-	  	}
 	  }       
 	}
 	

@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: plan.inc.php,v $
- * @version $Revision: 1.4 $
- * @modified $Date: 2005/09/09 08:36:07 $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2005/09/12 06:36:03 $
  * @author 	Martin Havlat
  *
  * Functions for management: 
@@ -150,9 +150,17 @@ function deleteTestCasesByCategories($catIDs)
 	return $result ? 1 : 0;
 }
 
-function deleteTestPlanBuilds($id)
+
+/*
+
+20050910 - fm - bug missing argument $buildID
+
+*/
+function deleteTestPlanBuilds($tpID, $buildID)
 {
-	$sql = "DELETE FROM build WHERE projid=" . $id;
+	
+	$sql = "DELETE FROM build " .
+	       "WHERE projid=" . $tpID . " AND buildid=" . $buildID;
 	$result = do_mysql_query($sql);
 	
 	return $result ? 1: 0;		

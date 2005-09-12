@@ -2,14 +2,15 @@
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: results.inc.php,v $
- * @version $Revision: 1.7 $
- * @modified $Date: 2005/09/07 12:14:46 $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2005/09/12 06:37:36 $
  * 
  * @author 	Martin Havlat 
  * @author 	Chad Rosen (original report definition)
  *
  * Functions for Test Reporting and Metrics
  *
+ * @author 20050905 - fm - bug in getBugsReport()
  * @author 20050905 - fm - refactoring - remove global coupling
  *
  * @author 20050807 - fm
@@ -826,6 +827,9 @@ function getBuildMetricsComponent($tpID,$build)
 
 
 /** @todo add build relation */
+/*
+20050911 - fm - bug due to fetch_assoc
+*/
 function getBugsReport($tpID, $build = 'all')
 {
 	global $g_bugInterfaceOn;
@@ -833,7 +837,7 @@ function getBugsReport($tpID, $build = 'all')
 	
 	$arrOutput = array();
 
-	$sql = " SELECT title, component.name, category.name, testcase.id, mgttcid" .
+	$sql = " SELECT title, component.name AS comp_name, category.name AS cat_name, testcase.id, mgttcid" .
 			   " FROM project,component,category,testcase WHERE project.id=" . $tpID . 
 			   " AND project.id=component.projid" .
 			   " AND component.id=category.compid and category.id=testcase.catid" .
@@ -855,15 +859,15 @@ function getBugsReport($tpID, $build = 'all')
 				$bugString .= $bugID;
 		}
 		// save
-		array_push($arrOutput, array($myrow[1] . ' / ' . $myrow[2], 
-				$myrow[4] . ': ' . htmlspecialchars($myrow[0]), $bugString));
+		array_push($arrOutput, array($myrow['comp_name'] . ' / ' . $myrow['cat_name'], 
+				       $myrow['mgttcid'] . ': ' . htmlspecialchars($myrow['title']), $bugString));
 
 		if($bugString != "") {
 			unset($bugString);
 		}
 	}
 
-	return $arrOutput;
+  return $arrOutput;
 }
 
 /**

@@ -1,13 +1,19 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execSetResults.tpl,v 1.5 2005/08/29 08:22:39 franciscom Exp $ *}
+{* $Id: execSetResults.tpl,v 1.6 2005/09/12 06:37:36 franciscom Exp $ *}
 {* Purpose: smarty template - show tests to add results *}
 {*	
-	20050828 - fm
+  20050911 - fm - 
+  using $smarty.section.Row.index 
+  (change needed to use assoc array to simplify processing in PHP)
+    
+	20050828 - fm -	
 	localize_date 
 	use $g_tc_status.not_run instead of magic letter 
+  
+  20050827 - scs - added display of tcID
+  20050815 - scs - small changes because of code changes in execSetResults.php
 *}	
-{* 20050815 - scs - small changes because of code changes in execSetResults.php *}
-{* 20050827 - scs - added display of tcID  *}
+
 {include file="inc_head.tpl" popup='yes'}
 
 <body>
@@ -27,7 +33,8 @@
 
 	{* display test cases from array $arrTC*}
 	{section name=Row loop=$arrTC}
-		<input type='hidden' name='tc{$arrTC[Row].id}' value='{$arrTC[Row].id}' />
+	  {assign var="idx" value=$smarty.section.Row.index}
+		<input type='hidden' name='tc[{$idx}]' value='{$arrTC[Row].id}' />
 			<h2>{lang_get s='th_test_case_id'}{$arrTC[Row].mgttcid} :: {lang_get s='title_test_case'} {$arrTC[Row].title|escape}</h2>
 		<div>
  		{if $arrTC[Row].recentResult.status != '' and $arrTC[Row].recentResult.status != $g_tc_status.not_run}			
@@ -76,23 +83,23 @@
 		<tr>
 			<td>
 				<div class="title">{lang_get s='test_exec_notes'}</div>
-				<textarea class="tcDesc" name='notes{$arrTC[Row].id}' 
+				<textarea class="tcDesc" name='notes[{$idx}]' 
 					cols=35 rows=4>{$arrTC[Row].note|escape}</textarea>			
 			</td>
 			<td>			
 				{* status of test *}
 				<div class="resultBox">
 					<span class="title">{lang_get s='test_exec_result'}</span><br /> 
-						<input type="radio" name='status{$arrTC[Row].id}' 
+						<input type="radio" name='status[{$idx}]' 
 							value="{$g_tc_status.not_run}" {if $arrTC[Row].status == $g_tc_status.not_run
 							|| $arrTC[Row].status == ''} checked="checked" {/if} />{lang_get s='test_status_not_run'}<br />
-						<input type="radio" name='status{$arrTC[Row].id}' 
+						<input type="radio" name='status[{$idx}]' 
 							value="{$g_tc_status.passed}" {if $arrTC[Row].status == $g_tc_status.passed} 
 							checked="checked" {/if} />{lang_get s='test_status_passed'}<br />
-						<input type="radio" name='status{$arrTC[Row].id}' 
+						<input type="radio" name='status[{$idx}]' 
 							value="{$g_tc_status.failed}" {if $arrTC[Row].status == $g_tc_status.failed} 
 							checked="checked" {/if} />{lang_get s='test_status_failed'}<br />
-						<input type="radio" name='status{$arrTC[Row].id}' 
+						<input type="radio" name='status[{$idx}]' 
 							value="{$g_tc_status.blocked}" {if $arrTC[Row].status == $g_tc_status.blocked} 
 							checked="checked" {/if} />{lang_get s='test_status_blocked'}<br />
 				</div>
@@ -103,7 +110,7 @@
 			<td colspan="2">
 				<br />
 				<span class="title">{lang_get s='test_exec_bug_report'}</span>
-				<input name='bugs{$arrTC[Row].id}' value='{$arrTC[Row].bugs}' /><a style="font-weight:normal" target="_blank" href="{$g_bugInterface->getEnterBugURL()}">{lang_get s='button_enter_bug'}</a>
+				<input name='bugs[{$idx}]' value='{$arrTC[Row].bugs}' /><a style="font-weight:normal" target="_blank" href="{$g_bugInterface->getEnterBugURL()}">{lang_get s='button_enter_bug'}</a>
 				{if $arrTC[Row].bugLinkList}
 				<table class="simple" width="100%">
 					<tr>

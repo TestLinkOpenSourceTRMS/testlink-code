@@ -4,13 +4,14 @@
  *
  * Filename $RCSfile: exec.inc.php,v $
  *
- * @version $Revision: 1.8 $
- * @modified $Date: 2005/09/07 09:23:03 $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2005/09/12 06:37:36 $
  *
  * @author Martin Havlat
  *
  * Functions for execution feature (add test results) 
  *
+ * 20050911 - fm - editTestResults() refactoring
  * 20050905 - fm - reduce global coupling
  *
  * 20050807 - fm
@@ -129,6 +130,8 @@ function createBuildMenu($idPlan)
 /**
  * Add editted test results to database
  *
+ * 20050911 - fm - refactoring
+ *
  * 20050905 - fm
  * interface changes
  *
@@ -136,138 +139,83 @@ function createBuildMenu($idPlan)
 // MHT 200507	added conversion of special chars on input - [ 900437 ] table results -- incoherent data ?
 function editTestResults($login_name, $tcData, $build)
 {
-	global $g_bugInterfaceOn;
-	
-	//It is necessary to turn the $_POST map into a number valued array
-	// 20050905 - fm
-	unset($tcData['submitTestResults']);
-	$newArray = hash2array($tcData);
+	global $g_bugInterfaceOn, $g_tc_status;
 	
 	$build = mysql_escape_string($build);
 
-	// todo: change this is use an associative array...
-	//		already fixed bug because of not using one :)
-	$i = 0; 
-	while ($i < count($newArray)){ //Loop for the entire size of the array
+  //echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b><pre>";
+  // print_r($tcData); echo "</pre></b><br>";
 	
-			$tcID = $newArray[$i]; //Then the first value is the ID
-			$tcNotes = mysql_escape_string($newArray[$i + 1]); //The second value is the notes
-			$tcStatus = mysql_escape_string($newArray[$i + 2]); //The third value is the status
-			$tcBugs = '';
-			if ($g_bugInterfaceOn)
+	$num_tc = count($tcData['tc']);
+	
+	for ($idx=0; $idx < $num_tc; $idx++ )
+	{
+		$tcID = $tcData['tc'][$idx];
+		$tcNotes = mysql_escape_string(trim($tcData['notes'][$idx])); 
+		$tcStatus = mysql_escape_string($tcData['status'][$idx]); 
+
+		$tcBugs = '';
+		if ($g_bugInterfaceOn)
+		{
+			$tcBugs = isset($tcData['bugs'][$idx]) ? mysql_escape_string($tcData['bugs'][$idx]) : ''; 
+		}
+
+		// Does exist a result for this (tcid, build) ?
+		$sql = " SELECT tcid, build, notes, status FROM results " .
+		       " WHERE tcid=" . $tcID .  
+		       " AND build='" . $build . "'";
+		$result = do_mysql_query($sql); 
+		$num = mysql_num_rows($result); 
+
+
+		if($num == 1)
+		{ 
+			// We will only update the results if (notes, status) information has changed ...
+			$myrow = mysql_fetch_assoc($result);
+			if(! ($myrow['notes'] == $tcNotes && $myrow['status'] == $tcStatus) )
 			{
-				//The 4th value is the CSV of bugs
-				$tcBugs = isset($newArray[$i + 3]) ? mysql_escape_string($newArray[$i + 3]) : ''; 
-				$i++;
+				$sql = " UPDATE results SET runby ='" . $login_name . "', status ='" .  
+						   $tcStatus . "', notes='" . $tcNotes . "' " .
+						   " WHERE tcid=" . $tcID . " AND build='" . $build . "'";
+				$result = do_mysql_query($sql); 
 			}
-
-			//SQL statement to look for the same record (tcid, build = tcid, build)
-			$sql = "SELECT tcid, build, notes, status FROM results WHERE tcid='" . $tcID . 
-					"' and build='" . $build . "'";
-			$result = do_mysql_query($sql); //Run the query
-			$num = mysql_num_rows($result); //How many results
-			
-			if($num == 1){ //If we find a matching record
-							
-				//Grabbing the values from the query above
-				$myrow = mysql_fetch_row($result);
-				$queryNotes = $myrow[2];
-				$queryStatus = $myrow[3];
-		
-				//If the (notes, status) information is the same.. Do nothing
-				if($queryNotes == $tcNotes && $queryStatus == $tcStatus){
-					//Delete all the bugs from the bugs table
-					$sqlDelete = "DELETE from bugs where tcid=" . $tcID . " and build=" . $build;
-					$result = do_mysql_query($sqlDelete); //Execute query
-					/////Loop to insert the new bugs into the bug table
-					//Grabbing the bug info from the results table
-					$bugArray = strlen($tcBugs) ?  explode(",",$tcBugs) : null;
-					$counter = 0;
-					while($counter < count($bugArray))	{
-	
-						$sql = "INSERT INTO bugs (tcid,build,bug) VALUES ('" . $tcID . "','" . 
-								$build . "','" . $bugArray[$counter] . "')";
-						$result = do_mysql_query($sql); //Execute query
-						$counter++;
-					}
-				} else {
-	
-					//update the old result
-					$sql = "UPDATE results SET runby ='" . $login_name . "', status ='" .  
-							$tcStatus . "', notes='" . $tcNotes . "' where tcid='" . $tcID . 
-							"' and build='" . $build . "'";
-					$result = do_mysql_query($sql); //Execute query
-	
-					//Delete all the bugs from the bugs table
-					$sqlDelete = "DELETE FROM bugs WHERE tcid=" . $tcID . " and build=" . $build;
-					$result = do_mysql_query($sqlDelete); //Execute query
-	
-					/////Loop to insert the new bugs into the bug table
-					//Grabbing the bug info from the results table
-					$bugArray = strlen($tcBugs) ?  explode(",",$tcBugs) : null;
-	
-					$counter = 0;
-					while($counter < count($bugArray))	{
-	
-						$sqlBugs = "INSERT INTO bugs (tcid,build,bug) VALUES ('" . $tcID . "','" . 
-								$build . "','" . $bugArray[$counter] . "')";
-						$result = do_mysql_query($sqlBugs); //Execute query
-						$counter++;
-					}
-				}
-			
-			//If the (notes, status) information is different.. then update the record
-			} 
-			else //If there is no entry for the build or the build is different 
+    }
+    else
+    {
+    	// Check to know if we need to insert a new result
+			if( !($tcNotes == "" && $tcStatus == $g_tc_status['not_run']) )
 			{ 
-			
-				//If the notes are blank and the status is n then do nothing
-				if($tcNotes == "" && $tcStatus == "n") { 
-					//Delete all the bugs from the bugs table
-					$sqlDelete = "DELETE from bugs where tcid=" . $tcID . " and build=" . $build;
-					$result = do_mysql_query($sqlDelete); //Execute query
-	
-					/////Loop to insert the new bugs into the bug table
-					//Grabbing the bug info from the results table
-					$bugArray = strlen($tcBugs) ?  explode(",",$tcBugs) : null;
-					$counter = 0;
-					while($counter < count($bugArray))	{
+				$sql = " INSERT INTO results (build,daterun,status,tcid,notes,runby) " .
+				       " VALUES ('" . $build . "',CURRENT_DATE(),'" . $tcStatus . 
+				       "'," . $tcID . ",'" . $tcNotes . "','" . $login_name . "')";
+				$result = do_mysql_query($sql);
+      }  
+    }
+    // -------------------------------------------------------------------------
 
-						$sql = " INSERT INTO bugs (tcid,build,bug) " .
-						       " VALUES ('" . $tcID . "','" . $build . "','" . $bugArray[$counter] . "')";
-						$result = do_mysql_query($sql); //Execute query
-						$counter++;
-					}
-	
-				} else { //Else enter a new row
-				
-					$sql = " INSERT INTO results (build,daterun,status,tcid,notes,runby) " .
-					       " VALUES ('" . $build . "',CURRENT_DATE(),'" . $tcStatus . 
-					       "','" . $tcID . "','" . $tcNotes . "','" . $login_name . "')";
-					$result = do_mysql_query($sql);
-	
-					$sqlDelete = "DELETE from bugs where tcid=" . $tcID . " and build=" . $build;
-					$result = do_mysql_query($sqlDelete); //Execute query
-	
-					/////Loop to insert the new bugs into the bug table
-					//Grabbing the bug info from the results table
-					$bugArray = strlen($tcBugs) ?  explode(",",$tcBugs) : null;
-					$counter = 0;
-					while($counter < count($bugArray)){
-						$sqlBugs = " INSERT INTO bugs (tcid,build,bug) " .
-						           " VALUES ('" . $tcID . "','" . $build . "','" . $bugArray[$counter] . "')";
-						$result = do_mysql_query($sqlBugs); //Execute query
-						$counter++;
-					}
-				}
-			}
-	
-			$i = $i + 3; //Increment 3 values to the next tcID
-	
-	}//end while
-	
-	return "<div class='info'><p>Test Results submitted.</p></div>";
+
+    // -------------------------------------------------------------------------
+    // Update Bug information (delete+insert) 
+	  $sqlDelete = "DELETE from bugs where tcid=" . $tcID . " and build=" . $build;
+	  $result = do_mysql_query($sqlDelete);
+
+	  $bugArray = strlen($tcBugs) ?  explode(",",$tcBugs) : null;
+	  $counter = 0;
+	  $num_bugs = count($bugArray);
+	  while($counter < $num_bugs)	
+	  {
+
+		  $sql = "INSERT INTO bugs (tcid,build,bug) VALUES (" . $tcID . ",'" . 
+			  	   $build . "','" . $bugArray[$counter] . "')";
+		  $result = do_mysql_query($sql); 
+		  $counter++;
+	  }
+    // -------------------------------------------------------------------------
+	}
+
+	return ("<div class='info'><p>" . lang_get("Test Results submitted.") . "</p></div>");
 }
+// -----------------------------------------------------------------------------
 
 	
 /**

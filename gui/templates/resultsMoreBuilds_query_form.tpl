@@ -8,7 +8,7 @@
 	<INPUT TYPE=HIDDEN NAME=projectid VALUE={$projectid}>
 	<INPUT TYPE=HIDDEN NAME=testPlanName VALUE="{$testPlanName}">
 	<table class="simple" style="width: 100%; text-align: center; margin-left: 0px;">
-		<tr><th>select builds </th></tr>
+		<tr><th>select builds </th><th>select component(s)</th></tr>
 		<tr>
 			<td>
 				<select name='build[]' size=10 multiple>
@@ -19,23 +19,31 @@
 					{/foreach}				
 				</select>
 			</td>
+			<td>
+        	        	<select name='component[]' size=10 multiple>
+					<option value="*" selected>all</option>
+					{foreach key=component item=componentid from=$arrComponents}
+						<option value="'{$componentid}'">{$componentid|escape}</option>
+					{/foreach}			
+				</select>	
+			</td>
 		</tr>
-	</table>
+<!--	</table>
 
 	<table class="simple" style="width: 100%; text-align: center; margin-left: 0px;">
-		<tr><th>select keyword </th></tr>
+		<tr></tr>
+		<tr></tr>
+--> <!--	</table>
+
+	<table class="simple" style="width: 100%; text-align: center; margin-left: 0px;">
+	-->	<tr><th>select keyword </th><th>select owner </th></tr>
 		<tr><td>
         	        <select name="keyword" size=5>
 			<option value="" selected></option>
                         {section name=Row loop=$arrKeywords}
                         <option value="{$arrKeywords[Row].keyword|escape}">{$arrKeywords[Row].keyword|escape}</option>
                         {/section}
-		</td></tr>
-	</table>
-		
-	<table class="simple" style="width: 100%; text-align: center; margin-left: 0px;">
-		<tr><th>select owner </th></tr>
-		<tr>
+		</td>
 			<td>
 				<select name='owner' size=5 >
 					<option value="" selected></option>
@@ -46,11 +54,28 @@
 				</select>
 			</td>
 		</tr>
+<!--	</table>
+		
+	<table class="simple" style="width: 100%; text-align: center; margin-left: 0px;">
+	-->	<tr></tr>
+		<tr>
+
+		</tr>
+<!--	</table>
+
+	<table class="simple" style="width: 100%; text-align: center; margin-left: 0px;">
+
 	</table>
 
 	<table class="simple" style="width: 100%; text-align: center; margin-left: 0px;">
-		<tr><th>select last result </th></tr>	
+	-->	<tr><th>select report format</th><th>select last result </th></tr>	
 		<tr><td> 
+			<select name='format' size=2>
+				<option selected>html</option>
+				<option>excel</option>
+			</select>
+		</td>
+		<td> 
 			<select name='lastStatus' size=5>
 				<option selected>any</option>
 				<option>passed</option>
@@ -59,19 +84,14 @@
 				<option>unexecuted</option>
 			</select>
 		</td></tr>
-	</table>
-
-	<table class="simple" style="width: 100%; text-align: center; margin-left: 0px;">
-		<tr><th>select format</th></tr>	
-		<tr><td> 
-			<select name='format' size=2>
-				<option selected>html</option>
-				<option>excel</option>
-			</select>
-		</td></tr>
-	</table>
-
-	<INPUT TYPE=submit VALUE='submit query'/>
+<!--	</table>
+-->
+	<tr>
+		<td>
+			<INPUT TYPE=submit VALUE='submit query'/>
+		</td>
+	</tr>
+</table>
 </form>
 </div>
 

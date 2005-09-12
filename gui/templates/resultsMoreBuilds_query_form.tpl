@@ -1,4 +1,8 @@
-{* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
+{* 
+TestLink Open Source Project - http://testlink.sourceforge.net/ 
+$Id: resultsMoreBuilds_query_form.tpl,v 1.7 2005/09/12 17:01:43 franciscom Exp $
+@author Francisco Mancardi - fm - BUGID 97/98
+*}
 {include file="inc_head.tpl"}
 
 <body>
@@ -12,7 +16,7 @@
 		<tr>
 			<td>
 				<select name='build[]' size=10 multiple>
-					<option value="0" selected>0</option>
+					<option value="0" selected>all</option>
 					{foreach key=build item=buildid from=$arrBuilds}
 						{* by default have the start build be the first build *}
 						<option value="{$build}">{$buildid|escape}</option>
@@ -28,25 +32,17 @@
 				</select>	
 			</td>
 		</tr>
-<!--	</table>
-
-	<table class="simple" style="width: 100%; text-align: center; margin-left: 0px;">
-		<tr></tr>
-		<tr></tr>
---> <!--	</table>
-
-	<table class="simple" style="width: 100%; text-align: center; margin-left: 0px;">
-	-->	<tr><th>select keyword </th><th>select owner </th></tr>
+    <tr><th>select keyword </th><th>select owner </th></tr>
 		<tr><td>
         	        <select name="keyword" size=5>
-			<option value="" selected></option>
+			<option value="" selected>all</option>
                         {section name=Row loop=$arrKeywords}
                         <option value="{$arrKeywords[Row].keyword|escape}">{$arrKeywords[Row].keyword|escape}</option>
                         {/section}
 		</td>
 			<td>
 				<select name='owner' size=5 >
-					<option value="" selected></option>
+					<option value="" selected>all</option>
 					{foreach key=owner item=ownerid from=$arrOwners}
 						{* by default the owner should be the current user *}
 						<option value="{$ownerid|escape}">{$ownerid|escape}</option>
@@ -54,21 +50,11 @@
 				</select>
 			</td>
 		</tr>
-<!--	</table>
-		
-	<table class="simple" style="width: 100%; text-align: center; margin-left: 0px;">
-	-->	<tr></tr>
+    <tr></tr>
 		<tr>
 
 		</tr>
-<!--	</table>
-
-	<table class="simple" style="width: 100%; text-align: center; margin-left: 0px;">
-
-	</table>
-
-	<table class="simple" style="width: 100%; text-align: center; margin-left: 0px;">
-	-->	<tr><th>select report format</th><th>select last result </th></tr>	
+    <tr><th>select report format</th><th>select last result </th></tr>	
 		<tr><td> 
 			<select name='format' size=2>
 				<option selected>html</option>
@@ -84,8 +70,6 @@
 				<option>unexecuted</option>
 			</select>
 		</td></tr>
-<!--	</table>
--->
 	<tr>
 		<td>
 			<INPUT TYPE=submit VALUE='submit query'/>

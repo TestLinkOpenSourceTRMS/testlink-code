@@ -1,15 +1,15 @@
 <?php
-/* 
- 	TestLink Open Source Project - http://testlink.sourceforge.net/
- 
- 	@version 	$Id: strings.txt,v 1.4 2005/09/06 06:40:40 franciscom Exp $
- 	@author 	Francisco Mancardi
- 
- 	This page generates tree menu with test specification. It builds the
-	javascript tree that allows the user to choose required container
-	or test case.
-
-*/
+/**
+ * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ *
+ * Filename $RCSfile: strings.txt,v $
+ *
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2005/09/12 06:00:49 $
+ *
+ * @author Francisco Mancardi
+ *
+**/
 
 // firstLogin.php
 $TLS_cant_create_user = "I'm sorry but your login could not be created. Please contact your administration about this!";

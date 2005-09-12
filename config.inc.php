@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.11 $
- * @modified $Date: 2005/09/08 12:11:43 $ by $Author: franciscom $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2005/09/12 06:01:48 $ by $Author: franciscom $
  *
  * @author Chad Rosen
  *
@@ -250,6 +250,7 @@ $g_tpl['tcView'] = "tcView.tpl";
 $g_tpl['tcSearchView'] = "tcSearchView.tpl";
 $g_tpl['tcEdit'] = "tcEdit.tpl";
 $g_tpl['tcNew'] = "tcNew.tpl";
+$g_tpl['execSetResults'] = "execSetResults.tpl";
 
 
 // Custom

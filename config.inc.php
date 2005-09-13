@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.12 $
- * @modified $Date: 2005/09/12 06:01:48 $ by $Author: franciscom $
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2005/09/13 16:31:21 $ by $Author: franciscom $
  *
  * @author Chad Rosen
  *
@@ -191,8 +191,7 @@ $g_date_format ="%d/%m/%Y";
 
 
 /* These are the supported locales */
-$g_locales = array('en_US' => 'American (US)',
-				   'en_GB' => 'English (UK)',
+$g_locales = array('en_GB' => 'English (UK)',
 				   'it_IT' => 'Italian',
 				   'es_AR' => 'Spanish (Argentine)',
 				   'es_ES' => 'Spanish',

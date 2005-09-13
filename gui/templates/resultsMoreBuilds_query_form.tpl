@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: resultsMoreBuilds_query_form.tpl,v 1.8 2005/09/12 17:13:38 franciscom Exp $
+$Id: resultsMoreBuilds_query_form.tpl,v 1.9 2005/09/13 05:17:08 kevinlevy Exp $
 @author Francisco Mancardi - fm - start solving BUGID 97/98
 *}
 {include file="inc_head.tpl"}
@@ -67,7 +67,7 @@ $Id: resultsMoreBuilds_query_form.tpl,v 1.8 2005/09/12 17:13:38 franciscom Exp $
 				<option>passed</option>
 				<option>failed</option>
 				<option>blocked</option>
-				<option>unexecuted</option>
+				<option>not run</option>
 			</select>
 		</td></tr>
 	<tr>

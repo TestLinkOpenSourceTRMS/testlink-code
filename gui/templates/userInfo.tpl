@@ -1,7 +1,12 @@
 {* Testlink: smarty template - Edit own account *}
-{* $Id: userInfo.tpl,v 1.2 2005/08/16 17:59:13 franciscom Exp $ *}
+{* $Id: userInfo.tpl,v 1.3 2005/09/13 17:05:59 franciscom Exp $ *}
 {* xhtml valid version - 1.1.2.3 *}
-{* 20050815 - changed action to updated *}
+{* 
+20050913 - fm - BUGID 0000103: Localization is changed but not strings
+
+20050815 - changed action to updated 
+
+*}
 {include file="inc_head.tpl" jsValidate="yes"}
 
 <body>
@@ -90,5 +95,14 @@ function valAllText(form)
 
 </div>
 
+{*  BUGID 0000103: Localization is changed but not strings *}
+{if $update_title_bar == 1}
+{literal}
+<script type="text/javascript">
+	//parent.mainframe.location = parent.mainframe.location;
+	parent.titlebar.location.reload();
+</script>
+{/literal}
+{/if}
 </body>
 </html>

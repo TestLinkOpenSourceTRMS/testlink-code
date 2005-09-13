@@ -1,14 +1,16 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* @version $Id: userInfo.php,v 1.4 2005/08/31 11:35:12 schlundus Exp $ 
+* @version $Id: userInfo.php,v 1.5 2005/09/13 17:06:01 franciscom Exp $ 
 *
 * @author	Asiel Brumfield <asielb@users.sourceforge.net>
 * @author 	Martin Havlat
 * 
-* This file generates and displays the users' information and 
-* allows users to change their passwords and user info.
+* Displays the users' information and allows users to change 
+* their passwords and user info.
 * 
+* 20050913 - fm - BUGID 0000103: Localization is changed but not strings
+*
 * 20050829 - scs - moved POST params to the top of the script
 *
 */
@@ -38,11 +40,16 @@ else if ($bChangePwd)
 	$updateResult = updateUserPassword($id,$old,$new);
 }
 
+echo "<pre>debug"; echo $bEdit ; echo "</pre>";
 $userResult ='';
 existLogin($_SESSION['user'], $userResult);
 
 $smarty = new TLSmarty();
 $smarty->assign('userData', $userResult);
 $smarty->assign('updateResult', $updateResult);
+
+// 20050913 - fm - BUGID 0000103: Localization is changed but not strings
+$smarty->assign('update_title_bar', $bEdit);
+
 $smarty->display('userInfo.tpl');
 ?>

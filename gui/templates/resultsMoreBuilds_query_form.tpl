@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: resultsMoreBuilds_query_form.tpl,v 1.9 2005/09/13 05:17:08 kevinlevy Exp $
+$Id: resultsMoreBuilds_query_form.tpl,v 1.10 2005/09/13 05:19:15 kevinlevy Exp $
 @author Francisco Mancardi - fm - start solving BUGID 97/98
 *}
 {include file="inc_head.tpl"}
@@ -63,11 +63,11 @@ $Id: resultsMoreBuilds_query_form.tpl,v 1.9 2005/09/13 05:17:08 kevinlevy Exp $
 		</td>
 		<td> 
 			<select name='lastStatus' size=5>
-				<option selected>any</option>
-				<option>passed</option>
-				<option>failed</option>
-				<option>blocked</option>
-				<option>not run</option>
+				<option selected>Any</option>
+				<option>Passed</option>
+				<option>Failed</option>
+				<option>Blocked</option>
+				<option>Not Run</option>
 			</select>
 		</td></tr>
 	<tr>

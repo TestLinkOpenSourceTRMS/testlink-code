@@ -1,6 +1,6 @@
 <?
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * $Id: mine_results.inc.php,v 1.0 
+ * $Id: resultsMoreBuilds.inc.php,v 1.0 
  * 
  * @author Kevin Levy
  *
@@ -451,4 +451,17 @@ function constructTestCaseInfo($tcid,$myrow)
   
   return $mgttcid . ": " . $title ;
 }
+
+// sept 12 - added by kl
+function getArrayOfComponentNames($projectId){
+  $sql = "select component.name from component where projid='" . $projectId . "'";
+  $result = do_mysql_query($sql);
+  $arrayOfComponentNames = array();
+  while($myrow = mysql_fetch_row($result)) {
+    array_push($arrayOfComponentNames, $myrow[0]);
+  }
+  return $arrayOfComponentNames;
+}
+
+
 ?>

@@ -1,100 +1,99 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsMoreBuilds_buildReport.php,v 1.9 2005/09/12 00:57:15 kevinlevy Exp $ 
+* $Id: resultsMoreBuilds_buildReport.php,v 1.10 2005/09/13 06:39:41 kevinlevy Exp $ 
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 * 
 * This page show Metrics a test plan based on a start build,
 * end build, keyword, test plan id, and owner.
-*
+* @author  Francisco Mancardi - 20050905 refactoring
 */
 
 require('../../config.inc.php');
 require_once('common.php');
 require_once('../functions/resultsMoreBuilds.inc.php');
 require_once('../functions/builds.inc.php');
-
-// I'm not sure which one of these contains
-// the excel libraries
 require_once('builds.inc.php');
 require_once('results.inc.php');
-require_once("../../lib/functions/lang_api.php");
-
-// init
 testlinkInitPage();
+
+$tpName = isset($_GET['testPlanName']) ? strings_stripSlashes($_GET['testPlanName']) : null;  
+$tpID = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0;  
+$keyword = isset($_GET['keyword']) ? strings_stripSlashes($_GET['keyword']) : null;  
+$owner = isset($_GET['owner']) ? strings_stripSlashes($_GET['owner']) : null;  
+$lastStatus = isset($_GET['lastStatus']) ? strings_stripSlashes($_GET['lastStatus']) : null;  
 
 $buildsSelected = array();
 $componentsSelected = array();
 
-$xls = null;
+$xls = FALSE;
 
-if (isset($_GET['format']) && $_GET['format'] =='excel'){
+if (isset($_GET['format']) && $_GET['format'] =='excel')
+{
+
   $xls = TRUE;
- } else {
-  $xls = FALSE;
- }
 
+} 
 
-if (isset($_REQUEST['build'])){
-  foreach($_REQUEST['build'] AS $val){
-    $buildsSelected[] = $val;
+if (isset($_REQUEST['build']))
+
+{
+
+  foreach($_REQUEST['build'] AS $val)
+    
+  {
+    
+      $buildsSelected[] = $val;
+  
   }
+
 }
 
-if (isset($_REQUEST['component'])){
-  foreach($_REQUEST['component'] AS $val){
-    $componentsSelected[] = $val;
-  }
+if (isset($_REQUEST['component']))
+
+{
+
+  foreach($_REQUEST['component'] AS $val)
+    
+    {
+    
+      $componentsSelected[] = $val;
+    
+    }
+
 }
 
+$a2check = array('build','keyword','owner','testPlanName','testPlanName',"lastStatus"); 
 
-if (!isset($_GET['build'])) {
-	tlog('$_GET["build"] is not defined');
-	exit;
+if( !check_hash_keys($_GET, $a2check, "is not defined in \$GET")) 
+
+{
+
+      exit;
+
 }
 
-if (!isset($_GET['keyword'])) {
-	tlog('$_GET["keyword"] is not defined');
-	exit;
-}
-
-if (!isset($_GET['owner'])) {
-	tlog('$_GET["owner"] is not defined');
-	exit;
-}
-
-if (!isset($_GET['projectid'])) {
-	tlog('$_GET["projectid"] is not defined');
-	exit;
-}
-
-if (!isset($_GET['testPlanName'])) {
-	tlog('$_GET["testPlanName"] is not defined');
-	exit;
-}
-
-if (!isset($_GET['lastStatus'])) {
-	tlog('$_GET["lastStatus"] is not defined');
-	exit;
-}
 
 tlTimingStart();
 
-// not sure why $xls is not being passed correctly
-$newXLS = null;
-if ($xls){
-  $newXLS = 1;
- }
- else{
-   $newXLS = 0;
- }
-
-$reportData = createResultsForTestPlan($_GET['testPlanName'],$_SESSION['testPlanId'], $buildsSelected, $_GET['keyword'], $_GET['owner'], $_GET['lastStatus'], $newXLS, $componentsSelected);
+$reportData = createResultsForTestPlan($_GET['testPlanName'],$_SESSION['testPlanId'], $buildsSelected, $_GET['keyword'], $_GET['owner'], $_GET['lastStatus'], $xls, $componentsSelected);
 tlTimingStop();
 $queryParameters = $reportData[0];
 $summaryOfResults = $reportData[1];
 $allComponentData = $reportData[2];
+
+/*  
+
+var_dump(strlen($summaryOfResults));  
+
+var_dump(strlen($allComponentData));  
+
+var_dump(tlTimingCurrent());  
+
+*/  
+
+
 //echo tlTimingCurrent();
 //var_dump(strlen($allComponentData));
 // display smarty
@@ -105,9 +104,13 @@ $smarty->assign('allComponentData', $allComponentData);
 $smarty->assign('xls', $xls);
 // for excel send header
 if ($xls) {
+
   sendXlsHeader();
-  $smarty->assign('printDate', date('"F j, Y, H:m"'));
+
+  $smarty->assign('printDate', strftime($g_date_format, time()) ); 
+
   $smarty->assign('user', $_SESSION['user']);
+
  }
 
 // this contains example of how this excel data gets used

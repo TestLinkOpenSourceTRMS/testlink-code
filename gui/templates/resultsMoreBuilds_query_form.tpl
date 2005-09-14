@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: resultsMoreBuilds_query_form.tpl,v 1.11 2005/09/14 08:38:35 kevinlevy Exp $
+$Id: resultsMoreBuilds_query_form.tpl,v 1.12 2005/09/14 09:27:15 kevinlevy Exp $
 @author Francisco Mancardi - fm - start solving BUGID 97/98
 *}
 {include file="inc_head.tpl"}
@@ -34,14 +34,14 @@ $Id: resultsMoreBuilds_query_form.tpl,v 1.11 2005/09/14 08:38:35 kevinlevy Exp $
     <tr><th>select keyword </th><th>select owner </th></tr>
 		<tr><td>
         	        <select name="keyword" size=5>
-			<option value="" selected></option>
+			<option value="" selected>DO NOT QUERY BY KEYWORD</option>
                         {section name=Row loop=$arrKeywords}
                         <option value="{$arrKeywords[Row].keyword|escape}">{$arrKeywords[Row].keyword|escape}</option>
                         {/section}
 		</td>
 			<td>
 				<select name='owner' size=5 >
-					<option value="" selected></option>
+					<option value="" selected>DO NOT QUERY BY OWNER</option>
 					{foreach key=owner item=ownerid from=$arrOwners}
 						{* by default the owner should be the current user *}
 						<option value="{$ownerid|escape}">{$ownerid|escape}</option>

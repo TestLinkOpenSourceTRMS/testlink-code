@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* @version $Id: userInfo.php,v 1.5 2005/09/13 17:06:01 franciscom Exp $ 
+* @version $Id: userInfo.php,v 1.6 2005/09/14 06:16:57 franciscom Exp $ 
 *
 * @author	Asiel Brumfield <asielb@users.sourceforge.net>
 * @author 	Martin Havlat
@@ -40,7 +40,6 @@ else if ($bChangePwd)
 	$updateResult = updateUserPassword($id,$old,$new);
 }
 
-echo "<pre>debug"; echo $bEdit ; echo "</pre>";
 $userResult ='';
 existLogin($_SESSION['user'], $userResult);
 

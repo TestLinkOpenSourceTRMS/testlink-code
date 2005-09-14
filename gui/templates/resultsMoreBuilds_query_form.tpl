@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: resultsMoreBuilds_query_form.tpl,v 1.10 2005/09/13 05:19:15 kevinlevy Exp $
+$Id: resultsMoreBuilds_query_form.tpl,v 1.11 2005/09/14 08:38:35 kevinlevy Exp $
 @author Francisco Mancardi - fm - start solving BUGID 97/98
 *}
 {include file="inc_head.tpl"}
@@ -12,14 +12,13 @@ $Id: resultsMoreBuilds_query_form.tpl,v 1.10 2005/09/13 05:19:15 kevinlevy Exp $
 	<INPUT TYPE=HIDDEN NAME=projectid VALUE={$projectid}>
 	<INPUT TYPE=HIDDEN NAME=testPlanName VALUE="{$testPlanName}">
 	<table class="simple" style="width: 100%; text-align: center; margin-left: 0px;">
-		<tr><th>select builds </th><th>select component(s)</th></tr>
+		<tr><th>select build(s)</th><th>select component(s)</th></tr>
 		<tr>
 			<td>
 				<select name='build[]' size=10 multiple>
-					<option value="0" selected></option>
 					{foreach key=build item=buildid from=$arrBuilds}
-						{* by default have the start build be the first build *}
-						<option value="{$build}">{$buildid|escape}</option>
+						{* by default select all builds*}
+						<option value="{$build}" selected>{$buildid|escape}</option>
 					{/foreach}				
 				</select>
 			</td>

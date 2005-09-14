@@ -23,18 +23,21 @@
 
 		<div class="workBack">
 {/if}
-			Query Parameters Used To Create This Report : <BR> 
+			<h2>Query Parameters</h2> 
 			{$queryParameters}
 {if !$xls}		</div>
 
 		<div class="workBack">
 {/if}
-			Overall Results For This Test Plan : <BR>
+			<h3>Overall Status</h3>
+			<a>Result totals for test cases which match specified "Owner", "Keyword", "Component(s)", and "Builds Selected".  "Last Status" query parameter is NOT considered.</a>
 			{$summaryOfResults}
 {if !$xls}		</div>
 
 		<div id="detailsOfReport" class="workBack">
-			<a href="javascript:showOrCollapseAll()">Show/Hide all</a>
+			<h3>Test Cases Returned By Query</h3>
+                        <a>Individual test cases which match specified "Owner", "Keyword", "Component(s)", "Last Status" and "Builds Selected" query parameters.</a>
+			<BR><BR><a href="javascript:showOrCollapseAll()">Show/Hide all</a>
 			<h2 onClick="plusMinus_onClick(this);"><img class="plus" src="icons/plus.gif">Results By Component</h2>
 			<div class="workBack">
 {/if}

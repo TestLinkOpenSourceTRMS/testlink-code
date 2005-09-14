@@ -95,7 +95,7 @@ function createResultsForTestPlan($testPlanName, $testPlanID, $buildsArray, $key
     }
   $summaryOfTestPlanTable = "<table class=\"simple\" style=\"width: 100%; " .
                               "text-align: center; margin-left: 0px;\"><tr><th># Cases</td>" .
-    "<th># Passed</td><th># Failed</td><th># Blocked</td><th># Unexecuted</td></tr>";
+    "<th># Passed</td><th># Failed</td><th># Blocked</td><th># Not Run</td></tr>";
   $summaryOfTestPlanTable = $summaryOfTestPlanTable . "<tr><td>" . $totalCasesForTestPlan  . 
                               "</td><td>" . $totalLastResultPassesForTestPlan . "</td><td>" . 
                               $totalLastResultFailuresForTestPlan . "</td><td>" . 
@@ -162,7 +162,7 @@ function createResultsForComponent($componentId, $owner, $keyword, $commaDelimit
 
   $summaryOfComponentTable = "<table class=\"simple\" style=\"width: 100%; " .
                                "text-align: center; margin-left: 0px;\"><tr><th># Cases</td>" .
-    "<th># Passed</td><th># Failed</td><th># Blocked</td><th># Unexecuted</td></tr>";
+    "<th># Passed</td><th># Failed</td><th># Blocked</td><th># Not Run</td></tr>";
   $summaryOfComponentTable = $summaryOfComponentTable . "<tr><td>" . $totalCasesForComponent  . "</td><td>" . 
                                $totalLastResultPassesForComponent . "</td><td>" . 
                                $totalLastResultFailuresForComponent . "</td><td>" . 
@@ -280,27 +280,27 @@ function createResultsForCategory($categoryId, $keyword, $commaDelimitedBuilds, 
       // additionally track if category contains any test cases returned by query
 
         
-      if ($lastResultToQueryFor == 'any'){
+      if ($lastResultToQueryFor == 'Any'){
 	$testCaseTables = $testCaseTables . $testCaseInfoToPrint;
 
 	$testCasesReturnedByQuery = true;
       }
-      elseif (($lastResult == $g_tc_status['passed']) && ($lastResultToQueryFor == 'passed')){
+      elseif (($lastResult == $g_tc_status['passed']) && ($lastResultToQueryFor == 'Passed')){
 	$testCaseTables = $testCaseTables . $testCaseInfoToPrint;
 
 	$testCasesReturnedByQuery = true;
       }
-      elseif (($lastResult == $g_tc_status['failed']) && ($lastResultToQueryFor == 'failed')){
+      elseif (($lastResult == $g_tc_status['failed']) && ($lastResultToQueryFor == 'Failed')){
 
 	$testCaseTables = $testCaseTables . $testCaseInfoToPrint;
 	$testCasesReturnedByQuery = true;
       }
-      elseif (($lastResult == $g_tc_status['blocked']) && ($lastResultToQueryFor == 'blocked')){
+      elseif (($lastResult == $g_tc_status['blocked']) && ($lastResultToQueryFor == 'Blocked')){
 
 	$testCaseTables = $testCaseTables . $testCaseInfoToPrint;
 	$testCasesReturnedByQuery = true;
       }
-      elseif (($lastResult == $g_tc_status['not_run']) && ($lastResultToQueryFor == 'unexecuted')){
+      elseif (($lastResult == $g_tc_status['not_run']) && ($lastResultToQueryFor == 'Not Run')){
 
 	$testCaseTables = $testCaseTables . $testCaseInfoToPrint;
 	$testCasesReturnedByQuery = true;
@@ -310,7 +310,7 @@ function createResultsForCategory($categoryId, $keyword, $commaDelimitedBuilds, 
   $summaryOfCategoryTable = "<table class=\"simple\" style=\"width: 100%; " .
                             "text-align: center; margin-left: 0px;\"><tr>" .
                             "<th># Cases</td><th># Passed</td><th># Failed</td>" .
-    "<th># Blocked</td><th># Unexecuted</td></tr>";
+    "<th># Blocked</td><th># Not Run</td></tr>";
 
   $summaryOfCategoryTable = $summaryOfCategoryTable . "<tr><td>" . $totalCasesForCategory  . "</td><td>" . 
                             $totalLastResultPassesForCategory . "</td><td>" . 
@@ -398,7 +398,7 @@ function createTableOfTestCaseResults($arrayOfResults,$arrBuilds,&$returnArray){
   // notify user of this
   if (!is_array($arrayOfResults))
     {
-      $returnData .= "<tr class=\"black\"><td>THIS CASE HAS NOT BEEN EXECUTED</td><td></td><td>" .
+      $returnData .= "<tr class=\"black\"><td>THIS CASE HAS NOT BEEN RUN</td><td></td><td>" .
 	"</td><td></td><td></td><td></td></tr></table>";
       // exit method
       return $returnData;

@@ -1,12 +1,11 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: testSetRemove.php,v 1.2 2005/08/16 18:00:57 franciscom Exp $ 
+ * @version $Id: testSetRemove.php,v 1.3 2005/09/15 12:51:36 franciscom Exp $ 
  * 
  * Remove Test Cases from Test Case Suite 
  * 
- *
- *
+ * @author 20050915 - fm - refactoring
  * @author 20050807 - fm
  * refactoring:  
  * removed deprecated: $_SESSION['project']
@@ -17,12 +16,15 @@ require("../functions/common.php");
 require_once("../../lib/functions/lang_api.php");
 testlinkInitPage();
 
+// for genTC_info()
+define('THIS_COMP',0);
+define('THIS_CAT',0);
+define('ALL_CAT',0);
+define('ALL_TC',0);
+
+
 $id = isset($_GET['data']) ? $_GET['data'] : null;
 $level = isset($_GET['level']) ? $_GET['level'] : null;
-
-// 20050807 - fm
-//store the project number in a variable so that i can fresh the left frame later
-//$project = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0 ; 
 
 $resultString = null;
 $arrData = array();
@@ -141,39 +143,29 @@ elseif(isset($_POST['deletecategory']))
 //	refreshFrame($page); //call the function below to refresh the left frame
 }
 
-
-/** grab data for table */
+// ---------------------------------------------------------------------------------------
+// grab data for table
+// 20050915 - fm - refactoring
+//
 if($level == 'component')
 {
-	$sqlCat = "SELECT id FROM category WHERE compid =" . $id;
-	$result = do_mysql_query($sqlCat);
-
-	while($row = mysql_fetch_array($result))
-	{
-		$sqlTC = "SELECT id FROM testcase WHERE catid=" . $row[0];
-		$resultTC = do_mysql_query($sqlTC);
-
-		while($rowTC = mysql_fetch_array($resultTC))
-			displayTC($rowTC[0],$arrData);
-	}
+	$arrData=genTC_info($id,ALL_CAT,ALL_TC);
 }
 else if ($level == 'category')
 {
-		$sqlCat ="SELECT id FROM testcase WHERE catid =" . $id;
-		$result = do_mysql_query($sqlCat);
-
-		while($row = mysql_fetch_array($result))
-			displayTC($row[0],$arrData);
+	$arrData=genTC_info(THIS_COMP,$id,ALL_TC);
 }
 else if($level == 'tc')
 {
-	displayTC($id,$arrData);
+  $arrData=genTC_info(THIS_COMP,THIS_CAT,$id);
 } 
 else
 {
 	// show instructions
 	redirect( $_SESSION['basehref'] . $g_rpath['instructions'].'/testSetRemove.html');
 }
+// ---------------------------------------------------------------------------------------
+
 
 $smarty = new TLSmarty;
 $smarty->assign('level', $level);
@@ -184,25 +176,55 @@ $smarty->assign('arrData', $arrData);
 $smarty->display('planRemoveTC.tpl');
 
 
-function displayTC($id,&$arrData)
+
+
+/*
+20050915 - fm 
+use the id that are != 0
+*/
+function genTC_info($compID, $catID, $tcID)
 {
-	$sql = "SELECT category.name, component.name, testcase.id, title, summary,steps,exresult, active, version, mgttcid,TCorder FROM testcase,component,category WHERE testcase.id='" . $id . "' AND component.id=category.compid AND category.id=testcase.catid ORDER BY TCorder";
+	$sql = " SELECT mgtcategory.name AS cat_name, mgtcomponent.name AS comp_name, " .
+	       " component.id AS comp_id, " .
+	       " category.id AS cat_id, " .
+	       " testcase.id, " . 
+	       " title, summary,steps,exresult, " .
+	       " active, version, mgttcid,TCorder " .
+	       " FROM testcase,mgtcomponent,mgtcategory,component,category " .
+	       " WHERE mgtcategory.id = category.mgtcatid " .
+	       " AND mgtcomponent.id = component.mgtcompid " .
+	       " AND component.id = category.compid " .
+	       " AND category.id=testcase.catid ";
+
+  if($compID)
+  {
+    $sql .= " AND component.id=" . $compID; 
+  }	       
+  if($catID)
+  {
+    $sql .= " AND category.id=" . $catID; 
+  }	       
+  if($tcID)
+  {
+    $sql .= " AND testcase.id=" . $tcID; 
+  }	       
+  $sql .= " ORDER BY TCorder";
+
+
 	$result = do_mysql_query($sql);
-	
-	while($row = mysql_fetch_array($result))
+	while($row = mysql_fetch_assoc($result))
 	{
-		//Assign values from the test case query
-		$id = $row['id'];
-		$title = $row['title'];
-		$mgtID = $row['mgttcid'];
-		$TCorder = $row['TCorder'];
-		$compName = $row[1];
-		$catName = $row[0];
-		
-		$arrData[] = array(	'id' => $id, 
-							'name' => $title, 
-							'container' => $compName . '/' . $catName
-						  );
-	}
+		$tc_info[] = array(	'id' => $row['id'], 
+		                    'name' => $row['title'], 
+								        'container' => $row['comp_name'] . '/' . $row['cat_name'],
+								        'comp_id' => $row['comp_id'],
+								        'cat_id' => $row['cat_id'] );
+  }
+  return ($tc_info);
 }
+
+
+
+
+
 ?>

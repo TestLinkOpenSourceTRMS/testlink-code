@@ -4,13 +4,15 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.13 $
- * @modified $Date: 2005/09/13 16:31:21 $ by $Author: franciscom $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2005/09/15 12:49:23 $ by $Author: franciscom $
  *
  * @author Chad Rosen
  *
  * Constants used throughout TestLink are defined within this file
  * they should be changed for your environment
+ *
+ * @author Francisco Mancardi - 20050915 - from 1.6.Beta1 to 1.6.RC1
  *
  * @author Francisco Mancardi - 20050908
  * New configuration parameters:
@@ -126,7 +128,7 @@ error_reporting(E_ALL & ~E_NOTICE);
  
 /** GUI related constants *///////////////////////////////////////////////////
 
-define('TL_VERSION', '1.6.Beta1'); 
+define('TL_VERSION', '1.6.RC1'); 
 define('TL_BACKGROUND_DEFAULT', "#9BD");
 
 /** 

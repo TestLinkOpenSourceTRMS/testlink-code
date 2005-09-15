@@ -2,7 +2,7 @@
 /**
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/ 
 *
-* @version 	$Id: printData.php,v 1.6 2005/09/12 06:36:03 franciscom Exp $
+* @version 	$Id: printData.php,v 1.7 2005/09/15 16:06:49 franciscom Exp $
 *	@author 	Martin Havlat
 * 
 * Shows the data that will be printed.
@@ -10,15 +10,11 @@
 * @todo more css available for print
 * @todo print results of tests
 *
-*
-* @author: francisco mancardi - 20050830
-* refactoring
-*
-* @author: francisco mancardi - 20050830
-* refactoring print_header()
-*
-* @author: francisco mancardi - 20050810
-* deprecated $_SESSION['product'] removed
+* @author: francisco mancardi - 20050915 - refactoring
+* @author: francisco mancardi - 20050914 - refactoring
+* @author: francisco mancardi - 20050830 - refactoring
+* @author: francisco mancardi - 20050830 - refactoring print_header()
+* @author: francisco mancardi - 20050810 - deprecated $_SESSION['product'] removed
 */
 require('../../config.inc.php');
 require("common.php");
@@ -61,12 +57,13 @@ function print_header($title, $toc)
 /** 
 print a component 
 
-
+20050915 - fm - refactoring using field name instead of numbers
 20050831 - fm -
 After adding fckeditor to all fields in category,
 I need to remove htmlspecialchars() calls and <pre></pre>
 
 */
+
 function print_component($component) 
 {
 	global $CONTENT;
@@ -79,22 +76,25 @@ function print_component($component)
 
 	if ($toc) 
 	{
-  	$CONTENT_HEAD .= '<p><a href="#com' . $component[0] . '">' . htmlspecialchars($component[1]) . '</a></p>';
-		$CONTENT .= "<a name='com" . $component[0] . "'></a>";
+  	$CONTENT_HEAD .= '<p><a href="#com' . $component['id'] . '">' . 
+  	                 htmlspecialchars($component['name']) . '</a></p>';
+		$CONTENT .= "<a name='com" . $component['id'] . "'></a>";
 	}
-   	$CONTENT .= "<h1>" . $component_number . " ".lang_get('component')." " . htmlspecialchars($component[1]) . "</h1>";
+   	$CONTENT .= "<h1>" . $component_number . " ".lang_get('component')." " . 
+   	                     htmlspecialchars($component['name']) . "</h1>";
 
   	if ($_GET['header'] == 'y') 
   	{
     	$CONTENT .= "<h2>" . $component_number . ".0 ". lang_get('introduction') . "</h2><div>" .  
-    	            $component[2] . "</div>";
-    	$CONTENT .= "<h3>" . $component_number . ".0.1 ".lang_get('scope')."</h3><div>" .  $component[3] . "</div>";
+    	            $component['intro'] . "</div>";
+    	$CONTENT .= "<h3>" . $component_number . ".0.1 ".lang_get('scope')."</h3><div>" .  
+    	            $component['scope'] . "</div>";
     	$CONTENT .= "<h3>" . $component_number . ".0.2 ".lang_get('references') . "</h3><div>" .  
-    	            $component[4] . "</div>";
+    	            $component['ref'] . "</div>";
     	$CONTENT .= "<h2>" . $component_number . ".1 " . lang_get('methodology') . "</h2><div>" . 
-    	            $component[5] . "</div>";
+    	            $component['method'] . "</div>";
     	$CONTENT .= "<h3>" . $component_number . ".1.1 ".lang_get('limitations')."</h3><div>" . 
-    	            $component[6] . "</pre></div>";
+    	            $component['lim'] . "</pre></div>";
     	$CONTENT .= "<h2>" . $component_number . ".2 ".lang_get('categories')."</h2>";
  	}
 } 
@@ -206,9 +206,10 @@ function generate_TCs($rs)
 /** print Test Specification data within category */
 function generate_product_TCs($idCategory)
 {
-	$sqlTC = " SELECT  id,title, summary, steps, exresult from " .
-				   " mgttestcase where catid=" . $idCategory . 
-				   " order by TCorder, id";
+	$sqlTC = " SELECT  id,title, summary, steps, exresult " .
+	         " FROM mgttestcase " .
+	         " WHERE catid=" . $idCategory . 
+				   " ORDER BY TCorder, id";
   
   $resultTC = do_mysql_query($sqlTC);
 
@@ -224,7 +225,7 @@ function generate_testSuite_TCs($idCategory)
 {
 	$sqlTC = " SELECT id,title, summary, steps, exresult,mgttcid, keywords " .
 	         " FROM testcase " .
-	         " WHERE catid=" . $idCategory . " order by TCorder, mgttcid";
+	         " WHERE catid=" . $idCategory . " ORDER BY TCorder, mgttcid";
 	$resultTC = do_mysql_query($sqlTC);
 
   mysql_num_rows($resultTC);   
@@ -237,6 +238,8 @@ function generate_testSuite_TCs($idCategory)
 }
 
 /*
+20050914 - fm - mgtcategory.name 
+
 20050911 - fm - Use Join
 code reuse adding catID
 catID=0 -> all
@@ -250,7 +253,7 @@ function generate_testSuite_Categories($idComponent,$catID=0)
   $sql=" SELECT mgtcategory.id, mgtcategory.objective," .
   	   " mgtcategory.config,mgtcategory.data,mgtcategory.tools," .
   	   " mgtcategory.CATorder, " .
-  	   " category.name, category.id AS catid " .  
+  	   " mgtcategory.name, category.id AS catid " .  
        " FROM  mgtcategory,category " .
        " WHERE mgtcategory.id=category.mgtcatid" .
        " AND  category.compid = " . $idComponent;
@@ -275,7 +278,8 @@ function generate_testSuite_Categories($idComponent,$catID=0)
 function generate_product_CATs($idComponent)
 {
     $sqlCAT = " SELECT id,name,objective,config,data,tools " .
-              " FROM mgtcategory WHERE compid=" . $idComponent .	
+              " FROM mgtcategory " .
+              " WHERE compid=" . $idComponent .	
               " order by CATorder, id";
   	$resultCAT = do_mysql_query($sqlCAT);
 	while ($myrowCAT = mysql_fetch_array($resultCAT))
@@ -288,19 +292,29 @@ function generate_product_CATs($idComponent)
 /* 20050911 - fm - refactoring*/
 function getTPcomponent($compID)
 {
-  $sql = " SELECT  mgtcomponent.id,mgtcomponent.name,mgtcomponent.intro," .
-  	     " mgtcomponent.scope,mgtcomponent.ref,mgtcomponent.method,mgtcomponent.lim from " .
-  		   " mgtcomponent,component where mgtcompid=mgtcomponent.id and component.id=" . $compID;
+  $sql = " SELECT  mgtcomponent.id, mgtcomponent.name,mgtcomponent.intro," .
+  	     " mgtcomponent.scope,mgtcomponent.ref,mgtcomponent.method,mgtcomponent.lim " .
+  	     " FROM mgtcomponent,component " .
+  		   " WHERE mgtcompid=mgtcomponent.id " .
+  		   " AND component.id=" . $compID;
   $res = do_mysql_query($sql);
   $myrow = mysql_fetch_assoc($res);
   return ($myrow);
 }
 
-/* 20050911 - fm - refactoring*/
+/* 
+20050914 - fm - refactoring
+20050911 - fm - refactoring
+
+*/
 function getTPcategory($catID)
 {
-  $sql = " SELECT id,name,compid " . " FROM category WHERE id=" . $catID . 
-  		   " ORDER BY CATorder, id";
+  $sql = " SELECT category.id,mgtcategory.name,category.compid " . 
+         " FROM category,mgtcategory " .
+         " WHERE category.mgtcatid=mgtcategory.id " .
+         " AND category.id=" . $catID . 
+  		   " ORDER BY mgtcategory.CATorder, category.id";
+
   $res = do_mysql_query($sql);
   $myrow = mysql_fetch_assoc($res);
   return ($myrow);
@@ -336,7 +350,7 @@ if($_GET['type'] == 'product')
 	{
 	    //if the user wants to print only a component they will enter here
 	  	$myrowCOM = getComponent($_GET['data']);
-	  	print_header("Component: " . $myrowCOM[1], $toc);
+	  	print_header("Component: " . $myrowCOM['name'], $toc);
 	  	print_component($myrowCOM);
 		  generate_product_CATs($_GET['data']);
 	
@@ -401,7 +415,8 @@ if($_GET['type'] == 'testSet')
 	    $myrowMGTCOM = getTPcomponent($compID);
 	
 	    // print
-	    print_header(lang_get('test_case_suite') . " : " . $_SESSION['testPlanName'] . " - " . $myrowMGTCOM[1], $toc);
+	    print_header(lang_get('test_case_suite') . " : " . $_SESSION['testPlanName'] . " - " . 
+	                 $myrowMGTCOM['name'], $toc);
 	  	print_component($myrowMGTCOM);
 		  generate_testSuite_Categories($compID);
 	}

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execNavigator.php,v $
  *
- * @version $Revision: 1.5 $
- * @modified $Date: 2005/09/07 20:19:24 $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2005/09/15 16:51:48 $
  *
  * @author Martin Havlat
  *
@@ -52,7 +52,9 @@ $tcData = null;
 $testCaseID = null;
 if ($tcID)
 {
-	$query = "SELECT testcase.id from component,category,testcase WHERE projID = {$_SESSION['testPlanId']} AND compid = component.id AND category.id = testcase.catid AND mgttcid = {$tcID}";
+	$query = " SELECT testcase.id FROM component,category,testcase " .
+	         " WHERE projID = {$_SESSION['testPlanId']} " .
+	         " AND compid = component.id AND category.id = testcase.catid AND mgttcid = {$tcID}";
 	$tcData = selectData($query);
 	if ($tcData)
 		$testCaseID = $tcData[0]['id'];
@@ -129,8 +131,8 @@ function generateExecTree($build,$purl_to_help,&$menuUrl,$tcIDFilter = null)
 	}
 		
 	//grab every component depending on the project 
-	$sql = "select component.id, component.name from component where " .
-			"component.projid = " . $_SESSION['testPlanId'] . " order by component.name";
+	$sql = " SELECT component.id, component.name FROM component where " .
+			   " component.projid = " . $_SESSION['testPlanId'] . " ORDER BY component.name";
 	$comResult = do_mysql_query($sql);
 	
 	$bKeyWordAll = ($keyword == 'All');
@@ -147,16 +149,20 @@ function generateExecTree($build,$purl_to_help,&$menuUrl,$tcIDFilter = null)
 		//to sort by category
 				
 		//grab every category depending on the component
-		if($bOwnerAll)
-		{
-			//If the user has not selected an owner to sort by
-			$catSql = "select category.id, category.name from component,category where component.id = " . $myrowCOM[0] . " and component.id = category.compid order by CATorder,category.id";
-		}
-		else
+			$catSql = " SELECT category.id, mgtcategory.name " .
+			          " FROM component,category,mgtcategory" .
+			          " WHERE component.id = category.compid " .
+			          " AND   mgtcategory.id = category.mgtcatid " .
+			          " AND component.id =" .  $myrowCOM[0];
+
+		if(!$bOwnerAll)
 		{ 
 			//if the user selected a user to sort by
-			$catSql = "select category.id, category.name from component,category where component.id = " . $myrowCOM[0] . " and component.id = category.compid and category.owner='" . $owner . "' order by CATorder,category.id";
+			$catSql .= " AND category.owner='" . $owner . "'";
 		}
+		$catSql .=	" ORDER BY mgtcategory.CATorder,category.id";
+		
+		
 		$catResult = do_mysql_query($catSql);
 
 		//check to see if there are any rows returned from the component query
@@ -168,17 +174,21 @@ function generateExecTree($build,$purl_to_help,&$menuUrl,$tcIDFilter = null)
 			if (TL_TREE_KIND == 'JTREE')				
 				$menustring .= "['" . $componentName . "','SCO({$myrowCOM[0]})',\n\n";
 			else if (TL_TREE_KIND == 'LAYERSMENU')
-				$menustring .= "..|" . $componentName . "|" . $menuUrl . "&level=component&id=" . $myrowCOM[0]  . "|Component||workframe|\n";
+				$menustring .= "..|" . $componentName . "|" . $menuUrl . 
+				               "&level=component&id=" . $myrowCOM[0]  . "|Component||workframe|\n";
 			else if (TL_TREE_KIND == 'DTREE')
 			{
 				$dtreeComponentId = $dtreeCounter;
-				$menustring .= "tlTree.add(" . $dtreeCounter++. ",0,'" . $componentName . "','" . $menuUrl . "&level=component&id=" . $myrowCOM[0] . "');\n";
+				$menustring .= "tlTree.add(" . $dtreeCounter++. ",0,'" . $componentName . "','" . 
+				               $menuUrl . "&level=component&id=" . $myrowCOM[0] . "');\n";
 			}
 			while ($myrowCAT = mysql_fetch_row($catResult))
 			{  //display all the categories until we run out
 					
-				//This next section displays test cases. However I need to check if there are actually are any test cases available first
-				$TCsql = "select testcase.id, testcase.title, testcase.mgttcid from testcase where testcase.catid = " . $myrowCAT[0];
+				//This next section displays test cases. 
+				// However I need to check if there are actually are any test cases available first
+				$TCsql = "SELECT testcase.id, testcase.title, testcase.mgttcid " .
+				         "FROM testcase WHERE testcase.catid = " . $myrowCAT[0];
 				//user passed in a result that isnt the default "all" and didnt select a keyword to sort by
 				if(!$bKeyWordAll)
 				{
@@ -186,8 +196,10 @@ function generateExecTree($build,$purl_to_help,&$menuUrl,$tcIDFilter = null)
 					$TCsql .= " AND (keywords LIKE '%,{$keyword},%' OR keywords like '{$keyword},%')";
 				}
 				if ($tcIDFilter)
+				{
 					$TCsql .= " AND testcase.mgttcid = {$tcIDFilter} ";
-				$TCsql .= " order by TCorder,testcase.mgttcid";				
+				}	
+				$TCsql .= " ORDER BY TCorder,testcase.mgttcid";				
 
 				$TCResult = do_mysql_query($TCsql); //run the query
 				$numRowsTC = mysql_num_rows($TCResult); //count the rows
@@ -212,10 +224,12 @@ function generateExecTree($build,$purl_to_help,&$menuUrl,$tcIDFilter = null)
 					else if (TL_TREE_KIND == 'DTREE')
 					{
 						$dtreeCategoryId = $dtreeCounter;
-						$menustring .= "tlTree.add(" . $dtreeCounter++. "," . $dtreeComponentId . ",'" . $name . "','" . $url . "');\n";
+						$menustring .= "tlTree.add(" . $dtreeCounter++. "," . $dtreeComponentId . ",'" . 
+						               $name . "','" . $url . "');\n";
 					}
 
-					$menustring .= displayTCTree($TCResult, $build, $owner, $colored, $menuUrl, $filteredResult, $dtreeCategoryId);
+					$menustring .= displayTCTree($TCResult, $build, $owner, $colored, $menuUrl, 
+					                             $filteredResult, $dtreeCategoryId);
 					if (TL_TREE_KIND == 'JTREE')
 						$menustring .= "],\n";
 				}
@@ -332,7 +346,8 @@ function displayTC($font,$mgttcid,$title,$tcid,$menuUrl, $dtreeCategoryId)
 }
 
 
-//this function gathers all of the passed,failed,blocked, and not run information about the test cases so that it can be displayed next to the category
+//this function gathers all of the passed,failed,blocked, 
+//and not run information about the test cases so that it can be displayed next to the category
 function catCount($catID,$colored,$build)
 {
 	//check to see if the user selected the cumulative checkbox
@@ -343,7 +358,9 @@ function catCount($catID,$colored,$build)
 	unset($testCaseArray);
 	unset($totalTCs);
 	
-	$sql = "select count(testcase.id) from category,testcase where category.id='" . $catID . "' and category.id = testcase.catid";
+	$sql = " SELECT count(testcase.id) from category,testcase " .
+	       " WHERE category.id=" . $catID . 
+	       " AND category.id = testcase.catid";
 	$totalTCResult = do_mysql_query($sql);
 	$totalTCs = mysql_fetch_row($totalTCResult);
 	
@@ -357,20 +374,24 @@ function catCount($catID,$colored,$build)
 		$testCaseArray = null;
 		
 		//Now grab all of the test cases and their results	
-		$sql = "select tcid,status from results,category,testcase where category.id='" . $catID . "' and category.id = testcase.catid and testcase.id = results.tcid order by build ASC";
+		$sql = "SELECT tcid,status FROM results,category,testcase WHERE category.id=" . $catID . 
+		       " AND category.id = testcase.catid and testcase.id = results.tcid ORDER BY build ASC";
 		$totalResult = do_mysql_query($sql);
 
 		//Setting the results to an array.. Only taking the most recent results and displaying them
 		while($totalRow = mysql_fetch_row($totalResult))
 		{
-			//This is a test.. I've got a problem if the user goes and sets a previous p,f,b value to a 'n' value. The program then sees the most recent value as an not run. I think we want the user to then see the most recent p,f,b value
+			//This is a test.. I've got a problem if the user goes and sets a previous p,f,b 
+			// value to a 'n' value. The program then sees the most recent value as an not run. 
+			//I think we want the user to then see the most recent p,f,b value
 			if($totalRow[1] != 'n')	{
 				$testCaseArray[$totalRow[0]] = $totalRow[1];
 			}
 		}
 		
 		//This is the code that determines the pass,fail,blocked amounts
-		//I had to write this code so that the loop before would work.. I'm sure there is a better way to do it but hell if I know how to figure it out..
+		//I had to write this code so that the loop before would work.. 
+		//I'm sure there is a better way to do it but hell if I know how to figure it out..
 		if(count($testCaseArray) > 0)
 		{
 			//This loop will cycle through the arrays and count the amount of p,f,b,n
@@ -395,7 +416,10 @@ function catCount($catID,$colored,$build)
 	else
 	{	
 		//else use a specific build
-		$sql = "SELECT COUNT(testcase.id) AS c,status FROM category,testcase,results WHERE category.id='" . $catID . "' and category.id=testcase.catid AND testcase.id=results.tcid AND build='" . $build . "' GROUP BY results.status";
+		$sql = " SELECT COUNT(testcase.id) AS c,status " .
+		       " FROM category,testcase,results WHERE category.id=" . $catID . 
+		       " AND category.id=testcase.catid AND testcase.id=results.tcid " .
+		       " AND build='" . $build . "' GROUP BY results.status";
 		$result = do_mysql_query($sql);
 	
 		$values['p'] = 0;

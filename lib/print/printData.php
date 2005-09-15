@@ -2,7 +2,7 @@
 /**
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/ 
 *
-* @version 	$Id: printData.php,v 1.7 2005/09/15 16:06:49 franciscom Exp $
+* @version 	$Id: printData.php,v 1.8 2005/09/15 16:38:01 franciscom Exp $
 *	@author 	Martin Havlat
 * 
 * Shows the data that will be printed.
@@ -10,7 +10,7 @@
 * @todo more css available for print
 * @todo print results of tests
 *
-* @author: francisco mancardi - 20050915 - refactoring
+* @author: francisco mancardi - 20050915 - refactoring / I18N
 * @author: francisco mancardi - 20050914 - refactoring
 * @author: francisco mancardi - 20050830 - refactoring
 * @author: francisco mancardi - 20050830 - refactoring print_header()
@@ -80,7 +80,7 @@ function print_component($component)
   	                 htmlspecialchars($component['name']) . '</a></p>';
 		$CONTENT .= "<a name='com" . $component['id'] . "'></a>";
 	}
-   	$CONTENT .= "<h1>" . $component_number . " ".lang_get('component')." " . 
+   	$CONTENT .= "<h1>" . $component_number . " ". lang_get('component') ." " . 
    	                     htmlspecialchars($component['name']) . "</h1>";
 
   	if ($_GET['header'] == 'y') 
@@ -335,14 +335,14 @@ if($_GET['type'] == 'product')
 	    print_header("", $toc); // no more information
 	
 	    $sqlMGTCOM = "SELECT  id,name,intro,scope,ref,method,lim, prodid" .
-	    		" FROM mgtcomponent WHERE  mgtcomponent.prodid=" . 
-	    		$_SESSION['productID'] . " ORDER BY mgtcomponent.name" ;
+	    		         " FROM mgtcomponent WHERE  mgtcomponent.prodid=" . 
+	    		         $_SESSION['productID'] . " ORDER BY mgtcomponent.name" ;
 	  	$resultMGTCOM = do_mysql_query($sqlMGTCOM);
-	  	while($myrowCOM = mysql_fetch_row($resultMGTCOM))
+	  	while($myrowCOM = mysql_fetch_assoc($resultMGTCOM))
 		  { 
 				//display components until we run out
 				print_component($myrowCOM);
-				generate_product_CATs($myrowCOM[0]);
+				generate_product_CATs($myrowCOM['id']);
 	  	}
 	
 	}
@@ -350,7 +350,7 @@ if($_GET['type'] == 'product')
 	{
 	    //if the user wants to print only a component they will enter here
 	  	$myrowCOM = getComponent($_GET['data']);
-	  	print_header("Component: " . $myrowCOM['name'], $toc);
+	  	print_header(lang_get("component") . ": " . $myrowCOM['name'], $toc);
 	  	print_component($myrowCOM);
 		  generate_product_CATs($_GET['data']);
 	
@@ -359,9 +359,8 @@ if($_GET['type'] == 'product')
 	{
 	    //if the user wants to print only a category they will enter here
 	  	$myrowCAT = getCategory($_GET['data']); 
-	  	$myrowCOM = getComponent($myrowCAT[0]);
-	
-	  	print_header("Category: " . $myrowCAT[1], $toc);
+	  	$myrowCOM = getComponent($myrowCAT['compid']);
+	  	print_header(lang_get("category") . ": ". $myrowCAT[1], $toc);
 	  	print_component($myrowCOM);
 	  	print_category($myrowCAT);
 	

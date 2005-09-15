@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: archive.inc.php,v $
  *
- * @version $Revision: 1.14 $
- * @modified $Date: 2005/09/12 07:35:49 $ by $Author: franciscom $
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2005/09/15 16:38:02 $ by $Author: franciscom $
  *
  * @author Martin Havlat
  * Purpose:  functions for test specification management have three parts:
@@ -43,7 +43,7 @@ function getComponent($id)
 function getCategory($id)
 {
 	$sql = "SELECT id,name,objective,config,data,tools,compid FROM mgtcategory " .
-			"WHERE id=" . $id;
+			   "WHERE id=" . $id;
 	$result = do_mysql_query($sql);
 
 	return mysql_fetch_array($result);

@@ -3,16 +3,26 @@
    Changelog for TestLink
 ***************************************************************
 
-TestLink development team:
+TestLink development team of 1.6 version:
 
 	Andreas  Morsing  (scs)
 	Martin  Havlat  (mht)
-	Asiel    (azl)
 	Francisco  Mancardi  (fm)
-	Chad  Rosen  (chad)
 	Kevin  Levy  (kl)
 
+===============================================================
+2005/09/15	Version: 1.6.RC1
+===============================================================
 
+- 0000035: [New Feature] [SF 878106 ] provide documentation in release (mhavlat)
+- 0000103: [Localization] Localization is changed but not strings (fman)
+- 0000092: [General] Two products each with one active test plan incorrectly prints the wrong plan (fman)
+- 0000093: [User Interface General] Incorrect link reference in testlink\gui\help\en_US\content.html (fman)
+- 0000088: [Database] Build numbers are not properly imported by update script (fman)
+- 0000090: [User Interface General] Special characters are not saved properly (schlundus)
+- 0000089: [Test Specification (tc, comp, cat)] Create 2 Categories, the second generates record not visible (fman)
+- 0000086: [Test Specification (tc, comp, cat)] Using "|" in the component or category name causes malformed URLs (fman)
+- 0000065: [New Feature] Test Case Execution - Show TC ID while working in "Test Case Execution" (kevin)
 
 ===============================================================
 2005/09/05	Version: 1.6.Beta

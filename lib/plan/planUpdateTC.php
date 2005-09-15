@@ -1,7 +1,7 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: planUpdateTC.php,v 1.4 2005/09/06 06:45:23 franciscom Exp $
+ * @version $Id: planUpdateTC.php,v 1.5 2005/09/15 17:00:14 franciscom Exp $
  * @author Martin Havlat
  * 
  * Update Test Cases within Test Case Suite 
@@ -113,9 +113,9 @@ if(isset($_POST['updateSelected']))
 }
 
 // walk through the project test cases
-$sqlTC = "SELECT testcase.id from testcase, category, component " .
-		"WHERE testcase.catid = category.id AND category.compid = component.id " .
-		"AND component.projid = " . $_SESSION['testPlanId'];
+$sqlTC = " SELECT testcase.id from testcase, category, component " .
+		     " WHERE testcase.catid = category.id AND category.compid = component.id " .
+		     " AND component.projid = " . $_SESSION['testPlanId'];
 $resultTC = do_mysql_query($sqlTC);
 //tLog(mysql_errno() . ": " . mysql_error());
 
@@ -319,7 +319,7 @@ function process_tc_cat_change($tc_id, $tc_specs)
 //               versions 1.5.x ALLOW only test case
 //               moving between CATEGORIES of the SAME COMPONENT
 
-$sql = "SELECT * from category where mgtcatid=" . $tc_specs['catid'];
+$sql = "SELECT * FROM category where mgtcatid=" . $tc_specs['catid'];
 $result = do_mysql_query($sql);
 
 if (mysql_num_rows($result) == 0) 
@@ -328,7 +328,7 @@ if (mysql_num_rows($result) == 0)
   // mgtcat belongs to a mgtcomp, then we need to check is mgtcomp
   // is part of the test plan.
   //
-  $sql = " SELECT * from component " .
+  $sql = " SELECT * FROM component " .
          " where component.projid = " . $_SESSION['testPlanId'] .
          " and mgtcompid=" . $tc_specs['compid'];
   $result = do_mysql_query($sql);
@@ -344,7 +344,7 @@ if (mysql_num_rows($result) == 0)
     $sql = " SELECT mgtcat.id as mgtcat_id, mgtcat.name mgtcat_name, " .
            " mgtcat.compid as mgtcat_compid,mgtcat.CATorder as mgtcat_CATorder, " .
            " component.id compid " .
-           " from mgtcategory mgtcat, component" .
+           " FROM mgtcategory mgtcat, component" .
            " where mgtcat.id=" . $tc_specs['catid'] .
            " and mgtcat.compid = component.mgtcompid";
            

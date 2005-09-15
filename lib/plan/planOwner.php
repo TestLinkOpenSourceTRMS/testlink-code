@@ -1,9 +1,10 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: planOwner.php,v 1.3 2005/09/07 06:23:06 franciscom Exp $ */
+/* $Id: planOwner.php,v 1.4 2005/09/15 17:00:14 franciscom Exp $ */
 /**
  * Manage the ownership and priority of test suite
  *
+ * @author Francisco Mancardi - 20050914 - refactoring         
  * @author Francisco Mancardi - 20050907 - bug on help          
  */
 ////////////////////////////////////////////////////////////////////////////////
@@ -15,7 +16,7 @@ require_once("../../lib/functions/lang_api.php");
 testlinkInitPage();
 
 // collect available users
-$arrUsers = getProjectUsers();
+$arrUsers = getTestPlanUsers();
 $updated = null;
 
 // process update request
@@ -24,10 +25,11 @@ if(isset($_POST['updateSuiteAttribute']) && $_POST['updateSuiteAttribute'])
 	$updated = updateSuiteAttributes($_POST);
 }
 
-// collect data
 $level = isset($_GET['level']) ? $_GET['level'] : null;
-$data = isset($_GET['data']) ? intval($_GET['data']) : null;
+$compID = isset($_GET['data']) ? intval($_GET['data']) : null;
+$catID = isset($_GET['data']) ? intval($_GET['data']) : null;
 $arrSuites = null;
+
 if($level == 'root')
 {
 	// 20050906 - fm
@@ -35,17 +37,19 @@ if($level == 'root')
 }	
 else if($level == 'component')
 {
-	//Selecting all categories from the components selected above
-	$categories = null;
-	$result = getAllTestPlanComponentCategories($_SESSION['testPlanId'],$data,$categories);
-	for($i = 0;$i < sizeof($categories);$i++)
+	$categories = getAllTestPlanComponentCategories($_SESSION['testPlanId'],$compID);
+	$num_cat = sizeof($categories);
+	for($idx = 0; $idx < $num_cat; $idx++)
 	{
-		$oneSuite = getTestSuiteParameters($categories[$i]['id']);
-		$arrSuites[] = $oneSuite[0];
+		$arrSuites[] = $categories[$idx];
 	}
+	
 }
 else if($level == 'category')
-	$arrSuites = getTestSuiteParameters($data);
+{
+	$arrSuites = getTP_category_info($catID);
+}
+
 
 $smarty = new TLSmarty;
 $smarty->assign('sqlResult', $updated);

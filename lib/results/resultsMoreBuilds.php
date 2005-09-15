@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsMoreBuilds.php,v 1.11 2005/09/12 16:51:34 franciscom Exp $ 
+* $Id: resultsMoreBuilds.php,v 1.12 2005/09/15 17:00:15 franciscom Exp $ 
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 * 
@@ -23,7 +23,7 @@ testlinkInitPage();
 $prodID = isset($_SESSION['productID']) ? $_SESSION['productID'] : 0;
 $projectId = $_SESSION['testPlanId'];
 $arrBuilds = getBuilds($projectId); 
-$arrOwners = getProjectUsers();
+$arrOwners = getTestPlanUsers();
 $arrKeywords = selectKeywords($prodID);
 $arrComponents = getArrayOfComponentNames($projectId);
 

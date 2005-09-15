@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: treeMenu.inc.php,v $
  *
- * @version $Revision: 1.3 $
- * @modified $Date: 2005/09/06 06:44:07 $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2005/09/15 17:00:14 $
  *
  * 	This file generates tree menu for test specification.
  *
@@ -303,8 +303,8 @@ function generateTestSuiteTree($linkto, $hidetc, $getArguments = '')
 
 			// create TCs if required
 			if ($hidetc == 0) {
-				$TCResult = do_mysql_query("select testcase.id, testcase.title,testcase." .
-					"mgttcid from category,testcase where category.id = " . 
+				$TCResult = do_mysql_query("SELECT testcase.id, testcase.title,testcase." .
+					                         "mgttcid from category,testcase where category.id = " . 
 					$myrowCAT[0] . " and category.id = testcase.catid order by " .
 					"TCorder,testcase.mgttcid");
 
@@ -313,7 +313,8 @@ function generateTestSuiteTree($linkto, $hidetc, $getArguments = '')
 					$tcName = filterString($myrowTC[1]);
 					if (TL_TREE_KIND == 'LAYERSMENU')
 					{ 
-						$menustring .= "....|<b>" . $myrowTC[2] . "</b>: " . $tcName . "|" . $linkto . "?level=tc&data=" . $myrowTC[0] . $getArguments . "|Test Case||workframe|\n";
+						$menustring .= "....|<b>" . $myrowTC[2] . "</b>: " . $tcName . "|" . $linkto . 
+						               "?level=tc&data=" . $myrowTC[0] . $getArguments . "|Test Case||workframe|\n";
 					}
 					elseif (TL_TREE_KIND == 'JTREE')
 					{						
@@ -321,7 +322,9 @@ function generateTestSuiteTree($linkto, $hidetc, $getArguments = '')
 					}
 					elseif (TL_TREE_KIND == 'DTREE')
 					{
-						$menustring .= "tlTree.add(" . $dtreeCounter++. "," . $dtreeCategoryId . ",'<b>" . $myrowTC[2] . "</b>:" . $tcName . "','" . $linkto . "?level=tc&data=" . $myrowTC[0] . $getArguments . "');\n";
+						$menustring .= "tlTree.add(" . $dtreeCounter++. "," . $dtreeCategoryId . ",'<b>" . 
+						               $myrowTC[2] . "</b>:" . $tcName . "','" . $linkto . "?level=tc&data=" . 
+						               $myrowTC[0] . $getArguments . "');\n";
 					}
 				}
 			}

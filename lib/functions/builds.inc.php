@@ -1,6 +1,6 @@
 <?
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: builds.inc.php,v 1.2 2005/08/16 18:00:55 franciscom Exp $
+* $Id: builds.inc.php,v 1.3 2005/09/15 17:00:14 franciscom Exp $
 * 
 * @author Martin Havlat
 *
@@ -41,10 +41,10 @@ function deleteTestPlanBuild($testPlanID,$buildID)
 	if ($testPlanID)
 	{ 
 		$catIDs = null;
-		getProjectCategories($testPlanID,$catIDs);
+		getTestPlanCategories($testPlanID,$catIDs);
 	
-		$tcIDs = null;
-		getCategoriesTestcases($catIDs,$tcIDs);	
+		// 20050914 - fm
+		$tcIDs = getCategories_TC_ids($catIDs);	
 		
 		if (sizeof($tcIDs))
 		{

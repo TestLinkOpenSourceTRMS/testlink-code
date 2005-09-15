@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: planNew.php,v 1.3 2005/09/09 08:36:07 franciscom Exp $ */
+/* $Id: planNew.php,v 1.4 2005/09/15 17:00:14 franciscom Exp $ */
 /* Purpose:  Add new Test Plan */
 /*
  * @ author: francisco mancardi - 20050810
@@ -36,7 +36,7 @@ if(isset($_POST['newTestPlan']))
 		//user has decided to copy an existing project. What this code does is loops through each of the components, inserts the component info, loops through the categories from the component and then adds the category, and the same thing as before with test cases.
 		if($copy) //if the user chose to copy then go through this code
 		{
-			$result = getProjectComponents($copy,$cInfo);
+			$result = getTestPlanComponents($copy,$cInfo);
 			for($i = 0; $i < sizeof($cInfo);$i++)
 			{
 				//insert it into the component table with new ids

@@ -1,10 +1,9 @@
 <?
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * $Id: resultsMoreBuilds.inc.php,v 1.0 
+ *$Id: resultsMoreBuilds.inc.php,v 1.16 2005/09/15 17:00:14 franciscom Exp $ 
  * 
  * @author Kevin Levy
  *
- * Functions for Mine Results
  */
 ////////////////////////////////////////////////////////////////////////////////
 

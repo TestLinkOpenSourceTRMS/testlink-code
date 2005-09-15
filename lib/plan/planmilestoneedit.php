@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: planmilestoneedit.php,v 1.2 2005/08/16 18:00:57 franciscom Exp $ */
+/* $Id: planmilestoneedit.php,v 1.3 2005/09/15 17:00:14 franciscom Exp $ */
 /** 
  * Purpose:  This page allows the creation and editing of milestones.
  * @author Chad Rosen, Martin Havlat 
@@ -54,7 +54,7 @@ if($editMileStone)
 $mileStones = null;
 
 // 20050807 - fm
-getProjectMileStones($_SESSION['testPlanId'],$mileStones);
+getTestPlanMileStones($_SESSION['testPlanId'],$mileStones);
 
 $smarty = new TLSmarty;
 $smarty->assign('arrMilestone', $mileStones);

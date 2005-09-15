@@ -2,12 +2,14 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: plan.inc.php,v $
- * @version $Revision: 1.5 $
- * @modified $Date: 2005/09/12 06:36:03 $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2005/09/15 17:00:14 $
  * @author 	Martin Havlat
  *
  * Functions for management: 
  * Test Plans, Test Case Suites, Milestones, Testers assignment
+ *
+ * @author Francisco Mancardi - 20050914 - refactoring
  */
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -21,10 +23,11 @@ require_once("plan.core.inc.php");
  */
 function updateSuiteAttributes($_INPUT)
 {
-	$sql = "UPDATE category set importance ='" . $_INPUT['importance'] . "', risk ='" .  
-			$_INPUT['risk'] . "', owner='" . $_INPUT['owner'] . "' where id='" . 
-			$_INPUT['id'] . "'";
+	$sql = "UPDATE category SET importance ='" . $_INPUT['importance'] . "', risk ='" .  
+			   $_INPUT['risk'] . "', owner='" . $_INPUT['owner'] . "' " .
+			   " WHERE id=" . $_INPUT['id'];
 	$result = do_mysql_query($sql);
+	
 	if ($result){
 		return 'ok';
 	} else {
@@ -35,20 +38,29 @@ function updateSuiteAttributes($_INPUT)
 /**
  * Get actual priority and owner of test suite/category
  *
- * @param 	string 	identification number of Test Suite / container
+ * @param 	string 	identification number 
  * @return 	array	list of parameters
+ *
+ * 20050914 - fm - using name and CATorder from mgtcategory 
  */
-function getTestSuiteParameters($testSuite)
+function getTP_category_info($catID)
 {
 	$output = array();
-	$sqlCAT = "select id, name, importance, risk, owner from category where id ='" . 
-			$testSuite . "' order by CATorder";
-	$resultCAT = @do_mysql_query($sqlCAT);
+	$sql = " SELECT category.id, mgtcategory.name, importance, risk, owner " .
+	       " FROM category, mgtcategory " .
+	       " WHERE category.mgtcatid = mgtcategory.id " .
+	       " AND category.id =" . $catID . " ORDER BY mgtcategory.CATorder";
+	       
+	      
+	$result = @do_mysql_query($sql);
 
-	while($row = mysql_fetch_array($resultCAT)){ //loop through all categories
-		array_push($output,array('id'=>$row['id'], 'name'=>$row['name'],
+	while($row = mysql_fetch_assoc($result))
+	{ 
+		/* array_push($output,array('id'=>$row['id'], 'name'=>$row['name'],
 				'importance'=>$row['importance'], 'risk'=>$row['risk'],
 				'owner'=>$row['owner']));
+		*/
+		$output[]=$row;		
 	}
 	return $output;
 }
@@ -65,7 +77,6 @@ function updateTestPlan($id,$name,$notes,$p_active)
 $active = to_boolean($p_active);
 	
 // 20050809 - fm 	
-// $sql = "UPDATE project SET active='" . mysql_escape_string($active) . 
 $sql = "UPDATE project SET active='" . $active . 
 	       "', name='" . mysql_escape_string($name) . "', notes='" . 
 	       mysql_escape_string($notes). "' WHERE id=" . $id;
@@ -89,7 +100,7 @@ function deleteTestPlanComponents($id)
 	return $result ? 1 : 0;
 }
 
-function getProjectComponents($id,&$cInfo)
+function getTestPlanComponents($id,&$cInfo)
 {
 	$sql = "SELECT * FROM component WHERE projid=" . $id;
 	$result = do_mysql_query($sql);
@@ -101,10 +112,10 @@ function getProjectComponents($id,&$cInfo)
 	return $result ? 1 : 0;
 }
 
-function getProjectComponentIDs($id,&$comIDs)
+function getTestPlanComponentIDs($id,&$comIDs)
 {
 	$cInfo = null;
-	$result = getProjectComponents($id,$cInfo);
+	$result = getTestPlanComponents($id,$cInfo);
 	if ($result)
 	{
 		for($i = 0 ; $i < sizeof($cInfo);$i++)
@@ -125,7 +136,7 @@ function deleteCategoriesByComponentIDs($comIDs)
 	return $result ? 1 : 0;
 }
 
-function getProjectCategories($id,&$catIDs)
+function getTestPlanCategories($id,&$catIDs)
 {
 	//Select all of the projects components
 	$sql = "SELECT category.id FROM component, category WHERE projid=".$id." AND component.id=compid";
@@ -296,7 +307,7 @@ function deleteMileStone($id)
 	return $result ? 1 : 0;
 }
 
-function getProjectMileStones($projID,&$mileStones)
+function getTestPlanMileStones($projID,&$mileStones)
 {
 	// load existing milestones
 	$sql = " SELECT id,name,date,A,B,C " .
@@ -373,43 +384,58 @@ function insertTestPlanBuild($build,$testplanID,$notes = '')
 	return $buildID;
 }
 
+/*
+20050914 - fm - 
+using also mgtcategory
+changed return type
 
-function getAllTestPlanComponentCategories($testPlanID,$compID,&$categories)
+*/
+
+function getAllTestPlanComponentCategories($testPlanID,$compID)
 {
-	$query = " SELECT category.id, category.name, importance, risk, owner " .
-	         " FROM component,category " .
-	         " WHERE component.projid = " .	$testPlanID  . 
+	$aCategories = array();
+	$query = " SELECT category.id, mgtcategory.name, importance, risk, owner " .
+	         " FROM component,category,mgtcategory " .
+	         " WHERE category.mgtcatid = mgtcategory.id " .
+	         " AND category.compid = component.id " .
+	         " AND component.projid = " .	$testPlanID  . 
 	         " AND component.id = " . $compID . 
-	         " AND category.compid = component.id ORDER BY component.name,CATorder";
+	         " ORDER BY component.name,mgtcategory.CATorder";
 	         
 	$result = do_mysql_query($query);
 	
-	$categories = null;
 	if ($result)
 	{
 		while($row = mysql_fetch_array($result))
-			$categories[] = $row;
+		{
+			$aCategories[] = $row;
+		}	
 	}
 	
-	return $result ? 1 : 0;
+	return ($aCategories);
 }
 
 
-function getCategoriesTestcases($catIDs,&$tcIDs)
+/*
+20050914 - fm - 
+using also mgtcategory
+changed return type
+*/
+function getCategories_TC_ids($catIDs,&$tcIDs)
 {
-	$tcIDs = null;
-	if (!sizeof($catIDs))
-		return 1;
-		
-	$catIDList = implode(",",$catIDs);
-	$sql = "SELECT id FROM testcase WHERE catid IN ({$catIDList})";
-	$result = do_mysql_query($sql);
-
-	if ($result)
+	$tcIDs = array();
+	if (sizeof($catIDs) > 0)
 	{
-		while ($row = mysql_fetch_array($result))
-			$tcIDs[] = $row['id'];
-	}
-	return $result ? 1 : 0;
+  	$catIDList = implode(",",$catIDs);
+  	$sql = "SELECT id FROM testcase WHERE catid IN ({$catIDList})";
+  	$result = do_mysql_query($sql);
+  
+  	if ($result)
+  	{
+  		while ($row = mysql_fetch_array($result))
+  			$tcIDs[] = $row['id'];
+  	}
+  }	
+	return($tcIDs);
 }
 ?>

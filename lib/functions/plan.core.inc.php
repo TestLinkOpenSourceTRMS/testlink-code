@@ -3,8 +3,8 @@
  * TestLink Open Source Project - @link http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: plan.core.inc.php,v $
- * @version $Revision: 1.5 $
- * @modified $Date: 2005/09/06 06:44:07 $ $Author: franciscom $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2005/09/15 17:00:14 $ $Author: franciscom $
  *  
  * 
  * @author 	Martin Havlat
@@ -187,7 +187,7 @@ function getCountTestPlans4UserProd($userID,$prodID=null)
  * @todo only users valid for the project should be collected
  * @todo ? DELETE - should be used user.inc.php
  */
-function getProjectUsers()
+function getTestPlanUsers()
 {
 	$sqlUser = "select login from user";
 	$resultUser = @do_mysql_query($sqlUser);
@@ -255,5 +255,66 @@ function check_tp_father($prodID,$tpID)
 // ------------------------------------------------------------
 
 
+
+
+/*
+20050914 - fm - interface changes
+
+*/
+function dispCategories($idPlan, $keyword, $resultCat) 
+{
+	$arrData = array();
+	
+	while($rowCAT = mysql_fetch_array($resultCat))
+	{ 
+		$arrTestCases = array();					
+		$idCAT = $rowCAT[0];
+		$nameCAT = $rowCAT[1];
+
+		$sqlTC = "SELECT id, title FROM mgttestcase " .
+		         "WHERE catid=" . $idCAT;
+		         
+	
+		
+		//Check the keyword that the user has submitted.
+		if($keyword != 'NONE')
+		{
+			$keyword = mysql_escape_string($keyword);
+			//keywordlist always have a trailing slash, so there are only two cases to consider 
+			//the keyword is the first in the list
+			//or its in the middle of list 		 
+			$sqlTC .= " AND (keywords LIKE '%,{$keyword},%' OR keywords like '{$keyword},%') ";
+		}
+		$sqlTC .= " ORDER BY TCorder,id";
+
+		$resultTC = do_mysql_query($sqlTC);
+		
+		while($rowTC = mysql_fetch_array($resultTC))
+		{ 
+			//Display all test cases
+			$idTC = $rowTC['id']; 
+			$titleTC = $rowTC['title']; 
+			
+			//Displays the test case name and a checkbox next to it
+			//
+			// 20050807 - fm - $idPlan
+			
+			$sqlCheck = " SELECT mgttcid FROM project,component,category,testcase " .
+			            " WHERE mgttcid=" . $idTC . 
+			            " AND project.id=component.projid AND component.id=category.compid AND " .
+			            " category.id=testcase.catid AND project.id=" . $idPlan;
+			$checkResult = do_mysql_query($sqlCheck);
+			$checkRow = mysql_num_rows($checkResult);
+			
+			array_push($arrTestCases, array( 'id' => $idTC, 'name' => $titleTC,
+											                 'added' => $checkRow));
+		}
+		
+		array_push($arrData, array( 'id' => $idCAT, 'name' => $nameCAT,
+									              'tc' => $arrTestCases));
+	}
+	
+	return $arrData;
+}
 
 ?>

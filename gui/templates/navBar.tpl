@@ -1,5 +1,5 @@
 {* Testlink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: navBar.tpl,v 1.3 2005/08/26 21:01:27 schlundus Exp $ *}
+{* $Id: navBar.tpl,v 1.4 2005/09/15 09:25:50 havlat Exp $ *}
 {* Purpose: smarty template - title bar + menu *}
 {* Andreas Morsing: changed the product selection *}
 {* 20050826 - scs - added input for entering tcid *}
@@ -58,7 +58,7 @@
       	{/if}	
       	<a href='lib/user/userInfo.php' target="mainframe" accesskey="i" 
       		tabindex="5">{lang_get s='title_edit_personal_data'}</a> | 
-      	<a href='http://testlink.sourceforge.net/docs/testLink.php' target="mainframe" 
+      	<a href='documentation/user-manual.html' target="mainframe" 
       		tabindex="6">{lang_get s='title_documentation'}</a>
     </div>
 

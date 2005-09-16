@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.5 $
- * @modified $Date: 2005/09/12 06:00:49 $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2005/09/16 22:49:02 $
  *
  * @author Francisco Mancardi
  *
@@ -1126,6 +1126,60 @@ $TLS_req_import_finished = "Importazione finita!";
 // inc_reqView.tpl
 $TLS_Author = "Autore";
 $TLS_btn_close = "Chiudi";
+
+// gui/templates/resultsMoreBuilds_query_form.tpl
+$TLS_resultsMoreBuilds_query_form_test_plan_header = "Test Plan : ";
+$TLS_resultsMoreBuilds_query_form_select_builds_header = "Select Build(s)";
+$TLS_resultsMoreBuilds_query_form_select_components_header = "Select Component(s)";
+$TLS_resultsMoreBuilds_query_form_components_selection_all = "all";
+$TLS_resultsMoreBuilds_query_form_select_keyword_header = "Select Keyword";
+$TLS_resultsMoreBuilds_query_form_do_not_query_by_keyword = "DO NOT QUERY BY KEYWORD";
+$TLS_resultsMoreBuilds_query_form_select_owner_header = "Select Owner";
+$TLS_resultsMoreBuilds_query_form_do_not_query_by_owner = "DO NOT QUERY BY OWNER";
+$TLS_resultsMoreBuilds_query_form_select_report_format_header = "Select Report Format";
+$TLS_resultsMoreBuilds_query_form_html_format = "HTML";
+$TLS_resultsMoreBuilds_query_form_excel_format = "MS Excel";
+$TLS_resultsMoreBuilds_query_form_select_last_result_header = "Select Last Result";
+$TLS_resultsMoreBuilds_query_form_last_status_any = "Any";
+$TLS_resultsMoreBuilds_query_form_last_status_passed = "Passed";
+$TLS_resultsMoreBuilds_query_form_last_status_failed = "Failed";
+$TLS_resultsMoreBuilds_query_form_last_status_blocked = "Blocked";
+$TLS_resultsMoreBuilds_query_form_last_status_not_run = "Not Run";
+$TLS_resultsMoreBuilds_query_form_submit_query = "Submit Query";
+
+// gui/templates/resultsMoreBuilds_report.tpl
+$TLS_resultsMoreBuilds_report_please_wait = "Please wait until report fully loads...";
+$TLS_resultsMoreBuilds_report_query_parameters_header = "Query Parameters Selected";
+$TLS_resultsMoreBuilds_report_overall_status = "Overall Status";
+$TLS_resultsMoreBuilds_report_description1 = "Results totals for test cases which match specified \"Owner\", \"Keyword\", \"Component(s)\", and \"Builds Selected\". \"Last Status\" query parameter is NOT considered.";
+$TLS_resultsMoreBuilds_report_case_return_by_query_header = "Test Cases Return By Query";
+$TLS_resultsMoreBuilds_report_description2 = "Individual test cases which match specified \"Owner\", \"Keyword\", \"Component(s)\", \"Last Status\" and \"Builds Selected\" query parameters.";
+$TLS_resultsMoreBuilds_report_show_hide_all = "Show/Hide All";
+$TLS_resultsMoreBuilds_report_results_by_component_header = "Results By Component";
+
+// lib/functions/resultsMoreBuilds.inc.php
+//$TLS_resultsMoreBuilds_inc
+$TLS_resultsMoreBuilds_inc_test_plan_name = "Test Plan";
+$TLS_resultsMoreBuilds_inc_builds_selected = "Build(s)";
+$TLS_resultsMoreBuilds_inc_keyword = "Keywords";
+$TLS_resultsMoreBuilds_inc_last_status = "Last Status";
+$TLS_resultsMoreBuilds_inc_owner = "Owner";
+$TLS_resultsMoreBuilds_inc_number_cases = "# Cases";
+$TLS_resultsMoreBuilds_inc_number_passed = "# Passed";
+$TLS_resultsMoreBuilds_inc_number_failed = "# Failed";
+$TLS_resultsMoreBuilds_inc_number_blocked = "# Blocked";
+$TLS_resultsMoreBuilds_inc_number_not_run = "# Not Run";
+$TLS_resultsMoreBuilds_inc_category_header = "Category =";
+$TLS_resultsMoreBuilds_inc_owner_header = "Owner =";
+$TLS_resultsMoreBuilds_inc_number_executions = "# Test Cases Run";
+$TLS_resultsMoreBuilds_inc_build = "Build";
+$TLS_resultsMoreBuilds_inc_runby = "Run By";
+$TLS_resultsMoreBuilds_inc_case_not_run_warning = "Test Case Not Run";
+$TLS_resultsMoreBuilds_inc_daterun = "Date Run";
+$TLS_resultsMoreBuilds_inc_status = "Status";
+$TLS_resultsMoreBuilds_inc_bugs = "Related Bugs";
+$TLS_resultsMoreBuilds_inc_notes = "Related Notes";
+
 
 
 ?>

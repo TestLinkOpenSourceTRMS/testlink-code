@@ -1,18 +1,18 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: resultsMoreBuilds_query_form.tpl,v 1.12 2005/09/14 09:27:15 kevinlevy Exp $
+$Id: resultsMoreBuilds_query_form.tpl,v 1.13 2005/09/16 19:45:15 kevinlevy Exp $
 @author Francisco Mancardi - fm - start solving BUGID 97/98
 *}
 {include file="inc_head.tpl"}
 
 <body>
-<h1>Test Plan = {$testPlanName}</h1>
+<h1>{lang_get s='resultsMoreBuilds_query_form_test_plan_header'} {$testPlanName}</h1>
 <div class="workBack">	
 <form action="lib/results/resultsMoreBuilds_buildReport.php" method='get'>
 	<INPUT TYPE=HIDDEN NAME=projectid VALUE={$projectid}>
 	<INPUT TYPE=HIDDEN NAME=testPlanName VALUE="{$testPlanName}">
 	<table class="simple" style="width: 100%; text-align: center; margin-left: 0px;">
-		<tr><th>select build(s)</th><th>select component(s)</th></tr>
+		<tr><th>{lang_get s='resultsMoreBuilds_query_form_select_builds_header'}</th><th>{lang_get s='resultsMoreBuilds_query_form_select_components_header}</th></tr>
 		<tr>
 			<td>
 				<select name='build[]' size=10 multiple>
@@ -31,17 +31,17 @@ $Id: resultsMoreBuilds_query_form.tpl,v 1.12 2005/09/14 09:27:15 kevinlevy Exp $
 				</select>	
 			</td>
 		</tr>
-    <tr><th>select keyword </th><th>select owner </th></tr>
+    <tr><th>{lang_get s='resultsMoreBuilds_query_form_select_keyword_header'}</th><th>{lang_get s='resultsMoreBuilds_query_form_select_owner_header'}</th></tr>
 		<tr><td>
         	        <select name="keyword" size=5>
-			<option value="" selected>DO NOT QUERY BY KEYWORD</option>
+			<option value="" selected>{lang_get s='resultsMoreBuilds_query_form_do_not_query_by_keyword'}</option>
                         {section name=Row loop=$arrKeywords}
                         <option value="{$arrKeywords[Row].keyword|escape}">{$arrKeywords[Row].keyword|escape}</option>
                         {/section}
 		</td>
 			<td>
 				<select name='owner' size=5 >
-					<option value="" selected>DO NOT QUERY BY OWNER</option>
+					<option value="" selected>{lang_get s='resultsMoreBuilds_query_form_do_not_query_by_owner'}</option>
 					{foreach key=owner item=ownerid from=$arrOwners}
 						{* by default the owner should be the current user *}
 						<option value="{$ownerid|escape}">{$ownerid|escape}</option>
@@ -53,25 +53,25 @@ $Id: resultsMoreBuilds_query_form.tpl,v 1.12 2005/09/14 09:27:15 kevinlevy Exp $
 		<tr>
 
 		</tr>
-    <tr><th>select report format</th><th>select last result </th></tr>	
+    <tr><th>{lang_get s='resultsMoreBuilds_query_form_select_report_format_header'}</th><th>{lang_get s='resultsMoreBuilds_query_form_select_last_result_header'} </th></tr>	
 		<tr><td> 
 			<select name='format' size=2>
-				<option selected>html</option>
-				<option>excel</option>
+				<option selected>{lang_get s='resultsMoreBuilds_query_form_html_format'}</option>
+				<option>{lang_get s='resultsMoreBuilds_query_form_excel_format'}</option>
 			</select>
 		</td>
 		<td> 
 			<select name='lastStatus' size=5>
-				<option selected>Any</option>
-				<option>Passed</option>
-				<option>Failed</option>
-				<option>Blocked</option>
-				<option>Not Run</option>
+				<option selected>{lang_get s='resultsMoreBuilds_query_form_last_status_any'}</option>
+				<option>{lang_get s='resultsMoreBuilds_query_form_last_status_passed'}</option>
+				<option>{lang_get s='resultsMoreBuilds_query_form_last_status_failed'}</option>
+				<option>{lang_get s='resultsMoreBuilds_query_form_last_status_blocked'}</option>
+				<option>{lang_get s='resultsMoreBuilds_query_form_last_status_not_run'}</option>
 			</select>
 		</td></tr>
 	<tr>
 		<td>
-			<INPUT TYPE=submit VALUE='submit query'/>
+			<INPUT TYPE=submit VALUE='{lang_get s='resultsMoreBuilds_query_form_submit_query'}'/>
 		</td>
 	</tr>
 </table>

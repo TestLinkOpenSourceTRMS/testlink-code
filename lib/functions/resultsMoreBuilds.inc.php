@@ -1,6 +1,6 @@
 <?
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
- *$Id: resultsMoreBuilds.inc.php,v 1.19 2005/09/16 19:57:33 kevinlevy Exp $ 
+ *$Id: resultsMoreBuilds.inc.php,v 1.20 2005/09/16 21:39:32 kevinlevy Exp $ 
  * 
  * @author Kevin Levy
  *
@@ -212,7 +212,7 @@ function createResultsForCategory($categoryId, $keyword, $commaDelimitedBuilds, 
   $owner = $categoryRowArray[5];
 
   
-  $categoryHeader = lang_get('resultsMoreBuilds_inc_category_header') . htmlspecialchars($categoryName) . lang_get('resultsMoreBuilds_inc_owner_header') . htmlspecialchars($owner);
+  $categoryHeader = lang_get('resultsMoreBuilds_inc_category_header') . htmlspecialchars($categoryName) . " " . lang_get('resultsMoreBuilds_inc_owner_header') . htmlspecialchars($owner);
   $sql = " SELECT testcase.id, testcase.title, testcase.summary, testcase.steps, " .
            " testcase.exresult, testcase.catid, testcase.active, testcase.version, " .
            " testcase.mgttcid, testcase.keywords, testcase.TCorder " .

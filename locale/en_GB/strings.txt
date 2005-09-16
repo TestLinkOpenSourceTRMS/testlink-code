@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.19 $
- * @modified $Date: 2005/09/16 20:55:48 $
+ * @version $Revision: 1.20 $
+ * @modified $Date: 2005/09/16 21:23:21 $
  *
  * @author Francisco Mancardi
 **/
@@ -1148,6 +1148,16 @@ $TLS_resultsMoreBuilds_query_form_last_status_failed = "Failed";
 $TLS_resultsMoreBuilds_query_form_last_status_blocked = "Blocked";
 $TLS_resultsMoreBuilds_query_form_last_status_not_run = "Not Run";
 $TLS_resultsMoreBuilds_query_form_submit_query = "Submit Query";
+
+// gui/templates/resultsMoreBuilds_report.tpl
+$TLS_resultsMoreBuilds_report_please_wait = "Please wait until report fully loads...";
+$TLS_resultsMoreBuilds_report_query_parameters_header = "Query Parameters Selected";
+$TLS_resultsMoreBuilds_report_overall_status = "Overall Status";
+$TLS_resultsMoreBuilds_report_description1 = "Results totals for test cases which match specified \"Owner\", \"Keyword\", \"Component(s)\", and \"Builds Selected\". \"Last Status\" query parameter is NOT considered.";
+$TLS_resultsMoreBuilds_report_case_return_by_query_header = "Test Cases Return By Query";
+$TLS_resultsMoreBuilds_report_description2 = "Individual test cases which match specified \"Owner\", \"Keyword\", \"Component(s)\", \"Last Status\" and \"Builds Selected\" query parameters.";
+$TLS_resultsMoreBuilds_report_show_hide_all = "Show/Hide All";
+$TLS_resultsMoreBuilds_report_results_by_component_header = "Results By Component";
 
 
 ?>

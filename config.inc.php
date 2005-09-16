@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.14 $
- * @modified $Date: 2005/09/15 12:49:23 $ by $Author: franciscom $
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2005/09/16 06:49:25 $ by $Author: franciscom $
  *
  * @author Chad Rosen
  *
@@ -111,7 +111,7 @@ define('TL_IMPORT_ROW_MAX', '10000'); // in chars
 * BUGZILLA: edit configuration in TL_ABS_PATH/cfg/bugzilla.cfg.php
 * MANTIS: edit configuration in TL_ABS_PATH/cfg/mantis.cfg.php
 */
-define('TL_INTERFACE_BUGS', 'NO');
+define('TL_INTERFACE_BUGS', 'MANTIS');
 require_once(TL_ABS_PATH . 'lib/bugtracking/int_bugtracking.php');
 
 /** Setting up the global include path for testlink */
@@ -128,7 +128,8 @@ error_reporting(E_ALL & ~E_NOTICE);
  
 /** GUI related constants *///////////////////////////////////////////////////
 
-define('TL_VERSION', '1.6.RC1'); 
+/* CVS will not released, MUST BE changed at the release day */
+define('TL_VERSION', '1.6.CVS.POST.RC1'); 
 define('TL_BACKGROUND_DEFAULT', "#9BD");
 
 /** 

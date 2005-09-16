@@ -1,6 +1,6 @@
 <?
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
- *$Id: resultsMoreBuilds.inc.php,v 1.20 2005/09/16 21:39:32 kevinlevy Exp $ 
+ *$Id: resultsMoreBuilds.inc.php,v 1.21 2005/09/16 21:41:38 kevinlevy Exp $ 
  * 
  * @author Kevin Levy
  *
@@ -344,7 +344,7 @@ function createResultsForTestCase($tcid, $myrow,$arrBuilds,$arrayOfResults,$last
   $className = getTCClassNameByStatus($lastResult);
   
   $summaryTable = "<table class=\"simple white\">";
-  $summaryTable .= "<tr class=\"black\"><th>" . lang_get('resultsMoreBuilds_inc_number_executions') . "</th><th>" . lang_get('resultsMoreBuilds_inc_number_passed') . "</th><th>" . lang_get('resultsMoreBuilds_inc_number_failures') . "</th><th>" . lang_get('resultsMoreBuilds_inc_number_blocked') . "</th></tr>";
+  $summaryTable .= "<tr class=\"black\"><th>" . lang_get('resultsMoreBuilds_inc_number_executions') . "</th><th>" . lang_get('resultsMoreBuilds_inc_number_passed') . "</th><th>" . lang_get('resultsMoreBuilds_inc_number_failed') . "</th><th>" . lang_get('resultsMoreBuilds_inc_number_blocked') . "</th></tr>";
   $summaryTable .= "<tr class=\"{$className}\"><td>" . $summaryOfResultData[0]  . 
                     "</td><td>" . $summaryOfResultData[1] . "</td><td>" . $summaryOfResultData[2] . "</td><td>" . 
     $summaryOfResultData[3] . "</td></tr></table>";

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.17 $
- * @modified $Date: 2005/09/12 06:00:49 $
+ * @version $Revision: 1.18 $
+ * @modified $Date: 2005/09/16 06:45:55 $
  *
  * @author Francisco Mancardi
 **/
@@ -1012,6 +1012,9 @@ $TLS_component_removed_part1 = "Componente";
 $TLS_component_removed_part2 = "has been removed.";
 $TLS_test_case_removed_part1 = "Test Case";
 
+
+// lib/plan/testSetNavigator
+$TLS_title_test_plan_navigator="Test Plan Navigator";
 
 
 // lib/plan/planUpdateTC.php

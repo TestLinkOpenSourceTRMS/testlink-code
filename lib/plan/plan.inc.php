@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: plan.inc.php,v $
- * @version $Revision: 1.6 $
- * @modified $Date: 2005/09/15 17:00:14 $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2005/09/16 06:47:11 $
  * @author 	Martin Havlat
  *
  * Functions for management: 
@@ -66,7 +66,6 @@ function getTP_category_info($catID)
 }
 
 
-
 // 20050809 - fm
 // changes must be made due to active field type changed to boolean
 //
@@ -100,15 +99,23 @@ function deleteTestPlanComponents($id)
 	return $result ? 1 : 0;
 }
 
+/*
+20050915 - fm - refactoring mgtcomponent
+
+*/
 function getTestPlanComponents($id,&$cInfo)
 {
-	$sql = "SELECT * FROM component WHERE projid=" . $id;
+	$sql = " SELECT component.id, mgtcomponent.name,component.projid, mgtcompid " .
+	       " FROM component, mgtcomponent " .
+	       " WHERE component.mgtcompid = mgtcomponent.id " .
+	       " AND projid=" . $id;
 	$result = do_mysql_query($sql);
 
 	$cInfo = null;
-	while ($row = mysql_fetch_row($result)) 
+	while ($row = mysql_fetch_array($result)) 
+	{
 		$cInfo[] = $row;
-	
+	}
 	return $result ? 1 : 0;
 }
 
@@ -118,11 +125,16 @@ function getTestPlanComponentIDs($id,&$comIDs)
 	$result = getTestPlanComponents($id,$cInfo);
 	if ($result)
 	{
-		for($i = 0 ; $i < sizeof($cInfo);$i++)
+		$num_loops = sizeof($cInfo);
+		for($i = 0 ; $i < $num_loops ;$i++)
+		{
 			$comIDs[] = $cInfo[$i][0];
+		}	
 	}
 	return $result ? 1 : 0;
 }
+
+
 function deleteCategoriesByComponentIDs($comIDs)
 {
 	if (!sizeof($comIDs))
@@ -136,16 +148,19 @@ function deleteCategoriesByComponentIDs($comIDs)
 	return $result ? 1 : 0;
 }
 
+
 function getTestPlanCategories($id,&$catIDs)
 {
 	//Select all of the projects components
-	$sql = "SELECT category.id FROM component, category WHERE projid=".$id." AND component.id=compid";
+	$sql = " SELECT category.id FROM component, category " .
+	       " WHERE projid=" . $id . " AND component.id=compid";
 	$result = do_mysql_query($sql);
 	
 	$catIDs = null;
-	while ($row = mysql_fetch_row($result)) 
-		$catIDs[] = $row[0];
-	
+	while ($row = mysql_fetch_assoc($result)) 
+	{
+		$catIDs[] = $row['id'];
+	}
 	return $result ? 1 : 0;
 }
 
@@ -220,7 +235,7 @@ function deleteTestPlanMilestones($id)
 }
 
 
-function insertPlan(&$id,$name,$notes,$tpID)
+function insertTestPlan(&$id,$name,$notes,$tpID)
 {
 	$sql = "INSERT INTO project (name,notes,prodID) VALUES ('" . 
 	       mysql_escape_string($name) . "','" . 
@@ -265,8 +280,15 @@ function insertTestPlanUserRight($projID,$userID)
 
 function insertTestPlanComponent($projID,$name,$mgtCompID)
 {
+	
+	/*
 	$sql = "INSERT INTO component (name,projid,mgtcompid) VALUES ('" . 
 					mysql_escape_string($name) . "'," . $projID . "," . $mgtCompID . ")";
+	*/
+	// 20050915 - fm
+	$sql = " INSERT INTO component (projid,mgtcompid) " .
+	       " VALUES (" . $projID . "," . $mgtCompID . ")";
+	
 	
 	$resultCom = do_mysql_query($sql);
 	$compID = 0;

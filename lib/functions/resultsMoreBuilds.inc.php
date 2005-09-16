@@ -1,6 +1,6 @@
 <?
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
- *$Id: resultsMoreBuilds.inc.php,v 1.16 2005/09/15 17:00:14 franciscom Exp $ 
+ *$Id: resultsMoreBuilds.inc.php,v 1.17 2005/09/16 06:47:11 franciscom Exp $ 
  * 
  * @author Kevin Levy
  *
@@ -68,8 +68,12 @@ function createResultsForTestPlan($testPlanName, $testPlanID, $buildsArray, $key
     htmlspecialchars($keyword) . "</td><td>" . htmlspecialchars($owner) . 
     "</td><td>".htmlspecialchars($lastStatus)."</td></tr></table>";
 
-  $sql = " SELECT component.id,component.name, component.projid, component.mgtcompid from component ".
-    " WHERE projid='" . $testPlanID . "'";
+  // 20050915 - fm - added mgtcomponent
+  $sql = " SELECT component.id, mgtcomponent.name, component.projid, component.mgtcompid " .
+         " FROM component,mgtcomponent ".
+         " WHERE component.mgtcompid = mgtcomponent.id " . 
+         " AND projid=" . $testPlanID;
+         
   $result = do_mysql_query($sql);
 
   $aggregateComponentDataToPrint = null;
@@ -438,10 +442,12 @@ function createTableOfTestCaseResults($arrayOfResults,$arrBuilds,&$returnArray){
       $returnData .= $data;
       next($arrayOfResults);
     }
-  $returnArray = array($numberOfPasses+$numberOfFailures+$numberOfBlocked,$numberOfPasses,$numberOfFailures,$numberOfBlocked);
+  $returnArray = array($numberOfPasses+$numberOfFailures+$numberOfBlocked,$numberOfPasses,$numberOfFailures,
+                       $numberOfBlocked);
   $returnData .= "</table>";
   return $returnData;
 }
+
 
 function constructTestCaseInfo($tcid,$myrow)
 {
@@ -451,12 +457,20 @@ function constructTestCaseInfo($tcid,$myrow)
   return $mgttcid . ": " . $title ;
 }
 
+// 20050915 - fm
 // sept 12 - added by kl
-function getArrayOfComponentNames($projectId){
-  $sql = "select component.name from component where projid='" . $projectId . "'";
+function getArrayOfComponentNames($tpID)
+{
+
+  $sql = " SELECT mgtcomponent.name " . 
+         " FROM component,mgtcomponent " .
+         " WHERE component.mgtcompid = mgtcomponent.id " .
+         " AND projid=" . $tpID;
+
   $result = do_mysql_query($sql);
   $arrayOfComponentNames = array();
-  while($myrow = mysql_fetch_row($result)) {
+  while($myrow = mysql_fetch_row($result)) 
+  {
     array_push($arrayOfComponentNames, $myrow[0]);
   }
   return $arrayOfComponentNames;

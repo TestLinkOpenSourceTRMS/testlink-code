@@ -4,13 +4,14 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.8 $
- * @modified $Date: 2005/09/12 06:37:36 $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2005/09/16 06:47:11 $
  *
  * @author Martin Havlat
  *
  * @todo bugs and owner are not working	    
  *
+ * @author 20050911 - Francisco Mancardi - refactoring  
  * @author 20050911 - Francisco Mancardi - refactoring  
  *
  * @author 20050825 - scs - added buginterface to smarty
@@ -66,13 +67,21 @@ $buildName = isset($builds[$build]) ? $builds[$build] : '';
 //if the user has selected to view by component
 if($level == 'component')
 { 
-	$catResult = do_mysql_query(" SELECT category.id, category.name FROM component,category " .
-	                            " WHERE component.id = " . $id .
-			                        " AND component.id = category.compid ORDER BY CATorder",$db);
+
+  $sql = " SELECT category.id, mgtcategory.name " .
+         " FROM  component,category,mgtcategory " .
+         " WHERE component.id = category.compid " .
+         " AND   mgtcategory.id = category.mgtcatid " .
+         " AND component.id = " . $id .
+	       " ORDER BY mgtcategory.CATorder";
+	
+	$catResult = do_mysql_query($sql,$db);
 	
 	$catIDs = null;
-	while ($myrowCAT = mysql_fetch_row($catResult))
-		$catIDs[] = $myrowCAT[0];
+	while ($myrowCAT = mysql_fetch_assoc($catResult))
+	{
+		$catIDs[] = $myrowCAT['id'];
+	}	
 	if ($catIDs)
 	{
 		$catIDs = implode(",",$catIDs);
@@ -81,7 +90,9 @@ if($level == 'component')
 		       "FROM testcase,category " .
 		       "WHERE category.id IN (" . $catIDs . ") AND testcase.catid = category.id";
 		if($keyword != 'All')
+		{
 			$sql .= " AND (testcase.keywords LIKE '%,{$keyword},%' OR testcase.keywords like '{$keyword},%')";
+		}	
 		$sql .= " order by CATorder,TCorder,testcase.id ASC";
 		$result = do_mysql_query($sql,$db);
 		
@@ -101,7 +112,9 @@ else if($level == 'category')
 		       
 		       
 		if($keyword != 'All')
+		{
 			$sql .= " AND (testcase.keywords LIKE '%,{$keyword},%' OR testcase.keywords like '{$keyword},%')";
+		}	
 		$sql .= " ORDER BY TCorder, testcase.id ASC";
 		$result = do_mysql_query($sql,$db);
 

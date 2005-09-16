@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execNavigator.php,v $
  *
- * @version $Revision: 1.6 $
- * @modified $Date: 2005/09/15 16:51:48 $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2005/09/16 06:47:11 $
  *
  * @author Martin Havlat
  *
@@ -130,9 +130,13 @@ function generateExecTree($build,$purl_to_help,&$menuUrl,$tcIDFilter = null)
 		$menustring .= "['" . $testPlanName . "','SP()',\n";
 	}
 		
-	//grab every component depending on the project 
-	$sql = " SELECT component.id, component.name FROM component where " .
-			   " component.projid = " . $_SESSION['testPlanId'] . " ORDER BY component.name";
+	// 20050915 - fm - mgtcomponent 	
+	$sql = " SELECT component.id, mgtcomponent.name " . 
+	       " FROM component,mgtcomponent " .
+	       " WHERE mgtcomponent.id = component.mgtcompid " .
+			   " AND component.projid = " . $_SESSION['testPlanId'] . 
+			   " ORDER BY mgtcomponent.name";
+			   
 	$comResult = do_mysql_query($sql);
 	
 	$bKeyWordAll = ($keyword == 'All');

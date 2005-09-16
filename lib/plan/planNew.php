@@ -1,8 +1,9 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: planNew.php,v 1.4 2005/09/15 17:00:14 franciscom Exp $ */
+/* $Id: planNew.php,v 1.5 2005/09/16 06:47:11 franciscom Exp $ */
 /* Purpose:  Add new Test Plan */
 /*
+ * @ author: francisco mancardi - 20050915 - refactoring function name
  * @ author: francisco mancardi - 20050810
  * deprecated $_SESSION['product'] removed
 */
@@ -25,15 +26,19 @@ if(isset($_POST['newTestPlan']))
 		$notes = isset($_POST['notes']) ? strings_stripSlashes($_POST['notes']) : null;
 		$copy = isset($_POST['copy']) ? intval($_POST['copy']) : 0;
 		$projID = 0;
-		if (insertPlan($projID,$name,$notes,$_SESSION['productID']))
+		if (insertTestPlan($projID,$name,$notes,$_SESSION['productID']))
 			$sqlResult = 'ok';
 		else
 			$sqlResult =  mysql_error();
+			
 		$result = insertTestPlanPriorities($projID);
 		$rights = isset($_POST['rights']) ? $_POST['rights'] : '';
 		if($rights == 'on')
 			$result = insertTestPlanUserRight($projID,$_SESSION['userID']);
-		//user has decided to copy an existing project. What this code does is loops through each of the components, inserts the component info, loops through the categories from the component and then adds the category, and the same thing as before with test cases.
+		//user has decided to copy an existing project. 
+		//What this code does is loops through each of the components, inserts the component info, 
+		//loops through the categories from the component and then adds the category, 
+		//and the same thing as before with test cases.
 		if($copy) //if the user chose to copy then go through this code
 		{
 			$result = getTestPlanComponents($copy,$cInfo);
@@ -49,21 +54,21 @@ if(isset($_POST['newTestPlan']))
 				while ($myrowCat = mysql_fetch_row($resultCat)) //loop through categories
 				{
 					//insert the new category
-					$sqlInsertCat = "insert into category (name,compid,mgtcatid,CATorder) " .
-							"values ('" . mysql_escape_string($myrowCat[1]) . "','" . mysql_escape_string($COMID) . " ','" . 
+					$sqlInsertCat = "INSERT INTO category (compid,mgtcatid,CATorder) " .
+							"VALUES ('" . mysql_escape_string($COMID) . " ','" . 
 							mysql_escape_string($myrowCat[3])  . "','" . mysql_escape_string($myrowCat[4]) . "')";
 					$resultInsertCat = do_mysql_query($sqlInsertCat); //run insert code
 					$CATID = mysql_insert_id(); //grab the catid from the last insert so we can use it for the test case
 	
 					//grab all of the test case info.. Anything with a default I ignore
-					$sqlTC = "select title,summary,steps,exresult,mgttcid,keywords,TCorder," .
-							"version from testcase where catid='" . mysql_escape_string($myrowCat[0]) . "'";
+					$sqlTC = "SELECT title,summary,steps,exresult,mgttcid,keywords,TCorder," .
+							     "version from testcase WHERE catid=" . $myrowCat[0];
 					$resultTC = do_mysql_query($sqlTC);
 	
 					while ($myrowTC = mysql_fetch_row($resultTC)) //loop through test case code
 					{
 						//insert the test case code
-						$sqlInsertTC = "insert into testcase (title,summary,steps,exresult," .
+						$sqlInsertTC = "INSERT INTO testcase (title,summary,steps,exresult," .
 								"catid,mgttcid,keywords,TCorder,version) values ('" . 
 								mysql_escape_string($myrowTC[0]) . "','" . mysql_escape_string($myrowTC[1]) . "','" . mysql_escape_string($myrowTC[2]) . 
 								"','" . mysql_escape_string($myrowTC[3]) . "','" . mysql_escape_string($CATID) . "','" . 
@@ -76,6 +81,9 @@ if(isset($_POST['newTestPlan']))
 		}//end the copy if statement
 	}
 }
+
+
+
 $smarty = new TLSmarty;
 $smarty->assign('sqlResult', $sqlResult);
 $smarty->assign('arrPlan', getAllActiveTestPlans());

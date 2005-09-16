@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: treeMenu.inc.php,v $
  *
- * @version $Revision: 1.4 $
- * @modified $Date: 2005/09/15 17:00:14 $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2005/09/16 06:47:11 $
  *
  * 	This file generates tree menu for test specification.
  *
@@ -51,8 +51,10 @@ function invokeMenu($menustring, $highLight = "")
 		//I had to figure this one out on my own.
 		//The method I'm using will color an item in the tree if you pass it a value
 		if($highLight != "")
+		{
 			$mid->setSelectedItemByUrl('treemenu1', $highLight);
-
+    }
+    
 		//print the client side menu
 		$data = $mid->newTreeMenu('treemenu1');
 	} 
@@ -114,50 +116,70 @@ function generateTestSpecTree($prodID, $prodName, $linkto, $hidetc, $getArgument
 {
 	
 	if (!$prodID)
+	{
 		return null;
+	}	
 	$menustring = null; // storage for output
 	
 	// Queries to determine total test cases
-	$sqlProdCount = "select count(mgttestcase.id) from mgtproduct,mgtcomponent," .
-			"mgtcategory,mgttestcase where mgtproduct.id = mgtcomponent.prodid " .
-			"and mgtcomponent.id=mgtcategory.compid and " .
-			"mgtcategory.id=mgttestcase.catid and mgtproduct.id=" . $prodID;
+	$sqlProdCount = " SELECT count(mgttestcase.id) AS qty" .
+	                " FROM mgtproduct,mgtcomponent, mgtcategory,mgttestcase " .
+	                " WHERE mgtproduct.id = mgtcomponent.prodid " .
+			            " AND mgtcomponent.id=mgtcategory.compid " .
+			            " AND mgtcategory.id=mgttestcase.catid " .
+			            " AND mgtproduct.id=" . $prodID;
+			
+			
 	$resultProdCount = do_mysql_query($sqlProdCount);
+	$prodCount = 0;
 	if ($resultProdCount)
-		$prodCount = mysql_fetch_row($resultProdCount);
-	else
-		$prodCount = 0;
+	{
+		$prodCount = mysql_fetch_assoc($resultProdCount);
+	}
+		
 	
 	$productName = filterString($prodName);
 	if (TL_TREE_KIND == 'LAYERSMENU')
 	{ 
-		$menustring .= ".|" . $productName . " (" . $prodCount[0] . ")|" . $linkto . "?edit=product&data=" . $prodID . $getArguments . "|Product||workframe|\n";
+		$menustring .= ".|" . $productName . " (" . $prodCount['qty'] . ")|" . $linkto . 
+		               "?edit=product&data=" . $prodID . $getArguments . "|Product||workframe|\n";
 	}
  	elseif (TL_TREE_KIND == 'JTREE')
 	{		
-		$menustring .=  "['" . $productName . " (" . $prodCount[0] . ")','EP({$prodID})',\n";
+		$menustring .=  "['" . $productName . " (" . $prodCount['qty'] . ")','EP({$prodID})',\n";
 	}
 	elseif (TL_TREE_KIND == 'DTREE')
 	{
 		$dtreeCounter = 0;
-		$menustring .= "tlTree.add(" . $dtreeCounter++ . ",-1,'" . $productName . " (" . $prodCount[0] . ")','" . $linkto . "?edit=product&data=" . $prodID . $getArguments . "');\n";
+		$menustring .= "tlTree.add(" . $dtreeCounter++ . ",-1,'" . $productName . 
+		               " (" . $prodCount['qty'] . ")','" . $linkto . "?edit=product&data=" . 
+		               $prodID . $getArguments . "');\n";
 	}
 	
 	//Parse components
-	$sqlCOM = "select id, name from mgtcomponent where prodid='" . $prodID . "' order by name";
+	$sqlCOM = " SELECT id, name from mgtcomponent " .
+	          " WHERE prodid=" . $prodID . 
+	          " ORDER BY name";
 	$resultCOM = do_mysql_query($sqlCOM);
 		
 	while ($myrowCOM = mysql_fetch_row($resultCOM)) //loop through all Components
 	{
-		//Queries to determine how many total test cases there are by Component. The number is then displayed next to the component
-		$sqlCOMCount = "select count(mgttestcase.id) from mgtcomponent,mgtcategory,mgttestcase where mgtcomponent.id=mgtcategory.compid and mgtcategory.id=mgttestcase.catid and mgtcomponent.id='" . $myrowCOM[0] . "'";
+		// Queries to determine how many total test cases there are by Component. 
+		// The number is then displayed next to the component
+		$sqlCOMCount = " SELECT count(mgttestcase.id) "  . 
+		               " FROM mgtcomponent,mgtcategory,mgttestcase " .
+		               " WHERE mgtcomponent.id=mgtcategory.compid " .
+		               " AND mgtcategory.id=mgttestcase.catid " .
+		               " AND mgtcomponent.id=" . $myrowCOM[0];
 		$resultCOMCount = do_mysql_query($sqlCOMCount);
 		$COMCount = mysql_fetch_row($resultCOMCount);
 
 		$componentName = filterString($myrowCOM[1]);
 		if (TL_TREE_KIND == 'LAYERSMENU')
 		{ 
-			$menustring .= "..|" . $componentName . " (" . $COMCount[0] . ")|" . $linkto . "?edit=component&data=" . $myrowCOM[0] . $getArguments . "|Component||workframe|\n";
+			$menustring .= "..|" . $componentName . " (" . $COMCount[0] . ")|" . 
+			               $linkto . "?edit=component&data=" . $myrowCOM[0] . 
+			               $getArguments . "|Component||workframe|\n";
 		}
 		elseif (TL_TREE_KIND == 'JTREE')
 		{	
@@ -166,24 +188,34 @@ function generateTestSpecTree($prodID, $prodName, $linkto, $hidetc, $getArgument
 		elseif (TL_TREE_KIND == 'DTREE')
 		{
 			$dtreeComponentId = $dtreeCounter;
-			$menustring .= "tlTree.add(" . $dtreeCounter++. ",0,'" . $componentName . " (" . $COMCount[0] . ")','" . $linkto . "?edit=component&data=" . $myrowCOM[0] . $getArguments . "');\n";
+			$menustring .= "tlTree.add(" . $dtreeCounter++. ",0,'" . $componentName . 
+			               " (" . $COMCount[0] . ")','" . $linkto . "?edit=component&data=" . 
+			               $myrowCOM[0] . $getArguments . "');\n";
 		}
 
 		//Parse categories
-		$sqlCAT = "select id, name from mgtcategory where compid='" . $myrowCOM[0] . "' order by CATorder,id";		
+		$sqlCAT = " SELECT id, name from mgtcategory " .  
+		          " WHERE compid=" . $myrowCOM[0] . 
+		          " ORDER BY CATorder,id";		
 		$resultCAT = do_mysql_query($sqlCAT);
 
 		while ($myrowCAT = mysql_fetch_row($resultCAT)) //loop through all Categories
 		{
-			//Queries to determine how many total test cases there are by Category. The number is then displayed next to the Category
-			$sqlCATCount = "select count(mgttestcase.id) from mgtcategory,mgttestcase where mgtcategory.id=mgttestcase.catid and mgtcategory.id='" . $myrowCAT[0] . "'";
+			//Queries to determine how many total test cases there are by Category. 
+			//The number is then displayed next to the Category
+			$sqlCATCount = " SELECT count(mgttestcase.id) " . 
+			               " FROM mgtcategory,mgttestcase " .
+			               " WHERE mgtcategory.id=mgttestcase.catid " .
+			               " AND mgtcategory.id=" . $myrowCAT[0];
+			               
 			$resultCATCount = do_mysql_query($sqlCATCount);
 			$CATCount = mysql_fetch_row($resultCATCount);
 	
 			$categoryName = filterString($myrowCAT[1]);
 			if (TL_TREE_KIND == 'LAYERSMENU')
 			{ 
-				$menustring .= "...|" . $categoryName . " (" . $CATCount[0] . ")|" . $linkto . "?edit=category&data=" . $myrowCAT[0] . $getArguments . "|Category||workframe|\n";
+				$menustring .= "...|" . $categoryName . " (" . $CATCount[0] . ")|" . 
+				               $linkto . "?edit=category&data=" . $myrowCAT[0] . $getArguments . "|Category||workframe|\n";
 			}
 			elseif (TL_TREE_KIND == 'JTREE') 
 			{								
@@ -192,13 +224,16 @@ function generateTestSpecTree($prodID, $prodName, $linkto, $hidetc, $getArgument
 			elseif (TL_TREE_KIND == 'DTREE')
 			{
 				$dtreeCategoryId = $dtreeCounter;
-				$menustring .= "tlTree.add(" . $dtreeCounter++. "," . $dtreeComponentId . ",'" . $categoryName . " (" . $CATCount[0] . ")','" . $linkto . "?edit=category&data=" . $myrowCAT[0] . $getArguments . "');\n";
+				$menustring .= "tlTree.add(" . $dtreeCounter++. "," . $dtreeComponentId . ",'" . 
+				               $categoryName . " (" . $CATCount[0] . ")','" . $linkto . "?edit=category&data=" . 
+				               $myrowCAT[0] . $getArguments . "');\n";
 			}
 
 			if ($hidetc == 0) 
 			{
 				//Parse Test Cases
-				$sqlTC = "select id, title from mgttestcase where catid='" . $myrowCAT[0] . "' order by TCorder,id";
+				$sqlTC = "SELECT id, title FROM mgttestcase WHERE catid=" . $myrowCAT[0] . 
+				         " ORDER BY TCorder,id";
 				$resultTC = do_mysql_query($sqlTC);
 
 				while ($myrowTC = mysql_fetch_row($resultTC)) //loop through all Test cases
@@ -206,7 +241,8 @@ function generateTestSpecTree($prodID, $prodName, $linkto, $hidetc, $getArgument
 					$tcName = filterString($myrowTC[1]);
 					if (TL_TREE_KIND == 'LAYERSMENU')
 					{ 
-						$menustring .= "....|<b>" . $myrowTC[0] . "</b>: " . $tcName . "|" . $linkto . "?edit=testcase&data=" . $myrowTC[0] . $getArguments . "|Test Case||workframe|\n";
+						$menustring .= "....|<b>" . $myrowTC[0] . "</b>: " . $tcName . "|" . 
+						               $linkto . "?edit=testcase&data=" . $myrowTC[0] . $getArguments . "|Test Case||workframe|\n";
 					}
 					elseif (TL_TREE_KIND == 'JTREE')
 					{								
@@ -214,7 +250,9 @@ function generateTestSpecTree($prodID, $prodName, $linkto, $hidetc, $getArgument
 					}	
 					elseif (TL_TREE_KIND == 'DTREE')
 					{
-						$menustring .= "tlTree.add(" . $dtreeCounter++. "," . $dtreeCategoryId . ",'<b>" . $myrowTC[0] . "</b>: " . $tcName . "','" . $linkto . "?edit=testcase&data=" . $myrowTC[0] . $getArguments . "');\n";
+						$menustring .= "tlTree.add(" . $dtreeCounter++. "," . $dtreeCategoryId . ",'<b>" . 
+						               $myrowTC[0] . "</b>: " . $tcName . "','" . $linkto . "?edit=testcase&data=" . 
+						               $myrowTC[0] . $getArguments . "');\n";
 					}
 				}
 			}  // end hidetc
@@ -240,12 +278,14 @@ function generateTestSpecTree($prodID, $prodName, $linkto, $hidetc, $getArgument
 }
 
 
+
+
 /** 
 * 	generate data for tree menu of Test Case Suite (in Test Plan)
 *
 * 	@param string $linkto path for generated URL
-*	@param integer $hidetc [0: show TCs, 1: disable TCs ]
-*	@param string $getArguments additional $_GET arguments
+*	  @param integer $hidetc [0: show TCs, 1: hide TCs ]
+*	  @param string $getArguments additional $_GET arguments
 * 	@return string input string for layersmenu
 */
 function generateTestSuiteTree($linkto, $hidetc, $getArguments = '')
@@ -253,78 +293,101 @@ function generateTestSuiteTree($linkto, $hidetc, $getArguments = '')
 	$menustring = null;
 	// define root directory
 	if (TL_TREE_KIND == 'LAYERSMENU') 
-		$menustring .= ".|" . $_SESSION['testPlanName'] . "|" . $linkto . "?level=root" . $getArguments . "|Test Case Suite||workframe|\n";
+	{
+		$menustring .= ".|" . $_SESSION['testPlanName'] . "|" . $linkto . "?level=root" . 
+		               $getArguments . "|Test Case Suite||workframe|\n";
+	}	
 	elseif (TL_TREE_KIND == 'JTREE')
+	{
 		$menustring .= "['" . $_SESSION['testPlanName'] . "','PTP()',\n";
+	}	
 	elseif (TL_TREE_KIND == 'DTREE')
 	{
 		$dtreeCounter = 0;
-		$menustring .= "tlTree.add(" . $dtreeCounter++ . ",-1,'" . $_SESSION['testPlanName'] . "','" . $linkto . "?level=root" . $getArguments . "');\n";
+		$menustring .= "tlTree.add(" . $dtreeCounter++ . ",-1,'" . $_SESSION['testPlanName'] . "','" . 
+		               $linkto . "?level=root" . $getArguments . "');\n";
 	}
 	
 	// grab every component depending on the test plan
 	//
-	// 20050807 - fm 
-	$sql = "select component.id, component.name from component,project where " .
-			"project.id = " . $_SESSION['testPlanId'] . 
-			" and component.projid = project.id order by component.name";
+	// 20050915 - fm 
+	$sql = " SELECT component.id, mgtcomponent.name " .
+	       " FROM component,mgtcomponent, project " .
+	       " WHERE mgtcomponent.id = component.mgtcompid " .
+			   " AND component.projid = project.id " .
+			   " AND project.id = " . $_SESSION['testPlanId'] . 
+			   " ORDER BY mgtcomponent.name";
+	   
 	$comResult = do_mysql_query($sql);
 
-	while ($myrowCOM = mysql_fetch_row($comResult)) { //display all the components until we run out
+	while ($myrowCOM = mysql_fetch_assoc($comResult)) { 
 
-		$componentName = filterString($myrowCOM[1]);
+		$componentName = filterString($myrowCOM['name']);
 		if (TL_TREE_KIND == 'LAYERSMENU') 
-			$menustring .= "..|" . $componentName . "|" . $linkto . "?level=component&data=" . $myrowCOM[0] . $getArguments . "|Component||workframe|\n";
+			$menustring .= "..|" . $componentName . "|" . $linkto . 
+			               "?level=component&data=" . $myrowCOM['id'] . $getArguments . "|Component||workframe|\n";
 		elseif (TL_TREE_KIND == 'JTREE')
-			$menustring .= "['" . $componentName . "','PCO({$myrowCOM[0]})',\n";
+			$menustring .= "['" . $componentName . "','PCO({$myrowCOM['id']})',\n";
 		elseif (TL_TREE_KIND == 'DTREE')
 		{
 			$dtreeComponentId = $dtreeCounter;
-			$menustring .= "tlTree.add(" . $dtreeCounter++. ",0,'" . $componentName . "','" . linkto . "?level=component&data=" . $myrowCOM[0] . $getArguments . "');\n";
+			$menustring .= "tlTree.add(" . $dtreeCounter++. ",0,'" . $componentName . "','" . 
+			               $linkto . "?level=component&data=" . $myrowCOM['id'] . $getArguments . "');\n";
 		}
 
 		// grab every category depending on the component 
-		$catResult = do_mysql_query("select category.id, category.name from component," .
-				"category where component.id = " . $myrowCOM[0] . 
-				" and component.id = category.compid order by CATorder,category.id");
+		$sql =" SELECT category.id, mgtcategory.name " .
+		      " FROM component,category,mgtcategory " .
+				  " WHERE component.id = category.compid " .
+				  " AND   mgtcategory.id = category.mgtcatid " .
+				  " AND component.id = " . $myrowCOM['id'] . 
+				  " ORDER BY mgtcategory.CATorder,category.id";
+		
+		$catResult = do_mysql_query($sql);
 			
-		while ($myrowCAT = mysql_fetch_row($catResult)) {  //display all the categories until we run out
+		while ($myrowCAT = mysql_fetch_assoc($catResult)) {  //display all the categories until we run out
 
-			$categoryName = filterString($myrowCAT[1]);
+			$categoryName = filterString($myrowCAT['name']);
 			if (TL_TREE_KIND == 'LAYERSMENU') 
-				$menustring .= "...|" . $categoryName . "|" . $linkto . "?level=category&data=" . $myrowCAT[0] . $getArguments . "|Category||workframe|\n";
+				$menustring .= "...|" . $categoryName . "|" . $linkto . 
+				               "?level=category&data=" . $myrowCAT['id'] . $getArguments . "|Category||workframe|\n";
 			elseif (TL_TREE_KIND == 'JTREE')				
-				$menustring .= "['" . $categoryName . "','PC({$myrowCAT[0]})',\n";
+				$menustring .= "['" . $categoryName . "','PC({$myrowCAT['id']})',\n";
 			elseif (TL_TREE_KIND == 'DTREE')
 			{
 				$dtreeCategoryId = $dtreeCounter;
-				$menustring .= "tlTree.add(" . $dtreeCounter++. "," . $dtreeComponentId . ",'" . $categoryName . "','" . $linkto . "?level=category&data=" . $myrowCAT[0] . $getArguments . "');\n";
+				$menustring .= "tlTree.add(" . $dtreeCounter++. "," . $dtreeComponentId . ",'" . 
+				               $categoryName . "','" . $linkto . "?level=category&data=" . $myrowCAT['id'] . 
+				               $getArguments . "');\n";
 			}
 
 			// create TCs if required
 			if ($hidetc == 0) {
-				$TCResult = do_mysql_query("SELECT testcase.id, testcase.title,testcase." .
-					                         "mgttcid from category,testcase where category.id = " . 
-					$myrowCAT[0] . " and category.id = testcase.catid order by " .
-					"TCorder,testcase.mgttcid");
+				$sql = " SELECT testcase.id, testcase.title,testcase.mgttcid " .
+				       " FROM category,testcase " .
+				       " WHERE category.id = testcase.catid " .
+				       " AND category.id = " . 	$myrowCAT['id'] . 
+				       " ORDER BY TCorder,testcase.mgttcid";
 
-				while ($myrowTC = mysql_fetch_row($TCResult)) 
+				$TCResult = do_mysql_query($sql);
+
+				while ($myrowTC = mysql_fetch_assoc($TCResult)) 
 				{  
-					$tcName = filterString($myrowTC[1]);
+					$tcName = filterString($myrowTC['title']);
 					if (TL_TREE_KIND == 'LAYERSMENU')
 					{ 
-						$menustring .= "....|<b>" . $myrowTC[2] . "</b>: " . $tcName . "|" . $linkto . 
-						               "?level=tc&data=" . $myrowTC[0] . $getArguments . "|Test Case||workframe|\n";
+						$menustring .= "....|<b>" . $myrowTC['mgttcid'] . "</b>: " . $tcName . "|" . $linkto . 
+						               "?level=tc&data=" . $myrowTC['id'] . $getArguments . "|Test Case||workframe|\n";
 					}
 					elseif (TL_TREE_KIND == 'JTREE')
 					{						
-						$menustring .= "['<b>" . $myrowTC[2] . "</b>:" . $tcName . "','PT({$myrowTC[0]})'],\n";
+						$menustring .= "['<b>" . $myrowTC['mgttcid'] . "</b>:" . $tcName . "','PT({$myrowTC['id']})'],\n";
 					}
 					elseif (TL_TREE_KIND == 'DTREE')
 					{
 						$menustring .= "tlTree.add(" . $dtreeCounter++. "," . $dtreeCategoryId . ",'<b>" . 
-						               $myrowTC[2] . "</b>:" . $tcName . "','" . $linkto . "?level=tc&data=" . 
-						               $myrowTC[0] . $getArguments . "');\n";
+						               $myrowTC['mgttcid'] . "</b>:" . $tcName . "','" . $linkto . "?level=tc&data=" . 
+						               $myrowTC['id'] . $getArguments . "');\n";
 					}
 				}
 			}

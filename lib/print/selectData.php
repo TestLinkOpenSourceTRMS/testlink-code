@@ -1,7 +1,7 @@
 <?
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* @version 	$Id: selectData.php,v 1.4 2005/09/12 06:36:03 franciscom Exp $
+* @version 	$Id: selectData.php,v 1.5 2005/09/16 06:47:11 franciscom Exp $
 * @author 	Martin Havlat
 * 
 * 	Navigator for print/export functionality. 
@@ -68,14 +68,15 @@ $args = "&format=" . $selFormat . "&header=" . $arrCheckboxes[0]['checked'] .
 $smarty = new TLSmarty;
 
 // generate tree 
+$HIDE_TCs=1;
 if ($type == 'product')
 {
-	$treeString = generateTestSpecTree($prodID, $prodName,$workPath, 1, $args);
+	$treeString = generateTestSpecTree($prodID, $prodName,$workPath, $HIDE_TCs, $args);
   $smarty->assign('title', lang_get('title_tc_print_navigator'));
 }	
 else if ($type == 'testSet')
 {
-	$treeString = generateTestSuiteTree($workPath, 1, $args);
+	$treeString = generateTestSuiteTree($workPath, $HIDE_TCs, $args);
 	$smarty->assign('title', lang_get('title_tp_print_navigator'));
 }	
 

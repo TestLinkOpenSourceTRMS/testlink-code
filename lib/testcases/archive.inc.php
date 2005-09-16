@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: archive.inc.php,v $
  *
- * @version $Revision: 1.15 $
- * @modified $Date: 2005/09/15 16:38:02 $ by $Author: franciscom $
+ * @version $Revision: 1.16 $
+ * @modified $Date: 2005/09/16 06:47:12 $ by $Author: franciscom $
  *
  * @author Martin Havlat
  * Purpose:  functions for test specification management have three parts:
@@ -101,6 +101,16 @@ function getTestcaseTitle($id, $convert = TRUE)
 	$tc_data=getTestcase($id, $convert);
 	return ($tc_data['title']);
 }
+
+
+
+
+
+
+
+
+
+
 
 ////////////////////////////////////////////////////////////////////////////////
 

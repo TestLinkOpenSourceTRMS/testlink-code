@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsMoreBuilds_buildReport.php,v 1.10 2005/09/13 06:39:41 kevinlevy Exp $ 
+* $Id: resultsMoreBuilds_buildReport.php,v 1.11 2005/09/16 19:51:54 kevinlevy Exp $ 
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 * 
@@ -29,7 +29,7 @@ $componentsSelected = array();
 
 $xls = FALSE;
 
-if (isset($_GET['format']) && $_GET['format'] =='excel')
+if (isset($_GET['format']) && $_GET['format'] =='lang_get('resultsMoreBuilds_query_form_excel_format')')
 {
 
   $xls = TRUE;

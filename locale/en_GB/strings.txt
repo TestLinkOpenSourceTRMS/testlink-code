@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.20 $
- * @modified $Date: 2005/09/16 21:23:21 $
+ * @version $Revision: 1.21 $
+ * @modified $Date: 2005/09/16 21:35:51 $
  *
  * @author Francisco Mancardi
 **/
@@ -1159,5 +1159,27 @@ $TLS_resultsMoreBuilds_report_description2 = "Individual test cases which match 
 $TLS_resultsMoreBuilds_report_show_hide_all = "Show/Hide All";
 $TLS_resultsMoreBuilds_report_results_by_component_header = "Results By Component";
 
+// lib/functions/resultsMoreBuilds.inc.php
+//$TLS_resultsMoreBuilds_inc 
+$TLS_resultsMoreBuilds_inc_test_plan_name = "Test Plan";
+$TLS_resultsMoreBuilds_inc_builds_selected = "Build(s)";
+$TLS_resultsMoreBuilds_inc_keyword = "Keywords";
+$TLS_resultsMoreBuilds_inc_last_status = "Last Status";
+$TLS_resultsMoreBuilds_inc_owner = "Owner";
+$TLS_resultsMoreBuilds_inc_number_cases = "# Cases";
+$TLS_resultsMoreBuilds_inc_number_passed = "# Passed";
+$TLS_resultsMoreBuilds_inc_number_failed = "# Failed";
+$TLS_resultsMoreBuilds_inc_number_blocked = "# Blocked";
+$TLS_resultsMoreBuilds_inc_number_not_run = "# Not Run";
+$TLS_resultsMoreBuilds_inc_category_header = "Category =";
+$TLS_resultsMoreBuilds_inc_owner_header = "Owner =";
+$TLS_resultsMoreBuilds_inc_number_executions = "# Test Cases Run";
+$TLS_resultsMoreBuilds_inc_build = "Build";
+$TLS_resultsMoreBuilds_inc_runby = "Run By";
+$TLS_resultsMoreBuilds_inc_case_not_run_warning	= "Test Case Not Run";
+$TLS_resultsMoreBuilds_inc_daterun = "Date Run";
+$TLS_resultsMoreBuilds_inc_status = "Status";
+$TLS_resultsMoreBuilds_inc_bugs = "Related Bugs";
+$TLS_resultsMoreBuilds_inc_notes = "Related Notes";
 
 ?>

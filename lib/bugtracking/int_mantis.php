@@ -4,9 +4,10 @@
  *
  * Filename $RCSfile: int_mantis.php,v $
  *
- * @version $Revision: 1.3 $
- * @modified $Date: 2005/08/25 17:40:59 $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2005/09/16 06:45:27 $
  *
+ * @author Francisco Mancardi - 20050916 - refactoring
  * @author Andreas Morsing
  *
  * Constants used throughout TestLink are defined within this file
@@ -49,6 +50,11 @@ class mantisInterface extends bugtrackingInterface
 	 *
 	 * @return string returns the status of the given bug (if found in the db), or false else
 	 *
+	 * @version 1.1
+	 * @author Francisco Mancardi
+	 * @since 16.09.2005, 07:45:29
+	 * mysql_fetch_assoc
+	 *
 	 * @version 1.0
 	 * @author Andreas Morsing <schlundus@web.de>
 	 * @since 22.04.2005, 21:05:25
@@ -63,9 +69,11 @@ class mantisInterface extends bugtrackingInterface
 		$result = do_mysql_query($query,$this->m_dbConnection);
 		if ($result)
 		{
-			$status = mysql_fetch_row($result);
+			$status = mysql_fetch_assoc($result);
 			if ($status)
-				$status = $status[0];
+			{
+				$status = $status['status'];
+			}	
 		}
 		return $status;
 		

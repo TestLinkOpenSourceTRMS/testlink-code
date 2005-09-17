@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.15 $
- * @modified $Date: 2005/09/12 06:22:55 $
+ * @version $Revision: 1.16 $
+ * @modified $Date: 2005/09/17 07:22:18 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -16,6 +16,9 @@
  * - has next values: valid (yes/no), user (login name), role (e.g. admin),
  * email, userID, productID, productName, project (use rather testPlanID),
  * testPlanID, testPlanName
+ *
+ *
+ * @author: francisco mancardi - 20050917 - BUG ID 0000120: Impossible to edit product
  *
  * @author: francisco mancardi - 
  * created updateSessionTp_Prod() and changed doInitSelection() to solve: 
@@ -33,6 +36,9 @@
  *
 **/
 require_once("getRights.php");
+require_once("product.core.inc.php");
+
+// 20050917 - fm - BUG ID 0000120: Impossible to edit product
 require_once("product.core.inc.php");
 require_once("logging.inc.php");
 require_once("lang_api.php");

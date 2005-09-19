@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.10 $
- * @modified $Date: 2005/09/19 17:46:07 $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2005/09/19 17:48:05 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *

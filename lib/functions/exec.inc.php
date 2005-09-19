@@ -4,13 +4,14 @@
  *
  * Filename $RCSfile: exec.inc.php,v $
  *
- * @version $Revision: 1.9 $
- * @modified $Date: 2005/09/12 06:37:36 $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2005/09/19 17:46:11 $
  *
  * @author Martin Havlat
  *
  * Functions for execution feature (add test results) 
  *
+ * 20050919 - fm - editTestResults() refactoring
  * 20050911 - fm - editTestResults() refactoring
  * 20050905 - fm - reduce global coupling
  *
@@ -143,9 +144,6 @@ function editTestResults($login_name, $tcData, $build)
 	
 	$build = mysql_escape_string($build);
 
-  //echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b><pre>";
-  // print_r($tcData); echo "</pre></b><br>";
-	
 	$num_tc = count($tcData['tc']);
 	
 	for ($idx=0; $idx < $num_tc; $idx++ )
@@ -231,11 +229,12 @@ function editTestResults($login_name, $tcData, $build)
  *
  * @author Andreas Morsing - removed unnecessary code
  */
-function createTestInput($resultTC,$build,$tpID)
+function createTestInput($resultTC,$buildID,$tpID)
 {
 	global $g_bugInterfaceOn,$g_tc_status;;
 	$arrTC = array();
-	while ($myrow = mysql_fetch_array($resultTC)){ 
+	while ($myrow = mysql_fetch_assoc($resultTC))
+	{ 
 
 		//display all the test cases until we run out
 		//If the result is empty it leaves the box blank.. This looks weird. 
@@ -250,17 +249,18 @@ function createTestInput($resultTC,$build,$tpID)
 		}
 			
 		//This query grabs the results from the build passed in
-		$sql = " SELECT notes, status FROM results WHERE tcid='" . $myrow['id']. "' " .
-		       " AND build='" . $build . "'";
+		$sql = " SELECT notes, status FROM results WHERE tcid='" . $myrow['tcid']. "' " .
+		       " AND build='" . $buildID . "'";
 		$resultStatus = do_mysql_query($sql);
+		
 		$dataStatus = mysql_fetch_row($resultStatus);
 
 		//This query grabs the most recent result
 		$sqlRecentResult = "SELECT build.name AS build,status,runby,daterun FROM results,build " .
-				"WHERE tcid=" . $myrow[0] . " AND status != '" . $g_tc_status['not_run'] . 
-				"' AND results.build = build.build AND projid = " . 
-				$tpID ." ORDER by build.build " .
-				"DESC limit 1";
+				               "WHERE tcid=" . $myrow['tcid'] . " AND status != '" . $g_tc_status['not_run'] . 
+				               "' AND results.build = build.build AND projid = " . 
+				               $tpID ." ORDER by build.build " .	"DESC limit 1";
+				               
 		$dataRecentResult = do_mysql_query($sqlRecentResult);
 		$rowRecent = mysql_fetch_assoc($dataRecentResult);
 		
@@ -273,27 +273,29 @@ function createTestInput($resultTC,$build,$tpID)
 		{
 			global $g_bugInterface ;
 			//sql code to grab the appropriate bugs for the test case and build
-			$sqlBugs = "SELECT bug FROM bugs WHERE tcid='" . $myrow[0] . "' and build='" . $build . "'";
+			$sqlBugs = "SELECT bug FROM bugs WHERE tcid='" . $myrow['tcid'] . "' and build='" . $buildID . "'";
 			$resultBugs = do_mysql_query($sqlBugs);
 
 			//For each bug that is found
 			while ($myrowBugs = mysql_fetch_assoc($resultBugs))
 			{ 
 				if (!is_null($resultBugList))
+				{
 					$resultBugList .= ",";
+				}	
 				$bugID = $myrowBugs['bug'];
 				$resultBugList .= $bugID;
 				$bugLinkList[] = $g_bugInterface->buildViewBugLink($bugID,true);
 			}
 		}
 		// add to output array
-		$arrTC[] = array( 'id' => $myrow[0],
-   						'title' => $myrow[1],
-						'summary' => $myrow[2], 
-	   					'steps' => $myrow[3],
-						'outcome' => $myrow[4],
-   						'mgttcid' => $myrow[6],
-						'version' => $myrow[7],
+		$arrTC[] = array( 'id' => $myrow['tcid'],
+   						'title' => $myrow['title'],
+						'summary' => $myrow['summary'], 
+	   					'steps' => $myrow['steps'],
+						'outcome' => $myrow['exresult'],
+   						'mgttcid' => $myrow['mgttcid'],
+						'version' => $myrow['version'],
 						'status' => $dataStatus[1],
    						'note' => $dataStatus[0], 
    						'bugs' => $resultBugList, 

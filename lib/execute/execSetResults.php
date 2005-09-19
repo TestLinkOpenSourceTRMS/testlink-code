@@ -4,14 +4,14 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.9 $
- * @modified $Date: 2005/09/16 06:47:11 $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2005/09/19 17:46:07 $
  *
  * @author Martin Havlat
  *
  * @todo bugs and owner are not working	    
  *
- * @author 20050911 - Francisco Mancardi - refactoring  
+ * @author 20050919 - Francisco Mancardi - refactoring SQL and PHP 
  * @author 20050911 - Francisco Mancardi - refactoring  
  *
  * @author 20050825 - scs - added buginterface to smarty
@@ -38,7 +38,7 @@ $submitResult = null;
 $_REQUEST = strings_stripSlashes($_REQUEST);
 
 $id = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0;
-$build = isset($_REQUEST['build']) ? intval($_REQUEST['build']) : 0;
+$buildID = isset($_REQUEST['build']) ? intval($_REQUEST['build']) : 0;
 $level = isset($_REQUEST['level']) ? strings_stripSlashes($_REQUEST['level']) : '';
 $owner = isset($_REQUEST['owner']) ? strings_stripSlashes($_REQUEST['owner']) : '';
 
@@ -60,7 +60,20 @@ if (isset($_REQUEST['submitTestResults']))
 // 20050821 - fm
 $tpID = $_SESSION['testPlanId'];
 $builds = getBuilds($tpID);
-$buildName = isset($builds[$build]) ? $builds[$build] : '';
+$buildName = isset($builds[$buildID]) ? $builds[$buildID] : '';
+
+// 20050919 - fm
+$sql = " SELECT CAT.id AS cat_id, MGTCAT.name AS cat_name, " .
+       " TC.id AS tcid, title, summary, steps, exresult, keywords,mgttcid,version " .
+       " FROM  component COMP, category CAT, mgtcategory MGTCAT, testcase TC " .
+       " WHERE COMP.id = CAT.compid " .
+       " AND   MGTCAT.id = CAT.mgtcatid " .
+       " AND   CAT.id = TC.catid  ";
+
+if ($keyword != 'All')
+{
+	$sql .= " AND (TC.keywords LIKE '%,{$keyword},%' OR TC.keywords like '{$keyword},%')";
+}	
 
 
 // Collect data of test cases and results
@@ -68,70 +81,31 @@ $buildName = isset($builds[$build]) ? $builds[$build] : '';
 if($level == 'component')
 { 
 
-  $sql = " SELECT category.id, mgtcategory.name " .
-         " FROM  component,category,mgtcategory " .
-         " WHERE component.id = category.compid " .
-         " AND   mgtcategory.id = category.mgtcatid " .
-         " AND component.id = " . $id .
-	       " ORDER BY mgtcategory.CATorder";
-	
-	$catResult = do_mysql_query($sql,$db);
-	
-	$catIDs = null;
-	while ($myrowCAT = mysql_fetch_assoc($catResult))
+  $sql .= " AND   COMP.id = " . $id;
+	$sql .= " ORDER BY MGTCAT.CATorder, TCorder, TC.id ASC";
+
+	$result = do_mysql_query($sql,$db);
+	$testdata = createTestInput($result,$buildID,$tpID);				
+
+	foreach ($testdataSuite as $tmp)
 	{
-		$catIDs[] = $myrowCAT['id'];
-	}	
-	if ($catIDs)
-	{
-		$catIDs = implode(",",$catIDs);
-		
-		$sql = "SELECT testcase.id, title, summary, steps, exresult, keywords,mgttcid,version " .
-		       "FROM testcase,category " .
-		       "WHERE category.id IN (" . $catIDs . ") AND testcase.catid = category.id";
-		if($keyword != 'All')
-		{
-			$sql .= " AND (testcase.keywords LIKE '%,{$keyword},%' OR testcase.keywords like '{$keyword},%')";
-		}	
-		$sql .= " order by CATorder,TCorder,testcase.id ASC";
-		$result = do_mysql_query($sql,$db);
-		
-		// 20050821 - fm
-		$testdataSuite = createTestInput($result,$build,$tpID);
-		foreach ($testdataSuite as $tmp)
-		{
-			$testdata[] = $tmp;
-		}
+		$testdata[] = $tmp;
 	}
 }
 //if the user has selected to view by category
 else if($level == 'category')
 { 
-		$sql = " SELECT testcase.id, title, summary, steps, exresult, keywords, mgttcid, version " .
-		       " FROM testcase,category WHERE category.id = " . $id . " AND testcase.catid = category.id	";
-		       
-		       
-		if($keyword != 'All')
-		{
-			$sql .= " AND (testcase.keywords LIKE '%,{$keyword},%' OR testcase.keywords like '{$keyword},%')";
-		}	
-		$sql .= " ORDER BY TCorder, testcase.id ASC";
+		$sql .= " AND CAT.id = " . $id ;
+		$sql .= " ORDER BY MGTCAT.CATorder, TCorder, TC.id ASC";
 		$result = do_mysql_query($sql,$db);
-
-    // 20050821 - fm
-		$testdata = createTestInput($result,$build,$tpID);				
+  	$testdata = createTestInput($result,$buildID,$tpID);				
 }
 else if($level == 'testcase')
 {
-	$query = " SELECT testcase.id, title, summary, steps, exresult, keywords,mgttcid,version " .
-	         " FROM testcase WHERE testcase.id = " . $id . " AND testcase.active = 1";
-	         
-	if ($keyword != 'All')
-		$query .= " AND (testcase.keywords LIKE '%,{$keyword},%' OR testcase.keywords like '{$keyword},%')";
-	$result = do_mysql_query($query,$db);
-
-  // 20050821 -fm
-	$testdata = createTestInput($result,$build,$tpID);				
+	$sql .= " AND TC.id = " . $id . " AND TC.active = 1";
+	$sql .= " ORDER BY MGTCAT.CATorder, TCorder, TC.id ASC";         
+	$result = do_mysql_query($sql,$db);
+	$testdata = createTestInput($result,$buildID,$tpID);				
 }
 else
 	tLog('Invalid GET data', 'ERROR');
@@ -143,7 +117,7 @@ else
 $smarty = new TLSmarty();
 $smarty->assign('rightsEdit', has_rights("tp_planning"));
 $smarty->assign('arrTC', $testdata);
-$smarty->assign('build', $buildName);
+$smarty->assign('build', $buildIDName);
 $smarty->assign('owner', $owner);
 $smarty->assign('updated', $submitResult);
 $smarty->assign('g_bugInterface', $g_bugInterface);

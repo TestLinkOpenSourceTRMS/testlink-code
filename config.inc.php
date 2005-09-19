@@ -4,14 +4,15 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.15 $
- * @modified $Date: 2005/09/16 06:49:25 $ by $Author: franciscom $
+ * @version $Revision: 1.16 $
+ * @modified $Date: 2005/09/19 06:43:03 $ by $Author: franciscom $
  *
  * @author Chad Rosen
  *
  * Constants used throughout TestLink are defined within this file
  * they should be changed for your environment
  *
+ * @author Francisco Mancardi - 20050919 - g_timestamp_format
  * @author Francisco Mancardi - 20050915 - from 1.6.Beta1 to 1.6.RC1
  *
  * @author Francisco Mancardi - 20050908
@@ -191,6 +192,9 @@ $g_fckeditor_toolbar = "TL_Medium_2";
 $g_date_format ="%d/%m/%Y";
 //$g_date_format ="%d/%m/%Y %H:%M";
 // $g_date_format ="%Y%m%d"; // pseudo iso
+
+
+$g_timestamp_format ="%d/%m/%Y %H:%M:%S";
 
 
 /* These are the supported locales */

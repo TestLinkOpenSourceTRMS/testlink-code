@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: plan.inc.php,v $
- * @version $Revision: 1.7 $
- * @modified $Date: 2005/09/16 06:47:11 $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2005/09/19 15:43:59 $
  * @author 	Martin Havlat
  *
  * Functions for management: 
@@ -416,13 +416,13 @@ changed return type
 function getAllTestPlanComponentCategories($testPlanID,$compID)
 {
 	$aCategories = array();
-	$query = " SELECT category.id, mgtcategory.name, importance, risk, owner " .
-	         " FROM component,category,mgtcategory " .
-	         " WHERE category.mgtcatid = mgtcategory.id " .
-	         " AND category.compid = component.id " .
-	         " AND component.projid = " .	$testPlanID  . 
-	         " AND component.id = " . $compID . 
-	         " ORDER BY component.name,mgtcategory.CATorder";
+	$query = " SELECT CAT.id, MGTCAT.name, importance, risk, owner " .
+	         " FROM component COMP, category CAT, mgtcategory MGTCAT " .
+	         " WHERE CAT.mgtcatid = MGTCAT.id " .
+	         " AND CAT.compid = COMP.id " .
+	         " AND COMP.projid = " .	$testPlanID  . 
+	         " AND COMP.id = " . $compID . 
+	         " ORDER BY MGTCOMP.name, MGTCAT.CATorder";
 	         
 	$result = do_mysql_query($query);
 	

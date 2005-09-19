@@ -2,8 +2,8 @@
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: results.inc.php,v $
- * @version $Revision: 1.10 $
- * @modified $Date: 2005/09/19 14:48:44 $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2005/09/19 15:42:03 $
  * 
  * @author 	Martin Havlat 
  * @author 	Chad Rosen (original report definition)
@@ -160,7 +160,7 @@ function getPlanStatus($tpID, $build)
 *
 * @param $tpID Test Plan ID
 * @param string build ID (optional)
-* @return array (component.name, $totalTCs, $pass, $fail, $blocked,
+* @return array (component name, $totalTCs, $pass, $fail, $blocked,
 *				$notRunTCs, $percentComplete)
 * @todo calculate results in db via select count; optimalize SQL requests
 *
@@ -1086,11 +1086,18 @@ function reportSuiteBuildStatus($tpID, $comID, $buildID,$buildName)
 	$notRun = $total - $run;
 	$percentComplete = getPercentageCompleted($total, $run);
 
-	$sqlCOMName = "SELECT component.name from component where id=" . $comID;
-	$resultCOMName = do_mysql_query($sqlCOMName);
-	$COMName = mysql_fetch_row($resultCOMName);
+  // 20050918 - fm - refactoring
+	$sqlCOMName = " SELECT MGTCOMP.name AS comp_name" .
+	              " FROM component COMP, mgtcomponent MGTCOMP " .
+	              " WHERE COMP.mgtcompid = MGTCOMP.id" .
+	              " AND COMP.id=" . $comID;
 
-	$msgBody = lang_get("trep_status_for_ts") . " " . $COMName[0] . " in Build: " . $buildName . "\n\n";
+	
+	
+	$resultCOMName = do_mysql_query($sqlCOMName);
+	$COMName = mysql_fetch_assoc($resultCOMName);
+
+	$msgBody = lang_get("trep_status_for_ts") . " " . $COMName['comp_name'] . " in Build: " . $buildName . "\n\n";
 	$msgBody .= lang_get("trep_total").": " . $total . "\n";
 	$msgBody .= lang_get("trep_passing").": " . $totalPassed . "\n";
 	$msgBody .= lang_get("trep_failing").": " . $totalFailed . "\n";
@@ -1156,11 +1163,17 @@ function reportSuiteStatus($tpID, $comID)
 	$percentComplete = getPercentageCompleted($totalTCs[0], $run);
 
 	//Grab the component's name
-	$sqlCOMName = "SELECT component.name from component where id=" . $comID;
-	$resultCOMName = do_mysql_query($sqlCOMName);
-	$COMName = mysql_fetch_row($resultCOMName);
+		$sqlCOMName = " SELECT MGTCOMP.name AS comp_name" .
+	              " FROM component COMP, mgtcomponent MGTCOMP " .
+	              " WHERE COMP.mgtcompid = MGTCOMP.id" .
+	              " AND COMP.id=" . $comID;
 
-	$msgBody = lang_get("trep_status_for_ts") .": ". $COMName[0] . "\n\n";
+	
+	
+	$resultCOMName = do_mysql_query($sqlCOMName);
+	$COMName = mysql_fetch_assoc($resultCOMName);
+
+	$msgBody = lang_get("trep_status_for_ts") .": ". $COMName['comp_name'] . "\n\n";
 	$msgBody .= lang_get("trep_total").": " . $totalTCs[0] . "\n";
 	$msgBody .= lang_get("trep_passed").": " . $pass . "\n";
 	$msgBody .= lang_get("trep_failed").": " . $fail . "\n";

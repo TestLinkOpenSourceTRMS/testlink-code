@@ -1,7 +1,7 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: planUpdateTC.php,v 1.5 2005/09/15 17:00:14 franciscom Exp $
+ * @version $Id: planUpdateTC.php,v 1.6 2005/09/19 15:47:04 franciscom Exp $
  * @author Martin Havlat
  * 
  * Update Test Cases within Test Case Suite 
@@ -156,11 +156,17 @@ function displayTC($id)
   // BUGID: SF1242462
   // added category.mgtcatid, testcase.catid
   //
-	$sql = "SELECT category.name as TPTC_category, component.name as TPTC_component, " .
-	       "testcase.id, testcase.title, version, mgttcid, category.mgtcatid, testcase.catid " .
-	       "FROM testcase,component,category " .
-	       "WHERE testcase.id='" . $id . 
-	       "' and component.id=category.compid and category.id=testcase.catid order by TCorder";
+		$sql = " SELECT MGTCAT.name as TPTC_category, MGTCOMP.name as TPTC_component, " .
+	       " TC.id, TC.title, version, mgttcid, CAT.mgtcatid, TC.catid " .
+	       " FROM testcase TC, component COMP, category CAT, mgtcategory MGTCAT, mgtcomponent MGTCOMP " .
+	       " WHERE CAT.mgtcatid = MGTCAT.id " .
+	       " AND COMP.mgtcompid = MGTCOMP.id " .
+	       " AND COMP.id=CAT.compid " .
+	       " AND CAT.id=TC.catid " . 
+	       " AND TC.id=" . $id . 
+	       " ORDER BY TC.TCorder";
+       
+	       
 	$result = @do_mysql_query($sql);
 
 
@@ -171,7 +177,7 @@ function displayTC($id)
 		$title = $row['title'];
 		$version = $row['version'];
 		$mgtID = $row['mgttcid'];
-		$containerName = $row[1] . '/' . $row[0];
+		$containerName = $row['TPTC_component'] . '/' . $row['TPTC_category'];
 
     // 20050730 - fm
     // BUGID: SF1242462

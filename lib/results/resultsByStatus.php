@@ -1,13 +1,14 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsByStatus.php,v 1.3 2005/09/01 20:39:06 schlundus Exp $ 
+* $Id: resultsByStatus.php,v 1.4 2005/09/19 06:53:21 franciscom Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
 * 
 * This page show Test Results over all Builds.
 *
+* @author 20050919 - fm - refactoring cat/comp name
 * @author 20050807 - fm
 * refactoring:  
 * removed deprecated: $_SESSION['project']
@@ -35,13 +36,20 @@ $arrBuilds = getBuilds($_SESSION['testPlanId']);
 
 //SQL to select the most current status of all the current test cases
 
-// 20050807 - fm - $_SESSION['testPlanId']
-$sql = "select tcid,status,build,runby,daterun,title,results.notes,component.name, category.name, component.id, category.id,mgttcid  " .
-		"from results,project,component,category,testcase ".
-		"where project.id = " . $_SESSION['testPlanId'] . 
-		" and project.id = component.projid and component.id = category.compid and " .
-		"category.id = testcase.catid and testcase.id = results.tcid " .
-		"order by tcid,build DESC";
+// 20050919 - fm - refactoring
+$sql = " SELECT tcid,status,build,runby,daterun,title,results.notes," .
+       " MGTCOMP.name  AS comp_name, MGTCAT.name AS cat_name, COMP.id, CAT.id,mgttcid  " .
+  		 " FROM results, project TP, component COMP, category CAT, " .
+  		 " mgtcomponent MGTCOMP, mgtcategory MGTCAT, testcase TC " .
+		   " WHERE TP.id = COMP.projid " .
+		   " AND COMP.id = CAT.compid " .
+		   " AND CAT.id = TC.catid " .
+		   " AND TC.id = results.tcid " .
+		   " AND MGTCOMP.id = COMP.mgtcompid " .
+		   " AND MGTCAT.id = CAT.mgtcatid " .
+		   " AND TP.id = " . $_SESSION['testPlanId'] . 
+		   " ORDER BY tcid,build DESC";
+
 $totalResult = do_mysql_query($sql,$db);
 
 reset($arrBuilds);

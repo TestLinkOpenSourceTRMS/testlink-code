@@ -1,6 +1,6 @@
 <?
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
- *$Id: resultsMoreBuilds.inc.php,v 1.21 2005/09/16 21:41:38 kevinlevy Exp $ 
+ *$Id: resultsMoreBuilds.inc.php,v 1.22 2005/09/19 14:48:44 franciscom Exp $ 
  * 
  * @author Kevin Levy
  *
@@ -130,13 +130,20 @@ function createResultsForComponent($componentId, $owner, $keyword, $commaDelimit
   $componentHeader = "Component :"  . $componentName ;
   
   // @toDo I'm not sure if I should use this LIKE in my sql statement
-  $sql = " SELECT category.id,category.name, category.compid, category.importance, category.risk, " .
-           " category.owner, category.mgtcatid, category.CATorder FROM " .
-    " category WHERE (category.compid='" . $componentId .  "')";
+    $sql = " SELECT CAT.id, MGTCAT.name, CAT.compid, CAT.importance, CAT.risk, " .
+           " CAT.owner, CAT.mgtcatid, CAT.CATorder" .
+           " FROM category CAT, mgtcategory MGTCAT " .
+           " WHERE MGTCAT.id = CAT.mgtcatid " .
+           " AND CAT.compid=" . $componentId;
+  
+    
   if (strlen($owner))
-    $sql .= " AND (category.owner = '" . mysql_escape_string($owner) . "');";
-  $sql .= " ORDER by CATorder ASC ";
+  {
+    $sql .= " AND CAT.owner = '" . mysql_escape_string($owner) . "'";
+  }  
+  $sql .= " ORDER BY MGTCAT.CATorder ASC ";
   $result = do_mysql_query($sql);
+
 
   $aggregateCategoryDataToPrint = null;;
   while ($myrow = mysql_fetch_row($result))

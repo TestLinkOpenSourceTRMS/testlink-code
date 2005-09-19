@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execNavigator.php,v $
  *
- * @version $Revision: 1.7 $
- * @modified $Date: 2005/09/16 06:47:11 $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2005/09/19 14:48:42 $
  *
  * @author Martin Havlat
  *
@@ -136,6 +136,7 @@ function generateExecTree($build,$purl_to_help,&$menuUrl,$tcIDFilter = null)
 	       " WHERE mgtcomponent.id = component.mgtcompid " .
 			   " AND component.projid = " . $_SESSION['testPlanId'] . 
 			   " ORDER BY mgtcomponent.name";
+			   
 			   
 	$comResult = do_mysql_query($sql);
 	

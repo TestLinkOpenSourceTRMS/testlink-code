@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.16 $
- * @modified $Date: 2005/09/19 06:43:03 $ by $Author: franciscom $
+ * @version $Revision: 1.17 $
+ * @modified $Date: 2005/09/19 06:52:57 $ by $Author: franciscom $
  *
  * @author Chad Rosen
  *
@@ -112,7 +112,7 @@ define('TL_IMPORT_ROW_MAX', '10000'); // in chars
 * BUGZILLA: edit configuration in TL_ABS_PATH/cfg/bugzilla.cfg.php
 * MANTIS: edit configuration in TL_ABS_PATH/cfg/mantis.cfg.php
 */
-define('TL_INTERFACE_BUGS', 'MANTIS');
+define('TL_INTERFACE_BUGS', 'NO');
 require_once(TL_ABS_PATH . 'lib/bugtracking/int_bugtracking.php');
 
 /** Setting up the global include path for testlink */

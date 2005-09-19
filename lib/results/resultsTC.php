@@ -1,13 +1,14 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsTC.php,v 1.3 2005/09/07 08:50:48 franciscom Exp $ 
+* $Id: resultsTC.php,v 1.4 2005/09/19 10:18:45 franciscom Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
 * 
-* This page that views Test Report by individual test case.
+* Show Test Report by individual test case.
 *
+* @author 20050919 - fm - refactoring
 * @author 20050807 - fm
 * refactoring:  
 * removed deprecated: $_SESSION['project']
@@ -21,37 +22,40 @@ require_once("../../lib/functions/lang_api.php");
 testlinkInitPage();
 
 $arrData = array();
-
-// 20050807 - fm
 $arrBuilds = getBuilds($_SESSION['testPlanId']);
 
 // is output is excel?
+$xls = FALSE;
 if (isset($_GET['format']) && $_GET['format'] =='excel'){
 	$xls = TRUE;
-}else{
-	$xls = FALSE;
 }
 
-// 20050807 - fm
-$sql = "select component.name,category.name, testcase.title, testcase.id,mgttcid from " .
-		"project,component,category,testcase where project.id=" . $_SESSION['testPlanId'] . 
-		" and component.projid=project.id and category.compid=component.id and " .
-		"testcase.catid=category.id";
+// 20050919 - fm
+$sql = " SELECT MGTCOMP.name AS comp_name, MGTCAT.name as cat_name, TC.title, TC.id AS tcid, mgttcid" .
+       " FROM project TP, component COMP, category CAT, testcase TC, mgtcomponent MGTCOMP, mgtcategory MGTCAT " .
+       " WHERE MGTCOMP.id = COMP.mgtcompid " .
+       " AND MGTCAT.id = CAT.mgtcatid " .
+		   " AND COMP.projid=TP.id " .
+		   " AND CAT.compid=COMP.id " .
+		   " AND TC.catid=CAT.id" .
+  	   " AND TP.id=" . $_SESSION['testPlanId'];
+
 $result = do_mysql_query($sql);
 $bRights = has_rights("tp_execute") && !$xls;
 
-while ($myrow = mysql_fetch_row($result))
+	
+while ($myrow = mysql_fetch_assoc($result))
 { //Cycle through all of the test cases
 	$container = null;
-	$container[] = htmlspecialchars($myrow[0] . ' / ' . $myrow[1]); // test suite
-	$container[] = "<b>" . $myrow[4] . "</b>:" . htmlspecialchars($myrow[2]); // title
+	$container[] = htmlspecialchars($myrow['comp_name'] . ' / ' . $myrow['cat_name']);
+	$container[] = "<b>" . $myrow['mgttcid'] . "</b>:" . htmlspecialchars($myrow['title']); 
 	
 	///SCHLUNDUS
-	foreach ($arrBuilds as $build=>$name)
+	foreach ($arrBuilds as $build => $name)
 	{
-		$tcID = $myrow[3];
+		$tcID = $myrow['tcid'];
 		$tcStatus = getStatus($tcID, $build);
-		if($tcStatus != 'n')
+		if($tcStatus != $g_tc_status['not run'])
 		{
 			//This displays the pass,failed or blocked test case result
 			//The hyperlink will take the user to the test case result in the execution page

@@ -2,8 +2,8 @@
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: results.inc.php,v $
- * @version $Revision: 1.8 $
- * @modified $Date: 2005/09/12 06:37:36 $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2005/09/19 10:19:13 $
  * 
  * @author 	Martin Havlat 
  * @author 	Chad Rosen (original report definition)
@@ -46,14 +46,13 @@ function sendXlsHeader()
 *
 * @author Francisco Mancardi - 20050905 - refactoring fetch_assoc
 */
-function getStatus($tcId, $build)
+function getStatus($tcId, $buildID)
 {
-	$sqlStatus = "SELECT status FROM results WHERE results.tcid=" . $tcId . 
-	             " AND results.build='" . $build  . "'";
-	$resultStatus = do_mysql_query($sqlStatus);
-	$myrowStatus = mysql_fetch_assoc($resultStatus);
-
-	return $myrowStatus['status'];
+	$sql = " SELECT status FROM results WHERE results.tcid=" . $tcId . 
+	       " AND results.build='" . $buildID  . "'";
+	$result = do_mysql_query($sql);
+	$myrow = mysql_fetch_assoc($result);
+	return $myrow['status'];
 }
 
 

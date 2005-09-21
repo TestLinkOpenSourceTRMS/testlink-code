@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.22 $
- * @modified $Date: 2005/09/21 09:32:39 $
+ * @version $Revision: 1.23 $
+ * @modified $Date: 2005/09/21 16:25:47 $
  *
  * @author Francisco Mancardi
 **/
@@ -1130,24 +1130,24 @@ $TLS_Author = "Author";
 $TLS_btn_close = "Close";
 
 // gui/templates/resultsMoreBuilds_query_form.tpl
-$TLS_resultsMoreBuilds_query_form_test_plan_header = "Test Plan : ";
-$TLS_resultsMoreBuilds_query_form_select_builds_header = "Select Build(s)";
-$TLS_resultsMoreBuilds_query_form_select_components_header = "Select Component(s)";
-$TLS_resultsMoreBuilds_query_form_components_selection_all = "all";
-$TLS_resultsMoreBuilds_query_form_select_keyword_header = "Select Keyword";
-$TLS_resultsMoreBuilds_query_form_do_not_query_by_keyword = "DO NOT QUERY BY KEYWORD";
-$TLS_resultsMoreBuilds_query_form_select_owner_header = "Select Owner";
-$TLS_resultsMoreBuilds_query_form_do_not_query_by_owner = "DO NOT QUERY BY OWNER";
-$TLS_resultsMoreBuilds_query_form_select_report_format_header = "Select Report Format";
-$TLS_resultsMoreBuilds_query_form_html_format = "HTML";
-$TLS_resultsMoreBuilds_query_form_excel_format = "MS Excel";
-$TLS_resultsMoreBuilds_query_form_select_last_result_header = "Select Last Result";
-$TLS_resultsMoreBuilds_query_form_last_status_any = "Any";
-$TLS_resultsMoreBuilds_query_form_last_status_passed = "Passed";
-$TLS_resultsMoreBuilds_query_form_last_status_failed = "Failed";
-$TLS_resultsMoreBuilds_query_form_last_status_blocked = "Blocked";
-$TLS_resultsMoreBuilds_query_form_last_status_not_run = "Not Run";
-$TLS_resultsMoreBuilds_query_form_submit_query = "Submit Query";
+$TLS_test_plan_header = "Test Plan : ";
+$TLS_select_builds_header = "Select Build(s)";
+$TLS_select_components_header = "Select Component(s)";
+$TLS_components_selection_all = "all";
+$TLS_select_keyword_header = "Select Keyword";
+$TLS_do_not_query_by_keyword = "DO NOT QUERY BY KEYWORD";
+$TLS_select_owner_header = "Select Owner";
+$TLS_do_not_query_by_owner = "DO NOT QUERY BY OWNER";
+$TLS_select_report_format_header = "Select Report Format";
+$TLS_html_format = "HTML";
+$TLS_excel_format = "MS Excel";
+$TLS_select_last_result_header = "Select Last Result";
+$TLS_last_status_any = "Any";
+$TLS_last_status_passed = "Passed";
+$TLS_last_status_failed = "Failed";
+$TLS_last_status_blocked = "Blocked";
+$TLS_last_status_not_run = "Not Run";
+$TLS_submit_query = "Submit Query";
 
 // gui/templates/resultsMoreBuilds_report.tpl
 $TLS_resultsMoreBuilds_report_please_wait = "Please wait until report fully loads...";

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.21 $
- * @modified $Date: 2005/09/16 21:35:51 $
+ * @version $Revision: 1.22 $
+ * @modified $Date: 2005/09/21 09:32:39 $
  *
  * @author Francisco Mancardi
 **/
@@ -108,7 +108,7 @@ $TLS_confirm_user_del = "Do really want to delete this user?";
 
 // gui/templates/buildNew.tpl
 $TLS_alt_delete_build = "Click here to delete this build";
-$TLS_enter_build = "Enter identifier";
+$TLS_enter_build = "Build Name";
 $TLS_enter_build_notes = "Notes:";
 $TLS_msg_build = "Each build is related to the active Test Plan.";
 $TLS_no_builds = "There are no builds for this Test Plan!";

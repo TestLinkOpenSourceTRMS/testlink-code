@@ -2,8 +2,8 @@
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: results.inc.php,v $
- * @version $Revision: 1.11 $
- * @modified $Date: 2005/09/19 15:42:03 $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2005/09/21 10:32:00 $
  * 
  * @author 	Martin Havlat 
  * @author 	Chad Rosen (original report definition)
@@ -49,7 +49,7 @@ function sendXlsHeader()
 function getStatus($tcId, $buildID)
 {
 	$sql = " SELECT status FROM results WHERE results.tcid=" . $tcId . 
-	       " AND results.build='" . $buildID  . "'";
+	       " AND results.build=" . $buildID;
 	$result = do_mysql_query($sql);
 	$myrow = mysql_fetch_assoc($result);
 	return $myrow['status'];
@@ -101,7 +101,7 @@ function getPlanTCNumber($tpID)
 * Function returns number of Test Cases in the Test Plan
 * @return string Link of Test ID + Title 
 */
-function getTCLink($rights, $result, $id, $title, $build)
+function getTCLink($rights, $result, $id, $title, $buildID)
 {
 	$title = htmlspecialchars($title);
 	$suffix = $result . '">' . $id . ": <b>" . $title. "</b></a>";
@@ -109,7 +109,7 @@ function getTCLink($rights, $result, $id, $title, $build)
 	// a hyper link to the execution pages
 	if ($rights)
 		$testTitle = '<a href="lib/execute/execSetResults.php?keyword=All&level=testcase&owner=All&build='. 
-		             $build . '&id=' . $suffix;
+		             $buildID . '&id=' . $suffix;
 	else // link to test specification
 		$testTitle = '<a href="lib/testcases/archiveData.php?edit=testcase&data=' . $suffix;
 		
@@ -124,7 +124,7 @@ function getTCLink($rights, $result, $id, $title, $build)
 * @param string $build Build number
 * @return array $totalPassed, $totalFailed, $totalBlocked
 */
-function getPlanStatus($tpID, $build)
+function getPlanStatus($tpID, $buildID)
 {
 	global $g_tc_status;
 
@@ -132,7 +132,7 @@ function getPlanStatus($tpID, $build)
 	$base_sql = " SELECT count(results.tcid) FROM component,category,testcase,results " .
 			" WHERE component.projid =" . $tpID . " AND component.id = category.compid " .
 			" AND category.id = testcase.catid " . " AND testcase.id = results.tcid " .
-			" AND build = '" . $build . "' ";
+			" AND results.build = " . $buildID ;
 
 	//Get the total # of passed testcases for the project and build
 	$sql = $base_sql . " AND status = '" . $g_tc_status['passed'] . "'";
@@ -808,7 +808,7 @@ function getBuildMetricsComponent($tpID,$buildID)
 		            " AND category.id = testcase.catid " .
 		            " AND component.id =" . $myrow['comp_id'] . 
 		            " AND testcase.id = results.tcid " .
-		            " AND results.build='" . $buildID . "' " ;
+		            " AND results.build=" . $buildID;
 		
 		$sql = $base_sql .  " and results.status='" . $g_tc_status['passed'] . "'";
 		$passedResult = do_mysql_query($sql);
@@ -872,7 +872,7 @@ function getBugsReport($tpID, $buildID = 'all')
 	
 	while ($myrow = mysql_fetch_assoc($result)) {
 		$bugString = null;
-		$sqlBugs = "SELECT bug from bugs where tcid=" . $myrow['id'];
+		$sqlBugs = "SELECT bug FROM bugs WHERE tcid=" . $myrow['id'];
 		$resultBugs = do_mysql_query($sqlBugs);
 		while ($myrowBug = mysql_fetch_row($resultBugs))
 		{

@@ -1,6 +1,6 @@
 <?
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: priority.inc.php,v 1.3 2005/09/06 06:44:07 franciscom Exp $ */
+/* $Id: priority.inc.php,v 1.4 2005/09/21 10:32:00 franciscom Exp $ */
 /**
  * Functions for Priority management 
  * Precondition: require init db + session verification done (testlinkInitPage();) 
@@ -26,7 +26,8 @@ function getPriority($tpID)
 	$arrData = array();
 	
 	// 20050807 - fm
-	$sql = "select id, riskImp, priority from priority where projid=" . $tpID;
+	$sql = " SELECT id, riskImp, priority " .
+	       " FROM priority WHERE projid=" . $tpID;
 	$result = do_mysql_query($sql); //Run the query
 
 	while($row = mysql_fetch_array($result)){
@@ -53,7 +54,7 @@ function setPriority($newArray)
 		$priority = $newArray[$i + 1]; //The second value is the notes
 		
 		//SQL statement to look for the same record (tcid, build = tcid, build)
-		$sql = "select id, priority from priority where id='" . $priID . "'";
+		$sql = "SELECT id, priority FROM priority WHERE id='" . $priID . "'";
 		$result = do_mysql_query($sql); //Run the query
 		$num = mysql_num_rows($result); //How many results
 		
@@ -64,7 +65,7 @@ function setPriority($newArray)
 	
 			//Update if different
 			if($queryPri != $priority) {
-				$sql = "UPDATE priority set priority ='" . $priority . "' where id='" . $priID . "'";
+				$sql = "UPDATE priority SET priority ='" . $priority . "' WHERE id='" . $priID . "'";
 				$result = do_mysql_query($sql);
 			}
 		}

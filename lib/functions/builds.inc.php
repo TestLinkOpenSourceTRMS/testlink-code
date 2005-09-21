@@ -1,6 +1,6 @@
 <?
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: builds.inc.php,v 1.3 2005/09/15 17:00:14 franciscom Exp $
+* $Id: builds.inc.php,v 1.4 2005/09/21 10:32:00 franciscom Exp $
 * 
 * @author Martin Havlat
 *
@@ -11,28 +11,32 @@ require_once("../functions/common.php");
 
 /**
  * Collect all builds for the Test Plan
+ *
+ * 20050921 - fm - refactoring
  */
 function getBuilds($idPlan)
 {
-  	$sql = "SELECT build,name FROM build WHERE projid = " . $idPlan . " ORDER BY id DESC";
+ 	$sql = "SELECT build.id, name FROM build WHERE projid = " . $idPlan . " ORDER BY build.id DESC";
 	return getBuildInfo($sql);
 }
 
 function getBuildsAndNotes($idPlan)
 {
-  	$sql = "SELECT build,note FROM build WHERE projid = " . $idPlan . " ORDER BY id DESC";
+  	$sql = "SELECT build.id,note FROM build WHERE projid = " . $idPlan . " ORDER BY build.id DESC";
 	return getBuildInfo($sql);
 }
 
 function getBuildInfo($sql)
 {
 	$arrBuilds = array();
-  	$result = do_mysql_query($sql) or die(mysql_error());
+ 	$result = do_mysql_query($sql) or die(mysql_error());
 
 	while ($myrow = mysql_fetch_array($result))
+	{
 		$arrBuilds[$myrow[0]] = $myrow[1];
+  }
 
-  	return $arrBuilds;
+ 	return $arrBuilds;
 }
 
 function deleteTestPlanBuild($testPlanID,$buildID)
@@ -58,7 +62,7 @@ function deleteTestPlanBuild($testPlanID,$buildID)
 			$result = $result && do_mysql_query($query);
 		}
 	
-		$query = "DELETE FROM build WHERE build='{$buildID}' AND projid=" . $testPlanID;
+		$query = "DELETE FROM build WHERE build.id={$buildID} AND projid=" . $testPlanID;
 		$result = $result && do_mysql_query($query);
 	}
 	return $result ? 1 : 0;

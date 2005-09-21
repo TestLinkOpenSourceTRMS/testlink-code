@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: exec.inc.php,v $
  *
- * @version $Revision: 1.11 $
- * @modified $Date: 2005/09/19 17:48:05 $ $Author: franciscom $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2005/09/21 10:32:00 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -117,12 +117,12 @@ function createResultsMenu()
 /** Building the dropdown box of builds */
 // MHT 200507	refactorization; improved SQL
 //
-// 20050807 - fm
-// added $idPlan to remove Global Coupling
-function createBuildMenu($idPlan)
+// 20050921 - fm - build.build -> build.id
+function createBuildMenu($tpID)
 {
-	$sql = "SELECT build,name FROM build WHERE build.projid = " . 
-			$idPlan . " ORDER BY build DESC";
+	$sql = " SELECT build.id, build.name " .
+	       " FROM build WHERE build.projid = " .  $tpID . 
+	       " ORDER BY build.id DESC";
 
 	return selectOptionData($sql);
 }//end function
@@ -138,11 +138,11 @@ function createBuildMenu($idPlan)
  *
  */
 // MHT 200507	added conversion of special chars on input - [ 900437 ] table results -- incoherent data ?
-function editTestResults($login_name, $tcData, $build)
+function editTestResults($login_name, $tcData, $buildID)
 {
 	global $g_bugInterfaceOn, $g_tc_status;
 	
-	$build = mysql_escape_string($build);
+	// $build = mysql_escape_string($build);
 
 	$num_tc = count($tcData['tc']);
 	
@@ -161,7 +161,7 @@ function editTestResults($login_name, $tcData, $build)
 		// Does exist a result for this (tcid, build) ?
 		$sql = " SELECT tcid, build, notes, status FROM results " .
 		       " WHERE tcid=" . $tcID .  
-		       " AND build='" . $build . "'";
+		       " AND build=" . $buildID;
 		$result = do_mysql_query($sql); 
 		$num = mysql_num_rows($result); 
 
@@ -172,9 +172,10 @@ function editTestResults($login_name, $tcData, $build)
 			$myrow = mysql_fetch_assoc($result);
 			if(! ($myrow['notes'] == $tcNotes && $myrow['status'] == $tcStatus) )
 			{
-				$sql = " UPDATE results SET runby ='" . $login_name . "', status ='" .  
-						   $tcStatus . "', notes='" . $tcNotes . "' " .
-						   " WHERE tcid=" . $tcID . " AND build='" . $build . "'";
+				$sql = " UPDATE results " .
+				       " SET runby ='" . $login_name . "', " . "status ='" .  $tcStatus . "', " .
+				       " notes='" . $tcNotes . "' " .
+						   " WHERE tcid=" . $tcID . " AND build=" . $buildID;
 				$result = do_mysql_query($sql); 
 			}
     }
@@ -184,7 +185,7 @@ function editTestResults($login_name, $tcData, $build)
 			if( !($tcNotes == "" && $tcStatus == $g_tc_status['not_run']) )
 			{ 
 				$sql = " INSERT INTO results (build,daterun,status,tcid,notes,runby) " .
-				       " VALUES ('" . $build . "',CURRENT_DATE(),'" . $tcStatus . 
+				       " VALUES (" . $buildID . ",CURRENT_DATE(),'" . $tcStatus . 
 				       "'," . $tcID . ",'" . $tcNotes . "','" . $login_name . "')";
 				$result = do_mysql_query($sql);
       }  
@@ -194,7 +195,7 @@ function editTestResults($login_name, $tcData, $build)
 
     // -------------------------------------------------------------------------
     // Update Bug information (delete+insert) 
-	  $sqlDelete = "DELETE from bugs where tcid=" . $tcID . " and build=" . $build;
+	  $sqlDelete = "DELETE FROM bugs WHERE tcid=" . $tcID . " and build=" . $buildID;
 	  $result = do_mysql_query($sqlDelete);
 
 	  $bugArray = strlen($tcBugs) ?  explode(",",$tcBugs) : null;
@@ -204,7 +205,7 @@ function editTestResults($login_name, $tcData, $build)
 	  {
 
 		  $sql = "INSERT INTO bugs (tcid,build,bug) VALUES (" . $tcID . ",'" . 
-			  	   $build . "','" . $bugArray[$counter] . "')";
+			  	   $buildID . "','" . $bugArray[$counter] . "')";
 		  $result = do_mysql_query($sql); 
 		  $counter++;
 	  }
@@ -256,10 +257,11 @@ function createTestInput($resultTC,$buildID,$tpID)
 		$dataStatus = mysql_fetch_row($resultStatus);
 
 		//This query grabs the most recent result
-		$sqlRecentResult = "SELECT build.name AS build,status,runby,daterun FROM results,build " .
-				               "WHERE tcid=" . $myrow['tcid'] . " AND status != '" . $g_tc_status['not_run'] . 
-				               "' AND results.build = build.build AND projid = " . 
-				               $tpID ." ORDER by build.build " .	"DESC limit 1";
+		$sqlRecentResult = " SELECT build.name AS build_name,status,runby,daterun " .
+		                   " FROM results,build " .
+				               " WHERE tcid=" . $myrow['tcid'] . " AND status != '" . $g_tc_status['not_run'] . "' " .
+				               " AND results.build = build.id " .
+				               " AND projid = " . $tpID ." ORDER by build.id " .	"DESC limit 1";
 				               
 		$dataRecentResult = do_mysql_query($sqlRecentResult);
 		$rowRecent = mysql_fetch_assoc($dataRecentResult);
@@ -273,7 +275,7 @@ function createTestInput($resultTC,$buildID,$tpID)
 		{
 			global $g_bugInterface ;
 			//sql code to grab the appropriate bugs for the test case and build
-			$sqlBugs = "SELECT bug FROM bugs WHERE tcid='" . $myrow['tcid'] . "' and build='" . $buildID . "'";
+			$sqlBugs = "SELECT bug FROM bugs WHERE tcid='" . $myrow['tcid'] . "' and build=" . $buildID;
 			$resultBugs = do_mysql_query($sqlBugs);
 
 			//For each bug that is found

@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: buildNew.php,v 1.8 2005/09/12 06:36:03 franciscom Exp $ */
+/* $Id: buildNew.php,v 1.9 2005/09/21 10:32:01 franciscom Exp $ */
 /* 
 Purpose:  admins create new builds for a project 
 
@@ -26,6 +26,7 @@ $tpID = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0;
 $buildID = isset($_POST['buildID']) ? intval($_POST['buildID']) : 0;
 
 $builds = getBuilds($tpID);
+
 $smarty = new TLSmarty;
 
 $of = new fckeditor('notes') ;

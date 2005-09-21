@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: plan.inc.php,v $
- * @version $Revision: 1.8 $
- * @modified $Date: 2005/09/19 15:43:59 $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2005/09/21 10:32:01 $
  * @author 	Martin Havlat
  *
  * Functions for management: 
@@ -179,6 +179,7 @@ function deleteTestCasesByCategories($catIDs)
 
 /*
 
+20050921 - fm - refactoring build.buildid -> build.id
 20050910 - fm - bug missing argument $buildID
 
 */
@@ -186,7 +187,7 @@ function deleteTestPlanBuilds($tpID, $buildID)
 {
 	
 	$sql = "DELETE FROM build " .
-	       "WHERE projid=" . $tpID . " AND buildid=" . $buildID;
+	       "WHERE projid=" . $tpID . " AND build.id=" . $buildID;
 	$result = do_mysql_query($sql);
 	
 	return $result ? 1: 0;		
@@ -376,20 +377,26 @@ function getUsersOfPlan($id,&$arrUsers)
 	}
 	return $result ? 1 : 0;
 }
+
+
 // 20050815 - scs - $notes now became a default parameter
 // 20050905 - scs - function now returns the build value
 // 20050909 - fm - From Project to TestPlan
-function insertTestPlanBuild($build,$testplanID,$notes = '')
+// 20050921 - fm - refactoring build
+function insertTestPlanBuild($buildName,$testplanID,$notes = '')
 {
 	$sql = " INSERT INTO build (projid,name,note) " .
-	       " VALUES ('". $testplanID . "','" . mysql_escape_string($build) . "','" . 
+	       " VALUES ('". $testplanID . "','" . mysql_escape_string($buildName) . "','" . 
 	       mysql_escape_string($notes) . "')";
 	       
 	$result = do_mysql_query($sql);
-	$buildID = 0;
+	$new_build_id = 0;
+		
 	if ($result)
 	{
-		$id = mysql_insert_id();
+		$new_build_id = mysql_insert_id();
+	
+	  /*
 		$query = "SELECT MAX(build)+1 FROM build";
 		$result = do_mysql_query($query);
 		if ($result)
@@ -401,9 +408,11 @@ function insertTestPlanBuild($build,$testplanID,$notes = '')
 			$query = "UPDATE build SET build = {$buildID} WHERE id = $id";
 			$result = do_mysql_query($query);
 		}
+		*/
 	}
 	
-	return $buildID;
+	
+	return $new_build_id;
 }
 
 /*

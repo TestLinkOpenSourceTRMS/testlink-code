@@ -1,6 +1,6 @@
 <?
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
- *$Id: resultsMoreBuilds.inc.php,v 1.22 2005/09/19 14:48:44 franciscom Exp $ 
+ *$Id: resultsMoreBuilds.inc.php,v 1.23 2005/09/21 16:42:02 franciscom Exp $ 
  * 
  * @author Kevin Levy
  *
@@ -60,8 +60,8 @@ function createResultsForTestPlan($testPlanName, $testPlanID, $buildsArray, $key
 
   $testPlanReportHeader = "<table class=\"simple\" style=\"width: 100%; " .
                             "text-align: center; margin-left: 0px;\">" .
-    "<tr><th>" . lang_get('resultsMoreBuilds_inc_test_plan_name') . "</th><th>" . lang_get('resultsMoreBuilds_inc_builds_selected') . "</th>" .
-    "<th>" . lang_get('resultsMoreBuilds_inc_keyword') . "</th><th>" . lang_get('resultsMoreBuilds_inc_owner') . "</th><th>" . lang_get('resultsMoreBuilds_inc_last_status') . "</th></tr>";
+    "<tr><th>" . lang_get('test_plan_name') . "</th><th>" . lang_get('builds_selected') . "</th>" .
+    "<th>" . lang_get('keyword') . "</th><th>" . lang_get('owner') . "</th><th>" . lang_get('last_status') . "</th></tr>";
   $testPlanReportHeader = $testPlanReportHeader . 
     "<tr><td>".htmlspecialchars($testPlanName)."</td><td>" . 
     htmlspecialchars($buildParams) . "</td><td>".
@@ -97,8 +97,8 @@ function createResultsForTestPlan($testPlanName, $testPlanID, $buildsArray, $key
 	}
     }
   $summaryOfTestPlanTable = "<table class=\"simple\" style=\"width: 100%; " .
-    "text-align: center; margin-left: 0px;\"><tr><th>" . lang_get('resultsMoreBuilds_inc_number_cases') . "</td>" .
-    "<th>" . lang_get('resultsMoreBuilds_inc_number_passed') . "</td><th>" . lang_get('resultsMoreBuilds_inc_number_failed') . "</td><th>" . lang_get('resultsMoreBuilds_inc_number_blocked') . "</td><th>" . lang_get('resultsMoreBuilds_inc_number_not_run') . "</td></tr>";
+    "text-align: center; margin-left: 0px;\"><tr><th>" . lang_get('number_cases') . "</td>" .
+    "<th>" . lang_get('number_passed') . "</td><th>" . lang_get('number_failed') . "</td><th>" . lang_get('number_blocked') . "</td><th>" . lang_get('number_not_run') . "</td></tr>";
   $summaryOfTestPlanTable = $summaryOfTestPlanTable . "<tr><td>" . $totalCasesForTestPlan  . 
                               "</td><td>" . $totalLastResultPassesForTestPlan . "</td><td>" . 
                               $totalLastResultFailuresForTestPlan . "</td><td>" . 
@@ -171,8 +171,8 @@ function createResultsForComponent($componentId, $owner, $keyword, $commaDelimit
     }
 
   $summaryOfComponentTable = "<table class=\"simple\" style=\"width: 100%; " .
-    "text-align: center; margin-left: 0px;\"><tr><th>" . lang_get('resultsMoreBuilds_inc_number_cases') . "</td>" .
-    "<th>" . lang_get('resultsMoreBuilds_inc_number_passed') . "</td><th>" . lang_get('resultsMoreBuilds_inc_number_failed') . "</td><th>" . lang_get('resultsMoreBuilds_inc_number_blocked') . "</td><th>" . lang_get('resultsMoreBuilds_inc_number_not_run') . "</td></tr>";
+    "text-align: center; margin-left: 0px;\"><tr><th>" . lang_get('number_cases') . "</td>" .
+    "<th>" . lang_get('number_passed') . "</td><th>" . lang_get('number_failed') . "</td><th>" . lang_get('number_blocked') . "</td><th>" . lang_get('number_not_run') . "</td></tr>";
   $summaryOfComponentTable = $summaryOfComponentTable . "<tr><td>" . $totalCasesForComponent  . "</td><td>" . 
                                $totalLastResultPassesForComponent . "</td><td>" . 
                                $totalLastResultFailuresForComponent . "</td><td>" . 
@@ -219,7 +219,7 @@ function createResultsForCategory($categoryId, $keyword, $commaDelimitedBuilds, 
   $owner = $categoryRowArray[5];
 
   
-  $categoryHeader = lang_get('resultsMoreBuilds_inc_category_header') . htmlspecialchars($categoryName) . " " . lang_get('resultsMoreBuilds_inc_owner_header') . htmlspecialchars($owner);
+  $categoryHeader = lang_get('category_header') . htmlspecialchars($categoryName) . " " . lang_get('owner_header') . htmlspecialchars($owner);
   $sql = " SELECT testcase.id, testcase.title, testcase.summary, testcase.steps, " .
            " testcase.exresult, testcase.catid, testcase.active, testcase.version, " .
            " testcase.mgttcid, testcase.keywords, testcase.TCorder " .
@@ -319,8 +319,8 @@ function createResultsForCategory($categoryId, $keyword, $commaDelimitedBuilds, 
 
   $summaryOfCategoryTable = "<table class=\"simple\" style=\"width: 100%; " .
                             "text-align: center; margin-left: 0px;\"><tr>" .
-    "<th>" . lang_get('resultsMoreBuilds_inc_number_cases') . "</td><th>" . lang_get('resultsMoreBuilds_inc_number_passed') . "</td><th>" . lang_get('resultsMoreBuilds_inc_number_failed') . "</td>" .
-    "<th>" . lang_get('resultsMoreBuilds_inc_number_blocked') . "</td><th>" . lang_get('resultsMoreBuilds_inc_number_not_run') . "</td></tr>";
+    "<th>" . lang_get('number_cases') . "</td><th>" . lang_get('number_passed') . "</td><th>" . lang_get('number_failed') . "</td>" .
+    "<th>" . lang_get('number_blocked') . "</td><th>" . lang_get('number_not_run') . "</td></tr>";
 
   $summaryOfCategoryTable = $summaryOfCategoryTable . "<tr><td>" . $totalCasesForCategory  . "</td><td>" . 
                             $totalLastResultPassesForCategory . "</td><td>" . 
@@ -351,7 +351,7 @@ function createResultsForTestCase($tcid, $myrow,$arrBuilds,$arrayOfResults,$last
   $className = getTCClassNameByStatus($lastResult);
   
   $summaryTable = "<table class=\"simple white\">";
-  $summaryTable .= "<tr class=\"black\"><th>" . lang_get('resultsMoreBuilds_inc_number_executions') . "</th><th>" . lang_get('resultsMoreBuilds_inc_number_passed') . "</th><th>" . lang_get('resultsMoreBuilds_inc_number_failed') . "</th><th>" . lang_get('resultsMoreBuilds_inc_number_blocked') . "</th></tr>";
+  $summaryTable .= "<tr class=\"black\"><th>" . lang_get('number_executions') . "</th><th>" . lang_get('number_passed') . "</th><th>" . lang_get('number_failed') . "</th><th>" . lang_get('number_blocked') . "</th></tr>";
   $summaryTable .= "<tr class=\"{$className}\"><td>" . $summaryOfResultData[0]  . 
                     "</td><td>" . $summaryOfResultData[1] . "</td><td>" . $summaryOfResultData[2] . "</td><td>" . 
     $summaryOfResultData[3] . "</td></tr></table>";
@@ -401,14 +401,14 @@ function createTableOfTestCaseResults($arrayOfResults,$arrBuilds,&$returnArray){
   
   
   $returnData = "<table class=\"simple white\">" .
-    "<tr class=\"black\"><th>" . lang_get('resultsMoreBuilds_inc_build') . "</th><th>" . lang_get('resultsMoreBuilds_inc_runby') . "</th><th>" . lang_get('resultsMoreBuilds_inc_daterun') . "</th>" .
-    "<th>" . lang_get('resultsMoreBuilds_inc_status') . "</th><th>" . lang_get('resultsMoreBuilds_inc_bugs') . "</th><th>" . lang_get('resultsMoreBuilds_inc_notes') . "</th></tr>";
+    "<tr class=\"black\"><th>" . lang_get('build') . "</th><th>" . lang_get('runby') . "</th><th>" . lang_get('daterun') . "</th>" .
+    "<th>" . lang_get('status') . "</th><th>" . lang_get('bugs') . "</th><th>" . lang_get('notes') . "</th></tr>";
 
   // if test case was never executed the array will be empty
   // notify user of this
   if (!is_array($arrayOfResults))
     {
-      $returnData .= "<tr class=\"black\"><td>" . lang_get('resultsMoreBuilds_inc_case_not_run_warning') . "</td><td></td><td>" .
+      $returnData .= "<tr class=\"black\"><td>" . lang_get('case_not_run_warning') . "</td><td></td><td>" .
 	"</td><td></td><td></td><td></td></tr></table>";
       // exit method
       return $returnData;

@@ -2,13 +2,14 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: plan.inc.php,v $
- * @version $Revision: 1.9 $
- * @modified $Date: 2005/09/21 10:32:01 $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2005/09/22 10:03:47 $
  * @author 	Martin Havlat
  *
  * Functions for management: 
  * Test Plans, Test Case Suites, Milestones, Testers assignment
  *
+ * @author Francisco Mancardi - 20050922 - BUGID 0000132: Cannot delete a test plan
  * @author Francisco Mancardi - 20050914 - refactoring
  */
 ////////////////////////////////////////////////////////////////////////////////
@@ -178,16 +179,21 @@ function deleteTestCasesByCategories($catIDs)
 
 
 /*
-
+20050922 - fm - BUGID 0000132: Cannot delete a test plan
 20050921 - fm - refactoring build.buildid -> build.id
 20050910 - fm - bug missing argument $buildID
 
 */
-function deleteTestPlanBuilds($tpID, $buildID)
+function deleteTestPlanBuilds($tpID, $buildID=0)
 {
 	
 	$sql = "DELETE FROM build " .
-	       "WHERE projid=" . $tpID . " AND build.id=" . $buildID;
+	       "WHERE projid=" . $tpID ;
+	       
+	if( $buildID )
+	{       
+	   $sql .=  " AND build.id=" . $buildID;
+	}       
 	$result = do_mysql_query($sql);
 	
 	return $result ? 1: 0;		
@@ -452,7 +458,7 @@ function getAllTestPlanComponentCategories($testPlanID,$compID)
 using also mgtcategory
 changed return type
 */
-function getCategories_TC_ids($catIDs,&$tcIDs)
+function getCategories_TC_ids($catIDs)
 {
 	$tcIDs = array();
 	if (sizeof($catIDs) > 0)

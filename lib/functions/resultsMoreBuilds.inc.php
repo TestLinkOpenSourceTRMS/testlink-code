@@ -1,6 +1,6 @@
 <?
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
- *$Id: resultsMoreBuilds.inc.php,v 1.23 2005/09/21 16:42:02 franciscom Exp $ 
+ *$Id: resultsMoreBuilds.inc.php,v 1.24 2005/09/25 05:05:13 kevinlevy Exp $ 
  * 
  * @author Kevin Levy
  *
@@ -44,6 +44,7 @@ function createResultsForTestPlan($testPlanName, $testPlanID, $buildsArray, $key
   $totalLastResultBlockedForTestPlan = 0;
   $totalUnexecutedTestCases = 0;
   
+  $arrBuilds_build = getBuilds_build($testPlanID);
   $arrBuilds = getBuilds($testPlanID);
   $commaDelimitedBuilds = null;
   $buildParams = null;
@@ -54,7 +55,7 @@ function createResultsForTestPlan($testPlanName, $testPlanID, $buildsArray, $key
 	  $commaDelimitedBuilds .= ",";
 	  $buildParams .= ",";
 	}
-      $commaDelimitedBuilds .= $buildsArray[$i];
+      $commaDelimitedBuilds .= $arrBuilds_build[$buildsArray[$i]];
       $buildParams .= $arrBuilds[$buildsArray[$i]];
     }
 
@@ -244,7 +245,6 @@ function createResultsForCategory($categoryId, $keyword, $commaDelimitedBuilds, 
   $sql = " SELECT results.build, results.runby, results.daterun, results.status, results.bugs, " .
            " results.tcid, results.notes FROM results WHERE tcid IN (" . $tcIDList . ")".
     " AND (build IN ('" . $build_list . "')) order by build DESC;";
-
   $sqlBuildResult = do_mysql_query($sql);
   $tcBuildInfo = null;
   //I need the num results so I can do the check below on not run test cases

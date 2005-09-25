@@ -1,6 +1,6 @@
 <?
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: builds.inc.php,v 1.4 2005/09/21 10:32:00 franciscom Exp $
+* $Id: builds.inc.php,v 1.5 2005/09/25 05:03:47 kevinlevy Exp $
 * 
 * @author Martin Havlat
 *
@@ -17,6 +17,12 @@ require_once("../functions/common.php");
 function getBuilds($idPlan)
 {
  	$sql = "SELECT build.id, name FROM build WHERE projid = " . $idPlan . " ORDER BY build.id DESC";
+	return getBuildInfo($sql);
+}
+
+// added by 09242005 kl - i want the build.build fields in the array
+function getBuilds_build($idPlan){
+	$sql = "SELECT build.id, build FROM build WHERE projid = " . $idPlan . " ORDER BY build.id DESC";
 	return getBuildInfo($sql);
 }
 

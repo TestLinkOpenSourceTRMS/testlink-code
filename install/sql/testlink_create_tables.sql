@@ -1,5 +1,5 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
-# $Id: testlink_create_tables.sql,v 1.6 2005/09/26 06:47:03 franciscom Exp $
+# $Id: testlink_create_tables.sql,v 1.7 2005/09/26 14:45:04 franciscom Exp $
 # SQL script - create db tables for TL 1.6.0  
 #
 # default rights & admin account are created via testlink_create_default_data.sql
@@ -335,7 +335,7 @@ INDEX ( `id_req` , `id_tc` )
 
 DROP TABLE IF EXISTS `results`;
 CREATE TABLE `results` (
-  `buildid` int(10) NOT NULL default '0',
+  `build_id` int(10) NOT NULL default '0',
   `runby` varchar(30) default NULL,
   `daterun` date default NULL,
   `status` char(1) default NULL,

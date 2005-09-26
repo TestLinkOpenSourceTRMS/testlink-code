@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsMoreBuilds_buildReport.php,v 1.12 2005/09/16 19:54:42 kevinlevy Exp $ 
+* $Id: resultsMoreBuilds_buildReport.php,v 1.13 2005/09/26 00:48:36 kevinlevy Exp $ 
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 * 
@@ -28,7 +28,7 @@ $buildsSelected = array();
 $componentsSelected = array();
 
 $xls = FALSE;
-$xls_localized_string = lang_get('resultsMoreBuilds_query_form_excel_format');
+$xls_localized_string = lang_get('excel_format');
 
 if (isset($_GET['format']) && $_GET['format'] == '$xls_localized_string')
 {

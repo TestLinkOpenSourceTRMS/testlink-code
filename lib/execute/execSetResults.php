@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.11 $
- * @modified $Date: 2005/09/19 17:48:05 $ $Author: franciscom $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2005/09/26 16:50:49 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -47,7 +47,6 @@ if( isset($_REQUEST['keyword']) )
 {
 	$keyword = mysql_escape_string($keyword);
 }
-
 
 if (isset($_REQUEST['submitTestResults']))
 {

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execNavigator.php,v $
  *
- * @version $Revision: 1.8 $
- * @modified $Date: 2005/09/19 14:48:42 $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2005/09/26 16:50:49 $
  *
  * @author Martin Havlat
  *
@@ -279,11 +279,16 @@ function displayTCTree($TCResult, $build, $owner, $colored, $menuUrl, $filteredR
 		$sqlResult = "SELECT tcid,status FROM results WHERE tcid IN (" . $tcIDsList . ")";
 		if($colored == 'result')
 		{
-			$sqlResult .= " ORDER BY build DESC";
+			// 20050926 - fm - newdb
+			// $sqlResult .= " ORDER BY build DESC";
+			$sqlResult .= " ORDER BY build_id DESC";
+			
 		}
 		else
 		{
-			$sqlResult .= " AND build = '" . $build . "'";
+			// 20050926 - fm - newdb
+			// $sqlResult .= " AND build = '" . $build . "'";
+			$sqlResult .= " AND build_id = " . $build;
 		}
 		
 		$sqlBuildResult = do_mysql_query($sqlResult);

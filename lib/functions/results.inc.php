@@ -2,8 +2,8 @@
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: results.inc.php,v $
- * @version $Revision: 1.12 $
- * @modified $Date: 2005/09/21 10:32:00 $
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2005/09/26 16:50:51 $
  * 
  * @author 	Martin Havlat 
  * @author 	Chad Rosen (original report definition)
@@ -49,7 +49,7 @@ function sendXlsHeader()
 function getStatus($tcId, $buildID)
 {
 	$sql = " SELECT status FROM results WHERE results.tcid=" . $tcId . 
-	       " AND results.build=" . $buildID;
+	       " AND results.build_id=" . $buildID;
 	$result = do_mysql_query($sql);
 	$myrow = mysql_fetch_assoc($result);
 	return $myrow['status'];
@@ -132,7 +132,7 @@ function getPlanStatus($tpID, $buildID)
 	$base_sql = " SELECT count(results.tcid) FROM component,category,testcase,results " .
 			" WHERE component.projid =" . $tpID . " AND component.id = category.compid " .
 			" AND category.id = testcase.catid " . " AND testcase.id = results.tcid " .
-			" AND results.build = " . $buildID ;
+			" AND results.build_id = " . $buildID ;
 
 	//Get the total # of passed testcases for the project and build
 	$sql = $base_sql . " AND status = '" . $g_tc_status['passed'] . "'";
@@ -207,11 +207,11 @@ function getTestSuiteReport($tpID, $buildID = 'all')
   	
   	if ($buildID == 'all') 
   	{
-  	    $sql .= " ORDER BY build";
+  	    $sql .= " ORDER BY results.build_id";
   	} 
   	else 
   	{
-  			$sql .= " AND results.build='" . $buildID .	"' ";
+  			$sql .= " AND results.build_id='" . $buildID .	"' ";
   	}
   	// ------------------------------------------------------------------------------
   	
@@ -323,10 +323,12 @@ function getKeywordsReport($tpID, $buildID = 'all')
 					" WHERE project.id = " . $tpID . " AND project.id = component.projid" .
 					" AND component.id = category.compid" .
 					" AND category.id = testcase.catid and testcase.id = results.tcid" .
-					" AND (keywords LIKE '%,{$word},%' OR keywords LIKE '{$word},%') order by build";
+					" AND (keywords LIKE '%,{$word},%' OR keywords LIKE '{$word},%') " .
+					" ORDER BY results.build_id";
 			} else {
 				$sql = "SELECT tcid,status FROM  results,project,component,category,testcase" .
-					" WHERE project.id = " . $tpID . " AND results.build = '" . $buildID . "' AND project.id = component.projid" .
+					" WHERE project.id = " . $tpID . " AND results.build_id = " . $buildID . 
+					" AND project.id = component.projid" .
 					" AND component.id = category.compid" .
 					" AND category.id = testcase.catid AND testcase.id = results.tcid" .
 					" AND (keywords LIKE '%,{$word},%' OR keywords LIKE '{$word},%')";
@@ -412,10 +414,10 @@ function getOwnerReport($tpID)
 
 		//Code to grab the results of the test case execution
 		$sql = " SELECT tcid,status FROM  results,project,component,category,testcase " .
-				   " where project.id = " . $tpID . " and category.owner='" . $myrow[0] . 
-				   "' and project.id = component.projid and component.id = category.compid" .
-				   " and category.id = testcase.catid and testcase.id = results.tcid" .
-				   " order by build";
+				   " WHERE project.id = " . $tpID . " and category.owner='" . $myrow[0] . 
+				   "' AND project.id = component.projid and component.id = category.compid" .
+				   " AND category.id = testcase.catid AND testcase.id = results.tcid" .
+				   " ORDER BY build_id";
 		$totalResult = do_mysql_query($sql);
 
 		//Setting the results to an array.. Only taking the most recent results and displaying them
@@ -525,11 +527,12 @@ function getPriorityReport($tpID, $buildID = 'all')
 				" WHERE component.projid = " . $tpID . 
 				" AND category.id=" . $myrow[1] .
 				" AND component.id = category.compid AND category.id = testcase.catid" .
-				" AND testcase.id = results.tcid ORDER BY build";
+				" AND testcase.id = results.tcid ORDER BY build_id";
 		} else {
 			$sql = "SELECT tcid,status FROM results,project,component,category,testcase" .
 				" WHERE component.projid = " . $tpID .
-				" AND results.build='" . $buildID . "' AND category.id=" . $myrow[1] . 
+				" AND results.build_id=" . $buildID . 
+				" AND category.id=" . $myrow[1] . 
 				" AND component.id = category.compid AND category.id = testcase.catid" .
 				" AND testcase.id = results.tcid";
 		}
@@ -715,7 +718,7 @@ function getBuildMetricsCategory($tpID, $buildID)
 			          " AND category.id = testcase.catid " .
 			          " AND component.id =" . $myrow['comp_id'] .
 			          " AND testcase.id = results.tcid " .
-			          " AND results.build='" . $buildID . "' " .
+			          " AND results.build_id=" . $buildID . 
 			          " AND category.id=" . $categoryRow['cat_id'];
 			
 			
@@ -808,7 +811,7 @@ function getBuildMetricsComponent($tpID,$buildID)
 		            " AND category.id = testcase.catid " .
 		            " AND component.id =" . $myrow['comp_id'] . 
 		            " AND testcase.id = results.tcid " .
-		            " AND results.build=" . $buildID;
+		            " AND results.build_id=" . $buildID;
 		
 		$sql = $base_sql .  " and results.status='" . $g_tc_status['passed'] . "'";
 		$passedResult = do_mysql_query($sql);
@@ -998,7 +1001,7 @@ function reportBuildStatus($tpID, $buildID,$buildName)
               " AND component.id = category.compid " .
               " AND category.id = testcase.catid " .
               " AND testcase.id = results.tcid " .
-              " AND build = '" . $buildID . "' " ;
+              " AND results.build_id = " . $buildID;
               
               
   
@@ -1059,7 +1062,7 @@ function reportSuiteBuildStatus($tpID, $comID, $buildID,$buildName)
 	            " AND component.id = category.compid " .
 	            " AND category.id = testcase.catid " .
 	            " AND testcase.id = results.tcid " .
-	            " AND build = '" . $buildID . "'" .
+	            " AND results.build_id = " . $buildID .
 	            " AND component.id=" . $comID;
 	            
 	            
@@ -1196,7 +1199,7 @@ function getLastResult($idSuiteTC)
 	global $g_tc_status;
 	
 	$sql = "SELECT status FROM results WHERE tcid = " . $idSuiteTC . " AND status <> '" . 
-				$g_tc_status['not_run'] . "' ORDER BY build DESC LIMIT 1";
+				$g_tc_status['not_run'] . "' ORDER BY results.build_id DESC LIMIT 1";
 	$result = do_mysql_selectOne($sql);
 
 	// add not run result if any other result is not available

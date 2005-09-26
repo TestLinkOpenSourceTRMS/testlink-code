@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsByStatus.php,v 1.4 2005/09/19 06:53:21 franciscom Exp $ 
+* $Id: resultsByStatus.php,v 1.5 2005/09/26 16:50:51 franciscom Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -37,7 +37,7 @@ $arrBuilds = getBuilds($_SESSION['testPlanId']);
 //SQL to select the most current status of all the current test cases
 
 // 20050919 - fm - refactoring
-$sql = " SELECT tcid,status,build,runby,daterun,title,results.notes," .
+$sql = " SELECT tcid,status,build_id,runby,daterun,title,results.notes," .
        " MGTCOMP.name  AS comp_name, MGTCAT.name AS cat_name, COMP.id, CAT.id,mgttcid  " .
   		 " FROM results, project TP, component COMP, category CAT, " .
   		 " mgtcomponent MGTCOMP, mgtcategory MGTCAT, testcase TC " .
@@ -48,7 +48,7 @@ $sql = " SELECT tcid,status,build,runby,daterun,title,results.notes," .
 		   " AND MGTCOMP.id = COMP.mgtcompid " .
 		   " AND MGTCAT.id = CAT.mgtcatid " .
 		   " AND TP.id = " . $_SESSION['testPlanId'] . 
-		   " ORDER BY tcid,build DESC";
+		   " ORDER BY tcid,build_id DESC";
 
 $totalResult = do_mysql_query($sql,$db);
 
@@ -86,8 +86,8 @@ if (sizeof($tcIDArray))
 		$notes = $myrow[6]; //notes
 		
 		//Grab all of the bugs for the test case in the build
-		$sqlBugs = "SELECT bug FROM bugs WHERE tcid='" . $tcID . 
-				"' AND build='" . $build . "'";
+		$sqlBugs = " SELECT bug FROM bugs WHERE tcid=" . $tcID . 
+				       " AND build_id=" . $build;
 		$resultBugs = do_mysql_query($sqlBugs,$db);
 		$bugString = null;
 		while ($myrowBug = mysql_fetch_row($resultBugs))

@@ -1,12 +1,12 @@
 <?php
 
 ////////////////////////////////////////////////////////////////////////////////
-// @version $Id: planAddTC.php,v 1.3 2005/09/15 17:00:14 franciscom Exp $
+// @version $Id: planAddTC.php,v 1.4 2005/09/26 16:50:51 franciscom Exp $
 // File:     planAddTC.php
 // Author:   Chad Rosen
 // Purpose:  This page manages the importation of test cases into testlink.
 //
-//
+// 20050926 - fm - removed name from category and component insert
 // 20050807 - fm - removed deprecated: $_SESSION['project']
 //
 ////////////////////////////////////////////////////////////////////////////////
@@ -23,7 +23,6 @@ $idPlan =  $_SESSION['testPlanId'];
 $keyword = isset($_REQUEST['key']) ? strings_stripSlashes($_REQUEST['key']) : 'NONE';
 $compID=$_GET['data'];
 $catID=$_GET['data'];
-
 
 $smarty = new TLSmarty;
 $smarty->assign('testPlanName', $_SESSION['testPlanName']);
@@ -61,15 +60,17 @@ if(isset($_POST['addTC'])) //If the user submits the import form
 			$resultMGTCOMID = @do_mysql_query($sqlMGTCOMID); 
 			$rowMGTCOMID = mysql_fetch_array($resultMGTCOMID); 
 
+
 			//This next long set of code looks through the kenny side of the DB and checks to see if each of the
 			//Components,categories, or TCs already exist. If one of the top level items exists the function skips down to the next level and checks there. Finally if no TCs exist it does nothing.
 			
 			//Determining if the component already exists for the project being added to
 			//
 			// 20050807 - fm - $idPlan
-			$sqlCOMID = "SELECT mgtcompid,id from COMPONENT where mgtcompid=" . $rowMGTCOMID[0] . 
+			$sqlCOMID = "SELECT mgtcompid,id FROM component where mgtcompid=" . $rowMGTCOMID[0] . 
 			            " AND projid=" .  $idPlan;
 			$resultCOMID = @do_mysql_query($sqlCOMID); 
+			
 			
 			if(mysql_num_rows($resultCOMID) > 0) //Are there any existing COM?
 			{
@@ -113,6 +114,7 @@ if(isset($_POST['addTC'])) //If the user submits the import form
 						            mysql_escape_string($rowMGTAddTC[5]) . "','" . 
 						            mysql_escape_string($rowMGTAddTC[6]) . "')";
 						$resultAddTC = do_mysql_query($sqlAddTC);
+						
 					}
 					
 				}
@@ -125,9 +127,8 @@ if(isset($_POST['addTC'])) //If the user submits the import form
 					$rowMGTAddCAT = mysql_fetch_array($resultAddMgtCAT); 
 
 					//Add the category to the project
-					$sqlAddCAT = "INSERT INTO category(name,mgtcatid,compid,CATorder) VALUES ('" . 
-					             mysql_escape_string($rowMGTAddCAT[0]) . "','" . 
-					             mysql_escape_string($rowMGTCATID[0]) . "','" . 
+					$sqlAddCAT = " INSERT INTO category (mgtcatid,compid,CATorder) " .
+					             " VALUES ('" . mysql_escape_string($rowMGTCATID[0]) . "','" . 
 					             mysql_escape_string($rowResultCOMID[1]) . "','" . 
 					             mysql_escape_string($rowMGTAddCAT[1]) . "')";
 					$resultAddCAT = do_mysql_query($sqlAddCAT); 
@@ -168,8 +169,8 @@ if(isset($_POST['addTC'])) //If the user submits the import form
 				//Add the component to the project					
 				//
 				// 20050807 -fm - $idPlan
-				$sqlAddCOM = "INSERT INTO component (name,mgtcompid,projid) " . 
-				             " VALUES ('" . mysql_escape_string($rowMGTAddCOM[0]) . "','" . 
+				$sqlAddCOM = "INSERT INTO component (mgtcompid,projid) " . 
+				             " VALUES ('" . 
 				             mysql_escape_string($rowMGTCOMID[0]) . "','" . $idPlan . "')";
 				             
 				             

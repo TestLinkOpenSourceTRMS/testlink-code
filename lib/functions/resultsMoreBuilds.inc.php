@@ -1,6 +1,6 @@
 <?
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
- *$Id: resultsMoreBuilds.inc.php,v 1.26 2005/09/26 03:18:18 kevinlevy Exp $ 
+ *$Id: resultsMoreBuilds.inc.php,v 1.27 2005/09/26 16:50:51 franciscom Exp $ 
  * 
  * @author Kevin Levy
  *
@@ -238,9 +238,10 @@ function createResultsForCategory($categoryId, $keyword, $commaDelimitedBuilds, 
       $tcIDList .= $tcID;
     }
   $build_list = str_replace(",","','",mysql_escape_string($commaDelimitedBuilds));
-  $sql = " SELECT results.build, results.runby, results.daterun, results.status, results.bugs, " .
-           " results.tcid, results.notes FROM results WHERE tcid IN (" . $tcIDList . ")".
-    " AND (build IN ('" . $build_list . "')) order by build DESC;";
+  $sql = " SELECT results.build_id, results.runby, results.daterun, results.status, results.bugs, " .
+         " results.tcid, results.notes " .
+         " FROM results WHERE tcid IN (" . $tcIDList . ")".
+         " AND (results.build_id IN ('" . $build_list . "')) ORDER BY results.build_id DESC;";
 
   // debug block - kl 09252005
   // print "<BR> sql = $sql <BR>";

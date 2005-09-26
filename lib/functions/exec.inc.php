@@ -4,13 +4,14 @@
  *
  * Filename $RCSfile: exec.inc.php,v $
  *
- * @version $Revision: 1.12 $
- * @modified $Date: 2005/09/21 10:32:00 $ $Author: franciscom $
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2005/09/26 16:50:51 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
  * Functions for execution feature (add test results) 
  *
+ * 20050926 - fm - db changes build -> build_id
  * 20050919 - fm - editTestResults() refactoring
  * 20050911 - fm - editTestResults() refactoring
  * 20050905 - fm - reduce global coupling
@@ -159,9 +160,16 @@ function editTestResults($login_name, $tcData, $buildID)
 		}
 
 		// Does exist a result for this (tcid, build) ?
+	  /*
 		$sql = " SELECT tcid, build, notes, status FROM results " .
 		       " WHERE tcid=" . $tcID .  
 		       " AND build=" . $buildID;
+	  */
+	  $sql = " SELECT tcid, build_id, notes, status FROM results " .
+		       " WHERE tcid=" . $tcID .  
+		       " AND build_id=" . $buildID;
+
+	  
 		$result = do_mysql_query($sql); 
 		$num = mysql_num_rows($result); 
 
@@ -175,7 +183,7 @@ function editTestResults($login_name, $tcData, $buildID)
 				$sql = " UPDATE results " .
 				       " SET runby ='" . $login_name . "', " . "status ='" .  $tcStatus . "', " .
 				       " notes='" . $tcNotes . "' " .
-						   " WHERE tcid=" . $tcID . " AND build=" . $buildID;
+						   " WHERE tcid=" . $tcID . " AND build_id=" . $buildID;
 				$result = do_mysql_query($sql); 
 			}
     }
@@ -184,7 +192,7 @@ function editTestResults($login_name, $tcData, $buildID)
     	// Check to know if we need to insert a new result
 			if( !($tcNotes == "" && $tcStatus == $g_tc_status['not_run']) )
 			{ 
-				$sql = " INSERT INTO results (build,daterun,status,tcid,notes,runby) " .
+				$sql = " INSERT INTO results (build_id,daterun,status,tcid,notes,runby) " .
 				       " VALUES (" . $buildID . ",CURRENT_DATE(),'" . $tcStatus . 
 				       "'," . $tcID . ",'" . $tcNotes . "','" . $login_name . "')";
 				$result = do_mysql_query($sql);
@@ -195,7 +203,7 @@ function editTestResults($login_name, $tcData, $buildID)
 
     // -------------------------------------------------------------------------
     // Update Bug information (delete+insert) 
-	  $sqlDelete = "DELETE FROM bugs WHERE tcid=" . $tcID . " and build=" . $buildID;
+	  $sqlDelete = "DELETE FROM bugs WHERE tcid=" . $tcID . " and build_id=" . $buildID;
 	  $result = do_mysql_query($sqlDelete);
 
 	  $bugArray = strlen($tcBugs) ?  explode(",",$tcBugs) : null;
@@ -250,17 +258,31 @@ function createTestInput($resultTC,$buildID,$tpID)
 		}
 			
 		//This query grabs the results from the build passed in
-		$sql = " SELECT notes, status FROM results WHERE tcid='" . $myrow['tcid']. "' " .
+		/* $sql = " SELECT notes, status FROM results WHERE tcid='" . $myrow['tcid']. "' " .
 		       " AND build='" . $buildID . "'";
+    */
+    // 20050926 - fm
+    $sql = " SELECT notes, status FROM results " .
+           " WHERE tcid=" . $myrow['tcid'] .
+		       " AND build_id=" . $buildID;
+    
 		$resultStatus = do_mysql_query($sql);
 		
 		$dataStatus = mysql_fetch_row($resultStatus);
 
 		//This query grabs the most recent result
+		/*
 		$sqlRecentResult = " SELECT build.name AS build_name,status,runby,daterun " .
 		                   " FROM results,build " .
 				               " WHERE tcid=" . $myrow['tcid'] . " AND status != '" . $g_tc_status['not_run'] . "' " .
 				               " AND results.build = build.id " .
+				               " AND projid = " . $tpID ." ORDER by build.id " .	"DESC limit 1";
+				            
+		*/
+		$sqlRecentResult = " SELECT build.name AS build_name,status,runby,daterun " .
+		                   " FROM results,build " .
+				               " WHERE tcid=" . $myrow['tcid'] . " AND status != '" . $g_tc_status['not_run'] . "' " .
+				               " AND results.build_id = build.id " .
 				               " AND projid = " . $tpID ." ORDER by build.id " .	"DESC limit 1";
 				               
 		$dataRecentResult = do_mysql_query($sqlRecentResult);

@@ -1,10 +1,7 @@
-ALTER TABLE bugs MODIFY `tcid` int(10) unsigned NOT NULL default '0';
-ALTER TABLE bugs MODIFY `bug` int(10) unsigned NOT NULL default '0';
+/* Migration from 1.0.4 to 1.6 POST RC1 - 20050925 - fm*/
+ALTER TABLE bugs MODIFY tcid int(10) unsigned NOT NULL default '0';
+ALTER TABLE bugs MODIFY bug int(10) unsigned NOT NULL default '0';
 
-/*
-ALTER TABLE bugs ADD INDEX `tcid` (`tcid`);
-ALTER TABLE bugs ADD INDEX `build` (`build`);
-ALTER TABLE bugs ADD INDEX `bug` (`bug`);
-*/
+ALTER TABLE bugs ADD COLUMN build_id int(10) NOT NULL default '0';
 
-ALTER TABLE `bugs` COMMENT = 'Updated to TL 1.6';
+ALTER TABLE bugs COMMENT = 'Updated to TL 1.6 POST RC1';

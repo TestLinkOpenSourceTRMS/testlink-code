@@ -1,10 +1,15 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
-# $Id: testlink_create_tables.sql,v 1.5 2005/09/12 06:19:07 franciscom Exp $
+# $Id: testlink_create_tables.sql,v 1.6 2005/09/26 06:47:03 franciscom Exp $
 # SQL script - create db tables for TL 1.6.0  
 #
 # default rights & admin account are created via testlink_create_default_data.sql
 #
 # Rev :
+#       20050925 - fm
+#       build: removed build.build
+#       category: removed category.name
+#       component: removed component.name
+#       bugs: build -> build_id
 #
 #       20050808 - fm
 #       every occurence of active field converted to boolean
@@ -32,11 +37,11 @@ CREATE TABLE `db_version` (
 DROP TABLE IF EXISTS `bugs`;
 CREATE TABLE `bugs` (
   `tcid` int(10) unsigned NOT NULL default '0',
-  `build` int(10) NOT NULL default '0',
+  `build_id` int(10) NOT NULL default '0',
   `bug` int(10) unsigned NOT NULL default '0',
-  PRIMARY KEY  (`tcid`,`build`,`bug`),
+  PRIMARY KEY  (`tcid`,`build_id`,`bug`),
   KEY `tcid` (`tcid`),
-  KEY `build` (`build`),
+  KEY `build_id` (`build_id`),
   KEY `bug` (`bug`)
 ) TYPE=MyISAM COMMENT='Bugs filed for each result';
 
@@ -49,7 +54,6 @@ CREATE TABLE `bugs` (
 DROP TABLE IF EXISTS `build`;
 CREATE TABLE `build` (
   `id` int(10) unsigned NOT NULL auto_increment,
-  `build` int(10) unsigned NOT NULL default '0',
   `projid` int(10) unsigned NOT NULL default '0',
   `name` varchar(100) NOT NULL default 'undefined',
   `note` text,
@@ -66,7 +70,6 @@ CREATE TABLE `build` (
 DROP TABLE IF EXISTS `category`;
 CREATE TABLE `category` (
   `id` int(10) unsigned NOT NULL auto_increment,
-  `name` varchar(100) NOT NULL default 'undefined',
   `compid` int(10) unsigned default NULL,
   `importance` enum('L','M','H') NOT NULL default 'M',
   `risk` enum('1','2','3') NOT NULL default '2',
@@ -87,7 +90,6 @@ CREATE TABLE `category` (
 DROP TABLE IF EXISTS `component`;
 CREATE TABLE `component` (
   `id` int(10) unsigned NOT NULL auto_increment,
-  `name` varchar(100) NOT NULL default 'undefined',
   `projid` int(10) unsigned default NULL,
   `mgtcompid` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id`),
@@ -333,14 +335,14 @@ INDEX ( `id_req` , `id_tc` )
 
 DROP TABLE IF EXISTS `results`;
 CREATE TABLE `results` (
-  `build` int(10) NOT NULL default '0',
+  `buildid` int(10) NOT NULL default '0',
   `runby` varchar(30) default NULL,
   `daterun` date default NULL,
   `status` char(1) default NULL,
   `bugs` varchar(100) default NULL,
   `tcid` int(10) unsigned NOT NULL default '0',
   `notes` text,
-  PRIMARY KEY  (`tcid`,`build`),
+  PRIMARY KEY  (`tcid`,`build_id`),
   KEY `tcid` (`tcid`),
   KEY `status` (`status`)
 ) TYPE=MyISAM;

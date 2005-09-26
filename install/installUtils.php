@@ -1,8 +1,9 @@
 <?php
 /* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: installUtils.php,v 1.5 2005/09/12 06:19:07 franciscom Exp $ 
+$Id: installUtils.php,v 1.6 2005/09/26 06:47:02 franciscom Exp $ 
 
+20050925 - fm - changes to getDirFiles()
 20050910 - fm - refactoring
 20050830 - fm - added check_php_settings()
 
@@ -15,6 +16,7 @@ $Id: installUtils.php,v 1.5 2005/09/12 06:19:07 franciscom Exp $
 // From PHP Manual - User's Notes
 // +----------------------------------------------------------------------+
 //
+// 20050925 - added sort()
 function getDirFiles($dirPath, $add_dirpath=0)
 {
 $my_dir_path = '';	
@@ -37,6 +39,10 @@ if ( $add_dirpath )
          closedir($handle);
      }  
      
+     // 20050925 - fm
+     sort($filesArr);
+     reset($filesArr);
+     
      return $filesArr; 
 }
 // +----------------------------------------------------------------------+
@@ -53,7 +59,7 @@ if ( $add_dirpath )
 // | Authors: João Prado Maia <jpm@mysql.com>                             |
 // +----------------------------------------------------------------------+
 //
-// @(#) $Id: installUtils.php,v 1.5 2005/09/12 06:19:07 franciscom Exp $
+// @(#) $Id: installUtils.php,v 1.6 2005/09/26 06:47:02 franciscom Exp $
 //
 
 

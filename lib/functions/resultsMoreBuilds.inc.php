@@ -1,6 +1,6 @@
 <?
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
- *$Id: resultsMoreBuilds.inc.php,v 1.25 2005/09/26 00:55:50 kevinlevy Exp $ 
+ *$Id: resultsMoreBuilds.inc.php,v 1.26 2005/09/26 03:18:18 kevinlevy Exp $ 
  * 
  * @author Kevin Levy
  *
@@ -44,7 +44,8 @@ function createResultsForTestPlan($testPlanName, $testPlanID, $buildsArray, $key
   $totalLastResultBlockedForTestPlan = 0;
   $totalUnexecutedTestCases = 0;
   
-  $arrBuilds_build = getBuilds_build($testPlanID);
+  // kl 09252005 - i don't think i'm doing this correctly, commenting back out
+  //  $arrBuilds_build = getBuilds_build($testPlanID);
   $arrBuilds = getBuilds($testPlanID);
   $commaDelimitedBuilds = null;
   $buildParams = null;
@@ -55,7 +56,7 @@ function createResultsForTestPlan($testPlanName, $testPlanID, $buildsArray, $key
 	  $commaDelimitedBuilds .= ",";
 	  $buildParams .= ",";
 	}
-      $commaDelimitedBuilds .= $arrBuilds_build[$buildsArray[$i]];
+      $commaDelimitedBuilds .= $buildsArray[$i];
       $buildParams .= $arrBuilds[$buildsArray[$i]];
     }
 
@@ -196,9 +197,6 @@ function createResultsForComponent($componentId, $owner, $keyword, $commaDelimit
   return array($summaryOfComponentArray, $componentDataToPrint, $testCasesReturnedByQuery);
 }
 
-
-
-
 function createResultsForCategory($categoryId, $keyword, $commaDelimitedBuilds, $lastResultToQueryFor,$myrow,$arrBuilds)
 {
   global $g_tc_status;
@@ -217,7 +215,6 @@ function createResultsForCategory($categoryId, $keyword, $commaDelimitedBuilds, 
   $categoryRowArray = array($myrow[0],$myrow[1],$myrow[2],$myrow[3],$myrow[4],$myrow[5],$myrow[6],$myrow[7]);
   $categoryName = $categoryRowArray[1];
   $owner = $categoryRowArray[5];
-
   
   $categoryHeader = lang_get('category_header') . htmlspecialchars($categoryName) . " " . lang_get('owner_header') . htmlspecialchars($owner);
   $sql = " SELECT testcase.id, testcase.title, testcase.summary, testcase.steps, " .
@@ -244,7 +241,12 @@ function createResultsForCategory($categoryId, $keyword, $commaDelimitedBuilds, 
   $sql = " SELECT results.build, results.runby, results.daterun, results.status, results.bugs, " .
            " results.tcid, results.notes FROM results WHERE tcid IN (" . $tcIDList . ")".
     " AND (build IN ('" . $build_list . "')) order by build DESC;";
+
+  // debug block - kl 09252005
+  // print "<BR> sql = $sql <BR>";
+
   $sqlBuildResult = do_mysql_query($sql);
+
   $tcBuildInfo = null;
   //I need the num results so I can do the check below on not run test cases
   while($myrowTC = mysql_fetch_row($sqlBuildResult))
@@ -263,7 +265,9 @@ function createResultsForCategory($categoryId, $keyword, $commaDelimitedBuilds, 
       $lastResult = isset($tcStatusInfo[$tcID]) ? $tcStatusInfo[$tcID] : 'n';
       $results = isset($tcBuildInfo[$tcID]) ? $tcBuildInfo[$tcID] : null;
 
-      
+      // kl - 09252005 - I don't think $results is being populated correctly
+      // 
+
       $testCaseData = createResultsForTestCase($myrow[0], $myrow,$arrBuilds,$results,$lastResult);
       $testCaseInfoToPrint = $testCaseData[0];
       $summaryOfTestCaseInfo = $testCaseData[1];
@@ -395,9 +399,7 @@ function getTCClassNameByStatus($status)
  * @return $returnData table of test case results
  */
 function createTableOfTestCaseResults($arrayOfResults,$arrBuilds,&$returnArray){
-  
-  
-  $returnData = "<table class=\"simple white\">" .
+    $returnData = "<table class=\"simple white\">" .
     "<tr class=\"black\"><th>" . lang_get('build') . "</th><th>" . lang_get('runby') . "</th><th>" . lang_get('daterun') . "</th>" .
     "<th>" . lang_get('status') . "</th><th>" . lang_get('bugs') . "</th><th>" . lang_get('notes') . "</th></tr>";
 
@@ -405,9 +407,12 @@ function createTableOfTestCaseResults($arrayOfResults,$arrBuilds,&$returnArray){
   // notify user of this
   if (!is_array($arrayOfResults))
     {
+      // debug block - kl - 09252005
+      //      print "createTableOfTestCaseResults - arrayOfResults is empty <BR>";
       $returnData .= "<tr class=\"black\"><td>" . lang_get('case_not_run_warning') . "</td><td></td><td>" .
 	"</td><td></td><td></td><td></td></tr></table>";
-      // exit method
+      // update return array and exit method
+      $returnArray = array(0,0,0,0);
       return $returnData;
     }
   
@@ -415,18 +420,24 @@ function createTableOfTestCaseResults($arrayOfResults,$arrBuilds,&$returnArray){
   $numberOfPasses = 0;
   $numberOfFailures = 0;
   $numberOfBlocked = 0;
+  
+  // debug block - kl - 09252005
+  //$printThis2 = key($arrayOfResults);
+  //print "<BR> key of arrayOfResults = $printThis2 <BR>";
 
   // iterate accross arrayOfResults
   while ($buildTested = key($arrayOfResults))
     {
       $results_status = $arrayOfResults[$buildTested][3];
+      // debug block -kl -09252005
+      // print "<BR>result_status = $results_status<BR>";
       $className = getTCClassNameByStatus($results_status);
-      
+	
       switch($results_status)
 	{
 	case $g_tc_status['passed']:
 	  $numberOfPasses++;
-	  break;
+	    break;
 	case $g_tc_status['failed']:
 	  $numberOfFailures++;
 	  break;
@@ -445,10 +456,17 @@ function createTableOfTestCaseResults($arrayOfResults,$arrBuilds,&$returnArray){
 	"</td></tr>";
       $returnData .= $data;
       next($arrayOfResults);
-    }
+      
+    } // end while block
+  // kl - 09252005 debug block
+  // $printThis = $g_tc_status['passed'];
+  // print "<BR> g_tc_status = $printThis <BR>";
+  //  print "<BR> passes = $numberOfPasses, failures = $numberOfFailures, blocked = $numberOfBlocked<BR>";
+
   $returnArray = array($numberOfPasses+$numberOfFailures+$numberOfBlocked,$numberOfPasses,$numberOfFailures,
-                       $numberOfBlocked);
+		       $numberOfBlocked);
   $returnData .= "</table>";
+  
   return $returnData;
 }
 

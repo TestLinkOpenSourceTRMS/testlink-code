@@ -1,6 +1,6 @@
 <?
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
- *$Id: resultsMoreBuilds.inc.php,v 1.24 2005/09/25 05:05:13 kevinlevy Exp $ 
+ *$Id: resultsMoreBuilds.inc.php,v 1.25 2005/09/26 00:55:50 kevinlevy Exp $ 
  * 
  * @author Kevin Levy
  *
@@ -163,7 +163,6 @@ function createResultsForComponent($componentId, $owner, $keyword, $commaDelimit
       if ($categoryData[2]){
 	$testCasesReturnedByQuery = $categoryData[2];
       }
-
       // only print category information if test cases are part of the query
       if ($categorySummary[0] != 0)
 	{
@@ -288,29 +287,26 @@ function createResultsForCategory($categoryId, $keyword, $commaDelimitedBuilds, 
        */
 
       // additionally track if category contains any test cases returned by query
-
         
-      if ($lastResultToQueryFor == lang_get('resultsMoreBuilds_query_form_last_status_any')){
+      if ($lastResultToQueryFor == lang_get('last_status_any')){
 	$testCaseTables = $testCaseTables . $testCaseInfoToPrint;
-
 	$testCasesReturnedByQuery = true;
       }
-      elseif (($lastResult == $g_tc_status['passed']) && ($lastResultToQueryFor == lang_get('resultsMoreBuilds_query_form_last_status_passed'))){
+      elseif (($lastResult == $g_tc_status['passed']) && ($lastResultToQueryFor == lang_get('last_status_passed'))){
 	$testCaseTables = $testCaseTables . $testCaseInfoToPrint;
-
 	$testCasesReturnedByQuery = true;
       }
-      elseif (($lastResult == $g_tc_status['failed']) && ($lastResultToQueryFor == lang_get('resultsMoreBuilds_query_form_last_status_failed'))){
+      elseif (($lastResult == $g_tc_status['failed']) && ($lastResultToQueryFor == lang_get('last_status_failed'))){
 
 	$testCaseTables = $testCaseTables . $testCaseInfoToPrint;
 	$testCasesReturnedByQuery = true;
       }
-      elseif (($lastResult == $g_tc_status['blocked']) && ($lastResultToQueryFor == lang_get('resultsMoreBuilds_query_form_last_status_blocked'))){
+      elseif (($lastResult == $g_tc_status['blocked']) && ($lastResultToQueryFor == lang_get('last_status_blocked'))){
 
 	$testCaseTables = $testCaseTables . $testCaseInfoToPrint;
 	$testCasesReturnedByQuery = true;
       }
-      elseif (($lastResult == $g_tc_status['not_run']) && ($lastResultToQueryFor == lang_get('resultsMoreBuilds_query_form_last_status_not_run'))){
+      elseif (($lastResult == $g_tc_status['not_run']) && ($lastResultToQueryFor == lang_get('last_status_not_run'))){
 
 	$testCaseTables = $testCaseTables . $testCaseInfoToPrint;
 	$testCasesReturnedByQuery = true;
@@ -330,6 +326,7 @@ function createResultsForCategory($categoryId, $keyword, $commaDelimitedBuilds, 
 
   // only display an option to expand the category info if there is any test cases which match the query parameters
   $categoryDataToPrint = null;
+
   if ($testCasesReturnedByQuery)
     {
     $categoryDataToPrint = "<h2 onClick=\"plusMinus_onClick(this);\"><img class=\"plus\" src=\"icons/plus.gif\">" . 

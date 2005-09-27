@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: installNewDB.php,v 1.10 2005/09/27 06:43:49 franciscom Exp $ */
+/* $Id: installNewDB.php,v 1.11 2005/09/27 16:48:33 franciscom Exp $ */
 /*
 Parts of this file has been taken from:
 Etomite Content Management System
@@ -118,16 +118,10 @@ $errors = 0;
 
 // get db info from session
 $db_server = $_SESSION['databasehost'];
-
-// 20050723 - fm
 $db_admin_name = $_SESSION['databaseloginname'];
 $db_admin_pass = $_SESSION['databaseloginpassword'];
-
-
-// 20050723 - fm
 $tl_db_login = $_SESSION['tl_loginname'];
 $tl_db_passwd = $_SESSION['tl_loginpassword'];
-
 $db = $_SESSION['databasename'];
 
 
@@ -261,6 +255,25 @@ if ( $inst_type == "upgrade")
     {
       // We are upgrading from a pre 1.6 version
   	  $sql_upd_dir = 'sql/alter_tables/1.5_to_1.6/';
+    }
+    else
+    {
+      // 20050927 - fm
+      // try to know what db version is installed
+      $sql = "SELECT * FROM db_version ORDER BY upgrade_date DESC LIMIT 1";
+    
+      $res = mysql_query($sql);  
+      if (!$res)
+      {
+       echo "MySQL ERROR:" . mysql_error();
+       exit(); 
+      }
+      $myrow = mysql_fetch_assoc($res);
+      
+      if ( strcmp(trim($myrow['version']), '1.6 BETA 1') == 0 )
+      {
+      	$sql_upd_dir = 'sql/alter_tables/1.6/';
+      }
     }
   }
 

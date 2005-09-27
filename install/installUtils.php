@@ -1,7 +1,7 @@
 <?php
 /* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: installUtils.php,v 1.6 2005/09/26 06:47:02 franciscom Exp $ 
+$Id: installUtils.php,v 1.7 2005/09/27 16:55:45 franciscom Exp $ 
 
 20050925 - fm - changes to getDirFiles()
 20050910 - fm - refactoring
@@ -59,7 +59,7 @@ if ( $add_dirpath )
 // | Authors: João Prado Maia <jpm@mysql.com>                             |
 // +----------------------------------------------------------------------+
 //
-// @(#) $Id: installUtils.php,v 1.6 2005/09/26 06:47:02 franciscom Exp $
+// @(#) $Id: installUtils.php,v 1.7 2005/09/27 16:55:45 franciscom Exp $
 //
 
 
@@ -302,7 +302,7 @@ $os_id = strtoupper(substr(PHP_OS, 0, 3));
 if( strcmp('WIN',$os_id) == 0 )
 {
   $final_msg .= "<p><center><span class='notok'>" . 
-  	            "Warning!: You are using a M$ Operating System, be careful to authetication problems <br>" .
+  	            "Warning!: You are using a M$ Operating System, be careful to authentication problems <br>" .
   	            "          between PHP 4 and the new MySQL 4.1.x passwords" . 
   	            "</span></center><p>";
 }

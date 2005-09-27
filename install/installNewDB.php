@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: installNewDB.php,v 1.11 2005/09/27 16:48:33 franciscom Exp $ */
+/* $Id: installNewDB.php,v 1.12 2005/09/27 16:55:45 franciscom Exp $ */
 /*
 Parts of this file has been taken from:
 Etomite Content Management System
@@ -45,9 +45,6 @@ $sql_update_data   = array();
 
 $sql_create_schema[1] = 'sql/testlink_create_tables.sql';
 $sql_default_data [1] = 'sql/testlink_create_default_data.sql';
-
-//$sql_upd_dir = 'sql/alter_tables/1.0.4_to_1.6/';
-
 
 
 // -------------------------------------------------------------------
@@ -273,6 +270,12 @@ if ( $inst_type == "upgrade")
       if ( strcmp(trim($myrow['version']), '1.6 BETA 1') == 0 )
       {
       	$sql_upd_dir = 'sql/alter_tables/1.6/';
+      }
+      else
+      {
+       echo "I don't know how upgrade from version " . trim($myrow['version']);
+       echo "<br>bye!";
+       exit(); 
       }
     }
   }

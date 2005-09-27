@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: installNewDB.php,v 1.9 2005/09/12 06:19:07 franciscom Exp $ */
+/* $Id: installNewDB.php,v 1.10 2005/09/27 06:43:49 franciscom Exp $ */
 /*
 Parts of this file has been taken from:
 Etomite Content Management System
@@ -24,6 +24,9 @@ moved mysql version check here
 require_once("installUtils.php");
 
 session_start();
+
+// 20050926 - fm
+set_time_limit(180);
 
 $inst_type = $_SESSION['installationType'];
 

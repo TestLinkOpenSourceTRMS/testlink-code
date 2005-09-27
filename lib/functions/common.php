@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.16 $
- * @modified $Date: 2005/09/17 07:22:18 $
+ * @version $Revision: 1.17 $
+ * @modified $Date: 2005/09/27 06:44:49 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -110,14 +110,16 @@ function setSessionProduct($productInfo)
 	}
 }
 
+
+// 20050926 - fm
 function setSessionTestPlan($tpInfo)
 {
 	if ($tpInfo)
 	{
-		$_SESSION['testPlanId'] = $tpInfo[0];
-		$_SESSION['testPlanName'] = $tpInfo[2];
+		$_SESSION['testPlanId'] = $tpInfo['id'];
+		$_SESSION['testPlanName'] = $tpInfo['name'];
 		
-		tLog("Test Plan was adjusted to '" . $tpInfo[1] . "' ID(" . $tpInfo[0] . ')', 'INFO');
+		tLog("Test Plan was adjusted to '" . $tpInfo['name'] . "' ID(" . $tpInfo['id'] . ')', 'INFO');
 	}
 	else
 	{
@@ -247,7 +249,6 @@ function checkSessionValid()
 function getUserTestPlan($userID,$tpID,$bActive = null)
 {
 	$tpInfo = getUserTestPlans($userID,$tpID,$bActive);
-	
 	return $tpInfo ? $tpInfo[0] : null;
 }
 
@@ -735,18 +736,36 @@ function updateSessionTp_Prod($hash_user_sel)
     { 
       $redo = 0;
     }
-    setSessionTestPlan(getUserTestPlan($_SESSION['userID'],$tpID));
+    setSessionTestPlan($tpData);
   }
   
   if ( $redo )
   {
+ 	
+  	// 20050926 - fm
+  	$tp_father = get_tp_father($tpID);
+  	
     // Houston we have a problem
     $tpInfo = getUserProdTestPlans($_SESSION['userID'],$prodID,true);
 		
-		// echo "<pre>tpInfo"; print_r($tpInfo); echo "</pre>";
 		if ($tpInfo)
 		{
-			$tpData = $tpInfo[0];
+		  if ($tp_father)
+		  {
+				$tpData = $tpInfo[0];
+			}
+			else
+			{
+				// TL 1.5.1 compatibility
+		    foreach (	$tpInfo as $key => $elem )
+		    {
+		      if ($elem['id'] == $tpID)
+		      {
+		       $tpData = $tpInfo[$key];
+		       break;
+		      }
+		    }	
+			}	
 		}
   }
   setSessionTestPlan($tpData);

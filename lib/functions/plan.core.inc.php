@@ -3,8 +3,8 @@
  * TestLink Open Source Project - @link http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: plan.core.inc.php,v $
- * @version $Revision: 1.6 $
- * @modified $Date: 2005/09/15 17:00:14 $ $Author: franciscom $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2005/09/27 06:44:49 $ $Author: franciscom $
  *  
  * 
  * @author 	Martin Havlat
@@ -13,6 +13,7 @@
  * @todo common.php includes related function getUserTestPlan (move it here)
  *
  *
+ * @author 20050926 - fm - get_tp_father() 
  * @author 20050904 - fm 
  * TL 1.5.1 compatibility, get also Test Plans without product id.
  *
@@ -253,6 +254,23 @@ function check_tp_father($prodID,$tpID)
 	return($ret);
 }
 // ------------------------------------------------------------
+
+// ------------------------------------------------------------
+// 20050926 - fm
+// 
+function get_tp_father($tpID)
+{
+  $ret = 0;
+	$sql = " SELECT id, name, notes , active, prodid " .
+	       " FROM project TP" . 
+	       " WHERE TP.id=" . $tpID;
+	       
+	       
+	$rs = selectData($sql);
+	return($rs[0]['prodid']);
+}
+// ------------------------------------------------------------
+
 
 
 

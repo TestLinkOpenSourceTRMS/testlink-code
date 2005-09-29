@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.17 $
- * @modified $Date: 2005/09/27 06:44:49 $
+ * @version $Revision: 1.18 $
+ * @modified $Date: 2005/09/29 06:14:34 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -39,7 +39,7 @@ require_once("getRights.php");
 require_once("product.core.inc.php");
 
 // 20050917 - fm - BUG ID 0000120: Impossible to edit product
-require_once("product.core.inc.php");
+require_once("plan.core.inc.php");
 require_once("logging.inc.php");
 require_once("lang_api.php");
 

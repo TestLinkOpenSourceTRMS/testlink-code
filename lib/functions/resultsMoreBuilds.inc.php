@@ -1,6 +1,6 @@
 <?
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
- *$Id: resultsMoreBuilds.inc.php,v 1.30 2005/10/01 18:56:30 kevinlevy Exp $ 
+ *$Id: resultsMoreBuilds.inc.php,v 1.31 2005/10/01 23:54:53 kevinlevy Exp $ 
  * 
  * @author Kevin Levy
  *
@@ -10,22 +10,31 @@
 require_once('../../config.inc.php');
 require_once("common.php");
 
-function createSummaryOfTestPlanTable($totalCases, $totalLastResultPasses, $totalLastResultFailures,$totalLastResultBlocked,$totalUnexecuted){
-  $summaryOfTestPlanTable = "<table class=\"simple\" style=\"width: 100%; " .
+/**
+ * Used to create html table that is used to display summary of data for test plan, component, category
+ * @param string totalCases
+ * @param string totalLastResultPasses
+ * @param string totalLastResultFailures
+ * @param string totalLastResultBlocked
+ * @param string totalUnexecuted
+ * @return string summaryOfTestPlanTable - html table 
+ */
+function createSummaryTable($totalCases, $passedCases, $failedCases, $blockedCases, $unexecutedCases){
+  $summaryTable = "<table class=\"simple\" style=\"width: 100%; " .
     "text-align: center; margin-left: 0px;\"><tr><th>" . lang_get('number_cases') . "</td>" .
-    "<th>" . lang_get('number_passed') . "</td><th>" . lang_get('number_failed') . "</td><th>" . lang_get('number_blocked') . "</td><th>" . lang_get('number_not_run') . "</td></tr>";
-  $summaryOfTestPlanTable = $summaryOfTestPlanTable . "<tr><td>" . $totalCases . 
-                              "</td><td>" . $totalLastResultPasses . "</td><td>" . 
-                              $totalLastResultFailures . "</td><td>" . 
-                              $totalLastResultBlocked . "</td><td>" . 
-    $totalUnexecuted . "</td></tr></table>";
-
-  return $summaryOfTestPlanTable;
+    "<th>" . lang_get('number_passed') . "</td><th>" . lang_get('number_failed') . "</td><th>" 
+    . lang_get('number_blocked') . "</td><th>" . lang_get('number_not_run') . "</td></tr>";
+  $summaryTable = $summaryTable . "<tr><td>" . $totalCases  . "</td><td>" . $passedCases . "</td><td>" . 
+    $failedCases . "</td><td>" . $blockedCases . "</td><td>" . $unexecutedCases . "</td></tr></table>";
+  return $summaryTable;
 }
 
-
 /**
- *
+ * @param string testPlanName
+ * @param string build_name_set -- comma delimited list of builds selected by user
+ * @param string keyword 
+ * @param string owner
+ * @param string lastStatus 
  * @return string testPlanReportHeader - html table which contains query parameters specified by user
  */
 function createTestPlanReportHeader($testPlanName, $build_name_set, $keyword, $owner, $lastStatus){
@@ -38,9 +47,7 @@ function createTestPlanReportHeader($testPlanName, $build_name_set, $keyword, $o
     htmlspecialchars($build_name_set) . "</td><td>".
     htmlspecialchars($keyword) . "</td><td>" . htmlspecialchars($owner) . 
     "</td><td>".htmlspecialchars($lastStatus)."</td></tr></table>";
-
   return $testPlanReportHeader;
-
 }
 
 
@@ -136,11 +143,7 @@ function createResultsForTestPlan($testPlanName, $testPlanID, $buildsArray, $key
 	}
     }
 
-  $summaryOfTestPlanTable = createSummaryOfTestPlanTable($totalCasesForTestPlan, $totalLastResultPassesForTestPlan, $totalLastResultFailuresForTestPlan,$totalLastResultBlockedForTestPlan,$totalUnexecutedTestCases);
-
-  // The $linksToAllComponents functionality does not work because something keeps screwing up
-  // my href values and prepending the root testlink url to the string
-  //  return  $testPlanReportHeader . $summaryOfTestPlanTable . $linksToAllComponents .$aggregateComponentDataToPrint;
+  $summaryOfTestPlanTable = createSummaryTable($totalCasesForTestPlan, $totalLastResultPassesForTestPlan, $totalLastResultFailuresForTestPlan,$totalLastResultBlockedForTestPlan,$totalUnexecutedTestCases);
 
   if (!$aggregateComponentDataToPrint)
     {
@@ -149,7 +152,7 @@ function createResultsForTestPlan($testPlanName, $testPlanID, $buildsArray, $key
   return array($testPlanReportHeader, $summaryOfTestPlanTable, $aggregateComponentDataToPrint);
 }
 
-function createResultsForComponent($componentId, $owner, $keyword, $commaDelimitedBuilds, $lastResult,$myrow,$arrAllBuilds)
+function createResultsForComponent($componentId, $owner, $keyword, $build_id_set, $lastResult,$myrow,$arrAllBuilds)
 {
   $totalCasesForComponent = 0;
   $totalLastResultPassesForComponent = 0;
@@ -163,14 +166,12 @@ function createResultsForComponent($componentId, $owner, $keyword, $commaDelimit
   $componentName = $componentRowArray[1];
   $componentHeader = "Component :"  . $componentName ;
   
-  // @toDo I'm not sure if I should use this LIKE in my sql statement
-    $sql = " SELECT CAT.id, MGTCAT.name, CAT.compid, CAT.importance, CAT.risk, " .
+  $sql = " SELECT CAT.id, MGTCAT.name, CAT.compid, CAT.importance, CAT.risk, " .
            " CAT.owner, CAT.mgtcatid, CAT.CATorder" .
            " FROM category CAT, mgtcategory MGTCAT " .
            " WHERE MGTCAT.id = CAT.mgtcatid " .
            " AND CAT.compid=" . $componentId;
-  
-    
+      
   if (strlen($owner))
   {
     $sql .= " AND CAT.owner = '" . mysql_escape_string($owner) . "'";
@@ -178,11 +179,10 @@ function createResultsForComponent($componentId, $owner, $keyword, $commaDelimit
   $sql .= " ORDER BY MGTCAT.CATorder ASC ";
   $result = do_mysql_query($sql);
 
-
-  $aggregateCategoryDataToPrint = null;;
+  $aggregateCategoryDataToPrint = null;
   while ($myrow = mysql_fetch_row($result))
     {
-      $categoryData = createResultsForCategory($myrow[0], $keyword, $commaDelimitedBuilds, $lastResult,$myrow,$arrAllBuilds);
+      $categoryData = createResultsForCategory($myrow[0], $keyword, $build_id_set, $lastResult,$myrow,$arrAllBuilds);
       $categorySummary = $categoryData[0];
       $totalCasesForComponent += $categorySummary[0];
       $totalLastResultPassesForComponent += $categorySummary[1];
@@ -203,19 +203,11 @@ function createResultsForComponent($componentId, $owner, $keyword, $commaDelimit
 	}
     }
 
-  $summaryOfComponentTable = "<table class=\"simple\" style=\"width: 100%; " .
-    "text-align: center; margin-left: 0px;\"><tr><th>" . lang_get('number_cases') . "</td>" .
-    "<th>" . lang_get('number_passed') . "</td><th>" . lang_get('number_failed') . "</td><th>" . lang_get('number_blocked') . "</td><th>" . lang_get('number_not_run') . "</td></tr>";
-  $summaryOfComponentTable = $summaryOfComponentTable . "<tr><td>" . $totalCasesForComponent  . "</td><td>" . 
-                               $totalLastResultPassesForComponent . "</td><td>" . 
-                               $totalLastResultFailuresForComponent . "</td><td>" . 
-                               $totalLastResultBlockedForComponent . "</td><td>" . 
-    $totalUnexecutedTestCases . "</td></tr></table>";
+  $summaryOfComponentTable = createSummaryTable($totalCasesForComponent, $totalLastResultPassesForComponent, $totalLastResultFailuresForComponent, $totalLastResultBlockedForComponent, $totalUnexecutedTestCases);
   
   $summaryOfComponentArray = array($totalCasesForComponent, $totalLastResultPassesForComponent,
 				   $totalLastResultFailuresForComponent, $totalLastResultBlockedForComponent, 
 				   $totalUnexecutedTestCases);
-
   if ($testCasesReturnedByQuery)
     {
       $componentDataToPrint = "<h2 onClick=\"plusMinus_onClick(this);\"><img class=\"plus\" src=\"icons/plus.gif\">" . 
@@ -229,7 +221,7 @@ function createResultsForComponent($componentId, $owner, $keyword, $commaDelimit
   return array($summaryOfComponentArray, $componentDataToPrint, $testCasesReturnedByQuery);
 }
 
-function createResultsForCategory($categoryId, $keyword, $commaDelimitedBuilds, $lastResultToQueryFor,$myrow,$arrAllBuilds)
+function createResultsForCategory($categoryId, $keyword, $build_id_set, $lastResultToQueryFor,$myrow,$arrAllBuilds)
 {
   global $g_tc_status;
   
@@ -255,6 +247,10 @@ function createResultsForCategory($categoryId, $keyword, $commaDelimitedBuilds, 
     " FROM testcase WHERE (catid='" . $categoryId . "') AND (keywords LIKE '%" . $keyword . "%') ";
   
   $sql .= " ORDER by TCorder ASC";
+
+  // debug - kl - 10012005
+  // print "sql = $sql <BR>";
+
   $result = do_mysql_query($sql);
   
   $testCaseTables;
@@ -269,7 +265,7 @@ function createResultsForCategory($categoryId, $keyword, $commaDelimitedBuilds, 
 	$tcIDList .= ",";
       $tcIDList .= $tcID;
     }
-  $build_list = str_replace(",","','",mysql_escape_string($commaDelimitedBuilds));
+  $build_list = str_replace(",","','",mysql_escape_string($build_id_set));
   $sql = " SELECT results.build_id, results.runby, results.daterun, results.status, results.bugs, " .
          " results.tcid, results.notes " .
          " FROM results WHERE tcid IN (" . $tcIDList . ")".
@@ -349,17 +345,8 @@ function createResultsForCategory($categoryId, $keyword, $commaDelimitedBuilds, 
 	$testCasesReturnedByQuery = true;
       }
     }
-
-  $summaryOfCategoryTable = "<table class=\"simple\" style=\"width: 100%; " .
-                            "text-align: center; margin-left: 0px;\"><tr>" .
-    "<th>" . lang_get('number_cases') . "</td><th>" . lang_get('number_passed') . "</td><th>" . lang_get('number_failed') . "</td>" .
-    "<th>" . lang_get('number_blocked') . "</td><th>" . lang_get('number_not_run') . "</td></tr>";
-
-  $summaryOfCategoryTable = $summaryOfCategoryTable . "<tr><td>" . $totalCasesForCategory  . "</td><td>" . 
-                            $totalLastResultPassesForCategory . "</td><td>" . 
-                            $totalLastResultFailuresForCategory . "</td><td>" . 
-                            $totalLastResultBlockedForCategory . "</td><td>" . 
-    $totalUnexecutedTestCases . "</td></tr></table>";
+  
+  $summaryOfCategoryTable = createSummaryTable($totalCasesForCategory, $totalLastResultPassesForCategory, $totalLastResultFailuresForCategory, $totalLastResultBlockedForCategory, $totalUnexecutedTestCases);
 
   // only display an option to expand the category info if there is any test cases which match the query parameters
   $categoryDataToPrint = null;

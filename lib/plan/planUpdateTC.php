@@ -1,7 +1,7 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: planUpdateTC.php,v 1.6 2005/09/19 15:47:04 franciscom Exp $
+ * @version $Id: planUpdateTC.php,v 1.7 2005/10/01 09:09:00 franciscom Exp $
  * @author Martin Havlat
  * 
  * Update Test Cases within Test Case Suite 
@@ -32,17 +32,18 @@ if(isset($_POST['updateSelected']))
 		$tcID = key($_POST);
 		tLog('Update TC id: ' . $tcID);
  
-    // 20050730 - fm
-    // BUGID: SF1242462
+    // 20050929 - fm - refactoring name 
+    // 20050730 - fm - BUGID: SF1242462
 		$sql = " SELECT testcase.*, " .
-		       " cat.id as cat_id, cat.name as cat_name,cat.mgtcatid as cat_mgtcatid " . 
-		       " FROM testcase, category cat" .
-		       " WHERE testcase.id=" . $tcID .
-		       " AND cat.id = testcase.catid";
+		       " cat.id as cat_id, mgt.name as cat_name,cat.mgtcatid as cat_mgtcatid " . 
+		       " FROM testcase, category cat, mgtcategory mgt" .
+		       " WHERE cat.mgtcatid = mgt.id" .
+		       " AND cat.id = testcase.catid " .
+		       " AND testcase.id=" . $tcID;
+		       
 		$result = do_mysql_query($sql);
 		$tctp_data = mysql_fetch_assoc($result);
-
-
+  
 		$specId = $tctp_data['mgttcid'];
 
     // 

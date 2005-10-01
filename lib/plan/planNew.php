@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: planNew.php,v 1.5 2005/09/16 06:47:11 franciscom Exp $ */
+/* $Id: planNew.php,v 1.6 2005/10/01 09:09:00 franciscom Exp $ */
 /* Purpose:  Add new Test Plan */
 /*
  * @ author: francisco mancardi - 20050915 - refactoring function name
@@ -47,9 +47,15 @@ if(isset($_POST['newTestPlan']))
 				//insert it into the component table with new ids
 				$component = $cInfo[$i];
 				$COMID = insertTestPlanComponent($projID,$component[1],$component[2]);
+				
 				//Grab all of the currently looping components categories
-				$sqlCat = "select id,name,compid,mgtcatid,CATorder from category where " .
-						"compid='" . $component[0] . "'";
+				// 20051001 - fm
+				$sqlCat = " SELECT id,name,compid,mgtcatid,CATorder " .
+				          " FROM category CAT, mgtcategory MGTCAT " . 
+				          " WHERE MGTCAT.id = CAT.mgtcatid " .  
+				          " AND compid=" . $component[0];
+
+
 				$resultCat = do_mysql_query($sqlCat);
 				while ($myrowCat = mysql_fetch_row($resultCat)) //loop through categories
 				{

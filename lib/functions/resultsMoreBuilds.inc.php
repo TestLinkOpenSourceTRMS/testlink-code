@@ -1,6 +1,6 @@
 <?
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
- *$Id: resultsMoreBuilds.inc.php,v 1.28 2005/10/01 18:13:04 kevinlevy Exp $ 
+ *$Id: resultsMoreBuilds.inc.php,v 1.29 2005/10/01 18:30:29 kevinlevy Exp $ 
  * 
  * @author Kevin Levy
  *
@@ -65,29 +65,34 @@ function createResultsForTestPlan($testPlanName, $testPlanID, $buildsArray, $key
   $totalLastResultBlockedForTestPlan = 0;
   $totalUnexecutedTestCases = 0;
   
-  $arrBuilds = getBuilds($testPlanID);
   // comma delimited list of build.id's for this testplan
   // build.id field is primary key of table and unknown to user
-  $commaDelimitedBuilds = null;
+  $build_id_set = null;
   // comma delimited list of build.name's for this testplan
   // build.name field is created by user and how user can identify build
-  $buildParams = null;
+  $build_name_set = null;
+
+  // list of ALL (id, name) pairs for the test plan
+  $arrAllBuilds = getBuilds($testPlanID);
+  
+  // debug - kl - 10012005
+  //print_r($arrAllBuilds);
   for($i = 0;$i < sizeof($buildsArray);$i++)
     {
       if ($i)
 	{
-	  $commaDelimitedBuilds .= ",";
-	  $buildParams .= ",";
+	  $build_id_set .= ",";
+	  $build_name_set .= ",";
 	}
-      $commaDelimitedBuilds .= $buildsArray[$i];
-      $buildParams .= $arrBuilds[$buildsArray[$i]];
+      $build_id_set .= $buildsArray[$i];
+      $build_name_set .= $arrAllBuilds[$buildsArray[$i]];
     }
 
   // debug
-  //print "commaDelimitedBuilds = $commaDelimitedBuilds <BR>";
-  //print "buildParams = $buildParams <BR>";
+  //print "build_id_set = $build_id_set <BR>";
+  //print "build_name_set = $build_name_set <BR>";
 
-  $testPlanReportHeader = createTestPlanReportHeader($testPlanName, $buildParams, $keyword, $owner, $lastStatus);
+  $testPlanReportHeader = createTestPlanReportHeader($testPlanName, $build_name_set, $keyword, $owner, $lastStatus);
 
   // 20050915 - fm - added mgtcomponent
   $sql = " SELECT component.id, mgtcomponent.name, component.projid, component.mgtcompid " .
@@ -101,7 +106,7 @@ function createResultsForTestPlan($testPlanName, $testPlanID, $buildsArray, $key
   while($myrow = mysql_fetch_row($result))
     {
       $componentData = createResultsForComponent($myrow[0], $owner, $keyword, 
-						 $commaDelimitedBuilds, $lastStatus,$myrow,$arrBuilds);
+						 $build_id_set, $lastStatus,$myrow,$arrAllBuilds);
       
       $componentSummary = $componentData[0];
       $totalCasesForTestPlan += $componentSummary[0];
@@ -136,7 +141,7 @@ function createResultsForTestPlan($testPlanName, $testPlanID, $buildsArray, $key
   return array($testPlanReportHeader, $summaryOfTestPlanTable, $aggregateComponentDataToPrint);
 }
 
-function createResultsForComponent($componentId, $owner, $keyword, $commaDelimitedBuilds, $lastResult,$myrow,$arrBuilds)
+function createResultsForComponent($componentId, $owner, $keyword, $commaDelimitedBuilds, $lastResult,$myrow,$arrAllBuilds)
 {
   $totalCasesForComponent = 0;
   $totalLastResultPassesForComponent = 0;
@@ -169,7 +174,7 @@ function createResultsForComponent($componentId, $owner, $keyword, $commaDelimit
   $aggregateCategoryDataToPrint = null;;
   while ($myrow = mysql_fetch_row($result))
     {
-      $categoryData = createResultsForCategory($myrow[0], $keyword, $commaDelimitedBuilds, $lastResult,$myrow,$arrBuilds);
+      $categoryData = createResultsForCategory($myrow[0], $keyword, $commaDelimitedBuilds, $lastResult,$myrow,$arrAllBuilds);
       $categorySummary = $categoryData[0];
       $totalCasesForComponent += $categorySummary[0];
       $totalLastResultPassesForComponent += $categorySummary[1];
@@ -216,7 +221,7 @@ function createResultsForComponent($componentId, $owner, $keyword, $commaDelimit
   return array($summaryOfComponentArray, $componentDataToPrint, $testCasesReturnedByQuery);
 }
 
-function createResultsForCategory($categoryId, $keyword, $commaDelimitedBuilds, $lastResultToQueryFor,$myrow,$arrBuilds)
+function createResultsForCategory($categoryId, $keyword, $commaDelimitedBuilds, $lastResultToQueryFor,$myrow,$arrAllBuilds)
 {
   global $g_tc_status;
   
@@ -288,7 +293,7 @@ function createResultsForCategory($categoryId, $keyword, $commaDelimitedBuilds, 
       // kl - 09252005 - I don't think $results is being populated correctly
       // 
 
-      $testCaseData = createResultsForTestCase($myrow[0], $myrow,$arrBuilds,$results,$lastResult);
+      $testCaseData = createResultsForTestCase($myrow[0], $myrow,$arrAllBuilds,$results,$lastResult);
       $testCaseInfoToPrint = $testCaseData[0];
       $summaryOfTestCaseInfo = $testCaseData[1];
       if ($lastResult == $g_tc_status['passed']){
@@ -364,11 +369,11 @@ function createResultsForCategory($categoryId, $keyword, $commaDelimitedBuilds, 
   return array($summaryOfCategory, $categoryDataToPrint, $testCasesReturnedByQuery); 
 }
 
-function createResultsForTestCase($tcid, $myrow,$arrBuilds,$arrayOfResults,$lastResult)
+function createResultsForTestCase($tcid, $myrow,$arrAllBuilds,$arrayOfResults,$lastResult)
 {
   $testcaseHeader = constructTestCaseInfo($tcid,$myrow);
   $summaryOfResultData = null;
-  $tableOfResultData = createTableOfTestCaseResults($arrayOfResults,$arrBuilds,$summaryOfResultData);
+  $tableOfResultData = createTableOfTestCaseResults($arrayOfResults,$arrAllBuilds,$summaryOfResultData);
   $className = getTCClassNameByStatus($lastResult);
   
   $summaryTable = "<table class=\"simple white\">";
@@ -418,7 +423,7 @@ function getTCClassNameByStatus($status)
  * mapped to result row [buildNumber][resultRowArray] 
  * @return $returnData table of test case results
  */
-function createTableOfTestCaseResults($arrayOfResults,$arrBuilds,&$returnArray){
+function createTableOfTestCaseResults($arrayOfResults,$arrAllBuilds,&$returnArray){
     $returnData = "<table class=\"simple white\">" .
     "<tr class=\"black\"><th>" . lang_get('build') . "</th><th>" . lang_get('runby') . "</th><th>" . lang_get('daterun') . "</th>" .
     "<th>" . lang_get('status') . "</th><th>" . lang_get('bugs') . "</th><th>" . lang_get('notes') . "</th></tr>";
@@ -467,7 +472,7 @@ function createTableOfTestCaseResults($arrayOfResults,$arrBuilds,&$returnArray){
 	}
       $resultInfo = $arrayOfResults[$buildTested];
       $data = "<tr class=\"" . $className . "\"><td>" .
-	htmlspecialchars($arrBuilds[$resultInfo[0]])  . 
+	htmlspecialchars($arrAllBuilds[$resultInfo[0]])  . 
 	"</td><td>" . $resultInfo[1] . 
 	"</td><td>" . $resultInfo[2] .
 	"</td><td>" . $resultInfo[3] .

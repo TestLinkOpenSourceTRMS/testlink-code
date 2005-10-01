@@ -1,6 +1,6 @@
 <?
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
- *$Id: resultsMoreBuilds.inc.php,v 1.27 2005/09/26 16:50:51 franciscom Exp $ 
+ *$Id: resultsMoreBuilds.inc.php,v 1.28 2005/10/01 18:13:04 kevinlevy Exp $ 
  * 
  * @author Kevin Levy
  *
@@ -9,6 +9,27 @@
 
 require_once('../../config.inc.php');
 require_once("common.php");
+
+
+/**
+ *
+ * @return string testPlanReportHeader - html table which contains query parameters specified by user
+ */
+function createTestPlanReportHeader($testPlanName, $buildParams, $keyword, $owner, $lastStatus){
+  $testPlanReportHeader = "<table class=\"simple\" style=\"width: 100%; " .
+                            "text-align: center; margin-left: 0px;\">" .
+    "<tr><th>" . lang_get('test_plan_name') . "</th><th>" . lang_get('builds_selected') . "</th>" .
+    "<th>" . lang_get('keyword') . "</th><th>" . lang_get('owner') . "</th><th>" . lang_get('last_status') . "</th></tr>";
+  $testPlanReportHeader = $testPlanReportHeader . 
+    "<tr><td>".htmlspecialchars($testPlanName)."</td><td>" . 
+    htmlspecialchars($buildParams) . "</td><td>".
+    htmlspecialchars($keyword) . "</td><td>" . htmlspecialchars($owner) . 
+    "</td><td>".htmlspecialchars($lastStatus)."</td></tr></table>";
+
+  return $testPlanReportHeader;
+
+}
+
 
 /**
  * Function createResultsForTestPlan()
@@ -44,10 +65,12 @@ function createResultsForTestPlan($testPlanName, $testPlanID, $buildsArray, $key
   $totalLastResultBlockedForTestPlan = 0;
   $totalUnexecutedTestCases = 0;
   
-  // kl 09252005 - i don't think i'm doing this correctly, commenting back out
-  //  $arrBuilds_build = getBuilds_build($testPlanID);
   $arrBuilds = getBuilds($testPlanID);
+  // comma delimited list of build.id's for this testplan
+  // build.id field is primary key of table and unknown to user
   $commaDelimitedBuilds = null;
+  // comma delimited list of build.name's for this testplan
+  // build.name field is created by user and how user can identify build
   $buildParams = null;
   for($i = 0;$i < sizeof($buildsArray);$i++)
     {
@@ -60,15 +83,11 @@ function createResultsForTestPlan($testPlanName, $testPlanID, $buildsArray, $key
       $buildParams .= $arrBuilds[$buildsArray[$i]];
     }
 
-  $testPlanReportHeader = "<table class=\"simple\" style=\"width: 100%; " .
-                            "text-align: center; margin-left: 0px;\">" .
-    "<tr><th>" . lang_get('test_plan_name') . "</th><th>" . lang_get('builds_selected') . "</th>" .
-    "<th>" . lang_get('keyword') . "</th><th>" . lang_get('owner') . "</th><th>" . lang_get('last_status') . "</th></tr>";
-  $testPlanReportHeader = $testPlanReportHeader . 
-    "<tr><td>".htmlspecialchars($testPlanName)."</td><td>" . 
-    htmlspecialchars($buildParams) . "</td><td>".
-    htmlspecialchars($keyword) . "</td><td>" . htmlspecialchars($owner) . 
-    "</td><td>".htmlspecialchars($lastStatus)."</td></tr></table>";
+  // debug
+  //print "commaDelimitedBuilds = $commaDelimitedBuilds <BR>";
+  //print "buildParams = $buildParams <BR>";
+
+  $testPlanReportHeader = createTestPlanReportHeader($testPlanName, $buildParams, $keyword, $owner, $lastStatus);
 
   // 20050915 - fm - added mgtcomponent
   $sql = " SELECT component.id, mgtcomponent.name, component.projid, component.mgtcompid " .

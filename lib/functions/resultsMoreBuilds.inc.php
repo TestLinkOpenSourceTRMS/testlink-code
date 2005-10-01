@@ -1,6 +1,6 @@
 <?
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
- *$Id: resultsMoreBuilds.inc.php,v 1.29 2005/10/01 18:30:29 kevinlevy Exp $ 
+ *$Id: resultsMoreBuilds.inc.php,v 1.30 2005/10/01 18:56:30 kevinlevy Exp $ 
  * 
  * @author Kevin Levy
  *
@@ -10,19 +10,32 @@
 require_once('../../config.inc.php');
 require_once("common.php");
 
+function createSummaryOfTestPlanTable($totalCases, $totalLastResultPasses, $totalLastResultFailures,$totalLastResultBlocked,$totalUnexecuted){
+  $summaryOfTestPlanTable = "<table class=\"simple\" style=\"width: 100%; " .
+    "text-align: center; margin-left: 0px;\"><tr><th>" . lang_get('number_cases') . "</td>" .
+    "<th>" . lang_get('number_passed') . "</td><th>" . lang_get('number_failed') . "</td><th>" . lang_get('number_blocked') . "</td><th>" . lang_get('number_not_run') . "</td></tr>";
+  $summaryOfTestPlanTable = $summaryOfTestPlanTable . "<tr><td>" . $totalCases . 
+                              "</td><td>" . $totalLastResultPasses . "</td><td>" . 
+                              $totalLastResultFailures . "</td><td>" . 
+                              $totalLastResultBlocked . "</td><td>" . 
+    $totalUnexecuted . "</td></tr></table>";
+
+  return $summaryOfTestPlanTable;
+}
+
 
 /**
  *
  * @return string testPlanReportHeader - html table which contains query parameters specified by user
  */
-function createTestPlanReportHeader($testPlanName, $buildParams, $keyword, $owner, $lastStatus){
+function createTestPlanReportHeader($testPlanName, $build_name_set, $keyword, $owner, $lastStatus){
   $testPlanReportHeader = "<table class=\"simple\" style=\"width: 100%; " .
                             "text-align: center; margin-left: 0px;\">" .
     "<tr><th>" . lang_get('test_plan_name') . "</th><th>" . lang_get('builds_selected') . "</th>" .
     "<th>" . lang_get('keyword') . "</th><th>" . lang_get('owner') . "</th><th>" . lang_get('last_status') . "</th></tr>";
   $testPlanReportHeader = $testPlanReportHeader . 
     "<tr><td>".htmlspecialchars($testPlanName)."</td><td>" . 
-    htmlspecialchars($buildParams) . "</td><td>".
+    htmlspecialchars($build_name_set) . "</td><td>".
     htmlspecialchars($keyword) . "</td><td>" . htmlspecialchars($owner) . 
     "</td><td>".htmlspecialchars($lastStatus)."</td></tr></table>";
 
@@ -122,14 +135,9 @@ function createResultsForTestPlan($testPlanName, $testPlanID, $buildsArray, $key
 	  $aggregateComponentDataToPrint .= $componentData[1];
 	}
     }
-  $summaryOfTestPlanTable = "<table class=\"simple\" style=\"width: 100%; " .
-    "text-align: center; margin-left: 0px;\"><tr><th>" . lang_get('number_cases') . "</td>" .
-    "<th>" . lang_get('number_passed') . "</td><th>" . lang_get('number_failed') . "</td><th>" . lang_get('number_blocked') . "</td><th>" . lang_get('number_not_run') . "</td></tr>";
-  $summaryOfTestPlanTable = $summaryOfTestPlanTable . "<tr><td>" . $totalCasesForTestPlan  . 
-                              "</td><td>" . $totalLastResultPassesForTestPlan . "</td><td>" . 
-                              $totalLastResultFailuresForTestPlan . "</td><td>" . 
-                              $totalLastResultBlockedForTestPlan . "</td><td>" . 
-    $totalUnexecutedTestCases . "</td></tr></table>";
+
+  $summaryOfTestPlanTable = createSummaryOfTestPlanTable($totalCasesForTestPlan, $totalLastResultPassesForTestPlan, $totalLastResultFailuresForTestPlan,$totalLastResultBlockedForTestPlan,$totalUnexecutedTestCases);
+
   // The $linksToAllComponents functionality does not work because something keeps screwing up
   // my href values and prepending the root testlink url to the string
   //  return  $testPlanReportHeader . $summaryOfTestPlanTable . $linksToAllComponents .$aggregateComponentDataToPrint;

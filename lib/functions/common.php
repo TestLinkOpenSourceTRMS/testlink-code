@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.18 $
- * @modified $Date: 2005/09/29 06:14:34 $
+ * @version $Revision: 1.19 $
+ * @modified $Date: 2005/10/02 19:47:59 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -33,7 +33,7 @@
  * @author: francisco mancardi - 20050813 - added localize_date_smarty()
  * @author: francisco mancardi - 20050813 - added TP filtered by Product *
  * @author: francisco mancardi - 20050810 - added function to_boolean($alt_boolean)
- *
+ * 20051002 - am - code reformatted, small corrections
 **/
 require_once("getRights.php");
 require_once("product.core.inc.php");
@@ -61,14 +61,16 @@ $db = 0;
 function doDBConnect()
 {
 	global $db;
+	
 	$result = array('status' => 1, 'dbms_msg' => 'ok');
 	$db = mysql_connect(DB_HOST, DB_USER, DB_PASS);
+	
 	if (!$db or !mysql_select_db(DB_NAME,$db) )
 	{
 		echo $result['dbms_msg'];
-	  $result['status'] = 0;
-	  $result['dbms_msg'] = mysql_error();
-	  tLog('Connect to database fails!!! ' . $result['dbms_msg'], 'ERROR');
+		$result['status'] = 0;
+		$result['dbms_msg'] = mysql_error();
+		tLog('Connect to database fails!!! ' . $result['dbms_msg'], 'ERROR');
   	}
   	else
 	{
@@ -193,7 +195,6 @@ function checkProductSelection()
 //
 function checkSessionTestPlan()
 {
-	
 	// 20050813 - fm - added TP filtered by Product
 	$prodID = isset($_SESSION['productID']) ? $_SESSION['productID'] : null;
 	$sTestPlanID = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : null;
@@ -276,7 +277,7 @@ function getUserTestPlans($userID,$tpID = null,$p_bActive = null)
 // 
 function getUserProdTestPlans($userID,$prodID,$p_bActive = null)
 {
-  global $g_show_tp_without_prodid;
+	global $g_show_tp_without_prodid;
   
 	$sql = " SELECT project.*, userID FROM project,projrights " .
 	       " WHERE projrights.projid = project.id " .
@@ -285,23 +286,22 @@ function getUserProdTestPlans($userID,$prodID,$p_bActive = null)
 	
 	if (!is_null($prodID))
 	{
-		$sql .= " AND project.prodid = {$prodID}";
-
-		
-		// 20050904 - fm - 
-		// TL 1.5.1 compatibility, get also Test Plans without product id.
-    if ($g_show_tp_without_prodid)
-    {
+		//20051002 - am - added missing columns
+		$sql .= " AND (project.prodid = {$prodID}";
+		// 20050904 - fm - TL 1.5.1 compatibility, get also Test Plans without product id.
+		if ($g_show_tp_without_prodid)
+		{
 			$sql .= " OR project.prodid=0";
-    }
+		}
+		$sql .= ")";
 	}	 
 	
 	if (!is_null($p_bActive))
 	{
-		// 20050810 - fm
 		$bActive = to_boolean($p_bActive);
 		$sql .= " AND project.active = " . $bActive;
- 	}
+	}
+
  	return selectData($sql);
 }
 
@@ -320,11 +320,9 @@ function doInitSelection()
 	checkSessionProduct();
 	checkSessionTestPlan();	
   */
-  // 20050910 - fm - 
-  // BUGID  0000092: Two products each with one active test plan incorrectly prints the wrong plan
-  updateSessionTp_Prod($_GET);
-
-
+	// 20050910 - fm - 
+	// BUGID  0000092: Two products each with one active test plan incorrectly prints the wrong plan
+	updateSessionTp_Prod($_GET);
 	return 1;
 }
 
@@ -353,15 +351,14 @@ function testlinkInitPage($initProduct = FALSE, $bDontCheckSession = false)
 	doSessionStart() or die("Could not start session");
 	setPaths();
 	
-	//echo "<pre>GET in initpage"; print_r($_GET); echo "</pre>";
-	
 	if (!$bDontCheckSession)
 	{
 		checkSessionValid();
 	}	
 	checkUserRights();
 		
-	if ($initProduct){
+	if ($initProduct)
+	{
 		doInitSelection() or die("Could not set session variables");
 	}
 }
@@ -573,7 +570,7 @@ function localize_date_smarty($params, &$smarty)
 {
 	global $g_date_format;
 
-  $the_d = strftime($g_date_format, strtotime($params['d']));	
+	$the_d = strftime($g_date_format, strtotime($params['d']));	
 	if(	isset($params['var']) )
 	{
 		$smarty->assign($params['var'], $the_ret);
@@ -633,7 +630,7 @@ function hash2array($hash, $bStripInput = false)
 	foreach ($hash as $key)
 	{
 		$newArray[] = $bStripInput ? strings_stripSlashes($key) : $key;
-  }
+	}
 	return $newArray;
 }
 
@@ -651,23 +648,17 @@ function hash2array($hash, $bStripInput = false)
  */
 function check_string($str2check, $ereg_forbidden_chars)
 {
-$status_ok=1;
-
-if( $ereg_forbidden_chars != '' and !is_null($ereg_forbidden_chars))
-{
-  if (eregi($ereg_forbidden_chars, $str2check))
-  {
-    $status_ok=0;	
-  } 	
-}	
-return $status_ok;
+	$status_ok = 1;
+	
+	if( $ereg_forbidden_chars != '' && !is_null($ereg_forbidden_chars))
+	{
+		if (eregi($ereg_forbidden_chars, $str2check))
+		{
+			$status_ok=0;	
+		} 	
+	}	
+	return $status_ok;
 }
-
-
-
-
-
-
 
 // If we receive TestPlan ID in the _SESSION
 //    then do some checks and if everything OK
@@ -685,23 +676,17 @@ function updateSessionTp_Prod($hash_user_sel)
 	$user_sel["prodID"] = isset($hash_user_sel['product']) ? intval($hash_user_sel['product']) : 0;
 	$user_sel["tpID"] = isset($hash_user_sel['project']) ? intval($hash_user_sel['project']) : 0;
 
-  $prodID = isset($_SESSION['productID']) ? $_SESSION['productID'] : 0;
+	$prodID = isset($_SESSION['productID']) ? $_SESSION['productID'] : 0;
 	$tpID   = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0;
 	
-	/* 
-  echo "<pre> SESSION in UPD"; print_r($_SESSION); echo "</pre>"; 
-  echo "<pre> USEL in UPD"; print_r($user_sel); echo "</pre>"; 
-  */
-	
-	// Now what to do ???
 	// Product is TestPlan container, then we start checking the container
 	if( $user_sel["prodID"] != 0 )
 	{
-    $prodID = $user_sel["prodID"];
+		$prodID = $user_sel["prodID"];
 	} 
-  $prodData=getProduct($prodID);
+	$prodData = getProduct($prodID);
 
-  // We need to do checks before updating the SESSION
+	//We need to do checks before updating the SESSION
 	if (!$prodID || !$prodData)
 	{
 		$products = getProducts();
@@ -710,65 +695,56 @@ function updateSessionTp_Prod($hash_user_sel)
 			$prodData = $products[0];
 		}	
 	}
-	// echo "<br>This is the prodID=" . $prodID . "<br>";
 	setSessionProduct($prodData);
 
-  // Now we need to validate the TestPlan
-  if( $user_sel["tpID"] != 0 )
+	// Now we need to validate the TestPlan
+	if( $user_sel["tpID"] != 0 )
 	{
-    $tpID = $user_sel["tpID"];
+    	$tpID = $user_sel["tpID"];
 	} 
   
-  // Wee need to check:
-  // 1. $tpID belongs to prodID
-  // 2. User has rights on $tpID
-  // If any check fails we try to show the first TP in the Product, allowed to the user
-  $redo = 1;
-  $tpData = null;
+	// We need to check:
+	// 1. $tpID belongs to prodID
+	// 2. User has rights on $tpID
+	// If any check fails we try to show the first TP in the Product, allowed to the user
+	$redo = 1;
+	$tpData = null;
   
-  // echo "<br>This is the tpID=" . $tpID . "<br>";
+	if (check_tp_father($prodID,$tpID))
+	{
+		$tpData = getUserTestPlan($_SESSION['userID'],$tpID,true);
+		if(!is_null($tpData))
+		{ 
+			$redo = 0;
+		}
+		setSessionTestPlan($tpData);
+	}
+  
+	if ($redo)
+	{
+		$tp_father = get_tp_father($tpID);
 	
-  if (check_tp_father($prodID,$tpID))
-  {
-    // Good! first check OK
-    $tpData = getUserTestPlan($_SESSION['userID'],$tpID);
-    if( !is_null($tpData) )
-    { 
-      $redo = 0;
-    }
-    setSessionTestPlan($tpData);
-  }
-  
-  if ( $redo )
-  {
- 	
-  	// 20050926 - fm
-  	$tp_father = get_tp_father($tpID);
-  	
-    // Houston we have a problem
-    $tpInfo = getUserProdTestPlans($_SESSION['userID'],$prodID,true);
-		
+		$tpInfo = getUserProdTestPlans($_SESSION['userID'],$prodID,true);
 		if ($tpInfo)
 		{
-		  if ($tp_father)
-		  {
+			if ($tp_father)
+			{
 				$tpData = $tpInfo[0];
 			}
 			else
 			{
 				// TL 1.5.1 compatibility
-		    foreach (	$tpInfo as $key => $elem )
-		    {
-		      if ($elem['id'] == $tpID)
-		      {
-		       $tpData = $tpInfo[$key];
-		       break;
-		      }
-		    }	
+				foreach ($tpInfo as $key => $elem)
+				{
+					if ($elem['id'] == $tpID)
+					{
+						$tpData = $tpInfo[$key];
+						break;
+					}
+				}	
 			}	
 		}
-  }
-  setSessionTestPlan($tpData);
-
+	}
+	setSessionTestPlan($tpData);
 }
 ?>

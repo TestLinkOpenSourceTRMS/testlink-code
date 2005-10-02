@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* @version $Id: userInfo.php,v 1.6 2005/09/14 06:16:57 franciscom Exp $ 
+* @version $Id: userInfo.php,v 1.7 2005/10/02 19:48:00 schlundus Exp $ 
 *
 * @author	Asiel Brumfield <asielb@users.sourceforge.net>
 * @author 	Martin Havlat
@@ -46,9 +46,7 @@ existLogin($_SESSION['user'], $userResult);
 $smarty = new TLSmarty();
 $smarty->assign('userData', $userResult);
 $smarty->assign('updateResult', $updateResult);
-
 // 20050913 - fm - BUGID 0000103: Localization is changed but not strings
 $smarty->assign('update_title_bar', $bEdit);
-
 $smarty->display('userInfo.tpl');
 ?>

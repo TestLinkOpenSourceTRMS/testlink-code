@@ -1,6 +1,6 @@
 <?
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: import.inc.php,v 1.6 2005/09/08 12:25:26 franciscom Exp $
+* $Id: import.inc.php,v 1.7 2005/10/02 19:47:59 schlundus Exp $
 * 
 * @author Martin Havlat
 *
@@ -144,7 +144,7 @@ function exeTcImport($fileLocation,$prodID, $login_name, $catIDForImport = 0)
 		$keys = buildKeywordListAndInsertKeywords($data,$prodID);
 		
 		//Insert arrayCom into component where projID == projIDSubmit 
-    // 20050908 - fm - changes in insertProductComponent()
+		// 20050908 - fm - changes in insertProductComponent()
 		$ret = insertProductComponent($prodID,$arrayCom,null,null,null,null,null);
 		$comID = $ret['id'];
 		
@@ -192,7 +192,6 @@ function exeTcImport($fileLocation,$prodID, $login_name, $catIDForImport = 0)
 			$arraySummary = $data[3];
 			$arrayTCSteps = $data[4];
 			$arrayResults = $data[5];
-	
 			$keys = buildKeywordListAndInsertKeywords($data,$prodID);
 			
 			if($arrayCom == $oldCom)
@@ -207,7 +206,9 @@ function exeTcImport($fileLocation,$prodID, $login_name, $catIDForImport = 0)
 			}
 			else
 			{
-				$comID = insertProductComponent($prodID,$arrayCom,null,null,null,null,null);
+				// 20051001 - am - changes in insertProductComponent() regarind to bug 150
+				$ret = insertProductComponent($prodID,$arrayCom,null,null,null,null,null);
+				$comID = $ret['id'];
 				$catID = insertComponentCategory($comID,$arrayCat,null,null,null,null);
 				$tcID = insertTestcase($catID,$arrayTC,$arraySummary,$arrayTCSteps,$arrayResults,$login_name,null,$keys);
 			}

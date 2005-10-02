@@ -1,6 +1,6 @@
 <?
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
- *$Id: resultsMoreBuilds.inc.php,v 1.31 2005/10/01 23:54:53 kevinlevy Exp $ 
+ *$Id: resultsMoreBuilds.inc.php,v 1.32 2005/10/02 00:29:46 kevinlevy Exp $ 
  * 
  * @author Kevin Levy
  *
@@ -392,7 +392,7 @@ function getTCClassNameByStatus($status)
   $passedColor = "bgGreen";
   $blockedColor = "bgBlue";
   $failedColor = "bgRed";
-  
+
   switch($status)
     {
     case $g_tc_status['passed']:
@@ -416,7 +416,11 @@ function getTCClassNameByStatus($status)
  * Function createTableOfTestCaseResults
  * @param $arrayOfResults - 2 dimention array containing build number 
  * mapped to result row [buildNumber][resultRowArray] 
- * @return $returnData table of test case results
+ * @return $returnData consists of 2 types :
+ *         1.)the first type is a string which is an html table for a single test case which 
+ *            describes how many times the case has been run, passed, failed, blocked 
+ *         2.) an array of integers : array($numberOfPasses+$numberOfFailures+$numberOfBlocked,
+ *                                           $numberOfPasses,$numberOfFailure,$numberOfBlocked)
  */
 function createTableOfTestCaseResults($arrayOfResults,$arrAllBuilds,&$returnArray){
     $returnData = "<table class=\"simple white\">" .

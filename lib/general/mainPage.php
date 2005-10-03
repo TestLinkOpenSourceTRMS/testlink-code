@@ -4,26 +4,32 @@
  *
  * Filename $RCSfile: mainPage.php,v $
  *
- * @version $Revision: 1.4 $
- * @modified $Date: 2005/08/26 21:01:27 $
+ * @version $Revision: 1.5 $ $Author: franciscom $
+ * @modified $Date: 2005/10/03 07:20:13 $
  *
  * @author Martin Havlat
  * 
- *	Page has two functions: navigation and select Test Plan
+ * Page has two functions: navigation and select Test Plan
  *
- *  	This file is the first page that the user sees when they log in.
- *	Most of the code in it is html but there is some logic that displays
- *	based upon the login. There is also some javascript that handles the
- *	form information.
+ * This file is the first page that the user sees when they log in.
+ * Most of the code in it is html but there is some logic that displays
+ * based upon the login. 
+ * There is also some javascript that handles the form information.
  *
+ *
+ * @author Francisco Mancardi - 20050928 - 
+ * changes to filter test plan by product
+ *
+ * @author Francisco Mancardi - 20050928 - 
+ * adding new User Interface feature: filter test plan by product
+ * 
 **/
 require_once('../../config.inc.php');
 require_once('common.php');
 require_once('plan.core.inc.php');
 require_once('configCheck.php');
 require_once('users.inc.php');
-// 20050811 - fm 
-// it's realy ok ??? testlinkInitPage(TRUE);
+
 testlinkInitPage(TRUE);
 $smarty = new TLSmarty;
 
@@ -67,11 +73,34 @@ if(MAIN_PAGE_METRICS_ENABLED == "TRUE")
     $smarty->assign('myTPdata', printMyTPData());
 }
 
+// 20050928 - fm
+$filter_tp_by_product = 1;
+if( isset($_REQUEST['filter_tp_by_product']) )
+{
+  $filter_tp_by_product = 1;
+}
+else if ( isset($_REQUEST['filter_tp_by_product_hidden']) )
+{
+  $filter_tp_by_product = 0;
+} 
+else
+{
+	if ( isset($_SESSION['filter_tp_by_product']) )
+  {
+    $filter_tp_by_product = $_SESSION['filter_tp_by_product'];
+  }
+}
+$_SESSION['filter_tp_by_product'] = $filter_tp_by_product;
+$smarty->assign('filter_tp_by_product',$filter_tp_by_product);
+
+
 // ----- Test Plan Section ----------------------------------  
 // get Test Plans available for the user 
+// 20050928 - fm - Interface changes
 // 20050810 - fm - Interface changes
 // 20050809 - fm - get only test plan for the selected product
-$arrPlans = getTestPlans($_SESSION['productID'], $_SESSION['userID']);
+$arrPlans = getTestPlans($_SESSION['productID'], $_SESSION['userID'], 
+                         $filter_tp_by_product);
 
 //20050826 - scs - added displaying of security notes
 $securityNotes = getSecurityNotes();
@@ -79,14 +108,25 @@ $securityNotes = getSecurityNotes();
 $smarty->assign('securityNotes',$securityNotes);
 $smarty->assign('arrPlans', $arrPlans);
 $smarty->assign('countPlans', count($arrPlans));
+
 //can the user test
 $smarty->assign('tp_execute', has_rights("tp_execute"));
+
 //can the user create build
 $smarty->assign('tp_create_build', has_rights("tp_create_build"));
+
 //can the user view metrics
 $smarty->assign('tp_metrics', has_rights("tp_metrics"));
+
 //can the user manage Test Plan
 $smarty->assign('tp_planning', has_rights("tp_planning"));
 $smarty->assign('launcher','lib/general/frmWorkArea.php');
+
+// 20051002 - fm
+global $g_ui_show_check_filter_tp_by_product;
+$smarty->assign('show_filter_tp_by_product',
+                $g_ui_show_check_filter_tp_by_product);
+
+
 $smarty->display('mainPage.tpl');
 ?>

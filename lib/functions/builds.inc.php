@@ -1,6 +1,6 @@
 <?
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: builds.inc.php,v 1.5 2005/09/25 05:03:47 kevinlevy Exp $
+* $Id: builds.inc.php,v 1.6 2005/10/03 07:21:42 franciscom Exp $
 * 
 * @author Martin Havlat
 *
@@ -12,17 +12,24 @@ require_once("../functions/common.php");
 /**
  * Collect all builds for the Test Plan
  *
+ * 20051002 - fm - refactoring
  * 20050921 - fm - refactoring
  */
-function getBuilds($idPlan)
+function getBuilds($idPlan, $order_by="ORDER BY build.id DESC")
 {
- 	$sql = "SELECT build.id, name FROM build WHERE projid = " . $idPlan . " ORDER BY build.id DESC";
+ 	$sql = "SELECT build.id, name FROM build WHERE projid = " . $idPlan;
+ 	
+ 	if ( strlen(trim($order_by)) )
+ 	{
+ 		$sql .= " " . $order_by;
+ 	}
 	return getBuildInfo($sql);
 }
 
+// 20051002 - fm - refactoring
 // added by 09242005 kl - i want the build.build fields in the array
 function getBuilds_build($idPlan){
-	$sql = "SELECT build.id, build FROM build WHERE projid = " . $idPlan . " ORDER BY build.id DESC";
+	$sql = "SELECT build.id, build.name FROM build WHERE projid = " . $idPlan . " ORDER BY build.id DESC";
 	return getBuildInfo($sql);
 }
 
@@ -31,6 +38,7 @@ function getBuildsAndNotes($idPlan)
   	$sql = "SELECT build.id,note FROM build WHERE projid = " . $idPlan . " ORDER BY build.id DESC";
 	return getBuildInfo($sql);
 }
+
 
 function getBuildInfo($sql)
 {
@@ -60,11 +68,11 @@ function deleteTestPlanBuild($testPlanID,$buildID)
 		{
 			$tcIDList = implode(",",$tcIDs);
 			
-			$query = "DELETE FROM bugs WHERE tcid IN ({$tcIDList}) AND build = '{$buildID}'";
+			$query = "DELETE FROM bugs WHERE tcid IN ({$tcIDList}) AND build.id = {$buildID}";
 			$result = $result && do_mysql_query($query);
 			
 			
-			$query = "DELETE FROM results WHERE tcid IN ({$tcIDList}) AND build = '{$buildID}'";
+			$query = "DELETE FROM results WHERE tcid IN ({$tcIDList}) AND build.id = {$buildID}";
 			$result = $result && do_mysql_query($query);
 		}
 	

@@ -1,6 +1,6 @@
 <?php 
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: newInstallStart_TL.php,v 1.4 2005/08/31 08:44:13 franciscom Exp $ */
+/* $Id: newInstallStart_TL.php,v 1.5 2005/10/03 07:19:17 franciscom Exp $ */
 
 // 20050824 - fm
 require_once("installUtils.php");
@@ -23,8 +23,8 @@ $inst_type = $_GET['installationType'];
 
 $main_title = 'TestLink Setup';
 $explain_msg = '<p>' . $main_title . 
-               'has carried out a number of checks ' .
-               "to see if everything's ready to start the setup. </br>";
+               ' has carried out a number of checks ' .
+               " to see if everything's ready to start the setup. </br>";
 
 $the_msg = '<p><b>' . $main_title . '</b></p>' . $explain_msg;
 

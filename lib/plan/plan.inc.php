@@ -2,12 +2,15 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: plan.inc.php,v $
- * @version $Revision: 1.10 $
- * @modified $Date: 2005/09/22 10:03:47 $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2005/10/03 07:20:14 $
  * @author 	Martin Havlat
  *
  * Functions for management: 
  * Test Plans, Test Case Suites, Milestones, Testers assignment
+ *
+ * @author Francisco Mancardi - 20051001
+ * del_category_deep(), del_component_deep
  *
  * @author Francisco Mancardi - 20050922 - BUGID 0000132: Cannot delete a test plan
  * @author Francisco Mancardi - 20050914 - refactoring
@@ -77,8 +80,7 @@ function updateTestPlan($id,$name,$notes,$p_active)
 $active = to_boolean($p_active);
 	
 // 20050809 - fm 	
-$sql = "UPDATE project SET active='" . $active . 
-	       "', name='" . mysql_escape_string($name) . "', notes='" . 
+$sql = "UPDATE project SET active='" . $active . "', name='" . mysql_escape_string($name) . "', notes='" . 
 	       mysql_escape_string($notes). "' WHERE id=" . $id;
 	$result = do_mysql_query($sql);
 	
@@ -101,52 +103,71 @@ function deleteTestPlanComponents($id)
 }
 
 /*
+20051001 - fm - refactoring
+mysql_fetch_assoc
+return type
+
 20050915 - fm - refactoring mgtcomponent
 
 */
-function getTestPlanComponents($id,&$cInfo)
+
+function getTestPlanComponents($tpID)
 {
-	$sql = " SELECT component.id, mgtcomponent.name,component.projid, mgtcompid " .
+	$cInfo = array();
+	
+	$sql = " SELECT component.id AS compid , mgtcomponent.name,component.projid, mgtcompid " .
 	       " FROM component, mgtcomponent " .
 	       " WHERE component.mgtcompid = mgtcomponent.id " .
-	       " AND projid=" . $id;
+	       " AND projid=" . $tpID;
 	$result = do_mysql_query($sql);
 
 	$cInfo = null;
-	while ($row = mysql_fetch_array($result)) 
+	while ($row = mysql_fetch_assoc($result)) 
 	{
 		$cInfo[] = $row;
 	}
-	return $result ? 1 : 0;
+	return($cInfo);
 }
 
-function getTestPlanComponentIDs($id,&$comIDs)
+
+
+/*
+20051001 - fm - refactoring
+
+*/
+function getTestPlanComponentIDs($id)
 {
-	$cInfo = null;
-	$result = getTestPlanComponents($id,$cInfo);
-	if ($result)
+	$comIDs = array();
+	$cInfo = getTestPlanComponents($id,$cInfo);
+	$num_comp = sizeof($cInfo);
+	if ($num_comp)
 	{
-		$num_loops = sizeof($cInfo);
-		for($i = 0 ; $i < $num_loops ;$i++)
+		for($i = 0 ; $i < $num_comp ;$i++)
 		{
 			$comIDs[] = $cInfo[$i][0];
 		}	
 	}
-	return $result ? 1 : 0;
+	return($comIDs);
 }
 
 
+/*
+  20051001 - fm - refactoring
+  1 -> delete OK or nothing done
+  0 -> problems
+*/
 function deleteCategoriesByComponentIDs($comIDs)
 {
-	if (!sizeof($comIDs))
-		return 1;
-	
-	$comIDs = implode(",",$comIDs);
-	$sql = "DELETE FROM category WHERE compid IN (" . $comIDs . ")";
-
-	$result = do_mysql_query($sql);
-	
-	return $result ? 1 : 0;
+	$ret_val = 1;
+	if( sizeof($comIDs) )
+	{
+		$comIDs = implode(",",$comIDs);
+		$sql = "DELETE FROM category WHERE compid IN (" . $comIDs . ")";
+		$result = do_mysql_query($sql);
+		
+		$ret_val = $result ? 1 : 0;
+	}
+	return($ret_val);
 }
 
 
@@ -207,16 +228,15 @@ function deleteTestPlanRightsForProject($id)
 	return $result ? 1 : 0;
 }
 
+
 function deleteResultsForBuilds($id,$builds)
 {
-	//todo: hat does the SQL statement below???
-	return 1;
 	//SCHLUNDUS
 	if (!strlen($builds))
 		return 1;
 	
 	//Delete all of the results associated with the project		
-	$sql = "DELETE FROM results WHERE build IN (". $builds . ")". 
+	$sql = "DELETE FROM results WHERE build.id IN (". $builds . ")". 
 				" AND results.tcid=testcase.id AND testcase.catid=" .
 				"category.id AND category.compid=component.id AND " .
 				"component.projid=".$id;
@@ -285,13 +305,14 @@ function insertTestPlanUserRight($projID,$userID)
 	return $result ? 1 : 0;
 }
 
-function insertTestPlanComponent($projID,$name,$mgtCompID)
+/*
+ 20051001 - fm - interface changes
+ $projID,$name,$mgtCompID -> $projID, $mgtCompID
+ 
+*/
+function insertTestPlanComponent($projID,$mgtCompID)
 {
 	
-	/*
-	$sql = "INSERT INTO component (name,projid,mgtcompid) VALUES ('" . 
-					mysql_escape_string($name) . "'," . $projID . "," . $mgtCompID . ")";
-	*/
 	// 20050915 - fm
 	$sql = " INSERT INTO component (projid,mgtcompid) " .
 	       " VALUES (" . $projID . "," . $mgtCompID . ")";
@@ -475,4 +496,64 @@ function getCategories_TC_ids($catIDs)
   }	
 	return($tcIDs);
 }
+
+
+/*
+ delete from all tables related to Test Plan (tescase, results, bugs, category)
+ category information
+ 
+ $catID
+
+ 20051001 - fm
+*/
+function del_category_deep($catID)
+{
+  // Cascade delete 
+  // bugs
+	$sql = " DELETE FROM bugs " .
+	       " WHERE tcid IN (SELECT id FROM testcase WHERE catid=" . $catID . ")";
+	$result = do_mysql_query($sql);
+	       
+	// results
+	$sql = " DELETE FROM results " .
+	       " WHERE tcid IN (SELECT id FROM testcase WHERE catid=" . $catID . ")";
+	$result = do_mysql_query($sql);
+	
+	// testcases
+	$sql = " DELETE FROM testcase  WHERE catid =" . $catID;
+	$result = do_mysql_query($sql);
+	       
+	//category
+	$sql = "DELETE FROM category WHERE id=" . $catID;
+	$result = do_mysql_query($sql);
+}
+
+
+
+/*
+ delete from all tables related to Test Plan 
+ (tescase, results, bugs, category,component) component information
+ 
+ $compID
+
+ 20051001 - fm
+*/
+function del_component_deep($compID)
+{
+	//Select all of the categories from the component
+	$sql = " SELECT category.id AS catid " .
+	       " FROM category WHERE compid=" . $compID;
+	$result = do_mysql_query($sql);
+
+	while($myrow = mysql_fetch_assoc($result))
+	{
+		del_category_deep($myrow['catid']);
+	}
+	
+	//component
+	$sql = "DELETE FROM component WHERE id=" . $compID;
+	$result = do_mysql_query($sql);
+
+}
+
 ?>

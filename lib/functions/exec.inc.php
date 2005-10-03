@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: exec.inc.php,v $
  *
- * @version $Revision: 1.13 $
- * @modified $Date: 2005/09/26 16:50:51 $ $Author: franciscom $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2005/10/03 07:21:42 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -32,15 +32,18 @@ require_once('../functions/common.php');
  * @param numeric test plan ID
  * @return integer Count of Builds
  */  
-function buildsNumber($tpID)
+function buildsNumber($tpID=0)
 {
-	$result = do_mysql_query("SELECT count(*) FROM build WHERE build.projid = " . $tpID);
-	$buildCount = mysql_result($result, 0);
-	if ($buildCount){
-		return $buildCount;
-	} else {
-		return 0;
+	// 20050929 - fm - seems sometimes we receive no tpID
+	$sql = "SELECT count(*) AS num_builds FROM build WHERE build.projid = " . $tpID;
+  $buildCount=0;
+  if ($tpID)
+  {
+	 $result = do_mysql_query($sql);
+	 $myrow = mysql_fetch_assoc($result);
+	 $buildCount = $myrow['num_builds'];
 	}
+	return ($buildCount);
 }
 
 /** 

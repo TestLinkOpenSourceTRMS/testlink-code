@@ -1,13 +1,15 @@
-{* Testlink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: mainPage.tpl,v 1.3 2005/08/26 21:01:27 schlundus Exp $ *}
-{* Purpose: smarty template - main page / site map                 *}
-{*                                                                 *}
-{*                                                                 *}
-{* rev :                                                           *}
-{*      20050809 - fm                                              *}
-{*      I18N - missing string                                      *}
-{*                                                                 *}
-{*******************************************************************}
+{* 
+ Testlink Open Source Project - http://testlink.sourceforge.net/ 
+ $Id: mainPage.tpl,v 1.4 2005/10/03 07:19:47 franciscom Exp $     
+ Purpose: smarty template - main page / site map                 
+                                                                 
+                                                                 
+ rev :                                                   
+      20051002 - fm - changes to filter tp by product      
+      20050929 - fm - new checkbox - filter tp by product
+      20050809 - fm - I18N - missing string                                      
+                                                                 
+*}
 {include file="inc_head.tpl" popup="yes"}
 
 <body>
@@ -22,19 +24,37 @@
 		<img alt="Help: Test Plan" style="float: right; vertical-align: top;" 
 			src="icons/sym_question.gif" 
 			onclick="javascript:open_popup('{$helphref}testPlan.html');" />
-    {lang_get s='title_test_plan'}
-		{if $countPlans > 0}
-			<form name="projectForm" action="lib/general/mainPage.php">
+
+ 	  <form name="projectForm" action="lib/general/mainPage.php">
+
+    	{* 20051002 - fm *}
+      {if $show_filter_tp_by_product }
+      
+      	{* 20050928 - fm *}
+      	<input type="hidden" name="filter_tp_by_product_hidden" value="0"> 
+        <input type="checkbox" name="filter_tp_by_product"  value="1" 
+      	       {if $filter_tp_by_product}
+      	         	checked="checked"
+               {/if}  	                     	 
+               onclick="this.form.submit();" />
+      
+
+			  {lang_get s='filter_tp_by_product'}
+			  <br><br>	
+		  {/if}  	                     	 
+        
+		{lang_get s='title_test_plan'}
+    {if $countPlans > 0}
 				<select name="project" onchange="this.form.submit();">
 				{section name=tPlan loop=$arrPlans}
 					<option value="{$arrPlans[tPlan].id}" 
 					{$arrPlans[tPlan].selected} >{$arrPlans[tPlan].name}</option>
 				{/section}
 				</select>
-			</form>
 		{else}
 			{lang_get s='msg_no_rights_for_tp'}
 		{/if}
+	 </form>
 	</div>
 
 	{if $countPlans > 0}

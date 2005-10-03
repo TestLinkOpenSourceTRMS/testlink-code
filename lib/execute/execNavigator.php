@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execNavigator.php,v $
  *
- * @version $Revision: 1.9 $
- * @modified $Date: 2005/09/26 16:50:49 $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2005/10/03 07:20:33 $
  *
  * @author Martin Havlat
  *
@@ -333,6 +333,8 @@ function displayTCTree($TCResult, $build, $owner, $colored, $menuUrl, $filteredR
 	return $data;
 }
 
+
+
 function displayTC($font,$mgttcid,$title,$tcid,$menuUrl, $dtreeCategoryId)
 {
 	$name = '<span';
@@ -358,21 +360,19 @@ function displayTC($font,$mgttcid,$title,$tcid,$menuUrl, $dtreeCategoryId)
 
 //this function gathers all of the passed,failed,blocked, 
 //and not run information about the test cases so that it can be displayed next to the category
+//
+// 20051002 - fm - refactoring
 function catCount($catID,$colored,$build)
 {
-	//check to see if the user selected the cumulative checkbox
-	//destroying old variables.. Shouldnt really matter but since I copied this from another place i'm leaving it in
+	global $g_tc_status;
 
 	$returnValues = null;
-	unset($totalRow);
-	unset($testCaseArray);
-	unset($totalTCs);
 	
-	$sql = " SELECT count(testcase.id) from category,testcase " .
+	$sql = " SELECT count(testcase.id) AS num_tc from category,testcase " .
 	       " WHERE category.id=" . $catID . 
 	       " AND category.id = testcase.catid";
 	$totalTCResult = do_mysql_query($sql);
-	$totalTCs = mysql_fetch_row($totalTCResult);
+	$totalTCs = mysql_fetch_assoc($totalTCResult);
 	
 	if($colored == 'result') //if they did then use these queries
 	{
@@ -384,18 +384,23 @@ function catCount($catID,$colored,$build)
 		$testCaseArray = null;
 		
 		//Now grab all of the test cases and their results	
-		$sql = "SELECT tcid,status FROM results,category,testcase WHERE category.id=" . $catID . 
-		       " AND category.id = testcase.catid and testcase.id = results.tcid ORDER BY build ASC";
+		$sql = " SELECT tcid, status, build.name " .
+		       " FROM results,category,testcase,build " .
+		       " WHERE category.id = testcase.catid " .
+		       " AND   testcase.id = results.tcid " .
+		       " AND   build.id = results.build_id " . 
+		       " AND   category.id=" . $catID . 
+		       " ORDER BY build.name DESC";
 		$totalResult = do_mysql_query($sql);
 
 		//Setting the results to an array.. Only taking the most recent results and displaying them
-		while($totalRow = mysql_fetch_row($totalResult))
+		while($totalRow = mysql_fetch_assoc($totalResult))
 		{
 			//This is a test.. I've got a problem if the user goes and sets a previous p,f,b 
 			// value to a 'n' value. The program then sees the most recent value as an not run. 
 			//I think we want the user to then see the most recent p,f,b value
-			if($totalRow[1] != 'n')	{
-				$testCaseArray[$totalRow[0]] = $totalRow[1];
+			if($totalRow['status'] != $g_tc_status['not run'])	{
+				$testCaseArray[$totalRow['tcid']] = $totalRow['status'];
 			}
 		}
 		
@@ -407,48 +412,55 @@ function catCount($catID,$colored,$build)
 			//This loop will cycle through the arrays and count the amount of p,f,b,n
 			foreach($testCaseArray as $tc)
 			{
-				if($tc == 'p') {
+				if($tc == $g_tc_status['passed']) {
 					$pass++;
-				} elseif($tc == 'f') {
+				} elseif($tc == $g_tc_status['failed']) {
 					$fail++;
-				} elseif($tc == 'b') {
+				} elseif($tc == $g_tc_status['blocked']) {
 					$blocked++;
 				}
 			}//end foreach
 		}//end if
 		//setup the return values
-		$returnValues = '<span class="green">' . $pass . "</span>"; //pass
-		$returnValues .= ',<span class="red">' . $fail . "</span>"; //fail
-		$returnValues .= ',<span class="blue">' . $blocked . "</span>"; //blocked
-		$tmp = $totalTCs[0] - ($pass + $fail + $blocked); //the equation for not run
+
+		$tmp = $totalTCs['num_tc'] - ($pass + $fail + $blocked); //the equation for not run
+		$returnValues = '<span class="green">' . $pass . "</span>";
+		$returnValues .= ',<span class="red">' . $fail . "</span>";
+		$returnValues .= ',<span class="blue">' . $blocked . "</span>";
 		$returnValues .= ',<span class="black">' . $tmp . "</span>"; //append font to front and back
 	}
 	else
 	{	
 		//else use a specific build
-		$sql = " SELECT COUNT(testcase.id) AS c,status " .
-		       " FROM category,testcase,results WHERE category.id=" . $catID . 
-		       " AND category.id=testcase.catid AND testcase.id=results.tcid " .
-		       " AND build='" . $build . "' GROUP BY results.status";
+		$sql = " SELECT COUNT(testcase.id) AS num_tc,status " .
+		       " FROM category,testcase,results " .
+		       " WHERE category.id=testcase.catid " .
+		       " AND testcase.id=results.tcid " .
+		       " AND category.id=" . $catID . 
+		       " AND results.build_id=" . $build . 
+		       " GROUP BY results.status";
 		$result = do_mysql_query($sql);
 	
-		$values['p'] = 0;
-		$values['f'] = 0;
-		$values['b'] = 0;
-		$values['n'] = 0;
+		$values[$g_tc_status['passed']] = 0;
+		$values[$g_tc_status['failed']] = 0;
+		$values[$g_tc_status['blocked']] = 0;
+		$values[$g_tc_status['not run']] = 0;
 		if ($result)
 		{
-			while($row = mysql_fetch_array($result))
-				$values[$row['status']] = $row['c'];
+			while($row = mysql_fetch_assoc($result))
+			{
+				$values[$row['status']] = $row['num_tc'];
+			}	
 		}
 		
-		$values['n'] = $totalTCs[0] -  $values['p'] - $values['f'] - $values['b'];
+		$values[$g_tc_status['not run']] = $totalTCs['num_tc'] -  $values[$g_tc_status['passed']] - 
+		                                                   $values[$g_tc_status['failed']] - 
+		                                                   $values[$g_tc_status['blocked']];
 		
-		//Set the passed,failed, and blocked results to the returned value
-		$returnValues = '<span class="green">' . $values['p'] . "</span>";  //pass
-		$returnValues .=  ',<span class="red">' . $values['f'] . "</span>"; //failed
-		$returnValues .= ',<span class="blue">' . $values['b'] . "</span>"; //blocked
-		$returnValues .= ',<span class="black">' . $values['n'] . "</span>";
+		$returnValues = '<span class="green">' . $values[$g_tc_status['passed']] . "</span>"; 
+		$returnValues .=  ',<span class="red">' . $values[$g_tc_status['failed']] . "</span>"; 
+		$returnValues .= ',<span class="blue">' . $values[$g_tc_status['blocked']] . "</span>";
+		$returnValues .= ',<span class="black">' . $values[$g_tc_status['not run']] . "</span>";
 	}
 	return $returnValues;
 }

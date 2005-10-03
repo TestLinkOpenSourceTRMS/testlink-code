@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: planEdit.php,v 1.4 2005/09/15 17:00:14 franciscom Exp $ */
+/* $Id: planEdit.php,v 1.5 2005/10/03 07:20:14 franciscom Exp $ */
 /* Purpose:  ability to edit and delete projects */
 /* TODO: I need to add the deletion of project rights
  *	I need to delete the projects builds
@@ -37,14 +37,20 @@ if(isset($_POST['editTestPlan']))
 
 			//Select all of the projects priority fields
 			if (!deleteTestPlanPriorityFields($id))
-				$editResult .= lang_get('delete_tp_priority_failed1'). $safeName. lang_get('delete_tp_priority_failed2') . ": <br />".mysql_error()."<br />";
+				$editResult .= lang_get('delete_tp_priority_failed1'). $safeName. lang_get('delete_tp_priority_failed2') . 
+				               ": <br />".mysql_error()."<br />";
 
 			//Select all of the projects milestones
 			if (!deleteTestPlanMilestones($id))
-				$editResult .= lang_get('delete_tp_milestones_failed1'). $safeName.lang_get('delete_tp_milestones_failed2') . ": <br />".mysql_error()."<br />";
-	
+			{
+				$editResult .= lang_get('delete_tp_milestones_failed1'). $safeName.lang_get('delete_tp_milestones_failed2') . 
+				               ": <br />".mysql_error()."<br />";
+	    }
+	    
 			//Select all of the projects builds
-			$builds = getBuilds($id);
+			// 20051002 - fm - order by
+			$builds = getBuilds($id, " ORDER BY build.name ");
+			
 			//SCHLUNDUS
 			$buildIDList = sizeof($builds) ? array_keys($builds) : null;
 			$buildIDList = sizeof($builds) ? implode(",",$buildIDList) : null;
@@ -63,13 +69,15 @@ if(isset($_POST['editTestPlan']))
 					$tcIDList = implode(",",$tcIDs);
 					$query = "DELETE FROM bugs WHERE tcid IN ({$tcIDList}) AND build IN ({$buildIDList})";
 					if (!do_mysql_query($query))
-						$editResult .= lang_get('delete_tp_bugs_failed1').$safeName.lang_get('delete_tp_bugs_failed2').": <br />".mysql_error()."<br />";
+						$editResult .= lang_get('delete_tp_bugs_failed1').$safeName.lang_get('delete_tp_bugs_failed2').
+						               ": <br />".mysql_error()."<br />";
 				}
 			}
 			
 			//Delete all of the builds
 			if (!deleteTestPlanBuilds($id))
-				$editResult .= lang_get('delete_tp_builds_failed1').$safeName.lang_get('delete_tp_builds_failed2').": <br />".mysql_error()."<br />";
+				$editResult .= lang_get('delete_tp_builds_failed1').$safeName.lang_get('delete_tp_builds_failed2').
+				               ": <br />".mysql_error()."<br />";
 			
 			if (sizeof($tcIDs))
 			{
@@ -77,30 +85,35 @@ if(isset($_POST['editTestPlan']))
 				$query = "DELETE FROM results WHERE tcid IN ({$tcIDList})";
 				$result = do_mysql_query($query);
 				if (!$result)
-					$editResult .= lang_get('delete_tp_results_failed1').$safeName.lang_get('delete_tp_results_failed2') . ": <br />".mysql_error()."<br />";
+					$editResult .= lang_get('delete_tp_results_failed1').$safeName.lang_get('delete_tp_results_failed2') . 
+					               ": <br />".mysql_error()."<br />";
 
 			}
 			deleteTestCasesByCategories($catIDs);
 
-			$comIDs = null;
-			getTestPlanComponentIDs($id,$comIDs);
+      // 20051001 - fm
+			$comIDs = getTestPlanComponentIDs($id);
 			deleteCategoriesByComponentIDs($comIDs);
 			
 			//Delete the components
 			if (!deleteTestPlanComponents($id))
-				$editResult .= lang_get('delete_tp_comp_failed1').$safeName. lang_get('delete_tp_comp_failed2').": <br />" .	mysql_error() . "<br />";
+				$editResult .= lang_get('delete_tp_comp_failed1').$safeName. 
+				               lang_get('delete_tp_comp_failed2').": <br />" .	mysql_error() . "<br />";
 
 			if (!deleteTestPlanRightsForProject($id))
-				$editResult .= lang_get('delete_tp_rights_failed1').$safeName.lang_get('delete_tp_rights_failed2').": <br />" .	mysql_error() . "<br />";
+				$editResult .= lang_get('delete_tp_rights_failed1'). $safeName . 
+				               lang_get('delete_tp_rights_failed2').": <br />" .	mysql_error() . "<br />";
 				
 			//Finally delete the test plan
 			if (!deleteTestPlan($id))
-				$editResult .= lang_get('delete_tp_data_failed1').$safeName.lang_get('delete_tp_data_failed2').": <br /> ". mysql_error()."<br />";
+				$editResult .= lang_get('delete_tp_data_failed1'). $safeName . 
+				               lang_get('delete_tp_data_failed2').": <br /> ". mysql_error()."<br />";
 			
 			if ($editResult == '')
 				$generalResult .= lang_get('delete_tp_succeeded1').$safeName. lang_get('delete_tp_succeeded2')."<br />";
 			else
-				$generalResult .= lang_get('delete_tp_failed1').$safeName. lang_get('delete_tp_failed2').": <br />" . $editResult . "<br />";
+				$generalResult .= lang_get('delete_tp_failed1').$safeName. lang_get('delete_tp_failed2').": <br />" . 
+				                  $editResult . "<br />";
 		}
 		else //if the user has edited the data
 		{
@@ -109,7 +122,8 @@ if(isset($_POST['editTestPlan']))
 			if (updateTestPlan($id,$name,$notes,$active))
 				$generalResult .= lang_get('update_tp_succeeded1'). $safeName . lang_get('update_tp_succeeded2')."<br />";
 			else
-				$generalResult .= lang_get('update_tp_failed1'). $safeName . lang_get('update_tp_failed2').": " . mysql_error() . "<br />";
+				$generalResult .= lang_get('update_tp_failed1'). $safeName . lang_get('update_tp_failed2').": " . 
+				                  mysql_error() . "<br />";
 		} // if delete
 	} // while POST array
 }

@@ -2,8 +2,8 @@
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: results.inc.php,v $
- * @version $Revision: 1.13 $
- * @modified $Date: 2005/09/26 16:50:51 $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2005/10/03 07:21:42 $
  * 
  * @author 	Martin Havlat 
  * @author 	Chad Rosen (original report definition)
@@ -122,17 +122,24 @@ function getTCLink($rights, $result, $id, $title, $buildID)
 *
 * @param string $tpID Test Plan ID; 
 * @param string $build Build number
-* @return array $totalPassed, $totalFailed, $totalBlocked
+* @return assoc array ('passed'  => total tc Passed, 
+                       'failed'  => total tc Failed, 
+                       'blocked' => total tc Blocked
+*
+* 20051002 - fm - refactoring, return type changed
 */
 function getPlanStatus($tpID, $buildID)
 {
 	global $g_tc_status;
 
 	// MHT 200507 improved SQL
-	$base_sql = " SELECT count(results.tcid) FROM component,category,testcase,results " .
-			" WHERE component.projid =" . $tpID . " AND component.id = category.compid " .
-			" AND category.id = testcase.catid " . " AND testcase.id = results.tcid " .
-			" AND results.build_id = " . $buildID ;
+	$base_sql = " SELECT count(results.tcid) AS num_results " .
+	            " FROM component,category,testcase,results " .
+			        " WHERE component.id = category.compid " .
+			        " AND category.id = testcase.catid " . 
+			        " AND testcase.id = results.tcid " .
+			        " AND component.projid =" . $tpID . 
+			        " AND results.build_id = " . $buildID ;
 
 	//Get the total # of passed testcases for the project and build
 	$sql = $base_sql . " AND status = '" . $g_tc_status['passed'] . "'";
@@ -152,7 +159,10 @@ function getPlanStatus($tpID, $buildID)
 	$blockedTCs = mysql_fetch_row($blockedResult);
 	$totalBlocked = $blockedTCs[0];
 
-	return array($totalPassed, $totalFailed, $totalBlocked);
+  // 20051002 - fm - assoc
+	return array('passed' => $totalPassed, 
+	             'failed' => $totalFailed, 
+	             'blocked' => $totalBlocked);
 }
 
 /**

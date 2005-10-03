@@ -3,8 +3,8 @@
  * TestLink Open Source Project - @link http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: plan.core.inc.php,v $
- * @version $Revision: 1.7 $
- * @modified $Date: 2005/09/27 06:44:49 $ $Author: franciscom $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2005/10/03 07:21:42 $ $Author: franciscom $
  *  
  * 
  * @author 	Martin Havlat
@@ -13,6 +13,7 @@
  * @todo common.php includes related function getUserTestPlan (move it here)
  *
  *
+ * @author 20050928 - fm - getTestPlans() interface changes 
  * @author 20050926 - fm - get_tp_father() 
  * @author 20050904 - fm 
  * TL 1.5.1 compatibility, get also Test Plans without product id.
@@ -30,6 +31,9 @@
  *
  *
  * rev :
+ *      20050928 - fm
+ *      added argument $filter_by_product
+ *
  *      20050904 - fm 
  *      TL 1.5.1 compatibility, get also Test Plans without product id.
  *
@@ -43,7 +47,7 @@
  *
  *      MHT 20050707 order by name
  */
-function getTestPlans($productID, $userID)
+function getTestPlans($productID, $userID, $filter_by_product=0)
 {
 	global $g_show_tp_without_prodid;
  	$arrPlans = array();
@@ -52,13 +56,18 @@ function getTestPlans($productID, $userID)
 	// added filter by product id
 	//
 	$sql = " SELECT DISTINCT id,name,notes,active,prodid FROM project,projrights " .
-			           " WHERE active=1 AND prodid=" . $productID;
+			           " WHERE active=1 ";
 			           
-			           
-	// 20050904 - fm - TL 1.5.1 compatibility, get also Test Plans without product id.		           
-  if ($g_show_tp_without_prodid)
-  {
-  	$sql .= " OR prodid=0 ";
+	// 20050928 - fm
+	if ( $filter_by_product )
+	{
+	   $sql .= " AND prodid=" . $productID;
+
+		// 20050904 - fm - TL 1.5.1 compatibility, get also Test Plans without product id.		           
+  	if ($g_show_tp_without_prodid)
+  	{
+  		$sql .= " OR prodid=0 ";
+		}
 	}
 	
 	$sql .= " ORDER BY name";
@@ -161,6 +170,7 @@ function getCountTestPlans4UserProd($userID,$prodID=null)
 			   
 	if (!$prodID)
 	{		   
+		// 20050929 - fm
 		$sql .= " AND project.prodid=" . $prodID;
 		
 		// 20050904 - fm - 

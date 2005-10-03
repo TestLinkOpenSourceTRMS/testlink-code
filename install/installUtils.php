@@ -1,8 +1,9 @@
 <?php
 /* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: installUtils.php,v 1.7 2005/09/27 16:55:45 franciscom Exp $ 
+$Id: installUtils.php,v 1.8 2005/10/03 07:19:17 franciscom Exp $ 
 
+20051002 - fm - messages changes
 20050925 - fm - changes to getDirFiles()
 20050910 - fm - refactoring
 20050830 - fm - added check_php_settings()
@@ -59,7 +60,7 @@ if ( $add_dirpath )
 // | Authors: João Prado Maia <jpm@mysql.com>                             |
 // +----------------------------------------------------------------------+
 //
-// @(#) $Id: installUtils.php,v 1.7 2005/09/27 16:55:45 franciscom Exp $
+// @(#) $Id: installUtils.php,v 1.8 2005/10/03 07:19:17 franciscom Exp $
 //
 
 
@@ -421,8 +422,12 @@ if ($inst_type == "upgrade" )
           "We STRONGLY recomend you to backup your Database Before starting this upgrade process"; 
   
   
-  $msg .= "<br><br> During the Upgrade the name of testcases, categories, ecc WILL BE TRUNCATED to 100 chars</h1>";
+  $msg .= "<br><br> Attention PLEASE:";
+  $msg .= "<br> 1. The name/title of testcases, categories, ecc WILL BE TRUNCATED to 100 chars";
+  $msg .= "<br> 2. Components and Categories present in Test Plans ";
+  $msg .= "BUT NO MORE PRESENT IN PRODUCTS <br>WILL BE DELETED</h1>";
   $msg .= '<br>' . $many_warnings . "<br><br>"; 
+  
         
 
 

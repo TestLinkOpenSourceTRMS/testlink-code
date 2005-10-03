@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.12 $
- * @modified $Date: 2005/09/26 16:50:49 $ $Author: franciscom $
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2005/10/03 07:20:33 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -58,7 +58,7 @@ if (isset($_REQUEST['submitTestResults']))
 
 // 20050821 - fm
 $tpID = $_SESSION['testPlanId'];
-$builds = getBuilds($tpID);
+$builds = getBuilds($tpID, " ORDER BY build.name ");
 $buildName = isset($builds[$buildID]) ? $builds[$buildID] : '';
 
 // 20050919 - fm

@@ -1,11 +1,12 @@
 <?php
 
 ////////////////////////////////////////////////////////////////////////////////
-// @version $Id: planAddTC.php,v 1.4 2005/09/26 16:50:51 franciscom Exp $
+// @version $Id: planAddTC.php,v 1.5 2005/10/03 07:20:14 franciscom Exp $
 // File:     planAddTC.php
 // Author:   Chad Rosen
 // Purpose:  This page manages the importation of test cases into testlink.
 //
+// 20051001 - fm - refactoring
 // 20050926 - fm - removed name from category and component insert
 // 20050807 - fm - removed deprecated: $_SESSION['project']
 //
@@ -38,7 +39,7 @@ if(isset($_POST['addTC'])) //If the user submits the import form
 	$i = 0;
 	//This loop goes through all of the $_POST variables and maps them to values
 	foreach ($_POST as $key)
-    {
+  {
 		$newArray[$i] = $key;
 		$i++;
 	}
@@ -50,171 +51,87 @@ if(isset($_POST['addTC'])) //If the user submits the import form
 		{
 			$tcid = $newArray[$i + 1]; //If we find the test case that has been 
 			                           //passed through it's value is always the next item in the list
-			//Finding CATID for the test case
-			$sqlMGTCATID = "SELECT catid from mgttestcase where id=" . $tcid;
-			$resultMGTCATID = @do_mysql_query($sqlMGTCATID); 
-			$rowMGTCATID = mysql_fetch_array($resultMGTCATID); 
-	
-			//Finding the COMID from the tpid we just found
-			$sqlMGTCOMID = "SELECT compid from mgtcategory where id=" . $rowMGTCATID[0];
-			$resultMGTCOMID = @do_mysql_query($sqlMGTCOMID); 
-			$rowMGTCOMID = mysql_fetch_array($resultMGTCOMID); 
-
-
+			                           
+			           
+			$sql_mgt = " SELECT MGTCAT.id AS mgtcatid, MGTCOMP.id AS mgtcompid, " .
+			           "        MGTCAT.CATorder " .
+			           " FROM mgtcomponent MGTCOMP, mgtcategory MGTCAT, mgttestcase MGTTC " .
+			           " WHERE MGTCAT.compid = MGTCOMP.id " .
+			           " AND   MGTTC.catid = MGTCAT.id " .
+			           " AND   MGTTC.id=" . $tcid;                            
+			$result = @do_mysql_query($sql_mgt);
+			$mgtinfo = mysql_fetch_assoc($result); 
+			
 			//This next long set of code looks through the kenny side of the DB and checks to see if each of the
-			//Components,categories, or TCs already exist. If one of the top level items exists the function skips down to the next level and checks there. Finally if no TCs exist it does nothing.
+			//Components,categories, or TCs already exist. 
+			//If one of the top level items exists the function skips down to the next level and checks there. 
+			//Finally if no TCs exist it does nothing.
 			
 			//Determining if the component already exists for the project being added to
 			//
 			// 20050807 - fm - $idPlan
-			$sqlCOMID = "SELECT mgtcompid,id FROM component where mgtcompid=" . $rowMGTCOMID[0] . 
+			$sqlCOMID = " SELECT mgtcompid,id AS compid FROM component " .
+			            " WHERE mgtcompid=" . $mgtinfo['mgtcompid'] . 
 			            " AND projid=" .  $idPlan;
 			$resultCOMID = @do_mysql_query($sqlCOMID); 
 			
 			
-			if(mysql_num_rows($resultCOMID) > 0) //Are there any existing COM?
+			if(mysql_num_rows($resultCOMID) > 0) 
 			{
-				$rowResultCOMID = mysql_fetch_row($resultCOMID); 
-				$sqlCATID = "SELECT mgtcatid,id from category WHERE mgtcatid=" . 
-				            $rowMGTCATID[0] . " AND compid=" . $rowResultCOMID[1];
-				$resultCATID = @do_mysql_query($sqlCATID); //execute query
+				$rowResultCOMID = mysql_fetch_assoc($resultCOMID); 
+				$sqlCATID = " SELECT mgtcatid,id AS catid from category " .
+				            " WHERE mgtcatid=" . $mgtinfo['mgtcatid'] . 
+				            " AND compid=" . $rowResultCOMID['compid'];
+				$resultCATID = @do_mysql_query($sqlCATID);
 				
-				if(mysql_num_rows($resultCATID) > 0) //Are there any existing CAT?
+				if(mysql_num_rows($resultCATID) > 0) 
 				{
-					$rowResultCATID = mysql_fetch_row($resultCATID);
-					$sqlTCID = "SELECT mgttcid from testcase where mgttcid=" . $tcid . 
-					           " AND catid=" . $rowResultCATID[1];
-					$resultTCID = @do_mysql_query($sqlTCID); //execute query
+					$rowResultCATID = mysql_fetch_assoc($resultCATID);
+					$sqlTCID = " SELECT mgttcid FROM testcase " .
+					           " WHERE mgttcid=" . $tcid . 
+					           " AND catid=" . $rowResultCATID['catid'];
+					$resultTCID = @do_mysql_query($sqlTCID); 
 
-					if(mysql_num_rows($resultTCID) > 0) //Were there any test case matches?
+					if( mysql_num_rows($resultTCID) == 0) 
 					{
-
-						//Do nothin
+					  // the test case doesn't already exist
+				    create_tc_from_mgttc($tcid, $rowResultCATID['catid']);
 					}
-					else //If the test case doesn't already exist
-					{
-						//Figure out the testcase info to be added
-						$sqlAddMgtTC = " SELECT title,summary,steps,exresult,version,keywords,TCorder FROM mgttestcase " .
-						               " WHERE id=" . $tcid;
-						$resultAddMgtTC = do_mysql_query($sqlAddMgtTC);
-						$rowMGTAddTC = mysql_fetch_array($resultAddMgtTC);
-
-						//Add the testcase to the project
-						$steps = $rowMGTAddTC[2];
-						$exresult = $rowMGTAddTC[3];
-						$summary = $rowMGTAddTC[1];
-										
-						$sqlAddTC = " INSERT INTO testcase(title,mgttcid,catid,summary,steps,exresult,version,keywords,TCorder) " .
-						            " VALUES ('" . mysql_escape_string($rowMGTAddTC[0]) . "'," . $tcid . "," . 
-						            mysql_escape_string($rowResultCATID[1]) . 
-						            ",'" . mysql_escape_string($summary) . "','" . 
-						            mysql_escape_string($steps) . "','" . 
-						            mysql_escape_string($exresult) . "','" . 
-						            mysql_escape_string($rowMGTAddTC[4]) . "','" . 
-						            mysql_escape_string($rowMGTAddTC[5]) . "','" . 
-						            mysql_escape_string($rowMGTAddTC[6]) . "')";
-						$resultAddTC = do_mysql_query($sqlAddTC);
-						
-					}
-					
 				}
 				else
 				{
-					//If the category doesn't exist
-					//Figure out the category info to be added
-					$sqlAddMgtCAT = "SELECT name,CATorder FROM mgtcategory WHERE id=" . $rowMGTCATID[0];
-					$resultAddMgtCAT = do_mysql_query($sqlAddMgtCAT);
-					$rowMGTAddCAT = mysql_fetch_array($resultAddMgtCAT); 
-
 					//Add the category to the project
 					$sqlAddCAT = " INSERT INTO category (mgtcatid,compid,CATorder) " .
-					             " VALUES ('" . mysql_escape_string($rowMGTCATID[0]) . "','" . 
-					             mysql_escape_string($rowResultCOMID[1]) . "','" . 
-					             mysql_escape_string($rowMGTAddCAT[1]) . "')";
+					             " VALUES (" . $mgtinfo['mgtcatid']      . "," . 
+					                           $rowResultCOMID['compid'] . "," . 
+					                           $mgtinfo['CATorder'] . ")";
 					$resultAddCAT = do_mysql_query($sqlAddCAT); 
 					$addCATID =  mysql_insert_id(); 
 
 					//Add the test case to the project
-					//Figure out the testcase info to be added
-					$sqlAddMgtTC = " SELECT title,summary,steps,exresult,version,keywords,TCorder " .
-					               " FROM mgttestcase WHERE id=" . $tcid;
-					$resultAddMgtTC = do_mysql_query($sqlAddMgtTC);
-					$rowMGTAddTC = mysql_fetch_array($resultAddMgtTC); 
-
-					$steps = $rowMGTAddTC[2];
-					$exresult = $rowMGTAddTC[3];
-					$summary = $rowMGTAddTC[1];
-
-					//Add the testcase to the project					
-					$sqlAddTC = " INSERT INTO testcase(title,mgttcid,catid,summary,steps,exresult,version,keywords,TCorder) " .
-					            " VALUES ('" . mysql_escape_string($rowMGTAddTC[0]) . "','" . 
-					                           mysql_escape_string($tcid) . "','" . 
-					                           mysql_escape_string($addCATID)  . "','" . 
-					                           mysql_escape_string($summary) . "','" . 
-					                           mysql_escape_string($steps) . "','" . 
-					                           mysql_escape_string($exresult) . "','" . 
-					                           mysql_escape_string($rowMGTAddTC[4]) . "','" . 
-					                           mysql_escape_string($rowMGTAddTC[5]) . "','" . 
-					                           mysql_escape_string($rowMGTAddTC[6]) . "')";
-					$resultAddTC = do_mysql_query($sqlAddTC); 
+		      create_tc_from_mgttc($tcid, $addCATID);
 				}
 			}
 			else
 			{ 
-				//Figure out the component info to be added
-				$sqlAddMgtCOM = "SELECT name from mgtcomponent WHERE id=" . $rowMGTCOMID[0];
-				$resultAddMgtCOM = do_mysql_query($sqlAddMgtCOM);
-				$rowMGTAddCOM = mysql_fetch_array($resultAddMgtCOM); //Grab the COMID
-
 				//Add the component to the project					
 				//
 				// 20050807 -fm - $idPlan
 				$sqlAddCOM = "INSERT INTO component (mgtcompid,projid) " . 
-				             " VALUES ('" . 
-				             mysql_escape_string($rowMGTCOMID[0]) . "','" . $idPlan . "')";
-				             
-				             
-				$resultAddCOM = do_mysql_query($sqlAddCOM); //execute query
-				$addCOMID =  mysql_insert_id();	 //Grab the id of the Component just entered
+				             " VALUES (" . $mgtinfo['mgtcompid'] . "," . $idPlan . ")";
+				$resultAddCOM = do_mysql_query($sqlAddCOM); 
+				$addCOMID =  mysql_insert_id();	 
 			
-				//Figure out the category info to be added
-				$sqlAddMgtCAT = "SELECT name,CATorder FROM mgtcategory where id=" . $rowMGTCATID[0];
-				$resultAddMgtCAT = do_mysql_query($sqlAddMgtCAT);
-				$rowMGTAddCAT = mysql_fetch_array($resultAddMgtCAT); 
-
 				//Add the category to the project					
-				$sqlAddCAT = "INSERT INTO category(name,mgtcatid,compid,CATorder) VALUES ('" . 
-				             mysql_escape_string($rowMGTAddCAT[0]) . "','" . 
-				             mysql_escape_string($rowMGTCATID[0]) . "','" . 
-				             mysql_escape_string($addCOMID) . "','" . 
-				             mysql_escape_string($rowMGTAddCAT[1]) . "')";
-				$resultAddCAT = do_mysql_query($sqlAddCAT); 
+				$sqlAddCAT = " INSERT INTO category(mgtcatid,compid,CATorder) " .
+				             " VALUES (" . $mgtinfo['mgtcatid'] ."," . 
+				                           $addCOMID . "," . 
+				                           $mgtinfo['CATorder'] . ")";
+				$resultAddCAT = do_mysql_query($sqlAddCAT);
 				$addCATID =  mysql_insert_id(); 
 
 				//Add the test case to the project
-		
-				//Figure out the test case info to be added
-				$sqlAddMgtTC = " SELECT title,summary,steps,exresult,version,keywords,TCorder " .
-				               " FROM mgttestcase WHERE id=" . $tcid;
-				$resultAddMgtTC = do_mysql_query($sqlAddMgtTC);
-				$rowMGTAddTC = mysql_fetch_array($resultAddMgtTC); //Grab the TCID
-
-				//Add the category to the project
-				$steps = $rowMGTAddTC[2];
-				$exresult = $rowMGTAddTC[3];
-				$summary = $rowMGTAddTC[1];
-				
-				$sqlAddTC = " INSERT INTO testcase(title,mgttcid,catid,summary,steps,exresult,version,keywords,TCorder) ".
-				            " VALUES ('" . mysql_escape_string($rowMGTAddTC[0]) . "','" . 
-				                          mysql_escape_string($tcid) . "','" . 
-				                          mysql_escape_string($addCATID)  . "','" . 
-				                          mysql_escape_string($summary) . "','" . 
-				                          mysql_escape_string($steps) . "','" . 
-				                          mysql_escape_string($exresult) . "','" . 
-				                          mysql_escape_string($rowMGTAddTC[4]) . "','" . 
-				                          mysql_escape_string($rowMGTAddTC[5]) . "','" . 
-				                          mysql_escape_string($rowMGTAddTC[6]) . "')";
-				$resultAddTC = do_mysql_query($sqlAddTC); 
+		    create_tc_from_mgttc($tcid, $addCATID);
 			}
 			$i = $i + 1; //increment the counter plus an extra one to skip the testcase number
 		}
@@ -260,6 +177,28 @@ else
 	redirect($_SESSION['basehref'] .$g_rpath['help'].'/planAddTC.html');
 }
 
+
+// 20051001 - fm
+function create_tc_from_mgttc($mgt_tcid, $catID)
+{
+	// Get management the test case info to be added
+	$sql = " SELECT title,summary,steps,exresult,version,keywords,TCorder " .
+	       " FROM mgttestcase WHERE id=" . $mgt_tcid;
+	$result = do_mysql_query($sql);
+	$myrow = mysql_fetch_assoc($result);
+
+	$sql = " INSERT INTO testcase(title,mgttcid,catid,summary,steps,exresult,version,keywords,TCorder) ".
+	       " VALUES ('" . mysql_escape_string($myrow['title']) . "'," . 
+	                      mysql_escape_string($mgt_tcid) . "," . 
+	                      mysql_escape_string($catID)  . "," .
+	                      "'" . mysql_escape_string($myrow['summary']) . "'," .
+	                      "'" . mysql_escape_string($myrow['steps']) . "'," . 
+	                      "'" . mysql_escape_string($myrow['exresult']) . "'," . 
+	                            mysql_escape_string($myrow['version']) . "," . 
+	                      "'" . mysql_escape_string($myrow['keywords']) . "'," .
+	                            mysql_escape_string($myrow['TCorder']) . ")";
+	$result = do_mysql_query($sql); 
+}
 
 
 ?>

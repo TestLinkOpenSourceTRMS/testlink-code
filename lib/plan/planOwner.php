@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: planOwner.php,v 1.5 2005/09/22 10:08:23 franciscom Exp $ */
+/* $Id: planOwner.php,v 1.6 2005/10/03 07:20:14 franciscom Exp $ */
 /**
  * Manage the ownership and priority of test suite
  *
@@ -32,8 +32,9 @@ $arrSuites = null;
 
 if($level == 'root')
 {
+	// 20051001 - fm -BUGID 0000133: Broken link in priority assignment
 	// 20050922 - fm -BUGID 0000133: Broken link in priority assignment
-	redirect(TL_INSTRUCTIONS_RPATH . $_SESSION['locale'] . '/planOwnerAndPriority.html');
+	redirect("../../" . TL_INSTRUCTIONS_RPATH . $_SESSION['locale'] . '/planOwnerAndPriority.html');
 }	
 else if($level == 'component')
 {

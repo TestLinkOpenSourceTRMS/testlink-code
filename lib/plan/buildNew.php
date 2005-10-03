@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: buildNew.php,v 1.10 2005/09/27 06:44:49 franciscom Exp $ */
+/* $Id: buildNew.php,v 1.11 2005/10/03 07:20:14 franciscom Exp $ */
 /* 
 Purpose:  admins create new builds for a project 
 
@@ -24,7 +24,7 @@ testlinkInitPage();
 $tpID = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0;
 $buildID = isset($_POST['buildID']) ? intval($_POST['buildID']) : 0;
 
-$builds = getBuilds($tpID);
+$builds = getBuilds($tpID, " ORDER BY build.name ");
 
 $smarty = new TLSmarty;
 
@@ -81,7 +81,8 @@ if ($buildID)
 	$smarty->assign('action', 'Delete');
 }
 
-$builds = getBuilds($tpID);
+// 20051002 - fm - change order by
+$builds = getBuilds($tpID, " ORDER by build.name ");
 $notes = getBuildsAndNotes($tpID);
 
 $smarty->assign('TPname', $_SESSION['testPlanName']);

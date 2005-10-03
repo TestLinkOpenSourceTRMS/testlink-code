@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: containerEdit.tpl,v 1.6 2005/08/29 11:13:46 schlundus Exp $ *}
+{* $Id: containerEdit.tpl,v 1.7 2005/10/03 07:19:47 franciscom Exp $ *}
 {* Purpose: smarty template - edit test specification: containers *}
 {* Note: htmlarea cannot be within tag <p> *}
 {*
@@ -12,7 +12,7 @@
 <body>
 <div class="workBack">
 
-<h1>{lang_get s='title_edit_level'} {$level}</h1> 
+<h1>{lang_get s='title_edit_level'} $$$$ {$level}</h1> 
 
 {if $level == 'category'}
 	<form method="post" action="lib/testcases/containerEdit.php?categoryID={$containerID}" /> 

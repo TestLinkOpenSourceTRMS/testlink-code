@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: requirements.inc.php,v $
- * @version $Revision: 1.11 $
- * @modified $Date: 2005/09/07 20:19:25 $ by $Author: schlundus $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2005/10/03 07:21:42 $ by $Author: franciscom $
  *
  * @author Martin Havlat <havlat@users.sourceforge.net>
  * 
@@ -13,6 +13,7 @@
  *
  * Revisions:
  *
+ * 20051002 - francisco mancardi - Changes in createTcFromRequirement()
  * 20050906 - francisco mancardi - reduce global coupling 
  * 20050901 - Martin Havlat - updated metrics/results related functions 
  * 20050830 - francisco mancardi - changes in printSRS()
@@ -147,7 +148,7 @@ function getReqSpec($prodID, $set = 'product')
 		$sql .= " WHERE id=" . $set;
 	}
 	// else all
-	
+
 	return selectData($sql);
 }
 
@@ -438,8 +439,10 @@ function createRequirement($title, $scope, $idSRS, $userID, $status = 'v', $type
 				"','" . mysql_escape_string($type) ."'," . mysql_escape_string($userID) . 
 				", CURRENT_DATE)";
 		$result = do_mysql_query($sql); 
-		$result = $result ? 'ok' : 'The INSERT request fails with these values:' . 
-			$title . ', ' . $scope . ', ' . $status;
+		
+		$result = $result ? 'ok' : 
+		          'The INSERT request fails with these values:' . $title . ', ' . $scope . ', ' . $status .
+		          $sql;
 	} else {
 		$result = "You cannot enter an empty title!";
 	}
@@ -656,16 +659,25 @@ function unassignTc2Req($idTc, $idReq)
  * @param array or integer list of REQ id's 
  * @return string Result description
  * 
+ * @version 1.2
+ * @author Francisco Mancardi
+ * interface changes added $idSRS
+ * use new configuration parameter
+ *
  * @version 1.1
  * @author Francisco Mancardi - reduce global coupling
  *
  * @version 1.0
  * @author Martin Havlat 
  */
-function createTcFromRequirement($mixIdReq, $prodID, $login_name)
+function createTcFromRequirement($mixIdReq, $prodID, $idSRS, $login_name)
 {
 	require_once("../testcases/archive.inc.php");
 	
+	global $g_req_cfg;
+	global $g_field_size;
+	
+
 	tLog('createTcFromRequirement started');
 	$output = null;
 	if (is_array($mixIdReq)) {
@@ -674,25 +686,44 @@ function createTcFromRequirement($mixIdReq, $prodID, $login_name)
 		$arrIdReq = array($mixIdReq);
 	}
 	
+	
+	// 20051002 - fm
+	$auto_category_name = $g_req_cfg->default_category_name;
+	$auto_component_name = $g_req_cfg->default_component_name;
+
+	if ( $g_req_cfg->use_req_spec_as_category_name )
+	{
+	  // SRS Title
+	  $arrSpec = getReqSpec($prodID,$idSRS);
+	  $auto_category_name = substr($arrSpec[0]['title'],0,$g_field_size->category_name);
+	}
+	
+	
 	//find component
-	$sqlCOM = "SELECT id FROM mgtcomponent WHERE name='TODO' AND " .
-			"prodid=" . $prodID;
+	$sqlCOM = " SELECT id FROM mgtcomponent " .
+	          " WHERE name='" . $auto_component_name . "' " .
+	          " AND prodid=" . $prodID;
+	          
 	$resultCOM = do_mysql_query($sqlCOM);
 	if (mysql_num_rows($resultCOM) == 1) {
 		$idCom = mysql_result($resultCOM,0);
 	}
 	else {
 		// not found -> create
-		tLog('Component TODO was not found.');
-		$sqlInsertCOM = 'INSERT INTO mgtcomponent (name,scope,prodid) VALUES ' .
-				            "('TODO','Test Cases generated from Requirements'," .  $prodID . ")";
+		tLog('Component:' . $auto_component_name . ' was not found.');
+		$sqlInsertCOM = " INSERT INTO mgtcomponent (name,scope,prodid) " .
+		                " VALUES (" . "'" . $auto_component_name . "'," .
+		                              "'" . $g_req_cfg->scope_for_component . "'," .  
+		                $prodID . ")";
+		                
 		$resultCOM = do_mysql_query($sqlInsertCOM);
 		if (mysql_affected_rows()) {
 			$resultCOM = do_mysql_query($sqlCOM);
 			if (mysql_num_rows($resultCOM) == 1) {
 				$idCom = mysql_result($resultCOM,0);
 			} else {
-				tLog('Component TODO was not found again! ' . mysql_error());
+				tLog('Component:' . $auto_component_name . 
+				     ' was not found again! ' . mysql_error());
 			}
 		} else {
 			tLog(mysql_error(), 'ERROR');
@@ -701,17 +732,21 @@ function createTcFromRequirement($mixIdReq, $prodID, $login_name)
 	tLog('createTcFromRequirement: $idCom=' . $idCom);
 
 	//find category
-	$sqlCAT = "SELECT id FROM mgtcategory WHERE name='TODO' AND " .
-			"compid=" . $idCom;
+	$sqlCAT = " SELECT id FROM mgtcategory " .
+	          " WHERE name='" . $auto_category_name . "' " .
+	          " AND compid=" . $idCom;
+	          
 	$resultCAT = do_mysql_query($sqlCAT);
 	if ($resultCAT && (mysql_num_rows($resultCAT) == 1)) {
 		$idCat = mysql_result($resultCAT,0);
 	}
 	else {
 		// not found -> create
-		$sqlInsertCAT = 'INSERT INTO mgtcategory (name,objective,compid) VALUES ' .
-				"('TODO','Test Cases generated from Requirements'," .
-				$idCom . ")";
+		$sqlInsertCAT = " INSERT INTO mgtcategory (name,objective,compid) " .
+		                " VALUES (" . "'". $auto_category_name . "'," .
+		                              "'" . $g_req_cfg->objective_for_category . "'," .
+				                     $idCom . ")";
+				                     
 		$resultCAT = do_mysql_query($sqlInsertCAT);
 		$resultCAT = do_mysql_query($sqlCAT);
 		if (mysql_num_rows($resultCAT) == 1) {

@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: reqSpecList.php,v $
- * @version $Revision: 1.8 $
- * @modified $Date: 2005/09/07 06:23:36 $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2005/10/03 07:20:14 $
  * 
  * @author Martin Havlat
  * 
@@ -26,6 +26,8 @@ $template = 'reqSpecList.tpl';
 
 $title = null;
 $scope = null;
+
+//echo "<pre>debug\$_REQUEST"; print_r($_REQUEST); echo "</pre>";
 
 // 20050906 - fm
 $prodID = isset($_SESSION['productID']) ? $_SESSION['productID'] : 0;

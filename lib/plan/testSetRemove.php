@@ -1,10 +1,11 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: testSetRemove.php,v 1.3 2005/09/15 12:51:36 franciscom Exp $ 
+ * @version $Id: testSetRemove.php,v 1.4 2005/10/03 07:20:14 franciscom Exp $ 
  * 
  * Remove Test Cases from Test Case Suite 
  * 
+ * @author 20051001 - fm - sql refactoring
  * @author 20050915 - fm - refactoring
  * @author 20050807 - fm
  * refactoring:  
@@ -14,6 +15,10 @@
 require('../../config.inc.php');
 require("../functions/common.php");
 require_once("../../lib/functions/lang_api.php");
+
+// 20051001 - fm
+require_once("plan.inc.php");
+
 testlinkInitPage();
 
 // for genTC_info()
@@ -35,7 +40,7 @@ if(isset($_POST['deleteTC']))
 	$newArray = extractInput(false);
 
 	$i = 1; //Start the counter at 3 because the first three variable is a submit box
-	while ($i < count($newArray)) //Loop for the entire size of the array
+	while ($i < count($newArray))
 	{
 		$tcID = $newArray[$i]; //Then the first value is the ID
 		if($newArray[$i + 1] == 'break')
@@ -45,102 +50,56 @@ if(isset($_POST['deleteTC']))
 		}
 		else
 		{
-			$sqlMGT = "SELECT mgttcid,title FROM testcase WHERE id='" . $tcID . "'";
+			$sqlMGT = "SELECT mgttcid,title FROM testcase WHERE id=" . $tcID;
 			$resultMGT = do_mysql_query($sqlMGT);
-			$mgtID = mysql_fetch_row($resultMGT);
+			$mgtID = mysql_fetch_assoc($resultMGT);
 
 			//Delete the test case as well as its results and bugs
-			$sqlTCDel = "DELETE FROM testcase WHERE id='" . $tcID . "'";
-			$sqlRESDel = "DELETE FROM results WHERE tcid='" . $tcID . "'";
-			$sqlBUGDel = "DELETE FROM bugs WHERE tcid='" . $tcID . "'";
+			$sqlTCDel = "DELETE FROM testcase WHERE id=" . $tcID;
+			$sqlRESDel = "DELETE FROM results WHERE tcid=" . $tcID;
+			$sqlBUGDel = "DELETE FROM bugs WHERE tcid=" . $tcID;
 			$result = do_mysql_query($sqlTCDel);
 			$result = do_mysql_query($sqlRESDel);
 			$result = do_mysql_query($sqlBUGDel);
 
-			//delete all results
-			$resultString .= lang_get("test_case_removed_part1") . " <b>". $mgtID[0] . "</b>: " . htmlspecialchars($mgtID[1]) . " " .lang_get("has been removed."). " <br />";
+			$resultString .= lang_get("test_case_removed_part1") . " <b>". $mgtID['mgttcid'] . "</b>: " . 
+			                 htmlspecialchars($mgtID['title']) . " " .lang_get("has been removed."). " <br />";
 			$i = $i + 3;
 		}
 	}
 
-	//Add in code that refreshes the left frame..
-//	$page = "editLeft.php?project=" . $project;
-//	refreshFrame($page); //call the function below to refresh the left frame
 }
 elseif(isset($_POST['deletecomponent']))
 {
-	//Select all of the categories from the component
-	$sqlCAT = "SELECT category.id FROM category WHERE compid='" . $_GET['data'] . "'";
-	$resultCAT = do_mysql_query($sqlCAT); //Execute query
-
-	while($rowCAT = mysql_fetch_array($resultCAT))
-	{
-		//Select all of the test cases from the categories
-		$sqlTC = "SELECT id FROM testcase WHERE catid='" . $rowCAT[0] . "'";
-		$resultTC = do_mysql_query($sqlTC);
-
-		while($rowTC = mysql_fetch_array($resultTC))
-		{
-			//delete each of the results and bugs from the selected test case
-			$sqlTCDel = "DELETE FROM testcase WHERE id='" . $rowTC[0] . "'";
-			$sqlRESDel = "DELETE FROM results WHERE tcid='" . $rowTC[0] . "'";
-			$sqlBUGDel = "DELETE FROM bugs WHERE tcid='" . $rowTC[0] . "'";
-			$result = do_mysql_query($sqlTCDel);
-			$result = do_mysql_query($sqlRESDel);
-			$result = do_mysql_query($sqlBUGDel);
-		}
-
-		//delete each category when you're done
-		$sqlCATDel = "DELETE FROM category WHERE id='" . $rowCAT[0] . "'";
-		$resultCATDel = do_mysql_query($sqlCATDel);
-	}
-
-	//Grab the component name
-	$sqlComName = "SELECT name FROM component WHERE id='" . $id . "'";
+	// 20051001 - fm
+	$sqlComName = " SELECT name AS comp_name" .
+	              " FROM component COMP, mgtcomponent MGTCOMP " .
+	              " WHERE MGTCOMP.id = COMP.mgtcompid " .
+	              " AND COMP.id=" . $id;
 	$comResult = do_mysql_query($sqlComName);
-	$comRow = mysql_fetch_row($comResult);
-	
-	//finally delete the component
-	$sqlCOMDel = "DELETE FROM component WHERE id='" . $id . "'";
-	$resultCOMDel = do_mysql_query($sqlCOMDel);
+	$comRow = mysql_fetch_assoc($comResult);
 
-	$resultString = "<b>". lang_get("component_removed_part1") ."</b> " . $comRow[0] ." ". lang_get("component_removed_part2");
-	
-	//Add in code that refreshes the left frame..
-//	$page = "editLeft.php?project=" . $project;
-//	refreshFrame($page); //call the function below to refresh the left frame
+	del_component_deep($id);
 
+	$resultString = "<b>". lang_get("component_removed_part1") ."</b> " . 
+	                $comRow['comp_name'] ." ". lang_get("component_removed_part2");
+	
 }
 elseif(isset($_POST['deletecategory'])) 
 {
-	//Select all of the test cases from the categories
-	$sqlTC = "SELECT id FROM testcase WHERE catid='" . $id . "'";
-	$resultTC = do_mysql_query($sqlTC); //Execute query
 
-	while($rowTC = mysql_fetch_array($resultTC))
-	{
-		//delete each of the results and bugs from the selected test case
-		$sqlTCDel = "DELETE FROM testcase WHERE id='" . $rowTC[0] . "'";
-		$sqlRESDel = "DELETE FROM results WHERE tcid='" . $rowTC[0] . "'";
-		$sqlBUGDel = "DELETE FROM bugs WHERE tcid='" . $rowTC[0] . "'";
-		$result = do_mysql_query($sqlTCDel);
-		$result = do_mysql_query($sqlRESDel);
-		$result = do_mysql_query($sqlBUGDel);
-	}
+	$sql = " SELECT name " .
+	       " FROM mgtcategory MGTCAT, category CAT" .
+	       " WHERE MGTCAT.id = CAT.mgtcatid " .
+	       " AND CAT.id=" . $id;
+	$result = do_mysql_query($sql);
+	$myrow = mysql_fetch_assoc($result);
+  $cat_name = $myrow['name'];
 
-	//Grab the category name
-	$sqlCatName = "SELECt name FROM category WHERE id='" . $id . "'";
-	$catResult = do_mysql_query($sqlCatName);
-	$catRow = mysql_fetch_row($catResult);
-
-	//delete the category when you're done
-	$sqlCATDel = "DELETE FROM category WHERE id='" . $id . "'";
-	$resultCATDel = do_mysql_query($sqlCATDel);
-	$resultString =  "<b>". lang_get("category_removed_part1") ." </b> " . $catRow[0] . " ". lang_get("category_removed_part2");
-
-	//Add in code that refreshes the left frame..
-//	$page = "editLeft.php?project=" . $project;
-//	refreshFrame($page); //call the function below to refresh the left frame
+  // 20051001 - fm
+  del_category_deep($id);
+	$resultString =  "<b>". lang_get("category_removed_part1") . 
+	                 " </b> " . $cat_name . " ". lang_get("category_removed_part2");
 }
 
 // ---------------------------------------------------------------------------------------

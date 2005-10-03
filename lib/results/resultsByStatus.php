@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsByStatus.php,v 1.5 2005/09/26 16:50:51 franciscom Exp $ 
+* $Id: resultsByStatus.php,v 1.6 2005/10/03 07:20:14 franciscom Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -32,7 +32,7 @@ else
 	tlog('wrong value of GET type');
 	exit();
 }
-$arrBuilds = getBuilds($_SESSION['testPlanId']);
+$arrBuilds = getBuilds($_SESSION['testPlanId'], " ORDER BY build.name ");
 
 //SQL to select the most current status of all the current test cases
 

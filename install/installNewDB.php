@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: installNewDB.php,v 1.12 2005/09/27 16:55:45 franciscom Exp $ */
+/* $Id: installNewDB.php,v 1.13 2005/10/03 07:20:13 franciscom Exp $ */
 /*
 Parts of this file has been taken from:
 Etomite Content Management System
@@ -108,8 +108,6 @@ TestLink setup will now attempt to setup the database:<br />
 <?php
 
 $update_pwd=0;
-  
- 
 $create = false;
 $errors = 0;
 
@@ -170,9 +168,21 @@ else
 // Succesful Connection, now try to select the database
 if(!@mysql_select_db($db, $conn)) 
 {
-	echo "</b><br>Database $db does not exist. <br>Will attempt to create:";
-	$errors += 1;
-	$create = true;
+	echo "</b><br>Database $db does not exist. <br>";
+	
+	if( $inst_type == "upgrade" )
+	{
+		echo "Can't Upgrade";
+		close_html_and_exit();     
+
+		$errors += 1;
+	}
+	else
+	{
+	 echo "Will attempt to create:";
+	 $create = true;
+	}	
+	
 } 
 else 
 {

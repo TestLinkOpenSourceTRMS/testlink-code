@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqSpecView.php,v $
- * @version $Revision: 1.9 $
- * @modified $Date: 2005/09/07 06:23:36 $ by $Author: franciscom $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2005/10/03 07:20:14 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Screen to view existing requirements within a req. specification.
@@ -25,6 +25,8 @@ require_once("../../third_party/fckeditor/fckeditor.php");
 // init page 
 tLog('POST: ' . implode(',',$_POST));
 testlinkInitPage();
+
+//echo "<pre>debug\$_REQUEST"; print_r($_REQUEST); echo "</pre>";
 
 $sqlResult = null;
 $action = null;
@@ -49,8 +51,6 @@ $countReq = isset($_REQUEST['countReq']) ? strings_stripSlashes($_REQUEST['count
 $prodID = isset($_SESSION['productID']) ? $_SESSION['productID'] : 0;
 $userID = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
 $login_name = isset($_SESSION['user']) ? strings_stripSlashes($_SESSION['user']) : null;
-
-
 $arrCov = null;
 
 
@@ -145,8 +145,9 @@ elseif (isset($_REQUEST['multiAction']))
 		} 
 		elseif ($_REQUEST['multiAction'] == lang_get('req_select_create_tc')) 
 		{
+			// 20051002 - fm - interface changes
 			// 20050906 - fm
-			$sqlResult = createTcFromRequirement($arrIdReq, $prodID, $login_name);
+			$sqlResult = createTcFromRequirement($arrIdReq, $prodID, $idSRS, $login_name);
 			$action = 'create';
 			$sqlItem = 'test case(s)';
 		}
@@ -161,9 +162,11 @@ if ($bGetReqs) {
 	$arrReq = getRequirements($idSRS);
 }
 // collect existing document data
-$arrSpec = getReqSpec($idSRS);
+// $arrSpec = getReqSpec($idSRS);
+// 20051001 - fm - bug
+$arrSpec = getReqSpec($prodID,$idSRS);
 
-// 20050930 - MHT - Added audit
+//  - MHT - Added audit
 $arrSpec[0]['author'] = getUserName($arrSpec[0]['id_author']);
 $arrSpec[0]['modifier'] = getUserName($arrSpec[0]['id_modifier']);
 

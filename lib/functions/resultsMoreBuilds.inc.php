@@ -1,6 +1,6 @@
 <?
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
- *$Id: resultsMoreBuilds.inc.php,v 1.33 2005/10/03 03:06:53 kevinlevy Exp $ 
+ *$Id: resultsMoreBuilds.inc.php,v 1.34 2005/10/03 07:40:59 franciscom Exp $ 
  * 
  * @author Kevin Levy
  *
@@ -103,7 +103,7 @@ function createResultsForTestPlan($testPlanName, $testPlanID,
   $build_name_set = null;
 
   // list of ALL (id, name) pairs for the test plan
-  $arrAllBuilds = getBuilds($testPlanID);
+  $arrAllBuilds = getBuilds($testPlanID," ORDER BY build.name ");
 
   // debug - kl - 10022005
   // other results and execution pages have a different build set

@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.19 $
- * @modified $Date: 2005/10/02 19:47:59 $
+ * @version $Revision: 1.20 $ $Author: franciscom $
+ * @modified $Date: 2005/10/03 07:36:30 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -18,6 +18,9 @@
  * testPlanID, testPlanName
  *
  *
+ * @author: francisco mancardi - 20051002 - more changes to support filter_tp_by_product
+ * 20051002 - am - code reformatted, small corrections
+ * @author: francisco mancardi - 20050929 - changes to support filter_tp_by_product
  * @author: francisco mancardi - 20050917 - BUG ID 0000120: Impossible to edit product
  *
  * @author: francisco mancardi - 
@@ -33,8 +36,7 @@
  * @author: francisco mancardi - 20050813 - added localize_date_smarty()
  * @author: francisco mancardi - 20050813 - added TP filtered by Product *
  * @author: francisco mancardi - 20050810 - added function to_boolean($alt_boolean)
- * 20051002 - am - code reformatted, small corrections
-**/
+**/ 
 require_once("getRights.php");
 require_once("product.core.inc.php");
 
@@ -272,36 +274,48 @@ function getUserTestPlans($userID,$tpID = null,$p_bActive = null)
 	return selectData($sql);
 }
 
+
+// 20051002 - fm - added $g_ui_show_check_filter_tp_by_product
+// 20050929 - fm - added $filter_by_product
 // 20050904 - fm - TL 1.5.1 compatibility, get also Test Plans without product id.
 // 20050813 - fm - new
 // 
-function getUserProdTestPlans($userID,$prodID,$p_bActive = null)
+function getUserProdTestPlans($userID,$prodID,$filter_by_product,$p_bActive = null)
 {
-	global $g_show_tp_without_prodid;
+  global $g_show_tp_without_prodid;
+  global $g_ui_show_check_filter_tp_by_product;
+  
+  $apply_tp_filter = 1;
+  if( $g_ui_show_check_filter_tp_by_product )
+  {
+    $apply_tp_filter = $filter_by_product;
+  }
   
 	$sql = " SELECT project.*, userID FROM project,projrights " .
 	       " WHERE projrights.projid = project.id " .
 	       " AND userID={$userID}";
 	
-	
 	if (!is_null($prodID))
 	{
-		//20051002 - am - added missing columns
-		$sql .= " AND (project.prodid = {$prodID}";
-		// 20050904 - fm - TL 1.5.1 compatibility, get also Test Plans without product id.
-		if ($g_show_tp_without_prodid)
+		if( $apply_tp_filter )
 		{
-			$sql .= " OR project.prodid=0";
-		}
-		$sql .= ")";
+			$sql .= " AND project.prodid = {$prodID}";
+		
+			// 20050904 - fm - 
+			// TL 1.5.1 compatibility, get also Test Plans without product id.
+    	if ($g_show_tp_without_prodid)
+    	{
+				$sql .= " OR project.prodid=0";
+    	}
+    }
 	}	 
 	
 	if (!is_null($p_bActive))
 	{
+		// 20050810 - fm
 		$bActive = to_boolean($p_bActive);
 		$sql .= " AND project.active = " . $bActive;
-	}
-
+ 	}
  	return selectData($sql);
 }
 
@@ -320,9 +334,13 @@ function doInitSelection()
 	checkSessionProduct();
 	checkSessionTestPlan();	
   */
-	// 20050910 - fm - 
-	// BUGID  0000092: Two products each with one active test plan incorrectly prints the wrong plan
-	updateSessionTp_Prod($_GET);
+  
+  // 20050929 - fm - _GET -> _REQUEST to get other info
+  // 20050910 - fm - 
+  // BUGID  0000092: Two products each with one active test plan incorrectly prints the wrong plan
+  updateSessionTp_Prod($_REQUEST);
+
+
 	return 1;
 }
 
@@ -671,22 +689,37 @@ function check_string($str2check, $ereg_forbidden_chars)
 //
 function updateSessionTp_Prod($hash_user_sel)
 {
+	
 	$user_sel = array("tpID" => 0, "prodID" => 0 );
 
 	$user_sel["prodID"] = isset($hash_user_sel['product']) ? intval($hash_user_sel['product']) : 0;
 	$user_sel["tpID"] = isset($hash_user_sel['project']) ? intval($hash_user_sel['project']) : 0;
 
-	$prodID = isset($_SESSION['productID']) ? $_SESSION['productID'] : 0;
+  
+  // 20050929 - fm
+  $filter_tp_by_product = 1;
+  if( isset($hash_user_sel['filter_tp_by_product']) )
+  {
+    $filter_tp_by_product = 1;
+  }
+  else if ( isset($hash_user_sel['filter_tp_by_product_hidden']) )
+  {
+    $filter_tp_by_product = 0;
+  } 
+  // ------------------------------------------------------------------
+
+  $prodID = isset($_SESSION['productID']) ? $_SESSION['productID'] : 0;
 	$tpID   = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0;
 	
+	// Now what to do ???
 	// Product is TestPlan container, then we start checking the container
 	if( $user_sel["prodID"] != 0 )
 	{
-		$prodID = $user_sel["prodID"];
+    $prodID = $user_sel["prodID"];
 	} 
-	$prodData = getProduct($prodID);
+  $prodData=getProduct($prodID);
 
-	//We need to do checks before updating the SESSION
+  // We need to do checks before updating the SESSION
 	if (!$prodID || !$prodData)
 	{
 		$products = getProducts();
@@ -697,54 +730,67 @@ function updateSessionTp_Prod($hash_user_sel)
 	}
 	setSessionProduct($prodData);
 
-	// Now we need to validate the TestPlan
-	if( $user_sel["tpID"] != 0 )
+
+  // Now we need to validate the TestPlan
+  if( $user_sel["tpID"] != 0 )
 	{
-    	$tpID = $user_sel["tpID"];
+    $tpID = $user_sel["tpID"];
 	} 
   
-	// We need to check:
-	// 1. $tpID belongs to prodID
-	// 2. User has rights on $tpID
-	// If any check fails we try to show the first TP in the Product, allowed to the user
-	$redo = 1;
-	$tpData = null;
+  // Wee need to check:
+  // 1. $tpID belongs to prodID
+  // 2. User has rights on $tpID
+  // If any check fails we try to show the first TP in the Product, allowed to the user
+  $redo = 1;
+  $tpData = null;
   
-	if (check_tp_father($prodID,$tpID))
-	{
-		$tpData = getUserTestPlan($_SESSION['userID'],$tpID,true);
-		if(!is_null($tpData))
-		{ 
-			$redo = 0;
-		}
-		setSessionTestPlan($tpData);
-	}
+  if (check_tp_father($prodID,$tpID))
+  {
+    // Good! first check OK
+    $tpData = getUserTestPlan($_SESSION['userID'],$tpID);
+    if( !is_null($tpData) )
+    { 
+      $redo = 0;
+      setSessionTestPlan($tpData);
+    }
+    // 20050929 - 
+  }
   
-	if ($redo)
-	{
-		$tp_father = get_tp_father($tpID);
-	
-		$tpInfo = getUserProdTestPlans($_SESSION['userID'],$prodID,true);
+  if ( $redo )
+  {
+  	// 20050926 - fm
+  	$tp_prodid = get_tp_father($tpID);
+  	
+    // Houston we have a problem
+    $ACTIVE_TP=true;
+    $tpInfo = getUserProdTestPlans($_SESSION['userID'],$prodID,$filter_tp_by_product,$ACTIVE_TP);
+		
 		if ($tpInfo)
 		{
-			if ($tp_father)
-			{
+			
+			// Attention: 
+			// this TP has a prodid (father) != 0, but it's prodid is different that selected prodid
+			// then what to do ?
+			if ($tp_prodid && $filter_tp_by_product)
+		  {
 				$tpData = $tpInfo[0];
 			}
 			else
 			{
-				// TL 1.5.1 compatibility
-				foreach ($tpInfo as $key => $elem)
-				{
-					if ($elem['id'] == $tpID)
-					{
-						$tpData = $tpInfo[$key];
-						break;
-					}
-				}	
+        // We can ignore the prodid (father) of the selected TP
+				// TL 1.5.1 compatibility 
+		    foreach (	$tpInfo as $key => $elem )
+		    {
+		      if ($elem['id'] == $tpID)
+		      {
+		       $tpData = $tpInfo[$key];
+		       break;
+		      }
+		    }	
 			}	
 		}
-	}
-	setSessionTestPlan($tpData);
+  }
+  setSessionTestPlan($tpData);
+
 }
 ?>

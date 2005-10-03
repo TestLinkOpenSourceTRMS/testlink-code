@@ -1,6 +1,6 @@
 <?
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
- *$Id: resultsMoreBuilds.inc.php,v 1.32 2005/10/02 00:29:46 kevinlevy Exp $ 
+ *$Id: resultsMoreBuilds.inc.php,v 1.33 2005/10/03 03:06:53 kevinlevy Exp $ 
  * 
  * @author Kevin Levy
  *
@@ -37,11 +37,14 @@ function createSummaryTable($totalCases, $passedCases, $failedCases, $blockedCas
  * @param string lastStatus 
  * @return string testPlanReportHeader - html table which contains query parameters specified by user
  */
-function createTestPlanReportHeader($testPlanName, $build_name_set, $keyword, $owner, $lastStatus){
+function createTestPlanReportHeader($testPlanName, $build_name_set, 
+				    $keyword, $owner, $lastStatus){
   $testPlanReportHeader = "<table class=\"simple\" style=\"width: 100%; " .
-                            "text-align: center; margin-left: 0px;\">" .
-    "<tr><th>" . lang_get('test_plan_name') . "</th><th>" . lang_get('builds_selected') . "</th>" .
-    "<th>" . lang_get('keyword') . "</th><th>" . lang_get('owner') . "</th><th>" . lang_get('last_status') . "</th></tr>";
+    "text-align: center; margin-left: 0px;\">" .
+    "<tr><th>" . lang_get('test_plan_name') . "</th><th>" 
+    . lang_get('builds_selected') . "</th>" .
+    "<th>" . lang_get('keyword') . "</th><th>" . lang_get('owner') 
+    . "</th><th>" . lang_get('last_status') . "</th></tr>";
   $testPlanReportHeader = $testPlanReportHeader . 
     "<tr><td>".htmlspecialchars($testPlanName)."</td><td>" . 
     htmlspecialchars($build_name_set) . "</td><td>".
@@ -53,20 +56,26 @@ function createTestPlanReportHeader($testPlanName, $build_name_set, $keyword, $o
 
 /**
  * Function createResultsForTestPlan()
- * Produces Report based on projectId, startBuild, endBuild, keyword, and owner.  The ability
- * to look at results across a range of builds as opposed to 1 build or ALL builds is the 
+ * Produces Report based on projectId, startBuild, endBuild, keyword, 
+ * and owner.  The ability
+ * to look at results across a range of builds as opposed to
+ * 1 build or ALL builds is the 
  * primary purpose of this method.  
  *
- * If startBuild or endBuild not specified - default values are used (range build 0 -> latest build) for
+ * If startBuild or endBuild not specified - default values are used 
+ * (range build 0 -> latest build) for
  * producing this report.
  *
- * If keyword specified, report only includes those test cases in the specified test plan which are associated
+ * If keyword specified, report only includes those test cases in the 
+ * specified test plan which are associated
  * with that keyword.  An empty string can be specified for keyword.
  *
- * If the owner is specified, report only includes those test cases which belong to categories owned by that order. 
+ * If the owner is specified, report only includes those test cases 
+ * which belong to categories owned by that order. 
  * An empty string can be specified for owner.
  *
- * keyword and owner queries use pattern matching notation (example: select * from testcase where 
+ * keyword and owner queries use pattern matching notation 
+ * (example: select * from testcase where 
  * keywork LIKE '%$keyword%') - so this makes it easier to do queries.
  *
  * @param string testPlanName 
@@ -77,7 +86,8 @@ function createTestPlanReportHeader($testPlanName, $build_name_set, $keyword, $o
  * @return string returnData - report based on query parameters  
  */
 // default start and end builds are specified 
-function createResultsForTestPlan($testPlanName, $testPlanID, $buildsArray, $keyword, $owner, $lastStatus)
+function createResultsForTestPlan($testPlanName, $testPlanID, 
+				  $buildsArray, $keyword, $owner, $lastStatus)
 {
   $totalCasesForTestPlan = 0;
   $totalLastResultPassesForTestPlan = 0;
@@ -94,6 +104,11 @@ function createResultsForTestPlan($testPlanName, $testPlanID, $buildsArray, $key
 
   // list of ALL (id, name) pairs for the test plan
   $arrAllBuilds = getBuilds($testPlanID);
+
+  // debug - kl - 10022005
+  // other results and execution pages have a different build set
+  // print_r($arrAllBuilds);
+  //  print "<BR>";
   
   // debug - kl - 10012005
   //print_r($arrAllBuilds);
@@ -109,10 +124,11 @@ function createResultsForTestPlan($testPlanName, $testPlanID, $buildsArray, $key
     }
 
   // debug
-  //print "build_id_set = $build_id_set <BR>";
-  //print "build_name_set = $build_name_set <BR>";
+  // print "build_id_set = $build_id_set <BR>";
+  // print "build_name_set = $build_name_set <BR>";
 
-  $testPlanReportHeader = createTestPlanReportHeader($testPlanName, $build_name_set, $keyword, $owner, $lastStatus);
+  $testPlanReportHeader = 
+    createTestPlanReportHeader($testPlanName, $build_name_set, $keyword, $owner, $lastStatus);
 
   // 20050915 - fm - added mgtcomponent
   $sql = " SELECT component.id, mgtcomponent.name, component.projid, component.mgtcompid " .
@@ -143,7 +159,10 @@ function createResultsForTestPlan($testPlanName, $testPlanID, $buildsArray, $key
 	}
     }
 
-  $summaryOfTestPlanTable = createSummaryTable($totalCasesForTestPlan, $totalLastResultPassesForTestPlan, $totalLastResultFailuresForTestPlan,$totalLastResultBlockedForTestPlan,$totalUnexecutedTestCases);
+  $summaryOfTestPlanTable = 
+    createSummaryTable($totalCasesForTestPlan, $totalLastResultPassesForTestPlan, 
+		       $totalLastResultFailuresForTestPlan,$totalLastResultBlockedForTestPlan,
+		       $totalUnexecutedTestCases);
 
   if (!$aggregateComponentDataToPrint)
     {
@@ -152,7 +171,8 @@ function createResultsForTestPlan($testPlanName, $testPlanID, $buildsArray, $key
   return array($testPlanReportHeader, $summaryOfTestPlanTable, $aggregateComponentDataToPrint);
 }
 
-function createResultsForComponent($componentId, $owner, $keyword, $build_id_set, $lastResult,$myrow,$arrAllBuilds)
+function createResultsForComponent($componentId, $owner, $keyword, $build_id_set, 
+				   $lastResult,$myrow,$arrAllBuilds)
 {
   $totalCasesForComponent = 0;
   $totalLastResultPassesForComponent = 0;
@@ -272,8 +292,8 @@ function createResultsForCategory($categoryId, $keyword, $build_id_set, $lastRes
          " AND (results.build_id IN ('" . $build_list . "')) ORDER BY results.build_id DESC;";
 
   // debug block - kl 09252005
-  // print "<BR> sql = $sql <BR>";
-
+  // print "sql = $sql <BR>";
+  
   $sqlBuildResult = do_mysql_query($sql);
 
   $tcBuildInfo = null;
@@ -283,23 +303,42 @@ function createResultsForCategory($categoryId, $keyword, $build_id_set, $lastRes
       $tcID = $myrowTC[5];
       $status = $myrowTC[3];
       $build = $myrowTC[0];
+      // debug - kl - 10022005 
+      // delete this line (this only print 13)
+      // print "xx tcID = $tcID, status = $status, build = $build <BR>"; 
       $tcBuildInfo[$tcID][$build] = $myrowTC;
       if ($status == $notRunStatus || isset($tcStatusInfo[$tcID]))
 	continue;
       $tcStatusInfo[$tcID] = $status;
     }
   //while ($myrow = mysql_fetch_row($result)){
+
+  $lastResult = 'n';
+  $lastResultHasBeenSet = false;
+
   foreach ($tcInfo as $tcID => $myrow)
     {
+      // debug - kl - 10022005 
+      // print "where last result is set - tcStatusInfo[tcID] = $tcStatusInfo[$tcID] <BR>";
+      
+      // if results is not set, set to n
       $lastResult = isset($tcStatusInfo[$tcID]) ? $tcStatusInfo[$tcID] : 'n';
+      
       $results = isset($tcBuildInfo[$tcID]) ? $tcBuildInfo[$tcID] : null;
 
       // kl - 09252005 - I don't think $results is being populated correctly
-      // 
+      
+      // debug - kl - 20051002
+      // print "tcid = $myrow[0] <BR>";
 
-      $testCaseData = createResultsForTestCase($myrow[0], $myrow,$arrAllBuilds,$results,$lastResult);
+      $testCaseData = createResultsForTestCase($myrow[0], $myrow, $arrAllBuilds, $results, $lastResult);
       $testCaseInfoToPrint = $testCaseData[0];
       $summaryOfTestCaseInfo = $testCaseData[1];
+
+      // debug - kl - 20051002
+      // lastResult is being printed incorrectly here
+      // print "lastResult = $lastResult <BR>";
+
       if ($lastResult == $g_tc_status['passed']){
 	$totalLastResultPassesForCategory++;
       }
@@ -437,7 +476,10 @@ function createTableOfTestCaseResults($arrayOfResults,$arrAllBuilds,&$returnArra
 	"</td><td></td><td></td><td></td></tr></table>";
       // update return array and exit method
       $returnArray = array(0,0,0,0);
-      return $returnData;
+      // debug - kl - 10022005
+      // print_r($returnArray);
+      // print "<BR>";
+     return $returnData;
     }
   
   global $g_tc_status;
@@ -452,9 +494,16 @@ function createTableOfTestCaseResults($arrayOfResults,$arrAllBuilds,&$returnArra
   // iterate accross arrayOfResults
   while ($buildTested = key($arrayOfResults))
     {
+      // debug - kl - 10022005
+      // print "buildTested = $buildTested <BR>";
+      $one = $arrayOfResults[$buildTested][3];
+      $two = $arrayOfResults[$buildTested][2];
       $results_status = $arrayOfResults[$buildTested][3];
       // debug block -kl -09252005
-      // print "<BR>result_status = $results_status<BR>";
+      // print "one = $one <BR>";
+      // print "two = $two <BR>";
+      // print "result_status = $results_status<BR>";
+
       $className = getTCClassNameByStatus($results_status);
 	
       switch($results_status)
@@ -489,8 +538,13 @@ function createTableOfTestCaseResults($arrayOfResults,$arrAllBuilds,&$returnArra
 
   $returnArray = array($numberOfPasses+$numberOfFailures+$numberOfBlocked,$numberOfPasses,$numberOfFailures,
 		       $numberOfBlocked);
-  $returnData .= "</table>";
   
+  
+  $returnData .= "</table>";
+  // debug - kl - 10022005 
+  
+  // print_r($returnArray);
+  // print "<BR>";
   return $returnData;
 }
 

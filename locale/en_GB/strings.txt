@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.25 $
- * @modified $Date: 2005/09/21 16:42:02 $
+ * @version $Revision: 1.26 $
+ * @modified $Date: 2005/10/03 07:18:44 $
  *
  * @author Francisco Mancardi
 **/
@@ -702,6 +702,7 @@ $TLS_title_test_spec = "Test Specification";
 $TLS_title_testlink_site_map = "TestLink - Desktop";
 $TLS_title_your_tp_metrics = "Your Test Plan Metrics";
 
+$TLS_filter_tp_by_product = "Filter Test Plans by Product";
 
 
 // gui/templates/inc_res_by_comp.tpl

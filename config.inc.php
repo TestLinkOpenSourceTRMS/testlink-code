@@ -4,13 +4,19 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.18 $
- * @modified $Date: 2005/09/27 06:44:49 $ by $Author: franciscom $
+ * @version $Revision: 1.19 $
+ * @modified $Date: 2005/10/03 07:18:43 $ by $Author: franciscom $
  *
  * @author Chad Rosen
  *
  * Constants used throughout TestLink are defined within this file
  * they should be changed for your environment
+ *
+ * @author Francisco Mancardi - 20051002 
+ * - Test Plan filtering by product related configuration parameters
+ *   $g_ui_show_check_filter_tp_by_product
+ *
+ * - New configuration parameters for Requirements Functionality
  *
  * @author Francisco Mancardi - 20050919 - g_timestamp_format
  * @author Francisco Mancardi - 20050915 - from 1.6.Beta1 to 1.6.RC1
@@ -183,6 +189,49 @@ $g_ereg_forbidden ="[|]";
 
 /* 1 -> TL 1.5.1 compatibility, get also Test Plans without product id. */
 $g_show_tp_without_prodid=1;
+
+
+/* 
+20051002 - fm
+New Feature
+1 -> user can enable/disable test plan filter by product 
+     At user interface level a check box is displayed over
+     the test plan combo box.
+     
+0 -> user can do nothing, no changes at UI.
+     Test Plan always filtered by product
+*/
+$g_ui_show_check_filter_tp_by_product = 1;
+
+
+
+/*
+Requirements - 
+
+Test Case generation from Requirement
+- use_req_spec_as_category_name=1;
+  0 -> test cases are created and assigned 
+       to a category with name $g_req_cfg->default_category_name
+  
+  1 -> REQuirement Specification Title is used a category name     
+       
+*/
+$g_req_cfg->default_category_name="TODO";
+$g_req_cfg->objective_for_category="Category/Test Cases generated from Requirements";
+
+$g_req_cfg->default_component_name="Component Created by Requirement - Auto";
+$g_req_cfg->scope_for_component="Component/Category/Test Cases generated from Requirements";
+
+$g_req_cfg->use_req_spec_as_category_name=1;
+
+
+
+/*
+20051002 - fm
+Must be changed if Table definition changes
+*/
+$g_field_size->category_name=100;
+
 
 /* fckeditor Toolbar */
 //$g_fckeditor_toolbar = "TL_Medium";

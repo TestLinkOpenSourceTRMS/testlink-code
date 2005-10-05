@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.9 $
- * @modified $Date: 2005/09/08 12:25:26 $  by $Author: franciscom $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2005/10/05 06:15:33 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
  * @author Martin Havlat
@@ -112,10 +112,10 @@ if($tc)
 	// get TC data
 	$myrowTC = getTestcase($testcaseID,false);
 
-	$tcKeywords = null;
-	getTCKeywords($testcaseID,$tcKeywords);
-	$prodKeywords = null;
-	getProductKeywords($_SESSION['productID'],$prodKeywords);
+	// 20051004 - fm - refactoring
+	$tcKeywords = getTCKeywords($testcaseID);
+	$prodKeywords = getProductKeywords($_SESSION['productID']);
+	
 	if (sizeof($prodKeywords))
 	{
 		$result = array_intersect($tcKeywords,$prodKeywords);

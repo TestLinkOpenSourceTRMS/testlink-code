@@ -1,7 +1,7 @@
 <?
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* @version $Id: keywords.inc.php,v 1.4 2005/09/06 06:45:02 franciscom Exp $
+* @version $Id: keywords.inc.php,v 1.5 2005/10/05 06:15:33 franciscom Exp $
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author	Chad Rosen
@@ -9,7 +9,10 @@
 * Purpose:  Functions for support keywords management. 
 * Precondition: require init db 
 *
-* @ author: francisco mancardi - 20050810
+* @author: francisco mancardi - 20051004 
+* addNewKeyword() refactoring and improvements
+*
+* @author: francisco mancardi - 20050810
 * deprecated $_SESSION['product'] removed
 */
 ////////////////////////////////////////////////////////////////////////////////
@@ -28,15 +31,15 @@ function selectKeywords($prodID, $selectedKey = '')
   	
   	if ($result)
   	{
-  		while ($myrow = mysql_fetch_row($result)) 
+  		while ($myrow = mysql_fetch_assoc($result)) 
   		{
   			// add selected string for an appropriate row
   			$selData = '';
-  			if (!is_null($selectedKey) && ($selectedKey == $myrow[1]))
+  			if (!is_null($selectedKey) && ($selectedKey == $myrow['id']))
   				$selData = 'selected="selected"';
-  			$arrKeywords[] = array( 'id' => $myrow[0],
-  									'keyword' => $myrow[1], 
-  									'notes' => $myrow[2], 
+  			$arrKeywords[] = array( 'id' => $myrow['id'],
+  									'keyword' => $myrow['keyword'], 
+  									'notes' => $myrow['notes'], 
   				   					'selected' => $selData,
   								   );
   		}
@@ -44,6 +47,9 @@ function selectKeywords($prodID, $selectedKey = '')
 	}
 	return $arrKeywords;
 }
+
+
+
 
 function updateTCKeywords ($id, $arrKeywords)
 {
@@ -67,51 +73,57 @@ function updateCategoryKeywords ($id, $newKey)
 	if ($resultTC)
 	{
 		// execute for all test cases of the category
-		while($rowTC = mysql_fetch_array($resultTC))
+		while($rowTC = mysql_fetch_assoc($resultTC))
 		{ 
-			$resultAdd = addTCKeyword ($rowTC[0], $newKey);
+			$resultAdd = addTCKeyword ($rowTC['id'], $newKey);
 			if ($resultAdd != 'ok')
-				$resultUpdate .= lang_get('tc_kw_update_fails1'). htmlspecialchars($rowTC[1]) . lang_get('tc_kw_update_fails2').': ' . $resultAdd . '<br />';
+				$resultUpdate .= lang_get('tc_kw_update_fails1'). htmlspecialchars($rowTC['title']) . 
+				                 lang_get('tc_kw_update_fails2').': ' . $resultAdd . '<br />';
 		}
 	}
 	else
+	{
 		$resultUpdate = mysql_error();
-
+  }
 	return $resultUpdate ? $resultUpdate : 'ok';
 }
 
+
 function updateComponentKeywords ($id, $newKey)
 {
-	$sqlCat = "SELECT id FROM mgtcategory WHERE compid=" . $id;
+	$sqlCat = "SELECT id AS cat_id FROM mgtcategory WHERE compid=" . $id;
 	$resultCat = do_mysql_query($sqlCat);
 	
 	$resultUpdate = null;
 	if ($resultCat)
 	{
 		// execute for all test cases of the category
-		while($rowCat = mysql_fetch_array($resultCat))
+		while($rowCat = mysql_fetch_assoc($resultCat))
 		{ 
-			$resultAdd = updateCategoryKeywords($rowCat[0], $newKey);
+			$resultAdd = updateCategoryKeywords($rowCat['cat_id'], $newKey);
 			if ($resultAdd != 'ok')
+			{
 				$resultUpdate .= $resultAdd . '<br />';
+			}	
 		}
 	}
 	else
+	{
 		$resultUpdate = mysql_error();
-
+  }
+  
 	return $resultUpdate ? $resultUpdate : 'ok';
 }
 
 
-function addTCKeyword ($id, $newKey)
+function addTCKeyword ($tcID, $newKey)
 {
-	// grab actual state
-	$sqlTC = "SELECT keywords FROM mgttestcase where id=" . $id;
+	$sqlTC = "SELECT keywords FROM mgttestcase where id=" . $tcID;
 	$resultUpdate = do_mysql_query($sqlTC);
 	if ($resultUpdate)
 	{
-		$oldKeys = mysql_fetch_row($resultUpdate);
-		$TCKeys = $oldKeys[0];
+		$oldKeys = mysql_fetch_assoc($resultUpdate);
+		$TCKeys = $oldKeys['keywords'];
 		
 		// add newKey if is not included
 		$keys = explode(",",$TCKeys);
@@ -119,7 +131,7 @@ function addTCKeyword ($id, $newKey)
 		{
 			$TCKeys .= $newKey.",";
 			$TCKeys = mysql_escape_string($TCKeys);
-			$sqlUpdate = "UPDATE mgttestcase SET keywords='".$TCKeys."' WHERE id=".$id;
+			$sqlUpdate = "UPDATE mgttestcase SET keywords='".$TCKeys."' WHERE id=". $tcID;
 			$resultUpdate = do_mysql_query($sqlUpdate);
 		}
 	}
@@ -189,6 +201,7 @@ function updateKeyword($id,$keyword,$notes)
 
 	return $result ? 1 : 0;
 }
+
 function deleteKeyword($id)
 {
 	$sql = "DELETE FROM keywords WHERE id=" . $id;
@@ -196,53 +209,103 @@ function deleteKeyword($id)
 	
 	return $result ? 1 : 0;
 }
+
 /**
 * Function insert a new Keyword to database
 *
+* @param int  $prodID
 * @param string $keyword
 * @param string $notes
 * @return string SQL result
+*
+* 20051004 - fm - refactoring
 */
 function addNewKeyword($prodID,$keyword, $notes)
 {
-	$sql = "INSERT INTO keywords (keyword,prodid,notes) VALUES ('" . 
-			mysql_escape_string($keyword) .	"'," . $prodID . 
-			",'" . mysql_escape_string($notes) . "')";
-	$result = do_mysql_query($sql);
-
-	return $result ? 'ok' : mysql_error();
+	global $g_allow_duplicate_keywords;
+	
+	$ret = 'ok';
+	$do_insert=1;
+	$my_kw = trim($keyword);
+	if( !$g_allow_duplicate_keywords )
+	{
+	  $sql = " SELECT * FROM	keywords " .
+	         " WHERE UPPER(keyword) ='" . strtoupper(mysql_escape_string($my_kw)) . "'" .
+	         " AND prodid=" . $prodID ;
+	                
+	  $result = do_mysql_query($sql);       
+	  if( mysql_num_rows($result) > 0)
+	  {
+	  	$do_insert=0;
+	  	$ret = lang_get('duplicate_keyword');
+	  }
+	}
+	
+  if ( $do_insert )
+  {
+	  $sql = " INSERT INTO keywords (keyword,prodid,notes) " .
+	         " VALUES ('" . mysql_escape_string($my_kw) .	"'," . 
+	                        $prodID . ",'" . mysql_escape_string($notes) . "')";
+	
+	  $result = do_mysql_query($sql);
+	  
+	  $ret = trim(mysql_error());
+	  if( strlen($ret) == 0 )
+	  {
+	    $ret = 'ok';
+	  }
+  }
+  
+	return($ret);
 }
 
-function getTCKeywords($tcID,&$keywords)
+
+
+/*
+20051004 - fm 
+return type changed
+*/
+function getTCKeywords($tcID)
 {
 	$sql = "SELECT keywords FROM mgttestcase WHERE id=" . $tcID;
 	$result = do_mysql_query($sql);
 	$keywords = array();
 	if ($result)
 	{
-		if ($row = mysql_fetch_row($result))
-			$keywords = explode(",",$row[0]);
+		if ($row = mysql_fetch_assoc($result))
+		{
+			$keywords = explode(",",$row['keywords']);
+		}	
 	}
 	
-	return $result ? 1 : 0;
+	return($keywords);
 }
 
-function getProductKeywords($prodID,&$keywords,$searchKW = null)
+
+/*
+20051004 - fm 
+return type changed
+*/
+function getProductKeywords($prodID,$searchKW = null)
 {
 	// grab all of the available keywords
 	$sql = "SELECT keyword FROM keywords WHERE prodid=" . $prodID;
 	
 	if (!is_null($searchKW))
+	{
 		$sql .= " AND keyword = '".mysql_escape_string($searchKW)."'";
+	}
 	
 	$result = do_mysql_query($sql);
 	$keywords = array();
 	if ($result)
 	{
-		while($row = mysql_fetch_row($result))
-			$keywords[] = $row[0];
+		while($row = mysql_fetch_assoc($result))
+		{
+			$keywords[] = $row['keyword'];
+		}	
 	}
 	
-	return $result ? 1 : 0;
+	return($keywords);
 }
 ?>

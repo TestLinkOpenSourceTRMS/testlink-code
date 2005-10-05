@@ -1,22 +1,24 @@
 <?
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: import.inc.php,v 1.7 2005/10/02 19:47:59 schlundus Exp $
+* $Id: import.inc.php,v 1.8 2005/10/05 06:15:32 franciscom Exp $
 * 
 * @author Martin Havlat
 *
 * Functions for Import TCs
 *
-* @ author: francisco mancardi - 20050810
+* @author: francisco mancardi - 20050810
 * deprecated $_SESSION['product'] removed 
 *
 * 20050828 - scs - changes for importing tc to a specific category
-*
 * 20050831 - fm - reduce global coupling
+* 20051004 - fm - interface changes
 */
+
 require_once('../../config.inc.php');
 require_once("../functions/common.php");
 require_once("../testcases/archive.inc.php");
 require_once("../keywords/keywords.inc.php");
+
 /**
 * Create table to show imported data at first
 *
@@ -40,23 +42,30 @@ function showTcImport($location,$catIDForImport = 0)
 			$arrayCat = $data[1];
 			$arrayTC = $data[2];
 	
-			//Strips off quotation marks (") needed to import data correctly
-			$arrayTC = preg_replace("/^['\"](.*?)['\"]$/","\\1", $arrayTC); // strip out possible quotes at beginning and end of string
+			// Strips off quotation marks (") needed to import data correctly
+			// strip out possible quotes at beginning and end of string
+			$arrayTC = preg_replace("/^['\"](.*?)['\"]$/","\\1", $arrayTC); 
 			if(strcmp($arrayCom,$oldCom) != 0){ //Is the current value equal to the old value?
-				$overview .= "<tr><td bgcolor='#CCCCCC' width='3'>COM:</td><td bgcolor='#CCCCCC'>" . $arrayCom . "</td></tr>"; //No
+				$overview .= "<tr><td bgcolor='#CCCCCC' width='3'>COM:</td><td bgcolor='#CCCCCC'>" . 
+				             $arrayCom . "</td></tr>";
 	
 				if(strcmp($arrayCat,$oldCat) != 0){ //Is the current value equal to the old value?
-					$overview .= "<tr><td bgcolor='#99CCFF' width='3'>CAT:</td><td  bgcolor='#99CCFF'>" . $arrayCat . "</td></tr>"; //No
-					$overview .= "<tr><td bgcolor='#FFFFCC' width='3'>TC:</td><td bgcolor='#FFFFCC'>" . $arrayTC . "</td></tr>"; //display TC
+					$overview .= "<tr><td bgcolor='#99CCFF' width='3'>CAT:</td><td  bgcolor='#99CCFF'>" . 
+					             $arrayCat . "</td></tr>";
+					$overview .= "<tr><td bgcolor='#FFFFCC' width='3'>TC:</td><td bgcolor='#FFFFCC'>" . 
+					             $arrayTC . "</td></tr>";
 				}
 	
 			} else {
 	
 				if (strcmp($arrayCat,$oldCat) == 0)	{
-					$overview .= "<tr><td bgcolor='#FFFFCC' width='3'>TC:</td><td bgcolor='#FFFFCC'>" . $arrayTC . "</td></tr>";
+					$overview .= "<tr><td bgcolor='#FFFFCC' width='3'>TC:</td><td bgcolor='#FFFFCC'>" . 
+					             $arrayTC . "</td></tr>";
 				} else {
-					$overview .= "<tr><td bgcolor='#99CCFF' width='3'>CAT:</td><td  bgcolor='#99CCFF'>" . $arrayCat . "</td></tr>"; //No
-					$overview .= "<tr><td bgcolor='#FFFFCC' width='3'>TC:</td><td bgcolor='#FFFFCC'>" . $arrayTC . "</td></tr>"; //display TC
+					$overview .= "<tr><td bgcolor='#99CCFF' width='3'>CAT:</td><td  bgcolor='#99CCFF'>" . 
+					             $arrayCat . "</td></tr>";
+					$overview .= "<tr><td bgcolor='#FFFFCC' width='3'>TC:</td><td bgcolor='#FFFFCC'>" . 
+					             $arrayTC . "</td></tr>"; 
 				}
 			}
 			$oldCom = $arrayCom;
@@ -68,7 +77,8 @@ function showTcImport($location,$catIDForImport = 0)
 		while ($data = fgetcsv ($handle, TL_IMPORT_ROW_MAX, ","))
 		{
 			$arrayTC = $data[0];
-			$overview .= "<tr><td bgcolor='#FFFFCC' width='3'>TC:</td><td bgcolor='#FFFFCC'>" . $arrayTC . "</td></tr>"; //display TC
+			$overview .= "<tr><td bgcolor='#FFFFCC' width='3'>TC:</td><td bgcolor='#FFFFCC'>" . 
+			             $arrayTC . "</td></tr>";
 		}
 	}
 
@@ -77,6 +87,8 @@ function showTcImport($location,$catIDForImport = 0)
 	$overview .= "</table>";
 	return $overview;
 }
+
+
 //20050828 - scs - added optional parameter for the offset in data where the keywords beging
 function buildKeywordListAndInsertKeywords($data,$prodID,$slice = 6)
 {
@@ -87,6 +99,7 @@ function buildKeywordListAndInsertKeywords($data,$prodID,$slice = 6)
 	//Need to reinitialize the keys variable
 	if (sizeof($keywords))
 	{
+		
 		for($i = 0;$i < sizeof($keywords);$i++)
 		{
 			$prodKeywords = null;
@@ -94,15 +107,19 @@ function buildKeywordListAndInsertKeywords($data,$prodID,$slice = 6)
 			$keyword = str_replace(array('"',','),array("",""),$keyword);
 			$keywords[$i] = $keyword;
 			
-			getProductKeywords($prodID,$prodKeywords,$keyword);
+			// 20051004 - fm - interface changes
+			$prodKeywords=getProductKeywords($prodID,$keyword);
 			if (!sizeof($prodKeywords))
+			{
 				addNewKeyword($prodID,$keywords[$i],null);
+			}	
 		}
 		$keywords = implode(",",$keywords).",";
 	}
 	else
+	{
 		$keywords = null;
-		
+	}	
 	return $keywords;
 }
 
@@ -129,7 +146,9 @@ function exeTcImport($fileLocation,$prodID, $login_name, $catIDForImport = 0)
 	//Harry: only stip out quotes if they are really there (M$ Excel CVS export compatibility)
 	//Harry: replace any M$ Excel CVS single quotes "'" inside key with double "''"
 	for($i = 0;$i < sizeof($data);$i++)
+	{
 		$data[$i] = stripQuotes($data[$i]);
+	}
 	
 	$arrayCom = $data[0];
 	$arrayCat = $data[1];
@@ -173,8 +192,10 @@ function exeTcImport($fileLocation,$prodID, $login_name, $catIDForImport = 0)
 	while ($data = fgetcsv ($handle, TL_IMPORT_ROW_MAX, ","))
 	{
 		for($i = 0;$i < sizeof($data);$i++)
+		{
 			$data[$i] = stripQuotes($data[$i]);
-	
+	  }
+	  
 		if ($catIDForImport)
 		{
 			$arrayTC = $data[0];
@@ -196,13 +217,13 @@ function exeTcImport($fileLocation,$prodID, $login_name, $catIDForImport = 0)
 			
 			if($arrayCom == $oldCom)
 			{
-				if($arrayCat == $oldCat)
-					$tcID = insertTestcase($oldCatNumber,$arrayTC,$arraySummary,$arrayTCSteps,$arrayResults,$login_name,null,$keys);
-				else
+		    // 20051004 - fm - refactoring
+				$catID = $oldCat;
+				if($arrayCat != $catID)
 				{
 					$catID = insertComponentCategory($oldComNumber,$arrayCat,null,null,null,null);
-					$tcID = insertTestcase($catID,$arrayTC,$arraySummary,$arrayTCSteps,$arrayResults,$login_name,null,$keys);
-				}
+				}	                       
+				$tcID = insertTestcase($catID,$arrayTC,$arraySummary,$arrayTCSteps,$arrayResults,$login_name,null,$keys);
 			}
 			else
 			{
@@ -228,8 +249,8 @@ function exeTcImport($fileLocation,$prodID, $login_name, $catIDForImport = 0)
 
 function stripQuotes($data)
 {
-	$data = preg_replace("/^['\"](.*?)['\"]$/","\\1", $data); // strip out possible quotes at beginning and end of string
-
+	// strip out possible quotes at beginning and end of string
+	$data = preg_replace("/^['\"](.*?)['\"]$/","\\1", $data); 
 	return $data;
 }
 ?>

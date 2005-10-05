@@ -4,13 +4,16 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.19 $
- * @modified $Date: 2005/10/03 07:18:43 $ by $Author: franciscom $
+ * @version $Revision: 1.20 $
+ * @modified $Date: 2005/10/05 06:15:32 $ by $Author: franciscom $
  *
  * @author Chad Rosen
  *
  * Constants used throughout TestLink are defined within this file
  * they should be changed for your environment
+ *
+ * @author Francisco Mancardi - 20051004 
+ * $g_allow_duplicate_keywords
  *
  * @author Francisco Mancardi - 20051002 
  * - Test Plan filtering by product related configuration parameters
@@ -204,6 +207,8 @@ New Feature
 $g_ui_show_check_filter_tp_by_product = 1;
 
 
+/* 1 -> you can create multiple time the same keyword for the same product */
+$g_allow_duplicate_keywords=0;
 
 /*
 Requirements - 

@@ -1,6 +1,10 @@
-{* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: resultsByStatus.tpl,v 1.2 2005/08/16 17:59:13 franciscom Exp $ *}
-{* Purpose: smarty template - show Test Results and Metrics *}
+{* 
+TestLink Open Source Project - http://testlink.sourceforge.net/
+$Id: resultsByStatus.tpl,v 1.3 2005/10/05 06:14:26 franciscom Exp $
+Purpose: show Test Results and Metrics 
+
+20051004 - fm - added print button
+*}
 {include file="inc_head.tpl"}
 
 <body>
@@ -24,6 +28,8 @@
 </table>
 <p class="italic">{lang_get s='info_test_results'}</p>
 </div>
+
+{include file="inc_print_button.tpl"}
 
 </body>
 </html>

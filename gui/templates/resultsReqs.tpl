@@ -1,7 +1,11 @@
-{* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: resultsReqs.tpl,v 1.1 2005/09/02 09:53:29 havlat Exp $ *}
-{* Purpose: smarty template - report REQ coverage *}
-{* Author Martin Havlat *}
+{* 
+TestLink Open Source Project - http://testlink.sourceforge.net/
+$Id: resultsReqs.tpl,v 1.2 2005/10/05 06:14:26 franciscom Exp $
+Purpose: report REQ coverage 
+Author Martin Havlat 
+
+20051004 - fm - added print button
+*}
 {include file="inc_head.tpl"}
 
 <body>
@@ -12,6 +16,8 @@
 	onclick="javascript:open_popup('{$helphref}requirementsCoverage.html');" />
 	{lang_get s='title_result_req_testplan'} {$arrReqSpec[$selectedReqSpec]} - {lang_get s='title_test_plan'}
 </h1>
+
+{include file="inc_print_button.tpl"}
 
 <div class="workBack">
 
@@ -136,6 +142,8 @@
 {/section}
 </div>
 
+
+{include file="inc_print_button.tpl"}
 
 </body>
 </html>

@@ -1,6 +1,10 @@
-{* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: resultsBugs.tpl,v 1.2 2005/08/16 17:59:13 franciscom Exp $ *}
-{* Purpose: smarty template - show Bugs Report *}
+{* 
+TestLink Open Source Project - http://testlink.sourceforge.net/
+$Id: resultsBugs.tpl,v 1.3 2005/10/05 06:14:26 franciscom Exp $
+Purpose: smarty template - show Bugs Report 
+
+20051004 - fm - added print button
+*}
 {include file="inc_head.tpl"}
 
 <body>
@@ -22,9 +26,10 @@
 	</tr>
 	 {/section}
 </table>
-
-
 </div>
+
+{include file="inc_print_button.tpl"}
+
 
 </body>
 </html>

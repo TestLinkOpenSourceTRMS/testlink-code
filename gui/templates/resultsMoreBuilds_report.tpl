@@ -50,6 +50,9 @@ $Author: franciscom $
 				{$allComponentData}
 {if !$xls}			</div>
 		</div>
+
+{include file="inc_print_button.tpl"}
+
 	</body>
 </html>
 {/if}

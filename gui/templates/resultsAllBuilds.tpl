@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: resultsAllBuilds.tpl,v 1.2 2005/08/16 17:59:13 franciscom Exp $ *}
+{* $Id: resultsAllBuilds.tpl,v 1.3 2005/10/05 06:14:26 franciscom Exp $ *}
 {* Purpose: smarty template - show Test Results and Metrics *}
 {include file="inc_head.tpl"}
 
@@ -31,5 +31,6 @@
 </table>
 </div>
 
+{include file="inc_print_button.tpl"}
 </body>
 </html>

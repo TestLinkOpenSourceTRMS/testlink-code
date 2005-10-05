@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execSetResults.tpl,v 1.6 2005/09/12 06:37:36 franciscom Exp $ *}
+{* $Id: execSetResults.tpl,v 1.7 2005/10/05 06:14:26 franciscom Exp $ *}
 {* Purpose: smarty template - show tests to add results *}
 {*	
   20050911 - fm - 
@@ -20,12 +20,14 @@
 
 <h1>{lang_get s='title_t_r_on_build'} {$build} {lang_get s='title_t_r_owner'} ( {$owner} )</h1>
 
+{include file="inc_print_button.tpl"}
+
 {* show echo about update if applicable *}
 {$updated}
 
 <div class="workBack">
 <form method='post'>
-	<div>
+	<div id="submit_tc_results">
 		<input type='submit' name='submitTestResults' value="{lang_get s='btn_save_tc_exec_results'}" />
 		<img align=top src="icons/sym_question.gif" onclick="javascript:open_popup('{$helphref}execMain.html');">
 	</div>
@@ -133,7 +135,7 @@
 	<hr />
 	{/section}
 
-	<div>
+	<div id="submit_tc_results">
 		<input type='submit' name='submitTestResults' value="{lang_get s='btn_save_tc_exec_results'}" />
 		<img align=top src="icons/sym_question.gif" onclick="javascript:open_popup('{$helphref}execMain.html');" />
 	</div>	
@@ -141,5 +143,6 @@
 </form>
 </div>
 
+{include file="inc_print_button.tpl"}
 </body>
 </html>

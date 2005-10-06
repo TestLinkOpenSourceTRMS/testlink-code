@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqAssign.tpl,v 1.2 2005/08/16 17:59:13 franciscom Exp $ *}
+{* $Id: reqAssign.tpl,v 1.3 2005/10/06 20:22:34 schlundus Exp $ *}
 {* Purpose: smarty template - assign REQ to one test case *}
 {include file="inc_head.tpl"}
 
@@ -12,7 +12,7 @@
 	{lang_get s='req_title_assign'} {$tcTitle}
 </h1>
 
-{include file="inc_update.tpl" result=$sqlResult action=$action}
+{include file="inc_update.tpl" result=$sqlResult action=$action item="Requirement"}
 
 <div class="workBack">
 <form method="post">{lang_get s='req_spec'}:

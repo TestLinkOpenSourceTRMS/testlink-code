@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.14 $
- * @modified $Date: 2005/09/21 16:42:02 $
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2005/10/06 20:22:34 $
  *
  * @author Andreas Morsing
  *
@@ -245,7 +245,7 @@ $TLS_Requirements = "Anforderungen";
 $TLS_TestCase = "testcase";
 $TLS_TestPlan = "TestPlan";
 $TLS_add = "hinzugefügt";
-$TLS_assigned = "assigned";
+$TLS_assigned = "zugewiesen";
 $TLS_delete = "gelöscht";
 $TLS_info_failed_db_upd = "Die Datenbank konnte nicht aktualisiert werden!";
 $TLS_info_failed_db_upd_details = "Die Datenbank konnte nicht aktualisiert werden! - details:";
@@ -670,6 +670,7 @@ $TLS_req_list_docs = "Liste der Dokumente";
 
 
 // gui/templates/mainPage.tpl
+$TLS_filter_tp_by_product = "Filter Test Plans by Product";
 $TLS_href_add_test_case = "TestCases hinzufügen";
 $TLS_href_assign_risk_own = "Risiko und Besitzverhältnisse zuweisen";
 $TLS_href_browse_tc = "TestCases durchsuchen";
@@ -846,6 +847,60 @@ $TLS_comp_scope = "Bereich";
 
 
 
+// gui/templates/resultsMoreBuilds_report.tpl
+$TLS_case_return_by_query_header = "Test Cases Return By Query";
+$TLS_descr_indiv = "Individual test cases which match specified \"Owner\", \"Keyword\", \"Component(s)\", \"Last Status\" and \"Builds Selected\" query parameters.";
+$TLS_descr_res_totals = "Results totals for test cases which match specified \"Owner\", \"Keyword\", \"Component(s)\", and \"Builds Selected\". \"Last Status\" query parameter is NOT considered.";
+$TLS_overall_status = "Overall Status";
+$TLS_please_wait = "Please wait until report fully loads...";
+$TLS_query_parameters_header = "Query Parameters Selected";
+$TLS_results_by_component_header = "Results By Component";
+$TLS_show_hide_all = "Show/Hide All";
+
+
+
+// gui/templates/resultsMoreBuilds_query_form.tpl
+$TLS_do_not_query_by_keyword = "DO NOT QUERY BY KEYWORD";
+$TLS_do_not_query_by_owner = "DO NOT QUERY BY OWNER";
+$TLS_excel_format = "MS Excel";
+$TLS_html_format = "HTML";
+$TLS_last_status_any = "Any";
+$TLS_last_status_blocked = "Blocked";
+$TLS_last_status_failed = "Failed";
+$TLS_last_status_not_run = "Not Run";
+$TLS_last_status_passed = "Passed";
+$TLS_select_builds_header = "Select Build(s)";
+$TLS_select_keyword_header = "Select Keyword";
+$TLS_select_last_result_header = "Select Last Result";
+$TLS_select_owner_header = "Select Owner";
+$TLS_select_report_format_header = "Select Report Format";
+$TLS_submit_query = "Submit Query";
+$TLS_test_plan_header = "Test Plan : ";
+
+
+
+// gui/templates/resultsReqs.tpl
+$TLS_req_title_blocked = "Blocked Requirements";
+$TLS_req_title_failed = "Failed Requirements";
+$TLS_req_title_notrun = "Unexecuted Requirements";
+$TLS_req_title_passed = "Passed Requirements";
+$TLS_title_result_req_testplan = "Test Results based on Requirements Specification";
+
+
+
+// gui/templates/inc_reqView.tpl
+
+
+
+// gui/templates/infoWindow.tpl
+$TLS_btn_close = "Close";
+
+
+
+// gui/templates/inc_print_button.tpl
+
+
+
 // lib/admin/adminProductEdit.php
 $TLS_info_no_more_prods = "Keine weiteren Produkte.";
 $TLS_info_product_activated = "Das Produkt wurde aktiviert.";
@@ -853,6 +908,7 @@ $TLS_info_product_inactivated = "Das Produkt wurde deaktiviert.";
 $TLS_info_product_name_empty = "Produktnamen dürfen nicht leer sein!";
 $TLS_info_product_not_deleted_check_log = "Das Produkt wurde nicht gelöscht.";
 $TLS_info_product_was_deleted = "Das Produkt wurde erfolgreich gelöscht.";
+$TLS_string_contains_bad_chars = "Zeichenkette enthält unerlaubte Zeichen";
 
 
 
@@ -915,6 +971,28 @@ $TLS_req_import_result_skipped = "Die Ergebnisse wurden übersprungen";
 
 
 
+// lib/functions/resultsMoreBuilds.inc.php
+$TLS_bugs = "Related Bugs";
+$TLS_build = "Build";
+$TLS_builds_selected = "Build(s)";
+$TLS_case_not_run_warning = "Test Case Not Run";
+$TLS_category_header = "Category =";
+$TLS_daterun = "Date Run";
+$TLS_last_status = "Last Status";
+$TLS_notes = "Related Notes";
+$TLS_number_blocked = "# Blocked";
+$TLS_number_cases = "# Cases";
+$TLS_number_executions = "# Test Cases Run";
+$TLS_number_failed = "# Failed";
+$TLS_number_not_run = "# Not Run";
+$TLS_number_passed = "# Passed";
+$TLS_owner = "Owner";
+$TLS_owner_header = "Owner =";
+$TLS_runby = "Run By";
+$TLS_test_plan_name = "Test Plan";
+
+
+
 // lib/general/frmWorkArea.php
 $TLS_no_build_warning_part1 = "Es gibt keine Builds für ";
 $TLS_no_build_warning_part2 = "Bitte, erstellen Sie erst einen und wenden sich an den Administrator";
@@ -931,6 +1009,7 @@ $TLS_no_testplans_available = "Keine Testpläne verfügbar";
 
 
 // lib/keywords/keywords.inc.php
+$TLS_duplicate_keyword = "Das Keyword ist schon vorhanden!";
 $TLS_empty_keyword_no = "Sie können kein leeres Keyword eingeben!";
 $TLS_kw_delete_fails = "Das Löschen der Keywords schlug fehl!";
 $TLS_kw_deleted = "Gelöscht";
@@ -1039,6 +1118,7 @@ $TLS_opt_show_tc_body = "Zeige Test Case Inhalt";
 $TLS_opt_show_tc_summary = "Zeige Test Case Zusammenfassung";
 $TLS_opt_show_toc = "Zeige Inhaltsverzeichnis";
 $TLS_title_tc_print_navigator = "Navigator - Test Spezifikation drucken";
+$TLS_title_tp_print_navigator = "Navigator - Print Test Plan ";
 
 
 
@@ -1078,6 +1158,15 @@ $TLS_title_test_report_all_builds = "Test Report: Resultate der Test Cases für a
 
 
 
+// lib/results/resultsMoreBuilds_buildReport.php
+
+
+
+// lib/testcases/archive.inc.php
+$TLS_component_name_already_exists = "Eine Komponente mit diesem Namen existiert schon!";
+
+
+
 // lib/testcases/containerEdit.php
 $TLS_error_cat_add = "Die Kategorie wurde nicht hinzugefügt!";
 $TLS_error_update_catorder = "Die Reihenfolge der Kategorien konnte nicht aktualisiert werden!";
@@ -1104,7 +1193,7 @@ $TLS_the_format_by_cat = "'testcase1','summary','steps','results','key1','key2',
 
 
 // lib/req/reqSpecView.php
-$TLS_req_msg_noselect = "nicht ausgewählt";
+$TLS_req_msg_noselect = "nichts ausgewählt";
 
 
 
@@ -1115,61 +1204,5 @@ $TLS_req_msg_notupdated_coverage = "Abdeckung für die Anfordungen konnte nicht a
 
 // lib/req/reqImport.php
 $TLS_req_import_finished = "Der Import ist abgeschlossen";
-
-// gui/templates/resultsMoreBuilds_query_form.tpl
-$TLS_test_plan_header = "Test Plan : ";
-$TLS_select_builds_header = "Select Build(s)";
-$TLS_select_components_header = "Select Component(s)";
-$TLS_components_selection_all = "all";
-$TLS_select_keyword_header = "Select Keyword";
-$TLS_do_not_query_by_keyword = "DO NOT QUERY BY KEYWORD";
-$TLS_select_owner_header = "Select Owner";
-$TLS_do_not_query_by_owner = "DO NOT QUERY BY OWNER";
-$TLS_select_report_format_header = "Select Report Format";
-$TLS_html_format = "HTML";
-$TLS_excel_format = "MS Excel";
-$TLS_select_last_result_header = "Select Last Result";
-$TLS_last_status_any = "Any";
-$TLS_last_status_passed = "Passed";
-$TLS_last_status_failed = "Failed";
-$TLS_last_status_blocked = "Blocked";
-$TLS_last_status_not_run = "Not Run";
-$TLS_submit_query = "Submit Query";
-
-// gui/templates/resultsMoreBuilds_report.tpl
-$TLS_please_wait = "Please wait until report fully loads...";
-$TLS_query_parameters_header = "Query Parameters Selected";
-$TLS_overall_status = "Overall Status";
-$TLS_descr_res_totals = "Results totals for test cases which match specified \"Owner\", \"Keyword\", \"Component(s)\", and \"Builds Selected\". \"Last Status\" query parameter is NOT considered.";
-$TLS_case_return_by_query_header = "Test Cases Return By Query";
-$TLS_descr_indiv = "Individual test cases which match specified \"Owner\", \"Keyword\", \"Component(s)\", \"Last Status\" and \"Builds Selected\" query parameters.";
-$TLS_show_hide_all = "Show/Hide All";
-$TLS_results_by_component_header = "Results By Component";
-
-// lib/functions/resultsMoreBuilds.inc.php
-//$TLS_resultsMoreBuilds_inc
-$TLS_test_plan_name = "Test Plan";
-$TLS_builds_selected = "Build(s)";
-$TLS_keyword = "Keywords";
-$TLS_last_status = "Last Status";
-$TLS_owner = "Owner";
-$TLS_number_cases = "# Cases";
-$TLS_number_passed = "# Passed";
-$TLS_number_failed = "# Failed";
-$TLS_number_blocked = "# Blocked";
-$TLS_number_not_run = "# Not Run";
-$TLS_category_header = "Category =";
-$TLS_owner_header = "Owner =";
-$TLS_number_executions = "# Test Cases Run";
-$TLS_build = "Build";
-$TLS_runby = "Run By";
-$TLS_case_not_run_warning = "Test Case Not Run";
-$TLS_daterun = "Date Run";
-$TLS_status = "Status";
-$TLS_bugs = "Related Bugs";
-$TLS_notes = "Related Notes";
-
-
-
 
 ?>

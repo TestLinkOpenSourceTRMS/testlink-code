@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: product.inc.php,v $
- * @version $Revision: 1.2 $
- * @modified $Date: 2005/08/16 18:00:55 $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2005/10/06 20:22:34 $
  * @author Martin Havlat
  *
  * Functions for Product management (create,update,delete)
@@ -89,8 +89,9 @@ function deleteProduct($id, &$error)
 	// be aware order of delete commands (there are dependencies)
 	$arrExecSql = array (
 		// delete bugs
+		// 20051005 - am - non-existing build-column was used
 		array ("DELETE bugs FROM bugs,project,build WHERE build.projid=project.id" .
-			" AND bugs.build=build.build AND project.prodid=" . $id, 
+			" AND bugs.build_id=build.id AND project.prodid=" . $id, 
 			'info_bugs_delete_fails'),
 		// delete builds
 		array ("DELETE build FROM project,build WHERE build.projid=project.id" .
@@ -132,7 +133,8 @@ function deleteProduct($id, &$error)
 			'info_testspec_delete_fails'),
 
 		// delete keywords
-		array ("DELETE FROM keywords WHERE id=" . $id, 
+		// 20051005 - am - wrong column used for deleting keywords
+		array ("DELETE FROM keywords WHERE prodid=" . $id, 
 			'info_keywords_delete_fails'),
 		// delete requirements
 		array ("DELETE req_spec,requirements,req_coverage FROM req_spec,requirements,req_coverage " .
@@ -186,7 +188,4 @@ function activateProduct($id, $status)
 
 	return $result ? 1 : 0;
 }
-
-// ----------- END ------------------------------------------
-
 ?>

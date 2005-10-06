@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.21 $
- * @modified $Date: 2005/10/06 06:07:10 $ by $Author: franciscom $
+ * @version $Revision: 1.22 $
+ * @modified $Date: 2005/10/06 20:22:33 $ by $Author: schlundus $
  *
  * @author Chad Rosen
  *
@@ -271,14 +271,14 @@ $g_locales_date_format = array('en_GB' => "%d/%m/%Y",
 				                       'it_IT' => "%d/%m/%Y",
 				                       'es_AR' => "%d/%m/%Y",
 				                       'es_ES' => "%d/%m/%Y",
-				                       'de_DE' => "%d/%m/%Y"
+				                       'de_DE' => "%d.%m.%Y"
 				                       ); 
 
 $g_locales_timestamp_format = array('en_GB' => "%d/%m/%Y %H:%M:%S",
 				                            'it_IT' => "%d/%m/%Y %H:%M:%S",
 				                            'es_AR' => "%d/%m/%Y %H:%M:%S",
 				                            'es_ES' => "%d/%m/%Y %H:%M:%S",
-				                            'de_DE' => "%d/%m/%Y %H:%M:%S"
+				                            'de_DE' => "%d.%m.%Y %H:%M:%S"
 				                           ); 
 // ----------------------------------------------------------------------------
 

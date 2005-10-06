@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.20 $ $Author: franciscom $
- * @modified $Date: 2005/10/03 07:36:30 $
+ * @version $Revision: 1.21 $ $Author: franciscom $
+ * @modified $Date: 2005/10/06 06:07:11 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -18,6 +18,7 @@
  * testPlanID, testPlanName
  *
  *
+ * @author: francisco mancardi - 20051005 - set_dt_formats()
  * @author: francisco mancardi - 20051002 - more changes to support filter_tp_by_product
  * 20051002 - am - code reformatted, small corrections
  * @author: francisco mancardi - 20050929 - changes to support filter_tp_by_product
@@ -368,6 +369,9 @@ function testlinkInitPage($initProduct = FALSE, $bDontCheckSession = false)
 	doDBConnect() or die("Could not connect to DB");
 	doSessionStart() or die("Could not start session");
 	setPaths();
+
+  // 20051005 - fm
+  set_dt_formats();
 	
 	if (!$bDontCheckSession)
 	{
@@ -793,4 +797,32 @@ function updateSessionTp_Prod($hash_user_sel)
   setSessionTestPlan($tpData);
 
 }
+
+/*
+SET Date and Time FORMATS
+
+20051005 - fm 
+*/
+function set_dt_formats()
+{
+	global $g_date_format;
+	global $g_timestamp_format;
+	global $g_locales_date_format;
+	global $g_locales_timestamp_format;
+
+  if(isset($_SESSION['locale']))
+  {
+
+		if($g_locales_date_format[$_SESSION['locale']])
+  	{
+	  	$g_date_format = $g_locales_date_format[$_SESSION['locale']];
+	  }
+	
+	  if($g_locales_timestamp_format[$_SESSION['locale']])
+	  {
+		  $g_timestamp_format = $g_locales_timestamp_format[$_SESSION['locale']];
+	  }
+  }
+}
+
 ?>

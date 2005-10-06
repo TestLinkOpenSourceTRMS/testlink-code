@@ -1,6 +1,6 @@
 <?
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: builds.inc.php,v 1.6 2005/10/03 07:21:42 franciscom Exp $
+* $Id: builds.inc.php,v 1.7 2005/10/06 06:07:11 franciscom Exp $
 * 
 * @author Martin Havlat
 *
@@ -81,5 +81,16 @@ function deleteTestPlanBuild($testPlanID,$buildID)
 	}
 	return $result ? 1 : 0;
 }
+
+
+/* 20051005 - fm */
+function getBuild_by_id($buildID)
+{
+  $sql = "SELECT build.* FROM build WHERE build.id = " . $buildID;
+  $result = do_mysql_query($sql);
+  $myrow = mysql_fetch_assoc($result);
+	return($myrow);
+}
+
 
 ?>

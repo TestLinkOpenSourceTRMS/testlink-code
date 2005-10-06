@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: users.inc.php,v $
  *
- * @version $Revision: 1.5 $
- * @modified $Date: 2005/08/30 11:29:41 $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2005/10/06 06:07:11 $
  *
  * @author Chad Rosen, Martin Havlat
  * @author Martin Havlat
@@ -197,15 +197,20 @@ function userUpdate($userID, $first, $last, $email ,
 }
 
 /** set session data after modification or authorization */
+// fm - 20051005  - set_dt_formats()
 // MHT 200507 - create function: update session data if admin modify yourself
 function setUserSession($user, $id, $roleID, $email, $locale = null)
 {
+	
 	tLog('setUserSession: $user='.$user.' $id='.$id.' $roleID='.$roleID.' $email='.$email.' $locale='.$locale);
 
 	if (!is_null($user))
-	    $_SESSION['user'] = $user; //Set the user name in a session variable
+	{
+	  $_SESSION['user'] = $user; 
+	}    
 	$_SESSION['userID']	= $id;
-    $_SESSION['email'] = $email; //Set the user's email address for easy lookup later
+  $_SESSION['email'] = $email; 
+  
 	if (!is_null($roleID))
 	{
 	    $_SESSION['roleId'] = intval($roleID); 
@@ -216,10 +221,12 @@ function setUserSession($user, $id, $roleID, $email, $locale = null)
 	    	$_SESSION['role'] = mysql_result($result, 0, 'role'); 
 	    	tLog('setUserSession: $user='.$_SESSION['role']);
 	    }
-    }
-    if (!is_null($locale))
+  }
+  if (!is_null($locale))
+  {
 		$_SESSION['locale'] = $locale;
-    
+    set_dt_formats();
+  }  
 	return 1;
 }
 

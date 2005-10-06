@@ -4,14 +4,18 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.20 $
- * @modified $Date: 2005/10/05 06:15:32 $ by $Author: franciscom $
+ * @version $Revision: 1.21 $
+ * @modified $Date: 2005/10/06 06:07:10 $ by $Author: franciscom $
  *
  * @author Chad Rosen
  *
  * Constants used throughout TestLink are defined within this file
  * they should be changed for your environment
  *
+ * @author Francisco Mancardi - 20051005
+ * new config structures to manage L18N for date and time format
+ * $g_locales_date_format, $g_locales_timestamp_format
+ * 
  * @author Francisco Mancardi - 20051004 
  * $g_allow_duplicate_keywords
  *
@@ -242,25 +246,47 @@ $g_field_size->category_name=100;
 //$g_fckeditor_toolbar = "TL_Medium";
 $g_fckeditor_toolbar = "TL_Medium_2";
 
-// see strftime() in PHP manual
-$g_date_format ="%d/%m/%Y";
-//$g_date_format ="%d/%m/%Y %H:%M";
-// $g_date_format ="%Y%m%d"; // pseudo iso
-
-
-$g_timestamp_format ="%d/%m/%Y %H:%M:%S";
 
 
 /* These are the supported locales */
 $g_locales = array('en_GB' => 'English (UK)',
-				   'it_IT' => 'Italian',
-				   'es_AR' => 'Spanish (Argentine)',
-				   'es_ES' => 'Spanish',
-				   'de_DE' => 'German',
-				  );
+				           'it_IT' => 'Italian',
+				           'es_AR' => 'Spanish (Argentine)',
+				           'es_ES' => 'Spanish',
+				           'de_DE' => 'German'
+				          );
+
+// ----------------------------------------------------------------------------
+// 20051005 - francisco.mancardi@gruppotesi.com
+// see strftime() in PHP manual
+//
+// Very IMPORTANT: 
+// setting according local is done in testlinkInitPage() using set_dt_formats()
+//
+// Default values
+$g_date_format ="%d/%m/%Y";
+$g_timestamp_format = "%d/%m/%Y %H:%M:%S";
+
+$g_locales_date_format = array('en_GB' => "%d/%m/%Y",
+				                       'it_IT' => "%d/%m/%Y",
+				                       'es_AR' => "%d/%m/%Y",
+				                       'es_ES' => "%d/%m/%Y",
+				                       'de_DE' => "%d/%m/%Y"
+				                       ); 
+
+$g_locales_timestamp_format = array('en_GB' => "%d/%m/%Y %H:%M:%S",
+				                            'it_IT' => "%d/%m/%Y %H:%M:%S",
+				                            'es_AR' => "%d/%m/%Y %H:%M:%S",
+				                            'es_ES' => "%d/%m/%Y %H:%M:%S",
+				                            'de_DE' => "%d/%m/%Y %H:%M:%S"
+				                           ); 
+// ----------------------------------------------------------------------------
+
+
 
 /* Set this to your default locale, this must be one of $g_locales */
 define('TL_DEFAULT_LOCALE','en_GB');
+
 
 /* These are the possible TestCase statuses */
 $g_tc_status = array ( "failed"        => 'f',

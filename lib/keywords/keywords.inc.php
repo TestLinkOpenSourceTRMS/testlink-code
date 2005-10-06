@@ -1,7 +1,7 @@
 <?
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* @version $Id: keywords.inc.php,v 1.5 2005/10/05 06:15:33 franciscom Exp $
+* @version $Id: keywords.inc.php,v 1.6 2005/10/06 06:07:11 franciscom Exp $
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author	Chad Rosen
@@ -124,6 +124,10 @@ function addTCKeyword ($tcID, $newKey)
 	{
 		$oldKeys = mysql_fetch_assoc($resultUpdate);
 		$TCKeys = $oldKeys['keywords'];
+		
+		// 20051005 - fm
+		//asort($TCKeys);
+		//reset($TCKeys);
 		
 		// add newKey if is not included
 		$keys = explode(",",$TCKeys);
@@ -275,6 +279,11 @@ function getTCKeywords($tcID)
 		if ($row = mysql_fetch_assoc($result))
 		{
 			$keywords = explode(",",$row['keywords']);
+			
+			// 20051005 - fm
+			// BUGID 0000160: Keywords showed without Order by
+			//asort($keywords);
+			//reset($keywords);
 		}	
 	}
 	

@@ -2,13 +2,14 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: plan.inc.php,v $
- * @version $Revision: 1.11 $
- * @modified $Date: 2005/10/03 07:20:14 $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2005/10/07 06:39:13 $ $Author: franciscom $
  * @author 	Martin Havlat
  *
  * Functions for management: 
  * Test Plans, Test Case Suites, Milestones, Testers assignment
  *
+ * @author Francisco Mancardi - 20051006 - updateTestPlanBuild()
  * @author Francisco Mancardi - 20051001
  * del_category_deep(), del_component_deep
  *
@@ -555,5 +556,27 @@ function del_component_deep($compID)
 	$result = do_mysql_query($sql);
 
 }
+
+
+/*
+ 20051006 - fm 
+*/
+function updateTestPlanBuild($buildID,$buildName,$notes)
+{
+	$ret=0;
+	$sql = " UPDATE build " .
+	       " SET name='" . mysql_escape_string($buildName) . "'," .  
+	       "     note='" . mysql_escape_string($notes) . "'" .
+	       " WHERE id=" . $buildID ;
+	       
+	$result = do_mysql_query($sql);
+	if ($result)
+	{
+		$ret=1;
+	}
+	return($ret);
+}
+
+
 
 ?>

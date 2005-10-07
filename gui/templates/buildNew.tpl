@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: buildNew.tpl,v 1.3 2005/08/26 15:08:39 franciscom Exp $ *}
+{* $Id: buildNew.tpl,v 1.4 2005/10/07 06:39:12 franciscom Exp $ *}
 {* Purpose: smarty template - Add new build and show existing 
 
  @author Francisco Mancardi - fm
@@ -32,7 +32,7 @@ var warning_delete_build = "{lang_get s='warning_delete_build'}";
 	<table class="common" width="80%">
 		<tr>
 			<td>{lang_get s='enter_build'}</td>
-			<td><input type="text" name="build" maxlength="100" size="30"/></td>
+			<td><input type="text" name="build_name" maxlength="100" value="{$build_name}" size="30"/></td>
 		</tr>
 		<tr>
 			<td>{lang_get s='enter_build_notes'}</td>
@@ -40,7 +40,7 @@ var warning_delete_build = "{lang_get s='warning_delete_build'}";
 		</tr>
 	</table>
 	<div class="groupBtn">	
-		<input type="submit" name="newBuild" value="{lang_get s='btn_create'}" />
+		<input type="submit" name="{$button_name}" value="{$button_value}" />
 	</div>
 	</form>
 </div>
@@ -55,9 +55,11 @@ var warning_delete_build = "{lang_get s='warning_delete_build'}";
 		</tr>
 		{foreach item=build key=b from=$arrBuilds}
 			<tr>
-				<td>{$build|escape}</td>
+				<!-- <td>{$build|escape}</td> -->
+				<td><a href="lib/plan/buildNew.php?edit_build=load_info&buildID={$b}&build_name={$build}">{$build|escape}</td>
 				<td><pre style="display:inline">{$buildNotes[$b]}</pre></td>
-				<td><img alt="{lang_get s='alt_delete_build'}" src="icons/thrash.png" onclick="deleteBuild_onClick({$b},'{$build|escape}')"/></td>
+				<td><img alt="{lang_get s='alt_delete_build'}" src="icons/thrash.png" 
+				              onclick="deleteBuild_onClick({$b},'{$build|escape}')"/></td>
 			</tr>
 		{/foreach}
 	</table>
@@ -68,6 +70,7 @@ var warning_delete_build = "{lang_get s='warning_delete_build'}";
 <form method="POST" action="lib/plan/buildNew.php" id="deleteBuildForm" onsubmit="return false">
 	<input type="hidden" name="buildID" id="buildID">
 	<input type="hidden" name="buildLabel" id="buildLabel">
+	<input type="hidden" name="del_build" id="del_build">
 </form>
 </div>
 

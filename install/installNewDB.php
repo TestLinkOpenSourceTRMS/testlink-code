@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: installNewDB.php,v 1.13 2005/10/03 07:20:13 franciscom Exp $ */
+/* $Id: installNewDB.php,v 1.14 2005/10/07 03:19:08 havlat Exp $ */
 /*
 Parts of this file has been taken from:
 Etomite Content Management System
@@ -202,12 +202,15 @@ if($create)
   $sql_create = "CREATE DATABASE " . $db . " CHARACTER SET utf8 "; 
 	if(!@mysql_query($sql_create, $conn)) 
 	{
-		echo "<span class='notok'>Failed!</span></b> - Could not create database: $db!";
+		// 20051005 MHT	More comments
+		echo "<span class='notok'>Failed!</span></b> - Could not create database: $db! " .
+			mysql_error();
 		$errors += 1;
 		
 		echo "<p> TestLink setup could not create the database, " .
 		     "and no existing database with the same name was found. <br />" .
-		     "Please create a database, and run setup again.";
+		     "Please create a database by different way (e.g. from command line)," . 
+			 " or with different DB root account. Run setup again then.";
 		close_html_and_exit();     
 	} 
 	else 

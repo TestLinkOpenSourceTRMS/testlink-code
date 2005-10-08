@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.27 $
- * @modified $Date: 2005/10/06 20:22:35 $
+ * @version $Revision: 1.28 $
+ * @modified $Date: 2005/10/08 04:12:16 $
  *
  * @author Francisco Mancardi
 **/
@@ -15,7 +15,7 @@ $TLS_cant_create_user = "I'm sorry but your login could not be created. Please c
 $TLS_empty_email_address = " You can't use an empty e-mail address";
 $TLS_empty_first_name = " You can't use an empty First Name";
 $TLS_empty_last_name = " You can't use an empty Last Name";
-$TLS_fatal_page_title = "TestLink ::: Fatal Error";
+$TLS_fatal_page_title = "TestLink - Fatal Error";
 $TLS_invalid_user_name = "I'm sorry but you must enter a valid user name. Please select another one";
 $TLS_passwd_dont_match = "The two passwords entered did not match. Note that comparison is case sensitive. Please try again";
 $TLS_user_cant_be_created_because = "Your account can't be created because:";
@@ -26,7 +26,7 @@ $TLS_your_info_please = "Enter Your User Information";
 
 
 // index.php
-$TLS_main_page_title = "TestLink ::: Main Page";
+$TLS_main_page_title = "TestLink - Main Page";
 
 
 
@@ -36,6 +36,9 @@ $TLS_passwd_lost = "Your password has been send to the email account you specifi
 $TLS_please_login = "Please log in ...";
 $TLS_session_expired = "Your session has expired! Please login again.";
 $TLS_your_first_login = "Welcome to TestLink! You have guest access now. Please login ...";
+$TLS_login_msg_session_exists1 = "There is still a valid login for your browser. Please use ";
+$TLS_login_msg_session_exists2 = " at first if you would like to renew your session.";
+$TLS_logout_link = "Logout";
 
 
 

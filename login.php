@@ -5,22 +5,24 @@
  *
  * Filename $RCSfile: login.php,v $
  *
- * @version $Revision: 1.8 $
- * @modified $Date: 2005/08/31 11:35:11 $ by $Author: schlundus $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2005/10/08 04:11:58 $ by $Author: havlat $
  *
  * @author Martin Havlat
  * 
  * The page allows adjust login data
  * 
  * 20050831 - scs - cosmetic changes
-**/
-//200508 MHT - added config check
+ * 200508 - MHT - added config check
+ **/
+
 require_once('lib/functions/configCheck.php');
 checkConfiguration();
 
 require('config.inc.php');
 require_once('lib/functions/common.php');
 require_once('lib/functions/users.inc.php');
+
 doDBConnect();
 
 $_GET = strings_stripSlashes($_GET);
@@ -41,6 +43,10 @@ switch($note)
 		break;
 	case 'lost':
 		$message = lang_get('passwd_lost');
+		break;
+	case 'sessionExists':
+		$message = lang_get('login_msg_session_exists1') . ' <a href="logout.php">' . 
+			lang_get('logout_link') . '</a>' . lang_get('login_msg_session_exists2');
 		break;
 	default:
 		break;

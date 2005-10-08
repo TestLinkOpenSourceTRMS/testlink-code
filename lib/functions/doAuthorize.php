@@ -1,18 +1,24 @@
 <?php
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ * This script is distributed under the GNU General Public License 2 or later. 
  * 
  * @filesource $RCSfile: doAuthorize.php,v $
- * @version $Revision: 1.3 $
- * @modified $Date: 2005/08/26 21:01:27 $ by $Author: schlundus $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2005/10/08 04:12:37 $ by $Author: havlat $
  * @author Chad Rosen, Martin Havlat
  *
  * This file handles the initial login and creates all user session variables.
  *
  * @todo Setting up cookies so that the user can automatically login next time
+ * 
+ * Revision:
+ * 
+ * 20051007 MHT Solved  0000024 Session confusion 
  *
  *///////////////////////////////////////////////////////////////////////////
- 
+
+
 require_once("users.inc.php");
 
 
@@ -20,6 +26,7 @@ require_once("users.inc.php");
 function doAuthorize()
 {
 	$bSuccess = false;
+	$sProblem = 'wrong'; // default problem attribute value
 	
 	$pwd = isset($_POST['password']) ? strings_stripSlashes($_POST['password']) : null;
 	$login = isset($_POST['login']) ? strings_stripSlashes($_POST['login']) : null;
@@ -35,12 +42,28 @@ function doAuthorize()
 		//encrypt the password so it isn't stored plain text in the db
 		if ($login_exists && $userInfo['password'] == md5($pwd))
 		{
-		    //Setting user's session information
-		    // MHT 200507 move session update to function
-		    setUserSession($userInfo['login'], $userInfo['id'], $userInfo['rightsid'], 
-		    		$userInfo['email'], $userInfo['locale']);
-		    $bSuccess = true;
+			// 20051007 MHT Solved  0000024 Session confusion 
+			// Disallow two session with one browser
+			if (strlen($_SESSION['user']) > 0)
+			{
+				$sProblem = 'sessionExists';
+				tLog("Session exists. No second login is allowed", 'INFO');
+			}
+			else
+			{
+			    //Setting user's session information
+			    // MHT 200507 move session update to function
+			    setUserSession($userInfo['login'], $userInfo['id'], 
+			    		$userInfo['rightsid'], $userInfo['email'], 
+			    		$userInfo['locale']);
+		    	$bSuccess = true;
+			}
 		}
+		else
+		{
+			 tLog("Account ".$login." doesn't exist or used wrong password.",'INFO');
+		}
+			
 	}
 	if ($bSuccess)
 	{
@@ -52,7 +75,7 @@ function doAuthorize()
 	{
 		// not authorized
 	    tLog("Login '$login' fails. (Timing: " . tlTimingCurrent() . ')', 'INFO');
-		redirect($_SESSION['basehref'] ."login.php?note=wrong");
+		redirect($_SESSION['basehref'] . "login.php?note=" . $sProblem);
 	}
 }
 ?>

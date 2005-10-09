@@ -1,7 +1,7 @@
 <?
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* @version $Id: keywords.inc.php,v 1.6 2005/10/06 06:07:11 franciscom Exp $
+* @version $Id: keywords.inc.php,v 1.7 2005/10/09 18:13:48 schlundus Exp $
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author	Chad Rosen
@@ -15,7 +15,6 @@
 * @author: francisco mancardi - 20050810
 * deprecated $_SESSION['product'] removed
 */
-////////////////////////////////////////////////////////////////////////////////
 
 /** collect all keywords for the product and return as associative array */
 function selectKeywords($prodID, $selectedKey = '')
@@ -24,32 +23,28 @@ function selectKeywords($prodID, $selectedKey = '')
 	
 	if ($prodID)
 	{	
-  	// grab keywords from db
-  	//20050827 - scs - added sorting of keyword
-  	$sql = "SELECT id,keyword,notes FROM keywords WHERE prodid = " . $prodID . " ORDER BY keyword ASC";
-  	$result = do_mysql_query($sql);
-  	
-  	if ($result)
-  	{
-  		while ($myrow = mysql_fetch_assoc($result)) 
-  		{
-  			// add selected string for an appropriate row
-  			$selData = '';
-  			if (!is_null($selectedKey) && ($selectedKey == $myrow['id']))
-  				$selData = 'selected="selected"';
-  			$arrKeywords[] = array( 'id' => $myrow['id'],
-  									'keyword' => $myrow['keyword'], 
-  									'notes' => $myrow['notes'], 
-  				   					'selected' => $selData,
-  								   );
-  		}
-  	}
+	  	//20050827 - scs - added sorting of keyword
+	  	$sql = "SELECT id,keyword,notes FROM keywords WHERE prodid = " . $prodID . " ORDER BY keyword ASC";
+	  	$result = do_mysql_query($sql);
+	  	
+	  	if ($result)
+	  	{
+	  		while ($myrow = mysql_fetch_assoc($result)) 
+	  		{
+	  			// add selected string for an appropriate row
+	  			$selData = '';
+	  			if (!is_null($selectedKey) && ($selectedKey == $myrow['id']))
+	  				$selData = 'selected="selected"';
+	  			$arrKeywords[] = array( 'id' => $myrow['id'],
+	  									'keyword' => $myrow['keyword'], 
+	  									'notes' => $myrow['notes'], 
+	  				   					'selected' => $selData,
+	  								   );
+	  		}
+	  	}
 	}
 	return $arrKeywords;
 }
-
-
-
 
 function updateTCKeywords ($id, $arrKeywords)
 {
@@ -57,7 +52,6 @@ function updateTCKeywords ($id, $arrKeywords)
 	if ($arrKeywords)
 		$keywords = implode(",",$arrKeywords).",";
 	
-	// execute db update
 	$sqlUpdate = "UPDATE mgttestcase SET keywords='" . mysql_escape_string($keywords)."' where id=".$id;
 	$resultUpdate = do_mysql_query($sqlUpdate);
 	
@@ -84,7 +78,7 @@ function updateCategoryKeywords ($id, $newKey)
 	else
 	{
 		$resultUpdate = mysql_error();
-  }
+	}
 	return $resultUpdate ? $resultUpdate : 'ok';
 }
 
@@ -110,13 +104,12 @@ function updateComponentKeywords ($id, $newKey)
 	else
 	{
 		$resultUpdate = mysql_error();
-  }
+	}
   
 	return $resultUpdate ? $resultUpdate : 'ok';
 }
 
-
-function addTCKeyword ($tcID, $newKey)
+function addTCKeyword($tcID, $newKey)
 {
 	$sqlTC = "SELECT keywords FROM mgttestcase where id=" . $tcID;
 	$resultUpdate = do_mysql_query($sqlTC);
@@ -124,11 +117,6 @@ function addTCKeyword ($tcID, $newKey)
 	{
 		$oldKeys = mysql_fetch_assoc($resultUpdate);
 		$TCKeys = $oldKeys['keywords'];
-		
-		// 20051005 - fm
-		//asort($TCKeys);
-		//reset($TCKeys);
-		
 		// add newKey if is not included
 		$keys = explode(",",$TCKeys);
 		if (!in_array($newKey,$keys))
@@ -229,42 +217,38 @@ function addNewKeyword($prodID,$keyword, $notes)
 	global $g_allow_duplicate_keywords;
 	
 	$ret = 'ok';
-	$do_insert=1;
+	$do_insert = 1;
 	$my_kw = trim($keyword);
-	if( !$g_allow_duplicate_keywords )
+	if (!$g_allow_duplicate_keywords)
 	{
-	  $sql = " SELECT * FROM	keywords " .
-	         " WHERE UPPER(keyword) ='" . strtoupper(mysql_escape_string($my_kw)) . "'" .
-	         " AND prodid=" . $prodID ;
-	                
-	  $result = do_mysql_query($sql);       
-	  if( mysql_num_rows($result) > 0)
-	  {
-	  	$do_insert=0;
-	  	$ret = lang_get('duplicate_keyword');
-	  }
+		$sql = 	" SELECT * FROM keywords " .
+				" WHERE UPPER(keyword) ='" . strtoupper(mysql_escape_string($my_kw))."'".
+		     	" AND prodid=" . $prodID ;
+		            
+		$result = do_mysql_query($sql);       
+		if(mysql_num_rows($result))
+		{
+			$do_insert = 0;
+			$ret = lang_get('duplicate_keyword');
+		}
 	}
 	
-  if ( $do_insert )
-  {
-	  $sql = " INSERT INTO keywords (keyword,prodid,notes) " .
-	         " VALUES ('" . mysql_escape_string($my_kw) .	"'," . 
-	                        $prodID . ",'" . mysql_escape_string($notes) . "')";
-	
-	  $result = do_mysql_query($sql);
-	  
-	  $ret = trim(mysql_error());
-	  if( strlen($ret) == 0 )
-	  {
-	    $ret = 'ok';
-	  }
-  }
+	if ($do_insert)
+	{
+		$sql =  " INSERT INTO keywords (keyword,prodid,notes) " .
+				" VALUES ('" . mysql_escape_string($my_kw) .	"'," . 
+		$prodID . ",'" . mysql_escape_string($notes) . "')";
+		
+		$result = do_mysql_query($sql);
+		$ret = trim(mysql_error());
+		if(!strlen($ret))
+		{
+			$ret = 'ok';
+		}
+	}
   
-	return($ret);
+	return $ret;
 }
-
-
-
 /*
 20051004 - fm 
 return type changed
@@ -279,21 +263,13 @@ function getTCKeywords($tcID)
 		if ($row = mysql_fetch_assoc($result))
 		{
 			$keywords = explode(",",$row['keywords']);
-			
-			// 20051005 - fm
-			// BUGID 0000160: Keywords showed without Order by
-			//asort($keywords);
-			//reset($keywords);
 		}	
 	}
-	
 	return($keywords);
 }
 
-
 /*
-20051004 - fm 
-return type changed
+20051004 - fm return type changed
 */
 function getProductKeywords($prodID,$searchKW = null)
 {
@@ -304,6 +280,7 @@ function getProductKeywords($prodID,$searchKW = null)
 	{
 		$sql .= " AND keyword = '".mysql_escape_string($searchKW)."'";
 	}
+	$sql .= " ORDER BY keyword ASC";
 	
 	$result = do_mysql_query($sql);
 	$keywords = array();
@@ -314,7 +291,6 @@ function getProductKeywords($prodID,$searchKW = null)
 			$keywords[] = $row['keyword'];
 		}	
 	}
-	
-	return($keywords);
+	return $keywords;
 }
 ?>

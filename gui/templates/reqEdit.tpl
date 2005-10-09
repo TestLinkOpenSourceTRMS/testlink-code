@@ -1,10 +1,11 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqEdit.tpl,v 1.4 2005/08/30 15:18:58 havlat Exp $ *}
+{* $Id: reqEdit.tpl,v 1.5 2005/10/09 18:13:48 schlundus Exp $ *}
 {* Purpose: smarty template - create / edit a req *}
 {* Author: Martin Havlat *}
 {* Revisions:
 20050828 - fm - fckeditor, localize_date
 20050830 - MHT - result presentation updated
+20051008 - am - added escaping of tile/author
 *}
 {include file="inc_head.tpl"}
 
@@ -14,7 +15,7 @@
 	<img alt="{lang_get s='help'}: {lang_get s='req_spec'}" class="help" 
 	src="icons/sym_question.gif" 
 	onclick="javascript:open_popup('{$helphref}requirementsCoverage.html');" />
-	{lang_get s='req_edit'}: {$arrReq.title}
+	{lang_get s='req_edit'}: {$arrReq.title|escape}
 </h1>
 
 <div class="workBack">
@@ -91,9 +92,9 @@
 </form>
 
 
-<p>{lang_get s="Author"}: {$arrReq.author} [{localize_date d=$arrReq.create_date}]</p>
+<p>{lang_get s="Author"}: {$arrReq.author|escape} [{localize_date d=$arrReq.create_date}]</p>
 {if $arrReq.id_modifier <> ''}
-<p>{lang_get s="last_edit"}: {$arrReq.modifier} [{localize_date d=$arrReq.modified_date}]</p>
+<p>{lang_get s="last_edit"}: {$arrReq.modifier|escape} [{localize_date d=$arrReq.modified_date}]</p>
 {/if}
 
 </div>

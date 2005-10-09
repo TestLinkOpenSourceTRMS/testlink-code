@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: exec.inc.php,v $
  *
- * @version $Revision: 1.14 $
- * @modified $Date: 2005/10/03 07:21:42 $ $Author: franciscom $
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2005/10/09 18:13:48 $ $Author: schlundus $
  *
  * @author Martin Havlat
  *
@@ -36,12 +36,15 @@ function buildsNumber($tpID=0)
 {
 	// 20050929 - fm - seems sometimes we receive no tpID
 	$sql = "SELECT count(*) AS num_builds FROM build WHERE build.projid = " . $tpID;
-  $buildCount=0;
-  if ($tpID)
-  {
-	 $result = do_mysql_query($sql);
-	 $myrow = mysql_fetch_assoc($result);
-	 $buildCount = $myrow['num_builds'];
+	$buildCount=0;
+	if ($tpID)
+	{
+		$result = do_mysql_query($sql);
+		if ($result)
+		{
+			$myrow = mysql_fetch_assoc($result);
+			$buildCount = $myrow['num_builds'];
+		}
 	}
 	return ($buildCount);
 }

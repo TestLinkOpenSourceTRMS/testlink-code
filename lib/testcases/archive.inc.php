@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: archive.inc.php,v $
  *
- * @version $Revision: 1.16 $
- * @modified $Date: 2005/09/16 06:47:12 $ by $Author: franciscom $
+ * @version $Revision: 1.17 $
+ * @modified $Date: 2005/10/09 18:13:49 $ by $Author: schlundus $
  *
  * @author Martin Havlat
  * Purpose:  functions for test specification management have three parts:
@@ -73,11 +73,11 @@ function getTestcase($id, $convert = TRUE)
 		$a_keys = array('title','summary','steps','exresult');
 
 		// prepare data
-    foreach($a_keys as $field_name)
-    {
-    	$myrowTC[$field_name] = stripslashes($myrowTC[$field_name]);
+	    foreach($a_keys as $field_name)
+	    {
+	    	$myrowTC[$field_name] = stripslashes($myrowTC[$field_name]);
 		}
-		
+			
 		//Chop the trailing comma off of the end of field
 		$myrowTC['keywords'] = substr($myrowTC['keywords'], 0, -1);
 	} 
@@ -101,16 +101,6 @@ function getTestcaseTitle($id, $convert = TRUE)
 	$tc_data=getTestcase($id, $convert);
 	return ($tc_data['title']);
 }
-
-
-
-
-
-
-
-
-
-
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -196,25 +186,29 @@ function showTestcase ($id,$allow_edit = 1)
 	define('DO_NOT_CONVERT',false);
 	global $g_tpl;
 	
-	
-	$can_edit='no';
-	if( $allow_edit )
+	$can_edit = 'no';
+	if ($allow_edit)
 	{
 		$can_edit = has_rights("mgt_modify_tc");
 	}
-	
 	$myrowTC = getTestcase($id,DO_NOT_CONVERT);
-
-
 	$len = strlen($myrowTC['keywords'])-1;
 	if (strrpos($myrowTC['keywords'],',') === $len)
 	{
-		$myrowTC['keywords'] = substr($myrowTC['keywords'],0,$len);
+		//2005 - am - show keywords alphanumerically sorted
+		$kwList = substr($myrowTC['keywords'],0,$len);
+		if (strlen($kwList))
+		{
+			$kwList = explode(",",$kwList);
+			asort($kwList);
+			reset($kwList);
+			$kwList = implode(",",$kwList);
+		}
+		$myrowTC['keywords'] = $kwList;
 	}
 	
 	// get assigned REQs
 	$arrReqs = getReq4Tc($id);
-	
 	// 20050820 - fm
 	$tc_array = array($myrowTC);
 	

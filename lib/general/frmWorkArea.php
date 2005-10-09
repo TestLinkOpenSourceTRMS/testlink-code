@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: frmWorkArea.php,v $
  *
- * @version $Revision: 1.4 $
- * @modified $Date: 2005/09/06 06:44:38 $ by $Author: franciscom $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2005/10/09 18:13:48 $ by $Author: schlundus $
  *
  * @author Martin Havlat
  *
@@ -56,8 +56,6 @@ if (in_array($showFeature,array('executeTest','metrics')))
 	                          $_SESSION['testPlanName'],
 	                          $_SESSION['productName']);
 }
-
-
 /// <enhancement version="???" date="2005-04-09" author="fm" >
 /// 1. get path from global var
 /// 2. the URL made easier after setting some rules for help/instruction files
@@ -65,16 +63,12 @@ if (in_array($showFeature,array('executeTest','metrics')))
 /// </enhancement>
 $smarty = new TLSmarty();
 
-
 /** default width of left pane */
 // 20050828 - fm
 $smarty->assign('treewidth', TL_FRMWORKAREA_LEFT_FRAME_WIDTH);
 $smarty->assign('treeframe', $aa_tfp[$showFeature]);
 $smarty->assign('workframe', $g_rpath['help'] . "/{$showFeature}" . ".html");
 $smarty->display('frmInner.tpl');
-
-
-
 
 /** 
  * 	validate that some build exists (for Test Plan related features).

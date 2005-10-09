@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.10 $
- * @modified $Date: 2005/10/05 06:15:33 $  by $Author: franciscom $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2005/10/09 18:13:49 $  by $Author: schlundus $
  * This page manages all the editing of test cases.
  *
  * @author Martin Havlat
@@ -58,22 +58,15 @@ if (isset($_REQUEST['editTC']))
 }	
 
 $product = $_SESSION['productID'];
-//$data = isset($_GET['data']) ? intval($_GET['data']) : 0;
-
-// 20050827
 $categoryID = isset($_GET['categoryID']) ? intval($_GET['categoryID']) : 0;
 $testcaseID = isset($_GET['testcaseID']) ? intval($_GET['testcaseID']) : 0;
 $show_newTC_form = 0;
 
-
 $smarty = new TLSmarty;
 
-// 20050810 - fm
-// from 3 to only 1 assignment
+// 20050810 - fm - from 3 to only 1 assignment
 $smarty->assign('path_htmlarea', $_SESSION['basehref'] . 'third_party/htmlarea/');
 
-
-// -------------------------------------------------------------------------------------------
 // 20050908 - fm
 $name_ok = 1;
 if( isset($_POST['addTC']) || isset($_POST['updateTC']) )
@@ -83,26 +76,20 @@ if( isset($_POST['addTC']) || isset($_POST['updateTC']) )
 	$steps 		= isset($_POST['steps']) ? strings_stripSlashes($_POST['steps']) : null;
 	$outcome 	= isset($_POST['exresult']) ? strings_stripSlashes($_POST['exresult']) : null;
 
-  // BUGID 0000086
-  $result = lang_get('warning_empty_tc_title');	
+	// BUGID 0000086
+	 $result = lang_get('warning_empty_tc_title');	
 	if( $name_ok && !check_string($title,$g_ereg_forbidden) )
 	{
 		$msg = lang_get('string_contains_bad_chars');
 		$name_ok = 0;
 	}
 	
-  if( $name_ok && strlen($title) == 0)
-  {
-    $msg = lang_get('warning_empty_tc_title');
-    $name_ok = 0;
-  }
+	if( $name_ok && strlen($title) == 0)
+	{
+		$msg = lang_get('warning_empty_tc_title');
+		$name_ok = 0;
+	}
 }
-// -------------------------------------------------------------------------------------------
-
-
-
-
-
 	
 //If the user has chosen to edit a testcase then show this code
 if($tc)
@@ -130,13 +117,13 @@ if($tc)
 	}
 
 	foreach ($a_ofck as $key)
-  {
-  	// Warning:
-  	// the data assignment will work while the keys in $the_data are identical
-  	// to the keys used on $oFCK.
-  	$of = &$oFCK[$key];
-  	$of->Value = $myrowTC[$key];
-  	$smarty->assign($key, $of->CreateHTML());
+  	{
+	  	// Warning:
+	  	// the data assignment will work while the keys in $the_data are identical
+	  	// to the keys used on $oFCK.
+	  	$of = &$oFCK[$key];
+	  	$of->Value = $myrowTC[$key];
+	  	$smarty->assign($key, $of->CreateHTML());
 	}
 
 	$smarty->assign('tc', $myrowTC);
@@ -144,15 +131,13 @@ if($tc)
 	$smarty->assign('keys', $setOfKeys);
 	$smarty->assign('keysize', $keySize);
 
-   global $g_tpl;
+	global $g_tpl;
 	$smarty->display($g_tpl['tcEdit']);
-	
 	
 	//saving a test case but not archiving it
 } 
 else if(isset($_POST['updateTC']))
 {
-
 	$updatedKeywords = null;
 
 	// Since the keywords are being passed in as an array I need to seperate them 
@@ -170,19 +155,18 @@ else if(isset($_POST['updateTC']))
 	$version = isset($_POST['version']) ? intval($_POST['version']) : 0; 
 	$version++;
 
-  $sqlResult = $msg;
-  if( $name_ok)
-  {
-   $sqlResult = 'ok';
-   if (!updateTestcase($testcaseID,$title,$summary,$steps,$outcome,$_SESSION['user'],$updatedKeywords,$version))
-   {
-		$sqlResult =  mysql_error();
-   }
-    
-  }	
+	//20051008 - am - added message
+	$sqlResult = lang_get('string_contains_bad_chars');
+	if( $name_ok)
+	{
+		$sqlResult = 'ok';
+		if (!updateTestcase($testcaseID,$title,$summary,$steps,$outcome,$_SESSION['user'],$updatedKeywords,$version))
+		{
+			$sqlResult =  mysql_error();
+		}
+	}	
 
-	// show testcase
-	// 20050820 - fm
+	// 20050820 - fm - show testcase
 	$allow_edit=1;
 	showTestcase($testcaseID, $allow_edit);
 }
@@ -194,19 +178,18 @@ else if(isset($_POST['addTC']))
 {
 	$show_newTC_form=1;
 	 
-  if ($name_ok)
+	if ($name_ok)
 	{
 		$msg = lang_get('error_tc_add');
-	  if (insertTestcase($categoryID,$title,$summary,$steps,$outcome,$_SESSION['user']))
-	  {
+		if (insertTestcase($categoryID,$title,$summary,$steps,$outcome,$_SESSION['user']))
+		{
 			$msg = 'ok';
 		}
-  }
+	}
   
-  $smarty->assign('sqlResult', $msg);
+	$smarty->assign('sqlResult', $msg);
 	$smarty->assign('name', $title);
 	$smarty->assign('item', 'Test case');
-
 }
 else if(isset($_POST['deleteTC']))
 {
@@ -264,7 +247,6 @@ else
 	// ERROR
 	tlog("A correct POST argument is not found.");
 }
-
 // --------------------------------------------------------------------------
 if ($show_newTC_form)
 {
@@ -272,18 +254,14 @@ if ($show_newTC_form)
 	$smarty->assign('categoryID', $categoryID);
 	
 	foreach ($a_ofck as $key)
-  {
-  	// Warning:
-  	// the data assignment will work while the keys in $the_data are identical
-  	// to the keys used on $oFCK.
-  	$of = &$oFCK[$key];
-  	$of->Value = "";
-  	$smarty->assign($key, $of->CreateHTML());
+	{
+		// Warning:
+		// the data assignment will work while the keys in $the_data are identical
+		// to the keys used on $oFCK.
+		$of = &$oFCK[$key];
+		$of->Value = "";
+		$smarty->assign($key, $of->CreateHTML());
 	}
 	$smarty->display($g_tpl['tcNew']);
 }
-
-
-
-
 ?>

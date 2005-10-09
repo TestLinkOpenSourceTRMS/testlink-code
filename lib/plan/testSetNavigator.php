@@ -1,7 +1,7 @@
 <?
 /** 
 *	TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* 	@version $Id: testSetNavigator.php,v 1.3 2005/09/16 06:47:11 franciscom Exp $
+* 	@version $Id: testSetNavigator.php,v 1.4 2005/10/09 18:13:48 schlundus Exp $
 *	@author Martin Havlat 
 *
 * This page navigate according to Test Set. It builds the javascript trees 
@@ -28,7 +28,7 @@ if ($_GET['feature'] == 'removeTC') {
 } elseif ($_GET['feature'] == 'priorityAssign') {
 
 	$workPath = "lib/plan/planOwner.php";
-	$title = lang_get(title_test_plan_navigator);
+	$title = lang_get('title_test_plan_navigator');
 	$template = 'tcTree.tpl';
 	$tcHide = 1;
 

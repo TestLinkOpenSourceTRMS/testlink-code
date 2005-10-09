@@ -1,6 +1,9 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqAssign.tpl,v 1.3 2005/10/06 20:22:34 schlundus Exp $ *}
+{* $Id: reqAssign.tpl,v 1.4 2005/10/09 18:13:48 schlundus Exp $ *}
 {* Purpose: smarty template - assign REQ to one test case *}
+{*
+20051008 - am - removed escaping of scope
+*}
 {include file="inc_head.tpl"}
 
 <body>
@@ -37,7 +40,7 @@
 		<td><input type="checkbox" name="{$arrAssignedReq[row].id}" /></td>
 		<td><span class="bold"><a href="lib/req/reqSpecView.php?editReq={$arrAssignedReq[row].id}&idSRS={$selectedReqSpec}">
 			{$arrAssignedReq[row].title|escape}</a></span></td>
-		<td>{$arrAssignedReq[row].scope|escape|truncate:30}</td>
+		<td>{$arrAssignedReq[row].scope|truncate:30}</td>
 	</tr>
 	{sectionelse}
 	<tr><td></td><td><span class="bold">{lang_get s='req_msg_norequirement'}</span></td></tr>
@@ -66,7 +69,7 @@
 		<td><input type="checkbox" name="{$arrUnassignedReq[row2].id}" /></td>
 		<td><span class="bold"><a href="lib/req/reqSpecView.php?editReq={$arrUnassignedReq[row2].id}&idSRS={$selectedReqSpec}">
 			{$arrUnassignedReq[row2].title|escape}</a></span></td>
-		<td>{$arrUnassignedReq[row2].scope|escape|truncate:30}</td>
+		<td>{$arrUnassignedReq[row2].scope|truncate:30}</td>
 	</tr>
 	{sectionelse}
 	<tr><td></td><td><span class="bold">{lang_get s='req_msg_norequirement'}</span></td></tr>

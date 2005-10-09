@@ -3,8 +3,8 @@
  * TestLink Open Source Project - @link http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: plan.core.inc.php,v $
- * @version $Revision: 1.8 $
- * @modified $Date: 2005/10/03 07:21:42 $ $Author: franciscom $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2005/10/09 18:13:48 $ $Author: schlundus $
  *  
  * 
  * @author 	Martin Havlat
@@ -97,7 +97,8 @@ function getTestPlans($productID, $userID, $filter_by_product=0)
             //a project once before and sets the default to that.. Bug 11453
             // If this is the first plan we're displaying,
             // and no session project has been set yet, then set it.
-            if ($cAvailablePlans == 0 && !$_SESSION['testPlanId']) {
+			//20050810 - am - added check if a testPlanID is set
+            if ($cAvailablePlans == 0 && (!isset($_SESSION['testPlanId']) || !$_SESSION['testPlanId'])) {
 				        $_SESSION['testPlanId'] = $myrow[0];
 				        $_SESSION['testPlanName'] = $myrow[1];
             }

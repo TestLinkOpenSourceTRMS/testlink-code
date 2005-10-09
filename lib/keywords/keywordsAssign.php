@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: keywordsAssign.php,v $
  *
- * @version $Revision: 1.4 $
- * @modified $Date: 2005/09/07 20:19:25 $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2005/10/09 18:13:48 $
  *
  * Purpose:  Assign keywords to set of testcases in tree structure
  *
@@ -35,38 +35,33 @@ $smarty = new TLSmarty();
 $smarty->assign('data', $id);
 $title = null;
 $level = null;
-//If the user has chosen to edit a product then show this code. 
 if ($edit == 'product')
 {
 	redirect($_SESSION['basehref'] . $g_rpath['help'] . '/keywordsAssign.html');
 	exit();
-} //If the user has chosen to edit a component then show this code
+}
 else if ($edit == 'component')
 {
-	// execute update
 	if($bAssignComponent) 
 	{
 		$result = updateComponentKeywords($id,$keyword);
 		$smarty->assign('sqlResult', $result);
 	}
-
 	$componentData = getComponent($id);
 	$title = $componentData[1];
 	$level = 'component';
-}//If the user has chosen to edit a category then show this code
+}
 else if ($edit == 'category')
 {
-	// execute update
 	if($bAssignCategory) 
 	{
 		$result = updateCategoryKeywords($id,$keyword);
 		$smarty->assign('sqlResult', $result);
 	}
-
 	$categoryData = getCategory($id);
 	$title = $categoryData[1];
 	$level = 'category';
-} //If the user has chosen to edit a testcase then show this code
+}
 else if($edit == 'testcase')
 {
 	if($bAssignTestCase) 
@@ -74,8 +69,6 @@ else if($edit == 'testcase')
 		$result = updateTCKeywords($id,$keyword);
 		$smarty->assign('sqlResult', $result);
 	}
-
-	// collect data
 	$tcData = getTestcase($id,false);
 	$tcKeywords = null;
 	if ($tcData[6])

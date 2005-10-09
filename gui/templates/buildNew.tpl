@@ -1,10 +1,10 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: buildNew.tpl,v 1.4 2005/10/07 06:39:12 franciscom Exp $ *}
+{* $Id: buildNew.tpl,v 1.5 2005/10/09 18:13:48 schlundus Exp $ *}
 {* Purpose: smarty template - Add new build and show existing 
 
  @author Francisco Mancardi - fm
  replace html with fckedit
-
+ 20051008 - am - removed build label while editing and deleting
 *}
 {include file="inc_head.tpl"}
 
@@ -55,11 +55,9 @@ var warning_delete_build = "{lang_get s='warning_delete_build'}";
 		</tr>
 		{foreach item=build key=b from=$arrBuilds}
 			<tr>
-				<!-- <td>{$build|escape}</td> -->
-				<td><a href="lib/plan/buildNew.php?edit_build=load_info&buildID={$b}&build_name={$build}">{$build|escape}</td>
+				<td><a href="lib/plan/buildNew.php?edit_build=load_info&buildID={$b}">{$build|escape}</td>
 				<td><pre style="display:inline">{$buildNotes[$b]}</pre></td>
-				<td><img alt="{lang_get s='alt_delete_build'}" src="icons/thrash.png" 
-				              onclick="deleteBuild_onClick({$b},'{$build|escape}')"/></td>
+				<td><a href="javascript:deleteBuild_onClick({$b})"><img style="border:none" alt="{lang_get s='alt_delete_build'}" src="icons/thrash.png"/></a></td>
 			</tr>
 		{/foreach}
 	</table>
@@ -69,7 +67,6 @@ var warning_delete_build = "{lang_get s='warning_delete_build'}";
 </div>
 <form method="POST" action="lib/plan/buildNew.php" id="deleteBuildForm" onsubmit="return false">
 	<input type="hidden" name="buildID" id="buildID">
-	<input type="hidden" name="buildLabel" id="buildLabel">
 	<input type="hidden" name="del_build" id="del_build">
 </form>
 </div>

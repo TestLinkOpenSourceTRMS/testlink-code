@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: navBar.php,v $
  *
- * @version $Revision: 1.3 $
- * @modified $Date: 2005/08/26 21:01:27 $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2005/10/09 18:13:48 $
  *
  * @author Martin Havlat
  *
@@ -22,17 +22,11 @@ testlinkInitPage(true);
 $arrProducts = getOptionProducts();
 $currentProduct = isset($_SESSION['productID']) ? $_SESSION['productID'] : null;
 
-// $countPlans = getCountTestPlans4User();
 // 20050810 - fm - interface changes
-//$countPlans = getCountTestPlans4User($_SESSION['userID']);
-// 20050813 - fm
 $countPlans = getCountTestPlans4UserProd($_SESSION['userID'],$currentProduct);
 
-
-$smarty = new TLSmarty;
-
-// -----------------------------------------------------------------------------
-// 20050813 - francisco.mancardi@gruppotesi.com
+$smarty = new TLSmarty();
+// 20050813 - fm
 // only when the user has changed the product using the combo
 // the _GET has this key.
 // Use this clue to launch a refresh of other frames present on the screen
@@ -45,7 +39,6 @@ if (isset($_GET['product']))
 {
 	$updateMainPage=1;
 }
-// -----------------------------------------------------------------------------
 
 $smarty->assign('user', $_SESSION['user'] . ' [' . $_SESSION['role'] . ']');
 $smarty->assign('rightViewSpec', has_rights("mgt_view_tc"));

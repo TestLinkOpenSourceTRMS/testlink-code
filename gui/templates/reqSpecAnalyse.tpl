@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecAnalyse.tpl,v 1.4 2005/08/31 16:06:59 havlat Exp $ *}
+{* $Id: reqSpecAnalyse.tpl,v 1.5 2005/10/09 18:13:48 schlundus Exp $ *}
 {* Purpose: smarty template - Analyse REQ coverage *}
 {include file="inc_head.tpl"}
 
@@ -9,7 +9,7 @@
 	<img alt="{lang_get s='help'}: {lang_get s='req_spec'}" class="help" 
 	src="icons/sym_question.gif" style="float: right;"
 	onclick="javascript:open_popup('{$helphref}requirementsCoverage.html');" />
-	{lang_get s='req_title_analyse'} {$arrReqSpec[$selectedReqSpec]}
+	{lang_get s='req_title_analyse'} {$arrReqSpec[$selectedReqSpec]|escape}
 </h1>
 
 {include file="inc_update.tpl" result=$sqlResult action=$action}

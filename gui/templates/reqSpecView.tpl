@@ -1,11 +1,12 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecView.tpl,v 1.6 2005/08/30 15:18:58 havlat Exp $ *}
+{* $Id: reqSpecView.tpl,v 1.7 2005/10/09 18:13:48 schlundus Exp $ *}
 {* 
    Purpose: smarty template - view a requirement specification
    Author: Martin Havlat 
 
    20050828 - fm - localize_date
 
+   20050810 - am - added escaping of title/author
 *}
 {include file="inc_head.tpl" openHead="yes"}
 {include file="inc_jsCheckboxes.tpl"}
@@ -49,14 +50,14 @@
 </form>
 </div>
 
-<p class="bold">{lang_get s="title"}: {$arrSpec[0].title}</p>
+<p class="bold">{lang_get s="title"}: {$arrSpec[0].title|escape}</p>
 <div class="tree" style="padding-left: 15px;">{$arrSpec[0].scope}</div>
 {if $arrSpec[0].total_req != 'n/a'}
 <p>{lang_get s="req_total_count"}: {$arrSpec[0].total_req}</p>
 {/if}
-<p>{lang_get s="Author"}: {$arrSpec[0].author} [{localize_date d=$arrSpec[0].create_date}]</p>
+<p>{lang_get s="Author"}: {$arrSpec[0].author|escape} [{localize_date d=$arrSpec[0].create_date}]</p>
 {if $arrSpec[0].id_modifier <> ''}
-<p>{lang_get s="last_edit"}: {$arrSpec[0].modifier} [{localize_date d=$arrSpec[0].modified_date}]</p>
+<p>{lang_get s="last_edit"}: {$arrSpec[0].modifier|escape} [{localize_date d=$arrSpec[0].modified_date}]</p>
 {/if}
 </div>
 

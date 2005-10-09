@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqSpecView.php,v $
- * @version $Revision: 1.10 $
- * @modified $Date: 2005/10/03 07:20:14 $ by $Author: franciscom $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2005/10/09 18:13:49 $ by $Author: schlundus $
  * @author Martin Havlat
  * 
  * Screen to view existing requirements within a req. specification.
@@ -46,25 +46,22 @@ $reqStatus = isset($_REQUEST['reqStatus']) ? strings_stripSlashes($_REQUEST['req
 $reqType = isset($_REQUEST['reqType']) ? strings_stripSlashes($_REQUEST['reqType']) : null;
 $countReq = isset($_REQUEST['countReq']) ? strings_stripSlashes($_REQUEST['countReq']) : null;
 
-
 // 20050906 - fm
 $prodID = isset($_SESSION['productID']) ? $_SESSION['productID'] : 0;
 $userID = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
 $login_name = isset($_SESSION['user']) ? strings_stripSlashes($_SESSION['user']) : null;
 $arrCov = null;
 
-
 // 20050826 - fm
 $of = new fckeditor('scope') ;
 $of->BasePath = $_SESSION['basehref'] . 'third_party/fckeditor/';
 $of->ToolbarSet=$g_fckeditor_toolbar;;
 
-
 // create a new spec.
 if(isset($_REQUEST['createReq']))
 {
-	if (isset($_REQUEST['title'])) {
-		
+	if (isset($_REQUEST['title']))
+	{
 		// 20050906 - fm
 		$sqlResult = createRequirement($title, $scope, $idSRS, $userID, $reqStatus); // used default type=n
 		$action = 'create';
@@ -74,8 +71,6 @@ if(isset($_REQUEST['createReq']))
 	$template = 'reqCreate.tpl';
 	$bGetReqs = FALSE;
 } 
-
-// edit REQ
 elseif (isset($_REQUEST['editReq']))
 {
 	$idReq = strings_stripSlashes($_REQUEST['editReq']);
@@ -86,43 +81,33 @@ elseif (isset($_REQUEST['editReq']))
 	$arrReq['modifier'] = getUserName($arrReq['id_modifier']);
 	$arrReq['coverage'] = getTc4Req($idReq);
 
-  // 20050826
-  $scope = $arrReq['scope']; 
-  $action ='editReq';
+	$scope = $arrReq['scope']; 
+	$action ='editReq';
 	$template = 'reqEdit.tpl';
 	$bGetReqs = FALSE;
 }
-
-// update REQ
 elseif (isset($_REQUEST['updateReq']))
 {
 	$sqlResult = updateRequirement($idReq, $title, $scope, $userID, $reqStatus, $reqStatus);
 	$action = 'update';
 	$sqlItem = 'Requirement';
 }
-
-// delete REQ
 elseif (isset($_REQUEST['deleteReq']))
 {
 	$sqlResult = deleteRequirement($idReq);
 	$action = 'delete';
 }
-
-// edit spec.
 elseif (isset($_REQUEST['editSRS']))
 {
 	$template = 'reqSpecEdit.tpl';
 	$action="editSRS";
 }
-
-// update spec.
 elseif (isset($_REQUEST['updateSRS']))
 {
 	// 20050906 - fm
 	$sqlResult = updateReqSpec($idSRS,$title,$scope,$countReq,$userID);
 	$action = 'update';
 }
-
 elseif (isset($_REQUEST['multiAction']))
 {
 	$arrIdReq = array_keys($_POST); // obtain names(id) of REQs
@@ -170,15 +155,14 @@ $arrSpec = getReqSpec($prodID,$idSRS);
 $arrSpec[0]['author'] = getUserName($arrSpec[0]['id_author']);
 $arrSpec[0]['modifier'] = getUserName($arrSpec[0]['id_modifier']);
 
-// smarty
-$smarty = new TLSmarty;
+$smarty = new TLSmarty();
 $smarty->assign('arrSpec', $arrSpec);
 $smarty->assign('arrReq', $arrReq);
 $smarty->assign('arrCov', $arrCov);
 $smarty->assign('sqlResult', $sqlResult);
 $smarty->assign('sqlItem', $sqlItem);
 $smarty->assign('action', $action);
-$smarty->assign('name',$title); // of updated item
+$smarty->assign('name',$title);
 $smarty->assign('selectReqStatus', $arrReqStatus);
 $smarty->assign('modify_req_rights', has_rights("mgt_modify_req")); 
 

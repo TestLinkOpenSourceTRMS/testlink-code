@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: planEdit.php,v 1.5 2005/10/03 07:20:14 franciscom Exp $ */
+/* $Id: planEdit.php,v 1.6 2005/10/09 18:13:48 schlundus Exp $ */
 /* Purpose:  ability to edit and delete projects */
 /* TODO: I need to add the deletion of project rights
  *	I need to delete the projects builds
@@ -58,7 +58,7 @@ if(isset($_POST['editTestPlan']))
 			$catIDs = null;
 			getTestPlanCategories($id,$catIDs);
 
-      // 20050914 - fm 
+      		// 20050914 - fm 
 			$tcIDs = getCategories_TC_ids($catIDs);
 			
 			//Delete all of the bugs associated with the project

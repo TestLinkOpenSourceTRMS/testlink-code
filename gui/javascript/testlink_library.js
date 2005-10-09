@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/ 
 // This script is distributed under the GNU General Public License 2 or later. 
 //
-// $Id: testlink_library.js,v 1.3 2005/09/05 11:37:58 havlat Exp $ 
+// $Id: testlink_library.js,v 1.4 2005/10/09 18:13:45 schlundus Exp $ 
 //
 // Javascript functions commonly used through the GUI
 // This library is automatically loaded with inc_header.tpl
@@ -110,7 +110,8 @@ function my_show_div(itm)
 }
 
 // MHT: TODO move it to validate.js
-function deleteBuild_onClick(buildID,build)
+// 20051007 - am - removed build name
+function deleteBuild_onClick(buildID)
 {
 	if (confirm(warning_delete_build))
 	{
@@ -120,9 +121,6 @@ function deleteBuild_onClick(buildID,build)
 			var field = document.getElementById('buildID');
 			if (field)
 				field.value = buildID;
-			field = document.getElementById('buildLabel');
-			if (field)
-				field.value = build;	
 			f.submit();
 		}
 	}

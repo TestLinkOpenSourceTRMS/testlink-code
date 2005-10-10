@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: plan.inc.php,v $
- * @version $Revision: 1.13 $
- * @modified $Date: 2005/10/09 18:13:48 $ $Author: schlundus $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2005/10/10 06:58:41 $ $Author: franciscom $
  * @author 	Martin Havlat
  *
  * Functions for management: 
@@ -207,13 +207,18 @@ function deleteTestPlanRightsForProject($id)
 function deleteResultsForBuilds($id,$builds)
 {
 	if (!strlen($builds))
+	{
 		return 1;
+	}
 	
 	//Delete all of the results associated with the project		
-	$sql = "DELETE FROM results WHERE build.id IN (". $builds . ")". 
-				" AND results.tcid=testcase.id AND testcase.catid=" .
-				"category.id AND category.compid=component.id AND " .
-				"component.projid=".$id;
+	$sql = " DELETE FROM results " .
+	       " WHERE build.id IN (". $builds . ")". 
+				 " AND results.tcid=testcase.id " .
+				 " AND testcase.catid=category.id " .
+				 " AND category.compid=component.id " .
+				 " AND component.projid=".$id;
+
 	$result = do_mysql_query($sql);
 	
 	return $result ? 1 : 0;

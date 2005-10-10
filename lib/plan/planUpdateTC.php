@@ -1,11 +1,13 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: planUpdateTC.php,v 1.7 2005/10/01 09:09:00 franciscom Exp $
+ * @version $Id: planUpdateTC.php,v 1.8 2005/10/10 06:55:52 franciscom Exp $
  * @author Martin Havlat
  * 
  * Update Test Cases within Test Case Suite 
  * 
+ * @author Francisco Mancardi - 20051009
+ * BUGID 0000162: Moving a Testcase to another category
  *
  * @author Francisco Mancardi - 20050821
  * corrected autogol exresults KO, exresult OK
@@ -18,6 +20,8 @@ testlinkInitPage();
 
 $resultString = null;
 $arrData = array(); 
+$tpID = $_SESSION['testPlanId'];
+
 
 if(isset($_POST['updateSelected']))
 {
@@ -88,7 +92,7 @@ if(isset($_POST['updateSelected']))
 			if( $mgtCatid != $tctp_data['cat_mgtcatid'])
 		  {	
 			  // Category Has Changed !!!
-        $cat_id=process_tc_cat_change($tcID, $tc_specs);		
+        $cat_id=process_tc_cat_change($tcID, $tc_specs, $tpID);		
 
 	      $updateSQL .= ', catid=' . $cat_id;
 
@@ -116,7 +120,7 @@ if(isset($_POST['updateSelected']))
 // walk through the project test cases
 $sqlTC = " SELECT testcase.id from testcase, category, component " .
 		     " WHERE testcase.catid = category.id AND category.compid = component.id " .
-		     " AND component.projid = " . $_SESSION['testPlanId'];
+		     " AND component.projid = " . $tpID;
 $resultTC = do_mysql_query($sqlTC);
 //tLog(mysql_errno() . ": " . mysql_error());
 
@@ -251,14 +255,13 @@ function displayTC($id)
 // ----------------------------------------------------------------------------
 function get_tc_specs($tc_id)
 {
-$sql = " SELECT tc.id as tcid,  catid, compid,  tc.title , " .
-       " cat.name as cat_name, comp.name as comp_name, " .
-       " steps, exresult, keywords, version, summary,TCorder " . 
-       " FROM mgttestcase  tc , mgtcategory cat, mgtcomponent comp " .
-       " where tc.id=" . $tc_id . 
-       " and cat.id = tc.catid " .
-       " and comp.id = cat.compid ";
-
+$sql = " SELECT MGTTC.id as tcid,  catid, compid,  MGTTC.title , " .
+       " MGTCAT.name as cat_name, MGTCOMP.name as comp_name, " .
+       " steps, exresult, keywords, version, summary, TCorder " . 
+       " FROM mgttestcase  MGTTC , mgtcategory MGTCAT, mgtcomponent MGTCOMP " .
+       " WHERE MGTCOMP.id = MGTCAT.compid " .
+       " AND   MGTCAT.id = MGTTC.catid " .
+       " AND   MGTTC.id=" . $tc_id ;
       
 $result = do_mysql_query($sql);
 $row = mysql_fetch_array($result);
@@ -308,12 +311,16 @@ $dummy = do_mysql_query($sql);
 //         the category id for Test Case ID, in the Test Plan
 //
 // rev:
+//      20051009 - fm
+//      BUGID 0000162: Moving a Testcase to another category
+//      interface changes added $tpID
+//
 //      20050731 - fm
 //      creation
 //      Added to solve 
 //      BUGID: SF1242462 - test plan not updated when test case category changed
 //
-function process_tc_cat_change($tc_id, $tc_specs)
+function process_tc_cat_change($tc_id, $tc_specs, $tpID)
 {
 
 //
@@ -326,7 +333,12 @@ function process_tc_cat_change($tc_id, $tc_specs)
 //               versions 1.5.x ALLOW only test case
 //               moving between CATEGORIES of the SAME COMPONENT
 
-$sql = "SELECT * FROM category where mgtcatid=" . $tc_specs['catid'];
+// 20051009 - fm - my bug
+$sql = " SELECT CAT.* " .
+       " FROM category CAT, component COMP " .
+       " WHERE CAT.compid = COMP.id " .
+       " AND COMP.projid = " .  $tpID .
+       " AND CAT.mgtcatid=" . $tc_specs['catid'];
 $result = do_mysql_query($sql);
 
 if (mysql_num_rows($result) == 0) 
@@ -336,8 +348,8 @@ if (mysql_num_rows($result) == 0)
   // is part of the test plan.
   //
   $sql = " SELECT * FROM component " .
-         " where component.projid = " . $_SESSION['testPlanId'] .
-         " and mgtcompid=" . $tc_specs['compid'];
+         " WHERE component.projid = " . $tpID .
+         " AND mgtcompid=" . $tc_specs['compid'];
   $result = do_mysql_query($sql);
 
   if (mysql_num_rows($result) == 0) 
@@ -346,24 +358,28 @@ if (mysql_num_rows($result) == 0)
   }
   else
   {
+  	// fm - my bug - missing JOIN condition with tpID
     // get mgtcategory data
     // 
-    $sql = " SELECT mgtcat.id as mgtcat_id, mgtcat.name mgtcat_name, " .
-           " mgtcat.compid as mgtcat_compid,mgtcat.CATorder as mgtcat_CATorder, " .
-           " component.id compid " .
-           " FROM mgtcategory mgtcat, component" .
-           " where mgtcat.id=" . $tc_specs['catid'] .
-           " and mgtcat.compid = component.mgtcompid";
-           
+    $sql = " SELECT MGTCAT.id as mgtcat_id, MGTCAT.name mgtcat_name, " .
+           " MGTCAT.compid as mgtcat_compid, MGTCAT.CATorder as mgtcat_CATorder, " .
+           " COMP.id compid " .
+           " FROM mgtcategory MGTCAT, component COMP" .
+           " WHERE MGTCAT.compid = COMP.mgtcompid" .
+           " AND COMP.projid = " . $tpID .
+           " AND MGTCAT.id=" . $tc_specs['catid'] ;
+
     $result = do_mysql_query($sql);
     $mgtcatRow = mysql_fetch_assoc($result);
 
+    // 20051009 - fm
+    // BUGID 0000162: Moving a Testcase to another category
+    // problem name field removed from category table.
     // excerpt from planAddTC.php
-		$sqlAddCAT = "insert into category(name,mgtcatid,compid,CATorder) " .
-		             "values ('" . mysql_escape_string($mgtcatRow['mgtcat_name']) . "','" . 
-		                           mysql_escape_string($mgtcatRow['mgtcat_id']) . "','" . 
-		                           mysql_escape_string($mgtcatRow['compid']) . "','" . 
-		                           mysql_escape_string($mgtcatRow['mgtcat_CATorder']) . "')";
+		$sqlAddCAT = " INSERT INTO category(mgtcatid,compid,CATorder) " .
+		             " VALUES (" . $mgtcatRow['mgtcat_id'] . "," . 
+		                           $mgtcatRow['compid'] . "," . 
+		                           $mgtcatRow['mgtcat_CATorder'] . ")";
 		$resultAddCAT = do_mysql_query($sqlAddCAT); 
 		$cat_id =  mysql_insert_id(); //Grab the id of the category just entered
     

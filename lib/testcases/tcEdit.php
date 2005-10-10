@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.11 $
- * @modified $Date: 2005/10/09 18:13:49 $  by $Author: schlundus $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2005/10/10 19:18:25 $  by $Author: schlundus $
  * This page manages all the editing of test cases.
  *
  * @author Martin Havlat
@@ -29,10 +29,7 @@ require_once("../../config.inc.php");
 require_once("../functions/common.php");
 require('archive.inc.php');
 require('../keywords/keywords.inc.php');
-require_once("../../lib/functions/lang_api.php");
-
 require_once("../../third_party/fckeditor/fckeditor.php");
-
 testlinkInitPage();
 
 // set variables
@@ -237,7 +234,7 @@ else if(isset($_POST['updateTCcopy']))
 	$catID = isset($_POST['moveCopy']) ? intval($_POST['moveCopy']) : 0;
 	$oldCat = isset($_POST['oldCat']) ? intval($_POST['oldCat']) : 0;
 
-  // 20050821 - fm - interface - reduce global coupling
+	// 20050821 - fm - interface - reduce global coupling
 	$result = copyTc($catID, $testcaseID, $_SESSION['user']);
 	
 	showCategory($oldCat, $result,'update',$catID);

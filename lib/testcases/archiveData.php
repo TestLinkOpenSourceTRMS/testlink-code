@@ -3,7 +3,7 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
- * @version $Id: archiveData.php,v 1.4 2005/08/30 09:17:47 havlat Exp $
+ * @version $Id: archiveData.php,v 1.5 2005/10/10 19:18:25 schlundus Exp $
  * @author Martin Havlat
  *  
  * This page allows you to show data (test cases, categories, and
@@ -11,14 +11,11 @@
  * 
  * 20050830 - MHT - formal update
  */
- 
 require_once('../../config.inc.php');
 require_once('common.php');
 require_once('archive.inc.php');
-
 testlinkInitPage();
 
-// parse input
 $feature = isset($_GET['edit']) ? $_GET['edit'] : null;
 $id = isset($_GET['data']) ? intval($_GET['data']) : null;
 //20050826 - scs - added input for entering tcid, but we should disable edit...
@@ -43,5 +40,4 @@ switch($feature)
 		tLog('$_GET["edit"] has invalid value: ' . $feature , 'ERROR');
 		trigger_error($_SESSION['user'].'> $_GET["edit"] has invalid value.', E_USER_ERROR);
 }
-
 ?>

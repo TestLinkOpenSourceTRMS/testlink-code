@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: searchData.php,v 1.4 2005/08/24 06:26:59 franciscom Exp $ */
+/* $Id: searchData.php,v 1.5 2005/10/10 19:18:25 schlundus Exp $ */
 /* Purpose:  This page presents the search results. 
  *
  * 
@@ -20,13 +20,14 @@ $arrTc = array();
 if(!$_POST['submit'])
 	tlog('searchData.php requires a submit data');
 
+$_POST = strings_stripSlashes($_POST);
 //Assign the values of the posts to variables
-$title = isset($_POST['title']) ? mysql_escape_string(strings_stripSlashes($_POST['title'])) : null;
-$summary = isset($_POST['summary']) ? mysql_escape_string(strings_stripSlashes($_POST['summary'])) : null;
-$steps = isset($_POST['steps']) ? mysql_escape_string(strings_stripSlashes($_POST['steps'])) : null;
-$exresult = isset($_POST['exresult']) ? mysql_escape_string(strings_stripSlashes($_POST['exresult'])) : null;
-$key = isset($_POST['key']) ? mysql_escape_string(strings_stripSlashes($_POST['key'])) : null;
-$TCID = isset($_POST['TCID']) ? mysql_escape_string(strings_stripSlashes($_POST['TCID'])) : 0;
+$title = isset($_POST['title']) ? mysql_escape_string($_POST['title']) : null;
+$summary = isset($_POST['summary']) ? mysql_escape_string($_POST['summary']) : null;
+$steps = isset($_POST['steps']) ? mysql_escape_string($_POST['steps']) : null;
+$exresult = isset($_POST['exresult']) ? mysql_escape_string($_POST['exresult']) : null;
+$key = isset($_POST['key']) ? mysql_escape_string($_POST['key']) : null;
+$TCID = isset($_POST['TCID']) ? mysql_escape_string($_POST['TCID']) : 0;
 
 $product = isset($_SESSION['productID']) ? $_SESSION['productID'] : 0;
 if ($product)
@@ -51,34 +52,23 @@ if ($product)
 		$sqlTC .= " AND (keywords LIKE '%,{$key},%' OR keywords like '{$key},%')";
 	}	
 	$sqlTC .= " ORDER BY title";
-
 	$result = do_mysql_query($sqlTC);
 	
-	
-	while ($row = mysql_fetch_assoc($result)) //loop through all categories
+	while ($row = mysql_fetch_assoc($result))
 	{
 		$row['keywords'] = substr($row['keywords'], 0, -1);
 		array_push($arrTc, $row);
 	}
 }
 
-/* 20050821 - fm
-if (!sizeof($arrTc))
-{
-	$arrTc = null;
-}
-*/
-
-$smarty = new TLSmarty;
+$smarty = new TLSmarty();
 $smarty->assign('modify_tc_rights', 'no');
 if(has_rights("mgt_modify_tc"))
 {
 	$smarty->assign('modify_tc_rights', 'yes');
 }
-
 $smarty->assign('testcase', $arrTc);
 
-// 20050821 - fm
 global $g_tpl;
 $smarty->display($g_tpl['tcSearchView']);
 ?>

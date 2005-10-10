@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: archive.inc.php,v $
  *
- * @version $Revision: 1.17 $
- * @modified $Date: 2005/10/09 18:13:49 $ by $Author: schlundus $
+ * @version $Revision: 1.18 $
+ * @modified $Date: 2005/10/10 19:18:25 $ by $Author: schlundus $
  *
  * @author Martin Havlat
  * Purpose:  functions for test specification management have three parts:
@@ -111,11 +111,10 @@ function showProduct($id, $sqlResult = '', $sqlAction = 'update',$moddedItem = 0
 	$product = getProduct($id);
 
 	$smarty = new TLSmarty;
-  $smarty->assign('modify_tc_rights', has_rights("mgt_modify_tc"));
+	$smarty->assign('modify_tc_rights', has_rights("mgt_modify_tc"));
 
 	if($sqlResult)
 	{ 
-		// something was updated
 		$smarty->assign('sqlResult', $sqlResult);
 		$smarty->assign('sqlAction', $sqlAction);
 	}
@@ -145,7 +144,6 @@ function showComponent($id, $sqlResult = '', $sqlAction = 'update',$moddedItem =
 	$moddedItem = ($moddedItem  ? getComponent($moddedItem) : $component);
 	$smarty->assign('moddedItem',$moddedItem);
 	
-	// get data
 	$smarty->assign('container_data', $component);
 	$smarty->display('containerView.tpl');
 }
@@ -158,7 +156,6 @@ function showCategory($id, $sqlResult = '', $sqlAction = 'update',$moddedItem = 
 
 	if($sqlResult)
 	{ 	
-		// something was updated
 		$smarty->assign('sqlResult', $sqlResult);
 		$smarty->assign('sqlAction', $sqlAction);
 	}
@@ -222,10 +219,8 @@ function showTestcase ($id,$allow_edit = 1)
 	$smarty->display($g_tpl['tcView']);
 }
 
-
 /////////////////////////////////////////////////////////////////////////
 /** 3. Functions for copy/move test specification */
-
 
 function moveTc($newCat, $id)
 {
@@ -235,22 +230,16 @@ function moveTc($newCat, $id)
 	return $result ?'ok' : mysql_error();
 }
 
-
-/*
-
-rev :
-     20050821 - fm
-     inteface changes, added $user to reduce global coupling 
-*/
+//20050821 - fm - inteface changes, added $user to reduce global coupling 
 function copyTc($newCat, $id, $user)
 {
-  $msg_status = 'ok';
-
+	$msg_status = 'ok';
+	
 	$tc = getTestcase($id,false);
-
+	
 	if (!insertTestcase($newCat,$tc['title'],$tc['summary'],
-	                            $tc['steps'],$tc['exresult'],
-	                            $user,$tc['TCorder'],$tc['keywords']))
+						$tc['steps'],$tc['exresult'],
+						$user,$tc['TCorder'],$tc['keywords']))
 	{
 		$msq_status=mysql_error();
 	}	
@@ -258,7 +247,6 @@ function copyTc($newCat, $id, $user)
 	return ($msg_status);
 }
 
-// 20050905 - fm
 function copyCategoryToComponent($newParent, $id, $nested, $login_name)
 {
 	//Select the category info so that we can copy it
@@ -280,8 +268,7 @@ function copyCategoryToComponent($newParent, $id, $nested, $login_name)
 	// copy also test cases
 	if ($nested == 'yes')
 	{
-		//grab the category id so that we can use it as the foreign key
-		$catID =  mysql_insert_id(); //Grab the id of the category just entered
+		$catID =  mysql_insert_id();
 
 		$sqlMoveCopy= "select id from mgttestcase where catid='" . 
 				$myrowCopyCat[7] . "'";
@@ -295,9 +282,12 @@ function copyCategoryToComponent($newParent, $id, $nested, $login_name)
 		}
 	}
 
-	if ($resultInsertCAT) {
+	if ($resultInsertCAT)
+	{
 		return 'ok';
-   	} else { 
+   	}
+	else
+	{ 
 		return mysql_error();
 	}
 }
@@ -319,7 +309,6 @@ function moveComponentToProduct($newParent, $id)
 }
 
 // 20050908 - fm due to changes in insertProductComponent()
-// 20050905 - fm
 function copyComponentToProduct($newParent, $id, $nested, $login_name)
 {
 	$component = getComponent($id);
@@ -328,79 +317,80 @@ function copyComponentToProduct($newParent, $id, $nested, $login_name)
 	                              $component[4],$component[5],$component[6]);
 	
 	$comID = $ret['id'];
-	if ( $ret['status_ok'] )                             
+	if ($ret['status_ok'])
 	{	
-  	// copy also categories
-  	if ($nested == 'yes')
-  	{
-  		// Select the categories for copy
-  		$catIDs = null;
-  		getComponentCategoryIDs($id,$catIDs);
-  		for($i = 0;$i < sizeof($catIDs);$i++)
-  		{
-  			copyCategoryToComponent($comID, $catIDs[$i], $nested, $login_name);
-  		}	
-  	}
-  }	
+	  	// copy also categories
+	  	if ($nested == 'yes')
+	  	{
+	  		// Select the categories for copy
+	  		$catIDs = null;
+	  		getComponentCategoryIDs($id,$catIDs);
+	  		for($i = 0;$i < sizeof($catIDs);$i++)
+	  		{
+	  			copyCategoryToComponent($comID, $catIDs[$i], $nested, $login_name);
+	  		}	
+	  	}
+	}	
 	return $comID ? 'ok' : mysql_error();
 }
 
 
 /*
  20050910 - fm - correct (my) bug
- 20050908 - fm
- added possibility to check for existent name and refuse to insert
+ 20050908 - fm - added possibility to check for existent name and refuse to insert
 */
 function insertProductComponent($prodID,$name,$intro,$scope,$ref,$method,$lim,
                                 $check_duplicate_name=0,
                                 $action_on_duplicate_name='allow_repeat')
 {
-	
 	global $g_prefix_name_for_copy;
 	
 	$name = trim($name);
-  $ret=array('status_ok' => 1, 'id' => 0, 'msg' => 'ok');
+	$ret = array('status_ok' => 1, 'id' => 0, 'msg' => 'ok');
 	if ($check_duplicate_name)
 	{
-	  $sql = " SELECT count(*) AS qty FROM mgtcomponent " .
-	         " WHERE name = '" . mysql_escape_string($name) . "'" . 
-	         " AND prodid={$prodID} "; 
-	  $result = do_mysql_query($sql);
-	  $myrow = mysql_fetch_assoc($result);
-
-    // 20050910 - fm
-    if( $myrow['qty'] > 0 )
-    {
-  	  if ($action_on_duplicate_name == 'block')
-  	  {
-    	    $ret['status_ok'] = 0;
-    	    $ret['msg'] = lang_get('component_name_already_exists');	
-    	} 
-  	  else
-  	  {
-  	  	$ret['status_ok'] = 1;      
-  	  	if ($action_on_duplicate_name == 'generate_new')
-  	  	{ 
-  	  		$ret['status_ok'] = 1;      
-  	  		$name = $g_prefix_name_for_copy . " " . $name ;      
-  	  	}
-  	  }
-	  }       
+		$sql = " SELECT count(*) AS qty FROM mgtcomponent " .
+			" WHERE name = '" . mysql_escape_string($name) . "'" . 
+			" AND prodid={$prodID} "; 
+		$result = do_mysql_query($sql);
+		$myrow = mysql_fetch_assoc($result);
+		
+		if( $myrow['qty'])
+		{
+			if ($action_on_duplicate_name == 'block')
+			{
+				$ret['status_ok'] = 0;
+				$ret['msg'] = lang_get('component_name_already_exists');	
+			} 
+			else
+			{
+				$ret['status_ok'] = 1;      
+				if ($action_on_duplicate_name == 'generate_new')
+				{ 
+					$ret['status_ok'] = 1;      
+					$name = $g_prefix_name_for_copy . " " . $name ;      
+				}
+			}
+		}       
 	}
 	
-	if ( $ret['status_ok'] )
+	if ($ret['status_ok'])
 	{
 		$sql = "INSERT INTO mgtcomponent (name,intro,scope,ref,method,lim,prodid) " .
-		     	 "VALUES ('" . mysql_escape_string($name) . "','" . mysql_escape_string($intro) . "','" . 
-			     mysql_escape_string($scope) . "','" . mysql_escape_string($ref) . "','" . mysql_escape_string($method) . 
+		     	 "VALUES ('" . mysql_escape_string($name) . "','" . 
+				 mysql_escape_string($intro) . "','" . 
+			     mysql_escape_string($scope) . "','" . 
+				 mysql_escape_string($ref) . "','" . mysql_escape_string($method) . 
 			     "','" . mysql_escape_string($lim) . "'," . $prodID . ")";
 			
-	  $result = do_mysql_query($sql);
-		if( $result ) {
-	    $ret['id'] = mysql_insert_id();
+		$result = do_mysql_query($sql);
+		if ($result)
+		{
+			$ret['id'] = mysql_insert_id();
 		}
-		else {
-   		$ret['msg'] = mysql_error();
+		else
+		{
+			$ret['msg'] = mysql_error();
 		}
 	}
 	return($ret);
@@ -606,7 +596,7 @@ function updateTestcase($tcID,$title,$summary,$steps,$outcome,$user,$keywords,$v
 		mysql_escape_string($steps) . "', exresult='" . mysql_escape_string($outcome) . 
 		"', reviewer='" . mysql_escape_string($user) . "', modified_date=CURRENT_DATE()" .
 		" WHERE id=" . $tcID;
-	$result = do_mysql_query($sql); //Execute query
+	$result = do_mysql_query($sql);
 	
 	return $result ? 1: 0;
 }

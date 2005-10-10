@@ -2,7 +2,7 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: listTestCases.php,v 1.3 2005/09/06 06:42:43 franciscom Exp $
+* 	@version 	$Id: listTestCases.php,v 1.4 2005/10/10 19:18:25 schlundus Exp $
 * 	@author 	Martin Havlat
 * 
 * 	This page generates tree menu with test specification. It builds the
@@ -15,14 +15,12 @@ require_once("common.php");
 require_once("treeMenu.inc.php");
 testlinkInitPage();
 
-// 20050905 - fm
+$feature = isset($_GET['feature']) ? $_GET['feature'] : null;
+
 $prodID   = isset($_SESSION['productID']) ? $_SESSION['productID'] : 0;
 $prodName = isset($_SESSION['productName']) ? $_SESSION['productName'] : 'xxx';
 
-
-// set using data
-$title = lang_get('title_navigator'). ' - ' . lang_get('title_test_spec'); //'Navigator - Test Specification';
-$feature = isset($_GET['feature']) ? $_GET['feature'] : null;
+$title = lang_get('title_navigator'). ' - ' . lang_get('title_test_spec');
 if(strlen($feature))
 {
 	if ($feature == 'tcEdit')
@@ -49,14 +47,12 @@ else
 	exit();
 }
 
-
-// generate tree 
 $treeString = generateTestSpecTree($prodID, $prodName,$workPath, 0);
 $tree = null;
 if (strlen($treeString))
 	$tree = invokeMenu($treeString);
 	
-$smarty = new TLSmarty;
+$smarty = new TLSmarty();
 $smarty->assign('treeKind', TL_TREE_KIND);
 $smarty->assign('tree', $tree);
 $smarty->assign('treeHeader', $title);

@@ -1,21 +1,29 @@
 <?php
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: treeMenu.inc.php,v $
  *
- * @version $Revision: 1.5 $
- * @modified $Date: 2005/09/16 06:47:11 $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2005/10/12 04:19:10 $ by $Author: havlat $
+ * @author Martin Havlat
  *
- * 	This file generates tree menu for test specification.
+ * 	This file generates tree menu for test specification and test execution.
+ * 	Three kinds of menu component are supported: LAYERSMENU (default), DTREE,
+ * 	and JTREE. Used type is defined in config.inc.php.
+ * 
+ * Revisions:
  *
  * @author 20050810 - fm refactoring:  removed deprecated: $_SESSION['product']
  * @author 20050807 - fm refactoring:  removed deprecated: $_SESSION['project']
+ * 20051011 - MHT - minor refactorization, header update
  *
-**/
+ **/
+ 
 require_once '../../config.inc.php';
 
-define('TL_TIME_LIMIT_EXTEND', 30); //seconds
+define('TL_TIME_LIMIT_EXTEND', 30); // limit of possible connection delay in seconds
 
 if (TL_TREE_KIND == 'LAYERSMENU') 
 {
@@ -28,15 +36,18 @@ if (TL_TREE_KIND == 'LAYERSMENU')
 	require_once TL_MENU_LIB_PATH . 'treemenu.inc.php';
 }
 
+
 /** 
-* generate html of tree menu
-*
-* @param string $menustring 
-* @param string $highLight optional
-* @return string generated html code
-*/
+ * generate html of tree menu
+ *
+ * @param string $menustring own menu data
+ * @param string $highLight optional
+ * @return string generated html/javascript code
+ **/
 function invokeMenu($menustring, $highLight = "")
 {
+	tLog('invokeMenu started');
+	
 	if (TL_TREE_KIND == 'LAYERSMENU') 
 	{
 		$mid = new TreeMenu();
@@ -100,18 +111,19 @@ function filterString($str)
 
 
 /** 
-* 	generate data for tree menu of Test Specification
-*
-* @param numeric prodID
-* @param string  prodName
-* @param string $linkto path for generated URL
-*	@param integer $hidetc [0: show TCs, 1: disable TCs ]
-*	@param string $getArguments additional $_GET arguments
-* @return string input string for layersmenu
-*
-* @author Francisco Mancardi - fm - reduce global coupling
-*
-*/
+ * generate data for tree menu of Test Specification
+ *
+ * @param numeric prodID
+ * @param string  prodName
+ * @param string $linkto path for generated URL
+ * @param integer $hidetc [0: show TCs, 1: disable TCs ]
+ * @param string $getArguments additional $_GET arguments
+ * @return string input string for layersmenu
+ *
+ * Revisions:
+ * @author Francisco Mancardi - fm - reduce global coupling
+ *
+ */
 function generateTestSpecTree($prodID, $prodName, $linkto, $hidetc, $getArguments = '')
 {
 	
@@ -119,7 +131,8 @@ function generateTestSpecTree($prodID, $prodName, $linkto, $hidetc, $getArgument
 	{
 		return null;
 	}	
-	$menustring = null; // storage for output
+	
+	$menustring = null; // storage variable for output
 	
 	// Queries to determine total test cases
 	$sqlProdCount = " SELECT count(mgttestcase.id) AS qty" .
@@ -175,22 +188,23 @@ function generateTestSpecTree($prodID, $prodName, $linkto, $hidetc, $getArgument
 		$COMCount = mysql_fetch_row($resultCOMCount);
 
 		$componentName = filterString($myrowCOM[1]);
+		$sItemName = $componentName . " (" . $COMCount[0] . ")";
+		$sItemLink = $linkto . "?edit=component&data=" . $myrowCOM[0] . $getArguments;
+		
 		if (TL_TREE_KIND == 'LAYERSMENU')
 		{ 
-			$menustring .= "..|" . $componentName . " (" . $COMCount[0] . ")|" . 
-			               $linkto . "?edit=component&data=" . $myrowCOM[0] . 
-			               $getArguments . "|Component||workframe|\n";
+			$menustring .= "..|" . $sItemName . "|" . 
+			               $sItemLink . "|Component||workframe|\n";
 		}
 		elseif (TL_TREE_KIND == 'JTREE')
 		{	
-			$menustring .= "['" . $componentName . " (" . $COMCount[0] . ")','ECO({$myrowCOM[0]})',\n";
+			$menustring .= "['" . $sItemName . "','ECO({$myrowCOM[0]})',\n";
 		}
 		elseif (TL_TREE_KIND == 'DTREE')
 		{
 			$dtreeComponentId = $dtreeCounter;
-			$menustring .= "tlTree.add(" . $dtreeCounter++. ",0,'" . $componentName . 
-			               " (" . $COMCount[0] . ")','" . $linkto . "?edit=component&data=" . 
-			               $myrowCOM[0] . $getArguments . "');\n";
+			$menustring .= "tlTree.add(" . $dtreeCounter++. ",0,'" . $sItemName . 
+					"', '" . $sItemLink . "');\n";
 		}
 
 		//Parse categories
@@ -211,21 +225,22 @@ function generateTestSpecTree($prodID, $prodName, $linkto, $hidetc, $getArgument
 			$resultCATCount = do_mysql_query($sqlCATCount);
 			$CATCount = mysql_fetch_row($resultCATCount);
 	
-			$categoryName = filterString($myrowCAT[1]);
+			$categoryName = filterString($myrowCAT[1]) . " (" . $CATCount[0] . ")";
+			
 			if (TL_TREE_KIND == 'LAYERSMENU')
 			{ 
-				$menustring .= "...|" . $categoryName . " (" . $CATCount[0] . ")|" . 
+				$menustring .= "...|" . $categoryName . "|" . 
 				               $linkto . "?edit=category&data=" . $myrowCAT[0] . $getArguments . "|Category||workframe|\n";
 			}
 			elseif (TL_TREE_KIND == 'JTREE') 
 			{								
-				$menustring .=  " ['" . $categoryName . " (" . $CATCount[0] . ")','EC({$myrowCAT[0]})',\n";
+				$menustring .=  " ['" . $categoryName . "','EC({$myrowCAT[0]})',\n";
 			}
 			elseif (TL_TREE_KIND == 'DTREE')
 			{
 				$dtreeCategoryId = $dtreeCounter;
 				$menustring .= "tlTree.add(" . $dtreeCounter++. "," . $dtreeComponentId . ",'" . 
-				               $categoryName . " (" . $CATCount[0] . ")','" . $linkto . "?edit=category&data=" . 
+				               $categoryName . "','" . $linkto . "?edit=category&data=" . 
 				               $myrowCAT[0] . $getArguments . "');\n";
 			}
 
@@ -239,6 +254,7 @@ function generateTestSpecTree($prodID, $prodName, $linkto, $hidetc, $getArgument
 				while ($myrowTC = mysql_fetch_row($resultTC)) //loop through all Test cases
 				{
 					$tcName = filterString($myrowTC[1]);
+					
 					if (TL_TREE_KIND == 'LAYERSMENU')
 					{ 
 						$menustring .= "....|<b>" . $myrowTC[0] . "</b>: " . $tcName . "|" . 
@@ -308,9 +324,7 @@ function generateTestSuiteTree($linkto, $hidetc, $getArguments = '')
 		               $linkto . "?level=root" . $getArguments . "');\n";
 	}
 	
-	// grab every component depending on the test plan
-	//
-	// 20050915 - fm 
+	// 20050915 - fm - grab every component depending on the test plan
 	$sql = " SELECT component.id, mgtcomponent.name " .
 	       " FROM component,mgtcomponent, project " .
 	       " WHERE mgtcomponent.id = component.mgtcompid " .

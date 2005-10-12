@@ -1,11 +1,12 @@
 <?
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: execNavigator.php,v $
  *
- * @version $Revision: 1.10 $
- * @modified $Date: 2005/10/03 07:20:33 $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2005/10/12 04:19:25 $ by $Author: havlat $
  *
  * @author Martin Havlat
  *
@@ -18,13 +19,15 @@
  * 20050828 - scs - reduced the code
  * 20050828 - scs - added searching for tcID
  * 20050907 - scs - fixed problem with wrong coloring
-**/
+ * 20051011 - MHT - fixed $g_tc_status['not_run'] + minor refactorization
+ **/
+ 
 require_once('../../config.inc.php');
 require_once('common.php');
 require_once('treeMenu.inc.php');
 require_once('exec.inc.php');
 require_once('builds.inc.php');
-require_once("../../lib/functions/lang_api.php");
+
 testlinkInitPage();
 
 // global var for dtree only
@@ -399,7 +402,7 @@ function catCount($catID,$colored,$build)
 			//This is a test.. I've got a problem if the user goes and sets a previous p,f,b 
 			// value to a 'n' value. The program then sees the most recent value as an not run. 
 			//I think we want the user to then see the most recent p,f,b value
-			if($totalRow['status'] != $g_tc_status['not run'])	{
+			if($totalRow['status'] != $g_tc_status['not_run'])	{
 				$testCaseArray[$totalRow['tcid']] = $totalRow['status'];
 			}
 		}
@@ -444,7 +447,7 @@ function catCount($catID,$colored,$build)
 		$values[$g_tc_status['passed']] = 0;
 		$values[$g_tc_status['failed']] = 0;
 		$values[$g_tc_status['blocked']] = 0;
-		$values[$g_tc_status['not run']] = 0;
+		$values[$g_tc_status['not_run']] = 0;
 		if ($result)
 		{
 			while($row = mysql_fetch_assoc($result))
@@ -453,14 +456,14 @@ function catCount($catID,$colored,$build)
 			}	
 		}
 		
-		$values[$g_tc_status['not run']] = $totalTCs['num_tc'] -  $values[$g_tc_status['passed']] - 
+		$values[$g_tc_status['not_run']] = $totalTCs['num_tc'] -  $values[$g_tc_status['passed']] - 
 		                                                   $values[$g_tc_status['failed']] - 
 		                                                   $values[$g_tc_status['blocked']];
 		
 		$returnValues = '<span class="green">' . $values[$g_tc_status['passed']] . "</span>"; 
 		$returnValues .=  ',<span class="red">' . $values[$g_tc_status['failed']] . "</span>"; 
 		$returnValues .= ',<span class="blue">' . $values[$g_tc_status['blocked']] . "</span>";
-		$returnValues .= ',<span class="black">' . $values[$g_tc_status['not run']] . "</span>";
+		$returnValues .= ',<span class="black">' . $values[$g_tc_status['not_run']] . "</span>";
 	}
 	return $returnValues;
 }

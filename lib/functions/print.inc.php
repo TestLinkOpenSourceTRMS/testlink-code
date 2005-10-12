@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: print.inc.php,v $
- * @version $Revision: 1.4 $
- * @modified $Date: 2005/09/06 06:44:07 $ by $Author: franciscom $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2005/10/12 06:25:06 $ by $Author: franciscom $
  *
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
@@ -39,7 +39,7 @@ function getAuthor($userID)
  *
  * 20050905 - fm - added argument base_href
  */
-function printHeader($title, $base_href, $cssTemplate = 'gui/css/tl_doc_basic.css')
+function printHeader($title, $base_href, $cssTemplate = TL_DOC_BASIC_CSS)
 {
 	$output = "<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN'>\n";
 	$output .= "<html>\n<head>\n";

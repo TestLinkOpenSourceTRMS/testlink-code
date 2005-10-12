@@ -1,13 +1,16 @@
 <?
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* @version $Id: keywords.inc.php,v 1.7 2005/10/09 18:13:48 schlundus Exp $
+* @version $Id: keywords.inc.php,v 1.8 2005/10/12 06:25:06 franciscom Exp $
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author	Chad Rosen
 * 
 * Purpose:  Functions for support keywords management. 
 * Precondition: require init db 
+*
+* @author: francisco mancardi - 20051011
+* refactoring - new function check_for_keyword_existence()
 *
 * @author: francisco mancardi - 20051004 
 * addNewKeyword() refactoring and improvements
@@ -136,11 +139,15 @@ function addTCKeyword($tcID, $newKey)
 *
 * @author Andreas Morsing - added check for empty keywords
 * @return array of Array of keyword + result
+*
+* @author Francisco Mancardi - 20051011 - interface changes
+*
 */
-function multiUpdateKeywords()
+function multiUpdateKeywords($prodID)
 {
 	$arrUpdate = null;
-	$newArray = extractInput(true);
+	$APPLY_STRIP_SLASHES=true;
+	$newArray = extractInput($APPLY_STRIP_SLASHES);
 
 	$i = 0;
 	$arrLimit = count($newArray) - 1; // -1 because of button
@@ -154,28 +161,35 @@ function multiUpdateKeywords()
 		{
 			$i = $i + 1;
 
-			if (deleteKeyword($id))
-				$errorResult = lang_get('kw_deleted');
-   			else
+      $errorResult = lang_get('kw_deleted');
+			if ( !deleteKeyword($id) )
+			{
 				$errorResult = lang_get('kw_delete_fails'). ' : ' . mysql_error();
+			}	
 		}
 		else
 		{
+			$errorResult = lang_get('empty_keyword_no');		
 			if (strlen($keyword))
 			{
 				//we shouldnt allow " and , any longer
 				if (!preg_match("/(\"|,)/",$keyword,$m))
 				{
-					if (updateKeyword($id,$keyword,$notes))
+				  $check = updateKeyword($prodID,$id,$keyword,$notes);
+					if ($check['status_ok'])
+					{
 						$errorResult = lang_get('kw_updated');
-		   			else
-						$errorResult = lang_get('kw_update_fails') . ': ' . mysql_error();
+					}	
+		   		else
+		   		{
+						$errorResult = lang_get('kw_update_fails') . ': ' . $check['msg'];
+					}	
 				}
 				else
+				{
 					$errorResult = lang_get('kw_invalid_chars');
+				}	
 			}
-			else
-				$errorResult = lang_get('empty_keyword_no');		
 		}
 		$arrUpdate[] =  array( 
 								'keyword' => $keyword,
@@ -185,14 +199,44 @@ function multiUpdateKeywords()
 	return $arrUpdate;
 }
 
-function updateKeyword($id,$keyword,$notes)
-{
-	$sql = "UPDATE keywords SET notes='" . mysql_escape_string($notes) . "', keyword='" 
-			. mysql_escape_string($keyword) . "' where id=" . $id;
-	$result = do_mysql_query($sql);
 
-	return $result ? 1 : 0;
+/*
+20051011 - fm - 
+*/
+
+function updateKeyword($prodID,$id,$keyword,$notes)
+{
+	global $g_allow_duplicate_keywords;
+
+  $ret = array("msg" => "ok", "status_ok" => 0);
+	$do_action = 1;
+	$my_kw = trim($keyword);
+
+	if (!$g_allow_duplicate_keywords)
+	{
+		$check = check_for_keyword_existence($prodID, $my_kw,$id);
+		$do_action = !$check['keyword_exists'];
+
+		$ret['msg'] = $check['msg'];
+		$ret['status_ok'] = $do_action;
+	}
+
+  if( $do_action )
+  {
+		$sql = "UPDATE keywords SET notes='" . mysql_escape_string($notes) . "', keyword='" 
+			     . mysql_escape_string($my_kw) . "' where id=" . $id;
+	  $result = do_mysql_query($sql);
+	  
+	  if (!$result)
+	  {
+			$ret['msg'] = mysql_error();
+			$ret['status_ok'] = 0;
+	  }
+  }
+
+  return($ret);
 }
+
 
 function deleteKeyword($id)
 {
@@ -210,6 +254,7 @@ function deleteKeyword($id)
 * @param string $notes
 * @return string SQL result
 *
+* 20051011 - fm - use of check_for_keyword_existence()
 * 20051004 - fm - refactoring
 */
 function addNewKeyword($prodID,$keyword, $notes)
@@ -217,23 +262,16 @@ function addNewKeyword($prodID,$keyword, $notes)
 	global $g_allow_duplicate_keywords;
 	
 	$ret = 'ok';
-	$do_insert = 1;
+	$do_action = 1;
 	$my_kw = trim($keyword);
 	if (!$g_allow_duplicate_keywords)
 	{
-		$sql = 	" SELECT * FROM keywords " .
-				" WHERE UPPER(keyword) ='" . strtoupper(mysql_escape_string($my_kw))."'".
-		     	" AND prodid=" . $prodID ;
-		            
-		$result = do_mysql_query($sql);       
-		if(mysql_num_rows($result))
-		{
-			$do_insert = 0;
-			$ret = lang_get('duplicate_keyword');
-		}
+		$check = check_for_keyword_existence($prodID, $my_kw);
+		$ret = $check['msg'];
+		$do_action = !$check['keyword_exists'];
 	}
 	
-	if ($do_insert)
+	if ($do_action)
 	{
 		$sql =  " INSERT INTO keywords (keyword,prodid,notes) " .
 				" VALUES ('" . mysql_escape_string($my_kw) .	"'," . 
@@ -293,4 +331,35 @@ function getProductKeywords($prodID,$searchKW = null)
 	}
 	return $keywords;
 }
+
+
+/* 20051011 - fm 
+
+$prodID: product ID
+$kw    : keyword 
+*/
+function check_for_keyword_existence($prodID, $kw, $kwID=0)
+{
+
+  $ret = array('msg' => 'ok', 'keyword_exists' => 0);
+  
+	$sql = 	" SELECT * FROM keywords " .
+		      " WHERE UPPER(keyword) ='" . strtoupper(mysql_escape_string($kw))."'".
+     	    " AND prodid=" . $prodID ;
+            
+  if ($kwID != 0 )
+  {
+    $sql .= " AND id <> " . $kwID;
+  }          
+	
+	$result = do_mysql_query($sql);       
+	if(mysql_num_rows($result))
+	{
+		$ret['keyword_exists'] = 1;
+		$ret['msg'] = lang_get('keyword_already_exists');
+	}
+
+  return($ret);
+}
+
 ?>

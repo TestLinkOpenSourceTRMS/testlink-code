@@ -4,12 +4,14 @@
  *
  * Filename $RCSfile: tlsmarty.inc.php,v $
  *
- * @version $Revision: 1.4 $
- * @modified $Date: 2005/08/31 19:21:38 $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2005/10/12 06:25:06 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
  * TLSmarty class implementation used in all templates
+ *
+ * @author Francisco Mancardi - 20051011 - using config param for CSS
  *
 **/
 class TLSmarty extends Smarty
@@ -31,7 +33,7 @@ class TLSmarty extends Smarty
 
 		$this->assign('basehref', $basehref);
 		$this->assign('helphref', $basehref . 'gui/help/' . $my_locale . "/");
-		$this->assign('css', $basehref . 'gui/css/testlink.css');
+		$this->assign('css', $basehref . TL_TESTLINK_CSS);
 		$this->assign('locale', $my_locale);
 		global $g_tc_status;
 		$this->assign('g_tc_status',$g_tc_status);

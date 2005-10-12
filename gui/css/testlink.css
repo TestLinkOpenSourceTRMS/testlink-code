@@ -1,5 +1,5 @@
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: testlink.css,v 1.3 2005/09/06 20:19:38 schlundus Exp $ */
+/* $Id: testlink.css,v 1.4 2005/10/12 06:25:06 franciscom Exp $ */
 /* Purpose: main css */
 /*                                                                 */
 /* 20050801 - fm                                                   */
@@ -129,6 +129,7 @@ div.groupBtn {
 	padding:		0px;
 }
 
+/*
 div.groupBtn input {
 	background:		#059;
 	color:			white;
@@ -137,6 +138,7 @@ div.groupBtn input {
 	padding:		2px 11px;
 	margin:			2px 5px;
 }
+*/
 
 /* show results of SQL actions or important information for user */
 div.error, .info {

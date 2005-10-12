@@ -4,13 +4,17 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.22 $
- * @modified $Date: 2005/10/06 20:22:33 $ by $Author: schlundus $
+ * @version $Revision: 1.23 $
+ * @modified $Date: 2005/10/12 06:24:38 $ by $Author: franciscom $
  *
  * @author Chad Rosen
  *
- * Constants used throughout TestLink are defined within this file
- * they should be changed for your environment
+ * Constants and configuration parameters used throughout TestLink 
+ * are defined within this file they should be changed for your environment
+ *
+ * @author Francisco Mancardi - 20051011
+ * New constant to configure CSS files
+ * Boolean values managed with TRUE/FALSE instead of 1/0 .
  *
  * @author Francisco Mancardi - 20051005
  * new config structures to manage L18N for date and time format
@@ -163,15 +167,30 @@ define('TL_INSTRUCTIONS_RPATH','gui/help/');
 define('TL_FRMWORKAREA_LEFT_FRAME_WIDTH', "30%"); 
 
 
-/* 1 -> Check if:
-        a. Product Name                   is unique
-        b. Component Name Inside Product  is unique
-        c. Category Name Inside Component is unique
-        d. Test Case Name inside Category is unique 
-   0 -> don't check
+/* CSS configuration */
+/* Standard */
+define('TL_LOGIN_CSS','gui/css/tl_login.css');
+define('TL_TESTLINK_CSS','gui/css/testlink.css');
+define('TL_DOC_BASIC_CSS','gui/css/tl_doc_basic_css');
+
+/* An example
+define('TL_LOGIN_CSS','gui/css/theme0/tl_login.css');
+define('TL_TESTLINK_CSS','gui/css/theme0/testlink.css');
+define('TL_DOC_BASIC_CSS','gui/css/theme0/tl_doc_basic_css');
 */
-//$g_check_names_for_duplicates=0;
-$g_check_names_for_duplicates=1;
+
+
+
+
+/* TRUE -> Check if:
+           a. Product Name                   is unique
+           b. Component Name Inside Product  is unique
+           c. Category Name Inside Component is unique
+           d. Test Case Name inside Category is unique 
+   FALSE -> don't check
+*/
+//$g_check_names_for_duplicates=FALSE;
+$g_check_names_for_duplicates=TRUE;
 
 /* 
 if you have choose to check for unique names, what to do
@@ -194,35 +213,35 @@ and testcase title
 */
 $g_ereg_forbidden ="[|]";
 
-/* 1 -> TL 1.5.1 compatibility, get also Test Plans without product id. */
-$g_show_tp_without_prodid=1;
+/* TRUE -> TL 1.5.1 compatibility, get also Test Plans without product id. */
+$g_show_tp_without_prodid=TRUE;
 
 
 /* 
 20051002 - fm
 New Feature
-1 -> user can enable/disable test plan filter by product 
-     At user interface level a check box is displayed over
-     the test plan combo box.
+TRUE -> user can enable/disable test plan filter by product 
+        At user interface level a check box is displayed over
+        the test plan combo box.
      
-0 -> user can do nothing, no changes at UI.
-     Test Plan always filtered by product
+FALSE -> user can do nothing, no changes at UI.
+         Test Plan always filtered by product
 */
-$g_ui_show_check_filter_tp_by_product = 1;
+$g_ui_show_check_filter_tp_by_product = TRUE;
 
 
-/* 1 -> you can create multiple time the same keyword for the same product */
-$g_allow_duplicate_keywords=0;
+/* TRUE -> you can create multiple time the same keyword for the same product */
+$g_allow_duplicate_keywords=FALSE;
 
 /*
 Requirements - 
 
 Test Case generation from Requirement
-- use_req_spec_as_category_name=1;
-  0 -> test cases are created and assigned 
-       to a category with name $g_req_cfg->default_category_name
+- use_req_spec_as_category_name
+  FALSE -> test cases are created and assigned 
+           to a category with name $g_req_cfg->default_category_name
   
-  1 -> REQuirement Specification Title is used a category name     
+  TRUE  -> REQuirement Specification Title is used a category name     
        
 */
 $g_req_cfg->default_category_name="TODO";
@@ -231,7 +250,7 @@ $g_req_cfg->objective_for_category="Category/Test Cases generated from Requireme
 $g_req_cfg->default_component_name="Component Created by Requirement - Auto";
 $g_req_cfg->scope_for_component="Component/Category/Test Cases generated from Requirements";
 
-$g_req_cfg->use_req_spec_as_category_name=1;
+$g_req_cfg->use_req_spec_as_category_name=TRUE;
 
 
 

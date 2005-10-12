@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: lostPassword.php,v $
  *
- * @version $Revision: 1.6 $
- * @modified $Date: 2005/08/31 11:35:11 $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2005/10/12 06:24:39 $
  *
  * @author Chad Rosen
  *
@@ -66,7 +66,7 @@ if (strlen($login))
 }
 
 $smarty = new TLSmarty();
-$smarty->assign('css', TL_BASE_HREF . 'gui/css/tl_login.css');
+$smarty->assign('css', TL_BASE_HREF . TL_LOGIN_CSS);
 $smarty->assign('note',$message);
 $smarty->assign('page_title',lang_get('page_title_lost_passwd'));
 $smarty->display('loginLost.tpl');

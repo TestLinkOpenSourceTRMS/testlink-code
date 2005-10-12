@@ -4,11 +4,12 @@
  *
  * Filename $RCSfile: keywordsAssign.php,v $
  *
- * @version $Revision: 1.5 $
- * @modified $Date: 2005/10/09 18:13:48 $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2005/10/12 06:25:06 $
  *
  * Purpose:  Assign keywords to set of testcases in tree structure
  *
+ * @author Francisco Mancardi - 20051011 - refactoring $_REQUEST
  * @author Andreas Morsing - cosmetic code changes
  * 20050907 - scs - moved POST to the top, refactoring
 **/
@@ -18,14 +19,13 @@ require_once("keywords.inc.php");
 require_once("../testcases/archive.inc.php");
 testlinkInitPage();
 
-$_POST = strings_stripSlashes($_POST);
-$_GET = strings_stripSlashes($_GET);
-$id = isset($_GET['data']) ? intval($_GET['data']) : null;
-$keyword = isset($_POST['keywords']) ? strings_stripSlashes($_POST['keywords']) : null;
-$edit = isset($_GET['edit']) ? strings_stripSlashes($_GET['edit']) : null;
-$bAssignComponent = isset($_POST['assigncomponent']) ? 1 : 0;
-$bAssignCategory = isset($_POST['assigncategory']) ? 1 : 0;
-$bAssignTestCase = isset($_POST['assigntestcase']) ? 1 : 0;
+$_REQUEST = strings_stripSlashes($_REQUEST);
+$id = isset($_REQUEST['data']) ? intval($_REQUEST['data']) : null;
+$keyword = isset($_REQUEST['keywords']) ? strings_stripSlashes($_REQUEST['keywords']) : null;
+$edit = isset($_REQUEST['edit']) ? strings_stripSlashes($_REQUEST['edit']) : null;
+$bAssignComponent = isset($_REQUEST['assigncomponent']) ? 1 : 0;
+$bAssignCategory = isset($_REQUEST['assigncategory']) ? 1 : 0;
+$bAssignTestCase = isset($_REQUEST['assigntestcase']) ? 1 : 0;
 
 // 20050905 - fm
 $prodID = isset($_SESSION['productID']) ? $_SESSION['productID'] : 0;
@@ -48,7 +48,7 @@ else if ($edit == 'component')
 		$smarty->assign('sqlResult', $result);
 	}
 	$componentData = getComponent($id);
-	$title = $componentData[1];
+	$title = $componentData['name'];
 	$level = 'component';
 }
 else if ($edit == 'category')
@@ -59,7 +59,7 @@ else if ($edit == 'category')
 		$smarty->assign('sqlResult', $result);
 	}
 	$categoryData = getCategory($id);
-	$title = $categoryData[1];
+	$title = $categoryData['name'];
 	$level = 'category';
 }
 else if($edit == 'testcase')
@@ -69,24 +69,29 @@ else if($edit == 'testcase')
 		$result = updateTCKeywords($id,$keyword);
 		$smarty->assign('sqlResult', $result);
 	}
-	$tcData = getTestcase($id,false);
+	$DO_NOT_CONVERT=false;
+	$tcData = getTestcase($id,$DO_NOT_CONVERT);
 	$tcKeywords = null;
-	if ($tcData[6])
-		$tcKeywords = explode(",",$tcData[6]);  
-
+	if ($tcData['keywords'])
+	{
+		$tcKeywords = explode(",",$tcData['keywords']);  
+  }
+  
 	//find actual keywords
 	for($i = 0;$i < count($keysOfProduct);$i++)
 	{
 		$productKeyword = $keysOfProduct[$i]['keyword'];
 		$sel = 'no';
 		if ($tcKeywords && in_array($productKeyword,$tcKeywords))
+		{
 			$sel  = 'yes';
+		}	
 		$keysOfProduct[$i]['selected'] = $sel;	
 	}
 
-	$title = $tcData[1];
+	$title = $tcData['title'];
 	$level = 'testcase';
-	$smarty->assign('tcKeys', $tcData[6]);
+	$smarty->assign('tcKeys', $tcData['keywords']);
 }
 else
 {

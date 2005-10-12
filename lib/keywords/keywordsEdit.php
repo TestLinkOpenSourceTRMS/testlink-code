@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: keywordsEdit.php,v $
  *
- * @version $Revision: 1.4 $
- * @modified $Date: 2005/09/07 20:19:25 $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2005/10/12 06:25:06 $ $Author: franciscom $
  *
  * @author	Martin Havlat
  * 
@@ -26,7 +26,8 @@ $updated = null;
 $arrUpdate = null;
 if ($bEditKey)
 {
-	$arrUpdate = multiUpdateKeywords();
+  // 20051011 - fm 
+	$arrUpdate = multiUpdateKeywords($prodID);
 	$updated = 'yes';
 }
 

@@ -5,14 +5,15 @@
  *
  * Filename $RCSfile: firstLogin.php,v $
  *
- * @version $Revision: 1.6 $
- * @modified $Date: 2005/08/31 11:35:11 $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2005/10/12 06:25:06 $ $Author: franciscom $
  *
  * @author Asiel Brumfield
  * @author Martin Havlat 
  *
  * Anybody can have Guest rights to browse TL
- * 
+ *
+ * 20051011 - fm - config param for CSS
  * 20050831 - scs - moved POST params to the top
 **/
 require_once('config.inc.php');
@@ -84,7 +85,7 @@ if($bEditUser)
 }
 
 $smarty = new TLSmarty();
-$smarty->assign('css', TL_BASE_HREF . 'gui/css/tl_login.css');
+$smarty->assign('css', TL_BASE_HREF . TL_LOGIN_CSS);
 $smarty->assign('message',$message);
 $smarty->display('loginFirst.tpl');
 ?>

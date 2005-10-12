@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: login.php,v $
  *
- * @version $Revision: 1.9 $
- * @modified $Date: 2005/10/08 04:11:58 $ by $Author: havlat $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2005/10/12 06:24:39 $ by $Author: franciscom $
  *
  * @author Martin Havlat
  * 
@@ -58,6 +58,7 @@ $securityNotes = getSecurityNotes();
 $smarty = new TLSmarty();
 $smarty->assign('securityNotes',$securityNotes);
 $smarty->assign('note',$message);
-$smarty->assign('css', TL_BASE_HREF . 'gui/css/tl_login.css');
+// $smarty->assign('css', TL_BASE_HREF . 'gui/css/tl_login.css');
+$smarty->assign('css', TL_BASE_HREF . TL_LOGIN_CSS);
 $smarty->display('login.tpl');
 ?>

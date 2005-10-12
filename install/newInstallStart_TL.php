@@ -1,6 +1,6 @@
 <?php 
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: newInstallStart_TL.php,v 1.5 2005/10/03 07:19:17 franciscom Exp $ */
+/* $Id: newInstallStart_TL.php,v 1.6 2005/10/12 06:30:18 franciscom Exp $ */
 
 // 20050824 - fm
 require_once("installUtils.php");
@@ -78,7 +78,8 @@ if($errors>0) {
 ?>
 <br />
 <br />
-Unfortunately, TestLink setup cannot continue at the moment, due to the above <?php echo $errors > 1 ? $errors." " : "" ; ?>error<?php echo $errors > 1 ? "s" : "" ; ?>. Please correct the error<?php echo $errors > 1 ? "s" : "" ; ?>, and try again. If you need help figuring out how to fix the problem<?php echo $errors > 1 ? "s" : "" ; ?>, please read the documentation in the <a href="http://www.cookiebean.com/wiki" target="_blank">TestLink Wiki</a>, or visit the <a href="http://www.cookiebean.com/forums" target="_blank">TestLink Forums</a>.
+Unfortunately, TestLink setup cannot continue at the moment, due to the above <?php echo $errors > 1 ? $errors." " : "" ; ?>error<?php echo $errors > 1 ? "s" : "" ; ?> . 
+Please correct the error<?php echo $errors > 1 ? "s" : "" ; ?>, and try again. If you need help figuring out how to fix the problem<?php echo $errors > 1 ? "s" : "" ; ?>, please read the documentation in the <a href="http://www.testlink.org" target="_blank">TestLink Wiki</a>, or visit the <a href="http://www.testlink.org" target="_blank">TestLink Forums</a>.
 <br />
 			</p>
 		</td>

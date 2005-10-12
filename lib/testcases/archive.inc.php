@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: archive.inc.php,v $
  *
- * @version $Revision: 1.18 $
- * @modified $Date: 2005/10/10 19:18:25 $ by $Author: schlundus $
+ * @version $Revision: 1.19 $
+ * @modified $Date: 2005/10/12 06:27:46 $ by $Author: franciscom $
  *
  * @author Martin Havlat
  * Purpose:  functions for test specification management have three parts:
@@ -59,10 +59,10 @@ function getCategory($id)
 function getTestcase($id, $convert = TRUE)
 {
 	// execute SQL request
-	$sqlTC = " select id,title,summary,steps,exresult,version,keywords," .
+	$sqlTC = " SELECT id,title,summary,steps,exresult,version,keywords," .
 			     " author,create_date,reviewer,modified_date,catid,TCorder " .
-			     " from mgttestcase" .
-			     " where id=" . $id ;
+			     " FROM mgttestcase" .
+			     " WHERE id=" . $id ;
 			     
 	$resultTC = do_mysql_query($sqlTC);
 	$myrowTC = mysql_fetch_array($resultTC);

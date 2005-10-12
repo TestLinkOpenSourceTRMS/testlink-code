@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.21 $ $Author: franciscom $
- * @modified $Date: 2005/10/06 06:07:11 $
+ * @version $Revision: 1.22 $ $Author: asielb $
+ * @modified $Date: 2005/10/12 18:17:49 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -37,6 +37,8 @@
  * @author: francisco mancardi - 20050813 - added localize_date_smarty()
  * @author: francisco mancardi - 20050813 - added TP filtered by Product *
  * @author: francisco mancardi - 20050810 - added function to_boolean($alt_boolean)
+ * 
+ * @author: Asiel Brumfield - 20051012 - optimize sql queries
 **/ 
 require_once("getRights.php");
 require_once("product.core.inc.php");
@@ -291,25 +293,28 @@ function getUserProdTestPlans($userID,$prodID,$filter_by_product,$p_bActive = nu
   {
     $apply_tp_filter = $filter_by_product;
   }
-  
-	$sql = " SELECT project.*, userID FROM project,projrights " .
+  	
+	$sql = " SELECT project.id, project.prodid, project.name, project.active, " .
+			"projrights.projid, projrights.userID FROM project,projrights " .
 	       " WHERE projrights.projid = project.id " .
 	       " AND userID={$userID}";
 	
 	if (!is_null($prodID))
 	{
-		if( $apply_tp_filter )
+		// 20050904 - fm - 
+		// TL 1.5.1 compatibility, get also Test Plans without product id.
+		// 20051012 - azl
+		// Removed the OR in the sql because it slows down the query signifigantly
+		// doing the logic here to determine if it is compat with 1.5 or not
+		if($apply_tp_filter and $g_show_tp_without_prodid)		    	
+		{
+			$sql .= " AND project.prodid=0";
+		}
+		elseif($apply_tp_filter)
 		{
 			$sql .= " AND project.prodid = {$prodID}";
-		
-			// 20050904 - fm - 
-			// TL 1.5.1 compatibility, get also Test Plans without product id.
-    	if ($g_show_tp_without_prodid)
-    	{
-				$sql .= " OR project.prodid=0";
-    	}
-    }
-	}	 
+		}
+    }		 
 	
 	if (!is_null($p_bActive))
 	{

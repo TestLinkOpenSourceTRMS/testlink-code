@@ -3,8 +3,8 @@
  * TestLink Open Source Project - @link http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: plan.core.inc.php,v $
- * @version $Revision: 1.9 $
- * @modified $Date: 2005/10/09 18:13:48 $ $Author: schlundus $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2005/10/12 18:17:49 $ $Author: asielb $
  *  
  * 
  * @author 	Martin Havlat
@@ -22,6 +22,7 @@
  * @author 20050809 - fm added getCountTestPlans4UserProd()
  * @author 20050809 - fm getTestPlans(), added filter on prodid
  * @author 20050807 - fm refactoring:  removed deprecated: $_SESSION['project']
+ * @author 20051012 - azl optimize getTestPlans() function sql queries.
 **/
 
 /**
@@ -54,8 +55,11 @@ function getTestPlans($productID, $userID, $filter_by_product=0)
 	
 	// 20050809 - fmm
 	// added filter by product id
-	//
-	$sql = " SELECT DISTINCT id,name,notes,active,prodid FROM project,projrights " .
+	// 20051012 - azl
+	// removed join with projrights table because it was slowing down query signifigantly and 
+	// it wasn't being used. Also removed selecting notes field because it isn't needed. 
+	// 
+	$sql = " SELECT DISTINCT id,name,active,prodid FROM project " .
 			           " WHERE active=1 ";
 			           
 	// 20050928 - fm

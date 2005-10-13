@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: int_bugtracking.php,v $
  *
- * @version $Revision: 1.3 $
- * @modified $Date: 2005/08/25 17:40:59 $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2005/10/13 19:26:36 $
  *
  * @author Andreas Morsing
  *
@@ -231,19 +231,25 @@ class bugtrackingInterface
 	 * 
 	 * @return string returns a complete URL to view the bug (if found in db)
 	 *
-	 * @version 1.0
+	 * @version 1.1
 	 * @author Andreas Morsing 
-	 * @since 22.04.2005, 21:05:25
+	 * @author Raphael Bosshard
+	 * @author Arjen van Summeren
+	 * @since 28.09.2005, 16:02:25
 	 **/
 	function buildViewBugLink($bugID,$bWithSummary = false)
 	{
 		$link = "<a href='" .$this->buildViewBugURL($bugID) . "' target='_blank'>";
-		$link .= $this->getBUGStatusString($bugID);
+		
+		$link .= $bugID;
 		if ($bWithSummary)
 		{
 			$summary = $this->getBugSummaryString($bugID);
-			if (!is_null($summary))
-				$link .= " - ".htmlspecialchars($summary);
+			$status = $this->getBugStatusString($bugID);
+			if (!is_null($status) && !is_null($summary))
+			{
+				$link .= " - " . $summary . " - " . $status;
+			}
 		}
 		$link .= "</a>";
 		

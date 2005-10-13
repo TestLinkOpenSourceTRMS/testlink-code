@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: login.php,v $
  *
- * @version $Revision: 1.10 $
- * @modified $Date: 2005/10/12 06:24:39 $ by $Author: franciscom $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2005/10/13 19:26:34 $ by $Author: schlundus $
  *
  * @author Martin Havlat
  * 
@@ -33,6 +33,10 @@ $message = lang_get('please_login');
 switch($note)
 {
 	case 'expired':
+		// 20051012 - am - fix for 134
+		session_start();
+		session_unset();
+		session_destroy();
 		$message = lang_get('session_expired');
 		break;
 	case 'wrong':

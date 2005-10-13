@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.15 $
- * @modified $Date: 2005/10/06 20:22:34 $
+ * @version $Revision: 1.16 $
+ * @modified $Date: 2005/10/13 19:26:36 $
  *
  * @author Andreas Morsing
  *
@@ -34,6 +34,9 @@ $TLS_main_page_title = "TestLink ::: Hauptseite";
 
 // login.php
 $TLS_bad_user_passwd = "Falscher Benutzer oder falsches Passwort!";
+$TLS_login_msg_session_exists1 = "There is still a valid login for your browser. Please use ";
+$TLS_login_msg_session_exists2 = " at first if you would like to renew your session.";
+$TLS_logout_link = "Logout";
 $TLS_passwd_lost = "Ihr Passwort wurde an den Email Account, welcher bei der Benutzererstellung angegeben, gesendet. Bitte überprüfen Sie Ihr Postfach.Falls Sie weitere Problem haben kontaktieren Sie Ihren Systemadministrator";
 $TLS_please_login = "Bitte melden Sie sich an...";
 $TLS_session_expired = "Ihre Session ist abgelaufen, bitte melden Sie sich neu an!";
@@ -239,6 +242,7 @@ $TLS_licensed_under = "TestLink ist lizenziert unter der";
 // gui/templates/inc_update.tpl
 $TLS_Build = "Build";
 $TLS_Keyword = "Keyword";
+$TLS_Priority = "LOCALIZE: TLS_Priority";
 $TLS_Product = "Produkt";
 $TLS_Requirement = "Anforderung";
 $TLS_Requirements = "Anforderungen";
@@ -1009,8 +1013,8 @@ $TLS_no_testplans_available = "Keine Testpläne verfügbar";
 
 
 // lib/keywords/keywords.inc.php
-$TLS_duplicate_keyword = "Das Keyword ist schon vorhanden!";
 $TLS_empty_keyword_no = "Sie können kein leeres Keyword eingeben!";
+$TLS_keyword_already_exists = "Das Keyword ist schon vorhanden!";
 $TLS_kw_delete_fails = "Das Löschen der Keywords schlug fehl!";
 $TLS_kw_deleted = "Gelöscht";
 $TLS_kw_invalid_chars = "Das Aktualisieren schlug fehl: Kommas und Anführungszeichen sind innerhalb Keywords nicht erlaubt!";
@@ -1029,6 +1033,7 @@ $TLS_keywords_char_not_allowed = "Kommas und Anführungszeichen sind innerhalb Ke
 // lib/plan/buildNew.php
 $TLS_cannot_add_build = "Der Build konnte nicht erstellt werden";
 $TLS_cannot_delete_build = "Der Build konnte nicht gelöscht werden";
+$TLS_cannot_update_build = "LOCALIZE: TLS_cannot_update_build";
 $TLS_invalid_build_id = "Build-IDs dürfen nicht leer sein!";
 $TLS_warning_duplicate_build = "Es gibt schon einen Build mit diesem Identifikator";
 
@@ -1078,6 +1083,11 @@ $TLS_warning_empty_tp_name = "sie können keinen Test Plan ohne Namen erstellen!"
 // lib/plan/planTestersEdit.php
 $TLS_title_assign_tp = "Assign Test Plans to the user: ";
 $TLS_title_assign_users = "Assign Users to the Test Plan: ";
+
+
+
+// lib/plan/testSetNavigator.php
+$TLS_title_test_plan_navigator = "LOCALIZE: TLS_title_test_plan_navigator";
 
 
 

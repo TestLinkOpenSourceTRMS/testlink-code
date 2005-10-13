@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.13 $
- * @modified $Date: 2005/10/03 07:20:33 $ $Author: franciscom $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2005/10/13 19:26:36 $ $Author: schlundus $
  *
  * @author Martin Havlat
  *
@@ -22,7 +22,7 @@
  * @author 20050807 - Francisco Mancardi  
  * refactoring:  removed deprecated: $_SESSION['project']
  *
- *
+ * @author 20051913 - am - build was displayed
 **/
 require_once('../../config.inc.php');
 require_once('common.php');
@@ -116,7 +116,7 @@ else
 $smarty = new TLSmarty();
 $smarty->assign('rightsEdit', has_rights("tp_planning"));
 $smarty->assign('arrTC', $testdata);
-$smarty->assign('build', $buildIDName);
+$smarty->assign('build', $buildName);
 $smarty->assign('owner', $owner);
 $smarty->assign('updated', $submitResult);
 $smarty->assign('g_bugInterface', $g_bugInterface);

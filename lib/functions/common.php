@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.22 $ $Author: asielb $
- * @modified $Date: 2005/10/12 18:17:49 $
+ * @version $Revision: 1.23 $ $Author: schlundus $
+ * @modified $Date: 2005/10/13 19:26:36 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -246,8 +246,18 @@ function checkSessionValid()
 	{
 		$ip = getenv ("REMOTE_ADDR");
 	    tLog('Invalid session from ' . $ip . '. Redirected to login page.', 'INFO');
-		redirect($_SESSION['basehref'] ."login.php?note=expired");
-		exit;
+		// 20051012 - am - fix for 134
+		$fName = "login.php";
+		for($i = 0;$i < 5;$i++)
+		{
+			if (file_exists($fName))
+			{
+				redirect($_SESSION['basehref'] . $fName."?note=expired","top.location");
+				break;
+			}
+			$fName = "../".$fName;
+		}
+		exit();
 	}
 }
 
@@ -374,9 +384,7 @@ function testlinkInitPage($initProduct = FALSE, $bDontCheckSession = false)
 	doDBConnect() or die("Could not connect to DB");
 	doSessionStart() or die("Could not start session");
 	setPaths();
-
-  // 20051005 - fm
-  set_dt_formats();
+	set_dt_formats();
 	
 	if (!$bDontCheckSession)
 	{
@@ -803,11 +811,7 @@ function updateSessionTp_Prod($hash_user_sel)
 
 }
 
-/*
-SET Date and Time FORMATS
-
-20051005 - fm 
-*/
+// 20051005 - fm - SET Date and Time FORMATS 
 function set_dt_formats()
 {
 	global $g_date_format;
@@ -815,19 +819,17 @@ function set_dt_formats()
 	global $g_locales_date_format;
 	global $g_locales_timestamp_format;
 
-  if(isset($_SESSION['locale']))
-  {
-
+	if(isset($_SESSION['locale']))
+	{
 		if($g_locales_date_format[$_SESSION['locale']])
-  	{
-	  	$g_date_format = $g_locales_date_format[$_SESSION['locale']];
-	  }
-	
-	  if($g_locales_timestamp_format[$_SESSION['locale']])
-	  {
-		  $g_timestamp_format = $g_locales_timestamp_format[$_SESSION['locale']];
-	  }
-  }
+		{
+			$g_date_format = $g_locales_date_format[$_SESSION['locale']];
+		}
+		if($g_locales_timestamp_format[$_SESSION['locale']])
+		{
+			$g_timestamp_format = $g_locales_timestamp_format[$_SESSION['locale']];
+		}
+	}
 }
 
 ?>

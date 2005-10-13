@@ -4,9 +4,11 @@
  *
  * Filename $RCSfile: int_bugzilla.php,v $
  *
- * @version $Revision: 1.4 $
- * @modified $Date: 2005/09/16 06:45:27 $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2005/10/13 19:26:36 $
  *
+ * @author Arjen van Summeren - 20051010 - inserted function getBugSummary($id) again, corrected getBugStatusString($id)
+ * @author Raphael Bosshard - 20051010 - inserted function getBugSummary($id) again
  * @author Francisco Mancardi - 20050916 - refactoring
  * @author Andreas Morsing
  *
@@ -77,6 +79,45 @@ class bugzillaInterface extends bugtrackingInterface
 		}
 		return $status;
 	}
+	
+	/**
+	 * Returns the bug summary in a human redable format, cutted down to 45 chars
+	 *
+	 * @return string returns the summary (in readable form) of the given bug
+	 *
+	 * @version 1.0
+	 * @author Raphael Bosshard
+	 * @author Arjen van Summeren
+	 * @since 28.09.2005, 16:06:25
+	 **/
+	function getBugSummaryString($id)
+	{
+		if (!$this->isConnected())
+			return null;
+
+		$status = null;
+		$query = "SELECT short_desc FROM {$this->m_dbName}.bugs WHERE bug_id=" . $id;
+		
+		$result = do_mysql_query($query,$this->m_dbConnection);
+		$summary = null;
+		if ($result)
+		{
+			$summary = mysql_fetch_row($result);
+			if ($summary)
+				$summary = $summary[0];
+		}
+		if(strlen($summary) > 45)
+		{
+			$summary = substr($summary, 0, 42) . "...";
+		}
+		
+		return $summary;
+	}	
+	
+	
+	
+	
+	
 	/**
 	 * Returns the status in a readable form (HTML context) for the bug with the given id
 	 *
@@ -84,23 +125,23 @@ class bugzillaInterface extends bugtrackingInterface
 	 * 
 	 * @return string returns the status (in a readable form) of the given bug 
 	 *
-	 * @version 1.0
+	 * @version 1.1
+	 * @author Arjen van Summeren - changed to return correct status STRING and not status ID
 	 * @author Andreas Morsing 
-	 * @since 22.04.2005, 21:05:25
+	 * @since 10.10.2005, 17:40:32
 	 **/
 	function getBugStatusString($id)
 	{
 		$status = $this->getBUGStatus($id);
 		
-		$str = htmlspecialchars($id);
 		//if the bug wasn't found the status is null and we simply display the bugID
 		if (!is_null($status))
 		{
 			//strike through all bugs that have a resolved, verified, or closed status.. 
 			if('RESOLVED' == $status || 'VERIFIED' == $status || 'CLOSED' == $status)
-				$str = "<del>" . $id . "</del>";
+				$status = "<del>" . htmlspecialchars($status). "</del>";
 		}
-		return $str;
+		return $status;
 	}
 }
 ?>

@@ -1,9 +1,9 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: containerMove.tpl,v 1.3 2005/08/29 08:07:36 franciscom Exp $ *}
+{* $Id: containerMove.tpl,v 1.4 2005/10/13 19:26:35 schlundus Exp $ *}
 {* Purpose: smarty template - form for move/copy container in test specification 
 
-20050825 - fm
-moveCopy -> containerID
+20050825 - fm - moveCopy -> containerID
+20051013 - am - fix for 115
 *}
 {include file="inc_head.tpl"}
 {if $level == 'category'}
@@ -38,6 +38,10 @@ moveCopy -> containerID
 		<p>
 			<input type="checkbox" name="nested" checked="checked" value="yes" />
 			{lang_get s='include_nested'}
+		</p>
+		<p>
+			<input type="checkbox" name="copyKeywords" checked="checked" value="1" />
+			{lang_get s='copy_keywords'}
 		</p>
 	</form>
 {/if}

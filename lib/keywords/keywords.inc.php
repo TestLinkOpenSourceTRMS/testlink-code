@@ -1,7 +1,7 @@
 <?
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* @version $Id: keywords.inc.php,v 1.8 2005/10/12 06:25:06 franciscom Exp $
+* @version $Id: keywords.inc.php,v 1.9 2005/10/13 19:26:36 schlundus Exp $
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author	Chad Rosen
@@ -199,16 +199,11 @@ function multiUpdateKeywords($prodID)
 	return $arrUpdate;
 }
 
-
-/*
-20051011 - fm - 
-*/
-
 function updateKeyword($prodID,$id,$keyword,$notes)
 {
 	global $g_allow_duplicate_keywords;
 
-  $ret = array("msg" => "ok", "status_ok" => 0);
+	$ret = array("msg" => "ok", "status_ok" => 0);
 	$do_action = 1;
 	$my_kw = trim($keyword);
 

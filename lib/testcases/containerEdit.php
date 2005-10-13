@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: containerEdit.php,v 1.15 2005/10/10 19:18:25 schlundus Exp $ */
+/* $Id: containerEdit.php,v 1.16 2005/10/13 19:26:36 schlundus Exp $ */
 /* Purpose:  This page manages all the editing of test specification containers. */
 /*
  *
@@ -357,8 +357,10 @@ else if($action == 'categoryCopy' || $action == 'categoryMove')
 else if($action == 'componentCopy' || $action == 'componentMove')
 {
 	$prodID = $_SESSION['productID'];
+	//20051013 - am - fix for 115
+	$copyKeywords = isset($_POST['copyKeywords']) ? intval($_POST['copyKeywords']) : 0;
 	
-	copy_or_move_comp( $action, $objectID, $prodID ,$_POST,$_SESSION['user']);
+	copy_or_move_comp( $action, $objectID, $prodID ,$_POST,$_SESSION['user'],$copyKeywords);
 }	
 else 
 {

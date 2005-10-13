@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: exec.inc.php,v $
  *
- * @version $Revision: 1.15 $
- * @modified $Date: 2005/10/09 18:13:48 $ $Author: schlundus $
+ * @version $Revision: 1.16 $
+ * @modified $Date: 2005/10/13 19:26:36 $ $Author: schlundus $
  *
  * @author Martin Havlat
  *
@@ -67,22 +67,9 @@ function filterKeyword($idPlan)
 		$sqlKeyword = "SELECT DISTINCT(keywords) FROM project, component, category, testcase WHERE " .
 				"project.id = " .  $idPlan . " AND project.id = component.projid" .
 				" AND component.id = category.compid AND category.id = testcase.catid ORDER BY keywords";
-		$resultKeyword = do_mysql_query($sqlKeyword);
 		
-		//Loop through each of the testcases
-		$keyArray = null;
-		while ($myrowKeyword = mysql_fetch_row($resultKeyword))
-		{
-			//schlundus: csvsplit and merging arrays was too slow, so we simple make a big list of the different keyword lists
-			$keyArray .= $myrowKeyword[0].",";
-		}
-		//removed quotes and separate the list
-		$keyArray = explode(",",$keyArray);
-	
-		//I need to make sure there are elements in the result 2 array. I was getting an error when I didn't check
-		if(count($keyArray))
-			$keyArray = array_unique ($keyArray);
-
+		//refactored
+		$keyArray = buildKeyWordArray($sqlKeyword);
 		//Now I begin the display of the keyword dropdown
 		$data = '<select name="keyword">'; //Create the select
 		$data .= "<option>All</option>"; //Add a none value to the array in case the user doesn't want to sort
@@ -107,7 +94,26 @@ function filterKeyword($idPlan)
 	return $data;
 }
 
+function buildKeyWordArray($sqlKeyword)
+{
+	$resultKeyword = do_mysql_query($sqlKeyword);
+	
+	//Loop through each of the testcases
+	$keyArray = null;
+	while ($myrowKeyword = mysql_fetch_row($resultKeyword))
+	{
+		//schlundus: csvsplit and merging arrays was too slow, so we simple make a big list of the different keyword lists
+		$keyArray .= $myrowKeyword[0].",";
+	}
+	//removed quotes and separate the list
+	$keyArray = explode(",",$keyArray);
 
+	//I need to make sure there are elements in the result 2 array. I was getting an error when I didn't check
+	if(count($keyArray))
+		$keyArray = array_unique ($keyArray);
+	
+	return $keyArray;
+}
 /** Building the dropdown box of results filter */
 function createResultsMenu()
 {
@@ -218,7 +224,7 @@ function editTestResults($login_name, $tcData, $buildID)
 	  while($counter < $num_bugs)	
 	  {
 
-		  $sql = "INSERT INTO bugs (tcid,build,bug) VALUES (" . $tcID . ",'" . 
+		  $sql = "INSERT INTO bugs (tcid,build_id,bug) VALUES (" . $tcID . ",'" . 
 			  	   $buildID . "','" . $bugArray[$counter] . "')";
 		  $result = do_mysql_query($sql); 
 		  $counter++;
@@ -264,9 +270,7 @@ function createTestInput($resultTC,$buildID,$tpID)
 		}
 			
 		//This query grabs the results from the build passed in
-		/* $sql = " SELECT notes, status FROM results WHERE tcid='" . $myrow['tcid']. "' " .
-		       " AND build='" . $buildID . "'";
-    */
+
     // 20050926 - fm
     $sql = " SELECT notes, status FROM results " .
            " WHERE tcid=" . $myrow['tcid'] .
@@ -303,9 +307,9 @@ function createTestInput($resultTC,$buildID,$tpID)
 		{
 			global $g_bugInterface ;
 			//sql code to grab the appropriate bugs for the test case and build
-			$sqlBugs = "SELECT bug FROM bugs WHERE tcid='" . $myrow['tcid'] . "' and build=" . $buildID;
+			$sqlBugs = "SELECT bug FROM bugs WHERE tcid='" . $myrow['tcid'] . "' and build_id='" . $buildID."'";
 			$resultBugs = do_mysql_query($sqlBugs);
-
+			
 			//For each bug that is found
 			while ($myrowBugs = mysql_fetch_assoc($resultBugs))
 			{ 

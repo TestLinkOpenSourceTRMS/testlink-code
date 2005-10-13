@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: myTPInfo.php,v $
  *
- * @version $Revision: 1.3 $
- * @modified $Date: 2005/10/02 19:48:00 $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2005/10/13 17:19:43 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -41,8 +41,8 @@ function printMyTPData()
 */
 function getMetrics()
 {
-    $sql = "select project.name,project.id from project,projrights,user where ".
-           " project.id=projrights.projid and user.id=projrights.userid and active=1 and ".
+    $sql = " SELECT project.name,project.id FROM project,projrights,user where ".
+           " project.id=projrights.projid AND user.id=projrights.userid AND active=1 AND ".
            " user.id=" . $_SESSION['userID'];
     $result = do_mysql_query($sql);
 	$metrics = null;
@@ -57,20 +57,30 @@ function getMetrics()
 		return null;
 	$projectList = implode(",",$projects);
 	
-    $sql = "select COUNT(testcase.mgttcid),projID from project,component,category,testcase where ".
-           "project.id = component.projid and component.id = category.compid and category.id = testcase.catid AND projID IN ({$projectList}) GROUP BY projId ";
+    $sql = " SELECT COUNT(testcase.mgttcid),projID " .
+           " FROM project,component,category,testcase " .
+           " WHERE project.id = component.projid " .
+           " AND component.id = category.compid " .
+           " AND category.id = testcase.catid " .
+           " AND projID IN ({$projectList}) GROUP BY projId ";
 		   
 	$result = do_mysql_query($sql);
 	while($row = mysql_fetch_row($result))
 		$metrics[$row[1]][0] = $row[0];
 	$tcInfo = null;
-	$sql = "select projID,tcid,status from results,project,component,category,testcase where project.id = component.projid and component.id = category.compid and category.id = testcase.catid and testcase.id = results.tcid AND projID IN ({$projectList})  ORDER BY projID,tcID,build_id";
+	$sql = " SELECT projID,tcid,status " .
+	       " FROM results,project,component,category,testcase " .
+	       " WHERE project.id = component.projid " .
+	       " AND component.id = category.compid " .
+	       " AND category.id = testcase.catid " .
+	       " AND testcase.id = results.tcid " .
+	       " AND projID IN ({$projectList}) ORDER BY projID,tcID,build_id";
 	getTCInfo($sql,$tcInfo);
 	calculateMetrics($metrics,$tcInfo,1);
 	
-	$sql = "select projID,tcid,status from results,project,component,category,testcase where ".
-            "project.id = component.projid and component.id = category.compid and category.id = testcase.catid and testcase.id = ".
-            "results.tcid AND owner = '".mysql_escape_string($_SESSION['user'])."' AND projID IN ({$projectList}) ORDER BY projID,tcID,build_id";
+	$sql = "SELECT projID,tcid,status FROM results,project,component,category,testcase where ".
+         "project.id = component.projid AND component.id = category.compid AND category.id = testcase.catid and testcase.id = ".
+         "results.tcid AND owner = '".mysql_escape_string($_SESSION['user'])."' AND projID IN ({$projectList}) ORDER BY projID,tcID,build_id";
 
 	$myTcInfo = null;
 	getTCInfo($sql,$myTcInfo);

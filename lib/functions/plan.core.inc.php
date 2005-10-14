@@ -3,8 +3,8 @@
  * TestLink Open Source Project - @link http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: plan.core.inc.php,v $
- * @version $Revision: 1.10 $
- * @modified $Date: 2005/10/12 18:17:49 $ $Author: asielb $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2005/10/14 23:22:32 $ $Author: asielb $
  *  
  * 
  * @author 	Martin Havlat
@@ -234,7 +234,7 @@ function getAllTestPlans($plan_status=null)
     $my_active = to_boolean($plan_status);
     $where = " WHERE active=" . $my_active;
 	}
-  $sql .= $where;
+  $sql .= $where . " ORDER BY name";
 	
 	return selectData($sql);
 }

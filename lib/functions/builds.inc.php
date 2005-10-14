@@ -1,6 +1,6 @@
 <?
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: builds.inc.php,v 1.8 2005/10/14 04:54:09 kevinlevy Exp $
+* $Id: builds.inc.php,v 1.9 2005/10/14 17:39:14 kevinlevy Exp $
 * 
 * @author Martin Havlat
 *
@@ -31,23 +31,13 @@ function getBuilds($idPlan, $order_by="ORDER BY build.id DESC")
  * return a comma delimited list of build.id's which are part of a test plan
  *
  */
-function getCommaDelimitedBuilds($idPlan, $order_by="ORDER BY build.id DESC")
+function get_cs_builds($idPlan, $order_by="ORDER BY build.id DESC")
 {
-  // debug
-  print "idPlan = $idPlan <BR>";
-  $commaDelimitedBuildIDs = null;
-  $arrAllBuilds = getBuilds($idPlan, " ORDER BY build.name ");
+  $comma_separated = null;
+  $arrAllBuilds = getBuilds($idPlan, $order_by);
   $arrAllKeys = array_keys($arrAllBuilds);
-  print_r($arrAllKeys);
-  for($i =0 ; $i < sizeof($arrAllKeys); $i++)
-    {
-      if ($i){
-	$commaDelimitedBuildIDs .= "','";
-      }
-      $commaDelimitedBuildIDs .= $arrAllKeys[$i];
-    }
-  return $commaDelimitedBuildIDs;
-  
+  $comma_separated = implode("','", $arrAllKeys);
+  return $comma_separated;
 }
 
 // 20051002 - fm - refactoring

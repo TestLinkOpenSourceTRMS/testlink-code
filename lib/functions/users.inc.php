@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: users.inc.php,v $
  *
- * @version $Revision: 1.7 $
- * @modified $Date: 2005/10/14 23:11:16 $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2005/10/14 23:23:55 $
  *
  * @author Chad Rosen, Martin Havlat
  * @author Martin Havlat
@@ -245,7 +245,7 @@ function getUserById($id,&$users)
 
 function getAllUsers(&$users,$whereClause = null)
 {
-	$sql = "SELECT id,login,password,first,last,email,rightsid FROM user ";
+	$sql = "SELECT id,login,password,first,last,email,rightsid FROM user ORDER BY login";
 	if (!is_null($whereClause))
 		$sql .= $whereClause;
 

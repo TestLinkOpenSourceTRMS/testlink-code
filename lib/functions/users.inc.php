@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: users.inc.php,v $
  *
- * @version $Revision: 1.6 $
- * @modified $Date: 2005/10/06 06:07:11 $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2005/10/14 23:11:16 $
  *
  * @author Chad Rosen, Martin Havlat
  * @author Martin Havlat
@@ -266,7 +266,7 @@ function getAllUsers_assoc(&$users,$whereClause = null)
 {
   
 	$sql = "SELECT id,login,password,first,last,email,rightsid,locale " .
-	       "FROM user ";
+	       "FROM user ORDER BY login";
 	
 	if (!is_null($whereClause))
 		$sql .= $whereClause;

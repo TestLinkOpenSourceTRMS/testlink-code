@@ -1,6 +1,6 @@
 <?
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: builds.inc.php,v 1.9 2005/10/14 17:39:14 kevinlevy Exp $
+* $Id: builds.inc.php,v 1.10 2005/10/14 19:38:54 kevinlevy Exp $
 * 
 * @author Martin Havlat
 *
@@ -35,8 +35,10 @@ function get_cs_builds($idPlan, $order_by="ORDER BY build.id DESC")
 {
   $comma_separated = null;
   $arrAllBuilds = getBuilds($idPlan, $order_by);
-  $arrAllKeys = array_keys($arrAllBuilds);
-  $comma_separated = implode("','", $arrAllKeys);
+  if ($arrAllBuilds){
+    $arrAllKeys = array_keys($arrAllBuilds);
+    $comma_separated = implode("','", $arrAllKeys);
+  }
   return $comma_separated;
 }
 

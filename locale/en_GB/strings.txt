@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.29 $
- * @modified $Date: 2005/10/13 19:26:36 $
+ * @version $Revision: 1.30 $
+ * @modified $Date: 2005/10/14 03:46:46 $
  *
  * @author Francisco Mancardi
 **/
@@ -878,7 +878,7 @@ $TLS_select_owner_header = "Select Owner";
 $TLS_select_report_format_header = "Select Report Format";
 $TLS_submit_query = "Submit Query";
 $TLS_test_plan_header = "Test Plan : ";
-
+$TLS_select_components_header = "Select Component(s)";
 
 
 // gui/templates/resultsReqs.tpl

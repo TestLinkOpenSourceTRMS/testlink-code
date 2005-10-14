@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: installNewDB.php,v 1.14 2005/10/07 03:19:08 havlat Exp $ */
+/* $Id: installNewDB.php,v 1.15 2005/10/14 06:59:29 franciscom Exp $ */
 /*
 Parts of this file has been taken from:
 Etomite Content Management System
@@ -286,7 +286,9 @@ if ( $inst_type == "upgrade")
       }
       else
       {
-       echo "I don't know how upgrade from version " . trim($myrow['version']);
+       // echo "I don't know how upgrade from version " . trim($myrow['version']);
+       echo "<br>Upgrade not need from version " . trim($myrow['version']) . "<br>";
+       echo "Just open your Browser and login to TestLink <br>";
        echo "<br>bye!";
        exit(); 
       }

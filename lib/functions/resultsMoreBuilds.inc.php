@@ -1,6 +1,6 @@
 <?
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
- *$Id: resultsMoreBuilds.inc.php,v 1.34 2005/10/03 07:40:59 franciscom Exp $ 
+ *$Id: resultsMoreBuilds.inc.php,v 1.35 2005/10/15 05:25:44 kevinlevy Exp $ 
  * 
  * @author Kevin Levy
  *
@@ -293,7 +293,7 @@ function createResultsForCategory($categoryId, $keyword, $build_id_set, $lastRes
 
   // debug block - kl 09252005
   // print "sql = $sql <BR>";
-  
+   
   $sqlBuildResult = do_mysql_query($sql);
 
   $tcBuildInfo = null;

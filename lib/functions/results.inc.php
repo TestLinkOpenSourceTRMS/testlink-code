@@ -2,8 +2,8 @@
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: results.inc.php,v $
- * @version $Revision: 1.15 $
- * @modified $Date: 2005/10/15 04:47:34 $
+ * @version $Revision: 1.16 $
+ * @modified $Date: 2005/10/15 05:25:44 $
  * 
  * @author 	Martin Havlat 
  * @author 	Chad Rosen (original report definition)
@@ -209,17 +209,18 @@ function getTestSuiteReport($tpID, $buildID = 'all')
     // ------------------------------------------------------------------------------
 		//Code to grab the results of the test case execution
     // 20050905 - fm 
+		$csBuilds = get_cs_builds($tpID);
   	$sql = " SELECT tcid,status FROM  results,component,category,testcase " .
-  		     " WHERE component.projid = " . $tpID . 
-  		     " AND component.id=" . $myrow['comp_id'] . 
-  		     " AND component.id = category.compid " .
-  		     " AND category.id = testcase.catid " .
-  		     " AND testcase.id = results.tcid ";
-  	
+	  " WHERE component.projid = " . $tpID . 
+	  " AND component.id=" . $myrow['comp_id'] . 
+	  " AND component.id = category.compid " .
+	  " AND category.id = testcase.catid " .
+	  " AND testcase.id = results.tcid " ;
+	
   	if ($buildID == 'all') 
-  	{
-  	    $sql .= " ORDER BY results.build_id";
-  	} 
+	  {
+  	    $sql .= " AND results.build_id IN (" . $csBuilds . " ) ORDER BY results.build_id";
+	  } 
   	else 
   	{
   			$sql .= " AND results.build_id='" . $buildID .	"' ";
@@ -329,13 +330,24 @@ function getKeywordsReport($tpID, $buildID = 'all')
 			$totalTCs = mysql_fetch_row($totalTCResult);
 
 			//Code to grab the results of the test case execution
+
+			// KL OCT 14, 2005
+			// when buildID is all, we still need to make sure
+			// we only get results executed on build_id's which are part
+			// of this test plan.  $csBuilds provides a list of 
+			// comma delimited builds in the plan and must be used
+			// in query statement.
 			if ($buildID == 'all') {
-				$sql = "SELECT tcid,status FROM  results,project,component,category,testcase" .
-					" WHERE project.id = " . $tpID . " AND project.id = component.projid" .
-					" AND component.id = category.compid" .
-					" AND category.id = testcase.catid and testcase.id = results.tcid" .
-					" AND (keywords LIKE '%,{$word},%' OR keywords LIKE '{$word},%') " .
-					" ORDER BY results.build_id";
+			  $csBuilds = get_cs_builds($tpID);
+			  $sql = "SELECT tcid,status FROM  results,project,component,category,testcase" .
+			    " WHERE project.id = " . $tpID . " AND project.id = component.projid" .
+			    " AND component.id = category.compid" .
+			    " AND category.id = testcase.catid and testcase.id = results.tcid" .
+			    " AND (keywords LIKE '%,{$word},%' OR keywords LIKE '{$word},%') " .
+			    " AND (results.build_id IN (" . 
+			    $csBuilds . ")) ORDER BY results.build_id";
+			  // KL OCT 14, 2005 debug 
+			  // print "$sql";
 			} else {
 				$sql = "SELECT tcid,status FROM  results,project,component,category,testcase" .
 					" WHERE project.id = " . $tpID . " AND results.build_id = " . $buildID . 

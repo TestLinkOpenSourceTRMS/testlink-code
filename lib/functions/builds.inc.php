@@ -1,6 +1,6 @@
 <?
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: builds.inc.php,v 1.10 2005/10/14 19:38:54 kevinlevy Exp $
+* $Id: builds.inc.php,v 1.11 2005/10/15 04:23:18 kevinlevy Exp $
 * 
 * @author Martin Havlat
 *
@@ -38,6 +38,8 @@ function get_cs_builds($idPlan, $order_by="ORDER BY build.id DESC")
   if ($arrAllBuilds){
     $arrAllKeys = array_keys($arrAllBuilds);
     $comma_separated = implode("','", $arrAllKeys);
+    // add single quotes to front and back
+    $comma_separated = "'" . $comma_separated . "'";
   }
   return $comma_separated;
 }

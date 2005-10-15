@@ -2,8 +2,8 @@
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: results.inc.php,v $
- * @version $Revision: 1.14 $
- * @modified $Date: 2005/10/03 07:21:42 $
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2005/10/15 04:47:34 $
  * 
  * @author 	Martin Havlat 
  * @author 	Chad Rosen (original report definition)
@@ -25,6 +25,7 @@
  */
 require_once('../../config.inc.php');
 require_once("common.php");
+require_once("builds.inc.php");
 
 /**
 * Function send header which initiate MS excel
@@ -493,6 +494,9 @@ function getOwnerReport($tpID)
 *
 */
 // MHT 200507 GENERAL REFACTORIZATION (use array through the function); SQL improve
+// KL OCT 14, 2005 - setting $buildID to all is probably causing 
+// some problems for us and returning results for cases
+// not executed in the same test plan.
 function getPriorityReport($tpID, $buildID = 'all')
 {
 	global $g_tc_status;
@@ -533,11 +537,14 @@ function getPriorityReport($tpID, $buildID = 'all')
 	
 		//Code to grab the results of the test case execution
 		if ($buildID == 'all'){
-			$sql = "SELECT tcid,status FROM results,component,category,testcase" .
-				" WHERE component.projid = " . $tpID . 
-				" AND category.id=" . $myrow[1] .
-				" AND component.id = category.compid AND category.id = testcase.catid" .
-				" AND testcase.id = results.tcid ORDER BY build_id";
+		  $csBuilds  = get_cs_builds($tpID);
+		  $sql = "SELECT tcid,status FROM results,component,category,testcase" .
+		    " WHERE component.projid = " . $tpID . 
+		    " AND category.id=" . $myrow[1] .
+		    " AND component.id = category.compid AND category.id = testcase.catid" .
+		    " AND testcase.id = results.tcid " .
+		    " AND results.build_id IN (" . $csBuilds . 
+		    " ) ORDER BY build_id";
 		} else {
 			$sql = "SELECT tcid,status FROM results,project,component,category,testcase" .
 				" WHERE component.projid = " . $tpID .

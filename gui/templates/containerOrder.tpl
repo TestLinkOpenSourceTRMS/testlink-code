@@ -1,6 +1,9 @@
-{* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: containerOrder.tpl,v 1.2 2005/08/16 17:59:13 franciscom Exp $ *}
-{* Purpose: smarty template - reorder containers (actually categories only) *}
+{* TestLink Open Source Project - http://testlink.sourceforge.net/ 
+$Id: containerOrder.tpl,v 1.3 2005/10/15 08:38:42 franciscom Exp $ 
+Purpose: smarty template - reorder containers (actually categories only) 
+
+20051015 - fm - data -> componentID
+*}
 {include file="inc_head.tpl"}
 
 <body>
@@ -12,7 +15,7 @@
 	{if $arraySelect eq ''}
 		{lang_get s='no_cat_to_reorder'}
 	{else}
-	<form method="post" action="lib/testcases/containerEdit.php?data={$data}">
+	<form method="post" action="lib/testcases/containerEdit.php?componentID={$data}">
 		<div style="padding: 3px;">
 			<input id="submit" type="submit" name="updateCategoryOrder" value="{lang_get s='btn_upd'}" />
 		</div>	

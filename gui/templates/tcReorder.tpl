@@ -1,6 +1,9 @@
-{* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: tcReorder.tpl,v 1.2 2005/08/16 17:59:13 franciscom Exp $ *}
-{* Purpose: smarty template - reorder testcases *}
+{* 
+TestLink Open Source Project - http://testlink.sourceforge.net/
+$Id: tcReorder.tpl,v 1.3 2005/10/15 08:38:43 franciscom Exp $
+Purpose: reorder testcases 
+20051015 - fm - BUGID 181 - data -> categoryID
+*}
 {include file="inc_head.tpl"}
 
 <body>
@@ -13,7 +16,7 @@
 {if $arrTC eq ''}
 	{lang_get s='no_tc_to_reorder'}
 {else}
-	<form method="post" action="lib/testcases/containerEdit.php?data={$data}">
+	<form method="post" action="lib/testcases/containerEdit.php?categoryID={$data}">
 		<div style="padding: 3px;">
 			<input id="submit" type="submit" name="updateTCorder" value="Update" />
 		</div>	

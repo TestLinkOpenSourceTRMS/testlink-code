@@ -2,8 +2,8 @@
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: results.inc.php,v $
- * @version $Revision: 1.16 $
- * @modified $Date: 2005/10/15 05:25:44 $
+ * @version $Revision: 1.17 $
+ * @modified $Date: 2005/10/15 16:35:32 $
  * 
  * @author 	Martin Havlat 
  * @author 	Chad Rosen (original report definition)
@@ -434,13 +434,15 @@ function getOwnerReport($tpID)
 		       " AND category.id = testcase.catid";
 		$totalTCResult = do_mysql_query($sql);
 		$totalTCs = mysql_fetch_row($totalTCResult);
-
+		$csBuilds = get_cs_builds($tpID);
 		//Code to grab the results of the test case execution
 		$sql = " SELECT tcid,status FROM  results,project,component,category,testcase " .
 				   " WHERE project.id = " . $tpID . " and category.owner='" . $myrow[0] . 
 				   "' AND project.id = component.projid and component.id = category.compid" .
 				   " AND category.id = testcase.catid AND testcase.id = results.tcid" .
-				   " ORDER BY build_id";
+				   " AND results.build_id IN (" . $csBuilds . " ) ORDER BY build_id";
+		  	     
+
 		$totalResult = do_mysql_query($sql);
 
 		//Setting the results to an array.. Only taking the most recent results and displaying them

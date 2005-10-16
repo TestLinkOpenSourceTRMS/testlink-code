@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: execNavigator.php,v $
  *
- * @version $Revision: 1.11 $
- * @modified $Date: 2005/10/12 04:19:25 $ by $Author: havlat $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2005/10/16 01:23:31 $ by $Author: kevinlevy $
  *
  * @author Martin Havlat
  *
@@ -279,12 +279,19 @@ function displayTCTree($TCResult, $build, $owner, $colored, $menuUrl, $filteredR
 	if ($tcIDs)
 	{
 		$tcIDsList = implode(",",$tcIDs);
-		$sqlResult = "SELECT tcid,status FROM results WHERE tcid IN (" . $tcIDsList . ")";
+		// 20051015 - kl - only get results from builds in test plan
+		$csBuilds = get_cs_builds($_SESSION['testPlanId']);
+		$sqlResult = "SELECT tcid,status FROM results WHERE tcid IN (" . $tcIDsList . ") " .
+		  
+ 		  // 10152005 - kl - only get results execute on test plan builds
+		  " AND (results.build_id IN (" . $csBuilds . " )) ";
 		if($colored == 'result')
 		{
 			// 20050926 - fm - newdb
 			// $sqlResult .= " ORDER BY build DESC";
 			$sqlResult .= " ORDER BY build_id DESC";
+
+			
 			
 		}
 		else
@@ -385,13 +392,16 @@ function catCount($catID,$colored,$build)
 		$blocked = 0;
 		$notRun = 0;
 		$testCaseArray = null;
-		
+		// 10152005 - kl - only get results execute on test plan builds
+		$csBuilds = get_cs_builds($_SESSION['testPlanId']);
 		//Now grab all of the test cases and their results	
 		$sql = " SELECT tcid, status, build.name " .
 		       " FROM results,category,testcase,build " .
 		       " WHERE category.id = testcase.catid " .
 		       " AND   testcase.id = results.tcid " .
 		       " AND   build.id = results.build_id " . 
+		  // 10152005 - kl - only get results execute on test plan builds
+		  " AND (results.build_id IN (" . $csBuilds . " )) " . 
 		       " AND   category.id=" . $catID . 
 		       " ORDER BY build.name DESC";
 		$totalResult = do_mysql_query($sql);

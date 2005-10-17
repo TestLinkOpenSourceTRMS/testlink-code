@@ -1,6 +1,6 @@
 <?
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: import.inc.php,v 1.8 2005/10/05 06:15:32 franciscom Exp $
+* $Id: import.inc.php,v 1.9 2005/10/17 20:11:27 schlundus Exp $
 * 
 * @author Martin Havlat
 *
@@ -31,59 +31,61 @@ function showTcImport($location,$catIDForImport = 0)
 
 	//command to open a csv for read
 	$handle = fopen ($location,"r");
-
-	$oldCom = null;
-	$oldCat = null;
-	//Need to grab the first row of data
-	if (!$catIDForImport)
+	
+	if ($handle)
 	{
-		while ($data = fgetcsv ($handle, TL_IMPORT_ROW_MAX, ",")) {
-			$arrayCom = $data[0];
-			$arrayCat = $data[1];
-			$arrayTC = $data[2];
-	
-			// Strips off quotation marks (") needed to import data correctly
-			// strip out possible quotes at beginning and end of string
-			$arrayTC = preg_replace("/^['\"](.*?)['\"]$/","\\1", $arrayTC); 
-			if(strcmp($arrayCom,$oldCom) != 0){ //Is the current value equal to the old value?
-				$overview .= "<tr><td bgcolor='#CCCCCC' width='3'>COM:</td><td bgcolor='#CCCCCC'>" . 
-				             $arrayCom . "</td></tr>";
-	
-				if(strcmp($arrayCat,$oldCat) != 0){ //Is the current value equal to the old value?
-					$overview .= "<tr><td bgcolor='#99CCFF' width='3'>CAT:</td><td  bgcolor='#99CCFF'>" . 
-					             $arrayCat . "</td></tr>";
-					$overview .= "<tr><td bgcolor='#FFFFCC' width='3'>TC:</td><td bgcolor='#FFFFCC'>" . 
-					             $arrayTC . "</td></tr>";
-				}
-	
-			} else {
-	
-				if (strcmp($arrayCat,$oldCat) == 0)	{
-					$overview .= "<tr><td bgcolor='#FFFFCC' width='3'>TC:</td><td bgcolor='#FFFFCC'>" . 
-					             $arrayTC . "</td></tr>";
-				} else {
-					$overview .= "<tr><td bgcolor='#99CCFF' width='3'>CAT:</td><td  bgcolor='#99CCFF'>" . 
-					             $arrayCat . "</td></tr>";
-					$overview .= "<tr><td bgcolor='#FFFFCC' width='3'>TC:</td><td bgcolor='#FFFFCC'>" . 
-					             $arrayTC . "</td></tr>"; 
-				}
-			}
-			$oldCom = $arrayCom;
-			$oldCat = $arrayCat;
-		}
-	}
-	else
-	{
-		while ($data = fgetcsv ($handle, TL_IMPORT_ROW_MAX, ","))
+		$oldCom = null;
+		$oldCat = null;
+		//Need to grab the first row of data
+		if (!$catIDForImport)
 		{
-			$arrayTC = $data[0];
-			$overview .= "<tr><td bgcolor='#FFFFCC' width='3'>TC:</td><td bgcolor='#FFFFCC'>" . 
-			             $arrayTC . "</td></tr>";
+			while ($data = fgetcsv($handle, TL_IMPORT_ROW_MAX, ",")) {
+				$arrayCom = $data[0];
+				$arrayCat = $data[1];
+				$arrayTC = $data[2];
+		
+				// Strips off quotation marks (") needed to import data correctly
+				// strip out possible quotes at beginning and end of string
+				$arrayTC = preg_replace("/^['\"](.*?)['\"]$/","\\1", $arrayTC); 
+				if(strcmp($arrayCom,$oldCom) != 0){ //Is the current value equal to the old value?
+					$overview .= "<tr><td bgcolor='#CCCCCC' width='3'>COM:</td><td bgcolor='#CCCCCC'>" . 
+					             $arrayCom . "</td></tr>";
+		
+					if(strcmp($arrayCat,$oldCat) != 0){ //Is the current value equal to the old value?
+						$overview .= "<tr><td bgcolor='#99CCFF' width='3'>CAT:</td><td  bgcolor='#99CCFF'>" . 
+						             $arrayCat . "</td></tr>";
+						$overview .= "<tr><td bgcolor='#FFFFCC' width='3'>TC:</td><td bgcolor='#FFFFCC'>" . 
+						             $arrayTC . "</td></tr>";
+					}
+		
+				} else {
+		
+					if (strcmp($arrayCat,$oldCat) == 0)	{
+						$overview .= "<tr><td bgcolor='#FFFFCC' width='3'>TC:</td><td bgcolor='#FFFFCC'>" . 
+						             $arrayTC . "</td></tr>";
+					} else {
+						$overview .= "<tr><td bgcolor='#99CCFF' width='3'>CAT:</td><td  bgcolor='#99CCFF'>" . 
+						             $arrayCat . "</td></tr>";
+						$overview .= "<tr><td bgcolor='#FFFFCC' width='3'>TC:</td><td bgcolor='#FFFFCC'>" . 
+						             $arrayTC . "</td></tr>"; 
+					}
+				}
+				$oldCom = $arrayCom;
+				$oldCat = $arrayCat;
+			}
 		}
+		else
+		{
+			while ($data = fgetcsv($handle, TL_IMPORT_ROW_MAX, ","))
+			{
+				$arrayTC = $data[0];
+				$overview .= "<tr><td bgcolor='#FFFFCC' width='3'>TC:</td><td bgcolor='#FFFFCC'>" . 
+				             $arrayTC . "</td></tr>";
+			}
+		}
+		fclose ($handle);
 	}
-
-	fclose ($handle);
-	
+		
 	$overview .= "</table>";
 	return $overview;
 }

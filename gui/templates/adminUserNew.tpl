@@ -1,5 +1,5 @@
 {* Testlink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: adminUserNew.tpl,v 1.3 2005/08/20 18:39:13 schlundus Exp $ *}
+{* $Id: adminUserNew.tpl,v 1.4 2005/10/17 20:11:25 schlundus Exp $ *}
 {* Purpose: smarty template - Add new user *}
 {include file="inc_head.tpl" popup="yes"}
 
@@ -26,7 +26,7 @@
 	<table class="common" width="50%">
 		<caption>{lang_get s='caption_new_user'}</caption>
 		<tr><td>{lang_get s='th_login'}:</td><td><input type="text" name="login" maxlength="30" /></td></tr>
-		<tr><td>{lang_get s='th_password'}:</td><td><input type="text" name="password" maxlength="32" /></td></tr>
+		<tr><td>{lang_get s='th_password'}:</td><td><input type="password" name="password" maxlength="32" /></td></tr>
 		<tr><td>{lang_get s='th_first_name'}:</td><td><input type="text" name="first" maxlength="30" /></td></tr>
 		<tr><td>{lang_get s='th_last_name'}:</td><td><input type="text" name="last" maxlength="30" /></td></tr>
 		<tr><td>{lang_get s='th_email'}:</td><td><input type="text" name="email" maxlength="100" size="50" /></td></tr>

@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecView.tpl,v 1.7 2005/10/09 18:13:48 schlundus Exp $ *}
+{* $Id: reqSpecView.tpl,v 1.8 2005/10/17 20:11:26 schlundus Exp $ *}
 {* 
    Purpose: smarty template - view a requirement specification
    Author: Martin Havlat 
@@ -12,7 +12,6 @@
 {include file="inc_jsCheckboxes.tpl"}
 </head>
 <body>
-
 <h1>
 	<img alt="{lang_get s='help'}: {lang_get s='req_spec'}" class="help" 
 	src="icons/sym_question.gif" 
@@ -33,7 +32,7 @@
 	<input type="submit" name="editSRS" value="{lang_get s='btn_edit_spec'}" />
 	<input type="button" name="deleteSRS" value="{lang_get s='btn_delete_spec'}"
 		onclick="javascript:; 
-		if (confirm('{lang_get s="popup_sure_delete"} {$arrSpec[0].title}?')){ldelim} 
+		if (confirm('{lang_get s="popup_sure_delete"}')){ldelim} 
 		location.href=fRoot+'lib/req/reqSpecList.php?deleteSRS={$arrSpec[0].title}&idSRS={$arrSpec[0].id}';{rdelim};"/>
 	{/if}
 	<input type="button" name="printSRS" value="{lang_get s='btn_print'}"

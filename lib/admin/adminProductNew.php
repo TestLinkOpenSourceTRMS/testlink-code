@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: adminProductNew.php,v $
  *
- * @version $Revision: 1.5 $
- * @modified $Date: 2005/09/08 12:25:26 $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2005/10/17 20:11:27 $
  *
  * @author Martin Havlat
  *
@@ -26,7 +26,7 @@ $bNewProduct = isset($_POST['newProduct']) ? 1 : 0;
 $name = isset($_POST['name']) ? $_POST['name'] : null;
 $color = isset($_POST['color']) ? $_POST['color'] : TL_BACKGROUND_DEFAULT;
 $optReq = isset($_POST['optReq']) ? intval($_POST['optReq']) : 0;
-
+$msg = null;
 $createResult = null;
 if ($bNewProduct)
 {

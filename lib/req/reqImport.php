@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqImport.php,v $
- * @version $Revision: 1.5 $
- * @modified $Date: 2005/10/09 03:15:45 $ by $Author: havlat $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2005/10/17 20:11:27 $ by $Author: schlundus $
  * @author Martin Havlat
  * 
  * Import requirements to a specification. 
@@ -16,24 +16,17 @@
 require_once("../../config.inc.php");
 require_once("common.php");
 require_once('requirementsImport.inc.php');
-
-// init page 
 testlinkInitPage();
-
 
 $idSRS = isset($_GET['idSRS']) ? strings_stripSlashes($_GET['idSRS']) : null;
 $importType = isset($_POST['importType']) ? strings_stripSlashes($_POST['importType']) : null;
-
-// 20050906 - fm
 $userID = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
-
-$CSVfile = TL_TEMP_PATH . "importReq.csv";
+$CSVfile = TL_TEMP_PATH . "importReq-".session_id().".csv";
 
 /** @var string $importResult declares that import was done */
 $importResult = null;
 /** @var array $arrImport carries the information about particular imported requirements */
 $arrImport = null;
-
 
 // load and check a data
 if (isset($_POST['UploadFile']))
@@ -63,7 +56,9 @@ if (isset($_POST['UploadFile']))
 			}
 		}
 	}
-	 
+	//20051015 - am - if no file was give, we cancel import
+	else 
+		$importType = '';
 }
 elseif (isset($_POST['executeImport']))
 {
@@ -82,12 +77,8 @@ elseif (isset($_POST['executeImport']))
 		$arrImport = executeImportedReqs($arrImportSource, $arrReqTitles, 
 		                                 $conflictSolution, $emptyScope, $idSRS, $userID);
 	}
-
 	$importResult = lang_get('req_import_finished');
-	
 }
-
-
 // collect existing document data
 // fm - mybug after refactoring
 $arrSpec = getReqSpec($_SESSION['productID'],$idSRS);	

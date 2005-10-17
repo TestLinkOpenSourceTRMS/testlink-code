@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.16 $
- * @modified $Date: 2005/10/13 19:26:36 $
+ * @version $Revision: 1.17 $
+ * @modified $Date: 2005/10/17 20:11:27 $
  *
  * @author Andreas Morsing
  *
@@ -652,6 +652,7 @@ $TLS_reqs = "Anforderungen";
 
 // gui/templates/reqEdit.tpl
 $TLS_btn_delete = "Löschen";
+$TLS_popup_delete_req = "Sind Sie sicher ,dass Sie diese Anforderung löschen wollen?";
 $TLS_btn_update = "Speichern";
 $TLS_coverage = "Abdeckung";
 $TLS_req_edit = "Anforderung editieren";
@@ -791,22 +792,22 @@ $TLS_title_specification = "Spezifikation";
 
 // gui/templates/reqImport.tpl
 $TLS_Result = "Resultat";
-$TLS_Title = "Title";
-$TLS_btn_back2srs = "Back to Req. Specification";
-$TLS_max_size_cvs_file1 = "Max. size of the file is";
+$TLS_Title = "Titel";
+$TLS_btn_back2srs = "Zurück zu Anf. Spezifikation";
+$TLS_max_size_cvs_file1 = "Max. Größe der Datei ist";
 $TLS_max_size_cvs_file2 = "kB";
 $TLS_req_import_check_note = "Please, verify a possible conflicts, set an appropriate solution and then start import process.";
-$TLS_req_import_dont_empty = "Do not import items with empty Scope";
+$TLS_req_import_dont_empty = "Keine Einträge mit leerem Bereich importieren";
 $TLS_req_import_format_description1 = " - CSV type requires two fields for each row: 'title','description'";
 $TLS_req_import_format_description2 = " - CSV exported from DOORS requires header row.";
-$TLS_req_import_option_double = "Add a new one with the same title";
-$TLS_req_import_option_header = "Set conflict solution";
-$TLS_req_import_option_overwrite = "Update an existing one";
-$TLS_req_import_option_skip = "Skip import of doubled requirements";
-$TLS_req_import_type = "Type:";
-$TLS_title_choose_file_type = "Choose file type";
-$TLS_title_req_import_check_input = "Check import data";
-$TLS_title_req_import_to = "Import requirements to document:";
+$TLS_req_import_option_double = "Mit gleichem Titel neu anlegen";
+$TLS_req_import_option_header = "Konflikt-Lösung auswählen";
+$TLS_req_import_option_overwrite = "Bestehende aktualisieren";
+$TLS_req_import_option_skip = "Import von doppelten Anforderungen überspringen";
+$TLS_req_import_type = "Typ:";
+$TLS_title_choose_file_type = "Dateityp wählen";
+$TLS_title_req_import_check_input = "Überprüfe Import-Daten";
+$TLS_title_req_import_to = "Anforderungen ins Dokument importieren:";
 
 
 
@@ -852,43 +853,43 @@ $TLS_comp_scope = "Bereich";
 
 
 // gui/templates/resultsMoreBuilds_report.tpl
-$TLS_case_return_by_query_header = "Test Cases Return By Query";
+$TLS_case_return_by_query_header = "Zurückgelieferte TestCases";
 $TLS_descr_indiv = "Individual test cases which match specified \"Owner\", \"Keyword\", \"Component(s)\", \"Last Status\" and \"Builds Selected\" query parameters.";
 $TLS_descr_res_totals = "Results totals for test cases which match specified \"Owner\", \"Keyword\", \"Component(s)\", and \"Builds Selected\". \"Last Status\" query parameter is NOT considered.";
-$TLS_overall_status = "Overall Status";
-$TLS_please_wait = "Please wait until report fully loads...";
-$TLS_query_parameters_header = "Query Parameters Selected";
-$TLS_results_by_component_header = "Results By Component";
-$TLS_show_hide_all = "Show/Hide All";
+$TLS_overall_status = "Gesamtstatus";
+$TLS_please_wait = "Bitte warten Sie bis der Report geladen ist...";
+$TLS_query_parameters_header = "Ausgewählte Anfrageparameter";
+$TLS_results_by_component_header = "Resultat nach Komponente";
+$TLS_show_hide_all = "Alle ein- ausblenden";
 
 
 
 // gui/templates/resultsMoreBuilds_query_form.tpl
-$TLS_do_not_query_by_keyword = "DO NOT QUERY BY KEYWORD";
-$TLS_do_not_query_by_owner = "DO NOT QUERY BY OWNER";
+$TLS_do_not_query_by_keyword = "-Nichts-";
+$TLS_do_not_query_by_owner = "-Nichts-";
 $TLS_excel_format = "MS Excel";
 $TLS_html_format = "HTML";
-$TLS_last_status_any = "Any";
-$TLS_last_status_blocked = "Blocked";
-$TLS_last_status_failed = "Failed";
-$TLS_last_status_not_run = "Not Run";
-$TLS_last_status_passed = "Passed";
-$TLS_select_builds_header = "Select Build(s)";
-$TLS_select_keyword_header = "Select Keyword";
-$TLS_select_last_result_header = "Select Last Result";
-$TLS_select_owner_header = "Select Owner";
-$TLS_select_report_format_header = "Select Report Format";
-$TLS_submit_query = "Submit Query";
-$TLS_test_plan_header = "Test Plan : ";
+$TLS_last_status_any = "Alle";
+$TLS_last_status_blocked = "Blockiert";
+$TLS_last_status_failed = "Fehlgeschlagen";
+$TLS_last_status_not_run = "Nicht durchgeführt";
+$TLS_last_status_passed = "Erfolgreich";
+$TLS_select_builds_header = "Build(s) wählen";
+$TLS_select_keyword_header = "Keyword wählen";
+$TLS_select_last_result_header = "Letztes Resultat wählen";
+$TLS_select_owner_header = "Besitzer wählen";
+$TLS_select_report_format_header = "Reportformat auswählen";
+$TLS_submit_query = "Anfrage abschicken";
+$TLS_test_plan_header = "TestPlan : ";
 
 
 
 // gui/templates/resultsReqs.tpl
-$TLS_req_title_blocked = "Blocked Requirements";
-$TLS_req_title_failed = "Failed Requirements";
-$TLS_req_title_notrun = "Unexecuted Requirements";
-$TLS_req_title_passed = "Passed Requirements";
-$TLS_title_result_req_testplan = "Test Results based on Requirements Specification";
+$TLS_req_title_blocked = "Blokcierte Anforderungen";
+$TLS_req_title_failed = "Fehlgeschlagene Anforderungen";
+$TLS_req_title_notrun = "Nicht ausgeführte Anforderungen";
+$TLS_req_title_passed = "Erfüllte Anforderungen";
+$TLS_title_result_req_testplan = "TestResultate basierend auf Anforderungsspezifikation";
 
 
 
@@ -976,23 +977,23 @@ $TLS_req_import_result_skipped = "Die Ergebnisse wurden übersprungen";
 
 
 // lib/functions/resultsMoreBuilds.inc.php
-$TLS_bugs = "Related Bugs";
+$TLS_bugs = "Verwandte Bugs";
 $TLS_build = "Build";
 $TLS_builds_selected = "Build(s)";
-$TLS_case_not_run_warning = "Test Case Not Run";
-$TLS_category_header = "Category =";
+$TLS_case_not_run_warning = "Test Case nicht durchgeführt";
+$TLS_category_header = "Kategorie =";
 $TLS_daterun = "Date Run";
-$TLS_last_status = "Last Status";
-$TLS_notes = "Related Notes";
-$TLS_number_blocked = "# Blocked";
-$TLS_number_cases = "# Cases";
-$TLS_number_executions = "# Test Cases Run";
+$TLS_last_status = "Letzter Status";
+$TLS_notes = "Verwandte Notizen";
+$TLS_number_blocked = "# Blockiert";
+$TLS_number_cases = "# Fälle";
+$TLS_number_executions = "# TestCases durchgeführt";
 $TLS_number_failed = "# Failed";
-$TLS_number_not_run = "# Not Run";
-$TLS_number_passed = "# Passed";
-$TLS_owner = "Owner";
-$TLS_owner_header = "Owner =";
-$TLS_runby = "Run By";
+$TLS_number_not_run = "# Nicht ausgeführt";
+$TLS_number_passed = "# Erfolgreich";
+$TLS_owner = "Besitzer";
+$TLS_owner_header = "Besitzer =";
+$TLS_runby = "Ausgeführt durch";
 $TLS_test_plan_name = "Test Plan";
 
 
@@ -1031,9 +1032,9 @@ $TLS_keywords_char_not_allowed = "Kommas und Anführungszeichen sind innerhalb Ke
 
 
 // lib/plan/buildNew.php
-$TLS_cannot_add_build = "Der Build konnte nicht erstellt werden";
-$TLS_cannot_delete_build = "Der Build konnte nicht gelöscht werden";
-$TLS_cannot_update_build = "LOCALIZE: TLS_cannot_update_build";
+$TLS_cannot_add_build = "Der Build konnte nicht erstellt werden!";
+$TLS_cannot_delete_build = "Der Build konnte nicht gelöscht werden!";
+$TLS_cannot_update_build = "Der Build konnte nicht aktualisiert werden!";
 $TLS_invalid_build_id = "Build-IDs dürfen nicht leer sein!";
 $TLS_warning_duplicate_build = "Es gibt schon einen Build mit diesem Identifikator";
 
@@ -1076,18 +1077,18 @@ $TLS_warning_milestone_date = "Das Datum eines Meilensteins muss größer gleich d
 
 
 // lib/plan/planNew.php
-$TLS_warning_empty_tp_name = "sie können keinen Test Plan ohne Namen erstellen!";
+$TLS_warning_empty_tp_name = "Sie können keinen Test Plan ohne Namen erstellen!";
 
 
 
 // lib/plan/planTestersEdit.php
-$TLS_title_assign_tp = "Assign Test Plans to the user: ";
-$TLS_title_assign_users = "Assign Users to the Test Plan: ";
+$TLS_title_assign_tp = "TestPläne an Benutzer zuweisen:";
+$TLS_title_assign_users = "Benutzer zu TestPlänen zuweisen: ";
 
 
 
 // lib/plan/testSetNavigator.php
-$TLS_title_test_plan_navigator = "LOCALIZE: TLS_title_test_plan_navigator";
+$TLS_title_test_plan_navigator = "TestPlan - Navigator";
 
 
 
@@ -1149,9 +1150,9 @@ $TLS_link_report_excel = "&#8195;&#8594; Excel export";
 $TLS_link_report_failed = "Fehlgeschlagene TestCases";
 $TLS_link_report_general_tp_metrics = "Generelle Test Plan Metriken";
 $TLS_link_report_metrics_active_build = "Metriken des Aktiven Build";
-$TLS_link_report_metrics_more_builds = "LOCALIZE: TLS_link_report_metrics_more_builds";
+$TLS_link_report_metrics_more_builds = "Report über mehrere Builds";
 $TLS_link_report_overall_build = "Gesamter Buildstatus";
-$TLS_link_report_reqs_coverage = "LOCALIZE: TLS_link_report_reqs_coverage";
+$TLS_link_report_reqs_coverage = "Report Anforderungs-Abdeckung";
 $TLS_link_report_test = "Test Report";
 $TLS_link_report_total_bugs = "Gesamtanzahl Bugs für jeden TestCase";
 
@@ -1192,7 +1193,7 @@ $TLS_warning_empty_com_name = "Sie können keine Komponente ohne Namen erstellen"
 // lib/testcases/tcEdit.php
 $TLS_current = "aktuell";
 $TLS_error_tc_add = "Es trat ein Fehler beim Hinzufügen des TestCase auf!";
-$TLS_warning_empty_tc_title = "Please give a title to test case";
+$TLS_warning_empty_tc_title = "Bitte geben Sie einen Titel für den TestCase ein!";
 
 
 

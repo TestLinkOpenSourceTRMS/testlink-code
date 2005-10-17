@@ -1,6 +1,9 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecEdit.tpl,v 1.4 2005/10/09 18:13:48 schlundus Exp $ *}
+{* $Id: reqSpecEdit.tpl,v 1.5 2005/10/17 20:11:26 schlundus Exp $ *}
 {* Purpose: smarty template - edit a req specification *}
+{*
+20051015 - am - cancel didnt work
+*}
 {include file="inc_head.tpl"}
 
 <body onload="document.forms[0].elements[0].focus()">
@@ -39,7 +42,7 @@
 <div class="groupBtn">
 	<input type="submit" name="updateSRS" value="{lang_get s='btn_update'}" />
 	<input type="button" name="cancel" value="{lang_get s='btn_cancel'}" 
-		onclick="javascript: location.href='lib/req/reqSpecView.php?idSRS={$arrSpec[0].id}';" />
+		onclick="javascript: location.href=fRoot+'lib/req/reqSpecView.php?idSRS={$arrSpec[0].id}';" />
 </div>
 </form>
 

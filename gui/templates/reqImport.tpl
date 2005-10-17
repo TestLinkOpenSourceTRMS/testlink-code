@@ -1,9 +1,10 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqImport.tpl,v 1.2 2005/08/30 15:18:58 havlat Exp $ *}
+{* $Id: reqImport.tpl,v 1.3 2005/10/17 20:11:26 schlundus Exp $ *}
 {* Purpose: smarty template - requirements import initial page *}
 {* Author: Martin Havlat *}
 {* revisions:
 20050830 - MHT - result presentation updated
+20051015 - am - fixed back button
 *}
 {include file="inc_head.tpl"}
 
@@ -17,7 +18,7 @@
 	{* third screen *}
 	<div class="groupBtn">
 		<input type="button" name="back" value="{lang_get s='btn_back2srs'}" 
-			onclick="javascript: location.href='lib/req/reqSpecView.php?idSRS={$reqSpec.id}';" />
+			onclick="javascript: location.href=fRoot+'lib/req/reqSpecView.php?idSRS={$reqSpec.id}';" />
 	</div>
 	<p class="info">{$importResult}</p>
 	
@@ -64,7 +65,7 @@
 		<div class="groupBtn">
 			<input type='submit' name='executeImport' value="{lang_get s='btn_import_cvs'}">
 			<input type="button" name="cancel" value="{lang_get s='btn_cancel'}" 
-				onclick="javascript: location.href='lib/req/reqSpecView.php?idSRS={$reqSpec.id}';" />
+				onclick="javascript: location.href=fRoot+'lib/req/reqSpecView.php?idSRS={$reqSpec.id}';" />
 		</div>
 	</form>
 	</div>
@@ -112,7 +113,7 @@
 		<input type="hidden" name="MAX_FILE_SIZE" value="{$importLimit}" /> {* restrict file size *}
 		<input type="submit" name="UploadFile" value="{lang_get s='btn_upload_file'}" />
 		<input type="button" name="cancel" value="{lang_get s='btn_cancel'}" 
-			onclick="javascript: location.href='lib/req/reqSpecView.php?idSRS={$reqSpec.id}';" />
+			onclick="javascript: location.href=fRoot+'lib/req/reqSpecView.php?idSRS={$reqSpec.id}';" />
 	</div>
 </form>
 {/if}

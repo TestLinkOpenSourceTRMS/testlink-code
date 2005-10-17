@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqEdit.tpl,v 1.5 2005/10/09 18:13:48 schlundus Exp $ *}
+{* $Id: reqEdit.tpl,v 1.6 2005/10/17 20:11:26 schlundus Exp $ *}
 {* Purpose: smarty template - create / edit a req *}
 {* Author: Martin Havlat *}
 {* Revisions:
@@ -26,7 +26,7 @@
 		onclick="javascript: formSRSUpdate.submit();" />
 	<input type="button" name="callDeleteReq" value="{lang_get s='btn_delete'}" 
 		onclick="javascript:; 
-		if (confirm('Are you sure you want to delete the requirement {$arrReq.title}?'))
+	if (confirm('{lang_get s='popup_delete_req'}'))
 		{ldelim}formSRSDelete.submit();{rdelim};" />
 	{/if}
 	<input type="button" name="cancel" value="{lang_get s='btn_cancel'}" 

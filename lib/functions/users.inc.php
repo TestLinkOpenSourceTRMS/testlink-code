@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: users.inc.php,v $
  *
- * @version $Revision: 1.8 $
- * @modified $Date: 2005/10/14 23:23:55 $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2005/10/17 20:11:27 $
  *
  * @author Chad Rosen, Martin Havlat
  * @author Martin Havlat
@@ -320,30 +320,30 @@ function user_is_name_valid( $p_username ) {
  * @return string user name
  * 
  * @author havlatm
+ * 20051015 - am - added check of userId of 0
  **/
 function getUserName($id_user)
 {
-	$sql = "SELECT login, first, last FROM user WHERE id=" . $id_user;
-	$result = do_mysql_query($sql);
-	
-	if ($result && (mysql_num_rows($result) > 0))
+	$username = lang_get('Unknown');
+	if ($id_user)
 	{
-		$row = mysql_fetch_array($result);
-		if (empty($row['first']) && empty($row['last']))
+		$sql = "SELECT login, first, last FROM user WHERE id=" . $id_user;
+		$result = do_mysql_query($sql);
+		
+		if ($result && (mysql_num_rows($result) > 0))
 		{
-			// return login (name was not defined)
-			$username = $row['login'];
+			$row = mysql_fetch_array($result);
+			if (empty($row['first']) && empty($row['last']))
+			{
+				// return login (name was not defined)
+				$username = $row['login'];
+			}
+			else
+			{
+				// return first + last name
+				$username = $row['first'] . ' ' . $row['last'];
+			}	
 		}
-		else
-		{
-			// return first + last name
-			$username = $row['first'] . ' ' . $row['last'];
-		}	
-	}
-	else
-	{
-		// user is unknown
-		$username = lang_get('Unknown');
 	}
 	
 	tLog('username = ' . $username);

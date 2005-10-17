@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.12 $
- * @modified $Date: 2005/10/10 19:18:25 $  by $Author: schlundus $
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2005/10/17 20:11:27 $  by $Author: schlundus $
  * This page manages all the editing of test cases.
  *
  * @author Martin Havlat
@@ -24,6 +24,8 @@
  *
  * @author Francisco Mancardi - 20050810
  * refactoring, deprecated $_SESSION['product'] removed
+ * 
+ * 20051015 - am - moved some POST params to the top
 **/
 require_once("../../config.inc.php");
 require_once("../functions/common.php");
@@ -39,61 +41,59 @@ $a_ofck = array('summary','steps','exresult');
 $oFCK = array();
 foreach ($a_ofck as $key)
 {
- $oFCK[$key] = new fckeditor($key) ;
- $of = &$oFCK[$key];
- $of->BasePath = $_SESSION['basehref'] . 'third_party/fckeditor/';
- $of->ToolbarSet=$g_fckeditor_toolbar;;
+	$oFCK[$key] = new fckeditor($key) ;
+	$of = &$oFCK[$key];
+	$of->BasePath = $_SESSION['basehref'] . 'third_party/fckeditor/';
+	$of->ToolbarSet=$g_fckeditor_toolbar;;
 }
 // --------------------------------------------------------------------
-
-$tc = null;
 $keySize = null;
-
-if (isset($_REQUEST['editTC']))
-{
-	$tc = $_REQUEST['editTC'];
-}	
-
 $product = $_SESSION['productID'];
-$categoryID = isset($_GET['categoryID']) ? intval($_GET['categoryID']) : 0;
-$testcaseID = isset($_GET['testcaseID']) ? intval($_GET['testcaseID']) : 0;
 $show_newTC_form = 0;
-
 $smarty = new TLSmarty;
-
 // 20050810 - fm - from 3 to only 1 assignment
 $smarty->assign('path_htmlarea', $_SESSION['basehref'] . 'third_party/htmlarea/');
 
-// 20050908 - fm
-$name_ok = 1;
-if( isset($_POST['addTC']) || isset($_POST['updateTC']) )
-{
-	$title 		= isset($_POST['title']) ? strings_stripSlashes($_POST['title']) : null;
-	$summary 	= isset($_POST['summary']) ? strings_stripSlashes($_POST['summary']) : null;
-	$steps 		= isset($_POST['steps']) ? strings_stripSlashes($_POST['steps']) : null;
-	$outcome 	= isset($_POST['exresult']) ? strings_stripSlashes($_POST['exresult']) : null;
+$tc = isset($_REQUEST['editTC']) ? $_REQUEST['editTC'] : null;
+$categoryID = isset($_GET['categoryID']) ? intval($_GET['categoryID']) : 0;
+$testcaseID = isset($_GET['testcaseID']) ? intval($_GET['testcaseID']) : 0;
+$title 		= isset($_POST['title']) ? strings_stripSlashes($_POST['title']) : null;
+$summary 	= isset($_POST['summary']) ? strings_stripSlashes($_POST['summary']) : null;
+$steps 		= isset($_POST['steps']) ? strings_stripSlashes($_POST['steps']) : null;
+$outcome 	= isset($_POST['exresult']) ? strings_stripSlashes($_POST['exresult']) : null;
+$catID = isset($_POST['moveCopy']) ? intval($_POST['moveCopy']) : 0;
+$oldCat = isset($_POST['oldCat']) ? intval($_POST['oldCat']) : 0;
+$bAddTC = isset($_POST['addTC']) ? 1 : 0;
+$bUpdateTC = isset($_POST['updateTC']) ? 1 : 0;
+$bNewTC = isset($_POST['newTC']) ? 1 : 0;
+$bDeleteTC = isset($_POST['deleteTC']) ? 1 : 0;
+$version = isset($_POST['version']) ? intval($_POST['version']) : 0; 
+$bSure = (isset($_GET['sure']) && $_GET['sure'] == 'yes');
+$bMoveTC = isset($_POST['moveTC']) ? 1 : 0;
+$bUpdateTCMove = isset($_POST['updateTCmove']) ? 1 : 0;
+$bUpdateTCCopy = isset($_POST['updateTCcopy']) ? 1 : 0;
 
+$name_ok = 1;
+if($bAddTC || $bUpdateTC)
+{
 	// BUGID 0000086
-	 $result = lang_get('warning_empty_tc_title');	
-	if( $name_ok && !check_string($title,$g_ereg_forbidden) )
+	$result = lang_get('warning_empty_tc_title');	
+	if($name_ok && !check_string($title,$g_ereg_forbidden) )
 	{
 		$msg = lang_get('string_contains_bad_chars');
 		$name_ok = 0;
 	}
-	
-	if( $name_ok && strlen($title) == 0)
+	if($name_ok && strlen($title) == 0)
 	{
 		$msg = lang_get('warning_empty_tc_title');
 		$name_ok = 0;
 	}
 }
-	
 //If the user has chosen to edit a testcase then show this code
 if($tc)
 {
 	$setOfKeys = array();
 	
-	// get TC data
 	$myrowTC = getTestcase($testcaseID,false);
 
 	// 20051004 - fm - refactoring
@@ -128,12 +128,10 @@ if($tc)
 	$smarty->assign('keys', $setOfKeys);
 	$smarty->assign('keysize', $keySize);
 
-	global $g_tpl;
 	$smarty->display($g_tpl['tcEdit']);
-	
 	//saving a test case but not archiving it
 } 
-else if(isset($_POST['updateTC']))
+else if($bUpdateTC)
 {
 	$updatedKeywords = null;
 
@@ -146,10 +144,9 @@ else if(isset($_POST['updateTC']))
 			$updatedKeywords .= strings_stripSlashes($bob) . ","; //Build this string
 	}
 	
-	tLog($_POST['version']);
 	
 	//everytime a test case is saved I update its version
-	$version = isset($_POST['version']) ? intval($_POST['version']) : 0; 
+	tLog($_POST['version']);
 	$version++;
 
 	//20051008 - am - added message
@@ -167,14 +164,13 @@ else if(isset($_POST['updateTC']))
 	$allow_edit=1;
 	showTestcase($testcaseID, $allow_edit);
 }
-else if(isset($_POST['newTC']))
+else if($bNewTC)
 {
 	$show_newTC_form = 1;
 }
-else if(isset($_POST['addTC']))
+else if($bAddTC)
 {
-	$show_newTC_form=1;
-	 
+	$show_newTC_form = 1;
 	if ($name_ok)
 	{
 		$msg = lang_get('error_tc_add');
@@ -188,10 +184,10 @@ else if(isset($_POST['addTC']))
 	$smarty->assign('name', $title);
 	$smarty->assign('item', 'Test case');
 }
-else if(isset($_POST['deleteTC']))
+else if($bDeleteTC)
 {
 	//check to see if the user said he was sure he wanted to delete
-	if(isset($_GET['sure']) && $_GET['sure'] == 'yes') 
+	if($bSure) 
 	{
 		if (deleteTestcase($testcaseID))
 			$smarty->assign('sqlResult', 'ok');
@@ -201,7 +197,7 @@ else if(isset($_POST['deleteTC']))
 	$smarty->assign('testcaseID', $testcaseID);
 	$smarty->display('tcDelete.tpl');
 }
-else if(isset($_POST['moveTC']))
+else if($bMoveTC)
 {
 	$catID = 0;
 	$compID = 0;
@@ -221,27 +217,19 @@ else if(isset($_POST['moveTC']))
 
 // move test case to another category
 }
-else if(isset($_POST['updateTCmove']))
+else if($bUpdateTCMove)
 {
-	$catID = isset($_POST['moveCopy']) ? intval($_POST['moveCopy']) : 0;
-	$oldCat = isset($_POST['oldCat']) ? intval($_POST['oldCat']) : 0;
-	
 	$result = moveTc($catID, $testcaseID);
 	showCategory($oldCat, $result);
 }
-else if(isset($_POST['updateTCcopy']))
+else if($bUpdateTCCopy)
 {
-	$catID = isset($_POST['moveCopy']) ? intval($_POST['moveCopy']) : 0;
-	$oldCat = isset($_POST['oldCat']) ? intval($_POST['oldCat']) : 0;
-
 	// 20050821 - fm - interface - reduce global coupling
 	$result = copyTc($catID, $testcaseID, $_SESSION['user']);
-	
 	showCategory($oldCat, $result,'update',$catID);
 }
 else
 {
-	// ERROR
 	tlog("A correct POST argument is not found.");
 }
 // --------------------------------------------------------------------------

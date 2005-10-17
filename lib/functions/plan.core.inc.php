@@ -3,8 +3,8 @@
  * TestLink Open Source Project - @link http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: plan.core.inc.php,v $
- * @version $Revision: 1.11 $
- * @modified $Date: 2005/10/14 23:22:32 $ $Author: asielb $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2005/10/17 20:11:27 $ $Author: schlundus $
  *  
  * 
  * @author 	Martin Havlat
@@ -154,36 +154,30 @@ function getCountTestPlans4User($userID)
 /**
  * get count Test Plans available for user and Product
  *
+ * 20050904 - fm - TL 1.5.1 compatibility, show also Test Plans without product id.
  *
- * 20050904 - fm
- * TL 1.5.1 compatibility, show also Test Plans without product id.
- *
- * 20050813 - fm
- * product filter
+ * 20050813 - fm - product filter
  * 
  * 20050810 - fm
- * changes need due to ACTIVE FIELD type change
- * interface changes
- *
+ * changes need due to ACTIVE FIELD type change interface changes
  */
 function getCountTestPlans4UserProd($userID,$prodID=null)
 {
 	global $g_show_tp_without_prodid;
 	
 	$sql = "SELECT count(project.id) FROM project,projrights WHERE active=1" .  
-			   " AND projid=project.id AND userid=" . $userID;
-			   
-	if (!$prodID)
+		   " AND projid=project.id AND userid=" . $userID;
+	
+	//20051015 - am - removed negation of $prodID		   
+	if ($prodID)
 	{		   
-		// 20050929 - fm
 		$sql .= " AND project.prodid=" . $prodID;
 		
-		// 20050904 - fm - 
-		// TL 1.5.1 compatibility, get also Test Plans without product id.
-    if ($g_show_tp_without_prodid)
-    {
-    	$sql .= " OR project.prodid=0";
-    }  	
+		// 20050904 - fm - TL 1.5.1 compatibility, get also Test Plans without product id.
+		if ($g_show_tp_without_prodid)
+		{
+			$sql .= " OR project.prodid=0";
+		}  	
 	}		   
 	$result = do_mysql_query($sql);
 	
@@ -193,10 +187,6 @@ function getCountTestPlans4UserProd($userID,$prodID=null)
 		return null;
 	}
 }
-
-
-
-
 
 /**
  * Get list of users

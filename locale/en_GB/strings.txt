@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.30 $
- * @modified $Date: 2005/10/14 03:46:46 $
+ * @version $Revision: 1.31 $
+ * @modified $Date: 2005/10/17 20:11:28 $
  *
  * @author Francisco Mancardi
 **/
@@ -650,6 +650,7 @@ $TLS_reqs = "Requirements";
 
 // gui/templates/reqEdit.tpl
 $TLS_btn_delete = "Delete";
+$TLS_popup_delete_req = "Are you sure you want to delete the requirement?";
 $TLS_btn_update = "Update";
 $TLS_coverage = "Coverage";
 $TLS_req_edit = "Edit Requirement";

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: logging.inc.php,v $
  *
- * @version $Revision: 1.5 $
- * @modified $Date: 2005/09/06 20:19:39 $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2005/10/17 20:11:27 $
  *
  * @author Martin Havlat
  *
@@ -57,6 +57,8 @@ function tlLogSetLevel ($level = ERROR)
 * [05/Jan/27 13:06:03][DEBUG][havlatm] - User id = 10, Rights = admin
 *
 * @author Andreas Morsing : changed to format of log entries
+* @author Andreas Morsing : errors in extended level will be shown in red instead of
+* 							inlined as comments
 */
 function tLog ($message, $level = 'DEBUG') 
 {
@@ -76,9 +78,15 @@ function tLog ($message, $level = 'DEBUG')
 		$bExtendedLogLevel = ($tl_log_levels[$tl_log_level] >= $tl_log_levels['EXTENDED']);
 		if ($bExtendedLogLevel)
 		{
-			echo "\n<!--\n";
+			if ($level == 'ERROR')
+				echo "<pre style=\"color:red\">";
+			else 
+				echo "\n<!--\n";
 			echo $message;
-			echo "\n-->\n";
+			if ($level == 'ERROR')
+				echo "</pre>";
+			else 
+				echo "\n-->\n";
 		}
     	return true;
     }

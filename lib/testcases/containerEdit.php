@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: containerEdit.php,v 1.17 2005/10/15 08:38:44 franciscom Exp $ */
+/* $Id: containerEdit.php,v 1.18 2005/10/17 06:14:57 franciscom Exp $ */
 /* Purpose:  This page manages all the editing of test specification containers. */
 /*
  *
@@ -349,10 +349,6 @@ else if($action == 'updateTCorder')
 	}
 
 	$smarty->assign('sqlResult', $generalResult);
-	
-	
-	echo "<pre>debug" . __FILE__ . "<br>";
-	echo "\$my_categoryID" . $my_categoryID;
 	$smarty->assign('data', getCategory($my_categoryID));
 }
 else if($action == 'categoryCopy' || $action == 'categoryMove')

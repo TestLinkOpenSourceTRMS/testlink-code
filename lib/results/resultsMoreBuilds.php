@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsMoreBuilds.php,v 1.13 2005/10/03 07:20:14 franciscom Exp $ 
+* $Id: resultsMoreBuilds.php,v 1.14 2005/10/19 05:47:45 kevinlevy Exp $ 
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 * 
@@ -34,6 +34,10 @@ $smarty->assign('arrBuilds', $arrBuilds);
 $smarty->assign('arrOwners', $arrOwners);
 $smarty->assign('arrKeywords', $arrKeywords);
 $smarty->assign('arrComponents', $arrComponents);
+
+// kl - 10182005 debug
+//print "resultMoreBuilds.php array of components = ";
+//print_r($arrComponents);
 
 $smarty->display('resultsMoreBuilds_query_form.tpl');
 

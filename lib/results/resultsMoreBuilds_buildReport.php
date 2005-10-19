@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsMoreBuilds_buildReport.php,v 1.13 2005/09/26 00:48:36 kevinlevy Exp $ 
+* $Id: resultsMoreBuilds_buildReport.php,v 1.14 2005/10/19 04:03:51 kevinlevy Exp $ 
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 * 
@@ -30,11 +30,10 @@ $componentsSelected = array();
 $xls = FALSE;
 $xls_localized_string = lang_get('excel_format');
 
-if (isset($_GET['format']) && $_GET['format'] == '$xls_localized_string')
+print "xls is currently false <BR>";
+if (isset($_GET['format']) && $_GET['format'] == $xls_localized_string)
 {
-
   $xls = TRUE;
-
 } 
 
 if (isset($_REQUEST['build']))

@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: resultsMoreBuilds_query_form.tpl,v 1.16 2005/10/03 04:57:11 kevinlevy Exp $
+$Id: resultsMoreBuilds_query_form.tpl,v 1.17 2005/10/19 05:25:59 kevinlevy Exp $
 @author Francisco Mancardi - fm - start solving BUGID 97/98
 *}
 {include file="inc_head.tpl"}
@@ -25,8 +25,8 @@ $Id: resultsMoreBuilds_query_form.tpl,v 1.16 2005/10/03 04:57:11 kevinlevy Exp $
 			<td>
         	        	<select name='component[]' size=10 multiple>
 						{* by default select all components *}
-					{foreach key=component item=componentid from=$arrComponents}
-						<option value="'{$componentid}'" selected>{$componentid|escape}</option>
+					{foreach key=componentid item=component_name from=$arrComponents}
+						<option value="'{$componentid}'" selected>{$component_name|escape}</option>
 					{/foreach}			
 				</select>	
 			</td>

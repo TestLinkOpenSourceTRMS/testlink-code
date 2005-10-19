@@ -1,6 +1,6 @@
 <?
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
- *$Id: resultsMoreBuilds.inc.php,v 1.37 2005/10/19 05:28:34 kevinlevy Exp $ 
+ *$Id: resultsMoreBuilds.inc.php,v 1.38 2005/10/19 05:46:58 kevinlevy Exp $ 
  * 
  * @author Kevin Levy
  *
@@ -89,9 +89,6 @@ function createTestPlanReportHeader($testPlanName, $build_name_set,
 function createResultsForTestPlan($testPlanName, $testPlanID, 
 				  $buildsArray, $keyword, $owner, $lastStatus, $xls, $componentsSelected)
 {
-  // 10182005 - kl - debug
-  //  print "xls = $xls <BR>";
-  // print_r($componentsSelected);
 
   $totalCasesForTestPlan = 0;
   $totalLastResultPassesForTestPlan = 0;
@@ -133,13 +130,21 @@ function createResultsForTestPlan($testPlanName, $testPlanID,
 
   $testPlanReportHeader = 
     createTestPlanReportHeader($testPlanName, $build_name_set, $keyword, $owner, $lastStatus);
+  
+  $comma_seperated_components = null;
+  if ($componentsSelected){
+    $comma_seperated_components = implode(",", $componentsSelected);
+  }
 
   // 20050915 - fm - added mgtcomponent
   $sql = " SELECT component.id, mgtcomponent.name, component.projid, component.mgtcompid " .
          " FROM component,mgtcomponent ".
-         " WHERE component.mgtcompid = mgtcomponent.id " . 
+         " WHERE component.mgtcompid = mgtcomponent.id " .
+         " AND (mgtcomponent.id IN ($comma_seperated_components)) " .
          " AND projid=" . $testPlanID;
-         
+
+  // 20051018 - kl - debug
+  // print "$sql <BR>";
   $result = do_mysql_query($sql);
 
   $aggregateComponentDataToPrint = null;

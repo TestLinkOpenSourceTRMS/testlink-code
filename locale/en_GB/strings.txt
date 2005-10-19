@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.31 $
- * @modified $Date: 2005/10/17 20:11:28 $
+ * @version $Revision: 1.32 $
+ * @modified $Date: 2005/10/19 05:51:01 $
  *
  * @author Francisco Mancardi
 **/
@@ -853,7 +853,7 @@ $TLS_comp_scope = "Scope";
 // gui/templates/resultsMoreBuilds_report.tpl
 $TLS_case_return_by_query_header = "Test Cases Return By Query";
 $TLS_descr_indiv = "Individual test cases which match specified \"Owner\", \"Keyword\", \"Component(s)\", \"Last Status\" and \"Builds Selected\" query parameters.";
-$TLS_descr_res_totals = "Results totals for test cases which match specified \"Owner\", \"Keyword\", \"Component(s)\", and \"Builds Selected\". \"Last Status\" query parameter is NOT considered.";
+$TLS_descr_res_totals = "Results totals for test cases which match specified \"Owner\", \"Keyword\", and \"Builds Selected\". \"Last Status\" query parameter is NOT considered. However, only those components which were selected are considered.";
 $TLS_overall_status = "Overall Status";
 $TLS_please_wait = "Please wait until report fully loads...";
 $TLS_query_parameters_header = "Query Parameters Selected";

@@ -1,6 +1,6 @@
 <?
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
- *$Id: resultsMoreBuilds.inc.php,v 1.36 2005/10/19 05:27:22 kevinlevy Exp $ 
+ *$Id: resultsMoreBuilds.inc.php,v 1.37 2005/10/19 05:28:34 kevinlevy Exp $ 
  * 
  * @author Kevin Levy
  *
@@ -89,8 +89,9 @@ function createTestPlanReportHeader($testPlanName, $build_name_set,
 function createResultsForTestPlan($testPlanName, $testPlanID, 
 				  $buildsArray, $keyword, $owner, $lastStatus, $xls, $componentsSelected)
 {
+  // 10182005 - kl - debug
   //  print "xls = $xls <BR>";
-  print_r($componentsSelected);
+  // print_r($componentsSelected);
 
   $totalCasesForTestPlan = 0;
   $totalLastResultPassesForTestPlan = 0;

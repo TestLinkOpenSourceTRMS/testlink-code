@@ -5,10 +5,49 @@
 
 TestLink development team of 1.6 version:
 
-	Andreas  Morsing  (scs)
-	Martin  Havlat  (mht)
-	Francisco  Mancardi  (fm)
-	Kevin  Levy  (kl)
+	Andreas  Morsing  (schlundus)
+	Martin  Havlat  (mhavlat)
+	Francisco  Mancardi  (fman)
+	Kevin  Levy  (kevin)
+	
+
+===============================================================
+2005/10/18	Version: 1.6.RC2
+===============================================================
+
+- 0000184: [User Interface General] use *** characters for the user password (schlundus)
+- 0000074: [Requirements Coverage] cancel button with history.back (schlundus)
+- 0000181: [Test Specification (tc, comp, cat)] Reorder Test Cases - finish with error message (fman)
+- 0000182: [Test Specification (tc, comp, cat)] Reorder categories - finish with error message (fman)
+- 0000173: [Installer] UPGRADE OPTION FROM testlink_1_6_RC1.zip TO testlink-HEAD-20051010.zip DO NOT WORK (fman)
+- 0000115: [Keywords] Test cases copied to another project mantain keywords which don't exist in the destination product. (schlundus)
+- 0000134: [User Interface General] Broken UI when session times out (schlundus)
+- 0000178: [Reports, Metrics, Export and Print] Nothing appears in the Test Plan Metrics (your Test plan metrics) in the main page (fman)
+- 0000172: [User Interface General] Use same type of button for every feature (fman)
+- 0000162: [Database] Moving a Testcase to another category (fman)
+- 0000138: [New Feature] When edit test case, it is impossible to change Navigation's window width. (schlundus)
+- 0000024: [General] Session confusion (mhavlat)
+- 0000141: [Product Management] Unable to access edit products page as an admin user (schlundus)
+- 0000097: [Reports, Metrics, Export and Print] Quality Metrics - User Interface - Build 0 is included into the Build Combo Box (fman)
+- 0000098: [Reports, Metrics, Export and Print] Quality Metrics - User Interface - Standard LABEL is needed for ALL (fman)
+- 0000144: [Database] Unable to create Product (fman)
+- 0000140: [Localization] date format needs to be localized (fman)
+- 0000169: [New Feature] Build name and notes has to be editable (fman)
+- 0000155: [Product Management] Problems deleting a product, it doesn't delete (schlundus)
+- 0000166: [Requirements Coverage] BIG PROBLEM - I can not chage the requirements when I have only 2 req. under 1 product - CRASH (fman)
+- 0000158: [Product Management] Failed to update database! - details: Product <Name> (fman)
+- 0000160: [Keywords] Keywords showed without Order by (fman)
+- 0000161: [Test Plan (milestones, test assign)] Creating a new build the notes are not saved/shown (fman)
+- 0000154: [Test Plan (milestones, test assign)] Build management doesn't take into consideration active test plans (schlundus)
+- 0000147: [User Interface General] Links related to test plan do not apply to the plan shown in the Test Plan dropdown upon login (schlundus)
+- 0000150: [Product Management] Import CSV into product will only create test cases in first component (schlundus)
+- 0000133: [Test Plan (milestones, test assign)] Broken link in priority assignment (fman)
+- 0000132: [Test Plan (milestones, test assign)] Cannot delete a test plan (fman)
+- 0000130: [Product Management] Create a new product/edit existing product fails (fman)
+- 0000114: [Database] I get an SQL syntax error whenever I try to assign a keyword to a test case. (fman)
+- 0000085: [Test Specification (tc, comp, cat)] Changes of category names are not updated in Test Navigator Suite, with previous "Update modified Test Cases" execution. (fman)
+- 0000100: [Reports, Metrics, Export and Print] Selection of Test Case Owner (fman)
+- 0000120: [Product Management] Impossible to edit product (fman)
 
 ===============================================================
 2005/09/15	Version: 1.6.RC1

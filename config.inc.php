@@ -1,16 +1,18 @@
 <?php
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.23 $
- * @modified $Date: 2005/10/12 06:24:38 $ by $Author: franciscom $
+ * @version $Revision: 1.24 $
+ * @modified $Date: 2005/10/19 00:59:01 $ by $Author: havlat $
  *
- * @author Chad Rosen
  *
  * Constants and configuration parameters used throughout TestLink 
  * are defined within this file they should be changed for your environment
+ *
+ * Revisions:
  *
  * @author Francisco Mancardi - 20051011
  * New constant to configure CSS files
@@ -147,7 +149,7 @@ error_reporting(E_ALL & ~E_NOTICE);
 /** GUI related constants *///////////////////////////////////////////////////
 
 /* CVS will not released, MUST BE changed at the release day */
-define('TL_VERSION', '1.6.CVS.POST.RC1'); 
+define('TL_VERSION', '1.6.RC2'); 
 define('TL_BACKGROUND_DEFAULT', "#9BD");
 
 /** 

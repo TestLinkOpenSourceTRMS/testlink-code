@@ -1,6 +1,6 @@
 <?
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
- *$Id: resultsMoreBuilds.inc.php,v 1.35 2005/10/15 05:25:44 kevinlevy Exp $ 
+ *$Id: resultsMoreBuilds.inc.php,v 1.36 2005/10/19 05:27:22 kevinlevy Exp $ 
  * 
  * @author Kevin Levy
  *
@@ -87,14 +87,17 @@ function createTestPlanReportHeader($testPlanName, $build_name_set,
  */
 // default start and end builds are specified 
 function createResultsForTestPlan($testPlanName, $testPlanID, 
-				  $buildsArray, $keyword, $owner, $lastStatus)
+				  $buildsArray, $keyword, $owner, $lastStatus, $xls, $componentsSelected)
 {
+  //  print "xls = $xls <BR>";
+  print_r($componentsSelected);
+
   $totalCasesForTestPlan = 0;
   $totalLastResultPassesForTestPlan = 0;
   $totalLastResultFailuresForTestPlan = 0;
   $totalLastResultBlockedForTestPlan = 0;
   $totalUnexecutedTestCases = 0;
-  
+
   // comma delimited list of build.id's for this testplan
   // build.id field is primary key of table and unknown to user
   $build_id_set = null;
@@ -562,7 +565,7 @@ function constructTestCaseInfo($tcid,$myrow)
 function getArrayOfComponentNames($tpID)
 {
 
-  $sql = " SELECT mgtcomponent.name " . 
+  $sql = " SELECT mgtcomponent.name, mgtcomponent.id " . 
          " FROM component,mgtcomponent " .
          " WHERE component.mgtcompid = mgtcomponent.id " .
          " AND projid=" . $tpID;
@@ -571,8 +574,12 @@ function getArrayOfComponentNames($tpID)
   $arrayOfComponentNames = array();
   while($myrow = mysql_fetch_row($result)) 
   {
-    array_push($arrayOfComponentNames, $myrow[0]);
+    // 10182005 - kl - debug
+    //print "$myrow[1] $myrow[0] <BR>";
+    $arrayOfComponentNames[$myrow[1]] =  $myrow[0];
   }
+  // 10182005 - kl - debug
+  //print_r($arrayOfComponentNames);
   return $arrayOfComponentNames;
 }
 

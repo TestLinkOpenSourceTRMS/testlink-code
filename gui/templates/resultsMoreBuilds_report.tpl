@@ -1,6 +1,6 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ 
 
-$Author: franciscom $
+$Author: kevinlevy $
 *}
 {include file="inc_head.tpl" openHead='yes'}
 <!-- added by Kevin Levy 8/27 -->
@@ -25,18 +25,17 @@ $Author: franciscom $
 		</div>	
 
 		<div class="workBack">
-{/if}
 			<h2>{lang_get s='query_parameters_header'}</h2> 
 			{$queryParameters}
-{if !$xls}		</div>
+		</div>
 
 		<div class="workBack">
-{/if}
+
 			<h3>{lang_get s='overall_status'}</h3>
 			<a>{lang_get s='descr_res_totals'}</a>
 <!--			<a>Result totals for test cases which match specified "Owner", "Keyword", "Component(s)", and "Builds Selected".  "Last Status" query parameter is NOT considered.</a> -->
 			{$summaryOfResults}
-{if !$xls}		</div>
+		</div>
 
 		<div id="detailsOfReport" class="workBack">
 <!--			<h3>Test Cases Returned By Query</h3> -->
@@ -46,13 +45,17 @@ $Author: franciscom $
 			<BR><BR><a href="javascript:showOrCollapseAll()">{lang_get s='show_hide_all'}</a>
 			<h2 onClick="plusMinus_onClick(this);"><img class="plus" src="icons/plus.gif">{lang_get s='results_by_component_header'}</h2>
 			<div class="workBack">
-{/if}
+
 				{$allComponentData}
-{if !$xls}			</div>
+				</div>
 		</div>
 
 {include file="inc_print_button.tpl"}
 
 	</body>
 </html>
+{/if}
+
+{if $xls}
+	MS Excel Report - development in progress 10/18/2005 kl
 {/if}

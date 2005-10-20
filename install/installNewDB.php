@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: installNewDB.php,v 1.15 2005/10/14 06:59:29 franciscom Exp $ */
+/* $Id: installNewDB.php,v 1.16 2005/10/20 17:44:54 franciscom Exp $ */
 /*
 Parts of this file has been taken from:
 Etomite Content Management System
@@ -8,6 +8,10 @@ Copyright 2003, 2004 Alexander Andrew Butter
 */
 
 /*
+@author Francisco Mancardi - 20050918
+Found error upgrading from 1.0.4 to 1.6 on RH
+due to case sensitive on table name. (USER)
+
 @author Francisco Mancardi - 20050910
 refactoring
 
@@ -382,7 +386,12 @@ if ($update_pwd)
   mysql_select_db($db, $conn);
 
 	echo "Password Conversion ...";
-	$user_pwd = "UPDATE USER SET PASSWORD=MD5(PASSWORD)";
+	
+	// @author Francisco Mancardi - 20050918
+  // Found error upgrading from 1.0.4 to 1.6 on RH
+  // due to case sensitive on table name. (USER)
+
+	$user_pwd = "UPDATE user SET password=MD5(password)";
 	$result = mysql_query($user_pwd);
 }
 

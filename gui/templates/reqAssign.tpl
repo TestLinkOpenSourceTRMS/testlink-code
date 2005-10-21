@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqAssign.tpl,v 1.4 2005/10/09 18:13:48 schlundus Exp $ *}
+{* $Id: reqAssign.tpl,v 1.5 2005/10/21 22:17:58 asielb Exp $ *}
 {* Purpose: smarty template - assign REQ to one test case *}
 {*
 20051008 - am - removed escaping of scope
@@ -32,12 +32,14 @@
 <table class="simple">
 	<tr>
 		<th style="width: 15px;"></th>
+		<th>{lang_get s="req_doc_id"}</th>
 		<th>{lang_get s="req"}</th>
 		<th>{lang_get s="scope"}</th>
 	</tr>
 	{section name=row loop=$arrAssignedReq}
 	<tr>
 		<td><input type="checkbox" name="{$arrAssignedReq[row].id}" /></td>
+		<td><span class="bold">{$arrAssignedReq[row].req_doc_id|escape}</span></td>
 		<td><span class="bold"><a href="lib/req/reqSpecView.php?editReq={$arrAssignedReq[row].id}&idSRS={$selectedReqSpec}">
 			{$arrAssignedReq[row].title|escape}</a></span></td>
 		<td>{$arrAssignedReq[row].scope|truncate:30}</td>
@@ -61,12 +63,14 @@
 <table class="simple">
 	<tr>
 		<th style="width: 15px;"></th>
+		<th>{lang_get s="req_doc_id"}</th>
 		<th>{lang_get s="req"}</th>
 		<th>{lang_get s="scope"}</th>
 	</tr>
 	{section name=row2 loop=$arrUnassignedReq}
 	<tr>
 		<td><input type="checkbox" name="{$arrUnassignedReq[row2].id}" /></td>
+		<td><span class="bold">{$arrUnassignedReq[row2].req_doc_id|escape}</span></td>
 		<td><span class="bold"><a href="lib/req/reqSpecView.php?editReq={$arrUnassignedReq[row2].id}&idSRS={$selectedReqSpec}">
 			{$arrUnassignedReq[row2].title|escape}</a></span></td>
 		<td>{$arrUnassignedReq[row2].scope|truncate:30}</td>

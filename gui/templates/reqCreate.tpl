@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqCreate.tpl,v 1.4 2005/08/30 15:18:58 havlat Exp $ *}
+{* $Id: reqCreate.tpl,v 1.5 2005/10/21 20:50:45 asielb Exp $ *}
 {* Purpose: smarty template - create / edit a req  *}
 {include file="inc_head.tpl"}
 
@@ -23,6 +23,10 @@
 <form name="formReqCreate" method="post" 
 	action="lib/req/reqSpecView.php?idSRS={$arrSpec[0].id}">
 <table class="common" style="width: 90%">
+	<tr>
+		<th>{lang_get s='req_doc_id'}</th>
+		<td><input type="text" name="reqDocId" size="20" maxlength="16" /></td>
+	</tr>
 	<tr>
 		<th>{lang_get s='title'}</th>
 		<td><input type="text" name="title" size="50" maxlength="100" /></td>

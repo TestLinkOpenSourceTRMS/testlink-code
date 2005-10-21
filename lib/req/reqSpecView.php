@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqSpecView.php,v $
- * @version $Revision: 1.11 $
- * @modified $Date: 2005/10/09 18:13:49 $ by $Author: schlundus $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2005/10/21 20:50:45 $ by $Author: asielb $
  * @author Martin Havlat
  * 
  * Screen to view existing requirements within a req. specification.
@@ -37,7 +37,7 @@ $bGetReqs = TRUE; // collect requirements as default
 
 $template = 'reqSpecView.tpl'; // main template
 
-
+$reqDocId = isset($_REQUEST['reqDocId']) ? strings_stripSlashes($_REQUEST['reqDocId']) : null;
 $idSRS = isset($_REQUEST['idSRS']) ? strings_stripSlashes($_REQUEST['idSRS']) : null;
 $idReq = isset($_REQUEST['idReq']) ? strings_stripSlashes($_REQUEST['idReq']) : null;
 $title = isset($_REQUEST['title']) ? strings_stripSlashes($_REQUEST['title']) : null;
@@ -63,7 +63,7 @@ if(isset($_REQUEST['createReq']))
 	if (isset($_REQUEST['title']))
 	{
 		// 20050906 - fm
-		$sqlResult = createRequirement($title, $scope, $idSRS, $userID, $reqStatus); // used default type=n
+		$sqlResult = createRequirement($title, $scope, $idSRS, $userID, $reqStatus, $reqType, $reqDocId); // used default type=n
 		$action = 'create';
 		$scope='';
 	}
@@ -80,7 +80,8 @@ elseif (isset($_REQUEST['editReq']))
 	$arrReq['author'] = getUserName($arrReq['id_author']);
 	$arrReq['modifier'] = getUserName($arrReq['id_modifier']);
 	$arrReq['coverage'] = getTc4Req($idReq);
-
+	
+	$reqDocId = $arrReq['req_doc_id'];
 	$scope = $arrReq['scope']; 
 	$action ='editReq';
 	$template = 'reqEdit.tpl';
@@ -88,7 +89,7 @@ elseif (isset($_REQUEST['editReq']))
 }
 elseif (isset($_REQUEST['updateReq']))
 {
-	$sqlResult = updateRequirement($idReq, $title, $scope, $userID, $reqStatus, $reqStatus);
+	$sqlResult = updateRequirement($idReq, $title, $scope, $userID, $reqStatus, $reqType, $reqDocId);
 	$action = 'update';
 	$sqlItem = 'Requirement';
 }

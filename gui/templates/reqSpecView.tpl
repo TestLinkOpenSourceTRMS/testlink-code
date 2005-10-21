@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecView.tpl,v 1.8 2005/10/17 20:11:26 schlundus Exp $ *}
+{* $Id: reqSpecView.tpl,v 1.9 2005/10/21 20:50:45 asielb Exp $ *}
 {* 
    Purpose: smarty template - view a requirement specification
    Author: Martin Havlat 
@@ -69,14 +69,16 @@
 <table class="simple">
 	<tr>
 		{if $modify_req_rights == "yes"}<th style="width: 15px;"></th>{/if}
+		<th>{lang_get s="req_doc_id"}</th>
 		<th>{lang_get s="title"}</th>
 		<th>{lang_get s="scope"}</th>
 	</tr>
 	{section name=row loop=$arrReq}
 	<tr>
 		{if $modify_req_rights == "yes"}<td><input type="checkbox" name="{$arrReq[row].id}" /></td>{/if}
+		<td><span class="bold">{$arrReq[row].req_doc_id|escape}</span></td>
 		<td><span class="bold"><a href="lib/req/reqSpecView.php?editReq={$arrReq[row].id}&idSRS={$arrSpec[0].id}">
-			{$arrReq[row].title|escape}</a></span></td>
+		{$arrReq[row].title|escape}</a></span></td>
 		<td>{$arrReq[row].scope|truncate:100|regex_replace:"/<.*>/":" "}</td>
 	</tr>
 	{sectionelse}

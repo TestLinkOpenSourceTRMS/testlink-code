@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqEdit.tpl,v 1.6 2005/10/17 20:11:26 schlundus Exp $ *}
+{* $Id: reqEdit.tpl,v 1.7 2005/10/21 20:50:45 asielb Exp $ *}
 {* Purpose: smarty template - create / edit a req *}
 {* Author: Martin Havlat *}
 {* Revisions:
@@ -36,6 +36,16 @@
 <form name="formSRSUpdate" method="post" 
 	action="lib/req/reqSpecView.php?idSRS={$arrSpec[0].id}">
 <table class="common" style="width: 90%">
+	<tr>
+		<th>{lang_get s='req_doc_id'}</th>
+		<td>{if $modify_req_rights == "yes"}
+			<input type="text" name="reqDocId" size="20" maxlength="16"
+			value="{$arrReq.req_doc_id|escape}"/>
+			{else}
+				{$arrReq.req_doc_id|escape}
+			{/if}
+		</td>
+	</tr>
 	<tr>
 		<th>{lang_get s='title'}</th>
 		<td>{if $modify_req_rights == "yes"}

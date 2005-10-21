@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: requirements.inc.php,v $
- * @version $Revision: 1.12 $
- * @modified $Date: 2005/10/03 07:21:42 $ by $Author: franciscom $
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2005/10/21 20:50:45 $ by $Author: asielb $
  *
  * @author Martin Havlat <havlat@users.sourceforge.net>
  * 
@@ -430,14 +430,15 @@ function getReq4Tc($idTc, $idSRS = 'all')
  * 
  * @author Martin Havlat 
  **/
-function createRequirement($title, $scope, $idSRS, $userID, $status = 'v', $type = 'n')
+function createRequirement($title, $scope, $idSRS, $userID, $status = 'v', $type = 'n', $req_doc_id = null)
 {
 	if (strlen($title)) {
-		$sql = "INSERT INTO requirements (id_srs, title, scope, status, type, id_author, create_date)" .
-				" VALUES (" . $idSRS . ",'" . mysql_escape_string($title) . 
-				"','" . mysql_escape_string($scope) . "','" . mysql_escape_string($status) . 
-				"','" . mysql_escape_string($type) ."'," . mysql_escape_string($userID) . 
-				", CURRENT_DATE)";
+		$sql = "INSERT INTO requirements (id_srs, req_doc_id, title, scope, status, type, id_author, create_date)" .
+				" VALUES (" . $idSRS . ",'" . mysql_escape_string($req_doc_id) .  
+				"','" . mysql_escape_string($title) . "','" . mysql_escape_string($scope) . 
+				 "','" . mysql_escape_string($status) . "','" . mysql_escape_string($type) .
+				 "'," . mysql_escape_string($userID) . ", CURRENT_DATE)";
+
 		$result = do_mysql_query($sql); 
 		
 		$result = $result ? 'ok' : 
@@ -463,14 +464,16 @@ function createRequirement($title, $scope, $idSRS, $userID, $status = 'v', $type
  * 
  * @author Martin Havlat 
  **/
-function updateRequirement($id, $title, $scope, $userID, $status, $type)
+function updateRequirement($id, $title, $scope, $userID, $status, $type, $reqDocId=null)
 {
 	if (strlen($title)) {
 		$sql = "UPDATE requirements SET title='" . mysql_escape_string($title) . 
 				"', scope='" . mysql_escape_string($scope) . "', status='" . mysql_escape_string($status) . 
 				"', type='" . mysql_escape_string($type) . 
-				"', id_modifier=" . mysql_escape_string($userID) . 
-				", modified_date=CURRENT_DATE WHERE id=" . $id;
+				"', id_modifier='" . mysql_escape_string($userID) . 
+				"', req_doc_id='" . mysql_escape_string($reqDocId) .
+				"', modified_date=CURRENT_DATE WHERE id=" . $id;	
+	
 		$result = do_mysql_query($sql); 
 		if ($result) {
 			$result = 'ok';

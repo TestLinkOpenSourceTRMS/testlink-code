@@ -21,6 +21,7 @@ DROP TABLE IF EXISTS `requirements`;
 CREATE TABLE `requirements` (
   `id` INT( 10 ) UNSIGNED NOT NULL AUTO_INCREMENT ,
   `id_srs` INT( 10 ) UNSIGNED NOT NULL ,
+  `req_doc_id` varchar(16) default NULL ,
   `title` VARCHAR( 100 ) NOT NULL ,
   `scope` TEXT,
   `status` char(1) default 'v' NOT NULL,
@@ -31,6 +32,7 @@ CREATE TABLE `requirements` (
   `modified_date` date NOT NULL default '0000-00-00',
 PRIMARY KEY ( `id` ) ,
 INDEX ( `id_srs` , `status` )
+KEY `req_doc_id` (`req_doc_id`)
 ) TYPE=MyISAM;
 
 # --------------------------------------------------------

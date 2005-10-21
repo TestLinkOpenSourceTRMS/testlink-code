@@ -1,5 +1,5 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
-# $Id: testlink_create_tables.sql,v 1.7 2005/09/26 14:45:04 franciscom Exp $
+# $Id: testlink_create_tables.sql,v 1.8 2005/10/21 20:40:31 asielb Exp $
 # SQL script - create db tables for TL 1.6.0  
 #
 # default rights & admin account are created via testlink_create_default_data.sql
@@ -301,9 +301,9 @@ DROP TABLE IF EXISTS `requirements`;
 CREATE TABLE `requirements` (
   `id` INT( 10 ) UNSIGNED NOT NULL AUTO_INCREMENT ,
   `id_srs` INT( 10 ) UNSIGNED NOT NULL ,
+  `req_doc_id` varchar(16) default NULL,
   `title` VARCHAR( 100 ) NOT NULL ,
   `scope` TEXT,
-#  `status` ENUM( 'Normal', 'Not testable' ) DEFAULT 'Normal' NOT NULL ,
   `status` char(1) default 'v' NOT NULL,
   `type` char(1) default NULL,
   `id_author` INT( 10 ) UNSIGNED NULL,
@@ -312,6 +312,7 @@ CREATE TABLE `requirements` (
   `modified_date` date NOT NULL default '0000-00-00',
 PRIMARY KEY ( `id` ) ,
 INDEX ( `id_srs` , `status` )
+KEY `req_doc_id` (`req_doc_id`)
 ) TYPE=MyISAM;
 
 # --------------------------------------------------------

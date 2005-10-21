@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.32 $
- * @modified $Date: 2005/10/19 05:51:01 $
+ * @version $Revision: 1.33 $
+ * @modified $Date: 2005/10/21 20:51:41 $
  *
  * @author Francisco Mancardi
 **/
@@ -638,6 +638,7 @@ $TLS_req_spec = "Requirements Specification";
 $TLS_req_title_list = "List of requirements";
 $TLS_req_total_count = "Total count of requirements";
 $TLS_scope = "Scope";
+$TLS_req_doc_id = "Doc ID";
 
 
 

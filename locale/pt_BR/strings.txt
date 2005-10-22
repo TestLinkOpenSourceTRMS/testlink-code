@@ -6,8 +6,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.1 $
- * @modified $Date: 2005/10/22 09:59:04 $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2005/10/22 10:02:32 $
  * based on ..\en_GB\strings.txt
  *
  * @author Leonardo Molinari
@@ -68,7 +68,7 @@ $TLS_color = "Cor";
 $TLS_enable_requirements = "Funcionalidade para habilitar requisitos"; 
 
 $TLS_info_failed_loc_prod = "Falha em localizar o produto."; 
-$TLS_invalid_query = "Consulta Inválida"";
+$TLS_invalid_query = "Consulta Inválida";
 $TLS_name = "Nome";
 $TLS_popup_product_delete = "Atenção! Esta ação eliminará irreversívelmente todos os dados relacionados com produtos (incluindo resultados de testes, planos, etc.). Você usar a desativação ao invés da eliminação.\\nRecomendação: Execute primeiramente um dump da base de dados. \\nVocê tem certeza que deseja deletar o produto?";
 $TLS_title_product_mgmt = "Gestão de Produtos"; 
@@ -1095,7 +1095,7 @@ $TLS_title_assign_users = "Assinalar usuários para o Plano de Teste: ";
 
 
 // lib/plan/testSetRemove.php
-$TLS_category_removed_part1 = "Categoria;
+$TLS_category_removed_part1 = "Categoria";
 $TLS_category_removed_part2 = "foi removido.";
 $TLS_component_removed_part1 = "Componente";
 $TLS_component_removed_part2 = "foi removido.";

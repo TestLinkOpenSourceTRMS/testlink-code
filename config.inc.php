@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.25 $
- * @modified $Date: 2005/10/22 07:03:34 $ by $Author: franciscom $
+ * @version $Revision: 1.26 $
+ * @modified $Date: 2005/10/22 09:58:34 $ by $Author: franciscom $
  *
  *
  * Constants and configuration parameters used throughout TestLink 
@@ -16,6 +16,8 @@
  *
  * @author Francisco Mancardi - 20051022
  * added french locale and translations - thanks grdscarabe@grdscarabe.net
+ * added portuguese locale and translations - thanks Leonardo Molinari
+ *
  * 
  * @author Francisco Mancardi - 20051011
  * New constant to configure CSS files
@@ -279,7 +281,8 @@ $g_locales = array('en_GB' => 'English (UK)',
 				           'es_AR' => 'Spanish (Argentine)',
 				           'es_ES' => 'Spanish',
 				           'de_DE' => 'German',
-                   'fr_FR' => 'Fran&ccedil;ais'
+                   'fr_FR' => 'Fran&ccedil;ais',
+                   'pt_BR' => 'Portuguese (Brazil)'
 				          );
 
 // ----------------------------------------------------------------------------
@@ -298,7 +301,8 @@ $g_locales_date_format = array('en_GB' => "%d/%m/%Y",
 				                       'es_AR' => "%d/%m/%Y",
 				                       'es_ES' => "%d/%m/%Y",
 				                       'de_DE' => "%d.%m.%Y",
-				                       'fr_FR' => "%d/%m/%Y"
+				                       'fr_FR' => "%d/%m/%Y",
+				                       'pt_BR' => "%d/%m/%Y"
 				                       ); 
 
 $g_locales_timestamp_format = array('en_GB' => "%d/%m/%Y %H:%M:%S",
@@ -306,7 +310,8 @@ $g_locales_timestamp_format = array('en_GB' => "%d/%m/%Y %H:%M:%S",
 				                            'es_AR' => "%d/%m/%Y %H:%M:%S",
 				                            'es_ES' => "%d/%m/%Y %H:%M:%S",
 				                            'de_DE' => "%d.%m.%Y %H:%M:%S",
-				                            'fr_FR' => "%d/%m/%Y %H:%M:%S"
+				                            'fr_FR' => "%d/%m/%Y %H:%M:%S",
+				                            'pt_BR' => "%d/%m/%Y %H:%M:%S",
 				                           ); 
 // ----------------------------------------------------------------------------
 

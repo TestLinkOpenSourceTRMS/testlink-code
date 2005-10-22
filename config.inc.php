@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.24 $
- * @modified $Date: 2005/10/19 00:59:01 $ by $Author: havlat $
+ * @version $Revision: 1.25 $
+ * @modified $Date: 2005/10/22 07:03:34 $ by $Author: franciscom $
  *
  *
  * Constants and configuration parameters used throughout TestLink 
@@ -14,6 +14,9 @@
  *
  * Revisions:
  *
+ * @author Francisco Mancardi - 20051022
+ * added french locale and translations - thanks grdscarabe@grdscarabe.net
+ * 
  * @author Francisco Mancardi - 20051011
  * New constant to configure CSS files
  * Boolean values managed with TRUE/FALSE instead of 1/0 .
@@ -269,12 +272,14 @@ $g_fckeditor_toolbar = "TL_Medium_2";
 
 
 
+/* fr_FR -> thanks to grdscarabe@grdscarabe.net */
 /* These are the supported locales */
 $g_locales = array('en_GB' => 'English (UK)',
 				           'it_IT' => 'Italian',
 				           'es_AR' => 'Spanish (Argentine)',
 				           'es_ES' => 'Spanish',
-				           'de_DE' => 'German'
+				           'de_DE' => 'German',
+                   'fr_FR' => 'Fran&ccedil;ais'
 				          );
 
 // ----------------------------------------------------------------------------
@@ -292,14 +297,16 @@ $g_locales_date_format = array('en_GB' => "%d/%m/%Y",
 				                       'it_IT' => "%d/%m/%Y",
 				                       'es_AR' => "%d/%m/%Y",
 				                       'es_ES' => "%d/%m/%Y",
-				                       'de_DE' => "%d.%m.%Y"
+				                       'de_DE' => "%d.%m.%Y",
+				                       'fr_FR' => "%d/%m/%Y"
 				                       ); 
 
 $g_locales_timestamp_format = array('en_GB' => "%d/%m/%Y %H:%M:%S",
 				                            'it_IT' => "%d/%m/%Y %H:%M:%S",
 				                            'es_AR' => "%d/%m/%Y %H:%M:%S",
 				                            'es_ES' => "%d/%m/%Y %H:%M:%S",
-				                            'de_DE' => "%d.%m.%Y %H:%M:%S"
+				                            'de_DE' => "%d.%m.%Y %H:%M:%S",
+				                            'fr_FR' => "%d/%m/%Y %H:%M:%S"
 				                           ); 
 // ----------------------------------------------------------------------------
 

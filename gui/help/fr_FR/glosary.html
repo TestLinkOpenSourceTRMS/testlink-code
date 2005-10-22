@@ -1,0 +1,95 @@
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta http-equiv="Content-language" content="en" />
+	<meta name="author" content="Martin Havlat" />
+	<meta name="copyright" content="GNU" />
+	<meta name="robots" content="NOFOLLOW" />
+	<title>TestLink Help: Glosary of Terms</title>
+ 	<link rel="stylesheet" type="text/css" href="../../css/tl_docs.css" />
+</head>
+
+<body>
+
+<h1>Glossary of terms used in TestLink</h1>
+
+<div id="menu">
+  <a href="javascript: window.close();" class="tlButton">Close</a>  
+  <a href="javascript: history.back();" class="tlButton">Back</a>  
+  <a href="content.html" class="tlButton">Content</a>  
+</div>
+
+
+<h2>Scope</h2>
+<p>This document presents concepts, terms and definitions designed to aid 
+understanding the testing terminology. Italic text explains TestLink usage.</p>
+
+<h2>Definitions</h2>
+
+<ul>
+	<li><a name="actualoutcome"></a><b>Actual outcome</b>
+		The behaviour actually produced when the object is tested under 
+		specified conditions.</li>
+	<li><a name="bug"></a><b>Bug</b> (= <a href="#fault">Fault</a>)
+		A manifestation of an error in software.</li>
+	<li><a name="coverageitem"></a><b>Coverage item</b>
+		An entity or property used as a basis for <a href="#testing">Testing.</a></li>
+	<li><a name="error"></a><b>Error</b>
+		A human action that produces an incorrect result.</li>
+	<li><a name="expectedresults"></a><b>Expected results </b> (= Predicted outcome 
+		or Expected outcome)
+		The behaviour predicted by the <a href="#testspec">specification</a> of 
+		an object under specified conditions.</li>
+	<li><a name="failure"></a><b>Failure</b>
+		Deviation of the software from its expected delivery or service.</li>
+	<li><a name="fault"></a><b>Fault</b> (= Bug)
+		A manifestation of an <a href="#error">Error</a> in software. 
+		A Fault, if encountered may cause a <a href="#failure">Failure</a>.</li>
+	<li><a name="path"></a><b>Path</b>
+		A sequence of executable statements of a <a href="#component">component</a>, 
+		from an entry point to an exit point.</li>
+	<li><a name="product"></a><b>Product</b>
+		<span class="italic">Product is top structure in TestLink Data. All
+		data (except users) are related to active product.</span></li>
+	<li><a name="testcasesuite"></a><b>Test case suite</b> 
+		A collection of one or more <a href="#testcase">test cases </a>
+		for the software under test.<span class="italic">TestLink uses this term
+		for set of Test Cases which are available for execution within Test Plan.
+		</span></li>
+	<li><a name="testcoverage"></a><b>Test Coverage</b>
+		The degree, expressed as a percentage, to which a specified 
+		<a href="#coverageitem">Coverage item</a> has been exercised 
+		by a <a href="#testcasesuite">Test case suite.</a></li>
+	<li><b><a name="testexecution"></a>Test execution</b>
+		The processing of a <a href="#testcasesuite">test case suite </a>
+		by the software under test, producing an <a href="#actualoutcome">
+		actual outcome.</a><br/>
+		<span class="italic">Test Case Suite is defined from Test Cases within
+		Test Specification via assignment to Test Plan.</span></li>
+	<li><a name="testplan"></a><b>Test Plan</b> 
+		A record of the test planning process detailing the 
+		degree of tester indedendence, the test environment, the test case design 
+		techniques and test measurement techniques to be used, and the rationale 
+		for their choice.<br/><span class="italic">TestLink allows define Test Case Suite, 
+		Builds and user assignment within a Test Plan.</span></li>
+	<li><a name="testspec"></a><b>Test Specification</b>
+		For each <a href="#testcase">test case</a>, the 
+		<a href="#coverageitem">coverage item</a>, the initial state of 
+		the software under test, the <a href="#Input">Steps (input)</a>, and 
+		the <a href="#expectedresults">Expected results</a>.</li>
+	<li><a name="testing"></a><b>Testing</b> 
+		The process of exercising software to verify that it satisfies specified 
+		requirements and to detect <a href="#error">error</a>s.</li>
+	<li><a name="testcase"></a><b>Test case</b>
+		A set of <a href="#Input">input</a>s, execution preconditions, 
+		and <a href="#expectedresults">Expected results</a>	developed for 
+		a particular objective, such as to exercise a particular program 
+		<a href="#path">Path </a>or to verify compliance with a specific 
+		requirement.</li>
+</ul>
+
+</body>
+</html>

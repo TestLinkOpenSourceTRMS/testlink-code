@@ -2,8 +2,8 @@
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: results.inc.php,v $
- * @version $Revision: 1.17 $
- * @modified $Date: 2005/10/15 16:35:32 $
+ * @version $Revision: 1.18 $
+ * @modified $Date: 2005/10/24 19:34:59 $
  * 
  * @author 	Martin Havlat 
  * @author 	Chad Rosen (original report definition)
@@ -724,7 +724,7 @@ function getBuildMetricsCategory($tpID, $buildID)
 		
 		$categoryResult = do_mysql_query($categoryQuery);
 	
-		while ($categoryRow = mysql_fetch_assoc($categoryResult)) {
+		while ($categoryRow = mysql_fetch_array($categoryResult)) {
 			
 						$catAllSql = " SELECT count(TC.id) AS num_tc " .
 			             " FROM project TP , component COMP, category CAT, testcase TC" .
@@ -735,7 +735,6 @@ function getBuildMetricsCategory($tpID, $buildID)
 			             " AND COMP.id =" . $myrow['comp_id'] . 
 			             " AND CAT.id=" . $categoryRow['cat_id'];
              
-			             
 			             
 			$catTotalResult = do_mysql_query($catAllSql);
 			$totalRow = mysql_fetch_row($catTotalResult);
@@ -783,7 +782,6 @@ function getBuildMetricsCategory($tpID, $buildID)
 			$priorityStatus = $categoryRow['importance'] . $categoryRow['risk'];
 			$priority = getPriority($priorityStatus, $dependencies);
 	
-
 			//save
 			array_push($arrOutput, array($myrow['comp_name'] . ' / ' . $categoryRow['cat_name'], 
 					$categoryRow[2], $categoryRow[3] , $priority, $totalRow[0], 
@@ -860,10 +858,12 @@ function getBuildMetricsComponent($tpID,$buildID)
 
 		//Not Run TCs per component
 		$notRun = $totalRow['num_tc'] - ($passedRow[0] + $failedRow[0] + $blockedRow[0]);
-		if($totalRow[0] == 0) 
+		if(!$totalRow['num_tc']) 
 		{
 			$percentComplete = 0;
-		} else {
+		}
+		else
+		{
 			//Getting total percent complete
 			$percentComplete = ($passedRow[0] + $failedRow[0] + $blockedRow[0]) / $totalRow['num_tc']; 
 			$percentComplete = round((100 * ($percentComplete)),2); //Rounding the number so it looks pretty

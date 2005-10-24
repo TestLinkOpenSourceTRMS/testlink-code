@@ -1,9 +1,10 @@
 <?
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
- *$Id: resultsMoreBuilds.inc.php,v 1.38 2005/10/19 05:46:58 kevinlevy Exp $ 
+ *$Id: resultsMoreBuilds.inc.php,v 1.39 2005/10/24 19:34:59 schlundus Exp $ 
  * 
  * @author Kevin Levy
  *
+ * 20051022 - scs - small cosmetic changes, removed ' in componentid list
  */
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -106,46 +107,35 @@ function createResultsForTestPlan($testPlanName, $testPlanID,
   // list of ALL (id, name) pairs for the test plan
   $arrAllBuilds = getBuilds($testPlanID," ORDER BY build.name ");
 
-  // debug - kl - 10022005
-  // other results and execution pages have a different build set
-  // print_r($arrAllBuilds);
-  //  print "<BR>";
-  
-  // debug - kl - 10012005
-  //print_r($arrAllBuilds);
   for($i = 0;$i < sizeof($buildsArray);$i++)
-    {
-      if ($i)
 	{
-	  $build_id_set .= ",";
-	  $build_name_set .= ",";
+		if ($i)
+		{
+			$build_id_set .= ",";
+			$build_name_set .= ",";
+		}
+		$build_id_set .= $buildsArray[$i];
+		$build_name_set .= $arrAllBuilds[$buildsArray[$i]];
 	}
-      $build_id_set .= $buildsArray[$i];
-      $build_name_set .= $arrAllBuilds[$buildsArray[$i]];
-    }
 
-  // debug
-  // print "build_id_set = $build_id_set <BR>";
-  // print "build_name_set = $build_name_set <BR>";
-
-  $testPlanReportHeader = 
-    createTestPlanReportHeader($testPlanName, $build_name_set, $keyword, $owner, $lastStatus);
+  $testPlanReportHeader = createTestPlanReportHeader($testPlanName, $build_name_set, $keyword, $owner, $lastStatus);
   
   $comma_seperated_components = null;
-  if ($componentsSelected){
-    $comma_seperated_components = implode(",", $componentsSelected);
+  if ($componentsSelected)
+  {
+		$comma_seperated_components = "'".implode("','", $componentsSelected)."'";
   }
 
-  // 20050915 - fm - added mgtcomponent
-  $sql = " SELECT component.id, mgtcomponent.name, component.projid, component.mgtcompid " .
-         " FROM component,mgtcomponent ".
-         " WHERE component.mgtcompid = mgtcomponent.id " .
-         " AND (mgtcomponent.id IN ($comma_seperated_components)) " .
-         " AND projid=" . $testPlanID;
-
-  // 20051018 - kl - debug
-  // print "$sql <BR>";
-  $result = do_mysql_query($sql);
+	// 20050915 - fm - added mgtcomponent
+	$sql = " SELECT component.id, mgtcomponent.name, component.projid, component.mgtcompid " .
+	     " FROM component,mgtcomponent ".
+	     " WHERE component.mgtcompid = mgtcomponent.id ";
+	
+	if (!is_null($comma_seperated_components))
+		$sql .= " AND (mgtcomponent.id IN ($comma_seperated_components)) " ;
+		 
+	$sql .= " AND projid=" . $testPlanID;
+	$result = do_mysql_query($sql);
 
   $aggregateComponentDataToPrint = null;
   while($myrow = mysql_fetch_row($result))
@@ -162,10 +152,10 @@ function createResultsForTestPlan($testPlanName, $testPlanID,
       $testCasesReturnedByQuery = $componentData[2];
 
       // only print component information if test cases are part of the query
-      if (($componentSummary[0] != 0) && $testCasesReturnedByQuery)
-	{
-	  $aggregateComponentDataToPrint .= $componentData[1];
-	}
+		if (($componentSummary[0] != 0) && $testCasesReturnedByQuery)
+		{
+		$aggregateComponentDataToPrint .= $componentData[1];
+		}
     }
 
   $summaryOfTestPlanTable = 
@@ -282,7 +272,6 @@ function createResultsForCategory($categoryId, $keyword, $build_id_set, $lastRes
 
   $result = do_mysql_query($sql);
   
-  $testCaseTables;
   $tcInfo = null;
   $tcIDList = null;
   while ($myrow = mysql_fetch_row($result))
@@ -307,6 +296,7 @@ function createResultsForCategory($categoryId, $keyword, $build_id_set, $lastRes
 
   $tcBuildInfo = null;
   //I need the num results so I can do the check below on not run test cases
+  $notRunStatus = $g_tc_status['not_run'];
   while($myrowTC = mysql_fetch_row($sqlBuildResult))
     {
       $tcID = $myrowTC[5];
@@ -317,14 +307,14 @@ function createResultsForCategory($categoryId, $keyword, $build_id_set, $lastRes
       // print "xx tcID = $tcID, status = $status, build = $build <BR>"; 
       $tcBuildInfo[$tcID][$build] = $myrowTC;
       if ($status == $notRunStatus || isset($tcStatusInfo[$tcID]))
-	continue;
+			continue;
       $tcStatusInfo[$tcID] = $status;
     }
   //while ($myrow = mysql_fetch_row($result)){
 
   $lastResult = 'n';
   $lastResultHasBeenSet = false;
-
+  $testCaseTables = '';
   foreach ($tcInfo as $tcID => $myrow)
     {
       // debug - kl - 10022005 
@@ -414,50 +404,52 @@ function createResultsForCategory($categoryId, $keyword, $build_id_set, $lastRes
 
 function createResultsForTestCase($tcid, $myrow,$arrAllBuilds,$arrayOfResults,$lastResult)
 {
-  $testcaseHeader = constructTestCaseInfo($tcid,$myrow);
-  $summaryOfResultData = null;
-  $tableOfResultData = createTableOfTestCaseResults($arrayOfResults,$arrAllBuilds,$summaryOfResultData);
-  $className = getTCClassNameByStatus($lastResult);
-  
-  $summaryTable = "<table class=\"simple white\">";
-  $summaryTable .= "<tr class=\"black\"><th>" . lang_get('number_executions') . "</th><th>" . lang_get('number_passed') . "</th><th>" . lang_get('number_failed') . "</th><th>" . lang_get('number_blocked') . "</th></tr>";
-  $summaryTable .= "<tr class=\"{$className}\"><td>" . $summaryOfResultData[0]  . 
-                    "</td><td>" . $summaryOfResultData[1] . "</td><td>" . $summaryOfResultData[2] . "</td><td>" . 
-    $summaryOfResultData[3] . "</td></tr></table>";
-  
-  $textToDisplay = "<div class=\"workBack\">" . $testcaseHeader . $summaryTable . $tableOfResultData . "</div>"; 
-  // return both the text to diplay and the summary of results in order for category to produce
-  // an aggregate summary
-  return array($textToDisplay, $summaryOfResultData); 
+	$testcaseHeader = constructTestCaseInfo($tcid,$myrow);
+	$summaryOfResultData = null;
+	$tableOfResultData = createTableOfTestCaseResults($arrayOfResults,$arrAllBuilds,$summaryOfResultData);
+	$className = getTCClassNameByStatus($lastResult);
+	
+	$summaryTable = "<table class=\"simple white\">";
+	$summaryTable .= "<tr class=\"black\"><th>" . lang_get('number_executions') . "</th><th>" . 
+					lang_get('number_passed') . "</th><th>" . lang_get('number_failed') . "</th><th>" . 
+					lang_get('number_blocked') . "</th></tr>";
+	$summaryTable .= "<tr class=\"{$className}\"><td>" . $summaryOfResultData[0]  . 
+					"</td><td>" . $summaryOfResultData[1] . "</td><td>" . $summaryOfResultData[2] . "</td><td>" . 
+	$summaryOfResultData[3] . "</td></tr></table>";
+	
+	$textToDisplay = "<div class=\"workBack\">" . $testcaseHeader . $summaryTable . $tableOfResultData . "</div>"; 
+	// return both the text to diplay and the summary of results in order for category to produce
+	// an aggregate summary
+	return array($textToDisplay, $summaryOfResultData); 
 }
 
 function getTCClassNameByStatus($status)
 {
-  global $g_tc_status;
+	global $g_tc_status;
 
-  $className = "bgPurple";
-  $notRunColor = "bgBlack";
-  $passedColor = "bgGreen";
-  $blockedColor = "bgBlue";
-  $failedColor = "bgRed";
+	$className = "bgPurple";
+	$notRunColor = "bgBlack";
+	$passedColor = "bgGreen";
+	$blockedColor = "bgBlue";
+	$failedColor = "bgRed";
 
-  switch($status)
-    {
-    case $g_tc_status['passed']:
-      $className = $passedColor;
-      break;
-    case $g_tc_status['failed']:
-      $className = $failedColor;
-      break;
-    case $g_tc_status['blocked']:
-      $className = $blockedColor;
-      break;
-    case $g_tc_status['not_run']:
-      $className = $notRunColor;
-      break;
-    default:
-    }
-  return $className;
+	switch($status)
+	{
+		case $g_tc_status['passed']:
+			$className = $passedColor;
+			break;
+		case $g_tc_status['failed']:
+			$className = $failedColor;
+			break;
+		case $g_tc_status['blocked']:
+			$className = $blockedColor;
+			break;
+		case $g_tc_status['not_run']:
+			$className = $notRunColor;
+			break;
+		default:
+	}
+	return $className;
 }
 
 /**
@@ -470,91 +462,66 @@ function getTCClassNameByStatus($status)
  *         2.) an array of integers : array($numberOfPasses+$numberOfFailures+$numberOfBlocked,
  *                                           $numberOfPasses,$numberOfFailure,$numberOfBlocked)
  */
-function createTableOfTestCaseResults($arrayOfResults,$arrAllBuilds,&$returnArray){
+function createTableOfTestCaseResults($arrayOfResults,$arrAllBuilds,&$returnArray)
+{
     $returnData = "<table class=\"simple white\">" .
-    "<tr class=\"black\"><th>" . lang_get('build') . "</th><th>" . lang_get('runby') . "</th><th>" . lang_get('daterun') . "</th>" .
-    "<th>" . lang_get('status') . "</th><th>" . lang_get('bugs') . "</th><th>" . lang_get('notes') . "</th></tr>";
+				    "<tr class=\"black\"><th>" . lang_get('build') . "</th><th>" . 
+					lang_get('runby') . "</th><th>" . lang_get('daterun') . "</th>" .
+				    "<th>" . lang_get('status') . "</th><th>" . lang_get('bugs') . "</th><th>" . 
+					lang_get('notes') . "</th></tr>";
 
-  // if test case was never executed the array will be empty
-  // notify user of this
-  if (!is_array($arrayOfResults))
+	// if test case was never executed the array will be empty
+	// notify user of this
+	if (!is_array($arrayOfResults))
     {
-      // debug block - kl - 09252005
-      //      print "createTableOfTestCaseResults - arrayOfResults is empty <BR>";
-      $returnData .= "<tr class=\"black\"><td>" . lang_get('case_not_run_warning') . "</td><td></td><td>" .
-	"</td><td></td><td></td><td></td></tr></table>";
-      // update return array and exit method
-      $returnArray = array(0,0,0,0);
-      // debug - kl - 10022005
-      // print_r($returnArray);
-      // print "<BR>";
-     return $returnData;
+		$returnData .= "<tr class=\"black\"><td>" . lang_get('case_not_run_warning') . "</td><td></td><td>" .
+					"</td><td></td><td></td><td></td></tr></table>";
+		$returnArray = array(0,0,0,0);
+		return $returnData;
     }
   
-  global $g_tc_status;
-  $numberOfPasses = 0;
-  $numberOfFailures = 0;
-  $numberOfBlocked = 0;
+	global $g_tc_status;
+	$numberOfPasses = 0;
+	$numberOfFailures = 0;
+	$numberOfBlocked = 0;
   
-  // debug block - kl - 09252005
-  //$printThis2 = key($arrayOfResults);
-  //print "<BR> key of arrayOfResults = $printThis2 <BR>";
-
-  // iterate accross arrayOfResults
-  while ($buildTested = key($arrayOfResults))
-    {
-      // debug - kl - 10022005
-      // print "buildTested = $buildTested <BR>";
-      $one = $arrayOfResults[$buildTested][3];
-      $two = $arrayOfResults[$buildTested][2];
-      $results_status = $arrayOfResults[$buildTested][3];
-      // debug block -kl -09252005
-      // print "one = $one <BR>";
-      // print "two = $two <BR>";
-      // print "result_status = $results_status<BR>";
-
-      $className = getTCClassNameByStatus($results_status);
-	
-      switch($results_status)
+	while ($buildTested = key($arrayOfResults))
 	{
-	case $g_tc_status['passed']:
-	  $numberOfPasses++;
-	    break;
-	case $g_tc_status['failed']:
-	  $numberOfFailures++;
-	  break;
-	case $g_tc_status['blocked']:
-	  $numberOfBlocked++;
-	  break;
-	}
-      $resultInfo = $arrayOfResults[$buildTested];
-      $data = "<tr class=\"" . $className . "\"><td>" .
-	htmlspecialchars($arrAllBuilds[$resultInfo[0]])  . 
-	"</td><td>" . $resultInfo[1] . 
-	"</td><td>" . $resultInfo[2] .
-	"</td><td>" . $resultInfo[3] .
-	"</td><td>" . $resultInfo[4] . 
-	"</td><td>" . $resultInfo[6] . 
-	"</td></tr>";
-      $returnData .= $data;
-      next($arrayOfResults);
-      
+		$one = $arrayOfResults[$buildTested][3];
+		$two = $arrayOfResults[$buildTested][2];
+		$results_status = $arrayOfResults[$buildTested][3];
+		$className = getTCClassNameByStatus($results_status);
+		
+		switch($results_status)
+		{
+			case $g_tc_status['passed']:
+				$numberOfPasses++;
+				break;
+			case $g_tc_status['failed']:
+				$numberOfFailures++;
+				break;
+			case $g_tc_status['blocked']:
+				$numberOfBlocked++;
+				break;
+		}
+		$resultInfo = $arrayOfResults[$buildTested];
+		$data = "<tr class=\"" . $className . "\"><td>" .
+		htmlspecialchars($arrAllBuilds[$resultInfo[0]])  . 
+						"</td><td>" . $resultInfo[1] . 
+						"</td><td>" . $resultInfo[2] .
+						"</td><td>" . $resultInfo[3] .
+						"</td><td>" . $resultInfo[4] . 
+						"</td><td>" . $resultInfo[6] . 
+						"</td></tr>";
+					      $returnData .= $data;
+					      next($arrayOfResults);
     } // end while block
-  // kl - 09252005 debug block
-  // $printThis = $g_tc_status['passed'];
-  // print "<BR> g_tc_status = $printThis <BR>";
-  //  print "<BR> passes = $numberOfPasses, failures = $numberOfFailures, blocked = $numberOfBlocked<BR>";
-
-  $returnArray = array($numberOfPasses+$numberOfFailures+$numberOfBlocked,$numberOfPasses,$numberOfFailures,
-		       $numberOfBlocked);
-  
-  
-  $returnData .= "</table>";
-  // debug - kl - 10022005 
-  
-  // print_r($returnArray);
-  // print "<BR>";
-  return $returnData;
+	$returnArray = array($numberOfPasses+$numberOfFailures+$numberOfBlocked,
+						$numberOfPasses,$numberOfFailures,
+	     				$numberOfBlocked);
+	
+	$returnData .= "</table>";
+	return $returnData;
 }
 
 
@@ -570,24 +537,17 @@ function constructTestCaseInfo($tcid,$myrow)
 // 20050912 - added by kl
 function getArrayOfComponentNames($tpID)
 {
-
-  $sql = " SELECT mgtcomponent.name, mgtcomponent.id " . 
-         " FROM component,mgtcomponent " .
-         " WHERE component.mgtcompid = mgtcomponent.id " .
-         " AND projid=" . $tpID;
-
-  $result = do_mysql_query($sql);
-  $arrayOfComponentNames = array();
-  while($myrow = mysql_fetch_row($result)) 
-  {
-    // 10182005 - kl - debug
-    //print "$myrow[1] $myrow[0] <BR>";
-    $arrayOfComponentNames[$myrow[1]] =  $myrow[0];
-  }
-  // 10182005 - kl - debug
-  //print_r($arrayOfComponentNames);
-  return $arrayOfComponentNames;
+	$sql = " SELECT mgtcomponent.name, mgtcomponent.id " . 
+		" FROM component,mgtcomponent " .
+		" WHERE component.mgtcompid = mgtcomponent.id " .
+		" AND projid=" . $tpID;
+	
+	$result = do_mysql_query($sql);
+	$arrayOfComponentNames = array();
+	while($myrow = mysql_fetch_row($result)) 
+	{
+		$arrayOfComponentNames[$myrow[1]] =  $myrow[0];
+	}
+	return $arrayOfComponentNames;
 }
-
-
 ?>

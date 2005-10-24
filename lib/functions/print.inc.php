@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: print.inc.php,v $
- * @version $Revision: 1.5 $
- * @modified $Date: 2005/10/12 06:25:06 $ by $Author: franciscom $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2005/10/24 19:34:59 $ by $Author: schlundus $
  *
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
@@ -43,7 +43,7 @@ function printHeader($title, $base_href, $cssTemplate = TL_DOC_BASIC_CSS)
 {
 	$output = "<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN'>\n";
 	$output .= "<html>\n<head>\n";
-	$output .= '<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />';
+	$output .= '<meta http-equiv="Content-Type" content="text/html; charset='.TL_TPL_CHARSET.'" />';
 	$output .= '<title>' . $title. "</title>\n";
 	$output .= '<link type="text/css" rel="stylesheet" href="' . $base_href . $cssTemplate . '" />';
 	$output .= "\n</head>\n<body>\n";

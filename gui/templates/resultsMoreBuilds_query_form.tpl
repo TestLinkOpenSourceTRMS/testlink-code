@@ -1,7 +1,8 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: resultsMoreBuilds_query_form.tpl,v 1.17 2005/10/19 05:25:59 kevinlevy Exp $
+$Id: resultsMoreBuilds_query_form.tpl,v 1.18 2005/10/24 19:34:59 schlundus Exp $
 @author Francisco Mancardi - fm - start solving BUGID 97/98
+20051022 - scs - removed ' in component id values
 *}
 {include file="inc_head.tpl"}
 
@@ -26,7 +27,7 @@ $Id: resultsMoreBuilds_query_form.tpl,v 1.17 2005/10/19 05:25:59 kevinlevy Exp $
         	        	<select name='component[]' size=10 multiple>
 						{* by default select all components *}
 					{foreach key=componentid item=component_name from=$arrComponents}
-						<option value="'{$componentid}'" selected>{$component_name|escape}</option>
+						<option value="{$componentid}" selected>{$component_name|escape}</option>
 					{/foreach}			
 				</select>	
 			</td>

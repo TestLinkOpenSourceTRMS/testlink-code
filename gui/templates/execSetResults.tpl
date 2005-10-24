@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execSetResults.tpl,v 1.7 2005/10/05 06:14:26 franciscom Exp $ *}
+{* $Id: execSetResults.tpl,v 1.8 2005/10/24 19:34:59 schlundus Exp $ *}
 {* Purpose: smarty template - show tests to add results *}
 {*	
   20050911 - fm - 
@@ -12,6 +12,7 @@
   
   20050827 - scs - added display of tcID
   20050815 - scs - small changes because of code changes in execSetResults.php
+  20051022 - scs - build identifier not displayed
 *}	
 
 {include file="inc_head.tpl" popup='yes'}
@@ -50,7 +51,7 @@
 			
 			{lang_get s='test_exec_last_run_date'} {localize_date d=$arrTC[Row].recentResult.daterun}
 			{lang_get s='test_exec_by'} {$arrTC[Row].recentResult.runby|escape} 
-			{lang_get s='test_exec_on_build'} {$arrTC[Row].recentResult.build|escape}: 
+			{lang_get s='test_exec_on_build'} {$arrTC[Row].recentResult.build_name|escape}: 
 			{if $arrTC[Row].recentResult.status == $g_tc_status.passed}
 				{lang_get s='test_status_passed'}
 			{elseif $arrTC[Row].recentResult.status == $g_tc_status.failed}

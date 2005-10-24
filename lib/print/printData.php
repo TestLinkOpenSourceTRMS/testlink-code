@@ -2,7 +2,7 @@
 /**
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/ 
 *
-* @version 	$Id: printData.php,v 1.8 2005/09/15 16:38:01 franciscom Exp $
+* @version 	$Id: printData.php,v 1.9 2005/10/24 19:34:59 schlundus Exp $
 *	@author 	Martin Havlat
 * 
 * Shows the data that will be printed.
@@ -149,6 +149,7 @@ function print_category($category)
 
 
 /** print a test case data */
+//20051022 - scs - print out mgttcid instead of tcid
 function print_testcase($testcase) 
 {
  	global $CONTENT;
@@ -159,10 +160,10 @@ function print_testcase($testcase)
 	{
 	  	$CONTENT_HEAD .= '<p style="padding-left: 20px;"><a href="#tc' . $testcase['id'] . '">' . 
 	  	                 htmlspecialchars($testcase['title']) . '</a></p>';
-		  $CONTENT .= "<a name='tc" . $testcase['id'] . "'></a>";
+		  $CONTENT .= "<a name='tc" . $testcase['mgttcid'] . "'></a>";
 	}
  	$CONTENT .= "<div class='tc'><table width=90%>";
- 	$CONTENT .= "<tr><th>".lang_get('test_case')." " . $testcase['id'] . ": " . 
+ 	$CONTENT .= "<tr><th>".lang_get('test_case')." " . $testcase['mgttcid'] . ": " . 
  	            htmlspecialchars($testcase['title']) . "</th></tr>";
 
 
@@ -224,17 +225,20 @@ function generate_product_TCs($idCategory)
 function generate_testSuite_TCs($idCategory)
 {
 	$sqlTC = " SELECT id,title, summary, steps, exresult,mgttcid, keywords " .
-	         " FROM testcase " .
-	         " WHERE catid=" . $idCategory . " ORDER BY TCorder, mgttcid";
+			" FROM testcase " .
+			" WHERE catid=" . $idCategory . " ORDER BY TCorder, mgttcid";
 	$resultTC = do_mysql_query($sqlTC);
-
-  mysql_num_rows($resultTC);   
-
-	if (!$resultTC)
+	
+	if ($resultTC)
+	{
+		mysql_num_rows($resultTC);   
+	}
+	else
 	{
 		tLog($sqlTC . ' | error: ' . mysql_error(), 'ERROR');
-  }
-  generate_TCs($resultTC);
+	}
+	
+	generate_TCs($resultTC);
 }
 
 /*
@@ -248,30 +252,28 @@ catID=0 -> all
 */
 function generate_testSuite_Categories($idComponent,$catID=0)
 {
-  // Now use a Join
-  // mgtcategory.name or category.name ???
-  $sql=" SELECT mgtcategory.id, mgtcategory.objective," .
-  	   " mgtcategory.config,mgtcategory.data,mgtcategory.tools," .
-  	   " mgtcategory.CATorder, " .
-  	   " mgtcategory.name, category.id AS catid " .  
-       " FROM  mgtcategory,category " .
-       " WHERE mgtcategory.id=category.mgtcatid" .
-       " AND  category.compid = " . $idComponent;
+	// Now use a Join
+	// mgtcategory.name or category.name ???
+	$sql =" SELECT mgtcategory.id, mgtcategory.objective," .
+		" mgtcategory.config,mgtcategory.data,mgtcategory.tools," .
+		" mgtcategory.CATorder, " .
+		" mgtcategory.name, category.id AS catid " .  
+		" FROM  mgtcategory,category " .
+		" WHERE mgtcategory.id=category.mgtcatid" .
+		" AND  category.compid = " . $idComponent;
      
-  if( $catID != 0 )
-  {
-    $sql .= " AND category.id=" . $catID;
-  }     
-  $sql .= " ORDER BY CATorder, id";
-  
-  
-  $res = do_mysql_query($sql);
-  
-  while ($myrow = mysql_fetch_array($res))
-  {  
-   	print_category($myrow);
-   	generate_testSuite_TCs($myrow['catid']);
-  }
+	if($catID)
+	{
+		$sql .= " AND category.id=" . $catID;
+	}     
+	$sql .= " ORDER BY CATorder, id";
+	$res = do_mysql_query($sql);
+	
+	while ($myrow = mysql_fetch_array($res))
+	{  
+		print_category($myrow);
+		generate_testSuite_TCs($myrow['catid']);
+	}
 }
 
 
@@ -426,7 +428,7 @@ if($_GET['type'] == 'testSet')
 	  $catID = $_GET['data'];
 	  $myrowCAT = getTPcategory($catID);
 	  $myrowMGTCOM = getTPcomponent($myrowCAT['compid']); 
-	  
+
 	  print_header(lang_get('test_case_suite') . ": " . $_SESSION['testPlanName'] . " - " . $myrowCAT['name'], $toc);
 	  print_component($myrowMGTCOM);
 	  generate_testSuite_Categories($myrowCAT['compid'], $catID);

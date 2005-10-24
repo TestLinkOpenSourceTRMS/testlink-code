@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsTC.php,v 1.5 2005/10/03 07:20:14 franciscom Exp $ 
+* $Id: resultsTC.php,v 1.6 2005/10/24 19:35:00 schlundus Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -12,7 +12,8 @@
 * @author 20050807 - fm
 * refactoring:  
 * removed deprecated: $_SESSION['project']
-*
+* 
+* 20051022 - scs - correct wrong index
 */
 require('../../config.inc.php');
 require_once('common.php');
@@ -43,7 +44,6 @@ $sql = " SELECT MGTCOMP.name AS comp_name, MGTCAT.name as cat_name, TC.title, TC
 $result = do_mysql_query($sql);
 $bRights = has_rights("tp_execute") && !$xls;
 
-	
 while ($myrow = mysql_fetch_assoc($result))
 { //Cycle through all of the test cases
 	$container = null;
@@ -55,7 +55,7 @@ while ($myrow = mysql_fetch_assoc($result))
 	{
 		$tcID = $myrow['tcid'];
 		$tcStatus = getStatus($tcID, $build);
-		if($tcStatus != $g_tc_status['not run'])
+		if($tcStatus != $g_tc_status['not_run'])
 		{
 			//This displays the pass,failed or blocked test case result
 			//The hyperlink will take the user to the test case result in the execution page

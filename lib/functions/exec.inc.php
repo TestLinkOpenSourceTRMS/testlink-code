@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: exec.inc.php,v $
  *
- * @version $Revision: 1.16 $
- * @modified $Date: 2005/10/13 19:26:36 $ $Author: schlundus $
+ * @version $Revision: 1.17 $
+ * @modified $Date: 2005/10/24 19:34:59 $ $Author: schlundus $
  *
  * @author Martin Havlat
  *
@@ -281,14 +281,6 @@ function createTestInput($resultTC,$buildID,$tpID)
 		$dataStatus = mysql_fetch_row($resultStatus);
 
 		//This query grabs the most recent result
-		/*
-		$sqlRecentResult = " SELECT build.name AS build_name,status,runby,daterun " .
-		                   " FROM results,build " .
-				               " WHERE tcid=" . $myrow['tcid'] . " AND status != '" . $g_tc_status['not_run'] . "' " .
-				               " AND results.build = build.id " .
-				               " AND projid = " . $tpID ." ORDER by build.id " .	"DESC limit 1";
-				            
-		*/
 		$sqlRecentResult = " SELECT build.name AS build_name,status,runby,daterun " .
 		                   " FROM results,build " .
 				               " WHERE tcid=" . $myrow['tcid'] . " AND status != '" . $g_tc_status['not_run'] . "' " .

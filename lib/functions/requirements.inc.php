@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: requirements.inc.php,v $
- * @version $Revision: 1.13 $
- * @modified $Date: 2005/10/21 20:50:45 $ by $Author: asielb $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2005/10/25 04:39:51 $ by $Author: havlat $
  *
  * @author Martin Havlat <havlat@users.sourceforge.net>
  * 
@@ -20,6 +20,7 @@
  * 20050829 - Martin Havlat - updated function headers 
  * 20050825 - Martin Havlat - updated global header;
  * 20050810	- francisco mancardi - deprecated $_SESSION['product'] removed
+ * 20051025 - MHT - corrected introduced bug with insert TC (Bug 197)
  *
  * 
  */
@@ -517,20 +518,19 @@ function deleteRequirement($id)
 /** 
  * print Requirement Specification 
  *
- * 
  * @param integer $idSRS
  * @param string $prodName
  * @param string $userID
  * @param string $base_href
  *
+ * @author Martin Havlat
+ *  
  * @version 1.2 - 20050905
  * @author Francisco Mancardi
  *
  * @version 1.1 - 20050830
  * @author Francisco Mancardi
  *
- * @version 1.0
- * @author Martin Havlat 
  **/
 function printSRS($idSRS, $prodName, $prodID, $userID, $base_href)
 {
@@ -550,7 +550,6 @@ function printSRS($idSRS, $prodName, $prodID, $userID, $base_href)
  * 
  * @param integer $idSRS
  * 
- * @version 1.0
  * @author Martin Havlat 
  **/
 function printRequirements($idSRS)
@@ -577,7 +576,6 @@ function printRequirements($idSRS)
  * @param integer requirement ID
  * @return integer 1 = ok / 0 = problem
  * 
- * @version 1.0
  * @author Martin Havlat 
  */
 function assignTc2Req($idTc, $idReq)
@@ -627,7 +625,6 @@ function assignTc2Req($idTc, $idReq)
  * @param integer requirement ID
  * @return integer 1 = ok / 0 = problem
  * 
- * @version 1.0
  * @author Martin Havlat 
  */
 function unassignTc2Req($idTc, $idReq)
@@ -657,21 +654,19 @@ function unassignTc2Req($idTc, $idReq)
 
 /** 
  * function generate testcases with name and summary for requirements
+ * @author Martin Havlat 
  *
  * @param numeric prodID
  * @param array or integer list of REQ id's 
  * @return string Result description
  * 
- * @version 1.2
+ *
+ * @author Francisco Mancardi - reduce global coupling
  * @author Francisco Mancardi
  * interface changes added $idSRS
  * use new configuration parameter
+ * 20051025 - MHT - corrected introduced bug with insert TC
  *
- * @version 1.1
- * @author Francisco Mancardi - reduce global coupling
- *
- * @version 1.0
- * @author Martin Havlat 
  */
 function createTcFromRequirement($mixIdReq, $prodID, $idSRS, $login_name)
 {
@@ -681,7 +676,7 @@ function createTcFromRequirement($mixIdReq, $prodID, $idSRS, $login_name)
 	global $g_field_size;
 	
 
-	tLog('createTcFromRequirement started');
+	tLog('createTcFromRequirement started:'.$mixIdReq.','.$prodID.','.$idSRS.','.$login_name);
 	$output = null;
 	if (is_array($mixIdReq)) {
 		$arrIdReq = $mixIdReq;
@@ -770,8 +765,9 @@ function createTcFromRequirement($mixIdReq, $prodID, $idSRS, $login_name)
 		tLog('$reqData:' . implode(',',$reqData));
 		
 		// create TC
-		$tcID =  insertTestcase($idCat,$reqData['title'],"Verify requirement: \n" . 
-				                    $reqData['scope'],$login_name,null,null);
+		// 20051025 - MHT - corrected input parameters order
+		$tcID =  insertTestcase($idCat, $reqData['title'], "Verify requirement: \n" . 
+				          $reqData['scope'], null, null, $login_name);
 		
 		// create coverage dependency
 		if (!assignTc2Req($tcID, $reqData['id'])) {

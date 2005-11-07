@@ -2,8 +2,8 @@
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: results.inc.php,v $
- * @version $Revision: 1.19 $
- * @modified $Date: 2005/11/07 07:06:28 $
+ * @version $Revision: 1.20 $
+ * @modified $Date: 2005/11/07 09:36:10 $
  * 
  * @author 	Martin Havlat 
  * @author 	Chad Rosen (original report definition)
@@ -521,9 +521,12 @@ function getPriorityReport($tpID, $buildID = 'all')
 	//Initializing variables
 	$arrAvailablePriority = array('a','b','c');
 	$myResults = array ( 
-		'a' => array('priority' => 'A', 'total' => 0, 'pass' => 0, 'fail' => 0, 'blocked' => 0, 'milestone' => '-', 'status' => '-'),
-		'b' => array('priority' => 'B', 'total' => 0, 'pass' => 0, 'fail' => 0, 'blocked' => 0, 'milestone' => '-', 'status' => '-'),
-		'c' => array('priority' => 'C', 'total' => 0, 'pass' => 0, 'fail' => 0, 'blocked' => 0, 'milestone' => '-', 'status' => '-'),
+		'a' => array('priority' => 'A', 'total' => 0, 'pass' => 0, 'fail' => 0, 'blocked' => 0, 
+		             'milestone' => '-', 'status' => '-'),
+		'b' => array('priority' => 'B', 'total' => 0, 'pass' => 0, 'fail' => 0, 'blocked' => 0, 
+		             'milestone' => '-', 'status' => '-'),
+		'c' => array('priority' => 'C', 'total' => 0, 'pass' => 0, 'fail' => 0, 'blocked' => 0, 
+		             'milestone' => '-', 'status' => '-'),
 		'milestone' => 'None', 
 		'deadline' => 'None'
 	);
@@ -535,7 +538,7 @@ function getPriorityReport($tpID, $buildID = 'all')
 			   " AND component.id = category.compid";
 	$result = do_mysql_query($sql);
 	
-	while ($myrow = mysql_fetch_row($result)) {
+	while ($myrow = mysql_fetch_array($result)) {
 	
 		$testCaseArray = null;
 
@@ -547,7 +550,7 @@ function getPriorityReport($tpID, $buildID = 'all')
 				"component.projid = " . $tpID . " AND category.id=" . 
 				$myrow[1] .	" AND component.id = category.compid AND category.id = testcase.catid";
 		$totalTCResult = do_mysql_query($sql);
-		$totalTCs = mysql_fetch_row($totalTCResult);
+		$totalTCs = mysql_fetch_array($totalTCResult);
 	
 		//Code to grab the results of the test case execution
 		if ($buildID == 'all'){
@@ -571,7 +574,6 @@ function getPriorityReport($tpID, $buildID = 'all')
 		//Setting the results to an array.. Only taking the most recent results and displaying them
 		while($totalRow = mysql_fetch_assoc($totalResult)){
 	
-			//This is a test.. I've got a problem if the user goes and sets a previous p,f,b value to a 'n' value. The program then sees the most recent value as an not run. I think we want the user to then see the most recent p,f,b value
 			if($totalRow['status'] != $g_tc_status['not_run']){
 				$testCaseArray[$totalRow['tcid']] = $totalRow['status'];
 			}
@@ -663,8 +665,9 @@ function getPriorityReport($tpID, $buildID = 'all')
 	}
 
 	// MHT: smarty template maintains this as ordered array
-	return array($myResults['a'], $myResults['b'], $myResults['c'], 'milestone' => $myResults['milestone'], 
-		'deadline' => $myResults['deadline']);
+	return array($myResults['a'], $myResults['b'], $myResults['c'], 
+	             'milestone' => $myResults['milestone'], 
+		           'deadline' => $myResults['deadline']);
 
 } // priority
 
@@ -990,25 +993,34 @@ function listTPComponent($tpID)
 function reportGeneralStatus($tpID)
 {
 	$arrData = getPriorityReport($tpID);
+	
 	// array('A', $totalA, $AStatus, $passA, $failA, $blockedA, $notRunTCsA, $percentCompleteA, $MA),
 	
+
 	$msgBody = null;
-	foreach ($arrData['values'] as $priority)
+	//foreach ($arrData['values'] as $priority)
+	foreach ($arrData as $priority)
 	{
-		$msgBody .= " Priority " . $priority[0] . " Test Cases\n\n";
-		$msgBody .= " Total: " . $priority[1] . "\n";
-		$msgBody .= " Passed: " . $priority[3] . "\n";
-		$msgBody .= " Failed: " . $priority[4] . "\n";
-		$msgBody .= " Blocked: " . $priority[5] . "\n";
-		$msgBody .= " Not Run: " . $priority[6] . "\n";
-		$msgBody .= " Percentage complete: " . $priority[7] . "\n";
-		if ($priority[2] != '-')
-		{
-			$msgBody .= " Percentage complete against current Milestone: " . $priority[8] . "\n";
-			$msgBody .= " Status against current Milestone: " . $priority[2] . "\n\n";
+    // echo "<pre>debug"; print_r($priority); echo "</pre>";
+	 
+	  if( is_array($priority) )
+	  {
+   		$msgBody .= " Priority " . $priority['priority'] . " Test Cases\n\n";
+   		$msgBody .= " Total: "   . $priority['total'] . "\n";
+   		$msgBody .= " Passed: " . $priority['pass'] . "\n";
+   		$msgBody .= " Failed: " . $priority['fail'] . "\n";
+   		$msgBody .= " Blocked: " . $priority['blocked'] . "\n";
+   		$msgBody .= " Not Run: " . $priority['notRun'] . "\n";
+   		$msgBody .= " Percentage complete: " . $priority['percentComplete'] . "\n";
+   		
+   		if ($priority['milestone'] != '-')
+   		{
+   			$msgBody .= " Percentage complete against current Milestone: " . $priority['percentComplete'] . "\n";
+   			$msgBody .= " Status against current Milestone: " . $priority['milestone'] . "\n\n";
+   		}
 		}
 	}
-
+ 
 	return $msgBody;
 }
 

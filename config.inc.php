@@ -5,14 +5,19 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.27 $
- * @modified $Date: 2005/10/24 19:34:58 $ by $Author: schlundus $
+ * @version $Revision: 1.28 $
+ * @modified $Date: 2005/11/07 07:03:49 $ by $Author: franciscom $
  *
  *
  * Constants and configuration parameters used throughout TestLink 
  * are defined within this file they should be changed for your environment
  *
  * Revisions:
+ *
+ * @author Francisco Mancardi - 20051106
+ * Adding configuration parameters to use PHPMAILER, to send mail.
+ * The PHPMAILER solution uses code from Mantis Bugtraking System.
+ *
  *
  * @author Francisco Mancardi - 20051022
  * added french locale and translations - thanks grdscarabe@grdscarabe.net
@@ -341,6 +346,29 @@ $g_tc_sd_color = array ( "failed"        => 'red',
                          "unknown"       => 'black',
                          "all"           => 'cyan'
                        ); 
+
+
+# ------------------------------------------------------------------
+# @author Francisco Mancardi - 20051106
+# Contributed by wangyy, modified by Francisco Mancardi
+# Taken from mantis
+# for phpmailer config
+define ("SMTP_SEND",2);
+$g_phpMailer_method = SMTP_SEND;
+
+$g_tl_admin_email     = 'tl_admin@127.0.0.1';  #  
+$g_from_email         = 'testlink_system@127.0.0.1';  # email sender
+$g_return_path_email  = 'tl_admin@127.0.0.1';
+
+
+// SMTP Configuration
+$g_smtp_host        = 'localhost';  # SMTP server MUST BE configured  
+
+// Configure only if SMTP server requires authentication
+$g_smtp_username    = '';  # user  
+$g_smtp_password    = '';  # password 
+# ------------------------------------------------------------------
+
 
 
 /** 

@@ -1,13 +1,14 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsSend.php,v 1.5 2005/10/03 07:20:14 franciscom Exp $ 
+* $Id: resultsSend.php,v 1.6 2005/11/07 07:06:28 franciscom Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author	Chad Rosen
 * 
 * Shows and processes the form for sending a Test Report.
 *
+* 
 * @author Francisco Mancardi - 20050906 - reduce global coupling
 *
 */
@@ -38,21 +39,41 @@ if(isset($_POST['submit']))
 			//grab all of the priority info and stuff it into the message body
 			$msgBody .= reportGeneralStatus($_SESSION['testPlanId']);
 		} 
-		else if($status == 'comAll') //user has chosen to send a specific component status across all builds
-			$msgBody .= reportSuiteStatus($_POST['comSelectAll']);
-		else if($status == 'projBuild') //user has chosen to send the status of a particular build
-			$msgBody .= reportBuildStatus($_POST['buildProj'],$builds[$_POST['buildProj']]);
-		else //user has chosen to send the status of a particular component for a build
-			$msgBody .= reportSuiteBuildStatus($_POST['comSelectBuild'], $_POST['buildCom'],$builds[$_POST['buildCom']]);
+		else if($status == 'comAll')
+		{ 
+		  // user has chosen to send a specific component status across all builds
+		  
+		  // 20051106 - fm - missed argument
+			$msgBody .= reportSuiteStatus($_SESSION['testPlanId'],$_POST['comSelectAll']);
+		}	
+		else if($status == 'projBuild') 
+		{ 
+			// 20051106 - fm - missed argument
+		  //user has chosen to send the status of a particular build
+			$msgBody .= reportBuildStatus($_SESSION['testPlanId'],$_POST['buildProj'],$builds[$_POST['buildProj']]);
+		}	
+		else
+		{ 
+			// 20051106 - fm - missed argument
+		  //user has chosen to send the status of a particular component for a build
+			$msgBody .= reportSuiteBuildStatus($_SESSION['testPlanId'],$_POST['comSelectBuild'], 
+			                                   $_POST['buildCom'],$builds[$_POST['buildCom']]);
+		}
+		
+			
 		// Send mail
 		$headers = null;
+		$send_cc_to_myself=false;
 		if (isset($_POST['cc']))
 		{
-			$headers = "Cc: " . $_SESSION['email'] . "\r\n";
+			// 20051106 - fm
+			// $headers = "Cc: " . $_SESSION['email'] . "\r\n";
+			$send_cc_to_myself=true;
     }
     
-    // 20050906 - fm 
-		$message = sendMail($_SESSION['email'],$_POST['to'], $_POST['subject'], $msgBody, $headers);
+    // 20050906 - fm
+		$message = sendMail($_SESSION['email'],$_POST['to'], $_POST['subject'],
+		                    $msgBody,$send_cc_to_myself);
 	}
 }
 

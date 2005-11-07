@@ -2,8 +2,8 @@
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: results.inc.php,v $
- * @version $Revision: 1.18 $
- * @modified $Date: 2005/10/24 19:34:59 $
+ * @version $Revision: 1.19 $
+ * @modified $Date: 2005/11/07 07:06:28 $
  * 
  * @author 	Martin Havlat 
  * @author 	Chad Rosen (original report definition)
@@ -1142,7 +1142,8 @@ function reportSuiteBuildStatus($tpID, $comID, $buildID,$buildName)
 	return $msgBody;
 }
 
-
+// 20051106 - fm
+// build_id
 function reportSuiteStatus($tpID, $comID)
 {
 	global $g_tc_status;
@@ -1157,11 +1158,15 @@ function reportSuiteStatus($tpID, $comID)
 	$totalTCs = mysql_fetch_row($totalTCResult);
 
 	//Code to grab the results of the test case execution
-	$sql = " SELECT tcid,status FROM results,project,component,category,testcase " .
+	//
+	// 20051106 - fm - bug build.id
+	$sql = " SELECT tcid,status " .
+	       " FROM results,project,component,category,testcase " .
 	       " WHERE project.id =" . $tpID . 
 	       " AND component.id=" . $comID . 
 	       " AND project.id = component.projid AND component.id = category.compid " .
-	       " AND category.id = testcase.catid AND testcase.id = results.tcid order by build";
+	       " AND category.id = testcase.catid AND testcase.id = results.tcid " .
+	       " ORDER BY build_id";
 	       
 	$totalResult = do_mysql_query($sql);
 

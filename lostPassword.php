@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: lostPassword.php,v $
  *
- * @version $Revision: 1.7 $
- * @modified $Date: 2005/10/12 06:24:39 $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2005/11/07 07:06:03 $
  *
  * @author Chad Rosen
  *
@@ -16,6 +16,10 @@
 require_once('config.inc.php');
 require_once('common.php');
 require_once('users.inc.php');
+
+// 20051106 - fm
+require_once('email_api.php');
+
 
 $_POST = strings_stripSlashes($_POST);
 $login = isset($_POST['login']) ? $_POST['login']: null;
@@ -34,7 +38,9 @@ $message = lang_get('your_info_for_passwd');
 if (strlen($login))
 {
 	if(!existLogin($login,$userInfo))
+	{
 		$message = lang_get('bad_user');
+	}	
 	else
 	{
 		$emailAddress = $userInfo['email'];
@@ -48,20 +54,29 @@ if (strlen($login))
 			
 			//Setup the message body
 			$msgBody = lang_get('your_password_is') . $newPassword .  lang_get('contact_admin');  
+
+      // 20051106 - fm  
+      $mail_op = @email_send($emailAddress, config_get('from_email'), 
+                             lang_get('mail_passwd_subject'), $msgBody);
 			
-			if (!@mail($emailAddress, lang_get('mail_passwd_subject'), $msgBody))
-				$message = lang_get('mail_problems');
-			else
+			if ($mail_op->status_ok)
 			{
 				if (setUserPassword($userID,$newPassword))
 				{
 					redirect(TL_BASE_HREF ."login.php?note=lost");
 					exit();
 				}
+
+			}	
+			else
+			{
+				$message = lang_get('mail_problems') . " - " . $mail_op->msg;
 			}
 		}
 		else
+		{
 			$message = lang_get('mail_empty_address');
+		}	
 	}
 }
 

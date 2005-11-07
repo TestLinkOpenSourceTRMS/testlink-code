@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.23 $ $Author: schlundus $
- * @modified $Date: 2005/10/13 19:26:36 $
+ * @version $Revision: 1.24 $ $Author: franciscom $
+ * @modified $Date: 2005/11/07 07:06:03 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -830,6 +830,39 @@ function set_dt_formats()
 			$g_timestamp_format = $g_locales_timestamp_format[$_SESSION['locale']];
 		}
 	}
+}
+
+
+// 20051105 - francisco.mancardi@gruppotesi.com
+// idea from mantisbt
+function config_get($config_id)
+{
+$my = "g_" . $config_id;
+
+return($GLOBALS[$my]);
+}
+
+
+# --------------------
+# Return true if the parameter is an empty string or a string
+#  containing only whitespace, false otherwise
+# --------------------------------------------------------
+# This piece of sowftare is based on work belonging to:
+# --------------------------------------------------------
+#
+# Mantis - a php based bugtracking system
+# Copyright (C) 2000 - 2002  Kenzaburo Ito - kenito@300baud.org
+# Copyright (C) 2002 - 2004  Mantis Team   - mantisbt-dev@lists.sourceforge.net
+# This program is distributed under the terms and conditions of the GPL
+# See the README and LICENSE files for details
+
+function is_blank( $p_var ) {
+	$p_var = trim( $p_var );
+	$str_len = strlen( $p_var );
+	if ( 0 == $str_len ) {
+		return true;
+	}
+	return false;
 }
 
 ?>

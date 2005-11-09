@@ -1,7 +1,9 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execSetResults.tpl,v 1.8 2005/10/24 19:34:59 schlundus Exp $ *}
+{* $Id: execSetResults.tpl,v 1.9 2005/11/09 07:11:28 franciscom Exp $ *}
 {* Purpose: smarty template - show tests to add results *}
 {*	
+  20050919 - fm - BUGID 82
+  
   20050911 - fm - 
   using $smarty.section.Row.index 
   (change needed to use assoc array to simplify processing in PHP)
@@ -26,12 +28,21 @@
 {* show echo about update if applicable *}
 {$updated}
 
+{* 20051108 - fm - BUGID 00082*}
+{assign var="input_enabled_disabled" value="disabled"}
+  	
 <div class="workBack">
 <form method='post'>
-	<div id="submit_tc_results">
-		<input type='submit' name='submitTestResults' value="{lang_get s='btn_save_tc_exec_results'}" />
-		<img align=top src="icons/sym_question.gif" onclick="javascript:open_popup('{$helphref}execMain.html');">
-	</div>
+  {* 20051108 - fm - BUGID 00082*}
+  {if $rightsEdit == "yes"}
+  	{assign var="input_enabled_disabled" value=""}
+  	
+  	<div id="submit_tc_results">
+  		<input type='submit' name='submitTestResults' value="{lang_get s='btn_save_tc_exec_results'}" />
+  		<img align=top src="icons/sym_question.gif" onclick="javascript:open_popup('{$helphref}execMain.html');">
+  	</div>
+	{/if}
+	
 	<hr />
 
 	{* display test cases from array $arrTC*}
@@ -86,23 +97,23 @@
 		<tr>
 			<td>
 				<div class="title">{lang_get s='test_exec_notes'}</div>
-				<textarea class="tcDesc" name='notes[{$idx}]' 
+				<textarea {$input_enabled_disabled} class="tcDesc" name='notes[{$idx}]' 
 					cols=35 rows=4>{$arrTC[Row].note|escape}</textarea>			
 			</td>
 			<td>			
 				{* status of test *}
 				<div class="resultBox">
 					<span class="title">{lang_get s='test_exec_result'}</span><br /> 
-						<input type="radio" name='status[{$idx}]' 
+						<input type="radio" {$input_enabled_disabled} name='status[{$idx}]' 
 							value="{$g_tc_status.not_run}" {if $arrTC[Row].status == $g_tc_status.not_run
 							|| $arrTC[Row].status == ''} checked="checked" {/if} />{lang_get s='test_status_not_run'}<br />
-						<input type="radio" name='status[{$idx}]' 
+						<input type="radio" {$input_enabled_disabled} name='status[{$idx}]' 
 							value="{$g_tc_status.passed}" {if $arrTC[Row].status == $g_tc_status.passed} 
 							checked="checked" {/if} />{lang_get s='test_status_passed'}<br />
-						<input type="radio" name='status[{$idx}]' 
+						<input type="radio" {$input_enabled_disabled} name='status[{$idx}]' 
 							value="{$g_tc_status.failed}" {if $arrTC[Row].status == $g_tc_status.failed} 
 							checked="checked" {/if} />{lang_get s='test_status_failed'}<br />
-						<input type="radio" name='status[{$idx}]' 
+						<input type="radio" {$input_enabled_disabled} name='status[{$idx}]' 
 							value="{$g_tc_status.blocked}" {if $arrTC[Row].status == $g_tc_status.blocked} 
 							checked="checked" {/if} />{lang_get s='test_status_blocked'}<br />
 				</div>
@@ -136,11 +147,13 @@
 	<hr />
 	{/section}
 
-	<div id="submit_tc_results">
-		<input type='submit' name='submitTestResults' value="{lang_get s='btn_save_tc_exec_results'}" />
-		<img align=top src="icons/sym_question.gif" onclick="javascript:open_popup('{$helphref}execMain.html');" />
-	</div>	
-
+  {* 20051108 - fm - BUGID 00082*}
+  {if $rightsEdit == "yes"}
+  	<div id="submit_tc_results">
+  		<input type='submit' name='submitTestResults' value="{lang_get s='btn_save_tc_exec_results'}" />
+  		<img align=top src="icons/sym_question.gif" onclick="javascript:open_popup('{$helphref}execMain.html');" />
+  	</div>	
+  {/if}
 </form>
 </div>
 

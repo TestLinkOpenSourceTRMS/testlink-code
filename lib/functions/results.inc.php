@@ -2,14 +2,15 @@
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: results.inc.php,v $
- * @version $Revision: 1.20 $
- * @modified $Date: 2005/11/07 09:36:10 $
+ * @version $Revision: 1.21 $
+ * @modified $Date: 2005/11/09 07:11:33 $   $Author: franciscom $
  * 
  * @author 	Martin Havlat 
  * @author 	Chad Rosen (original report definition)
  *
  * Functions for Test Reporting and Metrics
  *
+ * @author 20051108 - fm - BUGID 82 changes in getTCLink()
  * @author 20050905 - fm - bug in getBugsReport()
  * @author 20050905 - fm - refactoring - remove global coupling
  *
@@ -106,13 +107,19 @@ function getTCLink($rights, $result, $id, $title, $buildID)
 {
 	$title = htmlspecialchars($title);
 	$suffix = $result . '">' . $id . ": <b>" . $title. "</b></a>";
-
-	// a hyper link to the execution pages
+	
+	// 20051108 - fm - BUGID 82
 	if ($rights)
+	{
 		$testTitle = '<a href="lib/execute/execSetResults.php?keyword=All&level=testcase&owner=All&build='. 
 		             $buildID . '&id=' . $suffix;
-	else // link to test specification
-		$testTitle = '<a href="lib/testcases/archiveData.php?edit=testcase&data=' . $suffix;
+	}	             
+	else
+	{
+		$testTitle = '<a href="lib/execute/execShowResults.php?keyword=All&level=testcase&owner=All&build='. 
+		             $buildID . '&id=' . $suffix;
+	}
+	
 		
 	return $testTitle;
 }

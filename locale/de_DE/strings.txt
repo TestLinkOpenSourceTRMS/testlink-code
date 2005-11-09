@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.17 $
- * @modified $Date: 2005/10/17 20:11:27 $
+ * @version $Revision: 1.18 $
+ * @modified $Date: 2005/11/09 19:54:11 $
  *
  * @author Andreas Morsing
  *
@@ -954,7 +954,7 @@ $TLS_trep_status_for_ts = "Status für Test Suite";
 
 // lib/functions/users.inc.php
 $TLS_Unknown = "Unbekannt";
-
+$TLS_wrong_old_password = "Das alte Passwort stimmt nicht!";
 
 
 // lib/functions/requirements.inc.php

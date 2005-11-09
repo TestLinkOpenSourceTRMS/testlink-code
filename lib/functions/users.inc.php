@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: users.inc.php,v $
  *
- * @version $Revision: 1.9 $
- * @modified $Date: 2005/10/17 20:11:27 $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2005/11/09 19:54:10 $
  *
  * @author Chad Rosen, Martin Havlat
  * @author Martin Havlat
@@ -148,7 +148,7 @@ function updateUserPassword($userID, $oldPswd, $newPswd)
 	if (getUserPassword($userID) == md5($oldPswd))
 		$updateResult = setUserPassword($userID,$newPswd) ? 'ok' : mysql_error();
 	else
-		$updateResult = 'Wrong old password!';
+		$updateResult = lang_get('wrong_old_password');
 	
 	return $updateResult;
 }

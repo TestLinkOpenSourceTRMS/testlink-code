@@ -1,6 +1,6 @@
 <?
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: import.inc.php,v 1.9 2005/10/17 20:11:27 schlundus Exp $
+* $Id: import.inc.php,v 1.10 2005/11/09 19:54:10 schlundus Exp $
 * 
 * @author Martin Havlat
 *
@@ -12,9 +12,9 @@
 * 20050828 - scs - changes for importing tc to a specific category
 * 20050831 - fm - reduce global coupling
 * 20051004 - fm - interface changes
+* 20051104 - scs - import didnt work, fixed
 */
-
-require_once('../../config.inc.php');
+require_once("../../config.inc.php");
 require_once("../functions/common.php");
 require_once("../testcases/archive.inc.php");
 require_once("../keywords/keywords.inc.php");
@@ -27,48 +27,44 @@ require_once("../keywords/keywords.inc.php");
 */
 function showTcImport($location,$catIDForImport = 0)
 {
-	$overview = "<table class='simple' width='80%'>";
+	$overview = "<table class=\"simple\" width=\"80%\">";
 
-	//command to open a csv for read
 	$handle = fopen ($location,"r");
-	
 	if ($handle)
 	{
 		$oldCom = null;
 		$oldCat = null;
-		//Need to grab the first row of data
 		if (!$catIDForImport)
 		{
-			while ($data = fgetcsv($handle, TL_IMPORT_ROW_MAX, ",")) {
+			while ($data = fgetcsv($handle, TL_IMPORT_ROW_MAX, ","))
+			{
 				$arrayCom = $data[0];
 				$arrayCat = $data[1];
 				$arrayTC = $data[2];
 		
-				// Strips off quotation marks (") needed to import data correctly
-				// strip out possible quotes at beginning and end of string
-				$arrayTC = preg_replace("/^['\"](.*?)['\"]$/","\\1", $arrayTC); 
-				if(strcmp($arrayCom,$oldCom) != 0){ //Is the current value equal to the old value?
+				$arrayTC = stripQuotes($arrayTC); 
+				if(strcmp($arrayCom,$oldCom))
+				{ 	
 					$overview .= "<tr><td bgcolor='#CCCCCC' width='3'>COM:</td><td bgcolor='#CCCCCC'>" . 
 					             $arrayCom . "</td></tr>";
 		
-					if(strcmp($arrayCat,$oldCat) != 0){ //Is the current value equal to the old value?
+					if(strcmp($arrayCat,$oldCat))
+					{
 						$overview .= "<tr><td bgcolor='#99CCFF' width='3'>CAT:</td><td  bgcolor='#99CCFF'>" . 
 						             $arrayCat . "</td></tr>";
 						$overview .= "<tr><td bgcolor='#FFFFCC' width='3'>TC:</td><td bgcolor='#FFFFCC'>" . 
 						             $arrayTC . "</td></tr>";
 					}
-		
-				} else {
-		
-					if (strcmp($arrayCat,$oldCat) == 0)	{
-						$overview .= "<tr><td bgcolor='#FFFFCC' width='3'>TC:</td><td bgcolor='#FFFFCC'>" . 
-						             $arrayTC . "</td></tr>";
-					} else {
+				}
+				else
+				{
+					if (!strcmp($arrayCat,$oldCat))
+					{
 						$overview .= "<tr><td bgcolor='#99CCFF' width='3'>CAT:</td><td  bgcolor='#99CCFF'>" . 
 						             $arrayCat . "</td></tr>";
-						$overview .= "<tr><td bgcolor='#FFFFCC' width='3'>TC:</td><td bgcolor='#FFFFCC'>" . 
-						             $arrayTC . "</td></tr>"; 
 					}
+					$overview .= "<tr><td bgcolor='#FFFFCC' width='3'>TC:</td><td bgcolor='#FFFFCC'>" . 
+					             $arrayTC . "</td></tr>"; 
 				}
 				$oldCom = $arrayCom;
 				$oldCat = $arrayCat;
@@ -79,7 +75,7 @@ function showTcImport($location,$catIDForImport = 0)
 			while ($data = fgetcsv($handle, TL_IMPORT_ROW_MAX, ","))
 			{
 				$arrayTC = $data[0];
-				$overview .= "<tr><td bgcolor='#FFFFCC' width='3'>TC:</td><td bgcolor='#FFFFCC'>" . 
+				$overview .= "<tr><td bgcolor=\"#FFFFCC\" width=\"3\">TC:</td><td bgcolor=\"#FFFFCC\">" . 
 				             $arrayTC . "</td></tr>";
 			}
 		}
@@ -171,7 +167,6 @@ function exeTcImport($fileLocation,$prodID, $login_name, $catIDForImport = 0)
 		
 		//Select comID from component where comName == arrayCom store as comID
 		$catID = insertComponentCategory($comID,$arrayCat,null,null,null,null);
-	
 		$tcID = insertTestcase($catID,$arrayTC,$arraySummary,$arrayTCSteps,$arrayResults,$login_name,null,$keys);
 	}
 	else
@@ -196,7 +191,7 @@ function exeTcImport($fileLocation,$prodID, $login_name, $catIDForImport = 0)
 		for($i = 0;$i < sizeof($data);$i++)
 		{
 			$data[$i] = stripQuotes($data[$i]);
-	  }
+		}
 	  
 		if ($catIDForImport)
 		{
@@ -219,12 +214,11 @@ function exeTcImport($fileLocation,$prodID, $login_name, $catIDForImport = 0)
 			
 			if($arrayCom == $oldCom)
 			{
-		    // 20051004 - fm - refactoring
-				$catID = $oldCat;
-				if($arrayCat != $catID)
-				{
+		    	// 20051004 - fm - refactoring
+				if($arrayCat != $oldCat)
 					$catID = insertComponentCategory($oldComNumber,$arrayCat,null,null,null,null);
-				}	                       
+				else 
+					$catID = $oldCatNumber;
 				$tcID = insertTestcase($catID,$arrayTC,$arraySummary,$arrayTCSteps,$arrayResults,$login_name,null,$keys);
 			}
 			else

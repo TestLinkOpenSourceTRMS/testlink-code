@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.24 $ $Author: franciscom $
- * @modified $Date: 2005/11/07 07:06:03 $
+ * @version $Revision: 1.25 $ $Author: schlundus $
+ * @modified $Date: 2005/11/09 19:54:10 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -837,9 +837,9 @@ function set_dt_formats()
 // idea from mantisbt
 function config_get($config_id)
 {
-$my = "g_" . $config_id;
+	$my = "g_" . $config_id;
 
-return($GLOBALS[$my]);
+	return $GLOBALS[$my];
 }
 
 

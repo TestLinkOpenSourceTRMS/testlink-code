@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: login.php,v $
  *
- * @version $Revision: 1.11 $
- * @modified $Date: 2005/10/13 19:26:34 $ by $Author: schlundus $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2005/11/09 19:54:07 $ by $Author: schlundus $
  *
  * @author Martin Havlat
  * 
@@ -15,14 +15,12 @@
  * 20050831 - scs - cosmetic changes
  * 200508 - MHT - added config check
  **/
-
 require_once('lib/functions/configCheck.php');
 checkConfiguration();
 
 require('config.inc.php');
 require_once('lib/functions/common.php');
 require_once('lib/functions/users.inc.php');
-
 doDBConnect();
 
 $_GET = strings_stripSlashes($_GET);
@@ -62,7 +60,6 @@ $securityNotes = getSecurityNotes();
 $smarty = new TLSmarty();
 $smarty->assign('securityNotes',$securityNotes);
 $smarty->assign('note',$message);
-// $smarty->assign('css', TL_BASE_HREF . 'gui/css/tl_login.css');
 $smarty->assign('css', TL_BASE_HREF . TL_LOGIN_CSS);
 $smarty->display('login.tpl');
 ?>

@@ -1,13 +1,14 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: tcImport.tpl,v 1.4 2005/08/31 11:35:12 schlundus Exp $ *}
+{* $Id: tcImport.tpl,v 1.5 2005/11/09 19:54:10 schlundus Exp $ *}
 {* Purpose: smarty template - show Test Results and Metrics *}
 {* I18N: 20050528 - fm *}
 {* 20050828 - scs - changes for importing tc to a specific category *}
 {* 20050831 - scs - import limits are now define in config.inc.php *}
+{* 20051104 - scs - product name wasn't escaped *}
 {include file="inc_head.tpl"}
 
 <body>
-<h1>{$productName} {lang_get s='title_imp_cvs'}</h1>
+<h1>{$productName|escape} {lang_get s='title_imp_cvs'}</h1>
 
 {if $imported != ''}
 	<p class='info'>{lang_get s='cvs_import_ok'}</p>

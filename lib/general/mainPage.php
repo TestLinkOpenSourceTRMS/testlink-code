@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: mainPage.php,v $
  *
- * @version $Revision: 1.5 $ $Author: franciscom $
- * @modified $Date: 2005/10/03 07:20:13 $
+ * @version $Revision: 1.6 $ $Author: schlundus $
+ * @modified $Date: 2005/11/13 19:19:31 $
  *
  * @author Martin Havlat
  * 
@@ -23,6 +23,7 @@
  * @author Francisco Mancardi - 20050928 - 
  * adding new User Interface feature: filter test plan by product
  * 
+ * 20051112 - scs - removed undefined index notices
 **/
 require_once('../../config.inc.php');
 require_once('common.php');
@@ -54,7 +55,7 @@ if(has_rights("mgt_view_tc"))
 // REQS
 $smarty->assign('view_req_rights', has_rights("mgt_view_req")); 
 $smarty->assign('modify_req_rights', has_rights("mgt_modify_req")); 
-$smarty->assign('opt_requirements', $_SESSION['productOptReqs']); 
+$smarty->assign('opt_requirements', isset($_SESSION['productOptReqs']) ? $_SESSION['productOptReqs'] : null); 
 
 // view and modify Keywords 
 $smarty->assign('view_keys_rights', has_rights("mgt_view_key"));
@@ -99,8 +100,8 @@ $smarty->assign('filter_tp_by_product',$filter_tp_by_product);
 // 20050928 - fm - Interface changes
 // 20050810 - fm - Interface changes
 // 20050809 - fm - get only test plan for the selected product
-$arrPlans = getTestPlans($_SESSION['productID'], $_SESSION['userID'], 
-                         $filter_tp_by_product);
+$arrPlans = getTestPlans(isset($_SESSION['productID']) ? $_SESSION['productID'] : 0,
+						$_SESSION['userID'],$filter_tp_by_product);
 
 //20050826 - scs - added displaying of security notes
 $securityNotes = getSecurityNotes();

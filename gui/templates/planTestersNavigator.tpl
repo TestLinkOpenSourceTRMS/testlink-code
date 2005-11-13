@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: planTestersNavigator.tpl,v 1.2 2005/08/16 17:59:13 franciscom Exp $ *}
+{* $Id: planTestersNavigator.tpl,v 1.3 2005/11/13 19:19:31 schlundus Exp $ *}
 {* Purpose: smarty template - show users/plan for assignment *}
 {include file="inc_head.tpl"}
 
@@ -12,7 +12,7 @@
 {* menu for users or plan assignment *}
 <div>
 	<form method="get">
-		List of
+		{lang_get s='label_list_of'}
 		<select name="type" onchange="this.form.submit(); 
         {* change date="2005-04-16" author="fm" use helphref *}
 				parent.workframe.location.href='{$helphref}planTesters.html';">

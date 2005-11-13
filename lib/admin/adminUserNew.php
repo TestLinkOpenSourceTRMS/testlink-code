@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: adminUserNew.php,v $
  *
- * @version $Revision: 1.4 $
- * @modified $Date: 2005/08/31 19:21:38 $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2005/11/13 19:19:31 $
  *
  * @author Martin Havlat
  *
@@ -15,6 +15,7 @@
  * @author Andreas Morsing - added user_is_name_valid whenever a new user will be created
  * 20050829 - scs - moved POST params to the top of the script
  * 20050829 - scs - added locale while inserting new users
+ * 20051112 - scs - added trim of login, to avoid usernames with only spaces
  * 
 **/
 include('../../config.inc.php');
@@ -23,7 +24,7 @@ testlinkInitPage();
 
 $_POST = strings_stripSlashes($_POST);
 $bNewUser = isset($_POST['newUser']) ? $_POST['newUser'] : null;
-$login = isset($_POST['login']) ? $_POST['login'] : null;
+$login = isset($_POST['login']) ? trim($_POST['login']) : null;
 $password = isset($_POST['password']) ? $_POST['password'] : null;
 $rightsid = isset($_POST['rights']) ? intval($_POST['rights']) : 5;
 $first = isset($_POST['first']) ? $_POST['first'] : null;
@@ -34,6 +35,7 @@ $locale = isset($_POST['locale']) ? $_POST['locale'] : null;
 $sqlResult = null;
 if($bNewUser)
 {
+	$sqlResult = lang_get("login_must_not_be_empty");
 	if (strlen($login))
 	{
 		if (user_is_name_valid($login))
@@ -52,8 +54,6 @@ if($bNewUser)
 		else
 			$sqlResult = $message = lang_get('invalid_user_name') . "\n" . lang_get('valid_user_name_format');
 	}
-	else
-		$sqlResult = lang_get('empty_login_no'); 
 }
 
 $smarty = new TLSmarty();

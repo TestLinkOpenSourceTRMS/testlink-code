@@ -5,14 +5,16 @@
  *
  * Filename $RCSfile: adminUsers.php,v $
  *
- * @version $Revision: 1.4 $
- * @modified $Date: 2005/08/31 19:21:38 $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2005/11/13 19:19:31 $
  *
  * @author Martin Havlat
  *
  * This page allows  editing users.
  *
- * @author Andreas Morsing - added user_is_name_valid whenever a new user will be modified
+ * @author Andreas Morsing - added user_is_name_valid whenever a 
+ * 							 new user will be modified
+ * 20051112 - scs - added trimming of login
 **/
 include('../../config.inc.php');
 require_once("users.inc.php");
@@ -29,13 +31,14 @@ if($bEditUser)
 	{
 		$sqlRes = lang_get("login_must_not_be_empty");
 		
-		$login = $_POST['login'][$idx]; 
+		$login = trim($_POST['login'][$idx]); 
 		if (strlen($login))
 		{
 			if (user_is_name_valid($login))
 			{
-				if (userUpdate($_POST['id'][$idx],$_POST['first'][$idx],$_POST['last'][$idx],
-				               $_POST['email'][$idx],$_POST['login'][$idx],$_POST['rights'][$idx],
+				if (userUpdate($_POST['id'][$idx],$_POST['first'][$idx],
+							   $_POST['last'][$idx],$_POST['email'][$idx],
+							   $login,$_POST['rights'][$idx],
 				               $_POST['locale'][$idx]) == 'ok')
 				{
 					$sqlRes = lang_get('updated');
@@ -44,11 +47,12 @@ if($bEditUser)
 					$sqlRes = lang_get('invalid_query') . mysql_error();
 			}
 			else
-				$sqlRes = lang_get('invalid_user_name') . "\n" . lang_get('valid_user_name_format');
+				$sqlRes = lang_get('invalid_user_name') . "\n" . 
+						  lang_get('valid_user_name_format');
 		}
 			
 		$arrResults[] =  array(
-								'login' => $_POST['login'][$idx],
+								'login' => $login,
 					   			'action' => $sqlRes
 							  );
 	}

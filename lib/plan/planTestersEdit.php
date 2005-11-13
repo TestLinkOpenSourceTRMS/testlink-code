@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: planTestersEdit.php,v ${file_name} $
- * @version $Revision: 1.4 $
- * @modified $Date: 2005/09/09 08:36:07 ${date} ${time} $ by $Author: franciscom $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2005/11/13 19:19:32 ${date} ${time} $ by $Author: schlundus $
  * 
  * @author Martin Havlat
  * 
@@ -18,14 +18,14 @@
  * 
  * @todo move functions to included script
  * 
+ * 20051112 - scs - fixed wrong sql statement, because 'Save' button is 
+ * 					localized
  */
 require('../../config.inc.php');
 require_once('common.php');
 require_once('users.inc.php');
 require_once('plan.inc.php');
-
 testlinkInitPage();
-
 
 $type = isset($_GET['type']) ? $_GET['type'] : 0;
 $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
@@ -33,36 +33,33 @@ $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 if(!$type || !$id)
 	redirect( $_SESSION['basehref'] . "/gui/instructions/planTesters.html");
 	
-//update
 $submit = isset($_POST['submit']) ? $_POST['submit'] : 0;
 if ($submit)
 {
+	//remove the submit button
+	unset($_POST['submit']);
 	$projRightsArray = extractInput();
-
+	
 	if($type == 'users')
 	{
-		//First we need to delete everything from the projRights table for that user
+		//delete everything from the projRights table for that user
 		$resultDelete = deleteUsersProjectRights($id);
-		//Then we loop through the data that was passed in
-		foreach($projRightsArray as $projRights)
+		if (sizeof($projRightsArray))
 		{
-			 //ignore the first value because it is the submit button
-			if($projRights != 'Save')
+			foreach($projRightsArray as $projRights)
+			{
 				$resultDelete = insertTestPlanUserRight($projRights,$id);
+			}
 		}
 	}
-	elseif($type == 'plans')
+	else if($type == 'plans')
 	{
-		//First we need to delete everything from the projRights table for that project
+		//delete everything from the projRights table for that project
 		$resultDelete = deleteTestPlanRightsForProject($id);
-
-		//Then we loop through the data that was passed in
-		foreach($projRightsArray as $projRights)
+		if (sizeof($projRightsArray))
 		{
-			 //ignore the first value because it is the submit button
-			if($projRights != 'Save')
+			foreach($projRightsArray as $projRights)
 			{
-				//We then need to add the new data to the projRights table
 				$resultDelete = insertTestPlanUserRight($id,$projRights);
 			}
 		}
@@ -71,7 +68,6 @@ if ($submit)
 	$update = 'ok';
 }
 
-// collect data for display
 $arrData = null;
 if ($type == 'plans')
 {
@@ -86,7 +82,7 @@ else
 	getUserTestPlans1($id,$arrData);
 }
 
-$smarty = new TLSmarty;
+$smarty = new TLSmarty();
 $smarty->assign('title', $title);
 $smarty->assign('arrData', $arrData);
 $smarty->display('planTesters.tpl');
@@ -128,13 +124,13 @@ function getUserTestPlans1($id,&$arrPlans)
 	return 1;
 }
 
-
+//20051112 - scs - replaced not found with TL_Unknown
 function getUserLogin($id)
 {
 	$users = null;
 
 	getUserById($id,$users);
-	$userInfo = "<Not found>";
+	$userInfo = '<'.lang_get('Unknown').'>';
 	if (sizeof($users))
 	{
 		$user = $users[0];

@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: plan.inc.php,v $
- * @version $Revision: 1.14 $
- * @modified $Date: 2005/10/10 06:58:41 $ $Author: franciscom $
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2005/11/13 19:19:32 $ $Author: schlundus $
  * @author 	Martin Havlat
  *
  * Functions for management: 
@@ -398,6 +398,7 @@ function insertTestPlanBuild($buildName,$testplanID,$notes = '')
 }
 
 // 20050914 - fm - using also mgtcategory changed return type
+//20051112 - scs - removed non-existing MGTCOMP.name order by column
 function getAllTestPlanComponentCategories($testPlanID,$compID)
 {
 	$aCategories = array();
@@ -407,7 +408,7 @@ function getAllTestPlanComponentCategories($testPlanID,$compID)
 	         " AND CAT.compid = COMP.id " .
 	         " AND COMP.projid = " .	$testPlanID  . 
 	         " AND COMP.id = " . $compID . 
-	         " ORDER BY MGTCOMP.name, MGTCAT.CATorder";
+	         " ORDER BY MGTCAT.CATorder";
 	         
 	$result = do_mysql_query($query);
 	if ($result)

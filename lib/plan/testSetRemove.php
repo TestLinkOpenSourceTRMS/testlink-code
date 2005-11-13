@@ -1,7 +1,7 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: testSetRemove.php,v 1.4 2005/10/03 07:20:14 franciscom Exp $ 
+ * @version $Id: testSetRemove.php,v 1.5 2005/11/13 19:19:32 schlundus Exp $ 
  * 
  * Remove Test Cases from Test Case Suite 
  * 
@@ -11,6 +11,8 @@
  * refactoring:  
  * removed deprecated: $_SESSION['project']
  *
+ * 20051112 - scs - removed undefined index warning, added escaping of comp and
+ * 					cat names
  */         
 require('../../config.inc.php');
 require("../functions/common.php");
@@ -82,24 +84,24 @@ elseif(isset($_POST['deletecomponent']))
 	del_component_deep($id);
 
 	$resultString = "<b>". lang_get("component_removed_part1") ."</b> " . 
-	                $comRow['comp_name'] ." ". lang_get("component_removed_part2");
+	                htmlspecialchars($comRow['comp_name']) ." ". lang_get("component_removed_part2");
 	
 }
 elseif(isset($_POST['deletecategory'])) 
 {
-
 	$sql = " SELECT name " .
-	       " FROM mgtcategory MGTCAT, category CAT" .
-	       " WHERE MGTCAT.id = CAT.mgtcatid " .
-	       " AND CAT.id=" . $id;
+			" FROM mgtcategory MGTCAT, category CAT" .
+			" WHERE MGTCAT.id = CAT.mgtcatid " .
+			" AND CAT.id=" . $id;
 	$result = do_mysql_query($sql);
 	$myrow = mysql_fetch_assoc($result);
-  $cat_name = $myrow['name'];
-
-  // 20051001 - fm
-  del_category_deep($id);
+	$cat_name = $myrow['name'];
+	
+	// 20051001 - fm
+	del_category_deep($id);
 	$resultString =  "<b>". lang_get("category_removed_part1") . 
-	                 " </b> " . $cat_name . " ". lang_get("category_removed_part2");
+					" </b> " . htmlspecialchars($cat_name) . " ". 
+					lang_get("category_removed_part2");
 }
 
 // ---------------------------------------------------------------------------------------
@@ -108,15 +110,15 @@ elseif(isset($_POST['deletecategory']))
 //
 if($level == 'component')
 {
-	$arrData=genTC_info($id,ALL_CAT,ALL_TC);
+	$arrData = genTC_info($id,ALL_CAT,ALL_TC);
 }
 else if ($level == 'category')
 {
-	$arrData=genTC_info(THIS_COMP,$id,ALL_TC);
+	$arrData = genTC_info(THIS_COMP,$id,ALL_TC);
 }
 else if($level == 'tc')
 {
-  $arrData=genTC_info(THIS_COMP,THIS_CAT,$id);
+	$arrData = genTC_info(THIS_COMP,THIS_CAT,$id);
 } 
 else
 {
@@ -155,35 +157,30 @@ function genTC_info($compID, $catID, $tcID)
 	       " AND component.id = category.compid " .
 	       " AND category.id=testcase.catid ";
 
-  if($compID)
-  {
-    $sql .= " AND component.id=" . $compID; 
-  }	       
-  if($catID)
-  {
-    $sql .= " AND category.id=" . $catID; 
-  }	       
-  if($tcID)
-  {
-    $sql .= " AND testcase.id=" . $tcID; 
-  }	       
-  $sql .= " ORDER BY TCorder";
+	if($compID)
+	{
+		$sql .= " AND component.id=" . $compID; 
+	}	       
+	if($catID)
+	{
+		$sql .= " AND category.id=" . $catID; 
+	}	       
+	if($tcID)
+	{
+		$sql .= " AND testcase.id=" . $tcID; 
+	}	       
+	$sql .= " ORDER BY TCorder";
 
-
+	$tc_info = null;
 	$result = do_mysql_query($sql);
 	while($row = mysql_fetch_assoc($result))
 	{
-		$tc_info[] = array(	'id' => $row['id'], 
-		                    'name' => $row['title'], 
-								        'container' => $row['comp_name'] . '/' . $row['cat_name'],
-								        'comp_id' => $row['comp_id'],
-								        'cat_id' => $row['cat_id'] );
-  }
-  return ($tc_info);
+	$tc_info[] = array(	'id' => $row['id'], 
+				'name' => $row['title'], 
+				'container' => $row['comp_name'] . '/' . $row['cat_name'],
+				'comp_id' => $row['comp_id'],
+				'cat_id' => $row['cat_id'] );
+	}
+	return $tc_info;
 }
-
-
-
-
-
 ?>

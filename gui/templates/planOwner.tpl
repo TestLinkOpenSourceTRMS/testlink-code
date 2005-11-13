@@ -1,7 +1,8 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: planOwner.tpl,v 1.2 2005/08/16 17:59:13 franciscom Exp $ *}
+{* $Id: planOwner.tpl,v 1.3 2005/11/13 19:19:31 schlundus Exp $ *}
 {* Purpose: smarty template - assign ownership and priority *}
 {* 20050514 - fm: I18N*}
+{* 20051112 - scs - changed item to 'TestSuite', TestSuite name wasn't not escaped *}
 
 {include file="inc_head.tpl"}
 
@@ -15,7 +16,7 @@
 		target="_parent">{lang_get s='def_prio_rules'}</a></span> 
 </div>
 
-{include file="inc_update.tpl" result=$sqlResult item="Test Suite" }
+{include file="inc_update.tpl" result=$sqlResult item="TestSuite" }
 
 <div class="workBack">
 
@@ -30,7 +31,7 @@
 			<th>{lang_get s='th_owner'}</th>
 		</tr>
 		<tr>
-			<td>{$arrSuites[Row].name}</td>
+			<td>{$arrSuites[Row].name|escape}</td>
 			<td><select name="importance">
 					{html_options options=$optionImportance selected=$arrSuites[Row].importance}
 				</select></td>

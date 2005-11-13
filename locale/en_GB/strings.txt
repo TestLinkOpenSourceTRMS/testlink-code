@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.34 $
- * @modified $Date: 2005/11/09 19:54:12 $
+ * @version $Revision: 1.35 $
+ * @modified $Date: 2005/11/13 19:19:32 $
  *
  * @author Francisco Mancardi
 **/
@@ -246,6 +246,7 @@ $TLS_Requirement = "Requirement";
 $TLS_Requirements = "Requirements";
 $TLS_TestCase = "TestCase";
 $TLS_TestPlan = "TestPlan";
+$TLS_TestSuite = "TestSuite";
 $TLS_add = "added";
 $TLS_assigned = "assigned";
 $TLS_delete = "Delete";
@@ -401,6 +402,9 @@ $TLS_th_owner = "Owner";
 $TLS_th_risk = "Risk";
 $TLS_th_test_suite = "Test Suite";
 $TLS_title_plan_ownership = "TestPlan ownership";
+$TLS_opt_imp_low = 'Low';
+$TLS_opt_imp_medium = 'Medium';
+$TLS_opt_imp_high = 'High';
 
 
 
@@ -421,9 +425,9 @@ $TLS_btn_uncheck_all = "Uncheck All";
 
 
 // gui/templates/planTestersNavigator.tpl
+$TLS_label_list_of = "List of";
 $TLS_opt_test_plans = "Test Plans";
 $TLS_opt_users = "Users";
-
 
 
 // gui/templates/resultsAllBuilds.tpl
@@ -613,7 +617,7 @@ $TLS_th_status = "Status";
 $TLS_th_suite_version = "Suite version";
 $TLS_th_update = "Update";
 $TLS_title_upd_mod_tc = "Update Modified Test Cases in ";
-
+$TLS_deleted = "deleted";
 
 
 // gui/templates/reqSpecView.tpl

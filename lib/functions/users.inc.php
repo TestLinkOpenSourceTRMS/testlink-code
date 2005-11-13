@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: users.inc.php,v $
  *
- * @version $Revision: 1.10 $
- * @modified $Date: 2005/11/09 19:54:10 $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2005/11/13 19:19:31 $
  *
  * @author Chad Rosen, Martin Havlat
  * @author Martin Havlat
@@ -243,12 +243,14 @@ function getUserById($id,&$users)
 	return getAllUsers($users,"where id=" . $id);
 }
 
+//20051112 - scs - where clause was added at the wrong place
 function getAllUsers(&$users,$whereClause = null)
 {
-	$sql = "SELECT id,login,password,first,last,email,rightsid FROM user ORDER BY login";
+	$sql = "SELECT id,login,password,first,last,email,rightsid FROM user";
 	if (!is_null($whereClause))
-		$sql .= $whereClause;
-
+		$sql .= ' '.$whereClause;
+	
+	$sql .= " ORDER BY login";
 	$result = do_mysql_query($sql);
 	$users = null;
 	if ($result)
@@ -284,31 +286,36 @@ function getAllUsers_assoc(&$users,$whereClause = null)
 	return $result ? 1 : 0;
 }
 
-# Check if the username is a valid username (does not account for uniqueness) 
-#  realname can match
-# Return true if it is, false otherwise
-function user_is_name_valid( $p_username ) {
-  
-	$user_ok = true;
-  
-	# The regular expression to use when validating new user login names
+/*
+* Check if the username is a valid username (does not account for uniqueness) 
+* realname can match
+* Return true if it is, false otherwise
+* 
+* 20051112 - scs - small cosmetic changes, added trimming, corrected wrong login 
+* 				   maxlength check
+*/
+function user_is_name_valid($p_username)
+{
+ 	$user_ok = true;
+	
+	$p_username = trim($p_username);
+	//simple check for empty login, or login consisting only of whitespaces
+	//The DB field is only 30 characters
+	if (!strlen($p_username) || (strlen($p_username) > 30))
+	{
+		$user_ok = false;
+	}
+    # The regular expression to use when validating new user login names
 	# The default regular expression allows a-z, A-z, 0-9, as well as space and
 	#  underscore.  If you change this, you may want to update the
 	#  ERROR_USER_NAME_INVALID string in the language files to explain
 	#  the rules you are using on your site
 	$user_login_valid_regex = '/^[\w \-]+$/';
-
-	# The DB field is only 32 characters
-	if ( strlen( $p_username ) > 32 ) {
+	# Only allow a basic set of characters
+	if (!preg_match($user_login_valid_regex, $p_username))
+	{
 		$user_ok = false;
 	}
-
-	# Only allow a basic set of characters
-	if ( 0 == preg_match( $user_login_valid_regex, $p_username ) )
-		$user_ok = false;
-
-	if (strlen($p_username) == 0)
-	  $user_ok = false;
 
 	return $user_ok;
 }

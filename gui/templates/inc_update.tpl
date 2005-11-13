@@ -1,5 +1,5 @@
 {* Testlink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: inc_update.tpl,v 1.5 2005/10/09 18:13:48 schlundus Exp $ *}
+{* $Id: inc_update.tpl,v 1.6 2005/11/13 19:19:31 schlundus Exp $ *}
 {* Purpose: smarty template - show SQL update result *}
 {* INPUT: $result (mandatory) = [ok, sql_error_description] 
 			If $result is empty do nothing.
@@ -10,7 +10,9 @@
 	$action = [update (default), add, delete]
 	
 *}
-
+{*
+ 20051112 - scs - changed "Test Suite" to "TestSuite"
+*}
 
 {if $result eq "ok"}
 
@@ -28,7 +30,7 @@
 	lang_get('user');
 	lang_get('TestPlan');
 	lang_get('TestCase');
-	lang_get('Test Suite')
+	lang_get('TestSuite')
 	lang_get('Priority');
 	lang_get('component');
 	lang_get('category');

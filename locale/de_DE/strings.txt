@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.18 $
- * @modified $Date: 2005/11/09 19:54:11 $
+ * @version $Revision: 1.19 $
+ * @modified $Date: 2005/11/13 19:19:32 $
  *
  * @author Andreas Morsing
  *
@@ -242,12 +242,13 @@ $TLS_licensed_under = "TestLink ist lizenziert unter der";
 // gui/templates/inc_update.tpl
 $TLS_Build = "Build";
 $TLS_Keyword = "Keyword";
-$TLS_Priority = "LOCALIZE: TLS_Priority";
+$TLS_Priority = "Priorität";
 $TLS_Product = "Produkt";
 $TLS_Requirement = "Anforderung";
 $TLS_Requirements = "Anforderungen";
 $TLS_TestCase = "testcase";
 $TLS_TestPlan = "TestPlan";
+$TLS_TestSuite = "TestSuite";
 $TLS_add = "hinzugefügt";
 $TLS_assigned = "zugewiesen";
 $TLS_delete = "gelöscht";
@@ -403,7 +404,9 @@ $TLS_th_owner = "Besitzer";
 $TLS_th_risk = "Risiko";
 $TLS_th_test_suite = "Test Suite";
 $TLS_title_plan_ownership = "TestPlan Besitzverhältnisse";
-
+$TLS_opt_imp_low = 'Niedrig';
+$TLS_opt_imp_medium = 'Mittel';
+$TLS_opt_imp_high = 'Hoch';
 
 
 // gui/templates/planPriority.tpl
@@ -423,6 +426,7 @@ $TLS_btn_uncheck_all = "Alle deselektieren";
 
 
 // gui/templates/planTestersNavigator.tpl
+$TLS_label_list_of = "Liste der";
 $TLS_opt_test_plans = "TestPläne";
 $TLS_opt_users = "Benutzer";
 
@@ -609,13 +613,13 @@ $TLS_info_all_tc_uptodate = "Alle TestCases sind aktuell.";
 $TLS_th_category = "Kategorie";
 $TLS_th_component = "Komponente";
 $TLS_th_id_tc = "[ID] TestCase";
-$TLS_th_reason = "Reason to Update";
+$TLS_th_reason = "Aktualisierungsgrund";
 $TLS_th_spec_version = "Spez. Version";
 $TLS_th_status = "Status";
 $TLS_th_suite_version = "Suite Version";
 $TLS_th_update = "Aktualisieren";
 $TLS_title_upd_mod_tc = "Aktualisiere geänderte Test Cases in ";
-
+$TLS_deleted = "Gelöscht";
 
 
 // gui/templates/reqSpecView.tpl
@@ -1102,9 +1106,9 @@ $TLS_test_case_removed_part1 = "Test Case";
 
 
 // lib/plan/planUpdateTC.php
-$TLS_category_has_changed = "Category has changed";
-$TLS_different_versions = "Diff. Versions";
-$TLS_plan_update_no_tc_updated = "Keine Test Cases wurden aktualisiert";
+$TLS_category_has_changed = "Kategorie wurde geändert";
+$TLS_different_versions = "Verschiedene Versionen";
+$TLS_plan_update_no_tc_updated = "Es wurden keine TestCases aktualisiert";
 $TLS_planupdate_tc_deleted1 = "Test Case";
 $TLS_planupdate_tc_deleted2 = "wurde gelöscht.";
 $TLS_planupdate_tc_updated1 = "Test Case";

@@ -1,11 +1,14 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: planUpdateTC.php,v 1.9 2005/11/13 19:19:32 schlundus Exp $
+ * @version $Id: planUpdateTC.php,v 1.10 2005/11/14 07:43:46 franciscom Exp $
  * @author Martin Havlat
  * 
  * Update Test Cases within Test Case Suite 
  * 
+ * @author Francisco Mancardi - 20051112
+ * BUGID 0000218
+ *
  * @author Francisco Mancardi - 20051009
  * BUGID 0000162: Moving a Testcase to another category
  *
@@ -126,17 +129,25 @@ $smarty->display('planUpdateTC.tpl');
 //20050730 - fm - BUGID: SF1242462
 function displayTC($id,&$arrData)
 {
-	// 20050730 - fm - BUGID: SF1242462
-	// added category.mgtcatid, testcase.catid
-	$sql = " SELECT MGTCAT.name as TPTC_category, MGTCOMP.name as TPTC_component, " .
-	      " TC.id, TC.title, version, mgttcid, CAT.mgtcatid, TC.catid " .
-	      " FROM testcase TC, component COMP, category CAT, mgtcategory MGTCAT, mgtcomponent MGTCOMP " .
-	      " WHERE CAT.mgtcatid = MGTCAT.id " .
-	      " AND COMP.mgtcompid = MGTCOMP.id " .
-	      " AND COMP.id=CAT.compid " .
-	      " AND CAT.id=TC.catid " . 
-	      " AND TC.id=" . $id . 
-	      " ORDER BY TC.TCorder";
+  // 20051112 - fm - join with mgttestcase
+  //  
+  //                
+  // 20050730 - fm
+  // BUGID: SF1242462
+  // added category.mgtcatid, testcase.catid
+  //
+	$sql = " SELECT MGTCAT.name AS TPTC_category, MGTCOMP.name AS TPTC_component, " .
+	       " TC.id, TC.title, TC.version, TC.mgttcid, CAT.mgtcatid, TC.catid, " .
+	       " TC.TCOrder AS TPTC_order, MGTTC.TCOrder AS MGTTC_order" .
+	       " FROM testcase TC, component COMP, category CAT, " .
+	       "      mgttestcase MGTTC, mgtcategory MGTCAT, mgtcomponent MGTCOMP " .
+	       " WHERE CAT.mgtcatid = MGTCAT.id " .
+	       " AND COMP.mgtcompid = MGTCOMP.id " .
+	       " AND COMP.id=CAT.compid " .
+	       " AND CAT.id=TC.catid " . 
+	       " AND TC.mgttcid=MGTTC.id " .
+	       " AND TC.id=" . $id . 
+	       " ORDER BY TC.TCorder";
        
 	$result = do_mysql_query($sql);
 	while($row = mysql_fetch_array($result)){
@@ -183,6 +194,19 @@ function displayTC($id,&$arrData)
 			$reason_to_update .= lang_get('category_has_changed');
 			$load_data = 1;
 		}
+
+		// 20051112 - check fot TC order changes
+		if( $row['TPTC_order'] != $row['MGTTC_order'] )
+		{
+			if ($load_data )
+		  {	
+			  $reason_to_update .= " / ";
+		  }	
+			$reason_to_update .= lang_get('tcorder_has_changed');
+			$load_data = 1;
+		}
+
+
 		if ($load_data)
 		{
 			$arrData[] = array("container" => $containerName, "specId" => $mgtID, 

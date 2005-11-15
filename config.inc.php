@@ -5,14 +5,16 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.28 $
- * @modified $Date: 2005/11/07 07:03:49 $ by $Author: franciscom $
+ * @version $Revision: 1.29 $
+ * @modified $Date: 2005/11/15 11:42:56 $ by $Author: franciscom $
  *
  *
  * Constants and configuration parameters used throughout TestLink 
  * are defined within this file they should be changed for your environment
  *
  * Revisions:
+ *
+ * @author Francisco Mancardi - 20051115 - added constant for JIRA
  *
  * @author Francisco Mancardi - 20051106
  * Adding configuration parameters to use PHPMAILER, to send mail.
@@ -137,9 +139,10 @@ define('TL_IMPORT_ROW_MAX', '10000'); // in chars
 */
 
 /** 
-* @var STRING TL_INTERFACE_BUGS = ['NO', 'BUGZILLA','MANTIS']
+* @var STRING TL_INTERFACE_BUGS = ['NO', 'BUGZILLA','MANTIS','JIRA']
 * BUGZILLA: edit configuration in TL_ABS_PATH/cfg/bugzilla.cfg.php
-* MANTIS: edit configuration in TL_ABS_PATH/cfg/mantis.cfg.php
+* MANTIS  : edit configuration in TL_ABS_PATH/cfg/mantis.cfg.php
+* JIRA    : edit configuration in TL_ABS_PATH/cfg/jira.cfg.php
 */
 define('TL_INTERFACE_BUGS', 'NO');
 require_once(TL_ABS_PATH . 'lib/bugtracking/int_bugtracking.php');

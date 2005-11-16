@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.29 $
- * @modified $Date: 2005/11/15 11:42:56 $ by $Author: franciscom $
+ * @version $Revision: 1.30 $
+ * @modified $Date: 2005/11/16 03:46:40 $ by $Author: havlat $
  *
  *
  * Constants and configuration parameters used throughout TestLink 
@@ -162,7 +162,7 @@ error_reporting(E_ALL & ~E_NOTICE);
 /** GUI related constants *///////////////////////////////////////////////////
 
 /* CVS will not released, MUST BE changed at the release day */
-define('TL_VERSION', '1.6.RC2'); 
+define('TL_VERSION', '1.6.0'); 
 define('TL_BACKGROUND_DEFAULT', "#9BD");
 
 /** 
@@ -285,12 +285,13 @@ $g_fckeditor_toolbar = "TL_Medium_2";
 /* fr_FR -> thanks to grdscarabe@grdscarabe.net */
 /* These are the supported locales */
 $g_locales = array('en_GB' => 'English (UK)',
-				           'it_IT' => 'Italian',
-				           'es_AR' => 'Spanish (Argentine)',
-				           'es_ES' => 'Spanish',
-				           'de_DE' => 'German',
+				   'it_IT' => 'Italian',
+				   'es_AR' => 'Spanish (Argentine)',
+				   'es_ES' => 'Spanish',
+				   'de_DE' => 'German',
                    'fr_FR' => 'Fran&ccedil;ais',
-                   'pt_BR' => 'Portuguese (Brazil)'
+                   'pt_BR' => 'Portuguese (Brazil)',
+                   'zh_CN' => 'Chinese Simplified'
 				          );
 
 // ----------------------------------------------------------------------------
@@ -310,16 +311,18 @@ $g_locales_date_format = array('en_GB' => "%d/%m/%Y",
 				                       'es_ES' => "%d/%m/%Y",
 				                       'de_DE' => "%d.%m.%Y",
 				                       'fr_FR' => "%d/%m/%Y",
-				                       'pt_BR' => "%d/%m/%Y"
+				                       'pt_BR' => "%d/%m/%Y",
+				                       'zh_CN' => "%Y年%m月%d日"
 				                       ); 
 
 $g_locales_timestamp_format = array('en_GB' => "%d/%m/%Y %H:%M:%S",
-				                            'it_IT' => "%d/%m/%Y %H:%M:%S",
-				                            'es_AR' => "%d/%m/%Y %H:%M:%S",
-				                            'es_ES' => "%d/%m/%Y %H:%M:%S",
-				                            'de_DE' => "%d.%m.%Y %H:%M:%S",
-				                            'fr_FR' => "%d/%m/%Y %H:%M:%S",
-				                            'pt_BR' => "%d/%m/%Y %H:%M:%S",
+				                       'it_IT' => "%d/%m/%Y %H:%M:%S",
+				                       'es_AR' => "%d/%m/%Y %H:%M:%S",
+				                       'es_ES' => "%d/%m/%Y %H:%M:%S",
+				                       'de_DE' => "%d.%m.%Y %H:%M:%S",
+				                       'fr_FR' => "%d/%m/%Y %H:%M:%S",
+				                       'pt_BR' => "%d/%m/%Y %H:%M:%S",
+				                       'zh_CN' => "%Y年%m月%d日 %H时%M分%S秒"
 				                           ); 
 // ----------------------------------------------------------------------------
 

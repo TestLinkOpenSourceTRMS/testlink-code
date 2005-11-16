@@ -1,0 +1,1233 @@
+<?php
+/**
+ * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ *
+ * Filename $RCSfile: strings.txt,v $
+ *
+ * @version $Revision: 1.1 $
+ * @modified $Date: 2005/11/16 03:54:27 $
+ *
+ * @author Yoyo Wang
+**/
+
+// add by wangyy, global setting
+$TLS_charset	= "gb2312";
+$TLS_from_email_name = "Testlink 管理员";
+$TLS_default_component_name = "由需求自动创建的组件";
+$TLS_default_category_name = "待定";
+$TLS_objective_for_category = "从需求生成的分类/用例";
+$TLS_scope_for_component = "从需求生成的组件/分类/用例";
+
+
+// firstLogin.php
+$TLS_cant_create_user = "很抱歉无法为您创建登陆帐号。请与管理员联系！";
+$TLS_empty_email_address = " 电子邮件地址不能为空！";
+$TLS_empty_first_name = " 名字不能为空！";
+$TLS_empty_last_name = " 姓不能为空！";
+$TLS_fatal_page_title = "TestLink ::: 致命错误";
+$TLS_invalid_user_name = "用户名错误，请重新输入。";
+$TLS_passwd_dont_match = "两次输入的口令不一致，请说明口令是大小写敏感的。请重新输入。";
+$TLS_user_cant_be_created_because = "你的帐号无法创建,原因是：";
+$TLS_user_name_exists = "用户名已经被使用,请选择其它的名称。";
+$TLS_valid_user_name_format = "用户名只能包含字母,数字,空格,连字符和下划线。";
+$TLS_your_info_please = "输入你的用户信息";
+
+
+
+// index.php
+$TLS_main_page_title = "TestLink ::: 主页";
+
+
+
+// login.php
+$TLS_bad_user_passwd = "重试！错误的用户名或口令！";
+$TLS_login_msg_session_exists1 = "浏览器中已经有一个合法的登陆用户。请使用它。";
+$TLS_login_msg_session_exists2 = " 首先，你是否想重新建立会话。";
+$TLS_logout_link = "退出";
+$TLS_passwd_lost = "你的口令已经发送到你注册用户信息时指定的电子邮件地址中。请查看你的邮箱。如果还有其它问题，请与TestLink管理员联系。";
+$TLS_please_login = "请登陆 ...";
+$TLS_session_expired = "你的会话已经超时！请重新登陆。";
+$TLS_your_first_login = "欢迎使用 TestLink！你具有客户访问权限。请登陆 ...";
+
+
+
+// lostPassword.php
+$TLS_bad_user = "用户不存在，请重试";
+$TLS_contact_admin = "<br>如果你有近一步的问题，请与系统管理员联系。";
+$TLS_mail_empty_address = "你没有在你的用户档案信息中指定电子邮件地址！请与TestLink系统管理员联系，重新设置你的口令！";
+$TLS_mail_passwd_subject = "新的TestLink口令";
+$TLS_mail_problems = "邮件功能没有正确安装，请与系统管理员联系。";
+$TLS_page_title_lost_passwd = "TestLink - 忘记口令";
+$TLS_your_info_for_passwd = "输入你的用户信息，以便可以通过电子邮件发送你的新口令。";
+$TLS_your_password_is = "你的TestLink新口令是：<br>";
+
+
+
+// gui/templates/adminProductEdit.tpl
+$TLS_btn_activate = "激活";
+$TLS_btn_create = "创建";
+$TLS_btn_del = "删除";
+$TLS_btn_edit_del = "编辑 / 删除";
+$TLS_btn_inactivate = "禁用";
+$TLS_btn_upd = "更新";
+$TLS_caption_edit_product = "编辑产品";
+$TLS_color = "颜色";
+$TLS_enable_requirements = "启用需求功能";
+$TLS_info_failed_loc_prod = "本地化产品失败";
+$TLS_invalid_query = "无效的查询";
+$TLS_name = "名称";
+$TLS_popup_product_delete = "警告！这个操作会永久删除与产品相关的所有数据（包括测试结果、计划等）。你也可以使用禁用来代替删除操作。\\n建议：首先备份数据库。\\n你确定要删除这个产品吗？";
+$TLS_title_product_mgmt = "产品管理";
+
+
+
+// gui/templates/adminProductNew.tpl
+$TLS_alt_pick_up_color = "点击这里选择颜色";
+$TLS_caption_new_product = "新产品";
+
+
+
+// gui/templates/adminUserNew.tpl
+$TLS_btn_add = "增加";
+$TLS_caption_new_user = "用户信息";
+$TLS_menu_del_user = "删除用户";
+$TLS_menu_mod_user = "修改用户";
+$TLS_menu_new_user = "新增用户";
+$TLS_th_email = "电子邮件";
+$TLS_th_first_name = "名字";
+$TLS_th_last_name = "姓";
+$TLS_th_locale = "语言";
+$TLS_th_login = "帐号";
+$TLS_th_password = "口令";
+$TLS_th_rights = "权限";
+$TLS_title_user_mgmt = "用户管理";
+
+
+
+// gui/templates/adminUsers.tpl
+$TLS_btn_upd_users = "更新用户";
+$TLS_msg_users_upd = "已经更新了用户信息";
+$TLS_th_result = "结果";
+$TLS_th_role = "角色";
+
+
+
+// gui/templates/adminUsersDelete.tpl
+$TLS_btn_del_user = "删除用户";
+$TLS_confirm_user_del = "真的要删除这个用户吗？";
+
+
+
+// gui/templates/buildNew.tpl
+$TLS_alt_delete_build = "点击这里删除这个构建";
+$TLS_enter_build = "输入构建的标识";
+$TLS_enter_build_notes = "构建的说明：";
+$TLS_msg_build = "每个构建将与一个活动的测试计划相关联";
+$TLS_no_builds = "构建不存在于测试计划";
+$TLS_th_build_notes = "说明";
+$TLS_th_delete = "是否删除？";
+$TLS_th_existing_builds = "构建关联的测试计划 ";
+$TLS_title_create_build_for_tp = "创建构建并关联到测试计划";
+$TLS_title_notes = "说明：";
+$TLS_warning_delete_build = "你真的想要删除这个构建吗？所有相关的数据都将被删除！";
+
+
+
+// gui/templates/containerDelete.tpl
+$TLS_btn_yes_del_cat = "是的，删除分类！";
+$TLS_btn_yes_del_comp = "是的，删除组件！";
+$TLS_gui_error = "用户图形界面错误";
+$TLS_question_del = "真的删除";
+
+
+
+// gui/templates/containerEdit.tpl
+$TLS_btn_update_cat = "更新分类";
+$TLS_category = "分类";
+$TLS_component = "组件";
+$TLS_title_edit_level = "编辑";
+
+
+
+// gui/templates/containerMove.tpl
+$TLS_btn_cp = "复制";
+$TLS_btn_move = "移动";
+$TLS_choose_target = "选择目标";
+$TLS_cont_move_first = "移动这个";
+$TLS_cont_move_second = "到另一个";
+$TLS_defined_exclam = "已定义！";
+$TLS_include_nested = "包含嵌套数据（只能复制）";
+$TLS_sorry_further = "很抱歉没有更多的 ";
+$TLS_title_move_cp = "移动/复制";
+$TLS_copy_keywords = "复制关键字"; // add by wangyy
+
+
+// gui/templates/containerNew.tpl
+$TLS_btn_create_cat = "创建分类";
+$TLS_btn_create_comp = "创建组件";
+$TLS_title_create = "创建";
+
+
+
+// gui/templates/containerOrder.tpl
+$TLS_no_cat_to_reorder = "很抱歉，分类不存在，无法进行重新排序";
+$TLS_th_id = "标识";
+$TLS_th_order = "顺序";
+$TLS_title_change_comp_cat_order = "改变这个组件的分类顺序";
+
+
+
+// gui/templates/containerView.tpl
+$TLS_alt_del_com = "删除这个组件";
+$TLS_alt_edit_com = "修改这个组件的数据和标题";
+$TLS_alt_move_cp_com = "将这个组件移动或复制到另一个产品中";
+$TLS_btn_del_cat = "删除";
+$TLS_btn_del_com = "删除";
+$TLS_btn_edit_cat = "编辑";
+$TLS_btn_edit_com = "编辑";
+$TLS_btn_import_tc = "导入测试用例";
+$TLS_btn_move_cp_cat = "移动/复制";
+$TLS_btn_move_cp_com = "移动/复制";
+$TLS_btn_new_cat = "新建分类";
+$TLS_btn_new_com = "新建组件";
+$TLS_btn_new_tc = "创建测试用例";
+$TLS_btn_reorder_cat = "分类重新排序";
+$TLS_btn_reorder_tc = "测试用例重新排序";
+$TLS_th_product_name = "产品名称";
+
+
+
+// gui/templates/execNavigator.tpl
+$TLS_btn_update_menu = "更新菜单";
+$TLS_caption_nav_filter_settings = "导航 - 筛选和设置";
+$TLS_filter_build = "筛选: 构建";
+$TLS_filter_keyword = "筛选: 关键字";
+$TLS_filter_owner = "筛选: 拥有者";
+$TLS_filter_result = "筛选: 结果";
+$TLS_filter_tcID = "筛选: 测试用例标识";
+$TLS_opt_all = "不限";
+$TLS_opt_build = "构建";
+$TLS_opt_last_result = "上一次结果";
+$TLS_title_tc_suite_navigator = "导航 - 测试用例集";
+$TLS_tree_colored_to = "测试用例颜色依照 ";
+
+
+
+// gui/templates/execSetResults.tpl
+$TLS_btn_save_tc_exec_results = "保存结果";
+$TLS_button_enter_bug = "录入新问题";
+$TLS_caption_bugtable = "相关问题";
+$TLS_tc_not_tested_yet = "尚未测试的";
+$TLS_test_exec_bug_report = "问题报告";
+$TLS_test_exec_by = "执行人：";
+$TLS_test_exec_expected_r = "期望的结果";
+$TLS_test_exec_last_run_date = "最近的执行：";
+$TLS_test_exec_notes = "说明/描述";
+$TLS_test_exec_on_build = "→构建";
+$TLS_test_exec_result = "结果";
+$TLS_test_exec_steps = "步骤";
+$TLS_test_exec_summary= "摘要";
+$TLS_test_status_blocked = "锁定";
+$TLS_test_status_failed = "失败";
+$TLS_test_status_not_run = "尚未执行";
+$TLS_test_status_passed = "通过";
+$TLS_th_test_case_id = "标识";
+$TLS_title_t_r_on_build = "测试结果→构建";
+$TLS_title_t_r_owner = "拥有者";
+$TLS_title_test_case = "测试用例";
+$TLS_title_t_r_submitted = "测试结果已提交。"; // add by wangyy
+
+
+
+// gui/templates/inc_copyrightnotice.tpl
+$TLS_gnu_gpl = "GNU GPL";
+$TLS_lic_home = "主页";
+$TLS_lic_product = "产品";
+$TLS_licensed_under = "TestLink许可协议";
+
+
+
+// gui/templates/inc_update.tpl
+$TLS_Build = "构建";
+$TLS_Keyword = "关键字";
+$TLS_Priority = "优先级";
+$TLS_Product = "产品";
+$TLS_Requirement = "需求";
+$TLS_Requirements = "需求";
+$TLS_testcase = "测试用例";
+$TLS_TestPlan = "测试计划";
+$TLS_add = "增加";
+$TLS_assigned = "被指派";
+$TLS_delete = "删除";
+$TLS_info_failed_db_upd = "更新数据库失败！";
+$TLS_info_failed_db_upd_details = "更新数据库失败！-- 详细信息：";
+$TLS_item = "项目";
+$TLS_update = "更新";
+$TLS_updated = "更新";
+$TLS_user = "用户";
+$TLS_was_success = " 已成功 ";
+
+
+
+// gui/templates/keywordsAssign.tpl
+$TLS_atc_keywords = "已指派的测试用例关键字:";
+$TLS_btn_assign = "指派";
+$TLS_info_multi_sel = "说明：使用 CTRL 或者 SHIFT 键和鼠标一起进行多选.";
+$TLS_menu_assign_kw_to_tc = "指派到测试用例";
+$TLS_menu_create = "创建";
+$TLS_menu_edit_del = "编辑 / 删除";
+$TLS_menu_view = "查看";
+$TLS_no_keywords = "很抱歉，测试用例的关键字没有定义";
+$TLS_none = "无";
+$TLS_sel_all_keywords = "选择所有需要的关键字：";
+$TLS_select_keyword_label = "选择关键字";
+$TLS_title_assign_kw_to_tc = "为测试用例指派关键字";
+$TLS_title_assign_kw_to_tc_in_cat = "为分类中的每个测试用例指派关键字";
+$TLS_title_assign_kw_to_tc_in_com = "为组件中的每个测试用例指派关键字";
+$TLS_title_keywords = "关键字";
+
+
+
+// gui/templates/keywordsEdit.tpl
+$TLS_btn_multi_upd = "批量更新";
+$TLS_keywords_updated = "关键字被更新！";
+$TLS_th_delete_q = "是否删除？";
+$TLS_th_keyword = "关键字";
+$TLS_th_notes = "说明";
+
+
+
+// gui/templates/keywordsNew.tpl
+$TLS_btn_create_keyword = "新建关键字";
+$TLS_caption_new_keyword = "输入新关键字";
+$TLS_warning_enter_at_least1 = "请至少输入 ";
+$TLS_warning_enter_at_least2 = " 个字符。";
+$TLS_warning_enter_less1 = "请最多输入";
+$TLS_warning_enter_less2 = " 个字符。";
+
+
+
+// gui/templates/keywordsView.tpl
+
+
+
+// gui/templates/login.tpl
+$TLS_btn_login = "登陆";
+$TLS_login_name = "登陆名：";
+$TLS_lost_password_q = "忘记口令？";
+$TLS_new_user_q = "是新用户吗？";
+$TLS_password = "口令：";
+$TLS_sec_note_prefix = "TestLink安全问题";
+
+
+
+// gui/templates/loginFirst.tpl
+$TLS_btn_add_user_data = "添加用户信息";
+$TLS_e_mail = "电子邮件地址（用来发送忘记了的口令等）：";
+$TLS_first_name = "名字：";
+$TLS_last_name = "姓：";
+$TLS_link_back_to_login = "返回登录";
+$TLS_password_again = "再次输入口令：";
+
+
+
+// gui/templates/loginLost.tpl
+$TLS_btn_send = "发送";
+$TLS_href_back = "返回";
+
+
+
+// gui/templates/planAddTC.tpl
+$TLS_btn_add_selected_tc = "增加选择的测试用例";
+$TLS_btn_check = "全选";
+$TLS_btn_uncheck = "全都不选";
+$TLS_check_uncheck_tc = "分类中的测试用例";
+$TLS_all_tc_in_component = "组件中的测试用例"; // add by wangyy
+$TLS_note_keyword_filter = "用关键字进行筛选的测试用例";
+$TLS_title_add_test_to_plan = "将测试用例添加到测试计划";
+
+
+// gui/templates/planAddTCNavigator.tpl
+$TLS_btn_set_filter = "设置筛选器";
+$TLS_caption_assign_tc_with_kewords = "只按关键字指派测试用例";
+$TLS_choose_keyword = "选择关键字";
+$TLS_opt_none = "无";
+$TLS_title_navigator = "导航";
+
+
+
+// gui/templates/planEdit.tpl
+$TLS_No = "否";
+$TLS_Yes = "是";
+$TLS_btn_upd_tp = "更新";
+$TLS_caption_edit_tp = "编辑已有的测试计划";
+$TLS_no_test_plans = "没有定义的测试计划！";
+$TLS_th_active = "活动的";
+$TLS_th_delete_tp = "删除";
+$TLS_th_name = "名称";
+$TLS_th_tp_notes = "说明";
+$TLS_title_test_plan = "测试计划";
+
+
+
+// gui/templates/planMilestoneEdit.tpl
+$TLS_btn_upd_milestone = "更新";
+$TLS_info_milestones_date = "里程碑的日期必须大于等于今天";
+$TLS_menu_add = "创建";
+$TLS_no_milestones = "这个测试计划中没有创建里程碑！";
+$TLS_th_date_format = "日期 (YYYY-MM-DD)";
+$TLS_th_perc_a_prio = "% A 优先级";
+$TLS_th_perc_b_prio = "% B 优先级";
+$TLS_th_perc_c_prio = "% C 优先级";
+$TLS_title_existing_milestones = "已有的里程碑";
+$TLS_title_milestones = "测试计划的里程碑";
+
+
+
+// gui/templates/planMilestonenew.tpl
+$TLS_btn_new_milestone = "创建";
+$TLS_title_new_milestone = "里程碑";
+
+
+
+// gui/templates/planNew.tpl
+$TLS_btn_new = "新建";
+$TLS_caption_new_tp = "新建测试计划";
+$TLS_caption_tp_name = "名称";
+$TLS_caption_tp_notes = "说明";
+$TLS_opt_no = "否";
+$TLS_question_create_tp_from = "从已有的测试计划创建";
+$TLS_question_want_rights = "你想对这个测试计划设置权限吗";
+$TLS_say_yes = "是";
+
+
+
+// gui/templates/planOwner.tpl
+$TLS_assign_ownership = "设置所有权";
+$TLS_def_prio_rules = "定义优先级规则";
+$TLS_opt_label_none = "无";
+$TLS_th_imp = "重要性";
+$TLS_th_owner = "拥有者";
+$TLS_th_risk = "风险";
+$TLS_th_test_suite = "测试集";
+$TLS_title_plan_ownership = "测试计划所有权";
+
+
+
+// gui/templates/planPriority.tpl
+$TLS_btn_upd_prio = "更新";
+$TLS_menu_assign_ownership = "设置所有权";
+$TLS_menu_define_prio = "定义优先级规则";
+$TLS_title_priority = "为这个测试计划定义优先级规则";
+$TLS_tr_th_prio_cba = "优先级 (C/B/A)";
+$TLS_tr_th_risk = "风险/重要性";
+
+
+
+// gui/templates/planTesters.tpl
+$TLS_btn_save = "保存";
+$TLS_btn_uncheck_all = "全都不选";
+
+
+
+// gui/templates/planTestersNavigator.tpl
+$TLS_opt_test_plans = "测试计划";
+$TLS_opt_users = "用户";
+$TLS_list_of = "列表"; // add by wangyy
+
+
+
+// gui/templates/resultsAllBuilds.tpl
+$TLS_th_build = "构建标识";
+$TLS_th_tc_total = "全部测试用例";
+
+
+
+// gui/templates/resultsBugs.tpl
+$TLS_th_bugs = "问题";
+$TLS_th_title = "标题";
+$TLS_title_bugs_report = " - 问题报告 ";
+
+
+
+// gui/templates/resultsBuild.tpl
+$TLS_title_met_of_build = "中的度量结果→构建";
+
+
+
+// gui/templates/resultsByStatus.tpl
+$TLS_info_test_results = "这里只列出最后一次的测试结果。如果最后构建的测试结果是另外的状态（除非尚未执行测试），测试用例将不会显示。";
+$TLS_th_date = "日期";
+$TLS_th_run_by = "执行人";
+
+
+
+// gui/templates/resultsGeneral.tpl
+$TLS_title_gen_test_rep = "总体测试计划度量";
+
+
+
+// gui/templates/resultsNavigator.tpl
+$TLS_send_results = "发送结果";
+$TLS_title_active_build = "活动的构建";
+$TLS_via_email = "到电子邮件";
+
+
+
+// gui/templates/resultsSend.tpl
+$TLS_btn_send_report = "发送";
+$TLS_check_send_to_me = "给自己发送一份拷贝";
+$TLS_mail_body = "内容：";
+$TLS_mail_report = "报告：";
+$TLS_mail_subject = "主题：";
+$TLS_mail_to = "发送给：";
+$TLS_send_test_report = "- 发送测试报告";
+$TLS_status = "状态";
+$TLS_status_for_build = "构建的状态";
+$TLS_tp_status = "总体测试计划状态";
+$TLS_tp_status_for_build = "构建的测试计划状态";
+
+
+
+// gui/templates/resultsTC.tpl
+$TLS_date = "日期：";
+$TLS_printed_by = "由TestLink打印";
+$TLS_title = "标题";
+$TLS_title_test_case_suite = "测试用例集";
+$TLS_title_test_case_title = "测试标题";
+
+
+
+// gui/templates/tcDelete.tpl
+$TLS_title_del_tc = "删除测试用例";  // add by wangyy
+$TLS_btn_yes_iw2del = "是, 删除测试用例!";
+$TLS_question_del_tc = "真的要删除测试用例吗?";
+
+
+
+// gui/templates/tcEdit.tpl
+$TLS_alt_add_tc_name = "输入测试用例名称。这是必填项。";
+$TLS_expected_results = "期望的结果";
+$TLS_steps = "步骤";
+$TLS_summary= "摘要";
+$TLS_tc_keywords = "关键字";
+$TLS_tc_title = "测试用例标题";
+$TLS_title_edit_tc = "编辑测试用例";
+
+
+
+// gui/templates/tcImport.tpl
+$TLS_btn_import_cvs = "导入 cvs";
+$TLS_btn_upload_file = "上传文件";
+$TLS_check_imp_data = "检查导入的数据";
+$TLS_cvs_import_ok = "CVS导入成功.";
+$TLS_info_imp_data_line1 = "说明：TestLink不能判断导入的数据是否已经存在。";
+$TLS_info_imp_data_line2 = "因此，如果数据导入的数据已经存在，你会得到两份拷贝。";
+$TLS_local_file = "文件:";
+$TLS_max_size_cvs_file = "文件最大不超过：";
+$TLS_required_cvs_format = "文件格式：";
+$TLS_title_choose_local_file = "选择要上传的本地文件";
+$TLS_title_imp_cvs = "导入 CVS 数据";
+
+
+
+// gui/templates/tcMove.tpl
+$TLS_btn_mv = "移动";
+$TLS_choose_cat = "选择分类";
+$TLS_inst_move = "将这个测试用例移动到另一个分类下（同一组件内）";
+$TLS_title_mv_cp_tc = "移动/复制测试用例";
+
+
+
+// gui/templates/tcNew.tpl
+$TLS_title_new_tc = "创建测试用例";
+
+
+
+// gui/templates/tcPrintNavigator.tpl
+$TLS_btn_set_pref = "设置";
+$TLS_caption_print_opt = "打印选项";
+$TLS_tr_td_show_as = "格式";
+
+
+
+// gui/templates/tcReorder.tpl
+$TLS_no_tc_to_reorder = "测试用例不存在，无法重新排序。";
+$TLS_th_test_case = "测试用例";
+$TLS_title_change_tc_order = "修改分类中的测试用例顺序。";
+
+
+
+// gui/templates/tcSearchForm.tpl
+$TLS_btn_find = "查找";
+$TLS_caption_search_form = "搜索测试用例";
+$TLS_keyword = "关键字";
+$TLS_not_applied = "不指定";
+$TLS_th_tcid = "测试用例标识";
+$TLS_title_search_tcs = "搜索";
+
+
+
+// gui/templates/tcSearchView.tpl
+$TLS_href_test_case = "测试用例";
+$TLS_keywords = "关键字";
+$TLS_no_records_found = "没有查询到任何结果";
+$TLS_test_case = "测试用例";
+
+
+
+// gui/templates/tcTree.tpl
+$TLS_button_refresh = "刷新";
+$TLS_no_tc_spec_av = "没有可用的测试规范";
+
+
+
+// gui/templates/tcView.tpl
+$TLS_btn_edit = "编辑";
+$TLS_btn_mv_cp = "移动/复制";
+$TLS_by = "源自:";
+$TLS_title_created = "创建日期:";
+$TLS_title_last_mod = "最后修改日期:";
+$TLS_version = "版本";
+
+
+
+// gui/templates/userInfo.tpl
+$TLS_btn_change_passwd = "修改口令";
+$TLS_btn_upd_user_data = "更新";
+$TLS_th_new_passwd = "新口令";
+$TLS_th_new_passwd_again = "确认新口令";
+$TLS_th_old_passwd = "旧口令";
+$TLS_title_account_settings = "帐号设置";
+$TLS_title_change_your_passwd = "修改你的口令";
+$TLS_title_edit_personal_data = "个人帐号";
+$TLS_warning_different_pwd = "请重新输入你的新口令。新输入的口令不一致。";
+$TLS_warning_empty_pwd = "口令不允许为空！";
+
+
+
+// gui/templates/planRemoveTC.tpl
+$TLS_btn_remove_entire = "全部移去";
+$TLS_no_data_avail = "没有有效数据";
+$TLS_title_remove_tc_from_tp = "移去测试用例于测试计划：";
+$TLS_btn_remove_tc = "移去测试用例"; // add by wangyy
+
+
+// gui/templates/planUpdateTC.tpl
+$TLS_btn_upd_ck_tc = "更新选中的测试用例";
+$TLS_info_all_tc_uptodate = "所有的测试用例在上一次测试后都是没有变更。";
+$TLS_th_category = "分类";
+$TLS_th_component = "组件";
+$TLS_th_id_tc = "[标识]测试用例";
+$TLS_th_reason = "更新原因";
+$TLS_th_spec_version = "规约版本";
+$TLS_th_status = "状态";
+$TLS_th_suite_version = "测试集版本";
+$TLS_th_update = "更新";
+$TLS_title_upd_mod_tc = "更新已修改的测试用例→测试计划";
+
+
+
+// gui/templates/reqSpecView.tpl
+$TLS_Author = "作者";
+$TLS_btn_analyse = "分析";
+$TLS_btn_check_all = "全选";
+$TLS_btn_delete_spec = "删除规约";
+$TLS_btn_edit_spec = "编辑规约";
+$TLS_btn_import = "导入";
+$TLS_btn_print = "打印";
+$TLS_btn_req_create = "创建新需求";
+$TLS_btn_spec_list = "规约列表";
+$TLS_checked = "对选中的需求进行下列操作";
+$TLS_help = "帮助";
+$TLS_last_edit = "最后编辑人";
+$TLS_popup_sure_delete = "你确定要删除需求规约吗？";
+$TLS_req_edit_spec = "编辑需求规约";
+$TLS_req_msg_norequirement = "没有需求";
+$TLS_req_select_create_tc = "创建测试用例";
+$TLS_req_select_delete = "删除需求";
+$TLS_req_spec = "需求规约";
+$TLS_req_title_list = "需求列表";
+$TLS_req_total_count = "需求总数";
+$TLS_scope = "范围";
+$TLS_req_doc_id = "文档标识";
+
+
+// gui/templates/reqCreate.tpl
+$TLS_btn_cancel = "取消";
+$TLS_req_create = "创建一个新需求";
+$TLS_reqs = "需求";
+// add by wangyy
+$TLS_req_status_valid = "有效的";
+$TLS_req_status_not_testable = "无法测试的";
+
+
+// gui/templates/reqEdit.tpl
+$TLS_btn_delete = "删除";
+$TLS_popup_delete_req = "你确定要删除这个需求吗？";
+$TLS_btn_update = "更新";
+$TLS_coverage = "覆盖率";
+$TLS_req_edit = "编辑需求";
+$TLS_req_msg_notestcase = "没有关联的测试用例";
+
+
+
+// gui/templates/reqSpecEdit.tpl
+$TLS_edit = "编辑";
+$TLS_req_total = "需求总数";
+$TLS_update_data = "更新数据";
+
+
+
+// gui/templates/reqSpecList.tpl
+$TLS_btn_assign_tc = "指派测试用例";
+$TLS_no_docs = "没有可用的文档。";
+$TLS_req_list_docs = "文档列表";
+
+
+
+// gui/templates/mainPage.tpl
+$TLS_filter_tp_by_product = "按产品筛选测试计划";
+$TLS_href_add_test_case = "增加测试用例";
+$TLS_href_assign_risk_own = "设置风险和所有权";
+$TLS_href_browse_tc = "浏览测试用例";
+$TLS_href_build_new = "构建管理";
+$TLS_href_create_product = "创建新产品";
+$TLS_href_edit_product = "编辑/删除产品";
+$TLS_href_edit_tc = "编辑测试用例";
+$TLS_href_execute_test = "执行测试";
+$TLS_href_import_tc = "导入测试用例";
+$TLS_href_keywords_assign = "指派关键字";
+$TLS_href_keywords_edit = "编辑/删除关键字";
+$TLS_href_keywords_new = "创建关键字";
+$TLS_href_keywords_view = "查看关键字";
+$TLS_href_plan_assign_users = "定义用户/测试计划权限";
+$TLS_href_plan_edit = "编辑/删除测试计划";
+$TLS_href_plan_mstones = "编辑/删除里程碑";
+$TLS_href_plan_new = "创建测试计划";
+$TLS_href_print_tc = "打印测试用例";
+$TLS_href_print_tc_suite = "打印测试用例集";
+$TLS_href_remove_test_case = "移去测试用例";
+$TLS_href_rep_and_metrics = "测试报告和度量";
+$TLS_href_req_assign = "指派需求";
+$TLS_href_req_spec = "需求规约";
+$TLS_href_search_tc = "搜索测试用例";
+$TLS_href_upd_mod_tc = "更新修改过的测试用例";
+$TLS_msg_no_rights_for_tp = "- 无效的(你没有权限访问测试计划)";
+$TLS_th_my_perc_completed = "已完成 [%]";
+$TLS_th_perc_completed = "已完成 [%]";
+$TLS_title_requirements = "需求";
+$TLS_title_test_execution = "测试执行";
+$TLS_title_test_plan_mgmt = "测试计划管理";
+$TLS_title_test_spec = "测试规范";
+$TLS_title_testlink_site_map = "TestLink - 工作台";
+$TLS_title_your_tp_metrics = "你的测试计划度量";
+
+
+
+// gui/templates/inc_res_by_comp.tpl
+$TLS_title_res_by_comp = "结果（按组件）";
+$TLS_trep_blocked = "锁定";
+$TLS_trep_comp = "组件";
+$TLS_trep_comp_perc = "已完成 [%]";
+$TLS_trep_failed = "失败";
+$TLS_trep_not_run = "尚未执行";
+$TLS_trep_passed = "通过";
+$TLS_trep_total = "总数";
+
+
+
+// gui/templates/inc_res_by_keyw.tpl
+$TLS_title_res_by_kw = "结果（按关键字）";
+$TLS_trep_kw = "关键字";
+
+
+
+// gui/templates/inc_res_by_owner.tpl
+$TLS_title_res_by_owner = "结果（按拥有者）";
+$TLS_trep_owner = "拥有者";
+
+
+
+// gui/templates/inc_res_by_prio.tpl
+$TLS_tit_end_date = "结束日期";
+$TLS_tit_milestone = "里程碑";
+$TLS_title_res_by_prio = "结果（按优先级）";
+$TLS_trep_milestone_goal = "里程碑目标 [%]";
+$TLS_trep_prio = "优先级";
+$TLS_trep_status = "状态";
+
+
+
+// gui/templates/inc_res_by_ts.tpl
+$TLS_title_res_by_ts = "结果（按测试集）";
+$TLS_trep_imp = "重要性";
+$TLS_trep_risk = "风险";
+$TLS_trep_ts = "测试集";
+
+
+
+// gui/templates/reqAssign.tpl
+$TLS_btn_unassign = "取消指派";
+$TLS_req = "需求";
+$TLS_req_title_assign = "将需求指派给测试用例:";
+$TLS_req_title_assigned = "已指派的需求";
+$TLS_req_title_unassigned = "有效的需求";
+
+
+
+// gui/templates/reqSpecAnalyse.tpl
+$TLS_req_spec_change = "切换需求规约";
+$TLS_req_title_analyse = "分析需求规约";
+$TLS_req_title_covered = "覆盖的需求";
+$TLS_req_title_nottestable = "无法测试的需求";
+$TLS_req_title_uncovered = "未覆盖的需求";
+$TLS_testcases = "测试用例";
+
+
+
+// gui/templates/reqSpecCreate.tpl
+$TLS_create = "创建";
+
+
+
+// gui/templates/navBar.tpl
+$TLS_home = "主页";
+$TLS_link_logout = "注销";
+$TLS_product = "产品";
+$TLS_title_documentation = "用户手册";
+$TLS_title_execute = "执行";
+$TLS_title_results = "结果";
+$TLS_title_specification = "测试规范";
+
+
+
+// gui/templates/reqImport.tpl
+$TLS_Result = "结果";
+$TLS_Title = "标题";
+$TLS_btn_back2srs = "返回需求规约";
+$TLS_max_size_cvs_file1 = "文件最大不超过";
+$TLS_max_size_cvs_file2 = "kB";
+$TLS_req_import_check_note = "请验证可能存在的冲突，选择合适的解决方案，然后再开始执行导入操作。";
+$TLS_req_import_dont_empty = "不要导入空的项目";
+$TLS_req_import_format_description1 = " - CSV 格式每行需要两个字段：'title','description'";
+$TLS_req_import_format_description2 = " - CSV 从DOORS 导出需要标题行。";
+$TLS_req_import_option_double = "增加一个相同标题的需求";
+$TLS_req_import_option_header = "指定冲突的解决方案";
+$TLS_req_import_option_overwrite = "更新已有的需求";
+$TLS_req_import_option_skip = "跳过导入重复的需求。";
+$TLS_req_import_type = "类型：";
+$TLS_title_choose_file_type = "选择文件类型";
+$TLS_title_req_import_check_input = "检测导入数据";
+$TLS_title_req_import_to = "向文档中导入需求";
+
+
+
+// gui/templates/inc_cat_viewer_ro_m0.tpl
+$TLS_cat_scope = "范围和目标";
+$TLS_configuration = "配置";
+$TLS_data = "数据";
+$TLS_not_defined = "未定义的";
+$TLS_tools = "工具";
+
+
+
+// gui/templates/inc_cat_viewer_rw.tpl
+$TLS_cat_alt_name = "增加分类名称。这是必填项";
+$TLS_cat_config = "配置";
+$TLS_cat_data = "数据";
+$TLS_cat_name = "分类名称";
+$TLS_cat_tools = "工具";
+
+
+
+// gui/templates/inc_comp_viewer_ro.tpl
+$TLS_introduction = "介绍";
+$TLS_limitations = "限制";
+$TLS_methodology = "方法论";
+$TLS_references = "参考";
+
+
+
+// gui/templates/inc_comp_viewer_rw.tpl
+$TLS_comp_alt_name = "添加组件名称。这是必填项";
+$TLS_comp_intro = "介绍";
+$TLS_comp_lim = "限制";
+$TLS_comp_method = "方法论";
+$TLS_comp_name = "组件名称";
+$TLS_comp_ref = "参考";
+$TLS_comp_scope = "范围";
+
+
+
+// gui/templates/tcEdit_m2.tpl
+
+
+
+// gui/templates/resultsMoreBuilds_report.tpl
+$TLS_case_return_by_query_header = "查询到的测试用例";
+$TLS_descr_indiv = "匹配\"拥有者\", \"关键字\", \"组件\", \"最近状态\" 和 \"所选构建\" 查询条件的测试用例。";
+$TLS_descr_res_totals = "匹配指定\"拥有者\", \"关键字\", \"组件\", 和 \"所选构建\"等条件的测试用例的全部结果。 \"最近状态\" 参数没有考虑";
+$TLS_overall_status = "总体状态";
+$TLS_please_wait = "正在加载全部结果,请稍候...";
+$TLS_query_parameters_header = "选定的查询条件为：";
+$TLS_results_by_component_header = "结果(按组件)";
+$TLS_show_hide_all = "显示/隐藏全部";
+
+
+
+// gui/templates/resultsMoreBuilds_query_form.tpl
+$TLS_do_not_query_by_keyword = "不限";
+$TLS_do_not_query_by_owner = "不限";
+$TLS_excel_format = "MS Excel";
+$TLS_html_format = "HTML";
+$TLS_last_status_any = "不限";
+$TLS_last_status_blocked = "锁定";
+$TLS_last_status_failed = "失败";
+$TLS_last_status_not_run = "尚未执行";
+$TLS_last_status_passed = "通过";
+$TLS_select_builds_header = "选择构建";
+$TLS_select_keyword_header = "选择关键字";
+$TLS_select_last_result_header = "选择最近的结果";
+$TLS_select_owner_header = "选择拥有者";
+$TLS_select_report_format_header = "选择报告格式";
+$TLS_submit_query = "提交查询";
+$TLS_test_plan_header = "测试计划 : ";
+$TLS_select_components_header = "选择组件";
+
+
+// gui/templates/resultsReqs.tpl
+$TLS_req_title_blocked = "锁定的需求";
+$TLS_req_title_failed = "错误的需求";
+$TLS_req_title_notrun = "尚未执行的需求";
+$TLS_req_title_passed = "通过的需求";
+$TLS_title_result_req_testplan = "基于需求规约的测试结果";
+
+
+
+// gui/templates/inc_reqView.tpl
+
+
+
+// gui/templates/infoWindow.tpl
+$TLS_btn_close = "关闭";
+
+
+
+// gui/templates/inc_print_button.tpl
+
+
+
+// lib/admin/adminProductEdit.php
+$TLS_info_no_more_prods = "没有更多的产品。";
+$TLS_info_product_activated = "产品已经被激活。";
+$TLS_info_product_inactivated = "产品已经被禁用。";
+$TLS_info_product_name_empty = "不充许名称为空。";
+$TLS_info_product_not_deleted_check_log = "产品没有被删除。请查看TestLink的日志。";
+$TLS_info_product_was_deleted = "产品被成功地删除";
+$TLS_string_contains_bad_chars = "包含错误的字符";
+
+
+
+// lib/admin/adminProductNew.php
+$TLS_refer_to_log = " 请查看TestLink的日志来获取更多的信息。";
+
+
+
+// lib/admin/adminUserNew.php
+$TLS_duplicate_login = "该用户已经存在！";
+$TLS_empty_login_no = "用户登陆名不能为空";
+$TLS_user_not_added = "无法增加用户！";
+
+
+
+// lib/admin/adminUsers.php
+$TLS_login_must_not_be_empty = "用户登陆名不能为空！";
+
+
+
+// lib/functions/info.inc.php
+$TLS_email_sent_message = "你的邮件已被发送";
+
+
+
+// lib/functions/product.inc.php
+$TLS_info_product_delete_fails = "删除产品时出现错误";
+
+
+
+// lib/functions/results.inc.php
+$TLS_trep_failing = "失败";
+$TLS_trep_passing = "通过";
+$TLS_trep_status_for_build = "构建状态";
+$TLS_trep_status_for_ts = "测试集状态";
+
+
+
+// lib/functions/users.inc.php
+$TLS_Unknown = "未知";
+
+
+
+// lib/functions/requirements.inc.php
+$TLS_verify_requirement = "验证需求"; // add by wangyy
+
+
+// lib/functions/configCheck.php
+$TLS_sec_note_admin_default_pwd = "应该修改系统管理员的缺省口令！";
+$TLS_sec_note_remove_install_dir = "应该删除安装目录！";
+
+
+
+// lib/functions/requirementsImport.inc.php
+$TLS_conflict = "冲突";
+$TLS_ok = "OK";
+$TLS_req_import_result_added = "结果已经被增加！";
+$TLS_req_import_result_overwritten = "结果已经被覆盖！";
+$TLS_req_import_result_skipped = "结果被跳过！";
+
+
+
+// lib/functions/resultsMoreBuilds.inc.php
+$TLS_bugs = "关联的问题";
+$TLS_build = "构建标识";
+$TLS_builds_selected = "构建标识";
+$TLS_case_not_run_warning = "测试用例尚未执行";
+$TLS_category_header = "分类= ";
+$TLS_daterun = "执行时间";
+$TLS_last_status = "最近状态";
+$TLS_notes = "关联的说明";
+$TLS_number_blocked = "# 锁定的数量";
+$TLS_number_cases = "# 用例数量";
+$TLS_number_executions = "# 执行测试用例总数";
+$TLS_number_failed = "# 失败的数量";
+$TLS_number_not_run = "# 尚未执行的数量";
+$TLS_number_passed = "# 通过的数量";
+$TLS_owner = "拥有者";
+$TLS_owner_header = "拥有者= ";
+$TLS_runby = "执行人";
+$TLS_test_plan_name = "测试计划";
+
+
+
+// lib/general/frmWorkArea.php
+$TLS_no_build_warning_part1 = "没有为这个测试计划创建构建。";
+$TLS_no_build_warning_part2 = "请先创建它或找系统管理员解决。";
+
+
+
+// lib/general/myTPInfo.php
+$TLS_no_testplans_available = "无法获得测试计划";
+
+
+
+// lib/general/tlsmarty.inc.php
+
+
+
+// lib/keywords/keywords.inc.php
+$TLS_empty_keyword_no = "关键字不能为空！";
+$TLS_keyword_already_exists = "关键字已经存在";
+$TLS_kw_delete_fails = "删除关键字失败!";
+$TLS_kw_deleted = "被删除";
+$TLS_kw_invalid_chars = "更新失败：关键字中不能包含逗号和引号";
+$TLS_kw_update_fails = "更新失败";
+$TLS_kw_updated = "更新";
+$TLS_tc_kw_update_fails1 = "测试用例";
+$TLS_tc_kw_update_fails2 = "失败";
+
+
+
+// lib/keywords/keywordsNew.php
+$TLS_keywords_char_not_allowed = "关键字中不能包含逗号和引号！";
+
+
+
+// lib/plan/buildNew.php
+$TLS_cannot_add_build = "无法增加构建";
+$TLS_cannot_delete_build = "无法删除构建";
+$TLS_cannot_update_build = "无法更新构建";
+$TLS_invalid_build_id = "使用了错误的构建标识";
+$TLS_warning_duplicate_build = "构建标识已存在";
+
+
+
+// lib/plan/planEdit.php
+$TLS_delete_tp_bugs_failed1 = "正在删除问题→测试计划'";
+$TLS_delete_tp_bugs_failed2 = "' 失败";
+$TLS_delete_tp_builds_failed1 = "正在删除构建→测试计划'";
+$TLS_delete_tp_builds_failed2 = "' 失败";
+$TLS_delete_tp_comp_failed1 = "正在删除组件→测试计划'";
+$TLS_delete_tp_comp_failed2 = "' 失败";
+$TLS_delete_tp_data_failed1 = "正在删除数据→测试计划'";
+$TLS_delete_tp_data_failed2 = "' 失败";
+$TLS_delete_tp_failed1 = "正在删除测试计划'";
+$TLS_delete_tp_failed2 = "' 失败";
+$TLS_delete_tp_milestones_failed1 = "正在删除里程碑→测试计划'";
+$TLS_delete_tp_milestones_failed2 = "' 失败";
+$TLS_delete_tp_priority_failed1 = "正在删除优先级→测试计划'";
+$TLS_delete_tp_priority_failed2 = "' 失败";
+$TLS_delete_tp_results_failed1 = "正在删除结果→测试计划'";
+$TLS_delete_tp_results_failed2 = "' 失败";
+$TLS_delete_tp_rights_failed1 = "正在删除权限→测试计划'";
+$TLS_delete_tp_rights_failed2 = "' 失败";
+$TLS_delete_tp_succeeded1 = "测试计划 '";
+$TLS_delete_tp_succeeded2 = "' 已经被删除";
+$TLS_update_tp_failed1 = "测试计划'";
+$TLS_update_tp_failed2 = "' 更新失败";
+$TLS_update_tp_succeeded1 = "测试计划 '";
+$TLS_update_tp_succeeded2 = "' 已经被更新";
+
+
+
+// lib/plan/planMilestones.php
+$TLS_warning_empty_milestone_name = "必须为里程碑指定名称!";
+$TLS_warning_enter_valid_date = "必须输入一个有效日期";
+$TLS_warning_milestone_add_failed = "无法增加里程碑！";
+$TLS_warning_milestone_date = "里程碑的日期必须大于等于今天";
+
+
+
+// lib/plan/planNew.php
+$TLS_warning_empty_tp_name = "必须为测试计划指定名称!";
+
+
+
+// lib/plan/planTestersEdit.php
+$TLS_title_assign_tp = "将测试计划指派给用户：";
+$TLS_title_assign_users = "将用户指派到测试计划: ";
+
+
+
+// lib/plan/testSetNavigator.php
+$TLS_title_test_plan_navigator = "测试计划导航标题";
+
+
+
+// lib/plan/testSetRemove.php
+$TLS_category_removed_part1 = "分类";
+$TLS_category_removed_part2 = "已经被移去。";
+$TLS_component_removed_part1 = "组件";
+$TLS_component_removed_part2 = "已经被移去。";
+$TLS_test_case_removed_part1 = "测试用例";
+$TLS_test_case_removed_part2 = "已经被移去。"; // add by wangyy
+
+
+// lib/plan/planUpdateTC.php
+$TLS_category_has_changed = "分类已经发生变化";
+$TLS_different_versions = "不同版本";
+$TLS_plan_update_no_tc_updated = "没有测试用例被更新";
+$TLS_planupdate_tc_updated = "已更新"; // add by wangyy
+$TLS_planupdate_tc_deleted = "已删除"; // add by wangyy
+$TLS_planupdate_tc_deleted1 = "测试用例";
+$TLS_planupdate_tc_deleted2 = "已经被删除。";
+$TLS_planupdate_tc_updated1 = "测试用例";
+$TLS_planupdate_tc_updated2 = "已经被更新。";
+
+
+
+// lib/print/printData.php
+$TLS_categories = "分类";
+$TLS_no_test_case = "没有测试用例";
+$TLS_setup_and_config = "安装和配置";
+$TLS_test_case_suite = "测试用例集";
+$TLS_test_cases = "测试用例";
+$TLS_test_data = "测试数据";
+$TLS_title_toc = "内容列表";
+
+
+
+// lib/print/selectData.php
+$TLS_opt_show_doc_header = "显示文档属性信息";
+$TLS_opt_show_tc_body = "显示测试用例内容";
+$TLS_opt_show_tc_summary = "显示测试用例摘要";
+$TLS_opt_show_toc = "显示内容列表";
+$TLS_title_tc_print_navigator = "导航 - 打印测试规范";
+$TLS_title_tp_print_navigator = "导航 - 打印测试计划";
+
+
+
+// lib/results/resultsAllBuilds.php
+$TLS_title_metrics_x_build = " - 每个构建的测试结果度量";
+
+
+
+// lib/results/resultsByStatus.php
+$TLS_list_of_blocked = "锁定的测试用例列表";
+$TLS_list_of_failed = "失败的测试用例列表";
+
+
+
+// lib/results/resultsNavigator.php
+$TLS_link_report_blocked_tcs = "锁定的测试用例";
+$TLS_link_report_excel = "&#8195;&#8594; 导出Excel";
+$TLS_link_report_failed = "失败的测试用例";
+$TLS_link_report_general_tp_metrics = "总体测试计划度量";
+$TLS_link_report_metrics_active_build = "活动构建的度量";
+$TLS_link_report_metrics_more_builds = "查询度量";
+$TLS_link_report_overall_build = "全部构建的状态";
+$TLS_link_report_reqs_coverage = "基于需求的报告";
+$TLS_link_report_test = "测试报告";
+$TLS_link_report_total_bugs = "每个测试用例的全部问题";
+$TLS_link_report_result_navigator = "导航 - 测试结果";
+
+
+// lib/results/resultsSend.php
+$TLS_send_to_empty_email_warning = "很抱歉无法发送邮件，请输入有效的邮件地址。";
+$TLS_warning_create_build_first = "必须首先创建构建或导入数据。";
+
+
+
+// lib/results/resultsTC.php
+$TLS_title_test_report_all_builds = "测试报告：所有构建的测试用例的测试结果";
+
+
+
+// lib/results/resultsMoreBuilds_buildReport.php
+
+
+
+// lib/testcases/archive.inc.php
+$TLS_component_name_already_exists = "组件名称已经存在";
+
+
+
+// lib/testcases/containerEdit.php
+$TLS_error_cat_add = "无法增加分类!";
+$TLS_error_update_catorder = "无法更新分类的顺序";
+$TLS_warning_empty_cat_name = "请为分类指定名称";
+$TLS_warning_empty_com_name = "请为组件指定名称";
+
+
+
+// lib/testcases/listTestCases.php
+
+
+
+// lib/testcases/tcEdit.php
+$TLS_current = "没有变更的";
+$TLS_error_tc_add = "增加测试用例里发生错误";
+$TLS_warning_empty_tc_title = "请为测试用例指定标题";
+
+
+
+// lib/testcases/tcImport.php
+$TLS_the_format = "组件1,分类1,'测试用例1','摘要','步骤','结果','键1','键2','键...'";
+$TLS_the_format_by_cat = "'测试用例1','摘要','步骤','结果','键1','键2','键...'";
+
+
+
+// lib/req/reqSpecView.php
+$TLS_req_msg_noselect = "没选中目标";
+
+
+
+// lib/req/reqTcAssign.php
+$TLS_req_msg_notupdated_coverage = "没有为需求更新覆盖率";
+
+
+
+// lib/req/reqImport.php
+$TLS_req_import_finished = "导入结束";
+
+?>

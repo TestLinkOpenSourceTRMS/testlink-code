@@ -3,8 +3,8 @@
  * TestLink Open Source Project - @link http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: plan.core.inc.php,v $
- * @version $Revision: 1.12 $
- * @modified $Date: 2005/10/17 20:11:27 $ $Author: schlundus $
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2005/11/19 23:07:39 $ $Author: schlundus $
  *  
  * 
  * @author 	Martin Havlat
@@ -216,17 +216,17 @@ function getTestPlanUsers()
 function getAllTestPlans($plan_status=null)
 {
 
-	$sql = "SELECT id, name, notes,active, prodid FROM project";
+ $sql = "SELECT id, name, notes,active, prodid FROM project";
   $where ='';
 
-	if( !is_null($plan_status) )
+ if( !is_null($plan_status) )
   {	
     $my_active = to_boolean($plan_status);
     $where = " WHERE active=" . $my_active;
-	}
+ }
   $sql .= $where . " ORDER BY name";
-	
-	return selectData($sql);
+ 
+ return selectData($sql);
 }
 
 

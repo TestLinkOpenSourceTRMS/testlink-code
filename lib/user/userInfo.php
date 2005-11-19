@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* @version $Id: userInfo.php,v 1.7 2005/10/02 19:48:00 schlundus Exp $ 
+* @version $Id: userInfo.php,v 1.8 2005/11/19 23:07:39 schlundus Exp $ 
 *
 * @author	Asiel Brumfield <asielb@users.sourceforge.net>
 * @author 	Martin Havlat
@@ -10,13 +10,10 @@
 * their passwords and user info.
 * 
 * 20050913 - fm - BUGID 0000103: Localization is changed but not strings
-*
 * 20050829 - scs - moved POST params to the top of the script
-*
 */
 require_once('../../config.inc.php');
 require_once('users.inc.php');
-require_once("../../lib/functions/lang_api.php");
 testlinkInitPage();
 
 $_POST = strings_stripSlashes($_POST);

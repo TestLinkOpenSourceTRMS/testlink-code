@@ -1,6 +1,6 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: mainPage.tpl,v 1.4 2005/10/03 07:19:47 franciscom Exp $     
+ $Id: mainPage.tpl,v 1.5 2005/11/19 23:07:38 schlundus Exp $     
  Purpose: smarty template - main page / site map                 
                                                                  
                                                                  
@@ -8,7 +8,8 @@
       20051002 - fm - changes to filter tp by product      
       20050929 - fm - new checkbox - filter tp by product
       20050809 - fm - I18N - missing string                                      
-                                                                 
+	
+20051118 - scs - added escaping of testplan names                                                                 
 *}
 {include file="inc_head.tpl" popup="yes"}
 
@@ -48,7 +49,7 @@
 				<select name="project" onchange="this.form.submit();">
 				{section name=tPlan loop=$arrPlans}
 					<option value="{$arrPlans[tPlan].id}" 
-					{$arrPlans[tPlan].selected} >{$arrPlans[tPlan].name}</option>
+					{$arrPlans[tPlan].selected} >{$arrPlans[tPlan].name|escape}</option>
 				{/section}
 				</select>
 		{else}

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: firstLogin.php,v $
  *
- * @version $Revision: 1.7 $
- * @modified $Date: 2005/10/12 06:25:06 $ $Author: franciscom $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2005/11/19 23:07:34 $ $Author: schlundus $
  *
  * @author Asiel Brumfield
  * @author Martin Havlat 
@@ -15,6 +15,7 @@
  *
  * 20051011 - fm - config param for CSS
  * 20050831 - scs - moved POST params to the top
+ * 20051118 - scs - removed $_SESSION['basehref'], because this will not be set
 **/
 require_once('config.inc.php');
 require_once('common.php');
@@ -75,7 +76,7 @@ if($bEditUser)
 			$result = userInsert($login, $password, $first, $last, $email);
 			if ($result)
 			{
-				redirect($_SESSION['basehref'] . "login.php?note=first");
+				redirect(TL_BASE_HREF . "login.php?note=first");
 				exit();
 			}
 			else

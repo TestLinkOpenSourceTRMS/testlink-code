@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.35 $
- * @modified $Date: 2005/11/13 19:19:32 $
+ * @version $Revision: 1.36 $
+ * @modified $Date: 2005/11/19 23:07:39 $
  *
  * @author Francisco Mancardi
 **/
@@ -1219,4 +1219,6 @@ $TLS_req_msg_notupdated_coverage = "Coverage was not updated for Requirements: "
 // lib/req/reqImport.php
 $TLS_req_import_finished = "The import is finished!";
 
+// lib/functions/exec.in.php
+$TLS_test_results_submitted = "Test Results submitted.";
 ?>

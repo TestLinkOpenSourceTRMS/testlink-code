@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: exec.inc.php,v $
  *
- * @version $Revision: 1.17 $
- * @modified $Date: 2005/10/24 19:34:59 $ $Author: schlundus $
+ * @version $Revision: 1.18 $
+ * @modified $Date: 2005/11/19 23:07:39 $ $Author: schlundus $
  *
  * @author Martin Havlat
  *
@@ -22,7 +22,8 @@
  *
  * removed deprecated: $_SESSION['project']
  *
- *
+ * 20051118  - scs - FIXED: missing localization for test_Results_submitted
+ * 20051119  - scs - added fix for 227
 **/
 require_once('../functions/common.php');
 
@@ -172,11 +173,6 @@ function editTestResults($login_name, $tcData, $buildID)
 		}
 
 		// Does exist a result for this (tcid, build) ?
-	  /*
-		$sql = " SELECT tcid, build, notes, status FROM results " .
-		       " WHERE tcid=" . $tcID .  
-		       " AND build=" . $buildID;
-	  */
 	  $sql = " SELECT tcid, build_id, notes, status FROM results " .
 		       " WHERE tcid=" . $tcID .  
 		       " AND build_id=" . $buildID;
@@ -232,7 +228,7 @@ function editTestResults($login_name, $tcData, $buildID)
     // -------------------------------------------------------------------------
 	}
 
-	return ("<div class='info'><p>" . lang_get("Test Results submitted.") . "</p></div>");
+	return ("<div class='info'><p>" . lang_get("test_results_submitted") . "</p></div>");
 }
 // -----------------------------------------------------------------------------
 
@@ -299,7 +295,8 @@ function createTestInput($resultTC,$buildID,$tpID)
 		{
 			global $g_bugInterface ;
 			//sql code to grab the appropriate bugs for the test case and build
-			$sqlBugs = "SELECT bug FROM bugs WHERE tcid='" . $myrow['tcid'] . "' and build_id='" . $buildID."'";
+			//2005118 - scs - fix for 227
+			$sqlBugs = "SELECT bug,name FROM bugs,build WHERE bugs.build_id = build.id AND tcid='" . $myrow['tcid'] . "' ";
 			$resultBugs = do_mysql_query($sqlBugs);
 			
 			//For each bug that is found
@@ -310,8 +307,9 @@ function createTestInput($resultTC,$buildID,$tpID)
 					$resultBugList .= ",";
 				}	
 				$bugID = $myrowBugs['bug'];
+				$buildName = $myrowBugs['name'];
 				$resultBugList .= $bugID;
-				$bugLinkList[] = $g_bugInterface->buildViewBugLink($bugID,true);
+				$bugLinkList[] = array($g_bugInterface->buildViewBugLink($bugID,true),$buildName);
 			}
 		}
 		// add to output array

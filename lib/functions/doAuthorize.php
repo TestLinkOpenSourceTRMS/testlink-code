@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  * 
  * @filesource $RCSfile: doAuthorize.php,v $
- * @version $Revision: 1.5 $
- * @modified $Date: 2005/10/17 20:11:27 $ by $Author: schlundus $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2005/11/19 23:07:39 $ by $Author: schlundus $
  * @author Chad Rosen, Martin Havlat
  *
  * This file handles the initial login and creates all user session variables.
@@ -23,22 +23,19 @@ require_once("users.inc.php");
 
 
 /** authorization function verifies login & password and set user session data */
-function doAuthorize()
+//20051118 - scs - login and pwd are stripped two times, replaced POST by 
+//					function params
+function doAuthorize($login,$pwd)
 {
 	$bSuccess = false;
 	$sProblem = 'wrong'; // default problem attribute value
 	
-	$pwd = isset($_POST['password']) ? strings_stripSlashes($_POST['password']) : null;
-	$login = isset($_POST['login']) ? strings_stripSlashes($_POST['login']) : null;
-
-  // 20050416 - fm
 	$_SESSION['locale'] = TL_DEFAULT_LOCALE; 
 
 	if (!is_null($pwd) && !is_null($login))
 	{
-		 $login_exists = existLogin($login,$userInfo);
-		 tLog("Account exist = " . $login_exists);
-
+		$login_exists = existLogin($login,$userInfo);
+		tLog("Account exist = " . $login_exists);
 		//encrypt the password so it isn't stored plain text in the db
 		if ($login_exists && $userInfo['password'] == md5($pwd))
 		{

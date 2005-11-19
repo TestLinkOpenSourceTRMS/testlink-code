@@ -1,7 +1,7 @@
 <?
 /** 
 *	TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* 	@version $Id: testSetNavigator.php,v 1.5 2005/10/24 19:34:59 schlundus Exp $
+* 	@version $Id: testSetNavigator.php,v 1.6 2005/11/19 23:07:39 schlundus Exp $
 *	@author Martin Havlat 
 *
 * This page navigate according to Test Set. It builds the javascript trees 
@@ -10,41 +10,39 @@
 *
 *
 * 20050916 - fm - I18N
-* 20051022 - scs - title wasn't set correctly
+* 20051022 - scs - title wasn't set correctly, consmetic changes
 */ 	
-
 require('../../config.inc.php');
 require("common.php");
 require("treeMenu.inc.php");
-require_once("../../lib/functions/lang_api.php");
 testlinkInitPage();
 
 $workPath = null;
 // set feature data
-if ($_GET['feature'] == 'removeTC') {
+if ($_GET['feature'] == 'removeTC')
+{
 	$workPath = "lib/plan/testSetRemove.php";
 	$title = lang_get('title_test_plan_navigator');
 	$template = 'tcTree.tpl';
 	$tcHide = 0;
-
-} elseif ($_GET['feature'] == 'priorityAssign') {
-
+}
+elseif ($_GET['feature'] == 'priorityAssign')
+{
 	$workPath = "lib/plan/planOwner.php";
 	$title = lang_get('title_test_plan_navigator');
 	$template = 'tcTree.tpl';
 	$tcHide = 1;
-
-} else {
-
+}
+else
+{
 	tLog("Wrong or missing GET argument 'feature'.", 'ERROR');
 	exit();
 }
 
-// generate tree 
 $treeData = generateTestSuiteTree($workPath, $tcHide);
 $tree = invokeMenu($treeData);
 
-$smarty = new TLSmarty;
+$smarty = new TLSmarty();
 $smarty->assign('treeKind', TL_TREE_KIND);
 $smarty->assign('tree', $tree);
 $smarty->assign('treeHeader', $title);

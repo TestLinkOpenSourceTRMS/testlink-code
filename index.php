@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: index.php,v $
  *
- * @version $Revision: 1.5 $
- * @modified $Date: 2005/08/31 11:35:11 $ by $Author: schlundus $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2005/11/19 23:07:35 $ by $Author: schlundus $
  *
  * @author Martin Havlat
  *
@@ -29,13 +29,14 @@ setPaths();
 
 $_POST = strings_stripSlashes($_POST);
 $login = isset($_POST['login']) ? $_POST['login'] : null;
+$pwd = isset($_POST['password']) ? $_POST['password'] : null;
 
 if (!is_null($login))
 {
 	$op = doDBConnect();
 	
 	if ($op['status'])
-		doAuthorize();
+		doAuthorize($login,$pwd);
 	else
 	{
 		$smarty = new TLSmarty();

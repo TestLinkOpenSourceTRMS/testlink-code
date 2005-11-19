@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: int_jira.php,v $
  *
- * @version $Revision: 1.1 $
- * @modified $Date: 2005/11/15 11:39:38 $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2005/11/19 23:07:38 $
  *
  * @author (contributor) jbarchibald@gmail.com
  *
@@ -57,6 +57,8 @@ class jiraInterface extends bugtrackingInterface
 	 * @version 1.0
 	 * @author Andreas Morsing <schlundus@web.de>
 	 * @since 22.04.2005, 21:05:25
+	 * 
+	 * 2005119 - scs - fixed using of wrong index
 	 **/
 	function getBugStatus($id)
 	{
@@ -71,7 +73,7 @@ class jiraInterface extends bugtrackingInterface
 			$status = mysql_fetch_assoc($result);
 			if ($status)
 			{
-				$status = $status['status'];
+				$status = $status['issuestatus'];
 			}	
 		}
 		return $status;
@@ -92,7 +94,7 @@ class jiraInterface extends bugtrackingInterface
 	 **/
 	function getBugStatusString($id)
 	{
-		$status = $this->getBUGStatus($id);
+		$status = $this->getBugStatus($id);
 		
 		$str = htmlspecialchars($id);
 		//if the bug wasn't found the status is null and we simply display the bugID

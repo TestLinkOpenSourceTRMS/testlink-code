@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: lostPassword.php,v $
  *
- * @version $Revision: 1.9 $
- * @modified $Date: 2005/11/09 19:54:07 $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2005/11/19 23:07:35 $
  *
  * @author Chad Rosen
  *
@@ -56,7 +56,7 @@ if (strlen($login))
 			$msgBody = lang_get('your_password_is') . $newPassword .  lang_get('contact_admin');  
 
       		// 20051106 - fm  
-      		$mail_op = @email_send($emailAddress, config_get('from_email'), 
+      		$mail_op = email_send($emailAddress, config_get('from_email'), 
                              lang_get('mail_passwd_subject'), $msgBody);
 			
 			if ($mail_op->status_ok)

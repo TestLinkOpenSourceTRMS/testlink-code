@@ -1,12 +1,13 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: planEdit.php,v 1.7 2005/10/10 06:57:02 franciscom Exp $ */
+/* $Id: planEdit.php,v 1.8 2005/11/19 23:07:39 schlundus Exp $ */
 /* Purpose:  ability to edit and delete projects */
 /* TODO: I need to add the deletion of project rights
  *	I need to delete the projects builds
  *
  *
  * @author Francisco Mancardi - 20051009 - bug in delete from bugs
+ * 20051119 - scs - it was possible to save empty tp-names
  */
 require('../../config.inc.php');
 require("../functions/common.php");
@@ -133,12 +134,19 @@ if(isset($_POST['editTestPlan']))
 		else //if the user has edited the data
 		{
 			$i = $i + 4;
-
-			if (updateTestPlan($id,$name,$notes,$active))
-				$generalResult .= lang_get('update_tp_succeeded1'). $safeName . lang_get('update_tp_succeeded2')."<br />";
+			
+			if (strlen($name))
+			{
+				if (updateTestPlan($id,$name,$notes,$active))
+					$generalResult .= lang_get('update_tp_succeeded1'). $safeName . lang_get('update_tp_succeeded2')."<br />";
+				else
+					$generalResult .= lang_get('update_tp_failed1'). $safeName . lang_get('update_tp_failed2').": " . 
+					                  mysql_error() . "<br />";
+			}
 			else
 				$generalResult .= lang_get('update_tp_failed1'). $safeName . lang_get('update_tp_failed2').": " . 
-				                  mysql_error() . "<br />";
+								lang_get('warning_empty_tp_name')."<br />";
+				
 		} // if delete
 	} // while POST array
 }

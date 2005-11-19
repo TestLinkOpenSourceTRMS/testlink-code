@@ -2,7 +2,7 @@
 /**
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/ 
 *
-* @version 	$Id: printData.php,v 1.9 2005/10/24 19:34:59 schlundus Exp $
+* @version 	$Id: printData.php,v 1.10 2005/11/19 23:07:39 schlundus Exp $
 *	@author 	Martin Havlat
 * 
 * Shows the data that will be printed.
@@ -15,6 +15,8 @@
 * @author: francisco mancardi - 20050830 - refactoring
 * @author: francisco mancardi - 20050830 - refactoring print_header()
 * @author: francisco mancardi - 20050810 - deprecated $_SESSION['product'] removed
+* 
+* 20051118 - scs - title in print_header wasnt escaped
 */
 require('../../config.inc.php');
 require("common.php");
@@ -31,27 +33,22 @@ $CONTENT = "";
 /** if print TOC */
 $toc = isset($_GET['toc']) && ($_GET['toc'] == 'y') ? true : false;
 
-
 /** this function prints the document header */
 function print_header($title, $toc)
 {
-  global $CONTENT_HEAD;
-  
-  // 20050830 - fm
-  $prodName = isset($_SESSION['productName']) ? strings_stripSlashes($_SESSION['productName']) : null;
-  $my_userID = isset($_SESSION['userID']) ? intval($_SESSION['userID']) : null;
+	global $CONTENT_HEAD;
+	
+	$prodName = isset($_SESSION['productName']) ? strings_stripSlashes($_SESSION['productName']) : null;
+	$my_userID = isset($_SESSION['userID']) ? intval($_SESSION['userID']) : null;
+	
+	
+	$title = lang_get('title_test_spec') . "-" . htmlspecialchars($title);
+	
+	$CONTENT_HEAD .= printHeader($title,$_SESSION['basehref']);
+	$CONTENT_HEAD .= printFirstPage($title, $prodName, $my_userID);
 
-  
-  $title = lang_get('title_test_spec') . "-" . $title;
-  
-  // 20050905 - fm
-  $CONTENT_HEAD .= printHeader($title,$_SESSION['basehref']);
-  
-  // 20050830 - fm
-  $CONTENT_HEAD .= printFirstPage($title, $prodName, $my_userID);
-
-  if ($toc)
-  	$CONTENT_HEAD .= '<div class="toc"><h2>'.lang_get('title_toc').'</h2>';
+	if ($toc)
+		$CONTENT_HEAD .= '<div class="toc"><h2>'.lang_get('title_toc').'</h2>';
 }
 
 /** 
@@ -61,9 +58,7 @@ print a component
 20050831 - fm -
 After adding fckeditor to all fields in category,
 I need to remove htmlspecialchars() calls and <pre></pre>
-
 */
-
 function print_component($component) 
 {
 	global $CONTENT;
@@ -71,12 +66,13 @@ function print_component($component)
   	global $toc;
   	global $component_number;
   	global $category_number;
+	
   	$component_number++;
   	$category_number = 0;
 
 	if ($toc) 
 	{
-  	$CONTENT_HEAD .= '<p><a href="#com' . $component['id'] . '">' . 
+  		$CONTENT_HEAD .= '<p><a href="#com' . $component['id'] . '">' . 
   	                 htmlspecialchars($component['name']) . '</a></p>';
 		$CONTENT .= "<a name='com" . $component['id'] . "'></a>";
 	}
@@ -155,15 +151,17 @@ function print_testcase($testcase)
  	global $CONTENT;
  	global $CONTENT_HEAD;
  	global $toc;
-  	
+	
+	$idx = isset($testcase['mgttcid']) ? 'mgttcid' : 'id';
+	
 	if ($toc) 
 	{
 	  	$CONTENT_HEAD .= '<p style="padding-left: 20px;"><a href="#tc' . $testcase['id'] . '">' . 
 	  	                 htmlspecialchars($testcase['title']) . '</a></p>';
-		  $CONTENT .= "<a name='tc" . $testcase['mgttcid'] . "'></a>";
+		$CONTENT .= "<a name='tc" . $testcase[$idx] . "'></a>";
 	}
  	$CONTENT .= "<div class='tc'><table width=90%>";
- 	$CONTENT .= "<tr><th>".lang_get('test_case')." " . $testcase['mgttcid'] . ": " . 
+ 	$CONTENT .= "<tr><th>".lang_get('test_case')." " . $testcase[$idx] . ": " . 
  	            htmlspecialchars($testcase['title']) . "</th></tr>";
 
 
@@ -173,18 +171,15 @@ function print_testcase($testcase)
  	} 
  	if ($_GET['body'] == 'y') 
  	{
-   	$CONTENT .= "<tr><td><u>".lang_get('steps')."</u>:<br />" .  $testcase['steps'] . "</td></tr>";
-   	$CONTENT .= "<tr><td><u>".lang_get('expected_results')."</u>:<br />" .  $testcase['exresult'] . "</td></tr>";
+	   	$CONTENT .= "<tr><td><u>".lang_get('steps')."</u>:<br />" .  $testcase['steps'] . "</td></tr>";
+	   	$CONTENT .= "<tr><td><u>".lang_get('expected_results')."</u>:<br />" .  $testcase['exresult'] . "</td></tr>";
  	}
 
   	$CONTENT .= "</table></div>";
 }
 
-
 /*
-
 20050831 - fm - logic reuse
-
 */
 function generate_TCs($rs)
 {
@@ -208,17 +203,17 @@ function generate_TCs($rs)
 function generate_product_TCs($idCategory)
 {
 	$sqlTC = " SELECT  id,title, summary, steps, exresult " .
-	         " FROM mgttestcase " .
-	         " WHERE catid=" . $idCategory . 
-				   " ORDER BY TCorder, id";
-  
-  $resultTC = do_mysql_query($sqlTC);
+				" FROM mgttestcase " .
+				" WHERE catid=" . $idCategory . 
+				" ORDER BY TCorder, id";
 
+	$resultTC = do_mysql_query($sqlTC);
+	
 	if (!$resultTC)
 	{
 		tLog($sqlTC . ' | error: ' . mysql_error(), 'ERROR');
-  }
-  generate_TCs($resultTC);
+	}
+	generate_TCs($resultTC);
 }
 
 /** print Test Case Suite data within category */
@@ -229,11 +224,7 @@ function generate_testSuite_TCs($idCategory)
 			" WHERE catid=" . $idCategory . " ORDER BY TCorder, mgttcid";
 	$resultTC = do_mysql_query($sqlTC);
 	
-	if ($resultTC)
-	{
-		mysql_num_rows($resultTC);   
-	}
-	else
+	if (!$resultTC)
 	{
 		tLog($sqlTC . ' | error: ' . mysql_error(), 'ERROR');
 	}
@@ -286,7 +277,7 @@ function generate_product_CATs($idComponent)
   	$resultCAT = do_mysql_query($sqlCAT);
 	while ($myrowCAT = mysql_fetch_array($resultCAT))
 	{   
-	  print_category($myrowCAT);
+		print_category($myrowCAT);
 		generate_product_TCs($myrowCAT['id']);
 	}
 }
@@ -299,35 +290,30 @@ function getTPcomponent($compID)
   	     " FROM mgtcomponent,component " .
   		   " WHERE mgtcompid=mgtcomponent.id " .
   		   " AND component.id=" . $compID;
+
   $res = do_mysql_query($sql);
   $myrow = mysql_fetch_assoc($res);
-  return ($myrow);
+  return $myrow;
 }
 
 /* 
 20050914 - fm - refactoring
 20050911 - fm - refactoring
-
 */
 function getTPcategory($catID)
 {
-  $sql = " SELECT category.id,mgtcategory.name,category.compid " . 
-         " FROM category,mgtcategory " .
-         " WHERE category.mgtcatid=mgtcategory.id " .
-         " AND category.id=" . $catID . 
-  		   " ORDER BY mgtcategory.CATorder, category.id";
-
-  $res = do_mysql_query($sql);
-  $myrow = mysql_fetch_assoc($res);
-  return ($myrow);
+	$sql = " SELECT category.id,mgtcategory.name,category.compid " . 
+	       " FROM category,mgtcategory " .
+	       " WHERE category.mgtcatid=mgtcategory.id " .
+	       " AND category.id=" . $catID . 
+			   " ORDER BY mgtcategory.CATorder, category.id";
+	
+	$res = do_mysql_query($sql);
+	$myrow = mysql_fetch_assoc($res);
+	return $myrow;
 }
 
-
 // --------------------------------------------------------------------------------
-
-
-
-
 // Work with Test Specification of Product
 if($_GET['type'] == 'product')
 {
@@ -341,12 +327,11 @@ if($_GET['type'] == 'product')
 	    		         $_SESSION['productID'] . " ORDER BY mgtcomponent.name" ;
 	  	$resultMGTCOM = do_mysql_query($sqlMGTCOM);
 	  	while($myrowCOM = mysql_fetch_assoc($resultMGTCOM))
-		  { 
-				//display components until we run out
-				print_component($myrowCOM);
-				generate_product_CATs($myrowCOM['id']);
-	  	}
-	
+		{ 
+			//display components until we run out
+			print_component($myrowCOM);
+			generate_product_CATs($myrowCOM['id']);
+		}
 	}
 	else if($_GET['edit'] == 'component')
 	{
@@ -354,8 +339,7 @@ if($_GET['type'] == 'product')
 	  	$myrowCOM = getComponent($_GET['data']);
 	  	print_header(lang_get("component") . ": " . $myrowCOM['name'], $toc);
 	  	print_component($myrowCOM);
-		  generate_product_CATs($_GET['data']);
-	
+		generate_product_CATs($_GET['data']);
 	}
 	else if($_GET['edit'] == 'category')
 	{
@@ -366,9 +350,8 @@ if($_GET['type'] == 'product')
 	  	print_component($myrowCOM);
 	  	print_category($myrowCAT);
 	
-	  	//Print TCs
-	 	  generate_product_TCs($_GET['data']);
-		
+		//Print TCs
+		generate_product_TCs($_GET['data']);
 	}
 	else if(!$_GET['edit'])
 	{ 
@@ -390,7 +373,6 @@ if($_GET['type'] == 'testSet')
 	    // get project name for display
 	    print_header(lang_get('test_case_suite') . ": " . $_SESSION['testPlanName'], $toc);
 	
-	    // 
 	    $sql = " SELECT  mgtcomponent.id,mgtcomponent.name,mgtcomponent.intro," .
 	    		   " mgtcomponent.scope,mgtcomponent.ref,mgtcomponent.method,mgtcomponent.lim," .
 	    		   " component.id AS compid" .
@@ -399,14 +381,13 @@ if($_GET['type'] == 'testSet')
 	    		   " AND component.projid=" . $_SESSION['testPlanId'] . 
 				     " ORDER BY mgtcomponent.name";
 
-  	  $resultCOM = do_mysql_query($sql);
-	  	while($myrow = mysql_fetch_array($resultCOM))
-		  { 
-			 //display components until we run out
-	    	print_component($myrow);
-	    	generate_testSuite_Categories($myrow['compid']);
-	  	}
-	
+		$resultCOM = do_mysql_query($sql);
+		while($myrow = mysql_fetch_array($resultCOM))
+		{ 
+			//display components until we run out
+			print_component($myrow);
+			generate_testSuite_Categories($myrow['compid']);
+		}
 	}
 	else if($_GET['level'] == 'component')
 	{
@@ -436,18 +417,10 @@ if($_GET['type'] == 'testSet')
 	}
 	else
 	{
-		// something is wrong 
 		tLog("GET['level'] has invalid value.", 'ERROR');
 		exit();
 	}
-	
-	
-	
-	
-	
-	
-} // if project
-
+}
 
 // add MS Word header 
 if ($_GET['format'] == 'msword')

@@ -1,15 +1,16 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: planUpdateTC.tpl,v 1.3 2005/11/13 19:19:31 schlundus Exp $ *}
+{* $Id: planUpdateTC.tpl,v 1.4 2005/11/19 23:07:38 schlundus Exp $ *}
 {* Purpose: smarty template - update Test Case Suite *}
-{* 20051212 - scs - Comp/cat name and tc name weren't escaped
+{* 20051112 - scs - Comp/cat name and tc name weren't escaped
 					Un-/CheckAll Button localized
+   20051118	- scs - TestPlan name wasn't escaped				
 *}
 {include file="inc_head.tpl" openHead="yes"}
 	<script type="text/javascript" src="gui/javascript/checkboxes.js" language="javascript"></script>
 </head>
 <body>
 
-<h1>{lang_get s='title_upd_mod_tc'} {$testPlanName}</h1>
+<h1>{lang_get s='title_upd_mod_tc'} {$testPlanName|escape}</h1>
 
 {if $resultString ne ""}
 <div class="info">

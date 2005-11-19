@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execSetResults.tpl,v 1.9 2005/11/09 07:11:28 franciscom Exp $ *}
+{* $Id: execSetResults.tpl,v 1.10 2005/11/19 23:07:38 schlundus Exp $ *}
 {* Purpose: smarty template - show tests to add results *}
 {*	
   20050919 - fm - BUGID 82
@@ -15,6 +15,8 @@
   20050827 - scs - added display of tcID
   20050815 - scs - small changes because of code changes in execSetResults.php
   20051022 - scs - build identifier not displayed
+  20051118 - scs - enlargened the notes textarea
+  20051119 - scs - added fix for 227
 *}	
 
 {include file="inc_head.tpl" popup='yes'}
@@ -98,7 +100,7 @@
 			<td>
 				<div class="title">{lang_get s='test_exec_notes'}</div>
 				<textarea {$input_enabled_disabled} class="tcDesc" name='notes[{$idx}]' 
-					cols=35 rows=4>{$arrTC[Row].note|escape}</textarea>			
+					cols=50 rows=10>{$arrTC[Row].note|escape}</textarea>			
 			</td>
 			<td>			
 				{* status of test *}
@@ -128,11 +130,13 @@
 				{if $arrTC[Row].bugLinkList}
 				<table class="simple" width="100%">
 					<tr>
+						<th style="text-align:left">{lang_get s='build'}</th>
 						<th style="text-align:left">{lang_get s='caption_bugtable'}</th>
 					</tr>
 					{section name=link loop=$arrTC[Row].bugLinkList}
 					<tr>
-						<td>{$arrTC[Row].bugLinkList[link]}</td>
+						<td>{$arrTC[Row].bugLinkList[link][1]|escape}</td>
+						<td>{$arrTC[Row].bugLinkList[link][0]}</td>
 					</tr>
 					{/section}
 				{/if}

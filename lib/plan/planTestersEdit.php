@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: planTestersEdit.php,v ${file_name} $
- * @version $Revision: 1.5 $
- * @modified $Date: 2005/11/13 19:19:32 ${date} ${time} $ by $Author: schlundus $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2005/11/19 23:07:39 ${date} ${time} $ by $Author: schlundus $
  * 
  * @author Martin Havlat
  * 
@@ -20,6 +20,7 @@
  * 
  * 20051112 - scs - fixed wrong sql statement, because 'Save' button is 
  * 					localized
+ * 20051118 - scs - wrong tp name is displayed when clicked on a tp on the left
  */
 require('../../config.inc.php');
 require_once('common.php');
@@ -67,11 +68,20 @@ if ($submit)
 	/** @todo return real sql result */
 	$update = 'ok';
 }
-
 $arrData = null;
 if ($type == 'plans')
 {
-	$title = lang_get('title_assign_users') . $_SESSION['testPlanName'];
+	$tpName = $_SESSION['testPlanName'];
+	$tps = getAllTestPlans();
+	for($i = 0;$i < sizeof($tps);$i++)
+	{
+		if ($tps[$i]['id'] == $id)
+		{
+			$tpName = $tps[$i]['name'];
+			break;
+		}
+	}
+	$title = lang_get('title_assign_users') . $tpName;
 	$name = 'selected="selected"';
 	getUsersOfPlan($id,$arrData);
 }
@@ -81,7 +91,6 @@ else
 	$title = lang_get('title_assign_tp') . getUserLogin($id);
 	getUserTestPlans1($id,$arrData);
 }
-
 $smarty = new TLSmarty();
 $smarty->assign('title', $title);
 $smarty->assign('arrData', $arrData);

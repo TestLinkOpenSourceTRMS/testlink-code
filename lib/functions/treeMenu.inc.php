@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: treeMenu.inc.php,v $
  *
- * @version $Revision: 1.6 $
- * @modified $Date: 2005/10/12 04:19:10 $ by $Author: havlat $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2005/11/19 23:07:39 $ by $Author: schlundus $
  * @author Martin Havlat
  *
  * 	This file generates tree menu for test specification and test execution.
@@ -18,6 +18,7 @@
  * @author 20050810 - fm refactoring:  removed deprecated: $_SESSION['product']
  * @author 20050807 - fm refactoring:  removed deprecated: $_SESSION['project']
  * 20051011 - MHT - minor refactorization, header update
+ * 20051118 - scs - testplanname was not filtered (JS-Error in certain cases)
  *
  **/
  
@@ -307,20 +308,21 @@ function generateTestSpecTree($prodID, $prodName, $linkto, $hidetc, $getArgument
 function generateTestSuiteTree($linkto, $hidetc, $getArguments = '')
 {
 	$menustring = null;
+	$tpName = filterString($_SESSION['testPlanName']);
 	// define root directory
 	if (TL_TREE_KIND == 'LAYERSMENU') 
 	{
-		$menustring .= ".|" . $_SESSION['testPlanName'] . "|" . $linkto . "?level=root" . 
+		$menustring .= ".|" . $tpName . "|" . $linkto . "?level=root" . 
 		               $getArguments . "|Test Case Suite||workframe|\n";
 	}	
 	elseif (TL_TREE_KIND == 'JTREE')
 	{
-		$menustring .= "['" . $_SESSION['testPlanName'] . "','PTP()',\n";
+		$menustring .= "['" . $tpName . "','PTP()',\n";
 	}	
 	elseif (TL_TREE_KIND == 'DTREE')
 	{
 		$dtreeCounter = 0;
-		$menustring .= "tlTree.add(" . $dtreeCounter++ . ",-1,'" . $_SESSION['testPlanName'] . "','" . 
+		$menustring .= "tlTree.add(" . $dtreeCounter++ . ",-1,'" . $tpName . "','" . 
 		               $linkto . "?level=root" . $getArguments . "');\n";
 	}
 	

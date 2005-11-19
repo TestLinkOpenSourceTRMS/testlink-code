@@ -4,25 +4,21 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.14 $
- * @modified $Date: 2005/10/13 19:26:36 $ $Author: schlundus $
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2005/11/19 11:07:11 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
- * @todo bugs and owner are not working	    
  *
+ * @author 20051119 - Francisco Mancardi - BUGID 0000232: Only admin or leader can update test results
+ * @author 20051913 - am - build was displayed
  * @author 20050919 - Francisco Mancardi - refactoring SQL and PHP 
  * @author 20050911 - Francisco Mancardi - refactoring  
- *
  * @author 20050825 - scs - added buginterface to smarty
- * @author 20050821 - Francisco Mancardi  
- * refactoring decrease level of global coupling 
- *
+ * @author 20050821 - Francisco Mancardi - refactoring decrease level of global coupling 
  * @author 20050815 - scs - code optimization
- * @author 20050807 - Francisco Mancardi  
- * refactoring:  removed deprecated: $_SESSION['project']
+ * @author 20050807 - Francisco Mancardi - refactoring:  removed deprecated: $_SESSION['project']
  *
- * @author 20051913 - am - build was displayed
 **/
 require_once('../../config.inc.php');
 require_once('common.php');
@@ -114,7 +110,11 @@ else
 // ---------------------------------------------------------------------------------------	
 // launch viewer	
 $smarty = new TLSmarty();
-$smarty->assign('rightsEdit', has_rights("tp_planning"));
+
+// 20051119 - fm - BUGID 0000232: Only admin or leader can update test results
+// Solution by: scorpfromhell
+$smarty->assign('rightsEdit', has_rights("tp_execute"));
+
 $smarty->assign('arrTC', $testdata);
 $smarty->assign('build', $buildName);
 $smarty->assign('owner', $owner);

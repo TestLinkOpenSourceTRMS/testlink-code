@@ -3,9 +3,9 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * Filename $RCSfile: planTestersEdit.php,v ${file_name} $
- * @version $Revision: 1.6 $
- * @modified $Date: 2005/11/19 23:07:39 ${date} ${time} $ by $Author: schlundus $
+ * Filename $RCSfile: planTestersEdit.php,v $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2005/11/21 07:26:06 $ $ by $Author: franciscom $
  * 
  * @author Martin Havlat
  * 
@@ -21,6 +21,7 @@
  * 20051112 - scs - fixed wrong sql statement, because 'Save' button is 
  * 					localized
  * 20051118 - scs - wrong tp name is displayed when clicked on a tp on the left
+ * 20051120 - fm - adding test plan filter by product behaivour
  */
 require('../../config.inc.php');
 require_once('common.php');
@@ -32,7 +33,16 @@ $type = isset($_GET['type']) ? $_GET['type'] : 0;
 $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
 if(!$type || !$id)
+{
 	redirect( $_SESSION['basehref'] . "/gui/instructions/planTesters.html");
+}
+
+// 20051120 - fm
+// The current selected Product
+$prod->id   = $_SESSION['productID'];
+$prod->name = $_SESSION['productName'];
+	
+
 	
 $submit = isset($_POST['submit']) ? $_POST['submit'] : 0;
 if ($submit)
@@ -89,7 +99,9 @@ else
 { 	
 	// if users
 	$title = lang_get('title_assign_tp') . getUserLogin($id);
-	getUserTestPlans1($id,$arrData);
+	// 20051120 - fm
+ $arrData=getUserTestPlans1($id,$prod->id);
+
 }
 $smarty = new TLSmarty();
 $smarty->assign('title', $title);
@@ -101,11 +113,15 @@ $smarty->display('planTesters.tpl');
 // =================================================================================
 // 20050810 - fm - refactoring
 // 20050824	MHT	corrected syntax bug, wrong variable using
-function getUserTestPlans1($id,&$arrPlans)
+// 20051120 - fm - interface changes, using product filter on test plan
+function getUserTestPlans1($userID,$prodID)
 {
 	$arrPlans = null;
 	$userTestplans = getUserTestplans($id);
-	$Testplans = getAllTestplans();
+
+  // 20051120 - fm
+	$Testplans = getAllTestplans($prodID,TP_ALL_STATUS,FILTER_BY_PRODUCT);
+	
 	$num_of_tp = sizeof($Testplans);
 	$num_of_usertp = sizeof($userTestplans);
 	

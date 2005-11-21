@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: archive.inc.php,v $
  *
- * @version $Revision: 1.20 $
- * @modified $Date: 2005/11/14 07:36:45 $ by $Author: franciscom $
+ * @version $Revision: 1.21 $
+ * @modified $Date: 2005/11/21 10:49:15 $ by $Author: franciscom $
  *
  * @author Martin Havlat
  * Purpose:  functions for test specification management have three parts:
@@ -13,7 +13,9 @@
  *		2. show test specification
  *		3. copy/move data within test specification         
  *
- * @todo deactive users???? instead of delete
+ *
+ * @author Francisco Mancardi - 20051121 - fm - autogoal mgtid instead oif mgtcatid
+ * BUGID 0000236: unable to re-order categories in component
  *
  * @author Francisco Mancardi - 20051112
  * BUGID 000218
@@ -477,22 +479,29 @@ function getOrderedComponentCategories($compID,&$cats)
 }
 
 
+// 20051121 - fm - autogoal mgtid instead oif mgtcatid
+// BUGID 0000236: unable to re-order categories in component
+//
 // 20051112 - fm
 // to solve BUGID 000218 the CATOrder will be updated on category (testplan) also
 //
 function updateCategoryOrder($catID,$order)
 {
-	/* 
-	$sql = "UPDATE mgtcategory SET CATorder=" . $order . " WHERE id=" . $catID;
-	$result = do_mysql_query($sql);
-	*/
 	
-	$sql = " UPDATE mgtcategory, category " .
-	       " SET mgtcategory.CATorder=" . $order . "," .
-	       "     category.CATorder=" . $order . 
-	       " WHERE mgtcategory.id=category.mgtid" .
-	       " mgtcategory.id=" . $catID;
+  /*  20051121 - fm - on 20051112 wrong logic   */   
+	$sql = " UPDATE mgtcategory " .
+	       " SET mgtcategory.CATorder=" . $order . 
+	       " WHERE mgtcategory.id=" . $catID;
 	$result = do_mysql_query($sql);
+	       
+	
+	$sql = " UPDATE category, mgtcategory" .
+	       " SET category.CATorder=" . $order . 
+	       " WHERE mgtcategory.id=category.mgtcatid" .
+	       " AND   mgtcategory.id=" . $catID;
+	$result = do_mysql_query($sql);
+	
+	       
 	
 	
 	return $result ? 1 : 0;

@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: planEdit.php,v 1.8 2005/11/19 23:07:39 schlundus Exp $ */
+/* $Id: planEdit.php,v 1.9 2005/11/21 07:16:13 franciscom Exp $ */
 /* Purpose:  ability to edit and delete projects */
 /* TODO: I need to add the deletion of project rights
  *	I need to delete the projects builds
@@ -8,6 +8,7 @@
  *
  * @author Francisco Mancardi - 20051009 - bug in delete from bugs
  * 20051119 - scs - it was possible to save empty tp-names
+ * @author Francisco Mancardi - 20051120 - filtering TP by Product
  */
 require('../../config.inc.php');
 require("../functions/common.php");
@@ -15,6 +16,12 @@ require("plan.inc.php");
 require("../functions/builds.inc.php");
 require_once("../../lib/functions/lang_api.php");
 testlinkInitPage();
+
+// 20051120 - fm
+// The current selected Product
+$prod->id   = $_SESSION['productID'];
+$prod->name = $_SESSION['productName'];
+
 
 // if requested an update
 $generalResult = null;
@@ -153,6 +160,8 @@ if(isset($_POST['editTestPlan']))
 
 $smarty = new TLSmarty;
 $smarty->assign('editResult',$generalResult);
-$smarty->assign('arrPlan', getAllTestPlans());
+// 20051120 - fm
+//$smarty->assign('arrPlan', getAllTestPlans());
+$smarty->assign('arrPlan', getAllTestPlans($prod->id,TP_ALL_STATUS,FILTER_BY_PRODUCT));
 $smarty->display('planEdit.tpl');
 ?>

@@ -1,24 +1,26 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
-# $Id: testlink_create_tables.sql,v 1.10 2005/11/21 04:19:51 havlat Exp $
+# This script is distributed under the GNU General Public License 2 or later.
+# $Id: testlink_create_tables.sql,v 1.11 2005/11/21 04:35:02 havlat Exp $
 # SQL script - create db tables for TL 1.6.0  
 #
 # default rights & admin account are created via testlink_create_default_data.sql
 #
 # Rev :
+#       20050806 - fm
+#       1. equalized the dimension and type of field 'NAME'
+#       2. Corrected dimension of ID fields (11 -> 10) in requirement tables
+#       3. Table Comments clean-up  
+# 
+#       20050808 - fm
+#       every occurence of active field converted to boolean
+#
 #       20050925 - fm
 #       build: removed build.build
 #       category: removed category.name
 #       component: removed component.name
 #       bugs: build -> build_id
 #
-#       20050808 - fm
-#       every occurence of active field converted to boolean
-#
-#       20050806 - fm
-#       1. equalized the dimension and type of field 'NAME'
-#       2. Corrected dimension of ID fields (11 -> 10) in requirement tables
-#       3. Table Comments clean-up   
-#
+#	20051120 - mht - bug 237; updated db_vrsion->version default value
 #
 # --------------------------------------------------------
 
@@ -26,7 +28,7 @@
 # to trace the db upgrade history
 DROP TABLE IF EXISTS `db_version`;
 CREATE TABLE `db_version` (
-  version varchar(50) NOT NULL default '1.6 BETA 1',
+  version varchar(50) NOT NULL default 'unknown',
   upgrade_date datetime NOT NULL default '0000-00-00 00:00'
 );
 

@@ -3,8 +3,8 @@
  * TestLink Open Source Project - @link http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: plan.core.inc.php,v $
- * @version $Revision: 1.13 $
- * @modified $Date: 2005/11/19 23:07:39 $ $Author: schlundus $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2005/11/21 07:34:50 $ $Author: franciscom $
  *  
  * 
  * @author 	Martin Havlat
@@ -206,38 +206,66 @@ function getTestPlanUsers()
 }
 
 
-// 20050810 - fm
-// added optional parameter
+// Get All Test Plans for a product
+// 
 //
-// args:
-//      [plan_status]: boolean
-//                     default: null => get active and inactive TP
-//                                      
-function getAllTestPlans($plan_status=null)
+// [prodID]: numeric
+//           default: 0 => don't filter by product ID
+//
+// [plan_status]: boolean
+//                default: null => get active and inactive TP
+//                        
+// [filter_by_product]: boolean
+//                      default: 0 => don't filter by product ID
+//
+// honors the configuration parameter show_tp_without_prodid
+//
+// 20051120 - fm
+// Interface Changed, added filter on product
+//
+function getAllTestPlans($prodID=ALL_PRODUCTS,$plan_status=null,$filter_by_product=0)
 {
+  
+  $show_tp_without_prodid = config_get('show_tp_without_prodid');
+ 	
+  
+	$sql = "SELECT id, name, notes,active, prodid FROM project";
+  $where = ' WHERE 1=1';
 
- $sql = "SELECT id, name, notes,active, prodid FROM project";
-  $where ='';
+  // 20051120 - fm
+  if( $filter_by_product )
+  {
+    if ($prodID != ALL_PRODUCTS)
+    {
+      $where .= ' AND prodid=' . $prodID . " ";  	
+      
+      if ($g_show_tp_without_prodid)
+  	  {
+  		 $where .= " OR prodid=0 ";
+		  }
+    }
+  }
 
- if( !is_null($plan_status) )
+	if( !is_null($plan_status) )
   {	
     $my_active = to_boolean($plan_status);
-    $where = " WHERE active=" . $my_active;
- }
+    $where .= " AND active=" . $my_active;
+	}
   $sql .= $where . " ORDER BY name";
- 
- return selectData($sql);
+	
+	return selectData($sql);
 }
 
 
-// 20050810 - fm
-function getAllActiveTestPlans()
+
+// 20051120 - fm
+// interface changes
+function getAllActiveTestPlans($prodID=ALL_PRODUCTS,$filter_by_product=0)
 {
-	// 20050810 - fm
-	//$sql = "SELECT id, name, notes,active, prodid FROM project WHERE active='y'";
-	$active_tp=1;
-	return getAllTestPlans($active_tp);
+	return getAllTestPlans($prodID,TP_STATUS_ACTIVE,$filter_by_product);
 }
+
+
 
 // ------------------------------------------------------------
 // 20050810 - fm

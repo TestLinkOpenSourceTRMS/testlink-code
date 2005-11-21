@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.36 $
- * @modified $Date: 2005/11/19 23:07:39 $
+ * @version $Revision: 1.37 $
+ * @modified $Date: 2005/11/21 07:36:42 $
  *
  * @author Francisco Mancardi
 **/
@@ -390,6 +390,7 @@ $TLS_opt_no = "No";
 $TLS_question_create_tp_from = "Create from existing Test Plan?";
 $TLS_question_want_rights = "Do you want to use permissions with this Test Plan";
 $TLS_say_yes = "Yes";
+$TLS_caption_for_product = "for Product: ";
 
 
 
@@ -428,6 +429,8 @@ $TLS_btn_uncheck_all = "Uncheck All";
 $TLS_label_list_of = "List of";
 $TLS_opt_test_plans = "Test Plans";
 $TLS_opt_users = "Users";
+$TLS_nav_test_plan  = 'Navigator - ' . $TLS_opt_test_plans ;
+$TLS_nav_users      = 'Navigator - ' . $TLS_opt_users ;
 
 
 // gui/templates/resultsAllBuilds.tpl

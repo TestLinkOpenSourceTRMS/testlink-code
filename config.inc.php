@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.30 $
- * @modified $Date: 2005/11/16 03:46:40 $ by $Author: havlat $
+ * @version $Revision: 1.31 $
+ * @modified $Date: 2005/11/21 06:59:54 $ by $Author: franciscom $
  *
  *
  * Constants and configuration parameters used throughout TestLink 
@@ -390,6 +390,15 @@ require_once(TL_ABS_PATH . 'lib/general/tlsmarty.inc.php');
 define('TL_COMPANY', '');
 define('TL_DOC_COPYRIGHT', '');
 define('TL_DOC_CONFIDENT', '');
+
+
+/* 20051120 - fm */
+define('ALL_PRODUCTS',0);
+define('TP_ALL_STATUS',null);
+define('FILTER_BY_PRODUCT',1);
+define('TP_STATUS_ACTIVE',1);
+
+
 
 /*
 20050821 - fm

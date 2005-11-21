@@ -1,5 +1,5 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
-# $Id: testlink_create_tables.sql,v 1.9 2005/11/09 07:31:05 franciscom Exp $
+# $Id: testlink_create_tables.sql,v 1.10 2005/11/21 04:19:51 havlat Exp $
 # SQL script - create db tables for TL 1.6.0  
 #
 # default rights & admin account are created via testlink_create_default_data.sql
@@ -73,7 +73,7 @@ CREATE TABLE `category` (
   `compid` int(10) unsigned default NULL,
   `importance` enum('L','M','H') NOT NULL default 'M',
   `risk` enum('1','2','3') NOT NULL default '2',
-  `owner` varchar(20) default 'none',
+  `owner` varchar(30) default 'none',
   `mgtcatid` int(10) unsigned NOT NULL default '0',
   `CATorder` int(10) NOT NULL default '0',
   PRIMARY KEY  (`id`),

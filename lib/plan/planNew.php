@@ -1,21 +1,26 @@
 <?php
-/* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: planNew.php,v 1.7 2005/10/03 07:20:14 franciscom Exp $ */
-/* Purpose:  Add new Test Plan */
-/*
- * @ author: francisco mancardi - 20050915 - refactoring function name
- * @ author: francisco mancardi - 20050810
- * deprecated $_SESSION['product'] removed
+/* TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ * $Id: planNew.php,v 1.8 2005/11/21 07:02:25 franciscom Exp $ 
+ *
+ * Purpose:  Add new Test Plan 
+ *
+ * @author: francisco mancardi - 20051120 - adding test plan filter by product behaivour
+ * @author: francisco mancardi - 20050915 - refactoring function name
+ * @author: francisco mancardi - 20050810 - deprecated $_SESSION['product'] removed
 */
-////////////////////////////////////////////////////////////////////////////////
 require('../../config.inc.php');
 require("../functions/common.php");
 require("plan.inc.php");
 require_once("../../lib/functions/lang_api.php");
 testlinkInitPage();
 
+
+// 20051120 - fm
+// The current selected Product
+$prod->id   = $_SESSION['productID'];
+$prod->name = $_SESSION['productName'];
+
 $sqlResult = null;
-// insert new project
 if(isset($_POST['newTestPlan'])) 
 {
 	$name = isset($_POST['name']) ? strings_stripSlashes($_POST['name']) : null;
@@ -104,11 +109,12 @@ if(isset($_POST['newTestPlan']))
 	}
 }
 
-
-
 $smarty = new TLSmarty;
+
+// 20051120 - fm
+$smarty->assign('prod_name', $prod->name);
+$smarty->assign('arrPlan', getAllActiveTestPlans($prod->id,FILTER_BY_PRODUCT));
 $smarty->assign('sqlResult', $sqlResult);
-$smarty->assign('arrPlan', getAllActiveTestPlans());
 $smarty->display('planNew.tpl');
 ?>
 

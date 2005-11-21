@@ -1,8 +1,14 @@
-{* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: planNew.tpl,v 1.4 2005/08/26 21:01:27 schlundus Exp $ *}
-{* Purpose: smarty template - create Test Plan *}
-{* I18N 20050528 - fm *}
-{* 20050824 - scs - changed item to TestPlan *}
+{* 
+TestLink Open Source Project - http://testlink.sourceforge.net/
+$Id: planNew.tpl,v 1.5 2005/11/21 07:02:24 franciscom Exp $
+
+Purpose: smarty template - create Test Plan
+
+20050528 - fm - I18N  
+20050824 - scs - changed item to TestPlan 
+20051120 - fm - added product name info
+
+*}
 
 {include file="inc_head.tpl"}
 
@@ -22,7 +28,10 @@
 	<form method="post">
 
 	<table class="common" width="75%">
-		<caption>{lang_get s='caption_new_tp'}</caption>
+	  {* 20051120 - fm *}
+		<caption>{lang_get s='caption_new_tp'} - {lang_get s='caption_for_product'} {$prod_name}</caption>
+		
+		
 		<tr>
 			<td width="40%">{lang_get s='caption_tp_name'}</td>
 			<td><input type="text" name="name" maxlength="200" /></td>

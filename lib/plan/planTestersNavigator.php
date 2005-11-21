@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: planTestersNavigator.php,v 1.2 2005/08/16 18:00:57 franciscom Exp $ 
+* $Id: planTestersNavigator.php,v 1.3 2005/11/21 07:02:25 franciscom Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * 
@@ -15,18 +15,29 @@ require_once('plan.inc.php');
 require_once("../../lib/functions/lang_api.php");
 testlinkInitPage();
 
+// 20051120 - fm
+// The current selected Product
+$prod->id   = $_SESSION['productID'];
+$prod->name = $_SESSION['productName'];
+
+
 $type = isset($_GET['type']) ? $_GET['type'] : 'users';
 
 $arrData = null;
 if ($type == 'plans')
 {
-	$title = 'Navigator - Test Plans';
+	$title = lang_get('nav_test_plan');
 	$selected = 'selected="selected"';
-	$arrData = getAllActiveTestPlans();
+	
+	// $arrData = getAllActiveTestPlans();
+	// 20051120 - fm - filter by product
+	$arrData = getAllActiveTestPlans($prod->id,FILTER_BY_PRODUCT);
+	
+	
 }
 else
 {
-	$title = 'Navigator - Users';
+	$title = lang_get('nav_users');
 	$selected = '';
 	getAllUsers($arrData);
 }

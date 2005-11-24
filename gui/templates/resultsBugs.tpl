@@ -1,15 +1,16 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsBugs.tpl,v 1.3 2005/10/05 06:14:26 franciscom Exp $
+$Id: resultsBugs.tpl,v 1.4 2005/11/24 21:27:11 schlundus Exp $
 Purpose: smarty template - show Bugs Report 
 
 20051004 - fm - added print button
+20051121 - scs - added escaping of tpname
 *}
 {include file="inc_head.tpl"}
 
 <body>
 
-<h1>{$tpName} {lang_get s='title_bugs_report'}</h1>
+<h1>{$tpName|escape} {lang_get s='title_bugs_report'}</h1>
 <div class="workBack">
 
 <table class="simple" style="width: 100%; text-align: center; margin-left: 0px;">

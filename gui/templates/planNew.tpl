@@ -1,13 +1,13 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planNew.tpl,v 1.5 2005/11/21 07:02:24 franciscom Exp $
+$Id: planNew.tpl,v 1.6 2005/11/24 21:27:11 schlundus Exp $
 
 Purpose: smarty template - create Test Plan
 
 20050528 - fm - I18N  
 20050824 - scs - changed item to TestPlan 
 20051120 - fm - added product name info
-
+20051121 - scs - added escaping of product name
 *}
 
 {include file="inc_head.tpl"}
@@ -29,7 +29,7 @@ Purpose: smarty template - create Test Plan
 
 	<table class="common" width="75%">
 	  {* 20051120 - fm *}
-		<caption>{lang_get s='caption_new_tp'} - {lang_get s='caption_for_product'} {$prod_name}</caption>
+		<caption>{lang_get s='caption_new_tp'} - {lang_get s='caption_for_product'} {$prod_name|escape}</caption>
 		
 		
 		<tr>

@@ -3,8 +3,8 @@
  * TestLink Open Source Project - @link http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: plan.core.inc.php,v $
- * @version $Revision: 1.14 $
- * @modified $Date: 2005/11/21 07:34:50 $ $Author: franciscom $
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2005/11/24 21:27:13 $ $Author: schlundus $
  *  
  * 
  * @author 	Martin Havlat
@@ -220,38 +220,37 @@ function getTestPlanUsers()
 //
 // honors the configuration parameter show_tp_without_prodid
 //
-// 20051120 - fm
-// Interface Changed, added filter on product
+// 20051120 - fm - Interface Changed, added filter on product
+// 20051121 - scs - added missing global $g_show_tp_without_prodid
 //
 function getAllTestPlans($prodID=ALL_PRODUCTS,$plan_status=null,$filter_by_product=0)
 {
-  
-  $show_tp_without_prodid = config_get('show_tp_without_prodid');
- 	
-  
+	global $g_show_tp_without_prodid;
+		  
+	$show_tp_without_prodid = config_get('show_tp_without_prodid');
+	
 	$sql = "SELECT id, name, notes,active, prodid FROM project";
-  $where = ' WHERE 1=1';
-
-  // 20051120 - fm
-  if( $filter_by_product )
-  {
-    if ($prodID != ALL_PRODUCTS)
-    {
-      $where .= ' AND prodid=' . $prodID . " ";  	
-      
-      if ($g_show_tp_without_prodid)
-  	  {
-  		 $where .= " OR prodid=0 ";
-		  }
-    }
-  }
-
-	if( !is_null($plan_status) )
-  {	
-    $my_active = to_boolean($plan_status);
-    $where .= " AND active=" . $my_active;
+	$where = ' WHERE 1=1';
+	
+	// 20051120 - fm
+	if( $filter_by_product )
+	{
+		if ($prodID != ALL_PRODUCTS)
+		{
+			$where .= ' AND prodid=' . $prodID . " ";  	
+			if ($g_show_tp_without_prodid)
+			{
+				$where .= " OR prodid=0 ";
+			}
+		}
 	}
-  $sql .= $where . " ORDER BY name";
+	
+	if( !is_null($plan_status) )
+	{	
+		$my_active = to_boolean($plan_status);
+		$where .= " AND active=" . $my_active;
+	}
+	$sql .= $where . " ORDER BY name";
 	
 	return selectData($sql);
 }

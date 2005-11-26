@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: planAddTC.tpl,v 1.2 2005/08/16 17:59:13 franciscom Exp $ *}
+{* $Id: planAddTC.tpl,v 1.3 2005/11/26 19:58:21 schlundus Exp $ *}
 {* Purpose: smarty template - generate a list of TC for adding to Test Plan *}
 {include file="inc_head.tpl"}
 {include file="inc_jsCheckboxes.tpl"}
@@ -26,9 +26,9 @@
 	<div id="COM">
 		<h2>{$nameCOM|escape}</h2>
 		<p>
-			<input type='button' name='{$nameCOM}_check' value='Check' onclick='javascript: box("COM", true);' />
-			<input type='button' name='{$nameCOM}_uncheck' onclick='javascript: box("COM", false);' value='Uncheck' />
-			<b> test cases in all Categories</b>
+			<input type='button' name='{$nameCOM}_check' value='{lang_get s='btn_check'}' onclick='javascript: box("COM", true);' />
+			<input type='button' name='{$nameCOM}_uncheck' onclick='javascript: box("COM", false);' value='{lang_get s='btn_uncheck'}' />
+			<b> {lang_get s='check_uncheck_tc_in_categories'}</b>
 		</p>
 	{/if}
 

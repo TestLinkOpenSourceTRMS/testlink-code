@@ -1,7 +1,7 @@
 <?php
 
 ////////////////////////////////////////////////////////////////////////////////
-// @version $Id: planAddTC.php,v 1.5 2005/10/03 07:20:14 franciscom Exp $
+// @version $Id: planAddTC.php,v 1.6 2005/11/26 19:58:22 schlundus Exp $
 // File:     planAddTC.php
 // Author:   Chad Rosen
 // Purpose:  This page manages the importation of test cases into testlink.
@@ -9,26 +9,36 @@
 // 20051001 - fm - refactoring
 // 20050926 - fm - removed name from category and component insert
 // 20050807 - fm - removed deprecated: $_SESSION['project']
-//
+// 20051126 - scs - changed passing keyword to keywordID
 ////////////////////////////////////////////////////////////////////////////////
 require('../../config.inc.php');
 require("../functions/common.php");
+require("../keywords/keywords.inc.php");
 require("plan.inc.php");
-require_once("../../lib/functions/lang_api.php");
 testlinkInitPage();
 
 // 20050807 - fm
 $idPlan =  $_SESSION['testPlanId'];
 
 //Defining the keyword variable which is received from the left frame
-$keyword = isset($_REQUEST['key']) ? strings_stripSlashes($_REQUEST['key']) : 'NONE';
+$keywordID = isset($_REQUEST['key']) ? intval($_REQUEST['key']) : 0;
+$keyword = "NONE";
 $compID=$_GET['data'];
 $catID=$_GET['data'];
 
 $smarty = new TLSmarty;
 $smarty->assign('testPlanName', $_SESSION['testPlanName']);
 
-if($keyword != 'NONE')
+if($keywordID)
+{
+	$keyword = getProductKeywords($_SESSION['productID'],null,$keywordID);
+	if (sizeof($keyword))
+		$keyword = $keyword[0];
+	else
+		$keyword = 'NONE';
+}
+
+if ($keyword != 'NONE')	
 {
 	$smarty->assign('key', $keyword);
 }
@@ -39,7 +49,7 @@ if(isset($_POST['addTC'])) //If the user submits the import form
 	$i = 0;
 	//This loop goes through all of the $_POST variables and maps them to values
 	foreach ($_POST as $key)
-  {
+	{
 		$newArray[$i] = $key;
 		$i++;
 	}

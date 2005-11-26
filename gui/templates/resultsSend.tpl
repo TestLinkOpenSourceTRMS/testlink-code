@@ -1,11 +1,13 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: resultsSend.tpl,v 1.2 2005/08/16 17:59:13 franciscom Exp $ *}
+{* $Id: resultsSend.tpl,v 1.3 2005/11/26 19:58:21 schlundus Exp $ *}
 {* Purpose: smarty template - send Test Report *}
 {include file="inc_head.tpl"}
-
+{*
+	20051126 - scs - added escaping of tpname
+*}
 <body>
 
-<h1>{$tpName} {lang_get s='send_test_report'}</h1>
+<h1>{$tpName|escape} {lang_get s='send_test_report'}</h1>
 
 {if $message != "" }
 	<p class='info'>{$message}</p>

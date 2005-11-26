@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.21 $
- * @modified $Date: 2005/11/26 13:27:25 $
+ * @version $Revision: 1.22 $
+ * @modified $Date: 2005/11/26 19:58:22 $
  *
  * @author Andreas Morsing
  *
@@ -337,7 +337,7 @@ $TLS_btn_uncheck = "Markierung aufheben";
 $TLS_check_uncheck_tc = "TestCases der Kategorie.";
 $TLS_note_keyword_filter = "TestCase sind gefilter durch Keyword";
 $TLS_title_add_test_to_plan = "TestCase zum TestPlan hinzufügen";
-
+$TLS_check_uncheck_tc_in_categories = "TestCases in allen Kategorien";
 
 
 // gui/templates/planAddTCNavigator.tpl
@@ -603,10 +603,10 @@ $TLS_warning_empty_pwd = "Das Paswort darf nicht leer sein!";
 
 
 // gui/templates/planRemoveTC.tpl
-$TLS_btn_remove_entire = "Alle löschen";
+$TLS_btn_remove_entire = "Alle löschen:";
 $TLS_no_data_avail = "Keine Daten verfügbar.";
 $TLS_title_remove_tc_from_tp = "Test Case aus dem TestPlan entfernen";
-
+$TLS_btn_remove_tcs = "Test Cases entfernen";
 
 
 // gui/templates/planUpdateTC.tpl
@@ -869,7 +869,6 @@ $TLS_results_by_component_header = "Resultat nach Komponente";
 $TLS_show_hide_all = "Alle ein- ausblenden";
 
 
-
 // gui/templates/resultsMoreBuilds_query_form.tpl
 $TLS_do_not_query_by_keyword = "-Nichts-";
 $TLS_do_not_query_by_owner = "-Nichts-";
@@ -887,6 +886,7 @@ $TLS_select_owner_header = "Besitzer wählen";
 $TLS_select_report_format_header = "Reportformat auswählen";
 $TLS_submit_query = "Anfrage abschicken";
 $TLS_test_plan_header = "TestPlan : ";
+$TLS_select_components_header = "Komponente(n) wählen";
 
 
 
@@ -1104,7 +1104,7 @@ $TLS_category_removed_part2 = "wurde entfernt.";
 $TLS_component_removed_part1 = "Komponente";
 $TLS_component_removed_part2 = "wurde entfernt.";
 $TLS_test_case_removed_part1 = "Test Case";
-
+$TLS_test_case_removed_part2 = "wurde entfernt.";
 
 
 // lib/plan/planUpdateTC.php

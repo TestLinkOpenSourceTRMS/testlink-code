@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execSetResults.tpl,v 1.10 2005/11/19 23:07:38 schlundus Exp $ *}
+{* $Id: execSetResults.tpl,v 1.11 2005/11/26 19:58:21 schlundus Exp $ *}
 {* Purpose: smarty template - show tests to add results *}
 {*	
   20050919 - fm - BUGID 82
@@ -17,13 +17,14 @@
   20051022 - scs - build identifier not displayed
   20051118 - scs - enlargened the notes textarea
   20051119 - scs - added fix for 227
+  20051126 - scs - added escaping of build and owner
 *}	
 
 {include file="inc_head.tpl" popup='yes'}
 
 <body>
 
-<h1>{lang_get s='title_t_r_on_build'} {$build} {lang_get s='title_t_r_owner'} ( {$owner} )</h1>
+<h1>{lang_get s='title_t_r_on_build'} {$build|escape} {lang_get s='title_t_r_owner'} ( {$owner|escape} )</h1>
 
 {include file="inc_print_button.tpl"}
 

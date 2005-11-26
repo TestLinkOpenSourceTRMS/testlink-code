@@ -1,20 +1,21 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsReqs.tpl,v 1.2 2005/10/05 06:14:26 franciscom Exp $
+$Id: resultsReqs.tpl,v 1.3 2005/11/26 19:58:21 schlundus Exp $
 Purpose: report REQ coverage 
 Author Martin Havlat 
 
 20051004 - fm - added print button
+20051126 - scs - added escaping of spec
 *}
 {include file="inc_head.tpl"}
 
 <body>
 
 <h1>
-	<img alt="{lang_get s='help'}: {lang_get s='req_spec'}" class="help" 
+		<img alt="{lang_get s='help'}: {lang_get s='req_spec'}" class="help" 
 	src="icons/sym_question.gif" style="float: right;"
 	onclick="javascript:open_popup('{$helphref}requirementsCoverage.html');" />
-	{lang_get s='title_result_req_testplan'} {$arrReqSpec[$selectedReqSpec]} - {lang_get s='title_test_plan'}
+	{lang_get s='title_result_req_testplan'} {$arrReqSpec[$selectedReqSpec]|escape} - {lang_get s='title_test_plan'}
 </h1>
 
 {include file="inc_print_button.tpl"}

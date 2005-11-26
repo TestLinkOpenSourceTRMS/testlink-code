@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: frmWorkArea.php,v $
  *
- * @version $Revision: 1.5 $
- * @modified $Date: 2005/10/09 18:13:48 $ by $Author: schlundus $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2005/11/26 19:58:22 $ by $Author: schlundus $
  *
  * @author Martin Havlat
  *
@@ -17,7 +17,6 @@
 **/
 require_once('../../config.inc.php');
 require_once("common.php");
-require_once('../functions/lang_api.php');
 testlinkInitPage();
 
 /// <enhancement version="???" date="2005-04-09" author="fm" >
@@ -48,9 +47,8 @@ if (isset($aa_tfp[$showFeature]) === FALSE)
 	tLog("Wrong get argument 'feature'.", 'ERROR');
 	exit();
 }
-
 // features that need to run the validate build function
-if (in_array($showFeature,array('executeTest','metrics')))
+if (in_array($showFeature,array('executeTest','showMetrics')))
 {
 	validateBuildAvailability($_SESSION['testPlanId'],
 	                          $_SESSION['testPlanName'],

@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: planRemoveTC.tpl,v 1.2 2005/08/16 17:59:13 franciscom Exp $ *}
+{* $Id: planRemoveTC.tpl,v 1.3 2005/11/26 19:58:21 schlundus Exp $ *}
 {* Purpose: smarty template - generate a TC list for removing from Test Plan *}
 {include file="inc_head.tpl"}
 
@@ -13,7 +13,7 @@
 
 <form name='removeTcForm' method='post' action='lib/plan/testSetRemove.php?data={$id}&level={$level}'>
 <div style="padding-right: 20px; padding-top: 10px; padding-bottom: 10px; float: right;">
-	<input type='submit' name='deleteTC' value='Remove Test Case(s)' style="margin-right:10px;" /> 
+	<input type='submit' name='deleteTC' value="{lang_get s='btn_remove_tcs'}" style="margin-right:10px;" /> 
 {if $level == 'component' || $level == 'category'}
 	<input type='submit' name='delete{$level}' 
 	       value="{lang_get s='btn_remove_entire'} {$level}">

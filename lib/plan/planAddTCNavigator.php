@@ -2,12 +2,14 @@
 /** 
 *	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version $Id: planAddTCNavigator.php,v 1.3 2005/09/06 06:45:23 franciscom Exp $
+* 	@version $Id: planAddTCNavigator.php,v 1.4 2005/11/26 19:58:22 schlundus Exp $
 *	@author Martin Havlat
 * 
 * 	Navigator for feature: add Test Cases to a Test Case Suite in Test Plan. 
 *	It builds the javascript tree that allow the user select a required part 
 *	Test specification. Keywords should be used for filter.
+* 
+* 20051126 - scs - changed passing keyword to keyword id
 */
 require('../../config.inc.php');
 require("common.php");
@@ -27,7 +29,6 @@ if(isset($_POST['filter']))
 {
 	$key = isset($_POST['keyword']) ? strings_stripSlashes($_POST['keyword']) : 'NONE';
 }
-
 // generate tree 
 $workPath = 'lib/plan/planAddTC.php';
 $args = null;
@@ -39,7 +40,6 @@ if (strlen($key))
 // 20050905 - fm	
 $treeString = generateTestSpecTree($prodID, $prodName, $workPath, 1, $args);
 $tree = invokeMenu($treeString);
-
 $smarty = new TLSmarty;
 $smarty->assign('treeKind', TL_TREE_KIND);
 $smarty->assign('tree', $tree);

@@ -1,7 +1,7 @@
 <?
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* @version $Id: keywords.inc.php,v 1.10 2005/11/26 13:27:25 schlundus Exp $
+* @version $Id: keywords.inc.php,v 1.11 2005/11/26 19:58:22 schlundus Exp $
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author	Chad Rosen
@@ -302,8 +302,9 @@ function getTCKeywords($tcID)
 
 /*
 20051004 - fm return type changed
+* 20051126 - scs - added parameter kwID for getting the keyword name by id
 */
-function getProductKeywords($prodID,$searchKW = null)
+function getProductKeywords($prodID,$searchKW = null,$kwID = null)
 {
 	// grab all of the available keywords
 	$sql = "SELECT keyword FROM keywords WHERE prodid=" . $prodID;
@@ -311,6 +312,10 @@ function getProductKeywords($prodID,$searchKW = null)
 	if (!is_null($searchKW))
 	{
 		$sql .= " AND keyword = '".mysql_escape_string($searchKW)."'";
+	}
+	if (!is_null($kwID))
+	{
+		$sql .= " AND id = {$kwID}";
 	}
 	$sql .= " ORDER BY keyword ASC";
 	

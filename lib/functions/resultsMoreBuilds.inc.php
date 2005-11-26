@@ -1,10 +1,11 @@
 <?
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
- *$Id: resultsMoreBuilds.inc.php,v 1.39 2005/10/24 19:34:59 schlundus Exp $ 
+ *$Id: resultsMoreBuilds.inc.php,v 1.40 2005/11/26 19:58:22 schlundus Exp $ 
  * 
  * @author Kevin Levy
  *
  * 20051022 - scs - small cosmetic changes, removed ' in componentid list
+ * 20051126 - scs - added escaping of component name and notes
  */
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -183,7 +184,7 @@ function createResultsForComponent($componentId, $owner, $keyword, $build_id_set
 
   $componentRowArray = array($myrow[0],$myrow[1],$myrow[2],$myrow[3]);
   $componentName = $componentRowArray[1];
-  $componentHeader = "Component :"  . $componentName ;
+  $componentHeader = "Component :"  . htmlspecialchars($componentName) ;
   
   $sql = " SELECT CAT.id, MGTCAT.name, CAT.compid, CAT.importance, CAT.risk, " .
            " CAT.owner, CAT.mgtcatid, CAT.CATorder" .
@@ -507,11 +508,11 @@ function createTableOfTestCaseResults($arrayOfResults,$arrAllBuilds,&$returnArra
 		$resultInfo = $arrayOfResults[$buildTested];
 		$data = "<tr class=\"" . $className . "\"><td>" .
 		htmlspecialchars($arrAllBuilds[$resultInfo[0]])  . 
-						"</td><td>" . $resultInfo[1] . 
-						"</td><td>" . $resultInfo[2] .
-						"</td><td>" . $resultInfo[3] .
-						"</td><td>" . $resultInfo[4] . 
-						"</td><td>" . $resultInfo[6] . 
+						"</td><td>" . htmlspecialchars($resultInfo[1]) . 
+						"</td><td>" . htmlspecialchars($resultInfo[2]) .
+						"</td><td>" . htmlspecialchars($resultInfo[3]) .
+						"</td><td>" . htmlspecialchars($resultInfo[4]) . 
+						"</td><td>" . htmlspecialchars($resultInfo[6]) . 
 						"</td></tr>";
 					      $returnData .= $data;
 					      next($arrayOfResults);

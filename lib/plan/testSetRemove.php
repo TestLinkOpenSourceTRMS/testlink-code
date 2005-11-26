@@ -1,7 +1,7 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: testSetRemove.php,v 1.5 2005/11/13 19:19:32 schlundus Exp $ 
+ * @version $Id: testSetRemove.php,v 1.6 2005/11/26 19:58:22 schlundus Exp $ 
  * 
  * Remove Test Cases from Test Case Suite 
  * 
@@ -13,14 +13,11 @@
  *
  * 20051112 - scs - removed undefined index warning, added escaping of comp and
  * 					cat names
+ * 20051126 - scs - added test_case_removed_part2
  */         
 require('../../config.inc.php');
 require("../functions/common.php");
-require_once("../../lib/functions/lang_api.php");
-
-// 20051001 - fm
 require_once("plan.inc.php");
-
 testlinkInitPage();
 
 // for genTC_info()
@@ -64,8 +61,10 @@ if(isset($_POST['deleteTC']))
 			$result = do_mysql_query($sqlRESDel);
 			$result = do_mysql_query($sqlBUGDel);
 
-			$resultString .= lang_get("test_case_removed_part1") . " <b>". $mgtID['mgttcid'] . "</b>: " . 
-			                 htmlspecialchars($mgtID['title']) . " " .lang_get("has been removed."). " <br />";
+			$resultString .= lang_get("test_case_removed_part1") . " <b>". 
+							 $mgtID['mgttcid'] . "</b>: " . 
+			                 htmlspecialchars($mgtID['title']) . " " .
+							 lang_get("test_case_removed_part2"). " <br />";
 			$i = $i + 3;
 		}
 	}
@@ -136,12 +135,8 @@ $smarty->assign('resultString', $resultString);
 $smarty->assign('arrData', $arrData);
 $smarty->display('planRemoveTC.tpl');
 
-
-
-
 /*
-20050915 - fm 
-use the id that are != 0
+20050915 - fm - use the id that are != 0
 */
 function genTC_info($compID, $catID, $tcID)
 {
@@ -175,11 +170,11 @@ function genTC_info($compID, $catID, $tcID)
 	$result = do_mysql_query($sql);
 	while($row = mysql_fetch_assoc($result))
 	{
-	$tc_info[] = array(	'id' => $row['id'], 
-				'name' => $row['title'], 
-				'container' => $row['comp_name'] . '/' . $row['cat_name'],
-				'comp_id' => $row['comp_id'],
-				'cat_id' => $row['cat_id'] );
+		$tc_info[] = array(	'id' => $row['id'], 
+					'name' => $row['title'], 
+					'container' => $row['comp_name'] . '/' . $row['cat_name'],
+					'comp_id' => $row['comp_id'],
+					'cat_id' => $row['cat_id'] );
 	}
 	return $tc_info;
 }

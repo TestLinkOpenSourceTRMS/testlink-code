@@ -1,7 +1,10 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecList.tpl,v 1.3 2005/08/26 13:52:40 havlat Exp $ *}
+{* $Id: reqSpecList.tpl,v 1.4 2005/11/26 13:27:24 schlundus Exp $ *}
 {* Purpose: smarty template - create view and create a new req document *}
 {include file="inc_head.tpl"}
+{*
+20051125 - scs - added escaping of productnames
+*}
 
 <body>
 
@@ -9,7 +12,7 @@
 	<img alt="{lang_get s='help'}: {lang_get s='req_spec'}" class="help" 
 	src="icons/sym_question.gif" 
 	onclick="javascript: open_popup('{$helphref}requirementsCoverage.html');" />
-	{$productName} {lang_get s='req_spec'}
+	{$productName|escape} {lang_get s='req_spec'}
 </h1>
 
 

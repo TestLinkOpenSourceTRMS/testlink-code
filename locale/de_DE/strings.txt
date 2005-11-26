@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.20 $
- * @modified $Date: 2005/11/19 23:07:39 $
+ * @version $Revision: 1.21 $
+ * @modified $Date: 2005/11/26 13:27:25 $
  *
  * @author Andreas Morsing
  *
@@ -392,7 +392,7 @@ $TLS_opt_no = "Nein";
 $TLS_question_create_tp_from = "TestPlan auf Basis eines bestehenden erstellen";
 $TLS_question_want_rights = "Wollen Sie Zugriff auf den TestPlan?";
 $TLS_say_yes = "Ja";
-
+$TLS_duplicate_tp_name = "Es gibt schon einen TestPlan mit diesem Namen!";
 
 
 // gui/templates/planOwner.tpl
@@ -429,6 +429,8 @@ $TLS_btn_uncheck_all = "Alle deselektieren";
 $TLS_label_list_of = "Liste der";
 $TLS_opt_test_plans = "TestPläne";
 $TLS_opt_users = "Benutzer";
+$TLS_nav_test_plan  = 'Navigator - ' . $TLS_opt_test_plans ;
+$TLS_nav_users      = 'Navigator - ' . $TLS_opt_users ;
 
 
 
@@ -800,10 +802,10 @@ $TLS_Title = "Titel";
 $TLS_btn_back2srs = "Zurück zu Anf. Spezifikation";
 $TLS_max_size_cvs_file1 = "Max. Größe der Datei ist";
 $TLS_max_size_cvs_file2 = "kB";
-$TLS_req_import_check_note = "Please, verify a possible conflicts, set an appropriate solution and then start import process.";
+$TLS_req_import_check_note = "Überprüfen Sie mögliche Konflikte und wählen Sie vorm Import eine entsprechende Lösungsstrategie.";
 $TLS_req_import_dont_empty = "Keine Einträge mit leerem Bereich importieren";
-$TLS_req_import_format_description1 = " - CSV type requires two fields for each row: 'title','description'";
-$TLS_req_import_format_description2 = " - CSV exported from DOORS requires header row.";
+$TLS_req_import_format_description1 = " - CSV Typ erforder zwei Spalten pro Zeile: 'Titel','Beschreibung'";
+$TLS_req_import_format_description2 = " - CSV mittels DOORS exportiert erfordert eine Header-Zeile.";
 $TLS_req_import_option_double = "Mit gleichem Titel neu anlegen";
 $TLS_req_import_option_header = "Konflikt-Lösung auswählen";
 $TLS_req_import_option_overwrite = "Bestehende aktualisieren";
@@ -1223,4 +1225,10 @@ $TLS_req_import_finished = "Der Import ist abgeschlossen";
 // lib/functions/exec.in.php
 $TLS_test_results_submitted = "TestResultate wurde gespeichert.";
 
+
+//lib/functions/print.inc.php
+$TLS_author = "Autor";
+$TLS_printed_by_TestLink_on = "Gedruckt mit TestLink am";
+
+$TLS_req_doc_id = "DOC-ID";
 ?>

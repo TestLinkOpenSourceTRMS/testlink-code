@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqImport.tpl,v 1.3 2005/10/17 20:11:26 schlundus Exp $ *}
+{* $Id: reqImport.tpl,v 1.4 2005/11/26 13:27:24 schlundus Exp $ *}
 {* Purpose: smarty template - requirements import initial page *}
 {* Author: Martin Havlat *}
 {* revisions:
@@ -9,7 +9,7 @@
 {include file="inc_head.tpl"}
 
 <body>
-<h1>{lang_get s='title_req_import_to'} {$reqSpec.title}</h1>
+<h1>{lang_get s='title_req_import_to'} {$reqSpec.title|escape}</h1>
 
 <div class="workBack">
 

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: requirements.inc.php,v $
- * @version $Revision: 1.14 $
- * @modified $Date: 2005/10/25 04:39:51 $ by $Author: havlat $
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2005/11/26 13:27:25 $ by $Author: schlundus $
  *
  * @author Martin Havlat <havlat@users.sourceforge.net>
  * 
@@ -551,6 +551,7 @@ function printSRS($idSRS, $prodName, $prodID, $userID, $base_href)
  * @param integer $idSRS
  * 
  * @author Martin Havlat 
+ * 20051125 - scs - added escaping of req names
  **/
 function printRequirements($idSRS)
 {
@@ -559,7 +560,7 @@ function printRequirements($idSRS)
 	$output = "<h2>" . lang_get('reqs') . "</h2>\n<div>\n";
 	if (count($arrReq) > 0) {
 		foreach ($arrReq as $REQ) {
-			$output .= '<h3>' . $REQ['title'] . "</h3>\n<div>" . $REQ['scope'] . "</div>\n";
+			$output .= '<h3>' . htmlspecialchars($REQ['title']) . "</h3>\n<div>" . $REQ['scope'] . "</div>\n";
 		}
 	} else {
 		$output .= '<p>' . lang_get('none') . '</p>';

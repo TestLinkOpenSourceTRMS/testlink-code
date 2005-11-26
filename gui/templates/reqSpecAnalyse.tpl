@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecAnalyse.tpl,v 1.5 2005/10/09 18:13:48 schlundus Exp $ *}
+{* $Id: reqSpecAnalyse.tpl,v 1.6 2005/11/26 13:27:24 schlundus Exp $ *}
 {* Purpose: smarty template - Analyse REQ coverage *}
 {include file="inc_head.tpl"}
 
@@ -20,7 +20,7 @@
 <form method="get">{lang_get s='req_spec_change'}<br />
 	<select name="idSRS" onchange="form.submit()">
 	{html_options options=$arrReqSpec selected=$selectedReqSpec}</select>
-	<span class="bold"><a href="lib/req/reqSpecView.php?idSRS={$selectedReqSpec}">Edit</a></span>
+	<span class="bold"><a href="lib/req/reqSpecView.php?idSRS={$selectedReqSpec}">{lang_get s='edit'}</a></span>
 </form>
 </div>
 

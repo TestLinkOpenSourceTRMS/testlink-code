@@ -1,7 +1,7 @@
 <?
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* @version $Id: keywords.inc.php,v 1.9 2005/10/13 19:26:36 schlundus Exp $
+* @version $Id: keywords.inc.php,v 1.10 2005/11/26 13:27:25 schlundus Exp $
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author	Chad Rosen
@@ -252,7 +252,7 @@ function deleteKeyword($id)
 * 20051011 - fm - use of check_for_keyword_existence()
 * 20051004 - fm - refactoring
 */
-function addNewKeyword($prodID,$keyword, $notes)
+function addNewKeyword($prodID,$keyword,$notes)
 {
 	global $g_allow_duplicate_keywords;
 	
@@ -270,7 +270,7 @@ function addNewKeyword($prodID,$keyword, $notes)
 	{
 		$sql =  " INSERT INTO keywords (keyword,prodid,notes) " .
 				" VALUES ('" . mysql_escape_string($my_kw) .	"'," . 
-		$prodID . ",'" . mysql_escape_string($notes) . "')";
+				$prodID . ",'" . mysql_escape_string($notes) . "')";
 		
 		$result = do_mysql_query($sql);
 		$ret = trim(mysql_error());
@@ -283,8 +283,7 @@ function addNewKeyword($prodID,$keyword, $notes)
 	return $ret;
 }
 /*
-20051004 - fm 
-return type changed
+20051004 - fm - return type changed
 */
 function getTCKeywords($tcID)
 {
@@ -335,17 +334,14 @@ $kw    : keyword
 */
 function check_for_keyword_existence($prodID, $kw, $kwID=0)
 {
-
-  $ret = array('msg' => 'ok', 'keyword_exists' => 0);
+	$ret = array('msg' => 'ok', 'keyword_exists' => 0);
   
 	$sql = 	" SELECT * FROM keywords " .
-		      " WHERE UPPER(keyword) ='" . strtoupper(mysql_escape_string($kw))."'".
-     	    " AND prodid=" . $prodID ;
-            
-  if ($kwID != 0 )
-  {
-    $sql .= " AND id <> " . $kwID;
-  }          
+			" WHERE UPPER(keyword) ='" . strtoupper(mysql_escape_string($kw))
+			."' AND prodid=" . $prodID ;
+	
+	if ($kwID)
+		$sql .= " AND id <> " . $kwID;
 	
 	$result = do_mysql_query($sql);       
 	if(mysql_num_rows($result))
@@ -353,8 +349,7 @@ function check_for_keyword_existence($prodID, $kw, $kwID=0)
 		$ret['keyword_exists'] = 1;
 		$ret['msg'] = lang_get('keyword_already_exists');
 	}
-
-  return($ret);
+	
+	return $ret;
 }
-
 ?>

@@ -1,12 +1,13 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecView.tpl,v 1.9 2005/10/21 20:50:45 asielb Exp $ *}
+{* $Id: reqSpecView.tpl,v 1.10 2005/11/26 13:27:24 schlundus Exp $ *}
 {* 
    Purpose: smarty template - view a requirement specification
    Author: Martin Havlat 
 
    20050828 - fm - localize_date
 
-   20050810 - am - added escaping of title/author
+   20050810 - scs - added escaping of title/author
+   20051125 - scs - removed title for the deling of SRS
 *}
 {include file="inc_head.tpl" openHead="yes"}
 {include file="inc_jsCheckboxes.tpl"}
@@ -33,7 +34,7 @@
 	<input type="button" name="deleteSRS" value="{lang_get s='btn_delete_spec'}"
 		onclick="javascript:; 
 		if (confirm('{lang_get s="popup_sure_delete"}')){ldelim} 
-		location.href=fRoot+'lib/req/reqSpecList.php?deleteSRS={$arrSpec[0].title}&idSRS={$arrSpec[0].id}';{rdelim};"/>
+		location.href=fRoot+'lib/req/reqSpecList.php?deleteSRS=1&idSRS={$arrSpec[0].id}';{rdelim};"/>
 	{/if}
 	<input type="button" name="printSRS" value="{lang_get s='btn_print'}"
 		onclick="javascript: window.open('{$basehref}lib/req/reqSpecPrint.php?idSRS={$arrSpec[0].id}', 
@@ -49,7 +50,7 @@
 </form>
 </div>
 
-<p class="bold">{lang_get s="title"}: {$arrSpec[0].title|escape}</p>
+<p class="bold">{lang_get s="title"} {$arrSpec[0].title|escape}</p>
 <div class="tree" style="padding-left: 15px;">{$arrSpec[0].scope}</div>
 {if $arrSpec[0].total_req != 'n/a'}
 <p>{lang_get s="req_total_count"}: {$arrSpec[0].total_req}</p>

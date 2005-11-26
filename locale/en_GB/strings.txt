@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.37 $
- * @modified $Date: 2005/11/21 07:36:42 $
+ * @version $Revision: 1.38 $
+ * @modified $Date: 2005/11/26 13:27:25 $
  *
  * @author Francisco Mancardi
 **/
@@ -391,7 +391,7 @@ $TLS_question_create_tp_from = "Create from existing Test Plan?";
 $TLS_question_want_rights = "Do you want to use permissions with this Test Plan";
 $TLS_say_yes = "Yes";
 $TLS_caption_for_product = "for Product: ";
-
+$TLS_duplicate_tp_name = "There is already a TestPlan with this name!";
 
 
 // gui/templates/planOwner.tpl
@@ -1224,4 +1224,11 @@ $TLS_req_import_finished = "The import is finished!";
 
 // lib/functions/exec.in.php
 $TLS_test_results_submitted = "Test Results submitted.";
+
+
+//lib/functions/print.inc.php
+$TLS_author = "Author";
+$TLS_printed_by_TestLink_on = "Printed by TestLink on";
+
+$TLS_req_doc_id = "DOC-ID";
 ?>

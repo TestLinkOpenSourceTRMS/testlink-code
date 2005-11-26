@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: planTestersEdit.php,v $
- * @version $Revision: 1.7 $
- * @modified $Date: 2005/11/21 07:26:06 $ $ by $Author: franciscom $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2005/11/26 13:27:25 $ $ by $Author: schlundus $
  * 
  * @author Martin Havlat
  * 
@@ -41,7 +41,6 @@ if(!$type || !$id)
 // The current selected Product
 $prod->id   = $_SESSION['productID'];
 $prod->name = $_SESSION['productName'];
-	
 
 	
 $submit = isset($_POST['submit']) ? $_POST['submit'] : 0;
@@ -100,8 +99,7 @@ else
 	// if users
 	$title = lang_get('title_assign_tp') . getUserLogin($id);
 	// 20051120 - fm
- $arrData=getUserTestPlans1($id,$prod->id);
-
+	$arrData = getUserTestPlans1($id,$prod->id);
 }
 $smarty = new TLSmarty();
 $smarty->assign('title', $title);
@@ -117,11 +115,10 @@ $smarty->display('planTesters.tpl');
 function getUserTestPlans1($userID,$prodID)
 {
 	$arrPlans = null;
-	$userTestplans = getUserTestplans($id);
+	$userTestplans = getUserTestplans($userID);
 
-  // 20051120 - fm
+ 	// 20051120 - fm
 	$Testplans = getAllTestplans($prodID,TP_ALL_STATUS,FILTER_BY_PRODUCT);
-	
 	$num_of_tp = sizeof($Testplans);
 	$num_of_usertp = sizeof($userTestplans);
 	
@@ -141,12 +138,12 @@ function getUserTestPlans1($userID,$prodID)
 			}
 		}	
 		$arrPlans[] = array(	
-							'id' => $tp[0], 
-							'name' => $tp[1],
+							'id' => $tp['id'], 
+							'name' => $tp['name'],
 							'checked' => $checked,
 						);
 	}
-	return 1;
+	return $arrPlans;
 }
 
 //20051112 - scs - replaced not found with TL_Unknown

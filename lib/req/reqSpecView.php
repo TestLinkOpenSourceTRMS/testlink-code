@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqSpecView.php,v $
- * @version $Revision: 1.12 $
- * @modified $Date: 2005/10/21 20:50:45 $ by $Author: asielb $
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2005/11/26 13:27:25 $ by $Author: schlundus $
  * @author Martin Havlat
  * 
  * Screen to view existing requirements within a req. specification.
@@ -141,7 +141,6 @@ elseif (isset($_REQUEST['multiAction']))
 			$sqlResult = lang_get('req_msg_noselect');
 	}
 }
-
 
 // collect existing reqs for the SRS
 if ($bGetReqs) {

@@ -3,8 +3,8 @@
  * TestLink Open Source Project - @link http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: plan.core.inc.php,v $
- * @version $Revision: 1.15 $
- * @modified $Date: 2005/11/24 21:27:13 $ $Author: schlundus $
+ * @version $Revision: 1.16 $
+ * @modified $Date: 2005/11/26 13:27:25 $ $Author: schlundus $
  *  
  * 
  * @author 	Martin Havlat
@@ -225,27 +225,23 @@ function getTestPlanUsers()
 //
 function getAllTestPlans($prodID=ALL_PRODUCTS,$plan_status=null,$filter_by_product=0)
 {
-	global $g_show_tp_without_prodid;
-		  
-	$show_tp_without_prodid = config_get('show_tp_without_prodid');
-	
 	$sql = "SELECT id, name, notes,active, prodid FROM project";
 	$where = ' WHERE 1=1';
 	
 	// 20051120 - fm
-	if( $filter_by_product )
+	if($filter_by_product)
 	{
 		if ($prodID != ALL_PRODUCTS)
 		{
 			$where .= ' AND prodid=' . $prodID . " ";  	
-			if ($g_show_tp_without_prodid)
+			if (config_get('show_tp_without_prodid'))
 			{
 				$where .= " OR prodid=0 ";
 			}
 		}
 	}
 	
-	if( !is_null($plan_status) )
+	if(!is_null($plan_status))
 	{	
 		$my_active = to_boolean($plan_status);
 		$where .= " AND active=" . $my_active;
@@ -255,16 +251,12 @@ function getAllTestPlans($prodID=ALL_PRODUCTS,$plan_status=null,$filter_by_produ
 	return selectData($sql);
 }
 
-
-
 // 20051120 - fm
 // interface changes
 function getAllActiveTestPlans($prodID=ALL_PRODUCTS,$filter_by_product=0)
 {
 	return getAllTestPlans($prodID,TP_STATUS_ACTIVE,$filter_by_product);
 }
-
-
 
 // ------------------------------------------------------------
 // 20050810 - fm

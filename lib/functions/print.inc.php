@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: print.inc.php,v $
- * @version $Revision: 1.6 $
- * @modified $Date: 2005/10/24 19:34:59 $ by $Author: schlundus $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2005/11/26 13:27:25 $ by $Author: schlundus $
  *
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
@@ -20,17 +20,16 @@
 */
 function getAuthor($userID)
 {
-    $sql = "select first,last,login from user where id=" . $userID;
+    $sql = "SELECT first,last,login FROM user WHERE id=" . $userID;
     $result = do_mysql_query($sql);
     $myrow = mysql_fetch_assoc($result);
     
     $ret_val = $myrow['first'] . ' ' . $myrow['last'];
     if (strlen(trim($ret_val)) == 0 )
     {
-    	
     	$ret_val = $myrow['login'];
     }	
-    return($ret_val); 
+    return $ret_val; 
 }
 
 /** 
@@ -70,9 +69,9 @@ function printFirstPage($title, $prodName, $userID)
 	$output .= "</div>\n";
 	$output .= '<h1>'.$title."</h1>\n";
 	$output .= "<div style='margin: 50px;'>" .
-			"<p>Product: " . $the_prodName . "</p>" .
-			"<p>Author: " . htmlspecialchars(getAuthor($userID)) . "</p>" .
-			"<p>Printed by TestLink on " . 	strftime($g_date_format, time()) . "</p></div>";
+			"<p>".lang_get('product').": " . $the_prodName . "</p>" .
+			"<p>".lang_get('author').": " . htmlspecialchars(getAuthor($userID)) . "</p>" .
+			"<p>".lang_get('printed_by_TestLink_on')." ". strftime($g_date_format, time()) . "</p></div>";
 	if (TL_DOC_COPYRIGHT != '') {
 		$output .= '<div class="pagefooter">'.htmlspecialchars(TL_DOC_COPYRIGHT)."</div>\n";
 	}

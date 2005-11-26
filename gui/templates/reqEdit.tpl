@@ -1,11 +1,12 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqEdit.tpl,v 1.7 2005/10/21 20:50:45 asielb Exp $ *}
+{* $Id: reqEdit.tpl,v 1.8 2005/11/26 13:27:24 schlundus Exp $ *}
 {* Purpose: smarty template - create / edit a req *}
 {* Author: Martin Havlat *}
 {* Revisions:
 20050828 - fm - fckeditor, localize_date
 20050830 - MHT - result presentation updated
-20051008 - am - added escaping of tile/author
+20051008 - scs - added escaping of tile/author
+20051125 - scs - added escaping of titles for coverage
 *}
 {include file="inc_head.tpl"}
 
@@ -81,7 +82,7 @@
 		<th>{lang_get s='coverage'}</th>
 		<td>
 			{section name=row loop=$arrReq.coverage}
-				<a href="lib/testcases/archiveData.php?edit=testcase&data={$arrReq.coverage[row].id}">{$arrReq.coverage[row].title}</a><br />
+				<a href="lib/testcases/archiveData.php?edit=testcase&data={$arrReq.coverage[row].id}">{$arrReq.coverage[row].title|escape}</a><br />
 			{sectionelse}
 			<span>{lang_get s='req_msg_notestcase'}</span>
 			{/section}

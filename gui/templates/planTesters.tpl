@@ -1,8 +1,9 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: planTesters.tpl,v 1.3 2005/11/13 19:19:31 schlundus Exp $ *}
+{* $Id: planTesters.tpl,v 1.4 2005/11/26 13:27:24 schlundus Exp $ *}
 {* Purpose: smarty template - show users/plan for assignment *}
 {* I18N: 20050528 - fm 
 20051112 - scs - added localization of 'Check all' button
+20051125 - scs - changed order of checkboxes and tpnames 
 *}
 
 {include file="inc_head.tpl"}
@@ -28,11 +29,11 @@
 	{section name=Row loop=$arrData}
 		<tr>
 			<td>
-				{$arrData[Row].name|escape}
-			</td>
-			<td>
 				<input type="checkbox" name="{$arrData[Row].id}" 
 						value="{$arrData[Row].id}" {$arrData[Row].checked} />
+			</td>
+			<td>
+				{$arrData[Row].name|escape}
 			</td>
 		</tr>
 	{/section}

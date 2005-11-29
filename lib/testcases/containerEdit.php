@@ -1,11 +1,13 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: containerEdit.php,v 1.18 2005/10/17 06:14:57 franciscom Exp $ */
+/* $Id: containerEdit.php,v 1.19 2005/11/29 18:27:26 franciscom Exp $ */
 /* Purpose:  This page manages all the editing of test specification containers. */
 /*
  *
- * @author: Francisco Mancardi - 20050907
- * BUGID 0000086
+ * 
+ * @author: Francisco Mancardi - 20051129 - BUGID 0000256
+ * 20051010 - am - removed unneccesary php-warnings
+ * @author: Francisco Mancardi - 20050907 - BUGID 0000086
  *
  * @author: francisco mancardi - 20050830
  * bug in deleteCOM e deleteCAT 
@@ -20,7 +22,7 @@
  * @author: francisco mancardi - 20050810
  * deprecated $_SESSION['product'] removed
  *
- * 20051010 - am - removed unneccesary php-warnings
+ 
 */
 require_once("../../config.inc.php");
 require_once("../functions/common.php");
@@ -165,10 +167,13 @@ else if($action == 'addCOM')
 	if ($name_ok)
 	{
 		$msg = 'ok';
+		
+		// BUGID 256 - 20051129 - fm
 		$ret =insertProductComponent($my_productID,
 		                             $c_data['name'],$c_data['intro'],$c_data['scope'],
 		                             $c_data['ref'],$c_data['method'],$c_data['lim'],
-		                             $g_check_names_for_duplicates,'generate_new');
+		                             $g_check_names_for_duplicates,
+		                             $g_action_on_duplicate_name);
 		                             
 		if (!$ret['status_ok'] )                             
 		{	

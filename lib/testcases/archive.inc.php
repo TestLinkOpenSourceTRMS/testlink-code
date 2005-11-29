@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: archive.inc.php,v $
  *
- * @version $Revision: 1.21 $
- * @modified $Date: 2005/11/21 10:49:15 $ by $Author: franciscom $
+ * @version $Revision: 1.22 $
+ * @modified $Date: 2005/11/29 18:27:26 $ by $Author: franciscom $
  *
  * @author Martin Havlat
  * Purpose:  functions for test specification management have three parts:
@@ -13,6 +13,10 @@
  *		2. show test specification
  *		3. copy/move data within test specification         
  *
+ *
+ * @author Francisco Mancardi - 20051129 - 
+ * BUGID 0000259
+ * added logic to check for existent name in moveComponentToProduct()
  *
  * @author Francisco Mancardi - 20051121 - fm - autogoal mgtid instead oif mgtcatid
  * BUGID 0000236: unable to re-order categories in component
@@ -252,6 +256,8 @@ function copyTc($newCat, $id, $user)
 	return ($msg_status);
 }
 
+
+
 function copyCategoryToComponent($newParent, $id, $nested, $login_name)
 {
 	//Select the category info so that we can copy it
@@ -305,21 +311,83 @@ function moveCategoryToComponent($newParent, $id)
 	return $result ? 'ok': mysql_error();
 }
 
-function moveComponentToProduct($newParent, $id)
-{
-	$sql = "UPDATE mgtcomponent SET prodid=".$newParent." WHERE id=".$id;
-	$result = do_mysql_query($sql);
 
-	return $result ? 'ok' : mysql_error();
+// 20051129 - fm - added logic to check for existent name.
+function moveComponentToProduct($newParent, $comp_id)
+{
+
+  // 20051129 - fm
+	$check_names_for_duplicates=config_get('check_names_for_duplicates');
+  $upd_name_sql=' ';
+	$do_update=TRUE;
+	
+  if( $check_names_for_duplicates )
+  {
+  	
+  	$sql = "SELECT name 
+            FROM mgtcomponent
+            WHERE id=" . $comp_id;
+  	
+  	$result = do_mysql_query($sql);
+	  $row = mysql_fetch_array($result);
+	  $my_name=$row['name'];
+
+    $sql = " SELECT count(name) AS QTY_DUP 
+             FROM mgtcomponent
+             WHERE prodid = " . $newParent .
+           " AND name='" . $my_name . "'";
+    
+    $result = do_mysql_query($sql);
+	  $row = mysql_fetch_array($result);
+	
+	  if( $row['QTY_DUP'] > 0 )
+	  {
+	     $action_on_duplicate_name=config_get('action_on_duplicate_name');
+	     if ( $action_on_duplicate_name == "block" )
+	     {
+	       $do_update=FALSE;	
+         $msg = lang_get('component_name_already_exists');
+	     }
+	     
+	     if ( $action_on_duplicate_name == "generate_new" )
+	     {
+         $prefix_name_for_copy=config_get('prefix_name_for_copy');
+         $upd_name_sql = " , name='" . $prefix_name_for_copy . " " . $my_name . "' "; 
+	     }
+	  }
+  }
+
+	if( $do_update )
+	{
+		$sql = "UPDATE mgtcomponent 
+	          SET prodid=" . $newParent . $upd_name_sql .
+	         " WHERE id=". $comp_id;
+		$result = do_mysql_query($sql);
+		
+		$msg = $result ? 'ok' : mysql_error();
+  }
+
+
+	return ($msg);
 }
 
+
+
+// 20051129 - fm - added logic to manage duplicate names
 // 20050908 - fm due to changes in insertProductComponent()
+//
 function copyComponentToProduct($newParent, $id, $nested, $login_name)
 {
+	// 20051129 - fm
+	$check_names_for_duplicates=config_get('check_names_for_duplicates');
+  $action_on_duplicate_name=config_get('action_on_duplicate_name');
+  
 	$component = getComponent($id);
 
 	$ret = insertProductComponent($newParent,$component[1],$component[2],$component[3],
-	                              $component[4],$component[5],$component[6]);
+	                              $component[4],$component[5],$component[6],
+	                              $check_names_for_duplicates,
+	                              $action_on_duplicate_name);
 	
 	$comID = $ret['id'];
 	if ($ret['status_ok'])

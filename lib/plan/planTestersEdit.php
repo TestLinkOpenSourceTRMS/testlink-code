@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: planTestersEdit.php,v $
- * @version $Revision: 1.9 $
- * @modified $Date: 2005/11/30 15:22:55 $ $ by $Author: franciscom $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2005/11/30 15:25:31 $ $ by $Author: franciscom $
  * 
  * @author Martin Havlat
  * 
@@ -22,6 +22,8 @@
  * 					localized
  * 20051118 - scs - wrong tp name is displayed when clicked on a tp on the left
  * 20051120 - fm - adding test plan filter by product behaivour
+ * 20051130 - fm - BUGID 239
+ *
  */
 require('../../config.inc.php');
 require_once('common.php');
@@ -52,7 +54,7 @@ if ($submit)
 	
 	if($type == 'users')
 	{
-		// BUGID 239
+		// 20051130 - fm - BUGID 239
 		// delete everything from the projRights table for that user
 		$resultDelete = deleteUsersProjectRights($id, $prod->id);
 		

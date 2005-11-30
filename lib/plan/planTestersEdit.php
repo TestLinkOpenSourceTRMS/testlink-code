@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: planTestersEdit.php,v $
- * @version $Revision: 1.8 $
- * @modified $Date: 2005/11/26 13:27:25 $ $ by $Author: schlundus $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2005/11/30 15:22:55 $ $ by $Author: franciscom $
  * 
  * @author Martin Havlat
  * 
@@ -52,8 +52,10 @@ if ($submit)
 	
 	if($type == 'users')
 	{
-		//delete everything from the projRights table for that user
-		$resultDelete = deleteUsersProjectRights($id);
+		// BUGID 239
+		// delete everything from the projRights table for that user
+		$resultDelete = deleteUsersProjectRights($id, $prod->id);
+		
 		if (sizeof($projRightsArray))
 		{
 			foreach($projRightsArray as $projRights)

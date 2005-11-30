@@ -4,13 +4,15 @@
  *
  * Filename $RCSfile: users.inc.php,v $
  *
- * @version $Revision: 1.11 $
- * @modified $Date: 2005/11/13 19:19:31 $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2005/11/30 15:22:53 $ $Author: franciscom $
  *
  * @author Chad Rosen, Martin Havlat
  * @author Martin Havlat
  *
  * Functions for Users management
+ *
+ * @author Francisco Mancardi - 20050821 - BUGID 239
  *
 **/
 require_once("common.php");
@@ -230,11 +232,16 @@ function setUserSession($user, $id, $roleID, $email, $locale = null)
 	return 1;
 }
 
-function deleteUsersProjectRights($id)
+
+// 20051130 - fm
+// BUGID 239 - TestPlan are filtered by Product ID
+function deleteUsersProjectRights($userID, $prodID)
 {
-	$sql = "DELETE FROM projrights WHERE userid = " . $id;
+	$sql = " DELETE FROM projrights
+	         WHERE userid = " . $userID .
+	       " AND projid IN (SELECT id FROM project WHERE prodid = " . $prodID . ")";
+	      
 	$result = do_mysql_query($sql);
-	
 	return $result ? 1 : 0;
 }
 

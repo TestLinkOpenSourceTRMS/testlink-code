@@ -1,11 +1,12 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsBugs.tpl,v 1.5 2005/11/26 19:58:21 schlundus Exp $
+$Id: resultsBugs.tpl,v 1.6 2005/12/01 18:19:32 schlundus Exp $
 Purpose: smarty template - show Bugs Report 
 
 20051004 - fm - added print button
 20051121 - scs - added escaping of tpname
 20051126 - scs - added escaping of items
+20051201 - scs - removed escaping bug link
 *}
 {include file="inc_head.tpl"}
 
@@ -23,7 +24,13 @@ Purpose: smarty template - show Bugs Report
 	{section name=Row loop=$arrData}
 	<tr>
 		{section name=Item loop=$arrData[Row]}
-			<td>{$arrData[Row][Item]|escape}</td>
+			<td>
+				{if $smarty.section.Item.index == 2}
+					{$arrData[Row][Item]}
+				{else}
+					{$arrData[Row][Item]|escape}
+				{/if}
+			</td>
 		{/section}
 	</tr>
 	 {/section}

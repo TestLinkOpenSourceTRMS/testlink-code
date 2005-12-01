@@ -2,8 +2,8 @@
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: results.inc.php,v $
- * @version $Revision: 1.21 $
- * @modified $Date: 2005/11/09 07:11:33 $   $Author: franciscom $
+ * @version $Revision: 1.22 $
+ * @modified $Date: 2005/12/01 18:19:35 $   $Author: schlundus $
  * 
  * @author 	Martin Havlat 
  * @author 	Chad Rosen (original report definition)
@@ -934,9 +934,9 @@ function getBugsReport($tpID, $buildID = 'all')
 				$bugString .= $bugID;
 			}	
 		}
-		// save
+		// 20051201 - scs - fixed double escaping of TCTitle
 		array_push($arrOutput, array($myrow['comp_name'] . ' / ' . $myrow['cat_name'], 
-				       $myrow['mgttcid'] . ': ' . htmlspecialchars($myrow['title']), $bugString));
+				       $myrow['mgttcid'] . ': ' . $myrow['title'], $bugString));
 
 		if($bugString != "") {
 			unset($bugString);

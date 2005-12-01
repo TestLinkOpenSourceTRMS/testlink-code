@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: archive.inc.php,v $
  *
- * @version $Revision: 1.22 $
- * @modified $Date: 2005/11/29 18:27:26 $ by $Author: franciscom $
+ * @version $Revision: 1.23 $
+ * @modified $Date: 2005/12/01 07:38:03 $ by $Author: franciscom $
  *
  * @author Martin Havlat
  * Purpose:  functions for test specification management have three parts:
@@ -13,6 +13,8 @@
  *		2. show test specification
  *		3. copy/move data within test specification         
  *
+ * @author Francisco Mancardi - 20051201 - BUGID 258 
+ * Management of Component Duplicate Name - block on copy gives no message to user
  *
  * @author Francisco Mancardi - 20051129 - 
  * BUGID 0000259
@@ -373,6 +375,8 @@ function moveComponentToProduct($newParent, $comp_id)
 
 
 
+// 20051201 - fm - 
+// BUGID 258 Management of Component Duplicate Name - block on copy gives no message to user
 // 20051129 - fm - added logic to manage duplicate names
 // 20050908 - fm due to changes in insertProductComponent()
 //
@@ -404,7 +408,9 @@ function copyComponentToProduct($newParent, $id, $nested, $login_name)
 	  		}	
 	  	}
 	}	
-	return $comID ? 'ok' : mysql_error();
+  // 20051201 - fm
+	return $ret['msg'];
+		
 }
 
 

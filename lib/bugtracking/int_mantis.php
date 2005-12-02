@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: int_mantis.php,v $
  *
- * @version $Revision: 1.4 $
- * @modified $Date: 2005/09/16 06:45:27 $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2005/12/02 20:12:25 $
  *
  * @author Francisco Mancardi - 20050916 - refactoring
  * @author Andreas Morsing
@@ -13,6 +13,7 @@
  * Constants used throughout TestLink are defined within this file
  * they should be changed for your environment
  *
+ * 20051202 - scs - added returning null in some cases
 **/
 /** Interface name */
 define('BUG_INTERFACE_CLASSNAME',"mantisInterface");
@@ -74,6 +75,8 @@ class mantisInterface extends bugtrackingInterface
 			{
 				$status = $status['status'];
 			}	
+			else
+				$status = null;
 		}
 		return $status;
 		
@@ -133,6 +136,8 @@ class mantisInterface extends bugtrackingInterface
 			$summary = mysql_fetch_row($result);
 			if ($summary)
 				$summary = $summary[0];
+			else
+				$summary = null;
 		}
 		return $summary;
 	}

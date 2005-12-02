@@ -4,14 +4,15 @@
  *
  * Filename $RCSfile: int_jira.php,v $
  *
- * @version $Revision: 1.2 $
- * @modified $Date: 2005/11/19 23:07:38 $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2005/12/02 20:12:25 $
  *
  * @author (contributor) jbarchibald@gmail.com
  *
  * Constants used throughout TestLink are defined within this file
  * they should be changed for your environment
  *
+ * 20051202 - scs - added returning null in some cases
 **/
 /** Interface name */
 define('BUG_INTERFACE_CLASSNAME',"jiraInterface");
@@ -75,6 +76,8 @@ class jiraInterface extends bugtrackingInterface
 			{
 				$status = $status['issuestatus'];
 			}	
+			else
+				$status = null;
 		}
 		return $status;
 		
@@ -107,6 +110,8 @@ class jiraInterface extends bugtrackingInterface
 			if ($status == 5 || $status == 6)
 				$str = "<del>" . $id . "</del>";
 		}
+		else
+			$status	= null;
 			
 		return $str;
 	}
@@ -134,6 +139,8 @@ class jiraInterface extends bugtrackingInterface
 			$summary = mysql_fetch_row($result);
 			if ($summary)
 				$summary = $summary[0];
+			else
+				$summary = null;
 		}
 		return $summary;
 	}

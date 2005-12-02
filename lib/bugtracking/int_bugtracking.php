@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: int_bugtracking.php,v $
  *
- * @version $Revision: 1.5 $
- * @modified $Date: 2005/11/15 11:38:30 $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2005/12/02 20:12:25 $
  *
  * @author Andreas Morsing
  *
@@ -243,16 +243,21 @@ class bugtrackingInterface
 	{
 		$link = "<a href='" .$this->buildViewBugURL($bugID) . "' target='_blank'>";
 		
-		$link .= $bugID;
+		$status = $this->getBugStatusString($bugID);
+		
+		if (!is_null($status))
+			$link .= $status;
+		else
+			$link .= $bugID;
 		if ($bWithSummary)
 		{
 			$summary = $this->getBugSummaryString($bugID);
-			$status = $this->getBugStatusString($bugID);
-			if (!is_null($status) && !is_null($summary))
+			if (!is_null($summary))
 			{
-				$link .= " - " . $summary . " - " . $status;
+				$link .= " - " . $summary;
 			}
 		}
+
 		$link .= "</a>";
 		
 		return $link;

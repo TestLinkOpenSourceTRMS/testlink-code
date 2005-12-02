@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: int_bugzilla.php,v $
  *
- * @version $Revision: 1.5 $
- * @modified $Date: 2005/10/13 19:26:36 $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2005/12/02 20:12:25 $
  *
  * @author Arjen van Summeren - 20051010 - inserted function getBugSummary($id) again, corrected getBugStatusString($id)
  * @author Raphael Bosshard - 20051010 - inserted function getBugSummary($id) again
@@ -15,6 +15,7 @@
  * Constants used throughout TestLink are defined within this file
  * they should be changed for your environment
  *
+ *  * 20051202 - scs - added returning null in some cases
 **/
 /** Interface name */
 define('BUG_INTERFACE_CLASSNAME',"bugzillaInterface");
@@ -75,7 +76,9 @@ class bugzillaInterface extends bugtrackingInterface
 			if ($status)
 			{
 				$status = $status['bug_status'];
-			}	
+			}
+			else
+				$status = null;	
 		}
 		return $status;
 	}
@@ -104,11 +107,15 @@ class bugzillaInterface extends bugtrackingInterface
 		{
 			$summary = mysql_fetch_row($result);
 			if ($summary)
+			{
 				$summary = $summary[0];
-		}
-		if(strlen($summary) > 45)
-		{
-			$summary = substr($summary, 0, 42) . "...";
+				if(strlen($summary) > 45)
+				{
+					$summary = substr($summary, 0, 42) . "...";
+				}
+			}
+			else
+				$summary = null;
 		}
 		
 		return $summary;
@@ -139,7 +146,7 @@ class bugzillaInterface extends bugtrackingInterface
 		{
 			//strike through all bugs that have a resolved, verified, or closed status.. 
 			if('RESOLVED' == $status || 'VERIFIED' == $status || 'CLOSED' == $status)
-				$status = "<del>" . htmlspecialchars($status). "</del>";
+				$status = "<del>" . htmlspecialchars($id). "</del>";
 		}
 		return $status;
 	}

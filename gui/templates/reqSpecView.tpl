@@ -1,13 +1,14 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecView.tpl,v 1.10 2005/11/26 13:27:24 schlundus Exp $ *}
+{* $Id: reqSpecView.tpl,v 1.11 2005/12/02 20:49:55 schlundus Exp $ *}
 {* 
    Purpose: smarty template - view a requirement specification
    Author: Martin Havlat 
 
-   20050828 - fm - localize_date
+20050828 - fm - localize_date
 
-   20050810 - scs - added escaping of title/author
-   20051125 - scs - removed title for the deling of SRS
+20050810 - scs - added escaping of title/author
+20051125 - scs - removed title for the deling of SRS
+20051202 - scs - fixed 211
 *}
 {include file="inc_head.tpl" openHead="yes"}
 {include file="inc_jsCheckboxes.tpl"}
@@ -80,7 +81,7 @@
 		<td><span class="bold">{$arrReq[row].req_doc_id|escape}</span></td>
 		<td><span class="bold"><a href="lib/req/reqSpecView.php?editReq={$arrReq[row].id}&idSRS={$arrSpec[0].id}">
 		{$arrReq[row].title|escape}</a></span></td>
-		<td>{$arrReq[row].scope|truncate:100|regex_replace:"/<.*>/":" "}</td>
+		<td>{$arrReq[row].scope|strip_tags|strip|truncate:100}</td>
 	</tr>
 	{sectionelse}
 	<tr><td></td><td><span class="bold">{lang_get s='req_msg_norequirement'}</span></td></tr>

@@ -1,9 +1,10 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecList.tpl,v 1.4 2005/11/26 13:27:24 schlundus Exp $ *}
+{* $Id: reqSpecList.tpl,v 1.5 2005/12/02 20:49:55 schlundus Exp $ *}
 {* Purpose: smarty template - create view and create a new req document *}
 {include file="inc_head.tpl"}
 {*
 20051125 - scs - added escaping of productnames
+20051202 - scs - fixed 211
 *}
 
 <body>
@@ -45,7 +46,7 @@
 	<tr>
 		<td><span class="bold"><a href="lib/req/reqSpecView.php?idSRS={$arrSpec[rowSpec].id}">
 			{$arrSpec[rowSpec].title|escape}</a></span></td>
-		<td>{$arrSpec[rowSpec].scope|truncate:190|regex_replace:"/<.*>/":" "}</td>
+		<td>{$arrSpec[rowSpec].scope|strip_tags|strip|truncate:190}</td>
 		<td>{$arrSpec[rowSpec].total_req|escape}</td>
 	</tr>
 	{sectionelse}

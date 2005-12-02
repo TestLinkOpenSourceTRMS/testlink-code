@@ -1,10 +1,11 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqImport.tpl,v 1.4 2005/11/26 13:27:24 schlundus Exp $ *}
+{* $Id: reqImport.tpl,v 1.5 2005/12/02 20:49:55 schlundus Exp $ *}
 {* Purpose: smarty template - requirements import initial page *}
 {* Author: Martin Havlat *}
 {* revisions:
 20050830 - MHT - result presentation updated
-20051015 - am - fixed back button
+20051015 - scs - fixed back button
+20051202 - scs - fixed 211
 *}
 {include file="inc_head.tpl"}
 
@@ -80,7 +81,7 @@
 		{section name=row loop=$arrImport}
 		<tr>
 			<td>{$arrImport[row][0]|escape}</td>
-			<td>{$arrImport[row][1]|truncate:100|regex_replace:"/<.*>/":" "}</td>
+			<td>{$arrImport[row][1]|strip_tags|strip|truncate:100}</td>
 			<td>{$arrImport[row][2]|escape}</td>
 		</tr>
 		{sectionelse}

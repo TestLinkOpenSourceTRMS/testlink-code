@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: containerView.tpl,v 1.7 2005/08/31 08:46:28 franciscom Exp $ *}
+{* $Id: containerView.tpl,v 1.8 2005/12/02 20:49:55 schlundus Exp $ *}
 {* 
 Purpose: smarty template - view test specification containers 
 
@@ -11,6 +11,7 @@ Purpose: smarty template - view test specification containers
 3. use associative array instead of ordinal
 
 20050828 - scs - adding import of tcs to a specific category
+20051202 - scs - adding escaping of container names, fix for 267
 *}
 {include file="inc_head.tpl"}
 
@@ -46,7 +47,7 @@ Purpose: smarty template - view test specification containers
 		<div>
 		<form method="post" action="lib/testcases/containerEdit.php?componentID={$container_data.id}" />
 		  {* 20050830 - fm *}
-			<input type="hidden" name="componentName" value="{$container_data.name}" />
+			<input type="hidden" name="componentName" value="{$container_data.name|escape}" />
 
 			<input type="submit" name="editCOM" value="{lang_get s='btn_edit_com'}"
 				     alt="{lang_get s='alt_edit_com'}" />
@@ -72,7 +73,7 @@ Purpose: smarty template - view test specification containers
 		<div>
 		<form method="post" action="lib/testcases/containerEdit.php?categoryID={$container_data.id}" />
 			{* 20050830 - fm *}
-			<input type="hidden" name="categoryName" value="{$container_data.name}" />
+			<input type="hidden" name="categoryName" value="{$container_data.name|escape}" />
 
 			<input type="submit" name="editCat"   value="{lang_get s='btn_edit_cat'}" />  
 			<input type="submit" name="deleteCat" value="{lang_get s='btn_del_cat'}" />   

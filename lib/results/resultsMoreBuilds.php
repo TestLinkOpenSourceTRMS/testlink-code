@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsMoreBuilds.php,v 1.14 2005/10/19 05:47:45 kevinlevy Exp $ 
+* $Id: resultsMoreBuilds.php,v 1.15 2005/12/03 22:09:35 schlundus Exp $ 
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 * 
@@ -21,15 +21,15 @@ require_once('../keywords/keywords.inc.php');
 testlinkInitPage();
 
 $prodID = isset($_SESSION['productID']) ? $_SESSION['productID'] : 0;
-$projectId = $_SESSION['testPlanId'];
-$arrBuilds = getBuilds($projectId, " ORDER BY build.name "); 
-$arrOwners = getTestPlanUsers();
+$tpID = $_SESSION['testPlanId'];
+$arrBuilds = getBuilds($tpID, " ORDER BY build.name "); 
+$arrOwners = getTestPlanUsers($tpID);
 $arrKeywords = selectKeywords($prodID);
-$arrComponents = getArrayOfComponentNames($projectId);
+$arrComponents = getArrayOfComponentNames($tpID);
 
 $smarty = new TLSmarty();
 $smarty->assign('testPlanName',$_SESSION['testPlanName']);
-$smarty->assign('projectid', $projectId);
+$smarty->assign('projectid', $tpID);
 $smarty->assign('arrBuilds', $arrBuilds); 
 $smarty->assign('arrOwners', $arrOwners);
 $smarty->assign('arrKeywords', $arrKeywords);

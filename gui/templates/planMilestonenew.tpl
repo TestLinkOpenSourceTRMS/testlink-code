@@ -1,11 +1,15 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: planMilestonenew.tpl,v 1.2 2005/08/16 17:59:13 franciscom Exp $ *}
+{* $Id: planMilestonenew.tpl,v 1.3 2005/12/03 22:09:30 schlundus Exp $ *}
 {* Purpose: smarty template - edit milestones *}
+{*
+	20051203 - scs - corrected wrong maxlength for name and date,
+					 added displaying of tpName
+*}
 {include file="inc_head.tpl"}
 
 <body>
 
-<h1>{lang_get s='title_milestones'} {$projectName}</h1>
+<h1>{lang_get s='title_milestones'} {$tpName|escape}</h1>
 
 {* tabs *}
 <div class="tabMenu">
@@ -28,13 +32,13 @@
 		<tr>
 			<td>{lang_get s='th_name'}:</td>
 			<td>
-				<input type="text" name="name" maxlenght="50" />
+				<input type="text" name="name" maxlenght="100" />
 			</td>
 		</tr>
 		<tr>
 			<td>{lang_get s='th_date_format'}:</td>
 			<td>
-				<input type="text" name="date" maxlength="12" />
+				<input type="text" name="date" maxlength="10" />
 			</td>
 		</tr>
 		<tr>
@@ -56,7 +60,7 @@
 			</td>
 		</tr>
 	</table>
-	<p><input type="submit" NAME="newMilestone" value="{lang_get s='btn_new_milestone'}" /></p>
+	<p><input type="submit" name="newMilestone" value="{lang_get s='btn_new_milestone'}" /></p>
 	</form>
 	</div>
 

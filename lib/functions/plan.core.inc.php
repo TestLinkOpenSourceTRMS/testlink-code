@@ -3,8 +3,8 @@
  * TestLink Open Source Project - @link http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: plan.core.inc.php,v $
- * @version $Revision: 1.16 $
- * @modified $Date: 2005/11/26 13:27:25 $ $Author: schlundus $
+ * @version $Revision: 1.17 $
+ * @modified $Date: 2005/12/03 22:09:35 $ $Author: schlundus $
  *  
  * 
  * @author 	Martin Havlat
@@ -190,18 +190,22 @@ function getCountTestPlans4UserProd($userID,$prodID=null)
 
 /**
  * Get list of users
- * @todo only users valid for the project should be collected
- * @todo ? DELETE - should be used user.inc.php
+ * 20051203 - scs - added param tpID for getting only those user
+ * 					which belong to a certain tp
  */
-function getTestPlanUsers()
+function getTestPlanUsers($tpID)
 {
-	$sqlUser = "select login from user";
-	$resultUser = @do_mysql_query($sqlUser);
-	$i = 0;
-	while($rowUser = mysql_fetch_array($resultUser)){
-		$data[$i++] = $rowUser[0];
+	$sqlUser = "SELECT user.id,login FROM user,projrights WHERE ".
+			   "user.id = projrights.userid and projid = {$tpID}";
+	$resultUser = do_mysql_query($sqlUser);
+	if ($resultUser)
+	{
+		$data = null;
+		while($rowUser = mysql_fetch_assoc($resultUser))
+		{
+			$data[$rowUser['id']] = $rowUser['login'];
+		}
 	}
-	
 	return $data;
 }
 

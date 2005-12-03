@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: planOwner.php,v 1.7 2005/11/13 19:19:32 schlundus Exp $ */
+/* $Id: planOwner.php,v 1.8 2005/12/03 22:09:35 schlundus Exp $ */
 /**
  * Manage the ownership and priority of test suite
  *
@@ -9,6 +9,7 @@
  * 
  * 20051112 - scs - simplified case 'component', added localization of imp's
  * 					small cosmetic changes
+ * 20051203 - scs - added filtering of tp users by tpid
  */
 require('../../config.inc.php');
 require("../functions/common.php");
@@ -19,13 +20,12 @@ $level = isset($_GET['level']) ? $_GET['level'] : null;
 $compID = isset($_GET['data']) ? intval($_GET['data']) : null;
 $catID = isset($_GET['data']) ? intval($_GET['data']) : null;
 
-// process update request
+$tpID = $_SESSION['testPlanId'];
 $updated = null;
 if(isset($_POST['updateSuiteAttribute']) && $_POST['updateSuiteAttribute'])
 {
 	$updated = updateSuiteAttributes($_POST);
 }
-
 
 $arrSuites = null;
 if($level == 'root')
@@ -36,14 +36,14 @@ if($level == 'root')
 }	
 else if($level == 'component')
 {
-	$arrSuites = getAllTestPlanComponentCategories($_SESSION['testPlanId'],$compID);
+	$arrSuites = getAllTestPlanComponentCategories($tpID,$compID);
 }
 else if($level == 'category')
 {
 	$arrSuites = getTP_category_info($catID);
 }
 
-$arrUsers = getTestPlanUsers();
+$arrUsers = getTestPlanUsers($tpID);
 
 $smarty = new TLSmarty();
 $smarty->assign('sqlResult', $updated);

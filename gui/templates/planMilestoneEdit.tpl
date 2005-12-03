@@ -1,11 +1,15 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: planMilestoneEdit.tpl,v 1.2 2005/08/16 17:59:13 franciscom Exp $ *}
+{* $Id: planMilestoneEdit.tpl,v 1.3 2005/12/03 22:09:30 schlundus Exp $ *}
 {* Purpose: smarty template - edit milestones *}
+{* 
+20051203 - scs - added displaying of tpname, correct wrong maxlength of
+				 name and date
+*}
 {include file="inc_head.tpl"}
 
 <body>
 
-<h1>{lang_get s='title_milestones'} {$projectName|escape}</h1>
+<h1>{lang_get s='title_milestones'} {$tpName|escape}</h1>
 
 {* tabs *}
 <div class="tabMenu">
@@ -38,10 +42,10 @@
 						<tr>
 							<td>
 								<input type="hidden" name="{$arrMilestone[Row].id}" value="{$arrMilestone[Row].id}" />
-								<input name="title{$arrMilestone[Row].id}" value="{$arrMilestone[Row].title|escape}" maxlength="50" />
+								<input name="title{$arrMilestone[Row].id}" value="{$arrMilestone[Row].title|escape}" maxlength="100" />
 							</td>
 							<td>
-								<input name="date{$arrMilestone[Row].id}" value="{$arrMilestone[Row].date|escape}" maxlength="12" />
+								<input name="date{$arrMilestone[Row].id}" value="{$arrMilestone[Row].date|escape}" maxlength="10" />
 							</td>
 							<td>
 								<input name="aPriority{$arrMilestone[Row].id}" value="{$arrMilestone[Row].A|escape}" maxlength="3" />

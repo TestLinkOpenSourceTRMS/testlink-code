@@ -1,6 +1,6 @@
 <?
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: builds.inc.php,v 1.11 2005/10/15 04:23:18 kevinlevy Exp $
+* $Id: builds.inc.php,v 1.12 2005/12/03 22:09:35 schlundus Exp $
 * 
 * @author Martin Havlat
 *
@@ -70,7 +70,7 @@ function getBuildInfo($sql)
 
  	return $arrBuilds;
 }
-
+//20051203 - scs - correct wrong column name while deleting bugs and results
 function deleteTestPlanBuild($testPlanID,$buildID)
 {
 	$result = 1;
@@ -86,11 +86,11 @@ function deleteTestPlanBuild($testPlanID,$buildID)
 		{
 			$tcIDList = implode(",",$tcIDs);
 			
-			$query = "DELETE FROM bugs WHERE tcid IN ({$tcIDList}) AND build.id = {$buildID}";
+			$query = "DELETE FROM bugs WHERE tcid IN ({$tcIDList}) AND build_id = {$buildID}";
 			$result = $result && do_mysql_query($query);
 			
 			
-			$query = "DELETE FROM results WHERE tcid IN ({$tcIDList}) AND build.id = {$buildID}";
+			$query = "DELETE FROM results WHERE tcid IN ({$tcIDList}) AND build_id = {$buildID}";
 			$result = $result && do_mysql_query($query);
 		}
 	

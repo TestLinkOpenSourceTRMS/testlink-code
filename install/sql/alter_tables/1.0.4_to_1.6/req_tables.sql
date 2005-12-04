@@ -31,7 +31,7 @@ CREATE TABLE `requirements` (
   `id_modifier` INT( 10 ) UNSIGNED NULL,
   `modified_date` date NOT NULL default '0000-00-00',
 PRIMARY KEY ( `id` ) ,
-INDEX ( `id_srs` , `status` )
+INDEX ( `id_srs` , `status` ),
 KEY `req_doc_id` (`req_doc_id`)
 ) TYPE=MyISAM;
 

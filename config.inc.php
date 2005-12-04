@@ -5,12 +5,14 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.31 $
- * @modified $Date: 2005/11/21 06:59:54 $ by $Author: franciscom $
+ * @version $Revision: 1.32 $
+ * @modified $Date: 2005/12/04 23:48:15 $ by $Author: havlat $
  *
  *
  * Constants and configuration parameters used throughout TestLink 
  * are defined within this file they should be changed for your environment
+ * 
+ *-------------------------------------------------------------------------
  *
  * Revisions:
  *
@@ -69,26 +71,17 @@
  * @author Francisco Mancardi - 20050806 
  * Changes to support the installer
  * 
+ * 20051204 - MHT - added HTTP_ACCEPT_LANGUAGE support; added patch for Chinese
  * 
-**/
+ *------------------------------------------------------------------------*/
 
-// with the use of the installer, the file config_db.inc.php
-// will be generated automatically.
-// The following parameters regarding the TestLink Database (DB) 
-// are defined in config_db.inc.php
-//
-// DB user and password to use for connecting to the testlink db  
-// (DB_USER, DB_PASS)
-//
-// DB host to use when connecting to the testlink db 
-// (DB_HOST)
-//
-// Name of the database that contains the testlink tables
-// (DB_NAME);
-//
-// DB type being used by testlink (only mysql currently supported)
-// (DB_TYPE)
-//
+/** 
+ * config_db.inc.php is generated automatically with the use of the installer
+ * otherwise you must manualy create this file, that include constants:
+ * - DB host and DB name (DB_HOST, DB_NAME)
+ * - DB user and password to connect (DB_USER, DB_PASS)
+ * - DB type: define('DB_TYPE', 'mysql');
+ */ 
 require_once('config_db.inc.php');
 
 
@@ -98,9 +91,13 @@ define('TL_BASE_HREF', get_home_url());
 /** Set this to TRUE if your MySQL DB supports UTF8 (MySQL version >= 4.1) */
 define('DB_SUPPORTS_UTF8', TRUE);
 
-/** Don't change these values or you will have problems! */
-/* CHARSET */
+/** GUI CHARSET 
+ * Chinese users must comment the next line and uncomment the second one 
+ * @todo translate Chinese from gb2312 to UTF-8
+ **/
 define('TL_TPL_CHARSET', DB_SUPPORTS_UTF8  ? 'UTF-8' : 'ISO-8859-1');
+//define('TL_TPL_CHARSET', 'gb2312'); // Chinese charset
+
 /* Directory separator */
 define('DS', DIRECTORY_SEPARATOR);
 
@@ -194,9 +191,6 @@ define('TL_TESTLINK_CSS','gui/css/theme0/testlink.css');
 define('TL_DOC_BASIC_CSS','gui/css/theme0/tl_doc_basic.css');
 */
 
-
-
-
 /* TRUE -> Check if:
            a. Product Name                   is unique
            b. Component Name Inside Product  is unique
@@ -204,8 +198,7 @@ define('TL_DOC_BASIC_CSS','gui/css/theme0/tl_doc_basic.css');
            d. Test Case Name inside Category is unique 
    FALSE -> don't check
 */
-//$g_check_names_for_duplicates=FALSE;
-$g_check_names_for_duplicates=TRUE;
+$g_check_names_for_duplicates = TRUE;
 
 /* 
 if you have choose to check for unique names, what to do
@@ -216,20 +209,20 @@ when a duplicate name is found
 'block'       : return with an error 
 
 */    
-$g_action_on_duplicate_name='allow_repeat';
+$g_action_on_duplicate_name = 'allow_repeat';
 
 /*  */
-$g_prefix_name_for_copy= strftime("%Y%m%d-%H:%M:%S", time());
+$g_prefix_name_for_copy = strftime("%Y%m%d-%H:%M:%S", time());
         
 /* 
 BUGID 0000086: Using "|" in the component or category name causes malformed URLs
 regexp used to check for chars not allowed in product, component , category name, 
 and testcase title 
 */
-$g_ereg_forbidden ="[|]";
+$g_ereg_forbidden = "[|]";
 
 /* TRUE -> TL 1.5.1 compatibility, get also Test Plans without product id. */
-$g_show_tp_without_prodid=TRUE;
+$g_show_tp_without_prodid = TRUE;
 
 
 /* 
@@ -265,7 +258,7 @@ $g_req_cfg->objective_for_category="Category/Test Cases generated from Requireme
 $g_req_cfg->default_component_name="Component Created by Requirement - Auto";
 $g_req_cfg->scope_for_component="Component/Category/Test Cases generated from Requirements";
 
-$g_req_cfg->use_req_spec_as_category_name=TRUE;
+$g_req_cfg->use_req_spec_as_category_name = TRUE;
 
 
 
@@ -273,7 +266,7 @@ $g_req_cfg->use_req_spec_as_category_name=TRUE;
 20051002 - fm
 Must be changed if Table definition changes
 */
-$g_field_size->category_name=100;
+$g_field_size->category_name = 100;
 
 
 /* fckeditor Toolbar */
@@ -328,9 +321,12 @@ $g_locales_timestamp_format = array('en_GB' => "%d/%m/%Y %H:%M:%S",
 
 
 
-/* Set this to your default locale, this must be one of $g_locales */
-define('TL_DEFAULT_LOCALE','en_GB');
-
+/** Your default locale, this must be one of $g_locales */
+if (array_key_exists(getenv("HTTP_ACCEPT_LANGUAGE"), $g_locales)) {
+	define('TL_DEFAULT_LOCALE', getenv("HTTP_ACCEPT_LANGUAGE"));
+} else {
+	define('TL_DEFAULT_LOCALE','en_GB');
+}
 
 /* These are the possible TestCase statuses */
 $g_tc_status = array ( "failed"        => 'f',

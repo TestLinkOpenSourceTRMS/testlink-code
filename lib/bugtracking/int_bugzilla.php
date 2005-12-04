@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: int_bugzilla.php,v $
  *
- * @version $Revision: 1.6 $
- * @modified $Date: 2005/12/02 20:12:25 $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2005/12/04 12:58:46 $
  *
  * @author Arjen van Summeren - 20051010 - inserted function getBugSummary($id) again, corrected getBugStatusString($id)
  * @author Raphael Bosshard - 20051010 - inserted function getBugSummary($id) again
@@ -142,13 +142,14 @@ class bugzillaInterface extends bugtrackingInterface
 		$status = $this->getBUGStatus($id);
 		
 		//if the bug wasn't found the status is null and we simply display the bugID
+		$str = htmlspecialchars($id);
 		if (!is_null($status))
 		{
 			//strike through all bugs that have a resolved, verified, or closed status.. 
 			if('RESOLVED' == $status || 'VERIFIED' == $status || 'CLOSED' == $status)
-				$status = "<del>" . htmlspecialchars($id). "</del>";
+				$str = "<del>" . htmlspecialchars($id). "</del>";
 		}
-		return $status;
+		return $str;
 	}
 }
 ?>

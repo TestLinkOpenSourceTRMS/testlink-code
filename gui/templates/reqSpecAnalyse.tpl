@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecAnalyse.tpl,v 1.7 2005/12/04 23:51:15 kevinlevy Exp $ *}
+{* $Id: reqSpecAnalyse.tpl,v 1.8 2005/12/05 00:07:00 kevinlevy Exp $ *}
 {* Purpose: smarty template - Analyse REQ coverage *}
 {include file="inc_head.tpl"}
 
@@ -50,7 +50,7 @@
 		<td><span class="bold"><a href="lib/req/reqSpecView.php?editReq={$arrCoverage.covered[row].id}&idSRS={$selectedReqSpec}">
 			{$arrCoverage.covered[row].title|escape}</a></span></td>
 		<td>{section name=subrow loop=$arrCoverage.covered[row].coverage}
-{$arrCoverage.covered[row].coverage[subrow].id|escape}:{$arrCoverage.covered[row].coverage[subrow].title|escape}<br />
+<a href="lib/testcases/archiveData.php?data={$arrCoverage.covered[row].coverage[subrow].id|escape}&edit=testcase&allow_edit=0">{$arrCoverage.covered[row].coverage[subrow].id|escape}</a>:{$arrCoverage.covered[row].coverage[subrow].title|escape}<br />
 		{/section}</td>
 	</tr>
 {if $smarty.section.row.last}

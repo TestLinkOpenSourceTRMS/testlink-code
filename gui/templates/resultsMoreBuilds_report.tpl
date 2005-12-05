@@ -1,8 +1,9 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ 
-
-$Author: schlundus $
-
+$Id: resultsMoreBuilds_report.tpl,v 1.12 2005/12/05 01:46:52 havlat Exp $
+Purpose: smarty template - show Test Results and Metrics
+Revisions:
 20051126 - scs - removed a-tags around indiv. desc.
+20051204 - mht - removed obsolete print button
 *}
 {include file="inc_head.tpl" openHead='yes'}
 <!-- added by Kevin Levy 8/27 -->
@@ -45,9 +46,6 @@ $Author: schlundus $
 				{$allComponentData}
 				</div>
 		</div>
-
-{include file="inc_print_button.tpl"}
-
 	</body>
 </html>
 {/if}

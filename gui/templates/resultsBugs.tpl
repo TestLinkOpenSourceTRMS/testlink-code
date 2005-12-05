@@ -1,12 +1,13 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsBugs.tpl,v 1.6 2005/12/01 18:19:32 schlundus Exp $
+$Id: resultsBugs.tpl,v 1.7 2005/12/05 01:46:52 havlat Exp $
 Purpose: smarty template - show Bugs Report 
 
 20051004 - fm - added print button
 20051121 - scs - added escaping of tpname
 20051126 - scs - added escaping of items
 20051201 - scs - removed escaping bug link
+20051204 - mht - removed obsolete print button
 *}
 {include file="inc_head.tpl"}
 
@@ -36,9 +37,6 @@ Purpose: smarty template - show Bugs Report
 	 {/section}
 </table>
 </div>
-
-{include file="inc_print_button.tpl"}
-
 
 </body>
 </html>

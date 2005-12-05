@@ -1,11 +1,12 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsReqs.tpl,v 1.3 2005/11/26 19:58:21 schlundus Exp $
+$Id: resultsReqs.tpl,v 1.4 2005/12/05 01:46:52 havlat Exp $
 Purpose: report REQ coverage 
 Author Martin Havlat 
 
 20051004 - fm - added print button
 20051126 - scs - added escaping of spec
+20051204 - mht - removed obsolete print button
 *}
 {include file="inc_head.tpl"}
 
@@ -17,8 +18,6 @@ Author Martin Havlat
 	onclick="javascript:open_popup('{$helphref}requirementsCoverage.html');" />
 	{lang_get s='title_result_req_testplan'} {$arrReqSpec[$selectedReqSpec]|escape} - {lang_get s='title_test_plan'}
 </h1>
-
-{include file="inc_print_button.tpl"}
 
 <div class="workBack">
 
@@ -142,9 +141,6 @@ Author Martin Havlat
 	<p class="bold">{lang_get s='none'}</p>
 {/section}
 </div>
-
-
-{include file="inc_print_button.tpl"}
 
 </body>
 </html>

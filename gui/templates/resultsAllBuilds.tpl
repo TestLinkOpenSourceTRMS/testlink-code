@@ -1,6 +1,9 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: resultsAllBuilds.tpl,v 1.3 2005/10/05 06:14:26 franciscom Exp $ *}
+{* $Id: resultsAllBuilds.tpl,v 1.4 2005/12/05 01:46:52 havlat Exp $ *}
 {* Purpose: smarty template - show Test Results and Metrics *}
+{* Revisions:
+20051204 - mht - removed obsolete print button
+*}
 {include file="inc_head.tpl"}
 
 <body>
@@ -31,6 +34,5 @@
 </table>
 </div>
 
-{include file="inc_print_button.tpl"}
 </body>
 </html>

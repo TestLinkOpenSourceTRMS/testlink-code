@@ -1,19 +1,14 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execSetResults.tpl,v 1.11 2005/11/26 19:58:21 schlundus Exp $ *}
+{* $Id: execSetResults.tpl,v 1.12 2005/12/05 01:30:26 havlat Exp $ *}
 {* Purpose: smarty template - show tests to add results *}
-{*	
-  20050919 - fm - BUGID 82
-  
-  20050911 - fm - 
-  using $smarty.section.Row.index 
-  (change needed to use assoc array to simplify processing in PHP)
-    
-	20050828 - fm -	
-	localize_date 
-	use $g_tc_status.not_run instead of magic letter 
-  
-  20050827 - scs - added display of tcID
+{* Revisions:
+	
   20050815 - scs - small changes because of code changes in execSetResults.php
+  20050827 - scs - added display of tcID
+  20050828 - fm - localize_date; use $g_tc_status.not_run instead of magic letter 
+  20050911 - fm - using $smarty.section.Row.index 
+  (change needed to use assoc array to simplify processing in PHP)
+  20050919 - fm - BUGID 82
   20051022 - scs - build identifier not displayed
   20051118 - scs - enlargened the notes textarea
   20051119 - scs - added fix for 227
@@ -24,9 +19,12 @@
 
 <body>
 
-<h1>{lang_get s='title_t_r_on_build'} {$build|escape} {lang_get s='title_t_r_owner'} ( {$owner|escape} )</h1>
-
-{include file="inc_print_button.tpl"}
+<h1>	
+	<img alt="{lang_get s='help'}" class="help" 
+	src="icons/sym_question.gif" style="float: right;"
+	onclick="javascript:open_popup('{$helphref}execMain.html');" />
+	{lang_get s='title_t_r_on_build'} {$build|escape} {lang_get s='title_t_r_owner'} ( {$owner|escape} )
+</h1>
 
 {* show echo about update if applicable *}
 {$updated}
@@ -40,9 +38,10 @@
   {if $rightsEdit == "yes"}
   	{assign var="input_enabled_disabled" value=""}
   	
-  	<div id="submit_tc_results">
-  		<input type='submit' name='submitTestResults' value="{lang_get s='btn_save_tc_exec_results'}" />
-  		<img align=top src="icons/sym_question.gif" onclick="javascript:open_popup('{$helphref}execMain.html');">
+	<div class="groupBtn">
+  		<input type="submit" name='submitTestResults' value="{lang_get s='btn_save_tc_exec_results'}" />
+		<input type="button" name="print" value="{lang_get s='btn_print'}" 
+		onclick="javascript:window.print();" />
   	</div>
 	{/if}
 	
@@ -154,14 +153,12 @@
 
   {* 20051108 - fm - BUGID 00082*}
   {if $rightsEdit == "yes"}
-  	<div id="submit_tc_results">
+  	<div class="groupBtn">
   		<input type='submit' name='submitTestResults' value="{lang_get s='btn_save_tc_exec_results'}" />
-  		<img align=top src="icons/sym_question.gif" onclick="javascript:open_popup('{$helphref}execMain.html');" />
   	</div>	
   {/if}
 </form>
 </div>
 
-{include file="inc_print_button.tpl"}
 </body>
 </html>

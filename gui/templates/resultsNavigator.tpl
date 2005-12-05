@@ -1,13 +1,26 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: resultsNavigator.tpl,v 1.2 2005/08/16 17:59:13 franciscom Exp $ *}
+{* $Id: resultsNavigator.tpl,v 1.3 2005/12/05 01:30:59 havlat Exp $ *}
 {* Purpose: smarty template - show Test Results and Metrics *}
-{* I18N: 20050528 - fm *}
-{include file="inc_head.tpl"}
-
+{* Revisions:
+	20050528 - fm - I18N
+	20051204 - mht - added print button
+*}
+{include file="inc_head.tpl" openHead="yes"}
+{literal}<script type="text/javascript">
+function reportPrint(){
+	parent["workframe"].focus();
+	parent["workframe"].print();
+}
+</script>{/literal}
+</head>
 <body>
 
 <h1>{$title|escape}</h1>
 
+<div class="groupBtn">
+	<input type="button" name="print" value="{lang_get s='btn_print'}" 
+	onclick="javascript: reportPrint();" style="margin-left:2px;" />
+</div>
 
 <div class="tree">
 <div>

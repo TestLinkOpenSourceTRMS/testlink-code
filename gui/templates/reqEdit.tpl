@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqEdit.tpl,v 1.8 2005/11/26 13:27:24 schlundus Exp $ *}
+{* $Id: reqEdit.tpl,v 1.9 2005/12/05 00:11:06 kevinlevy Exp $ *}
 {* Purpose: smarty template - create / edit a req *}
 {* Author: Martin Havlat *}
 {* Revisions:
@@ -82,7 +82,7 @@
 		<th>{lang_get s='coverage'}</th>
 		<td>
 			{section name=row loop=$arrReq.coverage}
-				<a href="lib/testcases/archiveData.php?edit=testcase&data={$arrReq.coverage[row].id}">{$arrReq.coverage[row].title|escape}</a><br />
+				<a href="lib/testcases/archiveData.php?edit=testcase&data={$arrReq.coverage[row].id}">{$arrReq.coverage[row].id|escape}: {$arrReq.coverage[row].title|escape}</a><br />
 			{sectionelse}
 			<span>{lang_get s='req_msg_notestcase'}</span>
 			{/section}

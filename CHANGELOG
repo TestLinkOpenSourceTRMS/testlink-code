@@ -6,10 +6,50 @@
 TestLink development team of 1.6 version:
 
 	Andreas  Morsing  (schlundus)
-	Martin  Havlat  (mhavlat)
 	Francisco  Mancardi  (fman)
 	Kevin  Levy  (kevin)
-	
+	Martin  Havlat  (mhavlat)
+
+
+===============================================================
+2005/12/04	Version: 1.6.0 Build 1
+===============================================================
+
+- 0000236: [Test Specification (tc, comp, cat)] unable to re-order categories in component (fman)
+- 0000087: [Database] Unable to modify existing product to allow for requirements tracking (fman)
+- 0000271: [Test Plan (milestones, test assign)] Not all checks are made in milestone multi-update (schlundus)
+- 0000270: [Test Plan (milestones, test assign)] TPName is not displaying in milestone pages (schlundus)
+- 0000269: [Test Plan (milestones, test assign)] Deleting build-dependant data fails because of invalid SQL-Statement (schlundus)
+- 0000268: [Test Plan (milestones, test assign)] ComboBox in planOwner.tpl always shows all users regardless of the selected TP (schlundus)
+- 0000109: [User Interface General] The tree is not refreshed when you delete a category (schlundus)
+- 0000267: [Test Specification (tc, comp, cat)] Container names aren't escaped in containerView.tpl (schlundus)
+- 0000211: [Requirements Coverage] scope field in requirement list display error (schlundus)
+- 0000241: [Requirements Coverage] Print Requirements - DOC ID is not printed (schlundus)
+- 0000266: [Reports, Metrics, Export and Print] bug links are not properly rendered as "crossed-out" if the bug is closed, resolved, or fixed (schlundus)
+- 0000263: [Test Execute] php error when component is selected (fman)
+- 0000261: [Test Plan (milestones, test assign)] Assigning test plan rights for one product, removes rights for other product test plans. (fman)
+- 0000256: [Product Management] Create Component with Same Name (fman)
+- 0000164: [Test Execute] CLICK ON EXECUTE LINK AND MSG - Warning: mysql_result(): supplied argument is not a valid MySQL (fman)
+- 0000259: [Test Specification (tc, comp, cat)] Management of Component Duplicate Name - No control applied when MOVE (fman)
+- 0000249: [Test Specification (tc, comp, cat)] Import of test cases only imports the first test case of each category (schlundus)
+- 0000228: [General] The list of Relevant Bugs shows the bug in the CLOSED state (schlundus)
+- 0000240: [Test Plan (milestones, test assign)] Edit/Modify Test Plan - Product Filter is not applied (fman)
+- 0000239: [Test Plan (milestones, test assign)] Define User/Test Plan Rights - TP are not filtered by Product - (fman)
+- 0000237: [Database] Length mismatch of users-login column and category-owner column (mhavlat)
+- 0000227: [Test Execute] display relevant bugs in execution mode no matter what build is selected (schlundus)
+- 0000218: [General] Unable to re-order test case in test plan within a category. (fman)
+- 0000225: [Test Plan (milestones, test assign)] using <table> in test plan name breaks main page (fman)
+- 0000235: [User Interface General] Assign Testers to Test Plan - CSS not applied (schlundus)
+- 0000232: [Test Execute] Only admin or leader can update test results (fman)
+- 0000044: [Test Specification (tc, comp, cat)] [SF 953587 ] Test cases are reordered whe copying the category. (fman)
+- 0000045: [New Feature] [SF 1258462 ] Provide integration with JIRA (another bug tracker) (fman)
+- 0000171: [Requirements Coverage] import requirement by CSV files (mhavlat)
+- 0000223: [Documentation (ICG, User Manual)] planAssignTesters.html is in italian in all languages (mhavlat)
+- 0000207: [Test Specification (tc, comp, cat)] Import of TC doesnt work correct (schlundus)
+- 0000214: [Requirements Coverage] Requirement Document Can't be created - SQL Fails (fman)
+- 0000082: [Reports, Metrics, Export and Print] Test reports and metrics -> Blocked test cases, guest mode links to wrong testcases (fman)
+- 0000197: [Reports, Metrics, Export and Print] send test report via email error (fman)
+- 0000194: [User Management] Lost password feature does not sent password to user via email. (fman)	
 
 ===============================================================
 2005/10/18	Version: 1.6.RC2

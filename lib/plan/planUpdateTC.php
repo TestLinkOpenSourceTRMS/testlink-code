@@ -1,11 +1,13 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: planUpdateTC.php,v 1.10 2005/11/14 07:43:46 franciscom Exp $
+ * @version $Id: planUpdateTC.php,v 1.11 2005/12/07 18:11:09 franciscom Exp $
  * @author Martin Havlat
  * 
  * Update Test Cases within Test Case Suite 
  * 
+ * @author Francisco Mancardi - 20051207 - BUGID 284
+ *
  * @author Francisco Mancardi - 20051112
  * BUGID 0000218
  *
@@ -38,35 +40,43 @@ if(isset($_POST['updateSelected']))
 		$tcID = key($_POST);
 		tLog('Update TC id: ' . $tcID);
  
-	    // 20050929 - fm - refactoring name 
-	    // 20050730 - fm - BUGID: SF1242462
-		$sql = " SELECT testcase.*, " .
-		       " cat.id as cat_id, mgt.name as cat_name,cat.mgtcatid as cat_mgtcatid " . 
-		       " FROM testcase, category cat, mgtcategory mgt" .
-		       " WHERE cat.mgtcatid = mgt.id" .
-		       " AND cat.id = testcase.catid " .
+    // 20051207 - fm - need the compid - BUGID 284
+	  // 20050929 - fm - refactoring name 
+	  // 20050730 - fm - BUGID: SF1242462
+		$sql = " SELECT testcase.*,  cat.id as cat_id, mgtcat.name as cat_name, 
+		                cat.mgtcatid as cat_mgtcatid,  comp.mgtcompid  
+		         FROM testcase, category cat, mgtcategory mgtcat, component comp
+		         WHERE cat.mgtcatid = mgtcat.id
+		         AND   cat.compid   = comp.id 
+		         AND   cat.id       = testcase.catid " .
 		       " AND testcase.id=" . $tcID;
+
+    //  AND   comp.mgtcompid = mgtcomp.id 
 		       
 		$result = do_mysql_query($sql);
 		$tctp_data = mysql_fetch_assoc($result);
+
   
 		$specId = $tctp_data['mgttcid'];
 
-	    // 20050730 - fm - BUGID: SF1242462
+    // 20050730 - fm - BUGID: SF1242462
 		// Grab the relevant data from tc specs (mgt* Tables)
 		// mgtTestCase table
 		$tc_specs = get_tc_specs($specId);
 
-	    $mgtRow = $tc_specs;
+	  $mgtRow = $tc_specs;
 		$mgtTitle = mysql_escape_string($mgtRow['title']);
 		$mgtSteps = mysql_escape_string($mgtRow['steps']);
 		$mgtExresult = mysql_escape_string($mgtRow['exresult']);
 		$mgtKeywords = $mgtRow['keywords'];
-		$mgtCatid = $mgtRow['catid'];
+		$mgtCatid   = $mgtRow['catid'];
 		$mgtVersion = $mgtRow['version'];
 		$mgtSummary = mysql_escape_string($mgtRow['summary']);
 		$mgtTCorder = $mgtRow['TCorder'];
-			
+		
+		// 20051207 - fm - BUGID 284
+		$mgtCompid = $mgtRow['compid'];
+		
 		if($mgtVersion == "")
 		{
 			del_tc_from_tp($tcID);
@@ -80,22 +90,38 @@ if(isset($_POST['updateSelected']))
 			$updateSQL =  'update testcase ' .
 			              'set TCorder=' . $mgtTCorder . 
 			              ' , title="'      . $mgtTitle . 
-			            '", steps="'    . $mgtSteps . 
-			            '", exresult="' . $mgtExresult . 
-			            '", keywords="' . $mgtKeywords . 
-			            '", version="'  . $mgtVersion . 
-			            '", summary="'  . $mgtSummary . '" '; 
+			              '", steps="'    . $mgtSteps . 
+			              '", exresult="' . $mgtExresult . 
+			              '", keywords="' . $mgtKeywords . 
+			              '", version="'  . $mgtVersion . 
+			              '", summary="'  . $mgtSummary . '" '; 
+
+
 
 			if( $mgtCatid != $tctp_data['cat_mgtcatid'])
 			{	
-				// Category Has Changed !!!
+				echo "// Category Has Changed !!!";
 				$cat_id = process_tc_cat_change($tcID, $tc_specs, $tpID);		
 				$updateSQL .= ', catid=' . $cat_id;
 			} 
 			$updateSQL .= ' where id=' . $tcID;
 			$updateResult = do_mysql_query($updateSQL);
+			
+			
+			// 20051207 - fm - if category moved => component has changed => category table has to be updated
+			// BUGID 284
+			if( $mgtCompid != $tctp_data['compid'])
+			{	
+				// Component Has Changed !!!
+				process_tc_comp_change($tcID, $tc_specs, $tpID);		
+			} 
+			
+			
 			$resultString .= "<p>".lang_get('planupdate_tc_updated1')." [" . $specId . "]: ".htmlspecialchars($mgtTitle) . 
 			                       lang_get('planupdate_tc_updated2')."</p>";
+			                       
+			                       
+			                       
 		}
    		next($_POST);
 	}
@@ -129,26 +155,26 @@ $smarty->display('planUpdateTC.tpl');
 //20050730 - fm - BUGID: SF1242462
 function displayTC($id,&$arrData)
 {
+  // 20051206 - fm - COMP.mgtcompid
   // 20051112 - fm - join with mgttestcase
-  //  
-  //                
   // 20050730 - fm
   // BUGID: SF1242462
   // added category.mgtcatid, testcase.catid
   //
-	$sql = " SELECT MGTCAT.name AS TPTC_category, MGTCOMP.name AS TPTC_component, " .
-	       " TC.id, TC.title, TC.version, TC.mgttcid, CAT.mgtcatid, TC.catid, " .
-	       " TC.TCOrder AS TPTC_order, MGTTC.TCOrder AS MGTTC_order" .
-	       " FROM testcase TC, component COMP, category CAT, " .
-	       "      mgttestcase MGTTC, mgtcategory MGTCAT, mgtcomponent MGTCOMP " .
-	       " WHERE CAT.mgtcatid = MGTCAT.id " .
-	       " AND COMP.mgtcompid = MGTCOMP.id " .
-	       " AND COMP.id=CAT.compid " .
-	       " AND CAT.id=TC.catid " . 
-	       " AND TC.mgttcid=MGTTC.id " .
+	$sql = " SELECT MGTCAT.name AS TPTC_category, MGTCOMP.name AS TPTC_component,
+	         TC.id, TC.title, TC.version, TC.mgttcid, CAT.mgtcatid, TC.catid,
+	         TC.TCOrder AS TPTC_order, MGTTC.TCOrder AS MGTTC_order, COMP.mgtcompid 
+	         FROM testcase TC, component COMP, category CAT, 
+	              mgttestcase MGTTC, mgtcategory MGTCAT, mgtcomponent MGTCOMP 
+	         WHERE CAT.mgtcatid = MGTCAT.id 
+	         AND COMP.mgtcompid = MGTCOMP.id 
+	         AND COMP.id=CAT.compid
+	         AND CAT.id=TC.catid 
+	         AND TC.mgttcid=MGTTC.id " .
 	       " AND TC.id=" . $id . 
 	       " ORDER BY TC.TCorder";
-       
+  
+     
 	$result = do_mysql_query($sql);
 	while($row = mysql_fetch_array($result)){
 
@@ -159,8 +185,13 @@ function displayTC($id,&$arrData)
 		$mgtID = $row['mgttcid'];
 		$containerName = $row['TPTC_component'] . '/' . $row['TPTC_category'];
 
-	    // 20050730 - fm - BUGID: SF1242462 added , catid
-		$sqlMgt = "SELECT version, catid FROM mgttestcase WHERE mgttestcase.id=" . $mgtID;
+    // 20051207 - fm - compid is needed - BUGID 284
+	  // 20050730 - fm - BUGID: SF1242462 added , catid
+		$sqlMgt = " SELECT version, catid, compid 
+		            FROM mgttestcase, mgtcategory
+		            WHERE mgttestcase.catid = mgtcategory.id " .
+		          " AND mgttestcase.id=" . $mgtID;
+		          
 		$mgtResult = do_mysql_query($sqlMgt);
 		$mgtRow = mysql_fetch_array($mgtResult);
 
@@ -184,8 +215,20 @@ function displayTC($id,&$arrData)
 			$reason_to_update .= lang_get('different_versions');
 			$load_data = 1;
 		} 
-		
-		if( $row['mgtcatid'] != $mgtRow['catid']) 
+
+    // 20051207 - fm - BUGID 284
+    if( $row['mgtcompid'] != $mgtRow['compid']) 
+		{
+			if ($load_data )
+			{	
+				$reason_to_update .= " / ";
+			}	
+			$reason_to_update .= lang_get('component_has_changed');
+			$load_data = 1;
+		}
+
+
+    if( $row['mgtcatid'] != $mgtRow['catid']) 
 		{
 			if ($load_data )
 			{	
@@ -210,9 +253,9 @@ function displayTC($id,&$arrData)
 		if ($load_data)
 		{
 			$arrData[] = array("container" => $containerName, "specId" => $mgtID, 
-				               "planId" => $id, "name" => $title, "status" => $status, 
-				               "specVersion" => $mgtVersion, "planVersion" => $version, 
-				               "reason" => $reason_to_update);
+				                 "planId" => $id, "name" => $title, "status" => $status, 
+				                 "specVersion" => $mgtVersion, "planVersion" => $version, 
+				                 "reason" => $reason_to_update);
 		}
 	}
 }
@@ -320,13 +363,19 @@ function process_tc_cat_change($tc_id, $tc_specs, $tpID)
 		// mgtcat belongs to a mgtcomp, then we need to check is mgtcomp
 		// is part of the test plan.
 		$sql = " SELECT * FROM component " .
-				" WHERE component.projid = " . $tpID .
-				" AND mgtcompid=" . $tc_specs['compid'];
+				   " WHERE component.projid = " . $tpID .
+				   " AND mgtcompid=" . $tc_specs['compid'];
 		$result = do_mysql_query($sql);
 		
 		if (mysql_num_rows($result) == 0) 
 		{
 			echo "MGT Comp and Cat have to be added to Test Plan";    
+			
+			
+			
+			
+			
+			
 		}
 		else
 		{
@@ -361,5 +410,62 @@ function process_tc_cat_change($tc_id, $tc_specs, $tpID)
 	}   
 	
 	return $cat_id;
+}
+
+
+// 20051207 - fm - BUGID 284
+function process_tc_comp_change($tc_id, $tc_specs, $tpID)
+{
+	//
+	// A testcase spec can change only when the category has been
+	// moved to another component.
+	// An this can be done only INSIDE a Product.
+	//
+	// we need to verify if this component is present in the Test Plan
+	// If yes -> we need only to do an update
+	// If not -> 
+	//           we need to add the component to the testplan, and maybe
+	//           the category.
+	//
+	// print_r($tc_specs);
+	
+	$sql = " SELECT COMP.id AS compid, COMP.mgtcompid
+	         FROM   component COMP 
+	         WHERE  COMP.projid = " .  $tpID .
+	       " AND COMP.mgtcompid=" . $tc_specs['compid'];
+	
+	$result = do_mysql_query($sql);
+	
+	
+	if (mysql_num_rows($result) == 0) 
+	{
+	  $sql = " INSERT INTO component (mgtcompid,projid)
+	  				 VALUES (" . $tc_specs['compid'] . "," . $tpID . ")";
+	   
+	  $result  =  do_mysql_query($sql);
+	  $comp_id =  mysql_insert_id();
+	}
+	else
+	{
+		$row = mysql_fetch_assoc($result); 
+	  $comp_id =  $row['compid'];
+  }
+
+  // get catid 
+	$sql = " SELECT testcase.catid  
+		       FROM testcase 
+		       WHERE testcase.id=" . $tc_id;
+	
+	$result = do_mysql_query($sql);
+	$row = mysql_fetch_assoc($result); 
+	$cat_id =  $row['catid'];
+
+  // Now the compid mustbe updated for the category
+  $sql = " UPDATE category 
+           SET category.compid = " . $comp_id .
+         " WHERE category.id = " . $cat_id; 
+
+	$result = do_mysql_query($sql);
+
 }
 ?>

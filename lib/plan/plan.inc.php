@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: plan.inc.php,v $
- * @version $Revision: 1.15 $
- * @modified $Date: 2005/11/13 19:19:32 $ $Author: schlundus $
+ * @version $Revision: 1.16 $
+ * @modified $Date: 2005/12/09 10:04:34 $ $Author: franciscom $
  * @author 	Martin Havlat
  *
  * Functions for management: 
@@ -449,7 +449,7 @@ function getCategories_TC_ids($catIDs)
 
 /*
  delete from all tables related to Test Plan (tescase, results, bugs, category)
- category information
+ using category id
  
  $catID
 
@@ -478,7 +478,8 @@ function del_category_deep($catID)
 
 /*
  delete from all tables related to Test Plan 
- (tescase, results, bugs, category,component) component information
+ (tescase, results, bugs, category,component)
+ using the component id.
  
  $compID
 
@@ -515,4 +516,56 @@ function updateTestPlanBuild($buildID,$buildName,$notes)
 	$result = do_mysql_query($sql);
 	return $result ? 1 : 0;
 }
+
+
+
+/* 
+  delete from all tables related to Test Plan Info
+ (tescase, results, bugs, category,component) 
+ using the component SPECIFICATION ID.
+ 
+   20051208 - fm 
+*/
+function del_tp_info_by_mgtcomp($mgtcomp_id)
+{
+  // ----------------------------------------------------------------------------
+  // get the list of components id in test plan table 
+  // that are related to a component in the spec component table (mgtcomponent)
+  $sql = " SELECT component.id AS comp_id FROM component
+	         WHERE component.mgtcompid={$mgtcomp_id} ";
+
+  $result = do_mysql_query($sql);  
+  
+  while($row = mysql_fetch_assoc($result))
+	{ 
+    del_component_deep($row['comp_id']);
+	}  
+	
+	
+}
+
+/* 
+  delete from all tables related to Test Plan Info
+ (tescase, results, bugs, category) 
+ using the category SPECIFICATION ID.
+ 
+   20051208 - fm 
+*/
+function del_tp_info_by_mgtcat($mgtcat_id)
+{
+  // ----------------------------------------------------------------------------
+  // get the list of components id in test plan table 
+  // that are related to a component in the spec component table (mgtcomponent)
+  $sql = " SELECT category.id AS cat_id FROM category
+	         WHERE category.mgtcatid={$mgtcat_id} ";
+
+  $result = do_mysql_query($sql);  
+  
+  while($row = mysql_fetch_assoc($result))
+	{ 
+    del_category_deep($row['cat_id']);
+	}  
+}
+
+
 ?>

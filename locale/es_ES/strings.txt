@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.5 $
- * @modified $Date: 2005/09/21 16:44:32 $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2005/12/09 10:04:35 $
  *
  * @author jorgesf@jsf.jazztel.es
  *
@@ -61,11 +61,15 @@ $TLS_btn_inactivate = "Desactivar";
 $TLS_btn_upd = "Actualizar";
 $TLS_caption_edit_product = "Editar Producto";
 $TLS_color = "Color";
-$TLS_enable_requirements = "Funcionalidad para habilitar requisitos";
+$TLS_enable_requirements = "Habilitar gestión de requisitos";
 $TLS_info_failed_loc_prod = "Fallo intentando localizar el producto.";
 $TLS_invalid_query = "Consulta inválida";
 $TLS_name = "Nombre";
-$TLS_popup_product_delete = "¡Atención! Esta acción eliminará irrevocablemente todos los datos relacionados con el producto (incluyendo resultados de test, plantillas, etc.). En vez de eliminar, también puede desactivar.\nRecomendación: previamente haga una copia de su base de datos.\n¿Está seguro de querer eliminar el producto?";
+$TLS_popup_product_delete = "¡Atención! Esta acción eliminará irrevocablemente todos los datos " .
+                            "relacionados con el producto (incluyendo resultados de test, plantillas, etc.). " .
+                            "En vez de eliminar, también puede desactivar.\\n" .
+                            "Recomendación: previamente haga una copia de su base de datos.\\n".
+                            "¿Está seguro de querer eliminar el producto?";
 $TLS_title_product_mgmt = "Gestión de Productos";
 
 
@@ -85,7 +89,7 @@ $TLS_menu_new_user = "Nuevo usuario";
 $TLS_th_email = "E-mail";
 $TLS_th_first_name = "Nombre";
 $TLS_th_last_name = "Apellido";
-$TLS_th_locale = "Ubicación";
+$TLS_th_locale = "Idioma (locale)";
 $TLS_th_login = "Nombre de conexión";
 $TLS_th_password = "Contraseña";
 $TLS_th_rights = "Privilegios";

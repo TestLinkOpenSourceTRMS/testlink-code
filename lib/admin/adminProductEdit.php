@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: adminProductEdit.php,v $
  *
- * @version $Revision: 1.5 $
- * @modified $Date: 2005/11/19 23:07:38 $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2005/12/09 10:04:34 $
  *
  * @author Martin Havlat
  *
@@ -36,15 +36,23 @@ $bActivateProduct = isset($_POST['activateProduct']) ? 1 : 0;
 
 $name = isset($_GET['name']) ? $_GET['name'] : null;
 if (is_null($name))
+{
 	$name = isset($_POST['name']) ? $_POST['name'] : null;
+}
+	
 $id = isset($_GET['id']) ? intval($_GET['id']) : null;
 if (is_null($id))
+{
 	$id = isset($_POST['id']) ? intval($_POST['id']) : 0;
+}	
+
 $color = isset($_POST['color']) ? $_POST['color'] : null;
 $optReq = isset($_POST['optReq']) ? intval($_POST['optReq']) : 0;
 
 if (isset($_SESSION['productID']))
+{
 	tLog('Edit product: ' . $_SESSION['productID'] . ': ' . $_SESSION['productName']);
+}
 
 if ($bDeleteProduct)
 {

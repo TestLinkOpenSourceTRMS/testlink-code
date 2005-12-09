@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: containerEdit.php,v 1.19 2005/11/29 18:27:26 franciscom Exp $ */
+/* $Id: containerEdit.php,v 1.20 2005/12/09 10:04:35 franciscom Exp $ */
 /* Purpose:  This page manages all the editing of test specification containers. */
 /*
  *
@@ -31,6 +31,11 @@ require_once("../../lib/functions/lang_api.php");
 require_once("../../third_party/fckeditor/fckeditor.php");
 require('containerComp.inc.php');
 require('containerCat.inc.php');
+
+// 20051208 - fm
+require_once("../../lib/plan/plan.inc.php");
+
+
 
 testlinkInitPage();
 
@@ -202,19 +207,22 @@ else if ($action == 'deleteCOM')
 		$cats = null;
 		$smarty->assign('sqlResult', 'ok');
 
-		getComponentCategoryIDs($objectID,$cats);
+		$cats=getComponentCategoryIDs($objectID);
 		if (sizeof($cats))
 		{
-			$catIDs = "'".implode(",",$cats)."'";
+			// 20051208 - fm 
+			// $catIDs = "'".implode(",",$cats)."'";
+			$catIDs = implode(",",$cats);
 			deleteCategoriesTestCases($catIDs);
 			deleteComponentCategories($objectID);
 		}
-		
 		if (!deleteComponent($objectID))
 		{
 		  $smarty->assign('sqlResult', mysql_error());
 		}
-			
+		
+		// 20051208 - fm 
+		del_tp_info_by_mgtcomp($objectID);
 	}
 	else
 	{
@@ -306,6 +314,9 @@ else if ($action == 'deleteCat')
 	{
 		deleteCategoriesTestCases($objectID);
 		$smarty->assign('sqlResult',  deleteCategory($objectID) ? 'ok' : mysql_error());
+
+		// 20051208 - fm 
+		del_tp_info_by_mgtcat($objectID);
 	}
 	else
 	{

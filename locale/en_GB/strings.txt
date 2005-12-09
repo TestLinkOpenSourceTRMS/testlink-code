@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.40 $
- * @modified $Date: 2005/12/03 22:09:35 $
+ * @version $Revision: 1.41 $
+ * @modified $Date: 2005/12/09 10:04:35 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
 **/
@@ -94,7 +94,7 @@ $TLS_btn_yes_del_cat = "Yes, delete category!";
 $TLS_btn_yes_del_comp = "Yes, delete component!";
 $TLS_gui_error = "gui_error";
 $TLS_question_del = "Really delete";
-
+$TLS_delete_notice="Warning: All Related Execution Results will be deleted";
 
 
 // gui/templates/containerEdit.tpl

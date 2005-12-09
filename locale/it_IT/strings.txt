@@ -4,8 +4,11 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.9 $
- * @modified $Date: 2005/10/11 10:14:41 $ $Author: franciscom $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2005/12/09 10:04:35 $ $Author: franciscom $
+ *
+ * 20051208 - fm - corrected problems with javascript messages
+ * \n must be \\n, ' must be \'
  *
  * 20051011 - Walter.Giaquinto@gruppotesi.com / Alessandro.Lia@gruppotesi.com
  * italian translation
@@ -68,7 +71,11 @@ $TLS_enable_requirements = "Abilita funzionalità Requisiti";
 $TLS_info_failed_loc_prod = "Impossibile trovare il prodotto.";
 $TLS_invalid_query = "Query non valida";
 $TLS_name = "Nome";
-$TLS_popup_product_delete = "Attenzione! Quest'azione eliminerà in modo irrevocabile tutte le informazioni legate al prodotto (inclusi piani e risultati di test, etc.). E' possibile disattivarlo invece di cancellarlo.\nRaccomandazione: Eseguire prima di tutto un dump del database.\nE' sicuro di voler eliminare il prodotto?";
+$TLS_popup_product_delete = "Attenzione! Quest\'azione eliminerà in modo irrevocabile tutte " .
+                            "le informazioni legate al prodotto (inclusi piani e risultati di test, etc.). " .
+                            "E\' possibile disattivarlo invece di cancellarlo.\\n" .
+                            "Raccomandazione: Eseguire prima di tutto un dump del database.\\n".
+                            "E\' sicuro di voler eliminare il prodotto?";
 $TLS_title_product_mgmt = "Gestione Prodotto";
 
 
@@ -130,6 +137,7 @@ $TLS_btn_yes_del_cat = "Si, elimina categoria!";
 $TLS_btn_yes_del_comp = "Si, elimina componente!";
 $TLS_gui_error = "Errore_GUI";
 $TLS_question_del = "Eliminare";
+$TLS_delete_notice="Attenzione: i risultati dei test eseguiti verrano eliminati";
 
 
 
@@ -586,7 +594,7 @@ $TLS_btn_upd_user_data = "Aggiorna";
 $TLS_th_new_passwd = "Nuova Password";
 $TLS_th_new_passwd_again = "Conferma New Password";
 $TLS_th_old_passwd = "Vecchia Password";
-$TLS_title_account_settings = "impsotazioni Account";
+$TLS_title_account_settings = "impostazioni Account";
 $TLS_title_change_your_passwd = "Cambia la passwprd";
 $TLS_title_edit_personal_data = "Personale";
 $TLS_warning_different_pwd = "Reinserire la password.";

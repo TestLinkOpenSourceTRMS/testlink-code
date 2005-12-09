@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: archive.inc.php,v $
  *
- * @version $Revision: 1.23 $
- * @modified $Date: 2005/12/01 07:38:03 $ by $Author: franciscom $
+ * @version $Revision: 1.24 $
+ * @modified $Date: 2005/12/09 10:04:35 $ by $Author: franciscom $
  *
  * @author Martin Havlat
  * Purpose:  functions for test specification management have three parts:
@@ -375,6 +375,7 @@ function moveComponentToProduct($newParent, $comp_id)
 
 
 
+// 20051208 - fm -
 // 20051201 - fm - 
 // BUGID 258 Management of Component Duplicate Name - block on copy gives no message to user
 // 20051129 - fm - added logic to manage duplicate names
@@ -400,9 +401,9 @@ function copyComponentToProduct($newParent, $id, $nested, $login_name)
 	  	if ($nested == 'yes')
 	  	{
 	  		// Select the categories for copy
-	  		$catIDs = null;
-	  		getComponentCategoryIDs($id,$catIDs);
-	  		for($i = 0;$i < sizeof($catIDs);$i++)
+	  		$catIDs = getComponentCategoryIDs($id);
+	  		$num_cats = sizeof($catIDs);
+	  		for($i = 0; $i < $num_cats; $i++)
 	  		{
 	  			copyCategoryToComponent($comID, $catIDs[$i], $nested, $login_name);
 	  		}	
@@ -509,18 +510,25 @@ function deleteComponent($compID)
 	return $result ? 1 : 0;
 }
 
-function getComponentCategoryIDs($compID,&$cats)
+
+// 20051208 - fm 
+// returns array with categories id
+function getComponentCategoryIDs($compID)
 {
 	$sql = "SELECT id FROM mgtcategory WHERE compid=" . $compID;
 	$result = do_mysql_query($sql);
-	$cats = null;
+	$cat_ids = null;
 	if ($result)
 	{
-		while($cat = mysql_fetch_row($result))
-			$cats[] = $cat[0];
+		while($row = mysql_fetch_array($result))
+		{
+			$cat_ids[] = $row['id'];
+		}	
 	}
-	return $result ? 1: 0;
+	return($cat_ids);
 }
+
+
 
 function deleteComponentCategories($compID)
 {
@@ -537,6 +545,11 @@ function deleteCategoriesTestcases($catIDs)
 
 	return $result ? 1 : 0;
 }
+
+
+
+
+
 
 function getOrderedComponentCategories($compID,&$cats)
 {

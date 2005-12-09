@@ -1,12 +1,13 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: adminProductEdit.tpl,v 1.2 2005/08/16 17:59:13 franciscom Exp $ *}
+{* $Id: adminProductEdit.tpl,v 1.3 2005/12/09 10:04:33 franciscom Exp $ *}
 {* Purpose: smarty template - Edit existing product *}
 {include file="inc_head.tpl" openHead="yes"}
 {include file="inc_jsPicker.tpl"}
 </head>
 <body>
 
-<h1>{lang_get s='title_product_mgmt'} - {$productName|escape}</h1>
+{* productName -> name *}
+<h1>{lang_get s='title_product_mgmt'} - {$name|escape}</h1>
 
 {* tabs *}
 <div class="tabMenu">
@@ -32,8 +33,10 @@
 		<form name="editProduct" method="post" action="lib/admin/adminProductEdit.php">
 
 		<input type="hidden" name="id" value="{$id}" />
-		<table class="common" width="70%">
-			<caption>{lang_get s='caption_edit_product'} #{$id}</caption>
+  	{* 20051208 - fm - same width taht adminProductNew.tpl *}
+		<table class="common" width="50%">
+		  {* 20051208 - fm #{$id} -> {$name} *} 
+			<caption>{lang_get s='caption_edit_product'} {$name}</caption>
 			<tr>
 				<td>{lang_get s='name'}</td>
 				<td><input type="text" name="name" value="{$name|escape}" maxlength="100" /></td>

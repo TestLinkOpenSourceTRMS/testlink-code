@@ -1,13 +1,21 @@
-{* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: adminProductEdit.tpl,v 1.3 2005/12/09 10:04:33 franciscom Exp $ *}
-{* Purpose: smarty template - Edit existing product *}
+{* 
+TestLink Open Source Project - http://testlink.sourceforge.net/
+$Id: adminProductEdit.tpl,v 1.4 2005/12/12 18:36:54 franciscom Exp $
+Purpose: smarty template - Edit existing product 
+
+@author Francisco Mancardi - 20051211 - poor workaround for BUGID 180 Unable to delete Product
+*}
 {include file="inc_head.tpl" openHead="yes"}
 {include file="inc_jsPicker.tpl"}
 </head>
 <body>
 
-{* productName -> name *}
+{* 20051211 - fm - deleted $name as additional workaround for BUG 180}
+{* productName -> name 
 <h1>{lang_get s='title_product_mgmt'} - {$name|escape}</h1>
+*}
+<h1>{lang_get s='title_product_mgmt'}</h1>
+
 
 {* tabs *}
 <div class="tabMenu">
@@ -16,7 +24,7 @@
 </div>
 
 	{if $action == "activate" || $action == "inactivate"}
-		<div class="info">{$sqlResult}</div>
+		<div class="info">{$sqlResult} - {$action}</div>
 	{elseif $action == "updated"}
 		{include file="inc_update.tpl" result=$sqlResult item="Product" name=$name}
 	{/if}
@@ -25,10 +33,12 @@
 
 {if $action == "delete"}
 	{$sqlResult}
-{else}
+{/if}
+	
+{if $show_prod_attributes == "yes"}
 
 	{* edit product form *}
-	{if $founded == "yes"}
+	{if $found == "yes"}
 		<div>
 		<form name="editProduct" method="post" action="lib/admin/adminProductEdit.php">
 
@@ -79,7 +89,7 @@
 	{else}
 		<p class="info">
 		{if $name neq ''}
-			{lang_get s='info_failed_loc_prod'} {$name|escape}!<br>
+			{lang_get s='info_failed_loc_prod----'} {$name|escape}!<br>
 		{/if}
 		{lang_get s='invalid_query'}: {$sqlResult|escape}<p>
 	{/if}

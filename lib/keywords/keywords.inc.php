@@ -1,7 +1,7 @@
 <?
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* @version $Id: keywords.inc.php,v 1.11 2005/11/26 19:58:22 schlundus Exp $
+* @version $Id: keywords.inc.php,v 1.12 2005/12/17 03:42:51 havlat Exp $
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author	Chad Rosen
@@ -17,6 +17,8 @@
 *
 * @author: francisco mancardi - 20050810
 * deprecated $_SESSION['product'] removed
+* 
+* 20051216 - MHT - fixed update keywords also in testplan
 */
 
 /** collect all keywords for the product and return as associative array */
@@ -53,10 +55,19 @@ function updateTCKeywords ($id, $arrKeywords)
 {
 	$keywords = null;
 	if ($arrKeywords)
-		$keywords = implode(",",$arrKeywords).",";
+		$keywords = mysql_escape_string(implode(",",$arrKeywords).",");
 	
-	$sqlUpdate = "UPDATE mgttestcase SET keywords='" . mysql_escape_string($keywords)."' where id=".$id;
+	$sqlUpdate = "UPDATE mgttestcase SET keywords='" . $keywords ."' where id=".$id;
 	$resultUpdate = do_mysql_query($sqlUpdate);
+
+ 	// 200507 - MHT - SF1243285: TC version in TP is not incremented when keyword is added
+ 	if ($resultUpdate)
+ 	{
+ 		$sqlUpdate = "UPDATE testcase, mgttestcase SET testcase.keywords='" . $keywords .
+ 			"' WHERE testcase.version=mgttestcase.version AND testcase.mgttcid=" . $id .
+ 			" AND mgttestcase.id=" . $id;
+ 		$resultUpdate = mysql_query($sqlUpdate);
+ 	}
 	
 	return $resultUpdate ? 'ok' : mysql_error();
 }
@@ -128,6 +139,15 @@ function addTCKeyword($tcID, $newKey)
 			$TCKeys = mysql_escape_string($TCKeys);
 			$sqlUpdate = "UPDATE mgttestcase SET keywords='".$TCKeys."' WHERE id=". $tcID;
 			$resultUpdate = do_mysql_query($sqlUpdate);
+
+	 		// 200507 - MHT - SF1243285: TC version in TP is not incremented when keyword is added
+	 		if ($resultUpdate)
+ 			{
+ 				$sqlUpdate = "UPDATE testcase, mgttestcase SET testcase.keywords='" . $TCKeys .
+ 					"' WHERE testcase.version=mgttestcase.version AND testcase.mgttcid=" . $tcID .
+ 					" AND mgttestcase.id=" . $tcID;
+ 				$resultUpdate = mysql_query($sqlUpdate);
+ 			}
 		}
 	}
 	

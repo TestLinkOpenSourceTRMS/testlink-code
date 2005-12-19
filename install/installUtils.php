@@ -1,7 +1,7 @@
 <?php
 /* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: installUtils.php,v 1.8 2005/10/03 07:19:17 franciscom Exp $ 
+$Id: installUtils.php,v 1.9 2005/12/19 11:30:05 franciscom Exp $ 
 
 20051002 - fm - messages changes
 20050925 - fm - changes to getDirFiles()
@@ -60,7 +60,7 @@ if ( $add_dirpath )
 // | Authors: João Prado Maia <jpm@mysql.com>                             |
 // +----------------------------------------------------------------------+
 //
-// @(#) $Id: installUtils.php,v 1.8 2005/10/03 07:19:17 franciscom Exp $
+// @(#) $Id: installUtils.php,v 1.9 2005/12/19 11:30:05 franciscom Exp $
 //
 
 
@@ -138,30 +138,37 @@ Function: create_user_for_db
           Else
              do nothing
                 
+
+20051217 - fm
+refactoring - cosmetics changes
+                
 20050910 - fm
-webserver and dbserver on same machines => user must be created as user@dbserver
+webserver and dbserver on same machines      => user will be created as user
 webserver and dbserver on DIFFERENT machines => user must be created as user@webserver
 
-if @ in username -> get the hostname splitting, ignoring argument db_server
+if @ in login ->  get the hostname using splitting, and use it
+                                   during user creation on db. 
                 
                 
 */
-function create_user_for_db($conn, $db, $login, $passwd, $client_host='localhost')
+function create_user_for_db($conn, $db, $login, $passwd)
 {
 
 // 20050910 - fm
 $user_host = explode('@',$login);
-$the_host = $client_host;
+$the_host = 'localhost';
 
 if ( count($user_host) > 1 )
 {
-  $the_host = $user_host[1];  
-  $login = $user_host[0];    
+  $login    = $user_host[0];    
+  $the_host = trim($user_host[1]);  
 }
 
 $user_list = getUserList($conn);
 $login_lc = strtolower($login);
 $msg = "ko - fatal error - can't get db server user list !!!";
+
+// echo "\$the_host=" .$the_host . "<br>";
 
 if (count($user_list) > 0) 
 {
@@ -179,11 +186,33 @@ if (count($user_list) > 0)
       }         
       $stmt .= " IDENTIFIED BY '" .  $passwd . "'";
       
+            
       if (!@mysql_query($stmt, $conn)) 
       {
           $msg = "ko - " . mysql_error();
       }
-
+      else
+      {
+        // 20051217 - fm
+        // found that you get access denied in this situation:
+        // 1. you have create the user with grant for host.
+        // 2. you are running your app on host.
+        // 3. you don't have GRANT for localhost.       	
+        // 
+        // Then I've decide to grant always access from localhost
+        // to avoid this kind of problem.
+        // I hope this is not a security hole.
+        if( strcasecmp('localhost',$the_host) != 0)
+        {
+          $stmt = "GRANT SELECT, UPDATE, DELETE, INSERT ON " . 
+                   $db . ".* TO '" . $login . "'@'localhost'" .
+                  " IDENTIFIED BY '" .  $passwd . "'";
+          if (!@mysql_query($stmt, $conn)) 
+          {
+            $msg = "ko - " . mysql_error();
+          }
+        }
+      }
     }
 }
 
@@ -279,32 +308,49 @@ return($ret);
 function check_php_version()
 {
 $min_ver = "4.1.0";
+$ver_not_tested="5.0.0";
 
 $errors=0;	
-$final_msg = "<br />Checking PHP version:<b> ";
+$check_title="Checking PHP version:";
+$final_msg = "<p>{$check_title}<b> ";
 $my_version = phpversion();
+
 // version_compare:
 // -1 if left is less, 0 if equal, +1 if left is higher
 $php_ver_comp =  version_compare($my_version, $min_ver);
+$check_not_tested = version_compare($my_version, $ver_not_tested);
 
 if($php_ver_comp < 0) 
 {
-	$final_msg .= "<span class='notok'>Failed!</span> - You are running on PHP " . 
+	$final_msg .= "<br><span class='notok'>Failed!</span> - You are running on PHP " . 
 	        $my_version . ", and TestLink requires PHP " . $min_ver . " or greater";
 	$errors += 1;
 } 
+else if($check_not_tested >= 0) 
+{
+  // 20051218 - fm - Just a Warning
+  $final_msg .= "<br><span class='ok'>WARNING! You are running on PHP " . $my_version . 
+                ", and TestLink has not been tested on versions >= " . $ver_not_tested . "</span>";
+}
 else 
 {
-	$final_msg .= "<span class='ok'>OK! (" . $my_version . " >= " . $min_ver . ")</span>";
+	$final_msg .= "<span class='ok'>OK! (" . 
+	              $min_ver . " <= " .$my_version . "[your version] < " . $ver_not_tested . " [not tested yet]  )</span>";
 }
+
+
+
+
 
 // 20050910 - fm
 $os_id = strtoupper(substr(PHP_OS, 0, 3));
 if( strcmp('WIN',$os_id) == 0 )
 {
   $final_msg .= "<p><center><span class='notok'>" . 
-  	            "Warning!: You are using a M$ Operating System, be careful to authentication problems <br>" .
-  	            "          between PHP 4 and the new MySQL 4.1.x passwords" . 
+  	            "Warning!: You are using a M$ Operating System, be careful with authentication problems <br>" .
+  	            "          between PHP 4 and the new MySQL 4.1.x passwords<br>" . 
+  	            'Read this <A href="./info/MySQL-RefManual-A.2.3.pdf">' .
+  	            "MySQL - A.2.3. Client does not support authentication protocol</A>" .
   	            "</span></center><p>";
 }
 

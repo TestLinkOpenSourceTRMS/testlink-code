@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: installNewDB.php,v 1.16 2005/10/20 17:44:54 franciscom Exp $ */
+/* $Id: installNewDB.php,v 1.17 2005/12/19 11:30:05 franciscom Exp $ */
 /*
 Parts of this file has been taken from:
 Etomite Content Management System
@@ -116,11 +116,11 @@ $create = false;
 $errors = 0;
 
 // get db info from session
-$db_server = $_SESSION['databasehost'];
+$db_server     = $_SESSION['databasehost'];
 $db_admin_name = $_SESSION['databaseloginname'];
 $db_admin_pass = $_SESSION['databaseloginpassword'];
-$tl_db_login = $_SESSION['tl_loginname'];
-$tl_db_passwd = $_SESSION['tl_loginpassword'];
+$tl_db_login   = $_SESSION['tl_loginname'];
+$tl_db_passwd  = $_SESSION['tl_loginpassword'];
 $db = $_SESSION['databasename'];
 
 
@@ -310,18 +310,22 @@ if ( $inst_type == "upgrade")
 // ------------------------------------------------------------------------------------------------
 // Now proceed with user checks and user creation (if needed)
 //
+// 20051217 - fm
+// refactoring due to minor errors 
+//
 // 20050910 - fm
 // Added support for different types of architecture/installations:
 // 
-// webserver and dbserver on same machines => user must be created as user@dbserver
+// webserver and dbserver on same machines      => user will be created as user
 // webserver and dbserver on DIFFERENT machines => user must be created as user@webserver
 //  
-// if @ in username -> get the hostname splitting, ignoring argument db_server
+// if @ in tl_db_login (username) -> get the hostname using splitting, and use it
+//                                   during user creation on db. 
 //
-$msg = create_user_for_db($conn, $db, $tl_db_login, $tl_db_passwd, $db_server);
-
-
-echo "</b><br />Creating Testlink DB user `" . $tl_db_login . "`:<b> ";
+// 20051217 - fm
+$user_host = explode('@',$tl_db_login);
+$msg = create_user_for_db($conn, $db, $tl_db_login, $tl_db_passwd);
+echo "</b><br />Creating Testlink DB user `" . $user_host[0] . "`:<b> ";
 
 if ( strpos($msg,'ok -') === FALSE )
 {
@@ -419,9 +423,10 @@ else
 echo "</b><br />Writing configuration file:<b> ";
 $data['db_host']=$db_server;
 
-// 20050723 - fm
-$data['db_login']=$tl_db_login;
-$data['db_passwd']=$tl_db_passwd;
+// 20051217 - fm - BUGID 
+$data['db_login']  = $user_host[0];
+
+$data['db_passwd'] = $tl_db_passwd;
 
 $data['db_name']=$db;
 $cfg_file = "../config_db.inc.php";
@@ -455,6 +460,7 @@ close_html_and_exit();
 
 <?php
 // -----------------------------------------------------------
+// 20051217 - fm - BUGID 
 // 20050910 - fm
 function write_config_db($filename, $data)
 {
@@ -463,12 +469,14 @@ $ret = array('status'     => 'ok',
              'cfg_string' => '');
 
                
-$db_host = $data['db_host'];
+$db_host  = $data['db_host'];
 $db_login = $data['db_login'];
 
+// 20051217 - fm - BUGID 
 // 20050910 - fm
 // if @ present in db_login, explode an take user name WITHOUT HOST
-$the_host = $db_login;
+$user_host = explode('@',$db_login);
+
 if (count($user_host) > 1 )
 {
   $db_login = $user_host[0];    

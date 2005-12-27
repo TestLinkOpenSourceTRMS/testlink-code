@@ -2,8 +2,8 @@
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: results.inc.php,v $
- * @version $Revision: 1.22 $
- * @modified $Date: 2005/12/01 18:19:35 $   $Author: schlundus $
+ * @version $Revision: 1.23 $
+ * @modified $Date: 2005/12/27 11:16:35 $   $Author: franciscom $
  * 
  * @author 	Martin Havlat 
  * @author 	Chad Rosen (original report definition)
@@ -353,8 +353,6 @@ function getKeywordsReport($tpID, $buildID = 'all')
 			    " AND (keywords LIKE '%,{$word},%' OR keywords LIKE '{$word},%') " .
 			    " AND (results.build_id IN (" . 
 			    $csBuilds . ")) ORDER BY results.build_id";
-			  // KL OCT 14, 2005 debug 
-			  // print "$sql";
 			} else {
 				$sql = "SELECT tcid,status FROM  results,project,component,category,testcase" .
 					" WHERE project.id = " . $tpID . " AND results.build_id = " . $buildID . 
@@ -1008,8 +1006,6 @@ function reportGeneralStatus($tpID)
 	//foreach ($arrData['values'] as $priority)
 	foreach ($arrData as $priority)
 	{
-    // echo "<pre>debug"; print_r($priority); echo "</pre>";
-	 
 	  if( is_array($priority) )
 	  {
    		$msgBody .= " Priority " . $priority['priority'] . " Test Cases\n\n";

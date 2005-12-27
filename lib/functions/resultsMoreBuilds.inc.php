@@ -1,6 +1,6 @@
 <?
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
- *$Id: resultsMoreBuilds.inc.php,v 1.40 2005/11/26 19:58:22 schlundus Exp $ 
+ *$Id: resultsMoreBuilds.inc.php,v 1.41 2005/12/27 11:16:35 franciscom Exp $ 
  * 
  * @author Kevin Levy
  *
@@ -267,9 +267,6 @@ function createResultsForCategory($categoryId, $keyword, $build_id_set, $lastRes
     " FROM testcase WHERE (catid='" . $categoryId . "') AND (keywords LIKE '%" . $keyword . "%') ";
   
   $sql .= " ORDER by TCorder ASC";
-
-  // debug - kl - 10012005
-  // print "sql = $sql <BR>";
 
   $result = do_mysql_query($sql);
   

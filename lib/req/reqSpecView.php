@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqSpecView.php,v $
- * @version $Revision: 1.13 $
- * @modified $Date: 2005/11/26 13:27:25 $ by $Author: schlundus $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2005/12/27 11:16:35 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Screen to view existing requirements within a req. specification.
@@ -25,8 +25,6 @@ require_once("../../third_party/fckeditor/fckeditor.php");
 // init page 
 tLog('POST: ' . implode(',',$_POST));
 testlinkInitPage();
-
-//echo "<pre>debug\$_REQUEST"; print_r($_REQUEST); echo "</pre>";
 
 $sqlResult = null;
 $action = null;

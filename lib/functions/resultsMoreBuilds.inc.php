@@ -1,6 +1,6 @@
 <?
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
- *$Id: resultsMoreBuilds.inc.php,v 1.41 2005/12/27 11:16:35 franciscom Exp $ 
+ *$Id: resultsMoreBuilds.inc.php,v 1.42 2005/12/27 11:17:15 franciscom Exp $ 
  * 
  * @author Kevin Levy
  *
@@ -287,9 +287,7 @@ function createResultsForCategory($categoryId, $keyword, $build_id_set, $lastRes
          " FROM results WHERE tcid IN (" . $tcIDList . ")".
          " AND (results.build_id IN ('" . $build_list . "')) ORDER BY results.build_id DESC;";
 
-  // debug block - kl 09252005
-  // print "sql = $sql <BR>";
-   
+  
   $sqlBuildResult = do_mysql_query($sql);
 
   $tcBuildInfo = null;

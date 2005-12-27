@@ -3,8 +3,8 @@
  * TestLink Open Source Project - @link http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: plan.core.inc.php,v $
- * @version $Revision: 1.18 $
- * @modified $Date: 2005/12/27 11:16:12 $ $Author: franciscom $
+ * @version $Revision: 1.19 $
+ * @modified $Date: 2005/12/27 11:17:45 $ $Author: franciscom $
  *  
  * 
  * @author 	Martin Havlat
@@ -217,7 +217,6 @@ function getTestPlanUsers($tpID)
 			$data[$rowUser['id']] = $rowUser['login'];
 			if ($show_realname)
 			{
-				echo "<pre>debug-220"; print_r($rowUser); echo "</pre>";
 			  $data[$rowUser['id']] = format_username($rowUser);
 			}
 		}

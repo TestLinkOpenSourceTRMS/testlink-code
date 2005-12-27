@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: planOwner.tpl,v 1.3 2005/11/13 19:19:31 schlundus Exp $ *}
+{* $Id: planOwner.tpl,v 1.4 2005/12/27 11:16:12 franciscom Exp $ *}
 {* Purpose: smarty template - assign ownership and priority *}
 {* 20050514 - fm: I18N*}
 {* 20051112 - scs - changed item to 'TestSuite', TestSuite name wasn't not escaped *}
@@ -41,7 +41,8 @@
 			</td>
 			<td><select name="owner">
 					<option value="none">{lang_get s='opt_label_none'}</option>
-					{html_options values=$arrUsers output=$arrUsers selected=$arrSuites[Row].owner}
+					{* Changed the smarty syntax for options to show the full user name & id but still submit the login id - Tools-R-Us *}
+					{html_options options=$arrUsers selected=$arrSuites[Row].owner}
 				</select>
 			</td>
 		</tr>

@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: plan.inc.php,v $
- * @version $Revision: 1.16 $
- * @modified $Date: 2005/12/09 10:04:34 $ $Author: franciscom $
+ * @version $Revision: 1.17 $
+ * @modified $Date: 2005/12/27 11:16:12 $ $Author: franciscom $
  * @author 	Martin Havlat
  *
  * Functions for management: 
@@ -356,25 +356,48 @@ function getTestPlanMileStones($projID,&$mileStones)
 
 	return $result ? 1 : 0;
 }
-function getUsersOfPlan($id,&$arrUsers)
+
+
+// 20051222 - fm - contribution by ...
+//
+function getUsersOfPlan($id)
 {
+	$show_realname = config_get('show_realname');
 	$arrUsers = array();
-	$sql = "SELECT user.id,login,projrights.projid " . 
-	       "FROM user LEFT OUTER JOIN projrights ON projrights.userid = user.id AND projid = ".$id;
+	
+	
+	$sql = " SELECT user.id,login,projrights.projid ";
+	if ($show_realname)
+	{
+	  $sql .= " ,first,last "; 
+	}
+	$sql .= " FROM user LEFT OUTER JOIN projrights ON projrights.userid = user.id AND projid = ".$id;
+
 	$result = do_mysql_query($sql);
-	while ($myrow = mysql_fetch_row($result))
+	while ($myrow = mysql_fetch_array($result))
 	{ 
 		$checked = '';
-		if ($myrow[2])
+		if ($myrow['projid'])
+		{
 			$checked = 'checked="checked"';
+		}	
+  	
+  	// 20051222 - fm 
+  	$fullname =$myrow['login'];
+  	if ($show_realname)
+	  {
+			$fullname = format_username($myrow);
+		}
+		
 		$arrUsers[]  = array(
-								'id' => $myrow[0], 
-								'name' => $myrow[1],
+								'id'      => $myrow['id'], 
+								'name'    => $fullname,
 								'checked' => $checked,
 							);
 	}
-	return $result ? 1 : 0;
+	return ($arrUsers);
 }
+
 
 
 // 20050815 - scs - $notes now became a default parameter

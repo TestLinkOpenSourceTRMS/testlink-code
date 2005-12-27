@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: planOwner.php,v 1.8 2005/12/03 22:09:35 schlundus Exp $ */
+/* $Id: planOwner.php,v 1.9 2005/12/27 11:16:12 franciscom Exp $ */
 /**
  * Manage the ownership and priority of test suite
  *
@@ -44,6 +44,7 @@ else if($level == 'category')
 }
 
 $arrUsers = getTestPlanUsers($tpID);
+echo "<pre>debug-47"; print_r($arrUsers); echo "</pre>";
 
 $smarty = new TLSmarty();
 $smarty->assign('sqlResult', $updated);

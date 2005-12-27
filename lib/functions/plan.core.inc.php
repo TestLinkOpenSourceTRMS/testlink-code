@@ -3,8 +3,8 @@
  * TestLink Open Source Project - @link http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: plan.core.inc.php,v $
- * @version $Revision: 1.17 $
- * @modified $Date: 2005/12/03 22:09:35 $ $Author: schlundus $
+ * @version $Revision: 1.18 $
+ * @modified $Date: 2005/12/27 11:16:12 $ $Author: franciscom $
  *  
  * 
  * @author 	Martin Havlat
@@ -190,20 +190,36 @@ function getCountTestPlans4UserProd($userID,$prodID=null)
 
 /**
  * Get list of users
+ *
+ * 20051222 - fm  - contribution by
+ *
  * 20051203 - scs - added param tpID for getting only those user
  * 					which belong to a certain tp
  */
 function getTestPlanUsers($tpID)
 {
-	$sqlUser = "SELECT user.id,login FROM user,projrights WHERE ".
-			   "user.id = projrights.userid and projid = {$tpID}";
-	$resultUser = do_mysql_query($sqlUser);
-	if ($resultUser)
+	$show_realname = config_get('show_realname');
+	
+	$sql = " SELECT user.id, login ";
+	if ($show_realname)
+	{
+	  $sql .= " ,first,last ";
+	}
+	$sql .= " FROM user,projrights 
+	          WHERE user.id = projrights.userid AND projid = {$tpID}";
+             
+	$result = do_mysql_query($sql);
+	if ($result)
 	{
 		$data = null;
-		while($rowUser = mysql_fetch_assoc($resultUser))
+		while($rowUser = mysql_fetch_assoc($result))
 		{
 			$data[$rowUser['id']] = $rowUser['login'];
+			if ($show_realname)
+			{
+				echo "<pre>debug-220"; print_r($rowUser); echo "</pre>";
+			  $data[$rowUser['id']] = format_username($rowUser);
+			}
 		}
 	}
 	return $data;

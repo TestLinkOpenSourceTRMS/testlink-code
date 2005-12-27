@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.32 $
- * @modified $Date: 2005/12/04 23:48:15 $ by $Author: havlat $
+ * @version $Revision: 1.33 $
+ * @modified $Date: 2005/12/27 11:15:25 $ by $Author: franciscom $
  *
  *
  * Constants and configuration parameters used throughout TestLink 
@@ -16,6 +16,7 @@
  *
  * Revisions:
  *
+ * @author Francisco Mancardi - 20051227 - BUGID 300
  * @author Francisco Mancardi - 20051115 - added constant for JIRA
  *
  * @author Francisco Mancardi - 20051106
@@ -370,6 +371,22 @@ $g_smtp_host        = 'localhost';  # SMTP server MUST BE configured
 $g_smtp_username    = '';  # user  
 $g_smtp_password    = '';  # password 
 # ------------------------------------------------------------------
+
+
+// 20051227 - fm
+// based on contribution by scorpfromhell 
+// BUGID 300: Display name and surename in all user lists 
+// $g_show_realname=TRUE; -> use the function format_username()
+//                           to display user identification
+//                           using $g_username_format
+$g_show_realname=FALSE;
+
+// used by function format_username()
+// example: user ux555, real name= John Cook
+// 'name_surname'          -> John Cook
+// 'name_surname_login'    -> John Cook [ux555]
+//$g_username_format='name_surname_login';
+$g_username_format='name_surname';
 
 
 

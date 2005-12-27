@@ -1,6 +1,8 @@
-{* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: planTestersNavigator.tpl,v 1.3 2005/11/13 19:19:31 schlundus Exp $ *}
-{* Purpose: smarty template - show users/plan for assignment *}
+{* 
+TestLink Open Source Project - http://testlink.sourceforge.net/ 
+$Id: planTestersNavigator.tpl,v 1.4 2005/12/27 11:16:12 franciscom Exp $ 
+Purpose: smarty template - show users/plan for assignment 
+*}
 {include file="inc_head.tpl"}
 
 <body>
@@ -25,7 +27,14 @@
 <p>
 	{section name=Row loop=$arrData}
 		<a href="lib/plan/planTestersEdit.php?type={$type}&id={$arrData[Row][0]}" 
-			target="workframe">{$arrData[Row][1]|escape}</a><br />
+			target="workframe">
+			{* Changed by Tools-R-Us team to show the full name & ID of Users*}
+			{if $type eq "plans"}
+				{$arrData[Row][1]|escape}
+			{else}
+				{$arrData[Row].fullname|escape}
+			{/if}
+		</a><br />
 	{/section}
 </p>
 </div>

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: adminUsers.php,v $
  *
- * @version $Revision: 1.5 $
- * @modified $Date: 2005/11/13 19:19:31 $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2005/12/27 11:16:12 $
  *
  * @author Martin Havlat
  *
@@ -58,7 +58,7 @@ if($bEditUser)
 	}
 }
 $users = null;
-getAllUsers_assoc($users);
+$users=getAllUsers_assoc();
 
 $smarty = new TLSmarty();
 $smarty->assign('optRights', getListOfRights());

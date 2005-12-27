@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: planTestersNavigator.php,v 1.3 2005/11/21 07:02:25 franciscom Exp $ 
+* $Id: planTestersNavigator.php,v 1.4 2005/12/27 11:16:12 franciscom Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * 
@@ -39,8 +39,10 @@ else
 {
 	$title = lang_get('nav_users');
 	$selected = '';
-	getAllUsers($arrData);
+	$arrData=getAllUsers();
 }
+
+//echo "<pre>debug-45"; print_r($arrData); echo "</pre>";
 
 $smarty = new TLSmarty;
 $smarty->assign('title', $title);

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: planTestersEdit.php,v $
- * @version $Revision: 1.10 $
- * @modified $Date: 2005/11/30 15:25:31 $ $ by $Author: franciscom $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2005/12/27 11:16:12 $ $ by $Author: franciscom $
  * 
  * @author Martin Havlat
  * 
@@ -96,7 +96,7 @@ if ($type == 'plans')
 	}
 	$title = lang_get('title_assign_users') . $tpName;
 	$name = 'selected="selected"';
-	getUsersOfPlan($id,$arrData);
+	$arrData=getUsersOfPlan($id);
 }
 else
 { 	
@@ -150,17 +150,19 @@ function getUserTestPlans1($userID,$prodID)
 	return $arrPlans;
 }
 
-//20051112 - scs - replaced not found with TL_Unknown
+
+// 20051227 - fm
+// 20051112 - scs - replaced not found with TL_Unknown
 function getUserLogin($id)
 {
 	$users = null;
+	$users = getUserById($id);
 
-	getUserById($id,$users);
 	$userInfo = '<'.lang_get('Unknown').'>';
 	if (sizeof($users))
 	{
 		$user = $users[0];
-		$userInfo = $user[1]. ' ('. $user[3] . ' ' . $user[4] . ')';
+		$userInfo = $user['login']. ' ('. $user['first'] . ' ' . $user['last'] . ')';
 	}
 	
 	return $userInfo;

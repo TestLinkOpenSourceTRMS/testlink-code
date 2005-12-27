@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: users.inc.php,v $
  *
- * @version $Revision: 1.12 $
- * @modified $Date: 2005/11/30 15:22:53 $ $Author: franciscom $
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2005/12/27 11:16:12 $ $Author: franciscom $
  *
  * @author Chad Rosen, Martin Havlat
  * @author Martin Havlat
@@ -245,17 +245,23 @@ function deleteUsersProjectRights($userID, $prodID)
 	return $result ? 1 : 0;
 }
 
-function getUserById($id,&$users)
+function getUserById($id)
 {
-	return getAllUsers($users,"where id=" . $id);
+	return getAllUsers("where id=" . $id);
 }
 
-//20051112 - scs - where clause was added at the wrong place
-function getAllUsers(&$users,$whereClause = null)
+// 20051227 - fm
+// 20051112 - scs - where clause was added at the wrong place
+function getAllUsers($whereClause = null)
 {
-	$sql = "SELECT id,login,password,first,last,email,rightsid FROM user";
+	$show_realname=config_get('show_realname');
+	
+	$sql = " SELECT id,login,password,first,last,email,rightsid,'' AS fullname 
+	         FROM user";
 	if (!is_null($whereClause))
+	{
 		$sql .= ' '.$whereClause;
+	}
 	
 	$sql .= " ORDER BY login";
 	$result = do_mysql_query($sql);
@@ -264,21 +270,29 @@ function getAllUsers(&$users,$whereClause = null)
 	{
 		while($user = mysql_fetch_array($result))
 		{
+			$user['fullname'] = $user['login'];
+			if($show_realname)
+			{
+			  $user['fullname'] = format_username($user);
+			}
 			$users[] = $user;
 		}	
 	}
 	
-	return $result ? 1 : 0;
+	return($users);
 }
 
-function getAllUsers_assoc(&$users,$whereClause = null)
+// 20051227 - fm
+function getAllUsers_assoc($whereClause = null)
 {
   
 	$sql = "SELECT id,login,password,first,last,email,rightsid,locale " .
 	       "FROM user ORDER BY login";
 	
 	if (!is_null($whereClause))
+	{
 		$sql .= $whereClause;
+  }
   
 	$result = do_mysql_query($sql);
 	$users = null;
@@ -290,7 +304,7 @@ function getAllUsers_assoc(&$users,$whereClause = null)
 		}	
 	}
 	
-	return $result ? 1 : 0;
+	return $users;
 }
 
 /*
@@ -365,8 +379,27 @@ function getUserName($id_user)
 }
 
 
+// 20051227 - fm
+function format_username($hash)
+{
+  $username_format = config_get('username_format');
 
+  $username = $hash['first'] . " " . $hash['last'];
+  
+  switch($username_format)
+  {
+  	
+  	case "name_surname_login":
+  	$username .= " [" . $hash['login'] . "]";
+  	break;	
 
+  	case "name_surname":
+  	default:
+  	break;	
+  }
+
+	return $username;
+}
 
 
 

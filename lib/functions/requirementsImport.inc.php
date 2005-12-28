@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: requirementsImport.inc.php,v $
- * @version $Revision: 1.4 $
- * @modified $Date: 2005/09/07 06:24:03 $ by $Author: franciscom $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2005/12/28 07:34:55 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Functions for Import requirements to a specification. 
@@ -45,9 +45,9 @@ function getReqDataByTitle($title)
 	$output = array();
 	
 	$sql = "SELECT * FROM requirements WHERE title='" . $title . "'";
-	$result = do_mysql_query($sql);
+	$result = do_sql_query($sql);
 	if (!empty($result)) {
-		$output = mysql_fetch_array($result);
+		$output = $GLOBALS['db']->fetch_array($result);
 	}
 	
 	return $output;

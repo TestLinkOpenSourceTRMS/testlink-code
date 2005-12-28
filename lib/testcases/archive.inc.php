@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: archive.inc.php,v $
  *
- * @version $Revision: 1.24 $
- * @modified $Date: 2005/12/09 10:04:35 $ by $Author: franciscom $
+ * @version $Revision: 1.25 $
+ * @modified $Date: 2005/12/28 07:34:55 $ by $Author: franciscom $
  *
  * @author Martin Havlat
  * Purpose:  functions for test specification management have three parts:
@@ -46,18 +46,18 @@ function getComponent($id)
 {
 	$sqlCOM = "SELECT id,name,intro,scope,ref,method,lim FROM mgtcomponent " .
 			      "WHERE id=" . $id;
-	$resultCOM = do_mysql_query($sqlCOM);
+	$resultCOM = do_sql_query($sqlCOM);
 
-	return mysql_fetch_array($resultCOM);
+	return $GLOBALS['db']->fetch_array($resultCOM);
 }
 
 function getCategory($id)
 {
 	$sql = "SELECT id,name,objective,config,data,tools,compid FROM mgtcategory " .
 			   "WHERE id=" . $id;
-	$result = do_mysql_query($sql);
+	$result = do_sql_query($sql);
 
-	return mysql_fetch_array($result);
+	return $GLOBALS['db']->fetch_array($result);
 }
 
 
@@ -75,8 +75,8 @@ function getTestcase($id, $convert = TRUE)
 			     " FROM mgttestcase" .
 			     " WHERE id=" . $id ;
 			     
-	$resultTC = do_mysql_query($sqlTC);
-	$myrowTC = mysql_fetch_array($resultTC);
+	$resultTC = do_sql_query($sqlTC);
+	$myrowTC = $GLOBALS['db']->fetch_array($resultTC);
 	
 	if ($convert)
 	{
@@ -236,9 +236,9 @@ function showTestcase ($id,$allow_edit = 1)
 function moveTc($newCat, $id)
 {
 	$sql = "UPDATE mgttestcase SET catid=" . $newCat . " WHERE id=" . $id;
-	$result = do_mysql_query($sql);
+	$result = do_sql_query($sql);
 
-	return $result ?'ok' : mysql_error();
+	return $result ?'ok' : $GLOBALS['db']->error_msg();
 }
 
 //20050821 - fm - inteface changes, added $user to reduce global coupling 
@@ -252,7 +252,7 @@ function copyTc($newCat, $id, $user)
 						$tc['steps'],$tc['exresult'],
 						$user,$tc['TCorder'],$tc['keywords']))
 	{
-		$msq_status=mysql_error();
+		$msq_status=$GLOBALS['db']->error_msg();
 	}	
 	
 	return ($msg_status);
@@ -265,30 +265,30 @@ function copyCategoryToComponent($newParent, $id, $nested, $login_name)
 	//Select the category info so that we can copy it
 	$sqlCopyCat = " SELECT name,objective,config,data,tools,compid,CATorder,id " .
 			          " FROM mgtcategory WHERE id=" . $id;
-	$resultCopyCat = do_mysql_query($sqlCopyCat);
-	$myrowCopyCat = mysql_fetch_row($resultCopyCat);
+	$resultCopyCat = do_sql_query($sqlCopyCat);
+	$myrowCopyCat = $GLOBALS['db']->fetch_array($resultCopyCat);
 
 	//Insert the category info
 	$sqlInsertCat = "insert into mgtcategory (name,objective,config,data,tools," .
-			"compid,CATorder) values ('" . mysql_escape_string($myrowCopyCat[0]) . 
-			"','" . mysql_escape_string($myrowCopyCat[1]) . "','" . 
-			mysql_escape_string($myrowCopyCat[2]) . "','" . 
-			mysql_escape_string($myrowCopyCat[3]) . "','" . 
-			mysql_escape_string($myrowCopyCat[4]) . "','" . $newParent . 
-			"','" . mysql_escape_string($myrowCopyCat[6]) . "')";
-	$resultInsertCAT = do_mysql_query($sqlInsertCat);
+			"compid,CATorder) values ('" . $GLOBALS['db']->prepare_string($myrowCopyCat[0]) . 
+			"','" . $GLOBALS['db']->prepare_string($myrowCopyCat[1]) . "','" . 
+			$GLOBALS['db']->prepare_string($myrowCopyCat[2]) . "','" . 
+			$GLOBALS['db']->prepare_string($myrowCopyCat[3]) . "','" . 
+			$GLOBALS['db']->prepare_string($myrowCopyCat[4]) . "','" . $newParent . 
+			"','" . $GLOBALS['db']->prepare_string($myrowCopyCat[6]) . "')";
+	$resultInsertCAT = do_sql_query($sqlInsertCat);
 	
 	// copy also test cases
 	if ($nested == 'yes')
 	{
-		$catID =  mysql_insert_id();
+		$catID =  $GLOBALS['db']->insert_id();
 
 		$sqlMoveCopy= "select id from mgttestcase where catid='" . 
 				$myrowCopyCat[7] . "'";
-		$resultMoveCopy = do_mysql_query($sqlMoveCopy);
+		$resultMoveCopy = do_sql_query($sqlMoveCopy);
 	
 		//Insert nested test cases 
-		while($myrowMoveCopy = mysql_fetch_row($resultMoveCopy)) {
+		while($myrowMoveCopy = $GLOBALS['db']->fetch_array($resultMoveCopy)) {
 			
 			// 20050821 - fm - interface changes
 			copyTc($catID, $myrowMoveCopy[0], $login_name);
@@ -301,16 +301,16 @@ function copyCategoryToComponent($newParent, $id, $nested, $login_name)
    	}
 	else
 	{ 
-		return mysql_error();
+		return $GLOBALS['db']->error_msg();
 	}
 }
 
 function moveCategoryToComponent($newParent, $id)
 {
 	$sql = "UPDATE mgtcategory SET compid=".$newParent." WHERE id=".$id;
-	$result = do_mysql_query($sql);
+	$result = do_sql_query($sql);
 
-	return $result ? 'ok': mysql_error();
+	return $result ? 'ok': $GLOBALS['db']->error_msg();
 }
 
 
@@ -330,8 +330,8 @@ function moveComponentToProduct($newParent, $comp_id)
             FROM mgtcomponent
             WHERE id=" . $comp_id;
   	
-  	$result = do_mysql_query($sql);
-	  $row = mysql_fetch_array($result);
+  	$result = do_sql_query($sql);
+	  $row = $GLOBALS['db']->fetch_array($result);
 	  $my_name=$row['name'];
 
     $sql = " SELECT count(name) AS QTY_DUP 
@@ -339,8 +339,8 @@ function moveComponentToProduct($newParent, $comp_id)
              WHERE prodid = " . $newParent .
            " AND name='" . $my_name . "'";
     
-    $result = do_mysql_query($sql);
-	  $row = mysql_fetch_array($result);
+    $result = do_sql_query($sql);
+	  $row = $GLOBALS['db']->fetch_array($result);
 	
 	  if( $row['QTY_DUP'] > 0 )
 	  {
@@ -364,9 +364,9 @@ function moveComponentToProduct($newParent, $comp_id)
 		$sql = "UPDATE mgtcomponent 
 	          SET prodid=" . $newParent . $upd_name_sql .
 	         " WHERE id=". $comp_id;
-		$result = do_mysql_query($sql);
+		$result = do_sql_query($sql);
 		
-		$msg = $result ? 'ok' : mysql_error();
+		$msg = $result ? 'ok' : $GLOBALS['db']->error_msg();
   }
 
 
@@ -430,10 +430,10 @@ function insertProductComponent($prodID,$name,$intro,$scope,$ref,$method,$lim,
 	if ($check_duplicate_name)
 	{
 		$sql = " SELECT count(*) AS qty FROM mgtcomponent " .
-			" WHERE name = '" . mysql_escape_string($name) . "'" . 
+			" WHERE name = '" . $GLOBALS['db']->prepare_string($name) . "'" . 
 			" AND prodid={$prodID} "; 
-		$result = do_mysql_query($sql);
-		$myrow = mysql_fetch_assoc($result);
+		$result = do_sql_query($sql);
+		$myrow = $GLOBALS['db']->fetch_array($result);
 		
 		if( $myrow['qty'])
 		{
@@ -457,20 +457,20 @@ function insertProductComponent($prodID,$name,$intro,$scope,$ref,$method,$lim,
 	if ($ret['status_ok'])
 	{
 		$sql = "INSERT INTO mgtcomponent (name,intro,scope,ref,method,lim,prodid) " .
-		     	 "VALUES ('" . mysql_escape_string($name) . "','" . 
-				 mysql_escape_string($intro) . "','" . 
-			     mysql_escape_string($scope) . "','" . 
-				 mysql_escape_string($ref) . "','" . mysql_escape_string($method) . 
-			     "','" . mysql_escape_string($lim) . "'," . $prodID . ")";
+		     	 "VALUES ('" . $GLOBALS['db']->prepare_string($name) . "','" . 
+				 $GLOBALS['db']->prepare_string($intro) . "','" . 
+			     $GLOBALS['db']->prepare_string($scope) . "','" . 
+				 $GLOBALS['db']->prepare_string($ref) . "','" . $GLOBALS['db']->prepare_string($method) . 
+			     "','" . $GLOBALS['db']->prepare_string($lim) . "'," . $prodID . ")";
 			
-		$result = do_mysql_query($sql);
+		$result = do_sql_query($sql);
 		if ($result)
 		{
-			$ret['id'] = mysql_insert_id();
+			$ret['id'] = $GLOBALS['db']->insert_id();
 		}
 		else
 		{
-			$ret['msg'] = mysql_error();
+			$ret['msg'] = $GLOBALS['db']->error_msg();
 		}
 	}
 	return($ret);
@@ -481,23 +481,23 @@ function insertProductComponent($prodID,$name,$intro,$scope,$ref,$method,$lim,
 function insertComponentCategory($compID,$name,$objective,$config,$testdata,$tools)
 {
 	$sql = "INSERT INTO mgtcategory (name,objective,config,data,tools,compid) " .
-			"VALUES ('" . mysql_escape_string($name) . "','" . mysql_escape_string($objective). 
-			"','" . mysql_escape_string($config) . "','" . mysql_escape_string($testdata) . "','" . 
-			mysql_escape_string($tools) . "'," . mysql_escape_string($compID) . ")";
+			"VALUES ('" . $GLOBALS['db']->prepare_string($name) . "','" . $GLOBALS['db']->prepare_string($objective). 
+			"','" . $GLOBALS['db']->prepare_string($config) . "','" . $GLOBALS['db']->prepare_string($testdata) . "','" . 
+			$GLOBALS['db']->prepare_string($tools) . "'," . $GLOBALS['db']->prepare_string($compID) . ")";
 			
-	$result = do_mysql_query($sql); 
+	$result = do_sql_query($sql); 
 
-	return $result ? mysql_insert_id() : 0;
+	return $result ? $GLOBALS['db']->insert_id() : 0;
 }
 
 function updateComponent($id,$name,$intro,$scope,$ref,$method,$lim)
 {
-	$sql = "UPDATE mgtcomponent set name ='" . mysql_escape_string($name) . "', intro ='" . 
-		mysql_escape_string($intro) . "', scope='" . mysql_escape_string($scope) . "', ref='" . 
-		mysql_escape_string($ref) . "', method='" . mysql_escape_string($method) . "', lim='" . 
-		mysql_escape_string($lim) . "' where id=" . $id;
+	$sql = "UPDATE mgtcomponent set name ='" . $GLOBALS['db']->prepare_string($name) . "', intro ='" . 
+		$GLOBALS['db']->prepare_string($intro) . "', scope='" . $GLOBALS['db']->prepare_string($scope) . "', ref='" . 
+		$GLOBALS['db']->prepare_string($ref) . "', method='" . $GLOBALS['db']->prepare_string($method) . "', lim='" . 
+		$GLOBALS['db']->prepare_string($lim) . "' where id=" . $id;
 	
-	$result = do_mysql_query($sql); //Execute query
+	$result = do_sql_query($sql); //Execute query
 	
 	return $result ? 1 : 0;
 }
@@ -505,7 +505,7 @@ function updateComponent($id,$name,$intro,$scope,$ref,$method,$lim)
 function deleteComponent($compID)
 {
 	$sql = "DELETE FROM mgtcomponent WHERE id=" . $compID;
-	$result = do_mysql_query($sql);
+	$result = do_sql_query($sql);
 	 
 	return $result ? 1 : 0;
 }
@@ -516,11 +516,11 @@ function deleteComponent($compID)
 function getComponentCategoryIDs($compID)
 {
 	$sql = "SELECT id FROM mgtcategory WHERE compid=" . $compID;
-	$result = do_mysql_query($sql);
+	$result = do_sql_query($sql);
 	$cat_ids = null;
 	if ($result)
 	{
-		while($row = mysql_fetch_array($result))
+		while($row = $GLOBALS['db']->fetch_array($result))
 		{
 			$cat_ids[] = $row['id'];
 		}	
@@ -533,7 +533,7 @@ function getComponentCategoryIDs($compID)
 function deleteComponentCategories($compID)
 {
 	$sql = "DELETE FROM mgtcategory WHERE compID=".$compID;
-	$result = do_mysql_query($sql);
+	$result = do_sql_query($sql);
 	
 	return $result ? 1 : 0;
 }
@@ -541,7 +541,7 @@ function deleteComponentCategories($compID)
 function deleteCategoriesTestcases($catIDs)
 {
 	$sql = "DELETE FROM mgttestcase WHERE mgttestcase.catid IN ({$catIDs})";
-	$result = do_mysql_query($sql);
+	$result = do_sql_query($sql);
 
 	return $result ? 1 : 0;
 }
@@ -555,11 +555,11 @@ function getOrderedComponentCategories($compID,&$cats)
 {
 	$sql = "SELECT id,name,CATorder FROM mgtcategory WHERE compid=" . 
 			$compID . " ORDER BY CATorder,id";
-	$result = do_mysql_query($sql);
+	$result = do_sql_query($sql);
 	$cats = null;
 	if ($result)
 	{
-		while($cat = mysql_fetch_array($result))
+		while($cat = $GLOBALS['db']->fetch_array($result))
 			$cats[] = $cat;
 	}
 	return $result ? 1 : 0;
@@ -579,14 +579,14 @@ function updateCategoryOrder($catID,$order)
 	$sql = " UPDATE mgtcategory " .
 	       " SET mgtcategory.CATorder=" . $order . 
 	       " WHERE mgtcategory.id=" . $catID;
-	$result = do_mysql_query($sql);
+	$result = do_sql_query($sql);
 	       
 	
 	$sql = " UPDATE category, mgtcategory" .
 	       " SET category.CATorder=" . $order . 
 	       " WHERE mgtcategory.id=category.mgtcatid" .
 	       " AND   mgtcategory.id=" . $catID;
-	$result = do_mysql_query($sql);
+	$result = do_sql_query($sql);
 	
 	       
 	
@@ -597,29 +597,29 @@ function updateCategoryOrder($catID,$order)
 function deleteCategory($catID)
 {
 	$sql = "DELETE FROM mgtcategory WHERE id=".$catID;
-	$result = do_mysql_query($sql);
+	$result = do_sql_query($sql);
 	
 	return $result ? 1 : 0;
 }
 
 function updateCategory($catID,$name,$objective,$config,$pdata,$tools)
 {
-	$sql = "UPDATE mgtcategory SET name ='" .mysql_escape_string($name) . 
-		"', objective ='" . mysql_escape_string($objective). "', config='" . 
-		mysql_escape_string($config). "', data='" . mysql_escape_string($pdata) . "', tools='" . 
-		mysql_escape_string($tools). "' where id=" . $catID;
+	$sql = "UPDATE mgtcategory SET name ='" .$GLOBALS['db']->prepare_string($name) . 
+		"', objective ='" . $GLOBALS['db']->prepare_string($objective). "', config='" . 
+		$GLOBALS['db']->prepare_string($config). "', data='" . $GLOBALS['db']->prepare_string($pdata) . "', tools='" . 
+		$GLOBALS['db']->prepare_string($tools). "' where id=" . $catID;
 		
-	$result = do_mysql_query($sql); //Execute query
+	$result = do_sql_query($sql); //Execute query
 }
 
 function getOrderedCategoryTestcases($catID,&$tcs)
 {
 	$sql = "SELECT id,title,TCorder FROM mgttestcase WHERE catid=".$catID." ORDER BY TCorder,id";
-	$result = do_mysql_query($sql);
+	$result = do_sql_query($sql);
 	$tcs = null;
 	if ($result)
 	{
-		while($tc = mysql_fetch_array($result))
+		while($tc = $GLOBALS['db']->fetch_array($result))
 			$tcs[] = $tc;
 	}
 	return $result ? 1 : 0;
@@ -628,7 +628,7 @@ function getOrderedCategoryTestcases($catID,&$tcs)
 function updateTestCaseOrder($tcID,$order)
 {
 	$sql = "UPDATE mgttestcase SET TCorder=".$order." WHERE id=".$tcID;
-	$result = do_mysql_query($sql); //Execute query
+	$result = do_sql_query($sql); //Execute query
 	
 	return $result ? 1 : 0;
 }
@@ -636,12 +636,12 @@ function updateTestCaseOrder($tcID,$order)
 function getCategoryComponentAndProduct($catID,&$compID,&$prodID)
 {
 	$sql = "SELECT compid, prodid FROM mgtcategory,mgtcomponent WHERE mgtcategory.id=" . $catID . " AND mgtcategory.compid=mgtcomponent.id";
-	$result = do_mysql_query($sql);
+	$result = do_sql_query($sql);
 	$compID = 0;
 	$prodID = 0;
 	if ($result)
 	{
-		if ($row = mysql_fetch_row($result))
+		if ($row = $GLOBALS['db']->fetch_array($result))
 		{
 			$compID = $row[0];
 			$prodID = $row[1];
@@ -653,12 +653,12 @@ function getAllProductComponentsBut($compID,$prodID,&$comps)
 {
 	$sql = "SELECT id, name FROM mgtcomponent WHERE prodid=" . $prodID . 
 			" and id != " . $compID;
-	$result = do_mysql_query($sql);
+	$result = do_sql_query($sql);
 	
 	$comps = null;
 	if ($result)
 	{
-		while($row = mysql_fetch_row($result))
+		while($row = $GLOBALS['db']->fetch_array($result))
 			$comps[] = $row;
 	}
 	return $result ? 1 : 0;
@@ -667,7 +667,7 @@ function getAllProductComponentsBut($compID,$prodID,&$comps)
 function deleteTestcase($tcID)
 {
 	$sql = "DELETE FROM mgttestcase WHERE id=" . $tcID;
-	$result= do_mysql_query($sql);
+	$result= do_sql_query($sql);
 	
 	return $result ? 1 : 0;
 }
@@ -684,32 +684,32 @@ function insertTestcase($catID,$title,$summary,$steps,$outcome,$user,$tcOrder = 
 	if (!is_null($keywords) && strlen($keywords))
 		$sql .= ",keywords";
 			
-	$sql .=	 ") values ('" . mysql_escape_string($title) . "','" . 
-			mysql_escape_string($user) . "','" . mysql_escape_string($summary) . "','" . mysql_escape_string($steps) . 
-			"','" .	mysql_escape_string($outcome) . "',1," . $catID . 
+	$sql .=	 ") values ('" . $GLOBALS['db']->prepare_string($title) . "','" . 
+			$GLOBALS['db']->prepare_string($user) . "','" . $GLOBALS['db']->prepare_string($summary) . "','" . $GLOBALS['db']->prepare_string($steps) . 
+			"','" .	$GLOBALS['db']->prepare_string($outcome) . "',1," . $catID . 
 			", CURRENT_DATE()";
 			
 	if (!is_null($tcOrder))
 		$sql .= ",".$tcOrder;
 	if (!is_null($keywords) && strlen($keywords))
-		$sql .= ",'".mysql_escape_string($keywords)."'";
+		$sql .= ",'".$GLOBALS['db']->prepare_string($keywords)."'";
 	
 	$sql .= ")";
-	$result = do_mysql_query($sql);
+	$result = do_sql_query($sql);
 	
-	return $result ? mysql_insert_id() : 0;
+	return $result ? $GLOBALS['db']->insert_id() : 0;
 }
 
 // 20050819 - scs - fix for bug Mantis 59 Use of term "created by" is not enforced---
 function updateTestcase($tcID,$title,$summary,$steps,$outcome,$user,$keywords,$version)
 {
-	$sql = "UPDATE mgttestcase SET keywords='" . mysql_escape_string($keywords) . "', version='" . 
-		mysql_escape_string($version) . "', title='" . mysql_escape_string($title) . "'".
-		",summary='" . mysql_escape_string($summary) . "', steps='" . 
-		mysql_escape_string($steps) . "', exresult='" . mysql_escape_string($outcome) . 
-		"', reviewer='" . mysql_escape_string($user) . "', modified_date=CURRENT_DATE()" .
+	$sql = "UPDATE mgttestcase SET keywords='" . $GLOBALS['db']->prepare_string($keywords) . "', version='" . 
+		$GLOBALS['db']->prepare_string($version) . "', title='" . $GLOBALS['db']->prepare_string($title) . "'".
+		",summary='" . $GLOBALS['db']->prepare_string($summary) . "', steps='" . 
+		$GLOBALS['db']->prepare_string($steps) . "', exresult='" . $GLOBALS['db']->prepare_string($outcome) . 
+		"', reviewer='" . $GLOBALS['db']->prepare_string($user) . "', modified_date=CURRENT_DATE()" .
 		" WHERE id=" . $tcID;
-	$result = do_mysql_query($sql);
+	$result = do_sql_query($sql);
 	
 	return $result ? 1: 0;
 }
@@ -717,12 +717,12 @@ function updateTestcase($tcID,$title,$summary,$steps,$outcome,$user,$keywords,$v
 function getTestCaseCategoryAndComponent($tcID,&$catID,&$compID)
 {
 	$sql = "SELECT catid, compid FROM mgttestcase,mgtcategory WHERE mgttestcase.id=" . $tcID . " AND mgttestcase.catid=mgtcategory.id";
-	$result = do_mysql_query($sql);
+	$result = do_sql_query($sql);
 	$catID = 0;
 	$compID = 0;
 	if ($result)
 	{
-		if ($row = mysql_fetch_row($result))
+		if ($row = $GLOBALS['db']->fetch_array($result))
 		{
 			$catID = $row[0];
 			$compID = $row[1];
@@ -734,11 +734,11 @@ function getOptionCategoriesOfComponent($compID,&$comps)
 {
 	$sql = "SELECT id, name FROM mgtcategory WHERE compid=".$compID;	
 	
-	$result = do_mysql_query($sql);
+	$result = do_sql_query($sql);
 	$comps = null;
 	if ($result)
 	{
-		while($row = mysql_fetch_row($result))
+		while($row = $GLOBALS['db']->fetch_array($result))
 			$comps[$row[0]] = $row[1];
 	}		
 	

@@ -1,7 +1,7 @@
 <?php
 /* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: installUtils.php,v 1.9 2005/12/19 11:30:05 franciscom Exp $ 
+$Id: installUtils.php,v 1.10 2005/12/28 07:34:54 franciscom Exp $ 
 
 20051002 - fm - messages changes
 20050925 - fm - changes to getDirFiles()
@@ -60,7 +60,7 @@ if ( $add_dirpath )
 // | Authors: João Prado Maia <jpm@mysql.com>                             |
 // +----------------------------------------------------------------------+
 //
-// @(#) $Id: installUtils.php,v 1.9 2005/12/19 11:30:05 franciscom Exp $
+// @(#) $Id: installUtils.php,v 1.10 2005/12/28 07:34:54 franciscom Exp $
 //
 
 
@@ -69,7 +69,7 @@ function getDatabaseList($conn)
     $dbs = array();
 
     $db_list = mysql_list_dbs($conn);
-    while ($row = mysql_fetch_array($db_list)) {
+    while ($row = $GLOBALS['db']->fetch_array($db_list)) {
         $dbs[] = $row['Database'];
     }
     return $dbs;
@@ -79,9 +79,8 @@ function getTableList($conn)
 {
     $tables = array();
 
-    $res = @mysql_query('SHOW TABLES', $conn);
-    // echo mysql_errno();
-    while ($row = @mysql_fetch_row($res)) {
+    $res = @do_sql_query('SHOW TABLES', $conn);
+    while ($row = @$GLOBALS['db']->fetch_array($res)) {
         $tables[] = $row[0];
     }
     return $tables;
@@ -90,13 +89,13 @@ function getTableList($conn)
 function getUserList($conn)
 {
     @mysql_select_db('mysql');
-    $res = @mysql_query('SELECT DISTINCT User from user');
+    $res = @do_sql_query('SELECT DISTINCT User from user');
     $users = array();
     // if the user cannot select from the mysql.user table, then return an empty list
     if (!$res) {
         return $users;
     }
-    while ($row = mysql_fetch_row($res)) {
+    while ($row = $GLOBALS['db']->fetch_array($res)) {
         $users[] = $row[0];
     }
     return $users;
@@ -187,9 +186,9 @@ if (count($user_list) > 0)
       $stmt .= " IDENTIFIED BY '" .  $passwd . "'";
       
             
-      if (!@mysql_query($stmt, $conn)) 
+      if (!@do_sql_query($stmt, $conn)) 
       {
-          $msg = "ko - " . mysql_error();
+          $msg = "ko - " . $GLOBALS['db']->error_msg();
       }
       else
       {
@@ -207,9 +206,9 @@ if (count($user_list) > 0)
           $stmt = "GRANT SELECT, UPDATE, DELETE, INSERT ON " . 
                    $db . ".* TO '" . $login . "'@'localhost'" .
                   " IDENTIFIED BY '" .  $passwd . "'";
-          if (!@mysql_query($stmt, $conn)) 
+          if (!@do_sql_query($stmt, $conn)) 
           {
-            $msg = "ko - " . mysql_error();
+            $msg = "ko - " . $GLOBALS['db']->error_msg();
           }
         }
       }

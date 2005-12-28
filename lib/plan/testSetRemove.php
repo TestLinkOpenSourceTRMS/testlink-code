@@ -1,7 +1,7 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: testSetRemove.php,v 1.6 2005/11/26 19:58:22 schlundus Exp $ 
+ * @version $Id: testSetRemove.php,v 1.7 2005/12/28 07:34:55 franciscom Exp $ 
  * 
  * Remove Test Cases from Test Case Suite 
  * 
@@ -50,16 +50,16 @@ if(isset($_POST['deleteTC']))
 		else
 		{
 			$sqlMGT = "SELECT mgttcid,title FROM testcase WHERE id=" . $tcID;
-			$resultMGT = do_mysql_query($sqlMGT);
-			$mgtID = mysql_fetch_assoc($resultMGT);
+			$resultMGT = do_sql_query($sqlMGT);
+			$mgtID = $GLOBALS['db']->fetch_array($resultMGT);
 
 			//Delete the test case as well as its results and bugs
 			$sqlTCDel = "DELETE FROM testcase WHERE id=" . $tcID;
 			$sqlRESDel = "DELETE FROM results WHERE tcid=" . $tcID;
 			$sqlBUGDel = "DELETE FROM bugs WHERE tcid=" . $tcID;
-			$result = do_mysql_query($sqlTCDel);
-			$result = do_mysql_query($sqlRESDel);
-			$result = do_mysql_query($sqlBUGDel);
+			$result = do_sql_query($sqlTCDel);
+			$result = do_sql_query($sqlRESDel);
+			$result = do_sql_query($sqlBUGDel);
 
 			$resultString .= lang_get("test_case_removed_part1") . " <b>". 
 							 $mgtID['mgttcid'] . "</b>: " . 
@@ -77,8 +77,8 @@ elseif(isset($_POST['deletecomponent']))
 	              " FROM component COMP, mgtcomponent MGTCOMP " .
 	              " WHERE MGTCOMP.id = COMP.mgtcompid " .
 	              " AND COMP.id=" . $id;
-	$comResult = do_mysql_query($sqlComName);
-	$comRow = mysql_fetch_assoc($comResult);
+	$comResult = do_sql_query($sqlComName);
+	$comRow = $GLOBALS['db']->fetch_array($comResult);
 
 	del_component_deep($id);
 
@@ -92,8 +92,8 @@ elseif(isset($_POST['deletecategory']))
 			" FROM mgtcategory MGTCAT, category CAT" .
 			" WHERE MGTCAT.id = CAT.mgtcatid " .
 			" AND CAT.id=" . $id;
-	$result = do_mysql_query($sql);
-	$myrow = mysql_fetch_assoc($result);
+	$result = do_sql_query($sql);
+	$myrow = $GLOBALS['db']->fetch_array($result);
 	$cat_name = $myrow['name'];
 	
 	// 20051001 - fm
@@ -167,8 +167,8 @@ function genTC_info($compID, $catID, $tcID)
 	$sql .= " ORDER BY TCorder";
 
 	$tc_info = null;
-	$result = do_mysql_query($sql);
-	while($row = mysql_fetch_assoc($result))
+	$result = do_sql_query($sql);
+	while($row = $GLOBALS['db']->fetch_array($result))
 	{
 		$tc_info[] = array(	'id' => $row['id'], 
 					'name' => $row['title'], 

@@ -2,7 +2,7 @@
 /**
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/ 
 *
-* @version 	$Id: printData.php,v 1.10 2005/11/19 23:07:39 schlundus Exp $
+* @version 	$Id: printData.php,v 1.11 2005/12/28 07:34:55 franciscom Exp $
 *	@author 	Martin Havlat
 * 
 * Shows the data that will be printed.
@@ -185,9 +185,9 @@ function generate_TCs($rs)
 {
   global $CONTENT;
 
-	if (mysql_num_rows($rs) > 0)
+	if ($GLOBALS['db']->num_rows($rs) > 0)
 	{
-	    while ($myrow = mysql_fetch_assoc($rs))
+	    while ($myrow = $GLOBALS['db']->fetch_array($rs))
 		{
 			print_testcase($myrow);
 		}
@@ -207,11 +207,11 @@ function generate_product_TCs($idCategory)
 				" WHERE catid=" . $idCategory . 
 				" ORDER BY TCorder, id";
 
-	$resultTC = do_mysql_query($sqlTC);
+	$resultTC = do_sql_query($sqlTC);
 	
 	if (!$resultTC)
 	{
-		tLog($sqlTC . ' | error: ' . mysql_error(), 'ERROR');
+		tLog($sqlTC . ' | error: ' . $GLOBALS['db']->error_msg(), 'ERROR');
 	}
 	generate_TCs($resultTC);
 }
@@ -222,11 +222,11 @@ function generate_testSuite_TCs($idCategory)
 	$sqlTC = " SELECT id,title, summary, steps, exresult,mgttcid, keywords " .
 			" FROM testcase " .
 			" WHERE catid=" . $idCategory . " ORDER BY TCorder, mgttcid";
-	$resultTC = do_mysql_query($sqlTC);
+	$resultTC = do_sql_query($sqlTC);
 	
 	if (!$resultTC)
 	{
-		tLog($sqlTC . ' | error: ' . mysql_error(), 'ERROR');
+		tLog($sqlTC . ' | error: ' . $GLOBALS['db']->error_msg(), 'ERROR');
 	}
 	
 	generate_TCs($resultTC);
@@ -239,7 +239,7 @@ function generate_testSuite_TCs($idCategory)
 code reuse adding catID
 catID=0 -> all
 
-20050831 - fm - switch to mysql_fetch_array()
+20050831 - fm - switch to $GLOBALS['db']->fetch_array()
 */
 function generate_testSuite_Categories($idComponent,$catID=0)
 {
@@ -258,9 +258,9 @@ function generate_testSuite_Categories($idComponent,$catID=0)
 		$sql .= " AND category.id=" . $catID;
 	}     
 	$sql .= " ORDER BY CATorder, id";
-	$res = do_mysql_query($sql);
+	$res = do_sql_query($sql);
 	
-	while ($myrow = mysql_fetch_array($res))
+	while ($myrow = $GLOBALS['db']->fetch_array($res))
 	{  
 		print_category($myrow);
 		generate_testSuite_TCs($myrow['catid']);
@@ -274,8 +274,8 @@ function generate_product_CATs($idComponent)
               " FROM mgtcategory " .
               " WHERE compid=" . $idComponent .	
               " order by CATorder, id";
-  	$resultCAT = do_mysql_query($sqlCAT);
-	while ($myrowCAT = mysql_fetch_array($resultCAT))
+  	$resultCAT = do_sql_query($sqlCAT);
+	while ($myrowCAT = $GLOBALS['db']->fetch_array($resultCAT))
 	{   
 		print_category($myrowCAT);
 		generate_product_TCs($myrowCAT['id']);
@@ -291,8 +291,8 @@ function getTPcomponent($compID)
   		   " WHERE mgtcompid=mgtcomponent.id " .
   		   " AND component.id=" . $compID;
 
-  $res = do_mysql_query($sql);
-  $myrow = mysql_fetch_assoc($res);
+  $res = do_sql_query($sql);
+  $myrow = $GLOBALS['db']->fetch_array($res);
   return $myrow;
 }
 
@@ -308,8 +308,8 @@ function getTPcategory($catID)
 	       " AND category.id=" . $catID . 
 			   " ORDER BY mgtcategory.CATorder, category.id";
 	
-	$res = do_mysql_query($sql);
-	$myrow = mysql_fetch_assoc($res);
+	$res = do_sql_query($sql);
+	$myrow = $GLOBALS['db']->fetch_array($res);
 	return $myrow;
 }
 
@@ -325,8 +325,8 @@ if($_GET['type'] == 'product')
 	    $sqlMGTCOM = "SELECT  id,name,intro,scope,ref,method,lim, prodid" .
 	    		         " FROM mgtcomponent WHERE  mgtcomponent.prodid=" . 
 	    		         $_SESSION['productID'] . " ORDER BY mgtcomponent.name" ;
-	  	$resultMGTCOM = do_mysql_query($sqlMGTCOM);
-	  	while($myrowCOM = mysql_fetch_assoc($resultMGTCOM))
+	  	$resultMGTCOM = do_sql_query($sqlMGTCOM);
+	  	while($myrowCOM = $GLOBALS['db']->fetch_array($resultMGTCOM))
 		{ 
 			//display components until we run out
 			print_component($myrowCOM);
@@ -381,8 +381,8 @@ if($_GET['type'] == 'testSet')
 	    		   " AND component.projid=" . $_SESSION['testPlanId'] . 
 				     " ORDER BY mgtcomponent.name";
 
-		$resultCOM = do_mysql_query($sql);
-		while($myrow = mysql_fetch_array($resultCOM))
+		$resultCOM = do_sql_query($sql);
+		while($myrow = $GLOBALS['db']->fetch_array($resultCOM))
 		{ 
 			//display components until we run out
 			print_component($myrow);

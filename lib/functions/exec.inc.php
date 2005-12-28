@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: exec.inc.php,v $
  *
- * @version $Revision: 1.18 $
- * @modified $Date: 2005/11/19 23:07:39 $ $Author: schlundus $
+ * @version $Revision: 1.19 $
+ * @modified $Date: 2005/12/28 07:34:55 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -40,10 +40,10 @@ function buildsNumber($tpID=0)
 	$buildCount=0;
 	if ($tpID)
 	{
-		$result = do_mysql_query($sql);
+		$result = do_sql_query($sql);
 		if ($result)
 		{
-			$myrow = mysql_fetch_assoc($result);
+			$myrow = $GLOBALS['db']->fetch_array($result);
 			$buildCount = $myrow['num_builds'];
 		}
 	}
@@ -97,11 +97,11 @@ function filterKeyword($idPlan)
 
 function buildKeyWordArray($sqlKeyword)
 {
-	$resultKeyword = do_mysql_query($sqlKeyword);
+	$resultKeyword = do_sql_query($sqlKeyword);
 	
 	//Loop through each of the testcases
 	$keyArray = null;
-	while ($myrowKeyword = mysql_fetch_row($resultKeyword))
+	while ($myrowKeyword = $GLOBALS['db']->fetch_array($resultKeyword))
 	{
 		//schlundus: csvsplit and merging arrays was too slow, so we simple make a big list of the different keyword lists
 		$keyArray .= $myrowKeyword[0].",";
@@ -156,20 +156,20 @@ function editTestResults($login_name, $tcData, $buildID)
 {
 	global $g_bugInterfaceOn, $g_tc_status;
 	
-	// $build = mysql_escape_string($build);
+	// $build = $GLOBALS['db']->prepare_string($build);
 
 	$num_tc = count($tcData['tc']);
 	
 	for ($idx=0; $idx < $num_tc; $idx++ )
 	{
 		$tcID = $tcData['tc'][$idx];
-		$tcNotes = mysql_escape_string(trim($tcData['notes'][$idx])); 
-		$tcStatus = mysql_escape_string($tcData['status'][$idx]); 
+		$tcNotes = $GLOBALS['db']->prepare_string(trim($tcData['notes'][$idx])); 
+		$tcStatus = $GLOBALS['db']->prepare_string($tcData['status'][$idx]); 
 
 		$tcBugs = '';
 		if ($g_bugInterfaceOn)
 		{
-			$tcBugs = isset($tcData['bugs'][$idx]) ? mysql_escape_string($tcData['bugs'][$idx]) : ''; 
+			$tcBugs = isset($tcData['bugs'][$idx]) ? $GLOBALS['db']->prepare_string($tcData['bugs'][$idx]) : ''; 
 		}
 
 		// Does exist a result for this (tcid, build) ?
@@ -178,21 +178,21 @@ function editTestResults($login_name, $tcData, $buildID)
 		       " AND build_id=" . $buildID;
 
 	  
-		$result = do_mysql_query($sql); 
-		$num = mysql_num_rows($result); 
+		$result = do_sql_query($sql); 
+		$num = $GLOBALS['db']->num_rows($result); 
 
 
 		if($num == 1)
 		{ 
 			// We will only update the results if (notes, status) information has changed ...
-			$myrow = mysql_fetch_assoc($result);
+			$myrow = $GLOBALS['db']->fetch_array($result);
 			if(! ($myrow['notes'] == $tcNotes && $myrow['status'] == $tcStatus) )
 			{
 				$sql = " UPDATE results " .
 				       " SET runby ='" . $login_name . "', " . "status ='" .  $tcStatus . "', " .
 				       " notes='" . $tcNotes . "' " .
 						   " WHERE tcid=" . $tcID . " AND build_id=" . $buildID;
-				$result = do_mysql_query($sql); 
+				$result = do_sql_query($sql); 
 			}
     }
     else
@@ -203,7 +203,7 @@ function editTestResults($login_name, $tcData, $buildID)
 				$sql = " INSERT INTO results (build_id,daterun,status,tcid,notes,runby) " .
 				       " VALUES (" . $buildID . ",CURRENT_DATE(),'" . $tcStatus . 
 				       "'," . $tcID . ",'" . $tcNotes . "','" . $login_name . "')";
-				$result = do_mysql_query($sql);
+				$result = do_sql_query($sql);
       }  
     }
     // -------------------------------------------------------------------------
@@ -212,7 +212,7 @@ function editTestResults($login_name, $tcData, $buildID)
     // -------------------------------------------------------------------------
     // Update Bug information (delete+insert) 
 	  $sqlDelete = "DELETE FROM bugs WHERE tcid=" . $tcID . " and build_id=" . $buildID;
-	  $result = do_mysql_query($sqlDelete);
+	  $result = do_sql_query($sqlDelete);
 
 	  $bugArray = strlen($tcBugs) ?  explode(",",$tcBugs) : null;
 	  $counter = 0;
@@ -222,7 +222,7 @@ function editTestResults($login_name, $tcData, $buildID)
 
 		  $sql = "INSERT INTO bugs (tcid,build_id,bug) VALUES (" . $tcID . ",'" . 
 			  	   $buildID . "','" . $bugArray[$counter] . "')";
-		  $result = do_mysql_query($sql); 
+		  $result = do_sql_query($sql); 
 		  $counter++;
 	  }
     // -------------------------------------------------------------------------
@@ -241,7 +241,6 @@ function editTestResults($login_name, $tcData, $buildID)
  * @return array $arrTC
  *
  * @author Francisco Mancardi
- * from mysql_fetch_row -> mysq_fetch_assoc
  * refactoring removing global coupling (Test Plan ID)
  *
  * @author Andreas Morsing - removed unnecessary code
@@ -250,7 +249,7 @@ function createTestInput($resultTC,$buildID,$tpID)
 {
 	global $g_bugInterfaceOn,$g_tc_status;;
 	$arrTC = array();
-	while ($myrow = mysql_fetch_assoc($resultTC))
+	while ($myrow = $GLOBALS['db']->fetch_array($resultTC))
 	{ 
 
 		//display all the test cases until we run out
@@ -272,9 +271,9 @@ function createTestInput($resultTC,$buildID,$tpID)
            " WHERE tcid=" . $myrow['tcid'] .
 		       " AND build_id=" . $buildID;
     
-		$resultStatus = do_mysql_query($sql);
+		$resultStatus = do_sql_query($sql);
 		
-		$dataStatus = mysql_fetch_row($resultStatus);
+		$dataStatus = $GLOBALS['db']->fetch_array($resultStatus);
 
 		//This query grabs the most recent result
 		$sqlRecentResult = " SELECT build.name AS build_name,status,runby,daterun " .
@@ -283,8 +282,8 @@ function createTestInput($resultTC,$buildID,$tpID)
 				               " AND results.build_id = build.id " .
 				               " AND projid = " . $tpID ." ORDER by build.id " .	"DESC limit 1";
 				               
-		$dataRecentResult = do_mysql_query($sqlRecentResult);
-		$rowRecent = mysql_fetch_assoc($dataRecentResult);
+		$dataRecentResult = do_sql_query($sqlRecentResult);
+		$rowRecent = $GLOBALS['db']->fetch_array($dataRecentResult);
 		
 		//routine that collect the test cases bugs.
 		//Check to see if the user is using a bug system
@@ -297,10 +296,10 @@ function createTestInput($resultTC,$buildID,$tpID)
 			//sql code to grab the appropriate bugs for the test case and build
 			//2005118 - scs - fix for 227
 			$sqlBugs = "SELECT bug,name FROM bugs,build WHERE bugs.build_id = build.id AND tcid='" . $myrow['tcid'] . "' ";
-			$resultBugs = do_mysql_query($sqlBugs);
+			$resultBugs = do_sql_query($sqlBugs);
 			
 			//For each bug that is found
-			while ($myrowBugs = mysql_fetch_assoc($resultBugs))
+			while ($myrowBugs = $GLOBALS['db']->fetch_array($resultBugs))
 			{ 
 				if (!is_null($resultBugList))
 				{

@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: sqlParser.class.php,v 1.2 2005/08/16 17:59:48 franciscom Exp $ */
+/* $Id: sqlParser.class.php,v 1.3 2005/12/28 07:34:54 franciscom Exp $ */
 // File: sqlParser.class.php
 //       MySQL Dump Parser
 //
@@ -57,9 +57,9 @@ class SqlParser {
       if( strlen($sql_dodo) > 0 )
       {
   			$num = $num + 1;
-  			mysql_query($sql_do, $this->conn);
-  			if(mysql_error()) {
-  				$this->mysqlErrors[] = array("error" => mysql_error(), "sql" => $sql_do);
+  			do_sql_query($sql_do, $this->conn);
+  			if($GLOBALS['db']->error_msg()) {
+  				$this->mysqlErrors[] = array("error" => $GLOBALS['db']->error_msg(), "sql" => $sql_do);
   				$this->installFailed = true;
   			}
 			}

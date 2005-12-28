@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: containerComp.inc.php,v 1.4 2005/10/13 19:26:36 schlundus Exp $ */
+/* $Id: containerComp.inc.php,v 1.5 2005/12/28 07:34:55 franciscom Exp $ */
 /* Purpose:  This page manages all the editing of test specification containers. */
 /*
  *
@@ -80,7 +80,7 @@ function copy_or_move_comp( $action, $compID, $prodID ,$hash, $login_name, $copy
 				$kw = $keyArray[$i];
 				if (strlen($keyList))
 					$keyList .= "','";
-				$keyList .= mysql_escape_string($kw);
+				$keyList .= $GLOBALS['db']->prepare_string($kw);
 			}
 			$sqlKeyword = "SELECT keyword,notes from keywords where keyword IN ('{$keyList}') AND prodID = {$prodID}";
 			$kwData = selectData($sqlKeyword);

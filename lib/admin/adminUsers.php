@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: adminUsers.php,v $
  *
- * @version $Revision: 1.6 $
- * @modified $Date: 2005/12/27 11:16:12 $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2005/12/28 07:34:54 $
  *
  * @author Martin Havlat
  *
@@ -44,7 +44,7 @@ if($bEditUser)
 					$sqlRes = lang_get('updated');
 				}	
 				else
-					$sqlRes = lang_get('invalid_query') . mysql_error();
+					$sqlRes = lang_get('invalid_query') . $GLOBALS['db']->error_msg();
 			}
 			else
 				$sqlRes = lang_get('invalid_user_name') . "\n" . 

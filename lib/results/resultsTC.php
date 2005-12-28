@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsTC.php,v 1.6 2005/10/24 19:35:00 schlundus Exp $ 
+* $Id: resultsTC.php,v 1.7 2005/12/28 07:34:55 franciscom Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -41,10 +41,10 @@ $sql = " SELECT MGTCOMP.name AS comp_name, MGTCAT.name as cat_name, TC.title, TC
 		   " AND TC.catid=CAT.id" .
   	   " AND TP.id=" . $_SESSION['testPlanId'];
 
-$result = do_mysql_query($sql);
+$result = do_sql_query($sql);
 $bRights = has_rights("tp_execute") && !$xls;
 
-while ($myrow = mysql_fetch_assoc($result))
+while ($myrow = $GLOBALS['db']->fetch_array($result))
 { //Cycle through all of the test cases
 	$container = null;
 	$container[] = htmlspecialchars($myrow['comp_name'] . ' / ' . $myrow['cat_name']);

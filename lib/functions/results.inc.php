@@ -2,8 +2,8 @@
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: results.inc.php,v $
- * @version $Revision: 1.23 $
- * @modified $Date: 2005/12/27 11:16:35 $   $Author: franciscom $
+ * @version $Revision: 1.24 $
+ * @modified $Date: 2005/12/28 07:34:55 $   $Author: franciscom $
  * 
  * @author 	Martin Havlat 
  * @author 	Chad Rosen (original report definition)
@@ -52,8 +52,8 @@ function getStatus($tcId, $buildID)
 {
 	$sql = " SELECT status FROM results WHERE results.tcid=" . $tcId . 
 	       " AND results.build_id=" . $buildID;
-	$result = do_mysql_query($sql);
-	$myrow = mysql_fetch_assoc($result);
+	$result = do_sql_query($sql);
+	$myrow = $GLOBALS['db']->fetch_array($result);
 	return $myrow['status'];
 }
 
@@ -93,8 +93,8 @@ function getPlanTCNumber($tpID)
 	$sql = "SELECT count(testcase.id) FROM  project,component,category,testcase WHERE " .
 			"project.id =" . $tpID . " AND project.id = component.projid " .
 			"and component.id = category.compid and category.id = testcase.catid";
-	$sumResult = do_mysql_query($sql);
-	$sumTCs = mysql_fetch_row($sumResult); 
+	$sumResult = do_sql_query($sql);
+	$sumTCs = $GLOBALS['db']->fetch_array($sumResult); 
 
 	return $sumTCs[0];
 }
@@ -151,20 +151,20 @@ function getPlanStatus($tpID, $buildID)
 
 	//Get the total # of passed testcases for the project and build
 	$sql = $base_sql . " AND status = '" . $g_tc_status['passed'] . "'";
-	$passedResult = do_mysql_query($sql);
-	$passedTCs = mysql_fetch_row($passedResult);
+	$passedResult = do_sql_query($sql);
+	$passedTCs = $GLOBALS['db']->fetch_array($passedResult);
 	$totalPassed = $passedTCs[0];
 
 	//Get the total # of failed testcases for the project
 	$sql = $base_sql . " AND status = '" . $g_tc_status['failed'] . "'";
-	$failedResult = do_mysql_query($sql);
-	$failedTCs = mysql_fetch_row($failedResult);
+	$failedResult = do_sql_query($sql);
+	$failedTCs = $GLOBALS['db']->fetch_array($failedResult);
 	$totalFailed = $failedTCs[0];
 
 	//Get the total # of blocked testcases for the project
 	$sql = $base_sql . " AND status = '" . $g_tc_status['blocked'] . "'";
-	$blockedResult = do_mysql_query($sql);
-	$blockedTCs = mysql_fetch_row($blockedResult);
+	$blockedResult = do_sql_query($sql);
+	$blockedTCs = $GLOBALS['db']->fetch_array($blockedResult);
 	$totalBlocked = $blockedTCs[0];
 
   // 20051002 - fm - assoc
@@ -198,9 +198,9 @@ function getTestSuiteReport($tpID, $buildID = 'all')
 	       " WHERE MGTCOMP.id = COMP.mgtcompid " .
 	       " AND COMP.projid = " . $tpID;
 
-	$result = do_mysql_query($sql);
+	$result = do_sql_query($sql);
 
-	while ($myrow = mysql_fetch_assoc($result)) {
+	while ($myrow = $GLOBALS['db']->fetch_array($result)) {
 
 		$testCaseArray = null;
 		$sql = " SELECT COUNT(TC.id) " .
@@ -211,7 +211,7 @@ function getTestSuiteReport($tpID, $buildID = 'all')
 				   " AND COMP.id=" . $myrow['comp_id']; 
 				
 		// 20050901 - MHT - used generalication
-		$totalTCs = do_mysql_selectOne($sql);
+		$totalTCs = do_sql_selectOne($sql);
 
     // ------------------------------------------------------------------------------
 		//Code to grab the results of the test case execution
@@ -234,10 +234,10 @@ function getTestSuiteReport($tpID, $buildID = 'all')
   	}
   	// ------------------------------------------------------------------------------
   	
-		$totalResult = do_mysql_query($sql);
+		$totalResult = do_sql_query($sql);
 
 		//Setting the results to an array.. Only taking the most recent results and displaying them
-		while($totalRow = mysql_fetch_assoc($totalResult)){
+		while($totalRow = $GLOBALS['db']->fetch_array($totalResult)){
 			// This is a test.. I've got a problem if the user goes and sets a previous p,f,b 
 			// value to a 'n' value. 
 			// The program then sees the most recent value as an not run. 
@@ -303,11 +303,11 @@ function getKeywordsReport($tpID, $buildID = 'all')
 	$sqlKeyword = "SELECT DISTINCT(keywords) FROM component, category, testcase WHERE" .
 			" component.projid = " .  $tpID . " AND component.id = category.compid" .
 			" AND category.id = testcase.catid ORDER BY keywords";
-	$resultKeyword = do_mysql_query($sqlKeyword);
+	$resultKeyword = do_sql_query($sqlKeyword);
 
 	//Loop through each of the testcases
 	$keyArray = null;
-	while ($myrowKeyword = mysql_fetch_row($resultKeyword))
+	while ($myrowKeyword = $GLOBALS['db']->fetch_array($resultKeyword))
 	{
 		$keyArray .= $myrowKeyword[0].",";
 	}
@@ -328,13 +328,13 @@ function getKeywordsReport($tpID, $buildID = 'all')
 				
 			//Code to grab the entire amount of test cases per project
 			$keyWord = $word;
-			$word = mysql_escape_string($word);
+			$word = $GLOBALS['db']->prepare_string($word);
 			$sql = " SELECT count(testcase.id) FROM  project,component,category,testcase " .
 			       " WHERE project.id = " . $tpID . " AND project.id = component.projid " .
 			       " AND component.id = category.compid AND category.id = testcase.catid AND " .
 			       " (testcase.keywords LIKE '%,{$word},%' OR testcase.keywords LIKE '{$word},%')";
-			$totalTCResult = do_mysql_query($sql);
-			$totalTCs = mysql_fetch_row($totalTCResult);
+			$totalTCResult = do_sql_query($sql);
+			$totalTCs = $GLOBALS['db']->fetch_array($totalTCResult);
 
 			//Code to grab the results of the test case execution
 
@@ -361,10 +361,10 @@ function getKeywordsReport($tpID, $buildID = 'all')
 					" AND category.id = testcase.catid AND testcase.id = results.tcid" .
 					" AND (keywords LIKE '%,{$word},%' OR keywords LIKE '{$word},%')";
 			}
-			$totalResult = do_mysql_query($sql);
+			$totalResult = do_sql_query($sql);
 
 			//Setting the results to an array.. Only taking the most recent results and displaying them
-			while($totalRow = mysql_fetch_assoc($totalResult)){
+			while($totalRow = $GLOBALS['db']->fetch_array($totalResult)){
 
 				//This is a test.. I've got a problem if the user goes and sets a 
 				//previous p,f,b value to a 'n' value. 
@@ -429,16 +429,16 @@ function getOwnerReport($tpID)
 	$sql = " SELECT category.owner, category.id FROM  project,component, category " .
 	       " WHERE project.id = " . $tpID . " and project.id = component.projid " .
 	       " AND component.id = category.compid group by owner";
-	$result = do_mysql_query($sql);
+	$result = do_sql_query($sql);
 
-	while ($myrow = mysql_fetch_row($result)) {
+	while ($myrow = $GLOBALS['db']->fetch_array($result)) {
 		//Code to grab the entire amount of test cases per project
 		$sql = " SELECT count(testcase.id) FROM  project,component,category,testcase " .
 		       " WHERE project.id =" . $tpID . " AND project.id = component.projid " .
 		       " AND category.owner ='" . $myrow[0] . "' and component.id = category.compid " .
 		       " AND category.id = testcase.catid";
-		$totalTCResult = do_mysql_query($sql);
-		$totalTCs = mysql_fetch_row($totalTCResult);
+		$totalTCResult = do_sql_query($sql);
+		$totalTCs = $GLOBALS['db']->fetch_array($totalTCResult);
 		$csBuilds = get_cs_builds($tpID);
 		//Code to grab the results of the test case execution
 		$sql = " SELECT tcid,status FROM  results,project,component,category,testcase " .
@@ -448,10 +448,10 @@ function getOwnerReport($tpID)
 				   " AND results.build_id IN (" . $csBuilds . " ) ORDER BY build_id";
 		  	     
 
-		$totalResult = do_mysql_query($sql);
+		$totalResult = do_sql_query($sql);
 
 		//Setting the results to an array.. Only taking the most recent results and displaying them
-		while($totalRow = mysql_fetch_assoc($totalResult)){
+		while($totalRow = $GLOBALS['db']->fetch_array($totalResult)){
 			//This is a test.. 
 			// I've got a problem if the user goes and sets a previous p,f,b value to a 'n' value.
 			// The program then sees the most recent value as an not run.
@@ -541,9 +541,9 @@ function getPriorityReport($tpID, $buildID = 'all')
 			   " FROM project,component, category WHERE project.id = " .  $tpID . 
 			   " AND project.id = component.projid " .
 			   " AND component.id = category.compid";
-	$result = do_mysql_query($sql);
+	$result = do_sql_query($sql);
 	
-	while ($myrow = mysql_fetch_array($result)) {
+	while ($myrow = $GLOBALS['db']->fetch_array($result)) {
 	
 		$testCaseArray = null;
 
@@ -554,8 +554,8 @@ function getPriorityReport($tpID, $buildID = 'all')
 		$sql = "SELECT count(testcase.id) FROM component,category,testcase WHERE " .
 				"component.projid = " . $tpID . " AND category.id=" . 
 				$myrow[1] .	" AND component.id = category.compid AND category.id = testcase.catid";
-		$totalTCResult = do_mysql_query($sql);
-		$totalTCs = mysql_fetch_array($totalTCResult);
+		$totalTCResult = do_sql_query($sql);
+		$totalTCs = $GLOBALS['db']->fetch_array($totalTCResult);
 	
 		//Code to grab the results of the test case execution
 		if ($buildID == 'all'){
@@ -575,9 +575,9 @@ function getPriorityReport($tpID, $buildID = 'all')
 				" AND component.id = category.compid AND category.id = testcase.catid" .
 				" AND testcase.id = results.tcid";
 		}
-		$totalResult = do_mysql_query($sql);
+		$totalResult = do_sql_query($sql);
 		//Setting the results to an array.. Only taking the most recent results and displaying them
-		while($totalRow = mysql_fetch_assoc($totalResult)){
+		while($totalRow = $GLOBALS['db']->fetch_array($totalResult)){
 	
 			if($totalRow['status'] != $g_tc_status['not_run']){
 				$testCaseArray[$totalRow['tcid']] = $totalRow['status'];
@@ -634,13 +634,13 @@ function getPriorityReport($tpID, $buildID = 'all')
 	$sql = " SELECT name,date,A,B,C FROM milestone " .
 	       " WHERE projid=" . $tpID . " AND to_days(date) >= to_days(now()) " .
 			   " order by date limit 1";
-	$result = do_mysql_query($sql); //Run the query
-	$numRows = mysql_num_rows($result); //How many rows
+	$result = do_sql_query($sql); //Run the query
+	$numRows = $GLOBALS['db']->num_rows($result); //How many rows
 	
 	//Check to see if there are any milestone rows
 	if($numRows > 0){
 	
-		$currentMilestone = mysql_fetch_row($result);
+		$currentMilestone = $GLOBALS['db']->fetch_array($result);
 	
 		$myResults['milestone'] = $currentMilestone[0];
 		$myResults['deadline'] = $currentMilestone[1];
@@ -715,10 +715,10 @@ function getBuildMetricsCategory($tpID, $buildID)
 		     " AND MGTCOMP.id = COMP.mgtcompid " .
 		     " AND TP.id = " . $tpID;
 
-	$result = do_mysql_query($sql);
+	$result = do_sql_query($sql);
 
 
-	while ($myrow = mysql_fetch_assoc($result)) 
+	while ($myrow = $GLOBALS['db']->fetch_array($result)) 
 	{
 		
 		$categoryQuery = " SELECT MGTCAT.name AS cat_name, CAT.id AS cat_id, risk, importance " .
@@ -730,9 +730,9 @@ function getBuildMetricsCategory($tpID, $buildID)
 		                 " AND COMP.id =" . $myrow['comp_id'];
 
 		
-		$categoryResult = do_mysql_query($categoryQuery);
+		$categoryResult = do_sql_query($categoryQuery);
 	
-		while ($categoryRow = mysql_fetch_array($categoryResult)) {
+		while ($categoryRow = $GLOBALS['db']->fetch_array($categoryResult)) {
 			
 						$catAllSql = " SELECT count(TC.id) AS num_tc " .
 			             " FROM project TP , component COMP, category CAT, testcase TC" .
@@ -744,8 +744,8 @@ function getBuildMetricsCategory($tpID, $buildID)
 			             " AND CAT.id=" . $categoryRow['cat_id'];
              
 			             
-			$catTotalResult = do_mysql_query($catAllSql);
-			$totalRow = mysql_fetch_row($catTotalResult);
+			$catTotalResult = do_sql_query($catAllSql);
+			$totalRow = $GLOBALS['db']->fetch_array($catTotalResult);
 			
 			// 20050425 - fm
 			$base_sql = " SELECT count(testcase.id) " .
@@ -762,18 +762,18 @@ function getBuildMetricsCategory($tpID, $buildID)
 			
 			//Passed TCs per category
 			$sql = $base_sql . " AND results.status='" . $g_tc_status['passed'] ."'";
-			$passedResult = do_mysql_query($sql);
-			$passedRow = mysql_fetch_row($passedResult);
+			$passedResult = do_sql_query($sql);
+			$passedRow = $GLOBALS['db']->fetch_array($passedResult);
 	
 			//Failed TCs per category
 			$sql = $base_sql . " and results.status='" . $g_tc_status['failed'] ."'";
-			$failedResult = do_mysql_query($sql);
-			$failedRow = mysql_fetch_row($failedResult);
+			$failedResult = do_sql_query($sql);
+			$failedRow = $GLOBALS['db']->fetch_array($failedResult);
 
 			//Blocked TCs per category
 			$sql = $base_sql . " and results.status='" . $g_tc_status['blocked'] ."'";
-			$blockedResult = do_mysql_query($sql);
-			$blockedRow = mysql_fetch_row($blockedResult);
+			$blockedResult = do_sql_query($sql);
+			$blockedRow = $GLOBALS['db']->fetch_array($blockedResult);
 	
 	
 			//Not Run TCs per category
@@ -821,9 +821,9 @@ function getBuildMetricsComponent($tpID,$buildID)
 		     " AND TP.id = " . $tpID;
 			
 			
-	$result = do_mysql_query($sql);
+	$result = do_sql_query($sql);
 
-	while ($myrow = mysql_fetch_assoc($result)) 
+	while ($myrow = $GLOBALS['db']->fetch_array($result)) 
 	{
 		$componentName = $myrow['comp_name'];
 	
@@ -836,8 +836,8 @@ function getBuildMetricsComponent($tpID,$buildID)
 			     " AND COMP.id =" . $myrow['comp_id'];
 
 	
-		$totalResult = do_mysql_query($sql);
-		$totalRow = mysql_fetch_assoc($totalResult);
+		$totalResult = do_sql_query($sql);
+		$totalRow = $GLOBALS['db']->fetch_array($totalResult);
 		
 		//Passed TCs per component
 		$base_sql = " SELECT count(testcase.id) " .
@@ -851,18 +851,18 @@ function getBuildMetricsComponent($tpID,$buildID)
 		            " AND results.build_id=" . $buildID;
 		
 		$sql = $base_sql .  " and results.status='" . $g_tc_status['passed'] . "'";
-		$passedResult = do_mysql_query($sql);
-		$passedRow = mysql_fetch_row($passedResult);
+		$passedResult = do_sql_query($sql);
+		$passedRow = $GLOBALS['db']->fetch_array($passedResult);
 	
 		//Failed TCs per component
 		$sql = $base_sql .  " and results.status='" . $g_tc_status['failed'] . "'";
-		$failedResult = do_mysql_query($sql);
-		$failedRow = mysql_fetch_row($failedResult);
+		$failedResult = do_sql_query($sql);
+		$failedRow = $GLOBALS['db']->fetch_array($failedResult);
 	
 		//Blocked TCs per component
 		$sql = $base_sql .  " and results.status='" . $g_tc_status['blocked'] . "'";
-		$blockedResult = do_mysql_query($sql);
-		$blockedRow = mysql_fetch_row($blockedResult);
+		$blockedResult = do_sql_query($sql);
+		$blockedRow = $GLOBALS['db']->fetch_array($blockedResult);
 
 		//Not Run TCs per component
 		$notRun = $totalRow['num_tc'] - ($passedRow[0] + $failedRow[0] + $blockedRow[0]);
@@ -910,13 +910,13 @@ function getBugsReport($tpID, $buildID = 'all')
 			   " ORDER BY TC.id";
 			   
 			   
-	$result = do_mysql_query($sql);
+	$result = do_sql_query($sql);
 	
-	while ($myrow = mysql_fetch_assoc($result)) {
+	while ($myrow = $GLOBALS['db']->fetch_array($result)) {
 		$bugString = null;
 		$sqlBugs = "SELECT bug FROM bugs WHERE tcid=" . $myrow['id'];
-		$resultBugs = do_mysql_query($sqlBugs);
-		while ($myrowBug = mysql_fetch_row($resultBugs))
+		$resultBugs = do_sql_query($sqlBugs);
+		while ($myrowBug = $GLOBALS['db']->fetch_array($resultBugs))
 		{
 			if (!is_null($bugString))
 			{
@@ -978,10 +978,10 @@ function listTPComponent($tpID)
 			      " WHERE COMP.projid=TP.id " .
 			      " AND MGTCOMP.id=COMP.mgtcompid " .
 			      " AND TP.id=" . $tpID;
-	$result = do_mysql_query($sqlCom);
+	$result = do_sql_query($sqlCom);
 
 	//Build the options for the select box			
-	while ($myrow = mysql_fetch_assoc($result)){
+	while ($myrow = $GLOBALS['db']->fetch_array($result)){
 		$suites[$myrow['id']] = $myrow['name'];
 	}
 	return $suites;
@@ -1036,8 +1036,8 @@ function reportBuildStatus($tpID, $buildID,$buildName)
 	       " FROM project,component,category,testcase WHERE project.id =" . $tpID . 
 	       " AND project.id = component.projid AND component.id = category.compid AND category.id = testcase.catid";
 	       
-	$sumResult = do_mysql_query($sql);
-	$sumTCs = mysql_fetch_row($sumResult); 
+	$sumResult = do_sql_query($sql);
+	$sumTCs = $GLOBALS['db']->fetch_array($sumResult); 
 	$total = $sumTCs[0];
 
 	$base_sql = "SELECT count(results.tcid) " .
@@ -1053,20 +1053,20 @@ function reportBuildStatus($tpID, $buildID,$buildName)
   
 	//Get the total # of passed testcases for the project and build
 	$sql = $base_sql . " AND status ='" . $g_tc_status['passed'] . "'";
-	$passedResult = do_mysql_query($sql);
-	$passedTCs = mysql_fetch_row($passedResult);
+	$passedResult = do_sql_query($sql);
+	$passedTCs = $GLOBALS['db']->fetch_array($passedResult);
 	$totalPassed = $passedTCs[0];
 
 	//Get the total # of failed testcases for the project
 	$sql = $base_sql . " AND status ='" . $g_tc_status['failed'] . "'";
-	$failedResult = do_mysql_query($sql);
-	$failedTCs = mysql_fetch_row($failedResult);
+	$failedResult = do_sql_query($sql);
+	$failedTCs = $GLOBALS['db']->fetch_array($failedResult);
 	$totalFailed = $failedTCs[0];
 
 	//Get the total # of blocked testcases for the project
 	$sql = $base_sql . " AND status ='" . $g_tc_status['blocked'] . "'";
-	$blockedResult = do_mysql_query($sql);
-	$blockedTCs = mysql_fetch_row($blockedResult);
+	$blockedResult = do_sql_query($sql);
+	$blockedTCs = $GLOBALS['db']->fetch_array($blockedResult);
 	$totalBlocked = $blockedTCs[0];
 
 	//total # of testcases not run
@@ -1096,8 +1096,8 @@ function reportSuiteBuildStatus($tpID, $comID, $buildID,$buildName)
 	       " AND project.id = component.projid AND component.id = category.compid AND " .
 	       " category.id = testcase.catid and component.id=" . $comID;
 	       
-	$sumResult = do_mysql_query($sql);
-	$sumTCs = mysql_fetch_row($sumResult); 
+	$sumResult = do_sql_query($sql);
+	$sumTCs = $GLOBALS['db']->fetch_array($sumResult); 
 	$total = $sumTCs[0];
 
 	//Get the total # of passed testcases for the project and build
@@ -1114,20 +1114,20 @@ function reportSuiteBuildStatus($tpID, $comID, $buildID,$buildName)
 	            
 	
 	$sql = $base_sql . " AND status ='" . $g_tc_status['passed'] . "'";
-	$passedResult = do_mysql_query($sql);
-	$passedTCs = mysql_fetch_row($passedResult);
+	$passedResult = do_sql_query($sql);
+	$passedTCs = $GLOBALS['db']->fetch_array($passedResult);
 	$totalPassed = $passedTCs[0];
 
 	//Get the total # of failed testcases for the project
 	$sql = $base_sql . " AND status ='" . $g_tc_status['failed'] . "'";
-	$failedResult = do_mysql_query($sql);
-	$failedTCs = mysql_fetch_row($failedResult);
+	$failedResult = do_sql_query($sql);
+	$failedTCs = $GLOBALS['db']->fetch_array($failedResult);
 	$totalFailed = $failedTCs[0];
 
 	//Get the total # of blocked testcases for the project
 	$sql = $base_sql . " AND status ='" . $g_tc_status['blocked'] . "'";
-	$blockedResult = do_mysql_query($sql);
-	$blockedTCs = mysql_fetch_row($blockedResult);
+	$blockedResult = do_sql_query($sql);
+	$blockedTCs = $GLOBALS['db']->fetch_array($blockedResult);
 	$totalBlocked = $blockedTCs[0];
 
 	//total # of testcases not run
@@ -1143,8 +1143,8 @@ function reportSuiteBuildStatus($tpID, $comID, $buildID,$buildName)
 
 	
 	
-	$resultCOMName = do_mysql_query($sqlCOMName);
-	$COMName = mysql_fetch_assoc($resultCOMName);
+	$resultCOMName = do_sql_query($sqlCOMName);
+	$COMName = $GLOBALS['db']->fetch_array($resultCOMName);
 
 	$msgBody = lang_get("trep_status_for_ts") . " " . $COMName['comp_name'] . " in Build: " . $buildName . "\n\n";
 	$msgBody .= lang_get("trep_total").": " . $total . "\n";
@@ -1169,8 +1169,8 @@ function reportSuiteStatus($tpID, $comID)
 	       " AND component.id=" . $comID . " AND project.id = component.projid " .
 	       " AND component.id = category.compid AND category.id = testcase.catid";
 	       
-	$totalTCResult = do_mysql_query($sql);
-	$totalTCs = mysql_fetch_row($totalTCResult);
+	$totalTCResult = do_sql_query($sql);
+	$totalTCs = $GLOBALS['db']->fetch_array($totalTCResult);
 
 	//Code to grab the results of the test case execution
 	//
@@ -1183,10 +1183,10 @@ function reportSuiteStatus($tpID, $comID)
 	       " AND category.id = testcase.catid AND testcase.id = results.tcid " .
 	       " ORDER BY build_id";
 	       
-	$totalResult = do_mysql_query($sql);
+	$totalResult = do_sql_query($sql);
 
 	//Setting the results to an array.. Only taking the most recent results and displaying them
-	while($totalRow = mysql_fetch_row($totalResult))	{
+	while($totalRow = $GLOBALS['db']->fetch_array($totalResult))	{
 		if($totalRow[1] != $g_tc_status['not_run']){
 			$testCaseArray[$totalRow[0]] = $totalRow[1];
 		}
@@ -1224,8 +1224,8 @@ function reportSuiteStatus($tpID, $comID)
 
 	
 	
-	$resultCOMName = do_mysql_query($sqlCOMName);
-	$COMName = mysql_fetch_assoc($resultCOMName);
+	$resultCOMName = do_sql_query($sqlCOMName);
+	$COMName = $GLOBALS['db']->fetch_array($resultCOMName);
 
 	$msgBody = lang_get("trep_status_for_ts") .": ". $COMName['comp_name'] . "\n\n";
 	$msgBody .= lang_get("trep_total").": " . $totalTCs[0] . "\n";
@@ -1251,7 +1251,7 @@ function getLastResult($idSuiteTC)
 	
 	$sql = "SELECT status FROM results WHERE tcid = " . $idSuiteTC . " AND status <> '" . 
 				$g_tc_status['not_run'] . "' ORDER BY results.build_id DESC LIMIT 1";
-	$result = do_mysql_selectOne($sql);
+	$result = do_sql_selectOne($sql);
 
 	// add not run result if any other result is not available
 	if (is_null($result))

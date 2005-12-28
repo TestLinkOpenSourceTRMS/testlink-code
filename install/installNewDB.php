@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: installNewDB.php,v 1.17 2005/12/19 11:30:05 franciscom Exp $ */
+/* $Id: installNewDB.php,v 1.18 2005/12/28 07:34:54 franciscom Exp $ */
 /*
 Parts of this file has been taken from:
 Etomite Content Management System
@@ -142,7 +142,7 @@ echo "</b><br />Creating connection to Database Server:<b> ";
 if(!@$conn = mysql_connect($db_server, $db_admin_name, $db_admin_pass)) 
 {
 	echo '<span class="notok">Failed!</span><p />Please check the database login details and try again.';
-	echo '<br>MySQL Error Message: ' . mysql_error() . "<br>";
+	echo '<br>MySQL Error Message: ' . $GLOBALS['db']->error_msg() . "<br>";
 	
 	close_html_and_exit();
 } 
@@ -204,11 +204,11 @@ if($create)
   // 20050826 - fm
   // BUGID Mantis: 0000073: DB Creation fails with no message
   $sql_create = "CREATE DATABASE " . $db . " CHARACTER SET utf8 "; 
-	if(!@mysql_query($sql_create, $conn)) 
+	if(!@do_sql_query($sql_create, $conn)) 
 	{
 		// 20051005 MHT	More comments
 		echo "<span class='notok'>Failed!</span></b> - Could not create database: $db! " .
-			mysql_error();
+			$GLOBALS['db']->error_msg();
 		$errors += 1;
 		
 		echo "<p> TestLink setup could not create the database, " .
@@ -229,10 +229,10 @@ if($create)
 if ($inst_type == "upgrade" )
 {
 
-  $check_passwd_type = mysql_query("SELECT password FROM user");
+  $check_passwd_type = do_sql_query("SELECT password FROM user");
   if (!$check_passwd_type) 
   {
-     echo 'Could not run query: ' . mysql_error();
+     echo 'Could not run query: ' . $GLOBALS['db']->error_msg();
      exit;
   }
   $pwd_field_len = mysql_field_len($check_passwd_type, 0);
@@ -258,14 +258,14 @@ if ( $inst_type == "upgrade")
   {
     // try to guess TL version
     $sql = "SHOW TABLES FROM {$db} LIKE 'db_version' ";
-    $res = mysql_query($sql);
+    $res = do_sql_query($sql);
     
     if (!$res)
     {
-      echo "MySQL ERROR:" . mysql_error();
+      echo "MySQL ERROR:" . $GLOBALS['db']->error_msg();
       exit(); 
     }
-    if( mysql_num_rows($res) == 0 )
+    if( $GLOBALS['db']->num_rows($res) == 0 )
     {
       // We are upgrading from a pre 1.6 version
   	  $sql_upd_dir = 'sql/alter_tables/1.5_to_1.6/';
@@ -276,13 +276,13 @@ if ( $inst_type == "upgrade")
       // try to know what db version is installed
       $sql = "SELECT * FROM db_version ORDER BY upgrade_date DESC LIMIT 1";
     
-      $res = mysql_query($sql);  
+      $res = do_sql_query($sql);  
       if (!$res)
       {
-       echo "MySQL ERROR:" . mysql_error();
+       echo "MySQL ERROR:" . $GLOBALS['db']->error_msg();
        exit(); 
       }
-      $myrow = mysql_fetch_assoc($res);
+      $myrow = $GLOBALS['db']->fetch_array($res);
       
       if ( strcmp(trim($myrow['version']), '1.6 BETA 1') == 0 )
       {
@@ -396,7 +396,7 @@ if ($update_pwd)
   // due to case sensitive on table name. (USER)
 
 	$user_pwd = "UPDATE user SET password=MD5(password)";
-	$result = mysql_query($user_pwd);
+	$result = do_sql_query($user_pwd);
 }
 
 

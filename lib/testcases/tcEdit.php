@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.13 $
- * @modified $Date: 2005/10/17 20:11:27 $  by $Author: schlundus $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2005/12/28 07:34:55 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
  * @author Martin Havlat
@@ -156,7 +156,7 @@ else if($bUpdateTC)
 		$sqlResult = 'ok';
 		if (!updateTestcase($testcaseID,$title,$summary,$steps,$outcome,$_SESSION['user'],$updatedKeywords,$version))
 		{
-			$sqlResult =  mysql_error();
+			$sqlResult =  $GLOBALS['db']->error_msg();
 		}
 	}	
 
@@ -192,7 +192,7 @@ else if($bDeleteTC)
 		if (deleteTestcase($testcaseID))
 			$smarty->assign('sqlResult', 'ok');
 	   	else
-			$smarty->assign('sqlResult', mysql_error());
+			$smarty->assign('sqlResult', $GLOBALS['db']->error_msg());
 	}
 	$smarty->assign('testcaseID', $testcaseID);
 	$smarty->display('tcDelete.tpl');

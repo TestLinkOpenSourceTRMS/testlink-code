@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: execNavigator.php,v $
  *
- * @version $Revision: 1.12 $
- * @modified $Date: 2005/10/16 01:23:31 $ by $Author: kevinlevy $
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2005/12/28 07:34:55 $ by $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -92,7 +92,8 @@ $smarty->display('execNavigator.tpl');
 */
 function generateExecTree($build,$purl_to_help,&$menuUrl,$tcIDFilter = null)
 {
-	global	$dtreeCounter;
+	global $dtreeCounter;
+	global $db; 
 	
 	//If the user submits the sorting form
 	$keyword = 'All';
@@ -141,14 +142,14 @@ function generateExecTree($build,$purl_to_help,&$menuUrl,$tcIDFilter = null)
 			   " ORDER BY mgtcomponent.name";
 			   
 			   
-	$comResult = do_mysql_query($sql);
+	$comResult = do_sql_query($sql);
 	
 	$bKeyWordAll = ($keyword == 'All');
-	$keyword = mysql_escape_string($keyword);
+	$keyword = $GLOBALS['db']->prepare_string($keyword);
 	$bOwnerAll = ($owner == 'All');
-	$owner = mysql_escape_string($owner);
+	$owner = $GLOBALS['db']->prepare_string($owner);
 	
-	while ($myrowCOM = mysql_fetch_row($comResult)) { //display all the components until we run out
+	while ($myrowCOM = $GLOBALS['db']->fetch_array($comResult)) { //display all the components until we run out
 
 		//right now only categories are sorted by owners. This means that the entire component
 		//will still show up if the user has decided to sort.
@@ -171,10 +172,10 @@ function generateExecTree($build,$purl_to_help,&$menuUrl,$tcIDFilter = null)
 		$catSql .=	" ORDER BY mgtcategory.CATorder,category.id";
 		
 		
-		$catResult = do_mysql_query($catSql);
+		$catResult = do_sql_query($catSql);
 
 		//check to see if there are any rows returned from the component query
-		$numRowsCAT = mysql_num_rows($catResult);
+		$numRowsCAT = $GLOBALS['db']->num_rows($catResult);
 
 		if($numRowsCAT > 0)
 		{
@@ -190,7 +191,7 @@ function generateExecTree($build,$purl_to_help,&$menuUrl,$tcIDFilter = null)
 				$menustring .= "tlTree.add(" . $dtreeCounter++. ",0,'" . $componentName . "','" . 
 				               $menuUrl . "&level=component&id=" . $myrowCOM[0] . "');\n";
 			}
-			while ($myrowCAT = mysql_fetch_row($catResult))
+			while ($myrowCAT = $GLOBALS['db']->fetch_array($catResult))
 			{  //display all the categories until we run out
 					
 				//This next section displays test cases. 
@@ -209,8 +210,8 @@ function generateExecTree($build,$purl_to_help,&$menuUrl,$tcIDFilter = null)
 				}	
 				$TCsql .= " ORDER BY TCorder,testcase.mgttcid";				
 
-				$TCResult = do_mysql_query($TCsql); //run the query
-				$numRowsTC = mysql_num_rows($TCResult); //count the rows
+				$TCResult = do_sql_query($TCsql); //run the query
+				$numRowsTC = $GLOBALS['db']->num_rows($TCResult); //count the rows
 				if($numRowsTC > 0) //if there are actually test cases
 				{
 					//grab the test case info for this category
@@ -265,7 +266,7 @@ function displayTCTree($TCResult, $build, $owner, $colored, $menuUrl, $filteredR
 	$bFilteredResultAll = ($filteredResult == 'all');
 	$tcIDs = null;
 	$tcInfo = null;
-	while ($myrowTC = mysql_fetch_row($TCResult))
+	while ($myrowTC = $GLOBALS['db']->fetch_array($TCResult))
 	{
 		$name = $myrowTC[1];
 		$tcID = $myrowTC[0];
@@ -301,9 +302,9 @@ function displayTCTree($TCResult, $build, $owner, $colored, $menuUrl, $filteredR
 			$sqlResult .= " AND build_id = " . $build;
 		}
 		
-		$sqlBuildResult = do_mysql_query($sqlResult);
+		$sqlBuildResult = do_sql_query($sqlResult);
 		//I need the num results so I can do the check below on not run test cases
-		while($myrowTC = mysql_fetch_row($sqlBuildResult))
+		while($myrowTC = $GLOBALS['db']->fetch_array($sqlBuildResult))
 		{
 			$tcID = $myrowTC[0];
 			$status = $myrowTC[1];
@@ -381,8 +382,8 @@ function catCount($catID,$colored,$build)
 	$sql = " SELECT count(testcase.id) AS num_tc from category,testcase " .
 	       " WHERE category.id=" . $catID . 
 	       " AND category.id = testcase.catid";
-	$totalTCResult = do_mysql_query($sql);
-	$totalTCs = mysql_fetch_assoc($totalTCResult);
+	$totalTCResult = do_sql_query($sql);
+	$totalTCs = $GLOBALS['db']->fetch_array($totalTCResult);
 	
 	if($colored == 'result') //if they did then use these queries
 	{
@@ -404,10 +405,10 @@ function catCount($catID,$colored,$build)
 		  " AND (results.build_id IN (" . $csBuilds . " )) " . 
 		       " AND   category.id=" . $catID . 
 		       " ORDER BY build.name DESC";
-		$totalResult = do_mysql_query($sql);
+		$totalResult = do_sql_query($sql);
 
 		//Setting the results to an array.. Only taking the most recent results and displaying them
-		while($totalRow = mysql_fetch_assoc($totalResult))
+		while($totalRow = $GLOBALS['db']->fetch_array($totalResult))
 		{
 			//This is a test.. I've got a problem if the user goes and sets a previous p,f,b 
 			// value to a 'n' value. The program then sees the most recent value as an not run. 
@@ -452,7 +453,7 @@ function catCount($catID,$colored,$build)
 		       " AND category.id=" . $catID . 
 		       " AND results.build_id=" . $build . 
 		       " GROUP BY results.status";
-		$result = do_mysql_query($sql);
+		$result = do_sql_query($sql);
 	
 		$values[$g_tc_status['passed']] = 0;
 		$values[$g_tc_status['failed']] = 0;
@@ -460,7 +461,7 @@ function catCount($catID,$colored,$build)
 		$values[$g_tc_status['not_run']] = 0;
 		if ($result)
 		{
-			while($row = mysql_fetch_assoc($result))
+			while($row = $GLOBALS['db']->fetch_array($result))
 			{
 				$values[$row['status']] = $row['num_tc'];
 			}	

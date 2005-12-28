@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: logging.inc.php,v $
  *
- * @version $Revision: 1.6 $
- * @modified $Date: 2005/10/17 20:11:27 $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2005/12/28 07:34:55 $
  *
  * @author Martin Havlat
  *
@@ -173,28 +173,37 @@ function tlTimingCurrent ($name = 'default')
  * @author Andreas Morsing
  * 20050905 - scs - added overall duration
  **/
-function do_mysql_query($query,$resource = null)
+function do_sql_query($query, $resource = null)
 {
+	global $db;
+	$my_db = $db;
+	
 	static $nQuery = 0;
 	static $overallDuration = 0;
 	
 	$nQuery++;
 	//execute query and profile execution time
-	tlTimingStart('mysqlquery');
+	tlTimingStart('do_sql_query');
 	if (!is_null($resource))
-		$result = mysql_query($query,$resource);
-	else
-		$result = mysql_query($query);
-	tlTimingStop('mysqlquery');
-	$duration = tlTimingCurrent('mysqlquery');
+	{
+	  $my_db=$resource;
+	  	
+	}	
+	$result = $my_db->exec_query($query);
+
+		
+	tlTimingStop('do_sql_query');
+	$duration = tlTimingCurrent('do_sql_query');
 	$overallDuration += $duration;
+	
 	//build loginfo
 	$logLevel = 'DEBUG';
 	$message = "SQL [".$nQuery."] executed [took {$duration} secs][all took {$overallDuration} secs]:\n\t".$query;
+	
 	if (!$result)
 	{
-		$ec = $resource ? mysql_errno($resource) : mysql_errno();
-		$emsg = $resource ? mysql_error($resource) : mysql_error();
+		$ec       = $my_db->error_num;
+		$emsg     = $my_db->error_msg;
 		$message .= "\nQuery failed: errorcode[".$ec."]". "\n\terrormsg:".$emsg;
 		$logLevel = 'ERROR';
 	}

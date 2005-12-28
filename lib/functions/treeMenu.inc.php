@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: treeMenu.inc.php,v $
  *
- * @version $Revision: 1.7 $
- * @modified $Date: 2005/11/19 23:07:39 $ by $Author: schlundus $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2005/12/28 07:34:55 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * 	This file generates tree menu for test specification and test execution.
@@ -144,11 +144,11 @@ function generateTestSpecTree($prodID, $prodName, $linkto, $hidetc, $getArgument
 			            " AND mgtproduct.id=" . $prodID;
 			
 			
-	$resultProdCount = do_mysql_query($sqlProdCount);
+	$resultProdCount = do_sql_query($sqlProdCount);
 	$prodCount = 0;
 	if ($resultProdCount)
 	{
-		$prodCount = mysql_fetch_assoc($resultProdCount);
+		$prodCount = $GLOBALS['db']->fetch_array($resultProdCount);
 	}
 		
 	
@@ -174,9 +174,9 @@ function generateTestSpecTree($prodID, $prodName, $linkto, $hidetc, $getArgument
 	$sqlCOM = " SELECT id, name from mgtcomponent " .
 	          " WHERE prodid=" . $prodID . 
 	          " ORDER BY name";
-	$resultCOM = do_mysql_query($sqlCOM);
+	$resultCOM = do_sql_query($sqlCOM);
 		
-	while ($myrowCOM = mysql_fetch_row($resultCOM)) //loop through all Components
+	while ($myrowCOM = $GLOBALS['db']->fetch_array($resultCOM)) //loop through all Components
 	{
 		// Queries to determine how many total test cases there are by Component. 
 		// The number is then displayed next to the component
@@ -185,8 +185,8 @@ function generateTestSpecTree($prodID, $prodName, $linkto, $hidetc, $getArgument
 		               " WHERE mgtcomponent.id=mgtcategory.compid " .
 		               " AND mgtcategory.id=mgttestcase.catid " .
 		               " AND mgtcomponent.id=" . $myrowCOM[0];
-		$resultCOMCount = do_mysql_query($sqlCOMCount);
-		$COMCount = mysql_fetch_row($resultCOMCount);
+		$resultCOMCount = do_sql_query($sqlCOMCount);
+		$COMCount = $GLOBALS['db']->fetch_array($resultCOMCount);
 
 		$componentName = filterString($myrowCOM[1]);
 		$sItemName = $componentName . " (" . $COMCount[0] . ")";
@@ -212,9 +212,9 @@ function generateTestSpecTree($prodID, $prodName, $linkto, $hidetc, $getArgument
 		$sqlCAT = " SELECT id, name from mgtcategory " .  
 		          " WHERE compid=" . $myrowCOM[0] . 
 		          " ORDER BY CATorder,id";		
-		$resultCAT = do_mysql_query($sqlCAT);
+		$resultCAT = do_sql_query($sqlCAT);
 
-		while ($myrowCAT = mysql_fetch_row($resultCAT)) //loop through all Categories
+		while ($myrowCAT = $GLOBALS['db']->fetch_array($resultCAT)) //loop through all Categories
 		{
 			//Queries to determine how many total test cases there are by Category. 
 			//The number is then displayed next to the Category
@@ -223,8 +223,8 @@ function generateTestSpecTree($prodID, $prodName, $linkto, $hidetc, $getArgument
 			               " WHERE mgtcategory.id=mgttestcase.catid " .
 			               " AND mgtcategory.id=" . $myrowCAT[0];
 			               
-			$resultCATCount = do_mysql_query($sqlCATCount);
-			$CATCount = mysql_fetch_row($resultCATCount);
+			$resultCATCount = do_sql_query($sqlCATCount);
+			$CATCount = $GLOBALS['db']->fetch_array($resultCATCount);
 	
 			$categoryName = filterString($myrowCAT[1]) . " (" . $CATCount[0] . ")";
 			
@@ -250,9 +250,9 @@ function generateTestSpecTree($prodID, $prodName, $linkto, $hidetc, $getArgument
 				//Parse Test Cases
 				$sqlTC = "SELECT id, title FROM mgttestcase WHERE catid=" . $myrowCAT[0] . 
 				         " ORDER BY TCorder,id";
-				$resultTC = do_mysql_query($sqlTC);
+				$resultTC = do_sql_query($sqlTC);
 
-				while ($myrowTC = mysql_fetch_row($resultTC)) //loop through all Test cases
+				while ($myrowTC = $GLOBALS['db']->fetch_array($resultTC)) //loop through all Test cases
 				{
 					$tcName = filterString($myrowTC[1]);
 					
@@ -334,9 +334,9 @@ function generateTestSuiteTree($linkto, $hidetc, $getArguments = '')
 			   " AND project.id = " . $_SESSION['testPlanId'] . 
 			   " ORDER BY mgtcomponent.name";
 	   
-	$comResult = do_mysql_query($sql);
+	$comResult = do_sql_query($sql);
 
-	while ($myrowCOM = mysql_fetch_assoc($comResult)) { 
+	while ($myrowCOM = $GLOBALS['db']->fetch_array($comResult)) { 
 
 		$componentName = filterString($myrowCOM['name']);
 		if (TL_TREE_KIND == 'LAYERSMENU') 
@@ -359,9 +359,9 @@ function generateTestSuiteTree($linkto, $hidetc, $getArguments = '')
 				  " AND component.id = " . $myrowCOM['id'] . 
 				  " ORDER BY mgtcategory.CATorder,category.id";
 		
-		$catResult = do_mysql_query($sql);
+		$catResult = do_sql_query($sql);
 			
-		while ($myrowCAT = mysql_fetch_assoc($catResult)) {  //display all the categories until we run out
+		while ($myrowCAT = $GLOBALS['db']->fetch_array($catResult)) {  //display all the categories until we run out
 
 			$categoryName = filterString($myrowCAT['name']);
 			if (TL_TREE_KIND == 'LAYERSMENU') 
@@ -385,9 +385,9 @@ function generateTestSuiteTree($linkto, $hidetc, $getArguments = '')
 				       " AND category.id = " . 	$myrowCAT['id'] . 
 				       " ORDER BY TCorder,testcase.mgttcid";
 
-				$TCResult = do_mysql_query($sql);
+				$TCResult = do_sql_query($sql);
 
-				while ($myrowTC = mysql_fetch_assoc($TCResult)) 
+				while ($myrowTC = $GLOBALS['db']->fetch_array($TCResult)) 
 				{  
 					$tcName = filterString($myrowTC['title']);
 					if (TL_TREE_KIND == 'LAYERSMENU')

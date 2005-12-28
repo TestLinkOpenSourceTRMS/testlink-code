@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: print.inc.php,v $
- * @version $Revision: 1.7 $
- * @modified $Date: 2005/11/26 13:27:25 $ by $Author: schlundus $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2005/12/28 07:34:55 $ by $Author: franciscom $
  *
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
@@ -21,8 +21,8 @@
 function getAuthor($userID)
 {
     $sql = "SELECT first,last,login FROM user WHERE id=" . $userID;
-    $result = do_mysql_query($sql);
-    $myrow = mysql_fetch_assoc($result);
+    $result = do_sql_query($sql);
+    $myrow = $GLOBALS['db']->fetch_array($result);
     
     $ret_val = $myrow['first'] . ' ' . $myrow['last'];
     if (strlen(trim($ret_val)) == 0 )

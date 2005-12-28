@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: searchData.php,v 1.5 2005/10/10 19:18:25 schlundus Exp $ */
+/* $Id: searchData.php,v 1.6 2005/12/28 07:34:55 franciscom Exp $ */
 /* Purpose:  This page presents the search results. 
  *
  * 
@@ -22,12 +22,12 @@ if(!$_POST['submit'])
 
 $_POST = strings_stripSlashes($_POST);
 //Assign the values of the posts to variables
-$title = isset($_POST['title']) ? mysql_escape_string($_POST['title']) : null;
-$summary = isset($_POST['summary']) ? mysql_escape_string($_POST['summary']) : null;
-$steps = isset($_POST['steps']) ? mysql_escape_string($_POST['steps']) : null;
-$exresult = isset($_POST['exresult']) ? mysql_escape_string($_POST['exresult']) : null;
-$key = isset($_POST['key']) ? mysql_escape_string($_POST['key']) : null;
-$TCID = isset($_POST['TCID']) ? mysql_escape_string($_POST['TCID']) : 0;
+$title = isset($_POST['title']) ? $GLOBALS['db']->prepare_string($_POST['title']) : null;
+$summary = isset($_POST['summary']) ? $GLOBALS['db']->prepare_string($_POST['summary']) : null;
+$steps = isset($_POST['steps']) ? $GLOBALS['db']->prepare_string($_POST['steps']) : null;
+$exresult = isset($_POST['exresult']) ? $GLOBALS['db']->prepare_string($_POST['exresult']) : null;
+$key = isset($_POST['key']) ? $GLOBALS['db']->prepare_string($_POST['key']) : null;
+$TCID = isset($_POST['TCID']) ? $GLOBALS['db']->prepare_string($_POST['TCID']) : 0;
 
 $product = isset($_SESSION['productID']) ? $_SESSION['productID'] : 0;
 if ($product)
@@ -52,9 +52,9 @@ if ($product)
 		$sqlTC .= " AND (keywords LIKE '%,{$key},%' OR keywords like '{$key},%')";
 	}	
 	$sqlTC .= " ORDER BY title";
-	$result = do_mysql_query($sqlTC);
+	$result = do_sql_query($sqlTC);
 	
-	while ($row = mysql_fetch_assoc($result))
+	while ($row = $GLOBALS['db']->fetch_array($result))
 	{
 		$row['keywords'] = substr($row['keywords'], 0, -1);
 		array_push($arrTc, $row);

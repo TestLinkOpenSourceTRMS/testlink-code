@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: index.php,v $
  *
- * @version $Revision: 1.6 $
- * @modified $Date: 2005/11/19 23:07:35 $ by $Author: schlundus $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2005/12/28 07:34:54 $ by $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -18,6 +18,8 @@
  * @author Francisco Mancardi - 20050806 - Installer
 **/
 //200508 MHT - moved code to procedure
+global $db;
+
 require_once('lib/functions/configCheck.php');
 checkConfiguration();
 
@@ -33,16 +35,17 @@ $pwd = isset($_POST['password']) ? $_POST['password'] : null;
 
 if (!is_null($login))
 {
-	$op = doDBConnect();
+	$op = doDBConnect($db);
 	
 	if ($op['status'])
+	{
 		doAuthorize($login,$pwd);
+	}	
 	else
 	{
 		$smarty = new TLSmarty();
 		$smarty->assign('title', lang_get('fatal_page_title'));
 		$smarty->assign('content', $op['dbms_msg']);
-		// MHT 200507 corrected template filename
 		$smarty->display('workAreaSimple.tpl');  
 		exit();
 	}

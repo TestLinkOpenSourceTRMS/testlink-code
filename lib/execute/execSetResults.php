@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.16 $
- * @modified $Date: 2005/11/19 23:07:38 $ $Author: schlundus $
+ * @version $Revision: 1.17 $
+ * @modified $Date: 2005/12/28 07:34:55 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -40,7 +40,7 @@ $owner = isset($_REQUEST['owner']) ? $_REQUEST['owner'] : '';
 $keyword = 'All';
 if( isset($_REQUEST['keyword']) )
 {
-	$keyword = mysql_escape_string($keyword);
+	$keyword = $GLOBALS['db']->prepare_string($keyword);
 }
 if (isset($_REQUEST['submitTestResults']))
 {
@@ -85,7 +85,7 @@ else
 }
 if (!is_null($sql))
 {
-	$result = do_mysql_query($sql,$db);
+	$result = do_sql_query($sql,$db);
 	$testdata = createTestInput($result,$buildID,$tpID);				
 }	
 // ---------------------------------------------------------------------------------------	

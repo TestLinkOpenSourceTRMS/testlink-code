@@ -3,8 +3,8 @@
  * TestLink Open Source Project - @link http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: plan.core.inc.php,v $
- * @version $Revision: 1.19 $
- * @modified $Date: 2005/12/27 11:17:45 $ $Author: franciscom $
+ * @version $Revision: 1.20 $
+ * @modified $Date: 2005/12/28 07:34:55 $ $Author: franciscom $
  *  
  * 
  * @author 	Martin Havlat
@@ -76,23 +76,23 @@ function getTestPlans($productID, $userID, $filter_by_product=0)
 	
 	$sql .= " ORDER BY name";
 			           
-	$result = do_mysql_query($sql);
+	$result = do_sql_query($sql);
 
 	if ($result) {
-    	$testplanCount = mysql_num_rows($result);
+    	$testplanCount = $GLOBALS['db']->num_rows($result);
 	} else {
 		  $testplanCount = 0;
 	}
 	if($testplanCount > 0) {
 
       $cAvailablePlans = 0;  // count the available plans
-      while ($myrow = mysql_fetch_row($result))
+      while ($myrow = $GLOBALS['db']->fetch_array($result))
       {
         //Block of code will determines if the user has the appropriate rights to view available projects
         $sqlProjRights = "select projid from projrights where userid=" . $userID . 
                          " and projid=" . $myrow[0];
-        $projRightsResult = do_mysql_query($sqlProjRights);
-        $myrowProjRights = mysql_fetch_row($projRightsResult);
+        $projRightsResult = do_sql_query($sqlProjRights);
+        $myrowProjRights = $GLOBALS['db']->fetch_array($projRightsResult);
 
         //If the user has the rights to the project/test plan show it
         if($myrowProjRights[0] == $myrow[0])
@@ -136,13 +136,18 @@ function getTestPlans($productID, $userID, $filter_by_product=0)
  */
 function getCountTestPlans4User($userID)
 {
-	$sql = "SELECT count(project.id) FROM project,projrights WHERE active=1" .  
-			" AND projid=project.id AND userid=" . $userID;
-	$result = do_mysql_query($sql);
+	$sql = " SELECT count(project.id) AS num_tp 
+	         FROM project,projrights WHERE active=1  
+			     AND projid=project.id AND userid=" . $userID;
+	$result = do_sql_query($sql);
 	
-	if ($result){
-		return mysql_result($result, 0);
-	} else {
+	if ($result)
+	{
+	  $row = $GLOBALS['db']->fetch_array($result);
+		return($row['num_tp']);
+	} 
+	else 
+	{
 		return null;
 	}
 }
@@ -165,8 +170,9 @@ function getCountTestPlans4UserProd($userID,$prodID=null)
 {
 	global $g_show_tp_without_prodid;
 	
-	$sql = "SELECT count(project.id) FROM project,projrights WHERE active=1" .  
-		   " AND projid=project.id AND userid=" . $userID;
+	$sql = " SELECT count(project.id) AS num_tp
+	         FROM project,projrights WHERE active=1   
+		       AND projid=project.id AND userid=" . $userID;
 	
 	//20051015 - am - removed negation of $prodID		   
 	if ($prodID)
@@ -179,11 +185,16 @@ function getCountTestPlans4UserProd($userID,$prodID=null)
 			$sql .= " OR project.prodid=0";
 		}  	
 	}		   
-	$result = do_mysql_query($sql);
+	$result = do_sql_query($sql);
 	
-	if ($result){
-		return mysql_result($result, 0);
-	} else {
+	if ($result)
+	{
+		$row = $GLOBALS['db']->fetch_array($result);
+		return($row['num_tp']);
+
+	} 
+	else 
+	{
 		return null;
 	}
 }
@@ -208,11 +219,11 @@ function getTestPlanUsers($tpID)
 	$sql .= " FROM user,projrights 
 	          WHERE user.id = projrights.userid AND projid = {$tpID}";
              
-	$result = do_mysql_query($sql);
+	$result = do_sql_query($sql);
 	if ($result)
 	{
 		$data = null;
-		while($rowUser = mysql_fetch_assoc($result))
+		while($rowUser = $GLOBALS['db']->fetch_array($result))
 		{
 			$data[$rowUser['id']] = $rowUser['login'];
 			if ($show_realname)
@@ -326,7 +337,7 @@ function dispCategories($idPlan, $keyword, $resultCat)
 {
 	$arrData = array();
 	
-	while($rowCAT = mysql_fetch_array($resultCat))
+	while($rowCAT = $GLOBALS['db']->fetch_array($resultCat))
 	{ 
 		$arrTestCases = array();					
 		$idCAT = $rowCAT[0];
@@ -340,7 +351,7 @@ function dispCategories($idPlan, $keyword, $resultCat)
 		//Check the keyword that the user has submitted.
 		if($keyword != 'NONE')
 		{
-			$keyword = mysql_escape_string($keyword);
+			$keyword = $GLOBALS['db']->prepare_string($keyword);
 			//keywordlist always have a trailing slash, so there are only two cases to consider 
 			//the keyword is the first in the list
 			//or its in the middle of list 		 
@@ -348,9 +359,9 @@ function dispCategories($idPlan, $keyword, $resultCat)
 		}
 		$sqlTC .= " ORDER BY TCorder,id";
 
-		$resultTC = do_mysql_query($sqlTC);
+		$resultTC = do_sql_query($sqlTC);
 		
-		while($rowTC = mysql_fetch_array($resultTC))
+		while($rowTC = $GLOBALS['db']->fetch_array($resultTC))
 		{ 
 			//Display all test cases
 			$idTC = $rowTC['id']; 
@@ -364,8 +375,8 @@ function dispCategories($idPlan, $keyword, $resultCat)
 			            " WHERE mgttcid=" . $idTC . 
 			            " AND project.id=component.projid AND component.id=category.compid AND " .
 			            " category.id=testcase.catid AND project.id=" . $idPlan;
-			$checkResult = do_mysql_query($sqlCheck);
-			$checkRow = mysql_num_rows($checkResult);
+			$checkResult = do_sql_query($sqlCheck);
+			$checkRow = $GLOBALS['db']->num_rows($checkResult);
 			
 			array_push($arrTestCases, array( 'id' => $idTC, 'name' => $titleTC,
 											                 'added' => $checkRow));

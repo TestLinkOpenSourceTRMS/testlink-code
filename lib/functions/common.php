@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.25 $ $Author: schlundus $
- * @modified $Date: 2005/11/09 19:54:10 $
+ * @version $Revision: 1.26 $ $Author: franciscom $
+ * @modified $Date: 2005/12/28 07:34:55 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -40,6 +40,10 @@
  * 
  * @author: Asiel Brumfield - 20051012 - optimize sql queries
 **/ 
+
+// 20051227 - fm - ADODB
+require_once("database.class.php");
+
 require_once("getRights.php");
 require_once("product.core.inc.php");
 
@@ -58,35 +62,38 @@ $db = 0;
 *
 * @return assoc array
 *         aa['status'] = 1 -> OK , 0 -> KO
-*         aa['dbms_msg''] = 'ok', or mysql_error().
+*         aa['dbms_msg''] = 'ok', or $GLOBALS['db']->error_msg().
 *
 * 20050416 - fm
 * 
 */
-function doDBConnect()
+function doDBConnect(&$db)
 {
-	global $db;
+	// global $db;
 	
 	$result = array('status' => 1, 'dbms_msg' => 'ok');
-	$db = mysql_connect(DB_HOST, DB_USER, DB_PASS);
-	
-	if (!$db or !mysql_select_db(DB_NAME,$db) )
+	$db = New database(DB_TYPE);
+	$result = $db->connect(DSN, DB_HOST, DB_USER, DB_PASS, DB_NAME);
+
+	if (!$result['status'])
 	{
 		echo $result['dbms_msg'];
 		$result['status'] = 0;
-		$result['dbms_msg'] = mysql_error();
 		tLog('Connect to database fails!!! ' . $result['dbms_msg'], 'ERROR');
   	}
   	else
 	{
 		if (DB_SUPPORTS_UTF8)
 		{
-			$r = @do_mysql_query("SET CHARACTER SET utf8;");
-			$r = @do_mysql_query("SET collation_connection = 'utf8_general_ci';");
+			if(DB_TYPE == 'mysql')
+			{
+				$r = @$db->exec_query("SET CHARACTER SET utf8");
+				$r = @$db->exec_query("SET collation_connection = 'utf8_general_ci'");
+			}
 		}
 	}
 
-  	return $result;
+ 	return($result);
 }
 
 
@@ -381,7 +388,9 @@ function doSessionStart()
 */
 function testlinkInitPage($initProduct = FALSE, $bDontCheckSession = false)
 {
-	doDBConnect() or die("Could not connect to DB");
+	global $db;
+	doDBConnect($db) or die("Could not connect to DB");
+	
 	doSessionStart() or die("Could not start session");
 	setPaths();
 	set_dt_formats();
@@ -480,15 +489,15 @@ function strings_stripSlashes($parameter,$bGPC = true)
 function selectData($sql)
 {
 	$output = null;
-	$result = do_mysql_query($sql);
+	$result = do_sql_query($sql);
 	
 	if ($result)
 	{
-		while($row = mysql_fetch_array($result))
+		while($row = $GLOBALS['db']->fetch_array($result))
 			$output[] = $row;
 	}
 	else
-		tLog('FAILED SQL: ' . $sql . "\n" . mysql_error(), 'ERROR');
+		tLog('FAILED SQL: ' . $sql . "\n" . $GLOBALS['db']->error_msg(), 'ERROR');
 	
 	return $output;
 }
@@ -502,16 +511,16 @@ function selectData($sql)
 function selectOptionData($sql)
 {
 	$output = null;
-	$result = do_mysql_query($sql);
+	$result = do_sql_query($sql);
 	
 	if ($result)
 	{
-		while($row = mysql_fetch_array($result))
+		while($row = $GLOBALS['db']->fetch_array($result))
 			$output[$row[0]] = $row[1];
 	}
 	else
 	{
-		tLog('FAILED SQL: ' . $sql . "\n" . mysql_error(), 'ERROR');
+		tLog('FAILED SQL: ' . $sql . "\n" . $GLOBALS['db']->error_msg(), 'ERROR');
 	}
 	
 	return $output;
@@ -524,17 +533,18 @@ function selectOptionData($sql)
  * @return string required value or null
  * @author havlatm
  */
-function do_mysql_selectOne($sql)
+function do_sql_selectOne($sql)
 {
 	$output = null;
-	
-	$result = do_mysql_query($sql);
+  	
+	$result = do_sql_query($sql);
 
 	// return null for error or no data
-	if ($result && (mysql_num_rows($result) > 0)) {
-		$output = mysql_result($result, 0);
+  if ($result && ($GLOBALS['db']->num_rows($result) > 0)) 
+  {
+		$row = $GLOBALS['db']->fetch_array($result);
+		$output = $row['0'];
 	}
-	
 	return $output;
 }
 

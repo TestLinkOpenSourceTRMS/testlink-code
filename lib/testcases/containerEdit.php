@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: containerEdit.php,v 1.20 2005/12/09 10:04:35 franciscom Exp $ */
+/* $Id: containerEdit.php,v 1.21 2005/12/28 07:34:55 franciscom Exp $ */
 /* Purpose:  This page manages all the editing of test specification containers. */
 /*
  *
@@ -161,7 +161,7 @@ else if($action == 'updateCOM')
 	  	                     $c_data['name'],$c_data['intro'],$c_data['scope'],
 	  		                   $c_data['ref'],$c_data['method'],$c_data['lim']))
 	  	{
-	  		$msg = mysql_error();
+	  		$msg = $GLOBALS['db']->error_msg();
 	  	}
 	}	
 	showComponent($my_componentID, $msg);
@@ -218,7 +218,7 @@ else if ($action == 'deleteCOM')
 		}
 		if (!deleteComponent($objectID))
 		{
-		  $smarty->assign('sqlResult', mysql_error());
+		  $smarty->assign('sqlResult', $GLOBALS['db']->error_msg());
 		}
 		
 		// 20051208 - fm 
@@ -302,7 +302,7 @@ else if($action == 'updateCat') // Update a category (from edit window)
 	{
 		$msg = updateCategory($my_categoryID,
 	                        $c_data['name'], $c_data['objective'],$c_data['config'],
-	                        $c_data['data'],$c_data['tools']) ? 'ok' : mysql_error();
+	                        $c_data['data'],$c_data['tools']) ? 'ok' : $GLOBALS['db']->error_msg();
 	}	
 	// display updated values
 	showCategory($my_categoryID, $msg);
@@ -313,7 +313,7 @@ else if ($action == 'deleteCat')
 	if($bSure)
 	{
 		deleteCategoriesTestCases($objectID);
-		$smarty->assign('sqlResult',  deleteCategory($objectID) ? 'ok' : mysql_error());
+		$smarty->assign('sqlResult',  deleteCategory($objectID) ? 'ok' : $GLOBALS['db']->error_msg());
 
 		// 20051208 - fm 
 		del_tp_info_by_mgtcat($objectID);
@@ -361,7 +361,7 @@ else if($action == 'updateTCorder')
 		$order = intval($newArray[$i]);
 		
 		if (!updateTestCaseOrder($id,$order))
-			$generalResult .= mysql_error() . '<br />';
+			$generalResult .= $GLOBALS['db']->error_msg() . '<br />';
 	}
 
 	$smarty->assign('sqlResult', $generalResult);

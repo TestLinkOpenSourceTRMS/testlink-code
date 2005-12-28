@@ -1,6 +1,6 @@
 <?
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: priority.inc.php,v 1.4 2005/09/21 10:32:00 franciscom Exp $ */
+/* $Id: priority.inc.php,v 1.5 2005/12/28 07:34:55 franciscom Exp $ */
 /**
  * Functions for Priority management 
  * Precondition: require init db + session verification done (testlinkInitPage();) 
@@ -28,9 +28,9 @@ function getPriority($tpID)
 	// 20050807 - fm
 	$sql = " SELECT id, riskImp, priority " .
 	       " FROM priority WHERE projid=" . $tpID;
-	$result = do_mysql_query($sql); //Run the query
+	$result = do_sql_query($sql); //Run the query
 
-	while($row = mysql_fetch_array($result)){
+	while($row = $GLOBALS['db']->fetch_array($result)){
 		array_push($arrData, array('id' => $row['id'], 'priority'=> $row['priority'],
 			'name'=>$row['riskImp']));
 	}
@@ -55,18 +55,18 @@ function setPriority($newArray)
 		
 		//SQL statement to look for the same record (tcid, build = tcid, build)
 		$sql = "SELECT id, priority FROM priority WHERE id='" . $priID . "'";
-		$result = do_mysql_query($sql); //Run the query
-		$num = mysql_num_rows($result); //How many results
+		$result = do_sql_query($sql); //Run the query
+		$num = $GLOBALS['db']->num_rows($result); //How many results
 		
 		if($num == 1){ //If we find a matching record
 	
-			$myrow = mysql_fetch_row($result);
+			$myrow = $GLOBALS['db']->fetch_array($result);
 			$queryPri = $myrow[1];
 	
 			//Update if different
 			if($queryPri != $priority) {
 				$sql = "UPDATE priority SET priority ='" . $priority . "' WHERE id='" . $priID . "'";
-				$result = do_mysql_query($sql);
+				$result = do_sql_query($sql);
 			}
 		}
 		$i = $i + 2; //Increment 

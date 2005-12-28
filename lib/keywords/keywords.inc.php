@@ -1,7 +1,7 @@
 <?
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* @version $Id: keywords.inc.php,v 1.12 2005/12/17 03:42:51 havlat Exp $
+* @version $Id: keywords.inc.php,v 1.13 2005/12/28 07:34:55 franciscom Exp $
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author	Chad Rosen
@@ -30,11 +30,11 @@ function selectKeywords($prodID, $selectedKey = '')
 	{	
 	  	//20050827 - scs - added sorting of keyword
 	  	$sql = "SELECT id,keyword,notes FROM keywords WHERE prodid = " . $prodID . " ORDER BY keyword ASC";
-	  	$result = do_mysql_query($sql);
+	  	$result = do_sql_query($sql);
 	  	
 	  	if ($result)
 	  	{
-	  		while ($myrow = mysql_fetch_assoc($result)) 
+	  		while ($myrow = $GLOBALS['db']->fetch_array($result)) 
 	  		{
 	  			// add selected string for an appropriate row
 	  			$selData = '';
@@ -55,10 +55,10 @@ function updateTCKeywords ($id, $arrKeywords)
 {
 	$keywords = null;
 	if ($arrKeywords)
-		$keywords = mysql_escape_string(implode(",",$arrKeywords).",");
+		$keywords = $GLOBALS['db']->prepare_string(implode(",",$arrKeywords).",");
 	
 	$sqlUpdate = "UPDATE mgttestcase SET keywords='" . $keywords ."' where id=".$id;
-	$resultUpdate = do_mysql_query($sqlUpdate);
+	$resultUpdate = do_sql_query($sqlUpdate);
 
  	// 200507 - MHT - SF1243285: TC version in TP is not incremented when keyword is added
  	if ($resultUpdate)
@@ -66,22 +66,22 @@ function updateTCKeywords ($id, $arrKeywords)
  		$sqlUpdate = "UPDATE testcase, mgttestcase SET testcase.keywords='" . $keywords .
  			"' WHERE testcase.version=mgttestcase.version AND testcase.mgttcid=" . $id .
  			" AND mgttestcase.id=" . $id;
- 		$resultUpdate = mysql_query($sqlUpdate);
+ 		$resultUpdate = do_sql_query($sqlUpdate);
  	}
 	
-	return $resultUpdate ? 'ok' : mysql_error();
+	return $resultUpdate ? 'ok' : $GLOBALS['db']->error_msg();
 }
 
 function updateCategoryKeywords ($id, $newKey)
 {
 	$sqlTC = "SELECT id,title FROM mgttestcase WHERE catid=" . $id;
-	$resultTC = do_mysql_query($sqlTC);
+	$resultTC = do_sql_query($sqlTC);
 	
 	$resultUpdate = null;
 	if ($resultTC)
 	{
 		// execute for all test cases of the category
-		while($rowTC = mysql_fetch_assoc($resultTC))
+		while($rowTC = $GLOBALS['db']->fetch_array($resultTC))
 		{ 
 			$resultAdd = addTCKeyword ($rowTC['id'], $newKey);
 			if ($resultAdd != 'ok')
@@ -91,7 +91,7 @@ function updateCategoryKeywords ($id, $newKey)
 	}
 	else
 	{
-		$resultUpdate = mysql_error();
+		$resultUpdate = $GLOBALS['db']->error_msg();
 	}
 	return $resultUpdate ? $resultUpdate : 'ok';
 }
@@ -100,13 +100,13 @@ function updateCategoryKeywords ($id, $newKey)
 function updateComponentKeywords ($id, $newKey)
 {
 	$sqlCat = "SELECT id AS cat_id FROM mgtcategory WHERE compid=" . $id;
-	$resultCat = do_mysql_query($sqlCat);
+	$resultCat = do_sql_query($sqlCat);
 	
 	$resultUpdate = null;
 	if ($resultCat)
 	{
 		// execute for all test cases of the category
-		while($rowCat = mysql_fetch_assoc($resultCat))
+		while($rowCat = $GLOBALS['db']->fetch_array($resultCat))
 		{ 
 			$resultAdd = updateCategoryKeywords($rowCat['cat_id'], $newKey);
 			if ($resultAdd != 'ok')
@@ -117,7 +117,7 @@ function updateComponentKeywords ($id, $newKey)
 	}
 	else
 	{
-		$resultUpdate = mysql_error();
+		$resultUpdate = $GLOBALS['db']->error_msg();
 	}
   
 	return $resultUpdate ? $resultUpdate : 'ok';
@@ -126,19 +126,19 @@ function updateComponentKeywords ($id, $newKey)
 function addTCKeyword($tcID, $newKey)
 {
 	$sqlTC = "SELECT keywords FROM mgttestcase where id=" . $tcID;
-	$resultUpdate = do_mysql_query($sqlTC);
+	$resultUpdate = do_sql_query($sqlTC);
 	if ($resultUpdate)
 	{
-		$oldKeys = mysql_fetch_assoc($resultUpdate);
+		$oldKeys = $GLOBALS['db']->fetch_array($resultUpdate);
 		$TCKeys = $oldKeys['keywords'];
 		// add newKey if is not included
 		$keys = explode(",",$TCKeys);
 		if (!in_array($newKey,$keys))
 		{
 			$TCKeys .= $newKey.",";
-			$TCKeys = mysql_escape_string($TCKeys);
+			$TCKeys = $GLOBALS['db']->prepare_string($TCKeys);
 			$sqlUpdate = "UPDATE mgttestcase SET keywords='".$TCKeys."' WHERE id=". $tcID;
-			$resultUpdate = do_mysql_query($sqlUpdate);
+			$resultUpdate = do_sql_query($sqlUpdate);
 
 	 		// 200507 - MHT - SF1243285: TC version in TP is not incremented when keyword is added
 	 		if ($resultUpdate)
@@ -146,12 +146,12 @@ function addTCKeyword($tcID, $newKey)
  				$sqlUpdate = "UPDATE testcase, mgttestcase SET testcase.keywords='" . $TCKeys .
  					"' WHERE testcase.version=mgttestcase.version AND testcase.mgttcid=" . $tcID .
  					" AND mgttestcase.id=" . $tcID;
- 				$resultUpdate = mysql_query($sqlUpdate);
+ 				$resultUpdate = do_sql_query($sqlUpdate);
  			}
 		}
 	}
 	
-	return $resultUpdate ? 'ok' : mysql_error();
+	return $resultUpdate ? 'ok' : $GLOBALS['db']->error_msg();
 }
 
 /**
@@ -184,7 +184,7 @@ function multiUpdateKeywords($prodID)
       $errorResult = lang_get('kw_deleted');
 			if ( !deleteKeyword($id) )
 			{
-				$errorResult = lang_get('kw_delete_fails'). ' : ' . mysql_error();
+				$errorResult = lang_get('kw_delete_fails'). ' : ' . $GLOBALS['db']->error_msg();
 			}	
 		}
 		else
@@ -238,13 +238,13 @@ function updateKeyword($prodID,$id,$keyword,$notes)
 
   if( $do_action )
   {
-		$sql = "UPDATE keywords SET notes='" . mysql_escape_string($notes) . "', keyword='" 
-			     . mysql_escape_string($my_kw) . "' where id=" . $id;
-	  $result = do_mysql_query($sql);
+		$sql = "UPDATE keywords SET notes='" . $GLOBALS['db']->prepare_string($notes) . "', keyword='" 
+			     . $GLOBALS['db']->prepare_string($my_kw) . "' where id=" . $id;
+	  $result = do_sql_query($sql);
 	  
 	  if (!$result)
 	  {
-			$ret['msg'] = mysql_error();
+			$ret['msg'] = $GLOBALS['db']->error_msg();
 			$ret['status_ok'] = 0;
 	  }
   }
@@ -256,7 +256,7 @@ function updateKeyword($prodID,$id,$keyword,$notes)
 function deleteKeyword($id)
 {
 	$sql = "DELETE FROM keywords WHERE id=" . $id;
-	$result = do_mysql_query($sql);
+	$result = do_sql_query($sql);
 	
 	return $result ? 1 : 0;
 }
@@ -289,11 +289,11 @@ function addNewKeyword($prodID,$keyword,$notes)
 	if ($do_action)
 	{
 		$sql =  " INSERT INTO keywords (keyword,prodid,notes) " .
-				" VALUES ('" . mysql_escape_string($my_kw) .	"'," . 
-				$prodID . ",'" . mysql_escape_string($notes) . "')";
+				" VALUES ('" . $GLOBALS['db']->prepare_string($my_kw) .	"'," . 
+				$prodID . ",'" . $GLOBALS['db']->prepare_string($notes) . "')";
 		
-		$result = do_mysql_query($sql);
-		$ret = trim(mysql_error());
+		$result = do_sql_query($sql);
+		$ret = trim($GLOBALS['db']->error_msg());
 		if(!strlen($ret))
 		{
 			$ret = 'ok';
@@ -308,11 +308,11 @@ function addNewKeyword($prodID,$keyword,$notes)
 function getTCKeywords($tcID)
 {
 	$sql = "SELECT keywords FROM mgttestcase WHERE id=" . $tcID;
-	$result = do_mysql_query($sql);
+	$result = do_sql_query($sql);
 	$keywords = array();
 	if ($result)
 	{
-		if ($row = mysql_fetch_assoc($result))
+		if ($row = $GLOBALS['db']->fetch_array($result))
 		{
 			$keywords = explode(",",$row['keywords']);
 		}	
@@ -331,7 +331,7 @@ function getProductKeywords($prodID,$searchKW = null,$kwID = null)
 	
 	if (!is_null($searchKW))
 	{
-		$sql .= " AND keyword = '".mysql_escape_string($searchKW)."'";
+		$sql .= " AND keyword = '".$GLOBALS['db']->prepare_string($searchKW)."'";
 	}
 	if (!is_null($kwID))
 	{
@@ -339,11 +339,11 @@ function getProductKeywords($prodID,$searchKW = null,$kwID = null)
 	}
 	$sql .= " ORDER BY keyword ASC";
 	
-	$result = do_mysql_query($sql);
+	$result = do_sql_query($sql);
 	$keywords = array();
 	if ($result)
 	{
-		while($row = mysql_fetch_assoc($result))
+		while($row = $GLOBALS['db']->fetch_array($result))
 		{
 			$keywords[] = $row['keyword'];
 		}	
@@ -362,14 +362,14 @@ function check_for_keyword_existence($prodID, $kw, $kwID=0)
 	$ret = array('msg' => 'ok', 'keyword_exists' => 0);
   
 	$sql = 	" SELECT * FROM keywords " .
-			" WHERE UPPER(keyword) ='" . strtoupper(mysql_escape_string($kw))
+			" WHERE UPPER(keyword) ='" . strtoupper($GLOBALS['db']->prepare_string($kw))
 			."' AND prodid=" . $prodID ;
 	
 	if ($kwID)
 		$sql .= " AND id <> " . $kwID;
 	
-	$result = do_mysql_query($sql);       
-	if(mysql_num_rows($result))
+	$result = do_sql_query($sql);       
+	if($GLOBALS['db']->num_rows($result))
 	{
 		$ret['keyword_exists'] = 1;
 		$ret['msg'] = lang_get('keyword_already_exists');

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: adminProductEdit.php,v $
  *
- * @version $Revision: 1.7 $
- * @modified $Date: 2005/12/12 18:36:54 $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2005/12/28 07:34:54 $
  *
  * @author Martin Havlat
  *
@@ -21,7 +21,10 @@
 include('../../config.inc.php');
 require_once('common.php');
 require_once('product.inc.php');
+
+global $db;
 testlinkInitPage(true);
+
 
 $updateResult = null;
 $action = 'no';
@@ -65,9 +68,9 @@ if ($bDeleteProduct)
   // 20051211 - fm - 
   $show_prod_attributes = 'no';
 	$sql = "SELECT id FROM mgtproduct WHERE id=" . $id;
-	$result = do_mysql_query($sql);
+	$result = do_sql_query($sql);
 
-	if( mysql_num_rows($result) == 1 )
+	if( $GLOBALS['db']->num_rows($result) == 1 )
   {
   	if (deleteProduct($id,$error))
   	{

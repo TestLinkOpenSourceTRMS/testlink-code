@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: requirements.inc.php,v $
- * @version $Revision: 1.16 $
- * @modified $Date: 2005/12/02 20:49:57 $ by $Author: schlundus $
+ * @version $Revision: 1.17 $
+ * @modified $Date: 2005/12/28 07:34:55 $ by $Author: franciscom $
  *
  * @author Martin Havlat <havlat@users.sourceforge.net>
  * 
@@ -47,17 +47,17 @@ function createReqSpec($title, $scope, $countReq, $prodID, $userID, $type = 'n')
 	tLog('Create SRS requested: ' . $title);
 	if (strlen($title)) {
 		$sql = "INSERT INTO req_spec (id_product, title, scope, type, total_req, id_author, create_date) " .
-				"VALUES (" . $prodID . ",'" . mysql_escape_string($title) . "','" . mysql_escape_string($scope) . 
-				"','" . mysql_escape_string($type) . "','" . 
-				mysql_escape_string($countReq) . "'," . mysql_escape_string($userID) . 
+				"VALUES (" . $prodID . ",'" . $GLOBALS['db']->prepare_string($title) . "','" . $GLOBALS['db']->prepare_string($scope) . 
+				"','" . $GLOBALS['db']->prepare_string($type) . "','" . 
+				$GLOBALS['db']->prepare_string($countReq) . "'," . $GLOBALS['db']->prepare_string($userID) . 
 				", CURRENT_DATE)";
-		$result = do_mysql_query($sql); 
+		$result = do_sql_query($sql); 
 		if ($result) {
 			$result = 'ok';
 		} else {
 			 $result = 'The INSERT request fails with these values:' . 
 					$title . ', ' . $scope . ', ' . $countReq;
-			tLog('SQL: ' . $sql . ' fails: ' . mysql_error(), 'ERROR');
+			tLog('SQL: ' . $sql . ' fails: ' . $GLOBALS['db']->error_msg(), 'ERROR');
 		}
 	} else {
 		$result = "You cannot enter an empty title!";
@@ -82,17 +82,17 @@ function createReqSpec($title, $scope, $countReq, $prodID, $userID, $type = 'n')
 function updateReqSpec($id, $title, $scope, $countReq, $userID, $type = 'n')
 {
 	if (strlen($title)) {
-		$sql = "UPDATE req_spec SET title='" . mysql_escape_string($title) . 
-				"', scope='" . mysql_escape_string($scope) . "', type='" . mysql_escape_string($type) .
-				"', total_req ='" . mysql_escape_string($countReq) . "', id_modifier='" . 
-				mysql_escape_string($userID) . "', modified_date=CURRENT_DATE WHERE id=" . $id;
-		$result = do_mysql_query($sql); 
+		$sql = "UPDATE req_spec SET title='" . $GLOBALS['db']->prepare_string($title) . 
+				"', scope='" . $GLOBALS['db']->prepare_string($scope) . "', type='" . $GLOBALS['db']->prepare_string($type) .
+				"', total_req ='" . $GLOBALS['db']->prepare_string($countReq) . "', id_modifier='" . 
+				$GLOBALS['db']->prepare_string($userID) . "', modified_date=CURRENT_DATE WHERE id=" . $id;
+		$result = do_sql_query($sql); 
 		if ($result) {
 			$result = 'ok';
 		} else {
 			 $result = 'The UPDATE request fails with these values:' . 
 					$title . ', ' . $scope . ', ' . $countReq;
-			tLog('SQL: ' . $sql . ' fails: ' . mysql_error(), 'ERROR');
+			tLog('SQL: ' . $sql . ' fails: ' . $GLOBALS['db']->error_msg(), 'ERROR');
 		}
 	} else {
 		$result = "You cannot enter an empty title!";
@@ -121,12 +121,12 @@ function deleteReqSpec ($idSRS)
 		
 	// delete specification itself
 	$sql = "DELETE FROM req_spec WHERE id=" . $idSRS;
-	$result = do_mysql_query($sql); 
+	$result = do_sql_query($sql); 
 	if ($result) {
 		$result = 'ok';
 	} else {
 		$result = 'The DELETE SRS request fails.';
-		tLog('SQL: ' . $sql . ' fails: ' . mysql_error(), 'ERROR');
+		tLog('SQL: ' . $sql . ' fails: ' . $GLOBALS['db']->error_msg(), 'ERROR');
 	}
 	return $result; 
 }
@@ -289,14 +289,14 @@ function getReqMetrics_general($idSRS)
 	// get nottestable REQs
 	$sql = "SELECT count(*) FROM requirements WHERE id_srs=" . $idSRS . 
 			" AND status='n'";
-	$output['notTestable'] = do_mysql_selectOne($sql);
+	$output['notTestable'] = do_sql_selectOne($sql);
 
 	$sql = "SELECT count(*) FROM requirements WHERE id_srs=" . $idSRS;
-	$output['total'] = do_mysql_selectOne($sql);
+	$output['total'] = do_sql_selectOne($sql);
 	tLog('Count of total REQ in DB for id_SRS:'.$idSRS.' = '.$output['total']);
 
 	$sql = "SELECT total_req FROM req_spec WHERE id=" . $idSRS;
-	$output['expectedTotal'] = do_mysql_selectOne($sql);;
+	$output['expectedTotal'] = do_sql_selectOne($sql);;
 	tLog(' Redefined Count of total REQ in DB for id_SRS:'.$idSRS.' = '.$output['total']);
 	
 	if ($output['expectedTotal'] == 'n/a') {
@@ -306,9 +306,9 @@ function getReqMetrics_general($idSRS)
 	$sql = "SELECT DISTINCT requirements.id FROM requirements, req_coverage WHERE" .
 				" requirements.id_srs=" . $idSRS .
 				" AND requirements.id=req_coverage.id_req";
-	$result = do_mysql_query($sql);
+	$result = do_sql_query($sql);
 	if (!empty($result)) {
-		$output['covered'] = mysql_num_rows($result);
+		$output['covered'] = $GLOBALS['db']->num_rows($result);
 	}
 
 	$output['uncovered'] = $output['expectedTotal'] - $output['covered'] 
@@ -336,9 +336,9 @@ function getReqMetrics_testPlan($idSRS, $idTestPlan)
 				" AND category.compid=component.id AND category.id=testcase.catid" .
 				" AND testcase.mgttcid = req_coverage.id_tc AND id_req=requirements.id" .
 				" AND requirements.status = 'v'"; 
-	$result = do_mysql_query($sql);
+	$result = do_sql_query($sql);
 	if (!empty($result)) {
-		$output['coveredByTestPlan'] = mysql_num_rows($result);
+		$output['coveredByTestPlan'] = $GLOBALS['db']->num_rows($result);
 	}
 
 	$output['uncoveredByTestPlan'] = $output['expectedTotal'] 
@@ -359,9 +359,9 @@ function getReqData($idReq)
 	$output = array();
 	
 	$sql = "SELECT * FROM requirements WHERE id=" . $idReq;
-	$result = do_mysql_query($sql);
+	$result = do_sql_query($sql);
 	if (!empty($result)) {
-		$output = mysql_fetch_array($result);
+		$output = $GLOBALS['db']->fetch_array($result);
 	}
 	
 	return $output;
@@ -435,12 +435,12 @@ function createRequirement($title, $scope, $idSRS, $userID, $status = 'v', $type
 {
 	if (strlen($title)) {
 		$sql = "INSERT INTO requirements (id_srs, req_doc_id, title, scope, status, type, id_author, create_date)" .
-				" VALUES (" . $idSRS . ",'" . mysql_escape_string($req_doc_id) .  
-				"','" . mysql_escape_string($title) . "','" . mysql_escape_string($scope) . 
-				 "','" . mysql_escape_string($status) . "','" . mysql_escape_string($type) .
-				 "'," . mysql_escape_string($userID) . ", CURRENT_DATE)";
+				" VALUES (" . $idSRS . ",'" . $GLOBALS['db']->prepare_string($req_doc_id) .  
+				"','" . $GLOBALS['db']->prepare_string($title) . "','" . $GLOBALS['db']->prepare_string($scope) . 
+				 "','" . $GLOBALS['db']->prepare_string($status) . "','" . $GLOBALS['db']->prepare_string($type) .
+				 "'," . $GLOBALS['db']->prepare_string($userID) . ", CURRENT_DATE)";
 
-		$result = do_mysql_query($sql); 
+		$result = do_sql_query($sql); 
 		
 		$result = $result ? 'ok' : 
 		          'The INSERT request fails with these values:' . $title . ', ' . $scope . ', ' . $status .
@@ -468,20 +468,20 @@ function createRequirement($title, $scope, $idSRS, $userID, $status = 'v', $type
 function updateRequirement($id, $title, $scope, $userID, $status, $type, $reqDocId=null)
 {
 	if (strlen($title)) {
-		$sql = "UPDATE requirements SET title='" . mysql_escape_string($title) . 
-				"', scope='" . mysql_escape_string($scope) . "', status='" . mysql_escape_string($status) . 
-				"', type='" . mysql_escape_string($type) . 
-				"', id_modifier='" . mysql_escape_string($userID) . 
-				"', req_doc_id='" . mysql_escape_string($reqDocId) .
+		$sql = "UPDATE requirements SET title='" . $GLOBALS['db']->prepare_string($title) . 
+				"', scope='" . $GLOBALS['db']->prepare_string($scope) . "', status='" . $GLOBALS['db']->prepare_string($status) . 
+				"', type='" . $GLOBALS['db']->prepare_string($type) . 
+				"', id_modifier='" . $GLOBALS['db']->prepare_string($userID) . 
+				"', req_doc_id='" . $GLOBALS['db']->prepare_string($reqDocId) .
 				"', modified_date=CURRENT_DATE WHERE id=" . $id;	
 	
-		$result = do_mysql_query($sql); 
+		$result = do_sql_query($sql); 
 		if ($result) {
 			$result = 'ok';
 		} else {
 			 $result = 'The UPDATE request fails with these values:' . 
 					$title . ', ' . $scope;
-			tLog('SQL: ' . $sql . ' fails: ' . mysql_error(), 'ERROR');
+			tLog('SQL: ' . $sql . ' fails: ' . $GLOBALS['db']->error_msg(), 'ERROR');
 		}
 	} else {
 		$result = "You cannot enter an empty title!";
@@ -500,17 +500,17 @@ function deleteRequirement($id)
 {
 	// delete dependencies with test specification
 	$sql = "DELETE FROM req_coverage WHERE id_req=" . $id;
-	$result = do_mysql_query($sql); 
+	$result = do_sql_query($sql); 
 	if ($result) {
 		// delete req itself
 		$sql = "DELETE FROM requirements WHERE id=" . $id;
-		$result = do_mysql_query($sql); 
+		$result = do_sql_query($sql); 
 	}
 	if ($result) {
 		$result = 'ok';
 	} else {
 		$result = 'The DELETE REQ request fails.';
-		tLog('SQL: ' . $sql . ' fails: ' . mysql_error(), 'ERROR');
+		tLog('SQL: ' . $sql . ' fails: ' . $GLOBALS['db']->error_msg(), 'ERROR');
 	}
 	return $result; 
 }
@@ -589,25 +589,26 @@ function assignTc2Req($idTc, $idReq)
 	
 	if ($idTc && $idReq)
 	{
-		$sql = 'SELECT COUNT(*) FROM req_coverage WHERE id_req=' . $idReq . 
+		$sql = 'SELECT COUNT(*) AS num_cov FROM req_coverage WHERE id_req=' . $idReq . 
 				' AND id_tc=' . $idTc;
-		$result = do_mysql_query($sql);
+		$result = do_sql_query($sql);
 
-		if (mysql_result($result,0) == 0) {
+    $row=$GLOBALS['db']->fetch_array($result);
+		if ($row['num_cov'] == 0) {
 	
 			// create coverage dependency
 			$sqlReqCov = 'INSERT INTO req_coverage (id_req,id_tc) VALUES ' .
 					"(" . $idReq . "," . $idTc . ")";
-			$resultReqCov = do_mysql_query($sqlReqCov);
+			$resultReqCov = do_sql_query($sqlReqCov);
 			// collect results
-			if (mysql_affected_rows() == 1) {
+			if ($GLOBALS['db']->affected_rows() == 1) {
 				$output = 1;
 				tLog('Dependency was created between TC:' . $idTc . ' and REQ:' . $idReq, 'INFO');
 			}
 			else
 			{
 				tLog("Dependency wasn't created between TC:" . $idTc . ' and REQ:' . $idReq .
-					"\t" . mysql_error(), 'ERROR');
+					"\t" . $GLOBALS['db']->error_msg(), 'ERROR');
 			}
 		}
 		else
@@ -639,16 +640,16 @@ function unassignTc2Req($idTc, $idReq)
 	// create coverage dependency
 	$sqlReqCov = 'DELETE FROM req_coverage WHERE id_req=' . $idReq . 
 			' AND id_tc=' . $idTc;
-	$resultReqCov = do_mysql_query($sqlReqCov);
+	$resultReqCov = do_sql_query($sqlReqCov);
 
 	// collect results
-	if (mysql_affected_rows() == 1) {
+	if ($GLOBALS['db']->affected_rows() == 1) {
 		$output = 1;
 		tLog('Dependency was deleted between TC:' . $idTc . ' and REQ:' . $idReq, 'INFO');
 	}
 	else {
 		tLog("Dependency wasn't deleted between TC:" . $idTc . ' and REQ:' . $idReq .
-				"\n" . $sqlReqCov. "\n" . mysql_error(), 'ERROR');
+				"\n" . $sqlReqCov. "\n" . $GLOBALS['db']->error_msg(), 'ERROR');
 	}
 
 	return $output;
@@ -706,9 +707,10 @@ function createTcFromRequirement($mixIdReq, $prodID, $idSRS, $login_name)
 	          " WHERE name='" . $auto_component_name . "' " .
 	          " AND prodid=" . $prodID;
 	          
-	$resultCOM = do_mysql_query($sqlCOM);
-	if (mysql_num_rows($resultCOM) == 1) {
-		$idCom = mysql_result($resultCOM,0);
+	$resultCOM = do_sql_query($sqlCOM);
+  if ($GLOBALS['db']->num_rows($resultCOM) == 1) {
+		$row = $GLOBALS['db']->fetch_array($resultCOM);
+		$idCom = $row['id'];
 	}
 	else {
 		// not found -> create
@@ -718,17 +720,18 @@ function createTcFromRequirement($mixIdReq, $prodID, $idSRS, $login_name)
 		                              "'" . $g_req_cfg->scope_for_component . "'," .  
 		                $prodID . ")";
 		                
-		$resultCOM = do_mysql_query($sqlInsertCOM);
-		if (mysql_affected_rows()) {
-			$resultCOM = do_mysql_query($sqlCOM);
-			if (mysql_num_rows($resultCOM) == 1) {
-				$idCom = mysql_result($resultCOM,0);
+		$resultCOM = do_sql_query($sqlInsertCOM);
+		if ($GLOBALS['db']->affected_rows()) {
+			$resultCOM = do_sql_query($sqlCOM);
+			if ($GLOBALS['db']->num_rows($resultCOM) == 1) {
+				$row = $GLOBALS['db']->fetch_array($resultCOM);
+				$idCom = $row['id'];
 			} else {
 				tLog('Component:' . $auto_component_name . 
-				     ' was not found again! ' . mysql_error());
+				     ' was not found again! ' . $GLOBALS['db']->error_msg());
 			}
 		} else {
-			tLog(mysql_error(), 'ERROR');
+			tLog($GLOBALS['db']->error_msg(), 'ERROR');
 		}
 	}
 	tLog('createTcFromRequirement: $idCom=' . $idCom);
@@ -738,9 +741,10 @@ function createTcFromRequirement($mixIdReq, $prodID, $idSRS, $login_name)
 	          " WHERE name='" . $auto_category_name . "' " .
 	          " AND compid=" . $idCom;
 	          
-	$resultCAT = do_mysql_query($sqlCAT);
-	if ($resultCAT && (mysql_num_rows($resultCAT) == 1)) {
-		$idCat = mysql_result($resultCAT,0);
+	$resultCAT = do_sql_query($sqlCAT);
+	if ($resultCAT && ($GLOBALS['db']->num_rows($resultCAT) == 1)) {
+		$row = $GLOBALS['db']->fetch_array($resultCAT);
+		$idCat = $row['id'];
 	}
 	else {
 		// not found -> create
@@ -749,12 +753,13 @@ function createTcFromRequirement($mixIdReq, $prodID, $idSRS, $login_name)
 		                              "'" . $g_req_cfg->objective_for_category . "'," .
 				                     $idCom . ")";
 				                     
-		$resultCAT = do_mysql_query($sqlInsertCAT);
-		$resultCAT = do_mysql_query($sqlCAT);
-		if (mysql_num_rows($resultCAT) == 1) {
-			$idCat = mysql_result($resultCAT,0);
+		$resultCAT = do_sql_query($sqlInsertCAT);
+		$resultCAT = do_sql_query($sqlCAT);
+		if ($GLOBALS['db']->num_rows($resultCAT) == 1) {
+			$row = $GLOBALS['db']->fetch_array($resultCAT);
+		  $idCat = $row['id'];
 		} else {
-			die(mysql_error());
+			die($GLOBALS['db']->error_msg());
 		}
 	}
 	tLog('createTcFromRequirement: $idCat=' . $idCat);

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.33 $
- * @modified $Date: 2005/12/27 11:15:25 $ by $Author: franciscom $
+ * @version $Revision: 1.34 $
+ * @modified $Date: 2005/12/28 07:34:54 $ by $Author: franciscom $
  *
  *
  * Constants and configuration parameters used throughout TestLink 
@@ -85,6 +85,9 @@
  */ 
 require_once('config_db.inc.php');
 
+// 20051227 - fm
+// for method connect() of database.class
+define('DSN',FALSE);
 
 /** root of testlink directory location seen through the web server */
 define('TL_BASE_HREF', get_home_url()); 

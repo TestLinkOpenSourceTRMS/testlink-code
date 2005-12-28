@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: planEdit.php,v 1.9 2005/11/21 07:16:13 franciscom Exp $ */
+/* $Id: planEdit.php,v 1.10 2005/12/28 07:34:55 franciscom Exp $ */
 /* Purpose:  ability to edit and delete projects */
 /* TODO: I need to add the deletion of project rights
  *	I need to delete the projects builds
@@ -49,13 +49,13 @@ if(isset($_POST['editTestPlan']))
 			//Select all of the projects priority fields
 			if (!deleteTestPlanPriorityFields($id))
 				$editResult .= lang_get('delete_tp_priority_failed1'). $safeName. lang_get('delete_tp_priority_failed2') . 
-				               ": <br />".mysql_error()."<br />";
+				               ": <br />".$GLOBALS['db']->error_msg()."<br />";
 
 			//Select all of the projects milestones
 			if (!deleteTestPlanMilestones($id))
 			{
 				$editResult .= lang_get('delete_tp_milestones_failed1'). $safeName.lang_get('delete_tp_milestones_failed2') . 
-				               ": <br />".mysql_error()."<br />";
+				               ": <br />".$GLOBALS['db']->error_msg()."<br />";
 	    }
 	    
 			//Select all of the projects builds
@@ -80,10 +80,10 @@ if(isset($_POST['editTestPlan']))
 					$tcIDList = implode(",",$tcIDs);
 					// 20051009 - fm - my bug
 					$query = "DELETE FROM bugs WHERE tcid IN ({$tcIDList}) AND build_id IN ({$buildIDList})";
-					if (!do_mysql_query($query))
+					if (!do_sql_query($query))
 					{
 						$editResult .= lang_get('delete_tp_bugs_failed1').$safeName.lang_get('delete_tp_bugs_failed2').
-						               ": <br />".mysql_error()."<br />";
+						               ": <br />".$GLOBALS['db']->error_msg()."<br />";
 					}	               
 				}
 			}
@@ -92,18 +92,18 @@ if(isset($_POST['editTestPlan']))
 			if (!deleteTestPlanBuilds($id))
 			{
 				$editResult .= lang_get('delete_tp_builds_failed1').$safeName.lang_get('delete_tp_builds_failed2').
-				               ": <br />".mysql_error()."<br />";
+				               ": <br />".$GLOBALS['db']->error_msg()."<br />";
 			}
 			if (sizeof($tcIDs))
 			{
 				$tcIDList = implode(",",$tcIDs);
 				$query = "DELETE FROM results WHERE tcid IN ({$tcIDList})";
-				$result = do_mysql_query($query);
+				$result = do_sql_query($query);
 			
 				if (!$result)
 				{
 					$editResult .= lang_get('delete_tp_results_failed1').$safeName.lang_get('delete_tp_results_failed2') . 
-					               ": <br />".mysql_error()."<br />";
+					               ": <br />".$GLOBALS['db']->error_msg()."<br />";
         }
 			}
 			deleteTestCasesByCategories($catIDs);
@@ -116,20 +116,20 @@ if(isset($_POST['editTestPlan']))
 			if (!deleteTestPlanComponents($id))
 			{
 				$editResult .= lang_get('delete_tp_comp_failed1').$safeName. 
-				               lang_get('delete_tp_comp_failed2').": <br />" .	mysql_error() . "<br />";
+				               lang_get('delete_tp_comp_failed2').": <br />" .	$GLOBALS['db']->error_msg() . "<br />";
       } 
 			
 			if (!deleteTestPlanRightsForProject($id))
 			{
 				$editResult .= lang_get('delete_tp_rights_failed1'). $safeName . 
-				               lang_get('delete_tp_rights_failed2').": <br />" .	mysql_error() . "<br />";
+				               lang_get('delete_tp_rights_failed2').": <br />" .	$GLOBALS['db']->error_msg() . "<br />";
 			}	
 			
 			//Finally delete the test plan
 			if (!deleteTestPlan($id))
 			{
 				$editResult .= lang_get('delete_tp_data_failed1'). $safeName . 
-				               lang_get('delete_tp_data_failed2').": <br /> ". mysql_error()."<br />";
+				               lang_get('delete_tp_data_failed2').": <br /> ". $GLOBALS['db']->error_msg()."<br />";
 			}
 			
 			if ($editResult == '')
@@ -148,7 +148,7 @@ if(isset($_POST['editTestPlan']))
 					$generalResult .= lang_get('update_tp_succeeded1'). $safeName . lang_get('update_tp_succeeded2')."<br />";
 				else
 					$generalResult .= lang_get('update_tp_failed1'). $safeName . lang_get('update_tp_failed2').": " . 
-					                  mysql_error() . "<br />";
+					                  $GLOBALS['db']->error_msg() . "<br />";
 			}
 			else
 				$generalResult .= lang_get('update_tp_failed1'). $safeName . lang_get('update_tp_failed2').": " . 

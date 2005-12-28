@@ -1,7 +1,7 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: planUpdateTC.php,v 1.11 2005/12/07 18:11:09 franciscom Exp $
+ * @version $Id: planUpdateTC.php,v 1.12 2005/12/28 07:34:55 franciscom Exp $
  * @author Martin Havlat
  * 
  * Update Test Cases within Test Case Suite 
@@ -53,8 +53,8 @@ if(isset($_POST['updateSelected']))
 
     //  AND   comp.mgtcompid = mgtcomp.id 
 		       
-		$result = do_mysql_query($sql);
-		$tctp_data = mysql_fetch_assoc($result);
+		$result = do_sql_query($sql);
+		$tctp_data = $GLOBALS['db']->fetch_array($result);
 
   
 		$specId = $tctp_data['mgttcid'];
@@ -65,13 +65,13 @@ if(isset($_POST['updateSelected']))
 		$tc_specs = get_tc_specs($specId);
 
 	  $mgtRow = $tc_specs;
-		$mgtTitle = mysql_escape_string($mgtRow['title']);
-		$mgtSteps = mysql_escape_string($mgtRow['steps']);
-		$mgtExresult = mysql_escape_string($mgtRow['exresult']);
+		$mgtTitle = $GLOBALS['db']->prepare_string($mgtRow['title']);
+		$mgtSteps = $GLOBALS['db']->prepare_string($mgtRow['steps']);
+		$mgtExresult = $GLOBALS['db']->prepare_string($mgtRow['exresult']);
 		$mgtKeywords = $mgtRow['keywords'];
 		$mgtCatid   = $mgtRow['catid'];
 		$mgtVersion = $mgtRow['version'];
-		$mgtSummary = mysql_escape_string($mgtRow['summary']);
+		$mgtSummary = $GLOBALS['db']->prepare_string($mgtRow['summary']);
 		$mgtTCorder = $mgtRow['TCorder'];
 		
 		// 20051207 - fm - BUGID 284
@@ -105,7 +105,7 @@ if(isset($_POST['updateSelected']))
 				$updateSQL .= ', catid=' . $cat_id;
 			} 
 			$updateSQL .= ' where id=' . $tcID;
-			$updateResult = do_mysql_query($updateSQL);
+			$updateResult = do_sql_query($updateSQL);
 			
 			
 			// 20051207 - fm - if category moved => component has changed => category table has to be updated
@@ -135,10 +135,10 @@ if(isset($_POST['updateSelected']))
 $sqlTC = " SELECT testcase.id from testcase, category, component " .
 		     " WHERE testcase.catid = category.id AND category.compid = component.id " .
 		     " AND component.projid = " . $tpID;
-$resultTC = do_mysql_query($sqlTC);
+$resultTC = do_sql_query($sqlTC);
 if ($resultTC)
 {
-	while($rowTC = mysql_fetch_array($resultTC))
+	while($rowTC = $GLOBALS['db']->fetch_array($resultTC))
 	{
 		displayTC($rowTC[0],$arrData); 
 	}
@@ -175,8 +175,8 @@ function displayTC($id,&$arrData)
 	       " ORDER BY TC.TCorder";
   
      
-	$result = do_mysql_query($sql);
-	while($row = mysql_fetch_array($result)){
+	$result = do_sql_query($sql);
+	while($row = $GLOBALS['db']->fetch_array($result)){
 
 		//Assign values from the test case query
 		$id = $row['id'];
@@ -192,17 +192,18 @@ function displayTC($id,&$arrData)
 		            WHERE mgttestcase.catid = mgtcategory.id " .
 		          " AND mgttestcase.id=" . $mgtID;
 		          
-		$mgtResult = do_mysql_query($sqlMgt);
-		$mgtRow = mysql_fetch_array($mgtResult);
+		$mgtResult = do_sql_query($sqlMgt);
+		$mgtRow = $GLOBALS['db']->fetch_array($mgtResult);
 
-		if (mysql_num_rows($mgtResult) == 0) 
+		if ($GLOBALS['db']->num_rows($mgtResult) == 0) 
 		{
 			$mgtVersion = "---";
 			$status = lang_get("deleted");
 		}
 		else
 		{
-			$mgtVersion = mysql_result($mgtResult,0);
+			$row = $GLOBALS['db']->fetch_array($mgtResult);
+			$mgtVersion = $row['version'];
 			$status = lang_get("updated");
 		}
 		
@@ -285,8 +286,8 @@ function get_tc_specs($tc_id)
 	       " AND   MGTCAT.id = MGTTC.catid " .
 	       " AND   MGTTC.id=" . $tc_id ;
 	      
-	$result = do_mysql_query($sql);
-	$row = mysql_fetch_array($result);
+	$result = do_sql_query($sql);
+	$row = $GLOBALS['db']->fetch_array($result);
 	          
 	return $row;
 }
@@ -307,13 +308,13 @@ function get_tc_specs($tc_id)
 function del_tc_from_tp($tc_id)
 {
 	$sql = "DELETE FROM testcase WHERE id=" . $tc_id;
-	$dummy = do_mysql_query($sql);
+	$dummy = do_sql_query($sql);
 	
 	$sql = "DELETE FROM results WHERE tcid=" . $tc_id;
-	$dummy = do_mysql_query($sql); 
+	$dummy = do_sql_query($sql); 
 	
 	$sql = "DELETE FROM bugs WHERE tcid=" . $tc_id;
-	$dummy = do_mysql_query($sql); 
+	$dummy = do_sql_query($sql); 
 }
 
 // ----------------------------------------------------------------------------
@@ -356,18 +357,18 @@ function process_tc_cat_change($tc_id, $tc_specs, $tpID)
 	       " WHERE CAT.compid = COMP.id " .
 	       " AND COMP.projid = " .  $tpID .
 	       " AND CAT.mgtcatid=" . $tc_specs['catid'];
-	$result = do_mysql_query($sql);
+	$result = do_sql_query($sql);
 	
-	if (mysql_num_rows($result) == 0) 
+	if ($GLOBALS['db']->num_rows($result) == 0) 
 	{
 		// mgtcat belongs to a mgtcomp, then we need to check is mgtcomp
 		// is part of the test plan.
 		$sql = " SELECT * FROM component " .
 				   " WHERE component.projid = " . $tpID .
 				   " AND mgtcompid=" . $tc_specs['compid'];
-		$result = do_mysql_query($sql);
+		$result = do_sql_query($sql);
 		
-		if (mysql_num_rows($result) == 0) 
+		if ($GLOBALS['db']->num_rows($result) == 0) 
 		{
 			echo "MGT Comp and Cat have to be added to Test Plan";    
 			
@@ -388,8 +389,8 @@ function process_tc_cat_change($tc_id, $tc_specs, $tpID)
 				" AND COMP.projid = " . $tpID .
 				" AND MGTCAT.id=" . $tc_specs['catid'] ;
 				
-			$result = do_mysql_query($sql);
-			$mgtcatRow = mysql_fetch_assoc($result);
+			$result = do_sql_query($sql);
+			$mgtcatRow = $GLOBALS['db']->fetch_array($result);
 			
 			// 20051009 - fm
 			// BUGID 0000162: Moving a Testcase to another category
@@ -399,13 +400,13 @@ function process_tc_cat_change($tc_id, $tc_specs, $tpID)
 						" VALUES (" . $mgtcatRow['mgtcat_id'] . "," . 
 			$mgtcatRow['compid'] . "," . 
 			$mgtcatRow['mgtcat_CATorder'] . ")";
-			$resultAddCAT = do_mysql_query($sqlAddCAT); 
-			$cat_id =  mysql_insert_id();
+			$resultAddCAT = do_sql_query($sqlAddCAT); 
+			$cat_id =  $GLOBALS['db']->insert_id();
 		}    
 	}      
 	else   
 	{
-		$cat_row = mysql_fetch_assoc($result);
+		$cat_row = $GLOBALS['db']->fetch_array($result);
 		$cat_id = $cat_row['id'];
 	}   
 	
@@ -434,20 +435,20 @@ function process_tc_comp_change($tc_id, $tc_specs, $tpID)
 	         WHERE  COMP.projid = " .  $tpID .
 	       " AND COMP.mgtcompid=" . $tc_specs['compid'];
 	
-	$result = do_mysql_query($sql);
+	$result = do_sql_query($sql);
 	
 	
-	if (mysql_num_rows($result) == 0) 
+	if ($GLOBALS['db']->num_rows($result) == 0) 
 	{
 	  $sql = " INSERT INTO component (mgtcompid,projid)
 	  				 VALUES (" . $tc_specs['compid'] . "," . $tpID . ")";
 	   
-	  $result  =  do_mysql_query($sql);
-	  $comp_id =  mysql_insert_id();
+	  $result  =  do_sql_query($sql);
+	  $comp_id =  $GLOBALS['db']->insert_id();
 	}
 	else
 	{
-		$row = mysql_fetch_assoc($result); 
+		$row = $GLOBALS['db']->fetch_array($result); 
 	  $comp_id =  $row['compid'];
   }
 
@@ -456,8 +457,8 @@ function process_tc_comp_change($tc_id, $tc_specs, $tpID)
 		       FROM testcase 
 		       WHERE testcase.id=" . $tc_id;
 	
-	$result = do_mysql_query($sql);
-	$row = mysql_fetch_assoc($result); 
+	$result = do_sql_query($sql);
+	$row = $GLOBALS['db']->fetch_array($result); 
 	$cat_id =  $row['catid'];
 
   // Now the compid mustbe updated for the category
@@ -465,7 +466,7 @@ function process_tc_comp_change($tc_id, $tc_specs, $tpID)
            SET category.compid = " . $comp_id .
          " WHERE category.id = " . $cat_id; 
 
-	$result = do_mysql_query($sql);
+	$result = do_sql_query($sql);
 
 }
 ?>

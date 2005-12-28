@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: users.inc.php,v $
  *
- * @version $Revision: 1.13 $
- * @modified $Date: 2005/12/27 11:16:12 $ $Author: franciscom $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2005/12/28 07:34:55 $ $Author: franciscom $
  *
  * @author Chad Rosen, Martin Havlat
  * @author Martin Havlat
@@ -32,6 +32,8 @@ require_once("common.php");
  */
 function existLogin($login, &$r_user_data)
 {
+global $db;
+
 /*
 to maintain compatibility  
 Array
@@ -56,14 +58,14 @@ Array
 	       "        role, role, rights, locale" .
 	       " FROM user,rights " .
 	       " WHERE user.rightsid = rights.id " .
-	       " AND login='" . mysql_escape_string($login) . "'";
+	       " AND login='" . $GLOBALS['db']->prepare_string($login) . "'";
 	
 	$r_user_data = null;
 	$userExists = 0;
-	$result = do_mysql_query($sql);
+	$result = do_sql_query($sql);
 	if ($result)
 	{
-		if ($row = mysql_fetch_array($result))
+		if ($row = $GLOBALS['db']->fetch_array($result))
 			$r_user_data = $row;
 	}
 	
@@ -86,9 +88,9 @@ function userInsert($login, $password, $first, $last, $email, $rights = 5,$local
 {
 	$password = md5($password);
 	$sqlInsert = "INSERT INTO user (login,password,first,last,email,rightsid,locale) VALUES ('" . 
-				mysql_escape_string($login) . "','" . mysql_escape_string($password) . "','" . mysql_escape_string($first) . "','" . mysql_escape_string($last) .
-				 "','" . mysql_escape_string($email) . "'," . $rights . ",'".mysql_escape_string($locale)."')";
-	$insertResult = do_mysql_query($sqlInsert);
+				$GLOBALS['db']->prepare_string($login) . "','" . $GLOBALS['db']->prepare_string($password) . "','" . $GLOBALS['db']->prepare_string($first) . "','" . $GLOBALS['db']->prepare_string($last) .
+				 "','" . $GLOBALS['db']->prepare_string($email) . "'," . $rights . ",'".$GLOBALS['db']->prepare_string($locale)."')";
+	$insertResult = do_sql_query($sqlInsert);
 	
 	return $insertResult ? 1 : 0;
 }
@@ -97,9 +99,9 @@ function userInsert($login, $password, $first, $last, $email, $rights = 5,$local
 function userDelete($id)
 {
 	$sql = "DELETE FROM user WHERE id=" . $id;
-	$result = do_mysql_query($sql);
+	$result = do_sql_query($sql);
 			
-	return $result ? 'ok' : mysql_error();
+	return $result ? 'ok' : $GLOBALS['db']->error_msg();
 }
 
 /** Function get associated array of IDs with logins (used for listbox)*/
@@ -116,11 +118,11 @@ function getListOfRights()
 
 function getTwoColumnsMap($query)
 {
-	$result = do_mysql_query($query);
+	$result = do_sql_query($query);
 	$arrOut = null;
 	if ($result)
 	{
-		while ($myrow = mysql_fetch_row($result))
+		while ($myrow = $GLOBALS['db']->fetch_array($result))
 			$arrOut[$myrow[0]] = $myrow[1];
 	}
 	
@@ -131,8 +133,8 @@ function setUserPassword($userID,$password)
 {
 	//if we have successfully (at least we have sent the email (-;) we reset the pwd 
 	$password = md5($password);
-	$sql = "UPDATE user SET password = '" . mysql_escape_string($password) . "' WHERE id = ".$userID;
-	$result = do_mysql_query($sql); 
+	$sql = "UPDATE user SET password = '" . $GLOBALS['db']->prepare_string($password) . "' WHERE id = ".$userID;
+	$result = do_sql_query($sql); 
 	
 	return $result ? 1 : 0;
 }
@@ -148,7 +150,7 @@ function updateUserPassword($userID, $oldPswd, $newPswd)
 {
 	// use md5 to encrypt the password string
 	if (getUserPassword($userID) == md5($oldPswd))
-		$updateResult = setUserPassword($userID,$newPswd) ? 'ok' : mysql_error();
+		$updateResult = setUserPassword($userID,$newPswd) ? 'ok' : $GLOBALS['db']->error_msg();
 	else
 		$updateResult = lang_get('wrong_old_password');
 	
@@ -159,12 +161,12 @@ function getUserPassword($userID)
 {
 	//Find old password are correct
 	$sql = "SELECT password FROM user WHERE id=" . $userID;
-	$result = do_mysql_query($sql);
+	$result = do_sql_query($sql);
 	
 	$pwd = null;
 	if ($result)
 	{
-		$pwd = mysql_fetch_assoc($result);
+		$pwd = $GLOBALS['db']->fetch_array($result);
 		$pwd = $pwd['password'];
 	}
 	
@@ -177,25 +179,25 @@ function userUpdate($userID, $first, $last, $email ,
                     $login = null, $rightsID = null, $locale = null)
 {
  	$sql = "UPDATE user " .
-	       "SET first='" . mysql_escape_string($first) . "'" .
-	       ", last='" .  mysql_escape_string($last)    . "'" .
-	       ", email='" . mysql_escape_string($email)   . "'";
+	       "SET first='" . $GLOBALS['db']->prepare_string($first) . "'" .
+	       ", last='" .  $GLOBALS['db']->prepare_string($last)    . "'" .
+	       ", email='" . $GLOBALS['db']->prepare_string($email)   . "'";
 	
 	if (!is_null($login))
-		$sql .= ", login = '". mysql_escape_string($login) . "' ";
+		$sql .= ", login = '". $GLOBALS['db']->prepare_string($login) . "' ";
 	if (!is_null($rightsID))
 		$sql .= ", rightsid = ". $rightsID ;
 	if (!is_null($locale))
-		$sql .= ", locale = ". "'" . mysql_escape_string($locale) . "'" ;
+		$sql .= ", locale = ". "'" . $GLOBALS['db']->prepare_string($locale) . "'" ;
 		
 	$sql .= " WHERE id=" . $userID;
-	$result = do_mysql_query($sql);
+	$result = do_sql_query($sql);
 
 	// MHT 200507 - update session data if admin modify yourself
 	if (($userID == $_SESSION['userID']) && $result)
 		setUserSession($login, $userID, $rightsID, $email, $locale);
 	
-	return $result ? 'ok' : mysql_error();
+	return $result ? 'ok' : $GLOBALS['db']->error_msg();
 }
 
 /** set session data after modification or authorization */
@@ -217,10 +219,11 @@ function setUserSession($user, $id, $roleID, $email, $locale = null)
 	{
 	    $_SESSION['roleId'] = intval($roleID); 
     	$sql = "SELECT role FROM rights WHERE id = " . $roleID;
-	    $result = do_mysql_query($sql);
+	    $result = do_sql_query($sql);
 	    if ($result)
-		{
-	    	$_SESSION['role'] = mysql_result($result, 0, 'role'); 
+		  {
+	      $row = $GLOBALS['db']->fetch_array($result);
+	    	$_SESSION['role'] = $row['role']; 
 	    	tLog('setUserSession: $user='.$_SESSION['role']);
 	    }
   }
@@ -241,7 +244,7 @@ function deleteUsersProjectRights($userID, $prodID)
 	         WHERE userid = " . $userID .
 	       " AND projid IN (SELECT id FROM project WHERE prodid = " . $prodID . ")";
 	      
-	$result = do_mysql_query($sql);
+	$result = do_sql_query($sql);
 	return $result ? 1 : 0;
 }
 
@@ -264,11 +267,11 @@ function getAllUsers($whereClause = null)
 	}
 	
 	$sql .= " ORDER BY login";
-	$result = do_mysql_query($sql);
+	$result = do_sql_query($sql);
 	$users = null;
 	if ($result)
 	{
-		while($user = mysql_fetch_array($result))
+		while($user = $GLOBALS['db']->fetch_array($result))
 		{
 			$user['fullname'] = $user['login'];
 			if($show_realname)
@@ -294,11 +297,11 @@ function getAllUsers_assoc($whereClause = null)
 		$sql .= $whereClause;
   }
   
-	$result = do_mysql_query($sql);
+	$result = do_sql_query($sql);
 	$users = null;
 	if ($result)
 	{
-		while($user = mysql_fetch_array($result))
+		while($user = $GLOBALS['db']->fetch_array($result))
 		{
 			$users[] = $user;
 		}	
@@ -356,11 +359,11 @@ function getUserName($id_user)
 	if ($id_user)
 	{
 		$sql = "SELECT login, first, last FROM user WHERE id=" . $id_user;
-		$result = do_mysql_query($sql);
+		$result = do_sql_query($sql);
 		
-		if ($result && (mysql_num_rows($result) > 0))
+		if ($result && ($GLOBALS['db']->num_rows($result) > 0))
 		{
-			$row = mysql_fetch_array($result);
+			$row = $GLOBALS['db']->fetch_array($result);
 			if (empty($row['first']) && empty($row['last']))
 			{
 				// return login (name was not defined)

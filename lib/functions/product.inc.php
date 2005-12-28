@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: product.inc.php,v $
- * @version $Revision: 1.3 $
- * @modified $Date: 2005/10/06 20:22:34 $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2005/12/28 07:34:55 $
  * @author Martin Havlat
  *
  * Functions for Product management (create,update,delete)
@@ -21,10 +21,10 @@ require_once('product.core.inc.php');
  */
 function updateProduct($id, $name, $color, $optRequirements)
 {
-	$sql = "UPDATE mgtproduct SET name='" . mysql_escape_string($name) . "', color='" . 
-			mysql_escape_string($color) . "', option_reqs=" .  
-			mysql_escape_string($optRequirements) . " WHERE id=" . $id;
-	$result = do_mysql_query($sql);
+	$sql = "UPDATE mgtproduct SET name='" . $GLOBALS['db']->prepare_string($name) . "', color='" . 
+			$GLOBALS['db']->prepare_string($color) . "', option_reqs=" .  
+			$GLOBALS['db']->prepare_string($optRequirements) . " WHERE id=" . $id;
+	$result = do_sql_query($sql);
 	
 	if ($result)
 	{
@@ -39,7 +39,7 @@ function updateProduct($id, $name, $color, $optRequirements)
 	else
 	{
 		$sqlResult = 'Update product FAILED!';
-		tLog('FAILED SQL: ' . $sql . "\n Result: " . mysql_error(), 'ERROR');
+		tLog('FAILED SQL: ' . $sql . "\n Result: " . $GLOBALS['db']->error_msg(), 'ERROR');
 	}
 	
 	return $sqlResult;
@@ -57,9 +57,9 @@ function updateProduct($id, $name, $color, $optRequirements)
 function createProduct($name,$color,$optReq)
 {
 	$sql = "INSERT INTO mgtproduct (name,color,option_reqs) VALUES ('" . 
-			mysql_escape_string($name) . "','" . mysql_escape_string($color) . 
+			$GLOBALS['db']->prepare_string($name) . "','" . $GLOBALS['db']->prepare_string($color) . 
 			"'," . $optReq . ")";
-	$result = do_mysql_query($sql);
+	$result = do_sql_query($sql);
 
 	if ($result)
 	{
@@ -150,7 +150,7 @@ function deleteProduct($id, &$error)
 		{
 			tLog($oneSQL[0]);
 			$sql = $oneSQL[0];
-			$result = do_mysql_query($sql);	
+			$result = do_sql_query($sql);	
 			if (!$result) {
 				$error .= lang_get($oneSQL[1]);
 			}
@@ -161,7 +161,7 @@ function deleteProduct($id, &$error)
 	if (empty($error))
 	{
 		$sql = "DELETE FROM mgtproduct WHERE id=" . $id;
-		$result = do_mysql_query($sql);
+		$result = do_sql_query($sql);
 
 		if ($result) {
 			$sessProduct = isset($_SESSION['product']) ? $_SESSION['product'] : $id;
@@ -184,7 +184,7 @@ function deleteProduct($id, &$error)
 function activateProduct($id, $status)
 {
 	$sql = "UPDATE mgtproduct SET active='" . $status . "' WHERE id=" . $id;
-	$result = do_mysql_query($sql);
+	$result = do_sql_query($sql);
 
 	return $result ? 1 : 0;
 }

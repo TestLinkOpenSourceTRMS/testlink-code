@@ -1,6 +1,6 @@
 <?
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
- *$Id: resultsMoreBuilds.inc.php,v 1.42 2005/12/27 11:17:15 franciscom Exp $ 
+ *$Id: resultsMoreBuilds.inc.php,v 1.43 2005/12/28 07:34:55 franciscom Exp $ 
  * 
  * @author Kevin Levy
  *
@@ -136,10 +136,10 @@ function createResultsForTestPlan($testPlanName, $testPlanID,
 		$sql .= " AND (mgtcomponent.id IN ($comma_seperated_components)) " ;
 		 
 	$sql .= " AND projid=" . $testPlanID;
-	$result = do_mysql_query($sql);
+	$result = do_sql_query($sql);
 
   $aggregateComponentDataToPrint = null;
-  while($myrow = mysql_fetch_row($result))
+  while($myrow = $GLOBALS['db']->fetch_array($result))
     {
       $componentData = createResultsForComponent($myrow[0], $owner, $keyword, 
 						 $build_id_set, $lastStatus,$myrow,$arrAllBuilds);
@@ -194,13 +194,13 @@ function createResultsForComponent($componentId, $owner, $keyword, $build_id_set
       
   if (strlen($owner))
   {
-    $sql .= " AND CAT.owner = '" . mysql_escape_string($owner) . "'";
+    $sql .= " AND CAT.owner = '" . $GLOBALS['db']->prepare_string($owner) . "'";
   }  
   $sql .= " ORDER BY MGTCAT.CATorder ASC ";
-  $result = do_mysql_query($sql);
+  $result = do_sql_query($sql);
 
   $aggregateCategoryDataToPrint = null;
-  while ($myrow = mysql_fetch_row($result))
+  while ($myrow = $GLOBALS['db']->fetch_array($result))
     {
       $categoryData = createResultsForCategory($myrow[0], $keyword, $build_id_set, $lastResult,$myrow,$arrAllBuilds);
       $categorySummary = $categoryData[0];
@@ -268,11 +268,11 @@ function createResultsForCategory($categoryId, $keyword, $build_id_set, $lastRes
   
   $sql .= " ORDER by TCorder ASC";
 
-  $result = do_mysql_query($sql);
+  $result = do_sql_query($sql);
   
   $tcInfo = null;
   $tcIDList = null;
-  while ($myrow = mysql_fetch_row($result))
+  while ($myrow = $GLOBALS['db']->fetch_array($result))
     {
       $totalCasesForCategory++;
       $tcID = $myrow[0];
@@ -281,19 +281,19 @@ function createResultsForCategory($categoryId, $keyword, $build_id_set, $lastRes
 	$tcIDList .= ",";
       $tcIDList .= $tcID;
     }
-  $build_list = str_replace(",","','",mysql_escape_string($build_id_set));
+  $build_list = str_replace(",","','",$GLOBALS['db']->prepare_string($build_id_set));
   $sql = " SELECT results.build_id, results.runby, results.daterun, results.status, results.bugs, " .
          " results.tcid, results.notes " .
          " FROM results WHERE tcid IN (" . $tcIDList . ")".
          " AND (results.build_id IN ('" . $build_list . "')) ORDER BY results.build_id DESC;";
 
   
-  $sqlBuildResult = do_mysql_query($sql);
+  $sqlBuildResult = do_sql_query($sql);
 
   $tcBuildInfo = null;
   //I need the num results so I can do the check below on not run test cases
   $notRunStatus = $g_tc_status['not_run'];
-  while($myrowTC = mysql_fetch_row($sqlBuildResult))
+  while($myrowTC = $GLOBALS['db']->fetch_array($sqlBuildResult))
     {
       $tcID = $myrowTC[5];
       $status = $myrowTC[3];
@@ -306,7 +306,7 @@ function createResultsForCategory($categoryId, $keyword, $build_id_set, $lastRes
 			continue;
       $tcStatusInfo[$tcID] = $status;
     }
-  //while ($myrow = mysql_fetch_row($result)){
+  //while ($myrow = $GLOBALS['db']->fetch_array($result)){
 
   $lastResult = 'n';
   $lastResultHasBeenSet = false;
@@ -538,9 +538,9 @@ function getArrayOfComponentNames($tpID)
 		" WHERE component.mgtcompid = mgtcomponent.id " .
 		" AND projid=" . $tpID;
 	
-	$result = do_mysql_query($sql);
+	$result = do_sql_query($sql);
 	$arrayOfComponentNames = array();
-	while($myrow = mysql_fetch_row($result)) 
+	while($myrow = $GLOBALS['db']->fetch_array($result)) 
 	{
 		$arrayOfComponentNames[$myrow[1]] =  $myrow[0];
 	}

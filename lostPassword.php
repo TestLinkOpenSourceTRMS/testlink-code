@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: lostPassword.php,v $
  *
- * @version $Revision: 1.11 $
- * @modified $Date: 2005/12/09 11:13:20 $ $Author: franciscom $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2005/12/28 07:34:54 $ $Author: franciscom $
  *
  * @author Chad Rosen
  *
@@ -14,6 +14,7 @@
  * 20050831 - scs - cosmetic changes
  * 20051209 - fm - BUGID 289
 **/
+global $db;
 require_once('config.inc.php');
 require_once('common.php');
 require_once('users.inc.php');
@@ -25,7 +26,7 @@ require_once('email_api.php');
 $_POST = strings_stripSlashes($_POST);
 $login = isset($_POST['login']) ? $_POST['login']: null;
 
-$op = doDBConnect();
+$op = doDBConnect($db);
 if ($op['status'] == 0)
 {
 	$smarty = new TLSmarty();

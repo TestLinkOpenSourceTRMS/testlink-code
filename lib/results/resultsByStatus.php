@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsByStatus.php,v 1.6 2005/10/03 07:20:14 franciscom Exp $ 
+* $Id: resultsByStatus.php,v 1.7 2005/12/28 07:34:55 franciscom Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -50,7 +50,7 @@ $sql = " SELECT tcid,status,build_id,runby,daterun,title,results.notes," .
 		   " AND TP.id = " . $_SESSION['testPlanId'] . 
 		   " ORDER BY tcid,build_id DESC";
 
-$totalResult = do_mysql_query($sql,$db);
+$totalResult = do_sql_query($sql,$db);
 
 reset($arrBuilds);
 $maxBuild = each($arrBuilds);
@@ -59,7 +59,7 @@ $testCaseNumArray = null;
 //Looping through all of the test cases that we found
 $arrData = null;
 $tcIDArray = null;
-while($myrow = mysql_fetch_row($totalResult))
+while($myrow = $GLOBALS['db']->fetch_array($totalResult))
 {
 	$tcID = $myrow[0];
 	$status = $myrow[1];
@@ -88,9 +88,9 @@ if (sizeof($tcIDArray))
 		//Grab all of the bugs for the test case in the build
 		$sqlBugs = " SELECT bug FROM bugs WHERE tcid=" . $tcID . 
 				       " AND build_id=" . $build;
-		$resultBugs = do_mysql_query($sqlBugs,$db);
+		$resultBugs = do_sql_query($sqlBugs,$db);
 		$bugString = null;
-		while ($myrowBug = mysql_fetch_row($resultBugs))
+		while ($myrowBug = $GLOBALS['db']->fetch_array($resultBugs))
 		{
 			if (!is_null($bugString))
 				$bugString .= ","; 

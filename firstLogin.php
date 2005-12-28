@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: firstLogin.php,v $
  *
- * @version $Revision: 1.8 $
- * @modified $Date: 2005/11/19 23:07:34 $ $Author: schlundus $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2005/12/28 07:34:54 $ $Author: franciscom $
  *
  * @author Asiel Brumfield
  * @author Martin Havlat 
@@ -32,7 +32,11 @@ $email = isset($_POST['email']) ? $_POST['email'] : null;
 
 
 $message = lang_get('your_info_please');
-$op = doDBConnect();
+
+// 20051227 - fm
+global $db;
+$op = doDBConnect($db);
+
 if (!$op['status'])
 {
 	$smarty = new TLSmarty();

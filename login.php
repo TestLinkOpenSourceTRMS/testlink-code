@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: login.php,v $
  *
- * @version $Revision: 1.12 $
- * @modified $Date: 2005/11/09 19:54:07 $ by $Author: schlundus $
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2005/12/28 07:34:54 $ by $Author: franciscom $
  *
  * @author Martin Havlat
  * 
@@ -15,13 +15,25 @@
  * 20050831 - scs - cosmetic changes
  * 200508 - MHT - added config check
  **/
+global $db; 
 require_once('lib/functions/configCheck.php');
 checkConfiguration();
 
 require('config.inc.php');
 require_once('lib/functions/common.php');
 require_once('lib/functions/users.inc.php');
-doDBConnect();
+
+$op = doDBConnect($db);
+if (!$op['status'])
+{
+	$smarty = new TLSmarty();
+	$smarty->assign('title', lang_get('fatal_page_title'));
+	$smarty->assign('content', $op['dbms_msg']);
+	$smarty->display('workAreaSimple.tpl');  
+	exit();
+}
+
+
 
 $_GET = strings_stripSlashes($_GET);
 $note = isset($_GET['note']) ? $_GET['note'] : null;
@@ -37,15 +49,19 @@ switch($note)
 		session_destroy();
 		$message = lang_get('session_expired');
 		break;
+
 	case 'wrong':
 		$message = lang_get('bad_user_passwd');
 		break;
+
 	case 'first':
 		$message = lang_get('your_first_login');
 		break;
+
 	case 'lost':
 		$message = lang_get('passwd_lost');
 		break;
+
 	case 'sessionExists':
 		$message = lang_get('login_msg_session_exists1') . ' <a href="logout.php">' . 
 			lang_get('logout_link') . '</a>' . lang_get('login_msg_session_exists2');

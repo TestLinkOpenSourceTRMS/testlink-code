@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: myTPInfo.php,v $
  *
- * @version $Revision: 1.4 $
- * @modified $Date: 2005/10/13 17:19:43 $ $Author: franciscom $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2005/12/28 07:34:55 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -44,10 +44,10 @@ function getMetrics()
     $sql = " SELECT project.name,project.id FROM project,projrights,user where ".
            " project.id=projrights.projid AND user.id=projrights.userid AND active=1 AND ".
            " user.id=" . $_SESSION['userID'];
-    $result = do_mysql_query($sql);
+    $result = do_sql_query($sql);
 	$metrics = null;
 	$projects = null;
-	while($row = mysql_fetch_row($result))
+	while($row = $GLOBALS['db']->fetch_array($result))
 	{
 		$metrics[$row[1]] = array(0,0,0,$row[0]);
 		$projects[] = $row[1];
@@ -64,8 +64,8 @@ function getMetrics()
            " AND category.id = testcase.catid " .
            " AND projID IN ({$projectList}) GROUP BY projId ";
 		   
-	$result = do_mysql_query($sql);
-	while($row = mysql_fetch_row($result))
+	$result = do_sql_query($sql);
+	while($row = $GLOBALS['db']->fetch_array($result))
 		$metrics[$row[1]][0] = $row[0];
 	$tcInfo = null;
 	$sql = " SELECT projID,tcid,status " .
@@ -80,7 +80,7 @@ function getMetrics()
 	
 	$sql = "SELECT projID,tcid,status FROM results,project,component,category,testcase where ".
          "project.id = component.projid AND component.id = category.compid AND category.id = testcase.catid and testcase.id = ".
-         "results.tcid AND owner = '".mysql_escape_string($_SESSION['user'])."' AND projID IN ({$projectList}) ORDER BY projID,tcID,build_id";
+         "results.tcid AND owner = '".$GLOBALS['db']->prepare_string($_SESSION['user'])."' AND projID IN ({$projectList}) ORDER BY projID,tcID,build_id";
 
 	$myTcInfo = null;
 	getTCInfo($sql,$myTcInfo);
@@ -106,11 +106,11 @@ function calculateMetrics(&$metrics,&$myTcInfo,$index)
 
 function getTCInfo($sql,&$tcInfo)
 {
-	$result = do_mysql_query($sql);
+	$result = do_sql_query($sql);
 	$tcInfo = null;
 	if ($result)
 	{   
-		while($row = mysql_fetch_row($result))
+		while($row = $GLOBALS['db']->fetch_array($result))
 			$tcInfo[$row[0]][$row[1]] = $row[2];
 	}
 }

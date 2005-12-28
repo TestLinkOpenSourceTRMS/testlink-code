@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: planMilestones.php,v 1.4 2005/12/03 22:09:35 schlundus Exp $ */
+/* $Id: planMilestones.php,v 1.5 2005/12/28 07:34:55 franciscom Exp $ */
 /** 
  * Purpose:  This page allows the creation and editing of milestones.
  * @author Chad Rosen, Martin Havlat 
@@ -39,7 +39,7 @@ if($newMileStone)
 				if ($result)
 					$sqlResult = 'ok';
 				else
-					$sqlResult = lang_get("warning_milestone_add_failed") . mysql_error();
+					$sqlResult = lang_get("warning_milestone_add_failed") . $GLOBALS['db']->error_msg();
 			}
 			else
 				$sqlResult = lang_get('warning_milestone_date');

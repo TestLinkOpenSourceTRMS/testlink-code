@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
  * @filesource $RCSfile: getRights.php,v $
- * @version $Revision: 1.4 $
- * @modified $Date: 2005/08/26 21:01:27 $ by $Author: schlundus $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2005/12/28 07:34:55 $ by $Author: franciscom $
  * @author Martin Havlat, Chad Rosen
  * 
  * This script provides the get_rights and has_rights functions for
@@ -46,25 +46,25 @@
 function getRoleRights($role)
 {
 	$roles = null;
-	
-	// 20050423 - fm - Grab the users rights from the rights table
-	$sqlGetRights = "SELECT rights FROM rights " .
-	                "WHERE role='" . mysql_escape_string($role) . "'";
 
-	$resultGetRights = do_mysql_query($sqlGetRights);
-	if ($resultGetRights)
+	$sql = "SELECT rights FROM rights " .
+	       "WHERE role='" . $GLOBALS['db']->prepare_string($role) . "'";
+
+	$result = do_sql_query($sql);
+	if ($result)
 	{
-		$myrowGetRights = mysql_result($resultGetRights, 0, 0);
-		tLog("\$myrowGetRights =>	$myrowGetRights");
-		if ($myrowGetRights)
-			$roles = explode(",",$myrowGetRights);
+		$myrow = $GLOBALS['db']->fetch_array($result);
+		tLog("\$myrow =>	$myrow");
+		if ($myrow)
+		{
+			$roles = explode(",",$myrow['rights']);
+		}	
 	}
 	else
 	{
-		tLog('Request: '.$sqlGetRights.' causes '.mysql_error(), 'ERROR');
+		tLog('Request: ' .$sql. ' causes '. $GLOBALS['db']->error_msg(), 'ERROR');
 	}
-
-	return $roles;
+	return ($roles);
 }
 
 /** 
@@ -77,7 +77,11 @@ function has_rights($roleQuestion)
 	//				 - so the rights are fetched only once per script 
 	static $rights = null;
 	if (is_null($rights))
+	{
+		//echo "<pre>debug"; print_r($_SESSION); echo "</pre>";
 		$rights = getRoleRights($_SESSION['role']);
+		//echo "<pre>debug\$rights"; print_r($rights); echo "</pre>";
+	}
 	
 	//check to see if the $roleQuestion variable appears in the $roles variable
 	// 20050819 - scs - extended to so we can check for the presence multiple rights
@@ -85,11 +89,17 @@ function has_rights($roleQuestion)
 	{
 		$r = array_intersect($roleQuestion,$rights);
 		if (sizeof($r) == sizeof($roleQuestion))
+		{
 			return 'yes';
+		}	
 		else
+		{
 			return null;
+		}	
 	}
 	else
+	{
 		return (in_array($roleQuestion,$rights) ? 'yes' : null);
+	}	
 }
 ?>

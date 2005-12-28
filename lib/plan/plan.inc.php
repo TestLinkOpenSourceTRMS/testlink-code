@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: plan.inc.php,v $
- * @version $Revision: 1.17 $
- * @modified $Date: 2005/12/27 11:16:12 $ $Author: franciscom $
+ * @version $Revision: 1.18 $
+ * @modified $Date: 2005/12/28 07:34:55 $ $Author: franciscom $
  * @author 	Martin Havlat
  *
  * Functions for management: 
@@ -32,7 +32,7 @@ function updateSuiteAttributes($_INPUT)
 	$sql = "UPDATE category SET importance ='" . $_INPUT['importance'] . "', risk ='" .  
 			   $_INPUT['risk'] . "', owner='" . $_INPUT['owner'] . "' " .
 			   " WHERE id=" . $_INPUT['id'];
-	$result = do_mysql_query($sql);
+	$result = do_sql_query($sql);
 	
 	return $result ? 'ok' : '';
 }
@@ -54,10 +54,10 @@ function getTP_category_info($catID)
 	       " AND category.id =" . $catID . " ORDER BY mgtcategory.CATorder";
 	       
 	      
-	$result = do_mysql_query($sql);
+	$result = do_sql_query($sql);
 	if ($result)
 	{
-		while($row = mysql_fetch_assoc($result))
+		while($row = $GLOBALS['db']->fetch_array($result))
 		{ 
 			$output[] = $row;		
 		}
@@ -73,9 +73,9 @@ function updateTestPlan($id,$name,$notes,$p_active)
 	$active = to_boolean($p_active);
 	
 	// 20050809 - fm 	
-	$sql = "UPDATE project SET active='" . $active . "', name='" . mysql_escape_string($name) . "', notes='" . 
-			mysql_escape_string($notes). "' WHERE id=" . $id;
-	$result = do_mysql_query($sql);
+	$sql = "UPDATE project SET active='" . $active . "', name='" . $GLOBALS['db']->prepare_string($name) . "', notes='" . 
+			$GLOBALS['db']->prepare_string($notes). "' WHERE id=" . $id;
+	$result = do_sql_query($sql);
 	
 	return $result ? 1 : 0;
 }
@@ -83,7 +83,7 @@ function updateTestPlan($id,$name,$notes,$p_active)
 function deleteTestPlan($id)
 {
 	$sql = "DELETE FROM project WHERE id=" . $id;
-	$result = do_mysql_query($sql);
+	$result = do_sql_query($sql);
 
 	return $result ? 1 : 0;
 }
@@ -91,13 +91,12 @@ function deleteTestPlan($id)
 function deleteTestPlanComponents($id)
 {
 	$sql = "DELETE FROM component WHERE projid=" . $id;
-	$result = do_mysql_query($sql);
+	$result = do_sql_query($sql);
 
 	return $result ? 1 : 0;
 }
 
 /*
-20051001 - fm - refactoring mysql_fetch_assoc, return type
 20050915 - fm - refactoring mgtcomponent
 */
 function getTestPlanComponents($tpID)
@@ -106,10 +105,10 @@ function getTestPlanComponents($tpID)
 	       " FROM component, mgtcomponent " .
 	       " WHERE component.mgtcompid = mgtcomponent.id " .
 	       " AND projid=" . $tpID;
-	$result = do_mysql_query($sql);
+	$result = do_sql_query($sql);
 
 	$cInfo = null;
-	while ($row = mysql_fetch_assoc($result)) 
+	while ($row = $GLOBALS['db']->fetch_array($result)) 
 	{
 		$cInfo[] = $row;
 	}
@@ -141,7 +140,7 @@ function deleteCategoriesByComponentIDs($comIDs)
 	{
 		$comIDs = implode(",",$comIDs);
 		$sql = "DELETE FROM category WHERE compid IN (" . $comIDs . ")";
-		$result = do_mysql_query($sql);
+		$result = do_sql_query($sql);
 		
 		$ret_val = $result ? 1 : 0;
 	}
@@ -154,10 +153,10 @@ function getTestPlanCategories($id,&$catIDs)
 	//Select all of the projects components
 	$sql = " SELECT category.id FROM component, category " .
 	       " WHERE projid=" . $id . " AND component.id=compid";
-	$result = do_mysql_query($sql);
+	$result = do_sql_query($sql);
 	
 	$catIDs = null;
-	while ($row = mysql_fetch_assoc($result)) 
+	while ($row = $GLOBALS['db']->fetch_array($result)) 
 	{
 		$catIDs[] = $row['id'];
 	}
@@ -171,7 +170,7 @@ function deleteTestCasesByCategories($catIDs)
 	$catIDs = implode(",",$catIDs);
 
 	$sql = "DELETE FROM testcase WHERE catid IN (".$catIDs.")";	
-	$result = do_mysql_query($sql);
+	$result = do_sql_query($sql);
 	
 	return $result ? 1 : 0;
 }
@@ -190,7 +189,7 @@ function deleteTestPlanBuilds($tpID, $buildID=0)
 	{       
 	   $sql .=  " AND build.id=" . $buildID;
 	}       
-	$result = do_mysql_query($sql);
+	$result = do_sql_query($sql);
 	
 	return $result ? 1: 0;		
 }
@@ -198,7 +197,7 @@ function deleteTestPlanBuilds($tpID, $buildID=0)
 function deleteTestPlanRightsForProject($id)
 {
 	$sql = "DELETE FROM projrights WHERE projid = ".$id;	
-	$result = do_mysql_query($sql);
+	$result = do_sql_query($sql);
 	
 	return $result ? 1 : 0;
 }
@@ -219,7 +218,7 @@ function deleteResultsForBuilds($id,$builds)
 				 " AND category.compid=component.id " .
 				 " AND component.projid=".$id;
 
-	$result = do_mysql_query($sql);
+	$result = do_sql_query($sql);
 	
 	return $result ? 1 : 0;
 }
@@ -227,7 +226,7 @@ function deleteResultsForBuilds($id,$builds)
 function deleteTestPlanPriorityFields($id)
 {
 	$sql = "DELETE FROM priority WHERE projid=" . $id;
-	$result = do_mysql_query($sql);
+	$result = do_sql_query($sql);
 	
 	return $result ? 1 : 0;
 }
@@ -235,7 +234,7 @@ function deleteTestPlanPriorityFields($id)
 function deleteTestPlanMilestones($id)
 {
 	$sql = "DELETE FROM milestone WHERE projid=" . $id;
-	$result = do_mysql_query($sql);
+	$result = do_sql_query($sql);
 	
 	return $result ? 1: 0;
 }
@@ -244,13 +243,13 @@ function deleteTestPlanMilestones($id)
 function insertTestPlan(&$id,$name,$notes,$tpID)
 {
 	$sql = "INSERT INTO project (name,notes,prodID) VALUES ('" . 
-	       mysql_escape_string($name) . "','" . 
-	       mysql_escape_string($notes) . "'," . $tpID .")";
-	$result = do_mysql_query($sql);
+	       $GLOBALS['db']->prepare_string($name) . "','" . 
+	       $GLOBALS['db']->prepare_string($notes) . "'," . $tpID .")";
+	$result = do_sql_query($sql);
 	
 	$id = 0;
 	if ($result)
-		$id =  mysql_insert_id();
+		$id =  $GLOBALS['db']->insert_id();
 	
 	return $result ? 1 : 0;
 }
@@ -270,7 +269,7 @@ function insertTestPlanPriorities($projID)
 function insertTestPlanPriority($projID,$risk)
 {
 	$sql = "INSERT into priority (projid,riskImp) values (" . $projID . ",'" . $risk. "')";
-	$result = do_mysql_query($sql);		
+	$result = do_sql_query($sql);		
 	
 	return $result ? 1 : 0;
 }
@@ -279,7 +278,7 @@ function insertTestPlanPriority($projID,$risk)
 function insertTestPlanUserRight($projID,$userID)
 {
 	$sql = "INSERT INTO projrights (projid,userid) values (".$projID.",".$userID.")";
-	$result = do_mysql_query($sql);
+	$result = do_sql_query($sql);
   
 	return $result ? 1 : 0;
 }
@@ -294,10 +293,10 @@ function insertTestPlanComponent($projID,$mgtCompID)
 	       " VALUES (" . $projID . "," . $mgtCompID . ")";
 	
 	$compID = 0;
-	$resultCom = do_mysql_query($sql);
+	$resultCom = do_sql_query($sql);
 	if ($resultCom)
 	{
-		$compID = mysql_insert_id(); 
+		$compID = $GLOBALS['db']->insert_id(); 
 	}	
 	
 	return $compID;
@@ -306,19 +305,19 @@ function insertTestPlanComponent($projID,$mgtCompID)
 function insertTestPlanMileStone($projID,$name,$date,$A,$B,$C)
 {
 	$sql = "INSERT INTO milestone (projid,name,date,A,B,C) VALUES (" . 
-			$projID . ",'" . mysql_escape_string($name) . "','" . mysql_escape_string($date) . "'," . $A . "," . 
+			$projID . ",'" . $GLOBALS['db']->prepare_string($name) . "','" . $GLOBALS['db']->prepare_string($date) . "'," . $A . "," . 
 			$B . "," . $C . ")";
-	$result = do_mysql_query($sql);
+	$result = do_sql_query($sql);
 	
 	return $result ? 1 : 0;
 }
 
 function updateMileStone($id,$name,$date,$A,$B,$C)
 {
-	$sql = "UPDATE milestone SET name='" . mysql_escape_string($name) . "', " .
-	       " date='" . mysql_escape_string($date) . "', " . 
+	$sql = "UPDATE milestone SET name='" . $GLOBALS['db']->prepare_string($name) . "', " .
+	       " date='" . $GLOBALS['db']->prepare_string($date) . "', " . 
 	       " A=" . $A . ", B=" . $B . ", C=" . $C . " WHERE id=" . $id;
-	$result = do_mysql_query($sql);
+	$result = do_sql_query($sql);
 		
 	return $result ? 1 : 0;
 }
@@ -326,7 +325,7 @@ function updateMileStone($id,$name,$date,$A,$B,$C)
 function deleteMileStone($id)
 {
 	$sql = "DELETE FROM milestone WHERE id=" . $id;
-	$result = do_mysql_query($sql);
+	$result = do_sql_query($sql);
 	
 	return $result ? 1 : 0;
 }
@@ -338,11 +337,11 @@ function getTestPlanMileStones($projID,&$mileStones)
 	       " WHERE projid=" . $projID . 
 	       " AND to_days(date) >= to_days(now()) ORDER BY date";
 	       
-	$result = do_mysql_query($sql);
+	$result = do_sql_query($sql);
 	$mileStones = null;
 	if ($result)
 	{
-		while ($myrow = mysql_fetch_row($result))
+		while ($myrow = $GLOBALS['db']->fetch_array($result))
 		{
 			$mileStones[] =  array( 'id' => $myrow[0], 
 									  'title' => $myrow[1], 
@@ -373,8 +372,8 @@ function getUsersOfPlan($id)
 	}
 	$sql .= " FROM user LEFT OUTER JOIN projrights ON projrights.userid = user.id AND projid = ".$id;
 
-	$result = do_mysql_query($sql);
-	while ($myrow = mysql_fetch_array($result))
+	$result = do_sql_query($sql);
+	while ($myrow = $GLOBALS['db']->fetch_array($result))
 	{ 
 		$checked = '';
 		if ($myrow['projid'])
@@ -407,14 +406,14 @@ function getUsersOfPlan($id)
 function insertTestPlanBuild($buildName,$testplanID,$notes = '')
 {
 	$sql = " INSERT INTO build (projid,name,note) " .
-	       " VALUES ('". $testplanID . "','" . mysql_escape_string($buildName) . "','" . 
-	       mysql_escape_string($notes) . "')";
+	       " VALUES ('". $testplanID . "','" . $GLOBALS['db']->prepare_string($buildName) . "','" . 
+	       $GLOBALS['db']->prepare_string($notes) . "')";
 	       
 	$new_build_id = 0;
-	$result = do_mysql_query($sql);
+	$result = do_sql_query($sql);
 	if ($result)
 	{
-		$new_build_id = mysql_insert_id();
+		$new_build_id = $GLOBALS['db']->insert_id();
 	}
 	
 	return $new_build_id;
@@ -433,10 +432,10 @@ function getAllTestPlanComponentCategories($testPlanID,$compID)
 	         " AND COMP.id = " . $compID . 
 	         " ORDER BY MGTCAT.CATorder";
 	         
-	$result = do_mysql_query($query);
+	$result = do_sql_query($query);
 	if ($result)
 	{
-		while($row = mysql_fetch_array($result))
+		while($row = $GLOBALS['db']->fetch_array($result))
 		{
 			$aCategories[] = $row;
 		}	
@@ -459,10 +458,10 @@ function getCategories_TC_ids($catIDs)
 		$catIDList = implode(",",$catIDs);
 		$sql = "SELECT id FROM testcase WHERE catid IN ({$catIDList})";
 		
-		$result = do_mysql_query($sql);
+		$result = do_sql_query($sql);
 		if ($result)
 		{
-			while ($row = mysql_fetch_array($result))
+			while ($row = $GLOBALS['db']->fetch_array($result))
 				$tcIDs[] = $row['id'];
 		}
 	}	
@@ -483,20 +482,20 @@ function del_category_deep($catID)
 	// bugs
 	$sql = " DELETE FROM bugs " .
 	       " WHERE tcid IN (SELECT id FROM testcase WHERE catid=" . $catID . ")";
-	$result = do_mysql_query($sql);
+	$result = do_sql_query($sql);
 	       
 	// results
 	$sql = " DELETE FROM results " .
 	       " WHERE tcid IN (SELECT id FROM testcase WHERE catid=" . $catID . ")";
-	$result = do_mysql_query($sql);
+	$result = do_sql_query($sql);
 	
 	// testcases
 	$sql = " DELETE FROM testcase  WHERE catid =" . $catID;
-	$result = do_mysql_query($sql);
+	$result = do_sql_query($sql);
 	       
 	//category
 	$sql = "DELETE FROM category WHERE id=" . $catID;
-	$result = do_mysql_query($sql);
+	$result = do_sql_query($sql);
 }
 
 /*
@@ -513,16 +512,16 @@ function del_component_deep($compID)
 	//Select all of the categories from the component
 	$sql = " SELECT category.id AS catid " .
 	       " FROM category WHERE compid=" . $compID;
-	$result = do_mysql_query($sql);
+	$result = do_sql_query($sql);
 
-	while($myrow = mysql_fetch_assoc($result))
+	while($myrow = $GLOBALS['db']->fetch_array($result))
 	{
 		del_category_deep($myrow['catid']);
 	}
 	
 	//component
 	$sql = "DELETE FROM component WHERE id=" . $compID;
-	$result = do_mysql_query($sql);
+	$result = do_sql_query($sql);
 }
 
 
@@ -532,11 +531,11 @@ function del_component_deep($compID)
 function updateTestPlanBuild($buildID,$buildName,$notes)
 {
 	$sql = " UPDATE build " .
-	       " SET name='" . mysql_escape_string($buildName) . "'," .  
-	       "     note='" . mysql_escape_string($notes) . "'" .
+	       " SET name='" . $GLOBALS['db']->prepare_string($buildName) . "'," .  
+	       "     note='" . $GLOBALS['db']->prepare_string($notes) . "'" .
 	       " WHERE id=" . $buildID ;
 	       
-	$result = do_mysql_query($sql);
+	$result = do_sql_query($sql);
 	return $result ? 1 : 0;
 }
 
@@ -557,9 +556,9 @@ function del_tp_info_by_mgtcomp($mgtcomp_id)
   $sql = " SELECT component.id AS comp_id FROM component
 	         WHERE component.mgtcompid={$mgtcomp_id} ";
 
-  $result = do_mysql_query($sql);  
+  $result = do_sql_query($sql);  
   
-  while($row = mysql_fetch_assoc($result))
+  while($row = $GLOBALS['db']->fetch_array($result))
 	{ 
     del_component_deep($row['comp_id']);
 	}  
@@ -582,9 +581,9 @@ function del_tp_info_by_mgtcat($mgtcat_id)
   $sql = " SELECT category.id AS cat_id FROM category
 	         WHERE category.mgtcatid={$mgtcat_id} ";
 
-  $result = do_mysql_query($sql);  
+  $result = do_sql_query($sql);  
   
-  while($row = mysql_fetch_assoc($result))
+  while($row = $GLOBALS['db']->fetch_array($result))
 	{ 
     del_category_deep($row['cat_id']);
 	}  

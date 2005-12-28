@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * $Id: planNew.php,v 1.9 2005/11/26 13:27:25 schlundus Exp $ 
+ * $Id: planNew.php,v 1.10 2005/12/28 07:34:55 franciscom Exp $ 
  *
  * Purpose:  Add new Test Plan 
  *
@@ -51,7 +51,7 @@ if(isset($_POST['newTestPlan']))
 		{
 			if (!insertTestPlan($projID,$name,$notes,$_SESSION['productID']))
 			{
-				$sqlResult =  mysql_error();
+				$sqlResult =  $GLOBALS['db']->error_msg();
 			}	
 			
 			$result = insertTestPlanPriorities($projID);
@@ -83,39 +83,39 @@ if(isset($_POST['newTestPlan']))
 					          " WHERE MGTCAT.id = CAT.mgtcatid " .  
 					          " AND CAT.compid=" . $component['compid'];
 	
-					$resultCat = do_mysql_query($sqlCat);
-					while ($myrowCat = mysql_fetch_assoc($resultCat))
+					$resultCat = do_sql_query($sqlCat);
+					while ($myrowCat = $GLOBALS['db']->fetch_array($resultCat))
 					{
 						$sqlInsertCat = " INSERT INTO category (compid,mgtcatid,CATorder) " .
-								            " VALUES ('" . mysql_escape_string($COMID) . " ','" . 
-								            mysql_escape_string($myrowCat['mgtcatid'])  . "','" . 
-								            mysql_escape_string($myrowCat['CATorder']) . "')";
-						$resultInsertCat = do_mysql_query($sqlInsertCat); 
+								            " VALUES ('" . $GLOBALS['db']->prepare_string($COMID) . " ','" . 
+								            $GLOBALS['db']->prepare_string($myrowCat['mgtcatid'])  . "','" . 
+								            $GLOBALS['db']->prepare_string($myrowCat['CATorder']) . "')";
+						$resultInsertCat = do_sql_query($sqlInsertCat); 
 						
 						//grab the catid from the last insert so we can use it for the test case
-						$CATID = mysql_insert_id(); 
+						$CATID = $GLOBALS['db']->insert_id(); 
 		
 						//grab all of the test case info.. Anything with a default I ignore
 						$sqlTC = " SELECT title,summary,steps,exresult,mgttcid,keywords,TCorder, version " .
 						         " FROM testcase WHERE catid=" . $myrowCat['catid'];
-						$resultTC = do_mysql_query($sqlTC);
+						$resultTC = do_sql_query($sqlTC);
 		
-						while ($myrowTC = mysql_fetch_assoc($resultTC)) 
+						while ($myrowTC = $GLOBALS['db']->fetch_array($resultTC)) 
 						{
 							//insert the test case code
 							$sqlInsertTC = " INSERT INTO testcase " .
 							               " (title,summary,steps,exresult,catid,mgttcid,keywords,TCorder,version) " .
 							               " VALUES ('" . 
-									           mysql_escape_string($myrowTC['title']) . "','" . 
-									           mysql_escape_string($myrowTC['summary']) . "','" . 
-									           mysql_escape_string($myrowTC['steps']) . "','" . 
-									           mysql_escape_string($myrowTC['exresult']) . "','" . 
-									           mysql_escape_string($CATID)               . "','" . 
-									           mysql_escape_string($myrowTC['mgttcid']) . "','" . 
-									           mysql_escape_string($myrowTC['keywords']) . "','" . 
-									           mysql_escape_string($myrowTC['TCorder']) . "','" . 
-									           mysql_escape_string($myrowTC['version']) . "')";
-							$resultInsertTC = do_mysql_query($sqlInsertTC);
+									           $GLOBALS['db']->prepare_string($myrowTC['title']) . "','" . 
+									           $GLOBALS['db']->prepare_string($myrowTC['summary']) . "','" . 
+									           $GLOBALS['db']->prepare_string($myrowTC['steps']) . "','" . 
+									           $GLOBALS['db']->prepare_string($myrowTC['exresult']) . "','" . 
+									           $GLOBALS['db']->prepare_string($CATID)               . "','" . 
+									           $GLOBALS['db']->prepare_string($myrowTC['mgttcid']) . "','" . 
+									           $GLOBALS['db']->prepare_string($myrowTC['keywords']) . "','" . 
+									           $GLOBALS['db']->prepare_string($myrowTC['TCorder']) . "','" . 
+									           $GLOBALS['db']->prepare_string($myrowTC['version']) . "')";
+							$resultInsertTC = do_sql_query($sqlInsertTC);
 						}//end the tc loop
 					}//end the cat loop
 				}//end the com loop

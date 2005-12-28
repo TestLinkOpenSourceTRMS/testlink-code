@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: int_jira.php,v $
  *
- * @version $Revision: 1.3 $
- * @modified $Date: 2005/12/02 20:12:25 $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2005/12/28 07:12:19 $
  *
  * @author (contributor) jbarchibald@gmail.com
  *
@@ -53,7 +53,6 @@ class jiraInterface extends bugtrackingInterface
 	 * @version 1.1
 	 * @author Francisco Mancardi
 	 * @since 16.09.2005, 07:45:29
-	 * mysql_fetch_assoc
 	 *
 	 * @version 1.0
 	 * @author Andreas Morsing <schlundus@web.de>
@@ -68,10 +67,10 @@ class jiraInterface extends bugtrackingInterface
 
 		$status = false;
 		$query = "SELECT issuestatus FROM {$this->m_dbName}.jiraissue WHERE pkey='$id'";
-		$result = do_mysql_query($query,$this->m_dbConnection);
+		$result = do_sql_query($query,$this->m_dbConnection);
 		if ($result)
 		{
-			$status = mysql_fetch_assoc($result);
+			$status = $GLOBALS['db']->fetch_array($result);
 			if ($status)
 			{
 				$status = $status['issuestatus'];
@@ -133,10 +132,10 @@ class jiraInterface extends bugtrackingInterface
 
 		$status = null;
 		$query = "SELECT summary FROM {$this->m_dbName}.jiraissue WHERE pkey='$id'";
-		$result = do_mysql_query($query,$this->m_dbConnection);
+		$result = do_sql_query($query,$this->m_dbConnection);
 		if ($result)
 		{
-			$summary = mysql_fetch_row($result);
+			$summary = $GLOBALS['db']->fetch_array($result);
 			if ($summary)
 				$summary = $summary[0];
 			else

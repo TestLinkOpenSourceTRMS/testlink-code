@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: int_bugtracking.php,v $
  *
- * @version $Revision: 1.6 $
- * @modified $Date: 2005/12/02 20:12:25 $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2005/12/28 07:11:46 $
  *
  * @author Andreas Morsing
  *
@@ -85,11 +85,16 @@ class bugtrackingInterface
 	function connect()
 	{
 		if (is_null($this->m_dbHost) || is_null($this->m_dbUser))
+		{
 			return false;
+		}	
 		$result	= null;
 		$this->m_dbConnection = mysql_connect($this->m_dbHost,$this->m_dbUser,$this->m_dbPass,true); 
+		
 		if (!$this->m_dbConnection)
+		{
 			$this->m_dbConnection = null;
+		}	
 		else
 		{
 			$result = mysql_select_db($this->m_dbName, $this->m_dbConnection);
@@ -127,7 +132,9 @@ class bugtrackingInterface
 	function disconnect()
 	{
 		if (isConnected())
+		{
 			mysql_close($this->m_dbConnection);
+		}	
 		$this->m_bConnected = false;
 		$this->m_dbConnection = null;
 	}

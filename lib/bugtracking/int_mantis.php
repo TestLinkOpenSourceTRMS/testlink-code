@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: int_mantis.php,v $
  *
- * @version $Revision: 1.5 $
- * @modified $Date: 2005/12/02 20:12:25 $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2005/12/28 07:12:34 $
  *
  * @author Francisco Mancardi - 20050916 - refactoring
  * @author Andreas Morsing
@@ -54,7 +54,6 @@ class mantisInterface extends bugtrackingInterface
 	 * @version 1.1
 	 * @author Francisco Mancardi
 	 * @since 16.09.2005, 07:45:29
-	 * mysql_fetch_assoc
 	 *
 	 * @version 1.0
 	 * @author Andreas Morsing <schlundus@web.de>
@@ -67,10 +66,10 @@ class mantisInterface extends bugtrackingInterface
 
 		$status = false;
 		$query = "SELECT status FROM {$this->m_dbName}.mantis_bug_table WHERE id=" . $id;
-		$result = do_mysql_query($query,$this->m_dbConnection);
+		$result = do_sql_query($query,$this->m_dbConnection);
 		if ($result)
 		{
-			$status = mysql_fetch_assoc($result);
+			$status = $GLOBALS['db']->fetch_array($result);
 			if ($status)
 			{
 				$status = $status['status'];
@@ -130,10 +129,10 @@ class mantisInterface extends bugtrackingInterface
 
 		$status = null;
 		$query = "SELECT summary FROM {$this->m_dbName}.mantis_bug_table WHERE id=" . $id;
-		$result = do_mysql_query($query,$this->m_dbConnection);
+		$result = do_sql_query($query,$this->m_dbConnection);
 		if ($result)
 		{
-			$summary = mysql_fetch_row($result);
+			$summary = $GLOBALS['db']->fetch_array($result);
 			if ($summary)
 				$summary = $summary[0];
 			else

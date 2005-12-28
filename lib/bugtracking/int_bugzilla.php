@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: int_bugzilla.php,v $
  *
- * @version $Revision: 1.7 $
- * @modified $Date: 2005/12/04 12:58:46 $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2005/12/28 07:12:06 $
  *
  * @author Arjen van Summeren - 20051010 - inserted function getBugSummary($id) again, corrected getBugStatusString($id)
  * @author Raphael Bosshard - 20051010 - inserted function getBugSummary($id) again
@@ -56,7 +56,6 @@ class bugzillaInterface extends bugtrackingInterface
 	 * @version 1.1
 	 * @author Francisco Mancardi
 	 * @since 16.09.2005, 07:45:29
-	 * mysql_fetch_assoc
 	 * 
 	 * @version 1.0
 	 * @author Andreas Morsing 
@@ -65,14 +64,16 @@ class bugzillaInterface extends bugtrackingInterface
 	function getBugStatus($id)
 	{
 		if (!$this->isConnected())
+		{
 			return null;
-
+    }
+    
 		$status = null;
 		$query = "SELECT bug_status FROM {$this->m_dbName}.bugs WHERE bug_id=" . $id;
-		$result = do_mysql_query($query,$this->m_dbConnection);
+		$result = do_sql_query($query,$this->m_dbConnection);
 		if ($result)
 		{
-			$status = mysql_fetch_assoc($result);
+			$status = $GLOBALS['db']->fetch_array($result);
 			if ($status)
 			{
 				$status = $status['bug_status'];
@@ -96,16 +97,18 @@ class bugzillaInterface extends bugtrackingInterface
 	function getBugSummaryString($id)
 	{
 		if (!$this->isConnected())
+		{
 			return null;
-
+    }
+    
 		$status = null;
 		$query = "SELECT short_desc FROM {$this->m_dbName}.bugs WHERE bug_id=" . $id;
 		
-		$result = do_mysql_query($query,$this->m_dbConnection);
+		$result = do_sql_query($query,$this->m_dbConnection);
 		$summary = null;
 		if ($result)
 		{
-			$summary = mysql_fetch_row($result);
+			$summary = $GLOBALS['db']->fetch_array($result);
 			if ($summary)
 			{
 				$summary = $summary[0];

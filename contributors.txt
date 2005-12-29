@@ -1,0 +1,27 @@
+People who have contributed to TestLink
+---------------------------------------
+
+Original developer of TestLink 1.0
+* Chad Rosen
+
+Project lead since TestLink >= 1.5:
+* Martin Havlat
+* Francisco Mancardi
+* Andreas Morsing
+* Asiel Brumfield
+
+Other developers:
+* Kevin Levy
+
+Other Contributors (code, ideas, testing..):
+* Tools R Us
+
+Localization
+* French
+	grdscarabe@grdscarabe.net
+
+* Portuguese	
+	Leonardo Molinari
+	
+* German
+	Andreas Morsing

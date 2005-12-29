@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.14 $
- * @modified $Date: 2005/12/28 07:34:55 $  by $Author: franciscom $
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2005/12/29 20:59:00 $  by $Author: schlundus $
  * This page manages all the editing of test cases.
  *
  * @author Martin Havlat
@@ -97,8 +97,8 @@ if($tc)
 	$myrowTC = getTestcase($testcaseID,false);
 
 	// 20051004 - fm - refactoring
-	$tcKeywords = getTCKeywords($testcaseID);
-	$prodKeywords = getProductKeywords($_SESSION['productID']);
+	$tcKeywords = getTCKeywords($db,$testcaseID);
+	$prodKeywords = getProductKeywords($db,$_SESSION['productID']);
 	
 	if (sizeof($prodKeywords))
 	{

@@ -1,38 +1,40 @@
 <?php
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: keywordsAssign.php,v $
  *
- * @version $Revision: 1.7 $
- * @modified $Date: 2005/11/26 13:27:25 $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2005/12/29 20:59:00 $
  *
  * Purpose:  Assign keywords to set of testcases in tree structure
  *
- * @author Francisco Mancardi - 20051011 - refactoring $_REQUEST
- * @author Andreas Morsing - cosmetic code changes
+ * 20051011 - fm - refactoring $_REQUEST
  * 20050907 - scs - moved POST to the top, refactoring
+ * 20051217 - scs - cosmetic changes
 **/
 require_once("../../config.inc.php");
 require_once("../functions/common.php");
-require_once("keywords.inc.php");
 require_once("../testcases/archive.inc.php");
+require_once("keywords.inc.php");
 testlinkInitPage();
 
 $_REQUEST = strings_stripSlashes($_REQUEST);
 $id = isset($_REQUEST['data']) ? intval($_REQUEST['data']) : null;
-$keyword = isset($_REQUEST['keywords']) ? strings_stripSlashes($_REQUEST['keywords']) : null;
-$edit = isset($_REQUEST['edit']) ? strings_stripSlashes($_REQUEST['edit']) : null;
+$keyword = isset($_REQUEST['keywords']) ? $_REQUEST['keywords'] : null;
+$edit = isset($_REQUEST['edit']) ? $_REQUEST['edit'] : null;
 $bAssignComponent = isset($_REQUEST['assigncomponent']) ? 1 : 0;
 $bAssignCategory = isset($_REQUEST['assigncategory']) ? 1 : 0;
 $bAssignTestCase = isset($_REQUEST['assigntestcase']) ? 1 : 0;
+
 $prodID = isset($_SESSION['productID']) ? $_SESSION['productID'] : 0;
 
-$keysOfProduct = selectKeywords($prodID);
 $smarty = new TLSmarty();
-$smarty->assign('data', $id);
 $title = null;
-$level = null;
+$result = null;
+$keysOfProduct = selectKeywords($db,$prodID);
+
 if ($edit == 'product')
 {
 	redirect($_SESSION['basehref'] . $g_rpath['help'] . '/keywordsAssign.html');
@@ -41,54 +43,44 @@ if ($edit == 'product')
 else if ($edit == 'component')
 {
 	if($bAssignComponent) 
-	{
-		$result = updateComponentKeywords($id,$keyword);
-		$smarty->assign('sqlResult', $result);
-	}
+		$result = updateComponentKeywords($db,$id,$keyword);
+
 	$componentData = getComponent($id);
 	$title = $componentData['name'];
-	$level = 'component';
 }
 else if ($edit == 'category')
 {
 	if($bAssignCategory) 
-	{
-		$result = updateCategoryKeywords($id,$keyword);
-		$smarty->assign('sqlResult', $result);
-	}
+		$result = updateCategoryKeywords($db,$id,$keyword);
+
 	$categoryData = getCategory($id);
 	$title = $categoryData['name'];
-	$level = 'category';
 }
 else if($edit == 'testcase')
 {
 	if($bAssignTestCase) 
-	{
-		$result = updateTCKeywords($id,$keyword);
-		$smarty->assign('sqlResult', $result);
-	}
-	$DO_NOT_CONVERT=false;
-	$tcData = getTestcase($id,$DO_NOT_CONVERT);
+		$result = updateTCKeywords($db,$id,$keyword);
+
 	$tcKeywords = null;
+	$tcData = getTestcase($id,false);
 	if ($tcData['keywords'])
-	{
 		$tcKeywords = explode(",",$tcData['keywords']);  
-	}
-  
-	//find actual keywords
-	for($i = 0;$i < count($keysOfProduct);$i++)
+
+	//find actual keywords by select those productKeywords which are set in the TC
+	if ($tcKeywords)
 	{
-		$productKeyword = $keysOfProduct[$i]['keyword'];
-		$sel = 'no';
-		if ($tcKeywords && in_array($productKeyword,$tcKeywords))
+		for($i = 0;$i < count($keysOfProduct);$i++)
 		{
-			$sel  = 'yes';
-		}	
-		$keysOfProduct[$i]['selected'] = $sel;	
+			$productKeyword = $keysOfProduct[$i]['keyword'];
+			$sel = 0;
+			if (in_array($productKeyword,$tcKeywords))
+				$sel  = 1;
+	
+			$keysOfProduct[$i]['selected'] = $sel;	
+		}
 	}
 
 	$title = $tcData['title'];
-	$level = 'testcase';
 	$smarty->assign('tcKeys', $tcData['keywords']);
 }
 else
@@ -97,7 +89,9 @@ else
 	exit();
 }
 
-$smarty->assign('level', $level);
+$smarty->assign('sqlResult', $result);
+$smarty->assign('data', $id);
+$smarty->assign('level', $edit);
 $smarty->assign('title',$title);
 $smarty->assign('arrKeys', $keysOfProduct);
 $smarty->display('keywordsAssign.tpl');

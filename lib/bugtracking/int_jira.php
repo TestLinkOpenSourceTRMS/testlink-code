@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: int_jira.php,v $
  *
- * @version $Revision: 1.4 $
- * @modified $Date: 2005/12/28 07:12:19 $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2005/12/29 20:59:00 $
  *
  * @author (contributor) jbarchibald@gmail.com
  *
@@ -13,6 +13,7 @@
  * they should be changed for your environment
  *
  * 20051202 - scs - added returning null in some cases
+ * 20051229 - scs - added ADOdb support
 **/
 /** Interface name */
 define('BUG_INTERFACE_CLASSNAME',"jiraInterface");
@@ -24,6 +25,7 @@ class jiraInterface extends bugtrackingInterface
 	var $m_dbName = BUG_TRACK_DB_NAME;
 	var $m_dbUser = BUG_TRACK_DB_USER;
 	var $m_dbPass = BUG_TRACK_DB_PASS;
+	var $m_dbType = BUG_TRACK_DB_TYPE;
 	var $m_showBugURL = BUG_TRACK_HREF;
 	var $m_enterBugURL = BUG_TRACK_ENTER_BUG_HREF;
 	
@@ -34,10 +36,6 @@ class jiraInterface extends bugtrackingInterface
 	 * @param int id the bug id
 	 * 
 	 * @return string returns a complete URL to view the bug
-	 *
-	 * @version 1.0
-	 * @author Andreas Morsing <schlundus@web.de>
-	 * @since 22.04.2005, 21:05:25
 	 **/
 	function buildViewBugURL($id)
 	{
@@ -50,15 +48,7 @@ class jiraInterface extends bugtrackingInterface
 	 *
 	 * @return string returns the status of the given bug (if found in the db), or false else
 	 *
-	 * @version 1.1
-	 * @author Francisco Mancardi
-	 * @since 16.09.2005, 07:45:29
-	 *
-	 * @version 1.0
-	 * @author Andreas Morsing <schlundus@web.de>
-	 * @since 22.04.2005, 21:05:25
-	 * 
-	 * 2005119 - scs - fixed using of wrong index
+ 	 * 2005119 - scs - fixed using of wrong index
 	 **/
 	function getBugStatus($id)
 	{
@@ -67,10 +57,10 @@ class jiraInterface extends bugtrackingInterface
 
 		$status = false;
 		$query = "SELECT issuestatus FROM {$this->m_dbName}.jiraissue WHERE pkey='$id'";
-		$result = do_sql_query($query,$this->m_dbConnection);
+		$result = $this->m_dbConnection->exec_query($query);
 		if ($result)
 		{
-			$status = $GLOBALS['db']->fetch_array($result);
+			$status = $this->m_dbConnection->fetch_array($result);
 			if ($status)
 			{
 				$status = $status['issuestatus'];
@@ -88,11 +78,8 @@ class jiraInterface extends bugtrackingInterface
 	 * @param int id the bug id
 	 * 
 	 * @return string returns the status (in a readable form) of the given bug if the bug
-	 * 		was found , else false
+	 * 		was found, else false
 	 *
-	 * @version 1.0
-	 * @author Andreas Morsing <schlundus@web.de>
-	 * @since 22.04.2005, 21:05:25
 	 **/
 	function getBugStatusString($id)
 	{
@@ -120,10 +107,6 @@ class jiraInterface extends bugtrackingInterface
 	 * @param int id the bug id
 	 * 
 	 * @return string returns the bug summary if bug is found, else false
-	 *
-	 * @version 1.0
-	 * @author Andreas Morsing 
-	 * @since 22.04.2005, 21:05:25
 	 **/
 	function getBugSummaryString($id)
 	{
@@ -132,10 +115,10 @@ class jiraInterface extends bugtrackingInterface
 
 		$status = null;
 		$query = "SELECT summary FROM {$this->m_dbName}.jiraissue WHERE pkey='$id'";
-		$result = do_sql_query($query,$this->m_dbConnection);
+		$result = $this->m_dbConnection->exec_query($query);
 		if ($result)
 		{
-			$summary = $GLOBALS['db']->fetch_array($result);
+			$summary = $this->m_dbConnection->fetch_array($result);
 			if ($summary)
 				$summary = $summary[0];
 			else

@@ -1,10 +1,9 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: buildNew.tpl,v 1.5 2005/10/09 18:13:48 schlundus Exp $ *}
+{* $Id: buildNew.tpl,v 1.6 2005/12/29 20:59:00 schlundus Exp $ *}
 {* Purpose: smarty template - Add new build and show existing 
 
- @author Francisco Mancardi - fm
- replace html with fckedit
- 20051008 - am - removed build label while editing and deleting
+ ???????? - fm - replace html with fckedit
+ 20051008 - scs - removed build label while editing and deleting
 *}
 {include file="inc_head.tpl"}
 

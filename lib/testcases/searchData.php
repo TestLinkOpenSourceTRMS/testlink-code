@@ -1,16 +1,11 @@
 <?php
-/* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: searchData.php,v 1.6 2005/12/28 07:34:55 franciscom Exp $ */
-/* Purpose:  This page presents the search results. 
+/* TestLink Open Source Project - http://testlink.sourceforge.net/
+ * $Id: searchData.php,v 1.7 2005/12/29 20:59:00 schlundus Exp $
+ * Purpose:  This page presents the search results. 
  *
- * 
- * @ author: Francisco Mancardi - 20050821
- * changes to use template customization
- * (trying to reduce code redundancy)
- *
- * @ author: Francisco Mancardi - 20050810
- * deprecated $_SESSION['product'] removed
- */
+ * 20050821 - fm - changes to use template customization (trying to reduce code redundancy)
+ * 20050810 - fm - removed deprecated $_SESSION['product'] 
+**/
 require('../../config.inc.php');
 require("../functions/common.php");
 require_once("../../lib/functions/lang_api.php");
@@ -60,7 +55,6 @@ if ($product)
 		array_push($arrTc, $row);
 	}
 }
-
 $smarty = new TLSmarty();
 $smarty->assign('modify_tc_rights', 'no');
 if(has_rights("mgt_modify_tc"))
@@ -68,7 +62,5 @@ if(has_rights("mgt_modify_tc"))
 	$smarty->assign('modify_tc_rights', 'yes');
 }
 $smarty->assign('testcase', $arrTc);
-
-global $g_tpl;
 $smarty->display($g_tpl['tcSearchView']);
 ?>

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: tcImport.php,v $
  *
- * @version $Revision: 1.6 $
- * @modified $Date: 2005/10/17 20:11:27 $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2005/12/29 20:59:00 $
  *
  * @author	Martin Havlat
  * @author	Chad Rosen
@@ -15,6 +15,7 @@
  * 20050828 - scs - changes for importing tc to a specific category
  * 20050831 - scs - import limits are now define in config.inc.php
  * 20051015 - scs - moved POST params to the top
+ * 20051015 - scs - moved SESSION params to the top
 */
 require('../../config.inc.php');
 require_once('common.php');
@@ -26,6 +27,9 @@ $source = isset($HTTP_POST_FILES['uploadedFile']['tmp_name']) ? $HTTP_POST_FILES
 $catIDForImport = isset($_POST['catID']) ? intval($_POST['catID']) : 0;
 $bImport = isset($_POST['import']) ? 1 : 0;
 $location = isset($_POST['location']) ? strings_stripSlashes($_POST['location']) : null; 
+$productName = $_SESSION['productName'];
+$productID = $_SESSION['productID'];
+$user = $_SESSION['user'];
 
 //20050831 - scs - import now import not to a single file only
 $dest = TL_TEMP_PATH . session_id()."-importTc.csv";
@@ -40,14 +44,15 @@ if (($source != 'none') && ($source != '' ))
 	if (move_uploaded_file($source, $dest))
 	{
 		$uploadedFile = $dest;
-		$overview = showTcImport($dest,$catIDForImport); //create overview table
+		 //create overview table
+		$overview = showTcImport($dest,$catIDForImport);
 	}
 } 
 
 if($bImport)
 {
 	// 20050831 - fm - interface changes to reduce global coupling
-	$imported = exeTcImport($location,$_SESSION['productID'], $_SESSION['user'],$catIDForImport);
+	$imported = exeTcImport($db,$location,$productID,$user,$catIDForImport);
 }
 $fileFormatString = lang_get('the_format');
 if ($catIDForImport)
@@ -55,7 +60,7 @@ if ($catIDForImport)
 	
 $smarty = new TLSmarty;
 $smarty->assign('fileFormatString',$fileFormatString);
-$smarty->assign('productName', $_SESSION['productName']);
+$smarty->assign('productName', $productName);
 $smarty->assign('uploadedFile', $uploadedFile);
 $smarty->assign('overview', $overview);
 $smarty->assign('catIDForImport', $catIDForImport);

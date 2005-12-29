@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: logging.inc.php,v $
  *
- * @version $Revision: 1.7 $
- * @modified $Date: 2005/12/28 07:34:55 $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2005/12/29 20:59:00 $
  *
  * @author Martin Havlat
  *
@@ -162,53 +162,28 @@ function tlTimingCurrent ($name = 'default')
 * inline coding for an example of the use of these functions.
 */
 
-/**
- * Wrapper to execute a query and generate a log message for it
- * So its possible to profile and inline the query and its result
+/** DEPRECATED
+ * Wrapper to execute a query 
  *
  * @param string $query the query to execute
  * @param resource $resource [default = null] link identifier to the db connection
  * @return resource result handle of the db query
  *
- * @author Andreas Morsing
  * 20050905 - scs - added overall duration
+ * 20051229 - scs - adopted the new ADODb style, moved the logging part
+ * 					to the db-class. So this function now becomes DEPRECATED
+ * 					$db->exec_query should be used instead!
  **/
 function do_sql_query($query, $resource = null)
 {
 	global $db;
-	$my_db = $db;
 	
-	static $nQuery = 0;
-	static $overallDuration = 0;
-	
-	$nQuery++;
-	//execute query and profile execution time
-	tlTimingStart('do_sql_query');
+	$my_db = &$db;
 	if (!is_null($resource))
 	{
-	  $my_db=$resource;
-	  	
+		$my_db = &$resource;
 	}	
 	$result = $my_db->exec_query($query);
-
-		
-	tlTimingStop('do_sql_query');
-	$duration = tlTimingCurrent('do_sql_query');
-	$overallDuration += $duration;
-	
-	//build loginfo
-	$logLevel = 'DEBUG';
-	$message = "SQL [".$nQuery."] executed [took {$duration} secs][all took {$overallDuration} secs]:\n\t".$query;
-	
-	if (!$result)
-	{
-		$ec       = $my_db->error_num;
-		$emsg     = $my_db->error_msg;
-		$message .= "\nQuery failed: errorcode[".$ec."]". "\n\terrormsg:".$emsg;
-		$logLevel = 'ERROR';
-	}
-	
-	tLog($message,$logLevel);
 	
 	return $result;
 }

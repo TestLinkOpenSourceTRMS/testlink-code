@@ -4,18 +4,18 @@
  *
  * Filename $RCSfile: int_bugzilla.php,v $
  *
- * @version $Revision: 1.8 $
- * @modified $Date: 2005/12/28 07:12:06 $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2005/12/29 20:59:00 $
  *
  * @author Arjen van Summeren - 20051010 - inserted function getBugSummary($id) again, corrected getBugStatusString($id)
  * @author Raphael Bosshard - 20051010 - inserted function getBugSummary($id) again
  * @author Francisco Mancardi - 20050916 - refactoring
- * @author Andreas Morsing
  *
  * Constants used throughout TestLink are defined within this file
  * they should be changed for your environment
  *
- *  * 20051202 - scs - added returning null in some cases
+ * 20051202 - scs - added returning null in some cases
+ * 20051229 - scs - added ADOdb support
 **/
 /** Interface name */
 define('BUG_INTERFACE_CLASSNAME',"bugzillaInterface");
@@ -27,6 +27,7 @@ class bugzillaInterface extends bugtrackingInterface
 	var $m_dbName = BUG_TRACK_DB_NAME;
 	var $m_dbUser = BUG_TRACK_DB_USER;
 	var $m_dbPass = BUG_TRACK_DB_PASS;
+	var $m_dbType = BUG_TRACK_DB_TYPE;
 	var $m_showBugURL = BUG_TRACK_HREF;
 	var $m_enterBugURL = BUG_TRACK_ENTER_BUG_HREF;
 	
@@ -52,28 +53,18 @@ class bugzillaInterface extends bugtrackingInterface
 	 * this function is not directly called by TestLink. 
 	 *
 	 * @return string returns the status of the given bug (if found in the db), or null else
-	 *
-	 * @version 1.1
-	 * @author Francisco Mancardi
-	 * @since 16.09.2005, 07:45:29
-	 * 
-	 * @version 1.0
-	 * @author Andreas Morsing 
-	 * @since 22.04.2005, 21:05:25
 	 **/
 	function getBugStatus($id)
 	{
 		if (!$this->isConnected())
-		{
 			return null;
-    }
-    
+	
 		$status = null;
 		$query = "SELECT bug_status FROM {$this->m_dbName}.bugs WHERE bug_id=" . $id;
-		$result = do_sql_query($query,$this->m_dbConnection);
+		$result = $this->m_dbConnection->exec_query($query);
 		if ($result)
 		{
-			$status = $GLOBALS['db']->fetch_array($result);
+			$status = $this->m_dbConnection->fetch_array($result);
 			if ($status)
 			{
 				$status = $status['bug_status'];
@@ -104,11 +95,11 @@ class bugzillaInterface extends bugtrackingInterface
 		$status = null;
 		$query = "SELECT short_desc FROM {$this->m_dbName}.bugs WHERE bug_id=" . $id;
 		
-		$result = do_sql_query($query,$this->m_dbConnection);
+		$result = $this->m_dbConnection->exec_query($query);
 		$summary = null;
 		if ($result)
 		{
-			$summary = $GLOBALS['db']->fetch_array($result);
+			$summary = $this->m_dbConnection->fetch_array($result);
 			if ($summary)
 			{
 				$summary = $summary[0];
@@ -123,8 +114,6 @@ class bugzillaInterface extends bugtrackingInterface
 		
 		return $summary;
 	}	
-	
-	
 	
 	
 	

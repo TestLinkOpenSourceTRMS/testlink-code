@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: int_bugtracking.php,v $
  *
- * @version $Revision: 1.7 $
- * @modified $Date: 2005/12/28 07:11:46 $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2005/12/29 20:59:00 $
  *
  * @author Andreas Morsing
  *
@@ -16,12 +16,16 @@
  * For supporting a bug tracking system this class has to be extended
  * All bug tracking customization should be done in a sub class of this
  * class . for an example look at the bugzilla.cfg.php and mantis.cfg.php
+ * 
+ * 20051229 - scs - added ADOdb support
  *
 **/
 //Add new bugtracking interfaces here
 //Please use only lowercase file names!
 //This holds the configuration file names for the bugtracking interfaces
 //located in the cfg diectory
+require_once(TL_ABS_PATH. "/lib/functions/database.class.php");
+
 $configFiles = array(
 					'BUGZILLA' => 'bugzilla.cfg.php',
 					'MANTIS' => 'mantis.cfg.php',
@@ -45,6 +49,7 @@ class bugtrackingInterface
 	var $m_dbName = null;
 	var $m_dbUser = null;
 	var $m_dbPass = null;
+	var $m_dbType = null;
 	var $m_showBugURL = null;
 	var $m_enterBugURL = null;
 	
@@ -88,24 +93,13 @@ class bugtrackingInterface
 		{
 			return false;
 		}	
-		$result	= null;
-		$this->m_dbConnection = mysql_connect($this->m_dbHost,$this->m_dbUser,$this->m_dbPass,true); 
-		
-		if (!$this->m_dbConnection)
-		{
+		$this->m_dbConnection = new database($this->m_dbType);
+		$result = $this->m_dbConnection->connect(false, $this->m_dbHost,$this->m_dbUser,$this->m_dbPass, $this->m_dbName);
+		if (!$result['status'])
 			$this->m_dbConnection = null;
-		}	
-		else
-		{
-			$result = mysql_select_db($this->m_dbName, $this->m_dbConnection);
-			if (!$result)
-			{
-				mysql_close($this->m_dbConnection);
-				$this->m_dbConnection = null;
-			}
-		}			
+			
 		$this->m_bConnected = $result ? 1 : 0;
-		
+
 		return $this->m_bConnected;
 	}
 	/**
@@ -119,7 +113,7 @@ class bugtrackingInterface
 	 **/
 	function isConnected()
 	{
-		return ($this->m_bConnected && is_resource($this->m_dbConnection)) ? 1 : 0;
+		return ($this->m_bConnected && is_object($this->m_dbConnection)) ? 1 : 0;
 	}
 	
 	/**
@@ -133,7 +127,7 @@ class bugtrackingInterface
 	{
 		if (isConnected())
 		{
-			mysql_close($this->m_dbConnection);
+			$this->m_dbConnection->close();
 		}	
 		$this->m_bConnected = false;
 		$this->m_dbConnection = null;

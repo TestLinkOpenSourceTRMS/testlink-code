@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: userrightmatrix.php,v $
  *
- * @version $Revision: 1.4 $
- * @modified $Date: 2005/08/23 18:29:24 $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2005/12/29 20:59:00 $
  *
  * @author Andreas Morsing
  *
@@ -51,13 +51,11 @@ $g_userRights = array(
 						"lib/keywords/keywordsview.php" => array (
 															"mgt_view_key",
 														),
-						"lib/keywords/keywordsedit.php" => array (
+						//KEYWORDS
+						"lib/keywords/keywordsassign.php" => array (
 															"mgt_modify_key",
 														),
-						"lib/keywords/keywordsnew.php" => array (
-															"mgt_modify_key",
-														),
-						
+					
 						//BUILD
 						"lib/plan/buildnew.php" => array (
 															"tp_create_build",

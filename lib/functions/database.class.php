@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
  * @filesource $RCSfile: database.class.php,v $
- * @version $Revision: 1.1 $
- * @modified $Date: 2005/12/28 15:14:54 $ by $Author: franciscom $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2005/12/29 20:59:00 $ by $Author: schlundus $
  * @author Francisco Mancardi
  * 
 */
@@ -24,10 +24,12 @@ require_once( dirname(__FILE__). '/../../third_party/adodb/adodb.inc.php' );
 
 class database 
 {
-  var $db;
-  var $queries_array = array();
-  var $is_connected=false;
-
+	var $db;
+	var $queries_array = array();
+	var $is_connected=false;
+	var $nQuery = 0;
+	var $overallDuration = 0;
+	
   
 	# ------------------------------------------------------
 	# timer analysis
@@ -73,8 +75,9 @@ class database
 	# execute query, requires connection to be opened
 	# If $p_error_on_failure is true (default) an error will be triggered
 	#  if there is a problem executing the query.
-	function exec_query( $p_query, $p_limit = -1, $p_offset = -1 ) {
-
+	function exec_query( $p_query, $p_limit = -1, $p_offset = -1 )
+	{
+		$this->nQuery++;
 		$t_start = $this->microtime_float();
 		
 		if ( ( $p_limit != -1 ) || ( $p_offset != -1 ) ) {
@@ -83,8 +86,23 @@ class database
 			$t_result = $this->db->Execute( $p_query );
 		}
 		$t_elapsed = number_format( $this->microtime_float() - $t_start, 4);
-		
-		array_push ( $this->queries_array, array( $p_query, $t_elapsed ) );
+		$this->overallDuration += $t_elapsed;
+		$ec = 0;
+		$emsg = null;
+
+		//build loginfo
+		$logLevel = 'DEBUG';
+		$message = "SQL [".$this->nQuery."] executed [took {$t_elapsed} secs][all took {$this->overallDuration} secs]:\n\t".$p_query;
+		$this->overallDuration += $t_elapsed;	
+		if (!$t_result)
+		{
+			$ec       = $this->error_num();
+			$emsg     = $this->error_msg();
+			$message .= "\nQuery failed: errorcode[".$ec."]". "\n\terrormsg:".$emsg;
+			$logLevel = 'ERROR';
+		}
+		tLog($message,$logLevel);
+		array_push ($this->queries_array, array( $p_query, $t_elapsed, $ec, $emsg ) );
 
 		if ( !$t_result ) {
 			echo $this->error($p_query);
@@ -316,10 +334,58 @@ class database
 	}
 
 
+	/**
+	 * Fetches the first column first row 
+	 *
+	 * @param string $query the query to be executed
+	 * @param string $column the name of the column which shall be returned
+	 * @return mixed the value of the column
+	 **/
+	function fetchFirstRowSingleColumn($query,$column)
+	{
+		$value = null;
+		$row = $this->fetchFirstRow($query);
+		if ($row)
+			$value = $row[$column];
+		
+		return $value;
+	}
 
-
+	/**
+	 * Fetches the first row (in a assoc-array)
+	 *
+	 * @param string $query the query to be executed
+	 * @return array the first row
+	 **/
+	function fetchFirstRow($query)
+	{
+		$result = $this->exec_query($query);
+		$row = null;
+		if ($result)
+			$row = $this->fetch_array($result);
+		
+		return $row;
+	}
+	
+	
+	/**
+	 * Fetches all values for a given column of all returned rows
+	 *
+	 * @param string $query the query to be executed
+	 * @param string $column the name of the column
+	 * @return array a enumerated array, which contains all the values
+	 **/
+	function fetchColumnsIntoArray($query,$column)
+	{
+		$items = null;
+		$result = $this->exec_query($query);
+		if ($result)
+		{
+			while($row = $this->fetch_array($result))
+				$items[] = $row[$column];
+		}
+	
+		return $items;
+	}
 }
-
-
-
 ?>

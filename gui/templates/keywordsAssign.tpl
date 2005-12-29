@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: keywordsAssign.tpl,v 1.2 2005/08/16 17:59:13 franciscom Exp $ *}
+{* $Id: keywordsAssign.tpl,v 1.3 2005/12/29 20:59:00 schlundus Exp $ *}
 {* Purpose: smarty template - assign keywords to one or more test cases *}
 {* Andreas Morsing : changed action to updated *}
 {include file="inc_head.tpl"}
@@ -12,11 +12,7 @@
 {* tabs *}
 <div class="tabMenu">
 	<span class="unselected"><a href="lib/keywords/keywordsView.php"
-			target='mainframe'>{lang_get s='menu_view'}</a></span> 
-	<span class="unselected"><a href="lib/keywords/keywordsNew.php"
-			target='mainframe'>{lang_get s='menu_create'}</a></span> 
-	<span class="unselected"><a href="lib/keywords/keywordsEdit.php"
-			target='mainframe'>{lang_get s='menu_edit_del'}</a></span>
+			target='mainframe'>{lang_get s='menu_manage_keywords'}</a></span> 
 	<span class="selected">{lang_get s='menu_assign_kw_to_tc'}</span> 
 </div>
 
@@ -54,12 +50,13 @@
 			<td valign="top">
 				<select name="keywords[]" multiple="multiple">
 				{section name=Row loop=$arrKeys}
-					{if $arrKeys[Row].selected == "yes"}
-						<option value="{$arrKeys[Row].keyword|escape}"
-							selected="selected">{$arrKeys[Row].keyword|escape}</option>
-					{else}
-						<option value="{$arrKeys[Row].keyword|escape}">{$arrKeys[Row].keyword|escape}</option>
-					{/if}
+						<option value="{$arrKeys[Row].keyword|escape}" 
+						{if $arrKeys[Row].selected == 1}
+							selected="selected"
+						{/if}		
+						>
+						{$arrKeys[Row].keyword|escape}
+						</option>
 				{/section}
 			{else}
 			<td>{lang_get s='select_keyword_label'}</td>
@@ -69,7 +66,7 @@
 				{else}
 					<select name="keywords">
 					{section name=Row loop=$arrKeys}
-					<option value="{$arrKeys[Row].keyword|escape}">{$arrKeys[Row].keyword|escape}</option>
+						<option value="{$arrKeys[Row].keyword|escape}">{$arrKeys[Row].keyword|escape}</option>
 					{/section}
 				{/if}
 			{/if}

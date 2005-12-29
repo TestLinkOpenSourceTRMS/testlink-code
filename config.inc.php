@@ -5,15 +5,13 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.34 $
- * @modified $Date: 2005/12/28 07:34:54 $ by $Author: franciscom $
+ * @version $Revision: 1.35 $
+ * @modified $Date: 2005/12/29 20:58:58 $ by $Author: schlundus $
  *
  *
  * Constants and configuration parameters used throughout TestLink 
  * are defined within this file they should be changed for your environment
- * 
  *-------------------------------------------------------------------------
- *
  * Revisions:
  *
  * @author Francisco Mancardi - 20051227 - BUGID 300
@@ -45,37 +43,22 @@
  *   $g_ui_show_check_filter_tp_by_product
  *
  * - New configuration parameters for Requirements Functionality
- *
- * @author Francisco Mancardi - 20050919 - g_timestamp_format
- * @author Francisco Mancardi - 20050915 - from 1.6.Beta1 to 1.6.RC1
- *
- * @author Francisco Mancardi - 20050908
- * New configuration parameters:
- * $g_check_names_for_duplicates
- * $g_action_on_duplicate_name
- * $g_prefix_name_for_copy
- *
- * Fixed BUGID 0000086: Using "|" in the component or category name causes malformed URLs
- *
- * @author Francisco Mancardi - 20050904 
- * added $g_show_tp_without_prodid to manage TL 1.5.1 compatibility.
- *
- * @author Francisco Mancardi - 20050827 
- * changes in $g_tc_status, $g_tc_sd_color
- * new config parameters: $g_date_format, $g_fckeditor_toolbar
- *
- * @author Francisco Mancardi - 20050822 - $tpl -> $g_tpl
- * 
- * @author Francisco Mancardi - 20050821
- * template configuration/customization
- *
- * @author Francisco Mancardi - 20050806 
- * Changes to support the installer
- * 
+ * 20050919 - fm - 	g_timestamp_format
+ * 20050915 - fm - 	from 1.6.Beta1 to 1.6.RC1
+ * 20050908 - fm -  New configuration parameters:
+ * 					$g_check_names_for_duplicates
+ *					$g_action_on_duplicate_name
+ * 					$g_prefix_name_for_copy
+ *					Fixed BUGID 0000086: Using "|" in the component or category name causes malformed URLs
+ * 20050904 - fm - 	added $g_show_tp_without_prodid to manage TL 1.5.1 compatibility.
+ * 20050827 - fm - 	changes in $g_tc_status, $g_tc_sd_color
+ * 					new config parameters: $g_date_format, $g_fckeditor_toolbar
+ * 20050822 - fm - 	$tpl -> $g_tpl
+ * 20050821 - fm - template configuration/customization
+ * 20050806 - fm - Changes to support the installer
  * 20051204 - MHT - added HTTP_ACCEPT_LANGUAGE support; added patch for Chinese
- * 
- *------------------------------------------------------------------------*/
-
+ *------------------------------------------------------------------------
+**/
 /** 
  * config_db.inc.php is generated automatically with the use of the installer
  * otherwise you must manualy create this file, that include constants:
@@ -85,8 +68,7 @@
  */ 
 require_once('config_db.inc.php');
 
-// 20051227 - fm
-// for method connect() of database.class
+// 20051227 - fm - for method connect() of database.class
 define('DSN',FALSE);
 
 /** root of testlink directory location seen through the web server */
@@ -100,6 +82,7 @@ define('DB_SUPPORTS_UTF8', TRUE);
  * @todo translate Chinese from gb2312 to UTF-8
  **/
 define('TL_TPL_CHARSET', DB_SUPPORTS_UTF8  ? 'UTF-8' : 'ISO-8859-1');
+define('TL_XMLEXPORT_HEADER', "<?xml version=\"1.0\" encoding=\"".TL_TPL_CHARSET."\"?>\n");
 //define('TL_TPL_CHARSET', 'gb2312'); // Chinese charset
 
 /* Directory separator */
@@ -128,7 +111,7 @@ define('MAIN_PAGE_METRICS_ENABLED', 'FALSE');
 
 /** some maxmima related to importing stuff in TL */
 /** maximum uploadfile size */
-define('TL_IMPORT_LIMIT', '200000'); // in bytes
+define('TL_IMPORT_LIMIT', '204800'); // in bytes
 /** maximum line size of the imported file */
 define('TL_IMPORT_ROW_MAX', '10000'); // in chars
 
@@ -479,8 +462,6 @@ if ( isset ( $_SERVER['PHP_SELF'] ) ) {
 }
 
 }
-
-
 
 //includes needed for userright checking
 require_once(TL_ABS_PATH . 'lib/functions/getRights.php');

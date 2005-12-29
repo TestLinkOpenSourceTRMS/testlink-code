@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsMoreBuilds.php,v 1.16 2005/12/27 11:16:36 franciscom Exp $ 
+* $Id: resultsMoreBuilds.php,v 1.17 2005/12/29 20:59:00 schlundus Exp $ 
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 * 
@@ -24,7 +24,7 @@ $prodID = isset($_SESSION['productID']) ? $_SESSION['productID'] : 0;
 $tpID = $_SESSION['testPlanId'];
 $arrBuilds = getBuilds($tpID, " ORDER BY build.name "); 
 $arrOwners = getTestPlanUsers($tpID);
-$arrKeywords = selectKeywords($prodID);
+$arrKeywords = selectKeywords($db,$prodID);
 $arrComponents = getArrayOfComponentNames($tpID);
 
 $smarty = new TLSmarty();

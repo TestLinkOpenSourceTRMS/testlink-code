@@ -1,6 +1,6 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: mainPage.tpl,v 1.5 2005/11/19 23:07:38 schlundus Exp $     
+ $Id: mainPage.tpl,v 1.6 2005/12/29 20:59:00 schlundus Exp $     
  Purpose: smarty template - main page / site map                 
                                                                  
                                                                  
@@ -10,6 +10,7 @@
       20050809 - fm - I18N - missing string                                      
 	
 20051118 - scs - added escaping of testplan names                                                                 
+20051112 - scs - changed keyword related menu items
 *}
 {include file="inc_head.tpl" popup="yes"}
 
@@ -170,18 +171,16 @@
 	{if $view_keys_rights == "yes"}
         <h2>{lang_get s='title_keywords'}</h2>
 		<p>
-		<img class="arrow" src="icons/arrow_org.gif" />
-        <a href="lib/keywords/keywordsView.php">{lang_get s='href_keywords_view'}</a>
 		{if $modify_keys_rights == "yes"}
+			<img class="arrow" src="icons/arrow_org.gif" />
+	        <a href="lib/keywords/keywordsView.php">{lang_get s='href_keywords_manage'}</a>
 	        <br />
 			<img class="arrow" src="icons/arrow_org.gif" />
-        	<a href="lib/keywords/keywordsEdit.php">{lang_get s='href_keywords_edit'}</a>
-        	<br />
-			<img class="arrow" src="icons/arrow_org.gif" />
-        	<a href="lib/keywords/keywordsNew.php">{lang_get s='href_keywords_new'}</a>
-        	<br />
-			<img class="arrow" src="icons/arrow_org.gif" />
         	<a href="{$launcher}?feature=keywordsAssign">{lang_get s='href_keywords_assign'}</a>
+		{else} 		
+			<img class="arrow" src="icons/arrow_org.gif" />
+	        <a href="lib/keywords/keywordsView.php">{lang_get s='href_keywords_view'}</a>
+	        <br />
 		{/if} {* modify_keys_rights *}
         </p>
 

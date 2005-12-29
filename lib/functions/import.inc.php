@@ -1,6 +1,6 @@
 <?
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: import.inc.php,v 1.10 2005/11/09 19:54:10 schlundus Exp $
+* $Id: import.inc.php,v 1.11 2005/12/29 20:59:00 schlundus Exp $
 * 
 * @author Martin Havlat
 *
@@ -88,7 +88,7 @@ function showTcImport($location,$catIDForImport = 0)
 
 
 //20050828 - scs - added optional parameter for the offset in data where the keywords beging
-function buildKeywordListAndInsertKeywords($data,$prodID,$slice = 6)
+function buildKeywordListAndInsertKeywords(&$db,$data,$prodID,$slice = 6)
 {
 	//Grabbing the Key information from the excel sheets
 	$keywords = null;
@@ -106,10 +106,10 @@ function buildKeywordListAndInsertKeywords($data,$prodID,$slice = 6)
 			$keywords[$i] = $keyword;
 			
 			// 20051004 - fm - interface changes
-			$prodKeywords=getProductKeywords($prodID,$keyword);
+			$prodKeywords=getProductKeywords($db,$prodID,$keyword);
 			if (!sizeof($prodKeywords))
 			{
-				addNewKeyword($prodID,$keywords[$i],null);
+				addNewKeyword($db,$prodID,$keywords[$i],null);
 			}	
 		}
 		$keywords = implode(",",$keywords).",";
@@ -131,7 +131,7 @@ function buildKeywordListAndInsertKeywords($data,$prodID,$slice = 6)
 *
 * 20050831 - fm - reduce Global Coupling
 */
-function exeTcImport($fileLocation,$prodID, $login_name, $catIDForImport = 0)
+function exeTcImport(&$db,$fileLocation,$prodID, $login_name, $catIDForImport = 0)
 {
 	//command to open a csv for read
 	$handle = fopen($fileLocation, "r");
@@ -158,7 +158,7 @@ function exeTcImport($fileLocation,$prodID, $login_name, $catIDForImport = 0)
 
 	if (!$catIDForImport)
 	{
-		$keys = buildKeywordListAndInsertKeywords($data,$prodID);
+		$keys = buildKeywordListAndInsertKeywords($db,$data,$prodID);
 		
 		//Insert arrayCom into component where projID == projIDSubmit 
 		// 20050908 - fm - changes in insertProductComponent()
@@ -176,7 +176,7 @@ function exeTcImport($fileLocation,$prodID, $login_name, $catIDForImport = 0)
 		$arrayTCSteps = $data[2];
 		$arrayResults = $data[3];	
 
-		$keys = buildKeywordListAndInsertKeywords($data,$prodID,4);
+		$keys = buildKeywordListAndInsertKeywords($db,$data,$prodID,4);
 		$tcID = insertTestcase($catIDForImport,$arrayTC,$arraySummary,$arrayTCSteps,$arrayResults,$login_name,null,$keys);
 	}	
 	//Store all the old vales into a new array
@@ -199,7 +199,7 @@ function exeTcImport($fileLocation,$prodID, $login_name, $catIDForImport = 0)
 			$arraySummary = $data[1];
 			$arrayTCSteps = $data[2];
 			$arrayResults = $data[3];
-			$keys = buildKeywordListAndInsertKeywords($data,$prodID,4);
+			$keys = buildKeywordListAndInsertKeywords($db,$data,$prodID,4);
 			$tcID = insertTestcase($catIDForImport,$arrayTC,$arraySummary,$arrayTCSteps,$arrayResults,$login_name,null,$keys);
 		}
 		else
@@ -210,7 +210,7 @@ function exeTcImport($fileLocation,$prodID, $login_name, $catIDForImport = 0)
 			$arraySummary = $data[3];
 			$arrayTCSteps = $data[4];
 			$arrayResults = $data[5];
-			$keys = buildKeywordListAndInsertKeywords($data,$prodID);
+			$keys = buildKeywordListAndInsertKeywords($db,$data,$prodID);
 			
 			if($arrayCom == $oldCom)
 			{

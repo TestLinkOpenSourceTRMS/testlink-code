@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: containerComp.inc.php,v 1.5 2005/12/28 07:34:55 franciscom Exp $ */
+/* $Id: containerComp.inc.php,v 1.6 2005/12/29 20:59:00 schlundus Exp $ */
 /* Purpose:  This page manages all the editing of test specification containers. */
 /*
  *
@@ -59,7 +59,7 @@ function viewer_edit_new_com($amy_keys, $oFCK, $action, $productID, $id=null)
 }
 //20051013 - am - fix for 115, added param $copyKeywords for copying also the keywords
 //				  when copying the tcs to the new product
-function copy_or_move_comp( $action, $compID, $prodID ,$hash, $login_name, $copyKeywords)
+function copy_or_move_comp(&$db,$action, $compID, $prodID ,$hash, $login_name, $copyKeywords)
 {
 	$dest_prodID = isset($hash['containerID']) ? intval($hash['containerID']) : 0;
 	$result = 0;
@@ -88,7 +88,7 @@ function copy_or_move_comp( $action, $compID, $prodID ,$hash, $login_name, $copy
 			{
 				$keyword = $kwData[$i]['keyword'];
 				$notes = $kwData[$i]['notes'];
-				addNewKeyword($dest_prodID,$keyword, $notes);
+				addNewKeyword($db,$dest_prodID,$keyword, $notes);
 			}
 		}
 	}

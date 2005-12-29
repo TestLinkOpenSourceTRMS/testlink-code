@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: tcView.tpl,v 1.7 2005/09/05 11:39:07 havlat Exp $ *}
+{* $Id: tcView.tpl,v 1.8 2005/12/29 20:59:00 schlundus Exp $ *}
 {* Purpose: smarty template - view test case in test specification *}
 {* Revisions:
 20050828 - fm - localize_date
@@ -7,6 +7,7 @@
 20050528 - fm - I18N
 20050830 - MHT - Added REQs
 20050902 - MHT - Link to REQ added
+20051229 - scs - added check for empty search results
 *}
 
 {include file="inc_head.tpl"}
@@ -14,7 +15,9 @@
 <div class="workBack">
 
 
-{* 20050820 - fm *}
+{if $testcase eq null}
+	{lang_get s='no_records_found'}
+{else}
 {section name=row loop=$testcase}
 <h1>{lang_get s='title_test_case'} {$testcase[row].title|escape} </h1>
 
@@ -89,6 +92,6 @@
 		</p>
 	</div>
 {/section}
-
+{/if}
 </body>
 </html>

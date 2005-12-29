@@ -4,6 +4,7 @@
 * $Id: jira.cfg.php,v 1.0 2005/10/25 17:40:56 
 * 
 *
+* 20051229 - scs - added DEFINE for the DB-Type
 */
 
 // Contributed by  jbarchibald@gmail.com
@@ -21,8 +22,11 @@ define('BUG_TRACK_DB_USER', '<to be configured>');
 /** The DB password to use for connecting to the jira db */
 define('BUG_TRACK_DB_PASS', '<to be configured>');
 
-/* link of the web server for jira*/
+/** link of the web server for jira */
 define('BUG_TRACK_HREF', "<to be configured>"); 
+
+/** The DB type to use for connecting to the bugtracking db */
+define('BUG_TRACK_DB_TYPE', 'mysql');
 
 /** link to the bugtracking system, for entering new bugs */
 define('BUG_TRACK_ENTER_BUG_HREF',"<to be configured>");

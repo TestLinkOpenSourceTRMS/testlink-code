@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.26 $ $Author: franciscom $
- * @modified $Date: 2005/12/28 07:34:55 $
+ * @version $Revision: 1.27 $ $Author: schlundus $
+ * @modified $Date: 2005/12/29 20:59:00 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -69,10 +69,10 @@ $db = 0;
 */
 function doDBConnect(&$db)
 {
-	// global $db;
-	
-	$result = array('status' => 1, 'dbms_msg' => 'ok');
-	$db = New database(DB_TYPE);
+	$result = array('status' => 1, 
+					'dbms_msg' => 'ok'
+					);
+	$db = new database(DB_TYPE);
 	$result = $db->connect(DSN, DB_HOST, DB_USER, DB_PASS, DB_NAME);
 
 	if (!$result['status'])
@@ -87,13 +87,13 @@ function doDBConnect(&$db)
 		{
 			if(DB_TYPE == 'mysql')
 			{
-				$r = @$db->exec_query("SET CHARACTER SET utf8");
-				$r = @$db->exec_query("SET collation_connection = 'utf8_general_ci'");
+				$r = $db->exec_query("SET CHARACTER SET utf8");
+				$r = $db->exec_query("SET collation_connection = 'utf8_general_ci'");
 			}
 		}
 	}
 
- 	return($result);
+ 	return $result;
 }
 
 
@@ -875,4 +875,22 @@ function is_blank( $p_var ) {
 	return false;
 }
 
+
+/**
+ * Builds the header needed to make the content available for downloading
+ *
+ * @param string $content the content which should be downloaded
+ * @param string $fileName the filename
+ *
+ *
+**/
+function downloadContentsToFile($content,$fileName)
+{
+	ob_get_clean();
+	header('Pragma: public' );
+	header('Content-Type: text/plain; charset='.TL_TPL_CHARSET.'; name=' . $fileName );
+	header('Content-Transfer-Encoding: BASE64;' );
+	header('Content-Disposition: attachment; filename="' . $fileName .'"');
+	echo $content;
+}
 ?>

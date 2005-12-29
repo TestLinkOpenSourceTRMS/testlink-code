@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
  * @filesource $RCSfile: getRights.php,v $
- * @version $Revision: 1.5 $
- * @modified $Date: 2005/12/28 07:34:55 $ by $Author: franciscom $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2005/12/29 20:59:00 $ by $Author: schlundus $
  * @author Martin Havlat, Chad Rosen
  * 
  * This script provides the get_rights and has_rights functions for
@@ -54,7 +54,6 @@ function getRoleRights($role)
 	if ($result)
 	{
 		$myrow = $GLOBALS['db']->fetch_array($result);
-		tLog("\$myrow =>	$myrow");
 		if ($myrow)
 		{
 			$roles = explode(",",$myrow['rights']);
@@ -64,7 +63,7 @@ function getRoleRights($role)
 	{
 		tLog('Request: ' .$sql. ' causes '. $GLOBALS['db']->error_msg(), 'ERROR');
 	}
-	return ($roles);
+	return $roles;
 }
 
 /** 
@@ -84,7 +83,7 @@ function has_rights($roleQuestion)
 	}
 	
 	//check to see if the $roleQuestion variable appears in the $roles variable
-	// 20050819 - scs - extended to so we can check for the presence multiple rights
+	// 20050819 - scs - extended to so we can check for the presence of multiple rights
 	if (is_array($roleQuestion))
 	{
 		$r = array_intersect($roleQuestion,$rights);

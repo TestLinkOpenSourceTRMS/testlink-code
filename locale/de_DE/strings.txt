@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.23 $
- * @modified $Date: 2005/12/03 22:09:35 $
+ * @version $Revision: 1.24 $
+ * @modified $Date: 2005/12/29 20:59:00 $
  *
  * @author Andreas Morsing
  *
@@ -317,7 +317,7 @@ $TLS_menu_edit_del = "Ändern / Löschen";
 $TLS_menu_view = "Anzeigen";
 $TLS_no_keywords = "Es sind momentan keine Keywords definiert!";
 $TLS_none = "Keins";
-$TLS_sel_all_keywords = "Bitte wählen Sie alle erforderte Keywords:";
+$TLS_sel_all_keywords = "Bitte wählen Sie alle erforderten Keywords:";
 $TLS_select_keyword_label = "Bitte wählen Sie ein Keyword aus:";
 $TLS_title_assign_kw_to_tc = "Keyword zu TestCase zuweisen";
 $TLS_title_assign_kw_to_tc_in_cat = "Weise Keyword jedem TestCase der Kategorie zu";
@@ -676,7 +676,7 @@ $TLS_info_imp_data_line1 = "Hinweis: TestLink hat keine Möglichkeit festzustelle
 $TLS_info_imp_data_line2 = "D.h. falls die Daten bereits bestehen, haben Sie nach dem Import zwei Kopien.";
 $TLS_local_file = "Lokale Datei";
 $TLS_max_size_cvs_file = "Maximale Dateigröße ist";
-$TLS_required_cvs_format = "Erfordliches Dateiformat:";
+$TLS_required_cvs_format = "Erforderliches Dateiformat:";
 $TLS_title_choose_local_file = "Wählen Sie eine Datei zum Importieren";
 $TLS_title_imp_cvs = "CVS Datenimport";
 
@@ -1051,7 +1051,7 @@ $TLS_nav_users = "Navigator - Benutzer";
 
 // lib/plan/planUpdateTC.php
 $TLS_category_has_changed = "Kategorie wurde geändert";
-$TLS_deleted = "Gelöscht";
+$TLS_deleted = "gelöscht";
 $TLS_different_versions = "Verschiedene Versionen";
 $TLS_plan_update_no_tc_updated = "Es wurden keine TestCases aktualisiert";
 $TLS_planupdate_tc_deleted1 = "Test Case";
@@ -1084,7 +1084,7 @@ $TLS_kw_delete_fails = "Das Löschen der Keywords schlug fehl!";
 $TLS_kw_deleted = "Gelöscht";
 $TLS_kw_invalid_chars = "Das Aktualisieren schlug fehl: Kommas und Anführungszeichen sind innerhalb Keywords nicht erlaubt!";
 $TLS_kw_update_fails = "Das Aktualisieren schlug fehl";
-$TLS_kw_updated = "Aktualisieren";
+$TLS_kw_updated = "Das Aktualisieren war erfolgreich";
 $TLS_tc_kw_update_fails1 = "Test Case";
 $TLS_tc_kw_update_fails2 = "schlug fehl";
 

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: int_mantis.php,v $
  *
- * @version $Revision: 1.6 $
- * @modified $Date: 2005/12/28 07:12:34 $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2005/12/29 20:59:00 $
  *
  * @author Francisco Mancardi - 20050916 - refactoring
  * @author Andreas Morsing
@@ -14,6 +14,7 @@
  * they should be changed for your environment
  *
  * 20051202 - scs - added returning null in some cases
+ * 20051229 - scs - added ADOdb support
 **/
 /** Interface name */
 define('BUG_INTERFACE_CLASSNAME',"mantisInterface");
@@ -25,6 +26,7 @@ class mantisInterface extends bugtrackingInterface
 	var $m_dbName = BUG_TRACK_DB_NAME;
 	var $m_dbUser = BUG_TRACK_DB_USER;
 	var $m_dbPass = BUG_TRACK_DB_PASS;
+	var $m_dbType = BUG_TRACK_DB_TYPE;
 	var $m_showBugURL = BUG_TRACK_HREF;
 	var $m_enterBugURL = BUG_TRACK_ENTER_BUG_HREF;
 	
@@ -35,10 +37,6 @@ class mantisInterface extends bugtrackingInterface
 	 * @param int id the bug id
 	 * 
 	 * @return string returns a complete URL to view the bug
-	 *
-	 * @version 1.0
-	 * @author Andreas Morsing <schlundus@web.de>
-	 * @since 22.04.2005, 21:05:25
 	 **/
 	function buildViewBugURL($id)
 	{
@@ -50,14 +48,6 @@ class mantisInterface extends bugtrackingInterface
 	 * this function is not directly called by TestLink. 
 	 *
 	 * @return string returns the status of the given bug (if found in the db), or false else
-	 *
-	 * @version 1.1
-	 * @author Francisco Mancardi
-	 * @since 16.09.2005, 07:45:29
-	 *
-	 * @version 1.0
-	 * @author Andreas Morsing <schlundus@web.de>
-	 * @since 22.04.2005, 21:05:25
 	 **/
 	function getBugStatus($id)
 	{
@@ -66,10 +56,10 @@ class mantisInterface extends bugtrackingInterface
 
 		$status = false;
 		$query = "SELECT status FROM {$this->m_dbName}.mantis_bug_table WHERE id=" . $id;
-		$result = do_sql_query($query,$this->m_dbConnection);
+		$result = $this->m_dbConnection->exec_query($query);
 		if ($result)
 		{
-			$status = $GLOBALS['db']->fetch_array($result);
+			$status = $this->m_dbConnection->fetch_array($result);
 			if ($status)
 			{
 				$status = $status['status'];
@@ -88,10 +78,6 @@ class mantisInterface extends bugtrackingInterface
 	 * 
 	 * @return string returns the status (in a readable form) of the given bug if the bug
 	 * 		was found , else false
-	 *
-	 * @version 1.0
-	 * @author Andreas Morsing <schlundus@web.de>
-	 * @since 22.04.2005, 21:05:25
 	 **/
 	function getBugStatusString($id)
 	{
@@ -117,10 +103,6 @@ class mantisInterface extends bugtrackingInterface
 	 * @param int id the bug id
 	 * 
 	 * @return string returns the bug summary if bug is found, else false
-	 *
-	 * @version 1.0
-	 * @author Andreas Morsing 
-	 * @since 22.04.2005, 21:05:25
 	 **/
 	function getBugSummaryString($id)
 	{
@@ -129,10 +111,10 @@ class mantisInterface extends bugtrackingInterface
 
 		$status = null;
 		$query = "SELECT summary FROM {$this->m_dbName}.mantis_bug_table WHERE id=" . $id;
-		$result = do_sql_query($query,$this->m_dbConnection);
+		$result = $this->m_dbConnection->exec_query($query);
 		if ($result)
 		{
-			$summary = $GLOBALS['db']->fetch_array($result);
+			$summary = $this->m_dbConnection->fetch_array($result);
 			if ($summary)
 				$summary = $summary[0];
 			else

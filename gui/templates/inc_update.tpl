@@ -1,5 +1,5 @@
 {* Testlink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: inc_update.tpl,v 1.7 2005/12/03 22:09:30 schlundus Exp $ *}
+{* $Id: inc_update.tpl,v 1.8 2005/12/29 20:59:00 schlundus Exp $ *}
 {* Purpose: smarty template - show SQL update result *}
 {* INPUT: $result (mandatory) = [ok, sql_error_description] 
 			If $result is empty do nothing.
@@ -21,10 +21,12 @@
    the localized strings file.
     add actions below (for automatic detection)
 	lang_get('update');
-	lang_get('add');
-	lang_get('delete');
 	lang_get('updated');
+	lang_get('add');
+	lang_get('added');
 	lang_get('assigned');
+	lang_get('delete');
+	lang_get('deleted');
 	
 	lang_get('item');
 	lang_get('user');

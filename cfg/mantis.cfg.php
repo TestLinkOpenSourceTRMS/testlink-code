@@ -1,10 +1,12 @@
 <?php
 /**
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: mantis.cfg.php,v 1.3 2005/08/25 17:40:56 schlundus Exp $ 
+* $Id: mantis.cfg.php,v 1.4 2005/12/29 20:59:00 schlundus Exp $ 
 * 
 * Constants used throughout TestLink are defined within this file
 * they should be changed for your environment
+* 
+* 20051229 - scs - added DEFINE for the DB-Type
 */
 
 //Set the bug tracking system Interface to MANTIS 0.19.1
@@ -17,6 +19,7 @@ define('BUG_TRACK_DB_NAME', '<mantisdbname>');
 define('BUG_TRACK_DB_USER', '<mantisdbuser>');
 /** The DB password to use for connecting to the mantis db */
 define('BUG_TRACK_DB_PASS', '<mantisdbhost>');
+define('BUG_TRACK_DB_TYPE', 'mysql');
 /* link of the web server for mantis*/
 /* anonymous login into mantis has to be turned on, and a mantis user has to created with viewer rights to all public projects
 /* Change the following in your mantis config_inc.php (replace dummy with your created user)

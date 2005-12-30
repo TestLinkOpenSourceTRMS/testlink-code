@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  * 
  * @filesource $RCSfile: doAuthorize.php,v $
- * @version $Revision: 1.6 $
- * @modified $Date: 2005/11/19 23:07:39 $ by $Author: schlundus $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2005/12/30 16:02:41 $ by $Author: franciscom $
  * @author Chad Rosen, Martin Havlat
  *
  * This file handles the initial login and creates all user session variables.
@@ -37,7 +37,7 @@ function doAuthorize($login,$pwd)
 		$login_exists = existLogin($login,$userInfo);
 		tLog("Account exist = " . $login_exists);
 		//encrypt the password so it isn't stored plain text in the db
-		if ($login_exists && $userInfo['password'] == md5($pwd))
+		if ($login_exists && $userInfo['password'] == md5($pwd) && user_is_active($login))
 		{
 			// 20051007 MHT Solved  0000024 Session confusion 
 			// Disallow two session with one browser

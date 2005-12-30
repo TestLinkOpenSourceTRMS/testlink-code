@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: adminUserNew.php,v $
  *
- * @version $Revision: 1.5 $
- * @modified $Date: 2005/11/13 19:19:31 $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2005/12/30 16:02:03 $
  *
  * @author Martin Havlat
  *
@@ -16,6 +16,7 @@
  * 20050829 - scs - moved POST params to the top of the script
  * 20050829 - scs - added locale while inserting new users
  * 20051112 - scs - added trim of login, to avoid usernames with only spaces
+ * 20051231 - fm - active
  * 
 **/
 include('../../config.inc.php');
@@ -32,6 +33,9 @@ $last = isset($_POST['last']) ? $_POST['last'] : null;
 $email = isset($_POST['email']) ? $_POST['email'] : null;
 $locale = isset($_POST['locale']) ? $_POST['locale'] : null;
 
+// 20051231 - fm
+$user_is_active = isset($_POST['user_is_active']) ? 1 : 0;
+
 $sqlResult = null;
 if($bNewUser)
 {
@@ -43,7 +47,7 @@ if($bNewUser)
 			$userInfo = null;
 			if (!existLogin($login,$userInfo))
 			{
-				if(!userInsert($login, $password, $first, $last, $email, $rightsid, $locale))
+				if(!userInsert($login, $password, $first, $last, $email, $rightsid, $locale, $user_is_active))
 					$sqlResult = lang_get('user_not_added');
 				else 
 					$sqlResult = 'ok';

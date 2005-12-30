@@ -1,6 +1,11 @@
 {* Testlink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: adminUserNew.tpl,v 1.4 2005/10/17 20:11:25 schlundus Exp $ *}
-{* Purpose: smarty template - Add new user *}
+{* $Id: adminUserNew.tpl,v 1.5 2005/12/30 16:04:12 franciscom Exp $ *}
+{* 
+Purpose: smarty template - Add new user 
+
+20051115 - fm - added active
+
+*}
 {include file="inc_head.tpl" popup="yes"}
 
 <body>
@@ -39,6 +44,7 @@
 				{include file="inc_help.tpl" filename="userRights.html"}
 			</td>
 		</tr>
+
 		<tr>
 			<td>{lang_get s='th_locale'}:</td>
 			<td>
@@ -47,6 +53,16 @@
 				</select>
 			</td>
 		</tr>
+
+    {* --------------------------------------------------------------- *}
+		<tr>
+			<td>{lang_get s='th_active'}:</td>
+			<td>
+				<input type="checkbox" name="user_is_active" />
+      </td>
+		</tr>
+    {*  --------------------------------------------------------------- *}
+
 	</table>
 
 	<input type="submit" name="newUser" value={lang_get s='btn_add'} />

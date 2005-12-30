@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.35 $
- * @modified $Date: 2005/12/29 20:58:58 $ by $Author: schlundus $
+ * @version $Revision: 1.36 $
+ * @modified $Date: 2005/12/30 16:07:10 $ by $Author: franciscom $
  *
  *
  * Constants and configuration parameters used throughout TestLink 
@@ -417,6 +417,9 @@ $g_tpl['execSetResults'] = "execSetResults.tpl";
 // Custom
 $g_tpl['tcView'] = "tcView.tpl";
 $g_tpl['tcSearchView'] = $g_tpl['tcView'];
+
+// 20051230 - fm
+$g_tpl['adminUsers'] = "adminUsers_m1.tpl";
 
 // ----- End of Config ------------------------------------------------
 

@@ -4,14 +4,15 @@
  *
  * Filename $RCSfile: users.inc.php,v $
  *
- * @version $Revision: 1.14 $
- * @modified $Date: 2005/12/28 07:34:55 $ $Author: franciscom $
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2005/12/30 16:02:26 $ $Author: franciscom $
  *
  * @author Chad Rosen, Martin Havlat
  * @author Martin Havlat
  *
  * Functions for Users management
  *
+ * @author Francisco Mancardi - 20051228 - added active attribute
  * @author Francisco Mancardi - 20050821 - BUGID 239
  *
 **/
@@ -25,6 +26,8 @@ require_once("common.php");
  *    
  * @return 0: account doesn't exist
  *         1: account exists
+ *
+ * 20051228 - fm - active field
  *
  * 20050528 - fm
  * 1. header docum improved
@@ -53,9 +56,10 @@ Array
 */
  
 	// twice role to mantain array indexes
+  // 20051228 - fm - added active field
 	$sql = " SELECT password, login, user.id, rightsid, " .
 	       "        email, first, last, " .  
-	       "        role, role, rights, locale" .
+	       "        role, role, rights, locale, active" .
 	       " FROM user,rights " .
 	       " WHERE user.rightsid = rights.id " .
 	       " AND login='" . $GLOBALS['db']->prepare_string($login) . "'";
@@ -73,6 +77,8 @@ Array
 }
 
 /**
+ * 20051228 - fm - active field
+ *
  * 20050829 - scs - added param for locale
  * 
  * Function inserts new user to db
@@ -81,15 +87,20 @@ Array
  * @param string first name
  * @param string last name
  * @param string email
- * @param string rights (optional; default is guest)
- * @param string locale (optional; locale for the user)
+ * @param string rights  (optional; default is GUEST)
+ * @param string locale  (optional; locale for the user)
+ * @param numeric active (optional; default ACTIVE_USER)
  */
-function userInsert($login, $password, $first, $last, $email, $rights = 5,$locale = TL_DEFAULT_LOCALE)
+function userInsert($login, $password, $first, $last, $email, 
+                    $rights=GUEST, $locale = TL_DEFAULT_LOCALE, $active=ACTIVE_USER)
 {
 	$password = md5($password);
-	$sqlInsert = "INSERT INTO user (login,password,first,last,email,rightsid,locale) VALUES ('" . 
-				$GLOBALS['db']->prepare_string($login) . "','" . $GLOBALS['db']->prepare_string($password) . "','" . $GLOBALS['db']->prepare_string($first) . "','" . $GLOBALS['db']->prepare_string($last) .
-				 "','" . $GLOBALS['db']->prepare_string($email) . "'," . $rights . ",'".$GLOBALS['db']->prepare_string($locale)."')";
+	$sqlInsert = "INSERT INTO user (login,password,first,last,email,rightsid,locale,active) 
+	              VALUES ('" . 
+				        $GLOBALS['db']->prepare_string($login) . "','" . $GLOBALS['db']->prepare_string($password) . "','" . 
+				        $GLOBALS['db']->prepare_string($first) . "','" . $GLOBALS['db']->prepare_string($last) . "','" . 
+				        $GLOBALS['db']->prepare_string($email) . "'," . $rights . ",'". 
+				        $GLOBALS['db']->prepare_string($locale). "'," . $active . ")";
 	$insertResult = do_sql_query($sqlInsert);
 	
 	return $insertResult ? 1 : 0;
@@ -123,11 +134,14 @@ function getTwoColumnsMap($query)
 	if ($result)
 	{
 		while ($myrow = $GLOBALS['db']->fetch_array($result))
+		{
 			$arrOut[$myrow[0]] = $myrow[1];
+		}	
 	}
 	
 	return $arrOut;
 }
+
 
 function setUserPassword($userID,$password)
 {
@@ -174,9 +188,10 @@ function getUserPassword($userID)
 }
 
 /** Function update personal data name and e-mail */
-//      20050424 - fm added argument locale
+// 20051228 - fm - added active  
+// 20050424 - fm added argument locale
 function userUpdate($userID, $first, $last, $email ,
-                    $login = null, $rightsID = null, $locale = null)
+                    $login = null, $rightsID = null, $locale = null, $active = null)
 {
  	$sql = "UPDATE user " .
 	       "SET first='" . $GLOBALS['db']->prepare_string($first) . "'" .
@@ -184,19 +199,31 @@ function userUpdate($userID, $first, $last, $email ,
 	       ", email='" . $GLOBALS['db']->prepare_string($email)   . "'";
 	
 	if (!is_null($login))
+	{
 		$sql .= ", login = '". $GLOBALS['db']->prepare_string($login) . "' ";
+	}	
 	if (!is_null($rightsID))
+	{
 		$sql .= ", rightsid = ". $rightsID ;
+	}	
 	if (!is_null($locale))
+	{
 		$sql .= ", locale = ". "'" . $GLOBALS['db']->prepare_string($locale) . "'" ;
-		
+	}
+	// 20051228 - fm
+	if (!is_null($active))
+	{
+		$sql .= ", active = ". $active;
+	}	
+	
 	$sql .= " WHERE id=" . $userID;
 	$result = do_sql_query($sql);
 
 	// MHT 200507 - update session data if admin modify yourself
 	if (($userID == $_SESSION['userID']) && $result)
+	{
 		setUserSession($login, $userID, $rightsID, $email, $locale);
-	
+	}
 	return $result ? 'ok' : $GLOBALS['db']->error_msg();
 }
 
@@ -259,7 +286,7 @@ function getAllUsers($whereClause = null)
 {
 	$show_realname=config_get('show_realname');
 	
-	$sql = " SELECT id,login,password,first,last,email,rightsid,'' AS fullname 
+	$sql = " SELECT id,login,password,first,last,email,rightsid,'' AS fullname, active 
 	         FROM user";
 	if (!is_null($whereClause))
 	{
@@ -285,12 +312,13 @@ function getAllUsers($whereClause = null)
 	return($users);
 }
 
+// 20051230 - fm - active
 // 20051227 - fm
 function getAllUsers_assoc($whereClause = null)
 {
   
-	$sql = "SELECT id,login,password,first,last,email,rightsid,locale " .
-	       "FROM user ORDER BY login";
+	$sql = " SELECT id,login,password,first,last,email,rightsid,locale,active " .
+	       " FROM user ORDER BY login ";
 	
 	if (!is_null($whereClause))
 	{
@@ -402,6 +430,31 @@ function format_username($hash)
   }
 
 	return $username;
+}
+
+
+
+// 20051228 - fm
+function user_is_active($login)
+{
+	$is_active=0;
+	
+	$sql = " SELECT active
+	         FROM user
+	         WHERE login='" . $GLOBALS['db']->prepare_string($login) . "'";
+
+	$result = do_sql_query($sql);
+  
+	if ($result)
+	{
+		if ($row = $GLOBALS['db']->fetch_array($result))
+		{
+			$is_active = $row['active'];
+		}	
+	}
+
+  return ($is_active);
+
 }
 
 

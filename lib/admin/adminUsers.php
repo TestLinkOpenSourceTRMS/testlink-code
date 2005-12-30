@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: adminUsers.php,v $
  *
- * @version $Revision: 1.7 $
- * @modified $Date: 2005/12/28 07:34:54 $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2005/12/30 16:02:03 $
  *
  * @author Martin Havlat
  *
@@ -60,10 +60,15 @@ if($bEditUser)
 $users = null;
 $users=getAllUsers_assoc();
 
+global $g_tpl;
+
+
 $smarty = new TLSmarty();
 $smarty->assign('optRights', getListOfRights());
 $smarty->assign('arrResults', $arrResults);
 $smarty->assign('updated', $bEditUser ? 'yes' :null);
 $smarty->assign('users', $users);
-$smarty->display('adminUsers.tpl');
+
+// 20051115 - fm
+$smarty->display($g_tpl['adminUsers']);
 ?>

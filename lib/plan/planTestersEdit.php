@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: planTestersEdit.php,v $
- * @version $Revision: 1.11 $
- * @modified $Date: 2005/12/27 11:16:12 $ $ by $Author: franciscom $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2005/12/31 14:38:10 $ $ by $Author: schlundus $
  * 
  * @author Martin Havlat
  * 
@@ -23,6 +23,7 @@
  * 20051118 - scs - wrong tp name is displayed when clicked on a tp on the left
  * 20051120 - fm - adding test plan filter by product behaivour
  * 20051130 - fm - BUGID 239
+ * 20051231 - scs - changes due to ADBdb
  *
  */
 require('../../config.inc.php');
@@ -101,7 +102,7 @@ if ($type == 'plans')
 else
 { 	
 	// if users
-	$title = lang_get('title_assign_tp') . getUserLogin($id);
+	$title = lang_get('title_assign_tp') . getUserLogin($db,$id);
 	// 20051120 - fm
 	$arrData = getUserTestPlans1($id,$prod->id);
 }
@@ -153,10 +154,10 @@ function getUserTestPlans1($userID,$prodID)
 
 // 20051227 - fm
 // 20051112 - scs - replaced not found with TL_Unknown
-function getUserLogin($id)
+function getUserLogin(&$db,$id)
 {
 	$users = null;
-	$users = getUserById($id);
+	$users = getUserById($db,$id);
 
 	$userInfo = '<'.lang_get('Unknown').'>';
 	if (sizeof($users))

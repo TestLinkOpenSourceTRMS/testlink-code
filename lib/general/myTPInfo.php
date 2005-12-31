@@ -4,14 +4,15 @@
  *
  * Filename $RCSfile: myTPInfo.php,v $
  *
- * @version $Revision: 1.5 $
- * @modified $Date: 2005/12/28 07:34:55 $ $Author: franciscom $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2005/12/31 14:38:10 $ $Author: schlundus $
  *
  * @author Martin Havlat
  *
  * Defines functions used to get info about a users testPlans
  * 
- * 20051001 - am - changes for build_id column
+ * 20051001 - scs - changes for build_id column
+ * 20051231 - scs - changes for active state of users
  *
 **/
 function printMyTPData()
@@ -38,11 +39,12 @@ function printMyTPData()
 
 /**
 * This function does the bulk of the work in determining the calculations for testcases.
+* 20051231 - scs - fixed ambigious column name 
 */
 function getMetrics()
 {
     $sql = " SELECT project.name,project.id FROM project,projrights,user where ".
-           " project.id=projrights.projid AND user.id=projrights.userid AND active=1 AND ".
+           " project.id=projrights.projid AND user.id=projrights.userid AND project.active=1 AND ".
            " user.id=" . $_SESSION['userID'];
     $result = do_sql_query($sql);
 	$metrics = null;

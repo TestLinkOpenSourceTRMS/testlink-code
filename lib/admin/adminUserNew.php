@@ -5,18 +5,18 @@
  *
  * Filename $RCSfile: adminUserNew.php,v $
  *
- * @version $Revision: 1.6 $
- * @modified $Date: 2005/12/30 16:02:03 $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2005/12/31 14:38:10 $
  *
  * @author Martin Havlat
  *
  * Page for creation of a new users.
  * 
- * @author Andreas Morsing - added user_is_name_valid whenever a new user will be created
+ * ???????? - scw - added user_is_name_valid whenever a new user will be created
  * 20050829 - scs - moved POST params to the top of the script
  * 20050829 - scs - added locale while inserting new users
  * 20051112 - scs - added trim of login, to avoid usernames with only spaces
- * 20051231 - fm - active
+ * 20051231 - fm - changed due to active state of users
  * 
 **/
 include('../../config.inc.php');
@@ -32,8 +32,6 @@ $first = isset($_POST['first']) ? $_POST['first'] : null;
 $last = isset($_POST['last']) ? $_POST['last'] : null;
 $email = isset($_POST['email']) ? $_POST['email'] : null;
 $locale = isset($_POST['locale']) ? $_POST['locale'] : null;
-
-// 20051231 - fm
 $user_is_active = isset($_POST['user_is_active']) ? 1 : 0;
 
 $sqlResult = null;
@@ -63,7 +61,7 @@ if($bNewUser)
 $smarty = new TLSmarty();
 $smarty->assign('sqlResult', $sqlResult);
 $smarty->assign('name', $login);
-$smarty->assign('roles', getListOfRights());
+$smarty->assign('roles', getListOfRights($db));
 $smarty->assign('defaultLocale', TL_DEFAULT_LOCALE);
 $smarty->display('adminUserNew.tpl');
 ?>

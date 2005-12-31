@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
  * @filesource $RCSfile: getRights.php,v $
- * @version $Revision: 1.6 $
- * @modified $Date: 2005/12/29 20:59:00 $ by $Author: schlundus $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2005/12/31 14:38:10 $ by $Author: schlundus $
  * @author Martin Havlat, Chad Rosen
  * 
  * This script provides the get_rights and has_rights functions for
@@ -69,16 +69,20 @@ function getRoleRights($role)
 /** 
 * function takes a roleQuestion from a specified link and returns whether 
 * the user has rights to view it
+* 20051231 - scs - added reloading the rights if the users role has changed
+*
 */
 function has_rights($roleQuestion)
 {
 	// 20050819 - scs - we dont need to query the db for the rights every call
 	//				 - so the rights are fetched only once per script 
 	static $rights = null;
-	if (is_null($rights))
+	static $roleName = null;
+	if (is_null($rights) || is_null($roleName) || $roleName != $_SESSION['role'])
 	{
 		//echo "<pre>debug"; print_r($_SESSION); echo "</pre>";
-		$rights = getRoleRights($_SESSION['role']);
+		$roleName = $_SESSION['role'];
+		$rights = getRoleRights($roleName);
 		//echo "<pre>debug\$rights"; print_r($rights); echo "</pre>";
 	}
 	

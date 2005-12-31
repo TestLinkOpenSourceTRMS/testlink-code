@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: users.inc.php,v $
  *
- * @version $Revision: 1.15 $
- * @modified $Date: 2005/12/30 16:02:26 $ $Author: franciscom $
+ * @version $Revision: 1.16 $
+ * @modified $Date: 2005/12/31 14:38:10 $ $Author: schlundus $
  *
  * @author Chad Rosen, Martin Havlat
  * @author Martin Havlat
@@ -14,6 +14,7 @@
  *
  * @author Francisco Mancardi - 20051228 - added active attribute
  * @author Francisco Mancardi - 20050821 - BUGID 239
+ * 20051231 - scs - changes due to ADBdb
  *
 **/
 require_once("common.php");
@@ -115,25 +116,19 @@ function userDelete($id)
 	return $result ? 'ok' : $GLOBALS['db']->error_msg();
 }
 
-/** Function get associated array of IDs with logins (used for listbox)*/
-function getListOfUsers()
-{
-	return getTwoColumnsMap("SELECT id,login FROM user");
-}
-
 /** Function get associated array of IDs with rights (used for listbox)*/
-function getListOfRights()
+function getListOfRights(&$db)
 {
-	return getTwoColumnsMap("SELECT id,role FROM rights");
+	return getTwoColumnsMap($db,"SELECT id,role FROM rights");
 }
 
-function getTwoColumnsMap($query)
+function getTwoColumnsMap(&$db,$query)
 {
-	$result = do_sql_query($query);
+	$result = $db->exec_query($query);
 	$arrOut = null;
 	if ($result)
 	{
-		while ($myrow = $GLOBALS['db']->fetch_array($result))
+		while ($myrow = $db->fetch_array($result))
 		{
 			$arrOut[$myrow[0]] = $myrow[1];
 		}	
@@ -275,18 +270,18 @@ function deleteUsersProjectRights($userID, $prodID)
 	return $result ? 1 : 0;
 }
 
-function getUserById($id)
+function getUserById(&$db,$id)
 {
-	return getAllUsers("where id=" . $id);
+	return getAllUsers($db,"where id=" . $id);
 }
 
 // 20051227 - fm
 // 20051112 - scs - where clause was added at the wrong place
-function getAllUsers($whereClause = null)
+function getAllUsers(&$db,$whereClause = null)
 {
-	$show_realname=config_get('show_realname');
+	$show_realname = config_get('show_realname');
 	
-	$sql = " SELECT id,login,password,first,last,email,rightsid,'' AS fullname, active 
+	$sql = " SELECT id,login,password,first,last,email,rightsid,locale,'' AS fullname, active 
 	         FROM user";
 	if (!is_null($whereClause))
 	{
@@ -294,43 +289,16 @@ function getAllUsers($whereClause = null)
 	}
 	
 	$sql .= " ORDER BY login";
-	$result = do_sql_query($sql);
+	$result = $db->exec_query($sql);
 	$users = null;
 	if ($result)
 	{
-		while($user = $GLOBALS['db']->fetch_array($result))
+		while($user = $db->fetch_array($result))
 		{
 			$user['fullname'] = $user['login'];
 			if($show_realname)
-			{
-			  $user['fullname'] = format_username($user);
-			}
-			$users[] = $user;
-		}	
-	}
-	
-	return($users);
-}
+				$user['fullname'] = format_username($user);
 
-// 20051230 - fm - active
-// 20051227 - fm
-function getAllUsers_assoc($whereClause = null)
-{
-  
-	$sql = " SELECT id,login,password,first,last,email,rightsid,locale,active " .
-	       " FROM user ORDER BY login ";
-	
-	if (!is_null($whereClause))
-	{
-		$sql .= $whereClause;
-  }
-  
-	$result = do_sql_query($sql);
-	$users = null;
-	if ($result)
-	{
-		while($user = $GLOBALS['db']->fetch_array($result))
-		{
 			$users[] = $user;
 		}	
 	}

@@ -1,6 +1,6 @@
 {* 
 Testlink: smarty template - 
-$Id: adminUserEdit.tpl,v 1.1 2005/12/30 16:03:53 franciscom Exp $ 
+$Id: adminUserEdit.tpl,v 1.2 2005/12/31 14:38:10 schlundus Exp $ 
 *}
 {* 
 20050913 - fm - BUGID 0000103: Localization is changed but not strings
@@ -13,9 +13,6 @@ $Id: adminUserEdit.tpl,v 1.1 2005/12/30 16:03:53 franciscom Exp $
 <body>
 
 <h1> {lang_get s='title_account_settings'} </h1>
-
-{include file="inc_update.tpl" result=$updateResult action="updated" item="user" name=$userData[1]}
-
 
 <div class="workBack">
 
@@ -40,7 +37,7 @@ function valAllText(form)
 </script>
 {/literal}
 
-<form method="post" action="lib/admin/adminUserEdit.php" onsubmit="return valAllText(this)">
+<form method="post" action="lib/admin/adminUsers.php" onsubmit="return valAllText(this)">
 	<input type="hidden" name="user_id" value="{$userData.id}" />
 	<input type="hidden" name="user_login" value="{$userData.login}" />
 	<table class="common">
@@ -89,22 +86,17 @@ function valAllText(form)
 
 
 	<div class="groupBtn">	
+	{if $userData neq null}
 		<input type="submit" name="do_update" value="{lang_get s='btn_upd_user_data'}" />
+	{/if}
+		<input type="button" name="cancel" value="{lang_get s='btn_cancel'}" 
+			onclick="javascript: location.href=fRoot+'lib/admin/adminUsers.php';" />
+
 	</div>
 </form>
 <hr />
 
-
 </div>
 
-{*  BUGID 0000103: Localization is changed but not strings *}
-{if $update_title_bar == 1}
-{literal}
-<script type="text/javascript">
-	//parent.mainframe.location = parent.mainframe.location;
-	parent.titlebar.location.reload();
-</script>
-{/literal}
-{/if}
 </body>
 </html>

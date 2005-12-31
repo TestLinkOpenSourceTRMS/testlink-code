@@ -5,8 +5,8 @@
  * 
  * Filename $RCSfile: logout.php,v $
  *
- * @version $Revision: 1.4 $
- * @modified $Date: 2005/08/31 11:35:11 $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2005/12/31 14:38:09 $
  *
  * @author Martin Havlat
  *
@@ -21,7 +21,7 @@ session_destroy();
 <html>
 <head>
 	<script type="text/javascript">
-		location.href='login.php';
+		top.location.href='login.php';
 	</script>
 </head>
 <body>

@@ -1,5 +1,5 @@
 {* Testlink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: adminUserNew.tpl,v 1.5 2005/12/30 16:04:12 franciscom Exp $ *}
+{* $Id: adminUserNew.tpl,v 1.6 2005/12/31 14:38:10 schlundus Exp $ *}
 {* 
 Purpose: smarty template - Add new user 
 
@@ -16,7 +16,6 @@ Purpose: smarty template - Add new user
 <div class="tabMenu">
 	<span class="selected">{lang_get s='menu_new_user'}</span> 
 	<span class="unselected"><a href="lib/admin/adminUsers.php">{lang_get s='menu_mod_user'}</a></span>
-	<span class="unselected"><a href="lib/admin/adminUsersDelete.php">{lang_get s='menu_del_user'}</a></span>
 </div>
 
 <div class="workBack">

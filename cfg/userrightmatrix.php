@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: userrightmatrix.php,v $
  *
- * @version $Revision: 1.5 $
- * @modified $Date: 2005/12/29 20:59:00 $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2005/12/31 14:38:10 $
  *
  * @author Andreas Morsing
  *
@@ -24,10 +24,10 @@
 //		null : no rights need
 $g_userRights = array(
 						//USERADMINISTRATION
-						"lib/admin/adminusersdelete.php" => array (
-															"mgt_users",
-														),
 						"lib/admin/adminusernew.php"  => array (
+															"mgt_users",
+														),														
+						"lib/admin/adminuseredit.php"  => array (
 															"mgt_users",
 														),														
 						"lib/admin/adminusers.php"  => array (

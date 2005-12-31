@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* @version $Id: userInfo.php,v 1.8 2005/11/19 23:07:39 schlundus Exp $ 
+* @version $Id: userInfo.php,v 1.9 2005/12/31 14:38:10 schlundus Exp $ 
 *
 * @author	Asiel Brumfield <asielb@users.sourceforge.net>
 * @author 	Martin Havlat
@@ -9,13 +9,13 @@
 * Displays the users' information and allows users to change 
 * their passwords and user info.
 * 
+
 * 20050913 - fm - BUGID 0000103: Localization is changed but not strings
 * 20050829 - scs - moved POST params to the top of the script
 */
 require_once('../../config.inc.php');
 require_once('users.inc.php');
 testlinkInitPage();
-
 $_POST = strings_stripSlashes($_POST);
 $id = isset($_POST['id']) ? intval($_POST['id']) : 0;
 $first = isset($_POST['first']) ? $_POST['first'] : null;

@@ -1,7 +1,8 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: keywordsimport.tpl,v 1.1 2005/12/29 21:03:09 schlundus Exp $ *}
+{* $Id: keywordsimport.tpl,v 1.2 2005/12/31 14:38:10 schlundus Exp $ *}
 {* Purpose: smarty template - keyword import initial page *}
 {* revisions:
+20051231 - scs - fixed incorrect cancel button link
 *}
 {include file="inc_head.tpl"}
 
@@ -33,7 +34,7 @@
 		<input type="hidden" name="MAX_FILE_SIZE" value="{$importLimit}" /> {* restrict file size *}
 		<input type="submit" name="UploadFile" value="{lang_get s='btn_upload_file'}" />
 		<input type="button" name="cancel" value="{lang_get s='btn_cancel'}" 
-			onclick="javascript: location.href=fRoot+'lib/admin/keywordsimport.php';" />
+			onclick="javascript: location.href=fRoot+'lib/keywords/keywordsView.php';" />
 	</div>
 </form>
 

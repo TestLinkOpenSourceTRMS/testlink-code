@@ -1,12 +1,13 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: planTestersNavigator.php,v 1.4 2005/12/27 11:16:12 franciscom Exp $ 
+* $Id: planTestersNavigator.php,v 1.5 2005/12/31 14:38:10 schlundus Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * 
 * This page lists users and plan for assignment. 
 * 
+* 20051231 - scs - changes due to ADBdb
 */
 require_once('../../config.inc.php');
 require_once('common.php');
@@ -39,7 +40,7 @@ else
 {
 	$title = lang_get('nav_users');
 	$selected = '';
-	$arrData=getAllUsers();
+	$arrData = getAllUsers($db);
 }
 
 //echo "<pre>debug-45"; print_r($arrData); echo "</pre>";

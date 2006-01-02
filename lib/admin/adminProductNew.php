@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: adminProductNew.php,v $
  *
- * @version $Revision: 1.6 $
- * @modified $Date: 2005/10/17 20:11:27 $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2006/01/02 14:05:17 $
  *
  * @author Martin Havlat
  *
@@ -19,15 +19,27 @@
 require_once('../../config.inc.php');
 require_once('../functions/common.php');
 require_once('../functions/product.inc.php');
+require_once("../../third_party/fckeditor/fckeditor.php");
+
 testlinkInitPage();
 
-$_POST = strings_stripSlashes($_POST);
-$bNewProduct = isset($_POST['newProduct']) ? 1 : 0;
-$name = isset($_POST['name']) ? $_POST['name'] : null;
-$color = isset($_POST['color']) ? $_POST['color'] : TL_BACKGROUND_DEFAULT;
-$optReq = isset($_POST['optReq']) ? intval($_POST['optReq']) : 0;
+$_REQUEST = strings_stripSlashes($_REQUEST);
+$bNewProduct = isset($_REQUEST['newProduct']) ? 1 : 0;
+$name = isset($_REQUEST['name']) ? $_REQUEST['name'] : null;
+$color = isset($_REQUEST['color']) ? $_REQUEST['color'] : TL_BACKGROUND_DEFAULT;
+$optReq = isset($_REQUEST['optReq']) ? intval($_REQUEST['optReq']) : 0;
+
+// ----------------------------------------------------------------------
+// 20060101 - fm
+$notes = isset($_REQUEST['notes']) ? $_REQUEST['notes'] : null;
+$of = new fckeditor('notes') ;
+$of->BasePath = $_SESSION['basehref'] . 'third_party/fckeditor/';
+$of->ToolbarSet = 'TL_Medium';
+// ----------------------------------------------------------------------
+
 $msg = null;
 $createResult = null;
+$of->Value = null;
 if ($bNewProduct)
 {
 	$name_ok = 1;
@@ -47,7 +59,7 @@ if ($bNewProduct)
 	if ($name_ok)
 	{
 		$msg = 'ok';
-		if (!createProduct($name,$color,$optReq))
+		if (!createProduct($name,$color,$optReq,$notes))
 		{
 			$msg = lang_get('refer_to_log');
 		}	
@@ -58,5 +70,7 @@ $smarty = new TLSmarty();
 $smarty->assign('sqlResult', $msg);
 $smarty->assign('name', $name);
 $smarty->assign('defaultColor', TL_BACKGROUND_DEFAULT);
+$smarty->assign('notes', $of->CreateHTML());
+
 $smarty->display('adminProductNew.tpl');
 ?>

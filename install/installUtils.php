@@ -1,13 +1,13 @@
 <?php
 /* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: installUtils.php,v 1.10 2005/12/28 07:34:54 franciscom Exp $ 
+$Id: installUtils.php,v 1.11 2006/01/02 13:46:55 franciscom Exp $ 
 
+20051231 - fm - changes due to ADODB
 20051002 - fm - messages changes
 20050925 - fm - changes to getDirFiles()
 20050910 - fm - refactoring
 20050830 - fm - added check_php_settings()
-
 */
 
 
@@ -25,26 +25,24 @@ if ( $add_dirpath )
 {
   $my_dir_path = $dirPath;
 }    		           
+if ($handle = opendir($dirPath)) 
+{
+    while (false !== ($file = readdir($handle))) 
+    
+    // 20050808 - fm 
+    // added is_dir() to exclude dirs
+    if ($file != "." && $file != ".." && !is_dir($file))
+    {
+        $filesArr[] = $my_dir_path . trim($file);
+    }            
+    closedir($handle);
+}  
 
-     if ($handle = opendir($dirPath)) 
-     {
-         while (false !== ($file = readdir($handle))) 
-         
-             // 20050808 - fm 
-             // added is_dir() to exclude dirs
-             if ($file != "." && $file != ".." && !is_dir($file))
-             {
-                  
-                 $filesArr[] = $my_dir_path . trim($file);
-             }            
-         closedir($handle);
-     }  
-     
-     // 20050925 - fm
-     sort($filesArr);
-     reset($filesArr);
-     
-     return $filesArr; 
+// 20050925 - fm
+sort($filesArr);
+reset($filesArr);
+
+return $filesArr; 
 }
 // +----------------------------------------------------------------------+
 
@@ -60,7 +58,7 @@ if ( $add_dirpath )
 // | Authors: João Prado Maia <jpm@mysql.com>                             |
 // +----------------------------------------------------------------------+
 //
-// @(#) $Id: installUtils.php,v 1.10 2005/12/28 07:34:54 franciscom Exp $
+// @(#) $Id: installUtils.php,v 1.11 2006/01/02 13:46:55 franciscom Exp $
 //
 
 
@@ -75,30 +73,31 @@ function getDatabaseList($conn)
     return $dbs;
 }
 
-function getTableList($conn)
-{
-    $tables = array();
 
-    $res = @do_sql_query('SHOW TABLES', $conn);
-    while ($row = @$GLOBALS['db']->fetch_array($res)) {
-        $tables[] = $row[0];
-    }
-    return $tables;
+// a foolish wrapper - 20051231 - fm
+function getTableList($db)
+{
+    $my_ado = $db->get_dbmgr_object();
+    $tables = $my_ado->MetaTables('TABLES',false,'db_version');
+    return($tables);
 }
 
-function getUserList($conn)
+
+// 20060101 - fm - valid only for MySQL
+function getUserList($system_schema)
 {
-    @mysql_select_db('mysql');
-    $res = @do_sql_query('SELECT DISTINCT User from user');
-    $users = array();
-    // if the user cannot select from the mysql.user table, then return an empty list
-    if (!$res) {
-        return $users;
-    }
-    while ($row = $GLOBALS['db']->fetch_array($res)) {
-        $users[] = $row[0];
-    }
-    return $users;
+   $res = $system_schema->exec_query('SELECT DISTINCT user from user');
+   
+   $users = array();
+   // if the user cannot select from the mysql.user table, then return an empty list
+   if (!$res) {
+       return $users;
+   }
+   while ($row = $system_schema->fetch_array($res)) 
+   {
+       $users[] = $row['user'];
+   }
+   return($users);
 }
 
 
@@ -150,7 +149,7 @@ if @ in login ->  get the hostname using splitting, and use it
                 
                 
 */
-function create_user_for_db($conn, $db, $login, $passwd)
+function create_user_for_db($system_schema, $db_name, $login, $passwd)
 {
 
 // 20050910 - fm
@@ -163,11 +162,12 @@ if ( count($user_host) > 1 )
   $the_host = trim($user_host[1]);  
 }
 
-$user_list = getUserList($conn);
+$user_list = getUserList($system_schema);
 $login_lc = strtolower($login);
 $msg = "ko - fatal error - can't get db server user list !!!";
 
 // echo "\$the_host=" .$the_host . "<br>";
+//echo "<pre>debug174"; print_r($user_list); echo "</pre>";
 
 if (count($user_list) > 0) 
 {
@@ -177,7 +177,7 @@ if (count($user_list) > 0)
     {
     	$msg = 'ok - new user';
       $stmt = "GRANT SELECT, UPDATE, DELETE, INSERT ON " . 
-              $db . ".* TO '" . $login . "'";
+              $db_name . ".* TO '" . $login . "'";
               
       if (strlen(trim($the_host)) != 0)
       {
@@ -186,9 +186,9 @@ if (count($user_list) > 0)
       $stmt .= " IDENTIFIED BY '" .  $passwd . "'";
       
             
-      if (!@do_sql_query($stmt, $conn)) 
+      if (!@$system_schema->exec_query($stmt)) 
       {
-          $msg = "ko - " . $GLOBALS['db']->error_msg();
+          $msg = "ko - " . $system_schema->error_msg();
       }
       else
       {
@@ -204,18 +204,18 @@ if (count($user_list) > 0)
         if( strcasecmp('localhost',$the_host) != 0)
         {
           $stmt = "GRANT SELECT, UPDATE, DELETE, INSERT ON " . 
-                   $db . ".* TO '" . $login . "'@'localhost'" .
+                   $db_name . ".* TO '" . $login . "'@'localhost'" .
                   " IDENTIFIED BY '" .  $passwd . "'";
-          if (!@do_sql_query($stmt, $conn)) 
+          if ( !@$system_schema->exec_query($stmt) ) 
           {
-            $msg = "ko - " . $GLOBALS['db']->error_msg();
+            $msg = "ko - " . $system_schema->error_msg();
           }
         }
       }
     }
 }
 
-return $msg;
+return($msg);
 }  /* Function ends */
 
 
@@ -359,6 +359,8 @@ $ret = array ('errors' => $errors,
 
 return ($ret);
 }  //function end
+
+
 
 
 
@@ -540,6 +542,70 @@ $ret = array ('errors' => $errors,
 
 return ($ret);
 }  //function end
+
+
+// 20051231 - fm
+function check_db_version($dbhandler)
+{
+
+switch ($dbhandler->db->databaseType)
+{
+	case 'mysql':
+	$min_ver = "4.1.0";
+	$db_verbose="MySQL";
+  break;
+  
+  case 'postgres':
+  case 'postgres7':
+  case 'postgres8':
+  case 'postgres64':
+	$min_ver = "7";
+  $db_verbose="PostGres";
+  break;
+}
+
+$errors=0;	
+$final_msg = "</b><br/>Checking {$db_verbose} version:<b> ";
+
+$server_info = @$dbhandler->get_version_info();
+$my_version = trim($server_info['version']);
+
+if( strlen($my_version) != 0 )
+{
+
+  // version_compare:
+  // -1 if left is less, 0 if equal, +1 if left is higher
+  $ver_comp =  version_compare($my_version, $min_ver);
+  
+  if($ver_comp < 0) 
+  {
+  	$final_msg .= "<span class='notok'>Failed!</span> - You are running on {$db_verbose} " . 
+  	        $my_version . ", and TestLink requires {$db_verbose} " . $min_ver . " or greater";
+  	$errors += 1;
+  } 
+  else 
+  {
+  	$final_msg .= "<span class='ok'>OK! (" . $my_version . " >= " . $min_ver . ")</span>";
+  }
+}
+else
+{
+	$final_msg .= "<span class='notok'>Warning!: Unable to get {$db_verbose} version (may be due to security restrictions) - " .
+	              "Remember that Testlink requires {$db_verbose} >= " . $min_ver . ")</span>";
+}	  
+
+$ret = array ('errors' => $errors,
+              'msg' => $final_msg);
+
+
+return ($ret);
+}  //function end
+
+
+
+
+
+
 
 
 ?>

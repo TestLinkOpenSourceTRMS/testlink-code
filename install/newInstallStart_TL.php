@@ -1,6 +1,6 @@
 <?php 
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: newInstallStart_TL.php,v 1.6 2005/10/12 06:30:18 franciscom Exp $ */
+/* $Id: newInstallStart_TL.php,v 1.7 2006/01/02 13:47:35 franciscom Exp $ */
 
 // 20050824 - fm
 require_once("installUtils.php");
@@ -153,6 +153,16 @@ exit;
 					
 					
 					Database Configuration <p />
+					
+					<div class="labelHolder">
+						<label for="databasetype">Database Type</label>
+					</div>
+					<select id="databasetype" name="databasetype">
+						<option value="mysql" selected>MySQL</option>
+						<option value="posgres" >Postgres 7 and 8 (NOT YET)</option>
+					</select>	
+					<br />
+					
 					
 					<div class="labelHolder">
 						<label for="databasehost">Database host:</label>

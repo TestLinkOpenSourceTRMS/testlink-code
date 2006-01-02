@@ -1,11 +1,14 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: sqlParser.class.php,v 1.3 2005/12/28 07:34:54 franciscom Exp $ */
+/* $Id: sqlParser.class.php,v 1.4 2006/01/02 13:47:11 franciscom Exp $ */
 // File: sqlParser.class.php
 //       MySQL Dump Parser
 //
 // Rev :
-//       20050804 - francisco.mancardi@gruppotesi.com
+//       20060101 - fm
+//       Refactoring after added ADODB support
+//
+//       20050804 - fm
 //       Improved using code from MySQL Eventum
 //
 //       Original work from: Etomite Installer SNUFFKIN/ Alex 2004
@@ -13,22 +16,12 @@
 //
 
 class SqlParser {
-	var $host, $dbname, $prefix, $user, $password, $mysqlErrors;
-	var $conn, $installFailed, $sitename, $adminname, $adminpass;
+	var $sql_errors;
+	var $db_conn;
+	var $install_failed;
 
-	function SqlParser($host, $user, $password, $db, $prefix='test_', $adminname, $adminpass) {
-		$this->host = $host;
-		$this->dbname = $db;
-		$this->prefix = $prefix;
-		$this->user = $user;
-		$this->password = $password;
-		$this->adminpass = $adminpass;
-		$this->adminname = $adminname;
-	}
-
-	function connect() {
-		$this->conn = mysql_connect($this->host, $this->user, $this->password);
-		mysql_select_db($this->dbname, $this->conn);
+	function SqlParser($db_conn) {
+		$this->db_conn   = $db_conn;
 	}
 
 	function process($filename) {
@@ -57,17 +50,13 @@ class SqlParser {
       if( strlen($sql_dodo) > 0 )
       {
   			$num = $num + 1;
-  			do_sql_query($sql_do, $this->conn);
-  			if($GLOBALS['db']->error_msg()) {
-  				$this->mysqlErrors[] = array("error" => $GLOBALS['db']->error_msg(), "sql" => $sql_do);
-  				$this->installFailed = true;
+  			$this->db_conn->exec_query($sql_do);
+  			if($this->db_conn->error_msg()) {
+  				$this->sql_errors[] = array("error" => $this->db_conn->error_msg(), "sql" => $sql_do);
+  				$this->install_failed = true;
   			}
 			}
 		}
-	}
-
-	function close() {
-		mysql_close($this->conn);
 	}
 
   // 20050612 - fm

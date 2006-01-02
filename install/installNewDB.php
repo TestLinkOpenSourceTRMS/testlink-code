@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: installNewDB.php,v 1.18 2005/12/28 07:34:54 franciscom Exp $ */
+/* $Id: installNewDB.php,v 1.19 2006/01/02 13:46:39 franciscom Exp $ */
 /*
 Parts of this file has been taken from:
 Etomite Content Management System
@@ -25,49 +25,35 @@ moved mysql version check here
 
 */
 
+// 20051230 - fm
+//require_once( dirname(__FILE__). '/../third_party/adodb/adodb.inc.php' );
+require_once( dirname(__FILE__). '/../lib/functions/database.class.php' );
 require_once("installUtils.php");
+require_once("sqlParser.class.php");
 
 session_start();
-
-// 20050926 - fm
 set_time_limit(180);
-
 $inst_type = $_SESSION['installationType'];
 
-
-// 20050806 - fm
 define('LEN_PWD_TL_1_0_4',15);
 define('ADD_DIR',1);
 
-
 $sql_create_schema = array();
 $sql_default_data = array();
-
 $sql_update_schema = array();
 $sql_update_data   = array();
-
-
 $sql_create_schema[1] = 'sql/testlink_create_tables.sql';
 $sql_default_data [1] = 'sql/testlink_create_default_data.sql';
-
-
-// -------------------------------------------------------------------
-// 20050806 - fm 
 $sql_schema = $sql_create_schema;
 $sql_data   = $sql_default_data;
 $msg_process_data = "</b><br />Importing StartUp data<b> ";
-
 if ($inst_type == "upgrade" )
 {
 	$msg_process_data = "</b><br />Updating Database Contents<b> ";
   $sql_data   = array();
 }
-// -------------------------------------------------------------------
-
-
-$the_title = "TestLink Install" . $inst_type;
+$the_title = "TestLink Install - " . $inst_type;
 ?>
-
 
 
 
@@ -119,10 +105,10 @@ $errors = 0;
 $db_server     = $_SESSION['databasehost'];
 $db_admin_name = $_SESSION['databaseloginname'];
 $db_admin_pass = $_SESSION['databaseloginpassword'];
+$db_name       = $_SESSION['databasename'];
+$db_type       = $_SESSION['databasetype'];
 $tl_db_login   = $_SESSION['tl_loginname'];
 $tl_db_passwd  = $_SESSION['tl_loginpassword'];
-$db = $_SESSION['databasename'];
-
 
 // $table_prefix = $_SESSION['tableprefix'];
 $table_prefix ='';
@@ -139,10 +125,14 @@ echo "</b><br />Creating connection to Database Server:<b> ";
 
 // ------------------------------------------------------------------------------------------------
 // Connect to DB Server without choosing an specific database
-if(!@$conn = mysql_connect($db_server, $db_admin_name, $db_admin_pass)) 
+$db = new database($db_type);
+define('NO_DSN',FALSE);
+@$conn_result = $db->connect(NO_DSN,$db_server, $db_admin_name, $db_admin_pass); 
+
+if( $conn_result['status'] == 0 ) 
 {
 	echo '<span class="notok">Failed!</span><p />Please check the database login details and try again.';
-	echo '<br>MySQL Error Message: ' . $GLOBALS['db']->error_msg() . "<br>";
+	echo '<br>Database Error Message: ' . $db->error_msg() . "<br>";
 	
 	close_html_and_exit();
 } 
@@ -154,8 +144,9 @@ else
 
 // ------------------------------------------------------------------------------------------------
 // 20050824 - fm
-// Succesful Connection, now try to check MySQL Version
-$check=check_mysql_version($conn);
+// Succesful Connection, now try to check Database Version
+//echo "</b><br />Checking Database version:<b> ";
+$check=check_db_version($db);
 if($check['errors'] > 0) 
 {
 	echo '<span class="notok">' . $check['msg'] .'</span><p />';
@@ -163,16 +154,24 @@ if($check['errors'] > 0)
 }
 else
 {
-	echo "<span class='ok'>OK!", $check['msg'], "</span><p />" ;
+	//echo "<span class='ok'>OK!", $check['msg'], "</span><p />" ;
+	echo "<span class='ok'>", $check['msg'], "</span><p />" ;
 }	 
+$db->close();
+$db=null;
 // ------------------------------------------------------------------------------------------------
 
 
 // ------------------------------------------------------------------------------------------------
-// Succesful Connection, now try to select the database
-if(!@mysql_select_db($db, $conn)) 
+// Connect to the Database (if Succesful -> database exists)
+$db = new database($db_type);
+@$conn_result = $db->connect(NO_DSN,$db_server, $db_admin_name, $db_admin_pass,$db_name); 
+//echo "<pre>debug"; print_r($conn_result); echo "</pre>";
+
+if( $conn_result['status'] == 0 ) 
 {
-	echo "</b><br>Database $db does not exist. <br>";
+	$db->close();
+  echo "</b><br>Database $db_name does not exist. <br>";
 	
 	if( $inst_type == "upgrade" )
 	{
@@ -190,7 +189,7 @@ if(!@mysql_select_db($db, $conn))
 } 
 else 
 {
-  echo "</b><br />Selecting database `".$db."`:<b> ";
+  echo "</b><br />Connecting to database `" . $db_name . "`:<b> ";
 	echo "<span class='ok'>OK!</span>";
 }
 // ------------------------------------------------------------------------------------------------
@@ -199,16 +198,15 @@ else
 // ------------------------------------------------------------------------------------------------
 if($create) 
 {
-	echo "</b><br />Creating database `".$db."`:<b> ";
-
-  // 20050826 - fm
-  // BUGID Mantis: 0000073: DB Creation fails with no message
-  $sql_create = "CREATE DATABASE " . $db . " CHARACTER SET utf8 "; 
-	if(!@do_sql_query($sql_create, $conn)) 
+  $db = New database($db_type);
+  @$conn_result=$db->connect(NO_DSN,$db_server, $db_admin_name, $db_admin_pass);
+  echo "</b><br />Creating database `" . $db_name . "`:<b> ";
+  $sql_create = "CREATE DATABASE " . $db_name . " CHARACTER SET utf8 "; 
+  
+	if(!$db->exec_query($sql_create)) 
 	{
-		// 20051005 MHT	More comments
 		echo "<span class='notok'>Failed!</span></b> - Could not create database: $db! " .
-			$GLOBALS['db']->error_msg();
+			   $db->error_msg();
 		$errors += 1;
 		
 		echo "<p> TestLink setup could not create the database, " .
@@ -228,15 +226,9 @@ if($create)
 // to identify a version with uncrypted passwords
 if ($inst_type == "upgrade" )
 {
-
-  $check_passwd_type = do_sql_query("SELECT password FROM user");
-  if (!$check_passwd_type) 
-  {
-     echo 'Could not run query: ' . $GLOBALS['db']->error_msg();
-     exit;
-  }
-  $pwd_field_len = mysql_field_len($check_passwd_type, 0);
-
+  $my_ado=$db->get_dbmgr_object();
+  $the_cols=$my_ado->MetaColumns('user');
+  $pwd_field_len =$the_cols['PASSWORD']->max_length;
   if ( $pwd_field_len == LEN_PWD_TL_1_0_4 )
   {
     $update_pwd=1;
@@ -256,16 +248,8 @@ if ( $inst_type == "upgrade")
   }
   else
   {
-    // try to guess TL version
-    $sql = "SHOW TABLES FROM {$db} LIKE 'db_version' ";
-    $res = do_sql_query($sql);
-    
-    if (!$res)
-    {
-      echo "MySQL ERROR:" . $GLOBALS['db']->error_msg();
-      exit(); 
-    }
-    if( $GLOBALS['db']->num_rows($res) == 0 )
+    $the_version_table=$my_ado->MetaTables('TABLES',false,'db_version');
+    if( count($the_version_table) == 0 )
     {
       // We are upgrading from a pre 1.6 version
   	  $sql_upd_dir = 'sql/alter_tables/1.5_to_1.6/';
@@ -275,26 +259,29 @@ if ( $inst_type == "upgrade")
       // 20050927 - fm
       // try to know what db version is installed
       $sql = "SELECT * FROM db_version ORDER BY upgrade_date DESC LIMIT 1";
-    
-      $res = do_sql_query($sql);  
+      $res = $db->exec_query($sql);  
       if (!$res)
       {
-       echo "MySQL ERROR:" . $GLOBALS['db']->error_msg();
+       echo "Database ERROR:" . $db->error_msg();
        exit(); 
       }
-      $myrow = $GLOBALS['db']->fetch_array($res);
-      
-      if ( strcmp(trim($myrow['version']), '1.6 BETA 1') == 0 )
+
+      $myrow = $db->fetch_array($res);
+      switch (trim($myrow['version']))
       {
-      	$sql_upd_dir = 'sql/alter_tables/1.6/';
-      }
-      else
-      {
-       // echo "I don't know how upgrade from version " . trim($myrow['version']);
-       echo "<br>Upgrade not need from version " . trim($myrow['version']) . "<br>";
-       echo "Just open your Browser and login to TestLink <br>";
-       echo "<br>bye!";
-       exit(); 
+      	case '1.6':
+      	break;
+      	
+        case '1.6 BETA 1':
+        $sql_upd_dir = 'sql/alter_tables/1.6/';
+        break;
+       
+        default:
+        echo "<br>Upgrade not need from version " . trim($myrow['version']) . "<br>";
+        echo "Just open your Browser and login to TestLink <br>";
+        echo "<br>bye!";
+        exit(); 
+        break;
       }
     }
   }
@@ -324,7 +311,13 @@ if ( $inst_type == "upgrade")
 //
 // 20051217 - fm
 $user_host = explode('@',$tl_db_login);
-$msg = create_user_for_db($conn, $db, $tl_db_login, $tl_db_passwd);
+$system_schema = new database($db_type);
+$conn_res = $system_schema->connect(NO_DSN, $db_server, $db_admin_name, $db_admin_pass, 'mysql'); 
+
+//echo "<pre>debug"; print_r($conn_res); echo "</pre>";
+
+
+$msg = create_user_for_db($system_schema, $db_name, $tl_db_login, $tl_db_passwd);
 echo "</b><br />Creating Testlink DB user `" . $user_host[0] . "`:<b> ";
 
 if ( strpos($msg,'ok -') === FALSE )
@@ -336,26 +329,28 @@ else
 {
 		echo "<span class='ok'>OK! ($msg) </span>";
 }
+$system_schema->close();
+$system_schema=null;
 // ------------------------------------------------------------------------------------------------
 
-
-//  ------------------------------------------------------------------------------------------
-include "sqlParser.class.php";
-
-// 20050804 - fm
 // Schema Operations (CREATE, ALTER, ecc).
-$sqlParser = new SqlParser($db_server, $db_admin_name, $db_admin_pass, 
-                           $db, $table_prefix, $adminname, $adminpass);
+// Important: Do it as tl_login NOT as db_admin
+//
+//echo "<pre>debug"; print_r($db); echo "</pre>";
+$db->close();
+$db=null;
 
-$sqlParser->connect();
+$db = new database($db_type);
+@$conn_result = $db->connect(NO_DSN, $db_server, $db_admin_name, $db_admin_pass, $db_name); 
+
+$sqlParser = new SqlParser($db);
+
 foreach ($sql_schema as $sql_file) 
 {
 	echo "<br>Processing:" . $sql_file;
 	$sqlParser->process($sql_file);
 }
 echo "<br>";
-$sqlParser->close();
-
 
 /*
 echo "<pre>";
@@ -370,25 +365,15 @@ echo "</pre>";
 if ( count($sql_data > 0) )
 {
 	echo $msg_process_data;
-
-	$sqlParser = new SqlParser($db_server, $db_admin_name, $db_admin_pass, 
-  	                         $db, $table_prefix, $adminname, $adminpass);
-	$sqlParser->connect();
-	
   foreach ($sql_data as $sql_file) 
   {
 	  $sqlParser->process($sql_file);
   }
-	
-	$sqlParser->close();
 }
 
 // 20050806 - fm
 if ($update_pwd)
 {
-  $conn = mysql_connect($db_server, $db_admin_name, $db_admin_pass);
-  mysql_select_db($db, $conn);
-
 	echo "Password Conversion ...";
 	
 	// @author Francisco Mancardi - 20050918
@@ -396,11 +381,11 @@ if ($update_pwd)
   // due to case sensitive on table name. (USER)
 
 	$user_pwd = "UPDATE user SET password=MD5(password)";
-	$result = do_sql_query($user_pwd);
+	$result = $db->exec_query($user_pwd);
 }
 
 
-if($sqlParser->installFailed==true) 
+if($sqlParser->install_failed==true) 
 {
 
 	echo "<span class='notok'>Failed!</span></b> - Installation failed!";
@@ -408,9 +393,9 @@ if($sqlParser->installFailed==true)
 
   echo "<p />" .
        "TestLink setup couldn't install the default site into the selected database. " .
-       "The last error to occur was <i>" . $sqlParser->mysqlErrors[count($sqlParser->mysqlErrors)-1]["error"] .
+       "The last error to occur was <i>" . $sqlParser->sql_errors[count($sqlParser->sql_errors)-1]["error"] .
        '</i> during the execution of SQL statement <span class="mono">' .
-       strip_tags($sqlParser->mysqlErrors[count($sqlParser->mysqlErrors)-1]["sql"]). "</span>";
+       strip_tags($sqlParser->sql_errors[count($sqlParser->sql_errors)-1]["sql"]). "</span>";
        
 	close_html_and_exit();     
 } 
@@ -424,11 +409,11 @@ echo "</b><br />Writing configuration file:<b> ";
 $data['db_host']=$db_server;
 
 // 20051217 - fm - BUGID 
-$data['db_login']  = $user_host[0];
-
+$data['db_login'] = $user_host[0];
 $data['db_passwd'] = $tl_db_passwd;
+$data['db_name'] = $db_name;
+$data['db_type'] = $db_type;
 
-$data['db_name']=$db;
 $cfg_file = "../config_db.inc.php";
 $yy = write_config_db($cfg_file,$data);
 // -----------------------------------------------------------------------------
@@ -454,6 +439,7 @@ else
 }
 
 echo "</b><p />" . 'Installation was successful! You can now log into the <a href="../index.php">TestLink (Please Click Me!)</a>.';
+$db->close();
 close_html_and_exit();     
 
 ?>
@@ -468,6 +454,7 @@ function write_config_db($filename, $data)
 $ret = array('status'     => 'ok',
              'cfg_string' => '');
 
+               
                
 $db_host  = $data['db_host'];
 $db_login = $data['db_login'];
@@ -484,10 +471,11 @@ if (count($user_host) > 1 )
 
 $db_passwd = $data['db_passwd'];
 $db_name = $data['db_name'];
+$db_type = $data['db_type'];
 
 // write config.inc.php
 $configString = "<?php" . "\n" . "// Automatically Generated by TestLink Installer\n";
-$configString .= "define('DB_TYPE', 'mysql');\n";
+$configString .= "define('DB_TYPE', '" . $db_type . "');\n";
 $configString .= "define('DB_USER', '" . $db_login . "');\n";
 $configString .= "define('DB_PASS', '" . $db_passwd . "');\n";
 $configString .= "define('DB_HOST', '" . $db_host . "');\n";

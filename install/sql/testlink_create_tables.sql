@@ -1,6 +1,6 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
 # This script is distributed under the GNU General Public License 2 or later.
-# $Id: testlink_create_tables.sql,v 1.11 2005/11/21 04:35:02 havlat Exp $
+# $Id: testlink_create_tables.sql,v 1.12 2006/01/02 13:48:30 franciscom Exp $
 # SQL script - create db tables for TL 1.6.0  
 #
 # default rights & admin account are created via testlink_create_default_data.sql
@@ -20,8 +20,9 @@
 #       component: removed component.name
 #       bugs: build -> build_id
 #
-#	20051120 - mht - bug 237; updated db_vrsion->version default value
+#	      20051120 - mht - bug 237; updated db_version->version default value
 #
+#       20060101 - fm - added active field in user table 
 # --------------------------------------------------------
 
 #
@@ -167,6 +168,7 @@ DROP TABLE IF EXISTS `mgtproduct`;
 CREATE TABLE `mgtproduct` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `name` varchar(100) NOT NULL default 'undefined',
+  `notes` text,
   `color` varchar(12) NOT NULL default '#9BD',
   `active` bool NOT NULL default 1,
   `option_reqs` bool NOT NULL default 0,
@@ -412,6 +414,7 @@ CREATE TABLE `user` (
   `first` varchar(30) NOT NULL default '',
   `last` varchar(30) NOT NULL default '',
   `locale` varchar(10) NOT NULL default 'en_GB',
+  `active` bool NOT NULL default 1,
   PRIMARY KEY  (`id`),
   UNIQUE KEY `login` (`login`)
 ) TYPE=MyISAM COMMENT='User information' AUTO_INCREMENT=20;

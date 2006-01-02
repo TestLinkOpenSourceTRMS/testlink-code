@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: adminProductEdit.tpl,v 1.4 2005/12/12 18:36:54 franciscom Exp $
+$Id: adminProductEdit.tpl,v 1.5 2006/01/02 14:05:59 franciscom Exp $
 Purpose: smarty template - Edit existing product 
 
 @author Francisco Mancardi - 20051211 - poor workaround for BUGID 180 Unable to delete Product
@@ -44,13 +44,20 @@ Purpose: smarty template - Edit existing product
 
 		<input type="hidden" name="id" value="{$id}" />
   	{* 20051208 - fm - same width taht adminProductNew.tpl *}
-		<table class="common" width="50%">
+		<table class="common" width="80%">
 		  {* 20051208 - fm #{$id} -> {$name} *} 
 			<caption>{lang_get s='caption_edit_product'} {$name}</caption>
 			<tr>
 				<td>{lang_get s='name'}</td>
 				<td><input type="text" name="name" value="{$name|escape}" maxlength="100" /></td>
 			</tr>
+     {* ---------------------------------------------------------------- *}
+     {* 20060101 - fm *}
+	   <tr>
+		  <td>{lang_get s='notes'}</td>
+		  <td width="80%">{$notes}</td>
+	   </tr>
+    {* ---------------------------------------------------------------- *}
 			<tr>
 				<td>{lang_get s='color'}</td>
 				<td>

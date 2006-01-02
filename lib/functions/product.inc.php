@@ -2,13 +2,14 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: product.inc.php,v $
- * @version $Revision: 1.4 $
- * @modified $Date: 2005/12/28 07:34:55 $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2006/01/02 14:04:39 $
  * @author Martin Havlat
  *
  * Functions for Product management (create,update,delete)
  * Functions for get data see product.core.inc.php
- * 
+ *
+ * @ author: francisco mancardi - 20060101 - product notes management
  * @ author: francisco mancardi - 20050810 deprecated $_SESSION['product'] removed
  *
  */
@@ -18,14 +19,20 @@ require_once('product.core.inc.php');
 
 /**
  * Update Product data
+ *
+ * 20060101 - fm - added notes
  */
-function updateProduct($id, $name, $color, $optRequirements)
+function updateProduct($id, $name, $color, $optRequirements,$notes)
 {
-	$sql = "UPDATE mgtproduct SET name='" . $GLOBALS['db']->prepare_string($name) . "', color='" . 
-			$GLOBALS['db']->prepare_string($color) . "', option_reqs=" .  
-			$GLOBALS['db']->prepare_string($optRequirements) . " WHERE id=" . $id;
+	$sql = " UPDATE mgtproduct SET name='" . $GLOBALS['db']->prepare_string($name) . "', " .
+	       " color='" . $GLOBALS['db']->prepare_string($color) . "', ".
+			   " option_reqs=" .  $GLOBALS['db']->prepare_string($optRequirements) . ", " .
+			   " notes='" . $GLOBALS['db']->prepare_string($notes) . "'" . 
+			   " WHERE id=" . $id;
 	$result = do_sql_query($sql);
-	
+
+  echo "<pre>debug"; print_r($sql); echo "</pre>";
+
 	if ($result)
 	{
 		// update session data
@@ -51,14 +58,18 @@ function updateProduct($id, $name, $color, $optRequirements)
  * @param string $name
  * @param string $color
  * @param string $optReq [1,0]
+ * @param string $notes
  * @return boolean result
+ *
+ * 20060101 - fm - added notes
  */
-//MHT 20050630 added color and optReq; refactorization 
-function createProduct($name,$color,$optReq)
+function createProduct($name,$color,$optReq,$notes)
 {
-	$sql = "INSERT INTO mgtproduct (name,color,option_reqs) VALUES ('" . 
-			$GLOBALS['db']->prepare_string($name) . "','" . $GLOBALS['db']->prepare_string($color) . 
-			"'," . $optReq . ")";
+	$sql = " INSERT INTO mgtproduct (name,color,option_reqs,notes) " .
+	       " VALUES ('" .	$GLOBALS['db']->prepare_string($name) . "','" . 
+	                      $GLOBALS['db']->prepare_string($color) . 
+			                   "'," . $optReq . ",'" .
+			                  $GLOBALS['db']->prepare_string($notes) . "')";
 	$result = do_sql_query($sql);
 
 	if ($result)
@@ -183,7 +194,7 @@ function deleteProduct($id, &$error)
 // MHT 20050622 created
 function activateProduct($id, $status)
 {
-	$sql = "UPDATE mgtproduct SET active='" . $status . "' WHERE id=" . $id;
+	$sql = "UPDATE mgtproduct SET active=" . $status . " WHERE id=" . $id;
 	$result = do_sql_query($sql);
 
 	return $result ? 1 : 0;

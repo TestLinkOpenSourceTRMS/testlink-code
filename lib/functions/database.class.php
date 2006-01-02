@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
  * @filesource $RCSfile: database.class.php,v $
- * @version $Revision: 1.2 $
- * @modified $Date: 2005/12/29 20:59:00 $ by $Author: schlundus $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2006/01/02 14:04:28 $ by $Author: franciscom $
  * @author Francisco Mancardi
  * 
 */
@@ -21,6 +21,7 @@
  # -------------------------------------------------------------------------------
 
 require_once( dirname(__FILE__). '/../../third_party/adodb/adodb.inc.php' );
+require_once( dirname(__FILE__). '/logging.inc.php' );
 
 class database 
 {
@@ -43,6 +44,14 @@ class database
 	{
 	  $this->db = NewADOConnection($db_type);
 	}
+
+
+  // access to the ADODB object
+	function get_dbmgr_object()
+	{
+	  return($this->db);
+	}
+
 	
 	
 	# Make a connection to the database
@@ -50,7 +59,7 @@ class database
 	                          $p_password = null, $p_database_name = null ) {
 		
 		
-		
+
 		$result = array('status' => 1, 'dbms_msg' => 'ok');
    	
 		if(  $p_dsn === false ) {
@@ -65,16 +74,11 @@ class database
 		  $result['status'] = 0;
 		  $result['dbms_msg']=$this->error();
 		}
-
-    //echo "<pre>debug"; print_r($result); echo "</pre>";
-    //die(__FUNCTION__);
 		return ($result);
 	}
 
 	# --------------------
 	# execute query, requires connection to be opened
-	# If $p_error_on_failure is true (default) an error will be triggered
-	#  if there is a problem executing the query.
 	function exec_query( $p_query, $p_limit = -1, $p_offset = -1 )
 	{
 		$this->nQuery++;
@@ -92,13 +96,15 @@ class database
 
 		//build loginfo
 		$logLevel = 'DEBUG';
-		$message = "SQL [".$this->nQuery."] executed [took {$t_elapsed} secs][all took {$this->overallDuration} secs]:\n\t".$p_query;
+		$message = "SQL [". $this->nQuery . "] executed [took {$t_elapsed} secs]" .
+		           "[all took {$this->overallDuration} secs]:\n\t" . $p_query;
+		// echo $message;
 		$this->overallDuration += $t_elapsed;	
 		if (!$t_result)
 		{
 			$ec       = $this->error_num();
 			$emsg     = $this->error_msg();
-			$message .= "\nQuery failed: errorcode[".$ec."]". "\n\terrormsg:".$emsg;
+			$message .= "\nQuery failed: errorcode[" . $ec . "]". "\n\terrormsg:".$emsg;
 			$logLevel = 'ERROR';
 		}
 		tLog($message,$logLevel);
@@ -387,5 +393,23 @@ class database
 	
 		return $items;
 	}
+
+
+	/**
+	 * database server information
+	 *
+	 * wrapper for adodb method ServerInfo
+	 *
+	 * @return assoc array members 'version' and 'description'
+	 *
+	 * @rev: 
+	 *      20051231- fm
+	 **/
+	function get_version_info()
+	{
+    $version=$this->db->ServerInfo();
+		return($version);
+	}
+
 }
 ?>

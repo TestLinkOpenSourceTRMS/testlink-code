@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.37 $
- * @modified $Date: 2005/12/31 14:38:09 $ by $Author: schlundus $
+ * @version $Revision: 1.38 $
+ * @modified $Date: 2006/01/02 14:03:31 $ by $Author: franciscom $
  *
  *
  * Constants and configuration parameters used throughout TestLink 
@@ -14,7 +14,10 @@
  *-------------------------------------------------------------------------
  * Revisions:
  *
+ * @author Francisco Mancardi - 20060101 - version 1.7.0 Alpha
  * @author Francisco Mancardi - 20051227 - BUGID 300
+ * @author Martin Havlat - 20051204 - added HTTP_ACCEPT_LANGUAGE support; 
+ *                                    added patch for Chinese
  * @author Francisco Mancardi - 20051115 - added constant for JIRA
  *
  * @author Francisco Mancardi - 20051106
@@ -56,7 +59,6 @@
  * 20050822 - fm - 	$tpl -> $g_tpl
  * 20050821 - fm - template configuration/customization
  * 20050806 - fm - Changes to support the installer
- * 20051204 - MHT - added HTTP_ACCEPT_LANGUAGE support; added patch for Chinese
  *------------------------------------------------------------------------
 **/
 /** 
@@ -146,7 +148,7 @@ error_reporting(E_ALL & ~E_NOTICE);
 /** GUI related constants *///////////////////////////////////////////////////
 
 /* CVS will not released, MUST BE changed at the release day */
-define('TL_VERSION', '1.6.0'); 
+define('TL_VERSION', '1.7.0 Alpha'); 
 define('TL_BACKGROUND_DEFAULT', "#9BD");
 
 /** 

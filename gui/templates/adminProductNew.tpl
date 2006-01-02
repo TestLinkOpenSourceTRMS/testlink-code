@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: adminProductNew.tpl,v 1.2 2005/08/16 17:59:13 franciscom Exp $ *}
+{* $Id: adminProductNew.tpl,v 1.3 2006/01/02 14:05:59 franciscom Exp $ *}
 {* Purpose: smarty template - Add a new product *}
 {* @author Andreas Morsing - changed reload *}
 {include file="inc_head.tpl" openHead="yes"}
@@ -31,12 +31,21 @@
 {* new user form *}
 <div>
 <form method="post" name="createProduct">
-<table class="common" width="50%">
+<table class="common" width="80%">
 	<caption>{lang_get s='caption_new_product'}</caption>
 	<tr>
 		<td>{lang_get s='name'}</td>
-		<td><input type="text" name="name" maxlength="100" /></td>
+		<td><input type="text" name="name" size="100" maxlength="100" /></td>
 	</tr>
+	  {* ---------------------------------------------------------------- *}
+  {* 20060101 - fm *}
+	<tr>
+		<td>{lang_get s='notes'}</td>
+		<td width="80%">{$notes}</td>
+	</tr>
+  {* ---------------------------------------------------------------- *}
+
+	
 	<tr>
 		<td>{lang_get s='color'}</td>
 		<td>

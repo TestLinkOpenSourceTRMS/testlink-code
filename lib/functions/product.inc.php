@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: product.inc.php,v $
- * @version $Revision: 1.5 $
- * @modified $Date: 2006/01/02 14:04:39 $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2006/01/02 14:07:39 $
  * @author Martin Havlat
  *
  * Functions for Product management (create,update,delete)
@@ -30,8 +30,6 @@ function updateProduct($id, $name, $color, $optRequirements,$notes)
 			   " notes='" . $GLOBALS['db']->prepare_string($notes) . "'" . 
 			   " WHERE id=" . $id;
 	$result = do_sql_query($sql);
-
-  echo "<pre>debug"; print_r($sql); echo "</pre>";
 
 	if ($result)
 	{

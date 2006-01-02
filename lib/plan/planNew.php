@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * $Id: planNew.php,v 1.10 2005/12/28 07:34:55 franciscom Exp $ 
+ * $Id: planNew.php,v 1.11 2006/01/02 18:15:17 franciscom Exp $ 
  *
  * Purpose:  Add new Test Plan 
  *
@@ -33,7 +33,7 @@ if(isset($_POST['newTestPlan']))
 		$notes = isset($_POST['notes']) ? strings_stripSlashes($_POST['notes']) : null;
 		$copy = isset($_POST['copy']) ? intval($_POST['copy']) : 0;
 		
-		$projID = 0;
+		$tp_id = 0;
 		$sqlResult = 'ok';
 		
 		//20051125 - scs - added checking for duplicate tp names
@@ -49,17 +49,17 @@ if(isset($_POST['newTestPlan']))
 		}
 		if (!$bDuplicate)
 		{
-			if (!insertTestPlan($projID,$name,$notes,$_SESSION['productID']))
+			if (!insertTestPlan($tp_id,$name,$notes,$_SESSION['productID']))
 			{
 				$sqlResult =  $GLOBALS['db']->error_msg();
 			}	
 			
-			$result = insertTestPlanPriorities($projID);
+			$result = insertTestPlanPriorities($tp_id);
 			$rights = isset($_POST['rights']) ? $_POST['rights'] : '';
 			
 			if($rights == 'on')
 			{
-				$result = insertTestPlanUserRight($projID,$_SESSION['userID']);
+				$result = insertTestPlanUserRight($tp_id,$_SESSION['userID']);
 		    }
 	    
 			//user has decided to copy an existing Test Plan. 
@@ -74,7 +74,7 @@ if(isset($_POST['newTestPlan']))
 				{
 					//insert it into the component table with new ids
 					$component = $cInfo[$i];
-					$COMID = insertTestPlanComponent($projID,$component['mgtcompid']);
+					$COMID = insertTestPlanComponent($tp_id,$component['mgtcompid']);
 					
 					//Grab all of the currently looping components categories
 					// 20051001 - fm

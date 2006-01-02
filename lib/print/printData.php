@@ -2,7 +2,7 @@
 /**
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/ 
 *
-* @version 	$Id: printData.php,v 1.11 2005/12/28 07:34:55 franciscom Exp $
+* @version 	$Id: printData.php,v 1.12 2006/01/02 17:41:51 franciscom Exp $
 *	@author 	Martin Havlat
 * 
 * Shows the data that will be printed.
@@ -40,12 +40,16 @@ function print_header($title, $toc)
 	
 	$prodName = isset($_SESSION['productName']) ? strings_stripSlashes($_SESSION['productName']) : null;
 	$my_userID = isset($_SESSION['userID']) ? intval($_SESSION['userID']) : null;
+
+  // 20060102 - fm  
+	$prod_id = isset($_SESSION['productID']) ? intval($_SESSION['productID']) : 0;
+	$prod_data = getProduct($prod_id);
 	
 	
 	$title = lang_get('title_test_spec') . "-" . htmlspecialchars($title);
 	
 	$CONTENT_HEAD .= printHeader($title,$_SESSION['basehref']);
-	$CONTENT_HEAD .= printFirstPage($title, $prodName, $my_userID);
+	$CONTENT_HEAD .= printFirstPage($title, $prodName, $prod_data['notes'], $my_userID);
 
 	if ($toc)
 		$CONTENT_HEAD .= '<div class="toc"><h2>'.lang_get('title_toc').'</h2>';

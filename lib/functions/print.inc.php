@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: print.inc.php,v $
- * @version $Revision: 1.8 $
- * @modified $Date: 2005/12/28 07:34:55 $ by $Author: franciscom $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2006/01/02 17:41:49 $ by $Author: franciscom $
  *
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
@@ -53,12 +53,13 @@ function printHeader($title, $base_href, $cssTemplate = TL_DOC_BASIC_CSS)
 /** 
   print HTML - initial page of document 
 
-  20050830 - fm
-  added $g_date_format
+  20060102 - fm - product notes
 */
-function printFirstPage($title, $prodName, $userID)
+function printFirstPage($title, $prodName, $prodNotes, $userID)
 {
-	global $g_date_format;
+	
+	$g_date_format=config_get('date_format');
+	
 	
 	$the_prodName = htmlspecialchars($prodName);
 	$output = '<div class="pageheader">';
@@ -66,12 +67,15 @@ function printFirstPage($title, $prodName, $userID)
 	if (TL_COMPANY != '') {
 		$output .= '<span>'. htmlspecialchars(TL_COMPANY) ."</span>\n";
 	}
+	
 	$output .= "</div>\n";
 	$output .= '<h1>'.$title."</h1>\n";
 	$output .= "<div style='margin: 50px;'>" .
-			"<p>".lang_get('product').": " . $the_prodName . "</p>" .
-			"<p>".lang_get('author').": " . htmlspecialchars(getAuthor($userID)) . "</p>" .
-			"<p>".lang_get('printed_by_TestLink_on')." ". strftime($g_date_format, time()) . "</p></div>";
+			       "<p>". lang_get('product').": " . $the_prodName . "</p>" .
+			       "<p>". $prodNotes . "</p>" .
+			       
+			       "<p>".lang_get('author').": " . htmlspecialchars(getAuthor($userID)) . "</p>" .
+			       "<p>".lang_get('printed_by_TestLink_on')." ". strftime($g_date_format, time()) . "</p></div>";
 	if (TL_DOC_COPYRIGHT != '') {
 		$output .= '<div class="pagefooter">'.htmlspecialchars(TL_DOC_COPYRIGHT)."</div>\n";
 	}

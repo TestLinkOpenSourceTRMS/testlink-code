@@ -2,21 +2,19 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: plan.inc.php,v $
- * @version $Revision: 1.18 $
- * @modified $Date: 2005/12/28 07:34:55 $ $Author: franciscom $
+ * @version $Revision: 1.19 $
+ * @modified $Date: 2006/01/03 21:19:02 $ $Author: schlundus $
  * @author 	Martin Havlat
  *
  * Functions for management: 
  * Test Plans, Test Case Suites, Milestones, Testers assignment
  *
- * @author Francisco Mancardi - 20051006 - updateTestPlanBuild()
- * @author Francisco Mancardi - 20051001
- * del_category_deep(), del_component_deep
- *
- * @author Francisco Mancardi - 20050922 - BUGID 0000132: Cannot delete a test plan
- * @author Francisco Mancardi - 20050914 - refactoring
- * 
- * 20051008 - am - refactored
+ * 20051006 - fm - updateTestPlanBuild()
+ * 20051001 - fm - del_category_deep(), del_component_deep
+ * 20050922 - fm - BUGID 0000132: Cannot delete a test plan
+ * 20050914 - fm - refactoring
+ * 20051008 - scs - refactored
+ * 20060103 - scs - ADOdb changes
  */
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -302,54 +300,83 @@ function insertTestPlanComponent($projID,$mgtCompID)
 	return $compID;
 }
 
-function insertTestPlanMileStone($projID,$name,$date,$A,$B,$C)
+/**
+ * Function-Documentation
+ *
+ * @param type $db [ref] documentation
+ * @param type $projID documentation
+ * @param type $name documentation
+ * @param type $date documentation
+ * @param type $A documentation
+ * @param type $B documentation
+ * @param type $C documentation
+ * @return type documentation
+ **/
+function insertTestPlanMileStone(&$db,$projID,$name,$date,$A,$B,$C)
 {
 	$sql = "INSERT INTO milestone (projid,name,date,A,B,C) VALUES (" . 
-			$projID . ",'" . $GLOBALS['db']->prepare_string($name) . "','" . $GLOBALS['db']->prepare_string($date) . "'," . $A . "," . 
+			$projID . ",'" . $db->prepare_string($name) . "','" . $db->prepare_string($date) . "'," . $A . "," . 
 			$B . "," . $C . ")";
-	$result = do_sql_query($sql);
+	$result = $db->exec_query($sql);
 	
 	return $result ? 1 : 0;
 }
 
-function updateMileStone($id,$name,$date,$A,$B,$C)
+/**
+ * Function-Documentation
+ *
+ * @param type $db [ref] documentation
+ * @param type $id documentation
+ * @param type $name documentation
+ * @param type $date documentation
+ * @param type $A documentation
+ * @param type $B documentation
+ * @param type $C documentation
+ * @return type documentation
+ **/
+function updateMileStone(&$db,$id,$name,$date,$A,$B,$C)
 {
-	$sql = "UPDATE milestone SET name='" . $GLOBALS['db']->prepare_string($name) . "', " .
-	       " date='" . $GLOBALS['db']->prepare_string($date) . "', " . 
+	$sql = "UPDATE milestone SET name='" . $db->prepare_string($name) . "', " .
+	       " date='" . $db->prepare_string($date) . "', " . 
 	       " A=" . $A . ", B=" . $B . ", C=" . $C . " WHERE id=" . $id;
-	$result = do_sql_query($sql);
+	$result = $db->exec_query($sql);
 		
 	return $result ? 1 : 0;
 }
 
-function deleteMileStone($id)
+/**
+ * Function-Documentation
+ *
+ * @param type $db [ref] documentation
+ * @param type $id documentation
+ * @return type documentation
+ **/
+function deleteMileStone(&$db,$id)
 {
 	$sql = "DELETE FROM milestone WHERE id=" . $id;
-	$result = do_sql_query($sql);
+	$result = $db->exec_query($sql);
 	
 	return $result ? 1 : 0;
 }
 
-function getTestPlanMileStones($projID,&$mileStones)
+function getTestPlanMileStones(&$db,$projID,&$mileStones,$mileStoneID = null)
 {
-	$sql = " SELECT id,name,date,A,B,C " .
+	$sql = " SELECT id,name as title,date,A,B,C " .
 	       " FROM milestone " .
 	       " WHERE projid=" . $projID . 
-	       " AND to_days(date) >= to_days(now()) ORDER BY date";
+	       " AND to_days(date) >= to_days(now()) ";
+	if (!is_null($mileStoneID))
+		$sql .= "AND id = " . $mileStoneID;		   
+		   
+	$sql .= " ORDER BY date";
 	       
-	$result = do_sql_query($sql);
 	$mileStones = null;
+	$result = $db->exec_query($sql);
 	if ($result)
 	{
-		while ($myrow = $GLOBALS['db']->fetch_array($result))
+		while ($myrow = $db->fetch_array($result))
 		{
-			$mileStones[] =  array( 'id' => $myrow[0], 
-									  'title' => $myrow[1], 
-									  'date' => $myrow[2], 
-									  'A' => $myrow[3], 
-									  'B' => $myrow[4], 
-									  'C' => $myrow[5]
-									 );
+			$mileStones[] =  $myrow;
 		}
 	}
 
@@ -575,19 +602,52 @@ function del_tp_info_by_mgtcomp($mgtcomp_id)
 */
 function del_tp_info_by_mgtcat($mgtcat_id)
 {
-  // ----------------------------------------------------------------------------
-  // get the list of components id in test plan table 
-  // that are related to a component in the spec component table (mgtcomponent)
-  $sql = " SELECT category.id AS cat_id FROM category
-	         WHERE category.mgtcatid={$mgtcat_id} ";
-
-  $result = do_sql_query($sql);  
-  
-  while($row = $GLOBALS['db']->fetch_array($result))
+	// ----------------------------------------------------------------------------
+	// get the list of components id in test plan table 
+	// that are related to a component in the spec component table (mgtcomponent)
+	$sql = " SELECT category.id AS cat_id FROM category
+	WHERE category.mgtcatid={$mgtcat_id} ";
+	
+	$result = do_sql_query($sql);  
+	
+	while($row = $GLOBALS['db']->fetch_array($result))
 	{ 
-    del_category_deep($row['cat_id']);
+	del_category_deep($row['cat_id']);
 	}  
 }
 
-
+/**
+ * Checks the milestone parameter for correctness
+ *
+ * @param string $name the name for the milestone
+ * @param string $date the milestone date
+ * @param int $A the A-Val [0,100]
+ * @param int $B the B-Val [0,100]
+ * @param int $C the C-Val [0,100]
+ * @return string returns null on success, an error msg else
+ **/
+function checkMileStone($name,$date,$A,$B,$C)
+{
+	$sqlResult = null;
+	if (preg_match("/\D/",$A) || preg_match("/\D/",$B) || preg_match("/\D/",$C))
+		$sqlResult = lang_get("warning_invalid_percentage_value");	
+	else if (intval($A) > 100 || intval($B) > 100 || intval($C) > 100)
+		$sqlResult = lang_get("warning_invalid_percentage_value");	
+	else if (strlen($name))
+	{
+		if(strlen($date))
+		{
+			$s1 = strtotime($date." 23:59:59");
+			$s2 = strtotime("now");
+			if ($s1 < $s2)
+				$sqlResult = lang_get('warning_milestone_date');
+		}
+		else
+			$sqlResult = lang_get("warning_enter_valid_date");
+	}
+	else
+		$sqlResult = lang_get("warning_empty_milestone_name");
+		
+	return $sqlResult;
+}
 ?>

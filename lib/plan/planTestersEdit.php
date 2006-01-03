@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: planTestersEdit.php,v $
- * @version $Revision: 1.12 $
- * @modified $Date: 2005/12/31 14:38:10 $ $ by $Author: schlundus $
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2006/01/03 21:19:02 $ $ by $Author: schlundus $
  * 
  * @author Martin Havlat
  * 
@@ -24,6 +24,7 @@
  * 20051120 - fm - adding test plan filter by product behaivour
  * 20051130 - fm - BUGID 239
  * 20051231 - scs - changes due to ADBdb
+ * 20060103 - scs - ADOdb changes
  *
  */
 require('../../config.inc.php');
@@ -57,7 +58,7 @@ if ($submit)
 	{
 		// 20051130 - fm - BUGID 239
 		// delete everything from the projRights table for that user
-		$resultDelete = deleteUsersProjectRights($id, $prod->id);
+		$resultDelete = deleteUsersProjectRights($db,$id, $prod->id);
 		
 		if (sizeof($projRightsArray))
 		{

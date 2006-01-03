@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.39 $
- * @modified $Date: 2006/01/03 18:08:54 $ by $Author: franciscom $
+ * @version $Revision: 1.40 $
+ * @modified $Date: 2006/01/03 21:19:00 $ by $Author: schlundus $
  *
  *
  * Constants and configuration parameters used throughout TestLink 
@@ -251,10 +251,7 @@ $g_req_cfg->use_req_spec_as_category_name = TRUE;
 
 
 
-/*
-20051002 - fm
-Must be changed if Table definition changes
-*/
+//20051002 - fm - Must be changed if Table definition changes
 $g_field_size->category_name = 100;
 
 
@@ -263,8 +260,6 @@ $g_field_size->category_name = 100;
 $g_fckeditor_toolbar = "TL_Medium_2";
 
 
-
-/* fr_FR -> thanks to grdscarabe@grdscarabe.net */
 /* These are the supported locales */
 $g_locales = array('en_GB' => 'English (UK)',
 				   'it_IT' => 'Italian',
@@ -338,10 +333,11 @@ $g_tc_sd_color = array ( "failed"        => 'red',
                          "all"           => 'cyan'
                        ); 
 
+define("TL_ROLES_GUEST",5);
+define("TL_DEFAULT_ROLEID",TL_ROLES_GUEST);
 
 // 20060103 - fm 
 $g_tc_risks = array('L1', 'L2', 'L3','M1', 'M2', 'M3','H1', 'H2', 'H3');
-
 
 # ------------------------------------------------------------------
 # @author Francisco Mancardi - 20051106

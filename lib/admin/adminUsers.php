@@ -5,14 +5,15 @@
  *
  * Filename $RCSfile: adminUsers.php,v $
  *
- * @version $Revision: 1.9 $
- * @modified $Date: 2005/12/31 14:38:10 $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2006/01/03 21:19:02 $
  *
  * @author Martin Havlat
  *
  * This page shows all users
  *
  * 20053112 - scs - cleanup, due to removing bulk update of users
+ * 20060103 - scs - ADOdb changes
 **/
 include('../../config.inc.php');
 require_once("users.inc.php");
@@ -39,7 +40,7 @@ $reload = 0;
 
 if ($bUpdate)
 {
-	$sqlRes = userUpdate($user_id,$first,$last,$email,null,$rights_id,$locale,$user_is_active);
+	$sqlRes = userUpdate($db,$user_id,$first,$last,$email,null,$rights_id,$locale,$user_is_active);
 	$action = "updated";
 	if ($sqlRes == 'ok' && $user_id == $_SESSION['userID'])
 	{
@@ -59,7 +60,7 @@ if ($bUpdate)
 }
 else if ($bDelete && $id)
 {
-	$sqlRes = userDelete($id);
+	$sqlRes = userDelete($db,$id);
 	//if the users deletes itself then logout
 	if ($id == $_SESSION['userID'])
 	{

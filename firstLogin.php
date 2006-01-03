@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: firstLogin.php,v $
  *
- * @version $Revision: 1.9 $
- * @modified $Date: 2005/12/28 07:34:54 $ $Author: franciscom $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2006/01/03 21:19:00 $ $Author: schlundus $
  *
  * @author Asiel Brumfield
  * @author Martin Havlat 
@@ -16,6 +16,7 @@
  * 20051011 - fm - config param for CSS
  * 20050831 - scs - moved POST params to the top
  * 20051118 - scs - removed $_SESSION['basehref'], because this will not be set
+ * 20060103 - scs - ADOdb changes
 **/
 require_once('config.inc.php');
 require_once('common.php');
@@ -73,11 +74,11 @@ if($bEditUser)
 	else
 	{
 		$userData = '';
-		if(existLogin($login,$userData))
+		if(existLogin($db,$login,$userData))
 			$message = lang_get('user_name_exists');
 		else
 		{
-			$result = userInsert($login, $password, $first, $last, $email);
+			$result = userInsert($db,$login, $password, $first, $last, $email);
 			if ($result)
 			{
 				redirect(TL_BASE_HREF . "login.php?note=first");

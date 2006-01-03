@@ -4,12 +4,12 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqView.php,v $
- * @version $Revision: 1.1 $
- * @modified $Date: 2005/09/05 11:33:32 $ by $Author: havlat $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2006/01/03 21:19:02 $ by $Author: schlundus $
  * @author Martin Havlat
  * 
  * Screen to view content of requirement.
- * 
+ * 20060103 - scs - ADOdb changes
  */
  
 ////////////////////////////////////////////////////////////////////////////////
@@ -26,8 +26,8 @@ testlinkInitPage();
 $idReq = isset($_GET['idReq']) ? strings_stripSlashes($_GET['idReq']) : null;
 
 $arrReq = getReqData($idReq);
-$arrReq['author'] = getUserName($arrReq['id_author']);
-$arrReq['modifier'] = getUserName($arrReq['id_modifier']);
+$arrReq['author'] = getUserName($db,$arrReq['id_author']);
+$arrReq['modifier'] = getUserName($db,$arrReq['id_modifier']);
 $arrReq['coverage'] = getTc4Req($idReq);
 
 

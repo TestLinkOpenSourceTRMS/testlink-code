@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
  * @filesource $RCSfile: database.class.php,v $
- * @version $Revision: 1.3 $
- * @modified $Date: 2006/01/02 14:04:28 $ by $Author: franciscom $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2006/01/03 21:19:02 $ by $Author: schlundus $
  * @author Francisco Mancardi
  * 
 */
@@ -98,7 +98,7 @@ class database
 		$logLevel = 'DEBUG';
 		$message = "SQL [". $this->nQuery . "] executed [took {$t_elapsed} secs]" .
 		           "[all took {$this->overallDuration} secs]:\n\t" . $p_query;
-		// echo $message;
+		
 		$this->overallDuration += $t_elapsed;	
 		if (!$t_result)
 		{
@@ -326,7 +326,7 @@ class database
 		{
 			$msg .= " - " . $p_query ;
 		} 
-		return($msg);
+		return $msg;
 	}
 
 	# --------------------
@@ -407,8 +407,8 @@ class database
 	 **/
 	function get_version_info()
 	{
-    $version=$this->db->ServerInfo();
-		return($version);
+		$version=$this->db->ServerInfo();
+		return $version;
 	}
 
 }

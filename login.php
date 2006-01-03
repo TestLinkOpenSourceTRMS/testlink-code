@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: login.php,v $
  *
- * @version $Revision: 1.13 $
- * @modified $Date: 2005/12/28 07:34:54 $ by $Author: franciscom $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2006/01/03 21:19:00 $ by $Author: schlundus $
  *
  * @author Martin Havlat
  * 
@@ -14,6 +14,7 @@
  * 
  * 20050831 - scs - cosmetic changes
  * 200508 - MHT - added config check
+ * 20060103 - scs - ADOdb changes
  **/
 global $db; 
 require_once('lib/functions/configCheck.php');
@@ -71,7 +72,7 @@ switch($note)
 }
 
 //20050826 - scs - added displaying of security notes
-$securityNotes = getSecurityNotes();
+$securityNotes = getSecurityNotes($db);
 	
 $smarty = new TLSmarty();
 $smarty->assign('securityNotes',$securityNotes);

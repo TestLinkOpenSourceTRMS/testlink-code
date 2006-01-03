@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.42 $
- * @modified $Date: 2006/01/02 14:05:59 $ $Author: franciscom $
+ * @version $Revision: 1.43 $
+ * @modified $Date: 2006/01/03 21:19:02 $ $Author: schlundus $
  *
  * @author Francisco Mancardi
 **/
@@ -237,14 +237,13 @@ $TLS_title_test_plan_mgmt = "Test Plan Management";
 $TLS_title_test_spec = "Test Specification";
 $TLS_title_testlink_site_map = "TestLink - Desktop";
 $TLS_title_your_tp_metrics = "Your Test Plan Metrics";
-
-// 20060101 - fm
 $TLS_href_keywords_manage = "Keyword Management";
 $TLS_menu_manage_keywords = $TLS_href_keywords_manage;
 $TLS_btn_import_keywords = "import";
 $TLS_btn_export_keywords = "export";
 $TLS_btn_export = "export";
-
+$TLS_the_format_keyword_csv_import = "keyword;notes";
+$TLS_the_format_keyword_xml_import = "&lt;keywords>&lt;keyword name=\"name\">Notes&lt;/keyword>&lt;/keywords>";
 
 // gui/templates/inc_res_by_comp.tpl
 $TLS_title_res_by_comp = "Results by component";

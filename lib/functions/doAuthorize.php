@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  * 
  * @filesource $RCSfile: doAuthorize.php,v $
- * @version $Revision: 1.7 $
- * @modified $Date: 2005/12/30 16:02:41 $ by $Author: franciscom $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2006/01/03 21:19:02 $ by $Author: schlundus $
  * @author Chad Rosen, Martin Havlat
  *
  * This file handles the initial login and creates all user session variables.
@@ -25,7 +25,8 @@ require_once("users.inc.php");
 /** authorization function verifies login & password and set user session data */
 //20051118 - scs - login and pwd are stripped two times, replaced POST by 
 //					function params
-function doAuthorize($login,$pwd)
+//20060102 - scs - ADOdb changes
+function doAuthorize(&$db,$login,$pwd)
 {
 	$bSuccess = false;
 	$sProblem = 'wrong'; // default problem attribute value
@@ -34,10 +35,10 @@ function doAuthorize($login,$pwd)
 
 	if (!is_null($pwd) && !is_null($login))
 	{
-		$login_exists = existLogin($login,$userInfo);
+		$login_exists = existLogin($db,$login,$userInfo);
 		tLog("Account exist = " . $login_exists);
 		//encrypt the password so it isn't stored plain text in the db
-		if ($login_exists && $userInfo['password'] == md5($pwd) && user_is_active($login))
+		if ($login_exists && $userInfo['password'] == md5($pwd) && $userInfo['active'])
 		{
 			// 20051007 MHT Solved  0000024 Session confusion 
 			// Disallow two session with one browser
@@ -50,7 +51,7 @@ function doAuthorize($login,$pwd)
 			{
 			    //Setting user's session information
 			    // MHT 200507 move session update to function
-			    setUserSession($userInfo['login'], $userInfo['id'], 
+			    setUserSession($db,$userInfo['login'], $userInfo['id'], 
 			    		$userInfo['rightsid'], $userInfo['email'], 
 			    		$userInfo['locale']);
 		    	$bSuccess = true;

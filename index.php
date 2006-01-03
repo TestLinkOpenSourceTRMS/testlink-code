@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: index.php,v $
  *
- * @version $Revision: 1.7 $
- * @modified $Date: 2005/12/28 07:34:54 $ by $Author: franciscom $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2006/01/03 21:19:00 $ by $Author: schlundus $
  *
  * @author Martin Havlat
  *
@@ -16,6 +16,7 @@
  * if installer directory exists,  block login
  *
  * @author Francisco Mancardi - 20050806 - Installer
+ * 20060103 - scs - ADOdb changes
 **/
 //200508 MHT - moved code to procedure
 global $db;
@@ -39,7 +40,7 @@ if (!is_null($login))
 	
 	if ($op['status'])
 	{
-		doAuthorize($login,$pwd);
+		doAuthorize($db,$login,$pwd);
 	}	
 	else
 	{

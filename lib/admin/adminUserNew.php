@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: adminUserNew.php,v $
  *
- * @version $Revision: 1.7 $
- * @modified $Date: 2005/12/31 14:38:10 $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2006/01/03 21:19:02 $
  *
  * @author Martin Havlat
  *
@@ -17,6 +17,7 @@
  * 20050829 - scs - added locale while inserting new users
  * 20051112 - scs - added trim of login, to avoid usernames with only spaces
  * 20051231 - fm - changed due to active state of users
+ * 20060103 - scs - ADOdb changes
  * 
 **/
 include('../../config.inc.php');
@@ -43,9 +44,9 @@ if($bNewUser)
 		if (user_is_name_valid($login))
 		{
 			$userInfo = null;
-			if (!existLogin($login,$userInfo))
+			if (!existLogin($db,$login,$userInfo))
 			{
-				if(!userInsert($login, $password, $first, $last, $email, $rightsid, $locale, $user_is_active))
+				if(!userInsert($db,$login, $password, $first, $last, $email, $rightsid, $locale, $user_is_active))
 					$sqlResult = lang_get('user_not_added');
 				else 
 					$sqlResult = 'ok';

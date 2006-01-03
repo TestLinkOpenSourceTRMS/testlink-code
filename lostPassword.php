@@ -5,14 +5,15 @@
  *
  * Filename $RCSfile: lostPassword.php,v $
  *
- * @version $Revision: 1.12 $
- * @modified $Date: 2005/12/28 07:34:54 $ $Author: franciscom $
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2006/01/03 21:19:00 $ $Author: schlundus $
  *
  * @author Chad Rosen
  *
  * 
  * 20050831 - scs - cosmetic changes
  * 20051209 - fm - BUGID 289
+ * 20060103 - scs - ADOdb changes
 **/
 global $db;
 require_once('config.inc.php');
@@ -39,7 +40,7 @@ if ($op['status'] == 0)
 $message = lang_get('your_info_for_passwd');
 if (strlen($login))
 {
-	if(!existLogin($login,$userInfo))
+	if(!existLogin($db,$login,$userInfo))
 	{
 		$message = lang_get('bad_user');
 	}	
@@ -63,7 +64,7 @@ if (strlen($login))
 			
 			if ($mail_op->status_ok)
 			{
-				if (setUserPassword($userID,$newPassword))
+				if (setUserPassword($db,$userID,$newPassword))
 				{
 					redirect(TL_BASE_HREF ."login.php?note=lost");
 					exit();

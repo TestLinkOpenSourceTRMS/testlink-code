@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: mainPage.php,v $
  *
- * @version $Revision: 1.6 $ $Author: schlundus $
- * @modified $Date: 2005/11/13 19:19:31 $
+ * @version $Revision: 1.7 $ $Author: schlundus $
+ * @modified $Date: 2006/01/03 21:19:02 $
  *
  * @author Martin Havlat
  * 
@@ -24,6 +24,7 @@
  * adding new User Interface feature: filter test plan by product
  * 
  * 20051112 - scs - removed undefined index notices
+ * 20050103 - scs - ADOdb changes
 **/
 require_once('../../config.inc.php');
 require_once('common.php');
@@ -104,7 +105,7 @@ $arrPlans = getTestPlans(isset($_SESSION['productID']) ? $_SESSION['productID'] 
 						$_SESSION['userID'],$filter_tp_by_product);
 
 //20050826 - scs - added displaying of security notes
-$securityNotes = getSecurityNotes();
+$securityNotes = getSecurityNotes($db);
 
 $smarty->assign('securityNotes',$securityNotes);
 $smarty->assign('arrPlans', $arrPlans);

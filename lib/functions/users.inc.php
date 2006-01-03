@@ -1,21 +1,18 @@
 <?
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: users.inc.php,v $
  *
- * @version $Revision: 1.16 $
- * @modified $Date: 2005/12/31 14:38:10 $ $Author: schlundus $
+ * @version $Revision: 1.17 $
+ * @modified $Date: 2006/01/03 21:19:02 $ $Author: schlundus $
  *
- * @author Chad Rosen, Martin Havlat
- * @author Martin Havlat
+ * Functions for usermanagement
  *
- * Functions for Users management
- *
- * @author Francisco Mancardi - 20051228 - added active attribute
- * @author Francisco Mancardi - 20050821 - BUGID 239
+ * 20051228 - fm - added active attribute
+ * 20050821 - fm - BUGID 239
  * 20051231 - scs - changes due to ADBdb
- *
 **/
 require_once("common.php");
 
@@ -33,47 +30,20 @@ require_once("common.php");
  * 20050528 - fm
  * 1. header docum improved
  * 2. changed function prototype (r_user_data argument)
+ * 20060102 - scs - refactored
  */
-function existLogin($login, &$r_user_data)
+function existLogin(&$db,$login, &$r_user_data)
 {
-global $db;
-
-/*
-to maintain compatibility  
-Array
-(
-    [0] => [password]
-    [1] => [login] 
-    [2] => [id]   userid
-    [3] => [rightsid] 
-    [4] => [email] 
-    [5] => [first] 
-    [6] => [last] 
-    [7] => [id]   rightsid
-    [8] => [role] 
-    [9] => [rights] 
-    [10] => [locale] 
-)  
-*/
- 
 	// twice role to mantain array indexes
-  // 20051228 - fm - added active field
+	// 20051228 - fm - added active field
 	$sql = " SELECT password, login, user.id, rightsid, " .
 	       "        email, first, last, " .  
 	       "        role, role, rights, locale, active" .
 	       " FROM user,rights " .
 	       " WHERE user.rightsid = rights.id " .
-	       " AND login='" . $GLOBALS['db']->prepare_string($login) . "'";
+	       " AND login='" . $db->prepare_string($login) . "'";
 	
-	$r_user_data = null;
-	$userExists = 0;
-	$result = do_sql_query($sql);
-	if ($result)
-	{
-		if ($row = $GLOBALS['db']->fetch_array($result))
-			$r_user_data = $row;
-	}
-	
+	$r_user_data = $db->fetchFirstRow($sql);
 	return $r_user_data ? 1 : 0;
 }
 
@@ -88,40 +58,58 @@ Array
  * @param string first name
  * @param string last name
  * @param string email
- * @param string rights  (optional; default is GUEST)
+ * @param string rights  (optional; default is TL_DEFAULT_ROLEID)
  * @param string locale  (optional; locale for the user)
  * @param numeric active (optional; default ACTIVE_USER)
  */
-function userInsert($login, $password, $first, $last, $email, 
-                    $rights=GUEST, $locale = TL_DEFAULT_LOCALE, $active=ACTIVE_USER)
+function userInsert(&$db,$login, $password, $first, $last, $email, 
+                    $rights=TL_DEFAULT_ROLEID, $locale = TL_DEFAULT_LOCALE, $active=1)
 {
 	$password = md5($password);
 	$sqlInsert = "INSERT INTO user (login,password,first,last,email,rightsid,locale,active) 
 	              VALUES ('" . 
-				        $GLOBALS['db']->prepare_string($login) . "','" . $GLOBALS['db']->prepare_string($password) . "','" . 
-				        $GLOBALS['db']->prepare_string($first) . "','" . $GLOBALS['db']->prepare_string($last) . "','" . 
-				        $GLOBALS['db']->prepare_string($email) . "'," . $rights . ",'". 
-				        $GLOBALS['db']->prepare_string($locale). "'," . $active . ")";
-	$insertResult = do_sql_query($sqlInsert);
+				        $db->prepare_string($login) . "','" . $db->prepare_string($password) . "','" . 
+				        $db->prepare_string($first) . "','" . $db->prepare_string($last) . "','" . 
+				        $db->prepare_string($email) . "'," . $rights . ",'". 
+				        $db->prepare_string($locale). "'," . $active . ")";
+	$insertResult = $db->exec_query($sqlInsert);
 	
 	return $insertResult ? 1 : 0;
 }
 
-/** Function pernamently delete user */ 
-function userDelete($id)
+/**
+ * Deletes a user
+ *
+ * @param type $db [ref] documentation
+ * @param type $id documentation
+ * @return type documentation
+ **/
+function userDelete(&$db,$id)
 {
 	$sql = "DELETE FROM user WHERE id=" . $id;
-	$result = do_sql_query($sql);
+	$result = $db->exec_query($sql);
 			
-	return $result ? 'ok' : $GLOBALS['db']->error_msg();
+	return $result ? 'ok' : $db->error_msg();
 }
 
-/** Function get associated array of IDs with rights (used for listbox)*/
+/**
+ * gets an associated array of IDs with rights (used for listbox)
+ *
+ * @param type $db [ref] documentation
+ * @return type documentation
+ **/
 function getListOfRights(&$db)
 {
 	return getTwoColumnsMap($db,"SELECT id,role FROM rights");
 }
 
+/**
+ * Function-Documentation
+ *
+ * @param type $db [ref] documentation
+ * @param type $query documentation
+ * @return type documentation
+**/
 function getTwoColumnsMap(&$db,$query)
 {
 	$result = $db->exec_query($query);
@@ -138,12 +126,19 @@ function getTwoColumnsMap(&$db,$query)
 }
 
 
-function setUserPassword($userID,$password)
+/**
+ * Function-Documentation
+ *
+ * @param type $db [ref] documentation
+ * @param type $userID documentation
+ * @param type $password documentation
+ * @return type documentation
+ **/
+function setUserPassword(&$db,$userID,$password)
 {
-	//if we have successfully (at least we have sent the email (-;) we reset the pwd 
 	$password = md5($password);
-	$sql = "UPDATE user SET password = '" . $GLOBALS['db']->prepare_string($password) . "' WHERE id = ".$userID;
-	$result = do_sql_query($sql); 
+	$sql = "UPDATE user SET password = '" . $db->prepare_string($password) . "' WHERE id = ".$userID;
+	$result = $db->exec_query($sql); 
 	
 	return $result ? 1 : 0;
 }
@@ -155,47 +150,60 @@ function setUserPassword($userID,$password)
 * @param string new password
 * @return integer result 
 */
-function updateUserPassword($userID, $oldPswd, $newPswd)
+function updateUserPassword(&$db,$userID, $oldPswd, $newPswd)
 {
 	// use md5 to encrypt the password string
-	if (getUserPassword($userID) == md5($oldPswd))
-		$updateResult = setUserPassword($userID,$newPswd) ? 'ok' : $GLOBALS['db']->error_msg();
+	if (getUserPassword($db,$userID) == md5($oldPswd))
+		$updateResult = setUserPassword($db,$userID,$newPswd) ? 'ok' : $db->error_msg();
 	else
 		$updateResult = lang_get('wrong_old_password');
 	
 	return $updateResult;
 }
 
-function getUserPassword($userID)
+/**
+ * Function-Documentation
+ *
+ * @param type $db [ref] documentation
+ * @param type $userID documentation
+ * @return type documentation
+ **/
+function getUserPassword(&$db,$userID)
 {
-	//Find old password are correct
 	$sql = "SELECT password FROM user WHERE id=" . $userID;
-	$result = do_sql_query($sql);
-	
-	$pwd = null;
-	if ($result)
-	{
-		$pwd = $GLOBALS['db']->fetch_array($result);
-		$pwd = $pwd['password'];
-	}
+	$pwd = $db->fetchFirstRowSingleColumn($sql,"password");
 	
 	return $pwd;
 }
 
-/** Function update personal data name and e-mail */
-// 20051228 - fm - added active  
-// 20050424 - fm added argument locale
-function userUpdate($userID, $first, $last, $email ,
+/**
+ * Function update personal data
+ *
+ * @param type $db [ref] documentation
+ * @param type $userID documentation
+ * @param type $first documentation
+ * @param type $last documentation
+ * @param type $email documentation
+ * @param type $login [default = null] documentation
+ * @param type $rightsID [default = null] documentation
+ * @param type $locale [default = null] documentation
+ * @param type $active [default = null] documentation
+ * @return type documentation
+ *
+ * 20051228 - fm - added active  
+ * 20050424 - fm added argument locale
+ **/
+function userUpdate(&$db,$userID, $first, $last, $email ,
                     $login = null, $rightsID = null, $locale = null, $active = null)
 {
  	$sql = "UPDATE user " .
-	       "SET first='" . $GLOBALS['db']->prepare_string($first) . "'" .
-	       ", last='" .  $GLOBALS['db']->prepare_string($last)    . "'" .
-	       ", email='" . $GLOBALS['db']->prepare_string($email)   . "'";
+	       "SET first='" . $db->prepare_string($first) . "'" .
+	       ", last='" .  $db->prepare_string($last)    . "'" .
+	       ", email='" . $db->prepare_string($email)   . "'";
 	
 	if (!is_null($login))
 	{
-		$sql .= ", login = '". $GLOBALS['db']->prepare_string($login) . "' ";
+		$sql .= ", login = '". $db->prepare_string($login) . "' ";
 	}	
 	if (!is_null($rightsID))
 	{
@@ -203,102 +211,134 @@ function userUpdate($userID, $first, $last, $email ,
 	}	
 	if (!is_null($locale))
 	{
-		$sql .= ", locale = ". "'" . $GLOBALS['db']->prepare_string($locale) . "'" ;
+		$sql .= ", locale = ". "'" . $db->prepare_string($locale) . "'" ;
 	}
-	// 20051228 - fm
 	if (!is_null($active))
 	{
 		$sql .= ", active = ". $active;
 	}	
 	
 	$sql .= " WHERE id=" . $userID;
-	$result = do_sql_query($sql);
+	$result = $db->exec_query($sql);
 
 	// MHT 200507 - update session data if admin modify yourself
 	if (($userID == $_SESSION['userID']) && $result)
 	{
-		setUserSession($login, $userID, $rightsID, $email, $locale);
+		setUserSession($db,$login, $userID, $rightsID, $email, $locale);
 	}
-	return $result ? 'ok' : $GLOBALS['db']->error_msg();
+	return $result ? 'ok' : $db->error_msg();
 }
 
-/** set session data after modification or authorization */
-// fm - 20051005  - set_dt_formats()
-// MHT 200507 - create function: update session data if admin modify yourself
-function setUserSession($user, $id, $roleID, $email, $locale = null)
+/**
+ * set session data after modification or authorization
+ *
+ * @param type $db [ref] documentation
+ * @param type $user documentation
+ * @param type $id documentation
+ * @param type $roleID documentation
+ * @param type $email documentation
+ * @param type $locale [default = null] documentation
+ * @param type $active [default = null] documentation
+ * @return type documentation
+ *
+ * 20051005 - fm - set_dt_formats()
+ * 20050701 - create function: update session data if admin modify yourself
+ * 20060102 - scs - ADOdb changes
+ **/
+function setUserSession(&$db,$user, $id, $roleID, $email, $locale = null,$active = null)
 {
-	
 	tLog('setUserSession: $user='.$user.' $id='.$id.' $roleID='.$roleID.' $email='.$email.' $locale='.$locale);
-
+	
 	if (!is_null($user))
-	{
-	  $_SESSION['user'] = $user; 
-	}    
+		$_SESSION['user'] = $user; 
+
 	$_SESSION['userID']	= $id;
-  $_SESSION['email'] = $email; 
-  
+	$_SESSION['email'] = $email; 
+	
 	if (!is_null($roleID))
 	{
-	    $_SESSION['roleId'] = intval($roleID); 
-    	$sql = "SELECT role FROM rights WHERE id = " . $roleID;
-	    $result = do_sql_query($sql);
-	    if ($result)
-		  {
-	      $row = $GLOBALS['db']->fetch_array($result);
-	    	$_SESSION['role'] = $row['role']; 
-	    	tLog('setUserSession: $user='.$_SESSION['role']);
-	    }
-  }
-  if (!is_null($locale))
-  {
+		$_SESSION['roleId'] = intval($roleID); 
+		$sql = "SELECT role FROM rights WHERE id = " . $roleID;
+		$result = $db->exec_query($sql);
+		if ($result)
+		{
+			$row = $db->fetch_array($result);
+			$_SESSION['role'] = $row['role']; 
+			tLog('setUserSession: $user='.$_SESSION['role']);
+		}
+	}
+	if (!is_null($locale))
+	{
 		$_SESSION['locale'] = $locale;
-    set_dt_formats();
-  }  
+		set_dt_formats();
+	}  
 	return 1;
 }
 
 
-// 20051130 - fm
-// BUGID 239 - TestPlan are filtered by Product ID
-function deleteUsersProjectRights($userID, $prodID)
+/**
+ * Function-Documentation
+ *
+ * @param type $db [ref] documentation
+ * @param type $userID documentation
+ * @param type $prodID documentation
+ * @return type documentation
+ *
+ * BUGID 239 - TestPlan are filtered by Product ID
+ * 20060102 - scs - ADOdb changes
+ **/
+function deleteUsersProjectRights(&$db,$userID,$prodID)
 {
 	$sql = " DELETE FROM projrights
 	         WHERE userid = " . $userID .
 	       " AND projid IN (SELECT id FROM project WHERE prodid = " . $prodID . ")";
 	      
-	$result = do_sql_query($sql);
+	$result = $db->exec_query($sql);
 	return $result ? 1 : 0;
 }
 
+/**
+ * Function-Documentation
+ *
+ * @param type $db [ref] documentation
+ * @param type $id documentation
+ * @return type documentation
+ **/
 function getUserById(&$db,$id)
 {
 	return getAllUsers($db,"where id=" . $id);
 }
 
-// 20051227 - fm
-// 20051112 - scs - where clause was added at the wrong place
+/**
+ * Function-Documentation
+ *
+ * @param type $db [ref] documentation
+ * @param type $whereClause [default = null] documentation
+ * @return type documentation
+ *
+ * 20051112 - scs - where clause was added at the wrong place
+ * 
+ **/
 function getAllUsers(&$db,$whereClause = null)
 {
 	$show_realname = config_get('show_realname');
 	
-	$sql = " SELECT id,login,password,first,last,email,rightsid,locale,'' AS fullname, active 
-	         FROM user";
+	$sql = " SELECT id,login,password,first,last,email,rightsid,locale,".
+		   " login AS fullname, active FROM user";
 	if (!is_null($whereClause))
 	{
 		$sql .= ' '.$whereClause;
 	}
-	
 	$sql .= " ORDER BY login";
-	$result = $db->exec_query($sql);
+	
 	$users = null;
+	$result = $db->exec_query($sql);
 	if ($result)
 	{
 		while($user = $db->fetch_array($result))
 		{
-			$user['fullname'] = $user['login'];
 			if($show_realname)
 				$user['fullname'] = format_username($user);
-
 			$users[] = $user;
 		}	
 	}
@@ -306,14 +346,17 @@ function getAllUsers(&$db,$whereClause = null)
 	return $users;
 }
 
-/*
+/**
 * Check if the username is a valid username (does not account for uniqueness) 
 * realname can match
 * Return true if it is, false otherwise
-* 
-* 20051112 - scs - small cosmetic changes, added trimming, corrected wrong login 
-* 				   maxlength check
-*/
+ *
+ * @param type $p_username documentation
+ * @return type documentation
+ *
+ * 20051112 - scs - small cosmetic changes, added trimming, corrected wrong login 
+ * 				   maxlength check
+ **/
 function user_is_name_valid($p_username)
 {
  	$user_ok = true;
@@ -346,63 +389,52 @@ function user_is_name_valid($p_username)
  * @param integer $id_user
  * @return string user name
  * 
- * @author havlatm
- * 20051015 - am - added check of userId of 0
+ * 20051015 - scs - added check of userId of 0
+ * 20060102 - scs - refactored 
  **/
-function getUserName($id_user)
+function getUserName(&$db,$id_user)
 {
 	$username = lang_get('Unknown');
 	if ($id_user)
 	{
 		$sql = "SELECT login, first, last FROM user WHERE id=" . $id_user;
-		$result = do_sql_query($sql);
-		
-		if ($result && ($GLOBALS['db']->num_rows($result) > 0))
-		{
-			$row = $GLOBALS['db']->fetch_array($result);
-			if (empty($row['first']) && empty($row['last']))
-			{
-				// return login (name was not defined)
-				$username = $row['login'];
-			}
-			else
-			{
-				// return first + last name
-				$username = $row['first'] . ' ' . $row['last'];
-			}	
-		}
+		$row = $db->fetchFirstRow($sql); 
+		$username = format_username($row);
 	}
-	
-	tLog('username = ' . $username);
 	return $username;
 }
 
 
-// 20051227 - fm
+/**
+ * Function-Documentation
+ *
+ * @param type $hash documentation
+ * @return type documentation
+ *
+ **/
 function format_username($hash)
 {
-  $username_format = config_get('username_format');
-
-  $username = $hash['first'] . " " . $hash['last'];
-  
-  switch($username_format)
-  {
-  	
-  	case "name_surname_login":
-  	$username .= " [" . $hash['login'] . "]";
-  	break;	
-
-  	case "name_surname":
-  	default:
-  	break;	
-  }
-
+	$username_format = config_get('username_format');
+	$username = $hash['first'] . " " . $hash['last'];
+	
+	$username_format = "name_surname_login";
+	switch($username_format)
+	{
+		case "name_surname_login":
+			$username .= " [" . $hash['login'] . "]";
+			break;	
+		case "name_surname":
+			default:
+			break;	
+	}
+	
 	return $username;
 }
-
 
 
 // 20051228 - fm
+//NOT USED AT THE MOMENT
+/*
 function user_is_active($login)
 {
 	$is_active=0;
@@ -410,7 +442,7 @@ function user_is_active($login)
 	$sql = " SELECT active
 	         FROM user
 	         WHERE login='" . $GLOBALS['db']->prepare_string($login) . "'";
-
+	
 	$result = do_sql_query($sql);
   
 	if ($result)
@@ -424,11 +456,5 @@ function user_is_active($login)
   return ($is_active);
 
 }
-
-
-
-
-
-// --- END ----------------------------------------------------
-
+*/
 ?>

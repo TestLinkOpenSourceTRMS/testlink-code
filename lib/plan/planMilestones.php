@@ -1,58 +1,82 @@
 <?php
-/* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: planMilestones.php,v 1.5 2005/12/28 07:34:55 franciscom Exp $ */
-/** 
- * Purpose:  This page allows the creation and editing of milestones.
- * @author Chad Rosen, Martin Havlat 
+/* TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ * This script is distributed under the GNU General Public License 2 or later. 
  *
- * @author 20050807 - fm
- * refactoring:  
- * removed deprecated: $_SESSION['project']
+ * Filename $RCSfile: planMilestones.php,v $
  *
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2006/01/03 21:19:02 $
+ *
+ * 20050807 - fm  - refactoring removed deprecated: $_SESSION['project']
  * 20051203 - scs - added displaying of tpname, cosmetic changes
+ * 20060103 - scs - refactored, removed bulk update
  */
 require_once('../../config.inc.php');
 require_once("../functions/common.php");
 require_once("plan.inc.php");
 testlinkInitPage();
 
+$_POST = strings_stripSlashes($_POST);
+$name = isset($_POST['name']) ? $_POST['name'] : '';
+$date = isset($_POST['date']) ? $_POST['date'] : null;
+$A = isset($_POST['A']) ? $_POST['A'] : 0;
+$B = isset($_POST['B']) ? $_POST['B'] : 0;
+$C = isset($_POST['C']) ? $_POST['C'] : 0;
 $newMileStone = isset($_POST['newMilestone']) ? $_POST['newMilestone'] : null;
-$name = isset($_POST['name']) ? strings_stripSlashes($_POST['name']) : '';
-$date = isset($_POST['date']) ? strings_stripSlashes($_POST['date']) : null;
-$A = isset($_POST['A']) ? intval($_POST['A']) : 0;
-$B = isset($_POST['B']) ? intval($_POST['B']) : 0;
-$C = isset($_POST['C']) ? intval($_POST['C']) : 0;
+$bDelete = isset($_GET['delete']) ? $_GET['delete'] : null;
+$bUpdate = isset($_POST['update']) ? $_POST['update'] : null;
+$id = isset($_GET['id']) ? intval($_GET['id']) : 0;
+$pid = isset($_POST['id']) ? intval($_POST['id']) : 0;
 $idPlan = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0;
+$tpName = $_SESSION['testPlanName'];
 
 $sqlResult = null;
-if($newMileStone)
+$mileStone = null;
+$action = null;
+
+if ($id && !$bDelete && !$bUpdate && !$newMileStone)
 {
-	if (strlen($name))
-	{
-		if(strlen($date))
-		{
-			$s1 = strtotime($date." 23:59:59");
-			$s2 = strtotime("now");
-			if ($s1 >= $s2)
-			{
-				$result = insertTestPlanMileStone($idPlan,$name,$date,$A,$B,$C);
-				if ($result)
-					$sqlResult = 'ok';
-				else
-					$sqlResult = lang_get("warning_milestone_add_failed") . $GLOBALS['db']->error_msg();
-			}
-			else
-				$sqlResult = lang_get('warning_milestone_date');
-		}
-		else
-			$sqlResult = lang_get("warning_enter_valid_date");
-	}
-	else
-		$sqlResult = lang_get("warning_empty_milestone_name");
+	$mileStones = null;
+	getTestPlanMileStones($db,$idPlan,$mileStones,$id);
+	if ($mileStones)
+		$mileStone = $mileStones[0];
 }
+else if ($bDelete && $id)
+{
+	$sqlResult = 'ok';
+	if (!deleteMileStone($db,$id))
+		$sqlResult = lang_get('milestone_delete_fails'). ' : ' . $db->error_msg();
+	$action = "deleted";
+}
+else if($newMileStone || $bUpdate)
+{
+	$sqlResult = checkMileStone($name,$date,$A,$B,$C);
+	if (is_null($sqlResult))
+	{
+		$sqlResult = 'ok';
+		if ($newMileStone)
+		{
+			if (!insertTestPlanMileStone($db,$idPlan,$name,$date,$A,$B,$C))
+				$sqlResult = lang_get("warning_milestone_add_failed") . $db->error_msg();
+		}
+		else if ($pid)
+		{
+			if (!updateMileStone($db,$pid,$name,$date,$A,$B,$C))
+				$sqlResult = lang_get("warning_milestone_update_failed") . $db->error_msg();
+		}
+	}
+	//reset info, after successful updating	
+	$action = $bUpdate ? "updated" : "add";
+}
+
+$mileStones = null;
+getTestPlanMileStones($db,$idPlan,$mileStones,null);
+
 $smarty = new TLSmarty();
 $smarty->assign('sqlResult', $sqlResult);
-$smarty->assign('tpName', $_SESSION['testPlanName']);
-$smarty->assign('name', $name);
-$smarty->display('planMilestonenew.tpl');
+$smarty->assign('tpName', $tpName);
+$smarty->assign('arrMilestone', $mileStones);
+$smarty->assign('mileStone', $mileStone);
+$smarty->assign('action', $action);
+$smarty->display('planMilestones.tpl');
 ?>

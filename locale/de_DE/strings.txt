@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.24 $
- * @modified $Date: 2005/12/29 20:59:00 $
+ * @version $Revision: 1.25 $
+ * @modified $Date: 2006/01/03 21:19:02 $
  *
  * @author Andreas Morsing
  *
@@ -239,6 +239,13 @@ $TLS_title_test_plan_mgmt = "TestPlan Management";
 $TLS_title_test_spec = "Navigator - Test Specification";
 $TLS_title_testlink_site_map = "TestLink - Desktop";
 $TLS_title_your_tp_metrics = "Ihre TestPlan Metriken";
+$TLS_href_keywords_manage = "Keyword Management";
+$TLS_menu_manage_keywords = "Keyword Management";
+$TLS_btn_import_keywords = "Import";
+$TLS_btn_export_keywords = "Export";
+$TLS_btn_export = "Export";
+$TLS_the_format_keyword_csv_import = "keyword;notes";
+$TLS_the_format_keyword_xml_import = "&lt;keywords>&lt;keyword name=\"name\">Notes&lt;/keyword>&lt;/keywords>";
 
 
 

@@ -5,13 +5,13 @@
  *
  * Filename $RCSfile: configCheck.php,v ${file_name} $
  *
- * @version $Revision: 1.2 $
- * @modified $Date: 2005/08/26 21:01:27 ${date} ${time} $ by $Author: schlundus $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2006/01/03 21:19:02 ${date} ${time} $ by $Author: schlundus $
  *
  * @author Martin Havlat
  * 
  * Check configuration in login and index pages.
- *
+ * 20060103 - scs - ADOdb changes
  **/
 // ---------------------------------------------------------------------------------------------------
 /** check if we need to run the install program */
@@ -57,11 +57,11 @@ function checkForInstallDir()
  * @version 1.0
  * @author Andreas Morsing 
  **/
-function checkForAdminDefaultPwd()
+function checkForAdminDefaultPwd(&$db)
 {
 	$userInfo = null;
 	$bDefaultPwd = false;
-	if (existLogin("admin",$userInfo) && ($userInfo['password'] == md5('admin')))
+	if (existLogin($db,"admin",$userInfo) && ($userInfo['password'] == md5('admin')))
 		$bDefaultPwd = true;
 	
 	return $bDefaultPwd;
@@ -77,12 +77,12 @@ function checkForAdminDefaultPwd()
  * @author Andreas Morsing 
  *  
  **/
-function getSecurityNotes()
+function getSecurityNotes(&$db)
 {
 	$securityNotes = null;
 	if (checkForInstallDir())
 		$securityNotes[] = lang_get("sec_note_remove_install_dir");
-	if (checkForAdminDefaultPwd())
+	if (checkForAdminDefaultPwd($db))
 		$securityNotes[] = lang_get("sec_note_admin_default_pwd");
 		
 	return $securityNotes;

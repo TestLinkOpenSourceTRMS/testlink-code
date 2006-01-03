@@ -1,21 +1,25 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* @version $Id: userInfo.php,v 1.9 2005/12/31 14:38:10 schlundus Exp $ 
+* This script is distributed under the GNU General Public License 2 or later. 
 *
-* @author	Asiel Brumfield <asielb@users.sourceforge.net>
-* @author 	Martin Havlat
+* Filename $RCSfile: userInfo.php,v $
+*
+* @version $Revision: 1.10 $
+* @modified $Date: 2006/01/03 21:19:02 $
 * 
 * Displays the users' information and allows users to change 
 * their passwords and user info.
 * 
-
+*
 * 20050913 - fm - BUGID 0000103: Localization is changed but not strings
 * 20050829 - scs - moved POST params to the top of the script
+* 20060102 - scs - changes due to ADOdb
 */
 require_once('../../config.inc.php');
 require_once('users.inc.php');
 testlinkInitPage();
+
 $_POST = strings_stripSlashes($_POST);
 $id = isset($_POST['id']) ? intval($_POST['id']) : 0;
 $first = isset($_POST['first']) ? $_POST['first'] : null;
@@ -30,15 +34,15 @@ $bChangePwd = isset($_POST['changePasswd']) ? 1 : 0;
 $updateResult = null;
 if ($bEdit)
 {
-	$updateResult = userUpdate($id,$first,$last,$email,null,null,$locale);
+	$updateResult = userUpdate($db,$id,$first,$last,$email,null,null,$locale);
 }
 else if ($bChangePwd)
 {
-	$updateResult = updateUserPassword($id,$old,$new);
+	$updateResult = updateUserPassword($db,$id,$old,$new);
 }
 
 $userResult ='';
-existLogin($_SESSION['user'], $userResult);
+existLogin($db,$_SESSION['user'], $userResult);
 
 $smarty = new TLSmarty();
 $smarty->assign('userData', $userResult);

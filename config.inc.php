@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.38 $
- * @modified $Date: 2006/01/02 14:03:31 $ by $Author: franciscom $
+ * @version $Revision: 1.39 $
+ * @modified $Date: 2006/01/03 18:08:54 $ by $Author: franciscom $
  *
  *
  * Constants and configuration parameters used throughout TestLink 
@@ -337,6 +337,10 @@ $g_tc_sd_color = array ( "failed"        => 'red',
                          "unknown"       => 'black',
                          "all"           => 'cyan'
                        ); 
+
+
+// 20060103 - fm 
+$g_tc_risks = array('L1', 'L2', 'L3','M1', 'M2', 'M3','H1', 'H2', 'H3');
 
 
 # ------------------------------------------------------------------

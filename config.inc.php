@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.40 $
- * @modified $Date: 2006/01/03 21:19:00 $ by $Author: schlundus $
+ * @version $Revision: 1.41 $
+ * @modified $Date: 2006/01/04 11:30:00 $ by $Author: franciscom $
  *
  *
  * Constants and configuration parameters used throughout TestLink 
@@ -173,6 +173,11 @@ define('TL_FRMWORKAREA_LEFT_FRAME_WIDTH', "30%");
 define('TL_LOGIN_CSS','gui/css/tl_login.css');
 define('TL_TESTLINK_CSS','gui/css/testlink.css');
 define('TL_DOC_BASIC_CSS','gui/css/tl_doc_basic.css');
+
+
+// 20060104 - fm
+define('NON_TESTABLE_REQ','n');
+
 
 /* An example
 define('TL_LOGIN_CSS','gui/css/theme0/tl_login.css');

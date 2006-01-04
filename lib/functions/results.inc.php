@@ -2,8 +2,8 @@
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: results.inc.php,v $
- * @version $Revision: 1.24 $
- * @modified $Date: 2005/12/28 07:34:55 $   $Author: franciscom $
+ * @version $Revision: 1.25 $
+ * @modified $Date: 2006/01/04 11:30:19 $   $Author: franciscom $
  * 
  * @author 	Martin Havlat 
  * @author 	Chad Rosen (original report definition)
@@ -1279,11 +1279,14 @@ function getReqCoverage_testPlan($idSRS, $tpID)
 {
 	global $g_tc_status, $g_tc_sd_color;
 	$output = array('passed' => array(), 'failed' => array(), 
-				'blocked' => array(), 'not_run' => array());
+				          'blocked' => array(), 'not_run' => array());
 	
 	// get requirements
 	$sql = "SELECT id,title FROM requirements WHERE id_srs=" . $idSRS . 
-			" AND status='v' ORDER BY title";
+			   " AND status='v' ORDER BY title";
+			   
+	  echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
+		   
 	$arrReq = selectData($sql);
 
 	// parse each valid requirement

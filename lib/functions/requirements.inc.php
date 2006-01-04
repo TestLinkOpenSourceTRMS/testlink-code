@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: requirements.inc.php,v $
- * @version $Revision: 1.17 $
- * @modified $Date: 2005/12/28 07:34:55 $ by $Author: franciscom $
+ * @version $Revision: 1.18 $
+ * @modified $Date: 2006/01/04 11:30:19 $ by $Author: franciscom $
  *
  * @author Martin Havlat <havlat@users.sourceforge.net>
  * 
@@ -246,13 +246,12 @@ function getReqCoverage_general($idSRS)
 	$output = array('covered' => array(), 'uncovered' => array(), 'nottestable' => array());
 	
 	// get requirements
-	$sql = "SELECT id,title FROM requirements WHERE id_srs=" . $idSRS . 
-			" AND status='v' ORDER BY title";
+	$sql_common = "SELECT id,title FROM requirements WHERE id_srs=" . $idSRS;
+	$sql = $sql_common . " AND status='v' ORDER BY title";
 	$arrReq = selectData($sql);
 
 	// get not-testable requirements
-	$sql = "SELECT id,title FROM requirements WHERE id_srs=" . $idSRS . 
-			" AND status='n' ORDER BY title";
+	$sql = $sql_common . " AND status='" . NON_TESTABLE_REQ . "' ORDER BY title";
 	$output['nottestable'] = selectData($sql);
 	
 	// get coverage

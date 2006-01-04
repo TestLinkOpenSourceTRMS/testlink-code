@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: navBar.php,v $
  *
- * @version $Revision: 1.5 $
- * @modified $Date: 2006/01/04 09:43:56 $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2006/01/04 11:15:57 $
  *
  * @author Martin Havlat
  *
@@ -24,9 +24,6 @@ $currentProduct = isset($_SESSION['productID']) ? $_SESSION['productID'] : null;
 
 // 20050810 - fm - interface changes
 $countPlans = getCountTestPlans4UserProd($_SESSION['userID'],$currentProduct);
-
-  //echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $countPlans . "</b><br>";
-  //exit();
 
 $smarty = new TLSmarty();
 // 20050813 - fm

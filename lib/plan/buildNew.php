@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: buildNew.php,v 1.14 2006/01/04 09:43:56 franciscom Exp $ */
+/* $Id: buildNew.php,v 1.15 2006/01/04 11:16:11 franciscom Exp $ */
 /* 
 Purpose:  admins create new builds for a project 
 
@@ -109,7 +109,6 @@ if(isset($_REQUEST['edit_build']))
 $the_builds = getBuilds($tpID, " ORDER by build.name ");
 $notes = getBuildsAndNotes($tpID);
 
-echo "<pre>debug"; print_r($notes); echo "</pre>";
 
 $smarty->assign('TPname', $_SESSION['testPlanName']);
 $smarty->assign('arrBuilds', $the_builds);

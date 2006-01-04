@@ -3,8 +3,8 @@
  * TestLink Open Source Project - @link http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: plan.core.inc.php,v $
- * @version $Revision: 1.21 $
- * @modified $Date: 2006/01/04 09:43:56 $ $Author: franciscom $
+ * @version $Revision: 1.22 $
+ * @modified $Date: 2006/01/04 11:15:39 $ $Author: franciscom $
  *  
  * 
  * @author 	Martin Havlat
@@ -184,20 +184,13 @@ function getCountTestPlans4UserProd($userID,$prodID=null)
 		}  	
 	}		   
 	$result = do_sql_query($sql);
-  //echo "<pre>debug"; print_r($result); echo "</pre>";
-  //echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
-	
 	if ($result)
 	{
 		$row = $GLOBALS['db']->fetch_array($result);
-		//echo "<pre>debug"; print_r($row); echo "</pre>";
 		return($row['num_tp']);
-
 	} 
 	else 
 	{
-		//echo "FUJJ";
-		//exit();
 		return null;
 	}
 }

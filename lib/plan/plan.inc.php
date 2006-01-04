@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: plan.inc.php,v $
- * @version $Revision: 1.20 $
- * @modified $Date: 2006/01/04 08:08:07 $ $Author: franciscom $
+ * @version $Revision: 1.21 $
+ * @modified $Date: 2006/01/04 09:37:44 $ $Author: franciscom $
  * @author 	Martin Havlat
  *
  * Functions for management: 
@@ -239,66 +239,68 @@ function deleteTestPlanMilestones($id)
 }
 
 
-function insertTestPlan(&$id,$name,$notes,$tpID)
+/*
+  20060103 - fm
+*/
+function insertTestPlan($db,$name,$notes,$prodID)
 {
 	$sql = "INSERT INTO project (name,notes,prodID) VALUES ('" . 
-	       $GLOBALS['db']->prepare_string($name) . "','" . 
-	       $GLOBALS['db']->prepare_string($notes) . "'," . $tpID .")";
-	$result = do_sql_query($sql);
-	
+	       $db->prepare_string($name) . "','" . 
+	       $db->prepare_string($notes) . "'," . $prodID .")";
+	$result = $db->exec_query($sql);
 	$id = 0;
 	if ($result)
-		$id =  $GLOBALS['db']->insert_id();
-	
-	return $result ? 1 : 0;
+	{
+		$id =  $db->insert_id();
+	}
+	return($id);
 }
 
-function insertTestPlanPriorities($projID)
+function insertTestPlanPriorities($db,$tp_id)
 {
 	//Create the priority table
-	$arrSql = array('L1', 'L2', 'L3','M1', 'M2', 'M3','H1', 'H2', 'H3');
-	
+	$risk_array = config_get('tc_risks');
 	$result = 1;
-	foreach ($arrSql as $risk)
-		$result = $result && insertTestPlanPriority($projID,$risk);
-	
+	foreach ($risk_array as $risk)
+	{
+		$result = $result && insertTestPlanPriority($db,$tp_id,$risk);
+	}
 	return $result ? 1 : 0;
 }
 
-function insertTestPlanPriority($projID,$risk)
+function insertTestPlanPriority($db,$tp_id,$risk)
 {
-	$sql = "INSERT into priority (projid,riskImp) values (" . $projID . ",'" . $risk. "')";
-	$result = do_sql_query($sql);		
-	
+	$sql = "INSERT into priority (projid,riskImp) VALUES (" . $tp_id . ",'" . $risk. "')";
+	$result = $db->exec_query($sql);		
 	return $result ? 1 : 0;
 }
 
 
-function insertTestPlanUserRight($projID,$userID)
+function insertTestPlanUserRight($db,$tp_id,$userID)
 {
-	$sql = "INSERT INTO projrights (projid,userid) values (".$projID.",".$userID.")";
-	$result = do_sql_query($sql);
-  
+	$sql = "INSERT INTO projrights (projid,userid) 
+	        VALUES ( {$tp_id},{$userID} )";
+	$result = $db->exec_query($sql);
 	return $result ? 1 : 0;
 }
 
 /*
- 20051001 - fm - interface changes $projID,$name,$mgtCompID 
-  				-> $projID, $mgtCompID
+ 20060103 - fm - added $db
+ 
 */
-function insertTestPlanComponent($projID,$mgtCompID)
+function insertTestPlanComponent($db,$tp_id,$mgtCompID)
 {
 	$sql = " INSERT INTO component (projid,mgtcompid) " .
-	       " VALUES (" . $projID . "," . $mgtCompID . ")";
+	       " VALUES (" . $tp_id . "," . $mgtCompID . ")";
 	
 	$compID = 0;
-	$resultCom = do_sql_query($sql);
-	if ($resultCom)
+	$result = $db->exec_query($sql);
+	if ($result)
 	{
-		$compID = $GLOBALS['db']->insert_id(); 
+		$compID = $db->insert_id(); 
 	}	
 	
-	return $compID;
+	return($compID);
 }
 
 /**

@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: plan.inc.php,v $
- * @version $Revision: 1.21 $
- * @modified $Date: 2006/01/04 09:37:44 $ $Author: franciscom $
+ * @version $Revision: 1.22 $
+ * @modified $Date: 2006/01/04 09:42:26 $ $Author: franciscom $
  * @author 	Martin Havlat
  *
  * Functions for management: 
@@ -98,16 +98,16 @@ function deleteTestPlanComponents($id)
 /*
 20050915 - fm - refactoring mgtcomponent
 */
-function getTestPlanComponents($tpID)
+function getTestPlanComponents(&$db,$tpID)
 {
 	$sql = " SELECT component.id AS compid , mgtcomponent.name,component.projid, mgtcompid " .
 	       " FROM component, mgtcomponent " .
 	       " WHERE component.mgtcompid = mgtcomponent.id " .
 	       " AND projid=" . $tpID;
-	$result = do_sql_query($sql);
+	$result = $db->exec_query($sql);
 
 	$cInfo = null;
-	while ($row = $GLOBALS['db']->fetch_array($result)) 
+	while ($row = $db->fetch_array($result)) 
 	{
 		$cInfo[] = $row;
 	}
@@ -115,10 +115,10 @@ function getTestPlanComponents($tpID)
 }
 
 // 20051001 - fm - refactoring
-function getTestPlanComponentIDs($id)
+function getTestPlanComponentIDs(&$db,$id)
 {
 	$comIDs = array();
-	$cInfo = getTestPlanComponents($id);
+	$cInfo = getTestPlanComponents($db,$id);
 	$num_comp = sizeof($cInfo);
 	for($i = 0 ; $i < $num_comp ;$i++)
 	{
@@ -242,7 +242,7 @@ function deleteTestPlanMilestones($id)
 /*
   20060103 - fm
 */
-function insertTestPlan($db,$name,$notes,$prodID)
+function insertTestPlan(&$db,$name,$notes,$prodID)
 {
 	$sql = "INSERT INTO project (name,notes,prodID) VALUES ('" . 
 	       $db->prepare_string($name) . "','" . 
@@ -256,7 +256,7 @@ function insertTestPlan($db,$name,$notes,$prodID)
 	return($id);
 }
 
-function insertTestPlanPriorities($db,$tp_id)
+function insertTestPlanPriorities(&$db,$tp_id)
 {
 	//Create the priority table
 	$risk_array = config_get('tc_risks');
@@ -268,7 +268,7 @@ function insertTestPlanPriorities($db,$tp_id)
 	return $result ? 1 : 0;
 }
 
-function insertTestPlanPriority($db,$tp_id,$risk)
+function insertTestPlanPriority(&$db,$tp_id,$risk)
 {
 	$sql = "INSERT into priority (projid,riskImp) VALUES (" . $tp_id . ",'" . $risk. "')";
 	$result = $db->exec_query($sql);		
@@ -276,7 +276,7 @@ function insertTestPlanPriority($db,$tp_id,$risk)
 }
 
 
-function insertTestPlanUserRight($db,$tp_id,$userID)
+function insertTestPlanUserRight(&$db,$tp_id,$userID)
 {
 	$sql = "INSERT INTO projrights (projid,userid) 
 	        VALUES ( {$tp_id},{$userID} )";
@@ -288,7 +288,7 @@ function insertTestPlanUserRight($db,$tp_id,$userID)
  20060103 - fm - added $db
  
 */
-function insertTestPlanComponent($db,$tp_id,$mgtCompID)
+function insertTestPlanComponent(&$db,$tp_id,$mgtCompID)
 {
 	$sql = " INSERT INTO component (projid,mgtcompid) " .
 	       " VALUES (" . $tp_id . "," . $mgtCompID . ")";

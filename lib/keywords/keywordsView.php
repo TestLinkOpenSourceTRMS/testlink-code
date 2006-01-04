@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: keywordsView.php,v $
  *
- * @version $Revision: 1.5 $
- * @modified $Date: 2005/12/29 20:59:00 $ by $Author: schlundus $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2006/01/04 09:43:56 $ by $Author: franciscom $
  *
  * Purpose:  This page this allows users to view keywords. 
  *
@@ -18,16 +18,14 @@ require_once("../functions/common.php");
 require_once("keywords.inc.php");
 testlinkInitPage();
 
-$_POST = strings_stripSlashes($_POST);
-$keywordID = isset($_GET['id']) ? $_GET['id'] : null;
-$bDeleteKey = isset($_GET['deleteKey']) ? 1 : 0;
-$keyword = isset($_POST['keyword']) ? $_POST['keyword'] : null;
-$bNewKey = isset($_POST['newKey']) ? 1 : 0;
-$bEditKey = isset($_POST['editKey']) ? 1 : 0;
-$notes = isset($_POST['notes']) ? $_POST['notes'] : null;
-//when editing a keyword, the keywordID is sent via POST!
-if (is_null($keywordID) && $bEditKey)
-	$keywordID = isset($_POST['keywordID']) ? $_POST['keywordID'] : null;
+$_REQUEST = strings_stripSlashes($_REQUEST);
+$keywordID = isset($_REQUEST['id']) ? $_REQUEST['id'] : null;
+$bDeleteKey = isset($_REQUEST['deleteKey']) ? 1 : 0;
+$keyword = isset($_REQUEST['keyword']) ? $_REQUEST['keyword'] : null;
+$bNewKey = isset($_REQUEST['newKey']) ? 1 : 0;
+$bEditKey = isset($_REQUEST['editKey']) ? 1 : 0;
+$notes = isset($_REQUEST['notes']) ? $_REQUEST['notes'] : null;
+
 
 $prodID = isset($_SESSION['productID']) ? $_SESSION['productID'] : 0;
 $bModifyKeywordRight = has_rights("mgt_modify_key");
@@ -79,11 +77,19 @@ if ($bModifyKeywordRight)
 		$notes = $keyword = $keywordID = null;
 }
 
+// 20060103 - fm
+$my_kw_array = selectKeywords($db,$prodID);
+$num_kw = count($my_kw_array);
+for($idx=0; $idx <= $num_kw; $idx++)
+{
+  $my_kw_array[$idx]['notes'] = nl2br(htmlspecialchars($my_kw_array[$idx]['notes']));
+}
+
 $smarty = new TLSmarty();
 $smarty->assign('action',$action);
 $smarty->assign('sqlResult',$sqlResult);
 $smarty->assign('rightsKey',$bModifyKeywordRight);
-$smarty->assign('arrKeywords', selectKeywords($db,$prodID));
+$smarty->assign('arrKeywords', $my_kw_array);
 $smarty->assign('name',$keyword);
 $smarty->assign('keyword',$keyword);
 $smarty->assign('notes',$notes);

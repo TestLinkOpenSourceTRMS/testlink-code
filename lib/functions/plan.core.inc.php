@@ -3,8 +3,8 @@
  * TestLink Open Source Project - @link http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: plan.core.inc.php,v $
- * @version $Revision: 1.20 $
- * @modified $Date: 2005/12/28 07:34:55 $ $Author: franciscom $
+ * @version $Revision: 1.21 $
+ * @modified $Date: 2006/01/04 09:43:56 $ $Author: franciscom $
  *  
  * 
  * @author 	Martin Havlat
@@ -168,8 +168,6 @@ function getCountTestPlans4User($userID)
  */
 function getCountTestPlans4UserProd($userID,$prodID=null)
 {
-	global $g_show_tp_without_prodid;
-	
 	$sql = " SELECT count(project.id) AS num_tp
 	         FROM project,projrights WHERE active=1   
 		       AND projid=project.id AND userid=" . $userID;
@@ -180,21 +178,26 @@ function getCountTestPlans4UserProd($userID,$prodID=null)
 		$sql .= " AND project.prodid=" . $prodID;
 		
 		// 20050904 - fm - TL 1.5.1 compatibility, get also Test Plans without product id.
-		if ($g_show_tp_without_prodid)
+		if (config_get('show_tp_without_prodid'))
 		{
 			$sql .= " OR project.prodid=0";
 		}  	
 	}		   
 	$result = do_sql_query($sql);
+  //echo "<pre>debug"; print_r($result); echo "</pre>";
+  //echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
 	
 	if ($result)
 	{
 		$row = $GLOBALS['db']->fetch_array($result);
+		//echo "<pre>debug"; print_r($row); echo "</pre>";
 		return($row['num_tp']);
 
 	} 
 	else 
 	{
+		//echo "FUJJ";
+		//exit();
 		return null;
 	}
 }

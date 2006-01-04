@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: keywords.inc.php,v $
 * 
-* @version $Id: keywords.inc.php,v 1.14 2005/12/29 20:59:00 schlundus Exp $
-* @modified $Date: 2005/12/29 20:59:00 $ by $Author: schlundus $
+* @version $Id: keywords.inc.php,v 1.15 2006/01/04 09:43:56 franciscom Exp $
+* @modified $Date: 2006/01/04 09:43:56 $ by $Author: franciscom $
 *
 * Functions for support keywords management. 
 *
@@ -215,14 +215,14 @@ function addTCKeyword(&$db,$tcID, $newKey)
  **/
 function updateKeyword(&$db,$prodID,$id,$keyword,$notes)
 {
-	global $g_allow_duplicate_keywords;
+	$allow_duplicate_keywords=config_get('allow_duplicate_keywords');
 
 	$ret = array("msg" => "ok", 
 				 "status_ok" => 0);
 	$do_action = 1;
 	$my_kw = trim($keyword);
 
-	if (!$g_allow_duplicate_keywords)
+	if (!$allow_duplicate_keywords)
 	{
 		$check = check_for_keyword_existence($db,$prodID, $my_kw,$id);
 		$do_action = !$check['keyword_exists'];

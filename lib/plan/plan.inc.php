@@ -2,19 +2,20 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: plan.inc.php,v $
- * @version $Revision: 1.19 $
- * @modified $Date: 2006/01/03 21:19:02 $ $Author: schlundus $
+ * @version $Revision: 1.20 $
+ * @modified $Date: 2006/01/04 08:08:07 $ $Author: franciscom $
  * @author 	Martin Havlat
  *
  * Functions for management: 
  * Test Plans, Test Case Suites, Milestones, Testers assignment
  *
+ * 20060104 - fm - added copy_deep_testplan() 
+ * 20060103 - scs - ADOdb changes
+ * 20051008 - scs - refactored
  * 20051006 - fm - updateTestPlanBuild()
  * 20051001 - fm - del_category_deep(), del_component_deep
  * 20050922 - fm - BUGID 0000132: Cannot delete a test plan
  * 20050914 - fm - refactoring
- * 20051008 - scs - refactored
- * 20060103 - scs - ADOdb changes
  */
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -650,4 +651,72 @@ function checkMileStone($name,$date,$A,$B,$C)
 		
 	return $sqlResult;
 }
+
+
+
+/**
+ * Create a copy of source test plan ($source_tpid)
+ * assigning test plan id ($target_tpid)
+ *
+ * @param type $db [ref] ADODB
+ * @param int $source_tpid
+ * @param int $target_tpid
+ * @return void
+ **/
+function 	copy_deep_testplan(&$db, $source_tpid, $target_tpid)
+{
+	$cInfo = getTestPlanComponents($db, $source_tpid);
+	$num_comp = sizeof($cInfo);
+	for($idx = 0; $idx < $num_comp; $idx++)
+	{
+		//insert it into the component table with new ids
+		$component = $cInfo[$idx];
+		$COMID = insertTestPlanComponent($db,$target_tpid,$component['mgtcompid']);
+		
+		//Grab all of the currently looping components categories
+		// 20051001 - fm
+		$sqlCat = " SELECT CAT.id as catid, MGTCAT.name, CAT.compid, CAT.mgtcatid, MGTCAT.CATorder " .
+		          " FROM category CAT, mgtcategory MGTCAT " . 
+		          " WHERE MGTCAT.id = CAT.mgtcatid " .  
+		          " AND CAT.compid=" . $component['compid'];
+
+		$resultCat = $db->exec_query($sqlCat);
+		while ($myrowCat = $db->fetch_array($resultCat))
+		{
+			$sqlInsertCat = " INSERT INTO category (compid,mgtcatid,CATorder)
+					              VALUES ('" . 
+					              $db->prepare_string($COMID) . " ','" . 
+					              $db->prepare_string($myrowCat['mgtcatid'])  . "','" . 
+					              $db->prepare_string($myrowCat['CATorder']) . "')";
+			$resultInsertCat = $db->exec_query($sqlInsertCat); 
+			
+			//grab the catid from the last insert so we can use it for the test case
+			$CATID = $db->insert_id(); 
+
+			//grab all of the test case info.. Anything with a default I ignore
+			$sqlTC = " SELECT title,summary,steps,exresult,mgttcid,keywords,TCorder, version " .
+			         " FROM testcase WHERE catid=" . $myrowCat['catid'];
+			$resultTC = $db->exec_query($sqlTC);
+
+			while ($myrowTC = $db->fetch_array($resultTC)) 
+			{
+				//insert the test case code
+				$sqlInsertTC = " INSERT INTO testcase 
+				                 (title,summary,steps,exresult,catid,mgttcid,keywords,TCorder,version)
+				                 VALUES ('" . 
+						             $db->prepare_string($myrowTC['title']) . "','" . 
+						             $db->prepare_string($myrowTC['summary']) . "','" . 
+						             $db->prepare_string($myrowTC['steps']) . "','" . 
+						             $db->prepare_string($myrowTC['exresult']) . "','" . 
+						             $db->prepare_string($CATID)               . "','" . 
+						             $db->prepare_string($myrowTC['mgttcid']) . "','" . 
+						             $db->prepare_string($myrowTC['keywords']) . "','" . 
+						             $db->prepare_string($myrowTC['TCorder']) . "','" . 
+						             $db->prepare_string($myrowTC['version']) . "')";
+				$resultInsertTC = $db->exec_query($sqlInsertTC);
+			}//end the tc loop
+		}//end the cat loop
+	}//end the com loop
+
+} 
 ?>

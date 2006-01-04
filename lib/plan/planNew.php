@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * $Id: planNew.php,v 1.11 2006/01/02 18:15:17 franciscom Exp $ 
+ * $Id: planNew.php,v 1.12 2006/01/04 09:43:56 franciscom Exp $ 
  *
  * Purpose:  Add new Test Plan 
  *
@@ -13,35 +13,38 @@ require('../../config.inc.php');
 require("../functions/common.php");
 require("plan.inc.php");
 require_once("../../lib/functions/lang_api.php");
+require_once("../../third_party/fckeditor/fckeditor.php");
 testlinkInitPage();
 
+// ----------------------------------------------------------------------
+// 20060101 - fm
+$of = new fckeditor('notes') ;
+$of->BasePath = $_SESSION['basehref'] . 'third_party/fckeditor/';
+$of->ToolbarSet = 'TL_Medium';
+$of->Value = null;
+// ----------------------------------------------------------------------
 
-// 20051120 - fm
-// The current selected Product
-$prod->id   = $_SESSION['productID'];
-$prod->name = $_SESSION['productName'];
 $sqlResult = null;
-if(isset($_POST['newTestPlan'])) 
+$args = init_args($_REQUEST,$_SESSION);
+if(isset($_REQUEST['newTestPlan'])) 
 {
-	$name = isset($_POST['name']) ? strings_stripSlashes($_POST['name']) : null;
-	if (!strlen($name))
+  $of->Value = $args->notes;
+  if (!strlen($args->name))
 	{
 		$sqlResult = lang_get('warning_empty_tp_name');
 	}	
 	else
 	{
-		$notes = isset($_POST['notes']) ? strings_stripSlashes($_POST['notes']) : null;
-		$copy = isset($_POST['copy']) ? intval($_POST['copy']) : 0;
-		
 		$tp_id = 0;
 		$sqlResult = 'ok';
 		
 		//20051125 - scs - added checking for duplicate tp names
-		$plans = getAllTestPlans($_SESSION['productID'],null,1);
+		$plans = getAllTestPlans($args->productID,null,1);
 		$bDuplicate = false;
-		for($i = 0;$i < sizeof($plans);$i++)
+		$num_plans = sizeof($plans);
+		for($idx = 0; $idx < $num_plans; $idx++)
 		{
-			if ($plans[$i]['name'] == $name)
+			if ($plans[$idx]['name'] == $args->name)
 			{
 				$bDuplicate = true;
 				break;
@@ -49,90 +52,89 @@ if(isset($_POST['newTestPlan']))
 		}
 		if (!$bDuplicate)
 		{
-			if (!insertTestPlan($tp_id,$name,$notes,$_SESSION['productID']))
+			$tp_id=insertTestPlan($db,$args->name,$args->notes,$args->productID);
+			if ($tp_id == 0)
 			{
-				$sqlResult =  $GLOBALS['db']->error_msg();
+				$sqlResult = $db->error_msg();
 			}	
+			$result = insertTestPlanPriorities($db, $tp_id);
 			
-			$result = insertTestPlanPriorities($tp_id);
-			$rights = isset($_POST['rights']) ? $_POST['rights'] : '';
-			
-			if($rights == 'on')
+			if($args->rights == 'on')
 			{
-				$result = insertTestPlanUserRight($tp_id,$_SESSION['userID']);
-		    }
+				$result = insertTestPlanUserRight($db, $tp_id,$args->userID);
+		  }
 	    
 			//user has decided to copy an existing Test Plan. 
 			//What this code does is loops through each of the components, inserts the component info, 
 			//loops through the categories from the component and then adds the category, 
 			//and the same thing as before with test cases.
-			if($copy) //if the user chose to copy then go through this code
+			if($args->copy) 
 			{
-				$cInfo = getTestPlanComponents($copy);
-				$num_comp = sizeof($cInfo);
-				for($i = 0; $i < $num_comp;$i++)
-				{
-					//insert it into the component table with new ids
-					$component = $cInfo[$i];
-					$COMID = insertTestPlanComponent($tp_id,$component['mgtcompid']);
-					
-					//Grab all of the currently looping components categories
-					// 20051001 - fm
-					$sqlCat = " SELECT CAT.id as catid, MGTCAT.name, CAT.compid, CAT.mgtcatid, MGTCAT.CATorder " .
-					          " FROM category CAT, mgtcategory MGTCAT " . 
-					          " WHERE MGTCAT.id = CAT.mgtcatid " .  
-					          " AND CAT.compid=" . $component['compid'];
-	
-					$resultCat = do_sql_query($sqlCat);
-					while ($myrowCat = $GLOBALS['db']->fetch_array($resultCat))
-					{
-						$sqlInsertCat = " INSERT INTO category (compid,mgtcatid,CATorder) " .
-								            " VALUES ('" . $GLOBALS['db']->prepare_string($COMID) . " ','" . 
-								            $GLOBALS['db']->prepare_string($myrowCat['mgtcatid'])  . "','" . 
-								            $GLOBALS['db']->prepare_string($myrowCat['CATorder']) . "')";
-						$resultInsertCat = do_sql_query($sqlInsertCat); 
-						
-						//grab the catid from the last insert so we can use it for the test case
-						$CATID = $GLOBALS['db']->insert_id(); 
-		
-						//grab all of the test case info.. Anything with a default I ignore
-						$sqlTC = " SELECT title,summary,steps,exresult,mgttcid,keywords,TCorder, version " .
-						         " FROM testcase WHERE catid=" . $myrowCat['catid'];
-						$resultTC = do_sql_query($sqlTC);
-		
-						while ($myrowTC = $GLOBALS['db']->fetch_array($resultTC)) 
-						{
-							//insert the test case code
-							$sqlInsertTC = " INSERT INTO testcase " .
-							               " (title,summary,steps,exresult,catid,mgttcid,keywords,TCorder,version) " .
-							               " VALUES ('" . 
-									           $GLOBALS['db']->prepare_string($myrowTC['title']) . "','" . 
-									           $GLOBALS['db']->prepare_string($myrowTC['summary']) . "','" . 
-									           $GLOBALS['db']->prepare_string($myrowTC['steps']) . "','" . 
-									           $GLOBALS['db']->prepare_string($myrowTC['exresult']) . "','" . 
-									           $GLOBALS['db']->prepare_string($CATID)               . "','" . 
-									           $GLOBALS['db']->prepare_string($myrowTC['mgttcid']) . "','" . 
-									           $GLOBALS['db']->prepare_string($myrowTC['keywords']) . "','" . 
-									           $GLOBALS['db']->prepare_string($myrowTC['TCorder']) . "','" . 
-									           $GLOBALS['db']->prepare_string($myrowTC['version']) . "')";
-							$resultInsertTC = do_sql_query($sqlInsertTC);
-						}//end the tc loop
-					}//end the cat loop
-				}//end the com loop
+				copy_deep_testplan($db, $args->source_tpid, $tp_id);
 			}//end the copy if statement
+      $of->Value = null;
 		}
 		else
+		{
 			$sqlResult = lang_get('duplicate_tp_name');
+		}	
 	}
 }
 
 $smarty = new TLSmarty;
 
 // 20051120 - fm
-$smarty->assign('prod_name', $prod->name);
-$smarty->assign('arrPlan', getAllActiveTestPlans($prod->id,FILTER_BY_PRODUCT));
+$smarty->assign('prod_name', $args->productName);
+$smarty->assign('arrPlan', getAllActiveTestPlans($args->productID,FILTER_BY_PRODUCT));
 $smarty->assign('sqlResult', $sqlResult);
+$smarty->assign('notes', $of->CreateHTML());
+
 $smarty->display('planNew.tpl');
 ?>
 
 
+
+
+<?php
+/*
+ * INITialize page ARGuments, using the $_REQUEST and $_SESSION
+ * super-global hashes.
+ * Important: changes in HTML input elements on the Smarty template
+ *            must be reflected here.
+ *
+ *  
+ * @parameter hash request_hash the $_REQUEST
+ * @parameter hash session_hash the $_SESSION
+ * @return    object with html values tranformed and other
+ *                   generated variables.
+ *
+ * 20060103 - fm 
+*/
+function init_args($request_hash, $session_hash)
+{
+
+  $request_hash = strings_stripSlashes($request_hash);
+
+  $nullable_keys=array('name','notes','rights');
+  foreach ($nullable_keys as $value)
+  {
+    $args->$value=isset($request_hash[$value]) ? $request_hash[$value] : null;
+  }
+  
+  $intval_keys=array('copy' => 0);
+  foreach ($intval_keys as $key => $value)
+  {
+    $args->$key=isset($request_hash[$key]) ? intval($request_hash[$key]) : $value;
+  }
+  $args->source_tpid = $args->copy;
+  $args->copy = ($args->copy > 0) ? TRUE : FALSE;
+
+  $args->productID   = $_SESSION['productID'];
+  $args->productName = $_SESSION['productName'];
+  $args->userID      = $_SESSION['userID'];
+
+  return($args);
+}
+
+
+?>

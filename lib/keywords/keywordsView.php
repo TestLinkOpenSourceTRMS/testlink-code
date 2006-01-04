@@ -5,13 +5,14 @@
  *
  * Filename $RCSfile: keywordsView.php,v $
  *
- * @version $Revision: 1.6 $
- * @modified $Date: 2006/01/04 09:43:56 $ by $Author: franciscom $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2006/01/04 09:49:39 $ by $Author: franciscom $
  *
  * Purpose:  This page this allows users to view keywords. 
  *
  * 20050907 - scs - cosmetic changes
  * 20051216 - scs - put all keyword management into this script
+ * 20060104 - fm  - using nl2br() for the notes
 **/
 require_once("../../config.inc.php");
 require_once("../functions/common.php");
@@ -80,7 +81,7 @@ if ($bModifyKeywordRight)
 // 20060103 - fm
 $my_kw_array = selectKeywords($db,$prodID);
 $num_kw = count($my_kw_array);
-for($idx=0; $idx <= $num_kw; $idx++)
+for($idx=0; $idx < $num_kw; $idx++)
 {
   $my_kw_array[$idx]['notes'] = nl2br(htmlspecialchars($my_kw_array[$idx]['notes']));
 }

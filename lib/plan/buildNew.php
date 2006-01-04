@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: buildNew.php,v 1.13 2005/10/09 18:13:48 schlundus Exp $ */
+/* $Id: buildNew.php,v 1.14 2006/01/04 09:43:56 franciscom Exp $ */
 /* 
 Purpose:  admins create new builds for a project 
 
@@ -22,7 +22,7 @@ require_once("../../lib/functions/lang_api.php");
 require_once("../../third_party/fckeditor/fckeditor.php");
 testlinkInitPage();
 
-$tpID = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0;
+$tpID    = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0;
 $buildID = isset($_REQUEST['buildID']) ? intval($_REQUEST['buildID']) : 0;
 $build_name = isset($_REQUEST['build_name']) ? trim(strings_stripSlashes($_REQUEST['build_name'])) : null;
 $notes = isset($_REQUEST['notes']) ? strings_stripSlashes($_REQUEST['notes']) : null;
@@ -47,7 +47,7 @@ if (strlen($build_name))
 	if (sizeof($the_builds) == 0 || !in_array($build_name,$the_builds)
 	    ||(isset($the_builds[$buildID]) && $the_builds[$buildID] == $build_name))
 	{
-  		$sqlResult = 'ok';
+  	$sqlResult = 'ok';
 		$can_insert_or_update = 1;
 	}
 }
@@ -108,6 +108,8 @@ if(isset($_REQUEST['edit_build']))
 // 20051002 - fm - change order by
 $the_builds = getBuilds($tpID, " ORDER by build.name ");
 $notes = getBuildsAndNotes($tpID);
+
+echo "<pre>debug"; print_r($notes); echo "</pre>";
 
 $smarty->assign('TPname', $_SESSION['testPlanName']);
 $smarty->assign('arrBuilds', $the_builds);

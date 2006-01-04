@@ -1,5 +1,5 @@
 {* smarty template - view all keywords of product; ver. 1.0 *}
-{* $Id: keywordsView.tpl,v 1.3 2005/12/29 20:59:00 schlundus Exp $ *}
+{* $Id: keywordsView.tpl,v 1.4 2006/01/04 09:46:16 franciscom Exp $ *}
 {* Purpose: smarty template - View all keywords *}
 {include file="inc_head.tpl" jsValidate="yes"}
 
@@ -36,7 +36,8 @@ var warning_enter_less2 = "{lang_get s='warning_enter_less2'}";
 
 	<form name="addKey" method="post" action="lib/keywords/keywordsView.php" 
 		onsubmit="return valTextLength(this.keyword, 100, 1);">
-	<input type="hidden" name="keywordID" value="{$keywordID}" />
+	<!--- <input type="hidden" name="keywordID" value="{$keywordID}" /> --->
+	<input type="hidden" name="id" value="{$keywordID}" />
 	<table class="common">
 		<caption>{lang_get s='caption_new_keyword'}</caption>
 		<tr>
@@ -86,7 +87,8 @@ var warning_enter_less2 = "{lang_get s='warning_enter_less2'}";
 				</a>
 				{/if}
 			</td>
-			<td>{$arrKeywords[myKeyword].notes|escape}</td>
+			<!--- <td>{$arrKeywords[myKeyword].notes|escape}</td> --->
+			<td>{$arrKeywords[myKeyword].notes}</td>
 			{if $rightsKey ne ""}
 			<td>
 				<a href="lib/keywords/keywordsView.php?deleteKey=1&id={$arrKeywords[myKeyword].id}">

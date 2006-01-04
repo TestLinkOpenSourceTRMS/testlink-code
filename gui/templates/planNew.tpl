@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planNew.tpl,v 1.6 2005/11/24 21:27:11 schlundus Exp $
+$Id: planNew.tpl,v 1.7 2006/01/04 09:46:16 franciscom Exp $
 
 Purpose: smarty template - create Test Plan
 
@@ -27,18 +27,19 @@ Purpose: smarty template - create Test Plan
 
 	<form method="post">
 
-	<table class="common" width="75%">
+	<table class="common" width="80%">
 	  {* 20051120 - fm *}
 		<caption>{lang_get s='caption_new_tp'} - {lang_get s='caption_for_product'} {$prod_name|escape}</caption>
 		
 		
 		<tr>
-			<td width="40%">{lang_get s='caption_tp_name'}</td>
+			<td width="30%">{lang_get s='caption_tp_name'}</td>
 			<td><input type="text" name="name" maxlength="200" /></td>
 		</tr>
 		<tr>
 			<td>{lang_get s='caption_tp_notes'}</td>
-			<td><input type="text" name="notes" size="50" /></td>
+			{* <td><input type="text" name="notes" size="50" /></td> *}
+			<td >{$notes}</td>
 		</tr>
 		<tr>
 			<td>{lang_get s='question_create_tp_from'}</td>

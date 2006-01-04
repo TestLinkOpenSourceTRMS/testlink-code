@@ -1,6 +1,6 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
 # This script is distributed under the GNU General Public License 2 or later.
-# $Id: testlink_create_tables.sql,v 1.12 2006/01/02 13:48:30 franciscom Exp $
+# $Id: testlink_create_tables.sql,v 1.13 2006/01/04 09:56:07 franciscom Exp $
 # SQL script - create db tables for TL 1.6.0  
 #
 # default rights & admin account are created via testlink_create_default_data.sql
@@ -23,6 +23,7 @@
 #	      20051120 - mht - bug 237; updated db_version->version default value
 #
 #       20060101 - fm - added active field in user table 
+#       20060104 - fm - changes to milestone table suggested by Andreas Morsing
 # --------------------------------------------------------
 
 #
@@ -214,14 +215,13 @@ CREATE TABLE `milestone` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `projid` int(10) unsigned NOT NULL default '0',
   `date` date NOT NULL default '0000-00-00',
-  `A` tinyint(3) unsigned zerofill NOT NULL default '000',
-  `B` tinyint(3) unsigned zerofill NOT NULL default '000',
-  `C` tinyint(3) unsigned zerofill NOT NULL default '000',
+  `A` tinyint(3) unsigned NOT NULL default '0',
+  `B` tinyint(3) unsigned NOT NULL default '0',
+  `C` tinyint(3) unsigned NOT NULL default '0',
   `name` varchar(100) NOT NULL default 'undefined',
   PRIMARY KEY  (`id`),
   KEY `projid` (`projid`)
 ) TYPE=MyISAM;
-
 # --------------------------------------------------------
 
 #

@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqEdit.tpl,v 1.9 2005/12/05 00:11:06 kevinlevy Exp $ *}
+{* $Id: reqEdit.tpl,v 1.10 2006/01/05 14:47:00 franciscom Exp $ *}
 {* Purpose: smarty template - create / edit a req *}
 {* Author: Martin Havlat *}
 {* Revisions:
@@ -7,6 +7,7 @@
 20050830 - MHT - result presentation updated
 20051008 - scs - added escaping of tile/author
 20051125 - scs - added escaping of titles for coverage
+20060105 - fm  - BUGID 329: Unnable to Change requirement type to "untestable"
 *}
 {include file="inc_head.tpl"}
 
@@ -90,8 +91,11 @@
 	</tr>
 </table>
 	<input type="hidden" name="idReq" value="{$arrReq.id}" />
-	<input type="hidden" name="reqStatus" value="{$arrReq.type}" />
 	<input type="hidden" name="updateReq" />
+		
+	{* 20060105 - fm  - BUGID 329: Unnable to Change requirement type to "untestable"
+	   <input type="hidden" name="reqStatus" value="{$arrReq.type}" />	*}
+
 </form>
 
 

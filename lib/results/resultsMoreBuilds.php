@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsMoreBuilds.php,v 1.17 2005/12/29 20:59:00 schlundus Exp $ 
+* $Id: resultsMoreBuilds.php,v 1.18 2006/01/05 07:30:34 franciscom Exp $ 
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 * 
@@ -18,18 +18,18 @@ require_once('builds.inc.php');
 require_once('plan.core.inc.php');
 require_once('resultsMoreBuilds.inc.php');
 require_once('../keywords/keywords.inc.php');
-testlinkInitPage();
+testlinkInitPage($db);
 
 $prodID = isset($_SESSION['productID']) ? $_SESSION['productID'] : 0;
 $tpID = $_SESSION['testPlanId'];
-$arrBuilds = getBuilds($tpID, " ORDER BY build.name "); 
-$arrOwners = getTestPlanUsers($tpID);
+$arrBuilds = getBuilds($db,$tpID, " ORDER BY build.name "); 
+$arrOwners = getTestPlanUsers($db,$tpID);
 $arrKeywords = selectKeywords($db,$prodID);
-$arrComponents = getArrayOfComponentNames($tpID);
+$arrComponents = getArrayOfComponentNames($db,$tpID);
 
 $smarty = new TLSmarty();
 $smarty->assign('testPlanName',$_SESSION['testPlanName']);
-$smarty->assign('projectid', $tpID);
+$smarty->assign('testplanid', $tpID);
 $smarty->assign('arrBuilds', $arrBuilds); 
 $smarty->assign('arrOwners', $arrOwners);
 $smarty->assign('arrKeywords', $arrKeywords);

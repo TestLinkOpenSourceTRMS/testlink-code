@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsBuild.php,v 1.6 2005/10/03 07:20:14 franciscom Exp $ 
+* $Id: resultsBuild.php,v 1.7 2006/01/05 07:30:34 franciscom Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * 
@@ -15,7 +15,7 @@ require_once('common.php');
 require_once('results.inc.php');
 require_once("../../lib/functions/lang_api.php");
 require_once("../../lib/functions/builds.inc.php");
-testlinkInitPage();
+testlinkInitPage($db);
 
 $buildID = isset($_GET['build']) ? intval($_GET['build']) : null;
 if (!isset($_GET['build']))
@@ -26,14 +26,14 @@ if (!isset($_GET['build']))
 
 $tpID = $_SESSION['testPlanId'];
 
-$builds = getBuilds($tpID, " ORDER BY build.name ");
+$builds = getBuilds($db,$tpID, " ORDER BY build.name ");
 $buildName = $builds[$buildID];
-$arrDataPriority = getPriorityReport($tpID,$buildID);
+$arrDataPriority = getPriorityReport($db,$tpID,$buildID);
 
 // get Test Suite data
-$arrDataSuite = getBuildMetricsComponent($tpID,$buildID);
-$arrDataCategory = getBuildMetricsCategory($tpID,$buildID);
-$arrDataKeys = getKeywordsReport($tpID,$buildID);
+$arrDataSuite = getBuildMetricsComponent($db,$tpID,$buildID);
+$arrDataCategory = getBuildMetricsCategory($db,$tpID,$buildID);
+$arrDataKeys = getKeywordsReport($db,$tpID,$buildID);
 
 
 $smarty = new TLSmarty;

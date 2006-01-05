@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * $Id: planNew.php,v 1.12 2006/01/04 09:43:56 franciscom Exp $ 
+ * $Id: planNew.php,v 1.13 2006/01/05 07:30:34 franciscom Exp $ 
  *
  * Purpose:  Add new Test Plan 
  *
@@ -14,7 +14,7 @@ require("../functions/common.php");
 require("plan.inc.php");
 require_once("../../lib/functions/lang_api.php");
 require_once("../../third_party/fckeditor/fckeditor.php");
-testlinkInitPage();
+testlinkInitPage($db);
 
 // ----------------------------------------------------------------------
 // 20060101 - fm
@@ -39,7 +39,7 @@ if(isset($_REQUEST['newTestPlan']))
 		$sqlResult = 'ok';
 		
 		//20051125 - scs - added checking for duplicate tp names
-		$plans = getAllTestPlans($args->productID,null,1);
+		$plans = getAllTestPlans($db,$args->productID,null,1);
 		$bDuplicate = false;
 		$num_plans = sizeof($plans);
 		for($idx = 0; $idx < $num_plans; $idx++)
@@ -85,7 +85,7 @@ $smarty = new TLSmarty;
 
 // 20051120 - fm
 $smarty->assign('prod_name', $args->productName);
-$smarty->assign('arrPlan', getAllActiveTestPlans($args->productID,FILTER_BY_PRODUCT));
+$smarty->assign('arrPlan', getAllActiveTestPlans($db,$args->productID,FILTER_BY_PRODUCT));
 $smarty->assign('sqlResult', $sqlResult);
 $smarty->assign('notes', $of->CreateHTML());
 

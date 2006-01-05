@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: adminUserNew.php,v $
  *
- * @version $Revision: 1.8 $
- * @modified $Date: 2006/01/03 21:19:02 $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2006/01/05 07:30:33 $
  *
  * @author Martin Havlat
  *
@@ -22,7 +22,7 @@
 **/
 include('../../config.inc.php');
 require_once('users.inc.php');
-testlinkInitPage();
+testlinkInitPage($db);
 
 $_POST = strings_stripSlashes($_POST);
 $bNewUser = isset($_POST['newUser']) ? $_POST['newUser'] : null;

@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: product.core.inc.php,v $
- * @version $Revision: 1.2 $
- * @modified $Date: 2005/08/16 18:00:55 $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2006/01/05 07:30:33 $
  * @author Martin Havlat
  *
  * Core Functions for Product management (get data)
@@ -12,7 +12,7 @@
  */
 
 
-function getProducts($id = null)
+function getProducts(&$db,$id = null)
 {
 	$sql = "SELECT * FROM mgtproduct";
 	
@@ -20,23 +20,23 @@ function getProducts($id = null)
 		$sql .= " WHERE id = " . $id;
 	}
 	
-	return selectData($sql);
+	return selectData($db,$sql);
 }
 
 
 /** collect all information about Product */
-function getProduct($id)
+function getProduct(&$db,$id)
 {
-	$products = getProducts($id);
+	$products = getProducts($db,$id);
 
 	return $products ? $products[0] : null;
 }
 
 
-function getAllProductsBut($id,&$products)
+function getAllProductsBut(&$db,$id,&$products)
 {
 	$sql = "SELECT id, name FROM mgtproduct WHERE id !=" . $id;
-	$products = selectData($sql);
+	$products = selectData($db,$sql);
 
 	return (!empty($products)) ? 1 : 0;
 }	
@@ -48,7 +48,7 @@ rev :
      refactoring
      
 */
-function getOptionProducts()
+function getOptionProducts(&$db)
 {
 	$arrProducts = array();
 	
@@ -58,7 +58,7 @@ function getOptionProducts()
 	
 	if (has_rights('mgt_modify_product') == 'yes') {
 		$sql .= $order_by;
-		$arrTemp = selectData($sql);
+		$arrTemp = selectData($db,$sql);
 		if (sizeof($arrTemp))
 		{
 			foreach($arrTemp as $oneProduct)
@@ -74,7 +74,7 @@ function getOptionProducts()
 		
 	} else {
 		$sql .= " WHERE active=1 " . $order_by;
-		$arrProducts = selectOptionData($sql);
+		$arrProducts = selectOptionData($db,$sql);
 	}
 	
 	return $arrProducts;

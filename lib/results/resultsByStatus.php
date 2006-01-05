@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsByStatus.php,v 1.7 2005/12/28 07:34:55 franciscom Exp $ 
+* $Id: resultsByStatus.php,v 1.8 2006/01/05 07:30:34 franciscom Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -9,10 +9,6 @@
 * This page show Test Results over all Builds.
 *
 * @author 20050919 - fm - refactoring cat/comp name
-* @author 20050807 - fm
-* refactoring:  
-* removed deprecated: $_SESSION['project']
-* 
 * 20050901 - scs - added fix for Mantis 81
 */
 require('../../config.inc.php');
@@ -20,7 +16,7 @@ require_once('common.php');
 require_once('builds.inc.php');	
 require_once('results.inc.php');
 require_once("../../lib/functions/lang_api.php");
-testlinkInitPage();
+testlinkInitPage($db);
 
 $type = $_GET['type'];
 if($type == $g_tc_status['failed'])
@@ -32,14 +28,14 @@ else
 	tlog('wrong value of GET type');
 	exit();
 }
-$arrBuilds = getBuilds($_SESSION['testPlanId'], " ORDER BY build.name ");
+$arrBuilds = getBuilds($db,$_SESSION['testPlanId'], " ORDER BY build.name ");
 
 //SQL to select the most current status of all the current test cases
 
 // 20050919 - fm - refactoring
 $sql = " SELECT tcid,status,build_id,runby,daterun,title,results.notes," .
        " MGTCOMP.name  AS comp_name, MGTCAT.name AS cat_name, COMP.id, CAT.id,mgttcid  " .
-  		 " FROM results, project TP, component COMP, category CAT, " .
+  		 " FROM results, testplans TP, component COMP, category CAT, " .
   		 " mgtcomponent MGTCOMP, mgtcategory MGTCAT, testcase TC " .
 		   " WHERE TP.id = COMP.projid " .
 		   " AND COMP.id = CAT.compid " .

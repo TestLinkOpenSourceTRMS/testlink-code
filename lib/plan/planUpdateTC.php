@@ -1,7 +1,7 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: planUpdateTC.php,v 1.12 2005/12/28 07:34:55 franciscom Exp $
+ * @version $Id: planUpdateTC.php,v 1.13 2006/01/05 07:30:34 franciscom Exp $
  * @author Martin Havlat
  * 
  * Update Test Cases within Test Case Suite 
@@ -22,7 +22,7 @@
  */         
 require('../../config.inc.php');
 require("../functions/common.php");
-testlinkInitPage();
+testlinkInitPage($db);
 
 $resultString = null;
 $arrData = array(); 
@@ -131,7 +131,7 @@ if(isset($_POST['updateSelected']))
 	}
 }
 
-// walk through the project test cases
+// walk through the testplan test cases
 $sqlTC = " SELECT testcase.id from testcase, category, component " .
 		     " WHERE testcase.catid = category.id AND category.compid = component.id " .
 		     " AND component.projid = " . $tpID;

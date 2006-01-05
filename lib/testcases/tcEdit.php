@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.15 $
- * @modified $Date: 2005/12/29 20:59:00 $  by $Author: schlundus $
+ * @version $Revision: 1.16 $
+ * @modified $Date: 2006/01/05 07:30:34 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
  * @author Martin Havlat
@@ -32,7 +32,7 @@ require_once("../functions/common.php");
 require('archive.inc.php');
 require('../keywords/keywords.inc.php');
 require_once("../../third_party/fckeditor/fckeditor.php");
-testlinkInitPage();
+testlinkInitPage($db);
 
 // set variables
 // --------------------------------------------------------------------
@@ -94,7 +94,7 @@ if($tc)
 {
 	$setOfKeys = array();
 	
-	$myrowTC = getTestcase($testcaseID,false);
+	$myrowTC = getTestcase($db,$testcaseID,false);
 
 	// 20051004 - fm - refactoring
 	$tcKeywords = getTCKeywords($db,$testcaseID);
@@ -154,15 +154,16 @@ else if($bUpdateTC)
 	if( $name_ok)
 	{
 		$sqlResult = 'ok';
-		if (!updateTestcase($testcaseID,$title,$summary,$steps,$outcome,$_SESSION['user'],$updatedKeywords,$version))
+		if (!updateTestcase($db,$testcaseID,$title,$summary,$steps,
+		                    $outcome,$_SESSION['user'],$updatedKeywords,$version))
 		{
-			$sqlResult =  $GLOBALS['db']->error_msg();
+			$sqlResult =  $db->error_msg();
 		}
 	}	
 
 	// 20050820 - fm - show testcase
 	$allow_edit=1;
-	showTestcase($testcaseID, $allow_edit);
+	showTestcase($db,$testcaseID, $allow_edit);
 }
 else if($bNewTC)
 {
@@ -174,7 +175,7 @@ else if($bAddTC)
 	if ($name_ok)
 	{
 		$msg = lang_get('error_tc_add');
-		if (insertTestcase($categoryID,$title,$summary,$steps,$outcome,$_SESSION['user']))
+		if (insertTestcase($db,$categoryID,$title,$summary,$steps,$outcome,$_SESSION['user']))
 		{
 			$msg = 'ok';
 		}
@@ -192,7 +193,7 @@ else if($bDeleteTC)
 		if (deleteTestcase($testcaseID))
 			$smarty->assign('sqlResult', 'ok');
 	   	else
-			$smarty->assign('sqlResult', $GLOBALS['db']->error_msg());
+			$smarty->assign('sqlResult', $db->error_msg());
 	}
 	$smarty->assign('testcaseID', $testcaseID);
 	$smarty->display('tcDelete.tpl');
@@ -203,11 +204,11 @@ else if($bMoveTC)
 	$compID = 0;
 	$arrOptCategories = null;
 	
-	getTestCaseCategoryAndComponent($testcaseID,$catID,$compID);
-	getOptionCategoriesOfComponent($compID, $arrOptCategories);
+	getTestCaseCategoryAndComponent($db,$testcaseID,$catID,$compID);
+	getOptionCategoriesOfComponent($db,$compID, $arrOptCategories);
 	$arrOptCategories[$catID] .= ' (' . lang_get('current') . ')'; 
 
-	$tcTitle = getTestcaseTitle($testcaseID);
+	$tcTitle = getTestcaseTitle($db,$testcaseID);
 
 	$smarty->assign('oldCat', $catID); // original Category
 	$smarty->assign('arrayCat', $arrOptCategories);
@@ -219,14 +220,14 @@ else if($bMoveTC)
 }
 else if($bUpdateTCMove)
 {
-	$result = moveTc($catID, $testcaseID);
-	showCategory($oldCat, $result);
+	$result = moveTc($db,$catID, $testcaseID);
+	showCategory($db,$oldCat, $result);
 }
 else if($bUpdateTCCopy)
 {
 	// 20050821 - fm - interface - reduce global coupling
-	$result = copyTc($catID, $testcaseID, $_SESSION['user']);
-	showCategory($oldCat, $result,'update',$catID);
+	$result = copyTc($db,$catID, $testcaseID, $_SESSION['user']);
+	showCategory($db,$oldCat, $result,'update',$catID);
 }
 else
 {

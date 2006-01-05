@@ -2,7 +2,7 @@
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
- * @version $Id: resultsNavigator.php,v 1.4 2005/10/03 07:20:14 franciscom Exp $ 
+ * @version $Id: resultsNavigator.php,v 1.5 2006/01/05 07:30:34 franciscom Exp $ 
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
  * This page list View of Test Results and Metrics.
@@ -12,7 +12,6 @@
  *
  * Revisions:
  * 
- * 20050807 - fm - refactoring; removed deprecated: $_SESSION['project']
  * 20050831 - MHT - added req report; removed doubled include for lang support; updated file header
  *
  */
@@ -20,7 +19,7 @@ require('../../config.inc.php');
 require_once('common.php');
 require_once('builds.inc.php');
 
-testlinkInitPage();
+testlinkInitPage($db);
 
 // there is list of available results and metrics view
 $arrData = array(
@@ -46,7 +45,7 @@ $arrDataB = array(
 
 // collect builds of Test Plan
 // 20050807 - fm 
-$arrBuilds = getBuilds($_SESSION['testPlanId'], " ORDER BY build.name ");
+$arrBuilds = getBuilds($db,$_SESSION['testPlanId'], " ORDER BY build.name ");
 if (isset($_GET['build']))
 	$selectedBuild = $_GET['build'];
 else

@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: userInfo.php,v $
 *
-* @version $Revision: 1.10 $
-* @modified $Date: 2006/01/03 21:19:02 $
+* @version $Revision: 1.11 $
+* @modified $Date: 2006/01/05 07:30:34 $
 * 
 * Displays the users' information and allows users to change 
 * their passwords and user info.
@@ -18,7 +18,7 @@
 */
 require_once('../../config.inc.php');
 require_once('users.inc.php');
-testlinkInitPage();
+testlinkInitPage($db);
 
 $_POST = strings_stripSlashes($_POST);
 $id = isset($_POST['id']) ? intval($_POST['id']) : 0;

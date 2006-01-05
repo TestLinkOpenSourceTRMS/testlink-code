@@ -4,17 +4,16 @@
  *
  * Filename $RCSfile: planMilestones.php,v $
  *
- * @version $Revision: 1.6 $
- * @modified $Date: 2006/01/03 21:19:02 $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2006/01/05 07:30:34 $
  *
- * 20050807 - fm  - refactoring removed deprecated: $_SESSION['project']
  * 20051203 - scs - added displaying of tpname, cosmetic changes
  * 20060103 - scs - refactored, removed bulk update
  */
 require_once('../../config.inc.php');
 require_once("../functions/common.php");
 require_once("plan.inc.php");
-testlinkInitPage();
+testlinkInitPage($db);
 
 $_POST = strings_stripSlashes($_POST);
 $name = isset($_POST['name']) ? $_POST['name'] : '';

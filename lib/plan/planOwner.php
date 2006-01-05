@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: planOwner.php,v 1.10 2005/12/27 11:18:14 franciscom Exp $ */
+/* $Id: planOwner.php,v 1.11 2006/01/05 07:30:34 franciscom Exp $ */
 /**
  * Manage the ownership and priority of test suite
  *
@@ -14,7 +14,7 @@
 require('../../config.inc.php');
 require("../functions/common.php");
 require_once('plan.inc.php');
-testlinkInitPage();
+testlinkInitPage($db);
 
 $level = isset($_GET['level']) ? $_GET['level'] : null;
 $compID = isset($_GET['data']) ? intval($_GET['data']) : null;
@@ -43,7 +43,7 @@ else if($level == 'category')
 	$arrSuites = getTP_category_info($catID);
 }
 
-$arrUsers = getTestPlanUsers($tpID);
+$arrUsers = getTestPlanUsers($db,$tpID);
 $smarty = new TLSmarty();
 $smarty->assign('sqlResult', $updated);
 $smarty->assign('optionImportance', array(

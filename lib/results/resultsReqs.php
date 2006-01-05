@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: resultsReqs.php,v $
- * @version $Revision: 1.3 $
- * @modified $Date: 2006/01/04 11:29:33 $ by $Author: franciscom $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2006/01/05 07:30:34 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Report requirement based results
@@ -22,13 +22,13 @@ require_once('requirements.inc.php');
 require_once('results.inc.php');
 
 // init page 
-testlinkInitPage();
+testlinkInitPage($db);
 
 $idSRS = isset($_GET['idSRS']) ? strings_stripSlashes($_GET['idSRS']) : null;
 $prodID = isset($_SESSION['productID']) ? $_SESSION['productID'] : 0;
 
 //get list of available Req Specification
-$arrReqSpec = getOptionReqSpec($prodID);
+$arrReqSpec = getOptionReqSpec($db,$prodID);
 
 //set the first ReqSpec if not defined via $_GET
 if (!$idSRS && count($arrReqSpec)) {
@@ -45,8 +45,8 @@ $arrCoverage = null;
 $arrMetrics =  null;
 if( !is_null($idSRS))
 {
-	$arrCoverage = getReqCoverage_testPlan($idSRS, $_SESSION['testPlanId']);
-	$arrMetrics = getReqMetrics_testPlan($idSRS, $_SESSION['testPlanId']);
+	$arrCoverage = getReqCoverage_testPlan($db,$idSRS, $_SESSION['testPlanId']);
+	$arrMetrics = getReqMetrics_testPlan($db,$idSRS, $_SESSION['testPlanId']);
 }
 
 $smarty = new TLSmarty;

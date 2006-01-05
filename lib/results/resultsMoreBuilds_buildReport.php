@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsMoreBuilds_buildReport.php,v 1.16 2005/10/24 19:35:00 schlundus Exp $ 
+* $Id: resultsMoreBuilds_buildReport.php,v 1.17 2006/01/05 07:30:34 franciscom Exp $ 
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 * 
@@ -16,7 +16,7 @@ require_once('../functions/resultsMoreBuilds.inc.php');
 require_once('../functions/builds.inc.php');
 require_once('builds.inc.php');
 require_once('results.inc.php');
-testlinkInitPage();
+testlinkInitPage($db);
 
 $tpName = isset($_GET['testPlanName']) ? strings_stripSlashes($_GET['testPlanName']) : null;  
 $tpID = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0;  

@@ -2,7 +2,7 @@
 /**
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/ 
 *
-* @version 	$Id: printData.php,v 1.12 2006/01/02 17:41:51 franciscom Exp $
+* @version 	$Id: printData.php,v 1.13 2006/01/05 07:30:34 franciscom Exp $
 *	@author 	Martin Havlat
 * 
 * Shows the data that will be printed.
@@ -22,7 +22,7 @@ require('../../config.inc.php');
 require("common.php");
 require_once("print.inc.php");
 require_once("../testcases/archive.inc.php");
-testlinkInitPage();
+testlinkInitPage($db);
 
 // numbering of chapters
 $component_number = 0;
@@ -34,7 +34,7 @@ $CONTENT = "";
 $toc = isset($_GET['toc']) && ($_GET['toc'] == 'y') ? true : false;
 
 /** this function prints the document header */
-function print_header($title, $toc)
+function print_header(&$db,$title, $toc)
 {
 	global $CONTENT_HEAD;
 	
@@ -43,7 +43,7 @@ function print_header($title, $toc)
 
   // 20060102 - fm  
 	$prod_id = isset($_SESSION['productID']) ? intval($_SESSION['productID']) : 0;
-	$prod_data = getProduct($prod_id);
+	$prod_data = getProduct($db,$prod_id);
 	
 	
 	$title = lang_get('title_test_spec') . "-" . htmlspecialchars($title);
@@ -185,13 +185,13 @@ function print_testcase($testcase)
 /*
 20050831 - fm - logic reuse
 */
-function generate_TCs($rs)
+function generate_TCs(&$db,$rs)
 {
   global $CONTENT;
 
-	if ($GLOBALS['db']->num_rows($rs) > 0)
+	if ($db->num_rows($rs) > 0)
 	{
-	    while ($myrow = $GLOBALS['db']->fetch_array($rs))
+	    while ($myrow = $db->fetch_array($rs))
 		{
 			print_testcase($myrow);
 		}
@@ -204,36 +204,36 @@ function generate_TCs($rs)
 
 
 /** print Test Specification data within category */
-function generate_product_TCs($idCategory)
+function generate_product_TCs(&$db,$idCategory)
 {
 	$sqlTC = " SELECT  id,title, summary, steps, exresult " .
 				" FROM mgttestcase " .
 				" WHERE catid=" . $idCategory . 
 				" ORDER BY TCorder, id";
 
-	$resultTC = do_sql_query($sqlTC);
+	$resultTC = $db->exec_query($sqlTC);
 	
 	if (!$resultTC)
 	{
 		tLog($sqlTC . ' | error: ' . $GLOBALS['db']->error_msg(), 'ERROR');
 	}
-	generate_TCs($resultTC);
+	generate_TCs($db,$resultTC);
 }
 
 /** print Test Case Suite data within category */
-function generate_testSuite_TCs($idCategory)
+function generate_testSuite_TCs(&$db,$idCategory)
 {
 	$sqlTC = " SELECT id,title, summary, steps, exresult,mgttcid, keywords " .
 			" FROM testcase " .
 			" WHERE catid=" . $idCategory . " ORDER BY TCorder, mgttcid";
-	$resultTC = do_sql_query($sqlTC);
+	$resultTC = $db->exec_query($sqlTC);
 	
 	if (!$resultTC)
 	{
 		tLog($sqlTC . ' | error: ' . $GLOBALS['db']->error_msg(), 'ERROR');
 	}
 	
-	generate_TCs($resultTC);
+	generate_TCs($db,$resultTC);
 }
 
 /*
@@ -245,7 +245,7 @@ catID=0 -> all
 
 20050831 - fm - switch to $GLOBALS['db']->fetch_array()
 */
-function generate_testSuite_Categories($idComponent,$catID=0)
+function generate_testSuite_Categories(&$db,$idComponent,$catID=0)
 {
 	// Now use a Join
 	// mgtcategory.name or category.name ???
@@ -262,32 +262,32 @@ function generate_testSuite_Categories($idComponent,$catID=0)
 		$sql .= " AND category.id=" . $catID;
 	}     
 	$sql .= " ORDER BY CATorder, id";
-	$res = do_sql_query($sql);
+	$res = $db->exec_query($sql);
 	
-	while ($myrow = $GLOBALS['db']->fetch_array($res))
+	while ($myrow = $db->fetch_array($res))
 	{  
 		print_category($myrow);
-		generate_testSuite_TCs($myrow['catid']);
+		generate_testSuite_TCs($db,$myrow['catid']);
 	}
 }
 
 
-function generate_product_CATs($idComponent)
+function generate_product_CATs(&$db,$idComponent)
 {
     $sqlCAT = " SELECT id,name,objective,config,data,tools " .
               " FROM mgtcategory " .
               " WHERE compid=" . $idComponent .	
               " order by CATorder, id";
-  	$resultCAT = do_sql_query($sqlCAT);
-	while ($myrowCAT = $GLOBALS['db']->fetch_array($resultCAT))
+  	$resultCAT = $db->exec_query($sqlCAT);
+	while ($myrowCAT = $db->fetch_array($resultCAT))
 	{   
 		print_category($myrowCAT);
-		generate_product_TCs($myrowCAT['id']);
+		generate_product_TCs($db,$myrowCAT['id']);
 	}
 }
 
 /* 20050911 - fm - refactoring*/
-function getTPcomponent($compID)
+function getTPcomponent(&$db,$compID)
 {
   $sql = " SELECT  mgtcomponent.id, mgtcomponent.name,mgtcomponent.intro," .
   	     " mgtcomponent.scope,mgtcomponent.ref,mgtcomponent.method,mgtcomponent.lim " .
@@ -295,8 +295,8 @@ function getTPcomponent($compID)
   		   " WHERE mgtcompid=mgtcomponent.id " .
   		   " AND component.id=" . $compID;
 
-  $res = do_sql_query($sql);
-  $myrow = $GLOBALS['db']->fetch_array($res);
+  $res = $db->exec_query($sql);
+  $myrow = $db->fetch_array($res);
   return $myrow;
 }
 
@@ -304,7 +304,7 @@ function getTPcomponent($compID)
 20050914 - fm - refactoring
 20050911 - fm - refactoring
 */
-function getTPcategory($catID)
+function getTPcategory(&$db,$catID)
 {
 	$sql = " SELECT category.id,mgtcategory.name,category.compid " . 
 	       " FROM category,mgtcategory " .
@@ -312,8 +312,8 @@ function getTPcategory($catID)
 	       " AND category.id=" . $catID . 
 			   " ORDER BY mgtcategory.CATorder, category.id";
 	
-	$res = do_sql_query($sql);
-	$myrow = $GLOBALS['db']->fetch_array($res);
+	$res = $db->exec_query($sql);
+	$myrow = $db->fetch_array($res);
 	return $myrow;
 }
 
@@ -324,33 +324,33 @@ if($_GET['type'] == 'product')
 	// user wants to print the entire test specification
 	if($_GET['edit'] == 'product')
 	{
-	    print_header("", $toc); // no more information
+	    print_header($db,"", $toc); // no more information
 	
 	    $sqlMGTCOM = "SELECT  id,name,intro,scope,ref,method,lim, prodid" .
 	    		         " FROM mgtcomponent WHERE  mgtcomponent.prodid=" . 
 	    		         $_SESSION['productID'] . " ORDER BY mgtcomponent.name" ;
-	  	$resultMGTCOM = do_sql_query($sqlMGTCOM);
-	  	while($myrowCOM = $GLOBALS['db']->fetch_array($resultMGTCOM))
+	  	$resultMGTCOM = $db->exec_query($sqlMGTCOM);
+	  	while($myrowCOM = $db->fetch_array($resultMGTCOM))
 		{ 
 			//display components until we run out
 			print_component($myrowCOM);
-			generate_product_CATs($myrowCOM['id']);
+			generate_product_CATs($db,$myrowCOM['id']);
 		}
 	}
 	else if($_GET['edit'] == 'component')
 	{
 	    //if the user wants to print only a component they will enter here
-	  	$myrowCOM = getComponent($_GET['data']);
-	  	print_header(lang_get("component") . ": " . $myrowCOM['name'], $toc);
+	  	$myrowCOM = getComponent($db,$_GET['data']);
+	  	print_header($db,lang_get("component") . ": " . $myrowCOM['name'], $toc);
 	  	print_component($myrowCOM);
 		generate_product_CATs($_GET['data']);
 	}
 	else if($_GET['edit'] == 'category')
 	{
 	    //if the user wants to print only a category they will enter here
-	  	$myrowCAT = getCategory($_GET['data']); 
-	  	$myrowCOM = getComponent($myrowCAT['compid']);
-	  	print_header(lang_get("category") . ": ". $myrowCAT[1], $toc);
+	  	$myrowCAT = getCategory($db,$_GET['data']); 
+	  	$myrowCOM = getComponent($db,$myrowCAT['compid']);
+	  	print_header($db,lang_get("category") . ": ". $myrowCAT[1], $toc);
 	  	print_component($myrowCOM);
 	  	print_category($myrowCAT);
 	
@@ -374,8 +374,8 @@ if($_GET['type'] == 'testSet')
 	//if the user wants to print the entire test plan they have chosen this if statement
 	if($_GET['level'] == 'root')
 	{
-	    // get project name for display
-	    print_header(lang_get('test_case_suite') . ": " . $_SESSION['testPlanName'], $toc);
+	    // get testplan name for display
+	    print_header($db,lang_get('test_case_suite') . ": " . $_SESSION['testPlanName'], $toc);
 	
 	    $sql = " SELECT  mgtcomponent.id,mgtcomponent.name,mgtcomponent.intro," .
 	    		   " mgtcomponent.scope,mgtcomponent.ref,mgtcomponent.method,mgtcomponent.lim," .
@@ -385,12 +385,12 @@ if($_GET['type'] == 'testSet')
 	    		   " AND component.projid=" . $_SESSION['testPlanId'] . 
 				     " ORDER BY mgtcomponent.name";
 
-		$resultCOM = do_sql_query($sql);
-		while($myrow = $GLOBALS['db']->fetch_array($resultCOM))
+		$resultCOM = $db->exec_query($sql);
+		while($myrow = $db->fetch_array($resultCOM))
 		{ 
 			//display components until we run out
 			print_component($myrow);
-			generate_testSuite_Categories($myrow['compid']);
+			generate_testSuite_Categories($db,$myrow['compid']);
 		}
 	}
 	else if($_GET['level'] == 'component')
@@ -398,25 +398,25 @@ if($_GET['type'] == 'testSet')
 	    //if the user wants to print only a component they will enter here  
 	  	// get component data
 	  	$compID = $_GET['data'];
-	    $myrowMGTCOM = getTPcomponent($compID);
+	    $myrowMGTCOM = getTPcomponent($db,$compID);
 	
 	    // print
-	    print_header(lang_get('test_case_suite') . " : " . $_SESSION['testPlanName'] . " - " . 
+	    print_header($db,lang_get('test_case_suite') . " : " . $_SESSION['testPlanName'] . " - " . 
 	                 $myrowMGTCOM['name'], $toc);
 	  	print_component($myrowMGTCOM);
-		  generate_testSuite_Categories($compID);
+		  generate_testSuite_Categories($db,$compID);
 	}
 	else if($_GET['level'] == 'category')
 	{
 	  //if the user wants to print only a category they will enter here
 		// Get category
 	  $catID = $_GET['data'];
-	  $myrowCAT = getTPcategory($catID);
-	  $myrowMGTCOM = getTPcomponent($myrowCAT['compid']); 
+	  $myrowCAT = getTPcategory($db,$catID);
+	  $myrowMGTCOM = getTPcomponent($db,$myrowCAT['compid']); 
 
-	  print_header(lang_get('test_case_suite') . ": " . $_SESSION['testPlanName'] . " - " . $myrowCAT['name'], $toc);
+	  print_header($db,lang_get('test_case_suite') . ": " . $_SESSION['testPlanName'] . " - " . $myrowCAT['name'], $toc);
 	  print_component($myrowMGTCOM);
-	  generate_testSuite_Categories($myrowCAT['compid'], $catID);
+	  generate_testSuite_Categories($db,$myrowCAT['compid'], $catID);
 
 	}
 	else

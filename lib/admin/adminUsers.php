@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: adminUsers.php,v $
  *
- * @version $Revision: 1.10 $
- * @modified $Date: 2006/01/03 21:19:02 $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2006/01/05 07:30:33 $
  *
  * @author Martin Havlat
  *
@@ -17,7 +17,7 @@
 **/
 include('../../config.inc.php');
 require_once("users.inc.php");
-testlinkInitPage();
+testlinkInitPage($db);
 
 $sqlRes = null;
 //delete

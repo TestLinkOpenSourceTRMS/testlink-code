@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: containerEdit.php,v 1.22 2005/12/29 20:59:00 schlundus Exp $ */
+/* $Id: containerEdit.php,v 1.23 2006/01/05 07:30:34 franciscom Exp $ */
 /* Purpose:  This page manages all the editing of test specification containers. */
 /*
  *
@@ -37,7 +37,7 @@ require_once("../../lib/plan/plan.inc.php");
 
 
 
-testlinkInitPage();
+testlinkInitPage($db);
 
 // 20050826 - fm - $data has been replaced with the corresponding container ID
 $my_componentID = isset($_REQUEST['componentID']) ? intval($_REQUEST['componentID']) : null;
@@ -150,21 +150,21 @@ if($get_c_data)
 
 if($action == 'editCOM' || $action == 'newCOM')
 {
-	viewer_edit_new_com($amy_keys, $oFCK, $action,$my_productID, $my_componentID);
+	viewer_edit_new_com($db,$amy_keys, $oFCK, $action,$my_productID, $my_componentID);
 }
 else if($action == 'updateCOM')
 {
 	if( $name_ok )
 	{
 	    $msg = 'ok';
-	  	if (!updateComponent($my_componentID,
+	  	if (!updateComponent($db,$my_componentID,
 	  	                     $c_data['name'],$c_data['intro'],$c_data['scope'],
 	  		                   $c_data['ref'],$c_data['method'],$c_data['lim']))
 	  	{
 	  		$msg = $GLOBALS['db']->error_msg();
 	  	}
 	}	
-	showComponent($my_componentID, $msg);
+	showComponent($db,$my_componentID, $msg);
 }
 else if($action == 'addCOM')
 {
@@ -174,7 +174,7 @@ else if($action == 'addCOM')
 		$msg = 'ok';
 		
 		// BUGID 256 - 20051129 - fm
-		$ret =insertProductComponent($my_productID,
+		$ret =insertProductComponent($db,$my_productID,
 		                             $c_data['name'],$c_data['intro'],$c_data['scope'],
 		                             $c_data['ref'],$c_data['method'],$c_data['lim'],
 		                             $g_check_names_for_duplicates,
@@ -207,22 +207,22 @@ else if ($action == 'deleteCOM')
 		$cats = null;
 		$smarty->assign('sqlResult', 'ok');
 
-		$cats=getComponentCategoryIDs($objectID);
+		$cats=getComponentCategoryIDs($db,$objectID);
 		if (sizeof($cats))
 		{
 			// 20051208 - fm 
 			// $catIDs = "'".implode(",",$cats)."'";
 			$catIDs = implode(",",$cats);
-			deleteCategoriesTestCases($catIDs);
-			deleteComponentCategories($objectID);
+			deleteCategoriesTestCases($db,$catIDs);
+			deleteComponentCategories($db,$objectID);
 		}
-		if (!deleteComponent($objectID))
+		if (!deleteComponent($db,$objectID))
 		{
-		  $smarty->assign('sqlResult', $GLOBALS['db']->error_msg());
+		  $smarty->assign('sqlResult', $db->error_msg());
 		}
 		
 		// 20051208 - fm 
-		del_tp_info_by_mgtcomp($objectID);
+		del_tp_info_by_mgtcomp($db,$objectID);
 	}
 	else
 	{
@@ -234,7 +234,7 @@ else if ($action == 'deleteCOM')
 else if( $action == 'moveCom') 
 {
 	$products = null;
-	getAllProductsBut($my_productID,$products);
+	getAllProductsBut($db,$my_productID,$products);
 
 	$smarty->assign('old_containerID', $my_productID); // original container
 	$smarty->assign('arraySelect', $products);
@@ -243,7 +243,7 @@ else if( $action == 'moveCom')
 else if($action == 'reorderCAT') //user has chosen the reorder CAT page
 {
 	$cats = null;
-	getOrderedComponentCategories($my_componentID,$cats);
+	getOrderedComponentCategories($db,$my_componentID,$cats);
 
 	$smarty->assign('arraySelect', $cats);
 	$smarty->assign('data', $my_componentID);
@@ -260,15 +260,15 @@ else if($action == 'updateCategoryOrder') //Execute update categories order
 		$catID = intval($newArray[$i++]);
 		$order = intval($newArray[$i]);
 		
-		if (!updateCategoryOrder($catID,$order))
+		if (!updateCategoryOrder($db,$catID,$order))
 			$generalResult .= lang_get('error_update_catorder')." {$catID}";
 	}
 
-	showComponent($my_componentID, $generalResult);
+	showComponent($db,$my_componentID, $generalResult);
 }
 else if($action == 'editCat' || $action == 'newCAT')
 {
-	viewer_edit_new_cat($amy_keys, $oFCK, $action, $my_componentID, $my_categoryID);
+	viewer_edit_new_cat($db,$amy_keys, $oFCK, $action, $my_componentID, $my_categoryID);
 }
 else if($action == 'addCAT')
 {
@@ -276,9 +276,9 @@ else if($action == 'addCAT')
 	if ($name_ok)
 	{
 		$msg = lang_get('error_cat_add');
-		if (insertComponentCategory($my_componentID,
-								$c_data['name'], $c_data['objective'],
-								$c_data['config'],$c_data['data'],$c_data['tools']))
+		if (insertComponentCategory($db,$my_componentID,
+								                $c_data['name'], $c_data['objective'],
+							                	$c_data['config'],$c_data['data'],$c_data['tools']))
 		{
 			$msg = 'ok';
 		}	
@@ -300,23 +300,23 @@ else if($action == 'updateCat') // Update a category (from edit window)
 {
 	if($name_ok)
 	{
-		$msg = updateCategory($my_categoryID,
+		$msg = updateCategory($db,$my_categoryID,
 	                        $c_data['name'], $c_data['objective'],$c_data['config'],
 	                        $c_data['data'],$c_data['tools']) ? 'ok' : $GLOBALS['db']->error_msg();
 	}	
 	// display updated values
-	showCategory($my_categoryID, $msg);
+	showCategory($db,$my_categoryID, $msg);
 }
 else if ($action == 'deleteCat')
 {
 	/** @todo delete also tests in test plan(?) */
 	if($bSure)
 	{
-		deleteCategoriesTestCases($objectID);
+		deleteCategoriesTestCases($db,$objectID);
 		$smarty->assign('sqlResult',  deleteCategory($objectID) ? 'ok' : $GLOBALS['db']->error_msg());
 
 		// 20051208 - fm 
-		del_tp_info_by_mgtcat($objectID);
+		del_tp_info_by_mgtcat($db,$objectID);
 	}
 	else
 	{
@@ -331,9 +331,9 @@ else if($action == 'moveCat')
 	$comps = null;
 
 	//20050821 - scs - fix for Mantis 37, unable to copy a category into the same component it is in
-	getCategoryComponentAndProduct($my_categoryID,$compID,$prodID);
+	getCategoryComponentAndProduct($db,$my_categoryID,$compID,$prodID);
 	$compID = 0;
-	getAllProductComponentsBut($compID,$prodID,$comps);
+	getAllProductComponentsBut($db,$compID,$prodID,$comps);
 
 	$smarty->assign('old_containerID', $compID); // original container
 	$smarty->assign('arraySelect', $comps);
@@ -343,7 +343,7 @@ else if($action == 'reorderTC')
 {
 	//user has chosen to reorder the test cases of this category
 	$tcs = null;
-	getOrderedCategoryTestcases($my_categoryID,$tcs);
+	getOrderedCategoryTestcases($db,$my_categoryID,$tcs);
 
 	$smarty->assign('arrTC', $tcs);
 	$smarty->assign('data', $my_categoryID);
@@ -360,16 +360,16 @@ else if($action == 'updateTCorder')
 		$id = intval($newArray[$i++]);
 		$order = intval($newArray[$i]);
 		
-		if (!updateTestCaseOrder($id,$order))
-			$generalResult .= $GLOBALS['db']->error_msg() . '<br />';
+		if (!updateTestCaseOrder($db,$id,$order))
+			$generalResult .= $db->error_msg() . '<br />';
 	}
 
 	$smarty->assign('sqlResult', $generalResult);
-	$smarty->assign('data', getCategory($my_categoryID));
+	$smarty->assign('data', getCategory($db,$my_categoryID));
 }
 else if($action == 'categoryCopy' || $action == 'categoryMove')
 {
-	copy_or_move_cat( $action, $objectID, $_POST, $_SESSION['user']);
+	copy_or_move_cat($db, $action, $objectID, $_POST, $_SESSION['user']);
 }
 else if($action == 'componentCopy' || $action == 'componentMove')
 {

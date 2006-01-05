@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: users.inc.php,v $
  *
- * @version $Revision: 1.17 $
- * @modified $Date: 2006/01/03 21:19:02 $ $Author: schlundus $
+ * @version $Revision: 1.18 $
+ * @modified $Date: 2006/01/05 07:30:33 $ $Author: franciscom $
  *
  * Functions for usermanagement
  *
@@ -287,11 +287,11 @@ function setUserSession(&$db,$user, $id, $roleID, $email, $locale = null,$active
  * BUGID 239 - TestPlan are filtered by Product ID
  * 20060102 - scs - ADOdb changes
  **/
-function deleteUsersProjectRights(&$db,$userID,$prodID)
+function deleteUsersTestPlanRights(&$db,$userID,$prodID)
 {
 	$sql = " DELETE FROM projrights
 	         WHERE userid = " . $userID .
-	       " AND projid IN (SELECT id FROM project WHERE prodid = " . $prodID . ")";
+	       " AND projid IN (SELECT id FROM testplans WHERE prodid = " . $prodID . ")";
 	      
 	$result = $db->exec_query($sql);
 	return $result ? 1 : 0;

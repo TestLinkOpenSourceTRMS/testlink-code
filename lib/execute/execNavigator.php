@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: execNavigator.php,v $
  *
- * @version $Revision: 1.13 $
- * @modified $Date: 2005/12/28 07:34:55 $ by $Author: franciscom $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2006/01/05 07:30:33 $ by $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -28,7 +28,7 @@ require_once('treeMenu.inc.php');
 require_once('exec.inc.php');
 require_once('builds.inc.php');
 
-testlinkInitPage();
+testlinkInitPage($db);
 
 // global var for dtree only
 $dtreeCounter = 0; 
@@ -38,16 +38,16 @@ $filterOwner = array (array('id' => $_SESSION['user'], 'selected' => $selectOwne
 $tcID = isset($_POST['tcID']) ? intval($_POST['tcID']) : null;
 
 // 20050807 - fm - function interface changed
-$optBuild = createBuildMenu($_SESSION['testPlanId']);
+$optBuild = createBuildMenu($db,$_SESSION['testPlanId']);
 $optBuildSelected = isset($_POST['build']) ? $_POST['build'] : key($optBuild);
-$optResult = createResultsMenu();
+$optResult = createResultsMenu($db);
 $optResultSelected = isset($_POST['result']) ? $_POST['result'] : 'All';
 
 // generate tree 
 $menuUrl = null;
 
 $SP_html_help_file = TL_INSTRUCTIONS_RPATH . $_SESSION['locale'] . "/executeTest.html";
-$sMenu = generateExecTree($optBuildSelected,$SP_html_help_file,$menuUrl,$tcID);
+$sMenu = generateExecTree($db,$optBuildSelected,$SP_html_help_file,$menuUrl,$tcID);
 $tree = invokeMenu($sMenu);
 
 //20050828 - scs - quick check to see if the wanted tc is in the testplan
@@ -58,7 +58,7 @@ if ($tcID)
 	$query = " SELECT testcase.id FROM component,category,testcase " .
 	         " WHERE projID = {$_SESSION['testPlanId']} " .
 	         " AND compid = component.id AND category.id = testcase.catid AND mgttcid = {$tcID}";
-	$tcData = selectData($query);
+	$tcData = selectData($db,$query);
 	if ($tcData)
 		$testCaseID = $tcData[0]['id'];
 }
@@ -72,7 +72,7 @@ $smarty->assign('optResult', $optResult);
 $smarty->assign('optResultSelected', $optResultSelected); 
 $smarty->assign('arrOwner', $filterOwner);
 // 20050807 - fm - function interface changed
-$smarty->assign('filterKeyword', filterKeyword($_SESSION['testPlanId']));
+$smarty->assign('filterKeyword', filterKeyword($db,$_SESSION['testPlanId']));
 $smarty->assign('tcID',$tcID);
 $smarty->assign('testCaseID',$testCaseID);
 $smarty->assign('tcIDFound', $tcData ? 1 : 0);
@@ -90,7 +90,7 @@ $smarty->display('execNavigator.tpl');
 * 	20050528 - fm added purl_to_help argument
 *
 */
-function generateExecTree($build,$purl_to_help,&$menuUrl,$tcIDFilter = null)
+function generateExecTree(&$db,$build,$purl_to_help,&$menuUrl,$tcIDFilter = null)
 {
 	global $dtreeCounter;
 	global $db; 
@@ -142,14 +142,14 @@ function generateExecTree($build,$purl_to_help,&$menuUrl,$tcIDFilter = null)
 			   " ORDER BY mgtcomponent.name";
 			   
 			   
-	$comResult = do_sql_query($sql);
+	$comResult = $db->exec_query($sql);
 	
 	$bKeyWordAll = ($keyword == 'All');
-	$keyword = $GLOBALS['db']->prepare_string($keyword);
+	$keyword = $db->prepare_string($keyword);
 	$bOwnerAll = ($owner == 'All');
-	$owner = $GLOBALS['db']->prepare_string($owner);
+	$owner = $db->prepare_string($owner);
 	
-	while ($myrowCOM = $GLOBALS['db']->fetch_array($comResult)) { //display all the components until we run out
+	while ($myrowCOM = $db->fetch_array($comResult)) { //display all the components until we run out
 
 		//right now only categories are sorted by owners. This means that the entire component
 		//will still show up if the user has decided to sort.
@@ -172,10 +172,10 @@ function generateExecTree($build,$purl_to_help,&$menuUrl,$tcIDFilter = null)
 		$catSql .=	" ORDER BY mgtcategory.CATorder,category.id";
 		
 		
-		$catResult = do_sql_query($catSql);
+		$catResult = $db->exec_query($catSql);
 
 		//check to see if there are any rows returned from the component query
-		$numRowsCAT = $GLOBALS['db']->num_rows($catResult);
+		$numRowsCAT = $db->num_rows($catResult);
 
 		if($numRowsCAT > 0)
 		{
@@ -191,7 +191,7 @@ function generateExecTree($build,$purl_to_help,&$menuUrl,$tcIDFilter = null)
 				$menustring .= "tlTree.add(" . $dtreeCounter++. ",0,'" . $componentName . "','" . 
 				               $menuUrl . "&level=component&id=" . $myrowCOM[0] . "');\n";
 			}
-			while ($myrowCAT = $GLOBALS['db']->fetch_array($catResult))
+			while ($myrowCAT = $db->fetch_array($catResult))
 			{  //display all the categories until we run out
 					
 				//This next section displays test cases. 
@@ -210,12 +210,12 @@ function generateExecTree($build,$purl_to_help,&$menuUrl,$tcIDFilter = null)
 				}	
 				$TCsql .= " ORDER BY TCorder,testcase.mgttcid";				
 
-				$TCResult = do_sql_query($TCsql); //run the query
-				$numRowsTC = $GLOBALS['db']->num_rows($TCResult); //count the rows
+				$TCResult = $db->exec_query($TCsql); //run the query
+				$numRowsTC = $db->num_rows($TCResult); //count the rows
 				if($numRowsTC > 0) //if there are actually test cases
 				{
 					//grab the test case info for this category
-					$testCaseInfo = catCount($myrowCAT[0], $colored, $build);
+					$testCaseInfo = catCount($db,$myrowCAT[0], $colored, $build);
 					 
 					//display the category  section.. The first part of this string 
 					//displays the name of the category followed by how many passed, 
@@ -237,7 +237,7 @@ function generateExecTree($build,$purl_to_help,&$menuUrl,$tcIDFilter = null)
 						               $name . "','" . $url . "');\n";
 					}
 
-					$menustring .= displayTCTree($TCResult, $build, $owner, $colored, $menuUrl, 
+					$menustring .= displayTCTree($db,$TCResult, $build, $owner, $colored, $menuUrl, 
 					                             $filteredResult, $dtreeCategoryId);
 					if (TL_TREE_KIND == 'JTREE')
 						$menustring .= "],\n";
@@ -258,7 +258,7 @@ function generateExecTree($build,$purl_to_help,&$menuUrl,$tcIDFilter = null)
  *
  * @author Andreas Morsing - optimized SQL and reduced number of SQL-Statements
  */
-function displayTCTree($TCResult, $build, $owner, $colored, $menuUrl, $filteredResult, $dtreeCategoryId)
+function displayTCTree(&$db,$TCResult, $build, $owner, $colored, $menuUrl, $filteredResult, $dtreeCategoryId)
 {
 	global $g_tc_status;
 	$data = null;
@@ -266,7 +266,7 @@ function displayTCTree($TCResult, $build, $owner, $colored, $menuUrl, $filteredR
 	$bFilteredResultAll = ($filteredResult == 'all');
 	$tcIDs = null;
 	$tcInfo = null;
-	while ($myrowTC = $GLOBALS['db']->fetch_array($TCResult))
+	while ($myrowTC = $db->fetch_array($TCResult))
 	{
 		$name = $myrowTC[1];
 		$tcID = $myrowTC[0];
@@ -281,30 +281,22 @@ function displayTCTree($TCResult, $build, $owner, $colored, $menuUrl, $filteredR
 	{
 		$tcIDsList = implode(",",$tcIDs);
 		// 20051015 - kl - only get results from builds in test plan
-		$csBuilds = get_cs_builds($_SESSION['testPlanId']);
+   // 10152005 - kl - only get results execute on test plan builds
+		$csBuilds = get_cs_builds($db,$_SESSION['testPlanId']);
 		$sqlResult = "SELECT tcid,status FROM results WHERE tcid IN (" . $tcIDsList . ") " .
-		  
- 		  // 10152005 - kl - only get results execute on test plan builds
 		  " AND (results.build_id IN (" . $csBuilds . " )) ";
 		if($colored == 'result')
 		{
-			// 20050926 - fm - newdb
-			// $sqlResult .= " ORDER BY build DESC";
 			$sqlResult .= " ORDER BY build_id DESC";
-
-			
-			
 		}
 		else
 		{
-			// 20050926 - fm - newdb
-			// $sqlResult .= " AND build = '" . $build . "'";
 			$sqlResult .= " AND build_id = " . $build;
 		}
 		
-		$sqlBuildResult = do_sql_query($sqlResult);
+		$sqlBuildResult = $db->exec_query($sqlResult);
 		//I need the num results so I can do the check below on not run test cases
-		while($myrowTC = $GLOBALS['db']->fetch_array($sqlBuildResult))
+		while($myrowTC = $db->fetch_array($sqlBuildResult))
 		{
 			$tcID = $myrowTC[0];
 			$status = $myrowTC[1];
@@ -373,7 +365,7 @@ function displayTC($font,$mgttcid,$title,$tcid,$menuUrl, $dtreeCategoryId)
 //and not run information about the test cases so that it can be displayed next to the category
 //
 // 20051002 - fm - refactoring
-function catCount($catID,$colored,$build)
+function catCount(&$db,$catID,$colored,$build)
 {
 	global $g_tc_status;
 
@@ -382,8 +374,10 @@ function catCount($catID,$colored,$build)
 	$sql = " SELECT count(testcase.id) AS num_tc from category,testcase " .
 	       " WHERE category.id=" . $catID . 
 	       " AND category.id = testcase.catid";
-	$totalTCResult = do_sql_query($sql);
-	$totalTCs = $GLOBALS['db']->fetch_array($totalTCResult);
+
+
+	$totalTCResult = $db->exec_query($sql);
+	$totalTCs = $db->fetch_array($totalTCResult);
 	
 	if($colored == 'result') //if they did then use these queries
 	{
@@ -394,21 +388,21 @@ function catCount($catID,$colored,$build)
 		$notRun = 0;
 		$testCaseArray = null;
 		// 10152005 - kl - only get results execute on test plan builds
-		$csBuilds = get_cs_builds($_SESSION['testPlanId']);
+		$csBuilds = get_cs_builds($db,$_SESSION['testPlanId']);
 		//Now grab all of the test cases and their results	
+   // 10152005 - kl - only get results execute on test plan builds
 		$sql = " SELECT tcid, status, build.name " .
 		       " FROM results,category,testcase,build " .
 		       " WHERE category.id = testcase.catid " .
 		       " AND   testcase.id = results.tcid " .
 		       " AND   build.id = results.build_id " . 
-		  // 10152005 - kl - only get results execute on test plan builds
-		  " AND (results.build_id IN (" . $csBuilds . " )) " . 
+	         " AND (results.build_id IN (" . $csBuilds . " )) " . 
 		       " AND   category.id=" . $catID . 
 		       " ORDER BY build.name DESC";
-		$totalResult = do_sql_query($sql);
+		$totalResult = $db->exec_query($sql);
 
 		//Setting the results to an array.. Only taking the most recent results and displaying them
-		while($totalRow = $GLOBALS['db']->fetch_array($totalResult))
+		while($totalRow = $db->fetch_array($totalResult))
 		{
 			//This is a test.. I've got a problem if the user goes and sets a previous p,f,b 
 			// value to a 'n' value. The program then sees the most recent value as an not run. 
@@ -453,7 +447,7 @@ function catCount($catID,$colored,$build)
 		       " AND category.id=" . $catID . 
 		       " AND results.build_id=" . $build . 
 		       " GROUP BY results.status";
-		$result = do_sql_query($sql);
+		$result = $db->exec_query($sql);
 	
 		$values[$g_tc_status['passed']] = 0;
 		$values[$g_tc_status['failed']] = 0;
@@ -461,7 +455,7 @@ function catCount($catID,$colored,$build)
 		$values[$g_tc_status['not_run']] = 0;
 		if ($result)
 		{
-			while($row = $GLOBALS['db']->fetch_array($result))
+			while($row = $db->fetch_array($result))
 			{
 				$values[$row['status']] = $row['num_tc'];
 			}	

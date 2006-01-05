@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: product.inc.php,v $
- * @version $Revision: 1.6 $
- * @modified $Date: 2006/01/02 14:07:39 $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2006/01/05 07:30:33 $
  * @author Martin Havlat
  *
  * Functions for Product management (create,update,delete)
@@ -99,27 +99,27 @@ function deleteProduct($id, &$error)
 	$arrExecSql = array (
 		// delete bugs
 		// 20051005 - am - non-existing build-column was used
-		array ("DELETE bugs FROM bugs,project,build WHERE build.projid=project.id" .
-			" AND bugs.build_id=build.id AND project.prodid=" . $id, 
+		array ("DELETE bugs FROM bugs,testplans,build WHERE build.projid=testplans.id" .
+			" AND bugs.build_id=build.id AND testplans.prodid=" . $id, 
 			'info_bugs_delete_fails'),
 		// delete builds
-		array ("DELETE build FROM project,build WHERE build.projid=project.id" .
-			" AND project.prodid=" . $id, 
+		array ("DELETE build FROM testplans,build WHERE build.projid=testplans.id" .
+			" AND testplans.prodid=" . $id, 
 			'info_build_delete_fails'),
 		// delete milestones
-		array ("DELETE milestone FROM project,milestone WHERE milestone.projid=project.id" .
-				" AND project.prodid=" . $id, 
+		array ("DELETE milestone FROM testplans,milestone WHERE milestone.projid=testplans.id" .
+				" AND testplans.prodid=" . $id, 
 			'info_milestones_delete_fails'),
 		// delete priority
-		array ("DELETE priority FROM project,priority WHERE priority.projid=project.id" .
-				" AND project.prodid=" . $id, 
+		array ("DELETE priority FROM testplans,priority WHERE priority.projid=testplans.id" .
+				" AND testplans.prodid=" . $id, 
 			'info_priority_delete_fails'),
 		// delete Test Plan rights
-		array ("DELETE projrights FROM project,projrights WHERE projrights.projid=project.id" .
-				" AND project.prodid=" . $id, 
+		array ("DELETE projrights FROM testplans,projrights WHERE projrights.projid=testplans.id" .
+				" AND testplans.prodid=" . $id, 
 			'info_plan_rights_delete_fails'),
 		// delete test plans - should not be deleted if nested data were not deleted
-		array ("DELETE FROM project WHERE prodid=" . $id, 
+		array ("DELETE FROM testplans WHERE prodid=" . $id, 
 			'info_testplan_delete_fails'),
 
 		// delete results

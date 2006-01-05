@@ -1,6 +1,6 @@
 <?
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: import.inc.php,v 1.11 2005/12/29 20:59:00 schlundus Exp $
+* $Id: import.inc.php,v 1.12 2006/01/05 07:30:33 franciscom Exp $
 * 
 * @author Martin Havlat
 *
@@ -162,12 +162,12 @@ function exeTcImport(&$db,$fileLocation,$prodID, $login_name, $catIDForImport = 
 		
 		//Insert arrayCom into component where projID == projIDSubmit 
 		// 20050908 - fm - changes in insertProductComponent()
-		$ret = insertProductComponent($prodID,$arrayCom,null,null,null,null,null);
+		$ret = insertProductComponent($db,$prodID,$arrayCom,null,null,null,null,null);
 		$comID = $ret['id'];
 		
 		//Select comID from component where comName == arrayCom store as comID
-		$catID = insertComponentCategory($comID,$arrayCat,null,null,null,null);
-		$tcID = insertTestcase($catID,$arrayTC,$arraySummary,$arrayTCSteps,$arrayResults,$login_name,null,$keys);
+		$catID = insertComponentCategory($db,$comID,$arrayCat,null,null,null,null);
+		$tcID = insertTestcase($db,$catID,$arrayTC,$arraySummary,$arrayTCSteps,$arrayResults,$login_name,null,$keys);
 	}
 	else
 	{
@@ -177,7 +177,8 @@ function exeTcImport(&$db,$fileLocation,$prodID, $login_name, $catIDForImport = 
 		$arrayResults = $data[3];	
 
 		$keys = buildKeywordListAndInsertKeywords($db,$data,$prodID,4);
-		$tcID = insertTestcase($catIDForImport,$arrayTC,$arraySummary,$arrayTCSteps,$arrayResults,$login_name,null,$keys);
+		$tcID = insertTestcase($db,$catIDForImport,$arrayTC,$arraySummary,
+		                       $arrayTCSteps,$arrayResults,$login_name,null,$keys);
 	}	
 	//Store all the old vales into a new array
 	$oldCom = $arrayCom;
@@ -200,7 +201,8 @@ function exeTcImport(&$db,$fileLocation,$prodID, $login_name, $catIDForImport = 
 			$arrayTCSteps = $data[2];
 			$arrayResults = $data[3];
 			$keys = buildKeywordListAndInsertKeywords($db,$data,$prodID,4);
-			$tcID = insertTestcase($catIDForImport,$arrayTC,$arraySummary,$arrayTCSteps,$arrayResults,$login_name,null,$keys);
+			$tcID = insertTestcase($db,$catIDForImport,$arrayTC,$arraySummary,
+			                       $arrayTCSteps,$arrayResults,$login_name,null,$keys);
 		}
 		else
 		{
@@ -224,10 +226,10 @@ function exeTcImport(&$db,$fileLocation,$prodID, $login_name, $catIDForImport = 
 			else
 			{
 				// 20051001 - am - changes in insertProductComponent() regarind to bug 150
-				$ret = insertProductComponent($prodID,$arrayCom,null,null,null,null,null);
+				$ret = insertProductComponent($db,$prodID,$arrayCom,null,null,null,null,null);
 				$comID = $ret['id'];
-				$catID = insertComponentCategory($comID,$arrayCat,null,null,null,null);
-				$tcID = insertTestcase($catID,$arrayTC,$arraySummary,$arrayTCSteps,$arrayResults,$login_name,null,$keys);
+				$catID = insertComponentCategory($db,$comID,$arrayCat,null,null,null,null);
+				$tcID = insertTestcase($db,$catID,$arrayTC,$arraySummary,$arrayTCSteps,$arrayResults,$login_name,null,$keys);
 			}
 	
 			$oldCom = $arrayCom;

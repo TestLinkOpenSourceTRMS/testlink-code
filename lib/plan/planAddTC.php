@@ -1,21 +1,20 @@
 <?php
 
 ////////////////////////////////////////////////////////////////////////////////
-// @version $Id: planAddTC.php,v 1.8 2005/12/29 20:59:00 schlundus Exp $
+// @version $Id: planAddTC.php,v 1.9 2006/01/05 07:30:34 franciscom Exp $
 // File:     planAddTC.php
 // Author:   Chad Rosen
 // Purpose:  This page manages the importation of test cases into testlink.
 //
 // 20051001 - fm - refactoring
 // 20050926 - fm - removed name from category and component insert
-// 20050807 - fm - removed deprecated: $_SESSION['project']
 // 20051126 - scs - changed passing keyword to keywordID
 ////////////////////////////////////////////////////////////////////////////////
 require('../../config.inc.php');
 require("../functions/common.php");
 require("../keywords/keywords.inc.php");
 require("plan.inc.php");
-testlinkInitPage();
+testlinkInitPage($db);
 
 // 20050807 - fm
 $idPlan =  $_SESSION['testPlanId'];
@@ -77,7 +76,7 @@ if(isset($_POST['addTC'])) //If the user submits the import form
 			//If one of the top level items exists the function skips down to the next level and checks there. 
 			//Finally if no TCs exist it does nothing.
 			
-			//Determining if the component already exists for the project being added to
+			//Determining if the component already exists for the testplan being added to
 			//
 			// 20050807 - fm - $idPlan
 			$sqlCOMID = " SELECT mgtcompid,id AS compid FROM component " .
@@ -110,7 +109,7 @@ if(isset($_POST['addTC'])) //If the user submits the import form
 				}
 				else
 				{
-					//Add the category to the project
+					//Add the category to the testplan
 					$sqlAddCAT = " INSERT INTO category (mgtcatid,compid,CATorder) " .
 					             " VALUES (" . $mgtinfo['mgtcatid']      . "," . 
 					                           $rowResultCOMID['compid'] . "," . 
@@ -118,13 +117,13 @@ if(isset($_POST['addTC'])) //If the user submits the import form
 					$resultAddCAT = do_sql_query($sqlAddCAT); 
 					$addCATID =  $GLOBALS['db']->insert_id(); 
 
-					//Add the test case to the project
+					//Add the test case to the testplan
 		      create_tc_from_mgttc($tcid, $addCATID);
 				}
 			}
 			else
 			{ 
-				//Add the component to the project					
+				//Add the component to the testplan					
 				//
 				// 20050807 -fm - $idPlan
 				$sqlAddCOM = "INSERT INTO component (mgtcompid,projid) " . 
@@ -132,7 +131,7 @@ if(isset($_POST['addTC'])) //If the user submits the import form
 				$resultAddCOM = do_sql_query($sqlAddCOM); 
 				$addCOMID =  $GLOBALS['db']->insert_id();	 
 			
-				//Add the category to the project					
+				//Add the category to the testplan					
 				$sqlAddCAT = " INSERT INTO category(mgtcatid,compid,CATorder) " .
 				             " VALUES (" . $mgtinfo['mgtcatid'] ."," . 
 				                           $addCOMID . "," . 
@@ -140,7 +139,7 @@ if(isset($_POST['addTC'])) //If the user submits the import form
 				$resultAddCAT = do_sql_query($sqlAddCAT);
 				$addCATID =  $GLOBALS['db']->insert_id(); 
 
-				//Add the test case to the project
+				//Add the test case to the testplan
 		    create_tc_from_mgttc($tcid, $addCATID);
 			}
 			$i = $i + 1; //increment the counter plus an extra one to skip the testcase number

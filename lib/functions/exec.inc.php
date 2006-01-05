@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: exec.inc.php,v $
  *
- * @version $Revision: 1.19 $
- * @modified $Date: 2005/12/28 07:34:55 $ $Author: franciscom $
+ * @version $Revision: 1.20 $
+ * @modified $Date: 2006/01/05 07:30:33 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -20,7 +20,6 @@
  * filterKeyword()   : added $idPlan to remove global coupling via _SESSION
  * createBuildMenu() : added $idPlan to remove global coupling via _SESSION
  *
- * removed deprecated: $_SESSION['project']
  *
  * 20051118  - scs - FIXED: missing localization for test_Results_submitted
  * 20051119  - scs - added fix for 227
@@ -52,7 +51,7 @@ function buildsNumber($tpID=0)
 
 /** 
  * This code here displays the keyword dropdown box for Test Plan. It's fairly interesting code
- * What it does is searches through all of the currently viewed projects test cases and puts together
+ * What it does is searches through all of the currently viewed testplans test cases and puts together
  * all of the unique keywords from each testcase. It then builds a dropdown box to dispaly them
  * @todo rewrite this to use selectOptionData($sql) 
  *
@@ -61,16 +60,16 @@ function buildsNumber($tpID=0)
  * 20050807 - fm
  * added $idPlan to remove global coupling via _SESSION
  */
-function filterKeyword($idPlan)
+function filterKeyword(&$db,$idPlan)
 {
 		//SQL to grab all of the keywords
 		//schlundus: added DISTINCT
-		$sqlKeyword = "SELECT DISTINCT(keywords) FROM project, component, category, testcase WHERE " .
-				"project.id = " .  $idPlan . " AND project.id = component.projid" .
+		$sqlKeyword = "SELECT DISTINCT(keywords) FROM testplans, component, category, testcase WHERE " .
+				"testplans.id = " .  $idPlan . " AND testplans.id = component.projid" .
 				" AND component.id = category.compid AND category.id = testcase.catid ORDER BY keywords";
 		
 		//refactored
-		$keyArray = buildKeyWordArray($sqlKeyword);
+		$keyArray = buildKeyWordArray($db,$sqlKeyword);
 		//Now I begin the display of the keyword dropdown
 		$data = '<select name="keyword">'; //Create the select
 		$data .= "<option>All</option>"; //Add a none value to the array in case the user doesn't want to sort
@@ -95,13 +94,13 @@ function filterKeyword($idPlan)
 	return $data;
 }
 
-function buildKeyWordArray($sqlKeyword)
+function buildKeyWordArray(&$db,$sqlKeyword)
 {
-	$resultKeyword = do_sql_query($sqlKeyword);
+	$resultKeyword = $db->exec_query($sqlKeyword);
 	
 	//Loop through each of the testcases
 	$keyArray = null;
-	while ($myrowKeyword = $GLOBALS['db']->fetch_array($resultKeyword))
+	while ($myrowKeyword = $db->fetch_array($resultKeyword))
 	{
 		//schlundus: csvsplit and merging arrays was too slow, so we simple make a big list of the different keyword lists
 		$keyArray .= $myrowKeyword[0].",";
@@ -132,13 +131,13 @@ function createResultsMenu()
 // MHT 200507	refactorization; improved SQL
 //
 // 20050921 - fm - build.build -> build.id
-function createBuildMenu($tpID)
+function createBuildMenu(&$db,$tpID)
 {
 	$sql = " SELECT build.id, build.name " .
 	       " FROM build WHERE build.projid = " .  $tpID . 
 	       " ORDER BY build.id DESC";
 
-	return selectOptionData($sql);
+	return selectOptionData($db,$sql);
 }//end function
 
 
@@ -152,7 +151,7 @@ function createBuildMenu($tpID)
  *
  */
 // MHT 200507	added conversion of special chars on input - [ 900437 ] table results -- incoherent data ?
-function editTestResults($login_name, $tcData, $buildID)
+function editTestResults(&$db,$login_name, $tcData, $buildID)
 {
 	global $g_bugInterfaceOn, $g_tc_status;
 	
@@ -163,8 +162,8 @@ function editTestResults($login_name, $tcData, $buildID)
 	for ($idx=0; $idx < $num_tc; $idx++ )
 	{
 		$tcID = $tcData['tc'][$idx];
-		$tcNotes = $GLOBALS['db']->prepare_string(trim($tcData['notes'][$idx])); 
-		$tcStatus = $GLOBALS['db']->prepare_string($tcData['status'][$idx]); 
+		$tcNotes = $db->prepare_string(trim($tcData['notes'][$idx])); 
+		$tcStatus = $db->prepare_string($tcData['status'][$idx]); 
 
 		$tcBugs = '';
 		if ($g_bugInterfaceOn)
@@ -178,21 +177,21 @@ function editTestResults($login_name, $tcData, $buildID)
 		       " AND build_id=" . $buildID;
 
 	  
-		$result = do_sql_query($sql); 
-		$num = $GLOBALS['db']->num_rows($result); 
+		$result = $db->exec_query($sql); 
+		$num = $db->num_rows($result); 
 
 
 		if($num == 1)
 		{ 
 			// We will only update the results if (notes, status) information has changed ...
-			$myrow = $GLOBALS['db']->fetch_array($result);
+			$myrow = $db->fetch_array($result);
 			if(! ($myrow['notes'] == $tcNotes && $myrow['status'] == $tcStatus) )
 			{
 				$sql = " UPDATE results " .
 				       " SET runby ='" . $login_name . "', " . "status ='" .  $tcStatus . "', " .
 				       " notes='" . $tcNotes . "' " .
 						   " WHERE tcid=" . $tcID . " AND build_id=" . $buildID;
-				$result = do_sql_query($sql); 
+				$result = $db->exec_query($sql); 
 			}
     }
     else
@@ -203,7 +202,7 @@ function editTestResults($login_name, $tcData, $buildID)
 				$sql = " INSERT INTO results (build_id,daterun,status,tcid,notes,runby) " .
 				       " VALUES (" . $buildID . ",CURRENT_DATE(),'" . $tcStatus . 
 				       "'," . $tcID . ",'" . $tcNotes . "','" . $login_name . "')";
-				$result = do_sql_query($sql);
+				$result = $db->exec_query($sql);
       }  
     }
     // -------------------------------------------------------------------------
@@ -212,7 +211,7 @@ function editTestResults($login_name, $tcData, $buildID)
     // -------------------------------------------------------------------------
     // Update Bug information (delete+insert) 
 	  $sqlDelete = "DELETE FROM bugs WHERE tcid=" . $tcID . " and build_id=" . $buildID;
-	  $result = do_sql_query($sqlDelete);
+	  $result = $db->exec_query($sqlDelete);
 
 	  $bugArray = strlen($tcBugs) ?  explode(",",$tcBugs) : null;
 	  $counter = 0;
@@ -222,7 +221,7 @@ function editTestResults($login_name, $tcData, $buildID)
 
 		  $sql = "INSERT INTO bugs (tcid,build_id,bug) VALUES (" . $tcID . ",'" . 
 			  	   $buildID . "','" . $bugArray[$counter] . "')";
-		  $result = do_sql_query($sql); 
+		  $result = $db->exec_query($sql); 
 		  $counter++;
 	  }
     // -------------------------------------------------------------------------
@@ -245,11 +244,11 @@ function editTestResults($login_name, $tcData, $buildID)
  *
  * @author Andreas Morsing - removed unnecessary code
  */
-function createTestInput($resultTC,$buildID,$tpID)
+function createTestInput(&$db,$resultTC,$buildID,$tpID)
 {
 	global $g_bugInterfaceOn,$g_tc_status;;
 	$arrTC = array();
-	while ($myrow = $GLOBALS['db']->fetch_array($resultTC))
+	while ($myrow = $db->fetch_array($resultTC))
 	{ 
 
 		//display all the test cases until we run out
@@ -271,9 +270,9 @@ function createTestInput($resultTC,$buildID,$tpID)
            " WHERE tcid=" . $myrow['tcid'] .
 		       " AND build_id=" . $buildID;
     
-		$resultStatus = do_sql_query($sql);
+		$resultStatus = $db->exec_query($sql);
 		
-		$dataStatus = $GLOBALS['db']->fetch_array($resultStatus);
+		$dataStatus = $db->fetch_array($resultStatus);
 
 		//This query grabs the most recent result
 		$sqlRecentResult = " SELECT build.name AS build_name,status,runby,daterun " .
@@ -282,8 +281,8 @@ function createTestInput($resultTC,$buildID,$tpID)
 				               " AND results.build_id = build.id " .
 				               " AND projid = " . $tpID ." ORDER by build.id " .	"DESC limit 1";
 				               
-		$dataRecentResult = do_sql_query($sqlRecentResult);
-		$rowRecent = $GLOBALS['db']->fetch_array($dataRecentResult);
+		$dataRecentResult = $db->exec_query($sqlRecentResult);
+		$rowRecent = $db->fetch_array($dataRecentResult);
 		
 		//routine that collect the test cases bugs.
 		//Check to see if the user is using a bug system
@@ -296,10 +295,10 @@ function createTestInput($resultTC,$buildID,$tpID)
 			//sql code to grab the appropriate bugs for the test case and build
 			//2005118 - scs - fix for 227
 			$sqlBugs = "SELECT bug,name FROM bugs,build WHERE bugs.build_id = build.id AND tcid='" . $myrow['tcid'] . "' ";
-			$resultBugs = do_sql_query($sqlBugs);
+			$resultBugs = $db->exec_query($sqlBugs);
 			
 			//For each bug that is found
-			while ($myrowBugs = $GLOBALS['db']->fetch_array($resultBugs))
+			while ($myrowBugs = $db->fetch_array($resultBugs))
 			{ 
 				if (!is_null($resultBugList))
 				{

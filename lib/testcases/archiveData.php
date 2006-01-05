@@ -3,7 +3,7 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
- * @version $Id: archiveData.php,v 1.5 2005/10/10 19:18:25 schlundus Exp $
+ * @version $Id: archiveData.php,v 1.6 2006/01/05 07:30:34 franciscom Exp $
  * @author Martin Havlat
  *  
  * This page allows you to show data (test cases, categories, and
@@ -14,7 +14,7 @@
 require_once('../../config.inc.php');
 require_once('common.php');
 require_once('archive.inc.php');
-testlinkInitPage();
+testlinkInitPage($db);
 
 $feature = isset($_GET['edit']) ? $_GET['edit'] : null;
 $id = isset($_GET['data']) ? intval($_GET['data']) : null;
@@ -25,16 +25,16 @@ $allow_edit = isset($_GET['allow_edit']) ? intval($_GET['allow_edit']) : 1;
 switch($feature)
 {
 	case 'product':
-		showProduct($id);
+		showProduct($db,$id);
 		break;
  	case 'component':
-		showComponent($id);
+		showComponent($db,$id);
 		break;
     case 'category':
-		showCategory($id);
+		showCategory($db,$id);
 		break;
 	case 'testcase':
-		showTestcase($id,$allow_edit);	
+		showTestcase($db,$id,$allow_edit);	
 		break;
 	default:
 		tLog('$_GET["edit"] has invalid value: ' . $feature , 'ERROR');

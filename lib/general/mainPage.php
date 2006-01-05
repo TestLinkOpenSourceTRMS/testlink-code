@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: mainPage.php,v $
  *
- * @version $Revision: 1.7 $ $Author: schlundus $
- * @modified $Date: 2006/01/03 21:19:02 $
+ * @version $Revision: 1.8 $ $Author: franciscom $
+ * @modified $Date: 2006/01/05 07:30:34 $
  *
  * @author Martin Havlat
  * 
@@ -32,7 +32,7 @@ require_once('plan.core.inc.php');
 require_once('configCheck.php');
 require_once('users.inc.php');
 
-testlinkInitPage(TRUE);
+testlinkInitPage($db,TRUE);
 $smarty = new TLSmarty;
 
 // ----------------------------------------------------------------------

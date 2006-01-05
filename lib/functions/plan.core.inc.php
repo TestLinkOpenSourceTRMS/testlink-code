@@ -3,8 +3,8 @@
  * TestLink Open Source Project - @link http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: plan.core.inc.php,v $
- * @version $Revision: 1.22 $
- * @modified $Date: 2006/01/04 11:15:39 $ $Author: franciscom $
+ * @version $Revision: 1.23 $
+ * @modified $Date: 2006/01/05 07:30:33 $ $Author: franciscom $
  *  
  * 
  * @author 	Martin Havlat
@@ -21,7 +21,6 @@
  * @author 20050813 - fm product filter, added getCountTestPlans4UserProd()
  * @author 20050809 - fm added getCountTestPlans4UserProd()
  * @author 20050809 - fm getTestPlans(), added filter on prodid
- * @author 20050807 - fm refactoring:  removed deprecated: $_SESSION['project']
  * @author 20051012 - azl optimize getTestPlans() function sql queries.
 **/
 
@@ -59,7 +58,7 @@ function getTestPlans($productID, $userID, $filter_by_product=0)
 	// removed join with projrights table because it was slowing down query signifigantly and 
 	// it wasn't being used. Also removed selecting notes field because it isn't needed. 
 	// 
-	$sql = " SELECT DISTINCT id,name,active,prodid FROM project " .
+	$sql = " SELECT DISTINCT id,name,active,prodid FROM testplans " .
 			           " WHERE active=1 ";
 			           
 	// 20050928 - fm
@@ -88,19 +87,19 @@ function getTestPlans($productID, $userID, $filter_by_product=0)
       $cAvailablePlans = 0;  // count the available plans
       while ($myrow = $GLOBALS['db']->fetch_array($result))
       {
-        //Block of code will determines if the user has the appropriate rights to view available projects
+        //Block of code will determines if the user has the appropriate rights to view available testplans
         $sqlProjRights = "select projid from projrights where userid=" . $userID . 
                          " and projid=" . $myrow[0];
         $projRightsResult = do_sql_query($sqlProjRights);
         $myrowProjRights = $GLOBALS['db']->fetch_array($projRightsResult);
 
-        //If the user has the rights to the project/test plan show it
+        //If the user has the rights to the testplans/test plan show it
         if($myrowProjRights[0] == $myrow[0])
         {
             //This code block checks to see if the user has already selected 
-            //a project once before and sets the default to that.. Bug 11453
+            //a testplans once before and sets the default to that.. Bug 11453
             // If this is the first plan we're displaying,
-            // and no session project has been set yet, then set it.
+            // and no session testplans has been set yet, then set it.
 			//20050810 - am - added check if a testPlanID is set
             if ($cAvailablePlans == 0 && (!isset($_SESSION['testPlanId']) || !$_SESSION['testPlanId'])) {
 				        $_SESSION['testPlanId'] = $myrow[0];
@@ -134,16 +133,16 @@ function getTestPlans($productID, $userID, $filter_by_product=0)
  * interface changes
  *
  */
-function getCountTestPlans4User($userID)
+function getCountTestPlans4User(&$db,$userID)
 {
-	$sql = " SELECT count(project.id) AS num_tp 
-	         FROM project,projrights WHERE active=1  
-			     AND projid=project.id AND userid=" . $userID;
-	$result = do_sql_query($sql);
+	$sql = " SELECT count(testplans.id) AS num_tp 
+	         FROM testplans,projrights WHERE active=1  
+			     AND projid=testplans.id AND userid=" . $userID;
+	$result = $db->exec_query($sql);
 	
 	if ($result)
 	{
-	  $row = $GLOBALS['db']->fetch_array($result);
+	  $row = $db->fetch_array($result);
 		return($row['num_tp']);
 	} 
 	else 
@@ -166,27 +165,27 @@ function getCountTestPlans4User($userID)
  * 20050810 - fm
  * changes need due to ACTIVE FIELD type change interface changes
  */
-function getCountTestPlans4UserProd($userID,$prodID=null)
+function getCountTestPlans4UserProd(&$db,$userID,$prodID=null)
 {
-	$sql = " SELECT count(project.id) AS num_tp
-	         FROM project,projrights WHERE active=1   
-		       AND projid=project.id AND userid=" . $userID;
+	$sql = " SELECT count(testplans.id) AS num_tp
+	         FROM testplans,projrights WHERE active=1   
+		       AND projid=testplans.id AND userid=" . $userID;
 	
 	//20051015 - am - removed negation of $prodID		   
 	if ($prodID)
 	{		   
-		$sql .= " AND project.prodid=" . $prodID;
+		$sql .= " AND testplans.prodid=" . $prodID;
 		
 		// 20050904 - fm - TL 1.5.1 compatibility, get also Test Plans without product id.
 		if (config_get('show_tp_without_prodid'))
 		{
-			$sql .= " OR project.prodid=0";
+			$sql .= " OR testplans.prodid=0";
 		}  	
 	}		   
-	$result = do_sql_query($sql);
+	$result = $db->exec_query($sql);
 	if ($result)
 	{
-		$row = $GLOBALS['db']->fetch_array($result);
+		$row = $db->fetch_array($result);
 		return($row['num_tp']);
 	} 
 	else 
@@ -203,7 +202,7 @@ function getCountTestPlans4UserProd($userID,$prodID=null)
  * 20051203 - scs - added param tpID for getting only those user
  * 					which belong to a certain tp
  */
-function getTestPlanUsers($tpID)
+function getTestPlanUsers(&$db,$tpID)
 {
 	$show_realname = config_get('show_realname');
 	
@@ -215,11 +214,11 @@ function getTestPlanUsers($tpID)
 	$sql .= " FROM user,projrights 
 	          WHERE user.id = projrights.userid AND projid = {$tpID}";
              
-	$result = do_sql_query($sql);
+	$result = $db->exec_query($sql);
 	if ($result)
 	{
 		$data = null;
-		while($rowUser = $GLOBALS['db']->fetch_array($result))
+		while($rowUser = $db->fetch_array($result))
 		{
 			$data[$rowUser['id']] = $rowUser['login'];
 			if ($show_realname)
@@ -249,9 +248,9 @@ function getTestPlanUsers($tpID)
 // 20051120 - fm - Interface Changed, added filter on product
 // 20051121 - scs - added missing global $g_show_tp_without_prodid
 //
-function getAllTestPlans($prodID=ALL_PRODUCTS,$plan_status=null,$filter_by_product=0)
+function getAllTestPlans(&$db,$prodID=ALL_PRODUCTS,$plan_status=null,$filter_by_product=0)
 {
-	$sql = "SELECT id, name, notes,active, prodid FROM project";
+	$sql = "SELECT id, name, notes,active, prodid FROM testplans";
 	$where = ' WHERE 1=1';
 	
 	// 20051120 - fm
@@ -274,28 +273,28 @@ function getAllTestPlans($prodID=ALL_PRODUCTS,$plan_status=null,$filter_by_produ
 	}
 	$sql .= $where . " ORDER BY name";
 	
-	return selectData($sql);
+	return selectData($db,$sql);
 }
 
 // 20051120 - fm
 // interface changes
-function getAllActiveTestPlans($prodID=ALL_PRODUCTS,$filter_by_product=0)
+function getAllActiveTestPlans(&$db,$prodID=ALL_PRODUCTS,$filter_by_product=0)
 {
-	return getAllTestPlans($prodID,TP_STATUS_ACTIVE,$filter_by_product);
+	return getAllTestPlans($db,$prodID,TP_STATUS_ACTIVE,$filter_by_product);
 }
 
 // ------------------------------------------------------------
 // 20050810 - fm
 // Checks if the prodID is tp's father
-function check_tp_father($prodID,$tpID)
+function check_tp_father(&$db,$prodID,$tpID)
 {
   $ret = 0;
 	$sql = " SELECT id, name, notes , active, prodid " .
-	       " FROM project " . 
-	       " WHERE project.id=" . $tpID .
-	       " AND   project.prodid=" . $prodID;
+	       " FROM testplans " . 
+	       " WHERE testplans.id=" . $tpID .
+	       " AND   testplans.prodid=" . $prodID;
 	       
-	$rs = selectData($sql);
+	$rs = selectData($db,$sql);
 	
 	if( sizeof($rs) == 1)
   {
@@ -308,15 +307,15 @@ function check_tp_father($prodID,$tpID)
 // ------------------------------------------------------------
 // 20050926 - fm
 // 
-function get_tp_father($tpID)
+function get_tp_father(&$db,$tpID)
 {
   $ret = 0;
 	$sql = " SELECT id, name, notes , active, prodid " .
-	       " FROM project TP" . 
+	       " FROM testplans TP" . 
 	       " WHERE TP.id=" . $tpID;
 	       
 	       
-	$rs = selectData($sql);
+	$rs = selectData($db,$sql);
 	return($rs[0]['prodid']);
 }
 // ------------------------------------------------------------
@@ -329,11 +328,11 @@ function get_tp_father($tpID)
 20050914 - fm - interface changes
 
 */
-function dispCategories($idPlan, $keyword, $resultCat) 
+function dispCategories(&$db,$idPlan, $keyword, $resultCat) 
 {
 	$arrData = array();
 	
-	while($rowCAT = $GLOBALS['db']->fetch_array($resultCat))
+	while($rowCAT = $db->fetch_array($resultCat))
 	{ 
 		$arrTestCases = array();					
 		$idCAT = $rowCAT[0];
@@ -347,7 +346,7 @@ function dispCategories($idPlan, $keyword, $resultCat)
 		//Check the keyword that the user has submitted.
 		if($keyword != 'NONE')
 		{
-			$keyword = $GLOBALS['db']->prepare_string($keyword);
+			$keyword = $db->prepare_string($keyword);
 			//keywordlist always have a trailing slash, so there are only two cases to consider 
 			//the keyword is the first in the list
 			//or its in the middle of list 		 
@@ -355,9 +354,9 @@ function dispCategories($idPlan, $keyword, $resultCat)
 		}
 		$sqlTC .= " ORDER BY TCorder,id";
 
-		$resultTC = do_sql_query($sqlTC);
+		$resultTC = $db->exec_query($sqlTC);
 		
-		while($rowTC = $GLOBALS['db']->fetch_array($resultTC))
+		while($rowTC = $db->fetch_array($resultTC))
 		{ 
 			//Display all test cases
 			$idTC = $rowTC['id']; 
@@ -367,12 +366,12 @@ function dispCategories($idPlan, $keyword, $resultCat)
 			//
 			// 20050807 - fm - $idPlan
 			
-			$sqlCheck = " SELECT mgttcid FROM project,component,category,testcase " .
+			$sqlCheck = " SELECT mgttcid FROM testplans,component,category,testcase " .
 			            " WHERE mgttcid=" . $idTC . 
-			            " AND project.id=component.projid AND component.id=category.compid AND " .
-			            " category.id=testcase.catid AND project.id=" . $idPlan;
-			$checkResult = do_sql_query($sqlCheck);
-			$checkRow = $GLOBALS['db']->num_rows($checkResult);
+			            " AND testplans.id=component.projid AND component.id=category.compid AND " .
+			            " category.id=testcase.catid AND testplans.id=" . $idPlan;
+			$checkResult = $db->exec_query($sqlCheck);
+			$checkRow = $db->num_rows($checkResult);
 			
 			array_push($arrTestCases, array( 'id' => $idTC, 'name' => $titleTC,
 											                 'added' => $checkRow));

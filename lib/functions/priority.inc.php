@@ -1,6 +1,6 @@
 <?
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: priority.inc.php,v 1.5 2005/12/28 07:34:55 franciscom Exp $ */
+/* $Id: priority.inc.php,v 1.6 2006/01/05 07:30:33 franciscom Exp $ */
 /**
  * Functions for Priority management 
  * Precondition: require init db + session verification done (testlinkInitPage();) 
@@ -8,9 +8,6 @@
  *
  * @author 20050905 - fm - reduce global cpupling
  *
- * @author 20050807 - fm
- * refactoring:  
- * removed deprecated: $_SESSION['project']
  */
 ////////////////////////////////////////////////////////////////////////////////
 

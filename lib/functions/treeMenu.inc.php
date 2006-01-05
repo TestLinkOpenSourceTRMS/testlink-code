@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: treeMenu.inc.php,v $
  *
- * @version $Revision: 1.8 $
- * @modified $Date: 2005/12/28 07:34:55 $ by $Author: franciscom $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2006/01/05 07:30:33 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * 	This file generates tree menu for test specification and test execution.
@@ -16,7 +16,6 @@
  * Revisions:
  *
  * @author 20050810 - fm refactoring:  removed deprecated: $_SESSION['product']
- * @author 20050807 - fm refactoring:  removed deprecated: $_SESSION['project']
  * 20051011 - MHT - minor refactorization, header update
  * 20051118 - scs - testplanname was not filtered (JS-Error in certain cases)
  *
@@ -328,10 +327,10 @@ function generateTestSuiteTree($linkto, $hidetc, $getArguments = '')
 	
 	// 20050915 - fm - grab every component depending on the test plan
 	$sql = " SELECT component.id, mgtcomponent.name " .
-	       " FROM component,mgtcomponent, project " .
+	       " FROM component,mgtcomponent, testplans " .
 	       " WHERE mgtcomponent.id = component.mgtcompid " .
-			   " AND component.projid = project.id " .
-			   " AND project.id = " . $_SESSION['testPlanId'] . 
+			   " AND component.projid = testplans.id " .
+			   " AND testplans.id = " . $_SESSION['testPlanId'] . 
 			   " ORDER BY mgtcomponent.name";
 	   
 	$comResult = do_sql_query($sql);

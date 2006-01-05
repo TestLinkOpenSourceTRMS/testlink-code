@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: navBar.php,v $
  *
- * @version $Revision: 1.6 $
- * @modified $Date: 2006/01/04 11:15:57 $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2006/01/05 07:30:34 $
  *
  * @author Martin Havlat
  *
@@ -16,14 +16,14 @@
 require('../../config.inc.php');
 require_once("common.php");
 require_once("plan.core.inc.php");
-testlinkInitPage(true);
+testlinkInitPage($db,true);
 
-// Load data for combo box with all the available projects
-$arrProducts = getOptionProducts();
+// Load data for combo box with all the available testplans
+$arrProducts = getOptionProducts($db);
 $currentProduct = isset($_SESSION['productID']) ? $_SESSION['productID'] : null;
 
 // 20050810 - fm - interface changes
-$countPlans = getCountTestPlans4UserProd($_SESSION['userID'],$currentProduct);
+$countPlans = getCountTestPlans4UserProd($db,$_SESSION['userID'],$currentProduct);
 
 $smarty = new TLSmarty();
 // 20050813 - fm

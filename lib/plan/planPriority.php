@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: planPriority.php,v 1.3 2005/09/06 06:45:23 franciscom Exp $ */
+/* $Id: planPriority.php,v 1.4 2006/01/05 07:30:34 franciscom Exp $ */
 /**
  * This feature allows to define rules for priority dependecy 
  * to importance/risk for actual Test Plan
@@ -12,7 +12,7 @@ require('../../config.inc.php');
 require("../functions/common.php");
 require("../functions/priority.inc.php");
 require_once("../../lib/functions/lang_api.php");
-testlinkInitPage();
+testlinkInitPage($db);
 
 // update data
 $sqlResult = null;

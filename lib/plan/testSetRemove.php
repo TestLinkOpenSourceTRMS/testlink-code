@@ -1,16 +1,12 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: testSetRemove.php,v 1.7 2005/12/28 07:34:55 franciscom Exp $ 
+ * @version $Id: testSetRemove.php,v 1.8 2006/01/05 07:30:34 franciscom Exp $ 
  * 
  * Remove Test Cases from Test Case Suite 
  * 
  * @author 20051001 - fm - sql refactoring
  * @author 20050915 - fm - refactoring
- * @author 20050807 - fm
- * refactoring:  
- * removed deprecated: $_SESSION['project']
- *
  * 20051112 - scs - removed undefined index warning, added escaping of comp and
  * 					cat names
  * 20051126 - scs - added test_case_removed_part2
@@ -18,7 +14,7 @@
 require('../../config.inc.php');
 require("../functions/common.php");
 require_once("plan.inc.php");
-testlinkInitPage();
+testlinkInitPage($db);
 
 // for genTC_info()
 define('THIS_COMP',0);

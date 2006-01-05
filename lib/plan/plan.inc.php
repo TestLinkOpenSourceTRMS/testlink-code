@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: plan.inc.php,v $
- * @version $Revision: 1.22 $
- * @modified $Date: 2006/01/04 09:42:26 $ $Author: franciscom $
+ * @version $Revision: 1.23 $
+ * @modified $Date: 2006/01/05 07:30:34 $ $Author: franciscom $
  * @author 	Martin Havlat
  *
  * Functions for management: 
@@ -72,7 +72,7 @@ function updateTestPlan($id,$name,$notes,$p_active)
 	$active = to_boolean($p_active);
 	
 	// 20050809 - fm 	
-	$sql = "UPDATE project SET active='" . $active . "', name='" . $GLOBALS['db']->prepare_string($name) . "', notes='" . 
+	$sql = "UPDATE testplans SET active='" . $active . "', name='" . $GLOBALS['db']->prepare_string($name) . "', notes='" . 
 			$GLOBALS['db']->prepare_string($notes). "' WHERE id=" . $id;
 	$result = do_sql_query($sql);
 	
@@ -81,7 +81,7 @@ function updateTestPlan($id,$name,$notes,$p_active)
 
 function deleteTestPlan($id)
 {
-	$sql = "DELETE FROM project WHERE id=" . $id;
+	$sql = "DELETE FROM testplans WHERE id=" . $id;
 	$result = do_sql_query($sql);
 
 	return $result ? 1 : 0;
@@ -149,7 +149,7 @@ function deleteCategoriesByComponentIDs($comIDs)
 
 function getTestPlanCategories($id,&$catIDs)
 {
-	//Select all of the projects components
+	//Select all of the testplanss components
 	$sql = " SELECT category.id FROM component, category " .
 	       " WHERE projid=" . $id . " AND component.id=compid";
 	$result = do_sql_query($sql);
@@ -193,7 +193,7 @@ function deleteTestPlanBuilds($tpID, $buildID=0)
 	return $result ? 1: 0;		
 }
 
-function deleteTestPlanRightsForProject($id)
+function deleteTestPlanRightsForTestPlan($id)
 {
 	$sql = "DELETE FROM projrights WHERE projid = ".$id;	
 	$result = do_sql_query($sql);
@@ -209,7 +209,7 @@ function deleteResultsForBuilds($id,$builds)
 		return 1;
 	}
 	
-	//Delete all of the results associated with the project		
+	//Delete all of the results associated with the testplan		
 	$sql = " DELETE FROM results " .
 	       " WHERE build.id IN (". $builds . ")". 
 				 " AND results.tcid=testcase.id " .
@@ -244,7 +244,7 @@ function deleteTestPlanMilestones($id)
 */
 function insertTestPlan(&$db,$name,$notes,$prodID)
 {
-	$sql = "INSERT INTO project (name,notes,prodID) VALUES ('" . 
+	$sql = "INSERT INTO testplans (name,notes,prodID) VALUES ('" . 
 	       $db->prepare_string($name) . "','" . 
 	       $db->prepare_string($notes) . "'," . $prodID .")";
 	$result = $db->exec_query($sql);
@@ -431,7 +431,6 @@ function getUsersOfPlan($id)
 
 // 20050815 - scs - $notes now became a default parameter
 // 20050905 - scs - function now returns the build value
-// 20050909 - fm - From Project to TestPlan
 // 20050921 - fm - refactoring build
 function insertTestPlanBuild($buildName,$testplanID,$notes = '')
 {

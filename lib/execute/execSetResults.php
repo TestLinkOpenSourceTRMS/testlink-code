@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.17 $
- * @modified $Date: 2005/12/28 07:34:55 $ $Author: franciscom $
+ * @version $Revision: 1.18 $
+ * @modified $Date: 2006/01/05 07:30:33 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -17,7 +17,6 @@
  * @author 20050825 - scs - added buginterface to smarty
  * @author 20050821 - Francisco Mancardi - refactoring decrease level of global coupling 
  * @author 20050815 - scs - code optimization
- * @author 20050807 - Francisco Mancardi - refactoring:  removed deprecated: $_SESSION['project']
  *
  * 20051112 - scs - corrected using a undefined variable, cosmetic changes
  *
@@ -26,7 +25,7 @@ require_once('../../config.inc.php');
 require_once('common.php');
 require_once('exec.inc.php');
 require_once("../../lib/functions/builds.inc.php");
-testlinkInitPage();
+testlinkInitPage($db);
 
 $testdata = array();
 $submitResult = null;
@@ -40,16 +39,16 @@ $owner = isset($_REQUEST['owner']) ? $_REQUEST['owner'] : '';
 $keyword = 'All';
 if( isset($_REQUEST['keyword']) )
 {
-	$keyword = $GLOBALS['db']->prepare_string($keyword);
+	$keyword = $db->prepare_string($keyword);
 }
 if (isset($_REQUEST['submitTestResults']))
 {
 	// 20060908 - scs - fixed 90
-	$submitResult = editTestResults($_SESSION['user'],$_REQUEST,$_GET['build']);
+	$submitResult = editTestResults($db,$_SESSION['user'],$_REQUEST,$_GET['build']);
 }
 
 $tpID = $_SESSION['testPlanId'];
-$builds = getBuilds($tpID, " ORDER BY build.name ");
+$builds = getBuilds($db,$tpID, " ORDER BY build.name ");
 $buildName = isset($builds[$buildID]) ? $builds[$buildID] : '';
 
 $sql = " SELECT CAT.id AS cat_id, MGTCAT.name AS cat_name, " .
@@ -85,8 +84,8 @@ else
 }
 if (!is_null($sql))
 {
-	$result = do_sql_query($sql,$db);
-	$testdata = createTestInput($result,$buildID,$tpID);				
+	$result = $db->exec_query($sql,$db);
+	$testdata = createTestInput($db,$result,$buildID,$tpID);				
 }	
 // ---------------------------------------------------------------------------------------	
 $smarty = new TLSmarty();

@@ -1,6 +1,6 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: mainPage.tpl,v 1.6 2005/12/29 20:59:00 schlundus Exp $     
+ $Id: mainPage.tpl,v 1.7 2006/01/05 07:30:31 franciscom Exp $     
  Purpose: smarty template - main page / site map                 
                                                                  
                                                                  
@@ -27,7 +27,7 @@
 			src="icons/sym_question.gif" 
 			onclick="javascript:open_popup('{$helphref}testPlan.html');" />
 
- 	  <form name="projectForm" action="lib/general/mainPage.php">
+ 	  <form name="testplanForm" action="lib/general/mainPage.php">
 
     	{* 20051002 - fm *}
       {if $show_filter_tp_by_product }
@@ -47,7 +47,7 @@
         
 		{lang_get s='title_test_plan'}
     {if $countPlans > 0}
-				<select name="project" onchange="this.form.submit();">
+				<select name="testplan" onchange="this.form.submit();">
 				{section name=tPlan loop=$arrPlans}
 					<option value="{$arrPlans[tPlan].id}" 
 					{$arrPlans[tPlan].selected} >{$arrPlans[tPlan].name|escape}</option>

@@ -1,7 +1,7 @@
 <?
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* @version 	$Id: selectData.php,v 1.5 2005/09/16 06:47:11 franciscom Exp $
+* @version 	$Id: selectData.php,v 1.6 2006/01/05 07:30:34 franciscom Exp $
 * @author 	Martin Havlat
 * 
 * 	Navigator for print/export functionality. 
@@ -17,7 +17,7 @@ require('../../config.inc.php');
 require_once("common.php");
 require_once("treeMenu.inc.php");
 require_once("../../lib/functions/lang_api.php");
-testlinkInitPage();
+testlinkInitPage($db);
 
 
 // 20050905 - fm

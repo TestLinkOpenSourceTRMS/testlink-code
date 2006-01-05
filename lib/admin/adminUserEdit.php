@@ -5,14 +5,14 @@
 *
 * Filename $RCSfile: adminUserEdit.php,v $
 *
-* @version $Revision: 1.2 $
-* @modified $Date: 2005/12/31 14:38:10 $
+* @version $Revision: 1.3 $
+* @modified $Date: 2006/01/05 07:30:33 $
 * 
 * Allows editing a user
 */
 require_once('../../config.inc.php');
 require_once('users.inc.php');
-testlinkInitPage();
+testlinkInitPage($db);
 
 $user_id = isset($_GET['user_id']) ? intval($_GET['user_id']) : 0;
 

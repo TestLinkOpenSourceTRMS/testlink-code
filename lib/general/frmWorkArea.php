@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: frmWorkArea.php,v $
  *
- * @version $Revision: 1.6 $
- * @modified $Date: 2005/11/26 19:58:22 $ by $Author: schlundus $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2006/01/05 07:30:34 $ by $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -17,7 +17,7 @@
 **/
 require_once('../../config.inc.php');
 require_once("common.php");
-testlinkInitPage();
+testlinkInitPage($db);
 
 /// <enhancement version="???" date="2005-04-09" author="fm" >
 /// Changes a lot of if/else for configuration

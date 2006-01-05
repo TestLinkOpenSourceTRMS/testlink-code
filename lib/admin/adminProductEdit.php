@@ -5,14 +5,14 @@
  *
  * Filename $RCSfile: adminProductEdit.php,v $
  *
- * @version $Revision: 1.9 $
- * @modified $Date: 2006/01/02 14:05:32 $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2006/01/05 07:30:33 $
  *
  * @author Martin Havlat
  *
  * This page allows users to edit/delete products.
  * 
- * @todo Verify dependency before delete project 
+ * @todo Verify dependency before delete testplan 
  *
  * 20051211 - fm - poor workaround for the delete loop - BUGID 180 Unable to delete Product
  * 20050908 - fm - BUGID 0000086
@@ -24,7 +24,7 @@ require_once('product.inc.php');
 require_once("../../third_party/fckeditor/fckeditor.php");
 
 global $db;
-testlinkInitPage(true);
+testlinkInitPage($db,true);
 
 $updateResult = null;
 $error = null;
@@ -37,7 +37,7 @@ $tlog_msg_prefix="Product [ID: Name]=";
 
 $smarty = new TLSmarty();
 
-$args = init_args($_REQUEST,$_SESSION);
+$args = init_args($db,$_REQUEST,$_SESSION);
 
 // ----------------------------------------------------------------------
 // 20060101 - fm
@@ -134,7 +134,7 @@ if (strcasecmp($args->do,'deleteProduct') != 0 )
 {
 	if (isset($_SESSION['productID']))
 	{
-		$productData = getProduct($_SESSION['productID']);
+		$productData = getProduct($db,$_SESSION['productID']);
 		if ($productData)
 		{
 			$args->name = $productData['name'];
@@ -189,7 +189,7 @@ $smarty->display('adminProductEdit.tpl');
  *
  * 20060102 - fm 
 */
-function init_args($request_hash, $session_hash)
+function init_args(&$db,$request_hash, $session_hash)
 {
 
   $request_hash = strings_stripSlashes($request_hash);
@@ -227,7 +227,7 @@ function init_args($request_hash, $session_hash)
   $get_notes_from_db = (!is_null($the_prodid) && strcasecmp($args->do,"editProduct") != 0);
   if ($get_notes_from_db)
   {
-    $productData = getProduct($the_prodid);
+    $productData = getProduct($db,$the_prodid);
   	$args->notes = 	$productData['notes'];
   }
   return($args);

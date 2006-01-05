@@ -2,7 +2,7 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: listTestCases.php,v 1.4 2005/10/10 19:18:25 schlundus Exp $
+* 	@version 	$Id: listTestCases.php,v 1.5 2006/01/05 07:30:34 franciscom Exp $
 * 	@author 	Martin Havlat
 * 
 * 	This page generates tree menu with test specification. It builds the
@@ -13,7 +13,7 @@
 require('../../config.inc.php');
 require_once("common.php");
 require_once("treeMenu.inc.php");
-testlinkInitPage();
+testlinkInitPage($db);
 
 $feature = isset($_GET['feature']) ? $_GET['feature'] : null;
 

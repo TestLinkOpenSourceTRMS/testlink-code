@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsBugs.php,v 1.4 2005/09/07 12:29:22 franciscom Exp $ 
+* $Id: resultsBugs.php,v 1.5 2006/01/05 07:30:34 franciscom Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * 
@@ -12,10 +12,10 @@ require('../../config.inc.php');
 require_once('common.php');
 require_once('results.inc.php');
 require_once("../../lib/functions/lang_api.php");
-testlinkInitPage();
+testlinkInitPage($db);
 
 
-$arrData = getBugsReport($_SESSION['testPlanId']);
+$arrData = getBugsReport($db,$_SESSION['testPlanId']);
 
 $smarty = new TLSmarty;
 $smarty->assign('tpName', $_SESSION['testPlanName']);

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: requirementsImport.inc.php,v $
- * @version $Revision: 1.5 $
- * @modified $Date: 2005/12/28 07:34:55 $ by $Author: franciscom $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2006/01/05 07:30:33 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Functions for Import requirements to a specification. 
@@ -40,14 +40,14 @@ function trim_title($title, $len=100)
  * @param string $title of req.
  * @return assoc_array list of requirements
  */
-function getReqDataByTitle($title)
+function getReqDataByTitle(&$db,$title)
 {
 	$output = array();
 	
 	$sql = "SELECT * FROM requirements WHERE title='" . $title . "'";
-	$result = do_sql_query($sql);
+	$result = $db->exec_query($sql);
 	if (!empty($result)) {
-		$output = $GLOBALS['db']->fetch_array($result);
+		$output = $db->fetch_array($result);
 	}
 	
 	return $output;
@@ -59,7 +59,7 @@ function getReqDataByTitle($title)
  *
  * @author Francisco Mancardi - 20050906 - added $userID
  **/
-function executeImportedReqs($arrImportSource, $arrReqTitles, 
+function executeImportedReqs(&$db,$arrImportSource, $arrReqTitles, 
                              $conflictSolution, $emptyScope, $idSRS, $userID)
 {
 	foreach ($arrImportSource as $data)
@@ -82,8 +82,8 @@ function executeImportedReqs($arrImportSource, $arrReqTitles,
 				tLog('Conflict found. solution: ' . $conflictSolution);
 
 				if ($conflictSolution == 'overwrite') {
-					$arrOldReq = getReqDataByTitle($title);
-					$status = updateRequirement($arrOldReq[0]['id'],$title,$scope,$userID,
+					$arrOldReq = getReqDataByTitle($db,$title);
+					$status = updateRequirement($db,$arrOldReq[0]['id'],$title,$scope,$userID,
 							                        $arrOldReq[0]['status'],$arrOldReq[0]['type']);
 					if ($status == 'ok') {
 						$status = lang_get('req_import_result_overwritten');
@@ -92,7 +92,7 @@ function executeImportedReqs($arrImportSource, $arrReqTitles,
 
 				elseif ($conflictSolution == 'double') 
 				{
-					$status = createRequirement($title, $scope, $idSRS, $userID); // default status and type
+					$status = createRequirement($db,$title, $scope, $idSRS, $userID); // default status and type
 					if ($status == 'ok') {
 						$status = lang_get('req_import_result_added');
 					}
@@ -138,10 +138,10 @@ function compareImportedReqs($arrImportSource, $arrReqTitles)
 }
 
 /** get Titles of existing requirements */
-function getReqTitles($idSRS)
+function getReqTitles(&$db,$idSRS)
 {
 	// collect existing req titles in the SRS
-	$arrCurrentReq = getRequirements($idSRS);
+	$arrCurrentReq = getRequirements($db,$idSRS);
 	$arrReqTitles = array();
 	if (count($arrCurrentReq)) { // only if some reqs exist
 		foreach ($arrCurrentReq as $data) {

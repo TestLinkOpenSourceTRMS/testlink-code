@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: planTestersEdit.php,v $
- * @version $Revision: 1.13 $
- * @modified $Date: 2006/01/03 21:19:02 $ $ by $Author: schlundus $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2006/01/05 07:30:34 $ $ by $Author: franciscom $
  * 
  * @author Martin Havlat
  * 
@@ -31,7 +31,7 @@ require('../../config.inc.php');
 require_once('common.php');
 require_once('users.inc.php');
 require_once('plan.inc.php');
-testlinkInitPage();
+testlinkInitPage($db);
 
 $type = isset($_GET['type']) ? $_GET['type'] : 0;
 $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
@@ -58,7 +58,7 @@ if ($submit)
 	{
 		// 20051130 - fm - BUGID 239
 		// delete everything from the projRights table for that user
-		$resultDelete = deleteUsersProjectRights($db,$id, $prod->id);
+		$resultDelete = deleteUsersTestPlanRights($db,$id, $prod->id);
 		
 		if (sizeof($projRightsArray))
 		{
@@ -70,8 +70,8 @@ if ($submit)
 	}
 	else if($type == 'plans')
 	{
-		//delete everything from the projRights table for that project
-		$resultDelete = deleteTestPlanRightsForProject($id);
+		//delete everything from the projRights table for that testplan
+		$resultDelete = deleteTestPlanRightsForTestPlan($id);
 		if (sizeof($projRightsArray))
 		{
 			foreach($projRightsArray as $projRights)
@@ -87,7 +87,7 @@ $arrData = null;
 if ($type == 'plans')
 {
 	$tpName = $_SESSION['testPlanName'];
-	$tps = getAllTestPlans();
+	$tps = getAllTestPlans($db);
 	for($i = 0;$i < sizeof($tps);$i++)
 	{
 		if ($tps[$i]['id'] == $id)
@@ -118,13 +118,13 @@ $smarty->display('planTesters.tpl');
 // 20050810 - fm - refactoring
 // 20050824	MHT	corrected syntax bug, wrong variable using
 // 20051120 - fm - interface changes, using product filter on test plan
-function getUserTestPlans1($userID,$prodID)
+function getUserTestPlans1($db,$userID,$prodID)
 {
 	$arrPlans = null;
 	$userTestplans = getUserTestplans($userID);
 
  	// 20051120 - fm
-	$Testplans = getAllTestplans($prodID,TP_ALL_STATUS,FILTER_BY_PRODUCT);
+	$Testplans = getAllTestplans($db,$prodID,TP_ALL_STATUS,FILTER_BY_PRODUCT);
 	$num_of_tp = sizeof($Testplans);
 	$num_of_usertp = sizeof($userTestplans);
 	

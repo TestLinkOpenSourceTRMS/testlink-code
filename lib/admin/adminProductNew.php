@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: adminProductNew.php,v $
  *
- * @version $Revision: 1.7 $
- * @modified $Date: 2006/01/02 14:05:17 $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2006/01/05 07:30:33 $
  *
  * @author Martin Havlat
  *
@@ -21,7 +21,7 @@ require_once('../functions/common.php');
 require_once('../functions/product.inc.php');
 require_once("../../third_party/fckeditor/fckeditor.php");
 
-testlinkInitPage();
+testlinkInitPage($db);
 
 $_REQUEST = strings_stripSlashes($_REQUEST);
 $bNewProduct = isset($_REQUEST['newProduct']) ? 1 : 0;

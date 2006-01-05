@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsAllBuilds.php,v 1.3 2005/10/03 07:20:14 franciscom Exp $ 
+* $Id: resultsAllBuilds.php,v 1.4 2006/01/05 07:30:34 franciscom Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * 
@@ -15,18 +15,18 @@ require_once('common.php');
 require_once('builds.inc.php');	
 require_once('results.inc.php');
 require_once("../../lib/functions/lang_api.php");
-testlinkInitPage();
+testlinkInitPage($db);
 
 // collect results for Test Plan
-$arrBuilds = getBuilds($_SESSION['testPlanId'], " ORDER BY build.name ");
-$total = getPlanTCNumber($_SESSION['testPlanId']);
+$arrBuilds = getBuilds($db,$_SESSION['testPlanId'], " ORDER BY build.name ");
+$total = getPlanTCNumber($db,$_SESSION['testPlanId']);
 
 $arrData = array();
 ///SCHLUNDUS
 foreach ($arrBuilds as $myBuild=>$name)
 {
 	// get results for the build
-	$buildResults = getPlanStatus($_SESSION['testPlanId'], $myBuild);
+	$buildResults = getPlanStatus($db,$_SESSION['testPlanId'], $myBuild);
 	$notRun = $total - ($buildResults['passed'] + $buildResults['failed'] + $buildResults['blocked']);
 	
 	if ($total)

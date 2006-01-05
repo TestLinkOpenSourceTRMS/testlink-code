@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqSpecView.php,v $
- * @version $Revision: 1.15 $
- * @modified $Date: 2006/01/03 21:19:02 $ by $Author: schlundus $
+ * @version $Revision: 1.16 $
+ * @modified $Date: 2006/01/05 07:30:34 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Screen to view existing requirements within a req. specification.
@@ -24,7 +24,7 @@ require_once("../../third_party/fckeditor/fckeditor.php");
 
 // init page 
 tLog('POST: ' . implode(',',$_POST));
-testlinkInitPage();
+testlinkInitPage($db);
 
 $sqlResult = null;
 $action = null;
@@ -61,7 +61,8 @@ if(isset($_REQUEST['createReq']))
 	if (isset($_REQUEST['title']))
 	{
 		// 20050906 - fm
-		$sqlResult = createRequirement($title, $scope, $idSRS, $userID, $reqStatus, $reqType, $reqDocId); // used default type=n
+		$sqlResult = createRequirement($db,$title, $scope, $idSRS, $userID, 
+		                               $reqStatus, $reqType, $reqDocId); // used default type=n
 		$action = 'create';
 		$scope='';
 	}
@@ -72,12 +73,12 @@ if(isset($_REQUEST['createReq']))
 elseif (isset($_REQUEST['editReq']))
 {
 	$idReq = strings_stripSlashes($_REQUEST['editReq']);
-	$arrReq = getReqData($idReq);
+	$arrReq = getReqData($db,$idReq);
 	
 	// 20050830 - MHT - Added audit
 	$arrReq['author'] = getUserName($db,$arrReq['id_author']);
 	$arrReq['modifier'] = getUserName($db,$arrReq['id_modifier']);
-	$arrReq['coverage'] = getTc4Req($idReq);
+	$arrReq['coverage'] = getTc4Req($db,$idReq);
 	
 	$reqDocId = $arrReq['req_doc_id'];
 	$scope = $arrReq['scope']; 
@@ -87,13 +88,13 @@ elseif (isset($_REQUEST['editReq']))
 }
 elseif (isset($_REQUEST['updateReq']))
 {
-	$sqlResult = updateRequirement($idReq, $title, $scope, $userID, $reqStatus, $reqType, $reqDocId);
+	$sqlResult = updateRequirement($db,$idReq, $title, $scope, $userID, $reqStatus, $reqType, $reqDocId);
 	$action = 'update';
 	$sqlItem = 'Requirement';
 }
 elseif (isset($_REQUEST['deleteReq']))
 {
-	$sqlResult = deleteRequirement($idReq);
+	$sqlResult = deleteRequirement($db,$idReq);
 	$action = 'delete';
 }
 elseif (isset($_REQUEST['editSRS']))
@@ -104,7 +105,7 @@ elseif (isset($_REQUEST['editSRS']))
 elseif (isset($_REQUEST['updateSRS']))
 {
 	// 20050906 - fm
-	$sqlResult = updateReqSpec($idSRS,$title,$scope,$countReq,$userID);
+	$sqlResult = updateReqSpec($db,$idSRS,$title,$scope,$countReq,$userID);
 	$action = 'update';
 }
 elseif (isset($_REQUEST['multiAction']))
@@ -117,7 +118,7 @@ elseif (isset($_REQUEST['multiAction']))
 		{
 			foreach ($arrIdReq as $idReq) {
 				tLog("Delete requirement id=" . $idReq);
-				$tmpResult = deleteRequirement($idReq);
+				$tmpResult = deleteRequirement($db,$idReq);
 				if ($tmpResult != 'ok') {
 					$sqlResult .= $tmpResult . '<br />';
 				}
@@ -131,7 +132,7 @@ elseif (isset($_REQUEST['multiAction']))
 		{
 			// 20051002 - fm - interface changes
 			// 20050906 - fm
-			$sqlResult = createTcFromRequirement($arrIdReq, $prodID, $idSRS, $login_name);
+			$sqlResult = createTcFromRequirement($db,$arrIdReq, $prodID, $idSRS, $login_name);
 			$action = 'create';
 			$sqlItem = 'test case(s)';
 		}
@@ -142,12 +143,12 @@ elseif (isset($_REQUEST['multiAction']))
 
 // collect existing reqs for the SRS
 if ($bGetReqs) {
-	$arrReq = getRequirements($idSRS);
+	$arrReq = getRequirements($db,$idSRS);
 }
 // collect existing document data
 // $arrSpec = getReqSpec($idSRS);
 // 20051001 - fm - bug
-$arrSpec = getReqSpec($prodID,$idSRS);
+$arrSpec = getReqSpec($db,$prodID,$idSRS);
 
 //  - MHT - Added audit
 $arrSpec[0]['author'] = getUserName($db,$arrSpec[0]['id_author']);

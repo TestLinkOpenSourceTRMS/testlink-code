@@ -1,6 +1,6 @@
 <?
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
- *$Id: resultsMoreBuilds.inc.php,v 1.43 2005/12/28 07:34:55 franciscom Exp $ 
+ *$Id: resultsMoreBuilds.inc.php,v 1.44 2006/01/05 07:30:33 franciscom Exp $ 
  * 
  * @author Kevin Levy
  *
@@ -58,7 +58,7 @@ function createTestPlanReportHeader($testPlanName, $build_name_set,
 
 /**
  * Function createResultsForTestPlan()
- * Produces Report based on projectId, startBuild, endBuild, keyword, 
+ * Produces Report based on testPlanID, startBuild, endBuild, keyword, 
  * and owner.  The ability
  * to look at results across a range of builds as opposed to
  * 1 build or ALL builds is the 
@@ -81,14 +81,14 @@ function createTestPlanReportHeader($testPlanName, $build_name_set,
  * keywork LIKE '%$keyword%') - so this makes it easier to do queries.
  *
  * @param string testPlanName 
- * @param string projectId 
+ * @param string testPlanID
  * @param string builds selected - array of builds to be included in query
  * @param string keyword - can be empty string
  * @param string owner - can be empty string
  * @return string returnData - report based on query parameters  
  */
 // default start and end builds are specified 
-function createResultsForTestPlan($testPlanName, $testPlanID, 
+function createResultsForTestPlan(&$db,$testPlanName, $testPlanID, 
 				  $buildsArray, $keyword, $owner, $lastStatus, $xls, $componentsSelected)
 {
 
@@ -106,7 +106,7 @@ function createResultsForTestPlan($testPlanName, $testPlanID,
   $build_name_set = null;
 
   // list of ALL (id, name) pairs for the test plan
-  $arrAllBuilds = getBuilds($testPlanID," ORDER BY build.name ");
+  $arrAllBuilds = getBuilds($db,$testPlanID," ORDER BY build.name ");
 
   for($i = 0;$i < sizeof($buildsArray);$i++)
 	{
@@ -531,16 +531,16 @@ function constructTestCaseInfo($tcid,$myrow)
 
 // 20050915 - fm
 // 20050912 - added by kl
-function getArrayOfComponentNames($tpID)
+function getArrayOfComponentNames(&$db,$tpID)
 {
 	$sql = " SELECT mgtcomponent.name, mgtcomponent.id " . 
 		" FROM component,mgtcomponent " .
 		" WHERE component.mgtcompid = mgtcomponent.id " .
 		" AND projid=" . $tpID;
 	
-	$result = do_sql_query($sql);
+	$result = $db->exec_query($sql);
 	$arrayOfComponentNames = array();
-	while($myrow = $GLOBALS['db']->fetch_array($result)) 
+	while($myrow = $db->fetch_array($result)) 
 	{
 		$arrayOfComponentNames[$myrow[1]] =  $myrow[0];
 	}

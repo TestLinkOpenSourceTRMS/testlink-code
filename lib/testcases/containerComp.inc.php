@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: containerComp.inc.php,v 1.6 2005/12/29 20:59:00 schlundus Exp $ */
+/* $Id: containerComp.inc.php,v 1.7 2006/01/05 07:30:34 franciscom Exp $ */
 /* Purpose:  This page manages all the editing of test specification containers. */
 /*
  *
@@ -19,7 +19,7 @@
 require_once(TL_ABS_PATH."/lib/functions/exec.inc.php");
 require_once(TL_ABS_PATH."/lib/keywords/keywords.inc.php");
 
-function viewer_edit_new_com($amy_keys, $oFCK, $action, $productID, $id=null)
+function viewer_edit_new_com(&$db,$amy_keys, $oFCK, $action, $productID, $id=null)
 {
 	$a_tpl = array( 'editCOM' => 'containerEdit.tpl',
 					'newCOM'  => 'containerNew.tpl');
@@ -33,7 +33,7 @@ function viewer_edit_new_com($amy_keys, $oFCK, $action, $productID, $id=null)
 	$the_data = null;
 	if ($action == 'editCOM')
 	{
-		$the_data = getComponent($id);
+		$the_data = getComponent($db,$id);
 		$component_name=$the_data['name'];
 		$smarty->assign('containerID',$id);	
 	}
@@ -71,7 +71,7 @@ function copy_or_move_comp(&$db,$action, $compID, $prodID ,$hash, $login_name, $
 		$sqlKeyword = "SELECT DISTINCT(keywords) FROM mgtcomponent, mgtcategory,mgttestcase ".
 					  "WHERE mgtcomponent.id = mgtcategory.compid AND mgttestcase.catid = mgtcategory.id " .
 					  "AND mgtcomponent.id = {$compID}  ORDER BY keywords";
-		$keyArray = buildKeyWordArray($sqlKeyword);
+		$keyArray = buildKeyWordArray($db,$sqlKeyword);
 		if (sizeof($keyArray))
 		{
 			$keyList = "";
@@ -83,7 +83,7 @@ function copy_or_move_comp(&$db,$action, $compID, $prodID ,$hash, $login_name, $
 				$keyList .= $GLOBALS['db']->prepare_string($kw);
 			}
 			$sqlKeyword = "SELECT keyword,notes from keywords where keyword IN ('{$keyList}') AND prodID = {$prodID}";
-			$kwData = selectData($sqlKeyword);
+			$kwData = selectData($db,$sqlKeyword);
 			for($i = 0;$i < sizeof($kwData);$i++)
 			{
 				$keyword = $kwData[$i]['keyword'];
@@ -110,6 +110,6 @@ function copy_or_move_comp(&$db,$action, $compID, $prodID ,$hash, $login_name, $
 	}
 	
 	
-	showProduct($prodID, $result,$update,$dest_prodID);
+	showProduct($db,$prodID, $result,$update,$dest_prodID);
 }
 ?>

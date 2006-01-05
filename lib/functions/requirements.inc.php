@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: requirements.inc.php,v $
- * @version $Revision: 1.18 $
- * @modified $Date: 2006/01/04 11:30:19 $ by $Author: franciscom $
+ * @version $Revision: 1.19 $
+ * @modified $Date: 2006/01/05 07:30:33 $ by $Author: franciscom $
  *
  * @author Martin Havlat <havlat@users.sourceforge.net>
  * 
@@ -42,22 +42,22 @@ require_once('print.inc.php');
  * 
  * @author Martin Havlat 
  */
-function createReqSpec($title, $scope, $countReq, $prodID, $userID, $type = 'n')
+function createReqSpec(&$db,$title, $scope, $countReq, $prodID, $userID, $type = 'n')
 {
 	tLog('Create SRS requested: ' . $title);
 	if (strlen($title)) {
 		$sql = "INSERT INTO req_spec (id_product, title, scope, type, total_req, id_author, create_date) " .
-				"VALUES (" . $prodID . ",'" . $GLOBALS['db']->prepare_string($title) . "','" . $GLOBALS['db']->prepare_string($scope) . 
-				"','" . $GLOBALS['db']->prepare_string($type) . "','" . 
-				$GLOBALS['db']->prepare_string($countReq) . "'," . $GLOBALS['db']->prepare_string($userID) . 
+				"VALUES (" . $prodID . ",'" . $db->prepare_string($title) . "','" . $db->prepare_string($scope) . 
+				"','" . $db->prepare_string($type) . "','" . 
+				$db->prepare_string($countReq) . "'," . $db->prepare_string($userID) . 
 				", CURRENT_DATE)";
-		$result = do_sql_query($sql); 
+		$result = $db->exec_query($sql); 
 		if ($result) {
 			$result = 'ok';
 		} else {
 			 $result = 'The INSERT request fails with these values:' . 
 					$title . ', ' . $scope . ', ' . $countReq;
-			tLog('SQL: ' . $sql . ' fails: ' . $GLOBALS['db']->error_msg(), 'ERROR');
+			tLog('SQL: ' . $sql . ' fails: ' . $db->error_msg(), 'ERROR');
 		}
 	} else {
 		$result = "You cannot enter an empty title!";
@@ -79,20 +79,20 @@ function createReqSpec($title, $scope, $countReq, $prodID, $userID, $type = 'n')
  * 
  * @author Martin Havlat 
  */
-function updateReqSpec($id, $title, $scope, $countReq, $userID, $type = 'n')
+function updateReqSpec(&$db,$id, $title, $scope, $countReq, $userID, $type = 'n')
 {
 	if (strlen($title)) {
-		$sql = "UPDATE req_spec SET title='" . $GLOBALS['db']->prepare_string($title) . 
-				"', scope='" . $GLOBALS['db']->prepare_string($scope) . "', type='" . $GLOBALS['db']->prepare_string($type) .
-				"', total_req ='" . $GLOBALS['db']->prepare_string($countReq) . "', id_modifier='" . 
-				$GLOBALS['db']->prepare_string($userID) . "', modified_date=CURRENT_DATE WHERE id=" . $id;
-		$result = do_sql_query($sql); 
+		$sql = "UPDATE req_spec SET title='" . $db->prepare_string($title) . 
+				"', scope='" . $db->prepare_string($scope) . "', type='" . $db->prepare_string($type) .
+				"', total_req ='" . $db->prepare_string($countReq) . "', id_modifier='" . 
+				$db->prepare_string($userID) . "', modified_date=CURRENT_DATE WHERE id=" . $id;
+		$result = $db->exec_query($sql); 
 		if ($result) {
 			$result = 'ok';
 		} else {
 			 $result = 'The UPDATE request fails with these values:' . 
 					$title . ', ' . $scope . ', ' . $countReq;
-			tLog('SQL: ' . $sql . ' fails: ' . $GLOBALS['db']->error_msg(), 'ERROR');
+			tLog('SQL: ' . $sql . ' fails: ' . $db->error_msg(), 'ERROR');
 		}
 	} else {
 		$result = "You cannot enter an empty title!";
@@ -108,25 +108,25 @@ function updateReqSpec($id, $title, $scope, $countReq, $userID, $type = 'n')
  * 
  * @author Martin Havlat 
  **/
-function deleteReqSpec ($idSRS)
+function deleteReqSpec (&$db,$idSRS)
 {
 	// delete requirements and coverage
-	$arrReq = getRequirements($idSRS);
+	$arrReq = getRequirements($db,$idSRS);
 	if (sizeof($arrReq))
 	{
 		foreach ($arrReq as $oneReq) {
-			$result = deleteRequirement($oneReq['id']);
+			$result = deleteRequirement($db,$oneReq['id']);
 		}
 	}
 		
 	// delete specification itself
 	$sql = "DELETE FROM req_spec WHERE id=" . $idSRS;
-	$result = do_sql_query($sql); 
+	$result = $db->exec_query($sql); 
 	if ($result) {
 		$result = 'ok';
 	} else {
 		$result = 'The DELETE SRS request fails.';
-		tLog('SQL: ' . $sql . ' fails: ' . $GLOBALS['db']->error_msg(), 'ERROR');
+		tLog('SQL: ' . $sql . ' fails: ' . $db->error_msg(), 'ERROR');
 	}
 	return $result; 
 }
@@ -140,7 +140,7 @@ function deleteReqSpec ($idSRS)
  * 
  * @author Martin Havlat 
  **/
-function getReqSpec($prodID, $set = 'product')
+function getReqSpec(&$db,$prodID, $set = 'product')
 {
 	$sql = "SELECT * FROM req_spec";
 	if ($set == 'product') {
@@ -150,7 +150,7 @@ function getReqSpec($prodID, $set = 'product')
 	}
 	// else all
 
-	return selectData($sql);
+	return selectData($db,$sql);
 }
 
 /** 
@@ -160,12 +160,12 @@ function getReqSpec($prodID, $set = 'product')
  * 
  * @author Martin Havlat 
  **/
-function getOptionReqSpec($prodID)
+function getOptionReqSpec(&$db,$prodID)
 {
 	$sql = "SELECT id,title FROM req_spec WHERE id_product=" . $prodID . 
 			" ORDER BY title";
 	
-	return selectOptionData($sql);
+	return selectOptionData($db,$sql);
 }
 
 
@@ -181,7 +181,7 @@ function getOptionReqSpec($prodID)
  * 
  * @author Martin Havlat 
  */
-function getRequirements($idSRS, $range = 'all', $idTc = null)
+function getRequirements(&$db,$idSRS, $range = 'all', $idTc = null)
 {
 	if ($range == 'all') {
 		$sql = "SELECT * FROM requirements WHERE id_srs=" . $idSRS . " ORDER BY title";
@@ -192,7 +192,7 @@ function getRequirements($idSRS, $range = 'all', $idTc = null)
 				"req_coverage.id_tc=" . $idTc . " ORDER BY title";
 	}
 
-	return selectData($sql);
+	return selectData($db,$sql);
 }
 
 /** 
@@ -241,18 +241,18 @@ function array_diff_byId ($arrAll, $arrPart)
  * @return array Coverage in three internal arrays: covered, uncovered, nottestable REQ
  * @author martin havlat
  */
-function getReqCoverage_general($idSRS)
+function getReqCoverage_general(&$db,$idSRS)
 {
 	$output = array('covered' => array(), 'uncovered' => array(), 'nottestable' => array());
 	
 	// get requirements
 	$sql_common = "SELECT id,title FROM requirements WHERE id_srs=" . $idSRS;
 	$sql = $sql_common . " AND status='v' ORDER BY title";
-	$arrReq = selectData($sql);
+	$arrReq = selectData($db,$sql);
 
 	// get not-testable requirements
 	$sql = $sql_common . " AND status='" . NON_TESTABLE_REQ . "' ORDER BY title";
-	$output['nottestable'] = selectData($sql);
+	$output['nottestable'] = selectData($db,$sql);
 	
 	// get coverage
 	if (sizeof($arrReq))
@@ -260,7 +260,7 @@ function getReqCoverage_general($idSRS)
 		foreach ($arrReq as $req) 
 		{
 			// collect TC for REQ
-			$arrCoverage = getTc4Req($req['id']);
+			$arrCoverage = getTc4Req($db,$req['id']);
 	
 			if (count($arrCoverage) > 0) {
 				// add information about coverage
@@ -281,7 +281,7 @@ function getReqCoverage_general($idSRS)
  * @return array results
  * @author havlatm
  */
-function getReqMetrics_general($idSRS)
+function getReqMetrics_general(&$db,$idSRS)
 {
 	$output = array();
 	
@@ -305,9 +305,9 @@ function getReqMetrics_general($idSRS)
 	$sql = "SELECT DISTINCT requirements.id FROM requirements, req_coverage WHERE" .
 				" requirements.id_srs=" . $idSRS .
 				" AND requirements.id=req_coverage.id_req";
-	$result = do_sql_query($sql);
+	$result = $db->exec_query($sql);
 	if (!empty($result)) {
-		$output['covered'] = $GLOBALS['db']->num_rows($result);
+		$output['covered'] = $db->num_rows($result);
 	}
 
 	$output['uncovered'] = $output['expectedTotal'] - $output['covered'] 
@@ -324,9 +324,9 @@ function getReqMetrics_general($idSRS)
  * @return array Results
  * @author havlatm
  */
-function getReqMetrics_testPlan($idSRS, $idTestPlan)
+function getReqMetrics_testPlan(&$db,$idSRS, $idTestPlan)
 {
-	$output = getReqMetrics_general($idSRS);
+	$output = getReqMetrics_general($db,$idSRS);
 	$output['coveredByTestPlan'] = 0;
 	
 	$sql = "SELECT DISTINCT requirements.id FROM requirements,testcase," .
@@ -335,9 +335,9 @@ function getReqMetrics_testPlan($idSRS, $idTestPlan)
 				" AND category.compid=component.id AND category.id=testcase.catid" .
 				" AND testcase.mgttcid = req_coverage.id_tc AND id_req=requirements.id" .
 				" AND requirements.status = 'v'"; 
-	$result = do_sql_query($sql);
+	$result = $db->exec_query($sql);
 	if (!empty($result)) {
-		$output['coveredByTestPlan'] = $GLOBALS['db']->num_rows($result);
+		$output['coveredByTestPlan'] = $db->num_rows($result);
 	}
 
 	$output['uncoveredByTestPlan'] = $output['expectedTotal'] 
@@ -353,14 +353,14 @@ function getReqMetrics_testPlan($idSRS, $idTestPlan)
  * @param string $idREQ ID of req.
  * @return assoc_array list of requirements
  */
-function getReqData($idReq)
+function getReqData(&$db,$idReq)
 {
 	$output = array();
 	
 	$sql = "SELECT * FROM requirements WHERE id=" . $idReq;
-	$result = do_sql_query($sql);
+	$result = $db->exec_query($sql);
 	if (!empty($result)) {
-		$output = $GLOBALS['db']->fetch_array($result);
+		$output = $db->fetch_array($result);
 	}
 	
 	return $output;
@@ -370,13 +370,13 @@ function getReqData($idReq)
  * @param string $idREQ ID of req.
  * @return assoc_array list of test cases [id, title]
  */
-function getTc4Req($idReq)
+function getTc4Req(&$db,$idReq)
 {
 	$sql = "SELECT mgttestcase.id,mgttestcase.title FROM mgttestcase, req_coverage " .
 			"WHERE req_coverage.id_req=" . $idReq . 
 			" AND req_coverage.id_tc=mgttestcase.id";
 	
-	return selectData($sql);
+	return selectData($db,$sql);
 }
 
 
@@ -386,7 +386,7 @@ function getTc4Req($idReq)
  * @return assoc_array list of test cases [id, title]
  * @author martin havlat
  */
-function getSuite4Req($idReq, $idPlan)
+function getSuite4Req(&$db,$idReq, $idPlan)
 {
 	$sql = "SELECT testcase.id,testcase.title FROM testcase,req_coverage,category," .
 				"component WHERE component.projid=" . $idPlan .
@@ -394,7 +394,7 @@ function getSuite4Req($idReq, $idPlan)
 				" AND testcase.mgttcid = req_coverage.id_tc AND id_req=" . 
 				$idReq . " ORDER BY title";
 	
-	return selectData($sql);
+	return selectData($db,$sql);
 }
 
 /** 
@@ -404,7 +404,7 @@ function getSuite4Req($idReq, $idPlan)
  * @param string SRS ID (optional)
  * @return assoc_array list of test cases [id, title]
  */
-function getReq4Tc($idTc, $idSRS = 'all')
+function getReq4Tc(&$db,$idTc, $idSRS = 'all')
 {
 	$sql = "SELECT requirements.id,requirements.title FROM requirements, req_coverage " .
 			"WHERE req_coverage.id_tc=" . $idTc . 
@@ -414,7 +414,7 @@ function getReq4Tc($idTc, $idSRS = 'all')
 		$sql .= " AND requirements.id_srs=" . $idSRS;
 	}
 
-	return selectData($sql);
+	return selectData($db,$sql);
 }
 
 /** 
@@ -430,16 +430,17 @@ function getReq4Tc($idTc, $idSRS = 'all')
  * 
  * @author Martin Havlat 
  **/
-function createRequirement($title, $scope, $idSRS, $userID, $status = 'v', $type = 'n', $req_doc_id = null)
+function createRequirement(&$db,$title, $scope, $idSRS, $userID, 
+                           $status = 'v', $type = 'n', $req_doc_id = null)
 {
 	if (strlen($title)) {
 		$sql = "INSERT INTO requirements (id_srs, req_doc_id, title, scope, status, type, id_author, create_date)" .
-				" VALUES (" . $idSRS . ",'" . $GLOBALS['db']->prepare_string($req_doc_id) .  
-				"','" . $GLOBALS['db']->prepare_string($title) . "','" . $GLOBALS['db']->prepare_string($scope) . 
-				 "','" . $GLOBALS['db']->prepare_string($status) . "','" . $GLOBALS['db']->prepare_string($type) .
-				 "'," . $GLOBALS['db']->prepare_string($userID) . ", CURRENT_DATE)";
+				" VALUES (" . $idSRS . ",'" . $db->prepare_string($req_doc_id) .  
+				"','" . $db->prepare_string($title) . "','" . $db->prepare_string($scope) . 
+				 "','" . $db->prepare_string($status) . "','" . $db->prepare_string($type) .
+				 "'," . $db->prepare_string($userID) . ", CURRENT_DATE)";
 
-		$result = do_sql_query($sql); 
+		$result = $db->exec_query($sql); 
 		
 		$result = $result ? 'ok' : 
 		          'The INSERT request fails with these values:' . $title . ', ' . $scope . ', ' . $status .
@@ -464,23 +465,24 @@ function createRequirement($title, $scope, $idSRS, $userID, $status = 'v', $type
  * 
  * @author Martin Havlat 
  **/
-function updateRequirement($id, $title, $scope, $userID, $status, $type, $reqDocId=null)
+function updateRequirement(&$db,$id, $title, $scope, $userID, $status, $type, $reqDocId=null)
 {
 	if (strlen($title)) {
-		$sql = "UPDATE requirements SET title='" . $GLOBALS['db']->prepare_string($title) . 
-				"', scope='" . $GLOBALS['db']->prepare_string($scope) . "', status='" . $GLOBALS['db']->prepare_string($status) . 
-				"', type='" . $GLOBALS['db']->prepare_string($type) . 
-				"', id_modifier='" . $GLOBALS['db']->prepare_string($userID) . 
-				"', req_doc_id='" . $GLOBALS['db']->prepare_string($reqDocId) .
+		$sql = "UPDATE requirements SET title='" . $db->prepare_string($title) . 
+				"', scope='" . $db->prepare_string($scope) . "', status='" . 
+				$db->prepare_string($status) . 
+				"', type='" . $db->prepare_string($type) . 
+				"', id_modifier='" . $db->prepare_string($userID) . 
+				"', req_doc_id='" . $db->prepare_string($reqDocId) .
 				"', modified_date=CURRENT_DATE WHERE id=" . $id;	
 	
-		$result = do_sql_query($sql); 
+		$result = $db->exec_query($sql); 
 		if ($result) {
 			$result = 'ok';
 		} else {
 			 $result = 'The UPDATE request fails with these values:' . 
 					$title . ', ' . $scope;
-			tLog('SQL: ' . $sql . ' fails: ' . $GLOBALS['db']->error_msg(), 'ERROR');
+			tLog('SQL: ' . $sql . ' fails: ' . $db->error_msg(), 'ERROR');
 		}
 	} else {
 		$result = "You cannot enter an empty title!";
@@ -495,21 +497,21 @@ function updateRequirement($id, $title, $scope, $userID, $status, $type, $reqDoc
  * 
  * @author Martin Havlat 
  **/
-function deleteRequirement($id)
+function deleteRequirement(&$db,$id)
 {
 	// delete dependencies with test specification
 	$sql = "DELETE FROM req_coverage WHERE id_req=" . $id;
-	$result = do_sql_query($sql); 
+	$result = $db->exec_query($sql); 
 	if ($result) {
 		// delete req itself
 		$sql = "DELETE FROM requirements WHERE id=" . $id;
-		$result = do_sql_query($sql); 
+		$result = $db->exec_query($sql); 
 	}
 	if ($result) {
 		$result = 'ok';
 	} else {
 		$result = 'The DELETE REQ request fails.';
-		tLog('SQL: ' . $sql . ' fails: ' . $GLOBALS['db']->error_msg(), 'ERROR');
+		tLog('SQL: ' . $sql . ' fails: ' . $db->error_msg(), 'ERROR');
 	}
 	return $result; 
 }
@@ -531,9 +533,9 @@ function deleteRequirement($id)
  * @author Francisco Mancardi
  *
  **/
-function printSRS($idSRS, $prodName, $prodID, $userID, $base_href)
+function printSRS(&$db,$idSRS, $prodName, $prodID, $userID, $base_href)
 {
-	$arrSpec = getReqSpec($prodID,$idSRS);
+	$arrSpec = getReqSpec($db,$prodID,$idSRS);
 	
 	$output = printHeader($arrSpec[0]['title'],$base_href);
 	$output .= printFirstPage($arrSpec[0]['title'], $prodName, $userID);
@@ -553,9 +555,9 @@ function printSRS($idSRS, $prodName, $prodID, $userID, $base_href)
  * 20051125 - scs - added escaping of req names
  * 20051202 - scs - fixed 241
  **/
-function printRequirements($idSRS)
+function printRequirements(&$db,$idSRS)
 {
-	$arrReq = getRequirements($idSRS);
+	$arrReq = getRequirements($db,$idSRS);
 	
 	$output = "<h2>" . lang_get('reqs') . "</h2>\n<div>\n";
 	if (count($arrReq) > 0) {
@@ -581,7 +583,7 @@ function printRequirements($idSRS)
  * 
  * @author Martin Havlat 
  */
-function assignTc2Req($idTc, $idReq)
+function assignTc2Req(&$db,$idTc, $idReq)
 {
 	$output = 0;
 	tLog("assignTc2Req TC:" . $idTc . ' and REQ:' . $idReq);
@@ -590,24 +592,24 @@ function assignTc2Req($idTc, $idReq)
 	{
 		$sql = 'SELECT COUNT(*) AS num_cov FROM req_coverage WHERE id_req=' . $idReq . 
 				' AND id_tc=' . $idTc;
-		$result = do_sql_query($sql);
+		$result = $db->exec_query($sql);
 
-    $row=$GLOBALS['db']->fetch_array($result);
+    $row=$db->fetch_array($result);
 		if ($row['num_cov'] == 0) {
 	
 			// create coverage dependency
 			$sqlReqCov = 'INSERT INTO req_coverage (id_req,id_tc) VALUES ' .
 					"(" . $idReq . "," . $idTc . ")";
-			$resultReqCov = do_sql_query($sqlReqCov);
+			$resultReqCov = $db->exec_query($sqlReqCov);
 			// collect results
-			if ($GLOBALS['db']->affected_rows() == 1) {
+			if ($db->affected_rows() == 1) {
 				$output = 1;
 				tLog('Dependency was created between TC:' . $idTc . ' and REQ:' . $idReq, 'INFO');
 			}
 			else
 			{
 				tLog("Dependency wasn't created between TC:" . $idTc . ' and REQ:' . $idReq .
-					"\t" . $GLOBALS['db']->error_msg(), 'ERROR');
+					"\t" . $db->error_msg(), 'ERROR');
 			}
 		}
 		else
@@ -631,7 +633,7 @@ function assignTc2Req($idTc, $idReq)
  * 
  * @author Martin Havlat 
  */
-function unassignTc2Req($idTc, $idReq)
+function unassignTc2Req(&$db,$idTc, $idReq)
 {
 	$output = 0;
 	tLog("unassignTc2Req TC:" . $idTc . ' and REQ:' . $idReq);
@@ -639,16 +641,16 @@ function unassignTc2Req($idTc, $idReq)
 	// create coverage dependency
 	$sqlReqCov = 'DELETE FROM req_coverage WHERE id_req=' . $idReq . 
 			' AND id_tc=' . $idTc;
-	$resultReqCov = do_sql_query($sqlReqCov);
+	$resultReqCov = $db->exec_query($sqlReqCov);
 
 	// collect results
-	if ($GLOBALS['db']->affected_rows() == 1) {
+	if ($db->affected_rows() == 1) {
 		$output = 1;
 		tLog('Dependency was deleted between TC:' . $idTc . ' and REQ:' . $idReq, 'INFO');
 	}
 	else {
 		tLog("Dependency wasn't deleted between TC:" . $idTc . ' and REQ:' . $idReq .
-				"\n" . $sqlReqCov. "\n" . $GLOBALS['db']->error_msg(), 'ERROR');
+				"\n" . $sqlReqCov. "\n" . $db->error_msg(), 'ERROR');
 	}
 
 	return $output;
@@ -672,7 +674,7 @@ function unassignTc2Req($idTc, $idReq)
  * 20051025 - MHT - corrected introduced bug with insert TC
  *
  */
-function createTcFromRequirement($mixIdReq, $prodID, $idSRS, $login_name)
+function createTcFromRequirement(&$db,$mixIdReq, $prodID, $idSRS, $login_name)
 {
 	require_once("../testcases/archive.inc.php");
 	
@@ -696,7 +698,7 @@ function createTcFromRequirement($mixIdReq, $prodID, $idSRS, $login_name)
 	if ( $g_req_cfg->use_req_spec_as_category_name )
 	{
 	  // SRS Title
-	  $arrSpec = getReqSpec($prodID,$idSRS);
+	  $arrSpec = getReqSpec($db,$prodID,$idSRS);
 	  $auto_category_name = substr($arrSpec[0]['title'],0,$g_field_size->category_name);
 	}
 	
@@ -706,9 +708,9 @@ function createTcFromRequirement($mixIdReq, $prodID, $idSRS, $login_name)
 	          " WHERE name='" . $auto_component_name . "' " .
 	          " AND prodid=" . $prodID;
 	          
-	$resultCOM = do_sql_query($sqlCOM);
-  if ($GLOBALS['db']->num_rows($resultCOM) == 1) {
-		$row = $GLOBALS['db']->fetch_array($resultCOM);
+	$resultCOM = $db->exec_query($sqlCOM);
+  if ($db->num_rows($resultCOM) == 1) {
+		$row = $db->fetch_array($resultCOM);
 		$idCom = $row['id'];
 	}
 	else {
@@ -719,18 +721,18 @@ function createTcFromRequirement($mixIdReq, $prodID, $idSRS, $login_name)
 		                              "'" . $g_req_cfg->scope_for_component . "'," .  
 		                $prodID . ")";
 		                
-		$resultCOM = do_sql_query($sqlInsertCOM);
-		if ($GLOBALS['db']->affected_rows()) {
-			$resultCOM = do_sql_query($sqlCOM);
-			if ($GLOBALS['db']->num_rows($resultCOM) == 1) {
-				$row = $GLOBALS['db']->fetch_array($resultCOM);
+		$resultCOM = $db->exec_query($sqlInsertCOM);
+		if ($db->affected_rows()) {
+			$resultCOM = $db->exec_query($sqlCOM);
+			if ($db->num_rows($resultCOM) == 1) {
+				$row = $db->fetch_array($resultCOM);
 				$idCom = $row['id'];
 			} else {
 				tLog('Component:' . $auto_component_name . 
-				     ' was not found again! ' . $GLOBALS['db']->error_msg());
+				     ' was not found again! ' . $db->error_msg());
 			}
 		} else {
-			tLog($GLOBALS['db']->error_msg(), 'ERROR');
+			tLog($db->error_msg(), 'ERROR');
 		}
 	}
 	tLog('createTcFromRequirement: $idCom=' . $idCom);
@@ -740,9 +742,9 @@ function createTcFromRequirement($mixIdReq, $prodID, $idSRS, $login_name)
 	          " WHERE name='" . $auto_category_name . "' " .
 	          " AND compid=" . $idCom;
 	          
-	$resultCAT = do_sql_query($sqlCAT);
-	if ($resultCAT && ($GLOBALS['db']->num_rows($resultCAT) == 1)) {
-		$row = $GLOBALS['db']->fetch_array($resultCAT);
+	$resultCAT = $db->exec_query($sqlCAT);
+	if ($resultCAT && ($db->num_rows($resultCAT) == 1)) {
+		$row = $db->fetch_array($resultCAT);
 		$idCat = $row['id'];
 	}
 	else {
@@ -752,13 +754,13 @@ function createTcFromRequirement($mixIdReq, $prodID, $idSRS, $login_name)
 		                              "'" . $g_req_cfg->objective_for_category . "'," .
 				                     $idCom . ")";
 				                     
-		$resultCAT = do_sql_query($sqlInsertCAT);
-		$resultCAT = do_sql_query($sqlCAT);
-		if ($GLOBALS['db']->num_rows($resultCAT) == 1) {
-			$row = $GLOBALS['db']->fetch_array($resultCAT);
+		$resultCAT = $db->exec_query($sqlInsertCAT);
+		$resultCAT = $db->exec_query($sqlCAT);
+		if ($db->num_rows($resultCAT) == 1) {
+			$row = $db->fetch_array($resultCAT);
 		  $idCat = $row['id'];
 		} else {
-			die($GLOBALS['db']->error_msg());
+			die($db->error_msg());
 		}
 	}
 	tLog('createTcFromRequirement: $idCat=' . $idCat);
@@ -768,17 +770,17 @@ function createTcFromRequirement($mixIdReq, $prodID, $idSRS, $login_name)
 	{
 		//get data
 		tLog('proceed: $execIdReq=' . $execIdReq);
-		$reqData = getReqData($execIdReq);
+		$reqData = getReqData($db,$execIdReq);
 
 		tLog('$reqData:' . implode(',',$reqData));
 		
 		// create TC
 		// 20051025 - MHT - corrected input parameters order
-		$tcID =  insertTestcase($idCat, $reqData['title'], "Verify requirement: \n" . 
+		$tcID =  insertTestcase($db,$idCat, $reqData['title'], "Verify requirement: \n" . 
 				          $reqData['scope'], null, null, $login_name);
 		
 		// create coverage dependency
-		if (!assignTc2Req($tcID, $reqData['id'])) {
+		if (!assignTc2Req($db,$tcID, $reqData['id'])) {
 			$output = 'Test case: ' . $reqData['title'] . "was not created </br>";
 		}
 	}

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: keywordsAssign.php,v $
  *
- * @version $Revision: 1.8 $
- * @modified $Date: 2005/12/29 20:59:00 $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2006/01/05 07:30:34 $
  *
  * Purpose:  Assign keywords to set of testcases in tree structure
  *
@@ -18,7 +18,7 @@ require_once("../../config.inc.php");
 require_once("../functions/common.php");
 require_once("../testcases/archive.inc.php");
 require_once("keywords.inc.php");
-testlinkInitPage();
+testlinkInitPage($db);
 
 $_REQUEST = strings_stripSlashes($_REQUEST);
 $id = isset($_REQUEST['data']) ? intval($_REQUEST['data']) : null;
@@ -45,7 +45,7 @@ else if ($edit == 'component')
 	if($bAssignComponent) 
 		$result = updateComponentKeywords($db,$id,$keyword);
 
-	$componentData = getComponent($id);
+	$componentData = getComponent($db,$id);
 	$title = $componentData['name'];
 }
 else if ($edit == 'category')
@@ -53,7 +53,7 @@ else if ($edit == 'category')
 	if($bAssignCategory) 
 		$result = updateCategoryKeywords($db,$id,$keyword);
 
-	$categoryData = getCategory($id);
+	$categoryData = getCategory($db,$id);
 	$title = $categoryData['name'];
 }
 else if($edit == 'testcase')
@@ -62,7 +62,7 @@ else if($edit == 'testcase')
 		$result = updateTCKeywords($db,$id,$keyword);
 
 	$tcKeywords = null;
-	$tcData = getTestcase($id,false);
+	$tcData = getTestcase($db,$id,false);
 	if ($tcData['keywords'])
 		$tcKeywords = explode(",",$tcData['keywords']);  
 

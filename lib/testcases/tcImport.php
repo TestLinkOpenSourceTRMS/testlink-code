@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: tcImport.php,v $
  *
- * @version $Revision: 1.7 $
- * @modified $Date: 2005/12/29 20:59:00 $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2006/01/05 07:30:34 $
  *
  * @author	Martin Havlat
  * @author	Chad Rosen
@@ -20,7 +20,7 @@
 require('../../config.inc.php');
 require_once('common.php');
 require_once('import.inc.php');
-testlinkInitPage();
+testlinkInitPage($db);
 
 // Contains the full path and filename of the uploaded file as stored on the server.
 $source = isset($HTTP_POST_FILES['uploadedFile']['tmp_name']) ? $HTTP_POST_FILES['uploadedFile']['tmp_name'] : null;

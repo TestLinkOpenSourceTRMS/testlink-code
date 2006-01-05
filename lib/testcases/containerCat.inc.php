@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: containerCat.inc.php,v 1.3 2005/10/10 19:18:25 schlundus Exp $ */
+/* $Id: containerCat.inc.php,v 1.4 2006/01/05 07:30:34 franciscom Exp $ */
 /* Purpose:  This page manages all the editing of test specification containers. */
 /*
  *
@@ -14,7 +14,7 @@
  * @author: francisco mancardi - 20050810
  * deprecated $_SESSION['product'] removed
 */
-function viewer_edit_new_cat($amy_keys, $oFCK, $action, $componentID, $id=null)
+function viewer_edit_new_cat(&$db,$amy_keys, $oFCK, $action, $componentID, $id=null)
 {
 	$a_tpl = array('editCat' => 'containerEdit.tpl',
 				'newCAT'  => 'containerNew.tpl');
@@ -31,7 +31,7 @@ function viewer_edit_new_cat($amy_keys, $oFCK, $action, $componentID, $id=null)
 	if ($action ==  'editCat' )
 	{
 		// 20050824 - fm - fckeditor
-		$the_data = getCategory($id);
+		$the_data = getCategory($db,$id);
 		$category_name = $the_data['name'];
 		$smarty->assign('containerID',$id);
 	}

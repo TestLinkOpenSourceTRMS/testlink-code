@@ -1,14 +1,12 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: buildNew.php,v 1.15 2006/01/04 11:16:11 franciscom Exp $ */
+/* $Id: buildNew.php,v 1.16 2006/01/05 07:30:34 franciscom Exp $ */
 /* 
-Purpose:  admins create new builds for a project 
+Purpose:  admins create new builds for a testplan 
 
 @author Francisco Mancardi - 20051006 
 added edit build
 
-@author Francisco Mancardi - 20050909
-refactoring from project to testplan
 
 @author Francisco Mancardi - 20050826
 htmlarea replaced with fckeditor
@@ -20,14 +18,14 @@ require_once("plan.inc.php");
 require("../functions/builds.inc.php");
 require_once("../../lib/functions/lang_api.php");
 require_once("../../third_party/fckeditor/fckeditor.php");
-testlinkInitPage();
+testlinkInitPage($db);
 
 $tpID    = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0;
 $buildID = isset($_REQUEST['buildID']) ? intval($_REQUEST['buildID']) : 0;
 $build_name = isset($_REQUEST['build_name']) ? trim(strings_stripSlashes($_REQUEST['build_name'])) : null;
 $notes = isset($_REQUEST['notes']) ? strings_stripSlashes($_REQUEST['notes']) : null;
 
-$the_builds = getBuilds($tpID, " ORDER BY build.name ");
+$the_builds = getBuilds($db,$tpID, " ORDER BY build.name ");
 $smarty = new TLSmarty();
 
 $of = new fckeditor('notes') ;
@@ -106,8 +104,8 @@ if(isset($_REQUEST['edit_build']))
 }
 
 // 20051002 - fm - change order by
-$the_builds = getBuilds($tpID, " ORDER by build.name ");
-$notes = getBuildsAndNotes($tpID);
+$the_builds = getBuilds($db,$tpID, " ORDER by build.name ");
+$notes = getBuildsAndNotes($db,$tpID);
 
 
 $smarty->assign('TPname', $_SESSION['testPlanName']);

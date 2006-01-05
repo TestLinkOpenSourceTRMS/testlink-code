@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: planTestersNavigator.php,v 1.5 2005/12/31 14:38:10 schlundus Exp $ 
+* $Id: planTestersNavigator.php,v 1.6 2006/01/05 07:30:34 franciscom Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * 
@@ -14,14 +14,12 @@ require_once('common.php');
 require_once('users.inc.php');
 require_once('plan.inc.php');
 require_once("../../lib/functions/lang_api.php");
-testlinkInitPage();
+testlinkInitPage($db);
 
 // 20051120 - fm
 // The current selected Product
 $prod->id   = $_SESSION['productID'];
 $prod->name = $_SESSION['productName'];
-
-
 $type = isset($_GET['type']) ? $_GET['type'] : 'users';
 
 $arrData = null;
@@ -29,12 +27,7 @@ if ($type == 'plans')
 {
 	$title = lang_get('nav_test_plan');
 	$selected = 'selected="selected"';
-	
-	// $arrData = getAllActiveTestPlans();
-	// 20051120 - fm - filter by product
-	$arrData = getAllActiveTestPlans($prod->id,FILTER_BY_PRODUCT);
-	
-	
+	$arrData = getAllActiveTestPlans($db,$prod->id,FILTER_BY_PRODUCT);
 }
 else
 {
@@ -42,8 +35,6 @@ else
 	$selected = '';
 	$arrData = getAllUsers($db);
 }
-
-//echo "<pre>debug-45"; print_r($arrData); echo "</pre>";
 
 $smarty = new TLSmarty;
 $smarty->assign('title', $title);

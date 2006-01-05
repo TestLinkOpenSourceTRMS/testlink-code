@@ -2,7 +2,7 @@
 /** 
 *	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version $Id: planAddTCNavigator.php,v 1.5 2005/12/29 20:59:00 schlundus Exp $
+* 	@version $Id: planAddTCNavigator.php,v 1.6 2006/01/05 07:30:34 franciscom Exp $
 *	@author Martin Havlat
 * 
 * 	Navigator for feature: add Test Cases to a Test Case Suite in Test Plan. 
@@ -16,7 +16,7 @@ require("common.php");
 require_once("../keywords/keywords.inc.php");
 require_once("treeMenu.inc.php");
 require_once("../../lib/functions/lang_api.php");
-testlinkInitPage();
+testlinkInitPage($db);
 
 //setting up the top table with the date and build selection
 $key = null;

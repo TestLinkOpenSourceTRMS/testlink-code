@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: searchData.php,v 1.7 2005/12/29 20:59:00 schlundus Exp $
+ * $Id: searchData.php,v 1.8 2006/01/05 07:30:34 franciscom Exp $
  * Purpose:  This page presents the search results. 
  *
  * 20050821 - fm - changes to use template customization (trying to reduce code redundancy)
@@ -9,7 +9,7 @@
 require('../../config.inc.php');
 require("../functions/common.php");
 require_once("../../lib/functions/lang_api.php");
-testlinkInitPage();
+testlinkInitPage($db);
 
 $arrTc = array();
 if(!$_POST['submit'])

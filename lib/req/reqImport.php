@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqImport.php,v $
- * @version $Revision: 1.6 $
- * @modified $Date: 2005/10/17 20:11:27 $ by $Author: schlundus $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2006/01/05 07:30:34 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Import requirements to a specification. 
@@ -16,7 +16,7 @@
 require_once("../../config.inc.php");
 require_once("common.php");
 require_once('requirementsImport.inc.php');
-testlinkInitPage();
+testlinkInitPage($db);
 
 $idSRS = isset($_GET['idSRS']) ? strings_stripSlashes($_GET['idSRS']) : null;
 $importType = isset($_POST['importType']) ? strings_stripSlashes($_POST['importType']) : null;

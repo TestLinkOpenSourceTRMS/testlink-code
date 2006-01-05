@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsTC.php,v 1.7 2005/12/28 07:34:55 franciscom Exp $ 
+* $Id: resultsTC.php,v 1.8 2006/01/05 07:30:34 franciscom Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -9,9 +9,6 @@
 * Show Test Report by individual test case.
 *
 * @author 20050919 - fm - refactoring
-* @author 20050807 - fm
-* refactoring:  
-* removed deprecated: $_SESSION['project']
 * 
 * 20051022 - scs - correct wrong index
 */
@@ -20,10 +17,10 @@ require_once('common.php');
 require_once('builds.inc.php');
 require_once('results.inc.php');
 require_once("../../lib/functions/lang_api.php");
-testlinkInitPage();
+testlinkInitPage($db);
 
 $arrData = array();
-$arrBuilds = getBuilds($_SESSION['testPlanId'], " ORDER BY build.name ");
+$arrBuilds = getBuilds($db,$_SESSION['testPlanId'], " ORDER BY build.name ");
 
 // is output is excel?
 $xls = FALSE;
@@ -33,7 +30,7 @@ if (isset($_GET['format']) && $_GET['format'] =='excel'){
 
 // 20050919 - fm
 $sql = " SELECT MGTCOMP.name AS comp_name, MGTCAT.name as cat_name, TC.title, TC.id AS tcid, mgttcid" .
-       " FROM project TP, component COMP, category CAT, testcase TC, mgtcomponent MGTCOMP, mgtcategory MGTCAT " .
+       " FROM testplans TP, component COMP, category CAT, testcase TC, mgtcomponent MGTCOMP, mgtcategory MGTCAT " .
        " WHERE MGTCOMP.id = COMP.mgtcompid " .
        " AND MGTCAT.id = CAT.mgtcatid " .
 		   " AND COMP.projid=TP.id " .
@@ -41,10 +38,10 @@ $sql = " SELECT MGTCOMP.name AS comp_name, MGTCAT.name as cat_name, TC.title, TC
 		   " AND TC.catid=CAT.id" .
   	   " AND TP.id=" . $_SESSION['testPlanId'];
 
-$result = do_sql_query($sql);
+$result = $db->exec_query($sql);
 $bRights = has_rights("tp_execute") && !$xls;
 
-while ($myrow = $GLOBALS['db']->fetch_array($result))
+while ($myrow = $db->fetch_array($result))
 { //Cycle through all of the test cases
 	$container = null;
 	$container[] = htmlspecialchars($myrow['comp_name'] . ' / ' . $myrow['cat_name']);
@@ -54,7 +51,7 @@ while ($myrow = $GLOBALS['db']->fetch_array($result))
 	foreach ($arrBuilds as $build => $name)
 	{
 		$tcID = $myrow['tcid'];
-		$tcStatus = getStatus($tcID, $build);
+		$tcStatus = getStatus($db,$tcID, $build);
 		if($tcStatus != $g_tc_status['not_run'])
 		{
 			//This displays the pass,failed or blocked test case result

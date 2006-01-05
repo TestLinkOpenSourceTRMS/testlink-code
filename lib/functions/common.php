@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.27 $ $Author: schlundus $
- * @modified $Date: 2005/12/29 20:59:00 $
+ * @version $Revision: 1.28 $ $Author: franciscom $
+ * @modified $Date: 2006/01/05 07:30:33 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -14,7 +14,7 @@
  * @var array $_SESSION
  * - user related data are adjusted via doAuthorize.php and here (product & test plan)  
  * - has next values: valid (yes/no), user (login name), role (e.g. admin),
- * email, userID, productID, productName, project (use rather testPlanID),
+ * email, userID, productID, productName, testplan (use rather testPlanID),
  * testPlanID, testPlanName
  *
  *
@@ -173,7 +173,7 @@ function setPaths()
 //
 function checkTestPlanSelection()
 {
-	$tpID = isset($_GET['project']) ? intval($_GET['project']) : 0;
+	$tpID = isset($_GET['testplan']) ? intval($_GET['testplan']) : 0;
 	if ($tpID)
 	{
 		// Test Plan selection changed -> update SESSION INFO
@@ -187,12 +187,12 @@ function checkTestPlanSelection()
 //    pieces of the application
 //
 //
-function checkProductSelection()
+function checkProductSelection(&$db)
 {
 	$prodID = isset($_GET['product']) ? intval($_GET['product']) : 0;
 	if ($prodID)
 	{
-		setSessionProduct(getProduct($prodID));
+		setSessionProduct(getProduct($db,$prodID));
 	}
 }
 
@@ -205,7 +205,7 @@ function checkProductSelection()
 // Calling getUserProdTestPlans() instead of getUserTestPlans()
 //         to add ptoduct filtering of TP
 //
-function checkSessionTestPlan()
+function checkSessionTestPlan(&$db)
 {
 	// 20050813 - fm - added TP filtered by Product
 	$prodID = isset($_SESSION['productID']) ? $_SESSION['productID'] : null;
@@ -214,7 +214,7 @@ function checkSessionTestPlan()
 	if (!$sTestPlanID || ($sTestPlanID && !getUserTestPlan($_SESSION['userID'],$sTestPlanID,true)))
 	{
 	 	// 20050813 - fm
-		$tpInfo = getUserProdTestPlans($_SESSION['userID'],$prodID,true);
+		$tpInfo = getUserProdTestPlans($db,$_SESSION['userID'],$prodID,true);
 		if ($tpInfo)
 		{
 			setSessionTestPlan($tpInfo[0]);
@@ -231,14 +231,14 @@ function checkSessionTestPlan()
 //
 //
 
-function checkSessionProduct()
+function checkSessionProduct(&$db)
 {
 	$prodID = isset($_SESSION['productID']) ? $_SESSION['productID'] : null;
 	// if the session product exists, check to see if the user has rights to it
 	// 20050813 - fm - implified if-clause
-	if (!$prodID || !getProduct($prodID))
+	if (!$prodID || !getProduct($db,$prodID))
 	{
-		$products = getProducts();
+		$products = getProducts($db);
 		if ($products)
 		{
 			setSessionProduct($products[0]);
@@ -276,22 +276,22 @@ function getUserTestPlan($userID,$tpID,$bActive = null)
 }
 
 // 20050810 - fm - Changes needed due to ACTIVE FIELD type change to BOOLEAN
-function getUserTestPlans($userID,$tpID = null,$p_bActive = null)
+function getUserTestPlans(&$db,$userID,$tpID = null,$p_bActive = null)
 {
-	$sql = "SELECT * FROM project,projrights " .
-	       "WHERE projrights.projid = project.id AND userID={$userID}";
+	$sql = "SELECT * FROM testplans,projrights " .
+	       "WHERE projrights.projid = testplans.id AND userID={$userID}";
 	
 	if (!is_null($tpID))
 	{
-		 $sql .= " AND project.id = {$tpID}";
+		 $sql .= " AND testplans.id = {$tpID}";
 	}
 	if (!is_null($p_bActive))
 	{
 		// 20050810 - fm
 		$bActive = to_boolean($p_bActive);	
-		$sql .= " AND project.active = " . $bActive;
+		$sql .= " AND testplans.active = " . $bActive;
 	}
-	return selectData($sql);
+	return selectData($db,$sql);
 }
 
 
@@ -300,7 +300,7 @@ function getUserTestPlans($userID,$tpID = null,$p_bActive = null)
 // 20050904 - fm - TL 1.5.1 compatibility, get also Test Plans without product id.
 // 20050813 - fm - new
 // 
-function getUserProdTestPlans($userID,$prodID,$filter_by_product,$p_bActive = null)
+function getUserProdTestPlans(&$db,$userID,$prodID,$filter_by_product,$p_bActive = null)
 {
   global $g_show_tp_without_prodid;
   global $g_ui_show_check_filter_tp_by_product;
@@ -311,9 +311,9 @@ function getUserProdTestPlans($userID,$prodID,$filter_by_product,$p_bActive = nu
     $apply_tp_filter = $filter_by_product;
   }
   	
-	$sql = " SELECT project.id, project.prodid, project.name, project.active, " .
-			"projrights.projid, projrights.userID FROM project,projrights " .
-	       " WHERE projrights.projid = project.id " .
+	$sql = " SELECT testplans.id, testplans.prodid, testplans.name, testplans.active, " .
+			"projrights.projid, projrights.userID FROM testplans,projrights " .
+	       " WHERE projrights.projid = testplans.id " .
 	       " AND userID={$userID}";
 	
 	if (!is_null($prodID))
@@ -325,11 +325,11 @@ function getUserProdTestPlans($userID,$prodID,$filter_by_product,$p_bActive = nu
 		// doing the logic here to determine if it is compat with 1.5 or not
 		if($apply_tp_filter and $g_show_tp_without_prodid)		    	
 		{
-			$sql .= " AND project.prodid=0";
+			$sql .= " AND testplans.prodid=0";
 		}
 		elseif($apply_tp_filter)
 		{
-			$sql .= " AND project.prodid = {$prodID}";
+			$sql .= " AND testplans.prodid = {$prodID}";
 		}
     }		 
 	
@@ -337,31 +337,22 @@ function getUserProdTestPlans($userID,$prodID,$filter_by_product,$p_bActive = nu
 	{
 		// 20050810 - fm
 		$bActive = to_boolean($p_bActive);
-		$sql .= " AND project.active = " . $bActive;
+		$sql .= " AND testplans.active = " . $bActive;
  	}
- 	return selectData($sql);
+ 	return selectData($db,$sql);
 }
 
 /** 
 * Function adjust Product and Test Plan to $_SESSION
 *
 */
-function doInitSelection()
+function doInitSelection(&$db)
 {
 	
-	/*
-	checkTestPlanSelection();
-	checkProductSelection();
-	
-	
-	checkSessionProduct();
-	checkSessionTestPlan();	
-  */
-  
   // 20050929 - fm - _GET -> _REQUEST to get other info
   // 20050910 - fm - 
   // BUGID  0000092: Two products each with one active test plan incorrectly prints the wrong plan
-  updateSessionTp_Prod($_REQUEST);
+  updateSessionTp_Prod($db,$_REQUEST);
 
 
 	return 1;
@@ -386,9 +377,9 @@ function doSessionStart()
 * @param boolean $bDontCheckSession (optional) Set to true if no session should be
 * 		 started
 */
-function testlinkInitPage($initProduct = FALSE, $bDontCheckSession = false)
+function testlinkInitPage(&$db,$initProduct = FALSE, $bDontCheckSession = false)
 {
-	global $db;
+	//global $db;
 	doDBConnect($db) or die("Could not connect to DB");
 	
 	doSessionStart() or die("Could not start session");
@@ -403,7 +394,7 @@ function testlinkInitPage($initProduct = FALSE, $bDontCheckSession = false)
 		
 	if ($initProduct)
 	{
-		doInitSelection() or die("Could not set session variables");
+		doInitSelection($db) or die("Could not set session variables");
 	}
 }
 
@@ -486,20 +477,24 @@ function strings_stripSlashes($parameter,$bGPC = true)
  * @return associated array  
  */
 // MHT 200506 created
-function selectData($sql)
+function selectData(&$db,$sql)
 {
 	$output = null;
-	$result = do_sql_query($sql);
+	$result = $db->exec_query($sql);
 	
 	if ($result)
 	{
-		while($row = $GLOBALS['db']->fetch_array($result))
+		while($row = $db->fetch_array($result))
+		{
 			$output[] = $row;
+		}	
 	}
 	else
-		tLog('FAILED SQL: ' . $sql . "\n" . $GLOBALS['db']->error_msg(), 'ERROR');
+	{
+		tLog('FAILED SQL: ' . $sql . "\n" . $db->error_msg(), 'ERROR');
+	}
 	
-	return $output;
+	return($output);
 }
 
 /** 
@@ -508,19 +503,21 @@ function selectData($sql)
  * @return associated array  'id' => 'title'
  */
 // MHT 200506 created
-function selectOptionData($sql)
+function selectOptionData(&$db,$sql)
 {
 	$output = null;
-	$result = do_sql_query($sql);
+	$result = $db->exec_query($sql);
 	
 	if ($result)
 	{
-		while($row = $GLOBALS['db']->fetch_array($result))
+		while($row = $db->fetch_array($result))
+		{
 			$output[$row[0]] = $row[1];
+		}	
 	}
 	else
 	{
-		tLog('FAILED SQL: ' . $sql . "\n" . $GLOBALS['db']->error_msg(), 'ERROR');
+		tLog('FAILED SQL: ' . $sql . "\n" . $db->error_msg(), 'ERROR');
 	}
 	
 	return $output;
@@ -533,16 +530,16 @@ function selectOptionData($sql)
  * @return string required value or null
  * @author havlatm
  */
-function do_sql_selectOne($sql)
+function do_sql_selectOne(&$db,$sql)
 {
 	$output = null;
   	
-	$result = do_sql_query($sql);
+	$result = $db->exec_query($sql);
 
 	// return null for error or no data
-  if ($result && ($GLOBALS['db']->num_rows($result) > 0)) 
+  if ($result && ($db->num_rows($result) > 0)) 
   {
-		$row = $GLOBALS['db']->fetch_array($result);
+		$row = $db->fetch_array($result);
 		$output = $row['0'];
 	}
 	return $output;
@@ -714,13 +711,13 @@ function check_string($str2check, $ereg_forbidden_chars)
 // Calling getUserProdTestPlans() instead of getUserTestPlans()
 //         to add ptoduct filtering of TP
 //
-function updateSessionTp_Prod($hash_user_sel)
+function updateSessionTp_Prod(&$db,$hash_user_sel)
 {
 	
 	$user_sel = array("tpID" => 0, "prodID" => 0 );
 
 	$user_sel["prodID"] = isset($hash_user_sel['product']) ? intval($hash_user_sel['product']) : 0;
-	$user_sel["tpID"] = isset($hash_user_sel['project']) ? intval($hash_user_sel['project']) : 0;
+	$user_sel["tpID"] = isset($hash_user_sel['testplan']) ? intval($hash_user_sel['testplan']) : 0;
 
   
   // 20050929 - fm
@@ -744,12 +741,12 @@ function updateSessionTp_Prod($hash_user_sel)
 	{
     $prodID = $user_sel["prodID"];
 	} 
-  $prodData=getProduct($prodID);
+  $prodData=getProduct($db,$prodID);
 
   // We need to do checks before updating the SESSION
 	if (!$prodID || !$prodData)
 	{
-		$products = getProducts();
+		$products = getProducts($db);
 		if ($products)
 		{
 			$prodData = $products[0];
@@ -771,10 +768,10 @@ function updateSessionTp_Prod($hash_user_sel)
   $redo = 1;
   $tpData = null;
   
-  if (check_tp_father($prodID,$tpID))
+  if (check_tp_father($db,$prodID,$tpID))
   {
     // Good! first check OK
-    $tpData = getUserTestPlan($_SESSION['userID'],$tpID);
+    $tpData = getUserTestPlan($db,$_SESSION['userID'],$tpID);
     if( !is_null($tpData) )
     { 
       $redo = 0;
@@ -786,11 +783,11 @@ function updateSessionTp_Prod($hash_user_sel)
   if ( $redo )
   {
   	// 20050926 - fm
-  	$tp_prodid = get_tp_father($tpID);
+  	$tp_prodid = get_tp_father($db,$tpID);
   	
     // Houston we have a problem
     $ACTIVE_TP=true;
-    $tpInfo = getUserProdTestPlans($_SESSION['userID'],$prodID,$filter_tp_by_product,$ACTIVE_TP);
+    $tpInfo = getUserProdTestPlans($db,$_SESSION['userID'],$prodID,$filter_tp_by_product,$ACTIVE_TP);
 		
 		if ($tpInfo)
 		{

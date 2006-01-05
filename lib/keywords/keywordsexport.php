@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: keywordsexport.php,v $
  *
- * @version $Revision: 1.1 $
- * @modified $Date: 2005/12/29 21:03:09 $ by $Author: schlundus $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2006/01/05 07:30:34 $ by $Author: franciscom $
  *
  * This page this allows users to export keywords. 
  *
@@ -16,7 +16,7 @@ require_once("../functions/csv.inc.php");
 require_once("../functions/xml.inc.php");
 require_once("../functions/common.php");
 require_once("keywords.inc.php");
-testlinkInitPage();
+testlinkInitPage($db);
 
 $bExport = isset($_POST['export']) ? $_POST['export'] : null;
 $exportType = isset($_POST['exportType']) ? $_POST['exportType'] : null;

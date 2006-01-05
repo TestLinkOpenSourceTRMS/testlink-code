@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: reqTcAssign.php,v $
- * @version $Revision: 1.3 $
- * @modified $Date: 2005/09/07 06:23:36 $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2006/01/05 07:30:34 $
  * 
  * @author Martin Havlat
  * 
@@ -18,7 +18,7 @@ require_once('requirements.inc.php');
 require_once('../testcases/archive.inc.php');
 
 // init page 
-testlinkInitPage();
+testlinkInitPage($db);
 
 $action = null;
 $sqlResult = null;
@@ -77,10 +77,10 @@ if ($edit == 'product' || $edit == 'component' || $edit ==  'category')
 else if($edit == 'testcase')
 {
 	//get list of ReqSpec
-	$arrReqSpec = getOptionReqSpec($prodID);
+	$arrReqSpec = getOptionReqSpec($db,$prodID);
 
 	//get TC title
-	$arrTc = getTestcase($idTc);
+	$arrTc = getTestcase($db,$idTc);
 	
 	//get first ReqSpec if not defined
 	if (!$idReqSpec && count($arrReqSpec)) {
@@ -92,8 +92,8 @@ else if($edit == 'testcase')
 	// collect REQ data
 	if ($idReqSpec) {
 		// get assigned REQs
-		$arrAssignedReq = getRequirements($idReqSpec, 'assigned', $idTc);
-		$arrAllReq = getRequirements($idReqSpec);
+		$arrAssignedReq = getRequirements($db,$idReqSpec, 'assigned', $idTc);
+		$arrAllReq = getRequirements($db,$idReqSpec);
 
 		// get unassigned REQs
 		$arrUnassignedReq = array_diff_byId($arrAllReq, $arrAssignedReq);

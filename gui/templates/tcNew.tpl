@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: tcNew.tpl,v 1.6 2005/08/31 19:21:37 schlundus Exp $ *}
+{* $Id: tcNew.tpl,v 1.7 2006/01/06 20:32:49 schlundus Exp $ *}
 {* Purpose: smarty template - create new testcase *}
 {* 20050831 - scs - change item to TestCase *}
 {* 
@@ -7,6 +7,7 @@
 data -> categoryID 
 fckeditor
 20050825 - scs - changed item to testcase 
+20060106 - scs - fix bug 9
 *}
 
 {include file="inc_head.tpl"}
@@ -37,6 +38,14 @@ fckeditor
 	<div>{lang_get s='expected_results'}<br />
 	{$exresult}</div>
 	</div>
+
+	<p><a href="lib/keywords/keywordsView.php" target="mainframe">{lang_get s='tc_keywords'}</a><br />
+		<select name="keywords[]" style="width: 30%" multiple="multiple">
+			{section name=oneKey loop=$keys}
+				<option value="{$keys[oneKey]|escape}">{$keys[oneKey]|escape}</option>
+			{/section}
+		</select>
+	</p>
 	
 </form>
 

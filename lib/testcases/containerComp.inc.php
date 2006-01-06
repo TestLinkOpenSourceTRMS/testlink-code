@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: containerComp.inc.php,v 1.7 2006/01/05 07:30:34 franciscom Exp $ */
+/* $Id: containerComp.inc.php,v 1.8 2006/01/06 20:32:50 schlundus Exp $ */
 /* Purpose:  This page manages all the editing of test specification containers. */
 /*
  *
@@ -14,7 +14,8 @@
  * @author: francisco mancardi - 20050810
  * deprecated $_SESSION['product'] removed
  * 
- * 20051010 - am - removed unneccesary php-warnings
+ * 20051010 - scs - removed unneccesary php-warnings
+ * 20060106 - scs - fix for 0000326
 */
 require_once(TL_ABS_PATH."/lib/functions/exec.inc.php");
 require_once(TL_ABS_PATH."/lib/keywords/keywords.inc.php");
@@ -64,9 +65,9 @@ function copy_or_move_comp(&$db,$action, $compID, $prodID ,$hash, $login_name, $
 	$dest_prodID = isset($hash['containerID']) ? intval($hash['containerID']) : 0;
 	$result = 0;
 	$update = null;	
-	
+	$bProductsDifferent = ($dest_prodID != $prodID);
 	//20051013 - am - fix for 115
-	if ($copyKeywords)
+	if ($copyKeywords && $bProductsDifferent)
 	{
 		$sqlKeyword = "SELECT DISTINCT(keywords) FROM mgtcomponent, mgtcategory,mgttestcase ".
 					  "WHERE mgtcomponent.id = mgtcategory.compid AND mgttestcase.catid = mgtcategory.id " .
@@ -80,7 +81,7 @@ function copy_or_move_comp(&$db,$action, $compID, $prodID ,$hash, $login_name, $
 				$kw = $keyArray[$i];
 				if (strlen($keyList))
 					$keyList .= "','";
-				$keyList .= $GLOBALS['db']->prepare_string($kw);
+				$keyList .= $db->prepare_string($kw);
 			}
 			$sqlKeyword = "SELECT keyword,notes from keywords where keyword IN ('{$keyList}') AND prodID = {$prodID}";
 			$kwData = selectData($db,$sqlKeyword);
@@ -97,13 +98,11 @@ function copy_or_move_comp(&$db,$action, $compID, $prodID ,$hash, $login_name, $
 		$update = 'update';
 		$nested = isset($hash['nested']) ? $hash['nested'] : "no";
 		if ($dest_prodID)
-		{
-			$result = copyComponentToProduct($dest_prodID, $compID, $nested, $login_name);
-		}
+			$result = copyComponentToProduct($db,$dest_prodID, $compID, $nested, $login_name);
 	}
 	else if($action == 'componentMove')
 	{
-		if ($dest_prodID)
+		if ($dest_prodID && $bProductsDifferent)
 		{
 			$result = moveComponentToProduct($dest_prodID, $compID);
 		}	

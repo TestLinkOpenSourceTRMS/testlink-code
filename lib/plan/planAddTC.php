@@ -1,7 +1,7 @@
 <?php
 
 ////////////////////////////////////////////////////////////////////////////////
-// @version $Id: planAddTC.php,v 1.9 2006/01/05 07:30:34 franciscom Exp $
+// @version $Id: planAddTC.php,v 1.10 2006/01/06 20:32:50 schlundus Exp $
 // File:     planAddTC.php
 // Author:   Chad Rosen
 // Purpose:  This page manages the importation of test cases into testlink.
@@ -157,13 +157,13 @@ if(isset($_POST['addTC'])) //If the user submits the import form
 if($_GET['edit'] == 'component')
 {
 	$sqlCOM = "SELECT id, name FROM mgtcomponent WHERE id=" . $compID . " ORDER BY name";
-	$resultCOM = do_sql_query($sqlCOM);
+	$resultCOM = $db->exec_query($sqlCOM);
 
-	while($rowCOM = $GLOBALS['db']->fetch_array($resultCOM))
+	while($rowCOM = $db->fetch_array($resultCOM))
 	{
 		$sqlCAT = "SELECT id, name FROM mgtcategory WHERE compid=" . $rowCOM[0] . " ORDER BY CATorder,id";
 		$resultCAT = do_sql_query($sqlCAT);
-		$arrData = dispCategories($idPlan, $keyword, $resultCAT);
+		$arrData = dispCategories($db,$idPlan, $keyword, $resultCAT);
 		
 		$smarty->assign('nameCOM', $rowCOM[1]);
 		$smarty->assign('arrData', $arrData);

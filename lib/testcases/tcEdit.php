@@ -4,28 +4,18 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.16 $
- * @modified $Date: 2006/01/05 07:30:34 $  by $Author: franciscom $
+ * @version $Revision: 1.17 $
+ * @modified $Date: 2006/01/06 20:32:50 $  by $Author: schlundus $
  * This page manages all the editing of test cases.
  *
  * @author Martin Havlat
  *
- * @todo deactive users instead of delete
- * 
- * @author Francisco Mancardi - 20050827
- * BUGID 0000086
- *
- * @author Francisco Mancardi - 20050827
- * fckeditor
- *
- * @author Francisco Mancardi - 20050821
- * added missing control in tc title len
- * interface - reduce global coupling
- *
- * @author Francisco Mancardi - 20050810
- * refactoring, deprecated $_SESSION['product'] removed
- * 
- * 20051015 - am - moved some POST params to the top
+ * 20050827 - fm - BUGID 0000086
+ * 20050827 - fm - fckeditor
+ * 20050821 - fm - added missing control in tc title len interface - reduce global coupling
+ * 20050810 - fm - refactoring, deprecated $_SESSION['product'] removed
+ * 20051015 - scs - moved some POST params to the top
+ * 20060106 - scs - refactoring, fixed bug 9
 **/
 require_once("../../config.inc.php");
 require_once("../functions/common.php");
@@ -47,11 +37,9 @@ foreach ($a_ofck as $key)
 	$of->ToolbarSet=$g_fckeditor_toolbar;;
 }
 // --------------------------------------------------------------------
-$keySize = null;
-$product = $_SESSION['productID'];
+$productID = $_SESSION['productID'];
 $show_newTC_form = 0;
 $smarty = new TLSmarty;
-// 20050810 - fm - from 3 to only 1 assignment
 $smarty->assign('path_htmlarea', $_SESSION['basehref'] . 'third_party/htmlarea/');
 
 $tc = isset($_REQUEST['editTC']) ? $_REQUEST['editTC'] : null;
@@ -72,6 +60,11 @@ $bSure = (isset($_GET['sure']) && $_GET['sure'] == 'yes');
 $bMoveTC = isset($_POST['moveTC']) ? 1 : 0;
 $bUpdateTCMove = isset($_POST['updateTCmove']) ? 1 : 0;
 $bUpdateTCCopy = isset($_POST['updateTCcopy']) ? 1 : 0;
+$user = $_SESSION['user'];
+
+$updatedKeywords = null;
+if (isset($_POST['keywords']))
+	$updatedKeywords = strings_stripSlashes(implode(",",$_POST['keywords']).",");
 
 $name_ok = 1;
 if($bAddTC || $bUpdateTC)
@@ -95,21 +88,23 @@ if($tc)
 	$setOfKeys = array();
 	
 	$myrowTC = getTestcase($db,$testcaseID,false);
-
-	// 20051004 - fm - refactoring
 	$tcKeywords = getTCKeywords($db,$testcaseID);
-	$prodKeywords = getProductKeywords($db,$_SESSION['productID']);
-	
+	$prodKeywords = getProductKeywords($db,$productID);
 	if (sizeof($prodKeywords))
 	{
-		$result = array_intersect($tcKeywords,$prodKeywords);
+		if (sizeof($tcKeywords))
+			$result = array_intersect($tcKeywords,$prodKeywords);
+		else
+			$result = array();
+			
 		for($i = 0;$i < sizeof($prodKeywords);$i++)
 		{
 			$selected = 'no';
 			$keyword = $prodKeywords[$i];
 			if (in_array($keyword,$result))
 				$selected = 'yes';
-			$setOfKeys[] = array( 'key' => $keyword, 'selected' => $selected);
+			$setOfKeys[] = array( 'key' => $keyword, 
+								  'selected' => $selected);
 		}
 	}
 
@@ -126,43 +121,26 @@ if($tc)
 	$smarty->assign('tc', $myrowTC);
 	$smarty->assign('testcaseID', $testcaseID);
 	$smarty->assign('keys', $setOfKeys);
-	$smarty->assign('keysize', $keySize);
 
 	$smarty->display($g_tpl['tcEdit']);
-	//saving a test case but not archiving it
 } 
 else if($bUpdateTC)
 {
-	$updatedKeywords = null;
-
-	// Since the keywords are being passed in as an array I need to seperate them 
-	// into a comma separated string
-	if(isset($_POST['keywords']) && count($_POST['keywords']) > 0)
-	{ 	
-		//if there actually are values passed in
-		foreach($_POST['keywords'] as $bob)
-			$updatedKeywords .= strings_stripSlashes($bob) . ","; //Build this string
-	}
-	
-	
 	//everytime a test case is saved I update its version
-	tLog($_POST['version']);
 	$version++;
-
-	//20051008 - am - added message
+	//20051008 - scs - added message
 	$sqlResult = lang_get('string_contains_bad_chars');
 	if( $name_ok)
 	{
 		$sqlResult = 'ok';
 		if (!updateTestcase($db,$testcaseID,$title,$summary,$steps,
-		                    $outcome,$_SESSION['user'],$updatedKeywords,$version))
+		                    $outcome,$user,$updatedKeywords,$version))
 		{
 			$sqlResult =  $db->error_msg();
 		}
 	}	
-
 	// 20050820 - fm - show testcase
-	$allow_edit=1;
+	$allow_edit = 1;
 	showTestcase($db,$testcaseID, $allow_edit);
 }
 else if($bNewTC)
@@ -172,13 +150,12 @@ else if($bNewTC)
 else if($bAddTC)
 {
 	$show_newTC_form = 1;
+	
 	if ($name_ok)
 	{
 		$msg = lang_get('error_tc_add');
-		if (insertTestcase($db,$categoryID,$title,$summary,$steps,$outcome,$_SESSION['user']))
-		{
+		if (insertTestcase($db,$categoryID,$title,$summary,$steps,$outcome,$user,null,$updatedKeywords))
 			$msg = 'ok';
-		}
 	}
   
 	$smarty->assign('sqlResult', $msg);
@@ -225,8 +202,7 @@ else if($bUpdateTCMove)
 }
 else if($bUpdateTCCopy)
 {
-	// 20050821 - fm - interface - reduce global coupling
-	$result = copyTc($db,$catID, $testcaseID, $_SESSION['user']);
+	$result = copyTc($db,$catID, $testcaseID, $user);
 	showCategory($db,$oldCat, $result,'update',$catID);
 }
 else
@@ -236,7 +212,6 @@ else
 // --------------------------------------------------------------------------
 if ($show_newTC_form)
 {
-	//Creating a new test case
 	$smarty->assign('categoryID', $categoryID);
 	
 	foreach ($a_ofck as $key)
@@ -248,6 +223,9 @@ if ($show_newTC_form)
 		$of->Value = "";
 		$smarty->assign($key, $of->CreateHTML());
 	}
+
+	$prodKeywords = getProductKeywords($db,$productID);
+	$smarty->assign('keys',$prodKeywords);
 	$smarty->display($g_tpl['tcNew']);
 }
 ?>

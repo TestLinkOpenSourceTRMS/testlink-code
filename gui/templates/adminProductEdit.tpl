@@ -1,9 +1,10 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: adminProductEdit.tpl,v 1.5 2006/01/02 14:05:59 franciscom Exp $
+$Id: adminProductEdit.tpl,v 1.6 2006/01/06 20:32:49 schlundus Exp $
 Purpose: smarty template - Edit existing product 
 
-@author Francisco Mancardi - 20051211 - poor workaround for BUGID 180 Unable to delete Product
+ 20051211 - fm - poor workaround for BUGID 180 Unable to delete Product
+ 20060106 - scs - added createProduct functionality
 *}
 {include file="inc_head.tpl" openHead="yes"}
 {include file="inc_jsPicker.tpl"}
@@ -19,8 +20,14 @@ Purpose: smarty template - Edit existing product
 
 {* tabs *}
 <div class="tabMenu">
-	<span class="unselected"><a href="lib/admin/adminProductNew.php">{lang_get s='btn_create'}</a></span> 
+	{if $id neq '-1'}
+	<span class="unselected"><a href="lib/admin/adminProductEdit.php?createProduct=1">{lang_get s='btn_create'}</a></span> 
 	<span class="selected">{lang_get s='btn_edit_del'}</span>
+	{else}
+	<span class="selected">{lang_get s='btn_create'}</span> 
+	<span class="unselected"><a href="lib/admin/adminProductEdit.php">{lang_get s='btn_edit_del'}</a></span>
+	{/if}
+
 </div>
 
 	{if $action == "activate" || $action == "inactivate"}
@@ -41,12 +48,16 @@ Purpose: smarty template - Edit existing product
 	{if $found == "yes"}
 		<div>
 		<form name="editProduct" method="post" action="lib/admin/adminProductEdit.php">
-
 		<input type="hidden" name="id" value="{$id}" />
-  	{* 20051208 - fm - same width taht adminProductNew.tpl *}
 		<table class="common" width="80%">
 		  {* 20051208 - fm #{$id} -> {$name} *} 
-			<caption>{lang_get s='caption_edit_product'} {$name}</caption>
+			<caption>
+			{if $id neq '-1'}
+				{lang_get s='caption_edit_product'} 
+			{else}
+				{lang_get s='caption_new_product'} 
+			{/if}
+				{$name|escape}</caption>
 			<tr>
 				<td>{lang_get s='name'}</td>
 				<td><input type="text" name="name" value="{$name|escape}" maxlength="100" /></td>
@@ -72,23 +83,32 @@ Purpose: smarty template - Edit existing product
 			</tr>
 			<tr>
 				<td>{lang_get s='enable_requirements'}</td>
-				<td><select name="optReq">
-				{html_options options=$option_yes_no selected=$reqs_default}
-				</select></td>
+				<td>
+					<select name="optReq">
+					{html_options options=$option_yes_no selected=$reqs_default}
+					</select>
+				</td>
 			</tr>
 	
 		</table>
 		<div class="groupBtn">
+		{if $id neq '-1'}
 			<input type="submit" name="editProduct" value="{lang_get s='btn_upd'}" />
-			{if $active == '1'}
-			<input type="submit" name="inactivateProduct" value="{lang_get s='btn_inactivate'}" />
-			{else}
-			<input type="submit" name="activateProduct" value="{lang_get s='btn_activate'}" />
+		{else}
+			<input type="submit" name="editProduct" value="{lang_get s='btn_create'}" />
+		{/if}
+		
+			{if $id neq '-1'}
+				{if $active == '1'}
+				<input type="submit" name="inactivateProduct" value="{lang_get s='btn_inactivate'}" />
+				{else}
+				<input type="submit" name="activateProduct" value="{lang_get s='btn_activate'}" />
+				{/if}
+				<input type="button" name="deleteProduct" value="{lang_get s='btn_del'}" 
+					onclick="javascript:; if (confirm('{lang_get s="popup_product_delete"}'))
+					{ldelim}location.href=fRoot+'lib/admin/adminProductEdit.php?deleteProduct=&id={$id}&name={$name|escape:"url"}';
+					{rdelim};" />
 			{/if}
-			<input type="button" name="deleteProduct" value="{lang_get s='btn_del'}" 
-				onclick="javascript:; if (confirm('{lang_get s="popup_product_delete"}'))
-				{ldelim}location.href=fRoot+'lib/admin/adminProductEdit.php?deleteProduct=&id={$id}&name={$name|escape:"url"}';
-				{rdelim};" />
 		</div>
 
 		</form>
@@ -106,7 +126,15 @@ Purpose: smarty template - Edit existing product
 
 {if $action != "no"}
 	{* this renews menu bar after change *}
-	<script type="text/javascript">parent.titlebar.location.reload();</script>
+	{if $action == 'delete'}
+	<script type="text/javascript">
+	top.location = top.location;
+	</script>
+	{else}
+	<script type="text/javascript">
+	parent.titlebar.location.reload();
+	</script>
+	{/if}
 {/if}
 
 </body>

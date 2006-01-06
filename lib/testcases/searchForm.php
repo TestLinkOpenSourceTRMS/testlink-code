@@ -1,16 +1,14 @@
 <?
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: searchForm.php,v 1.6 2006/01/05 07:30:34 franciscom Exp $ */
+/* $Id: searchForm.php,v 1.7 2006/01/06 20:32:50 schlundus Exp $ */
 // Purpose:  This page is the left frame of the search pages. It builds the
 //	    form for adding criteria for search.
 ////////////////////////////////////////////////////////////////////////////////
 require_once("../../config.inc.php");
 require_once("../functions/common.php");
 require_once("../keywords/keywords.inc.php");
-require_once("../../lib/functions/lang_api.php");
 testlinkInitPage($db);
 
-// 20050905 - fm
 $prodID = isset($_SESSION['productID']) ? $_SESSION['productID'] : 0;
 
 $smarty = new TLSmarty();

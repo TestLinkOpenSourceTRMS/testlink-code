@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: containerEdit.php,v 1.23 2006/01/05 07:30:34 franciscom Exp $ */
+/* $Id: containerEdit.php,v 1.24 2006/01/06 20:32:50 schlundus Exp $ */
 /* Purpose:  This page manages all the editing of test specification containers. */
 /*
  *
@@ -22,7 +22,7 @@
  * @author: francisco mancardi - 20050810
  * deprecated $_SESSION['product'] removed
  *
- 
+ * 20060106 - scs - fix for 0000326
 */
 require_once("../../config.inc.php");
 require_once("../functions/common.php");
@@ -234,7 +234,8 @@ else if ($action == 'deleteCOM')
 else if( $action == 'moveCom') 
 {
 	$products = null;
-	getAllProductsBut($db,$my_productID,$products);
+	$my_productID;
+	getAllProductsBut($db,0,$products);
 
 	$smarty->assign('old_containerID', $my_productID); // original container
 	$smarty->assign('arraySelect', $products);

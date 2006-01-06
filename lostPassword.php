@@ -5,24 +5,17 @@
  *
  * Filename $RCSfile: lostPassword.php,v $
  *
- * @version $Revision: 1.13 $
- * @modified $Date: 2006/01/03 21:19:00 $ $Author: schlundus $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2006/01/06 20:32:44 $ $Author: schlundus $
  *
- * @author Chad Rosen
- *
- * 
  * 20050831 - scs - cosmetic changes
  * 20051209 - fm - BUGID 289
  * 20060103 - scs - ADOdb changes
 **/
-global $db;
 require_once('config.inc.php');
 require_once('common.php');
 require_once('users.inc.php');
-
-// 20051106 - fm
 require_once('email_api.php');
-
 
 $_POST = strings_stripSlashes($_POST);
 $login = isset($_POST['login']) ? $_POST['login']: null;
@@ -69,17 +62,12 @@ if (strlen($login))
 					redirect(TL_BASE_HREF ."login.php?note=lost");
 					exit();
 				}
-
 			}	
 			else
-			{
 				$message = lang_get('mail_problems') . " - " . $mail_op->msg;
-			}
 		}
 		else
-		{
 			$message = lang_get('mail_empty_address');
-		}	
 	}
 }
 

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: archive.inc.php,v $
  *
- * @version $Revision: 1.26 $
- * @modified $Date: 2006/01/05 07:30:34 $ by $Author: franciscom $
+ * @version $Revision: 1.27 $
+ * @modified $Date: 2006/01/06 20:32:50 $ by $Author: schlundus $
  *
  * @author Martin Havlat
  * Purpose:  functions for test specification management have three parts:
@@ -385,7 +385,7 @@ function copyComponentToProduct(&$db,$newParent, $id, $nested, $login_name)
 {
 	// 20051129 - fm
 	$check_names_for_duplicates=config_get('check_names_for_duplicates');
-  $action_on_duplicate_name=config_get('action_on_duplicate_name');
+	$action_on_duplicate_name=config_get('action_on_duplicate_name');
   
 	$component = getComponent($db,$id);
 
@@ -401,17 +401,16 @@ function copyComponentToProduct(&$db,$newParent, $id, $nested, $login_name)
 	  	if ($nested == 'yes')
 	  	{
 	  		// Select the categories for copy
-	  		$catIDs = getComponentCategoryIDs($id);
+	  		$catIDs = getComponentCategoryIDs($db,$id);
 	  		$num_cats = sizeof($catIDs);
 	  		for($i = 0; $i < $num_cats; $i++)
 	  		{
-	  			copyCategoryToComponent($comID, $catIDs[$i], $nested, $login_name);
+	  			copyCategoryToComponent($db,$comID, $catIDs[$i], $nested, $login_name);
 	  		}	
 	  	}
 	}	
-  // 20051201 - fm
+	// 20051201 - fm
 	return $ret['msg'];
-		
 }
 
 

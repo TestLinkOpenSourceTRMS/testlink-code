@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: index.php,v $
  *
- * @version $Revision: 1.8 $
- * @modified $Date: 2006/01/03 21:19:00 $ by $Author: schlundus $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2006/01/06 20:32:43 $ by $Author: schlundus $
  *
  * @author Martin Havlat
  *
@@ -19,8 +19,6 @@
  * 20060103 - scs - ADOdb changes
 **/
 //200508 MHT - moved code to procedure
-global $db;
-
 require_once('lib/functions/configCheck.php');
 checkConfiguration();
 

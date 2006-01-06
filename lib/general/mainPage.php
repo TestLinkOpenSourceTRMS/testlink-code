@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: mainPage.php,v $
  *
- * @version $Revision: 1.8 $ $Author: franciscom $
- * @modified $Date: 2006/01/05 07:30:34 $
+ * @version $Revision: 1.9 $ $Author: schlundus $
+ * @modified $Date: 2006/01/06 20:32:49 $
  *
  * @author Martin Havlat
  * 
@@ -25,6 +25,7 @@
  * 
  * 20051112 - scs - removed undefined index notices
  * 20050103 - scs - ADOdb changes
+ * 20060106 - scs - changes because new product functionality
 **/
 require_once('../../config.inc.php');
 require_once('common.php');
@@ -39,7 +40,7 @@ $smarty = new TLSmarty;
 /** redirect admin to create product if not found */
 if ($_SESSION['role'] == 'admin' && !isset($_SESSION['productID']))
 { 
-	redirect($_SESSION['basehref'] . 'lib/admin/adminProductNew.php');
+	redirect($_SESSION['basehref'] . 'lib/admin/adminProductEdit.php');
 }
 // ----------------------------------------------------------------------
 

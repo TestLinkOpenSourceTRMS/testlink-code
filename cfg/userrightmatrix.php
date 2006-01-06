@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: userrightmatrix.php,v $
  *
- * @version $Revision: 1.6 $
- * @modified $Date: 2005/12/31 14:38:10 $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2006/01/06 20:32:49 $
  *
  * @author Andreas Morsing
  *
@@ -35,9 +35,6 @@ $g_userRights = array(
 														),														
 						//PRODUCTADMINISTRATION
 						"lib/admin/adminproductedit.php" => array (
-															"mgt_modify_product",
-														),
-						"lib/admin/adminproductnew.php" => array (
 															"mgt_modify_product",
 														),
 						//TESTEXECUTION														

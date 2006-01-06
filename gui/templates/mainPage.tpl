@@ -1,6 +1,6 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: mainPage.tpl,v 1.7 2006/01/05 07:30:31 franciscom Exp $     
+ $Id: mainPage.tpl,v 1.8 2006/01/06 20:32:49 schlundus Exp $     
  Purpose: smarty template - main page / site map                 
                                                                  
                                                                  
@@ -11,6 +11,7 @@
 	
 20051118 - scs - added escaping of testplan names                                                                 
 20051112 - scs - changed keyword related menu items
+20060106 - scs - changes because of changing the newProduct functionality
 *}
 {include file="inc_head.tpl" popup="yes"}
 
@@ -191,7 +192,7 @@
         <h2>{lang_get s='title_product_mgmt'}</h2>
 		<p>
 		<img class="arrow" src="icons/arrow_org.gif" />
-        <a href="lib/admin/adminProductNew.php">{lang_get s='href_create_product'}</a>
+        <a href="lib/admin/adminProductEdit.php?createProduct=1">{lang_get s='href_create_product'}</a>
         <br />
 		<img class="arrow" src="icons/arrow_org.gif" />
         <a href="lib/admin/adminProductEdit.php">{lang_get s='href_edit_product'}</a>

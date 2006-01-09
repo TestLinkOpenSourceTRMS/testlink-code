@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqSpecAnalyse.php,v $
- * @version $Revision: 1.5 $
- * @modified $Date: 2006/01/05 07:30:34 $ by $Author: franciscom $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2006/01/09 07:16:16 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Analyse coverage of a req. specification.
@@ -46,6 +46,6 @@ $smarty->assign('arrMetrics', $arrMetrics);
 $smarty->assign('arrCoverage', $arrCoverage);
 $smarty->assign('arrReqSpec', $arrReqSpec);
 $smarty->assign('selectedReqSpec', $idSRS);
-$smarty->assign('modify_req_rights', has_rights("mgt_modify_req")); 
+$smarty->assign('modify_req_rights', has_rights($db,"mgt_modify_req")); 
 $smarty->display('reqSpecAnalyse.tpl');
 ?>

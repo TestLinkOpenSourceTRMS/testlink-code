@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.28 $ $Author: franciscom $
- * @modified $Date: 2006/01/05 07:30:33 $
+ * @version $Revision: 1.29 $ $Author: franciscom $
+ * @modified $Date: 2006/01/09 07:15:43 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -62,7 +62,7 @@ $db = 0;
 *
 * @return assoc array
 *         aa['status'] = 1 -> OK , 0 -> KO
-*         aa['dbms_msg''] = 'ok', or $GLOBALS['db']->error_msg().
+*         aa['dbms_msg''] = 'ok', or $db->error_msg().
 *
 * 20050416 - fm
 * 
@@ -278,8 +278,8 @@ function getUserTestPlan($userID,$tpID,$bActive = null)
 // 20050810 - fm - Changes needed due to ACTIVE FIELD type change to BOOLEAN
 function getUserTestPlans(&$db,$userID,$tpID = null,$p_bActive = null)
 {
-	$sql = "SELECT * FROM testplans,projrights " .
-	       "WHERE projrights.projid = testplans.id AND userID={$userID}";
+	$sql = "SELECT * FROM testplans,testplans_rights " .
+	       "WHERE testplans_rights.projid = testplans.id AND userID={$userID}";
 	
 	if (!is_null($tpID))
 	{
@@ -312,8 +312,8 @@ function getUserProdTestPlans(&$db,$userID,$prodID,$filter_by_product,$p_bActive
   }
   	
 	$sql = " SELECT testplans.id, testplans.prodid, testplans.name, testplans.active, " .
-			"projrights.projid, projrights.userID FROM testplans,projrights " .
-	       " WHERE projrights.projid = testplans.id " .
+			"testplans_rights.projid, testplans_rights.userID FROM testplans,testplans_rights " .
+	       " WHERE testplans_rights.projid = testplans.id " .
 	       " AND userID={$userID}";
 	
 	if (!is_null($prodID))
@@ -390,7 +390,7 @@ function testlinkInitPage(&$db,$initProduct = FALSE, $bDontCheckSession = false)
 	{
 		checkSessionValid();
 	}	
-	checkUserRights();
+	checkUserRights($db);
 		
 	if ($initProduct)
 	{
@@ -398,16 +398,19 @@ function testlinkInitPage(&$db,$initProduct = FALSE, $bDontCheckSession = false)
 	}
 }
 
-function checkUserRights()
+// 20060107 - fm
+function checkUserRights(&$db)
 {
-	global $g_userRights;
+	// global $g_userRights;
+	$g_userRights = config_get('userRights');
+	
 	$self = strtolower($_SERVER['SCRIPT_FILENAME']);
 	$fName = str_replace(strtolower(str_replace("\\","/",TL_ABS_PATH)),"",$self);
 
 	if (isset($g_userRights[$fName]) && !is_null($g_userRights[$fName]))
 	{
 		$fRights = $g_userRights[$fName];
-		if (has_rights($fRights) != 'yes')
+		if (has_rights($db,$fRights) != 'yes')
 		{
 			tLog("Warning: Insufficient rights for ".$self);
 			die("Insufficient rights");

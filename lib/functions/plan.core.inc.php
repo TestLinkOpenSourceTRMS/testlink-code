@@ -3,8 +3,8 @@
  * TestLink Open Source Project - @link http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: plan.core.inc.php,v $
- * @version $Revision: 1.23 $
- * @modified $Date: 2006/01/05 07:30:33 $ $Author: franciscom $
+ * @version $Revision: 1.24 $
+ * @modified $Date: 2006/01/09 07:15:43 $ $Author: franciscom $
  *  
  * 
  * @author 	Martin Havlat
@@ -47,7 +47,7 @@
  *
  *      MHT 20050707 order by name
  */
-function getTestPlans($productID, $userID, $filter_by_product=0)
+function getTestPlans(&$db,$productID, $userID, $filter_by_product=0)
 {
 	global $g_show_tp_without_prodid;
  	$arrPlans = array();
@@ -55,7 +55,7 @@ function getTestPlans($productID, $userID, $filter_by_product=0)
 	// 20050809 - fmm
 	// added filter by product id
 	// 20051012 - azl
-	// removed join with projrights table because it was slowing down query signifigantly and 
+	// removed join with testplans_rights table because it was slowing down query signifigantly and 
 	// it wasn't being used. Also removed selecting notes field because it isn't needed. 
 	// 
 	$sql = " SELECT DISTINCT id,name,active,prodid FROM testplans " .
@@ -75,23 +75,23 @@ function getTestPlans($productID, $userID, $filter_by_product=0)
 	
 	$sql .= " ORDER BY name";
 			           
-	$result = do_sql_query($sql);
+	$result = $db->exec_query($sql);
 
 	if ($result) {
-    	$testplanCount = $GLOBALS['db']->num_rows($result);
+    	$testplanCount = $db->num_rows($result);
 	} else {
 		  $testplanCount = 0;
 	}
 	if($testplanCount > 0) {
 
       $cAvailablePlans = 0;  // count the available plans
-      while ($myrow = $GLOBALS['db']->fetch_array($result))
+      while ($myrow = $db->fetch_array($result))
       {
         //Block of code will determines if the user has the appropriate rights to view available testplans
-        $sqlProjRights = "select projid from projrights where userid=" . $userID . 
+        $sqlProjRights = "select projid from testplans_rights where userid=" . $userID . 
                          " and projid=" . $myrow[0];
-        $projRightsResult = do_sql_query($sqlProjRights);
-        $myrowProjRights = $GLOBALS['db']->fetch_array($projRightsResult);
+        $projRightsResult = $db->exec_query($sqlProjRights);
+        $myrowProjRights = $db->fetch_array($projRightsResult);
 
         //If the user has the rights to the testplans/test plan show it
         if($myrowProjRights[0] == $myrow[0])
@@ -136,7 +136,7 @@ function getTestPlans($productID, $userID, $filter_by_product=0)
 function getCountTestPlans4User(&$db,$userID)
 {
 	$sql = " SELECT count(testplans.id) AS num_tp 
-	         FROM testplans,projrights WHERE active=1  
+	         FROM testplans,testplans_rights WHERE active=1  
 			     AND projid=testplans.id AND userid=" . $userID;
 	$result = $db->exec_query($sql);
 	
@@ -168,7 +168,7 @@ function getCountTestPlans4User(&$db,$userID)
 function getCountTestPlans4UserProd(&$db,$userID,$prodID=null)
 {
 	$sql = " SELECT count(testplans.id) AS num_tp
-	         FROM testplans,projrights WHERE active=1   
+	         FROM testplans,testplans_rights WHERE active=1   
 		       AND projid=testplans.id AND userid=" . $userID;
 	
 	//20051015 - am - removed negation of $prodID		   
@@ -211,8 +211,8 @@ function getTestPlanUsers(&$db,$tpID)
 	{
 	  $sql .= " ,first,last ";
 	}
-	$sql .= " FROM user,projrights 
-	          WHERE user.id = projrights.userid AND projid = {$tpID}";
+	$sql .= " FROM user,testplans_rights 
+	          WHERE user.id = testplans_rights.userid AND projid = {$tpID}";
              
 	$result = $db->exec_query($sql);
 	if ($result)

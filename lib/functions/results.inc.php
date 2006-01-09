@@ -2,8 +2,8 @@
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: results.inc.php,v $
- * @version $Revision: 1.26 $
- * @modified $Date: 2006/01/05 07:30:33 $   $Author: franciscom $
+ * @version $Revision: 1.27 $
+ * @modified $Date: 2006/01/09 07:15:43 $   $Author: franciscom $
  * 
  * @author 	Martin Havlat 
  * @author 	Chad Rosen (original report definition)
@@ -1022,7 +1022,7 @@ function reportGeneralStatus(&$db,$tpID)
 }
 
 
-function reportBuildStatus($tpID, $buildID,$buildName)
+function reportBuildStatus(&$db,$tpID, $buildID,$buildName)
 {
 	global $g_tc_status;
 	
@@ -1030,8 +1030,8 @@ function reportBuildStatus($tpID, $buildID,$buildName)
 	       " FROM testplans,component,category,testcase WHERE testplans.id =" . $tpID . 
 	       " AND testplans.id = component.projid AND component.id = category.compid AND category.id = testcase.catid";
 	       
-	$sumResult = do_sql_query($sql);
-	$sumTCs = $GLOBALS['db']->fetch_array($sumResult); 
+	$sumResult = $db->exec_query($sql);
+	$sumTCs = $db->fetch_array($sumResult); 
 	$total = $sumTCs[0];
 
 	$base_sql = "SELECT count(results.tcid) " .
@@ -1047,20 +1047,20 @@ function reportBuildStatus($tpID, $buildID,$buildName)
   
 	//Get the total # of passed testcases for the testplan and build
 	$sql = $base_sql . " AND status ='" . $g_tc_status['passed'] . "'";
-	$passedResult = do_sql_query($sql);
-	$passedTCs = $GLOBALS['db']->fetch_array($passedResult);
+	$passedResult = $db->exec_query($sql);
+	$passedTCs = $db->fetch_array($passedResult);
 	$totalPassed = $passedTCs[0];
 
 	//Get the total # of failed testcases for the testplan
 	$sql = $base_sql . " AND status ='" . $g_tc_status['failed'] . "'";
-	$failedResult = do_sql_query($sql);
-	$failedTCs = $GLOBALS['db']->fetch_array($failedResult);
+	$failedResult = $db->exec_query($sql);
+	$failedTCs = $db->fetch_array($failedResult);
 	$totalFailed = $failedTCs[0];
 
 	//Get the total # of blocked testcases for the testplan
 	$sql = $base_sql . " AND status ='" . $g_tc_status['blocked'] . "'";
-	$blockedResult = do_sql_query($sql);
-	$blockedTCs = $GLOBALS['db']->fetch_array($blockedResult);
+	$blockedResult = $db->exec_query($sql);
+	$blockedTCs = $db->fetch_array($blockedResult);
 	$totalBlocked = $blockedTCs[0];
 
 	//total # of testcases not run
@@ -1137,8 +1137,8 @@ function reportSuiteBuildStatus(&$db,$tpID, $comID, $buildID,$buildName)
 
 	
 	
-	$resultCOMName = do_sql_query($sqlCOMName);
-	$COMName = $GLOBALS['db']->fetch_array($resultCOMName);
+	$resultCOMName = $db->exec_query($sqlCOMName);
+	$COMName = $db->fetch_array($resultCOMName);
 
 	$msgBody = lang_get("trep_status_for_ts") . " " . $COMName['comp_name'] . " in Build: " . $buildName . "\n\n";
 	$msgBody .= lang_get("trep_total").": " . $total . "\n";
@@ -1153,7 +1153,7 @@ function reportSuiteBuildStatus(&$db,$tpID, $comID, $buildID,$buildName)
 
 // 20051106 - fm
 // build_id
-function reportSuiteStatus($tpID, $comID)
+function reportSuiteStatus(&$db,$tpID, $comID)
 {
 	global $g_tc_status;
   
@@ -1163,8 +1163,8 @@ function reportSuiteStatus($tpID, $comID)
 	       " AND component.id=" . $comID . " AND testplans.id = component.projid " .
 	       " AND component.id = category.compid AND category.id = testcase.catid";
 	       
-	$totalTCResult = do_sql_query($sql);
-	$totalTCs = $GLOBALS['db']->fetch_array($totalTCResult);
+	$totalTCResult = $db->exec_query($sql);
+	$totalTCs = $db->fetch_array($totalTCResult);
 
 	//Code to grab the results of the test case execution
 	//
@@ -1177,10 +1177,10 @@ function reportSuiteStatus($tpID, $comID)
 	       " AND category.id = testcase.catid AND testcase.id = results.tcid " .
 	       " ORDER BY build_id";
 	       
-	$totalResult = do_sql_query($sql);
+	$totalResult = $db->exec_query($sql);
 
 	//Setting the results to an array.. Only taking the most recent results and displaying them
-	while($totalRow = $GLOBALS['db']->fetch_array($totalResult))	{
+	while($totalRow = $db->fetch_array($totalResult))	{
 		if($totalRow[1] != $g_tc_status['not_run']){
 			$testCaseArray[$totalRow[0]] = $totalRow[1];
 		}
@@ -1218,8 +1218,8 @@ function reportSuiteStatus($tpID, $comID)
 
 	
 	
-	$resultCOMName = do_sql_query($sqlCOMName);
-	$COMName = $GLOBALS['db']->fetch_array($resultCOMName);
+	$resultCOMName = $db->exec_query($sqlCOMName);
+	$COMName = $db->fetch_array($resultCOMName);
 
 	$msgBody = lang_get("trep_status_for_ts") .": ". $COMName['comp_name'] . "\n\n";
 	$msgBody .= lang_get("trep_total").": " . $totalTCs[0] . "\n";
@@ -1239,13 +1239,13 @@ function reportSuiteStatus($tpID, $comID)
  * @return string last test result
  * @author martin havlat
  **/
-function getLastResult($idSuiteTC)
+function getLastResult(&$db,$idSuiteTC)
 {
 	global $g_tc_status;
 	
 	$sql = "SELECT status FROM results WHERE tcid = " . $idSuiteTC . " AND status <> '" . 
 				$g_tc_status['not_run'] . "' ORDER BY results.build_id DESC LIMIT 1";
-	$result = do_sql_selectOne($sql);
+	$result = do_sql_selectOne($db,$sql);
 
 	// add not run result if any other result is not available
 	if (is_null($result))

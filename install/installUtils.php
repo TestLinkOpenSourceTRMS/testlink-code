@@ -1,8 +1,9 @@
 <?php
 /* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: installUtils.php,v 1.11 2006/01/02 13:46:55 franciscom Exp $ 
+$Id: installUtils.php,v 1.12 2006/01/09 07:14:39 franciscom Exp $ 
 
+20060108 - fm - removed some functions
 20051231 - fm - changes due to ADODB
 20051002 - fm - messages changes
 20050925 - fm - changes to getDirFiles()
@@ -58,21 +59,8 @@ return $filesArr;
 // | Authors: João Prado Maia <jpm@mysql.com>                             |
 // +----------------------------------------------------------------------+
 //
-// @(#) $Id: installUtils.php,v 1.11 2006/01/02 13:46:55 franciscom Exp $
+// @(#) $Id: installUtils.php,v 1.12 2006/01/09 07:14:39 franciscom Exp $
 //
-
-
-function getDatabaseList($conn)
-{
-    $dbs = array();
-
-    $db_list = mysql_list_dbs($conn);
-    while ($row = $GLOBALS['db']->fetch_array($db_list)) {
-        $dbs[] = $row['Database'];
-    }
-    return $dbs;
-}
-
 
 // a foolish wrapper - 20051231 - fm
 function getTableList($db)
@@ -100,29 +88,6 @@ function getUserList($system_schema)
    return($users);
 }
 
-
-/*
-Function: dbExists (DataBase Exists)
-
-args :	$db_name: database to test for existence 
-				$conn   : valid db connection handler
-       
-
-returns: 1 -> db exits
-         0 ->   
-*/
-function dbExists($db_name,$conn)
-{
-    $db_list = getDatabaseList($conn);
-    $db_list = array_map('strtolower', $db_list);
-    $db_name_lc = strtolower($db_name);
-    $ret_val = 1;
-    if ( !in_array($db_name, $db_list)) 
-    {
-      $ret_val = 0;
-    } 
-    return $ret_val;
-}
 
 
 /*

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: users.inc.php,v $
  *
- * @version $Revision: 1.18 $
- * @modified $Date: 2006/01/05 07:30:33 $ $Author: franciscom $
+ * @version $Revision: 1.19 $
+ * @modified $Date: 2006/01/09 07:15:43 $ $Author: franciscom $
  *
  * Functions for usermanagement
  *
@@ -289,7 +289,7 @@ function setUserSession(&$db,$user, $id, $roleID, $email, $locale = null,$active
  **/
 function deleteUsersTestPlanRights(&$db,$userID,$prodID)
 {
-	$sql = " DELETE FROM projrights
+	$sql = " DELETE FROM testplans_rights
 	         WHERE userid = " . $userID .
 	       " AND projid IN (SELECT id FROM testplans WHERE prodid = " . $prodID . ")";
 	      
@@ -300,13 +300,19 @@ function deleteUsersTestPlanRights(&$db,$userID,$prodID)
 /**
  * Function-Documentation
  *
- * @param type $db [ref] documentation
- * @param type $id documentation
- * @return type documentation
+ * @param  type $db [ref] ADODB
+ * @param  type $id user_id
+ * @return null or assoc array with user data
  **/
 function getUserById(&$db,$id)
 {
-	return getAllUsers($db,"where id=" . $id);
+	// 20060108 - fm
+	$ret=null;
+	if( !is_null(id) and intval($id) > 0)
+	{
+	  $ret = getAllUsers($db,"where id=" . $id);
+	}  
+	return ($ret);
 }
 
 /**
@@ -338,7 +344,9 @@ function getAllUsers(&$db,$whereClause = null)
 		while($user = $db->fetch_array($result))
 		{
 			if($show_realname)
+			{
 				$user['fullname'] = format_username($user);
+			}	
 			$users[] = $user;
 		}	
 	}
@@ -441,13 +449,13 @@ function user_is_active($login)
 	
 	$sql = " SELECT active
 	         FROM user
-	         WHERE login='" . $GLOBALS['db']->prepare_string($login) . "'";
+	         WHERE login='" . $db->prepare_string($login) . "'";
 	
 	$result = do_sql_query($sql);
   
 	if ($result)
 	{
-		if ($row = $GLOBALS['db']->fetch_array($result))
+		if ($row = db->fetch_array($result))
 		{
 			$is_active = $row['active'];
 		}	

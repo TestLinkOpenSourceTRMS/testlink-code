@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: reqSpecList.php,v $
- * @version $Revision: 1.10 $
- * @modified $Date: 2006/01/05 07:30:34 $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2006/01/09 07:16:16 $
  * 
  * @author Martin Havlat
  * 
@@ -84,7 +84,7 @@ $smarty->assign('sqlResult', $sqlResult);
 $smarty->assign('action', $action);
 $smarty->assign('name',$title); // of created doc
 $smarty->assign('productName', $_SESSION['productName']);
-$smarty->assign('modify_req_rights', has_rights("mgt_modify_req")); 
+$smarty->assign('modify_req_rights', has_rights($db,"mgt_modify_req")); 
 $smarty->assign('scope',$of->CreateHTML());
 
 $smarty->display($template);

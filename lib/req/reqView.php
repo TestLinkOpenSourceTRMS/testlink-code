@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqView.php,v $
- * @version $Revision: 1.3 $
- * @modified $Date: 2006/01/05 07:30:34 $ by $Author: franciscom $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2006/01/09 07:16:16 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Screen to view content of requirement.
@@ -36,7 +36,7 @@ $smarty = new TLSmarty;
 $smarty->assign('title', $arrReq['title']);
 $smarty->assign('arrReq', $arrReq);
 $smarty->assign('internalTemplate', 'inc_reqView.tpl');
-$smarty->assign('modify_req_rights', has_rights("mgt_modify_req")); 
+$smarty->assign('modify_req_rights', has_rights($db,"mgt_modify_req")); 
 $smarty->assign('selectReqStatus', $arrReqStatus);
 
 $smarty->display('infoWindow.tpl');

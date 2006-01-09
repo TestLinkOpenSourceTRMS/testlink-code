@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: product.core.inc.php,v $
- * @version $Revision: 1.3 $
- * @modified $Date: 2006/01/05 07:30:33 $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2006/01/09 07:15:43 $
  * @author Martin Havlat
  *
  * Core Functions for Product management (get data)
@@ -56,7 +56,7 @@ function getOptionProducts(&$db)
 	$sql =  "SELECT id,name,active FROM mgtproduct ";
 	$order_by = " ORDER BY name";
 	
-	if (has_rights('mgt_modify_product') == 'yes') {
+	if (has_rights($db,'mgt_modify_product') == 'yes') {
 		$sql .= $order_by;
 		$arrTemp = selectData($db,$sql);
 		if (sizeof($arrTemp))

@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: containerCat.inc.php,v 1.4 2006/01/05 07:30:34 franciscom Exp $ */
+/* $Id: containerCat.inc.php,v 1.5 2006/01/09 07:20:00 franciscom Exp $ */
 /* Purpose:  This page manages all the editing of test specification containers. */
 /*
  *
@@ -63,7 +63,7 @@ function viewer_edit_new_cat(&$db,$amy_keys, $oFCK, $action, $componentID, $id=n
 }
 
 
-function copy_or_move_cat( $action, $catID, $hash, $login_name)
+function copy_or_move_cat($action, $catID, $hash, $user_id)
 {
 	$update = null;
 	$result = 0;	
@@ -76,7 +76,7 @@ function copy_or_move_cat( $action, $catID, $hash, $login_name)
 		$nested = isset($hash['nested']) ? $hash['nested'] : "no";
 		if ($dest_compID)
 		{
-			$result = copyCategoryToComponent($dest_compID, $catID, $nested, $login_name);
+			$result = copyCategoryToComponent($dest_compID, $catID, $nested, $user_id);
 		}
 	}
 	else if($action == 'categoryMove')

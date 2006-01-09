@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: adminUserNew.php,v $
  *
- * @version $Revision: 1.9 $
- * @modified $Date: 2006/01/05 07:30:33 $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2006/01/09 07:20:00 $
  *
  * @author Martin Havlat
  *
@@ -20,11 +20,13 @@
  * 20060103 - scs - ADOdb changes
  * 
 **/
+
 include('../../config.inc.php');
 require_once('users.inc.php');
 testlinkInitPage($db);
 
 $_POST = strings_stripSlashes($_POST);
+
 $bNewUser = isset($_POST['newUser']) ? $_POST['newUser'] : null;
 $login = isset($_POST['login']) ? trim($_POST['login']) : null;
 $password = isset($_POST['password']) ? $_POST['password'] : null;

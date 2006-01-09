@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.18 $
- * @modified $Date: 2006/01/05 07:30:33 $ $Author: franciscom $
+ * @version $Revision: 1.19 $
+ * @modified $Date: 2006/01/09 07:15:07 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -92,7 +92,7 @@ $smarty = new TLSmarty();
 
 // 20051119 - fm - BUGID 0000232: Only admin or leader can update test results
 // Solution by: scorpfromhell
-$smarty->assign('rightsEdit', has_rights("tp_execute"));
+$smarty->assign('rightsEdit', has_rights($db,"tp_execute"));
 $smarty->assign('arrTC', $testdata);
 $smarty->assign('build', $buildName);
 $smarty->assign('owner', $owner);

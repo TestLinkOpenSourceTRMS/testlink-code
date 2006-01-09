@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: exec.inc.php,v $
  *
- * @version $Revision: 1.20 $
- * @modified $Date: 2006/01/05 07:30:33 $ $Author: franciscom $
+ * @version $Revision: 1.21 $
+ * @modified $Date: 2006/01/09 07:15:43 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -32,17 +32,17 @@ require_once('../functions/common.php');
  * @param numeric test plan ID
  * @return integer Count of Builds
  */  
-function buildsNumber($tpID=0)
+function buildsNumber(&$db,$tpID=0)
 {
 	// 20050929 - fm - seems sometimes we receive no tpID
 	$sql = "SELECT count(*) AS num_builds FROM build WHERE build.projid = " . $tpID;
 	$buildCount=0;
 	if ($tpID)
 	{
-		$result = do_sql_query($sql);
+		$result = $db->exec_query($sql);
 		if ($result)
 		{
-			$myrow = $GLOBALS['db']->fetch_array($result);
+			$myrow = $db->fetch_array($result);
 			$buildCount = $myrow['num_builds'];
 		}
 	}
@@ -155,7 +155,7 @@ function editTestResults(&$db,$login_name, $tcData, $buildID)
 {
 	global $g_bugInterfaceOn, $g_tc_status;
 	
-	// $build = $GLOBALS['db']->prepare_string($build);
+	// $build = $db->prepare_string($build);
 
 	$num_tc = count($tcData['tc']);
 	
@@ -168,7 +168,7 @@ function editTestResults(&$db,$login_name, $tcData, $buildID)
 		$tcBugs = '';
 		if ($g_bugInterfaceOn)
 		{
-			$tcBugs = isset($tcData['bugs'][$idx]) ? $GLOBALS['db']->prepare_string($tcData['bugs'][$idx]) : ''; 
+			$tcBugs = isset($tcData['bugs'][$idx]) ? $db->prepare_string($tcData['bugs'][$idx]) : ''; 
 		}
 
 		// Does exist a result for this (tcid, build) ?

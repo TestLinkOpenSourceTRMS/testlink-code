@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: product.inc.php,v $
- * @version $Revision: 1.7 $
- * @modified $Date: 2006/01/05 07:30:33 $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2006/01/09 07:15:43 $
  * @author Martin Havlat
  *
  * Functions for Product management (create,update,delete)
@@ -22,14 +22,14 @@ require_once('product.core.inc.php');
  *
  * 20060101 - fm - added notes
  */
-function updateProduct($id, $name, $color, $optRequirements,$notes)
+function updateProduct(&$db,$id, $name, $color, $optRequirements,$notes)
 {
-	$sql = " UPDATE mgtproduct SET name='" . $GLOBALS['db']->prepare_string($name) . "', " .
-	       " color='" . $GLOBALS['db']->prepare_string($color) . "', ".
-			   " option_reqs=" .  $GLOBALS['db']->prepare_string($optRequirements) . ", " .
-			   " notes='" . $GLOBALS['db']->prepare_string($notes) . "'" . 
+	$sql = " UPDATE mgtproduct SET name='" . $db->prepare_string($name) . "', " .
+	       " color='" . $db->prepare_string($color) . "', ".
+			   " option_reqs=" .  $db->prepare_string($optRequirements) . ", " .
+			   " notes='" . $db->prepare_string($notes) . "'" . 
 			   " WHERE id=" . $id;
-	$result = do_sql_query($sql);
+	$result = $db->exec_query($sql);
 
 	if ($result)
 	{
@@ -44,7 +44,7 @@ function updateProduct($id, $name, $color, $optRequirements,$notes)
 	else
 	{
 		$sqlResult = 'Update product FAILED!';
-		tLog('FAILED SQL: ' . $sql . "\n Result: " . $GLOBALS['db']->error_msg(), 'ERROR');
+		tLog('FAILED SQL: ' . $sql . "\n Result: " . $db->error_msg(), 'ERROR');
 	}
 	
 	return $sqlResult;
@@ -61,14 +61,14 @@ function updateProduct($id, $name, $color, $optRequirements,$notes)
  *
  * 20060101 - fm - added notes
  */
-function createProduct($name,$color,$optReq,$notes)
+function createProduct(&$db,$name,$color,$optReq,$notes)
 {
 	$sql = " INSERT INTO mgtproduct (name,color,option_reqs,notes) " .
-	       " VALUES ('" .	$GLOBALS['db']->prepare_string($name) . "','" . 
-	                      $GLOBALS['db']->prepare_string($color) . 
+	       " VALUES ('" .	$db->prepare_string($name) . "','" . 
+	                      $db->prepare_string($color) . 
 			                   "'," . $optReq . ",'" .
-			                  $GLOBALS['db']->prepare_string($notes) . "')";
-	$result = do_sql_query($sql);
+			                  $db->prepare_string($notes) . "')";
+	$result = $db->exec_query($sql);
 
 	if ($result)
 	{
@@ -90,7 +90,7 @@ function createProduct($name,$color,$optReq,$notes)
  */
 // MHT 20050630 added to delete all nested data
 /** @todo the function are not able to delete test plan data from another product (i.e. test case suite) */
-function deleteProduct($id, &$error)
+function deleteProduct(&$db,$id, &$error)
 {
 	$error = ''; //clear error string
 	
@@ -115,7 +115,7 @@ function deleteProduct($id, &$error)
 				" AND testplans.prodid=" . $id, 
 			'info_priority_delete_fails'),
 		// delete Test Plan rights
-		array ("DELETE projrights FROM testplans,projrights WHERE projrights.projid=testplans.id" .
+		array ("DELETE testplans_rights FROM testplans,testplans_rights WHERE testplans_rights.projid=testplans.id" .
 				" AND testplans.prodid=" . $id, 
 			'info_plan_rights_delete_fails'),
 		// delete test plans - should not be deleted if nested data were not deleted
@@ -159,7 +159,7 @@ function deleteProduct($id, &$error)
 		{
 			tLog($oneSQL[0]);
 			$sql = $oneSQL[0];
-			$result = do_sql_query($sql);	
+			$result = $db->exec_query($sql);	
 			if (!$result) {
 				$error .= lang_get($oneSQL[1]);
 			}
@@ -170,7 +170,7 @@ function deleteProduct($id, &$error)
 	if (empty($error))
 	{
 		$sql = "DELETE FROM mgtproduct WHERE id=" . $id;
-		$result = do_sql_query($sql);
+		$result = $db->exec_query($sql);
 
 		if ($result) {
 			$sessProduct = isset($_SESSION['product']) ? $_SESSION['product'] : $id;
@@ -190,10 +190,10 @@ function deleteProduct($id, &$error)
  * @param integer $status 1=active || 0=inactive 
  */
 // MHT 20050622 created
-function activateProduct($id, $status)
+function activateProduct(&$db,$id, $status)
 {
 	$sql = "UPDATE mgtproduct SET active=" . $status . " WHERE id=" . $id;
-	$result = do_sql_query($sql);
+	$result = $db->exec_query($sql);
 
 	return $result ? 1 : 0;
 }

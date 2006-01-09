@@ -1,6 +1,6 @@
 <?
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: import.inc.php,v 1.12 2006/01/05 07:30:33 franciscom Exp $
+* $Id: import.inc.php,v 1.13 2006/01/09 07:15:43 franciscom Exp $
 * 
 * @author Martin Havlat
 *
@@ -13,6 +13,8 @@
 * 20050831 - fm - reduce global coupling
 * 20051004 - fm - interface changes
 * 20051104 - scs - import didnt work, fixed
+* 20060108 - fm  - refactoring
+*
 */
 require_once("../../config.inc.php");
 require_once("../functions/common.php");
@@ -126,12 +128,12 @@ function buildKeywordListAndInsertKeywords(&$db,$data,$prodID,$slice = 6)
 *
 * @param 
 * @param $prodID
-* @param $login_name
+* @param $user_id
 * @param int catIDForImport optional parameter for importing tc directly to a specific catID
 *
 * 20050831 - fm - reduce Global Coupling
 */
-function exeTcImport(&$db,$fileLocation,$prodID, $login_name, $catIDForImport = 0)
+function exeTcImport(&$db,$fileLocation,$prodID, $user_id, $catIDForImport = 0)
 {
 	//command to open a csv for read
 	$handle = fopen($fileLocation, "r");
@@ -141,9 +143,10 @@ function exeTcImport(&$db,$fileLocation,$prodID, $login_name, $catIDForImport = 
 
 	//Data taken from the csv
 	//Removing the quotation marks around the stings
-	//Harry: only stip out quotes if they are really there (M$ Excel CVS export compatibility)
-	//Harry: replace any M$ Excel CVS single quotes "'" inside key with double "''"
-	for($i = 0;$i < sizeof($data);$i++)
+	//only stip out quotes if they are really there (M$ Excel CVS export compatibility)
+	//replace any M$ Excel CVS single quotes "'" inside key with double "''"
+  $qta_fields=sizeof($data);
+	for($i = 0; $i < $qta_fields ;$i++)
 	{
 		$data[$i] = stripQuotes($data[$i]);
 	}
@@ -155,31 +158,31 @@ function exeTcImport(&$db,$fileLocation,$prodID, $login_name, $catIDForImport = 
 	$arrayTCSteps = $data[4];
 	$arrayResults = $data[5];
 
-
-	if (!$catIDForImport)
+	if ($catIDForImport)
 	{
-		$keys = buildKeywordListAndInsertKeywords($db,$data,$prodID);
-		
+		$arrayTC      = $data[0];
+		$arraySummary = $data[1];
+		$arrayTCSteps = $data[2];
+		$arrayResults = $data[3];	
+    $key_index=4;
+	  $catID = $catIDForImport;
+	}	
+	else
+	{
+		$key_index=6;
+
 		//Insert arrayCom into component where projID == projIDSubmit 
-		// 20050908 - fm - changes in insertProductComponent()
 		$ret = insertProductComponent($db,$prodID,$arrayCom,null,null,null,null,null);
 		$comID = $ret['id'];
 		
 		//Select comID from component where comName == arrayCom store as comID
 		$catID = insertComponentCategory($db,$comID,$arrayCat,null,null,null,null);
-		$tcID = insertTestcase($db,$catID,$arrayTC,$arraySummary,$arrayTCSteps,$arrayResults,$login_name,null,$keys);
 	}
-	else
-	{
-		$arrayTC = $data[0];
-		$arraySummary = $data[1];
-		$arrayTCSteps = $data[2];
-		$arrayResults = $data[3];	
-
-		$keys = buildKeywordListAndInsertKeywords($db,$data,$prodID,4);
-		$tcID = insertTestcase($db,$catIDForImport,$arrayTC,$arraySummary,
-		                       $arrayTCSteps,$arrayResults,$login_name,null,$keys);
-	}	
+	$keys = buildKeywordListAndInsertKeywords($db,$data,$prodID,$key_index);
+	$tcID = insertTestcase($db,$catID,$arrayTC,$arraySummary,
+	                       $arrayTCSteps,$arrayResults,$user_id,null,$keys);
+	
+	
 	//Store all the old vales into a new array
 	$oldCom = $arrayCom;
 	$oldComNumber = $comID;
@@ -189,7 +192,8 @@ function exeTcImport(&$db,$fileLocation,$prodID, $login_name, $catIDForImport = 
 	//Next start the loop!!
 	while ($data = fgetcsv ($handle, TL_IMPORT_ROW_MAX, ","))
 	{
-		for($i = 0;$i < sizeof($data);$i++)
+  	$qta_fields=sizeof($data);
+		for($i = 0;$i < $qta_fields ;$i++)
 		{
 			$data[$i] = stripQuotes($data[$i]);
 		}
@@ -201,8 +205,8 @@ function exeTcImport(&$db,$fileLocation,$prodID, $login_name, $catIDForImport = 
 			$arrayTCSteps = $data[2];
 			$arrayResults = $data[3];
 			$keys = buildKeywordListAndInsertKeywords($db,$data,$prodID,4);
-			$tcID = insertTestcase($db,$catIDForImport,$arrayTC,$arraySummary,
-			                       $arrayTCSteps,$arrayResults,$login_name,null,$keys);
+			$catID=$catIDForImport;
+			$keys_index=4;
 		}
 		else
 		{
@@ -212,16 +216,15 @@ function exeTcImport(&$db,$fileLocation,$prodID, $login_name, $catIDForImport = 
 			$arraySummary = $data[3];
 			$arrayTCSteps = $data[4];
 			$arrayResults = $data[5];
-			$keys = buildKeywordListAndInsertKeywords($db,$data,$prodID);
+			$keys_index=6;
 			
 			if($arrayCom == $oldCom)
 			{
-		    	// 20051004 - fm - refactoring
+				$catID = $oldCatNumber;
 				if($arrayCat != $oldCat)
-					$catID = insertComponentCategory($oldComNumber,$arrayCat,null,null,null,null);
-				else 
-					$catID = $oldCatNumber;
-				$tcID = insertTestcase($catID,$arrayTC,$arraySummary,$arrayTCSteps,$arrayResults,$login_name,null,$keys);
+				{
+					$catID = insertComponentCategory($db,$oldComNumber,$arrayCat,null,null,null,null);
+				} 
 			}
 			else
 			{
@@ -229,8 +232,10 @@ function exeTcImport(&$db,$fileLocation,$prodID, $login_name, $catIDForImport = 
 				$ret = insertProductComponent($db,$prodID,$arrayCom,null,null,null,null,null);
 				$comID = $ret['id'];
 				$catID = insertComponentCategory($db,$comID,$arrayCat,null,null,null,null);
-				$tcID = insertTestcase($db,$catID,$arrayTC,$arraySummary,$arrayTCSteps,$arrayResults,$login_name,null,$keys);
 			}
+			$keys = buildKeywordListAndInsertKeywords($db,$data,$prodID,$keys_index);
+			$tcID = insertTestcase($db,$catID,$arrayTC,$arraySummary,
+			                       $arrayTCSteps,$arrayResults,$user_id,null,$keys);
 	
 			$oldCom = $arrayCom;
 			$oldComNumber = $comID;
@@ -241,7 +246,6 @@ function exeTcImport(&$db,$fileLocation,$prodID, $login_name, $catIDForImport = 
 	
 	//Close the CSV
 	fclose ($handle);
-
 	return "Data Imported";
 }
 

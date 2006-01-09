@@ -1,10 +1,12 @@
 <?
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: builds.inc.php,v 1.14 2006/01/05 07:30:33 franciscom Exp $
+* $Id: builds.inc.php,v 1.15 2006/01/09 07:15:43 franciscom Exp $
 * 
 * @author Martin Havlat
 *
 * Functions for Test Plan management - build related
+*
+* 20060108 - fm - ADODB
 */
 require_once('../../config.inc.php');
 require_once("../functions/common.php");
@@ -71,42 +73,42 @@ function getBuildInfo(&$db,$sql)
  	return $arrBuilds;
 }
 //20051203 - scs - correct wrong column name while deleting bugs and results
-function deleteTestPlanBuild($testPlanID,$buildID)
+function deleteTestPlanBuild(&$db,$testPlanID,$buildID)
 {
 	$result = 1;
 	if ($testPlanID)
 	{ 
 		$catIDs = null;
-		getTestPlanCategories($testPlanID,$catIDs);
+		getTestPlanCategories($db,$testPlanID,$catIDs);
 	
 		// 20050914 - fm
-		$tcIDs = getCategories_TC_ids($catIDs);	
+		$tcIDs = getCategories_TC_ids($db,$catIDs);	
 		
 		if (sizeof($tcIDs))
 		{
 			$tcIDList = implode(",",$tcIDs);
 			
 			$query = "DELETE FROM bugs WHERE tcid IN ({$tcIDList}) AND build_id = {$buildID}";
-			$result = $result && do_sql_query($query);
+			$result = $result && $db->exec_query($query);
 			
 			
 			$query = "DELETE FROM results WHERE tcid IN ({$tcIDList}) AND build_id = {$buildID}";
-			$result = $result && do_sql_query($query);
+			$result = $result && $db->exec_query($query);
 		}
 	
 		$query = "DELETE FROM build WHERE build.id={$buildID} AND projid=" . $testPlanID;
-		$result = $result && do_sql_query($query);
+		$result = $result && $do->exec_query($query);
 	}
 	return $result ? 1 : 0;
 }
 
 
 /* 20051005 - fm */
-function getBuild_by_id($buildID)
+function getBuild_by_id(&$db,$buildID)
 {
   $sql = "SELECT build.* FROM build WHERE build.id = " . $buildID;
-  $result = do_sql_query($sql);
-  $myrow = $GLOBALS['db']->fetch_array($result);
+  $result = $db->exec_query($sql);
+  $myrow = $db->fetch_array($result);
 	return($myrow);
 }
 

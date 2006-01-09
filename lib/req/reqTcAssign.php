@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: reqTcAssign.php,v $
- * @version $Revision: 1.4 $
- * @modified $Date: 2006/01/05 07:30:34 $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2006/01/09 07:16:16 $
  * 
  * @author Martin Havlat
  * 
@@ -114,6 +114,6 @@ $smarty->assign('arrUnassignedReq', $arrUnassignedReq);
 $smarty->assign('arrReqSpec', $arrReqSpec);
 $smarty->assign('arrAssignedReq', $arrAssignedReq);
 $smarty->assign('selectedReqSpec', $idReqSpec);
-$smarty->assign('modify_req_rights', has_rights("mgt_modify_req")); 
+$smarty->assign('modify_req_rights', has_rights($db,"mgt_modify_req")); 
 $smarty->display('reqAssign.tpl');
 ?>

@@ -5,13 +5,14 @@
  *
  * Filename $RCSfile: tcImport.php,v $
  *
- * @version $Revision: 1.8 $
- * @modified $Date: 2006/01/05 07:30:34 $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2006/01/09 07:20:00 $
  *
  * @author	Martin Havlat
  * @author	Chad Rosen
  *
  * This page manages the importation of product data from a csv file.
+ *
  * 20050828 - scs - changes for importing tc to a specific category
  * 20050831 - scs - import limits are now define in config.inc.php
  * 20051015 - scs - moved POST params to the top
@@ -30,6 +31,7 @@ $location = isset($_POST['location']) ? strings_stripSlashes($_POST['location'])
 $productName = $_SESSION['productName'];
 $productID = $_SESSION['productID'];
 $user = $_SESSION['user'];
+$user_id = $_SESSION['userID'];
 
 //20050831 - scs - import now import not to a single file only
 $dest = TL_TEMP_PATH . session_id()."-importTc.csv";
@@ -52,7 +54,7 @@ if (($source != 'none') && ($source != '' ))
 if($bImport)
 {
 	// 20050831 - fm - interface changes to reduce global coupling
-	$imported = exeTcImport($db,$location,$productID,$user,$catIDForImport);
+	$imported = exeTcImport($db,$location,$productID,$user_id,$catIDForImport);
 }
 $fileFormatString = lang_get('the_format');
 if ($catIDForImport)

@@ -1,6 +1,6 @@
 <?
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: priority.inc.php,v 1.6 2006/01/05 07:30:33 franciscom Exp $ */
+/* $Id: priority.inc.php,v 1.7 2006/01/09 07:15:43 franciscom Exp $ */
 /**
  * Functions for Priority management 
  * Precondition: require init db + session verification done (testlinkInitPage();) 
@@ -18,16 +18,16 @@ require_once("../functions/common.php");
  * Collect information about rules for priority within actual Plan
  * @return array of array: id, priority, name of item 
  */
-function getPriority($tpID)
+function getPriority(&$db,$tpID)
 {
 	$arrData = array();
 	
 	// 20050807 - fm
 	$sql = " SELECT id, riskImp, priority " .
 	       " FROM priority WHERE projid=" . $tpID;
-	$result = do_sql_query($sql); //Run the query
+	$result = $db->exec_query($sql); //Run the query
 
-	while($row = $GLOBALS['db']->fetch_array($result)){
+	while($row = $db->fetch_array($result)){
 		array_push($arrData, array('id' => $row['id'], 'priority'=> $row['priority'],
 			'name'=>$row['riskImp']));
 	}
@@ -42,7 +42,7 @@ function getPriority($tpID)
  * @return string 'ok'
  * @todo return could depend on sql result
  */
-function setPriority($newArray)
+function setPriority(&$db,$newArray)
 {
 	$i = 0; //Start the counter 
 	while ($i < (count($newArray) - 1)){ //Loop for the entire size of the array
@@ -52,18 +52,18 @@ function setPriority($newArray)
 		
 		//SQL statement to look for the same record (tcid, build = tcid, build)
 		$sql = "SELECT id, priority FROM priority WHERE id='" . $priID . "'";
-		$result = do_sql_query($sql); //Run the query
-		$num = $GLOBALS['db']->num_rows($result); //How many results
+		$result = $db->exec_query($sql); //Run the query
+		$num = $db->num_rows($result); //How many results
 		
 		if($num == 1){ //If we find a matching record
 	
-			$myrow = $GLOBALS['db']->fetch_array($result);
+			$myrow = $db->fetch_array($result);
 			$queryPri = $myrow[1];
 	
 			//Update if different
 			if($queryPri != $priority) {
 				$sql = "UPDATE priority SET priority ='" . $priority . "' WHERE id='" . $priID . "'";
-				$result = do_sql_query($sql);
+				$result = $db->exec_query($sql);
 			}
 		}
 		$i = $i + 2; //Increment 

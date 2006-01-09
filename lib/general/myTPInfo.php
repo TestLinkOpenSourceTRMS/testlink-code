@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: myTPInfo.php,v $
  *
- * @version $Revision: 1.7 $
- * @modified $Date: 2006/01/05 07:30:34 $ $Author: franciscom $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2006/01/09 07:20:00 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -15,10 +15,11 @@
  * 20051231 - scs - changes for active state of users
  *
 **/
-function printMyTPData()
+// 20060107 - fm
+function printMyTPData(&$db)
 {
   $myData = '';
- 	$metrics = getMetrics();
+ 	$metrics = getMetrics($db);
  	if (sizeof($metrics))
  	{
  		foreach($metrics as $testplan => $metric)
@@ -41,15 +42,15 @@ function printMyTPData()
 * This function does the bulk of the work in determining the calculations for testcases.
 * 20051231 - scs - fixed ambigious column name 
 */
-function getMetrics()
+function getMetrics(&$db)
 {
-    $sql = " SELECT testplans.name,testplans.id FROM testplans,projrights,user where ".
-           " testplans.id=projrights.projid AND user.id=projrights.userid AND testplans.active=1 AND ".
+    $sql = " SELECT testplans.name,testplans.id FROM testplans,testplans_rights,user where ".
+           " testplans.id=testplans_rights.projid AND user.id=testplans_rights.userid AND testplans.active=1 AND ".
            " user.id=" . $_SESSION['userID'];
-    $result = do_sql_query($sql);
+    $result = $db->exec_query($sql);
 	$metrics = null;
 	$testplans = null;
-	while($row = $GLOBALS['db']->fetch_array($result))
+	while($row = $db->fetch_array($result))
 	{
 		$metrics[$row[1]] = array(0,0,0,$row[0]);
 		$testplans[] = $row[1];
@@ -66,8 +67,8 @@ function getMetrics()
            " AND category.id = testcase.catid " .
            " AND projID IN ({$testplan_list}) GROUP BY projId ";
 		   
-	$result = do_sql_query($sql);
-	while($row = $GLOBALS['db']->fetch_array($result))
+	$result = $db->exec_query($sql);
+	while($row = $db->fetch_array($result))
 		$metrics[$row[1]][0] = $row[0];
 	$tcInfo = null;
 	$sql = " SELECT projID,tcid,status " .
@@ -77,19 +78,24 @@ function getMetrics()
 	       " AND category.id = testcase.catid " .
 	       " AND testcase.id = results.tcid " .
 	       " AND projID IN ({$testplan_list}) ORDER BY projID,tcID,build_id";
-	getTCInfo($sql,$tcInfo);
+	       
+	// 20060107 - fm	       
+	$tcInfo = getTCInfo($sql);
 	calculateMetrics($metrics,$tcInfo,1);
 	
 	$sql = "SELECT projID,tcid,status FROM results,testplans,component,category,testcase where ".
          "testplans.id = component.projid AND component.id = category.compid AND category.id = testcase.catid and testcase.id = ".
-         "results.tcid AND owner = '".$GLOBALS['db']->prepare_string($_SESSION['user'])."' AND projID IN ({$testplan_list}) ORDER BY projID,tcID,build_id";
+         "results.tcid AND owner = '".$db->prepare_string($_SESSION['user'])."' AND projID IN ({$testplan_list}) ORDER BY projID,tcID,build_id";
 
 	$myTcInfo = null;
-	getTCInfo($sql,$myTcInfo);
+
+	// 20060107 - fm	       
+	$tcInfo = getTCInfo($sql);
 	calculateMetrics($metrics,$myTcInfo,2);
 
 	return $metrics;
 }
+
 
 function calculateMetrics(&$metrics,&$myTcInfo,$index)
 {
@@ -106,13 +112,14 @@ function calculateMetrics(&$metrics,&$myTcInfo,$index)
 	}
 }
 
-function getTCInfo($sql,&$tcInfo)
+// 20060107 - fm
+function getTCInfo(&$db,$sql,&$tcInfo)
 {
-	$result = do_sql_query($sql);
+	$result = $db->exec_query($sql);
 	$tcInfo = null;
 	if ($result)
 	{   
-		while($row = $GLOBALS['db']->fetch_array($result))
+		while($row = $db->fetch_array($result))
 			$tcInfo[$row[0]][$row[1]] = $row[2];
 	}
 }

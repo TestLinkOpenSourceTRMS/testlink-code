@@ -1,6 +1,6 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
 # This script is distributed under the GNU General Public License 2 or later.
-# $Id: testlink_create_tables.sql,v 1.13 2006/01/04 09:56:07 franciscom Exp $
+# $Id: testlink_create_tables.sql,v 1.14 2006/01/09 07:14:41 franciscom Exp $
 # SQL script - create db tables for TL 1.6.0  
 #
 # default rights & admin account are created via testlink_create_default_data.sql
@@ -195,9 +195,9 @@ CREATE TABLE `mgttestcase` (
   `catid` int(10) unsigned NOT NULL default '0',
   `version` smallint(5) unsigned NOT NULL default '1',
   `summary` text,
-  `author` varchar(30) default NULL,
+  `author_id` unsigned NULL,
   `create_date` date NOT NULL default '0000-00-00',
-  `reviewer` varchar(30) default NULL,
+  `reviewer_id` unsigned NULL,
   `modified_date` date NOT NULL default '0000-00-00',
   `TCorder` int(10) NOT NULL default '0',
   PRIMARY KEY  (`id`),
@@ -250,8 +250,8 @@ CREATE TABLE `priority` (
 # to:
 #       `active` bool NOT NULL default 1,
 #
-DROP TABLE IF EXISTS `project`;
-CREATE TABLE `project` (
+DROP TABLE IF EXISTS `testplans`;
+CREATE TABLE `testplans` (
   `id` int(10) NOT NULL auto_increment,
   `prodid` int(10) unsigned NOT NULL default '0',
   `name` varchar(100) NOT NULL default 'unknown',
@@ -264,11 +264,11 @@ CREATE TABLE `project` (
 # --------------------------------------------------------
 
 #
-# Table structure for table `projrights`
+# Table structure for table `testplans_rights`
 #
 
-DROP TABLE IF EXISTS `projrights`;
-CREATE TABLE `projrights` (
+DROP TABLE IF EXISTS `testplans_rights`;
+CREATE TABLE `testplans_rights` (
   `userid` int(10) unsigned NOT NULL default '0',
   `projid` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`userid`,`projid`)

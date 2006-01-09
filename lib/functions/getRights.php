@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
  * @filesource $RCSfile: getRights.php,v $
- * @version $Revision: 1.7 $
- * @modified $Date: 2005/12/31 14:38:10 $ by $Author: schlundus $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2006/01/09 07:15:43 $ by $Author: franciscom $
  * @author Martin Havlat, Chad Rosen
  * 
  * This script provides the get_rights and has_rights functions for
@@ -43,17 +43,17 @@
  * 
  * 20050819 - scs - small cosmetic changes
  */
-function getRoleRights($role)
+function getRoleRights(&$db,$role)
 {
 	$roles = null;
 
 	$sql = "SELECT rights FROM rights " .
-	       "WHERE role='" . $GLOBALS['db']->prepare_string($role) . "'";
+	       "WHERE role='" . $db->prepare_string($role) . "'";
 
-	$result = do_sql_query($sql);
+	$result = $db->exec_query($sql);
 	if ($result)
 	{
-		$myrow = $GLOBALS['db']->fetch_array($result);
+		$myrow = $db->fetch_array($result);
 		if ($myrow)
 		{
 			$roles = explode(",",$myrow['rights']);
@@ -61,7 +61,7 @@ function getRoleRights($role)
 	}
 	else
 	{
-		tLog('Request: ' .$sql. ' causes '. $GLOBALS['db']->error_msg(), 'ERROR');
+		tLog('Request: ' .$sql. ' causes '. $db->error_msg(), 'ERROR');
 	}
 	return $roles;
 }
@@ -72,7 +72,7 @@ function getRoleRights($role)
 * 20051231 - scs - added reloading the rights if the users role has changed
 *
 */
-function has_rights($roleQuestion)
+function has_rights(&$db,$roleQuestion)
 {
 	// 20050819 - scs - we dont need to query the db for the rights every call
 	//				 - so the rights are fetched only once per script 
@@ -82,7 +82,7 @@ function has_rights($roleQuestion)
 	{
 		//echo "<pre>debug"; print_r($_SESSION); echo "</pre>";
 		$roleName = $_SESSION['role'];
-		$rights = getRoleRights($roleName);
+		$rights = getRoleRights($db,$roleName);
 		//echo "<pre>debug\$rights"; print_r($rights); echo "</pre>";
 	}
 	

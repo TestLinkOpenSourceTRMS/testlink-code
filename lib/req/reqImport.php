@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqImport.php,v $
- * @version $Revision: 1.7 $
- * @modified $Date: 2006/01/05 07:30:34 $ by $Author: franciscom $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2006/01/09 07:16:16 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Import requirements to a specification. 
@@ -49,7 +49,7 @@ if (isset($_POST['UploadFile']))
 			if (count($arrImportSource))
 			{
 				// collect existing req titles in the SRS
-				$arrReqTitles = getReqTitles($idSRS);
+				$arrReqTitles = getReqTitles($db,$idSRS);
 				
 				// compare titles
 				$arrImport = compareImportedReqs($arrImportSource, $arrReqTitles);
@@ -71,17 +71,17 @@ elseif (isset($_POST['executeImport']))
 	if (count($arrImportSource))
 	{
 		// collect existing req titles in the SRS
-		$arrReqTitles = getReqTitles($idSRS);
+		$arrReqTitles = getReqTitles($db,$idSRS);
 				
 		// process import
-		$arrImport = executeImportedReqs($arrImportSource, $arrReqTitles, 
+		$arrImport = executeImportedReqs($db,$arrImportSource, $arrReqTitles, 
 		                                 $conflictSolution, $emptyScope, $idSRS, $userID);
 	}
 	$importResult = lang_get('req_import_finished');
 }
 // collect existing document data
 // fm - mybug after refactoring
-$arrSpec = getReqSpec($_SESSION['productID'],$idSRS);	
+$arrSpec = getReqSpec($db,$_SESSION['productID'],$idSRS);	
 
 $smarty = new TLSmarty;
 $smarty->assign('reqSpec', $arrSpec[0]);

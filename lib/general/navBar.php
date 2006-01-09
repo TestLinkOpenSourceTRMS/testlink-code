@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: navBar.php,v $
  *
- * @version $Revision: 1.7 $
- * @modified $Date: 2006/01/05 07:30:34 $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2006/01/09 07:20:00 $
  *
  * @author Martin Havlat
  *
@@ -41,10 +41,10 @@ if (isset($_GET['product']))
 }
 
 $smarty->assign('user', $_SESSION['user'] . ' [' . $_SESSION['role'] . ']');
-$smarty->assign('rightViewSpec', has_rights("mgt_view_tc"));
-$smarty->assign('rightExecute', has_rights("tp_execute"));
-$smarty->assign('rightMetrics', has_rights("tp_metrics"));
-$smarty->assign('rightUserAdmin', has_rights("mgt_users"));
+$smarty->assign('rightViewSpec', has_rights($db,"mgt_view_tc"));
+$smarty->assign('rightExecute', has_rights($db,"tp_execute"));
+$smarty->assign('rightMetrics', has_rights($db,"tp_metrics"));
+$smarty->assign('rightUserAdmin', has_rights($db,"mgt_users"));
 $smarty->assign('countPlans', $countPlans);
 $smarty->assign('arrayProducts', $arrProducts);
 $smarty->assign('currentProduct', $currentProduct);

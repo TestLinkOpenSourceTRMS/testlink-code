@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: requirements.inc.php,v $
- * @version $Revision: 1.19 $
- * @modified $Date: 2006/01/05 07:30:33 $ by $Author: franciscom $
+ * @version $Revision: 1.20 $
+ * @modified $Date: 2006/01/09 07:15:43 $ by $Author: franciscom $
  *
  * @author Martin Havlat <havlat@users.sourceforge.net>
  * 
@@ -288,14 +288,14 @@ function getReqMetrics_general(&$db,$idSRS)
 	// get nottestable REQs
 	$sql = "SELECT count(*) FROM requirements WHERE id_srs=" . $idSRS . 
 			" AND status='n'";
-	$output['notTestable'] = do_sql_selectOne($sql);
+	$output['notTestable'] = do_sql_selectOne($db,$sql);
 
 	$sql = "SELECT count(*) FROM requirements WHERE id_srs=" . $idSRS;
-	$output['total'] = do_sql_selectOne($sql);
+	$output['total'] = do_sql_selectOne($db,$sql);
 	tLog('Count of total REQ in DB for id_SRS:'.$idSRS.' = '.$output['total']);
 
 	$sql = "SELECT total_req FROM req_spec WHERE id=" . $idSRS;
-	$output['expectedTotal'] = do_sql_selectOne($sql);;
+	$output['expectedTotal'] = do_sql_selectOne($db,$sql);;
 	tLog(' Redefined Count of total REQ in DB for id_SRS:'.$idSRS.' = '.$output['total']);
 	
 	if ($output['expectedTotal'] == 'n/a') {
@@ -753,6 +753,7 @@ function createTcFromRequirement(&$db,$mixIdReq, $prodID, $idSRS, $login_name)
 		                " VALUES (" . "'". $auto_category_name . "'," .
 		                              "'" . $g_req_cfg->objective_for_category . "'," .
 				                     $idCom . ")";
+  echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sqlInsertCAT . "</b><br>";
 				                     
 		$resultCAT = $db->exec_query($sqlInsertCAT);
 		$resultCAT = $db->exec_query($sqlCAT);

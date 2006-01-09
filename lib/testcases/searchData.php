@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: searchData.php,v 1.10 2006/01/09 08:35:00 franciscom Exp $
+ * $Id: searchData.php,v 1.11 2006/01/09 18:58:00 franciscom Exp $
  * Purpose:  This page presents the search results. 
  *
  * 20050821 - fm - changes to use template customization (trying to reduce code redundancy)
@@ -24,7 +24,7 @@ $product = isset($_SESSION['productID']) ? $_SESSION['productID'] : 0;
 if ($product)
 {
 	$sqlTC = " SELECT mgttestcase.id,title,summary,steps,exresult,keywords,version," .
-	         " author,create_date,reviewer,modified_date,catid,TCorder " .
+	         " author_id,create_date,reviewer_id,modified_date,catid,TCorder " .
 	         " FROM mgttestcase, mgtcategory,	mgtcomponent " .
 	         " WHERE prodid = ".$product.
  			     " AND mgtcategory.compID = mgtcomponent.id " .

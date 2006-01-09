@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: archive.inc.php,v $
  *
- * @version $Revision: 1.28 $
- * @modified $Date: 2006/01/09 08:25:44 $ by $Author: franciscom $
+ * @version $Revision: 1.29 $
+ * @modified $Date: 2006/01/09 18:58:00 $ by $Author: franciscom $
  *
  * @author Martin Havlat
  * Purpose:  functions for test specification management have three parts:
@@ -75,7 +75,7 @@ function getTestcase(&$db,$id, $convert = TRUE)
 {
 	// execute SQL request
 	$sql  = " SELECT id,title,summary,steps,exresult,version,keywords,
-			       author AS ' ', reviewer AS ' ', author_id, reviewer_id,
+			       ' '  AS author , ' ' AS reviewer, author_id, reviewer_id,
 			       create_date,
 			       modified_date,catid,TCorder 
 			       FROM mgttestcase

@@ -2,7 +2,7 @@
 /**
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/ 
 *
-* @version 	$Id: printData.php,v 1.13 2006/01/05 07:30:34 franciscom Exp $
+* @version 	$Id: printData.php,v 1.14 2006/01/09 07:17:18 franciscom Exp $
 *	@author 	Martin Havlat
 * 
 * Shows the data that will be printed.
@@ -215,7 +215,7 @@ function generate_product_TCs(&$db,$idCategory)
 	
 	if (!$resultTC)
 	{
-		tLog($sqlTC . ' | error: ' . $GLOBALS['db']->error_msg(), 'ERROR');
+		tLog($sqlTC . ' | error: ' . $db->error_msg(), 'ERROR');
 	}
 	generate_TCs($db,$resultTC);
 }
@@ -230,7 +230,7 @@ function generate_testSuite_TCs(&$db,$idCategory)
 	
 	if (!$resultTC)
 	{
-		tLog($sqlTC . ' | error: ' . $GLOBALS['db']->error_msg(), 'ERROR');
+		tLog($sqlTC . ' | error: ' . $db->error_msg(), 'ERROR');
 	}
 	
 	generate_TCs($db,$resultTC);
@@ -243,7 +243,6 @@ function generate_testSuite_TCs(&$db,$idCategory)
 code reuse adding catID
 catID=0 -> all
 
-20050831 - fm - switch to $GLOBALS['db']->fetch_array()
 */
 function generate_testSuite_Categories(&$db,$idComponent,$catID=0)
 {

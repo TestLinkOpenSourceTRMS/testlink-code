@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: planEdit.php,v 1.12 2006/01/05 07:30:34 franciscom Exp $ */
+/* $Id: planEdit.php,v 1.13 2006/01/09 07:19:06 franciscom Exp $ */
 /* Purpose:  ability to edit and delete testplanss */
 /* TODO: I need to add the deletion of testplans rights
  *	I need to delete the testplanss builds
@@ -49,7 +49,7 @@ if(isset($_POST['editTestPlan']))
 			//Select all of the testplanss priority fields
 			if (!deleteTestPlanPriorityFields($id))
 				$editResult .= lang_get('delete_tp_priority_failed1'). $safeName. lang_get('delete_tp_priority_failed2') . 
-				               ": <br />".$GLOBALS['db']->error_msg()."<br />";
+				               ": <br />".$db->error_msg()."<br />";
 
 			//Select all of the testplanss milestones
 			if (!deleteTestPlanMilestones($id))
@@ -148,7 +148,7 @@ if(isset($_POST['editTestPlan']))
 					$generalResult .= lang_get('update_tp_succeeded1'). $safeName . lang_get('update_tp_succeeded2')."<br />";
 				else
 					$generalResult .= lang_get('update_tp_failed1'). $safeName . lang_get('update_tp_failed2').": " . 
-					                  $GLOBALS['db']->error_msg() . "<br />";
+					                  $db->error_msg() . "<br />";
 			}
 			else
 				$generalResult .= lang_get('update_tp_failed1'). $safeName . lang_get('update_tp_failed2').": " . 

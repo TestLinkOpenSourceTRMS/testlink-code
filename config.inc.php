@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.41 $
- * @modified $Date: 2006/01/04 11:30:00 $ by $Author: franciscom $
+ * @version $Revision: 1.42 $
+ * @modified $Date: 2006/01/09 07:18:15 $ by $Author: franciscom $
  *
  *
  * Constants and configuration parameters used throughout TestLink 
@@ -380,6 +380,7 @@ $g_show_realname=FALSE;
 // 'name_surname_login'    -> John Cook [ux555]
 //$g_username_format='name_surname_login';
 $g_username_format='name_surname';
+
 
 
 

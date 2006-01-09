@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsByStatus.php,v 1.8 2006/01/05 07:30:34 franciscom Exp $ 
+* $Id: resultsByStatus.php,v 1.9 2006/01/09 07:17:32 franciscom Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -46,7 +46,7 @@ $sql = " SELECT tcid,status,build_id,runby,daterun,title,results.notes," .
 		   " AND TP.id = " . $_SESSION['testPlanId'] . 
 		   " ORDER BY tcid,build_id DESC";
 
-$totalResult = do_sql_query($sql,$db);
+$totalResult = $db->exec_query($sql,$db);
 
 reset($arrBuilds);
 $maxBuild = each($arrBuilds);
@@ -55,7 +55,7 @@ $testCaseNumArray = null;
 //Looping through all of the test cases that we found
 $arrData = null;
 $tcIDArray = null;
-while($myrow = $GLOBALS['db']->fetch_array($totalResult))
+while($myrow = $db->fetch_array($totalResult))
 {
 	$tcID = $myrow[0];
 	$status = $myrow[1];
@@ -76,7 +76,7 @@ if (sizeof($tcIDArray))
 		$testSuite = $myrow[7] . "/" . $myrow[8];	
 	
 		//Display the test case with a hyper link to the execution pages
-		$testTitle = getTCLink(has_rights("tp_execute"), $tcID, $myrow[11], $myrow[5], $build); // TC title
+		$testTitle = getTCLink(has_rights($db,"tp_execute"), $tcID, $myrow[11], $myrow[5], $build); // TC title
 		$tester = $myrow[3]; //Run By
 		$testDate = $myrow[4]; //Date run
 		$notes = $myrow[6]; //notes
@@ -84,9 +84,9 @@ if (sizeof($tcIDArray))
 		//Grab all of the bugs for the test case in the build
 		$sqlBugs = " SELECT bug FROM bugs WHERE tcid=" . $tcID . 
 				       " AND build_id=" . $build;
-		$resultBugs = do_sql_query($sqlBugs,$db);
+		$resultBugs = $db->exec_query($sqlBugs,$db);
 		$bugString = null;
-		while ($myrowBug = $GLOBALS['db']->fetch_array($resultBugs))
+		while ($myrowBug = $db->fetch_array($resultBugs))
 		{
 			if (!is_null($bugString))
 				$bugString .= ","; 

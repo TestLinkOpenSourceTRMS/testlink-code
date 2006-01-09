@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsTC.php,v 1.8 2006/01/05 07:30:34 franciscom Exp $ 
+* $Id: resultsTC.php,v 1.9 2006/01/09 07:17:32 franciscom Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -39,7 +39,7 @@ $sql = " SELECT MGTCOMP.name AS comp_name, MGTCAT.name as cat_name, TC.title, TC
   	   " AND TP.id=" . $_SESSION['testPlanId'];
 
 $result = $db->exec_query($sql);
-$bRights = has_rights("tp_execute") && !$xls;
+$bRights = has_rights($db,"tp_execute") && !$xls;
 
 while ($myrow = $db->fetch_array($result))
 { //Cycle through all of the test cases

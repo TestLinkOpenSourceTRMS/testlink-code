@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: planTestersEdit.php,v $
- * @version $Revision: 1.14 $
- * @modified $Date: 2006/01/05 07:30:34 $ $ by $Author: franciscom $
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2006/01/09 07:19:06 $ $ by $Author: franciscom $
  * 
  * @author Martin Havlat
  * 
@@ -57,26 +57,26 @@ if ($submit)
 	if($type == 'users')
 	{
 		// 20051130 - fm - BUGID 239
-		// delete everything from the projRights table for that user
+		// delete everything from the testplans_rights table for that user
 		$resultDelete = deleteUsersTestPlanRights($db,$id, $prod->id);
 		
 		if (sizeof($projRightsArray))
 		{
 			foreach($projRightsArray as $projRights)
 			{
-				$resultDelete = insertTestPlanUserRight($projRights,$id);
+				$resultDelete = insertTestPlanUserRight($db,$projRights,$id);
 			}
 		}
 	}
 	else if($type == 'plans')
 	{
-		//delete everything from the projRights table for that testplan
-		$resultDelete = deleteTestPlanRightsForTestPlan($id);
+		//delete everything from the testplans_rights table for that testplan
+		$resultDelete = deleteTestPlanRightsForTestPlan($db,$id);
 		if (sizeof($projRightsArray))
 		{
 			foreach($projRightsArray as $projRights)
 			{
-				$resultDelete = insertTestPlanUserRight($id,$projRights);
+				$resultDelete = insertTestPlanUserRight($db,$id,$projRights);
 			}
 		}
 	}
@@ -98,14 +98,14 @@ if ($type == 'plans')
 	}
 	$title = lang_get('title_assign_users') . $tpName;
 	$name = 'selected="selected"';
-	$arrData=getUsersOfPlan($id);
+	$arrData=getUsersOfPlan($db,$id);
 }
 else
 { 	
 	// if users
 	$title = lang_get('title_assign_tp') . getUserLogin($db,$id);
 	// 20051120 - fm
-	$arrData = getUserTestPlans1($id,$prod->id);
+	$arrData = getUserTestPlans1($db,$id,$prod->id);
 }
 $smarty = new TLSmarty();
 $smarty->assign('title', $title);
@@ -118,10 +118,10 @@ $smarty->display('planTesters.tpl');
 // 20050810 - fm - refactoring
 // 20050824	MHT	corrected syntax bug, wrong variable using
 // 20051120 - fm - interface changes, using product filter on test plan
-function getUserTestPlans1($db,$userID,$prodID)
+function getUserTestPlans1(&$db,$userID,$prodID)
 {
 	$arrPlans = null;
-	$userTestplans = getUserTestplans($userID);
+	$userTestplans = getUserTestplans($db,$userID);
 
  	// 20051120 - fm
 	$Testplans = getAllTestplans($db,$prodID,TP_ALL_STATUS,FILTER_BY_PRODUCT);

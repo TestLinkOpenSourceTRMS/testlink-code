@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: planOwner.php,v 1.11 2006/01/05 07:30:34 franciscom Exp $ */
+/* $Id: planOwner.php,v 1.12 2006/01/09 07:19:06 franciscom Exp $ */
 /**
  * Manage the ownership and priority of test suite
  *
@@ -24,7 +24,7 @@ $tpID = $_SESSION['testPlanId'];
 $updated = null;
 if(isset($_POST['updateSuiteAttribute']) && $_POST['updateSuiteAttribute'])
 {
-	$updated = updateSuiteAttributes($_POST);
+	$updated = updateSuiteAttributes($db,$_POST);
 }
 
 $arrSuites = null;
@@ -36,11 +36,11 @@ if($level == 'root')
 }	
 else if($level == 'component')
 {
-	$arrSuites = getAllTestPlanComponentCategories($tpID,$compID);
+	$arrSuites = getAllTestPlanComponentCategories($db,$tpID,$compID);
 }
 else if($level == 'category')
 {
-	$arrSuites = getTP_category_info($catID);
+	$arrSuites = getTP_category_info($db,$catID);
 }
 
 $arrUsers = getTestPlanUsers($db,$tpID);

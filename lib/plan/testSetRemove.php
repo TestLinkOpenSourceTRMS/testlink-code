@@ -1,7 +1,7 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: testSetRemove.php,v 1.8 2006/01/05 07:30:34 franciscom Exp $ 
+ * @version $Id: testSetRemove.php,v 1.9 2006/01/09 07:19:06 franciscom Exp $ 
  * 
  * Remove Test Cases from Test Case Suite 
  * 
@@ -46,16 +46,16 @@ if(isset($_POST['deleteTC']))
 		else
 		{
 			$sqlMGT = "SELECT mgttcid,title FROM testcase WHERE id=" . $tcID;
-			$resultMGT = do_sql_query($sqlMGT);
-			$mgtID = $GLOBALS['db']->fetch_array($resultMGT);
+			$resultMGT = $db->exec_query($sqlMGT);
+			$mgtID = $db->fetch_array($resultMGT);
 
 			//Delete the test case as well as its results and bugs
 			$sqlTCDel = "DELETE FROM testcase WHERE id=" . $tcID;
 			$sqlRESDel = "DELETE FROM results WHERE tcid=" . $tcID;
 			$sqlBUGDel = "DELETE FROM bugs WHERE tcid=" . $tcID;
-			$result = do_sql_query($sqlTCDel);
-			$result = do_sql_query($sqlRESDel);
-			$result = do_sql_query($sqlBUGDel);
+			$result = $db->exec_query($sqlTCDel);
+			$result = $db->exec_query($sqlRESDel);
+			$result = $db->exec_query($sqlBUGDel);
 
 			$resultString .= lang_get("test_case_removed_part1") . " <b>". 
 							 $mgtID['mgttcid'] . "</b>: " . 
@@ -73,10 +73,10 @@ elseif(isset($_POST['deletecomponent']))
 	              " FROM component COMP, mgtcomponent MGTCOMP " .
 	              " WHERE MGTCOMP.id = COMP.mgtcompid " .
 	              " AND COMP.id=" . $id;
-	$comResult = do_sql_query($sqlComName);
-	$comRow = $GLOBALS['db']->fetch_array($comResult);
+	$comResult = $db->exec_query($sqlComName);
+	$comRow = $db->fetch_array($comResult);
 
-	del_component_deep($id);
+	del_component_deep($db,$id);
 
 	$resultString = "<b>". lang_get("component_removed_part1") ."</b> " . 
 	                htmlspecialchars($comRow['comp_name']) ." ". lang_get("component_removed_part2");
@@ -88,12 +88,12 @@ elseif(isset($_POST['deletecategory']))
 			" FROM mgtcategory MGTCAT, category CAT" .
 			" WHERE MGTCAT.id = CAT.mgtcatid " .
 			" AND CAT.id=" . $id;
-	$result = do_sql_query($sql);
-	$myrow = $GLOBALS['db']->fetch_array($result);
+	$result = $db->exec_query($sql);
+	$myrow = $db->fetch_array($result);
 	$cat_name = $myrow['name'];
 	
 	// 20051001 - fm
-	del_category_deep($id);
+	del_category_deep($db,$id);
 	$resultString =  "<b>". lang_get("category_removed_part1") . 
 					" </b> " . htmlspecialchars($cat_name) . " ". 
 					lang_get("category_removed_part2");
@@ -134,7 +134,7 @@ $smarty->display('planRemoveTC.tpl');
 /*
 20050915 - fm - use the id that are != 0
 */
-function genTC_info($compID, $catID, $tcID)
+function genTC_info(&$db, $compID, $catID, $tcID)
 {
 	$sql = " SELECT mgtcategory.name AS cat_name, mgtcomponent.name AS comp_name, " .
 	       " component.id AS comp_id, " .
@@ -163,8 +163,8 @@ function genTC_info($compID, $catID, $tcID)
 	$sql .= " ORDER BY TCorder";
 
 	$tc_info = null;
-	$result = do_sql_query($sql);
-	while($row = $GLOBALS['db']->fetch_array($result))
+	$result = $db->exec_query($sql);
+	while($row = $db->fetch_array($result))
 	{
 		$tc_info[] = array(	'id' => $row['id'], 
 					'name' => $row['title'], 

@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: keywords.inc.php,v $
 * 
-* @version $Id: keywords.inc.php,v 1.15 2006/01/04 09:43:56 franciscom Exp $
-* @modified $Date: 2006/01/04 09:43:56 $ by $Author: franciscom $
+* @version $Id: keywords.inc.php,v 1.16 2006/01/09 07:16:49 franciscom Exp $
+* @modified $Date: 2006/01/09 07:16:49 $ by $Author: franciscom $
 *
 * Functions for support keywords management. 
 *
@@ -177,7 +177,7 @@ function updateComponentKeywords(&$db,$id, $newKey)
 function addTCKeyword(&$db,$tcID, $newKey)
 {
 	$sqlTC = "SELECT keywords FROM mgttestcase where id=" . $tcID;
-	//$resultUpdate = do_sql_query($sqlTC);
+	//$resultUpdate = $db->exec_query($sqlTC);
 	$TCKeys = $db->fetchFirstRowSingleColumn($sqlTC,'keywords');
 	// add newKey if is not included
 	$keys = explode(",",$TCKeys);
@@ -297,9 +297,11 @@ function addNewKeyword(&$db,$prodID,$keyword,$notes)
 				" VALUES ('" . $db->prepare_string($my_kw) .	"'," . 
 				$prodID . ",'" . $db->prepare_string($notes) . "')";
 		
-		$result = do_sql_query($sql);
+		$result = $db->exec_query($sql);
 		if (!$result)
+		{
 			$ret = $db->error_msg();
+		}	
 	}
   
 	return $ret;
@@ -318,8 +320,9 @@ function getTCKeywords(&$db,$tcID)
 	$sql = "SELECT keywords FROM mgttestcase WHERE id=" . $tcID;
 	$keywords = $db->fetchFirstRowSingleColumn($sql,'keywords');
 	if (!is_null($keywords))
+	{
 		$keywords = explode(",",$keywords);	
-	
+	}
 	return $keywords;
 }
 
@@ -356,12 +359,12 @@ function getProductKeywords(&$db,$prodID,$searchKW = null,$kwID = null)
 }
 
 /**
- * Function-Documentation
+ * check_for_keyword_existence
  *
  * @param object $db [ref] documentation
- * @param inr $prodID product ID
+ * @param int    $prodID product ID
  * @param string $kw keyword to search for
- * @param int $kwID[default = 0] ignore  keyword with this id
+ * @param int    $kwID[default = 0] ignore keyword with this id
  *
  * @return type
  *				 				

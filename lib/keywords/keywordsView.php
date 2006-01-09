@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: keywordsView.php,v $
  *
- * @version $Revision: 1.8 $
- * @modified $Date: 2006/01/05 07:30:34 $ by $Author: franciscom $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2006/01/09 07:16:49 $ by $Author: franciscom $
  *
  * Purpose:  This page this allows users to view keywords. 
  *
@@ -29,7 +29,7 @@ $notes = isset($_REQUEST['notes']) ? $_REQUEST['notes'] : null;
 
 
 $prodID = isset($_SESSION['productID']) ? $_SESSION['productID'] : 0;
-$bModifyKeywordRight = has_rights("mgt_modify_key");
+$bModifyKeywordRight = has_rights($db,"mgt_modify_key");
 
 $sqlResult = null;
 $action = null;

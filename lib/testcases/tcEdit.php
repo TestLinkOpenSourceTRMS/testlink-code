@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.17 $
- * @modified $Date: 2006/01/06 20:32:50 $  by $Author: schlundus $
+ * @version $Revision: 1.18 $
+ * @modified $Date: 2006/01/09 08:41:09 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
  * @author Martin Havlat
@@ -133,8 +133,9 @@ else if($bUpdateTC)
 	if( $name_ok)
 	{
 		$sqlResult = 'ok';
+		// 20060108 - fm - user->user id 
 		if (!updateTestcase($db,$testcaseID,$title,$summary,$steps,
-		                    $outcome,$user,$updatedKeywords,$version))
+		                    $outcome,$_SESSION['userID'],$updatedKeywords,$version))
 		{
 			$sqlResult =  $db->error_msg();
 		}
@@ -154,7 +155,7 @@ else if($bAddTC)
 	if ($name_ok)
 	{
 		$msg = lang_get('error_tc_add');
-		if (insertTestcase($db,$categoryID,$title,$summary,$steps,$outcome,$user,null,$updatedKeywords))
+		if (insertTestcase($db,$categoryID,$title,$summary,$steps,$outcome,$_SESSION['userID'],null,$updatedKeywords))
 			$msg = 'ok';
 	}
   
@@ -167,7 +168,7 @@ else if($bDeleteTC)
 	//check to see if the user said he was sure he wanted to delete
 	if($bSure) 
 	{
-		if (deleteTestcase($testcaseID))
+		if (deleteTestcase($db,$testcaseID))
 			$smarty->assign('sqlResult', 'ok');
 	   	else
 			$smarty->assign('sqlResult', $db->error_msg());
@@ -202,7 +203,7 @@ else if($bUpdateTCMove)
 }
 else if($bUpdateTCCopy)
 {
-	$result = copyTc($db,$catID, $testcaseID, $user);
+	$result = copyTc($db,$catID, $testcaseID, $_SESSION['userID']);
 	showCategory($db,$oldCat, $result,'update',$catID);
 }
 else

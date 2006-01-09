@@ -1,6 +1,6 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
 # This script is distributed under the GNU General Public License 2 or later.
-# $Id: testlink_create_tables.sql,v 1.14 2006/01/09 07:14:41 franciscom Exp $
+# $Id: testlink_create_tables.sql,v 1.15 2006/01/09 18:50:32 franciscom Exp $
 # SQL script - create db tables for TL 1.6.0  
 #
 # default rights & admin account are created via testlink_create_default_data.sql
@@ -195,9 +195,9 @@ CREATE TABLE `mgttestcase` (
   `catid` int(10) unsigned NOT NULL default '0',
   `version` smallint(5) unsigned NOT NULL default '1',
   `summary` text,
-  `author_id` unsigned NULL,
+  `author_id` INT(10) unsigned  NULL,
   `create_date` date NOT NULL default '0000-00-00',
-  `reviewer_id` unsigned NULL,
+  `reviewer_id` INT(10) unsigned  NULL,
   `modified_date` date NOT NULL default '0000-00-00',
   `TCorder` int(10) NOT NULL default '0',
   PRIMARY KEY  (`id`),

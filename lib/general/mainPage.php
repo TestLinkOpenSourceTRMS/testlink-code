@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: mainPage.php,v $
  *
- * @version $Revision: 1.9 $ $Author: schlundus $
- * @modified $Date: 2006/01/06 20:32:49 $
+ * @version $Revision: 1.10 $ $Author: franciscom $
+ * @modified $Date: 2006/01/09 08:13:45 $
  *
  * @author Martin Havlat
  * 
@@ -45,26 +45,26 @@ if ($_SESSION['role'] == 'admin' && !isset($_SESSION['productID']))
 // ----------------------------------------------------------------------
 
 // ----- Product Section ----------------------------------  
-if(has_rights("mgt_view_tc"))
+if(has_rights($db,"mgt_view_tc"))
 { 
   	//user can view tcs 
     $smarty->assign('view_tc_rights', 'yes');
     
     //users can modify tcs
-    $smarty->assign('modify_tc_rights', has_rights("mgt_modify_tc")); 
+    $smarty->assign('modify_tc_rights', has_rights($db,"mgt_modify_tc")); 
 }
 
 // REQS
-$smarty->assign('view_req_rights', has_rights("mgt_view_req")); 
-$smarty->assign('modify_req_rights', has_rights("mgt_modify_req")); 
+$smarty->assign('view_req_rights', has_rights($db,"mgt_view_req")); 
+$smarty->assign('modify_req_rights', has_rights($db,"mgt_modify_req")); 
 $smarty->assign('opt_requirements', isset($_SESSION['productOptReqs']) ? $_SESSION['productOptReqs'] : null); 
 
 // view and modify Keywords 
-$smarty->assign('view_keys_rights', has_rights("mgt_view_key"));
-$smarty->assign('modify_keys_rights', has_rights("mgt_modify_key"));
+$smarty->assign('view_keys_rights', has_rights($db,"mgt_view_key"));
+$smarty->assign('modify_keys_rights', has_rights($db,"mgt_modify_key"));
 
 // User has Product rights
-$smarty->assign('modify_product_rights', has_rights("mgt_modify_product"));
+$smarty->assign('modify_product_rights', has_rights($db,"mgt_modify_product"));
 
 
 // ----- Test Statistics Section --------------------------
@@ -102,7 +102,7 @@ $smarty->assign('filter_tp_by_product',$filter_tp_by_product);
 // 20050928 - fm - Interface changes
 // 20050810 - fm - Interface changes
 // 20050809 - fm - get only test plan for the selected product
-$arrPlans = getTestPlans(isset($_SESSION['productID']) ? $_SESSION['productID'] : 0,
+$arrPlans = getTestPlans($db,isset($_SESSION['productID']) ? $_SESSION['productID'] : 0,
 						$_SESSION['userID'],$filter_tp_by_product);
 
 //20050826 - scs - added displaying of security notes
@@ -113,16 +113,16 @@ $smarty->assign('arrPlans', $arrPlans);
 $smarty->assign('countPlans', count($arrPlans));
 
 //can the user test
-$smarty->assign('tp_execute', has_rights("tp_execute"));
+$smarty->assign('tp_execute', has_rights($db,"tp_execute"));
 
 //can the user create build
-$smarty->assign('tp_create_build', has_rights("tp_create_build"));
+$smarty->assign('tp_create_build', has_rights($db,"tp_create_build"));
 
 //can the user view metrics
-$smarty->assign('tp_metrics', has_rights("tp_metrics"));
+$smarty->assign('tp_metrics', has_rights($db,"tp_metrics"));
 
 //can the user manage Test Plan
-$smarty->assign('tp_planning', has_rights("tp_planning"));
+$smarty->assign('tp_planning', has_rights($db,"tp_planning"));
 $smarty->assign('launcher','lib/general/frmWorkArea.php');
 
 // 20051002 - fm

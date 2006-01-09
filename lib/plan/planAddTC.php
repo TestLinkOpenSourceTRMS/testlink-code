@@ -1,7 +1,7 @@
 <?php
 
 ////////////////////////////////////////////////////////////////////////////////
-// @version $Id: planAddTC.php,v 1.10 2006/01/06 20:32:50 schlundus Exp $
+// @version $Id: planAddTC.php,v 1.11 2006/01/09 08:16:56 franciscom Exp $
 // File:     planAddTC.php
 // Author:   Chad Rosen
 // Purpose:  This page manages the importation of test cases into testlink.
@@ -68,8 +68,8 @@ if(isset($_POST['addTC'])) //If the user submits the import form
 			           " WHERE MGTCAT.compid = MGTCOMP.id " .
 			           " AND   MGTTC.catid = MGTCAT.id " .
 			           " AND   MGTTC.id=" . $tcid;                            
-			$result = @do_sql_query($sql_mgt);
-			$mgtinfo = $GLOBALS['db']->fetch_array($result); 
+			$result = @$db->exec_query($sql_mgt);
+			$mgtinfo = $db->fetch_array($result); 
 			
 			//This next long set of code looks through the kenny side of the DB and checks to see if each of the
 			//Components,categories, or TCs already exist. 
@@ -82,26 +82,26 @@ if(isset($_POST['addTC'])) //If the user submits the import form
 			$sqlCOMID = " SELECT mgtcompid,id AS compid FROM component " .
 			            " WHERE mgtcompid=" . $mgtinfo['mgtcompid'] . 
 			            " AND projid=" .  $idPlan;
-			$resultCOMID = @do_sql_query($sqlCOMID); 
+			$resultCOMID = @$db->exec_query($sqlCOMID); 
 			
 			
-			if($GLOBALS['db']->num_rows($resultCOMID) > 0) 
+			if($db->num_rows($resultCOMID) > 0) 
 			{
-				$rowResultCOMID = $GLOBALS['db']->fetch_array($resultCOMID); 
+				$rowResultCOMID = $db->fetch_array($resultCOMID); 
 				$sqlCATID = " SELECT mgtcatid,id AS catid from category " .
 				            " WHERE mgtcatid=" . $mgtinfo['mgtcatid'] . 
 				            " AND compid=" . $rowResultCOMID['compid'];
-				$resultCATID = @do_sql_query($sqlCATID);
+				$resultCATID = @$db->exec_query($sqlCATID);
 				
-				if($GLOBALS['db']->num_rows($resultCATID) > 0) 
+				if($db->num_rows($resultCATID) > 0) 
 				{
-					$rowResultCATID = $GLOBALS['db']->fetch_array($resultCATID);
+					$rowResultCATID = $db->fetch_array($resultCATID);
 					$sqlTCID = " SELECT mgttcid FROM testcase " .
 					           " WHERE mgttcid=" . $tcid . 
 					           " AND catid=" . $rowResultCATID['catid'];
-					$resultTCID = @do_sql_query($sqlTCID); 
+					$resultTCID = @$db->exec_query($sqlTCID); 
 
-					if( $GLOBALS['db']->num_rows($resultTCID) == 0) 
+					if( $db->num_rows($resultTCID) == 0) 
 					{
 					  // the test case doesn't already exist
 				    create_tc_from_mgttc($tcid, $rowResultCATID['catid']);
@@ -114,8 +114,8 @@ if(isset($_POST['addTC'])) //If the user submits the import form
 					             " VALUES (" . $mgtinfo['mgtcatid']      . "," . 
 					                           $rowResultCOMID['compid'] . "," . 
 					                           $mgtinfo['CATorder'] . ")";
-					$resultAddCAT = do_sql_query($sqlAddCAT); 
-					$addCATID =  $GLOBALS['db']->insert_id(); 
+					$resultAddCAT = $db->exec_query($sqlAddCAT); 
+					$addCATID =  $db->insert_id(); 
 
 					//Add the test case to the testplan
 		      create_tc_from_mgttc($tcid, $addCATID);
@@ -128,16 +128,16 @@ if(isset($_POST['addTC'])) //If the user submits the import form
 				// 20050807 -fm - $idPlan
 				$sqlAddCOM = "INSERT INTO component (mgtcompid,projid) " . 
 				             " VALUES (" . $mgtinfo['mgtcompid'] . "," . $idPlan . ")";
-				$resultAddCOM = do_sql_query($sqlAddCOM); 
-				$addCOMID =  $GLOBALS['db']->insert_id();	 
+				$resultAddCOM = $db->exec_query($sqlAddCOM); 
+				$addCOMID =  $db->insert_id();	 
 			
 				//Add the category to the testplan					
 				$sqlAddCAT = " INSERT INTO category(mgtcatid,compid,CATorder) " .
 				             " VALUES (" . $mgtinfo['mgtcatid'] ."," . 
 				                           $addCOMID . "," . 
 				                           $mgtinfo['CATorder'] . ")";
-				$resultAddCAT = do_sql_query($sqlAddCAT);
-				$addCATID =  $GLOBALS['db']->insert_id(); 
+				$resultAddCAT = $db->exec_query($sqlAddCAT);
+				$addCATID =  $db->insert_id(); 
 
 				//Add the test case to the testplan
 		    create_tc_from_mgttc($tcid, $addCATID);
@@ -162,7 +162,7 @@ if($_GET['edit'] == 'component')
 	while($rowCOM = $db->fetch_array($resultCOM))
 	{
 		$sqlCAT = "SELECT id, name FROM mgtcategory WHERE compid=" . $rowCOM[0] . " ORDER BY CATorder,id";
-		$resultCAT = do_sql_query($sqlCAT);
+		$resultCAT = $db->exec_query($sqlCAT);
 		$arrData = dispCategories($db,$idPlan, $keyword, $resultCAT);
 		
 		$smarty->assign('nameCOM', $rowCOM[1]);
@@ -175,8 +175,8 @@ else if($_GET['edit'] == 'category')
 {
   	//Query to grab all of the category information based on what was passed in by the user
   	$sqlCAT = "SELECT id, name FROM mgtcategory WHERE id=" . $catID . " ORDER BY CATorder,id";
-  	$resultCAT = do_sql_query($sqlCAT);
-  	$arrData = dispCategories($idPlan, $keyword, $resultCAT);
+  	$resultCAT = $db->exec_query($sqlCAT);
+  	$arrData = dispCategories($db,$idPlan, $keyword, $resultCAT);
 
 	  $smarty->assign('arrData', $arrData);
 	  $smarty->display('planAddTC.tpl');
@@ -193,20 +193,20 @@ function create_tc_from_mgttc($mgt_tcid, $catID)
 	// Get management the test case info to be added
 	$sql = " SELECT title,summary,steps,exresult,version,keywords,TCorder " .
 	       " FROM mgttestcase WHERE id=" . $mgt_tcid;
-	$result = do_sql_query($sql);
-	$myrow = $GLOBALS['db']->fetch_array($result);
+	$result = $db->exec_query($sql);
+	$myrow = $db->fetch_array($result);
 
 	$sql = " INSERT INTO testcase(title,mgttcid,catid,summary,steps,exresult,version,keywords,TCorder) ".
-	       " VALUES ('" . $GLOBALS['db']->prepare_string($myrow['title']) . "'," . 
-	                      $GLOBALS['db']->prepare_string($mgt_tcid) . "," . 
-	                      $GLOBALS['db']->prepare_string($catID)  . "," .
-	                      "'" . $GLOBALS['db']->prepare_string($myrow['summary']) . "'," .
-	                      "'" . $GLOBALS['db']->prepare_string($myrow['steps']) . "'," . 
-	                      "'" . $GLOBALS['db']->prepare_string($myrow['exresult']) . "'," . 
-	                            $GLOBALS['db']->prepare_string($myrow['version']) . "," . 
-	                      "'" . $GLOBALS['db']->prepare_string($myrow['keywords']) . "'," .
-	                            $GLOBALS['db']->prepare_string($myrow['TCorder']) . ")";
-	$result = do_sql_query($sql); 
+	       " VALUES ('" . $db->prepare_string($myrow['title']) . "'," . 
+	                      $db->prepare_string($mgt_tcid) . "," . 
+	                      $db->prepare_string($catID)  . "," .
+	                      "'" . $db->prepare_string($myrow['summary']) . "'," .
+	                      "'" . $db->prepare_string($myrow['steps']) . "'," . 
+	                      "'" . $db->prepare_string($myrow['exresult']) . "'," . 
+	                            $db->prepare_string($myrow['version']) . "," . 
+	                      "'" . $db->prepare_string($myrow['keywords']) . "'," .
+	                            $db->prepare_string($myrow['TCorder']) . ")";
+	$result = $db->exec_query($sql); 
 }
 
 

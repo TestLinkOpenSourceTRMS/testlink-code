@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: containerEdit.php,v 1.24 2006/01/06 20:32:50 schlundus Exp $ */
+/* $Id: containerEdit.php,v 1.25 2006/01/09 08:30:53 franciscom Exp $ */
 /* Purpose:  This page manages all the editing of test specification containers. */
 /*
  *
@@ -161,7 +161,7 @@ else if($action == 'updateCOM')
 	  	                     $c_data['name'],$c_data['intro'],$c_data['scope'],
 	  		                   $c_data['ref'],$c_data['method'],$c_data['lim']))
 	  	{
-	  		$msg = $GLOBALS['db']->error_msg();
+	  		$msg = $db->error_msg();
 	  	}
 	}	
 	showComponent($db,$my_componentID, $msg);
@@ -303,7 +303,7 @@ else if($action == 'updateCat') // Update a category (from edit window)
 	{
 		$msg = updateCategory($db,$my_categoryID,
 	                        $c_data['name'], $c_data['objective'],$c_data['config'],
-	                        $c_data['data'],$c_data['tools']) ? 'ok' : $GLOBALS['db']->error_msg();
+	                        $c_data['data'],$c_data['tools']) ? 'ok' : $db->error_msg();
 	}	
 	// display updated values
 	showCategory($db,$my_categoryID, $msg);
@@ -314,7 +314,7 @@ else if ($action == 'deleteCat')
 	if($bSure)
 	{
 		deleteCategoriesTestCases($db,$objectID);
-		$smarty->assign('sqlResult',  deleteCategory($objectID) ? 'ok' : $GLOBALS['db']->error_msg());
+		$smarty->assign('sqlResult',  deleteCategory($db,$objectID) ? 'ok' : $db->error_msg());
 
 		// 20051208 - fm 
 		del_tp_info_by_mgtcat($db,$objectID);
@@ -370,7 +370,7 @@ else if($action == 'updateTCorder')
 }
 else if($action == 'categoryCopy' || $action == 'categoryMove')
 {
-	copy_or_move_cat($db, $action, $objectID, $_POST, $_SESSION['user']);
+	copy_or_move_cat($db, $action, $objectID, $_POST, $_SESSION['userID']);
 }
 else if($action == 'componentCopy' || $action == 'componentMove')
 {
@@ -378,7 +378,7 @@ else if($action == 'componentCopy' || $action == 'componentMove')
 	//20051013 - am - fix for 115
 	$copyKeywords = isset($_POST['copyKeywords']) ? intval($_POST['copyKeywords']) : 0;
 	
-	copy_or_move_comp($db, $action, $objectID, $prodID ,$_POST,$_SESSION['user'],$copyKeywords);
+	copy_or_move_comp($db, $action, $objectID, $prodID ,$_POST,$_SESSION['userID'],$copyKeywords);
 }	
 else 
 {

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: archive.inc.php,v $
  *
- * @version $Revision: 1.27 $
- * @modified $Date: 2006/01/06 20:32:50 $ by $Author: schlundus $
+ * @version $Revision: 1.28 $
+ * @modified $Date: 2006/01/09 08:25:44 $ by $Author: franciscom $
  *
  * @author Martin Havlat
  * Purpose:  functions for test specification management have three parts:
@@ -40,6 +40,10 @@
 
 require_once('requirements.inc.php');
 
+// 20060108 - fm
+require_once('../functions/users.inc.php');
+
+
 /** 1. functions for grab container and test case data from database */ 
 
 function getComponent(&$db,$id)
@@ -70,13 +74,15 @@ function getCategory(&$db,$id)
 function getTestcase(&$db,$id, $convert = TRUE)
 {
 	// execute SQL request
-	$sqlTC = " SELECT id,title,summary,steps,exresult,version,keywords," .
-			     " author,create_date,reviewer,modified_date,catid,TCorder " .
-			     " FROM mgttestcase" .
-			     " WHERE id=" . $id ;
+	$sql  = " SELECT id,title,summary,steps,exresult,version,keywords,
+			       author AS ' ', reviewer AS ' ', author_id, reviewer_id,
+			       create_date,
+			       modified_date,catid,TCorder 
+			       FROM mgttestcase
+			       WHERE id=" . $id ;
 			     
-	$resultTC = $db->exec_query($sqlTC);
-	$myrowTC = $db->fetch_array($resultTC);
+	$result = $db->exec_query($sql);
+	$myrow = $db->fetch_array($result);
 	
 	if ($convert)
 	{
@@ -86,15 +92,45 @@ function getTestcase(&$db,$id, $convert = TRUE)
 		// prepare data
 	    foreach($a_keys as $field_name)
 	    {
-	    	$myrowTC[$field_name] = stripslashes($myrowTC[$field_name]);
+	    	$myrow[$field_name] = stripslashes($myrow[$field_name]);
 		}
 			
 		//Chop the trailing comma off of the end of field
-		$myrowTC['keywords'] = substr($myrowTC['keywords'], 0, -1);
+		$myrow['keywords'] = substr($myrow['keywords'], 0, -1);
 	} 
 
-	return $myrowTC;
+  // need to assign identity to author and reviewer, and may be they
+  // are deleted users.
+  $users_to_seek=array('author_id' => 'author' , 'reviewer_id' => 'reviewer');
+  foreach($users_to_seek as $user_id => $user_for_humans)
+  {
+   	$myrow[$user_for_humans]= "";
+  	if( !is_null($myrow[$user_id]) and intval($myrow[$user_id]) > 0 )
+  	{
+	    $user_data = 	getUserById($db,$myrow[$user_id]);
+  		if( !is_null($user_data) )
+  		{
+  	  	$myrow[$user_for_humans]=$user_data[0]['fullname'];
 }
+    	else
+    	{
+      	$myrow[$user_for_humans]= "(" . $myrow[$user_id] . " - deleted user)";
+  		}
+  	}
+  }
+	return($myrow);
+}
+
+
+
+
+
+
+
+
+
+
+
 
 /** 
 * function get converted TC title
@@ -122,7 +158,7 @@ function showProduct(&$db,$id, $sqlResult = '', $sqlAction = 'update',$moddedIte
 	$product = getProduct($db,$id);
 
 	$smarty = new TLSmarty;
-	$smarty->assign('modify_tc_rights', has_rights("mgt_modify_tc"));
+	$smarty->assign('modify_tc_rights', has_rights($db,"mgt_modify_tc"));
 
 	if($sqlResult)
 	{ 
@@ -141,7 +177,7 @@ function showComponent(&$db,$id, $sqlResult = '', $sqlAction = 'update',$moddedI
 {
 	// init smarty
 	$smarty = new TLSmarty;
-	$smarty->assign('modify_tc_rights', has_rights("mgt_modify_tc"));
+	$smarty->assign('modify_tc_rights', has_rights($db,"mgt_modify_tc"));
 
 	if ($sqlResult)
 	{ 
@@ -163,7 +199,7 @@ function showComponent(&$db,$id, $sqlResult = '', $sqlAction = 'update',$moddedI
 function showCategory(&$db,$id, $sqlResult = '', $sqlAction = 'update',$moddedItem = 0)
 {
 	$smarty = new TLSmarty;
-	$smarty->assign('modify_tc_rights', has_rights("mgt_modify_tc"));
+	$smarty->assign('modify_tc_rights', has_rights($db,"mgt_modify_tc"));
 
 	if($sqlResult)
 	{ 	
@@ -197,7 +233,7 @@ function showTestcase (&$db,$id,$allow_edit = 1)
 	$can_edit = 'no';
 	if ($allow_edit)
 	{
-		$can_edit = has_rights("mgt_modify_tc");
+		$can_edit = has_rights($db,"mgt_modify_tc");
 	}
 	$myrowTC = getTestcase($db,$id,DO_NOT_CONVERT);
 	$len = strlen($myrowTC['keywords'])-1;
@@ -224,7 +260,7 @@ function showTestcase (&$db,$id,$allow_edit = 1)
 	$smarty->assign('modify_tc_rights', $can_edit);
 	$smarty->assign('testcase',$tc_array);
 	$smarty->assign('arrReqs',$arrReqs);
-	$smarty->assign('view_req_rights', has_rights("mgt_view_req")); 
+	$smarty->assign('view_req_rights', has_rights($db,"mgt_view_req")); 
 	$smarty->assign('opt_requirements', $_SESSION['productOptReqs']); 	
 	// 20050821 - fm
 	$smarty->display($g_tpl['tcView']);
@@ -242,7 +278,7 @@ function moveTc(&$db,$newCat, $id)
 }
 
 //20050821 - fm - inteface changes, added $user to reduce global coupling 
-function copyTc(&$db,$newCat, $id, $user)
+function copyTc(&$db,$newCat, $id, $user_id)
 {
 	$msg_status = 'ok';
 	
@@ -250,7 +286,7 @@ function copyTc(&$db,$newCat, $id, $user)
 	
 	if (!insertTestcase(&$db,$newCat,$tc['title'],$tc['summary'],
 						$tc['steps'],$tc['exresult'],
-						$user,$tc['TCorder'],$tc['keywords']))
+						          $user_id,$tc['TCorder'],$tc['keywords']))
 	{
 		$msq_status=$db->error_msg();
 	}	
@@ -260,7 +296,8 @@ function copyTc(&$db,$newCat, $id, $user)
 
 
 
-function copyCategoryToComponent(&$db,$newParent, $id, $nested, $login_name)
+
+function copyCategoryToComponent(&$db,$newParent, $id, $nested, $user_id)
 {
 	//Select the category info so that we can copy it
 	$sqlCopyCat = " SELECT name,objective,config,data,tools,compid,CATorder,id " .
@@ -291,7 +328,7 @@ function copyCategoryToComponent(&$db,$newParent, $id, $nested, $login_name)
 		while($myrowMoveCopy = $db->fetch_array($resultMoveCopy)) {
 			
 			// 20050821 - fm - interface changes
-			copyTc($catID, $myrowMoveCopy[0], $login_name);
+			copyTc($catID, $myrowMoveCopy[0], $user_id);
 		}
 	}
 
@@ -381,7 +418,9 @@ function moveComponentToProduct(&$db,$newParent, $comp_id)
 // 20051129 - fm - added logic to manage duplicate names
 // 20050908 - fm due to changes in insertProductComponent()
 //
-function copyComponentToProduct(&$db,$newParent, $id, $nested, $login_name)
+
+function copyComponentToProduct(&$db,$newParent, $id, $nested, $user_id)
+
 {
 	// 20051129 - fm
 	$check_names_for_duplicates=config_get('check_names_for_duplicates');
@@ -405,7 +444,7 @@ function copyComponentToProduct(&$db,$newParent, $id, $nested, $login_name)
 	  		$num_cats = sizeof($catIDs);
 	  		for($i = 0; $i < $num_cats; $i++)
 	  		{
-	  			copyCategoryToComponent($db,$comID, $catIDs[$i], $nested, $login_name);
+	  			copyCategoryToComponent($db,$comID, $catIDs[$i], $nested, $user_id);
 	  		}	
 	  	}
 	}	
@@ -537,7 +576,7 @@ function deleteComponentCategories(&$db,$compID)
 	return $result ? 1 : 0;
 }
 
-function deleteCategoriesTestcases($catIDs)
+function deleteCategoriesTestcases(&$db,$catIDs)
 {
 	$sql = "DELETE FROM mgttestcase WHERE mgttestcase.catid IN ({$catIDs})";
 	$result = $db->exec_query($sql);
@@ -672,48 +711,65 @@ function deleteTestcase(&$db,$tcID)
 	return $result ? 1 : 0;
 }
 
+// 20060108 - fm 
 function insertTestcase(&$db,$catID,$title,$summary,$steps,
-                        $outcome,$user,$tcOrder = null,$keywords = null)
+                        $outcome,$user_id,$tcOrder = null,$keywords = null)
 {
-	if(!strlen($user))
-		$user = 'n/a';
+	$more_sql = '';
+	$more_values = '';
 	
-	$sql = "INSERT INTO mgttestcase (title,author,summary,steps,exresult," .
-			"version,catid,create_date";
-	if (!is_null($tcOrder))
-		$sql .= ",TCorder";
+	$sql = "INSERT INTO mgttestcase 
+	       (title,summary,steps,exresult, version,catid,create_date";
+
+  $values =	") values ('" . $db->prepare_string($title)   . "','" . 
+			                      $db->prepare_string($summary) . "','" . 
+			                      $db->prepare_string($steps)   . "','" .	
+			                      $db->prepare_string($outcome) . "',1," . $catID . 
+			                      ", CURRENT_DATE()";
+  // ----------------------------------------------------------
+	if (!is_null($user_id))
+	{
+	  $sql .= ",author_id";
+		$values .= "," . $user_id;
+	}
+
+  if (!is_null($tcOrder))
+  {
+		$sql    .= ",TCorder";
+		$values .= ",".$tcOrder;
+  }
+  
 	if (!is_null($keywords) && strlen($keywords))
+	{
 		$sql .= ",keywords";
-			
-	$sql .=	 ") values ('" . $db->prepare_string($title) . "','" . 
-			$db->prepare_string($user) . "','" . $db->prepare_string($summary) . "','" . $db->prepare_string($steps) . 
-			"','" .	$db->prepare_string($outcome) . "',1," . $catID . 
-			", CURRENT_DATE()";
-			
-	if (!is_null($tcOrder))
-		$sql .= ",".$tcOrder;
-	if (!is_null($keywords) && strlen($keywords))
-		$sql .= ",'".$db->prepare_string($keywords)."'";
-	
-	$sql .= ")";
+		$values .= ",'".$db->prepare_string($keywords)."'";
+	}
+	// ----------------------------------------------------------
+
+  
+  $sql .= $values . ")";
 	$result = $db->exec_query($sql);
 	
 	return $result ? $db->insert_id() : 0;
 }
 
+// 20060108 - fm  - reviewer_id 
 // 20050819 - scs - fix for bug Mantis 59 Use of term "created by" is not enforced---
-function updateTestcase(&$db,$tcID,$title,$summary,$steps,$outcome,$user,$keywords,$version)
+function updateTestcase(&$db,$tcID,$title,$summary,$steps,$outcome,$user_id,$keywords,$version)
 {
-	$sql = "UPDATE mgttestcase SET keywords='" . $db->prepare_string($keywords) . "', version='" . 
-		$db->prepare_string($version) . "', title='" . $db->prepare_string($title) . "'".
-		",summary='" . $db->prepare_string($summary) . "', steps='" . 
-		$db->prepare_string($steps) . "', exresult='" . $db->prepare_string($outcome) . 
-		"', reviewer='" . $db->prepare_string($user) . "', modified_date=CURRENT_DATE()" .
-		" WHERE id=" . $tcID;
+	
+	$sql = "UPDATE mgttestcase SET keywords='" . 
+	        $db->prepare_string($keywords) . "', version='" . $db->prepare_string($version) . 
+	        "', title='" . $db->prepare_string($title) . "'".
+		      ",summary='" . $db->prepare_string($summary) . "', steps='" . 
+	      	$db->prepare_string($steps) . "', exresult='" . $db->prepare_string($outcome) . 
+		      "', reviewer_id=" . $user_id . ", modified_date=CURRENT_DATE()" .
+		      " WHERE id=" . $tcID;
 	$result = $db->exec_query($sql);
 	
 	return $result ? 1: 0;
 }
+
 
 function getTestCaseCategoryAndComponent(&$db,$tcID,&$catID,&$compID)
 {

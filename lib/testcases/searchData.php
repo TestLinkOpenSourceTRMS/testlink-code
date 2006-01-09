@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: searchData.php,v 1.9 2006/01/06 20:32:50 schlundus Exp $
+ * $Id: searchData.php,v 1.10 2006/01/09 08:35:00 franciscom Exp $
  * Purpose:  This page presents the search results. 
  *
  * 20050821 - fm - changes to use template customization (trying to reduce code redundancy)
@@ -49,7 +49,7 @@ if ($product)
 	}
 }
 $smarty = new TLSmarty();
-$smarty->assign('modify_tc_rights', has_rights("mgt_modify_tc"));
+$smarty->assign('modify_tc_rights', has_rights($db,"mgt_modify_tc"));
 $smarty->assign('testcase', $arrTc);
 $smarty->display($g_tpl['tcSearchView']);
 ?>

@@ -2,7 +2,7 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: listTestCases.php,v 1.6 2006/01/06 20:32:50 schlundus Exp $
+* 	@version 	$Id: listTestCases.php,v 1.7 2006/01/09 08:32:36 franciscom Exp $
 * 	@author 	Martin Havlat
 * 
 * 	This page generates tree menu with test specification. It builds the
@@ -24,11 +24,17 @@ $title = lang_get('title_navigator'). ' - ' . lang_get('title_test_spec');
 if(strlen($feature))
 {
 	if ($feature == 'tcEdit')
+	{
 		$workPath = "lib/testcases/archiveData.php";
+	} 
 	else if ($feature == 'keywordsAssign') 
+	{
 		$workPath = "lib/keywords/keywordsAssign.php";
+	}
 	else if ($feature == 'assignReqs') 
+	{
 		$workPath = "lib/req/reqTcAssign.php";
+	}
 	else
 	{
 		tLog("Wrong get argument 'feature'.", 'ERROR');
@@ -41,7 +47,7 @@ else
 	exit();
 }
 
-$treeString = generateTestSpecTree($prodID, $prodName,$workPath, 0);
+$treeString = generateTestSpecTree($db,$prodID, $prodName,$workPath, 0);
 $tree = null;
 if (strlen($treeString))
 	$tree = invokeMenu($treeString);

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: adminProductEdit.php,v $
  *
- * @version $Revision: 1.11 $
- * @modified $Date: 2006/01/06 20:32:49 $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2006/01/09 18:52:46 $
  *
  * @author Martin Havlat
  *
@@ -89,7 +89,7 @@ switch($args->do)
 			if ($args->id == -1)
 			{
 				$updateResult = 'ok';
-				$args->id = createProduct($args->name, $args->color, $args->optReq, $args->notes);
+				$args->id = createProduct($db,$args->name, $args->color, $args->optReq, $args->notes);
 				if (!$args->id)
 					$updateResult = lang_get('refer_to_log');
 				else

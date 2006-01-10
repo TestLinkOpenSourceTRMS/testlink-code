@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: requirementsImport.inc.php,v $
- * @version $Revision: 1.6 $
- * @modified $Date: 2006/01/05 07:30:33 $ by $Author: franciscom $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2006/01/10 19:59:28 $ by $Author: schlundus $
  * @author Martin Havlat
  * 
  * Functions for Import requirements to a specification. 
@@ -110,7 +110,7 @@ function executeImportedReqs(&$db,$arrImportSource, $arrReqTitles,
 
 			} else {
 				// no conflict - just add requirement
-				$status = createRequirement ($title, $scope, $idSRS, $userID); // default status and type
+				$status = createRequirement ($db, $title, $scope, $idSRS, $userID); // default status and type
 			}
 			$arrImport[] = array($title, $status);
 		}

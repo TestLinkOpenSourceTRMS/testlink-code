@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqImport.php,v $
- * @version $Revision: 1.8 $
- * @modified $Date: 2006/01/09 07:16:16 $ by $Author: franciscom $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2006/01/10 19:59:28 $ by $Author: schlundus $
  * @author Martin Havlat
  * 
  * Import requirements to a specification. 
@@ -56,7 +56,7 @@ if (isset($_POST['UploadFile']))
 			}
 		}
 	}
-	//20051015 - am - if no file was give, we cancel import
+	//20051015 - am - if no file was given, we cancel import
 	else 
 		$importType = '';
 }
@@ -90,7 +90,7 @@ $smarty->assign('importResult', $importResult);
 $smarty->assign('importType', $importType);
 $smarty->assign('uploadedFile', $CSVfile);
 $smarty->assign('importLimit', TL_IMPORT_LIMIT);
-$smarty->assign('importLimitKB', round(strval(TL_IMPORT_LIMIT) / 1000));
+$smarty->assign('importLimitKB', round(strval(TL_IMPORT_LIMIT) / 1024));
 $smarty->display('reqImport.tpl');
 
 ?>

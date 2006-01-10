@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: mainPage.php,v $
  *
- * @version $Revision: 1.10 $ $Author: franciscom $
- * @modified $Date: 2006/01/09 08:13:45 $
+ * @version $Revision: 1.11 $ $Author: schlundus $
+ * @modified $Date: 2006/01/10 19:59:28 $
  *
  * @author Martin Havlat
  * 
@@ -40,7 +40,7 @@ $smarty = new TLSmarty;
 /** redirect admin to create product if not found */
 if ($_SESSION['role'] == 'admin' && !isset($_SESSION['productID']))
 { 
-	redirect($_SESSION['basehref'] . 'lib/admin/adminProductEdit.php');
+	redirect($_SESSION['basehref'] . 'lib/admin/adminProductEdit.php?createProduct=1');
 }
 // ----------------------------------------------------------------------
 
@@ -73,7 +73,7 @@ $smarty->assign('metricsEnabled', MAIN_PAGE_METRICS_ENABLED);
 if(MAIN_PAGE_METRICS_ENABLED == "TRUE")
 {
 	require_once('myTPInfo.php');
-    $smarty->assign('myTPdata', printMyTPData());
+    $smarty->assign('myTPdata', printMyTPData($db));
 }
 
 // 20050928 - fm

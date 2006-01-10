@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: adminProductEdit.php,v $
  *
- * @version $Revision: 1.12 $
- * @modified $Date: 2006/01/09 18:52:46 $
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2006/01/10 19:59:25 $
  *
  * @author Martin Havlat
  *
@@ -54,7 +54,7 @@ switch($args->do)
 	case 'deleteProduct':
 		$show_prod_attributes = 'no';
 		$error = null;
-		if (deleteProduct($args->id,$error))
+		if (deleteProduct($db,$args->id,$error))
 		{
 			$updateResult = lang_get('info_product_was_deleted');
 			$tlog_msg .= " was deleted.";
@@ -96,12 +96,12 @@ switch($args->do)
 					$args->id = -1;
 			}
 			else
-				$updateResult = updateProduct($args->id, $args->name, $args->color,$args->optReq, $args->notes);
+				$updateResult = updateProduct($db,$args->id, $args->name, $args->color,$args->optReq, $args->notes);
 		}
 		$action = 'updated';
 		break;
 	case 'inactivateProduct':
-		if (activateProduct($args->id, 0))
+		if (activateProduct($db,$args->id, 0))
 		{
 			$updateResult = lang_get('info_product_inactivated');
 			$tlog_msg .= 'was inactivated.';
@@ -110,7 +110,7 @@ switch($args->do)
 	break;
 
 	case 'activateProduct':
-		if (activateProduct($args->id, 1))
+		if (activateProduct($db,$args->id, 1))
 		{
 			$updateResult = lang_get('info_product_activated');
 			$tlog_msg .= 'was activated.';

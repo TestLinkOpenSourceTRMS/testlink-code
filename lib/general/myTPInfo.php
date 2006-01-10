@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: myTPInfo.php,v $
  *
- * @version $Revision: 1.8 $
- * @modified $Date: 2006/01/09 07:20:00 $ $Author: franciscom $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2006/01/10 19:59:28 $ $Author: schlundus $
  *
  * @author Martin Havlat
  *
@@ -80,7 +80,7 @@ function getMetrics(&$db)
 	       " AND projID IN ({$testplan_list}) ORDER BY projID,tcID,build_id";
 	       
 	// 20060107 - fm	       
-	$tcInfo = getTCInfo($sql);
+	$tcInfo = getTCInfo($db,$sql);
 	calculateMetrics($metrics,$tcInfo,1);
 	
 	$sql = "SELECT projID,tcid,status FROM results,testplans,component,category,testcase where ".
@@ -90,7 +90,7 @@ function getMetrics(&$db)
 	$myTcInfo = null;
 
 	// 20060107 - fm	       
-	$tcInfo = getTCInfo($sql);
+	$tcInfo = getTCInfo($db,$sql);
 	calculateMetrics($metrics,$myTcInfo,2);
 
 	return $metrics;
@@ -113,7 +113,7 @@ function calculateMetrics(&$metrics,&$myTcInfo,$index)
 }
 
 // 20060107 - fm
-function getTCInfo(&$db,$sql,&$tcInfo)
+function getTCInfo(&$db,$sql)
 {
 	$result = $db->exec_query($sql);
 	$tcInfo = null;
@@ -122,5 +122,6 @@ function getTCInfo(&$db,$sql,&$tcInfo)
 		while($row = $db->fetch_array($result))
 			$tcInfo[$row[0]][$row[1]] = $row[2];
 	}
+	return $tcInfo;
 }
 ?>

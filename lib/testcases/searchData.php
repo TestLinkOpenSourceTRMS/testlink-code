@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: searchData.php,v 1.11 2006/01/09 18:58:00 franciscom Exp $
+ * $Id: searchData.php,v 1.12 2006/01/10 06:54:37 franciscom Exp $
  * Purpose:  This page presents the search results. 
  *
  * 20050821 - fm - changes to use template customization (trying to reduce code redundancy)
@@ -8,6 +8,8 @@
 **/
 require('../../config.inc.php');
 require("../functions/common.php");
+require("../functions/users.inc.php");
+
 testlinkInitPage($db);
 
 $_POST = strings_stripSlashes($_POST);
@@ -24,7 +26,7 @@ $product = isset($_SESSION['productID']) ? $_SESSION['productID'] : 0;
 if ($product)
 {
 	$sqlTC = " SELECT mgttestcase.id,title,summary,steps,exresult,keywords,version," .
-	         " author_id,create_date,reviewer_id,modified_date,catid,TCorder " .
+	         " ' ' AS author, ' ' AS reviewer, author_id,create_date,reviewer_id,modified_date,catid,TCorder " .
 	         " FROM mgttestcase, mgtcategory,	mgtcomponent " .
 	         " WHERE prodid = ".$product.
  			     " AND mgtcategory.compID = mgtcomponent.id " .
@@ -42,9 +44,29 @@ if ($product)
 
 	$sqlTC .= " ORDER BY title";
 	$result = $db->exec_query($sqlTC);
+  $users_to_seek=array('author_id' => 'author' , 'reviewer_id' => 'reviewer');
+
 	while ($row = $db->fetch_array($result))
 	{
 		$row['keywords'] = substr($row['keywords'], 0, -1);
+
+    foreach($users_to_seek as $user_id => $user_for_humans)
+    {
+   	 $row[$user_for_humans]= "";
+  	 if( !is_null($row[$user_id]) and intval($row[$user_id]) > 0 )
+  	 {
+	     $user_data = getUserById($db,$row[$user_id]);
+  	  	if( !is_null($user_data) )
+  	 	 {
+  	  	$row[$user_for_humans]=$user_data[0]['fullname'];
+       }
+    	 else
+    	 {
+      	$row[$user_for_humans]= "(" . $row[$user_id] . " - deleted user)";
+  		 }
+  	 }
+    }
+    reset($users_to_seek);
 		$arrTc[] = $row;
 	}
 }

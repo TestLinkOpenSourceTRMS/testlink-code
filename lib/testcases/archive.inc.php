@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: archive.inc.php,v $
  *
- * @version $Revision: 1.29 $
- * @modified $Date: 2006/01/09 18:58:00 $ by $Author: franciscom $
+ * @version $Revision: 1.30 $
+ * @modified $Date: 2006/01/10 06:54:37 $ by $Author: franciscom $
  *
  * @author Martin Havlat
  * Purpose:  functions for test specification management have three parts:
@@ -111,7 +111,7 @@ function getTestcase(&$db,$id, $convert = TRUE)
   		if( !is_null($user_data) )
   		{
   	  	$myrow[$user_for_humans]=$user_data[0]['fullname'];
-}
+      }
     	else
     	{
       	$myrow[$user_for_humans]= "(" . $myrow[$user_id] . " - deleted user)";

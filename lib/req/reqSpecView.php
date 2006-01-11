@@ -4,15 +4,15 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqSpecView.php,v $
- * @version $Revision: 1.17 $
- * @modified $Date: 2006/01/09 07:16:16 $ by $Author: franciscom $
+ * @version $Revision: 1.18 $
+ * @modified $Date: 2006/01/11 15:54:15 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Screen to view existing requirements within a req. specification.
  * 
- * @author Francisco Mancardi - fm - fckeditor
  * 20050930 - MHT - Database schema changed (author, modifier, status, etc.)
  * 20060103 - scs - ADOdb changes
+ * 20060110 - fm  - removed onchange event management
  */
 ////////////////////////////////////////////////////////////////////////////////
 require_once("../../config.inc.php");
@@ -108,13 +108,11 @@ elseif (isset($_REQUEST['updateSRS']))
 	$sqlResult = updateReqSpec($db,$idSRS,$title,$scope,$countReq,$userID);
 	$action = 'update';
 }
-elseif (isset($_REQUEST['multiAction']))
+elseif (isset($_REQUEST['create_tc_from_req']) || isset($_REQUEST['req_select_delete']) )
 {
-	$arrIdReq = array_keys($_POST); // obtain names(id) of REQs
-	array_pop($arrIdReq);	// remove multiAction value
-	
+	$arrIdReq = isset($_POST['req_id_cbox']) ? $_POST['req_id_cbox'] : null;
 	if (count($arrIdReq) != 0) {
-		if ($_REQUEST['multiAction'] == lang_get('req_select_delete')) 
+		if (isset($_REQUEST['req_select_delete'])) 
 		{
 			foreach ($arrIdReq as $idReq) {
 				tLog("Delete requirement id=" . $idReq);
@@ -128,16 +126,17 @@ elseif (isset($_REQUEST['multiAction']))
 			}
 			$action = 'delete';
 		} 
-		elseif ($_REQUEST['multiAction'] == lang_get('req_select_create_tc')) 
+		elseif (isset($_REQUEST['create_tc_from_req'])) 
 		{
+			// 20060110 - fm - interface changes
 			// 20051002 - fm - interface changes
-			// 20050906 - fm
-			$sqlResult = createTcFromRequirement($db,$arrIdReq, $prodID, $idSRS, $login_name);
+			// 20050906 - fm			
+			$sqlResult = createTcFromRequirement($db,$arrIdReq, $prodID, $idSRS, $userID);
 			$action = 'create';
 			$sqlItem = 'test case(s)';
 		}
 	} else {
-			$sqlResult = lang_get('req_msg_noselect');
+		  $sqlResult = lang_get('req_msg_noselect');
 	}
 }
 

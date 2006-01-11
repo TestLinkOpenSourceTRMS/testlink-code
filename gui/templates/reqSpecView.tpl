@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecView.tpl,v 1.11 2005/12/02 20:49:55 schlundus Exp $ *}
+{* $Id: reqSpecView.tpl,v 1.12 2006/01/11 15:54:11 franciscom Exp $ *}
 {* 
    Purpose: smarty template - view a requirement specification
    Author: Martin Havlat 
@@ -77,7 +77,9 @@
 	</tr>
 	{section name=row loop=$arrReq}
 	<tr>
-		{if $modify_req_rights == "yes"}<td><input type="checkbox" name="{$arrReq[row].id}" /></td>{/if}
+	  {* 20060110 - fm - managing checkboxes as array and added value *}
+		{if $modify_req_rights == "yes"}<td><input type="checkbox" name="req_id_cbox[{$arrReq[row].id}]" 
+		                                           value="{$arrReq[row].id}"/></td>{/if}
 		<td><span class="bold">{$arrReq[row].req_doc_id|escape}</span></td>
 		<td><span class="bold"><a href="lib/req/reqSpecView.php?editReq={$arrReq[row].id}&idSRS={$arrSpec[0].id}">
 		{$arrReq[row].title|escape}</a></span></td>
@@ -94,12 +96,18 @@
 		onclick="javascript: box('frmReqList', true);" />
 	<input type="button" name="clearAll" value="{lang_get s='btn_uncheck_all'}" 
 		onclick="javascript: box('frmReqList', false);" />
-	
+
+ <!---	
 	<select name="multiAction" onchange="this.form.submit();">
 		<option>{lang_get s='checked'}:</option>
 		<option name="multiCreate">{lang_get s='req_select_create_tc'}</option>
 		<option name="multiDelete">{lang_get s='req_select_delete'}</option>
 	</select>
+ --->
+ <input type="submit" name="create_tc_from_req" value="{lang_get s='req_select_create_tc'}">
+ <input type="submit" name="req_select_delete" value="{lang_get s='req_select_delete'}">
+
+
 </div>
 {/if}
 </form>

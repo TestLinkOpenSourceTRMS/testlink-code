@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: requirements.inc.php,v $
- * @version $Revision: 1.20 $
- * @modified $Date: 2006/01/09 07:15:43 $ by $Author: franciscom $
+ * @version $Revision: 1.21 $
+ * @modified $Date: 2006/01/11 15:57:13 $ by $Author: franciscom $
  *
  * @author Martin Havlat <havlat@users.sourceforge.net>
  * 
@@ -29,6 +29,7 @@
 $arrReqStatus = array('v' => 'Valid', 'n' => 'Not testable');
 
 require_once('print.inc.php');
+require_once("../testcases/archive.inc.php");
 
 /** 
  * create a new System Requirements Specification 
@@ -673,35 +674,31 @@ function unassignTc2Req(&$db,$idTc, $idReq)
  * use new configuration parameter
  * 20051025 - MHT - corrected introduced bug with insert TC
  *
+ * 20060110 - fm - user_id
  */
-function createTcFromRequirement(&$db,$mixIdReq, $prodID, $idSRS, $login_name)
+function createTcFromRequirement(&$db,$mixIdReq, $prodID, $idSRS, $user_id)
 {
-	require_once("../testcases/archive.inc.php");
-	
-	global $g_req_cfg;
-	global $g_field_size;
-	
+	//global $g_req_cfg;
+	//global $g_field_size;
+  // 20060110 - fm 
+	$g_req_cfg = config_get('req_cfg');
+	$g_field_size = config_get('field_size');
+	$auto_category_name = $g_req_cfg->default_category_name;
+	$auto_component_name = $g_req_cfg->default_component_name;
 
-	tLog('createTcFromRequirement started:'.$mixIdReq.','.$prodID.','.$idSRS.','.$login_name);
+	tLog('createTcFromRequirement started:'.$mixIdReq.','.$prodID.','.$idSRS.','.$user_id);
 	$output = null;
 	if (is_array($mixIdReq)) {
 		$arrIdReq = $mixIdReq;
 	} else {
 		$arrIdReq = array($mixIdReq);
 	}
-	
-	
-	// 20051002 - fm
-	$auto_category_name = $g_req_cfg->default_category_name;
-	$auto_component_name = $g_req_cfg->default_component_name;
-
 	if ( $g_req_cfg->use_req_spec_as_category_name )
 	{
 	  // SRS Title
 	  $arrSpec = getReqSpec($db,$prodID,$idSRS);
 	  $auto_category_name = substr($arrSpec[0]['title'],0,$g_field_size->category_name);
 	}
-	
 	
 	//find component
 	$sqlCOM = " SELECT id FROM mgtcomponent " .
@@ -717,8 +714,8 @@ function createTcFromRequirement(&$db,$mixIdReq, $prodID, $idSRS, $login_name)
 		// not found -> create
 		tLog('Component:' . $auto_component_name . ' was not found.');
 		$sqlInsertCOM = " INSERT INTO mgtcomponent (name,scope,prodid) " .
-		                " VALUES (" . "'" . $auto_component_name . "'," .
-		                              "'" . $g_req_cfg->scope_for_component . "'," .  
+		                " VALUES (" . "'" . $db->prepare_string($auto_component_name) . "'," .
+		                              "'" . $db->prepare_string($g_req_cfg->scope_for_component) . "'," .  
 		                $prodID . ")";
 		                
 		$resultCOM = $db->exec_query($sqlInsertCOM);
@@ -739,7 +736,7 @@ function createTcFromRequirement(&$db,$mixIdReq, $prodID, $idSRS, $login_name)
 
 	//find category
 	$sqlCAT = " SELECT id FROM mgtcategory " .
-	          " WHERE name='" . $auto_category_name . "' " .
+	          " WHERE name='" . $db->prepare_string($auto_category_name) . "' " .
 	          " AND compid=" . $idCom;
 	          
 	$resultCAT = $db->exec_query($sqlCAT);
@@ -749,11 +746,12 @@ function createTcFromRequirement(&$db,$mixIdReq, $prodID, $idSRS, $login_name)
 	}
 	else {
 		// not found -> create
-		$sqlInsertCAT = " INSERT INTO mgtcategory (name,objective,compid) " .
-		                " VALUES (" . "'". $auto_category_name . "'," .
-		                              "'" . $g_req_cfg->objective_for_category . "'," .
-				                     $idCom . ")";
-  echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sqlInsertCAT . "</b><br>";
+		// 20060110 - fm - added config,data,tools
+		$sqlInsertCAT = " INSERT INTO mgtcategory (name,objective,compid,config,data,tools) " .
+		                " VALUES (" . "'" . 
+		                $db->prepare_string($auto_category_name) . "'," . "'" . 
+		                $db->prepare_string($g_req_cfg->objective_for_category) . "'," .
+		                $idCom .  ",'','','')";
 				                     
 		$resultCAT = $db->exec_query($sqlInsertCAT);
 		$resultCAT = $db->exec_query($sqlCAT);
@@ -777,8 +775,14 @@ function createTcFromRequirement(&$db,$mixIdReq, $prodID, $idSRS, $login_name)
 		
 		// create TC
 		// 20051025 - MHT - corrected input parameters order
+		/* 
+		  // 20060110 - fm
+		  function insertTestcase(&$db,$catID,$title,$summary,$steps,
+                             $outcome,$user_id,$tcOrder = null,$keywords = null)
+    */
+		
 		$tcID =  insertTestcase($db,$idCat, $reqData['title'], "Verify requirement: \n" . 
-				          $reqData['scope'], null, null, $login_name);
+				                    $reqData['scope'], null, null, $user_id,null,null);
 		
 		// create coverage dependency
 		if (!assignTc2Req($db,$tcID, $reqData['id'])) {

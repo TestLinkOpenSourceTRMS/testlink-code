@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: exec.inc.php,v $
  *
- * @version $Revision: 1.21 $
- * @modified $Date: 2006/01/09 07:15:43 $ $Author: franciscom $
+ * @version $Revision: 1.22 $
+ * @modified $Date: 2006/01/14 17:47:54 $ $Author: schlundus $
  *
  * @author Martin Havlat
  *
@@ -46,7 +46,7 @@ function buildsNumber(&$db,$tpID=0)
 			$buildCount = $myrow['num_builds'];
 		}
 	}
-	return ($buildCount);
+	return $buildCount;
 }
 
 /** 

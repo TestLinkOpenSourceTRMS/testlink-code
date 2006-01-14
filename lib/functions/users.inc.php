@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: users.inc.php,v $
  *
- * @version $Revision: 1.19 $
- * @modified $Date: 2006/01/09 07:15:43 $ $Author: franciscom $
+ * @version $Revision: 1.20 $
+ * @modified $Date: 2006/01/14 17:47:54 $ $Author: schlundus $
  *
  * Functions for usermanagement
  *
@@ -306,13 +306,11 @@ function deleteUsersTestPlanRights(&$db,$userID,$prodID)
  **/
 function getUserById(&$db,$id)
 {
-	// 20060108 - fm
-	$ret=null;
-	if( !is_null(id) and intval($id) > 0)
-	{
-	  $ret = getAllUsers($db,"where id=" . $id);
-	}  
-	return ($ret);
+	$ret = null;
+	if(!is_null($id) and intval($id) > 0)
+	$ret = getAllUsers($db,"where id=" . $id);
+
+	return $ret;
 }
 
 /**

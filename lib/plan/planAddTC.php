@@ -1,7 +1,7 @@
 <?php
 
 ////////////////////////////////////////////////////////////////////////////////
-// @version $Id: planAddTC.php,v 1.11 2006/01/09 08:16:56 franciscom Exp $
+// @version $Id: planAddTC.php,v 1.12 2006/01/14 17:47:54 schlundus Exp $
 // File:     planAddTC.php
 // Author:   Chad Rosen
 // Purpose:  This page manages the importation of test cases into testlink.
@@ -104,7 +104,7 @@ if(isset($_POST['addTC'])) //If the user submits the import form
 					if( $db->num_rows($resultTCID) == 0) 
 					{
 					  // the test case doesn't already exist
-				    create_tc_from_mgttc($tcid, $rowResultCATID['catid']);
+				    create_tc_from_mgttc($db,$tcid, $rowResultCATID['catid']);
 					}
 				}
 				else
@@ -118,7 +118,7 @@ if(isset($_POST['addTC'])) //If the user submits the import form
 					$addCATID =  $db->insert_id(); 
 
 					//Add the test case to the testplan
-		      create_tc_from_mgttc($tcid, $addCATID);
+		      create_tc_from_mgttc($db,$tcid, $addCATID);
 				}
 			}
 			else
@@ -140,7 +140,7 @@ if(isset($_POST['addTC'])) //If the user submits the import form
 				$addCATID =  $db->insert_id(); 
 
 				//Add the test case to the testplan
-		    create_tc_from_mgttc($tcid, $addCATID);
+		    create_tc_from_mgttc($db,$tcid, $addCATID);
 			}
 			$i = $i + 1; //increment the counter plus an extra one to skip the testcase number
 		}
@@ -188,7 +188,7 @@ else
 
 
 // 20051001 - fm
-function create_tc_from_mgttc($mgt_tcid, $catID)
+function create_tc_from_mgttc(&$db,$mgt_tcid, $catID)
 {
 	// Get management the test case info to be added
 	$sql = " SELECT title,summary,steps,exresult,version,keywords,TCorder " .

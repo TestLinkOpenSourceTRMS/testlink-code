@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: adminProductEdit.tpl,v 1.6 2006/01/06 20:32:49 schlundus Exp $
+$Id: adminProductEdit.tpl,v 1.7 2006/01/14 17:47:54 schlundus Exp $
 Purpose: smarty template - Edit existing product 
 
  20051211 - fm - poor workaround for BUGID 180 Unable to delete Product
@@ -116,7 +116,7 @@ Purpose: smarty template - Edit existing product
 	{else}
 		<p class="info">
 		{if $name neq ''}
-			{lang_get s='info_failed_loc_prod----'} {$name|escape}!<br>
+			{lang_get s='info_failed_loc_prod'} - {$name|escape}!<br>
 		{/if}
 		{lang_get s='invalid_query'}: {$sqlResult|escape}<p>
 	{/if}

@@ -1,5 +1,5 @@
 {* smarty template - view all keywords of product; ver. 1.0 *}
-{* $Id: keywordsView.tpl,v 1.4 2006/01/04 09:46:16 franciscom Exp $ *}
+{* $Id: keywordsView.tpl,v 1.5 2006/01/14 17:47:54 schlundus Exp $ *}
 {* Purpose: smarty template - View all keywords *}
 {include file="inc_head.tpl" jsValidate="yes"}
 
@@ -68,7 +68,7 @@ var warning_enter_less2 = "{lang_get s='warning_enter_less2'}";
 	{lang_get s='no_keywords'}
 {else}
 	{* data table *}
-	<table class="simple" width="70%">
+	<table class="common" width="70%">
 		<tr>
 			<th width="30%">{lang_get s='th_keyword'}</th>
 			<th>{lang_get s='th_notes'}</th>
@@ -87,7 +87,6 @@ var warning_enter_less2 = "{lang_get s='warning_enter_less2'}";
 				</a>
 				{/if}
 			</td>
-			<!--- <td>{$arrKeywords[myKeyword].notes|escape}</td> --->
 			<td>{$arrKeywords[myKeyword].notes}</td>
 			{if $rightsKey ne ""}
 			<td>

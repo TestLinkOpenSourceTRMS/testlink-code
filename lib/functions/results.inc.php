@@ -2,8 +2,8 @@
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: results.inc.php,v $
- * @version $Revision: 1.27 $
- * @modified $Date: 2006/01/09 07:15:43 $   $Author: franciscom $
+ * @version $Revision: 1.28 $
+ * @modified $Date: 2006/01/14 17:47:54 $   $Author: schlundus $
  * 
  * @author 	Martin Havlat 
  * @author 	Chad Rosen (original report definition)
@@ -103,17 +103,8 @@ function getTCLink($rights, $result, $id, $title, $buildID)
 	$suffix = $result . '">' . $id . ": <b>" . $title. "</b></a>";
 	
 	// 20051108 - fm - BUGID 82
-	if ($rights)
-	{
-		$testTitle = '<a href="lib/execute/execSetResults.php?keyword=All&level=testcase&owner=All&build='. 
-		             $buildID . '&id=' . $suffix;
-	}	             
-	else
-	{
-		$testTitle = '<a href="lib/execute/execShowResults.php?keyword=All&level=testcase&owner=All&build='. 
-		             $buildID . '&id=' . $suffix;
-	}
-	
+	$testTitle = '<a href="lib/execute/execSetResults.php?keyword=All&level=testcase&owner=All&build='. 
+	             $buildID . '&id=' . $suffix;
 		
 	return $testTitle;
 }

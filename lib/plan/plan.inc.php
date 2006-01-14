@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: plan.inc.php,v $
- * @version $Revision: 1.24 $
- * @modified $Date: 2006/01/09 07:19:06 $ $Author: franciscom $
+ * @version $Revision: 1.25 $
+ * @modified $Date: 2006/01/14 17:47:54 $ $Author: schlundus $
  * @author 	Martin Havlat
  *
  * Functions for management: 
@@ -432,7 +432,7 @@ function getUsersOfPlan(&$db,$id)
 // 20050815 - scs - $notes now became a default parameter
 // 20050905 - scs - function now returns the build value
 // 20050921 - fm - refactoring build
-function insertTestPlanBuild($buildName,$testplanID,$notes = '')
+function insertTestPlanBuild(&$db,$buildName,$testplanID,$notes = '')
 {
 	$sql = " INSERT INTO build (projid,name,note) " .
 	       " VALUES ('". $testplanID . "','" . $db->prepare_string($buildName) . "','" . 
@@ -479,7 +479,7 @@ function getAllTestPlanComponentCategories(&$db,$testPlanID,$compID)
 using also mgtcategory
 changed return type
 */
-function getCategories_TC_ids($catIDs)
+function getCategories_TC_ids(&$db,$catIDs)
 {
 	$tcIDs = array();
 	if (sizeof($catIDs))
@@ -506,7 +506,7 @@ function getCategories_TC_ids($catIDs)
 
  20051001 - fm
 */
-function del_category_deep($catID)
+function del_category_deep(&$db,$catID)
 {
 	// bugs
 	$sql = " DELETE FROM bugs " .
@@ -536,7 +536,7 @@ function del_category_deep($catID)
 
  20051001 - fm
 */
-function del_component_deep($compID)
+function del_component_deep(&$db,$compID)
 {
 	//Select all of the categories from the component
 	$sql = " SELECT category.id AS catid " .
@@ -557,7 +557,7 @@ function del_component_deep($compID)
 /*
  20051006 - fm 
 */
-function updateTestPlanBuild($buildID,$buildName,$notes)
+function updateTestPlanBuild(&$db,$buildID,$buildName,$notes)
 {
 	$sql = " UPDATE build " .
 	       " SET name='" . $db->prepare_string($buildName) . "'," .  
@@ -664,7 +664,7 @@ function checkMileStone($name,$date,$A,$B,$C)
  * @param int $target_tpid
  * @return void
  **/
-function 	copy_deep_testplan(&$db, $source_tpid, $target_tpid)
+function copy_deep_testplan(&$db, $source_tpid, $target_tpid)
 {
 	$cInfo = getTestPlanComponents($db, $source_tpid);
 	$num_comp = sizeof($cInfo);
@@ -718,6 +718,5 @@ function 	copy_deep_testplan(&$db, $source_tpid, $target_tpid)
 			}//end the tc loop
 		}//end the cat loop
 	}//end the com loop
-
 } 
 ?>

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: mainPage.php,v $
  *
- * @version $Revision: 1.11 $ $Author: schlundus $
- * @modified $Date: 2006/01/10 19:59:28 $
+ * @version $Revision: 1.12 $ $Author: schlundus $
+ * @modified $Date: 2006/01/14 17:47:54 $
  *
  * @author Martin Havlat
  * 
@@ -88,10 +88,8 @@ else if ( isset($_REQUEST['filter_tp_by_product_hidden']) )
 } 
 else
 {
-	if ( isset($_SESSION['filter_tp_by_product']) )
-  {
-    $filter_tp_by_product = $_SESSION['filter_tp_by_product'];
-  }
+	if (isset($_SESSION['filter_tp_by_product']))
+		$filter_tp_by_product = $_SESSION['filter_tp_by_product'];
 }
 $_SESSION['filter_tp_by_product'] = $filter_tp_by_product;
 $smarty->assign('filter_tp_by_product',$filter_tp_by_product);
@@ -125,8 +123,6 @@ $smarty->assign('tp_metrics', has_rights($db,"tp_metrics"));
 $smarty->assign('tp_planning', has_rights($db,"tp_planning"));
 $smarty->assign('launcher','lib/general/frmWorkArea.php');
 
-// 20051002 - fm
-global $g_ui_show_check_filter_tp_by_product;
 $smarty->assign('show_filter_tp_by_product',
                 $g_ui_show_check_filter_tp_by_product);
 

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: frmWorkArea.php,v $
  *
- * @version $Revision: 1.7 $
- * @modified $Date: 2006/01/05 07:30:34 $ by $Author: franciscom $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2006/01/14 17:47:54 $ by $Author: schlundus $
  *
  * @author Martin Havlat
  *
@@ -50,7 +50,7 @@ if (isset($aa_tfp[$showFeature]) === FALSE)
 // features that need to run the validate build function
 if (in_array($showFeature,array('executeTest','showMetrics')))
 {
-	validateBuildAvailability($_SESSION['testPlanId'],
+	validateBuildAvailability($db,$_SESSION['testPlanId'],
 	                          $_SESSION['testPlanName'],
 	                          $_SESSION['productName']);
 }
@@ -79,7 +79,7 @@ $smarty->display('frmInner.tpl');
  *
  **/
 /// <enhancement date="2005-04-16" author="fm"> improved user message </<enhancement>
-function validateBuildAvailability($tpID, $tpName, $prodName)
+function validateBuildAvailability(&$db,$tpID, $tpName, $prodName)
 {
 	require_once("exec.inc.php");
 	
@@ -90,7 +90,7 @@ function validateBuildAvailability($tpID, $tpName, $prodName)
 	          "  (Product::Test Plan) "  . 
 	          '</p><p>' . lang_get('no_build_warning_part2') . '</p>';
 		
-	if (!buildsNumber($tpID))
+	if (!buildsNumber($db,$tpID))
 	{	           
 		// show info and exit
 		$smarty = new TLSmarty;

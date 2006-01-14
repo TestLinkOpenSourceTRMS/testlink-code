@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: userrightmatrix.php,v $
  *
- * @version $Revision: 1.7 $
- * @modified $Date: 2006/01/06 20:32:49 $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2006/01/14 17:47:54 $
  *
  * @author Andreas Morsing
  *
@@ -39,9 +39,6 @@ $g_userRights = array(
 														),
 						//TESTEXECUTION														
 						"lib/execute/execnavigator.php" => array (
-															"tp_execute",
-														),
-						"lib/execute/execsetresults.php" => array (
 															"tp_execute",
 														),
 						//KEYWORDS

@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: userInfo.php,v $
 *
-* @version $Revision: 1.11 $
-* @modified $Date: 2006/01/05 07:30:34 $
+* @version $Revision: 1.12 $
+* @modified $Date: 2006/01/14 17:47:54 $
 * 
 * Displays the users' information and allows users to change 
 * their passwords and user info.
@@ -30,19 +30,16 @@ $old = isset($_POST['old']) ? $_POST['old'] : null;
 $new = isset($_POST['new1']) ? $_POST['new1'] : null;
 $bEdit = isset($_POST['editUser']) ? 1 : 0;
 $bChangePwd = isset($_POST['changePasswd']) ? 1 : 0;
+$userName = $_SESSION['user'];
 
 $updateResult = null;
 if ($bEdit)
-{
 	$updateResult = userUpdate($db,$id,$first,$last,$email,null,null,$locale);
-}
 else if ($bChangePwd)
-{
 	$updateResult = updateUserPassword($db,$id,$old,$new);
-}
 
 $userResult ='';
-existLogin($db,$_SESSION['user'], $userResult);
+existLogin($db,$userName, $userResult);
 
 $smarty = new TLSmarty();
 $smarty->assign('userData', $userResult);

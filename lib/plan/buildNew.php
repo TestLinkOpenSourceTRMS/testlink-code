@@ -1,22 +1,20 @@
 <?php
-/* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: buildNew.php,v 1.16 2006/01/05 07:30:34 franciscom Exp $ */
-/* 
-Purpose:  admins create new builds for a testplan 
-
-@author Francisco Mancardi - 20051006 
-added edit build
-
-
-@author Francisco Mancardi - 20050826
-htmlarea replaced with fckeditor
-* 20050710 - am - refactored - removed build_label when deleting and editing
+/**
+ * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ * This script is distributed under the GNU General Public License 2 or later. 
+ *
+ * Filename $RCSfile: buildNew.php,v $
+ *
+ * @version $Revision: 1.17 $
+ * @modified $Date: 2006/01/14 17:47:54 $ $Author: schlundus $
+ * 20051006 - fm - added edit build
+ * 20050826 - fm - htmlarea replaced with fckeditor
+ * 20050710 - scs - refactored - removed build_label when deleting and editing
 */
 require('../../config.inc.php');
 require("../functions/common.php");
 require_once("plan.inc.php");
 require("../functions/builds.inc.php");
-require_once("../../lib/functions/lang_api.php");
 require_once("../../third_party/fckeditor/fckeditor.php");
 testlinkInitPage($db);
 
@@ -24,6 +22,7 @@ $tpID    = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0;
 $buildID = isset($_REQUEST['buildID']) ? intval($_REQUEST['buildID']) : 0;
 $build_name = isset($_REQUEST['build_name']) ? trim(strings_stripSlashes($_REQUEST['build_name'])) : null;
 $notes = isset($_REQUEST['notes']) ? strings_stripSlashes($_REQUEST['notes']) : null;
+$tpName = $_SESSION['testPlanName'];
 
 $the_builds = getBuilds($db,$tpID, " ORDER BY build.name ");
 $smarty = new TLSmarty();
@@ -54,7 +53,7 @@ if(isset($_REQUEST['newBuild']))
 {
 	if ($can_insert_or_update)
 	{
-		if (!insertTestPlanBuild($build_name,$tpID,$notes))
+		if (!insertTestPlanBuild($db,$build_name,$tpID,$notes))
 		{
 			$sqlResult = lang_get("cannot_add_build");
 		}	
@@ -94,9 +93,7 @@ if(isset($_REQUEST['edit_build']))
 		if ($can_insert_or_update)
 		{
 		   	if (!updateTestPlanBuild($buildID,$build_name,$notes))
-		   	{
 		 		$sqlResult = lang_get("cannot_update_build");
-		 	}	
 		}
 		$smarty->assign('sqlResult', $sqlResult);
 		$build_name = '';
@@ -108,7 +105,7 @@ $the_builds = getBuilds($db,$tpID, " ORDER by build.name ");
 $notes = getBuildsAndNotes($db,$tpID);
 
 
-$smarty->assign('TPname', $_SESSION['testPlanName']);
+$smarty->assign('TPname', $tpName);
 $smarty->assign('arrBuilds', $the_builds);
 $smarty->assign('buildNotes', $notes);
 $smarty->assign('build_name', $build_name);

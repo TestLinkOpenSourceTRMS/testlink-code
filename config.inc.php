@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.42 $
- * @modified $Date: 2006/01/09 07:18:15 $ by $Author: franciscom $
+ * @version $Revision: 1.43 $
+ * @modified $Date: 2006/01/14 17:47:53 $ by $Author: schlundus $
  *
  *
  * Constants and configuration parameters used throughout TestLink 
@@ -14,41 +14,26 @@
  *-------------------------------------------------------------------------
  * Revisions:
  *
- * @author Francisco Mancardi - 20060101 - version 1.7.0 Alpha
- * @author Francisco Mancardi - 20051227 - BUGID 300
- * @author Martin Havlat - 20051204 - added HTTP_ACCEPT_LANGUAGE support; 
- *                                    added patch for Chinese
- * @author Francisco Mancardi - 20051115 - added constant for JIRA
- *
- * @author Francisco Mancardi - 20051106
- * Adding configuration parameters to use PHPMAILER, to send mail.
- * The PHPMAILER solution uses code from Mantis Bugtraking System.
- *
- *
- * @author Francisco Mancardi - 20051022
- * added french locale and translations - thanks grdscarabe@grdscarabe.net
- * added portuguese locale and translations - thanks Leonardo Molinari
- *
- * 
- * @author Francisco Mancardi - 20051011
- * New constant to configure CSS files
- * Boolean values managed with TRUE/FALSE instead of 1/0 .
- *
- * @author Francisco Mancardi - 20051005
- * new config structures to manage L18N for date and time format
- * $g_locales_date_format, $g_locales_timestamp_format
- * 
- * @author Francisco Mancardi - 20051004 
- * $g_allow_duplicate_keywords
- *
- * @author Francisco Mancardi - 20051002 
- * - Test Plan filtering by product related configuration parameters
- *   $g_ui_show_check_filter_tp_by_product
- *
- * - New configuration parameters for Requirements Functionality
+ * 20060101 - fm - 	version 1.7.0 Alpha
+ * 20051227 - fm - 	fixed BUGID 300
+ * 20051204 - mht -	added HTTP_ACCEPT_LANGUAGE support; 
+ *                  added patch for Chinese
+ * 20051115 - fm - 	added constant for JIRA
+ * 20051106 - fm - 	Adding configuration parameters to use PHPMAILER, to send mail.
+ * 					The PHPMAILER solution uses code from Mantis Bugtracking System.
+ * 20051022 - fm - 	added french locale and translations
+ * 					added portuguese locale and translations
+ * 20051011 - fm -	New constant to configure CSS files Boolean values managed 
+ * 					with TRUE/FALSE instead of 1/0 .
+ * 20051005 - fm -	new config structures to manage L18N for date and time format
+ * 					$g_locales_date_format, $g_locales_timestamp_format
+ * 20051004 - fm - 	$g_allow_duplicate_keywords
+ * 20051002 - fm - 	Test Plan filtering by product related configuration parameters
+ *   				$g_ui_show_check_filter_tp_by_product
+ * 				 - 	New configuration parameters for Requirements Functionality
  * 20050919 - fm - 	g_timestamp_format
  * 20050915 - fm - 	from 1.6.Beta1 to 1.6.RC1
- * 20050908 - fm -  New configuration parameters:
+ * 20050908 - fm - 	New configuration parameters:
  * 					$g_check_names_for_duplicates
  *					$g_action_on_duplicate_name
  * 					$g_prefix_name_for_copy
@@ -57,8 +42,8 @@
  * 20050827 - fm - 	changes in $g_tc_status, $g_tc_sd_color
  * 					new config parameters: $g_date_format, $g_fckeditor_toolbar
  * 20050822 - fm - 	$tpl -> $g_tpl
- * 20050821 - fm - template configuration/customization
- * 20050806 - fm - Changes to support the installer
+ * 20050821 - fm - 	template configuration/customization
+ * 20050806 - fm - 	Changes to support the installer
  *------------------------------------------------------------------------
 **/
 /** 
@@ -255,7 +240,6 @@ $g_req_cfg->scope_for_component="Component/Category/Test Cases generated from Re
 $g_req_cfg->use_req_spec_as_category_name = TRUE;
 
 
-
 //20051002 - fm - Must be changed if Table definition changes
 $g_field_size->category_name = 100;
 
@@ -277,8 +261,7 @@ $g_locales = array('en_GB' => 'English (UK)',
 				          );
 
 // ----------------------------------------------------------------------------
-// 20051005 - francisco.mancardi@gruppotesi.com
-// see strftime() in PHP manual
+// 20051005 - fm - see strftime() in PHP manual
 //
 // Very IMPORTANT: 
 // setting according local is done in testlinkInitPage() using set_dt_formats()
@@ -327,7 +310,7 @@ $g_tc_status = array ( "failed"        => 'f',
                        "all"           => 'all'
                       ); 
 
-/* 20050508 - fm - enhancement */
+//20050508 - fm - enhancement
 /* TestCase Status Description -> color */
 $g_tc_sd_color = array ( "failed"        => 'red',
                          "blocked"       => 'blue',
@@ -341,14 +324,10 @@ $g_tc_sd_color = array ( "failed"        => 'red',
 define("TL_ROLES_GUEST",5);
 define("TL_DEFAULT_ROLEID",TL_ROLES_GUEST);
 
-// 20060103 - fm 
 $g_tc_risks = array('L1', 'L2', 'L3','M1', 'M2', 'M3','H1', 'H2', 'H3');
 
 # ------------------------------------------------------------------
-# @author Francisco Mancardi - 20051106
-# Contributed by wangyy, modified by Francisco Mancardi
-# Taken from mantis
-# for phpmailer config
+# 20051106 - fm - Taken from mantis for phpmailer config
 define ("SMTP_SEND",2);
 $g_phpMailer_method = SMTP_SEND;
 
@@ -366,9 +345,7 @@ $g_smtp_password    = '';  # password
 # ------------------------------------------------------------------
 
 
-// 20051227 - fm
-// based on contribution by scorpfromhell 
-// BUGID 300: Display name and surename in all user lists 
+// 20051227 - fm - BUGID 300: Display name and surename in all user lists 
 // $g_show_realname=TRUE; -> use the function format_username()
 //                           to display user identification
 //                           using $g_username_format
@@ -380,8 +357,6 @@ $g_show_realname=FALSE;
 // 'name_surname_login'    -> John Cook [ux555]
 //$g_username_format='name_surname_login';
 $g_username_format='name_surname';
-
-
 
 
 /** 
@@ -399,7 +374,7 @@ define('TL_DOC_COPYRIGHT', '');
 define('TL_DOC_CONFIDENT', '');
 
 
-/* 20051120 - fm */
+// 20051120 - fm 
 define('ALL_PRODUCTS',0);
 define('TP_ALL_STATUS',null);
 define('FILTER_BY_PRODUCT',1);
@@ -407,12 +382,8 @@ define('TP_STATUS_ACTIVE',1);
 
 
 
-/*
-20050821 - fm
-configurable templates
-This help is you want to use a non standard template 
-*/
-$g_tpl=array();
+// 20050821 - fm - configurable templates this help is you want to use a non standard template 
+$g_tpl = array();
 
 // Standard
 $g_tpl['tcView'] = "tcView.tpl";

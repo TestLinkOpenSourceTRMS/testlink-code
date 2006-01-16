@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: planEdit.php,v $
  *
- * @version $Revision: 1.14 $
- * @modified $Date: 2006/01/14 17:47:54 $ $Author: schlundus $
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2006/01/16 11:11:36 $ $Author: franciscom $
  *
  * Purpose:  ability to edit and delete testplans
  *
@@ -25,7 +25,6 @@ $prodID = $_SESSION['productID'];
 $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 $bDelete = isset($_GET['deleteTP']) ? intval($_GET['deleteTP']) : 0;
 
-var_dump($_SESSION);
 $generalResult = null;
 $editResult = null;
 if($bDelete)

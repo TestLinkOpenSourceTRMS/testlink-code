@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqView.php,v $
- * @version $Revision: 1.4 $
- * @modified $Date: 2006/01/09 07:16:16 $ by $Author: franciscom $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2006/01/18 16:59:41 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Screen to view content of requirement.
@@ -26,8 +26,8 @@ testlinkInitPage($db);
 $idReq = isset($_GET['idReq']) ? strings_stripSlashes($_GET['idReq']) : null;
 
 $arrReq = getReqData($db,$idReq);
-$arrReq['author'] = getUserName($db,$arrReq['id_author']);
-$arrReq['modifier'] = getUserName($db,$arrReq['id_modifier']);
+$arrReq['author'] = getUserName($db,$arrReq['author_id']);
+$arrReq['modifier'] = getUserName($db,$arrReq['modifier_id']);
 $arrReq['coverage'] = getTc4Req($db,$idReq);
 
 

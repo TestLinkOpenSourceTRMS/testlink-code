@@ -1,6 +1,6 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
 # This script is distributed under the GNU General Public License 2 or later.
-# $Id: testlink_create_tables.sql,v 1.15 2006/01/09 18:50:32 franciscom Exp $
+# $Id: testlink_create_tables.sql,v 1.16 2006/01/18 16:59:39 franciscom Exp $
 # SQL script - create db tables for TL 1.6.0  
 #
 # default rights & admin account are created via testlink_create_default_data.sql
@@ -24,6 +24,7 @@
 #
 #       20060101 - fm - added active field in user table 
 #       20060104 - fm - changes to milestone table suggested by Andreas Morsing
+#       20060118 - fm - id_xxx -> xxx_id
 # --------------------------------------------------------
 
 #
@@ -283,17 +284,17 @@ CREATE TABLE `testplans_rights` (
 DROP TABLE IF EXISTS `req_spec`;
 CREATE TABLE `req_spec` (
   `id` INT( 10 ) UNSIGNED NOT NULL AUTO_INCREMENT ,
-  `id_product` INT( 10 ) UNSIGNED NOT NULL ,
+  `product_id` INT( 10 ) UNSIGNED NOT NULL ,
   `title` VARCHAR( 100 ) NOT NULL ,
   `scope` TEXT,
   `total_req` VARCHAR( 5 ) DEFAULT 'n/a' NOT NULL ,
   `type` char(1) default 'n',
-  `id_author` INT( 10 ) UNSIGNED NULL,
+  `author_id` INT( 10 ) UNSIGNED NULL,
   `create_date` date NOT NULL default '0000-00-00',
-  `id_modifier` INT( 10 ) UNSIGNED NULL,
+  `modifier_id` INT( 10 ) UNSIGNED NULL,
   `modified_date` date NOT NULL default '0000-00-00',
 PRIMARY KEY ( `id` ) ,
-INDEX ( `id_product` )
+INDEX ( `product_id` )
 ) TYPE=MyISAM COMMENT='Dev. Documents (e.g. System Requirements Specification)';
 # --------------------------------------------------------
 
@@ -304,18 +305,18 @@ INDEX ( `id_product` )
 DROP TABLE IF EXISTS `requirements`;
 CREATE TABLE `requirements` (
   `id` INT( 10 ) UNSIGNED NOT NULL AUTO_INCREMENT ,
-  `id_srs` INT( 10 ) UNSIGNED NOT NULL ,
+  `srs_id` INT( 10 ) UNSIGNED NOT NULL ,
   `req_doc_id` varchar(16) default NULL,
   `title` VARCHAR( 100 ) NOT NULL ,
   `scope` TEXT,
   `status` char(1) default 'v' NOT NULL,
   `type` char(1) default NULL,
-  `id_author` INT( 10 ) UNSIGNED NULL,
+  `author_id` INT( 10 ) UNSIGNED NULL,
   `create_date` date NOT NULL default '0000-00-00',
-  `id_modifier` INT( 10 ) UNSIGNED NULL,
+  `modifier_id` INT( 10 ) UNSIGNED NULL,
   `modified_date` date NOT NULL default '0000-00-00',
 PRIMARY KEY ( `id` ) ,
-INDEX ( `id_srs` , `status` ),
+INDEX ( `srs_id` , `status` ),
 KEY `req_doc_id` (`req_doc_id`)
 ) TYPE=MyISAM;
 
@@ -327,9 +328,9 @@ KEY `req_doc_id` (`req_doc_id`)
 
 DROP TABLE IF EXISTS `req_coverage`;
 CREATE TABLE `req_coverage` (
-`id_req` INT( 10 ) NOT NULL ,
-`id_tc` INT( 10 ) NOT NULL ,
-INDEX ( `id_req` , `id_tc` )
+`req_id` INT( 10 ) NOT NULL ,
+`tc_id` INT( 10 ) NOT NULL ,
+INDEX ( `req_id` , `tc_id` )
 ) TYPE=MyISAM COMMENT = 'relation test case ** requirements';
 
 # --------------------------------------------------------

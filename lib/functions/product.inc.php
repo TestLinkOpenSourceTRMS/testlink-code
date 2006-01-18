@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: product.inc.php,v $
- * @version $Revision: 1.8 $
- * @modified $Date: 2006/01/09 07:15:43 $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2006/01/18 16:59:40 $
  * @author Martin Havlat
  *
  * Functions for Product management (create,update,delete)
@@ -147,8 +147,8 @@ function deleteProduct(&$db,$id, &$error)
 			'info_keywords_delete_fails'),
 		// delete requirements
 		array ("DELETE req_spec,requirements,req_coverage FROM req_spec,requirements,req_coverage " .
-			"WHERE req_spec.id_product=" . $id . " AND req_spec.id=requirements.id_srs" .
-			" AND req_coverage.id_req=requirements.id", 
+			"WHERE req_spec.product_id=" . $id . " AND req_spec.id=requirements.srs_id" .
+			" AND req_coverage.req_id=requirements.id", 
 			'info_reqs_delete_fails')
 	); 
 

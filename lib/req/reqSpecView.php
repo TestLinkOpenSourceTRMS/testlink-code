@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqSpecView.php,v $
- * @version $Revision: 1.18 $
- * @modified $Date: 2006/01/11 15:54:15 $ by $Author: franciscom $
+ * @version $Revision: 1.19 $
+ * @modified $Date: 2006/01/18 16:59:41 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Screen to view existing requirements within a req. specification.
@@ -76,8 +76,8 @@ elseif (isset($_REQUEST['editReq']))
 	$arrReq = getReqData($db,$idReq);
 	
 	// 20050830 - MHT - Added audit
-	$arrReq['author'] = getUserName($db,$arrReq['id_author']);
-	$arrReq['modifier'] = getUserName($db,$arrReq['id_modifier']);
+	$arrReq['author'] = getUserName($db,$arrReq['author_id']);
+	$arrReq['modifier'] = getUserName($db,$arrReq['modifier_id']);
 	$arrReq['coverage'] = getTc4Req($db,$idReq);
 	
 	$reqDocId = $arrReq['req_doc_id'];
@@ -150,8 +150,8 @@ if ($bGetReqs) {
 $arrSpec = getReqSpec($db,$prodID,$idSRS);
 
 //  - MHT - Added audit
-$arrSpec[0]['author'] = getUserName($db,$arrSpec[0]['id_author']);
-$arrSpec[0]['modifier'] = getUserName($db,$arrSpec[0]['id_modifier']);
+$arrSpec[0]['author'] = getUserName($db,$arrSpec[0]['author_id']);
+$arrSpec[0]['modifier'] = getUserName($db,$arrSpec[0]['modifier_id']);
 
 $smarty = new TLSmarty();
 $smarty->assign('arrSpec', $arrSpec);

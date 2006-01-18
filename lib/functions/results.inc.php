@@ -2,8 +2,8 @@
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: results.inc.php,v $
- * @version $Revision: 1.28 $
- * @modified $Date: 2006/01/14 17:47:54 $   $Author: schlundus $
+ * @version $Revision: 1.29 $
+ * @modified $Date: 2006/01/18 16:59:41 $   $Author: franciscom $
  * 
  * @author 	Martin Havlat 
  * @author 	Chad Rosen (original report definition)
@@ -1267,7 +1267,7 @@ function getReqCoverage_testPlan(&$db,$idSRS, $tpID)
 				          'blocked' => array(), 'not_run' => array());
 	
 	// get requirements
-	$sql = "SELECT id,title FROM requirements WHERE id_srs=" . $idSRS . 
+	$sql = "SELECT id,title FROM requirements WHERE srs_id=" . $idSRS . 
 			   " AND status='v' ORDER BY title";
 			   
 	  echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";

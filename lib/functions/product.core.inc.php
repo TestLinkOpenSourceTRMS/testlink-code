@@ -1,9 +1,9 @@
-<?
+<?php
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: product.core.inc.php,v $
- * @version $Revision: 1.4 $
- * @modified $Date: 2006/01/09 07:15:43 $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2006/02/04 20:13:14 $
  * @author Martin Havlat
  *
  * Core Functions for Product management (get data)
@@ -63,11 +63,9 @@ function getOptionProducts(&$db)
 		{
 			foreach($arrTemp as $oneProduct)
 			{
-				if ($oneProduct['active']) {
-					$noteActive = '';
-				} else {
+				$noteActive = '';
+				if (!$oneProduct['active'])
 					$noteActive = '* ';
-				}
 				$arrProducts[$oneProduct['id']] = $noteActive . $oneProduct['name'];
 			}
 		}

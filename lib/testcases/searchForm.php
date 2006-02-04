@@ -1,6 +1,6 @@
-<?
+<?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: searchForm.php,v 1.7 2006/01/06 20:32:50 schlundus Exp $ */
+/* $Id: searchForm.php,v 1.8 2006/02/04 20:13:15 schlundus Exp $ */
 // Purpose:  This page is the left frame of the search pages. It builds the
 //	    form for adding criteria for search.
 ////////////////////////////////////////////////////////////////////////////////

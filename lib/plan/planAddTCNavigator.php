@@ -1,8 +1,8 @@
-<?
+<?php
 /** 
 *	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version $Id: planAddTCNavigator.php,v 1.7 2006/01/09 07:19:06 franciscom Exp $
+* 	@version $Id: planAddTCNavigator.php,v 1.8 2006/02/04 20:13:15 schlundus Exp $
 *	@author Martin Havlat
 * 
 * 	Navigator for feature: add Test Cases to a Test Case Suite in Test Plan. 

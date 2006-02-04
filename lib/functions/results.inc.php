@@ -1,9 +1,9 @@
-<?
+<?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: results.inc.php,v $
- * @version $Revision: 1.29 $
- * @modified $Date: 2006/01/18 16:59:41 $   $Author: franciscom $
+ * @version $Revision: 1.30 $
+ * @modified $Date: 2006/02/04 20:13:14 $   $Author: schlundus $
  * 
  * @author 	Martin Havlat 
  * @author 	Chad Rosen (original report definition)

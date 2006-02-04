@@ -1,8 +1,8 @@
-<?
+<?php
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: listTestCases.php,v 1.7 2006/01/09 08:32:36 franciscom Exp $
+* 	@version 	$Id: listTestCases.php,v 1.8 2006/02/04 20:13:15 schlundus Exp $
 * 	@author 	Martin Havlat
 * 
 * 	This page generates tree menu with test specification. It builds the

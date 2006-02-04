@@ -1,11 +1,11 @@
-<?
+<?php
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  *
  * Filename $RCSfile: frmWorkArea.php,v $
  *
- * @version $Revision: 1.8 $
- * @modified $Date: 2006/01/14 17:47:54 $ by $Author: schlundus $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2006/02/04 20:13:14 $ by $Author: schlundus $
  *
  * @author Martin Havlat
  *

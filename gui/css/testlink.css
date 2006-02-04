@@ -1,5 +1,5 @@
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: testlink.css,v 1.4 2005/10/12 06:25:06 franciscom Exp $ */
+/* $Id: testlink.css,v 1.5 2006/02/04 20:13:07 schlundus Exp $ */
 /* Purpose: main css */
 /*                                                                 */
 /* 20050801 - fm                                                   */
@@ -191,7 +191,6 @@ a:visited, a:link, a:active {
 /* A link being hovered over is red*/
 a:hover   {
 	color: 			#900; 
-	font-weight:    bold;
 	text-decoration: none;
 } 
 

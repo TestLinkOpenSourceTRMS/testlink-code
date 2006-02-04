@@ -1,6 +1,6 @@
-<?
+<?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: priority.inc.php,v 1.7 2006/01/09 07:15:43 franciscom Exp $ */
+/* $Id: priority.inc.php,v 1.8 2006/02/04 20:13:14 schlundus Exp $ */
 /**
  * Functions for Priority management 
  * Precondition: require init db + session verification done (testlinkInitPage();) 

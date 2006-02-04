@@ -1,10 +1,10 @@
-<?
+<?php
 /**
  * TestLink Open Source Project - @link http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: plan.core.inc.php,v $
- * @version $Revision: 1.25 $
- * @modified $Date: 2006/01/14 17:47:54 $ $Author: schlundus $
+ * @version $Revision: 1.26 $
+ * @modified $Date: 2006/02/04 20:13:14 $ $Author: schlundus $
  *  
  * 
  * @author 	Martin Havlat

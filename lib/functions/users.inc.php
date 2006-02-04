@@ -1,12 +1,12 @@
-<?
+<?php
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: users.inc.php,v $
  *
- * @version $Revision: 1.20 $
- * @modified $Date: 2006/01/14 17:47:54 $ $Author: schlundus $
+ * @version $Revision: 1.21 $
+ * @modified $Date: 2006/02/04 20:13:14 $ $Author: schlundus $
  *
  * Functions for usermanagement
  *

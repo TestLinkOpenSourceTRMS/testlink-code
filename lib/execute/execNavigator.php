@@ -1,12 +1,12 @@
-<?
+<?php
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: execNavigator.php,v $
  *
- * @version $Revision: 1.14 $
- * @modified $Date: 2006/01/05 07:30:33 $ by $Author: franciscom $
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2006/02/04 20:13:13 $ by $Author: schlundus $
  *
  * @author Martin Havlat
  *

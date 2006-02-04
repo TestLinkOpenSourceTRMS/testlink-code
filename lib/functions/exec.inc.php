@@ -1,11 +1,11 @@
-<?
+<?php
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  *
  * Filename $RCSfile: exec.inc.php,v $
  *
- * @version $Revision: 1.22 $
- * @modified $Date: 2006/01/14 17:47:54 $ $Author: schlundus $
+ * @version $Revision: 1.23 $
+ * @modified $Date: 2006/02/04 20:13:14 $ $Author: schlundus $
  *
  * @author Martin Havlat
  *

@@ -1,12 +1,12 @@
-<?
+<?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
 * This script is distributed under the GNU General Public License 2 or later. 
 *
 * Filename $RCSfile: keywords.inc.php,v $
 * 
-* @version $Id: keywords.inc.php,v 1.16 2006/01/09 07:16:49 franciscom Exp $
-* @modified $Date: 2006/01/09 07:16:49 $ by $Author: franciscom $
+* @version $Id: keywords.inc.php,v 1.17 2006/02/04 20:13:14 schlundus Exp $
+* @modified $Date: 2006/02/04 20:13:14 $ by $Author: schlundus $
 *
 * Functions for support keywords management. 
 *

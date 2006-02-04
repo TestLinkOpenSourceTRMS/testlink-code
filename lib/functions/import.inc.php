@@ -1,6 +1,6 @@
-<?
+<?php
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: import.inc.php,v 1.13 2006/01/09 07:15:43 franciscom Exp $
+* $Id: import.inc.php,v 1.14 2006/02/04 20:13:14 schlundus Exp $
 * 
 * @author Martin Havlat
 *

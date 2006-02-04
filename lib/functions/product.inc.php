@@ -1,9 +1,9 @@
-<?
+<?php
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: product.inc.php,v $
- * @version $Revision: 1.9 $
- * @modified $Date: 2006/01/18 16:59:40 $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2006/02/04 20:13:14 $
  * @author Martin Havlat
  *
  * Functions for Product management (create,update,delete)

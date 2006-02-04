@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: mainPage.php,v $
  *
- * @version $Revision: 1.12 $ $Author: schlundus $
- * @modified $Date: 2006/01/14 17:47:54 $
+ * @version $Revision: 1.13 $ $Author: schlundus $
+ * @modified $Date: 2006/02/04 20:13:14 $
  *
  * @author Martin Havlat
  * 
@@ -17,11 +17,8 @@
  * There is also some javascript that handles the form information.
  *
  *
- * @author Francisco Mancardi - 20050928 - 
- * changes to filter test plan by product
- *
- * @author Francisco Mancardi - 20050928 - 
- * adding new User Interface feature: filter test plan by product
+ * 20050928 - fm - changes to filter test plan by product
+ * 20050928 - fm - adding new User Interface feature: filter test plan by product
  * 
  * 20051112 - scs - removed undefined index notices
  * 20050103 - scs - ADOdb changes

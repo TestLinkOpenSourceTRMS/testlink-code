@@ -1,6 +1,6 @@
-<?
+<?php
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
- *$Id: resultsMoreBuilds.inc.php,v 1.45 2006/01/09 07:15:43 franciscom Exp $ 
+ *$Id: resultsMoreBuilds.inc.php,v 1.46 2006/02/04 20:13:14 schlundus Exp $ 
  * 
  * @author Kevin Levy
  *

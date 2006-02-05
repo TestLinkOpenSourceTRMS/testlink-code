@@ -4,13 +4,14 @@
  *
  * Filename $RCSfile: navBar.php,v $
  *
- * @version $Revision: 1.9 $
- * @modified $Date: 2006/02/04 20:13:14 $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2006/02/05 23:01:05 $
  *
  * @author Martin Havlat
  *
  * This file manages the navigation bar. 
  * @author Francisco Mancardi - 20050813 added Product Filter con TestPlan 
+ * 20060205 - JBA - Remember last product (BTS 221); added by MHT
  *
 **/
 require('../../config.inc.php');
@@ -38,6 +39,8 @@ $updateMainPage=0;
 if (isset($_GET['product']))
 {
 	$updateMainPage=1;
+	// set product ID for the next session
+	setcookie('lastProductForUser'. $_SESSION['userID'], $_GET['product'], TL_COOKIE_KEEPTIME, '/');
 }
 
 $smarty->assign('user', $_SESSION['user'] . ' [' . $_SESSION['role'] . ']');

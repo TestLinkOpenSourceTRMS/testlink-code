@@ -5,14 +5,15 @@
  *
  * Filename $RCSfile: users.inc.php,v $
  *
- * @version $Revision: 1.21 $
- * @modified $Date: 2006/02/04 20:13:14 $ $Author: schlundus $
+ * @version $Revision: 1.22 $
+ * @modified $Date: 2006/02/05 23:00:41 $ $Author: havlat $
  *
  * Functions for usermanagement
  *
  * 20051228 - fm - added active attribute
  * 20050821 - fm - BUGID 239
  * 20051231 - scs - changes due to ADBdb
+ * 20060205 - JBA - Remember last product (BTS 221); added by MHT
 **/
 require_once("common.php");
 
@@ -272,6 +273,14 @@ function setUserSession(&$db,$user, $id, $roleID, $email, $locale = null,$active
 		$_SESSION['locale'] = $locale;
 		set_dt_formats();
 	}  
+
+    // 20051208 - JBA - added to set the lastProduct the user has selected before logging off.
+    $cookedProduct = 'lastProductForUser'. $id;
+    if (isset($_COOKIE[$cookedProduct])) {
+    	$_SESSION['productID'] = $_COOKIE[$cookedProduct];
+    	tLog('Cookie: lastProductForUser='.$_SESSION['productID']);
+    }
+
 	return 1;
 }
 

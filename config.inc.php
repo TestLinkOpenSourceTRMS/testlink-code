@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.43 $
- * @modified $Date: 2006/01/14 17:47:53 $ by $Author: schlundus $
+ * @version $Revision: 1.44 $
+ * @modified $Date: 2006/02/05 23:01:19 $ by $Author: havlat $
  *
  *
  * Constants and configuration parameters used throughout TestLink 
@@ -44,6 +44,8 @@
  * 20050822 - fm - 	$tpl -> $g_tpl
  * 20050821 - fm - 	template configuration/customization
  * 20050806 - fm - 	Changes to support the installer
+ * 20060205 - JBA - 	Remember last product (BTS 221)
+ *
  *------------------------------------------------------------------------
 **/
 /** 
@@ -135,6 +137,7 @@ error_reporting(E_ALL & ~E_NOTICE);
 /* CVS will not released, MUST BE changed at the release day */
 define('TL_VERSION', '1.7.0 Alpha'); 
 define('TL_BACKGROUND_DEFAULT', "#9BD");
+define('TL_COOKIE_KEEPTIME', (time()+60*60*24*30)); // 30 days
 
 /** 
 *	Definition of tree menu component: dTree, jTree or phplayersmenu.

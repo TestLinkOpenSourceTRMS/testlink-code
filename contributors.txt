@@ -25,3 +25,6 @@ Localization
 	
 * German
 	Andreas Morsing
+	
+* Italian
+  Walter Giaquinto/Alessandro Lia	

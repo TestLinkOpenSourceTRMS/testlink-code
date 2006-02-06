@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.44 $
- * @modified $Date: 2006/02/05 23:01:19 $ by $Author: havlat $
+ * @version $Revision: 1.45 $
+ * @modified $Date: 2006/02/06 18:36:46 $ by $Author: franciscom $
  *
  *
  * Constants and configuration parameters used throughout TestLink 
@@ -14,6 +14,7 @@
  *-------------------------------------------------------------------------
  * Revisions:
  *
+ * 20060205 - JBA - 	Remember last product (BTS 221)
  * 20060101 - fm - 	version 1.7.0 Alpha
  * 20051227 - fm - 	fixed BUGID 300
  * 20051204 - mht -	added HTTP_ACCEPT_LANGUAGE support; 
@@ -44,7 +45,6 @@
  * 20050822 - fm - 	$tpl -> $g_tpl
  * 20050821 - fm - 	template configuration/customization
  * 20050806 - fm - 	Changes to support the installer
- * 20060205 - JBA - 	Remember last product (BTS 221)
  *
  *------------------------------------------------------------------------
 **/

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.45 $
- * @modified $Date: 2006/02/06 18:36:46 $ by $Author: franciscom $
+ * @version $Revision: 1.46 $
+ * @modified $Date: 2006/02/07 11:10:52 $ by $Author: franciscom $
  *
  *
  * Constants and configuration parameters used throughout TestLink 
@@ -14,6 +14,7 @@
  *-------------------------------------------------------------------------
  * Revisions:
  *
+ * 20060207 - franciscom - BUGID 303
  * 20060205 - JBA - 	Remember last product (BTS 221)
  * 20060101 - fm - 	version 1.7.0 Alpha
  * 20051227 - fm - 	fixed BUGID 300
@@ -360,6 +361,15 @@ $g_show_realname=FALSE;
 // 'name_surname_login'    -> John Cook [ux555]
 //$g_username_format='name_surname_login';
 $g_username_format='name_surname';
+
+
+// 20060207 - franciscom - BUGID 303
+// Contributed by Tools-R-Us@Cognizant.com
+// Should Test Results of older builds be editable?
+// FALSE --> Not editable
+// TRUE  --> Editable
+$g_edit_old_build_results = FALSE;
+
 
 
 /** 

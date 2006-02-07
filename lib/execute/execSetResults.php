@@ -4,21 +4,20 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.20 $
- * @modified $Date: 2006/01/14 17:47:54 $ $Author: schlundus $
+ * @version $Revision: 1.21 $
+ * @modified $Date: 2006/02/07 11:17:24 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
- *
- * @author 20051119 - Francisco Mancardi - BUGID 0000232: Only admin or leader can update test results
- * @author 20051913 - am - build was displayed
- * @author 20050919 - Francisco Mancardi - refactoring SQL and PHP 
- * @author 20050911 - Francisco Mancardi - refactoring  
- * @author 20050825 - scs - added buginterface to smarty
- * @author 20050821 - Francisco Mancardi - refactoring decrease level of global coupling 
- * @author 20050815 - scs - code optimization
- *
- * 20051112 - scs - corrected using a undefined variable, cosmetic changes
+ * 20060207 - franciscom - BUGID 0000303 - Solution by: scorpfromhell
+ * 20051219 - am - build was displayed
+ * 20051119 - Francisco Mancardi - BUGID 0000232: Only admin or leader can update test results
+ * 20051119 - Francisco Mancardi - BUGID 0000232: Only admin or leader can update test results
+ * 20050919 - Francisco Mancardi - refactoring SQL and PHP 
+ * 20050911 - Francisco Mancardi - refactoring  
+ * 20050825 - scs - added buginterface to smarty
+ * 20050821 - Francisco Mancardi - refactoring decrease level of global coupling 
+ * 20050815 - scs - code optimization
  *
 **/
 require_once('../../config.inc.php');
@@ -50,6 +49,20 @@ if (isset($_REQUEST['submitTestResults']))
 $tpID = $_SESSION['testPlanId'];
 $builds = getBuilds($db,$tpID, " ORDER BY build.name ");
 $buildName = isset($builds[$buildID]) ? $builds[$buildID] : '';
+
+// -------------------------------------------------------------------------------------------
+// 20060207 - franciscom - BUGID 0000303 - Solution by: scorpfromhell 
+// Added to set Test Results editable by comparing themax Build ID and the requested Build ID.			
+$editTestResult = "yes";
+$allbuilds = getBuilds($tpID, 'ORDER BY build.id DESC');
+$latestBuild = array_keys($allbuilds);
+$latestBuild = $latestBuild[0];
+
+if(($latestBuild > $buildID) && !(config_get('edit_old_build_results')))
+{
+	$editTestResult = "no";
+}
+// -------------------------------------------------------------------------------------------
 
 $sql = " SELECT CAT.id AS cat_id, MGTCAT.name AS cat_name, " .
        " TC.id AS tcid, title, summary, steps, exresult, keywords,mgttcid,version " .
@@ -92,6 +105,10 @@ $smarty = new TLSmarty();
 
 // 20051119 - fm - BUGID 0000232: Only admin or leader can update test results
 $smarty->assign('rightsEdit', has_rights($db,"tp_execute"));
+
+// 20060207 - franciscom - BUGID 0000303 - Solution by: scorpfromhell
+$smarty->assign('edit_test_results', $editTestResult);
+
 $smarty->assign('arrTC', $testdata);
 $smarty->assign('build', $buildName);
 $smarty->assign('owner', $owner);

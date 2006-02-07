@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execSetResults.tpl,v 1.12 2005/12/05 01:30:26 havlat Exp $ *}
+{* $Id: execSetResults.tpl,v 1.13 2006/02/07 11:15:10 franciscom Exp $ *}
 {* Purpose: smarty template - show tests to add results *}
 {* Revisions:
 	
@@ -13,6 +13,7 @@
   20051118 - scs - enlargened the notes textarea
   20051119 - scs - added fix for 227
   20051126 - scs - added escaping of build and owner
+  20060207 - franciscom - BUGID 303
 *}	
 
 {include file="inc_head.tpl" popup='yes'}
@@ -34,14 +35,17 @@
   	
 <div class="workBack">
 <form method='post'>
+  {* -------------------------------------------------------------------------------------- *}
+  {* 20060207 - franciscom - BUGID 303
+     Added to make Test Results editable only if Current build is latest Build - Tools-R-Us *}
   {* 20051108 - fm - BUGID 00082*}
-  {if $rightsEdit == "yes"}
+  {if $rightsEdit == "yes" and $edit_test_results == "yes"}
   	{assign var="input_enabled_disabled" value=""}
   	
-	<div class="groupBtn">
+	  <div class="groupBtn">
   		<input type="submit" name='submitTestResults' value="{lang_get s='btn_save_tc_exec_results'}" />
-		<input type="button" name="print" value="{lang_get s='btn_print'}" 
-		onclick="javascript:window.print();" />
+		  <input type="button" name="print" value="{lang_get s='btn_print'}" 
+		         onclick="javascript:window.print();" />
   	</div>
 	{/if}
 	
@@ -125,8 +129,15 @@
 		<tr>
 			<td colspan="2">
 				<br />
-				<span class="title">{lang_get s='test_exec_bug_report'}</span>
-				<input name='bugs[{$idx}]' value='{$arrTC[Row].bugs}' /><a style="font-weight:normal" target="_blank" href="{$g_bugInterface->getEnterBugURL()}">{lang_get s='button_enter_bug'}</a>
+			  {* -------------------------------------------------------------------------------------- *}
+			  {* 20060207 - franciscom - BUGID 303
+		      Added to make Test Results editable only if Current build is latest Build - Tools-R-Us *}
+				{if $rightsEdit == "yes" and $edit_test_results == "yes"}
+							<span class="title">{lang_get s='test_exec_bug_report'}</span>
+							<input name='bugs[{$idx}]' value='{$arrTC[Row].bugs}' /><a style="font-weight:normal" target="_blank" href="{$g_bugInterface->getEnterBugURL()}">{lang_get s='button_enter_bug'}</a>
+				{/if}
+			  {* -------------------------------------------------------------------------------------- *}
+				
 				{if $arrTC[Row].bugLinkList}
 				<table class="simple" width="100%">
 					<tr>
@@ -151,8 +162,9 @@
 	<hr />
 	{/section}
 
+  {* 20060207 - franciscom - BUGID 303*}
   {* 20051108 - fm - BUGID 00082*}
-  {if $rightsEdit == "yes"}
+  {if $rightsEdit == "yes" and $edit_test_results == "yes" }
   	<div class="groupBtn">
   		<input type='submit' name='submitTestResults' value="{lang_get s='btn_save_tc_exec_results'}" />
   	</div>	

@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: installNewDB.php,v 1.19 2006/01/02 13:46:39 franciscom Exp $ */
+/* $Id: installNewDB.php,v 1.20 2006/02/15 14:01:03 franciscom Exp $ */
 /*
 Parts of this file has been taken from:
 Etomite Content Management System
@@ -198,10 +198,30 @@ else
 // ------------------------------------------------------------------------------------------------
 if($create) 
 {
+	
+	// 20060214 - franciscom
+	// check database name for invalid characters (now only for MySQL)
+	
+	
   $db = New database($db_type);
   @$conn_result=$db->connect(NO_DSN,$db_server, $db_admin_name, $db_admin_pass);
   echo "</b><br />Creating database `" . $db_name . "`:<b> ";
-  $sql_create = "CREATE DATABASE " . $db_name . " CHARACTER SET utf8 "; 
+  
+  // 20060214 - franciscom - from MySQL Manual
+  // 9.2. Database, Table, Index, Column, and Alias Names
+  //
+  // Identifier            : Database
+  // Maximum Length (bytes): 64
+  // Allowed Characters    : Any character that is allowed in a directory name, except '/', '\', or '.'  
+  // 
+  // An identifier may be quoted or unquoted. 
+  // If an identifier is a reserved word or contains special characters, you must quote it whenever you refer to it. 
+  // For a list of reserved words, see Section 9.6, “Treatment of Reserved Words in MySQL”. 
+  // Special characters are those outside the set of alphanumeric characters from the current character set, 
+  // '_', and '$'. 
+  // The identifier quote character is the backtick ('`'): 
+  //
+  $sql_create = "CREATE DATABASE `" . $db->prepare_string($db_name) . "` CHARACTER SET utf8 "; 
   
 	if(!$db->exec_query($sql_create)) 
 	{

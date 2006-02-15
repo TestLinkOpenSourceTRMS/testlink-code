@@ -1,6 +1,6 @@
 <?php 
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: newInstallStart_TL.php,v 1.7 2006/01/02 13:47:35 franciscom Exp $ */
+/* $Id: newInstallStart_TL.php,v 1.8 2006/02/15 14:01:03 franciscom Exp $ */
 
 // 20050824 - fm
 require_once("installUtils.php");
@@ -106,6 +106,17 @@ exit;
 				alert('You need to enter a value for database name!');
 				return false;
 			}
+      
+			// 20060215 - franciscom
+			if( f.databasename.value.indexOf('/') >= 0 ||
+			    f.databasename.value.indexOf('\\') >= 0 ||
+          f.databasename.value.indexOf('.') >= 0 )
+			{
+				alert('Database name contains forbbiden characters!');
+				return false;
+			}
+      
+			
 			if(f.databasehost.value=="") {
 				alert('You need to enter a value for database host!');
 				return false;
@@ -167,13 +178,18 @@ exit;
 					<div class="labelHolder">
 						<label for="databasehost">Database host:</label>
 					</div>
-					<input type="text" id="databasehost" name="databasehost" value="localhost" style="width:200px" /><br />
+					<input type="text" id="databasehost" name="databasehost" 
+					                   value="localhost" style="width:200px" /><br />
 					
 				<p>
          <?php echo db_msg($inst_type); ?>
 				</p>
 				<p>
-					<div class="labelHolder"><label for="databasename">Database name:</label></div><input type="text" id="databasename" name="databasename" style="width:200px" value="TestLink"><br />
+				  <!-- 20060215 - franciscom -->
+					<div class="labelHolder"><label for="databasename">Database name:</label></div>
+					<input type="text" id="databasename" name="databasename" 
+                 maxlength="50" 
+					       style="width:200px" value="TestLink"><br />
 					<!--
 					20050611 - fm
 					<div class="labelHolder"><label for="tableprefix">Table prefix:</label></div><input type="text" id="tableprefix" name="tableprefix" style="width:200px" value="TestLink_">

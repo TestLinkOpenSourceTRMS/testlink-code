@@ -1,8 +1,9 @@
 <?php
 /* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: installUtils.php,v 1.12 2006/01/09 07:14:39 franciscom Exp $ 
+$Id: installUtils.php,v 1.13 2006/02/15 14:01:03 franciscom Exp $ 
 
+20060214 - franciscom - added warning regarding valid database names
 20060108 - fm - removed some functions
 20051231 - fm - changes due to ADODB
 20051002 - fm - messages changes
@@ -59,7 +60,7 @@ return $filesArr;
 // | Authors: João Prado Maia <jpm@mysql.com>                             |
 // +----------------------------------------------------------------------+
 //
-// @(#) $Id: installUtils.php,v 1.12 2006/01/09 07:14:39 franciscom Exp $
+// @(#) $Id: installUtils.php,v 1.13 2006/02/15 14:01:03 franciscom Exp $
 //
 
 // a foolish wrapper - 20051231 - fm
@@ -449,12 +450,17 @@ return($msg);
 }  //function end
 
 
+// 20060214 - franciscom - added warning regarding valid database names
 function db_msg($inst_type)
 {
 
 $msg = '';
 
 $msg .=	"Please enter the name of the database you want to use for TestLink. <br>" .
+				'<br><span class="notok">
+				  Your attention please<br>' .
+				"The database name can contain any character that is allowed in a directory name, except '/', '\', or '.'  
+				  </span> <br><br>" .
 				"If you haven't created a database yet, the installer will attempt to do so for you, <br>" . 
 				"but this may fail depending on the MySQL setup your host uses.<br>";
 

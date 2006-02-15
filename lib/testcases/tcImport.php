@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: tcImport.php,v $
  *
- * @version $Revision: 1.9 $
- * @modified $Date: 2006/01/09 07:20:00 $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2006/02/15 08:51:04 $
  *
  * @author	Martin Havlat
  * @author	Chad Rosen
@@ -28,8 +28,8 @@ $source = isset($HTTP_POST_FILES['uploadedFile']['tmp_name']) ? $HTTP_POST_FILES
 $catIDForImport = isset($_POST['catID']) ? intval($_POST['catID']) : 0;
 $bImport = isset($_POST['import']) ? 1 : 0;
 $location = isset($_POST['location']) ? strings_stripSlashes($_POST['location']) : null; 
-$productName = $_SESSION['productName'];
-$productID = $_SESSION['productID'];
+$productName = $_SESSION['testprojectName'];
+$productID = $_SESSION['testprojectID'];
 $user = $_SESSION['user'];
 $user_id = $_SESSION['userID'];
 

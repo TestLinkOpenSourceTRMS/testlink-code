@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: planEdit.php,v $
  *
- * @version $Revision: 1.15 $
- * @modified $Date: 2006/01/16 11:11:36 $ $Author: franciscom $
+ * @version $Revision: 1.16 $
+ * @modified $Date: 2006/02/15 08:49:20 $ $Author: franciscom $
  *
  * Purpose:  ability to edit and delete testplans
  *
@@ -21,7 +21,7 @@ require("plan.inc.php");
 require("../functions/builds.inc.php");
 testlinkInitPage($db);
 
-$prodID = $_SESSION['productID'];
+$prodID = $_SESSION['testprojectID'];
 $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 $bDelete = isset($_GET['deleteTP']) ? intval($_GET['deleteTP']) : 0;
 

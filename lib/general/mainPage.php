@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: mainPage.php,v $
  *
- * @version $Revision: 1.13 $ $Author: schlundus $
- * @modified $Date: 2006/02/04 20:13:14 $
+ * @version $Revision: 1.14 $ $Author: franciscom $
+ * @modified $Date: 2006/02/15 08:49:19 $
  *
  * @author Martin Havlat
  * 
@@ -35,7 +35,7 @@ $smarty = new TLSmarty;
 
 // ----------------------------------------------------------------------
 /** redirect admin to create product if not found */
-if ($_SESSION['role'] == 'admin' && !isset($_SESSION['productID']))
+if ($_SESSION['role'] == 'admin' && !isset($_SESSION['testprojectID']))
 { 
 	redirect($_SESSION['basehref'] . 'lib/admin/adminProductEdit.php?createProduct=1');
 }
@@ -54,7 +54,7 @@ if(has_rights($db,"mgt_view_tc"))
 // REQS
 $smarty->assign('view_req_rights', has_rights($db,"mgt_view_req")); 
 $smarty->assign('modify_req_rights', has_rights($db,"mgt_modify_req")); 
-$smarty->assign('opt_requirements', isset($_SESSION['productOptReqs']) ? $_SESSION['productOptReqs'] : null); 
+$smarty->assign('opt_requirements', isset($_SESSION['testprojectOptReqs']) ? $_SESSION['testprojectOptReqs'] : null); 
 
 // view and modify Keywords 
 $smarty->assign('view_keys_rights', has_rights($db,"mgt_view_key"));
@@ -97,7 +97,7 @@ $smarty->assign('filter_tp_by_product',$filter_tp_by_product);
 // 20050928 - fm - Interface changes
 // 20050810 - fm - Interface changes
 // 20050809 - fm - get only test plan for the selected product
-$arrPlans = getTestPlans($db,isset($_SESSION['productID']) ? $_SESSION['productID'] : 0,
+$arrPlans = getTestPlans($db,isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0,
 						$_SESSION['userID'],$filter_tp_by_product);
 
 //20050826 - scs - added displaying of security notes

@@ -2,7 +2,7 @@
 /** 
 *	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version $Id: planAddTCNavigator.php,v 1.8 2006/02/04 20:13:15 schlundus Exp $
+* 	@version $Id: planAddTCNavigator.php,v 1.9 2006/02/15 08:49:20 franciscom Exp $
 *	@author Martin Havlat
 * 
 * 	Navigator for feature: add Test Cases to a Test Case Suite in Test Plan. 
@@ -22,8 +22,8 @@ testlinkInitPage($db);
 $key = null;
 
 // 20050905 - fm
-$prodID   = isset($_SESSION['productID']) ? $_SESSION['productID'] : 0;
-$prodName = isset($_SESSION['productName']) ? $_SESSION['productName'] : '';
+$prodID   = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+$prodName = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : '';
 
 if(isset($_POST['filter']))
 {

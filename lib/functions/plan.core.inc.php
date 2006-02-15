@@ -3,8 +3,8 @@
  * TestLink Open Source Project - @link http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: plan.core.inc.php,v $
- * @version $Revision: 1.26 $
- * @modified $Date: 2006/02/04 20:13:14 $ $Author: schlundus $
+ * @version $Revision: 1.27 $
+ * @modified $Date: 2006/02/15 08:49:19 $ $Author: franciscom $
  *  
  * 
  * @author 	Martin Havlat
@@ -39,7 +39,7 @@
  *
  *      20050810 - fm
  *      Removed Global Coupling:
- *      ($_SESSION['productID'], $_SESSION['userID'])
+ *      ($_SESSION['testprojectID'], $_SESSION['userID'])
  *
  *      20050809 - fm
  *      changes in active field type now is boolean

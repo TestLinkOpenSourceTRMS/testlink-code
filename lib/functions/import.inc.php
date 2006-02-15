@@ -1,13 +1,10 @@
 <?php
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: import.inc.php,v 1.14 2006/02/04 20:13:14 schlundus Exp $
+* $Id: import.inc.php,v 1.15 2006/02/15 08:49:19 franciscom Exp $
 * 
 * @author Martin Havlat
 *
 * Functions for Import TCs
-*
-* @author: francisco mancardi - 20050810
-* deprecated $_SESSION['product'] removed 
 *
 * 20050828 - scs - changes for importing tc to a specific category
 * 20050831 - fm - reduce global coupling

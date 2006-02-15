@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: navBar.php,v $
  *
- * @version $Revision: 1.10 $
- * @modified $Date: 2006/02/05 23:01:05 $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2006/02/15 08:49:19 $
  *
  * @author Martin Havlat
  *
@@ -21,7 +21,7 @@ testlinkInitPage($db,true);
 
 // Load data for combo box with all the available testplans
 $arrProducts = getOptionProducts($db);
-$currentProduct = isset($_SESSION['productID']) ? $_SESSION['productID'] : null;
+$currentProduct = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : null;
 
 // 20050810 - fm - interface changes
 $countPlans = getCountTestPlans4UserProd($db,$_SESSION['userID'],$currentProduct);

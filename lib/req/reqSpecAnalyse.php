@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqSpecAnalyse.php,v $
- * @version $Revision: 1.6 $
- * @modified $Date: 2006/01/09 07:16:16 $ by $Author: franciscom $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2006/02/15 08:50:19 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Analyse coverage of a req. specification.
@@ -25,7 +25,7 @@ testlinkInitPage($db);
 $idSRS = isset($_GET['idSRS']) ? strings_stripSlashes($_GET['idSRS']) : null;
 
 // 20050906 - fm
-$prodID = isset($_SESSION['productID']) ? $_SESSION['productID'] : 0;
+$prodID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 
 //get list of ReqSpec
 $arrReqSpec = getOptionReqSpec($db,$prodID);

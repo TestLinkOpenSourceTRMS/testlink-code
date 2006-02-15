@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: users.inc.php,v $
  *
- * @version $Revision: 1.22 $
- * @modified $Date: 2006/02/05 23:00:41 $ $Author: havlat $
+ * @version $Revision: 1.23 $
+ * @modified $Date: 2006/02/15 08:49:19 $ $Author: franciscom $
  *
  * Functions for usermanagement
  *
@@ -277,8 +277,8 @@ function setUserSession(&$db,$user, $id, $roleID, $email, $locale = null,$active
     // 20051208 - JBA - added to set the lastProduct the user has selected before logging off.
     $cookedProduct = 'lastProductForUser'. $id;
     if (isset($_COOKIE[$cookedProduct])) {
-    	$_SESSION['productID'] = $_COOKIE[$cookedProduct];
-    	tLog('Cookie: lastProductForUser='.$_SESSION['productID']);
+    	$_SESSION['testprojectID'] = $_COOKIE[$cookedProduct];
+    	tLog('Cookie: lastProductForUser='.$_SESSION['testprojectID']);
     }
 
 	return 1;

@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* @version 	$Id: selectData.php,v 1.8 2006/02/04 20:13:15 schlundus Exp $
+* @version 	$Id: selectData.php,v 1.9 2006/02/15 08:49:54 franciscom Exp $
 * @author 	Martin Havlat
 * 
 * 	Navigator for print/export functionality. 
@@ -21,8 +21,8 @@ testlinkInitPage($db);
 
 
 // 20050905 - fm
-$prodID   = isset($_SESSION['productID']) ? $_SESSION['productID'] : 0;
-$prodName = isset($_SESSION['productName']) ? $_SESSION['productName'] : '';
+$prodID   = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+$prodName = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : '';
 
 // parse wrong type
 $type = isset($_GET['type']) ? $_GET['type'] : '';

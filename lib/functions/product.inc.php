@@ -2,15 +2,14 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: product.inc.php,v $
- * @version $Revision: 1.10 $
- * @modified $Date: 2006/02/04 20:13:14 $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2006/02/15 08:49:19 $
  * @author Martin Havlat
  *
  * Functions for Product management (create,update,delete)
  * Functions for get data see product.core.inc.php
  *
  * @ author: francisco mancardi - 20060101 - product notes management
- * @ author: francisco mancardi - 20050810 deprecated $_SESSION['product'] removed
  *
  */
 
@@ -34,9 +33,9 @@ function updateProduct(&$db,$id, $name, $color, $optRequirements,$notes)
 	if ($result)
 	{
 		// update session data
-		$_SESSION['productColor'] = $color;
-		$_SESSION['productName'] = $name;
-		$_SESSION['productOptReqs'] = $optRequirements;
+		$_SESSION['testprojectColor'] = $color;
+		$_SESSION['testprojectName'] = $name;
+		$_SESSION['testprojectOptReqs'] = $optRequirements;
 
 		$sqlResult = 'ok';
 		tLog('Product ' . $name . ' update: Ok.', 'INFO');
@@ -173,7 +172,7 @@ function deleteProduct(&$db,$id, &$error)
 		$result = $db->exec_query($sql);
 
 		if ($result) {
-			$sessProduct = isset($_SESSION['product']) ? $_SESSION['product'] : $id;
+			$sessProduct = isset($_SESSION['testprojectID']) ? $_SESSION['testproject'] : $id;
 			if ($id == $sessProduct) {
 				setSessionProduct(null);
 			}

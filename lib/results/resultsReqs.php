@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: resultsReqs.php,v $
- * @version $Revision: 1.4 $
- * @modified $Date: 2006/01/05 07:30:34 $ by $Author: franciscom $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2006/02/15 08:50:43 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Report requirement based results
@@ -25,7 +25,7 @@ require_once('results.inc.php');
 testlinkInitPage($db);
 
 $idSRS = isset($_GET['idSRS']) ? strings_stripSlashes($_GET['idSRS']) : null;
-$prodID = isset($_SESSION['productID']) ? $_SESSION['productID'] : 0;
+$prodID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 
 //get list of available Req Specification
 $arrReqSpec = getOptionReqSpec($db,$prodID);

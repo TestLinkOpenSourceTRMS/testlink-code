@@ -1,7 +1,7 @@
 <?php
 
 ////////////////////////////////////////////////////////////////////////////////
-// @version $Id: planAddTC.php,v 1.12 2006/01/14 17:47:54 schlundus Exp $
+// @version $Id: planAddTC.php,v 1.13 2006/02/15 08:49:20 franciscom Exp $
 // File:     planAddTC.php
 // Author:   Chad Rosen
 // Purpose:  This page manages the importation of test cases into testlink.
@@ -30,7 +30,7 @@ $smarty->assign('testPlanName', $_SESSION['testPlanName']);
 
 if($keywordID)
 {
-	$keyword = getProductKeywords($db,$_SESSION['productID'],null,$keywordID);
+	$keyword = getProductKeywords($db,$_SESSION['testprojectID'],null,$keywordID);
 	if (sizeof($keyword))
 		$keyword = $keyword[0];
 	else

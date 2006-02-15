@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqImport.php,v $
- * @version $Revision: 1.9 $
- * @modified $Date: 2006/01/10 19:59:28 $ by $Author: schlundus $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2006/02/15 08:50:19 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Import requirements to a specification. 
@@ -81,7 +81,7 @@ elseif (isset($_POST['executeImport']))
 }
 // collect existing document data
 // fm - mybug after refactoring
-$arrSpec = getReqSpec($db,$_SESSION['productID'],$idSRS);	
+$arrSpec = getReqSpec($db,$_SESSION['testprojectID'],$idSRS);	
 
 $smarty = new TLSmarty;
 $smarty->assign('reqSpec', $arrSpec[0]);

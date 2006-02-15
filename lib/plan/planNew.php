@@ -5,14 +5,13 @@
  *
  * Filename $RCSfile: planNew.php,v $
  *
- * @version $Revision: 1.14 $
- * @modified $Date: 2006/01/14 17:47:54 $ $Author: schlundus $
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2006/02/15 08:49:20 $ $Author: franciscom $
  *
  * Purpose:  Add new or edit existing Test Plan 
  *
  * 20051120 - fm - adding test plan filter by product behaivour
  * 20050915 - fm - refactoring function name
- * 20050810 - fm - deprecated $_SESSION['product'] removed
  * 20051125 - scs - added checking for duplicate tp names
  * 20060113 - scs - adding editing of tps
 */
@@ -163,8 +162,8 @@ function init_args($request_hash, $session_hash)
 	$args->source_tpid = $args->copy;
 	$args->copy = ($args->copy > 0) ? TRUE : FALSE;
 	
-	$args->productID   = $session_hash['productID'];
-	$args->productName = $session_hash['productName'];
+	$args->productID   = $session_hash['testprojectID'];
+	$args->productName = $session_hash['testprojectName'];
 	$args->userID      = $session_hash['userID'];
 	
 	return $args;

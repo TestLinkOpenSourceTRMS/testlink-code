@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: treeMenu.inc.php,v $
  *
- * @version $Revision: 1.10 $
- * @modified $Date: 2006/01/09 07:15:43 $ by $Author: franciscom $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2006/02/15 08:49:19 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * 	This file generates tree menu for test specification and test execution.
@@ -15,7 +15,6 @@
  * 
  * Revisions:
  *
- * @author 20050810 - fm refactoring:  removed deprecated: $_SESSION['product']
  * 20051011 - MHT - minor refactorization, header update
  * 20051118 - scs - testplanname was not filtered (JS-Error in certain cases)
  *

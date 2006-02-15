@@ -2,7 +2,7 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: listTestCases.php,v 1.8 2006/02/04 20:13:15 schlundus Exp $
+* 	@version 	$Id: listTestCases.php,v 1.9 2006/02/15 08:51:04 franciscom Exp $
 * 	@author 	Martin Havlat
 * 
 * 	This page generates tree menu with test specification. It builds the
@@ -17,8 +17,8 @@ testlinkInitPage($db);
 
 $feature = isset($_GET['feature']) ? $_GET['feature'] : null;
 
-$prodID   = isset($_SESSION['productID']) ? $_SESSION['productID'] : 0;
-$prodName = isset($_SESSION['productName']) ? $_SESSION['productName'] : 'xxx';
+$prodID   = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+$prodName = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : 'xxx';
 
 $title = lang_get('title_navigator'). ' - ' . lang_get('title_test_spec');
 if(strlen($feature))

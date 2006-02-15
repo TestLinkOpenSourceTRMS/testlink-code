@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: planTestersNavigator.php,v 1.6 2006/01/05 07:30:34 franciscom Exp $ 
+* $Id: planTestersNavigator.php,v 1.7 2006/02/15 08:49:20 franciscom Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * 
@@ -18,8 +18,8 @@ testlinkInitPage($db);
 
 // 20051120 - fm
 // The current selected Product
-$prod->id   = $_SESSION['productID'];
-$prod->name = $_SESSION['productName'];
+$prod->id   = $_SESSION['testprojectID'];
+$prod->name = $_SESSION['testprojectName'];
 $type = isset($_GET['type']) ? $_GET['type'] : 'users';
 
 $arrData = null;

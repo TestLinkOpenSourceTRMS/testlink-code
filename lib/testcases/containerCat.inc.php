@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: containerCat.inc.php,v 1.5 2006/01/09 07:20:00 franciscom Exp $ */
+/* $Id: containerCat.inc.php,v 1.6 2006/02/15 08:51:04 franciscom Exp $ */
 /* Purpose:  This page manages all the editing of test specification containers. */
 /*
  *
@@ -11,8 +11,6 @@
  * @author: francisco mancardi - 20050820
  * added missing control con category name length
  *
- * @author: francisco mancardi - 20050810
- * deprecated $_SESSION['product'] removed
 */
 function viewer_edit_new_cat(&$db,$amy_keys, $oFCK, $action, $componentID, $id=null)
 {

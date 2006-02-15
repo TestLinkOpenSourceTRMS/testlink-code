@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: reqTcAssign.php,v $
- * @version $Revision: 1.5 $
- * @modified $Date: 2006/01/09 07:16:16 $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2006/02/15 08:50:19 $
  * 
  * @author Martin Havlat
  * 
@@ -35,7 +35,7 @@ $doAssign = isset($_POST['assign']);
 $doUnassign = isset($_POST['unassign']);
 
 // 20050906 - fm
-$prodID = isset($_SESSION['productID']) ? $_SESSION['productID'] : 0;
+$prodID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 
 // add or remove dependencies TC - REQ
 if ($doAssign || $doUnassign) {

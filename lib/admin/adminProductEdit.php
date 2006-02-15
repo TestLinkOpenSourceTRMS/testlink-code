@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: adminProductEdit.php,v $
  *
- * @version $Revision: 1.13 $
- * @modified $Date: 2006/01/10 19:59:25 $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2006/02/15 08:49:17 $
  *
  * @author Martin Havlat
  *
@@ -25,7 +25,7 @@ require_once('product.inc.php');
 require_once("../../third_party/fckeditor/fckeditor.php");
 testlinkInitPage($db,true);
 
-$sessionProdID = isset($_SESSION['productID']) ? $_SESSION['productID'] : 0;
+$sessionProdID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 
 $updateResult = null;
 $action = 'no';
@@ -45,7 +45,7 @@ $of->Value = $args->notes;
 // ----------------------------------------------------------------------
 
 if ($sessionProdID)
-	$tlog_msg .= $sessionProdID . ': ' . $_SESSION['productName'];
+	$tlog_msg .= $sessionProdID . ': ' . $_SESSION['testprojectName'];
 else
 	$tlog_msg .= $args->id . ': ' . $args->name;
 

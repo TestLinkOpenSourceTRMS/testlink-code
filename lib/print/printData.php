@@ -2,7 +2,7 @@
 /**
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/ 
 *
-* @version 	$Id: printData.php,v 1.14 2006/01/09 07:17:18 franciscom Exp $
+* @version 	$Id: printData.php,v 1.15 2006/02/15 08:49:54 franciscom Exp $
 *	@author 	Martin Havlat
 * 
 * Shows the data that will be printed.
@@ -14,7 +14,6 @@
 * @author: francisco mancardi - 20050914 - refactoring
 * @author: francisco mancardi - 20050830 - refactoring
 * @author: francisco mancardi - 20050830 - refactoring print_header()
-* @author: francisco mancardi - 20050810 - deprecated $_SESSION['product'] removed
 * 
 * 20051118 - scs - title in print_header wasnt escaped
 */
@@ -38,11 +37,11 @@ function print_header(&$db,$title, $toc)
 {
 	global $CONTENT_HEAD;
 	
-	$prodName = isset($_SESSION['productName']) ? strings_stripSlashes($_SESSION['productName']) : null;
+	$prodName = isset($_SESSION['testprojectName']) ? strings_stripSlashes($_SESSION['testprojectName']) : null;
 	$my_userID = isset($_SESSION['userID']) ? intval($_SESSION['userID']) : null;
 
   // 20060102 - fm  
-	$prod_id = isset($_SESSION['productID']) ? intval($_SESSION['productID']) : 0;
+	$prod_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
 	$prod_data = getProduct($db,$prod_id);
 	
 	
@@ -327,7 +326,7 @@ if($_GET['type'] == 'product')
 	
 	    $sqlMGTCOM = "SELECT  id,name,intro,scope,ref,method,lim, prodid" .
 	    		         " FROM mgtcomponent WHERE  mgtcomponent.prodid=" . 
-	    		         $_SESSION['productID'] . " ORDER BY mgtcomponent.name" ;
+	    		         $_SESSION['testprojectID'] . " ORDER BY mgtcomponent.name" ;
 	  	$resultMGTCOM = $db->exec_query($sqlMGTCOM);
 	  	while($myrowCOM = $db->fetch_array($resultMGTCOM))
 		{ 

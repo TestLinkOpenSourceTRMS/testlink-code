@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.29 $ $Author: franciscom $
- * @modified $Date: 2006/01/09 07:15:43 $
+ * @version $Revision: 1.30 $ $Author: franciscom $
+ * @modified $Date: 2006/02/15 08:49:19 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -98,29 +98,27 @@ function doDBConnect(&$db)
 
 
 // 20050622 mht added options and productID
-// 20050813 - fm - removed $_SESSION['product'];
 function setSessionProduct($productInfo)
 {
 	if ($productInfo)
 	{
 		/** @todo check if the session product is updated when its modified per adminproductedit.php  */
-		// 20050813 - fm $_SESSION['product'] = $productInfo['id'];
-		$_SESSION['productID'] = $productInfo['id']; 
-		$_SESSION['productName'] = $productInfo['name'];
-		$_SESSION['productColor'] = $productInfo['color'];
-		$_SESSION['productOptReqs'] = isset($productInfo['option_reqs']) ? $productInfo['option_reqs'] : null;
-		$_SESSION['productOptPriority'] = isset($productInfo['option_priority']) ? $productInfo['option_priority'] : null;
+		$_SESSION['testprojectID'] = $productInfo['id']; 
+		$_SESSION['testprojectName'] = $productInfo['name'];
+		$_SESSION['testprojectColor'] = $productInfo['color'];
+		$_SESSION['testprojectOptReqs'] = isset($productInfo['option_reqs']) ? $productInfo['option_reqs'] : null;
+		$_SESSION['testprojectOptPriority'] = isset($productInfo['option_priority']) ? $productInfo['option_priority'] : null;
 		
 		tLog("Product was adjusted to [" . $productInfo['id'] . "]" . $productInfo['name'], 'INFO');
-		tLog("Product features REQ=" . $_SESSION['productOptReqs'] . ", PRIORITY=" . $_SESSION['productOptPriority']);
+		tLog("Product features REQ=" . $_SESSION['testprojectOptReqs'] . ", PRIORITY=" . $_SESSION['testprojectOptPriority']);
 	}
 	else
 	{
-		unset($_SESSION['productID']);
-		unset($_SESSION['productName']);
-		unset($_SESSION['productColor']);
-		unset($_SESSION['productOptReqs']);
-		unset($_SESSION['productOptPriority']);
+		unset($_SESSION['testprojectID']);
+		unset($_SESSION['testprojectName']);
+		unset($_SESSION['testprojectColor']);
+		unset($_SESSION['testprojectOptReqs']);
+		unset($_SESSION['testprojectOptPriority']);
 	}
 }
 
@@ -208,7 +206,7 @@ function checkProductSelection(&$db)
 function checkSessionTestPlan(&$db)
 {
 	// 20050813 - fm - added TP filtered by Product
-	$prodID = isset($_SESSION['productID']) ? $_SESSION['productID'] : null;
+	$prodID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : null;
 	$sTestPlanID = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : null;
 	
 	if (!$sTestPlanID || ($sTestPlanID && !getUserTestPlan($_SESSION['userID'],$sTestPlanID,true)))
@@ -233,7 +231,7 @@ function checkSessionTestPlan(&$db)
 
 function checkSessionProduct(&$db)
 {
-	$prodID = isset($_SESSION['productID']) ? $_SESSION['productID'] : null;
+	$prodID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : null;
 	// if the session product exists, check to see if the user has rights to it
 	// 20050813 - fm - implified if-clause
 	if (!$prodID || !getProduct($db,$prodID))
@@ -735,7 +733,7 @@ function updateSessionTp_Prod(&$db,$hash_user_sel)
   } 
   // ------------------------------------------------------------------
 
-  $prodID = isset($_SESSION['productID']) ? $_SESSION['productID'] : 0;
+  $prodID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 	$tpID   = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0;
 	
 	// Now what to do ???

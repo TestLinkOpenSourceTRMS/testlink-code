@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: planTestersEdit.php,v $
- * @version $Revision: 1.15 $
- * @modified $Date: 2006/01/09 07:19:06 $ $ by $Author: franciscom $
+ * @version $Revision: 1.16 $
+ * @modified $Date: 2006/02/15 08:49:20 $ $ by $Author: franciscom $
  * 
  * @author Martin Havlat
  * 
@@ -43,8 +43,8 @@ if(!$type || !$id)
 
 // 20051120 - fm
 // The current selected Product
-$prod->id   = $_SESSION['productID'];
-$prod->name = $_SESSION['productName'];
+$prod->id   = $_SESSION['testprojectID'];
+$prod->name = $_SESSION['testprojectName'];
 
 	
 $submit = isset($_POST['submit']) ? $_POST['submit'] : 0;

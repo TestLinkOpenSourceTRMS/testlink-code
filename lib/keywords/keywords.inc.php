@@ -5,14 +5,13 @@
 *
 * Filename $RCSfile: keywords.inc.php,v $
 * 
-* @version $Id: keywords.inc.php,v 1.17 2006/02/04 20:13:14 schlundus Exp $
-* @modified $Date: 2006/02/04 20:13:14 $ by $Author: schlundus $
+* @version $Id: keywords.inc.php,v 1.18 2006/02/15 08:49:20 franciscom Exp $
+* @modified $Date: 2006/02/15 08:49:20 $ by $Author: franciscom $
 *
 * Functions for support keywords management. 
 *
 * 20051011 - fm - new dunction check_for_keyword_existence()
 * 20051004 - fm - addNewKeyword() refactoring and improvements
-* 20050810 - fm - deprecated $_SESSION['product'] removed
 * 20051216 - MHT - fixed update keywords also in testplan
 * 20051229 - scs - added support for ADODB, added some functions related to import/export
 **/

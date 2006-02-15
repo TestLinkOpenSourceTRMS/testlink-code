@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: keywordsexport.php,v $
  *
- * @version $Revision: 1.2 $
- * @modified $Date: 2006/01/05 07:30:34 $ by $Author: franciscom $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2006/02/15 08:49:20 $ by $Author: franciscom $
  *
  * This page this allows users to export keywords. 
  *
@@ -21,8 +21,8 @@ testlinkInitPage($db);
 $bExport = isset($_POST['export']) ? $_POST['export'] : null;
 $exportType = isset($_POST['exportType']) ? $_POST['exportType'] : null;
 
-$prodID = isset($_SESSION['productID']) ? $_SESSION['productID'] : 0;
-$productName = $_SESSION['productName'];
+$prodID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+$productName = $_SESSION['testprojectName'];
 
 if ($bExport)
 {

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tlsmarty.inc.php,v $
  *
- * @version $Revision: 1.5 $
- * @modified $Date: 2005/10/12 06:25:06 $ $Author: franciscom $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2006/02/15 08:49:19 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -21,8 +21,8 @@ class TLSmarty extends Smarty
         $this->Smarty();
         $this->template_dir = TL_ABS_PATH . 'gui/templates/';
         $this->compile_dir = TL_TEMP_PATH;
-        if (isset($_SESSION['productColor'])) 
-        	$productColor =  $_SESSION['productColor'];
+        if (isset($_SESSION['testprojectColor'])) 
+        	$productColor =  $_SESSION['testprojectColor'];
         else
         	$productColor = TL_BACKGROUND_DEFAULT;
         	

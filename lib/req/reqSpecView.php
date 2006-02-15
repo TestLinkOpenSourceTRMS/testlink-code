@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqSpecView.php,v $
- * @version $Revision: 1.19 $
- * @modified $Date: 2006/01/18 16:59:41 $ by $Author: franciscom $
+ * @version $Revision: 1.20 $
+ * @modified $Date: 2006/02/15 08:50:19 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Screen to view existing requirements within a req. specification.
@@ -45,7 +45,7 @@ $reqType = isset($_REQUEST['reqType']) ? strings_stripSlashes($_REQUEST['reqType
 $countReq = isset($_REQUEST['countReq']) ? strings_stripSlashes($_REQUEST['countReq']) : null;
 
 // 20050906 - fm
-$prodID = isset($_SESSION['productID']) ? $_SESSION['productID'] : 0;
+$prodID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 $userID = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
 $login_name = isset($_SESSION['user']) ? strings_stripSlashes($_SESSION['user']) : null;
 $arrCov = null;

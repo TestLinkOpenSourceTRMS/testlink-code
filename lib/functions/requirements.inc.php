@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: requirements.inc.php,v $
- * @version $Revision: 1.22 $
- * @modified $Date: 2006/01/18 16:59:41 $ by $Author: franciscom $
+ * @version $Revision: 1.23 $
+ * @modified $Date: 2006/02/15 08:49:19 $ by $Author: franciscom $
  *
  * @author Martin Havlat <havlat@users.sourceforge.net>
  * 
@@ -19,7 +19,6 @@
  * 20050830 - francisco mancardi - changes in printSRS()
  * 20050829 - Martin Havlat - updated function headers 
  * 20050825 - Martin Havlat - updated global header;
- * 20050810	- francisco mancardi - deprecated $_SESSION['product'] removed
  * 20051025 - MHT - corrected introduced bug with insert TC (Bug 197)
  *
  * 

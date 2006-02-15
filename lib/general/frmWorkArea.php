@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: frmWorkArea.php,v $
  *
- * @version $Revision: 1.9 $
- * @modified $Date: 2006/02/04 20:13:14 $ by $Author: schlundus $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2006/02/15 08:49:19 $ by $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -52,7 +52,7 @@ if (in_array($showFeature,array('executeTest','showMetrics')))
 {
 	validateBuildAvailability($db,$_SESSION['testPlanId'],
 	                          $_SESSION['testPlanName'],
-	                          $_SESSION['productName']);
+	                          $_SESSION['testprojectName']);
 }
 /// <enhancement version="???" date="2005-04-09" author="fm" >
 /// 1. get path from global var

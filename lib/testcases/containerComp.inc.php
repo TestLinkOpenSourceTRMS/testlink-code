@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: containerComp.inc.php,v 1.9 2006/01/09 08:28:10 franciscom Exp $ */
+/* $Id: containerComp.inc.php,v 1.10 2006/02/15 08:51:04 franciscom Exp $ */
 /* Purpose:  This page manages all the editing of test specification containers. */
 /*
  *
@@ -11,9 +11,6 @@
  * @author: francisco mancardi - 20050820
  * added missing control con category name length
  *
- * @author: francisco mancardi - 20050810
- * deprecated $_SESSION['product'] removed
- * 
  * 20051010 - scs - removed unneccesary php-warnings
  * 20060106 - scs - fix for 0000326
 */

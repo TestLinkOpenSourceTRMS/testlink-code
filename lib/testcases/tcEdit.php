@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.18 $
- * @modified $Date: 2006/01/09 08:41:09 $  by $Author: franciscom $
+ * @version $Revision: 1.19 $
+ * @modified $Date: 2006/02/15 08:51:04 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
  * @author Martin Havlat
@@ -13,7 +13,6 @@
  * 20050827 - fm - BUGID 0000086
  * 20050827 - fm - fckeditor
  * 20050821 - fm - added missing control in tc title len interface - reduce global coupling
- * 20050810 - fm - refactoring, deprecated $_SESSION['product'] removed
  * 20051015 - scs - moved some POST params to the top
  * 20060106 - scs - refactoring, fixed bug 9
 **/
@@ -37,7 +36,7 @@ foreach ($a_ofck as $key)
 	$of->ToolbarSet=$g_fckeditor_toolbar;;
 }
 // --------------------------------------------------------------------
-$productID = $_SESSION['productID'];
+$productID = $_SESSION['testprojectID'];
 $show_newTC_form = 0;
 $smarty = new TLSmarty;
 $smarty->assign('path_htmlarea', $_SESSION['basehref'] . 'third_party/htmlarea/');

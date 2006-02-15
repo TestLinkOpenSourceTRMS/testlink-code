@@ -5,7 +5,7 @@
  *
  * Filename $RCSfile: keywordsimport.php,v $
  *
- * @modified $Date: 2006/01/05 07:30:34 $
+ * @modified $Date: 2006/02/15 08:49:20 $
  *
 */
 require('../../config.inc.php');
@@ -20,8 +20,8 @@ $bImport = isset($_POST['import']) ? 1 : 0;
 $importType = isset($_POST['importType']) ? $_POST['importType'] : null;
 $location = isset($_POST['location']) ? strings_stripSlashes($_POST['location']) : null; 
 
-$prodID = $_SESSION['productID'];
-$productName = $_SESSION['productName'];
+$prodID = $_SESSION['testprojectID'];
+$productName = $_SESSION['testprojectName'];
 $dest = TL_TEMP_PATH . session_id()."-importkeywords.csv";
 
 // check the uploaded file

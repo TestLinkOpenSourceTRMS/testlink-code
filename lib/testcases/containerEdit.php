@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: containerEdit.php,v 1.25 2006/01/09 08:30:53 franciscom Exp $ */
+/* $Id: containerEdit.php,v 1.26 2006/02/15 08:51:04 franciscom Exp $ */
 /* Purpose:  This page manages all the editing of test specification containers. */
 /*
  *
@@ -18,9 +18,6 @@
  *
  * @author: francisco mancardi - 20050820
  * added missing control con category name length
- *
- * @author: francisco mancardi - 20050810
- * deprecated $_SESSION['product'] removed
  *
  * 20060106 - scs - fix for 0000326
 */
@@ -46,7 +43,7 @@ $my_productID   = isset($_REQUEST['productID']) ? intval($_REQUEST['productID'])
 
 if(!$my_productID)
 {
-	$my_productID = $_SESSION['productID'];	
+	$my_productID = $_SESSION['testprojectID'];	
 }
 $compName = isset($_REQUEST['componentName']) ? stripslashes($_REQUEST['componentName']) : null;
 $catName = isset($_REQUEST['categoryName']) ? stripslashes($_REQUEST['categoryName']) : null;
@@ -374,7 +371,7 @@ else if($action == 'categoryCopy' || $action == 'categoryMove')
 }
 else if($action == 'componentCopy' || $action == 'componentMove')
 {
-	$prodID = $_SESSION['productID'];
+	$prodID = $_SESSION['testprojectID'];
 	//20051013 - am - fix for 115
 	$copyKeywords = isset($_POST['copyKeywords']) ? intval($_POST['copyKeywords']) : 0;
 	

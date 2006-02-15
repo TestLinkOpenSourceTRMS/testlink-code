@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: reqSpecList.php,v $
- * @version $Revision: 1.11 $
- * @modified $Date: 2006/01/09 07:16:16 $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2006/02/15 08:50:19 $
  * 
  * @author Martin Havlat
  * 
@@ -27,7 +27,7 @@ $title = null;
 $scope = null;
 
 // 20050906 - fm
-$prodID = isset($_SESSION['productID']) ? $_SESSION['productID'] : 0;
+$prodID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 $userID = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
 
 
@@ -83,7 +83,7 @@ $smarty->assign('arrSpecCount', count($arrSpec));
 $smarty->assign('sqlResult', $sqlResult);
 $smarty->assign('action', $action);
 $smarty->assign('name',$title); // of created doc
-$smarty->assign('productName', $_SESSION['productName']);
+$smarty->assign('productName', $_SESSION['testprojectName']);
 $smarty->assign('modify_req_rights', has_rights($db,"mgt_modify_req")); 
 $smarty->assign('scope',$of->CreateHTML());
 

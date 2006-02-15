@@ -1,10 +1,9 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: searchData.php,v 1.12 2006/01/10 06:54:37 franciscom Exp $
+ * $Id: searchData.php,v 1.13 2006/02/15 08:51:04 franciscom Exp $
  * Purpose:  This page presents the search results. 
  *
  * 20050821 - fm - changes to use template customization (trying to reduce code redundancy)
- * 20050810 - fm - removed deprecated $_SESSION['product'] 
 **/
 require('../../config.inc.php');
 require("../functions/common.php");
@@ -22,7 +21,7 @@ $key = isset($_POST['key']) ? $db->prepare_string($_POST['key']) : null;
 $TCID = isset($_POST['TCID']) ? $db->prepare_string($_POST['TCID']) : 0;
 
 $arrTc = null;
-$product = isset($_SESSION['productID']) ? $_SESSION['productID'] : 0;
+$product = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 if ($product)
 {
 	$sqlTC = " SELECT mgttestcase.id,title,summary,steps,exresult,keywords,version," .

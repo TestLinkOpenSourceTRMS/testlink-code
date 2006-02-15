@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: archive.inc.php,v $
  *
- * @version $Revision: 1.30 $
- * @modified $Date: 2006/01/10 06:54:37 $ by $Author: franciscom $
+ * @version $Revision: 1.31 $
+ * @modified $Date: 2006/02/15 08:51:04 $ by $Author: franciscom $
  *
  * @author Martin Havlat
  * Purpose:  functions for test specification management have three parts:
@@ -261,7 +261,7 @@ function showTestcase (&$db,$id,$allow_edit = 1)
 	$smarty->assign('testcase',$tc_array);
 	$smarty->assign('arrReqs',$arrReqs);
 	$smarty->assign('view_req_rights', has_rights($db,"mgt_view_req")); 
-	$smarty->assign('opt_requirements', $_SESSION['productOptReqs']); 	
+	$smarty->assign('opt_requirements', $_SESSION['testprojectOptReqs']); 	
 	// 20050821 - fm
 	$smarty->display($g_tpl['tcView']);
 }

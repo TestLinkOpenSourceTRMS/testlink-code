@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
  * @filesource $RCSfile: database.class.php,v $
- * @version $Revision: 1.5 $
- * @modified $Date: 2006/02/04 20:13:14 $ by $Author: schlundus $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2006/02/18 11:28:42 $ by $Author: franciscom $
  * @author Francisco Mancardi
  * 
 */
@@ -423,6 +423,31 @@ class database
 		$version=$this->db->ServerInfo();
 		return $version;
 	}
+
+
+  // 20060218 - franciscom
+  // the old selectData with new name.
+  //
+  function get_recordset($sql)
+  {
+	  $output = null;
+	  $result = $this->db->exec_query($sql);
+	
+	  if ($result)
+	  {
+		  while($row = $this->db->fetch_array($result))
+		  {
+			  $output[] = $row;
+		  }	
+	  }
+	  else
+	  {
+		  tLog('FAILED SQL: ' . $sql . "\n" . $db->error_msg(), 'ERROR');
+	  }
+	  return($output);
+  }
+
+
 
 }
 ?>

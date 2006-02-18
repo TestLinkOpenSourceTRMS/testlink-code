@@ -3,10 +3,14 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
  * @filesource $RCSfile: database.class.php,v $
- * @version $Revision: 1.7 $
- * @modified $Date: 2006/02/18 11:32:24 $ by $Author: franciscom $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2006/02/18 11:39:16 $ by $Author: franciscom $
  * @author Francisco Mancardi
  * 
+ *
+ * 20060218 - franciscom - added get_recordset()
+ *                         found bugs regarding calling exec_query in
+ *                         class methods
 */
  
  # -------------------------------------------------------------------------------
@@ -157,7 +161,9 @@ class database
 
 		if ( isset($p_table) && $this->db->is_pgsql() ) {
 			$query = "SELECT currval('".$p_table."_id_seq')";
-			$result = $this->db->exec_query( $query );
+			// 20060218 - franciscom - bug
+			// $result = $this->db->exec_query( $query );
+			$result = $this->exec_query( $query );
 			return $this->db->result($result);
 		}
 		return $this->db->Insert_ID( );
@@ -192,7 +198,10 @@ class database
 		$c_key   = $this->db->prepare_string( $p_key );
 
 		$query = "DESCRIBE $c_table";
-		$result = $this->db->exec_query( $query );
+		// 20060218 - franciscom - bug
+		// $result = $this->db->exec_query( $query );
+		$result = $this->exec_query( $query );
+		
 		$count = $this->db->num_rows( $result );
 		for ( $i=0 ; $i < $count ; $i++ ) {
 			$row = $this->db->fetch_array( $result );

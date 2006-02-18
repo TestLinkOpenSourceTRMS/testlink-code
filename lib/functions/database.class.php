@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
  * @filesource $RCSfile: database.class.php,v $
- * @version $Revision: 1.6 $
- * @modified $Date: 2006/02/18 11:28:42 $ by $Author: franciscom $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2006/02/18 11:32:24 $ by $Author: franciscom $
  * @author Francisco Mancardi
  * 
 */
@@ -431,18 +431,18 @@ class database
   function get_recordset($sql)
   {
 	  $output = null;
-	  $result = $this->db->exec_query($sql);
+	  $result = $this->exec_query($sql);
 	
 	  if ($result)
 	  {
-		  while($row = $this->db->fetch_array($result))
+		  while($row = $this->fetch_array($result))
 		  {
 			  $output[] = $row;
 		  }	
 	  }
 	  else
 	  {
-		  tLog('FAILED SQL: ' . $sql . "\n" . $db->error_msg(), 'ERROR');
+		  tLog('FAILED SQL: ' . $sql . "\n" . $this->error_msg(), 'ERROR');
 	  }
 	  return($output);
   }

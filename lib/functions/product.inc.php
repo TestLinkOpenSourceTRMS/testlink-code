@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: product.inc.php,v $
- * @version $Revision: 1.11 $
- * @modified $Date: 2006/02/15 08:49:19 $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2006/02/19 13:03:33 $
  * @author Martin Havlat
  *
  * Functions for Product management (create,update,delete)
@@ -148,7 +148,10 @@ function deleteProduct(&$db,$id, &$error)
 		array ("DELETE req_spec,requirements,req_coverage FROM req_spec,requirements,req_coverage " .
 			"WHERE req_spec.product_id=" . $id . " AND req_spec.id=requirements.srs_id" .
 			" AND req_coverage.req_id=requirements.id", 
-			'info_reqs_delete_fails')
+			'info_reqs_delete_fails'),
+
+		array ("DELETE FROM user_product_roles WHERE product_id=" . $id, 
+			'info_productrights_delete_fails'),
 	); 
 
 	// delete all nested data over array $arrExecSql

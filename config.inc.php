@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.46 $
- * @modified $Date: 2006/02/07 11:10:52 $ by $Author: franciscom $
+ * @version $Revision: 1.47 $
+ * @modified $Date: 2006/02/19 13:03:29 $ by $Author: schlundus $
  *
  *
  * Constants and configuration parameters used throughout TestLink 
@@ -326,6 +326,7 @@ $g_tc_sd_color = array ( "failed"        => 'red',
                        ); 
 
 define("TL_ROLES_GUEST",5);
+define("TL_ROLES_NONE",3);
 define("TL_DEFAULT_ROLEID",TL_ROLES_GUEST);
 
 $g_tc_risks = array('L1', 'L2', 'L3','M1', 'M2', 'M3','H1', 'H2', 'H3');
@@ -411,7 +412,7 @@ $g_tpl['tcView'] = "tcView.tpl";
 $g_tpl['tcSearchView'] = $g_tpl['tcView'];
 
 // 20051230 - fm
-$g_tpl['adminUsers'] = "adminUsers.tpl";
+$g_tpl['usersview'] = "usersview.tpl";
 
 // ----- End of Config ------------------------------------------------
 
@@ -459,6 +460,6 @@ if ( isset ( $_SERVER['PHP_SELF'] ) ) {
 }
 
 //includes needed for userright checking
-require_once(TL_ABS_PATH . 'lib/functions/getRights.php');
+require_once(TL_ABS_PATH . 'lib/functions/roles.inc.php');
 require_once(TL_ABS_PATH . 'cfg/userrightmatrix.php');
 ?>

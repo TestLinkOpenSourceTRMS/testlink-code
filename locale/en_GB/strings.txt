@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.44 $
- * @modified $Date: 2006/01/14 17:47:55 $ $Author: schlundus $
+ * @version $Revision: 1.45 $
+ * @modified $Date: 2006/02/19 13:09:54 $ $Author: schlundus $
  *
  * @author Francisco Mancardi
 **/
@@ -36,23 +36,6 @@ $TLS_name = "Name";
 $TLS_notes = "Related Notes";
 $TLS_popup_product_delete = "Warning! This action deletes irrevocable all product related data (including test results, plans, etc.). You can also use to deactivate instead of delete.\\nRecommendation: Execute a dump of database at first.\\nAre you sure to delete the product?";
 $TLS_title_product_mgmt = "Product Management";
-
-
-
-// gui/templates/adminUserNew.tpl
-$TLS_btn_add = "Add";
-$TLS_caption_new_user = "User Data";
-$TLS_menu_mod_user = "Modify Users";
-$TLS_menu_new_user = "New User";
-$TLS_th_active = "Active";
-$TLS_th_email = "Email";
-$TLS_th_first_name = "First Name";
-$TLS_th_last_name = "Last  Name";
-$TLS_th_locale = "Locale";
-$TLS_th_login = "Login";
-$TLS_th_password = "Password";
-$TLS_th_rights = "Permissions";
-$TLS_title_user_mgmt = "User Administration";
 
 
 
@@ -185,6 +168,7 @@ $TLS_title_test_case = "Test Case";
 $TLS_filter_tp_by_product = "Filter Test Plans by Product";
 $TLS_href_add_test_case = "Add Test Cases";
 $TLS_href_assign_risk_own = "Assign Risk and Ownership";
+$TLS_href_assign_user_roles = "LOCALIZE: TLS_href_assign_user_roles";
 $TLS_href_browse_tc = "Browse Test Cases";
 $TLS_href_build_new = "Build Management";
 $TLS_href_create_product = "Create new Products";
@@ -205,10 +189,13 @@ $TLS_href_remove_test_case = "Remove Test Cases";
 $TLS_href_rep_and_metrics = "Test reports and Metrics";
 $TLS_href_req_assign = "Assign Requirements";
 $TLS_href_req_spec = "Requirement Specification";
+$TLS_href_roles_management = "LOCALIZE: TLS_href_roles_management";
 $TLS_href_search_tc = "Search Test Cases";
 $TLS_href_upd_mod_tc = "Update modified Test Cases";
+$TLS_href_user_management = "LOCALIZE: TLS_href_user_management";
 $TLS_msg_no_rights_for_tp = "- unavailable (You don't have permissions for any Test Plan)";
 $TLS_sec_note_prefix = "TestLink Security Issue";
+$TLS_testplan_role = "LOCALIZE: TLS_testplan_role";
 $TLS_th_my_perc_completed = "My completed [%]";
 $TLS_th_name = "Name";
 $TLS_th_perc_completed = "Completed [%]";
@@ -220,6 +207,7 @@ $TLS_title_test_plan = "Test Plan";
 $TLS_title_test_plan_mgmt = "Test Plan Management";
 $TLS_title_test_spec = "Test Specification";
 $TLS_title_testlink_site_map = "TestLink - Desktop";
+$TLS_title_user_mgmt = "User Administration";
 $TLS_title_your_tp_metrics = "Your Test Plan Metrics";
 
 
@@ -362,6 +350,7 @@ $TLS_title_navigator = "Navigator";
 $TLS_home = "Home";
 $TLS_link_logout = "Logout";
 $TLS_product = "Product";
+$TLS_product_role = "LOCALIZE: TLS_product_role";
 $TLS_th_tcid = "TestCase ID";
 $TLS_title_documentation = "Documentation (external)";
 $TLS_title_edit_personal_data = "Personal";
@@ -391,6 +380,7 @@ $TLS_caption_edit_tp = "Edit existing Test Plans";
 $TLS_menu_create = "Create";
 $TLS_menu_edit_del = "Edit / Delete";
 $TLS_no_test_plans = "There are no Test Plans defined!";
+$TLS_th_active = "Active";
 $TLS_th_delete_tp = "Delete";
 $TLS_th_tp_notes = "Notes";
 
@@ -717,6 +707,11 @@ $TLS_version = "Version";
 // gui/templates/userInfo.tpl
 $TLS_btn_change_passwd = "Change password";
 $TLS_btn_upd_user_data = "Update";
+$TLS_th_email = "Email";
+$TLS_th_first_name = "First Name";
+$TLS_th_last_name = "Last  Name";
+$TLS_th_locale = "Locale";
+$TLS_th_login = "Login";
 $TLS_th_new_passwd = "New Password";
 $TLS_th_new_passwd_again = "Confirm New Password";
 $TLS_th_old_passwd = "Old Password";
@@ -850,13 +845,63 @@ $TLS_title_keyword_import_to = "Import keywords to";
 
 
 
-// gui/templates/adminUserEdit.tpl
+// gui/templates/rolesview.tpl
+$TLS_btn_confirm_delete = "LOCALIZE: TLS_btn_confirm_delete";
+$TLS_caption_possible_affected_users = "LOCALIZE: TLS_caption_possible_affected_users";
+$TLS_menu_assign_product_roles = "LOCALIZE: TLS_menu_assign_product_roles";
+$TLS_menu_assign_testplan_roles = "LOCALIZE: TLS_menu_assign_testplan_roles";
+$TLS_menu_define_roles = "LOCALIZE: TLS_menu_define_roles";
+$TLS_menu_mod_user = "Modify Users";
+$TLS_menu_new_user = "New User";
+$TLS_menu_view_roles = "LOCALIZE: TLS_menu_view_roles";
+$TLS_no_roles = "LOCALIZE: TLS_no_roles";
+$TLS_th_roles = "LOCALIZE: TLS_th_roles";
+$TLS_title_roles = "LOCALIZE: TLS_title_roles";
+$TLS_warning_users_will_be_reset = "LOCALIZE: TLS_warning_users_will_be_reset";
 
 
 
-// gui/templates/adminUsers.tpl
-$TLS_alt_delete_user = "LOCALIZE: TLS_alt_delete_user";
+// gui/templates/rolesedit.tpl
+$TLS_btn_create_role = "LOCALIZE: TLS_btn_create_role";
+$TLS_btn_edit_role = "LOCALIZE: TLS_btn_edit_role";
+$TLS_caption_define_role = "LOCALIZE: TLS_caption_define_role";
+$TLS_th_kw_rights = "LOCALIZE: TLS_th_kw_rights";
+$TLS_th_mgttc_rights = "LOCALIZE: TLS_th_mgttc_rights";
+$TLS_th_product_rights = "LOCALIZE: TLS_th_product_rights";
+$TLS_th_req_rights = "LOCALIZE: TLS_th_req_rights";
+$TLS_th_rights = "Permissions";
+$TLS_th_rolename = "LOCALIZE: TLS_th_rolename";
+$TLS_th_tp_rights = "LOCALIZE: TLS_th_tp_rights";
+$TLS_th_user_rights = "LOCALIZE: TLS_th_user_rights";
+$TLS_warning_modify_role = "LOCALIZE: TLS_warning_modify_role";
+
+
+
+// gui/templates/usersedit.tpl
+$TLS_btn_add = "Add";
+$TLS_caption_user_details = "LOCALIZE: TLS_caption_user_details";
+$TLS_th_password = "Password";
 $TLS_th_role = "Role";
+
+
+
+// gui/templates/usersview.tpl
+$TLS_alt_delete_user = "LOCALIZE: TLS_alt_delete_user";
+
+
+
+// gui/templates/DEPR-usersnew.tpl
+$TLS_caption_new_user = "User Data";
+
+
+
+// gui/templates/usersassign.tpl
+$TLS_Role = "LOCALIZE: TLS_Role";
+$TLS_User = "LOCALIZE: TLS_User";
+$TLS_btn_change = "LOCALIZE: TLS_btn_change";
+$TLS_caption_assign_product_user_roles = "LOCALIZE: TLS_caption_assign_product_user_roles";
+$TLS_caption_assign_testplan_user_roles = "LOCALIZE: TLS_caption_assign_testplan_user_roles";
+$TLS_title_assign_product_roles = "LOCALIZE: TLS_title_assign_product_roles";
 
 
 
@@ -1146,6 +1191,10 @@ $TLS_trep_status_for_ts = "Status for test suite";
 
 
 // lib/functions/users.inc.php
+$TLS_duplicate_login = "A user with that login already exists!";
+$TLS_invalid_user_name = "User Name not valid. Please select another one.";
+$TLS_login_must_not_be_empty = "Login must not be empty!";
+$TLS_valid_user_name_format = "User Names may only contain letters, numbers, spaces, hyphens and underscores.";
 $TLS_wrong_old_password = "Wrong old password!";
 
 
@@ -1181,6 +1230,26 @@ $TLS_stmp_host_unconfigured = "LOCALIZE: TLS_stmp_host_unconfigured";
 
 
 
+// lib/functions/roles.inc.php
+$TLS_desc_mgt_modify_key = "LOCALIZE: TLS_desc_mgt_modify_key";
+$TLS_desc_mgt_modify_product = "LOCALIZE: TLS_desc_mgt_modify_product";
+$TLS_desc_mgt_modify_req = "LOCALIZE: TLS_desc_mgt_modify_req";
+$TLS_desc_mgt_modify_tc = "LOCALIZE: TLS_desc_mgt_modify_tc";
+$TLS_desc_mgt_modify_users = "LOCALIZE: TLS_desc_mgt_modify_users";
+$TLS_desc_mgt_view_key = "LOCALIZE: TLS_desc_mgt_view_key";
+$TLS_desc_mgt_view_req = "LOCALIZE: TLS_desc_mgt_view_req";
+$TLS_desc_mgt_view_tc = "LOCALIZE: TLS_desc_mgt_view_tc";
+$TLS_desc_testplan_assign_rights = "LOCALIZE: TLS_desc_testplan_assign_rights";
+$TLS_desc_testplan_create_build = "LOCALIZE: TLS_desc_testplan_create_build";
+$TLS_desc_testplan_execute = "LOCALIZE: TLS_desc_testplan_execute";
+$TLS_desc_testplan_metrics = "LOCALIZE: TLS_desc_testplan_metrics";
+$TLS_desc_testplan_planning = "LOCALIZE: TLS_desc_testplan_planning";
+$TLS_error_duplicate_rolename = "LOCALIZE: TLS_error_duplicate_rolename";
+$TLS_error_role_no_rights = "LOCALIZE: TLS_error_role_no_rights";
+$TLS_error_role_no_rolename = "LOCALIZE: TLS_error_role_no_rolename";
+
+
+
 // lib/admin/adminProductEdit.php
 $TLS_info_no_more_prods = "No more products.";
 $TLS_info_product_activated = "The product was activated.";
@@ -1192,12 +1261,23 @@ $TLS_refer_to_log = " Please refer to TestLink log for more information.";
 
 
 
-// lib/admin/adminUserNew.php
-$TLS_duplicate_login = "A user with that login already exists!";
-$TLS_invalid_user_name = "User Name not valid. Please select another one.";
-$TLS_login_must_not_be_empty = "Login must not be empty!";
+// lib/usermanagement/rolesview.php
+$TLS_error_role_deletion = "LOCALIZE: TLS_error_role_deletion";
+
+
+
+// lib/usermanagement/rolesedit.php
+$TLS_error_role_creation = "LOCALIZE: TLS_error_role_creation";
+$TLS_error_role_update = "LOCALIZE: TLS_error_role_update";
+
+
+
+// lib/usermanagement/usersedit.php
 $TLS_user_not_added = "The user wasn't added!";
-$TLS_valid_user_name_format = "User Names may only contain letters, numbers, spaces, hyphens and underscores.";
+
+
+
+// lib/usermanagement/DEPR-usersnew.php
 
 
 

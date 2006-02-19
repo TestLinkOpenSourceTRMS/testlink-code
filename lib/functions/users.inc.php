@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: users.inc.php,v $
  *
- * @version $Revision: 1.23 $
- * @modified $Date: 2006/02/15 08:49:19 $ $Author: franciscom $
+ * @version $Revision: 1.24 $
+ * @modified $Date: 2006/02/19 13:03:33 $ $Author: schlundus $
  *
  * Functions for usermanagement
  *
@@ -37,11 +37,11 @@ function existLogin(&$db,$login, &$r_user_data)
 {
 	// twice role to mantain array indexes
 	// 20051228 - fm - added active field
-	$sql = " SELECT password, login, user.id, rightsid, " .
+	$sql = " SELECT password, login, user.id, role_id AS rightsid, " .
 	       "        email, first, last, " .  
-	       "        role, role, rights, locale, active" .
-	       " FROM user,rights " .
-	       " WHERE user.rightsid = rights.id " .
+	       "        roles.description AS role, locale, active" .
+	       " FROM user,roles " .
+	       " WHERE user.role_id = roles.id " .
 	       " AND login='" . $db->prepare_string($login) . "'";
 	
 	$r_user_data = $db->fetchFirstRow($sql);
@@ -67,7 +67,7 @@ function userInsert(&$db,$login, $password, $first, $last, $email,
                     $rights=TL_DEFAULT_ROLEID, $locale = TL_DEFAULT_LOCALE, $active=1)
 {
 	$password = md5($password);
-	$sqlInsert = "INSERT INTO user (login,password,first,last,email,rightsid,locale,active) 
+	$sqlInsert = "INSERT INTO user (login,password,first,last,email,role_id AS rightsid,locale,active) 
 	              VALUES ('" . 
 				        $db->prepare_string($login) . "','" . $db->prepare_string($password) . "','" . 
 				        $db->prepare_string($first) . "','" . $db->prepare_string($last) . "','" . 
@@ -93,16 +93,7 @@ function userDelete(&$db,$id)
 	return $result ? 'ok' : $db->error_msg();
 }
 
-/**
- * gets an associated array of IDs with rights (used for listbox)
- *
- * @param type $db [ref] documentation
- * @return type documentation
- **/
-function getListOfRights(&$db)
-{
-	return getTwoColumnsMap($db,"SELECT id,role FROM rights");
-}
+
 
 /**
  * Function-Documentation
@@ -208,7 +199,7 @@ function userUpdate(&$db,$userID, $first, $last, $email ,
 	}	
 	if (!is_null($rightsID))
 	{
-		$sql .= ", rightsid = ". $rightsID ;
+		$sql .= ", role_id = ". $rightsID ;
 	}	
 	if (!is_null($locale))
 	{
@@ -246,7 +237,7 @@ function userUpdate(&$db,$userID, $first, $last, $email ,
  * 20050701 - create function: update session data if admin modify yourself
  * 20060102 - scs - ADOdb changes
  **/
-function setUserSession(&$db,$user, $id, $roleID, $email, $locale = null,$active = null)
+function setUserSession(&$db,$user, $id, $roleID, $email, $locale = null,$active = null,$userProductRoles = null,$userTestPlanRoles = null)
 {
 	tLog('setUserSession: $user='.$user.' $id='.$id.' $roleID='.$roleID.' $email='.$email.' $locale='.$locale);
 	
@@ -259,12 +250,12 @@ function setUserSession(&$db,$user, $id, $roleID, $email, $locale = null,$active
 	if (!is_null($roleID))
 	{
 		$_SESSION['roleId'] = intval($roleID); 
-		$sql = "SELECT role FROM rights WHERE id = " . $roleID;
+		$sql = "SELECT description FROM roles WHERE id = " . $roleID;
 		$result = $db->exec_query($sql);
 		if ($result)
 		{
 			$row = $db->fetch_array($result);
-			$_SESSION['role'] = $row['role']; 
+			$_SESSION['role'] = $row['description']; 
 			tLog('setUserSession: $user='.$_SESSION['role']);
 		}
 	}
@@ -272,9 +263,12 @@ function setUserSession(&$db,$user, $id, $roleID, $email, $locale = null,$active
 	{
 		$_SESSION['locale'] = $locale;
 		set_dt_formats();
-	}  
-
-    // 20051208 - JBA - added to set the lastProduct the user has selected before logging off.
+	} 
+	
+	$_SESSION['productRoles'] = $userProductRoles; 
+	$_SESSION['testPlanRoles'] = $userTestPlanRoles; 
+	
+	// 20051208 - JBA - added to set the lastProduct the user has selected before logging off.
     $cookedProduct = 'lastProductForUser'. $id;
     if (isset($_COOKIE[$cookedProduct])) {
     	$_SESSION['testprojectID'] = $_COOKIE[$cookedProduct];
@@ -332,11 +326,11 @@ function getUserById(&$db,$id)
  * 20051112 - scs - where clause was added at the wrong place
  * 
  **/
-function getAllUsers(&$db,$whereClause = null)
+function getAllUsers(&$db,$whereClause = null,$column = null)
 {
 	$show_realname = config_get('show_realname');
 	
-	$sql = " SELECT id,login,password,first,last,email,rightsid,locale,".
+	$sql = " SELECT id,login,password,first,last,email,role_id AS rightsid,locale,".
 		   " login AS fullname, active FROM user";
 	if (!is_null($whereClause))
 	{
@@ -354,7 +348,10 @@ function getAllUsers(&$db,$whereClause = null)
 			{
 				$user['fullname'] = format_username($user);
 			}	
-			$users[] = $user;
+			if (!is_null($column))
+				$users[$user[$column]] = $user;
+			else 
+				$users[] = $user;
 		}	
 	}
 	
@@ -446,7 +443,24 @@ function format_username($hash)
 	return $username;
 }
 
-
+function checkLogin(&$db,$login)
+{
+	$sqlResult = lang_get("login_must_not_be_empty");
+	if (strlen($login))
+	{
+		if (user_is_name_valid($login))
+		{
+			$userInfo = null;
+			if (existLogin($db,$login,$userInfo))
+				$sqlResult = lang_get('duplicate_login');
+			else
+				$sqlResult = 'ok';
+		}
+		else
+			$sqlResult = $message = lang_get('invalid_user_name') . "\n" . lang_get('valid_user_name_format');
+	}		
+	return $sqlResult;
+}
 // 20051228 - fm
 //NOT USED AT THE MOMENT
 /*

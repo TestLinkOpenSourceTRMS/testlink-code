@@ -1,5 +1,5 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
-# $Id: testlink_create_default_data.sql,v 1.6 2006/01/02 13:48:42 franciscom Exp $
+# $Id: testlink_create_default_data.sql,v 1.7 2006/02/19 13:03:32 schlundus Exp $
 # SQL script - create default data (rights & admin account)
 # --------------------------------------------------------
 
@@ -17,6 +17,7 @@ INSERT INTO `rights` VALUES (6, 'senior tester', 'tp_execute,tp_metrics,tp_creat
 INSERT INTO `rights` VALUES (7, 'tester', 'tp_execute,tp_metrics,mgt_view_tc,mgt_view_key,mgt_view_req');
 INSERT INTO `rights` VALUES (5, 'guest', 'tp_metrics,mgt_view_tc,mgt_view_key,mgt_view_req');
 INSERT INTO `rights` VALUES (4, 'test designer', 'tp_metrics,mgt_view_tc,mgt_modify_tc,mgt_view_key,mgt_modify_req,mgt_view_req');
+INSERT INTO `rights` VALUES (3, '<no rights>', '');
 
 
 INSERT INTO db_version VALUES('1.7.0 Alpha', CURRENT_TIMESTAMP());

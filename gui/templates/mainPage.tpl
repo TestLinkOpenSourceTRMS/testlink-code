@@ -1,6 +1,6 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: mainPage.tpl,v 1.9 2006/01/14 17:47:54 schlundus Exp $     
+ $Id: mainPage.tpl,v 1.10 2006/02/19 13:03:32 schlundus Exp $     
  Purpose: smarty template - main page / site map                 
                                                                  
                                                                  
@@ -41,7 +41,6 @@
                {/if}  	                     	 
                onclick="this.form.submit();" />
       
-
 			  {lang_get s='filter_tp_by_product'}
 			  <br><br>	
 		  {/if}  	                     	 
@@ -54,6 +53,9 @@
 					{$arrPlans[tPlan].selected} >{$arrPlans[tPlan].name|escape}</option>
 				{/section}
 				</select>
+				{if $testPlanRole neq null}
+					- {lang_get s='testplan_role'}{$testPlanRole|escape}
+				{/if}
 		{else}
 			{lang_get s='msg_no_rights_for_tp'}
 		{/if}
@@ -63,24 +65,24 @@
 	{if $countPlans > 0}
 	    <h2>{lang_get s='title_test_execution'}</h2>
 		<p>
-		{if $tp_execute == "yes" }
+		{if $testplan_execute == "yes" }
 			<img class="arrow" src="icons/arrow_org.gif" />
 	        <a href="{$launcher}?feature=executeTest">{lang_get s='href_execute_test'}</a>
 	        <br />
 			<img class="arrow" src="icons/arrow_org.gif" />
 	       	<a href="{$launcher}?feature=printTestSet">{lang_get s='href_print_tc_suite'}</a>
-		{/if} {* tp_execute *}
+		{/if} {* testplan_execute *}
 
 
     {* change date"2005-04-16" author="fm" feature=metrics -> feature=showMetrics*} 
-		{if $tp_metrics == "yes"}
+		{if $testplan_metrics == "yes"}
 	        <br />
 			<img class="arrow" src="icons/arrow_org.gif" />
 	        <a href="{$launcher}?feature=showMetrics">{lang_get s='href_rep_and_metrics'}</a>
-		{/if} {* tp_metrics *}
+		{/if} {* testplan_metrics *}
 	    </p>
 	
-		{if $tp_planning == "yes"}
+		{if $testplan_planning == "yes"}
 	    <h2>{lang_get s='title_test_case_suite'}</h2>
 		<p>
 			<img class="arrow" src="icons/arrow_org.gif" />
@@ -95,10 +97,10 @@
 			<img class="arrow" src="icons/arrow_org.gif" />
 	   		<a href="lib/plan/planUpdateTC.php">{lang_get s='href_upd_mod_tc'}</a>
 	    </p>
-		{/if} {* tp_planning *}
+		{/if} {* testplan_planning *}
 	{/if}
 
-	{if $tp_planning == "yes"}
+	{if $testplan_planning == "yes"}
     <h2>{lang_get s='title_test_plan_mgmt'}</h2>
 	<p>
 		<img class="arrow" src="icons/arrow_org.gif" />
@@ -108,20 +110,26 @@
 	   		<a href="lib/plan/planEdit.php">{lang_get s='href_plan_edit'}</a>
 		{if $countPlans > 0}
 	        <br />
+			<!--
 			<img class="arrow" src="icons/arrow_org.gif" />
 	   		<a href="{$launcher}?feature=planAssignTesters">{lang_get s='href_plan_assign_users'}</a>
 			<br /><br />
+			-->
+			<img class="arrow" src="icons/arrow_org.gif" />
+    	    <a href="lib/usermanagement/usersassign.php?feature=testplan&featureID={$sessionTestPlanID}">{lang_get s='href_assign_user_roles'}</a>
+			<br /><br />
+	
 			<img class="arrow" src="icons/arrow_org.gif" />
 	       	<a href="lib/plan/planMilestones.php">{lang_get s='href_plan_mstones'}</a>
    		{/if}
     </p>
-	{/if} {* tp_planning *}
-	{if $tp_create_build == "yes" and $countPlans > 0}
+	{/if} {* testplan_planning *}
+	{if $testplan_create_build == "yes" and $countPlans > 0}
 	<p>
 		<img class="arrow" src="icons/arrow_org.gif" />
        	<a href="lib/plan/buildNew.php">{lang_get s='href_build_new'}</a>
     </p>
-	{/if} {* tp_create_build *}
+	{/if} {* testplan_create_build *}
 </div>
 
 
@@ -196,8 +204,24 @@
         <br />
 		<img class="arrow" src="icons/arrow_org.gif" />
         <a href="lib/admin/adminProductEdit.php">{lang_get s='href_edit_product'}</a>
+        <br />
+		<img class="arrow" src="icons/arrow_org.gif" />
+        <a href="lib/usermanagement/usersassign.php?feature=product&featureID={$sessionProductID}">{lang_get s='href_assign_user_roles'}</a>
         </p>
 	{/if} {* modify_product_rights *}
+	
+	{****** user management ***********************}
+	
+	{if $usermanagement_rights == "yes"}
+        <h2>{lang_get s='title_user_mgmt'}</h2>
+		<p>
+		<img class="arrow" src="icons/arrow_org.gif" />
+        <a href="lib/usermanagement/usersedit.php">{lang_get s='href_user_management'}</a>
+        <br />
+		<img class="arrow" src="icons/arrow_org.gif" />
+        <a href="lib/usermanagement/rolesview.php">{lang_get s='href_roles_management'}</a>
+        </p>
+	{/if}
 </div>
 
 

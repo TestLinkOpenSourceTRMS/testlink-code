@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.30 $ $Author: franciscom $
- * @modified $Date: 2006/02/15 08:49:19 $
+ * @version $Revision: 1.31 $ $Author: schlundus $
+ * @modified $Date: 2006/02/19 13:03:32 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -44,7 +44,7 @@
 // 20051227 - fm - ADODB
 require_once("database.class.php");
 
-require_once("getRights.php");
+require_once("roles.inc.php");
 require_once("product.core.inc.php");
 
 // 20050917 - fm - BUG ID 0000120: Impossible to edit product
@@ -105,6 +105,8 @@ function setSessionProduct($productInfo)
 		/** @todo check if the session product is updated when its modified per adminproductedit.php  */
 		$_SESSION['testprojectID'] = $productInfo['id']; 
 		$_SESSION['testprojectName'] = $productInfo['name'];
+		$_SESSION['productID'] = $productInfo['id']; 
+		$_SESSION['productName'] = $productInfo['name'];
 		$_SESSION['testprojectColor'] = $productInfo['color'];
 		$_SESSION['testprojectOptReqs'] = isset($productInfo['option_reqs']) ? $productInfo['option_reqs'] : null;
 		$_SESSION['testprojectOptPriority'] = isset($productInfo['option_priority']) ? $productInfo['option_priority'] : null;

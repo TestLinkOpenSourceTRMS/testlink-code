@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/ 
 // This script is distributed under the GNU General Public License 2 or later. 
 //
-// $Id: testlink_library.js,v 1.4 2005/10/09 18:13:45 schlundus Exp $ 
+// $Id: testlink_library.js,v 1.5 2006/02/19 13:03:32 schlundus Exp $ 
 //
 // Javascript functions commonly used through the GUI
 // This library is automatically loaded with inc_header.tpl
@@ -125,4 +125,23 @@ function deleteBuild_onClick(buildID)
 		}
 	}
 	
+}
+
+function modifyRoles_warning()
+{
+	if (confirm(warning_modify_role))
+	{
+		return true;
+	}
+	return false;
+}
+
+function changeTestPlan(feature)
+{
+	var tmp = document.getElementById('testPlanSel');
+	if (!tmp)
+		return;
+	var tpID = tmp.value;	
+	if(tpID)
+		location = fRoot+"lib/usermanagement/usersassign.php?feature="+feature+"&featureID="+tpID;
 }

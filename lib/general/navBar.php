@@ -4,13 +4,11 @@
  *
  * Filename $RCSfile: navBar.php,v $
  *
- * @version $Revision: 1.11 $
- * @modified $Date: 2006/02/15 08:49:19 $
- *
- * @author Martin Havlat
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2006/02/19 13:03:33 $
  *
  * This file manages the navigation bar. 
- * @author Francisco Mancardi - 20050813 added Product Filter con TestPlan 
+ * 20050813 - fm - added Product Filter con TestPlan 
  * 20060205 - JBA - Remember last product (BTS 221); added by MHT
  *
 **/
@@ -19,9 +17,13 @@ require_once("common.php");
 require_once("plan.core.inc.php");
 testlinkInitPage($db,true);
 
-// Load data for combo box with all the available testplans
 $arrProducts = getOptionProducts($db);
 $currentProduct = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : null;
+$roles = getRoles($db);
+$productRole = null;
+if ($currentProduct && isset($_SESSION['productRoles'][$currentProduct]))
+	$productRole = '['.$roles[$_SESSION['productRoles'][$currentProduct]['role_id']]['role'].']';
+$roleName = $roles[$_SESSION['roleId']]['role'];
 
 // 20050810 - fm - interface changes
 $countPlans = getCountTestPlans4UserProd($db,$_SESSION['userID'],$currentProduct);
@@ -32,9 +34,6 @@ $smarty = new TLSmarty();
 // the _GET has this key.
 // Use this clue to launch a refresh of other frames present on the screen
 // using the onload HTML body attribute
-//
-// all this is needed to manage the Product Filter on testplans
-//
 $updateMainPage=0;
 if (isset($_GET['product']))
 {
@@ -43,10 +42,13 @@ if (isset($_GET['product']))
 	setcookie('lastProductForUser'. $_SESSION['userID'], $_GET['product'], TL_COOKIE_KEEPTIME, '/');
 }
 
-$smarty->assign('user', $_SESSION['user'] . ' [' . $_SESSION['role'] . ']');
+$smarty->assign('user', $_SESSION['user'] . ' [' . $roleName . ']');
+$smarty->assign('productRole',$productRole);
+$smarty->assign('testPlanRole',$testPlanRole);
+
 $smarty->assign('rightViewSpec', has_rights($db,"mgt_view_tc"));
-$smarty->assign('rightExecute', has_rights($db,"tp_execute"));
-$smarty->assign('rightMetrics', has_rights($db,"tp_metrics"));
+$smarty->assign('rightExecute', has_rights($db,"testplan_execute"));
+$smarty->assign('rightMetrics', has_rights($db,"testplan_metrics"));
 $smarty->assign('rightUserAdmin', has_rights($db,"mgt_users"));
 $smarty->assign('countPlans', $countPlans);
 $smarty->assign('arrayProducts', $arrProducts);

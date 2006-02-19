@@ -1,5 +1,5 @@
 {* Testlink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: navBar.tpl,v 1.4 2005/09/15 09:25:50 havlat Exp $ *}
+{* $Id: navBar.tpl,v 1.5 2006/02/19 13:03:32 schlundus Exp $ *}
 {* Purpose: smarty template - title bar + menu *}
 {* Andreas Morsing: changed the product selection *}
 {* 20050826 - scs - added input for entering tcid *}
@@ -14,8 +14,11 @@
 	</div>
 	<img alt="TestLink icon" src="icons/twist.gif" width="15px" 
 			height="15px" style="margin-left: 5px; vertical-align: middle;" />
-	<span class="bold">TestLink {$tlVersion|escape} : {$user|escape}</span>
-
+	<span class="bold">TestLink {$tlVersion|escape} : {$user|escape} 
+	{if $productRole  neq null}
+	- {lang_get s='product_role'}{$productRole|escape}
+	{/if}
+	</span>
 </div>
 <div class="menu">
 
@@ -53,7 +56,7 @@
       		tabindex="3">{lang_get s='title_results'}</a> | 
       	{/if}	
       	{if $rightUserAdmin == "yes"}
-      	<a href="lib/admin/adminUserNew.php" target="mainframe" accesskey="u" 
+      	<a href="lib/usermanagement/usersedit.php" target="mainframe" accesskey="u" 
       		tabindex="4">{lang_get s='title_user_mgmt'}</a> | 
       	{/if}	
       	<a href='lib/user/userInfo.php' target="mainframe" accesskey="i" 

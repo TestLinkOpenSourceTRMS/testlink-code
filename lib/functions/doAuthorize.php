@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  * 
  * @filesource $RCSfile: doAuthorize.php,v $
- * @version $Revision: 1.8 $
- * @modified $Date: 2006/01/03 21:19:02 $ by $Author: schlundus $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2006/02/19 13:03:32 $ by $Author: schlundus $
  * @author Chad Rosen, Martin Havlat
  *
  * This file handles the initial login and creates all user session variables.
@@ -20,6 +20,7 @@
 
 
 require_once("users.inc.php");
+require_once("roles.inc.php");
 
 
 /** authorization function verifies login & password and set user session data */
@@ -49,11 +50,13 @@ function doAuthorize(&$db,$login,$pwd)
 			}
 			else
 			{
+				$userProductRoles = getUserProductRoles($db,$userInfo['id']);
+				$userTestPlanRoles = getUserTestPlanRoles($db,$userInfo['id']);
 			    //Setting user's session information
 			    // MHT 200507 move session update to function
 			    setUserSession($db,$userInfo['login'], $userInfo['id'], 
 			    		$userInfo['rightsid'], $userInfo['email'], 
-			    		$userInfo['locale']);
+			    		$userInfo['locale'],null,$userProductRoles,$userTestPlanRoles);
 		    	$bSuccess = true;
 			}
 		}

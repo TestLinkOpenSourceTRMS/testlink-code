@@ -1,7 +1,7 @@
 {* Testlink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: adminUsers.tpl,v 1.3 2005/12/31 14:38:10 schlundus Exp $ *}
+{* $Id: usersview.tpl,v 1.1 2006/02/19 13:08:05 schlundus Exp $ *}
 {* 
-Purpose: smarty template - Edit user data 
+Purpose: smarty template - users overview
 
  20051115 - fm - new model
  20051231 - scs - cleanup due to removing bulk update of users
@@ -14,15 +14,20 @@ Purpose: smarty template - Edit user data
 
 {***** TABS *****}
 <div class="tabMenu">
-	<span class="unselected"><a href="lib/admin/adminUserNew.php">{lang_get s='menu_new_user'}</a></span> 
+	<span class="unselected"><a href="lib/usermanagement/usersedit.php">{lang_get s='menu_new_user'}</a></span> 
 	<span class="selected">{lang_get s='menu_mod_user'}</span>
+	<br /><hr />
+	<span class="unselected"><a href="lib/usermanagement/rolesedit.php">{lang_get s='menu_define_roles'}</a></span> 
+	<span class="unselected"><a href="lib/usermanagement/rolesview.php">{lang_get s='menu_view_roles'}</a></span> 
+	<span class="unselected"><a href="lib/usermanagement/usersassign.php?feature=product">{lang_get s='menu_assign_product_roles'}</a></span> 
+	<span class="unselected"><a href="lib/usermanagement/usersassign.php?feature=testplan">{lang_get s='menu_assign_testplan_roles'}</a></span>
 </div>
 
 {include file="inc_update.tpl" result=$result item="user" action="$action"}
 
 {***** existing users form *****}
 <div class="workBack">
-	<form method="post" action="lib/admin/adminUsers.php">
+	<form method="post" action="lib/usermanagement/usersview.php">
 	<table class="common" width="95%">
 		<tr>
 			<th>{lang_get s='th_login'}</th>
@@ -37,7 +42,7 @@ Purpose: smarty template - Edit user data
 		
 		{section name=row loop=$users start=0}
 		<tr>
-			<td><a href="lib/admin/adminUserEdit.php?user_id={$users[row].id}"> 
+			<td><a href="lib/usermanagement/usersedit.php?user_id={$users[row].id}"> 
 			    {$users[row].login|escape}</a></td>
 			<td>{$users[row].first|escape}</td>
 			<td>{$users[row].last|escape}</td>
@@ -47,8 +52,8 @@ Purpose: smarty template - Edit user data
 				{$optRights[$rightID]|escape}
 			</td>
 			<td>
-				{assign var="local" value="$users[row].locale"}
-				{$optLocale[$locale]|escape}
+				{assign var="lc" value="$users[row]"}
+				{$optLocale[$lc.locale]|escape}
 			</td>
 			<td>
 				{if $users[row].active eq 1}
@@ -58,7 +63,7 @@ Purpose: smarty template - Edit user data
 				{/if}
 			</td>
 			<td>
-				<a href="lib/admin/adminUsers.php?delete=1&user={$users[row].id}">
+				<a href="lib/usermanagement/usersview.php?delete=1&user={$users[row].id}">
 				<img style="border:none" alt="{lang_get s='alt_delete_user'}"	 src="icons/thrash.png"/>
 				</a>
 			</td>

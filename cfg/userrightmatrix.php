@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: userrightmatrix.php,v $
  *
- * @version $Revision: 1.8 $
- * @modified $Date: 2006/01/14 17:47:54 $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2006/02/19 13:03:32 $
  *
  * @author Andreas Morsing
  *
@@ -24,13 +24,22 @@
 //		null : no rights need
 $g_userRights = array(
 						//USERADMINISTRATION
-						"lib/admin/adminusernew.php"  => array (
+						"lib/usermanagement/usersnew.php"  => array (
 															"mgt_users",
 														),														
-						"lib/admin/adminuseredit.php"  => array (
+						"lib/usermanagement/usersedit.php"  => array (
 															"mgt_users",
 														),														
-						"lib/admin/adminusers.php"  => array (
+						"lib/usermanagement/usersview.php"  => array (
+															"mgt_users",
+														),														
+						"lib/usermanagement/rolesview.php"  => array (
+															"mgt_users",
+														),														
+						"lib/usermanagement/rolesedit.php"  => array (
+															"mgt_users",
+														),														
+						"lib/usermanagement/usersassign.php"  => array (
 															"mgt_users",
 														),														
 						//PRODUCTADMINISTRATION
@@ -39,7 +48,7 @@ $g_userRights = array(
 														),
 						//TESTEXECUTION														
 						"lib/execute/execnavigator.php" => array (
-															"tp_execute",
+															"testplan_execute",
 														),
 						//KEYWORDS
 						"lib/keywords/keywordsview.php" => array (
@@ -52,51 +61,51 @@ $g_userRights = array(
 					
 						//BUILD
 						"lib/plan/buildnew.php" => array (
-															"tp_create_build",
+															"testplan_create_build",
 														),
 						
 						//TESTPLAN
 						"lib/plan/planupdatetc.php" => array (
-															"tp_planning",
+															"testplan_planning",
 														),
 						"lib/plan/planaddtc.php" => array (
-															"tp_planning",
+															"testplan_planning",
 														),														
 						"lib/plan/planaddtcnavigator.php" => array (
-															"tp_planning",
+															"testplan_planning",
 														),														
 						"lib/plan/planedit.php" => array (
-															"tp_planning",
+															"testplan_planning",
 														),														
 						"lib/plan/planmilestones.php" => array (
-															"tp_planning",
+															"testplan_planning",
 														),														
 						"lib/plan/plannew.php" => array (
-															"tp_planning",
+															"testplan_planning",
 														),														
 						"lib/plan/planowner.php" => array (
-															"tp_planning",
+															"testplan_planning",
 														),														
 						"lib/plan/planpriority.php" => array (
-															"tp_planning",
+															"testplan_planning",
 														),														
 						"lib/plan/plantestersedit.php" => array (
-															"tp_planning",
+															"testplan_planning",
 														),														
 						"lib/plan/plantestersnavigator.php" => array (
-															"tp_planning",
+															"testplan_planning",
 														),														
 						"lib/plan/planupdatetc.php" => array (
-															"tp_planning",
+															"testplan_planning",
 														),														
 						"lib/plan/planmilestoneedit.php" => array (
-															"tp_planning",
+															"testplan_planning",
 														),														
 						"lib/plan/testsetnavigator.php" => array (
-															"tp_planning",
+															"testplan_planning",
 														),														
 						"lib/plan/testsetremove.php" => array (
-															"tp_planning",
+															"testplan_planning",
 															),														
 						//REQUIREMENTS
 						"lib/req/reqspeclist.php" => array (
@@ -116,28 +125,28 @@ $g_userRights = array(
 															),														
 						//REPORTS
 						"lib/results/resultsallbuilds.php" => array (
-																"tp_metrics",
+																"testplan_metrics",
 															),														
 						"lib/results/resultsbugs.php" => array (
-																"tp_metrics",
+																"testplan_metrics",
 															),														
 						"lib/results/resultsbuild.php" => array (
-																"tp_metrics",
+																"testplan_metrics",
 															),														
 						"lib/results/resultsbystatus.php" => array (
-																"tp_metrics",
+																"testplan_metrics",
 															),														
 						"lib/results/resultsgeneral.php" => array (
-																"tp_metrics",
+																"testplan_metrics",
 															),														
 						"lib/results/resultsnavigator.php" => array (
-																"tp_metrics",
+																"testplan_metrics",
 															),														
 						"lib/results/resultssend.php" => array (
-																"tp_metrics",
+																"testplan_metrics",
 															),														
 						"lib/results/resultstc.php" => array (
-																"tp_metrics",
+																"testplan_metrics",
 															),														
 						//TESTCASES						
 						"lib/testcases/containeredit.php" => array (

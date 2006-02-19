@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsByStatus.php,v 1.9 2006/01/09 07:17:32 franciscom Exp $ 
+* $Id: resultsByStatus.php,v 1.10 2006/02/19 13:03:33 schlundus Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -76,7 +76,7 @@ if (sizeof($tcIDArray))
 		$testSuite = $myrow[7] . "/" . $myrow[8];	
 	
 		//Display the test case with a hyper link to the execution pages
-		$testTitle = getTCLink(has_rights($db,"tp_execute"), $tcID, $myrow[11], $myrow[5], $build); // TC title
+		$testTitle = getTCLink(has_rights($db,"testplan_execute"), $tcID, $myrow[11], $myrow[5], $build); // TC title
 		$tester = $myrow[3]; //Run By
 		$testDate = $myrow[4]; //Date run
 		$notes = $myrow[6]; //notes

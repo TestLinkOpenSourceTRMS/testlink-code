@@ -3,8 +3,8 @@
  * TestLink Open Source Project - @link http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: plan.core.inc.php,v $
- * @version $Revision: 1.27 $
- * @modified $Date: 2006/02/15 08:49:19 $ $Author: franciscom $
+ * @version $Revision: 1.28 $
+ * @modified $Date: 2006/02/19 13:03:32 $ $Author: schlundus $
  *  
  * 
  * @author 	Martin Havlat
@@ -64,13 +64,15 @@ function getTestPlans(&$db,$productID, $userID, $filter_by_product=0)
 	// 20050928 - fm
 	if ( $filter_by_product )
 	{
-	   $sql .= " AND prodid=" . $productID;
-
+		$sql .= " AND ( prodid=" . $productID;
+		
 		// 20050904 - fm - TL 1.5.1 compatibility, get also Test Plans without product id.		           
-  	if ($g_show_tp_without_prodid)
-  	{
-  		$sql .= " OR prodid=0 ";
+		if ($g_show_tp_without_prodid)
+		{
+			$sql .= " OR prodid=0 ";
 		}
+		
+		$sql .= " )";
 	}
 	
 	$sql .= " ORDER BY name";

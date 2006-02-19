@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: mainPage.php,v $
  *
- * @version $Revision: 1.14 $ $Author: franciscom $
- * @modified $Date: 2006/02/15 08:49:19 $
+ * @version $Revision: 1.15 $ $Author: schlundus $
+ * @modified $Date: 2006/02/19 13:03:33 $
  *
  * @author Martin Havlat
  * 
@@ -33,9 +33,12 @@ require_once('users.inc.php');
 testlinkInitPage($db,TRUE);
 $smarty = new TLSmarty;
 
+$productID = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
+$testPlanID = isset($_SESSION['testPlanId']) ? intval($_SESSION['testPlanId']) : 0;
+
 // ----------------------------------------------------------------------
 /** redirect admin to create product if not found */
-if ($_SESSION['role'] == 'admin' && !isset($_SESSION['testprojectID']))
+if (has_rights($db,'mgt_modify_product') && !isset($_SESSION['testprojectID']))
 { 
 	redirect($_SESSION['basehref'] . 'lib/admin/adminProductEdit.php?createProduct=1');
 }
@@ -91,13 +94,17 @@ else
 $_SESSION['filter_tp_by_product'] = $filter_tp_by_product;
 $smarty->assign('filter_tp_by_product',$filter_tp_by_product);
 
-
+$roles = getRoles($db);
+$testPlanRole = null;
+$currentTestPlan = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : null;
+if ($currentTestPlan && isset($_SESSION['testPlanRoles'][$currentTestPlan]))
+	$testPlanRole = '['.$roles[$_SESSION['testPlanRoles'][$currentTestPlan]['role_id']]['role'].']';
 // ----- Test Plan Section ----------------------------------  
 // get Test Plans available for the user 
 // 20050928 - fm - Interface changes
 // 20050810 - fm - Interface changes
 // 20050809 - fm - get only test plan for the selected product
-$arrPlans = getTestPlans($db,isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0,
+$arrPlans = getTestPlans($db,$productID,
 						$_SESSION['userID'],$filter_tp_by_product);
 
 //20050826 - scs - added displaying of security notes
@@ -108,21 +115,26 @@ $smarty->assign('arrPlans', $arrPlans);
 $smarty->assign('countPlans', count($arrPlans));
 
 //can the user test
-$smarty->assign('tp_execute', has_rights($db,"tp_execute"));
+$smarty->assign('testplan_execute', has_rights($db,"testplan_execute"));
 
 //can the user create build
-$smarty->assign('tp_create_build', has_rights($db,"tp_create_build"));
+$smarty->assign('testplan_create_build', has_rights($db,"testplan_create_build"));
 
 //can the user view metrics
-$smarty->assign('tp_metrics', has_rights($db,"tp_metrics"));
+$smarty->assign('testplan_metrics', has_rights($db,"testplan_metrics"));
 
 //can the user manage Test Plan
-$smarty->assign('tp_planning', has_rights($db,"tp_planning"));
+$smarty->assign('testplan_planning', has_rights($db,"testplan_planning"));
 $smarty->assign('launcher','lib/general/frmWorkArea.php');
 
 $smarty->assign('show_filter_tp_by_product',
                 $g_ui_show_check_filter_tp_by_product);
 
+$smarty->assign('usermanagement_rights',has_rights($db,"mgt_users"));
 
+$smarty->assign('sessionProductID',$productID);	
+$smarty->assign('sessionTestPlanID',$testPlanID);
+
+$smarty->assign('testPlanRole',$testPlanRole);
 $smarty->display('mainPage.tpl');
 ?>

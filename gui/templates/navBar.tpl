@@ -1,5 +1,5 @@
 {* Testlink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: navBar.tpl,v 1.5 2006/02/19 13:03:32 schlundus Exp $ *}
+{* $Id: navBar.tpl,v 1.6 2006/02/22 20:26:38 schlundus Exp $ *}
 {* Purpose: smarty template - title bar + menu *}
 {* Andreas Morsing: changed the product selection *}
 {* 20050826 - scs - added input for entering tcid *}
@@ -31,6 +31,7 @@
 		</select>
 		</form>
 	</div>
+	{if $view_tc_rights ne ""}
 	<div style="float: right;margin-right:5px">
 		<form style="display:inline" target="mainframe" name="searchTC" action="lib/testcases/archiveData.php" method="get"> 
 		<span style="font-size: 80%">{lang_get s='th_tcid'}: </span>
@@ -39,6 +40,7 @@
 		<input type="hidden" name="allow_edit" value="0"/>
 		</form>
 	</div>
+	{/if}
 	{/if}
 	
 	<div style="padding: 2px;">

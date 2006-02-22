@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.27 $
- * @modified $Date: 2006/02/19 13:09:29 $
+ * @version $Revision: 1.28 $
+ * @modified $Date: 2006/02/22 20:26:38 $
  *
  * @author Andreas Morsing
  *
@@ -889,11 +889,6 @@ $TLS_th_role = "Rolle";
 
 // gui/templates/usersview.tpl
 $TLS_alt_delete_user = "LOCALIZE: TLS_alt_delete_user";
-
-
-
-// gui/templates/DEPR-usersnew.tpl
-$TLS_caption_new_user = "Benutzerdaten";
 
 
 

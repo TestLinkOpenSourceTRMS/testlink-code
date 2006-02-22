@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: navBar.php,v $
  *
- * @version $Revision: 1.12 $
- * @modified $Date: 2006/02/19 13:03:33 $
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2006/02/22 20:26:38 $
  *
  * This file manages the navigation bar. 
  * 20050813 - fm - added Product Filter con TestPlan 
@@ -42,6 +42,7 @@ if (isset($_GET['product']))
 	setcookie('lastProductForUser'. $_SESSION['userID'], $_GET['product'], TL_COOKIE_KEEPTIME, '/');
 }
 
+$smarty->assign('view_tc_rights',has_rights($db,"mgt_view_tc"));
 $smarty->assign('user', $_SESSION['user'] . ' [' . $roleName . ']');
 $smarty->assign('productRole',$productRole);
 $smarty->assign('testPlanRole',$testPlanRole);

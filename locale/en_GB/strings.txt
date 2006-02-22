@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.45 $
- * @modified $Date: 2006/02/19 13:09:54 $ $Author: schlundus $
+ * @version $Revision: 1.46 $
+ * @modified $Date: 2006/02/22 20:26:39 $ $Author: schlundus $
  *
  * @author Francisco Mancardi
 **/
@@ -168,7 +168,7 @@ $TLS_title_test_case = "Test Case";
 $TLS_filter_tp_by_product = "Filter Test Plans by Product";
 $TLS_href_add_test_case = "Add Test Cases";
 $TLS_href_assign_risk_own = "Assign Risk and Ownership";
-$TLS_href_assign_user_roles = "LOCALIZE: TLS_href_assign_user_roles";
+$TLS_href_assign_user_roles = "Assign user roles";
 $TLS_href_browse_tc = "Browse Test Cases";
 $TLS_href_build_new = "Build Management";
 $TLS_href_create_product = "Create new Products";
@@ -189,13 +189,13 @@ $TLS_href_remove_test_case = "Remove Test Cases";
 $TLS_href_rep_and_metrics = "Test reports and Metrics";
 $TLS_href_req_assign = "Assign Requirements";
 $TLS_href_req_spec = "Requirement Specification";
-$TLS_href_roles_management = "LOCALIZE: TLS_href_roles_management";
+$TLS_href_roles_management = "Role Management";
 $TLS_href_search_tc = "Search Test Cases";
 $TLS_href_upd_mod_tc = "Update modified Test Cases";
-$TLS_href_user_management = "LOCALIZE: TLS_href_user_management";
+$TLS_href_user_management = "User Management";
 $TLS_msg_no_rights_for_tp = "- unavailable (You don't have permissions for any Test Plan)";
 $TLS_sec_note_prefix = "TestLink Security Issue";
-$TLS_testplan_role = "LOCALIZE: TLS_testplan_role";
+$TLS_testplan_role = "TestPlan role";
 $TLS_th_my_perc_completed = "My completed [%]";
 $TLS_th_name = "Name";
 $TLS_th_perc_completed = "Completed [%]";
@@ -350,7 +350,7 @@ $TLS_title_navigator = "Navigator";
 $TLS_home = "Home";
 $TLS_link_logout = "Logout";
 $TLS_product = "Product";
-$TLS_product_role = "LOCALIZE: TLS_product_role";
+$TLS_product_role = "Product role";
 $TLS_th_tcid = "TestCase ID";
 $TLS_title_documentation = "Documentation (external)";
 $TLS_title_edit_personal_data = "Personal";
@@ -846,47 +846,47 @@ $TLS_title_keyword_import_to = "Import keywords to";
 
 
 // gui/templates/rolesview.tpl
-$TLS_btn_confirm_delete = "LOCALIZE: TLS_btn_confirm_delete";
-$TLS_caption_possible_affected_users = "LOCALIZE: TLS_caption_possible_affected_users";
-$TLS_menu_assign_product_roles = "LOCALIZE: TLS_menu_assign_product_roles";
-$TLS_menu_assign_testplan_roles = "LOCALIZE: TLS_menu_assign_testplan_roles";
-$TLS_menu_define_roles = "LOCALIZE: TLS_menu_define_roles";
+$TLS_btn_confirm_delete = "Delete";
+$TLS_caption_possible_affected_users = "Possibly affected users";
+$TLS_menu_assign_product_roles = "Assign testproject roles";
+$TLS_menu_assign_testplan_roles = "Assign testplan roles";
+$TLS_menu_define_roles = "Define roles";
 $TLS_menu_mod_user = "Modify Users";
 $TLS_menu_new_user = "New User";
-$TLS_menu_view_roles = "LOCALIZE: TLS_menu_view_roles";
-$TLS_no_roles = "LOCALIZE: TLS_no_roles";
-$TLS_th_roles = "LOCALIZE: TLS_th_roles";
-$TLS_title_roles = "LOCALIZE: TLS_title_roles";
-$TLS_warning_users_will_be_reset = "LOCALIZE: TLS_warning_users_will_be_reset";
+$TLS_menu_view_roles = "View roles";
+$TLS_no_roles = "No roles";
+$TLS_th_roles = "Roles";
+$TLS_title_roles = "Available roles";
+$TLS_warning_users_will_be_reset = "The affected users will be resetted to guest role!";
 
 
 
 // gui/templates/rolesedit.tpl
-$TLS_btn_create_role = "LOCALIZE: TLS_btn_create_role";
-$TLS_btn_edit_role = "LOCALIZE: TLS_btn_edit_role";
-$TLS_caption_define_role = "LOCALIZE: TLS_caption_define_role";
+$TLS_btn_create_role = "Create";
+$TLS_btn_edit_role = "Edit";
+$TLS_caption_define_role = "Define role";
 $TLS_th_kw_rights = "LOCALIZE: TLS_th_kw_rights";
 $TLS_th_mgttc_rights = "LOCALIZE: TLS_th_mgttc_rights";
 $TLS_th_product_rights = "LOCALIZE: TLS_th_product_rights";
 $TLS_th_req_rights = "LOCALIZE: TLS_th_req_rights";
 $TLS_th_rights = "Permissions";
-$TLS_th_rolename = "LOCALIZE: TLS_th_rolename";
+$TLS_th_rolename = "Rolename";
 $TLS_th_tp_rights = "LOCALIZE: TLS_th_tp_rights";
 $TLS_th_user_rights = "LOCALIZE: TLS_th_user_rights";
-$TLS_warning_modify_role = "LOCALIZE: TLS_warning_modify_role";
+$TLS_warning_modify_role = "Really modify the role?";
 
 
 
 // gui/templates/usersedit.tpl
 $TLS_btn_add = "Add";
-$TLS_caption_user_details = "LOCALIZE: TLS_caption_user_details";
+$TLS_caption_user_details = "User details";
 $TLS_th_password = "Password";
 $TLS_th_role = "Role";
 
 
 
 // gui/templates/usersview.tpl
-$TLS_alt_delete_user = "LOCALIZE: TLS_alt_delete_user";
+$TLS_alt_delete_user = "Really delete the selected user?";
 
 
 
@@ -896,17 +896,17 @@ $TLS_caption_new_user = "User Data";
 
 
 // gui/templates/usersassign.tpl
-$TLS_Role = "LOCALIZE: TLS_Role";
-$TLS_User = "LOCALIZE: TLS_User";
-$TLS_btn_change = "LOCALIZE: TLS_btn_change";
-$TLS_caption_assign_product_user_roles = "LOCALIZE: TLS_caption_assign_product_user_roles";
-$TLS_caption_assign_testplan_user_roles = "LOCALIZE: TLS_caption_assign_testplan_user_roles";
-$TLS_title_assign_product_roles = "LOCALIZE: TLS_title_assign_product_roles";
+$TLS_Role = "Roles";
+$TLS_User = "User";
+$TLS_btn_change = "Change";
+$TLS_caption_assign_product_user_roles = "Assign testproject roles to users";
+$TLS_caption_assign_testplan_user_roles = "Assign testplan roles to users";
+$TLS_title_assign_product_roles = "Assign testproject roles";
 
 
 
 // lib/testcases/archive.inc.php
-$TLS_component_name_already_exists = "LOCALIZE: TLS_component_name_already_exists";
+$TLS_component_name_already_exists = "There's already a component with that name";
 
 
 
@@ -1244,9 +1244,9 @@ $TLS_desc_testplan_create_build = "LOCALIZE: TLS_desc_testplan_create_build";
 $TLS_desc_testplan_execute = "LOCALIZE: TLS_desc_testplan_execute";
 $TLS_desc_testplan_metrics = "LOCALIZE: TLS_desc_testplan_metrics";
 $TLS_desc_testplan_planning = "LOCALIZE: TLS_desc_testplan_planning";
-$TLS_error_duplicate_rolename = "LOCALIZE: TLS_error_duplicate_rolename";
-$TLS_error_role_no_rights = "LOCALIZE: TLS_error_role_no_rights";
-$TLS_error_role_no_rolename = "LOCALIZE: TLS_error_role_no_rolename";
+$TLS_error_duplicate_rolename = "There's already a role with that name!";
+$TLS_error_role_no_rights = "You cannot save roles without any rights!";
+$TLS_error_role_no_rolename = "You must enter a name for the role!";
 
 
 
@@ -1262,22 +1262,18 @@ $TLS_refer_to_log = " Please refer to TestLink log for more information.";
 
 
 // lib/usermanagement/rolesview.php
-$TLS_error_role_deletion = "LOCALIZE: TLS_error_role_deletion";
+$TLS_error_role_deletion = "The role couldn't be deleted!";
 
 
 
 // lib/usermanagement/rolesedit.php
-$TLS_error_role_creation = "LOCALIZE: TLS_error_role_creation";
-$TLS_error_role_update = "LOCALIZE: TLS_error_role_update";
+$TLS_error_role_creation = "The role couldn't be created!";
+$TLS_error_role_update = "The role couldn't be updated!";
 
 
 
 // lib/usermanagement/usersedit.php
 $TLS_user_not_added = "The user wasn't added!";
-
-
-
-// lib/usermanagement/DEPR-usersnew.php
 
 
 

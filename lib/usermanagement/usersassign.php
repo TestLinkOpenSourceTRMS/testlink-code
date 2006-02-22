@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: usersassign.php,v $
 *
-* @version $Revision: 1.1 $
-* @modified $Date: 2006/02/19 13:08:05 $
+* @version $Revision: 1.2 $
+* @modified $Date: 2006/02/22 20:26:38 $
 * 
 * Allows assigning users roles to testplans or testprojects
 */
@@ -15,11 +15,16 @@ require_once('users.inc.php');
 testlinkInitPage($db);
 
 $feature = isset($_GET['feature']) ? $_GET['feature'] : null;
+$productID = isset($_SESSION['productID']) ? $_SESSION['productID'] : 0;
+$tpName = isset($_SESSION['testPlanName']) ? $_SESSION['testPlanName'] : null;
+$productName = isset($_SESSION['productName']) ? $_SESSION['productName'] : null;
+$userID = $_SESSION['userID'];
+
 $bProduct = false;
 $bTestPlan = false;
 if ($feature == "product")
 {
-	$featureID = isset($_SESSION['productID']) ? $_SESSION['productID'] : 0;
+	$featureID = $productID;
 	$bProduct = true;
 }
 else if ($feature == "testplan")
@@ -28,8 +33,8 @@ else if ($feature == "testplan")
 	$featureID = isset($_GET['featureID']) ? $_GET['featureID'] : 0;
 }
 
+//postback
 $bUpdate = isset($_POST['do_update']) ? 1 : 0;
-
 if ($bUpdate)
 {
 	$featureID = isset($_POST['featureID']) ? intval($_POST['featureID']) : 0;
@@ -76,7 +81,8 @@ if ($bProduct)
 	$userFeatureRoles = getProductUserRoles($db,$featureID);
 else if($bTestPlan)
 {
-	$testPlans = getTestPlans($db,$_SESSION['productID'],$_SESSION['userID'],1);
+	$testPlans = getTestPlans($db,$productID,$userID,1);
+	//if nothing special was selected, use the one in the session or the first
 	if (!$featureID)
 	{
 		if (isset($_SESSION['testPlanId']) && $_SESSION['testPlanId'])
@@ -86,9 +92,10 @@ else if($bTestPlan)
 	}
 	$userFeatureRoles = getTestPlanUserRoles($db,$featureID);
 }
+$roleList = getListOfRoles($db);
 
 $smarty = new TLSmarty();
-$smarty->assign('optRights', getListOfRoles($db));
+$smarty->assign('optRights', $roleList);
 $smarty->assign('userData', $userData);
 $smarty->assign('userFeatureRoles',$userFeatureRoles);
 $smarty->assign('featureID',$featureID);
@@ -96,7 +103,7 @@ $smarty->assign('feature',$feature);
 $smarty->assign('result',$sqlResult);
 $smarty->assign('action',$action);
 $smarty->assign('testPlans',$testPlans);
-$smarty->assign('productName',$_SESSION['productName']);
-$smarty->assign('testPlanName',$_SESSION['testPlanName']);
+$smarty->assign('productName',$productName);
+$smarty->assign('testPlanName',$tpName);
 $smarty->display('usersassign.tpl');
 ?>

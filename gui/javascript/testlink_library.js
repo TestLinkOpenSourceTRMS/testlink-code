@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/ 
 // This script is distributed under the GNU General Public License 2 or later. 
 //
-// $Id: testlink_library.js,v 1.5 2006/02/19 13:03:32 schlundus Exp $ 
+// $Id: testlink_library.js,v 1.6 2006/02/22 20:26:38 schlundus Exp $ 
 //
 // Javascript functions commonly used through the GUI
 // This library is automatically loaded with inc_header.tpl
@@ -127,15 +127,25 @@ function deleteBuild_onClick(buildID)
 	
 }
 
+/**
+ * Display a confirmation dlg before modifying roles
+ *
+ * @return bool return true if the user confirmed, false else
+ *
+ **/
 function modifyRoles_warning()
 {
 	if (confirm(warning_modify_role))
-	{
 		return true;
-	}
+
 	return false;
 }
 
+/**
+ * Function-Documentation
+ *
+ * @param string feature the feature, could be testplan or product
+ **/
 function changeTestPlan(feature)
 {
 	var tmp = document.getElementById('testPlanSel');
@@ -144,4 +154,9 @@ function changeTestPlan(feature)
 	var tpID = tmp.value;	
 	if(tpID)
 		location = fRoot+"lib/usermanagement/usersassign.php?feature="+feature+"&featureID="+tpID;
+}
+
+function openFileUploadWindow(id,tableName)
+{
+	window.open(fRoot+"lib/attachments/attachmentupload.php?id"+id+"&"+tableName,"FileUpload","width=510,height=300,resizable=yes,dependent=yes");
 }

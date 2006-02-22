@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: usersedit.php,v $
 *
-* @version $Revision: 1.1 $
-* @modified $Date: 2006/02/19 13:08:05 $
+* @version $Revision: 1.2 $
+* @modified $Date: 2006/02/22 20:26:38 $
 * 
 * Allows editing a user
 */
@@ -16,6 +16,7 @@ testlinkInitPage($db);
 
 $user_id = isset($_GET['user_id']) ? intval($_GET['user_id']) : 0;
 $args = init_args($_GET,$_POST,TRUE);
+$sessionUserID = $_SESSION['userID'];
 
 $sqlResult = null;
 $action = null;
@@ -45,7 +46,7 @@ if ($args->do_update)
 		$user_id = $args->user_id;
 	}
 
-	if ($sqlResult == 'ok' && ($args->user_id == $_SESSION['userID']))
+	if ($sqlResult == 'ok' && ($args->user_id == $sessionUserID))
 	{
 		//if the user has no longer the mgt_users right, reload the index.php page,
 		//else we must update the titlebar
@@ -80,7 +81,7 @@ $smarty->assign('action',$action);
 $smarty->display('usersedit.tpl');
 
 // 20060107 - fm
-function init_args($get_hash, $post_hash, $do_post_strip=TRUE)
+function init_args($get_hash, $post_hash, $do_post_strip = TRUE)
 {
 	if($do_post_strip)
 		$post_hash = strings_stripSlashes($post_hash);

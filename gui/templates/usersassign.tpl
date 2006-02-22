@@ -1,6 +1,6 @@
 {* 
 Testlink: smarty template - 
-$Id: usersassign.tpl,v 1.1 2006/02/19 13:08:05 schlundus Exp $ 
+$Id: usersassign.tpl,v 1.2 2006/02/22 20:26:38 schlundus Exp $ 
 *}
 {* 
 *}
@@ -8,7 +8,9 @@ $Id: usersassign.tpl,v 1.1 2006/02/19 13:08:05 schlundus Exp $
 
 <body>
 
-<h1> {lang_get s='title_assign_product_roles'} </h1>
+<h1>
+	{lang_get s='title_assign_roles'}
+</h1>
 
 {* tabs *}
 <div class="tabMenu">
@@ -33,12 +35,12 @@ $Id: usersassign.tpl,v 1.1 2006/02/19 13:08:05 schlundus Exp $
 <form method="post" action="lib/usermanagement/usersassign.php">
 	<input type="hidden" name="featureID" value="{$featureID}" />
 	<input type="hidden" name="feature" value="{$feature}" />
-	<table class="common" width="50%">
+	<table class="common" width="75%">
 	<caption>
 	{if $feature == 'product'}
 		{lang_get s='caption_assign_product_user_roles'} - {$productName|escape}
 	{else}
-		{lang_get s='caption_assign_testplan_user_roles'}
+		{lang_get s='caption_assign_testplan_user_roles'} - {lang_get s='TestPlan'}
 		<select id="testPlanSel">
 		{foreach from=$testPlans item=testPlan}
 		<option value="{$testPlan.id}" 

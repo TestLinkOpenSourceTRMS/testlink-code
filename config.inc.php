@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.47 $
- * @modified $Date: 2006/02/19 13:03:29 $ by $Author: schlundus $
+ * @version $Revision: 1.48 $
+ * @modified $Date: 2006/02/22 20:26:38 $ by $Author: schlundus $
  *
  *
  * Constants and configuration parameters used throughout TestLink 
@@ -14,6 +14,7 @@
  *-------------------------------------------------------------------------
  * Revisions:
  *
+ * 20060223 - scs - added basic stuff for attachments
  * 20060207 - franciscom - BUGID 303
  * 20060205 - JBA - 	Remember last product (BTS 221)
  * 20060101 - fm - 	version 1.7.0 Alpha
@@ -354,7 +355,7 @@ $g_smtp_password    = '';  # password
 // $g_show_realname=TRUE; -> use the function format_username()
 //                           to display user identification
 //                           using $g_username_format
-$g_show_realname=FALSE;
+$g_show_realname = FALSE;
 
 // used by function format_username()
 // example: user ux555, real name= John Cook
@@ -394,7 +395,31 @@ define('TP_ALL_STATUS',null);
 define('FILTER_BY_PRODUCT',1);
 define('TP_STATUS_ACTIVE',1);
 
+/* ATTACHMENTS */
+/* some attachment related defines, no need to modify them */
+define("TL_REPOSITORY_TYPE_DB",1);
+define("TL_REPOSITORY_TYPE_FS",2);
 
+define("TL_REPOSITORY_COMPRESSIONTYPE_NONE",1);
+define("TL_REPOSITORY_COMPRESSIONTYPE_GZIP",2);
+
+/* the maximum allowed file size for each repository entry, default 1MB */
+define("TL_REPOSITORY_MAXFILESIZE_MB",1);
+define("TL_REPOSITORY_MAXFILESIZE",1024*1024*TL_REPOSITORY_MAXFILESIZE_MB);
+
+/* the type of the repository can be database or filesystem
+* TL_REPOSITORY_TYPE_DB => database
+* TL_REPOSITORY_TYPE_FS => filesystem
+**/
+$g_repositoryType = TL_REPOSITORY_TYPE_DB;
+/* the where the filesystem repository should be located */
+$g_repositoryPath = "c:/muell";
+/* compression used within the repository 
+ * TL_REPOSITORY_COMPRESSIONTYPE_NONE => no compression
+ * TL_REPOSITORY_COMPRESSIONTYPE_GZIP => gzip compression
+*/
+$g_repositoryCompressionType = TL_REPOSITORY_COMPRESSIONTYPE_NONE;
+/* END ATTACHMENTS */
 
 // 20050821 - fm - configurable templates this help is you want to use a non standard template 
 $g_tpl = array();

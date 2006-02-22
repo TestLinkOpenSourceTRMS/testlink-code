@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: usersview.php,v $
  *
- * @version $Revision: 1.1 $
- * @modified $Date: 2006/02/19 13:08:05 $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2006/02/22 20:26:38 $
  *
  * This page shows all users
  *
@@ -22,13 +22,14 @@ testlinkInitPage($db);
 $sqlResult = null;
 $action = null;
 $args = init_args($_GET,$_POST,TRUE);
+$userID = $_SESSION['userID'];
 
 if ($args->delete && $args->user)
 {
 	$sqlResult = userDelete($db,$args->user);
 	
 	//if the users deletes itself then logout
-	if ($args->user == $_SESSION['userID'])
+	if ($args->user == $userID)
 	{
 		header("Location: ../../logout.php");
 		exit();
@@ -49,7 +50,7 @@ $smarty->assign('action',$action);
 $smarty->display($g_tpl['usersview']);
 
 // 20060107 - fm
-function init_args($get_hash, $post_hash, $do_post_strip=TRUE)
+function init_args($get_hash, $post_hash, $do_post_strip = TRUE)
 {
 	if($do_post_strip)
 		$post_hash = strings_stripSlashes($post_hash);

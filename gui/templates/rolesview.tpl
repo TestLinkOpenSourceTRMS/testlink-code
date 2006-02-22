@@ -1,5 +1,5 @@
 {* smarty template - view all keywords of product; ver. 1.0 *}
-{* $Id: rolesview.tpl,v 1.1 2006/02/19 13:08:05 schlundus Exp $ *}
+{* $Id: rolesview.tpl,v 1.2 2006/02/22 20:26:38 schlundus Exp $ *}
 {* Purpose: smarty template - View all roless *}
 {include file="inc_head.tpl"}
 
@@ -60,7 +60,7 @@
 					<img style="border:none" alt="{lang_get s='alt_delete_keyword'}" src="icons/thrash.png"/>
 					</a>
 				{else}
-					{lang_get s='N/A'}
+					{lang_get s='N_A'}
 				{/if}
 				</td>
 			</tr>

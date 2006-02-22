@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: users.inc.php,v $
  *
- * @version $Revision: 1.24 $
- * @modified $Date: 2006/02/19 13:03:33 $ $Author: schlundus $
+ * @version $Revision: 1.25 $
+ * @modified $Date: 2006/02/22 20:26:38 $ $Author: schlundus $
  *
  * Functions for usermanagement
  *
@@ -67,7 +67,7 @@ function userInsert(&$db,$login, $password, $first, $last, $email,
                     $rights=TL_DEFAULT_ROLEID, $locale = TL_DEFAULT_LOCALE, $active=1)
 {
 	$password = md5($password);
-	$sqlInsert = "INSERT INTO user (login,password,first,last,email,role_id AS rightsid,locale,active) 
+	$sqlInsert = "INSERT INTO user (login,password,first,last,email,role_id,locale,active) 
 	              VALUES ('" . 
 				        $db->prepare_string($login) . "','" . $db->prepare_string($password) . "','" . 
 				        $db->prepare_string($first) . "','" . $db->prepare_string($last) . "','" . 

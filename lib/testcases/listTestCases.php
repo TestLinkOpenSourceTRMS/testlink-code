@@ -2,7 +2,7 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: listTestCases.php,v 1.9 2006/02/15 08:51:04 franciscom Exp $
+* 	@version 	$Id: listTestCases.php,v 1.10 2006/02/24 18:26:22 franciscom Exp $
 * 	@author 	Martin Havlat
 * 
 * 	This page generates tree menu with test specification. It builds the
@@ -17,8 +17,8 @@ testlinkInitPage($db);
 
 $feature = isset($_GET['feature']) ? $_GET['feature'] : null;
 
-$prodID   = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-$prodName = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : 'xxx';
+$tproject_id   = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+$$tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : 'xxx';
 
 $title = lang_get('title_navigator'). ' - ' . lang_get('title_test_spec');
 if(strlen($feature))
@@ -47,10 +47,12 @@ else
 	exit();
 }
 
-$treeString = generateTestSpecTree($db,$prodID, $prodName,$workPath, 0);
+$treeString = generateTestSpecTree($db,$tproject_id, $$tproject_name,$workPath, 0);
 $tree = null;
 if (strlen($treeString))
+{
 	$tree = invokeMenu($treeString);
+}
 	
 $smarty = new TLSmarty();
 $smarty->assign('treeKind', TL_TREE_KIND);

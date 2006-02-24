@@ -1,5 +1,5 @@
 {* Testlink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: navBar.tpl,v 1.6 2006/02/22 20:26:38 schlundus Exp $ *}
+{* $Id: navBar.tpl,v 1.7 2006/02/24 18:39:49 franciscom Exp $ *}
 {* Purpose: smarty template - title bar + menu *}
 {* Andreas Morsing: changed the product selection *}
 {* 20050826 - scs - added input for entering tcid *}
@@ -26,7 +26,8 @@
 	<div style="float: right;">
 		<form name="productForm" action="lib/general/navBar.php" method="get"> 
 		<span style="font-size: 80%">{lang_get s='product'} </span>
-		<select class="tlcombo1" name="product" onchange="this.form.submit();">
+		{* 20060224 - franciscom - name="product" *}
+		<select class="tlcombo1" name="testproject" onchange="this.form.submit();">
 			{html_options options=$arrayProducts selected=$currentProduct}
 		</select>
 		</form>

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: requirements.inc.php,v $
- * @version $Revision: 1.23 $
- * @modified $Date: 2006/02/15 08:49:19 $ by $Author: franciscom $
+ * @version $Revision: 1.24 $
+ * @modified $Date: 2006/02/24 18:15:44 $ by $Author: franciscom $
  *
  * @author Martin Havlat <havlat@users.sourceforge.net>
  * 
@@ -181,7 +181,7 @@ function getOptionReqSpec(&$db,$prodID)
  * 
  * @author Martin Havlat 
  */
-function getRequirements(&$db,$idSRS, $range = 'all', $idTc = null)
+function getRequirements(&$db,$idSRS, $range = 'all', $testcase_id = null)
 {
 	if ($range == 'all') {
 		$sql = "SELECT * FROM requirements WHERE srs_id=" . $idSRS . " ORDER BY title";
@@ -189,7 +189,7 @@ function getRequirements(&$db,$idSRS, $range = 'all', $idTc = null)
 	elseif ($range == 'assigned') {
 		$sql = "SELECT requirements.* FROM requirements,req_coverage WHERE srs_id=" . 
 				$idSRS . " AND req_coverage.req_id=requirements.id AND " . 
-				"req_coverage.tc_id=" . $idTc . " ORDER BY title";
+				"req_coverage.testcase_id=" . $testcase_id . " ORDER BY title";
 	}
 
 	return selectData($db,$sql);
@@ -333,7 +333,7 @@ function getReqMetrics_testPlan(&$db,$idSRS, $idTestPlan)
 			"req_coverage,category,component WHERE requirements.srs_id=" . $idSRS .
 				" AND component.projid=" . $idTestPlan .
 				" AND category.compid=component.id AND category.id=testcase.catid" .
-				" AND testcase.mgttcid = req_coverage.tc_id AND req_id=requirements.id" .
+				" AND testcase.mgttcid = req_coverage.testcase_id AND req_id=requirements.id" .
 				" AND requirements.status = 'v'"; 
 	$result = $db->exec_query($sql);
 	if (!empty($result)) {
@@ -350,14 +350,14 @@ function getReqMetrics_testPlan(&$db,$idSRS, $idTestPlan)
 /** 
  * collect information about one Requirement
  *  
- * @param string $idREQ ID of req.
+ * @param string $req_id ID of req.
  * @return assoc_array list of requirements
  */
-function getReqData(&$db,$idReq)
+function getReqData(&$db,$req_id)
 {
 	$output = array();
 	
-	$sql = "SELECT * FROM requirements WHERE id=" . $idReq;
+	$sql = "SELECT * FROM requirements WHERE id=" . $req_id;
 	$result = $db->exec_query($sql);
 	if (!empty($result)) {
 		$output = $db->fetch_array($result);
@@ -367,32 +367,32 @@ function getReqData(&$db,$idReq)
 }
 
 /** collect coverage of Requirement 
- * @param string $idREQ ID of req.
+ * @param string $req_id ID of req.
  * @return assoc_array list of test cases [id, title]
  */
-function getTc4Req(&$db,$idReq)
+function getTc4Req(&$db,$req_id)
 {
 	$sql = "SELECT mgttestcase.id,mgttestcase.title FROM mgttestcase, req_coverage " .
-			"WHERE req_coverage.req_id=" . $idReq . 
-			" AND req_coverage.tc_id=mgttestcase.id";
+			"WHERE req_coverage.req_id=" . $req_id . 
+			" AND req_coverage.testcase_id=mgttestcase.id";
 	
 	return selectData($db,$sql);
 }
 
 
 /** collect coverage of Requirement for Test Suite
- * @param string $idREQ ID of req.
+ * @param string $req_id ID of req.
  * @param string $idPlan ID of Test Plan
  * @return assoc_array list of test cases [id, title]
  * @author martin havlat
  */
-function getSuite4Req(&$db,$idReq, $idPlan)
+function getSuite4Req(&$db,$req_id, $idPlan)
 {
 	$sql = "SELECT testcase.id,testcase.title FROM testcase,req_coverage,category," .
 				"component WHERE component.projid=" . $idPlan .
 				" AND category.compid=component.id AND category.id=testcase.catid" .
-				" AND testcase.mgttcid = req_coverage.tc_id AND req_id=" . 
-				$idReq . " ORDER BY title";
+				" AND testcase.mgttcid = req_coverage.testcase_id AND req_id=" . 
+				$req_id . " ORDER BY title";
 	
 	return selectData($db,$sql);
 }
@@ -400,14 +400,14 @@ function getSuite4Req(&$db,$idReq, $idPlan)
 /** 
  * collect coverage of TC
  *  
- * @param string $idTC ID of req.
+ * @param string $testcase_id ID of req.
  * @param string SRS ID (optional)
  * @return assoc_array list of test cases [id, title]
  */
-function getReq4Tc(&$db,$idTc, $idSRS = 'all')
+function getReq4Tc(&$db,$testcase_id, $idSRS = 'all')
 {
 	$sql = "SELECT requirements.id,requirements.title FROM requirements, req_coverage " .
-			"WHERE req_coverage.tc_id=" . $idTc . 
+			"WHERE req_coverage.testcase_id=" . $testcase_id . 
 			" AND req_coverage.req_id=requirements.id";
 	// if only for one specification is required
 	if ($idSRS != 'all') {
@@ -583,39 +583,39 @@ function printRequirements(&$db,$idSRS)
  * 
  * @author Martin Havlat 
  */
-function assignTc2Req(&$db,$idTc, $idReq)
+function assignTc2Req(&$db,$testcase_id, $req_id)
 {
 	$output = 0;
-	tLog("assignTc2Req TC:" . $idTc . ' and REQ:' . $idReq);
+	tLog("assignTc2Req TC:" . $testcase_id . ' and REQ:' . $req_id);
 	
-	if ($idTc && $idReq)
+	if ($testcase_id && $req_id)
 	{
-		$sql = 'SELECT COUNT(*) AS num_cov FROM req_coverage WHERE req_id=' . $idReq . 
-				' AND tc_id=' . $idTc;
+		$sql = 'SELECT COUNT(*) AS num_cov FROM req_coverage WHERE req_id=' . $req_id . 
+				' AND testcase_id=' . $testcase_id;
 		$result = $db->exec_query($sql);
 
     $row=$db->fetch_array($result);
 		if ($row['num_cov'] == 0) {
 	
 			// create coverage dependency
-			$sqlReqCov = 'INSERT INTO req_coverage (req_id,tc_id) VALUES ' .
-					"(" . $idReq . "," . $idTc . ")";
+			$sqlReqCov = 'INSERT INTO req_coverage (req_id,testcase_id) VALUES ' .
+					"(" . $req_id . "," . $testcase_id . ")";
 			$resultReqCov = $db->exec_query($sqlReqCov);
 			// collect results
 			if ($db->affected_rows() == 1) {
 				$output = 1;
-				tLog('Dependency was created between TC:' . $idTc . ' and REQ:' . $idReq, 'INFO');
+				tLog('Dependency was created between TC:' . $testcase_id . ' and REQ:' . $req_id, 'INFO');
 			}
 			else
 			{
-				tLog("Dependency wasn't created between TC:" . $idTc . ' and REQ:' . $idReq .
+				tLog("Dependency wasn't created between TC:" . $testcase_id . ' and REQ:' . $req_id .
 					"\t" . $db->error_msg(), 'ERROR');
 			}
 		}
 		else
 		{
 			$output = 1;
-			tLog('Dependency already exists between TC:' . $idTc . ' and REQ:' . $idReq, 'INFO');
+			tLog('Dependency already exists between TC:' . $testcase_id . ' and REQ:' . $req_id, 'INFO');
 		}
 	}
 	else {
@@ -633,23 +633,23 @@ function assignTc2Req(&$db,$idTc, $idReq)
  * 
  * @author Martin Havlat 
  */
-function unassignTc2Req(&$db,$idTc, $idReq)
+function unassignTc2Req(&$db,$testcase_id, $req_id)
 {
 	$output = 0;
-	tLog("unassignTc2Req TC:" . $idTc . ' and REQ:' . $idReq);
+	tLog("unassignTc2Req TC:" . $testcase_id . ' and REQ:' . $req_id);
 
 	// create coverage dependency
-	$sqlReqCov = 'DELETE FROM req_coverage WHERE req_id=' . $idReq . 
-			' AND tc_id=' . $idTc;
+	$sqlReqCov = 'DELETE FROM req_coverage WHERE req_id=' . $req_id . 
+			' AND testcase_id=' . $testcase_id;
 	$resultReqCov = $db->exec_query($sqlReqCov);
 
 	// collect results
 	if ($db->affected_rows() == 1) {
 		$output = 1;
-		tLog('Dependency was deleted between TC:' . $idTc . ' and REQ:' . $idReq, 'INFO');
+		tLog('Dependency was deleted between TC:' . $testcase_id . ' and REQ:' . $req_id, 'INFO');
 	}
 	else {
-		tLog("Dependency wasn't deleted between TC:" . $idTc . ' and REQ:' . $idReq .
+		tLog("Dependency wasn't deleted between TC:" . $testcase_id . ' and REQ:' . $req_id .
 				"\n" . $sqlReqCov. "\n" . $db->error_msg(), 'ERROR');
 	}
 

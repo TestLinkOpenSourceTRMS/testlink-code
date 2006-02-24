@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: adminProductEdit.php,v $
  *
- * @version $Revision: 1.14 $
- * @modified $Date: 2006/02/15 08:49:17 $
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2006/02/24 18:48:36 $
  *
  * @author Martin Havlat
  *
@@ -22,10 +22,17 @@
 include('../../config.inc.php');
 require_once('common.php');
 require_once('product.inc.php');
+
+// 20060219 - francisco.mancardi@gruppotesi.com
+require_once('testproject.class.php');
+
 require_once("../../third_party/fckeditor/fckeditor.php");
 testlinkInitPage($db,true);
+$session_tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 
-$sessionProdID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+//echo "<pre>debug"; print_r($_SESSION); echo "</pre>";
+//echo "<pre>debug\session_tproject_id"; print_r($session_tproject_id); echo "</pre>";
+
 
 $updateResult = null;
 $action = 'no';
@@ -34,18 +41,23 @@ $show_prod_attributes = 'yes';
 $tlog_msg = "Product [ID: Name]=";
 $tlog_level = 'INFO';
 
-$args = init_args($db,$_REQUEST,$sessionProdID);
+// 20060219 - franciscom
+$tproject = New testproject($db);
+
+$args = init_args($tproject,$_REQUEST,$session_tproject_id);
+
+//echo "<pre>debug\$args"; print_r($args); echo "</pre>";
 
 // ----------------------------------------------------------------------
 // 20060101 - fm
 $of = new fckeditor('notes') ;
 $of->BasePath = $_SESSION['basehref'] . 'third_party/fckeditor/';
 $of->ToolbarSet = 'TL_Medium';
-$of->Value = $args->notes;
+//$of->Value = $args->notes;
 // ----------------------------------------------------------------------
 
-if ($sessionProdID)
-	$tlog_msg .= $sessionProdID . ': ' . $_SESSION['testprojectName'];
+if ($session_tproject_id)
+	$tlog_msg .= $session_tproject_id . ': ' . $_SESSION['testprojectName'];
 else
 	$tlog_msg .= $args->id . ': ' . $args->name;
 
@@ -67,6 +79,7 @@ switch($args->do)
 		}
 		$action = 'delete';
 		break;
+		
 	case 'createProduct':
 		$args->id = -1;
 		break;	 
@@ -89,17 +102,22 @@ switch($args->do)
 			if ($args->id == -1)
 			{
 				$updateResult = 'ok';
-				$args->id = createProduct($db,$args->name, $args->color, $args->optReq, $args->notes);
+				// 20060219 - franciscom
+				$args->id = $tproject->create($args->name, $args->color, $args->optReq, $args->notes);
 				if (!$args->id)
 					$updateResult = lang_get('refer_to_log');
 				else
 					$args->id = -1;
 			}
 			else
-				$updateResult = updateProduct($db,$args->id, $args->name, $args->color,$args->optReq, $args->notes);
+			{
+				// 20060219 - franciscom
+				$updateResult = $tproject->update($args->id, $args->name, $args->color,$args->optReq, $args->notes);
+			}	
 		}
 		$action = 'updated';
 		break;
+	
 	case 'inactivateProduct':
 		if (activateProduct($db,$args->id, 0))
 		{
@@ -126,17 +144,17 @@ if ($args->do != 'deleteProduct')
 {
 	if ($args->id != -1)
 	{
-		if ($sessionProdID)
+		if ($session_tproject_id)
 		{
-			$productData = getProduct($db,$sessionProdID);
-			if ($productData)
+			$the_data = $tproject->get_by_id($session_tproject_id);
+			if ($the_data)
 			{
-				$args->name = $productData['name'];
+				$args->name = $the_data['name'];
 				$smarty->assign('found', 'yes');
-				$smarty->assign('id', $productData['id']);
-				$smarty->assign('color', $productData['color']);
-				$smarty->assign('active', $productData['active']);
-				$smarty->assign('reqs_default', $productData['option_reqs']);
+				$smarty->assign('id', $the_data['id']);
+				$smarty->assign('color', $the_data['color']);
+				$smarty->assign('active', $the_data['active']);
+				$smarty->assign('reqs_default', $the_data['option_reqs']);
 			}
 			else
 				$updateResult = lang_get('info_failed_loc_prod');
@@ -155,8 +173,11 @@ if ($args->do != 'deleteProduct')
 }
 
 if($action != 'no')
+{
 	tLog($tlog_msg, $tlog_level);
+}
 
+$of->Value = $args->notes;
 $smarty->assign('action', $action);
 $smarty->assign('sqlResult', $updateResult);
 $smarty->assign('name', $args->name);
@@ -176,10 +197,16 @@ $smarty->display('adminProductEdit.tpl');
  * @return    object with html values tranformed and other
  *                   generated variables.
  *
+ * 20060219 - franciscom
  * 20060102 - fm 
 */
-function init_args(&$db,$request_hash, $sessionProdID)
+function init_args($tproject,$request_hash, $session_tproject_id)
 {
+	
+	//echo "<pre>debug\$session_tproject_id"; print_r($session_tproject_id); echo "</pre>";
+	//echo "<pre>debug\$request_hash"; print_r($request_hash); echo "</pre>";
+	
+	
 	$request_hash = strings_stripSlashes($request_hash);
 	
 	$do_keys = array('deleteProduct','editProduct','inactivateProduct','activateProduct','createProduct');
@@ -202,23 +229,41 @@ function init_args(&$db,$request_hash, $sessionProdID)
 	}
 	
 	// Special algorithm for notes
-	$the_prodid = 0;
+	$the_tproject_id = 0;
 	if ($args->do == 'createProduct')
-		$args->id = -1;
-	else if ($args->id == -1)
-		$the_prodid = -1;
-	else if ($sessionProdID)
-		$the_prodid = $sessionProdID;
-	else if(!is_null($args->id))
-		$the_prodid = $args->id;
-
-	if ($the_prodid > 0)
 	{
-		$productData = getProduct($db,$the_prodid);
-		$args->notes = 	$productData['notes'];
+		$args->id = -1;
 	}
-	else 
-		$args->notes = '';
+	//else if ($args->id == -1)
+	//{
+	//	$the_tproject_id = -1;
+	//}
+	else if ($session_tproject_id)
+	{
+		$the_tproject_id = $session_tproject_id;
+	}	
+	else if(!is_null($args->id))
+	{
+		$the_tproject_id = $args->id;
+  }
+
+  //echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $the_tproject_id . "</b><br>";
+
+  if( $args->do != 'editProduct')
+  {
+    if ($the_tproject_id > 0)
+	  {
+		  $the_data = $tproject->get_by_id($the_tproject_id);
+		  //echo "<pre>debug"; print_r($the_data); echo "</pre>";
+			$args->notes = 	$the_data['notes'];
+	  }
+ 	  else
+	  { 
+		  $args->notes = '';
+	  }
+	}
+	
+		
 	return $args;
 }
 ?>

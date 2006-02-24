@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: users.inc.php,v $
  *
- * @version $Revision: 1.26 $
- * @modified $Date: 2006/02/24 18:06:13 $ $Author: franciscom $
+ * @version $Revision: 1.27 $
+ * @modified $Date: 2006/02/24 18:13:23 $ $Author: franciscom $
  *
  * Functions for usermanagement
  *
@@ -27,6 +27,7 @@ require_once("common.php");
  * @return 0: account doesn't exist
  *         1: account exists
  *
+ * 20060224 - franciscom - table name user -> users
  * 20051228 - fm - active field
  *
  * 20050528 - fm
@@ -41,7 +42,7 @@ function existLogin(&$db,$login, &$r_user_data)
 	$sql = " SELECT password, login, user.id, role_id AS rightsid, " .
 	       "        email, first, last, " .  
 	       "        roles.description AS role, locale, active" .
-	       " FROM user,roles " .
+	       " FROM users,roles " .
 	       " WHERE user.role_id = roles.id " .
 	       " AND login='" . $db->prepare_string($login) . "'";
 	
@@ -85,10 +86,11 @@ function userInsert(&$db,$login, $password, $first, $last, $email,
  * @param type $db [ref] documentation
  * @param type $id documentation
  * @return type documentation
+ * 20060224 - franciscom - table name user -> users
  **/
 function userDelete(&$db,$id)
 {
-	$sql = "DELETE FROM user WHERE id=" . $id;
+	$sql = "DELETE FROM users WHERE id=" . $id;
 	$result = $db->exec_query($sql);
 			
 	return $result ? 'ok' : $db->error_msg();
@@ -160,10 +162,12 @@ function updateUserPassword(&$db,$userID, $oldPswd, $newPswd)
  * @param type $db [ref] documentation
  * @param type $userID documentation
  * @return type documentation
+ *
+ * 20060224 - franciscom - table name user -> users
  **/
 function getUserPassword(&$db,$userID)
 {
-	$sql = "SELECT password FROM user WHERE id=" . $userID;
+	$sql = "SELECT password FROM users WHERE id=" . $userID;
 	$pwd = $db->fetchFirstRowSingleColumn($sql,"password");
 	
 	return $pwd;
@@ -325,14 +329,14 @@ function getUserById(&$db,$id)
  * @return type documentation
  *
  * 20051112 - scs - where clause was added at the wrong place
- * 
+ * 20060224 - franciscom - table name user -> users
  **/
 function getAllUsers(&$db,$whereClause = null,$column = null)
 {
 	$show_realname = config_get('show_realname');
 	
 	$sql = " SELECT id,login,password,first,last,email,role_id AS rightsid,locale,".
-		   " login AS fullname, active FROM user";
+		   " login AS fullname, active FROM users";
 	if (!is_null($whereClause))
 	{
 		$sql .= ' '.$whereClause;
@@ -404,13 +408,14 @@ function user_is_name_valid($p_username)
  * 
  * 20051015 - scs - added check of userId of 0
  * 20060102 - scs - refactored 
+ * 20060224 - franciscom - table name user -> users
  **/
 function getUserName(&$db,$id_user)
 {
 	$username = lang_get('Unknown');
 	if ($id_user)
 	{
-		$sql = "SELECT login, first, last FROM user WHERE id=" . $id_user;
+		$sql = "SELECT login, first, last FROM users WHERE id=" . $id_user;
 		$row = $db->fetchFirstRow($sql); 
 		$username = format_username($row);
 	}
@@ -462,6 +467,7 @@ function checkLogin(&$db,$login)
 	}		
 	return $sqlResult;
 }
+
 // 20051228 - fm
 //NOT USED AT THE MOMENT
 /*

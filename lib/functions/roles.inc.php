@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
  * @filesource $RCSfile: roles.inc.php,v $
- * @version $Revision: 1.4 $
- * @modified $Date: 2006/02/24 18:13:10 $ by $Author: franciscom $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2006/02/24 18:56:18 $ by $Author: franciscom $
  * @author Martin Havlat, Chad Rosen
  * 
  * This script provides the get_rights and has_rights functions for
@@ -340,7 +340,8 @@ function resetUserRoles(&$db,$id)
 function getRoles(&$db)
 {
 	$roles = null;
-	$query = "SELECT roles.id, roles.description, rights.description AS rights_description FROM role_rights r, roles, rights WHERE role_id=roles.id and right_id=rights.id";
+	$query = "SELECT roles.id, roles.description, rights.description AS rights_description 
+	          FROM role_rights r, roles, rights WHERE role_id=roles.id and right_id=rights.id";
 	$result = $db->exec_query($query);
 	if ($result)
 	{

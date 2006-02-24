@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: users.inc.php,v $
  *
- * @version $Revision: 1.27 $
- * @modified $Date: 2006/02/24 18:13:23 $ $Author: franciscom $
+ * @version $Revision: 1.28 $
+ * @modified $Date: 2006/02/24 18:34:48 $ $Author: franciscom $
  *
  * Functions for usermanagement
  *
@@ -61,19 +61,19 @@ function existLogin(&$db,$login, &$r_user_data)
  * @param string first name
  * @param string last name
  * @param string email
- * @param string rights  (optional; default is TL_DEFAULT_ROLEID)
+ * @param string role_id  (optional; default is TL_DEFAULT_ROLEID)
  * @param string locale  (optional; locale for the user)
  * @param numeric active (optional; default ACTIVE_USER)
  */
 function userInsert(&$db,$login, $password, $first, $last, $email, 
-                    $rights=TL_DEFAULT_ROLEID, $locale = TL_DEFAULT_LOCALE, $active=1)
+                    $role_id=TL_DEFAULT_ROLEID, $locale = TL_DEFAULT_LOCALE, $active=1)
 {
 	$password = md5($password);
 	$sqlInsert = "INSERT INTO user (login,password,first,last,email,role_id,locale,active) 
 	              VALUES ('" . 
 				        $db->prepare_string($login) . "','" . $db->prepare_string($password) . "','" . 
 				        $db->prepare_string($first) . "','" . $db->prepare_string($last) . "','" . 
-				        $db->prepare_string($email) . "'," . $rights . ",'". 
+				        $db->prepare_string($email) . "'," . $role_id . ",'". 
 				        $db->prepare_string($locale). "'," . $active . ")";
 	$insertResult = $db->exec_query($sqlInsert);
 	
@@ -182,7 +182,7 @@ function getUserPassword(&$db,$userID)
  * @param type $last documentation
  * @param type $email documentation
  * @param type $login [default = null] documentation
- * @param type $rightsID [default = null] documentation
+ * @param type $role_id [default = null] documentation
  * @param type $locale [default = null] documentation
  * @param type $active [default = null] documentation
  * @return type documentation
@@ -191,7 +191,7 @@ function getUserPassword(&$db,$userID)
  * 20050424 - fm added argument locale
  **/
 function userUpdate(&$db,$userID, $first, $last, $email ,
-                    $login = null, $rightsID = null, $locale = null, $active = null)
+                    $login = null, $role_id = null, $locale = null, $active = null)
 {
  	$sql = "UPDATE user " .
 	       "SET first='" . $db->prepare_string($first) . "'" .
@@ -204,7 +204,7 @@ function userUpdate(&$db,$userID, $first, $last, $email ,
 	}	
 	if (!is_null($rightsID))
 	{
-		$sql .= ", role_id = ". $rightsID ;
+		$sql .= ", role_id = ". $role_id ;
 	}	
 	if (!is_null($locale))
 	{

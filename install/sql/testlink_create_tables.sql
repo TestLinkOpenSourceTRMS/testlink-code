@@ -1,425 +1,322 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
 # This script is distributed under the GNU General Public License 2 or later.
-# $Id: testlink_create_tables.sql,v 1.16 2006/01/18 16:59:39 franciscom Exp $
-# SQL script - create db tables for TL 1.6.0  
+# $Id: testlink_create_tables.sql,v 1.17 2006/02/24 17:57:48 franciscom Exp $
+# SQL script - create db tables for TL   
 #
 # default rights & admin account are created via testlink_create_default_data.sql
 #
 # Rev :
-#       20050806 - fm
-#       1. equalized the dimension and type of field 'NAME'
-#       2. Corrected dimension of ID fields (11 -> 10) in requirement tables
-#       3. Table Comments clean-up  
-# 
-#       20050808 - fm
-#       every occurence of active field converted to boolean
-#
-#       20050925 - fm
-#       build: removed build.build
-#       category: removed category.name
-#       component: removed component.name
-#       bugs: build -> build_id
-#
-#	      20051120 - mht - bug 237; updated db_version->version default value
-#
-#       20060101 - fm - added active field in user table 
-#       20060104 - fm - changes to milestone table suggested by Andreas Morsing
-#       20060118 - fm - id_xxx -> xxx_id
 # --------------------------------------------------------
-
 #
-# to trace the db upgrade history
-DROP TABLE IF EXISTS `db_version`;
-CREATE TABLE `db_version` (
-  version varchar(50) NOT NULL default 'unknown',
-  upgrade_date datetime NOT NULL default '0000-00-00 00:00'
-);
-
-#
-# Table structure for table `bugs`
-#
-#
-DROP TABLE IF EXISTS `bugs`;
-CREATE TABLE `bugs` (
-  `tcid` int(10) unsigned NOT NULL default '0',
-  `build_id` int(10) NOT NULL default '0',
-  `bug` int(10) unsigned NOT NULL default '0',
-  PRIMARY KEY  (`tcid`,`build_id`,`bug`),
-  KEY `tcid` (`tcid`),
-  KEY `build_id` (`build_id`),
-  KEY `bug` (`bug`)
-) TYPE=MyISAM COMMENT='Bugs filed for each result';
-
-# --------------------------------------------------------
-
-#
-# Table structure for table `build`
-#
-
-DROP TABLE IF EXISTS `build`;
-CREATE TABLE `build` (
+CREATE TABLE `builds` (
   `id` int(10) unsigned NOT NULL auto_increment,
-  `projid` int(10) unsigned NOT NULL default '0',
+  `testplan_id` int(10) unsigned NOT NULL default '0',
   `name` varchar(100) NOT NULL default 'undefined',
-  `note` text,
+  `notes` text,
   PRIMARY KEY  (`id`),
-  KEY `projid` (`projid`)
-) TYPE=MyISAM COMMENT='Available builds';
+  UNIQUE KEY `name` (`testplan_id`,`name`),
+  KEY `testplan_id` (`testplan_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Available builds';
 
-# --------------------------------------------------------
+CREATE TABLE `db_version` (
+  `version` varchar(50) NOT NULL default 'unknown',
+  `upgrade_ts` datetime NOT NULL default '0000-00-00 00:00:00'
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-#
-# Table structure for table `category`
-#
 
-DROP TABLE IF EXISTS `category`;
-CREATE TABLE `category` (
+CREATE TABLE `execution_bugs` (
+  `execution_id` int(10) unsigned NOT NULL default '0',
+  `bug_id` int(10) unsigned NOT NULL default '0',
+  PRIMARY KEY  (`execution_id`,`bug_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE `executions` (
   `id` int(10) unsigned NOT NULL auto_increment,
-  `compid` int(10) unsigned default NULL,
-  `importance` enum('L','M','H') NOT NULL default 'M',
-  `risk` enum('1','2','3') NOT NULL default '2',
-  `owner` varchar(30) default 'none',
-  `mgtcatid` int(10) unsigned NOT NULL default '0',
-  `CATorder` int(10) NOT NULL default '0',
-  PRIMARY KEY  (`id`),
-  KEY `id` (`id`),
-  KEY `compid` (`compid`)
-) TYPE=MyISAM COMMENT='Category of TC assigned to a Test Plan';
+  `build_id` int(10) NOT NULL default '0',
+  `tester_id` int(10) unsigned default NULL,
+  `execution_ts` datetime default NULL,
+  `status` char(1) default NULL,
+  `testplan_id` int(10) unsigned NOT NULL default '0',
+  `tcversion_id` int(10) unsigned NOT NULL default '0',
+  `notes` text,
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-# --------------------------------------------------------
-
-#
-# Table structure for table `component`
-#
-
-DROP TABLE IF EXISTS `component`;
-CREATE TABLE `component` (
-  `id` int(10) unsigned NOT NULL auto_increment,
-  `projid` int(10) unsigned default NULL,
-  `mgtcompid` int(10) unsigned NOT NULL default '0',
-  PRIMARY KEY  (`id`),
-  KEY `id` (`id`),
-  KEY `projid` (`projid`)
-) TYPE=MyISAM ;
-
-# --------------------------------------------------------
-
-#
-# Table structure for table `keywords`
-#
-
-DROP TABLE IF EXISTS `keywords`;
 CREATE TABLE `keywords` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `keyword` varchar(100) NOT NULL default '',
-  `prodid` int(10) unsigned NOT NULL default '0',
+  `testproject_id` int(10) unsigned NOT NULL default '0',
   `notes` text,
   PRIMARY KEY  (`id`),
-  KEY `prodid` (`prodid`),
+  KEY `testproject_id` (`testproject_id`),
   KEY `keyword` (`keyword`)
-) TYPE=MyISAM COMMENT='All of the keywords for each product';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-# --------------------------------------------------------
-
-#
-# Table structure for table `mgtcategory`
-#
-
-DROP TABLE IF EXISTS `mgtcategory`;
-CREATE TABLE `mgtcategory` (
+CREATE TABLE `milestones` (
   `id` int(10) unsigned NOT NULL auto_increment,
+  `testproject_id` int(10) unsigned NOT NULL default '0',
+  `date` date NOT NULL default '0000-00-00',
+  `A` tinyint(3) unsigned zerofill NOT NULL default '000',
+  `B` tinyint(3) unsigned zerofill NOT NULL default '000',
+  `C` tinyint(3) unsigned zerofill NOT NULL default '000',
   `name` varchar(100) NOT NULL default 'undefined',
-  `objective` text NOT NULL,
-  `config` text NOT NULL,
-  `data` text NOT NULL,
-  `tools` text NOT NULL,
-  `date` datetime NOT NULL default '0000-00-00 00:00:00',
-  `compid` int(10) unsigned NOT NULL default '0',
-  `CATorder` int(10) NOT NULL default '0',
   PRIMARY KEY  (`id`),
-  KEY `compid` (`compid`)
-) TYPE=MyISAM COMMENT='Categories of the Test Specification';
+  KEY `testproject_id` (`testproject_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-# --------------------------------------------------------
 
-#
-# Table structure for table `mgtcomponent`
-#
-
-DROP TABLE IF EXISTS `mgtcomponent`;
-CREATE TABLE `mgtcomponent` (
+CREATE TABLE `node_types` (
   `id` int(10) unsigned NOT NULL auto_increment,
-  `name` varchar(100) NOT NULL default 'undefined',
-  `intro` text,
+  `description` varchar(100) NOT NULL default 'testproject',
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+CREATE TABLE `nodes_hierarchy` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `parent_id` int(10) unsigned default NULL,
+  `node_type_id` int(10) unsigned NOT NULL default '1',
+  `node_order` int(10) unsigned default NULL,
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+CREATE TABLE `priorities` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `testplan_id` int(10) unsigned NOT NULL default '0',
+  `risk_importance` char(2) NOT NULL default '',
+  `priority` char(1) NOT NULL default 'b',
+  PRIMARY KEY  (`id`),
+  KEY `testplan_id` (`testplan_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+CREATE TABLE `req_coverage` (
+  `req_id` int(10) NOT NULL,
+  `testcase_id` int(10) NOT NULL,
+  KEY `req_testcase` (`req_id`,`testcase_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='relation test case ** requirements';
+
+DROP TABLE IF EXISTS `req_specs`;
+CREATE TABLE `req_specs` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `testproject_id` int(10) unsigned NOT NULL,
+  `title` varchar(100) NOT NULL,
   `scope` text,
-  `ref` text,
-  `method` text,
-  `lim` text,
-  `prodid` int(10) unsigned NOT NULL default '0',
+  `total_req` int(10) NOT NULL default '0',
+  `type` char(1) default 'n',
+  `author_id` int(10) unsigned default NULL,
+  `creation_ts` datetime NOT NULL default '0000-00-00 00:00:00',
+  `modifier_id` int(10) unsigned default NULL,
+  `modification_ts` datetime NOT NULL default '0000-00-00 00:00:00',
   PRIMARY KEY  (`id`),
-  KEY `prodid` (`prodid`)
-) TYPE=MyISAM COMMENT='Components of the Test Specification';
+  KEY `testproject_id` (`testproject_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Dev. Documents (e.g. System Requirements Specification)';
 
-# --------------------------------------------------------
-
-#
-# Table structure for table `mgtproduct`
-#
-
-DROP TABLE IF EXISTS `mgtproduct`;
-CREATE TABLE `mgtproduct` (
+CREATE TABLE `requirements` (
   `id` int(10) unsigned NOT NULL auto_increment,
+  `srs_id` int(10) unsigned NOT NULL,
+  `req_doc_id` varchar(16) default NULL,
+  `title` varchar(100) NOT NULL,
+  `scope` text,
+  `status` char(1) NOT NULL default 'v',
+  `type` char(1) default NULL,
+  `author_id` int(10) unsigned default NULL,
+  `creation_ts` datetime NOT NULL default '0000-00-00 00:00:00',
+  `modifier_id` int(10) unsigned default NULL,
+  `modification_ts` datetime NOT NULL default '0000-00-00 00:00:00',
+  PRIMARY KEY  (`id`),
+  KEY `srs_id` (`srs_id`,`status`),
+  KEY `req_doc_id` (`req_doc_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+CREATE TABLE `rights` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `description` varchar(100) NOT NULL default '',
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY `Index_2` (`description`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE `risk_assignments` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `testplan_id` int(10) unsigned NOT NULL default '0',
+  `node_id` int(10) unsigned NOT NULL default '0',
+  `risk` int(10) NOT NULL default '2',
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY `tp_node_id` (`testplan_id`,`node_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `user_assignments`;
+CREATE TABLE `user_assignments` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `type` int(10) unsigned NOT NULL default '0',
+  `feature_id` int(10) unsigned NOT NULL default '0',
+  `owner_id` int(10) unsigned default NULL,
+  `deadline_ts` datetime NOT NULL default '0000-00-00 00:00:00',
+  `assigner_id`  int(10) unsigned default NULL,
+  `create_ts`  datetime NOT NULL default '0000-00-00 00:00:00',
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+
+
+CREATE TABLE `role_rights` (
+  `role_id` int(11) NOT NULL default '0',
+  `right_id` int(11) NOT NULL default '0',
+  PRIMARY KEY  (`role_id`,`right_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+CREATE TABLE `roles` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `description` varchar(100) NOT NULL default '',
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY `Index_2` (`description`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+
+
+CREATE TABLE `testcase_keywords` (
+  `testcase_id` int(10) unsigned NOT NULL default '0',
+  `keyword_id` int(10) unsigned NOT NULL default '0',
+  PRIMARY KEY  (`testcase_id`,`keyword_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+CREATE TABLE `tcversions` (
+  `id` int(10) unsigned NOT NULL,
+  `version` smallint(5) unsigned NOT NULL default '1',
+  `summary` text,
+  `steps` text,
+  `expected_results` text,
+  `importance` char(1) NOT NULL default 'M',
+  `author_id` int(10) unsigned default NULL,
+  `creation_ts` datetime NOT NULL default '0000-00-00 00:00:00',
+  `updater_id` int(10) unsigned default NULL,
+  `modification_ts` datetime NOT NULL default '0000-00-00 00:00:00',
+  `active` tinyint(1) NOT NULL default '1',
+  `open` tinyint(1) NOT NULL default '1',
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+CREATE TABLE `testcases` (
+  `id` int(10) unsigned NOT NULL,
+  `name` varchar(100) default NULL,
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE `testplan_tcversions` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `tcversion_id` int(10) unsigned NOT NULL default '0',
+  `testplan_id` int(10) unsigned NOT NULL default '0',
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY `tp_tcversion` (`tcversion_id`,`testplan_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE `testplans` (
+  `id` int(10) unsigned NOT NULL,
+  `name` varchar(100) NOT NULL default 'unknown',
+  `testproject_id` int(10) unsigned NOT NULL default '0',
+  `notes` text,
+  `active` tinyint(1) NOT NULL default '1',
+  `open` tinyint(1) NOT NULL default '1',
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY `testproject_id_name` (`testproject_id`,`name`),
+  KEY `testproject_id_active` (`testproject_id`,`active`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+CREATE TABLE `testprojects` (
+  `id` int(10) unsigned NOT NULL,
   `name` varchar(100) NOT NULL default 'undefined',
   `notes` text,
   `color` varchar(12) NOT NULL default '#9BD',
-  `active` bool NOT NULL default 1,
-  `option_reqs` bool NOT NULL default 0,
-  `option_priority` bool NOT NULL default 1,
+  `active` tinyint(1) NOT NULL default '1',
+  `option_reqs` tinyint(1) NOT NULL default '0',
+  `option_priority` tinyint(1) NOT NULL default '1',
   PRIMARY KEY  (`id`),
   UNIQUE KEY `name` (`name`),
-  KEY `ActiveId` (`id`,`active`)
-) TYPE=MyISAM COMMENT='Products of the TC management';
+  KEY `id_active` (`id`,`active`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-# --------------------------------------------------------
-
-#
-# Table structure for table `mgttestcase`
-#
-
-DROP TABLE IF EXISTS `mgttestcase`;
-CREATE TABLE `mgttestcase` (
-  `id` int(10) unsigned NOT NULL auto_increment,
-  `title` varchar(200) default NULL,
-  `steps` text,
-  `exresult` text,
-  `keywords` text,
-  `catid` int(10) unsigned NOT NULL default '0',
-  `version` smallint(5) unsigned NOT NULL default '1',
-  `summary` text,
-  `author_id` INT(10) unsigned  NULL,
-  `create_date` date NOT NULL default '0000-00-00',
-  `reviewer_id` INT(10) unsigned  NULL,
-  `modified_date` date NOT NULL default '0000-00-00',
-  `TCorder` int(10) NOT NULL default '0',
-  PRIMARY KEY  (`id`),
-  KEY `catid` (`catid`)
-) TYPE=MyISAM COMMENT='The test cases within Test Specification';
-
-# --------------------------------------------------------
-
-#
-# Table structure for table `milestone`
-#
-
-DROP TABLE IF EXISTS `milestone`;
-CREATE TABLE `milestone` (
-  `id` int(10) unsigned NOT NULL auto_increment,
-  `projid` int(10) unsigned NOT NULL default '0',
-  `date` date NOT NULL default '0000-00-00',
-  `A` tinyint(3) unsigned NOT NULL default '0',
-  `B` tinyint(3) unsigned NOT NULL default '0',
-  `C` tinyint(3) unsigned NOT NULL default '0',
+CREATE TABLE `testsuites` (
+  `id` int(10) unsigned NOT NULL,
   `name` varchar(100) NOT NULL default 'undefined',
-  PRIMARY KEY  (`id`),
-  KEY `projid` (`projid`)
-) TYPE=MyISAM;
-# --------------------------------------------------------
+  `details` text,
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-#
-# Table structure for table `priority`
-#
-
-DROP TABLE IF EXISTS `priority`;
-CREATE TABLE `priority` (
+CREATE TABLE `users` (
   `id` int(10) unsigned NOT NULL auto_increment,
-  `projid` int(10) unsigned NOT NULL default '0',
-  `riskImp` char(2) NOT NULL default '',
-  `priority` enum('a','b','c') NOT NULL default 'b',
-  PRIMARY KEY  (`id`),
-  KEY `projid` (`projid`)
-) TYPE=MyISAM;
-
-# --------------------------------------------------------
-
-#
-# Table structure for table `project`
-#
-#
-# 20050808 - fm
-# from:
-#       `active` enum('y','n') NOT NULL default 'y',
-# to:
-#       `active` bool NOT NULL default 1,
-#
-DROP TABLE IF EXISTS `testplans`;
-CREATE TABLE `testplans` (
-  `id` int(10) NOT NULL auto_increment,
-  `prodid` int(10) unsigned NOT NULL default '0',
-  `name` varchar(100) NOT NULL default 'unknown',
-  `notes` text,
-  `active` bool NOT NULL default 1,
-  PRIMARY KEY  (`id`),
-  KEY `product` (`prodid`,`active`)
-) TYPE=MyISAM COMMENT='Test Plan information';
-
-# --------------------------------------------------------
-
-#
-# Table structure for table `testplans_rights`
-#
-
-DROP TABLE IF EXISTS `testplans_rights`;
-CREATE TABLE `testplans_rights` (
-  `userid` int(10) unsigned NOT NULL default '0',
-  `projid` int(10) unsigned NOT NULL default '0',
-  PRIMARY KEY  (`userid`,`projid`)
-) TYPE=MyISAM COMMENT='User''s project permissions';
-
-# --------------------------------------------------------
-
-#
-# Table structure for table `requirement_doc`
-#
-
-DROP TABLE IF EXISTS `req_spec`;
-CREATE TABLE `req_spec` (
-  `id` INT( 10 ) UNSIGNED NOT NULL AUTO_INCREMENT ,
-  `product_id` INT( 10 ) UNSIGNED NOT NULL ,
-  `title` VARCHAR( 100 ) NOT NULL ,
-  `scope` TEXT,
-  `total_req` VARCHAR( 5 ) DEFAULT 'n/a' NOT NULL ,
-  `type` char(1) default 'n',
-  `author_id` INT( 10 ) UNSIGNED NULL,
-  `create_date` date NOT NULL default '0000-00-00',
-  `modifier_id` INT( 10 ) UNSIGNED NULL,
-  `modified_date` date NOT NULL default '0000-00-00',
-PRIMARY KEY ( `id` ) ,
-INDEX ( `product_id` )
-) TYPE=MyISAM COMMENT='Dev. Documents (e.g. System Requirements Specification)';
-# --------------------------------------------------------
-
-#
-# Table structure for table `requirements`
-#
-
-DROP TABLE IF EXISTS `requirements`;
-CREATE TABLE `requirements` (
-  `id` INT( 10 ) UNSIGNED NOT NULL AUTO_INCREMENT ,
-  `srs_id` INT( 10 ) UNSIGNED NOT NULL ,
-  `req_doc_id` varchar(16) default NULL,
-  `title` VARCHAR( 100 ) NOT NULL ,
-  `scope` TEXT,
-  `status` char(1) default 'v' NOT NULL,
-  `type` char(1) default NULL,
-  `author_id` INT( 10 ) UNSIGNED NULL,
-  `create_date` date NOT NULL default '0000-00-00',
-  `modifier_id` INT( 10 ) UNSIGNED NULL,
-  `modified_date` date NOT NULL default '0000-00-00',
-PRIMARY KEY ( `id` ) ,
-INDEX ( `srs_id` , `status` ),
-KEY `req_doc_id` (`req_doc_id`)
-) TYPE=MyISAM;
-
-# --------------------------------------------------------
-
-#
-# Table structure for table `requirements_coverage`
-#
-
-DROP TABLE IF EXISTS `req_coverage`;
-CREATE TABLE `req_coverage` (
-`req_id` INT( 10 ) NOT NULL ,
-`tc_id` INT( 10 ) NOT NULL ,
-INDEX ( `req_id` , `tc_id` )
-) TYPE=MyISAM COMMENT = 'relation test case ** requirements';
-
-# --------------------------------------------------------
-
-#
-# Table structure for table `results`
-#
-
-DROP TABLE IF EXISTS `results`;
-CREATE TABLE `results` (
-  `build_id` int(10) NOT NULL default '0',
-  `runby` varchar(30) default NULL,
-  `daterun` date default NULL,
-  `status` char(1) default NULL,
-  `bugs` varchar(100) default NULL,
-  `tcid` int(10) unsigned NOT NULL default '0',
-  `notes` text,
-  PRIMARY KEY  (`tcid`,`build_id`),
-  KEY `tcid` (`tcid`),
-  KEY `status` (`status`)
-) TYPE=MyISAM;
-
-# --------------------------------------------------------
-
-#
-# Table structure for table `rights`
-#
-
-DROP TABLE IF EXISTS `rights`;
-CREATE TABLE `rights` (
-  `id` tinyint(5) unsigned NOT NULL auto_increment,
-  `role` varchar(20) NOT NULL default '',
-  `rights` text NOT NULL,
-  PRIMARY KEY  (`id`),
-  UNIQUE KEY `role` (`role`)
-) TYPE=MyISAM COMMENT='rights (permissions)';
-
-# --------------------------------------------------------
-
-#
-# Table structure for table `testcase`
-#
-# 20050808 - fm
-# from:
-#       `active` enum('on','off') NOT NULL default 'on',
-# to:
-#       `active` bool NOT NULL default 1,
-#
-
-DROP TABLE IF EXISTS `testcase`;
-CREATE TABLE `testcase` (
-  `id` int(10) unsigned NOT NULL auto_increment,
-  `title` varchar(200) default NULL,
-  `summary` text,
-  `steps` text,
-  `exresult` text,
-  `catid` int(10) unsigned NOT NULL default '0',
-  `active` bool NOT NULL default 1,
-  `version` smallint(5) unsigned NOT NULL default '0',
-  `mgttcid` int(10) unsigned NOT NULL default '0',
-  `keywords` text,
-  `TCorder` int(10) NOT NULL default '0',
-  PRIMARY KEY  (`id`),
-  KEY `id` (`id`),
-  KEY `mgttcid` (`mgttcid`),
-  KEY `catid` (`catid`)
-) TYPE=MyISAM COMMENT='Test case information';
-
-# --------------------------------------------------------
-
-#
-# Table structure for table `user`
-#
-
-DROP TABLE IF EXISTS `user`;
-CREATE TABLE `user` (
-  `password` varchar(32) NOT NULL default '',
   `login` varchar(30) NOT NULL default '',
-  `id` int(10) unsigned NOT NULL auto_increment,
-  `rightsid` tinyint(3) unsigned NOT NULL default '0',
+  `password` varchar(32) NOT NULL default '',
+  `role_id` tinyint(3) unsigned NOT NULL default '0',
   `email` varchar(100) NOT NULL default '',
   `first` varchar(30) NOT NULL default '',
   `last` varchar(30) NOT NULL default '',
   `locale` varchar(10) NOT NULL default 'en_GB',
-  `active` bool NOT NULL default 1,
+  `active` tinyint(1) NOT NULL default '1',
   PRIMARY KEY  (`id`),
   UNIQUE KEY `login` (`login`)
-) TYPE=MyISAM COMMENT='User information' AUTO_INCREMENT=20;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='User information';
 
-    
-# ---- END ----------------------------------------------------
+CREATE TABLE `cfield_node_types` (
+  `field_id` int(10) NOT NULL default '0',
+  `node_type_id` int(10) NOT NULL default '0',
+  PRIMARY KEY  (`field_id`,`node_type_id`),
+  KEY `idx_custom_fields_assign` (`node_type_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
+CREATE TABLE `cfield_testprojects` (
+  `field_id` int(10) unsigned NOT NULL default '0',
+  `testproject_id` int(10) unsigned NOT NULL default '0',
+  PRIMARY KEY  (`field_id`,`testproject_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+CREATE TABLE `cfield_design_values` (
+  `field_id` int(10) NOT NULL default '0',
+  `node_id` int(10) NOT NULL default '0',
+  `value` varchar(255) NOT NULL default '',
+  PRIMARY KEY  (`field_id`,`node_id`),
+  KEY `idx_cfield_design_values` (`node_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+CREATE TABLE `cfield_execution_values` (
+  `field_id`     int(10) NOT NULL default '0',
+  `execution_id` int(10) NOT NULL default '0',
+  `testplan_id` int(10) NOT NULL default '0',
+  `tcversion_id` int(10) NOT NULL default '0',
+  `value` varchar(255) NOT NULL default '',
+  PRIMARY KEY  (`field_id`,`execution_id`,`testplan_id`,`tcversion_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+CREATE TABLE `custom_fields` (
+  `id` int(10) NOT NULL auto_increment,
+  `name` varchar(64) NOT NULL default '',
+  `type` smallint(6) NOT NULL default '0',
+  `possible_values` varchar(255) NOT NULL default '',
+  `default_value` varchar(255) NOT NULL default '',
+  `valid_regexp` varchar(255) NOT NULL default '',
+  `length_min` int(10) NOT NULL default '0',
+  `length_max` int(10) NOT NULL default '0',
+  `display_order` smallint(5) unsigned NOT NULL default '0',
+  `show_on_design` tinyint(3) unsigned NOT NULL default '1' COMMENT '1=> show it during specification design',
+  `enable_on_design` tinyint(3) unsigned NOT NULL default '1' COMMENT '1=> user can write/manage it during specification design',
+  `show_on_execution` tinyint(3) unsigned NOT NULL default '0' COMMENT '1=> show it during test case execution',
+  `enable_on_execution` tinyint(3) unsigned NOT NULL default '0' COMMENT '1=> user can write/manage it during test case execution',
+  PRIMARY KEY  (`id`),
+  KEY `idx_custom_fields_name` (`name`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE `user_testproject_roles` (
+  `user_id` int(10) NOT NULL default '0',
+  `testproject_id` int(10) NOT NULL default '0',
+  `role_id` int(10) NOT NULL default '0',
+  PRIMARY KEY  (`user_id`,`testproject_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+CREATE TABLE `user_testplan_roles` (
+  `user_id` int(10) NOT NULL default '0',
+  `testplan_id` int(10) NOT NULL default '0',
+  `role_id` int(10) NOT NULL default '0',
+  PRIMARY KEY  (`user_id`,`testplan_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;

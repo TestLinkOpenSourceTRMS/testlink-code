@@ -1,11 +1,16 @@
 <?php
-/* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: index.php,v 1.2 2005/08/16 17:59:48 franciscom Exp $ */
+/* 
+TestLink Open Source Project - http://testlink.sourceforge.net/
+$Id: index.php,v 1.3 2006/02/24 17:57:24 franciscom Exp $ 
+
+20060218 - franciscom
+*/
 
 session_start();
 $_SESSION['session_test'] = 1;
-?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" 
-  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+?>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
 	<title>TestLink Install</title>

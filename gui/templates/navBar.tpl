@@ -1,8 +1,12 @@
-{* Testlink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: navBar.tpl,v 1.7 2006/02/24 18:39:49 franciscom Exp $ *}
-{* Purpose: smarty template - title bar + menu *}
-{* Andreas Morsing: changed the product selection *}
-{* 20050826 - scs - added input for entering tcid *}
+{* Testlink Open Source Project - http://testlink.sourceforge.net/ 
+$Id: navBar.tpl,v 1.8 2006/02/24 18:47:22 franciscom Exp $ 
+Purpose: smarty template - title bar + menu 
+
+20060224 - franciscom - productRole -> testprojectRole
+Andreas Morsing: changed the product selection 
+20050826 - scs - added input for entering tcid 
+
+*}
 
 {*******************************************************************}
 {include file="inc_head.tpl"}
@@ -15,8 +19,8 @@
 	<img alt="TestLink icon" src="icons/twist.gif" width="15px" 
 			height="15px" style="margin-left: 5px; vertical-align: middle;" />
 	<span class="bold">TestLink {$tlVersion|escape} : {$user|escape} 
-	{if $productRole  neq null}
-	- {lang_get s='product_role'}{$productRole|escape}
+	{if $testprojectRole  neq null}
+	- {lang_get s='product_role'}{$testprojectRole|escape}
 	{/if}
 	</span>
 </div>

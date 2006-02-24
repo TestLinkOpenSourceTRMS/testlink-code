@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
  * @filesource $RCSfile: roles.inc.php,v $
- * @version $Revision: 1.2 $
- * @modified $Date: 2006/02/22 20:26:38 $ by $Author: schlundus $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2006/02/24 18:06:13 $ by $Author: franciscom $
  * @author Martin Havlat, Chad Rosen
  * 
  * This script provides the get_rights and has_rights functions for
@@ -34,6 +34,7 @@
  * mgt_modify_product, mgt_users - just Admin edits Products and Users
  *
  *
+ * 20060224 - franciscom - changes in session product -> testproject
  */
 require_once( dirname(__FILE__). '/lang_api.php' );
 
@@ -431,7 +432,7 @@ function has_rights(&$db,$roleQuestion)
 	if (is_null($s_userProductRoles))
 	{
 		$s_userProductRoles = getUserProductRoles($db,$_SESSION['userID']);
-		$_SESSION['productRoles'] = $s_userProductRoles;
+		$_SESSION['testprojectRoles'] = $s_userProductRoles;
 	}
 	if (is_null($s_userTestPlanRoles))
 	{
@@ -459,7 +460,7 @@ function has_rights(&$db,$roleQuestion)
 	
 	//check for product rights first
 	$productID = $_SESSION['testprojectID'];
-	$userProductRoles = $_SESSION['productRoles'];
+	$userProductRoles = $_SESSION['testprojectRoles'];
 	if (isset($userProductRoles[$productID]))
 	{
 		$productRoleID = $userProductRoles[$productID]['role_id'];

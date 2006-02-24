@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: users.inc.php,v $
  *
- * @version $Revision: 1.25 $
- * @modified $Date: 2006/02/22 20:26:38 $ $Author: schlundus $
+ * @version $Revision: 1.26 $
+ * @modified $Date: 2006/02/24 18:06:13 $ $Author: franciscom $
  *
  * Functions for usermanagement
  *
@@ -14,6 +14,7 @@
  * 20050821 - fm - BUGID 239
  * 20051231 - scs - changes due to ADBdb
  * 20060205 - JBA - Remember last product (BTS 221); added by MHT
+ * 20060224 - franciscom - changes in session product -> testproject
 **/
 require_once("common.php");
 
@@ -237,7 +238,7 @@ function userUpdate(&$db,$userID, $first, $last, $email ,
  * 20050701 - create function: update session data if admin modify yourself
  * 20060102 - scs - ADOdb changes
  **/
-function setUserSession(&$db,$user, $id, $roleID, $email, $locale = null,$active = null,$userProductRoles = null,$userTestPlanRoles = null)
+function setUserSession(&$db,$user, $id, $roleID, $email, $locale = null,$active = null,$usertestprojectRoles = null,$userTestPlanRoles = null)
 {
 	tLog('setUserSession: $user='.$user.' $id='.$id.' $roleID='.$roleID.' $email='.$email.' $locale='.$locale);
 	
@@ -265,7 +266,7 @@ function setUserSession(&$db,$user, $id, $roleID, $email, $locale = null,$active
 		set_dt_formats();
 	} 
 	
-	$_SESSION['productRoles'] = $userProductRoles; 
+	$_SESSION['testprojectRoles'] = $usertestprojectRoles; 
 	$_SESSION['testPlanRoles'] = $userTestPlanRoles; 
 	
 	// 20051208 - JBA - added to set the lastProduct the user has selected before logging off.

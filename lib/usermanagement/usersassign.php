@@ -5,17 +5,19 @@
 *
 * Filename $RCSfile: usersassign.php,v $
 *
-* @version $Revision: 1.2 $
-* @modified $Date: 2006/02/22 20:26:38 $
+* @version $Revision: 1.3 $
+* @modified $Date: 2006/02/24 18:06:14 $
 * 
 * Allows assigning users roles to testplans or testprojects
+*
+* 20060224 - franciscom - changes in session product -> testproject
 */
 require_once('../../config.inc.php');
 require_once('users.inc.php');
 testlinkInitPage($db);
 
 $feature = isset($_GET['feature']) ? $_GET['feature'] : null;
-$productID = isset($_SESSION['productID']) ? $_SESSION['productID'] : 0;
+$testprojectID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 $tpName = isset($_SESSION['testPlanName']) ? $_SESSION['testPlanName'] : null;
 $productName = isset($_SESSION['productName']) ? $_SESSION['productName'] : null;
 $userID = $_SESSION['userID'];
@@ -24,7 +26,7 @@ $bProduct = false;
 $bTestPlan = false;
 if ($feature == "product")
 {
-	$featureID = $productID;
+	$featureID = $testprojectID;
 	$bProduct = true;
 }
 else if ($feature == "testplan")
@@ -81,7 +83,7 @@ if ($bProduct)
 	$userFeatureRoles = getProductUserRoles($db,$featureID);
 else if($bTestPlan)
 {
-	$testPlans = getTestPlans($db,$productID,$userID,1);
+	$testPlans = getTestPlans($db,$testprojectID,$userID,1);
 	//if nothing special was selected, use the one in the session or the first
 	if (!$featureID)
 	{

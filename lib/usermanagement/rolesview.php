@@ -5,9 +5,10 @@
  *
  * Filename $RCSfile: rolesview.php,v $
  *
- * @version $Revision: 1.2 $
- * @modified $Date: 2006/02/22 20:26:38 $ by $Author: schlundus $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2006/02/24 18:06:14 $ by $Author: franciscom $
  *
+ * 20060224 - franciscom - changes in session product -> testproject
 **/
 require_once("../../config.inc.php");
 require_once("../functions/common.php");
@@ -38,7 +39,7 @@ if ($bDelete && $id)
 			//reset all affected users by replacing the deleted role with the
 			//<no rights> role
 			resetUserRoles($db,$id);
-			$_SESSION['productRoles'] = getUserProductRoles($db,$userID);
+			$_SESSION['testprojectRoles'] = getUserProductRoles($db,$userID);
 			if ($_SESSION['roleId'] == $id)
 				$_SESSION['roleId'] = TL_ROLES_NONE;
 		}

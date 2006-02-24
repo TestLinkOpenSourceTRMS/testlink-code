@@ -4,12 +4,13 @@
  *
  * Filename $RCSfile: navBar.php,v $
  *
- * @version $Revision: 1.13 $
- * @modified $Date: 2006/02/22 20:26:38 $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2006/02/24 18:02:09 $
  *
  * This file manages the navigation bar. 
  * 20050813 - fm - added Product Filter con TestPlan 
  * 20060205 - JBA - Remember last product (BTS 221); added by MHT
+ * 20060224 - franciscom - changes in session testproject instead of product
  *
 **/
 require('../../config.inc.php');
@@ -21,8 +22,8 @@ $arrProducts = getOptionProducts($db);
 $currentProduct = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : null;
 $roles = getRoles($db);
 $productRole = null;
-if ($currentProduct && isset($_SESSION['productRoles'][$currentProduct]))
-	$productRole = '['.$roles[$_SESSION['productRoles'][$currentProduct]['role_id']]['role'].']';
+if ($currentProduct && isset($_SESSION['testprojectRoles'][$currentProduct]))
+	$productRole = '['.$roles[$_SESSION['testprojectRoles'][$currentProduct]['role_id']]['role'].']';
 $roleName = $roles[$_SESSION['roleId']]['role'];
 
 // 20050810 - fm - interface changes

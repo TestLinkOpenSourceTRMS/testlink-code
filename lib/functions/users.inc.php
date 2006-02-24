@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: users.inc.php,v $
  *
- * @version $Revision: 1.28 $
- * @modified $Date: 2006/02/24 18:34:48 $ $Author: franciscom $
+ * @version $Revision: 1.29 $
+ * @modified $Date: 2006/02/24 18:56:01 $ $Author: franciscom $
  *
  * Functions for usermanagement
  *
@@ -34,12 +34,11 @@ require_once("common.php");
  * 1. header docum improved
  * 2. changed function prototype (r_user_data argument)
  * 20060102 - scs - refactored
+ * 20060224 - franciscom - removed role_id AS
  */
 function existLogin(&$db,$login, &$r_user_data)
 {
-	// twice role to mantain array indexes
-	// 20051228 - fm - added active field
-	$sql = " SELECT password, login, user.id, role_id AS rightsid, " .
+	$sql = " SELECT password, login, user.id, role_id, " .
 	       "        email, first, last, " .  
 	       "        roles.description AS role, locale, active" .
 	       " FROM users,roles " .
@@ -330,12 +329,13 @@ function getUserById(&$db,$id)
  *
  * 20051112 - scs - where clause was added at the wrong place
  * 20060224 - franciscom - table name user -> users
+ *                       - removed role_id AS
  **/
 function getAllUsers(&$db,$whereClause = null,$column = null)
 {
 	$show_realname = config_get('show_realname');
 	
-	$sql = " SELECT id,login,password,first,last,email,role_id AS rightsid,locale,".
+	$sql = " SELECT id,login,password,first,last,email,role_id,locale,".
 		   " login AS fullname, active FROM users";
 	if (!is_null($whereClause))
 	{

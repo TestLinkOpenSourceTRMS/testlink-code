@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: planNew.php,v $
  *
- * @version $Revision: 1.15 $
- * @modified $Date: 2006/02/15 08:49:20 $ $Author: franciscom $
+ * @version $Revision: 1.16 $
+ * @modified $Date: 2006/02/24 18:17:27 $ $Author: franciscom $
  *
  * Purpose:  Add new or edit existing Test Plan 
  *
@@ -39,7 +39,7 @@ $bEditTestPlan = isset($_POST['editTestPlan']) ? $_POST['editTestPlan'] : 0;
 //get testplan info
 if($args->tpID && !($bNewTestPlan || $bEditTestPlan))
 {
-	$tpInfo = getAllTestPlans($db,$args->productID,TP_ALL_STATUS,FILTER_BY_PRODUCT,$args->tpID);
+	$tpInfo = getAllTestPlans($db,$args->testprojectID,TP_ALL_STATUS,FILTER_BY_PRODUCT,$args->tpID);
 	if (sizeof($tpInfo))
 	{
 		$tpInfo = $tpInfo[0];
@@ -63,7 +63,7 @@ else if($bNewTestPlan || $bEditTestPlan)
 		$sqlResult = 'ok';
 		
 		//20051125 - scs - added checking for duplicate tp names
-		$plans = getAllTestPlans($db,$args->productID,null,1);
+		$plans = getAllTestPlans($db,$args->testprojectID,null,1);
 		$bDuplicate = false;
 		$num_plans = sizeof($plans);
 		for($idx = 0; $idx < $num_plans; $idx++)
@@ -82,7 +82,8 @@ else if($bNewTestPlan || $bEditTestPlan)
 		{
 			if ($bNewTestPlan)
 			{
-				$tp_id = insertTestPlan($db,$args->name,$args->notes,$args->productID);
+				// 20060219 - franciscom
+				$tp_id = createTestPlan($db,$args->name,$args->notes,$args->testprojectID);
 				if ($tp_id == 0)
 					$sqlResult = $db->error_msg();
 				$result = insertTestPlanPriorities($db, $tp_id);
@@ -125,7 +126,7 @@ $smarty->assign('tpID',$args->tpID);
 $smarty->assign('tpName', $tpName);
 $smarty->assign('tpActive', $bActive);
 $smarty->assign('prod_name', $args->productName);
-$smarty->assign('arrPlan', getAllActiveTestPlans($db,$args->productID,FILTER_BY_PRODUCT));
+$smarty->assign('arrPlan', getAllActiveTestPlans($db,$args->testprojectID,FILTER_BY_PRODUCT));
 $smarty->assign('sqlResult', $sqlResult);
 $smarty->assign('notes', $of->CreateHTML());
 $smarty->display('planNew.tpl');
@@ -162,8 +163,8 @@ function init_args($request_hash, $session_hash)
 	$args->source_tpid = $args->copy;
 	$args->copy = ($args->copy > 0) ? TRUE : FALSE;
 	
-	$args->productID   = $session_hash['testprojectID'];
-	$args->productName = $session_hash['testprojectName'];
+	$args->testprojectID   = $session_hash['testprojectID'];
+	$args->testprojectName = $session_hash['testprojectName'];
 	$args->userID      = $session_hash['userID'];
 	
 	return $args;

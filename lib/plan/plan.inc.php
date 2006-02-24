@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: plan.inc.php,v $
- * @version $Revision: 1.26 $
- * @modified $Date: 2006/02/04 20:13:15 $ $Author: schlundus $
+ * @version $Revision: 1.27 $
+ * @modified $Date: 2006/02/24 18:17:27 $ $Author: franciscom $
  * @author 	Martin Havlat
  *
  * Functions for management: 
@@ -21,6 +21,10 @@
 
 /** include core functions for collect information about Test Plans */
 require_once("plan.core.inc.php"); 
+
+// 20060219 - franciscom
+require_once("../functions/tree.class.php"); 
+
 
 /**
  * Update priority and owner of test suite/category
@@ -240,13 +244,20 @@ function deleteTestPlanMilestones(&$db,$id)
 
 
 /*
-  20060103 - fm
+  20060219 - franciscom
 */
-function insertTestPlan(&$db,$name,$notes,$prodID)
+function createTestPlan(&$db,$name,$notes,$testproject_id)
 {
-	$sql = "INSERT INTO testplans (name,notes,prodID) VALUES ('" . 
-	       $db->prepare_string($name) . "','" . 
-	       $db->prepare_string($notes) . "'," . $prodID .")";
+	$tree_manager = New tree($db);
+	$node_types=$tree_manager->get_available_node_types();
+	
+  $tplan_id = $tree_manager->new_node($testproject_id,$node_types['test plan']);
+	
+	$sql = "INSERT INTO testplans (id,name,notes,testproject_id) 
+	        VALUES ( {$tplan_id} " . ", '" . 
+	                 $db->prepare_string($name) . "','" . 
+	                 $db->prepare_string($notes) . "'," . 
+	                 $testproject_id .")";
 	$result = $db->exec_query($sql);
 	$id = 0;
 	if ($result)
@@ -256,21 +267,24 @@ function insertTestPlan(&$db,$name,$notes,$prodID)
 	return($id);
 }
 
-function insertTestPlanPriorities(&$db,$tp_id)
+
+
+function insertTestPlanPriorities(&$db,$tplan_id)
 {
 	//Create the priority table
 	$risk_array = config_get('tc_risks');
 	$result = 1;
 	foreach ($risk_array as $risk)
 	{
-		$result = $result && insertTestPlanPriority($db,$tp_id,$risk);
+		$result = $result && insertTestPlanPriority($db,$tplan_id,$risk);
 	}
 	return $result ? 1 : 0;
 }
 
-function insertTestPlanPriority(&$db,$tp_id,$risk)
+function insertTestPlanPriority(&$db,$tplan_id,$risk)
 {
-	$sql = "INSERT into priority (projid,riskImp) VALUES (" . $tp_id . ",'" . $risk. "')";
+	$sql = "INSERT into priorities (testplan_id,risk_importance) 
+	        VALUES (" . $tplan_id . ",'" . $risk. "')";
 	$result = $db->exec_query($sql);		
 	return $result ? 1 : 0;
 }
@@ -278,10 +292,13 @@ function insertTestPlanPriority(&$db,$tp_id,$risk)
 
 function insertTestPlanUserRight(&$db,$tp_id,$userID)
 {
+	/*
 	$sql = "INSERT INTO testplans_rights (projid,userid) 
 	        VALUES ( {$tp_id},{$userID} )";
 	$result = $db->exec_query($sql);
 	return $result ? 1 : 0;
+	*/
+	return 1;
 }
 
 /*

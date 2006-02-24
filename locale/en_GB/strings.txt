@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.46 $
- * @modified $Date: 2006/02/22 20:26:39 $ $Author: schlundus $
+ * @version $Revision: 1.47 $
+ * @modified $Date: 2006/02/24 18:25:40 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
 **/
@@ -14,7 +14,7 @@
 // gui/templates/inc_copyrightnotice.tpl
 $TLS_gnu_gpl = "GNU GPL";
 $TLS_lic_home = "Home";
-$TLS_lic_product = "Product";
+$TLS_lic_product = "Test project";
 $TLS_licensed_under = "TestLink is licensed under the";
 
 
@@ -26,16 +26,16 @@ $TLS_btn_del = "Delete";
 $TLS_btn_edit_del = "Edit / Delete";
 $TLS_btn_inactivate = "Inactivate";
 $TLS_btn_upd = "Update";
-$TLS_caption_edit_product = "Edit Product";
-$TLS_caption_new_product = "New product";
+$TLS_caption_edit_product = "Edit Test project";
+$TLS_caption_new_product = "New Test project";
 $TLS_color = "Color";
 $TLS_enable_requirements = "Enable Requirements functionality";
-$TLS_info_failed_loc_prod = "Failed to localize the product.";
+$TLS_info_failed_loc_prod = "Failed to localize the Test project.";
 $TLS_invalid_query = "Invalid query";
 $TLS_name = "Name";
 $TLS_notes = "Related Notes";
-$TLS_popup_product_delete = "Warning! This action deletes irrevocable all product related data (including test results, plans, etc.). You can also use to deactivate instead of delete.\\nRecommendation: Execute a dump of database at first.\\nAre you sure to delete the product?";
-$TLS_title_product_mgmt = "Product Management";
+$TLS_popup_product_delete = "Warning! This action deletes irrevocable all Test project related data (including test results, plans, etc.). You can also use to deactivate instead of delete.\\nRecommendation: Execute a dump of database at first.\\nAre you sure to delete the Test project?";
+$TLS_title_product_mgmt = "Test project Management";
 
 
 
@@ -103,7 +103,7 @@ $TLS_title_change_comp_cat_order = "Change this component's Category order";
 // gui/templates/containerView.tpl
 $TLS_alt_del_com = "Delete this component";
 $TLS_alt_edit_com = "Modify this component data and title";
-$TLS_alt_move_cp_com = "Move or copy this component to another product";
+$TLS_alt_move_cp_com = "Move or copy this component to another Test project";
 $TLS_btn_del_cat = "Delete";
 $TLS_btn_del_com = "Delete";
 $TLS_btn_edit_cat = "Edit";
@@ -116,7 +116,7 @@ $TLS_btn_new_com = "New Component";
 $TLS_btn_new_tc = "Create Test Cases";
 $TLS_btn_reorder_cat = "Reorder Categories";
 $TLS_btn_reorder_tc = "Reorder Test Cases";
-$TLS_th_product_name = "Product Name";
+$TLS_th_product_name = "Test project Name";
 
 
 
@@ -165,14 +165,14 @@ $TLS_title_test_case = "Test Case";
 
 
 // gui/templates/mainPage.tpl
-$TLS_filter_tp_by_product = "Filter Test Plans by Product";
+$TLS_filter_tp_by_product = "Filter Test Plans by Test project";
 $TLS_href_add_test_case = "Add Test Cases";
 $TLS_href_assign_risk_own = "Assign Risk and Ownership";
 $TLS_href_assign_user_roles = "Assign user roles";
 $TLS_href_browse_tc = "Browse Test Cases";
 $TLS_href_build_new = "Build Management";
-$TLS_href_create_product = "Create new Products";
-$TLS_href_edit_product = "Edit / Delete Product";
+$TLS_href_create_product = "Create new Test projects";
+$TLS_href_edit_product = "Edit / Delete Test project";
 $TLS_href_edit_tc = "Edit Test Cases";
 $TLS_href_execute_test = "Execute Tests";
 $TLS_href_import_tc = "Import Test Cases";
@@ -259,7 +259,7 @@ $TLS_Build = "Build";
 $TLS_Keyword = "Keyword";
 $TLS_Milestone = "Milestone";
 $TLS_Priority = "Priority";
-$TLS_Product = "Product";
+$TLS_Product = "Test project";
 $TLS_Requirement = "Requirement";
 $TLS_Requirements = "Requirements";
 $TLS_TestCase = "TestCase";
@@ -349,8 +349,8 @@ $TLS_title_navigator = "Navigator";
 // gui/templates/navBar.tpl
 $TLS_home = "Home";
 $TLS_link_logout = "Logout";
-$TLS_product = "Product";
-$TLS_product_role = "Product role";
+$TLS_product = "Test project";
+$TLS_product_role = "Test project role";
 $TLS_th_tcid = "TestCase ID";
 $TLS_title_documentation = "Documentation (external)";
 $TLS_title_edit_personal_data = "Personal";
@@ -405,7 +405,7 @@ $TLS_title_new_milestone = "Milestone";
 // gui/templates/planNew.tpl
 $TLS_btn_edit = "Edit";
 $TLS_btn_new = "New";
-$TLS_caption_for_product = "for Product: ";
+$TLS_caption_for_product = "for Test project: ";
 $TLS_caption_new_tp = "New Test Plan";
 $TLS_caption_tp_name = "Name";
 $TLS_caption_tp_notes = "Notes";
@@ -1174,7 +1174,7 @@ $TLS_printed_by_TestLink_on = "Printed by TestLink on";
 
 
 // lib/functions/product.inc.php
-$TLS_info_product_delete_fails = "An error occured while deleting the product";
+$TLS_info_product_delete_fails = "An error occured while deleting the Test project";
 
 
 
@@ -1251,12 +1251,12 @@ $TLS_error_role_no_rolename = "You must enter a name for the role!";
 
 
 // lib/admin/adminProductEdit.php
-$TLS_info_no_more_prods = "No more products.";
-$TLS_info_product_activated = "The product was activated.";
-$TLS_info_product_inactivated = "The product was deactivated.";
+$TLS_info_no_more_prods = "No more Test projects.";
+$TLS_info_product_activated = "The Test project was activated.";
+$TLS_info_product_inactivated = "The Test project was deactivated.";
 $TLS_info_product_name_empty = "Empty name is not possible.";
-$TLS_info_product_not_deleted_check_log = "Product was not deleted. Please check TestLink log.";
-$TLS_info_product_was_deleted = "The Product was successfully deleted.";
+$TLS_info_product_not_deleted_check_log = "Test project was not deleted. Please check TestLink log.";
+$TLS_info_product_was_deleted = "The Test project was successfully deleted.";
 $TLS_refer_to_log = " Please refer to TestLink log for more information.";
 
 

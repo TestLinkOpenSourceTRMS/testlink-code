@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.48 $
- * @modified $Date: 2006/02/22 20:26:38 $ by $Author: schlundus $
+ * @version $Revision: 1.49 $
+ * @modified $Date: 2006/02/24 18:20:34 $ by $Author: franciscom $
  *
  *
  * Constants and configuration parameters used throughout TestLink 
@@ -14,6 +14,7 @@
  *-------------------------------------------------------------------------
  * Revisions:
  *
+ * 20060207 - franciscom - some changes in config vars related to testproject
  * 20060223 - scs - added basic stuff for attachments
  * 20060207 - franciscom - BUGID 303
  * 20060205 - JBA - 	Remember last product (BTS 221)
@@ -208,6 +209,9 @@ $g_ereg_forbidden = "[|]";
 /* TRUE -> TL 1.5.1 compatibility, get also Test Plans without product id. */
 $g_show_tp_without_prodid = TRUE;
 
+// 20060219 - franciscom
+$g_show_tp_without_tproject_id = $g_show_tp_without_prodid;
+
 
 /* 
 20051002 - fm
@@ -220,6 +224,9 @@ FALSE -> user can do nothing, no changes at UI.
          Test Plan always filtered by product
 */
 $g_ui_show_check_filter_tp_by_product = TRUE;
+
+// 20060219 - franciscom
+$g_ui_show_check_filter_tp_by_testproject = $g_ui_show_check_filter_tp_by_product;
 
 
 /* TRUE -> you can create multiple time the same keyword for the same product */

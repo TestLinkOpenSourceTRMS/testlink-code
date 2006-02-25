@@ -1,5 +1,5 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
-# $Id: testlink_create_default_data.sql,v 1.8 2006/02/24 17:57:47 franciscom Exp $
+# $Id: testlink_create_default_data.sql,v 1.9 2006/02/25 21:48:24 schlundus Exp $
 # SQL script - create default data (rights & admin account)
 # --------------------------------------------------------
 
@@ -56,6 +56,44 @@ INSERT INTO `role_rights` (role_id,right_id) VALUES (8,10);
 INSERT INTO `role_rights` (role_id,right_id) VALUES (8,11);
 INSERT INTO `role_rights` (role_id,right_id) VALUES (8,12);
 INSERT INTO `role_rights` (role_id,right_id) VALUES (8,13);
+
+# Rights for guest (guest role)
+INSERT INTO `role_rights` (role_id,right_id) VALUES (5,3 );
+INSERT INTO `role_rights` (role_id,right_id) VALUES (5,6 );
+INSERT INTO `role_rights` (role_id,right_id) VALUES (5,8 );
+
+
+# Rights for test dsigner (test dsigner role)
+INSERT INTO `role_rights` (role_id,right_id) VALUES (4,3 );
+INSERT INTO `role_rights` (role_id,right_id) VALUES (4,6 );
+INSERT INTO `role_rights` (role_id,right_id) VALUES (4,7 );
+INSERT INTO `role_rights` (role_id,right_id) VALUES (4,8 );
+INSERT INTO `role_rights` (role_id,right_id) VALUES (4,11);
+
+# Rights for tester (tester role)
+INSERT INTO `role_rights` (role_id,right_id) VALUES (7,1 );
+INSERT INTO `role_rights` (role_id,right_id) VALUES (7,3 );
+
+# Rights for senior tester (senior tester role)
+INSERT INTO `role_rights` (role_id,right_id) VALUES (6,1 );
+INSERT INTO `role_rights` (role_id,right_id) VALUES (6,2 );
+INSERT INTO `role_rights` (role_id,right_id) VALUES (6,3 );
+INSERT INTO `role_rights` (role_id,right_id) VALUES (6,6 );
+INSERT INTO `role_rights` (role_id,right_id) VALUES (6,7 );
+INSERT INTO `role_rights` (role_id,right_id) VALUES (6,8 );
+INSERT INTO `role_rights` (role_id,right_id) VALUES (6,11);
+
+# Rights for leader (leader role)
+INSERT INTO `role_rights` (role_id,right_id) VALUES (9,1 );
+INSERT INTO `role_rights` (role_id,right_id) VALUES (9,2 );
+INSERT INTO `role_rights` (role_id,right_id) VALUES (9,3 );
+INSERT INTO `role_rights` (role_id,right_id) VALUES (9,4 );
+INSERT INTO `role_rights` (role_id,right_id) VALUES (9,5 );
+INSERT INTO `role_rights` (role_id,right_id) VALUES (9,6 );
+INSERT INTO `role_rights` (role_id,right_id) VALUES (9,7 );
+INSERT INTO `role_rights` (role_id,right_id) VALUES (9,8 );
+INSERT INTO `role_rights` (role_id,right_id) VALUES (9,9 );
+INSERT INTO `role_rights` (role_id,right_id) VALUES (9,11);
 
 
 

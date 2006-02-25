@@ -1,6 +1,6 @@
 {* 
 Testlink: smarty template - 
-$Id: usersedit.tpl,v 1.1 2006/02/19 13:08:05 schlundus Exp $ 
+$Id: usersedit.tpl,v 1.2 2006/02/25 21:48:24 schlundus Exp $ 
 *}
 {* 
 20050913 - fm - BUGID 0000103: Localization is changed but not strings
@@ -21,7 +21,7 @@ $Id: usersedit.tpl,v 1.1 2006/02/19 13:08:05 schlundus Exp $
 	<br /><hr />
 	<span class="unselected"><a href="lib/usermanagement/rolesedit.php">{lang_get s='menu_define_roles'}</a></span> 
 	<span class="unselected"><a href="lib/usermanagement/rolesview.php">{lang_get s='menu_view_roles'}</a></span> 
-	<span class="unselected"><a href="lib/usermanagement/usersassign.php?feature=product">{lang_get s='menu_assign_product_roles'}</a></span> 
+	<span class="unselected"><a href="lib/usermanagement/usersassign.php?feature=testproject">{lang_get s='menu_assign_product_roles'}</a></span> 
 	<span class="unselected"><a href="lib/usermanagement/usersassign.php?feature=testplan">{lang_get s='menu_assign_testplan_roles'}</a></span>
 </div>
 
@@ -84,7 +84,7 @@ function valAllText(form)
 			<th>{lang_get s='th_role'}:</th>
 			<td>
 				<select name="rights_id"> 
-				{html_options options=$optRights selected=$userData.rightsid}
+				{html_options options=$optRights selected=$userData.role_id}
 				</select>
 			</td>
 		</tr>

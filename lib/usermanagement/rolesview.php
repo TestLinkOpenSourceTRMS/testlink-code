@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: rolesview.php,v $
  *
- * @version $Revision: 1.3 $
- * @modified $Date: 2006/02/24 18:06:14 $ by $Author: franciscom $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2006/02/25 21:48:27 $ by $Author: schlundus $
  *
  * 20060224 - franciscom - changes in session product -> testproject
 **/
@@ -21,6 +21,7 @@ $bDelete = isset($_GET['deleterole']) ? 1 : 0;
 $bConfirmed = isset($_GET['confirmed']) ? 1 : 0;
 $userID = $_SESSION['userID'];
 
+$sqlResult = null;
 $affectedUsers = null;
 $allUsers = getAllUsers($db,null,'id');
 if ($bDelete && $id)
@@ -39,15 +40,23 @@ if ($bDelete && $id)
 			//reset all affected users by replacing the deleted role with the
 			//<no rights> role
 			resetUserRoles($db,$id);
-			$_SESSION['testprojectRoles'] = getUserProductRoles($db,$userID);
-			if ($_SESSION['roleId'] == $id)
-				$_SESSION['roleId'] = TL_ROLES_NONE;
 		}
 	}
 	else
 		$sqlResult = null;
 }
 $roles = getRoles($db);
+if ($bDelete && $id)
+{
+	//reload the roles of the current user
+	$_SESSION['testprojectRoles'] = getUserProductRoles($db,$userID);
+	$_SESSION['testPlanRoles'] = getUserTestPlanRoles($db,$userID);
+	if ($_SESSION['roleId'] == $id)
+	{
+		$_SESSION['roleId'] = TL_ROLES_NONE;
+		$_SESSION['role'] = $roles[TL_ROLES_NONE]['role'];
+	}
+}
 
 $smarty = new TLSmarty();
 $smarty->assign('roles',$roles);

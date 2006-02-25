@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: planNew.php,v $
  *
- * @version $Revision: 1.16 $
- * @modified $Date: 2006/02/24 18:17:27 $ $Author: franciscom $
+ * @version $Revision: 1.17 $
+ * @modified $Date: 2006/02/25 21:48:25 $ $Author: schlundus $
  *
  * Purpose:  Add new or edit existing Test Plan 
  *
@@ -125,7 +125,7 @@ $smarty = new TLSmarty();
 $smarty->assign('tpID',$args->tpID);
 $smarty->assign('tpName', $tpName);
 $smarty->assign('tpActive', $bActive);
-$smarty->assign('prod_name', $args->productName);
+$smarty->assign('prod_name', $args->testprojectName);
 $smarty->assign('arrPlan', getAllActiveTestPlans($db,$args->testprojectID,FILTER_BY_PRODUCT));
 $smarty->assign('sqlResult', $sqlResult);
 $smarty->assign('notes', $of->CreateHTML());

@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
  * @filesource $RCSfile: database.class.php,v $
- * @version $Revision: 1.9 $
- * @modified $Date: 2006/02/19 13:03:32 $ by $Author: schlundus $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2006/02/25 21:48:24 $ by $Author: schlundus $
  * @author Francisco Mancardi
  * 
  *
@@ -388,7 +388,7 @@ class database
 	 *
 	 * @param string $query the query to be executed
 	 * @param string $column the name of the column
-	 * @return array a enumerated array, which contains all the values
+	 * @return array an enumerated array, which contains all the values
 	 **/
 	function fetchColumnsIntoArray($query,$column)
 	{
@@ -403,6 +403,14 @@ class database
 		return $items;
 	}
 
+	/**
+	 * Fetches all rows into a map whose keys are the values of columns
+	 *
+	 * @param string $query the query to be executed
+	 * @param string $column the name of the column
+	 * @return array an assoc array whose keys are the values from the columns
+	 * 				 of the rows
+	 **/
 	function fetchRowsIntoMap($query,$column)
 	{
 		$items = null;
@@ -417,6 +425,30 @@ class database
 		
 		return $items;
 	}
+	/**
+	 * Fetches the values of two columns from all rows into a map
+	 *
+	 * @param string $query the query to be executed
+	 * @param string $column1 the name of the column (keys for the map)
+	 * @param string $column2 the name of the second column (values of the map)
+	 * @return array return an assoc array whose keys are the values of column1 
+	 *				 and the values are the values of column2 
+	 **/
+	function fetchColumnsIntoMap($query,$column1,$column2)
+	{
+		$result = $this->exec_query($query);
+		$items = null;
+		if ($result)
+		{
+			while ($myrow = $this->fetch_array($result))
+			{
+				$items[$myrow[$column1]] = $myrow[$column2];
+			}	
+		}
+		
+		return $items;
+	}
+
 	/**
 	 * database server information
 	 *

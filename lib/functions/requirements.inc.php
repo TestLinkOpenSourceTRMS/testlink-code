@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: requirements.inc.php,v $
- * @version $Revision: 1.24 $
- * @modified $Date: 2006/02/24 18:15:44 $ by $Author: franciscom $
+ * @version $Revision: 1.25 $
+ * @modified $Date: 2006/02/25 21:48:24 $ by $Author: schlundus $
  *
  * @author Martin Havlat <havlat@users.sourceforge.net>
  * 
@@ -165,7 +165,7 @@ function getOptionReqSpec(&$db,$prodID)
 	$sql = "SELECT id,title FROM req_spec WHERE product_id=" . $prodID . 
 			" ORDER BY title";
 	
-	return selectOptionData($db,$sql);
+	return $db->fetchColumnsIntoMap($sql,'id','title');
 }
 
 
@@ -286,16 +286,16 @@ function getReqMetrics_general(&$db,$idSRS)
 	$output = array();
 	
 	// get nottestable REQs
-	$sql = "SELECT count(*) FROM requirements WHERE srs_id=" . $idSRS . 
+	$sql = "SELECT count(*) AS cnt FROM requirements WHERE srs_id=" . $idSRS . 
 			" AND status='n'";
-	$output['notTestable'] = do_sql_selectOne($db,$sql);
+	$output['notTestable'] = $db->fetchFirstRowSingleColumn($sql,'cnt');
 
-	$sql = "SELECT count(*) FROM requirements WHERE srs_id=" . $idSRS;
-	$output['total'] = do_sql_selectOne($db,$sql);
+	$sql = "SELECT count(*) AS cnt FROM requirements WHERE srs_id=" . $idSRS;
+	$output['total'] = $db->fetchFirstRowSingleColumn($sql,'cnt');
 	tLog('Count of total REQ in DB for srs_id:'.$idSRS.' = '.$output['total']);
 
 	$sql = "SELECT total_req FROM req_spec WHERE id=" . $idSRS;
-	$output['expectedTotal'] = do_sql_selectOne($db,$sql);;
+	$output['expectedTotal'] = $db->fetchFirstRowSingleColumn($sql,'total_req');
 	tLog(' Redefined Count of total REQ in DB for srs_id:'.$idSRS.' = '.$output['total']);
 	
 	if ($output['expectedTotal'] == 'n/a') {

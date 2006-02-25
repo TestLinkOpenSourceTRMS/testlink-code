@@ -1,5 +1,5 @@
 {* Testlink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: usersview.tpl,v 1.1 2006/02/19 13:08:05 schlundus Exp $ *}
+{* $Id: usersview.tpl,v 1.2 2006/02/25 21:48:24 schlundus Exp $ *}
 {* 
 Purpose: smarty template - users overview
 
@@ -19,7 +19,7 @@ Purpose: smarty template - users overview
 	<br /><hr />
 	<span class="unselected"><a href="lib/usermanagement/rolesedit.php">{lang_get s='menu_define_roles'}</a></span> 
 	<span class="unselected"><a href="lib/usermanagement/rolesview.php">{lang_get s='menu_view_roles'}</a></span> 
-	<span class="unselected"><a href="lib/usermanagement/usersassign.php?feature=product">{lang_get s='menu_assign_product_roles'}</a></span> 
+	<span class="unselected"><a href="lib/usermanagement/usersassign.php?feature=testproject">{lang_get s='menu_assign_product_roles'}</a></span> 
 	<span class="unselected"><a href="lib/usermanagement/usersassign.php?feature=testplan">{lang_get s='menu_assign_testplan_roles'}</a></span>
 </div>
 
@@ -48,8 +48,8 @@ Purpose: smarty template - users overview
 			<td>{$users[row].last|escape}</td>
 			<td>{$users[row].email|escape}</td>
 			<td>
-				{assign var="rightID" value="$users[row].rightsid}
-				{$optRights[$rightID]|escape}
+				{assign var="roleID" value="$users[row].role_id}
+				{$optRoles[$roleID]|escape}
 			</td>
 			<td>
 				{assign var="lc" value="$users[row]"}

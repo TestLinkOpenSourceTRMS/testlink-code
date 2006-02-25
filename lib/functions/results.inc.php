@@ -2,8 +2,8 @@
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: results.inc.php,v $
- * @version $Revision: 1.30 $
- * @modified $Date: 2006/02/04 20:13:14 $   $Author: schlundus $
+ * @version $Revision: 1.31 $
+ * @modified $Date: 2006/02/25 21:48:24 $   $Author: schlundus $
  * 
  * @author 	Martin Havlat 
  * @author 	Chad Rosen (original report definition)
@@ -188,7 +188,7 @@ function getTestSuiteReport(&$db,$tpID, $buildID = 'all')
 	while ($myrow = $db->fetch_array($result)) {
 
 		$testCaseArray = null;
-		$sql = " SELECT COUNT(TC.id) " .
+		$sql = " SELECT COUNT(TC.id) AS cnt" .
 		       " FROM component COMP, category CAT, testcase TC " .
 				   " WHERE COMP.id = CAT.compid " .
 				   " AND CAT.id = TC.catid" .
@@ -196,7 +196,7 @@ function getTestSuiteReport(&$db,$tpID, $buildID = 'all')
 				   " AND COMP.id=" . $myrow['comp_id']; 
 				
 		// 20050901 - MHT - used generalication
-		$totalTCs = do_sql_selectOne($db,$sql);
+		$totalTCs = db->fetchFirstRowSingleColumn($sql,'cnt');
 
     // ------------------------------------------------------------------------------
 		//Code to grab the results of the test case execution
@@ -670,8 +670,8 @@ function getPriorityReport(&$db,$tpID, $buildID = 'all')
 // MHT 200507 refactorization, improved sql query
 function getPriorityDefine(&$db,$tpID)
 {
-	$sql = "SELECT  riskImp,priority FROM priority WHERE priority.projid = " . $tpID;
-	return selectOptionData($db,$sql);
+	$sql = "SELECT riskImp,priority FROM priority WHERE priority.projid = " . $tpID;
+	return $db->fetchColumnsIntoMap($sql,'riskImp','priority');
 }
 
 // MHT 200507 refactorization
@@ -1236,7 +1236,7 @@ function getLastResult(&$db,$idSuiteTC)
 	
 	$sql = "SELECT status FROM results WHERE tcid = " . $idSuiteTC . " AND status <> '" . 
 				$g_tc_status['not_run'] . "' ORDER BY results.build_id DESC LIMIT 1";
-	$result = do_sql_selectOne($db,$sql);
+	$result = $db->fetchFirstRowSingleColumn($sql,'status');
 
 	// add not run result if any other result is not available
 	if (is_null($result))

@@ -3,8 +3,8 @@
  * TestLink Open Source Project - @link http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: plan.core.inc.php,v $
- * @version $Revision: 1.29 $
- * @modified $Date: 2006/02/25 07:02:25 $ $Author: franciscom $
+ * @version $Revision: 1.30 $
+ * @modified $Date: 2006/02/25 21:48:24 $ $Author: schlundus $
  *  
  * 
  * @author 	Martin Havlat
@@ -23,205 +23,70 @@
  * @author 20050809 - fm getTestPlans(), added filter on prodid
  * @author 20051012 - azl optimize getTestPlans() function sql queries.
 **/
-
-/**
- * Take data of all the available Test Plans
- * @return array select list 
- * @todo refactorize this function via selectOptionData($sql); use one sql instead of two 
- *
- *
- * rev :
- *      20050928 - fm
- *      added argument $filter_by_product
- *
- *      20050904 - fm 
- *      TL 1.5.1 compatibility, get also Test Plans without product id.
- *
- *      20050810 - fm
- *      Removed Global Coupling:
- *      ($_SESSION['testprojectID'], $_SESSION['userID'])
- *
- *      20050809 - fm
- *      changes in active field type now is boolean
- *      added filter by product id
- *
- *      MHT 20050707 order by name
- */
-function getTestPlans(&$db,$tproject_id, $userID, $filter_by_product=0)
+ 
+function getAccessibleTestPlans(&$db,$productID,$filter_by_product=0,$tpID = null)
 {
-	$show_tp_without_tproject_id = config_get('show_tp_without_tproject_id');
- 	$arrPlans = array();
+	global $g_show_tp_without_prodid;
 	
-	// 20050809 - fmm
-	// added filter by product id
-	// 20051012 - azl
-	// removed join with testplans_rights table because it was slowing down query signifigantly and 
-	// it wasn't being used. Also removed selecting notes field because it isn't needed. 
-	// 
-	$sql = " SELECT DISTINCT id,name,active,testproject_id FROM testplans " .
-			           " WHERE active=1 ";
-			           
-	// 20050928 - fm
-	if ( $filter_by_product )
+	$userID = $_SESSION['userID'];
+	
+	$query = "SELECT id,name,active FROM testplans LEFT OUTER JOIN user_testplan_roles " .
+			 "ON testplans.id = user_testplan_roles.testplan_id AND ". 
+			 " user_testplan_roles.user_ID =  {$userID} WHERE active=1 AND ".
+			 " ";
+	if ($filter_by_product)
+		$query .= "(testproject_id = {$productID} OR testproject_id = 0) AND ";
+	
+	$bGlobalNo = ($_SESSION['roleId'] == TL_ROLES_NONE);
+	$bProductNo = 0;
+	if (isset($_SESSION['productRoles'][$productID]['role_id']))
+		$bProductNo = ($_SESSION['productRoles'][$productID]['role_id'] == TL_ROLES_NONE); 
+	
+	if ($bProductNo || $bGlobalNo)
+		$query .= "(role_id IS NOT NULL AND role_id != ".TL_ROLES_NONE.")";
+	else
+		$query .= "(role_id IS NULL OR role_id != ".TL_ROLES_NONE.")";
+	
+	if (!is_null($tpID))
+		$query .= " AND id = {$tpID}";
+		
+	$query .= " ORDER BY name";
+	$testPlans = $db->get_recordset($query);
+	
+	$arrPlans = null;
+	for($i = 0;$i < sizeof($testPlans);$i++)
 	{
-	   $sql .= " AND testproject_id=" . $tproject_id;
-		
-		// 20050904 - fm - TL 1.5.1 compatibility, get also Test Plans without product id.		           
-  	if ($show_tp_without_tproject_id)
+		$testPlan = $testPlans[$i];
+	 	if ($i == 0 && (!isset($_SESSION['testPlanId']) || !$_SESSION['testPlanId']))
 		{
-  		$sql .= " OR testproject_id=0 ";
-		}
+        	$_SESSION['testPlanId'] = $testPlan['id'];
+	        $_SESSION['testPlanName'] = $testPlan['name'];
+		}	
 		
-		//$sql .= " )";
+		$selected = null;
+		if ($testPlan['id'] == $_SESSION['testPlanId'])
+			$selected = 'selected="selected"';
+		$arrPlans[] =  array( 'id' => $testPlan['id'], 
+							  'name' => $testPlan['name'],
+							  'selected' => $selected
+							 );
+	}
+	if (!sizeof($testPlans))
+	{
+		unset($_SESSION['testPlanId']);
+	    unset($_SESSION['testPlanName']);
 	}
 	
-	$sql .= " ORDER BY name";
-			           
-	  //echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
-		           
-	$result = $db->exec_query($sql);
-
-	if ($result) {
-    	$testplanCount = $db->num_rows($result);
-	} else {
-		  $testplanCount = 0;
-	}
-	
-	//echo "<pre>debug"; print_r($testplanCount); echo "</pre>";
-	
-	if($testplanCount > 0) {
-
-      $cAvailablePlans = 0;  // count the available plans
-      while ($myrow = $db->fetch_array($result))
-      {
-        // echo "<pre>debug"; print_r($myrow); echo "</pre>";
-         
-        // 20060224 - franciscom
-        $sql = "SELECT testplan_id FROM user_testplan_roles 
-                WHERE user_id= {$userID} AND testplan_id= {$myrow[0]}";
-
-        $tplan_result = $db->exec_query($sql);
-        $myrow_tplan = $db->fetch_array($tplan_result);
-
-
-        //If the user has the rights to the testplans/test plan show it
-        if($myrow_tplan[0] == $myrow[0])
-        {
-            //This code block checks to see if the user has already selected 
-            //a testplans once before and sets the default to that.. Bug 11453
-            // If this is the first plan we're displaying,
-            // and no session testplans has been set yet, then set it.
-			//20050810 - am - added check if a testPlanID is set
-            if ($cAvailablePlans == 0 && (!isset($_SESSION['testPlanId']) || !$_SESSION['testPlanId'])) {
-				        $_SESSION['testPlanId'] = $myrow[0];
-				        $_SESSION['testPlanName'] = $myrow[1];
-            }
-
-            $cAvailablePlans++;
-
-            if($myrow[0] == $_SESSION['testPlanId']) { //did I choose this selection last
-				array_push($arrPlans, array( 'id' => $myrow[0], 'name' => $myrow[1],
-						'notes' => $myrow[2], 'active' => $myrow[3], 
-						'selected' => 'selected="selected"'));
-            } else { //Else just display the value
-				array_push($arrPlans, array( 'id' => $myrow[0], 'name' => $myrow[1],
-						'notes' => $myrow[2], 'active' => $myrow[3], 
-						'selected' => ''));
-            }
-        }
-   	  }//END WHILE
-	}//end testplan count
-
 	return $arrPlans;
 }
 
-
-/**
- * get count Test Plans available for user
- *
- * 20050810 - fm
- * changes need due to ACTIVE FIELD type change
- * interface changes
- *
- */
-function getCountTestPlans4User(&$db,$userID)
-{
-	/*
-	$sql = " SELECT count(testplans.id) AS num_tp 
-	         FROM testplans,testplans_rights WHERE active=1  
-			     AND projid=testplans.id AND userid=" . $userID;
-	*/
-  /*	
-	$sql = " SELECT count(testplans.id) AS num_tp  
-			     FROM testplans, user_testplan_roles 
-	         WHERE active = 1
-	         AND user_testplan_roles.testplan_id = testplans.id
-	         AND user_testplan_roles.user_id={$userID}";
-
-			     
-			     
-	$result = $db->exec_query($sql);
-	
-	if ($result)
-	{
-	  $row = $db->fetch_array($result);
-		return($row['num_tp']);
-	} 
-	else 
-	{
-		return null;
-	}
-	*/
-	
-	// 20060219 - franciscom 
-  return( getCountTestPlans4UserProd($db,$userID));
-
-}
-
-
-
-
-
 /**
  * get count Test Plans available for user and Product
- *
- * 20050904 - fm - TL 1.5.1 compatibility, show also Test Plans without product id.
- *
- * 20050813 - fm - product filter
- * 
- * 20050810 - fm
- * changes need due to ACTIVE FIELD type change interface changes
  */
-function getCountTestPlans4UserProd(&$db,$userID,$testproject_id=null)
+function getNumberOfAccessibleTestPlans(&$db,$productID, $filter_by_product=0,$tpID = null)
 {
-	$sql = " SELECT count(testplans.id) AS num_tp
-			     FROM testplans, user_testplan_roles 
-	         WHERE active = 1
-	         AND user_testplan_roles.testplan_id = testplans.id
-	         AND user_testplan_roles.user_id={$userID}";
-
-	
-	//20051015 - am - removed negation of $testproject_id		   
-	if ($testproject_id)
-	{		   
-		$sql .= " AND testplans.testproject_id=" . $testproject_id;
-		
-		// 20050904 - fm - TL 1.5.1 compatibility, get also Test Plans without product id.
-		if (config_get('show_tp_without_tproject_id'))
-		{
-			$sql .= " OR testplans.testproject_id=0";
-		}  	
-	}		   
-	$result = $db->exec_query($sql);
-	if ($result)
-	{
-		$row = $db->fetch_array($result);
-		return($row['num_tp']);
-	} 
-	else 
-	{
-		return null;
-	}
+	$tpData = getAccessibleTestPlans(&$db,$productID, $filter_by_product,$tpID);
+	return sizeof($tpData);	
 }
 
 /**
@@ -234,6 +99,8 @@ function getCountTestPlans4UserProd(&$db,$userID,$testproject_id=null)
  */
 function getTestPlanUsers(&$db,$tpID)
 {
+	//@todo schlundus: code is not correct
+	/*
 	$show_realname = config_get('show_realname');
 	
 	$sql = " SELECT users.id, login ";
@@ -259,6 +126,8 @@ function getTestPlanUsers(&$db,$tpID)
 		}
 	}
 	return $data;
+	*/
+	return null;
 }
 
 
@@ -290,10 +159,10 @@ function getAllTestPlans(&$db,$testproject_id=ALL_PRODUCTS,$plan_status=null,$fi
 	{
 		if ($testproject_id != ALL_PRODUCTS)
 		{
-			$where .= ' AND (testproject_id=' . $testproject_id . " ";  	
+			$where .= ' AND (testproject_id = ' . $testproject_id . " ";  	
 			if (config_get('show_tp_without_tproject_id'))
 			{
-				$where .= " OR testproject_id=0 ";
+				$where .= " OR testproject_id = 0 ";
 			}
 			$where .= " ) ";
 		}
@@ -302,7 +171,7 @@ function getAllTestPlans(&$db,$testproject_id=ALL_PRODUCTS,$plan_status=null,$fi
 	if(!is_null($plan_status))
 	{	
 		$my_active = to_boolean($plan_status);
-		$where .= " AND active=" . $my_active;
+		$where .= " AND active = " . $my_active;
 	}
 	if (!is_null($tpID))
 		$where .= " AND id = " . $tpID;
@@ -314,7 +183,7 @@ function getAllTestPlans(&$db,$testproject_id=ALL_PRODUCTS,$plan_status=null,$fi
 
 // 20051120 - fm
 // interface changes
-function getAllActiveTestPlans(&$db,$testproject_id=ALL_PRODUCTS,$filter_by_product=0)
+function getAllActiveTestPlans(&$db,$testproject_id = ALL_PRODUCTS,$filter_by_product = 0)
 {
 	return getAllTestPlans($db,$testproject_id,TP_STATUS_ACTIVE,$filter_by_product);
 }

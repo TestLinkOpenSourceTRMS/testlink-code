@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: mainPage.php,v $
  *
- * @version $Revision: 1.16 $ $Author: franciscom $
- * @modified $Date: 2006/02/25 07:02:25 $
+ * @version $Revision: 1.17 $ $Author: schlundus $
+ * @modified $Date: 2006/02/25 21:48:24 $
  *
  * @author Martin Havlat
  * 
@@ -34,7 +34,6 @@ testlinkInitPage($db,TRUE);
 $smarty = new TLSmarty;
 
 $testprojectID = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
-$testPlanID = isset($_SESSION['testPlanId']) ? intval($_SESSION['testPlanId']) : 0;
 
 // ----------------------------------------------------------------------
 /** redirect admin to create product if not found */
@@ -79,34 +78,32 @@ if(MAIN_PAGE_METRICS_ENABLED == "TRUE")
 // 20050928 - fm
 $filter_tp_by_product = 1;
 if( isset($_REQUEST['filter_tp_by_product']) )
-{
   $filter_tp_by_product = 1;
-}
 else if ( isset($_REQUEST['filter_tp_by_product_hidden']) )
-{
   $filter_tp_by_product = 0;
-} 
 else
 {
 	if (isset($_SESSION['filter_tp_by_product']))
-	{
 		$filter_tp_by_product = $_SESSION['filter_tp_by_product'];
-	}	
 }
 $_SESSION['filter_tp_by_product'] = $filter_tp_by_product;
 $smarty->assign('filter_tp_by_product',$filter_tp_by_product);
 
-$roles = getRoles($db);
-$testPlanRole = null;
-$cur_tplan = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : null;
-if ($cur_tplan && isset($_SESSION['testPlanRoles'][$cur_tplan]))
-{
-	$idx = $_SESSION['testPlanRoles'][$cur_tplan]['role_id'];
-	$testPlanRole = ROLE_SEP_START . $roles[$idx]['role'] . ROLE_SEP_END;
-}
 // ----- Test Plan Section ----------------------------------  
 // get Test Plans available for the user 
-$arrPlans = getTestPlans($db,$testprojectID,$_SESSION['userID'],$filter_tp_by_product);
+// 20050928 - fm - Interface changes
+// 20050810 - fm - Interface changes
+// 20050809 - fm - get only test plan for the selected product
+$arrPlans = getAccessibleTestPlans($db,$testprojectID,$filter_tp_by_product);
+$testPlanID = isset($_SESSION['testPlanId']) ? intval($_SESSION['testPlanId']) : 0;
+
+$roles = getAllRoles($db);
+$testPlanRole = null;
+if ($testPlanID && isset($_SESSION['testPlanRoles'][$testPlanID]))
+{
+	$idx = $_SESSION['testPlanRoles'][$testPlanID]['role_id'];
+	$testPlanRole = ROLE_SEP_START . $roles[$idx] . ROLE_SEP_END;
+}
 
 //20050826 - scs - added displaying of security notes
 $securityNotes = getSecurityNotes($db);

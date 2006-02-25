@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: users.inc.php,v $
  *
- * @version $Revision: 1.30 $
- * @modified $Date: 2006/02/25 07:02:25 $ $Author: franciscom $
+ * @version $Revision: 1.31 $
+ * @modified $Date: 2006/02/25 21:48:24 $ $Author: schlundus $
  *
  * Functions for usermanagement
  *
@@ -68,7 +68,7 @@ function userInsert(&$db,$login, $password, $first, $last, $email,
                     $role_id=TL_DEFAULT_ROLEID, $locale = TL_DEFAULT_LOCALE, $active=1)
 {
 	$password = md5($password);
-	$sqlInsert = "INSERT INTO user (login,password,first,last,email,role_id,locale,active) 
+	$sqlInsert = "INSERT INTO users (login,password,first,last,email,role_id,locale,active) 
 	              VALUES ('" . 
 				        $db->prepare_string($login) . "','" . $db->prepare_string($password) . "','" . 
 				        $db->prepare_string($first) . "','" . $db->prepare_string($last) . "','" . 
@@ -97,28 +97,6 @@ function userDelete(&$db,$id)
 
 
 
-/**
- * Function-Documentation
- *
- * @param type $db [ref] documentation
- * @param type $query documentation
- * @return type documentation
-**/
-function getTwoColumnsMap(&$db,$query)
-{
-	$result = $db->exec_query($query);
-	$arrOut = null;
-	if ($result)
-	{
-		while ($myrow = $db->fetch_array($result))
-		{
-			$arrOut[$myrow[0]] = $myrow[1];
-		}	
-	}
-	
-	return $arrOut;
-}
-
 
 /**
  * Function-Documentation
@@ -131,7 +109,7 @@ function getTwoColumnsMap(&$db,$query)
 function setUserPassword(&$db,$userID,$password)
 {
 	$password = md5($password);
-	$sql = "UPDATE user SET password = '" . $db->prepare_string($password) . "' WHERE id = ".$userID;
+	$sql = "UPDATE users SET password = '" . $db->prepare_string($password) . "' WHERE id = ".$userID;
 	$result = $db->exec_query($sql); 
 	
 	return $result ? 1 : 0;
@@ -192,7 +170,7 @@ function getUserPassword(&$db,$userID)
 function userUpdate(&$db,$userID, $first, $last, $email ,
                     $login = null, $role_id = null, $locale = null, $active = null)
 {
- 	$sql = "UPDATE user " .
+ 	$sql = "UPDATE users " .
 	       "SET first='" . $db->prepare_string($first) . "'" .
 	       ", last='" .  $db->prepare_string($last)    . "'" .
 	       ", email='" . $db->prepare_string($email)   . "'";
@@ -201,7 +179,7 @@ function userUpdate(&$db,$userID, $first, $last, $email ,
 	{
 		$sql .= ", login = '". $db->prepare_string($login) . "' ";
 	}	
-	if (!is_null($rightsID))
+	if (!is_null($role_id))
 	{
 		$sql .= ", role_id = ". $role_id ;
 	}	
@@ -220,7 +198,7 @@ function userUpdate(&$db,$userID, $first, $last, $email ,
 	// MHT 200507 - update session data if admin modify yourself
 	if (($userID == $_SESSION['userID']) && $result)
 	{
-		setUserSession($db,$login, $userID, $rightsID, $email, $locale);
+		setUserSession($db,$login, $userID, $role_id, $email, $locale);
 	}
 	return $result ? 'ok' : $db->error_msg();
 }
@@ -295,7 +273,7 @@ function setUserSession(&$db,$user, $id, $roleID, $email, $locale = null, $activ
  * BUGID 239 - TestPlan are filtered by Product ID
  * 20060102 - scs - ADOdb changes
  **/
-function deleteUsersTestPlanRights(&$db,$userID,$prodID)
+function DEPRECATED_deleteUsersTestPlanRights(&$db,$userID,$prodID)
 {
 	$sql = " DELETE FROM testplans_rights
 	         WHERE userid = " . $userID .
@@ -315,8 +293,8 @@ function deleteUsersTestPlanRights(&$db,$userID,$prodID)
 function getUserById(&$db,$id)
 {
 	$ret = null;
-	if(!is_null($id) and intval($id) > 0)
-	$ret = getAllUsers($db,"where id=" . $id);
+	if(!is_null($id) && intval($id) > 0)
+	$ret = getAllUsers($db,"WHERE id=" . $id);
 
 	return $ret;
 }

@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.32 $ $Author: franciscom $
- * @modified $Date: 2006/02/25 07:02:25 $
+ * @version $Revision: 1.33 $ $Author: schlundus $
+ * @modified $Date: 2006/02/25 21:48:24 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -166,60 +166,6 @@ function setPaths()
 	return 1;
 }
 
-
-// If we receive TestPlan ID in the _SESSION
-//    then do some checks and if everything OK
-//    Update this value at Session Level, to set it available in other
-//    pieces of the application
-//
-//
-// Calling getUserProdTestPlans() instead of getUserTestPlans()
-//         to add ptoduct filtering of TP
-//
-function checkSessionTestPlan(&$db)
-{
-	// 20050813 - fm - added TP filtered by Product
-	$tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : null;
-	$sTestPlanID = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : null;
-	
-	if (!$sTestPlanID || ($sTestPlanID && !getUserTestPlan($_SESSION['userID'],$sTestPlanID,true)))
-	{
-	 	// 20050813 - fm
-		$tplan_info = getUserProdTestPlans($db,$_SESSION['userID'],$tproject_id,true);
-		if ($tplan_info)
-		{
-			setSessionTestPlan($tplan_info[0]);
-		}	
-	}
-}
-
-
-
-// If we receive Product ID in the _SESSION
-//    then do some checks and if everything OK
-//    Update this value at Session Level, to set it available in other
-//    pieces of the application
-//
-//
-
-function checkSessionTestProject(&$db)
-{
-	
-	$tproject = New testproject($db);
-	
-	$testprojectID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : null;
-	
-	// if the session product/testproject exists, check to see if the user has rights to it
-	if (!$testprojectID || !$tproject->get_by_id($testprojectID) )
-	{
-		$all_tprojects = $tproject->get_all();
-		if ($all_tprojects)
-		{
-			setSessionTestProject($all_tprojects[0]);
-		}	
-	}
-}
-
 /** Verify if user is log in. Redirect to login page if not. */
 function checkSessionValid()
 {
@@ -242,92 +188,14 @@ function checkSessionValid()
 	}
 }
 
-
-function getUserTestPlan($userID,$tplan_id,$bActive = null)
-{
-	$tplan_info = getUserTestPlans($userID,$tplan_id,$bActive);
-	return $tplan_info ? $tplan_info[0] : null;
-}
-
-// 20060219 - franciscom - new tables
-function getUserTestPlans(&$db,$userID,$tplan_id = null,$p_bActive = null)
-{
-	$sql = " SELECT testplans.id, testplans.testproject_id, testplans.name, testplans.active,
-			            user_testplan_roles.user_id 
-			     FROM testplans, user_testplan_roles 
-	         WHERE user_testplan_roles.testplan_id = testplans.id
-	         AND user_testplan_roles.user_id={$userID}";
-	
-
-	if (!is_null($tplan_id))
-	{
-		 $sql .= " AND testplans.id = {$tplan_id}";
-	}
-	if (!is_null($p_bActive))
-	{
-		$bActive = to_boolean($p_bActive);	
-		$sql .= " AND testplans.active = " . $bActive;
-	}
-	return selectData($db,$sql);
-}
-
-
-// 20051002 - fm - added $g_ui_show_check_filter_tp_by_product
-// 20050929 - fm - added $filter_by_product
-// 20050904 - fm - TL 1.5.1 compatibility, get also Test Plans without product id.
-// 20050813 - fm - new
-// 
-function getUserProdTestPlans(&$db,$userID,$tproject_id,$filter_by_product,$p_bActive = null)
-{
-  
-  $show_tp_without_tproject_id = config_get('show_tp_without_tproject_id');
-  $ui_show_check_filter_tp_by_testproject = config_get('ui_show_check_filter_tp_by_testproject');
-  
-  $apply_tp_filter = 1;
-  if( $ui_show_check_filter_tp_by_testproject )
-  {
-    $apply_tp_filter = $filter_by_product;
-  }
-  	
-	$sql = " SELECT testplans.id, testplans.testproject_id, testplans.name, testplans.active,
-			            user_testplan_roles.user_id 
-			     FROM testplans, user_testplan_roles 
-	         WHERE user_testplan_roles.testplan_id = testplans.id
-	         AND user_testplan_roles.user_id={$userID}";
-	
- 	if (!is_null($tproject_id))
-	{
-		// 20050904 - fm - 
-		// TL 1.5.1 compatibility, get also Test Plans without product id.
-		// 20051012 - azl
-		// Removed the OR in the sql because it slows down the query signifigantly
-		// doing the logic here to determine if it is compat with 1.5 or not
-		if($apply_tp_filter and $show_tp_without_tproject_id)		    	
-		{
-			$sql .= " AND testplans.testproject_id=0";
-		}
-		elseif($apply_tp_filter)
-		{
-			$sql .= " AND testplans.testproject_id = {$tproject_id}";
-		}
-    }		 
-	
-	if (!is_null($p_bActive))
-	{
-		// 20050810 - fm
-		$bActive = to_boolean($p_bActive);
-		$sql .= " AND testplans.active = " . $bActive;
- 	}
- 	return selectData($db,$sql);
-}
-
 /** 
 * Function adjust Product and Test Plan to $_SESSION
 *
 */
 function doInitSelection(&$db)
 {
-  upd_session_tplan_tproject($db,$_REQUEST);
+	upd_session_tplan_tproject($db,$_REQUEST);
+
 	return 1;
 }
 
@@ -352,23 +220,19 @@ function doSessionStart()
 */
 function testlinkInitPage(&$db,$initProduct = FALSE, $bDontCheckSession = false)
 {
-	//global $db;
+	doSessionStart() or die("Could not start session");
 	doDBConnect($db) or die("Could not connect to DB");
 	
-	doSessionStart() or die("Could not start session");
 	setPaths();
 	set_dt_formats();
 	
 	if (!$bDontCheckSession)
-	{
 		checkSessionValid();
-	}	
+
 	checkUserRights($db);
 		
 	if ($initProduct)
-	{
 		doInitSelection($db) or die("Could not set session variables");
-	}
 }
 
 // 20060107 - fm
@@ -407,20 +271,6 @@ function redirect($path, $level = 'location')
 	echo "$level.href='$path';";
 	echo "</script></body></html>";
 	exit;
-}
-
-/**
- * Turn the $_POST map into a number valued array
- *
- * @return  array    number valued array of posted input 
- */
-function extractInput($bStripInput = false)
-{
-	$newArray = null;
-	foreach ($_POST as $key)
-		$newArray[] = $bStripInput ? strings_stripSlashes($key) : $key;
-
-	return $newArray;
 }
 
 function strings_stripSlashes($parameter,$bGPC = true)
@@ -473,55 +323,6 @@ function selectData(&$db,$sql)
 	return($output);
 }
 
-/** 
- * generalized execution SELECT query for option data
- * @param string SQL request (SELECT id,title FROM ...)
- * @return associated array  'id' => 'title'
- */
-// MHT 200506 created
-function selectOptionData(&$db,$sql)
-{
-	$output = null;
-	$result = $db->exec_query($sql);
-	
-	if ($result)
-	{
-		while($row = $db->fetch_array($result))
-		{
-			$output[$row[0]] = $row[1];
-		}	
-	}
-	else
-	{
-		tLog('FAILED SQL: ' . $sql . "\n" . $db->error_msg(), 'ERROR');
-	}
-	
-	return $output;
-}
-
-/** 
- * pick one value from SQL request
- * 
- * @param string $sql SQL request
- * @return string required value or null
- * @author havlatm
- */
-function do_sql_selectOne(&$db,$sql)
-{
-	$output = null;
-  	
-	$result = $db->exec_query($sql);
-
-	// return null for error or no data
-  if ($result && ($db->num_rows($result) > 0)) 
-  {
-		$row = $db->fetch_array($result);
-		$output = $row['0'];
-	}
-	return $output;
-}
-
-
 // --------------------------------------------------------------
 // returns an array of messages, one element for every
 // key of $a_fields_msg, that has empty value in $a_fields_values.
@@ -542,7 +343,7 @@ function control_empty_fields( $a_fields_values, $a_fields_msg )
 		if (strlen($a_fields_values[$key_f]) == 0)
 			$a_msg[] = $value_m ;    
 	}
-	return ($a_msg);
+	return $a_msg;
 }
 
 
@@ -634,8 +435,6 @@ function check_hash_keys($hash, $akeys2check, $msg='')
 	return ($status);
 }
 
-
-
 /**
  * Turn a hash into a number valued array
  *
@@ -651,7 +450,6 @@ function hash2array($hash, $bStripInput = false)
 	}
 	return $newArray;
 }
-
 
 /**
  * Turn a hash into a number valued array
@@ -689,36 +487,35 @@ function check_string($str2check, $ereg_forbidden_chars)
 //
 function upd_session_tplan_tproject(&$db,$hash_user_sel)
 {
-	$tproject = New testproject($db);
+	$tproject = new testproject($db);
 
-  // ------------------------------------------------------------------
-  $filter_tp_by_product = 1;
-  if( isset($hash_user_sel['filter_tp_by_product']) )
-  {
-    $filter_tp_by_product = 1;
-  }
-  else if ( isset($hash_user_sel['filter_tp_by_product_hidden']) )
-  {
-    $filter_tp_by_product = 0;
-  } 
-  // ------------------------------------------------------------------
+	// ------------------------------------------------------------------
+	$filter_tp_by_product = 1;
+	if( isset($hash_user_sel['filter_tp_by_product']) )
+	{
+	  $filter_tp_by_product = 1;
+	}
+	else if ( isset($hash_user_sel['filter_tp_by_product_hidden']) )
+	{
+	  $filter_tp_by_product = 0;
+	} 
+	// ------------------------------------------------------------------
 
 	$user_sel = array("tplan_id" => 0, "tproject_id" => 0 );
 	$user_sel["tproject_id"] = isset($hash_user_sel['testproject']) ? intval($hash_user_sel['testproject']) : 0;
 	$user_sel["tplan_id"] = isset($hash_user_sel['testplan']) ? intval($hash_user_sel['testplan']) : 0;
 
-  $tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-	$tplan_id    = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0;
+	$tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 	
 	// Now what to do ???
 	// test project is Test Plan container, then we start checking the container
 	if( $user_sel["tproject_id"] != 0 )
 	{
-    $tproject_id = $user_sel["tproject_id"];
+		$tproject_id = $user_sel["tproject_id"];
 	} 
-  $tproject_data=$tproject->get_by_id($tproject_id);
+	$tproject_data = $tproject->get_by_id($tproject_id);
 
-  // We need to do checks before updating the SESSION
+	// We need to do checks before updating the SESSION
 	if (!$tproject_id || !$tproject_data)
 	{
 		$all_tprojects = $tproject->get_all();
@@ -728,69 +525,28 @@ function upd_session_tplan_tproject(&$db,$hash_user_sel)
 		}	
 	}
 	setSessionTestProject($tproject_data);
+	$tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 
+	$tplan_id    = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0;
+	// Now we need to validate the TestPlan
+	if($user_sel["tplan_id"] != 0)
+		$tplan_id = $user_sel["tplan_id"];
 
-  // Now we need to validate the TestPlan
-  if( $user_sel["tplan_id"] != 0 )
-	{
-    $tplan_id = $user_sel["tplan_id"];
-	} 
+	//check if the specific combination of testprojectid and testplanid is valid
+	$tplan_data = getAccessibleTestPlans($db,$tproject_id,$filter_tp_by_product,$tplan_id);
+	if(!is_null($tplan_data))
+	{ 
+		$tplan_data = $tplan_data[0];
+		setSessionTestPlan($tplan_data);
+		return;
+	}
   
-  // Wee need to check:
-  // 1. $tplan_id belongs to tproject_id
-  // 2. User has rights on $tplan_id
-  // If any check fails we try to show the first TP in the Product, allowed to the user
-  $redo = 1;
-  $tplan_data = null;
-  
-  if (check_tp_father($db,$tproject_id,$tplan_id))
-  {
-    // Good! first check OK
-    $tplan_data = getUserTestPlan($db,$_SESSION['userID'],$tplan_id);
-    if( !is_null($tplan_data) )
-    { 
-      $redo = 0;
-      setSessionTestPlan($tplan_data);
-    }
-    // 20050929 - 
-  }
-  
-  if ( $redo )
-  {
-  	// 20050926 - fm
-  	$tp_tproject_id = get_tp_father($db,$tplan_id);
-  	
-    // Houston we have a problem
-    $ACTIVE_TP=true;
-    $tplan_info = getUserProdTestPlans($db,$_SESSION['userID'],$tproject_id,$filter_tp_by_product,$ACTIVE_TP);
+	//get the first accessible TestPlan
+	$tplan_data = getAccessibleTestPlans($db,$tproject_id,$filter_tp_by_product,null);
+	if(!is_null($tplan_data))
+		$tplan_data = $tplan_data[0];
 		
-		if ($tplan_info)
-		{
-			
-			// Attention: 
-			// this TPlan has a tproject_id (father) != 0, 
-			// but it's tproject_id is different that selected tproject_id
-			// then what to do ?
-			if ($tp_tproject_id && $filter_tp_by_product)
-		  {
-				$tplan_data = $tplan_info[0];
-			}
-			else
-			{
-        // We can ignore the tproject_id (father) of the selected TP
-				// TL 1.5.1 compatibility 
-		    foreach (	$tplan_info as $key => $elem )
-		    {
-		      if ($elem['id'] == $tplan_id)
-		      {
-		       $tplan_data = $tplan_info[$key];
-		       break;
-		      }
-		    }	
-			}	
-		}
-  }
-  setSessionTestPlan($tplan_data);
+	setSessionTestPlan($tplan_data);
 }
 
 // 20051005 - fm - SET Date and Time FORMATS 

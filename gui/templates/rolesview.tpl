@@ -1,5 +1,5 @@
 {* smarty template - view all keywords of product; ver. 1.0 *}
-{* $Id: rolesview.tpl,v 1.2 2006/02/22 20:26:38 schlundus Exp $ *}
+{* $Id: rolesview.tpl,v 1.3 2006/02/25 21:48:24 schlundus Exp $ *}
 {* Purpose: smarty template - View all roless *}
 {include file="inc_head.tpl"}
 
@@ -14,7 +14,7 @@
 	<br /><hr />
 	<span class="unselected"><a href="lib/usermanagement/rolesedit.php">{lang_get s='menu_define_roles'}</a></span> 
 	<span class="selected">{lang_get s='menu_view_roles'}</span>
-	<span class="unselected"><a href="lib/usermanagement/usersassign.php?feature=product">{lang_get s='menu_assign_product_roles'}</a></span> 
+	<span class="unselected"><a href="lib/usermanagement/usersassign.php?feature=testproject">{lang_get s='menu_assign_product_roles'}</a></span> 
 	<span class="unselected"><a href="lib/usermanagement/usersassign.php?feature=testplan">{lang_get s='menu_assign_testplan_roles'}</a></span>
 </div>
 

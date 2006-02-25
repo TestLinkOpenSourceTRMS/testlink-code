@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: containerEdit.php,v 1.26 2006/02/15 08:51:04 franciscom Exp $ */
+/* $Id: containerEdit.php,v 1.27 2006/02/25 21:48:26 schlundus Exp $ */
 /* Purpose:  This page manages all the editing of test specification containers. */
 /*
  *
@@ -248,7 +248,7 @@ else if($action == 'reorderCAT') //user has chosen the reorder CAT page
 }
 else if($action == 'updateCategoryOrder') //Execute update categories order
 {
-	$newArray = extractInput($_POST);
+	$newArray = hash2array($_POST,true);
 	$generalResult = 'ok';
 	
 	//skip the first one, this is the submit button
@@ -349,7 +349,7 @@ else if($action == 'reorderTC')
 } //Update db according to a category's reordered test cases
 else if($action == 'updateTCorder') 
 {
-	$newArray = extractInput($_POST); //Reorder the POST array to numeric
+	$newArray = hash2array($_POST,true); //Reorder the POST array to numeric
 	$generalResult = 'ok';
 	
 	//skip the first one, this is the submit button

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: navBar.php,v $
  *
- * @version $Revision: 1.15 $
- * @modified $Date: 2006/02/24 18:47:23 $
+ * @version $Revision: 1.16 $
+ * @modified $Date: 2006/02/25 21:48:24 $
  *
  * This file manages the navigation bar. 
  * 20050813 - fm - added Product Filter con TestPlan 
@@ -18,36 +18,37 @@ require_once("common.php");
 require_once("plan.core.inc.php");
 testlinkInitPage($db,true);
 
-$arr_tprojects = getOptionProducts($db);
+$arr_tprojects = getAccessibleProducts($db);
 $curr_tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : null;
-$roles = getRoles($db);
+if ($curr_tproject_id)
+	getAccessibleTestPlans($db,$curr_tproject_id,1,isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : null);
+	
+$roles = getAllRoles($db);
 $testprojectRole = null;
 if ($curr_tproject_id && isset($_SESSION['testprojectRoles'][$curr_tproject_id]))
-	$testprojectRole = '['.$roles[$_SESSION['testprojectRoles'][$curr_tproject_id]['role_id']]['role'].']';
-$roleName = $roles[$_SESSION['roleId']]['role'];
+	$testprojectRole = '['.$roles[$_SESSION['testprojectRoles'][$curr_tproject_id]['role_id']].']';
+$roleName = $roles[$_SESSION['roleId']];
 
 // 20050810 - fm - interface changes
-$countPlans = getCountTestPlans4UserProd($db,$_SESSION['userID'],$curr_tproject_id);
-
+$countPlans = getNumberOfAccessibleTestPlans($db,$curr_tproject_id, $_SESSION['filter_tp_by_product'],null);
 $smarty = new TLSmarty();
+
 // 20050813 - fm
 // only when the user has changed the product using the combo
 // the _GET has this key.
 // Use this clue to launch a refresh of other frames present on the screen
 // using the onload HTML body attribute
-$updateMainPage=0;
+$updateMainPage = 0;
 if (isset($_GET['testproject']))
 {
-	$updateMainPage=1;
+	$updateMainPage = 1;
 	// set product ID for the next session
-	setcookie('lastProductForUser'. $_SESSION['userID'], $_GET['product'], TL_COOKIE_KEEPTIME, '/');
+	setcookie('lastProductForUser'. $_SESSION['userID'], $_GET['testproject'], TL_COOKIE_KEEPTIME, '/');
 }
 
 $smarty->assign('view_tc_rights',has_rights($db,"mgt_view_tc"));
 $smarty->assign('user', $_SESSION['user'] . ' [' . $roleName . ']');
 $smarty->assign('testprojectRole',$testprojectRole);
-$smarty->assign('testPlanRole',$testPlanRole);
-
 $smarty->assign('rightViewSpec', has_rights($db,"mgt_view_tc"));
 $smarty->assign('rightExecute', has_rights($db,"testplan_execute"));
 $smarty->assign('rightMetrics', has_rights($db,"testplan_metrics"));

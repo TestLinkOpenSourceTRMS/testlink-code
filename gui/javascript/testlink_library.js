@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/ 
 // This script is distributed under the GNU General Public License 2 or later. 
 //
-// $Id: testlink_library.js,v 1.6 2006/02/22 20:26:38 schlundus Exp $ 
+// $Id: testlink_library.js,v 1.7 2006/02/25 21:48:22 schlundus Exp $ 
 //
 // Javascript functions commonly used through the GUI
 // This library is automatically loaded with inc_header.tpl
@@ -146,14 +146,14 @@ function modifyRoles_warning()
  *
  * @param string feature the feature, could be testplan or product
  **/
-function changeTestPlan(feature)
+function changeFeature(feature)
 {
-	var tmp = document.getElementById('testPlanSel');
+	var tmp = document.getElementById('featureSel');
 	if (!tmp)
 		return;
-	var tpID = tmp.value;	
-	if(tpID)
-		location = fRoot+"lib/usermanagement/usersassign.php?feature="+feature+"&featureID="+tpID;
+	var fID = tmp.value;	
+	if(fID)
+		location = fRoot+"lib/usermanagement/usersassign.php?feature="+feature+"&featureID="+fID;
 }
 
 function openFileUploadWindow(id,tableName)

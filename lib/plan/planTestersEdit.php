@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: planTestersEdit.php,v $
- * @version $Revision: 1.16 $
- * @modified $Date: 2006/02/15 08:49:20 $ $ by $Author: franciscom $
+ * @version $Revision: 1.17 $
+ * @modified $Date: 2006/02/25 21:48:26 $ $ by $Author: schlundus $
  * 
  * @author Martin Havlat
  * 
@@ -52,7 +52,7 @@ if ($submit)
 {
 	//remove the submit button
 	unset($_POST['submit']);
-	$projRightsArray = extractInput();
+	$projRightsArray = hash2array($_POST,false);
 	
 	if($type == 'users')
 	{

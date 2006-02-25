@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: rolesedit.php,v $
  *
- * @version $Revision: 1.1 $
- * @modified $Date: 2006/02/19 13:08:05 $ by $Author: schlundus $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2006/02/25 21:48:27 $ by $Author: schlundus $
  *
 **/
 require_once("../../config.inc.php");
@@ -17,6 +17,10 @@ testlinkInitPage($db);
 $_POST = strings_stripSlashes($_POST);
 $id = isset($_GET['id']) ? $_GET['id'] : 0;
 $postBack = sizeof($_POST) ? 1 : 0;
+
+$roleRights = null;
+$sqlResult = null;
+$action = null;
 
 if ($postBack)
 {
@@ -54,11 +58,12 @@ if ($postBack)
 }
 
 //get the role info
-$roles = getRoles($db,$id);
 $role = null;
 $affectedUsers = null;
 $allUsers = null;
-if (sizeof($roles))
+
+$roles = getRoles($db,$id);
+if (sizeof($roles) && $id)
 {
 	$role = $roles[$id];
 	if($role)

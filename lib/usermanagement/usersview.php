@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: usersview.php,v $
  *
- * @version $Revision: 1.2 $
- * @modified $Date: 2006/02/22 20:26:38 $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2006/02/25 21:48:27 $
  *
  * This page shows all users
  *
@@ -21,15 +21,19 @@ testlinkInitPage($db);
 
 $sqlResult = null;
 $action = null;
-$args = init_args($_GET,$_POST,TRUE);
-$userID = $_SESSION['userID'];
+$update_title_bar = 0;
+$reload = 0;
 
-if ($args->delete && $args->user)
+$bDelete = isset($_GET['delete']) ? $_GET['delete'] : 0;
+$userID = isset($_GET['user']) ? $_GET['user'] : 0;
+$sessionUserID = $_SESSION['userID'];
+
+if ($bDelete && $userID)
 {
-	$sqlResult = userDelete($db,$args->user);
+	$sqlResult = userDelete($db,$userID);
 	
 	//if the users deletes itself then logout
-	if ($args->user == $userID)
+	if ($userID == $sessionUserID)
 	{
 		header("Location: ../../logout.php");
 		exit();
@@ -38,29 +42,14 @@ if ($args->delete && $args->user)
 }
 	
 $users = getAllUsers($db);
-$rights = getListOfRoles($db);
+$roles = getAllRoles($db);
 
 $smarty = new TLSmarty();
-$smarty->assign('optRights',$rights);
+$smarty->assign('optRoles',$roles);
 $smarty->assign('update_title_bar',$update_title_bar);
 $smarty->assign('reload',$reload);
 $smarty->assign('users',$users);
 $smarty->assign('result',$sqlResult);
 $smarty->assign('action',$action);
 $smarty->display($g_tpl['usersview']);
-
-// 20060107 - fm
-function init_args($get_hash, $post_hash, $do_post_strip = TRUE)
-{
-	if($do_post_strip)
-		$post_hash = strings_stripSlashes($post_hash);
-
-	$intval_keys = array('delete' => 0, 'user' => 0);
-	foreach ($intval_keys as $key => $value)
-	{
-		$args->$key = isset($get_hash[$key]) ? intval($get_hash[$key]) : $value;
-	}
-  
-	return $args;
-}
 ?>

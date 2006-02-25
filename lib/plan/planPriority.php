@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: planPriority.php,v 1.4 2006/01/05 07:30:34 franciscom Exp $ */
+/* $Id: planPriority.php,v 1.5 2006/02/25 21:48:26 schlundus Exp $ */
 /**
  * This feature allows to define rules for priority dependecy 
  * to importance/risk for actual Test Plan
@@ -17,7 +17,7 @@ testlinkInitPage($db);
 // update data
 $sqlResult = null;
 if(isset($_POST['updatePriorityRules'])){
-	$newArray = extractInput();
+	$newArray = hash2array($_POST,false);
 	$sqlResult = setPriority($newArray);
 }
 

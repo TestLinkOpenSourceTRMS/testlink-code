@@ -1,6 +1,6 @@
 {* 
 Testlink: smarty template - 
-$Id: usersassign.tpl,v 1.3 2006/02/25 07:02:24 franciscom Exp $ 
+$Id: usersassign.tpl,v 1.4 2006/02/25 21:48:24 schlundus Exp $ 
 *}
 {* 
 *}
@@ -38,20 +38,29 @@ $Id: usersassign.tpl,v 1.3 2006/02/25 07:02:24 franciscom Exp $
 	<table class="common" width="75%">
 	<caption>
 	{if $feature == 'testproject'}
-		{lang_get s='caption_assign_testproject_user_roles'} - {$testprojectName|escape}
-	{else}
-		{lang_get s='caption_assign_testplan_user_roles'} - {lang_get s='TestPlan'}
-		<select id="testPlanSel">
-		{foreach from=$testPlans item=testPlan}
-		<option value="{$testPlan.id}" 
-		{if $featureID == $testPlan.id}
+		{lang_get s='caption_assign_testproject_user_roles'} - {lang_get s='TestProject'}
+		<select id="featureSel">
+		{foreach from=$features key=id item=f}
+		<option value="{$id}" 
+		{if $featureID == $id}
 			selected="selected" 
 		{/if}
-		>{$testPlan.name|escape}</option>
+		>{$f|escape}</option>
 		{/foreach}
 		</select>
-		<input type="button" value="{lang_get s='btn_change'}" onclick="changeTestPlan('{$feature}');"/>
+	{else}
+		{lang_get s='caption_assign_testplan_user_roles'} - {lang_get s='TestPlan'}
+		<select id="featureSel">
+		{foreach from=$features item=f}
+		<option value="{$f.id}" 
+		{if $featureID == $f.id}
+			selected="selected" 
+		{/if}
+		>{$f.name|escape}</option>
+		{/foreach}
+		</select>
 	{/if}
+	<input type="button" value="{lang_get s='btn_change'}" onclick="changeFeature('{$feature}');"/>
 	
 	</caption>
 	<tr>

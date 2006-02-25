@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
  * @filesource $RCSfile: roles.inc.php,v $
- * @version $Revision: 1.6 $
- * @modified $Date: 2006/02/25 07:02:25 $ by $Author: franciscom $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2006/02/25 21:48:24 $ by $Author: schlundus $
  * @author Martin Havlat, Chad Rosen
  * 
  * This script provides the get_rights and has_rights functions for
@@ -235,39 +235,60 @@ function deleteTestPlanUserRoles(&$db,$testPlanID)
 	return ($db->exec_query($query) ? 1 : 0);
 }
 
-function updateUserProductRoles(&$db,$userID,$userProductRoles)
-{
-	foreach($userProductRoles as $pID => $roleID)
-	{
-		if ($roleID)
-			insertUserProductRole($db,$userID,$pID,$roleID);
-	}
-}
-
+/**
+ * Inserts a testplan related role for a given user
+ *
+ * @param object $db [ref] the db-object
+ * @param int $userID the id of the user
+ * @param int $testPlanID the testplan id 
+ * @param int $roleID the role id
+ * @return int returns 1 on success, 0 else
+ **/
 function insertUserTestPlanRole(&$db,$userID,$testPlanID,$roleID)
 {
 	$query = "INSERT INTO user_testplan_roles (user_id,testplan_id,role_id) VALUES ({$userID},{$testPlanID},{$roleID})";
 	return ($db->exec_query($query) ? 1 : 0);
 }
 
-function insertUserProductRole(&$db,$userID,$productID,$roleID)
+/**
+ * Inserts a testproject related role for a given user
+ *
+ * @param object $db [ref] the db-object
+ * @param int $userID the id of the user
+ * @param int $testPlanID the testproject id 
+ * @param int $roleID the role id
+ * @return int returns 1 on success, 0 else
+ **/
+function insertUserTestProjectRole(&$db,$userID,$productID,$roleID)
 {
 	$query = "INSERT INTO user_testproject_roles (user_id,testproject_id,role_id) VALUES ({$userID},{$productID},{$roleID})";
 	return ($db->exec_query($query) ? 1 : 0);
 }
 
 
-// 20060224 - franciscom - table name user -> users
+/**
+ * Gets all users with a certain global role
+ *
+ * @param object $db [ref] the db-object
+ * @param int $roleID the role id
+ * @return array returns assoc map with the userids as the keys
+ **/
 function getUsersWithGlobalRole(&$db,$roleID)
 {
-	$query = "SELECT id FROM users WHERE role_id={$roleID}";
+	$query = "SELECT id FROM users WHERE role_id = {$roleID}";
 	$users = $db->fetchColumnsIntoArray($query,'id');
 	
 	return $users;
 }
 
-// 20060224 - franciscom - table name user -> users
-function getUsersWithProductRole(&$db,$roleID)
+/**
+ * Gets all users with a certain testproject role
+ *
+ * @param object $db [ref] the db-object
+ * @param int $roleID the role id
+ * @return array returns assoc map with the userids as the keys
+ **/
+function getUsersWithTestProjectRole(&$db,$roleID)
 {
 	$query = "SELECT id FROM users,user_testproject_roles 
 	          WHERE users.id = user_testproject_roles.user_id";
@@ -277,7 +298,13 @@ function getUsersWithProductRole(&$db,$roleID)
 	return $users;
 }
 
-// 20060224 - franciscom - table name user -> users
+/**
+ * Gets all users with a certain testplan role
+ *
+ * @param object $db [ref] the db-object
+ * @param int $roleID the role id
+ * @return array returns assoc map with the userids as the keys
+ **/
 function getUsersWithTestPlanRole(&$db,$roleID)
 {
 	$query = "SELECT id FROM users,user_testplan_roles 
@@ -288,16 +315,30 @@ function getUsersWithTestPlanRole(&$db,$roleID)
 	return $users;
 }
 
+/**
+ * Gets all users which have a certain global,testplan or testproject role
+ *
+ * @param object $db [ref] the db-object
+ * @param int $roleID the role id
+ * @return array returns assoc map with the userids as the keys
+ **/
 function getAllUsersWithRole(&$db,$roleID)
 {
 	$affectedGlobalUsers = getUsersWithGlobalRole($db,$roleID);
 	$affectedTestPlanUsers = getUsersWithTestPlanRole($db,$roleID);
-	$affectedProductUsers = getUsersWithProductRole($db,$roleID);
+	$affectedProductUsers = getUsersWithTestProjectRole($db,$roleID);
 	$affectedUsers = array_unique(array_merge($affectedGlobalUsers,$affectedTestPlanUsers,$affectedProductUsers));
 
 	return $affectedUsers;
 }
 
+/**
+ * Deletes all rights for a certain role
+ *
+ * @param object $db [ref] the db-object
+ * @param int $roleID the role id
+ * @return int returns 1 on success, 0 else
+ **/
 function deleteRoleRights(&$db,$roleID)
 {
 	$query = "DELETE FROM role_rights WHERE role_id = {$roleID}";
@@ -306,6 +347,13 @@ function deleteRoleRights(&$db,$roleID)
 	return $result ? 1 : 0;
 }
 
+/**
+ * Deletes a role
+ *
+ * @param object $db [ref] the db-object
+ * @param int $roleID the role id
+ * @return int return 1 on success, 0 else
+ **/
 function deleteRole(&$db,$roleID)
 {
 	if (deleteRoleRights($db,$roleID))
@@ -317,6 +365,15 @@ function deleteRole(&$db,$roleID)
 	return $result ? 1 : 0;
 }
 
+/**
+ * Updates a role 
+ *
+ * @param object $db [ref] the db-object
+ * @param int $roleID the role id 
+ * @param int $roleName the rolename
+ * @param array $rights array of the rights for the roles
+ * @return int returns 1 on success, 0 else
+ **/
 function updateRole(&$db,$roleID,$roleName,$rights)
 {
 	deleteRoleRights($db,$roleID);
@@ -329,16 +386,26 @@ function updateRole(&$db,$roleID,$roleName,$rights)
 	return $db->exec_query($query) ? 1 : 0;
 }
 
+
+/**
+ * Resets all assigned roles with a certain roleid to the <No rights>-role
+ *
+ * @param object $db [ref] the db-object
+ * @param int $id the role id
+ * @return int returns 1 on success, 0 else
+ **/
 function resetUserRoles(&$db,$id)
 {
-	$query = "UPDATE user SET role_id = ".TL_ROLES_NONE." WHERE role_id = {$id}";
-	$db->exec_query($query);
+	$query = "UPDATE users SET role_id = ".TL_ROLES_NONE." WHERE role_id = {$id}";
+	$result = ($db->exec_query($query) ? true : false);
 
 	$query = "UPDATE user_testproject_roles SET role_id = ".TL_ROLES_NONE." WHERE role_id = {$id}";
-	$db->exec_query($query);
+	$result = $result && ($db->exec_query($query) ? true : false);
 	
 	$query = "UPDATE user_testplan_roles SET role_id = ".TL_ROLES_NONE." WHERE role_id = {$id}";
-	$db->exec_query($query);
+	$result = $result && ($db->exec_query($query) ? true : false);
+	
+	return ($result ? 1 : 0);
 }
 						
 function getRoles(&$db)
@@ -379,9 +446,9 @@ function getRoles(&$db)
 	return $roles;
 }
 
-function getListOfRoles(&$db)
+function getAllRoles(&$db)
 {
-	$roles = getTwoColumnsMap($db,"SELECT id,description FROM roles");
+	$roles  = $db->fetchColumnsIntoMap("SELECT id,description FROM roles",'id','description');
 	$roles[0] = "<undefined>";
 	
 	return $roles;
@@ -453,7 +520,7 @@ function has_rights(&$db,$roleQuestion)
 	$globalRights = explode(",",$globalRights);
 	
 	//check for testplan rights first
-	$testPlanID = $_SESSION['testPlanId'];
+	$testPlanID = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0;
 	$userTestPlanRoles = $_SESSION['testPlanRoles'];
 
 	if (isset($userTestPlanRoles[$testPlanID]))
@@ -468,7 +535,7 @@ function has_rights(&$db,$roleQuestion)
 	}
 	
 	//check for product rights first
-	$productID = $_SESSION['testprojectID'];
+	$productID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 	$userProductRoles = $_SESSION['testprojectRoles'];
 	if (isset($userProductRoles[$productID]))
 	{

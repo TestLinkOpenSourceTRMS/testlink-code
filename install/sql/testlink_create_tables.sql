@@ -1,6 +1,6 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
 # This script is distributed under the GNU General Public License 2 or later.
-# $Id: testlink_create_tables.sql,v 1.17 2006/02/24 17:57:48 franciscom Exp $
+# $Id: testlink_create_tables.sql,v 1.18 2006/02/25 21:48:24 schlundus Exp $
 # SQL script - create db tables for TL   
 #
 # default rights & admin account are created via testlink_create_default_data.sql
@@ -320,3 +320,19 @@ CREATE TABLE `user_testplan_roles` (
   `role_id` int(10) NOT NULL default '0',
   PRIMARY KEY  (`user_id`,`testplan_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+CREATE TABLE `attachments` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `fk_id` int(10) unsigned NOT NULL default '0',
+  `fk_table` varchar(250) default '',
+  `title` varchar(250) default '',
+  `description` varchar(250) default '',
+  `file_name` varchar(250) NOT NULL default '',
+  `file_path` varchar(250) default '',
+  `file_size` int(11) NOT NULL default '0',
+  `file_type` varchar(250) NOT NULL default '',
+  `date_added` datetime NOT NULL default '1970-01-01 00:00:01',
+  `content` longblob,
+  `compression_type` int(11) NOT NULL default '0',
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8; 

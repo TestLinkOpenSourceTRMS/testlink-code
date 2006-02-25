@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: exec.inc.php,v $
  *
- * @version $Revision: 1.23 $
- * @modified $Date: 2006/02/04 20:13:14 $ $Author: schlundus $
+ * @version $Revision: 1.24 $
+ * @modified $Date: 2006/02/25 21:48:24 $ $Author: schlundus $
  *
  * @author Martin Havlat
  *
@@ -136,8 +136,7 @@ function createBuildMenu(&$db,$tpID)
 	$sql = " SELECT build.id, build.name " .
 	       " FROM build WHERE build.projid = " .  $tpID . 
 	       " ORDER BY build.id DESC";
-
-	return selectOptionData($db,$sql);
+	return $db->fetchColumnsIntoMap($sql,'id','name');
 }//end function
 
 

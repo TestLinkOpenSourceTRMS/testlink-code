@@ -1,7 +1,7 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: testSetRemove.php,v 1.9 2006/01/09 07:19:06 franciscom Exp $ 
+ * @version $Id: testSetRemove.php,v 1.10 2006/02/25 21:48:26 schlundus Exp $ 
  * 
  * Remove Test Cases from Test Case Suite 
  * 
@@ -32,7 +32,7 @@ $arrData = array();
 /** process update if available */
 if(isset($_POST['deleteTC']))
 {
-	$newArray = extractInput(false);
+	$newArray = hash2array($_POST,false);
 
 	$i = 1; //Start the counter at 3 because the first three variable is a submit box
 	while ($i < count($newArray))

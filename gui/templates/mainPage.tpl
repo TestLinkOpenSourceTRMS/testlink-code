@@ -1,6 +1,6 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: mainPage.tpl,v 1.11 2006/02/25 07:02:24 franciscom Exp $     
+ $Id: mainPage.tpl,v 1.12 2006/02/25 21:48:24 schlundus Exp $     
  Purpose: smarty template - main page / site map                 
                                                                  
                                                                  
@@ -206,7 +206,7 @@
         <a href="lib/admin/adminProductEdit.php">{lang_get s='href_edit_product'}</a>
         <br />
 		<img class="arrow" src="icons/arrow_org.gif" />
-        <a href="lib/usermanagement/usersassign.php?feature=product&featureID={$sessionProductID}">{lang_get s='href_assign_user_roles'}</a>
+        <a href="lib/usermanagement/usersassign.php?feature=testproject&featureID={$sessionProductID}">{lang_get s='href_assign_user_roles'}</a>
         </p>
 	{/if} {* modify_product_rights *}
 	

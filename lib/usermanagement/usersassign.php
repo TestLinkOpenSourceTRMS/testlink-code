@@ -5,13 +5,12 @@
 *
 * Filename $RCSfile: usersassign.php,v $
 *
-* @version $Revision: 1.4 $
-* @modified $Date: 2006/02/25 07:02:25 $
+* @version $Revision: 1.5 $
+* @modified $Date: 2006/02/25 21:48:27 $
 * 
 * Allows assigning users roles to testplans or testprojects
 *
 * 20060224 - franciscom - changes in session product -> testproject
-*            getTestPlans() -> getAllActiveTestPlans()
 */
 require_once('../../config.inc.php');
 require_once('users.inc.php');
@@ -19,21 +18,23 @@ testlinkInitPage($db);
 
 $feature = isset($_GET['feature']) ? $_GET['feature'] : null;
 $testprojectID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-$tplan_name = isset($_SESSION['testPlanName']) ? $_SESSION['testPlanName'] : null;
-$testprojectName = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : null;
+$tpID = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0;
 $userID = $_SESSION['userID'];
 
-$btestproject = false;
+$sqlResult = null;
+$action = null;
+$testPlans = null;
+$bTestproject = false;
 $bTestPlan = false;
+$featureID = isset($_GET['featureID']) ? $_GET['featureID'] : 0;
+
 if ($feature == "testproject")
 {
-	$btestproject = true;
-	$featureID = $testprojectID;
+	$bTestproject = true;
 }
 else if ($feature == "testplan")
 {
 	$bTestPlan = true;
-	$featureID = isset($_GET['featureID']) ? $_GET['featureID'] : 0;
 }
 
 //postback
@@ -45,7 +46,7 @@ if ($bUpdate)
 	{
 		$feature = isset($_POST['feature']) ? $_POST['feature'] : null;
 		if ($feature == "testproject")
-			$btestproject = true;
+			$bTestproject = true;
 		else if ($feature == "testplan")
 			$bTestPlan = true;
 	}
@@ -59,19 +60,20 @@ if ($featureID && $bUpdate)
 	unset($_POST['feature']);
 	$users = $_POST;
 	
-	if ($btestproject)
+	if ($bTestproject)
 		deleteProductUserRoles($db,$featureID);			
 	else if ($bTestPlan)
 		deleteTestPlanUserRoles($db,$featureID);					
-
-  // 20060224 - franciscom - Please remove this magic number	
+	
+	$subStr = "userRole";
+	$subLen = strlen($subStr);
 	foreach($users as $userRole => $roleID)
 	{
-		if ($roleID && (substr($userRole,0,8) == "userRole"))
+		if ($roleID && (substr($userRole,0,$subLen) == $subStr))
 		{
-			$userID = intval(substr($userRole,8));
-			if ($btestproject)
-				insertUserProductRole($db,$userID,$featureID,$roleID);
+			$userID = intval(substr($userRole,$subLen));
+			if ($bTestproject)
+				insertUserTestProjectRole($db,$userID,$featureID,$roleID);
 			else if ($bTestPlan)
 				insertUserTestPlanRole($db,$userID,$featureID,$roleID);
 		}
@@ -81,31 +83,36 @@ if ($featureID && $bUpdate)
 }
 $userData = getAllUsers($db);
 
-if ($btestproject)
+$userFeatureRoles = null;
+if ($bTestproject)
 {
 	$userFeatureRoles = getProductUserRoles($db,$featureID);
-}	
+	$features = getAccessibleProducts($db);
+	if (!$featureID)
+	{
+		if ($testprojectID)
+			$featureID = $testprojectID;
+		else if (sizeof($features))
+		{
+			$k = key($features);
+			$featureID = $k;
+		}
+	}
+}
 else if($bTestPlan)
 {
-	// $testPlans = getTestPlans($db,$testprojectID,$userID,1);
-	// 20060224 - franciscom
-	// We can't filter by user because will be impossible to assign role to
-	// unassigned testplans
-	$testPlans = getAllActiveTestPlans($db,$testprojectID,FILTER_BY_TESTPROJECT);
-
-	
-	
+	$features = getAllActiveTestPlans($db,$testprojectID,$_SESSION['filter_tp_by_product']);
 	//if nothing special was selected, use the one in the session or the first
 	if (!$featureID)
 	{
-		if (isset($_SESSION['testPlanId']) && $_SESSION['testPlanId'])
-			$featureID = $_SESSION['testPlanId'];
-		else if (sizeof($testPlans))
-			$featureID = $testPlans[0]['id'];
+		if ($tpID)
+			$featureID = $tpID;
+		else if (sizeof($features))
+			$featureID = $features[0]['id'];
 	}
 	$userFeatureRoles = getTestPlanUserRoles($db,$featureID);
 }
-$roleList = getListOfRoles($db);
+$roleList = getAllRoles($db);
 
 $smarty = new TLSmarty();
 $smarty->assign('optRights', $roleList);
@@ -115,8 +122,6 @@ $smarty->assign('featureID',$featureID);
 $smarty->assign('feature',$feature);
 $smarty->assign('result',$sqlResult);
 $smarty->assign('action',$action);
-$smarty->assign('testPlans',$testPlans);
-$smarty->assign('testprojectName',$testprojectName);
-$smarty->assign('testPlanName',$tplan_name);
+$smarty->assign('features',$features);
 $smarty->display('usersassign.tpl');
 ?>

@@ -1,5 +1,5 @@
 {* smarty template - view all keywords of product; ver. 1.0 *}
-{* $Id: rolesedit.tpl,v 1.1 2006/02/19 13:08:05 schlundus Exp $ *}
+{* $Id: rolesedit.tpl,v 1.2 2006/02/25 21:48:24 schlundus Exp $ *}
 {* Purpose: smarty template - View all roless *}
 {include file="inc_head.tpl"}
 
@@ -21,7 +21,7 @@ var warning_modify_role = "{lang_get s='warning_modify_role'}";
 	<br /><hr />
 	<span class="selected">{lang_get s='menu_define_roles'}</span> 
 	<span class="unselected"><a href="lib/usermanagement/rolesview.php">{lang_get s='menu_view_roles'}</a></span>
-	<span class="unselected"><a href="lib/usermanagement/usersassign.php?feature=product">{lang_get s='menu_assign_product_roles'}</a></span> 
+	<span class="unselected"><a href="lib/usermanagement/usersassign.php?feature=testproject">{lang_get s='menu_assign_product_roles'}</a></span> 
 	<span class="unselected"><a href="lib/usermanagement/usersassign.php?feature=testplan">{lang_get s='menu_assign_testplan_roles'}</a></span>
 </div>
 

@@ -5,13 +5,13 @@
 *
 * Filename $RCSfile: usersedit.php,v $
 *
-* @version $Revision: 1.3 $
-* @modified $Date: 2006/02/25 07:02:25 $
+* @version $Revision: 1.4 $
+* @modified $Date: 2006/02/25 21:48:27 $
 * 
 * Allows editing a user
 */
 require_once('../../config.inc.php');
-require_once('testproject.class.php');  // 20060224 - francisco.mancardi@gruppotesi.com
+require_once('testproject.class.php');
 require_once('users.inc.php');
 testlinkInitPage($db);
 
@@ -67,10 +67,6 @@ if ($args->do_update)
 
 $userResult = null;
 
-// 20060219 - franciscom
-$tproject_mgr = New testproject($db);
-$all_tprojects = $tproject_mgr->get_all($db);
-
 if ($user_id)
 {
 	$userResult = getUserById($db,$user_id);
@@ -79,7 +75,7 @@ if ($user_id)
 }
 	
 $smarty = new TLSmarty();
-$smarty->assign('optRights', getListOfRoles($db));
+$smarty->assign('optRights', getAllRoles($db));
 $smarty->assign('userData', $userResult);
 $smarty->assign('result',$sqlResult);
 $smarty->assign('action',$action);

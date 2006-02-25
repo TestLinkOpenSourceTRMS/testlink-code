@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: product.core.inc.php,v $
- * @version $Revision: 1.7 $
- * @modified $Date: 2006/02/25 07:02:25 $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2006/02/25 21:48:24 $
  * @author Martin Havlat
  *
  * Core Functions for Product management (get data)
@@ -52,7 +52,7 @@ rev :
      refactoring
      
 */
-function getOptionProducts(&$db)
+function getAccessibleProducts(&$db)
 {
 	$arrProducts = array();
 	
@@ -65,25 +65,23 @@ function getOptionProducts(&$db)
 	else
 		$sql .=  "(role_id IS NOT NULL AND role_id != ".TL_ROLES_NONE.")";
 	
-	$order_by = " ORDER BY name";
 	
-	if (has_rights($db,'mgt_modify_product') == 'yes') {
-		$sql .= $order_by;
-		$arrTemp = selectData($db,$sql);
-		if (sizeof($arrTemp))
+	if (has_rights($db,'mgt_modify_product') != 'yes')
+		$sql .= " AND active=1 ";
+
+	$sql .= " ORDER BY name";
+	
+	$arrTemp = $db->fetchRowsIntoMap($sql,'id');
+	
+	if (sizeof($arrTemp))
+	{
+		foreach($arrTemp as $id => $row)
 		{
-			foreach($arrTemp as $one_item)
-			{
-				$noteActive = '';
-				if (!$one_item['active'])
-					$noteActive = '* ';
-				$arrProducts[$one_item['id']] = $noteActive . $one_item['name'];
-			}
+			$noteActive = '';
+			if (!$row['active'])
+				$noteActive = '* ';
+			$arrProducts[$id] = $noteActive . $row['name'];
 		}
-		
-	} else {
-		$sql .= " AND active=1 " . $order_by;
-		$arrProducts = selectOptionData($db,$sql);
 	}
 	
 	return $arrProducts;

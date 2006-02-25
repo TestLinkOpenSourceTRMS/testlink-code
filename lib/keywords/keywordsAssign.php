@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: keywordsAssign.php,v $
  *
- * @version $Revision: 1.10 $
- * @modified $Date: 2006/02/15 08:49:20 $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2006/02/25 07:02:25 $
  *
  * Purpose:  Assign keywords to set of testcases in tree structure
  *
@@ -28,12 +28,12 @@ $bAssignComponent = isset($_REQUEST['assigncomponent']) ? 1 : 0;
 $bAssignCategory = isset($_REQUEST['assigncategory']) ? 1 : 0;
 $bAssignTestCase = isset($_REQUEST['assigntestcase']) ? 1 : 0;
 
-$prodID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+$testproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 
 $smarty = new TLSmarty();
 $title = null;
 $result = null;
-$keysOfProduct = selectKeywords($db,$prodID);
+$keysOfProduct = selectKeywords($db,$testproject_id);
 
 if ($edit == 'product')
 {

@@ -5,12 +5,13 @@
 *
 * Filename $RCSfile: usersassign.php,v $
 *
-* @version $Revision: 1.3 $
-* @modified $Date: 2006/02/24 18:06:14 $
+* @version $Revision: 1.4 $
+* @modified $Date: 2006/02/25 07:02:25 $
 * 
 * Allows assigning users roles to testplans or testprojects
 *
 * 20060224 - franciscom - changes in session product -> testproject
+*            getTestPlans() -> getAllActiveTestPlans()
 */
 require_once('../../config.inc.php');
 require_once('users.inc.php');
@@ -18,16 +19,16 @@ testlinkInitPage($db);
 
 $feature = isset($_GET['feature']) ? $_GET['feature'] : null;
 $testprojectID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-$tpName = isset($_SESSION['testPlanName']) ? $_SESSION['testPlanName'] : null;
-$productName = isset($_SESSION['productName']) ? $_SESSION['productName'] : null;
+$tplan_name = isset($_SESSION['testPlanName']) ? $_SESSION['testPlanName'] : null;
+$testprojectName = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : null;
 $userID = $_SESSION['userID'];
 
-$bProduct = false;
+$btestproject = false;
 $bTestPlan = false;
-if ($feature == "product")
+if ($feature == "testproject")
 {
+	$btestproject = true;
 	$featureID = $testprojectID;
-	$bProduct = true;
 }
 else if ($feature == "testplan")
 {
@@ -43,8 +44,8 @@ if ($bUpdate)
 	if ($featureID)
 	{
 		$feature = isset($_POST['feature']) ? $_POST['feature'] : null;
-		if ($feature == "product")
-			$bProduct = true;
+		if ($feature == "testproject")
+			$btestproject = true;
 		else if ($feature == "testplan")
 			$bTestPlan = true;
 	}
@@ -58,17 +59,18 @@ if ($featureID && $bUpdate)
 	unset($_POST['feature']);
 	$users = $_POST;
 	
-	if ($bProduct)
+	if ($btestproject)
 		deleteProductUserRoles($db,$featureID);			
 	else if ($bTestPlan)
 		deleteTestPlanUserRoles($db,$featureID);					
-	
+
+  // 20060224 - franciscom - Please remove this magic number	
 	foreach($users as $userRole => $roleID)
 	{
 		if ($roleID && (substr($userRole,0,8) == "userRole"))
 		{
 			$userID = intval(substr($userRole,8));
-			if ($bProduct)
+			if ($btestproject)
 				insertUserProductRole($db,$userID,$featureID,$roleID);
 			else if ($bTestPlan)
 				insertUserTestPlanRole($db,$userID,$featureID,$roleID);
@@ -79,11 +81,20 @@ if ($featureID && $bUpdate)
 }
 $userData = getAllUsers($db);
 
-if ($bProduct)
+if ($btestproject)
+{
 	$userFeatureRoles = getProductUserRoles($db,$featureID);
+}	
 else if($bTestPlan)
 {
-	$testPlans = getTestPlans($db,$testprojectID,$userID,1);
+	// $testPlans = getTestPlans($db,$testprojectID,$userID,1);
+	// 20060224 - franciscom
+	// We can't filter by user because will be impossible to assign role to
+	// unassigned testplans
+	$testPlans = getAllActiveTestPlans($db,$testprojectID,FILTER_BY_TESTPROJECT);
+
+	
+	
 	//if nothing special was selected, use the one in the session or the first
 	if (!$featureID)
 	{
@@ -105,7 +116,7 @@ $smarty->assign('feature',$feature);
 $smarty->assign('result',$sqlResult);
 $smarty->assign('action',$action);
 $smarty->assign('testPlans',$testPlans);
-$smarty->assign('productName',$productName);
-$smarty->assign('testPlanName',$tpName);
+$smarty->assign('testprojectName',$testprojectName);
+$smarty->assign('testPlanName',$tplan_name);
 $smarty->display('usersassign.tpl');
 ?>

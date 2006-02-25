@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: keywords.inc.php,v $
 * 
-* @version $Id: keywords.inc.php,v 1.18 2006/02/15 08:49:20 franciscom Exp $
-* @modified $Date: 2006/02/15 08:49:20 $ by $Author: franciscom $
+* @version $Id: keywords.inc.php,v 1.19 2006/02/25 07:02:25 franciscom Exp $
+* @modified $Date: 2006/02/25 07:02:25 $ by $Author: franciscom $
 *
 * Functions for support keywords management. 
 *
@@ -14,6 +14,7 @@
 * 20051004 - fm - addNewKeyword() refactoring and improvements
 * 20051216 - MHT - fixed update keywords also in testplan
 * 20051229 - scs - added support for ADODB, added some functions related to import/export
+* 20060224 - franciscom - changes due to new schema
 **/
 $g_keywordImportTypes = array( "CSV" => "CSV",
 							 "XML" => "XML",
@@ -28,19 +29,19 @@ $g_keywordFormatStrings = array (
  * collect all keywords for the product and return as associative array 
  *
  * @param object $db [ref] the database object
- * @param int $prodID the productID
+ * @param int $testprojectID the productID
  * @param string $selectedKey [default = ''] a possible selected keyword
  * @param int $keywordID [default = null] a possible keywordID to search for
  * 
  * @return type documentation
  **/
-function selectKeywords(&$db,$prodID, $selectedKey = '',$keywordID = null)
+function selectKeywords(&$db,$testprojectID, $selectedKey = '',$keywordID = null)
 {
 	$arrKeywords = null;
-	if ($prodID)
+	if ($testprojectID)
 	{	
 	  	//20050827 - scs - added sorting of keyword
-	  	$sql = "SELECT id,keyword,notes FROM keywords WHERE prodid = " . $prodID ;
+	  	$sql = "SELECT id,keyword,notes FROM keywords WHERE testproject_id = " . $testprojectID ;
 		if (!is_null($keywordID))
 			$sql .= " AND id = {$keywordID} ";
 		$sql .= " ORDER BY keyword ASC";
@@ -205,14 +206,14 @@ function addTCKeyword(&$db,$tcID, $newKey)
  * Function-Documentation
  *
  * @param object $db [ref] documentation
- * @param type $prodID documentation
+ * @param type $testprojectID documentation
  * @param type $id documentation
  * @param type $keyword documentation
  * @param type $notes documentation
  * 
  * @return type documentation
  **/
-function updateKeyword(&$db,$prodID,$id,$keyword,$notes)
+function updateKeyword(&$db,$testprojectID,$id,$keyword,$notes)
 {
 	$allow_duplicate_keywords=config_get('allow_duplicate_keywords');
 
@@ -223,7 +224,7 @@ function updateKeyword(&$db,$prodID,$id,$keyword,$notes)
 
 	if (!$allow_duplicate_keywords)
 	{
-		$check = check_for_keyword_existence($db,$prodID, $my_kw,$id);
+		$check = check_for_keyword_existence($db,$testprojectID, $my_kw,$id);
 		$do_action = !$check['keyword_exists'];
 
 		$ret['msg'] = $check['msg'];
@@ -267,7 +268,7 @@ function deleteKeyword(&$db,$id)
  * Adds a new keyword to the given product
  *
  * @param object $db [ref] the database object
- * @param int  $prodID
+ * @param int  $testprojectID
  * @param string $keyword
  * @param string $notes
  *
@@ -276,7 +277,7 @@ function deleteKeyword(&$db,$id)
  * 20051011 - fm - use of check_for_keyword_existence()
  * 20051004 - fm - refactoring
  **/
-function addNewKeyword(&$db,$prodID,$keyword,$notes)
+function addNewKeyword(&$db,$testprojectID,$keyword,$notes)
 {
 	global $g_allow_duplicate_keywords;
 	
@@ -285,16 +286,16 @@ function addNewKeyword(&$db,$prodID,$keyword,$notes)
 	$my_kw = trim($keyword);
 	if (!$g_allow_duplicate_keywords)
 	{
-		$check = check_for_keyword_existence($db,$prodID, $my_kw);
+		$check = check_for_keyword_existence($db,$testprojectID, $my_kw);
 		$ret = $check['msg'];
 		$do_action = !$check['keyword_exists'];
 	}
 	
 	if ($do_action)
 	{
-		$sql =  " INSERT INTO keywords (keyword,prodid,notes) " .
+		$sql =  " INSERT INTO keywords (keyword,testproject_id,notes) " .
 				" VALUES ('" . $db->prepare_string($my_kw) .	"'," . 
-				$prodID . ",'" . $db->prepare_string($notes) . "')";
+				$testprojectID . ",'" . $db->prepare_string($notes) . "')";
 		
 		$result = $db->exec_query($sql);
 		if (!$result)
@@ -329,7 +330,7 @@ function getTCKeywords(&$db,$tcID)
  * Function-Documentation
  *
  * @param object $db [ref] documentation
- * @param type $prodID documentation
+ * @param type $testprojectID documentation
  * @param type $searchKW [default = null] documentation
  * @param type $kwID [default = null] documentation
  * 
@@ -338,9 +339,9 @@ function getTCKeywords(&$db,$tcID)
  * 20051004 - fm - return type changed
  * 20051126 - scs - added parameter kwID for getting the keyword name by id
  **/
-function getProductKeywords(&$db,$prodID,$searchKW = null,$kwID = null)
+function getProductKeywords(&$db,$testprojectID,$searchKW = null,$kwID = null)
 {
-	$sql = "SELECT keyword FROM keywords WHERE prodid=" . $prodID;
+	$sql = "SELECT keyword FROM keywords WHERE testproject_id=" . $testprojectID;
 	
 	if (!is_null($searchKW))
 	{
@@ -361,14 +362,14 @@ function getProductKeywords(&$db,$prodID,$searchKW = null,$kwID = null)
  * check_for_keyword_existence
  *
  * @param object $db [ref] documentation
- * @param int    $prodID product ID
+ * @param int    $testprojectID product ID
  * @param string $kw keyword to search for
  * @param int    $kwID[default = 0] ignore keyword with this id
  *
  * @return type
  *				 				
  **/
-function check_for_keyword_existence($db,$prodID, $kw, $kwID = 0)
+function check_for_keyword_existence($db,$testprojectID, $kw, $kwID = 0)
 {
 	$ret = array(
 				 'msg' => 'ok', 
@@ -377,7 +378,7 @@ function check_for_keyword_existence($db,$prodID, $kw, $kwID = 0)
 	  
 	$sql = 	" SELECT * FROM keywords " .
 			" WHERE UPPER(keyword) ='" . strtoupper($db->prepare_string($kw)).
-		    "' AND prodid=" . $prodID ;
+		    "' AND testproject_id=" . $testprojectID ;
 	
 	if ($kwID)
 		$sql .= " AND id <> " . $kwID;
@@ -470,7 +471,7 @@ function importKeywordDataFromXML($fileName)
  * Imports the keywords contained in keywordData to the given product
  *
  * @param type $db [ref] documentation
- * @param int $prodID the product to which the keywords should be imported
+ * @param int $testprojectID the product to which the keywords should be imported
  * @param array $keywordData an array with keyword information like
  * 				 keywordData[$i]['keyword'] => the keyword itself
  * 				 keywordData[$i]['notes'] => the notes of keyword
@@ -479,7 +480,7 @@ function importKeywordDataFromXML($fileName)
  *
  * @author Andreas Morsing <schlundus@web.de>
  **/
-function importKeywords(&$db,$prodID,$keywordData)
+function importKeywords(&$db,$testprojectID,$keywordData)
 {
 	$sqlResults = null;
 	for($i = 0;$i < sizeof($keywordData);$i++)
@@ -490,7 +491,7 @@ function importKeywords(&$db,$prodID,$keywordData)
 		if (!is_null($msg))
 			$sqlResults[] = $msg;
 		else
-			$sqlResults[] = addNewKeyword($db,$prodID,$keyword,$notes);
+			$sqlResults[] = addNewKeyword($db,$testprojectID,$keyword,$notes);
 	}
 	
 	return $sqlResults;

@@ -1,6 +1,6 @@
 {* 
 Testlink: smarty template - 
-$Id: usersassign.tpl,v 1.2 2006/02/22 20:26:38 schlundus Exp $ 
+$Id: usersassign.tpl,v 1.3 2006/02/25 07:02:24 franciscom Exp $ 
 *}
 {* 
 *}
@@ -19,11 +19,11 @@ $Id: usersassign.tpl,v 1.2 2006/02/22 20:26:38 schlundus Exp $
 	<br /><hr />
 	<span class="unselected"><a href="lib/usermanagement/rolesedit.php">{lang_get s='menu_define_roles'}</a></span> 
 	<span class="unselected"><a href="lib/usermanagement/rolesview.php">{lang_get s='menu_view_roles'}</a></span>
-	{if $feature == 'product'}
-		<span class="selected">{lang_get s='menu_assign_product_roles'}</span> 
+	{if $feature == 'testproject'}
+		<span class="selected">{lang_get s='menu_assign_testproject_roles'}</span> 
 		<span class="unselected"><a href="lib/usermanagement/usersassign.php?feature=testplan">{lang_get s='menu_assign_testplan_roles'}</a></span>
 	{else}
-		<span class="unselected"><a href="lib/usermanagement/usersassign.php?feature=product">{lang_get s='menu_assign_product_roles'}</a></span>
+		<span class="unselected"><a href="lib/usermanagement/usersassign.php?feature=testproject">{lang_get s='menu_assign_testproject_roles'}</a></span>
 		<span class="selected">{lang_get s='menu_assign_testplan_roles'}</span> 
 	{/if}
 </div>
@@ -37,8 +37,8 @@ $Id: usersassign.tpl,v 1.2 2006/02/22 20:26:38 schlundus Exp $
 	<input type="hidden" name="feature" value="{$feature}" />
 	<table class="common" width="75%">
 	<caption>
-	{if $feature == 'product'}
-		{lang_get s='caption_assign_product_user_roles'} - {$productName|escape}
+	{if $feature == 'testproject'}
+		{lang_get s='caption_assign_testproject_user_roles'} - {$testprojectName|escape}
 	{else}
 		{lang_get s='caption_assign_testplan_user_roles'} - {lang_get s='TestPlan'}
 		<select id="testPlanSel">

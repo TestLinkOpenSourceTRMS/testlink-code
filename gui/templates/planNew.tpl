@@ -1,13 +1,9 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planNew.tpl,v 1.8 2006/01/14 17:47:54 schlundus Exp $
+$Id: planNew.tpl,v 1.9 2006/02/25 07:02:24 franciscom Exp $
 
 Purpose: smarty template - create Test Plan
-
-20050528 - fm - I18N  
-20050824 - scs - changed item to TestPlan 
-20051120 - fm - added product name info
-20051121 - scs - added escaping of product name
+20060224 - franciscom - removed the rights check
 *}
 
 {include file="inc_head.tpl"}
@@ -56,10 +52,6 @@ Purpose: smarty template - create Test Plan
 				{/section}
 				</select>
 			</td>
-		<tr>
-			<td>{lang_get s='question_want_rights'}</td>
-			<td><input type="checkbox" name="rights" checked="checked" />{lang_get s='say_yes'}</td>
-		</tr>
 		{else}
 		<tr>
 			<td>{lang_get s='th_active'}:</td>

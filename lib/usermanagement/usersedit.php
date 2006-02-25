@@ -5,12 +5,13 @@
 *
 * Filename $RCSfile: usersedit.php,v $
 *
-* @version $Revision: 1.2 $
-* @modified $Date: 2006/02/22 20:26:38 $
+* @version $Revision: 1.3 $
+* @modified $Date: 2006/02/25 07:02:25 $
 * 
 * Allows editing a user
 */
 require_once('../../config.inc.php');
+require_once('testproject.class.php');  // 20060224 - francisco.mancardi@gruppotesi.com
 require_once('users.inc.php');
 testlinkInitPage($db);
 
@@ -65,7 +66,11 @@ if ($args->do_update)
 }
 
 $userResult = null;
-$products = getProducts($db);
+
+// 20060219 - franciscom
+$tproject_mgr = New testproject($db);
+$all_tprojects = $tproject_mgr->get_all($db);
+
 if ($user_id)
 {
 	$userResult = getUserById($db,$user_id);
@@ -79,6 +84,7 @@ $smarty->assign('userData', $userResult);
 $smarty->assign('result',$sqlResult);
 $smarty->assign('action',$action);
 $smarty->display('usersedit.tpl');
+
 
 // 20060107 - fm
 function init_args($get_hash, $post_hash, $do_post_strip = TRUE)

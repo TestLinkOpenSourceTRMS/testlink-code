@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: plan.inc.php,v $
- * @version $Revision: 1.27 $
- * @modified $Date: 2006/02/24 18:17:27 $ $Author: franciscom $
+ * @version $Revision: 1.28 $
+ * @modified $Date: 2006/02/25 07:02:25 $ $Author: franciscom $
  * @author 	Martin Havlat
  *
  * Functions for management: 
@@ -251,7 +251,7 @@ function createTestPlan(&$db,$name,$notes,$testproject_id)
 	$tree_manager = New tree($db);
 	$node_types=$tree_manager->get_available_node_types();
 	
-  $tplan_id = $tree_manager->new_node($testproject_id,$node_types['test plan']);
+  $tplan_id = $tree_manager->new_node($testproject_id,$node_types['testplan']);
 	
 	$sql = "INSERT INTO testplans (id,name,notes,testproject_id) 
 	        VALUES ( {$tplan_id} " . ", '" . 
@@ -412,12 +412,13 @@ function getUsersOfPlan(&$db,$id)
 	$arrUsers = array();
 	
 	
-	$sql = " SELECT user.id,login,testplans_rights.projid ";
+	$sql = " SELECT users.id,login,testplans_rights.projid ";
 	if ($show_realname)
 	{
 	  $sql .= " ,first,last "; 
 	}
-	$sql .= " FROM user LEFT OUTER JOIN testplans_rights ON testplans_rights.userid = user.id AND projid = ".$id;
+	$sql .= " FROM users LEFT OUTER JOIN testplans_rights ON 
+	          testplans_rights.userid = users.id AND projid = ".$id;
 
 	$result = $db->exec_query($sql);
 	while ($myrow = $db->fetch_array($result))

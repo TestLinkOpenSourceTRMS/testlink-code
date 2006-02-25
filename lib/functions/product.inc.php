@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: product.inc.php,v $
- * @version $Revision: 1.12 $
- * @modified $Date: 2006/02/19 13:03:33 $
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2006/02/25 07:02:25 $
  * @author Martin Havlat
  *
  * Functions for Product management (create,update,delete)
@@ -114,9 +114,10 @@ function deleteProduct(&$db,$id, &$error)
 				" AND testplans.prodid=" . $id, 
 			'info_priority_delete_fails'),
 		// delete Test Plan rights
-		array ("DELETE testplans_rights FROM testplans,testplans_rights WHERE testplans_rights.projid=testplans.id" .
-				" AND testplans.prodid=" . $id, 
-			'info_plan_rights_delete_fails'),
+		// 20060224 - franciscom
+		//array ("DELETE testplans_rights FROM testplans,testplans_rights WHERE testplans_rights.projid=testplans.id" .
+		//		" AND testplans.prodid=" . $id, 
+		//	'info_plan_rights_delete_fails'),
 		// delete test plans - should not be deleted if nested data were not deleted
 		array ("DELETE FROM testplans WHERE prodid=" . $id, 
 			'info_testplan_delete_fails'),
@@ -150,7 +151,7 @@ function deleteProduct(&$db,$id, &$error)
 			" AND req_coverage.req_id=requirements.id", 
 			'info_reqs_delete_fails'),
 
-		array ("DELETE FROM user_product_roles WHERE product_id=" . $id, 
+		array ("DELETE FROM user_testproject_roles WHERE testproject_id=" . $id, 
 			'info_productrights_delete_fails'),
 	); 
 
@@ -175,9 +176,9 @@ function deleteProduct(&$db,$id, &$error)
 		$result = $db->exec_query($sql);
 
 		if ($result) {
-			$sessProduct = isset($_SESSION['testprojectID']) ? $_SESSION['testproject'] : $id;
-			if ($id == $sessProduct) {
-				setSessionProduct(null);
+			$tproject_id_on_session = isset($_SESSION['testprojectID']) ? $_SESSION['testproject'] : $id;
+			if ($id == $tproject_id_on_session) {
+				setSessionTestProject(null);
 			}
 		} else {
 			$error .= lang_get('info_product_delete_fails');

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: users.inc.php,v $
  *
- * @version $Revision: 1.29 $
- * @modified $Date: 2006/02/24 18:56:01 $ $Author: franciscom $
+ * @version $Revision: 1.30 $
+ * @modified $Date: 2006/02/25 07:02:25 $ $Author: franciscom $
  *
  * Functions for usermanagement
  *
@@ -38,11 +38,11 @@ require_once("common.php");
  */
 function existLogin(&$db,$login, &$r_user_data)
 {
-	$sql = " SELECT password, login, user.id, role_id, " .
+	$sql = " SELECT password, login, users.id, role_id, " .
 	       "        email, first, last, " .  
 	       "        roles.description AS role, locale, active" .
 	       " FROM users,roles " .
-	       " WHERE user.role_id = roles.id " .
+	       " WHERE users.role_id = roles.id " .
 	       " AND login='" . $db->prepare_string($login) . "'";
 	
 	$r_user_data = $db->fetchFirstRow($sql);
@@ -241,9 +241,10 @@ function userUpdate(&$db,$userID, $first, $last, $email ,
  * 20050701 - create function: update session data if admin modify yourself
  * 20060102 - scs - ADOdb changes
  **/
-function setUserSession(&$db,$user, $id, $roleID, $email, $locale = null,$active = null,$usertestprojectRoles = null,$userTestPlanRoles = null)
+function setUserSession(&$db,$user, $id, $roleID, $email, $locale = null, $active = null,
+                        $usertestprojectRoles = null,$userTestPlanRoles = null)
 {
-	tLog('setUserSession: $user='.$user.' $id='.$id.' $roleID='.$roleID.' $email='.$email.' $locale='.$locale);
+	tLog('setUserSession: $user=' . $user . ' $id='.$id.' $roleID='.$roleID.' $email='.$email.' $locale='.$locale);
 	
 	if (!is_null($user))
 		$_SESSION['user'] = $user; 

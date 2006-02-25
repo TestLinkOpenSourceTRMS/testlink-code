@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  * 
  * @filesource $RCSfile: doAuthorize.php,v $
- * @version $Revision: 1.9 $
- * @modified $Date: 2006/02/19 13:03:32 $ by $Author: schlundus $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2006/02/25 07:02:25 $ by $Author: franciscom $
  * @author Chad Rosen, Martin Havlat
  *
  * This file handles the initial login and creates all user session variables.
@@ -14,6 +14,7 @@
  * 
  * Revision:
  * 
+ * 20060224 - franciscom - role_id instead of deprecated rights id
  * 20051007 MHT Solved  0000024 Session confusion 
  *
  *///////////////////////////////////////////////////////////////////////////
@@ -55,7 +56,7 @@ function doAuthorize(&$db,$login,$pwd)
 			    //Setting user's session information
 			    // MHT 200507 move session update to function
 			    setUserSession($db,$userInfo['login'], $userInfo['id'], 
-			    		$userInfo['rightsid'], $userInfo['email'], 
+			    		$userInfo['role_id'], $userInfo['email'], 
 			    		$userInfo['locale'],null,$userProductRoles,$userTestPlanRoles);
 		    	$bSuccess = true;
 			}

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: keywordsexport.php,v $
  *
- * @version $Revision: 1.3 $
- * @modified $Date: 2006/02/15 08:49:20 $ by $Author: franciscom $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2006/02/25 07:02:25 $ by $Author: franciscom $
  *
  * This page this allows users to export keywords. 
  *
@@ -21,12 +21,12 @@ testlinkInitPage($db);
 $bExport = isset($_POST['export']) ? $_POST['export'] : null;
 $exportType = isset($_POST['exportType']) ? $_POST['exportType'] : null;
 
-$prodID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+$testproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 $productName = $_SESSION['testprojectName'];
 
 if ($bExport)
 {
-	$keywords = selectKeywords($db,$prodID);
+	$keywords = selectKeywords($db,$testproject_id);
 	switch($exportType)
 	{
 		case 'CSV':
@@ -49,7 +49,7 @@ if ($bExport)
 
 $smarty = new TLSmarty;
 $smarty->assign('productName', $productName);
-$smarty->assign('productID', $prodID);
+$smarty->assign('productID', $testproject_id);
 $smarty->assign('importTypes',$g_keywordImportTypes);
 $smarty->display('keywordsexport.tpl');
 

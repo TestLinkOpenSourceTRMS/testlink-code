@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
  * @filesource $RCSfile: roles.inc.php,v $
- * @version $Revision: 1.5 $
- * @modified $Date: 2006/02/24 18:56:18 $ by $Author: franciscom $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2006/02/25 07:02:25 $ by $Author: franciscom $
  * @author Martin Havlat, Chad Rosen
  * 
  * This script provides the get_rights and has_rights functions for
@@ -36,6 +36,7 @@
  *
  * 20060224 - franciscom - changes in session product -> testproject
                          - table name user -> users
+                         
  */
 require_once( dirname(__FILE__). '/lang_api.php' );
 
@@ -268,16 +269,19 @@ function getUsersWithGlobalRole(&$db,$roleID)
 // 20060224 - franciscom - table name user -> users
 function getUsersWithProductRole(&$db,$roleID)
 {
-	$query = "SELECT id FROM users,user_testproject_roles WHERE user.id = user_testproject_roles.user_id";
+	$query = "SELECT id FROM users,user_testproject_roles 
+	          WHERE users.id = user_testproject_roles.user_id";
 	$query .= " AND user_testproject_roles.role_id = {$roleID}";
 	$users = $db->fetchColumnsIntoArray($query,'id');
 	
 	return $users;
 }
 
+// 20060224 - franciscom - table name user -> users
 function getUsersWithTestPlanRole(&$db,$roleID)
 {
-	$query = "SELECT id FROM `user`,user_testplan_roles WHERE  user.id = user_testplan_roles.user_id";
+	$query = "SELECT id FROM users,user_testplan_roles 
+	          WHERE  users.id = user_testplan_roles.user_id";
 	$query .= " AND user_testplan_roles.role_id = {$roleID}";
 	$users = $db->fetchColumnsIntoArray($query,'id');
 	

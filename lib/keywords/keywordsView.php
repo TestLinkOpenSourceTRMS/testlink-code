@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: keywordsView.php,v $
  *
- * @version $Revision: 1.10 $
- * @modified $Date: 2006/02/15 08:49:20 $ by $Author: franciscom $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2006/02/25 07:02:25 $ by $Author: franciscom $
  *
  * Purpose:  This page this allows users to view keywords. 
  *
@@ -28,7 +28,7 @@ $bEditKey = isset($_REQUEST['editKey']) ? 1 : 0;
 $notes = isset($_REQUEST['notes']) ? $_REQUEST['notes'] : null;
 
 
-$prodID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+$testproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 $bModifyKeywordRight = has_rights($db,"mgt_modify_key");
 
 $sqlResult = null;
@@ -36,7 +36,7 @@ $action = null;
 //show the details of the keyword to edit
 if ($keywordID && !$bEditKey && !$bDeleteKey)
 {
-	$info = selectKeywords($db,$prodID,null,$keywordID);
+	$info = selectKeywords($db,$testproject_id,null,$keywordID);
 	if (sizeof($info))
 	{
 		$keyword = $info[0]['keyword'];
@@ -52,10 +52,10 @@ if ($bModifyKeywordRight)
 		if (is_null($sqlResult))
 		{
 			if ($bNewKey)
-				$sqlResult = addNewKeyword($db,$prodID,$keyword,$notes);
+				$sqlResult = addNewKeyword($db,$testproject_id,$keyword,$notes);
 			else
 			{
-				$check = updateKeyword($db,$prodID,$keywordID,$keyword,$notes);
+				$check = updateKeyword($db,$testproject_id,$keywordID,$keyword,$notes);
 				if ($check['status_ok'])
 					$sqlResult = 'ok';
 				else
@@ -79,7 +79,7 @@ if ($bModifyKeywordRight)
 }
 
 // 20060103 - fm
-$my_kw_array = selectKeywords($db,$prodID);
+$my_kw_array = selectKeywords($db,$testproject_id);
 $num_kw = count($my_kw_array);
 for($idx=0; $idx < $num_kw; $idx++)
 {

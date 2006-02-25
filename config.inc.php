@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.49 $
- * @modified $Date: 2006/02/24 18:20:34 $ by $Author: franciscom $
+ * @version $Revision: 1.50 $
+ * @modified $Date: 2006/02/25 07:02:19 $ by $Author: franciscom $
  *
  *
  * Constants and configuration parameters used throughout TestLink 
@@ -401,6 +401,13 @@ define('ALL_PRODUCTS',0);
 define('TP_ALL_STATUS',null);
 define('FILTER_BY_PRODUCT',1);
 define('TP_STATUS_ACTIVE',1);
+
+// 20060224 - franciscom
+define('FILTER_BY_TESTPROJECT',1);
+
+// characters used to surround the role description in the user interface
+define('ROLE_SEP_START','[');
+define('ROLE_SEP_END',']');
 
 /* ATTACHMENTS */
 /* some attachment related defines, no need to modify them */

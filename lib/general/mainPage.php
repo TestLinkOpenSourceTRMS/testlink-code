@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: mainPage.php,v $
  *
- * @version $Revision: 1.15 $ $Author: schlundus $
- * @modified $Date: 2006/02/19 13:03:33 $
+ * @version $Revision: 1.16 $ $Author: franciscom $
+ * @modified $Date: 2006/02/25 07:02:25 $
  *
  * @author Martin Havlat
  * 
@@ -33,7 +33,7 @@ require_once('users.inc.php');
 testlinkInitPage($db,TRUE);
 $smarty = new TLSmarty;
 
-$productID = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
+$testprojectID = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
 $testPlanID = isset($_SESSION['testPlanId']) ? intval($_SESSION['testPlanId']) : 0;
 
 // ----------------------------------------------------------------------
@@ -89,23 +89,24 @@ else if ( isset($_REQUEST['filter_tp_by_product_hidden']) )
 else
 {
 	if (isset($_SESSION['filter_tp_by_product']))
+	{
 		$filter_tp_by_product = $_SESSION['filter_tp_by_product'];
+	}	
 }
 $_SESSION['filter_tp_by_product'] = $filter_tp_by_product;
 $smarty->assign('filter_tp_by_product',$filter_tp_by_product);
 
 $roles = getRoles($db);
 $testPlanRole = null;
-$currentTestPlan = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : null;
-if ($currentTestPlan && isset($_SESSION['testPlanRoles'][$currentTestPlan]))
-	$testPlanRole = '['.$roles[$_SESSION['testPlanRoles'][$currentTestPlan]['role_id']]['role'].']';
+$cur_tplan = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : null;
+if ($cur_tplan && isset($_SESSION['testPlanRoles'][$cur_tplan]))
+{
+	$idx = $_SESSION['testPlanRoles'][$cur_tplan]['role_id'];
+	$testPlanRole = ROLE_SEP_START . $roles[$idx]['role'] . ROLE_SEP_END;
+}
 // ----- Test Plan Section ----------------------------------  
 // get Test Plans available for the user 
-// 20050928 - fm - Interface changes
-// 20050810 - fm - Interface changes
-// 20050809 - fm - get only test plan for the selected product
-$arrPlans = getTestPlans($db,$productID,
-						$_SESSION['userID'],$filter_tp_by_product);
+$arrPlans = getTestPlans($db,$testprojectID,$_SESSION['userID'],$filter_tp_by_product);
 
 //20050826 - scs - added displaying of security notes
 $securityNotes = getSecurityNotes($db);
@@ -132,7 +133,7 @@ $smarty->assign('show_filter_tp_by_product',
 
 $smarty->assign('usermanagement_rights',has_rights($db,"mgt_users"));
 
-$smarty->assign('sessionProductID',$productID);	
+$smarty->assign('sessionProductID',$testprojectID);	
 $smarty->assign('sessionTestPlanID',$testPlanID);
 
 $smarty->assign('testPlanRole',$testPlanRole);

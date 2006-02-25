@@ -1,6 +1,6 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: mainPage.tpl,v 1.10 2006/02/19 13:03:32 schlundus Exp $     
+ $Id: mainPage.tpl,v 1.11 2006/02/25 07:02:24 franciscom Exp $     
  Purpose: smarty template - main page / site map                 
                                                                  
                                                                  
@@ -54,7 +54,7 @@
 				{/section}
 				</select>
 				{if $testPlanRole neq null}
-					- {lang_get s='testplan_role'}{$testPlanRole|escape}
+					<br>{lang_get s='testplan_role'} {$testPlanRole|escape}
 				{/if}
 		{else}
 			{lang_get s='msg_no_rights_for_tp'}

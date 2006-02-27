@@ -4,14 +4,15 @@
  *
  * Filename $RCSfile: navBar.php,v $
  *
- * @version $Revision: 1.16 $
- * @modified $Date: 2006/02/25 21:48:24 $
+ * @version $Revision: 1.17 $
+ * @modified $Date: 2006/02/27 08:05:58 $
  *
  * This file manages the navigation bar. 
+ *
  * 20050813 - fm - added Product Filter con TestPlan 
  * 20060205 - JBA - Remember last product (BTS 221); added by MHT
  * 20060224 - franciscom - changes in session testproject instead of product
- *
+ * 20060226 - franciscom - gestione logo
 **/
 require('../../config.inc.php');
 require_once("common.php");
@@ -45,6 +46,15 @@ if (isset($_GET['testproject']))
 	// set product ID for the next session
 	setcookie('lastProductForUser'. $_SESSION['userID'], $_GET['testproject'], TL_COOKIE_KEEPTIME, '/');
 }
+
+
+// 20060226 - franciscom
+$logo_img='';
+if (defined('LOGO_NAVBAR') )
+{
+  $logo_img=LOGO_NAVBAR;
+}
+$smarty->assign('logo', $logo_img);
 
 $smarty->assign('view_tc_rights',has_rights($db,"mgt_view_tc"));
 $smarty->assign('user', $_SESSION['user'] . ' [' . $roleName . ']');

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: archive.inc.php,v $
  *
- * @version $Revision: 1.31 $
- * @modified $Date: 2006/02/15 08:51:04 $ by $Author: franciscom $
+ * @version $Revision: 1.32 $
+ * @modified $Date: 2006/02/27 07:55:45 $ by $Author: franciscom $
  *
  * @author Martin Havlat
  * Purpose:  functions for test specification management have three parts:
@@ -173,6 +173,7 @@ function showProduct(&$db,$id, $sqlResult = '', $sqlAction = 'update',$moddedIte
 }
 
 
+/*
 function showComponent(&$db,$id, $sqlResult = '', $sqlAction = 'update',$moddedItem = 0)
 {
 	// init smarty
@@ -194,6 +195,7 @@ function showComponent(&$db,$id, $sqlResult = '', $sqlAction = 'update',$moddedI
 	$smarty->assign('container_data', $component);
 	$smarty->display('containerView.tpl');
 }
+*/
 
 
 function showCategory(&$db,$id, $sqlResult = '', $sqlAction = 'update',$moddedItem = 0)

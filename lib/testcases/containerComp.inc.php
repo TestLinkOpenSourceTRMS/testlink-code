@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: containerComp.inc.php,v 1.10 2006/02/15 08:51:04 franciscom Exp $ */
+/* $Id: containerComp.inc.php,v 1.11 2006/02/27 07:55:45 franciscom Exp $ */
 /* Purpose:  This page manages all the editing of test specification containers. */
 /*
  *
@@ -55,6 +55,9 @@ function viewer_edit_new_com(&$db,$amy_keys, $oFCK, $action, $productID, $id=nul
 	
 	$smarty->display($the_tpl);
 }
+
+
+
 //20051013 - am - fix for 115, added param $copyKeywords for copying also the keywords
 //				  when copying the tcs to the new product
 function copy_or_move_comp(&$db,$action, $compID, $prodID ,$hash, $user_id, $copyKeywords)

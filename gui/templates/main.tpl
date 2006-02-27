@@ -1,5 +1,5 @@
 {* Testlink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: main.tpl,v 1.2 2005/08/16 17:59:13 franciscom Exp $ *}
+{* $Id: main.tpl,v 1.3 2006/02/27 07:55:44 franciscom Exp $ *}
 {* Purpose: smarty template - main frame *}
 {*******************************************************************}
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">
@@ -15,7 +15,8 @@
 	<meta name="description" content="TestLink - {$title|default:"Main page"}" />
 </head>
 
-<frameset rows="45,*" frameborder="0" framespacing="0">
+{* 20060226 - franciscom - changes in dimensions due to logo on navbar*}
+<frameset rows="80,*" frameborder="0" framespacing="0">
 	<frame src="{$titleframe}" name="titlebar" scrolling="no" noresize="noresize" />
 	<frame src="{$mainframe}" scrolling='auto' name='mainframe' />
 	<noframes>

@@ -2,9 +2,9 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.1 $
- * @modified $Date: 2006/02/24 18:49:51 $
- * @author Martin Havlat
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2006/02/27 07:55:45 $
+ * @author franciscom
  *
  */
 
@@ -72,7 +72,7 @@ function update($id, $name, $color, $opt_req,$notes)
 			   " notes='" . $this->db->prepare_string($notes) . "'" . 
 			   " WHERE id=" . $id;
 			   
-	  echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
+	  //echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
 		   
 	$result = $this->db->exec_query($sql);
 
@@ -134,6 +134,36 @@ function get_all()
   $recordset = $this->db->get_recordset($sql);
   return($recordset);
 }
+
+
+/* 20060225 - franciscom */
+function show($id, $sqlResult = '', $action = 'update',$modded_item_id = 0)
+{
+	
+	$smarty = new TLSmarty;
+	$smarty->assign('modify_tc_rights', has_rights($this->db,"mgt_modify_tc"));
+
+	if($sqlResult)
+	{ 
+		$smarty->assign('sqlResult', $sqlResult);
+		$smarty->assign('sqlAction', $action);
+	}
+	
+	$item = $this->get_by_id($id);
+  $modded_item = $item;
+	if ( $modded_item_id )
+	{
+		$modded_item = $this->get_by_id($modded_item_id);
+	}
+  
+  //echo "<pre>debug"; print_r($item); echo "</pre>";
+  		
+	$smarty->assign('moddedItem',$modded_item);
+	$smarty->assign('level', 'testproject');
+	$smarty->assign('container_data', $item);
+	$smarty->display('containerView.tpl');
+}
+
 
 
 

@@ -4,16 +4,12 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.19 $
- * @modified $Date: 2006/02/15 08:51:04 $  by $Author: franciscom $
+ * @version $Revision: 1.20 $
+ * @modified $Date: 2006/02/27 07:55:45 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
  * @author Martin Havlat
  *
- * 20050827 - fm - BUGID 0000086
- * 20050827 - fm - fckeditor
- * 20050821 - fm - added missing control in tc title len interface - reduce global coupling
- * 20051015 - scs - moved some POST params to the top
  * 20060106 - scs - refactoring, fixed bug 9
 **/
 require_once("../../config.inc.php");
@@ -21,12 +17,18 @@ require_once("../functions/common.php");
 require('archive.inc.php');
 require('../keywords/keywords.inc.php');
 require_once("../../third_party/fckeditor/fckeditor.php");
+require_once("testcase.class.php"); // 20060226 - franciscom
+
+
 testlinkInitPage($db);
+
+
+//echo "<pre>debug (" . __FILE__ .")"; print_r($_REQUEST); echo "</pre>";
 
 // set variables
 // --------------------------------------------------------------------
 // create  fckedit objects
-$a_ofck = array('summary','steps','exresult');
+$a_ofck = array('summary','steps','expected_results');
 $oFCK = array();
 foreach ($a_ofck as $key)
 {
@@ -36,20 +38,21 @@ foreach ($a_ofck as $key)
 	$of->ToolbarSet=$g_fckeditor_toolbar;;
 }
 // --------------------------------------------------------------------
-$productID = $_SESSION['testprojectID'];
+$testprojectID = $_SESSION['testprojectID'];
 $show_newTC_form = 0;
 $smarty = new TLSmarty;
 $smarty->assign('path_htmlarea', $_SESSION['basehref'] . 'third_party/htmlarea/');
 
 $tc = isset($_REQUEST['editTC']) ? $_REQUEST['editTC'] : null;
-$categoryID = isset($_GET['categoryID']) ? intval($_GET['categoryID']) : 0;
+$containerID = isset($_GET['containerID']) ? intval($_GET['containerID']) : 0;
 $testcaseID = isset($_GET['testcaseID']) ? intval($_GET['testcaseID']) : 0;
 $title 		= isset($_POST['title']) ? strings_stripSlashes($_POST['title']) : null;
 $summary 	= isset($_POST['summary']) ? strings_stripSlashes($_POST['summary']) : null;
 $steps 		= isset($_POST['steps']) ? strings_stripSlashes($_POST['steps']) : null;
-$outcome 	= isset($_POST['exresult']) ? strings_stripSlashes($_POST['exresult']) : null;
+$expected_results 	= isset($_POST['expected_results']) ? strings_stripSlashes($_POST['expected_results']) : null;
 $catID = isset($_POST['moveCopy']) ? intval($_POST['moveCopy']) : 0;
 $oldCat = isset($_POST['oldCat']) ? intval($_POST['oldCat']) : 0;
+
 $bAddTC = isset($_POST['addTC']) ? 1 : 0;
 $bUpdateTC = isset($_POST['updateTC']) ? 1 : 0;
 $bNewTC = isset($_POST['newTC']) ? 1 : 0;
@@ -81,6 +84,7 @@ if($bAddTC || $bUpdateTC)
 		$name_ok = 0;
 	}
 }
+
 //If the user has chosen to edit a testcase then show this code
 if($tc)
 {
@@ -88,7 +92,7 @@ if($tc)
 	
 	$myrowTC = getTestcase($db,$testcaseID,false);
 	$tcKeywords = getTCKeywords($db,$testcaseID);
-	$prodKeywords = getProductKeywords($db,$productID);
+	$prodKeywords = getProductKeywords($db,$testprojectID);
 	if (sizeof($prodKeywords))
 	{
 		if (sizeof($tcKeywords))
@@ -153,9 +157,15 @@ else if($bAddTC)
 	
 	if ($name_ok)
 	{
+		$tcase_mgr = New testcase($db);
 		$msg = lang_get('error_tc_add');
-		if (insertTestcase($db,$categoryID,$title,$summary,$steps,$outcome,$_SESSION['userID'],null,$updatedKeywords))
-			$msg = 'ok';
+		//if (insertTestcase($db,$containerID,$title,$summary,$steps,$outcome,$_SESSION['userID'],null,$updatedKeywords))
+		//	$msg = 'ok';
+		if ($tcase_mgr->create($containerID,$title,$summary,$steps,$expected_results,$_SESSION['userID']))
+		{
+		  $msg = 'ok';
+		}
+		
 	}
   
 	$smarty->assign('sqlResult', $msg);
@@ -209,13 +219,17 @@ else
 {
 	tlog("A correct POST argument is not found.");
 }
+
 // --------------------------------------------------------------------------
 if ($show_newTC_form)
 {
-	$smarty->assign('categoryID', $categoryID);
+	$smarty->assign('containerID', $containerID);
 	
 	foreach ($a_ofck as $key)
 	{
+    //echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $key . "</b><br>";
+
+	   
 		// Warning:
 		// the data assignment will work while the keys in $the_data are identical
 		// to the keys used on $oFCK.
@@ -224,7 +238,7 @@ if ($show_newTC_form)
 		$smarty->assign($key, $of->CreateHTML());
 	}
 
-	$prodKeywords = getProductKeywords($db,$productID);
+	$prodKeywords = getProductKeywords($db,$testprojectID);
 	$smarty->assign('keys',$prodKeywords);
 	$smarty->display($g_tpl['tcNew']);
 }

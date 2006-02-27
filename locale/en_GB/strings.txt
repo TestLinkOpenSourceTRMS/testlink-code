@@ -4,10 +4,12 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.47 $
- * @modified $Date: 2006/02/24 18:25:40 $ $Author: franciscom $
+ * @version $Revision: 1.48 $
+ * @modified $Date: 2006/02/27 07:55:45 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
+ *
+ * 20060225 - franciscom - removed some deprecated names
 **/
 
 
@@ -55,8 +57,8 @@ $TLS_warning_delete_build = "Do really want to delete this build? All dependant 
 
 
 // gui/templates/containerDelete.tpl
-$TLS_btn_yes_del_cat = "Yes, delete category!";
-$TLS_btn_yes_del_comp = "Yes, delete component!";
+$TLS_btn_yes_del_cat = "Yes, delete test suite!";
+$TLS_btn_yes_del_comp = "Yes, delete test suite!";
 $TLS_delete_notice = "Warning: All Related Execution Results will be deleted";
 $TLS_gui_error = "gui_error";
 $TLS_question_del = "Really delete";
@@ -64,9 +66,9 @@ $TLS_question_del = "Really delete";
 
 
 // gui/templates/containerEdit.tpl
-$TLS_btn_update_cat = "Update category";
-$TLS_category = "Category";
-$TLS_component = "Component";
+$TLS_btn_update_cat = "Update test suite";
+$TLS_category = "test suite";
+$TLS_component = "test suite";
 $TLS_title_edit_level = "Edit";
 
 
@@ -86,8 +88,8 @@ $TLS_title_move_cp = "Move/Copy";
 
 
 // gui/templates/containerNew.tpl
-$TLS_btn_create_cat = "Create category";
-$TLS_btn_create_comp = "Create component";
+$TLS_btn_create_cat = "Create test suite";
+$TLS_btn_create_comp = "Create test suite";
 $TLS_title_create = "Create";
 
 
@@ -96,14 +98,14 @@ $TLS_title_create = "Create";
 $TLS_no_cat_to_reorder = "I'm sorry there are no categories to reorder!";
 $TLS_th_id = "ID";
 $TLS_th_order = "Order";
-$TLS_title_change_comp_cat_order = "Change this component's Category order";
+$TLS_title_change_comp_cat_order = "Change this test suite's test suite order";
 
 
 
 // gui/templates/containerView.tpl
-$TLS_alt_del_com = "Delete this component";
-$TLS_alt_edit_com = "Modify this component data and title";
-$TLS_alt_move_cp_com = "Move or copy this component to another Test project";
+$TLS_alt_del_com = "Delete this test suite";
+$TLS_alt_edit_com = "Modify this test suite data and title";
+$TLS_alt_move_cp_com = "Move or copy this test suite to another Test project";
 $TLS_btn_del_cat = "Delete";
 $TLS_btn_del_com = "Delete";
 $TLS_btn_edit_cat = "Edit";
@@ -111,8 +113,8 @@ $TLS_btn_edit_com = "Edit";
 $TLS_btn_import_tc = "Import TestCases";
 $TLS_btn_move_cp_cat = "Move/Copy";
 $TLS_btn_move_cp_com = "Move/Copy";
-$TLS_btn_new_cat = "New Category";
-$TLS_btn_new_com = "New Component";
+$TLS_btn_new_cat = "New test suite";
+$TLS_btn_new_com = "New test suite";
 $TLS_btn_new_tc = "Create Test Cases";
 $TLS_btn_reorder_cat = "Reorder Categories";
 $TLS_btn_reorder_tc = "Reorder Test Cases";
@@ -213,9 +215,9 @@ $TLS_title_your_tp_metrics = "Your Test Plan Metrics";
 
 
 // gui/templates/inc_res_by_comp.tpl
-$TLS_title_res_by_comp = "Results by component";
+$TLS_title_res_by_comp = "Results by test suite";
 $TLS_trep_blocked = "Blocked";
-$TLS_trep_comp = "Component";
+$TLS_trep_comp = "test suite";
 $TLS_trep_comp_perc = "Completed [%]";
 $TLS_trep_failed = "Failed";
 $TLS_trep_not_run = "Not run";
@@ -291,8 +293,8 @@ $TLS_none = "None";
 $TLS_sel_all_keywords = "Select all required Keywords:";
 $TLS_select_keyword_label = "Select keyword";
 $TLS_title_assign_kw_to_tc = "Assign Keyword to Test Case";
-$TLS_title_assign_kw_to_tc_in_cat = "Assign Keyword to every Test Case in Category";
-$TLS_title_assign_kw_to_tc_in_com = "Assign Keyword to every Test Case in Component";
+$TLS_title_assign_kw_to_tc_in_cat = "Assign Keyword to every Test Case in test suite";
+$TLS_title_assign_kw_to_tc_in_com = "Assign Keyword to every Test Case in test suite";
 
 
 
@@ -364,7 +366,7 @@ $TLS_title_specification = "Specification";
 $TLS_btn_add_selected_tc = "Add selected Test Cases";
 $TLS_btn_check = "Check";
 $TLS_btn_uncheck = "Uncheck";
-$TLS_check_uncheck_tc = "test cases in the category.";
+$TLS_check_uncheck_tc = "test cases in the test suite.";
 $TLS_check_uncheck_tc_in_categories = "test cases in all Categories";
 $TLS_note_keyword_filter = "Test cases are filtered by keyword";
 $TLS_title_add_test_to_plan = "Add Test Cases to the Test Plan";
@@ -463,8 +465,8 @@ $TLS_opt_users = "Users";
 // gui/templates/planUpdateTC.tpl
 $TLS_btn_upd_ck_tc = "Update Checked Test Cases";
 $TLS_info_all_tc_uptodate = "All Test cases are current.";
-$TLS_th_category = "Category";
-$TLS_th_component = "Component";
+$TLS_th_category = "test suite";
+$TLS_th_component = "test suite";
 $TLS_th_id_tc = "[ID] Test Case";
 $TLS_th_reason = "Reason to Update";
 $TLS_th_spec_version = "Spec. version";
@@ -647,8 +649,8 @@ $TLS_title_imp_cvs = "Import CVS data";
 
 // gui/templates/tcMove.tpl
 $TLS_btn_mv = "Move";
-$TLS_choose_cat = "Choose category";
-$TLS_inst_move = "Move this test case to a different category (within the same component).";
+$TLS_choose_cat = "Choose test suite";
+$TLS_inst_move = "Move this test case to a different test suite (within the same test suite).";
 $TLS_title_mv_cp_tc = "Move/Copy test case";
 
 
@@ -668,7 +670,7 @@ $TLS_tr_td_show_as = "Show as";
 // gui/templates/tcReorder.tpl
 $TLS_no_tc_to_reorder = "There are no test cases to reorder!";
 $TLS_th_test_case = "Test Case";
-$TLS_title_change_tc_order = "Change This Category's Test Case Order.";
+$TLS_title_change_tc_order = "Change This test suite's Test Case Order.";
 
 
 
@@ -753,10 +755,10 @@ $TLS_tools = "Tools";
 
 
 // gui/templates/inc_cat_viewer_rw.tpl
-$TLS_cat_alt_name = "Add category name. This value is mandatory.";
+$TLS_cat_alt_name = "Add test suite name. This value is mandatory.";
 $TLS_cat_config = "Configuration";
 $TLS_cat_data = "Data";
-$TLS_cat_name = "Category Name";
+$TLS_cat_name = "test suite Name";
 $TLS_cat_tools = "Tools";
 
 
@@ -768,13 +770,16 @@ $TLS_methodology = "Methodology";
 $TLS_references = "References";
 
 
+// gui/templates/inc_testsuite_viewer_ro.tpl
+$TLS_details = "Details";
+
 
 // gui/templates/inc_comp_viewer_rw.tpl
-$TLS_comp_alt_name = "Add component name. This value is mandatory.";
+$TLS_comp_alt_name = "Add test suite name. This value is mandatory.";
 $TLS_comp_intro = "Intro";
 $TLS_comp_lim = "Limitations";
 $TLS_comp_method = "Methodology";
-$TLS_comp_name = "Component Name";
+$TLS_comp_name = "test suite Name";
 $TLS_comp_ref = "References";
 $TLS_comp_scope = "Scope";
 
@@ -795,7 +800,7 @@ $TLS_last_status_failed = "Failed";
 $TLS_last_status_not_run = "Not Run";
 $TLS_last_status_passed = "Passed";
 $TLS_select_builds_header = "Select Build(s)";
-$TLS_select_components_header = "Select component(s)";
+$TLS_select_components_header = "Select test suite(s)";
 $TLS_select_keyword_header = "Select Keyword";
 $TLS_select_last_result_header = "Select Last Result";
 $TLS_select_owner_header = "Select Owner";
@@ -807,12 +812,12 @@ $TLS_test_plan_header = "Test Plan : ";
 
 // gui/templates/resultsMoreBuilds_report.tpl
 $TLS_case_return_by_query_header = "Test Cases Return By Query";
-$TLS_descr_indiv = "Individual test cases which match specified \"Owner\", \"Keyword\", \"Component(s)\", \"Last Status\" and \"Builds Selected\" query parameters.";
-$TLS_descr_res_totals = "Results totals for test cases which match specified \"Owner\", \"Keyword\", and \"Builds Selected\". \"Last Status\" query parameter is NOT considered. However, only those components which were selected are considered.";
+$TLS_descr_indiv = "Individual test cases which match specified \"Owner\", \"Keyword\", \"test suite(s)\", \"Last Status\" and \"Builds Selected\" query parameters.";
+$TLS_descr_res_totals = "Results totals for test cases which match specified \"Owner\", \"Keyword\", and \"Builds Selected\". \"Last Status\" query parameter is NOT considered. However, only those test suites which were selected are considered.";
 $TLS_overall_status = "Overall Status";
 $TLS_please_wait = "Please wait until report fully loads...";
 $TLS_query_parameters_header = "Query Parameters Selected";
-$TLS_results_by_component_header = "Results By Component";
+$TLS_results_by_component_header = "Results By test suite";
 $TLS_show_hide_all = "Show/Hide All";
 
 
@@ -906,16 +911,16 @@ $TLS_title_assign_product_roles = "Assign testproject roles";
 
 
 // lib/testcases/archive.inc.php
-$TLS_component_name_already_exists = "There's already a component with that name";
+$TLS_component_name_already_exists = "There's already a test suite with that name";
 
 
 
 // lib/testcases/containerEdit.php
-$TLS_error_cat_add = "Category was not added!";
-$TLS_error_update_catorder = "Failed to update order for category";
+$TLS_error_cat_add = "test suite was not added!";
+$TLS_error_update_catorder = "Failed to update order for test suite";
 $TLS_string_contains_bad_chars = "LOCALIZE: TLS_string_contains_bad_chars";
-$TLS_warning_empty_cat_name = "Please give a name to category";
-$TLS_warning_empty_com_name = "Please give a name to component";
+$TLS_warning_empty_cat_name = "Please give a name to test suite";
+$TLS_warning_empty_com_name = "Please give a name to test suite";
 
 
 
@@ -931,7 +936,7 @@ $TLS_warning_empty_tc_title = "Please give a title to TestCase";
 
 
 // lib/testcases/tcImport.php
-$TLS_the_format = "component1,category1,'testcase1','summary','steps','results','key1','key2','key...'";
+$TLS_the_format = "test suite1,test suite1,'testcase1','summary','steps','results','key1','key2','key...'";
 $TLS_the_format_by_cat = "'testcase1','summary','steps','results','key1','key2','key...'";
 
 
@@ -1034,7 +1039,7 @@ $TLS_delete_tp_bugs_failed1 = "Deleting bugs for Test Plan '";
 $TLS_delete_tp_bugs_failed2 = "' failed";
 $TLS_delete_tp_builds_failed1 = "Deleting builds for Test Plan '";
 $TLS_delete_tp_builds_failed2 = "' failed";
-$TLS_delete_tp_comp_failed1 = "Deleting components for Test Plan '";
+$TLS_delete_tp_comp_failed1 = "Deleting test suites for Test Plan '";
 $TLS_delete_tp_comp_failed2 = "' failed";
 $TLS_delete_tp_data_failed1 = "Deleting data of Test Plan '";
 $TLS_delete_tp_data_failed2 = "' failed";
@@ -1089,8 +1094,8 @@ $TLS_nav_users = "Navigator - Users";
 
 
 // lib/plan/planUpdateTC.php
-$TLS_category_has_changed = "Category has changed";
-$TLS_component_has_changed = "Component has changed";
+$TLS_category_has_changed = "test suite has changed";
+$TLS_component_has_changed = "test suite has changed";
 $TLS_different_versions = "Diff. Versions";
 $TLS_plan_update_no_tc_updated = "No test cases were updated";
 $TLS_planupdate_tc_deleted1 = "Test Case";
@@ -1107,9 +1112,9 @@ $TLS_title_test_plan_navigator = "LOCALIZE: TLS_title_test_plan_navigator";
 
 
 // lib/plan/testSetRemove.php
-$TLS_category_removed_part1 = "Category";
+$TLS_category_removed_part1 = "test suite";
 $TLS_category_removed_part2 = "has been removed.";
-$TLS_component_removed_part1 = "Componente";
+$TLS_component_removed_part1 = "test suite";
 $TLS_component_removed_part2 = "has been removed.";
 $TLS_test_case_removed_part1 = "Test Case";
 $TLS_test_case_removed_part2 = "has been removed.";
@@ -1209,7 +1214,7 @@ $TLS_sec_note_remove_install_dir = "Install directory should be removed!";
 $TLS_bugs = "Related Bugs";
 $TLS_builds_selected = "Build(s)";
 $TLS_case_not_run_warning = "Test Case Not Run";
-$TLS_category_header = "Category =";
+$TLS_category_header = "test suite =";
 $TLS_daterun = "Date Run";
 $TLS_last_status = "Last Status";
 $TLS_number_blocked = "# Blocked";

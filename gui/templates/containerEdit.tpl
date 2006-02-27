@@ -1,11 +1,14 @@
-{* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: containerEdit.tpl,v 1.8 2005/10/10 19:18:23 schlundus Exp $ *}
-{* Purpose: smarty template - edit test specification: containers *}
-{* Note: htmlarea cannot be within tag <p> *}
-{*
-	20050823 - scs - localized title
-			lang_get('component');
-			lang_get('category');
+{* 
+TestLink Open Source Project - http://testlink.sourceforge.net/ 
+$Id: containerEdit.tpl,v 1.9 2006/02/27 07:59:42 franciscom Exp $
+Purpose: smarty template - edit test specification: containers 
+
+20060225 - franciscom 
+
+20050823 - scs - localized title
+lang_get('component');
+lang_get('category');
+
 *}
 {include file="inc_head.tpl"}
 
@@ -14,12 +17,12 @@
 
 <h1>{lang_get s='title_edit_level'} {$level}</h1> 
 
-{if $level == 'category'}
-	<form method="post" action="lib/testcases/containerEdit.php?categoryID={$containerID}" /> 
+{if $level == 'testsuite'}
+	<form method="post" action="lib/testcases/containerEdit.php?testsuiteID={$containerID}" /> 
 		<div style="float: right;">
-			<input type="submit" name="updateCat" value="{lang_get s='btn_update_cat'}" />
+			<input type="submit" name="update_testsuite" value="{lang_get s='btn_update_cat'}" />
 		</div>
-   {include file="inc_cat_viewer_rw.tpl"}
+   {include file="inc_testsuite_viewer_rw.tpl"}
 
 	</form>
 

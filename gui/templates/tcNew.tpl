@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: tcNew.tpl,v 1.7 2006/01/06 20:32:49 schlundus Exp $ *}
+{* $Id: tcNew.tpl,v 1.8 2006/02/27 07:55:44 franciscom Exp $ *}
 {* Purpose: smarty template - create new testcase *}
 {* 20050831 - scs - change item to TestCase *}
 {* 
@@ -20,7 +20,7 @@ fckeditor
 
 <div class="workBack">
 
-<form method="post" action="lib/testcases/tcEdit.php?categoryID={$categoryID}">
+<form method="post" action="lib/testcases/tcEdit.php?containerID={$containerID}">
 
 	<div style="float: right;">
 			<input id="submit" type="submit" name="addTC" value="{lang_get s='btn_create'}" />
@@ -36,7 +36,7 @@ fckeditor
 	<div>{lang_get s='steps'}<br />
 	{$steps}
 	<div>{lang_get s='expected_results'}<br />
-	{$exresult}</div>
+	{$expected_results}</div>
 	</div>
 
 	<p><a href="lib/keywords/keywordsView.php" target="mainframe">{lang_get s='tc_keywords'}</a><br />

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: login.php,v $
  *
- * @version $Revision: 1.14 $
- * @modified $Date: 2006/01/03 21:19:00 $ by $Author: schlundus $
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2006/02/27 07:55:45 $ by $Author: franciscom $
  *
  * @author Martin Havlat
  * 
@@ -15,6 +15,8 @@
  * 20050831 - scs - cosmetic changes
  * 200508 - MHT - added config check
  * 20060103 - scs - ADOdb changes
+ * 20060226 - franciscom - adding logo management
+ *
  **/
 global $db; 
 require_once('lib/functions/configCheck.php');
@@ -73,8 +75,16 @@ switch($note)
 
 //20050826 - scs - added displaying of security notes
 $securityNotes = getSecurityNotes($db);
+
+// 20060226 - franciscom
+$logo_img='';
+if (defined('LOGO_LOGIN_PAGE') )
+{
+  $logo_img=LOGO_LOGIN_PAGE;
+}
 	
 $smarty = new TLSmarty();
+$smarty->assign('login_logo', $logo_img);
 $smarty->assign('securityNotes',$securityNotes);
 $smarty->assign('note',$message);
 $smarty->assign('css', TL_BASE_HREF . TL_LOGIN_CSS);

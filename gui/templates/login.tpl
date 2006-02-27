@@ -1,11 +1,17 @@
-{* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: login.tpl,v 1.3 2005/08/26 21:01:27 schlundus Exp $ *}
-{* Purpose: smarty template - login page *}
-{* 20050826 - scs - added display of security note *}
+{* 
+TestLink Open Source Project - http://testlink.sourceforge.net/ 
+$Id: login.tpl,v 1.4 2006/02/27 07:56:14 franciscom Exp $
+Purpose: smarty template - login page 
+20060226 - franciscom - logo
+20050826 - scs - added display of security note 
+*}
 {include file="inc_head.tpl" title="TestLink - Login" }
 
 <body onload="document.forms[0].elements[0].focus()">
 
+{* 20060226 - franciscom - logo *}
+{$login_logo}
+<p>
 <div class="title">TestLink {$tlVersion|escape}</div>
 
 <div class="forms">

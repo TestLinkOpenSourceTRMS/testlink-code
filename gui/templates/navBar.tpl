@@ -1,7 +1,8 @@
 {* Testlink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: navBar.tpl,v 1.8 2006/02/24 18:47:22 franciscom Exp $ 
+$Id: navBar.tpl,v 1.9 2006/02/27 07:56:14 franciscom Exp $ 
 Purpose: smarty template - title bar + menu 
 
+20060226 - franciscom - logo
 20060224 - franciscom - productRole -> testprojectRole
 Andreas Morsing: changed the product selection 
 20050826 - scs - added input for entering tcid 
@@ -16,8 +17,11 @@ Andreas Morsing: changed the product selection
 	<div style="float: right; margin-right: 5px;">
 		<a href="logout.php" target="_parent" accesskey="q">{lang_get s='link_logout'}</a>
 	</div>
-	<img alt="TestLink icon" src="icons/twist.gif" width="15px" 
-			height="15px" style="margin-left: 5px; vertical-align: middle;" />
+
+{* 20060226 - franciscom - logo *}
+{$logo}
+
+
 	<span class="bold">TestLink {$tlVersion|escape} : {$user|escape} 
 	{if $testprojectRole  neq null}
 	- {lang_get s='product_role'}{$testprojectRole|escape}

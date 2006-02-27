@@ -5,8 +5,7 @@ class tree
 {
 
   // configurable values - pseudoconstants
-  var $node_types = array( 1 => 'testproject','testsuite',
-                                'testplan','testcase','tcversion');
+  var $node_types = array( 1 => 'testproject','testsuite','testcase','tcversion','testplan');
 
   var $node_tables = array('testproject' => 'testprojects',
                            'testsuite'   => 'testsuites',
@@ -169,14 +168,14 @@ function get_subtree($node_id)
     $node_table = $this->node_tables[$this->node_types[$row['node_type_id']]];
 
     $sql = "SELECT name FROM {$node_table} 
-            WHERE id = {$row['id']}";
+    	      WHERE id = {$row['id']}";
     $result_node = $this->db->exec_query($sql);        
     
     $item_name='';        
-    if( $this->db->num_rows($result_node) == 0 )
+    if( $this->db->num_rows($result_node) == 1 )
     {
     	$item_row  = $this->db->fetch_array($result_node);
-      $item_name = $item_row['name'];	
+    	$item_name = $item_row['name'];	
     }
     // ----------------------------------------------------------------------------        
 
@@ -187,13 +186,19 @@ function get_subtree($node_id)
                          'node_table' => $node_table,
                          'name' => $item_name);
     
-    $xx_list = $this->get_subtree($row['id']);	
-  	
-  	if( !is_null($xx_list) )
-  	{
-  		$ma = array_merge($node_list,$xx_list);
-  		$node_list = $ma;
+    // We don't want the children if the parent is a testcase,
+    // due to the version management
+    if( $this->node_types[$row['node_type_id']] != 'testcase')
+    {
+  	  $xx_list = $this->get_subtree($row['id']);	
+   	  
+   	  if( !is_null($xx_list) )
+  	  {
+  		  $ma = array_merge($node_list,$xx_list);
+  		  $node_list = $ma;
+  	  }
   	}
+  	
   }
   return ($node_list);
 }
@@ -222,7 +227,7 @@ function get_xx($aa)
   return($xx);
 }
 
-  
+ 
 }// end class
 
 ?>

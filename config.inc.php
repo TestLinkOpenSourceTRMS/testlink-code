@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.50 $
- * @modified $Date: 2006/02/25 07:02:19 $ by $Author: franciscom $
+ * @version $Revision: 1.51 $
+ * @modified $Date: 2006/02/27 07:45:10 $ by $Author: franciscom $
  *
  *
  * Constants and configuration parameters used throughout TestLink 
@@ -194,7 +194,8 @@ when a duplicate name is found
 'block'       : return with an error 
 
 */    
-$g_action_on_duplicate_name = 'allow_repeat';
+// $g_action_on_duplicate_name = 'allow_repeat';
+$g_action_on_duplicate_name = 'generate_new';
 
 /*  */
 $g_prefix_name_for_copy = strftime("%Y%m%d-%H:%M:%S", time());
@@ -404,6 +405,15 @@ define('TP_STATUS_ACTIVE',1);
 
 // 20060224 - franciscom
 define('FILTER_BY_TESTPROJECT',1);
+
+// 20060226 - franciscom
+// logo for login page, if not defined nothing happens
+define('LOGO_LOGIN_PAGE','<center><img src="icons/company_logo.png"></center>');
+
+// 20060226 - franciscom - fo navbar page
+define('LOGO_NAVBAR',
+	     '<img alt="logo" src="icons/company_logo.png"  
+			       style="margin-left: 5px; vertical-align: middle;" />');
 
 // characters used to surround the role description in the user interface
 define('ROLE_SEP_START','[');

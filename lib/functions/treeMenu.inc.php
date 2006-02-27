@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: treeMenu.inc.php,v $
  *
- * @version $Revision: 1.11 $
- * @modified $Date: 2006/02/15 08:49:19 $ by $Author: franciscom $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2006/02/27 07:45:14 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * 	This file generates tree menu for test specification and test execution.
@@ -123,15 +123,99 @@ function filterString($str)
  * @author Francisco Mancardi - fm - reduce global coupling
  *
  */
-function generateTestSpecTree(&$db,$prodID, $prodName, $linkto, $hidetc, $getArguments = '')
+function generateTestSpecTree(&$db,$tproject_id, $tproject_name, $linkto, $hidetc, $getArguments = '')
 {
+	$menustring = null; // storage variable for output
+
+	$tree_manager = New tree($db);
 	
-	if (!$prodID)
+	//echo "<pre>debug (" . __FUNCTION__ . ")" ; print_r($tproject_id); echo "</pre>";
+	
+	$test_spec = $tree_manager->get_subtree($tproject_id);
+  $hash_descr_id = $tree_manager->get_available_node_types();
+  $hash_id_descr = array_flip($hash_descr_id);
+  
+  /*
+  echo "<pre>debug"; print_r($hash_descr_id); echo "</pre>";
+  echo "<pre>debug"; print_r($hash_id_descr); echo "</pre>";
+  
+  exit();
+	*/
+	
+	//echo "<pre>debug"; print_r($test_spec); echo "</pre>";
+	
+	// fake
+	$prodCount['qty']=6;
+	
+	if (TL_TREE_KIND == 'LAYERSMENU')
+	{ 
+	
+	  // [dots] | [text] | [link] | [title] | [icon] | [target] | [expand]
+    // 
+	  // dots= ".|"
+	  // text= $tproject_name . " (" . $prodCount['qty'] . ")
+	  // link= $linkto . "?edit=product&data=" . $tproject_id . $getArguments
+	  // title="Product"
+	  // icon= -
+	  // target="workframe"
+	  // expand=-
+	  //
+		$menustring .= "." . "|" . 
+		               $tproject_name . " (" . $prodCount['qty'] . ")" . "|" . 
+		               $linkto . "?edit=testproject&data=" . $tproject_id . $getArguments . "|" .
+		               "testproject". "|" . "|" . "workframe" ."|\n";
+	}
+ 	
+  // 20060223 - franciscom
+  if( count($test_spec) > 0 )
+  {
+   	$pivot=$test_spec[0];
+   	$the_level=1;
+    $level=array();
+  
+   	foreach ($test_spec as $elem)
+   	{
+   	 //echo "<pre>debug (" . __FUNCTION__ . ")"; print_r($elem); echo "</pre>";	
+   	 $current = $elem;
+  
+     if( $pivot['parent_id'] == $current['parent_id'])
+     {
+       $the_level=$the_level;
+     }
+     else if ($pivot['id'] == $current['parent_id'])
+     {
+     	  $the_level++;
+     	  $level[$current['parent_id']]=$the_level;
+     }
+     else 
+     {
+     	  $the_level=$level[$current['parent_id']];
+     }
+     
+     $menustring .= str_repeat('.',$the_level) . ".|" . 
+                    " " . $current['name'] . "|" . 
+                    $linkto . "?edit=" . $hash_id_descr[$current['node_type_id']] . 
+                              "&data=" . $current['id'] . $getArguments . "|" . 
+                    $hash_id_descr[$current['node_type_id']] . "|" . "|" . "workframe" ."|\n"; 
+        
+     
+     // update pivot
+     $level[$current['parent_id']]= $the_level;
+     $pivot=$elem;
+   	}
+	}
+	return $menustring;
+ 	
+ 	
+	
+	exit();
+	
+	
+	if (!$tproject_id)
 	{
 		return null;
 	}	
 	
-	$menustring = null; // storage variable for output
 	
 	// Queries to determine total test cases
 	$sqlProdCount = " SELECT count(mgttestcase.id) AS qty" .
@@ -139,7 +223,7 @@ function generateTestSpecTree(&$db,$prodID, $prodName, $linkto, $hidetc, $getArg
 	                " WHERE mgtproduct.id = mgtcomponent.prodid " .
 			            " AND mgtcomponent.id=mgtcategory.compid " .
 			            " AND mgtcategory.id=mgttestcase.catid " .
-			            " AND mgtproduct.id=" . $prodID;
+			            " AND mgtproduct.id=" . $tproject_id;
 			
 			
 	$resultProdCount = $db->exec_query($sqlProdCount);
@@ -150,27 +234,27 @@ function generateTestSpecTree(&$db,$prodID, $prodName, $linkto, $hidetc, $getArg
 	}
 		
 	
-	$productName = filterString($prodName);
+	$tproject_name = filterString($tproject_name);
 	if (TL_TREE_KIND == 'LAYERSMENU')
 	{ 
 		$menustring .= ".|" . $productName . " (" . $prodCount['qty'] . ")|" . $linkto . 
-		               "?edit=product&data=" . $prodID . $getArguments . "|Product||workframe|\n";
+		               "?edit=product&data=" . $tproject_id . $getArguments . "|Product||workframe|\n";
 	}
  	elseif (TL_TREE_KIND == 'JTREE')
 	{		
-		$menustring .=  "['" . $productName . " (" . $prodCount['qty'] . ")','EP({$prodID})',\n";
+		$menustring .=  "['" . $productName . " (" . $prodCount['qty'] . ")','EP({$tproject_id})',\n";
 	}
 	elseif (TL_TREE_KIND == 'DTREE')
 	{
 		$dtreeCounter = 0;
 		$menustring .= "tlTree.add(" . $dtreeCounter++ . ",-1,'" . $productName . 
 		               " (" . $prodCount['qty'] . ")','" . $linkto . "?edit=product&data=" . 
-		               $prodID . $getArguments . "');\n";
+		               $tproject_id . $getArguments . "');\n";
 	}
 	
 	//Parse components
 	$sqlCOM = " SELECT id, name from mgtcomponent " .
-	          " WHERE prodid=" . $prodID . 
+	          " WHERE prodid=" . $tproject_id . 
 	          " ORDER BY name";
 	$resultCOM = $db->exec_query($sqlCOM);
 		

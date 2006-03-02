@@ -5,30 +5,26 @@
 |--------------------------------------------------*/
 
 .dtree {
-	font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
-	font-size: 11px;
-	color: #666;
-	white-space: nowrap;
+        font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
+        font-size: 11px;
+        white-space: nowrap;
+        color: #000000;
 }
 .dtree img {
-	border: 0px;
-	vertical-align: middle;
+        border: 0px;
+        vertical-align: middle;
 }
 .dtree a {
-	color: #333;
-	text-decoration: none;
 }
-.dtree a.node, .dtree a.nodeSel {
-	white-space: nowrap;
-	padding: 1px 2px 1px 2px;
-}
-.dtree a.node:hover, .dtree a.nodeSel:hover {
-	color: #333;
-	text-decoration: underline;
+.dtree a.node:hover, .dtree a.nodeSel:hover {;
+        text-decoration: underline;
+        color: #000099;
 }
 .dtree a.nodeSel {
-	background-color: #c0d2ec;
+        background-color: transparent;
+        font-weight: bolder;
 }
 .dtree .clip {
-	overflow: hidden;
+        overflow: hidden;
 }
+

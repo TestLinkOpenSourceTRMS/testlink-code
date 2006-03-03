@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.20 $
- * @modified $Date: 2006/02/27 07:55:45 $  by $Author: franciscom $
+ * @version $Revision: 1.21 $
+ * @modified $Date: 2006/03/03 16:21:03 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
  * @author Martin Havlat
@@ -24,6 +24,7 @@ testlinkInitPage($db);
 
 
 //echo "<pre>debug (" . __FILE__ .")"; print_r($_REQUEST); echo "</pre>";
+//echo "<pre>debug (" . __FILE__ .")"; print_r($_SESSION); echo "</pre>";
 
 // set variables
 // --------------------------------------------------------------------
@@ -37,48 +38,64 @@ foreach ($a_ofck as $key)
 	$of->BasePath = $_SESSION['basehref'] . 'third_party/fckeditor/';
 	$of->ToolbarSet=$g_fckeditor_toolbar;;
 }
+
 // --------------------------------------------------------------------
 $testprojectID = $_SESSION['testprojectID'];
 $show_newTC_form = 0;
 $smarty = new TLSmarty;
 $smarty->assign('path_htmlarea', $_SESSION['basehref'] . 'third_party/htmlarea/');
 
-$tc = isset($_REQUEST['editTC']) ? $_REQUEST['editTC'] : null;
 $containerID = isset($_GET['containerID']) ? intval($_GET['containerID']) : 0;
 $testcaseID = isset($_GET['testcaseID']) ? intval($_GET['testcaseID']) : 0;
-$title 		= isset($_POST['title']) ? strings_stripSlashes($_POST['title']) : null;
+$name 		= isset($_POST['name']) ? strings_stripSlashes($_POST['name']) : null;
 $summary 	= isset($_POST['summary']) ? strings_stripSlashes($_POST['summary']) : null;
 $steps 		= isset($_POST['steps']) ? strings_stripSlashes($_POST['steps']) : null;
 $expected_results 	= isset($_POST['expected_results']) ? strings_stripSlashes($_POST['expected_results']) : null;
+
 $catID = isset($_POST['moveCopy']) ? intval($_POST['moveCopy']) : 0;
 $oldCat = isset($_POST['oldCat']) ? intval($_POST['oldCat']) : 0;
 
+
+$bEditTC = isset($_REQUEST['editTC']) ? $_REQUEST['editTC'] : null;
 $bAddTC = isset($_POST['addTC']) ? 1 : 0;
 $bUpdateTC = isset($_POST['updateTC']) ? 1 : 0;
 $bNewTC = isset($_POST['newTC']) ? 1 : 0;
 $bDeleteTC = isset($_POST['deleteTC']) ? 1 : 0;
-$version = isset($_POST['version']) ? intval($_POST['version']) : 0; 
 $bSure = (isset($_GET['sure']) && $_GET['sure'] == 'yes');
 $bMoveTC = isset($_POST['moveTC']) ? 1 : 0;
 $bUpdateTCMove = isset($_POST['updateTCmove']) ? 1 : 0;
 $bUpdateTCCopy = isset($_POST['updateTCcopy']) ? 1 : 0;
-$user = $_SESSION['user'];
+
+$login_name = $_SESSION['user'];
+$version = isset($_POST['version']) ? intval($_POST['version']) : 0; 
 
 $updatedKeywords = null;
 if (isset($_POST['keywords']))
+{
 	$updatedKeywords = strings_stripSlashes(implode(",",$_POST['keywords']).",");
+}
+
+//echo "<pre>debug - \$_POST - (" . __FILE__ . ") "; print_r($_POST); echo "</pre>";
+
+
+
+// 20060303 - francisco.mancardi@gruppotesi.com
+$tcase_mgr = New testcase($db);
+$tproject_mgr = New testproject($db);
+
+
 
 $name_ok = 1;
 if($bAddTC || $bUpdateTC)
 {
 	// BUGID 0000086
 	$result = lang_get('warning_empty_tc_title');	
-	if($name_ok && !check_string($title,$g_ereg_forbidden) )
+	if($name_ok && !check_string($name,$g_ereg_forbidden) )
 	{
 		$msg = lang_get('string_contains_bad_chars');
 		$name_ok = 0;
 	}
-	if($name_ok && strlen($title) == 0)
+	if($name_ok && strlen($name) == 0)
 	{
 		$msg = lang_get('warning_empty_tc_title');
 		$name_ok = 0;
@@ -86,11 +103,12 @@ if($bAddTC || $bUpdateTC)
 }
 
 //If the user has chosen to edit a testcase then show this code
-if($tc)
+if($bEditTC)
 {
 	$setOfKeys = array();
+	$myrowTC = $tcase_mgr->get_by_id($testcaseID);
 	
-	$myrowTC = getTestcase($db,$testcaseID,false);
+	/*
 	$tcKeywords = getTCKeywords($db,$testcaseID);
 	$prodKeywords = getProductKeywords($db,$testprojectID);
 	if (sizeof($prodKeywords))
@@ -110,6 +128,7 @@ if($tc)
 								  'selected' => $selected);
 		}
 	}
+	*/
 
 	foreach ($a_ofck as $key)
   	{
@@ -117,11 +136,14 @@ if($tc)
 	  	// the data assignment will work while the keys in $the_data are identical
 	  	// to the keys used on $oFCK.
 	  	$of = &$oFCK[$key];
-	  	$of->Value = $myrowTC[$key];
+	  	$of->Value = $myrowTC[0][$key];
 	  	$smarty->assign($key, $of->CreateHTML());
 	}
 
-	$smarty->assign('tc', $myrowTC);
+  //echo "<pre>debug - \$myrowTC" . __FILE__; print_r($myrowTC); echo "</pre>";
+  //echo "<pre>debug - \$myrowTC[0]" . __FILE__; print_r($myrowTC[0]); echo "</pre>";
+  
+	$smarty->assign('tc', $myrowTC[0]);
 	$smarty->assign('testcaseID', $testcaseID);
 	$smarty->assign('keys', $setOfKeys);
 
@@ -129,23 +151,25 @@ if($tc)
 } 
 else if($bUpdateTC)
 {
-	//everytime a test case is saved I update its version
-	$version++;
-	//20051008 - scs - added message
 	$sqlResult = lang_get('string_contains_bad_chars');
 	if( $name_ok)
 	{
 		$sqlResult = 'ok';
-		// 20060108 - fm - user->user id 
-		if (!updateTestcase($db,$testcaseID,$title,$summary,$steps,
-		                    $outcome,$_SESSION['userID'],$updatedKeywords,$version))
+
+    // 20060303 - franciscom		
+    // just to get the tcversion id without considering that more versions
+    // can exits
+    // THIS MUST BE IMPROVED
+    //
+		$tc_old = $tcase_mgr->get_by_id($testcaseID);
+
+		if (!$tcase_mgr->update($testcaseID,$tc_old[0]['id'],$name,$summary,$steps,$expected_results,
+		                       $_SESSION['userID'],$updatedKeywords))
 		{
 			$sqlResult =  $db->error_msg();
 		}
 	}	
-	// 20050820 - fm - show testcase
-	$allow_edit = 1;
-	showTestcase($db,$testcaseID, $allow_edit);
+	$tcase_mgr->show($testcaseID, $_SESSION['userID']);
 }
 else if($bNewTC)
 {
@@ -157,11 +181,8 @@ else if($bAddTC)
 	
 	if ($name_ok)
 	{
-		$tcase_mgr = New testcase($db);
 		$msg = lang_get('error_tc_add');
-		//if (insertTestcase($db,$containerID,$title,$summary,$steps,$outcome,$_SESSION['userID'],null,$updatedKeywords))
-		//	$msg = 'ok';
-		if ($tcase_mgr->create($containerID,$title,$summary,$steps,$expected_results,$_SESSION['userID']))
+		if ($tcase_mgr->create($containerID,$name,$summary,$steps,$expected_results,$_SESSION['userID']))
 		{
 		  $msg = 'ok';
 		}
@@ -169,7 +190,7 @@ else if($bAddTC)
 	}
   
 	$smarty->assign('sqlResult', $msg);
-	$smarty->assign('name', $title);
+	$smarty->assign('name', $name);
 	$smarty->assign('item', 'Test case');
 }
 else if($bDeleteTC)

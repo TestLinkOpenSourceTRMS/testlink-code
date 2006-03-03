@@ -1,13 +1,9 @@
-{* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: tcView.tpl,v 1.8 2005/12/29 20:59:00 schlundus Exp $ *}
-{* Purpose: smarty template - view test case in test specification *}
-{* Revisions:
-20050828 - fm - localize_date
-20050820 - fm - access $testcase by name not by ordinal layout
-20050528 - fm - I18N
-20050830 - MHT - Added REQs
-20050902 - MHT - Link to REQ added
-20051229 - scs - added check for empty search results
+{* 
+TestLink Open Source Project - http://testlink.sourceforge.net/
+$Id: tcView.tpl,v 1.9 2006/03/03 16:20:59 franciscom Exp $
+Purpose: smarty template - view test case in test specification
+
+20060303 - franciscom
 *}
 
 {include file="inc_head.tpl"}
@@ -19,15 +15,15 @@
 	{lang_get s='no_records_found'}
 {else}
 {section name=row loop=$testcase}
-<h1>{lang_get s='title_test_case'} {$testcase[row].title|escape} </h1>
+<h1>{lang_get s='title_test_case'} {$testcase[row].name|escape} </h1>
 
 
-{if $modify_tc_rights == "yes" }
+{if $can_edit == "yes" }
 
 	{include file="inc_update.tpl" result=$sqlResult item="TestCase" refresh="yes"}
 
 	<div class="groupBtn">
-	<form method="post" action="lib/testcases/tcEdit.php?&testcaseID={$testcase[row].id}">
+	<form method="post" action="lib/testcases/tcEdit.php?&testcaseID={$testcase[row].testcase_id}">
 		<input type="submit" name="editTC"   value="{lang_get s='btn_edit'}">
 		<input type="submit" name="deleteTC" value="{lang_get s='btn_del'}">
 		<input type="submit" name="moveTC"   value="{lang_get s='btn_mv_cp'}">
@@ -37,8 +33,8 @@
 
 	<table width="95%" class="simple" border="0">
 		<tr>
-			<th  colspan="2">{lang_get s='th_test_case_id'}{$testcase[row].id} :: 
-			{lang_get s='title_test_case'} {$testcase[row].title|escape}</th>
+			<th  colspan="2">{lang_get s='th_test_case_id'}{$testcase[row].testcase_id} :: 
+			{lang_get s='title_test_case'} {$testcase[row].name|escape}</th>
 		</tr>
 		<tr>
 			<td class="bold" colspan="2">{lang_get s='version'} 
@@ -56,7 +52,7 @@
 		</tr>
 		<tr>
 			<td>{$testcase[row].steps}</td>
-			<td>{$testcase[row].exresult}</td>
+			<td>{$testcase[row].expected_results}</td>
 		</tr>
 		<tr>
 			<td colspan="2"><a href="lib/keywords/keywordsView.php" 
@@ -83,11 +79,13 @@
 	</table>
 	
 	<div>
-		<p>{lang_get s='title_created'}&nbsp;{localize_date d=$testcase[row].create_date }&nbsp;
-			{lang_get s='by'}&nbsp;{$testcase[row].author|escape}
-		{if $testcase[row].reviewer ne ""}
-		<br />{lang_get s='title_last_mod'}&nbsp;{localize_date d=$testcase[row].modified_date}
-		&nbsp;{lang_get s='by'}&nbsp;{$testcase[row].reviewer|escape}
+		<p>{lang_get s='title_created'}&nbsp;{localize_timestamp ts=$testcase[row].creation_ts }&nbsp;
+			{lang_get s='by'}&nbsp;{$testcase[row].author_first_name|escape}&nbsp;{$testcase[row].author_last_name|escape}
+		
+		{if $testcase[row].updater_last_name ne "" || $testcase[row].updater_first_name ne ""}
+		<br />{lang_get s='title_last_mod'}&nbsp;{localize_timestamp ts=$testcase[row].modification_ts}
+		&nbsp;{lang_get s='by'}&nbsp;{$testcase[row].updater_first_name|escape}
+		                       &nbsp;{$testcase[row].updater_last_name|escape}
 		{/if}
 		</p>
 	</div>

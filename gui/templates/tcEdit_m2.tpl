@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: tcEdit_m2.tpl,v 1.1 2005/08/29 07:07:42 franciscom Exp $ *}
+{* $Id: tcEdit_m2.tpl,v 1.2 2006/03/03 16:20:58 franciscom Exp $ *}
 {* Purpose: smarty template - edit test specification: test case *}
 {include file="inc_head.tpl"}
 
@@ -16,7 +16,7 @@
 	</div>	
 
 	<p>{lang_get s='tc_title'}<br />
-		<input type="text" name="title" size="40" value="{$tc.title|escape}"
+		<input type="text" name="name" size="40" value="{$tc.name|escape}"
 			alt="{lang_get s='alt_add_tc_name'}"/>
 	</p>
 

@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.33 $ $Author: schlundus $
- * @modified $Date: 2006/02/25 21:48:24 $
+ * @version $Revision: 1.34 $ $Author: franciscom $
+ * @modified $Date: 2006/03/03 16:21:02 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -387,9 +387,10 @@ usage: Important: if registered as localize_date()
 */
 function localize_date_smarty($params, &$smarty)
 {
-	global $g_date_format;
+	// global $g_date_format;
+  $date_format = config_get('date_format');
 
-	$the_d = strftime($g_date_format, strtotime($params['d']));	
+	$the_d = strftime($date_format, strtotime($params['d']));	
 	if(	isset($params['var']) )
 	{
 		$smarty->assign($params['var'], $the_ret);
@@ -399,6 +400,25 @@ function localize_date_smarty($params, &$smarty)
 		return $the_d;
 	}
 }
+
+/*
+20060303 - franciscom
+*/
+function localize_timestamp_smarty($params, &$smarty)
+{
+  $timestamp_format = config_get('timestamp_format');
+
+	$the_ts = strftime($timestamp_format, strtotime($params['ts']));	
+	if(	isset($params['var']) )
+	{
+		$smarty->assign($params['var'], $the_ret);
+	}
+	else
+	{
+		return $the_ts;
+	}
+}
+
 
 
 /*

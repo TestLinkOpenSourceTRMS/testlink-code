@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: tcSearchForm.tpl,v 1.2 2005/08/16 17:59:13 franciscom Exp $ *}
+{* $Id: tcSearchForm.tpl,v 1.3 2006/03/03 16:20:59 franciscom Exp $ *}
 {* Purpose: smarty template - show form for search through test cases 
  * in test specification of the actual product
  *}
@@ -18,7 +18,7 @@
 		</tr>
 		<tr>
 			<td>{lang_get s='th_title'}</td>
-			<td><input type="text" size="35" name="title" /></td>
+			<td><input type="text" size="35" name="name" /></td>
 		</tr>
 		<tr>
 			<td>{lang_get s='summary'}</td>

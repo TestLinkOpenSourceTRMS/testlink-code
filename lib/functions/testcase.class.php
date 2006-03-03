@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.1 $
- * @modified $Date: 2006/02/27 07:45:14 $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2006/03/03 16:21:02 $
  * @author franciscom
  *
  */
@@ -68,10 +68,6 @@ function create($parent_id,$name,$summary,$steps,
 }
 
 
-function update()
-{
-}
-
 
 function get_by_name($name)
 {
@@ -87,14 +83,66 @@ function get_by_name($name)
 
 
 /*
-get info for one test suite
+get info for one testcase as an array, where every element is a associative array
+will be useful to manage the different versions of a test case
+
+20060227 - franciscom
+
 */
-function get_by_id($id)
+function get_by_id($id,$version_id=TC_ALL_VERSIONS, $get_active=0, $get_open=0)
 {
-	$sql = " SELECT * FROM testcases 
-	         WHERE id = {$id}";
+
+// 20060302 - francisco.mancardi@gruppotesi.com
+//
+	$sql = " SELECT testcases.id AS testcase_id, name, tcversions.*, 
+	                users.first AS author_first_name, users.last AS author_last_name,
+	                '' AS updater_first_name, '' AS updater_last_name
+	         FROM testcases JOIN nodes_hierarchy ON nodes_hierarchy.parent_id = testcases.id 
+                          JOIN tcversions ON nodes_hierarchy.id = tcversions.id 
+                          LEFT OUTER JOIN users ON tcversions.author_id = users.id
+                          WHERE testcases.id = {$id}";
+	
+	  //echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
+           
   $recordset = $this->db->get_recordset($sql);
-  return($recordset ? $recordset[0] : null);
+  
+  if($recordset)
+  {
+	 $sql = " SELECT updater_id, users.first AS updater_first_name, users.last  AS updater_last_name
+	          FROM testcases JOIN nodes_hierarchy ON nodes_hierarchy.parent_id = testcases.id 
+                           JOIN tcversions ON nodes_hierarchy.id = tcversions.id 
+                           LEFT OUTER JOIN users ON tcversions.updater_id = users.id
+                           WHERE testcases.id = {$id} and tcversions.updater_id IS NOT NULL ";
+                           
+    //echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
+                       
+                           
+    $updaters = $this->db->get_recordset($sql);
+    
+    if($updaters)
+    {
+    	foreach ($recordset as  $the_key => $row )
+    	{
+        //echo "<pre>debug \$row "; print_r($row); echo "</pre>";
+    		if ( !is_null($row['updater_id']) )
+    		{
+      		foreach ($updaters as $row_upd)
+      		{
+            if ( $row['updater_id'] == $row_upd['updater_id'] )
+            {
+              $recordset[$the_key]['updater_last_name'] = $row_upd['updater_last_name'];
+              $recordset[$the_key]['updater_first_name'] = $row_upd['updater_first_name'];
+              break;
+            }
+      		}
+      	}
+      }
+    }
+
+  }
+
+ 
+  return($recordset ? $recordset : null);
 }
 
 
@@ -112,33 +160,37 @@ function get_all()
 }
 
 
-/* 20060225 - franciscom */
-function show($id, $sqlResult = '', $action = 'update',$modded_item_id = 0)
+/* 20060227 - franciscom */
+function show($id, $user_id)
 {
+	// define('DO_NOT_CONVERT',false);
+	$the_tpl=config_get('tpl');
+	$arrReqs = null;
+	
+	$can_edit = has_rights($this->db,"mgt_modify_tc");
+	
+	//echo "<pre>debug - \$can_edit" . $can_edit; echo "</pre>";
+	
+	$tc_array = $this->get_by_id($id);
+	//echo "<pre>debug ( function=" . __FUNCTION__ ." ) "; print_r($tc_array); echo "</pre>";
+	
+	
+	// get assigned REQs
+	$arrReqs = getReq4Tc($this->db,$id);
+	
+	//$tc_array = array($myrowTC);
 	
 	$smarty = new TLSmarty;
-	$smarty->assign('modify_tc_rights', has_rights($this->db,"mgt_modify_tc"));
-
-	if($sqlResult)
-	{ 
-		$smarty->assign('sqlResult', $sqlResult);
-		$smarty->assign('sqlAction', $action);
-	}
 	
-	$item = $this->get_by_id($id);
-  $modded_item = $item;
-	if ( $modded_item_id )
-	{
-		$modded_item = $this->get_by_id($modded_item_id);
-	}
-  
-  //echo "<pre>debug"; print_r($item); echo "</pre>";
-  		
-	$smarty->assign('moddedItem',$modded_item);
-	$smarty->assign('level', 'testsuite');
-	$smarty->assign('container_data', $item);
-	$smarty->display('containerView.tpl');
+	$smarty->assign('can_edit',$can_edit);
+	$smarty->assign('testcase',$tc_array);
+	$smarty->assign('arrReqs',$arrReqs);
+	$smarty->assign('view_req_rights', has_rights($this->db,"mgt_view_req")); 
+	$smarty->assign('opt_requirements', $_SESSION['testprojectOptReqs']); 	
+	$smarty->display($the_tpl['tcView']);
 }
+
+
 
 
 // 20060226 - franciscom
@@ -178,6 +230,64 @@ function viewer_edit_new($amy_keys, $oFCK, $action, $parent_id, $id=null)
 	
 	$smarty->display($the_tpl);
 }
+
+
+// 20060303 - franciscom
+function update($id,$tcversion_id,$name,$summary,$steps,
+                $expected_results,$user_id,$tc_order = null)
+{
+$status_ok=0;
+
+
+
+
+// test case
+$sql = " UPDATE testcases SET name='" . $this->db->prepare_string($name) . "'" .
+       " WHERE testcases.id = {$id}";
+
+  //echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
+
+
+$result = $this->db->exec_query($sql);
+$status_ok=$result ? 1: 0;
+
+
+if( $status_ok)
+{       
+	// test case version
+	$sql = " UPDATE tcversions 
+  	       SET summary='" . $this->db->prepare_string($summary) . "'," .
+    	   " steps='" . $this->db->prepare_string($steps) . "'," .
+      	 " expected_results='" . $this->db->prepare_string($expected_results) .  "'," .
+		   	 " updater_id={$user_id}, modification_ts = " . $this->db->db_now()  .
+		   	 " WHERE tcversions.id = {$tcversion_id}";
+
+  //echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
+	$result = $this->db->exec_query($sql);
+	$status_ok=$result ? 1: 0;
+}
+
+       
+
+// keywords
+
+/*
+$sql = "UPDATE mgttestcase SET keywords='" . 
+	        $db->prepare_string($keywords) . "', version='" . $db->prepare_string($version) . 
+	        "', title='" . $db->prepare_string($title) . "'".
+		      ",summary='" . $db->prepare_string($summary) . "', steps='" . 
+	      	$db->prepare_string($steps) . "', exresult='" . $db->prepare_string($outcome) . 
+		      "', reviewer_id=" . $user_id . ", modified_date=CURRENT_DATE()" .
+		      " WHERE id=" . $tcID;
+	$result = $db->exec_query($sql);
+	
+	return $result ? 1: 0;
+
+*/
+return ( $status_ok);
+
+} // end function
+
 
 
 

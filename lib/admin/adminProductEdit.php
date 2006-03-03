@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: adminProductEdit.php,v $
  *
- * @version $Revision: 1.15 $
- * @modified $Date: 2006/02/24 18:48:36 $
+ * @version $Revision: 1.16 $
+ * @modified $Date: 2006/03/03 16:21:02 $
  *
  * @author Martin Havlat
  *
@@ -28,10 +28,10 @@ require_once('testproject.class.php');
 
 require_once("../../third_party/fckeditor/fckeditor.php");
 testlinkInitPage($db,true);
-$session_tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 
-//echo "<pre>debug"; print_r($_SESSION); echo "</pre>";
-//echo "<pre>debug\session_tproject_id"; print_r($session_tproject_id); echo "</pre>";
+$session_tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+echo "<pre>debug \$session_tproject_id = " . __FILE__ . "=" .$session_tproject_id; echo "</pre>";
+
 
 
 $updateResult = null;
@@ -43,8 +43,7 @@ $tlog_level = 'INFO';
 
 // 20060219 - franciscom
 $tproject = New testproject($db);
-
-$args = init_args($tproject,$_REQUEST,$session_tproject_id);
+$args = init_args($tproject, $_REQUEST, $session_tproject_id);
 
 //echo "<pre>debug\$args"; print_r($args); echo "</pre>";
 
@@ -60,6 +59,12 @@ if ($session_tproject_id)
 	$tlog_msg .= $session_tproject_id . ': ' . $_SESSION['testprojectName'];
 else
 	$tlog_msg .= $args->id . ': ' . $args->name;
+
+//echo "<pre>debug" . __FILE__; print_r($session_tproject_id); echo "</pre>";
+//echo "<pre>debug" . __FILE__; print_r($args); echo "</pre>";
+//exit();
+
+//echo "<pre>debug" . __FILE__; print_r($tproject->get_all_keywords($args->id)); echo "</pre>";
 
 switch($args->do)
 {
@@ -203,8 +208,8 @@ $smarty->display('adminProductEdit.tpl');
 function init_args($tproject,$request_hash, $session_tproject_id)
 {
 	
-	//echo "<pre>debug\$session_tproject_id"; print_r($session_tproject_id); echo "</pre>";
-	//echo "<pre>debug\$request_hash"; print_r($request_hash); echo "</pre>";
+	//echo "<pre>debug \$session_tproject_id " . __FUNCTION__ . " " ; print_r($session_tproject_id); echo "</pre>";
+	//echo "<pre>debug \$request_hash " . __FUNCTION__ . " "; print_r($request_hash); echo "</pre>";
 	
 	
 	$request_hash = strings_stripSlashes($request_hash);
@@ -241,6 +246,7 @@ function init_args($tproject,$request_hash, $session_tproject_id)
 	else if ($session_tproject_id)
 	{
 		$the_tproject_id = $session_tproject_id;
+		$args->id = $the_tproject_id;
 	}	
 	else if(!is_null($args->id))
 	{
@@ -254,8 +260,7 @@ function init_args($tproject,$request_hash, $session_tproject_id)
     if ($the_tproject_id > 0)
 	  {
 		  $the_data = $tproject->get_by_id($the_tproject_id);
-		  //echo "<pre>debug"; print_r($the_data); echo "</pre>";
-			$args->notes = 	$the_data['notes'];
+		  $args->notes = 	$the_data['notes'];
 	  }
  	  else
 	  { 
@@ -263,6 +268,7 @@ function init_args($tproject,$request_hash, $session_tproject_id)
 	  }
 	}
 	
+	echo "<pre> debug \$args " . __FUNCTION__ . " "; print_r($args); echo "</pre>";
 		
 	return $args;
 }

@@ -1,7 +1,8 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: tcEdit.tpl,v 1.4 2005/10/09 18:13:48 schlundus Exp $ *}
+{* $Id: tcEdit.tpl,v 1.5 2006/03/03 16:20:58 franciscom Exp $ *}
 {* Purpose: smarty template - edit test specification: test case *}
 {*
+20060303 - franciscom
 20051008 - am - correct wrong link to keywords view page
 *}
 {include file="inc_head.tpl"}
@@ -9,7 +10,7 @@
 <body>
 
 <div class="workBack" style="font-weight: bold;">
-<h1>{lang_get s='title_edit_tc'} {$tc[0]|escape}</h1> 
+<h1>{lang_get s='title_edit_tc'} {$tc.name|escape}</h1> 
 
 <form method="post" action="lib/testcases/tcEdit.php?testcaseID={$testcaseID}">
 
@@ -19,7 +20,7 @@
 	</div>	
 
 	<p>{lang_get s='tc_title'}<br />
-		<input type="text" name="title" size="40" value="{$tc.title|escape}"
+		<input type="text" name="name" size="40" value="{$tc.name|escape}"
 			alt="{lang_get s='alt_add_tc_name'}"/>
 	</p>
 
@@ -32,7 +33,7 @@
 	</div>
 
 	<div>{lang_get s='expected_results'}<br />
-		{$exresult}
+		{$expected_results}
 	</div>
 	
 	<p><a href="lib/keywords/keywordsView.php" target="mainframe">{lang_get s='tc_keywords'}</a><br />

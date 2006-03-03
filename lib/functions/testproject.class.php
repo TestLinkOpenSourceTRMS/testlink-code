@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.2 $
- * @modified $Date: 2006/02/27 07:55:45 $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2006/03/03 16:21:03 $
  * @author franciscom
  *
  */
@@ -164,6 +164,27 @@ function show($id, $sqlResult = '', $action = 'update',$modded_item_id = 0)
 	$smarty->display('containerView.tpl');
 }
 
+// 20060301 - franciscom
+function get_all_keywords($testproject_id)
+{
+	$a_keywords = null;
+ 	$sql = " SELECT id,keyword,notes FROM keywords 
+ 	         WHERE testproject_id = {$testproject_id} 
+ 	         ORDER BY keyword ASC";
+
+  $result = $this->db->exec_query($sql);
+	if ($result)
+	{
+		while ($myrow = $this->db->fetch_array($result)) 
+		{
+			$a_keywords[] = array( 'id' => $myrow['id'],
+									            'keyword' => $myrow['keyword'], 
+									            'notes' => $myrow['notes']
+								            );
+		}
+	}
+  return ($a_keywords);
+}
 
 
 

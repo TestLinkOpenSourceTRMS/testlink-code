@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcReorder.tpl,v 1.3 2005/10/15 08:38:43 franciscom Exp $
+$Id: tcReorder.tpl,v 1.4 2006/03/03 16:20:59 franciscom Exp $
 Purpose: reorder testcases 
 20051015 - fm - BUGID 181 - data -> categoryID
 *}
@@ -31,7 +31,7 @@ Purpose: reorder testcases
 			{section name=number loop=$arrTC}
 			<tr>
 				<td>{$arrTC[number].id}</td>
-				<td class="bold">{$arrTC[number].title|escape}</td>
+				<td class="bold">{$arrTC[number].name|escape}</td>
 				<td>
 					<input type="hidden" name="id{$arrTC[number].id}" 
 						value="{$arrTC[number].id}" />

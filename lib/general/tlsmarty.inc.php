@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tlsmarty.inc.php,v $
  *
- * @version $Revision: 1.6 $
- * @modified $Date: 2006/02/15 08:49:19 $ $Author: franciscom $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2006/03/03 16:21:03 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -22,11 +22,11 @@ class TLSmarty extends Smarty
         $this->template_dir = TL_ABS_PATH . 'gui/templates/';
         $this->compile_dir = TL_TEMP_PATH;
         if (isset($_SESSION['testprojectColor'])) 
-        	$productColor =  $_SESSION['testprojectColor'];
+        	$testprojectColor =  $_SESSION['testprojectColor'];
         else
-        	$productColor = TL_BACKGROUND_DEFAULT;
+        	$testprojectColor = TL_BACKGROUND_DEFAULT;
         	
-		$this->assign('productColor', $productColor);
+		$this->assign('productColor', $testprojectColor);
     
 		$my_locale = isset($_SESSION['locale']) ? $_SESSION['locale'] : TL_DEFAULT_LOCALE;
 		$basehref = isset($_SESSION['basehref']) ? $_SESSION['basehref'] : TL_BASE_HREF;
@@ -43,13 +43,16 @@ class TLSmarty extends Smarty
 	
 		$this->assign('pageCharset',TL_TPL_CHARSET);
 		$this->assign('tlVersion',TL_VERSION);
+		
 		// this allows unclosed <head> tag to add more information and link; see inc_head.tpl 
 		$this->assign('openHead', 'no');
+		
 		// there are some variables which should not be assigned for template 
 		// but must be initialized
 		$this->assign('jsValidate', null);
 		$this->assign('jsTree', null);
 		$this->assign('sqlResult', null);
+		
 		//20050831 - scs - changed default action to updated
 		$this->assign('action', 'updated');
 	
@@ -60,6 +63,8 @@ class TLSmarty extends Smarty
 		// 20050828 - fm
 		$this->register_function("localize_date", "localize_date_smarty");
 
+    // 20060303 - franciscom
+    $this->register_function("localize_timestamp", "localize_timestamp_smarty");
 		
 		// define a select structure for {html_options ...}
 		$this->assign('option_yes_no', array(0 => lang_get('No'), 1 => lang_get('Yes')));

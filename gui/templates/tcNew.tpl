@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: tcNew.tpl,v 1.8 2006/02/27 07:55:44 franciscom Exp $ *}
+{* $Id: tcNew.tpl,v 1.9 2006/03/03 16:20:58 franciscom Exp $ *}
 {* Purpose: smarty template - create new testcase *}
 {* 20050831 - scs - change item to TestCase *}
 {* 
@@ -27,7 +27,7 @@ fckeditor
 	</div>	
 
 	<p>{lang_get s='tc_title'}<br />
-	<input type="text" name="title" size="50" value=""
+	<input type="text" name="name" size="50" value=""
 			alt="{lang_get s='alt_add_tc_name'}"/></p>
 	
 	<div style="width: 95%;">

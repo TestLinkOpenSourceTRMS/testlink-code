@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: requirements.inc.php,v $
- * @version $Revision: 1.25 $
- * @modified $Date: 2006/02/25 21:48:24 $ by $Author: schlundus $
+ * @version $Revision: 1.26 $
+ * @modified $Date: 2006/03/03 16:21:02 $ by $Author: franciscom $
  *
  * @author Martin Havlat <havlat@users.sourceforge.net>
  * 
@@ -36,21 +36,22 @@ require_once("../testcases/archive.inc.php");
  * @param string $title
  * @param string $scope
  * @param string $countReq
- * @param numeric $prodID
- * @param numeric $userID
+ * @param numeric $testproject_id
+ * @param numeric $user_id
  * @param string $type
  * 
  * @author Martin Havlat 
  */
-function createReqSpec(&$db,$title, $scope, $countReq, $prodID, $userID, $type = 'n')
+function createReqSpec(&$db,$title, $scope, $countReq, $testproject_id, $user_id, $type = 'n')
 {
 	tLog('Create SRS requested: ' . $title);
 	if (strlen($title)) {
-		$sql = "INSERT INTO req_spec (product_id, title, scope, type, total_req, author_id, create_date) " .
-				"VALUES (" . $prodID . ",'" . $db->prepare_string($title) . "','" . $db->prepare_string($scope) . 
-				"','" . $db->prepare_string($type) . "','" . 
-				$db->prepare_string($countReq) . "'," . $db->prepare_string($userID) . 
-				", CURRENT_DATE)";
+		$sql = "INSERT INTO req_specs (testproject_id, title, scope, type, total_req, author_id, creation_ts)
+				    VALUES (" . $testproject_id . ",'" . $db->prepare_string($title) . "','" . 
+				                $db->prepare_string($scope) .  "','" . $db->prepare_string($type) . "','" . 
+				                $db->prepare_string($countReq) . "'," . $db->prepare_string($user_id) . ", " . 
+				                $db->db_now() . ")";
+				
 		$result = $db->exec_query($sql); 
 		if ($result) {
 			$result = 'ok';
@@ -73,19 +74,19 @@ function createReqSpec(&$db,$title, $scope, $countReq, $prodID, $userID, $type =
  * @param string $title
  * @param string $scope
  * @param string $countReq
- * @param integer $userID
+ * @param integer $user_id
  * @param string $type
  * @return string result
  * 
  * @author Martin Havlat 
  */
-function updateReqSpec(&$db,$id, $title, $scope, $countReq, $userID, $type = 'n')
+function updateReqSpec(&$db,$id, $title, $scope, $countReq, $user_id, $type = 'n')
 {
 	if (strlen($title)) {
-		$sql = "UPDATE req_spec SET title='" . $db->prepare_string($title) . 
+		$sql = "UPDATE req_specs SET title='" . $db->prepare_string($title) . 
 				"', scope='" . $db->prepare_string($scope) . "', type='" . $db->prepare_string($type) .
 				"', total_req ='" . $db->prepare_string($countReq) . "', modifier_id='" . 
-				$db->prepare_string($userID) . "', modified_date=CURRENT_DATE WHERE id=" . $id;
+				$db->prepare_string($user_id) . "', modified_date=CURRENT_DATE WHERE id=" . $id;
 		$result = $db->exec_query($sql); 
 		if ($result) {
 			$result = 'ok';
@@ -103,15 +104,15 @@ function updateReqSpec(&$db,$id, $title, $scope, $countReq, $userID, $type = 'n'
 /** 
  * delete System Requirement Specification
  *  
- * @param integer $idSRS
+ * @param integer $srs_id
  * @return string result comment
  * 
  * @author Martin Havlat 
  **/
-function deleteReqSpec (&$db,$idSRS)
+function deleteReqSpec (&$db,$srs_id)
 {
 	// delete requirements and coverage
-	$arrReq = getRequirements($db,$idSRS);
+	$arrReq = getRequirements($db,$srs_id);
 	if (sizeof($arrReq))
 	{
 		foreach ($arrReq as $oneReq) {
@@ -120,7 +121,7 @@ function deleteReqSpec (&$db,$idSRS)
 	}
 		
 	// delete specification itself
-	$sql = "DELETE FROM req_spec WHERE id=" . $idSRS;
+	$sql = "DELETE FROM req_specs WHERE id=" . $srs_id;
 	$result = $db->exec_query($sql); 
 	if ($result) {
 		$result = 'ok';
@@ -140,11 +141,11 @@ function deleteReqSpec (&$db,$idSRS)
  * 
  * @author Martin Havlat 
  **/
-function getReqSpec(&$db,$prodID, $set = 'product')
+function getReqSpec(&$db,$testproject_id, $set = 'testproject')
 {
-	$sql = "SELECT * FROM req_spec";
-	if ($set == 'product') {
-		$sql .= " WHERE product_id=" . $prodID . " ORDER BY title";
+	$sql = "SELECT * FROM req_specs";
+	if ($set == 'testproject') {
+		$sql .= " WHERE testproject_id=" . $testproject_id . " ORDER BY title";
 	} elseif (intval($set)) {
 		$sql .= " WHERE id=" . $set;
 	}
@@ -160,9 +161,9 @@ function getReqSpec(&$db,$prodID, $set = 'product')
  * 
  * @author Martin Havlat 
  **/
-function getOptionReqSpec(&$db,$prodID)
+function getOptionReqSpec(&$db,$testproject_id)
 {
-	$sql = "SELECT id,title FROM req_spec WHERE product_id=" . $prodID . 
+	$sql = "SELECT id,title FROM req_specs WHERE testproject_id=" . $testproject_id . 
 			" ORDER BY title";
 	
 	return $db->fetchColumnsIntoMap($sql,'id','title');
@@ -172,7 +173,7 @@ function getOptionReqSpec(&$db,$prodID)
 /** 
  * collect information about current list of Requirements in req. Specification
  *  
- * @param string $idSRS ID of req. specification
+ * @param string $srs_id ID of req. specification
  * @param string range = ["all" (default), "assigned"] (optional)
  * 			"unassign" is not implemented because requires subquery 
  * 			which is not available in MySQL 4.0.x
@@ -181,14 +182,14 @@ function getOptionReqSpec(&$db,$prodID)
  * 
  * @author Martin Havlat 
  */
-function getRequirements(&$db,$idSRS, $range = 'all', $testcase_id = null)
+function getRequirements(&$db,$srs_id, $range = 'all', $testcase_id = null)
 {
 	if ($range == 'all') {
-		$sql = "SELECT * FROM requirements WHERE srs_id=" . $idSRS . " ORDER BY title";
+		$sql = "SELECT * FROM requirements WHERE srs_id=" . $srs_id . " ORDER BY title";
 	}
 	elseif ($range == 'assigned') {
 		$sql = "SELECT requirements.* FROM requirements,req_coverage WHERE srs_id=" . 
-				$idSRS . " AND req_coverage.req_id=requirements.id AND " . 
+				$srs_id . " AND req_coverage.req_id=requirements.id AND " . 
 				"req_coverage.testcase_id=" . $testcase_id . " ORDER BY title";
 	}
 
@@ -237,16 +238,16 @@ function array_diff_byId ($arrAll, $arrPart)
 /**
  * get analyse based on requirements and test specification
  * 
- * @param integer $idSRS
+ * @param integer $srs_id
  * @return array Coverage in three internal arrays: covered, uncovered, nottestable REQ
  * @author martin havlat
  */
-function getReqCoverage_general(&$db,$idSRS)
+function getReqCoverage_general(&$db,$srs_id)
 {
 	$output = array('covered' => array(), 'uncovered' => array(), 'nottestable' => array());
 	
 	// get requirements
-	$sql_common = "SELECT id,title FROM requirements WHERE srs_id=" . $idSRS;
+	$sql_common = "SELECT id,title FROM requirements WHERE srs_id=" . $srs_id;
 	$sql = $sql_common . " AND status='v' ORDER BY title";
 	$arrReq = selectData($db,$sql);
 
@@ -277,33 +278,33 @@ function getReqCoverage_general(&$db,$idSRS)
 /**
  * get requirement coverage metrics
  * 
- * @param integer $idSRS
+ * @param integer $srs_id
  * @return array results
  * @author havlatm
  */
-function getReqMetrics_general(&$db,$idSRS)
+function getReqMetrics_general(&$db,$srs_id)
 {
 	$output = array();
 	
 	// get nottestable REQs
-	$sql = "SELECT count(*) AS cnt FROM requirements WHERE srs_id=" . $idSRS . 
+	$sql = "SELECT count(*) AS cnt FROM requirements WHERE srs_id=" . $srs_id . 
 			" AND status='n'";
 	$output['notTestable'] = $db->fetchFirstRowSingleColumn($sql,'cnt');
 
-	$sql = "SELECT count(*) AS cnt FROM requirements WHERE srs_id=" . $idSRS;
+	$sql = "SELECT count(*) AS cnt FROM requirements WHERE srs_id=" . $srs_id;
 	$output['total'] = $db->fetchFirstRowSingleColumn($sql,'cnt');
-	tLog('Count of total REQ in DB for srs_id:'.$idSRS.' = '.$output['total']);
+	tLog('Count of total REQ in DB for srs_id:'.$srs_id.' = '.$output['total']);
 
-	$sql = "SELECT total_req FROM req_spec WHERE id=" . $idSRS;
+	$sql = "SELECT total_req FROM req_specs WHERE id=" . $srs_id;
 	$output['expectedTotal'] = $db->fetchFirstRowSingleColumn($sql,'total_req');
-	tLog(' Redefined Count of total REQ in DB for srs_id:'.$idSRS.' = '.$output['total']);
+	tLog(' Redefined Count of total REQ in DB for srs_id:'.$srs_id.' = '.$output['total']);
 	
 	if ($output['expectedTotal'] == 'n/a') {
 		$output['expectedTotal'] = $output['total'];
 	}
 	
 	$sql = "SELECT DISTINCT requirements.id FROM requirements, req_coverage WHERE" .
-				" requirements.srs_id=" . $idSRS .
+				" requirements.srs_id=" . $srs_id .
 				" AND requirements.id=req_coverage.req_id";
 	$result = $db->exec_query($sql);
 	if (!empty($result)) {
@@ -319,18 +320,18 @@ function getReqMetrics_general(&$db,$idSRS)
 /**
  * get requirement coverage metrics for a Test Plan
  * 
- * @param integer $idSRS
+ * @param integer $srs_id
  * @param integer $idTestPlan
  * @return array Results
  * @author havlatm
  */
-function getReqMetrics_testPlan(&$db,$idSRS, $idTestPlan)
+function getReqMetrics_testPlan(&$db,$srs_id, $idTestPlan)
 {
-	$output = getReqMetrics_general($db,$idSRS);
+	$output = getReqMetrics_general($db,$srs_id);
 	$output['coveredByTestPlan'] = 0;
 	
 	$sql = "SELECT DISTINCT requirements.id FROM requirements,testcase," .
-			"req_coverage,category,component WHERE requirements.srs_id=" . $idSRS .
+			"req_coverage,category,component WHERE requirements.srs_id=" . $srs_id .
 				" AND component.projid=" . $idTestPlan .
 				" AND category.compid=component.id AND category.id=testcase.catid" .
 				" AND testcase.mgttcid = req_coverage.testcase_id AND req_id=requirements.id" .
@@ -404,14 +405,14 @@ function getSuite4Req(&$db,$req_id, $idPlan)
  * @param string SRS ID (optional)
  * @return assoc_array list of test cases [id, title]
  */
-function getReq4Tc(&$db,$testcase_id, $idSRS = 'all')
+function getReq4Tc(&$db,$testcase_id, $srs_id = 'all')
 {
 	$sql = "SELECT requirements.id,requirements.title FROM requirements, req_coverage " .
 			"WHERE req_coverage.testcase_id=" . $testcase_id . 
 			" AND req_coverage.req_id=requirements.id";
 	// if only for one specification is required
-	if ($idSRS != 'all') {
-		$sql .= " AND requirements.srs_id=" . $idSRS;
+	if ($srs_id != 'all') {
+		$sql .= " AND requirements.srs_id=" . $srs_id;
 	}
 
 	return selectData($db,$sql);
@@ -422,23 +423,23 @@ function getReq4Tc(&$db,$testcase_id, $idSRS = 'all')
  * 
  * @param string $title
  * @param string $scope
- * @param integer $idSRS
- * @param integer $userID
+ * @param integer $srs_id
+ * @param integer $user_id
  
  * @param char $status
  * @param char $type
  * 
  * @author Martin Havlat 
  **/
-function createRequirement(&$db,$title, $scope, $idSRS, $userID, 
+function createRequirement(&$db,$title, $scope, $srs_id, $user_id, 
                            $status = 'v', $type = 'n', $req_doc_id = null)
 {
 	if (strlen($title)) {
 		$sql = "INSERT INTO requirements (srs_id, req_doc_id, title, scope, status, type, author_id, create_date)" .
-				" VALUES (" . $idSRS . ",'" . $db->prepare_string($req_doc_id) .  
+				" VALUES (" . $srs_id . ",'" . $db->prepare_string($req_doc_id) .  
 				"','" . $db->prepare_string($title) . "','" . $db->prepare_string($scope) . 
 				 "','" . $db->prepare_string($status) . "','" . $db->prepare_string($type) .
-				 "'," . $db->prepare_string($userID) . ", CURRENT_DATE)";
+				 "'," . $db->prepare_string($user_id) . ", CURRENT_DATE)";
 
 		$result = $db->exec_query($sql); 
 		
@@ -458,21 +459,21 @@ function createRequirement(&$db,$title, $scope, $idSRS, $userID,
  * @param integer $id
  * @param string $title
  * @param string $scope
- * @param integer $userID
+ * @param integer $user_id
  
  * @param string $status
  * @param string $type
  * 
  * @author Martin Havlat 
  **/
-function updateRequirement(&$db,$id, $title, $scope, $userID, $status, $type, $reqDocId=null)
+function updateRequirement(&$db,$id, $title, $scope, $user_id, $status, $type, $reqDocId=null)
 {
 	if (strlen($title)) {
 		$sql = "UPDATE requirements SET title='" . $db->prepare_string($title) . 
 				"', scope='" . $db->prepare_string($scope) . "', status='" . 
 				$db->prepare_string($status) . 
 				"', type='" . $db->prepare_string($type) . 
-				"', modifier_id='" . $db->prepare_string($userID) . 
+				"', modifier_id='" . $db->prepare_string($user_id) . 
 				"', req_doc_id='" . $db->prepare_string($reqDocId) .
 				"', modified_date=CURRENT_DATE WHERE id=" . $id;	
 	
@@ -519,9 +520,9 @@ function deleteRequirement(&$db,$id)
 /** 
  * print Requirement Specification 
  *
- * @param integer $idSRS
+ * @param integer $srs_id
  * @param string $prodName
- * @param string $userID
+ * @param string $user_id
  * @param string $base_href
  *
  * @author Martin Havlat
@@ -533,14 +534,14 @@ function deleteRequirement(&$db,$id)
  * @author Francisco Mancardi
  *
  **/
-function printSRS(&$db,$idSRS, $prodName, $prodID, $userID, $base_href)
+function printSRS(&$db,$srs_id, $prodName, $testproject_id, $user_id, $base_href)
 {
-	$arrSpec = getReqSpec($db,$prodID,$idSRS);
+	$arrSpec = getReqSpec($db,$testproject_id,$srs_id);
 	
 	$output = printHeader($arrSpec[0]['title'],$base_href);
-	$output .= printFirstPage($arrSpec[0]['title'], $prodName, $userID);
+	$output .= printFirstPage($arrSpec[0]['title'], $prodName, $user_id);
 	$output .= "<h2>" . lang_get('scope') . "</h2>\n<div>" . $arrSpec[0]['scope'] . "</div>\n";
-	$output .= printRequirements($idSRS);
+	$output .= printRequirements($srs_id);
 	$output .= "\n</body>\n</html>";
 
 	echo $output;
@@ -549,15 +550,15 @@ function printSRS(&$db,$idSRS, $prodName, $prodID, $userID, $base_href)
 /** 
  * print Requirement for SRS 
  * 
- * @param integer $idSRS
+ * @param integer $srs_id
  * 
  * @author Martin Havlat 
  * 20051125 - scs - added escaping of req names
  * 20051202 - scs - fixed 241
  **/
-function printRequirements(&$db,$idSRS)
+function printRequirements(&$db,$srs_id)
 {
-	$arrReq = getRequirements($db,$idSRS);
+	$arrReq = getRequirements($db,$srs_id);
 	
 	$output = "<h2>" . lang_get('reqs') . "</h2>\n<div>\n";
 	if (count($arrReq) > 0) {
@@ -669,13 +670,13 @@ function unassignTc2Req(&$db,$testcase_id, $req_id)
  *
  * @author Francisco Mancardi - reduce global coupling
  * @author Francisco Mancardi
- * interface changes added $idSRS
+ * interface changes added $srs_id
  * use new configuration parameter
  * 20051025 - MHT - corrected introduced bug with insert TC
  *
  * 20060110 - fm - user_id
  */
-function createTcFromRequirement(&$db,$mixIdReq, $prodID, $idSRS, $user_id)
+function createTcFromRequirement(&$db,$mixIdReq, $testproject_id, $srs_id, $user_id)
 {
 	//global $g_req_cfg;
 	//global $g_field_size;
@@ -685,7 +686,7 @@ function createTcFromRequirement(&$db,$mixIdReq, $prodID, $idSRS, $user_id)
 	$auto_category_name = $g_req_cfg->default_category_name;
 	$auto_component_name = $g_req_cfg->default_component_name;
 
-	tLog('createTcFromRequirement started:'.$mixIdReq.','.$prodID.','.$idSRS.','.$user_id);
+	tLog('createTcFromRequirement started:'.$mixIdReq.','.$testproject_id.','.$srs_id.','.$user_id);
 	$output = null;
 	if (is_array($mixIdReq)) {
 		$arrIdReq = $mixIdReq;
@@ -695,14 +696,14 @@ function createTcFromRequirement(&$db,$mixIdReq, $prodID, $idSRS, $user_id)
 	if ( $g_req_cfg->use_req_spec_as_category_name )
 	{
 	  // SRS Title
-	  $arrSpec = getReqSpec($db,$prodID,$idSRS);
+	  $arrSpec = getReqSpec($db,$testproject_id,$srs_id);
 	  $auto_category_name = substr($arrSpec[0]['title'],0,$g_field_size->category_name);
 	}
 	
 	//find component
 	$sqlCOM = " SELECT id FROM mgtcomponent " .
 	          " WHERE name='" . $auto_component_name . "' " .
-	          " AND prodid=" . $prodID;
+	          " AND prodid=" . $testproject_id;
 	          
 	$resultCOM = $db->exec_query($sqlCOM);
   if ($db->num_rows($resultCOM) == 1) {
@@ -715,7 +716,7 @@ function createTcFromRequirement(&$db,$mixIdReq, $prodID, $idSRS, $user_id)
 		$sqlInsertCOM = " INSERT INTO mgtcomponent (name,scope,prodid) " .
 		                " VALUES (" . "'" . $db->prepare_string($auto_component_name) . "'," .
 		                              "'" . $db->prepare_string($g_req_cfg->scope_for_component) . "'," .  
-		                $prodID . ")";
+		                $testproject_id . ")";
 		                
 		$resultCOM = $db->exec_query($sqlInsertCOM);
 		if ($db->affected_rows()) {

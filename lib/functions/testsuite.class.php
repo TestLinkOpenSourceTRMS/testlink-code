@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testsuite.class.php,v $
- * @version $Revision: 1.1 $
- * @modified $Date: 2006/02/27 07:45:14 $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2006/03/03 16:21:03 $
  * @author franciscom
  *
  */
@@ -30,7 +30,7 @@ function create($parent_id,$name,$details,
 	$node_types_descr_id=$tree_manager->get_available_node_types();
   $node_types_id_descr=array_flip($node_types_descr_id);
    
-  echo "<pre>debug" . _FUNCTION_; print_r($hash_id_descr); echo "</pre>";   
+  //echo "<pre>debug" . _FUNCTION_; print_r($hash_id_descr); echo "</pre>";   
     
 	$prefix_name_for_copy = config_get('prefix_name_for_copy');
 	

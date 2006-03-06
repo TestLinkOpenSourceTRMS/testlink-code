@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.3 $
- * @modified $Date: 2006/03/03 16:21:03 $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2006/03/06 17:31:00 $
  * @author franciscom
  *
  */
@@ -72,8 +72,6 @@ function update($id, $name, $color, $opt_req,$notes)
 			   " notes='" . $this->db->prepare_string($notes) . "'" . 
 			   " WHERE id=" . $id;
 			   
-	  //echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
-		   
 	$result = $this->db->exec_query($sql);
 
 	if ($result)
@@ -156,8 +154,6 @@ function show($id, $sqlResult = '', $action = 'update',$modded_item_id = 0)
 		$modded_item = $this->get_by_id($modded_item_id);
 	}
   
-  //echo "<pre>debug"; print_r($item); echo "</pre>";
-  		
 	$smarty->assign('moddedItem',$modded_item);
 	$smarty->assign('level', 'testproject');
 	$smarty->assign('container_data', $item);
@@ -165,7 +161,7 @@ function show($id, $sqlResult = '', $action = 'update',$modded_item_id = 0)
 }
 
 // 20060301 - franciscom
-function get_all_keywords($testproject_id)
+function get_all_keywords($id)
 {
 	$a_keywords = null;
  	$sql = " SELECT id,keyword,notes FROM keywords 
@@ -187,6 +183,82 @@ function get_all_keywords($testproject_id)
 }
 
 
+/* 20060305 - franciscom */
+function count_testcases($id)
+{
+  $tree_manager = New tree($this->db);
+	$test_spec = $tree_manager->get_subtree($id,array('testplan'=>'exclude me'),
+	                                            array('testcase'=>'exclude my children'));
+  
+  $hash_descr_id = $tree_manager->get_available_node_types();
+  
+  $qty=0;
+  if( count($test_spec) > 0 )
+  {
+    foreach($test_spec as $elem)
+    {
+    	if($elem['node_type_id'] == $hash_descr_id['testcase'])
+    	{
+    	  $qty++;
+    	}
+    }
+  }
+  return ($qty);
+}
+
+
+function gen_combo_test_suites($id)
+{
+	$aa = array(); 
+
+	$tree_manager = New tree($this->db);
+	//echo __FUNCTION__  ;
+	$test_spec = $tree_manager->get_subtree($id, array("testplan"=>"exclude me",
+                                                     "testcase"=>"exclude me"),
+                                               array('testcase'=>'exclude my children PLEASE'));
+  
+  $hash_descr_id = $tree_manager->get_available_node_types();
+  $hash_id_descr = array_flip($hash_descr_id);
+  
+  
+  // 20060223 - franciscom
+  if( count($test_spec) > 0 )
+  {
+   	$pivot=$test_spec[0];
+   	$the_level=1;
+    $level=array();
+  
+   	foreach ($test_spec as $elem)
+   	{
+   	 $current = $elem;
+  
+     if( $pivot['parent_id'] == $current['parent_id'])
+     {
+       $the_level=$the_level;
+     }
+     else if ($pivot['id'] == $current['parent_id'])
+     {
+     	  $the_level++;
+     	  $level[$current['parent_id']]=$the_level;
+     }
+     else 
+     {
+     	  $the_level=$level[$current['parent_id']];
+     }
+     
+     if( $hash_id_descr[$current['node_type_id']] == "testcase") 
+     {
+       $icon="gnome-starthere-mini.png";	
+     }
+     $aa[$current['id']] = str_repeat('.',$the_level) . $current['name'];
+     // update pivot
+     $level[$current['parent_id']]= $the_level;
+     $pivot=$elem;
+   	}
+	}
+	
+	return($aa);
+}
 
 } // end class
 

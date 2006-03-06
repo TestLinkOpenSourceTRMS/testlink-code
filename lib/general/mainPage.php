@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: mainPage.php,v $
  *
- * @version $Revision: 1.17 $ $Author: schlundus $
- * @modified $Date: 2006/02/25 21:48:24 $
+ * @version $Revision: 1.18 $ $Author: franciscom $
+ * @modified $Date: 2006/03/06 17:31:00 $
  *
  * @author Martin Havlat
  * 
@@ -39,7 +39,8 @@ $testprojectID = isset($_SESSION['testprojectID']) ? intval($_SESSION['testproje
 /** redirect admin to create product if not found */
 if (has_rights($db,'mgt_modify_product') && !isset($_SESSION['testprojectID']))
 { 
-	redirect($_SESSION['basehref'] . 'lib/admin/adminProductEdit.php?createProduct=1');
+	// 20060305 - franciscom
+	redirect($_SESSION['basehref'] . 'lib/admin/adminProductEdit.php?show_create_screen');
 }
 // ----------------------------------------------------------------------
 

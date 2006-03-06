@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: adminProductEdit.php,v $
  *
- * @version $Revision: 1.16 $
- * @modified $Date: 2006/03/03 16:21:02 $
+ * @version $Revision: 1.17 $
+ * @modified $Date: 2006/03/06 17:31:00 $
  *
  * @author Martin Havlat
  *
@@ -30,9 +30,7 @@ require_once("../../third_party/fckeditor/fckeditor.php");
 testlinkInitPage($db,true);
 
 $session_tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-echo "<pre>debug \$session_tproject_id = " . __FILE__ . "=" .$session_tproject_id; echo "</pre>";
-
-
+// echo "<pre>debug \$session_tproject_id = " . __FILE__ . "=" .$session_tproject_id; echo "</pre>";
 
 $updateResult = null;
 $action = 'no';
@@ -45,30 +43,18 @@ $tlog_level = 'INFO';
 $tproject = New testproject($db);
 $args = init_args($tproject, $_REQUEST, $session_tproject_id);
 
-//echo "<pre>debug\$args"; print_r($args); echo "</pre>";
-
-// ----------------------------------------------------------------------
-// 20060101 - fm
 $of = new fckeditor('notes') ;
 $of->BasePath = $_SESSION['basehref'] . 'third_party/fckeditor/';
 $of->ToolbarSet = 'TL_Medium';
-//$of->Value = $args->notes;
-// ----------------------------------------------------------------------
 
 if ($session_tproject_id)
 	$tlog_msg .= $session_tproject_id . ': ' . $_SESSION['testprojectName'];
 else
 	$tlog_msg .= $args->id . ': ' . $args->name;
 
-//echo "<pre>debug" . __FILE__; print_r($session_tproject_id); echo "</pre>";
-//echo "<pre>debug" . __FILE__; print_r($args); echo "</pre>";
-//exit();
-
-//echo "<pre>debug" . __FILE__; print_r($tproject->get_all_keywords($args->id)); echo "</pre>";
-
 switch($args->do)
 {
-	case 'deleteProduct':
+	case 'do_delete':
 		$show_prod_attributes = 'no';
 		$error = null;
 		if (deleteProduct($db,$args->id,$error))
@@ -85,11 +71,11 @@ switch($args->do)
 		$action = 'delete';
 		break;
 		
-	case 'createProduct':
+	case 'show_create_screen':
 		$args->id = -1;
 		break;	 
 		
-	case 'editProduct':
+	case 'do_create':
 		$name_ok = 1;
 		if (!strlen($args->name))
 		{
@@ -102,23 +88,42 @@ switch($args->do)
 			$updateResult = lang_get('string_contains_bad_chars');
 			$name_ok = 0;
 		}
-		if ($name_ok && $args->id)
+		$updateResult = 'ok';
+
+		if ($name_ok)
 		{
-			if ($args->id == -1)
+			$args->id = $tproject->create($args->name, $args->color, $args->optReq, $args->notes);
+			if (!$args->id)
 			{
-				$updateResult = 'ok';
-				// 20060219 - franciscom
-				$args->id = $tproject->create($args->name, $args->color, $args->optReq, $args->notes);
-				if (!$args->id)
-					$updateResult = lang_get('refer_to_log');
-				else
-					$args->id = -1;
+				$updateResult = lang_get('refer_to_log');
 			}
 			else
 			{
-				// 20060219 - franciscom
+				$args->id = -1;
+      }
+		  $action = 'updated';
+		}
+		break;
+		
+		
+		
+	case 'do_edit':
+		$name_ok = 1;
+		if (!strlen($args->name))
+		{
+			$updateResult = lang_get('info_product_name_empty');
+			$name_ok = 0;
+		}
+		// BUGID 0000086
+		if ($name_ok && !check_string($args->name,$g_ereg_forbidden))
+		{
+			$updateResult = lang_get('string_contains_bad_chars');
+			$name_ok = 0;
+		}
+		
+		if ($name_ok)
+		{
 				$updateResult = $tproject->update($args->id, $args->name, $args->color,$args->optReq, $args->notes);
-			}	
 		}
 		$action = 'updated';
 		break;
@@ -208,13 +213,11 @@ $smarty->display('adminProductEdit.tpl');
 function init_args($tproject,$request_hash, $session_tproject_id)
 {
 	
-	//echo "<pre>debug \$session_tproject_id " . __FUNCTION__ . " " ; print_r($session_tproject_id); echo "</pre>";
-	//echo "<pre>debug \$request_hash " . __FUNCTION__ . " "; print_r($request_hash); echo "</pre>";
-	
 	
 	$request_hash = strings_stripSlashes($request_hash);
 	
-	$do_keys = array('deleteProduct','editProduct','inactivateProduct','activateProduct','createProduct');
+	$do_keys = array('show_create_screen','do_delete','do_edit',
+	                 'inactivateProduct','activateProduct','do_create');
 	$args->do = '';
 	foreach ($do_keys as $value)
 	{
@@ -235,7 +238,7 @@ function init_args($tproject,$request_hash, $session_tproject_id)
 	
 	// Special algorithm for notes
 	$the_tproject_id = 0;
-	if ($args->do == 'createProduct')
+	if ($args->do == 'show_create_screen' || $args->do == 'do_create')
 	{
 		$args->id = -1;
 	}
@@ -255,7 +258,7 @@ function init_args($tproject,$request_hash, $session_tproject_id)
 
   //echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $the_tproject_id . "</b><br>";
 
-  if( $args->do != 'editProduct')
+  if( $args->do != 'do_edit')
   {
     if ($the_tproject_id > 0)
 	  {
@@ -268,8 +271,6 @@ function init_args($tproject,$request_hash, $session_tproject_id)
 	  }
 	}
 	
-	echo "<pre> debug \$args " . __FUNCTION__ . " "; print_r($args); echo "</pre>";
-		
 	return $args;
 }
 ?>

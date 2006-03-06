@@ -1,7 +1,10 @@
-{* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: tcMove.tpl,v 1.3 2005/08/29 07:09:40 franciscom Exp $ *}
-{* Purpose: smarty template - move/copy test case *}
-{* I18N: 20050528 - fm *}
+{* 
+TestLink Open Source Project - http://testlink.sourceforge.net/ 
+$Id: tcMove.tpl,v 1.4 2006/03/06 17:30:54 franciscom Exp $ 
+Purpose: smarty template - move/copy test case 
+
+20060305 - franciscom
+*}
 
 {include file="inc_head.tpl"}
 
@@ -14,12 +17,12 @@
 	<div class="groupBtn">
 			<input id="submit1" type="submit" name="updateTCmove" value="{lang_get s='btn_mv'}" />
 			<input id="submit2" type="submit" name="updateTCcopy" value="{lang_get s='btn_cp'}" />
-			<input type="hidden" name="oldCat" value="{$oldCat}" />
+			<input type="hidden" name="old_container" value="{$old_container}" />
 		</div>	
 	<p>{lang_get s='inst_move'}</p>
 	<p>{lang_get s='choose_cat'}
-		<select name="moveCopy">
-			{html_options options=$arrayCat}
+		<select name="new_container">
+			{html_options options=$array_container}
 		</select>
 	</p>
 </form>

@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: containerEdit.php,v 1.28 2006/02/27 08:05:59 franciscom Exp $ */
+/* $Id: containerEdit.php,v 1.29 2006/03/06 17:31:01 franciscom Exp $ */
 /* Purpose:  This page manages all the editing of test specification containers. */
 /*
  *
@@ -34,14 +34,12 @@ $tsuite_mgr = New testsuite($db); // 20060226 - franciscom
 $my_testsuiteID = isset($_REQUEST['testsuiteID']) ? intval($_REQUEST['testsuiteID']) : null;
 $my_containerID = isset($_REQUEST['containerID']) ? intval($_REQUEST['containerID']) : null;
 
-echo "<pre>debug (" . __FILE__ . ")"; print_r($_REQUEST); echo "</pre>";
-
 if(!$my_containerID)
 {
 	$my_containerID = $_SESSION['testprojectID'];	
 }
 
-$compName = isset($_REQUEST['testsuiteName']) ? stripslashes($_REQUEST['testsuiteName']) : null;
+$tsuite_name = isset($_REQUEST['testsuiteName']) ? stripslashes($_REQUEST['testsuiteName']) : null;
 $objectID = isset($_GET['objectID']) ? intval($_GET['objectID']) : null;
 $bSure = (isset($_GET['sure']) && ($_GET['sure'] == 'yes'));
 
@@ -61,14 +59,12 @@ $a_tpl = array( 'move_testsuite' => 'containerMove.tpl',
 $a_actions = array ('edit_testsuite' => 0, 'new_testsuite' => 0,                       
                     'delete_testsuite' => 0, 'moveCom' => 0, 
                     'add_testsuite' => 1, 'componentMove' => 0,
-                    'addCOM' => 1,  'updateCOM' => 1);
+                    'addCOM' => 1,  'update_testsuite' => 1);
 
 $the_tpl = null;
-//echo "<pre>debug  (" . __FILE__ . ") <br>"; print_r($_POST); echo "</pre>";
 
 foreach ($a_actions as $the_key => $the_val)
 {
-	echo $the_key . "<br>";
 	if (isset($_POST[$the_key]) )
 	{
 		$the_tpl = isset($a_tpl[$the_key]) ? $a_tpl[$the_key] : null;
@@ -79,9 +75,6 @@ foreach ($a_actions as $the_key => $the_val)
 		break;
 	}
 }                    
-
-echo "<pre>debug " . "level"; print_r($level); echo "</pre>";
-
 $smarty->assign('level', $level);
  
 // --------------------------------------------------------------------
@@ -96,8 +89,6 @@ foreach ($amy_keys as $key)
 	$of->BasePath = $_SESSION['basehref'] . 'third_party/fckeditor/';
 	$of->ToolbarSet=$g_fckeditor_toolbar;;
 }
-
-echo "<pre>debug (" . __FILE__ . ")"; print_r($get_c_data); echo "</pre>";
 
 if($get_c_data)
 {
@@ -129,7 +120,6 @@ else if($action == 'add_testsuite')
 	if ($name_ok)
 	{
 		$msg = 'ok';
-		
 		$ret =$tsuite_mgr->create($my_containerID,$c_data['name'],$c_data['details'],
                               $g_check_names_for_duplicates,
 		                          $g_action_on_duplicate_name);
@@ -158,14 +148,14 @@ else if($action == 'update_testsuite')
 	if( $name_ok )
 	{
 	    $msg = 'ok';
-	  	if (!updateComponent($db,$my_testsuiteID,
-	  	                     $c_data['name'],$c_data['intro'],$c_data['scope'],
-	  		                   $c_data['ref'],$c_data['method'],$c_data['lim']))
+	  	if (!$tsuite_mgr->update($my_testsuiteID,$c_data['name'],$c_data['details']))
 	  	{
 	  		$msg = $db->error_msg();
 	  	}
 	}	
-	showComponent($db,$my_testsuiteID, $msg);
+	$tsuite_mgr->show($my_testsuiteID);
+	
+	// showComponent($db,$my_testsuiteID, $msg);
 }
 else if ($action == 'delete_testsuite')
 {
@@ -196,7 +186,7 @@ else if ($action == 'delete_testsuite')
 	else
 	{
 		//if the user has clicked the delete button on the archive page show the delete confirmation page
-		$smarty->assign('objectName', $compName);
+		$smarty->assign('objectName', $tsuite_name);
 		$smarty->assign('objectID', $my_testsuiteID);
 	}
 }
@@ -267,6 +257,7 @@ else if($action == 'updateTCorder')
 else if($action == 'componentCopy' || $action == 'componentMove')
 {
 	$prodID = $_SESSION['testprojectID'];
+	
 	//20051013 - am - fix for 115
 	$copyKeywords = isset($_POST['copyKeywords']) ? intval($_POST['copyKeywords']) : 0;
 	

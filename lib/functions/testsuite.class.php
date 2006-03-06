@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testsuite.class.php,v $
- * @version $Revision: 1.2 $
- * @modified $Date: 2006/03/03 16:21:03 $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2006/03/06 17:31:00 $
  * @author franciscom
  *
  */
@@ -29,8 +29,6 @@ function create($parent_id,$name,$details,
   $tree_manager = New tree($this->db);
 	$node_types_descr_id=$tree_manager->get_available_node_types();
   $node_types_id_descr=array_flip($node_types_descr_id);
-   
-  //echo "<pre>debug" . _FUNCTION_; print_r($hash_id_descr); echo "</pre>";   
     
 	$prefix_name_for_copy = config_get('prefix_name_for_copy');
 	
@@ -64,8 +62,6 @@ function create($parent_id,$name,$details,
 		         AND node_type_id = {$node_types_descr_id['testsuite']} 
 		         AND nodes_hierarchy.parent_id={$parent_id} "; 
 		
-    //echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
-
 		$result = $this->db->exec_query($sql);
 		$myrow = $this->db->fetch_array($result);
 		
@@ -90,15 +86,11 @@ function create($parent_id,$name,$details,
 	
 	if ($ret['status_ok'])
 	{
-
     // get a new id
     $tsuite_id = $tree_manager->new_node($parent_id,$node_types_descr_id['testsuite']);
-	
-
 		$sql = "INSERT INTO testsuites (id,name,details) " .
 		     	 "VALUES ({$tsuite_id},'" . $this->db->prepare_string($name) . "','" . 
 				                              $this->db->prepare_string($details) . "')";
-		  //echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
 		                              
 		$result = $this->db->exec_query($sql);
 		if ($result)
@@ -114,8 +106,22 @@ function create($parent_id,$name,$details,
 }
 
 
-function update()
+/* 20060306 - franciscom */
+function update($id, $name, $details)
 {
+	//TODO - check for existent name
+	$sql = "UPDATE testsuites
+	        SET name = '" . $this->db->prepare_string($name) . "', " .
+	       "    details = '" . $this->db->prepare_string($details) . "'" .
+	       " WHERE id = {$id}";
+	
+	$result = $this->db->exec_query($sql);
+  $ret['msg']='ok';
+	if (!$result)
+	{
+		$ret['msg'] = $this->db->error_msg();
+	}
+	return ($ret);	
 }
 
 
@@ -178,8 +184,6 @@ function show($id, $sqlResult = '', $action = 'update',$modded_item_id = 0)
 		$modded_item = $this->get_by_id($modded_item_id);
 	}
   
-  //echo "<pre>debug"; print_r($item); echo "</pre>";
-  		
 	$smarty->assign('moddedItem',$modded_item);
 	$smarty->assign('level', 'testsuite');
 	$smarty->assign('container_data', $item);

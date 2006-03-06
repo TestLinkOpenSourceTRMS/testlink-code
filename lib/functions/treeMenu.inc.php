@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: treeMenu.inc.php,v $
  *
- * @version $Revision: 1.12 $
- * @modified $Date: 2006/02/27 07:45:14 $ by $Author: franciscom $
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2006/03/06 17:31:00 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * 	This file generates tree menu for test specification and test execution.
@@ -17,10 +17,17 @@
  *
  * 20051011 - MHT - minor refactorization, header update
  * 20051118 - scs - testplanname was not filtered (JS-Error in certain cases)
+ * 20060304 - franciscom - changes on invokeMenu()
+ * 20060305 - franciscom - towards TL 1.7
  *
  **/
  
 require_once '../../config.inc.php';
+
+// 20060305 - franciscom
+require_once 'tree.class.php';
+require_once 'testproject.class.php';
+
 
 define('TL_TIME_LIMIT_EXTEND', 30); // limit of possible connection delay in seconds
 
@@ -42,6 +49,9 @@ if (TL_TREE_KIND == 'LAYERSMENU')
  * @param string $menustring own menu data
  * @param string $highLight optional
  * @return string generated html/javascript code
+ *
+ * 20060304 - franciscom - setting config params for icons
+ *
  **/
 function invokeMenu($menustring, $highLight = "")
 {
@@ -53,6 +63,12 @@ function invokeMenu($menustring, $highLight = "")
 
 		$mid->setLibjsdir(TL_MENU_PATH . 'libjs' . DS);
 		$mid->setImgwww(TL_MENU_WWW . 'menuimages/');
+		
+		// 20060304 - franciscom
+		// needed to be able to set the icon file for a menu item (works only for LEAF nodes)
+		$mid->setIcondir(TL_MENU_PATH . 'menuicons/');
+		$mid->setIconwww(TL_MENU_WWW . 'menuicons/');
+		
 		$mid->setIconsize(16, 16);
 
 		$mid->setMenuStructureString($menustring);
@@ -128,24 +144,16 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name, $linkto, $hidet
 	$menustring = null; // storage variable for output
 
 	$tree_manager = New tree($db);
+	$tproject_mgr = New testproject($db);
 	
-	//echo "<pre>debug (" . __FUNCTION__ . ")" ; print_r($tproject_id); echo "</pre>";
-	
-	$test_spec = $tree_manager->get_subtree($tproject_id);
+	// 20060305 - franciscom - interface changes
+	$test_spec = $tree_manager->get_subtree($tproject_id,array('testplan'=>'exclude me'),
+	                                                     array('testcase'=>'exclude my children'));
+
   $hash_descr_id = $tree_manager->get_available_node_types();
   $hash_id_descr = array_flip($hash_descr_id);
   
-  /*
-  echo "<pre>debug"; print_r($hash_descr_id); echo "</pre>";
-  echo "<pre>debug"; print_r($hash_id_descr); echo "</pre>";
-  
-  exit();
-	*/
-	
-	//echo "<pre>debug"; print_r($test_spec); echo "</pre>";
-	
-	// fake
-	$prodCount['qty']=6;
+	$testcase_count=$tproject_mgr->count_testcases($tproject_id);
 	
 	if (TL_TREE_KIND == 'LAYERSMENU')
 	{ 
@@ -153,7 +161,7 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name, $linkto, $hidet
 	  // [dots] | [text] | [link] | [title] | [icon] | [target] | [expand]
     // 
 	  // dots= ".|"
-	  // text= $tproject_name . " (" . $prodCount['qty'] . ")
+	  // text= $tproject_name . " (" . $testcase_count . ")
 	  // link= $linkto . "?edit=product&data=" . $tproject_id . $getArguments
 	  // title="Product"
 	  // icon= -
@@ -161,7 +169,7 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name, $linkto, $hidet
 	  // expand=-
 	  //
 		$menustring .= "." . "|" . 
-		               $tproject_name . " (" . $prodCount['qty'] . ")" . "|" . 
+		               $tproject_name . " (" . $testcase_count . ")" . "|" . 
 		               $linkto . "?edit=testproject&data=" . $tproject_id . $getArguments . "|" .
 		               "testproject". "|" . "|" . "workframe" ."|\n";
 	}
@@ -175,7 +183,6 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name, $linkto, $hidet
   
    	foreach ($test_spec as $elem)
    	{
-   	 //echo "<pre>debug (" . __FUNCTION__ . ")"; print_r($elem); echo "</pre>";	
    	 $current = $elem;
   
      if( $pivot['parent_id'] == $current['parent_id'])
@@ -192,18 +199,26 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name, $linkto, $hidet
      	  $the_level=$level[$current['parent_id']];
      }
      
+     // 20060303 - franciscom - added icon
+     $icon="";
+     if( $hash_id_descr[$current['node_type_id']] == "testcase") 
+     {
+       $icon="gnome-starthere-mini.png";	
+     }
+     
      $menustring .= str_repeat('.',$the_level) . ".|" . 
                     " " . $current['name'] . "|" . 
                     $linkto . "?edit=" . $hash_id_descr[$current['node_type_id']] . 
                               "&data=" . $current['id'] . $getArguments . "|" . 
-                    $hash_id_descr[$current['node_type_id']] . "|" . "|" . "workframe" ."|\n"; 
-        
+                    $hash_id_descr[$current['node_type_id']] . "|" . $icon . "|" . "workframe" ."|\n"; 
      
      // update pivot
      $level[$current['parent_id']]= $the_level;
      $pivot=$elem;
    	}
 	}
+	
+	//echo $menustring;
 	return $menustring;
  	
  	

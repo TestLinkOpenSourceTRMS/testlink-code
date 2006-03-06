@@ -1,10 +1,11 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: adminProductEdit.tpl,v 1.7 2006/01/14 17:47:54 schlundus Exp $
+$Id: adminProductEdit.tpl,v 1.8 2006/03/06 17:30:54 franciscom Exp $
 Purpose: smarty template - Edit existing product 
 
  20051211 - fm - poor workaround for BUGID 180 Unable to delete Product
  20060106 - scs - added createProduct functionality
+ 20060305 - franciscom - changes input names
 *}
 {include file="inc_head.tpl" openHead="yes"}
 {include file="inc_jsPicker.tpl"}
@@ -21,7 +22,7 @@ Purpose: smarty template - Edit existing product
 {* tabs *}
 <div class="tabMenu">
 	{if $id neq '-1'}
-	<span class="unselected"><a href="lib/admin/adminProductEdit.php?createProduct=1">{lang_get s='btn_create'}</a></span> 
+	<span class="unselected"><a href="lib/admin/adminProductEdit.php?show_create_screen">{lang_get s='btn_create'}</a></span> 
 	<span class="selected">{lang_get s='btn_edit_del'}</span>
 	{else}
 	<span class="selected">{lang_get s='btn_create'}</span> 
@@ -47,7 +48,7 @@ Purpose: smarty template - Edit existing product
 	{* edit product form *}
 	{if $found == "yes"}
 		<div>
-		<form name="editProduct" method="post" action="lib/admin/adminProductEdit.php">
+		<form name="edit_testproject" method="post" action="lib/admin/adminProductEdit.php">
 		<input type="hidden" name="id" value="{$id}" />
 		<table class="common" width="80%">
 		  {* 20051208 - fm #{$id} -> {$name} *} 
@@ -75,7 +76,7 @@ Purpose: smarty template - Edit existing product
 					<input type="text" name="color" value="{$color|escape}" maxlength="12" />
 					{* this function below calls the color picker javascript function. 
 					It can be found in the color directory *}
-					<a href="javascript: TCP.popup(document.forms['editProduct'].elements['color'], '{$basehref}third_party/color_picker/picker.html');">
+					<a href="javascript: TCP.popup(document.forms['edit_testproject'].elements['color'], '{$basehref}third_party/color_picker/picker.html');">
 						<img width="15" height="13" border="0" alt="Click Here to Pick up the color" 
 						src="third_party/color_picker/img/sel.gif" />
 					</a>
@@ -93,9 +94,9 @@ Purpose: smarty template - Edit existing product
 		</table>
 		<div class="groupBtn">
 		{if $id neq '-1'}
-			<input type="submit" name="editProduct" value="{lang_get s='btn_upd'}" />
+			<input type="submit" name="do_edit" value="{lang_get s='btn_upd'}" />
 		{else}
-			<input type="submit" name="editProduct" value="{lang_get s='btn_create'}" />
+			<input type="submit" name="do_create" value="{lang_get s='btn_create'}" />
 		{/if}
 		
 			{if $id neq '-1'}
@@ -104,9 +105,9 @@ Purpose: smarty template - Edit existing product
 				{else}
 				<input type="submit" name="activateProduct" value="{lang_get s='btn_activate'}" />
 				{/if}
-				<input type="button" name="deleteProduct" value="{lang_get s='btn_del'}" 
+				<input type="button" name="do_delete" value="{lang_get s='btn_del'}" 
 					onclick="javascript:; if (confirm('{lang_get s="popup_product_delete"}'))
-					{ldelim}location.href=fRoot+'lib/admin/adminProductEdit.php?deleteProduct=&id={$id}&name={$name|escape:"url"}';
+					{ldelim}location.href=fRoot+'lib/admin/adminProductEdit.php?do_delete=&id={$id}&name={$name|escape:"url"}';
 					{rdelim};" />
 			{/if}
 		</div>

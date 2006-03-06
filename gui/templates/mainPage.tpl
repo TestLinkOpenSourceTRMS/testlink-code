@@ -1,6 +1,6 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: mainPage.tpl,v 1.12 2006/02/25 21:48:24 schlundus Exp $     
+ $Id: mainPage.tpl,v 1.13 2006/03/06 17:30:54 franciscom Exp $     
  Purpose: smarty template - main page / site map                 
                                                                  
                                                                  
@@ -200,7 +200,8 @@
         <h2>{lang_get s='title_product_mgmt'}</h2>
 		<p>
 		<img class="arrow" src="icons/arrow_org.gif" />
-        <a href="lib/admin/adminProductEdit.php?createProduct=1">{lang_get s='href_create_product'}</a>
+		    {* 20060305 - franciscom *}
+        <a href="lib/admin/adminProductEdit.php?show_create_screen">{lang_get s='href_create_product'}</a>
         <br />
 		<img class="arrow" src="icons/arrow_org.gif" />
         <a href="lib/admin/adminProductEdit.php">{lang_get s='href_edit_product'}</a>

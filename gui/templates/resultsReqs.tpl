@@ -1,12 +1,13 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsReqs.tpl,v 1.4 2005/12/05 01:46:52 havlat Exp $
+$Id: resultsReqs.tpl,v 1.5 2006/03/08 22:22:07 kevinlevy Exp $
 Purpose: report REQ coverage 
 Author Martin Havlat 
 
 20051004 - fm - added print button
 20051126 - scs - added escaping of spec
 20051204 - mht - removed obsolete print button
+20050305 - kl - fixed mantis bug 335 by refering to fields passed,failed,blocked,not_run instead of covered
 *}
 {include file="inc_head.tpl"}
 
@@ -52,7 +53,7 @@ Author Martin Havlat
 	</tr>
 {/if}
 	<tr>
-		<td><span class="bold"><a href="lib/req/reqSpecView.php?editReq={$arrCoverage.covered[row].id}&idSRS={$selectedReqSpec}">
+		<td><span class="bold"><a href="lib/req/reqSpecView.php?editReq={$arrCoverage.passed[row].id}&idSRS={$selectedReqSpec}">
 			{$arrCoverage.passed[row].title|escape}</a></span></td>
 		<td>{$arrCoverage.passed[row].tcList}</td>
 	</tr>
@@ -78,7 +79,7 @@ Author Martin Havlat
 	</tr>
 {/if}
 	<tr>
-		<td><span class="bold"><a href="lib/req/reqSpecView.php?editReq={$arrCoverage.covered[row].id}&idSRS={$selectedReqSpec}">
+		<td><span class="bold"><a href="lib/req/reqSpecView.php?editReq={$arrCoverage.failed[row].id}&idSRS={$selectedReqSpec}">
 			{$arrCoverage.failed[row].title|escape}</a></span></td>
 		<td>{$arrCoverage.failed[row].tcList}</td>
 	</tr>
@@ -104,7 +105,7 @@ Author Martin Havlat
 	</tr>
 {/if}
 	<tr>
-		<td><span class="bold"><a href="lib/req/reqSpecView.php?editReq={$arrCoverage.covered[row].id}&idSRS={$selectedReqSpec}">
+		<td><span class="bold"><a href="lib/req/reqSpecView.php?editReq={$arrCoverage.blocked[row].id}&idSRS={$selectedReqSpec}">
 			{$arrCoverage.blocked[row].title|escape}</a></span></td>
 		<td>{$arrCoverage.blocked[row].tcList}</td>
 	</tr>
@@ -130,7 +131,7 @@ Author Martin Havlat
 	</tr>
 {/if}
 	<tr>
-		<td><span class="bold"><a href="lib/req/reqSpecView.php?editReq={$arrCoverage.covered[row].id}&idSRS={$selectedReqSpec}">
+		<td><span class="bold"><a href="lib/req/reqSpecView.php?editReq={$arrCoverage.not_run[row].id}&idSRS={$selectedReqSpec}">
 			{$arrCoverage.not_run[row].title|escape}</a></span></td>
 		<td>{$arrCoverage.not_run[row].tcList}</td>
 	</tr>

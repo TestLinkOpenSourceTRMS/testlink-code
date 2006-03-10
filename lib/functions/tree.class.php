@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: tree.class.php,v $
  *
- * @version $Revision: 1.3 $
- * @modified $Date: 2006/03/06 17:31:00 $ by $Author: franciscom $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2006/03/10 07:42:44 $ by $Author: franciscom $
  * @author Francisco Mancardi
 */
 
@@ -159,11 +159,14 @@ function get_subtree_list($node_id)
 // 20060305 - franciscom
 // added $exclude_node_types,$exclude_children_of
 //
-function get_subtree($node_id,$exclude_node_types=null,$exclude_children_of=null)
+function get_subtree($node_id,$exclude_node_types=null,
+                              $exclude_children_of=null,$exclude_branches=null)
 {
 
   $sql = " SELECT * from nodes_hierarchy
           WHERE parent_id = {$node_id} ";
+ 
+ // echo "<pre>debug" . __FUNCTION__ ; print_r($sql); echo "</pre>";
  
   $node_list=array();  
   $result = $this->db->exec_query($sql);
@@ -184,11 +187,15 @@ function get_subtree($node_id,$exclude_node_types=null,$exclude_children_of=null
     // Getting data from the node specific table
     $node_table = $this->node_tables[$this->node_types[$row['node_type_id']]];
 
-    //echo "\$node_id=" . $row['id'] ."<br>";
-    //echo "\$parent_id=" . $row['parent_id'] ."<br>";
-    //echo "child ::" . $this->node_types[$row['node_type_id']] . "<br>";
-      
-    if( !isset($exclude_node_types[$this->node_types[$row['node_type_id']]] ))
+    /*echo "\$node_id=" . $row['id'] ."<br>";
+    echo "\$parent_id=" . $row['parent_id'] ."<br>";
+    echo "child ::" . $this->node_types[$row['node_type_id']] . "<br>";
+    echo "<pre>\$exclude_node_types"; print_r($exclude_node_types); echo "</pre>";  
+    echo "<pre>\$exclude_branches"; print_r($exclude_branches); echo "</pre>";  
+    */  
+    if( !isset($exclude_node_types[$this->node_types[$row['node_type_id']]]) &&
+        !isset($exclude_branches[$row['id']])
+      )
     {
       //echo "node :: accepted <br><br>";
       $sql = "SELECT name FROM {$node_table} 
@@ -213,10 +220,13 @@ function get_subtree($node_id,$exclude_node_types=null,$exclude_children_of=null
       // Basically we use this because:
       // We don't want the children if the parent is a testcase,
       // due to the version management
-      if( !isset($exclude_children_of[$this->node_types[$row['node_type_id']]] ) )
+      if( !isset($exclude_children_of[$this->node_types[$row['node_type_id']]]) && 
+          !isset($exclude_branches[$row['id']])
+        )
       {
       	//echo "Exploring children of {$row['id']} <br>";
-    	  $xx_list = $this->get_subtree($row['id'],$exclude_node_types,$exclude_children_of);	
+    	  $xx_list = $this->get_subtree($row['id'],
+    	                                $exclude_node_types,$exclude_children_of,$exclude_branches);	
      	  
      	  if( !is_null($xx_list) )
     	  {
@@ -282,7 +292,7 @@ function delete_subtree($node_id)
 
 
 // $node is the name of the node we want the path of
-function get_path($node_id) 
+function get_path($node_id,$to_node_id=null) 
 {
 	
 // look up the parent of this node
@@ -303,8 +313,24 @@ function get_path($node_id)
    // only continue if this $node isn't the root node
    // (that's the node with no parent)
    
-   if ($row['parent_id'] != '') 
+   if ($row['parent_id'] != '' && $row['id'] != $to_node_id) 
    {
+   	  // 20060309 - franciscom
+      // Getting data from the node specific table
+      $node_table = $this->node_tables[$this->node_types[$row['node_type_id']]];
+      
+      $sql = "SELECT name FROM {$node_table} 
+      	      WHERE id = {$row['id']}";
+      $result_node = $this->db->exec_query($sql);        
+      
+      $item_name='';        
+      if( $this->db->num_rows($result_node) == 1 )
+      {
+      	$item_row  = $this->db->fetch_array($result_node);
+      	$item_name = $item_row['name'];	
+      }
+      
+      
    		// the last part of the path to $node, is the name
    		// of the parent of $node
       $node_list[] = array('id'        => $row['id'],
@@ -312,12 +338,12 @@ function get_path($node_id)
                            'node_type_id' => $row['node_type_id'],
                            'node_order' => $row['node_order'],
                            'node_table' => $node_table,
-                           'name' => $item_name);
+                           'name' => $item_name );
 
 			
       // we should add the path to the parent of this node
       // to the path
-      $node_list = array_merge($this->get_path($row['parent_id']), $node_list);
+      $node_list = array_merge($this->get_path($row['parent_id'],$to_node_id), $node_list);
    }
  }
  return $node_list;
@@ -335,6 +361,53 @@ function change_parent($node_id, $parent_id)
   return ($result);
 
 }
+ 
+ 
+/* 20060306 - franciscom */
+function get_children($id,$exclude_node_types=null) 
+{
+  $sql = " SELECT * from nodes_hierarchy
+          WHERE parent_id = {$node_id} ORDER BY node_order";
+
+  $node_list=array();  
+  $result = $this->db->exec_query($sql);
+ 
+  if( $this->db->num_rows($result) == 0 )
+  {
+    return(null); 	
+  }
+
+  while ( $row = $this->db->fetch_array($result) )
+  {
+    // ----------------------------------------------------------------------------
+    // Getting data from the node specific table
+    $node_table = $this->node_tables[$this->node_types[$row['node_type_id']]];
+
+    if( !isset($exclude_node_types[$this->node_types[$row['node_type_id']]]))
+    {
+      $sql = "SELECT name FROM {$node_table} 
+      	      WHERE id = {$row['id']}";
+      $result_node = $this->db->exec_query($sql);        
+      
+      $item_name='';        
+      if( $this->db->num_rows($result_node) == 1 )
+      {
+      	$item_row  = $this->db->fetch_array($result_node);
+      	$item_name = $item_row['name'];	
+      }
+      $node_list[] = array('id'        => $row['id'],
+                           'parent_id' => $row['parent_id'],
+                           'node_type_id' => $row['node_type_id'],
+                           'node_order' => $row['node_order'],
+                           'node_table' => $node_table,
+                           'name' => $item_name);
+  	}
+  }
+  return ($node_list);
+}
+ 
+ 
+ 
  
 }// end class
 ?>

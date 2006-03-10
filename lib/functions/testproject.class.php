@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.4 $
- * @modified $Date: 2006/03/06 17:31:00 $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2006/03/10 07:42:44 $
  * @author franciscom
  *
  */
@@ -207,15 +207,20 @@ function count_testcases($id)
 }
 
 
-function gen_combo_test_suites($id)
+// 20060308 - franciscom - added exclude_branches
+// 
+function gen_combo_test_suites($id,$exclude_branches=null)
 {
 	$aa = array(); 
 
 	$tree_manager = New tree($this->db);
-	//echo __FUNCTION__  ;
-	$test_spec = $tree_manager->get_subtree($id, array("testplan"=>"exclude me",
-                                                     "testcase"=>"exclude me"),
-                                               array('testcase'=>'exclude my children PLEASE'));
+	echo __FUNCTION__ ."<br>" ;
+	echo "<pre>debug"; print_r($exclude_branches); echo "</pre>";
+	
+	// 20060308 - franciscom
+	$test_spec = $tree_manager->get_subtree($id, array("testplan"=>"exclude me","testcase"=>"exclude me"),
+                                               array('testcase'=>'exclude my children PLEASE'),
+                                               $exclude_branches);
   
   $hash_descr_id = $tree_manager->get_available_node_types();
   $hash_id_descr = array_flip($hash_descr_id);

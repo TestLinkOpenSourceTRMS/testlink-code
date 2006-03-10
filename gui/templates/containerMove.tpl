@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: containerMove.tpl,v 1.4 2005/10/13 19:26:35 schlundus Exp $ *}
+{* $Id: containerMove.tpl,v 1.5 2006/03/10 07:42:42 franciscom Exp $ *}
 {* Purpose: smarty template - form for move/copy container in test specification 
 
 20050825 - fm - moveCopy -> containerID
@@ -23,16 +23,22 @@
 {else}
 	<form method="post" action="lib/testcases/containerEdit.php?objectID={$objectID|escape}">
 		<div>
-			<input type="submit" name="{$level|escape}Move" value="{lang_get s='btn_move'}" />
-			<input type="submit" name="{$level|escape}Copy" value="{lang_get s='btn_cp'}" />
+			<input type="submit" name="do_move" value="{lang_get s='btn_move'}" />
+			<input type="submit" name="do_copy" value="{lang_get s='btn_cp'}" />
 			<input type="hidden" name="old_containerID" value="{$old_containerID}" />
 		</div>	
 		<p>{lang_get s='cont_move_first'} {$level|escape} {lang_get s='cont_move_second'} {$parent|escape}.</p>
 		<p>{lang_get s='choose_target'} {$parent|escape}:
 			<select name="containerID">
+			  
+			  {*
 				{section name=oneKey loop=$arraySelect}
 					<option name="{$arraySelect[oneKey][1]}" value="{$arraySelect[oneKey][0]}">{$arraySelect[oneKey][1]|escape}</option>
 				{/section}
+				*}
+				
+				{html_options options=$arraySelect}
+				
 			</select>
 		</p>
 		<p>

@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: containerView.tpl,v 1.9 2006/02/27 07:59:42 franciscom Exp $ *}
+{* $Id: containerView.tpl,v 1.10 2006/03/10 07:42:42 franciscom Exp $ *}
 {* 
 Purpose: smarty template - view test specification containers 
 
@@ -52,7 +52,6 @@ Purpose: smarty template - view test specification containers
 		
 	</table>
 
-{***** COMPONENT ************************************************}
 {elseif $level == 'testsuite'}
 
 	{if $modify_tc_rights == 'yes' || $sqlResult ne ''}
@@ -64,7 +63,7 @@ Purpose: smarty template - view test specification containers
 				     alt="{lang_get s='alt_edit_com'}" />
 			<input type="submit" name="delete_testsuite" value="{lang_get s='btn_del_com'}" 
 				     alt="{lang_get s='alt_del_com'}" />
-			<input type="submit" name="move_testsuite" value="{lang_get s='btn_move_cp_com'}" 
+			<input type="submit" name="move_testsuite_viewer" value="{lang_get s='btn_move_cp_com'}" 
 				     alt="{lang_get s='alt_move_cp_com'}" />
 			<input type="submit" name="reorder_testsuite" value="{lang_get s='btn_reorder_cat'}" />
 		</form>
@@ -83,44 +82,10 @@ Purpose: smarty template - view test specification containers
 			<input type="submit" name="newTC" value="{lang_get s='btn_new_tc'}" />  
 		</form>
 		</div>
-		
-		
 	{/if}
 
   {include file="inc_testsuite_viewer_ro.tpl"}
-
-{***** CATEGORY ************************************************}
-{elseif $level == 'category'}
-	{if $modify_tc_rights == 'yes' || $sqlResult ne ''}
-		<div>
-		<form method="post" action="lib/testcases/containerEdit.php?categoryID={$container_data.id}" />
-			{* 20050830 - fm *}
-			<input type="hidden" name="categoryName" value="{$container_data.name|escape}" />
-
-			<input type="submit" name="editCat"   value="{lang_get s='btn_edit_cat'}" />  
-			<input type="submit" name="deleteCat" value="{lang_get s='btn_del_cat'}" />   
-			<input type="submit" name="moveCat"   value="{lang_get s='btn_move_cp_cat'}" />
-			<input type="submit" name="reorderTC" value="{lang_get s='btn_reorder_tc'}" />
-		</form>
-		</div>
-		<div>
-		<form method="post" action="lib/testcases/tcEdit.php?categoryID={$container_data.id}" />
-			<input type="submit" name="newTC" value="{lang_get s='btn_new_tc'}" />  
-		</form>
-		</div>
-		
-		<div>
-		<form method="post" action="lib/testcases/tcImport.php"/>
-			<input type="hidden" name="catID" value="{$container_data.id}"/>
-			<input type="submit" name="tcImport" value="{lang_get s='btn_import_tc'}" />
-		</form>
-		</div>
-
-		
 	{/if}
-
- {include file="inc_cat_viewer_ro_m0.tpl"}
-{/if}
 
 </div>
 </body>

@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: containerEdit.php,v 1.29 2006/03/06 17:31:01 franciscom Exp $ */
+/* $Id: containerEdit.php,v 1.30 2006/03/10 07:42:44 franciscom Exp $ */
 /* Purpose:  This page manages all the editing of test specification containers. */
 /*
  *
@@ -26,13 +26,22 @@ require('containerCat.inc.php');
 require_once("../../lib/plan/plan.inc.php");
 
 require_once('testsuite.class.php');  // 20060226 - franciscom
+require_once('testproject.class.php');  // 20060308 - franciscom
+require_once('tree.class.php');  // 20060308 - franciscom
 
 testlinkInitPage($db);
 
+$tree_mgr = New tree($db); // 20060308 - franciscom
+$tproject_mgr = New testproject($db); // 20060308 - franciscom
 $tsuite_mgr = New testsuite($db); // 20060226 - franciscom
+$tcase_mgr = New testcase($db); // 20060226 - franciscom
+
+
 
 $my_testsuiteID = isset($_REQUEST['testsuiteID']) ? intval($_REQUEST['testsuiteID']) : null;
 $my_containerID = isset($_REQUEST['containerID']) ? intval($_REQUEST['containerID']) : null;
+
+$my_tprojectID = $_SESSION['testprojectID'];
 
 if(!$my_containerID)
 {
@@ -43,22 +52,41 @@ $tsuite_name = isset($_REQUEST['testsuiteName']) ? stripslashes($_REQUEST['tests
 $objectID = isset($_GET['objectID']) ? intval($_GET['objectID']) : null;
 $bSure = (isset($_GET['sure']) && ($_GET['sure'] == 'yes'));
 
+
+echo "<pre>debug"; print_r($_POST); echo "</pre>";
+echo "<pre>debug"; print_r($_GET); echo "</pre>";
+
+
 $smarty = new TLSmarty();
 
 // 20050822 - fm - name/key of fck objects to create and table column name
 $a_keys['testsuite'] = array('details');
 
-$a_tpl = array( 'move_testsuite' => 'containerMove.tpl',
+
+/*
+$a_tpl = array( 'moveCom' => 'containerMove.tpl',
+                'addCOM' => 'containerNew.tpl',
+                'deleteCOM' => 'containerDelete.tpl',
+                'moveCat' => 'containerMove.tpl',
+                'addCAT'  => 'containerNew.tpl',
+                'deleteCat' => 'containerDelete.tpl',
+                'reorderCAT' => 'containerOrder.tpl',
+                'updateTCorder' => 'containerView.tpl',
+                'reorderTC' => 'tcReorder.tpl'); 
+*/
+
+
+$a_tpl = array( 'move_testsuite_viewer' => 'containerMove.tpl',
                 'add_testsuite' => 'containerNew.tpl',
                 // 'new_testsuite' => 'containerNew.tpl',
                 'delete_testsuite' => 'containerDelete.tpl',
-                'reorder_testsuite' => 'containerOrder.tpl',
+                'reorder_testsuites' => 'containerOrder.tpl',
                 'updateTCorder' => 'containerView.tpl',
                 'reorderTC' => 'tcReorder.tpl'); 
 
 $a_actions = array ('edit_testsuite' => 0, 'new_testsuite' => 0,                       
-                    'delete_testsuite' => 0, 'moveCom' => 0, 
-                    'add_testsuite' => 1, 'componentMove' => 0,
+                    'delete_testsuite' => 0, 'do_move' => 0, 'do_copy' => 0,
+                    'add_testsuite' => 1, 'move_testsuite_viewer' => 0,
                     'addCOM' => 1,  'update_testsuite' => 1);
 
 $the_tpl = null;
@@ -163,6 +191,11 @@ else if ($action == 'delete_testsuite')
 	//check to see if the user said he was sure he wanted to delete
 	if($bSure)
 	{
+
+    $tsuite_mgr->delete_deep($objectID);
+    exit();
+    
+    
 		$cats = null;
 		$smarty->assign('sqlResult', 'ok');
 
@@ -185,22 +218,63 @@ else if ($action == 'delete_testsuite')
 	}
 	else
 	{
+		// Get test cases present in this testsuite and all children
+		$testcases=$tsuite_mgr->get_testcases_deep($my_testsuiteID);
+		
+		if( !is_null($testcases) )
+		{
+			$verbose=array();
+			$warning=array();
+			
+		  foreach ($testcases as $the_key => $elem)
+		  {
+		  	 $verbose[] = $tree_mgr->get_path($elem['id'],$my_testsuiteID);
+		  }
+
+		  $idx=0; 
+		  foreach ($verbose as $the_key => $elem)
+		  {
+		  	//echo "<pre>debug - 230 => "; print_r($elem); echo "</pre>";
+		    foreach ($elem as $tkey => $telem)
+		    {
+		  	  $warning[$idx] .= $telem['name'] . "\\"; 	
+		    }	  
+	  		$warning[$idx]=rtrim($warning[$idx], "\\");
+		  	$idx++;
+		  }	
+
+      reset($testcases);
+      $link_msg=array();
+		  foreach ($testcases as $the_key => $elem)
+		  {
+		  	 $link_msg[] = $tcase_mgr->check_delete_condition($elem['id']);
+		  }
+      echo "<pre>debug - \$link_msg"; print_r($link_msg); echo "</pre>";
+
+		}
+		
 		//if the user has clicked the delete button on the archive page show the delete confirmation page
 		$smarty->assign('objectName', $tsuite_name);
 		$smarty->assign('objectID', $my_testsuiteID);
 	}
 }
-else if( $action == 'moveCom') 
+else if( $action == 'move_testsuite_viewer') 
 {
-	$products = null;
-	$my_tprojectID;
-	getAllProductsBut($db,0,$products);
+	$testsuites = null;
+	$testsuites =$tproject_mgr->gen_combo_test_suites($my_tprojectID,
+	                                                  array($my_testsuiteID=>'exclude'));
+  
+  
+  //echo "<pre>debug"; print_r($testsuites); echo "</pre>";
+  //exit();
+  	                                     
+	// getAllProductsBut($db,0,$products);
 
 	$smarty->assign('old_containerID', $my_tprojectID); // original container
-	$smarty->assign('arraySelect', $products);
+	$smarty->assign('arraySelect', $testsuites);
 	$smarty->assign('objectID', $my_testsuiteID);
 }
-else if($action == 'reorder_testsuite') //user has chosen the reorder CAT page
+else if($action == 'reorder_testsuites') //user has chosen the reorder page
 {
 	$cats = null;
 	getOrderedComponentCategories($db,$my_testsuiteID,$cats);
@@ -254,14 +328,27 @@ else if($action == 'updateTCorder')
 	$smarty->assign('sqlResult', $generalResult);
 	$smarty->assign('data', getCategory($db,$my_categoryID));
 }
-else if($action == 'componentCopy' || $action == 'componentMove')
+else if($action == 'do_move')
+{
+	$tree_mgr->change_parent($objectID,$my_containerID);  
+  $tproject_mgr->show($my_tprojectID);
+	
+	// copy_or_move_comp($db, $action, $objectID, $prodID ,$_POST,$_SESSION['userID'],$copyKeywords);
+}	
+else if($action == 'do_copy')
 {
 	$prodID = $_SESSION['testprojectID'];
 	
 	//20051013 - am - fix for 115
 	$copyKeywords = isset($_POST['copyKeywords']) ? intval($_POST['copyKeywords']) : 0;
 	
-	copy_or_move_comp($db, $action, $objectID, $prodID ,$_POST,$_SESSION['userID'],$copyKeywords);
+	// copy_or_move_comp($db, $action, $objectID, $prodID ,$_POST,$_SESSION['userID'],$copyKeywords);
+	
+	//
+	$tsuite_mgr->copy_to($objectID, $my_containerID, $_SESSION['userID'],
+	                     config_get('check_names_for_duplicates'),
+	                     config_get('action_on_duplicate_name'));
+	
 }	
 else 
 {

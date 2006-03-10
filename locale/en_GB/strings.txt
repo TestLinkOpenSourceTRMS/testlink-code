@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.48 $
- * @modified $Date: 2006/02/27 07:55:45 $ $Author: franciscom $
+ * @version $Revision: 1.49 $
+ * @modified $Date: 2006/03/10 07:42:45 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
@@ -95,7 +95,7 @@ $TLS_title_create = "Create";
 
 
 // gui/templates/containerOrder.tpl
-$TLS_no_cat_to_reorder = "I'm sorry there are no categories to reorder!";
+$TLS_no_cat_to_reorder = "I'm sorry there are no test suites to reorder!";
 $TLS_th_id = "ID";
 $TLS_th_order = "Order";
 $TLS_title_change_comp_cat_order = "Change this test suite's test suite order";
@@ -116,7 +116,7 @@ $TLS_btn_move_cp_com = "Move/Copy";
 $TLS_btn_new_cat = "New test suite";
 $TLS_btn_new_com = "New test suite";
 $TLS_btn_new_tc = "Create Test Cases";
-$TLS_btn_reorder_cat = "Reorder Categories";
+$TLS_btn_reorder_cat = "Reorder test suites";
 $TLS_btn_reorder_tc = "Reorder Test Cases";
 $TLS_th_product_name = "Test project Name";
 

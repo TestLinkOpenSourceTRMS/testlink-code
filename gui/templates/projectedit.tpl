@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: adminProductEdit.tpl,v 1.8 2006/03/06 17:30:54 franciscom Exp $
+$Id: projectedit.tpl,v 1.1 2006/03/10 22:40:52 schlundus Exp $
 Purpose: smarty template - Edit existing product 
 
  20051211 - fm - poor workaround for BUGID 180 Unable to delete Product
@@ -22,11 +22,11 @@ Purpose: smarty template - Edit existing product
 {* tabs *}
 <div class="tabMenu">
 	{if $id neq '-1'}
-	<span class="unselected"><a href="lib/admin/adminProductEdit.php?show_create_screen">{lang_get s='btn_create'}</a></span> 
+	<span class="unselected"><a href="lib/project/projectedit.php?show_create_screen">{lang_get s='btn_create'}</a></span> 
 	<span class="selected">{lang_get s='btn_edit_del'}</span>
 	{else}
 	<span class="selected">{lang_get s='btn_create'}</span> 
-	<span class="unselected"><a href="lib/admin/adminProductEdit.php">{lang_get s='btn_edit_del'}</a></span>
+	<span class="unselected"><a href="lib/project/projectedit.php">{lang_get s='btn_edit_del'}</a></span>
 	{/if}
 
 </div>
@@ -48,7 +48,7 @@ Purpose: smarty template - Edit existing product
 	{* edit product form *}
 	{if $found == "yes"}
 		<div>
-		<form name="edit_testproject" method="post" action="lib/admin/adminProductEdit.php">
+		<form name="edit_testproject" method="post" action="lib/project/projectedit.php">
 		<input type="hidden" name="id" value="{$id}" />
 		<table class="common" width="80%">
 		  {* 20051208 - fm #{$id} -> {$name} *} 
@@ -107,7 +107,7 @@ Purpose: smarty template - Edit existing product
 				{/if}
 				<input type="button" name="do_delete" value="{lang_get s='btn_del'}" 
 					onclick="javascript:; if (confirm('{lang_get s="popup_product_delete"}'))
-					{ldelim}location.href=fRoot+'lib/admin/adminProductEdit.php?do_delete=&id={$id}&name={$name|escape:"url"}';
+					{ldelim}location.href=fRoot+'lib/project/projectedit.php?do_delete=&id={$id}&name={$name|escape:"url"}';
 					{rdelim};" />
 			{/if}
 		</div>

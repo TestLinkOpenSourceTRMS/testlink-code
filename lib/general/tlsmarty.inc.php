@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tlsmarty.inc.php,v $
  *
- * @version $Revision: 1.7 $
- * @modified $Date: 2006/03/03 16:21:03 $ $Author: franciscom $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2006/03/10 22:35:59 $ $Author: schlundus $
  *
  * @author Martin Havlat
  *
@@ -21,12 +21,15 @@ class TLSmarty extends Smarty
         $this->Smarty();
         $this->template_dir = TL_ABS_PATH . 'gui/templates/';
         $this->compile_dir = TL_TEMP_PATH;
-        if (isset($_SESSION['testprojectColor'])) 
-        	$testprojectColor =  $_SESSION['testprojectColor'];
-        else
-        	$testprojectColor = TL_BACKGROUND_DEFAULT;
-        	
-		$this->assign('productColor', $testprojectColor);
+		
+		$testprojectColor = TL_BACKGROUND_DEFAULT;
+		if (isset($_SESSION['testprojectColor'])) 
+        {
+			$testprojectColor =  $_SESSION['testprojectColor'];
+        	if (!strlen($testprojectColor))
+        		$testprojectColor = TL_BACKGROUND_DEFAULT;
+		}
+		$this->assign('testprojectColor', $testprojectColor);
     
 		$my_locale = isset($_SESSION['locale']) ? $_SESSION['locale'] : TL_DEFAULT_LOCALE;
 		$basehref = isset($_SESSION['basehref']) ? $_SESSION['basehref'] : TL_BASE_HREF;
@@ -63,8 +66,8 @@ class TLSmarty extends Smarty
 		// 20050828 - fm
 		$this->register_function("localize_date", "localize_date_smarty");
 
-    // 20060303 - franciscom
-    $this->register_function("localize_timestamp", "localize_timestamp_smarty");
+	    // 20060303 - franciscom
+	    $this->register_function("localize_timestamp", "localize_timestamp_smarty");
 		
 		// define a select structure for {html_options ...}
 		$this->assign('option_yes_no', array(0 => lang_get('No'), 1 => lang_get('Yes')));

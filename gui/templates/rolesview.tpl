@@ -1,5 +1,5 @@
 {* smarty template - view all keywords of product; ver. 1.0 *}
-{* $Id: rolesview.tpl,v 1.3 2006/02/25 21:48:24 schlundus Exp $ *}
+{* $Id: rolesview.tpl,v 1.4 2006/03/10 22:35:57 schlundus Exp $ *}
 {* Purpose: smarty template - View all roless *}
 {include file="inc_head.tpl"}
 
@@ -34,7 +34,7 @@
 	</table>
 	<p>{lang_get s='warning_users_will_be_reset'}</p>
 	<div class="groupBtn">	
-		<input type="submit" name="confirmed" value="{lang_get s='btn_confirm_delete'}" onclick="location='lib/usermanagement/rolesview.php?confirmed=1&deleterole=1&id={$id}'"/>
+		<input type="submit" name="confirmed" value="{lang_get s='btn_confirm_delete'}" onclick="location='lib/usermanagement/rolesview.php?confirmed=1&amp;deleterole=1&amp;id={$id}'"/>
 		<input type="submit" value="{lang_get s='btn_cancel'}" onclick="location='lib/usermanagement/rolesview.php'" />
 	</div>
 {else}
@@ -56,7 +56,7 @@
 				</td>
 				<td>
 				{if $role.id > 9}
-					<a href="lib/usermanagement/rolesview.php?deleterole=1&id={$role.id}">
+					<a href="lib/usermanagement/rolesview.php?deleterole=1&amp;id={$role.id}">
 					<img style="border:none" alt="{lang_get s='alt_delete_keyword'}" src="icons/thrash.png"/>
 					</a>
 				{else}

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  * 
  * @filesource $RCSfile: doAuthorize.php,v $
- * @version $Revision: 1.10 $
- * @modified $Date: 2006/02/25 07:02:25 $ by $Author: franciscom $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2006/03/10 22:35:59 $ by $Author: schlundus $
  * @author Chad Rosen, Martin Havlat
  *
  * This file handles the initial login and creates all user session variables.
@@ -51,6 +51,7 @@ function doAuthorize(&$db,$login,$pwd)
 			}
 			else
 			{
+				$_SESSION['filter_tp_by_product'] = $g_ui_show_check_filter_tp_by_testproject;
 				$userProductRoles = getUserProductRoles($db,$userInfo['id']);
 				$userTestPlanRoles = getUserTestPlanRoles($db,$userInfo['id']);
 			    //Setting user's session information

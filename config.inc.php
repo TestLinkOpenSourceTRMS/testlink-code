@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.51 $
- * @modified $Date: 2006/02/27 07:45:10 $ by $Author: franciscom $
+ * @version $Revision: 1.52 $
+ * @modified $Date: 2006/03/10 22:35:55 $ by $Author: schlundus $
  *
  *
  * Constants and configuration parameters used throughout TestLink 
@@ -33,7 +33,7 @@
  * 					$g_locales_date_format, $g_locales_timestamp_format
  * 20051004 - fm - 	$g_allow_duplicate_keywords
  * 20051002 - fm - 	Test Plan filtering by product related configuration parameters
- *   				$g_ui_show_check_filter_tp_by_product
+ *   				$g_ui_show_check_filter_tp_by_testproject
  * 				 - 	New configuration parameters for Requirements Functionality
  * 20050919 - fm - 	g_timestamp_format
  * 20050915 - fm - 	from 1.6.Beta1 to 1.6.RC1
@@ -224,10 +224,7 @@ TRUE -> user can enable/disable test plan filter by product
 FALSE -> user can do nothing, no changes at UI.
          Test Plan always filtered by product
 */
-$g_ui_show_check_filter_tp_by_product = TRUE;
-
-// 20060219 - franciscom
-$g_ui_show_check_filter_tp_by_testproject = $g_ui_show_check_filter_tp_by_product;
+$g_ui_show_check_filter_tp_by_testproject = TRUE;
 
 
 /* TRUE -> you can create multiple time the same keyword for the same product */
@@ -401,19 +398,17 @@ define('TL_DOC_CONFIDENT', '');
 define('ALL_PRODUCTS',0);
 define('TP_ALL_STATUS',null);
 define('FILTER_BY_PRODUCT',1);
+define('FILTER_BY_TESTPROJECT',FILTER_BY_PRODUCT);
 define('TP_STATUS_ACTIVE',1);
 
-// 20060224 - franciscom
-define('FILTER_BY_TESTPROJECT',1);
-
-// 20060226 - franciscom
+// 20060213 - franciscom
 // logo for login page, if not defined nothing happens
-define('LOGO_LOGIN_PAGE','<center><img src="icons/company_logo.png"></center>');
+define('LOGO_LOGIN_PAGE','<img alt="TestLink" src="icons/company_logo.png" />');
 
-// 20060226 - franciscom - fo navbar page
-define('LOGO_NAVBAR',
-	     '<img alt="logo" src="icons/company_logo.png"  
-			       style="margin-left: 5px; vertical-align: middle;" />');
+
+// 20060217 - franciscom - fo navbar page
+define('LOGO_NAVBAR','<img alt="TestLink" src="icons/company_logo.png" />');
+
 
 // characters used to surround the role description in the user interface
 define('ROLE_SEP_START','[');

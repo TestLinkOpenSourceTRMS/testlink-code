@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: mainPage.php,v $
  *
- * @version $Revision: 1.18 $ $Author: franciscom $
- * @modified $Date: 2006/03/06 17:31:00 $
+ * @version $Revision: 1.19 $ $Author: schlundus $
+ * @modified $Date: 2006/03/10 22:35:59 $
  *
  * @author Martin Havlat
  * 
@@ -40,7 +40,7 @@ $testprojectID = isset($_SESSION['testprojectID']) ? intval($_SESSION['testproje
 if (has_rights($db,'mgt_modify_product') && !isset($_SESSION['testprojectID']))
 { 
 	// 20060305 - franciscom
-	redirect($_SESSION['basehref'] . 'lib/admin/adminProductEdit.php?show_create_screen');
+	redirect($_SESSION['basehref'] . 'lib/project/projectedit.php?show_create_screen');
 }
 // ----------------------------------------------------------------------
 
@@ -127,7 +127,7 @@ $smarty->assign('testplan_planning', has_rights($db,"testplan_planning"));
 $smarty->assign('launcher','lib/general/frmWorkArea.php');
 
 $smarty->assign('show_filter_tp_by_product',
-                $g_ui_show_check_filter_tp_by_product);
+                $g_ui_show_check_filter_tp_by_testproject);
 
 $smarty->assign('usermanagement_rights',has_rights($db,"mgt_users"));
 

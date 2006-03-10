@@ -1,5 +1,5 @@
 {* Testlink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: inc_update.tpl,v 1.8 2005/12/29 20:59:00 schlundus Exp $ *}
+{* $Id: inc_update.tpl,v 1.9 2006/03/10 22:35:57 schlundus Exp $ *}
 {* Purpose: smarty template - show SQL update result *}
 {* INPUT: $result (mandatory) = [ok, sql_error_description] 
 			If $result is empty do nothing.
@@ -65,6 +65,6 @@
 			{lang_get s='info_failed_db_upd_details'} {$item|default:"item"} {$name|escape}
 		{/if}
     </p>
-		<p>{lang_get s='invalid_query'} {$result|escape}<p>
+		<p>{lang_get s='invalid_query'} {$result|escape}</p>
 	</div>
 {/if}

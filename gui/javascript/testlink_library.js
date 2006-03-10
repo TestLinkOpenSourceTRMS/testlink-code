@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/ 
 // This script is distributed under the GNU General Public License 2 or later. 
 //
-// $Id: testlink_library.js,v 1.7 2006/02/25 21:48:22 schlundus Exp $ 
+// $Id: testlink_library.js,v 1.8 2006/03/10 22:35:56 schlundus Exp $ 
 //
 // Javascript functions commonly used through the GUI
 // This library is automatically loaded with inc_header.tpl
@@ -67,7 +67,7 @@ function ET(id)
 
 function PTP(id)
 {
-	parent.workframe.location = fRoot+'/'+SP_html_help_file;
+	parent.workframe.location = fRoot+menuUrl+"?level=root&data="+id+args;
 }
 
 function PCO(id)
@@ -125,6 +125,12 @@ function deleteBuild_onClick(buildID)
 		}
 	}
 	
+}
+
+function deleteUser_onClick(userID)
+{
+	if (confirm(warning_delete_user))
+		location = "lib/usermanagement/usersview.php?delete=1&user="+userID;
 }
 
 /**

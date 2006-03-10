@@ -1,5 +1,5 @@
 {* Testlink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: inc_head.tpl,v 1.3 2005/12/05 01:30:59 havlat Exp $ *}
+{* $Id: inc_head.tpl,v 1.4 2006/03/10 22:35:57 schlundus Exp $ *}
 {* Purpose: smarty template - HTML Common Header *}
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
      "DTD/xhtml1-transitional.dtd">
@@ -15,7 +15,7 @@
 	<base href="{$basehref}"/>
 	<title>{$title|default:"TestLink"}</title>
 	<style media="all" type="text/css">@import "{$css}";</style>
-	<style type="text/css"> body {ldelim}background: {$productColor};{rdelim}</style>
+	<style type="text/css"> body {ldelim}background: {$testprojectColor};{rdelim}</style>
 	<style media="print" type="text/css">@import "gui/css/tl_print.css";</style>
 	<script type="text/javascript" src="gui/javascript/testlink_library.js" language="javascript"></script>
 {if $jsValidate == "yes"} 

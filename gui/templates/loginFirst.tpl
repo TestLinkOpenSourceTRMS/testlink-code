@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: loginFirst.tpl,v 1.2 2005/08/16 17:59:13 franciscom Exp $ *}
+{* $Id: loginFirst.tpl,v 1.3 2006/03/10 22:35:57 schlundus Exp $ *}
 {* Purpose: smarty template - first login *}
 {include file="inc_head.tpl" title="TestLink - New Account" }
 
@@ -11,7 +11,7 @@
 
 <p class="bold">{$message}</p>
 
-<form method="post">
+<form method="post" action="firstLogin.php">
 	<p class="bold">{lang_get s='login_name'}<br />
 	<input type="text" name="loginName" size="20" maxlength="30" /></p>
 	<p class="bold">{lang_get s='password'}<br />

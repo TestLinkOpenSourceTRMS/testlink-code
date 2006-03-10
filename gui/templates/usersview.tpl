@@ -1,5 +1,5 @@
 {* Testlink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: usersview.tpl,v 1.2 2006/02/25 21:48:24 schlundus Exp $ *}
+{* $Id: usersview.tpl,v 1.3 2006/03/10 22:35:57 schlundus Exp $ *}
 {* 
 Purpose: smarty template - users overview
 
@@ -9,6 +9,14 @@ Purpose: smarty template - users overview
 {include file="inc_head.tpl"}
 
 <body>
+
+{literal}
+<script type="text/javascript">
+{/literal}
+var warning_delete_user = "{lang_get s='warning_delete_user'}";
+{literal}
+</script>
+{/literal}
 
 <h1>{lang_get s='title_user_mgmt'}</h1>
 
@@ -63,7 +71,7 @@ Purpose: smarty template - users overview
 				{/if}
 			</td>
 			<td>
-				<a href="lib/usermanagement/usersview.php?delete=1&user={$users[row].id}">
+				<a href="javascript:deleteUser_onClick({$users[row].id})">
 				<img style="border:none" alt="{lang_get s='alt_delete_user'}"	 src="icons/thrash.png"/>
 				</a>
 			</td>

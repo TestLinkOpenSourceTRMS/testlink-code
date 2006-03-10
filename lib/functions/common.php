@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.34 $ $Author: franciscom $
- * @modified $Date: 2006/03/03 16:21:02 $
+ * @version $Revision: 1.35 $ $Author: schlundus $
+ * @modified $Date: 2006/03/10 22:35:57 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -104,7 +104,7 @@ function setSessionTestProject($tproject_info)
 {
 	if ($tproject_info)
 	{
-		/** @todo check if the session product is updated when its modified per adminproductedit.php  */
+		/** @todo check if the session product is updated when its modified per projectedit.php.php  */
 		$_SESSION['testprojectID'] = $tproject_info['id']; 
 		$_SESSION['testprojectName'] = $tproject_info['name'];
 		$_SESSION['testprojectColor'] = $tproject_info['color'];
@@ -520,7 +520,6 @@ function upd_session_tplan_tproject(&$db,$hash_user_sel)
 	  $filter_tp_by_product = 0;
 	} 
 	// ------------------------------------------------------------------
-
 	$user_sel = array("tplan_id" => 0, "tproject_id" => 0 );
 	$user_sel["tproject_id"] = isset($hash_user_sel['testproject']) ? intval($hash_user_sel['testproject']) : 0;
 	$user_sel["tplan_id"] = isset($hash_user_sel['testplan']) ? intval($hash_user_sel['testplan']) : 0;

@@ -1,5 +1,5 @@
 {* Testlink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: navBar.tpl,v 1.9 2006/02/27 07:56:14 franciscom Exp $ 
+$Id: navBar.tpl,v 1.10 2006/03/10 22:35:57 schlundus Exp $ 
 Purpose: smarty template - title bar + menu 
 
 20060226 - franciscom - logo
@@ -14,19 +14,15 @@ Andreas Morsing: changed the product selection
 <body>
 
 <div class="tltitle">
-	<div style="float: right; margin-right: 5px;">
-		<a href="logout.php" target="_parent" accesskey="q">{lang_get s='link_logout'}</a>
+	<div style="width:100%;">
+		{$logo}
+		<div class="bold" style="float:left;padding-left:5px;width:49%;display:inline">TestLink {$tlVersion|escape} : {$user|escape}
+		{if $testprojectRole  neq null}	
+			- {lang_get s='product_role'}{$testprojectRole|escape}
+		{/if}
+		</div>
+		<div style="text-align:right;"><a style="width:100%;padding-right:5px;" href="logout.php" target="_parent" accesskey="q">{lang_get s='link_logout'}</a></div>
 	</div>
-
-{* 20060226 - franciscom - logo *}
-{$logo}
-
-
-	<span class="bold">TestLink {$tlVersion|escape} : {$user|escape} 
-	{if $testprojectRole  neq null}
-	- {lang_get s='product_role'}{$testprojectRole|escape}
-	{/if}
-	</span>
 </div>
 <div class="menu">
 

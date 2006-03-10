@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: containerView.tpl,v 1.10 2006/03/10 07:42:42 franciscom Exp $ *}
+{* $Id: containerView.tpl,v 1.11 2006/03/10 17:59:45 franciscom Exp $ *}
 {* 
 Purpose: smarty template - view test specification containers 
 
@@ -65,7 +65,7 @@ Purpose: smarty template - view test specification containers
 				     alt="{lang_get s='alt_del_com'}" />
 			<input type="submit" name="move_testsuite_viewer" value="{lang_get s='btn_move_cp_com'}" 
 				     alt="{lang_get s='alt_move_cp_com'}" />
-			<input type="submit" name="reorder_testsuite" value="{lang_get s='btn_reorder_cat'}" />
+			<input type="submit" name="reorder_testsuites" value="{lang_get s='btn_reorder_cat'}" />
 		</form>
 		</div>
 

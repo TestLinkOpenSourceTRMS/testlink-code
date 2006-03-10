@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: tree.class.php,v $
  *
- * @version $Revision: 1.4 $
- * @modified $Date: 2006/03/10 07:42:44 $ by $Author: franciscom $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2006/03/10 18:01:42 $ by $Author: franciscom $
  * @author Francisco Mancardi
 */
 
@@ -367,7 +367,7 @@ function change_parent($node_id, $parent_id)
 function get_children($id,$exclude_node_types=null) 
 {
   $sql = " SELECT * from nodes_hierarchy
-          WHERE parent_id = {$node_id} ORDER BY node_order";
+          WHERE parent_id = {$id} ORDER BY node_order";
 
   $node_list=array();  
   $result = $this->db->exec_query($sql);

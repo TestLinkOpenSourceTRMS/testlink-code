@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: planEdit.php,v $
  *
- * @version $Revision: 1.16 $
- * @modified $Date: 2006/02/15 08:49:20 $ $Author: franciscom $
+ * @version $Revision: 1.17 $
+ * @modified $Date: 2006/03/11 22:55:19 $ $Author: kevinlevy $
  *
  * Purpose:  ability to edit and delete testplans
  *
@@ -47,7 +47,8 @@ if($bDelete)
 	}
    
 	// 20051002 - fm - added order by
-	$builds = getBuilds($db,$id, " ORDER BY build.name ");
+	// 20060311 - kl - change table name for 1.7 schema
+	$builds = getBuilds($db,$id, " ORDER BY builds.name ");
 	
 	$buildIDList = sizeof($builds) ? array_keys($builds) : null;
 	$buildIDList = sizeof($builds) ? implode(",",$buildIDList) : null;

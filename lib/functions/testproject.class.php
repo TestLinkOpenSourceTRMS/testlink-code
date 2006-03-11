@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.6 $
- * @modified $Date: 2006/03/11 08:23:39 $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2006/03/11 10:26:12 $
  * @author franciscom
  *
  */
@@ -16,7 +16,7 @@ var $db;
 
 function testproject(&$db)
 {
-  $this->db = $db;	
+  $this->db = &$db;	
 }
 
 

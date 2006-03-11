@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.3 $
- * @modified $Date: 2006/03/06 17:31:00 $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2006/03/11 10:25:19 $
  * @author franciscom
  *
  */
@@ -16,7 +16,7 @@ var $db;
 
 function testcase(&$db)
 {
-  $this->db = $db;	
+  $this->db = &$db;	
 }
 
 // 20060226 - franciscom

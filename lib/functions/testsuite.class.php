@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testsuite.class.php,v $
- * @version $Revision: 1.5 $
- * @modified $Date: 2006/03/11 08:23:39 $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2006/03/11 10:26:13 $
  * @author franciscom
  *
  */
@@ -18,7 +18,7 @@ var $db;
 
 function testsuite(&$db)
 {
-  $this->db = $db;	
+  $this->db = &$db;	
 }
 
 // 20060309 - franciscom

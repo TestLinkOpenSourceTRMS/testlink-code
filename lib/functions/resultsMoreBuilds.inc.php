@@ -1,6 +1,6 @@
 <?php
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
- *$Id: resultsMoreBuilds.inc.php,v 1.46 2006/02/04 20:13:14 schlundus Exp $ 
+ *$Id: resultsMoreBuilds.inc.php,v 1.47 2006/03/11 22:51:14 kevinlevy Exp $ 
  * 
  * @author Kevin Levy
  *
@@ -106,7 +106,7 @@ function createResultsForTestPlan(&$db,$testPlanName, $testPlanID,
   $build_name_set = null;
 
   // list of ALL (id, name) pairs for the test plan
-  $arrAllBuilds = getBuilds($db,$testPlanID," ORDER BY build.name ");
+  $arrAllBuilds = getBuilds($db,$testPlanID," ORDER BY builds.name ");
 
   for($i = 0;$i < sizeof($buildsArray);$i++)
 	{

@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsTC.php,v 1.10 2006/02/19 13:03:33 schlundus Exp $ 
+* $Id: resultsTC.php,v 1.11 2006/03/11 23:04:50 kevinlevy Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -20,7 +20,7 @@ require_once("../../lib/functions/lang_api.php");
 testlinkInitPage($db);
 
 $arrData = array();
-$arrBuilds = getBuilds($db,$_SESSION['testPlanId'], " ORDER BY build.name ");
+$arrBuilds = getBuilds($db,$_SESSION['testPlanId'], " ORDER BY builds.name ");
 
 // is output is excel?
 $xls = FALSE;

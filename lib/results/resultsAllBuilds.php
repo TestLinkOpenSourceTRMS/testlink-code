@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsAllBuilds.php,v 1.4 2006/01/05 07:30:34 franciscom Exp $ 
+* $Id: resultsAllBuilds.php,v 1.5 2006/03/11 23:04:50 kevinlevy Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * 
@@ -18,7 +18,7 @@ require_once("../../lib/functions/lang_api.php");
 testlinkInitPage($db);
 
 // collect results for Test Plan
-$arrBuilds = getBuilds($db,$_SESSION['testPlanId'], " ORDER BY build.name ");
+$arrBuilds = getBuilds($db,$_SESSION['testPlanId'], " ORDER BY builds.name ");
 $total = getPlanTCNumber($db,$_SESSION['testPlanId']);
 
 $arrData = array();

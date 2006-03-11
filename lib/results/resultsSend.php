@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsSend.php,v 1.7 2006/01/05 07:30:34 franciscom Exp $ 
+* $Id: resultsSend.php,v 1.8 2006/03/11 23:04:50 kevinlevy Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author	Chad Rosen
@@ -31,7 +31,7 @@ if(isset($_POST['submit']))
 		// create message body
 		$msgBody = (isset($_POST['body']) ? $_POST['body'] : null) . "\n\n";
 		$status = isset($_POST['status']) ? $_POST['status'] : null;
-		$builds = getBuilds($db,$_SESSION['testPlanId']," ORDER BY build.name ");
+		$builds = getBuilds($db,$_SESSION['testPlanId']," ORDER BY builds.name ");
 
 		if($status == 'projAll')
 		{
@@ -82,7 +82,7 @@ if(isset($_POST['submit']))
 $suites = listTPComponent($db,$_SESSION['testPlanId']);
 
 // Gather info for the build dropdown box
-$builds = getBuilds($db,$_SESSION['testPlanId']," ORDER BY build.name ");
+$builds = getBuilds($db,$_SESSION['testPlanId']," ORDER BY builds.name ");
 // warning if no build or component
 if(count($suites) == 0 || count($builds) == 0)
 	displayInfo($_SESSION['testPlanName'], lang_get("warning_create_build_first"));

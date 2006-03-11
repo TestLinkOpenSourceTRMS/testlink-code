@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsBuild.php,v 1.7 2006/01/05 07:30:34 franciscom Exp $ 
+* $Id: resultsBuild.php,v 1.8 2006/03/11 23:04:50 kevinlevy Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * 
@@ -26,7 +26,7 @@ if (!isset($_GET['build']))
 
 $tpID = $_SESSION['testPlanId'];
 
-$builds = getBuilds($db,$tpID, " ORDER BY build.name ");
+$builds = getBuilds($db,$tpID, " ORDER BY builds.name ");
 $buildName = $builds[$buildID];
 $arrDataPriority = getPriorityReport($db,$tpID,$buildID);
 

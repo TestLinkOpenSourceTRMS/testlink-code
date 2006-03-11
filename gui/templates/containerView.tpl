@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: containerView.tpl,v 1.11 2006/03/10 17:59:45 franciscom Exp $ *}
+{* $Id: containerView.tpl,v 1.12 2006/03/11 10:19:48 franciscom Exp $ *}
 {* 
 Purpose: smarty template - view test specification containers 
 
@@ -13,6 +13,7 @@ Purpose: smarty template - view test specification containers
 20050828 - scs - adding import of tcs to a specific category
 20051202 - scs - adding escaping of container names, fix for 267
 20060225 - franciscom - new 1.7 terms instead of deprecated
+20060311 - franciscom - added reorder test suites for test project
 *}
 {include file="inc_head.tpl"}
 
@@ -30,6 +31,7 @@ Purpose: smarty template - view test specification containers
 				{* 20060226 - franciscom *}
 				<input type="hidden" name="containerID" value={$container_data.id}>
 				<input type="submit" name="new_testsuite" value="{lang_get s='btn_new_com'}" />
+			  <input type="submit" name="reorder_testsuites" value="{lang_get s='btn_reorder_cat'}" />
 			</form>
 		</div>
 	{/if}

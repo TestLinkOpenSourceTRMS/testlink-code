@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.35 $ $Author: schlundus $
- * @modified $Date: 2006/03/10 22:35:57 $
+ * @version $Revision: 1.36 $ $Author: schlundus $
+ * @modified $Date: 2006/03/11 23:09:19 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -49,6 +49,7 @@ require_once("product.core.inc.php");
 
 // 20060219 - franciscom
 require_once("testproject.class.php");
+require_once("testcase.class.php");
 
 require_once("plan.core.inc.php");
 require_once("logging.inc.php");

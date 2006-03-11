@@ -2,83 +2,17 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: product.inc.php,v $
- * @version $Revision: 1.13 $
- * @modified $Date: 2006/02/25 07:02:25 $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2006/03/11 23:09:19 $
  * @author Martin Havlat
  *
  * Functions for Product management (create,update,delete)
  * Functions for get data see product.core.inc.php
  *
- * @ author: francisco mancardi - 20060101 - product notes management
+ * @author: francisco mancardi - 20060101 - product notes management
  *
  */
-
 require_once('product.core.inc.php');
-
-
-/**
- * Update Product data
- *
- * 20060101 - fm - added notes
- */
-function updateProduct(&$db,$id, $name, $color, $optRequirements,$notes)
-{
-	$sql = " UPDATE mgtproduct SET name='" . $db->prepare_string($name) . "', " .
-	       " color='" . $db->prepare_string($color) . "', ".
-			   " option_reqs=" .  $db->prepare_string($optRequirements) . ", " .
-			   " notes='" . $db->prepare_string($notes) . "'" . 
-			   " WHERE id=" . $id;
-	$result = $db->exec_query($sql);
-
-	if ($result)
-	{
-		// update session data
-		$_SESSION['testprojectColor'] = $color;
-		$_SESSION['testprojectName'] = $name;
-		$_SESSION['testprojectOptReqs'] = $optRequirements;
-
-		$sqlResult = 'ok';
-		tLog('Product ' . $name . ' update: Ok.', 'INFO');
-	}
-	else
-	{
-		$sqlResult = 'Update product FAILED!';
-		tLog('FAILED SQL: ' . $sql . "\n Result: " . $db->error_msg(), 'ERROR');
-	}
-	
-	return $sqlResult;
-}
-
-
-/** 
- * create a new product 
- * @param string $name
- * @param string $color
- * @param string $optReq [1,0]
- * @param string $notes
- * @return boolean result
- *
- * 20060101 - fm - added notes
- */
-function createProduct(&$db,$name,$color,$optReq,$notes)
-{
-	$sql = " INSERT INTO mgtproduct (name,color,option_reqs,notes) " .
-	       " VALUES ('" .	$db->prepare_string($name) . "','" . 
-	                      $db->prepare_string($color) . 
-			                   "'," . $optReq . ",'" .
-			                  $db->prepare_string($notes) . "')";
-	$result = $db->exec_query($sql);
-
-	if ($result)
-	{
-		tLog('The new product '.$name.' was succesfully created.', 'INFO');
-		$output = 1;
-	} else {
-		$output = 0;
-	}
-		
-	return $output;
-}
 
 /**
  * delete a product including all dependent data
@@ -186,18 +120,5 @@ function deleteProduct(&$db,$id, &$error)
 	}
 
 	return empty($error) ? 1 : 0;
-}
-
-/** allow deactive a product 
- * @param integer $id Product ID
- * @param integer $status 1=active || 0=inactive 
- */
-// MHT 20050622 created
-function activateProduct(&$db,$id, $status)
-{
-	$sql = "UPDATE mgtproduct SET active=" . $status . " WHERE id=" . $id;
-	$result = $db->exec_query($sql);
-
-	return $result ? 1 : 0;
 }
 ?>

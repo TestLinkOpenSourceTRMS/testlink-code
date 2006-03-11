@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: keywordsAssign.php,v $
  *
- * @version $Revision: 1.11 $
- * @modified $Date: 2006/02/25 07:02:25 $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2006/03/11 23:09:28 $
  *
  * Purpose:  Assign keywords to set of testcases in tree structure
  *
@@ -33,7 +33,8 @@ $testproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID']
 $smarty = new TLSmarty();
 $title = null;
 $result = null;
-$keysOfProduct = selectKeywords($db,$testproject_id);
+$testProject = new testproject($db);
+$keysOfProduct = $testProject->getKeywords($testproject_id);
 
 if ($edit == 'product')
 {
@@ -58,30 +59,44 @@ else if ($edit == 'category')
 }
 else if($edit == 'testcase')
 {
-	if($bAssignTestCase) 
-		$result = updateTCKeywords($db,$id,$keyword);
+	$testCase = new testcase($db);
 
-	$tcKeywords = null;
-	$tcData = getTestcase($db,$id,false);
-	if ($tcData['keywords'])
-		$tcKeywords = explode(",",$tcData['keywords']);  
+	$tcData = $testCase->get_by_id($id);
+	if (sizeof($tcData))
+	{
+		$tcData = $tcData[0];
+		$title = $tcData['name'];
+	}
+		
+	if($bAssignTestCase)
+	{
+		$result = $testCase->deleteKeywords($id);   	 
+		$result = $result && $testCase->addKeywords($id,$keyword);
+	}
 
 	//find actual keywords by select those productKeywords which are set in the TC
+	$tcKeywords = $testCase->getKeywords($id);
+	$keywords = null;
 	if ($tcKeywords)
 	{
+		$tcKeywordIDs = array_keys($tcKeywords);
 		for($i = 0;$i < count($keysOfProduct);$i++)
 		{
-			$productKeyword = $keysOfProduct[$i]['keyword'];
+			$productKeyword = $keysOfProduct[$i]['id'];
 			$sel = 0;
-			if (in_array($productKeyword,$tcKeywords))
+			if (in_array($productKeyword,$tcKeywordIDs))
+			{
 				$sel  = 1;
+				$keywords[] = $tcKeywords[$productKeyword]['keyword'];
+			}
 	
 			$keysOfProduct[$i]['selected'] = $sel;	
 		}
+		if(sizeof($keywords))
+			$keywords = implode(",",$keywords);
 	}
 
-	$title = $tcData['title'];
-	$smarty->assign('tcKeys', $tcData['keywords']);
+	$smarty->assign('tcKeys', $keywords);
 }
 else
 {

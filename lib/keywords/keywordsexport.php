@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: keywordsexport.php,v $
  *
- * @version $Revision: 1.4 $
- * @modified $Date: 2006/02/25 07:02:25 $ by $Author: franciscom $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2006/03/11 23:09:28 $ by $Author: schlundus $
  *
  * This page this allows users to export keywords. 
  *
@@ -26,7 +26,8 @@ $productName = $_SESSION['testprojectName'];
 
 if ($bExport)
 {
-	$keywords = selectKeywords($db,$testproject_id);
+	$tproject = new testproject($db);
+	$keywords = $tproject->getKeywords($testproject_id);
 	switch($exportType)
 	{
 		case 'CSV':

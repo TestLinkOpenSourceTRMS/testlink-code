@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.4 $
- * @modified $Date: 2006/03/11 10:25:19 $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2006/03/11 23:09:19 $
  * @author franciscom
  *
  */
@@ -472,7 +472,50 @@ function copy_to($id, $parent_id, $user_id)
   }
   
 } // end function
+	
+	/* KEYWORD RELATED */
+	function getKeywords($tcID,$kwID = null)
+	{
+		$sql = "SELECT keyword_id,keywords.keyword FROM testcase_keywords,keywords WHERE keyword_id = keywords.id AND testcase_id = {$tcID}";
+		if (!is_null($kwID))
+			$sql .= " AND keyword_id = {$kwID}";
+		$tcKeywords = $this->db->fetchRowsIntoMap($sql,'keyword_id');
+		
+		return $tcKeywords;
+	} 
+	
+	function addKeyword($tcID,$kwID)
+	{
+		$kw = $this->getKeywords($tcID,$kwID);
+		if (sizeof($kw))
+			return 1;
+		$sql = "INSERT INTO testcase_keywords (testcase_id,keyword_id) " .
+			   " VALUES ($tcID,$kwID)";
 
-    
+		return ($this->db->exec_query($sql) ? 1 : 0);
+	}
+	
+	function addKeywords($tcID,$kwIDs)
+	{
+		$bSuccess = 1;
+		for($i = 0;$i < sizeof($kwIDs);$i++)
+		{
+			$bSuccess = $bSuccess && $this->addKeyword($tcID,$kwIDs[$i]);
+		}
+		
+		return $bSuccess;
+	}
+	
+	function deleteKeywords($tcID,$kwID = null)
+	{
+		$sql = "DELETE FROM testcase_keywords WHERE testcase_id = {$tcID}";
+		if (!is_null($kwID))
+			$sql .= " AND keyword_id = {$kwID}";
+		
+		return $this->db->exec_query($sql);
+	}
+	
+	/* END KEYWORD RELATED */
+
 } // end class
 ?>

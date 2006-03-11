@@ -5,7 +5,7 @@
  *
  * Filename $RCSfile: keywordsimport.php,v $
  *
- * @modified $Date: 2006/02/25 07:02:25 $
+ * @modified $Date: 2006/03/11 23:09:28 $
  *
 */
 require('../../config.inc.php');
@@ -42,7 +42,8 @@ if (($source != 'none') && ($source != ''))
 		if ($pfn)
 		{
 			$keywordData = $pfn($dest);
-			$sqlResult = importKeywords($db,$testproject_id,$keywordData);
+			$tproject = new testproject($db);
+			$sqlResult = $tproject->addKeywords($testproject_id,$keywordData);
 			header("Location: keywordsView.php");
 			exit();		
 		}

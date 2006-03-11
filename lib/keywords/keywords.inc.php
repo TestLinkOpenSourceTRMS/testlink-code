@@ -5,13 +5,11 @@
 *
 * Filename $RCSfile: keywords.inc.php,v $
 * 
-* @version $Id: keywords.inc.php,v 1.19 2006/02/25 07:02:25 franciscom Exp $
-* @modified $Date: 2006/02/25 07:02:25 $ by $Author: franciscom $
+* @version $Id: keywords.inc.php,v 1.20 2006/03/11 23:09:28 schlundus Exp $
+* @modified $Date: 2006/03/11 23:09:28 $ by $Author: schlundus $
 *
 * Functions for support keywords management. 
 *
-* 20051011 - fm - new dunction check_for_keyword_existence()
-* 20051004 - fm - addNewKeyword() refactoring and improvements
 * 20051216 - MHT - fixed update keywords also in testplan
 * 20051229 - scs - added support for ADODB, added some functions related to import/export
 * 20060224 - franciscom - changes due to new schema
@@ -34,6 +32,7 @@ $g_keywordFormatStrings = array (
  * @param int $keywordID [default = null] a possible keywordID to search for
  * 
  * @return type documentation
+ * DEPRECATED
  **/
 function selectKeywords(&$db,$testprojectID, $selectedKey = '',$keywordID = null)
 {
@@ -67,6 +66,24 @@ function selectKeywords(&$db,$testprojectID, $selectedKey = '',$keywordID = null
 }
 
 /**
+ * Gets the keyword with the given keywordID
+ *
+ * @param int $tprojectID the test project id
+ * @param int $keywordID the keyword id
+ * @return array returns the keyword information
+ **/
+function getKeyword(&$db,$keywordID)
+{
+  	$sql = "SELECT id,keyword,notes FROM keywords WHERE id = {$keywordID} " .
+		   " ORDER BY keyword ASC";
+	  	
+	$aKeywords = $db->get_recordset($sql);
+	if (sizeof($aKeywords))
+		$aKeywords = $aKeywords[0];
+	
+	return $aKeywords;
+}
+/**
  * Function-Documentation
  *
  * @param object $db [ref] documentation
@@ -74,6 +91,7 @@ function selectKeywords(&$db,$testprojectID, $selectedKey = '',$keywordID = null
  * @param type $arrKeywords documentation
  *
  * @return type documentation
+ * DEPRECATED
  **/
 function updateTCKeywords(&$db,$id,$arrKeywords)
 {
@@ -173,6 +191,7 @@ function updateComponentKeywords(&$db,$id, $newKey)
  * @param type $newKey documentation
  *
  * @return type documentation
+ * DEPRECATED
  **/
 function addTCKeyword(&$db,$tcID, $newKey)
 {
@@ -202,51 +221,6 @@ function addTCKeyword(&$db,$tcID, $newKey)
 	return $resultUpdate ? 'ok' : $db->error_msg();
 }
 
-/**
- * Function-Documentation
- *
- * @param object $db [ref] documentation
- * @param type $testprojectID documentation
- * @param type $id documentation
- * @param type $keyword documentation
- * @param type $notes documentation
- * 
- * @return type documentation
- **/
-function updateKeyword(&$db,$testprojectID,$id,$keyword,$notes)
-{
-	$allow_duplicate_keywords=config_get('allow_duplicate_keywords');
-
-	$ret = array("msg" => "ok", 
-				 "status_ok" => 0);
-	$do_action = 1;
-	$my_kw = trim($keyword);
-
-	if (!$allow_duplicate_keywords)
-	{
-		$check = check_for_keyword_existence($db,$testprojectID, $my_kw,$id);
-		$do_action = !$check['keyword_exists'];
-
-		$ret['msg'] = $check['msg'];
-		$ret['status_ok'] = $do_action;
-	}
-
-	if ($do_action)
-	{
-		$sql = "UPDATE keywords SET notes='" . $db->prepare_string($notes) . "', keyword='" 
-				. $db->prepare_string($my_kw) . "' where id=" . $id;
-		$result = $db->exec_query($sql);
-		
-		if (!$result)
-		{
-			$ret['msg'] = $db->error_msg();
-			$ret['status_ok'] = 0;
-		}
-	}
-
-	return $ret;
-}
-
 
 /**
  * Deletes the keyword with the given id 
@@ -255,75 +229,23 @@ function updateKeyword(&$db,$testprojectID,$id,$keyword,$notes)
  * @param int $id the keywordID
  *
  * @return int returns 1 on success, 0 else
+ * 
+ * 20060311 - scs - fix for 0000064 
+ * 				   When deleting a keyword, the keyword is not deleted from test cases 
+ * @todo: should we now increment the tcversion also?
  **/
 function deleteKeyword(&$db,$id)
 {
-	$sql = "DELETE FROM keywords WHERE id=" . $id;
+	$sql = "DELETE FROM testcase_keywords WHERE keyword_id=" . $id;
 	$result = $db->exec_query($sql);
 	
-	return $result ? 1 : 0;
-}
-
-/**
- * Adds a new keyword to the given product
- *
- * @param object $db [ref] the database object
- * @param int  $testprojectID
- * @param string $keyword
- * @param string $notes
- *
- * @return string 'ok' on success, a db error msg else
- *
- * 20051011 - fm - use of check_for_keyword_existence()
- * 20051004 - fm - refactoring
- **/
-function addNewKeyword(&$db,$testprojectID,$keyword,$notes)
-{
-	global $g_allow_duplicate_keywords;
-	
-	$ret = 'ok';
-	$do_action = 1;
-	$my_kw = trim($keyword);
-	if (!$g_allow_duplicate_keywords)
+	if ($result)
 	{
-		$check = check_for_keyword_existence($db,$testprojectID, $my_kw);
-		$ret = $check['msg'];
-		$do_action = !$check['keyword_exists'];
-	}
-	
-	if ($do_action)
-	{
-		$sql =  " INSERT INTO keywords (keyword,testproject_id,notes) " .
-				" VALUES ('" . $db->prepare_string($my_kw) .	"'," . 
-				$testprojectID . ",'" . $db->prepare_string($notes) . "')";
-		
+		$sql = "DELETE FROM keywords WHERE id=" . $id;
 		$result = $db->exec_query($sql);
-		if (!$result)
-		{
-			$ret = $db->error_msg();
-		}	
 	}
-  
-	return $ret;
-}
-/**
- * Function-Documentation
- *
- * @param object $db [ref] documentation
- * @param type $tcID documentation
- * @return type documentation
- *
- * 20051004 - fm - return type changed 
- **/
-function getTCKeywords(&$db,$tcID)
-{
-	$sql = "SELECT keywords FROM mgttestcase WHERE id=" . $tcID;
-	$keywords = $db->fetchFirstRowSingleColumn($sql,'keywords');
-	if (!is_null($keywords))
-	{
-		$keywords = explode(",",$keywords);	
-	}
-	return $keywords;
+		
+	return $result ? 1 : 0;
 }
 
 /**
@@ -338,6 +260,7 @@ function getTCKeywords(&$db,$tcID)
  *
  * 20051004 - fm - return type changed
  * 20051126 - scs - added parameter kwID for getting the keyword name by id
+ * DEPRECATED
  **/
 function getProductKeywords(&$db,$testprojectID,$searchKW = null,$kwID = null)
 {
@@ -357,41 +280,6 @@ function getProductKeywords(&$db,$testprojectID,$searchKW = null,$kwID = null)
 	
 	return $keywords;
 }
-
-/**
- * check_for_keyword_existence
- *
- * @param object $db [ref] documentation
- * @param int    $testprojectID product ID
- * @param string $kw keyword to search for
- * @param int    $kwID[default = 0] ignore keyword with this id
- *
- * @return type
- *				 				
- **/
-function check_for_keyword_existence($db,$testprojectID, $kw, $kwID = 0)
-{
-	$ret = array(
-				 'msg' => 'ok', 
-				 'keyword_exists' => 0
-				 );
-	  
-	$sql = 	" SELECT * FROM keywords " .
-			" WHERE UPPER(keyword) ='" . strtoupper($db->prepare_string($kw)).
-		    "' AND testproject_id=" . $testprojectID ;
-	
-	if ($kwID)
-		$sql .= " AND id <> " . $kwID;
-	
-	if ($db->fetchFirstRow($sql))
-	{
-		$ret['keyword_exists'] = 1;
-		$ret['msg'] = lang_get('keyword_already_exists');
-	}
-	
-	return $ret;
-}
-
 
 /**
  * Exports the given keywords to a XML file
@@ -426,10 +314,10 @@ function exportKeywordDataToCSV($keywords)
 function exportKeywordDataToXML($keywords)
 {
 	$keywordRootElem = "<keywords>{{XMLCODE}}</keywords>";
-	$keywordElemTpl = "\t".'<keyword name="{{NAME}}"><notes><![CDATA['."\n{{NOTES}}\n]]>".'</notes></keyword>'."\n";
+	$keywordElemTpl = "\t".'<keyword name="{{NAME}}"><notes><![CDATA['."\n||NOTES||\n]]>".'</notes></keyword>'."\n";
 	$keywordInfo = array (
 							"{{NAME}}" => "keyword",
-							"{{NOTES}}" => "notes",
+							"||NOTES||" => "notes",
 						);
 	return exportDataToXML($keywords,$keywordRootElem,$keywordElemTpl,$keywordInfo);
 }
@@ -468,36 +356,6 @@ function importKeywordDataFromXML($fileName)
 }
 
 /**
- * Imports the keywords contained in keywordData to the given product
- *
- * @param type $db [ref] documentation
- * @param int $testprojectID the product to which the keywords should be imported
- * @param array $keywordData an array with keyword information like
- * 				 keywordData[$i]['keyword'] => the keyword itself
- * 				 keywordData[$i]['notes'] => the notes of keyword
- *
- * @return array returns an array of result msgs
- *
- * @author Andreas Morsing <schlundus@web.de>
- **/
-function importKeywords(&$db,$testprojectID,$keywordData)
-{
-	$sqlResults = null;
-	for($i = 0;$i < sizeof($keywordData);$i++)
-	{
-		$keyword = $keywordData[$i]['keyword'];
-		$notes = $keywordData[$i]['notes'];
-		$msg = checkKeyword($keyword);
-		if (!is_null($msg))
-			$sqlResults[] = $msg;
-		else
-			$sqlResults[] = addNewKeyword($db,$testprojectID,$keyword,$notes);
-	}
-	
-	return $sqlResults;
-}
-
-/**
  * Import keywords from a CSV file to keyword data which can be further processed
  *
  * @param string $fileName the input CSV filename
@@ -526,7 +384,7 @@ function importKeywordDataFromCSV($fileName)
  *
  * @author Andreas Morsing <schlundus@web.de>
  **/
-function checkKeyword($keyword)
+function checkKeywordName($keyword)
 {
 	$msg = null;
 	if (strlen($keyword))

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: tree.class.php,v $
  *
- * @version $Revision: 1.7 $
- * @modified $Date: 2006/03/11 08:23:39 $ by $Author: franciscom $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2006/03/11 23:09:19 $ by $Author: schlundus $
  * @author Francisco Mancardi
 */
 
@@ -33,7 +33,7 @@ class tree
     
 	function tree(&$db) 
 	{
-    $this->db = $db;
+    $this->db = &$db;
   }
 
   /*

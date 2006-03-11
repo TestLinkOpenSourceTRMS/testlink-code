@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: projectedit.tpl,v 1.1 2006/03/10 22:40:52 schlundus Exp $
+$Id: projectedit.tpl,v 1.2 2006/03/11 23:09:09 schlundus Exp $
 Purpose: smarty template - Edit existing product 
 
  20051211 - fm - poor workaround for BUGID 180 Unable to delete Product
@@ -13,11 +13,7 @@ Purpose: smarty template - Edit existing product
 <body>
 
 {* 20051211 - fm - deleted $name as additional workaround for BUG 180}
-{* productName -> name 
-<h1>{lang_get s='title_product_mgmt'} - {$name|escape}</h1>
-*}
 <h1>{lang_get s='title_product_mgmt'}</h1>
-
 
 {* tabs *}
 <div class="tabMenu">
@@ -32,8 +28,8 @@ Purpose: smarty template - Edit existing product
 </div>
 
 	{if $action == "activate" || $action == "inactivate"}
-		<div class="info">{$sqlResult} - {$action}</div>
-	{elseif $action == "updated"}
+		<div class="info">{$sqlResult}</div>
+	{else}
 		{include file="inc_update.tpl" result=$sqlResult item="Product" name=$name}
 	{/if}
 
@@ -63,13 +59,11 @@ Purpose: smarty template - Edit existing product
 				<td>{lang_get s='name'}</td>
 				<td><input type="text" name="name" value="{$name|escape}" maxlength="100" /></td>
 			</tr>
-     {* ---------------------------------------------------------------- *}
      {* 20060101 - fm *}
 	   <tr>
 		  <td>{lang_get s='notes'}</td>
 		  <td width="80%">{$notes}</td>
 	   </tr>
-    {* ---------------------------------------------------------------- *}
 			<tr>
 				<td>{lang_get s='color'}</td>
 				<td>
@@ -107,7 +101,7 @@ Purpose: smarty template - Edit existing product
 				{/if}
 				<input type="button" name="do_delete" value="{lang_get s='btn_del'}" 
 					onclick="javascript:; if (confirm('{lang_get s="popup_product_delete"}'))
-					{ldelim}location.href=fRoot+'lib/project/projectedit.php?do_delete=&id={$id}&name={$name|escape:"url"}';
+					{ldelim}location.href=fRoot+'lib/project/projectedit.php?do_delete=&amp;id={$id}&amp;name={$name|escape:"url"}';
 					{rdelim};" />
 			{/if}
 		</div>

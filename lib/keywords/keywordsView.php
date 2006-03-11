@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: keywordsView.php,v $
  *
- * @version $Revision: 1.11 $
- * @modified $Date: 2006/02/25 07:02:25 $ by $Author: franciscom $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2006/03/11 23:09:28 $ by $Author: schlundus $
  *
  * Purpose:  This page this allows users to view keywords. 
  *
@@ -27,20 +27,20 @@ $bNewKey = isset($_REQUEST['newKey']) ? 1 : 0;
 $bEditKey = isset($_REQUEST['editKey']) ? 1 : 0;
 $notes = isset($_REQUEST['notes']) ? $_REQUEST['notes'] : null;
 
-
 $testproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 $bModifyKeywordRight = has_rights($db,"mgt_modify_key");
 
+$tproject = new testproject($db);
 $sqlResult = null;
 $action = null;
 //show the details of the keyword to edit
 if ($keywordID && !$bEditKey && !$bDeleteKey)
 {
-	$info = selectKeywords($db,$testproject_id,null,$keywordID);
-	if (sizeof($info))
+	$info = getKeyword($db,$keywordID);
+	if ($info)
 	{
-		$keyword = $info[0]['keyword'];
-		$notes = $info[0]['notes'];
+		$keyword = $info['keyword'];
+		$notes = $info['notes'];
 	}
 }
 if ($bModifyKeywordRight)
@@ -48,14 +48,14 @@ if ($bModifyKeywordRight)
 	//insert or update a keyword
 	if ($bEditKey || $bNewKey)
 	{
-		$sqlResult = checkKeyword($keyword);
+		$sqlResult = checkKeywordName($keyword);
 		if (is_null($sqlResult))
 		{
 			if ($bNewKey)
-				$sqlResult = addNewKeyword($db,$testproject_id,$keyword,$notes);
+				$sqlResult = $tproject->addKeyword($testproject_id,$keyword,$notes);
 			else
 			{
-				$check = updateKeyword($db,$testproject_id,$keywordID,$keyword,$notes);
+				$check = $tproject->updateKeyword($testproject_id,$keywordID,$keyword,$notes);
 				if ($check['status_ok'])
 					$sqlResult = 'ok';
 				else
@@ -78,19 +78,13 @@ if ($bModifyKeywordRight)
 		$notes = $keyword = $keywordID = null;
 }
 
-// 20060103 - fm
-$my_kw_array = selectKeywords($db,$testproject_id);
-$num_kw = count($my_kw_array);
-for($idx=0; $idx < $num_kw; $idx++)
-{
-  $my_kw_array[$idx]['notes'] = nl2br(htmlspecialchars($my_kw_array[$idx]['notes']));
-}
+$keywords = $tproject->getKeywords($testproject_id);
 
 $smarty = new TLSmarty();
 $smarty->assign('action',$action);
 $smarty->assign('sqlResult',$sqlResult);
 $smarty->assign('rightsKey',$bModifyKeywordRight);
-$smarty->assign('arrKeywords', $my_kw_array);
+$smarty->assign('arrKeywords', $keywords);
 $smarty->assign('name',$keyword);
 $smarty->assign('keyword',$keyword);
 $smarty->assign('notes',$notes);

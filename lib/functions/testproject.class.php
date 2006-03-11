@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.7 $
- * @modified $Date: 2006/03/11 10:26:12 $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2006/03/11 23:09:19 $
  * @author franciscom
  *
  */
@@ -92,9 +92,6 @@ function update($id, $name, $color, $opt_req,$notes)
 	return($status_msg);
 }
 
-
-
-
 function get_by_name($name)
 {
 	$sql = " SELECT * FROM testprojects 
@@ -104,9 +101,6 @@ function get_by_name($name)
   $recordset = $this->db->get_recordset($sql);
   return($recordset);
 }
-
-
-
 
 /*
 get info for one test project
@@ -158,28 +152,6 @@ function show($id, $sqlResult = '', $action = 'update',$modded_item_id = 0)
 	$smarty->assign('level', 'testproject');
 	$smarty->assign('container_data', $item);
 	$smarty->display('containerView.tpl');
-}
-
-// 20060301 - franciscom
-function get_all_keywords($id)
-{
-	$a_keywords = null;
- 	$sql = " SELECT id,keyword,notes FROM keywords 
- 	         WHERE testproject_id = {$testproject_id} 
- 	         ORDER BY keyword ASC";
-
-  $result = $this->db->exec_query($sql);
-	if ($result)
-	{
-		while ($myrow = $this->db->fetch_array($result)) 
-		{
-			$a_keywords[] = array( 'id' => $myrow['id'],
-									            'keyword' => $myrow['keyword'], 
-									            'notes' => $myrow['notes']
-								            );
-		}
-	}
-  return ($a_keywords);
 }
 
 
@@ -262,6 +234,211 @@ function gen_combo_test_suites($id,$exclude_branches=null)
 	
 	return($aa);
 }
+
+	/**
+	 * Checks a test project name for correctness
+	 *
+	 * @param string $name the name to check
+	 * @param string $msg [ref] the error msg on failure
+	 * @return integer return 1 on success, 0 else
+	 **/
+	function checkTestProjectName($name,&$msg)
+	{
+		global $g_ereg_forbidden;
+		
+		$name_ok = 1;
+		if (!strlen($name))
+		{
+			$msg = lang_get('info_product_name_empty');
+			$name_ok = 0;
+		}
+		// BUGID 0000086
+		if ($name_ok && !check_string($name,$g_ereg_forbidden))
+		{
+			$msg = lang_get('string_contains_bad_chars');
+			$name_ok = 0;
+		}
+		return $name_ok;
+	}
+	
+	
+	/** allow activate or deactivate a test project
+	 * @param integer $id test project ID
+	 * @param integer $status 1=active || 0=inactive 
+	 */
+	function activateTestProject($id, $status)
+	{
+		$sql = "UPDATE testprojects SET active=" . $status . " WHERE id=" . $id;
+		$result = $this->db->exec_query($sql);
+	
+		return $result ? 1 : 0;
+	}
+	/* KEYWORDS RELATED */	
+	/**
+	 * Adds a new keyword to the given product
+	 *
+	 * @param int  $testprojectID
+	 * @param string $keyword
+	 * @param string $notes
+	 *
+	 * @return string 'ok' on success, a db error msg else
+	 *
+	 * 20051011 - fm - use of check_for_keyword_existence()
+	 * 20051004 - fm - refactoring
+	 **/
+	function addKeyword($testprojectID,$keyword,$notes)
+	{
+		global $g_allow_duplicate_keywords;
+		
+		$ret = 'ok';
+		$do_action = 1;
+		$my_kw = trim($keyword);
+		if (!$g_allow_duplicate_keywords)
+		{
+			$check = $this->check_for_keyword_existence($testprojectID, $my_kw);
+			$ret = $check['msg'];
+			$do_action = !$check['keyword_exists'];
+		}
+		
+		if ($do_action)
+		{
+			$sql =  " INSERT INTO keywords (keyword,testproject_id,notes) " .
+					" VALUES ('" . $this->db->prepare_string($my_kw) .	"'," . 
+					$testprojectID . ",'" . $this->db->prepare_string($notes) . "')";
+			
+			$result = $this->db->exec_query($sql);
+			if (!$result)
+				$ret = $this->db->error_msg();
+		}
+	  
+		return $ret;
+	}
+	
+	
+	/**
+	 * Function-Documentation
+	 *
+	 * @param type $testprojectID documentation
+	 * @param type $id documentation
+	 * @param type $keyword documentation
+	 * @param type $notes documentation
+	 * 
+	 * @return type documentation
+	 **/
+	function updateKeyword($testprojectID,$id,$keyword,$notes)
+	{
+		global $g_allow_duplicate_keywords;
+		
+		$ret = array("msg" => "ok", 
+					 "status_ok" => 0);
+		$do_action = 1;
+		$my_kw = trim($keyword);
+	
+		if (!$g_allow_duplicate_keywords)
+		{
+			$check = $this->check_for_keyword_existence($testprojectID, $my_kw,$id);
+			$do_action = !$check['keyword_exists'];
+	
+			$ret['msg'] = $check['msg'];
+			$ret['status_ok'] = $do_action;
+		}
+		if ($do_action)
+		{
+			$sql = "UPDATE keywords SET notes='" . $this->db->prepare_string($notes) . "', keyword='" 
+					. $this->db->prepare_string($my_kw) . "' where id=" . $id;
+
+			$result = $this->db->exec_query($sql);
+			if (!$result)
+			{
+				$ret['msg'] = $this->db->error_msg();
+				$ret['status_ok'] = 0;
+			}
+		}
+	
+		return $ret;
+	}
+
+	/**
+	 * check_for_keyword_existence
+	 *
+	 * @param int    $testprojectID product ID
+	 * @param string $kw keyword to search for
+	 * @param int    $kwID[default = 0] ignore keyword with this id
+	 *
+	 * @return type
+	 *				 				
+	 **/
+	function check_for_keyword_existence($testprojectID, $kw, $kwID = 0)
+	{
+		$ret = array(
+					 'msg' => 'ok', 
+					 'keyword_exists' => 0
+					 );
+		  
+		$sql = 	" SELECT * FROM keywords " .
+				" WHERE UPPER(keyword) ='" . strtoupper($this->db->prepare_string($kw)).
+			    "' AND testproject_id=" . $testprojectID ;
+		
+		if ($kwID)
+			$sql .= " AND id <> " . $kwID;
+		
+		if ($this->db->fetchFirstRow($sql))
+		{
+			$ret['keyword_exists'] = 1;
+			$ret['msg'] = lang_get('keyword_already_exists');
+		}
+		
+		return $ret;
+	}
+	/**
+	 * Gets the keywords of the given test project
+	 *
+	 * @param int $tprojectID the test project id
+	 * @param int $keywordID [default = null] the optional keyword id
+	 * @return array returns the keyword information
+	 **/
+	function getKeywords($testproject_id,$keywordID = null)
+	{
+		$a_keywords = null;
+		$sql = " SELECT id,keyword,notes FROM keywords " .
+			   " WHERE testproject_id = {$testproject_id}" .
+			   " ORDER BY keyword ASC";
+		
+		$a_keywords = $this->db->get_recordset($sql);
+		return $a_keywords;
+	}
+	
+	/**
+	 * Imports the keywords contained in keywordData to the given product
+	 *
+	 * @param type $db [ref] documentation
+	 * @param int $testprojectID the product to which the keywords should be imported
+	 * @param array $keywordData an array with keyword information like
+	 * 				 keywordData[$i]['keyword'] => the keyword itself
+	 * 				 keywordData[$i]['notes'] => the notes of keyword
+	 *
+	 * @return array returns an array of result msgs
+	 *
+	 * @author Andreas Morsing <schlundus@web.de>
+	 **/
+	function addKeywords($testprojectID,$keywordData)
+	{
+		$sqlResults = null;
+		for($i = 0;$i < sizeof($keywordData);$i++)
+		{
+			$keyword = $keywordData[$i]['keyword'];
+			$notes = $keywordData[$i]['notes'];
+			$msg = checkKeywordName($keyword);
+			if (!is_null($msg))
+				$sqlResults[] = $msg;
+			else
+				$sqlResults[] = $this->addKeyword($testprojectID,$keyword,$notes);
+		}
+	
+		return $sqlResults;
+	}
+
+	/* END KEYWORDS RELATED */	
 
 } // end class
 

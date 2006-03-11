@@ -1,6 +1,6 @@
 <?php
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: builds.inc.php,v 1.16 2006/02/04 20:13:14 schlundus Exp $
+* $Id: builds.inc.php,v 1.17 2006/03/11 22:15:20 kevinlevy Exp $
 * 
 * @author Martin Havlat
 *
@@ -17,9 +17,9 @@ require_once("../functions/common.php");
  * 20051002 - fm - refactoring
  * 20050921 - fm - refactoring
  */
-function getBuilds(&$db,$idPlan, $order_by="ORDER BY build.id DESC")
+function getBuilds(&$db,$idPlan, $order_by="ORDER BY builds.id DESC")
 {
- 	$sql = "SELECT build.id, name FROM build WHERE projid = " . $idPlan;
+ 	$sql = "SELECT builds.id, name FROM builds WHERE testplan_id = " . $idPlan;
  	
  	if ( strlen(trim($order_by)) )
  	{
@@ -33,7 +33,7 @@ function getBuilds(&$db,$idPlan, $order_by="ORDER BY build.id DESC")
  * return a comma delimited list of build.id's which are part of a test plan
  *
  */
-function get_cs_builds(&$db,$idPlan, $order_by="ORDER BY build.id DESC")
+function get_cs_builds(&$db,$idPlan, $order_by="ORDER BY builds.id DESC")
 {
   $comma_separated = null;
   $arrAllBuilds = getBuilds($db,$idPlan, $order_by);
@@ -49,13 +49,13 @@ function get_cs_builds(&$db,$idPlan, $order_by="ORDER BY build.id DESC")
 // 20051002 - fm - refactoring
 // added by 09242005 kl - i want the build.build fields in the array
 function getBuilds_build(&$db,$idPlan){
-	$sql = "SELECT build.id, build.name FROM build WHERE projid = " . $idPlan . " ORDER BY build.id DESC";
+	$sql = "SELECT builds.id, builds.name FROM builds WHERE testplan_id = " . $idPlan . " ORDER BY builds.id DESC";
 	return getBuildInfo($db,$sql);
 }
 
 function getBuildsAndNotes(&$db,$idPlan)
 {
-  	$sql = "SELECT build.id,note FROM build WHERE projid = " . $idPlan . " ORDER BY build.id DESC";
+  	$sql = "SELECT builds.id,notes FROM builds WHERE testplan_id = " . $idPlan . " ORDER BY builds.id DESC";
 	return getBuildInfo($db,$sql);
 }
 
@@ -106,7 +106,7 @@ function deleteTestPlanBuild(&$db,$testPlanID,$buildID)
 /* 20051005 - fm */
 function getBuild_by_id(&$db,$buildID)
 {
-  $sql = "SELECT build.* FROM build WHERE build.id = " . $buildID;
+  $sql = "SELECT build.* FROM builds WHERE builds.id = " . $buildID;
   $result = $db->exec_query($sql);
   $myrow = $db->fetch_array($result);
 	return($myrow);

@@ -5,11 +5,12 @@
  *
  * Filename $RCSfile: buildNew.php,v $
  *
- * @version $Revision: 1.17 $
- * @modified $Date: 2006/01/14 17:47:54 $ $Author: schlundus $
+ * @version $Revision: 1.18 $
+ * @modified $Date: 2006/03/11 22:14:20 $ $Author: kevinlevy $
  * 20051006 - fm - added edit build
  * 20050826 - fm - htmlarea replaced with fckeditor
  * 20050710 - scs - refactored - removed build_label when deleting and editing
+ * 20060311 - kl - adjusted SQL queries to comply with 1.7 schema
 */
 require('../../config.inc.php');
 require("../functions/common.php");
@@ -24,7 +25,7 @@ $build_name = isset($_REQUEST['build_name']) ? trim(strings_stripSlashes($_REQUE
 $notes = isset($_REQUEST['notes']) ? strings_stripSlashes($_REQUEST['notes']) : null;
 $tpName = $_SESSION['testPlanName'];
 
-$the_builds = getBuilds($db,$tpID, " ORDER BY build.name ");
+$the_builds = getBuilds($db,$tpID, " ORDER BY builds.name ");
 $smarty = new TLSmarty();
 
 $of = new fckeditor('notes') ;
@@ -101,7 +102,7 @@ if(isset($_REQUEST['edit_build']))
 }
 
 // 20051002 - fm - change order by
-$the_builds = getBuilds($db,$tpID, " ORDER by build.name ");
+$the_builds = getBuilds($db,$tpID, " ORDER by builds.name ");
 $notes = getBuildsAndNotes($db,$tpID);
 
 

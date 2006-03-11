@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: keywordsAssign.tpl,v 1.3 2005/12/29 20:59:00 schlundus Exp $ *}
+{* $Id: keywordsAssign.tpl,v 1.4 2006/03/11 22:58:02 schlundus Exp $ *}
 {* Purpose: smarty template - assign keywords to one or more test cases *}
 {* Andreas Morsing : changed action to updated *}
 {include file="inc_head.tpl"}
@@ -50,7 +50,7 @@
 			<td valign="top">
 				<select name="keywords[]" multiple="multiple">
 				{section name=Row loop=$arrKeys}
-						<option value="{$arrKeys[Row].keyword|escape}" 
+						<option value="{$arrKeys[Row].id|escape}" 
 						{if $arrKeys[Row].selected == 1}
 							selected="selected"
 						{/if}		

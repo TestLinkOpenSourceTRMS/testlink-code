@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: keywordsexport.tpl,v 1.1 2005/12/29 21:03:09 schlundus Exp $ *}
+{* $Id: keywordsexport.tpl,v 1.2 2006/03/11 22:58:02 schlundus Exp $ *}
 {* Purpose: smarty template - keyword import initial page *}
 {* revisions:
 *}
@@ -10,7 +10,7 @@
 
 <div class="workBack">
 
-<form method="post" enctype="multipart/form-data">
+<form method="post" enctype="multipart/form-data" action="lib/keywords/keywordsexport.php">
 
 	<h2>{lang_get s='title_choose_file_type'}</h2>
 	<p>{lang_get s='req_import_type'}

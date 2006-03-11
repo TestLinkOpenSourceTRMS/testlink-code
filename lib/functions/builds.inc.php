@@ -1,12 +1,13 @@
 <?php
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: builds.inc.php,v 1.17 2006/03/11 22:15:20 kevinlevy Exp $
+* $Id: builds.inc.php,v 1.18 2006/03/11 22:33:28 kevinlevy Exp $
 * 
 * @author Martin Havlat
 *
 * Functions for Test Plan management - build related
 *
 * 20060108 - fm - ADODB
+* 20060311 - kl - adjusting queries to be compliant with 1.7 schema
 */
 require_once('../../config.inc.php');
 require_once("../functions/common.php");
@@ -73,6 +74,8 @@ function getBuildInfo(&$db,$sql)
  	return $arrBuilds;
 }
 //20051203 - scs - correct wrong column name while deleting bugs and results
+//20060311 - kl - this method is not yet 1.7 compliant!
+
 function deleteTestPlanBuild(&$db,$testPlanID,$buildID)
 {
 	$result = 1;
@@ -88,7 +91,7 @@ function deleteTestPlanBuild(&$db,$testPlanID,$buildID)
 		{
 			$tcIDList = implode(",",$tcIDs);
 			
-			$query = "DELETE FROM bugs WHERE tcid IN ({$tcIDList}) AND build_id = {$buildID}";
+			$query = "DELETE FROM WHERE tcid IN ({$tcIDList}) AND build_id = {$buildID}";
 			$result = $result && $db->exec_query($query);
 			
 			
@@ -106,7 +109,7 @@ function deleteTestPlanBuild(&$db,$testPlanID,$buildID)
 /* 20051005 - fm */
 function getBuild_by_id(&$db,$buildID)
 {
-  $sql = "SELECT build.* FROM builds WHERE builds.id = " . $buildID;
+  $sql = "SELECT builds.* FROM builds WHERE builds.id = " . $buildID;
   $result = $db->exec_query($sql);
   $myrow = $db->fetch_array($result);
 	return($myrow);

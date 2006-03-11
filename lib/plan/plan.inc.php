@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: plan.inc.php,v $
- * @version $Revision: 1.28 $
- * @modified $Date: 2006/02/25 07:02:25 $ $Author: franciscom $
+ * @version $Revision: 1.29 $
+ * @modified $Date: 2006/03/11 22:38:25 $ $Author: kevinlevy $
  * @author 	Martin Havlat
  *
  * Functions for management: 
@@ -450,9 +450,10 @@ function getUsersOfPlan(&$db,$id)
 // 20050815 - scs - $notes now became a default parameter
 // 20050905 - scs - function now returns the build value
 // 20050921 - fm - refactoring build
+// 20060311 - kl - adjusting SQL to 1.7 schema
 function insertTestPlanBuild(&$db,$buildName,$testplanID,$notes = '')
 {
-	$sql = " INSERT INTO build (projid,name,note) " .
+	$sql = " INSERT INTO builds (testplan_id,name,notes) " .
 	       " VALUES ('". $testplanID . "','" . $db->prepare_string($buildName) . "','" . 
 	       $db->prepare_string($notes) . "')";
 	       

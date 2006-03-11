@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: containerEdit.php,v 1.30 2006/03/10 07:42:44 franciscom Exp $ */
+/* $Id: containerEdit.php,v 1.31 2006/03/11 08:23:39 franciscom Exp $ */
 /* Purpose:  This page manages all the editing of test specification containers. */
 /*
  *
@@ -52,11 +52,6 @@ $tsuite_name = isset($_REQUEST['testsuiteName']) ? stripslashes($_REQUEST['tests
 $objectID = isset($_GET['objectID']) ? intval($_GET['objectID']) : null;
 $bSure = (isset($_GET['sure']) && ($_GET['sure'] == 'yes'));
 
-
-echo "<pre>debug"; print_r($_POST); echo "</pre>";
-echo "<pre>debug"; print_r($_GET); echo "</pre>";
-
-
 $smarty = new TLSmarty();
 
 // 20050822 - fm - name/key of fck objects to create and table column name
@@ -86,6 +81,7 @@ $a_tpl = array( 'move_testsuite_viewer' => 'containerMove.tpl',
 
 $a_actions = array ('edit_testsuite' => 0, 'new_testsuite' => 0,                       
                     'delete_testsuite' => 0, 'do_move' => 0, 'do_copy' => 0,
+                    'reorder_testsuites' => 1, 'do_testsuite_reorder' => 0,
                     'add_testsuite' => 1, 'move_testsuite_viewer' => 0,
                     'addCOM' => 1,  'update_testsuite' => 1);
 
@@ -234,7 +230,6 @@ else if ($action == 'delete_testsuite')
 		  $idx=0; 
 		  foreach ($verbose as $the_key => $elem)
 		  {
-		  	//echo "<pre>debug - 230 => "; print_r($elem); echo "</pre>";
 		    foreach ($elem as $tkey => $telem)
 		    {
 		  	  $warning[$idx] .= $telem['name'] . "\\"; 	
@@ -249,8 +244,6 @@ else if ($action == 'delete_testsuite')
 		  {
 		  	 $link_msg[] = $tcase_mgr->check_delete_condition($elem['id']);
 		  }
-      echo "<pre>debug - \$link_msg"; print_r($link_msg); echo "</pre>";
-
 		}
 		
 		//if the user has clicked the delete button on the archive page show the delete confirmation page
@@ -276,29 +269,33 @@ else if( $action == 'move_testsuite_viewer')
 }
 else if($action == 'reorder_testsuites') //user has chosen the reorder page
 {
-	$cats = null;
-	getOrderedComponentCategories($db,$my_testsuiteID,$cats);
+  $children=$tree_mgr->get_children($my_testsuiteID, array("testplan" => "exclude_me","testcase" => "exclude_me"));	
 
-	$smarty->assign('arraySelect', $cats);
+  /*
+  if( !is_null($children) )
+  {
+  	$aselect=array();
+  	foreach($children as $the_key => $elem)
+  	{
+  	 $aselect[]= 
+  	}  
+  }
+  */
+  //echo "<pre>debug" . __FILE__ ; print_r($children); echo "</pre>";
+  //exit();
+  
+	//$cats = null;
+	//getOrderedComponentCategories($db,$my_testsuiteID,$cats);
+
+	$smarty->assign('arraySelect', $children);
 	$smarty->assign('data', $my_testsuiteID);
 }
-else if($action == 'update_testsuite_Order') //Execute update categories order
+else if($action == 'do_testsuite_reorder') //Execute update categories order
 {
-	$newArray = hash2array($_POST,true);
 	$generalResult = 'ok';
 	
-	//skip the first one, this is the submit button
-	$qta_loops=sizeof($newArray);
-	for($i = 1;$i < $qta_loops ;$i++)
-	{
-		$catID = intval($newArray[$i++]);
-		$order = intval($newArray[$i]);
-		
-		if (!updateCategoryOrder($db,$catID,$order))
-			$generalResult .= lang_get('error_update_catorder')." {$catID}";
-	}
-
-	showComponent($db,$my_testsuiteID, $generalResult);
+	$tree_mgr->change_order_bulk($_POST['id'],$_POST['order']);
+	$tsuite_mgr->show($my_containerID);
 }
 else if($action == 'reorderTC') 
 {

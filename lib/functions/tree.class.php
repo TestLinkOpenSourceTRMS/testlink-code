@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: tree.class.php,v $
  *
- * @version $Revision: 1.6 $
- * @modified $Date: 2006/03/10 18:11:13 $ by $Author: franciscom $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2006/03/11 08:23:39 $ by $Author: franciscom $
  * @author Francisco Mancardi
 */
 
@@ -370,8 +370,6 @@ function get_children($id,$exclude_node_types=null)
   $sql = " SELECT * from nodes_hierarchy
           WHERE parent_id = {$id} ORDER BY node_order";
 
-    echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
-
   $node_list=array();  
   $result = $this->db->exec_query($sql);
  
@@ -410,6 +408,25 @@ function get_children($id,$exclude_node_types=null)
 }
  
  
+/* 20060310 - franciscom */
+/* both hash indexed by the same value -> the node_id
+   example:
+   $hash_node_id=array(10=>10, 23=>23, 30=>30);
+   $hash_node_order=array(10=>3, 23=>1, 30=>2);
+*/   
+function change_order_bulk($hash_node_id, $hash_node_order) 
+{
+	foreach( $hash_node_id as $the_id => $elem )
+	{
+  	$sql = "UPDATE nodes_hierarchy
+    	      SET id = {$the_id}, node_order = {$hash_node_order[$the_id]}
+      	    WHERE id = {$the_id}";
+  	$result = $this->db->exec_query($sql);
+  }
+  
+  return ($result);
+}
+
  
  
 }// end class

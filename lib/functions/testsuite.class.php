@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testsuite.class.php,v $
- * @version $Revision: 1.4 $
- * @modified $Date: 2006/03/10 07:42:44 $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2006/03/11 08:23:39 $
  * @author franciscom
  *
  */
@@ -361,7 +361,6 @@ function delete_deep($id)
     // -------------------------------------------------------------------
     if (!is_null($testcases))
 	  {
-      echo "<pre>debug" . __FUNCTION__; print_r($testcases); echo "</pre>";
 	    foreach($testcases as $the_key => $elem)
 	    {
         $tcase_mgr->delete($elem['id']);

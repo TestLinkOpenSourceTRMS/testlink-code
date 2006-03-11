@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: containerOrder.tpl,v 1.3 2005/10/15 08:38:42 franciscom Exp $ 
+$Id: containerOrder.tpl,v 1.4 2006/03/11 08:23:36 franciscom Exp $ 
 Purpose: smarty template - reorder containers (actually categories only) 
 
 20051015 - fm - data -> componentID
@@ -15,9 +15,9 @@ Purpose: smarty template - reorder containers (actually categories only)
 	{if $arraySelect eq ''}
 		{lang_get s='no_cat_to_reorder'}
 	{else}
-	<form method="post" action="lib/testcases/containerEdit.php?componentID={$data}">
+	<form method="post" action="lib/testcases/containerEdit.php?containerID={$data}">
 		<div style="padding: 3px;">
-			<input id="submit" type="submit" name="updateCategoryOrder" value="{lang_get s='btn_upd'}" />
+			<input id="submit" type="submit" name="do_testsuite_reorder" value="{lang_get s='btn_upd'}" />
 		</div>	
 	
 		<table class="common" style="width: 70%">
@@ -27,15 +27,15 @@ Purpose: smarty template - reorder containers (actually categories only)
 				<th style="width: 15%;">{lang_get s='th_order'}</th>
 			</tr>
 	
-			{section name=number loop=$arraySelect}
+			{section name=idx loop=$arraySelect}
 			<tr>
-				<td>{$arraySelect[number].id}</td>
-				<td class="bold">{$arraySelect[number].name|escape}</td>
+				<td>{$arraySelect[idx].id}</td>
+				<td class="bold">{$arraySelect[idx].name|escape}</td>
 				<td>
-					<input type="hidden" name="id{$arraySelect[number].id}" 
-						value="{$arraySelect[number].id|escape}" />
-					<input type="text" size="5" name="order{$arraySelect[number].id|escape}" 
-						value="{$arraySelect[number].CATorder|escape}" />
+					<input type="hidden" name="id[{$arraySelect[idx].id}]" 
+						value="{$arraySelect[idx].id}" />
+					<input type="text" size="5" name="order[{$arraySelect[idx].id}]" 
+						value="{$arraySelect[idx].node_order|escape}" />
 				</td>
 			</tr>
 			{/section}

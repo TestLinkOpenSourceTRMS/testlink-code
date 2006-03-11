@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: exec.inc.php,v $
  *
- * @version $Revision: 1.24 $
- * @modified $Date: 2006/02/25 21:48:24 $ $Author: schlundus $
+ * @version $Revision: 1.25 $
+ * @modified $Date: 2006/03/11 22:48:34 $ $Author: kevinlevy $
  *
  * @author Martin Havlat
  *
@@ -23,6 +23,8 @@
  *
  * 20051118  - scs - FIXED: missing localization for test_Results_submitted
  * 20051119  - scs - added fix for 227
+ * 20060311 - kl - some modifications to SQL queries dealing with 1.7
+ *                 builds table in order to comply with new 1.7 schema
 **/
 require_once('../functions/common.php');
 
@@ -31,11 +33,12 @@ require_once('../functions/common.php');
  *
  * @param numeric test plan ID
  * @return integer Count of Builds
+ * 20060311 - kl - adjusted SQL for 1.7 schema
  */  
 function buildsNumber(&$db,$tpID=0)
 {
 	// 20050929 - fm - seems sometimes we receive no tpID
-	$sql = "SELECT count(*) AS num_builds FROM build WHERE build.projid = " . $tpID;
+	$sql = "SELECT count(*) AS num_builds FROM builds WHERE builds.testplan_id = " . $tpID;
 	$buildCount=0;
 	if ($tpID)
 	{
@@ -133,9 +136,9 @@ function createResultsMenu()
 // 20050921 - fm - build.build -> build.id
 function createBuildMenu(&$db,$tpID)
 {
-	$sql = " SELECT build.id, build.name " .
-	       " FROM build WHERE build.projid = " .  $tpID . 
-	       " ORDER BY build.id DESC";
+	$sql = " SELECT builds.id, builds.name " .
+	       " FROM builds WHERE builds.testplan_id = " .  $tpID . 
+	       " ORDER BY builds.id DESC";
 	return $db->fetchColumnsIntoMap($sql,'id','name');
 }//end function
 
@@ -274,8 +277,8 @@ function createTestInput(&$db,$resultTC,$buildID,$tpID)
 		$dataStatus = $db->fetch_array($resultStatus);
 
 		//This query grabs the most recent result
-		$sqlRecentResult = " SELECT build.name AS build_name,status,runby,daterun " .
-		                   " FROM results,build " .
+		$sqlRecentResult = " SELECT builds.name AS build_name,status,runby,daterun " .
+		                   " FROM results,builds " .
 				               " WHERE tcid=" . $myrow['tcid'] . " AND status != '" . $g_tc_status['not_run'] . "' " .
 				               " AND results.build_id = build.id " .
 				               " AND projid = " . $tpID ." ORDER by build.id " .	"DESC limit 1";

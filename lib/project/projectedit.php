@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: projectedit.php,v $
  *
- * @version $Revision: 1.1 $
- * @modified $Date: 2006/03/11 23:38:41 $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2006/03/12 18:47:15 $
  *
  * @author Martin Havlat
  *
@@ -71,52 +71,29 @@ switch($args->do)
 		break;	 
 		
 	case 'do_create':
-		$name_ok = 1;
-		if (!strlen($args->name))
-		{
-			$updateResult = lang_get('info_product_name_empty');
-			$name_ok = 0;
-		}
-		// BUGID 0000086
-		if ($name_ok && !check_string($args->name,$g_ereg_forbidden))
-		{
-			$updateResult = lang_get('string_contains_bad_chars');
-			$name_ok = 0;
-		}
 		$updateResult = 'ok';
-
-		if ($name_ok)
+		if ($tproject->checkTestProjectName($args->name,$updateResult))
 		{
 			$args->id = $tproject->create($args->name, $args->color, $args->optReq, $args->notes);
 			if (!$args->id)
 				$updateResult = lang_get('refer_to_log');
 			else
 				$args->id = -1;
-			$action = 'updated';
+			$action = 'updated';	
 		}
 		break;
 		
 	case 'do_edit':
-		$name_ok = 1;
-		if (!strlen($args->name))
+		$updateResult = 'ok';
+		if ($tproject->checkTestProjectName($args->name,$updateResult))
 		{
-			$updateResult = lang_get('info_product_name_empty');
-			$name_ok = 0;
+			$updateResult = $tproject->update($args->id, $args->name, $args->color,$args->optReq, $args->notes);
+			$action = 'updated';
 		}
-		// BUGID 0000086
-		if ($name_ok && !check_string($args->name,$g_ereg_forbidden))
-		{
-			$updateResult = lang_get('string_contains_bad_chars');
-			$name_ok = 0;
-		}
-		
-		if ($name_ok)
-				$updateResult = $tproject->update($args->id, $args->name, $args->color,$args->optReq, $args->notes);
-		$action = 'updated';
 		break;
 	
 	case 'inactivateProduct':
-		if (activateProduct($db,$args->id, 0))
+		if ($tproject->activateTestProject($args->id,0))
 		{
 			$updateResult = lang_get('info_product_inactivated');
 			$tlog_msg .= 'was inactivated.';
@@ -125,7 +102,7 @@ switch($args->do)
 		break;
 
 	case 'activateProduct':
-		if (activateProduct($db,$args->id, 1))
+		if ($tproject->activateTestProject($args->id,1))
 		{
 			$updateResult = lang_get('info_product_activated');
 			$tlog_msg .= 'was activated.';

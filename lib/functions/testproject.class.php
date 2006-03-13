@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.9 $
- * @modified $Date: 2006/03/13 09:37:49 $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2006/03/13 17:06:33 $
  * @author franciscom
  *
  */
@@ -199,8 +199,8 @@ function gen_combo_test_suites($id,$exclude_branches=null)
 
 	// 20060308 - franciscom
 	$test_spec = $this->tree_manager->get_subtree($id, array("testplan"=>"exclude me","testcase"=>"exclude me"),
-                                               array('testcase'=>'exclude my children PLEASE'),
-                                               $exclude_branches);
+                                                     array('testcase'=>'exclude my children PLEASE'),
+                                                     $exclude_branches);
   
   $hash_descr_id = $this->tree_manager->get_available_node_types();
   $hash_id_descr = array_flip($hash_descr_id);

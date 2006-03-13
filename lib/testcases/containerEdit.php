@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: containerEdit.php,v 1.33 2006/03/13 16:22:29 franciscom Exp $ */
+/* $Id: containerEdit.php,v 1.34 2006/03/13 17:06:33 franciscom Exp $ */
 /* Purpose:  This page manages all the editing of test specification containers. */
 /*
  *
@@ -257,16 +257,11 @@ else if( $action == 'move_testsuite_viewer')
 	$testsuites =$tproject_mgr->gen_combo_test_suites($my_tprojectID,
 	                                                  array($my_testsuiteID => 'exclude'));
   
-  
-  //echo "<pre>debug"; print_r($testsuites); echo "</pre>";
-  //exit();
-  	                                     
-	// getAllProductsBut($db,0,$products);
-
 	$smarty->assign('old_containerID', $my_tprojectID); // original container
 	$smarty->assign('arraySelect', $testsuites);
-	//$smarty->assign('sqlResult', 'ok');
 	$smarty->assign('objectID', $my_testsuiteID);
+	$smarty->assign('object_name', $tsuite_name);
+	
 }
 else if($action == 'reorder_testsuites') //user has chosen the reorder page
 {

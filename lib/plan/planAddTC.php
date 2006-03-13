@@ -1,7 +1,7 @@
 <?php
 
 ////////////////////////////////////////////////////////////////////////////////
-// @version $Id: planAddTC.php,v 1.13 2006/02/15 08:49:20 franciscom Exp $
+// @version $Id: planAddTC.php,v 1.14 2006/03/13 18:57:22 franciscom Exp $
 // File:     planAddTC.php
 // Author:   Chad Rosen
 // Purpose:  This page manages the importation of test cases into testlink.
@@ -14,20 +14,35 @@ require('../../config.inc.php');
 require("../functions/common.php");
 require("../keywords/keywords.inc.php");
 require("plan.inc.php");
+
+// 20060311 - franciscom
+require_once('testsuite.class.php');
+require_once('testproject.class.php');
+require_once('tree.class.php');
+
 testlinkInitPage($db);
 
+// 20060311 - franciscom
+$tree_mgr = New tree($db); 
+$tproject_mgr = New testproject($db); 
+$tsuite_mgr = New testsuite($db); 
+$tcase_mgr = New testcase($db); 
+
+
+
 // 20050807 - fm
-$idPlan =  $_SESSION['testPlanId'];
+$tplan_id =  $_SESSION['testPlanId'];
 
 //Defining the keyword variable which is received from the left frame
 $keywordID = isset($_REQUEST['key']) ? intval($_REQUEST['key']) : 0;
 $keyword = "NONE";
-$compID=$_GET['data'];
-$catID=$_GET['data'];
+$object_id=$_GET['data'];
 
 $smarty = new TLSmarty;
 $smarty->assign('testPlanName', $_SESSION['testPlanName']);
 
+/*
+20060311 - franciscom
 if($keywordID)
 {
 	$keyword = getProductKeywords($db,$_SESSION['testprojectID'],null,$keywordID);
@@ -41,8 +56,34 @@ if ($keyword != 'NONE')
 {
 	$smarty->assign('key', $keyword);
 }
+*/
+
+// ----------------------------------------------------------------------------------
+// 20060311 - franciscom
+if($_GET['edit'] == 'testsuite')
+{
+    /*$subtree=$tree_mgr->get_subtree($object_id,array("testplan" => "exclude_me"),
+                                               array("testcase" => "exclude_my_children"));
+    */
+    //echo "<pre>debug" . __FILE__ ; print_r($subtree); echo "</pre>";                                                                        
+    $tsuite_data=$tsuite_mgr->get_by_id($object_id);
+    //echo "<pre>debug" . _FUNCTION_; print_r($tsuite_data); echo "</pre>";
+    
+    $out=gen_spec_view($db,$object_id,$tsuite_data['name']);
+ 
+    echo "<pre>debug" . __FILE__ ; print_r($out); echo "</pre>";                                    
+		$smarty->assign('arrData', $out);
+		$smarty->display('planAddTC_m1.tpl');
+		exit();
+}
+// ----------------------------------------------------------------------------------
 
 
+
+
+
+
+// ----------------------------------------------------------------------------------
 if(isset($_POST['addTC'])) //If the user submits the import form
 {
 	$i = 0;
@@ -78,10 +119,10 @@ if(isset($_POST['addTC'])) //If the user submits the import form
 			
 			//Determining if the component already exists for the testplan being added to
 			//
-			// 20050807 - fm - $idPlan
+			// 20050807 - fm - $tplan_id
 			$sqlCOMID = " SELECT mgtcompid,id AS compid FROM component " .
 			            " WHERE mgtcompid=" . $mgtinfo['mgtcompid'] . 
-			            " AND projid=" .  $idPlan;
+			            " AND projid=" .  $tplan_id;
 			$resultCOMID = @$db->exec_query($sqlCOMID); 
 			
 			
@@ -125,9 +166,9 @@ if(isset($_POST['addTC'])) //If the user submits the import form
 			{ 
 				//Add the component to the testplan					
 				//
-				// 20050807 -fm - $idPlan
+				// 20050807 -fm - $tplan_id
 				$sqlAddCOM = "INSERT INTO component (mgtcompid,projid) " . 
-				             " VALUES (" . $mgtinfo['mgtcompid'] . "," . $idPlan . ")";
+				             " VALUES (" . $mgtinfo['mgtcompid'] . "," . $tplan_id . ")";
 				$resultAddCOM = $db->exec_query($sqlAddCOM); 
 				$addCOMID =  $db->insert_id();	 
 			
@@ -153,6 +194,9 @@ if(isset($_POST['addTC'])) //If the user submits the import form
 }
 
 
+
+
+
 //If the user has selected a component
 if($_GET['edit'] == 'component')
 {
@@ -163,7 +207,7 @@ if($_GET['edit'] == 'component')
 	{
 		$sqlCAT = "SELECT id, name FROM mgtcategory WHERE compid=" . $rowCOM[0] . " ORDER BY CATorder,id";
 		$resultCAT = $db->exec_query($sqlCAT);
-		$arrData = dispCategories($db,$idPlan, $keyword, $resultCAT);
+		$arrData = dispCategories($db,$tplan_id, $keyword, $resultCAT);
 		
 		$smarty->assign('nameCOM', $rowCOM[1]);
 		$smarty->assign('arrData', $arrData);
@@ -176,7 +220,7 @@ else if($_GET['edit'] == 'category')
   	//Query to grab all of the category information based on what was passed in by the user
   	$sqlCAT = "SELECT id, name FROM mgtcategory WHERE id=" . $catID . " ORDER BY CATorder,id";
   	$resultCAT = $db->exec_query($sqlCAT);
-  	$arrData = dispCategories($db,$idPlan, $keyword, $resultCAT);
+  	$arrData = dispCategories($db,$tplan_id, $keyword, $resultCAT);
 
 	  $smarty->assign('arrData', $arrData);
 	  $smarty->display('planAddTC.tpl');
@@ -208,6 +252,109 @@ function create_tc_from_mgttc(&$db,$mgt_tcid, $catID)
 	                            $db->prepare_string($myrow['TCorder']) . ")";
 	$result = $db->exec_query($sql); 
 }
+
+
+?>
+
+
+
+<?php
+/*
+returns: array where every element is an associative array with the following
+         structure:
+         [main] => Array( [id] => 28
+                          [name] => TS1 )
+
+        [testcases] => Array( [0] => Array( [id] => 79
+                                            [name] => TC0)
+
+                              [1] => Array( [id] => 81
+                                            [name] => TC88))
+
+*/
+function gen_spec_view(&$db,$id,$name)
+{
+	  $tcase_mgr = New testcase($db); 
+
+		$out = array(); 
+    $a_tcid=array();
+     
+		$tree_manager = New tree($db);
+		/*
+		$test_spec = $tree_manager->get_subtree($id,array('testplan'=>'exclude me'),
+	                                              array('testcase'=>'exclude my children'));
+
+    */
+    $test_spec = $tree_manager->get_subtree($id,array('testplan'=>'exclude me'));
+    
+ 
+  	$hash_descr_id = $tree_manager->get_available_node_types();
+  	$hash_id_descr = array_flip($hash_descr_id);
+  
+    $idx=0;
+    $a_id=array();
+  	$hash_id_pos[$id]=$idx;
+  	$out[$idx]['main']=array('id' => $id, 'name' => $name);
+  	$out[$idx]['testcases']=array();
+  	$out[$idx]['tcversions']=array();
+  	$out[$idx]['write_buttons']='no';
+    $idx++;
+  	
+  	if( count($test_spec) > 0 )
+  	{
+   			$pivot=$test_spec[0];
+   			$the_level=1;
+    		$level=array();
+  
+   			foreach ($test_spec as $elem)
+   			{
+   	 				$current = $elem;
+  
+     				if( $pivot['parent_id'] == $current['parent_id'])
+     				{
+       					$the_level=$the_level;
+     				}
+     				else if ($pivot['id'] == $current['parent_id'])
+     				{
+     	  				$the_level++;
+     	  				$level[$current['parent_id']]=$the_level;
+     				}
+     				else 
+     				{
+     	  				$the_level=$level[$current['parent_id']];
+     				}
+            
+            if( $hash_id_descr[$current['node_type_id']] == "testcase")
+            {
+            		$parent_idx=$hash_id_pos[$current['parent_id']];
+              	$out[$parent_idx]['testcases'][]=array('id' => $current['id'],
+     				                                           'name' => $current['name']);
+                $out[$parent_idx]['write_buttons']='yes';
+                $a_tcid[]=$current['id'];
+            }
+            else
+            {
+              	$out[$idx]['main']=array('id' => $current['id'],
+     				                             'name' => $current['name']);
+  	            $out[$idx]['testcases']=array();
+  	            $out[$idx]['tcversions']=array();
+  	            $out[$idx]['write_buttons']='no';
+  	            $hash_id_pos[$current['id']]=$idx;
+     				    $idx++;
+	          }
+
+     				// update pivot
+     				$level[$current['parent_id']]= $the_level;
+     				$pivot=$elem;
+   			}
+		}
+		
+		$xx=$tcase_mgr->get_by_id_bulk($a_tcid);
+		echo "<pre>debug SONO XX" . __FUNCTION__ ; print_r($xx); echo "</pre>";
+		exit();
+		return($out);
+}
+
 
 
 ?>

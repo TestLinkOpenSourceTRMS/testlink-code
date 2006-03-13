@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: containerEdit.php,v 1.34 2006/03/13 17:06:33 franciscom Exp $ */
+/* $Id: containerEdit.php,v 1.35 2006/03/13 18:57:24 franciscom Exp $ */
 /* Purpose:  This page manages all the editing of test specification containers. */
 /*
  *
@@ -267,8 +267,9 @@ else if($action == 'reorder_testsuites') //user has chosen the reorder page
 {
 
 	$object_id = is_null($my_testsuiteID) ? $my_containerID : $my_testsuiteID;
-  $children=$tree_mgr->get_children($object_id, array("testplan" => "exclude_me","testcase" => "exclude_me"));	
-
+  // $children=$tree_mgr->get_children($object_id, array("testplan" => "exclude_me","testcase" => "exclude_me"));	
+  $children=$tree_mgr->get_children($object_id, array("testplan" => "exclude_me"));	
+  
   /*
   if( !is_null($children) )
   {

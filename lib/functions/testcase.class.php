@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.7 $
- * @modified $Date: 2006/03/13 16:22:24 $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2006/03/13 18:57:15 $
  * @author franciscom
  *
  */
@@ -104,6 +104,7 @@ will be useful to manage the different versions of a test case
 */
 function get_by_id($id,$version_id=TC_ALL_VERSIONS, $get_active=0, $get_open=0)
 {
+	
   // 20060312 - franciscom
 	$sql = " SELECT nodes_hierarchy.parent_id AS testcase_id, 
 	                (SELECT nodes_hierarchy.name 
@@ -461,7 +462,9 @@ function copy_to($id, $parent_id, $user_id)
 	/* KEYWORD RELATED */
 	function getKeywords($tcID,$kwID = null)
 	{
-		$sql = "SELECT keyword_id,keywords.keyword FROM testcase_keywords,keywords WHERE keyword_id = keywords.id AND testcase_id = {$tcID}";
+		$sql = "SELECT keyword_id,keywords.keyword 
+		        FROM testcase_keywords,keywords 
+		        WHERE keyword_id = keywords.id AND testcase_id = {$tcID}";
 		if (!is_null($kwID))
 			$sql .= " AND keyword_id = {$kwID}";
 		$tcKeywords = $this->db->fetchRowsIntoMap($sql,'keyword_id');
@@ -501,6 +504,98 @@ function copy_to($id, $parent_id, $user_id)
 	}
 	
 	/* END KEYWORD RELATED */
+
+
+
+// 20060313 - franciscom
+function get_by_id_bulk($id,$version_id=TC_ALL_VERSIONS, $get_active=0, $get_open=0)
+{
+	
+	if( is_array($id) )
+	{
+		  $tcid_list = implode(",",$id);
+			$where_clause = " WHERE nodes_hierarchy.parent_id IN ($tcid_list) ";
+			$where_clause_names = " WHERE nodes_hierarchy.id IN ($tcid_list) ";
+	}
+	else
+	{
+			$where_clause = " WHERE nodes_hierarchy.parent_id = {$id} ";
+			$where_clause_names = " WHERE nodes_hierarchy.id = {$id} ";
+	}
+	
+  // 20060312 - franciscom
+	$sql = " SELECT nodes_hierarchy.parent_id AS testcase_id, 
+	                tcversions.*, users.first AS author_first_name, users.last AS author_last_name,
+	                '' AS updater_first_name, '' AS updater_last_name
+	         FROM nodes_hierarchy JOIN tcversions ON nodes_hierarchy.id = tcversions.id 
+                          LEFT OUTER JOIN users ON tcversions.author_id = users.id
+           {$where_clause} ORDER BY tcversions.version DESC";
+  $recordset = $this->db->get_recordset($sql);
+  
+  
+  if($recordset)
+  {
+  	 // get the names
+	   $sql = " SELECT nodes_hierarchy.id AS testcase_id, nodes_hierarchy.name 
+	            FROM nodes_hierarchy {$where_clause_names} ";
+	   
+	   $the_names = $this->db->get_recordset($sql);
+     //echo "<pre>debug" . __FUNCTION__ ; print_r($the_names); echo "</pre>";  
+     //echo "<pre>debug" . __FUNCTION__ ; print_r($recordset); echo "</pre>";  
+    
+     if($the_names)
+     {
+    	  foreach ($recordset as  $the_key => $row )
+    	  {
+          reset($the_names);
+          foreach($the_names as $row_n)
+          {
+          	  if( $row['testcase_id'] == $row_n['testcase_id'])
+          	  {
+          	    $recordset[$the_key]['name']= $row_n['name'];
+          	    break;
+          	  }
+          }
+  	    }
+  	 }
+  	
+  	
+	 $sql = " SELECT updater_id, users.first AS updater_first_name, users.last  AS updater_last_name
+	           FROM nodes_hierarchy JOIN tcversions ON nodes_hierarchy.id = tcversions.id 
+                           LEFT OUTER JOIN users ON tcversions.updater_id = users.id
+             {$where_clause} and tcversions.updater_id IS NOT NULL ";
+                           
+    $updaters = $this->db->get_recordset($sql);
+    
+    if($updaters)
+    { 
+    	reset($recordset);
+    	foreach ($recordset as  $the_key => $row )
+    	{
+    		if ( !is_null($row['updater_id']) )
+    		{
+      		foreach ($updaters as $row_upd)
+      		{
+            if ( $row['updater_id'] == $row_upd['updater_id'] )
+            {
+              $recordset[$the_key]['updater_last_name'] = $row_upd['updater_last_name'];
+              $recordset[$the_key]['updater_first_name'] = $row_upd['updater_first_name'];
+              break;
+            }
+      		}
+      	}
+      }
+    }
+
+  }
+
+ 
+  return($recordset ? $recordset : null);
+}
+
+
+
+
 
 } // end class
 ?>

@@ -1,11 +1,19 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
 # This script is distributed under the GNU General Public License 2 or later.
-# $Id: testlink_create_tables.sql,v 1.18 2006/02/25 21:48:24 schlundus Exp $
+# $Id: testlink_create_tables.sql,v 1.19 2006/03/13 08:30:47 franciscom Exp $
 # SQL script - create db tables for TL   
 #
 # default rights & admin account are created via testlink_create_default_data.sql
 #
 # Rev :
+#       20060312 - franciscom
+#       changed bud_id column type to varchar(16) as requested by Asiel
+#       to avoid problems with JIRA bug tracking system.
+#
+#       added name to nodes_hierarchy table to improve performance in
+#       tree operations
+# 
+#       changed some int(11) to int(10)
 # --------------------------------------------------------
 #
 CREATE TABLE `builds` (
@@ -26,7 +34,7 @@ CREATE TABLE `db_version` (
 
 CREATE TABLE `execution_bugs` (
   `execution_id` int(10) unsigned NOT NULL default '0',
-  `bug_id` int(10) unsigned NOT NULL default '0',
+  `bug_id` varchar(16) NOT NULL default '0',
   PRIMARY KEY  (`execution_id`,`bug_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
@@ -74,6 +82,7 @@ CREATE TABLE `node_types` (
 
 CREATE TABLE `nodes_hierarchy` (
   `id` int(10) unsigned NOT NULL auto_increment,
+  `name` varchar(100) default NULL,
   `parent_id` int(10) unsigned default NULL,
   `node_type_id` int(10) unsigned NOT NULL default '1',
   `node_order` int(10) unsigned default NULL,
@@ -160,8 +169,8 @@ CREATE TABLE `user_assignments` (
 
 
 CREATE TABLE `role_rights` (
-  `role_id` int(11) NOT NULL default '0',
-  `right_id` int(11) NOT NULL default '0',
+  `role_id` int(10) NOT NULL default '0',
+  `right_id` int(10) NOT NULL default '0',
   PRIMARY KEY  (`role_id`,`right_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
@@ -196,12 +205,6 @@ CREATE TABLE `tcversions` (
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-CREATE TABLE `testcases` (
-  `id` int(10) unsigned NOT NULL,
-  `name` varchar(100) default NULL,
-  PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-
 
 CREATE TABLE `testplan_tcversions` (
   `id` int(10) unsigned NOT NULL auto_increment,
@@ -214,32 +217,27 @@ CREATE TABLE `testplan_tcversions` (
 
 CREATE TABLE `testplans` (
   `id` int(10) unsigned NOT NULL,
-  `name` varchar(100) NOT NULL default 'unknown',
   `testproject_id` int(10) unsigned NOT NULL default '0',
   `notes` text,
   `active` tinyint(1) NOT NULL default '1',
   `open` tinyint(1) NOT NULL default '1',
   PRIMARY KEY  (`id`),
-  UNIQUE KEY `testproject_id_name` (`testproject_id`,`name`),
   KEY `testproject_id_active` (`testproject_id`,`active`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 CREATE TABLE `testprojects` (
   `id` int(10) unsigned NOT NULL,
-  `name` varchar(100) NOT NULL default 'undefined',
   `notes` text,
   `color` varchar(12) NOT NULL default '#9BD',
   `active` tinyint(1) NOT NULL default '1',
   `option_reqs` tinyint(1) NOT NULL default '0',
   `option_priority` tinyint(1) NOT NULL default '1',
   PRIMARY KEY  (`id`),
-  UNIQUE KEY `name` (`name`),
   KEY `id_active` (`id`,`active`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 CREATE TABLE `testsuites` (
   `id` int(10) unsigned NOT NULL,
-  `name` varchar(100) NOT NULL default 'undefined',
   `details` text,
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;

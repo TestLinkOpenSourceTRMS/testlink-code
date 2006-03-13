@@ -1,5 +1,5 @@
 {* Testlink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: navBar.tpl,v 1.10 2006/03/10 22:35:57 schlundus Exp $ 
+$Id: navBar.tpl,v 1.11 2006/03/13 19:19:54 schlundus Exp $ 
 Purpose: smarty template - title bar + menu 
 
 20060226 - franciscom - logo
@@ -68,7 +68,7 @@ Andreas Morsing: changed the product selection
       	{/if}	
       	<a href='lib/user/userInfo.php' target="mainframe" accesskey="i" 
       		tabindex="5">{lang_get s='title_edit_personal_data'}</a> | 
-      	<a href='documentation/user-manual.html' target="mainframe" 
+      	<a href='documentation/TL1_6-user-manual.html' target="mainframe" 
       		tabindex="6">{lang_get s='title_documentation'}</a>
     </div>
 

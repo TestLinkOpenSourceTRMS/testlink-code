@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: tree.class.php,v $
  *
- * @version $Revision: 1.8 $
- * @modified $Date: 2006/03/11 23:09:19 $ by $Author: schlundus $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2006/03/13 09:37:49 $ by $Author: franciscom $
  * @author Francisco Mancardi
 */
 
@@ -16,6 +16,7 @@ class tree
 
   // configurable values - pseudoconstants
   var $node_types = array( 1 => 'testproject','testsuite','testcase','tcversion','testplan');
+  var $node_descr_id = array();
 
   var $node_tables = array('testproject' => 'testprojects',
                            'testsuite'   => 'testsuites',
@@ -34,6 +35,7 @@ class tree
 	function tree(&$db) 
 	{
     $this->db = &$db;
+    $this->node_descr_id = array_flip($this->node_types);
   }
 
   /*
@@ -60,15 +62,18 @@ class tree
   
     returns: node_id of the new node created
     
-    rev    : 20060218 - franciscom
+    rev    : 
+    					20060218 - franciscom
+              20060312 - franciscom - added optional parameter
     
   */
-	function new_root_node() 
+	function new_root_node($name='') 
 	{
 
     $sql = " INSERT INTO nodes_hierarchy 
-             (node_type_id, node_order) 
-             VALUES({$this->ROOT_NODE_TYPE_ID},1)";
+             (node_type_id, node_order, name) 
+             VALUES({$this->ROOT_NODE_TYPE_ID},1,'" . 
+                     $this->db->prepare_string($name). "')";
     $this->db->exec_query($sql);
     
     return ($this->db->insert_id());
@@ -80,12 +85,15 @@ class tree
     returns: node_id of the new node created
 
     rev    : 20060218 - franciscom
+             20060312 - franciscom - added optional parameter
+
   */
-	function new_node($parent_id,$node_type_id,$node_order=0) 
+	function new_node($parent_id,$node_type_id,$name='',$node_order=0) 
 	{
     $sql = " INSERT INTO nodes_hierarchy 
-             (parent_id,node_type_id, node_order) 
-             VALUES({$parent_id},{$node_type_id},{$node_order})";
+             (parent_id,node_type_id,node_order,name) 
+             VALUES({$parent_id},{$node_type_id},{$node_order},'" .
+                     $this->db->prepare_string($name). "')";
     $this->db->exec_query($sql);
     
     return ($this->db->insert_id());
@@ -156,96 +164,6 @@ function get_subtree_list($node_id)
 }
 
 
-// 20060305 - franciscom
-// added $exclude_node_types,$exclude_children_of
-//
-function get_subtree($node_id,$exclude_node_types=null,
-                              $exclude_children_of=null,$exclude_branches=null)
-{
-
-  // 20060310 - franciscom - added order by
-  $sql = " SELECT * from nodes_hierarchy
-          WHERE parent_id = {$node_id} ORDER BY node_order";
- 
-  //echo "<pre>debug" . __FUNCTION__ ; print_r($sql); echo "</pre>";
- 
-  $node_list=array();  
-  $result = $this->db->exec_query($sql);
-  
-  if( $this->db->num_rows($result) == 0 )
-  {
-  	//echo "NO CHILDREN<br>";
-    return(null); 	
-  }
-  
-  //echo $node_id . " HAS  CHILDREN:: ". $this->db->num_rows($result) ."<br>";
-
-  
-  
-  while ( $row = $this->db->fetch_array($result) )
-  {
-    // ----------------------------------------------------------------------------
-    // Getting data from the node specific table
-    $node_table = $this->node_tables[$this->node_types[$row['node_type_id']]];
-
-    /*echo "\$node_id=" . $row['id'] ."<br>";
-    echo "\$parent_id=" . $row['parent_id'] ."<br>";
-    echo "child ::" . $this->node_types[$row['node_type_id']] . "<br>";
-    echo "<pre>\$exclude_node_types"; print_r($exclude_node_types); echo "</pre>";  
-    echo "<pre>\$exclude_branches"; print_r($exclude_branches); echo "</pre>";  
-    */  
-    if( !isset($exclude_node_types[$this->node_types[$row['node_type_id']]]) &&
-        !isset($exclude_branches[$row['id']])
-      )
-    {
-      //echo "node :: accepted <br><br>";
-      $sql = "SELECT name FROM {$node_table} 
-      	      WHERE id = {$row['id']}";
-      $result_node = $this->db->exec_query($sql);        
-      
-      $item_name='';        
-      if( $this->db->num_rows($result_node) == 1 )
-      {
-      	$item_row  = $this->db->fetch_array($result_node);
-      	$item_name = $item_row['name'];	
-      }
-      // ----------------------------------------------------------------------------        
-  
-      $node_list[] = array('id'        => $row['id'],
-                           'parent_id' => $row['parent_id'],
-                           'node_type_id' => $row['node_type_id'],
-                           'node_order' => $row['node_order'],
-                           'node_table' => $node_table,
-                           'name' => $item_name);
-      
-      // Basically we use this because:
-      // We don't want the children if the parent is a testcase,
-      // due to the version management
-      if( !isset($exclude_children_of[$this->node_types[$row['node_type_id']]]) && 
-          !isset($exclude_branches[$row['id']])
-        )
-      {
-      	//echo "Exploring children of {$row['id']} <br>";
-    	  $xx_list = $this->get_subtree($row['id'],
-    	                                $exclude_node_types,$exclude_children_of,$exclude_branches);	
-     	  
-     	  if( !is_null($xx_list) )
-    	  {
-    		  $ma = array_merge($node_list,$xx_list);
-    		  $node_list = $ma;
-    	  }
-    	}
-      // ------------------------------------------------------------------------------------- 	
-  	}
-  	/*
-  	else
-  	{
-  	  //echo "node :: REJECTED <br><br>";
-  	}
-  	*/
-  }
-  return ($node_list);
-}
 
 
 function get_xx($aa)
@@ -272,10 +190,6 @@ function get_xx($aa)
 }
 
 
-
-/*
-
-*/
 function delete_subtree($node_id)
 {
  // echo "\$node_id ={$node_id} <br>";	
@@ -386,22 +300,12 @@ function get_children($id,$exclude_node_types=null)
 
     if( !isset($exclude_node_types[$this->node_types[$row['node_type_id']]]))
     {
-      $sql = "SELECT name FROM {$node_table} 
-      	      WHERE id = {$row['id']}";
-      $result_node = $this->db->exec_query($sql);        
-      
-      $item_name='';        
-      if( $this->db->num_rows($result_node) == 1 )
-      {
-      	$item_row  = $this->db->fetch_array($result_node);
-      	$item_name = $item_row['name'];	
-      }
       $node_list[] = array('id'        => $row['id'],
                            'parent_id' => $row['parent_id'],
                            'node_type_id' => $row['node_type_id'],
                            'node_order' => $row['node_order'],
                            'node_table' => $node_table,
-                           'name' => $item_name);
+                           'name' => $row['name']);
   	}
   }
   return ($node_list);
@@ -427,6 +331,89 @@ function change_order_bulk($hash_node_id, $hash_node_order)
   return ($result);
 }
 
+
+function get_subtree($node_id,$exclude_node_types=null,
+                              $exclude_children_of=null,
+                              $exclude_branches=null, $and_not_in_clause='')
+{
+ 		$the_subtree=array();
+ 		
+ 		// Generate NOT IN CLAUSE to exclude some node types
+ 		$not_ib_clause='';
+ 	  if( !is_null($exclude_node_types) )
+  	{
+  			$exclude=array();
+    		foreach($exclude_node_types as $the_key => $elem)
+    		{
+      			$exclude[]= $this->node_descr_id[$the_key];
+    		}
+    		$not_in_clause = " AND node_type_id NOT IN (" . implode(",",$exclude) . ")";
+  	}
+    
+    
+    $this->_get_subtree($node_id,$the_subtree,$not_in_clause,
+                                          $exclude_children_of,
+                                          $exclude_branches);
+
+    return ($the_subtree);
+}
+
+
+// 20060312 - franciscom
+// Changed and improved following some Andreas Morsing advice.
+//
+// I would like this method will be have PRIVate scope, but seems not possible in PHP4
+// that's why I've prefixed with _
+//
+function _get_subtree($node_id,&$node_list,$and_not_in_clause='',
+                                           $exclude_children_of=null,
+                                           $exclude_branches=null)
+{
+
+  	$sql = " SELECT * from nodes_hierarchy
+    	       WHERE parent_id = {$node_id}  {$and_not_in_clause} ORDER BY node_order";
+ 
+    $result = $this->db->exec_query($sql);
+  
+    if( $this->db->num_rows($result) == 0 )
+    {
+  	   return; 	
+    }
+  
+    while ( $row = $this->db->fetch_array($result) )
+    {
+    	$node_table = $this->node_tables[$this->node_types[$row['node_type_id']]];
+      $node_list[] = array('id'        => $row['id'],
+                           'parent_id' => $row['parent_id'],
+                           'node_type_id' => $row['node_type_id'],
+                           'node_order' => $row['node_order'],
+                           'node_table' => $node_table,
+                           'name' => $row['name']);
+      
+      // Basically we use this because:
+      // 1. Sometimes we don't want the children if the parent is a testcase,
+      //    due to the version management
+      //
+      // 2. Sometime we want to exclude all descendants (branch) of a node.
+      //
+      // [franciscom]: 
+      // I think ( but I have no figures to backup my thoughts) doing this check and 
+      // avoiding the function call is better that passing a condition that will result
+      // in a null result set.
+      //
+      //
+      if( !isset($exclude_children_of[$this->node_types[$row['node_type_id']]]) && 
+          !isset($exclude_branches[$row['id']])
+        )
+      {
+    	  $this->_get_subtree($row['id'],$node_list,
+    	                                 $and_not_in_clause,
+    	                                 $exclude_children_of,
+    	                                 $exclude_branches);	
+     	  
+    	}
+  	}
+} // function end
  
  
 }// end class

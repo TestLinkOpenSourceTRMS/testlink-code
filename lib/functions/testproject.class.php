@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.8 $
- * @modified $Date: 2006/03/11 23:09:19 $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2006/03/13 09:37:49 $
  * @author franciscom
  *
  */
@@ -13,10 +13,12 @@ class testproject
 {
 
 var $db;
+var $tree_manager;
 
 function testproject(&$db)
 {
   $this->db = &$db;	
+  $this->tree_manager = New tree($this->db);
 }
 
 
@@ -28,19 +30,18 @@ function testproject(&$db)
  * @param string $notes
  * @return boolean result
  *
- * 20060101 - fm - added notes
+ * 20060312 - franciscom - name is setted on nodes_hierarchy table
+ * 20060101 - franciscom - added notes
  */
 function create($name,$color,$optReq,$notes)
 {
 	$status_ok=0;
 
   // Create Node and get the id
-  $tree_manager = New tree($this->db);
-  $root_node_id = $tree_manager->new_root_node();
+  $root_node_id = $this->tree_manager->new_root_node($name);
 
-	$sql = " INSERT INTO testprojects (id,name,color,option_reqs,notes) " .
+	$sql = " INSERT INTO testprojects (id,color,option_reqs,notes) " .
 	       " VALUES (" . $root_node_id . ", '" .	
-	                 $this->db->prepare_string($name)  . "','" . 
 	                 $this->db->prepare_string($color) . "',"  . 
 	                 $optReq . ",'" .
 			             $this->db->prepare_string($notes) . "')";
@@ -59,20 +60,27 @@ function create($name,$color,$optReq,$notes)
 /*
 update info on tables and on session
 
+		20060312 - franciscom - name is setted on nodes_hierarchy table
+
 */
 function update($id, $name, $color, $opt_req,$notes)
 {
 	$status_msg='ok';
-  $log_msg = 'Product ' . $name . ' update: Ok.';
+  $log_msg = 'Test project ' . $name . ' update: Ok.';
 	$log_level='INFO';
 	
-	$sql = " UPDATE testprojects SET name='" . $this->db->prepare_string($name) . "', " .
-	       " color='" . $this->db->prepare_string($color) . "', ".
+	$sql = " UPDATE testprojects SET color='" . $this->db->prepare_string($color) . "', ".
 			   " option_reqs=" .  $opt_req . ", " .
 			   " notes='" . $this->db->prepare_string($notes) . "'" . 
 			   " WHERE id=" . $id;
 			   
-	$result = $this->db->exec_query($sql);
+	$result = @$this->db->exec_query($sql);
+
+	if ($result)
+	{
+		$sql = " UPDATE nodes_hierarchy SET name='" . 
+		         $this->db->prepare_string($name) . "' WHERE id= {$id}";
+  }
 
 	if ($result)
 	{
@@ -94,8 +102,9 @@ function update($id, $name, $color, $opt_req,$notes)
 
 function get_by_name($name)
 {
-	$sql = " SELECT * FROM testprojects 
-	         WHERE name = '" . 
+	$sql = " SELECT testprojects.*, nodes_hierarchy.name 
+	         FROM testprojects, nodes_hierarchy 
+	         WHERE nodes_hierarchy.name = '" . 
 	         $this->db->prepare_string($name) . "'";
 
   $recordset = $this->db->get_recordset($sql);
@@ -107,8 +116,10 @@ get info for one test project
 */
 function get_by_id($id)
 {
-	$sql = " SELECT * FROM testprojects
-	         WHERE id = {$id}";
+	$sql = " SELECT testprojects.*,nodes_hierarchy.name 
+	         FROM testprojects, nodes_hierarchy
+	         WHERE testprojects.id = nodes_hierarchy.id
+	         AND   testprojects.id = {$id}";
   $recordset = $this->db->get_recordset($sql);
   return($recordset ? $recordset[0] : null);
 }
@@ -122,7 +133,9 @@ Every array element contains an assoc array with test project info
 */
 function get_all()
 {
-	$sql = " SELECT * FROM testprojects ";
+	$sql = " SELECT testprojects.*, nodes_hierarchy.name 
+	         FROM testprojects, nodes_hierarchy
+	         WHERE testprojects.id=nodes_hierarchy.id";
   $recordset = $this->db->get_recordset($sql);
   return($recordset);
 }
@@ -158,11 +171,10 @@ function show($id, $sqlResult = '', $action = 'update',$modded_item_id = 0)
 /* 20060305 - franciscom */
 function count_testcases($id)
 {
-  $tree_manager = New tree($this->db);
-	$test_spec = $tree_manager->get_subtree($id,array('testplan'=>'exclude me'),
+	$test_spec = $this->tree_manager->get_subtree($id,array('testplan'=>'exclude me'),
 	                                            array('testcase'=>'exclude my children'));
   
-  $hash_descr_id = $tree_manager->get_available_node_types();
+  $hash_descr_id = $this->tree_manager->get_available_node_types();
   
   $qty=0;
   if( count($test_spec) > 0 )
@@ -185,14 +197,12 @@ function gen_combo_test_suites($id,$exclude_branches=null)
 {
 	$aa = array(); 
 
-	$tree_manager = New tree($this->db);
-
 	// 20060308 - franciscom
-	$test_spec = $tree_manager->get_subtree($id, array("testplan"=>"exclude me","testcase"=>"exclude me"),
+	$test_spec = $this->tree_manager->get_subtree($id, array("testplan"=>"exclude me","testcase"=>"exclude me"),
                                                array('testcase'=>'exclude my children PLEASE'),
                                                $exclude_branches);
   
-  $hash_descr_id = $tree_manager->get_available_node_types();
+  $hash_descr_id = $this->tree_manager->get_available_node_types();
   $hash_id_descr = array_flip($hash_descr_id);
   
   

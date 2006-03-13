@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.5 $
- * @modified $Date: 2006/03/11 23:09:19 $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2006/03/13 09:37:49 $
  * @author franciscom
  *
  */
@@ -13,10 +13,18 @@ class testcase
 {
 
 var $db;
+var $tree_manager;
+var $node_types_descr_id;
+var $node_types_id_descr;
+var $my_node_type;
 
 function testcase(&$db)
 {
   $this->db = &$db;	
+  $this->tree_manager = New tree($this->db);
+	$this->node_types_descr_id=$this->tree_manager->get_available_node_types();
+  $this->node_types_id_descr=array_flip($this->node_types_descr_id);
+  $this->my_node_type=$this->node_types_descr_id['testcase'];
 }
 
 // 20060226 - franciscom
@@ -39,25 +47,11 @@ function create($parent_id,$name,$summary,$steps,
 /* 20060306 - franciscom */
 function create_tcase_only($parent_id,$name)
 {
-  // Create Node Manager 
-  $tree_manager = New tree($this->db);
-	$node_types_descr_id=$tree_manager->get_available_node_types();
-  $node_types_id_descr=array_flip($node_types_descr_id);
-   
   // get a new id
-  $tcase_id = $tree_manager->new_node($parent_id,$node_types_descr_id['testcase']);
-	
-	$sql = "INSERT INTO testcases (id,name)
-	        VALUES({$tcase_id},'" . $this->db->prepare_string($name). "')";
-	$result = $this->db->exec_query($sql);        
-
-  $status_ok=1;
+  $tcase_id = $this->tree_manager->new_node($parent_id,
+                                            $this->my_node_type,$name);
   $ret['id'] = $tcase_id;
   $ret['msg'] = 'ok';
-  if (!$result)
-	{
-	  $ret['msg'] = $this->db->error_msg();
-	}
   return ($ret);
 }
 
@@ -66,13 +60,8 @@ function create_tcase_only($parent_id,$name)
 function create_tcversion($id,$summary,$steps,
                           $expected_results,$author_id)
 {
-  // Create Node Manager 
-  $tree_manager = New tree($this->db);
-	$node_types_descr_id=$tree_manager->get_available_node_types();
-  $node_types_id_descr=array_flip($node_types_descr_id);
-   
   // get a new ids
-	$tcase_version_id = $tree_manager->new_node($id,$node_types_descr_id['testcase_version']);
+	$tcase_version_id = $this->tree_manager->new_node($id,$this->node_types_descr_id['testcase_version']);
 	
 	$sql = "INSERT INTO tcversions (id,version,summary,steps,expected_results,author_id,creation_ts)
   	      VALUES({$tcase_version_id},1,'" .  $this->db->prepare_string($summary) . "'," . 
@@ -90,11 +79,13 @@ function create_tcversion($id,$summary,$steps,
 }
 
 
-
+/* 20060312 - franciscom */
 function get_by_name($name)
 {
-	$sql = " SELECT * FROM testcases 
-	         WHERE name = '" . 
+	$sql = " SELECT nodes_hierarchy.id,nodes_hierarchy.name 
+	         FROM nodes_hierarchy 
+	         WHERE nodes_hierarchy.node_type_id={$this->my_node_type}
+	         AND nodes_hierarchy.name = '" . 
 	         $this->db->prepare_string($name) . "'";
 
   $recordset = $this->db->get_recordset($sql);
@@ -113,25 +104,23 @@ will be useful to manage the different versions of a test case
 */
 function get_by_id($id,$version_id=TC_ALL_VERSIONS, $get_active=0, $get_open=0)
 {
-
-// 20060302 - francisco.mancardi@gruppotesi.com
-//
-	$sql = " SELECT testcases.id AS testcase_id, name, tcversions.*, 
-	                users.first AS author_first_name, users.last AS author_last_name,
+  // 20060312 - franciscom
+	$sql = " SELECT nodes_hierarchy.parent_id AS testcase_id, 
+	                (SELECT nodes_hierarchy.name 
+	                 FROM nodes_hierarchy WHERE nodes_hierarchy.id = {$id} ) AS name, 
+	                tcversions.*, users.first AS author_first_name, users.last AS author_last_name,
 	                '' AS updater_first_name, '' AS updater_last_name
-	         FROM testcases JOIN nodes_hierarchy ON nodes_hierarchy.parent_id = testcases.id 
-                          JOIN tcversions ON nodes_hierarchy.id = tcversions.id 
+	         FROM nodes_hierarchy JOIN tcversions ON nodes_hierarchy.id = tcversions.id 
                           LEFT OUTER JOIN users ON tcversions.author_id = users.id
-                          WHERE testcases.id = {$id} ORDER BY tcversions.version DESC";
+           WHERE nodes_hierarchy.parent_id = {$id} ORDER BY tcversions.version DESC";
   $recordset = $this->db->get_recordset($sql);
   
   if($recordset)
   {
 	 $sql = " SELECT updater_id, users.first AS updater_first_name, users.last  AS updater_last_name
-	          FROM testcases JOIN nodes_hierarchy ON nodes_hierarchy.parent_id = testcases.id 
-                           JOIN tcversions ON nodes_hierarchy.id = tcversions.id 
+	           FROM nodes_hierarchy JOIN tcversions ON nodes_hierarchy.id = tcversions.id 
                            LEFT OUTER JOIN users ON tcversions.updater_id = users.id
-                           WHERE testcases.id = {$id} and tcversions.updater_id IS NOT NULL ";
+             WHERE nodes_hierarchy.parent_id = {$id} and tcversions.updater_id IS NOT NULL ";
                            
     $updaters = $this->db->get_recordset($sql);
     
@@ -169,7 +158,9 @@ Every array element contains an assoc array with test suite info
 */
 function get_all()
 {
-	$sql = " SELECT * FROM testcases ";
+	$sql = " SELECT nodes_hierarchy.name, nodes_hierarchy.id
+	         FROM  nodes_hierarchy
+	         WHERE nodes_hierarchy.node_type_id={$my_node_type}";
   $recordset = $this->db->get_recordset($sql);
   return($recordset);
 }
@@ -254,9 +245,8 @@ function update($id,$tcversion_id,$name,$summary,$steps,
 {
 $status_ok=0;
 
-// test case
-$sql = " UPDATE testcases SET name='" . $this->db->prepare_string($name) . "'" .
-       " WHERE testcases.id = {$id}";
+$sql = " UPDATE nodes_hierarchy SET name='" . 
+         $this->db->prepare_string($name) . "' WHERE id= {$id}";
 
 $result = $this->db->exec_query($sql);
 $status_ok=$result ? 1: 0;
@@ -411,12 +401,8 @@ function _blind_delete($id)
                                  FROM nodes_hierarchy WHERE nodes_hierarchy.parent_id = {$id})";
 	  $result = $this->db->exec_query($sql);        
     
-    $sql="DELETE FROM testcases WHERE testcases.id = {$id}";
-    $result = $this->db->exec_query($sql);
     
-    // Create Node Manager 
-    $tree_manager = New tree($this->db);
-    $tree_manager->delete_subtree($id);
+    $this->tree_manager->delete_subtree($id);
 
 }
 
@@ -447,11 +433,7 @@ function _execution_delete($id)
 */
 function get_testproject($id)
 {
-  // Create Node Manager 
-  $tree_manager = New tree($this->db);
-
-  $a_path = $tree_manager->get_path($id);
-  
+  $a_path = $this->tree_manager->get_path($id);
   return ($a_path[0]['parent_id']);
 }
 
@@ -460,6 +442,9 @@ function get_testproject($id)
 function copy_to($id, $parent_id, $user_id)
 {
 	$tcase_info = $this->get_by_id($id);
+	
+	echo "<pre>debug" . __FUNCTION__ ; print_r($tcase_info); echo "</pre>";
+	
 	$new_tc = $this->create_tcase_only($parent_id,$tcase_info[0]['name']);
 	  
   $qta_tcversions = count($tcase_info);

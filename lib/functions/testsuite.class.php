@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testsuite.class.php,v $
- * @version $Revision: 1.6 $
- * @modified $Date: 2006/03/11 10:26:13 $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2006/03/13 09:37:49 $
  * @author franciscom
  *
  */
@@ -15,10 +15,19 @@ class testsuite
 {
 
 var $db;
+var $tree_manager;
+var $node_types_descr_id;
+var $node_types_id_descr;
+var $my_node_type;
 
 function testsuite(&$db)
 {
   $this->db = &$db;	
+
+  $this->tree_manager = New tree($this->db);
+	$this->node_types_descr_id=$this->tree_manager->get_available_node_types();
+  $this->node_types_id_descr=array_flip($this->node_types_descr_id);
+  $this->my_node_type=$this->node_types_descr_id['testsuite'];
 }
 
 // 20060309 - franciscom
@@ -31,9 +40,6 @@ function create($parent_id,$name,$details,
                 $check_duplicate_name=0,
                 $action_on_duplicate_name='allow_repeat')
 {
-  $tree_manager = New tree($this->db);
-	$node_types_descr_id=$tree_manager->get_available_node_types();
-  $node_types_id_descr=array_flip($node_types_descr_id);
   
   // 20060309 - franciscom
   $ret['status_ok']=0;
@@ -52,25 +58,10 @@ function create($parent_id,$name,$details,
     // $p_node_info = $tree_manager->get_by_id($parent_id);
     // $p_node_type_id = $p_node_info['node_type_id'];
     
-    /*
-    switch ( $hash_id_descr[$p_node_type_id] )
-    {
-      case 'testproject'
-      $sql = " SELECT count(*) AS qty FROM testsuites,node 
-			         WHERE name = '" . $this->db->prepare_string($name) . "'" . 
-			       " AND testprojects.id={$parent_id} "; 
-      break;
-      
-      case 'testsuite'
-      break;
-      
-      	
-    }
-    */
     $sql = " SELECT count(*) AS qty FROM testsuites,nodes_hierarchy 
-		         WHERE name = '" . $this->db->prepare_string($name) . "'" . 
+		         WHERE nodes_hierarchy.name = '" . $this->db->prepare_string($name) . "'" . 
 		       " AND testsuites.id=nodes_hierarchy.id
-		         AND node_type_id = {$node_types_descr_id['testsuite']} 
+		         AND node_type_id = {$this->my_node_type} 
 		         AND nodes_hierarchy.parent_id={$parent_id} "; 
 		
 		$result = $this->db->exec_query($sql);
@@ -98,10 +89,9 @@ function create($parent_id,$name,$details,
 	if ($ret['status_ok'])
 	{
     // get a new id
-    $tsuite_id = $tree_manager->new_node($parent_id,$node_types_descr_id['testsuite']);
-		$sql = "INSERT INTO testsuites (id,name,details) " .
-		     	 "VALUES ({$tsuite_id},'" . $this->db->prepare_string($name) . "','" . 
-				                              $this->db->prepare_string($details) . "')";
+    $tsuite_id = $this->tree_manager->new_node($parent_id,$this->my_node_type,$name);
+		$sql = "INSERT INTO testsuites (id,details) " .
+		     	 "VALUES ({$tsuite_id},'" . $this->db->prepare_string($details) . "')";
 		                              
 		$result = $this->db->exec_query($sql);
 		if ($result)
@@ -121,12 +111,19 @@ function create($parent_id,$name,$details,
 function update($id, $name, $details)
 {
 	//TODO - check for existent name
-	$sql = "UPDATE testsuites
-	        SET name = '" . $this->db->prepare_string($name) . "', " .
-	       "    details = '" . $this->db->prepare_string($details) . "'" .
+	$sql = " UPDATE testsuites
+	         SET details = '" . $this->db->prepare_string($details) . "'" .
 	       " WHERE id = {$id}";
-	
 	$result = $this->db->exec_query($sql);
+  
+  if ($result)
+	{
+		$sql = " UPDATE nodes_hierarchy SET name='" . 
+		         $this->db->prepare_string($name) . "' WHERE id= {$id}";
+    $result = $this->db->exec_query($sql);
+  }
+
+	
   $ret['msg']='ok';
 	if (!$result)
 	{
@@ -138,8 +135,9 @@ function update($id, $name, $details)
 
 function get_by_name($name)
 {
-	$sql = " SELECT * FROM testsuites 
-	         WHERE name = '" . 
+	$sql = " SELECT testsuites.*, nodes_hierarchy.name 
+	         FROM testsuites, nodes_hierarchy  
+	         WHERE nodes_hierarchy.name = '" . 
 	         $this->db->prepare_string($name) . "'";
 
   $recordset = $this->db->get_recordset($sql);
@@ -154,8 +152,10 @@ get info for one test suite
 */
 function get_by_id($id)
 {
-	$sql = " SELECT * FROM testsuites 
-	         WHERE id = {$id}";
+	$sql = " SELECT testsuites.*, nodes_hierarchy.name 
+	         FROM testsuites,nodes_hierarchy 
+	         WHERE testsuites.id = nodes_hierarchy.id
+	         AND testsuites.id = {$id}";
   $recordset = $this->db->get_recordset($sql);
   return($recordset ? $recordset[0] : null);
 }
@@ -169,7 +169,9 @@ Every array element contains an assoc array with test suite info
 */
 function get_all()
 {
-	$sql = " SELECT * FROM testsuites ";
+	$sql = " SELECT testsuites.*, nodes_hierarchy.name
+	         FROM testsuites,nodes_hierarchy
+	         WHERE testsuites.id = nodes_hierarchy.id";
   $recordset = $this->db->get_recordset($sql);
   return($recordset);
 }
@@ -245,21 +247,16 @@ function viewer_edit_new($amy_keys, $oFCK, $action, $parent_id, $id=null)
 function copy_to($id, $parent_id, $user_id,
                  $check_duplicate_name=0,$action_on_duplicate_name='allow_repeat')
 {
-  $tree_manager = New tree($this->db);
   $tcase_mgr = New testcase($this->db);
 
-  $node_types_descr_id=$tree_manager->get_available_node_types();
-  $node_types_id_descr=array_flip($node_types_descr_id);
-  
-  
-	$tsuite_info = $this->get_by_id($id);
+ 	$tsuite_info = $this->get_by_id($id);
 	$ret = $this->create($parent_id,$tsuite_info['name'],$tsuite_info['details'],
 	                     $check_duplicate_name,$action_on_duplicate_name);
 
 	$new_tsuite_id = $ret['id'];
 	
-  $subtree = $tree_manager->get_subtree($id,array('testplan' => 'exclude_me'),
-	                                          array('testcase' => 'exclude_my_children'));
+  $subtree = $this->tree_manager->get_subtree($id,array('testplan' => 'exclude_me'),
+	                                                array('testcase' => 'exclude_my_children'));
 	
 	
   if (!is_null($subtree))
@@ -274,12 +271,12 @@ function copy_to($id, $parent_id, $user_id,
 	  	
 	    switch ($elem['node_type_id'])
 	    {
-	      case $node_types_descr_id['testcase']:
+	      case $this->node_types_descr_id['testcase']:
         $tcase_mgr->copy_to($elem['id'],$the_parent_id,$user_id);  	      
 	      break;
 	      
 	      
-	      case $node_types_descr_id['testsuite']:
+	      case $this->node_types_descr_id['testsuite']:
 	      $tsuite_info = $this->get_by_id($elem['id']);
 	      $ret = $this->create($the_parent_id,$tsuite_info['name'],$tsuite_info['details']);      
 	      $the_parent_id = $ret['id'];
@@ -299,19 +296,15 @@ function copy_to($id, $parent_id, $user_id,
 // no info about tcversions is returned
 function get_testcases_deep($id)
 {
-  $tree_manager = New tree($this->db);
-	$node_types_descr_id=$tree_manager->get_available_node_types();
-  $node_types_id_descr=array_flip($node_types_descr_id);
-
-  $subtree = $tree_manager->get_subtree($id,array('testplan' => 'exclude_me'),
-	                                          array('testcase' => 'exclude_my_children'));
+  $subtree = $this->tree_manager->get_subtree($id,array('testplan' => 'exclude_me'),
+	                                                array('testcase' => 'exclude_my_children'));
 	$testcases=null;
 	if( !is_null($subtree) )
 	{
 		$testcases = array();
 	  foreach ( $subtree as $the_key => $elem)
 	  {
-	    if($elem['node_type_id'] == $node_types_descr_id['testcase'])
+	    if($elem['node_type_id'] == $this->node_types_descr_id['testcase'])
 	    {
 	      $testcases[]=$elem;
 	    }	
@@ -327,15 +320,11 @@ function get_testcases_deep($id)
 // 20060309 - franciscom
 function delete_deep($id)
 {
-  $tree_manager = New tree($this->db);
   $tcase_mgr = New testcase($this->db);
 
-  $node_types_descr_id=$tree_manager->get_available_node_types();
-  $node_types_id_descr=array_flip($node_types_descr_id);
-  
 	$tsuite_info = $this->get_by_id($id);
-  $subtree = $tree_manager->get_subtree($id,array('testplan' => 'exclude_me', 'testcase' => 'exclude_me'),
-                                            array('testcase' => 'exclude_my_children'));
+  $subtree = $this->tree_manager->get_subtree($id,array('testplan' => 'exclude_me', 'testcase' => 'exclude_me'),
+                                                  array('testcase' => 'exclude_my_children'));
 	
 	// add me, to delete me 
 	$subtree[]=array('id' => $id);
@@ -368,7 +357,7 @@ function delete_deep($id)
 	  }  
     // -------------------------------------------------------------------
 
-    $tree_manager->delete_subtree($id);
+    $this->tree_manager->delete_subtree($id);
 
 	}
 } // end function

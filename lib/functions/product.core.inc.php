@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: product.core.inc.php,v $
- * @version $Revision: 1.8 $
- * @modified $Date: 2006/02/25 21:48:24 $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2006/03/13 09:37:49 $
  * @author Martin Havlat
  *
  * Core Functions for Product management (get data)
@@ -48,8 +48,7 @@ function getAllProductsBut(&$db,$id,&$products)
 /** get option list of products; all for admin and active for others 
 
 rev :
-     20050810 - fm
-     refactoring
+     20060312 - franciscom - add nodes_hierarchy on join
      
 */
 function getAccessibleProducts(&$db)
@@ -57,9 +56,13 @@ function getAccessibleProducts(&$db)
 	$arrProducts = array();
 	
 	$userID = $_SESSION['userID'];
-	$sql =  "SELECT id,name,active FROM testprojects LEFT OUTER JOIN user_testproject_roles " .
-		    "ON testprojects.id = user_testproject_roles.testproject_id AND " . 
-		 	"user_testproject_roles.user_ID = {$userID} WHERE ";
+	$sql =  " SELECT nodes_hierarchy.id,nodes_hierarchy.name,active
+ 	          FROM nodes_hierarchy 
+ 	          JOIN testprojects ON nodes_hierarchy.id=testprojects.id  
+	          LEFT OUTER JOIN user_testproject_roles 
+		        ON testprojects.id = user_testproject_roles.testproject_id AND  
+		 	      user_testproject_roles.user_ID = {$userID} WHERE ";
+		 	      
 	if ($_SESSION['roleId'] != TL_ROLES_NONE)
 		$sql .=  "(role_id IS NULL OR role_id != ".TL_ROLES_NONE.")";
 	else

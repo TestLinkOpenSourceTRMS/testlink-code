@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: plan.inc.php,v $
- * @version $Revision: 1.29 $
- * @modified $Date: 2006/03/11 22:38:25 $ $Author: kevinlevy $
+ * @version $Revision: 1.30 $
+ * @modified $Date: 2006/03/13 09:37:51 $ $Author: franciscom $
  * @author 	Martin Havlat
  *
  * Functions for management: 
@@ -244,6 +244,7 @@ function deleteTestPlanMilestones(&$db,$id)
 
 
 /*
+  20060312 - franciscom - name in nodes_hierarchy
   20060219 - franciscom
 */
 function createTestPlan(&$db,$name,$notes,$testproject_id)
@@ -251,11 +252,10 @@ function createTestPlan(&$db,$name,$notes,$testproject_id)
 	$tree_manager = New tree($db);
 	$node_types=$tree_manager->get_available_node_types();
 	
-  $tplan_id = $tree_manager->new_node($testproject_id,$node_types['testplan']);
+  $tplan_id = $tree_manager->new_node($testproject_id,$node_types['testplan'],$name);
 	
-	$sql = "INSERT INTO testplans (id,name,notes,testproject_id) 
+	$sql = "INSERT INTO testplans (id,notes,testproject_id) 
 	        VALUES ( {$tplan_id} " . ", '" . 
-	                 $db->prepare_string($name) . "','" . 
 	                 $db->prepare_string($notes) . "'," . 
 	                 $testproject_id .")";
 	$result = $db->exec_query($sql);

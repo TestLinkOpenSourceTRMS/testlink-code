@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: requirements.inc.php,v $
- * @version $Revision: 1.26 $
- * @modified $Date: 2006/03/03 16:21:02 $ by $Author: franciscom $
+ * @version $Revision: 1.27 $
+ * @modified $Date: 2006/03/13 11:33:23 $ by $Author: franciscom $
  *
  * @author Martin Havlat <havlat@users.sourceforge.net>
  * 
@@ -373,10 +373,10 @@ function getReqData(&$db,$req_id)
  */
 function getTc4Req(&$db,$req_id)
 {
-	$sql = "SELECT mgttestcase.id,mgttestcase.title FROM mgttestcase, req_coverage " .
-			"WHERE req_coverage.req_id=" . $req_id . 
-			" AND req_coverage.testcase_id=mgttestcase.id";
-	
+	$sql = "SELECT nodes_hierarchy.id,nodes_hierarchy.name 
+	        FROM nodes_hierarchy, req_coverage
+			    WHERE req_coverage.testcase_id = nodes_hierarchy.id
+			    AND  req_coverage.req_id={$req_id}"; 
 	return selectData($db,$sql);
 }
 
@@ -389,8 +389,9 @@ function getTc4Req(&$db,$req_id)
  */
 function getSuite4Req(&$db,$req_id, $idPlan)
 {
-	$sql = "SELECT testcase.id,testcase.title FROM testcase,req_coverage,category," .
-				"component WHERE component.projid=" . $idPlan .
+	$sql = " SELECT testcase.id,testcase.title 
+	         FROM testcase,req_coverage,category," .
+				  "component WHERE component.projid=" . $idPlan .
 				" AND category.compid=component.id AND category.id=testcase.catid" .
 				" AND testcase.mgttcid = req_coverage.testcase_id AND req_id=" . 
 				$req_id . " ORDER BY title";
@@ -435,11 +436,11 @@ function createRequirement(&$db,$title, $scope, $srs_id, $user_id,
                            $status = 'v', $type = 'n', $req_doc_id = null)
 {
 	if (strlen($title)) {
-		$sql = "INSERT INTO requirements (srs_id, req_doc_id, title, scope, status, type, author_id, create_date)" .
+		$sql = "INSERT INTO requirements (srs_id, req_doc_id, title, scope, status, type, author_id, creation_ts)" .
 				" VALUES (" . $srs_id . ",'" . $db->prepare_string($req_doc_id) .  
 				"','" . $db->prepare_string($title) . "','" . $db->prepare_string($scope) . 
 				 "','" . $db->prepare_string($status) . "','" . $db->prepare_string($type) .
-				 "'," . $db->prepare_string($user_id) . ", CURRENT_DATE)";
+				 "'," . $db->prepare_string($user_id) . "," . $db->db_now() . ")";
 
 		$result = $db->exec_query($sql); 
 		

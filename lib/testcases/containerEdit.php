@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: containerEdit.php,v 1.32 2006/03/11 10:19:52 franciscom Exp $ */
+/* $Id: containerEdit.php,v 1.33 2006/03/13 16:22:29 franciscom Exp $ */
 /* Purpose:  This page manages all the editing of test specification containers. */
 /*
  *
@@ -177,7 +177,7 @@ else if($action == 'update_testsuite')
 	  		$msg = $db->error_msg();
 	  	}
 	}	
-	$tsuite_mgr->show($my_testsuiteID);
+	$tsuite_mgr->show($my_testsuiteID,'ok');
 	
 	// showComponent($db,$my_testsuiteID, $msg);
 }
@@ -255,7 +255,7 @@ else if( $action == 'move_testsuite_viewer')
 {
 	$testsuites = null;
 	$testsuites =$tproject_mgr->gen_combo_test_suites($my_tprojectID,
-	                                                  array($my_testsuiteID=>'exclude'));
+	                                                  array($my_testsuiteID => 'exclude'));
   
   
   //echo "<pre>debug"; print_r($testsuites); echo "</pre>";
@@ -265,6 +265,7 @@ else if( $action == 'move_testsuite_viewer')
 
 	$smarty->assign('old_containerID', $my_tprojectID); // original container
 	$smarty->assign('arraySelect', $testsuites);
+	//$smarty->assign('sqlResult', 'ok');
 	$smarty->assign('objectID', $my_testsuiteID);
 }
 else if($action == 'reorder_testsuites') //user has chosen the reorder page
@@ -297,7 +298,7 @@ else if($action == 'do_testsuite_reorder') //Execute update categories order
 	$generalResult = 'ok';
 	
 	$tree_mgr->change_order_bulk($_POST['id'],$_POST['order']);
-	$tsuite_mgr->show($my_containerID);
+	$tsuite_mgr->show($my_containerID,'ok');
 }
 else if($action == 'reorderTC') 
 {
@@ -330,7 +331,7 @@ else if($action == 'updateTCorder')
 else if($action == 'do_move')
 {
 	$tree_mgr->change_parent($objectID,$my_containerID);  
-  $tproject_mgr->show($my_tprojectID);
+  $tproject_mgr->show($my_tprojectID,'ok');
 	
 	// copy_or_move_comp($db, $action, $objectID, $prodID ,$_POST,$_SESSION['userID'],$copyKeywords);
 }	
@@ -348,6 +349,8 @@ else if($action == 'do_copy')
 	                     config_get('check_names_for_duplicates'),
 	                     config_get('action_on_duplicate_name'));
 	
+	// 20060313 - franciscom
+	$tsuite_mgr->show($objectID,'ok');
 }	
 else 
 {

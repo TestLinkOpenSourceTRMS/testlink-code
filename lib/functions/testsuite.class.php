@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testsuite.class.php,v $
- * @version $Revision: 1.7 $
- * @modified $Date: 2006/03/13 09:37:49 $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2006/03/13 16:22:24 $
  * @author franciscom
  *
  */
@@ -200,6 +200,7 @@ function show($id, $sqlResult = '', $action = 'update',$modded_item_id = 0)
 	$smarty->assign('moddedItem',$modded_item);
 	$smarty->assign('level', 'testsuite');
 	$smarty->assign('container_data', $item);
+	$smarty->assign('sqlResult',$sqlResult);
 	$smarty->display('containerView.tpl');
 }
 

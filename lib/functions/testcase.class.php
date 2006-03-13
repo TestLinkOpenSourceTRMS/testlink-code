@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.6 $
- * @modified $Date: 2006/03/13 09:37:49 $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2006/03/13 16:22:24 $
  * @author franciscom
  *
  */
@@ -443,7 +443,7 @@ function copy_to($id, $parent_id, $user_id)
 {
 	$tcase_info = $this->get_by_id($id);
 	
-	echo "<pre>debug" . __FUNCTION__ ; print_r($tcase_info); echo "</pre>";
+	//echo "<pre>debug" . __FUNCTION__ ; print_r($tcase_info); echo "</pre>";
 	
 	$new_tc = $this->create_tcase_only($parent_id,$tcase_info[0]['name']);
 	  

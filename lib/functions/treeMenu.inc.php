@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: treeMenu.inc.php,v $
  *
- * @version $Revision: 1.13 $
- * @modified $Date: 2006/03/06 17:31:00 $ by $Author: franciscom $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2006/03/20 18:02:22 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * 	This file generates tree menu for test specification and test execution.
@@ -139,7 +139,8 @@ function filterString($str)
  * @author Francisco Mancardi - fm - reduce global coupling
  *
  */
-function generateTestSpecTree(&$db,$tproject_id, $tproject_name, $linkto, $hidetc, $getArguments = '')
+function generateTestSpecTree(&$db,$tproject_id, $tproject_name, 
+                              $linkto, $hidetc, $getArguments = '')
 {
 	$menustring = null; // storage variable for output
 
@@ -150,6 +151,9 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name, $linkto, $hidet
 	$test_spec = $tree_manager->get_subtree($tproject_id,array('testplan'=>'exclude me'),
 	                                                     array('testcase'=>'exclude my children'));
 
+  
+  //echo "<pre>debug" . __FUNCTION__; print_r($test_spec); echo "</pre>";
+  
   $hash_descr_id = $tree_manager->get_available_node_types();
   $hash_id_descr = array_flip($hash_descr_id);
   

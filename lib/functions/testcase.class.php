@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.8 $
- * @modified $Date: 2006/03/13 18:57:15 $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2006/03/20 18:02:22 $
  * @author franciscom
  *
  */
@@ -102,7 +102,7 @@ will be useful to manage the different versions of a test case
 20060227 - franciscom
 
 */
-function get_by_id($id,$version_id=TC_ALL_VERSIONS, $get_active=0, $get_open=0)
+function get_by_id_old($id,$version_id=TC_ALL_VERSIONS, $get_active=0, $get_open=0)
 {
 	
   // 20060312 - franciscom
@@ -168,7 +168,7 @@ function get_all()
 
 
 /* 20060227 - franciscom */
-function show($id, $user_id)
+function show($id, $user_id, $action='',$msg_result='')
 {
 	// define('DO_NOT_CONVERT',false);
 	$the_tpl=config_get('tpl');
@@ -190,6 +190,8 @@ function show($id, $user_id)
 	
 	$smarty = new TLSmarty;
 	
+	$smarty->assign('action',$action);
+	$smarty->assign('sqlResult',$msg_result);
 	$smarty->assign('can_edit',$can_edit);
 	$smarty->assign('testcase',$tc_data);
 	$smarty->assign('arrReqs',$arrReqs);
@@ -442,22 +444,21 @@ function get_testproject($id)
 /* 20060306 - franciscom */
 function copy_to($id, $parent_id, $user_id)
 {
+	$status_ok=1;
 	$tcase_info = $this->get_by_id($id);
-	
-	//echo "<pre>debug" . __FUNCTION__ ; print_r($tcase_info); echo "</pre>";
-	
 	$new_tc = $this->create_tcase_only($parent_id,$tcase_info[0]['name']);
-	  
   $qta_tcversions = count($tcase_info);
   
   foreach( $tcase_info as $tcversion )
   {
     $this->create_tcversion($new_tc['id'],$tcversion['summary'],$tcversion['steps'],
                                           $tcversion['expected_results'],$tcversion['author_id']);
-      	
   }
-  
+  return($status_ok);
 } // end function
+	
+	
+	
 	
 	/* KEYWORD RELATED */
 	function getKeywords($tcID,$kwID = null)
@@ -506,7 +507,20 @@ function copy_to($id, $parent_id, $user_id)
 	/* END KEYWORD RELATED */
 
 
+/*
+SELECT	U.login AS updater, -- Updater login, updater is in table U
+		Users.login as author,  -- Author login , author is in table Users
+		B.name, -- TC Name
+		A.parent_id AS testcase_id, tcversions.*, users.first AS author_first_name, users.last AS author_last_name, ''
+		AS updater_first_name, '' AS updater_last_name
+FROM nodes_hierarchy as A, nodes_hierarchy as B 
+JOIN tcversions ON A.id = tcversions.id 
+LEFT OUTER JOIN users ON tcversions.author_id = users.id 
+LEFT OUTER JOIN users as U ON tcversions.updater_id = U.id  
+WHERE A.parent_id IN (4,6) AND A.parent_id = B.id 
+ORDER BY tcversions.version DESC
 
+*/
 // 20060313 - franciscom
 function get_by_id_bulk($id,$version_id=TC_ALL_VERSIONS, $get_active=0, $get_open=0)
 {
@@ -593,6 +607,58 @@ function get_by_id_bulk($id,$version_id=TC_ALL_VERSIONS, $get_active=0, $get_ope
   return($recordset ? $recordset : null);
 }
 
+
+
+/*
+SELECT	U.login AS updater, -- Updater login, updater is in table U
+		Users.login as author,  -- Author login , author is in table Users
+		B.name, -- TC Name
+		A.parent_id AS testcase_id, tcversions.*, users.first AS author_first_name, users.last AS author_last_name, ''
+		AS updater_first_name, '' AS updater_last_name
+FROM nodes_hierarchy as A, nodes_hierarchy as B 
+JOIN tcversions ON A.id = tcversions.id 
+LEFT OUTER JOIN users ON tcversions.author_id = users.id 
+LEFT OUTER JOIN users as U ON tcversions.updater_id = U.id  
+WHERE A.parent_id IN (4,6) AND A.parent_id = B.id 
+ORDER BY tcversions.version DESC
+
+*/
+
+// 20060313 - franciscom
+function get_by_id($id,$version_id=TC_ALL_VERSIONS, $get_active=0, $get_open=0)
+{
+	
+	if( is_array($id) )
+	{
+		  $tcid_list = implode(",",$id);
+			$where_clause = " WHERE NHA.parent_id IN ($tcid_list) ";
+			$where_clause_names = " WHERE nodes_hierarchy.id IN ($tcid_list) ";
+	}
+	else
+	{
+			$where_clause = " WHERE NHA.parent_id = {$id} ";
+			$where_clause_names = " WHERE nodes_hierarchy.id = {$id} ";
+	}
+	
+  $sql="SELECT	U.login AS updater_login,users.login as author_login,
+		    NHB.name,NHA.parent_id AS testcase_id, tcversions.*, 
+		    users.first AS author_first_name, 
+		    users.last AS author_last_name, 
+		    U.first AS updater_first_name, 
+		    U.last  AS updater_last_name
+        FROM nodes_hierarchy NHA
+        JOIN nodes_hierarchy NHB ON NHA.parent_id = NHB.id 
+        JOIN tcversions ON NHA.id = tcversions.id 
+        LEFT OUTER JOIN users ON tcversions.author_id = users.id 
+        LEFT OUTER JOIN users U ON tcversions.updater_id = U.id  
+        $where_clause 
+        ORDER BY tcversions.version DESC";
+
+  $recordset = $this->db->get_recordset($sql);
+
+ 
+  return($recordset ? $recordset : null);
+}
 
 
 

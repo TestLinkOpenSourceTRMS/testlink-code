@@ -2,7 +2,7 @@
 /** 
 *	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version $Id: planAddTCNavigator.php,v 1.9 2006/02/15 08:49:20 franciscom Exp $
+* 	@version $Id: planAddTCNavigator.php,v 1.10 2006/03/20 18:02:33 franciscom Exp $
 *	@author Martin Havlat
 * 
 * 	Navigator for feature: add Test Cases to a Test Case Suite in Test Plan. 
@@ -22,8 +22,8 @@ testlinkInitPage($db);
 $key = null;
 
 // 20050905 - fm
-$prodID   = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-$prodName = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : '';
+$tproject_id   = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+$tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : '';
 
 if(isset($_POST['filter']))
 {
@@ -38,12 +38,12 @@ if (strlen($key))
 }
 
 // 20050905 - fm	
-$treeString = generateTestSpecTree($db,$prodID, $prodName, $workPath, 1, $args);
+$treeString = generateTestSpecTree($db,$tproject_id, $tproject_name, $workPath, 1, $args);
 $tree = invokeMenu($treeString);
 $smarty = new TLSmarty;
 $smarty->assign('treeKind', TL_TREE_KIND);
 $smarty->assign('tree', $tree);
-$smarty->assign('arrKeys', selectKeywords($db,$prodID,$key));
+$smarty->assign('arrKeys', selectKeywords($db,$tproject_id,$key));
 $smarty->assign('menuUrl', $workPath);
 $smarty->assign('args', $args);
 $smarty->display('planAddTCNavigator.tpl');

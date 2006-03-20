@@ -5,9 +5,11 @@
  *
  * Filename $RCSfile: tree.class.php,v $
  *
- * @version $Revision: 1.10 $
- * @modified $Date: 2006/03/13 17:06:33 $ by $Author: franciscom $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2006/03/20 18:02:22 $ by $Author: franciscom $
  * @author Francisco Mancardi
+ *
+ * 20060316 - franciscom - bug on get_path
 */
 
 // 20060218 - franciscom
@@ -234,18 +236,6 @@ function get_path($node_id,$to_node_id=null)
       // Getting data from the node specific table
       $node_table = $this->node_tables[$this->node_types[$row['node_type_id']]];
       
-      $sql = "SELECT name FROM {$node_table} 
-      	      WHERE id = {$row['id']}";
-      $result_node = $this->db->exec_query($sql);        
-      
-      $item_name='';        
-      if( $this->db->num_rows($result_node) == 1 )
-      {
-      	$item_row  = $this->db->fetch_array($result_node);
-      	$item_name = $item_row['name'];	
-      }
-      
-      
    		// the last part of the path to $node, is the name
    		// of the parent of $node
       $node_list[] = array('id'        => $row['id'],
@@ -253,7 +243,7 @@ function get_path($node_id,$to_node_id=null)
                            'node_type_id' => $row['node_type_id'],
                            'node_order' => $row['node_order'],
                            'node_table' => $node_table,
-                           'name' => $item_name );
+                           'name' => $row['name'] );
 
 			
       // we should add the path to the parent of this node
@@ -263,6 +253,7 @@ function get_path($node_id,$to_node_id=null)
  }
  return $node_list;
 }
+
 
 
 /* 20060306 - franciscom */

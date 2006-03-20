@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: planNew.php,v $
  *
- * @version $Revision: 1.17 $
- * @modified $Date: 2006/02/25 21:48:25 $ $Author: schlundus $
+ * @version $Revision: 1.18 $
+ * @modified $Date: 2006/03/20 18:02:33 $ $Author: franciscom $
  *
  * Purpose:  Add new or edit existing Test Plan 
  *
@@ -19,7 +19,11 @@ require('../../config.inc.php');
 require("../functions/common.php");
 require("plan.inc.php");
 require_once("../../third_party/fckeditor/fckeditor.php");
+require_once('../functions/testplan.class.php'); // 20060319 - franciscom
+
 testlinkInitPage($db);
+
+$tplan_mgr = New testplan($db);
 
 // ----------------------------------------------------------------------
 // 20060101 - fm
@@ -82,8 +86,9 @@ else if($bNewTestPlan || $bEditTestPlan)
 		{
 			if ($bNewTestPlan)
 			{
-				// 20060219 - franciscom
-				$tp_id = createTestPlan($db,$args->name,$args->notes,$args->testprojectID);
+				// 20060319 - franciscom
+				$tp_id = $tplan_mgr->create($args->name,$args->notes,$args->testprojectID);
+				
 				if ($tp_id == 0)
 					$sqlResult = $db->error_msg();
 				$result = insertTestPlanPriorities($db, $tp_id);

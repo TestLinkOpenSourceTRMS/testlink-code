@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: frmWorkArea.php,v $
  *
- * @version $Revision: 1.10 $
- * @modified $Date: 2006/02/15 08:49:19 $ by $Author: franciscom $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2006/03/20 18:02:27 $ by $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -26,7 +26,7 @@ testlinkInitPage($db);
 // key  : feature
 // value: page to lauch
 $aa_tfp = array( 
-            'editTc' => 'lib/testcases/listTestCases.php?feature=tcEdit',
+            'editTc' => 'lib/testcases/listTestCases.php?feature=edit_tc',
             'assignReqs' => 'lib/testcases/listTestCases.php?feature=assignReqs',
             'searchTc' => 'lib/testcases/searchForm.php',
             'printTc' => 'lib/print/selectData.php?type=product',

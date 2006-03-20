@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: tcEdit.tpl,v 1.5 2006/03/03 16:20:58 franciscom Exp $ *}
+{* $Id: tcEdit.tpl,v 1.6 2006/03/20 18:02:12 franciscom Exp $ *}
 {* Purpose: smarty template - edit test specification: test case *}
 {*
 20060303 - franciscom
@@ -15,7 +15,7 @@
 <form method="post" action="lib/testcases/tcEdit.php?testcaseID={$testcaseID}">
 
 	<div style="float: right;">
-		<input id="submit" type="submit" name="updateTC" value="Update" />
+		<input id="do_update" type="submit" name="do_update" value="update" />
 		<input type="hidden" name="version" value="{$tc.version}" />
 	</div>	
 

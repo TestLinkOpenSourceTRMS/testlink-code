@@ -1,8 +1,9 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView.tpl,v 1.9 2006/03/03 16:20:59 franciscom Exp $
+$Id: tcView.tpl,v 1.10 2006/03/20 18:02:12 franciscom Exp $
 Purpose: smarty template - view test case in test specification
 
+20060316 - franciscom - added action
 20060303 - franciscom
 *}
 
@@ -19,14 +20,14 @@ Purpose: smarty template - view test case in test specification
 
 
 {if $can_edit == "yes" }
-
-	{include file="inc_update.tpl" result=$sqlResult item="TestCase" refresh="yes"}
+  {* 20060316 - franciscom - added action *}
+	{include file="inc_update.tpl" result=$sqlResult action=$action item="test case" refresh="yes"}
 
 	<div class="groupBtn">
 	<form method="post" action="lib/testcases/tcEdit.php?&testcaseID={$testcase[row].testcase_id}">
-		<input type="submit" name="editTC"   value="{lang_get s='btn_edit'}">
-		<input type="submit" name="deleteTC" value="{lang_get s='btn_del'}">
-		<input type="submit" name="moveTC"   value="{lang_get s='btn_mv_cp'}">
+		<input type="submit" id="edit_tc"   name="edit_tc"   value="{lang_get s='btn_edit'}">
+		<input type="submit" id="delete_tc" name="delete_tc" value="{lang_get s='btn_del'}">
+		<input type="submit" id="move_copy_tc" name="move_copy_tc"   value="{lang_get s='btn_mv_cp'}">
 	</form>
 	</div>	
 {/if}

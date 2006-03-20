@@ -1,6 +1,11 @@
-{* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: planAddTC_m1.tpl,v 1.1 2006/03/18 10:12:11 franciscom Exp $ *}
-{* Purpose: smarty template - generate a list of TC for adding to Test Plan *}
+{* 
+TestLink Open Source Project - http://testlink.sourceforge.net/ 
+$Id: planAddTC_m1.tpl,v 1.2 2006/03/20 18:02:11 franciscom Exp $
+Purpose: smarty template - generate a list of TC for adding to Test Plan 
+
+20060319 - franciscom
+*}
+
 {include file="inc_head.tpl"}
 {include file="inc_jsCheckboxes.tpl"}
 
@@ -8,9 +13,12 @@
 
 <h1>{lang_get s='title_add_test_to_plan'} '{$testPlanName|escape}'</h1>
 
+
+{if $has_tc }
+
 <form name='addTcForm' method='post'>
 <div style="padding-right: 20px; float: right;">
-	<input type='submit' name='addTC' value='{lang_get s='btn_add_selected_tc'}' />
+	<input type='submit' name='link_tc' value='{lang_get s='btn_add_selected_tc'}' />
 </div>
 
 {include file="inc_update.tpl" result=$sqlResult}
@@ -18,52 +26,44 @@
 	<div style="margin-left: 20px; font-size: smaller;"><p>{lang_get s='note_keyword_filter'} '{$key|escape}'</p></div>
 {/if}
 
+
 <div class="workBack">
 	{section name=tsuite_idx loop=$arrData}
-	<div id="div_{$arrData[tsuite_idx].main.id}">
-	    <h3>{$arrData[tsuite_idx].main.name|escape}</h3>
+	<div id="div_{$arrData[tsuite_idx].testsuite.id}">
+	    <h3>{$arrData[tsuite_idx].testsuite.name|escape}</h3>
 
     	{if $arrData[tsuite_idx].write_buttons eq 'yes'}
       	<p>
-      	<input type='button' name='{$arrData[tsuite_idx].main.name|escape}_check' 
-      	       onclick='javascript: box("div_{$arrData[tsuite_idx].main.id}", true)' 
+      	<input type='button' name='{$arrData[tsuite_idx].testsuite.name|escape}_check' 
+      	       onclick='javascript: box("div_{$arrData[tsuite_idx].testsuite.id}", true)' 
       	       value='{lang_get s='btn_check'}' />
-      	<input type='button' name='{$arrData[tsuite_idx].main.name|escape}_uncheck' 
-      	       onclick='javascript: box("div_{$arrData[tsuite_idx].main.id}", false)' 
+      	<input type='button' name='{$arrData[tsuite_idx].testsuite.name|escape}_uncheck' 
+      	       onclick='javascript: box("div_{$arrData[tsuite_idx].testsuite.id}", false)' 
       	       value='{lang_get s='btn_uncheck'}' />
   			<b> {lang_get s='check_uncheck_tc'}</b>
   			</p>
   			<p>
       {/if}
 
-      {*  
-			{section name=tcase_idx loop=$arrData[tsuite_idx].testcases}
-			  TC={$tcase_idx}
-				<input type='checkbox' name='C{$arrData[tsuite_idx].testcases[tcase_idx].id}' />
-      	<input type='hidden' name='H{$arrData[tsuite_idx].testcases[tcase_idx].id}' 
-      				 value='{$arrData[tsuite_idx].testcases[tcase_idx].id}' />
-      	{$arrData[tsuite_idx].testcases[tcase_idx].name|escape}
-      	
-				<select name="combo_tcversion">
-				{html_options options=$arrData[tsuite_idx].testcases[tcase_idx].tcversions}
-				</select>
-
-      	<br>			 
-			{/section}
-      *}
-      
+      <table>
       {foreach from=$arrData[tsuite_idx].testcases item=tcase }
-				<input type='checkbox' name='C{$tcase.id}' />
-      	<input type='hidden' name='H{$tcase.id}' 
-      				 value='{$tcase.id}' />
+				<tr {if $tcase.linked_version_id ne 0} style="background-color:yellow" {/if}>
+				<td>
+				<input type='checkbox' name='achecked_tc[{$tcase.id}]' value='{$tcase.id}' 
+				       {if $tcase.linked_version_id ne 0} checked disabled{/if}	/>
+      	<input type='hidden' name='a_tcid[{$tcase.id}]' value='{$tcase.id}' />
       	{$tcase.name|escape}
+        </td>
+        <td>
 				&nbsp;&nbsp;{lang_get s='version'}
-				<select name="combo_tcversion">
-				{html_options options=$tcase.tcversions}
+				<select name="tcversion_for_tcid[{$tcase.id}]"
+				        {if $tcase.linked_version_id ne 0}disabled{/if} >
+				{html_options options=$tcase.tcversions selected=$tcase.linked_version_id}
 				</select>
-      	<br>			 
+        </td>
+        <tr>
 			{/foreach}
-      
+      </table>
       
       </p>
 
@@ -89,6 +89,10 @@
 
 </div>
 </form>
+
+{else}
+ <h2>{lang_get s='no_testcase_available'}</h2>
+{/if}
 
 </body>
 </html>

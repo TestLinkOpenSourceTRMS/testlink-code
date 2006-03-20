@@ -2,7 +2,7 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: listTestCases.php,v 1.11 2006/03/11 23:09:37 schlundus Exp $
+* 	@version 	$Id: listTestCases.php,v 1.12 2006/03/20 18:02:37 franciscom Exp $
 * 	@author 	Martin Havlat
 * 
 * 	This page generates tree menu with test specification. It builds the
@@ -23,7 +23,7 @@ $tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectNam
 $title = lang_get('title_navigator'). ' - ' . lang_get('title_test_spec');
 if(strlen($feature))
 {
-	if ($feature == 'tcEdit')
+	if ($feature == 'edit_tc')
 	{
 		$workPath = "lib/testcases/archiveData.php";
 	} 

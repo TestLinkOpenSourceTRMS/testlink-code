@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.22 $
- * @modified $Date: 2006/03/06 17:31:01 $  by $Author: franciscom $
+ * @version $Revision: 1.23 $
+ * @modified $Date: 2006/03/20 18:02:37 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
  * @author Martin Havlat
@@ -43,8 +43,6 @@ foreach ($a_ofck as $key)
 $testprojectID = $_SESSION['testprojectID'];
 $show_newTC_form = 0;
 $smarty = new TLSmarty;
-$smarty->assign('path_htmlarea', $_SESSION['basehref'] . 'third_party/htmlarea/');
-
 $container_id = isset($_GET['containerID']) ? intval($_GET['containerID']) : 0;
 
 $testcaseID = isset($_GET['testcaseID']) ? intval($_GET['testcaseID']) : 0;
@@ -56,16 +54,19 @@ $expected_results 	= isset($_POST['expected_results']) ? strings_stripSlashes($_
 $new_container_id = isset($_POST['new_container']) ? intval($_POST['new_container']) : 0;
 $old_container_id = isset($_POST['old_container']) ? intval($_POST['old_container']) : 0;
 
+// manage the forms to collect data
+$edit_tc   = isset($_REQUEST['edit_tc']) ? 1 : 0;
+$delete_tc = isset($_POST['delete_tc']) ? 1 : 0;
+$create_tc = isset($_POST['create_tc']) ? 1 : 0;
+$move_copy_tc = isset($_POST['move_copy_tc']) ? 1 : 0;
 
-$bEditTC = isset($_REQUEST['editTC']) ? $_REQUEST['editTC'] : null;
-$bAddTC = isset($_POST['addTC']) ? 1 : 0;
-$bUpdateTC = isset($_POST['updateTC']) ? 1 : 0;
-$bNewTC = isset($_POST['newTC']) ? 1 : 0;
-$bDeleteTC = isset($_POST['deleteTC']) ? 1 : 0;
-$bSure = (isset($_GET['sure']) && $_GET['sure'] == 'yes');
-$bMoveTC = isset($_POST['moveTC']) ? 1 : 0;
-$bUpdateTCMove = isset($_POST['updateTCmove']) ? 1 : 0;
-$bUpdateTCCopy = isset($_POST['updateTCcopy']) ? 1 : 0;
+// really do the operation requested
+$do_create = isset($_POST['do_create']) ? 1 : 0;
+$do_update = isset($_POST['do_update']) ? 1 : 0;
+$do_move   = isset($_POST['do_move']) ? 1 : 0;
+$do_copy   = isset($_POST['do_copy']) ? 1 : 0;
+$do_delete = isset($_POST['do_delete']) ? 1 : 0;
+
 
 $login_name = $_SESSION['user'];
 $version = isset($_POST['version']) ? intval($_POST['version']) : 0; 
@@ -84,10 +85,10 @@ $tree_mgr = New tree($db);
 $tsuite_mgr = New testsuite($db);
 
 
-
+echo "<pre>debug"; print_r($_POST); echo "</pre>";
 
 $name_ok = 1;
-if($bAddTC || $bUpdateTC)
+if($do_create || $do_update)
 {
 	// BUGID 0000086
 	$result = lang_get('warning_empty_tc_title');	
@@ -104,7 +105,7 @@ if($bAddTC || $bUpdateTC)
 }
 
 //If the user has chosen to edit a testcase then show this code
-if($bEditTC)
+if($edit_tc)
 {
 	$setOfKeys = array();
 	$myrowTC = $tcase_mgr->get_by_id($testcaseID);
@@ -147,7 +148,7 @@ if($bEditTC)
 
 	$smarty->display($g_tpl['tcEdit']);
 } 
-else if($bUpdateTC)
+else if($do_update)
 {
 	$sqlResult = lang_get('string_contains_bad_chars');
 	if( $name_ok)
@@ -167,13 +168,21 @@ else if($bUpdateTC)
 			$sqlResult =  $db->error_msg();
 		}
 	}	
-	$tcase_mgr->show($testcaseID, $_SESSION['userID']);
+ 	$action_result='updated';
+ 	$msg_result='';
+  if( strcmp($tc_old[0]['name'],$name) != 0 )
+  {
+  	$msg_result='ok';
+  }	
+	$tcase_mgr->show($testcaseID, $_SESSION['userID'],$action_result,$msg_result);
+	
+		// $tcase_mgr->show($testcaseID, $_SESSION['userID'],$action_result,$msg_result);
 }
-else if($bNewTC)
+else if($create_tc)
 {
 	$show_newTC_form = 1;
 }
-else if($bAddTC)
+else if($do_create)
 {
 	$show_newTC_form = 1;
 	
@@ -191,48 +200,56 @@ else if($bAddTC)
 	$smarty->assign('name', $name);
 	$smarty->assign('item', 'Test case');
 }
-else if($bDeleteTC)
+else if($delete_tc)
 {
-	
 	$msg='';
-	//check to see if the user said he was sure he wanted to delete
-	if($bSure) 
+	
+	// 20060305 - franciscom
+	// check delete conditions
+	$my_ret= $tcase_mgr->check_delete_condition($testcaseID);
+	switch ($my_ret)
 	{
-		if ($tcase_mgr->delete($testcaseID))
-		{
-			$smarty->assign('sqlResult', 'ok');
-	  }
-	  else
-	  {
-			$smarty->assign('sqlResult', $db->error_msg());
-		}
-	}
-	else
-	{
-	  // 20060305 - franciscom
-	  // check delete conditions
-	  $my_ret= $tcase_mgr->check_delete_condition($testcaseID);
-	  switch ($my_ret)
-	  {
-	  	case "linked_and_executed":
-	  	$msg = " This test case has been linked to test plans <br>" .
-	  		     " and has been runned<br>" .
-	  		     " If you confirm the links to test plans, and execution related information will be removed";
-	  	break;
+		case "linked_and_executed":
+		$msg = " This test case has been linked to test plans <br>" .
+			     " and has been runned<br>" .
+			     " If you confirm the links to test plans, and execution related information will be removed";
+		break;
 
-	  	case "linked_but_not_executed":
-	  	$msg = " This test case has been linked to test plans <br>" .
-	  		     " If you confirm the links to test plans will be removed";
-	  	break;
-	  	
-	  }
+		case "linked_but_not_executed":
+		$msg = " This test case has been linked to test plans <br>" .
+			     " If you confirm the links to test plans will be removed";
+		break;
+		
 	}
+
+  $tcinfo=$tcase_mgr->get_by_id($testcaseID);
+	$smarty->assign('title', lang_get('title_del_tc') . $tcinfo[0]['name']);
 	
 	$smarty->assign('testcaseID', $testcaseID);
 	$smarty->assign('delete_message', $msg);
 	$smarty->display('tcDelete.tpl');
 }
-else if($bMoveTC)
+else if($do_delete)
+{
+	$msg='';
+	$action_result='deleted';
+  $verbose_result='ok';
+  $tcinfo=$tcase_mgr->get_by_id($testcaseID);
+
+	if (!$tcase_mgr->delete($testcaseID))
+	{
+	    $action_result='';
+			$verbose_result=$db->error_msg();
+	}
+
+	$smarty->assign('title', lang_get('title_del_tc') . $tcinfo[0]['name']);
+  $smarty->assign('sqlResult', $verbose_result);
+	$smarty->assign('testcaseID', $testcaseID);
+	$smarty->assign('delete_message', $msg);
+	$smarty->assign('action',$action_result);
+	$smarty->display('tcDelete.tpl');
+}
+else if($move_copy_tc)
 {
   // need to get the testproject for the test case
 	$tproject_id=$tcase_mgr->get_testproject($testcaseID);
@@ -252,15 +269,21 @@ else if($bMoveTC)
 
 // move test case to another category
 }
-else if($bUpdateTCMove)
+else if($do_move)
 {
 	$result = $tree_mgr->change_parent($testcaseID,$new_container_id);
   $tsuite_mgr->show($old_container_id);
 }
-else if($bUpdateTCCopy)
+else if($do_copy)
 {
-	
+	$action_result='copied';
 	$result = $tcase_mgr->copy_to($testcaseID,$new_container_id,$_SESSION['userID']);
+	
+	if($result)
+	{
+	  $msg_result='ok';
+	}
+	$tcase_mgr->show($testcaseID, $_SESSION['userID'],$action_result,$msg_result);
 	
 	//$result = copyTc($db,$catID, $testcaseID, $_SESSION['userID']);
 	//showCategory($db,$oldCat, $result,'update',$catID);

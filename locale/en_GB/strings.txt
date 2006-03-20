@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.49 $
- * @modified $Date: 2006/03/10 07:42:45 $ $Author: franciscom $
+ * @version $Revision: 1.50 $
+ * @modified $Date: 2006/03/20 18:02:41 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
@@ -618,6 +618,8 @@ $TLS_title_test_case_title = "Test Title";
 // gui/templates/tcDelete.tpl
 $TLS_btn_yes_iw2del = "Yes, delete Test Case!";
 $TLS_question_del_tc = "Really delete Test Case?";
+$TLS_title_del_tc = "Delete test case ";
+
 
 
 

@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: tcSearchView.tpl,v 1.3 2006/03/03 16:20:59 franciscom Exp $ *}
+{* $Id: tcSearchView.tpl,v 1.4 2006/03/20 18:02:12 franciscom Exp $ *}
 {* Purpose: smarty template - view searched test case *}
 {include file="inc_head.tpl"}
 <body>
@@ -15,7 +15,7 @@
 		{if $modify_tc_rights eq "yes"}
 			<tr>
 				<th>
-				<a href="lib/testcases/tcEdit.php?editTC=testcase&data={$arrTc[Row].id}" 
+				<a href="lib/testcases/tcEdit.php?edit_tc=testcase&data={$arrTc[Row].id}" 
 				target="mainframe">{lang_get s='href_test_case'} [{$arrTc[Row].id}]: {$arrTc[Row].name|escape}</a>
 				</th>
 			</tr>

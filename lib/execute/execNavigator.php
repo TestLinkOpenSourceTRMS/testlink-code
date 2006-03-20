@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: execNavigator.php,v $
  *
- * @version $Revision: 1.15 $
- * @modified $Date: 2006/02/04 20:13:13 $ by $Author: schlundus $
+ * @version $Revision: 1.16 $
+ * @modified $Date: 2006/03/20 18:02:18 $ by $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -28,6 +28,10 @@ require_once('treeMenu.inc.php');
 require_once('exec.inc.php');
 require_once('builds.inc.php');
 
+require_once 'tree.class.php'; // 20060319 - franciscom
+require_once 'testplan.class.php'; // 20060319 - franciscom
+
+
 testlinkInitPage($db);
 
 // global var for dtree only
@@ -38,30 +42,24 @@ $filterOwner = array (array('id' => $_SESSION['user'], 'selected' => $selectOwne
 $tcID = isset($_POST['tcID']) ? intval($_POST['tcID']) : null;
 
 // 20050807 - fm - function interface changed
+/*
 $optBuild = createBuildMenu($db,$_SESSION['testPlanId']);
 $optBuildSelected = isset($_POST['build']) ? $_POST['build'] : key($optBuild);
 $optResult = createResultsMenu($db);
 $optResultSelected = isset($_POST['result']) ? $_POST['result'] : 'All';
+*/
 
 // generate tree 
 $menuUrl = null;
 
 $SP_html_help_file = TL_INSTRUCTIONS_RPATH . $_SESSION['locale'] . "/executeTest.html";
-$sMenu = generateExecTree($db,$optBuildSelected,$SP_html_help_file,$menuUrl,$tcID);
-$tree = invokeMenu($sMenu);
 
-//20050828 - scs - quick check to see if the wanted tc is in the testplan
+// 20060319 - franciscom
+$sMenu = generateExecTree($db,$_SESSION['testPlanId'],$_SESSION['testPlanName'],
+                          $optBuildSelected,$SP_html_help_file,$menuUrl,$tcID);
+$tree = invokeMenu($sMenu);
 $tcData = null;
 $testCaseID = null;
-if ($tcID)
-{
-	$query = " SELECT testcase.id FROM component,category,testcase " .
-	         " WHERE projID = {$_SESSION['testPlanId']} " .
-	         " AND compid = component.id AND category.id = testcase.catid AND mgttcid = {$tcID}";
-	$tcData = selectData($db,$query);
-	if ($tcData)
-		$testCaseID = $tcData[0]['id'];
-}
 
 $smarty = new TLSmarty;
 $smarty->assign('treeKind', TL_TREE_KIND);
@@ -71,8 +69,9 @@ $smarty->assign('optBuildSelected', $optBuildSelected);
 $smarty->assign('optResult', $optResult);
 $smarty->assign('optResultSelected', $optResultSelected); 
 $smarty->assign('arrOwner', $filterOwner);
+
 // 20050807 - fm - function interface changed
-$smarty->assign('filterKeyword', filterKeyword($db,$_SESSION['testPlanId']));
+//$smarty->assign('filterKeyword', filterKeyword($db,$_SESSION['testPlanId']));
 $smarty->assign('tcID',$tcID);
 $smarty->assign('testCaseID',$testCaseID);
 $smarty->assign('tcIDFound', $tcData ? 1 : 0);
@@ -90,10 +89,13 @@ $smarty->display('execNavigator.tpl');
 * 	20050528 - fm added purl_to_help argument
 *
 */
-function generateExecTree(&$db,$build,$purl_to_help,&$menuUrl,$tcIDFilter = null)
+function generateExecTree(&$db,$tplan_id,$tplan_name,$build,$purl_to_help,&$menuUrl,$tcIDFilter = null)
 {
 	global $dtreeCounter;
-	global $db; 
+	
+	$tree_mgr = New tree($db);
+	$tplan_mgr = New testplan($db);
+
 	
 	//If the user submits the sorting form
 	$keyword = 'All';
@@ -114,26 +116,149 @@ function generateExecTree(&$db,$build,$purl_to_help,&$menuUrl,$tcIDFilter = null
 
 	$dtreeCategoryId = null;
 	$menuUrl = 'lib/execute/execSetResults.php?keyword=' . $keyword . 
-			'&build=' . $build . '&owner=' . $owner;
+			       '&build=' . $build . '&owner=' . $owner;
 	$menustring = null;
 	//root of tree
-	$testPlanName = filterString($_SESSION['testPlanName']);
+	// $testPlanName = filterString($_SESSION['testPlanName']);
 	
 	if (TL_TREE_KIND == 'LAYERSMENU') 
 	{
-		$menustring = ".|" . $testPlanName . "|" . $purl_to_help . "|Test Case Suite||workframe|\n";
+		$menustring = ".|" . $tplan_name . "|" . $purl_to_help . "|Test Case Suite||workframe|\n";
 	}
 	elseif (TL_TREE_KIND == 'DTREE')
 	{
-		$menustring .= "tlTree.add(" . $dtreeCounter++ . ",-1,'" . $testPlanName . 
+		$menustring .= "tlTree.add(" . $dtreeCounter++ . ",-1,'" . $tplan_name . 
 		               "','" . $purl_to_help . "');\n";
 	}
 	elseif (TL_TREE_KIND == 'JTREE')	
 	{
 		$help_html = $purl_to_help . "/testExecute.html";
-		$menustring .= "['" . $testPlanName . "','SP()',\n";
+		$menustring .= "['" . $tplan_name . "','SP()',\n";
 	}
 		
+
+  $xx=$tplan_mgr->get_linked_tcversions($tplan_id);
+  $test_spec=array();
+  $zz=array();
+  $added=array();
+  $first_level=array();
+  $idx=0;
+ 
+ 
+  // Get the path for every test case, grouping test cases that
+  // have same parent.
+  foreach($xx as $item)
+  {
+ 	  $path=$tree_mgr->get_path($item['tc_id']);
+
+ 	  if( !isset($first_level[$path[0]['id']]) )
+  	{
+      $first_level[$path[0]['id']]=$idx; 
+    }
+ 	  
+ 	  if( isset($added[$item['testsuite_id']]) )
+  	{
+  		$pos = $added[$item['testsuite_id']];
+  	  $zz[$pos][]=end($path);
+  	}
+    else
+    {
+    	$added[$item['testsuite_id']]=$idx;
+  		$zz[]=$path;
+  	}
+    $idx++;
+  }
+  
+   
+  // we can have branchs with common path, but still not joined
+  // that's what we want to solve with the following process.  
+  // Now group test suites under it's parent 
+  $added=array();
+  $gdx=0;
+  foreach($zz as $item)
+  {
+  	if( isset($added[$item[0]['id']]) )
+  	{
+  		// look for the point where to join
+  		$pos=$first_level[$item[0]['id']];
+      foreach( $zz[$pos] as $the_k => $the_e)
+      {
+      	  if( $the_e['id'] != $item[$the_k]['id'] )
+      	  {
+ 	          $qty=count($item)-1;
+            for( $jdx=$the_k; $jdx <= $qty ; $jdx++)
+            {
+      	  			$zz[$pos][]=$item[$jdx];
+        	  }
+        	  break;
+        	}  
+      }
+      $zz[$gdx]=null;
+  	}
+  	else
+  	{
+  		$added[$item[0]['id']]=$item[0]['id'];
+  	}
+  	$gdx++;
+ 	}  
+    
+ 	// Now create the data structure that like the tree drawing algorithm
+ 	foreach($zz as $item)
+  {
+    $test_spec=array_merge($test_spec,$item);
+  }
+ 
+    
+  // 20060223 - franciscom
+  if( count($test_spec) > 0 )
+  {
+   	$pivot=$test_spec[0];
+   	$the_level=1;
+    $level=array();
+  
+   	foreach ($test_spec as $elem)
+   	{
+   	 $current = $elem;
+  
+     if( $pivot['parent_id'] == $current['parent_id'])
+     {
+       $the_level=$the_level;
+     }
+     else if ($pivot['id'] == $current['parent_id'])
+     {
+     	  $the_level++;
+     	  $level[$current['parent_id']]=$the_level;
+     }
+     else 
+     {
+     	  $the_level=$level[$current['parent_id']];
+     }
+     
+     // 20060303 - franciscom - added icon
+     $icon="";
+     if( $hash_id_descr[$current['node_type_id']] == "testcase") 
+     {
+       $icon="gnome-starthere-mini.png";	
+     }
+     
+     $menustring .= str_repeat('.',$the_level) . ".|" . 
+                    " " . $current['name'] . "|" . 
+                    $linkto . "?edit=" . $hash_id_descr[$current['node_type_id']] . 
+                              "&data=" . $current['id'] . $getArguments . "|" . 
+                    $hash_id_descr[$current['node_type_id']] . "|" . $icon . "|" . "workframe" ."|\n"; 
+     
+     // update pivot
+     $level[$current['parent_id']]= $the_level;
+     $pivot=$elem;
+   	}
+	}
+	
+	//echo $menustring;
+	return $menustring;
+
+
+
+
 	// 20050915 - fm - mgtcomponent 	
 	$sql = " SELECT component.id, mgtcomponent.name " . 
 	       " FROM component,mgtcomponent " .

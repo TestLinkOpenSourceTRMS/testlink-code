@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: containerView.tpl,v 1.12 2006/03/11 10:19:48 franciscom Exp $ *}
+{* $Id: containerView.tpl,v 1.13 2006/03/20 18:02:09 franciscom Exp $ *}
 {* 
 Purpose: smarty template - view test specification containers 
 
@@ -81,7 +81,7 @@ Purpose: smarty template - view test specification containers
 		{* Add a new testcase - 20060226 - franciscom *}
 		<div>
 		<form method="post" action="lib/testcases/tcEdit.php?containerID={$container_data.id}" />
-			<input type="submit" name="newTC" value="{lang_get s='btn_new_tc'}" />  
+			<input type="submit" id="create_tc" name="create_tc" value="{lang_get s='btn_new_tc'}" />  
 		</form>
 		</div>
 	{/if}

@@ -1,8 +1,9 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcMove.tpl,v 1.4 2006/03/06 17:30:54 franciscom Exp $ 
+$Id: tcMove.tpl,v 1.5 2006/03/20 18:02:12 franciscom Exp $ 
 Purpose: smarty template - move/copy test case 
 
+20060316 - franciscom - html input names updated
 20060305 - franciscom
 *}
 
@@ -15,8 +16,8 @@ Purpose: smarty template - move/copy test case
 <div class="workBack">
 <form method="post" action="lib/testcases/tcEdit.php?testcaseID={$testcaseID}">
 	<div class="groupBtn">
-			<input id="submit1" type="submit" name="updateTCmove" value="{lang_get s='btn_mv'}" />
-			<input id="submit2" type="submit" name="updateTCcopy" value="{lang_get s='btn_cp'}" />
+			<input id="do_move" type="submit" name="do_move" value="{lang_get s='btn_mv'}" />
+			<input id="do_copy" type="submit" name="do_copy" value="{lang_get s='btn_cp'}" />
 			<input type="hidden" name="old_container" value="{$old_container}" />
 		</div>	
 	<p>{lang_get s='inst_move'}</p>

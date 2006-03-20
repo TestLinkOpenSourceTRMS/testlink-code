@@ -1,5 +1,5 @@
 {* Testlink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: inc_update.tpl,v 1.9 2006/03/10 22:35:57 schlundus Exp $ *}
+{* $Id: inc_update.tpl,v 1.10 2006/03/20 18:02:11 franciscom Exp $ *}
 {* Purpose: smarty template - show SQL update result *}
 {* INPUT: $result (mandatory) = [ok, sql_error_description] 
 			If $result is empty do nothing.
@@ -43,7 +43,7 @@
 	lang_get('Requirement');
 	lang_get('Milestone');
 *}
-    {lang_get s=$action var='action'}
+  {lang_get s=$action var='action'}
 	{lang_get s=$item var='item'}
 	
 	<div class="error">

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: execNavigator.php,v $
  *
- * @version $Revision: 1.16 $
- * @modified $Date: 2006/03/20 18:02:18 $ by $Author: franciscom $
+ * @version $Revision: 1.17 $
+ * @modified $Date: 2006/03/21 10:51:12 $ by $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -136,13 +136,15 @@ function generateExecTree(&$db,$tplan_id,$tplan_name,$build,$purl_to_help,&$menu
 		$menustring .= "['" . $tplan_name . "','SP()',\n";
 	}
 		
-
+  $mtime_start = array_sum(explode(" ",microtime()));
   $xx=$tplan_mgr->get_linked_tcversions($tplan_id);
   $test_spec=array();
   $zz=array();
   $added=array();
   $first_level=array();
+  $debug_counter=array();
   $idx=0;
+  $jdx=0;
  
  
   // Get the path for every test case, grouping test cases that
@@ -151,24 +153,27 @@ function generateExecTree(&$db,$tplan_id,$tplan_name,$build,$purl_to_help,&$menu
   {
  	  $path=$tree_mgr->get_path($item['tc_id']);
 
+    // echo "<pre>debug PATH di {$item['tc_id']} = " ; print_r($path); echo "</pre>";
+    
  	  if( !isset($first_level[$path[0]['id']]) )
   	{
-      $first_level[$path[0]['id']]=$idx; 
+      $first_level[$path[0]['id']]=$jdx++; 
     }
  	  
  	  if( isset($added[$item['testsuite_id']]) )
   	{
   		$pos = $added[$item['testsuite_id']];
   	  $zz[$pos][]=end($path);
+      $debug_counter[$item['testsuite_id']]++;
   	}
     else
     {
-    	$added[$item['testsuite_id']]=$idx;
+    	$added[$item['testsuite_id']]=$idx++;
+  		$debug_counter[$item['testsuite_id']]=1;
   		$zz[]=$path;
   	}
-    $idx++;
+    
   }
-  
    
   // we can have branchs with common path, but still not joined
   // that's what we want to solve with the following process.  
@@ -252,6 +257,10 @@ function generateExecTree(&$db,$tplan_id,$tplan_name,$build,$purl_to_help,&$menu
      $pivot=$elem;
    	}
 	}
+	
+	$mtime_stop = array_sum(explode(" ",microtime()));
+	$ttime=$mtime_stop - $mtime_start;
+	//echo "Total Time = $ttime (millisec) <br>";
 	
 	//echo $menustring;
 	return $menustring;

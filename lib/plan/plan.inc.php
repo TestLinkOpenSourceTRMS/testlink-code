@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: plan.inc.php,v $
- * @version $Revision: 1.30 $
- * @modified $Date: 2006/03/13 09:37:51 $ $Author: franciscom $
+ * @version $Revision: 1.31 $
+ * @modified $Date: 2006/03/22 11:54:59 $ $Author: franciscom $
  * @author 	Martin Havlat
  *
  * Functions for management: 
@@ -186,11 +186,11 @@ function deleteTestCasesByCategories(&$db,$catIDs)
 */
 function deleteTestPlanBuilds(&$db,$tpID, $buildID=0)
 {
-	$sql = "DELETE FROM build WHERE projid=" . $tpID ;
+	$sql = "DELETE FROM builds WHERE testplan_id=" . $tpID ;
 	       
 	if($buildID)
 	{       
-	   $sql .=  " AND build.id=" . $buildID;
+	   $sql .=  " AND builds.id=" . $buildID;
 	}       
 	$result = $db->exec_query($sql);
 	
@@ -578,9 +578,9 @@ function del_component_deep(&$db,$compID)
 */
 function updateTestPlanBuild(&$db,$buildID,$buildName,$notes)
 {
-	$sql = " UPDATE build " .
+	$sql = " UPDATE builds " .
 	       " SET name='" . $db->prepare_string($buildName) . "'," .  
-	       "     note='" . $db->prepare_string($notes) . "'" .
+	       "     notes='" . $db->prepare_string($notes) . "'" .
 	       " WHERE id=" . $buildID ;
 	       
 	$result = $db->exec_query($sql);

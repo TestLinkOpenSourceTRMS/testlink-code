@@ -5,26 +5,26 @@
  *
  * Filename $RCSfile: buildNew.php,v $
  *
- * @version $Revision: 1.19 $
- * @modified $Date: 2006/03/22 11:56:40 $ $Author: franciscom $
+ * @version $Revision: 1.20 $
+ * @modified $Date: 2006/03/22 12:05:49 $ $Author: franciscom $
+ *
+ *
  * 20051006 - fm - added edit build
  * 20050826 - fm - htmlarea replaced with fckeditor
  * 20050710 - scs - refactored - removed build_label when deleting and editing
  * 20060311 - kl - adjusted SQL queries to comply with 1.7 schema
+ * 20060322 - franciscom - using new classes
 */
 require('../../config.inc.php');
 require("../functions/common.php");
 require_once("plan.inc.php");
 require("../functions/builds.inc.php");
 require_once("../../third_party/fckeditor/fckeditor.php");
-
 require("../functions/testplan.class.php");  // 20060322 - franciscom
-
 
 testlinkInitPage($db);
 
 $tplan_mgr=New testplan($db);
-
 
 $tpID    = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0;
 $buildID = isset($_REQUEST['buildID']) ? intval($_REQUEST['buildID']) : 0;
@@ -60,8 +60,6 @@ if (strlen($build_name))
 if(isset($_REQUEST['newBuild']))
 {
 
-  echo "<pre>debug"; print_r($_POST); echo "</pre>";
-  
 	if ($can_insert_or_update)
 	{
 		if (!insertTestPlanBuild($db,$build_name,$tpID,$notes))
@@ -77,8 +75,7 @@ if(isset($_REQUEST['newBuild']))
 if(isset($_REQUEST['del_build']))
 {
 	$sqlResult = 'ok';
-	// 20050910 - fm - (my typo bug)
-	if (!deleteTestPlanBuild($db,$tpID,$buildID))
+	if (!delete_build($db,$buildID))
 	{
 		$sqlResult = lang_get("cannot_delete_build");
 	}
@@ -111,17 +108,11 @@ if(isset($_REQUEST['edit_build']))
 	}
 }
 
-//$all_builds = $tplan_mgr->get_builds_for_html_options($tpID);
-//$the_builds = getBuilds($db,$tpID, " ORDER by builds.name ");
-//$notes = getBuildsAndNotes($db,$tpID);
-
+// Refesh data after operation
+$the_builds = $tplan_mgr->get_builds($tpID);
 
 $smarty->assign('TPname', $tpName);
 $smarty->assign('arrBuilds', $the_builds);
-
-echo "<pre>debug"; print_r($the_builds); echo "</pre>";
-
-//$smarty->assign('buildNotes', $notes);
 $smarty->assign('build_name', $build_name);
 $smarty->assign('notes', $of->CreateHTML());
 $smarty->assign('button_name', $build_action);

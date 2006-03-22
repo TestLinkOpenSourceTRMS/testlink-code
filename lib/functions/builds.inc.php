@@ -1,6 +1,6 @@
 <?php
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: builds.inc.php,v 1.18 2006/03/11 22:33:28 kevinlevy Exp $
+* $Id: builds.inc.php,v 1.19 2006/03/22 12:05:48 franciscom Exp $
 * 
 * @author Martin Havlat
 *
@@ -8,6 +8,7 @@
 *
 * 20060108 - fm - ADODB
 * 20060311 - kl - adjusting queries to be compliant with 1.7 schema
+* 20060322 - franciscom - 
 */
 require_once('../../config.inc.php');
 require_once("../functions/common.php");
@@ -114,6 +115,16 @@ function getBuild_by_id(&$db,$buildID)
   $myrow = $db->fetch_array($result);
 	return($myrow);
 }
+
+// 20060322 - franciscom
+function delete_build(&$db,$build_id)
+{
+	$result = 1;
+	$sql = "DELETE FROM builds WHERE builds.id={$build_id}";
+	$result = $result && $db->exec_query($sql);
+	return $result ? 1 : 0;
+}
+
 
 
 ?>

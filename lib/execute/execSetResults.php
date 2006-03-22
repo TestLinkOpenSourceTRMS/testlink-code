@@ -4,20 +4,11 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.22 $
- * @modified $Date: 2006/02/19 13:03:32 $ $Author: schlundus $
+ * @version $Revision: 1.23 $
+ * @modified $Date: 2006/03/22 11:56:40 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
- * 20060207 - franciscom - BUGID 0000303 - Solution by: scorpfromhell
- * 20051219 - am - build was displayed
- * 20051119 - Francisco Mancardi - BUGID 0000232: Only admin or leader can update test results
- * 20051119 - Francisco Mancardi - BUGID 0000232: Only admin or leader can update test results
- * 20050919 - Francisco Mancardi - refactoring SQL and PHP 
- * 20050911 - Francisco Mancardi - refactoring  
- * 20050825 - scs - added buginterface to smarty
- * 20050821 - Francisco Mancardi - refactoring decrease level of global coupling 
- * 20050815 - scs - code optimization
  *
 **/
 require_once('../../config.inc.php');

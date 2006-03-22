@@ -1,9 +1,7 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: buildNew.tpl,v 1.6 2005/12/29 20:59:00 schlundus Exp $ *}
+{* $Id: buildNew.tpl,v 1.7 2006/03/22 11:56:21 franciscom Exp $ *}
 {* Purpose: smarty template - Add new build and show existing 
 
- ???????? - fm - replace html with fckedit
- 20051008 - scs - removed build label while editing and deleting
 *}
 {include file="inc_head.tpl"}
 
@@ -52,11 +50,11 @@ var warning_delete_build = "{lang_get s='warning_delete_build'}";
 			<th>{lang_get s='th_build_notes'}</th>
 			<th>{lang_get s='th_delete'}</th>
 		</tr>
-		{foreach item=build key=b from=$arrBuilds}
+		{foreach item=build from=$arrBuilds}
 			<tr>
-				<td><a href="lib/plan/buildNew.php?edit_build=load_info&buildID={$b}">{$build|escape}</td>
-				<td><pre style="display:inline">{$buildNotes[$b]}</pre></td>
-				<td><a href="javascript:deleteBuild_onClick({$b})"><img style="border:none" alt="{lang_get s='alt_delete_build'}" src="icons/thrash.png"/></a></td>
+				<td><a href="lib/plan/buildNew.php?edit_build=load_info&buildID={$build.id}">{$build.name|escape}</td>
+				<td><pre style="display:inline">{$build.notes}</pre></td>
+				<td><a href="javascript:deleteBuild_onClick({$build.id})"><img style="border:none" alt="{lang_get s='alt_delete_build'}" src="icons/thrash.png"/></a></td>
 			</tr>
 		{/foreach}
 	</table>

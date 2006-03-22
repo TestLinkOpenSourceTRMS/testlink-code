@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: buildNew.php,v $
  *
- * @version $Revision: 1.18 $
- * @modified $Date: 2006/03/11 22:14:20 $ $Author: kevinlevy $
+ * @version $Revision: 1.19 $
+ * @modified $Date: 2006/03/22 11:56:40 $ $Author: franciscom $
  * 20051006 - fm - added edit build
  * 20050826 - fm - htmlarea replaced with fckeditor
  * 20050710 - scs - refactored - removed build_label when deleting and editing
@@ -17,22 +17,29 @@ require("../functions/common.php");
 require_once("plan.inc.php");
 require("../functions/builds.inc.php");
 require_once("../../third_party/fckeditor/fckeditor.php");
+
+require("../functions/testplan.class.php");  // 20060322 - franciscom
+
+
 testlinkInitPage($db);
+
+$tplan_mgr=New testplan($db);
+
 
 $tpID    = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0;
 $buildID = isset($_REQUEST['buildID']) ? intval($_REQUEST['buildID']) : 0;
 $build_name = isset($_REQUEST['build_name']) ? trim(strings_stripSlashes($_REQUEST['build_name'])) : null;
 $notes = isset($_REQUEST['notes']) ? strings_stripSlashes($_REQUEST['notes']) : null;
 $tpName = $_SESSION['testPlanName'];
+$the_builds = $tplan_mgr->get_builds($tpID);
 
-$the_builds = getBuilds($db,$tpID, " ORDER BY builds.name ");
+
 $smarty = new TLSmarty();
 
 $of = new fckeditor('notes') ;
 $of->BasePath = $_SESSION['basehref'] . 'third_party/fckeditor/';
 $of->ToolbarSet = 'TL_Medium';
 
-// 20051005 - fm
 $build_action = 'newBuild';
 $button_value = lang_get('btn_create');
 
@@ -52,6 +59,9 @@ if (strlen($build_name))
 
 if(isset($_REQUEST['newBuild']))
 {
+
+  echo "<pre>debug"; print_r($_POST); echo "</pre>";
+  
 	if ($can_insert_or_update)
 	{
 		if (!insertTestPlanBuild($db,$build_name,$tpID,$notes))
@@ -68,7 +78,7 @@ if(isset($_REQUEST['del_build']))
 {
 	$sqlResult = 'ok';
 	// 20050910 - fm - (my typo bug)
-	if (!deleteTestPlanBuild($tpID,$buildID))
+	if (!deleteTestPlanBuild($db,$tpID,$buildID))
 	{
 		$sqlResult = lang_get("cannot_delete_build");
 	}
@@ -81,9 +91,9 @@ if(isset($_REQUEST['edit_build']))
 {
 	if(strcasecmp($_REQUEST['edit_build'], "load_info") == 0 )
 	{
-		$my_b_info = getBuild_by_id($buildID);
+		$my_b_info = getBuild_by_id($db,$buildID);
 		$build_name = $my_b_info['name'];
-		$of->Value = $my_b_info['note'];
+		$of->Value = $my_b_info['notes'];
 		$build_action = 'edit_build';
 		$button_value = lang_get('btn_save');
 	}
@@ -93,7 +103,7 @@ if(isset($_REQUEST['edit_build']))
 		$button_value = lang_get('btn_create');
 		if ($can_insert_or_update)
 		{
-		   	if (!updateTestPlanBuild($buildID,$build_name,$notes))
+		   	if (!updateTestPlanBuild($db,$buildID,$build_name,$notes))
 		 		$sqlResult = lang_get("cannot_update_build");
 		}
 		$smarty->assign('sqlResult', $sqlResult);
@@ -101,14 +111,17 @@ if(isset($_REQUEST['edit_build']))
 	}
 }
 
-// 20051002 - fm - change order by
-$the_builds = getBuilds($db,$tpID, " ORDER by builds.name ");
-$notes = getBuildsAndNotes($db,$tpID);
+//$all_builds = $tplan_mgr->get_builds_for_html_options($tpID);
+//$the_builds = getBuilds($db,$tpID, " ORDER by builds.name ");
+//$notes = getBuildsAndNotes($db,$tpID);
 
 
 $smarty->assign('TPname', $tpName);
 $smarty->assign('arrBuilds', $the_builds);
-$smarty->assign('buildNotes', $notes);
+
+echo "<pre>debug"; print_r($the_builds); echo "</pre>";
+
+//$smarty->assign('buildNotes', $notes);
 $smarty->assign('build_name', $build_name);
 $smarty->assign('notes', $of->CreateHTML());
 $smarty->assign('button_name', $build_action);

@@ -2,7 +2,7 @@
 /** 
 *	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version $Id: planAddTCNavigator.php,v 1.10 2006/03/20 18:02:33 franciscom Exp $
+* 	@version $Id: planAddTCNavigator.php,v 1.11 2006/03/22 11:56:40 franciscom Exp $
 *	@author Martin Havlat
 * 
 * 	Navigator for feature: add Test Cases to a Test Case Suite in Test Plan. 
@@ -37,8 +37,14 @@ if (strlen($key))
 	$args = '&key=' . $key;
 }
 
-// 20050905 - fm	
-$treeString = generateTestSpecTree($db,$tproject_id, $tproject_name, $workPath, 1, $args);
+// 20050905 - fm
+//$linked_versions=$tplan_mgr->get_linked_tcversions($tplan_id);	
+//$treeString = generateTestSpecTree($db,$tproject_id, $tproject_name, 
+//                                   $workPath, 1, $args,$linked_versions);
+                                   
+$treeString = generateTestSpecTree($db,$tproject_id, $tproject_name, 
+                                   $workPath, 1, $args);
+                                   
 $tree = invokeMenu($treeString);
 $smarty = new TLSmarty;
 $smarty->assign('treeKind', TL_TREE_KIND);

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: execNavigator.php,v $
  *
- * @version $Revision: 1.17 $
- * @modified $Date: 2006/03/21 10:51:12 $ by $Author: franciscom $
+ * @version $Revision: 1.18 $
+ * @modified $Date: 2006/03/22 11:56:40 $ by $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -34,6 +34,9 @@ require_once 'testplan.class.php'; // 20060319 - franciscom
 
 testlinkInitPage($db);
 
+// 20060321 - franciscom
+$tplan_mgr = New testplan($db);
+
 // global var for dtree only
 $dtreeCounter = 0; 
 $treeColored = (isset($_POST['colored']) && ($_POST['colored'] == 'result')) ? 'selected="selected"' : null;
@@ -42,9 +45,14 @@ $filterOwner = array (array('id' => $_SESSION['user'], 'selected' => $selectOwne
 $tcID = isset($_POST['tcID']) ? intval($_POST['tcID']) : null;
 
 // 20050807 - fm - function interface changed
-/*
-$optBuild = createBuildMenu($db,$_SESSION['testPlanId']);
+//$optBuild = $tplan_mgr->create_build_menu($_SESSION['testPlanId']);
+
+$optBuild = $tplan_mgr->get_builds_for_html_options($_SESSION['testPlanId']);
+
 $optBuildSelected = isset($_POST['build']) ? $_POST['build'] : key($optBuild);
+
+echo "<pre>debug" . __FUNCTION__; print_r($optBuild); echo "</pre>";
+/*
 $optResult = createResultsMenu($db);
 $optResultSelected = isset($_POST['result']) ? $_POST['result'] : 'All';
 */
@@ -95,6 +103,9 @@ function generateExecTree(&$db,$tplan_id,$tplan_name,$build,$purl_to_help,&$menu
 	
 	$tree_mgr = New tree($db);
 	$tplan_mgr = New testplan($db);
+
+  $hash_descr_id = $tree_mgr->get_available_node_types();
+  $hash_id_descr = array_flip($hash_descr_id);
 
 	
 	//If the user submits the sorting form
@@ -152,8 +163,6 @@ function generateExecTree(&$db,$tplan_id,$tplan_name,$build,$purl_to_help,&$menu
   foreach($xx as $item)
   {
  	  $path=$tree_mgr->get_path($item['tc_id']);
-
-    // echo "<pre>debug PATH di {$item['tc_id']} = " ; print_r($path); echo "</pre>";
     
  	  if( !isset($first_level[$path[0]['id']]) )
   	{
@@ -246,11 +255,29 @@ function generateExecTree(&$db,$tplan_id,$tplan_name,$build,$purl_to_help,&$menu
        $icon="gnome-starthere-mini.png";	
      }
      
+     
+     /*
      $menustring .= str_repeat('.',$the_level) . ".|" . 
                     " " . $current['name'] . "|" . 
                     $linkto . "?edit=" . $hash_id_descr[$current['node_type_id']] . 
                               "&data=" . $current['id'] . $getArguments . "|" . 
                     $hash_id_descr[$current['node_type_id']] . "|" . $icon . "|" . "workframe" ."|\n"; 
+     */               
+     
+     $menustring .= str_repeat('.',$the_level) . ".|" . 
+                         " " . $current['name'] . "|" . 
+                    $menuUrl . "&level=" . $hash_id_descr[$current['node_type_id']] . 
+                               "&id=" . $current['id'] . "|" . 
+                               $hash_id_descr[$current['node_type_id']] . "|" .
+                               $icon . "|" . "workframe" ."|\n";
+                    
+     
+                    /*
+                    "?edit=" . $hash_id_descr[$current['node_type_id']] . 
+                              "&data=" . $current['id'] . $getArguments . "|" . 
+                    $hash_id_descr[$current['node_type_id']] . "|" . $icon . "|" . "workframe" ."|\n"; 
+                    */
+     
      
      // update pivot
      $level[$current['parent_id']]= $the_level;

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: attachmentupload.php,v $
  *
- * @version $Revision: 1.1 $
- * @modified $Date: 2006/02/22 20:26:38 $ by $Author: schlundus $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2006/03/23 20:46:27 $ by $Author: schlundus $
  *
  * Upload dialog
 **/
@@ -17,14 +17,14 @@ testlinkInitPage($db);
 
 $id = isset($_GET['id'])? $_GET['id'] : 0;
 $tableName = isset($_GET['tableName'])? $_GET['tableName'] : null;
-$bPostBack = isset($_POST);
+$bPostBack = sizeof($_POST);
 $bUploaded = false;
 
 if ($bPostBack)
 {
 	$fInfo  = isset($HTTP_POST_FILES['uploadedFile']) ? $HTTP_POST_FILES['uploadedFile'] : null;
 	$title = isset($_POST['title']) ? $_POST['title'] : "";
-	
+	$id = isset($_POST['id'])? intval($_POST['id']) : 0;
 	if ($fInfo)
 	{
 		$error = isset($fInfo['error']) ? $fInfo['error'] : 0;
@@ -32,10 +32,10 @@ if ($bPostBack)
 		$fSize = isset($fInfo['size']) ? $fInfo['size'] : 0;
 		$fType = isset($fInfo['type']) ? $fInfo['type'] : '';
 		$fTmpName = isset($fInfo['tmp_name']) ? $fInfo['tmp_name'] : '';
-		if ($fSize && strlen($fTmpName) && !$bError)
+		$fContents = null;
+		if ($fSize && strlen($fTmpName))
 		{
 			$fExt = getFileExtension(isset($fInfo['name']) ? ($fInfo['name']) : '',"bin");
-			$fContents = null;
 			$destFPath = null;
 			$destFName = getUniqueFileName($fExt);
 			
@@ -49,10 +49,10 @@ if ($bPostBack)
 				$fContents = getFileContentsForDBRepository($fTmpName,$destFName);
 				$bUploaded = sizeof($fContents);
 			}
-			unlink($fTmpName);			
+			@unlink($fTmpName);			
 		}
 		if ($bUploaded)
-			$bUploaded = insertAttachment(&$db,$id,$tableName,$fName,$destFPath,$fContent,$fType,$fSize,$title);
+			$bUploaded = insertAttachment(&$db,$id,$tableName,$fName,$destFPath,$fContents,$fType,$fSize,$title);
 	}
 }
 

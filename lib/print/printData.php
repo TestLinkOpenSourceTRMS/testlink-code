@@ -2,7 +2,7 @@
 /**
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/ 
 *
-* @version 	$Id: printData.php,v 1.15 2006/02/15 08:49:54 franciscom Exp $
+* @version 	$Id: printData.php,v 1.16 2006/03/23 20:46:30 schlundus Exp $
 *	@author 	Martin Havlat
 * 
 * Shows the data that will be printed.
@@ -48,7 +48,7 @@ function print_header(&$db,$title, $toc)
 	$title = lang_get('title_test_spec') . "-" . htmlspecialchars($title);
 	
 	$CONTENT_HEAD .= printHeader($title,$_SESSION['basehref']);
-	$CONTENT_HEAD .= printFirstPage($title, $prodName, $prod_data['notes'], $my_userID);
+	$CONTENT_HEAD .= printFirstPage($db,$title, $prodName, $prod_data['notes'], $my_userID);
 
 	if ($toc)
 		$CONTENT_HEAD .= '<div class="toc"><h2>'.lang_get('title_toc').'</h2>';

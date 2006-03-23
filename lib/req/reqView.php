@@ -4,23 +4,17 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqView.php,v $
- * @version $Revision: 1.5 $
- * @modified $Date: 2006/01/18 16:59:41 $ by $Author: franciscom $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2006/03/23 20:46:30 $ by $Author: schlundus $
  * @author Martin Havlat
  * 
  * Screen to view content of requirement.
  * 20060103 - scs - ADOdb changes
  */
- 
-////////////////////////////////////////////////////////////////////////////////
-
 require_once('../../config.inc.php');
 require_once('common.php');
 require_once('requirements.inc.php');
 require_once('users.inc.php');
-
-
-// init page 
 testlinkInitPage($db);
 
 $idReq = isset($_GET['idReq']) ? strings_stripSlashes($_GET['idReq']) : null;

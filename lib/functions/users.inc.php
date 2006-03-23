@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: users.inc.php,v $
  *
- * @version $Revision: 1.31 $
- * @modified $Date: 2006/02/25 21:48:24 $ $Author: schlundus $
+ * @version $Revision: 1.32 $
+ * @modified $Date: 2006/03/23 20:46:28 $ $Author: schlundus $
  *
  * Functions for usermanagement
  *
@@ -223,7 +223,6 @@ function setUserSession(&$db,$user, $id, $roleID, $email, $locale = null, $activ
                         $usertestprojectRoles = null,$userTestPlanRoles = null)
 {
 	tLog('setUserSession: $user=' . $user . ' $id='.$id.' $roleID='.$roleID.' $email='.$email.' $locale='.$locale);
-	
 	if (!is_null($user))
 		$_SESSION['user'] = $user; 
 
@@ -257,7 +256,8 @@ function setUserSession(&$db,$user, $id, $roleID, $email, $locale = null, $activ
     	$_SESSION['testprojectID'] = $_COOKIE[$cookedProduct];
     	tLog('Cookie: lastProductForUser='.$_SESSION['testprojectID']);
     }
-
+	$_SESSION['s_lastAttachmentList'] = null;
+	
 	return 1;
 }
 

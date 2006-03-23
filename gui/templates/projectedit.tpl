@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: projectedit.tpl,v 1.2 2006/03/11 23:09:09 schlundus Exp $
+$Id: projectedit.tpl,v 1.3 2006/03/23 20:46:26 schlundus Exp $
 Purpose: smarty template - Edit existing product 
 
  20051211 - fm - poor workaround for BUGID 180 Unable to delete Product
@@ -12,7 +12,7 @@ Purpose: smarty template - Edit existing product
 </head>
 <body>
 
-{* 20051211 - fm - deleted $name as additional workaround for BUG 180}
+{* 20051211 - fm - deleted $name as additional workaround for BUG 180} *}
 <h1>{lang_get s='title_product_mgmt'}</h1>
 
 {* tabs *}

@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.36 $ $Author: schlundus $
- * @modified $Date: 2006/03/11 23:09:19 $
+ * @version $Revision: 1.37 $ $Author: schlundus $
+ * @modified $Date: 2006/03/23 20:46:28 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -388,38 +388,21 @@ usage: Important: if registered as localize_date()
 */
 function localize_date_smarty($params, &$smarty)
 {
-	// global $g_date_format;
-  $date_format = config_get('date_format');
-
-	$the_d = strftime($date_format, strtotime($params['d']));	
-	if(	isset($params['var']) )
-	{
-		$smarty->assign($params['var'], $the_ret);
-	}
-	else
-	{
-		return $the_d;
-	}
+	return localize_dateOrTimeStamp($params,$smarty,'date_format',$params['d']);
 }
-
-/*
-20060303 - franciscom
-*/
 function localize_timestamp_smarty($params, &$smarty)
 {
-  $timestamp_format = config_get('timestamp_format');
-
-	$the_ts = strftime($timestamp_format, strtotime($params['ts']));	
-	if(	isset($params['var']) )
-	{
-		$smarty->assign($params['var'], $the_ret);
-	}
-	else
-	{
-		return $the_ts;
-	}
+	return localize_dateOrTimeStamp($params,$smarty,'timestamp_format',$params['ts']);
 }
+function localize_dateOrTimeStamp($params,&$smarty,$what,$value)
+{
+	$format = config_get($what);
 
+	$retVal = strftime($format, strtotime($value));	
+	if(isset($params['var']))
+		$smarty->assign($params['var'],$retVal);
+	return $retVal;
+}
 
 
 /*

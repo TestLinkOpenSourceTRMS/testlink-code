@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.28 $
- * @modified $Date: 2006/02/22 20:26:38 $
+ * @version $Revision: 1.29 $
+ * @modified $Date: 2006/03/23 20:46:32 $
  *
  * @author Andreas Morsing
  *
@@ -16,7 +16,7 @@
 // gui/templates/inc_copyrightnotice.tpl
 $TLS_gnu_gpl = "GNU GPL";
 $TLS_lic_home = "Home";
-$TLS_lic_product = "Produkt";
+$TLS_lic_product = "TestLink Produkt";
 $TLS_licensed_under = "TestLink ist lizenziert unter der";
 
 
@@ -549,7 +549,7 @@ $TLS_btn_import = "Importieren";
 $TLS_btn_req_create = "Neue Anforderungen erstellen";
 $TLS_btn_spec_list = "Liste der Spec.";
 $TLS_checked = "Ausgewählt";
-$TLS_popup_sure_delete = "Sind Sie sicher, dass die Anforderungsspezifikation wirklich löschen wollen?";
+$TLS_popup_sure_delete = "Sind Sie sicher, dass Sie die Anforderungsspezifikation wirklich löschen wollen?";
 $TLS_req_edit_spec = "Anforderungsspezifikation editieren";
 $TLS_req_select_create_tc = "Test Cases erstellen";
 $TLS_req_select_delete = "Anforderungen löschen";

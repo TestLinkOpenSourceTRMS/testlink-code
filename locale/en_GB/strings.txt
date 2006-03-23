@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.50 $
- * @modified $Date: 2006/03/20 18:02:41 $ $Author: franciscom $
+ * @version $Revision: 1.51 $
+ * @modified $Date: 2006/03/23 20:46:33 $ $Author: schlundus $
  *
  * @author Francisco Mancardi
  *
@@ -16,7 +16,7 @@
 // gui/templates/inc_copyrightnotice.tpl
 $TLS_gnu_gpl = "GNU GPL";
 $TLS_lic_home = "Home";
-$TLS_lic_product = "Test project";
+$TLS_lic_product = "TestLink project";
 $TLS_licensed_under = "TestLink is licensed under the";
 
 

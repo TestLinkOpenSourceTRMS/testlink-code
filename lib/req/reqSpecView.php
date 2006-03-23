@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqSpecView.php,v $
- * @version $Revision: 1.20 $
- * @modified $Date: 2006/02/15 08:50:19 $ by $Author: franciscom $
+ * @version $Revision: 1.21 $
+ * @modified $Date: 2006/03/23 20:46:30 $ by $Author: schlundus $
  * @author Martin Havlat
  * 
  * Screen to view existing requirements within a req. specification.
@@ -13,77 +13,76 @@
  * 20050930 - MHT - Database schema changed (author, modifier, status, etc.)
  * 20060103 - scs - ADOdb changes
  * 20060110 - fm  - removed onchange event management
- */
-////////////////////////////////////////////////////////////////////////////////
+**/
 require_once("../../config.inc.php");
 require_once("common.php");
 require_once("users.inc.php");
 require_once('requirements.inc.php');
+require_once('attachments.inc.php');
 require_once("../../third_party/fckeditor/fckeditor.php");
-
-
-// init page 
-tLog('POST: ' . implode(',',$_POST));
 testlinkInitPage($db);
 
 $sqlResult = null;
 $action = null;
 $sqlItem = 'Requirement';
-
 $arrReq = array();
 $bGetReqs = TRUE; // collect requirements as default
+$template = 'reqSpecView.tpl';
 
-$template = 'reqSpecView.tpl'; // main template
+$_REQUEST = strings_stripSlashes($_REQUEST);
+$reqDocId = isset($_REQUEST['reqDocId']) ? $_REQUEST['reqDocId'] : null;
+$idSRS = isset($_REQUEST['idSRS']) ? $_REQUEST['idSRS'] : null;
+$idReq = isset($_REQUEST['idReq']) ? $_REQUEST['idReq'] : null;
+$title = isset($_REQUEST['title']) ? $_REQUEST['title'] : null;
+$scope = isset($_REQUEST['scope']) ? $_REQUEST['scope'] : null;
+$reqStatus = isset($_REQUEST['reqStatus']) ? $_REQUEST['reqStatus'] : null;
+$reqType = isset($_REQUEST['reqType']) ? $_REQUEST['reqType'] : null;
+$countReq = isset($_REQUEST['countReq']) ? intval($_REQUEST['countReq']) : 0;
 
-$reqDocId = isset($_REQUEST['reqDocId']) ? strings_stripSlashes($_REQUEST['reqDocId']) : null;
-$idSRS = isset($_REQUEST['idSRS']) ? strings_stripSlashes($_REQUEST['idSRS']) : null;
-$idReq = isset($_REQUEST['idReq']) ? strings_stripSlashes($_REQUEST['idReq']) : null;
-$title = isset($_REQUEST['title']) ? strings_stripSlashes($_REQUEST['title']) : null;
-$scope = isset($_REQUEST['scope']) ? strings_stripSlashes($_REQUEST['scope']) : null;
-$reqStatus = isset($_REQUEST['reqStatus']) ? strings_stripSlashes($_REQUEST['reqStatus']) : null;
-$reqType = isset($_REQUEST['reqType']) ? strings_stripSlashes($_REQUEST['reqType']) : null;
-$countReq = isset($_REQUEST['countReq']) ? strings_stripSlashes($_REQUEST['countReq']) : null;
-
-// 20050906 - fm
-$prodID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+$tprojectID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 $userID = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
-$login_name = isset($_SESSION['user']) ? strings_stripSlashes($_SESSION['user']) : null;
+$login_name = isset($_SESSION['user']) ? $_SESSION['user'] : null;
+
 $arrCov = null;
 
-// 20050826 - fm
+$tproject = new testproject($db);
+$smarty = new TLSmarty();
+
 $of = new fckeditor('scope') ;
 $of->BasePath = $_SESSION['basehref'] . 'third_party/fckeditor/';
 $of->ToolbarSet=$g_fckeditor_toolbar;;
 
+
 // create a new spec.
 if(isset($_REQUEST['createReq']))
 {
-	if (isset($_REQUEST['title']))
-	{
-		// 20050906 - fm
-		$sqlResult = createRequirement($db,$title, $scope, $idSRS, $userID, 
-		                               $reqStatus, $reqType, $reqDocId); // used default type=n
-		$action = 'create';
-		$scope='';
-	}
-	
+	$sqlResult = createRequirement($db,$title, $scope, $idSRS, $userID, 
+		                               $reqStatus, $reqType, $reqDocId);
+	$action = 'create';
+	$scope = '';
 	$template = 'reqCreate.tpl';
 	$bGetReqs = FALSE;
 } 
 elseif (isset($_REQUEST['editReq']))
 {
-	$idReq = strings_stripSlashes($_REQUEST['editReq']);
+	$idReq = intval($_REQUEST['editReq']);
 	$arrReq = getReqData($db,$idReq);
-	
-	// 20050830 - MHT - Added audit
-	$arrReq['author'] = getUserName($db,$arrReq['author_id']);
-	$arrReq['modifier'] = getUserName($db,$arrReq['modifier_id']);
-	$arrReq['coverage'] = getTc4Req($db,$idReq);
-	
-	$reqDocId = $arrReq['req_doc_id'];
-	$scope = $arrReq['scope']; 
-	$action ='editReq';
+	if ($arrReq)
+	{
+		$arrReq['author'] = getUserName($db,$arrReq['author_id']);
+		$arrReq['modifier'] = getUserName($db,$arrReq['modifier_id']);
+		$arrReq['coverage'] = getTc4Req($db,$idReq);
+		
+		$reqDocId = $arrReq['req_doc_id'];
+		$scope = $arrReq['scope']; 
+	}
+	$action = 'editReq';
 	$template = 'reqEdit.tpl';
+	$smarty->assign('id',$idReq);	
+	$smarty->assign('tableName','requirements');	
+	$attachmentInfos = getAttachmentInfos($db,$idReq,'requirements');
+	$smarty->assign('attachmentInfos',$attachmentInfos);	
+	
 	$bGetReqs = FALSE;
 }
 elseif (isset($_REQUEST['updateReq']))
@@ -100,11 +99,10 @@ elseif (isset($_REQUEST['deleteReq']))
 elseif (isset($_REQUEST['editSRS']))
 {
 	$template = 'reqSpecEdit.tpl';
-	$action="editSRS";
+	$action = "editSRS";
 }
 elseif (isset($_REQUEST['updateSRS']))
 {
-	// 20050906 - fm
 	$sqlResult = updateReqSpec($db,$idSRS,$title,$scope,$countReq,$userID);
 	$action = 'update';
 }
@@ -128,10 +126,7 @@ elseif (isset($_REQUEST['create_tc_from_req']) || isset($_REQUEST['req_select_de
 		} 
 		elseif (isset($_REQUEST['create_tc_from_req'])) 
 		{
-			// 20060110 - fm - interface changes
-			// 20051002 - fm - interface changes
-			// 20050906 - fm			
-			$sqlResult = createTcFromRequirement($db,$arrIdReq, $prodID, $idSRS, $userID);
+			$sqlResult = createTcFromRequirement($db,$tproject,$arrIdReq,$tprojectID, $idSRS, $userID);
 			$action = 'create';
 			$sqlItem = 'test case(s)';
 		}
@@ -145,15 +140,11 @@ if ($bGetReqs) {
 	$arrReq = getRequirements($db,$idSRS);
 }
 // collect existing document data
-// $arrSpec = getReqSpec($idSRS);
-// 20051001 - fm - bug
-$arrSpec = getReqSpec($db,$prodID,$idSRS);
+$arrSpec = $tproject->getReqSpec($tprojectID,$idSRS);
 
-//  - MHT - Added audit
 $arrSpec[0]['author'] = getUserName($db,$arrSpec[0]['author_id']);
 $arrSpec[0]['modifier'] = getUserName($db,$arrSpec[0]['modifier_id']);
 
-$smarty = new TLSmarty();
 $smarty->assign('arrSpec', $arrSpec);
 $smarty->assign('arrReq', $arrReq);
 $smarty->assign('arrCov', $arrCov);
@@ -164,20 +155,13 @@ $smarty->assign('name',$title);
 $smarty->assign('selectReqStatus', $arrReqStatus);
 $smarty->assign('modify_req_rights', has_rights($db,"mgt_modify_req")); 
 
-// 20050906 - fm
-if(!is_null($scope))
-{
+$of->Value="";
+if (!is_null($scope))
 	$of->Value=$scope;
-}
 else if ($action && $action != 'create')
 {
 	$of->Value=$arrSpec[0]['scope'];
 }
-else
-{
-	$of->Value="";
-}
-
 
 $smarty->assign('scope',$of->CreateHTML());
 $smarty->display($template);

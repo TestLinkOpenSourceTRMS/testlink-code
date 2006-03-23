@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.52 $
- * @modified $Date: 2006/03/10 22:35:55 $ by $Author: schlundus $
+ * @version $Revision: 1.53 $
+ * @modified $Date: 2006/03/23 20:46:20 $ by $Author: schlundus $
  *
  *
  * Constants and configuration parameters used throughout TestLink 
@@ -304,11 +304,15 @@ $g_locales_timestamp_format = array('en_GB' => "%d/%m/%Y %H:%M:%S",
 
 
 /** Your default locale, this must be one of $g_locales */
-if (array_key_exists(getenv("HTTP_ACCEPT_LANGUAGE"), $g_locales)) {
-	define('TL_DEFAULT_LOCALE', getenv("HTTP_ACCEPT_LANGUAGE"));
-} else {
-	define('TL_DEFAULT_LOCALE','en_GB');
+$language = 'en_GB';
+// check for !== false because getenv() returns false on error
+$serverLanguage = getenv($_SERVER['HTTP_ACCEPT_LANGUAGE']);
+if(false !== $serverLanguage)
+{
+	if (array_key_exists($serverLanguage,$g_locales))
+		$language = $serverLanguage;
 }
+define ('TL_DEFAULT_LOCALE',$language);
 
 /* These are the possible TestCase statuses */
 $g_tc_status = array ( "failed"        => 'f',
@@ -430,9 +434,10 @@ define("TL_REPOSITORY_MAXFILESIZE",1024*1024*TL_REPOSITORY_MAXFILESIZE_MB);
 * TL_REPOSITORY_TYPE_DB => database
 * TL_REPOSITORY_TYPE_FS => filesystem
 **/
-$g_repositoryType = TL_REPOSITORY_TYPE_DB;
+$g_repositoryType = TL_REPOSITORY_TYPE_FS;
 /* the where the filesystem repository should be located */
-$g_repositoryPath = "c:/muell";
+$g_repositoryPath = "c:\\muell";
+
 /* compression used within the repository 
  * TL_REPOSITORY_COMPRESSIONTYPE_NONE => no compression
  * TL_REPOSITORY_COMPRESSIONTYPE_GZIP => gzip compression

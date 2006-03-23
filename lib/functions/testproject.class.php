@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.10 $
- * @modified $Date: 2006/03/13 17:06:33 $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2006/03/23 20:46:28 $
  * @author franciscom
  *
  */
@@ -449,7 +449,60 @@ function gen_combo_test_suites($id,$exclude_branches=null)
 	}
 
 	/* END KEYWORDS RELATED */	
+	
+	/* REQUIREMENTS RELATED */
+	/** 
+	 * collect information about current list of Requirements Specification
+	 *  
+	 * @param numeric $testproject_id
+	 * @param string $set optional id of the requirement specification
+	 
+	 * @return assoc_array list of SRS
+	 * 
+	 * @author Martin Havlat 
+	 **/
+	function getReqSpec($testproject_id, $id = null)
+	{
+		$sql = "SELECT * FROM req_specs WHERE testproject_id=" . $testproject_id;
+		
+		if (!is_null($id))
+			$sql .= " AND id=" . $id;
+		
+		$sql .= "  ORDER BY title";
+	
+		return $this->db->get_recordset($sql);
+	}
+	
+	/** 
+	 * create a new System Requirements Specification 
+	 * 
+	 * @param string $title
+	 * @param string $scope
+	 * @param string $countReq
+	 * @param numeric $testproject_id
+	 * @param numeric $user_id
+	 * @param string $type
+	 * 
+	 * @author Martin Havlat 
+	 */
+	function createReqSpec($testproject_id,$title, $scope, $countReq,$user_id,$type = 'n')
+	{
+		$result = 'ok';
+		if (checkRequirementTitle($title,$result))
+		{
+			$sql = "INSERT INTO req_specs (testproject_id, title, scope, type, total_req, author_id, creation_ts)
+					    VALUES (" . $testproject_id . ",'" . $this->db->prepare_string($title) . "','" . 
+					                $this->db->prepare_string($scope) .  "','" . $this->db->prepare_string($type) . "','" . 
+					                $this->db->prepare_string($countReq) . "'," . $this->db->prepare_string($user_id) . ", " . 
+					                $this->db->db_now() . ")";
+					
+			if (!$this->db->exec_query($sql))
+				$result = lang_get('error_creating_req_spec');
+		}
+		return $result; 
+	}
 
+	/* END REQUIREMENT RELATED */
 } // end class
 
 ?>

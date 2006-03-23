@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecCreate.tpl,v 1.4 2005/11/26 13:27:24 schlundus Exp $ *}
+{* $Id: reqSpecCreate.tpl,v 1.5 2006/03/23 20:46:26 schlundus Exp $ *}
 {* Purpose: smarty template - create a new req document *}
 {include file="inc_head.tpl"}
 
@@ -10,8 +10,6 @@
 	onclick="javascript: open_popup('{$helphref}requirementsCoverage.html');" />
 	{lang_get s='create'} {$productName|escape} {lang_get s='req_spec'}
 </h1>
-
-<div class="workBack">
 
 {* Create Form *}
 {if $modify_req_rights == "yes"}

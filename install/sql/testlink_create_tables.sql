@@ -1,6 +1,6 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
 # This script is distributed under the GNU General Public License 2 or later.
-# $Id: testlink_create_tables.sql,v 1.19 2006/03/13 08:30:47 franciscom Exp $
+# $Id: testlink_create_tables.sql,v 1.20 2006/03/23 20:46:27 schlundus Exp $
 # SQL script - create db tables for TL   
 #
 # default rights & admin account are created via testlink_create_default_data.sql
@@ -63,14 +63,14 @@ CREATE TABLE `keywords` (
 
 CREATE TABLE `milestones` (
   `id` int(10) unsigned NOT NULL auto_increment,
-  `testproject_id` int(10) unsigned NOT NULL default '0',
+  `testplan_id` int(10) unsigned NOT NULL default '0',
   `date` date NOT NULL default '0000-00-00',
   `A` tinyint(3) unsigned zerofill NOT NULL default '000',
   `B` tinyint(3) unsigned zerofill NOT NULL default '000',
   `C` tinyint(3) unsigned zerofill NOT NULL default '000',
   `name` varchar(100) NOT NULL default 'undefined',
   PRIMARY KEY  (`id`),
-  KEY `testproject_id` (`testproject_id`)
+  KEY `testplan_id` (`testplan_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 

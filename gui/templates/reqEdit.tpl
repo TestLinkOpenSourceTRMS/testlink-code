@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqEdit.tpl,v 1.10 2006/01/05 14:47:00 franciscom Exp $ *}
+{* $Id: reqEdit.tpl,v 1.11 2006/03/23 20:46:26 schlundus Exp $ *}
 {* Purpose: smarty template - create / edit a req *}
 {* Author: Martin Havlat *}
 {* Revisions:
@@ -22,18 +22,6 @@
 
 <div class="workBack">
 
-<div class="groupBtn" style="margin-bottom: 20px;">
-	{if $modify_req_rights == "yes"}
-	<input type="button" name="callUpdateReq" value="{lang_get s='btn_update'}" 
-		onclick="javascript: formSRSUpdate.submit();" />
-	<input type="button" name="callDeleteReq" value="{lang_get s='btn_delete'}" 
-		onclick="javascript:; 
-	if (confirm('{lang_get s='popup_delete_req'}'))
-		{ldelim}formSRSDelete.submit();{rdelim};" />
-	{/if}
-	<input type="button" name="cancel" value="{lang_get s='btn_cancel'}" 
-		onclick="javascript: location.href=fRoot+'lib/req/reqSpecView.php?idSRS={$arrSpec[0].id}';" />
-</div>
 
 <form name="formSRSUpdate" method="post" 
 	action="lib/req/reqSpecView.php?idSRS={$arrSpec[0].id}">
@@ -90,14 +78,27 @@
 		</td>
 	</tr>
 </table>
+{include file="inc_attachments.tpl"}
+
 	<input type="hidden" name="idReq" value="{$arrReq.id}" />
 	<input type="hidden" name="updateReq" />
 		
 	{* 20060105 - fm  - BUGID 329: Unnable to Change requirement type to "untestable"
-	   <input type="hidden" name="reqStatus" value="{$arrReq.type}" />	*}
+	<input type="hidden" name="reqStatus" value="{$arrReq.type}" />	*}
 
 </form>
-
+<div class="groupBtn" style="margin-bottom: 20px;">
+	{if $modify_req_rights == "yes"}
+	<input type="button" name="callUpdateReq" value="{lang_get s='btn_update'}" 
+		onclick="javascript: formSRSUpdate.submit();" />
+	<input type="button" name="callDeleteReq" value="{lang_get s='btn_delete'}" 
+		onclick="javascript:; 
+	if (confirm('{lang_get s='popup_delete_req'}'))
+		{ldelim}formSRSDelete.submit();{rdelim};" />
+	{/if}
+	<input type="button" name="cancel" value="{lang_get s='btn_cancel'}" 
+		onclick="javascript: location.href=fRoot+'lib/req/reqSpecView.php?idSRS={$arrSpec[0].id}';" />
+</div>
 
 <form name="formSRSDelete" method="post" 
 	action="lib/req/reqSpecView.php?idSRS={$arrSpec[0].id}">

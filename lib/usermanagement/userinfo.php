@@ -3,10 +3,10 @@
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
 * This script is distributed under the GNU General Public License 2 or later. 
 *
-* Filename $RCSfile: userInfo.php,v $
+* Filename $RCSfile: userinfo.php,v $
 *
-* @version $Revision: 1.12 $
-* @modified $Date: 2006/01/14 17:47:54 $
+* @version $Revision: 1.1 $
+* @modified $Date: 2006/03/23 20:46:31 $
 * 
 * Displays the users' information and allows users to change 
 * their passwords and user info.

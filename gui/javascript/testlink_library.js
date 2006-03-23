@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/ 
 // This script is distributed under the GNU General Public License 2 or later. 
 //
-// $Id: testlink_library.js,v 1.8 2006/03/10 22:35:56 schlundus Exp $ 
+// $Id: testlink_library.js,v 1.9 2006/03/23 20:46:25 schlundus Exp $ 
 //
 // Javascript functions commonly used through the GUI
 // This library is automatically loaded with inc_header.tpl
@@ -164,5 +164,16 @@ function changeFeature(feature)
 
 function openFileUploadWindow(id,tableName)
 {
-	window.open(fRoot+"lib/attachments/attachmentupload.php?id"+id+"&"+tableName,"FileUpload","width=510,height=300,resizable=yes,dependent=yes");
+	window.open(fRoot+"lib/attachments/attachmentupload.php?id="+id+"&tableName="+tableName,"FileUpload","width=510,height=250,resizable=yes,dependent=yes");
+}
+
+function openFileDownloadWindow(id)
+{
+	window.open(fRoot+"lib/attachments/attachmentdownload.php?id="+id,"FileDownload","width=510,height=150,resizable=yes,dependent=yes");
+}
+
+function deleteAttachment_onClick(id)
+{
+	if (confirm(warning_delete_attachment))
+		window.open(fRoot+"lib/attachments/attachmentdelete.php?id="+id,"Delete","width=510,height=150,resizable=yes,dependent=yes");
 }

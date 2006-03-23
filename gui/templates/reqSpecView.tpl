@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecView.tpl,v 1.12 2006/01/11 15:54:11 franciscom Exp $ *}
+{* $Id: reqSpecView.tpl,v 1.13 2006/03/23 20:46:26 schlundus Exp $ *}
 {* 
    Purpose: smarty template - view a requirement specification
    Author: Martin Havlat 
@@ -35,7 +35,7 @@
 	<input type="button" name="deleteSRS" value="{lang_get s='btn_delete_spec'}"
 		onclick="javascript:; 
 		if (confirm('{lang_get s="popup_sure_delete"}')){ldelim} 
-		location.href=fRoot+'lib/req/reqSpecList.php?deleteSRS=1&idSRS={$arrSpec[0].id}';{rdelim};"/>
+		location.href=fRoot+'lib/req/reqSpecList.php?deleteSRS=1&amp;idSRS={$arrSpec[0].id}';{rdelim};"/>
 	{/if}
 	<input type="button" name="printSRS" value="{lang_get s='btn_print'}"
 		onclick="javascript: window.open('{$basehref}lib/req/reqSpecPrint.php?idSRS={$arrSpec[0].id}', 
@@ -81,7 +81,7 @@
 		{if $modify_req_rights == "yes"}<td><input type="checkbox" name="req_id_cbox[{$arrReq[row].id}]" 
 		                                           value="{$arrReq[row].id}"/></td>{/if}
 		<td><span class="bold">{$arrReq[row].req_doc_id|escape}</span></td>
-		<td><span class="bold"><a href="lib/req/reqSpecView.php?editReq={$arrReq[row].id}&idSRS={$arrSpec[0].id}">
+		<td><span class="bold"><a href="lib/req/reqSpecView.php?editReq={$arrReq[row].id}&amp;idSRS={$arrSpec[0].id}">
 		{$arrReq[row].title|escape}</a></span></td>
 		<td>{$arrReq[row].scope|strip_tags|strip|truncate:100}</td>
 	</tr>
@@ -97,15 +97,8 @@
 	<input type="button" name="clearAll" value="{lang_get s='btn_uncheck_all'}" 
 		onclick="javascript: box('frmReqList', false);" />
 
- <!---	
-	<select name="multiAction" onchange="this.form.submit();">
-		<option>{lang_get s='checked'}:</option>
-		<option name="multiCreate">{lang_get s='req_select_create_tc'}</option>
-		<option name="multiDelete">{lang_get s='req_select_delete'}</option>
-	</select>
- --->
- <input type="submit" name="create_tc_from_req" value="{lang_get s='req_select_create_tc'}">
- <input type="submit" name="req_select_delete" value="{lang_get s='req_select_delete'}">
+ <input type="submit" name="create_tc_from_req" value="{lang_get s='req_select_create_tc'}" />
+ <input type="submit" name="req_select_delete" value="{lang_get s='req_select_delete'}" />
 
 
 </div>

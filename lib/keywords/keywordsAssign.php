@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: keywordsAssign.php,v $
  *
- * @version $Revision: 1.12 $
- * @modified $Date: 2006/03/11 23:09:28 $
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2006/03/23 20:46:28 $
  *
  * Purpose:  Assign keywords to set of testcases in tree structure
  *
@@ -36,7 +36,7 @@ $result = null;
 $testProject = new testproject($db);
 $keysOfProduct = $testProject->getKeywords($testproject_id);
 
-if ($edit == 'product')
+if ($edit == 'testproject')
 {
 	redirect($_SESSION['basehref'] . $g_rpath['help'] . '/keywordsAssign.html');
 	exit();

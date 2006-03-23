@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: print.inc.php,v $
- * @version $Revision: 1.10 $
- * @modified $Date: 2006/01/09 07:15:43 $ by $Author: franciscom $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2006/03/23 20:46:28 $ by $Author: schlundus $
  *
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
@@ -20,7 +20,7 @@
 */
 function getAuthor(&$db,$userID)
 {
-    $sql = "SELECT first,last,login FROM user WHERE id=" . $userID;
+    $sql = "SELECT first,last,login FROM users WHERE id=" . $userID;
     $result = $db->exec_query($sql);
     $myrow = $db->fetch_array($result);
     
@@ -55,33 +55,31 @@ function printHeader($title, $base_href, $cssTemplate = TL_DOC_BASIC_CSS)
 
   20060102 - fm - product notes
 */
-function printFirstPage($title, $prodName, $prodNotes, $userID)
+function printFirstPage(&$db,$title, $prodName, $prodNotes, $userID)
 {
+	$g_date_format = config_get('date_format');
+	$prodName = htmlspecialchars($prodName);
+	$author = htmlspecialchars(getAuthor($db,$userID));
+	$title = htmlspecialchars($title);
 	
-	$g_date_format=config_get('date_format');
-	
-	
-	$the_prodName = htmlspecialchars($prodName);
 	$output = '<div class="pageheader">';
-	$output .= '<span style="float: right;">'. $the_prodName ."</span>";
-	if (TL_COMPANY != '') {
+	$output .= '<span style="float: right;">'. $prodName ."</span>";
+	if (TL_COMPANY != '')
 		$output .= '<span>'. htmlspecialchars(TL_COMPANY) ."</span>\n";
-	}
 	
 	$output .= "</div>\n";
-	$output .= '<h1>'.$title."</h1>\n";
+	$output .= "<h1>".$title."</h1>\n";
 	$output .= "<div style='margin: 50px;'>" .
-			       "<p>". lang_get('product').": " . $the_prodName . "</p>" .
-			       "<p>". $prodNotes . "</p>" .
-			       
-			       "<p>".lang_get('author').": " . htmlspecialchars(getAuthor($userID)) . "</p>" .
-			       "<p>".lang_get('printed_by_TestLink_on')." ". strftime($g_date_format, time()) . "</p></div>";
-	if (TL_DOC_COPYRIGHT != '') {
+		       "<p>". lang_get('product').": " . $prodName . "</p>" .
+		       "<p>". $prodNotes . "</p>" .
+		       
+		       "<p>".lang_get('author').": " . $author . "</p>" .
+		       "<p>".lang_get('printed_by_TestLink_on')." ". strftime($g_date_format, time()) . "</p></div>";
+
+	if (TL_DOC_COPYRIGHT != '')
 		$output .= '<div class="pagefooter">'.htmlspecialchars(TL_DOC_COPYRIGHT)."</div>\n";
-	}
-	if (TL_DOC_CONFIDENT != '') {
+	if (TL_DOC_CONFIDENT != '')
 		$output .= '<div class="pagefooter">'.htmlspecialchars(TL_DOC_CONFIDENT)."</div>\n";
-	}
 
 	return $output;
 }

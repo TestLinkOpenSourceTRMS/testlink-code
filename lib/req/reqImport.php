@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqImport.php,v $
- * @version $Revision: 1.10 $
- * @modified $Date: 2006/02/15 08:50:19 $ by $Author: franciscom $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2006/03/23 20:46:30 $ by $Author: schlundus $
  * @author Martin Havlat
  * 
  * Import requirements to a specification. 
@@ -22,6 +22,8 @@ $idSRS = isset($_GET['idSRS']) ? strings_stripSlashes($_GET['idSRS']) : null;
 $importType = isset($_POST['importType']) ? strings_stripSlashes($_POST['importType']) : null;
 $userID = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
 $CSVfile = TL_TEMP_PATH . "importReq-".session_id().".csv";
+
+$tproject = new testproject($db);
 
 /** @var string $importResult declares that import was done */
 $importResult = null;
@@ -81,7 +83,7 @@ elseif (isset($_POST['executeImport']))
 }
 // collect existing document data
 // fm - mybug after refactoring
-$arrSpec = getReqSpec($db,$_SESSION['testprojectID'],$idSRS);	
+$arrSpec = $tproject->getReqSpec($_SESSION['testprojectID'],$idSRS);
 
 $smarty = new TLSmarty;
 $smarty->assign('reqSpec', $arrSpec[0]);

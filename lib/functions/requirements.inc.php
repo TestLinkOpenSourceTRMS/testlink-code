@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: requirements.inc.php,v $
- * @version $Revision: 1.27 $
- * @modified $Date: 2006/03/13 11:33:23 $ by $Author: franciscom $
+ * @version $Revision: 1.28 $
+ * @modified $Date: 2006/03/23 20:46:28 $ by $Author: schlundus $
  *
  * @author Martin Havlat <havlat@users.sourceforge.net>
  * 
@@ -25,47 +25,15 @@
  */
 ////////////////////////////////////////////////////////////////////////////////
 
-$arrReqStatus = array('v' => 'Valid', 'n' => 'Not testable');
+define('TL_REQ_STATUS_VALID', 'v');
+define('TL_REQ_STATUS_NOTTESTABLE', 'n');
+
+$arrReqStatus = array(TL_REQ_STATUS_VALID => lang_get('req_state_valid'), 
+					  TL_REQ_STATUS_NOTTESTABLE => lang_get('req_state_not_testable'),
+					  );
 
 require_once('print.inc.php');
 require_once("../testcases/archive.inc.php");
-
-/** 
- * create a new System Requirements Specification 
- * 
- * @param string $title
- * @param string $scope
- * @param string $countReq
- * @param numeric $testproject_id
- * @param numeric $user_id
- * @param string $type
- * 
- * @author Martin Havlat 
- */
-function createReqSpec(&$db,$title, $scope, $countReq, $testproject_id, $user_id, $type = 'n')
-{
-	tLog('Create SRS requested: ' . $title);
-	if (strlen($title)) {
-		$sql = "INSERT INTO req_specs (testproject_id, title, scope, type, total_req, author_id, creation_ts)
-				    VALUES (" . $testproject_id . ",'" . $db->prepare_string($title) . "','" . 
-				                $db->prepare_string($scope) .  "','" . $db->prepare_string($type) . "','" . 
-				                $db->prepare_string($countReq) . "'," . $db->prepare_string($user_id) . ", " . 
-				                $db->db_now() . ")";
-				
-		$result = $db->exec_query($sql); 
-		if ($result) {
-			$result = 'ok';
-		} else {
-			 $result = 'The INSERT request fails with these values:' . 
-					$title . ', ' . $scope . ', ' . $countReq;
-			tLog('SQL: ' . $sql . ' fails: ' . $db->error_msg(), 'ERROR');
-		}
-	} else {
-		$result = "You cannot enter an empty title!";
-	}
-	return $result; 
-}
-
 
 /** 
  * update System Requiements Specification
@@ -82,22 +50,17 @@ function createReqSpec(&$db,$title, $scope, $countReq, $testproject_id, $user_id
  */
 function updateReqSpec(&$db,$id, $title, $scope, $countReq, $user_id, $type = 'n')
 {
-	if (strlen($title)) {
+	$result = 'ok';
+	if (checkRequirementTitle($title,$result))
+	{
 		$sql = "UPDATE req_specs SET title='" . $db->prepare_string($title) . 
 				"', scope='" . $db->prepare_string($scope) . "', type='" . $db->prepare_string($type) .
 				"', total_req ='" . $db->prepare_string($countReq) . "', modifier_id='" . 
-				$db->prepare_string($user_id) . "', modified_date=CURRENT_DATE WHERE id=" . $id;
-		$result = $db->exec_query($sql); 
-		if ($result) {
-			$result = 'ok';
-		} else {
-			 $result = 'The UPDATE request fails with these values:' . 
-					$title . ', ' . $scope . ', ' . $countReq;
-			tLog('SQL: ' . $sql . ' fails: ' . $db->error_msg(), 'ERROR');
-		}
-	} else {
-		$result = "You cannot enter an empty title!";
+				$db->prepare_string($user_id) . "', modification_ts=CURRENT_DATE WHERE id=" . $id;
+		if (!$db->exec_query($sql))
+			$result = lang_get('error_updating_reqspec');
 	}
+	
 	return $result; 
 }
 
@@ -132,27 +95,6 @@ function deleteReqSpec (&$db,$srs_id)
 	return $result; 
 }
 
-/** 
- * collect information about current list of Requirements Specification
- *  
- * @param numeric prodID
- * @param string $set range of collection 'product' (default) or 'all' or '<id>'
- * @return assoc_array list of SRS
- * 
- * @author Martin Havlat 
- **/
-function getReqSpec(&$db,$testproject_id, $set = 'testproject')
-{
-	$sql = "SELECT * FROM req_specs";
-	if ($set == 'testproject') {
-		$sql .= " WHERE testproject_id=" . $testproject_id . " ORDER BY title";
-	} elseif (intval($set)) {
-		$sql .= " WHERE id=" . $set;
-	}
-	// else all
-
-	return selectData($db,$sql);
-}
 
 /** 
  * get list of all SRS for the current product 
@@ -193,7 +135,7 @@ function getRequirements(&$db,$srs_id, $range = 'all', $testcase_id = null)
 				"req_coverage.testcase_id=" . $testcase_id . " ORDER BY title";
 	}
 
-	return selectData($db,$sql);
+	return $db->get_recordset($sql);
 }
 
 /** 
@@ -249,11 +191,11 @@ function getReqCoverage_general(&$db,$srs_id)
 	// get requirements
 	$sql_common = "SELECT id,title FROM requirements WHERE srs_id=" . $srs_id;
 	$sql = $sql_common . " AND status='v' ORDER BY title";
-	$arrReq = selectData($db,$sql);
+	$arrReq = $db->get_recordset($sql);
 
 	// get not-testable requirements
 	$sql = $sql_common . " AND status='" . NON_TESTABLE_REQ . "' ORDER BY title";
-	$output['nottestable'] = selectData($db,$sql);
+	$output['nottestable'] = $db->get_recordset($sql);
 	
 	// get coverage
 	if (sizeof($arrReq))
@@ -356,15 +298,9 @@ function getReqMetrics_testPlan(&$db,$srs_id, $idTestPlan)
  */
 function getReqData(&$db,$req_id)
 {
-	$output = array();
-	
 	$sql = "SELECT * FROM requirements WHERE id=" . $req_id;
-	$result = $db->exec_query($sql);
-	if (!empty($result)) {
-		$output = $db->fetch_array($result);
-	}
-	
-	return $output;
+
+	return $db->fetchFirstRow($sql);
 }
 
 /** collect coverage of Requirement 
@@ -389,14 +325,13 @@ function getTc4Req(&$db,$req_id)
  */
 function getSuite4Req(&$db,$req_id, $idPlan)
 {
-	$sql = " SELECT testcase.id,testcase.title 
-	         FROM testcase,req_coverage,category," .
-				  "component WHERE component.projid=" . $idPlan .
+	$sql = "SELECT testcase.id,testcase.title FROM testcase,req_coverage,category," .
+				"component WHERE component.projid=" . $idPlan .
 				" AND category.compid=component.id AND category.id=testcase.catid" .
 				" AND testcase.mgttcid = req_coverage.testcase_id AND req_id=" . 
 				$req_id . " ORDER BY title";
 	
-	return selectData($db,$sql);
+	return $db->get_recordset($sql);
 }
 
 /** 
@@ -416,11 +351,31 @@ function getReq4Tc(&$db,$testcase_id, $srs_id = 'all')
 		$sql .= " AND requirements.srs_id=" . $srs_id;
 	}
 
-	return selectData($db,$sql);
+	return $db->get_recordset($sql);
 }
-
+/**
+ * Function-Documentation
+ *
+ * @param type $title documentation
+ * @param type $result [ref] documentation
+ * @return type documentation
+ *
+ * @author Andreas Morsing <schlundus@web.de>
+ * @since 12.03.2006, 22:04:20
+ *
+ **/
+function checkRequirementTitle($title,&$result)
+{
+	$bSuccess = 0;
+	if (!strlen($title))
+		$result = lang_get("warning_empty_req_title");
+	else
+		$bSuccess = 1;
+		
+	return $bSuccess;
+}
 /** 
- * create a new Requiement 
+ * creates a new Requiement 
  * 
  * @param string $title
  * @param string $scope
@@ -433,23 +388,21 @@ function getReq4Tc(&$db,$testcase_id, $srs_id = 'all')
  * @author Martin Havlat 
  **/
 function createRequirement(&$db,$title, $scope, $srs_id, $user_id, 
-                           $status = 'v', $type = 'n', $req_doc_id = null)
+                           $status = TL_REQ_STATUS_VALID, $type = 'n', $req_doc_id = null)
 {
-	if (strlen($title)) {
+	$result = 'ok';
+	if (checkRequirementTitle($title,$result))
+	{
 		$sql = "INSERT INTO requirements (srs_id, req_doc_id, title, scope, status, type, author_id, creation_ts)" .
 				" VALUES (" . $srs_id . ",'" . $db->prepare_string($req_doc_id) .  
 				"','" . $db->prepare_string($title) . "','" . $db->prepare_string($scope) . 
 				 "','" . $db->prepare_string($status) . "','" . $db->prepare_string($type) .
-				 "'," . $db->prepare_string($user_id) . "," . $db->db_now() . ")";
+				 "'," . $db->prepare_string($user_id) . ", CURRENT_DATE)";
 
-		$result = $db->exec_query($sql); 
-		
-		$result = $result ? 'ok' : 
-		          'The INSERT request fails with these values:' . $title . ', ' . $scope . ', ' . $status .
-		          $sql;
-	} else {
-		$result = "You cannot enter an empty title!";
+		if (!$db->exec_query($sql))
+		 	$result = lang_get('error_inserting_req');
 	}
+	 
 	return $result; 
 }
 
@@ -469,26 +422,20 @@ function createRequirement(&$db,$title, $scope, $srs_id, $user_id,
  **/
 function updateRequirement(&$db,$id, $title, $scope, $user_id, $status, $type, $reqDocId=null)
 {
-	if (strlen($title)) {
+	$result = 'ok';
+	if (checkRequirementTitle($title,$result))
+	{
 		$sql = "UPDATE requirements SET title='" . $db->prepare_string($title) . 
 				"', scope='" . $db->prepare_string($scope) . "', status='" . 
 				$db->prepare_string($status) . 
 				"', type='" . $db->prepare_string($type) . 
 				"', modifier_id='" . $db->prepare_string($user_id) . 
 				"', req_doc_id='" . $db->prepare_string($reqDocId) .
-				"', modified_date=CURRENT_DATE WHERE id=" . $id;	
-	
-		$result = $db->exec_query($sql); 
-		if ($result) {
-			$result = 'ok';
-		} else {
-			 $result = 'The UPDATE request fails with these values:' . 
-					$title . ', ' . $scope;
-			tLog('SQL: ' . $sql . ' fails: ' . $db->error_msg(), 'ERROR');
-		}
-	} else {
-		$result = "You cannot enter an empty title!";
+				"', modification_ts=CURRENT_DATE WHERE id=" . $id;	
+		if (!$db->exec_query($sql))
+		 	$result = lang_get('error_updating_req');
 	}
+	
 	return $result; 
 }
 
@@ -504,17 +451,16 @@ function deleteRequirement(&$db,$id)
 	// delete dependencies with test specification
 	$sql = "DELETE FROM req_coverage WHERE req_id=" . $id;
 	$result = $db->exec_query($sql); 
-	if ($result) {
-		// delete req itself
+	if ($result)
+	{
 		$sql = "DELETE FROM requirements WHERE id=" . $id;
 		$result = $db->exec_query($sql); 
 	}
-	if ($result) {
+	if (!$result)
+		$result = lang_get('error_deleting_req');
+	else
 		$result = 'ok';
-	} else {
-		$result = 'The DELETE REQ request fails.';
-		tLog('SQL: ' . $sql . ' fails: ' . $db->error_msg(), 'ERROR');
-	}
+		
 	return $result; 
 }
 
@@ -535,17 +481,18 @@ function deleteRequirement(&$db,$id)
  * @author Francisco Mancardi
  *
  **/
-function printSRS(&$db,$srs_id, $prodName, $testproject_id, $user_id, $base_href)
+function printSRS(&$db,&$tproject,$srs_id, $prodName, $testproject_id, $user_id, $base_href)
 {
-	$arrSpec = getReqSpec($db,$testproject_id,$srs_id);
+	$arrSpec = $tproject->getReqSpec($testproject_id,$srs_id);
 	
-	$output = printHeader($arrSpec[0]['title'],$base_href);
-	$output .= printFirstPage($arrSpec[0]['title'], $prodName, $user_id);
+	$title = $arrSpec[0]['title'];
+	$output =  printHeader($title,$base_href);
+	$output .= printFirstPage($db,$title,$prodName,'',$user_id);
 	$output .= "<h2>" . lang_get('scope') . "</h2>\n<div>" . $arrSpec[0]['scope'] . "</div>\n";
-	$output .= printRequirements($srs_id);
+	$output .= printRequirements($db,$srs_id);
 	$output .= "\n</body>\n</html>";
 
-	echo $output;
+	return $output;
 }
 
 /** 
@@ -562,15 +509,18 @@ function printRequirements(&$db,$srs_id)
 	$arrReq = getRequirements($db,$srs_id);
 	
 	$output = "<h2>" . lang_get('reqs') . "</h2>\n<div>\n";
-	if (count($arrReq) > 0) {
-		foreach ($arrReq as $REQ) {
+	if (count($arrReq))
+	{
+		foreach ($arrReq as $REQ)
+		{
 			$output .= '<h3>' .htmlspecialchars($REQ["req_doc_id"]). " - " . 
 						htmlspecialchars($REQ['title']) . "</h3>\n<div>" . 
 						$REQ['scope'] . "</div>\n";
 		}
-	} else {
-		$output .= '<p>' . lang_get('none') . '</p>';
 	}
+	else
+		$output .= '<p>' . lang_get('none') . '</p>';
+
 	$output .= "\n</div>";
 
 	return $output;
@@ -677,7 +627,7 @@ function unassignTc2Req(&$db,$testcase_id, $req_id)
  *
  * 20060110 - fm - user_id
  */
-function createTcFromRequirement(&$db,$mixIdReq, $testproject_id, $srs_id, $user_id)
+function createTcFromRequirement(&$db,&$tproject,$mixIdReq, $testproject_id, $srs_id, $user_id)
 {
 	//global $g_req_cfg;
 	//global $g_field_size;
@@ -697,7 +647,7 @@ function createTcFromRequirement(&$db,$mixIdReq, $testproject_id, $srs_id, $user
 	if ( $g_req_cfg->use_req_spec_as_category_name )
 	{
 	  // SRS Title
-	  $arrSpec = getReqSpec($db,$testproject_id,$srs_id);
+	  $arrSpec = $tproject->getReqSpec($testproject_id,$srs_id);
 	  $auto_category_name = substr($arrSpec[0]['title'],0,$g_field_size->category_name);
 	}
 	

@@ -1,6 +1,6 @@
 <?php
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: builds.inc.php,v 1.19 2006/03/22 12:05:48 franciscom Exp $
+* $Id: builds.inc.php,v 1.20 2006/03/23 20:46:28 schlundus Exp $
 * 
 * @author Martin Havlat
 *
@@ -124,7 +124,4 @@ function delete_build(&$db,$build_id)
 	$result = $result && $db->exec_query($sql);
 	return $result ? 1 : 0;
 }
-
-
-
 ?>

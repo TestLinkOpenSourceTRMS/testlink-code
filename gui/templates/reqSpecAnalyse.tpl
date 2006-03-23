@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecAnalyse.tpl,v 1.8 2005/12/05 00:07:00 kevinlevy Exp $ *}
+{* $Id: reqSpecAnalyse.tpl,v 1.9 2006/03/23 20:46:26 schlundus Exp $ *}
 {* Purpose: smarty template - Analyse REQ coverage *}
 {include file="inc_head.tpl"}
 
@@ -47,10 +47,10 @@
 	</tr>
 {/if}
 	<tr>
-		<td><span class="bold"><a href="lib/req/reqSpecView.php?editReq={$arrCoverage.covered[row].id}&idSRS={$selectedReqSpec}">
+		<td><span class="bold"><a href="lib/req/reqSpecView.php?editReq={$arrCoverage.covered[row].id}&amp;idSRS={$selectedReqSpec}">
 			{$arrCoverage.covered[row].title|escape}</a></span></td>
 		<td>{section name=subrow loop=$arrCoverage.covered[row].coverage}
-<a href="lib/testcases/archiveData.php?data={$arrCoverage.covered[row].coverage[subrow].id|escape}&edit=testcase&allow_edit=0">{$arrCoverage.covered[row].coverage[subrow].id|escape}</a>:{$arrCoverage.covered[row].coverage[subrow].title|escape}<br />
+<a href="lib/testcases/archiveData.php?data={$arrCoverage.covered[row].coverage[subrow].id|escape}&amp;edit=testcase&allow_edit=0">{$arrCoverage.covered[row].coverage[subrow].id|escape}</a>:{$arrCoverage.covered[row].coverage[subrow].title|escape}<br />
 		{/section}</td>
 	</tr>
 {if $smarty.section.row.last}
@@ -72,7 +72,7 @@
 	</tr>
 {/if}
 	<tr>
-		<td><span class="bold"><a href="lib/req/reqSpecView.php?editReq={$arrCoverage.uncovered[row2].id}&idSRS={$selectedReqSpec}">{$arrCoverage.uncovered[row2].title|escape}</a></span></td>
+		<td><span class="bold"><a href="lib/req/reqSpecView.php?editReq={$arrCoverage.uncovered[row2].id}&amp;idSRS={$selectedReqSpec}">{$arrCoverage.uncovered[row2].title|escape}</a></span></td>
 	</tr>
 {if $smarty.section.row2.last}
 </table>
@@ -93,7 +93,7 @@
 	</tr>
 {/if}
 	<tr>
-		<td><span class="bold"><a href="lib/req/reqSpecView.php?editReq={$arrCoverage.nottestable[row3].id}&idSRS={$selectedReqSpec}">
+		<td><span class="bold"><a href="lib/req/reqSpecView.php?editReq={$arrCoverage.nottestable[row3].id}&amp;idSRS={$selectedReqSpec}">
 			{$arrCoverage.nottestable[row3].title|escape}</a></span></td>
 	</tr>
 {if $smarty.section.row3.last}

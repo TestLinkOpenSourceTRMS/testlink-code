@@ -1,5 +1,5 @@
 {* Testlink: smarty template - Edit own account *}
-{* $Id: userInfo.tpl,v 1.3 2005/09/13 17:05:59 franciscom Exp $ *}
+{* $Id: userInfo.tpl,v 1.4 2006/03/23 20:46:26 schlundus Exp $ *}
 {* xhtml valid version - 1.1.2.3 *}
 {* 
 20050913 - fm - BUGID 0000103: Localization is changed but not strings
@@ -41,7 +41,7 @@ function valAllText(form)
 </script>
 {/literal}
 
-<form method="post" action="lib/user/userInfo.php" onsubmit="return valAllText(this)">
+<form method="post" action="lib/usermanagement/userinfo.php" onsubmit="return valAllText(this)">
 	<input type="hidden" name="id" value="{$userData[2]}" />
 	<table class="common">
 		<tr>
@@ -77,7 +77,7 @@ function valAllText(form)
 
 <h2>{lang_get s='title_change_your_passwd'}</h2>
 
-<form name="changePass" method="post" action="lib/user/userInfo.php" 
+<form name="changePass" method="post" action="lib/usermanagement/userinfo.php" 
 	onsubmit="return validatePassword(document.changePass);">
 	<input type="hidden" name="id" value="{$userData[2]}" />
 	<table class="common">

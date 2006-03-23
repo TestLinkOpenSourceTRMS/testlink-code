@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: attachmentupload.tpl,v 1.1 2006/02/22 20:26:38 schlundus Exp $ *}
+{* $Id: attachmentupload.tpl,v 1.2 2006/03/23 20:46:26 schlundus Exp $ *}
 {* Purpose: smarty template - show Test Results and Metrics *}
 {include file="inc_head.tpl"}
 
@@ -16,13 +16,13 @@
 	<form method="post" enctype="multipart/form-data">
 		<input type="hidden" name="MAX_FILE_SIZE" value="{$import_limit}" /> {* restrict file size *}
 		<p>{lang_get s='local_file'}
-			<input type='hidden' value='{$id}' name='id'>
-			<input type='hidden' value='{$tableName}' name='tableName'>
+			<input type='hidden' value='{$id}' name='id' />
+			<input type='hidden' value='{$tableName}' name='tableName' />
 			<input type="file" name="uploadedFile" size="30" />
 		</p>
 		<p>
 			{lang_get s='enter_attachment_title'}:
-			<input type='text' name='title' maxlength="250" size="30">
+			<input type='text' name='title' maxlength="250" size="30" />
 		</p>
 		<div class="groupBtn">
 			<input type="submit" value="{lang_get s='btn_upload_file'}" />

@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: planEdit.tpl,v 1.3 2006/01/14 17:47:54 schlundus Exp $ *}
+{* $Id: planEdit.tpl,v 1.4 2006/03/24 20:32:16 schlundus Exp $ *}
 {* Purpose: smarty template - edit / delete Test Plan *}
 {* 20050810 - fm - changes in active field definition *}
 
@@ -54,7 +54,7 @@
 				<img style="border:none" alt="{lang_get s='alt_delete_testplan'}" src="icons/thrash.png"/>
 				</a>
 			</td>
-		<tr>
+		</tr>
 		{/section}
 
 	</table>

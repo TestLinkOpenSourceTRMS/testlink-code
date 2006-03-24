@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: treeMenu.inc.php,v $
  *
- * @version $Revision: 1.14 $
- * @modified $Date: 2006/03/20 18:02:22 $ by $Author: franciscom $
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2006/03/24 20:32:16 $ by $Author: schlundus $
  * @author Martin Havlat
  *
  * 	This file generates tree menu for test specification and test execution.
@@ -118,7 +118,10 @@ function invokeMenu($menustring, $highLight = "")
 function filterString($str)
 {
 	$str = str_replace(array("\n","\r"), array("",""), $str);
-	$str = addslashes($str);
+	if (TL_TREE_KIND != LAYERSMENU)
+	{
+		$str = addslashes($str);
+	}
 	$str = htmlspecialchars($str, ENT_QUOTES);	
 	
 	return $str;

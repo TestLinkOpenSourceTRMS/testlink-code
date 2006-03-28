@@ -1,6 +1,6 @@
 /* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: testlink.css,v 1.6 2006/03/28 16:52:46 franciscom Exp $
+$Id: testlink.css,v 1.7 2006/03/28 17:16:27 franciscom Exp $
 Purpose: main css 
 
 20060328 - franciscom - removed silly definitions
@@ -311,52 +311,7 @@ a.tlButton:hover {
 } 
 
 
-/***** EXECUTION & RESULTS ****************************************/
 
-/* colors for results (pass=green, fail=red, blocked=blue, not run=black, n/a=purple) */
-.green {
-	color:			green;
-}
-.red {
-	color:			red;
-}
-.blue {
-	color:			blue;
-}
-.black {
-	color:			black;
-}
-.purple {
-	color:			purple;
-}
-.white {
-	color:			white;
-}
-
-div.passBox {
-	background:		green;
-}
-
-div.failBox {
-	background:		red;
-}
-
-div.blockedBox {
-	background:		blue;
-}
-
-div.notRunBox {
-	background:		black;
-}
-.bgPurple {
-	background:		purple;
-}
-
-div.passBox, div.failBox, div.blockedBox, div.notRunBox {
-	color: 			white;
-	margin: 		12px;
-	padding: 		12px;
-}
 
 
 /* execution boxes (result, test scenario, notes) */
@@ -393,24 +348,13 @@ img.arrow {
 }
 
 
-/***** htmlarea dimensions **********************************/
-
-textarea.w99h100, textarea.w99h300 {
-	width: 			99%; 	
-}
-textarea.w99h300 {
-	height: 		300px;
-}
-textarea.w99h100 {
-	height: 		100px;
-}
-
 pre
 {
 	font-family : 	Arial, Helvetica, sans-serif;
 }
 
 
+/* 20060328 - franciscom - I must to comment this better later :( */
 span.type1 {
 	background:		#059;
 	border: 		1px solid black;
@@ -422,6 +366,37 @@ span.type1 {
 }
 
 
+/* ----------------------------------------------------------------------------- */
+/* Execution & Results */
+div.passed {
+	color: 			white;
+	background:		green;
+	margin: 		12px;
+	padding: 		12px;
+}
+
+div.failed {
+	color: 			white;
+	background:		red;
+	margin: 		12px;
+	padding: 		12px;
+}
+
+div.blocked {
+	color: 			white;
+	background:		blue;
+	margin: 		12px;
+	padding: 		12px;
+}
+
+div.not_run {
+	color: 			white;
+	background:		black;
+	border: 1px solid red;
+	margin: 		12px;
+	padding: 		12px;
+}
+/* ----------------------------------------------------------------------------- */
 
 /***** END *************************************************/
 

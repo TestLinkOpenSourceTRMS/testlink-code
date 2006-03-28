@@ -1,10 +1,10 @@
-/* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: testlink.css,v 1.5 2006/02/04 20:13:07 schlundus Exp $ */
-/* Purpose: main css */
-/*                                                                 */
-/* 20050801 - fm                                                   */
-/* BUGID: SF1243287                                                */
-/*******************************************************************/
+/* 
+TestLink Open Source Project - http://testlink.sourceforge.net/
+$Id: testlink.css,v 1.6 2006/03/28 16:52:46 franciscom Exp $
+Purpose: main css 
+
+20060328 - franciscom - removed silly definitions
+*/
 
 
 body {
@@ -332,16 +332,20 @@ a.tlButton:hover {
 .white {
 	color:			white;
 }
-.bgGreen, div.passBox {
+
+div.passBox {
 	background:		green;
 }
-.bgRed, div.failBox {
+
+div.failBox {
 	background:		red;
 }
-.bgBlue, div.blockedBox {
+
+div.blockedBox {
 	background:		blue;
 }
-.bgBlack, div.notRunBox {
+
+div.notRunBox {
 	background:		black;
 }
 .bgPurple {
@@ -405,6 +409,19 @@ pre
 {
 	font-family : 	Arial, Helvetica, sans-serif;
 }
+
+
+span.type1 {
+	background:		#059;
+	border: 		1px solid black;
+	color:			white;
+	font-size:		110%;
+	margin-bottom:	4px;
+	padding: 		2px;
+	text-align: 	left;
+}
+
+
 
 /***** END *************************************************/
 

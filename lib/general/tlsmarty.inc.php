@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tlsmarty.inc.php,v $
  *
- * @version $Revision: 1.8 $
- * @modified $Date: 2006/03/10 22:35:59 $ $Author: schlundus $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2006/03/29 12:44:25 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -18,6 +18,10 @@ class TLSmarty extends Smarty
 {
     function TLSmarty()
 	{
+		global $g_tc_status;
+		global $g_tc_status_css;
+		global $g_bugInterfaceOn;
+
         $this->Smarty();
         $this->template_dir = TL_ABS_PATH . 'gui/templates/';
         $this->compile_dir = TL_TEMP_PATH;
@@ -38,11 +42,11 @@ class TLSmarty extends Smarty
 		$this->assign('helphref', $basehref . 'gui/help/' . $my_locale . "/");
 		$this->assign('css', $basehref . TL_TESTLINK_CSS);
 		$this->assign('locale', $my_locale);
-		global $g_tc_status;
-		$this->assign('g_tc_status',$g_tc_status);
-	
-		global $g_bugInterfaceOn;
+		
+		$this->assign('gsmarty_tc_status',$g_tc_status);
 		$this->assign('g_bugInterfaceOn', $g_bugInterfaceOn);
+
+		$this->assign('gsmarty_tc_status_css',$g_tc_status_css);
 	
 		$this->assign('pageCharset',TL_TPL_CHARSET);
 		$this->assign('tlVersion',TL_VERSION);
@@ -66,8 +70,8 @@ class TLSmarty extends Smarty
 		// 20050828 - fm
 		$this->register_function("localize_date", "localize_date_smarty");
 
-	    // 20060303 - franciscom
-	    $this->register_function("localize_timestamp", "localize_timestamp_smarty");
+	  // 20060303 - franciscom
+	  $this->register_function("localize_timestamp", "localize_timestamp_smarty");
 		
 		// define a select structure for {html_options ...}
 		$this->assign('option_yes_no', array(0 => lang_get('No'), 1 => lang_get('Yes')));

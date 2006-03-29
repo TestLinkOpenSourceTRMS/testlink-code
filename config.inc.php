@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.53 $
- * @modified $Date: 2006/03/23 20:46:20 $ by $Author: schlundus $
+ * @version $Revision: 1.54 $
+ * @modified $Date: 2006/03/29 12:45:58 $ by $Author: franciscom $
  *
  *
  * Constants and configuration parameters used throughout TestLink 
@@ -323,6 +323,10 @@ $g_tc_status = array ( "failed"        => 'f',
                        "unknown"       => 'u',
                        "all"           => 'all'
                       ); 
+
+
+// 20060328 - franciscom
+$g_tc_status_css = array_flip($g_tc_status);
 
 //20050508 - fm - enhancement
 /* TestCase Status Description -> color */

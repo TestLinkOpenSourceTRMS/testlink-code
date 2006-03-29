@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: execNavigator.php,v $
  *
- * @version $Revision: 1.18 $
- * @modified $Date: 2006/03/22 11:56:40 $ by $Author: franciscom $
+ * @version $Revision: 1.19 $
+ * @modified $Date: 2006/03/29 14:34:30 $ by $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -51,7 +51,8 @@ $optBuild = $tplan_mgr->get_builds_for_html_options($_SESSION['testPlanId']);
 
 $optBuildSelected = isset($_POST['build']) ? $_POST['build'] : key($optBuild);
 
-echo "<pre>debug" . __FUNCTION__; print_r($optBuild); echo "</pre>";
+//echo "<pre>debug optbuild=" . __FUNCTION__; print_r($optBuild); echo "</pre>";
+
 /*
 $optResult = createResultsMenu($db);
 $optResultSelected = isset($_POST['result']) ? $_POST['result'] : 'All';
@@ -149,6 +150,10 @@ function generateExecTree(&$db,$tplan_id,$tplan_name,$build,$purl_to_help,&$menu
 		
   $mtime_start = array_sum(explode(" ",microtime()));
   $xx=$tplan_mgr->get_linked_tcversions($tplan_id);
+  
+  //echo "<pre>debug" . __FUNCTION__; print_r($xx); echo "</pre>";
+  //exit();
+  
   $test_spec=array();
   $zz=array();
   $added=array();
@@ -183,6 +188,7 @@ function generateExecTree(&$db,$tplan_id,$tplan_name,$build,$purl_to_help,&$menu
   	}
     
   }
+   
    
   // we can have branchs with common path, but still not joined
   // that's what we want to solve with the following process.  
@@ -221,6 +227,8 @@ function generateExecTree(&$db,$tplan_id,$tplan_name,$build,$purl_to_help,&$menu
   {
     $test_spec=array_merge($test_spec,$item);
   }
+  //echo "<pre>debug \$xx" . __FUNCTION__; print_r($xx); echo "</pre>";
+  //echo "<pre>debug \$test_spec" . __FUNCTION__; print_r($test_spec); echo "</pre>";
  
     
   // 20060223 - franciscom
@@ -250,8 +258,10 @@ function generateExecTree(&$db,$tplan_id,$tplan_name,$build,$purl_to_help,&$menu
      
      // 20060303 - franciscom - added icon
      $icon="";
+     $version_id = "";
      if( $hash_id_descr[$current['node_type_id']] == "testcase") 
      {
+       $version_id = "&version_id=" . $xx[$current['id']]['tcversion_id'];
        $icon="gnome-starthere-mini.png";	
      }
      
@@ -267,7 +277,8 @@ function generateExecTree(&$db,$tplan_id,$tplan_name,$build,$purl_to_help,&$menu
      $menustring .= str_repeat('.',$the_level) . ".|" . 
                          " " . $current['name'] . "|" . 
                     $menuUrl . "&level=" . $hash_id_descr[$current['node_type_id']] . 
-                               "&id=" . $current['id'] . "|" . 
+                               "&id=" . $current['id'] . 
+                               $version_id . "|" . 
                                $hash_id_descr[$current['node_type_id']] . "|" .
                                $icon . "|" . "workframe" ."|\n";
                     

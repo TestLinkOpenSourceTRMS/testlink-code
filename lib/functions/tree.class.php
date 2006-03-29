@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: tree.class.php,v $
  *
- * @version $Revision: 1.11 $
- * @modified $Date: 2006/03/20 18:02:22 $ by $Author: franciscom $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2006/03/29 14:33:59 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * 20060316 - franciscom - bug on get_path
@@ -207,16 +207,31 @@ function delete_subtree($node_id)
 }
 
 
+// 20060327 - franciscom
+function get_path_new($node_id,$to_node_id=null,$format='full') 
+{
+ 		$the_path=array();
+    $this->_get_path($node_id,$the_path,$to_node_id,$format); 
+    
+    //echo "<pre>debug" . __FUNCTION__; print_r($the_path); echo "</pre>";
+    return ($the_path);
+    
+}
+
+
+
+
 
 // $node is the name of the node we want the path of
-function get_path($node_id,$to_node_id=null) 
+// 20060327 - franciscom
+function get_path($node_id,$to_node_id=null,$format='full') 
 {
 	
-// look up the parent of this node
+ // look up the parent of this node
  $sql = " SELECT * from nodes_hierarchy
           WHERE id = {$node_id} ";
  
- $node_list=array();  
+ $node_list=array();
  $result = $this->db->exec_query($sql);
  
  if( $this->db->num_rows($result) == 0 )
@@ -238,21 +253,86 @@ function get_path($node_id,$to_node_id=null)
       
    		// the last part of the path to $node, is the name
    		// of the parent of $node
-      $node_list[] = array('id'        => $row['id'],
-                           'parent_id' => $row['parent_id'],
-                           'node_type_id' => $row['node_type_id'],
-                           'node_order' => $row['node_order'],
-                           'node_table' => $node_table,
-                           'name' => $row['name'] );
-
+   		if( $format == "full" )
+   		{
+      		$node_list[] = array('id'        => $row['id'],
+          		                 'parent_id' => $row['parent_id'],
+              		             'node_type_id' => $row['node_type_id'],
+                  		         'node_order' => $row['node_order'],
+                      		     'node_table' => $node_table,
+                          		 'name' => $row['name'] );
+      }
+      else
+      {
+      		$node_list[$row['parent_id']] = $row['parent_id'];
+      }
 			
       // we should add the path to the parent of this node
       // to the path
-      $node_list = array_merge($this->get_path($row['parent_id'],$to_node_id), $node_list);
+      $node_list = array_merge($this->get_path($row['parent_id'],$to_node_id,$format), $node_list);
    }
  }
  return $node_list;
 }
+
+
+// $node is the name of the node we want the path of
+// 20060327 - franciscom
+function _get_path($node_id,&$node_list,$to_node_id=null,$format='full') 
+{
+	
+// look up the parent of this node
+ $sql = " SELECT * from nodes_hierarchy
+          WHERE id = {$node_id} ";
+ 
+ $result = $this->db->exec_query($sql);
+ 
+ if( $this->db->num_rows($result) == 0 )
+ {
+    return(null); 	
+ }
+  
+ while ( $row = $this->db->fetch_array($result) )
+ {
+   
+   // only continue if this $node isn't the root node
+   // (that's the node with no parent)
+   
+   if ($row['parent_id'] != '' && $row['id'] != $to_node_id) 
+   {
+   	  // 20060309 - franciscom
+      // Getting data from the node specific table
+      $node_table = $this->node_tables[$this->node_types[$row['node_type_id']]];
+      
+   		// the last part of the path to $node, is the name
+   		// of the parent of $node
+   		if( $format == "full" )
+   		{
+      		$node_list[] = array('id'        => $row['id'],
+          		                 'parent_id' => $row['parent_id'],
+              		             'node_type_id' => $row['node_type_id'],
+                  		         'node_order' => $row['node_order'],
+                      		     'node_table' => $node_table,
+                          		 'name' => $row['name'] );
+      }
+      else
+      {
+      		$node_list[$row['parent_id']] = $row['parent_id'];
+      }
+			
+      // we should add the path to the parent of this node
+      // to the path
+      //$node_list = array_merge($this->get_path($row['parent_id'],$to_node_id,$format), $node_list);
+      $this->_get_path($row['parent_id'],$node_list,$to_node_id,$format);
+   }
+ }
+}
+
+
+
+
+
+
 
 
 

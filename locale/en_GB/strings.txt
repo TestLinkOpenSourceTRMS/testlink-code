@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.51 $
- * @modified $Date: 2006/03/23 20:46:33 $ $Author: schlundus $
+ * @version $Revision: 1.52 $
+ * @modified $Date: 2006/03/29 14:36:42 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
@@ -1324,4 +1324,9 @@ $TLS_page_title_lost_passwd = "TestLink - Lost password";
 $TLS_your_info_for_passwd = "Enter Your User Information so that your new password can be mailed to you.";
 $TLS_your_password_is = "Your new TestLink password is: <br>";
 
+
+
+// 20060326 - franciscom
+$TLS_btn_del_this_version = "Delete this version";
+$TLS_btn_new_version = "Create a new version";
 ?>

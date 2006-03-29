@@ -1,6 +1,6 @@
 /* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: testlink.css,v 1.7 2006/03/28 17:16:27 franciscom Exp $
+$Id: testlink.css,v 1.8 2006/03/29 14:33:05 franciscom Exp $
 Purpose: main css 
 
 20060328 - franciscom - removed silly definitions
@@ -319,7 +319,7 @@ div.resultBox {
 	background: 	white;
 	border: 		medium solid grey;
 	color: 			black;
-	margin: 		12px;
+	margin: 		0px 12px 12px 12px;
 	padding: 		12px;
 }
 
@@ -392,7 +392,6 @@ div.blocked {
 div.not_run {
 	color: 			white;
 	background:		black;
-	border: 1px solid red;
 	margin: 		12px;
 	padding: 		12px;
 }

@@ -2,9 +2,11 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.9 $
- * @modified $Date: 2006/03/20 18:02:22 $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2006/03/29 14:34:31 $ $Author: franciscom $
  * @author franciscom
+ *
+ * 20060323 - franciscom - create_tcversion() interface change added $version
  *
  */
 
@@ -32,11 +34,12 @@ function create($parent_id,$name,$summary,$steps,
                 $expected_results,$author_id,$tc_order = null)
 {
 	
+	$first_version=1;
   $status_ok=1;
   $ret = $this->create_tcase_only($parent_id,$name);
   if( $ret['msg'] == 'ok' )
   {
-  	$ret = $this->create_tcversion($ret['id'],$summary,$steps,
+  	$ret = $this->create_tcversion($ret['id'],$first_version,$summary,$steps,
                                    $expected_results,$author_id);
   }
   return ($ret);
@@ -56,15 +59,15 @@ function create_tcase_only($parent_id,$name)
 }
 
 
-/* 20060306 - franciscom */
-function create_tcversion($id,$summary,$steps,
+/* 20060323 - franciscom - create_tcversion() interface change added $version*/
+function create_tcversion($id,$version,$summary,$steps,
                           $expected_results,$author_id)
 {
   // get a new ids
 	$tcase_version_id = $this->tree_manager->new_node($id,$this->node_types_descr_id['testcase_version']);
 	
 	$sql = "INSERT INTO tcversions (id,version,summary,steps,expected_results,author_id,creation_ts)
-  	      VALUES({$tcase_version_id},1,'" .  $this->db->prepare_string($summary) . "'," . 
+  	      VALUES({$tcase_version_id},{$version},'" .  $this->db->prepare_string($summary) . "'," . 
 	  	                           "'" . $this->db->prepare_string($steps) . "'," .
 	  	                           "'" . $this->db->prepare_string($expected_results) . "'," . $author_id . "," .
                     	  	       $this->db->db_now() . ")";
@@ -166,20 +169,30 @@ function get_all()
   return($recordset);
 }
 
-
+/* 20060326 - franciscom - inferface changes */
 /* 20060227 - franciscom */
-function show($id, $user_id, $action='',$msg_result='')
+function show($id, $user_id, $version_id=TC_ALL_VERSIONS, $action='', $msg_result='', $refresh_tree='yes')
 {
 	// define('DO_NOT_CONVERT',false);
 	$the_tpl=config_get('tpl');
 	$arrReqs = null;
 	
 	$can_edit = has_rights($this->db,"mgt_modify_tc");
-	$tc_array = $this->get_by_id($id);
-	$tc_data = $tc_array;
-	if( count($tc_array) > 1 )
+	$tc_array = $this->get_by_id($id,$version_id);
+	
+	// 20060326 - get the status quo of execution and links of tc versions
+	$status_quo_map = $this->get_versions_status_quo($id);
+	//echo "<pre>debug" . __FUNCTION__; print_r($status_quo_map); echo "</pre>";
+	
+	// $tc_data = $tc_array;
+	
+	//20060324 - franciscom
+	$tc_current_version = array($tc_array[0]);
+	$tc_other_versions = array();
+	$qta_versions = count($tc_array);
+	if( $qta_versions > 1 )
 	{
-	  $tc_data = array($tc_array[0]);
+		$tc_other_versions = array_slice($tc_array,1);
 	}
 	
 	
@@ -193,13 +206,21 @@ function show($id, $user_id, $action='',$msg_result='')
 	$smarty->assign('action',$action);
 	$smarty->assign('sqlResult',$msg_result);
 	$smarty->assign('can_edit',$can_edit);
-	$smarty->assign('testcase',$tc_data);
+	$smarty->assign('can_delete_testcase',$can_edit);
+	$smarty->assign('can_delete_version',$can_edit);
+	$smarty->assign('status_quo',$status_quo_map);
+	
+	$smarty->assign('refresh_tree',$refresh_tree);
+	
+	$smarty->assign('testcase_curr_version',$tc_current_version);
+	$smarty->assign('testcase_other_versions',$tc_other_versions);
+	
+	
 	$smarty->assign('arrReqs',$arrReqs);
 	$smarty->assign('view_req_rights', has_rights($this->db,"mgt_view_req")); 
 	$smarty->assign('opt_requirements', $_SESSION['testprojectOptReqs']); 	
 	$smarty->display($the_tpl['tcView']);
 }
-
 
 
 
@@ -323,11 +344,12 @@ function check_delete_condition($id)
 }
 
 
+/* 20060326 - franciscom - interface changed */
 /* 20060305 - franciscom */
-function delete($id)
+function delete($id,$version_id=TC_ALL_VERSIONS)
 {
-	$this->_execution_delete($id);
-	$this->_blind_delete($id);
+	$this->_execution_delete($id,$version_id);
+	$this->_blind_delete($id,$version_id);
 	return 1;
 }
 
@@ -345,14 +367,21 @@ function get_linked_versions($id,$status="ALL")
 	switch ($status)
 	{
 	  case "ALL":
-		$sql="SELECT * from nodes_hierarchy,tcversions,testplan_tcversions
-	  	    WHERE testplan_tcversions.tcversion_id = tcversions.id 
-	  	    AND   tcversions.id = nodes_hierarchy.id
-	      	AND   nodes_hierarchy.parent_id = {$id}"; 
+		$sql="SELECT nodes_hierarchy.*,
+		             tcversions.*,
+		             testplan_tcversions.*
+		      FROM   nodes_hierarchy,tcversions,testplan_tcversions
+	  	    WHERE  testplan_tcversions.tcversion_id = tcversions.id 
+	  	    AND    tcversions.id = nodes_hierarchy.id
+	      	AND    nodes_hierarchy.parent_id = {$id}"; 
 	  break;
 	      	
     case "EXECUTED":
-		$sql="SELECT * from nodes_hierarchy,tcversions,testplan_tcversions,executions
+		$sql="SELECT nodes_hierarchy.*,
+		             tcversions.*,
+		             testplan_tcversions.*,
+		             executions.*
+		      FROM   nodes_hierarchy,tcversions,testplan_tcversions,executions       
 	    	  WHERE  testplan_tcversions.tcversion_id = tcversions.id
 	    	  AND    executions.tcversion_id = tcversions.id
 	  	    AND    tcversions.id = nodes_hierarchy.id
@@ -360,7 +389,8 @@ function get_linked_versions($id,$status="ALL")
     break;
 
     case "NOT_EXECUTED":
-		$sql="SELECT * from nodes_hierarchy,tcversions,testplan_tcversions
+		$sql="SELECT * 
+		      FROM   nodes_hierarchy,tcversions,testplan_tcversions
 	    	  WHERE  testplan_tcversions.tcversion_id = tcversions.id
 	  	    AND    tcversions.id = nodes_hierarchy.id
 	      	AND    nodes_hierarchy.parent_id = {$id}
@@ -385,27 +415,39 @@ links to test plans
 tcversions
 nodes from hierarchy
 */
-function _blind_delete($id)
+function _blind_delete($id, $version_id=TC_ALL_VERSIONS)
 {
+    $sql = array();
 
-    $sql="DELETE FROM testcase_keywords WHERE testcase_id = {$id}";
-    $result = $this->db->exec_query($sql);
-    
-    $sql="DELETE FROM req_coverage WHERE testcase_id = {$id}";
-    $result = $this->db->exec_query($sql);
+    if( $version_id == TC_ALL_VERSIONS)
+    {    
+    		$sql[]="DELETE FROM testcase_keywords WHERE testcase_id = {$id}";
+    		$sql[]="DELETE FROM req_coverage WHERE testcase_id = {$id}";
+ 
+   			$sql[]="DELETE FROM testplan_tcversions 
+                WHERE tcversion_id IN (SELECT nodes_hierarchy.id 
+                                       FROM nodes_hierarchy WHERE nodes_hierarchy.parent_id = {$id})";
+        $sql[]="DELETE FROM tcversions 
+                WHERE tcversions.id IN (SELECT nodes_hierarchy.id 
+                                        FROM nodes_hierarchy WHERE nodes_hierarchy.parent_id = {$id})";
+	
+        $item_id=$id;
+    }
+    else
+    {
+   			$sql[]="DELETE FROM testplan_tcversions 
+                WHERE tcversion_id = {$version_id}";
+        $sql[]="DELETE FROM tcversions 
+                WHERE tcversions.id = {$version_id}";
+    	
+    	  $item_id=$version_id;
+    }
 
-    $sql="DELETE FROM testplan_tcversions 
-          WHERE tcversion_id IN (SELECT nodes_hierarchy.id 
-                                 FROM nodes_hierarchy WHERE nodes_hierarchy.parent_id = {$id})";
-    $result = $this->db->exec_query($sql);
-
-    $sql="DELETE FROM tcversions 
-          WHERE tcversions.id IN (SELECT nodes_hierarchy.id 
-                                 FROM nodes_hierarchy WHERE nodes_hierarchy.parent_id = {$id})";
-	  $result = $this->db->exec_query($sql);        
-    
-    
-    $this->tree_manager->delete_subtree($id);
+    foreach ($sql as $the_stm)
+    {
+    		$result = $this->db->exec_query($the_stm);
+    }
+    $this->tree_manager->delete_subtree($item_id);
 
 }
 
@@ -415,20 +457,35 @@ Delete the following info:
 bugs
 executions
 */
-function _execution_delete($id)
+function _execution_delete($id,$version_id=TC_ALL_VERSIONS)
 {
-    $sql="DELETE FROM execution_bugs 
-          WHERE execution_id IN (SELECT execution_id FROM executions 
-                                 WHERE tcversion_id IN (SELECT nodes_hierarchy.id 
-                                                        FROM nodes_hierarchy 
-                                                        WHERE nodes_hierarchy.parent_id = {$id}))";
-    $result = $this->db->exec_query($sql);
+	  $sql = array();
+		if( $version_id	== TC_ALL_VERSIONS )
+		{ 
+    		$sql[]="DELETE FROM execution_bugs 
+          		  WHERE execution_id IN (SELECT execution_id FROM executions 
+              		                     WHERE tcversion_id IN (SELECT nodes_hierarchy.id 
+                  		                                        FROM nodes_hierarchy 
+                      		                                    WHERE nodes_hierarchy.parent_id = {$id}))";
 
+    		$sql[]="DELETE FROM executions 
+        		    WHERE tcversion_id IN (SELECT nodes_hierarchy.id 
+            		                       FROM nodes_hierarchy WHERE nodes_hierarchy.parent_id = {$id})";
+    }
+    else
+    {
+    		$sql[]="DELETE FROM execution_bugs 
+        	  	  WHERE execution_id IN (SELECT execution_id FROM executions 
+              		                     WHERE tcversion_id = {$version_id})";
+    	
+    		$sql[]="DELETE FROM executions 
+        		    WHERE tcversion_id = {$version_id}";
+    }
 
-    $sql="DELETE FROM executions 
-          WHERE tcversion_id IN (SELECT nodes_hierarchy.id 
-                                 FROM nodes_hierarchy WHERE nodes_hierarchy.parent_id = {$id})";
-    $result = $this->db->exec_query($sql);
+    foreach ($sql as $the_stm)
+    {
+    		$result = $this->db->exec_query($the_stm);
+    }
 }
 
 /*
@@ -451,60 +508,87 @@ function copy_to($id, $parent_id, $user_id)
   
   foreach( $tcase_info as $tcversion )
   {
-    $this->create_tcversion($new_tc['id'],$tcversion['summary'],$tcversion['steps'],
+    $this->create_tcversion($new_tc['id'],$tcversion['version'],
+                                          $tcversion['summary'],$tcversion['steps'],
                                           $tcversion['expected_results'],$tcversion['author_id']);
   }
   return($status_ok);
 } // end function
 	
 	
+/* 20060323 - franciscom */
+function create_new_version($id,$user_id)
+{
+  // get a new id
+  $tcversion_id = $this->tree_manager->new_node($id,$this->node_types_descr_id['testcase_version']);
 	
-	
-	/* KEYWORD RELATED */
-	function getKeywords($tcID,$kwID = null)
-	{
-		$sql = "SELECT keyword_id,keywords.keyword 
-		        FROM testcase_keywords,keywords 
-		        WHERE keyword_id = keywords.id AND testcase_id = {$tcID}";
-		if (!is_null($kwID))
-			$sql .= " AND keyword_id = {$kwID}";
-		$tcKeywords = $this->db->fetchRowsIntoMap($sql,'keyword_id');
-		
-		return $tcKeywords;
-	} 
-	
-	function addKeyword($tcID,$kwID)
-	{
-		$kw = $this->getKeywords($tcID,$kwID);
-		if (sizeof($kw))
-			return 1;
-		$sql = "INSERT INTO testcase_keywords (testcase_id,keyword_id) " .
-			   " VALUES ($tcID,$kwID)";
+  // get last version for this test case
+  $last_version_info =  $this->get_last_version_info($id);  
+  $this->copy_tcversion($last_version_info['id'],$tcversion_id,$last_version_info['version']+1,$user_id);
+    
+  $ret['id'] = $tcversion_id;
+  $ret['msg'] = 'ok';
+  return ($ret);
+}
 
-		return ($this->db->exec_query($sql) ? 1 : 0);
-	}
+
+/* 20060323 - franciscom */
+function get_last_version_info($id)
+{
 	
-	function addKeywords($tcID,$kwIDs)
-	{
-		$bSuccess = 1;
-		for($i = 0;$i < sizeof($kwIDs);$i++)
-		{
-			$bSuccess = $bSuccess && $this->addKeyword($tcID,$kwIDs[$i]);
-		}
-		
-		return $bSuccess;
-	}
+	$sql="SELECT MAX(version) 
+	      FROM tcversions,nodes_hierarchy
+	      WHERE nodes_hierarchy.id = tcversions.id
+	      AND   nodes_hierarchy.parent_id = {$id} ";
 	
-	function deleteKeywords($tcID,$kwID = null)
-	{
-		$sql = "DELETE FROM testcase_keywords WHERE testcase_id = {$tcID}";
-		if (!is_null($kwID))
-			$sql .= " AND keyword_id = {$kwID}";
-		
-		return $this->db->exec_query($sql);
-	}
+	$recordset = $this->db->get_recordset($sql);
+  $max_version=$recordset[0][0];
 	
-	/* END KEYWORD RELATED */
+	$sql="SELECT tcversions.*
+	      FROM tcversions,nodes_hierarchy
+	      WHERE version = {$max_version}
+        AND nodes_hierarchy.id = tcversions.id
+	      AND nodes_hierarchy.parent_id = {$id}";
+	
+	
+	
+	/*
+	$sql="SELECT tcversions.*
+	      FROM tcversions,nodes_hierarchy
+	      WHERE version = ( SELECT MAX(version) 
+	                        FROM tcversions
+	                        WHERE nodes_hierarchy.id = tcversions.id
+	                        AND   nodes_hierarchy.parent_id = {$id} )
+        AND nodes_hierarchy.id = tcversions.id
+	      AND nodes_hierarchy.parent_id = {$id}";
+	*/
+	      
+  echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
+	      
+  $recordset = $this->db->get_recordset($sql);
+	return($recordset[0]);
+}
+
+
+/* 20060323 - franciscom	*/ 
+function copy_tcversion($from_tcversion_id,$to_tcversion_id,$as_version_number,$user_id)
+{
+
+    $now = $this->db->db_now();
+		$sql="INSERT INTO tcversions (id,version,author_id,creation_ts,
+		                              summary,steps,expected_results,importance)
+          SELECT {$to_tcversion_id} AS id, {$as_version_number} AS version,
+                 {$user_id} AS author_id, {$now} AS creation_ts,
+                 summary,steps,expected_results,importance
+          FROM tcversions 
+          WHERE id={$from_tcversion_id} ";
+                 
+      echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
+             
+    $result = $this->db->exec_query($sql);
+}	
+	
+
 
 
 /*
@@ -631,14 +715,26 @@ function get_by_id($id,$version_id=TC_ALL_VERSIONS, $get_active=0, $get_open=0)
 	if( is_array($id) )
 	{
 		  $tcid_list = implode(",",$id);
-			$where_clause = " WHERE NHA.parent_id IN ($tcid_list) ";
-			$where_clause_names = " WHERE nodes_hierarchy.id IN ($tcid_list) ";
+			$where_clause = " WHERE NHA.parent_id IN ({$tcid_list}) ";
 	}
 	else
 	{
 			$where_clause = " WHERE NHA.parent_id = {$id} ";
-			$where_clause_names = " WHERE nodes_hierarchy.id = {$id} ";
 	}
+	
+	if( is_array($version_id) )
+	{
+	    $versionid_list = implode(",",$version_id);
+	    $where_clause  .= " AND tcversions.id IN ({$versionid_list}) ";
+	}
+	else
+	{
+			if($version_id != TC_ALL_VERSIONS)
+			{
+				$where_clause  .= " AND tcversions.id = {$version_id} ";
+			}
+	}
+
 	
   $sql="SELECT	U.login AS updater_login,users.login as author_login,
 		    NHB.name,NHA.parent_id AS testcase_id, tcversions.*, 
@@ -656,9 +752,167 @@ function get_by_id($id,$version_id=TC_ALL_VERSIONS, $get_active=0, $get_open=0)
 
   $recordset = $this->db->get_recordset($sql);
 
+  //echo "<pre>debug" . __FUNCTION__; print_r($recordset); echo "</pre>";
  
   return($recordset ? $recordset : null);
 }
+
+
+// 20060326 - franciscom
+//
+// args:
+//       id: test case id
+//
+// returns a recorset with the following fields
+//
+// tcversion_id, linked , executed
+//
+// linked field: will take the following values
+//               NULL if the tc version is not linked to any test plan
+//               tcversion_id if linked 
+//
+// executed field: will take the following values
+//                 NULL if the tc version has not been executed in any test plan
+//                 tcversion_id if has executions 
+//
+//
+function get_versions_status_quo($id)
+{
+		$sql="SELECT DISTINCT NH.id AS tcversion_id,
+		                      T.tcversion_id AS linked,
+		                      E.tcversion_id AS executed
+		      FROM   nodes_hierarchy NH
+		      LEFT OUTER JOIN testplan_tcversions T ON T.tcversion_id = NH.id
+		      LEFT OUTER JOIN executions E ON E.tcversion_id = NH.id
+		      WHERE  NH.parent_id = {$id}"; 
+		$recordset = $this->db->fetchRowsIntoMap($sql,'tcversion_id');
+  	return($recordset);
+}
+// -------------------------------------------------------------------------------
+
+
+
+
+
+
+// -------------------------------------------------------------------------------
+//                            Keyword related methods	
+// -------------------------------------------------------------------------------
+function getKeywords($tcID,$kwID = null)
+{
+	$sql = "SELECT keyword_id,keywords.keyword 
+	        FROM testcase_keywords,keywords 
+	        WHERE keyword_id = keywords.id AND testcase_id = {$tcID}";
+	if (!is_null($kwID))
+		$sql .= " AND keyword_id = {$kwID}";
+	$tcKeywords = $this->db->fetchRowsIntoMap($sql,'keyword_id');
+	
+	return $tcKeywords;
+} 
+
+function addKeyword($tcID,$kwID)
+{
+	$kw = $this->getKeywords($tcID,$kwID);
+	if (sizeof($kw))
+		return 1;
+	$sql = "INSERT INTO testcase_keywords (testcase_id,keyword_id) " .
+		   " VALUES ($tcID,$kwID)";
+
+	return ($this->db->exec_query($sql) ? 1 : 0);
+}
+
+function addKeywords($tcID,$kwIDs)
+{
+	$bSuccess = 1;
+	for($i = 0;$i < sizeof($kwIDs);$i++)
+	{
+		$bSuccess = $bSuccess && $this->addKeyword($tcID,$kwIDs[$i]);
+	}
+	
+	return $bSuccess;
+}
+
+function deleteKeywords($tcID,$kwID = null)
+{
+	$sql = "DELETE FROM testcase_keywords WHERE testcase_id = {$tcID}";
+	if (!is_null($kwID))
+		$sql .= " AND keyword_id = {$kwID}";
+	
+	return $this->db->exec_query($sql);
+}
+
+// -------------------------------------------------------------------------------
+//                            END Keyword related methods	
+// -------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+/*
+
+
+*/
+function get_executions($id,$version_id,$tplan_id,$build_id)
+{
+	
+	if( is_array($id) )
+	{
+		  $tcid_list = implode(",",$id);
+			$where_clause = " WHERE NHA.parent_id IN ({$tcid_list}) ";
+	}
+	else
+	{
+			$where_clause = " WHERE NHA.parent_id = {$id} ";
+	}
+
+	if( is_array($version_id) )
+	{
+	    $versionid_list = implode(",",$version_id);
+	    $where_clause  .= " AND tcversions.id IN ({$versionid_list}) ";
+	}
+	else
+	{
+			if($version_id != TC_ALL_VERSIONS)
+			{
+				$where_clause  .= " AND tcversions.id = {$version_id} ";
+			}
+	}
+
+  $sql="SELECT	NHB.name,NHA.parent_id AS testcase_id, tcversions.*, 
+		    users.login AS tester_login,
+		    users.first AS tester_first_name, 
+		    users.last AS tester_last_name, 
+		    EXEC.id AS execution_id, EXEC.status, EXEC.notes AS execution_notes,
+		    builds.name AS build_name
+        FROM nodes_hierarchy NHA
+        JOIN nodes_hierarchy NHB ON NHA.parent_id = NHB.id 
+        JOIN tcversions ON NHA.id = tcversions.id 
+        LEFT OUTER JOIN executions EXEC ON NHA.id = EXEC.tcversion_id  
+                                           AND EXEC.testplan_id = {$tplan_id}
+                                           AND EXEC.build_id = {$build_id} 
+        JOIN builds     ON builds.id = {$build_id} 
+                           AND builds.testplan_id = {$tplan_id}                                
+        LEFT OUTER JOIN users ON EXEC.tester_id = users.id 
+        $where_clause 
+        ORDER BY NHA.node_order ASC, execution_id DESC";
+
+
+  //echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
+
+  $recordset = $this->db->get_recordset($sql);
+
+  // echo "<pre>debug" . __FUNCTION__ ; print_r($recordset); echo "</pre>";
+ 
+  return($recordset ? $recordset : null);
+}
+
 
 
 

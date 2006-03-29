@@ -1,19 +1,7 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execSetResults.tpl,v 1.13 2006/02/07 11:15:10 franciscom Exp $ *}
+{* $Id: execSetResults.tpl,v 1.14 2006/03/29 14:33:32 franciscom Exp $ *}
 {* Purpose: smarty template - show tests to add results *}
 {* Revisions:
-	
-  20050815 - scs - small changes because of code changes in execSetResults.php
-  20050827 - scs - added display of tcID
-  20050828 - fm - localize_date; use $g_tc_status.not_run instead of magic letter 
-  20050911 - fm - using $smarty.section.Row.index 
-  (change needed to use assoc array to simplify processing in PHP)
-  20050919 - fm - BUGID 82
-  20051022 - scs - build identifier not displayed
-  20051118 - scs - enlargened the notes textarea
-  20051119 - scs - added fix for 227
-  20051126 - scs - added escaping of build and owner
-  20060207 - franciscom - BUGID 303
 *}	
 
 {include file="inc_head.tpl" popup='yes'}
@@ -52,123 +40,106 @@
 	<hr />
 
 	{* display test cases from array $arrTC*}
-	{section name=Row loop=$arrTC}
-	  {assign var="idx" value=$smarty.section.Row.index}
-		<input type='hidden' name='tc[{$idx}]' value='{$arrTC[Row].id}' />
-			<h2>{lang_get s='th_test_case_id'}{$arrTC[Row].mgttcid} :: {lang_get s='title_test_case'} {$arrTC[Row].title|escape}</h2>
+	{foreach item=tc_exec from=$arrTC}
+	
+	  {assign var="idx" value=$tc_exec.testcase_id}
+		<input type='hidden' name='tc[{$idx}]' value='{$tc_exec.testcase_id}' />
+  	<h2>{lang_get s='th_test_case_id'}{$tc_exec.testcase_id} :: {lang_get s='title_test_case'} {$tc_exec.name|escape}</h2>
+
+
 		<div>
- 		{if $arrTC[Row].recentResult.status != '' and $arrTC[Row].recentResult.status != $g_tc_status.not_run}			
-			{if $arrTC[Row].recentResult.status == $g_tc_status.passed}
-				<div class="passBox">
-			{elseif $arrTC[Row].recentResult.status == $g_tc_status.failed}
-				<div class="failBox">
-			{elseif $arrTC[Row].recentResult.status == $g_tc_status.blocked}
-				<div class="blockedBox">
-			{/if}
+	  {if $tc_exec.status != '' and $tc_exec.status != $gsmarty_tc_status.not_run}			
+      
+      {assign var="status_code" value=$tc_exec.status}
+
+			<div class="{$gsmarty_tc_status_css.$status_code}">
+			{lang_get s='test_exec_last_run_date'} {localize_date d=$tc_exec.execution_ts}
+			{lang_get s='test_exec_by'} {$tc_exec.runby|escape} 
+			{lang_get s='test_exec_on_build'} {$tc_exec.build_name|escape}: 
 			
-			{lang_get s='test_exec_last_run_date'} {localize_date d=$arrTC[Row].recentResult.daterun}
-			{lang_get s='test_exec_by'} {$arrTC[Row].recentResult.runby|escape} 
-			{lang_get s='test_exec_on_build'} {$arrTC[Row].recentResult.build_name|escape}: 
-			{if $arrTC[Row].recentResult.status == $g_tc_status.passed}
+			
+			{if $tc_exec.status == $gsmarty_tc_status.passed}
 				{lang_get s='test_status_passed'}
-			{elseif $arrTC[Row].recentResult.status == $g_tc_status.failed}
+			{elseif $tc_exec.status == $gsmarty_tc_status.failed}
 				{lang_get s='test_status_failed'}
-			{elseif $arrTC[Row].recentResult.status == $g_tc_status.blocked}
+			{elseif $tc_exec.status == $gsmarty_tc_status.blocked}
 				{lang_get s='test_status_blocked'}
 			{/if}
 			</div>
-	
+	    
 		{else}
-			<div class="notRunBox">{lang_get s='test_status_not_run'}</div>
+			<div class="not_run">{lang_get s='test_status_not_run'}</div>
 			{lang_get s='tc_not_tested_yet'}
 		{/if}
+
 		<table class="notesBox">
 		<tr>
 			<td colspan="2" class="title">{lang_get s='test_exec_summary'}</td>
 		</tr>
 		<tr>
-			<td colspan="2">{$arrTC[Row].summary}</td>
+			<td colspan="2">{$tc_exec.summary}</td>
 		</tr>
 		<tr>
 			<td class="title" width="50%">{lang_get s='test_exec_steps'}</td>
 			<td class="title" width="50%">{lang_get s='test_exec_expected_r'}</td>
 		</tr>
 		<tr>
-			<td>{$arrTC[Row].steps}</td>
-			<td>{$arrTC[Row].outcome}</td>
+			<td>{$tc_exec.steps}</td>
+			<td>{$tc_exec.expected_results}</td>
 		</tr>
 		</table>
 
-		<table border="0">
+		<table border="2">
 		<tr>
-			<td>
+			<td rowspan="2">
 				<div class="title">{lang_get s='test_exec_notes'}</div>
 				<textarea {$input_enabled_disabled} class="tcDesc" name='notes[{$idx}]' 
-					cols=50 rows=10>{$arrTC[Row].note|escape}</textarea>			
+					cols=50 rows=10>{$tc_exec.note|escape}</textarea>			
 			</td>
 			<td>			
-				{* status of test *}
-				<div class="resultBox">
-					<span class="title">{lang_get s='test_exec_result'}</span><br /> 
-						<input type="radio" {$input_enabled_disabled} name='status[{$idx}]' 
-							value="{$g_tc_status.not_run}" {if $arrTC[Row].status == $g_tc_status.not_run
-							|| $arrTC[Row].status == ''} checked="checked" {/if} />{lang_get s='test_status_not_run'}<br />
-						<input type="radio" {$input_enabled_disabled} name='status[{$idx}]' 
-							value="{$g_tc_status.passed}" {if $arrTC[Row].status == $g_tc_status.passed} 
-							checked="checked" {/if} />{lang_get s='test_status_passed'}<br />
-						<input type="radio" {$input_enabled_disabled} name='status[{$idx}]' 
-							value="{$g_tc_status.failed}" {if $arrTC[Row].status == $g_tc_status.failed} 
-							checked="checked" {/if} />{lang_get s='test_status_failed'}<br />
-						<input type="radio" {$input_enabled_disabled} name='status[{$idx}]' 
-							value="{$g_tc_status.blocked}" {if $arrTC[Row].status == $g_tc_status.blocked} 
-							checked="checked" {/if} />{lang_get s='test_status_blocked'}<br />
-				</div>
-			</td>				
-		</tr>
-		{if $g_bugInterfaceOn}					
-		<tr>
-			<td colspan="2">
-				<br />
-			  {* -------------------------------------------------------------------------------------- *}
-			  {* 20060207 - franciscom - BUGID 303
-		      Added to make Test Results editable only if Current build is latest Build - Tools-R-Us *}
-				{if $rightsEdit == "yes" and $edit_test_results == "yes"}
-							<span class="title">{lang_get s='test_exec_bug_report'}</span>
-							<input name='bugs[{$idx}]' value='{$arrTC[Row].bugs}' /><a style="font-weight:normal" target="_blank" href="{$g_bugInterface->getEnterBugURL()}">{lang_get s='button_enter_bug'}</a>
-				{/if}
-			  {* -------------------------------------------------------------------------------------- *}
-				
-				{if $arrTC[Row].bugLinkList}
-				<table class="simple" width="100%">
-					<tr>
-						<th style="text-align:left">{lang_get s='build'}</th>
-						<th style="text-align:left">{lang_get s='caption_bugtable'}</th>
-					</tr>
-					{section name=link loop=$arrTC[Row].bugLinkList}
-					<tr>
-						<td>{$arrTC[Row].bugLinkList[link][1]|escape}</td>
-						<td>{$arrTC[Row].bugLinkList[link][0]}</td>
-					</tr>
-					{/section}
-				{/if}
-				</table>
-			</td>
-		</tr>
-		{/if}
-		</table>		
+  				{* status of test *}
+  				<!-- <span class="title">{lang_get s='test_exec_result'}</span><br /> --->
+  				<div class="title" style="text-align: center;">{lang_get s='test_exec_result'}</div>
+  				
+  				<div class="resultBox">
+  					
+  						<input type="radio" {$input_enabled_disabled} name='status[{$idx}]' 
+  							value="{$gsmarty_tc_status.not_run}" {if $tc_exec.status == $gsmarty_tc_status.not_run
+  							|| $tc_exec.status == ''} checked="checked" {/if} />{lang_get s='test_status_not_run'}<br />
+  						<input type="radio" {$input_enabled_disabled} name='status[{$idx}]' 
+  							value="{$gsmarty_tc_status.passed}" {if $tc_exec.status == $gsmarty_tc_status.passed} 
+  							checked="checked" {/if} />{lang_get s='test_status_passed'}<br />
+  						<input type="radio" {$input_enabled_disabled} name='status[{$idx}]' 
+  							value="{$gsmarty_tc_status.failed}" {if $tc_exec.status == $gsmarty_tc_status.failed} 
+  							checked="checked" {/if} />{lang_get s='test_status_failed'}<br />
+  						<input type="radio" {$input_enabled_disabled} name='status[{$idx}]' 
+  							value="{$gsmarty_tc_status.blocked}" {if $tc_exec.status == $gsmarty_tc_status.blocked} 
+  							checked="checked" {/if} />{lang_get s='test_status_blocked'}<br />
+  					<br>		
+  		 			<input type='submit' name='submitTestResults' value="{lang_get s='btn_save_tc_exec_results'}" />
+  				</div>
+          <!---
+  				<div class="resultBox">
+  		 			<input type='submit' name='submitTestResults' value="{lang_get s='btn_save_tc_exec_results'}" />
+   	  		</div>	
+      	--->
+  			</td>
+  	</tr>
+	 </tr>
+	</table>
 
-		
-	</div>
+
+
+
 	<hr />
-	{/section}
-
-  {* 20060207 - franciscom - BUGID 303*}
-  {* 20051108 - fm - BUGID 00082*}
-  {if $rightsEdit == "yes" and $edit_test_results == "yes" }
+	{/foreach}
+  {* {if $rightsEdit == "yes" and $edit_test_results == "yes" } *}
   	<div class="groupBtn">
   		<input type='submit' name='submitTestResults' value="{lang_get s='btn_save_tc_exec_results'}" />
   	</div>	
-  {/if}
+  {* {/if} *}
+
+
 </form>
 </div>
 

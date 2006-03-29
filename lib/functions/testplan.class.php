@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.2 $
- * @modified $Date: 2006/03/22 11:56:40 $ $Author: franciscom $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2006/03/29 14:34:31 $ $Author: franciscom $
  * @author franciscom
  *
  */
@@ -150,7 +150,8 @@ function get_linked_tcversions($id)
           WHERE testplan_id={$id} ORDER BY testsuite_id";	
 
 
-	  $recordset = $this->db->get_recordset($sql);
+	  //$recordset = $this->db->get_recordset($sql);
+	  $recordset = $this->db->fetchRowsIntoMap($sql,'tc_id');
     return($recordset);
 }
 
@@ -160,7 +161,18 @@ function get_builds_for_html_options($id)
 	$sql = " SELECT builds.id, builds.name 
 	         FROM builds WHERE builds.testplan_id = {$id}
 	         ORDER BY builds.name";
-	return $this->db->fetchRowsIntoMap($sql,'id');
+	return $this->db->fetchColumnsIntoMap($sql,'id','name');
+}//end function
+
+// 20060322 - franciscom
+function get_max_build_id($id)
+{
+	$sql = " SELECT MAX(builds.id)
+	         FROM builds WHERE builds.testplan_id = {$id}";
+	
+	$recordset = $this->db->get_recordset($sql);
+	return(intval($recordset[0][0]));
+	
 }//end function
 
 

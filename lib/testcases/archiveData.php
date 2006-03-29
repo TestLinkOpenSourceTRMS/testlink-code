@@ -3,7 +3,7 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
- * @version $Id: archiveData.php,v 1.9 2006/03/06 17:31:01 franciscom Exp $
+ * @version $Id: archiveData.php,v 1.10 2006/03/29 14:33:59 franciscom Exp $
  * @author Martin Havlat
  *  
  * This page allows you to show data (test cases, categories, and
@@ -36,17 +36,18 @@ switch($feature)
 {
 	case 'testproject':
 	$item_mgr = New testproject($db);
+  //$item_mgr->show($id,$user_id);
 	break;
 		
  	case 'testsuite':
 	$item_mgr = New testsuite($db);
-	//$item_mgr->show($id);
+	//$item_mgr->show($id,$user_id);
 	break;
 		
 	
 	case 'testcase':
 	$item_mgr = New testcase($db);
- 	//showTestcase($db,$id,$allow_edit);	
+  //$item_mgr->show($id,$user_id);
 	break;
 
 	//case 'testcase_version':
@@ -58,7 +59,6 @@ switch($feature)
 		tLog('$_GET["edit"] has invalid value: ' . $feature , 'ERROR');
 		trigger_error($_SESSION['user'].'> $_GET["edit"] has invalid value.', E_USER_ERROR);
 }
-
 $item_mgr->show($id,$user_id);
 
 ?>

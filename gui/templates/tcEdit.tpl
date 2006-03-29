@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: tcEdit.tpl,v 1.6 2006/03/20 18:02:12 franciscom Exp $ *}
+{* $Id: tcEdit.tpl,v 1.7 2006/03/29 14:33:32 franciscom Exp $ *}
 {* Purpose: smarty template - edit test specification: test case *}
 {*
 20060303 - franciscom
@@ -10,13 +10,16 @@
 <body>
 
 <div class="workBack" style="font-weight: bold;">
-<h1>{lang_get s='title_edit_tc'} {$tc.name|escape}</h1> 
+<h1>{lang_get s='title_edit_tc'} {$tc.name|escape} {lang_get s='version'} {$tc.version}</h1> 
 
-<form method="post" action="lib/testcases/tcEdit.php?testcaseID={$testcaseID}">
+<form method="post" action="lib/testcases/tcEdit.php">
+  <input type="hidden" name="testcase_id"  value="{$tc.testcase_id}">
+  <input type="hidden" name="tcversion_id"  value="{$tc.id}">
+	<input type="hidden" name="version" value="{$tc.version}" />
+	
 
 	<div style="float: right;">
 		<input id="do_update" type="submit" name="do_update" value="update" />
-		<input type="hidden" name="version" value="{$tc.version}" />
 	</div>	
 
 	<p>{lang_get s='tc_title'}<br />

@@ -1,96 +1,87 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView.tpl,v 1.10 2006/03/20 18:02:12 franciscom Exp $
+$Id: tcView.tpl,v 1.11 2006/03/29 14:33:32 franciscom Exp $
 Purpose: smarty template - view test case in test specification
 
 20060316 - franciscom - added action
 20060303 - franciscom
 *}
 
-{include file="inc_head.tpl"}
-<body>
+{include file="inc_head.tpl" openHead='yes'}
+<script language="JavaScript" src="gui/javascript/expandAndCollapseFunctions.js" type="text/javascript"></script>
+</head>
+
+<body onLoad="viewElement(document.getElementById('other_versions'),false)">
+
+{include file="inc_update.tpl" result=$sqlResult action=$action item="test case" refresh=$refresh_tree}
+
 <div class="workBack">
 
 
-{if $testcase eq null}
-	{lang_get s='no_records_found'}
+{if $testcase_curr_version eq null}
+		{lang_get s='no_records_found'}
 {else}
-{section name=row loop=$testcase}
-<h1>{lang_get s='title_test_case'} {$testcase[row].name|escape} </h1>
-
-
-{if $can_edit == "yes" }
-  {* 20060316 - franciscom - added action *}
-	{include file="inc_update.tpl" result=$sqlResult action=$action item="test case" refresh="yes"}
-
-	<div class="groupBtn">
-	<form method="post" action="lib/testcases/tcEdit.php?&testcaseID={$testcase[row].testcase_id}">
-		<input type="submit" id="edit_tc"   name="edit_tc"   value="{lang_get s='btn_edit'}">
-		<input type="submit" id="delete_tc" name="delete_tc" value="{lang_get s='btn_del'}">
-		<input type="submit" id="move_copy_tc" name="move_copy_tc"   value="{lang_get s='btn_mv_cp'}">
-	</form>
-	</div>	
-{/if}
-
-	<table width="95%" class="simple" border="0">
-		<tr>
-			<th  colspan="2">{lang_get s='th_test_case_id'}{$testcase[row].testcase_id} :: 
-			{lang_get s='title_test_case'} {$testcase[row].name|escape}</th>
-		</tr>
-		<tr>
-			<td class="bold" colspan="2">{lang_get s='version'} 
-			{$testcase[row].version|escape}</td>
-		</tr>
-		<tr >
-			<td class="bold" colspan="2">{lang_get s='summary'}</td>
-		</tr>
-		<tr>
-			<td  colspan="2">{$testcase[row].summary}</td>
-		</tr>
-		<tr>
-			<td class="bold" width="50%">{lang_get s='steps'}</td>
-			<td class="bold" width="50%">{lang_get s='expected_results'}</td>
-		</tr>
-		<tr>
-			<td>{$testcase[row].steps}</td>
-			<td>{$testcase[row].expected_results}</td>
-		</tr>
-		<tr>
-			<td colspan="2"><a href="lib/keywords/keywordsView.php" 
-				target="mainframe" class="bold">{lang_get s='keywords'}</a>: &nbsp;
-				{$testcase[row].keywords|escape}
-			</td>
-		</tr>
-	{if $opt_requirements == TRUE && $view_req_rights == "yes"}
-		<tr>
-			<td colspan="2"><span><a href="lib/req/reqSpecList.php" 
-				target="mainframe" class="bold">{lang_get s='Requirements'}</a>
-				: &nbsp;</span>
-			
-				{section name=item loop=$arrReqs}
-					<span onclick="javascript: open_top(fRoot+'lib/req/reqView.php?idReq={$arrReqs[item].id}');"
-					style="cursor:  pointer;">
-					{$arrReqs[item].title|escape}</span>, 
-				{sectionelse}
-					{lang_get s='none'}
-				{/section}
-			</td>
-		</tr>
-	{/if}
-	</table>
 	
-	<div>
-		<p>{lang_get s='title_created'}&nbsp;{localize_timestamp ts=$testcase[row].creation_ts }&nbsp;
-			{lang_get s='by'}&nbsp;{$testcase[row].author_first_name|escape}&nbsp;{$testcase[row].author_last_name|escape}
-		
-		{if $testcase[row].updater_last_name ne "" || $testcase[row].updater_first_name ne ""}
-		<br />{lang_get s='title_last_mod'}&nbsp;{localize_timestamp ts=$testcase[row].modification_ts}
-		&nbsp;{lang_get s='by'}&nbsp;{$testcase[row].updater_first_name|escape}
-		                       &nbsp;{$testcase[row].updater_last_name|escape}
-		{/if}
-		</p>
-	</div>
-{/section}
+	{* Current active version *}
+  {if $testcase_other_versions neq null}
+    {assign var="my_delete_version" value="yes"}
+  {/if}
+  
+	{foreach item=my_testcase from=$testcase_curr_version}
+			{include file="tcView_viewer.tpl" my_testcase=$my_testcase 
+			         can_edit=$can_edit can_move_copy="yes" 
+			         can_delete_testcase=$can_delete_testcase
+			         can_delete_version=$my_delete_version
+			         status_quo=null
+			         show_version="yes" show_title="yes"}
+	{/foreach}
+	
+	
+	{* Old active version *}
+  {if $testcase_other_versions neq null}
+    <span style="cursor: pointer" class="type1" onclick="viewElement(document.getElementById('other_versions'),document.getElementById('other_versions').style.display=='none')"> Other Versions </span>
+    <div id="other_versions" class="workBack">
+  	{foreach item=my_testcase from=$testcase_other_versions}
+  	    <span style="cursor: pointer" class="type1" 
+  	          onclick="viewElement(document.getElementById('{$my_testcase.version}'),document.getElementById('{$my_testcase.version}').style.display=='none')"> Version {$my_testcase.version} </span>
+  	    <br><div id="{$my_testcase.version}" class="workBack">
+				{include file="tcView_viewer.tpl" my_testcase=$my_testcase 
+				         can_edit=$can_edit can_move_copy="no" 
+   			         can_delete_testcase='no'
+			           can_delete_version=$can_delete_version
+			           status_quo=$status_quo
+				         show_version="no" show_title="no"}
+  	    </div>
+  	    <br>
+		{/foreach}
+		</div>
+  
+  	{* ---------------------------------------------------------------- *}
+  	{* Force the div of every old version to show closed as first state *}
+  	{literal}
+  	<script type="text/javascript">
+  	{/literal}
+  		{foreach item=my_testcase from=$testcase_other_versions}
+  	  	  viewElement(document.getElementById('{$my_testcase.version}'),false);
+			{/foreach}
+  	{literal}
+  	</script>
+  	{/literal}
+  	{* ---------------------------------------------------------------- *}
+
+  
+  
+  {/if}
+	
+	
+<!--
+    <span style="cursor: pointer" onclick="alert('hole');viewElement(document.getElementById('other_versions'),document.getElementById('other_versions').style.display=='none')"> Other Versions </span>
+<span 
+ onclick="viewElement(document.getElementById('other_versions'),document.getElementById('other_versions').style.display=='none')">Dati generali</span>
+
+
+    -->	
+	
 {/if}
 </body>
 </html>

@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execSetResults.tpl,v 1.14 2006/03/29 14:33:32 franciscom Exp $ *}
+{* $Id: execSetResults.tpl,v 1.15 2006/03/29 17:44:01 franciscom Exp $ *}
 {* Purpose: smarty template - show tests to add results *}
 {* Revisions:
 *}	
@@ -31,7 +31,7 @@
   	{assign var="input_enabled_disabled" value=""}
   	
 	  <div class="groupBtn">
-  		<input type="submit" name='submitTestResults' value="{lang_get s='btn_save_tc_exec_results'}" />
+  		<input type="submit" name='save_results' value="{lang_get s='btn_save_tc_exec_results'}" />
 		  <input type="button" name="print" value="{lang_get s='btn_print'}" 
 		         onclick="javascript:window.print();" />
   	</div>

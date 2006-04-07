@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: buildNew.php,v $
  *
- * @version $Revision: 1.20 $
- * @modified $Date: 2006/03/22 12:05:49 $ $Author: franciscom $
+ * @version $Revision: 1.21 $
+ * @modified $Date: 2006/04/07 20:15:30 $ $Author: schlundus $
  *
  *
  * 20051006 - fm - added edit build
@@ -24,7 +24,7 @@ require("../functions/testplan.class.php");  // 20060322 - franciscom
 
 testlinkInitPage($db);
 
-$tplan_mgr=New testplan($db);
+$tplan_mgr = new testplan($db);
 
 $tpID    = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0;
 $buildID = isset($_REQUEST['buildID']) ? intval($_REQUEST['buildID']) : 0;
@@ -32,7 +32,6 @@ $build_name = isset($_REQUEST['build_name']) ? trim(strings_stripSlashes($_REQUE
 $notes = isset($_REQUEST['notes']) ? strings_stripSlashes($_REQUEST['notes']) : null;
 $tpName = $_SESSION['testPlanName'];
 $the_builds = $tplan_mgr->get_builds($tpID);
-
 
 $smarty = new TLSmarty();
 

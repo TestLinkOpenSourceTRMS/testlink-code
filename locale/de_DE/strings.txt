@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.29 $
- * @modified $Date: 2006/03/23 20:46:32 $
+ * @version $Revision: 1.30 $
+ * @modified $Date: 2006/04/07 20:15:32 $
  *
  * @author Andreas Morsing
  *
@@ -515,7 +515,7 @@ $TLS_req_msg_notestcase = "Keine verbundenen Test Cases";
 $TLS_edit = "Editieren";
 $TLS_req_spec_change = "Ändere die Anforderungsspezifikation nach";
 $TLS_req_title_analyse = "Analysiere die Anforderungsspezifikation ";
-$TLS_req_title_covered = "Erfüllte Anforderunge";
+$TLS_req_title_covered = "Erfüllte Anforderungen";
 $TLS_req_title_nottestable = "Nicht testbare Anforderungen";
 $TLS_req_title_uncovered = "Unerfüllte Anforderungen";
 $TLS_req_total_count = "Gesamtanzahl der Anforderungen";
@@ -732,7 +732,7 @@ $TLS_max_size_cvs_file1 = "Max. Größe der Datei ist";
 $TLS_max_size_cvs_file2 = "kB";
 $TLS_req_import_check_note = "Überprüfen Sie mögliche Konflikte und wählen Sie vorm Import eine entsprechende Lösungsstrategie.";
 $TLS_req_import_dont_empty = "Keine Einträge mit leerem Bereich importieren";
-$TLS_req_import_format_description1 = " - CSV Typ erforder zwei Spalten pro Zeile: 'Titel','Beschreibung'";
+$TLS_req_import_format_description1 = " - CSV Typ erfordert zwei Spalten pro Zeile: 'Titel','Beschreibung'";
 $TLS_req_import_format_description2 = " - CSV mittels DOORS exportiert erfordert eine Header-Zeile.";
 $TLS_req_import_option_double = "Mit gleichem Titel neu anlegen";
 $TLS_req_import_option_header = "Konflikt-Lösung auswählen";

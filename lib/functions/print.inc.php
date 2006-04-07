@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: print.inc.php,v $
- * @version $Revision: 1.11 $
- * @modified $Date: 2006/03/23 20:46:28 $ by $Author: schlundus $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2006/04/07 20:15:26 $ by $Author: schlundus $
  *
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
@@ -43,7 +43,7 @@ function printHeader($title, $base_href, $cssTemplate = TL_DOC_BASIC_CSS)
 	$output = "<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN'>\n";
 	$output .= "<html>\n<head>\n";
 	$output .= '<meta http-equiv="Content-Type" content="text/html; charset='.TL_TPL_CHARSET.'" />';
-	$output .= '<title>' . $title. "</title>\n";
+	$output .= '<title>' . htmlspecialchars($title). "</title>\n";
 	$output .= '<link type="text/css" rel="stylesheet" href="' . $base_href . $cssTemplate . '" />';
 	$output .= "\n</head>\n<body>\n";
 
@@ -70,10 +70,11 @@ function printFirstPage(&$db,$title, $prodName, $prodNotes, $userID)
 	$output .= "</div>\n";
 	$output .= "<h1>".$title."</h1>\n";
 	$output .= "<div style='margin: 50px;'>" .
-		       "<p>". lang_get('product').": " . $prodName . "</p>" .
-		       "<p>". $prodNotes . "</p>" .
+		       "<p>". lang_get('product').": " . $prodName . "</p>";
+	if (strlen($prodNotes))
+		$output .= "<p>". $prodNotes . "</p>";
 		       
-		       "<p>".lang_get('author').": " . $author . "</p>" .
+	$output .= "<p>".lang_get('author').": " . $author . "</p>" .
 		       "<p>".lang_get('printed_by_TestLink_on')." ". strftime($g_date_format, time()) . "</p></div>";
 
 	if (TL_DOC_COPYRIGHT != '')

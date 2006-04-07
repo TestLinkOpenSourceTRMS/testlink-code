@@ -1,5 +1,5 @@
 {* smarty template - view all keywords of product; ver. 1.0 *}
-{* $Id: rolesview.tpl,v 1.4 2006/03/10 22:35:57 schlundus Exp $ *}
+{* $Id: rolesview.tpl,v 1.5 2006/04/07 20:15:25 schlundus Exp $ *}
 {* Purpose: smarty template - View all roless *}
 {include file="inc_head.tpl"}
 
@@ -45,6 +45,7 @@
 		<table class="common" width="50%">
 			<tr>
 				<th width="30%">{lang_get s='th_roles'}</th>
+				<th>{lang_get s='th_notes'}</th>
 				<th>{lang_get s='th_delete'}</th>
 			</tr>
 			{foreach from=$roles item=role}
@@ -53,6 +54,9 @@
 					<a href="lib/usermanagement/rolesedit.php?id={$role.id}">
 						{$role.role|escape}
 					</a>
+				</td>
+				<td>
+					{$role.notes}
 				</td>
 				<td>
 				{if $role.id > 9}

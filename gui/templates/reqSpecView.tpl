@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecView.tpl,v 1.13 2006/03/23 20:46:26 schlundus Exp $ *}
+{* $Id: reqSpecView.tpl,v 1.14 2006/04/07 20:15:25 schlundus Exp $ *}
 {* 
    Purpose: smarty template - view a requirement specification
    Author: Martin Havlat 
@@ -99,8 +99,6 @@
 
  <input type="submit" name="create_tc_from_req" value="{lang_get s='req_select_create_tc'}" />
  <input type="submit" name="req_select_delete" value="{lang_get s='req_select_delete'}" />
-
-
 </div>
 {/if}
 </form>

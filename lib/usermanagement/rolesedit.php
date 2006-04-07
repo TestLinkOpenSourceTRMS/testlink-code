@@ -5,18 +5,24 @@
  *
  * Filename $RCSfile: rolesedit.php,v $
  *
- * @version $Revision: 1.2 $
- * @modified $Date: 2006/02/25 21:48:27 $ by $Author: schlundus $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2006/04/07 20:15:31 $ by $Author: schlundus $
  *
 **/
 require_once("../../config.inc.php");
 require_once("../functions/users.inc.php");
 require_once("../functions/common.php");
+require_once("../../third_party/fckeditor/fckeditor.php");
 testlinkInitPage($db);
 
 $_POST = strings_stripSlashes($_POST);
 $id = isset($_GET['id']) ? $_GET['id'] : 0;
 $postBack = sizeof($_POST) ? 1 : 0;
+
+$of = new fckeditor('notes') ;
+$of->BasePath = $_SESSION['basehref'] . 'third_party/fckeditor/';
+$of->ToolbarSet = 'TL_Medium';
+
 
 $roleRights = null;
 $sqlResult = null;
@@ -26,12 +32,14 @@ if ($postBack)
 {
 	$roleName = isset($_POST['rolename']) ? $_POST['rolename'] : null;
 	$id = isset($_POST['id']) ? $_POST['id'] : 0;
+	$notes = isset($_POST['notes']) ? strings_stripSlashes($_POST['notes']) : '';
 	$bNew = ($id == 0);
 	//remove all keys except the rights
 	unset($_POST['id']);
 	unset($_POST['editRole']);
 	unset($_POST['newRole']);
 	unset($_POST['rolename']);
+	unset($_POST['notes']);
 	
 	$rights = $_POST;
 	$sqlResult = checkRole($db,$roleName,$rights,$id);
@@ -40,7 +48,7 @@ if ($postBack)
 		$rights = array_keys($rights);
 		if ($bNew)
 		{
-			$id = createRole($db,$roleName,$rights);
+			$id = createRole($db,$roleName,$rights,$notes);
 			if (!$id)
 				$sqlResult = lang_get('error_role_creation');
 			$action = "added";
@@ -50,7 +58,7 @@ if ($postBack)
 		}
 		else
 		{
-			if (!updateRole($db,$id,$roleName,$rights))
+			if (!updateRole($db,$id,$roleName,$rights,$notes))
 				$sqlResult = lang_get('error_role_update');
 			$action = "updated";
 		}
@@ -77,6 +85,7 @@ if (sizeof($roles) && $id)
 		//get all users which are affected by changing the role definition
 		$allUsers = getAllUsers($db,null,'id');
 		$affectedUsers = getAllUsersWithRole($db,$id);
+		$of->Value = $role['notes'];
 	}
 }
 
@@ -93,5 +102,6 @@ $smarty->assign('sqlResult',$sqlResult);
 $smarty->assign('allUsers',$allUsers);
 $smarty->assign('affectedUsers',$affectedUsers);
 $smarty->assign('action',$action);
+$smarty->assign('notes', $of->CreateHTML());
 $smarty->display('rolesedit.tpl');
 ?>

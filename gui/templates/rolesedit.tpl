@@ -1,5 +1,5 @@
 {* smarty template - view all keywords of product; ver. 1.0 *}
-{* $Id: rolesedit.tpl,v 1.2 2006/02/25 21:48:24 schlundus Exp $ *}
+{* $Id: rolesedit.tpl,v 1.3 2006/04/07 20:15:25 schlundus Exp $ *}
 {* Purpose: smarty template - View all roless *}
 {include file="inc_head.tpl"}
 
@@ -96,6 +96,11 @@ var warning_modify_role = "{lang_get s='warning_modify_role'}";
 			</table>
 			</td>
 		</tr>
+		<tr>
+			<th>{lang_get s='enter_role_notes'}</th>
+			<td width="80%">{$notes}</td>
+		</tr>
+
 	</table>
 	<div class="groupBtn">	
 	{if $role == 0}

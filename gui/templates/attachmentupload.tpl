@@ -1,6 +1,6 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: attachmentupload.tpl,v 1.2 2006/03/23 20:46:26 schlundus Exp $ *}
-{* Purpose: smarty template - show Test Results and Metrics *}
+{* $Id: attachmentupload.tpl,v 1.3 2006/04/07 20:15:25 schlundus Exp $ *}
+{* Purpose: smarty template - the template for the attachment upload dialog *}
 {include file="inc_head.tpl"}
 
 <body>
@@ -13,7 +13,7 @@
 
 	<h2>{lang_get s='title_choose_local_file'}</h2>
 	
-	<form method="post" enctype="multipart/form-data">
+	<form action="lib/attachments/attachmentupload.php" method="post" enctype="multipart/form-data">
 		<input type="hidden" name="MAX_FILE_SIZE" value="{$import_limit}" /> {* restrict file size *}
 		<p>{lang_get s='local_file'}
 			<input type='hidden' value='{$id}' name='id' />

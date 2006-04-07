@@ -4,95 +4,66 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqImport.php,v $
- * @version $Revision: 1.11 $
- * @modified $Date: 2006/03/23 20:46:30 $ by $Author: schlundus $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2006/04/07 20:15:30 $ by $Author: schlundus $
  * @author Martin Havlat
  * 
  * Import requirements to a specification. 
- * Supported: simple CSV, Doors CSV
+ * Supported: simple CSV, Doors CSV, XML
  * 
  */
-////////////////////////////////////////////////////////////////////////////////
 require_once("../../config.inc.php");
 require_once("common.php");
 require_once('requirementsImport.inc.php');
+require_once('xml.inc.php');
 testlinkInitPage($db);
 
 $idSRS = isset($_GET['idSRS']) ? strings_stripSlashes($_GET['idSRS']) : null;
 $importType = isset($_POST['importType']) ? strings_stripSlashes($_POST['importType']) : null;
+$emptyScope = isset($_POST['noEmpty']) ? strings_stripSlashes($_POST['noEmpty']) : null;
+$conflictSolution = isset($_POST['conflicts']) ? strings_stripSlashes($_POST['conflicts']) : null;
+$bUpload = isset($_POST['UploadFile']);
+$bExecuteImport = isset($_POST['executeImport']);
+
+$tprojectID = $_SESSION['testprojectID'];
 $userID = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
-$CSVfile = TL_TEMP_PATH . "importReq-".session_id().".csv";
+
+$fileName = TL_TEMP_PATH . "importReq-".session_id().".csv";
 
 $tproject = new testproject($db);
-
-/** @var string $importResult declares that import was done */
 $importResult = null;
-/** @var array $arrImport carries the information about particular imported requirements */
 $arrImport = null;
 
-// load and check a data
-if (isset($_POST['UploadFile']))
+if ($bUpload)
 {
-	// Contains the full path and filename of the uploaded file as stored on the server.
 	$source = isset($HTTP_POST_FILES['uploadedFile']['tmp_name']) ? $HTTP_POST_FILES['uploadedFile']['tmp_name'] : null;
 	$arrImport = array();
-	tLog("importType=$importType");
 
-	// check the uploaded file
-	if ( ($source != 'none') && ($source != '' ))
+	if (($source != 'none') && ($source != '' ))
 	{ 
-		// store the file
-		if (move_uploaded_file($source, $CSVfile))
-		{
-			// load data to $arrImportSource
-			$arrImportSource = loadImportedReq($CSVfile, $importType);
-			
-			// assess possible conflicts
-			if (count($arrImportSource))
-			{
-				// collect existing req titles in the SRS
-				$arrReqTitles = getReqTitles($db,$idSRS);
-				
-				// compare titles
-				$arrImport = compareImportedReqs($arrImportSource, $arrReqTitles);
-			}
-		}
+		if (move_uploaded_file($source, $fileName))
+			$arrImport = doImport($db,$userID,$idSRS,$fileName,$importType,$emptyScope,$conflictSolution,false);
 	}
-	//20051015 - am - if no file was given, we cancel import
 	else 
 		$importType = '';
 }
-elseif (isset($_POST['executeImport']))
+else if ($bExecuteImport)
 {
-	$emptyScope = isset($_POST['noEmpty']) ? strings_stripSlashes($_POST['noEmpty']) : null;
-	$conflictSolution = isset($_POST['conflicts']) ? strings_stripSlashes($_POST['conflicts']) : null;
-	tLog("INPUT: importType=$importType, CSVfile=$CSVfile, emptyScope=$emptyScope, conflictSolution=$conflictSolution");
-	
-	$arrImportSource = loadImportedReq($CSVfile, $importType);
-				
-	if (count($arrImportSource))
-	{
-		// collect existing req titles in the SRS
-		$arrReqTitles = getReqTitles($db,$idSRS);
-				
-		// process import
-		$arrImport = executeImportedReqs($db,$arrImportSource, $arrReqTitles, 
-		                                 $conflictSolution, $emptyScope, $idSRS, $userID);
-	}
+	$arrImport = doImport($db,$userID,$idSRS,$fileName,$importType,$emptyScope,$conflictSolution,true);
 	$importResult = lang_get('req_import_finished');
 }
-// collect existing document data
-// fm - mybug after refactoring
-$arrSpec = $tproject->getReqSpec($_SESSION['testprojectID'],$idSRS);
+
+$arrSpec = $tproject->getReqSpec($tprojectID,$idSRS);
 
 $smarty = new TLSmarty;
+$smarty->assign('reqFormatStrings',$g_reqFormatStrings);
+$smarty->assign('importTypes',$g_reqImportTypes);
 $smarty->assign('reqSpec', $arrSpec[0]);
 $smarty->assign('arrImport', $arrImport);
 $smarty->assign('importResult', $importResult);
 $smarty->assign('importType', $importType);
-$smarty->assign('uploadedFile', $CSVfile);
+$smarty->assign('uploadedFile', $fileName);
 $smarty->assign('importLimit', TL_IMPORT_LIMIT);
 $smarty->assign('importLimitKB', round(strval(TL_IMPORT_LIMIT) / 1024));
 $smarty->display('reqImport.tpl');
-
 ?>

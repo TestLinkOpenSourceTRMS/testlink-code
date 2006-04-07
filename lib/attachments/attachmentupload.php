@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: attachmentupload.php,v $
  *
- * @version $Revision: 1.2 $
- * @modified $Date: 2006/03/23 20:46:27 $ by $Author: schlundus $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2006/04/07 20:15:25 $ by $Author: schlundus $
  *
  * Upload dialog
 **/
@@ -25,6 +25,7 @@ if ($bPostBack)
 	$fInfo  = isset($HTTP_POST_FILES['uploadedFile']) ? $HTTP_POST_FILES['uploadedFile'] : null;
 	$title = isset($_POST['title']) ? $_POST['title'] : "";
 	$id = isset($_POST['id'])? intval($_POST['id']) : 0;
+	$tableName = isset($_POST['tableName'])? $_POST['tableName'] : null;
 	if ($fInfo)
 	{
 		$error = isset($fInfo['error']) ? $fInfo['error'] : 0;
@@ -41,7 +42,7 @@ if ($bPostBack)
 			
 			if ($g_repositoryType == TL_REPOSITORY_TYPE_FS)
 			{
-				$destFPath = buildRepositoryFolder($destFName,$tableName,$id);
+				$destFPath = buildRepositoryFilePath($destFName,$tableName,$id);
 				$bUploaded = storeFileInFSRepository($fTmpName,$destFPath);
 			}
 			else

@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: keywords.inc.php,v $
 * 
-* @version $Id: keywords.inc.php,v 1.20 2006/03/11 23:09:28 schlundus Exp $
-* @modified $Date: 2006/03/11 23:09:28 $ by $Author: schlundus $
+* @version $Id: keywords.inc.php,v 1.21 2006/04/07 20:15:27 schlundus Exp $
+* @modified $Date: 2006/04/07 20:15:27 $ by $Author: schlundus $
 *
 * Functions for support keywords management. 
 *
@@ -343,6 +343,8 @@ function importKeywordDataFromXML($fileName)
 	for($i = 0;$i < sizeof($xmlKeywords);$i++)
 	{
 		$xmlKeyword = $xmlKeywords[$i];
+		if ($xmlKeyword->node_type() != XML_ELEMENT_NODE)
+			continue;
 		$keywordData[$i]['keyword'] = $xmlKeyword->get_attribute("name");
 		$xmlKeywordNotes = $xmlKeyword->get_elements_by_tagname("notes");
 		if ($xmlKeywordNotes)

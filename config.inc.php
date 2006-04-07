@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.54 $
- * @modified $Date: 2006/03/29 12:45:58 $ by $Author: franciscom $
+ * @version $Revision: 1.55 $
+ * @modified $Date: 2006/04/07 20:15:22 $ by $Author: schlundus $
  *
  *
  * Constants and configuration parameters used throughout TestLink 
@@ -341,6 +341,10 @@ $g_tc_sd_color = array ( "failed"        => 'red',
 
 define("TL_ROLES_GUEST",5);
 define("TL_ROLES_NONE",3);
+define("TL_ROLES_NONE_DESC","<no rights>");
+define("TL_ROLES_UNDEFINED",0);
+define("TL_ROLES_UNDEFINED_DESC","<undefined>");
+
 define("TL_DEFAULT_ROLEID",TL_ROLES_GUEST);
 
 $g_tc_risks = array('L1', 'L2', 'L3','M1', 'M2', 'M3','H1', 'H2', 'H3');

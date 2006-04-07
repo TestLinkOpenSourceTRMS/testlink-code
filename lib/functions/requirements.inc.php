@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: requirements.inc.php,v $
- * @version $Revision: 1.28 $
- * @modified $Date: 2006/03/23 20:46:28 $ by $Author: schlundus $
+ * @version $Revision: 1.29 $
+ * @modified $Date: 2006/04/07 20:15:26 $ by $Author: schlundus $
  *
  * @author Martin Havlat <havlat@users.sourceforge.net>
  * 
@@ -36,7 +36,7 @@ require_once('print.inc.php');
 require_once("../testcases/archive.inc.php");
 
 /** 
- * update System Requiements Specification
+ * update System Requirements Specification
  *  
  * @param integer $id
  * @param string $title
@@ -456,6 +456,9 @@ function deleteRequirement(&$db,$id)
 		$sql = "DELETE FROM requirements WHERE id=" . $id;
 		$result = $db->exec_query($sql); 
 	}
+	if ($result)
+		$result = deleteAttachmentsFor($db,$id,"requirements");
+
 	if (!$result)
 		$result = lang_get('error_deleting_req');
 	else
@@ -743,4 +746,6 @@ function createTcFromRequirement(&$db,&$tproject,$mixIdReq, $testproject_id, $sr
 
 	return (!$output) ? 'ok' : $output;
 }
+
+
 ?>

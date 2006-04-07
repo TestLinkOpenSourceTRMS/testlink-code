@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
  * @filesource $RCSfile: roles.inc.php,v $
- * @version $Revision: 1.8 $
- * @modified $Date: 2006/02/27 08:05:56 $ by $Author: franciscom $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2006/04/07 20:15:26 $ by $Author: schlundus $
  * @author Martin Havlat, Chad Rosen
  * 
  * This script provides the get_rights and has_rights functions for
@@ -96,11 +96,12 @@ function getAllRights(&$db,$column = 'id')
  * @param array $rights the rights for the role (string array) 
  * @return int the new roleID on success, 0 else
  **/
-function createRole(&$db,$roleName,$rights)
+function createRole(&$db,$roleName,$rights,$notes)
 {
 	$roleID = 0;
 
-	$query = "INSERT INTO roles (description) VALUES ('".$db->prepare_string($roleName)."')";
+	$query = "INSERT INTO roles (description,notes) VALUES ('".$db->prepare_string($roleName)."',".
+			 "'".$db->prepare_string($notes)."')";
 	$result = $db->exec_query($query);		 
 	if ($result)
 	{
@@ -374,12 +375,13 @@ function deleteRole(&$db,$roleID)
  * @param array $rights array of the rights for the roles
  * @return int returns 1 on success, 0 else
  **/
-function updateRole(&$db,$roleID,$roleName,$rights)
+function updateRole(&$db,$roleID,$roleName,$rights,$notes)
 {
 	deleteRoleRights($db,$roleID);
 	
-	$query = "UPDATE roles SET description = '".$db->prepare_string($roleName)."'".
-				" WHERE id = {$roleID}";
+	$query = "UPDATE roles SET description = '".$db->prepare_string($roleName)."',".
+			 "notes ='".$db->prepare_string($notes)."'".
+			" WHERE id = {$roleID}";
 	
 	insertRoleRights($db,$roleID,$rights);
 	
@@ -408,23 +410,28 @@ function resetUserRoles(&$db,$id)
 	return ($result ? 1 : 0);
 }
 						
+/**
+ * returns all roles from the db with the assigned rights, the db-non-existing
+ * NONE roles is also added
+ *
+ * @param object $db [ref] the db-object
+ * @return array assoc-array of the following form
+ * 				 roles[role_id] => array ('id' => role_id,
+ * 										  'role' => role_description,
+ * 										  'rights' => comma-separated list of rights
+ **/
 function getRoles(&$db)
 {
 	$roles = null;
-	$sql = "SELECT roles.id, roles.description, rights.description AS rights_description 
-	        FROM role_rights r, roles, rights 
+	$sql = "SELECT roles.id, roles.description, rights.description AS rights_description, notes
+	        FROM role_rights r, roles, rights
 	        WHERE role_id=roles.id and right_id=rights.id";
-	          
-	  //echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
-
 	          
 	$result = $db->exec_query($sql);
 	if ($result)
 	{
-		$tmp = 0;
-		$role = null;
 		$roles[TL_ROLES_NONE] = array('id' => TL_ROLES_NONE,
-									  'role' => '<no rights>',
+									  'role' => TL_ROLES_NONE_DESC,
 									  'rights' => '',
 									  );
 		while($row = $db->fetch_array($result))
@@ -432,13 +439,16 @@ function getRoles(&$db)
 			$roleID = $row['id'];
 			$roleDesc = $row['description'];
 			$rightDescription = $row['rights_description'];
+			//add the new role if not present
 			if (!isset($roles[$roleID]))
 				$roles[$roleID] = array('id' => $roleID,
 										'role' => $roleDesc,
 										'rights' => $rightDescription,
+										'notes' => $row['notes'],
 										);
 			else
 			{
+				//update the right list for existing roles
 				$roleString = $roles[$roleID]['rights'];
 				if (strlen($roleString))
 					$roleString .= ",";
@@ -451,14 +461,29 @@ function getRoles(&$db)
 	return $roles;
 }
 
+/**
+ * returns all roles and their descriptions
+ *
+ * @param object $db [ref] the db-object
+ * @return array returns assoc-array in the form of 
+ * 				 roles[role_id] => role_description
+ **/
 function getAllRoles(&$db)
 {
 	$roles  = $db->fetchColumnsIntoMap("SELECT id,description FROM roles",'id','description');
-	$roles[0] = "<undefined>";
+	$roles[TL_ROLES_UNDEFINED] = TL_ROLES_UNDEFINED_DESC;
 	
 	return $roles;
 }
 
+/**
+ * Checks for the existing of a role with a given name
+ *
+ * @param object $db [ref] the db-object
+ * @param string $roleName the role_name to search for
+ * @param int $id [default = null] optional id which should be excluded by the search
+ * @return int returns 1 if a role was found, 0 else
+ **/
 function existRole(&$db,$roleName,$id = null)
 {
 	$roleName = $db->prepare_string($roleName);
@@ -469,6 +494,17 @@ function existRole(&$db,$roleName,$id = null)
 	return ($db->fetchFirstRowSingleColumn($query,"id") ? 1 : 0);
 }
 
+/**
+ * Checks a role for correctness. Checks the role name, presence of at least one
+ * assigned right, checks for duplicate role name
+ *
+ * @param object $db [ref] the db-object
+ * @param string $roleName the role name
+ * @param array $rights array of assigned rights for the role
+ * @param int $id [default = null] optional id to be excluded while checking for
+ * 				  already existing roles (used on updating a role)
+ * @return string returns 'ok' if all checks passed, error message else
+ **/
 function checkRole(&$db,$roleName,$rights,$id = null)
 {
 	$sqlResult = 'ok';

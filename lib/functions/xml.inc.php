@@ -26,4 +26,15 @@ function exportDataToXML($items,$rootTpl,$elemTpl,$elemInfo)
 	$xmlCode = TL_XMLEXPORT_HEADER."\n".str_replace("{{XMLCODE}}",$xmlCode,$rootTpl);
 	return $xmlCode;
 }
+function getNodeContent(&$node,$tag)
+{
+	$nodes = $node->get_elements_by_tagname($tag);
+	if ($nodes)
+	{
+		$tnode = $nodes[0]->first_child();
+		if ($tnode)
+			return $tnode->node_value();
+	}
+	return null;
+}
 ?>

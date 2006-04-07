@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: requirementsImport.inc.php,v $
- * @version $Revision: 1.7 $
- * @modified $Date: 2006/01/10 19:59:28 $ by $Author: schlundus $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2006/04/07 20:15:26 $ by $Author: schlundus $
  * @author Martin Havlat
  * 
  * Functions for Import requirements to a specification. 
@@ -16,7 +16,19 @@
  */
 
 require_once('requirements.inc.php');
+require_once( dirname(__FILE__). '/csv.inc.php' );
 
+
+$g_reqImportTypes = array( "csv" => "CSV",
+							"csv_doors" => "CSV (Doors)",
+							 "XML" => "XML",
+							 );
+
+$g_reqFormatStrings = array (
+							"csv" => lang_get('req_import_format_description1'),
+							"csv_doors" => lang_get('req_import_format_description2'),
+							"XML" => lang_get('the_format_req_xml_import')
+							); 		
 
 /** 
  * trim title to N chars
@@ -64,16 +76,17 @@ function executeImportedReqs(&$db,$arrImportSource, $arrReqTitles,
 {
 	foreach ($arrImportSource as $data)
 	{
-		if (($emptyScope == 'on') && empty($data[1]))
+		$title = $data['title'];
+		$description = $data['description'];
+		if (($emptyScope == 'on') && empty($description))
 		{
 			// skip rows with empty scope
 			$status = lang_get('req_import_result_skipped');
 		}
 		else
 		{
-			// 
-			$title = trim_title($data[0]);
-			$scope = nl2br($data[1]);
+			$title = trim_title($title);
+			$scope = nl2br(htmlspecialchars($description));
 			tLog('REQ: '.$title. "\n scope: ".$scope);
 		
 			if (array_search($title, $arrReqTitles))
@@ -122,16 +135,22 @@ function executeImportedReqs(&$db,$arrImportSource, $arrReqTitles,
 /** compare titles of importing and existing requirements */
 function compareImportedReqs($arrImportSource, $arrReqTitles)
 {
-	foreach ($arrImportSource as $data)
+	$arrImport = null;
+	if (sizeof($arrImportSource))
 	{
-		if (array_search($data[0], $arrReqTitles))
+		foreach ($arrImportSource as $data)
 		{
-			$status = lang_get('conflict');
-			tLog('REQ: '.$data[0]. "\n CONTENT: ".$data[1]);
-		} else {
 			$status = lang_get('ok');
+			$title = $data['title'];
+			if (!strlen(trim($title)))
+				continue;
+			if ($arrReqTitles &&  in_array($title, $arrReqTitles,true))
+			{
+				$status = lang_get('conflict');
+				tLog('REQ: '.$title. "\n CONTENT: ".$data['description']);
+			}
+			$arrImport[] = array($title, $data['description'], $status);
 		}
-		$arrImport[] = array($data[0], $data[1], $status);
 	}
 	
 	return $arrImport;
@@ -142,9 +161,12 @@ function getReqTitles(&$db,$idSRS)
 {
 	// collect existing req titles in the SRS
 	$arrCurrentReq = getRequirements($db,$idSRS);
-	$arrReqTitles = array();
-	if (count($arrCurrentReq)) { // only if some reqs exist
-		foreach ($arrCurrentReq as $data) {
+	$arrReqTitles = null;
+	if (count($arrCurrentReq))
+	{ 
+		// only if some reqs exist
+		foreach ($arrCurrentReq as $data)
+		{
 			$arrReqTitles[$data['id']] = $data['title'];
 		}
 	}
@@ -158,39 +180,102 @@ function getReqTitles(&$db,$idSRS)
  */
 function loadImportedReq($CSVfile, $importType)
 {
-	$fp = fopen($CSVfile,"r");
-	if ($importType == 'csv_doors')
+	$fileName = $CSVfile;
+	switch($importType)
 	{
-		// read header and find order of important fields
-		$data = fgetcsv($fp, TL_IMPORT_ROW_MAX, ",");
-		$titleNumber = array_search("Object Identifier", $data);
-		$scopeNumber = array_search("Object Text", $data);
-		$createdByNumber = array_search("Created By", $data);
-		$createdOnNumber = array_search("Created On", $data);
-		$modifiedByNumber = array_search("Last Modified By", $data);
-		$modifiedOnNumber = array_search("Last Modified On", $data);
-				
-		tLog("titleNumber=$titleNumber scopeNumber=$scopeNumber");
+		case 'csv':
+			$pfn = "importReqDataFromCSV";
+			break;
+		case 'csv_doors':
+			$pfn = "importReqDataFromCSVDoors";
+			break;
+		case 'XML':
+			$pfn = "importReqDataFromXML";
+			break;
 	}
-			
-	while ($data = fgetcsv($fp, TL_IMPORT_ROW_MAX, ","))
+	if ($pfn)
 	{
-		// process only rows with two and more fields
-		if (count ($data) > 1){
-			if ($importType == 'csv_doors') {
-				//$arrImportSource[] = array($data[$titleNumber],$data[$scopeNumber]);
-				$arrImportSource[] = array($data[$titleNumber],$data[$scopeNumber],$data[$createdByNumber],
-						$data[$createdOnNumber],$data[$modifiedByNumber],$data[$modifiedOnNumber]);
-			} elseif ($importType == 'csv') {
-				$arrImportSource[] = $data; // simple CSV
-			} else {
-				tLog("Wrong import type.", "ERROR");
-			}
-		}
+		$data = $pfn($fileName);
+		return $data;
 	}
-	fclose ($fp);
+	return;
 	
-	return $arrImportSource;
 }
 
+/**
+ * Import keywords from a CSV file to keyword data which can be further processed
+ *
+ * @param string $fileName the input CSV filename
+ * @return array return null on error or an array of
+ * 				 keywordData[$i]['keyword'] => the keyword itself
+ * 				 keywordData[$i]['notes'] => the notes of keyword
+ *
+ * @author Andreas Morsing <schlundus@web.de>
+ **/
+function importReqDataFromCSV($fileName)
+{
+	$destKeys = array(
+					"title",
+					"description",
+	 					);
+	$reqData = importCSVData($fileName,$destKeys,$delimiter = ',');
+	
+	return $reqData;
+}
+
+function importReqDataFromCSVDoors($fileName)
+{
+	$destKeys = array(
+					"Object Identifier" => "title",
+					"Object Text" => "description",
+					"Created By",
+					"Created On",
+					"Last Modified By",
+					"Last Modified On",
+				);
+				
+	$reqData = importCSVData($fileName,$destKeys,$delimiter = ',',true,false);
+	
+	return $reqData;
+}
+
+
+function importReqDataFromXML($fileName)
+{
+	$dom = domxml_open_file($fileName);
+	$xmlReqs = null;
+	if ($dom)
+		$xmlReqs = $dom->get_elements_by_tagname("requirement");
+	
+	$xmlData = null;
+	for($i = 0;$i < sizeof($xmlReqs);$i++)
+	{
+		$xmlReq = $xmlReqs[$i];
+		if ($xmlReq->node_type() != XML_ELEMENT_NODE)
+			continue;
+		$xmlData[$i]['title'] = getNodeContent($xmlReq,"title");
+		$xmlData[$i]['description'] = getNodeContent($xmlReq,"description");
+	}
+	return $xmlData;
+}
+
+function doImport(&$db,$userID,$idSRS,$fileName,$importType,$emptyScope,$conflictSolution,$bImport)
+{
+	$arrImportSource = loadImportedReq($fileName, $importType);
+	
+	$arrImport = null;
+	if (count($arrImportSource))
+	{
+		$arrReqTitles = getReqTitles($db,$idSRS);
+		
+		if ($bImport)
+		{
+			$arrImport = executeImportedReqs($db,$arrImportSource, $arrReqTitles, 
+		                        $conflictSolution, $emptyScope, $idSRS, $userID);
+		}
+		else
+			$arrImport = compareImportedReqs($arrImportSource, $arrReqTitles);
+	}
+	return $arrImport;
+}
 ?>

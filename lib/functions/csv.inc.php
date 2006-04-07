@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: csv.inc.php,v $
  *
- * @version $Revision: 1.1 $
- * @modified $Date: 2005/12/29 21:03:09 $ by $Author: schlundus $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2006/04/07 20:15:26 $ by $Author: schlundus $
  *
  * functions related to csv export
  *
@@ -41,21 +41,43 @@ function exportDataToCSV($data,$sourceKeys,$destKeys,$bWithHeader = 0,$delimiter
 	return $csvContent;
 }
 
-function importCSVData($fileName,$destKeys,$delimiter = ';',$bWithHeader = false)
+function importCSVData($fileName,$destKeys,$delimiter = ';',$bWithHeader = false,$bSkipHeader = true)
 {
 	$handle = fopen ($fileName,"r"); 
 	$retData = null;
 	if ($handle)
 	{
 		$i = 0;
+		$idx = $destKeys;
 		while($data = fgetcsv($handle, TL_IMPORT_ROW_MAX, $delimiter))
 		{ 
-			if (!$i && $bWithHeader)
-				continue;
-			$num = count($data); 
-			for ($c = 0;$c < $num;$c++)
+			if (!$i)
+			{
+				if ($bWithHeader && !$bSkipHeader)
+				{
+					$idx = null;
+					foreach($destKeys as $k => $targetKey)
+					{
+						if (is_int($k))
+						{
+							$needle = $targetKey;
+							$dest = $needle;
+						}
+						else
+						{
+							$needle = $k;
+							$dest = $targetKey;
+						}
+						$t = array_search($needle, $data);	
+						$idx[$t] = $dest;
+					}
+					$i++;
+					continue;
+				}
+			}
+			foreach($idx as $c => $key)
 			{ 
-				$retData[$i][$destKeys[$c]] = $data[$c];
+				$retData[$i][$idx[$c]] = $data[$c];
 			} 
 			$i++;
 		}

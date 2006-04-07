@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqImport.tpl,v 1.5 2005/12/02 20:49:55 schlundus Exp $ *}
+{* $Id: reqImport.tpl,v 1.6 2006/04/07 20:15:25 schlundus Exp $ *}
 {* Purpose: smarty template - requirements import initial page *}
 {* Author: Martin Havlat *}
 {* revisions:
@@ -60,11 +60,11 @@
 		<p><input type="checkbox" name="noEmpty" checked="checked" />{lang_get s='req_import_dont_empty'}</p>
 
 		<input type="hidden" name="idSRS" value="{$reqSpec.id}" />
-		<input type='hidden' value='{$uploadedFile}' name='uploadedFile'>
-		<input type='hidden' value='{$importType}' name='importType'>
+		<input type='hidden' value='{$uploadedFile}' name='uploadedFile' />
+		<input type='hidden' value='{$importType}' name='importType' />
 
 		<div class="groupBtn">
-			<input type='submit' name='executeImport' value="{lang_get s='btn_import_cvs'}">
+			<input type='submit' name='executeImport' value="{lang_get s='btn_import'}" />
 			<input type="button" name="cancel" value="{lang_get s='btn_cancel'}" 
 				onclick="javascript: location.href=fRoot+'lib/req/reqSpecView.php?idSRS={$reqSpec.id}';" />
 		</div>
@@ -95,15 +95,18 @@
 {* first screen *}
 <form method="post" enctype="multipart/form-data" action="{$SCRIPT_NAME}?idSRS={$reqSpec.id}">
 
+
 	<h2>{lang_get s='title_choose_file_type'}</h2>
 	<p>{lang_get s='req_import_type'}
 	<select name="importType">
-		<option value ="csv">CSV</option>
-		<option value ="csv_doors">CSV (Doors)</option>
+		{html_options options=$importTypes}
 	</select>
 	</p>
-	<p>{lang_get s='required_cvs_format'}<br />{lang_get s='req_import_format_description1'}
-	<br />{lang_get s='req_import_format_description2'}</p>
+	<p>	{lang_get s='required_cvs_format'}<br />
+		{foreach key=k item=i from=$reqFormatStrings}
+			{$k} : {$i}<br />
+		{/foreach}
+	</p>
 
 	<h2>{lang_get s='title_choose_local_file'}</h2>
 	<p>{lang_get s='local_file'} <input type="file" name="uploadedFile" size="30" /></p>

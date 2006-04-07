@@ -5,12 +5,19 @@
  *
  * Filename $RCSfile: attachments.inc.php,v $
  *
- * @version $Revision: 1.2 $
- * @modified $Date: 2006/03/23 20:46:28 $ by $Author: schlundus $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2006/04/07 20:15:25 $ by $Author: schlundus $
  *
  * functions related to attachments
 **/
 
+/**
+ * Fetches the contents of a file for storing it into the DB-Repository
+ *
+ * @param string $fTmpName the filename of the attachment
+ * @param string $destFName a unique file name for temporary usage 
+ * @return string the contents of the attachment to be stored into the db
+ **/
 function getFileContentsForDBRepository($fTmpName,$destFName)
 {
 	global $g_repositoryCompressionType;
@@ -22,18 +29,28 @@ function getFileContentsForDBRepository($fTmpName,$destFName)
 		case TL_REPOSITORY_COMPRESSIONTYPE_NONE:
 			break;
 		case TL_REPOSITORY_COMPRESSIONTYPE_GZIP:
+			//copy the file into a dummy file in the repository and gz it and 
+			//read the file contents from this new file
 			$tmpGZName = $g_repositoryPath.DS.$destFName.".gz";
 			gzip_compress_file($fTmpName, $tmpGZName);
 			$fTmpName = $tmpGZName;
 			break;
 	}
 	$fContents = getFileContents($fTmpName);
+	//delete the dummy file if present
 	if (!is_null($tmpGZName))
 		unlink($tmpGZName);			
 		
 	return $fContents;
 }
 
+/**
+ * Stores a file into the FS-repository
+ *
+ * @param string $fTmpName the filename
+ * @param string $destFPath [ref] the destination file name
+ * @return bool returns true if the file was uploaded, false else
+ **/
 function storeFileInFSRepository($fTmpName,&$destFPath)
 {
 	global $g_repositoryCompressionType;
@@ -44,6 +61,7 @@ function storeFileInFSRepository($fTmpName,&$destFPath)
 			$bUploaded = move_uploaded_file($fTmpName,$destFPath);
 			break;
 		case TL_REPOSITORY_COMPRESSIONTYPE_GZIP:
+			//add the gz extension and compress the file
 			$destFPath .= ".gz";
 			$bUploaded = gzip_compress_file($fTmpName,$destFPath);
 			break;
@@ -51,6 +69,20 @@ function storeFileInFSRepository($fTmpName,&$destFPath)
 	return $bUploaded;
 }
 
+/**
+ * Inserts the information about an attachment into the db
+ *
+ * @param object $db [ref] the db-object
+ * @param int $id the foreign key id
+ * @param string $tableName the tablename to which the $id refers to
+ * @param string $fName the filename
+ * @param string $destFPath the file path 
+ * @param string $fContents the contents of the file
+ * @param string $fType the mime-type of the file
+ * @param int $fSize the filesize (uncompressed)
+ * @param string $title the title used for the attachment
+ * @return int returns 1 if the information was successfully stored, 0 else
+ **/
 function insertAttachment(&$db,$id,$tableName,$fName,$destFPath,$fContents,$fType,$fSize,$title)
 {
 	global $g_repositoryCompressionType;
@@ -58,8 +90,11 @@ function insertAttachment(&$db,$id,$tableName,$fName,$destFPath,$fContents,$fTyp
 	
 	$tableName = $db->prepare_string($tableName);
 	$fName = $db->prepare_string($fName);
+	//for DB-repository the filename is null
+	//for FS-repository, the path to the repository itself is cut off, so the path is
+	//					relative to the repository itself
 	$destFPath = is_null($destFPath) ? 'NULL' : "'".$db->prepare_string(str_replace($g_repositoryPath.DS,"",$destFPath))."'";
-	
+	//for FS-repository the contents are null
 	$fContents = is_null($fContents) ? 'NULL' : "'".$db->prepare_string($fContents)."'";
 	$title = $db->prepare_string($title);
 	$fType = $db->prepare_string($fType);
@@ -72,18 +107,40 @@ function insertAttachment(&$db,$id,$tableName,$fName,$destFPath,$fContents,$fTyp
 	return $result ? 1 : 0;
 }
 
-function buildRepositoryFolder($destFName,$tableName,$id)
+/**
+ * Builds the path for a given filename according to the tablename and id
+ *
+ * @param string $destFName the fileName
+ * @param string $tableName the tablename to which $id referes to
+ * @param int $id the foreign key id
+ * @return string returns the full path for the file 
+ **/
+function buildRepositoryFilePath($destFName,$tableName,$id)
 {
-	global $g_repositoryPath;
-	
-	$destFPath = $g_repositoryPath.DS.$tableName.$id;
-	if (!file_exists($destFPath))
-			mkdir($destFPath);
+	$destFPath = buildRepositoryFolderFor($tableName,$id,true);
 	$destFPath .= DS.$destFName;
 	
 	return $destFPath;
 }
+function buildRepositoryFolderFor($tableName,$id,$mkDir = false)
+{
+	global $g_repositoryPath;
 
+	$path = $g_repositoryPath.DS.$tableName;
+	if ($mkDir && !file_exists($path))
+		mkdir($path);
+	$path .= DS.$id;
+	if ($mkDir && !file_exists($path))
+		mkdir($path);
+	
+	return $path;
+}
+/**
+ * Gets an unique file name to be user for the attachment
+ *
+ * @param string $fExt the file extension
+ * @return string the filename
+ **/
 function getUniqueFileName($fExt)
 {
 	$destFName = md5(uniqid(rand(), true)).".".$fExt; 
@@ -91,6 +148,13 @@ function getUniqueFileName($fExt)
 	return $destFName;
 }
 
+/**
+ * gets the extension from a file name
+ *
+ * @param string $fName the filename
+ * @param string $default a default extension 
+ * @return string returns the extension
+ **/
 function getFileExtension($fName,$default)
 {
 	$fExt = pathinfo($fName);
@@ -102,6 +166,12 @@ function getFileExtension($fName,$default)
 	return $fExt;
 }
 
+/**
+ * get the contents of a file 
+ *
+ * @param string $fName the name of the file to read
+ * @return string the file contents
+ **/
 function getFileContents($fName)
 {
 	$fContents = null;
@@ -114,20 +184,39 @@ function getFileContents($fName)
 	return $fContents;
 }
 
+/**
+ * Compresses a file
+ *
+ * @param string $srcName the source file
+ * @param string $dstName the destination file name (the compressed one)
+ * @return bool returns true on success, false else
+ **/
 function gzip_compress_file($srcName, $dstName)
 {
-	$fp = fopen($srcName, "r");
-	if ($fp)
+	$bSuccess = false;
+
+	$data = getFileContents($srcName);
+	if (strlen($data))
+		$bSuccess = gzip_writeToFile($dstName,$data);
+		
+	return $bSuccess;
+}
+
+/**
+ * Writes contents to a gzip-file
+ *
+ * @param string $dstName the filename
+ * @param string $data the contents to be written
+ * @return bool returns true on success, false else
+ **/
+function gzip_writeToFile($dstName,$data)
+{
+	$zp = gzopen($dstName, "wb9");
+	if ($zp)
 	{
-		$data = fread($fp,filesize($srcName));
-		fclose($fp);
-		$zp = gzopen($dstName, "wb9");
-		if ($zp)
-		{
-			gzwrite($zp, $data);
-			gzclose($zp);
-			return true;
-		}
+		gzwrite($zp, $data);
+		gzclose($zp);
+		return true;
 	}
 	return false;
 }
@@ -276,5 +365,21 @@ function getAttachmentContentFromFS(&$db,$id)
 	}
 	
 	return $content;
+}
+
+function deleteAttachmentsFor(&$db,$id,$tableName)
+{
+	$attachmentInfos = getAttachmentInfos($db,$id,$tableName,false);
+	$bSuccess = true;
+	if (sizeof($attachmentInfos))
+	{
+		for($i = 0;$i < sizeof($attachmentInfos);$i++)
+		{
+			$attachmentInfo = $attachmentInfos[$i];
+			$id = $attachmentInfo['id'];
+			$bSuccess = (deleteAttachment($db,$id,$attachmentInfo) && $bSuccess);
+		}
+	}
+	return $bSuccess;
 }
 ?>

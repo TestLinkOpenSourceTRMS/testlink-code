@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqCreate.tpl,v 1.5 2005/10/21 20:50:45 asielb Exp $ *}
+{* $Id: reqCreate.tpl,v 1.6 2006/04/08 19:51:38 schlundus Exp $ *}
 {* Purpose: smarty template - create / edit a req  *}
 {include file="inc_head.tpl"}
 
@@ -43,6 +43,7 @@
 	</tr>
 </table>
 <div class="groupBtn">
+<input type="hidden" name="create" value="1" />
 <input type="submit" name="createReq" value="{lang_get s='btn_create'}" />
 <input type="button" name="cancel" value="{lang_get s='btn_cancel'}" 
 	onclick="javascript: location.href=fRoot+'lib/req/reqSpecView.php?idSRS={$arrSpec[0].id}';" />

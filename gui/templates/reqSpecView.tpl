@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecView.tpl,v 1.14 2006/04/07 20:15:25 schlundus Exp $ *}
+{* $Id: reqSpecView.tpl,v 1.15 2006/04/08 19:51:38 schlundus Exp $ *}
 {* 
    Purpose: smarty template - view a requirement specification
    Author: Martin Havlat 
@@ -46,6 +46,8 @@
 	<input type="button" name="importReq" value="{lang_get s='btn_import'}"
 		onclick="javascript: location.href=fRoot+'lib/req/reqImport.php?idSRS={$arrSpec[0].id}';" />
 	{/if}
+	<input type="button" name="exportAll" value="{lang_get s='btn_export_reqs'}" 
+		onclick="javascript: location.href=fRoot+'lib/req/reqexport.php?idSRS={$arrSpec[0].id}';" />
 	<input type="button" name="backToSRSList" value="{lang_get s='btn_spec_list'}" 
 		onclick="javascript: location.href=fRoot+'lib/req/reqSpecList.php';" />
 </form>

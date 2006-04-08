@@ -4,14 +4,13 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqSpecView.php,v $
- * @version $Revision: 1.21 $
- * @modified $Date: 2006/03/23 20:46:30 $ by $Author: schlundus $
+ * @version $Revision: 1.22 $
+ * @modified $Date: 2006/04/08 19:51:42 $ by $Author: schlundus $
  * @author Martin Havlat
  * 
  * Screen to view existing requirements within a req. specification.
  * 
  * 20050930 - MHT - Database schema changed (author, modifier, status, etc.)
- * 20060103 - scs - ADOdb changes
  * 20060110 - fm  - removed onchange event management
 **/
 require_once("../../config.inc.php");
@@ -38,6 +37,7 @@ $scope = isset($_REQUEST['scope']) ? $_REQUEST['scope'] : null;
 $reqStatus = isset($_REQUEST['reqStatus']) ? $_REQUEST['reqStatus'] : null;
 $reqType = isset($_REQUEST['reqType']) ? $_REQUEST['reqType'] : null;
 $countReq = isset($_REQUEST['countReq']) ? intval($_REQUEST['countReq']) : 0;
+$bCreate = isset($_REQUEST['create']) ? intval($_REQUEST['create']) : 0;
 
 $tprojectID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 $userID = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
@@ -50,14 +50,16 @@ $smarty = new TLSmarty();
 
 $of = new fckeditor('scope') ;
 $of->BasePath = $_SESSION['basehref'] . 'third_party/fckeditor/';
-$of->ToolbarSet=$g_fckeditor_toolbar;;
-
+$of->ToolbarSet = $g_fckeditor_toolbar;;
 
 // create a new spec.
 if(isset($_REQUEST['createReq']))
 {
-	$sqlResult = createRequirement($db,$title, $scope, $idSRS, $userID, 
-		                               $reqStatus, $reqType, $reqDocId);
+	if ($bCreate)
+	{
+		$sqlResult = createRequirement($db,$title, $scope, $idSRS, $userID, 
+			                               $reqStatus, $reqType, $reqDocId);
+	}
 	$action = 'create';
 	$scope = '';
 	$template = 'reqCreate.tpl';
@@ -136,9 +138,9 @@ elseif (isset($_REQUEST['create_tc_from_req']) || isset($_REQUEST['req_select_de
 }
 
 // collect existing reqs for the SRS
-if ($bGetReqs) {
+if ($bGetReqs)
 	$arrReq = getRequirements($db,$idSRS);
-}
+
 // collect existing document data
 $arrSpec = $tproject->getReqSpec($tprojectID,$idSRS);
 

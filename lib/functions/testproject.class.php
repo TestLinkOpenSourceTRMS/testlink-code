@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.11 $
- * @modified $Date: 2006/03/23 20:46:28 $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2006/04/10 09:08:55 $
  * @author franciscom
  *
  */
@@ -503,6 +503,30 @@ function gen_combo_test_suites($id,$exclude_branches=null)
 	}
 
 	/* END REQUIREMENT RELATED */
+
+
+/* 20060402 - franciscom */
+function delete()
+{
+	
+	
+	
+}
+
+
+// 20060409 - franciscom
+function get_keywords_map($testproject_id)
+{
+		$map_keywords = null;
+		$sql = " SELECT id,keyword FROM keywords " .
+			   " WHERE testproject_id = {$testproject_id}" .
+			   " ORDER BY keyword ASC";
+		
+		$map_keywords = $this->db->fetchColumnsIntoMap($sql,'id','keyword');
+		return($map_keywords);
+}
+	
+
 } // end class
 
 ?>

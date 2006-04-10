@@ -4,16 +4,14 @@
  *
  * Filename $RCSfile: exec.inc.php,v $
  *
- * @version $Revision: 1.25 $
- * @modified $Date: 2006/03/11 22:48:34 $ $Author: kevinlevy $
+ * @version $Revision: 1.26 $
+ * @modified $Date: 2006/04/10 09:08:44 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
  * Functions for execution feature (add test results) 
  *
  * 20050926 - fm - db changes build -> build_id
- * 20050919 - fm - editTestResults() refactoring
- * 20050911 - fm - editTestResults() refactoring
  * 20050905 - fm - reduce global coupling
  *
  * 20050807 - fm
@@ -153,12 +151,59 @@ function createBuildMenu(&$db,$tpID)
  *
  */
 // MHT 200507	added conversion of special chars on input - [ 900437 ] table results -- incoherent data ?
-function editTestResults(&$db,$login_name, $tcData, $buildID)
+function editTestResults(&$db,$user_id, $exec_data, $tplan_id,$build_id,$map_last_exec)
 {
-	global $g_bugInterfaceOn, $g_tc_status;
 	
-	// $build = $db->prepare_string($build);
-
+	$map_tc_status=config_get('tc_status');
+	
+	$bugInterfaceOn = config_get('bugInterfaceOn');
+	$tc_status_map = config_get('tc_status');
+	
+	echo "<pre>debug" . __FUNCTION__; print_r($exec_data['tc_version']); echo "</pre>";
+	echo "<pre>debug" . __FUNCTION__; print_r($exec_data['notes']); echo "</pre>";
+	echo "<pre>debug" . __FUNCTION__; print_r($exec_data['status']); echo "</pre>";
+	echo "<pre>debug \$map_last_exec" . __FUNCTION__; print_r($map_last_exec); echo "</pre>";
+	
+	$db_now = $db->db_now();
+	
+	$num_tc = count($tcData['tc']);
+	foreach ($exec_data['tc_version'] as $tcversion_id => $val)
+	{
+   
+    $current_status = $exec_data['status'][$tcversion_id];
+    $has_been_executed = ($current_status != $map_tc_status['not_run'] ? TRUE : FALSE);
+    $do_write = $has_been_executed;
+    
+    if( $has_been_executed )
+    {
+      $status_changed=($current_status != $map_last_exec[$tcversion_id]['status'] ? TRUE : FALSE);
+      
+      echo "Status changed ???" . $status_changed;
+      
+      /*if( !$status_changed )
+      {
+      		$notes_changed = strcmp(	
+      }*/
+      $do_write = $status_changed;
+    }
+    
+    if( $do_write )
+    { 
+    
+      $my_notes = $db->prepare_string(trim($exec_data['notes'][$tcversion_id]));		
+	  	$sql="INSERT INTO executions
+	    	    (build_id,tester_id,status,testplan_id,tcversion_id,execution_ts,notes)
+	      	  VALUES ( {$build_id}, {$user_id}, '{$exec_data['status'][$tcversion_id]}',
+	      	           {$tplan_id}, {$tcversion_id},{$db_now},'{$my_notes}')";
+	      	  
+	    echo "<pre>debug" . __FUNCTION__; print_r($sql); echo "</pre>";   	  
+	    $db->exec_query($sql);  	     
+    }
+	
+	
+	}
+	
+  /*
 	$num_tc = count($tcData['tc']);
 	
 	for ($idx=0; $idx < $num_tc; $idx++ )
@@ -168,7 +213,7 @@ function editTestResults(&$db,$login_name, $tcData, $buildID)
 		$tcStatus = $db->prepare_string($tcData['status'][$idx]); 
 
 		$tcBugs = '';
-		if ($g_bugInterfaceOn)
+		if ($bugInterfaceOn)
 		{
 			$tcBugs = isset($tcData['bugs'][$idx]) ? $db->prepare_string($tcData['bugs'][$idx]) : ''; 
 		}
@@ -176,23 +221,22 @@ function editTestResults(&$db,$login_name, $tcData, $buildID)
 		// Does exist a result for this (tcid, build) ?
 	  $sql = " SELECT tcid, build_id, notes, status FROM results " .
 		       " WHERE tcid=" . $tcID .  
-		       " AND build_id=" . $buildID;
+		       " AND build_id=" . $build_id;
 
 	  
 		$result = $db->exec_query($sql); 
 		$num = $db->num_rows($result); 
 
-
+ 	  // We will only update the results if (notes, status) information has changed ...
 		if($num == 1)
 		{ 
-			// We will only update the results if (notes, status) information has changed ...
 			$myrow = $db->fetch_array($result);
 			if(! ($myrow['notes'] == $tcNotes && $myrow['status'] == $tcStatus) )
 			{
 				$sql = " UPDATE results " .
 				       " SET runby ='" . $login_name . "', " . "status ='" .  $tcStatus . "', " .
 				       " notes='" . $tcNotes . "' " .
-						   " WHERE tcid=" . $tcID . " AND build_id=" . $buildID;
+						   " WHERE tcid=" . $tcID . " AND build_id=" . $build_id;
 				$result = $db->exec_query($sql); 
 			}
     }
@@ -202,7 +246,7 @@ function editTestResults(&$db,$login_name, $tcData, $buildID)
 			if( !($tcNotes == "" && $tcStatus == $g_tc_status['not_run']) )
 			{ 
 				$sql = " INSERT INTO results (build_id,daterun,status,tcid,notes,runby) " .
-				       " VALUES (" . $buildID . ",CURRENT_DATE(),'" . $tcStatus . 
+				       " VALUES (" . $build_id . ",CURRENT_DATE(),'" . $tcStatus . 
 				       "'," . $tcID . ",'" . $tcNotes . "','" . $login_name . "')";
 				$result = $db->exec_query($sql);
       }  
@@ -212,7 +256,7 @@ function editTestResults(&$db,$login_name, $tcData, $buildID)
 
     // -------------------------------------------------------------------------
     // Update Bug information (delete+insert) 
-	  $sqlDelete = "DELETE FROM bugs WHERE tcid=" . $tcID . " and build_id=" . $buildID;
+	  $sqlDelete = "DELETE FROM bugs WHERE tcid=" . $tcID . " and build_id=" . $build_id;
 	  $result = $db->exec_query($sqlDelete);
 
 	  $bugArray = strlen($tcBugs) ?  explode(",",$tcBugs) : null;
@@ -222,7 +266,7 @@ function editTestResults(&$db,$login_name, $tcData, $buildID)
 	  {
 
 		  $sql = "INSERT INTO bugs (tcid,build_id,bug) VALUES (" . $tcID . ",'" . 
-			  	   $buildID . "','" . $bugArray[$counter] . "')";
+			  	   $build_id . "','" . $bugArray[$counter] . "')";
 		  $result = $db->exec_query($sql); 
 		  $counter++;
 	  }
@@ -230,6 +274,8 @@ function editTestResults(&$db,$login_name, $tcData, $buildID)
 	}
 
 	return ("<div class='info'><p>" . lang_get("test_results_submitted") . "</p></div>");
+	
+	*/
 }
 // -----------------------------------------------------------------------------
 
@@ -246,7 +292,7 @@ function editTestResults(&$db,$login_name, $tcData, $buildID)
  *
  * @author Andreas Morsing - removed unnecessary code
  */
-function createTestInput(&$db,$resultTC,$buildID,$tpID)
+function createTestInput(&$db,$resultTC,$build_id,$tpID)
 {
 	global $g_bugInterfaceOn,$g_tc_status;;
 	$arrTC = array();
@@ -270,7 +316,7 @@ function createTestInput(&$db,$resultTC,$buildID,$tpID)
     // 20050926 - fm
     $sql = " SELECT notes, status FROM results " .
            " WHERE tcid=" . $myrow['tcid'] .
-		       " AND build_id=" . $buildID;
+		       " AND build_id=" . $build_id;
     
 		$resultStatus = $db->exec_query($sql);
 		
@@ -355,4 +401,48 @@ function defineColor($buildResult)
 			return "black";
 	}
 }
+
+
+// 20060401 - franciscom
+function write_execution(&$db,$user_id, $exec_data, $tplan_id,$build_id,$map_last_exec)
+{
+	
+	$map_tc_status=config_get('tc_status');
+	
+	$bugInterfaceOn = config_get('bugInterfaceOn');
+	$tc_status_map = config_get('tc_status');
+	
+	echo "<pre>debug" . __FUNCTION__; print_r($exec_data['tc_version']); echo "</pre>";
+	echo "<pre>debug" . __FUNCTION__; print_r($exec_data['notes']); echo "</pre>";
+	echo "<pre>debug" . __FUNCTION__; print_r($exec_data['status']); echo "</pre>";
+	echo "<pre>debug" . __FUNCTION__; print_r($exec_data['save_results']); echo "</pre>";
+
+	echo "<pre>debug \$map_last_exec" . __FUNCTION__; print_r($map_last_exec); echo "</pre>";
+	
+	$db_now = $db->db_now();
+	
+	$num_tc = count($tcData['tc']);
+	//foreach ($exec_data['tc_version'] as $tcversion_id => $val)
+	
+	foreach ($exec_data['save_results'] as $tcversion_id => $val)
+	{
+   
+    $current_status = $exec_data['status'][$tcversion_id];
+    $has_been_executed = ($current_status != $map_tc_status['not_run'] ? TRUE : FALSE);
+    $do_write = $has_been_executed;
+    if( $do_write )
+    { 
+    
+      $my_notes = $db->prepare_string(trim($exec_data['notes'][$tcversion_id]));		
+	  	$sql="INSERT INTO executions
+	    	    (build_id,tester_id,status,testplan_id,tcversion_id,execution_ts,notes)
+	      	  VALUES ( {$build_id}, {$user_id}, '{$exec_data['status'][$tcversion_id]}',
+	      	           {$tplan_id}, {$tcversion_id},{$db_now},'{$my_notes}')";
+	    $db->exec_query($sql);  	     
+    }
+	}
+}
+// -----------------------------------------------------------------------------
+
+
 ?>

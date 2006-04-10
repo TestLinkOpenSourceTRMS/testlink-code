@@ -5,18 +5,19 @@
  *
  * Filename $RCSfile: login.php,v $
  *
- * @version $Revision: 1.15 $
- * @modified $Date: 2006/02/27 07:55:45 $ by $Author: franciscom $
- *
+ * @version $Revision: 1.16 $
+ * @modified $Date: 2006/04/10 20:18:39 $ by $Author: havlat $
  * @author Martin Havlat
  * 
  * The page allows adjust login data
- * 
+ * ----------------------------------------------------------------------
+ * Revisions:  
  * 20050831 - scs - cosmetic changes
  * 200508 - MHT - added config check
  * 20060103 - scs - ADOdb changes
  * 20060226 - franciscom - adding logo management
- *
+ * 20060410 - MHT - refactorize
+ * ----------------------------------------------------------------------
  **/
 global $db; 
 require_once('lib/functions/configCheck.php');
@@ -26,13 +27,15 @@ require('config.inc.php');
 require_once('lib/functions/common.php');
 require_once('lib/functions/users.inc.php');
 
+tLog('Login page requested by ' . $_SERVER['REMOTE_ADDR'], 'INFO');
 $op = doDBConnect($db);
 if (!$op['status'])
 {
 	$smarty = new TLSmarty();
 	$smarty->assign('title', lang_get('fatal_page_title'));
 	$smarty->assign('content', $op['dbms_msg']);
-	$smarty->display('workAreaSimple.tpl');  
+	$smarty->display('workAreaSimple.tpl'); 
+	tLog('Connection fail page shown.'); 
 	exit();
 }
 
@@ -76,15 +79,9 @@ switch($note)
 //20050826 - scs - added displaying of security notes
 $securityNotes = getSecurityNotes($db);
 
-// 20060226 - franciscom
-$logo_img='';
-if (defined('LOGO_LOGIN_PAGE') )
-{
-  $logo_img=LOGO_LOGIN_PAGE;
-}
 	
 $smarty = new TLSmarty();
-$smarty->assign('login_logo', $logo_img);
+$smarty->assign('login_logo', LOGO_LOGIN_PAGE);
 $smarty->assign('securityNotes',$securityNotes);
 $smarty->assign('note',$message);
 $smarty->assign('css', TL_BASE_HREF . TL_LOGIN_CSS);

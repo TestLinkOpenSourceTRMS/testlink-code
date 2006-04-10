@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: execNavigator.php,v $
  *
- * @version $Revision: 1.19 $
- * @modified $Date: 2006/03/29 14:34:30 $ by $Author: franciscom $
+ * @version $Revision: 1.20 $
+ * @modified $Date: 2006/04/10 09:17:34 $ by $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -44,14 +44,9 @@ $selectOwner = (isset($_POST['owner']) && ($_POST['owner'] == $_SESSION['user'])
 $filterOwner = array (array('id' => $_SESSION['user'], 'selected' => $selectOwner));
 $tcID = isset($_POST['tcID']) ? intval($_POST['tcID']) : null;
 
-// 20050807 - fm - function interface changed
-//$optBuild = $tplan_mgr->create_build_menu($_SESSION['testPlanId']);
-
 $optBuild = $tplan_mgr->get_builds_for_html_options($_SESSION['testPlanId']);
+$optBuildSelected = isset($_POST['build_id']) ? $_POST['build_id'] : key($optBuild);
 
-$optBuildSelected = isset($_POST['build']) ? $_POST['build'] : key($optBuild);
-
-//echo "<pre>debug optbuild=" . __FUNCTION__; print_r($optBuild); echo "</pre>";
 
 /*
 $optResult = createResultsMenu($db);
@@ -162,7 +157,10 @@ function generateExecTree(&$db,$tplan_id,$tplan_name,$build,$purl_to_help,&$menu
   $idx=0;
   $jdx=0;
  
- 
+// ------------------------------------------------------------------------ 
+// 20060401 - franciscom
+if( !is_null($xx) )
+{ 
   // Get the path for every test case, grouping test cases that
   // have same parent.
   foreach($xx as $item)
@@ -295,6 +293,8 @@ function generateExecTree(&$db,$tplan_id,$tplan_name,$build,$purl_to_help,&$menu
      $pivot=$elem;
    	}
 	}
+}
+
 	
 	$mtime_stop = array_sum(explode(" ",microtime()));
 	$ttime=$mtime_stop - $mtime_start;

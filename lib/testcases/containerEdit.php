@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: containerEdit.php,v 1.35 2006/03/13 18:57:24 franciscom Exp $ */
+/* $Id: containerEdit.php,v 1.36 2006/04/10 09:17:34 franciscom Exp $ */
 /* Purpose:  This page manages all the editing of test specification containers. */
 /*
  *
@@ -242,13 +242,17 @@ else if ($action == 'delete_testsuite')
       $link_msg=array();
 		  foreach ($testcases as $the_key => $elem)
 		  {
-		  	 $link_msg[] = $tcase_mgr->check_delete_condition($elem['id']);
+		  	 $link_msg[] = $tcase_mgr->check_link_and_exec_status($elem['id']);
 		  }
 		}
-		
+	
 		//if the user has clicked the delete button on the archive page show the delete confirmation page
 		$smarty->assign('objectName', $tsuite_name);
-		$smarty->assign('objectID', $my_testsuiteID);
+		$smarty->assign('warning', $warning);
+		$smarty->assign('link_msg', $link_msg);
+
+
+		
 	}
 }
 else if( $action == 'move_testsuite_viewer') 

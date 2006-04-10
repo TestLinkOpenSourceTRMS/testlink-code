@@ -1,6 +1,6 @@
 /* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: testlink.css,v 1.8 2006/03/29 14:33:05 franciscom Exp $
+$Id: testlink.css,v 1.9 2006/04/10 09:16:43 franciscom Exp $
 Purpose: main css 
 
 20060328 - franciscom - removed silly definitions
@@ -297,6 +297,23 @@ table.invisible {
 }
 
 
+/* 20060402 - franciscom */
+table.exec_history {
+	background:     #EEE;
+	border: 		thin solid black;
+	font-size:		90%;
+	margin:			20px;
+	width:			95%;
+}
+
+/* 20060402 - franciscom */
+table.exec_history th {
+	background:     #CCC;
+	border-bottom:	1px solid black;
+	padding:		2px;
+}
+
+
 /***** Special button *****/
 a.tlButton {
 	background:		#CDE;
@@ -371,30 +388,43 @@ span.type1 {
 div.passed {
 	color: 			white;
 	background:		green;
-	margin: 		12px;
-	padding: 		12px;
+	margin: 		8px;
+	padding: 		6px;
+	text-align: center;
 }
 
 div.failed {
 	color: 			white;
 	background:		red;
-	margin: 		12px;
-	padding: 		12px;
+	margin: 		8px;
+	padding: 		6px;
+	text-align: center;
 }
 
 div.blocked {
 	color: 			white;
 	background:		blue;
-	margin: 		12px;
-	padding: 		12px;
+	margin: 		8px;
+	padding: 		6px;
+	text-align: center;
 }
 
 div.not_run {
 	color: 			white;
 	background:		black;
-	margin: 		12px;
-	padding: 		12px;
+	margin: 		8px;
+	padding: 		6px;
+	text-align: center;
 }
+
+
+div.exec_history {
+	background:		white;
+	padding: 		0px 3px 0px 3px;
+	/* marging: 		0px 3px 0px 3px; */
+}
+
+
 /* ----------------------------------------------------------------------------- */
 
 /***** END *************************************************/

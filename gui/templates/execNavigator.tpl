@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execNavigator.tpl,v 1.3 2005/08/27 20:53:30 schlundus Exp $ *}
+{* $Id: execNavigator.tpl,v 1.4 2006/04/10 09:17:34 franciscom Exp $ *}
 {* Purpose: smarty template - show test set tree *}
 {* 20050828 - scs - added searching for tcID *}
 {include file="inc_head.tpl" jsTree="yes"}
@@ -42,7 +42,7 @@
 		</tr>
 		<tr>
 			<td>{lang_get s='filter_build'}</td>
-			<td><select name="build">
+			<td><select name="build_id">
 			{html_options options=$optBuild selected=$optBuildSelected}
 			</select></td>
 		</tr>
@@ -50,8 +50,8 @@
 		<tr>
 			<td>{lang_get s='tree_colored_to'}</td>
 			<td><select name="colored">
-				<option value="build">{lang_get s='opt_build'}</option>
-				<option value="result" {$treeColored}>{lang_get s='opt_last_result'}</option>
+				<option value="by_build">{lang_get s='opt_build'}</option>
+				<option value="by_result" {$treeColored}>{lang_get s='opt_last_result'}</option>
 			</select></td>
 
 		</tr>

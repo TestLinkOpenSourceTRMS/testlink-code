@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
  * @filesource $RCSfile: database.class.php,v $
- * @version $Revision: 1.10 $
- * @modified $Date: 2006/02/25 21:48:24 $ by $Author: schlundus $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2006/04/10 09:17:34 $ by $Author: franciscom $
  * @author Francisco Mancardi
  * 
  *
@@ -483,5 +483,32 @@ class database
 		}
 		return $output;
 	}
+
+
+	/**
+	 * Fetches all rows into a map whose keys are the values of columns
+	 *
+	 * @param string $query the query to be executed
+	 * @param string $column the name of the column
+	 * @return array an assoc array whose keys are the values from the columns
+	 * 				 of the rows
+	 **/
+	function fetchArrayRowsIntoMap($query,$column)
+	{
+		$items = null;
+		$result = $this->exec_query($query);
+		if ($result)
+		{
+			while($row = $this->fetch_array($result))
+			{
+				$items[$row[$column]][] = $row;
+			}
+		}
+		
+		return $items;
+	}
+
+
+
 }
 ?>

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tlsmarty.inc.php,v $
  *
- * @version $Revision: 1.9 $
- * @modified $Date: 2006/03/29 12:44:25 $ $Author: franciscom $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2006/04/10 09:17:34 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -72,6 +72,9 @@ class TLSmarty extends Smarty
 
 	  // 20060303 - franciscom
 	  $this->register_function("localize_timestamp", "localize_timestamp_smarty");
+
+    // 20060401 - franciscom
+    $this->register_function("localize_tc_status","translate_tc_status_smarty");
 		
 		// define a select structure for {html_options ...}
 		$this->assign('option_yes_no', array(0 => lang_get('No'), 1 => lang_get('Yes')));

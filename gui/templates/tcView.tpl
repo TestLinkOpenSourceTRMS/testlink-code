@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView.tpl,v 1.11 2006/03/29 14:33:32 franciscom Exp $
+$Id: tcView.tpl,v 1.12 2006/04/10 09:17:34 franciscom Exp $
 Purpose: smarty template - view test case in test specification
 
 20060316 - franciscom - added action
@@ -32,7 +32,7 @@ Purpose: smarty template - view test case in test specification
 			         can_edit=$can_edit can_move_copy="yes" 
 			         can_delete_testcase=$can_delete_testcase
 			         can_delete_version=$my_delete_version
-			         status_quo=null
+			         status_quo=$status_quo
 			         show_version="yes" show_title="yes"}
 	{/foreach}
 	

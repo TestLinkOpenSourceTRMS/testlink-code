@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.24 $
- * @modified $Date: 2006/03/29 14:33:59 $  by $Author: franciscom $
+ * @version $Revision: 1.25 $
+ * @modified $Date: 2006/04/10 09:17:34 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
  * @author Martin Havlat
@@ -154,7 +154,6 @@ if($edit_tc)
 	}
 
 	$smarty->assign('tc', $myrowTC[0]);
-	//$smarty->assign('testcase_id', $tcase_id);
 	$smarty->assign('keys', $setOfKeys);
 
 	$smarty->display($g_tpl['tcEdit']);
@@ -212,9 +211,7 @@ else if($delete_tc)
 {
 	$msg='';
 	
-	// 20060305 - franciscom
-	// check delete conditions
-	$my_ret= $tcase_mgr->check_delete_condition($tcase_id);
+	$my_ret= $tcase_mgr->check_link_and_exec_status($tcase_id);
 	switch ($my_ret)
 	{
 		case "linked_and_executed":

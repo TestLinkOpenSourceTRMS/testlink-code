@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.52 $
- * @modified $Date: 2006/03/29 14:36:42 $ $Author: franciscom $
+ * @version $Revision: 1.53 $
+ * @modified $Date: 2006/04/10 09:17:10 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
@@ -116,7 +116,7 @@ $TLS_btn_move_cp_com = "Move/Copy";
 $TLS_btn_new_cat = "New test suite";
 $TLS_btn_new_com = "New test suite";
 $TLS_btn_new_tc = "Create Test Cases";
-$TLS_btn_reorder_cat = "Reorder test suites";
+$TLS_btn_reorder_cat = "Reorder children";
 $TLS_btn_reorder_tc = "Reorder Test Cases";
 $TLS_th_product_name = "Test project Name";
 
@@ -140,14 +140,15 @@ $TLS_tree_colored_to = "TC Colored according to ";
 
 // gui/templates/execSetResults.tpl
 $TLS_btn_print = "Print";
-$TLS_btn_save_tc_exec_results = "Save Results";
+//$TLS_btn_save_tc_exec_results = "Save Results";
+$TLS_btn_save_tc_exec_results = "Save execution";
 $TLS_build = "Build";
 $TLS_button_enter_bug = "Create new bug";
 $TLS_caption_bugtable = "Relevant bugs";
 $TLS_help = "Help";
 $TLS_tc_not_tested_yet = "Not Tested Yet";
 $TLS_test_exec_bug_report = "Bug / Problem Report";
-$TLS_test_exec_by = "by";
+$TLS_test_exec_by = "Tested by";
 $TLS_test_exec_expected_r = "Expected Results";
 $TLS_test_exec_last_run_date = "Most recent Run:";
 $TLS_test_exec_notes = "Notes / Description";
@@ -163,6 +164,11 @@ $TLS_th_test_case_id = "ID ";
 $TLS_title_t_r_on_build = "Test Results on Build";
 $TLS_title_t_r_owner = "owner:";
 $TLS_title_test_case = "Test Case";
+
+$TLS_execution_history = "Execution history";
+$TLS_date_time_run = "Date";
+$TLS_exec_status = "Status";
+$TLS_exec_notes = "Notes";
 
 
 
@@ -1329,4 +1335,7 @@ $TLS_your_password_is = "Your new TestLink password is: <br>";
 // 20060326 - franciscom
 $TLS_btn_del_this_version = "Delete this version";
 $TLS_btn_new_version = "Create a new version";
+$TLS_linked_and_executed = "is linked to test plan(s) and has been executed";
+$TLS_linked_but_not_executed = "is linked to test plan(s)";
+
 ?>

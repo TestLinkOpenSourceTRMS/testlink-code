@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.24 $
- * @modified $Date: 2006/03/29 14:34:30 $ $Author: franciscom $
+ * @version $Revision: 1.25 $
+ * @modified $Date: 2006/04/10 09:17:34 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -33,27 +33,27 @@ $submitResult = null;
 
 $_REQUEST = strings_stripSlashes($_REQUEST);
 $id = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0;
-//$buildID = isset($_REQUEST['build']) ? intval($_REQUEST['build']) : 0;
+$build_id = isset($_REQUEST['build']) ? intval($_REQUEST['build']) : 0;
 $level = isset($_REQUEST['level']) ? $_REQUEST['level'] : '';
 $owner = isset($_REQUEST['owner']) ? $_REQUEST['owner'] : '';
+
+$tplan_id = $_SESSION['testPlanId'];
+$the_builds = $tplan_mgr->get_builds_for_html_options($tplan_id);
+$build_name = isset($the_builds[$build_id]) ? $the_builds[$build_id] : '';
+$user_id = $_SESSION['userID'];
+
 
 $keyword = 'All';
 if( isset($_REQUEST['keyword']) )
 {
 	$keyword = $db->prepare_string($keyword);
 }
-if (isset($_REQUEST['submitTestResults']))
-{
-	// 20060908 - scs - fixed 90
-	//$submitResult = editTestResults($db,$_SESSION['user'],$_REQUEST,$_GET['build']);
-}
 
-echo "<pre>debug" ; print_r($_REQUEST); echo "</pre>";
+
+define('ANY_BUILD',null);
+define('GET_NO_EXEC',1);
 
 /*
-$tpID = $_SESSION['testPlanId'];
-$builds = getBuilds($db,$tpID, " ORDER BY build.name ");
-$buildName = isset($builds[$buildID]) ? $builds[$buildID] : '';
 */
 
 // -------------------------------------------------------------------------------------------
@@ -64,62 +64,18 @@ $editTestResult = "yes";
 //$latestBuild = array_keys($allbuilds);
 //$latestBuild = $latestBuild[0];
 
-if(($latestBuild > $buildID) && !(config_get('edit_old_build_results')))
+if(($latestBuild > $build_id) && !(config_get('edit_old_build_results')))
 {
 	$editTestResult = "no";
 }
 // -------------------------------------------------------------------------------------------
 
-/*
-$sql = " SELECT CAT.id AS cat_id, MGTCAT.name AS cat_name, " .
-       " TC.id AS tcid, title, summary, steps, exresult, keywords,mgttcid,version " .
-       " FROM  component COMP, category CAT, mgtcategory MGTCAT, testcase TC " .
-       " WHERE COMP.id = CAT.compid " .
-       " AND   MGTCAT.id = CAT.mgtcatid " .
-       " AND   CAT.id = TC.catid  ";
-
-if ($keyword != 'All')
-{
-	$sql .= " AND (TC.keywords LIKE '%,{$keyword},%' OR TC.keywords like '{$keyword},%')";
-}	
-if($level == 'component')
-{ 
-	$sql .= " AND   COMP.id = " . $id;
-	$sql .= " ORDER BY MGTCAT.CATorder, TCorder, TC.id ASC";
-}
-else if($level == 'category')
-{ 
-	$sql .= " AND CAT.id = " . $id ;
-	$sql .= " ORDER BY MGTCAT.CATorder, TCorder, TC.id ASC";
-}
-else if($level == 'testcase')
-{
-	$sql .= " AND TC.id = " . $id . " AND TC.active = 1";
-	$sql .= " ORDER BY MGTCAT.CATorder, TCorder, TC.id ASC";         
-}
-else
-{
-	tLog('Invalid GET data', 'ERROR');
-	$sql = null;
-}
-*/
 
 // ----------------------------------------------------------------
 // 20060326 - franciscom
-$tplan_id = $_SESSION['testPlanId'];
-
 $xx=$tplan_mgr->get_linked_tcversions($tplan_id);
-
-//echo "<pre>debug linked versions" . __FUNCTION__; print_r($xx); echo "</pre>";
-
 $test_spec=array();
 $zz=array();
-$added=array();
-$first_level=array();
-$debug_counter=array();
-$idx=0;
-$jdx=0;
-
 
 // Get the path for every test case, grouping test cases that
 // have same parent.
@@ -152,20 +108,43 @@ else
       } 
     }
 }
-//$yy=$tcase_mgr->get_by_id($tcase_id,$tcversion_id);
-//echo "<pre>debug" . __FUNCTION__; print_r($yy); echo "</pre>";
 
-$zz=$tcase_mgr->get_executions($tcase_id,$tcversion_id,$tplan_id,3);
 
-// echo "<pre>debug "; print_r($zz); echo "</pre>";
+$map_last_exec=$tcase_mgr->get_last_execution($tcase_id,$tcversion_id,$tplan_id,$build_id,GET_NO_EXEC);
+if (isset($_REQUEST['save_results']))
+{
+	 $submitResult = write_execution($db,$user_id,$_REQUEST,$tplan_id,$build_id,$map_last_exec);
+}
+$map_last_exec_any_build=$tcase_mgr->get_last_execution($tcase_id,$tcversion_id,$tplan_id,ANY_BUILD,GET_NO_EXEC);
+
+$exec_to_exclude=null;
+if( is_array($map_last_exec) )
+{
+    $exec_to_exclude=array();
+		foreach($map_last_exec as $key => $value)
+		{
+			  if( intval($value['execution_id']) > 0 )
+			  {
+   					$exec_to_exclude[] = 	$value['execution_id'];
+   			}
+		}
+		
+}
+$other_execs=$tcase_mgr->get_executions($tcase_id,$tcversion_id,$tplan_id,$build_id);
+
 // ---------------------------------------------------------------------------------------	
 $smarty = new TLSmarty();
 
 $smarty->assign('rightsEdit', has_rights($db,"testplan_execute"));
 $smarty->assign('edit_test_results', $editTestResult);
 
-$smarty->assign('arrTC', $zz);
-$smarty->assign('build', $buildName);
+$smarty->assign('map_last_exec', $map_last_exec);
+$smarty->assign('other_exec', $other_execs);
+$smarty->assign('map_last_exec_any_build', $map_last_exec_any_build);
+
+$smarty->assign('build_name', $build_name);
+
+
 $smarty->assign('owner', $owner);
 $smarty->assign('updated', $submitResult);
 $smarty->assign('g_bugInterface', $g_bugInterface);

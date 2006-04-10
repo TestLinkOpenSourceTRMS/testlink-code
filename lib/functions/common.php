@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.37 $ $Author: schlundus $
- * @modified $Date: 2006/03/23 20:46:28 $
+ * @version $Revision: 1.38 $ $Author: franciscom $
+ * @modified $Date: 2006/04/10 09:17:34 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -624,4 +624,37 @@ function downloadContentsToFile($content,$fileName)
 	header('Content-Disposition: attachment; filename="' . $fileName .'"');
 	echo $content;
 }
+
+
+
+/* 20060401 - franciscom */
+function translate_tc_status($status_code)
+{
+$map_tc_status = array_flip(config_get('tc_status'));
+
+$verbose = lang_get('test_status_not_run');
+if( $status_code != '')
+{
+	$suffix = $map_tc_status[$status_code];
+  $verbose=lang_get('test_status_' . $suffix);
+}
+return ($verbose);
+}
+
+function translate_tc_status_smarty($params, &$smarty)
+{
+	$the_ret = translate_tc_status($params['s']);  
+	if(	isset($params['var']) )
+	{
+		$smarty->assign($params['var'], $the_ret);
+	}
+	else
+	{
+		return $the_ret;
+	}
+}
+// -----------------------------------------------
+
+
+
 ?>

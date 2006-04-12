@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.38 $ $Author: franciscom $
- * @modified $Date: 2006/04/10 09:17:34 $
+ * @version $Revision: 1.39 $ $Author: havlat $
+ * @modified $Date: 2006/04/12 13:24:49 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -39,6 +39,8 @@
  * @author: francisco mancardi - 20050810 - added function to_boolean($alt_boolean)
  * 
  * @author: Asiel Brumfield - 20051012 - optimize sql queries
+ * MHT - 20060412 - Commented tree.class from the file a) include errors; b) must be removed 
+ * 					because is not used over all TL 
 **/ 
 
 // 20051227 - fm - ADODB
@@ -46,10 +48,6 @@ require_once("database.class.php");
 
 require_once("roles.inc.php");
 require_once("product.core.inc.php");
-
-// 20060219 - franciscom
-require_once("testproject.class.php");
-require_once("testcase.class.php");
 
 require_once("plan.core.inc.php");
 require_once("logging.inc.php");
@@ -80,7 +78,6 @@ function doDBConnect(&$db)
 
 	if (!$result['status'])
 	{
-		echo $result['dbms_msg'];
 		$result['status'] = 0;
 		tLog('Connect to database fails!!! ' . $result['dbms_msg'], 'ERROR');
   	}
@@ -193,12 +190,14 @@ function checkSessionValid()
 * Function adjust Product and Test Plan to $_SESSION
 *
 */
+/*
 function doInitSelection(&$db)
 {
 	upd_session_tplan_tproject($db,$_REQUEST);
 
 	return 1;
 }
+*/
 
 /**
 * Function start session
@@ -232,8 +231,8 @@ function testlinkInitPage(&$db,$initProduct = FALSE, $bDontCheckSession = false)
 
 	checkUserRights($db);
 		
-	if ($initProduct)
-		doInitSelection($db) or die("Could not set session variables");
+//	if ($initProduct)
+//		doInitSelection($db) or die("Could not set session variables");
 }
 
 // 20060107 - fm
@@ -480,6 +479,7 @@ function check_string($str2check, $ereg_forbidden_chars)
 	return $status_ok;
 }
 
+/* move to testplan related pages only
 // If we receive TestPlan ID in the _SESSION
 //    then do some checks and if everything OK
 //    Update this value at Session Level, to set it available in other
@@ -551,6 +551,7 @@ function upd_session_tplan_tproject(&$db,$hash_user_sel)
 		
 	setSessionTestPlan($tplan_data);
 }
+*/
 
 // 20051005 - fm - SET Date and Time FORMATS 
 function set_dt_formats()

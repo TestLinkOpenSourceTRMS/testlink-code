@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: projectedit.tpl,v 1.3 2006/03/23 20:46:26 schlundus Exp $
+$Id: projectedit.tpl,v 1.4 2006/04/12 11:33:45 havlat Exp $
 Purpose: smarty template - Edit existing product 
 
  20051211 - fm - poor workaround for BUGID 180 Unable to delete Product
@@ -13,7 +13,10 @@ Purpose: smarty template - Edit existing product
 <body>
 
 {* 20051211 - fm - deleted $name as additional workaround for BUG 180} *}
-<h1>{lang_get s='title_product_mgmt'}</h1>
+{* 20060412 - MHT - get $name back with condition because of BUG 416 *}
+<h1>{lang_get s='title_product_mgmt'}
+{if $action != "delete"} - {$name|escape}{/if}
+</h1>
 
 {* tabs *}
 <div class="tabMenu">
@@ -100,7 +103,7 @@ Purpose: smarty template - Edit existing product
 				<input type="submit" name="activateProduct" value="{lang_get s='btn_activate'}" />
 				{/if}
 				<input type="button" name="do_delete" value="{lang_get s='btn_del'}" 
-					onclick="javascript:; if (confirm('{lang_get s="popup_product_delete"}'))
+					onclick="javascript:; if (confirm('{lang_get s="popup_product_delete"}{$name|escape}?'))
 					{ldelim}location.href=fRoot+'lib/project/projectedit.php?do_delete=&amp;id={$id}&amp;name={$name|escape:"url"}';
 					{rdelim};" />
 			{/if}

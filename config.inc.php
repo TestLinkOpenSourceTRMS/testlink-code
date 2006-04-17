@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.55 $
- * @modified $Date: 2006/04/07 20:15:22 $ by $Author: schlundus $
+ * @version $Revision: 1.56 $
+ * @modified $Date: 2006/04/17 22:31:03 $ by $Author: asielb $
  *
  *
  * Constants and configuration parameters used throughout TestLink 
@@ -127,10 +127,18 @@ require_once(TL_ABS_PATH . 'lib/bugtracking/int_bugtracking.php');
 ini_set('include_path', '.' . DELIM . TL_ABS_PATH . 'lib' . DS . 'functions' . DS . DELIM);
 
 /**
-* Set the session timeout value (in seconds).
+* Set the session timeout value (in minutes).
 * This will prevent sessions timing out after very short periods of time
 */
 //ini_set('session.cache_expire',900);
+
+/**
+ * Set the session garbage collection timeout value (in seconds)
+ * The default session garbage collection in php is set to 1440 seconds (24 minutes)
+ * If you want sessions to last longer this must be set to a higher value.
+ * You may need to set this in your global php.ini if the settings don't take effect.
+ */
+//ini_set('session.gc_maxlifetime', 54000)
 
 /** Error reporting - do we want php errors to show up for users */
 error_reporting(E_ALL & ~E_NOTICE);

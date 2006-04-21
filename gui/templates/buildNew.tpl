@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: buildNew.tpl,v 1.7 2006/03/22 11:56:21 franciscom Exp $ *}
+{* $Id: buildNew.tpl,v 1.8 2006/04/21 16:48:40 asielb Exp $ *}
 {* Purpose: smarty template - Add new build and show existing 
 
 *}
@@ -23,7 +23,7 @@ var warning_delete_build = "{lang_get s='warning_delete_build'}";
 
 <div> {* new build form *}
 	<h2>{lang_get s='title_notes'}</h2>
-	<p>{lang_get s='msg_build'}</p>
+	<p>{lang_get s='msg_build'} <b>({$TPname|escape})</b></p>
 	<form method="post">
 
 	<table class="common" width="80%">

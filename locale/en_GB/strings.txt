@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.53 $
- * @modified $Date: 2006/04/10 09:17:10 $ $Author: franciscom $
+ * @version $Revision: 1.54 $
+ * @modified $Date: 2006/04/21 16:47:38 $ $Author: asielb $
  *
  * @author Francisco Mancardi
  *
@@ -45,12 +45,12 @@ $TLS_title_product_mgmt = "Test project Management";
 $TLS_alt_delete_build = "Click here to delete this build";
 $TLS_enter_build = "Enter identifier";
 $TLS_enter_build_notes = "Notes:";
-$TLS_msg_build = "Each build is related to the active Test Plan.";
-$TLS_no_builds = "There are no builds for this Test Plan!";
+$TLS_msg_build = "Each build is related to the active Test Suite: ";
+$TLS_no_builds = "There are no builds for this Test Suite!";
 $TLS_th_build_notes = "Notes";
 $TLS_th_delete = "Delete?";
-$TLS_th_existing_builds = "Existing builds within the Test Plan ";
-$TLS_title_create_build_for_tp = "Create build for Test plan";
+$TLS_th_existing_builds = "Existing builds within the Test Suite ";
+$TLS_title_create_build_for_tp = "Create build for Test suite";
 $TLS_title_notes = "Notes:";
 $TLS_warning_delete_build = "Do really want to delete this build? All dependant data will also be deleted!";
 
@@ -173,7 +173,7 @@ $TLS_exec_notes = "Notes";
 
 
 // gui/templates/mainPage.tpl
-$TLS_filter_tp_by_product = "Filter Test Plans by Test project";
+$TLS_filter_tp_by_product = "Filter Test Suites by Test project";
 $TLS_href_add_test_case = "Add Test Cases";
 $TLS_href_assign_risk_own = "Assign Risk and Ownership";
 $TLS_href_assign_user_roles = "Assign user roles";
@@ -187,10 +187,10 @@ $TLS_href_import_tc = "Import Test Cases";
 $TLS_href_keywords_assign = "Assign Keywords";
 $TLS_href_keywords_manage = "Keyword Management";
 $TLS_href_keywords_view = "View Keywords";
-$TLS_href_plan_assign_users = "Define User / Test Plan Rights";
-$TLS_href_plan_edit = "Edit / Delete Test Plan";
+$TLS_href_plan_assign_users = "Define User / Test Suite Rights";
+$TLS_href_plan_edit = "Edit / Delete Test Suite";
 $TLS_href_plan_mstones = "Milestone Management";
-$TLS_href_plan_new = "Create Test Plan";
+$TLS_href_plan_new = "Create Test Suite";
 $TLS_href_print_tc = "Print Test Cases";
 $TLS_href_print_tc_suite = "Print Test Case Suite";
 $TLS_href_remove_test_case = "Remove Test Cases";
@@ -201,7 +201,7 @@ $TLS_href_roles_management = "Role Management";
 $TLS_href_search_tc = "Search Test Cases";
 $TLS_href_upd_mod_tc = "Update modified Test Cases";
 $TLS_href_user_management = "User Management";
-$TLS_msg_no_rights_for_tp = "- unavailable (You don't have permissions for any Test Plan)";
+$TLS_msg_no_rights_for_tp = "- unavailable (You don't have permissions for any Test Suite)";
 $TLS_sec_note_prefix = "TestLink Security Issue";
 $TLS_testplan_role = "TestPlan role";
 $TLS_th_my_perc_completed = "My completed [%]";
@@ -211,12 +211,12 @@ $TLS_title_keywords = "Keywords";
 $TLS_title_requirements = "Requirements";
 $TLS_title_test_case_suite = "Test Case Suite";
 $TLS_title_test_execution = "Test Execution";
-$TLS_title_test_plan = "Test Plan";
-$TLS_title_test_plan_mgmt = "Test Plan Management";
+$TLS_title_test_plan = "Test Suite";
+$TLS_title_test_plan_mgmt = "Test Suite Management";
 $TLS_title_test_spec = "Test Specification";
 $TLS_title_testlink_site_map = "TestLink - Desktop";
 $TLS_title_user_mgmt = "User Administration";
-$TLS_title_your_tp_metrics = "Your Test Plan Metrics";
+$TLS_title_your_tp_metrics = "Your Test Suite Metrics";
 
 
 
@@ -375,7 +375,7 @@ $TLS_btn_uncheck = "Uncheck";
 $TLS_check_uncheck_tc = "test cases in the test suite.";
 $TLS_check_uncheck_tc_in_categories = "test cases in all Categories";
 $TLS_note_keyword_filter = "Test cases are filtered by keyword";
-$TLS_title_add_test_to_plan = "Add Test Cases to the Test Plan";
+$TLS_title_add_test_to_plan = "Add Test Cases to the Test Suite";
 
 
 
@@ -384,10 +384,10 @@ $TLS_No = "No";
 $TLS_Yes = "Yes";
 $TLS_alt_delete_testplan = "Delete the testplan?";
 $TLS_btn_upd_tp = "Update";
-$TLS_caption_edit_tp = "Edit existing Test Plans";
+$TLS_caption_edit_tp = "Edit existing Test Suites";
 $TLS_menu_create = "Create";
 $TLS_menu_edit_del = "Edit / Delete";
-$TLS_no_test_plans = "There are no Test Plans defined!";
+$TLS_no_test_plans = "There are no Test Suites defined!";
 $TLS_th_active = "Active";
 $TLS_th_delete_tp = "Delete";
 $TLS_th_tp_notes = "Notes";
@@ -399,13 +399,13 @@ $TLS_alt_delete_milestone = "Delete the milestone?";
 $TLS_btn_edit_milestone = "Edit";
 $TLS_btn_new_milestone = "Create";
 $TLS_info_milestones_date = "Milestones must be created at today's date or greater";
-$TLS_no_milestones = "There are no milestones for this Test Plan!";
+$TLS_no_milestones = "There are no milestones for this Test Suite!";
 $TLS_th_date_format = "Date (YYYY-MM-DD)";
 $TLS_th_perc_a_prio = "% A Priority";
 $TLS_th_perc_b_prio = "% B priority";
 $TLS_th_perc_c_prio = "% C priority";
 $TLS_title_existing_milestones = "Existing Milestones";
-$TLS_title_milestones = "Milestones for Test Plan";
+$TLS_title_milestones = "Milestones for Test Suite";
 $TLS_title_new_milestone = "Milestone";
 
 
@@ -414,12 +414,12 @@ $TLS_title_new_milestone = "Milestone";
 $TLS_btn_edit = "Edit";
 $TLS_btn_new = "New";
 $TLS_caption_for_product = "for Test project: ";
-$TLS_caption_new_tp = "New Test Plan";
+$TLS_caption_new_tp = "New Test Suite";
 $TLS_caption_tp_name = "Name";
 $TLS_caption_tp_notes = "Notes";
 $TLS_opt_no = "No";
-$TLS_question_create_tp_from = "Create from existing Test Plan?";
-$TLS_question_want_rights = "Do you want to use permissions with this Test Plan";
+$TLS_question_create_tp_from = "Create from existing Test Suite?";
+$TLS_question_want_rights = "Do you want to use permissions with this Test Suite";
 $TLS_say_yes = "Yes";
 
 
@@ -440,7 +440,7 @@ $TLS_title_plan_ownership = "TestPlan ownership";
 $TLS_btn_upd_prio = "Update";
 $TLS_menu_assign_ownership = "Assign Ownership";
 $TLS_menu_define_prio = "Define Priority Rules";
-$TLS_title_priority = "Define Priority Rules for the Test Plan";
+$TLS_title_priority = "Define Priority Rules for the Test Suite";
 $TLS_tr_th_prio_cba = "Priority (C/B/A)";
 $TLS_tr_th_risk = "Risk/Importance";
 
@@ -450,7 +450,7 @@ $TLS_tr_th_risk = "Risk/Importance";
 $TLS_btn_remove_entire = "Remove entire";
 $TLS_btn_remove_tcs = "Remove Test Case(s)";
 $TLS_no_data_avail = "No data available.";
-$TLS_title_remove_tc_from_tp = "Remove Test Cases from the Test Plan";
+$TLS_title_remove_tc_from_tp = "Remove Test Cases from the Test Suite";
 
 
 
@@ -463,7 +463,7 @@ $TLS_btn_uncheck_all = "Uncheck All";
 
 // gui/templates/planTestersNavigator.tpl
 $TLS_label_list_of = "List of";
-$TLS_opt_test_plans = "Test Plans";
+$TLS_opt_test_plans = "Test Suites";
 $TLS_opt_users = "Users";
 
 
@@ -589,7 +589,7 @@ $TLS_th_run_by = "Run by";
 
 
 // gui/templates/resultsGeneral.tpl
-$TLS_title_gen_test_rep = "General Test Plan Metrics";
+$TLS_title_gen_test_rep = "General Test Suite Metrics";
 
 
 
@@ -609,8 +609,8 @@ $TLS_mail_subject = "Subject:";
 $TLS_mail_to = "To:";
 $TLS_send_test_report = "- Send Test Report";
 $TLS_status_for_build = "Status for Build";
-$TLS_tp_status = "General Test Plan status";
-$TLS_tp_status_for_build = "Test Plan status for Build";
+$TLS_tp_status = "General Test Suite status";
+$TLS_tp_status_for_build = "Test Suite status for Build";
 
 
 
@@ -814,7 +814,7 @@ $TLS_select_last_result_header = "Select Last Result";
 $TLS_select_owner_header = "Select Owner";
 $TLS_select_report_format_header = "Select Report Format";
 $TLS_submit_query = "Submit Query";
-$TLS_test_plan_header = "Test Plan : ";
+$TLS_test_plan_header = "Test Suite : ";
 
 
 
@@ -964,7 +964,7 @@ $TLS_list_of_failed = "List of Failed Test Cases";
 $TLS_link_report_blocked_tcs = "Blocked Test Cases";
 $TLS_link_report_excel = "&#8195;&#8594; Excel export";
 $TLS_link_report_failed = "Failed Test Cases";
-$TLS_link_report_general_tp_metrics = "General Test Plan Metrics";
+$TLS_link_report_general_tp_metrics = "General Test Suite Metrics";
 $TLS_link_report_metrics_active_build = "Metrics of active Build";
 $TLS_link_report_metrics_more_builds = "Query Metrics";
 $TLS_link_report_overall_build = "The Overall Build Status";
@@ -1021,7 +1021,7 @@ $TLS_opt_show_tc_body = "Show Test Case Body";
 $TLS_opt_show_tc_summary = "Show Test Case Summary";
 $TLS_opt_show_toc = "Show Table of Contents";
 $TLS_title_tc_print_navigator = "Navigator - Print Test Specification";
-$TLS_title_tp_print_navigator = "Navigator - Print Test Plan ";
+$TLS_title_tp_print_navigator = "Navigator - Print Test Suite ";
 
 
 
@@ -1043,25 +1043,25 @@ $TLS_warning_milestone_date = "Milestones have to be created at today's date or 
 
 
 // lib/plan/planEdit.php
-$TLS_delete_tp_bugs_failed1 = "Deleting bugs for Test Plan '";
+$TLS_delete_tp_bugs_failed1 = "Deleting bugs for Test Suite '";
 $TLS_delete_tp_bugs_failed2 = "' failed";
-$TLS_delete_tp_builds_failed1 = "Deleting builds for Test Plan '";
+$TLS_delete_tp_builds_failed1 = "Deleting builds for Test Suite '";
 $TLS_delete_tp_builds_failed2 = "' failed";
-$TLS_delete_tp_comp_failed1 = "Deleting test suites for Test Plan '";
+$TLS_delete_tp_comp_failed1 = "Deleting test suites for Test Suite '";
 $TLS_delete_tp_comp_failed2 = "' failed";
-$TLS_delete_tp_data_failed1 = "Deleting data of Test Plan '";
+$TLS_delete_tp_data_failed1 = "Deleting data of Test Suite '";
 $TLS_delete_tp_data_failed2 = "' failed";
-$TLS_delete_tp_failed1 = "Deleting Test Plan '";
+$TLS_delete_tp_failed1 = "Deleting Test Suite '";
 $TLS_delete_tp_failed2 = "' failed";
-$TLS_delete_tp_milestones_failed1 = "Deleting milestones for Test Plan '";
+$TLS_delete_tp_milestones_failed1 = "Deleting milestones for Test Suite '";
 $TLS_delete_tp_milestones_failed2 = "' failed";
-$TLS_delete_tp_priority_failed1 = "Deleting priority for Test Plan '";
+$TLS_delete_tp_priority_failed1 = "Deleting priority for Test Suite '";
 $TLS_delete_tp_priority_failed2 = "' failed";
-$TLS_delete_tp_results_failed1 = "Deleting results for Test Plan '";
+$TLS_delete_tp_results_failed1 = "Deleting results for Test Suite '";
 $TLS_delete_tp_results_failed2 = "' failed";
-$TLS_delete_tp_rights_failed1 = "Deleting permissions for Test Plan '";
+$TLS_delete_tp_rights_failed1 = "Deleting permissions for Test Suite '";
 $TLS_delete_tp_rights_failed2 = "' failed";
-$TLS_delete_tp_succeeded1 = "Test Plan '";
+$TLS_delete_tp_succeeded1 = "Test Suite '";
 $TLS_delete_tp_succeeded2 = "' has been deleted.";
 
 
@@ -1075,7 +1075,7 @@ $TLS_warning_milestone_update_failed = "The milestone couldn't be updated!";
 
 // lib/plan/planNew.php
 $TLS_duplicate_tp_name = "There is already a TestPlan with this name!";
-$TLS_update_tp_failed1 = "Update of Test Plan '";
+$TLS_update_tp_failed1 = "Update of Test Suite '";
 $TLS_update_tp_failed2 = "' failed";
 $TLS_warning_empty_tp_name = "You cannot enter Testplan without a name!";
 
@@ -1090,13 +1090,13 @@ $TLS_opt_imp_medium = "Medium";
 
 // lib/plan/planTestersEdit.php
 $TLS_Unknown = "Unknown";
-$TLS_title_assign_tp = "Assign Test Plans to the user: ";
-$TLS_title_assign_users = "Assign Users to the Test Plan: ";
+$TLS_title_assign_tp = "Assign Test Suites to the user: ";
+$TLS_title_assign_users = "Assign Users to the Test Suite: ";
 
 
 
 // lib/plan/planTestersNavigator.php
-$TLS_nav_test_plan = "Navigator - Test Plans";
+$TLS_nav_test_plan = "Navigator - Test Suites";
 $TLS_nav_users = "Navigator - Users";
 
 
@@ -1147,13 +1147,13 @@ $TLS_kw_update_fails = "Update fails";
 
 
 // lib/general/frmWorkArea.php
-$TLS_no_build_warning_part1 = "There are no Builds created for this Test Plan.";
+$TLS_no_build_warning_part1 = "There are no Builds created for this Test Suite.";
 $TLS_no_build_warning_part2 = "Please create it first or ask your administrator.";
 
 
 
 // lib/general/myTPInfo.php
-$TLS_no_testplans_available = "I'm sorry there are no Test Plans available";
+$TLS_no_testplans_available = "I'm sorry there are no Test Suites available";
 
 
 
@@ -1234,7 +1234,7 @@ $TLS_number_passed = "# Passed";
 $TLS_owner = "Owner";
 $TLS_owner_header = "Owner =";
 $TLS_runby = "Run By";
-$TLS_test_plan_name = "Test Plan";
+$TLS_test_plan_name = "Test Suite";
 
 
 
@@ -1335,7 +1335,7 @@ $TLS_your_password_is = "Your new TestLink password is: <br>";
 // 20060326 - franciscom
 $TLS_btn_del_this_version = "Delete this version";
 $TLS_btn_new_version = "Create a new version";
-$TLS_linked_and_executed = "is linked to test plan(s) and has been executed";
-$TLS_linked_but_not_executed = "is linked to test plan(s)";
+$TLS_linked_and_executed = "is linked to test suite(s) and has been executed";
+$TLS_linked_but_not_executed = "is linked to test suite(s)";
 
 ?>

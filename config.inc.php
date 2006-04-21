@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.56 $
- * @modified $Date: 2006/04/17 22:31:03 $ by $Author: asielb $
+ * @version $Revision: 1.57 $
+ * @modified $Date: 2006/04/21 20:30:56 $ by $Author: asielb $
  *
  *
  * Constants and configuration parameters used throughout TestLink 
@@ -49,6 +49,7 @@
  * 20050821 - fm - 	template configuration/customization
  * 20050806 - fm - 	Changes to support the installer
  *
+ * 20060421 - azl - Added en_US locale
  *------------------------------------------------------------------------
 **/
 /** 
@@ -268,15 +269,16 @@ $g_fckeditor_toolbar = "TL_Medium_2";
 
 
 /* These are the supported locales */
-$g_locales = array('en_GB' => 'English (UK)',
-				   'it_IT' => 'Italian',
-				   'es_AR' => 'Spanish (Argentine)',
-				   'es_ES' => 'Spanish',
-				   'de_DE' => 'German',
-                   'fr_FR' => 'Fran&ccedil;ais',
-                   'pt_BR' => 'Portuguese (Brazil)',
-                   'zh_CN' => 'Chinese Simplified'
-				          );
+$g_locales = array('en_US' => 'English (US)',
+						'en_GB' => 'English (UK)',
+						'it_IT' => 'Italian',
+						'es_AR' => 'Spanish (Argentine)',
+						'es_ES' => 'Spanish',
+						'de_DE' => 'German',
+						'fr_FR' => 'Fran&ccedil;ais',
+						'pt_BR' => 'Portuguese (Brazil)',
+						'zh_CN' => 'Chinese Simplified'
+                    );
 
 // ----------------------------------------------------------------------------
 // 20051005 - fm - see strftime() in PHP manual
@@ -285,34 +287,36 @@ $g_locales = array('en_GB' => 'English (UK)',
 // setting according local is done in testlinkInitPage() using set_dt_formats()
 //
 // Default values
-$g_date_format ="%d/%m/%Y";
-$g_timestamp_format = "%d/%m/%Y %H:%M:%S";
+$g_date_format ="%m/%d/%Y";
+$g_timestamp_format = "%m/%d/%Y %H:%M:%S";
 
-$g_locales_date_format = array('en_GB' => "%d/%m/%Y",
-				                       'it_IT' => "%d/%m/%Y",
-				                       'es_AR' => "%d/%m/%Y",
-				                       'es_ES' => "%d/%m/%Y",
-				                       'de_DE' => "%d.%m.%Y",
-				                       'fr_FR' => "%d/%m/%Y",
-				                       'pt_BR' => "%d/%m/%Y",
-				                       'zh_CN' => "%Y年%m月%d日"
-				                       ); 
+$g_locales_date_format = array('en_US' => "%m/%d/%Y",
+									'en_GB' => "%d/%m/%Y",
+                                    'it_IT' => "%d/%m/%Y",
+                                    'es_AR' => "%d/%m/%Y",
+                                    'es_ES' => "%d/%m/%Y",
+                                    'de_DE' => "%d.%m.%Y",
+                                    'fr_FR' => "%d/%m/%Y",
+                                    'pt_BR' => "%d/%m/%Y",
+                                    'zh_CN' => "%Y年%m月%d日"
+                                ); 
 
-$g_locales_timestamp_format = array('en_GB' => "%d/%m/%Y %H:%M:%S",
-				                       'it_IT' => "%d/%m/%Y %H:%M:%S",
-				                       'es_AR' => "%d/%m/%Y %H:%M:%S",
-				                       'es_ES' => "%d/%m/%Y %H:%M:%S",
-				                       'de_DE' => "%d.%m.%Y %H:%M:%S",
-				                       'fr_FR' => "%d/%m/%Y %H:%M:%S",
-				                       'pt_BR' => "%d/%m/%Y %H:%M:%S",
-				                       'zh_CN' => "%Y年%m月%d日 %H时%M分%S秒"
-				                           ); 
+$g_locales_timestamp_format = array('en_US' => "%m/%d/%Y %H:%M:%S",
+                                        'en_GB' => "%d/%m/%Y %H:%M:%S",
+                                        'it_IT' => "%d/%m/%Y %H:%M:%S",
+                                        'es_AR' => "%d/%m/%Y %H:%M:%S",
+                                        'es_ES' => "%d/%m/%Y %H:%M:%S",
+                                        'de_DE' => "%d.%m.%Y %H:%M:%S",
+                                        'fr_FR' => "%d/%m/%Y %H:%M:%S",
+                                        'pt_BR' => "%d/%m/%Y %H:%M:%S",
+                                        'zh_CN' => "%Y年%m月%d日 %H时%M分%S秒"
+                                    ); 
 // ----------------------------------------------------------------------------
 
 
 
 /** Your default locale, this must be one of $g_locales */
-$language = 'en_GB';
+$language = 'en_US';
 // check for !== false because getenv() returns false on error
 $serverLanguage = getenv($_SERVER['HTTP_ACCEPT_LANGUAGE']);
 if(false !== $serverLanguage)

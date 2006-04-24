@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.58 $
- * @modified $Date: 2006/04/24 15:33:39 $ by $Author: franciscom $
+ * @version $Revision: 1.59 $
+ * @modified $Date: 2006/04/24 15:44:58 $ by $Author: franciscom $
  *
  *
  * Constants and configuration parameters used throughout TestLink 
@@ -292,11 +292,11 @@ $g_locales = array(	'en_GB' => 'English (UK)',
 // setting according local is done in testlinkInitPage() using set_dt_formats()
 //
 // Default values
-$g_date_format ="%m/%d/%Y";
-$g_timestamp_format = "%m/%d/%Y %H:%M:%S";
+$g_date_format ="%d/%m/%Y";
+$g_timestamp_format = "%d/%m/%Y %H:%M:%S";
 
 $g_locales_date_format = array('en_US' => "%m/%d/%Y",
-									'en_GB' => "%d/%m/%Y",
+									             'en_GB' => "%d/%m/%Y",
                                     'it_IT' => "%d/%m/%Y",
                                     'es_AR' => "%d/%m/%Y",
                                     'es_ES' => "%d/%m/%Y",
@@ -321,7 +321,8 @@ $g_locales_timestamp_format = array('en_US' => "%m/%d/%Y %H:%M:%S",
 
 
 /** Your default locale, this must be one of $g_locales */
-$language = 'en_US';
+$language = 'en_GB';
+
 // check for !== false because getenv() returns false on error
 $serverLanguage = getenv($_SERVER['HTTP_ACCEPT_LANGUAGE']);
 if(false !== $serverLanguage)

@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.12 $
- * @modified $Date: 2006/04/24 10:38:02 $ $Author: franciscom $
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2006/04/24 17:44:03 $ $Author: franciscom $
  * @author franciscom
  *
  * 20060423 - franciscom - added order_by_clause argument - get_keywords_map()
@@ -270,9 +270,10 @@ function viewer_edit_new($amy_keys, $oFCK, $action, $parent_id, $id=null)
 }
 
 
+// 20060424 - franciscom - interface changes added $keywords_id
 // 20060303 - franciscom
 function update($id,$tcversion_id,$name,$summary,$steps,
-                $expected_results,$user_id,$tc_order = null)
+                $expected_results,$user_id,$keywords_id='',$tc_order = null)
 {
 $status_ok=0;
 
@@ -298,19 +299,16 @@ if( $status_ok)
       
 
 // keywords
-/*
-$sql = "UPDATE mgttestcase SET keywords='" . 
-	        $db->prepare_string($keywords) . "', version='" . $db->prepare_string($version) . 
-	        "', title='" . $db->prepare_string($title) . "'".
-		      ",summary='" . $db->prepare_string($summary) . "', steps='" . 
-	      	$db->prepare_string($steps) . "', exresult='" . $db->prepare_string($outcome) . 
-		      "', reviewer_id=" . $user_id . ", modified_date=CURRENT_DATE()" .
-		      " WHERE id=" . $tcID;
-	$result = $db->exec_query($sql);
-	
-	return $result ? 1: 0;
+// update = delete + insert
+$this->deleteKeywords($id);   	 
+if( strlen(trim($keywords_id)) > 0 )
+{
+  $a_keywords=explode(",",$keywords_id);
+	$this->addKeywords($id,$a_keywords);
+}
 
-*/
+
+
 return ( $status_ok);
 
 } // end function

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.27 $
- * @modified $Date: 2006/04/24 17:44:59 $  by $Author: franciscom $
+ * @version $Revision: 1.28 $
+ * @modified $Date: 2006/04/24 17:46:46 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
  * @author Martin Havlat
@@ -103,8 +103,6 @@ $tproject_mgr = New testproject($db);
 $tree_mgr = New tree($db);
 $tsuite_mgr = New testsuite($db);
 
-echo "<pre>debug -" . __FILE__ ; print_r($_POST); echo "</pre>";
-
 $name_ok = 1;
 if($do_create || $do_update)
 {
@@ -164,8 +162,6 @@ if($edit_tc)
 } 
 else if($do_update)
 {
-  echo "<pre>debug" . __FUNCTION__; print_r($right_list); echo "</pre>";
-  
 	$refresh_tree='no';
 	if( $name_ok)
 	{
@@ -355,7 +351,6 @@ else if($do_create_new_version)
 	  $msg = 'ok';
 	}
 	
-	//echo "<pre>debug" . __FUNCTION__; print_r($op); echo "</pre>";
 	define('DONT_REFRESH','no');
 	$tcase_mgr->show($tcase_id, $_SESSION['userID'], TC_ALL_VERSIONS, 
 	                            $action_result,$msg,DONT_REFRESH);

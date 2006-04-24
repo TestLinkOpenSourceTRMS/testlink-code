@@ -2,9 +2,11 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.11 $
- * @modified $Date: 2006/04/10 09:08:31 $ $Author: franciscom $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2006/04/24 10:38:02 $ $Author: franciscom $
  * @author franciscom
+ *
+ * 20060423 - franciscom - added order_by_clause argument - get_keywords_map()
  *
  * 20060323 - franciscom - create_tcversion() interface change added $version
  *
@@ -179,18 +181,23 @@ function show($id, $user_id, $version_id=TC_ALL_VERSIONS, $action='', $msg_resul
 	
 	$can_edit = has_rights($this->db,"mgt_modify_tc");
 	$tc_array = $this->get_by_id($id,$version_id);
-	
+
 	// 20060326 - get the status quo of execution and links of tc versions
 	$status_quo_map = $this->get_versions_status_quo($id);
 	
 	//20060324 - franciscom
+	$keywords_map=$this->get_keywords_map($id,' ORDER BY KEYWORD ASC ');
+	$tc_array[0]['keywords']=$keywords_map;
 	$tc_current_version = array($tc_array[0]);
+	
 	$tc_other_versions = array();
 	$qta_versions = count($tc_array);
 	if( $qta_versions > 1 )
 	{
 		$tc_other_versions = array_slice($tc_array,1);
 	}
+	
+	
 	
 	$linked_tcversions = $this->get_linked_versions($id,'EXECUTED');
   // echo "<pre>debug \$linked_tcversions" . __FUNCTION__; print_r($linked_tcversions); echo "</pre>";
@@ -216,6 +223,9 @@ function show($id, $user_id, $version_id=TC_ALL_VERSIONS, $action='', $msg_resul
 	$smarty->assign('arrReqs',$arrReqs);
 	$smarty->assign('view_req_rights', has_rights($this->db,"mgt_view_req")); 
 	$smarty->assign('opt_requirements', $_SESSION['testprojectOptReqs']); 	
+	
+	// 20060423 - franciscom
+	$smarty->assign('keywords_map',$keywords_map);
 	$smarty->display($the_tpl['tcView']);
 }
 
@@ -773,11 +783,15 @@ function getKeywords($tcID,$kwID = null)
 	return $tcKeywords;
 } 
 
-function get_keywords_map($id)
+// 20060423 - franciscom - added order_by_clause argument
+// 
+function get_keywords_map($id,$order_by_clause='')
 {
 	$sql = "SELECT keyword_id,keywords.keyword 
 	        FROM testcase_keywords,keywords 
-	        WHERE keyword_id = keywords.id AND testcase_id = {$id}";
+	        WHERE keyword_id = keywords.id AND testcase_id = {$id} 
+	        {$order_by_clause}";
+
 
 	$map_keywords = $this->db->fetchColumnsIntoMap($sql,'keyword_id','keyword');
 	return($map_keywords);
@@ -826,10 +840,9 @@ function addKeywords($id,$kw_ids)
 
 function deleteKeywords($tcID,$kwID = null)
 {
-	$sql = "DELETE FROM testcase_keywords WHERE testcase_id = {$tcID}";
+	$sql = " DELETE FROM testcase_keywords WHERE testcase_id = {$tcID} ";
 	if (!is_null($kwID))
 		$sql .= " AND keyword_id = {$kwID}";
-	
 	return $this->db->exec_query($sql);
 }
 

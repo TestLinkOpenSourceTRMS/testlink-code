@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView.tpl,v 1.12 2006/04/10 09:17:34 franciscom Exp $
+$Id: tcView.tpl,v 1.13 2006/04/24 10:36:24 franciscom Exp $
 Purpose: smarty template - view test case in test specification
 
 20060316 - franciscom - added action
@@ -28,7 +28,8 @@ Purpose: smarty template - view test case in test specification
   {/if}
   
 	{foreach item=my_testcase from=$testcase_curr_version}
-			{include file="tcView_viewer.tpl" my_testcase=$my_testcase 
+			{include file="tcView_viewer.tpl" my_testcase=$my_testcase
+			         keywords_map=$keywords_map 
 			         can_edit=$can_edit can_move_copy="yes" 
 			         can_delete_testcase=$can_delete_testcase
 			         can_delete_version=$my_delete_version
@@ -46,6 +47,7 @@ Purpose: smarty template - view test case in test specification
   	          onclick="viewElement(document.getElementById('{$my_testcase.version}'),document.getElementById('{$my_testcase.version}').style.display=='none')"> Version {$my_testcase.version} </span>
   	    <br><div id="{$my_testcase.version}" class="workBack">
 				{include file="tcView_viewer.tpl" my_testcase=$my_testcase 
+			           keywords_map=$keywords_map 
 				         can_edit=$can_edit can_move_copy="no" 
    			         can_delete_testcase='no'
 			           can_delete_version=$can_delete_version

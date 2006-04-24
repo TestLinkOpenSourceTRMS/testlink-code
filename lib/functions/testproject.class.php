@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.12 $
- * @modified $Date: 2006/04/10 09:08:55 $
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2006/04/24 10:38:02 $
  * @author franciscom
  *
  */
@@ -519,13 +519,45 @@ function get_keywords_map($testproject_id)
 {
 		$map_keywords = null;
 		$sql = " SELECT id,keyword FROM keywords " .
-			   " WHERE testproject_id = {$testproject_id}" .
-			   " ORDER BY keyword ASC";
-		
+			     " WHERE testproject_id = {$testproject_id}" .
+			     " ORDER BY keyword ASC";
 		$map_keywords = $this->db->fetchColumnsIntoMap($sql,'id','keyword');
 		return($map_keywords);
 }
 	
+
+
+
+
+/* 20060411 - franciscom */
+function get_all_testcases_id($id)
+{
+	$a_tcid=array();
+	$test_spec = $this->tree_manager->get_subtree($id,array('testplan'=>'exclude me'),
+	                                            array('testcase'=>'exclude my children'));
+  
+  $hash_descr_id = $this->tree_manager->get_available_node_types();
+  
+  // echo "<pre>debug" . __FUNCTION__; print_r($test_spec); echo "</pre>";
+  
+  $qty=0;
+  if( count($test_spec) > 0 )
+  {
+    foreach($test_spec as $elem)
+    {
+    	if($elem['node_type_id'] == $hash_descr_id['testcase'])
+    	{
+    	  $a_tcid[]=$elem['id'];
+    	}
+    }
+  }
+  
+  echo "<pre>debug" . __FUNCTION__; print_r($a_tcid); echo "</pre>";
+  return ($a_tcid);
+  
+}
+
+
 
 } // end class
 

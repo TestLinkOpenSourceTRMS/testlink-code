@@ -1,7 +1,7 @@
 <?php
 
 ////////////////////////////////////////////////////////////////////////////////
-// @version $Id: planAddTC.php,v 1.15 2006/03/20 18:02:33 franciscom Exp $
+// @version $Id: planAddTC.php,v 1.16 2006/04/24 10:38:03 franciscom Exp $
 // File:     planAddTC.php
 // Author:   Chad Rosen
 // Purpose:  This page manages the importation of test cases into testlink.
@@ -128,20 +128,29 @@ if( $do_display)
 /*
 returns: array where every element is an associative array with the following
          structure:
+        
          [testsuite] => Array( [id] => 28
                           [name] => TS1 )
 
-         [testcases] => Array( [0] => Array( [id] => 79
-                                             [name] => TC0)
+         [testcases] => Array( [79] => Array( [id] => 79
+                                             [name] => TC0
+                                             [tcversions] => Array 
+                                                             (
+                                                              [1093] => 2   // key=tcversion id,value=version
+                                                              [6] => 1
+                                                             )
+                    
+                                                             [linked_version_id] => 0
+                                             )
 
-                               [1] => Array( [id] => 81
+                               [81] => Array( [id] => 81
             
                                              [name] => TC88))
 
-         [tcversions] => Array( 79 => 1, 82 => 2)  
-                         where key=tcversion id
-                               value=version
+       [level] =  
+       [write_buttons] => yes or no
 
+       level and write_buttons are used to generate the user interface
 
 */
 function gen_spec_view(&$db,$id,$name,&$linked_items)
@@ -206,14 +215,21 @@ function gen_spec_view(&$db,$id,$name,&$linked_items)
               	$out[$parent_idx]['testcases'][$tc_id]['tcversions']=array();             
                 $out[$parent_idx]['testcases'][$tc_id]['linked_version_id']=0;
 
+                $out[$parent_idx]['level']=$the_level;
                 $out[$parent_idx]['write_buttons']='yes';
+                $out[$parent_idx]['testcase_qty']++;
+
                 $a_tcid[]=$current['id'];
+  	            
             }
             else
             {
               	$out[$idx]['testsuite']=array('id' => $current['id'],
      				                             'name' => $current['name']);
   	            $out[$idx]['testcases']=array();
+  	            $out[$idx]['testcase_qty']=0;
+  	            
+                $out[$idx]['level']=$the_level;
   	            $out[$idx]['write_buttons']='no';
   	            $hash_id_pos[$current['id']]=$idx;
      				    $idx++;

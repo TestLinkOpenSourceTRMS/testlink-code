@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.1 2006/04/10 09:16:43 franciscom Exp $
+$Id: tcView_viewer.tpl,v 1.2 2006/04/24 10:36:24 franciscom Exp $
 viewer for test case in test specification
 
 20060325 - franciscom - 
@@ -75,11 +75,25 @@ viewer for test case in test specification
 			<td>{$my_testcase.expected_results}</td>
 		</tr>
 		<tr>
-			<td colspan="2"><a href="lib/keywords/keywordsView.php" 
+		
+		<td  colspan="2">
+		<table>
+	    <tr>
+	  	<td width="35%"><a href="lib/keywords/keywordsView.php" 
 				target="mainframe" class="bold">{lang_get s='keywords'}</a>: &nbsp;
-				{$my_testcase.keywords|escape}
 			</td>
+			<td>
+				{* 20060423 - franciscom *}
+		  	{foreach item=keyword_item from=$keywords_map}
+				    {$keyword_item|escape}
+				    <br>
+				{/foreach}
+			</td>
+			</tr>
+		</table>	
+		</td>
 		</tr>
+		
 	{if $opt_requirements == TRUE && $view_req_rights == "yes"}
 		<tr>
 			<td colspan="2"><span><a href="lib/req/reqSpecList.php" 

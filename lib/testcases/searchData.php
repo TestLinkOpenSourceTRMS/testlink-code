@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: searchData.php,v 1.13 2006/02/15 08:51:04 franciscom Exp $
+ * $Id: searchData.php,v 1.14 2006/04/24 10:38:04 franciscom Exp $
  * Purpose:  This page presents the search results. 
  *
  * 20050821 - fm - changes to use template customization (trying to reduce code redundancy)
@@ -8,67 +8,68 @@
 require('../../config.inc.php');
 require("../functions/common.php");
 require("../functions/users.inc.php");
+//require("../functions/testproject.class.php");
+
 
 testlinkInitPage($db);
 
 $_POST = strings_stripSlashes($_POST);
+
 //Assign the values of the posts to variables
-$title = isset($_POST['title']) ? $db->prepare_string($_POST['title']) : null;
+$name = isset($_POST['name']) ? $db->prepare_string($_POST['name']) : null;
 $summary = isset($_POST['summary']) ? $db->prepare_string($_POST['summary']) : null;
 $steps = isset($_POST['steps']) ? $db->prepare_string($_POST['steps']) : null;
 $exresult = isset($_POST['exresult']) ? $db->prepare_string($_POST['exresult']) : null;
 $key = isset($_POST['key']) ? $db->prepare_string($_POST['key']) : null;
-$TCID = isset($_POST['TCID']) ? $db->prepare_string($_POST['TCID']) : 0;
+$tc_id = isset($_POST['TCID']) ? $db->prepare_string($_POST['TCID']) : 0;
 
 $arrTc = null;
-$product = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-if ($product)
+$tproject = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+
+//echo "<pre>debug"; print_r($_POST); echo "</pre>";
+
+$tproject_mgr = new testproject($db);
+
+$filter=array('by_tc_id' => '', 'by_name' => '', 'by_summary' => '');
+
+if ($tproject > 0)
 {
-	$sqlTC = " SELECT mgttestcase.id,title,summary,steps,exresult,keywords,version," .
-	         " ' ' AS author, ' ' AS reviewer, author_id,create_date,reviewer_id,modified_date,catid,TCorder " .
-	         " FROM mgttestcase, mgtcategory,	mgtcomponent " .
-	         " WHERE prodid = ".$product.
- 			     " AND mgtcategory.compID = mgtcomponent.id " .
- 			     " AND mgttestcase.catID = mgtcategory.id " .
- 			     " AND mgttestcase.id like '%" . 	$TCID . "%' " .
- 			     " AND title like '%" . $title . "%' " .
- 			     " AND summary like '%" . $summary . "%' " . 
- 			     " AND steps like '%" . $steps . "%' " .
- 			     " AND exresult like '%" . $exresult."%'";
+    $a_tcid=$tproject_mgr->get_all_testcases_id($tproject);
+		if( count($a_tcid) > 0 )
+		{
+			  if($tc_id > 0)
+			  {
+						$filter['by_tc_id'] = " AND NHB.parent_id = {$tc_id} ";
+				}
+				else
+				{
+						$filter['by_tc_id'] = " AND NHB.parent_id IN (" . implode(",",$a_tcid) . ") ";
+				}
 
-	//keywordlist always have a trailing comma, so there are only two cases 
-	//to consider the keyword is the first in the list, or its in the middle of list 		 
-	if($key != 'none')
-		$sqlTC .= " AND (keywords LIKE '%,{$key},%' OR keywords like '{$key},%')";
+        if( !is_null($name) )				
+        {
+        	  $filter['by_name'] = " AND NHA.name like '%{$name}%' ";	
+        }
 
-	$sqlTC .= " ORDER BY title";
-	$result = $db->exec_query($sqlTC);
-  $users_to_seek=array('author_id' => 'author' , 'reviewer_id' => 'reviewer');
 
-	while ($row = $db->fetch_array($result))
-	{
-		$row['keywords'] = substr($row['keywords'], 0, -1);
+       
+				$sql = " SELECT NHA.id AS testcase_id,NHA.name,summary,steps,version
+	      			   FROM nodes_hierarchy NHA, nodes_hierarchy NHB, tcversions
+	        			 WHERE NHA.id = NHB.parent_id
+	        			 AND   NHB.id = tcversions.id
+	        			 {$filter['by_tc_id']} {$filter['by_name']}
+	        			 ";  
+	        echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
+  			 
+		}
 
-    foreach($users_to_seek as $user_id => $user_for_humans)
-    {
-   	 $row[$user_for_humans]= "";
-  	 if( !is_null($row[$user_id]) and intval($row[$user_id]) > 0 )
-  	 {
-	     $user_data = getUserById($db,$row[$user_id]);
-  	  	if( !is_null($user_data) )
-  	 	 {
-  	  	$row[$user_for_humans]=$user_data[0]['fullname'];
-       }
-    	 else
-    	 {
-      	$row[$user_for_humans]= "(" . $row[$user_id] . " - deleted user)";
-  		 }
-  	 }
-    }
-    reset($users_to_seek);
-		$arrTc[] = $row;
-	}
+		$map = $db->fetchRowsIntoMap($sql,'testcase_id');
+
+   echo "<pre>debug" . __FUNCTION__; print_r($map); echo "</pre>"; 
+
 }
+
+
 $smarty = new TLSmarty();
 $smarty->assign('modify_tc_rights', has_rights($db,"mgt_modify_tc"));
 $smarty->assign('testcase', $arrTc);

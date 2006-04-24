@@ -5,17 +5,18 @@
  *
  * Filename $RCSfile: opt_transfer.php,v $
  *
- * @version $Revision: 1.1 $
- * @modified $Date: 2006/04/10 09:08:08 $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2006/04/24 10:38:02 $
  *
  * Manage Option Transfer (double select box)
  *
  * Author: franciscom
  *
+ * 20060423 - franciscom - minor bug when to->map == null
  * 20060410 - franciscom
  * 
 **/
-function opt_tranf_cfg(&$opt_cfg, $right_list, $js_ot_name='ot')
+function opt_transf_cfg(&$opt_cfg, $right_list, $js_ot_name='ot')
 {
 $opt_cfg->js_events->all_right_click="window.setTimeout('$js_ot_name.transferAllRight()',20);";
 $opt_cfg->js_events->left2right_click="window.setTimeout('$js_ot_name.transferRight()',20);";
@@ -26,12 +27,19 @@ $opt_cfg->js_events->all_left_click="window.setTimeout('$js_ot_name.transferAllL
 $a_right=array();
 if( strlen(trim($right_list)) == 0 )
 {
-	 $a_right = $opt_cfg->to->map;
-}
+   // 20060423 - franciscom
+	 if( !is_null($opt_cfg->to->map) )
+	 {
+	 		$a_right = $opt_cfg->to->map;
+	 }
+	 else
+	 {
+	    $a_right = array();
+ 	 }
+} 
 else
 {
   $a_k=explode(",",trim($right_list));
-  
   foreach($a_k as $key => $code)
   {
   	$a_right[$code] = $opt_cfg->from->map[$code];
@@ -39,9 +47,84 @@ else
 }
 
 $a_left=array_diff_assoc($opt_cfg->from->map,$a_right);
-
-
 $opt_cfg->from->map=$a_left;
 $opt_cfg->to->map=$a_right;
+}
 
+
+// 20060423 - franciscom - to ease use
+//
+function keywords_opt_transf_cfg(&$opt_cfg, $right_list)
+{
+  
+$opt_cfg->size=8;
+$opt_cfg->style="width: 300px;";
+
+$opt_cfg->js_events->all_right_click="";
+$opt_cfg->js_events->left2right_click="";
+$opt_cfg->js_events->right2left_click="";
+$opt_cfg->js_events->all_left_click="";
+$opt_cfg->from->name="from_select_box";
+
+$opt_cfg->from->id_field='id';
+$opt_cfg->from->desc_field='keyword';
+$opt_cfg->from->desc_glue=" ";
+$opt_cfg->from->desc_html_content=true;
+$opt_cfg->from->required=false;
+$opt_cfg->from->show_id_in_desc=true;
+$opt_cfg->from->js_events->ondblclick="";
+
+$opt_cfg->to->name="to_select_box";
+$opt_cfg->to->show_id_in_desc=true;
+$opt_cfg->to->id_field='id';
+$opt_cfg->to->desc_field='keyword';
+$opt_cfg->to->desc_glue=" ";
+$opt_cfg->to->desc_html_content=true;
+$opt_cfg->to->required=false;
+$opt_cfg->to->show_id_in_desc=true;
+$opt_cfg->to->js_events->ondblclick="";
+
+opt_transf_cfg($opt_cfg, $right_list,$opt_cfg->js_ot_name);  
+}
+
+
+// 20060423 - franciscom
+function opt_transf_empty_cfg()
+{
+
+$opt_cfg->js_ot_name="";
+$opt_cfg->size=8;
+$opt_cfg->style="width: 300px;";
+
+$opt_cfg->js_events->all_right_click="";
+$opt_cfg->js_events->left2right_click="";
+$opt_cfg->js_events->right2left_click="";
+$opt_cfg->js_events->all_left_click="";
+
+$opt_cfg->global_lbl='Option Transfer';
+$opt_cfg->from->lbl='from';
+$opt_cfg->from->name="from_select_box";
+$opt_cfg->from->map=array();
+
+$opt_cfg->from->id_field='';
+$opt_cfg->from->desc_field='';
+$opt_cfg->from->desc_glue=" ";
+$opt_cfg->from->desc_html_content=true;
+$opt_cfg->from->required=false;
+$opt_cfg->from->show_id_in_desc=true;
+$opt_cfg->from->js_events->ondblclick="";
+
+$opt_cfg->to->lbl='to';
+$opt_cfg->to->name="to_select_box";
+$opt_cfg->to->map=array();
+$opt_cfg->to->show_id_in_desc=true;
+$opt_cfg->to->id_field='';
+$opt_cfg->to->desc_field='';
+$opt_cfg->to->desc_glue=" ";
+$opt_cfg->to->desc_html_content=true;
+$opt_cfg->to->required=false;
+$opt_cfg->to->show_id_in_desc=true;
+$opt_cfg->to->js_events->ondblclick="";
+
+return($opt_cfg);
 }

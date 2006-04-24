@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: keywordsAssign.php,v $
  *
- * @version $Revision: 1.14 $
- * @modified $Date: 2006/04/10 09:13:23 $
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2006/04/24 10:38:03 $
  *
  * Purpose:  Assign keywords to set of testcases in tree structure
  *
@@ -39,44 +39,17 @@ $tcase_mgr = new testcase($db);
 
 $project_keys = $tproject_mgr->getKeywords($testproject_id);
 
-$opt_cfg->js_ot_name="ot";
-$opt_cfg->size=8;
-$opt_cfg->style="width: 300px;";
 
-$opt_cfg->js_events->all_right_click="";
-$opt_cfg->js_events->left2right_click="";
-$opt_cfg->js_events->right2left_click="";
-$opt_cfg->js_events->all_left_click="";
-
-
-$opt_cfg->from->lbl="from";
-$opt_cfg->from->name="from_select_box";
+$opt_cfg = opt_transf_empty_cfg();
+$opt_cfg->js_ot_name='ot';
+$opt_cfg->global_lbl=lang_get('title_assign_kw_to_tc');
+$opt_cfg->from->lbl=lang_get('available_kword');
 $opt_cfg->from->map=$tproject_mgr->get_keywords_map($testproject_id);
-
-$opt_cfg->from->id_field='id';
-$opt_cfg->from->desc_field='keyword';
-$opt_cfg->from->desc_glue=" ";
-$opt_cfg->from->desc_html_content=true;
-$opt_cfg->from->required=false;
-$opt_cfg->from->show_id_in_desc=true;
-$opt_cfg->from->js_events->ondblclick="";
-
-$opt_cfg->to->lbl="to";
-$opt_cfg->to->name="to_select_box";
-$opt_cfg->to->map=$tcase_mgr->get_keywords_map($id);
-$opt_cfg->to->show_id_in_desc=true;
-$opt_cfg->to->id_field='id';
-$opt_cfg->to->desc_field='keyword';
-$opt_cfg->to->desc_glue=" ";
-$opt_cfg->to->desc_html_content=true;
-$opt_cfg->to->required=false;
-$opt_cfg->to->show_id_in_desc=true;
-$opt_cfg->to->js_events->ondblclick="";
+$opt_cfg->to->lbl=lang_get('assigned_kword');
+$opt_cfg->to->map=$tcase_mgr->get_keywords_map($id," ORDER BY keyword ASC ");
 
 $rl_html_name = $opt_cfg->js_ot_name . "_newRight";
 $right_list = isset($_REQUEST[$rl_html_name])? $_REQUEST[$rl_html_name] : "";
-
-
 
 if ($edit == 'testproject')
 {
@@ -109,12 +82,8 @@ else if ($edit == 'category')
 */
 else if($edit == 'testcase')
 {
-
-  opt_tranf_cfg($opt_cfg, $right_list);
-	
-	$testCase = new testcase($db);
-
-	$tcData = $testCase->get_by_id($id);
+  $tcase_mgr = new testcase($db);
+	$tcData = $tcase_mgr->get_by_id($id);
 	if (sizeof($tcData))
 	{
 		$tcData = $tcData[0];
@@ -123,12 +92,17 @@ else if($edit == 'testcase')
 	
 	if($bAssignTestCase)
 	{
-		$a_keywords=explode(",",$right_list);
-		//echo "<pre>debug"; print_r($a_keywords); echo "</pre>";
-		
-		$result = $testCase->deleteKeywords($id);   	 
-		$result = $result && $testCase->addKeywords($id,$a_keywords);
+	  $result ='ok';
+		$rr=$tcase_mgr->deleteKeywords($id);   	 
+    if( strlen(trim($right_list)) > 0 )
+    {
+      $a_keywords=explode(",",$right_list);
+  		$tcase_mgr->addKeywords($id,$a_keywords);
+		}
+    $opt_cfg->to->map=$tcase_mgr->get_keywords_map($id," ORDER BY keyword ASC ");
 	}
+	
+	keywords_opt_transf_cfg($opt_cfg, $right_list);
 }
 else
 {
@@ -143,5 +117,6 @@ $smarty->assign('title',$title);
 $smarty->assign('arrKeys', $keysOfProduct);
 
 $smarty->assign('opt_cfg', $opt_cfg);
+//exit();
 $smarty->display('keywordsAssign.tpl');
 ?>

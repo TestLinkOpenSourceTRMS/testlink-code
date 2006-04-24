@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planAddTC_m1.tpl,v 1.2 2006/03/20 18:02:11 franciscom Exp $
+$Id: planAddTC_m1.tpl,v 1.3 2006/04/24 10:36:24 franciscom Exp $
 Purpose: smarty template - generate a list of TC for adding to Test Plan 
 
 20060319 - franciscom
@@ -29,7 +29,7 @@ Purpose: smarty template - generate a list of TC for adding to Test Plan
 
 <div class="workBack">
 	{section name=tsuite_idx loop=$arrData}
-	<div id="div_{$arrData[tsuite_idx].testsuite.id}">
+	<div id="div_{$arrData[tsuite_idx].testsuite.id}" style="margin:0px 0px 0px {$arrData[tsuite_idx].level}0px;">
 	    <h3>{$arrData[tsuite_idx].testsuite.name|escape}</h3>
 
     	{if $arrData[tsuite_idx].write_buttons eq 'yes'}
@@ -45,45 +45,27 @@ Purpose: smarty template - generate a list of TC for adding to Test Plan
   			<p>
       {/if}
 
-      <table>
-      {foreach from=$arrData[tsuite_idx].testcases item=tcase }
-				<tr {if $tcase.linked_version_id ne 0} style="background-color:yellow" {/if}>
-				<td>
-				<input type='checkbox' name='achecked_tc[{$tcase.id}]' value='{$tcase.id}' 
-				       {if $tcase.linked_version_id ne 0} checked disabled{/if}	/>
-      	<input type='hidden' name='a_tcid[{$tcase.id}]' value='{$tcase.id}' />
-      	{$tcase.name|escape}
-        </td>
-        <td>
-				&nbsp;&nbsp;{lang_get s='version'}
-				<select name="tcversion_for_tcid[{$tcase.id}]"
-				        {if $tcase.linked_version_id ne 0}disabled{/if} >
-				{html_options options=$tcase.tcversions selected=$tcase.linked_version_id}
-				</select>
-        </td>
-        <tr>
-			{/foreach}
-      </table>
-      
-      </p>
-
-
-	  {*
-		{section name=row loop=$arrData[idx].tc}
-			{if $arrData[idx].tc[row].added == '0'}
-				<input type='checkbox' name='C{$arrData[idx].tc[row].id}' />
-      			<input type='hidden' name='H{$arrData[idx].tc[row].id}' 
-      				value='{$arrData[idx].tc[row].id}' />
-			{else}
-      			<img src='icons/checkmark.gif' height='12px' width='12px' 
-      				style='margin-left:5px;' />
-      		{/if}
-			<b>{$arrData[idx].tc[row].id}</b>: 
-			<a href='lib/testcases/archiveData.php?edit=testcase&data={$arrData[idx].tc[row].id}'>
-				{$arrData[idx].tc[row].name|escape}</a><br/>
-		{/section}
-      	</p>
-    *}
+      {if $arrData[tsuite_idx].testcase_qty gt 0 }
+          <table>
+          {foreach from=$arrData[tsuite_idx].testcases item=tcase }
+    				<tr {if $tcase.linked_version_id ne 0} style="background-color:yellow" {/if}>
+    				<td>
+    				<input type='checkbox' name='achecked_tc[{$tcase.id}]' value='{$tcase.id}' 
+    				       {if $tcase.linked_version_id ne 0} checked disabled{/if}	/>
+          	<input type='hidden' name='a_tcid[{$tcase.id}]' value='{$tcase.id}' />
+          	{$tcase.name|escape}
+            </td>
+            <td>
+    				&nbsp;&nbsp;{lang_get s='version'}
+    				<select name="tcversion_for_tcid[{$tcase.id}]"
+    				        {if $tcase.linked_version_id ne 0}disabled{/if} >
+    				{html_options options=$tcase.tcversions selected=$tcase.linked_version_id}
+    				</select>
+            </td>
+            <tr>
+    			{/foreach}
+          </table>
+      {/if}
     </div>
 	{/section}
 

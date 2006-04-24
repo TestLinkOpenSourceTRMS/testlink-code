@@ -1,17 +1,9 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: mainPage.tpl,v 1.14 2006/03/10 22:35:57 schlundus Exp $     
+ $Id: mainPage.tpl,v 1.15 2006/04/24 10:36:24 franciscom Exp $     
  Purpose: smarty template - main page / site map                 
                                                                  
-                                                                 
  rev :                                                   
-      20051002 - fm - changes to filter tp by product      
-      20050929 - fm - new checkbox - filter tp by product
-      20050809 - fm - I18N - missing string                                      
-	
-20051118 - scs - added escaping of testplan names                                                                 
-20051112 - scs - changed keyword related menu items
-20060106 - scs - changes because of changing the newProduct functionality
 *}
 {include file="inc_head.tpl" popup="yes"}
 
@@ -243,14 +235,10 @@
     </div>
 {/if}
 
-	{if $securityNotes}
-	
-	<div class="bold" style="color:red">
-		{foreach from=$securityNotes item=secNote}
-			<br/>{lang_get s='sec_note_prefix'} : {$secNote|escape}
-		{/foreach}
-	</div>
-	{/if}
+{if $securityNotes}
+	  {* 20060413 - franciscom *}
+    {include file="inc_msg_from_array.tpl" array_of_msg=$securityNotes }
+{/if}
 
 </body>
 </html>

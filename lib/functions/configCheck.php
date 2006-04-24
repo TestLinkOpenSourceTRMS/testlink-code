@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: configCheck.php,v ${file_name} $
  *
- * @version $Revision: 1.3 $
- * @modified $Date: 2006/01/03 21:19:02 ${date} ${time} $ by $Author: schlundus $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2006/04/24 10:38:01 ${date} ${time} $ by $Author: franciscom $
  *
  * @author Martin Havlat
  * 
@@ -82,9 +82,42 @@ function getSecurityNotes(&$db)
 	$securityNotes = null;
 	if (checkForInstallDir())
 		$securityNotes[] = lang_get("sec_note_remove_install_dir");
+
 	if (checkForAdminDefaultPwd($db))
 		$securityNotes[] = lang_get("sec_note_admin_default_pwd");
+
+	// 20060413 - franciscom
+	if (!checkForBTSconnection())
+	{
+		$securityNotes[] = lang_get("bts_connection_problems");
+	}
 		
 	return $securityNotes;
 }
+
+
+/**
+ * checks if the connection to the Bug Tracking System database is working
+ *
+ * @return bool returns true if ok
+ * 				false else
+ *
+ * @version 1.0
+ * @author franciscom 
+ **/
+function checkForBTSconnection()
+{
+	global $g_bugInterface;
+	$status_ok=1;
+	if($g_bugInterface)
+	{
+		if( !$g_bugInterface->connect() )
+		{
+			$status_ok=0;
+		}
+	}
+	return($status_ok);
+}
+
+
 ?>

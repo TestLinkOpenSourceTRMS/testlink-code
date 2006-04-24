@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: login.tpl,v 1.5 2006/03/10 22:35:57 schlundus Exp $
+$Id: login.tpl,v 1.6 2006/04/24 10:36:24 franciscom Exp $
 Purpose: smarty template - login page 
 20060226 - franciscom - logo
 20050826 - scs - added display of security note 
@@ -15,7 +15,10 @@ Purpose: smarty template - login page
 <div class="forms">
 
 	<form method="post" action="index.php">
-		<p>{$note}</p>
+		{* <p>{$note}</p> *}
+	  <div class="bold" style="background-color:#990000; color:white; text-align:center;">
+	  {$note}
+    </div>
 		
 		<p class="bold">{lang_get s='login_name'}<br />
 		<input type="text" name="login" size="20" maxlength="30" /></p>
@@ -31,15 +34,13 @@ Purpose: smarty template - login page
 	<a href="lostPassword.php">{lang_get s='lost_password_q'}</a>
 	</p>
 
-	{if $securityNotes}
-	<div class="bold" style="color:red">
-		{foreach from=$securityNotes item=secNote}
-		<br/>{lang_get s='sec_note_prefix'} : {$secNote|escape}
-		{/foreach}
-	</div>
-	{/if}
 	
 	{include file="inc_copyrightnotice.tpl"}
+
+	{if $securityNotes}
+	  {* 20060413 - franciscom *}
+    {include file="inc_msg_from_array.tpl" array_of_msg=$securityNotes }
+	{/if}
 
 </div>
 </body>

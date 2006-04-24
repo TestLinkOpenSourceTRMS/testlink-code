@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: keywords.inc.php,v $
 * 
-* @version $Id: keywords.inc.php,v 1.21 2006/04/07 20:15:27 schlundus Exp $
-* @modified $Date: 2006/04/07 20:15:27 $ by $Author: schlundus $
+* @version $Id: keywords.inc.php,v 1.22 2006/04/24 10:38:02 franciscom Exp $
+* @modified $Date: 2006/04/24 10:38:02 $ by $Author: franciscom $
 *
 * Functions for support keywords management. 
 *
@@ -124,7 +124,7 @@ function updateTCKeywords(&$db,$id,$arrKeywords)
  *
  *
 **/
-function updateCategoryKeywords(&$db,$id, $newKey)
+/*function updateCategoryKeywords(&$db,$id, $newKey)
 {
 	$sqlTC = "SELECT id,title FROM mgttestcase WHERE catid=" . $id;
 	$resultTC = $db->exec_query($sqlTC);
@@ -147,7 +147,7 @@ function updateCategoryKeywords(&$db,$id, $newKey)
 	}
 	return $resultUpdate ? $resultUpdate : 'ok';
 }
-
+*/
 
 /**
  * Function-Documentation

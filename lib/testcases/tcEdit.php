@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.25 $
- * @modified $Date: 2006/04/10 09:17:34 $  by $Author: franciscom $
+ * @version $Revision: 1.26 $
+ * @modified $Date: 2006/04/24 10:38:04 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
  * @author Martin Havlat
@@ -118,30 +118,10 @@ if($edit_tc)
 {
 	$setOfKeys = array();
 	$myrowTC = $tcase_mgr->get_by_id($tcase_id,$tcversion_id);
+  
+  $keywords_map=$tcase_mgr->get_keywords_map($tcase_id," ORDER BY keyword ASC ");
 
-  //echo "<pre>debug" . __FUNCTION__; print_r($myrowTC); echo "</pre>";
-	
-	/*
-	$tcKeywords = getTCKeywords($db,$tcase_id);
-	$prodKeywords = getProductKeywords($db,$testprojectID);
-	if (sizeof($prodKeywords))
-	{
-		if (sizeof($tcKeywords))
-			$result = array_intersect($tcKeywords,$prodKeywords);
-		else
-			$result = array();
-			
-		for($i = 0;$i < sizeof($prodKeywords);$i++)
-		{
-			$selected = 'no';
-			$keyword = $prodKeywords[$i];
-			if (in_array($keyword,$result))
-				$selected = 'yes';
-			$setOfKeys[] = array( 'key' => $keyword, 
-								  'selected' => $selected);
-		}
-	}
-	*/
+
 
 	foreach ($a_ofck as $key)
   	{
@@ -154,7 +134,7 @@ if($edit_tc)
 	}
 
 	$smarty->assign('tc', $myrowTC[0]);
-	$smarty->assign('keys', $setOfKeys);
+	$smarty->assign('keywords_map', $keywords_map);
 
 	$smarty->display($g_tpl['tcEdit']);
 } 

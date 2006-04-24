@@ -1,28 +1,32 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: opt_transfer.inc.tpl,v 1.1 2006/04/10 09:07:13 franciscom Exp $
+$Id: opt_transfer.inc.tpl,v 1.2 2006/04/24 10:36:24 franciscom Exp $
 Purpose: manage the OptionTransfer.js created by Matt Kruse
          http://www.JavascriptToolbox.com/
          JavaScript Toolbox - Option Transfer - Move Select Box Options Back And Forth
 
 Author: Francisco Mancardi
         Based on Cold Fusion code by Alessandro Lia (alessandro.lia@gruppotesi.com
+        
+        20060423 - franciscom - improved label management 
+                                added double-click management
 *}
   
   <table cellspacing="0" cellpadding="0" border="0" width="100%">
-  		<caption>
-  	  {lang_get s='title_assign_kw_to_tc'}
+  		<caption style="font-weight:bold;">
+  	  {$option_transfer->global_lbl}
     	&nbsp;{$title|escape}
 		  </caption>
 
     <tr>
       <td align="center">
+         {$option_transfer->from->lbl}
          {html_options name=$option_transfer->from->name 
                        id=$option_transfer->from->name
                        size=$option_transfer->size 
                        style=$option_transfer->style 
                        multiple="yes"
-                       ondblclick="dd"  
+                       ondblclick=$opt_cfg->js_events->left2right_click  
                        options=$option_transfer->from->map}
       </td>
       <td align="center" width="10%">
@@ -40,12 +44,13 @@ Author: Francisco Mancardi
               alt="<<" style="cursor: pointer;">
       </td>
       <td align="center">
+         {$option_transfer->to->lbl}
          {html_options name=$option_transfer->to->name 
                        id=$option_transfer->to->name
                        size=$option_transfer->size 
                        style=$option_transfer->style 
                        multiple="yes"
-                       ondblclick="dd"  
+                       ondblclick=$opt_cfg->js_events->right2left_click  
                        options=$option_transfer->to->map}
       </td>
       

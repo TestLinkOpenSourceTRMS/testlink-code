@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.26 $
- * @modified $Date: 2006/04/24 10:38:04 $  by $Author: franciscom $
+ * @version $Revision: 1.27 $
+ * @modified $Date: 2006/04/24 17:44:59 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
  * @author Martin Havlat
@@ -20,6 +20,7 @@ require('../keywords/keywords.inc.php');
 require_once("../../third_party/fckeditor/fckeditor.php");
 require_once("testcase.class.php"); // 20060226 - franciscom
 require_once("testsuite.class.php"); // 20060306 - franciscom
+require_once("../functions/opt_transfer.php"); // 20060424 - franciscom
 
 
 testlinkInitPage($db);
@@ -40,7 +41,7 @@ foreach ($a_ofck as $key)
 }
 
 // --------------------------------------------------------------------
-$testprojectID = $_SESSION['testprojectID'];
+$testproject_id = $_SESSION['testprojectID'];
 $show_newTC_form = 0;
 $smarty = new TLSmarty;
 $container_id = isset($_GET['containerID']) ? intval($_GET['containerID']) : 0;
@@ -56,6 +57,14 @@ $expected_results 	= isset($_POST['expected_results']) ? strings_stripSlashes($_
 
 $new_container_id = isset($_POST['new_container']) ? intval($_POST['new_container']) : 0;
 $old_container_id = isset($_POST['old_container']) ? intval($_POST['old_container']) : 0;
+
+
+// 20060424 - franciscom
+$opt_cfg->js_ot_name='ot';
+$rl_html_name = $opt_cfg->js_ot_name . "_newRight";
+$right_list = isset($_REQUEST[$rl_html_name])? $_REQUEST[$rl_html_name] : "";
+
+
 
 // manage the forms to collect data
 $edit_tc   = isset($_REQUEST['edit_tc']) ? 1 : 0;
@@ -116,30 +125,47 @@ if($do_create || $do_update)
 //If the user has chosen to edit a testcase then show this code
 if($edit_tc)
 {
-	$setOfKeys = array();
-	$myrowTC = $tcase_mgr->get_by_id($tcase_id,$tcversion_id);
+    $opt_cfg = opt_transf_empty_cfg();
+    $opt_cfg->js_ot_name='ot';
+    $opt_cfg->global_lbl=lang_get('title_assign_kw_to_tc');
+    $opt_cfg->from->lbl=lang_get('available_kword');
+    $opt_cfg->from->map=$tproject_mgr->get_keywords_map($testproject_id);
+    $opt_cfg->to->lbl=lang_get('assigned_kword');
+    $opt_cfg->to->map=$tcase_mgr->get_keywords_map($tcase_id," ORDER BY keyword ASC ");
+    
+    //$rl_html_name = $opt_cfg->js_ot_name . "_newRight";
+    //$right_list = isset($_REQUEST[$rl_html_name])? $_REQUEST[$rl_html_name] : "";
+    keywords_opt_transf_cfg($opt_cfg, $right_list); 
+    
+    
+  	$myrowTC = $tcase_mgr->get_by_id($tcase_id,$tcversion_id);
+    
+    $keywords_map=$tcase_mgr->get_keywords_map($tcase_id," ORDER BY keyword ASC ");
   
-  $keywords_map=$tcase_mgr->get_keywords_map($tcase_id," ORDER BY keyword ASC ");
+  
+  
+  	foreach ($a_ofck as $key)
+    	{
+  	  	// Warning:
+  	  	// the data assignment will work while the keys in $the_data are identical
+  	  	// to the keys used on $oFCK.
+  	  	$of = &$oFCK[$key];
+  	  	$of->Value = $myrowTC[0][$key];
+  	  	$smarty->assign($key, $of->CreateHTML());
+  	}
+  
+  	$smarty->assign('tc', $myrowTC[0]);
+  	$smarty->assign('keywords_map', $keywords_map);
+  	$smarty->assign('opt_cfg', $opt_cfg);   // 20060424 - franciscom
+
+  	$smarty->display($g_tpl['tcEdit']);
 
 
-
-	foreach ($a_ofck as $key)
-  	{
-	  	// Warning:
-	  	// the data assignment will work while the keys in $the_data are identical
-	  	// to the keys used on $oFCK.
-	  	$of = &$oFCK[$key];
-	  	$of->Value = $myrowTC[0][$key];
-	  	$smarty->assign($key, $of->CreateHTML());
-	}
-
-	$smarty->assign('tc', $myrowTC[0]);
-	$smarty->assign('keywords_map', $keywords_map);
-
-	$smarty->display($g_tpl['tcEdit']);
 } 
 else if($do_update)
 {
+  echo "<pre>debug" . __FUNCTION__; print_r($right_list); echo "</pre>";
+  
 	$refresh_tree='no';
 	if( $name_ok)
 	{
@@ -147,9 +173,9 @@ else if($do_update)
 
     // to get the name before the user operation
  	  $tc_old = $tcase_mgr->get_by_id($tcase_id,$tcversion_id);
-				
+						
 		if ($tcase_mgr->update($tcase_id,$tcversion_id,$name,$summary,$steps,$expected_results,
-		                        $_SESSION['userID'],$updatedKeywords))
+		                        $_SESSION['userID'],$right_list) )
 		{
 				if( strcmp($tc_old[0]['name'],$name) != 0 )
     		{
@@ -354,7 +380,7 @@ if ($show_newTC_form)
 		$smarty->assign($key, $of->CreateHTML());
 	}
 
-	$prodKeywords = getProductKeywords($db,$testprojectID);
+	$prodKeywords = getProductKeywords($db,$testproject_id);
 	$smarty->assign('keys',$prodKeywords);
 	$smarty->display($g_tpl['tcNew']);
 }

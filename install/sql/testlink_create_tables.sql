@@ -1,11 +1,13 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
 # This script is distributed under the GNU General Public License 2 or later.
-# $Id: testlink_create_tables.sql,v 1.22 2006/04/21 21:54:51 asielb Exp $
+# $Id: testlink_create_tables.sql,v 1.23 2006/04/24 15:24:06 franciscom Exp $
 # SQL script - create db tables for TL   
 #
 # default rights & admin account are created via testlink_create_default_data.sql
 #
 # Rev :
+#
+#       20060424 - franciscom - redoing asiel changes on users table due to wrong name
 #       20060312 - franciscom
 #       changed bud_id column type to varchar(16) as requested by Asiel
 #       to avoid problems with JIRA bug tracking system.
@@ -252,7 +254,7 @@ CREATE TABLE `users` (
   `first` varchar(30) NOT NULL default '',
   `last` varchar(30) NOT NULL default '',
   `locale` varchar(10) NOT NULL default 'en_US',
-  `default_product` int(10) default NULL,
+  `default_testproject_id` int(10) default NULL,
   `active` tinyint(1) NOT NULL default '1',
   PRIMARY KEY  (`id`),
   UNIQUE KEY `login` (`login`)

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.57 $
- * @modified $Date: 2006/04/21 20:30:56 $ by $Author: asielb $
+ * @version $Revision: 1.58 $
+ * @modified $Date: 2006/04/24 15:33:39 $ by $Author: franciscom $
  *
  *
  * Constants and configuration parameters used throughout TestLink 
@@ -14,6 +14,11 @@
  *-------------------------------------------------------------------------
  * Revisions:
  *
+ * 20060207 - franciscom - reorder of element on $g_locales
+ *            Again English UK is DEFAULT, rest of element ordered in
+ *            alphabetical fashion
+ *
+ * 20060421 - azl - Added en_US locale
  * 20060207 - franciscom - some changes in config vars related to testproject
  * 20060223 - scs - added basic stuff for attachments
  * 20060207 - franciscom - BUGID 303
@@ -49,7 +54,6 @@
  * 20050821 - fm - 	template configuration/customization
  * 20050806 - fm - 	Changes to support the installer
  *
- * 20060421 - azl - Added en_US locale
  *------------------------------------------------------------------------
 **/
 /** 
@@ -269,15 +273,16 @@ $g_fckeditor_toolbar = "TL_Medium_2";
 
 
 /* These are the supported locales */
-$g_locales = array('en_US' => 'English (US)',
-						'en_GB' => 'English (UK)',
-						'it_IT' => 'Italian',
-						'es_AR' => 'Spanish (Argentine)',
-						'es_ES' => 'Spanish',
-						'de_DE' => 'German',
-						'fr_FR' => 'Fran&ccedil;ais',
-						'pt_BR' => 'Portuguese (Brazil)',
-						'zh_CN' => 'Chinese Simplified'
+/* The first element will be the default when creating a user */
+$g_locales = array(	'en_GB' => 'English (UK)',
+						        'zh_CN' => 'Chinese Simplified',
+						        'en_US' => 'English (US)',
+						        'fr_FR' => 'Fran&ccedil;ais',
+						        'de_DE' => 'German',
+						        'it_IT' => 'Italian',
+						        'pt_BR' => 'Portuguese (Brazil)',
+						        'es_AR' => 'Spanish (Argentine)',
+						        'es_ES' => 'Spanish'
                     );
 
 // ----------------------------------------------------------------------------

@@ -4,11 +4,12 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.54 $
- * @modified $Date: 2006/04/21 16:47:38 $ $Author: asielb $
+ * @version $Revision: 1.55 $
+ * @modified $Date: 2006/04/24 10:50:25 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
+ * 20060423 - franciscom - new labels for keyword assignment
  * 20060225 - franciscom - removed some deprecated names
 **/
 
@@ -298,9 +299,13 @@ $TLS_no_keywords = "I'm sorry, there are no keywords defined!";
 $TLS_none = "None";
 $TLS_sel_all_keywords = "Select all required Keywords:";
 $TLS_select_keyword_label = "Select keyword";
-$TLS_title_assign_kw_to_tc = "Assign Keyword to Test Case";
+$TLS_title_assign_kw_to_tc = "Assign Keywords to Test Case";
 $TLS_title_assign_kw_to_tc_in_cat = "Assign Keyword to every Test Case in test suite";
 $TLS_title_assign_kw_to_tc_in_com = "Assign Keyword to every Test Case in test suite";
+
+// 20060424 - franciscom
+$TLS_available_kword = "Available Keywords";
+$TLS_assigned_kword = "Assigned Keywords";
 
 
 

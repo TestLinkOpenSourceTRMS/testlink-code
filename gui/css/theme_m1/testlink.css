@@ -1,0 +1,425 @@
+/* TestLink Open Source Project - http://testlink.sourceforge.net/ */
+/* $Id: testlink.css,v 1.1 2006/04/24 10:34:41 franciscom Exp $ */
+/* Purpose: main css */
+/*                                                                 */
+/* 20050801 - fm                                                   */
+/* BUGID: SF1243287                                                */
+/*******************************************************************/
+
+
+/*
+body {
+	background:     #9BD;
+	FONT-FAMILY: 'Trebuchet MS', Verdana, Arial, sans-serif;
+	FONT-SIZE: 75%;
+    margin:			0px;
+}
+*/
+
+body {
+	background:     #9BD;
+	FONT-FAMILY: 'Trebuchet MS', Verdana, Arial, sans-serif;
+	FONT-SIZE: smaller;
+    margin:			0px;
+}
+
+
+/***** Title + Menu bar ***********************************/
+
+div.tlTitle {
+	font-stretch:	wider;
+	padding:		1px;
+}
+
+div.menu {
+	background: 	#CDE;
+	background-image: url(../../icons/navbar.gif); 
+	border-style:	groove;
+	border-width:	thin;
+	padding: 		1px 5px;
+}
+
+select.tlcombo1 {
+	background: 	#EEE;
+	border-style:	none;
+	font-size:	 	smaller;
+	font-weight:    bold;
+}
+
+/***** main page *****************************************/
+
+div.columnList {
+	background: 	#EEE;
+	font-size:      smaller;
+	margin: 		3px; 
+	padding: 		2px;
+	padding-bottom:	30px;
+	width:			26%;
+}
+
+div.columnList h2 {
+	background:     #FFC;
+	border-style:	none;
+	color:			black;
+	font-weight:    bold;
+}
+
+div.productTitle {
+	background:		#059;
+	border: 		1px solid black;
+	color:			white;
+	font-size:		85%;
+	padding: 		2px;
+}
+/***** main page table *****/
+
+table.mainTable{
+	background: 	#EEE;
+	border: 		1px double black;
+	min-width:		200px;
+}
+
+table.mainTable td th {
+	border: 		thin dotted black;
+}
+
+table.mainTable th {
+	background:     #FFFFCC;
+}
+
+
+/***** general styles **************************************/
+
+/* this is obsolete - use <h1> instead of this */
+div.pagetitle {
+	background:		#059;
+	color:			white;
+	font-size:		85%;
+	font-weight:    bold;
+	padding: 		2px 2px 2px 5px;
+	margin:			5px 0px 0px 0px;
+}
+
+/* background for working area (tables and forms) */
+div.workBack {
+	text-align: 	left;
+	margin: 		3px;
+	background: 	#CDE;
+	padding: 		15px; 
+	border-style:	groove;
+	border-width:	thin;
+	FONT-FAMILY: 'Trebuchet MS', Verdana, Arial, sans-serif;
+}
+
+/* for tree menu */
+div.tree {
+	background: 	#EEE;
+	padding: 		3px;
+	border: 		1px solid grey;
+	margin:			2px;
+	overflow: auto; /* BUGID: SF1243287 */
+}
+
+h1 {
+	background:		#059;
+	border: 		1px solid black;
+	color:			white;
+	font-size:		85%;
+	margin-bottom:	4px;
+	padding: 		2px;
+	text-align: 	left;
+}
+
+h2 {
+	font-size:		80%;
+}
+
+div.groupBtn {
+/*	border-bottom: 1px solid grey; */
+	padding:		0px;
+}
+
+/*
+div.groupBtn input {
+	background:		#059;
+	color:			white;
+	font-weight:    bold;
+	font-size:		85%;
+	FONT-FAMILY: 'Trebuchet MS', Verdana, Arial, sans-serif;
+
+	padding:		2px 11px;
+	margin:			2px 5px;
+}
+*/
+
+/* show results of SQL actions or important information for user */
+div.error, .info {
+	font-size:		85%;
+	text-align:		center;
+	color:			red;
+	font-weight:    bold;
+	padding: 		2px;
+}
+
+.title {
+	font-weight:    bold;
+	font-size:		85%;
+}
+
+.bold {
+	font-weight:    bold;
+}
+
+.italic {
+	font-style: 	italic;
+}
+
+.onright {
+	float: 	right;
+}
+
+/***** links to help files **************************/
+img.help {
+	vertical-align: top;
+	float:			right;
+}
+
+/* This allows link help from text e.g. instruction
+ * Using: <span class="help" onclick="javascript:open_popup('../help/glosary.html#testspec');">Test Specification</span>
+ */
+span.help 
+{
+	cursor: 		help;
+	text-decoration: underline; 
+}
+
+/***** Links **************************************/
+
+/* A Visited link is still blue */
+a:visited, a:link, a:active {
+	color: 			#059; 
+	text-decoration: none;
+} 
+/* A link being hovered over is red*/
+a:hover   {
+	color: 			#900; 
+	font-weight:    bold;
+	text-decoration: none;
+} 
+
+
+/***** tabbed menu ***********************************/
+/* add under h1 tag */
+
+div.tabMenu {
+	margin-top:		0px;
+	padding:		0px 30px 10px 30px;
+}
+
+span.selected, span.unselected {
+	border: 		1px solid black;
+	border-top-style: none;
+	font-weight:    bold;
+	padding: 		5px;
+}
+
+span.selected {
+	background:		#059;
+	color:			white;
+}
+
+span.unselected:hover {
+	background:		#BCD;
+}
+
+span.unselected a, span.unselected a:visited {
+	color:    		black;
+}
+
+
+/***** Tables *****************************************
+* 
+* Standard table classes:
+* 
+* "common" - view tables
+* "simple" - forms
+* "smallGrey" - options / filters
+* "invisible" - no borders
+*/
+
+table.common {
+	background:     #EEE;
+	border: 		1px solid black;
+	margin-bottom:	20px;
+	min-width:		50%;
+}
+
+table.common th {
+	background:     #FFC;
+	border: 		1px solid black;
+	padding: 		3px;
+}
+
+table.common td, table.simple td, th{
+	vertical-align: top;
+}
+
+table.common caption, table.smallGrey caption {
+	background:     #CCC;
+	border: 		1px solid black;
+	border-bottom-style: none;
+	font-weight:    bold;
+}
+
+table.simple {
+	background:     #EEE;
+	border: 		thin solid black;
+	font-size:		90%;
+	margin:			20px;
+	width:			90%;
+}
+
+table.simple th {
+	background:     #CCC;
+	border-bottom:	1px solid black;
+	padding:		2px;
+}
+
+table.simple caption {
+	background:     #CCC;
+	border: 		thin solid black;
+	border-bottom-style: none;
+	font-weight:    bold;
+}
+
+
+/* Used for filters and options settings */
+table.smallGrey {
+	background:     #EEE;
+	border: 		1px solid black;
+	font-size:		smaller;
+	margin-bottom:	10px;
+	margin-right:	0px;
+}
+
+
+table.invisible {
+	border: 		0px none;
+	font-size:		90%;
+	margin:			20px;
+}
+
+
+/***** Special button *****/
+a.tlButton {
+	background:		#CDE;
+	border: 		2px outset grey;
+	font-weight:    bold;
+	padding:		2px;
+	margin:			2px;
+}
+
+a.tlButton:hover {
+	background:     #EEE;
+} 
+
+
+/***** EXECUTION & RESULTS ****************************************/
+
+/* colors for results (pass=green, fail=red, blocked=blue, not run=black, n/a=purple) */
+.green {
+	color:			green;
+}
+.red {
+	color:			red;
+}
+.blue {
+	color:			blue;
+}
+.black {
+	color:			black;
+}
+.purple {
+	color:			purple;
+}
+.white {
+	color:			white;
+}
+.bgGreen, div.passBox {
+	background:		green;
+}
+.bgRed, div.failBox {
+	background:		red;
+}
+.bgBlue, div.blockedBox {
+	background:		blue;
+}
+.bgBlack, div.notRunBox {
+	background:		black;
+}
+.bgPurple {
+	background:		purple;
+}
+
+div.passBox, div.failBox, div.blockedBox, div.notRunBox {
+	color: 			white;
+	margin: 		12px;
+	padding: 		12px;
+}
+
+
+/* execution boxes (result, test scenario, notes) */
+div.resultBox {
+	background: 	white;
+	border: 		medium solid grey;
+	color: 			black;
+	margin: 		12px;
+	padding: 		12px;
+}
+
+textarea.tcDesc {
+	background: 	white;
+	border: 		medium solid grey;
+}
+
+div.notesBox,table.notesBox {
+	background: 	#FFC;
+	border: 		thin dashed black;
+	color: 			black;
+	margin: 		12px;
+	padding: 		12px;
+	width: 97%;
+}
+
+table.notesBox td
+{
+	vertical-align: top;
+}
+
+img.arrow {
+	width: 			16px;
+	height: 		9px;
+}
+
+
+/***** htmlarea dimensions **********************************/
+
+textarea.w99h100, textarea.w99h300 {
+	width: 			99%; 	
+}
+textarea.w99h300 {
+	height: 		300px;
+}
+textarea.w99h100 {
+	height: 		100px;
+}
+
+pre
+{
+		FONT-FAMILY: 'Trebuchet MS', Verdana, Arial, sans-serif;
+
+}
+
+/***** END *************************************************/
+
+

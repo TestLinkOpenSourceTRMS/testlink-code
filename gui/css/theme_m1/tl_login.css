@@ -1,0 +1,40 @@
+/* TestLink CSS - Login Page; version 0.1 */
+
+body {
+	FONT-FAMILY: 'Trebuchet MS', Verdana, Arial, sans-serif;
+	font-size : smaller;
+	background:      #99BBDD;
+}
+
+div.title {
+	text-align: center;
+	width: 100%;
+	background: #CCDDEE;
+	margin: 0px; 
+	padding-bottom: 5px;
+	padding-top: 5px;
+	font-stretch: expanded;
+	font-weight : bold;
+	font-variant : small-caps;
+	letter-spacing: 5px;
+}
+
+div.forms {
+	text-align: left;
+	margin: 20%;
+	margin-top: 20px;
+	background: #CCDDEE;
+	padding: 25px; 
+	border: 1px;
+}
+
+A:visited  {color: #0000cc; text-decoration: none} /*A Visited link is blue*/
+A:link  {color: #0000cc; text-decoration: none} /*A normal link is blue*/
+A:active  {color: #0000cc; text-decoration: none} /*An active link is blue*/
+A:hover   {color: #990000; text-decoration: none} /*A link being hovered over is red*/
+
+
+.bold
+{
+	font-weight: bold;
+}

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.2 $
- * @modified $Date: 2006/04/21 20:25:18 $ $Author: asielb $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2006/04/25 17:32:03 $ $Author: asielb $
  *
  * @author Francisco Mancardi
  *
@@ -412,7 +412,7 @@ $TLS_title_new_milestone = "Milestone";
 
 // gui/templates/planNew.tpl
 $TLS_btn_edit = "Edit";
-$TLS_btn_new = "New";
+$TLS_btn_new = "Save Changes";
 $TLS_caption_for_product = "for Test project: ";
 $TLS_caption_new_tp = "New Test Suite";
 $TLS_caption_tp_name = "Name";

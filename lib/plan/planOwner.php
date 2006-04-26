@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: planOwner.php,v 1.12 2006/01/09 07:19:06 franciscom Exp $ */
+/* $Id: planOwner.php,v 1.13 2006/04/26 07:07:55 franciscom Exp $ */
 /**
  * Manage the ownership and priority of test suite
  *
@@ -12,7 +12,7 @@
  * 20051203 - scs - added filtering of tp users by tpid
  */
 require('../../config.inc.php');
-require("../functions/common.php");
+require_once("../functions/common.php");
 require_once('plan.inc.php');
 testlinkInitPage($db);
 

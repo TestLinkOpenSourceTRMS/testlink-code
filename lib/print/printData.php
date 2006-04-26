@@ -2,7 +2,7 @@
 /**
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/ 
 *
-* @version 	$Id: printData.php,v 1.16 2006/03/23 20:46:30 schlundus Exp $
+* @version 	$Id: printData.php,v 1.17 2006/04/26 07:07:55 franciscom Exp $
 *	@author 	Martin Havlat
 * 
 * Shows the data that will be printed.
@@ -18,7 +18,7 @@
 * 20051118 - scs - title in print_header wasnt escaped
 */
 require('../../config.inc.php');
-require("common.php");
+require_once("common.php");
 require_once("print.inc.php");
 require_once("../testcases/archive.inc.php");
 testlinkInitPage($db);

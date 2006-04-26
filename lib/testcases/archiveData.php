@@ -3,7 +3,7 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
- * @version $Id: archiveData.php,v 1.10 2006/03/29 14:33:59 franciscom Exp $
+ * @version $Id: archiveData.php,v 1.11 2006/04/26 07:07:56 franciscom Exp $
  * @author Martin Havlat
  *  
  * This page allows you to show data (test cases, categories, and
@@ -30,6 +30,9 @@ $user_id=isset($_SESSION['userID']) ? $_GET['userID'] : 0;
 $feature = isset($_GET['edit']) ? $_GET['edit'] : null;
 $id = isset($_GET['data']) ? intval($_GET['data']) : null;
 $allow_edit = isset($_GET['allow_edit']) ? intval($_GET['allow_edit']) : 1;
+
+// 20060425 - franciscom
+$smarty = new TLSmarty();
 
 // load data and show template
 switch($feature)
@@ -59,6 +62,7 @@ switch($feature)
 		tLog('$_GET["edit"] has invalid value: ' . $feature , 'ERROR');
 		trigger_error($_SESSION['user'].'> $_GET["edit"] has invalid value.', E_USER_ERROR);
 }
-$item_mgr->show($id,$user_id);
+// 20060425 - franciscom
+$item_mgr->show($smarty,$id,$user_id);
 
 ?>

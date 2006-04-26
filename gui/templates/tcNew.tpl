@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: tcNew.tpl,v 1.10 2006/03/20 18:02:12 franciscom Exp $ *}
+{* $Id: tcNew.tpl,v 1.11 2006/04/26 07:07:55 franciscom Exp $ *}
 {* Purpose: smarty template - create new testcase *}
 {* 20050831 - scs - change item to TestCase *}
 {* 
@@ -8,11 +8,27 @@ data -> categoryID
 fckeditor
 20050825 - scs - changed item to testcase 
 20060106 - scs - fix bug 9
+20060425 - franciscom - added new interface for keywords
+
 *}
 
-{include file="inc_head.tpl"}
+{include file="inc_head.tpl" openHead='yes'}
+<script language="JavaScript" src="gui/javascript/OptionTransfer.js" type="text/javascript"></script>
+<script language="JavaScript" src="gui/javascript/expandAndCollapseFunctions.js" type="text/javascript"></script>
 
-<body>
+<script language="JavaScript">
+var {$opt_cfg->js_ot_name} = new OptionTransfer("{$opt_cfg->from->name}","{$opt_cfg->to->name}");
+{$opt_cfg->js_ot_name}.saveRemovedLeftOptions("{$opt_cfg->js_ot_name}_removedLeft");
+{$opt_cfg->js_ot_name}.saveRemovedRightOptions("{$opt_cfg->js_ot_name}_removedRight");
+{$opt_cfg->js_ot_name}.saveAddedLeftOptions("{$opt_cfg->js_ot_name}_addedLeft");
+{$opt_cfg->js_ot_name}.saveAddedRightOptions("{$opt_cfg->js_ot_name}_addedRight");
+{$opt_cfg->js_ot_name}.saveNewLeftOptions("{$opt_cfg->js_ot_name}_newLeft");
+{$opt_cfg->js_ot_name}.saveNewRightOptions("{$opt_cfg->js_ot_name}_newRight");
+</script>
+</head>
+
+<body onLoad="{$opt_cfg->js_ot_name}.init(document.forms[0])">
+
 
 <h1>{lang_get s='title_new_tc'}</h1>
 
@@ -39,13 +55,9 @@ fckeditor
 	{$expected_results}</div>
 	</div>
 
-	<p><a href="lib/keywords/keywordsView.php" target="mainframe">{lang_get s='tc_keywords'}</a><br />
-		<select name="keywords[]" style="width: 30%" multiple="multiple">
-			{section name=oneKey loop=$keys}
-				<option value="{$keys[oneKey]|escape}">{$keys[oneKey]|escape}</option>
-			{/section}
-		</select>
-	</p>
+	<div><a href="lib/keywords/keywordsView.php" target="mainframe">{lang_get s='tc_keywords'}</a>
+  {include file="opt_transfer.inc.tpl" option_transfer=$opt_cfg}
+	</div><p>
 	
 </form>
 

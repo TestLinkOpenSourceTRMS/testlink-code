@@ -1,7 +1,7 @@
 <?php
 /** 
 *	TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* 	@version $Id: testSetNavigator.php,v 1.10 2006/02/04 20:13:15 schlundus Exp $
+* 	@version $Id: testSetNavigator.php,v 1.11 2006/04/26 07:07:55 franciscom Exp $
 *	@author Martin Havlat 
 *
 * This page navigate according to Test Set. It builds the javascript trees 
@@ -14,8 +14,8 @@
 * 20051126 - scs - corrected wrong help file
 */ 	
 require('../../config.inc.php');
-require("common.php");
-require("treeMenu.inc.php");
+require_once("common.php");
+require_once("treeMenu.inc.php");
 testlinkInitPage($db);
 
 $workPath = null;

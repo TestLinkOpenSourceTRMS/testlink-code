@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: buildNew.php,v $
  *
- * @version $Revision: 1.21 $
- * @modified $Date: 2006/04/07 20:15:30 $ $Author: schlundus $
+ * @version $Revision: 1.22 $
+ * @modified $Date: 2006/04/26 07:07:55 $ $Author: franciscom $
  *
  *
  * 20051006 - fm - added edit build
@@ -16,11 +16,13 @@
  * 20060322 - franciscom - using new classes
 */
 require('../../config.inc.php');
-require("../functions/common.php");
+
+// 20060425 - franciscom - require_once
+require_once("../functions/common.php");
 require_once("plan.inc.php");
-require("../functions/builds.inc.php");
+require_once("../functions/builds.inc.php");
 require_once("../../third_party/fckeditor/fckeditor.php");
-require("../functions/testplan.class.php");  // 20060322 - franciscom
+require_once("../functions/testplan.class.php");  // 20060322 - franciscom
 
 testlinkInitPage($db);
 

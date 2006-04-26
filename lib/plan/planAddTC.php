@@ -1,7 +1,7 @@
 <?php
 
 ////////////////////////////////////////////////////////////////////////////////
-// @version $Id: planAddTC.php,v 1.16 2006/04/24 10:38:03 franciscom Exp $
+// @version $Id: planAddTC.php,v 1.17 2006/04/26 07:07:55 franciscom Exp $
 // File:     planAddTC.php
 // Author:   Chad Rosen
 // Purpose:  This page manages the importation of test cases into testlink.
@@ -11,9 +11,11 @@
 // 20051126 - scs - changed passing keyword to keywordID
 ////////////////////////////////////////////////////////////////////////////////
 require('../../config.inc.php');
-require("../functions/common.php");
-require("../keywords/keywords.inc.php");
-require("plan.inc.php");
+
+// 20060425 - franciscom - require_once
+require_once("../functions/common.php");
+require_once("../keywords/keywords.inc.php");
+require_once("plan.inc.php");
 
 // 20060311 - franciscom
 require_once('testsuite.class.php');

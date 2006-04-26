@@ -1,8 +1,9 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView.tpl,v 1.13 2006/04/24 10:36:24 franciscom Exp $
+$Id: tcView.tpl,v 1.14 2006/04/26 07:07:55 franciscom Exp $
 Purpose: smarty template - view test case in test specification
 
+20060425 - franciscom - can manage multiple test cases
 20060316 - franciscom - added action
 20060303 - franciscom
 *}
@@ -18,72 +19,73 @@ Purpose: smarty template - view test case in test specification
 <div class="workBack">
 
 
-{if $testcase_curr_version eq null}
-		{lang_get s='no_records_found'}
-{else}
-	
-	{* Current active version *}
-  {if $testcase_other_versions neq null}
-    {assign var="my_delete_version" value="yes"}
-  {/if}
-  
-	{foreach item=my_testcase from=$testcase_curr_version}
-			{include file="tcView_viewer.tpl" my_testcase=$my_testcase
-			         keywords_map=$keywords_map 
-			         can_edit=$can_edit can_move_copy="yes" 
-			         can_delete_testcase=$can_delete_testcase
-			         can_delete_version=$my_delete_version
-			         status_quo=$status_quo
-			         show_version="yes" show_title="yes"}
-	{/foreach}
-	
-	
-	{* Old active version *}
-  {if $testcase_other_versions neq null}
-    <span style="cursor: pointer" class="type1" onclick="viewElement(document.getElementById('other_versions'),document.getElementById('other_versions').style.display=='none')"> Other Versions </span>
-    <div id="other_versions" class="workBack">
-  	{foreach item=my_testcase from=$testcase_other_versions}
-  	    <span style="cursor: pointer" class="type1" 
-  	          onclick="viewElement(document.getElementById('{$my_testcase.version}'),document.getElementById('{$my_testcase.version}').style.display=='none')"> Version {$my_testcase.version} </span>
-  	    <br><div id="{$my_testcase.version}" class="workBack">
-				{include file="tcView_viewer.tpl" my_testcase=$my_testcase 
-			           keywords_map=$keywords_map 
-				         can_edit=$can_edit can_move_copy="no" 
-   			         can_delete_testcase='no'
-			           can_delete_version=$can_delete_version
-			           status_quo=$status_quo
-				         show_version="no" show_title="no"}
-  	    </div>
-  	    <br>
-		{/foreach}
-		</div>
-  
-  	{* ---------------------------------------------------------------- *}
-  	{* Force the div of every old version to show closed as first state *}
-  	{literal}
-  	<script type="text/javascript">
-  	{/literal}
-  		{foreach item=my_testcase from=$testcase_other_versions}
-  	  	  viewElement(document.getElementById('{$my_testcase.version}'),false);
-			{/foreach}
-  	{literal}
-  	</script>
-  	{/literal}
-  	{* ---------------------------------------------------------------- *}
+{section name=idx loop=$testcase_curr_version}
+    {* Current active version *}
+    {if $testcase_other_versions[idx] neq null}
+        {assign var="my_delete_version" value="yes"}
+    {/if}
 
-  
-  
-  {/if}
-	
-	
-<!--
-    <span style="cursor: pointer" onclick="alert('hole');viewElement(document.getElementById('other_versions'),document.getElementById('other_versions').style.display=='none')"> Other Versions </span>
-<span 
- onclick="viewElement(document.getElementById('other_versions'),document.getElementById('other_versions').style.display=='none')">Dati generali</span>
+		{include file="tcView_viewer.tpl" 
+		         args_testcase=$testcase_curr_version[idx][0]
+		         args_keywords_map=$keywords_map[idx] 
+		         args_reqs=$arrReqs[idx] 
+		         args_status_quo=$status_quo[idx]
+
+		         args_can_edit=$can_edit 
+		         args_can_move_copy="yes" 
+		         args_can_delete_testcase=$can_delete_testcase
+		         args_can_delete_version=$my_delete_version
+		         args_show_version="yes" 
+		         args_show_title="yes"}
 
 
-    -->	
-	
-{/if}
+    {* Other Versions *}
+    {if $testcase_other_versions[idx] neq null}
+        {assign var="vid" value=$testcase_curr_version[idx][0].id}
+         
+        <span style="cursor: pointer" class="type1" 
+              onclick="viewElement(document.getElementById('vers_{$vid}'),document.getElementById('vers_{$vid}').style.display=='none')"> Other Versions </span>
+        <div id="vers_{$vid}" class="workBack">
+        
+  	    {foreach item=my_testcase from=$testcase_other_versions[idx]}
+  	          <span style="cursor: pointer" class="type1" 
+  	                onclick="viewElement(document.getElementById('{$my_testcase.version}'),document.getElementById('{$my_testcase.version}').style.display=='none')"> Version {$my_testcase.version} </span>
+  	          <br>
+  	          <div id="{$my_testcase.version}" class="workBack">
+				
+				      {include file="tcView_viewer.tpl" 
+				               args_testcase=$my_testcase 
+			                 args_keywords_map=$keywords_map[idx] 
+				               args_reqs=$arrReqs[idx]
+				               args_status_quo=$status_quo[idx]
+				         
+				               args_can_edit=$can_edit 
+				               args_can_move_copy="no" 
+   			               args_can_delete_testcase='no'
+			                 args_can_delete_version=$can_delete_version
+			                 args_show_version="no" 
+				               args_show_title="no"}
+  	         </div>
+  	         <br>
+  	         
+		    {/foreach}
+		    </div>
+  
+      	{* ---------------------------------------------------------------- *}
+      	{* Force the div of every old version to show closed as first state *}
+      	{literal}
+      	<script type="text/javascript">
+      	{/literal}
+ 	  	      viewElement(document.getElementById('vers_{$vid}'),false);
+
+    	  		{foreach item=my_testcase from=$testcase_other_versions[idx]}
+  	  	      viewElement(document.getElementById('{$my_testcase.version}'),false);
+			      {/foreach}
+      	{literal}
+      	</script>
+      	{/literal}
+      	{* ---------------------------------------------------------------- *}
+    {/if}
+{/section}
 </body>
 </html>

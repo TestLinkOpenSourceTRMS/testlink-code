@@ -1,7 +1,7 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: testSetRemove.php,v 1.10 2006/02/25 21:48:26 schlundus Exp $ 
+ * @version $Id: testSetRemove.php,v 1.11 2006/04/26 07:07:55 franciscom Exp $ 
  * 
  * Remove Test Cases from Test Case Suite 
  * 
@@ -12,7 +12,7 @@
  * 20051126 - scs - added test_case_removed_part2
  */         
 require('../../config.inc.php');
-require("../functions/common.php");
+require_once("../functions/common.php");
 require_once("plan.inc.php");
 testlinkInitPage($db);
 

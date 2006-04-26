@@ -1,12 +1,11 @@
 {* 
 Testlink: smarty template - 
-$Id: usersedit.tpl,v 1.2 2006/02/25 21:48:24 schlundus Exp $ 
+$Id: usersedit.tpl,v 1.3 2006/04/26 07:07:55 franciscom Exp $ 
 *}
 {* 
+20060425 - franciscom - better management of default locale 
 20050913 - fm - BUGID 0000103: Localization is changed but not strings
-
 20050815 - changed action to updated 
-
 *}
 {include file="inc_head.tpl" jsValidate="yes"}
 
@@ -92,8 +91,17 @@ function valAllText(form)
 		<tr>
 			<th>{lang_get s='th_locale'}</th>
 			<td>		   
+        {* 20060425 - franciscom - better management of default locale 
+           Very important: the locale member that holds the value of TL_DEFAULT_LOCALE
+                           is declared in tlsmarty.inc.php
+        *}
+        {assign var=selected_locale value=$userData.locale}
+        {if $userData.locale|count_characters eq 0}
+           {assign var=selected_locale value=$locale}
+        {/if}
+	
 				<select name="locale">
-				{html_options options=$optLocale selected=$userData.locale}
+				{html_options options=$optLocale selected=$selected_locale}
 				</select>	
 			</td>
 		</tr>

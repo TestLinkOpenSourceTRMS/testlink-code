@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: planNew.php,v $
  *
- * @version $Revision: 1.18 $
- * @modified $Date: 2006/03/20 18:02:33 $ $Author: franciscom $
+ * @version $Revision: 1.19 $
+ * @modified $Date: 2006/04/26 07:07:55 $ $Author: franciscom $
  *
  * Purpose:  Add new or edit existing Test Plan 
  *
@@ -16,8 +16,8 @@
  * 20060113 - scs - adding editing of tps
 */
 require('../../config.inc.php');
-require("../functions/common.php");
-require("plan.inc.php");
+require_once("../functions/common.php");
+require_once("plan.inc.php");
 require_once("../../third_party/fckeditor/fckeditor.php");
 require_once('../functions/testplan.class.php'); // 20060319 - franciscom
 

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: archive.inc.php,v $
  *
- * @version $Revision: 1.32 $
- * @modified $Date: 2006/02/27 07:55:45 $ by $Author: franciscom $
+ * @version $Revision: 1.33 $
+ * @modified $Date: 2006/04/26 07:07:55 $ by $Author: franciscom $
  *
  * @author Martin Havlat
  * Purpose:  functions for test specification management have three parts:
@@ -38,10 +38,12 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 
-require_once('requirements.inc.php');
+// 20060425 - franciscom - added dirname(__FILE__)
+
+require_once(dirname(__FILE__) . '/../functions/requirements.inc.php');
 
 // 20060108 - fm
-require_once('../functions/users.inc.php');
+require_once(dirname(__FILE__) . '/../functions/users.inc.php');
 
 
 /** 1. functions for grab container and test case data from database */ 

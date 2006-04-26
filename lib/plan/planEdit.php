@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: planEdit.php,v $
  *
- * @version $Revision: 1.17 $
- * @modified $Date: 2006/03/11 22:55:19 $ $Author: kevinlevy $
+ * @version $Revision: 1.18 $
+ * @modified $Date: 2006/04/26 07:07:55 $ $Author: franciscom $
  *
  * Purpose:  ability to edit and delete testplans
  *
@@ -16,9 +16,11 @@
  * 20060114 - scs - removed bulk update
  */
 require('../../config.inc.php');
-require("../functions/common.php");
-require("plan.inc.php");
-require("../functions/builds.inc.php");
+
+// 20060425 - franciscom - require_once
+require_once("../functions/common.php");
+require_once("plan.inc.php");
+require_once("../functions/builds.inc.php");
 testlinkInitPage($db);
 
 $prodID = $_SESSION['testprojectID'];

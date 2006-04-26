@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: containerView.tpl,v 1.13 2006/03/20 18:02:09 franciscom Exp $ *}
+{* $Id: containerView.tpl,v 1.14 2006/04/26 07:07:55 franciscom Exp $ *}
 {* 
 Purpose: smarty template - view test specification containers 
 
@@ -22,7 +22,9 @@ Purpose: smarty template - view test specification containers
 
 <h1>{$level|capitalize}: {$container_data.name|escape}</h1>
 
-{include file="inc_update.tpl" result=$sqlResult item=$level name=$moddedItem[1] refresh='yes'}
+{* 20060425 - franciscom - again a bug due to use of numeric index access when
+   access by name available !!!!!! *}
+{include file="inc_update.tpl" result=$sqlResult item=$level name=$moddedItem.name refresh='yes'}
 
 {if $level == 'testproject'}
 	{if $modify_tc_rights == 'yes'}

@@ -1,8 +1,8 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: tcEdit.tpl,v 1.8 2006/04/24 17:44:59 franciscom Exp $ *}
+{* $Id: tcEdit.tpl,v 1.9 2006/04/26 07:07:55 franciscom Exp $ *}
 {* Purpose: smarty template - edit test specification: test case *}
 {*
-20060303 - franciscom
+20060425 - franciscom - added update button at page bottom
 20051008 - am - correct wrong link to keywords view page
 *}
 
@@ -43,40 +43,31 @@ var {$opt_cfg->js_ot_name} = new OptionTransfer("{$opt_cfg->from->name}","{$opt_
 
 	<div>{lang_get s='summary'}<br />
 		{$summary}
-	</div>
+	</div><p>
 	
 	<div>{lang_get s='steps'}<br />
 		{$steps}
-	</div>
+	</div><p>
 
 	<div>{lang_get s='expected_results'}<br />
 		{$expected_results}
-	</div>
+	</div><p>
 
-  {* 	
-	==========================================================================================================
-	<p><a href="lib/keywords/keywordsView.php" target="mainframe">{lang_get s='tc_keywords'}</a><br />
-		<select name="keywords[]" style="width: 30%" size="{$keySize}" multiple="multiple">
-		{section name=oneKey loop=$keys}
-				{if $keys[oneKey].selected == "yes"}
-					<option value="{$keys[oneKey].key|escape}" selected="selected">{$keys[oneKey].key|escape}</option>
-			{else}
-					<option value="{$keys[oneKey].key|escape}">{$keys[oneKey].key|escape}</option>
-			{/if}
-		{/section}
-		</select>
-	</p>
-  ==========================================================================================================
-  *}
-  
+
+	<div><a href="lib/keywords/keywordsView.php" target="mainframe">{lang_get s='tc_keywords'}</a>
   {include file="opt_transfer.inc.tpl" option_transfer=$opt_cfg}
+	</div><p>
 
+	{* 20060425 - franciscom - same Name DIFFERENT ID *}
+	<div style="float: right;">
+		<input id="do_update_bottom" type="submit" name="do_update" value="update" />
+	</div>	
 
 
 </form>
 
 <script type="text/javascript" defer="1">
-   	document.forms[0].title.focus()
+   	document.forms[0].name.focus()
 </script>
 
 </div>

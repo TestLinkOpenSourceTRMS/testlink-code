@@ -2,7 +2,7 @@
 /** 
 *	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version $Id: planAddTCNavigator.php,v 1.11 2006/03/22 11:56:40 franciscom Exp $
+* 	@version $Id: planAddTCNavigator.php,v 1.12 2006/04/26 07:07:55 franciscom Exp $
 *	@author Martin Havlat
 * 
 * 	Navigator for feature: add Test Cases to a Test Case Suite in Test Plan. 
@@ -12,7 +12,8 @@
 * 20051126 - scs - changed passing keyword to keyword id
 */
 require('../../config.inc.php');
-require("common.php");
+
+require_once("common.php");
 require_once("../keywords/keywords.inc.php");
 require_once("treeMenu.inc.php");
 require_once("../../lib/functions/lang_api.php");

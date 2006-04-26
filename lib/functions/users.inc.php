@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: users.inc.php,v $
  *
- * @version $Revision: 1.32 $
- * @modified $Date: 2006/03/23 20:46:28 $ $Author: schlundus $
+ * @version $Revision: 1.33 $
+ * @modified $Date: 2006/04/26 07:07:55 $ $Author: franciscom $
  *
  * Functions for usermanagement
  *
@@ -50,9 +50,6 @@ function existLogin(&$db,$login, &$r_user_data)
 }
 
 /**
- * 20051228 - fm - active field
- *
- * 20050829 - scs - added param for locale
  * 
  * Function inserts new user to db
  * @param string login
@@ -63,6 +60,11 @@ function existLogin(&$db,$login, &$r_user_data)
  * @param string role_id  (optional; default is TL_DEFAULT_ROLEID)
  * @param string locale  (optional; locale for the user)
  * @param numeric active (optional; default ACTIVE_USER)
+ *
+ *
+ * 20051228 - franciscom - active field
+ * 20050829 - scs - added param for locale
+ *  
  */
 function userInsert(&$db,$login, $password, $first, $last, $email, 
                     $role_id=TL_DEFAULT_ROLEID, $locale = TL_DEFAULT_LOCALE, $active=1)

@@ -1,13 +1,13 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: searchData.php,v 1.14 2006/04/24 10:38:04 franciscom Exp $
+ * $Id: searchData.php,v 1.15 2006/04/26 07:07:56 franciscom Exp $
  * Purpose:  This page presents the search results. 
  *
  * 20050821 - fm - changes to use template customization (trying to reduce code redundancy)
 **/
 require('../../config.inc.php');
-require("../functions/common.php");
-require("../functions/users.inc.php");
+require_once("../functions/common.php");
+require_once("../functions/users.inc.php");
 //require("../functions/testproject.class.php");
 
 
@@ -25,10 +25,8 @@ $tc_id = isset($_POST['TCID']) ? $db->prepare_string($_POST['TCID']) : 0;
 
 $arrTc = null;
 $tproject = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-
-//echo "<pre>debug"; print_r($_POST); echo "</pre>";
-
 $tproject_mgr = new testproject($db);
+
 
 $filter=array('by_tc_id' => '', 'by_name' => '', 'by_summary' => '');
 
@@ -50,9 +48,7 @@ if ($tproject > 0)
         {
         	  $filter['by_name'] = " AND NHA.name like '%{$name}%' ";	
         }
-
-
-       
+     
 				$sql = " SELECT NHA.id AS testcase_id,NHA.name,summary,steps,version
 	      			   FROM nodes_hierarchy NHA, nodes_hierarchy NHB, tcversions
 	        			 WHERE NHA.id = NHB.parent_id
@@ -71,7 +67,19 @@ if ($tproject > 0)
 
 
 $smarty = new TLSmarty();
+if( count($map) > 0 )
+{
+  $tcase_mgr = new testcase($db);   
+  //foreach($map as $tcase_id => $tcase_data)
+  //{
+    $tcase_mgr->show_multi($smarty,array_keys($map), $_SESSION['userID']);
+  //}
+  
+}
+
+/*
 $smarty->assign('modify_tc_rights', has_rights($db,"mgt_modify_tc"));
 $smarty->assign('testcase', $arrTc);
 $smarty->display($g_tpl['tcSearchView']);
+*/
 ?>

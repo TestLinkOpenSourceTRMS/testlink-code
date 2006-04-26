@@ -2,9 +2,11 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.13 $
- * @modified $Date: 2006/04/24 10:38:02 $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2006/04/26 07:07:55 $
  * @author franciscom
+ *
+ * 20060425 - franciscom - changes in show() following Andreas Morsing advice (schlundus)
  *
  */
 
@@ -141,11 +143,12 @@ function get_all()
 }
 
 
-/* 20060225 - franciscom */
-function show($id, $sqlResult = '', $action = 'update',$modded_item_id = 0)
+// 20060425 - franciscom - added $smarty argument (by reference)
+function show(&$smarty,$id, $sqlResult = '', $action = 'update',$modded_item_id = 0)
 {
 	
-	$smarty = new TLSmarty;
+	// 20060425 - franciscom
+	// $smarty = new TLSmarty;
 	$smarty->assign('modify_tc_rights', has_rights($this->db,"mgt_modify_tc"));
 
 	if($sqlResult)

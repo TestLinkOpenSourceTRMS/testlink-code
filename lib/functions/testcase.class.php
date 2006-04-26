@@ -2,17 +2,19 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.13 $
- * @modified $Date: 2006/04/24 17:44:03 $ $Author: franciscom $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2006/04/26 07:07:55 $ $Author: franciscom $
  * @author franciscom
  *
+ * 20060425 - franciscom - changes in show() following Andreas Morsing advice (schlundus)
  * 20060423 - franciscom - added order_by_clause argument - get_keywords_map()
- *
  * 20060323 - franciscom - create_tcversion() interface change added $version
  *
  */
 
-require_once( dirname(__FILE__). '/tree.class.php' );
+require_once( dirname(__FILE__) . '/tree.class.php' );
+require_once( dirname(__FILE__) . '/requirements.inc.php' );  // 20060425 - franciscom
+
 class testcase
 {
 
@@ -31,16 +33,26 @@ function testcase(&$db)
   $this->my_node_type=$this->node_types_descr_id['testcase'];
 }
 
+
+// 20060425 - franciscom - - interface changes added $keywords_id
 // 20060226 - franciscom
 function create($parent_id,$name,$summary,$steps,
-                $expected_results,$author_id,$tc_order = null)
+                $expected_results,$author_id,$keywords_id='',$tc_order = null)
 {
+
 	
 	$first_version=1;
   $status_ok=1;
   $ret = $this->create_tcase_only($parent_id,$name);
   if( $ret['msg'] == 'ok' )
   {
+    // 20060425 - franciscom
+    if( strlen(trim($keywords_id)) > 0 )
+    {
+        $a_keywords=explode(",",$keywords_id);
+	      $this->addKeywords($ret['id'],$a_keywords);
+    }
+    
   	$ret = $this->create_tcversion($ret['id'],$first_version,$summary,$steps,
                                    $expected_results,$author_id);
   }
@@ -101,62 +113,6 @@ function get_by_name($name)
 
 
 /*
-get info for one testcase as an array, where every element is a associative array
-will be useful to manage the different versions of a test case
-
-20060227 - franciscom
-
-*/
-function get_by_id_old($id,$version_id=TC_ALL_VERSIONS, $get_active=0, $get_open=0)
-{
-	
-  // 20060312 - franciscom
-	$sql = " SELECT nodes_hierarchy.parent_id AS testcase_id, 
-	                (SELECT nodes_hierarchy.name 
-	                 FROM nodes_hierarchy WHERE nodes_hierarchy.id = {$id} ) AS name, 
-	                tcversions.*, users.first AS author_first_name, users.last AS author_last_name,
-	                '' AS updater_first_name, '' AS updater_last_name
-	         FROM nodes_hierarchy JOIN tcversions ON nodes_hierarchy.id = tcversions.id 
-                          LEFT OUTER JOIN users ON tcversions.author_id = users.id
-           WHERE nodes_hierarchy.parent_id = {$id} ORDER BY tcversions.version DESC";
-  $recordset = $this->db->get_recordset($sql);
-  
-  if($recordset)
-  {
-	 $sql = " SELECT updater_id, users.first AS updater_first_name, users.last  AS updater_last_name
-	           FROM nodes_hierarchy JOIN tcversions ON nodes_hierarchy.id = tcversions.id 
-                           LEFT OUTER JOIN users ON tcversions.updater_id = users.id
-             WHERE nodes_hierarchy.parent_id = {$id} and tcversions.updater_id IS NOT NULL ";
-                           
-    $updaters = $this->db->get_recordset($sql);
-    
-    if($updaters)
-    {
-    	foreach ($recordset as  $the_key => $row )
-    	{
-    		if ( !is_null($row['updater_id']) )
-    		{
-      		foreach ($updaters as $row_upd)
-      		{
-            if ( $row['updater_id'] == $row_upd['updater_id'] )
-            {
-              $recordset[$the_key]['updater_last_name'] = $row_upd['updater_last_name'];
-              $recordset[$the_key]['updater_first_name'] = $row_upd['updater_first_name'];
-              break;
-            }
-      		}
-      	}
-      }
-    }
-
-  }
-
- 
-  return($recordset ? $recordset : null);
-}
-
-
-/*
 get array of info for every test suite
 without any kind of filter.
 Every array element contains an assoc array with test suite info
@@ -171,42 +127,65 @@ function get_all()
   return($recordset);
 }
 
-/* 20060326 - franciscom - inferface changes */
-/* 20060227 - franciscom */
-function show($id, $user_id, $version_id=TC_ALL_VERSIONS, $action='', $msg_result='', $refresh_tree='yes')
+// 20060425 - franciscom - added $smarty argument (by reference) 
+//                         can accept an array of id
+//
+function show(&$smarty,$id, $user_id, $version_id=TC_ALL_VERSIONS, $action='', 
+              $msg_result='', $refresh_tree='yes')
 {
-	// define('DO_NOT_CONVERT',false);
+
 	$the_tpl=config_get('tpl');
 	$arrReqs = null;
-	
 	$can_edit = has_rights($this->db,"mgt_modify_tc");
-	$tc_array = $this->get_by_id($id,$version_id);
 
-	// 20060326 - get the status quo of execution and links of tc versions
-	$status_quo_map = $this->get_versions_status_quo($id);
-	
-	//20060324 - franciscom
-	$keywords_map=$this->get_keywords_map($id,' ORDER BY KEYWORD ASC ');
-	$tc_array[0]['keywords']=$keywords_map;
-	$tc_current_version = array($tc_array[0]);
-	
-	$tc_other_versions = array();
-	$qta_versions = count($tc_array);
-	if( $qta_versions > 1 )
-	{
-		$tc_other_versions = array_slice($tc_array,1);
-	}
-	
-	
-	
-	$linked_tcversions = $this->get_linked_versions($id,'EXECUTED');
-  // echo "<pre>debug \$linked_tcversions" . __FUNCTION__; print_r($linked_tcversions); echo "</pre>";
-	
-	// get assigned REQs
-	$arrReqs = getReq4Tc($this->db,$id);
-	
-	$smarty = new TLSmarty;
-	
+  
+  if( is_array($id) )
+  {
+    $a_id=$id;
+  }
+  else
+  {
+    $a_id=array($id);  
+  }
+ 
+  $tc_current_version=array();
+  $tc_other_versions =array();
+  $status_quo_map=array();
+  $keywords_map=array();
+  $arrReqs=array();
+  
+  foreach($a_id as $key => $tc_id)
+  {
+      $tc_array = $this->get_by_id($tc_id,$version_id);
+      
+    	// 20060326 - get the status quo of execution and links of tc versions
+    	$status_quo_map[] = $this->get_versions_status_quo($tc_id);
+    	
+    	//20060324 - franciscom
+    	$keywords_map[]=$this->get_keywords_map($tc_id,' ORDER BY KEYWORD ASC ');
+    	$tc_array[0]['keywords']=$keywords_map;
+    	$tc_current_version[] = array($tc_array[0]);
+    	
+    	$qta_versions = count($tc_array);
+    	if( $qta_versions > 1 )
+    	{
+    	  $tc_other_versions[] = array_slice($tc_array,1);
+    		echo "<pre>debug - in other versions " . __FUNCTION__; print_r($tc_other_versions); echo "</pre>";
+    		
+    		
+    	}
+    	else
+    	{
+    	  $tc_other_versions[] = null;
+    	}
+    	
+    	$linked_tcversions = $this->get_linked_versions($tc_id,'EXECUTED');
+    	
+    	// get assigned REQs
+    	$arrReqs[] = getReq4Tc($this->db,$tc_id);
+  }
+  
+    	
 	$smarty->assign('action',$action);
 	$smarty->assign('sqlResult',$msg_result);
 	$smarty->assign('can_edit',$can_edit);
@@ -223,9 +202,8 @@ function show($id, $user_id, $version_id=TC_ALL_VERSIONS, $action='', $msg_resul
 	$smarty->assign('arrReqs',$arrReqs);
 	$smarty->assign('view_req_rights', has_rights($this->db,"mgt_view_req")); 
 	$smarty->assign('opt_requirements', $_SESSION['testprojectOptReqs']); 	
-	
-	// 20060423 - franciscom
 	$smarty->assign('keywords_map',$keywords_map);
+	
 	$smarty->display($the_tpl['tcView']);
 }
 
@@ -1060,8 +1038,6 @@ function get_last_execution($id,$version_id,$tplan_id,$build_id,$get_no_executio
   $recordset = $this->db->fetchRowsIntoMap($sql,'id');
   return($recordset ? $recordset : null);
 }
-
-
 
 
 

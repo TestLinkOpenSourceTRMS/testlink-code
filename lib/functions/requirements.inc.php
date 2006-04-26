@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: requirements.inc.php,v $
- * @version $Revision: 1.30 $
- * @modified $Date: 2006/04/08 19:51:42 $ by $Author: schlundus $
+ * @version $Revision: 1.31 $
+ * @modified $Date: 2006/04/26 07:07:55 $ by $Author: franciscom $
  *
  * @author Martin Havlat <havlat@users.sourceforge.net>
  * 
@@ -43,8 +43,10 @@ $g_reqFormatStrings = array (
 							"XML" => lang_get('the_format_req_xml_import')
 							); 		
 
-require_once('print.inc.php');
-require_once("../testcases/archive.inc.php");
+
+// 20060425 - franciscom
+require_once(dirname(__FILE__) . "/print.inc.php");
+require_once(dirname(__FILE__) . "/../testcases/archive.inc.php");
 
 /** 
  * update System Requirements Specification

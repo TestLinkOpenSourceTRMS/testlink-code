@@ -2,9 +2,11 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testsuite.class.php,v $
- * @version $Revision: 1.8 $
- * @modified $Date: 2006/03/13 16:22:24 $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2006/04/26 07:07:55 $
  * @author franciscom
+ *
+ * 20060425 - franciscom - changes in show() following Andreas Morsing advice (schlundus)
  *
  */
 
@@ -177,11 +179,11 @@ function get_all()
 }
 
 
+// 20060425 - franciscom - added $smarty argument (by reference)
 /* 20060225 - franciscom */
-function show($id, $sqlResult = '', $action = 'update',$modded_item_id = 0)
+function show(&$smarty,$id, $sqlResult = '', $action = 'update',$modded_item_id = 0)
 {
 	
-	$smarty = new TLSmarty;
 	$smarty->assign('modify_tc_rights', has_rights($this->db,"mgt_modify_tc"));
 
 	if($sqlResult)
@@ -197,11 +199,15 @@ function show($id, $sqlResult = '', $action = 'update',$modded_item_id = 0)
 		$modded_item = $this->get_by_id($modded_item_id);
 	}
   
+  echo "<pre>debug" . __FUNCTION__; print_r($modded_item); echo "</pre>";
+  echo "<pre>debug" . __FUNCTION__; print_r($sqlResult); echo "</pre>";
+  
+  
 	$smarty->assign('moddedItem',$modded_item);
 	$smarty->assign('level', 'testsuite');
 	$smarty->assign('container_data', $item);
 	$smarty->assign('sqlResult',$sqlResult);
-	$smarty->display('containerView.tpl');
+  $smarty->display('containerView.tpl');
 }
 
 

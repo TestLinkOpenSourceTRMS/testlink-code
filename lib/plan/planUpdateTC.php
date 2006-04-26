@@ -1,7 +1,7 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: planUpdateTC.php,v 1.14 2006/01/09 07:19:06 franciscom Exp $
+ * @version $Id: planUpdateTC.php,v 1.15 2006/04/26 07:07:55 franciscom Exp $
  * @author Martin Havlat
  * 
  * Update Test Cases within Test Case Suite 
@@ -21,7 +21,7 @@
  * 					added localization of status
  */         
 require('../../config.inc.php');
-require("../functions/common.php");
+require_once("../functions/common.php");
 testlinkInitPage($db);
 
 $resultString = null;

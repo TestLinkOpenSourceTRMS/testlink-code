@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.59 $
- * @modified $Date: 2006/04/24 15:44:58 $ by $Author: franciscom $
+ * @version $Revision: 1.60 $
+ * @modified $Date: 2006/04/26 07:02:15 $ by $Author: franciscom $
  *
  *
  * Constants and configuration parameters used throughout TestLink 
@@ -65,8 +65,7 @@
  */ 
 require_once('config_db.inc.php');
 
-// 20051227 - fm - for method connect() of database.class
-define('DSN',FALSE);
+
 
 /** root of testlink directory location seen through the web server */
 define('TL_BASE_HREF', get_home_url()); 
@@ -178,16 +177,21 @@ define('TL_LOGIN_CSS','gui/css/tl_login.css');
 define('TL_TESTLINK_CSS','gui/css/testlink.css');
 define('TL_DOC_BASIC_CSS','gui/css/tl_doc_basic.css');
 
-
-// 20060104 - fm
-define('NON_TESTABLE_REQ','n');
-
-
 /* An example
 define('TL_LOGIN_CSS','gui/css/theme0/tl_login.css');
 define('TL_TESTLINK_CSS','gui/css/theme0/testlink.css');
 define('TL_DOC_BASIC_CSS','gui/css/theme0/tl_doc_basic.css');
 */
+
+
+// logo for login page, if not defined nothing happens
+define('LOGO_LOGIN_PAGE','<img alt="TestLink" src="icons/company_logo.png" />');
+
+// logo for navbar page
+define('LOGO_NAVBAR','<img alt="TestLink" src="icons/company_logo.png" />');
+
+
+
 
 /* TRUE -> Check if:
            a. Product Name                   is unique
@@ -210,7 +214,10 @@ when a duplicate name is found
 // $g_action_on_duplicate_name = 'allow_repeat';
 $g_action_on_duplicate_name = 'generate_new';
 
-/*  */
+/* Used when creating a Test Suite using copy 
+   and you have choose  $g_action_on_duplicate_name = 'generate_new'
+   if the name exist.
+ */
 $g_prefix_name_for_copy = strftime("%Y%m%d-%H:%M:%S", time());
         
 /* 
@@ -230,7 +237,8 @@ $g_show_tp_without_tproject_id = $g_show_tp_without_prodid;
 /* 
 20051002 - fm
 New Feature
-TRUE -> user can enable/disable test plan filter by product 
+TRUE -> user can enable/disable test plan filter by 
+        product (term used on TL < 1.7) / test project (term used on TL>= 1.7)
         At user interface level a check box is displayed over
         the test plan combo box.
      
@@ -240,7 +248,8 @@ FALSE -> user can do nothing, no changes at UI.
 $g_ui_show_check_filter_tp_by_testproject = TRUE;
 
 
-/* TRUE -> you can create multiple time the same keyword for the same product */
+/* TRUE -> you can create multiple time the same keyword 
+           for the same product (term used on TL < 1.7) / test project (term used on TL>= 1.7) */
 $g_allow_duplicate_keywords=FALSE;
 
 /*
@@ -272,10 +281,24 @@ $g_field_size->category_name = 100;
 $g_fckeditor_toolbar = "TL_Medium_2";
 
 
-/* These are the supported locales */
-/* The first element will be the default when creating a user */
-$g_locales = array(	'en_GB' => 'English (UK)',
-						        'zh_CN' => 'Chinese Simplified',
+//                    [Section: I18N Section]                 
+//
+// Your first/suggested choice for default locale, this must be one of $g_locales (see below).
+// An attempt will be done to stablish the default locale 
+// automatically using $_SERVER['HTTP_ACCEPT_LANGUAGE']
+//
+$language = 'en_GB';
+
+// These are the supported locales.
+// This array will be used to create combo box at user interface.
+// Please mantain the alphabetical order when adding new locales.
+// Attention:
+//           The locale selected by default in the combo box when
+//           creating a new user WILL BE fixed by the value of the default locale,
+//           NOT by the order of the elements in this array.
+//
+$g_locales = array(	'zh_CN' => 'Chinese Simplified',
+                    'en_GB' => 'English (UK)',
 						        'en_US' => 'English (US)',
 						        'fr_FR' => 'Fran&ccedil;ais',
 						        'de_DE' => 'German',
@@ -285,12 +308,29 @@ $g_locales = array(	'en_GB' => 'English (UK)',
 						        'es_ES' => 'Spanish'
                     );
 
+
+// check for !== false because getenv() returns false on error
+$serverLanguage = getenv($_SERVER['HTTP_ACCEPT_LANGUAGE']);
+if(false !== $serverLanguage)
+{
+	if (array_key_exists($serverLanguage,$g_locales))
+	{
+		$language = $serverLanguage;
+	}	
+}
+define ('TL_DEFAULT_LOCALE',$language);
+
+
+
+
+
+
+
+
 // ----------------------------------------------------------------------------
 // 20051005 - fm - see strftime() in PHP manual
-//
 // Very IMPORTANT: 
 // setting according local is done in testlinkInitPage() using set_dt_formats()
-//
 // Default values
 $g_date_format ="%d/%m/%Y";
 $g_timestamp_format = "%d/%m/%Y %H:%M:%S";
@@ -320,17 +360,9 @@ $g_locales_timestamp_format = array('en_US' => "%m/%d/%Y %H:%M:%S",
 
 
 
-/** Your default locale, this must be one of $g_locales */
-$language = 'en_GB';
 
-// check for !== false because getenv() returns false on error
-$serverLanguage = getenv($_SERVER['HTTP_ACCEPT_LANGUAGE']);
-if(false !== $serverLanguage)
-{
-	if (array_key_exists($serverLanguage,$g_locales))
-		$language = $serverLanguage;
-}
-define ('TL_DEFAULT_LOCALE',$language);
+
+
 
 /* These are the possible TestCase statuses */
 $g_tc_status = array ( "failed"        => 'f',
@@ -424,20 +456,15 @@ define('TL_DOC_COPYRIGHT', '');
 define('TL_DOC_CONFIDENT', '');
 
 
-// 20051120 - fm 
+// 20051120 - franciscom - 
+// used in several functions instead of MAGIC NUMBERS - Don't change 
 define('ALL_PRODUCTS',0);
 define('TP_ALL_STATUS',null);
 define('FILTER_BY_PRODUCT',1);
 define('FILTER_BY_TESTPROJECT',FILTER_BY_PRODUCT);
 define('TP_STATUS_ACTIVE',1);
-
-// 20060213 - franciscom
-// logo for login page, if not defined nothing happens
-define('LOGO_LOGIN_PAGE','<img alt="TestLink" src="icons/company_logo.png" />');
-
-
-// 20060217 - franciscom - fo navbar page
-define('LOGO_NAVBAR','<img alt="TestLink" src="icons/company_logo.png" />');
+define('NON_TESTABLE_REQ','n');
+define('DSN',FALSE);  // for method connect() of database.class
 
 
 // characters used to surround the role description in the user interface

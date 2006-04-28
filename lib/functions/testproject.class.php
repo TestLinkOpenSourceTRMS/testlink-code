@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.14 $
- * @modified $Date: 2006/04/26 07:07:55 $
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2006/04/28 17:07:18 $
  * @author franciscom
  *
  * 20060425 - franciscom - changes in show() following Andreas Morsing advice (schlundus)
@@ -540,9 +540,7 @@ function get_all_testcases_id($id)
 	                                            array('testcase'=>'exclude my children'));
   
   $hash_descr_id = $this->tree_manager->get_available_node_types();
-  
-  // echo "<pre>debug" . __FUNCTION__; print_r($test_spec); echo "</pre>";
-  
+
   $qty=0;
   if( count($test_spec) > 0 )
   {
@@ -554,8 +552,6 @@ function get_all_testcases_id($id)
     	}
     }
   }
-  
-  echo "<pre>debug" . __FUNCTION__; print_r($a_tcid); echo "</pre>";
   return ($a_tcid);
   
 }

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: tree.class.php,v $
  *
- * @version $Revision: 1.12 $
- * @modified $Date: 2006/03/29 14:33:59 $ by $Author: franciscom $
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2006/04/28 09:12:20 $ by $Author: havlat $
  * @author Francisco Mancardi
  *
  * 20060316 - franciscom - bug on get_path
@@ -131,7 +131,7 @@ class tree
     // display each child
     while ($row = $this->db->fetch_array($result)) 
     {
-     echo str_repeat(' ',$level) . $row['id'] ."\n";
+//     echo str_repeat(' ',$level) . $row['id'] ."\n";
 
      $this->get_descendants($row['id'], $level+1);
     }
@@ -176,18 +176,19 @@ function get_xx($aa)
 	$xx=array();
   foreach($aa as $key => $value)
   {
-  	print_r($value);
-  	echo "<br>";
+//  	print_r($value);
+//  	echo "<br>";
   	$xx[$value['node_table']]['id'][]=$value['id'];
   	$xx[$value['node_table']]['key_id'][$value['id']]=$key;
   }
   
-  foreach($xx as $key => $value)
+/*  foreach($xx as $key => $value)
   {
     $zz = implode(",", $value['id']);
     echo $key . "<br>";
     echo $zz . "<br>";
   }
+*/
   return($xx);
 }
 
@@ -217,7 +218,6 @@ function get_path_new($node_id,$to_node_id=null,$format='full')
     return ($the_path);
     
 }
-
 
 
 
@@ -493,6 +493,3 @@ function _get_subtree($node_id,&$node_list,$and_not_in_clause='',
  
 }// end class
 ?>
-
-
-

@@ -1,8 +1,9 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.3 2006/04/26 07:07:55 franciscom Exp $
+$Id: tcView_viewer.tpl,v 1.4 2006/04/28 17:01:36 franciscom Exp $
 viewer for test case in test specification
 
+20060427 - franciscom - added font-size in the table used for keywords
 20060325 - franciscom - 
 *}
 
@@ -76,7 +77,8 @@ viewer for test case in test specification
 		<tr>
 		
 		<td  colspan="2">
-		<table>
+		{* 20060427 - franciscom *}
+		<table style="font-size:100%;">
 	    <tr>
 	  	<td width="35%"><a href="lib/keywords/keywordsView.php" 
 				target="mainframe" class="bold">{lang_get s='keywords'}</a>: &nbsp;

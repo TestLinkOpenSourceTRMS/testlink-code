@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: tcSearchForm.tpl,v 1.3 2006/03/03 16:20:59 franciscom Exp $ *}
+{* $Id: tcSearchForm.tpl,v 1.4 2006/04/28 17:01:36 franciscom Exp $ *}
 {* Purpose: smarty template - show form for search through test cases 
  * in test specification of the actual product
  *}
@@ -37,7 +37,7 @@
 			<td><select style="width:235px" name="key">
 					<option value="none">{lang_get s='not_applied'}</option>
 					{section name=Row loop=$arrKeys}
-					<option value="{$arrKeys[Row].keyword|escape}">{$arrKeys[Row].keyword|escape}</option>
+					<option value="{$arrKeys[Row].id}">{$arrKeys[Row].keyword|escape}</option>
 				{/section}
 				</select>
 			</td>

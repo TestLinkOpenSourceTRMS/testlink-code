@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.57 $
- * @modified $Date: 2006/04/25 17:32:03 $ $Author: asielb $
+ * @version $Revision: 1.58 $
+ * @modified $Date: 2006/04/28 17:36:18 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
@@ -693,7 +693,7 @@ $TLS_caption_search_form = "Search Test Cases";
 $TLS_keyword = "Keyword";
 $TLS_not_applied = "Not applied";
 $TLS_title_search_tcs = "Search";
-
+$TLS_th_tcversion='Version';
 
 
 // gui/templates/tcSearchView.tpl

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.29 $
- * @modified $Date: 2006/04/26 07:07:56 $  by $Author: franciscom $
+ * @version $Revision: 1.30 $
+ * @modified $Date: 2006/04/28 17:17:31 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
  * @author Martin Havlat
@@ -99,8 +99,6 @@ if (isset($_POST['keywords']))
 
 // 20060425 - franciscom
 $init_opt_transfer = ($create_tc || $edit_tc || $do_create) ? 1 : 0;
-
-echo "<pre>debug - \$init_opt_transfer" . $init_opt_transfer; echo "</pre>";
 
 
 // 20060303 - francisco.mancardi@gruppotesi.com

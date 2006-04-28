@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.14 $
- * @modified $Date: 2006/04/26 07:07:55 $ $Author: franciscom $
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2006/04/28 17:21:45 $ $Author: franciscom $
  * @author franciscom
  *
  * 20060425 - franciscom - changes in show() following Andreas Morsing advice (schlundus)
@@ -170,9 +170,6 @@ function show(&$smarty,$id, $user_id, $version_id=TC_ALL_VERSIONS, $action='',
     	if( $qta_versions > 1 )
     	{
     	  $tc_other_versions[] = array_slice($tc_array,1);
-    		echo "<pre>debug - in other versions " . __FUNCTION__; print_r($tc_other_versions); echo "</pre>";
-    		
-    		
     	}
     	else
     	{

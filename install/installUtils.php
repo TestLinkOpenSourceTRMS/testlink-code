@@ -1,8 +1,9 @@
 <?php
 /* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: installUtils.php,v 1.13 2006/02/15 14:01:03 franciscom Exp $ 
+$Id: installUtils.php,v 1.14 2006/04/28 18:00:04 franciscom Exp $ 
 
+20060428 - franciscom - new function check_db_loaded_extension()
 20060214 - franciscom - added warning regarding valid database names
 20060108 - fm - removed some functions
 20051231 - fm - changes due to ADODB
@@ -60,7 +61,7 @@ return $filesArr;
 // | Authors: João Prado Maia <jpm@mysql.com>                             |
 // +----------------------------------------------------------------------+
 //
-// @(#) $Id: installUtils.php,v 1.13 2006/02/15 14:01:03 franciscom Exp $
+// @(#) $Id: installUtils.php,v 1.14 2006/04/28 18:00:04 franciscom Exp $
 //
 
 // a foolish wrapper - 20051231 - fm
@@ -574,6 +575,25 @@ return ($ret);
 
 
 
+// 20060428 - franciscom
+function check_db_loaded_extension()
+{
+$tt=array_flip(get_loaded_extensions());
+
+$errors=0;	
+$final_msg = "</b><br/>Checking PHP DB extensions<b> ";
+
+if( !isset($tt['mysql']) )
+{
+	$final_msg .= "<span class='notok'>Warning!: Your PHP installation don't have the MySQL extension - " .
+	              "without it is IMPOSSIBLE to use Testlink.</span>";
+	$errors += 1;
+}
+$ret = array ('errors' => $errors,
+              'msg' => $final_msg);
+
+return ($ret);
+}  //function end
 
 
 

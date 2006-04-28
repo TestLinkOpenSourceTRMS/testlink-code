@@ -1,7 +1,9 @@
 <?php 
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: newInstallStart_TL.php,v 1.8 2006/02/15 14:01:03 franciscom Exp $ */
+/* $Id: newInstallStart_TL.php,v 1.9 2006/04/28 18:00:04 franciscom Exp $ */
 
+// 20060428 - franciscom - added new check  check_db_loaded_extension()
+//
 // 20050824 - fm
 require_once("installUtils.php");
 
@@ -55,8 +57,11 @@ $check = check_php_version();
 $errors += $check['errors'];
 echo $check['msg'];
 
-/* 20050830 - fm  */
 $check = check_php_settings();
+$errors += $check['errors'];
+echo $check['msg'];
+
+$check = check_db_loaded_extension();
 $errors += $check['errors'];
 echo $check['msg'];
 

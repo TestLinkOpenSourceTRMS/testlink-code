@@ -1,8 +1,11 @@
-{* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: tcSearchForm.tpl,v 1.4 2006/04/28 17:01:36 franciscom Exp $ *}
-{* Purpose: smarty template - show form for search through test cases 
- * in test specification of the actual product
- *}
+{* 
+TestLink Open Source Project - http://testlink.sourceforge.net/ 
+$Id: tcSearchForm.tpl,v 1.5 2006/04/28 17:34:25 franciscom Exp $
+Purpose: show form for search through test cases in test specification
+
+20060428 - franciscom - added version input
+*}
+
 {include file="inc_head.tpl"}
 <body>
 
@@ -15,6 +18,10 @@
 		<tr>
 			<td>{lang_get s='th_tcid'}</td>
 			<td><input type="text" size="15" name="TCID" /></td>
+		</tr>
+		<tr>
+			<td>{lang_get s='th_tcversion'}</td>
+			<td><input type="text" size="3" name="version" /></td>
 		</tr>
 		<tr>
 			<td>{lang_get s='th_title'}</td>
@@ -30,12 +37,12 @@
 		</tr>
 		<tr>
 			<td>{lang_get s='expected_results'}</td>
-			<td><input type="text" size="35" name="exresult" /></td>
+			<td><input type="text" size="35" name="expected_results" /></td>
 		</tr>
 		<tr>
 			<td>{lang_get s='keyword'}</td>
 			<td><select style="width:235px" name="key">
-					<option value="none">{lang_get s='not_applied'}</option>
+					<option value="0">{lang_get s='not_applied'}</option>
 					{section name=Row loop=$arrKeys}
 					<option value="{$arrKeys[Row].id}">{$arrKeys[Row].keyword|escape}</option>
 				{/section}

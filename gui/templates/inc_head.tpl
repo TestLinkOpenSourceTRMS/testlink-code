@@ -1,5 +1,5 @@
 {* Testlink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: inc_head.tpl,v 1.4 2006/03/10 22:35:57 schlundus Exp $ *}
+{* $Id: inc_head.tpl,v 1.5 2006/04/29 19:32:54 schlundus Exp $ *}
 {* Purpose: smarty template - HTML Common Header *}
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
      "DTD/xhtml1-transitional.dtd">
@@ -32,6 +32,11 @@
 	// 20050528 - fm
 	// To solve problem diplaying help
 	var SP_html_help_file  = '{$SP_html_help_file}';
+	
+	//attachment related JS-Stuff
+	var attachmentDlg_refWindow = null;
+	var attachmentDlg_refLocation = null;
+	var attachmentDlg_bNoRefresh = false;
 	</script> 
 {if $openHead == "no"} {* 'no' is default defined in config *}
 </head>

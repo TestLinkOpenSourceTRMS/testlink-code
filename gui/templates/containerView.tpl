@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: containerView.tpl,v 1.14 2006/04/26 07:07:55 franciscom Exp $ *}
+{* $Id: containerView.tpl,v 1.15 2006/04/29 19:32:54 schlundus Exp $ *}
 {* 
 Purpose: smarty template - view test specification containers 
 
@@ -22,15 +22,12 @@ Purpose: smarty template - view test specification containers
 
 <h1>{$level|capitalize}: {$container_data.name|escape}</h1>
 
-{* 20060425 - franciscom - again a bug due to use of numeric index access when
-   access by name available !!!!!! *}
 {include file="inc_update.tpl" result=$sqlResult item=$level name=$moddedItem.name refresh='yes'}
 
 {if $level == 'testproject'}
 	{if $modify_tc_rights == 'yes'}
 		<div>
 			<form method="post" action="lib/testcases/containerEdit.php">
-				{* 20060226 - franciscom *}
 				<input type="hidden" name="containerID" value={$container_data.id}>
 				<input type="submit" name="new_testsuite" value="{lang_get s='btn_new_com'}" />
 			  <input type="submit" name="reorder_testsuites" value="{lang_get s='btn_reorder_cat'}" />
@@ -45,8 +42,6 @@ Purpose: smarty template - view test specification containers
 		<tr>
 			<td>{$container_data.name|escape}</td>
 		</tr>
-		
-		{* 20060225 - franciscom *}
 		<tr>
 			<th>{lang_get s='th_notes'}</th>
 		</tr>
@@ -60,7 +55,7 @@ Purpose: smarty template - view test specification containers
 
 	{if $modify_tc_rights == 'yes' || $sqlResult ne ''}
 		<div>
-		<form method="post" action="lib/testcases/containerEdit.php?testsuiteID={$container_data.id}" />
+		<form method="post" action="lib/testcases/containerEdit.php?testsuiteID={$container_data.id}">
 			<input type="hidden" name="testsuiteName" value="{$container_data.name|escape}" />
 
 			<input type="submit" name="edit_testsuite" value="{lang_get s='btn_edit_com'}"
@@ -72,17 +67,17 @@ Purpose: smarty template - view test specification containers
 			<input type="submit" name="reorder_testsuites" value="{lang_get s='btn_reorder_cat'}" />
 		</form>
 		</div>
-
+		<br/>	
 		{* Add a new testsuite children for this parent *}
 		<div>
-		<form method="post" action="lib/testcases/containerEdit.php?containerID={$container_data.id}" />
+		<form method="post" action="lib/testcases/containerEdit.php?containerID={$container_data.id}">
 			<input type="submit" name="new_testsuite" value="{lang_get s='btn_new_cat'}" />
 		</form>
 		</div>
-		
-		{* Add a new testcase - 20060226 - franciscom *}
+		<br/>	
+		{* Add a new testcase *}
 		<div>
-		<form method="post" action="lib/testcases/tcEdit.php?containerID={$container_data.id}" />
+		<form method="post" action="lib/testcases/tcEdit.php?containerID={$container_data.id}">
 			<input type="submit" id="create_tc" name="create_tc" value="{lang_get s='btn_new_tc'}" />  
 		</form>
 		</div>

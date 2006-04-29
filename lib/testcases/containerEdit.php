@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: containerEdit.php,v 1.37 2006/04/26 07:07:56 franciscom Exp $ */
+/* $Id: containerEdit.php,v 1.38 2006/04/29 19:32:54 schlundus Exp $ */
 /* Purpose:  This page manages all the editing of test specification containers. */
 /*
  *
@@ -24,19 +24,12 @@ require_once("../../third_party/fckeditor/fckeditor.php");
 require_once('containerComp.inc.php');
 require_once('containerCat.inc.php');
 require_once("../../lib/plan/plan.inc.php");
-
-require_once('testsuite.class.php');  // 20060226 - franciscom
-require_once('testproject.class.php');  // 20060308 - franciscom
-require_once('tree.class.php');  // 20060308 - franciscom
-
 testlinkInitPage($db);
 
-$tree_mgr = New tree($db); // 20060308 - franciscom
-$tproject_mgr = New testproject($db); // 20060308 - franciscom
-$tsuite_mgr = New testsuite($db); // 20060226 - franciscom
-$tcase_mgr = New testcase($db); // 20060226 - franciscom
-
-
+$tree_mgr = New tree($db);
+$tproject_mgr = New testproject($db);
+$tsuite_mgr = New testsuite($db);
+$tcase_mgr = New testcase($db);
 
 $my_testsuiteID = isset($_REQUEST['testsuiteID']) ? intval($_REQUEST['testsuiteID']) : null;
 $my_containerID = isset($_REQUEST['containerID']) ? intval($_REQUEST['containerID']) : null;
@@ -187,9 +180,9 @@ else if ($action == 'delete_testsuite')
 	//check to see if the user said he was sure he wanted to delete
 	if($bSure)
 	{
-
-    $tsuite_mgr->delete_deep($objectID);
-    exit();
+	
+	    $tsuite_mgr->delete_deep($objectID);
+	    exit();
     
     
 		$cats = null;
@@ -250,9 +243,6 @@ else if ($action == 'delete_testsuite')
 		$smarty->assign('objectName', $tsuite_name);
 		$smarty->assign('warning', $warning);
 		$smarty->assign('link_msg', $link_msg);
-
-
-		
 	}
 }
 else if( $action == 'move_testsuite_viewer') 
@@ -269,27 +259,11 @@ else if( $action == 'move_testsuite_viewer')
 }
 else if($action == 'reorder_testsuites') //user has chosen the reorder page
 {
-
 	$object_id = is_null($my_testsuiteID) ? $my_containerID : $my_testsuiteID;
-  // $children=$tree_mgr->get_children($object_id, array("testplan" => "exclude_me","testcase" => "exclude_me"));	
-  $children=$tree_mgr->get_children($object_id, array("testplan" => "exclude_me"));	
-  
-  /*
-  if( !is_null($children) )
-  {
-  	$aselect=array();
-  	foreach($children as $the_key => $elem)
-  	{
-  	 $aselect[]= 
-  	}  
-  }
-  */
-  //echo "<pre>debug" . __FILE__ ; print_r($children); echo "</pre>";
-  //exit();
-  
-	//$cats = null;
-	//getOrderedComponentCategories($db,$my_testsuiteID,$cats);
-
+	$children = $tree_mgr->get_children($object_id, array("testplan" => "exclude_me"));	
+  	if (!sizeof($children))
+		$children = null;
+  	
 	$smarty->assign('arraySelect', $children);
 	$smarty->assign('data', $my_testsuiteID);
 }

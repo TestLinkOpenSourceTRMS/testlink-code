@@ -1,9 +1,9 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: attachmentdelete.tpl,v 1.1 2006/03/23 20:46:26 schlundus Exp $ *}
+{* $Id: attachmentdelete.tpl,v 1.2 2006/04/29 19:32:54 schlundus Exp $ *}
 {* Purpose: smarty template - show Test Results and Metrics *}
 {include file="inc_head.tpl"}
 
-<body>
+<body onunload="attachmentDlg_onUnload()" onload="attachmentDlg_onLoad()">
 <h1>{lang_get s='title_delete_attachment'}</h1>
 <p class='info'>
 {if $bDeleted == 1}

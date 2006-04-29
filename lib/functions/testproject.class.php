@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.15 $
- * @modified $Date: 2006/04/28 17:07:18 $
+ * @version $Revision: 1.16 $
+ * @modified $Date: 2006/04/29 19:32:54 $
  * @author franciscom
  *
  * 20060425 - franciscom - changes in show() following Andreas Morsing advice (schlundus)
@@ -13,14 +13,13 @@
 require_once( dirname(__FILE__). '/tree.class.php' );
 class testproject
 {
-
-var $db;
-var $tree_manager;
+	var $db;
+	var $tree_manager;
 
 function testproject(&$db)
 {
   $this->db = &$db;	
-  $this->tree_manager = New tree($this->db);
+  $this->tree_manager = new tree($this->db);
 }
 
 
@@ -48,7 +47,7 @@ function create($name,$color,$optReq,$notes)
 	                 $optReq . ",'" .
 			             $this->db->prepare_string($notes) . "')";
 			             
-	$result = @$this->db->exec_query($sql);
+	$result = $this->db->exec_query($sql);
 
 	if ($result)
 	{
@@ -59,31 +58,38 @@ function create($name,$color,$optReq,$notes)
 	return $status_ok;
 }
 
-/*
-update info on tables and on session
-
-		20060312 - franciscom - name is setted on nodes_hierarchy table
-
-*/
+/**
+ * update info on tables and on session
+ *
+ * @param type $id documentation
+ * @param type $name documentation
+ * @param type $color documentation
+ * @param type $opt_req documentation
+ * @param type $notes documentation
+ * @return type documentation
+ *
+ *	20060312 - franciscom - name is setted on nodes_hierarchy table
+ *
+ **/
 function update($id, $name, $color, $opt_req,$notes)
 {
-	$status_msg='ok';
-  $log_msg = 'Test project ' . $name . ' update: Ok.';
-	$log_level='INFO';
+	$status_msg = 'ok';
+	$log_msg = 'Test project ' . $name . ' update: Ok.';
+	$log_level = 'INFO';
 	
 	$sql = " UPDATE testprojects SET color='" . $this->db->prepare_string($color) . "', ".
-			   " option_reqs=" .  $opt_req . ", " .
-			   " notes='" . $this->db->prepare_string($notes) . "'" . 
-			   " WHERE id=" . $id;
-			   
-	$result = @$this->db->exec_query($sql);
-
+			" option_reqs=" .  $opt_req . ", " .
+			" notes='" . $this->db->prepare_string($notes) . "'" . 
+			" WHERE id=" . $id;
+	
+	$result = $this->db->exec_query($sql);
 	if ($result)
 	{
-		$sql = " UPDATE nodes_hierarchy SET name='" . 
-		         $this->db->prepare_string($name) . "' WHERE id= {$id}";
-  }
-
+		$sql = "UPDATE nodes_hierarchy SET name='" . 
+				$this->db->prepare_string($name) .
+				"' WHERE id= {$id}";
+		$result = $this->db->exec_query($sql);
+	}
 	if ($result)
 	{
 		// update session data
@@ -94,12 +100,12 @@ function update($id, $name, $color, $opt_req,$notes)
 	else
 	{
 		$status_msg = 'Update product FAILED!';
-		$log_level='ERROR';
-		$log_msg = 'FAILED SQL: ' . $sql . "\n Result: " . $this->db->error_msg();
+		$log_level ='ERROR';
+		$log_msg = $status_msg;
 	}
 	
 	tLog($log_msg,$log_level);
-	return($status_msg);
+	return $status_msg;
 }
 
 function get_by_name($name)
@@ -143,12 +149,20 @@ function get_all()
 }
 
 
-// 20060425 - franciscom - added $smarty argument (by reference)
+/**
+ * Function-Documentation
+ *
+ * @param type $smarty [ref] documentation
+ * @param type $id documentation
+ * @param type $sqlResult [default = ''] documentation
+ * @param type $action [default = 'update'] documentation
+ * @param type $modded_item_id [default = 0] documentation
+ * @return type documentation
+ *
+ *
+ **/
 function show(&$smarty,$id, $sqlResult = '', $action = 'update',$modded_item_id = 0)
 {
-	
-	// 20060425 - franciscom
-	// $smarty = new TLSmarty;
 	$smarty->assign('modify_tc_rights', has_rights($this->db,"mgt_modify_tc"));
 
 	if($sqlResult)
@@ -158,8 +172,8 @@ function show(&$smarty,$id, $sqlResult = '', $action = 'update',$modded_item_id 
 	}
 	
 	$item = $this->get_by_id($id);
-  $modded_item = $item;
-	if ( $modded_item_id )
+ 	$modded_item = $item;
+	if ($modded_item_id)
 	{
 		$modded_item = $this->get_by_id($modded_item_id);
 	}

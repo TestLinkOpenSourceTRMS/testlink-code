@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.4 2006/04/28 17:01:36 franciscom Exp $
+$Id: tcView_viewer.tpl,v 1.5 2006/04/29 19:32:54 schlundus Exp $
 viewer for test case in test specification
 
 20060427 - franciscom - added font-size in the table used for keywords
@@ -18,27 +18,27 @@ viewer for test case in test specification
   
 	<div class="groupBtn">
 	<form method="post" action="lib/testcases/tcEdit.php">
-	  <input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}">
-	  <input type="hidden" name="tcversion_id" value="{$args_testcase.id}">
+	  <input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
+	  <input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />
 
     {if $args_status_quo eq null or $args_status_quo[$args_testcase.id].executed eq null}
- 	    <input type="submit" id="edit_tc"   name="edit_tc"   value="{lang_get s='btn_edit'}">
+ 	    <input type="submit" id="edit_tc"   name="edit_tc"   value="{lang_get s='btn_edit'}" />
     {/if}
 
-		{if $args_can_delete_testcase == "yes" }
-			<input type="submit" id="delete_tc" name="delete_tc" value="{lang_get s='btn_del'}">
+	{if $args_can_delete_testcase == "yes" }
+		<input type="submit" id="delete_tc" name="delete_tc" value="{lang_get s='btn_del'}" />
     {/if}
 
     {if $args_can_delete_version == "yes" }
-				<input type="submit" id="delete_tc_version" 
-				                     name="delete_tc_version" value="{lang_get s='btn_del_this_version'}">
+		<input type="submit" id="delete_tc_version" 
+		                     name="delete_tc_version" value="{lang_get s='btn_del_this_version'}" />
     {/if}
     
     {if $args_can_move_copy == "yes" }
-    		<input type="submit" id="move_copy_tc" 
-    		                     name="move_copy_tc"   value="{lang_get s='btn_mv_cp'}">
+   		<input type="submit" id="move_copy_tc" 
+   		                     name="move_copy_tc"   value="{lang_get s='btn_mv_cp'}" />
     {/if}		                     
-		<input type="submit" id="do_create_new_version" name="do_create_new_version"   value="{lang_get s='btn_new_version'}">
+		<input type="submit" id="do_create_new_version" name="do_create_new_version"   value="{lang_get s='btn_new_version'}" />
 
 	</form>
 	</div>	
@@ -60,11 +60,11 @@ viewer for test case in test specification
 		</tr>
 		{/if}
 		
-		<tr >
+		<tr>
 			<td class="bold" colspan="2">{lang_get s='summary'}</td>
 		</tr>
 		<tr>
-			<td  colspan="2">{$args_testcase.summary}</td>
+			<td colspan="2">{$args_testcase.summary}</td>
 		</tr>
 		<tr>
 			<td class="bold" width="50%">{lang_get s='steps'}</td>
@@ -75,25 +75,23 @@ viewer for test case in test specification
 			<td>{$args_testcase.expected_results}</td>
 		</tr>
 		<tr>
-		
-		<td  colspan="2">
-		{* 20060427 - franciscom *}
-		<table style="font-size:100%;">
-	    <tr>
-	  	<td width="35%"><a href="lib/keywords/keywordsView.php" 
-				target="mainframe" class="bold">{lang_get s='keywords'}</a>: &nbsp;
+		  		<td colspan="2">
+				<table cellpadding="0" cellspacing="0" style="font-size:100%;">
+			    <tr>
+				  	<td width="35%"><a href="lib/keywords/keywordsView.php" 
+							target="mainframe" class="bold">{lang_get s='keywords'}</a>: &nbsp;
+						</td>
+					<td>
+					  	{foreach item=keyword_item from=$args_keywords_map}
+						    {$keyword_item|escape}
+						    <br />
+						{/foreach}
+					</td>
+				</tr>
+				</table>	
 			</td>
-			<td>
-				{* 20060423 - franciscom *}
-		  	{foreach item=keyword_item from=$args_keywords_map}
-				    {$keyword_item|escape}
-				    <br>
-				{/foreach}
-			</td>
-			</tr>
-		</table>	
-		</td>
 		</tr>
+		
 		
 	{if $opt_requirements == TRUE && $view_req_rights == "yes"}
 		<tr>
@@ -124,3 +122,4 @@ viewer for test case in test specification
 		{/if}
 		</p>
 	</div>
+	

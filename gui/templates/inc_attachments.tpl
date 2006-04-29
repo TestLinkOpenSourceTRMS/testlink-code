@@ -1,5 +1,5 @@
 {* Testlink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: inc_attachments.tpl,v 1.1 2006/03/23 20:46:26 schlundus Exp $ *}
+{* $Id: inc_attachments.tpl,v 1.2 2006/04/29 19:32:54 schlundus Exp $ *}
 {* Purpose: smarty template - show SQL update result *}
 {* INPUT: 
 	
@@ -18,7 +18,7 @@ var warning_delete_attachment = "{lang_get s='warning_delete_attachment'}";
 	</tr>
 	{foreach from=$attachmentInfos item=info}
 	<tr>
-		<td><a href="javascript:openFileDownloadWindow({$info.id})" class="bold">{$info.title}</a> - <span class="italic">{$info.file_name} ({$info.file_size} bytes, {$info.file_type}) {localize_date d=$info.date_added}</span>
+		<td><a href="lib/attachments/attachmentdownload.php?id={$info.id}" target="_blank" class="bold">{$info.title}</a> - <span class="italic">{$info.file_name} ({$info.file_size} bytes, {$info.file_type}) {localize_date d=$info.date_added}</span>
 		<a href="javascript:deleteAttachment_onClick({$info.id});"><img style="border:none" alt="{lang_get s='alt_delete_build'}" src="icons/thrash.png"/></a>
 		</td>
 	</tr>

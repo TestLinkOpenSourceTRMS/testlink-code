@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: containerDelete.tpl,v 1.6 2006/04/10 09:17:34 franciscom Exp $ 
+$Id: containerDelete.tpl,v 1.7 2006/04/29 19:32:54 schlundus Exp $ 
 Purpose: smarty template - delete containers in test specification
 
 20060309 - franciscom
@@ -14,7 +14,7 @@ Purpose: smarty template - delete containers in test specification
 
 {if $sqlResult == ''}
 
-  <br>
+  <br />
   {section name=idx loop=$warning}
   		{lang_get s='test_case'} {$warning[idx]} {lang_get s=$link_msg[idx]}<br>
   {/section}
@@ -25,7 +25,7 @@ Purpose: smarty template - delete containers in test specification
 	<p>{lang_get s='question_del'} {$level|escape}?</p>
 
 	<form method="post" 
-	      action="lib/testcases/containerEdit.php?sure=yes&objectID={$objectID|escape}">
+	      action="lib/testcases/containerEdit.php?sure=yes&amp;objectID={$objectID|escape}">
 
 
 	

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: treeMenu.inc.php,v $
  *
- * @version $Revision: 1.15 $
- * @modified $Date: 2006/03/24 20:32:16 $ by $Author: schlundus $
+ * @version $Revision: 1.16 $
+ * @modified $Date: 2006/04/29 19:32:54 $ by $Author: schlundus $
  * @author Martin Havlat
  *
  * 	This file generates tree menu for test specification and test execution.
@@ -21,13 +21,7 @@
  * 20060305 - franciscom - towards TL 1.7
  *
  **/
- 
 require_once '../../config.inc.php';
-
-// 20060305 - franciscom
-require_once 'tree.class.php';
-require_once 'testproject.class.php';
-
 
 define('TL_TIME_LIMIT_EXTEND', 30); // limit of possible connection delay in seconds
 
@@ -74,12 +68,9 @@ function invokeMenu($menustring, $highLight = "")
 		$mid->setMenuStructureString($menustring);
 		$mid->parseStructureForMenu('treemenu1');
 		
-		//I had to figure this one out on my own.
 		//The method I'm using will color an item in the tree if you pass it a value
 		if($highLight != "")
-		{
 			$mid->setSelectedItemByUrl('treemenu1', $highLight);
-    }
     
 		//print the client side menu
 		$data = $mid->newTreeMenu('treemenu1');
@@ -138,29 +129,21 @@ function filterString($str)
  * @param string $getArguments additional $_GET arguments
  * @return string input string for layersmenu
  *
- * Revisions:
- * @author Francisco Mancardi - fm - reduce global coupling
- *
  */
 function generateTestSpecTree(&$db,$tproject_id, $tproject_name, 
                               $linkto, $hidetc, $getArguments = '')
 {
 	$menustring = null; // storage variable for output
 
-	$tree_manager = New tree($db);
-	$tproject_mgr = New testproject($db);
+	$tree_manager = new tree($db);
+	$tproject_mgr = new testproject($db);
 	
-	// 20060305 - franciscom - interface changes
 	$test_spec = $tree_manager->get_subtree($tproject_id,array('testplan'=>'exclude me'),
 	                                                     array('testcase'=>'exclude my children'));
 
-  
-  //echo "<pre>debug" . __FUNCTION__; print_r($test_spec); echo "</pre>";
-  
-  $hash_descr_id = $tree_manager->get_available_node_types();
-  $hash_id_descr = array_flip($hash_descr_id);
-  
-	$testcase_count=$tproject_mgr->count_testcases($tproject_id);
+	$hash_descr_id = $tree_manager->get_available_node_types();
+	$hash_id_descr = array_flip($hash_descr_id);
+	$testcase_count = $tproject_mgr->count_testcases($tproject_id);
 	
 	if (TL_TREE_KIND == 'LAYERSMENU')
 	{ 
@@ -176,62 +159,57 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,
 	  // expand=-
 	  //
 		$menustring .= "." . "|" . 
-		               $tproject_name . " (" . $testcase_count . ")" . "|" . 
+		               filterString($tproject_name) . " (" . $testcase_count . ")" . "|" . 
 		               $linkto . "?edit=testproject&data=" . $tproject_id . $getArguments . "|" .
 		               "testproject". "|" . "|" . "workframe" ."|\n";
 	}
  	
-  // 20060223 - franciscom
-  if( count($test_spec) > 0 )
-  {
-   	$pivot=$test_spec[0];
-   	$the_level=1;
-    $level=array();
+	if(count($test_spec))
+	{
+	   	$pivot = $test_spec[0];
+	   	$the_level = 1;
+	    $level = array();
   
-   	foreach ($test_spec as $elem)
-   	{
-   	 $current = $elem;
-  
-     if( $pivot['parent_id'] == $current['parent_id'])
-     {
-       $the_level=$the_level;
-     }
-     else if ($pivot['id'] == $current['parent_id'])
-     {
-     	  $the_level++;
-     	  $level[$current['parent_id']]=$the_level;
-     }
-     else 
-     {
-     	  $the_level=$level[$current['parent_id']];
-     }
-     
-     // 20060303 - franciscom - added icon
-     $icon="";
-     if( $hash_id_descr[$current['node_type_id']] == "testcase") 
-     {
-       $icon="gnome-starthere-mini.png";	
-     }
-     
-     $menustring .= str_repeat('.',$the_level) . ".|" . 
-                    " " . $current['name'] . "|" . 
-                    $linkto . "?edit=" . $hash_id_descr[$current['node_type_id']] . 
-                              "&data=" . $current['id'] . $getArguments . "|" . 
-                    $hash_id_descr[$current['node_type_id']] . "|" . $icon . "|" . "workframe" ."|\n"; 
-     
-     // update pivot
-     $level[$current['parent_id']]= $the_level;
-     $pivot=$elem;
-   	}
+		foreach ($test_spec as $elem)
+		{
+			$current = $elem;
+			
+			/*	
+			if($pivot['parent_id'] == $current['parent_id'])
+			{
+				$the_level = $the_level;
+			}
+			*/
+			if ($pivot['id'] == $current['parent_id'])
+			{
+				$the_level++;
+				$level[$current['parent_id']] = $the_level;
+			}
+			else 
+			{
+				$the_level = $level[$current['parent_id']];
+			}
+		
+			$icon = "";
+			if($hash_id_descr[$current['node_type_id']] == "testcase") 
+			{
+				$icon = "gnome-starthere-mini.png";	
+			}
+		
+			$menustring .= str_repeat('.',$the_level) . ".|" . 
+							" " . filterString($current['name']) . "|" . 
+						$linkto . "?edit=" . $hash_id_descr[$current['node_type_id']] . 
+						"&data=" . $current['id'] . $getArguments . "|" . 
+						$hash_id_descr[$current['node_type_id']] . "|" . $icon . "|" . "workframe" ."|\n"; 
+		
+			$level[$current['parent_id']] = $the_level;
+			$pivot = $elem;
+		}
 	}
 	
-	//echo $menustring;
 	return $menustring;
- 	
- 	
-	
-	exit();
-	
+ 	//The remaining code stays until all works as expected
+	//but will not executed	
 	
 	if (!$tproject_id)
 	{

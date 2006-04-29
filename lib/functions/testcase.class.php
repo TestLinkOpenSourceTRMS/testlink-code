@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.15 $
- * @modified $Date: 2006/04/28 17:21:45 $ $Author: franciscom $
+ * @version $Revision: 1.16 $
+ * @modified $Date: 2006/04/29 19:32:54 $ $Author: schlundus $
  * @author franciscom
  *
  * 20060425 - franciscom - changes in show() following Andreas Morsing advice (schlundus)
@@ -13,7 +13,7 @@
  */
 
 require_once( dirname(__FILE__) . '/tree.class.php' );
-require_once( dirname(__FILE__) . '/requirements.inc.php' );  // 20060425 - franciscom
+require_once( dirname(__FILE__) . '/requirements.inc.php' );
 
 class testcase
 {
@@ -26,11 +26,11 @@ var $my_node_type;
 
 function testcase(&$db)
 {
-  $this->db = &$db;	
-  $this->tree_manager = New tree($this->db);
+	$this->db = &$db;	
+	$this->tree_manager = New tree($this->db);
 	$this->node_types_descr_id=$this->tree_manager->get_available_node_types();
-  $this->node_types_id_descr=array_flip($this->node_types_descr_id);
-  $this->my_node_type=$this->node_types_descr_id['testcase'];
+	$this->node_types_id_descr=array_flip($this->node_types_descr_id);
+	$this->my_node_type=$this->node_types_descr_id['testcase'];
 }
 
 
@@ -133,57 +133,52 @@ function get_all()
 function show(&$smarty,$id, $user_id, $version_id=TC_ALL_VERSIONS, $action='', 
               $msg_result='', $refresh_tree='yes')
 {
-
-	$the_tpl=config_get('tpl');
+	$the_tpl = config_get('tpl');
 	$arrReqs = null;
 	$can_edit = has_rights($this->db,"mgt_modify_tc");
 
-  
-  if( is_array($id) )
-  {
-    $a_id=$id;
-  }
-  else
-  {
-    $a_id=array($id);  
-  }
+	if(is_array($id))
+	{
+		$a_id = $id;
+	}
+	else
+	{
+		$a_id = array($id);  
+	}
  
-  $tc_current_version=array();
-  $tc_other_versions =array();
-  $status_quo_map=array();
-  $keywords_map=array();
-  $arrReqs=array();
+	$tc_current_version = array();
+	$tc_other_versions = array();
+	$status_quo_map = array();
+	$keywords_map = array();
+	$arrReqs = array();
   
-  foreach($a_id as $key => $tc_id)
-  {
-      $tc_array = $this->get_by_id($tc_id,$version_id);
-      
-    	// 20060326 - get the status quo of execution and links of tc versions
-    	$status_quo_map[] = $this->get_versions_status_quo($tc_id);
-    	
-    	//20060324 - franciscom
-    	$keywords_map[]=$this->get_keywords_map($tc_id,' ORDER BY KEYWORD ASC ');
-    	$tc_array[0]['keywords']=$keywords_map;
-    	$tc_current_version[] = array($tc_array[0]);
-    	
-    	$qta_versions = count($tc_array);
-    	if( $qta_versions > 1 )
-    	{
-    	  $tc_other_versions[] = array_slice($tc_array,1);
-    	}
-    	else
-    	{
-    	  $tc_other_versions[] = null;
-    	}
-    	
-    	$linked_tcversions = $this->get_linked_versions($tc_id,'EXECUTED');
-    	
-    	// get assigned REQs
-    	$arrReqs[] = getReq4Tc($this->db,$tc_id);
-  }
+	foreach($a_id as $key => $tc_id)
+	{
+		$tc_array = $this->get_by_id($tc_id,$version_id);
+		
+		//get the status quo of execution and links of tc versions
+		$status_quo_map[] = $this->get_versions_status_quo($tc_id);
+		
+		$keywords_map[] = $this->get_keywords_map($tc_id,' ORDER BY KEYWORD ASC ');
+		$tc_array[0]['keywords'] = $keywords_map;
+		$tc_current_version[] = array($tc_array[0]);
+		
+		$qta_versions = count($tc_array);
+		if($qta_versions > 1)
+		{
+			$tc_other_versions[] = array_slice($tc_array,1);
+		}
+		else
+		{
+			$tc_other_versions[] = null;
+		}
+		
+		$linked_tcversions = $this->get_linked_versions($tc_id,'EXECUTED');
+		// get assigned REQs
+		$arrReqs[] = getReq4Tc($this->db,$tc_id);
+	}
   
-    	
-	$smarty->assign('action',$action);
+    $smarty->assign('action',$action);
 	$smarty->assign('sqlResult',$msg_result);
 	$smarty->assign('can_edit',$can_edit);
 	$smarty->assign('can_delete_testcase',$can_edit);
@@ -194,7 +189,6 @@ function show(&$smarty,$id, $user_id, $version_id=TC_ALL_VERSIONS, $action='',
 	
 	$smarty->assign('testcase_curr_version',$tc_current_version);
 	$smarty->assign('testcase_other_versions',$tc_other_versions);
-	
 	
 	$smarty->assign('arrReqs',$arrReqs);
 	$smarty->assign('view_req_rights', has_rights($this->db,"mgt_view_req")); 

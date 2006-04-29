@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.60 $
- * @modified $Date: 2006/04/26 07:02:15 $ by $Author: franciscom $
+ * @version $Revision: 1.61 $
+ * @modified $Date: 2006/04/29 19:32:50 $ by $Author: schlundus $
  *
  *
  * Constants and configuration parameters used throughout TestLink 
@@ -393,7 +393,7 @@ define("TL_ROLES_GUEST",5);
 define("TL_ROLES_NONE",3);
 define("TL_ROLES_NONE_DESC","<no rights>");
 define("TL_ROLES_UNDEFINED",0);
-define("TL_ROLES_UNDEFINED_DESC","<undefined>");
+define("TL_ROLES_UNDEFINED_DESC","<inherited>");
 
 define("TL_DEFAULT_ROLEID",TL_ROLES_GUEST);
 

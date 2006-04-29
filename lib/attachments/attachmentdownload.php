@@ -5,11 +5,12 @@
  *
  * Filename $RCSfile: attachmentdownload.php,v $
  *
- * @version $Revision: 1.1 $
- * @modified $Date: 2006/03/23 20:46:27 $ by $Author: schlundus $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2006/04/29 19:32:54 $ by $Author: schlundus $
  *
  * Download dialog
 **/
+ob_start();
 require_once('../../config.inc.php');
 require_once('../functions/common.php');
 require_once('../functions/attachments.inc.php');
@@ -24,13 +25,12 @@ if ($attachmentInfo && checkAttachmentID($db,$id,$attachmentInfo))
 		$content = getAttachmentContentFromDB($db,$id);
 	else
 		$content = getAttachmentContentFromFS($db,$id);
-		
 	if (strlen($content))
 	{
-		@ob_end_clean();
-		header("Pragma: public");
-		header("Content-Type: {$attachmentInfo['file_type']}");
-		header("Content-Length: ".$attachmentInfo['file_size']);
+		ob_end_clean();
+		header('Pragma: no-cache');
+		header('Content-Type: '.$attachmentInfo['file_type']);
+		header('Content-Length: '.$attachmentInfo['file_size']);
 		header("Content-Disposition: attachment; filename=\"{$attachmentInfo['file_name']}\"");
 		header("Content-Description: Download Data");
 		echo $content;

@@ -67,6 +67,8 @@ function onLoad()
 		o.style.display = "block";
 }
 
-function viewElement(obj,show_me){
-  obj.style.display= (show_me)?'':'none';
+function viewElement(obj,show_me)
+{
+	if (obj)
+		obj.style.display = (show_me ? '' : 'none');
 }

@@ -2,34 +2,30 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testsuite.class.php,v $
- * @version $Revision: 1.9 $
- * @modified $Date: 2006/04/26 07:07:55 $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2006/04/29 19:32:54 $
  * @author franciscom
  *
  * 20060425 - franciscom - changes in show() following Andreas Morsing advice (schlundus)
  *
  */
 
-require_once( dirname(__FILE__). '/tree.class.php' );
-require_once( dirname(__FILE__). '/testcase.class.php' ); // 20060309 - franciscom
-
 class testsuite
 {
-
-var $db;
-var $tree_manager;
-var $node_types_descr_id;
-var $node_types_id_descr;
-var $my_node_type;
+	var $db;
+	var $tree_manager;
+	var $node_types_descr_id;
+	var $node_types_id_descr;
+	var $my_node_type;
 
 function testsuite(&$db)
 {
-  $this->db = &$db;	
-
-  $this->tree_manager = New tree($this->db);
+	$this->db = &$db;	
+	
+	$this->tree_manager =  new tree($this->db);
 	$this->node_types_descr_id=$this->tree_manager->get_available_node_types();
-  $this->node_types_id_descr=array_flip($this->node_types_descr_id);
-  $this->my_node_type=$this->node_types_descr_id['testsuite'];
+	$this->node_types_id_descr=array_flip($this->node_types_descr_id);
+	$this->my_node_type=$this->node_types_descr_id['testsuite'];
 }
 
 // 20060309 - franciscom
@@ -179,11 +175,19 @@ function get_all()
 }
 
 
-// 20060425 - franciscom - added $smarty argument (by reference)
-/* 20060225 - franciscom */
+/**
+ * Function-Documentation
+ *
+ * @param type $smarty [ref] documentation
+ * @param type $id documentation
+ * @param type $sqlResult [default = ''] documentation
+ * @param type $action [default = 'update'] documentation
+ * @param type $modded_item_id [default = 0] documentation
+ * @return type documentation
+ *
+ **/
 function show(&$smarty,$id, $sqlResult = '', $action = 'update',$modded_item_id = 0)
 {
-	
 	$smarty->assign('modify_tc_rights', has_rights($this->db,"mgt_modify_tc"));
 
 	if($sqlResult)
@@ -193,21 +197,17 @@ function show(&$smarty,$id, $sqlResult = '', $action = 'update',$modded_item_id 
 	}
 	
 	$item = $this->get_by_id($id);
-  $modded_item = $item;
+	$modded_item = $item;
 	if ( $modded_item_id )
 	{
 		$modded_item = $this->get_by_id($modded_item_id);
 	}
   
-  echo "<pre>debug" . __FUNCTION__; print_r($modded_item); echo "</pre>";
-  echo "<pre>debug" . __FUNCTION__; print_r($sqlResult); echo "</pre>";
-  
-  
 	$smarty->assign('moddedItem',$modded_item);
 	$smarty->assign('level', 'testsuite');
 	$smarty->assign('container_data', $item);
 	$smarty->assign('sqlResult',$sqlResult);
-  $smarty->display('containerView.tpl');
+	$smarty->display('containerView.tpl');
 }
 
 

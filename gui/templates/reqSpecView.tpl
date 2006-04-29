@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecView.tpl,v 1.15 2006/04/08 19:51:38 schlundus Exp $ *}
+{* $Id: reqSpecView.tpl,v 1.16 2006/04/29 19:32:54 schlundus Exp $ *}
 {* 
    Purpose: smarty template - view a requirement specification
    Author: Martin Havlat 
@@ -21,6 +21,13 @@
 	{lang_get s='req_edit_spec'}
 </h1>
 
+{literal}
+<script type="text/javascript">
+{/literal}
+var warning_delete_requirements = "{lang_get s='warning_delete_requirements'}";
+{literal}
+</script>
+{/literal}
 {* show SQL result *}
 {include file="inc_update.tpl" result=$sqlResult item=$sqlItem name=$name action=$action}
 	
@@ -100,7 +107,7 @@
 		onclick="javascript: box('frmReqList', false);" />
 
  <input type="submit" name="create_tc_from_req" value="{lang_get s='req_select_create_tc'}" />
- <input type="submit" name="req_select_delete" value="{lang_get s='req_select_delete'}" />
+ <input type="submit" onclick="return confirm(warning_delete_requirements)" name="req_select_delete" value="{lang_get s='req_select_delete'}" />
 </div>
 {/if}
 </form>

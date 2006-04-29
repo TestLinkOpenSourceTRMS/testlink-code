@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: containerEdit.tpl,v 1.9 2006/02/27 07:59:42 franciscom Exp $
+$Id: containerEdit.tpl,v 1.10 2006/04/29 19:32:54 schlundus Exp $
 Purpose: smarty template - edit test specification: containers 
 
 20060225 - franciscom 
@@ -16,7 +16,6 @@ lang_get('category');
 <div class="workBack">
 
 <h1>{lang_get s='title_edit_level'} {$level}</h1> 
-
 {if $level == 'testsuite'}
 	<form method="post" action="lib/testcases/containerEdit.php?testsuiteID={$containerID}" /> 
 		<div style="float: right;">

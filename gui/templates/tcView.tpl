@@ -1,11 +1,9 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView.tpl,v 1.14 2006/04/26 07:07:55 franciscom Exp $
+$Id: tcView.tpl,v 1.15 2006/04/29 19:32:54 schlundus Exp $
 Purpose: smarty template - view test case in test specification
 
 20060425 - franciscom - can manage multiple test cases
-20060316 - franciscom - added action
-20060303 - franciscom
 *}
 
 {include file="inc_head.tpl" openHead='yes'}
@@ -50,23 +48,23 @@ Purpose: smarty template - view test case in test specification
   	    {foreach item=my_testcase from=$testcase_other_versions[idx]}
   	          <span style="cursor: pointer" class="type1" 
   	                onclick="viewElement(document.getElementById('{$my_testcase.version}'),document.getElementById('{$my_testcase.version}').style.display=='none')"> Version {$my_testcase.version} </span>
-  	          <br>
+  	          <br />
   	          <div id="{$my_testcase.version}" class="workBack">
 				
 				      {include file="tcView_viewer.tpl" 
-				               args_testcase=$my_testcase 
-			                 args_keywords_map=$keywords_map[idx] 
-				               args_reqs=$arrReqs[idx]
-				               args_status_quo=$status_quo[idx]
-				         
-				               args_can_edit=$can_edit 
-				               args_can_move_copy="no" 
-   			               args_can_delete_testcase='no'
-			                 args_can_delete_version=$can_delete_version
-			                 args_show_version="no" 
-				               args_show_title="no"}
+						args_testcase=$my_testcase 
+						args_keywords_map=$keywords_map[idx] 
+						args_reqs=$arrReqs[idx]
+						args_status_quo=$status_quo[idx]
+						
+						args_can_edit=$can_edit 
+						args_can_move_copy="no" 
+						args_can_delete_testcase='no'
+						args_can_delete_version=$can_delete_version
+						args_show_version="no" 
+						args_show_title="no"}
   	         </div>
-  	         <br>
+  	         <br />
   	         
 		    {/foreach}
 		    </div>
@@ -87,5 +85,6 @@ Purpose: smarty template - view test case in test specification
       	{* ---------------------------------------------------------------- *}
     {/if}
 {/section}
+</div>
 </body>
 </html>

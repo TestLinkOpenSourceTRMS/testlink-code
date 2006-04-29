@@ -2,13 +2,14 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: plan.inc.php,v $
- * @version $Revision: 1.31 $
- * @modified $Date: 2006/03/22 11:54:59 $ $Author: franciscom $
+ * @version $Revision: 1.32 $
+ * @modified $Date: 2006/04/29 09:22:43 $ $Author: franciscom $
  * @author 	Martin Havlat
  *
  * Functions for management: 
  * Test Plans, Test Case Suites, Milestones, Testers assignment
  *
+ * 20060429 - franciscom - adjust table name
  * 20060104 - fm - added copy_deep_testplan() 
  * 20060103 - scs - ADOdb changes
  * 20051008 - scs - refactored
@@ -236,7 +237,7 @@ function deleteTestPlanPriorityFields(&$db,$id)
 
 function deleteTestPlanMilestones(&$db,$id)
 {
-	$sql = "DELETE FROM milestone WHERE projid=" . $id;
+	$sql = "DELETE FROM milestones WHERE testplan_id=" . $id;
 	$result = $db->exec_query($sql);
 	
 	return $result ? 1: 0;
@@ -332,10 +333,10 @@ function insertTestPlanComponent(&$db,$tp_id,$mgtCompID)
  * @param type $C documentation
  * @return type documentation
  **/
-function insertTestPlanMileStone(&$db,$projID,$name,$date,$A,$B,$C)
+function insertTestPlanMileStone(&$db,$testplan_id,$name,$date,$A,$B,$C)
 {
-	$sql = "INSERT INTO milestone (projid,name,date,A,B,C) VALUES (" . 
-			$projID . ",'" . $db->prepare_string($name) . "','" . $db->prepare_string($date) . "'," . $A . "," . 
+	$sql = "INSERT INTO milestones (testplan_id,name,date,A,B,C) VALUES (" . 
+			$testplan_id . ",'" . $db->prepare_string($name) . "','" . $db->prepare_string($date) . "'," . $A . "," . 
 			$B . "," . $C . ")";
 	$result = $db->exec_query($sql);
 	
@@ -356,7 +357,7 @@ function insertTestPlanMileStone(&$db,$projID,$name,$date,$A,$B,$C)
  **/
 function updateMileStone(&$db,$id,$name,$date,$A,$B,$C)
 {
-	$sql = "UPDATE milestone SET name='" . $db->prepare_string($name) . "', " .
+	$sql = "UPDATE milestones SET name='" . $db->prepare_string($name) . "', " .
 	       " date='" . $db->prepare_string($date) . "', " . 
 	       " A=" . $A . ", B=" . $B . ", C=" . $C . " WHERE id=" . $id;
 	$result = $db->exec_query($sql);
@@ -373,7 +374,7 @@ function updateMileStone(&$db,$id,$name,$date,$A,$B,$C)
  **/
 function deleteMileStone(&$db,$id)
 {
-	$sql = "DELETE FROM milestone WHERE id=" . $id;
+	$sql = "DELETE FROM milestones WHERE id=" . $id;
 	$result = $db->exec_query($sql);
 	
 	return $result ? 1 : 0;
@@ -382,8 +383,8 @@ function deleteMileStone(&$db,$id)
 function getTestPlanMileStones(&$db,$projID,&$mileStones,$mileStoneID = null)
 {
 	$sql = " SELECT id,name as title,date,A,B,C " .
-	       " FROM milestone " .
-	       " WHERE projid=" . $projID . 
+	       " FROM milestones " .
+	       " WHERE testplan_id=" . $projID . 
 	       " AND to_days(date) >= to_days(now()) ";
 	if (!is_null($mileStoneID))
 		$sql .= "AND id = " . $mileStoneID;		   

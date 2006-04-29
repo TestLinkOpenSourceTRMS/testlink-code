@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: product.inc.php,v $
- * @version $Revision: 1.14 $
- * @modified $Date: 2006/03/11 23:09:19 $
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2006/04/29 09:22:42 $
  * @author Martin Havlat
  *
  * Functions for Product management (create,update,delete)
@@ -40,7 +40,7 @@ function deleteProduct(&$db,$id, &$error)
 			" AND testplans.prodid=" . $id, 
 			'info_build_delete_fails'),
 		// delete milestones
-		array ("DELETE milestone FROM testplans,milestone WHERE milestone.projid=testplans.id" .
+		array ("DELETE milestones FROM testplans,milestones WHERE milestones.projid=testplans.id" .
 				" AND testplans.prodid=" . $id, 
 			'info_milestones_delete_fails'),
 		// delete priority

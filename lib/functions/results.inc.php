@@ -2,8 +2,8 @@
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: results.inc.php,v $
- * @version $Revision: 1.31 $
- * @modified $Date: 2006/02/25 21:48:24 $   $Author: schlundus $
+ * @version $Revision: 1.32 $
+ * @modified $Date: 2006/04/29 09:22:42 $   $Author: franciscom $
  * 
  * @author 	Martin Havlat 
  * @author 	Chad Rosen (original report definition)
@@ -616,8 +616,8 @@ function getPriorityReport(&$db,$tpID, $buildID = 'all')
 	}
 
 	//This next section gets the milestones information
-	$sql = " SELECT name,date,A,B,C FROM milestone " .
-	       " WHERE projid=" . $tpID . " AND to_days(date) >= to_days(now()) " .
+	$sql = " SELECT name,date,A,B,C FROM milestones " .
+	       " WHERE testplan_id=" . $tpID . " AND to_days(date) >= to_days(now()) " .
 			   " order by date limit 1";
 	$result = $db->exec_query($sql); //Run the query
 	$numRows = $db->num_rows($result); //How many rows

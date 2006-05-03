@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.16 $
- * @modified $Date: 2006/04/29 19:32:54 $ $Author: schlundus $
+ * @version $Revision: 1.17 $
+ * @modified $Date: 2006/05/03 07:17:18 $ $Author: franciscom $
  * @author franciscom
  *
  * 20060425 - franciscom - changes in show() following Andreas Morsing advice (schlundus)
@@ -689,17 +689,14 @@ function get_by_id($id,$version_id=TC_ALL_VERSIONS, $get_active=0, $get_open=0)
         ORDER BY tcversions.version DESC";
 
   $recordset = $this->db->get_recordset($sql);
-  
-  //echo "<pre>debug" . __FUNCTION__; print_r($recordset); echo "</pre>";
-  
   return($recordset ? $recordset : null);
 }
 
 
-// 20060326 - franciscom
 //
 // args:
 //       id: test case id
+//       [tcversion_id]: can be a single value or an array
 //
 // returns a recorset with the following fields
 //
@@ -714,15 +711,32 @@ function get_by_id($id,$version_id=TC_ALL_VERSIONS, $get_active=0, $get_open=0)
 //                 tcversion_id if has executions 
 //
 //
-function get_versions_status_quo($id)
+// rev : 
+//      20060430 - franciscom 
+//      added new argument 
+//      20060326 - franciscom
+function get_versions_status_quo($id, $tcversion_id=null)
 {
+    $tcversion_filter='';
+    if(!is_null($tcversion_id))
+    {
+      if(is_array($tcversion_id))
+      {
+         $tcversion_filter=" AND NH.id IN (" . implode(",",$tcversion_id) . ") ";
+      }
+      else
+      {
+         $tcversion_filter=" AND NH.id={$tcversion_id} ";
+      }
+      
+    }  
 		$sql="SELECT DISTINCT NH.id AS tcversion_id,
 		                      T.tcversion_id AS linked,
 		                      E.tcversion_id AS executed
 		      FROM   nodes_hierarchy NH
 		      LEFT OUTER JOIN testplan_tcversions T ON T.tcversion_id = NH.id
 		      LEFT OUTER JOIN executions E ON E.tcversion_id = NH.id
-		      WHERE  NH.parent_id = {$id}"; 
+		      WHERE  NH.parent_id = {$id} {$tcversion_filter}"; 
 		$recordset = $this->db->fetchRowsIntoMap($sql,'tcversion_id');
   	return($recordset);
 }

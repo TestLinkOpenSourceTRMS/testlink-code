@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: tree.class.php,v $
  *
- * @version $Revision: 1.13 $
- * @modified $Date: 2006/04/28 09:12:20 $ by $Author: havlat $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2006/05/03 07:26:02 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * 20060316 - franciscom - bug on get_path
@@ -213,8 +213,6 @@ function get_path_new($node_id,$to_node_id=null,$format='full')
 {
  		$the_path=array();
     $this->_get_path($node_id,$the_path,$to_node_id,$format); 
-    
-    //echo "<pre>debug" . __FUNCTION__; print_r($the_path); echo "</pre>";
     return ($the_path);
     
 }
@@ -410,7 +408,7 @@ function get_subtree($node_id,$exclude_node_types=null,
  		$the_subtree=array();
  		
  		// Generate NOT IN CLAUSE to exclude some node types
- 		$not_ib_clause='';
+ 		$not_in_clause='';
  	  if( !is_null($exclude_node_types) )
   	{
   			$exclude=array();

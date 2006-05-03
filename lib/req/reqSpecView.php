@@ -4,14 +4,15 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqSpecView.php,v $
- * @version $Revision: 1.22 $
- * @modified $Date: 2006/04/08 19:51:42 $ by $Author: schlundus $
+ * @version $Revision: 1.23 $
+ * @modified $Date: 2006/05/03 15:51:17 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Screen to view existing requirements within a req. specification.
  * 
  * 20050930 - MHT - Database schema changed (author, modifier, status, etc.)
  * 20060110 - fm  - removed onchange event management
+ * 20060503 - franciscom - added control on attachement repository when FileSystem
 **/
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -19,6 +20,7 @@ require_once("users.inc.php");
 require_once('requirements.inc.php');
 require_once('attachments.inc.php');
 require_once("../../third_party/fckeditor/fckeditor.php");
+require_once(dirname("__FILE__") . "/../functions/configCheck.php");
 testlinkInitPage($db);
 
 $sqlResult = null;
@@ -84,6 +86,21 @@ elseif (isset($_REQUEST['editReq']))
 	$smarty->assign('tableName','requirements');	
 	$attachmentInfos = getAttachmentInfos($db,$idReq,'requirements');
 	$smarty->assign('attachmentInfos',$attachmentInfos);	
+
+  // -----------------------------------------------------------
+  // 20060503 - franciscom
+  $attach['status_ok']=true;
+  $attach['msg']='';
+  	
+  $repository['type']=config_get('repositoryType');
+  $repository['path']=config_get('repositoryPath');
+  if( $repository['type'] == TL_REPOSITORY_TYPE_FS )
+  {
+    $attach = checkForRepositoryDir($repository['path']);
+  }
+  // -----------------------------------------------------------
+
+
 	
 	$bGetReqs = FALSE;
 }
@@ -146,6 +163,9 @@ $arrSpec = $tproject->getReqSpec($tprojectID,$idSRS);
 
 $arrSpec[0]['author'] = getUserName($db,$arrSpec[0]['author_id']);
 $arrSpec[0]['modifier'] = getUserName($db,$arrSpec[0]['modifier_id']);
+
+
+$smarty->assign('attach', $attach);  // 20060503 - franciscom
 
 $smarty->assign('arrSpec', $arrSpec);
 $smarty->assign('arrReq', $arrReq);

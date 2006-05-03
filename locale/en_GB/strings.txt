@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.59 $
- * @modified $Date: 2006/05/03 08:44:06 $ $Author: franciscom $
+ * @version $Revision: 1.60 $
+ * @modified $Date: 2006/05/03 15:51:17 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
@@ -1349,5 +1349,9 @@ $TLS_linked_and_executed = "is linked to test plan(s) and has been executed";
 $TLS_linked_but_not_executed = "is linked to test plan(s)";
 
 $TLS_remove_tc = "Remove";
+
+$TLS_attachment_disabled="Attachment feature disabled";
+$TLS_attachments_dir="directory for attachments:";
+$TLS_does_not_exist="does not exist";
 
 ?>

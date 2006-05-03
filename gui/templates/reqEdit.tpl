@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqEdit.tpl,v 1.11 2006/03/23 20:46:26 schlundus Exp $ *}
+{* $Id: reqEdit.tpl,v 1.12 2006/05/03 15:51:17 franciscom Exp $ *}
 {* Purpose: smarty template - create / edit a req *}
 {* Author: Martin Havlat *}
 {* Revisions:
@@ -78,7 +78,8 @@
 		</td>
 	</tr>
 </table>
-{include file="inc_attachments.tpl"}
+
+{include file="inc_attachments.tpl" arg_attach_control=$attach}
 
 	<input type="hidden" name="idReq" value="{$arrReq.id}" />
 	<input type="hidden" name="updateReq" />

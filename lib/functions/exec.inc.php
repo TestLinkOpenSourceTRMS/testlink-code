@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: exec.inc.php,v $
  *
- * @version $Revision: 1.26 $
- * @modified $Date: 2006/04/10 09:08:44 $ $Author: franciscom $
+ * @version $Revision: 1.27 $
+ * @modified $Date: 2006/05/03 07:10:16 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -158,12 +158,6 @@ function editTestResults(&$db,$user_id, $exec_data, $tplan_id,$build_id,$map_las
 	
 	$bugInterfaceOn = config_get('bugInterfaceOn');
 	$tc_status_map = config_get('tc_status');
-	
-	echo "<pre>debug" . __FUNCTION__; print_r($exec_data['tc_version']); echo "</pre>";
-	echo "<pre>debug" . __FUNCTION__; print_r($exec_data['notes']); echo "</pre>";
-	echo "<pre>debug" . __FUNCTION__; print_r($exec_data['status']); echo "</pre>";
-	echo "<pre>debug \$map_last_exec" . __FUNCTION__; print_r($map_last_exec); echo "</pre>";
-	
 	$db_now = $db->db_now();
 	
 	$num_tc = count($tcData['tc']);
@@ -195,8 +189,6 @@ function editTestResults(&$db,$user_id, $exec_data, $tplan_id,$build_id,$map_las
 	    	    (build_id,tester_id,status,testplan_id,tcversion_id,execution_ts,notes)
 	      	  VALUES ( {$build_id}, {$user_id}, '{$exec_data['status'][$tcversion_id]}',
 	      	           {$tplan_id}, {$tcversion_id},{$db_now},'{$my_notes}')";
-	      	  
-	    echo "<pre>debug" . __FUNCTION__; print_r($sql); echo "</pre>";   	  
 	    $db->exec_query($sql);  	     
     }
 	
@@ -412,12 +404,14 @@ function write_execution(&$db,$user_id, $exec_data, $tplan_id,$build_id,$map_las
 	$bugInterfaceOn = config_get('bugInterfaceOn');
 	$tc_status_map = config_get('tc_status');
 	
+	/*
 	echo "<pre>debug" . __FUNCTION__; print_r($exec_data['tc_version']); echo "</pre>";
 	echo "<pre>debug" . __FUNCTION__; print_r($exec_data['notes']); echo "</pre>";
 	echo "<pre>debug" . __FUNCTION__; print_r($exec_data['status']); echo "</pre>";
 	echo "<pre>debug" . __FUNCTION__; print_r($exec_data['save_results']); echo "</pre>";
 
 	echo "<pre>debug \$map_last_exec" . __FUNCTION__; print_r($map_last_exec); echo "</pre>";
+	*/
 	
 	$db_now = $db->db_now();
 	

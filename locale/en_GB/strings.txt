@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.58 $
- * @modified $Date: 2006/04/28 17:36:18 $ $Author: franciscom $
+ * @version $Revision: 1.59 $
+ * @modified $Date: 2006/05/03 08:44:06 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
@@ -382,6 +382,8 @@ $TLS_check_uncheck_tc_in_categories = "test cases in all Categories";
 $TLS_note_keyword_filter = "Test cases are filtered by keyword";
 $TLS_title_add_test_to_plan = "Add Test Cases to the Test Plan";
 
+$TLS_title_add_remove_test_to_plan = "Add/Remove Test Cases to the Test Plan";
+$TLS_btn_add_remove_selected_tc ="Add/Remove selected Test Cases";
 
 
 // gui/templates/planEdit.tpl
@@ -1345,5 +1347,7 @@ $TLS_btn_del_this_version = "Delete this version";
 $TLS_btn_new_version = "Create a new version";
 $TLS_linked_and_executed = "is linked to test plan(s) and has been executed";
 $TLS_linked_but_not_executed = "is linked to test plan(s)";
+
+$TLS_remove_tc = "Remove";
 
 ?>

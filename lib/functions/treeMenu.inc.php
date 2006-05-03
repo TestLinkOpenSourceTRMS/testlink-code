@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: treeMenu.inc.php,v $
  *
- * @version $Revision: 1.17 $
- * @modified $Date: 2006/05/03 08:25:40 $ by $Author: franciscom $
+ * @version $Revision: 1.18 $
+ * @modified $Date: 2006/05/03 08:47:58 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * 	This file generates tree menu for test specification and test execution.
@@ -204,13 +204,13 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,
    	 
    	 $current = $elem;
   
-     /*if( $pivot['parent_id'] == $current['parent_id'])
+     // 20060503 - franciscom - seems stupid but without this (I need to find a better
+     //                         solution) the tree is drawn in a wrong way
+     if( $pivot['parent_id'] == $current['parent_id'])
      {
        $the_level=$the_level;
      }
-     else 
-     */
-     if ($pivot['id'] == $current['parent_id'])
+     else if ($pivot['id'] == $current['parent_id'])
      {
      	  $the_level++;
      	  $level[$current['parent_id']]=$the_level;

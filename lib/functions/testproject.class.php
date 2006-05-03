@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.16 $
- * @modified $Date: 2006/04/29 19:32:54 $
+ * @version $Revision: 1.17 $
+ * @modified $Date: 2006/05/03 07:24:27 $
  * @author franciscom
  *
  * 20060425 - franciscom - changes in show() following Andreas Morsing advice (schlundus)
@@ -568,10 +568,26 @@ function get_all_testcases_id($id)
   }
   return ($a_tcid);
   
-}
+} //end function
 
-
-
+// 20060430 - franciscom
+function get_keywords_tcases($testproject_id, $keyword_id=0)
+{
+    $keyword_filter= '' ;
+    if( $keyword_id > 0 )
+    {
+       $keyword_filter = " AND keyword_id = {$keyword_id} ";
+    }
+		$map_keywords = null;
+		$sql = " SELECT testcase_id,keyword_id,keyword 
+		         FROM keywords K, testcase_keywords  
+		         WHERE keyword_id = K.id  
+		         AND testproject_id = {$testproject_id}
+		         {$keyword_filter}
+			       ORDER BY keyword ASC ";
+		$map_keywords = $this->db->fetchRowsIntoMap($sql,'testcase_id');
+		return($map_keywords);
+} //end function
 } // end class
 
 ?>

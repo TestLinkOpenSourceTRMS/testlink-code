@@ -2,7 +2,7 @@
 /** 
 *	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version $Id: planAddTCNavigator.php,v 1.12 2006/04/26 07:07:55 franciscom Exp $
+* 	@version $Id: planAddTCNavigator.php,v 1.13 2006/05/03 08:30:07 franciscom Exp $
 *	@author Martin Havlat
 * 
 * 	Navigator for feature: add Test Cases to a Test Case Suite in Test Plan. 
@@ -14,43 +14,53 @@
 require('../../config.inc.php');
 
 require_once("common.php");
-require_once("../keywords/keywords.inc.php");
 require_once("treeMenu.inc.php");
 require_once("../../lib/functions/lang_api.php");
+require_once(dirname(__FILE__) . "/../functions/testproject.class.php");
+
 testlinkInitPage($db);
 
-//setting up the top table with the date and build selection
-$key = null;
+$tproject_mgr=New testproject($db);
 
 // 20050905 - fm
 $tproject_id   = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 $tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : '';
 
-if(isset($_POST['filter']))
+$keyword_id = 0;
+$keywords_map = $tproject_mgr->get_keywords_map($tproject_id, " order by keyword "); 
+
+if( !is_null($keywords_map) )
 {
-	$key = isset($_POST['keyword']) ? strings_stripSlashes($_POST['keyword']) : 'NONE';
-}
-// generate tree 
-$workPath = 'lib/plan/planAddTC.php';
-$args = null;
-if (strlen($key))
-{
-	$args = '&key=' . $key;
+  $keywords_map = array( 0 => '') + $keywords_map;
 }
 
-// 20050905 - fm
-//$linked_versions=$tplan_mgr->get_linked_tcversions($tplan_id);	
-//$treeString = generateTestSpecTree($db,$tproject_id, $tproject_name, 
-//                                   $workPath, 1, $args,$linked_versions);
-                                   
+if(isset($_POST['filter']))
+{
+	$keyword_id = isset($_POST['keyword_id']) ? $_POST['keyword_id'] : 0;
+}
+
+
+// generate tree 
+$workPath = 'lib/plan/planAddTC.php';
+$args = '&keyword_id=' . $keyword_id;
+
+$hide_testcase_items=0;             
+$tc_action_disabled=0;          
+
+// 20060501 - franciscom - interface changes
 $treeString = generateTestSpecTree($db,$tproject_id, $tproject_name, 
-                                   $workPath, 1, $args);
+                                   $workPath, $hide_testcase_items, $tc_action_disabled,
+                                   $args, $keyword_id);
+
                                    
 $tree = invokeMenu($treeString);
 $smarty = new TLSmarty;
+
 $smarty->assign('treeKind', TL_TREE_KIND);
 $smarty->assign('tree', $tree);
-$smarty->assign('arrKeys', selectKeywords($db,$tproject_id,$key));
+$smarty->assign('keywords_map', $keywords_map);
+$smarty->assign('keyword_id', $keyword_id);
+
 $smarty->assign('menuUrl', $workPath);
 $smarty->assign('args', $args);
 $smarty->display('planAddTCNavigator.tpl');

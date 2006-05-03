@@ -1,7 +1,7 @@
 <?php
 /** 
 *	TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* 	@version $Id: testSetNavigator.php,v 1.11 2006/04/26 07:07:55 franciscom Exp $
+* 	@version $Id: testSetNavigator.php,v 1.12 2006/05/03 08:30:07 franciscom Exp $
 *	@author Martin Havlat 
 *
 * This page navigate according to Test Set. It builds the javascript trees 
@@ -12,27 +12,49 @@
 * 20050916 - fm - I18N
 * 20051022 - scs - title wasn't set correctly, consmetic changes
 * 20051126 - scs - corrected wrong help file
+
 */ 	
 require('../../config.inc.php');
 require_once("common.php");
 require_once("treeMenu.inc.php");
+require_once(dirname(__FILE__) . "/../functions/testplan.class.php"); // 20060501
+
 testlinkInitPage($db);
 
 $workPath = null;
+
+$tplan_mgr=New testplan($db);
+$tplan_id = $_SESSION['testPlanId'];
+
+// 
+$keyword_id = 0;
+$keywords_map = $tplan_mgr->get_keywords_map($tplan_id, " order by keyword "); 
+
+if( !is_null($keywords_map) )
+{
+  $keywords_map = array( 0 => '') + $keywords_map;
+}
+if(isset($_POST['filter']))
+{
+	$keyword_id = isset($_POST['keyword_id']) ? $_POST['keyword_id'] : 0;
+}
+
+
 // set feature data
 if ($_GET['feature'] == 'removeTC')
 {
-	$workPath = "lib/plan/testSetRemove.php";
+	$menuUrl = "lib/plan/testSetRemove.php";
 	$title = lang_get('title_test_plan_navigator');
 	$tcHide = 0;
-	$helpFile = "testSetRemove.html";
+	$help_file = "testSetRemove.html";
+	$operation='remove_testcase_from_testplan';
 }
 elseif ($_GET['feature'] == 'priorityAssign')
 {
-	$workPath = "lib/plan/planOwner.php";
+	$menuUrl = "lib/plan/planOwner.php";
 	$title = lang_get('title_test_plan_navigator');
 	$tcHide = 1;
-	$helpFile = "planOwnerAndPriority.html";
+	$help_file = "planOwnerAndPriority.html";
 }
 else
 {
@@ -40,14 +62,27 @@ else
 	exit();
 }
 
-$treeData = generateTestSuiteTree($db,$workPath, $tcHide);
-$tree = invokeMenu($treeData);
+// 20060429 - franciscom
+define('FILTER_BY_BUILD_OFF',0);
+define('FILTER_BY_TC_OFF',null);
+define('FILTER_BY_OWNER_OFF',0);
+define('FILTER_BY_TC_STATUS_OFF',null);
+
+$sMenu = generateExecTree($db,$menuUrl,$_SESSION['testPlanId'],$_SESSION['testPlanName'],
+                          FILTER_BY_BUILD_OFF,$help_file,$operation,
+                          FILTER_BY_TC_OFF,$keyword_id);
+
+$tree = invokeMenu($sMenu);
+
 
 $smarty = new TLSmarty();
 $smarty->assign('treeKind', TL_TREE_KIND);
 $smarty->assign('tree', $tree);
+$smarty->assign('keywords_map', $keywords_map);
+$smarty->assign('keyword_id', $keyword_id);
+
 $smarty->assign('treeHeader', $title);
-$smarty->assign('menuUrl',$workPath);
-$smarty->assign('SP_html_help_file',TL_INSTRUCTIONS_RPATH . $_SESSION['locale'] ."/". $helpFile);
-$smarty->display('tcTree.tpl');
+$smarty->assign('menuUrl',menuUrl);
+$smarty->assign('SP_html_help_file',TL_INSTRUCTIONS_RPATH . $_SESSION['locale'] ."/". $help_file);
+$smarty->display('testSetNavigator.tpl');
 ?>

@@ -1,7 +1,7 @@
 <?php
 
 ////////////////////////////////////////////////////////////////////////////////
-// @version $Id: planAddTC.php,v 1.18 2006/05/03 08:30:07 franciscom Exp $
+// @version $Id: planAddTC.php,v 1.19 2006/05/03 08:48:44 franciscom Exp $
 // File:     planAddTC.php
 // Author:   Chad Rosen
 // Purpose:  This page manages the importation of test cases into testlink.
@@ -39,9 +39,6 @@ $tproject_id =  $_SESSION['testprojectID'];
 
 $keyword_id = isset($_REQUEST['keyword_id']) ? intval($_REQUEST['keyword_id']) : 0;
 $object_id=$_GET['data'];
-
-echo "<pre>debug -- \$_REQUEST --"; print_r($_REQUEST); echo "</pre>";
-
 $smarty = new TLSmarty;
 $smarty->assign('testPlanName', $_SESSION['testPlanName']);
 
@@ -57,8 +54,6 @@ if($_GET['edit'] == 'testsuite')
                        $tproject_id,$object_id,$tsuite_data['name'],
                        $tplan_mgr->get_linked_tcversions($tplan_id,DONT_FILTER_BY_TCASE_ID,$keyword_id),
                        $keyword_id,DONT_FILTER_BY_TCASE_ID);
-                       
-    echo "<pre>debug \$out -- "; print_r($out); echo "</pre>";                   
     $do_display=1;  
 }
 else

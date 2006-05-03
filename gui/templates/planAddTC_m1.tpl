@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planAddTC_m1.tpl,v 1.3 2006/04/24 10:36:24 franciscom Exp $
+$Id: planAddTC_m1.tpl,v 1.4 2006/05/03 06:47:50 franciscom Exp $
 Purpose: smarty template - generate a list of TC for adding to Test Plan 
 
 20060319 - franciscom
@@ -11,14 +11,23 @@ Purpose: smarty template - generate a list of TC for adding to Test Plan
 
 <body>
 
-<h1>{lang_get s='title_add_test_to_plan'} '{$testPlanName|escape}'</h1>
+<h1>{if $has_linked_items eq 0} {lang_get s='title_add_test_to_plan'}
+    {else}  {lang_get s='title_add_remove_test_to_plan'}
+    {/if}     
+    '{$testPlanName|escape}'</h1>
 
 
 {if $has_tc }
 
 <form name='addTcForm' method='post'>
 <div style="padding-right: 20px; float: right;">
-	<input type='submit' name='link_tc' value='{lang_get s='btn_add_selected_tc'}' />
+    <input type='submit' name='do_action' 
+	    {if $has_linked_items eq 0}
+	    	    value='{lang_get s='btn_add_selected_tc'}'
+      {else}
+            value='{lang_get s='btn_add_remove_selected_tc'}' 
+      {/if}
+    />
 </div>
 
 {include file="inc_update.tpl" result=$sqlResult}
@@ -46,22 +55,42 @@ Purpose: smarty template - generate a list of TC for adding to Test Plan
       {/if}
 
       {if $arrData[tsuite_idx].testcase_qty gt 0 }
-          <table>
+          <table cellspacing="0" style="font-size:small;" width="100%">
+            <tr style="background-color:blue;font-weight:bold;"><td>&nbsp;</td><td>{lang_get s='th_test_case'}</td><td>{lang_get s='version'}</td>
+            {if $arrData[tsuite_idx].linked_testcase_qty gt 0 }
+               <td>&nbsp;</td><td>{lang_get s='remove_tc'}</td>
+            {/if}
+            </tr>   
           {foreach from=$arrData[tsuite_idx].testcases item=tcase }
+
     				<tr {if $tcase.linked_version_id ne 0} style="background-color:yellow" {/if}>
     				<td>
     				<input type='checkbox' name='achecked_tc[{$tcase.id}]' value='{$tcase.id}' 
-    				       {if $tcase.linked_version_id ne 0} checked disabled{/if}	/>
+    				       {if $tcase.linked_version_id ne 0} checked disabled readonly{/if}	/>
           	<input type='hidden' name='a_tcid[{$tcase.id}]' value='{$tcase.id}' />
+    				</td>
+    				<td>
           	{$tcase.name|escape}
             </td>
             <td>
-    				&nbsp;&nbsp;{lang_get s='version'}
     				<select name="tcversion_for_tcid[{$tcase.id}]"
     				        {if $tcase.linked_version_id ne 0}disabled{/if} >
     				{html_options options=$tcase.tcversions selected=$tcase.linked_version_id}
     				</select>
             </td>
+            
+            {* 20060430 - franciscom *}
+            {if $arrData[tsuite_idx].linked_testcase_qty gt 0 }
+              <td>&nbsp;</td>
+              <td>
+                 {if $tcase.linked_version_id ne 0} 
+                   <input type='checkbox' name='remove_checked_tc[{$tcase.id}]' 
+                                          value='{$tcase.linked_version_id}'> 
+                 {else}
+                 &nbsp;
+                 {/if}
+              </td>
+            {/if}
             <tr>
     			{/foreach}
           </table>

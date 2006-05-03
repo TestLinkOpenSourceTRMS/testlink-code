@@ -1,5 +1,5 @@
 {* Testlink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: usersview.tpl,v 1.3 2006/03/10 22:35:57 schlundus Exp $ *}
+{* $Id: usersview.tpl,v 1.4 2006/05/03 06:48:02 franciscom Exp $ *}
 {* 
 Purpose: smarty template - users overview
 
@@ -56,7 +56,7 @@ var warning_delete_user = "{lang_get s='warning_delete_user'}";
 			<td>{$users[row].last|escape}</td>
 			<td>{$users[row].email|escape}</td>
 			<td>
-				{assign var="roleID" value="$users[row].role_id}
+				{assign var="roleID" value="$users[row].role_id"}
 				{$optRoles[$roleID]|escape}
 			</td>
 			<td>

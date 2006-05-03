@@ -1,45 +1,37 @@
-{* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: planAddTCNavigator.tpl,v 1.3 2005/11/26 19:58:21 schlundus Exp $ *}
-{* Purpose: smarty template - show test specification tree *}
-{include file="inc_head.tpl" jsTree="yes"}
-{*
- 20051126 - scs - changed passing keyword to keywordID, 
- 				  added escaping of keywords
-				  changed the width of the "select keyword" box
+{* 
+TestLink Open Source Project - http://testlink.sourceforge.net/
+$Id: planAddTCNavigator.tpl,v 1.4 2006/05/03 06:48:33 franciscom Exp $
+show test specification tree 
 *}
 
+{include file="inc_head.tpl" jsTree="yes"}
 <body>
 
 <h1>{lang_get s='title_navigator'}</h1>
-
-<div>
+<div style="margin: 3px;">
 <form method="post">
-	<table class="common" width="100%">
-		<caption>{lang_get s='caption_assign_tc_with_kewords'}</caption>
+	<table class="smallGrey" >
+		<caption>
+			{lang_get s='caption_nav_filter_settings'}
+			{include file="inc_help.tpl" filename="execFilter.html"}
+		</caption>
 		<tr>
-			<th>{lang_get s='choose_keyword'}</th>
-		</tr>
-		<tr>
-			<td>
-			<select name="keyword">
-				<option value="NONE">{lang_get s='opt_none'}</option>
-				{section name=Row loop=$arrKeys}
-					<option value="{$arrKeys[Row].id|escape}"
-							{$arrKeys[Row].selected}>{$arrKeys[Row].keyword|escape}</option>
-				{/section}
-			</select>
+			<td>{lang_get s='keyword'}</td>
+			<td><select name="keyword_id">
+			    {html_options options=$keywords_map selected=$keyword_id}
+				</select>
 			</td>
 		</tr>
 		<tr>
 			<td>
-			<input type="submit" value="{lang_get s='btn_set_filter'}" name="filter" />
+			<input type="submit" value="{lang_get s='btn_update_menu'}" name="filter" />
 			</td>
 		</tr>
 	</table>
 </form>
 </div>
 
-<div class="tree">
+<div class="tree" id="tree">
 	{$tree}
 </div>
 

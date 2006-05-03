@@ -2,39 +2,36 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: listTestCases.php,v 1.12 2006/03/20 18:02:37 franciscom Exp $
+* 	@version 	$Id: listTestCases.php,v 1.13 2006/05/03 08:31:25 franciscom Exp $
 * 	@author 	Martin Havlat
 * 
 * 	This page generates tree menu with test specification. It builds the
-*	javascript tree that allows the user to choose required container
-*	or test case.
+*	  javascript tree that allows the user to choose required container
+*	  or test case.
 *
-*////////////////////////////////////////////////////////////////////////////////
+*   20060501 - franciscom - refactoring
+*/
 require('../../config.inc.php');
 require_once("common.php");
 require_once("treeMenu.inc.php");
 testlinkInitPage($db);
 
 $feature = isset($_GET['feature']) ? $_GET['feature'] : null;
-
 $tproject_id   = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 $tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : 'xxx';
 
 $title = lang_get('title_navigator'). ' - ' . lang_get('title_test_spec');
-if(strlen($feature))
+
+$feature_action=array('edit_tc' => "lib/testcases/archiveData.php",
+                      'keywordsAssign' => "lib/keywords/keywordsAssign.php",
+                      'assignReqs' => "lib/req/reqTcAssign.php");
+
+if(!is_null($feature) && strlen($feature))
 {
-	if ($feature == 'edit_tc')
-	{
-		$workPath = "lib/testcases/archiveData.php";
-	} 
-	else if ($feature == 'keywordsAssign') 
-	{
-		$workPath = "lib/keywords/keywordsAssign.php";
-	}
-	else if ($feature == 'assignReqs') 
-	{
-		$workPath = "lib/req/reqTcAssign.php";
-	}
+  if( isset($feature_action[$feature]) )
+  {
+    $workPath = $feature_action[$feature];
+  }
 	else
 	{
 		tLog("Wrong get argument 'feature'.", 'ERROR');
@@ -47,7 +44,11 @@ else
 	exit();
 }
 
-$treeString = generateTestSpecTree($db,$tproject_id, $tproject_name,$workPath, 0);
+define('SHOW_TESTCASE_ITEMS',0);
+define('TC_ACTION_ENABLED',1);
+$treeString = generateTestSpecTree($db,$tproject_id, $tproject_name,
+                                   $workPath, SHOW_TESTCASE_ITEMS,TC_ACTION_ENABLED);
+
 $tree = null;
 if (strlen($treeString))
 {

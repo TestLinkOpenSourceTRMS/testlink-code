@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.43 $ $Author: schlundus $
- * @modified $Date: 2006/04/29 19:32:54 $
+ * @version $Revision: 1.44 $ $Author: franciscom $
+ * @modified $Date: 2006/05/03 07:07:25 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -654,6 +654,246 @@ function translate_tc_status_smarty($params, &$smarty)
 }
 // -----------------------------------------------
 
+/*
 
+arguments:
+          spec_view_type: can get one of the following values:
+                          'testproject','testplan'
+                          
+                          This setting change the processing done 
+                          to get the keywords.
+                          And indicates the type of id (testproject/testplan) 
+                          contained in the argument tobj_id.
+
+
+returns: array where every element is an associative array with the following
+         structure:
+        
+         [testsuite] => Array( [id] => 28
+                          [name] => TS1 )
+
+         [testcases] => Array( [79] => Array( [id] => 79
+                                             [name] => TC0
+                                             [tcversions] => Array 
+                                                             (
+                                                              [1093] => 2   // key=tcversion id,value=version
+                                                              [6] => 1
+                                                             )
+                    
+                                                             [linked_version_id] => 0
+                                             )
+
+                               [81] => Array( [id] => 81
+            
+                                             [name] => TC88))
+
+       [level] =  
+       [write_buttons] => yes or no
+
+       level and write_buttons are used to generate the user interface
+
+*/
+function gen_spec_view(&$db,$spec_view_type='testproject',
+                            $tobj_id,$id,$name,&$linked_items,
+                            $keyword_id=0,$tcase_id=null,$write_button_only_if_linked=0)
+{
+    // 20060430 - franciscom
+    $write_status='yes';
+    if($write_button_only_if_linked)
+    {
+      $write_status='no';
+    }
+		$result = array('spec_view'=>array(), 'num_tc' => 0);
+		$out = array(); 
+    $a_tcid=array();
+    
+	  $tcase_mgr = New testcase($db); 
+     
+		$tree_manager = New tree($db);
+  	$hash_descr_id = $tree_manager->get_available_node_types();
+  	$tcase_node_type = $hash_descr_id['testcase'];
+  	$hash_id_descr = array_flip($hash_descr_id);
+
+    $test_spec = $tree_manager->get_subtree($id,array('testplan'=>'exclude me'),
+                                                array('testcase'=>'exclude my_children'));
+
+    // ---------------------------------------------------------------------------------------
+    // 20060501 - franciscom
+    // filters
+    if( $keyword_id > 0 )
+    {
+        switch ($spec_view_type)
+        {
+           case 'testproject':
+           $tobj_mgr = New testproject($db); 
+           break;  
+
+           case 'testplan':
+           $tobj_mgr = New testplan($db); 
+           break;  
+        }
+        $tck_map=$tobj_mgr->get_keywords_tcases($tobj_id,$keyword_id);
+       
+        // Get the Test Cases that has the Keyword_id
+        // filter the test_spec
+        foreach($test_spec as $key => $node)
+        {
+           if( $node['node_type_id'] == $tcase_node_type &&  !isset($tck_map[$node['id']]) )
+           {
+              $test_spec[$key]=null;            
+           }      
+        }
+    }
+    if( !is_null($tcase_id) )
+    {
+       // filter the test_spec
+        foreach($test_spec as $key => $node)
+        {
+           if( $node['node_type_id'] == $tcase_node_type &&  $node['id'] != $tcase_id )
+           {
+              $test_spec[$key]=null;            
+           }      
+        }
+    }
+    // ---------------------------------------------------------------------------------------    
+    $idx=0;
+    $a_tcid=array();
+    $a_tsuite_idx=array();
+  	$hash_id_pos[$id]=$idx;
+  	$out[$idx]['testsuite']=array('id' => $id, 'name' => $name);
+  	$out[$idx]['testcases']=array();
+  	$out[$idx]['write_buttons']='no';
+    $idx++;
+
+  	if( count($test_spec) > 0 )
+  	{
+   			$pivot=$test_spec[0];
+   			$the_level=1;
+    		$level=array();
+  
+   			foreach ($test_spec as $elem)
+   			{
+   	
+   	        // 20060501 - franciscom
+   	        if( is_null($elem) )
+   	        {
+   	           continue;
+   	        }
+
+   	 				$current = $elem;
+
+     				if( $pivot['parent_id'] == $current['parent_id'])
+     				{
+       					$the_level=$the_level;
+     				}
+     				else if ($pivot['id'] == $current['parent_id'])
+     				{
+     	  				$the_level++;
+     	  				$level[$current['parent_id']]=$the_level;
+     				}
+     				else 
+     				{
+     	  				$the_level=$level[$current['parent_id']];
+     				}
+            
+            if( $hash_id_descr[$current['node_type_id']] == "testcase")
+            {
+            	  $tc_id = $current['id'];
+            		$parent_idx=$hash_id_pos[$current['parent_id']];
+              	$a_tsuite_idx[$tc_id]=$parent_idx;
+              	
+              	$out[$parent_idx]['testcases'][$tc_id]=array('id' => $tc_id,
+     				                                                 'name' => $current['name']);
+              	$out[$parent_idx]['testcases'][$tc_id]['tcversions']=array();             
+                $out[$parent_idx]['testcases'][$tc_id]['linked_version_id']=0;
+                
+                // 20060430 - franciscom
+                $out[$parent_idx]['testcases'][$tc_id]['executed']='no';
+
+                $out[$parent_idx]['level']=$the_level;
+                $out[$parent_idx]['write_buttons']=$write_status;
+                $out[$parent_idx]['testcase_qty']++;
+  	            $out[$parent_idx]['linked_testcase_qty']=0; //20060502 - franciscom
+
+                $a_tcid[]=$current['id'];
+  	            
+            }
+            else
+            {
+              	$out[$idx]['testsuite']=array('id' => $current['id'],
+     				                                  'name' => $current['name']);
+  	            $out[$idx]['testcases']=array();
+  	            $out[$idx]['testcase_qty']=0;
+  	            $out[$idx]['linked_testcase_qty']=0; //20060502 - franciscom
+  	            
+                $out[$idx]['level']=$the_level;
+  	            $out[$idx]['write_buttons']='no';
+  	            $hash_id_pos[$current['id']]=$idx;
+     				    $idx++;
+	          }
+
+     				// update pivot
+     				$level[$current['parent_id']]= $the_level;
+     				$pivot=$elem;
+   			}
+		}
+
+    // Loop to get test case version information		
+		$result['num_tc']=count($a_tcid);
+		$result['has_linked_items']=0;
+		
+
+    if( $result['num_tc'] > 0 )
+    {
+				$tcase_set=$tcase_mgr->get_by_id($a_tcid);
+		
+    		foreach($tcase_set as $the_k => $the_tc)
+    		{
+    			$tc_id = $the_tc['testcase_id'];
+    		  $parent_idx=$a_tsuite_idx[$tc_id];
+          $out[$parent_idx]['testcases'][$tc_id]['tcversions'][$the_tc['id']]= $the_tc['version'];
+            
+          if( !is_null($linked_items) )
+          {
+              foreach($linked_items as $the_item)
+        		  {
+        		     if( ($the_item['tc_id'] == $the_tc['testcase_id']) &&
+        		         ($the_item['tcversion_id'] == $the_tc['id']) )
+        		     {
+        		     	   $out[$parent_idx]['testcases'][$tc_id]['linked_version_id']=$the_item['tcversion_id'];
+        		     	   $out[$parent_idx]['write_buttons']='yes';
+                     $out[$parent_idx]['linked_testcase_qty']++;  //20060502 - franciscom
+                     
+                     $result['has_linked_items']=1; //20060502 - franciscom 
+  	            
+                     if( intval($the_item['executed']) > 0 )
+                     {
+                         $out[$parent_idx]['testcases'][$tc_id]['executed']='yes';
+                     } 
+        		         break;
+        		     }
+              }
+          }    
+    		}
+		}
+		$result['spec_view']=$out;
+		
+		return($result);
+}
+
+
+// 20060318 - franciscom
+function my_array_intersect_keys($array1,$array2)
+{
+    $aresult=array();
+		foreach($array1 as $key => $val)
+		{
+		  	if(isset($array2[$key]))
+		  	{
+		  			$aresult[$key]=$array2[$key];
+		  	} 	
+		}	
+		return($aresult);	
+}
 
 ?>

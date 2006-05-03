@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: treeMenu.inc.php,v $
  *
- * @version $Revision: 1.16 $
- * @modified $Date: 2006/04/29 19:32:54 $ by $Author: schlundus $
+ * @version $Revision: 1.17 $
+ * @modified $Date: 2006/05/03 08:25:40 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * 	This file generates tree menu for test specification and test execution.
@@ -19,6 +19,7 @@
  * 20051118 - scs - testplanname was not filtered (JS-Error in certain cases)
  * 20060304 - franciscom - changes on invokeMenu()
  * 20060305 - franciscom - towards TL 1.7
+ * 20060503 - franciscom - moved here generateExecTree()
  *
  **/
 require_once '../../config.inc.php';
@@ -122,28 +123,49 @@ function filterString($str)
 /** 
  * generate data for tree menu of Test Specification
  *
- * @param numeric prodID
- * @param string  prodName
- * @param string $linkto path for generated URL
- * @param integer $hidetc [0: show TCs, 1: disable TCs ]
- * @param string $getArguments additional $_GET arguments
- * @return string input string for layersmenu
- *
+ * 20060501 - franciscom - interface changes
  */
 function generateTestSpecTree(&$db,$tproject_id, $tproject_name, 
-                              $linkto, $hidetc, $getArguments = '')
+                              $linkto, $hidetc, $tc_action_enabled=1,
+                              $getArguments = '',$keyword_id=0)
 {
 	$menustring = null; // storage variable for output
 
-	$tree_manager = new tree($db);
-	$tproject_mgr = new testproject($db);
+	$tree_manager = New tree($db);
+	$tproject_mgr = New testproject($db);
+
+	$tcase_node_type = $tree_manager->node_descr_id['testcase'];
+  $hash_descr_id = $tree_manager->get_available_node_types();
+  $hash_id_descr = array_flip($hash_descr_id);
 	
 	$test_spec = $tree_manager->get_subtree($tproject_id,array('testplan'=>'exclude me'),
 	                                                     array('testcase'=>'exclude my children'));
 
-	$hash_descr_id = $tree_manager->get_available_node_types();
-	$hash_id_descr = array_flip($hash_descr_id);
-	$testcase_count = $tproject_mgr->count_testcases($tproject_id);
+  // 20060501 - franciscom
+  // ------------------------------------------------------------------------------------------- 
+  if( $keyword_id > 0 )
+  {
+     // Get the Test Cases that has the Keyword_id
+     $tck_map=$tproject_mgr->get_keywords_tcases($tproject_id,$keyword_id);
+    
+     if( !is_null($tck_map) )
+     {
+        // filter the test_spec
+        foreach($test_spec as $key => $node)
+        {
+           if( $node['node_type_id'] == $tcase_node_type &&  !isset($tck_map[$node['id']]) )
+           {
+              $test_spec[$key]=null;            
+           }      
+        }
+        $test_spec = array_merge($test_spec);
+        
+     } 
+  }
+  // -------------------------------------------------------------------------------------------
+  
+  
+	$testcase_count=$tproject_mgr->count_testcases($tproject_id);
 	
 	if (TL_TREE_KIND == 'LAYERSMENU')
 	{ 
@@ -159,220 +181,85 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,
 	  // expand=-
 	  //
 		$menustring .= "." . "|" . 
-		               filterString($tproject_name) . " (" . $testcase_count . ")" . "|" . 
+		               $tproject_name . " (" . $testcase_count . ")" . "|" . 
 		               $linkto . "?edit=testproject&data=" . $tproject_id . $getArguments . "|" .
 		               "testproject". "|" . "|" . "workframe" ."|\n";
 	}
  	
-	if(count($test_spec))
-	{
-	   	$pivot = $test_spec[0];
-	   	$the_level = 1;
-	    $level = array();
+  // 20060223 - franciscom
+  if( count($test_spec) > 0 )
+  {
+   	$pivot=$test_spec[0];
+   	$the_level=1;
+    $level=array();
   
-		foreach ($test_spec as $elem)
-		{
-			$current = $elem;
-			
-			/*	
-			if($pivot['parent_id'] == $current['parent_id'])
-			{
-				$the_level = $the_level;
-			}
-			*/
-			if ($pivot['id'] == $current['parent_id'])
-			{
-				$the_level++;
-				$level[$current['parent_id']] = $the_level;
-			}
-			else 
-			{
-				$the_level = $level[$current['parent_id']];
-			}
-		
-			$icon = "";
-			if($hash_id_descr[$current['node_type_id']] == "testcase") 
-			{
-				$icon = "gnome-starthere-mini.png";	
-			}
-		
-			$menustring .= str_repeat('.',$the_level) . ".|" . 
-							" " . filterString($current['name']) . "|" . 
-						$linkto . "?edit=" . $hash_id_descr[$current['node_type_id']] . 
-						"&data=" . $current['id'] . $getArguments . "|" . 
-						$hash_id_descr[$current['node_type_id']] . "|" . $icon . "|" . "workframe" ."|\n"; 
-		
-			$level[$current['parent_id']] = $the_level;
-			$pivot = $elem;
-		}
+   	foreach ($test_spec as $elem)
+   	{
+     // 20060501 - franciscom
+     if( is_null($elem) )
+     {
+        // I use set an element to null to filter out leaf menu items
+        continue;
+     } 
+   	 
+   	 $current = $elem;
+  
+     /*if( $pivot['parent_id'] == $current['parent_id'])
+     {
+       $the_level=$the_level;
+     }
+     else 
+     */
+     if ($pivot['id'] == $current['parent_id'])
+     {
+     	  $the_level++;
+     	  $level[$current['parent_id']]=$the_level;
+     }
+     else 
+     {
+     	  $the_level=$level[$current['parent_id']];
+     }
+     
+     // 20060303 - franciscom - added icon
+     $icon="";
+     $build_linkto=1;
+     if( $hash_id_descr[$current['node_type_id']] == "testcase") 
+     {
+       $icon="gnome-starthere-mini.png";
+       $build_linkto=$tc_action_enabled;
+     }
+     
+     if($build_linkto)
+     {
+       $my_linkto=    $linkto . "?edit=" . $hash_id_descr[$current['node_type_id']] . 
+                              "&data=" . $current['id'] . $getArguments ;
+     }
+     else
+     {
+       $my_linkto=' |'; 
+     }
+     /*
+     $menustring .= str_repeat('.',$the_level) . ".|" . 
+                    " " . $current['name'] . "|" . 
+                    $linkto . "?edit=" . $hash_id_descr[$current['node_type_id']] . 
+                              "&data=" . $current['id'] . $getArguments . "|" . 
+                    $hash_id_descr[$current['node_type_id']] . "|" . $icon . "|" . "workframe" ."|\n"; 
+     
+     */
+     $menustring .= str_repeat('.',$the_level) . ".|" . 
+                    " " . filterString($current['name']) .      "|" . 
+                    $my_linkto .                  "|" .
+                    $hash_id_descr[$current['node_type_id']] . "|" . $icon . "|" . "workframe" ."|\n"; 
+     
+     
+     
+     // update pivot
+     $level[$current['parent_id']]= $the_level;
+     $pivot=$elem;
+   	}
 	}
 	
-	return $menustring;
- 	//The remaining code stays until all works as expected
-	//but will not executed	
-	
-	if (!$tproject_id)
-	{
-		return null;
-	}	
-	
-	
-	// Queries to determine total test cases
-	$sqlProdCount = " SELECT count(mgttestcase.id) AS qty" .
-	                " FROM mgtproduct,mgtcomponent, mgtcategory,mgttestcase " .
-	                " WHERE mgtproduct.id = mgtcomponent.prodid " .
-			            " AND mgtcomponent.id=mgtcategory.compid " .
-			            " AND mgtcategory.id=mgttestcase.catid " .
-			            " AND mgtproduct.id=" . $tproject_id;
-			
-			
-	$resultProdCount = $db->exec_query($sqlProdCount);
-	$prodCount = 0;
-	if ($resultProdCount)
-	{
-		$prodCount = $db->fetch_array($resultProdCount);
-	}
-		
-	
-	$tproject_name = filterString($tproject_name);
-	if (TL_TREE_KIND == 'LAYERSMENU')
-	{ 
-		$menustring .= ".|" . $productName . " (" . $prodCount['qty'] . ")|" . $linkto . 
-		               "?edit=product&data=" . $tproject_id . $getArguments . "|Product||workframe|\n";
-	}
- 	elseif (TL_TREE_KIND == 'JTREE')
-	{		
-		$menustring .=  "['" . $productName . " (" . $prodCount['qty'] . ")','EP({$tproject_id})',\n";
-	}
-	elseif (TL_TREE_KIND == 'DTREE')
-	{
-		$dtreeCounter = 0;
-		$menustring .= "tlTree.add(" . $dtreeCounter++ . ",-1,'" . $productName . 
-		               " (" . $prodCount['qty'] . ")','" . $linkto . "?edit=product&data=" . 
-		               $tproject_id . $getArguments . "');\n";
-	}
-	
-	//Parse components
-	$sqlCOM = " SELECT id, name from mgtcomponent " .
-	          " WHERE prodid=" . $tproject_id . 
-	          " ORDER BY name";
-	$resultCOM = $db->exec_query($sqlCOM);
-		
-	while ($myrowCOM = $db->fetch_array($resultCOM)) //loop through all Components
-	{
-		// Queries to determine how many total test cases there are by Component. 
-		// The number is then displayed next to the component
-		$sqlCOMCount = " SELECT count(mgttestcase.id) "  . 
-		               " FROM mgtcomponent,mgtcategory,mgttestcase " .
-		               " WHERE mgtcomponent.id=mgtcategory.compid " .
-		               " AND mgtcategory.id=mgttestcase.catid " .
-		               " AND mgtcomponent.id=" . $myrowCOM[0];
-		$resultCOMCount = $db->exec_query($sqlCOMCount);
-		$COMCount = $db->fetch_array($resultCOMCount);
-
-		$componentName = filterString($myrowCOM[1]);
-		$sItemName = $componentName . " (" . $COMCount[0] . ")";
-		$sItemLink = $linkto . "?edit=component&data=" . $myrowCOM[0] . $getArguments;
-		
-		if (TL_TREE_KIND == 'LAYERSMENU')
-		{ 
-			$menustring .= "..|" . $sItemName . "|" . 
-			               $sItemLink . "|Component||workframe|\n";
-		}
-		elseif (TL_TREE_KIND == 'JTREE')
-		{	
-			$menustring .= "['" . $sItemName . "','ECO({$myrowCOM[0]})',\n";
-		}
-		elseif (TL_TREE_KIND == 'DTREE')
-		{
-			$dtreeComponentId = $dtreeCounter;
-			$menustring .= "tlTree.add(" . $dtreeCounter++. ",0,'" . $sItemName . 
-					"', '" . $sItemLink . "');\n";
-		}
-
-		//Parse categories
-		$sqlCAT = " SELECT id, name from mgtcategory " .  
-		          " WHERE compid=" . $myrowCOM[0] . 
-		          " ORDER BY CATorder,id";		
-		$resultCAT = $db->exec_query($sqlCAT);
-
-		while ($myrowCAT = $db->fetch_array($resultCAT)) //loop through all Categories
-		{
-			//Queries to determine how many total test cases there are by Category. 
-			//The number is then displayed next to the Category
-			$sqlCATCount = " SELECT count(mgttestcase.id) " . 
-			               " FROM mgtcategory,mgttestcase " .
-			               " WHERE mgtcategory.id=mgttestcase.catid " .
-			               " AND mgtcategory.id=" . $myrowCAT[0];
-			               
-			$resultCATCount = $db->exec_query($sqlCATCount);
-			$CATCount = $db->fetch_array($resultCATCount);
-	
-			$categoryName = filterString($myrowCAT[1]) . " (" . $CATCount[0] . ")";
-			
-			if (TL_TREE_KIND == 'LAYERSMENU')
-			{ 
-				$menustring .= "...|" . $categoryName . "|" . 
-				               $linkto . "?edit=category&data=" . $myrowCAT[0] . $getArguments . "|Category||workframe|\n";
-			}
-			elseif (TL_TREE_KIND == 'JTREE') 
-			{								
-				$menustring .=  " ['" . $categoryName . "','EC({$myrowCAT[0]})',\n";
-			}
-			elseif (TL_TREE_KIND == 'DTREE')
-			{
-				$dtreeCategoryId = $dtreeCounter;
-				$menustring .= "tlTree.add(" . $dtreeCounter++. "," . $dtreeComponentId . ",'" . 
-				               $categoryName . "','" . $linkto . "?edit=category&data=" . 
-				               $myrowCAT[0] . $getArguments . "');\n";
-			}
-
-			if ($hidetc == 0) 
-			{
-				//Parse Test Cases
-				$sqlTC = "SELECT id, title FROM mgttestcase WHERE catid=" . $myrowCAT[0] . 
-				         " ORDER BY TCorder,id";
-				$resultTC = $db->exec_query($sqlTC);
-
-				while ($myrowTC = $db->fetch_array($resultTC)) //loop through all Test cases
-				{
-					$tcName = filterString($myrowTC[1]);
-					
-					if (TL_TREE_KIND == 'LAYERSMENU')
-					{ 
-						$menustring .= "....|<b>" . $myrowTC[0] . "</b>: " . $tcName . "|" . 
-						               $linkto . "?edit=testcase&data=" . $myrowTC[0] . $getArguments . "|Test Case||workframe|\n";
-					}
-					elseif (TL_TREE_KIND == 'JTREE')
-					{								
-						$menustring .=  "['<b>" . $myrowTC[0] . "</b>: " . $tcName . "','ET({$myrowTC[0]})'],\n";
-					}	
-					elseif (TL_TREE_KIND == 'DTREE')
-					{
-						$menustring .= "tlTree.add(" . $dtreeCounter++. "," . $dtreeCategoryId . ",'<b>" . 
-						               $myrowTC[0] . "</b>: " . $tcName . "','" . $linkto . "?edit=testcase&data=" . 
-						               $myrowTC[0] . $getArguments . "');\n";
-					}
-				}
-			}  // end hidetc
-
-			if (TL_TREE_KIND == 'JTREE')
-			{
-				$menustring .=  "]\n,"; //end the category block
-			}
-		}
-
-		if (TL_TREE_KIND == 'JTREE')
-		{
-			$menustring .=  "]\n,"; //end the component block
-		}
-
-		// MHT 20050630 - extend script deadline
-		// [ 1119896 ] Cannot see test cases in Test Case Execution page
-		set_time_limit(TL_TIME_LIMIT_EXTEND);
-	}
-
-	// return input string for layersmenu
+	//echo $menustring;
 	return $menustring;
 }
 
@@ -503,6 +390,227 @@ function generateTestSuiteTree(&$db,$linkto, $hidetc, $getArguments = '')
 	}
 
 	tLog("function generateTestSuiteTree output:\n" . $menustring);
+	return $menustring;
+}
+
+
+/** 
+* Creates data for tree menu used on :
+*
+* Execution of Test Cases
+* Remove Test cases from test plan
+* 
+* 20060429 - franciscom - 
+* removing coupling with _POST
+* interface changes
+*
+* operation: string that can take the following values:
+*            testcase_execution
+*            remove_testcase_from_testplan
+*             
+*            and changes how the URL's are build.
+* 
+*/
+function generateExecTree(&$db,&$menuUrl,$tplan_id,$tplan_name,$build_id,$url_to_help,
+                          $operation,
+                          $testcase_id = null,
+                          $keyword_id = 0,
+                          $owner = null,
+                          $tc_status = null,      
+                          $do_coloring_by='result')
+{
+	global $dtreeCounter;
+
+	$dtreeCategoryId = null;
+	$menustring = null;
+	
+	$tree_mgr = New tree($db);
+	$tplan_mgr = New testplan($db);
+
+  $hash_descr_id = $tree_mgr->get_available_node_types();
+  $hash_id_descr = array_flip($hash_descr_id);
+
+  $testcase_count=$tplan_mgr->count_testcases($tplan_id);
+
+
+	$keyword = 'All';
+	$testcase_status = 'all';
+
+  switch ($operation)
+  {
+     case 'testcase_execution':
+     $menuUrl .= '?keyword_id=' . $keyword_id . '&build_id=' . $build_id . '&owner=' . $owner;
+	   break;
+	   
+	   case 'remove_testcase_from_testplan':
+	   $menuUrl .= '?keyword_id=' . $keyword_id;
+	   break;
+	   
+  } 
+
+	
+	if (TL_TREE_KIND == 'LAYERSMENU') 
+	{
+		$menustring = ".|" . $tplan_name . " (" . $testcase_count . ")" . "|" . 
+		              $purl_to_help . "|Test Case Suite||workframe|\n";
+	}
+	elseif (TL_TREE_KIND == 'DTREE')
+	{
+		$menustring .= "tlTree.add(" . $dtreeCounter++ . ",-1,'" . $tplan_name . 
+		               "','" . $purl_to_help . "');\n";
+	}
+	elseif (TL_TREE_KIND == 'JTREE')	
+	{
+		$help_html = $purl_to_help . "/testExecute.html";
+		$menustring .= "['" . $tplan_name . "','SP()',\n";
+	}
+		
+  $mtime_start = array_sum(explode(" ",microtime()));
+  
+  // 20060430 - franciscom
+  $xx=$tplan_mgr->get_linked_tcversions($tplan_id,$testcase_id,$keyword_id);
+  
+  
+  $test_spec=array();
+  $zz=array();
+  $added=array();
+  $first_level=array();
+  $debug_counter=array();
+  $idx=0;
+  $jdx=0;
+ 
+// ------------------------------------------------------------------------ 
+// 20060401 - franciscom
+if( !is_null($xx) )
+{ 
+  // Get the path for every test case, grouping test cases that
+  // have same parent.
+  foreach($xx as $item)
+  {
+ 	  $path=$tree_mgr->get_path($item['tc_id']);
+    
+ 	  if( !isset($first_level[$path[0]['id']]) )
+  	{
+      $first_level[$path[0]['id']]=$jdx++; 
+    }
+ 	  
+ 	  if( isset($added[$item['testsuite_id']]) )
+  	{
+  		$pos = $added[$item['testsuite_id']];
+  	  $zz[$pos][]=end($path);
+      $debug_counter[$item['testsuite_id']]++;
+  	}
+    else
+    {
+    	$added[$item['testsuite_id']]=$idx++;
+  		$debug_counter[$item['testsuite_id']]=1;
+  		$zz[]=$path;
+  	}
+    
+  }
+   
+   
+  // we can have branchs with common path, but still not joined
+  // that's what we want to solve with the following process.  
+  // Now group test suites under it's parent 
+  $added=array();
+  $gdx=0;
+  foreach($zz as $item)
+  {
+  	if( isset($added[$item[0]['id']]) )
+  	{
+  		// look for the point where to join
+  		$pos=$first_level[$item[0]['id']];
+      foreach( $zz[$pos] as $the_k => $the_e)
+      {
+      	  if( $the_e['id'] != $item[$the_k]['id'] )
+      	  {
+ 	          $qty=count($item)-1;
+            for( $jdx=$the_k; $jdx <= $qty ; $jdx++)
+            {
+      	  			$zz[$pos][]=$item[$jdx];
+        	  }
+        	  break;
+        	}  
+      }
+      $zz[$gdx]=null;
+  	}
+  	else
+  	{
+  		$added[$item[0]['id']]=$item[0]['id'];
+  	}
+  	$gdx++;
+ 	}  
+    
+ 	// Now create the data structure that like the tree drawing algorithm
+ 	foreach($zz as $item)
+  {
+    $test_spec=array_merge($test_spec,$item);
+  }
+
+  // 20060223 - franciscom
+  if( count($test_spec) > 0 )
+  {
+   	$pivot=$test_spec[0];
+   	$the_level=1;
+    $level=array();
+  
+   	foreach ($test_spec as $elem)
+   	{
+   	 $current = $elem;
+  
+     if( $pivot['parent_id'] == $current['parent_id'])
+     {
+       $the_level=$the_level;
+     }
+     else if ($pivot['id'] == $current['parent_id'])
+     {
+     	  $the_level++;
+     	  $level[$current['parent_id']]=$the_level;
+     }
+     else 
+     {
+     	  $the_level=$level[$current['parent_id']];
+     }
+     
+     // 20060303 - franciscom - added icon
+     $icon="";
+     $version_id = "";
+     if( $hash_id_descr[$current['node_type_id']] == "testcase") 
+     {
+       $version_id = "&version_id=" . $xx[$current['id']]['tcversion_id'];
+       $icon="gnome-starthere-mini.png";	
+     }
+     
+     
+     /*
+     $menustring .= str_repeat('.',$the_level) . ".|" . 
+                    " " . $current['name'] . "|" . 
+                    $linkto . "?edit=" . $hash_id_descr[$current['node_type_id']] . 
+                              "&data=" . $current['id'] . $getArguments . "|" . 
+                    $hash_id_descr[$current['node_type_id']] . "|" . $icon . "|" . "workframe" ."|\n"; 
+     */               
+     
+     $menustring .= str_repeat('.',$the_level) . ".|" . 
+                         " " . $current['name'] . "|" . 
+                    $menuUrl . "&level=" . $hash_id_descr[$current['node_type_id']] . 
+                               "&id=" . $current['id'] . 
+                               $version_id . "|" . 
+                               $hash_id_descr[$current['node_type_id']] . "|" .
+                               $icon . "|" . "workframe" ."|\n";
+     // update pivot
+     $level[$current['parent_id']]= $the_level;
+     $pivot=$elem;
+   	}
+	}
+}
+
+	
+	$mtime_stop = array_sum(explode(" ",microtime()));
+	$ttime=$mtime_stop - $mtime_start;
+	//echo "Total Time = $ttime (millisec) <br>";
+	
+	//echo $menustring;
 	return $menustring;
 }
 ?>

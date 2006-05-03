@@ -5,12 +5,14 @@
  *
  * Filename $RCSfile: configCheck.php,v ${file_name} $
  *
- * @version $Revision: 1.4 $
- * @modified $Date: 2006/04/24 10:38:01 ${date} ${time} $ by $Author: franciscom $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2006/05/03 07:01:18 ${date} ${time} $ by $Author: franciscom $
  *
  * @author Martin Havlat
  * 
- * Check configuration in login and index pages.
+ * Check configuration functions
+ *
+ * 20060429 - franciscom - added checkForRepositoryDir()
  * 20060103 - scs - ADOdb changes
  **/
 // ---------------------------------------------------------------------------------------------------
@@ -79,6 +81,10 @@ function checkForAdminDefaultPwd(&$db)
  **/
 function getSecurityNotes(&$db)
 {
+  $repository['type']=config_get('repositoryType');
+  $repository['path']=config_get('repositoryPath');
+  
+
 	$securityNotes = null;
 	if (checkForInstallDir())
 		$securityNotes[] = lang_get("sec_note_remove_install_dir");
@@ -91,6 +97,18 @@ function getSecurityNotes(&$db)
 	{
 		$securityNotes[] = lang_get("bts_connection_problems");
 	}
+		
+	// 20060429 - franciscom	
+  if( $repository['type'] == TL_REPOSITORY_TYPE_FS )
+  {
+    $ret = checkForRepositoryDir($repository['path']);
+    
+	  if(!$ret['status_ok'])
+	  {
+		  $securityNotes[] = $ret['msg'];
+	  }
+	}
+	
 		
 	return $securityNotes;
 }
@@ -119,5 +137,66 @@ function checkForBTSconnection()
 	return($status_ok);
 }
 
+
+// 20060429 - franciscom
+function checkForRepositoryDir($the_dir)
+{
+	clearstatcache();
+
+  $ret['msg']=lang_get('attachments_dir') . " " . $the_dir . " ";
+              
+  $ret['status_ok']=false;
+  	
+  if(is_dir($the_dir)) 
+  {
+  	$ret['msg'] .= lang_get('exists');
+    $ret['status_ok']=true;
+
+    // There is a note on PHP manual that points that on windows
+    // is_writable() has problems => need a workaround
+    
+    /*
+    */
+    //echo substr(sprintf('%o', fileperms($the_dir)), -4);
+    
+    $os_id = strtoupper(substr(PHP_OS, 0, 3));
+    if( strcmp('WIN',$os_id) == 0 )
+    {
+      $test_dir= $the_dir . '/requirements/';
+      if(!is_dir($test_dir))
+      {
+        // try to make the dir
+        $stat = @mkdir($test_dir);
+        if( $stat )
+        {
+      	    $ret['msg'] .= lang_get('directory_is_writable');
+        }
+        else
+        {
+            $ret['msg'] .= lang_get('but_directory_is_not_writable');
+            $ret['status_ok']=false;
+        }
+      }
+    }
+    else
+    {
+        if(is_writable($the_dir)) 
+        {
+      	    $ret['msg'] .= lang_get('directory_is_writable');
+      	}
+        else
+        {
+      	    $ret['msg'] .= lang_get('but_directory_is_not_writable');
+            $ret['status_ok']=false;
+        }
+    }
+    
+  } 
+  else
+  {
+    $ret['msg'] .= lang_get('does_not_exist');
+  }
+  return($ret);
+}
 
 ?>

@@ -5,13 +5,14 @@
  *
  * Filename $RCSfile: opt_transfer.php,v $
  *
- * @version $Revision: 1.2 $
- * @modified $Date: 2006/04/24 10:38:02 $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2006/05/03 07:14:18 $
  *
  * Manage Option Transfer (double select box)
  *
  * Author: franciscom
  *
+ * 20060430 - franciscom - bug when from->map == null
  * 20060423 - franciscom - minor bug when to->map == null
  * 20060410 - franciscom
  * 
@@ -25,6 +26,8 @@ $opt_cfg->js_events->all_left_click="window.setTimeout('$js_ot_name.transferAllL
 
 
 $a_right=array();
+$a_left=array();
+
 if( strlen(trim($right_list)) == 0 )
 {
    // 20060423 - franciscom
@@ -46,7 +49,11 @@ else
   }
 }
 
+if( !is_null($opt_cfg->from->map) )
+{
 $a_left=array_diff_assoc($opt_cfg->from->map,$a_right);
+}
+
 $opt_cfg->from->map=$a_left;
 $opt_cfg->to->map=$a_right;
 }

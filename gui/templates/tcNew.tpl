@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: tcNew.tpl,v 1.11 2006/04/26 07:07:55 franciscom Exp $ *}
+{* $Id: tcNew.tpl,v 1.12 2006/05/05 20:07:23 schlundus Exp $ *}
 {* Purpose: smarty template - create new testcase *}
 {* 20050831 - scs - change item to TestCase *}
 {* 
@@ -63,7 +63,9 @@ var {$opt_cfg->js_ot_name} = new OptionTransfer("{$opt_cfg->from->name}","{$opt_
 
 </div>
 
-{include file="inc_refreshTree.tpl"}
+{if $sqlResult eq 'ok'}
+	{include file="inc_refreshTree.tpl"}
+{/if}
 
 </body>
 </html>

@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/ 
 // This script is distributed under the GNU General Public License 2 or later. 
 //
-// $Id: testlink_library.js,v 1.10 2006/04/29 19:32:54 schlundus Exp $ 
+// $Id: testlink_library.js,v 1.11 2006/05/05 20:07:23 schlundus Exp $ 
 //
 // Javascript functions commonly used through the GUI
 // This library is automatically loaded with inc_header.tpl
@@ -54,6 +54,12 @@ function ECO(id)
 {
 	parent.workframe.location = fRoot+menuUrl+"?edit=component&data="+id+args;
 }
+
+function ETS(id)
+{
+	parent.workframe.location = fRoot+menuUrl+"?edit=testsuite&data="+id+args;
+}
+
 
 function EC(id)
 {

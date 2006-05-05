@@ -2,7 +2,7 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: listTestCases.php,v 1.13 2006/05/03 08:31:25 franciscom Exp $
+* 	@version 	$Id: listTestCases.php,v 1.14 2006/05/05 20:07:24 schlundus Exp $
 * 	@author 	Martin Havlat
 * 
 * 	This page generates tree menu with test specification. It builds the
@@ -22,16 +22,16 @@ $tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectNam
 
 $title = lang_get('title_navigator'). ' - ' . lang_get('title_test_spec');
 
-$feature_action=array('edit_tc' => "lib/testcases/archiveData.php",
+$feature_action = array('edit_tc' => "lib/testcases/archiveData.php",
                       'keywordsAssign' => "lib/keywords/keywordsAssign.php",
                       'assignReqs' => "lib/req/reqTcAssign.php");
 
 if(!is_null($feature) && strlen($feature))
 {
-  if( isset($feature_action[$feature]) )
-  {
-    $workPath = $feature_action[$feature];
-  }
+	if(isset($feature_action[$feature]))
+	{
+		$workPath = $feature_action[$feature];
+	}
 	else
 	{
 		tLog("Wrong get argument 'feature'.", 'ERROR');

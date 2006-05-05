@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: tree.class.php,v $
  *
- * @version $Revision: 1.14 $
- * @modified $Date: 2006/05/03 07:26:02 $ by $Author: franciscom $
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2006/05/05 20:07:23 $ by $Author: schlundus $
  * @author Francisco Mancardi
  *
  * 20060316 - franciscom - bug on get_path
@@ -403,7 +403,7 @@ function change_order_bulk($hash_node_id, $hash_node_order)
 
 function get_subtree($node_id,$exclude_node_types=null,
                               $exclude_children_of=null,
-                              $exclude_branches=null, $and_not_in_clause='')
+                              $exclude_branches=null, $and_not_in_clause='',$bRecursive = false)
 {
  		$the_subtree=array();
  		
@@ -419,10 +419,14 @@ function get_subtree($node_id,$exclude_node_types=null,
     		$not_in_clause = " AND node_type_id NOT IN (" . implode(",",$exclude) . ")";
   	}
     
-    
-    $this->_get_subtree($node_id,$the_subtree,$not_in_clause,
-                                          $exclude_children_of,
-                                          $exclude_branches);
+	if ($bRecursive)
+	    $this->_get_subtree_rec($node_id,$the_subtree,$not_in_clause,
+	                                          $exclude_children_of,
+	                                          $exclude_branches);
+	else
+	    $this->_get_subtree($node_id,$the_subtree,$not_in_clause,
+	                                          $exclude_children_of,
+	                                          $exclude_branches);
 
     return ($the_subtree);
 }
@@ -488,6 +492,62 @@ function _get_subtree($node_id,&$node_list,$and_not_in_clause='',
   	}
 } // function end
  
+function _get_subtree_rec($node_id,&$pnode,$and_not_in_clause = '',
+                                           $exclude_children_of = null,
+                                           $exclude_branches = null)
+{
+  	$sql = " SELECT * from nodes_hierarchy ".
+   	       " WHERE parent_id = {$node_id} {$and_not_in_clause} ".
+		   " ORDER BY node_order";
+ 
+    $result = $this->db->exec_query($sql);
+    if($this->db->num_rows($result) == 0)
+		return; 	
+  
+    while($row = $this->db->fetch_array($result))
+    {
+		$rowID = $row['id'];
+		$nodeTypeID = $row['node_type_id'];
+		$nodeType = $this->node_types[$nodeTypeID];
+		
+		if(!isset($exclude_branches[$rowID]))
+		{  
+			$node_table = $this->node_tables[$nodeType];
+			$node =  array(	   'id' => $rowID,
+                               'parent_id' => $row['parent_id'],
+                               'node_type_id' => $nodeTypeID,
+                               'node_order' => $row['node_order'],
+                               'node_table' => $node_table,
+                               'name' => $row['name'],
+							   'childNodes' => null,
+							   );
+          
+          // Basically we use this because:
+          // 1. Sometimes we don't want the children if the parent is a testcase,
+          //    due to the version management
+          //
+          // 2. Sometime we want to exclude all descendants (branch) of a node.
+          //
+          // [franciscom]: 
+          // I think ( but I have no figures to backup my thoughts) doing this check and 
+          // avoiding the function call is better that passing a condition that will result
+          // in a null result set.
+          //
+          //
+          if(!isset($exclude_children_of[$nodeType]) && 
+              !isset($exclude_branches[$rowID])
+            )
+			{
+				$this->_get_subtree_rec($rowID,$node,
+        	                            $and_not_in_clause,
+        	                            $exclude_children_of,
+        	                            $exclude_branches);	
+         	}
+			
+			$pnode['childNodes'][] = $node;
+		}
+  	}
+}
  
 }// end class
 ?>

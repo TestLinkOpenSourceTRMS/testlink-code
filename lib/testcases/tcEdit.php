@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.30 $
- * @modified $Date: 2006/04/28 17:17:31 $  by $Author: franciscom $
+ * @version $Revision: 1.31 $
+ * @modified $Date: 2006/05/05 20:07:24 $  by $Author: schlundus $
  * This page manages all the editing of test cases.
  *
  * @author Martin Havlat
@@ -18,13 +18,8 @@ require_once("../functions/common.php");
 require_once('archive.inc.php');
 require_once('../keywords/keywords.inc.php');
 require_once("../../third_party/fckeditor/fckeditor.php");
-require_once("testcase.class.php"); // 20060226 - franciscom
-require_once("testsuite.class.php"); // 20060306 - franciscom
 require_once("../functions/opt_transfer.php"); // 20060424 - franciscom
-
-
 testlinkInitPage($db);
-
 
 
 // set variables
@@ -59,13 +54,9 @@ $expected_results 	= isset($_POST['expected_results']) ? strings_stripSlashes($_
 $new_container_id = isset($_POST['new_container']) ? intval($_POST['new_container']) : 0;
 $old_container_id = isset($_POST['old_container']) ? intval($_POST['old_container']) : 0;
 
-
-// 20060425 - franciscom
 $opt_cfg->js_ot_name='ot';
 $rl_html_name = $opt_cfg->js_ot_name . "_newRight";
 $assigned_keywords_list = isset($_REQUEST[$rl_html_name])? $_REQUEST[$rl_html_name] : "";
-
-
 
 // manage the forms to collect data
 $edit_tc   = isset($_REQUEST['edit_tc']) ? 1 : 0;
@@ -73,10 +64,7 @@ $delete_tc = isset($_POST['delete_tc']) ? 1 : 0;
 $create_tc = isset($_POST['create_tc']) ? 1 : 0;
 $move_copy_tc = isset($_POST['move_copy_tc']) ? 1 : 0;
 
-// 20060326 - franciscom
 $delete_tc_version = isset($_POST['delete_tc_version']) ? 1 : 0;
-
-
 
 // really do the operation requested
 $do_create = isset($_POST['do_create']) ? 1 : 0;
@@ -86,7 +74,6 @@ $do_copy   = isset($_POST['do_copy']) ? 1 : 0;
 $do_delete = isset($_POST['do_delete']) ? 1 : 0;
 $do_create_new_version = isset($_POST['do_create_new_version']) ? 1 : 0;
 $do_delete_tc_version = isset($_POST['do_delete_tc_version']) ? 1 : 0;
-
 
 $login_name = $_SESSION['user'];
 $version = isset($_POST['version']) ? intval($_POST['version']) : 0; 
@@ -100,8 +87,6 @@ if (isset($_POST['keywords']))
 // 20060425 - franciscom
 $init_opt_transfer = ($create_tc || $edit_tc || $do_create) ? 1 : 0;
 
-
-// 20060303 - francisco.mancardi@gruppotesi.com
 $tcase_mgr = New testcase($db);
 $tproject_mgr = New testproject($db);
 $tree_mgr = New tree($db);
@@ -109,7 +94,6 @@ $tsuite_mgr = New testsuite($db);
 
 $name_ok = 1;
 
-// 20060425 - franciscom
 if($init_opt_transfer)
 {
     $opt_cfg = opt_transf_empty_cfg();

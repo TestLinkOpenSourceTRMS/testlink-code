@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: treeMenu.inc.php,v $
  *
- * @version $Revision: 1.18 $
- * @modified $Date: 2006/05/03 08:47:58 $ by $Author: franciscom $
+ * @version $Revision: 1.19 $
+ * @modified $Date: 2006/05/05 20:07:23 $ by $Author: schlundus $
  * @author Martin Havlat
  *
  * 	This file generates tree menu for test specification and test execution.
@@ -90,7 +90,7 @@ function invokeMenu($menustring, $highLight = "")
 	{
 		$data = "<script type='text/javascript'>\n<!--\n var TREE_ITEMS = [\n"; 
 		$data .= $menustring;
-		$data .=  "]\n];\n"; //end the product block and whole array
+		$data .=  "\n];\n"; //end the product block and whole array
 		$data .=  "new tree (TREE_ITEMS, TREE_TPL);";
 		$data .= "//-->\n</script>\n";
 	}
@@ -110,22 +110,20 @@ function invokeMenu($menustring, $highLight = "")
 function filterString($str)
 {
 	$str = str_replace(array("\n","\r"), array("",""), $str);
-	if (TL_TREE_KIND != LAYERSMENU)
-	{
+	if (TL_TREE_KIND != 'LAYERSMENU')
 		$str = addslashes($str);
-	}
+
 	$str = htmlspecialchars($str, ENT_QUOTES);	
 	
 	return $str;
 }
-
 
 /** 
  * generate data for tree menu of Test Specification
  *
  * 20060501 - franciscom - interface changes
  */
-function generateTestSpecTree(&$db,$tproject_id, $tproject_name, 
+function fman_generateTestSpecTree(&$db,$tproject_id, $tproject_name, 
                               $linkto, $hidetc, $tc_action_enabled=1,
                               $getArguments = '',$keyword_id=0)
 {
@@ -135,8 +133,8 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,
 	$tproject_mgr = New testproject($db);
 
 	$tcase_node_type = $tree_manager->node_descr_id['testcase'];
-  $hash_descr_id = $tree_manager->get_available_node_types();
-  $hash_id_descr = array_flip($hash_descr_id);
+	 $hash_descr_id = $tree_manager->get_available_node_types();
+	 $hash_id_descr = array_flip($hash_descr_id);
 	
 	$test_spec = $tree_manager->get_subtree($tproject_id,array('testplan'=>'exclude me'),
 	                                                     array('testcase'=>'exclude my children'));
@@ -264,6 +262,220 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,
 }
 
 
+/** 
+ * generate data for tree menu of Test Specification
+*/
+function generateTestSpecTree(&$db,$tproject_id, $tproject_name, 
+                              $linkto, $hidetc, $tc_action_enabled=1,
+                              $getArguments = '',$keyword_id=0)
+{
+	$menustring = null; // storage variable for output
+
+	$tproject_mgr = new testproject($db);
+	$tree_manager = &$tproject_mgr->tree_manager;
+
+	$tcase_node_type = $tree_manager->node_descr_id['testcase'];
+	$hash_descr_id = $tree_manager->get_available_node_types();
+	$hash_id_descr = array_flip($hash_descr_id);
+	
+	$test_spec = $tree_manager->get_subtree($tproject_id,array('testplan'=>'exclude me'),
+	                                                     array('testcase'=>'exclude my children'),null,null,true);
+
+	$test_spec['name'] = $tproject_name;
+	$test_spec['id'] = $tproject_id;
+	$test_spec['node_type_id'] = 1;
+	if($test_spec)
+	{
+		$tck_map = null;
+		if($keyword_id)
+			$tck_map = $tproject_mgr->get_keywords_tcases($tproject_id,$keyword_id);
+		$testcase_count = prepareNode(&$test_spec,$hash_id_descr,$tck_map);
+		$test_spec['testcase_count'] = $testcase_count;
+	
+		$menustring = renderTreeNode(1,$test_spec,$getArguments,$hash_id_descr,$tc_action_enabled,$linkto);
+	}
+
+	return $menustring;
+}
+
+function prepareNode(&$node,$hash_id_descr,$tck_map = null)
+{
+	$nodeDesc = $hash_id_descr[$node['node_type_id']];
+	
+	$nTestCases = 0;
+	if ($nodeDesc == 'testcase')
+	{
+		$nTestCases = 1;
+		if ($tck_map)
+		{
+			if (!isset($tck_map[$node['id']]))
+			{
+				$node = null;
+				$nTestCases = 0;
+			}
+		}
+	}
+	if (isset($node['childNodes']) && $node['childNodes'])
+	{
+		$childNodes = &$node['childNodes'];
+		for($i = 0;$i < sizeof($childNodes);$i++)
+		{
+			$current = &$childNodes[$i];
+			// I use set an element to null to filter out leaf menu items
+			if(is_null($current))
+				continue;
+			$nTestCases += prepareNode($current,$hash_id_descr,$tck_map);
+		}
+		$node['testcase_count'] = $nTestCases;
+		if ($tck_map && !$nTestCases)
+			$node = null;
+		
+	}
+	
+	return $nTestCases;
+}
+
+function renderTreeNode($level,&$node,$getArguments,$hash_id_descr,$tc_action_enabled,$linkto)
+{
+	$nodeDesc = $hash_id_descr[$node['node_type_id']];
+
+	if (TL_TREE_KIND == 'JTREE')
+		$menustring = jtree_renderTestSpecTreeNodeOnOpen($node,$nodeDesc,$tc_action_enabled);
+	else if (TL_TREE_KIND == 'DTREE')
+		$menustring = dtree_renderTestSpecTreeNodeOnOpen($node,$nodeDesc,$linkto,$getArguments,$tc_action_enabled);
+	else 
+		$menustring = layersmenu_renderTestSpecTreeNodeOnOpen($node,$nodeDesc,$linkto,$getArguments,$level,$tc_action_enabled);
+		
+	if (isset($node['childNodes']) && $node['childNodes'])
+	{
+		$childNodes = $node['childNodes'];
+		for($i = 0;$i < sizeof($childNodes);$i++)
+		{
+			$current = $childNodes[$i];
+			// I use set an element to null to filter out leaf menu items
+			if(is_null($current))
+				continue;
+			
+			$menustring .= renderTreeNode($level+1,$current,$getArguments,$hash_id_descr,$tc_action_enabled,$linkto);
+		}
+	}
+	if (TL_TREE_KIND == 'JTREE')
+		$menustring .= jtree_renderTestSpecTreeNodeOnClose($node,$nodeDesc);
+	
+	return $menustring;
+}
+
+
+function layersmenu_renderTestSpecTreeNodeOnOpen($node,$nodeDesc,$linkto,$getArguments,$level,$tc_action_enabled)
+{
+	$name = filterString($node['name']);
+	$label = $name;
+	$icon = "";
+	$buildLinkTo = 1;
+	$dots  = str_repeat('.',$level);
+	
+	$testcase_count = isset($node['testcase_count']) ? $node['testcase_count'] : 0;
+	
+	if ($nodeDesc == 'testproject')
+	{
+		$label = $name . " ({$testcase_count})";
+		$dots = ".";
+	}
+	else
+	{			
+		if($nodeDesc == "testcase") 
+		{
+			$icon = "gnome-starthere-mini.png";
+			$buildLinkTo = $tc_action_enabled;
+			$label = "<b>{$node['id']}</b>: {$name}";
+		}		   
+		else if ($nodeDesc == "testsuite")
+			$label = $name . " ({$testcase_count})";
+	}	
+	if ($buildLinkTo)
+		$myLinkTo = "{$linkto}?edit={$nodeDesc}&data={$node['id']}{$getArguments}";
+	else	
+		$myLinkTo = ' ';
+		
+	$menustring = "{$dots}|{$label}|{$myLinkTo}|{$nodeDesc}". 
+		           "|{$icon}|workframe|\n";
+		
+	return $menustring;				
+}
+
+function dtree_renderTestSpecTreeNodeOnOpen($current,$nodeDesc,$linkto,$getArguments,$tc_action_enabled)
+{
+	$dtreeCounter = $current['id'];
+
+	$parentID = isset($current['parent_id']) ? $current['parent_id'] : -1;
+	$name = filterString($current['name']);
+	$buildLinkTo = 1;
+	
+	$edit = 'testcase';
+	$label = $name;
+	$testcase_count = isset($current['testcase_count']) ? $current['testcase_count'] : 0;
+	if ($nodeDesc == 'testproject')
+	{
+		$label = $name ." (" . $testcase_count . ")";
+	}
+	else if ($nodeDesc == 'testcase')
+	{
+		$label = "<b>{$current['id']}</b>:".$name;
+		$buildLinkTo = $tc_action_enabled;
+	}
+	else
+	{
+		$label = $name ." (" . $testcase_count . ")";
+	}
+	if ($buildLinkTo)
+		$myLinkTo = $linkto . "?edit={$nodeDesc}&data=" . $current['id'] . $getArguments;
+	else
+		$myLinkTo = "";
+		
+		
+	$menustring = "tlTree.add(" . $dtreeCounter . ",{$parentID},'" ;
+	$menustring .= $label. "','{$myLinkTo}');\n";
+				   
+	return $menustring;				   
+}
+
+function jtree_renderTestSpecTreeNodeOnOpen($current,$nodeDesc,$tc_action_enabled)
+{
+	$menustring = "['";
+	$name = filterString($current['name']);
+	$buildLinkTo = 1;
+	$pfn = "ET";
+	$testcase_count = isset($current['testcase_count']) ? $current['testcase_count'] : 0;	
+	
+	if($nodeDesc == 'testproject')
+	{
+		$pfn = 'EP';
+		$label =  $name . " (" . $testcase_count . ")";
+	}
+	else if ($nodeDesc == 'testsuite')
+	{
+		$pfn = 'ETS';
+		$label =  $name . " (" . $testcase_count . ")";	
+	}
+	else if ($nodeDesc == 'testcase')
+	{
+		$buildLinkTo = $tc_action_enabled;
+		if (!$buildLinkTo)
+			$pfn = "void";
+			
+		$label = "<b>" . $current['id'] . "</b>: ".$name;
+	}
+	$menustring = "['{$label}','{$pfn}({$current['id']})',\n";
+			
+	return $menustring;
+}
+
+function jtree_renderTestSpecTreeNodeOnClose($current,$nodeDesc)
+{
+	$menustring =  "],";
+	
+	return $menustring;
+}
 
 
 /** 

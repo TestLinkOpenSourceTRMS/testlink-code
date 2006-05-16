@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
  * @filesource $RCSfile: roles.inc.php,v $
- * @version $Revision: 1.9 $
- * @modified $Date: 2006/04/07 20:15:26 $ by $Author: schlundus $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2006/05/16 19:35:40 $ by $Author: schlundus $
  * @author Martin Havlat, Chad Rosen
  * 
  * This script provides the get_rights and has_rights functions for
@@ -557,27 +557,16 @@ function has_rights(&$db,$roleQuestion)
 		$_SESSION['testPlanRoles'] = $s_userTestPlanRoles;
 	}
 	$globalRoleID = $_SESSION['roleId'];
-	$globalRights = $s_allRoles[$globalRoleID]['rights'];
+	$globalRights = isset($s_allRoles[$globalRoleID]['rights']) ? $s_allRoles[$globalRoleID]['rights'] : '';
 	$globalRights = explode(",",$globalRights);
 	
-	//check for testplan rights first
 	$testPlanID = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0;
 	$userTestPlanRoles = $_SESSION['testPlanRoles'];
-
-	if (isset($userTestPlanRoles[$testPlanID]))
-	{
-		$testPlanRoleID = $userTestPlanRoles[$testPlanID]['role_id'];
-		$testPlanRights = $s_allRoles[$testPlanRoleID]['rights'];
-		$testPlanRights = explode(",",$testPlanRights);
-		
-		propagateRights($globalRights,$g_propRights_global,$testPlanRights);
-		propagateRights($globalRights,$g_propRights_product,$testPlanRights);
-		return checkForRights($testPlanRights,$roleQuestion);
-	}
 	
-	//check for product rights first
 	$productID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 	$userProductRoles = $_SESSION['testprojectRoles'];
+
+	$allRights = $globalRights;
 	if (isset($userProductRoles[$productID]))
 	{
 		$productRoleID = $userProductRoles[$productID]['role_id'];
@@ -585,11 +574,19 @@ function has_rights(&$db,$roleQuestion)
 		$productRights = explode(",",$productRights);
 		
 		propagateRights($globalRights,$g_propRights_global,$productRights);
-		return checkForRights($productRights,$roleQuestion);
+		$allRights = $productRights;
 	}
 
-	//check global rights last;
-	return checkForRights($globalRights,$roleQuestion);
+	if (isset($userTestPlanRoles[$testPlanID]))
+	{
+		$testPlanRoleID = $userTestPlanRoles[$testPlanID]['role_id'];
+		$testPlanRights = $s_allRoles[$testPlanRoleID]['rights'];
+		$testPlanRights = explode(",",$testPlanRights);
+		
+		propagateRights($allRights,$g_propRights_product,$testPlanRights);
+		$allRights = $testPlanRights; 
+	}
+	return checkForRights($allRights,$roleQuestion);
 }
 
 function propagateRights($fromRights,$propRights,&$toRights)

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.61 $
- * @modified $Date: 2006/04/29 19:32:50 $ by $Author: schlundus $
+ * @version $Revision: 1.62 $
+ * @modified $Date: 2006/05/16 19:35:39 $ by $Author: schlundus $
  *
  *
  * Constants and configuration parameters used throughout TestLink 
@@ -145,7 +145,7 @@ ini_set('include_path', '.' . DELIM . TL_ABS_PATH . 'lib' . DS . 'functions' . D
 //ini_set('session.gc_maxlifetime', 54000)
 
 /** Error reporting - do we want php errors to show up for users */
-error_reporting(E_ALL & ~E_NOTICE);
+error_reporting(E_ALL);
  
 /** GUI related constants *///////////////////////////////////////////////////
 

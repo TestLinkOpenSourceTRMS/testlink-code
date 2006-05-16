@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.17 $
- * @modified $Date: 2006/05/03 07:24:27 $
+ * @version $Revision: 1.18 $
+ * @modified $Date: 2006/05/16 19:35:40 $
  * @author franciscom
  *
  * 20060425 - franciscom - changes in show() following Andreas Morsing advice (schlundus)
@@ -542,33 +542,27 @@ function get_keywords_map($testproject_id)
 		return($map_keywords);
 }
 	
-
-
-
-
-/* 20060411 - franciscom */
 function get_all_testcases_id($id)
 {
-	$a_tcid=array();
-	$test_spec = $this->tree_manager->get_subtree($id,array('testplan'=>'exclude me'),
-	                                            array('testcase'=>'exclude my children'));
-  
-  $hash_descr_id = $this->tree_manager->get_available_node_types();
-
-  $qty=0;
-  if( count($test_spec) > 0 )
-  {
-    foreach($test_spec as $elem)
-    {
-    	if($elem['node_type_id'] == $hash_descr_id['testcase'])
-    	{
-    	  $a_tcid[]=$elem['id'];
-    	}
-    }
-  }
-  return ($a_tcid);
-  
-} //end function
+	$a_tcid = array();
+	$test_spec = $this->tree_manager->get_subtree($id,
+					array('testplan'=>'exclude me'),
+	         		array('testcase'=>'exclude my children'));
+	
+	$hash_descr_id = $this->tree_manager->get_available_node_types();
+	if(count($test_spec))
+	{
+		$tcNodeType = $hash_descr_id['testcase']; 
+		foreach($test_spec as $elem)
+		{
+			if($elem['node_type_id'] == $tcNodeType)
+			{
+				$a_tcid[] = $elem['id'];
+			}
+		}
+	}
+	return $a_tcid;
+}
 
 // 20060430 - franciscom
 function get_keywords_tcases($testproject_id, $keyword_id=0)

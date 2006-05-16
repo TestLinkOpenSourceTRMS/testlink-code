@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.17 $
- * @modified $Date: 2006/05/03 07:17:18 $ $Author: franciscom $
+ * @version $Revision: 1.18 $
+ * @modified $Date: 2006/05/16 19:35:40 $ $Author: schlundus $
  * @author franciscom
  *
  * 20060425 - franciscom - changes in show() following Andreas Morsing advice (schlundus)
@@ -11,9 +11,9 @@
  * 20060323 - franciscom - create_tcversion() interface change added $version
  *
  */
-
-require_once( dirname(__FILE__) . '/tree.class.php' );
 require_once( dirname(__FILE__) . '/requirements.inc.php' );
+
+define("TC_ALL_VERSIONS",0);
 
 class testcase
 {
@@ -513,36 +513,22 @@ function create_new_version($id,$user_id)
 /* 20060323 - franciscom */
 function get_last_version_info($id)
 {
+	$sql = "SELECT MAX(version) AS version FROM tcversions,nodes_hierarchy WHERE ".
+		   " nodes_hierarchy.id = tcversions.id ".
+	       " AND nodes_hierarchy.parent_id = {$id} ";
 	
-	$sql="SELECT MAX(version) 
-	      FROM tcversions,nodes_hierarchy
-	      WHERE nodes_hierarchy.id = tcversions.id
-	      AND   nodes_hierarchy.parent_id = {$id} ";
+	$max_version = $this->db->fetchFirstRowSingleColumn($sql,'version');
 	
-	$recordset = $this->db->get_recordset($sql);
-  $max_version=$recordset[0][0];
-	
-	$sql="SELECT tcversions.*
-	      FROM tcversions,nodes_hierarchy
-	      WHERE version = {$max_version}
-        AND nodes_hierarchy.id = tcversions.id
-	      AND nodes_hierarchy.parent_id = {$id}";
-	
-	
-	
-	/*
-	$sql="SELECT tcversions.*
-	      FROM tcversions,nodes_hierarchy
-	      WHERE version = ( SELECT MAX(version) 
-	                        FROM tcversions
-	                        WHERE nodes_hierarchy.id = tcversions.id
-	                        AND   nodes_hierarchy.parent_id = {$id} )
-        AND nodes_hierarchy.id = tcversions.id
-	      AND nodes_hierarchy.parent_id = {$id}";
-	*/
-	      
-  $recordset = $this->db->get_recordset($sql);
-	return($recordset[0]);
+	$tcInfo = null;
+	if ($max_version)
+	{
+		$sql = "SELECT tcversions.* FROM tcversions,nodes_hierarchy ".
+		       "WHERE version = {$max_version} AND nodes_hierarchy.id = tcversions.id".
+			   " AND nodes_hierarchy.parent_id = {$id}";
+		
+		$tcInfo = $this->db->fetchFirstRow($sql);
+	}
+	return $tcInfo;
 }
 
 

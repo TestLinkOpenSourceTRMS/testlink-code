@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.25 $
- * @modified $Date: 2006/04/10 09:17:34 $ $Author: franciscom $
+ * @version $Revision: 1.26 $
+ * @modified $Date: 2006/05/16 19:35:40 $ $Author: schlundus $
  *
  * @author Martin Havlat
  *
@@ -27,13 +27,14 @@ $tplan_mgr = New testplan($db);
 $tcase_mgr = New testcase($db);
 
 
-
 $testdata = array();
 $submitResult = null;
 
 $_REQUEST = strings_stripSlashes($_REQUEST);
 $id = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0;
-$build_id = isset($_REQUEST['build']) ? intval($_REQUEST['build']) : 0;
+$build_id = isset($_REQUEST['build_id']) ? intval($_REQUEST['build_id']) : 0;
+$tc_id = isset($_REQUEST['tc_id']) ? intval($_REQUEST['tc_id']) : null;
+$keyword_id = isset($_REQUEST['keyword_id']) ? intval($_REQUEST['keyword_id']) : 0;
 $level = isset($_REQUEST['level']) ? $_REQUEST['level'] : '';
 $owner = isset($_REQUEST['owner']) ? $_REQUEST['owner'] : '';
 
@@ -42,19 +43,8 @@ $the_builds = $tplan_mgr->get_builds_for_html_options($tplan_id);
 $build_name = isset($the_builds[$build_id]) ? $the_builds[$build_id] : '';
 $user_id = $_SESSION['userID'];
 
-
-$keyword = 'All';
-if( isset($_REQUEST['keyword']) )
-{
-	$keyword = $db->prepare_string($keyword);
-}
-
-
 define('ANY_BUILD',null);
 define('GET_NO_EXEC',1);
-
-/*
-*/
 
 // -------------------------------------------------------------------------------------------
 // 20060207 - franciscom - BUGID 0000303 - Solution by: scorpfromhell 
@@ -73,7 +63,7 @@ if(($latestBuild > $build_id) && !(config_get('edit_old_build_results')))
 
 // ----------------------------------------------------------------
 // 20060326 - franciscom
-$xx=$tplan_mgr->get_linked_tcversions($tplan_id);
+$xx=$tplan_mgr->get_linked_tcversions($tplan_id,$tc_id,$keyword_id);
 $test_spec=array();
 $zz=array();
 

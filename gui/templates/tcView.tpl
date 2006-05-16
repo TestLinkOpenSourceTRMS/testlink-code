@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView.tpl,v 1.15 2006/04/29 19:32:54 schlundus Exp $
+$Id: tcView.tpl,v 1.16 2006/05/16 19:35:40 schlundus Exp $
 Purpose: smarty template - view test case in test specification
 
 20060425 - franciscom - can manage multiple test cases
@@ -16,7 +16,7 @@ Purpose: smarty template - view test case in test specification
 
 <div class="workBack">
 
-
+{if $testcase_curr_version}
 {section name=idx loop=$testcase_curr_version}
     {* Current active version *}
     {if $testcase_other_versions[idx] neq null}
@@ -85,6 +85,10 @@ Purpose: smarty template - view test case in test specification
       	{* ---------------------------------------------------------------- *}
     {/if}
 {/section}
+{else}
+	{lang_get s='no_records_found'}
+{/if}
+
 </div>
 </body>
 </html>

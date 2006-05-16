@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/ 
 // This script is distributed under the GNU General Public License 2 or later. 
 //
-// $Id: testlink_library.js,v 1.11 2006/05/05 20:07:23 schlundus Exp $ 
+// $Id: testlink_library.js,v 1.12 2006/05/16 19:35:40 schlundus Exp $ 
 //
 // Javascript functions commonly used through the GUI
 // This library is automatically loaded with inc_header.tpl
@@ -26,19 +26,14 @@ function open_top(page)
 
 
 // test specification related functions
-function ST(id)
+function ST(id,version)
 {
-	parent.workframe.location = fRoot+'/'+menuUrl+"&level=testcase&id="+id;
+	parent.workframe.location = fRoot+'/'+menuUrl+"?version="+version+"&level=testcase&id="+id+args;
 }
 
-function SCO(id)
+function STS(id)
 {
-	parent.workframe.location = fRoot+'/'+menuUrl+"&level=component&id="+id;
-}
-
-function SC(id)
-{
-	parent.workframe.location = fRoot+'/'+menuUrl+"&level=category&id="+id;
+	parent.workframe.location = fRoot+'/'+menuUrl+"?level=component&id="+id+args;
 }
 
 function SP()
@@ -46,13 +41,16 @@ function SP()
 	parent.workframe.location = fRoot+'/'+SP_html_help_file;
 }
 
+/*
+function SC(id)
+{
+	parent.workframe.location = fRoot+'/'+menuUrl+"&level=category&id="+id;
+}
+*/
+
 function EP(id)
 {
-	parent.workframe.location = fRoot+menuUrl+"?edit=product&data="+id+args;
-}
-function ECO(id)
-{
-	parent.workframe.location = fRoot+menuUrl+"?edit=component&data="+id+args;
+	parent.workframe.location = fRoot+menuUrl+"?edit=testproject&data="+id+args;
 }
 
 function ETS(id)
@@ -60,16 +58,21 @@ function ETS(id)
 	parent.workframe.location = fRoot+menuUrl+"?edit=testsuite&data="+id+args;
 }
 
+function ET(id)
+{
+	parent.workframe.location = fRoot+menuUrl+"?edit=testcase&data="+id+args;
+}
+/*
+function ECO(id)
+{
+	parent.workframe.location = fRoot+menuUrl+"?edit=component&data="+id+args;
+}
 
 function EC(id)
 {
 	parent.workframe.location = fRoot+menuUrl+"?edit=category&data="+id+args;
 }
-
-function ET(id)
-{
-	parent.workframe.location = fRoot+menuUrl+"?edit=testcase&data="+id+args;
-}
+*/
 
 function PTP(id)
 {

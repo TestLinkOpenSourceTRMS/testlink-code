@@ -2,7 +2,7 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: listTestCases.php,v 1.14 2006/05/05 20:07:24 schlundus Exp $
+* 	@version 	$Id: listTestCases.php,v 1.15 2006/05/16 19:35:40 schlundus Exp $
 * 	@author 	Martin Havlat
 * 
 * 	This page generates tree menu with test specification. It builds the
@@ -44,16 +44,12 @@ else
 	exit();
 }
 
-define('SHOW_TESTCASE_ITEMS',0);
-define('TC_ACTION_ENABLED',1);
 $treeString = generateTestSpecTree($db,$tproject_id, $tproject_name,
-                                   $workPath, SHOW_TESTCASE_ITEMS,TC_ACTION_ENABLED);
+                                   $workPath,0,1);
 
 $tree = null;
 if (strlen($treeString))
-{
 	$tree = invokeMenu($treeString);
-}
 	
 $smarty = new TLSmarty();
 $smarty->assign('treeKind', TL_TREE_KIND);

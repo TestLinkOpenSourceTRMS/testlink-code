@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: execNavigator.php,v $
  *
- * @version $Revision: 1.21 $
- * @modified $Date: 2006/05/03 07:01:58 $ by $Author: franciscom $
+ * @version $Revision: 1.22 $
+ * @modified $Date: 2006/05/16 19:35:40 $ by $Author: schlundus $
  *
  * @author Martin Havlat
  *
@@ -28,56 +28,57 @@ require_once('common.php');
 require_once('treeMenu.inc.php');
 require_once('exec.inc.php');
 require_once('builds.inc.php');
-
-require_once 'tree.class.php'; // 20060319 - franciscom
-require_once 'testplan.class.php'; // 20060319 - franciscom
-
-
 testlinkInitPage($db);
 
-// 20060321 - franciscom
-$tplan_mgr = New testplan($db);
-
-// global var for dtree only
-$dtreeCounter = 0; 
 
 $treeColored = (isset($_POST['colored']) && ($_POST['colored'] == 'result')) ? 'selected="selected"' : null;
 $selectOwner = (isset($_POST['owner']) && ($_POST['owner'] == $_SESSION['user'])) ? 'selected="selected"' : null;
 $filterOwner = array (array('id' => $_SESSION['user'], 'selected' => $selectOwner));
 $tc_id = isset($_POST['tcID']) ? intval($_POST['tcID']) : null;
+$keyword_id = isset($_POST['keyword_id']) ? $_POST['keyword_id'] : 0;             
 
-$optBuild = $tplan_mgr->get_builds_for_html_options($_SESSION['testPlanId']);
+$tplan_id   = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0;
+$tplan_name = isset($_SESSION['testPlanName']) ? $_SESSION['testPlanName'] : 'xxx';
+$tplan_mgr = new testplan($db);
+$optBuild = $tplan_mgr->get_builds_for_html_options($tplan_id);
 $optBuildSelected = isset($_POST['build_id']) ? $_POST['build_id'] : key($optBuild);
 
-// 20060430 - franciscom
-$kw_map=$tplan_mgr->get_keywords_map($_SESSION['testPlanId'],' order by keyword ');
-if( !is_null($kw_map) )
+$tproject_id   = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+$tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : 'xxx';
+
+$kw_map = $tplan_mgr->get_keywords_map($_SESSION['testPlanId'],' order by keyword ');
+if(!is_null($kw_map))
 {
   // add the blank option
   // 0 -> id for no keyword
-  $blank_map[0]='';
-  $keywords_map=$blank_map+$kw_map;
+  $blank_map[0] = '';
+  $keywords_map = $blank_map+$kw_map;
 }
-$keyword_id = isset($_POST['keyword_id']) ? $_POST['keyword_id'] : 0;             
 
-
-// generate tree 
 $menuUrl = null;
-
 $SP_html_help_file = TL_INSTRUCTIONS_RPATH . $_SESSION['locale'] . "/executeTest.html";
 
-// 20060429 - franciscom
 $menuUrl = 'lib/execute/execSetResults.php';
-$sMenu = generateExecTree($db,$menuUrl,$_SESSION['testPlanId'],$_SESSION['testPlanName'],
-                          $optBuildSelected,$SP_html_help_file,'testcase_execution',
-                          $tc_id,$keyword_id);
+$getArguments = '&build_id=' . $optBuildSelected;
+if ($keyword_id)
+	$getArguments .= '&keyword_id='.$keyword_id;
+if ($tc_id)
+	$getArguments .= '&tc_id='.$tc_id;
+	
+$sMenu = generateExecTree($db,$menuUrl,$tproject_id,$tproject_name,$tplan_id,$tplan_name,
+                          $optBuildSelected,$getArguments,$keyword_id,$tc_id);
 
-                          
+                     
 $tree = invokeMenu($sMenu);
 $tcData = null;
 $testCaseID = null;
+$optResult = null;
+$optResultSelected = null;
+$testCaseID = null;
 
-$smarty = new TLSmarty;
+
+
+$smarty = new TLSmarty();
 $smarty->assign('treeKind', TL_TREE_KIND);
 $smarty->assign('treeColored', $treeColored);
 $smarty->assign('optBuild', $optBuild);
@@ -85,15 +86,14 @@ $smarty->assign('optBuildSelected', $optBuildSelected);
 $smarty->assign('optResult', $optResult);
 $smarty->assign('optResultSelected', $optResultSelected); 
 $smarty->assign('arrOwner', $filterOwner);
-
-$smarty->assign('keywords_map', $keywords_map); // 20060430 - franciscom
-$smarty->assign('keyword_id', $keyword_id); // 20060430 - franciscom
-
+$smarty->assign('keywords_map', $keywords_map);
+$smarty->assign('keyword_id', $keyword_id);
 $smarty->assign('tcID', intval($tc_id) > 0 ? $tc_id : '');
 $smarty->assign('testCaseID',$testCaseID);
 $smarty->assign('tcIDFound', $tcData ? 1 : 0);
 $smarty->assign('tree', $tree);
 $smarty->assign('menuUrl',$menuUrl);
+$smarty->assign('args',$getArguments);
 $smarty->assign('SP_html_help_file',$SP_html_help_file);
 $smarty->display('execNavigator.tpl');
 
@@ -104,7 +104,7 @@ $smarty->display('execNavigator.tpl');
  *
  * @author Andreas Morsing - optimized SQL and reduced number of SQL-Statements
  */
-function displayTCTree(&$db,$TCResult, $build, $owner, $colored, $menuUrl, $filteredResult, $dtreeCategoryId)
+function DEPR_displayTCTree(&$db,$TCResult, $build, $owner, $colored, $menuUrl, $filteredResult, $dtreeCategoryId)
 {
 	global $g_tc_status;
 	$data = null;
@@ -184,7 +184,7 @@ function displayTCTree(&$db,$TCResult, $build, $owner, $colored, $menuUrl, $filt
 
 
 
-function displayTC($font,$mgttcid,$title,$tcid,$menuUrl, $dtreeCategoryId)
+function DEPR_displayTC($font,$mgttcid,$title,$tcid,$menuUrl, $dtreeCategoryId)
 {
 	$name = '<span';
 	if ($font != 'black')
@@ -211,7 +211,7 @@ function displayTC($font,$mgttcid,$title,$tcid,$menuUrl, $dtreeCategoryId)
 //and not run information about the test cases so that it can be displayed next to the category
 //
 // 20051002 - fm - refactoring
-function catCount(&$db,$catID,$colored,$build)
+function DEPR_catCount(&$db,$catID,$colored,$build)
 {
 	global $g_tc_status;
 

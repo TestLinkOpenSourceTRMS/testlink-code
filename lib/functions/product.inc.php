@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: product.inc.php,v $
- * @version $Revision: 1.15 $
- * @modified $Date: 2006/04/29 09:22:42 $
+ * @version $Revision: 1.16 $
+ * @modified $Date: 2006/05/16 19:35:40 $
  * @author Martin Havlat
  *
  * Functions for Product management (create,update,delete)
@@ -25,6 +25,7 @@ require_once('product.core.inc.php');
 /** @todo the function are not able to delete test plan data from another product (i.e. test case suite) */
 function deleteProduct(&$db,$id, &$error)
 {
+	/* TODO: this must be changed!*/
 	$error = ''; //clear error string
 	
 	// list of sql commands + fail info id
@@ -102,7 +103,7 @@ function deleteProduct(&$db,$id, &$error)
 			}
 		}
 	}	
-
+	exit();
 	// delete product itself
 	if (empty($error))
 	{

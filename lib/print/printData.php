@@ -2,7 +2,7 @@
 /**
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/ 
 *
-* @version 	$Id: printData.php,v 1.17 2006/04/26 07:07:55 franciscom Exp $
+* @version 	$Id: printData.php,v 1.18 2006/05/16 19:35:40 schlundus Exp $
 *	@author 	Martin Havlat
 * 
 * Shows the data that will be printed.
@@ -30,290 +30,25 @@ $category_number = 0;
 $CONTENT_HEAD = "";
 $CONTENT = "";
 /** if print TOC */
-$toc = isset($_GET['toc']) && ($_GET['toc'] == 'y') ? true : false;
+$type = isset($_GET['type']) ?  $_GET['type'] : null;
+$tproject_id   = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+$tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : 'xxx';
+$printingOptions = null;
 
-/** this function prints the document header */
-function print_header(&$db,$title, $toc)
+$printingOptions = array 
+						( 'toc' => 0,
+						  'body' => 0,
+						  'summary' => 0,
+						  'header' => 0,
+						 );
+foreach($printingOptions as $opt => $val)
 {
-	global $CONTENT_HEAD;
-	
-	$prodName = isset($_SESSION['testprojectName']) ? strings_stripSlashes($_SESSION['testprojectName']) : null;
-	$my_userID = isset($_SESSION['userID']) ? intval($_SESSION['userID']) : null;
-
-  // 20060102 - fm  
-	$prod_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
-	$prod_data = getProduct($db,$prod_id);
-	
-	
-	$title = lang_get('title_test_spec') . "-" . htmlspecialchars($title);
-	
-	$CONTENT_HEAD .= printHeader($title,$_SESSION['basehref']);
-	$CONTENT_HEAD .= printFirstPage($db,$title, $prodName, $prod_data['notes'], $my_userID);
-
-	if ($toc)
-		$CONTENT_HEAD .= '<div class="toc"><h2>'.lang_get('title_toc').'</h2>';
-}
-
-/** 
-print a component 
-
-20050915 - fm - refactoring using field name instead of numbers
-20050831 - fm -
-After adding fckeditor to all fields in category,
-I need to remove htmlspecialchars() calls and <pre></pre>
-*/
-function print_component($component) 
-{
-	global $CONTENT;
-  	global $CONTENT_HEAD;
-  	global $toc;
-  	global $component_number;
-  	global $category_number;
-	
-  	$component_number++;
-  	$category_number = 0;
-
-	if ($toc) 
-	{
-  		$CONTENT_HEAD .= '<p><a href="#com' . $component['id'] . '">' . 
-  	                 htmlspecialchars($component['name']) . '</a></p>';
-		$CONTENT .= "<a name='com" . $component['id'] . "'></a>";
-	}
-   	$CONTENT .= "<h1>" . $component_number . " ". lang_get('component') ." " . 
-   	                     htmlspecialchars($component['name']) . "</h1>";
-
-  	if ($_GET['header'] == 'y') 
-  	{
-    	$CONTENT .= "<h2>" . $component_number . ".0 ". lang_get('introduction') . "</h2><div>" .  
-    	            $component['intro'] . "</div>";
-    	$CONTENT .= "<h3>" . $component_number . ".0.1 ".lang_get('scope')."</h3><div>" .  
-    	            $component['scope'] . "</div>";
-    	$CONTENT .= "<h3>" . $component_number . ".0.2 ".lang_get('references') . "</h3><div>" .  
-    	            $component['ref'] . "</div>";
-    	$CONTENT .= "<h2>" . $component_number . ".1 " . lang_get('methodology') . "</h2><div>" . 
-    	            $component['method'] . "</div>";
-    	$CONTENT .= "<h3>" . $component_number . ".1.1 ".lang_get('limitations')."</h3><div>" . 
-    	            $component['lim'] . "</pre></div>";
-    	$CONTENT .= "<h2>" . $component_number . ".2 ".lang_get('categories')."</h2>";
- 	}
-} 
-
-/** 
-print a category 
-
-20050831 - fm 
-After adding fckeditor to all fields in category,
-I need to remove htmlspecialchars() calls and <pre></pre>
-
-*/
-
-function print_category($category) 
-{
-  	global $CONTENT;
-  	global $CONTENT_HEAD;
-  	global $toc;
-  	global $component_number;
-  	global $category_number;
-  	$category_number++;
-
-	if ($toc) 
-	{
-	 	$CONTENT_HEAD .= '<p style="padding-left: 10px;"><a href="#cat' . $category['id'] . '">' . 
-	 	                 htmlspecialchars($category['name']) . '</a></p>';
-		$CONTENT .= "<a name='cat" . $category['id'] . "'></a>";
-	}
-    $CONTENT .= "<h3>" . $component_number . ".2." . $category_number . " " . 
-                         htmlspecialchars($category['name']) . "</h3>";
-
-  	if ($_GET['header'] == 'y') 
-  	{
-		  $CONTENT .= "<p>" .  $category['objective'] . "</p>";
-	    $CONTENT .= "<h4>" . $component_number . ".2." . 
-	                         $category_number . ".1 ". lang_get('setup_and_config')."</h4><div>" .  
-	                         $category['config']."</div>";
-	                         
-    	$CONTENT .= "<h4>" . $component_number . ".2." . 
-    	                     $category_number . ".2 ". lang_get('test_data')."</h4><div>" .  
-    	                     $category['data'] . "</div>";
-    	                     
-	    $CONTENT .= "<h4>" . $component_number . ".2." . 
-	                         $category_number . ".3 ". lang_get('tools')."</h4><div>" .  
-	                         $category['tools'] . "</div>";
-	                         
-    	$CONTENT .= "<h4>" . $component_number . ".2." . $category_number . ".4 " . 
-    	                     lang_get('test_cases')."</h4>";
-    	$CONTENT .= "<p>";
-  	}
-}
+	$printingOptions[$opt] = (isset($_GET[$opt]) && ($_GET[$opt] == 'y'));
+}						 
 
 
-/** print a test case data */
-//20051022 - scs - print out mgttcid instead of tcid
-function print_testcase($testcase) 
-{
- 	global $CONTENT;
- 	global $CONTENT_HEAD;
- 	global $toc;
-	
-	$idx = isset($testcase['mgttcid']) ? 'mgttcid' : 'id';
-	
-	if ($toc) 
-	{
-	  	$CONTENT_HEAD .= '<p style="padding-left: 20px;"><a href="#tc' . $testcase['id'] . '">' . 
-	  	                 htmlspecialchars($testcase['title']) . '</a></p>';
-		$CONTENT .= "<a name='tc" . $testcase[$idx] . "'></a>";
-	}
- 	$CONTENT .= "<div class='tc'><table width=90%>";
- 	$CONTENT .= "<tr><th>".lang_get('test_case')." " . $testcase[$idx] . ": " . 
- 	            htmlspecialchars($testcase['title']) . "</th></tr>";
-
-
- 	if ($_GET['body'] == 'y' || $_GET['summary'] == 'y')
- 	{
- 	 	$CONTENT .= "<tr><td><u>".lang_get('summary')."</u>: " .  $testcase['summary'] . "</td></tr>";
- 	} 
- 	if ($_GET['body'] == 'y') 
- 	{
-	   	$CONTENT .= "<tr><td><u>".lang_get('steps')."</u>:<br />" .  $testcase['steps'] . "</td></tr>";
-	   	$CONTENT .= "<tr><td><u>".lang_get('expected_results')."</u>:<br />" .  $testcase['exresult'] . "</td></tr>";
- 	}
-
-  	$CONTENT .= "</table></div>";
-}
 
 /*
-20050831 - fm - logic reuse
-*/
-function generate_TCs(&$db,$rs)
-{
-  global $CONTENT;
-
-	if ($db->num_rows($rs) > 0)
-	{
-	    while ($myrow = $db->fetch_array($rs))
-		{
-			print_testcase($myrow);
-		}
-	}
-	else
-	{
-    	$CONTENT .= "<p>" . lang_get('no_test_case') . "</p>";
-	}
-}
-
-
-/** print Test Specification data within category */
-function generate_product_TCs(&$db,$idCategory)
-{
-	$sqlTC = " SELECT  id,title, summary, steps, exresult " .
-				" FROM mgttestcase " .
-				" WHERE catid=" . $idCategory . 
-				" ORDER BY TCorder, id";
-
-	$resultTC = $db->exec_query($sqlTC);
-	
-	if (!$resultTC)
-	{
-		tLog($sqlTC . ' | error: ' . $db->error_msg(), 'ERROR');
-	}
-	generate_TCs($db,$resultTC);
-}
-
-/** print Test Case Suite data within category */
-function generate_testSuite_TCs(&$db,$idCategory)
-{
-	$sqlTC = " SELECT id,title, summary, steps, exresult,mgttcid, keywords " .
-			" FROM testcase " .
-			" WHERE catid=" . $idCategory . " ORDER BY TCorder, mgttcid";
-	$resultTC = $db->exec_query($sqlTC);
-	
-	if (!$resultTC)
-	{
-		tLog($sqlTC . ' | error: ' . $db->error_msg(), 'ERROR');
-	}
-	
-	generate_TCs($db,$resultTC);
-}
-
-/*
-20050914 - fm - mgtcategory.name 
-
-20050911 - fm - Use Join
-code reuse adding catID
-catID=0 -> all
-
-*/
-function generate_testSuite_Categories(&$db,$idComponent,$catID=0)
-{
-	// Now use a Join
-	// mgtcategory.name or category.name ???
-	$sql =" SELECT mgtcategory.id, mgtcategory.objective," .
-		" mgtcategory.config,mgtcategory.data,mgtcategory.tools," .
-		" mgtcategory.CATorder, " .
-		" mgtcategory.name, category.id AS catid " .  
-		" FROM  mgtcategory,category " .
-		" WHERE mgtcategory.id=category.mgtcatid" .
-		" AND  category.compid = " . $idComponent;
-     
-	if($catID)
-	{
-		$sql .= " AND category.id=" . $catID;
-	}     
-	$sql .= " ORDER BY CATorder, id";
-	$res = $db->exec_query($sql);
-	
-	while ($myrow = $db->fetch_array($res))
-	{  
-		print_category($myrow);
-		generate_testSuite_TCs($db,$myrow['catid']);
-	}
-}
-
-
-function generate_product_CATs(&$db,$idComponent)
-{
-    $sqlCAT = " SELECT id,name,objective,config,data,tools " .
-              " FROM mgtcategory " .
-              " WHERE compid=" . $idComponent .	
-              " order by CATorder, id";
-  	$resultCAT = $db->exec_query($sqlCAT);
-	while ($myrowCAT = $db->fetch_array($resultCAT))
-	{   
-		print_category($myrowCAT);
-		generate_product_TCs($db,$myrowCAT['id']);
-	}
-}
-
-/* 20050911 - fm - refactoring*/
-function getTPcomponent(&$db,$compID)
-{
-  $sql = " SELECT  mgtcomponent.id, mgtcomponent.name,mgtcomponent.intro," .
-  	     " mgtcomponent.scope,mgtcomponent.ref,mgtcomponent.method,mgtcomponent.lim " .
-  	     " FROM mgtcomponent,component " .
-  		   " WHERE mgtcompid=mgtcomponent.id " .
-  		   " AND component.id=" . $compID;
-
-  $res = $db->exec_query($sql);
-  $myrow = $db->fetch_array($res);
-  return $myrow;
-}
-
-/* 
-20050914 - fm - refactoring
-20050911 - fm - refactoring
-*/
-function getTPcategory(&$db,$catID)
-{
-	$sql = " SELECT category.id,mgtcategory.name,category.compid " . 
-	       " FROM category,mgtcategory " .
-	       " WHERE category.mgtcatid=mgtcategory.id " .
-	       " AND category.id=" . $catID . 
-			   " ORDER BY mgtcategory.CATorder, category.id";
-	
-	$res = $db->exec_query($sql);
-	$myrow = $db->fetch_array($res);
-	return $myrow;
-}
 
 // --------------------------------------------------------------------------------
 // Work with Test Specification of Product
@@ -362,7 +97,6 @@ if($_GET['type'] == 'product')
 		exit();
 	}
 } // endif product
-
 
 // ------------------------------------------------------------------------------------
 // ----------            Test Case Suite / Test Plan  Print    ------------------------
@@ -424,6 +158,155 @@ if($_GET['type'] == 'testSet')
 	}
 }
 
+*/
+
+
+if ($type == 'testproject')
+{
+	$tproject_mgr = new testproject($db);
+	$tree_manager = &$tproject_mgr->tree_manager;
+	$test_spec = $tree_manager->get_subtree($tproject_id,array('testplan'=>'exclude me'),
+	                                                     array('testcase'=>'exclude my children'),null,null,true);
+	$test_spec['name'] = $tproject_name;
+	$test_spec['id'] = $tproject_id;
+	$test_spec['node_type_id'] = 1;
+	if($test_spec)
+	{
+		$code = renderTreeForPrinting($db,$printingOptions,$test_spec,null,0,1);
+	}
+	
+}
+
+function renderTreeForPrinting(&$db,&$printingOptions,&$node,$tocPrefix,$tcCnt,$level)
+{
+	$code = null;
+	$bCloseTOC = 0;	
+	switch($node['node_type_id'])
+	{
+		case 1:
+			$code .= renderProjectNode($db,$printingOptions,"",$node);
+			
+			break;	
+		case 2:
+			if (!is_null($tocPrefix))
+				$tocPrefix .= ".";
+			$tocPrefix .= $tcCnt;
+			$code .= renderTestSuiteNode($db,$printingOptions,$node,$tocPrefix,$level);
+			break;
+		case 3:
+			$code .= renderTestCaseForPrinting($db,$printingOptions,$node,$level);
+			break;
+	}
+	if (isset($node['childNodes']) && $node['childNodes'])
+	{
+		$childNodes = $node['childNodes'];
+		$tsCnt = 0;
+		for($i = 0;$i < sizeof($childNodes);$i++)
+		{
+			$current = $childNodes[$i];
+			if(is_null($current))
+				continue;
+			
+			if ($current['node_type_id'] == 2)
+				$tsCnt++;
+			$code .= renderTreeForPrinting($db,$printingOptions,$current,$tocPrefix,$tsCnt,$level+1);
+		}
+	}
+	if ($node['node_type_id'] == 1)
+	{
+		if ($printingOptions['toc'])
+		{
+			$printingOptions['tocCode'] .= '</div><hr />';	
+			$code = str_replace("{{INSERT_TOC}}",$printingOptions['tocCode'],$code);
+		}
+		$code .= "</body></html>";
+	}
+		
+	return $code;
+}
+
+function renderTestCaseForPrinting(&$db,&$printingOptions,&$node,$level) 
+{
+ 	$id = $node['id'];
+	$name = htmlspecialchars($node['name']);
+	
+	$code = null;
+	if ($printingOptions['toc']) 
+	{
+	  	$printingOptions['tocCode']  .= '<p style="padding-left: '.(15*$level).'px;"><a href="#tc' . $id . '">' . 
+	  	                 $name . '</a></p>';
+		$code .= "<a name='tc" . $id . "'></a>";
+	}
+ 	$code .= "<div class='tc'><table width=90%>";
+ 	$code .= "<tr><th>".lang_get('test_case')." " . $id . ": " . 
+ 	            $name . "</th></tr>";
+	
+	if ($printingOptions['body'] || $printingOptions['summary'])
+	{
+		$tc = new testcase($db);
+		$tcInfo = $tc->get_last_version_info($id);
+			
+		$code .= "<tr><td><u>".lang_get('summary')."</u>: " .  $tcInfo['summary'] . "</td></tr>";
+	 	if ($printingOptions['body']) 
+	 	{
+		   	$code .= "<tr><td><u>".lang_get('steps')."</u>:<br />" .  $tcInfo['steps'] . "</td></tr>";
+		   	$code .= "<tr><td><u>".lang_get('expected_results')."</u>:<br />" .  $tcInfo['expected_results'] . "</td></tr>";
+	 	}
+		unset($tc);
+	}
+  	$code .= "</table></div>";
+	
+	return $code;
+}
+
+function renderProjectNode(&$db,&$printingOptions,$title,&$node)
+{
+	$stitle = lang_get('title_test_spec');
+	if (strlen($title))
+		$stitle .= "-" . htmlspecialchars($title);
+	
+	$my_userID = isset($_SESSION['userID']) ? intval($_SESSION['userID']) : null;
+
+	$tproject = new testproject(&$db);
+	$projectData = $tproject->get_by_id($node['id']);
+
+	$code = printHeader($stitle,$_SESSION['basehref']);
+	$code .= printFirstPage($db,$stitle, $projectData['name'], $projectData['notes'], $my_userID);
+
+	$printingOptions['toc_numbers'][1] = 0;
+	if ($printingOptions['toc'])
+	{
+		$printingOptions['tocCode'] = '<div class="toc"><h2>'.lang_get('title_toc').'</h2>';
+		$code .= "{{INSERT_TOC}}";
+		$code .= '</div>';
+	}
+	$printingOptions['tc_list'] = null;		
+	return $code;
+}
+
+function renderTestSuiteNode(&$db,&$printingOptions,&$node,$tocPrefix,$level) 
+{
+	$code = null;
+	$name = htmlspecialchars($node['name']);
+	if ($printingOptions['toc']) 
+	{
+	 	$printingOptions['tocCode'] .= '<p style="padding-left: '.(10*$level).'px;"><a href="#cat' . $node['id'] . '">' . 
+	 	                 $name . '</a></p>';
+		$code .= "<a name='cat" . $node['id'] . "'></a>";
+	}
+ 	$code .= "<h1>" . $tocPrefix . " ". lang_get('test suite') ." " . 
+   	                     $name . "</h1>";
+						 
+	$node['details'] = "Blubba";
+	if ($printingOptions['header']) 
+  	{
+    	$code .= "<h2>" . $tocPrefix . ".0 ". lang_get('details') . "</h2><div>" .  
+    	            $node['details'] . "</div>";
+    	$code .= "<h2>" . $tocPrefix . ".1 ".lang_get('data')."</h2>";
+ 	}
+	
+	return $code;
+}
 // add MS Word header 
 if ($_GET['format'] == 'msword')
 {
@@ -433,12 +316,5 @@ if ($_GET['format'] == 'msword')
 	flush();
 }
 
-//close TOC and print docs
-if ($toc)
-	$CONTENT_HEAD .= '</div><hr />';
-$output = $CONTENT_HEAD . $CONTENT . "</body></html>";
-tLog ($output);
-
-// print all document
-echo $output;
+echo $code;
 ?>

@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* @version 	$Id: selectData.php,v 1.9 2006/02/15 08:49:54 franciscom Exp $
+* @version 	$Id: selectData.php,v 1.10 2006/05/16 19:35:40 schlundus Exp $
 * @author 	Martin Havlat
 * 
 * 	Navigator for print/export functionality. 
@@ -26,7 +26,7 @@ $prodName = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] :
 
 // parse wrong type
 $type = isset($_GET['type']) ? $_GET['type'] : '';
-if ($type != 'product' && $type != 'testSet')
+if ($type != 'testproject' && $type != 'testSet')
 {
 	tLog("Argument GET['type'] has invalid value", 'ERROR');
 	exit();
@@ -69,10 +69,10 @@ $smarty = new TLSmarty;
 
 // generate tree 
 $HIDE_TCs=1;
-if ($type == 'product')
+if ($type == 'testproject')
 {
-	$treeString = generateTestSpecTree($db,$prodID, $prodName,$workPath, $HIDE_TCs, $args);
-  $smarty->assign('title', lang_get('title_tc_print_navigator'));
+	$treeString = generateTestSpecTree($db,$prodID, $prodName,$workPath, 1, 0,$args);
+	$smarty->assign('title', lang_get('title_tc_print_navigator'));
 }	
 else if ($type == 'testSet')
 {
@@ -80,9 +80,7 @@ else if ($type == 'testSet')
 	$smarty->assign('title', lang_get('title_tp_print_navigator'));
 }	
 
-
 $tree = invokeMenu($treeString);
-
 $smarty->assign('treeKind', TL_TREE_KIND);
 $smarty->assign('arrCheckboxes', $arrCheckboxes);
 $smarty->assign('arrFormat', $arrFormat);

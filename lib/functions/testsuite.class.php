@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testsuite.class.php,v $
- * @version $Revision: 1.10 $
- * @modified $Date: 2006/04/29 19:32:54 $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2006/05/17 19:12:17 $
  * @author franciscom
  *
  * 20060425 - franciscom - changes in show() following Andreas Morsing advice (schlundus)
@@ -150,7 +150,7 @@ get info for one test suite
 */
 function get_by_id($id)
 {
-	$sql = " SELECT testsuites.*, nodes_hierarchy.name 
+	$sql = " SELECT testsuites.*, nodes_hierarchy.name,nodes_hierarchy.node_type_id 
 	         FROM testsuites,nodes_hierarchy 
 	         WHERE testsuites.id = nodes_hierarchy.id
 	         AND testsuites.id = {$id}";

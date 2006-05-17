@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: planNew.php,v $
  *
- * @version $Revision: 1.19 $
- * @modified $Date: 2006/04/26 07:07:55 $ $Author: franciscom $
+ * @version $Revision: 1.20 $
+ * @modified $Date: 2006/05/17 11:08:07 $ $Author: franciscom $
  *
  * Purpose:  Add new or edit existing Test Plan 
  *
@@ -90,7 +90,11 @@ else if($bNewTestPlan || $bEditTestPlan)
 				$tp_id = $tplan_mgr->create($args->name,$args->notes,$args->testprojectID);
 				
 				if ($tp_id == 0)
+				{
 					$sqlResult = $db->error_msg();
+				}	
+				else
+        {
 				$result = insertTestPlanPriorities($db, $tp_id);
 				
 				if($args->rights == 'on')
@@ -98,6 +102,8 @@ else if($bNewTestPlan || $bEditTestPlan)
 		    
 				if($args->copy) 
 					copy_deep_testplan($db, $args->source_tpid, $tp_id);
+			  }
+			
 			}
 			else
 			{

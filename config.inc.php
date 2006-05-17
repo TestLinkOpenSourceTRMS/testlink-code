@@ -5,14 +5,16 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.62 $
- * @modified $Date: 2006/05/16 19:35:39 $ by $Author: schlundus $
+ * @version $Revision: 1.63 $
+ * @modified $Date: 2006/05/17 11:13:50 $ by $Author: franciscom $
  *
  *
  * Constants and configuration parameters used throughout TestLink 
  * are defined within this file they should be changed for your environment
  *-------------------------------------------------------------------------
  * Revisions:
+ *
+ * 20060508 - franciscom - new config params for LDAP
  *
  * 20060207 - franciscom - reorder of element on $g_locales
  *            Again English UK is DEFAULT, rest of element ordered in
@@ -110,6 +112,42 @@ define('MAIN_PAGE_METRICS_ENABLED', 'FALSE');
 define('TL_IMPORT_LIMIT', '204800'); // in bytes
 /** maximum line size of the imported file */
 define('TL_IMPORT_ROW_MAX', '10000'); // in chars
+
+
+// --------------------------------------------------------------------------------------
+//                    [Section: authentication]                 
+// possible values: '' or 'MD5' => use password stored on db
+//                  'LDAP'      => use password from LDAP Server
+$g_login_method				= 'MD5';
+
+// Code copied from mantis (www.mantisbt.org)
+//
+// sample configuration
+//
+//$g_ldap_server			= 'localhost';
+//$g_ldap_port			  = '389';
+//$g_ldap_root_dn			= 'dc=mycompany,dc=com';
+//$g_ldap_organization	= '';  You can leave it empty
+//$g_ldap_uid_field		= 'uid'; # Use 'sAMAccountName' for Active Directory
+//
+// If you LDAP server allows anonymous binding you can set the following two
+// parameters to ''
+// 
+// 
+//$g_ldap_bind_dn			= 'my_bind_user';
+//$g_ldap_bind_passwd	= 'my_bind_password';
+//
+// If you need more info to configure this, contact your system administrator
+//
+$g_ldap_server			= 'localhost';
+$g_ldap_port			  = '389';
+$g_ldap_root_dn			= 'dc=mycompany,dc=com';
+$g_ldap_organization	= '';    # e.g. '(organizationname=*Traffic)'
+$g_ldap_uid_field		= 'uid'; # Use 'sAMAccountName' for Active Directory
+$g_ldap_bind_dn			= '';
+$g_ldap_bind_passwd	= '';
+// --------------------------------------------------------------------------------------
+
 
 
 /** Bug Tracking systems */////////////////////////////////////////////////////
@@ -456,15 +494,6 @@ define('TL_DOC_COPYRIGHT', '');
 define('TL_DOC_CONFIDENT', '');
 
 
-// 20051120 - franciscom - 
-// used in several functions instead of MAGIC NUMBERS - Don't change 
-define('ALL_PRODUCTS',0);
-define('TP_ALL_STATUS',null);
-define('FILTER_BY_PRODUCT',1);
-define('FILTER_BY_TESTPROJECT',FILTER_BY_PRODUCT);
-define('TP_STATUS_ACTIVE',1);
-define('NON_TESTABLE_REQ','n');
-define('DSN',FALSE);  // for method connect() of database.class
 
 
 // characters used to surround the role description in the user interface
@@ -517,6 +546,29 @@ $g_tpl['tcSearchView'] = $g_tpl['tcView'];
 $g_tpl['usersview'] = "usersview.tpl";
 
 // ----- End of Config ------------------------------------------------
+
+
+// ------------------------- Constants don't change it ----------------
+// 
+// Based on mantis issue tracking system code
+// ERROR_LDAP_*
+define( 'ERROR_LDAP_AUTH_FAILED',				      1400 );
+define( 'ERROR_LDAP_SERVER_CONNECT_FAILED',		1401 );
+define( 'ERROR_LDAP_UPDATE_FAILED',				    1402 );
+define( 'ERROR_LDAP_USER_NOT_FOUND',			    1403 );
+define( 'ERROR_LDAP_BIND_FAILED',				      1404 );
+
+// 20051120 - franciscom - 
+// used in several functions instead of MAGIC NUMBERS - Don't change 
+define('ALL_PRODUCTS',0);
+define('TP_ALL_STATUS',null);
+define('FILTER_BY_PRODUCT',1);
+define('FILTER_BY_TESTPROJECT',FILTER_BY_PRODUCT);
+define('TP_STATUS_ACTIVE',1);
+define('NON_TESTABLE_REQ','n');
+define('DSN',FALSE);  // for method connect() of database.class
+// -------------------------------------------------------------------
+
 
 
 // -------------------------------------------------------------------

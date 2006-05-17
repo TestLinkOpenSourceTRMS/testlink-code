@@ -5,10 +5,11 @@
  *
  * Filename $RCSfile: tree.class.php,v $
  *
- * @version $Revision: 1.15 $
- * @modified $Date: 2006/05/05 20:07:23 $ by $Author: schlundus $
+ * @version $Revision: 1.16 $
+ * @modified $Date: 2006/05/17 10:58:23 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
+ * 20060511 - franciscom - changes in call to insert_id() due to problems with Postgres
  * 20060316 - franciscom - bug on get_path
 */
 
@@ -33,6 +34,7 @@ class tree
   
   var $db;  // Database Handler
   
+    var $obj_table='nodes_hierarchy';
     
 	function tree(&$db) 
 	{
@@ -71,14 +73,8 @@ class tree
   */
 	function new_root_node($name='') 
 	{
-
-    $sql = " INSERT INTO nodes_hierarchy 
-             (node_type_id, node_order, name) 
-             VALUES({$this->ROOT_NODE_TYPE_ID},1,'" . 
-                     $this->db->prepare_string($name). "')";
-    $this->db->exec_query($sql);
-    
-    return ($this->db->insert_id());
+    $this->new_node(null,$this->ROOT_NODE_TYPE_ID,$name,1);
+    return ($this->db->insert_id($this->obj_table));
   }
 
 
@@ -92,13 +88,26 @@ class tree
   */
 	function new_node($parent_id,$node_type_id,$name='',$node_order=0) 
 	{
-    $sql = " INSERT INTO nodes_hierarchy 
-             (parent_id,node_type_id,node_order,name) 
+    
+    $sql = " INSERT INTO {$this->obj_table} ";
+    
+    if( is_null($parent_id) )
+    {
+        $sql .= " (node_type_id,node_order,name) 
+                  VALUES({$node_type_id},{$node_order},'" .
+                          $this->db->prepare_string($name). "')";
+    
+    }
+    else
+    {
+        $sql .= " (parent_id,node_type_id,node_order,name) 
              VALUES({$parent_id},{$node_type_id},{$node_order},'" .
                      $this->db->prepare_string($name). "')";
+    
+    }    
     $this->db->exec_query($sql);
     
-    return ($this->db->insert_id());
+    return ($this->db->insert_id($this->obj_table));
   }
 
   /*
@@ -112,7 +121,7 @@ class tree
   */
 	function get_node_hierachy_info($node_id) 
 	{
-    $sql = " SELECT * FROM nodes_hierarchy 
+    $sql = " SELECT * FROM {$this->obj_table} 
              WHERE id ={$node_id} ";
              
     $result=$this->db->exec_query($sql);
@@ -120,27 +129,12 @@ class tree
   }
 
 
-  //     rev    : 20060218 - franciscom
-  function get_descendants($node_id, $level) 
-  {
-    $sql = " SELECT * FROM nodes_hierarchy 
-             WHERE parent_id = {$node_id} ";
-    
-    $result = $this->db->exec_query($sql);
-    
-    // display each child
-    while ($row = $this->db->fetch_array($result)) 
-    {
-//     echo str_repeat(' ',$level) . $row['id'] ."\n";
-
-     $this->get_descendants($row['id'], $level+1);
-    }
-  }
 
 
+// 20060508 - franciscom - refactored as suggested
 function get_subtree_list($node_id)
 {
-  $sql = " SELECT * from nodes_hierarchy
+  $sql = " SELECT * from {$this->obj_table} 
           WHERE parent_id = {$node_id} ";
  
   $node_list='';  
@@ -153,44 +147,18 @@ function get_subtree_list($node_id)
   
   while ( $row = $this->db->fetch_array($result) )
   {
-    $node_list .= $row['id'] . ",";
+    $node_list .= $row['id'];
     
     $xx_list = $this->get_subtree_list($row['id']);	
   	
   	if( !is_null($xx_list) )
   	{
-  		$node_list .= $xx_list;
+  		$node_list .= "," . $xx_list;
   	}
   }
-  return (rtrim($node_list,","));
+  return ($node_list);
 }
 
-
-
-
-function get_xx($aa)
-{
-  // useful to group ids for table name trying
-  // to reduce amount of querie using IN clause
-   
-	$xx=array();
-  foreach($aa as $key => $value)
-  {
-//  	print_r($value);
-//  	echo "<br>";
-  	$xx[$value['node_table']]['id'][]=$value['id'];
-  	$xx[$value['node_table']]['key_id'][$value['id']]=$key;
-  }
-  
-/*  foreach($xx as $key => $value)
-  {
-    $zz = implode(",", $value['id']);
-    echo $key . "<br>";
-    echo $zz . "<br>";
-  }
-*/
-  return($xx);
-}
 
 
 function delete_subtree($node_id)
@@ -202,7 +170,7 @@ function delete_subtree($node_id)
  {
    $id2del .= ",{$children}";	
  }
- $sql = "DELETE FROM nodes_hierarchy WHERE nodes_hierarchy.id IN ({$id2del})";
+ $sql = "DELETE FROM {$this->obj_table} WHERE id IN ({$id2del})";
  $result = $this->db->exec_query($sql);
  
 }
@@ -226,7 +194,7 @@ function get_path($node_id,$to_node_id=null,$format='full')
 {
 	
  // look up the parent of this node
- $sql = " SELECT * from nodes_hierarchy
+ $sql = " SELECT * from {$this->obj_table} 
           WHERE id = {$node_id} ";
  
  $node_list=array();
@@ -280,14 +248,15 @@ function _get_path($node_id,&$node_list,$to_node_id=null,$format='full')
 {
 	
 // look up the parent of this node
- $sql = " SELECT * from nodes_hierarchy
+ $sql = " SELECT * from {$this->obj_table} 
           WHERE id = {$node_id} ";
  
  $result = $this->db->exec_query($sql);
  
  if( $this->db->num_rows($result) == 0 )
  {
-    return(null); 	
+    $node_list=null;
+    return; 	
  }
   
  while ( $row = $this->db->fetch_array($result) )
@@ -350,7 +319,7 @@ function change_parent($node_id, $parent_id)
 /* 20060306 - franciscom */
 function get_children($id,$exclude_node_types=null) 
 {
-  $sql = " SELECT * from nodes_hierarchy
+  $sql = " SELECT * from {$this->obj_table}
           WHERE parent_id = {$id} ORDER BY node_order";
 
   $node_list=array();  
@@ -391,7 +360,7 @@ function change_order_bulk($hash_node_id, $hash_node_order)
 {
 	foreach( $hash_node_id as $the_id => $elem )
 	{
-  	$sql = "UPDATE nodes_hierarchy
+  	$sql = "UPDATE {$this->obj_table} 
     	      SET id = {$the_id}, node_order = {$hash_node_order[$the_id]}
       	    WHERE id = {$the_id}";
   	$result = $this->db->exec_query($sql);
@@ -496,9 +465,9 @@ function _get_subtree_rec($node_id,&$pnode,$and_not_in_clause = '',
                                            $exclude_children_of = null,
                                            $exclude_branches = null)
 {
-  	$sql = " SELECT * from nodes_hierarchy ".
-   	       " WHERE parent_id = {$node_id} {$and_not_in_clause} ".
-		   " ORDER BY node_order";
+  	$sql = " SELECT * from {$this->obj_table}
+   	         WHERE parent_id = {$node_id} {$and_not_in_clause}
+		         ORDER BY node_order";
  
     $result = $this->db->exec_query($sql);
     if($this->db->num_rows($result) == 0)

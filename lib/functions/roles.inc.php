@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
  * @filesource $RCSfile: roles.inc.php,v $
- * @version $Revision: 1.10 $
- * @modified $Date: 2006/05/16 19:35:40 $ by $Author: schlundus $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2006/05/17 11:05:05 $ by $Author: franciscom $
  * @author Martin Havlat, Chad Rosen
  * 
  * This script provides the get_rights and has_rights functions for
@@ -105,7 +105,7 @@ function createRole(&$db,$roleName,$rights,$notes)
 	$result = $db->exec_query($query);		 
 	if ($result)
 	{
-		$roleID = $db->insert_id();
+		$roleID = $db->insert_id('roles');
 		if ($roleID)
 			insertRoleRights($db,$roleID,$rights);
 	}

@@ -3,10 +3,14 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
  * @filesource $RCSfile: database.class.php,v $
- * @version $Revision: 1.11 $
- * @modified $Date: 2006/04/10 09:17:34 $ by $Author: franciscom $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2006/05/17 10:15:03 $ by $Author: franciscom $
  * @author Francisco Mancardi
  * 
+ *
+ * 20060511 - franciscom - added a couple of functions need to resolve postgres problems
+ *                         with insert_id()
+ *                       - fixed other minor bugs  
  *
  * 20060218 - franciscom - added get_recordset()
  *                         found bugs regarding calling exec_query in
@@ -144,9 +148,9 @@ class database
 	}
 
 	# --------------------
-	function result( $p_result, $p_index1=0, $p_index2=0 ) {
+	function db_result( $p_result, $p_index1=0, $p_index2=0 ) {
 
-		if ( $p_result && ( $this->db->num_rows( $p_result ) > 0 ) ) {
+		if ( $p_result && ( $this->num_rows( $p_result ) > 0 ) ) {
 			$p_result->Move($p_index1);
 			$t_result = $p_result->GetArray();
 			return $t_result[0][$p_index2];
@@ -157,16 +161,31 @@ class database
 
 	# --------------------
 	# return the last inserted id
-	function insert_id($p_table = null) {
-
-		if ( isset($p_table) && $this->db->is_pgsql() ) {
+	function insert_id($p_table = null) 
+	{
+		if ( isset($p_table) && $this->db_is_pgsql() ) 
+		{
 			$query = "SELECT currval('".$p_table."_id_seq')";
-			// 20060218 - franciscom - bug
-			// $result = $this->db->exec_query( $query );
 			$result = $this->exec_query( $query );
-			return $this->db->result($result);
+			return $this->db_result($result);
 		}
 		return $this->db->Insert_ID( );
+	}
+
+
+  # Check is the database is PostgreSQL
+	function db_is_pgsql() {
+		$t_db_type = DB_TYPE;
+
+		switch( $t_db_type ) {
+			case 'postgres':
+			case 'postgres64':
+			case 'postgres7':
+			case 'pgsql':
+				return true;
+		}
+
+		return false;
 	}
 
 
@@ -198,11 +217,9 @@ class database
 		$c_key   = $this->db->prepare_string( $p_key );
 
 		$query = "DESCRIBE $c_table";
-		// 20060218 - franciscom - bug
-		// $result = $this->db->exec_query( $query );
 		$result = $this->exec_query( $query );
 		
-		$count = $this->db->num_rows( $result );
+		$count = $this->num_rows( $result );
 		for ( $i=0 ; $i < $count ; $i++ ) {
 			$row = $this->db->fetch_array( $result );
 

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  * 
  * @filesource $RCSfile: doAuthorize.php,v $
- * @version $Revision: 1.11 $
- * @modified $Date: 2006/03/10 22:35:59 $ by $Author: schlundus $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2006/05/17 10:13:28 $ by $Author: franciscom $
  * @author Chad Rosen, Martin Havlat
  *
  * This file handles the initial login and creates all user session variables.
@@ -13,9 +13,9 @@
  * @todo Setting up cookies so that the user can automatically login next time
  * 
  * Revision:
- * 
- * 20060224 - franciscom - role_id instead of deprecated rights id
- * 20051007 MHT Solved  0000024 Session confusion 
+ *           20060507 - franciscom - 
+ *           added bare bones LDAP authentication using mantis code
+ *                                  
  *
  *///////////////////////////////////////////////////////////////////////////
 
@@ -39,8 +39,14 @@ function doAuthorize(&$db,$login,$pwd)
 	{
 		$login_exists = existLogin($db,$login,$userInfo);
 		tLog("Account exist = " . $login_exists);
+
+    if ($login_exists )
+    {
+       $password_check=auth_does_password_match( $login, $pwd, $userInfo['password']); 
+    }
+    
 		//encrypt the password so it isn't stored plain text in the db
-		if ($login_exists && $userInfo['password'] == md5($pwd) && $userInfo['active'])
+		if ($login_exists && $password_check->status_ok && $userInfo['active'])
 		{
 			// 20051007 MHT Solved  0000024 Session confusion 
 			// Disallow two session with one browser
@@ -80,5 +86,42 @@ function doAuthorize(&$db,$login,$pwd)
 	    tLog("Login '$login' fails. (Timing: " . tlTimingCurrent() . ')', 'INFO');
 		redirect($_SESSION['basehref'] . "login.php?note=" . $sProblem);
 	}
+}
+
+
+// 20060507 - franciscom - based on mantis function
+//
+// crypted_password is only used when the authentication method is 'MD5'
+//
+// returns:
+//         obj->status_ok = true/false
+//         obj->msg = message to explain what has happened to a human being.
+//
+function auth_does_password_match( $login_name, $cleartext_password, $crypted_password) 
+{
+    $msg[ERROR_LDAP_AUTH_FAILED]=lang_get('error_ldap_auth_failed');
+    $msg[ERROR_LDAP_SERVER_CONNECT_FAILED]=lang_get('error_ldap_server_connect_failed');
+    $msg[ERROR_LDAP_UPDATE_FAILED]=lang_get('error_ldap_update_failed');
+    $msg[ERROR_LDAP_USER_NOT_FOUND]=lang_get('error_ldap_user_not_found');
+    $msg[ERROR_LDAP_BIND_FAILED]=lang_get('error_ldap_bind_failed');
+   
+    
+		$login_method = config_get( 'login_method' );
+    $ret->status_ok=true;
+    $ret->msg='ok';
+  	if ( 'LDAP' == $login_method ) 
+		{
+			$xx=ldap_authenticate( $login_name, $cleartext_password );
+			$ret->status_ok=$xx->status_ok;
+		  $ret->msg=$msg[$xx->status_code];	
+		}
+    else
+    {
+       if($crypted_password != md5($cleartext_password))
+       {
+         $ret->status_ok=false;      
+       }
+    }
+		return($ret);
 }
 ?>

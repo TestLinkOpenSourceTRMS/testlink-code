@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: plan.inc.php,v $
- * @version $Revision: 1.32 $
- * @modified $Date: 2006/04/29 09:22:43 $ $Author: franciscom $
+ * @version $Revision: 1.33 $
+ * @modified $Date: 2006/05/17 11:06:59 $ $Author: franciscom $
  * @author 	Martin Havlat
  *
  * Functions for management: 
@@ -244,32 +244,6 @@ function deleteTestPlanMilestones(&$db,$id)
 }
 
 
-/*
-  20060312 - franciscom - name in nodes_hierarchy
-  20060219 - franciscom
-*/
-function createTestPlan(&$db,$name,$notes,$testproject_id)
-{
-	$tree_manager = New tree($db);
-	$node_types=$tree_manager->get_available_node_types();
-	
-  $tplan_id = $tree_manager->new_node($testproject_id,$node_types['testplan'],$name);
-	
-	$sql = "INSERT INTO testplans (id,notes,testproject_id) 
-	        VALUES ( {$tplan_id} " . ", '" . 
-	                 $db->prepare_string($notes) . "'," . 
-	                 $testproject_id .")";
-	$result = $db->exec_query($sql);
-	$id = 0;
-	if ($result)
-	{
-		$id =  $db->insert_id();
-	}
-	return($id);
-}
-
-
-
 function insertTestPlanPriorities(&$db,$tplan_id)
 {
 	//Create the priority table
@@ -300,25 +274,6 @@ function insertTestPlanUserRight(&$db,$tp_id,$userID)
 	return $result ? 1 : 0;
 	*/
 	return 1;
-}
-
-/*
- 20060103 - fm - added $db
- 
-*/
-function insertTestPlanComponent(&$db,$tp_id,$mgtCompID)
-{
-	$sql = " INSERT INTO component (projid,mgtcompid) " .
-	       " VALUES (" . $tp_id . "," . $mgtCompID . ")";
-	
-	$compID = 0;
-	$result = $db->exec_query($sql);
-	if ($result)
-	{
-		$compID = $db->insert_id(); 
-	}	
-	
-	return($compID);
 }
 
 /**
@@ -462,7 +417,7 @@ function insertTestPlanBuild(&$db,$buildName,$testplanID,$notes = '')
 	$result = $db->exec_query($sql);
 	if ($result)
 	{
-		$new_build_id = $db->insert_id();
+		$new_build_id = $db->insert_id('builds');
 	}
 	
 	return $new_build_id;
@@ -675,68 +630,4 @@ function checkMileStone($name,$date,$A,$B,$C)
 
 
 
-/**
- * Create a copy of source test plan ($source_tpid)
- * assigning test plan id ($target_tpid)
- *
- * @param type $db [ref] ADODB
- * @param int $source_tpid
- * @param int $target_tpid
- * @return void
- **/
-function copy_deep_testplan(&$db, $source_tpid, $target_tpid)
-{
-	$cInfo = getTestPlanComponents($db, $source_tpid);
-	$num_comp = sizeof($cInfo);
-	for($idx = 0; $idx < $num_comp; $idx++)
-	{
-		//insert it into the component table with new ids
-		$component = $cInfo[$idx];
-		$COMID = insertTestPlanComponent($db,$target_tpid,$component['mgtcompid']);
-		
-		//Grab all of the currently looping components categories
-		// 20051001 - fm
-		$sqlCat = " SELECT CAT.id as catid, MGTCAT.name, CAT.compid, CAT.mgtcatid, MGTCAT.CATorder " .
-		          " FROM category CAT, mgtcategory MGTCAT " . 
-		          " WHERE MGTCAT.id = CAT.mgtcatid " .  
-		          " AND CAT.compid=" . $component['compid'];
-
-		$resultCat = $db->exec_query($sqlCat);
-		while ($myrowCat = $db->fetch_array($resultCat))
-		{
-			$sqlInsertCat = " INSERT INTO category (compid,mgtcatid,CATorder)
-					              VALUES ('" . 
-					              $db->prepare_string($COMID) . " ','" . 
-					              $db->prepare_string($myrowCat['mgtcatid'])  . "','" . 
-					              $db->prepare_string($myrowCat['CATorder']) . "')";
-			$resultInsertCat = $db->exec_query($sqlInsertCat); 
-			
-			//grab the catid from the last insert so we can use it for the test case
-			$CATID = $db->insert_id(); 
-
-			//grab all of the test case info.. Anything with a default I ignore
-			$sqlTC = " SELECT title,summary,steps,exresult,mgttcid,keywords,TCorder, version " .
-			         " FROM testcase WHERE catid=" . $myrowCat['catid'];
-			$resultTC = $db->exec_query($sqlTC);
-
-			while ($myrowTC = $db->fetch_array($resultTC)) 
-			{
-				//insert the test case code
-				$sqlInsertTC = " INSERT INTO testcase 
-				                 (title,summary,steps,exresult,catid,mgttcid,keywords,TCorder,version)
-				                 VALUES ('" . 
-						             $db->prepare_string($myrowTC['title']) . "','" . 
-						             $db->prepare_string($myrowTC['summary']) . "','" . 
-						             $db->prepare_string($myrowTC['steps']) . "','" . 
-						             $db->prepare_string($myrowTC['exresult']) . "','" . 
-						             $db->prepare_string($CATID)               . "','" . 
-						             $db->prepare_string($myrowTC['mgttcid']) . "','" . 
-						             $db->prepare_string($myrowTC['keywords']) . "','" . 
-						             $db->prepare_string($myrowTC['TCorder']) . "','" . 
-						             $db->prepare_string($myrowTC['version']) . "')";
-				$resultInsertTC = $db->exec_query($sqlInsertTC);
-			}//end the tc loop
-		}//end the cat loop
-	}//end the com loop
-} 
 ?>

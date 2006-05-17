@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: loginFirst.tpl,v 1.3 2006/03/10 22:35:57 schlundus Exp $ *}
+{* $Id: loginFirst.tpl,v 1.4 2006/05/17 11:00:25 franciscom Exp $ *}
 {* Purpose: smarty template - first login *}
 {include file="inc_head.tpl" title="TestLink - New Account" }
 
@@ -12,18 +12,31 @@
 <p class="bold">{$message}</p>
 
 <form method="post" action="firstLogin.php">
+
 	<p class="bold">{lang_get s='login_name'}<br />
 	<input type="text" name="loginName" size="20" maxlength="30" /></p>
+
+  {* 20060507 - franciscom *}
+  {if $external_password_mgmt eq 0}
+
 	<p class="bold">{lang_get s='password'}<br />
 	<input type="password" name="password" size="20" maxlength="32" /></p>
 	<p class="bold">{lang_get s='password_again'}<br />
 	<input type="password" name="password2" size="20" maxlength="32" /></p>
+  {/if}
+  
 	<p class="bold">{lang_get s='first_name'}<br />
 	<input type="text" name="first" size="20" maxlength="30" /></p>
 	<p class="bold">{lang_get s='last_name'}<br />
 	<input type="text" name="last" size="20" maxlength="30" /></p>
 	<p class="bold">{lang_get s='e_mail'}<br />
 	<input type="text" name="email" size="20" maxlength="100" /></p>
+
+  {* 20060507 - franciscom *}
+  {if $external_password_mgmt eq 1}
+     <p>{lang_get s='password_mgmt_is_external'}<p>
+	{/if}
+
 	<p><input type="submit" name="editUser" value="{lang_get s='btn_add_user_data'}" /></p>
 </form>
 

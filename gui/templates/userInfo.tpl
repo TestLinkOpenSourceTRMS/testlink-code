@@ -1,11 +1,10 @@
 {* Testlink: smarty template - Edit own account *}
-{* $Id: userInfo.tpl,v 1.4 2006/03/23 20:46:26 schlundus Exp $ *}
+{* $Id: userInfo.tpl,v 1.5 2006/05/17 11:00:25 franciscom Exp $ *}
 {* xhtml valid version - 1.1.2.3 *}
 {* 
+20060507 - franciscom - changes due to external password management
 20050913 - fm - BUGID 0000103: Localization is changed but not strings
-
 20050815 - changed action to updated 
-
 *}
 {include file="inc_head.tpl" jsValidate="yes"}
 
@@ -77,6 +76,9 @@ function valAllText(form)
 
 <h2>{lang_get s='title_change_your_passwd'}</h2>
 
+{* 20060507 - franciscom *}
+{if $external_password_mgmt eq 0 }
+
 <form name="changePass" method="post" action="lib/usermanagement/userinfo.php" 
 	onsubmit="return validatePassword(document.changePass);">
 	<input type="hidden" name="id" value="{$userData[2]}" />
@@ -92,6 +94,10 @@ function valAllText(form)
 		<input type="submit" name="changePasswd" value="{lang_get s='btn_change_passwd'}" />
 	</div>
 </form>
+
+{else}
+   <p>{lang_get s='your_password_is_external'}<p>
+{/if}
 
 </div>
 

@@ -1,6 +1,6 @@
 {* 
 Testlink: smarty template - 
-$Id: usersedit.tpl,v 1.3 2006/04/26 07:07:55 franciscom Exp $ 
+$Id: usersedit.tpl,v 1.4 2006/05/17 11:00:25 franciscom Exp $ 
 *}
 {* 
 20060425 - franciscom - better management of default locale 
@@ -69,12 +69,19 @@ function valAllText(form)
 			<th>{lang_get s='th_last_name'}</th>
 			<td><input type="text" name="last" value="{$userData.last|escape}" maxlength="30" /></td>
 		</tr>
+
 		{if $userData eq null}
-		<tr>
-			<th>{lang_get s='th_password'}:</th>
-			<td><input type="password" name="password" maxlength="32" /></td>
-		</tr>
-		{/if}
+		     <tr>
+			     <th>{lang_get s='th_password'}:</th>
+			    {if $external_password_mgmt eq 0 }
+		        <td><input type="password" name="password" maxlength="32" /></td>
+		      {else}      
+            <td>{lang_get s='password_mgmt_is_external'}</td>
+		      {/if}      
+		     </tr>
+   {/if}
+   
+   
 		<tr>
 			<th>{lang_get s='th_email'}</th>
 			<td><input type="text" name="email" value="{$userData.email|escape}" size="50" maxlength="100" /></td>

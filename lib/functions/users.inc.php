@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: users.inc.php,v $
  *
- * @version $Revision: 1.33 $
- * @modified $Date: 2006/04/26 07:07:55 $ $Author: franciscom $
+ * @version $Revision: 1.34 $
+ * @modified $Date: 2006/05/17 11:01:15 $ $Author: franciscom $
  *
  * Functions for usermanagement
  *
@@ -15,8 +15,14 @@
  * 20051231 - scs - changes due to ADBdb
  * 20060205 - JBA - Remember last product (BTS 221); added by MHT
  * 20060224 - franciscom - changes in session product -> testproject
+ * 20060511 - franciscom - changes in userInsert()
 **/
 require_once("common.php");
+
+if( 'LDAP' == config_get('login_method') )
+{
+  require_once(dirname(__FILE__) . "/ldap_api.php");
+}
 
 /**
  * Function verifies if login exists
@@ -38,6 +44,7 @@ require_once("common.php");
  */
 function existLogin(&$db,$login, &$r_user_data)
 {
+  
 	$sql = " SELECT password, login, users.id, role_id, " .
 	       "        email, first, last, " .  
 	       "        roles.description AS role, locale, active" .
@@ -62,6 +69,13 @@ function existLogin(&$db,$login, &$r_user_data)
  * @param numeric active (optional; default ACTIVE_USER)
  *
  *
+ * return: 
+ *        if insert OK -> user id
+ *                  KO -> 0
+ *
+ * 20060511 - franciscom - changed the returns value
+ *                         
+ *
  * 20051228 - franciscom - active field
  * 20050829 - scs - added param for locale
  *  
@@ -70,15 +84,23 @@ function userInsert(&$db,$login, $password, $first, $last, $email,
                     $role_id=TL_DEFAULT_ROLEID, $locale = TL_DEFAULT_LOCALE, $active=1)
 {
 	$password = md5($password);
-	$sqlInsert = "INSERT INTO users (login,password,first,last,email,role_id,locale,active) 
-	              VALUES ('" . 
-				        $db->prepare_string($login) . "','" . $db->prepare_string($password) . "','" . 
-				        $db->prepare_string($first) . "','" . $db->prepare_string($last) . "','" . 
-				        $db->prepare_string($email) . "'," . $role_id . ",'". 
-				        $db->prepare_string($locale). "'," . $active . ")";
-	$insertResult = $db->exec_query($sqlInsert);
+	$sql= "INSERT INTO users (login,password,first,last,email,role_id,locale,active) 
+	       VALUES ('" . 
+			   $db->prepare_string($login) . "','" . $db->prepare_string($password) . "','" . 
+			   $db->prepare_string($first) . "','" . $db->prepare_string($last) . "','" . 
+			   $db->prepare_string($email) . "'," . $role_id . ",'". 
+			   $db->prepare_string($locale). "'," . $active . ")";
+	$result = $db->exec_query($sql);
 	
-	return $insertResult ? 1 : 0;
+	// 20060511 - franciscom
+	$new_user_id=0;
+	if( $result )
+	{
+
+	  $new_user_id=$db->insert_id('users');
+	}
+	
+	return($new_user_id);
 }
 
 /**

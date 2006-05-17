@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.4 $
- * @modified $Date: 2006/05/03 07:17:18 $ $Author: franciscom $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2006/05/17 11:02:12 $ $Author: franciscom $
  * @author franciscom
  *
  * 20060430 - franciscom - added get_keywords_map()
@@ -27,6 +27,7 @@ function testplan(&$db)
 /** 
  * create 
  *
+ * 20060511 - franciscom - wrong use of insert_id() [not needed]
  * 20060312 - franciscom - name is setted on nodes_hierarchy table
  * 20060101 - franciscom - added notes
  */
@@ -43,7 +44,7 @@ function create($name,$notes,$testproject_id)
 	$id = 0;
 	if ($result)
 	{
-		$id =  $this->db->insert_id();
+		$id =  $tplan_id;
 	}
 	return($id);
 }

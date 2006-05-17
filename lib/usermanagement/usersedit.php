@@ -5,10 +5,14 @@
 *
 * Filename $RCSfile: usersedit.php,v $
 *
-* @version $Revision: 1.4 $
-* @modified $Date: 2006/02/25 21:48:27 $
+* @version $Revision: 1.5 $
+* @modified $Date: 2006/05/17 11:11:11 $
 * 
 * Allows editing a user
+*
+* 20060507 - franciscom - changes in userInsert()
+* 20060507 - franciscom - changes due external password management (LDAP authentication)
+*
 */
 require_once('../../config.inc.php');
 require_once('testproject.class.php');
@@ -24,6 +28,11 @@ $action = null;
 $update_title_bar = 0;
 $reload = 0;
 
+// 20060507 - franciscom
+$login_method = config_get('login_method');
+$external_password_mgmt = ('LDAP' == $login_method )? 1 : 0;
+
+
 if ($args->do_update)
 {
 	if ($args->user_id == 0)
@@ -31,11 +40,13 @@ if ($args->do_update)
 		$sqlResult = checkLogin($db,$args->login);
 		if ($sqlResult =='ok')
 		{
-			if(!userInsert($db,$args->login, $args->password, $args->first, $args->last,
-						   $args->email, $args->rights_id, $args->locale, $args->user_is_active))
+      // 20060511 - franciscom
+		  $args->user_id = userInsert($db,$args->login, $args->password, $args->first, $args->last,  
+		  	                              $args->email, $args->rights_id, $args->locale, $args->user_is_active);
+			if(!$args->user_id)
+			{
 				$sqlResult = lang_get('user_not_added');
-			else
-				$args->user_id = $db->insert_id();	
+			}	
 		}		
 		$action = "added";
 	}
@@ -75,6 +86,10 @@ if ($user_id)
 }
 	
 $smarty = new TLSmarty();
+
+// 20060507 - franciscom
+$smarty->assign('external_password_mgmt', $external_password_mgmt);
+
 $smarty->assign('optRights', getAllRoles($db));
 $smarty->assign('userData', $userResult);
 $smarty->assign('result',$sqlResult);

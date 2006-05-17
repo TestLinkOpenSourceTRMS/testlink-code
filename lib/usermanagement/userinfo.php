@@ -5,15 +5,14 @@
 *
 * Filename $RCSfile: userinfo.php,v $
 *
-* @version $Revision: 1.1 $
-* @modified $Date: 2006/03/23 20:46:31 $
+* @version $Revision: 1.2 $
+* @modified $Date: 2006/05/17 11:09:43 $
 * 
 * Displays the users' information and allows users to change 
 * their passwords and user info.
 * 
 *
-* 20050913 - fm - BUGID 0000103: Localization is changed but not strings
-* 20050829 - scs - moved POST params to the top of the script
+* 20060507 - franciscom - changes due external password management (LDAP authentication)
 * 20060102 - scs - changes due to ADOdb
 */
 require_once('../../config.inc.php');
@@ -32,6 +31,11 @@ $bEdit = isset($_POST['editUser']) ? 1 : 0;
 $bChangePwd = isset($_POST['changePasswd']) ? 1 : 0;
 $userName = $_SESSION['user'];
 
+// 20060507 - franciscom
+$login_method = config_get('login_method');
+$external_password_mgmt = ('LDAP' == $login_method )? 1 : 0;
+
+
 $updateResult = null;
 if ($bEdit)
 	$updateResult = userUpdate($db,$id,$first,$last,$email,null,null,$locale);
@@ -42,9 +46,10 @@ $userResult ='';
 existLogin($db,$userName, $userResult);
 
 $smarty = new TLSmarty();
+
+$smarty->assign('external_password_mgmt', $external_password_mgmt);
 $smarty->assign('userData', $userResult);
 $smarty->assign('updateResult', $updateResult);
-// 20050913 - fm - BUGID 0000103: Localization is changed but not strings
 $smarty->assign('update_title_bar', $bEdit);
 $smarty->display('userInfo.tpl');
 ?>

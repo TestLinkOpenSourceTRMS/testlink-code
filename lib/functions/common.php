@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.44 $ $Author: franciscom $
- * @modified $Date: 2006/05/03 07:07:25 $
+ * @version $Revision: 1.45 $ $Author: franciscom $
+ * @modified $Date: 2006/05/22 15:07:12 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -763,6 +763,9 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
   	$out[$idx]['testsuite']=array('id' => $id, 'name' => $name);
   	$out[$idx]['testcases']=array();
   	$out[$idx]['write_buttons']='no';
+  	
+  	// 20060518 - franciscom - to solve error: Undefined index: testcase_qty
+  	$out[$idx]['testcase_qty']=0;
     $idx++;
 
   	if( count($test_spec) > 0 )

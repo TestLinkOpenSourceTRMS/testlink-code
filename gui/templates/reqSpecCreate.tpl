@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecCreate.tpl,v 1.5 2006/03/23 20:46:26 schlundus Exp $ *}
+{* $Id: reqSpecCreate.tpl,v 1.6 2006/05/22 15:05:00 franciscom Exp $ *}
 {* Purpose: smarty template - create a new req document *}
 {include file="inc_head.tpl"}
 
@@ -33,7 +33,7 @@
 			{lang_get s='req_total'}
 		 </th>
 		<td><input type="text" name="countReq" size="5" maxlength="5" 
-			value="n/a" /></td>
+			value="0" /></td>
 	</tr>
 </table>
 <div class="groupBtn">

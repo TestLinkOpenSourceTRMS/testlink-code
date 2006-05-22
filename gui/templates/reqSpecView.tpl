@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecView.tpl,v 1.16 2006/04/29 19:32:54 schlundus Exp $ *}
+{* $Id: reqSpecView.tpl,v 1.17 2006/05/22 15:05:49 franciscom Exp $ *}
 {* 
    Purpose: smarty template - view a requirement specification
    Author: Martin Havlat 
@@ -62,7 +62,7 @@ var warning_delete_requirements = "{lang_get s='warning_delete_requirements'}";
 
 <p class="bold">{lang_get s="title"} {$arrSpec[0].title|escape}</p>
 <div class="tree" style="padding-left: 15px;">{$arrSpec[0].scope}</div>
-{if $arrSpec[0].total_req != 'n/a'}
+{if $arrSpec[0].total_req != 0}
 <p>{lang_get s="req_total_count"}: {$arrSpec[0].total_req}</p>
 {/if}
 <p>{lang_get s="Author"}: {$arrSpec[0].author|escape} [{localize_date d=$arrSpec[0].create_date}]</p>

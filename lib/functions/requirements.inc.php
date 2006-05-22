@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: requirements.inc.php,v $
- * @version $Revision: 1.31 $
- * @modified $Date: 2006/04/26 07:07:55 $ by $Author: franciscom $
+ * @version $Revision: 1.32 $
+ * @modified $Date: 2006/05/22 15:10:00 $ by $Author: franciscom $
  *
  * @author Martin Havlat <havlat@users.sourceforge.net>
  * 
@@ -254,7 +254,7 @@ function getReqMetrics_general(&$db,$srs_id)
 	$output['expectedTotal'] = $db->fetchFirstRowSingleColumn($sql,'total_req');
 	tLog(' Redefined Count of total REQ in DB for srs_id:'.$srs_id.' = '.$output['total']);
 	
-	if ($output['expectedTotal'] == 'n/a') {
+	if ($output['expectedTotal'] == 0) {
 		$output['expectedTotal'] = $output['total'];
 	}
 	

@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testsuite.class.php,v $
- * @version $Revision: 1.11 $
- * @modified $Date: 2006/05/17 19:12:17 $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2006/05/22 15:12:39 $
  * @author franciscom
  *
  * 20060425 - franciscom - changes in show() following Andreas Morsing advice (schlundus)
@@ -224,6 +224,9 @@ function viewer_edit_new($amy_keys, $oFCK, $action, $parent_id, $id=null)
 	$smarty->assign('containerID',$parent_id);	 
 	
 	$the_data = null;
+	
+	// 20060518 - franciscom
+  $name='';
 	if ($action == 'edit_testsuite')
 	{
 		$the_data = $this->get_by_id($id);

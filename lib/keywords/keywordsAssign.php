@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: keywordsAssign.php,v $
  *
- * @version $Revision: 1.15 $
- * @modified $Date: 2006/04/24 10:38:03 $
+ * @version $Revision: 1.16 $
+ * @modified $Date: 2006/05/22 15:13:53 $
  *
  * Purpose:  Assign keywords to set of testcases in tree structure
  *
@@ -114,9 +114,7 @@ $smarty->assign('sqlResult', $result);
 $smarty->assign('data', $id);
 $smarty->assign('level', $edit);
 $smarty->assign('title',$title);
-$smarty->assign('arrKeys', $keysOfProduct);
 
 $smarty->assign('opt_cfg', $opt_cfg);
-//exit();
 $smarty->display('keywordsAssign.tpl');
 ?>

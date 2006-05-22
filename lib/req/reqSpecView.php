@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqSpecView.php,v $
- * @version $Revision: 1.23 $
- * @modified $Date: 2006/05/03 15:51:17 $ by $Author: franciscom $
+ * @version $Revision: 1.24 $
+ * @modified $Date: 2006/05/22 15:43:32 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Screen to view existing requirements within a req. specification.
@@ -54,6 +54,9 @@ $of = new fckeditor('scope') ;
 $of->BasePath = $_SESSION['basehref'] . 'third_party/fckeditor/';
 $of->ToolbarSet = $g_fckeditor_toolbar;;
 
+$attach['status_ok']=true;
+$attach['msg']='';
+ 
 // create a new spec.
 if(isset($_REQUEST['createReq']))
 {
@@ -87,10 +90,6 @@ elseif (isset($_REQUEST['editReq']))
 	$attachmentInfos = getAttachmentInfos($db,$idReq,'requirements');
 	$smarty->assign('attachmentInfos',$attachmentInfos);	
 
-  // -----------------------------------------------------------
-  // 20060503 - franciscom
-  $attach['status_ok']=true;
-  $attach['msg']='';
   	
   $repository['type']=config_get('repositoryType');
   $repository['path']=config_get('repositoryPath');

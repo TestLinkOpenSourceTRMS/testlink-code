@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: installNewDB.php,v 1.20 2006/02/15 14:01:03 franciscom Exp $ */
+/* $Id: installNewDB.php,v 1.21 2006/05/24 07:11:59 franciscom Exp $ */
 /*
 Parts of this file has been taken from:
 Etomite Content Management System
@@ -8,25 +8,19 @@ Copyright 2003, 2004 Alexander Andrew Butter
 */
 
 /*
-@author Francisco Mancardi - 20050918
+20060523 - franciscom - adding postgres support
+
+20050918 - franciscom -
 Found error upgrading from 1.0.4 to 1.6 on RH
 due to case sensitive on table name. (USER)
 
-@author Francisco Mancardi - 20050910
-refactoring
-
-@author Francisco Mancardi - 20050829
+20050829 - franciscom -
 BUGID Mantis: 0000073: DB Creation fails with no message
 wrong call to create_user_for_db()
-
-@author Francisco Mancardi - 20050824
-moved mysql version check here
 
 
 */
 
-// 20051230 - fm
-//require_once( dirname(__FILE__). '/../third_party/adodb/adodb.inc.php' );
 require_once( dirname(__FILE__). '/../lib/functions/database.class.php' );
 require_once("installUtils.php");
 require_once("sqlParser.class.php");
@@ -35,6 +29,9 @@ session_start();
 set_time_limit(180);
 $inst_type = $_SESSION['installationType'];
 
+// 20060523 - franciscom
+$tl_and_version = "TestLink {$_SESSION['testlink_version']} ";
+
 define('LEN_PWD_TL_1_0_4',15);
 define('ADD_DIR',1);
 
@@ -42,8 +39,24 @@ $sql_create_schema = array();
 $sql_default_data = array();
 $sql_update_schema = array();
 $sql_update_data   = array();
-$sql_create_schema[1] = 'sql/testlink_create_tables.sql';
-$sql_default_data [1] = 'sql/testlink_create_default_data.sql';
+
+// get db info from session
+$db_server     = $_SESSION['databasehost'];
+$db_admin_name = $_SESSION['databaseloginname'];
+$db_admin_pass = $_SESSION['databaseloginpassword'];
+$db_name       = $_SESSION['databasename'];
+$db_type       = $_SESSION['databasetype'];
+$tl_db_login   = $_SESSION['tl_loginname'];
+$tl_db_passwd  = $_SESSION['tl_loginpassword'];
+
+// 20060523 - franciscom
+$tl_and_version = "TestLink {$_SESSION['testlink_version']} ";
+
+
+// 20060514 - franciscom
+$sql_create_schema[1] = "sql/{$db_type}/testlink_create_tables.sql";
+$sql_default_data [1] = "sql/{$db_type}/testlink_create_default_data.sql";
+
 $sql_schema = $sql_create_schema;
 $sql_data   = $sql_default_data;
 $msg_process_data = "</b><br />Importing StartUp data<b> ";
@@ -52,7 +65,7 @@ if ($inst_type == "upgrade" )
 	$msg_process_data = "</b><br />Updating Database Contents<b> ";
   $sql_data   = array();
 }
-$the_title = "TestLink Install - " . $inst_type;
+$the_title = "{$tl_and_version} Install - " . $inst_type;
 ?>
 
 
@@ -75,7 +88,7 @@ $the_title = "TestLink Install - " . $inst_type;
 <body>
 <table border="0" cellpadding="0" cellspacing="0" class="mainTable">
   <tr class="fancyRow">
-    <td><span class="headers">&nbsp;<img src="./img/dot.gif" alt="" style="margin-top: 1px;" />&nbsp;TestLink</span></td>
+    <td><span class="headers">&nbsp;<img src="./img/dot.gif" alt="" style="margin-top: 1px;" />&nbsp;<?php echo $tl_and_version?></span></td>
     <td align="right"><span class="headers">Installation - <?php echo $inst_type; ?> </span></td>
   </tr>
   <tr class="fancyRow2">
@@ -101,14 +114,6 @@ $update_pwd=0;
 $create = false;
 $errors = 0;
 
-// get db info from session
-$db_server     = $_SESSION['databasehost'];
-$db_admin_name = $_SESSION['databaseloginname'];
-$db_admin_pass = $_SESSION['databaseloginpassword'];
-$db_name       = $_SESSION['databasename'];
-$db_type       = $_SESSION['databasetype'];
-$tl_db_login   = $_SESSION['tl_loginname'];
-$tl_db_passwd  = $_SESSION['tl_loginpassword'];
 
 // $table_prefix = $_SESSION['tableprefix'];
 $table_prefix ='';
@@ -128,6 +133,7 @@ echo "</b><br />Creating connection to Database Server:<b> ";
 $db = new database($db_type);
 define('NO_DSN',FALSE);
 @$conn_result = $db->connect(NO_DSN,$db_server, $db_admin_name, $db_admin_pass); 
+
 
 if( $conn_result['status'] == 0 ) 
 {
@@ -166,7 +172,6 @@ $db=null;
 // Connect to the Database (if Succesful -> database exists)
 $db = new database($db_type);
 @$conn_result = $db->connect(NO_DSN,$db_server, $db_admin_name, $db_admin_pass,$db_name); 
-//echo "<pre>debug"; print_r($conn_result); echo "</pre>";
 
 if( $conn_result['status'] == 0 ) 
 {
@@ -202,6 +207,8 @@ if($create)
 	// 20060214 - franciscom
 	// check database name for invalid characters (now only for MySQL)
 	
+	$db->close();
+	$db = null;
 	
   $db = New database($db_type);
   @$conn_result=$db->connect(NO_DSN,$db_server, $db_admin_name, $db_admin_pass);
@@ -221,9 +228,27 @@ if($create)
   // '_', and '$'. 
   // The identifier quote character is the backtick ('`'): 
   //
-  $sql_create = "CREATE DATABASE `" . $db->prepare_string($db_name) . "` CHARACTER SET utf8 "; 
+  //
+  //
+  // Postgres uses as identifier quote character " (double quotes):
+  //  
+  $sql_create_db =$db->build_sql_create_db($db_name);
   
-	if(!$db->exec_query($sql_create)) 
+  /*
+  switch($db_type)
+  {
+      case 'mysql':
+      $sql_create_db = "CREATE DATABASE `" . $db->prepare_string($db_name) . "` CHARACTER SET utf8 "; 
+      break;
+        
+      case 'postgres':
+      $sql_create_db = 'CREATE DATABASE "' . $db->prepare_string($db_name) . '" ' . "WITH ENCODING='UNICODE' "; 
+      break;
+  }
+  */
+  
+  
+	if(!$db->exec_query($sql_create_db)) 
 	{
 		echo "<span class='notok'>Failed!</span></b> - Could not create database: $db! " .
 			   $db->error_msg();
@@ -329,17 +354,38 @@ if ( $inst_type == "upgrade")
 // if @ in tl_db_login (username) -> get the hostname using splitting, and use it
 //                                   during user creation on db. 
 //
+// 20060523 - franciscom
+$db->close();
+$db=null;
+
 // 20051217 - fm
 $user_host = explode('@',$tl_db_login);
+
+
+/*
 $system_schema = new database($db_type);
-$conn_res = $system_schema->connect(NO_DSN, $db_server, $db_admin_name, $db_admin_pass, 'mysql'); 
 
-//echo "<pre>debug"; print_r($conn_res); echo "</pre>";
+// 20060514 - franciscom
+switch ($db_type)
+{
+    case 'mysql';
+    @$conn_res = $system_schema->connect(NO_DSN, $db_server, $db_admin_name, $db_admin_pass, 'mysql'); 
+    break;
+    
+    case 'postgres';
+    // 20060523 - franciscom
+    @$conn_res = $system_schema->connect(NO_DSN, $db_server, $db_admin_name, $db_admin_pass,$db_name); 
+    //@$conn_res = $system_schema->connect(NO_DSN, $db_server, $tl_db_login, $tl_db_passwd); 
+    break;
+}
+*/
 
+echo "<pre>debug 20060523 " . __FUNCTION__; print_r($db_type); echo "</pre>";
 
-$msg = create_user_for_db($system_schema, $db_name, $tl_db_login, $tl_db_passwd);
+$msg = create_user_for_db($db_type,$db_name, $db_server, $db_admin_name, $db_admin_pass, 
+                          $tl_db_login, $tl_db_passwd);
+
 echo "</b><br />Creating Testlink DB user `" . $user_host[0] . "`:<b> ";
-
 if ( strpos($msg,'ok -') === FALSE )
 {
 		echo "<span class='notok'>Failed!</span></b> - Could not create user: $tl_db_login!";
@@ -349,22 +395,40 @@ else
 {
 		echo "<span class='ok'>OK! ($msg) </span>";
 }
+
+/*
 $system_schema->close();
 $system_schema=null;
+*/
 // ------------------------------------------------------------------------------------------------
 
 // Schema Operations (CREATE, ALTER, ecc).
-// Important: Do it as tl_login NOT as db_admin
+// Important: 
+//           Postgres: do it as tl_login NOT as db_admin
 //
+//           MySQL   : do it as db_admin NOT as tl_login 
 //echo "<pre>debug"; print_r($db); echo "</pre>";
-$db->close();
-$db=null;
+if( !is_null($db) )
+{
+  $db->close();
+  $db=null;
+}
 
 $db = new database($db_type);
-@$conn_result = $db->connect(NO_DSN, $db_server, $db_admin_name, $db_admin_pass, $db_name); 
+switch($db_type)
+{
+    case 'mysql':
+    @$conn_result = $db->connect(NO_DSN, $db_server, $db_admin_name, $db_admin_pass, $db_name); 
+    break;
+        
+    case 'postgres':
+    @$conn_result = $db->connect(NO_DSN, $db_server, $tl_db_login, $tl_db_passwd, $db_name); 
+    break;
+}
+  
 
-$sqlParser = new SqlParser($db);
-
+// 20060523 - franciscom
+$sqlParser = new SqlParser($db,$db_type);
 foreach ($sql_schema as $sql_file) 
 {
 	echo "<br>Processing:" . $sql_file;
@@ -372,15 +436,6 @@ foreach ($sql_schema as $sql_file)
 }
 echo "<br>";
 
-/*
-echo "<pre>";
-foreach ($sqlParser->mysqlErrors as $v)
- echo $v . "<br>";
-echo "</pre>";
-*/
-
-
-// 20050804 - fm
 // Data Operations
 if ( count($sql_data > 0) )
 {

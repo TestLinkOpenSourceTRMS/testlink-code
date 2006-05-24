@@ -1,6 +1,6 @@
 <?php 
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: newInstallStart_TL.php,v 1.9 2006/04/28 18:00:04 franciscom Exp $ */
+/* $Id: newInstallStart_TL.php,v 1.10 2006/05/24 07:11:59 franciscom Exp $ */
 
 // 20060428 - franciscom - added new check  check_db_loaded_extension()
 //
@@ -8,12 +8,16 @@
 require_once("installUtils.php");
 
 session_start(); 
+
+// 20060523 - franciscom
+$tl_and_version = "TestLink {$_SESSION['testlink_version']} ";
+
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" 
   "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-	<title>TestLink Installer</title>
+	<title><?php echo $tl_and_version ?>Installer</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
         <style type="text/css">
              @import url('./css/style.css');
@@ -23,7 +27,7 @@ session_start();
 <?php
 $inst_type = $_GET['installationType'];
 
-$main_title = 'TestLink Setup';
+$main_title = "Testlink Setup";
 $explain_msg = '<p>' . $main_title . 
                ' has carried out a number of checks ' .
                " to see if everything's ready to start the setup. </br>";
@@ -37,7 +41,7 @@ $the_msg = '<p><b>' . $main_title . '</b></p>' . $explain_msg;
 <body>
 <table border="0" cellpadding="0" cellspacing="0" class="mainTable">
   <tr class="fancyRow">
-    <td><span class="headers">&nbsp;<img src="./img/dot.gif" alt="" style="margin-top: 1px;" />&nbsp;TestLink</span></td>
+    <td><span class="headers">&nbsp;<img src="./img/dot.gif" alt="" style="margin-top: 1px;" />&nbsp;<?php echo $tl_and_version ?></span></td>
     <td align="right"><span class="headers">Installation - <?php echo $inst_type; ?> </span></td>
   </tr>
   <tr class="fancyRow2">
@@ -175,7 +179,8 @@ exit;
 					</div>
 					<select id="databasetype" name="databasetype">
 						<option value="mysql" selected>MySQL</option>
-						<option value="posgres" >Postgres 7 and 8 (NOT YET)</option>
+						<option value="postgres" >Postgres 8.0/8.1</option>
+						<option value="mssql" >Microsoft SQL Server (not tested)</option>
 					</select>	
 					<br />
 					

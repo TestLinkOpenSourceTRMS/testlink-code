@@ -1,15 +1,15 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: sqlParser.class.php,v 1.4 2006/01/02 13:47:11 franciscom Exp $ */
+/* $Id: sqlParser.class.php,v 1.5 2006/05/24 07:11:59 franciscom Exp $ */
 // File: sqlParser.class.php
 //       MySQL Dump Parser
 //
 // Rev :
-//       20060101 - fm
-//       Refactoring after added ADODB support
+//       20060523 - franciscom - changes to add postgres support
 //
-//       20050804 - fm
-//       Improved using code from MySQL Eventum
+//       20060101 - franciscom - Refactoring after added ADODB support
+//
+//       20050804 - franciscom - Improved using code from MySQL Eventum
 //
 //       Original work from: Etomite Installer SNUFFKIN/ Alex 2004
 //
@@ -19,13 +19,15 @@ class SqlParser {
 	var $sql_errors;
 	var $db_conn;
 	var $install_failed;
+	var $db_type;
 
-	function SqlParser($db_conn) {
+  // 20060523 - franciscom - interface changes
+	function SqlParser(&$db_conn,$db_type) {
 		$this->db_conn   = $db_conn;
+		$this->db_type   = $db_type;
 	}
 
 	function process($filename) {
-		
 		
 		// -----------------------------------------------------------------
 		// part of this logic has been copied from the setup of EVENTUM 
@@ -35,13 +37,20 @@ class SqlParser {
 		// This FAILS!!!
 		// $cfil = array_filter($contents,"only_good_sql");
 		//
-    $cfil = array_filter($contents,array($this,"only_good_sql"));
+		switch($this->db_type)
+    {
+      case 'mysql':
+      $cfil = array_filter($contents,array($this,"only_good_mysql"));
+      break;
+        
+      case 'postgres':
+      $cfil = array_filter($contents,array($this,"only_good_sql"));
+      break;
+    }
     $r2d2 = implode("", $cfil);
     $sql_array = explode(";", $r2d2);
     // ----------------------------------------------------------------
 
-    // print_r($sql_array);
-    
 		$num = 0;
 		foreach($sql_array as $sql_do) {
 
@@ -60,11 +69,19 @@ class SqlParser {
 	}
 
   // 20050612 - fm
-  function only_good_sql($v)
+  function only_good_mysql($v)
+  {
+    $comment_char='#';
+    return($this->only_good_sql($v, $comment_char));
+  } // Function ends
+
+
+  // 20060523 - fm
+  function only_good_sql($v, $comment_char='-')
   {
   
   $use_v = true;
-  $findme='#';
+  $findme=$comment_char;
   
   // Must trim New Line for the strlen check
   $v_c = trim($v, "\r\n ");
@@ -96,6 +113,7 @@ class SqlParser {
   return ($use_v);
   
   } // Function ends
+
 
 
 }

@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: license.php,v 1.2 2005/08/16 17:59:48 franciscom Exp $ */
+/* $Id: license.php,v 1.3 2006/05/24 07:11:59 franciscom Exp $ */
 session_start();
 foreach($_POST as $key => $val) {
 	$_SESSION[$key] = $val;
@@ -9,6 +9,9 @@ foreach($_POST as $key => $val) {
 // 20050808 - fm
 $inst_type = $_SESSION['installationType'];
 
+// 20060523 - franciscom
+$tl_and_version = "TestLink {$_SESSION['testlink_version']} ";
+
 
 //print_r($_POST); 
 ?>
@@ -16,7 +19,7 @@ $inst_type = $_SESSION['installationType'];
   "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-	<title>TestLink &raquo; Install</title>
+	<title><?php echo $tl_and_version ?> Install</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
         <style type="text/css">
              @import url('./css/style.css');
@@ -28,7 +31,7 @@ $inst_type = $_SESSION['installationType'];
 <body>
 <table border="0" cellpadding="0" cellspacing="0" class="mainTable">
   <tr class="fancyRow">
-    <td><span class="headers">&nbsp;<img src="./img/dot.gif" alt="" style="margin-top: 1px;" />&nbsp;TestLink</span></td>
+    <td><span class="headers">&nbsp;<img src="./img/dot.gif" alt="" style="margin-top: 1px;" />&nbsp;<?php echo $tl_and_version ?></span></td>
     <td align="right"><span class="headers">Installation - <?php echo $inst_type; ?></span></td>
   </tr>
   <tr class="fancyRow2">

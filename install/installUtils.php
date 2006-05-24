@@ -1,7 +1,7 @@
 <?php
 /* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: installUtils.php,v 1.14 2006/04/28 18:00:04 franciscom Exp $ 
+$Id: installUtils.php,v 1.15 2006/05/24 07:11:59 franciscom Exp $ 
 
 20060428 - franciscom - new function check_db_loaded_extension()
 20060214 - franciscom - added warning regarding valid database names
@@ -61,7 +61,7 @@ return $filesArr;
 // | Authors: João Prado Maia <jpm@mysql.com>                             |
 // +----------------------------------------------------------------------+
 //
-// @(#) $Id: installUtils.php,v 1.14 2006/04/28 18:00:04 franciscom Exp $
+// @(#) $Id: installUtils.php,v 1.15 2006/05/24 07:11:59 franciscom Exp $
 //
 
 // a foolish wrapper - 20051231 - fm
@@ -73,17 +73,30 @@ function getTableList($db)
 }
 
 
-// 20060101 - fm - valid only for MySQL
-function getUserList($system_schema)
+function getUserList(&$db,$db_type)
 {
-   $res = $system_schema->exec_query('SELECT DISTINCT user from user');
+   $users=null;
+   switch($db_type)
+   {
+      case 'mysql':
+      $result = $db->exec_query('SELECT DISTINCT user AS user FROM user');
+      break;
+      
+      case 'postgres':
+      $result = $db->exec_query('SELECT DISTINCT usename AS user FROM pg_user');
+      break;
+   
+   }
    
    $users = array();
+   
+   // MySQL NOTE:
    // if the user cannot select from the mysql.user table, then return an empty list
-   if (!$res) {
+   //
+   if (!$result) {
        return $users;
    }
-   while ($row = $system_schema->fetch_array($res)) 
+   while ($row = $db->fetch_array($result)) 
    {
        $users[] = $row['user'];
    }
@@ -116,8 +129,12 @@ if @ in login ->  get the hostname using splitting, and use it
                 
                 
 */
-function create_user_for_db($system_schema, $db_name, $login, $passwd)
+function create_user_for_db($db_type,$db_name,$db_server, $db_admin_name, $db_admin_pass,
+                            $login, $passwd)
 {
+
+// 20060523 - franciscom
+$db = new database($db_type);
 
 // 20050910 - fm
 $user_host = explode('@',$login);
@@ -129,57 +146,90 @@ if ( count($user_host) > 1 )
   $the_host = trim($user_host[1]);  
 }
 
-$user_list = getUserList($system_schema);
+switch($db_type)
+{
+    case 'mssql':
+    @$conn_res = $db->connect(NO_DSN, $db_server, $db_admin_name, $db_admin_pass,$db_name); 
+    break;
+    
+    case 'postgres':
+    // 20060523 - franciscom
+    @$conn_res = $db->connect(NO_DSN, $db_server, $db_admin_name, $db_admin_pass,$db_name); 
+    break;
+    
+    case 'mysql':
+    default:
+    @$conn_res = $db->connect(NO_DSN, $db_server, $db_admin_name, $db_admin_pass, 'mysql'); 
+    break;
+
+}
+
+
+$user_list = getUserList($db,$db_type);
 $login_lc = strtolower($login);
 $msg = "ko - fatal error - can't get db server user list !!!";
 
-// echo "\$the_host=" .$the_host . "<br>";
-//echo "<pre>debug174"; print_r($user_list); echo "</pre>";
-
-if (count($user_list) > 0) 
+// 20060514 - franciscom
+if (!is_null($user_list) && count($user_list) > 0) 
 {
-	  $msg = 'ok - user_exists';
+
     $user_list = array_map('strtolower', $user_list);
     if (!in_array($login_lc, $user_list)) 
     {
-    	$msg = 'ok - new user';
-      $stmt = "GRANT SELECT, UPDATE, DELETE, INSERT ON " . 
-              $db_name . ".* TO '" . $login . "'";
-              
-      if (strlen(trim($the_host)) != 0)
-      {
-        $stmt .= "@" . "'" . $the_host . "'";
-      }         
-      $stmt .= " IDENTIFIED BY '" .  $passwd . "'";
-      
-            
-      if (!@$system_schema->exec_query($stmt)) 
-      {
-          $msg = "ko - " . $system_schema->error_msg();
-      }
-      else
-      {
-        // 20051217 - fm
-        // found that you get access denied in this situation:
-        // 1. you have create the user with grant for host.
-        // 2. you are running your app on host.
-        // 3. you don't have GRANT for localhost.       	
-        // 
-        // Then I've decide to grant always access from localhost
-        // to avoid this kind of problem.
-        // I hope this is not a security hole.
-        if( strcasecmp('localhost',$the_host) != 0)
-        {
-          $stmt = "GRANT SELECT, UPDATE, DELETE, INSERT ON " . 
-                   $db_name . ".* TO '" . $login . "'@'localhost'" .
-                  " IDENTIFIED BY '" .  $passwd . "'";
-          if ( !@$system_schema->exec_query($stmt) ) 
-          {
-            $msg = "ko - " . $system_schema->error_msg();
-          }
-        }
-      }
+    	$msg = '';
+    	switch($db_type)
+    	{
+        
+        case 'mssql':
+        $op = _mssql_make_user_with_grants($db,$the_host,$db_name,$login,$passwd);
+        break;
+
+        case 'postgres':
+        $op = _postgres_make_user_with_grants($db,$the_host,$db_name,$login,$passwd);
+        break;
+
+        case 'mysql':
+        default:
+        // for MySQL making the user and assign right is the same operation
+        $op = _mysql_make_user($db,$the_host,$db_name,$login,$passwd);
+        break;
+
+      }  
     }
+    else
+    {
+      // just assign rights on the database
+    	$msg = 'ok - user_exists';
+      switch($db_type)
+    	{
+        case 'mysql':
+        $op = _mysql_assign_grants($db,$the_host,$db_name,$login,$passwd);
+        break;
+        
+        case 'postgres':
+        $op = _postgres_assign_grants($db,$the_host,$db_name,$login,$passwd);
+        break;
+
+        case 'mssql':
+        $op = _mssql_assign_grants($db,$the_host,$db_name,$login,$passwd);
+        break;
+
+      }  
+      
+    }
+    if( !$op->status_ok )
+    {
+       $msg .= " but ...";    
+    } 
+    $msg .= " " . $op->msg;    
+    
+    
+}
+
+// 20060523 - franciscom
+if( !is_null($db) )
+{
+    $db->close();
 }
 
 return($msg);
@@ -531,7 +581,7 @@ switch ($dbhandler->db->databaseType)
   case 'postgres7':
   case 'postgres8':
   case 'postgres64':
-	$min_ver = "7";
+	$min_ver = "8";
   $db_verbose="PostGres";
   break;
 }
@@ -597,6 +647,169 @@ return ($ret);
 
 
 
+
+
+// 20060514 - franciscom
+function _mysql_make_user($dbhandler,$db_host,$db_name,$login,$passwd)
+{
+
+$op->status_ok=true;
+$op->msg = 'ok - new user';     
+
+// Escaping following rules form:
+//
+// MySQL Manual
+// 9.2. Database, Table, Index, Column, and Alias Names
+//
+$stmt = "GRANT SELECT, UPDATE, DELETE, INSERT ON " . 
+        "`" . $dbhandler->prepare_string($db_name) . "`" . ".* TO " . 
+        "'" . $dbhandler->prepare_string($login) . "'";
+        
+if (strlen(trim($the_host)) != 0)
+{
+  $stmt .= "@" . "'" . $dbhandler->prepare_string($db_host) . "'";
+}         
+$stmt .= " IDENTIFIED BY '" .  $passwd . "'";
+
+      
+if (!@$dbhandler->exec_query($stmt)) 
+{
+    $op->msg = "ko - " . $dbhandler->error_msg();
+    $op->status_ok=false;
+}
+else
+{
+  // 20051217 - fm
+  // found that you get access denied in this situation:
+  // 1. you have create the user with grant for host.
+  // 2. you are running your app on host.
+  // 3. you don't have GRANT for localhost.       	
+  // 
+  // Then I've decide to grant always access from localhost
+  // to avoid this kind of problem.
+  // I hope this is not a security hole.
+  if( strcasecmp('localhost',$the_host) != 0)
+  {
+    // 20060514 - franciscom - missing 
+    $stmt = "GRANT SELECT, UPDATE, DELETE, INSERT ON " . 
+             "`" . $dbhandler->prepare_string($db_name) . "`" . ".* TO " . 
+             "'" . $dbhandler->prepare_string($login) . "'@'localhost'" .
+            " IDENTIFIED BY '" .  $passwd . "'";
+    if ( !@$dbhandler->exec_query($stmt) ) 
+    {
+      $op->msg = "ko - " . $dbhandler->error_msg();
+      $op->status_ok=false;
+    }
+  }
+}
+     
+return ($op); 
+}
+
+
+// 20060514 - franciscom
+// for MySQL just a wrapper
+function _mysql_assign_grants($dbhandler,$db_host,$db_name,$login,$passwd)
+{
+
+$op = _mysql_make_user($dbhandler,$db_host,$db_name,$login,$passwd);
+
+if( $op->status_ok)
+{
+  $op->msg = 'ok - grant assignment';
+}     
+
+return ($op); 
+}
+
+
+
+function _postgres_make_user_with_grants(&$db,$db_host,$db_name,$login,$passwd)
+{
+$op->status_ok=true;
+$op->msg='';
+
+$int_op = _postgres_make_user($db,$db_host,$db_name,$login,$passwd);
+
+if( $int_op->status_ok)
+{
+  $op->msg = $int_op->msg;
+  $int_op = _postgres_assign_grants($db,$db_host,$db_name,$login,$passwd);
+
+  $op->msg .= " " . $int_op->msg;
+  $op->status_ok=$int_op->status_ok;
+}
+
+return($op);
+}  // function end
+
+
+
+function _postgres_make_user(&$db,$db_host,$db_name,$login,$passwd)
+{
+$op->status_ok=true;  
+$op->msg = 'ok - new user'; 
+    
+$sql = 'CREATE USER "' . $db->prepare_string($login) . '"' . " ENCRYPTED PASSWORD '{$passwd}'";
+if (!@$db->exec_query($sql)) 
+{
+    $op->status_ok=false;  
+    $op->msg = "ko - " . $db->error_msg();
+}
+return ($op); 
+}
+
+
+function _postgres_assign_grants(&$db,$db_host,$db_name,$login,$passwd)
+{
+$op->status_ok=true;  
+$op->msg = 'ok - grant assignment';     
+
+/*
+if( $op->status_ok )
+{
+    $sql=" REVOKE ALL ON SCHEMA public FROM public ";
+    if (!@$dbhandler->exec_query($sql)) 
+    {
+        $op->status_ok=false;  
+        $op->msg = "ko - " . $dbhandler->error_msg();
+    }
+}
+*/
+
+if( $op->status_ok )
+{
+    $sql = 'ALTER DATABASE "' . $db->prepare_string($db_name) . '" OWNER TO ' . 
+                        '"' . $db->prepare_string($login) . '"';
+    if (!@$db->exec_query($sql)) 
+    {
+        $op->status_ok=false;  
+        $op->msg = "ko - " . $db->error_msg();
+    }
+}
+
+if( $op->status_ok )
+{
+    // 20060523 - franciscom
+    $sql = 'ALTER SCHEMA public OWNER TO ' .  '"' . $db->prepare_string($login) . '"';
+    if (!@$db->exec_query($sql)) 
+    {
+        $op->status_ok=false;  
+        $op->msg = "ko - " . $db->error_msg();
+    }
+}
+
+return ($op); 
+}
+
+
+function _mssql_make_user_with_grants($db,$the_host,$db_name,$login,$passwd)
+{
+}
+
+function _mssql_assign_grants($db,$the_host,$db_name,$login,$passwd)
+{
+}
 
 
 ?>

@@ -1,5 +1,5 @@
 {* Testlink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: inc_attachments.tpl,v 1.2 2006/04/29 19:32:54 schlundus Exp $ *}
+{* $Id: inc_attachments.tpl,v 1.3 2006/05/24 19:47:17 schlundus Exp $ *}
 {* Purpose: smarty template - show SQL update result *}
 {* INPUT: 
 	
@@ -12,7 +12,7 @@ var warning_delete_attachment = "{lang_get s='warning_delete_attachment'}";
 </script>
 {/literal}
 
-<table class="simple">
+<table class="simple" style="font-size:12px">
 	<tr>
 		<td class="bold">{lang_get s="attached_files"}:</td>
 	</tr>

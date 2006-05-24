@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: exec.inc.php,v $
  *
- * @version $Revision: 1.27 $
- * @modified $Date: 2006/05/03 07:10:16 $ $Author: franciscom $
+ * @version $Revision: 1.28 $
+ * @modified $Date: 2006/05/24 19:47:18 $ $Author: schlundus $
  *
  * @author Martin Havlat
  *
@@ -394,49 +394,25 @@ function defineColor($buildResult)
 	}
 }
 
-
-// 20060401 - franciscom
 function write_execution(&$db,$user_id, $exec_data, $tplan_id,$build_id,$map_last_exec)
 {
-	
-	$map_tc_status=config_get('tc_status');
-	
+	$map_tc_status = config_get('tc_status');
 	$bugInterfaceOn = config_get('bugInterfaceOn');
-	$tc_status_map = config_get('tc_status');
-	
-	/*
-	echo "<pre>debug" . __FUNCTION__; print_r($exec_data['tc_version']); echo "</pre>";
-	echo "<pre>debug" . __FUNCTION__; print_r($exec_data['notes']); echo "</pre>";
-	echo "<pre>debug" . __FUNCTION__; print_r($exec_data['status']); echo "</pre>";
-	echo "<pre>debug" . __FUNCTION__; print_r($exec_data['save_results']); echo "</pre>";
-
-	echo "<pre>debug \$map_last_exec" . __FUNCTION__; print_r($map_last_exec); echo "</pre>";
-	*/
 	
 	$db_now = $db->db_now();
-	
-	$num_tc = count($tcData['tc']);
-	//foreach ($exec_data['tc_version'] as $tcversion_id => $val)
-	
 	foreach ($exec_data['save_results'] as $tcversion_id => $val)
 	{
-   
-    $current_status = $exec_data['status'][$tcversion_id];
-    $has_been_executed = ($current_status != $map_tc_status['not_run'] ? TRUE : FALSE);
-    $do_write = $has_been_executed;
-    if( $do_write )
-    { 
-    
-      $my_notes = $db->prepare_string(trim($exec_data['notes'][$tcversion_id]));		
-	  	$sql="INSERT INTO executions
-	    	    (build_id,tester_id,status,testplan_id,tcversion_id,execution_ts,notes)
-	      	  VALUES ( {$build_id}, {$user_id}, '{$exec_data['status'][$tcversion_id]}',
-	      	           {$tplan_id}, {$tcversion_id},{$db_now},'{$my_notes}')";
-	    $db->exec_query($sql);  	     
-    }
+		$current_status = $exec_data['status'][$tcversion_id];
+		$has_been_executed = ($current_status != $map_tc_status['not_run'] ? TRUE : FALSE);
+		if($has_been_executed)
+		{ 
+			$my_notes = $db->prepare_string(trim($exec_data['notes'][$tcversion_id]));		
+			$sql = "INSERT INTO executions ".
+				  "(build_id,tester_id,status,testplan_id,tcversion_id,execution_ts,notes)".
+				  " VALUES ( {$build_id}, {$user_id}, '{$exec_data['status'][$tcversion_id]}',".
+				  "{$tplan_id}, {$tcversion_id},{$db_now},'{$my_notes}')";
+			$db->exec_query($sql);  	     
+		}
 	}
 }
-// -----------------------------------------------------------------------------
-
-
 ?>

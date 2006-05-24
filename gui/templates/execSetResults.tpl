@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execSetResults.tpl,v 1.16 2006/04/10 09:17:34 franciscom Exp $ *}
+{* $Id: execSetResults.tpl,v 1.17 2006/05/24 19:47:17 schlundus Exp $ *}
 {* Purpose: smarty template - show tests to add results *}
 {* Revisions:
 *}	
@@ -68,9 +68,8 @@
 	  {* -------------------------------------------------------------------------------------------------------- *}
 
     {* -------------------------------------------------------------------------------------------------- *}
-    {* 20060401 - franciscom*}
     {if $other_exec.$tcversion_id}
-		  <table class="exec_history">
+		  <table cellspacing="0" class="exec_history">
 			 <tr>
 				<th style="text-align:left">{lang_get s='date_time_run'}</th>
 				<th style="text-align:left">{lang_get s='test_exec_by'}</th>
@@ -78,12 +77,19 @@
 				<th style="text-align:left">{lang_get s='exec_notes'}</th>
 			 </tr>
 			{foreach item=tc_old_exec from=$other_exec.$tcversion_id}
- 			<tr>
-        <td>{localize_timestamp ts=$tc_old_exec.execution_ts}</td>
-			  <td>{$tc_old_exec.tester_first_name|escape} {$tc_old_exec.tester_last_name|escape}</td> 
-			  <td>{localize_tc_status s=$tc_old_exec.status}</td>
-			  <td>{$tc_old_exec.execution_notes|escape}</td>
+ 			<tr  style="border-top:1px solid black">
+				<td>{localize_timestamp ts=$tc_old_exec.execution_ts}</td>
+				<td>{$tc_old_exec.tester_first_name|escape} {$tc_old_exec.tester_last_name|escape}</td> 
+				<td>{localize_tc_status s=$tc_old_exec.status}</td>
+				<td>{$tc_old_exec.execution_notes|escape}</td>
 			</tr>  
+			<tr>
+			<td colspan="4">
+				{assign var="execID" value=$tc_old_exec.execution_id}
+				{assign var="attachmentInfos" value=$attachments[$execID]}
+				{include file="inc_attachments.tpl" id="$execID" tableName="executions"}
+			</td>
+			</tr>
 			{/foreach}
 			</table>
 		{/if}
@@ -117,9 +123,7 @@
 			</td>
 			<td>			
   				{* status of test *}
-  				<!-- <span class="title">{lang_get s='test_exec_result'}</span><br /> --->
   				<div class="title" style="text-align: center;">{lang_get s='test_exec_result'}</div>
-  				
   				<div class="resultBox">
   					
   						<input type="radio" {$input_enabled_disabled} name='status[{$tcversion_id}]' 

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: attachments.inc.php,v $
  *
- * @version $Revision: 1.3 $
- * @modified $Date: 2006/04/07 20:15:25 $ by $Author: schlundus $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2006/05/24 19:47:18 $ by $Author: schlundus $
  *
  * functions related to attachments
 **/
@@ -221,12 +221,18 @@ function gzip_writeToFile($dstName,$data)
 	return false;
 }
 
-function getAttachmentInfos(&$db,$fkid,$tableName,$bStoreListInSession = true)
+function getAttachmentInfos(&$db,$fkid,$tableName,$bStoreListInSession = true,$counter = 0)
 {
 	$query = "SELECT id,title,description,file_name,file_type,file_size,date_added,compression_type,file_path, fk_id,fk_table FROM attachments WHERE fk_id = {$fkid} AND fk_table = '" .
 			 $db->prepare_string($tableName)."' ORDER BY date_added DESC";
-	$attachmentInfos = $db->get_recordset($query);			 
-	$_SESSION['s_lastAttachmentInfos'] = $attachmentInfos;
+	$attachmentInfos = $db->get_recordset($query);
+	if ($bStoreListInSession)
+	{
+		if ($counter == 0) 
+			$_SESSION['s_lastAttachmentInfos'] = $attachmentInfos;
+		else
+			$_SESSION['s_lastAttachmentInfos'] = array_merge($_SESSION['s_lastAttachmentInfos'],$attachmentInfos);
+	}
 
 	return $attachmentInfos;
 }

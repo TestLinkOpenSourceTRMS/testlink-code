@@ -5,14 +5,17 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.63 $
- * @modified $Date: 2006/05/17 11:13:50 $ by $Author: franciscom $
+ * @version $Revision: 1.64 $
+ * @modified $Date: 2006/05/29 06:37:59 $ by $Author: franciscom $
  *
  *
  * Constants and configuration parameters used throughout TestLink 
  * are defined within this file they should be changed for your environment
  *-------------------------------------------------------------------------
  * Revisions:
+ *
+ * 20060528 - franciscom - new config param to choose order of execution history
+ *                         $g_tc_status_for_ui for generation of radio buttons
  *
  * 20060508 - franciscom - new config params for LDAP
  *
@@ -147,6 +150,24 @@ $g_ldap_uid_field		= 'uid'; # Use 'sAMAccountName' for Active Directory
 $g_ldap_bind_dn			= '';
 $g_ldap_bind_passwd	= '';
 // --------------------------------------------------------------------------------------
+
+
+
+// 20060528 - franciscom
+// ASCending   -> last execution at bottom
+// DESCending  -> last execution on top
+$g_exec_cfg->history_order='DESC';
+
+// TRUE  -> the whole execution history for the choosen build will be showed
+// FALSE -> just last execution for the choosen build will be showed
+$g_exec_cfg->history_on=TRUE;
+
+
+// TRUE  ->  test case VERY LAST (i.e. in any build) execution status 
+//           will be displayed
+//
+//
+$g_exec_cfg->show_last_exec_any_build=TRUE;
 
 
 
@@ -360,11 +381,6 @@ define ('TL_DEFAULT_LOCALE',$language);
 
 
 
-
-
-
-
-
 // ----------------------------------------------------------------------------
 // 20051005 - fm - see strftime() in PHP manual
 // Very IMPORTANT: 
@@ -373,34 +389,28 @@ define ('TL_DEFAULT_LOCALE',$language);
 $g_date_format ="%d/%m/%Y";
 $g_timestamp_format = "%d/%m/%Y %H:%M:%S";
 
-$g_locales_date_format = array('en_US' => "%m/%d/%Y",
-									             'en_GB' => "%d/%m/%Y",
-                                    'it_IT' => "%d/%m/%Y",
-                                    'es_AR' => "%d/%m/%Y",
-                                    'es_ES' => "%d/%m/%Y",
-                                    'de_DE' => "%d.%m.%Y",
-                                    'fr_FR' => "%d/%m/%Y",
-                                    'pt_BR' => "%d/%m/%Y",
-                                    'zh_CN' => "%Y年%m月%d日"
+$g_locales_date_format = array('en_GB' => "%d/%m/%Y",
+                               'en_US' => "%m/%d/%Y",
+                               'it_IT' => "%d/%m/%Y",
+                               'es_AR' => "%d/%m/%Y",
+                               'es_ES' => "%d/%m/%Y",
+                               'de_DE' => "%d.%m.%Y",
+                               'fr_FR' => "%d/%m/%Y",
+                               'pt_BR' => "%d/%m/%Y",
+                               'zh_CN' => "%Y年%m月%d日"
                                 ); 
 
-$g_locales_timestamp_format = array('en_US' => "%m/%d/%Y %H:%M:%S",
-                                        'en_GB' => "%d/%m/%Y %H:%M:%S",
-                                        'it_IT' => "%d/%m/%Y %H:%M:%S",
-                                        'es_AR' => "%d/%m/%Y %H:%M:%S",
-                                        'es_ES' => "%d/%m/%Y %H:%M:%S",
-                                        'de_DE' => "%d.%m.%Y %H:%M:%S",
-                                        'fr_FR' => "%d/%m/%Y %H:%M:%S",
-                                        'pt_BR' => "%d/%m/%Y %H:%M:%S",
-                                        'zh_CN' => "%Y年%m月%d日 %H时%M分%S秒"
+$g_locales_timestamp_format = array('en_GB' => "%d/%m/%Y %H:%M:%S",
+                                    'en_US' => "%m/%d/%Y %H:%M:%S",
+                                    'it_IT' => "%d/%m/%Y %H:%M:%S",
+                                    'es_AR' => "%d/%m/%Y %H:%M:%S",
+                                    'es_ES' => "%d/%m/%Y %H:%M:%S",
+                                    'de_DE' => "%d.%m.%Y %H:%M:%S",
+                                    'fr_FR' => "%d/%m/%Y %H:%M:%S",
+                                    'pt_BR' => "%d/%m/%Y %H:%M:%S",
+                                    'zh_CN' => "%Y年%m月%d日 %H时%M分%S秒"
                                     ); 
 // ----------------------------------------------------------------------------
-
-
-
-
-
-
 
 /* These are the possible TestCase statuses */
 $g_tc_status = array ( "failed"        => 'f',
@@ -412,6 +422,17 @@ $g_tc_status = array ( "failed"        => 'f',
                        "all"           => 'all'
                       ); 
 
+// 20060528 - franciscom
+// Used to generate radio and buttons at user interface level.
+// Order is important
+// key   => verbose status as defined in $g_tc_status
+// value => string id defined in the strings.txt file, 
+//          used to localize the strings.
+//
+$g_tc_status_for_ui=array("not_run" => "test_status_not_run",
+                          "passed"  => "test_status_passed",
+                          "failed"  => "test_status_failed",
+                          "blocked" => "test_status_blocked");
 
 // 20060328 - franciscom
 $g_tc_status_css = array_flip($g_tc_status);
@@ -567,6 +588,13 @@ define('FILTER_BY_TESTPROJECT',FILTER_BY_PRODUCT);
 define('TP_STATUS_ACTIVE',1);
 define('NON_TESTABLE_REQ','n');
 define('DSN',FALSE);  // for method connect() of database.class
+
+// 20060528 - franciscom
+define('ANY_BUILD',null);
+define('GET_NO_EXEC',1);
+
+// for getAttachmentInfos()
+define('STORE_IN_SESSION',true);
 // -------------------------------------------------------------------
 
 

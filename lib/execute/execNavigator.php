@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: execNavigator.php,v $
  *
- * @version $Revision: 1.22 $
- * @modified $Date: 2006/05/16 19:35:40 $ by $Author: schlundus $
+ * @version $Revision: 1.23 $
+ * @modified $Date: 2006/05/29 06:39:10 $ by $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -46,13 +46,14 @@ $optBuildSelected = isset($_POST['build_id']) ? $_POST['build_id'] : key($optBui
 $tproject_id   = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 $tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : 'xxx';
 
-$kw_map = $tplan_mgr->get_keywords_map($_SESSION['testPlanId'],' order by keyword ');
-if(!is_null($kw_map))
+
+$keywords_map = $tplan_mgr->get_keywords_map($_SESSION['testPlanId'],' order by keyword ');
+if(!is_null($keywords_map))
 {
   // add the blank option
   // 0 -> id for no keyword
   $blank_map[0] = '';
-  $keywords_map = $blank_map+$kw_map;
+  $keywords_map = $blank_map+$keywords_map;
 }
 
 $menuUrl = null;

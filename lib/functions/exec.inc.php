@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: exec.inc.php,v $
  *
- * @version $Revision: 1.28 $
- * @modified $Date: 2006/05/24 19:47:18 $ $Author: schlundus $
+ * @version $Revision: 1.29 $
+ * @modified $Date: 2006/05/29 06:39:11 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -23,6 +23,10 @@
  * 20051119  - scs - added fix for 227
  * 20060311 - kl - some modifications to SQL queries dealing with 1.7
  *                 builds table in order to comply with new 1.7 schema
+ *
+ * 20060528 - franciscom - adding management of bulk update
+ *
+ *
 **/
 require_once('../functions/common.php');
 
@@ -394,13 +398,26 @@ function defineColor($buildResult)
 	}
 }
 
+
+// 20060528 - franciscom - adding management of bulk update
 function write_execution(&$db,$user_id, $exec_data, $tplan_id,$build_id,$map_last_exec)
 {
 	$map_tc_status = config_get('tc_status');
 	$bugInterfaceOn = config_get('bugInterfaceOn');
-	
 	$db_now = $db->db_now();
-	foreach ($exec_data['save_results'] as $tcversion_id => $val)
+	
+	// is a bulk save ???
+  if( isset($exec_data['do_bulk_save']) )
+  {
+      // create structure to use common algoritm
+      $item2loop= $exec_data['status'];
+  }	
+	else
+	{
+	    $item2loop= $exec_data['save_results'];
+	}
+	
+	foreach ( $item2loop as $tcversion_id => $val)
 	{
 		$current_status = $exec_data['status'][$tcversion_id];
 		$has_been_executed = ($current_status != $map_tc_status['not_run'] ? TRUE : FALSE);

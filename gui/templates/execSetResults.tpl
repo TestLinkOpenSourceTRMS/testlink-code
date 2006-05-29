@@ -1,10 +1,15 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execSetResults.tpl,v 1.17 2006/05/24 19:47:17 schlundus Exp $ *}
+{* $Id: execSetResults.tpl,v 1.18 2006/05/29 06:39:08 franciscom Exp $ *}
 {* Purpose: smarty template - show tests to add results *}
 {* Revisions:
+              20060528 - franciscom - $show_last_exec_any_build
 *}	
 
-{include file="inc_head.tpl" popup='yes'}
+{* {include file="inc_head.tpl" popup='yes'} *}
+{* 20060528 - franciscom *}
+{include file="inc_head.tpl" popup='yes' openHead='yes'}
+<script language="JavaScript" src="gui/javascript/radio_utils.js" type="text/javascript"></script>
+</head>
 
 <body>
 
@@ -30,12 +35,24 @@
   {if $rightsEdit == "yes" and $edit_test_results == "yes"}
   	{assign var="input_enabled_disabled" value=""}
   	
-	  <div class="groupBtn">
+    <h1> {lang_get s='bulk_tc_status_management'} </h1>
+    {* 20060528 - franciscom - bulk management of test case status *}
+    {foreach key=verbose_status item=locale_status from=$gsmarty_tc_status_for_ui}
+  	   <input type="button" id="btn_{$verbose_status}" name="btn_{$verbose_status}"
+  	          value="{lang_get s='set_all_tc_to'} {lang_get s=$locale_status}"
+  	          onclick="javascript:check_all_radios('{$gsmarty_tc_status.$verbose_status}');">
+  	{/foreach}		
+    <br>
+    <p>
+		  <input type="submit" id="do_bulk_save" name="do_bulk_save" value="{lang_get s='btn_save_all_tests_results'}"/>
+    <hr>
+	{/if}
+
+
+  <div class="groupBtn">
 		  <input type="button" name="print" value="{lang_get s='btn_print'}" 
 		         onclick="javascript:window.print();" />
-  	</div>
-	{/if}
-	
+  </div>
 	<hr />
 
 	
@@ -46,26 +63,33 @@
   	<h2>{lang_get s='th_test_case_id'}{$tc_exec.testcase_id} :: {lang_get s='title_test_case'} {$tc_exec.name|escape}</h2>
 
 		<div id="execution_history" class="exec_history">
-		<h3>{lang_get s='execution_history'}</h3>
+		{if $history_on}
+		    <h3>{lang_get s='execution_history'}</h3>
+    {else}
+        <h3>{lang_get s='just_last_execution_for_this_build'}</h3>
+    {/if}
 
 	  {* -------------------------------------------------------------------------------------------------------- *}
     {* The very last execution for any build of this test plan                                                  *}
-		{assign var="abs_last_exec" value=$map_last_exec_any_build.$tcversion_id}
-    {if $abs_last_exec.status != '' and $abs_last_exec.status != $gsmarty_tc_status.not_run}			
-      {assign var="status_code" value=$abs_last_exec.status}
-
-			<div class="{$gsmarty_tc_status_css.$status_code}">
-			{lang_get s='test_exec_last_run_date'} {localize_timestamp ts=$abs_last_exec.execution_ts}
-			{lang_get s='test_exec_by'} {$abs_last_exec.tester_first_name|escape} {$abs_last_exec.tester_last_name|escape} 
-			{lang_get s='test_exec_on_build'} {$abs_last_exec.build_name|escape}: 			
-			{localize_tc_status s=$status_code}
-			</div>
-	    
-		{else}
-			<div class="not_run">{lang_get s='test_status_not_run'}</div>
-			{lang_get s='tc_not_tested_yet'}
-		{/if}
-	  {* -------------------------------------------------------------------------------------------------------- *}
+    {* 20060528 - franciscom *}
+    {if $show_last_exec_any_build}
+    		{assign var="abs_last_exec" value=$map_last_exec_any_build.$tcversion_id}
+        {if $abs_last_exec.status != '' and $abs_last_exec.status != $gsmarty_tc_status.not_run}			
+          {assign var="status_code" value=$abs_last_exec.status}
+    
+    			<div class="{$gsmarty_tc_status_css.$status_code}">
+    			{lang_get s='test_exec_last_run_date'} {localize_timestamp ts=$abs_last_exec.execution_ts}
+    			{lang_get s='test_exec_by'} {$abs_last_exec.tester_first_name|escape} {$abs_last_exec.tester_last_name|escape} 
+    			{lang_get s='test_exec_on_build'} {$abs_last_exec.build_name|escape}: 			
+    			{localize_tc_status s=$status_code}
+    			</div>
+    	    
+    		{else}
+    			<div class="not_run">{lang_get s='test_status_not_run'}</div>
+    			{lang_get s='tc_not_tested_yet'}
+    		{/if}
+    {/if}
+    {* -------------------------------------------------------------------------------------------------------- *}
 
     {* -------------------------------------------------------------------------------------------------- *}
     {if $other_exec.$tcversion_id}
@@ -125,15 +149,15 @@
   				{* status of test *}
   				<div class="title" style="text-align: center;">{lang_get s='test_exec_result'}</div>
   				<div class="resultBox">
-  					
+
+              {* 20060528 - franciscom *}  					
+              {foreach key=verbose_status item=locale_status from=$gsmarty_tc_status_for_ui}
   						<input type="radio" {$input_enabled_disabled} name='status[{$tcversion_id}]' 
-  							value="{$gsmarty_tc_status.not_run}" checked="checked" />{lang_get s='test_status_not_run'}<br />
-  						<input type="radio" {$input_enabled_disabled} name='status[{$tcversion_id}]' 
-  							value="{$gsmarty_tc_status.passed}" />{lang_get s='test_status_passed'}<br />
-  						<input type="radio" {$input_enabled_disabled} name='status[{$tcversion_id}]' 
-  							value="{$gsmarty_tc_status.failed}" />{lang_get s='test_status_failed'}<br />
-  						<input type="radio" {$input_enabled_disabled} name='status[{$tcversion_id}]' 
-  							value="{$gsmarty_tc_status.blocked}" />{lang_get s='test_status_blocked'}<br />
+  							value="{$gsmarty_tc_status.$verbose_status}"/
+  							{if $gsmarty_tc_status.$verbose_status eq $gsmarty_tc_status.not_run}
+  							checked="checked" 
+  							{/if}>{lang_get s=$locale_status}<br />
+  					 {/foreach}		
   					<br>		
   		 			<input type='submit' name='save_results[{$tcversion_id}]' value="{lang_get s='btn_save_tc_exec_results'}" />
   				</div>

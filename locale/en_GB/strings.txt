@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.60 $
- * @modified $Date: 2006/05/03 15:51:17 $ $Author: franciscom $
+ * @version $Revision: 1.61 $
+ * @modified $Date: 2006/05/29 06:39:12 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
@@ -171,6 +171,8 @@ $TLS_date_time_run = "Date";
 $TLS_exec_status = "Status";
 $TLS_exec_notes = "Notes";
 
+$TLS_set_all_tc_to="Set all to status ";
+$TLS_btn_save_all_tests_results="Save all executions";
 
 
 // gui/templates/mainPage.tpl
@@ -193,7 +195,7 @@ $TLS_href_plan_edit = "Edit / Delete Test Plan";
 $TLS_href_plan_mstones = "Milestone Management";
 $TLS_href_plan_new = "Create Test Plan";
 $TLS_href_print_tc = "Print Test Cases";
-$TLS_href_print_tc_suite = "Print Test Case Suite";
+$TLS_href_print_tc_suite = "Print Test Plan";
 $TLS_href_remove_test_case = "Remove Test Cases";
 $TLS_href_rep_and_metrics = "Test reports and Metrics";
 $TLS_href_req_assign = "Assign Requirements";
@@ -210,7 +212,7 @@ $TLS_th_name = "Name";
 $TLS_th_perc_completed = "Completed [%]";
 $TLS_title_keywords = "Keywords";
 $TLS_title_requirements = "Requirements";
-$TLS_title_test_case_suite = "Test Case Suite";
+$TLS_title_test_case_suite = "Test Plan contents";
 $TLS_title_test_execution = "Test Execution";
 $TLS_title_test_plan = "Test Plan";
 $TLS_title_test_plan_mgmt = "Test Plan Management";

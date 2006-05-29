@@ -3,10 +3,12 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
  * @filesource $RCSfile: database.class.php,v $
- * @version $Revision: 1.12 $
- * @modified $Date: 2006/05/17 10:15:03 $ by $Author: franciscom $
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2006/05/29 06:39:11 $ by $Author: franciscom $
  * @author Francisco Mancardi
  * 
+ *
+ * 20060523 - franciscom -  added build_sql_create_db()
  *
  * 20060511 - franciscom - added a couple of functions need to resolve postgres problems
  *                         with insert_id()
@@ -179,7 +181,7 @@ class database
 
 		switch( $t_db_type ) {
 			case 'postgres':
-			case 'postgres64':
+			// case 'postgres64': - 20060523
 			case 'postgres7':
 			case 'pgsql':
 				return true;
@@ -524,6 +526,31 @@ class database
 		
 		return $items;
 	}
+
+
+  // 20060523 - franciscom
+  function build_sql_create_db($db_name)
+  {
+    $db_type=$this->db->databaseType;
+    $sql='';
+    
+    switch($db_type)
+    {
+      case 'postgres7':
+      $sql = 'CREATE DATABASE "' . $this->prepare_string($db_name) . '" ' . "WITH ENCODING='UNICODE' "; 
+      break;
+ 
+      case 'mssql':
+      $sql = 'CREATE DATABASE "' . $this->prepare_string($db_name) . '" '; 
+      break;
+      
+      case 'mysql':
+      default:
+      $sql = "CREATE DATABASE `" . $this->prepare_string($db_name) . "` CHARACTER SET utf8 "; 
+      break;
+    }
+    return ($sql);
+  }
 
 
 

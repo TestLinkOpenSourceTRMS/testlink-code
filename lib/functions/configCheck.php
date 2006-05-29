@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: configCheck.php,v ${file_name} $
  *
- * @version $Revision: 1.5 $
- * @modified $Date: 2006/05/03 07:01:18 ${date} ${time} $ by $Author: franciscom $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2006/05/29 06:39:11 ${date} ${time} $ by $Author: franciscom $
  *
  * @author Martin Havlat
  * 
@@ -24,11 +24,12 @@ function checkConfiguration()
 
 	if(!is_file($file_to_check))
 	{
-		echo "<html><body>Fatal Error. You haven't configured TestLink yet.<br/><a href='./install/index.php'>
-			Click Here To Start Installation/Setup!</a></body></html>";
-		exit();
+    echo '<html><body onload="' . "location.href='./install/index.php'" . '"></body></html>';
+		exit();	
 	}
 }
+
+
 
 /**
  * checks if the install dir is present

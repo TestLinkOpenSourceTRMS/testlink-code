@@ -4,11 +4,12 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.27 $
- * @modified $Date: 2006/05/24 19:47:17 $ $Author: schlundus $
+ * @version $Revision: 1.28 $
+ * @modified $Date: 2006/05/29 06:39:10 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
+ * 20060528 - franciscom - manage config option for history order
  *
 **/
 require_once('../../config.inc.php');
@@ -18,6 +19,10 @@ require_once("../../lib/functions/builds.inc.php");
 require_once("../../lib/functions/attachments.inc.php");
 
 testlinkInitPage($db);
+
+
+// 20060528 - franciscom
+$exec_cfg = config_get('exec_cfg');
 
 $tree_mgr = new tree($db);
 $tplan_mgr = new testplan($db);
@@ -40,9 +45,6 @@ $user_id = $_SESSION['userID'];
 $the_builds = $tplan_mgr->get_builds_for_html_options($tplan_id);
 $build_name = isset($the_builds[$build_id]) ? $the_builds[$build_id] : '';
 
-define('ANY_BUILD',null);
-define('GET_NO_EXEC',1);
-
 // -------------------------------------------------------------------------------------------
 // 20060207 - franciscom - BUGID 0000303 - Solution by: scorpfromhell 
 // Added to set Test Results editable by comparing themax Build ID and the requested Build ID.			
@@ -60,6 +62,7 @@ if(($latestBuild > $build_id) && !(config_get('edit_old_build_results')))
 
 // ----------------------------------------------------------------
 $xx = $tplan_mgr->get_linked_tcversions($tplan_id,$tc_id,$keyword_id);
+
 // Get the path for every test case, grouping test cases that
 // have same parent.
 $items_to_exec = array();
@@ -90,29 +93,67 @@ else
 	}
 }
 
-$map_last_exec = $tcase_mgr->get_last_execution($tcase_id,$tcversion_id,$tplan_id,$build_id,GET_NO_EXEC);
-if (isset($_REQUEST['save_results']))
+// 
+// will create a record even if the testcase version has not been executed (GET_NO_EXEC)
+$map_last_exec = $tcase_mgr->get_last_execution($tcase_id,$tcversion_id,$tplan_id,
+                                                $build_id,GET_NO_EXEC);
+
+
+// 20060528 - franciscom                                               
+if (isset($_REQUEST['save_results']) || isset($_REQUEST['do_bulk_save']))
 {
 	$submitResult = write_execution($db,$user_id,$_REQUEST,$tplan_id,$build_id,$map_last_exec);
 }
-$map_last_exec_any_build = $tcase_mgr->get_last_execution($tcase_id,$tcversion_id,$tplan_id,ANY_BUILD,GET_NO_EXEC);
 
-$other_execs = $tcase_mgr->get_executions($tcase_id,$tcversion_id,$tplan_id,$build_id);
-
-$attachmentInfos = null;
-foreach($other_execs as $tcversion_id => $execInfo)
+// 20060528 - franciscom
+$map_last_exec_any_build = null;
+if( $exec_cfg->show_last_exec_any_build )
 {
-	for($i = 0;$i < sizeof($execInfo);$i++)
-	{
-		$execID = $execInfo[$i]['execution_id'];
-		
-		$aInfo = getAttachmentInfos($db,$execID,'executions',true,$i);
-		if ($aInfo)
-		{
-			$attachmentInfos[$execID] = $aInfo;
-		}
-	}
+    $map_last_exec_any_build = $tcase_mgr->get_last_execution($tcase_id,$tcversion_id,$tplan_id,ANY_BUILD,GET_NO_EXEC);
 }
+
+$exec_id_order = $exec_cfg->history_order;
+$other_execs = null;
+$attachmentInfos = null;
+if( $exec_cfg->history_on)
+{
+    $other_execs = $tcase_mgr->get_executions($tcase_id,$tcversion_id,$tplan_id,$build_id,$exec_id_order);
+}    
+else
+{
+    // Warning!!!:
+    // we can't use the data we have got with previous call to get_last_execution()
+    // because if user have asked to save results last execution data may be has changed
+    $aux_map = $tcase_mgr->get_last_execution($tcase_id,$tcversion_id,$tplan_id,$build_id);
+    if(!is_null($aux_map))
+    {
+        foreach($aux_map as $key => $value )
+        {
+           $other_execs = array($key => array($value));
+        }
+    }
+}
+
+
+if( !is_null($other_execs) )
+{
+    foreach($other_execs as $tcversion_id => $execInfo)
+    {
+      $num_elem = sizeof($execInfo);   
+    	for($i = 0;$i < $num_elem;$i++)
+    	{
+    		$execID = $execInfo[$i]['execution_id'];
+    		
+    		$aInfo = getAttachmentInfos($db,$execID,'executions',STORE_IN_SESSION,$i);
+    		if ($aInfo)
+    		{
+    			$attachmentInfos[$execID] = $aInfo;
+    		}
+    	}
+    }
+}
+
+
 
 $smarty = new TLSmarty();
 $smarty->assign('attachments',$attachmentInfos);
@@ -120,7 +161,14 @@ $smarty->assign('rightsEdit', has_rights($db,"testplan_execute"));
 $smarty->assign('edit_test_results', $editTestResult);
 $smarty->assign('map_last_exec', $map_last_exec);
 $smarty->assign('other_exec', $other_execs);
+
+// 20060528 - franciscom
+$smarty->assign('show_last_exec_any_build', $exec_cfg->show_last_exec_any_build);
+$smarty->assign('history_on',$exec_cfg->history_on);
+
+$smarty->assign('show_last_exec_any_build', $exec_cfg->show_last_exec_any_build);
 $smarty->assign('map_last_exec_any_build', $map_last_exec_any_build);
+
 $smarty->assign('build_name', $build_name);
 $smarty->assign('owner', $owner);
 $smarty->assign('updated', $submitResult);

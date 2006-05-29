@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.18 $
- * @modified $Date: 2006/05/16 19:35:40 $ $Author: schlundus $
+ * @version $Revision: 1.19 $
+ * @modified $Date: 2006/05/29 06:39:11 $ $Author: franciscom $
  * @author franciscom
  *
  * 20060425 - franciscom - changes in show() following Andreas Morsing advice (schlundus)
@@ -819,10 +819,10 @@ function deleteKeywords($tcID,$kwID = null)
 
 
 /*
-
+20060528 - franciscom - interface changes 
 
 */
-function get_executions($id,$version_id,$tplan_id,$build_id,$exec_to_exclude=null)
+function get_executions($id,$version_id,$tplan_id,$build_id,$exec_id_order='DESC',$exec_to_exclude=null)
 {
 	
 	// --------------------------------------------------------------------
@@ -880,7 +880,7 @@ function get_executions($id,$version_id,$tplan_id,$build_id,$exec_to_exclude=nul
                                      AND EXEC.build_id = {$build_id} 
         LEFT OUTER JOIN users ON EXEC.tester_id = users.id 
         $where_clause 
-        ORDER BY NHA.node_order ASC, NHA.parent_id ASC, execution_id DESC";
+        ORDER BY NHA.node_order ASC, NHA.parent_id ASC, execution_id {$exec_id_order}";
    
 
   $recordset = $this->db->fetchArrayRowsIntoMap($sql,'id');

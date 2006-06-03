@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: plan.inc.php,v $
- * @version $Revision: 1.33 $
- * @modified $Date: 2006/05/17 11:06:59 $ $Author: franciscom $
+ * @version $Revision: 1.34 $
+ * @modified $Date: 2006/06/03 23:23:04 $ $Author: kevinlevy $
  * @author 	Martin Havlat
  *
  * Functions for management: 
@@ -374,7 +374,7 @@ function getUsersOfPlan(&$db,$id)
 	  $sql .= " ,first,last "; 
 	}
 	$sql .= " FROM users LEFT OUTER JOIN testplans_rights ON 
-	          testplans_rights.userid = users.id AND projid = ".$id;
+	          testplans_rights.userid = users.id AND projid = ".$id . " ORDER BY users.login";
 
 	$result = $db->exec_query($sql);
 	while ($myrow = $db->fetch_array($result))

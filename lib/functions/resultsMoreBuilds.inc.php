@@ -1,6 +1,6 @@
 <?php
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
- *$Id: resultsMoreBuilds.inc.php,v 1.47 2006/03/11 22:51:14 kevinlevy Exp $ 
+ *$Id: resultsMoreBuilds.inc.php,v 1.48 2006/06/04 21:37:07 kevinlevy Exp $ 
  * 
  * @author Kevin Levy
  *
@@ -11,6 +11,22 @@
 
 require_once('../../config.inc.php');
 require_once("common.php");
+
+/**
+ * 20060604 - KL - New for looking into 1.7 schema - work in progress
+ */
+
+function getExecutionsMap(&$db, $idPlan){
+  $sql = "SELECT id, build_id, tester_id, execution_ts, status, testplan_id, tcversion_id, notes FROM executions WHERE testplan_id= $idPlan";
+  $arrResults = array();
+  $result = $db->exec_query($sql) or die($db->error_msg());
+  while ($myrow = $db->fetch_array($result))
+    {
+      $arrBuilds[$myrow[0]] = $myrow;
+    }
+  return $arrBuilds;
+}
+
 
 /**
  * Used to create html table that is used to display summary of data for test plan, component, category

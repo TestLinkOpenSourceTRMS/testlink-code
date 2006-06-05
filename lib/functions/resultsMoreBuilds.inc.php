@@ -1,6 +1,6 @@
 <?php
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
- *$Id: resultsMoreBuilds.inc.php,v 1.48 2006/06/04 21:37:07 kevinlevy Exp $ 
+ *$Id: resultsMoreBuilds.inc.php,v 1.49 2006/06/05 01:56:19 kevinlevy Exp $ 
  * 
  * @author Kevin Levy
  *
@@ -10,6 +10,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 require_once('../../config.inc.php');
+require_once("database.class.php");
 require_once("common.php");
 
 /**
@@ -18,13 +19,10 @@ require_once("common.php");
 
 function getExecutionsMap(&$db, $idPlan){
   $sql = "SELECT id, build_id, tester_id, execution_ts, status, testplan_id, tcversion_id, notes FROM executions WHERE testplan_id= $idPlan";
-  $arrResults = array();
-  $result = $db->exec_query($sql) or die($db->error_msg());
-  while ($myrow = $db->fetch_array($result))
-    {
-      $arrBuilds[$myrow[0]] = $myrow;
-    }
-  return $arrBuilds;
+
+  $column = 'id';
+  $mapOfResults = $db->fetchArrayRowsIntoMap($sql, $column);
+  return $mapOfResults;
 }
 
 

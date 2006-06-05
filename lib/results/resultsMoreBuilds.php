@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsMoreBuilds.php,v 1.21 2006/06/05 01:55:43 kevinlevy Exp $ 
+* $Id: resultsMoreBuilds.php,v 1.22 2006/06/05 03:40:03 kevinlevy Exp $ 
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 * 
@@ -31,28 +31,72 @@ if ($DEBUG) {
   print "prodID = $prodID <BR>";
   print "tpID = $tpID <BR>";
 
-  print "getExecutionsMap =";
+
   $mapOfResults = getExecutionsMap($db, $tpID);
 
-  print_r($mapOfResults);
-  
-  print "<BR>";
- }
+  //  $keys = array_keys($mapOfResults);
+
+  print "<row><th>id</th>
+                <th>build_id</th>
+                <th>tester_id</th>
+                <th>execution_ts</th>
+                <th>status</th>
+                <th>testplan_id</th>
+                <th>tcversion_id</th>
+                <th>notes</th></row>";
+    print "<BR/>";
+  while ($key = key($mapOfResults)){
+    //    print "execution # " . $key . "<br />";
+    $resultArray = $mapOfResults[$key];
+
+    $key2 = key($resultArray);
+
+    $resultArray2 = $resultArray[$key2];
+    $id = $resultArray2[id];
+    $build_id = $resultArray2[build_id];
+    $tester_id = $resultArray2[tester_id];
+    $execution_ts = $resultArray2[execution_ts];
+    $status = $resultArray2[status];
+    $testplan_id = $resultArray2[testplan_id];
+    $tcversion_id = $resultArray2[tcversion_id];
+    $notes = $resultArray2[notes];
+    
+    
+    print "<row><td>id = $id</td>
+                <td>$build_id</td>
+                <td>$tester_id</td> 
+                <td>$execution_ts</td>
+                <td>$status</td>
+                <td>$testplan_id</td>
+                <td>$tcversion_id</td>
+                <td>$notes</td></row>";
+    print "<BR/>";
+    //    print_r($resultArray2);
+    
+    next($mapOfResults);
+  } // end while loop
+
+  //  print_r($mapOfResults);
+
+ } // end if DEBUG
 
 $arrBuilds = getBuilds($db,$tpID, " ORDER BY builds.name "); 
 print "arrBuilds = ";
-print_r($arrBuilds);
+//print_r($arrBuilds);
 print "<BR>"; 
 
 $arrOwners = getTestPlanUsers($db,$tpID);
 print "arrOwners = ";
-print_r($arrOwners);
+//print_r($arrOwners);
 print "<BR>";
 
 $arrKeywords = selectKeywords($db,$prodID);
 print "arrKeywords = ";
-print_r($arrKeywords);
+//print_r($arrKeywords);
 print "<BR>";
+
+
+print "</body></html>";
 
 /** 
  * this function call is currently causing an error

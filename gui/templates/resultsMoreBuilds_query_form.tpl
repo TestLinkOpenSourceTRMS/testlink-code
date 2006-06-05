@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: resultsMoreBuilds_query_form.tpl,v 1.21 2006/01/05 07:30:31 franciscom Exp $
+$Id: resultsMoreBuilds_query_form.tpl,v 1.22 2006/06/05 05:32:26 kevinlevy Exp $
 @author Francisco Mancardi - fm - start solving BUGID 97/98
 20051022 - scs - removed ' in component id values
 20051121 - scs - added escaping of tpname
@@ -9,6 +9,36 @@ $Id: resultsMoreBuilds_query_form.tpl,v 1.21 2006/01/05 07:30:31 franciscom Exp 
 {include file="inc_head.tpl"}
 
 <body>
+
+<!-- ============================== -->
+<!-- 20060604 - KL - 1.7 development - temporarily commenting this out
+<!-- ============================= -->
+<!--
+<table class="simple" style="width: 100%; text-align: center; margin-left: 0px;">
+	{foreach key=build item=buildid from=$arrBuilds}
+	{* by default select all builds*}
+		{$build} {$buildid}
+	{/foreach}				
+</table>
+-->
+
+<table class="simple" style="width: 100%; text-align: center; margin-left: 0px;">
+	<tr><th>id</th><th>build_id</th><th>tester_id</th><th>execution_ts</th><th>status</th><th>testplan_id</th><th>tcversion_id</th><th>notes</th></tr>
+	{foreach key=id item=array from=$mapOfResults}
+	{* by default select all builds*}
+		<tr><td>{$array[0]}</td>
+		     <td>{$array[1]}</td>
+	   	     <td>{$array[2]}</td>
+	   	     <td>{$array[3]}</td>
+	   	     <td>{$array[4]}</td>
+	   	     <td>{$array[5]}</td>
+	   	     <td>{$array[6]}</td>
+	   	     <td>{$array[7]}</td>
+		</tr>
+	{/foreach}				
+</table>
+
+<!--
 <h1>{lang_get s='test_plan_header'} {$testPlanName|escape}</h1>
 <div class="workBack">	
 <form action="lib/results/resultsMoreBuilds_buildReport.php" method='get'>
@@ -80,6 +110,6 @@ $Id: resultsMoreBuilds_query_form.tpl,v 1.21 2006/01/05 07:30:31 franciscom Exp 
 </table>
 </form>
 </div>
-
+-->
 </body>
 </html>

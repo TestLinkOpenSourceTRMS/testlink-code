@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsMoreBuilds.php,v 1.22 2006/06/05 03:40:03 kevinlevy Exp $ 
+* $Id: resultsMoreBuilds.php,v 1.23 2006/06/05 05:33:34 kevinlevy Exp $ 
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 * 
@@ -23,16 +23,15 @@ testlinkInitPage($db);
 $prodID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 $tpID = $_SESSION['testPlanId'];
 
-$DEBUG = 1;
+$DEBUG = 0;
+
+$mapOfResults = getExecutionsMap($db, $tpID);
+
+print "Work in progress - upgrading to 1.7 - KL - 6/3/2006 <BR>";
 
 if ($DEBUG) {
-  print "Work in progress - KL - 6/3/2006 <BR>";
-
   print "prodID = $prodID <BR>";
   print "tpID = $tpID <BR>";
-
-
-  $mapOfResults = getExecutionsMap($db, $tpID);
 
   //  $keys = array_keys($mapOfResults);
 
@@ -47,11 +46,11 @@ if ($DEBUG) {
     print "<BR/>";
   while ($key = key($mapOfResults)){
     //    print "execution # " . $key . "<br />";
-    $resultArray = $mapOfResults[$key];
+    $resultArray2 = $mapOfResults[$key];
 
-    $key2 = key($resultArray);
+    //    $key2 = key($resultArray);
 
-    $resultArray2 = $resultArray[$key2];
+    //$resultArray2 = $resultArray[$key2];
     $id = $resultArray2[id];
     $build_id = $resultArray2[build_id];
     $tester_id = $resultArray2[tester_id];
@@ -62,7 +61,7 @@ if ($DEBUG) {
     $notes = $resultArray2[notes];
     
     
-    print "<row><td>id = $id</td>
+    print "<row><td>$id</td>
                 <td>$build_id</td>
                 <td>$tester_id</td> 
                 <td>$execution_ts</td>
@@ -80,23 +79,24 @@ if ($DEBUG) {
 
  } // end if DEBUG
 
-$arrBuilds = getBuilds($db,$tpID, " ORDER BY builds.name "); 
-print "arrBuilds = ";
-//print_r($arrBuilds);
-print "<BR>"; 
 
+$arrBuilds = getBuilds($db,$tpID, " ORDER BY builds.name "); 
+//print "arrBuilds = ";
+//print_r($arrBuilds);
+//print "<BR>"; 
+
+/** not working  - comment out for now
+until we figure out exactly what is needed
 $arrOwners = getTestPlanUsers($db,$tpID);
 print "arrOwners = ";
-//print_r($arrOwners);
+print_r($arrOwners);
 print "<BR>";
 
 $arrKeywords = selectKeywords($db,$prodID);
 print "arrKeywords = ";
-//print_r($arrKeywords);
+print_r($arrKeywords);
 print "<BR>";
-
-
-print "</body></html>";
+*/
 
 /** 
  * this function call is currently causing an error
@@ -106,16 +106,14 @@ print "</body></html>";
  *print "<BR>";
  **/
 
-
-/**
 $smarty = new TLSmarty();
 $smarty->assign('testPlanName',$_SESSION['testPlanName']);
 $smarty->assign('testplanid', $tpID);
 $smarty->assign('arrBuilds', $arrBuilds); 
-$smarty->assign('arrOwners', $arrOwners);
-$smarty->assign('arrKeywords', $arrKeywords);
-$smarty->assign('arrComponents', $arrComponents);
+$smarty->assign('mapOfResults', $mapOfResults); 
+//$smarty->assign('arrOwners', $arrOwners);
+//$smarty->assign('arrKeywords', $arrKeywords);
+//$smarty->assign('arrComponents', $arrComponents);
 $smarty->display('resultsMoreBuilds_query_form.tpl');
-**/
 
 ?>

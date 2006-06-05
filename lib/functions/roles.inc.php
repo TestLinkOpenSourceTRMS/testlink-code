@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
  * @filesource $RCSfile: roles.inc.php,v $
- * @version $Revision: 1.11 $
- * @modified $Date: 2006/05/17 11:05:05 $ by $Author: franciscom $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2006/06/05 05:33:51 $ by $Author: kevinlevy $
  * @author Martin Havlat, Chad Rosen
  * 
  * This script provides the get_rights and has_rights functions for
@@ -145,9 +145,7 @@ function getTestPlanUserRoles(&$db,$testPlanID)
 {
 	$query = "SELECT user_id,role_id FROM user_testplan_roles WHERE testplan_id = {$testPlanID}";
 	$roles = $db->fetchRowsIntoMap($query,'user_id');
-	
 	return $roles;
-
 }
 
 /**

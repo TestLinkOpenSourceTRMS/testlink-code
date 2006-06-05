@@ -1,6 +1,6 @@
 <?php
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
- *$Id: resultsMoreBuilds.inc.php,v 1.49 2006/06/05 01:56:19 kevinlevy Exp $ 
+ *$Id: resultsMoreBuilds.inc.php,v 1.50 2006/06/05 05:33:51 kevinlevy Exp $ 
  * 
  * @author Kevin Levy
  *
@@ -21,7 +21,7 @@ function getExecutionsMap(&$db, $idPlan){
   $sql = "SELECT id, build_id, tester_id, execution_ts, status, testplan_id, tcversion_id, notes FROM executions WHERE testplan_id= $idPlan";
 
   $column = 'id';
-  $mapOfResults = $db->fetchArrayRowsIntoMap($sql, $column);
+  $mapOfResults = $db->fetchRowsIntoMap($sql, $column);
   return $mapOfResults;
 }
 

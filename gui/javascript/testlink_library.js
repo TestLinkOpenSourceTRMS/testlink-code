@@ -1,14 +1,15 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/ 
 // This script is distributed under the GNU General Public License 2 or later. 
 //
-// $Id: testlink_library.js,v 1.12 2006/05/16 19:35:40 schlundus Exp $ 
+// $Id: testlink_library.js,v 1.13 2006/06/07 12:34:55 franciscom Exp $ 
 //
 // Javascript functions commonly used through the GUI
 // This library is automatically loaded with inc_header.tpl
 //
 // DO NOT ADD FUNCTIONS FOR ONE USING
 //
-
+// 20060603 - franciscom - added confirm_and_submit()
+//
 
 // help popup
 function open_popup(page) 
@@ -120,20 +121,11 @@ function my_show_div(itm)
 
 // MHT: TODO move it to validate.js
 // 20051007 - am - removed build name
-function deleteBuild_onClick(buildID)
+function deleteBuild_onClick(buildID,msg)
 {
-	if (confirm(warning_delete_build))
-	{
-		var f = document.getElementById('deleteBuildForm');
-		if (f)
-		{
-			var field = document.getElementById('buildID');
-			if (field)
-				field.value = buildID;
-			f.submit();
-		}
-	}
-	
+  confirm_and_submit(msg,
+                     'deleteBuildForm','buildID',
+                     buildID);
 }
 
 function deleteUser_onClick(userID)
@@ -218,4 +210,24 @@ function attachmentDlg_onSubmit()
 	attachmentDlg_bNoRefresh = true;
 	
 	return true;
+}
+
+
+// 20060603 - franciscom
+function confirm_and_submit(msg,form_id,field_id,field_value)
+{
+	if (confirm(msg))
+	{
+		var f = document.getElementById(form_id);
+		if (f)
+		{
+			var field = document.getElementById(field_id);
+			if (field)
+			{
+				field.value = field_value;
+			}	
+			f.submit();
+		}
+	}
+	
 }

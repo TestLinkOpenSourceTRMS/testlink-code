@@ -5,14 +5,18 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.64 $
- * @modified $Date: 2006/05/29 06:37:59 $ by $Author: franciscom $
+ * @version $Revision: 1.65 $
+ * @modified $Date: 2006/06/07 12:34:55 $ by $Author: franciscom $
  *
  *
  * Constants and configuration parameters used throughout TestLink 
  * are defined within this file they should be changed for your environment
  *-------------------------------------------------------------------------
  * Revisions:
+ *
+ * 20060602 - franciscom - new config param to manage attachments
+ *                         different models for the attachments management 
+ *                         on execution page.
  *
  * 20060528 - franciscom - new config param to choose order of execution history
  *                         $g_tc_status_for_ui for generation of radio buttons
@@ -160,15 +164,29 @@ $g_exec_cfg->history_order='DESC';
 
 // TRUE  -> the whole execution history for the choosen build will be showed
 // FALSE -> just last execution for the choosen build will be showed
-$g_exec_cfg->history_on=TRUE;
+$g_exec_cfg->history_on=FALSE;
 
 
 // TRUE  ->  test case VERY LAST (i.e. in any build) execution status 
 //           will be displayed
 //
 //
-$g_exec_cfg->show_last_exec_any_build=TRUE;
+$g_exec_cfg->show_last_exec_any_build=FALSE;
 
+// 20060602 - franciscom - 
+// different models for the attachments management on execution page
+//
+$att_model_m1->show_upload_btn=true;
+$att_model_m1->show_title=true;
+$att_model_m1->num_cols=4;
+$att_model_m1->show_upload_column=false;
+
+$att_model_m2->show_upload_btn=false;
+$att_model_m2->show_title=false;
+$att_model_m2->num_cols=5;
+$att_model_m2->show_upload_column=true;
+
+$g_exec_cfg->att_model=$att_model_m2;
 
 
 /** Bug Tracking systems */////////////////////////////////////////////////////
@@ -546,6 +564,36 @@ $g_repositoryPath = "c:\\muell";
  * TL_REPOSITORY_COMPRESSIONTYPE_GZIP => gzip compression
 */
 $g_repositoryCompressionType = TL_REPOSITORY_COMPRESSIONTYPE_NONE;
+
+
+// 20060602 - franciscom ---------------------------------------------------------
+// TRUE -> when you upload a file you can give no title
+$g_attachments->allow_empty_title=TRUE;
+
+// $g_attachments->allow_empty_title == TRUE, you can ask the system
+// to do something 
+// 
+// 'none' -> just write on db an empty title
+$g_attachments->action_on_save_empty_title='none';
+//$g_attachments->action_on_save_empty_title='use_filename';
+
+
+// Remember that title is used as link description for download
+// then if title is empty, what the system has to do when displaying ?
+//
+// 'show_icon'  -> the $g_attachments->access_icon will be used.
+//
+//
+// 'show_label' -> the value of $g_attachments->access_string will be used .
+// 
+$g_attachments->action_on_display_empty_title='show_icon';
+//$g_attachments->action_on_display_empty_title='show_label';
+
+$g_attachments->access_icon='<img src="icons/new_f2_16.png" style="border:none">';
+$g_attachments->access_string="[*]";
+// ----------------------------------------------------------------------------
+
+
 /* END ATTACHMENTS */
 
 // 20050821 - fm - configurable templates this help is you want to use a non standard template 

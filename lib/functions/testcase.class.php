@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.19 $
- * @modified $Date: 2006/05/29 06:39:11 $ $Author: franciscom $
+ * @version $Revision: 1.20 $
+ * @modified $Date: 2006/06/07 12:34:55 $ $Author: franciscom $
  * @author franciscom
  *
  * 20060425 - franciscom - changes in show() following Andreas Morsing advice (schlundus)
@@ -550,6 +550,11 @@ function copy_tcversion($from_tcversion_id,$to_tcversion_id,$as_version_number,$
 // 20060313 - franciscom
 function get_by_id_bulk($id,$version_id=TC_ALL_VERSIONS, $get_active=0, $get_open=0)
 {
+	$where_clause="";
+	$where_clause_names="";
+	$tcid_list ="";
+	$sql = "";
+	$the_names = null;
 	
 	if( is_array($id) )
 	{
@@ -635,6 +640,8 @@ function get_by_id_bulk($id,$version_id=TC_ALL_VERSIONS, $get_active=0, $get_ope
 // 20060313 - franciscom
 function get_by_id($id,$version_id=TC_ALL_VERSIONS, $get_active=0, $get_open=0)
 {
+	$tcid_list ='';
+	$where_clause ='';
 	
 	if( is_array($id) )
 	{
@@ -895,6 +902,8 @@ function get_last_execution($id,$version_id,$tplan_id,$build_id,$get_no_executio
 {
 	
 	$build_id_filter='';
+	$where_clause_1 = '';
+	$where_clause_2= '';
 	
 	if( is_array($id) )
 	{

@@ -2,10 +2,11 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.5 $
- * @modified $Date: 2006/05/17 11:02:12 $ $Author: franciscom $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2006/06/07 12:34:55 $ $Author: franciscom $
  * @author franciscom
  *
+ * 20060603 - franciscom - changes in get_linked_tcversions()
  * 20060430 - franciscom - added get_keywords_map()
  *
  */
@@ -135,28 +136,23 @@ function link_tcversions($id,&$items_to_link)
 		}
 }
 
+//  20060603 - franciscom - new argument executed
+//                          not_null     -> get only executed tcversions
+//                          null         -> get executed and NOT executed
+// 
+//
 //  20060430 - franciscom - new join to get the execution status 
 // executed field: will take the following values
 //                 NULL if the tc version has not been executed in THIS test plan
 //                 tcversion_id if has executions 
 //
-function get_linked_tcversions($id,$tcase_id=null,$keyword_id=0)
+function get_linked_tcversions($id,$tcase_id=null,$keyword_id=0,$executed=null)
 
 {
-/*    $sql="SELECT nodes_hierarchy.parent_id as tc_id,tcversion_id 
-          FROM testplan_tcversions,nodes_hierarchy 
-          WHERE nodes_hierarchy.id = tcversion_id
-          AND   testplan_id={$id}";	
-          	
-    $sql="SELECT	NHB.parent_id AS testsuite_id,NHA.parent_id AS tc_id, tcversion_id 
-          FROM nodes_hierarchy NHA
-          JOIN nodes_hierarchy NHB ON NHA.parent_id = NHB.id 
-          JOIN testplan_tcversions ON NHA.id = tcversion_id 
-          WHERE testplan_id={$id} ORDER BY testsuite_id";	
-*/
 $keywords_join = " ";
 $keywords_filter = " ";
 $tc_id_filter = " ";
+$executions_join = " ";
 
 if( $keyword_id > 0 )
 {
@@ -174,19 +170,29 @@ if (!is_null($tcase_id) )
       $tc_id_filter = " AND   NHA.parent_id = {$tcase_id} ";
    }
 }
+
+// 20060603 - franciscom
+if( is_null($executed) )
+{
+     $executions_join = " LEFT OUTER ";
+}          
+$executions_join .= " JOIN executions E ON NHA.id = E.tcversion_id ";
+
+
 $sql="SELECT DISTINCT NHB.parent_id AS testsuite_id,
               NHA.parent_id AS tc_id, 
               T.tcversion_id AS tcversion_id,
               E.tcversion_id AS executed
-          FROM nodes_hierarchy NHA
-          JOIN nodes_hierarchy NHB ON NHA.parent_id = NHB.id 
-          JOIN testplan_tcversions T ON NHA.id = T.tcversion_id 
-          LEFT OUTER JOIN executions E ON NHA.id = E.tcversion_id
-          {$keywords_join}
-          WHERE T.testplan_id={$id} {$keywords_filter} {$tc_id_filter}      
-          ORDER BY testsuite_id";	
-	  $recordset = $this->db->fetchRowsIntoMap($sql,'tc_id');
-    return($recordset);
+      FROM nodes_hierarchy NHA
+      JOIN nodes_hierarchy NHB ON NHA.parent_id = NHB.id 
+      JOIN testplan_tcversions T ON NHA.id = T.tcversion_id 
+      {$executions_join}
+      {$keywords_join}
+      WHERE T.testplan_id={$id} {$keywords_filter} {$tc_id_filter}      
+      ORDER BY testsuite_id";
+          
+$recordset = $this->db->fetchRowsIntoMap($sql,'tc_id');
+return($recordset);
 }
 
 

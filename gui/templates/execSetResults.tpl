@@ -1,7 +1,8 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execSetResults.tpl,v 1.18 2006/05/29 06:39:08 franciscom Exp $ *}
+{* $Id: execSetResults.tpl,v 1.19 2006/06/07 12:34:55 franciscom Exp $ *}
 {* Purpose: smarty template - show tests to add results *}
 {* Revisions:
+              20060602 - franciscom - new code for attachments display 
               20060528 - franciscom - $show_last_exec_any_build
 *}	
 
@@ -20,6 +21,7 @@
 	{lang_get s='title_t_r_on_build'} {$build_name|escape} {lang_get s='title_t_r_owner'} ( {$owner|escape} )
 </h1>
 
+
 {* show echo about update if applicable *}
 {$updated}
 
@@ -28,32 +30,45 @@
   	
 <div id="main_content" class="workBack">
 <form method='post'>
-  {* -------------------------------------------------------------------------------------- *}
-  {* 20060207 - franciscom - BUGID 303
-     Added to make Test Results editable only if Current build is latest Build - Tools-R-Us *}
-  {* 20051108 - fm - BUGID 00082*}
-  {if $rightsEdit == "yes" and $edit_test_results == "yes"}
-  	{assign var="input_enabled_disabled" value=""}
-  	
-    <h1> {lang_get s='bulk_tc_status_management'} </h1>
-    {* 20060528 - franciscom - bulk management of test case status *}
-    {foreach key=verbose_status item=locale_status from=$gsmarty_tc_status_for_ui}
-  	   <input type="button" id="btn_{$verbose_status}" name="btn_{$verbose_status}"
-  	          value="{lang_get s='set_all_tc_to'} {lang_get s=$locale_status}"
-  	          onclick="javascript:check_all_radios('{$gsmarty_tc_status.$verbose_status}');">
-  	{/foreach}		
-    <br>
-    <p>
-		  <input type="submit" id="do_bulk_save" name="do_bulk_save" value="{lang_get s='btn_save_all_tests_results'}"/>
-    <hr>
-	{/if}
+  {if $map_last_exec eq ""}
+     {lang_get s='no_data_available'}
+  {else}
+      {* -------------------------------------------------------------------------------------- *}
+      {* 20060207 - franciscom - BUGID 303
+         Added to make Test Results editable only if Current build is latest Build - Tools-R-Us *}
+      {* 20051108 - fm - BUGID 00082*}
+      {if $rightsEdit == "yes" and $edit_test_results == "yes"}
+      	{assign var="input_enabled_disabled" value=""}
+        <h1> {lang_get s='bulk_tc_status_management'} </h1>
+        {* 20060528 - franciscom - bulk management of test case status *}
+        {foreach key=verbose_status item=locale_status from=$gsmarty_tc_status_for_ui}
+      	   <input type="button" id="btn_{$verbose_status}" name="btn_{$verbose_status}"
+      	          value="{lang_get s='set_all_tc_to'} {lang_get s=$locale_status}"
+      	          onclick="javascript:check_all_radios('{$gsmarty_tc_status.$verbose_status}');">
+      	{/foreach}		
+        <br>
+        <p>
+    		  <input type="submit" id="do_bulk_save" name="do_bulk_save" value="{lang_get s='btn_save_all_tests_results'}"/>
+        <hr>
+    	{/if}
+    
+    
+      <div class="groupBtn">
+    		  <input type="button" name="print" value="{lang_get s='btn_print'}" 
+    		         onclick="javascript:window.print();" />
 
+    		  <input type="submit" id="toggle_history_on_off" 
+    		         name="{$history_status_btn_name}" 
+    		         value="{lang_get s=$history_status_btn_name}"  />
+    		  
+    		  <input type="hidden" id="history_on" 
+    		         name="history_on" value={$history_on}>
+    		   
+    		         
+      </div>
+    	<hr />
 
-  <div class="groupBtn">
-		  <input type="button" name="print" value="{lang_get s='btn_print'}" 
-		         onclick="javascript:window.print();" />
-  </div>
-	<hr />
+  {/if}
 
 	
 	{foreach item=tc_exec from=$map_last_exec}
@@ -99,6 +114,12 @@
 				<th style="text-align:left">{lang_get s='test_exec_by'}</th>
 				<th style="text-align:left">{lang_get s='exec_status'}</th>
 				<th style="text-align:left">{lang_get s='exec_notes'}</th>
+				
+		    {* 20060602 - franciscom *}
+				{if $att_model->show_upload_column}
+						<th style="text-align:left">{lang_get s='attachment_mgmt'}</th>
+        {/if}
+        
 			 </tr>
 			{foreach item=tc_old_exec from=$other_exec.$tcversion_id}
  			<tr  style="border-top:1px solid black">
@@ -106,12 +127,28 @@
 				<td>{$tc_old_exec.tester_first_name|escape} {$tc_old_exec.tester_last_name|escape}</td> 
 				<td>{localize_tc_status s=$tc_old_exec.status}</td>
 				<td>{$tc_old_exec.execution_notes|escape}</td>
+
+		    {* 20060602 - franciscom *}
+        {if $att_model->show_upload_column}
+    				<td align="center"><a href="javascript:openFileUploadWindow({$tc_old_exec.execution_id},'executions')">
+    				    <img src="icons/upload_16.png"
+    				         alt="{lang_get s='alt_attachment_mgmt'}" 
+    				         style="border:none" /></a>
+            </td>
+        {/if}
+
 			</tr>  
 			<tr>
-			<td colspan="4">
+			<td colspan="{$att_model->num_cols}">
 				{assign var="execID" value=$tc_old_exec.execution_id}
-				{assign var="attachmentInfos" value=$attachments[$execID]}
-				{include file="inc_attachments.tpl" id="$execID" tableName="executions"}
+
+		    {* 20060602 - franciscom *}
+				{assign var="attach_info" value=$attachments[$execID]}
+				{include file="inc_attachments.tpl" 
+				         attachmentInfos=$attach_info 
+				         id=$execID tableName="executions"
+				         show_upload_btn=$att_model->show_upload_btn
+				         show_title=$att_model->show_title }
 			</td>
 			</tr>
 			{/foreach}

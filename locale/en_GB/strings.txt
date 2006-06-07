@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.61 $
- * @modified $Date: 2006/05/29 06:39:12 $ $Author: franciscom $
+ * @version $Revision: 1.62 $
+ * @modified $Date: 2006/06/07 12:34:56 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
@@ -1355,5 +1355,13 @@ $TLS_remove_tc = "Remove";
 $TLS_attachment_disabled="Attachment feature disabled";
 $TLS_attachments_dir="directory for attachments:";
 $TLS_does_not_exist="does not exist";
+
+$TLS_alt_attachment_mgmt="attachments";
+$TLS_attachment_mgmt="attachments";
+
+$TLS_no_data_available="No data available";
+
+$TLS_btn_history_off="show only last execution";
+$TLS_btn_history_on="show complete history";
 
 ?>

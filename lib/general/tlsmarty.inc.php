@@ -4,13 +4,14 @@
  *
  * Filename $RCSfile: tlsmarty.inc.php,v $
  *
- * @version $Revision: 1.11 $
- * @modified $Date: 2006/05/29 06:39:11 $ $Author: franciscom $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2006/06/07 12:34:55 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
  * TLSmarty class implementation used in all templates
  *
+ * 20060602 - franciscom - added new global var $g_attachments
  * 20060528 - franciscom - added new global var $g_tc_status_for_ui
  *
 **/
@@ -22,6 +23,8 @@ class TLSmarty extends Smarty
 		global $g_tc_status_css;
 		global $g_bugInterfaceOn;
 		global $g_tc_status_for_ui; // 20060528 - franciscom
+		global $g_attachments;     // 20060602 - franciscom
+
 
         $this->Smarty();
         $this->template_dir = TL_ABS_PATH . 'gui/templates/';
@@ -51,6 +54,9 @@ class TLSmarty extends Smarty
 	  
 	  // 20060528 - franciscom
 	  $this->assign('gsmarty_tc_status_for_ui',$g_tc_status_for_ui);
+		
+		// 20060602 - franciscom
+		$this->assign('gsmarty_attachments',$g_attachments);
 		
 	
 		$this->assign('pageCharset',TL_TPL_CHARSET);

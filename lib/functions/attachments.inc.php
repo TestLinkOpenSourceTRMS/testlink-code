@@ -5,11 +5,16 @@
  *
  * Filename $RCSfile: attachments.inc.php,v $
  *
- * @version $Revision: 1.4 $
- * @modified $Date: 2006/05/24 19:47:18 $ by $Author: schlundus $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2006/06/07 12:34:55 $ by $Author: franciscom $
  *
  * functions related to attachments
+ *
+ * 20060602 - franciscom - changed title management in insertAttachment
 **/
+
+// 20060602 - franciscom - to enable use of config_get()
+require_once('common.php');
 
 /**
  * Fetches the contents of a file for storing it into the DB-Repository
@@ -82,6 +87,9 @@ function storeFileInFSRepository($fTmpName,&$destFPath)
  * @param int $fSize the filesize (uncompressed)
  * @param string $title the title used for the attachment
  * @return int returns 1 if the information was successfully stored, 0 else
+ *
+ * 20060602 - franciscom - if empty(title) title=filename
+ *
  **/
 function insertAttachment(&$db,$id,$tableName,$fName,$destFPath,$fContents,$fType,$fSize,$title)
 {
@@ -96,12 +104,37 @@ function insertAttachment(&$db,$id,$tableName,$fName,$destFPath,$fContents,$fTyp
 	$destFPath = is_null($destFPath) ? 'NULL' : "'".$db->prepare_string(str_replace($g_repositoryPath.DS,"",$destFPath))."'";
 	//for FS-repository the contents are null
 	$fContents = is_null($fContents) ? 'NULL' : "'".$db->prepare_string($fContents)."'";
+	
+	// 20060602 - franciscom
+	if( strlen(trim($title)) == 0)
+	{
+	  $cfg = config_get('attachments');
+	  
+	  switch ($cfg->action_on_save_empty_title)
+	  {
+	     case 'use_filename':
+	     $title = $fName;
+	     break;
+	     
+	     default:
+	     break;  
+	  }
+	}
 	$title = $db->prepare_string($title);
 	$fType = $db->prepare_string($fType);
+
+  /*
 	$date = date("Y-m-d H:i:s");
 	$query = "INSERT INTO attachments (fk_id,fk_table,file_name,file_path,file_size,file_type,date_added,content,compression_type,title) VALUES " 
-				. "({$id},'{$tableName}','{$fName}',{$destFPath},{$fSize},'{$fType}','{$date}',$fContents,$g_repositoryCompressionType,'{$title}')";
-			
+				. "({$id},'{$tableName}','{$fName}',{$destFPath},{$fSize},'{$fType}',
+				          '{$date}',$fContents,$g_repositoryCompressionType,'{$title}')";
+  */
+  $query = "INSERT INTO attachments 
+           (fk_id,fk_table,file_name,file_path,file_size,file_type, date_added,content,compression_type,title) 
+           VALUES ({$id},'{$tableName}','{$fName}',{$destFPath},{$fSize},'{$fType}'," . $db->db_now() . 
+           ",$fContents,$g_repositoryCompressionType,'{$title}')";
+  
+
 	$result = $db->exec_query($query);					
 
 	return $result ? 1 : 0;

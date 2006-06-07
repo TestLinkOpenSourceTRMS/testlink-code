@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.18 $
- * @modified $Date: 2006/05/16 19:35:40 $
+ * @version $Revision: 1.19 $
+ * @modified $Date: 2006/06/07 12:34:55 $
  * @author franciscom
  *
  * 20060425 - franciscom - changes in show() following Andreas Morsing advice (schlundus)
@@ -582,6 +582,38 @@ function get_keywords_tcases($testproject_id, $keyword_id=0)
 		$map_keywords = $this->db->fetchRowsIntoMap($sql,'testcase_id');
 		return($map_keywords);
 } //end function
+
+
+// 
+// 20060603 - franciscom
+function get_all_testplans($testproject_id,$get_tp_without_tproject_id=0,$plan_status=null)
+{
+	$sql = " SELECT nodes_hierarchy.id, nodes_hierarchy.name, 
+	                notes,active, testproject_id 
+	         FROM nodes_hierarchy,testplans";
+	$where = " WHERE nodes_hierarchy.id=testplans.id ";
+  $where .= ' AND (testproject_id = ' . $testproject_id . " ";  	
+
+	if($get_tp_without_tproject_id)
+	{
+			$where .= " OR testproject_id = 0 ";
+	}
+	$where .= " ) ";
+
+	if(!is_null($plan_status))
+	{	
+		$my_active = to_boolean($plan_status);
+		$where .= " AND active = " . $my_active;
+	}
+	$sql .= $where . " ORDER BY name";
+
+	$map = $this->db->fetchRowsIntoMap($sql,'id');
+	return($map);
+	
+}
+
+
+
 } // end class
 
 ?>

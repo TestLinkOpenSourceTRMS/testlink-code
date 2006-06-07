@@ -1,20 +1,11 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: buildNew.tpl,v 1.8 2006/04/21 16:48:40 asielb Exp $ *}
+{* $Id: buildNew.tpl,v 1.9 2006/06/07 12:34:55 franciscom Exp $ *}
 {* Purpose: smarty template - Add new build and show existing 
 
 *}
 {include file="inc_head.tpl"}
 
 <body>
-
-{literal}
-<script type="text/javascript">
-{/literal}
-var warning_delete_build = "{lang_get s='warning_delete_build'}";
-{literal}
-</script>
-{/literal}
-
 <h1>{lang_get s='title_create_build_for_tp'} '{$TPname|escape}'</h1>
 
 {include file="inc_update.tpl" result=$sqlResult item="Build" name=$name}
@@ -44,6 +35,8 @@ var warning_delete_build = "{lang_get s='warning_delete_build'}";
 
 <div> {* existing builds *}
 {if $arrBuilds ne ""}
+  {lang_get s='warning_delete_build' var="warning_msg" }
+
 	<table class="simple" width="80%" style="table-layout:fixed">
 		<tr>
 			<th>{lang_get s='th_existing_builds'} {$TPname|escape}</th>
@@ -54,7 +47,7 @@ var warning_delete_build = "{lang_get s='warning_delete_build'}";
 			<tr>
 				<td><a href="lib/plan/buildNew.php?edit_build=load_info&buildID={$build.id}">{$build.name|escape}</td>
 				<td><pre style="display:inline">{$build.notes}</pre></td>
-				<td><a href="javascript:deleteBuild_onClick({$build.id})"><img style="border:none" alt="{lang_get s='alt_delete_build'}" src="icons/thrash.png"/></a></td>
+				<td><a href="javascript:deleteBuild_onClick({$build.id},'{$warning_msg}')"><img style="border:none" alt="{lang_get s='alt_delete_build'}" src="icons/thrash.png"/></a></td>
 			</tr>
 		{/foreach}
 	</table>

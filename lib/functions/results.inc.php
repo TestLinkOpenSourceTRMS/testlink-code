@@ -2,8 +2,8 @@
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: results.inc.php,v $
- * @version $Revision: 1.33 $
- * @modified $Date: 2006/05/03 07:17:18 $   $Author: franciscom $
+ * @version $Revision: 1.34 $
+ * @modified $Date: 2006/06/08 19:56:09 $   $Author: schlundus $
  * 
  * @author 	Martin Havlat 
  * @author 	Chad Rosen (original report definition)
@@ -196,7 +196,7 @@ function getTestSuiteReport(&$db,$tpID, $buildID = 'all')
 				   " AND COMP.id=" . $myrow['comp_id']; 
 				
 		// 20050901 - MHT - used generalication
-		$totalTCs = db->fetchFirstRowSingleColumn($sql,'cnt');
+		$totalTCs = $db->fetchFirstRowSingleColumn($sql,'cnt');
 
     // ------------------------------------------------------------------------------
 		//Code to grab the results of the test case execution

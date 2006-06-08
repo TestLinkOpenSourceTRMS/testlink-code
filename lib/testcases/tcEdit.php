@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.31 $
- * @modified $Date: 2006/05/05 20:07:24 $  by $Author: schlundus $
+ * @version $Revision: 1.32 $
+ * @modified $Date: 2006/06/08 19:56:09 $  by $Author: schlundus $
  * This page manages all the editing of test cases.
  *
  * @author Martin Havlat
@@ -18,11 +18,10 @@ require_once("../functions/common.php");
 require_once('archive.inc.php');
 require_once('../keywords/keywords.inc.php');
 require_once("../../third_party/fckeditor/fckeditor.php");
-require_once("../functions/opt_transfer.php"); // 20060424 - franciscom
+require_once("../functions/opt_transfer.php");
 testlinkInitPage($db);
 
 
-// set variables
 // --------------------------------------------------------------------
 // create  fckedit objects
 $a_ofck = array('summary','steps','expected_results');

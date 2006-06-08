@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView.tpl,v 1.16 2006/05/16 19:35:40 schlundus Exp $
+$Id: tcView.tpl,v 1.17 2006/06/08 19:56:09 schlundus Exp $
 Purpose: smarty template - view test case in test specification
 
 20060425 - franciscom - can manage multiple test cases
@@ -15,7 +15,6 @@ Purpose: smarty template - view test case in test specification
 {include file="inc_update.tpl" result=$sqlResult action=$action item="test case" refresh=$refresh_tree}
 
 <div class="workBack">
-
 {if $testcase_curr_version}
 {section name=idx loop=$testcase_curr_version}
     {* Current active version *}
@@ -36,6 +35,7 @@ Purpose: smarty template - view test case in test specification
 		         args_show_version="yes" 
 		         args_show_title="yes"}
 
+		{include file="inc_attachments.tpl" id=$id tableName="nodes_hierarchy"}
 
     {* Other Versions *}
     {if $testcase_other_versions[idx] neq null}

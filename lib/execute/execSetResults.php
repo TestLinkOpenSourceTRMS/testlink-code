@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.29 $
- * @modified $Date: 2006/06/07 12:34:55 $ $Author: franciscom $
+ * @version $Revision: 1.30 $
+ * @modified $Date: 2006/06/08 19:56:09 $ $Author: schlundus $
  *
  * @author Martin Havlat
  *
@@ -23,8 +23,6 @@ require_once("../../lib/functions/attachments.inc.php");
 
 testlinkInitPage($db);
 
-
-// 20060528 - franciscom
 $exec_cfg = config_get('exec_cfg');
 
 $tree_mgr = new tree($db);
@@ -47,17 +45,14 @@ $user_id = $_SESSION['userID'];
 $the_builds = $tplan_mgr->get_builds_for_html_options($tplan_id);
 $build_name = isset($the_builds[$build_id]) ? $the_builds[$build_id] : '';
 
-
-// 20060603 - franciscom
-$history_on=manage_history_on($_REQUEST,$_SESSION,$exec_cfg,'btn_history_on','btn_history_off','history_on');
-$_SESSION['history_on']=$history_on;
+$history_on = manage_history_on($_REQUEST,$_SESSION,$exec_cfg,'btn_history_on','btn_history_off','history_on');
+$_SESSION['history_on'] = $history_on;
 
 $history_status_btn_name = 'btn_history_on';
 if($history_on)
 {
     $history_status_btn_name = 'btn_history_off';
 }
-// -------------------------------------------------------------------------------------------
 
 // -------------------------------------------------------------------------------------------
 // 20060207 - franciscom - BUGID 0000303 - Solution by: scorpfromhell 
@@ -119,13 +114,9 @@ if( !is_null($xx) )
     $map_last_exec = $tcase_mgr->get_last_execution($tcase_id,$tcversion_id,$tplan_id,
                                                     $build_id,GET_NO_EXEC);
     
-    // 20060528 - franciscom                                               
     if (isset($_REQUEST['save_results']) || isset($_REQUEST['do_bulk_save']))
-    {
     	$submitResult = write_execution($db,$user_id,$_REQUEST,$tplan_id,$build_id,$map_last_exec);
-    }
     
-    // 20060528 - franciscom
     $map_last_exec_any_build = null;
     if( $exec_cfg->show_last_exec_any_build )
     {
@@ -136,8 +127,7 @@ if( !is_null($xx) )
     $exec_id_order = $exec_cfg->history_order;
     $other_execs = null;
     $attachmentInfos = null;
-    //if( $exec_cfg->history_on)
-    if( $history_on)
+    if($history_on)
     {
         $other_execs = $tcase_mgr->get_executions($tcase_id,$tcversion_id,$tplan_id,$build_id,$exec_id_order);
     }    
@@ -150,22 +140,19 @@ if( !is_null($xx) )
 
         if(!is_null($aux_map))
         {
-            // 20060603 - franciscom - (my) bug correction
-            $other_execs=array();
+            $other_execs = array();
             foreach($aux_map as $key => $value )
             {
                $other_execs[$key] = array($value);
             }
         }
-        
     }
     
-    
-    if( !is_null($other_execs) )
+    if(!is_null($other_execs))
     {
         foreach($other_execs as $tcversion_id => $execInfo)
         {
-          $num_elem = sizeof($execInfo);   
+			$num_elem = sizeof($execInfo);   
         	for($i = 0;$i < $num_elem;$i++)
         	{
         		$execID = $execInfo[$i]['execution_id'];
@@ -179,41 +166,28 @@ if( !is_null($xx) )
         }
     }
 }
-
+$tcAttachments = getAttachmentInfos($db,$id,'nodes_hierarchy');
 
 $smarty = new TLSmarty();
+$smarty->assign('tcAttachments',$tcAttachments);
+$smarty->assign('id',$id);
 $smarty->assign('attachments',$attachmentInfos);
 $smarty->assign('rightsEdit', has_rights($db,"testplan_execute"));
 $smarty->assign('edit_test_results', $editTestResult);
 $smarty->assign('map_last_exec', $map_last_exec);
 $smarty->assign('other_exec', $other_execs);
-
-// 20060528 - franciscom
 $smarty->assign('show_last_exec_any_build', $exec_cfg->show_last_exec_any_build);
 $smarty->assign('history_on',$history_on);
-
-
 $smarty->assign('history_status_btn_name',$history_status_btn_name);
-
-
-
-
-// 20060602 - franciscom
 $smarty->assign('att_model',$exec_cfg->att_model);
-
-
 $smarty->assign('show_last_exec_any_build', $exec_cfg->show_last_exec_any_build);
 $smarty->assign('map_last_exec_any_build', $map_last_exec_any_build);
-
 $smarty->assign('build_name', $build_name);
 $smarty->assign('owner', $owner);
 $smarty->assign('updated', $submitResult);
 $smarty->assign('g_bugInterface', $g_bugInterface);
 $smarty->display($g_tpl['execSetResults']);
-?>																																
 
-
-<?php
 function manage_history_on($hash_REQUEST,$hash_SESSION,
                            $exec_cfg,$btn_on_name,$btn_off_name,$hidden_on_name)
 {

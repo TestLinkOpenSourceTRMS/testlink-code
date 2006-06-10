@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: requirements.inc.php,v $
- * @version $Revision: 1.32 $
- * @modified $Date: 2006/05/22 15:10:00 $ by $Author: franciscom $
+ * @version $Revision: 1.33 $
+ * @modified $Date: 2006/06/10 20:22:20 $ by $Author: schlundus $
  *
  * @author Martin Havlat <havlat@users.sourceforge.net>
  * 
@@ -764,10 +764,11 @@ function createTcFromRequirement(&$db,&$tproject,$mixIdReq, $testproject_id, $sr
 function exportReqDataToXML($reqData)
 {
 	$rootElem = "<requirements>{{XMLCODE}}</requirements>";
-	$elemTpl = "\t".'<requirement><title><![CDATA['."\n||TITLE||\n]]>".'</title>'.
+	$elemTpl = "\t".'<requirement><docid><![CDATA['."\n||DOCID||\n]]>".'</docid><title><![CDATA['."\n||TITLE||\n]]>".'</title>'.
 					'<description><![CDATA['."\n||DESCRIPTION||\n]]>".'</description>'.
 					'</requirement>'."\n";
 	$info = array (
+							"||DOCID||" => "req_doc_id",
 							"||TITLE||" => "title",
 							"||DESCRIPTION||" => "scope",
 						);
@@ -820,6 +821,7 @@ function executeImportedReqs(&$db,$arrImportSource, $arrReqTitles,
 {
 	foreach ($arrImportSource as $data)
 	{
+		$docID = isset($data['req_doc_id']) ? $data['req_doc_id'] : '';
 		$title = $data['title'];
 		$description = $data['description'];
 		if (($emptyScope == 'on') && empty($description))
@@ -831,17 +833,16 @@ function executeImportedReqs(&$db,$arrImportSource, $arrReqTitles,
 		{
 			$title = trim_title($title);
 			$scope = $description;
-			tLog('REQ: '.$title. "\n scope: ".$scope);
 		
 			if ($arrReqTitles && array_search($title, $arrReqTitles))
 			{
-				// process conflick according to choosen solution
+				// process conflict according to choosen solution
 				tLog('Conflict found. solution: ' . $conflictSolution);
-
-				if ($conflictSolution == 'overwrite') {
+				if ($conflictSolution == 'overwrite')
+				{
 					$arrOldReq = getReqDataByTitle($db,$title);
 					$status = updateRequirement($db,$arrOldReq[0]['id'],$title,$scope,$userID,
-							                        $arrOldReq[0]['status'],$arrOldReq[0]['type']);
+							                        $arrOldReq[0]['status'],$arrOldReq[0]['type'],$docID);
 					if ($status == 'ok') {
 						$status = lang_get('req_import_result_overwritten');
 					}
@@ -849,7 +850,7 @@ function executeImportedReqs(&$db,$arrImportSource, $arrReqTitles,
 
 				elseif ($conflictSolution == 'double') 
 				{
-					$status = createRequirement($db,$title, $scope, $idSRS, $userID); // default status and type
+					$status = createRequirement($db,$title, $scope, $idSRS, $userID,TL_REQ_STATUS_VALID, 'n',$docID); // default status and type
 					if ($status == 'ok') {
 						$status = lang_get('req_import_result_added');
 					}
@@ -867,9 +868,9 @@ function executeImportedReqs(&$db,$arrImportSource, $arrReqTitles,
 
 			} else {
 				// no conflict - just add requirement
-				$status = createRequirement ($db, $title, $scope, $idSRS, $userID); // default status and type
+				$status = createRequirement ($db, $title, $scope, $idSRS, $userID,TL_REQ_STATUS_VALID, 'n',$docID); // default status and type
 			}
-			$arrImport[] = array($title, $status);
+			$arrImport[] = array($docID,$title, $status);
 		}
 	}
 	
@@ -893,7 +894,10 @@ function compareImportedReqs($arrImportSource, $arrReqTitles)
 				$status = lang_get('conflict');
 				tLog('REQ: '.$title. "\n CONTENT: ".$data['description']);
 			}
-			$arrImport[] = array($title, $data['description'], $status);
+			$arrImport[] = array(
+								isset($data['req_doc_id']) ? $data['req_doc_id'] : '',
+								$title, 
+								$data['description'], $status);
 		}
 	}
 	
@@ -959,6 +963,7 @@ function loadImportedReq($CSVfile, $importType)
 function importReqDataFromCSV($fileName)
 {
 	$destKeys = array(
+					"req_doc_id",
 					"title",
 					"description",
 	 					);
@@ -997,6 +1002,7 @@ function importReqDataFromXML($fileName)
 		$xmlReq = $xmlReqs[$i];
 		if ($xmlReq->node_type() != XML_ELEMENT_NODE)
 			continue;
+		$xmlData[$i]['req_doc_id'] = getNodeContent($xmlReq,"docid");
 		$xmlData[$i]['title'] = getNodeContent($xmlReq,"title");
 		$xmlData[$i]['description'] = getNodeContent($xmlReq,"description");
 	}
@@ -1027,6 +1033,7 @@ function doImport(&$db,$userID,$idSRS,$fileName,$importType,$emptyScope,$conflic
 function exportReqDataToCSV($reqData)
 {
 	$sKeys = array(
+					"req_doc_id",
 					"title",
 					"scope",
 				   );

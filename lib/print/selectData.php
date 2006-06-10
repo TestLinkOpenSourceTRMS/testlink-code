@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* @version 	$Id: selectData.php,v 1.10 2006/05/16 19:35:40 schlundus Exp $
+* @version 	$Id: selectData.php,v 1.11 2006/06/10 20:22:20 schlundus Exp $
 * @author 	Martin Havlat
 * 
 * 	Navigator for print/export functionality. 
@@ -12,17 +12,17 @@
 *
 * 20050911 - fm - different titles
 *
-*/////////////////////////////////////////////////////////////////////////////////
+*/
 require('../../config.inc.php');
 require_once("common.php");
 require_once("treeMenu.inc.php");
 require_once("../../lib/functions/lang_api.php");
 testlinkInitPage($db);
 
-
-// 20050905 - fm
-$prodID   = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-$prodName = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : '';
+$tplan_id   = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0;
+$tplan_name = isset($_SESSION['testPlanName']) ? $_SESSION['testPlanName'] : 'xxx';
+$tproject_id   = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+$tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : '';
 
 // parse wrong type
 $type = isset($_GET['type']) ? $_GET['type'] : '';
@@ -62,21 +62,20 @@ $args = "&format=" . $selFormat . "&header=" . $arrCheckboxes[0]['checked'] .
 			$arrCheckboxes[2]['checked'] . "&type=" . $type . "&toc=" . 
 			$arrCheckboxes[3]['checked'];
 
-
-
-
-$smarty = new TLSmarty;
-
+$smarty = new TLSmarty();
 // generate tree 
-$HIDE_TCs=1;
+$HIDE_TCs = 1;
 if ($type == 'testproject')
 {
-	$treeString = generateTestSpecTree($db,$prodID, $prodName,$workPath, 1, 0,$args);
+	$treeString = generateTestSpecTree($db,$tproject_id, $tproject_name,$workPath, 1, 0,$args);
 	$smarty->assign('title', lang_get('title_tc_print_navigator'));
 }	
 else if ($type == 'testSet')
 {
-	$treeString = generateTestSuiteTree($db,$workPath, $HIDE_TCs, $args);
+	$tp = new testplan($db);
+	$latestBuild = $tp->get_max_build_id($tplan_id);
+	$treeString = generateExecTree($db,$workPath,$tproject_id,$tproject_name,$tplan_id,$tplan_name,$latestBuild,$args,null,null,true);
+
 	$smarty->assign('title', lang_get('title_tp_print_navigator'));
 }	
 

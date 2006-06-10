@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: keywordsAssign.tpl,v 1.5 2006/04/10 09:07:39 franciscom Exp $
+$Id: keywordsAssign.tpl,v 1.6 2006/06/10 20:22:20 schlundus Exp $
 Purpose: smarty template - assign keywords to one or more test cases
 Andreas Morsing : changed action to updated 
 *}
@@ -8,7 +8,7 @@ Andreas Morsing : changed action to updated
 <script language="JavaScript" src="gui/javascript/OptionTransfer.js" type="text/javascript"></script>
 <script language="JavaScript" src="gui/javascript/expandAndCollapseFunctions.js" type="text/javascript"></script>
 
-<script language="JavaScript">
+<script type="text/javascript" language="JavaScript">
 var {$opt_cfg->js_ot_name} = new OptionTransfer("{$opt_cfg->from->name}","{$opt_cfg->to->name}");
 {$opt_cfg->js_ot_name}.saveRemovedLeftOptions("{$opt_cfg->js_ot_name}_removedLeft");
 {$opt_cfg->js_ot_name}.saveRemovedRightOptions("{$opt_cfg->js_ot_name}_removedRight");
@@ -33,12 +33,11 @@ var {$opt_cfg->js_ot_name} = new OptionTransfer("{$opt_cfg->from->name}","{$opt_
     
     {include file="inc_update.tpl" result=$sqlResult item=$level action='updated'}
     
-    
     {* data form *}
     <div style="margin-top: 25px;">
-    	<form method="post" action="lib/keywords/keywordsAssign.php?data={$data}&edit={$level}">
-      {* 20060409 - franciscom *}
+    	<form method="post" action="lib/keywords/keywordsAssign.php?data={$data}&amp;edit={$level}">
       {include file="opt_transfer.inc.tpl" option_transfer=$opt_cfg}
+	    <br />
     	<input type="submit" name="assign{$level}" value="{lang_get s='btn_assign'}" />
     	</form>
     </div>

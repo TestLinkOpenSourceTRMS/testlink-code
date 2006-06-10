@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.62 $
- * @modified $Date: 2006/06/07 12:34:56 $ $Author: franciscom $
+ * @version $Revision: 1.63 $
+ * @modified $Date: 2006/06/10 20:22:20 $ $Author: schlundus $
  *
  * @author Francisco Mancardi
  *
@@ -749,7 +749,7 @@ $TLS_max_size_cvs_file1 = "Max. size of the file is";
 $TLS_max_size_cvs_file2 = "kB";
 $TLS_req_import_check_note = "Please verify possible conflicts, set an appropriate solution and then start import process.";
 $TLS_req_import_dont_empty = "Do not import items with empty Scope";
-$TLS_req_import_format_description1 = " - CSV type requires two fields for each row: 'title','description'";
+$TLS_req_import_format_description1 = " - CSV type requires three fields for each row: 'req_doc_id','title','description'";
 $TLS_req_import_format_description2 = " - CSV exported from DOORS requires header row.";
 $TLS_req_import_option_double = "Add a new one with the same title";
 $TLS_req_import_option_header = "Set conflict solution";
@@ -1174,7 +1174,7 @@ $TLS_no_testplans_available = "I'm sorry there are no Test Plans available";
 $TLS_conflict = "Conflict";
 $TLS_ok = "OK";
 $TLS_req_import_result_added = "Results have been added!";
-$TLS_req_import_result_overwritten = "Results have been overwritte!";
+$TLS_req_import_result_overwritten = "Results have been overwritten!";
 $TLS_req_import_result_skipped = "Results are skipped";
 
 

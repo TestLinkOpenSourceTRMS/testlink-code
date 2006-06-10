@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqImport.tpl,v 1.6 2006/04/07 20:15:25 schlundus Exp $ *}
+{* $Id: reqImport.tpl,v 1.7 2006/06/10 20:22:20 schlundus Exp $ *}
 {* Purpose: smarty template - requirements import initial page *}
 {* Author: Martin Havlat *}
 {* revisions:
@@ -25,6 +25,7 @@
 	
 	<table class="simple">
 	<tr>
+		<th>{lang_get s="req_doc_id"}</th>
 		<th>{lang_get s="Title"}</th>
 		<th style="width: 20%;">{lang_get s="Result"}</th>
 	</tr>
@@ -32,6 +33,7 @@
 	<tr>
 		<td>{$arrImport[result][0]|escape}</td>
 		<td>{$arrImport[result][1]|escape}</td>
+		<td>{$arrImport[result][2]|escape}</td>
 	</tr>
 	{sectionelse}
 	<tr><td>{lang_get s='req_msg_norequirement'}</td></tr>
@@ -74,6 +76,7 @@
 	<div>
 	<table class="simple">
 		<tr>
+			<th>{lang_get s="req_doc_id"}</th>
 			<th>{lang_get s="title"}</th>
 			<th>{lang_get s="scope"}</th>
 			<th>{lang_get s="status"}</th>
@@ -81,8 +84,9 @@
 		{section name=row loop=$arrImport}
 		<tr>
 			<td>{$arrImport[row][0]|escape}</td>
-			<td>{$arrImport[row][1]|strip_tags|strip|truncate:100}</td>
-			<td>{$arrImport[row][2]|escape}</td>
+			<td>{$arrImport[row][1]|escape}</td>
+			<td>{$arrImport[row][2]|strip_tags|strip|truncate:100}</td>
+			<td>{$arrImport[row][3]|escape}</td>
 		</tr>
 		{sectionelse}
 		<tr><td><span class="bold">{lang_get s='req_msg_norequirement'}</span></td></tr>

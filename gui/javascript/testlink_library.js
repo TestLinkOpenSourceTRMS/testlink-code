@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/ 
 // This script is distributed under the GNU General Public License 2 or later. 
 //
-// $Id: testlink_library.js,v 1.13 2006/06/07 12:34:55 franciscom Exp $ 
+// $Id: testlink_library.js,v 1.14 2006/06/10 20:22:19 schlundus Exp $ 
 //
 // Javascript functions commonly used through the GUI
 // This library is automatically loaded with inc_header.tpl
@@ -63,6 +63,11 @@ function ET(id)
 {
 	parent.workframe.location = fRoot+menuUrl+"?edit=testcase&data="+id+args;
 }
+
+function PTS(id)
+{
+	parent.workframe.location = fRoot+menuUrl+"?level=testsuite&data="+id+args;
+}
 /*
 function ECO(id)
 {
@@ -79,7 +84,7 @@ function PTP(id)
 {
 	parent.workframe.location = fRoot+menuUrl+"?level=root&data="+id+args;
 }
-
+/*
 function PCO(id)
 {
 	parent.workframe.location = fRoot+menuUrl+"?level=component&data="+id+args;
@@ -89,7 +94,7 @@ function PC(id)
 {
 	parent.workframe.location = fRoot+menuUrl+"?level=category&data="+id+args;
 }
-
+*/
 
 function PT(id)
 {

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqImport.php,v $
- * @version $Revision: 1.13 $
- * @modified $Date: 2006/04/08 19:51:42 $ by $Author: schlundus $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2006/06/10 20:22:20 $ by $Author: schlundus $
  * @author Martin Havlat
  * 
  * Import requirements to a specification. 

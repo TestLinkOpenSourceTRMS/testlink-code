@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: treeMenu.inc.php,v $
  *
- * @version $Revision: 1.20 $
- * @modified $Date: 2006/05/16 19:35:40 $ by $Author: schlundus $
+ * @version $Revision: 1.21 $
+ * @modified $Date: 2006/06/10 20:22:20 $ by $Author: schlundus $
  * @author Martin Havlat
  *
  * 	This file generates tree menu for test specification and test execution.
@@ -362,7 +362,7 @@ function jtree_renderTestSpecTreeNodeOnClose($current,$nodeDesc)
 
 function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,$tplan_name,$build_id,
                           $getArguments,
-                          $keyword_id = 0,$tc_id = 0
+                          $keyword_id = 0,$tc_id = 0,$bForPrinting = false
                           )
 {
 	$menustring = null;
@@ -389,25 +389,24 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,$
 		$tck_map = null;
 		if($keyword_id)
 			$tck_map = $tproject_mgr->get_keywords_tcases($tproject_id,$keyword_id);
-		$testcase_count = prepareNode(&$test_spec,$hash_id_descr,$tck_map,$tp_tcs);
+		$testcase_count = prepareNode(&$test_spec,$hash_id_descr,$tck_map,$tp_tcs,$bForPrinting);
 		$test_spec['testcase_count'] = $testcase_count;
 	
-		$menustring = renderExecTreeNode(1,$test_spec,$getArguments,$hash_id_descr,1,$menuUrl);
+		$menustring = renderExecTreeNode(1,$test_spec,$getArguments,$hash_id_descr,1,$menuUrl,$bForPrinting);
 	}
 	return $menustring;
 }
 
-function renderExecTreeNode($level,&$node,$getArguments,$hash_id_descr,$tc_action_enabled,$linkto)
+function renderExecTreeNode($level,&$node,$getArguments,$hash_id_descr,$tc_action_enabled,$linkto,$bForPrinting)
 {
 	$nodeDesc = $hash_id_descr[$node['node_type_id']];
 
 	if (TL_TREE_KIND == 'JTREE')
-		$menustring = jtree_renderExecTreeNodeOnOpen($node,$nodeDesc,$tc_action_enabled);
+		$menustring = jtree_renderExecTreeNodeOnOpen($node,$nodeDesc,$tc_action_enabled,$bForPrinting);
 	else if (TL_TREE_KIND == 'DTREE')
-		$menustring = dtree_renderExecTreeNodeOnOpen($node,$nodeDesc,$linkto,$getArguments,$tc_action_enabled);
+		$menustring = dtree_renderExecTreeNodeOnOpen($node,$nodeDesc,$linkto,$getArguments,$tc_action_enabled,$bForPrinting);
 	else 
-		$menustring = layersmenu_renderExecTreeNodeOnOpen($node,$nodeDesc,$linkto,$getArguments,$level,$tc_action_enabled);
-		
+		$menustring = layersmenu_renderExecTreeNodeOnOpen($node,$nodeDesc,$linkto,$getArguments,$level,$tc_action_enabled,$bForPrinting);
 	if (isset($node['childNodes']) && $node['childNodes'])
 	{
 		$childNodes = $node['childNodes'];
@@ -417,7 +416,7 @@ function renderExecTreeNode($level,&$node,$getArguments,$hash_id_descr,$tc_actio
 			if(is_null($current))
 				continue;
 			
-			$menustring .= renderExecTreeNode($level+1,$current,$getArguments,$hash_id_descr,$tc_action_enabled,$linkto);
+			$menustring .= renderExecTreeNode($level+1,$current,$getArguments,$hash_id_descr,$tc_action_enabled,$linkto,$bForPrinting);
 		}
 	}
 	if (TL_TREE_KIND == 'JTREE')
@@ -426,7 +425,7 @@ function renderExecTreeNode($level,&$node,$getArguments,$hash_id_descr,$tc_actio
 	return $menustring;
 }
 
-function layersmenu_renderExecTreeNodeOnOpen($node,$nodeDesc,$linkto,$getArguments,$level,$tc_action_enabled)
+function layersmenu_renderExecTreeNodeOnOpen($node,$nodeDesc,$linkto,$getArguments,$level,$tc_action_enabled,$bForPrinting)
 {
 	$name = filterString($node['name']);
 	$label = $name;
@@ -464,7 +463,7 @@ function layersmenu_renderExecTreeNodeOnOpen($node,$nodeDesc,$linkto,$getArgumen
 	return $menustring;				
 }
 
-function dtree_renderExecTreeNodeOnOpen($current,$nodeDesc,$linkto,$getArguments,$tc_action_enabled)
+function dtree_renderExecTreeNodeOnOpen($current,$nodeDesc,$linkto,$getArguments,$tc_action_enabled,$bForPrinting)
 {
 	$dtreeCounter = $current['id'];
 
@@ -502,7 +501,7 @@ function dtree_renderExecTreeNodeOnOpen($current,$nodeDesc,$linkto,$getArguments
 	return $menustring;				   
 }
 
-function jtree_renderExecTreeNodeOnOpen($current,$nodeDesc,$tc_action_enabled)
+function jtree_renderExecTreeNodeOnOpen($current,$nodeDesc,$tc_action_enabled,$bForPrinting)
 {
 	$menustring = "['";
 	$name = filterString($current['name']);
@@ -513,12 +512,12 @@ function jtree_renderExecTreeNodeOnOpen($current,$nodeDesc,$tc_action_enabled)
 	
 	if($nodeDesc == 'testproject')
 	{
-		$pfn = 'SP';
+		$pfn = $bForPrinting ? 'PTP' : 'SP';
 		$label =  $name . " (" . $testcase_count . ")";
 	}
 	else if ($nodeDesc == 'testsuite')
 	{
-		$pfn = 'STS';
+		$pfn = $bForPrinting ? 'PTS' : 'STS';
 		$label =  $name . " (" . $testcase_count . ")";	
 	}
 	else if ($nodeDesc == 'testcase')

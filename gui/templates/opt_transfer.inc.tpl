@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: opt_transfer.inc.tpl,v 1.2 2006/04/24 10:36:24 franciscom Exp $
+$Id: opt_transfer.inc.tpl,v 1.3 2006/06/10 20:22:20 schlundus Exp $
 Purpose: manage the OptionTransfer.js created by Matt Kruse
          http://www.JavascriptToolbox.com/
          JavaScript Toolbox - Option Transfer - Move Select Box Options Back And Forth
@@ -30,18 +30,18 @@ Author: Francisco Mancardi
                        options=$option_transfer->from->map}
       </td>
       <td align="center" width="10%">
-        <img  src="#images["ico_all_r.gif"]#" 
+        <img src="#images["ico_all_r.gif"]#" 
               onclick="{$opt_cfg->js_events->all_right_click}"
-              alt=">>" style="cursor: pointer;"><br>
-        <img  src="#images["ico_l2r.gif"]#" 
+              alt=">>" style="cursor: pointer;" /><br />
+        <img src="#images["ico_l2r.gif"]#" 
               onclick="{$opt_cfg->js_events->left2right_click}"
-              alt=">" style="cursor: pointer;"><br>
-        <img  src="#images["ico_r2l.gif"]#" 
+              alt=">" style="cursor: pointer;" /><br />
+        <img src="#images["ico_r2l.gif"]#" 
               onclick="{$opt_cfg->js_events->right2left_click}"
-              alt="<" style="cursor: pointer;"><br>
-        <img  src="#images["ico_all_l.gif"]#" 
+              alt="<" style="cursor: pointer;" /><br />
+        <img src="#images["ico_all_l.gif"]#" 
               onclick="{$opt_cfg->js_events->all_left_click}"
-              alt="<<" style="cursor: pointer;">
+              alt="<<" style="cursor: pointer;" />
       </td>
       <td align="center">
          {$option_transfer->to->lbl}
@@ -57,9 +57,9 @@ Author: Francisco Mancardi
       
     </tr>
   </table>
-  <input type="hidden" name="{$opt_cfg->js_ot_name}_removedLeft"  value="">
-  <input type="hidden" name="{$opt_cfg->js_ot_name}_removedRight"  value="">
-  <input type="hidden" name="{$opt_cfg->js_ot_name}_addedLeft"  value="">
-  <input type="hidden" name="{$opt_cfg->js_ot_name}_addedRight"  value="">
-  <input type="hidden" name="{$opt_cfg->js_ot_name}_newLeft"  value="">
-  <input type="hidden" name="{$opt_cfg->js_ot_name}_newRight"  value="">
+  <input type="hidden" name="{$opt_cfg->js_ot_name}_removedLeft"  value="" />
+  <input type="hidden" name="{$opt_cfg->js_ot_name}_removedRight"  value="" />
+  <input type="hidden" name="{$opt_cfg->js_ot_name}_addedLeft"  value="" />
+  <input type="hidden" name="{$opt_cfg->js_ot_name}_addedRight"  value="" />
+  <input type="hidden" name="{$opt_cfg->js_ot_name}_newLeft"  value="" />
+  <input type="hidden" name="{$opt_cfg->js_ot_name}_newRight"  value="" />

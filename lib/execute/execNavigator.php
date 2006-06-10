@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: execNavigator.php,v $
  *
- * @version $Revision: 1.23 $
- * @modified $Date: 2006/05/29 06:39:10 $ by $Author: franciscom $
+ * @version $Revision: 1.24 $
+ * @modified $Date: 2006/06/10 20:22:20 $ by $Author: schlundus $
  *
  * @author Martin Havlat
  *
@@ -68,7 +68,6 @@ if ($tc_id)
 	
 $sMenu = generateExecTree($db,$menuUrl,$tproject_id,$tproject_name,$tplan_id,$tplan_name,
                           $optBuildSelected,$getArguments,$keyword_id,$tc_id);
-
                      
 $tree = invokeMenu($sMenu);
 $tcData = null;

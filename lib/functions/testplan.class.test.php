@@ -8,7 +8,7 @@ require_once('../../config.inc.php');
 require_once('common.php');
 require_once('testplan.class.php');
 
-print "<h3>/lib/results/testplan.class.test.php</h3>";
+print "<h3>/lib/functions/testplan.class.test.php</h3>";
 print "author : Kevin Levy <BR>";
 print "last updated 20060618 <BR>";
 print "<BR>This page displays the functions in /lib/functions/testplan.class.php and examples of their usage.  This page will first call an initialization method, then the testplan class will be instantiated, then we will retrieve the current testplan and testproject ids.  Once this initial information has been gathered, each method of the testplan class will be used and we will inspect the results.<BR>";

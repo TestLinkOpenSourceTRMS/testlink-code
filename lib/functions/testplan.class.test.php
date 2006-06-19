@@ -54,7 +54,7 @@ print "\$get_by_name_result = \$tp->get_by_name(\$_SESSION['testPlanName']) <BR>
 $get_by_name_result = $tp->get_by_name($_SESSION['testPlanName']);
 print "\$get_by_name_result : <BR>";
 print_r($get_by_name_result);
-
+print "<BR>";
 print "============================================== <BR> ";
 print "<h3>get_by_id(\$id)</h3>";
 print "\$get_by_id_result  = \$tp->get_by_id(\$_SESSION['testPlanId']) <BR>";

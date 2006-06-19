@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsMoreBuilds.php,v 1.23 2006/06/05 05:33:34 kevinlevy Exp $ 
+* $Id: resultsMoreBuilds.php,v 1.24 2006/06/19 04:40:31 kevinlevy Exp $ 
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 * 
@@ -14,16 +14,27 @@
 require('../../config.inc.php');
 require_once('common.php');
 require_once('builds.inc.php');
+require_once('../functions/testplan.class.php');
 // allow us to retreive array of users 
-require_once('plan.core.inc.php');
+//require_once('plan.core.inc.php');
 require_once('resultsMoreBuilds.inc.php');
-require_once('../keywords/keywords.inc.php');
+//require_once('../keywords/keywords.inc.php');
+
 testlinkInitPage($db);
 
+$tp = new testplan($db);
+$linked_tcversions = $tp->get_linked_tcversions($_SESSION['testPlanId']);
+print "<BR>";
+print "\$linked_tcversions : <BR>";
+print_r($linked_tcversions);
+print "<BR>";
 $prodID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 $tpID = $_SESSION['testPlanId'];
-
+print "test plan id = " . $tpID . "<BR>";
+print "test project id = " . $prodID . "<BR>";
 $DEBUG = 0;
+
+
 
 $mapOfResults = getExecutionsMap($db, $tpID);
 
@@ -106,14 +117,47 @@ print "<BR>";
  *print "<BR>";
  **/
 
+/**
+ * 20060605 - KL - experimentation with php charts 
+ */
+
+  /*  Define the path to chartclasses.php. 
+   It must be changed and relative to where you have extracted the phpcharts files. 
+   In most cases it would be: define("CHARTS_SOURCE", "phpcharts/"); */
+define("CHARTS_SOURCE", "../../third_party/phpcharts/");  
+include(CHARTS_SOURCE."chartclasses.php");
+
+$objChart = new Chart(200, 200, "chart6");
+
+$objChart->AddValue(0, 341, "pass");
+$objChart->AddValue(0, 231, "fail");
+$objChart->AddValue(0, 200, "blocked");
+$objChart->AddValue(0, 400, "not run");
+
+$objChart->CreateChartImage(PIE_CHART);
+
+/**
+ * END Experimentation - KL - 20060605 
+ */
+
 $smarty = new TLSmarty();
 $smarty->assign('testPlanName',$_SESSION['testPlanName']);
 $smarty->assign('testplanid', $tpID);
 $smarty->assign('arrBuilds', $arrBuilds); 
-$smarty->assign('mapOfResults', $mapOfResults); 
+$smarty->assign('mapOfResults', $mapOfResults);
+//$smarty->assign('mapOfResults', $mapOfResults); 
 //$smarty->assign('arrOwners', $arrOwners);
 //$smarty->assign('arrKeywords', $arrKeywords);
 //$smarty->assign('arrComponents', $arrComponents);
-$smarty->display('resultsMoreBuilds_query_form.tpl');
 
+?>
+
+<html>
+<body>
+<img src="chart6.png">
+  </body>
+</html>
+
+<?
+$smarty->display('resultsMoreBuilds_query_form.tpl');
 ?>

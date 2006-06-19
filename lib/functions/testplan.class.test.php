@@ -124,15 +124,59 @@ print "<BR>";
 
 print "============================================== <BR> ";
 print "<h3>get_max_build_id(\$id) </h3>";
-
+print "\$get_max_build_id_result = \$tp->get_max_build_id(\$_SESSION['testPlanId']) <BR>";
+$get_max_build_id_result = $tp->get_max_build_id($_SESSION['testPlanId']);
+print "\$get_max_build_id_result (id for build)= $get_max_build_id_result <BR>";
 print "============================================== <BR> ";
 print "<h3>get_builds(\$id) </h3>";
+print "\$get_builds_result = \$tp->get_builds(\$_SESSION['testPlanId']) <BR> ";
+$get_builds_result = $tp->get_builds($_SESSION['testPlanId']);
+print "\$get_builds_result : <BR> ";
+print_r($get_builds_result);
+print "<BR>";
+
 print "============================================== <BR> ";
 print "<h3>unlink_tcversions(\$id, &\$items) </h3>";
+
+print "this method will remove test cases from the test plan <BR>";
+print "The test code will remove 3 test cases to the current test plan.  Don't expect this code to work as is. You will need to re-code this test to use your own testcase ids and tcversion ids (which can be found by querying the nodes_hierarchy table). The testplan used will be the current test plan selected. <BR>";
+
+$tc_id_1 = "6";
+$tcversion_id_1 = "7";
+
+$tc_id_2 = "8";
+$tcversion_id_2 = "9";
+
+$tc_id_3 = "10";
+$tcversion_id_3 = "11";
+
+$items_to_unlink = array($tc_id_1 => $tcversion_id_1,$tc_id_2 => $tcversion_id_2,$tc_id_3 => $tcversion_id_3 );
+
+print "\$items_to_unlink = ";
+print_r($items_to_unlink);
+
+print "\$tp->unlink_tcversions(\$_SESSION['testPlanId'],\$items_to_unlink) <BR>";
+
+print "uncomment the following line of code to execute this write action. <BR>"; 
+print "NOTE: when I ran this on 20060618 - I did not see the test cases removed from the current test plan <BR>";
+//$tp->unlink_tcversions($_SESSION['testPlanId'], $items_to_link);
+print "<BR>";
+
 print "============================================== <BR> ";
 print "<h3>get_keywords_map(\$id, \$order_by_clause='') </h3> ";
+print "\$get_keywords_map_result = \$tp->get_keywords_map(\$_SESSION['testPlanId']) <BR>";
+$get_keywords_map_result = $tp->get_keywords_map($_SESSION['testPlanId']);
+print "\$get_keywords_map_result : <BR>";
+print_r($get_keywords_map_result);
+print "<BR>";
+
 print "============================================== <BR> ";
 print "<h3>get_keywords_tcases(\$id, \$keyword_id=0) </h3> ";
+print "\$get_keywords_tcases_result = \$tp->get_keywords_tcases(\$_SESSION['testPlanId']) <BR>";
+$get_keywords_tcases_result = $tp->get_keywords_tcases($_SESSION['testPlanId']);
+print "\$get_keywords_tcases_result : <BR>";
+print_r($get_keywords_tcases_result);
+print "<BR>";
 print "============================================== <BR> ";
 
 ?>

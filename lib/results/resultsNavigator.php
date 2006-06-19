@@ -2,7 +2,7 @@
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
- * @version $Id: resultsNavigator.php,v 1.7 2006/03/11 23:04:50 kevinlevy Exp $ 
+ * @version $Id: resultsNavigator.php,v 1.8 2006/06/19 02:16:33 kevinlevy Exp $ 
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
  * This page list View of Test Results and Metrics.
@@ -31,6 +31,8 @@ $arrData = array(
 	array('name' => lang_get('link_report_blocked_tcs'), 'href' => 'resultsByStatus.php?type=b'),
 	array('name' => lang_get('link_report_failed'), 'href' => 'resultsByStatus.php?type=f'),
 	array('name' => lang_get('link_report_total_bugs'), 'href' => 'resultsBugs.php'),
+	// KL - 20060618 - temporarly location of link to documentation
+	array('name' => 'testplan class API', 'href' => '../functions/testplan.class.test.php')
 );
 
 if ($_SESSION['testprojectOptReqs'])

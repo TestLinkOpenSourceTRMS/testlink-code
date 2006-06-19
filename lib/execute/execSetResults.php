@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.30 $
- * @modified $Date: 2006/06/08 19:56:09 $ $Author: schlundus $
+ * @version $Revision: 1.31 $
+ * @modified $Date: 2006/06/19 19:35:38 $ $Author: schlundus $
  *
  * @author Martin Havlat
  *
@@ -74,26 +74,29 @@ $attachmentInfos=null;
 $map_last_exec=null;
 $other_execs=null;
 $map_last_exec_any_build=null;
-
+$tcAttachments = null;
+$tSuiteAttachments = null;
 $xx = $tplan_mgr->get_linked_tcversions($tplan_id,$tc_id,$keyword_id);
 
-if( !is_null($xx) )
+if(!is_null($xx))
 {
     // Get the path for every test case, grouping test cases that
     // have same parent.
     $items_to_exec = array();
-    
+	$_SESSION['s_lastAttachmentInfos'] = null;
     if($level == 'testcase')
     {
     	$items_to_exec[$id] = $xx[$id]['tcversion_id'];    
     	$tcase_id = $id;
     	$tcversion_id = $xx[$id]['tcversion_id'];
+		$tcAttachments[$id] = getAttachmentInfos($db,$id,'nodes_hierarchy',1);
     }
     else
     {
     	$tcase_id = array();
     	$tcversion_id = array();
-    	  
+    	 
+		$i = 0; 
     	foreach($xx as $item)
     	{
     		$path = $tree_mgr->get_path($item['tc_id'],null,'simplex');
@@ -103,10 +106,16 @@ if( !is_null($xx) )
     			{
     				$tcase_id[] = $item['tc_id'];
     				$tcversion_id[] = $item['tcversion_id'];
+					$tcAttachments[$item['tc_id']] = getAttachmentInfos($db,$item['tc_id'],'nodes_hierarchy',STORE_IN_SESSION,1);
+
     				break;
     			}
     		} 
     	}
+		if ($level == 'component')
+		{
+			$tSuiteAttachments = getAttachmentInfos($db,$id,'nodes_hierarchy',STORE_IN_SESSION,1);
+		}
     }
     
     // 
@@ -157,7 +166,7 @@ if( !is_null($xx) )
         	{
         		$execID = $execInfo[$i]['execution_id'];
         		
-        		$aInfo = getAttachmentInfos($db,$execID,'executions',STORE_IN_SESSION,$i);
+        		$aInfo = getAttachmentInfos($db,$execID,'executions',STORE_IN_SESSION,1);
         		if ($aInfo)
         		{
         			$attachmentInfos[$execID] = $aInfo;
@@ -166,11 +175,10 @@ if( !is_null($xx) )
         }
     }
 }
-$tcAttachments = getAttachmentInfos($db,$id,'nodes_hierarchy');
-
 $smarty = new TLSmarty();
 $smarty->assign('tcAttachments',$tcAttachments);
 $smarty->assign('id',$id);
+$smarty->assign('tSuiteAttachments',$tSuiteAttachments);
 $smarty->assign('attachments',$attachmentInfos);
 $smarty->assign('rightsEdit', has_rights($db,"testplan_execute"));
 $smarty->assign('edit_test_results', $editTestResult);
@@ -194,25 +202,25 @@ function manage_history_on($hash_REQUEST,$hash_SESSION,
     
     if( isset($hash_REQUEST[$btn_on_name]) )
     {
-      $history_on=true;
+		$history_on = true;
     }
     elseif(isset($_REQUEST[$btn_off_name]))
     {
-      $history_on=false;
+		$history_on = false;
     }
     elseif (isset($_REQUEST[$hidden_on_name]))
     {
-       $history_on=$_REQUEST[$hidden_on_name];
+       $history_on = $_REQUEST[$hidden_on_name];
     }
     elseif (isset($_SESSION[$hidden_on_name]))
     {
-       $history_on=$_SESSION[$hidden_on_name];
+       $history_on = $_SESSION[$hidden_on_name];
     }
     else
     {
-       $history_on=$exec_cfg->history_on;
+       $history_on = $exec_cfg->history_on;
     }
-    return ($history_on);
+    return $history_on;
 }
 
 ?>																																

@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testsuite.class.php,v $
- * @version $Revision: 1.12 $
- * @modified $Date: 2006/05/22 15:12:39 $
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2006/06/19 19:35:38 $
  * @author franciscom
  *
  * 20060425 - franciscom - changes in show() following Andreas Morsing advice (schlundus)
@@ -52,7 +52,7 @@ function create($parent_id,$name,$details,
 	if ($check_duplicate_name)
 	{
 		
-		// 1. node_type_id of the parent_id
+	// 1. node_type_id of the parent_id
     // $p_node_info = $tree_manager->get_by_id($parent_id);
     // $p_node_type_id = $p_node_info['node_type_id'];
     
@@ -86,26 +86,21 @@ function create($parent_id,$name,$details,
 	
 	if ($ret['status_ok'])
 	{
-    // get a new id
-    $tsuite_id = $this->tree_manager->new_node($parent_id,$this->my_node_type,$name);
+		// get a new id
+		$tsuite_id = $this->tree_manager->new_node($parent_id,$this->my_node_type,$name);
 		$sql = "INSERT INTO testsuites (id,details) " .
-		     	 "VALUES ({$tsuite_id},'" . $this->db->prepare_string($details) . "')";
-		                              
+				"VALUES ({$tsuite_id},'" . $this->db->prepare_string($details) . "')";
+		             
 		$result = $this->db->exec_query($sql);
 		if ($result)
 		{
 			$ret['id'] = $tsuite_id;
 		}
-		else
-		{
-			$ret['msg'] = "(" . __FUNCTION__ . ") " . $this->db->error_msg();
-		}
 	}
-	return($ret);
+	return $ret;
 }
 
 
-/* 20060306 - franciscom */
 function update($id, $name, $details)
 {
 	//TODO - check for existent name
@@ -114,36 +109,33 @@ function update($id, $name, $details)
 	       " WHERE id = {$id}";
 	$result = $this->db->exec_query($sql);
   
-  if ($result)
+	if ($result)
 	{
 		$sql = " UPDATE nodes_hierarchy SET name='" . 
-		         $this->db->prepare_string($name) . "' WHERE id= {$id}";
-    $result = $this->db->exec_query($sql);
-  }
+				$this->db->prepare_string($name) . "' WHERE id= {$id}";
+		$result = $this->db->exec_query($sql);
+	}
 
 	
-  $ret['msg']='ok';
+	$ret['msg']='ok';
 	if (!$result)
 	{
 		$ret['msg'] = $this->db->error_msg();
 	}
-	return ($ret);	
+	return $ret;
 }
 
 
 function get_by_name($name)
 {
-	$sql = " SELECT testsuites.*, nodes_hierarchy.name 
-	         FROM testsuites, nodes_hierarchy  
-	         WHERE nodes_hierarchy.name = '" . 
-	         $this->db->prepare_string($name) . "'";
-
-  $recordset = $this->db->get_recordset($sql);
-  return($recordset);
+	$sql = " SELECT testsuites.*, nodes_hierarchy.name " .
+		   " FROM testsuites, nodes_hierarchy " .
+		   " WHERE nodes_hierarchy.name = '" . 
+			$this->db->prepare_string($name) . "'";
+	
+	$recordset = $this->db->get_recordset($sql);
+	return $recordset;
 }
-
-
-
 
 /*
 get info for one test suite
@@ -198,7 +190,7 @@ function show(&$smarty,$id, $sqlResult = '', $action = 'update',$modded_item_id 
 	
 	$item = $this->get_by_id($id);
 	$modded_item = $item;
-	if ( $modded_item_id )
+	if ($modded_item_id)
 	{
 		$modded_item = $this->get_by_id($modded_item_id);
 	}

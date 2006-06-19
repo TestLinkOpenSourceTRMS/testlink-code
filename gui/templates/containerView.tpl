@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: containerView.tpl,v 1.15 2006/04/29 19:32:54 schlundus Exp $ *}
+{* $Id: containerView.tpl,v 1.16 2006/06/19 19:35:37 schlundus Exp $ *}
 {* 
 Purpose: smarty template - view test specification containers 
 
@@ -83,7 +83,10 @@ Purpose: smarty template - view test specification containers
 		</div>
 	{/if}
 
-  {include file="inc_testsuite_viewer_ro.tpl"}
+		{include file="inc_testsuite_viewer_ro.tpl"}
+  
+	{include file="inc_attachments.tpl" id=$id tableName="nodes_hierarchy"}
+
 	{/if}
 
 </div>

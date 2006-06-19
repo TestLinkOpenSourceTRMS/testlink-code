@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execSetResults.tpl,v 1.20 2006/06/08 19:56:09 schlundus Exp $ *}
+{* $Id: execSetResults.tpl,v 1.21 2006/06/19 19:35:37 schlundus Exp $ *}
 {* Purpose: smarty template - show tests to add results *}
 {* Revisions:
               20060602 - franciscom - new code for attachments display 
@@ -64,7 +64,15 @@
     <hr />
 
 	{/if}
-
+	
+	{if $tSuiteAttachments neq null}
+		<h2>{lang_get s='testsuite_attachments'}</h2>	
+		{include file="inc_attachments.tpl" tableName="nodes_hierarchy" downloadOnly=true 
+				 attachmentInfos=$tSuiteAttachments tableClassName="bordered"
+				 tableStyles="background-color:#dddddd;width:100%"
+		}
+	{/if}
+		
 	{foreach item=tc_exec from=$map_last_exec}
 	
 	  {assign var="tcversion_id" value=$tc_exec.id}
@@ -106,7 +114,6 @@
 				<th style="text-align:left">{lang_get s='exec_status'}</th>
 				<th style="text-align:left">{lang_get s='exec_notes'}</th>
 				
-		    {* 20060602 - franciscom *}
 				{if $att_model->show_upload_column}
 						<th style="text-align:left">{lang_get s='attachment_mgmt'}</th>
         {/if}
@@ -161,10 +168,13 @@
 		</tr>
 		<tr>
 			<td colspan="2">
-			{include file="inc_attachments.tpl" tableName="nodes_hierarchy" downloadOnly=true 
-					 attachmentInfos=$tcAttachments tableClassName="bordered"
-					 tableStyles="background-color:#dddddd;width:100%"
-			}
+			{assign var="tcID" value=$tc_exec.testcase_id}
+			{if $tcAttachments[$tcID] neq null}
+				{include file="inc_attachments.tpl" tableName="nodes_hierarchy" downloadOnly=true 
+						 attachmentInfos=$tcAttachments[$tcID] tableClassName="bordered"
+						 tableStyles="background-color:#dddddd;width:100%"
+				}
+			{/if}
 			</td>
 		</tr>
 		</table>

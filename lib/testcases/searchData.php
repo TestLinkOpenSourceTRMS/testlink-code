@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: searchData.php,v 1.18 2006/05/16 19:35:40 schlundus Exp $
+ * $Id: searchData.php,v 1.19 2006/06/19 19:35:38 schlundus Exp $
  * Purpose:  This page presents the search results. 
  *
  * 20060427 - franciscom - added include tescase class
@@ -9,6 +9,7 @@
 require('../../config.inc.php');
 require_once("../functions/common.php");
 require_once("../functions/users.inc.php");
+require_once("../functions/attachments.inc.php");
 testlinkInitPage($db);
 
 $_POST = strings_stripSlashes($_POST);
@@ -94,10 +95,14 @@ if ($tproject)
 	}
 	$map = $db->fetchRowsIntoMap($sql,'testcase_id');
 }
-
 $smarty = new TLSmarty();
 if(count($map))
 {
+	foreach($map as $id => $dd)
+	{
+		$attachments[$id] = getAttachmentInfos($db,$id,'nodes_hierarchy',STORE_IN_SESSION,1);
+	}
+	$smarty->assign('attachments',$attachments);
 	$tcase_mgr = new testcase($db);   
 	$tcase_mgr->show($smarty,array_keys($map), $userID);
 }

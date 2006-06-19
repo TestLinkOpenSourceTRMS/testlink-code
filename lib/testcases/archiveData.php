@@ -3,7 +3,7 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
- * @version $Id: archiveData.php,v 1.15 2006/06/08 19:56:09 schlundus Exp $
+ * @version $Id: archiveData.php,v 1.16 2006/06/19 19:35:38 schlundus Exp $
  * @author Martin Havlat
  *  
  * This page allows you to show data (test cases, categories, and
@@ -30,12 +30,15 @@ switch($feature)
 	    $item_mgr->show($smarty,$id);
 		break;
 	case 'testsuite':
+		$attachments = getAttachmentInfos($db,$id,'nodes_hierarchy');
+		$smarty->assign('attachmentInfos',$attachments);
+		$smarty->assign('id',$id);
 		$item_mgr = new testsuite($db);
     	$item_mgr->show($smarty,$id);
 		break;
 	case 'testcase':
-		$attachments = getAttachmentInfos($db,$id,'nodes_hierarchy');
-		$smarty->assign('attachmentInfos',$attachments);
+		$attachments[$id] = getAttachmentInfos($db,$id,'nodes_hierarchy');
+		$smarty->assign('attachments',$attachments);
 		$smarty->assign('id',$id);
 		$item_mgr = new testcase($db);
 		$item_mgr->show($smarty,$id,$user_id);

@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.20 $
- * @modified $Date: 2006/06/07 12:34:55 $ $Author: franciscom $
+ * @version $Revision: 1.21 $
+ * @modified $Date: 2006/06/19 19:35:38 $ $Author: schlundus $
  * @author franciscom
  *
  * 20060425 - franciscom - changes in show() following Andreas Morsing advice (schlundus)
@@ -172,7 +172,6 @@ function show(&$smarty,$id, $user_id, $version_id=TC_ALL_VERSIONS, $action='',
 		{
 			$tc_other_versions[] = null;
 		}
-		
 		$linked_tcversions = $this->get_linked_versions($tc_id,'EXECUTED');
 		// get assigned REQs
 		$arrReqs[] = getReq4Tc($this->db,$tc_id);

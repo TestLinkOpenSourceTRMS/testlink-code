@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: keywords.inc.php,v $
 * 
-* @version $Id: keywords.inc.php,v 1.22 2006/04/24 10:38:02 franciscom Exp $
-* @modified $Date: 2006/04/24 10:38:02 $ by $Author: franciscom $
+* @version $Id: keywords.inc.php,v 1.23 2006/06/20 19:51:32 schlundus Exp $
+* @modified $Date: 2006/06/20 19:51:32 $ by $Author: schlundus $
 *
 * Functions for support keywords management. 
 *
@@ -157,7 +157,8 @@ function updateTCKeywords(&$db,$id,$arrKeywords)
  * @param type $newKey documentation
  * @return type documentation
  **/
-function updateComponentKeywords(&$db,$id, $newKey)
+ 
+function DEPR_updateComponentKeywords(&$db,$id, $newKey)
 {
 	$sqlCat = "SELECT id AS cat_id FROM mgtcategory WHERE compid=" . $id;
 	$resultCat = $db->exec_query($sqlCat);
@@ -262,7 +263,7 @@ function deleteKeyword(&$db,$id)
  * 20051126 - scs - added parameter kwID for getting the keyword name by id
  * DEPRECATED
  **/
-function getProductKeywords(&$db,$testprojectID,$searchKW = null,$kwID = null)
+function DEPR_getProductKeywords(&$db,$testprojectID,$searchKW = null,$kwID = null)
 {
 	$sql = "SELECT keyword FROM keywords WHERE testproject_id=" . $testprojectID;
 	

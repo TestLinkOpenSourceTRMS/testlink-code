@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.32 $
- * @modified $Date: 2006/06/08 19:56:09 $  by $Author: schlundus $
+ * @version $Revision: 1.33 $
+ * @modified $Date: 2006/06/20 19:51:32 $  by $Author: schlundus $
  * This page manages all the editing of test cases.
  *
  * @author Martin Havlat
@@ -302,14 +302,14 @@ else if($do_delete)
 }
 else if($move_copy_tc)
 {
-  // need to get the testproject for the test case
+	// need to get the testproject for the test case
 	$tproject_id=$tcase_mgr->get_testproject($tcase_id);
-  $the_tc_node = $tree_mgr->get_node_hierachy_info($tcase_id);
-  $tc_parent_id = $the_tc_node['parent_id'];
-  $the_tree = $tree_mgr->get_subtree($tproject_id, array("testplan"=>"exclude me",
-                                                         "testcase"=>"exclude me"));
-  $the_xx = $tproject_mgr->gen_combo_test_suites($tproject_id);
-  $the_xx[$the_tc_node['parent_id']] .= ' (' . lang_get('current') . ')'; 
+	$the_tc_node = $tree_mgr->get_node_hierachy_info($tcase_id);
+	$tc_parent_id = $the_tc_node['parent_id'];
+	$the_tree = $tree_mgr->get_subtree($tproject_id, array("testplan"=>"exclude me",
+	                                             "testcase"=>"exclude me"));
+	$the_xx = $tproject_mgr->gen_combo_test_suites($tproject_id);
+	$the_xx[$the_tc_node['parent_id']] .= ' (' . lang_get('current') . ')'; 
 	$tc_info = $tcase_mgr->get_by_id($tcase_id);
 
 	$smarty->assign('old_container', $container_id); // original container

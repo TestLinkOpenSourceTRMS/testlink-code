@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.21 $
- * @modified $Date: 2006/06/19 19:35:38 $ $Author: schlundus $
+ * @version $Revision: 1.22 $
+ * @modified $Date: 2006/06/20 19:51:32 $ $Author: schlundus $
  * @author franciscom
  *
  * 20060425 - franciscom - changes in show() following Andreas Morsing advice (schlundus)
@@ -762,31 +762,17 @@ function get_keywords_map($id,$order_by_clause='')
 {
 	$sql = "SELECT keyword_id,keywords.keyword 
 	        FROM testcase_keywords,keywords 
-	        WHERE keyword_id = keywords.id AND testcase_id = {$id} 
-	        {$order_by_clause}";
-
+	        WHERE keyword_id = keywords.id ";
+	if (is_array($id))
+		$sql .= " AND testcase_id IN (".implode(",",$id).") ";
+	else
+		$sql .= " AND testcase_id = {$id} ";
+		
+	$sql .= $order_by_clause;
 
 	$map_keywords = $this->db->fetchColumnsIntoMap($sql,'keyword_id','keyword');
-	return($map_keywords);
+	return $map_keywords;
 } 
-
-// 20060409 - franciscom
-/*function add_keyword($id,$kw_id)
-{
-	$current_kw = $this->get_keywords_map($id);
-	
-	if( !is_null($current_kw) && count($current_kw) > 0 )
-	{
-	
-		
-	}
- 
-
-
-}
-*/
-
-
 
 function addKeyword($id,$kw_id)
 {

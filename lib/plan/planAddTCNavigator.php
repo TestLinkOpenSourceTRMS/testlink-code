@@ -2,7 +2,7 @@
 /** 
 *	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version $Id: planAddTCNavigator.php,v 1.14 2006/05/16 19:35:40 schlundus Exp $
+* 	@version $Id: planAddTCNavigator.php,v 1.15 2006/06/20 19:51:32 schlundus Exp $
 *	@author Martin Havlat
 * 
 * 	Navigator for feature: add Test Cases to a Test Case Suite in Test Plan. 
@@ -39,7 +39,7 @@ if ($keyword_id)
 	$args = '&keyword_id=' . $keyword_id;
 
 $treeString = generateTestSpecTree($db,$tproject_id, $tproject_name, 
-                                   $workPath,0,1,
+                                   $workPath,1,0,
                                    $args, $keyword_id);
                                    
 $tree = invokeMenu($treeString);

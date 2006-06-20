@@ -2,26 +2,24 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.19 $
- * @modified $Date: 2006/06/07 12:34:55 $
+ * @version $Revision: 1.20 $
+ * @modified $Date: 2006/06/20 19:51:32 $
  * @author franciscom
  *
  * 20060425 - franciscom - changes in show() following Andreas Morsing advice (schlundus)
  *
- */
+**/
 
-require_once( dirname(__FILE__). '/tree.class.php' );
 class testproject
 {
 	var $db;
 	var $tree_manager;
 
-function testproject(&$db)
-{
-  $this->db = &$db;	
-  $this->tree_manager = new tree($this->db);
-}
-
+	function testproject(&$db)
+	{
+		$this->db = &$db;	
+		$this->tree_manager = new tree($this->db);
+	}
 
 /** 
  * create a new test project
@@ -36,19 +34,18 @@ function testproject(&$db)
  */
 function create($name,$color,$optReq,$notes)
 {
-	$status_ok=0;
+	$status_ok = 0;
 
-  // Create Node and get the id
-  $root_node_id = $this->tree_manager->new_root_node($name);
+	// Create Node and get the id
+	$root_node_id = $this->tree_manager->new_root_node($name);
 
 	$sql = " INSERT INTO testprojects (id,color,option_reqs,notes) " .
 	       " VALUES (" . $root_node_id . ", '" .	
 	                 $this->db->prepare_string($color) . "',"  . 
 	                 $optReq . ",'" .
-			             $this->db->prepare_string($notes) . "')";
+		             $this->db->prepare_string($notes) . "')";
 			             
 	$result = $this->db->exec_query($sql);
-
 	if ($result)
 	{
 		tLog('The new testproject '.$name.' was succesfully created.', 'INFO');
@@ -110,13 +107,13 @@ function update($id, $name, $color, $opt_req,$notes)
 
 function get_by_name($name)
 {
-	$sql = " SELECT testprojects.*, nodes_hierarchy.name 
-	         FROM testprojects, nodes_hierarchy 
-	         WHERE nodes_hierarchy.name = '" . 
+	$sql = " SELECT testprojects.*, nodes_hierarchy.name ".
+	       "  FROM testprojects, nodes_hierarchy ". 
+	       "  WHERE nodes_hierarchy.name = '" . 
 	         $this->db->prepare_string($name) . "'";
 
-  $recordset = $this->db->get_recordset($sql);
-  return($recordset);
+	$recordset = $this->db->get_recordset($sql);
+	return $recordset;
 }
 
 /*
@@ -124,12 +121,12 @@ get info for one test project
 */
 function get_by_id($id)
 {
-	$sql = " SELECT testprojects.*,nodes_hierarchy.name 
-	         FROM testprojects, nodes_hierarchy
-	         WHERE testprojects.id = nodes_hierarchy.id
-	         AND   testprojects.id = {$id}";
-  $recordset = $this->db->get_recordset($sql);
-  return($recordset ? $recordset[0] : null);
+	$sql = " SELECT testprojects.*,nodes_hierarchy.name ".
+	       " FROM testprojects, nodes_hierarchy ".
+	       " WHERE testprojects.id = nodes_hierarchy.id ".
+	       " AND testprojects.id = {$id}";
+	$recordset = $this->db->get_recordset($sql);
+	return ($recordset ? $recordset[0] : null);
 }
 
 
@@ -141,11 +138,11 @@ Every array element contains an assoc array with test project info
 */
 function get_all()
 {
-	$sql = " SELECT testprojects.*, nodes_hierarchy.name 
-	         FROM testprojects, nodes_hierarchy
-	         WHERE testprojects.id=nodes_hierarchy.id";
-  $recordset = $this->db->get_recordset($sql);
-  return($recordset);
+	$sql = " SELECT testprojects.*, nodes_hierarchy.name ".
+	       " FROM testprojects, nodes_hierarchy ".
+	       " WHERE testprojects.id = nodes_hierarchy.id";
+	$recordset = $this->db->get_recordset($sql);
+	return $recordset;
 }
 
 
@@ -164,6 +161,7 @@ function get_all()
 function show(&$smarty,$id, $sqlResult = '', $action = 'update',$modded_item_id = 0)
 {
 	$smarty->assign('modify_tc_rights', has_rights($this->db,"mgt_modify_tc"));
+	$smarty->assign('mgt_modify_product', has_rights($this->db,"mgt_modify_product"));
 
 	if($sqlResult)
 	{ 
@@ -185,82 +183,73 @@ function show(&$smarty,$id, $sqlResult = '', $action = 'update',$modded_item_id 
 }
 
 
-/* 20060305 - franciscom */
 function count_testcases($id)
 {
 	$test_spec = $this->tree_manager->get_subtree($id,array('testplan'=>'exclude me'),
 	                                            array('testcase'=>'exclude my children'));
   
-  $hash_descr_id = $this->tree_manager->get_available_node_types();
+ 	$hash_descr_id = $this->tree_manager->get_available_node_types();
   
-  $qty=0;
-  if( count($test_spec) > 0 )
-  {
-    foreach($test_spec as $elem)
-    {
-    	if($elem['node_type_id'] == $hash_descr_id['testcase'])
-    	{
-    	  $qty++;
-    	}
-    }
-  }
-  return ($qty);
-}
-
-
-// 20060308 - franciscom - added exclude_branches
-// 
-function gen_combo_test_suites($id,$exclude_branches=null)
-{
-	$aa = array(); 
-
-	// 20060308 - franciscom
-	$test_spec = $this->tree_manager->get_subtree($id, array("testplan"=>"exclude me","testcase"=>"exclude me"),
-                                                     array('testcase'=>'exclude my children PLEASE'),
-                                                     $exclude_branches);
-  
-  $hash_descr_id = $this->tree_manager->get_available_node_types();
-  $hash_id_descr = array_flip($hash_descr_id);
-  
-  
-  // 20060223 - franciscom
-  if( count($test_spec) > 0 )
-  {
-   	$pivot=$test_spec[0];
-   	$the_level=1;
-    $level=array();
-  
-   	foreach ($test_spec as $elem)
-   	{
-   	 $current = $elem;
-  
-     if( $pivot['parent_id'] == $current['parent_id'])
-     {
-       $the_level=$the_level;
-     }
-     else if ($pivot['id'] == $current['parent_id'])
-     {
-     	  $the_level++;
-     	  $level[$current['parent_id']]=$the_level;
-     }
-     else 
-     {
-     	  $the_level=$level[$current['parent_id']];
-     }
-     
-     if( $hash_id_descr[$current['node_type_id']] == "testcase") 
-     {
-       $icon="gnome-starthere-mini.png";	
-     }
-     $aa[$current['id']] = str_repeat('.',$the_level) . $current['name'];
-     // update pivot
-     $level[$current['parent_id']]= $the_level;
-     $pivot=$elem;
-   	}
+ 	$qty = 0;
+	if(count($test_spec))
+	{
+		foreach($test_spec as $elem)
+		{
+			if($elem['node_type_id'] == $hash_descr_id['testcase'])
+				$qty++;
+		}
 	}
-	
-	return($aa);
+	return $qty;
 }
+
+
+	// 20060308 - franciscom - added exclude_branches
+	// 
+	function gen_combo_test_suites($id,$exclude_branches=null)
+	{
+		$aa = array(); 
+	
+		$test_spec = $this->tree_manager->get_subtree($id, array("testplan"=>"exclude me","testcase"=>"exclude me"),
+	                                                     array('testcase'=>'exclude my children PLEASE'),
+	                                                     $exclude_branches);
+	  
+		$hash_descr_id = $this->tree_manager->get_available_node_types();
+		$hash_id_descr = array_flip($hash_descr_id);
+	  
+	  
+		if(count($test_spec))
+		{
+			$pivot = $test_spec[0];
+			$the_level = 1;
+			$level = array();
+		
+			foreach($test_spec as $elem)
+			{
+				$current = $elem;
+				
+				if ($pivot['id'] == $current['parent_id'])
+				{
+					$the_level++;
+					$level[$current['parent_id']]=$the_level;
+				}
+				else if ($pivot['parent_id'] != $current['parent_id'])
+				{
+					$the_level = $level[$current['parent_id']];
+				}
+				
+				if($hash_id_descr[$current['node_type_id']] == "testcase")
+				{
+					$icon = "gnome-starthere-mini.png";	
+				}
+				$aa[$current['id']] = str_repeat('.',$the_level) . $current['name'];
+				// update pivot
+				$level[$current['parent_id']]= $the_level;
+				$pivot=$elem;
+			}
+		}
+		
+		return $aa;
+	}
 
 	/**
 	 * Checks a test project name for correctness

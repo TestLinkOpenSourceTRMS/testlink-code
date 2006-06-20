@@ -1,9 +1,8 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planAddTC_m1.tpl,v 1.4 2006/05/03 06:47:50 franciscom Exp $
+$Id: planAddTC_m1.tpl,v 1.5 2006/06/20 19:51:32 schlundus Exp $
 Purpose: smarty template - generate a list of TC for adding to Test Plan 
 
-20060319 - franciscom
 *}
 
 {include file="inc_head.tpl"}
@@ -11,10 +10,13 @@ Purpose: smarty template - generate a list of TC for adding to Test Plan
 
 <body>
 
-<h1>{if $has_linked_items eq 0} {lang_get s='title_add_test_to_plan'}
-    {else}  {lang_get s='title_add_remove_test_to_plan'}
+<h1>{if $has_linked_items eq 0} 
+		{lang_get s='title_add_test_to_plan'}
+    {else}
+		{lang_get s='title_add_remove_test_to_plan'}
     {/if}     
-    '{$testPlanName|escape}'</h1>
+    '{$testPlanName|escape}'
+</h1>
 
 
 {if $has_tc }
@@ -22,17 +24,19 @@ Purpose: smarty template - generate a list of TC for adding to Test Plan
 <form name='addTcForm' method='post'>
 <div style="padding-right: 20px; float: right;">
     <input type='submit' name='do_action' 
-	    {if $has_linked_items eq 0}
-	    	    value='{lang_get s='btn_add_selected_tc'}'
-      {else}
+		{if $has_linked_items eq 0}
+	    	value='{lang_get s='btn_add_selected_tc'}'
+		{else}
             value='{lang_get s='btn_add_remove_selected_tc'}' 
-      {/if}
+		{/if}
     />
 </div>
 
 {include file="inc_update.tpl" result=$sqlResult}
 {if $key ne ''}
-	<div style="margin-left: 20px; font-size: smaller;"><p>{lang_get s='note_keyword_filter'} '{$key|escape}'</p></div>
+	<div style="margin-left: 20px; font-size: smaller;">
+		<p>{lang_get s='note_keyword_filter'} '{$key|escape}'</p>
+	</div>
 {/if}
 
 
@@ -43,56 +47,66 @@ Purpose: smarty template - generate a list of TC for adding to Test Plan
 
     	{if $arrData[tsuite_idx].write_buttons eq 'yes'}
       	<p>
-      	<input type='button' name='{$arrData[tsuite_idx].testsuite.name|escape}_check' 
-      	       onclick='javascript: box("div_{$arrData[tsuite_idx].testsuite.id}", true)' 
-      	       value='{lang_get s='btn_check'}' />
-      	<input type='button' name='{$arrData[tsuite_idx].testsuite.name|escape}_uncheck' 
-      	       onclick='javascript: box("div_{$arrData[tsuite_idx].testsuite.id}", false)' 
-      	       value='{lang_get s='btn_uncheck'}' />
-  			<b> {lang_get s='check_uncheck_tc'}</b>
-  			</p>
-  			<p>
+	      	<input type='button' name='{$arrData[tsuite_idx].testsuite.name|escape}_check' 
+	      	       onclick='javascript: box("div_{$arrData[tsuite_idx].testsuite.id}", true)' 
+	      	       value='{lang_get s='btn_check'}' />
+	      	<input type='button' name='{$arrData[tsuite_idx].testsuite.name|escape}_uncheck' 
+	      	       onclick='javascript: box("div_{$arrData[tsuite_idx].testsuite.id}", false)' 
+	      	       value='{lang_get s='btn_uncheck'}' />
+	  		<b>{lang_get s='check_uncheck_tc'}</b>
+  		</p>
       {/if}
 
       {if $arrData[tsuite_idx].testcase_qty gt 0 }
           <table cellspacing="0" style="font-size:small;" width="100%">
-            <tr style="background-color:blue;font-weight:bold;"><td>&nbsp;</td><td>{lang_get s='th_test_case'}</td><td>{lang_get s='version'}</td>
-            {if $arrData[tsuite_idx].linked_testcase_qty gt 0 }
-               <td>&nbsp;</td><td>{lang_get s='remove_tc'}</td>
-            {/if}
+            <tr style="background-color:blue;font-weight:bold;">
+				<td>&nbsp;</td>
+				<td>{lang_get s='th_test_case'}</td>
+				<td>{lang_get s='version'}</td>
+	            {if $arrData[tsuite_idx].linked_testcase_qty gt 0 }
+               		<td>&nbsp;</td>
+					<td>{lang_get s='remove_tc'}</td>
+	            {/if}
             </tr>   
-          {foreach from=$arrData[tsuite_idx].testcases item=tcase }
-
-    				<tr {if $tcase.linked_version_id ne 0} style="background-color:yellow" {/if}>
-    				<td>
-    				<input type='checkbox' name='achecked_tc[{$tcase.id}]' value='{$tcase.id}' 
-    				       {if $tcase.linked_version_id ne 0} checked disabled readonly{/if}	/>
-          	<input type='hidden' name='a_tcid[{$tcase.id}]' value='{$tcase.id}' />
-    				</td>
-    				<td>
-          	{$tcase.name|escape}
-            </td>
+          {foreach from=$arrData[tsuite_idx].testcases item=tcase}
+			<tr 
+				{if $tcase.linked_version_id ne 0} 
+				style="background-color:yellow" 
+				{/if}>
+			<td>
+				<input type='checkbox' name='achecked_tc[{$tcase.id}]' value='{$tcase.id}' 
+					{if $tcase.linked_version_id ne 0} 
+						checked disabled readonly
+					{/if} 
+				/>
+				<input type='hidden' name='a_tcid[{$tcase.id}]' value='{$tcase.id}' />
+			</td>
+			<td>
+				{$tcase.name|escape}
+			</td>
             <td>
-    				<select name="tcversion_for_tcid[{$tcase.id}]"
-    				        {if $tcase.linked_version_id ne 0}disabled{/if} >
-    				{html_options options=$tcase.tcversions selected=$tcase.linked_version_id}
-    				</select>
+   				<select name="tcversion_for_tcid[{$tcase.id}]"
+			        {if $tcase.linked_version_id ne 0}
+						disabled
+					{/if}
+				>
+   				{html_options options=$tcase.tcversions selected=$tcase.linked_version_id}
+   				</select>
             </td>
             
-            {* 20060430 - franciscom *}
             {if $arrData[tsuite_idx].linked_testcase_qty gt 0 }
-              <td>&nbsp;</td>
-              <td>
-                 {if $tcase.linked_version_id ne 0} 
-                   <input type='checkbox' name='remove_checked_tc[{$tcase.id}]' 
-                                          value='{$tcase.linked_version_id}'> 
-                 {else}
-                 &nbsp;
-                 {/if}
-              </td>
+				<td>&nbsp;</td>
+				<td>
+				   {if $tcase.linked_version_id ne 0} 
+						<input type='checkbox' name='remove_checked_tc[{$tcase.id}]' 
+				               value='{$tcase.linked_version_id}' />
+				   {else}
+						&nbsp;
+				   {/if}
+				</td>
             {/if}
-            <tr>
-    			{/foreach}
+            </tr>
+    	  {/foreach}
           </table>
       {/if}
     </div>
@@ -102,7 +116,7 @@ Purpose: smarty template - generate a list of TC for adding to Test Plan
 </form>
 
 {else}
- <h2>{lang_get s='no_testcase_available'}</h2>
+	<h2>{lang_get s='no_testcase_available'}</h2>
 {/if}
 
 </body>

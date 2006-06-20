@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planAddTCNavigator.tpl,v 1.4 2006/05/03 06:48:33 franciscom Exp $
+$Id: planAddTCNavigator.tpl,v 1.5 2006/06/20 19:51:32 schlundus Exp $
 show test specification tree 
 *}
 
@@ -17,14 +17,15 @@ show test specification tree
 		</caption>
 		<tr>
 			<td>{lang_get s='keyword'}</td>
-			<td><select name="keyword_id">
+			<td>
+				<select name="keyword_id">
 			    {html_options options=$keywords_map selected=$keyword_id}
 				</select>
 			</td>
 		</tr>
 		<tr>
 			<td>
-			<input type="submit" value="{lang_get s='btn_update_menu'}" name="filter" />
+				<input type="submit" value="{lang_get s='btn_update_menu'}" name="filter" />
 			</td>
 		</tr>
 	</table>

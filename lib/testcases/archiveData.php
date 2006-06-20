@@ -3,7 +3,7 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
- * @version $Id: archiveData.php,v 1.16 2006/06/19 19:35:38 schlundus Exp $
+ * @version $Id: archiveData.php,v 1.17 2006/06/20 19:51:32 schlundus Exp $
  * @author Martin Havlat
  *  
  * This page allows you to show data (test cases, categories, and
@@ -26,6 +26,9 @@ $smarty = new TLSmarty();
 switch($feature)
 {
 	case 'testproject':
+		$attachments = getAttachmentInfos($db,$id,'nodes_hierarchy');
+		$smarty->assign('attachmentInfos',$attachments);
+		$smarty->assign('id',$id);
 		$item_mgr = new testproject($db);
 	    $item_mgr->show($smarty,$id);
 		break;

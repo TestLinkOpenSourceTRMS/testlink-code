@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tlsmarty.inc.php,v $
  *
- * @version $Revision: 1.12 $
- * @modified $Date: 2006/06/07 12:34:55 $ $Author: franciscom $
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2006/06/20 19:51:32 $ $Author: schlundus $
  *
  * @author Martin Havlat
  *
@@ -22,8 +22,8 @@ class TLSmarty extends Smarty
 		global $g_tc_status;
 		global $g_tc_status_css;
 		global $g_bugInterfaceOn;
-		global $g_tc_status_for_ui; // 20060528 - franciscom
-		global $g_attachments;     // 20060602 - franciscom
+		global $g_tc_status_for_ui;
+		global $g_attachments;
 
 
         $this->Smarty();
@@ -52,10 +52,7 @@ class TLSmarty extends Smarty
 
 		$this->assign('gsmarty_tc_status_css',$g_tc_status_css);
 	  
-	  // 20060528 - franciscom
-	  $this->assign('gsmarty_tc_status_for_ui',$g_tc_status_for_ui);
-		
-		// 20060602 - franciscom
+		$this->assign('gsmarty_tc_status_for_ui',$g_tc_status_for_ui);
 		$this->assign('gsmarty_attachments',$g_attachments);
 		
 	
@@ -78,14 +75,9 @@ class TLSmarty extends Smarty
 		$this->assign('optLocale',$g_locales);
 		$this->register_function("lang_get", "lang_get_smarty");
 		
-		// 20050828 - fm
 		$this->register_function("localize_date", "localize_date_smarty");
-
-	  // 20060303 - franciscom
-	  $this->register_function("localize_timestamp", "localize_timestamp_smarty");
-
-    // 20060401 - franciscom
-    $this->register_function("localize_tc_status","translate_tc_status_smarty");
+		$this->register_function("localize_timestamp", "localize_timestamp_smarty");
+	    $this->register_function("localize_tc_status","translate_tc_status_smarty");
 		
 		// define a select structure for {html_options ...}
 		$this->assign('option_yes_no', array(0 => lang_get('No'), 1 => lang_get('Yes')));

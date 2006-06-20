@@ -1,5 +1,5 @@
 {* Testlink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: inc_head.tpl,v 1.5 2006/04/29 19:32:54 schlundus Exp $ *}
+{* $Id: inc_head.tpl,v 1.6 2006/06/20 19:51:32 schlundus Exp $ *}
 {* Purpose: smarty template - HTML Common Header *}
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
      "DTD/xhtml1-transitional.dtd">
@@ -24,7 +24,7 @@
 {if $jsTree == "yes"} {* 'no' is default defined in config *}
 	{include file="inc_jsTree.tpl"}
 {/if}
-	<script type="text/javascript">
+	<script type="text/javascript" language="javascript">
 	var fRoot = '{$basehref}';
 	var menuUrl = '{$menuUrl}';
 	var args  = '{$args}';

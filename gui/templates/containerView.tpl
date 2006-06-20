@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: containerView.tpl,v 1.16 2006/06/19 19:35:37 schlundus Exp $ *}
+{* $Id: containerView.tpl,v 1.17 2006/06/20 19:51:32 schlundus Exp $ *}
 {* 
 Purpose: smarty template - view test specification containers 
 
@@ -25,6 +25,11 @@ Purpose: smarty template - view test specification containers
 {include file="inc_update.tpl" result=$sqlResult item=$level name=$moddedItem.name refresh='yes'}
 
 {if $level == 'testproject'}
+	{assign var="bDownloadOnly" value=false}
+	{if $mgt_modify_product neq 'yes'}
+		{assign var="bDownloadOnly" value=true}
+	{/if}
+	
 	{if $modify_tc_rights == 'yes'}
 		<div>
 			<form method="post" action="lib/testcases/containerEdit.php">
@@ -51,6 +56,7 @@ Purpose: smarty template - view test specification containers
 		
 	</table>
 
+	{include file="inc_attachments.tpl" id=$id tableName="nodes_hierarchy" downloadOnly=$bDownloadOnly}
 {elseif $level == 'testsuite'}
 
 	{if $modify_tc_rights == 'yes' || $sqlResult ne ''}

@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testsuite.class.php,v $
- * @version $Revision: 1.13 $
- * @modified $Date: 2006/06/19 19:35:38 $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2006/06/20 19:51:32 $
  * @author franciscom
  *
  * 20060425 - franciscom - changes in show() following Andreas Morsing advice (schlundus)
@@ -290,36 +290,33 @@ function copy_to($id, $parent_id, $user_id,
 	
 } // end function
 
-
-
-
-// 20060309 - franciscom
 // get all test cases in the test suite and all children test suites
 // no info about tcversions is returned
-function get_testcases_deep($id)
+function get_testcases_deep($id,$bIdsOnly = false)
 {
-  $subtree = $this->tree_manager->get_subtree($id,array('testplan' => 'exclude_me'),
-	                                                array('testcase' => 'exclude_my_children'));
-	$testcases=null;
-	if( !is_null($subtree) )
+	$subtree = $this->tree_manager->get_subtree($id,
+												array('testplan' => 'exclude_me'),
+	             								array('testcase' => 'exclude_my_children'));
+	$testcases = null;
+	if(!is_null($subtree))
 	{
 		$testcases = array();
-	  foreach ( $subtree as $the_key => $elem)
-	  {
-	    if($elem['node_type_id'] == $this->node_types_descr_id['testcase'])
-	    {
-	      $testcases[]=$elem;
-	    }	
-	  }
+		$tcNodeType = $this->node_types_descr_id['testcase'];
+		foreach ($subtree as $the_key => $elem)
+		{
+			if($elem['node_type_id'] == $tcNodeType)
+			{
+				if ($bIdsOnly)
+					$testcases[] = $elem['id'];
+				else
+					$testcases[]= $elem;
+			}
+		}
 	}
 	
-  return ($testcases); 
+	return $testcases; 
 }
 
-
-
-
-// 20060309 - franciscom
 function delete_deep($id)
 {
   $tcase_mgr = New testcase($this->db);

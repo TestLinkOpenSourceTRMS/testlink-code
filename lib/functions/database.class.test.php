@@ -21,13 +21,6 @@ print "<h3>MUST BE DONE 1st : initialize the page and \$db reference</h3>";
 print "testlinkInitPage(\$db) <BR>";
 testlinkInitPage($db);
 
-print "============================================== <BR> ";
-
-print "<h3>Many of the values used by the methods can be retrieve from \$_SESSION</h3>";
-print "contents of the \$_SESSION object : <BR>";
-print_r($_SESSION);
-print "<BR>";
-
 print "============================================== <BR>";
 
 print "function microtime_float() <BR>";

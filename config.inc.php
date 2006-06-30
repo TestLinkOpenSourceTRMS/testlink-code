@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.65 $
- * @modified $Date: 2006/06/07 12:34:55 $ by $Author: franciscom $
+ * @version $Revision: 1.66 $
+ * @modified $Date: 2006/06/30 18:41:25 $ by $Author: schlundus $
  *
  *
  * Constants and configuration parameters used throughout TestLink 
@@ -173,20 +173,19 @@ $g_exec_cfg->history_on=FALSE;
 //
 $g_exec_cfg->show_last_exec_any_build=FALSE;
 
-// 20060602 - franciscom - 
-// different models for the attachments management on execution page
+// 20060602 - franciscom - different models for the attachments management on execution page
 //
-$att_model_m1->show_upload_btn=true;
-$att_model_m1->show_title=true;
-$att_model_m1->num_cols=4;
-$att_model_m1->show_upload_column=false;
+$att_model_m1->show_upload_btn = true;
+$att_model_m1->show_title = true;
+$att_model_m1->num_cols = 4;
+$att_model_m1->show_upload_column = false;
 
-$att_model_m2->show_upload_btn=false;
-$att_model_m2->show_title=false;
-$att_model_m2->num_cols=5;
-$att_model_m2->show_upload_column=true;
+$att_model_m2->show_upload_btn = false;
+$att_model_m2->show_title = false;
+$att_model_m2->num_cols = 5;
+$att_model_m2->show_upload_column = true;
 
-$g_exec_cfg->att_model=$att_model_m2;
+$g_exec_cfg->att_model = $att_model_m2;
 
 
 /** Bug Tracking systems */////////////////////////////////////////////////////
@@ -254,20 +253,11 @@ define('TL_LOGIN_CSS','gui/css/tl_login.css');
 define('TL_TESTLINK_CSS','gui/css/testlink.css');
 define('TL_DOC_BASIC_CSS','gui/css/tl_doc_basic.css');
 
-/* An example
-define('TL_LOGIN_CSS','gui/css/theme0/tl_login.css');
-define('TL_TESTLINK_CSS','gui/css/theme0/testlink.css');
-define('TL_DOC_BASIC_CSS','gui/css/theme0/tl_doc_basic.css');
-*/
-
-
 // logo for login page, if not defined nothing happens
 define('LOGO_LOGIN_PAGE','<img alt="TestLink" src="icons/company_logo.png" />');
 
 // logo for navbar page
 define('LOGO_NAVBAR','<img alt="TestLink" src="icons/company_logo.png" />');
-
-
 
 
 /* TRUE -> Check if:
@@ -327,7 +317,7 @@ $g_ui_show_check_filter_tp_by_testproject = TRUE;
 
 /* TRUE -> you can create multiple time the same keyword 
            for the same product (term used on TL < 1.7) / test project (term used on TL>= 1.7) */
-$g_allow_duplicate_keywords=FALSE;
+$g_allow_duplicate_keywords = FALSE;
 
 /*
 Requirements - 
@@ -340,11 +330,11 @@ Test Case generation from Requirement
   TRUE  -> REQuirement Specification Title is used a category name     
        
 */
-$g_req_cfg->default_category_name="TODO";
-$g_req_cfg->objective_for_category="Category/Test Cases generated from Requirements";
+$g_req_cfg->default_category_name = "TODO";
+$g_req_cfg->objective_for_category = "Category/Test Cases generated from Requirements";
 
-$g_req_cfg->default_component_name="Component Created by Requirement - Auto";
-$g_req_cfg->scope_for_component="Component/Category/Test Cases generated from Requirements";
+$g_req_cfg->default_component_name = "Component Created by Requirement - Auto";
+$g_req_cfg->scope_for_component = "Component/Category/Test Cases generated from Requirements";
 
 $g_req_cfg->use_req_spec_as_category_name = TRUE;
 
@@ -376,13 +366,13 @@ $language = 'en_GB';
 //
 $g_locales = array(	'zh_CN' => 'Chinese Simplified',
                     'en_GB' => 'English (UK)',
-						        'en_US' => 'English (US)',
-						        'fr_FR' => 'Fran&ccedil;ais',
-						        'de_DE' => 'German',
-						        'it_IT' => 'Italian',
-						        'pt_BR' => 'Portuguese (Brazil)',
-						        'es_AR' => 'Spanish (Argentine)',
-						        'es_ES' => 'Spanish'
+			        'en_US' => 'English (US)',
+			        'fr_FR' => 'Fran&ccedil;ais',
+			        'de_DE' => 'German',
+			        'it_IT' => 'Italian',
+			        'pt_BR' => 'Portuguese (Brazil)',
+			        'es_AR' => 'Spanish (Argentine)',
+			        'es_ES' => 'Spanish'
                     );
 
 
@@ -391,12 +381,9 @@ $serverLanguage = getenv($_SERVER['HTTP_ACCEPT_LANGUAGE']);
 if(false !== $serverLanguage)
 {
 	if (array_key_exists($serverLanguage,$g_locales))
-	{
 		$language = $serverLanguage;
-	}	
 }
 define ('TL_DEFAULT_LOCALE',$language);
-
 
 
 // ----------------------------------------------------------------------------
@@ -447,16 +434,14 @@ $g_tc_status = array ( "failed"        => 'f',
 // value => string id defined in the strings.txt file, 
 //          used to localize the strings.
 //
-$g_tc_status_for_ui=array("not_run" => "test_status_not_run",
+$g_tc_status_for_ui = array("not_run" => "test_status_not_run",
                           "passed"  => "test_status_passed",
                           "failed"  => "test_status_failed",
                           "blocked" => "test_status_blocked");
 
-// 20060328 - franciscom
 $g_tc_status_css = array_flip($g_tc_status);
 
-//20050508 - fm - enhancement
-/* TestCase Status Description -> color */
+//20050508 - fm - TestCase Status Description -> color
 $g_tc_sd_color = array ( "failed"        => 'red',
                          "blocked"       => 'blue',
                          "passed"        => 'green',
@@ -471,7 +456,6 @@ define("TL_ROLES_NONE",3);
 define("TL_ROLES_NONE_DESC","<no rights>");
 define("TL_ROLES_UNDEFINED",0);
 define("TL_ROLES_UNDEFINED_DESC","<inherited>");
-
 define("TL_DEFAULT_ROLEID",TL_ROLES_GUEST);
 
 $g_tc_risks = array('L1', 'L2', 'L3','M1', 'M2', 'M3','H1', 'H2', 'H3');
@@ -605,13 +589,8 @@ $g_tpl['tcSearchView'] = "tcSearchView.tpl";
 $g_tpl['tcEdit'] = "tcEdit.tpl";
 $g_tpl['tcNew'] = "tcNew.tpl";
 $g_tpl['execSetResults'] = "execSetResults.tpl";
-
-
-// Custom
 $g_tpl['tcView'] = "tcView.tpl";
-$g_tpl['tcSearchView'] = $g_tpl['tcView'];
-
-// 20051230 - fm
+$g_tpl['tcSearchView'] = "tcView.tpl";
 $g_tpl['usersview'] = "usersview.tpl";
 
 // ----- End of Config ------------------------------------------------
@@ -627,7 +606,6 @@ define( 'ERROR_LDAP_UPDATE_FAILED',				    1402 );
 define( 'ERROR_LDAP_USER_NOT_FOUND',			    1403 );
 define( 'ERROR_LDAP_BIND_FAILED',				      1404 );
 
-// 20051120 - franciscom - 
 // used in several functions instead of MAGIC NUMBERS - Don't change 
 define('ALL_PRODUCTS',0);
 define('TP_ALL_STATUS',null);
@@ -636,13 +614,8 @@ define('FILTER_BY_TESTPROJECT',FILTER_BY_PRODUCT);
 define('TP_STATUS_ACTIVE',1);
 define('NON_TESTABLE_REQ','n');
 define('DSN',FALSE);  // for method connect() of database.class
-
-// 20060528 - franciscom
 define('ANY_BUILD',null);
 define('GET_NO_EXEC',1);
-
-// for getAttachmentInfos()
-define('STORE_IN_SESSION',true);
 // -------------------------------------------------------------------
 
 

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: keywordsView.php,v $
  *
- * @version $Revision: 1.12 $
- * @modified $Date: 2006/03/11 23:09:28 $ by $Author: schlundus $
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2006/06/30 18:41:25 $ by $Author: schlundus $
  *
  * Purpose:  This page this allows users to view keywords. 
  *
@@ -36,11 +36,11 @@ $action = null;
 //show the details of the keyword to edit
 if ($keywordID && !$bEditKey && !$bDeleteKey)
 {
-	$info = getKeyword($db,$keywordID);
+	$info = $tproject->getKeywords($testproject_id,$keywordID);
 	if ($info)
 	{
-		$keyword = $info['keyword'];
-		$notes = $info['notes'];
+		$keyword = $info[0]['keyword'];
+		$notes = $info[0]['notes'];
 	}
 }
 if ($bModifyKeywordRight)

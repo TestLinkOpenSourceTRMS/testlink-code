@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: keywords.inc.php,v $
 * 
-* @version $Id: keywords.inc.php,v 1.23 2006/06/20 19:51:32 schlundus Exp $
-* @modified $Date: 2006/06/20 19:51:32 $ by $Author: schlundus $
+* @version $Id: keywords.inc.php,v 1.24 2006/06/30 18:41:25 schlundus Exp $
+* @modified $Date: 2006/06/30 18:41:25 $ by $Author: schlundus $
 *
 * Functions for support keywords management. 
 *
@@ -32,9 +32,8 @@ $g_keywordFormatStrings = array (
  * @param int $keywordID [default = null] a possible keywordID to search for
  * 
  * @return type documentation
- * DEPRECATED
  **/
-function selectKeywords(&$db,$testprojectID, $selectedKey = '',$keywordID = null)
+function DEPR_selectKeywords(&$db,$testprojectID, $selectedKey = '',$keywordID = null)
 {
 	$arrKeywords = null;
 	if ($testprojectID)
@@ -72,7 +71,7 @@ function selectKeywords(&$db,$testprojectID, $selectedKey = '',$keywordID = null
  * @param int $keywordID the keyword id
  * @return array returns the keyword information
  **/
-function getKeyword(&$db,$keywordID)
+function DEPR_getKeyword(&$db,$keywordID)
 {
   	$sql = "SELECT id,keyword,notes FROM keywords WHERE id = {$keywordID} " .
 		   " ORDER BY keyword ASC";
@@ -91,9 +90,8 @@ function getKeyword(&$db,$keywordID)
  * @param type $arrKeywords documentation
  *
  * @return type documentation
- * DEPRECATED
  **/
-function updateTCKeywords(&$db,$id,$arrKeywords)
+function DEPR_updateTCKeywords(&$db,$id,$arrKeywords)
 {
 	$keywords = null;
 	if ($arrKeywords)
@@ -124,7 +122,7 @@ function updateTCKeywords(&$db,$id,$arrKeywords)
  *
  *
 **/
-/*function updateCategoryKeywords(&$db,$id, $newKey)
+function DEPR_updateCategoryKeywords(&$db,$id, $newKey)
 {
 	$sqlTC = "SELECT id,title FROM mgttestcase WHERE catid=" . $id;
 	$resultTC = $db->exec_query($sqlTC);
@@ -147,7 +145,6 @@ function updateTCKeywords(&$db,$id,$arrKeywords)
 	}
 	return $resultUpdate ? $resultUpdate : 'ok';
 }
-*/
 
 /**
  * Function-Documentation
@@ -192,9 +189,8 @@ function DEPR_updateComponentKeywords(&$db,$id, $newKey)
  * @param type $newKey documentation
  *
  * @return type documentation
- * DEPRECATED
  **/
-function addTCKeyword(&$db,$tcID, $newKey)
+function DEPR_addTCKeyword(&$db,$tcID, $newKey)
 {
 	$sqlTC = "SELECT keywords FROM mgttestcase where id=" . $tcID;
 	//$resultUpdate = $db->exec_query($sqlTC);
@@ -261,7 +257,6 @@ function deleteKeyword(&$db,$id)
  *
  * 20051004 - fm - return type changed
  * 20051126 - scs - added parameter kwID for getting the keyword name by id
- * DEPRECATED
  **/
 function DEPR_getProductKeywords(&$db,$testprojectID,$searchKW = null,$kwID = null)
 {

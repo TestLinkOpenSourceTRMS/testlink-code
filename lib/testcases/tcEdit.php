@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.33 $
- * @modified $Date: 2006/06/20 19:51:32 $  by $Author: schlundus $
+ * @version $Revision: 1.34 $
+ * @modified $Date: 2006/06/30 18:41:25 $  by $Author: schlundus $
  * This page manages all the editing of test cases.
  *
  * @author Martin Havlat
@@ -21,7 +21,6 @@ require_once("../../third_party/fckeditor/fckeditor.php");
 require_once("../functions/opt_transfer.php");
 testlinkInitPage($db);
 
-
 // --------------------------------------------------------------------
 // create  fckedit objects
 $a_ofck = array('summary','steps','expected_results');
@@ -36,6 +35,7 @@ foreach ($a_ofck as $key)
 
 // --------------------------------------------------------------------
 $testproject_id = $_SESSION['testprojectID'];
+$userID = $_SESSION['userID'];
 $show_newTC_form = 0;
 $smarty = new TLSmarty;
 
@@ -83,13 +83,12 @@ if (isset($_POST['keywords']))
 	$updatedKeywords = strings_stripSlashes(implode(",",$_POST['keywords']).",");
 }
 
-// 20060425 - franciscom
 $init_opt_transfer = ($create_tc || $edit_tc || $do_create) ? 1 : 0;
 
-$tcase_mgr = New testcase($db);
-$tproject_mgr = New testproject($db);
-$tree_mgr = New tree($db);
-$tsuite_mgr = New testsuite($db);
+$tcase_mgr = new testcase($db);
+$tproject_mgr = new testproject($db);
+$tree_mgr = new tree($db);
+$tsuite_mgr = new testsuite($db);
 
 $name_ok = 1;
 
@@ -99,7 +98,7 @@ if($init_opt_transfer)
     $opt_cfg->js_ot_name='ot';
     $opt_cfg->global_lbl='';
     $opt_cfg->from->lbl=lang_get('available_kword');
-    $opt_cfg->from->map=$tproject_mgr->get_keywords_map($testproject_id);
+    $opt_cfg->from->map = $tproject_mgr->get_keywords_map($testproject_id);
     $opt_cfg->to->lbl=lang_get('assigned_kword');
 }
 
@@ -158,7 +157,7 @@ else if($do_update)
  	  $tc_old = $tcase_mgr->get_by_id($tcase_id,$tcversion_id);
 						
 		if ($tcase_mgr->update($tcase_id,$tcversion_id,$name,$summary,$steps,$expected_results,
-		                        $_SESSION['userID'],$assigned_keywords_list) )
+		                        $userID,$assigned_keywords_list) )
 		{
 				if( strcmp($tc_old[0]['name'],$name) != 0 )
     		{
@@ -172,17 +171,15 @@ else if($do_update)
     }
 	}	
  	$action_result='updated';
-  $tcase_mgr->show($smarty,$tcase_id, $_SESSION['userID'], $tcversion_id, $action_result,$msg,$refresh_tree);
+  $tcase_mgr->show($smarty,$tcase_id, $userID, $tcversion_id, $action_result,$msg,$refresh_tree);
 }
 else if($create_tc)
 {
 	$show_newTC_form = 1;
 	
-	// 20060425 - franciscom
-  $opt_cfg->to->map=array();
-  keywords_opt_transf_cfg($opt_cfg, $assigned_keywords_list); 
- 	$smarty->assign('opt_cfg', $opt_cfg);
-
+	$opt_cfg->to->map=array();
+	keywords_opt_transf_cfg($opt_cfg, $assigned_keywords_list); 
+	$smarty->assign('opt_cfg', $opt_cfg);
 }
 else if($do_create)
 {
@@ -191,17 +188,15 @@ else if($do_create)
 	if ($name_ok)
 	{
 		$msg = lang_get('error_tc_add');
-		// 20060425 - franciscom
 		if ($tcase_mgr->create($container_id,$name,$summary,$steps,
-		                       $expected_results,$_SESSION['userID'],$assigned_keywords_list))
+		                       $expected_results,$userID,$assigned_keywords_list))
 		{
 		  $msg = 'ok';
 		}
 		
 	}
 
-  // 20060425 - franciscom
-  keywords_opt_transf_cfg($opt_cfg, $assigned_keywords_list); 
+	keywords_opt_transf_cfg($opt_cfg, $assigned_keywords_list); 
  	$smarty->assign('opt_cfg', $opt_cfg);
   
 	$smarty->assign('sqlResult', $msg);
@@ -228,7 +223,7 @@ else if($delete_tc)
 		
 	}
 
-  $tcinfo=$tcase_mgr->get_by_id($tcase_id);
+	$tcinfo=$tcase_mgr->get_by_id($tcase_id);
 	$smarty->assign('title', lang_get('title_del_tc') . $tcinfo[0]['name']);
 	
 	$smarty->assign('testcase_id', $tcase_id);
@@ -292,7 +287,7 @@ else if($do_delete)
   		$refresh_tree="no";
   }
 	$smarty->assign('title', $the_title);
-  $smarty->assign('sqlResult', $verbose_result);
+	$smarty->assign('sqlResult', $verbose_result);
 	$smarty->assign('testcase_id', $tcase_id);
 	$smarty->assign('delete_message', $msg);
 	$smarty->assign('action',$action_result);
@@ -323,35 +318,28 @@ else if($move_copy_tc)
 else if($do_move)
 {
 	$result = $tree_mgr->change_parent($tcase_id,$new_container_id);
-  $tsuite_mgr->show($smarty,$old_container_id);
+	$tsuite_mgr->show($smarty,$old_container_id);
 }
 else if($do_copy)
 {
-	$msg='';
-	$action_result='copied';
-	$result = $tcase_mgr->copy_to($tcase_id,$new_container_id,$_SESSION['userID']);
+	$msg = '';
+	$action_result = 'copied';
+	$result = $tcase_mgr->copy_to($tcase_id,$new_container_id,$userID,1);
 	if($result)
-	{
-	  $msg='ok';
-	}
-	$tcase_mgr->show($smarty,$tcase_id, $_SESSION['userID'],$tcversion_id,$action_result,$msg);
-	
-	//$result = copyTc($db,$catID, $tcase_id, $_SESSION['userID']);
-	//showCategory($db,$oldCat, $result,'update',$catID);
+		$msg = 'ok';
+	$tcase_mgr->show($smarty,$tcase_id, $userID,$tcversion_id,$action_result,$msg);
 }
 else if($do_create_new_version)
 {
 	$show_newTC_form = 0;
-	$action_result="create_new_version";
+	$action_result = "create_new_version";
 	$msg = lang_get('error_tc_add');
-	$op=$tcase_mgr->create_new_version($tcase_id,$_SESSION['userID']);
+	$op = $tcase_mgr->create_new_version($tcase_id,$userID);
 	if ($op['msg'] == "ok")
-	{
-	  $msg = 'ok';
-	}
+		$msg = 'ok';
 	
 	define('DONT_REFRESH','no');
-	$tcase_mgr->show($smarty,$tcase_id, $_SESSION['userID'], TC_ALL_VERSIONS, 
+	$tcase_mgr->show($smarty,$tcase_id, $userID, TC_ALL_VERSIONS, 
 	                            $action_result,$msg,DONT_REFRESH);
 }
 else
@@ -373,9 +361,7 @@ if ($show_newTC_form)
 		$of->Value = "";
 		$smarty->assign($key, $of->CreateHTML());
 	}
-
-	$prodKeywords = getProductKeywords($db,$testproject_id);
-	$smarty->assign('keys',$prodKeywords);
+	
 	$smarty->display($g_tpl['tcNew']);
 }
 ?>

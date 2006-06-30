@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.22 $
- * @modified $Date: 2006/06/20 19:51:32 $ $Author: schlundus $
+ * @version $Revision: 1.23 $
+ * @modified $Date: 2006/06/30 18:41:25 $ $Author: schlundus $
  * @author franciscom
  *
  * 20060425 - franciscom - changes in show() following Andreas Morsing advice (schlundus)
@@ -475,22 +475,30 @@ function get_testproject($id)
 }
 
 
-/* 20060306 - franciscom */
-function copy_to($id, $parent_id, $user_id)
+function copy_to($id,$parent_id,$user_id,$copyKeywords = 0)
 {
-	$status_ok=1;
+	$status_ok = 0;
 	$tcase_info = $this->get_by_id($id);
-	$new_tc = $this->create_tcase_only($parent_id,$tcase_info[0]['name']);
-  $qta_tcversions = count($tcase_info);
-  
-  foreach( $tcase_info as $tcversion )
-  {
-    $this->create_tcversion($new_tc['id'],$tcversion['version'],
-                                          $tcversion['summary'],$tcversion['steps'],
-                                          $tcversion['expected_results'],$tcversion['author_id']);
-  }
-  return($status_ok);
-} // end function
+	if ($tcase_info)
+	{
+		$new_tc = $this->create_tcase_only($parent_id,$tcase_info[0]['name']);
+		if ($new_tc)
+		{
+			foreach($tcase_info as $tcversion)
+			{
+				$this->create_tcversion($new_tc['id'],$tcversion['version'],
+				                        $tcversion['summary'],$tcversion['steps'],
+				                        $tcversion['expected_results'],$tcversion['author_id']);
+			}
+			if ($copyKeywords)
+			{
+				$this->copyKeywordsTo($id,$new_tc['id']);
+			}
+			$status_ok = 1;
+		}
+	}
+	return $status_ok;
+}
 	
 	
 /* 20060323 - franciscom */
@@ -796,6 +804,22 @@ function addKeywords($id,$kw_ids)
 	
 	return $bSuccess;
 }
+
+function copyKeywordsTo($id,$destID)
+{
+	$bSuccess = true;
+	$this->deleteKeywords($destID);
+	$kws = $this->getKeywords($id);
+	if ($kws)
+	{
+		foreach($kws as $k => $kwID)
+		{
+			$bSuccess = $bSuccess && $this->addKeyword($destID,$kwID['keyword_id']);
+		}
+	}	
+	return $bSuccess;
+}
+
 
 function deleteKeywords($tcID,$kwID = null)
 {

@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: tcNew.tpl,v 1.12 2006/05/05 20:07:23 schlundus Exp $ *}
+{* $Id: tcNew.tpl,v 1.13 2006/06/30 18:41:25 schlundus Exp $ *}
 {* Purpose: smarty template - create new testcase *}
 {* 20050831 - scs - change item to TestCase *}
 {* 
@@ -16,7 +16,7 @@ fckeditor
 <script language="JavaScript" src="gui/javascript/OptionTransfer.js" type="text/javascript"></script>
 <script language="JavaScript" src="gui/javascript/expandAndCollapseFunctions.js" type="text/javascript"></script>
 
-<script language="JavaScript">
+<script language="JavaScript" type="text/javascript">
 var {$opt_cfg->js_ot_name} = new OptionTransfer("{$opt_cfg->from->name}","{$opt_cfg->to->name}");
 {$opt_cfg->js_ot_name}.saveRemovedLeftOptions("{$opt_cfg->js_ot_name}_removedLeft");
 {$opt_cfg->js_ot_name}.saveRemovedRightOptions("{$opt_cfg->js_ot_name}_removedRight");
@@ -46,7 +46,6 @@ var {$opt_cfg->js_ot_name} = new OptionTransfer("{$opt_cfg->from->name}","{$opt_
 	<input type="text" name="name" size="50" value=""
 			alt="{lang_get s='alt_add_tc_name'}"/></p>
 	
-	<div style="width: 95%;">
 	<div>{lang_get s='summary'}<br />
 	{$summary}</div>
 	<div>{lang_get s='steps'}<br />
@@ -56,8 +55,8 @@ var {$opt_cfg->js_ot_name} = new OptionTransfer("{$opt_cfg->from->name}","{$opt_
 	</div>
 
 	<div><a href="lib/keywords/keywordsView.php" target="mainframe">{lang_get s='tc_keywords'}</a>
-  {include file="opt_transfer.inc.tpl" option_transfer=$opt_cfg}
-	</div><p>
+	{include file="opt_transfer.inc.tpl" option_transfer=$opt_cfg}
+	</div>
 	
 </form>
 

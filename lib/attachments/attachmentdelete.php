@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: attachmentdelete.php,v $
  *
- * @version $Revision: 1.1 $
- * @modified $Date: 2006/03/23 20:46:27 $ by $Author: schlundus $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2006/06/30 18:41:25 $ by $Author: schlundus $
  *
  * Deletes an attachment
 **/
@@ -15,7 +15,7 @@ require_once('../functions/common.php');
 require_once('../functions/attachments.inc.php');
 testlinkInitPage($db);
 
-$id = isset($_GET['id'])? $_GET['id'] : 0;
+$id = isset($_GET['id'])? intval($_GET['id']) : 0;
 $bDeleted = false;
 if ($id)
 {

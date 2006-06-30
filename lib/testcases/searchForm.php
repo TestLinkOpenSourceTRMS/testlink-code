@@ -1,18 +1,18 @@
 <?php
-/* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: searchForm.php,v 1.9 2006/02/15 08:51:04 franciscom Exp $ */
-// Purpose:  This page is the left frame of the search pages. It builds the
-//	    form for adding criteria for search.
-////////////////////////////////////////////////////////////////////////////////
+/* TestLink Open Source Project - http://testlink.sourceforge.net/
+ * $Id: searchForm.php,v 1.10 2006/06/30 18:41:25 schlundus Exp $
+ * Purpose:  This page presents the search results. 
+ *
+**/
 require_once("../../config.inc.php");
 require_once("../functions/common.php");
-require_once("../keywords/keywords.inc.php");
 testlinkInitPage($db);
 
-$prodID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+$tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+$tproject_mgr = new testproject($db);
 
 $smarty = new TLSmarty();
-$smarty->assign('arrKeys', selectKeywords($db,$prodID));
+$smarty->assign('arrKeys', $tproject_mgr->getKeywords($tproject_id));
 $smarty->display('tcSearchForm.tpl');
 ?>
 

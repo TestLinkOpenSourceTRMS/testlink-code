@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: archive.inc.php,v $
  *
- * @version $Revision: 1.33 $
- * @modified $Date: 2006/04/26 07:07:55 $ by $Author: franciscom $
+ * @version $Revision: 1.34 $
+ * @modified $Date: 2006/06/30 18:41:25 $ by $Author: schlundus $
  *
  * @author Martin Havlat
  * Purpose:  functions for test specification management have three parts:
@@ -13,42 +13,13 @@
  *		2. show test specification
  *		3. copy/move data within test specification         
  *
- * @author Francisco Mancardi - 20051201 - BUGID 258 
- * Management of Component Duplicate Name - block on copy gives no message to user
- *
- * @author Francisco Mancardi - 20051129 - 
- * BUGID 0000259
- * added logic to check for existent name in moveComponentToProduct()
- *
- * @author Francisco Mancardi - 20051121 - fm - autogoal mgtid instead oif mgtcatid
- * BUGID 0000236: unable to re-order categories in component
- *
- * @author Francisco Mancardi - 20051112
- * BUGID 000218
- *
- * @author Francisco Mancardi - 20050910
- * bug on insertProductC
- * 
- * @author Francisco Mancardi - 20050820
- * $data -> container_data (to avoid problems with field data table mgmtcategory)
- *
- * @author Francisco Mancardi - 20050820
- * refactoring getTestcase(), getTestcaseTitle()
-**//////////////////////////////////////////////////////////////////////////////
-
-////////////////////////////////////////////////////////////////////////////////
-
-// 20060425 - franciscom - added dirname(__FILE__)
-
+**/
 require_once(dirname(__FILE__) . '/../functions/requirements.inc.php');
-
-// 20060108 - fm
 require_once(dirname(__FILE__) . '/../functions/users.inc.php');
-
 
 /** 1. functions for grab container and test case data from database */ 
 
-function getComponent(&$db,$id)
+function DEPR_getComponent(&$db,$id)
 {
 	$sqlCOM = "SELECT id,name,intro,scope,ref,method,lim FROM mgtcomponent " .
 			      "WHERE id=" . $id;
@@ -57,7 +28,7 @@ function getComponent(&$db,$id)
 	return $db->fetch_array($resultCOM);
 }
 
-function getCategory(&$db,$id)
+function DEPR_getCategory(&$db,$id)
 {
 	$sql = "SELECT id,name,objective,config,data,tools,compid FROM mgtcategory " .
 			   "WHERE id=" . $id;
@@ -73,7 +44,7 @@ function getCategory(&$db,$id)
 * @var integer $id
 * @var bool $convert TRUE is default
 */
-function getTestcase(&$db,$id, $convert = TRUE)
+function DEPR_getTestcase(&$db,$id, $convert = TRUE)
 {
 	// execute SQL request
 	$sql  = " SELECT id,title,summary,steps,exresult,version,keywords,
@@ -123,17 +94,6 @@ function getTestcase(&$db,$id, $convert = TRUE)
 	return($myrow);
 }
 
-
-
-
-
-
-
-
-
-
-
-
 /** 
 * function get converted TC title
 *
@@ -145,7 +105,7 @@ function getTestcase(&$db,$id, $convert = TRUE)
 * refactoring call to getTestcase
 *
 */
-function getTestcaseTitle(&$db,$id, $convert = TRUE)
+function DEPR_getTestcaseTitle(&$db,$id, $convert = TRUE)
 {
 	$tc_data=getTestcase($db,$id, $convert);
 	return ($tc_data['title']);
@@ -155,7 +115,7 @@ function getTestcaseTitle(&$db,$id, $convert = TRUE)
 
 /** 2. Functions to show test specification */
 
-function showProduct(&$db,$id, $sqlResult = '', $sqlAction = 'update',$moddedItem = 0)
+function DEPR_showProduct(&$db,$id, $sqlResult = '', $sqlAction = 'update',$moddedItem = 0)
 {
 	$product = getProduct($db,$id);
 
@@ -175,32 +135,7 @@ function showProduct(&$db,$id, $sqlResult = '', $sqlAction = 'update',$moddedIte
 }
 
 
-/*
-function showComponent(&$db,$id, $sqlResult = '', $sqlAction = 'update',$moddedItem = 0)
-{
-	// init smarty
-	$smarty = new TLSmarty;
-	$smarty->assign('modify_tc_rights', has_rights($db,"mgt_modify_tc"));
-
-	if ($sqlResult)
-	{ 
-		$smarty->assign('sqlResult', $sqlResult);
-		$smarty->assign('sqlAction', $sqlAction);
-	}
-	$smarty->assign('level', 'component');
-	
-	$component = getComponent($db,$id);
-	
-	$moddedItem = ($moddedItem  ? getComponent($db,$moddedItem) : $component);
-	$smarty->assign('moddedItem',$moddedItem);
-	
-	$smarty->assign('container_data', $component);
-	$smarty->display('containerView.tpl');
-}
-*/
-
-
-function showCategory(&$db,$id, $sqlResult = '', $sqlAction = 'update',$moddedItem = 0)
+function DEPR_showCategory(&$db,$id, $sqlResult = '', $sqlAction = 'update',$moddedItem = 0)
 {
 	$smarty = new TLSmarty;
 	$smarty->assign('modify_tc_rights', has_rights($db,"mgt_modify_tc"));
@@ -229,7 +164,7 @@ function showCategory(&$db,$id, $sqlResult = '', $sqlAction = 'update',$moddedIt
  *     
  * @modified 20050829 - Martin Havlat - added REQ support            
  */
-function showTestcase (&$db,$id,$allow_edit = 1)
+function DEPR_showTestcase (&$db,$id,$allow_edit = 1)
 {
 	define('DO_NOT_CONVERT',false);
 	global $g_tpl;
@@ -273,7 +208,7 @@ function showTestcase (&$db,$id,$allow_edit = 1)
 /////////////////////////////////////////////////////////////////////////
 /** 3. Functions for copy/move test specification */
 
-function moveTc(&$db,$newCat, $id)
+function DEPR_moveTc(&$db,$newCat, $id)
 {
 	$sql = "UPDATE mgttestcase SET catid=" . $newCat . " WHERE id=" . $id;
 	$result = $db->exec_query($sql);
@@ -301,7 +236,7 @@ function copyTc(&$db,$newCat, $id, $user_id)
 
 
 
-function copyCategoryToComponent(&$db,$newParent, $id, $nested, $user_id)
+function DEPR_copyCategoryToComponent(&$db,$newParent, $id, $nested, $user_id)
 {
 	//Select the category info so that we can copy it
 	$sqlCopyCat = " SELECT name,objective,config,data,tools,compid,CATorder,id " .
@@ -346,7 +281,7 @@ function copyCategoryToComponent(&$db,$newParent, $id, $nested, $user_id)
 	}
 }
 
-function moveCategoryToComponent(&$db,$newParent, $id)
+function DEPR_moveCategoryToComponent(&$db,$newParent, $id)
 {
 	$sql = "UPDATE mgtcategory SET compid=".$newParent." WHERE id=".$id;
 	$result = $db->exec_query($sql);
@@ -356,7 +291,7 @@ function moveCategoryToComponent(&$db,$newParent, $id)
 
 
 // 20051129 - fm - added logic to check for existent name.
-function moveComponentToProduct(&$db,$newParent, $comp_id)
+function DEPR_moveComponentToProduct(&$db,$newParent, $comp_id)
 {
 
   // 20051129 - fm
@@ -423,14 +358,14 @@ function moveComponentToProduct(&$db,$newParent, $comp_id)
 // 20050908 - fm due to changes in insertProductComponent()
 //
 
-function copyComponentToProduct(&$db,$newParent, $id, $nested, $user_id)
+function DEPR_copyComponentToProduct(&$db,$newParent, $id, $nested, $user_id)
 
 {
 	// 20051129 - fm
 	$check_names_for_duplicates=config_get('check_names_for_duplicates');
 	$action_on_duplicate_name=config_get('action_on_duplicate_name');
   
-	$component = getComponent($db,$id);
+	$component = DEPR_getComponent($db,$id);
 
 	$ret = insertProductComponent($db,$newParent,$component[1],$component[2],$component[3],
 	                              $component[4],$component[5],$component[6],
@@ -461,7 +396,7 @@ function copyComponentToProduct(&$db,$newParent, $id, $nested, $user_id)
  20050910 - fm - correct (my) bug
  20050908 - fm - added possibility to check for existent name and refuse to insert
 */
-function insertProductComponent(&$db,$prodID,$name,$intro,$scope,$ref,$method,$lim,
+function DEPR_insertProductComponent(&$db,$prodID,$name,$intro,$scope,$ref,$method,$lim,
                                 $check_duplicate_name=0,
                                 $action_on_duplicate_name='allow_repeat')
 {
@@ -520,7 +455,7 @@ function insertProductComponent(&$db,$prodID,$name,$intro,$scope,$ref,$method,$l
 
 
 
-function insertComponentCategory(&$db,$compID,$name,$objective,$config,$testdata,$tools)
+function DEPR_insertComponentCategory(&$db,$compID,$name,$objective,$config,$testdata,$tools)
 {
 	$sql = "INSERT INTO mgtcategory (name,objective,config,data,tools,compid) " .
 			"VALUES ('" . $db->prepare_string($name) . "','" . $db->prepare_string($objective). 
@@ -532,7 +467,7 @@ function insertComponentCategory(&$db,$compID,$name,$objective,$config,$testdata
 	return $result ? $db->insert_id() : 0;
 }
 
-function updateComponent(&$db,$id,$name,$intro,$scope,$ref,$method,$lim)
+function DEPR_updateComponent(&$db,$id,$name,$intro,$scope,$ref,$method,$lim)
 {
 	$sql = "UPDATE mgtcomponent set name ='" . $db->prepare_string($name) . "', intro ='" . 
 		$db->prepare_string($intro) . "', scope='" . $db->prepare_string($scope) . "', ref='" . 
@@ -544,7 +479,7 @@ function updateComponent(&$db,$id,$name,$intro,$scope,$ref,$method,$lim)
 	return $result ? 1 : 0;
 }
 
-function deleteComponent(&$db,$compID)
+function DEPR_deleteComponent(&$db,$compID)
 {
 	$sql = "DELETE FROM mgtcomponent WHERE id=" . $compID;
 	$result = $db->exec_query($sql);
@@ -555,7 +490,7 @@ function deleteComponent(&$db,$compID)
 
 // 20051208 - fm 
 // returns array with categories id
-function getComponentCategoryIDs(&$db,$compID)
+function DEPR_getComponentCategoryIDs(&$db,$compID)
 {
 	$sql = "SELECT id FROM mgtcategory WHERE compid=" . $compID;
 	$result = $db->exec_query($sql);
@@ -570,9 +505,7 @@ function getComponentCategoryIDs(&$db,$compID)
 	return($cat_ids);
 }
 
-
-
-function deleteComponentCategories(&$db,$compID)
+function DEPR_deleteComponentCategories(&$db,$compID)
 {
 	$sql = "DELETE FROM mgtcategory WHERE compID=".$compID;
 	$result = $db->exec_query($sql);
@@ -580,7 +513,7 @@ function deleteComponentCategories(&$db,$compID)
 	return $result ? 1 : 0;
 }
 
-function deleteCategoriesTestcases(&$db,$catIDs)
+function DEPR_deleteCategoriesTestcases(&$db,$catIDs)
 {
 	$sql = "DELETE FROM mgttestcase WHERE mgttestcase.catid IN ({$catIDs})";
 	$result = $db->exec_query($sql);
@@ -588,12 +521,7 @@ function deleteCategoriesTestcases(&$db,$catIDs)
 	return $result ? 1 : 0;
 }
 
-
-
-
-
-
-function getOrderedComponentCategories(&$db,$compID,&$cats)
+function DEPR_getOrderedComponentCategories(&$db,$compID,&$cats)
 {
 	$sql = "SELECT id,name,CATorder FROM mgtcategory WHERE compid=" . 
 			$compID . " ORDER BY CATorder,id";
@@ -614,7 +542,7 @@ function getOrderedComponentCategories(&$db,$compID,&$cats)
 // 20051112 - fm
 // to solve BUGID 000218 the CATOrder will be updated on category (testplan) also
 //
-function updateCategoryOrder(&$db,$catID,$order)
+function DEPR_updateCategoryOrder(&$db,$catID,$order)
 {
 	
   /*  20051121 - fm - on 20051112 wrong logic   */   
@@ -636,7 +564,7 @@ function updateCategoryOrder(&$db,$catID,$order)
 	return $result ? 1 : 0;
 }
 
-function deleteCategory(&$db,$catID)
+function DEPR_deleteCategory(&$db,$catID)
 {
 	$sql = "DELETE FROM mgtcategory WHERE id=".$catID;
 	$result = $db->exec_query($sql);
@@ -644,7 +572,7 @@ function deleteCategory(&$db,$catID)
 	return $result ? 1 : 0;
 }
 
-function updateCategory(&$db,$catID,$name,$objective,$config,$pdata,$tools)
+function DEPR_updateCategory(&$db,$catID,$name,$objective,$config,$pdata,$tools)
 {
 	$sql = "UPDATE mgtcategory SET name ='" .$db->prepare_string($name) . 
 		"', objective ='" . $db->prepare_string($objective). "', config='" . 
@@ -654,7 +582,7 @@ function updateCategory(&$db,$catID,$name,$objective,$config,$pdata,$tools)
 	$result = $db->exec_query($sql); //Execute query
 }
 
-function getOrderedCategoryTestcases(&$db,$catID,&$tcs)
+function DEPR_getOrderedCategoryTestcases(&$db,$catID,&$tcs)
 {
 	$sql = "SELECT id,title,TCorder FROM mgttestcase WHERE catid=".$catID." ORDER BY TCorder,id";
 	$result = $db->exec_query($sql);
@@ -667,7 +595,7 @@ function getOrderedCategoryTestcases(&$db,$catID,&$tcs)
 	return $result ? 1 : 0;
 }
 
-function updateTestCaseOrder(&$db,$tcID,$order)
+function DEPR_updateTestCaseOrder(&$db,$tcID,$order)
 {
 	$sql = "UPDATE mgttestcase SET TCorder=".$order." WHERE id=".$tcID;
 	$result = $db->exec_query($sql); //Execute query
@@ -675,7 +603,7 @@ function updateTestCaseOrder(&$db,$tcID,$order)
 	return $result ? 1 : 0;
 }
 
-function getCategoryComponentAndProduct(&$db,$catID,&$compID,&$prodID)
+function DEPR_getCategoryComponentAndProduct(&$db,$catID,&$compID,&$prodID)
 {
 	$sql = "SELECT compid, prodid FROM mgtcategory,mgtcomponent WHERE mgtcategory.id=" . 
 	       $catID . " AND mgtcategory.compid=mgtcomponent.id";
@@ -692,7 +620,7 @@ function getCategoryComponentAndProduct(&$db,$catID,&$compID,&$prodID)
 	}
 	return $result ? 1 : 0;
 }
-function getAllProductComponentsBut(&$db,$compID,$prodID,&$comps)
+function DEPR_getAllProductComponentsBut(&$db,$compID,$prodID,&$comps)
 {
 	$sql = "SELECT id, name FROM mgtcomponent WHERE prodid=" . $prodID . 
 			" and id != " . $compID;
@@ -707,7 +635,7 @@ function getAllProductComponentsBut(&$db,$compID,$prodID,&$comps)
 	return $result ? 1 : 0;
 }
 
-function deleteTestcase(&$db,$tcID)
+function DEPR_deleteTestcase(&$db,$tcID)
 {
 	$sql = "DELETE FROM mgttestcase WHERE id=" . $tcID;
 	$result= $db->exec_query($sql);
@@ -716,7 +644,7 @@ function deleteTestcase(&$db,$tcID)
 }
 
 // 20060108 - fm 
-function insertTestcase(&$db,$catID,$title,$summary,$steps,
+function DEPR_insertTestcase(&$db,$catID,$title,$summary,$steps,
                         $outcome,$user_id,$tcOrder = null,$keywords = null)
 {
 	$more_sql = '';
@@ -759,7 +687,7 @@ function insertTestcase(&$db,$catID,$title,$summary,$steps,
 
 // 20060108 - fm  - reviewer_id 
 // 20050819 - scs - fix for bug Mantis 59 Use of term "created by" is not enforced---
-function updateTestcase(&$db,$tcID,$title,$summary,$steps,$outcome,$user_id,$keywords,$version)
+function DEPR_updateTestcase(&$db,$tcID,$title,$summary,$steps,$outcome,$user_id,$keywords,$version)
 {
 	
 	$sql = "UPDATE mgttestcase SET keywords='" . 
@@ -775,7 +703,7 @@ function updateTestcase(&$db,$tcID,$title,$summary,$steps,$outcome,$user_id,$key
 }
 
 
-function getTestCaseCategoryAndComponent(&$db,$tcID,&$catID,&$compID)
+function DEPR_getTestCaseCategoryAndComponent(&$db,$tcID,&$catID,&$compID)
 {
 	$sql = "SELECT catid, compid FROM mgttestcase,mgtcategory WHERE mgttestcase.id=" . $tcID . " AND mgttestcase.catid=mgtcategory.id";
 	$result = $db->exec_query($sql);
@@ -791,7 +719,7 @@ function getTestCaseCategoryAndComponent(&$db,$tcID,&$catID,&$compID)
 	}
 	return $result ? 1 : 0;
 }
-function getOptionCategoriesOfComponent(&$db,$compID,&$comps)
+function DEPR_getOptionCategoriesOfComponent(&$db,$compID,&$comps)
 {
 	$sql = "SELECT id, name FROM mgtcategory WHERE compid=".$compID;	
 	

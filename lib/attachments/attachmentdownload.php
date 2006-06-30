@@ -5,12 +5,12 @@
  *
  * Filename $RCSfile: attachmentdownload.php,v $
  *
- * @version $Revision: 1.2 $
- * @modified $Date: 2006/04/29 19:32:54 $ by $Author: schlundus $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2006/06/30 18:41:25 $ by $Author: schlundus $
  *
  * Download dialog
 **/
-ob_start();
+ob_end_clean();
 require_once('../../config.inc.php');
 require_once('../functions/common.php');
 require_once('../functions/attachments.inc.php');

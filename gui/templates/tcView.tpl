@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView.tpl,v 1.18 2006/06/19 19:35:37 schlundus Exp $
+$Id: tcView.tpl,v 1.19 2006/06/30 18:41:25 schlundus Exp $
 Purpose: smarty template - view test case in test specification
 
 20060425 - franciscom - can manage multiple test cases
@@ -36,7 +36,11 @@ Purpose: smarty template - view test case in test specification
 		         args_show_title="yes"}
 		
 		{assign var="tcID" value=$testcase_curr_version[idx][0].testcase_id}
-		{include file="inc_attachments.tpl" attachmentInfos=$attachments[$tcID] id=$tcID tableName="nodes_hierarchy"}
+		{assign var="bDownloadOnly" value=false}
+		{if $can_edit neq 'yes'}
+			{assign var="bDownloadOnly" value=true}
+		{/if}
+		{include file="inc_attachments.tpl" attachmentInfos=$attachments[$tcID] id=$tcID tableName="nodes_hierarchy" downloadOnly=$bDownloadOnly}
 
     {* Other Versions *}
     {if $testcase_other_versions[idx] neq null}
@@ -48,9 +52,9 @@ Purpose: smarty template - view test case in test specification
         
   	    {foreach item=my_testcase from=$testcase_other_versions[idx]}
   	          <span style="cursor: pointer" class="type1" 
-  	                onclick="viewElement(document.getElementById('{$my_testcase.version}'),document.getElementById('{$my_testcase.version}').style.display=='none')"> Version {$my_testcase.version} </span>
+  	                onclick="viewElement(document.getElementById('v{$vid}_{$my_testcase.version}'),document.getElementById('v{$vid}_{$my_testcase.version}').style.display=='none')"> Version {$my_testcase.version} </span>
   	          <br />
-  	          <div id="{$my_testcase.version}" class="workBack">
+  	          <div id="v{$vid}_{$my_testcase.version}" class="workBack">
 				
 				      {include file="tcView_viewer.tpl" 
 						args_testcase=$my_testcase 

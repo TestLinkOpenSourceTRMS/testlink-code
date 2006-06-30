@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.31 $
- * @modified $Date: 2006/06/19 19:35:38 $ $Author: schlundus $
+ * @version $Revision: 1.32 $
+ * @modified $Date: 2006/06/30 18:41:25 $ $Author: schlundus $
  *
  * @author Martin Havlat
  *
@@ -106,7 +106,7 @@ if(!is_null($xx))
     			{
     				$tcase_id[] = $item['tc_id'];
     				$tcversion_id[] = $item['tcversion_id'];
-					$tcAttachments[$item['tc_id']] = getAttachmentInfos($db,$item['tc_id'],'nodes_hierarchy',STORE_IN_SESSION,1);
+					$tcAttachments[$item['tc_id']] = getAttachmentInfos($db,$item['tc_id'],'nodes_hierarchy',true,1);
 
     				break;
     			}
@@ -114,7 +114,7 @@ if(!is_null($xx))
     	}
 		if ($level == 'component')
 		{
-			$tSuiteAttachments = getAttachmentInfos($db,$id,'nodes_hierarchy',STORE_IN_SESSION,1);
+			$tSuiteAttachments = getAttachmentInfos($db,$id,'nodes_hierarchy',true,1);
 		}
     }
     
@@ -166,7 +166,7 @@ if(!is_null($xx))
         	{
         		$execID = $execInfo[$i]['execution_id'];
         		
-        		$aInfo = getAttachmentInfos($db,$execID,'executions',STORE_IN_SESSION,1);
+        		$aInfo = getAttachmentInfos($db,$execID,'executions',true,1);
         		if ($aInfo)
         		{
         			$attachmentInfos[$execID] = $aInfo;

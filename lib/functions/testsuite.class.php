@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testsuite.class.php,v $
- * @version $Revision: 1.14 $
- * @modified $Date: 2006/06/20 19:51:32 $
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2006/06/30 18:41:25 $
  * @author franciscom
  *
  * 20060425 - franciscom - changes in show() following Andreas Morsing advice (schlundus)
@@ -244,51 +244,45 @@ function viewer_edit_new($amy_keys, $oFCK, $action, $parent_id, $id=null)
 	$smarty->display($the_tpl);
 }
 
-
-// 20060309 - franciscom
 function copy_to($id, $parent_id, $user_id,
-                 $check_duplicate_name=0,$action_on_duplicate_name='allow_repeat')
+                 $check_duplicate_name = 0,
+				 $action_on_duplicate_name = 'allow_repeat',
+				 $copyKeywords = 0
+				 )
 {
-  $tcase_mgr = New testcase($this->db);
-
- 	$tsuite_info = $this->get_by_id($id);
+	$tcase_mgr = new testcase($this->db);
+	
+	$tsuite_info = $this->get_by_id($id);
 	$ret = $this->create($parent_id,$tsuite_info['name'],$tsuite_info['details'],
-	                     $check_duplicate_name,$action_on_duplicate_name);
-
+						$check_duplicate_name,$action_on_duplicate_name);
+	
 	$new_tsuite_id = $ret['id'];
 	
-  $subtree = $this->tree_manager->get_subtree($id,array('testplan' => 'exclude_me'),
-	                                                array('testcase' => 'exclude_my_children'));
+	$subtree = $this->tree_manager->get_subtree($id,array('testplan' => 'exclude_me'),
+													array('testcase' => 'exclude_my_children'));
 	
-	
-  if (!is_null($subtree))
+	if (!is_null($subtree))
 	{
 		$the_parent_id = $new_tsuite_id;	
-	  foreach($subtree as $the_key => $elem)
-	  {
-	  	if( $elem['parent_id'] == $id )
-	  	{
-	  	  $the_parent_id = $new_tsuite_id;	
-	  	}
-	  	
-	    switch ($elem['node_type_id'])
-	    {
-	      case $this->node_types_descr_id['testcase']:
-        $tcase_mgr->copy_to($elem['id'],$the_parent_id,$user_id);  	      
-	      break;
-	      
-	      
-	      case $this->node_types_descr_id['testsuite']:
-	      $tsuite_info = $this->get_by_id($elem['id']);
-	      $ret = $this->create($the_parent_id,$tsuite_info['name'],$tsuite_info['details']);      
-	      $the_parent_id = $ret['id'];
-	      break;
-	    }
-	  }
+		foreach($subtree as $the_key => $elem)
+		{
+			if( $elem['parent_id'] == $id )
+				$the_parent_id = $new_tsuite_id;	
+			
+			switch ($elem['node_type_id'])
+			{
+				case $this->node_types_descr_id['testcase']:
+					$tcase_mgr->copy_to($elem['id'],$the_parent_id,$user_id,$copyKeywords);
+					break;
+				case $this->node_types_descr_id['testsuite']:
+					$tsuite_info = $this->get_by_id($elem['id']);
+					$ret = $this->create($the_parent_id,$tsuite_info['name'],$tsuite_info['details']);      
+					$the_parent_id = $ret['id'];
+					break;
+			}
+		}
 	}
-	
-	
-} // end function
+}
 
 // get all test cases in the test suite and all children test suites
 // no info about tcversions is returned

@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: searchData.php,v 1.19 2006/06/19 19:35:38 schlundus Exp $
+ * $Id: searchData.php,v 1.20 2006/06/30 18:41:25 schlundus Exp $
  * Purpose:  This page presents the search results. 
  *
  * 20060427 - franciscom - added include tescase class
@@ -33,9 +33,6 @@ if ($tproject)
 	$from = array(
 				'by_keyword_id' => ' '
 			);
-    // Due to changes in the DB schema we can't do a simple query to
-    // filter testcase by Test project. We need to walk the tree hierarchy.
-    //
     $a_tcid = $tproject_mgr->get_all_testcases_id($tproject);
 	$filter = null;
 	if(count($a_tcid))
@@ -57,8 +54,7 @@ if ($tproject)
 		if($keyword_id)				
 		{
 			$from['by_keyword_id'] = ' ,testcase_keywords KW';
-			$filter['by_keyword_id'] = " AND NHA.id = KW.testcase_id 
-							             AND KW.keyword_id = {$keyword_id} ";	
+			$filter['by_keyword_id'] = " AND NHA.id = KW.testcase_id AND KW.keyword_id = {$keyword_id} ";	
 		}
 
         if(strlen($name))
@@ -85,10 +81,9 @@ if ($tproject)
         	$filter['by_expected_results'] = " AND expected_results like '%{$expected_results}%' ";	
         }    
 
-		$sql = " SELECT NHA.id AS testcase_id,NHA.name,summary,steps,expected_results,version
-			FROM nodes_hierarchy NHA, nodes_hierarchy NHB, tcversions {$from['by_keyword_id']}
-  			WHERE NHA.id = NHB.parent_id
-  			AND   NHB.id = tcversions.id ";
+		$sql = " SELECT NHA.id AS testcase_id,NHA.name,summary,steps,expected_results,version ".
+			   " FROM nodes_hierarchy NHA, nodes_hierarchy NHB, tcversions {$from['by_keyword_id']}".
+  			   " WHERE NHA.id = NHB.parent_id AND NHB.id = tcversions.id ";
 			
 		if ($filter)
 			$sql .= implode("",$filter);
@@ -100,7 +95,7 @@ if(count($map))
 {
 	foreach($map as $id => $dd)
 	{
-		$attachments[$id] = getAttachmentInfos($db,$id,'nodes_hierarchy',STORE_IN_SESSION,1);
+		$attachments[$id] = getAttachmentInfos($db,$id,'nodes_hierarchy',true,1);
 	}
 	$smarty->assign('attachments',$attachments);
 	$tcase_mgr = new testcase($db);   

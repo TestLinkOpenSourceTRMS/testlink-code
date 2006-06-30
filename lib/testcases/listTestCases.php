@@ -2,7 +2,7 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: listTestCases.php,v 1.15 2006/05/16 19:35:40 schlundus Exp $
+* 	@version 	$Id: listTestCases.php,v 1.16 2006/06/30 18:41:25 schlundus Exp $
 * 	@author 	Martin Havlat
 * 
 * 	This page generates tree menu with test specification. It builds the
@@ -43,7 +43,6 @@ else
 	tLog("Missing argument 'feature'.", 'ERROR');
 	exit();
 }
-
 $treeString = generateTestSpecTree($db,$tproject_id, $tproject_name,
                                    $workPath,0,1);
 

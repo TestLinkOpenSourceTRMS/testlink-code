@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: treeMenu.inc.php,v $
  *
- * @version $Revision: 1.21 $
- * @modified $Date: 2006/06/10 20:22:20 $ by $Author: schlundus $
+ * @version $Revision: 1.22 $
+ * @modified $Date: 2006/06/30 18:41:25 $ by $Author: schlundus $
  * @author Martin Havlat
  *
  * 	This file generates tree menu for test specification and test execution.
@@ -23,8 +23,6 @@
  *
  **/
 require_once '../../config.inc.php';
-
-define('TL_TIME_LIMIT_EXTEND', 30); // limit of possible connection delay in seconds
 
 if (TL_TREE_KIND == 'LAYERSMENU') 
 {
@@ -59,7 +57,6 @@ function invokeMenu($menustring, $highLight = "")
 		$mid->setLibjsdir(TL_MENU_PATH . 'libjs' . DS);
 		$mid->setImgwww(TL_MENU_WWW . 'menuimages/');
 		
-		// 20060304 - franciscom
 		// needed to be able to set the icon file for a menu item (works only for LEAF nodes)
 		$mid->setIcondir(TL_MENU_PATH . 'menuicons/');
 		$mid->setIconwww(TL_MENU_WWW . 'menuicons/');
@@ -135,7 +132,7 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,
 	$hash_id_descr = array_flip($hash_descr_id);
 	
 	$test_spec = $tree_manager->get_subtree($tproject_id,array('testplan'=>'exclude me'),
-	                                                     array('testcase'=>'exclude my children'),null,null,true);
+												 array('testcase'=>'exclude my children'),null,null,true);
 	$test_spec['name'] = $tproject_name;
 	$test_spec['id'] = $tproject_id;
 	$test_spec['node_type_id'] = 1;
@@ -146,7 +143,6 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,
 			$tck_map = $tproject_mgr->get_keywords_tcases($tproject_id,$keyword_id);
 		$testcase_count = prepareNode(&$test_spec,$hash_id_descr,$tck_map,null,$bHideTCs);
 		$test_spec['testcase_count'] = $testcase_count;
-			
 		$menustring = renderTreeNode(1,$test_spec,$getArguments,$hash_id_descr,$tc_action_enabled,$linkto);
 	}
 
@@ -214,7 +210,8 @@ function renderTreeNode($level,&$node,$getArguments,$hash_id_descr,$tc_action_en
 	if (isset($node['childNodes']) && $node['childNodes'])
 	{
 		$childNodes = $node['childNodes'];
-		for($i = 0;$i < sizeof($childNodes);$i++)
+		$nChildren = sizeof($childNodes);
+		for($i = 0;$i < $nChildren;$i++)
 		{
 			$current = $childNodes[$i];
 			if(is_null($current))

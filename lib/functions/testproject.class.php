@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.20 $
- * @modified $Date: 2006/06/20 19:51:32 $
+ * @version $Revision: 1.21 $
+ * @modified $Date: 2006/06/30 18:41:25 $
  * @author franciscom
  *
  * 20060425 - franciscom - changes in show() following Andreas Morsing advice (schlundus)
@@ -417,8 +417,10 @@ function count_testcases($id)
 	{
 		$a_keywords = null;
 		$sql = " SELECT id,keyword,notes FROM keywords " .
-			   " WHERE testproject_id = {$testproject_id}" .
-			   " ORDER BY keyword ASC";
+			   " WHERE testproject_id = {$testproject_id}" ;
+		if ($keywordID)
+			$sql .= " AND id = {$keywordID} ";			   
+		$sql .= " ORDER BY keyword ASC";
 		
 		$a_keywords = $this->db->get_recordset($sql);
 		return $a_keywords;

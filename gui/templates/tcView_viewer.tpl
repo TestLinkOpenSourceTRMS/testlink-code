@@ -1,10 +1,9 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.5 2006/04/29 19:32:54 schlundus Exp $
+$Id: tcView_viewer.tpl,v 1.6 2006/06/30 18:41:25 schlundus Exp $
 viewer for test case in test specification
 
 20060427 - franciscom - added font-size in the table used for keywords
-20060325 - franciscom - 
 *}
 
 {if $args_show_title == "yes"}
@@ -22,24 +21,21 @@ viewer for test case in test specification
 	  <input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />
 
     {if $args_status_quo eq null or $args_status_quo[$args_testcase.id].executed eq null}
- 	    <input type="submit" id="edit_tc"   name="edit_tc"   value="{lang_get s='btn_edit'}" />
+ 	    <input type="submit" name="edit_tc"   value="{lang_get s='btn_edit'}" />
     {/if}
 
 	{if $args_can_delete_testcase == "yes" }
-		<input type="submit" id="delete_tc" name="delete_tc" value="{lang_get s='btn_del'}" />
+		<input type="submit" name="delete_tc" value="{lang_get s='btn_del'}" />
     {/if}
 
     {if $args_can_delete_version == "yes" }
-		<input type="submit" id="delete_tc_version" 
-		                     name="delete_tc_version" value="{lang_get s='btn_del_this_version'}" />
+		<input type="submit" name="delete_tc_version" value="{lang_get s='btn_del_this_version'}" />
     {/if}
     
     {if $args_can_move_copy == "yes" }
-   		<input type="submit" id="move_copy_tc" 
-   		                     name="move_copy_tc"   value="{lang_get s='btn_mv_cp'}" />
+   		<input type="submit" name="move_copy_tc"   value="{lang_get s='btn_mv_cp'}" />
     {/if}		                     
-		<input type="submit" id="do_create_new_version" name="do_create_new_version"   value="{lang_get s='btn_new_version'}" />
-
+		<input type="submit" name="do_create_new_version"   value="{lang_get s='btn_new_version'}" />
 	</form>
 	</div>	
 {/if}

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: tree.class.php,v $
  *
- * @version $Revision: 1.16 $
- * @modified $Date: 2006/05/17 10:58:23 $ by $Author: franciscom $
+ * @version $Revision: 1.17 $
+ * @modified $Date: 2006/06/30 18:41:25 $ by $Author: schlundus $
  * @author Francisco Mancardi
  *
  * 20060511 - franciscom - changes in call to insert_id() due to problems with Postgres
@@ -137,7 +137,7 @@ function get_subtree_list($node_id)
   $sql = " SELECT * from {$this->obj_table} 
           WHERE parent_id = {$node_id} ";
  
-  $node_list='';  
+  $node_list = '';  
   $result = $this->db->exec_query($sql);
   
   if( $this->db->num_rows($result) == 0 )
@@ -465,14 +465,10 @@ function _get_subtree_rec($node_id,&$pnode,$and_not_in_clause = '',
                                            $exclude_children_of = null,
                                            $exclude_branches = null)
 {
-  	$sql = " SELECT * from {$this->obj_table}
-   	         WHERE parent_id = {$node_id} {$and_not_in_clause}
-		         ORDER BY node_order";
+  	$sql = " SELECT * from {$this->obj_table} WHERE parent_id = {$node_id} {$and_not_in_clause}" .
+		   " ORDER BY node_order";
  
     $result = $this->db->exec_query($sql);
-    if($this->db->num_rows($result) == 0)
-		return; 	
-  
     while($row = $this->db->fetch_array($result))
     {
 		$rowID = $row['id'];

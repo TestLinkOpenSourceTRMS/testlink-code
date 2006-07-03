@@ -3,10 +3,11 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * Filename $RCSfile: containerEdit.php,v $
+ * 20060701 - franciscom
+ * Added the Test Project as the FIRST Container where is possible to copy
  *
- * @version $Revision: 1.39 $
- * @modified $Date: 2006/06/30 18:41:25 $ by $Author: schlundus $
+ * @version $Revision: 1.40 $
+ * @modified $Date: 2006/07/03 15:43:05 $ by $Author: franciscom $
  * @author Martin Havlat
 */
 require_once("../../config.inc.php");
@@ -209,8 +210,13 @@ else if ($action == 'delete_testsuite')
 }
 else if($action == 'move_testsuite_viewer') 
 {
+	
 	$testsuites = $tproject_mgr->gen_combo_test_suites($my_tprojectID,
 	                                                  array($my_testsuiteID => 'exclude'));
+  
+  // 20060701 - franciscom
+  // Added the Test Project as the FIRST Container where is possible to copy
+  $testsuites = array($my_tprojectID => $_SESSION['testprojectName']) + $testsuites;
   
 	$smarty->assign('old_containerID', $my_tprojectID); // original container
 	$smarty->assign('arraySelect', $testsuites);

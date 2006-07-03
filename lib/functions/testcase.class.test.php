@@ -8,9 +8,17 @@ require_once('../../config.inc.php');
 require_once('common.php');
 require_once('testcase.class.php');
 
-$classDescription = "This page will first call an initialization method, then the testplan class will be instantiated, then we will retrieve the current testplan and testproject ids.  Once this initial information has been gathered, each method of the testplan class will be used and we will inspect the results.";
+$classDescription = "testcase.class.php provides methods to create, edit, and delete test cases.";
 
-$classUsage = "initialize the page and \$db reference testlinkInitPage(\$db) testlinkInitPage(\$db) Instantiate the testplan object using the \$db reference \$tp = new testplan(\$db) \$tp = new testplan(\$db) Many of the values used by the methods can be retrieve from \$_SESSION ";
+$classUsage = "1st initialize the page and \$db reference using \"testlinkInitPage(\$db)\"  <BR> 2nd instantiate the testcase object using the \$db reference \"\$tc = new testcase(\$db)\" <BR> Make function calls into your object using \"\$result = \$tc->functionName()\" <BR> Many of the parameter values required by the methods can be retrieve from  the \$_SESSION object. This object is always available and does not need to be instantiated. Review the source from testcase.class.test.php to see examples of using methods for the testcase object.";
+
+/**
+
+*/
+
+testlinkInitPage($db);
+$tc = new testcase($db);
+
 
 $mapOfRows = array();
 /** ******************************************** */

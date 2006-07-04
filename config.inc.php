@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.66 $
- * @modified $Date: 2006/06/30 18:41:25 $ by $Author: schlundus $
+ * @version $Revision: 1.67 $
+ * @modified $Date: 2006/07/04 17:01:11 $ by $Author: franciscom $
  *
  *
  * Constants and configuration parameters used throughout TestLink 
@@ -541,7 +541,8 @@ define("TL_REPOSITORY_MAXFILESIZE",1024*1024*TL_REPOSITORY_MAXFILESIZE_MB);
 **/
 $g_repositoryType = TL_REPOSITORY_TYPE_FS;
 /* the where the filesystem repository should be located */
-$g_repositoryPath = "c:\\muell";
+$g_repositoryPath = TL_ABS_PATH . "upload_area" . DS;
+
 
 /* compression used within the repository 
  * TL_REPOSITORY_COMPRESSIONTYPE_NONE => no compression

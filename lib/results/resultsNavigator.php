@@ -2,7 +2,7 @@
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
- * @version $Id: resultsNavigator.php,v 1.8 2006/06/19 02:16:33 kevinlevy Exp $ 
+ * @version $Id: resultsNavigator.php,v 1.9 2006/07/04 17:24:58 kevinlevy Exp $ 
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
  * This page list View of Test Results and Metrics.
@@ -30,10 +30,17 @@ $arrData = array(
 	array('name' => lang_get('link_report_excel'), 'href' => 'resultsTC.php?format=excel'),
 	array('name' => lang_get('link_report_blocked_tcs'), 'href' => 'resultsByStatus.php?type=b'),
 	array('name' => lang_get('link_report_failed'), 'href' => 'resultsByStatus.php?type=f'),
-	array('name' => lang_get('link_report_total_bugs'), 'href' => 'resultsBugs.php'),
-	// KL - 20060618 - temporarly location of link to documentation
-	array('name' => 'testplan class API', 'href' => '../functions/testplan.class.test.php')
-);
+	array('name' => lang_get('link_report_total_bugs'), 'href' => 'resultsBugs.php')
+	// KL - 20060618 - temporarly location of links to documentation on classes
+	/**
+	array('name' => 'database.class API', 'href' => '../functions/database.class.test.php'),
+	array('name' => 'testcase.class API', 'href' => '../functions/testcase.class.test.php'),
+	array('name' => 'testplan.class API', 'href' => '../functions/testplan.class.test.php'),
+	array('name' => 'testproject.class API', 'href' => '../functions/testproject.class.test.php'),
+	array('name' => 'testsuite.class API', 'href' => '../functions/testsuite.class.test.php'),
+	array('name' => 'tree.class API', 'href' => '../functions/tree.class.test.php'),
+	*/
+	);
 
 if ($_SESSION['testprojectOptReqs'])
 {

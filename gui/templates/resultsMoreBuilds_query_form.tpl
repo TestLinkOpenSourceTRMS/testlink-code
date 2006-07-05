@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: resultsMoreBuilds_query_form.tpl,v 1.22 2006/06/05 05:32:26 kevinlevy Exp $
+$Id: resultsMoreBuilds_query_form.tpl,v 1.23 2006/07/05 05:37:47 kevinlevy Exp $
 @author Francisco Mancardi - fm - start solving BUGID 97/98
 20051022 - scs - removed ' in component id values
 20051121 - scs - added escaping of tpname
@@ -22,21 +22,30 @@ $Id: resultsMoreBuilds_query_form.tpl,v 1.22 2006/06/05 05:32:26 kevinlevy Exp $
 </table>
 -->
 
-<table class="simple" style="width: 100%; text-align: center; margin-left: 0px;">
-	<tr><th>id</th><th>build_id</th><th>tester_id</th><th>execution_ts</th><th>status</th><th>testplan_id</th><th>tcversion_id</th><th>notes</th></tr>
-	{foreach key=id item=array from=$mapOfResults}
-	{* by default select all builds*}
-		<tr><td>{$array[0]}</td>
-		     <td>{$array[1]}</td>
-	   	     <td>{$array[2]}</td>
-	   	     <td>{$array[3]}</td>
-	   	     <td>{$array[4]}</td>
-	   	     <td>{$array[5]}</td>
-	   	     <td>{$array[6]}</td>
-	   	     <td>{$array[7]}</td>
+
+	{foreach key=id item=array from=$suiteList}
+		<h3>suite id = {$id} </h3>
+		<table class="simple" style="width: 100%; text-align: center; margin-left: 0px;">
+		<tr><th>test case id</th><th>test case version id</th><th>build id</th><th>tester_id</th><th>execution_ts</th><th>status</th><th>notes</th></tr>
+
+		{foreach key=id2 item=array2 from=$suiteList[$id]}
+
+		{* by default select all builds*}
+		<tr>
+			<td>{$array2[0]}</td>
+	 	     	<td>{$array2[1]}</td>
+	   	     	<td>{$array2[2]}</td>
+	   	     	<td>{$array2[3]}</td>
+	   	     	<td>{$array2[4]}</td>
+	   	     	<td>{$array2[5]}</td>
+	   	     	<td>{$array2[6]}</td>
+	   	     	<td>{$array2[7]}</td>
 		</tr>
+		
+		{/foreach}
+	</table>
 	{/foreach}				
-</table>
+
 
 <!--
 <h1>{lang_get s='test_plan_header'} {$testPlanName|escape}</h1>

@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: installNewDB.php,v 1.21 2006/05/24 07:11:59 franciscom Exp $ */
+/* $Id: installNewDB.php,v 1.22 2006/07/05 17:58:06 franciscom Exp $ */
 /*
 Parts of this file has been taken from:
 Etomite Content Management System
@@ -513,7 +513,9 @@ else
 	echo "<span class='ok'>OK!</span>";
 }
 
-echo "</b><p />" . 'Installation was successful! You can now log into the <a href="../index.php">TestLink (Please Click Me!)</a>.';
+echo "</b><p />" . 'Installation was successful! ' .
+     'You can now log into the <a href="../index.php">' .
+     'TestLink (using login name:admin / password:admin - Please Click Me!)</a>.';
 $db->close();
 close_html_and_exit();     
 

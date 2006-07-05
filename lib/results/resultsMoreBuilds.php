@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsMoreBuilds.php,v 1.25 2006/07/04 19:51:57 kevinlevy Exp $ 
+* $Id: resultsMoreBuilds.php,v 1.26 2006/07/05 05:25:25 kevinlevy Exp $ 
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 * 
@@ -14,6 +14,7 @@
 require('../../config.inc.php');
 require_once('common.php');
 require_once('builds.inc.php');
+require_once('../functions/results.class.php');
 require_once('../functions/testplan.class.php');
 // allow us to retreive array of users 
 //require_once('plan.core.inc.php');
@@ -23,84 +24,20 @@ require_once('resultsMoreBuilds.inc.php');
 testlinkInitPage($db);
 
 $tp = new testplan($db);
-$linked_tcversions = $tp->get_linked_tcversions($_SESSION['testPlanId']);
-/**
-print "<BR>";
-print "\$linked_tcversions : <BR>";
-print_r($linked_tcversions);
-print "<BR>";
-*/
-  print " ========================= <BR> ";
-while ($testcaseID = key($linked_tcversions)){
-  $info = $linked_tcversions[$testcaseID];
-  print "testcaseID = $testcaseID <BR>";
-  //print_r($info);
-  //$notSure = $info[0];
-  //print "notSure = $notSure <BR>";
-  $testsuite_id = $info[testsuite_id];
-  print "testsuite_id =$testsuite_id <BR>";
-  //$notSure2 = $info[1];
-  //print "notSure2 = $notSure2 <BR>";
-  //$tc_id = $info[tc_id];
-  //print "tc_id = $tc_id <BR>";
-  $tcversion_id = $info[tcversion_id];
-  print "tcversion_id = $tcversion_id <BR>";
-  //$notSure3 = $info[3];
-  //print "noteSure3 = $noteSure3 <BR>";
-  $executed = $info[executed];
-  print "executed = $executed <BR>";
-
-  $executionExists = 1;
-  if ($tcversion_id != $executed){
-    print "tcversion_id $tcversion_id was not executed <BR>";
-    $executionExists = 0;
-  }
-
-  // select * from executions where tcversion_id = $executed;
-
-  if ($executionExists) {
-    
-    // NOTE TO SELF - this is where we can include the searching of results
-    // over multiple test plans - by modifying this select statement slightly
-    // to include multiple test plan ids
-
-    $execQuery = $db->fetchArrayRowsIntoMap("select * from executions where tcversion_id = $executed AND testplan_id = $_SESSION[testPlanId]", 'id');
-    //    print_r($execQuery);
-    print "<BR>";
-        while($executions_id = key($execQuery)){
-	    print "execution info : <BR>";
-	    
-	    print "executions_id = $executions_id <BR>";
-	    print "<BR>";
-	    $notSureA = $execQuery[$executions_id];
-	    $exec_row = $notSureA[0];
-	    print_r($executions_row);
-	    $build_id = $exec_row[build_id];
-	    $tester_id = $exec_row[tester_id];
-	    $execution_ts = $exec_row[execution_ts];
-	    $status = $exec_row[status];
-	    $testplan_id = $exec_row[testplan_id];
-	    $notes = $exec_row[notes];
-	    print "<BR>";
-	       next($execQuery);
-	     }
-
-  }
-  print "<BR>";
-  next($linked_tcversions);
-  print " ========================= <BR> ";
- }
+$re = new results($db, $tp);
+$re->buildSuiteList();
+$suiteList = $re->getSuiteList();
+//print_r($suiteList);
 
 $prodID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 $tpID = $_SESSION['testPlanId'];
-print "test plan id = " . $tpID . "<BR>";
-print "test project id = " . $prodID . "<BR>";
+//print "test plan id = " . $tpID . "<BR>";
+//print "test project id = " . $prodID . "<BR>";
 $DEBUG = 0;
 
+// $mapOfResults = getExecutionsMap($db, $tpID);
 
-$mapOfResults = getExecutionsMap($db, $tpID);
-
-print "Work in progress - upgrading to 1.7 - KL - 6/3/2006 <BR>";
+//print "Work in progress - upgrading to 1.7 - KL - 6/3/2006 <BR>";
 
 if ($DEBUG) {
   print "prodID = $prodID <BR>";
@@ -206,7 +143,9 @@ $smarty = new TLSmarty();
 $smarty->assign('testPlanName',$_SESSION['testPlanName']);
 $smarty->assign('testplanid', $tpID);
 $smarty->assign('arrBuilds', $arrBuilds); 
-$smarty->assign('mapOfResults', $mapOfResults);
+// $smarty->assign('mapOfResults', $mapOfResults);
+$smarty->assign('suiteList', $suiteList);
+
 //$smarty->assign('mapOfResults', $mapOfResults); 
 //$smarty->assign('arrOwners', $arrOwners);
 //$smarty->assign('arrKeywords', $arrKeywords);

@@ -11,16 +11,17 @@ class results
     $this->db = &$db;	
     $this->tp = &$tp;
     
-    $this->mySuiteList = new suiteResultList();
+    $this->mySuiteList = array();
 
+    $this->buildSuiteList();
   }
 
-  /**
-      testsuite_id -> list of results
-  */
+  function getSuiteList(){
+    return $this->mySuiteList;
+  }
 
   // map suite ids to arrays of results for those suites
-  function buildResultTree(){
+  function buildSuiteList(){
     $linked_tcversions = $this->tp->get_linked_tcversions($_SESSION['testPlanId']);
     
     while ($testcaseID = key($linked_tcversions)){
@@ -28,9 +29,12 @@ class results
       //$notSure = $info[0];
       $testsuite_id = $info[testsuite_id];
 
-      $currentSuiteObject;
-      if (!($this->mySuiteList->contains($testsuite_id))){
-	$currentSuiteObject = new suiteResult($testsuite_id);
+      $currentSuite;
+      if (!(array_key_exists($testsuite_id, $this->mySuiteList))){
+	    $currentSuite = array();
+      }
+      else {
+	$currentSuite = $this->mySuiteList[$testsuite_id];
       }
 
       //$notSure2 = $info[1];
@@ -63,30 +67,18 @@ class results
 	  $status = $exec_row[status];
 	  $testplan_id = $exec_row[testplan_id];
 	  $notes = $exec_row[notes];
+
+	  $infoToSave = array($testcaseID, $tcversion_id, $build_id, $tester_id, $execution_ts, $status, $notes);
+	  array_push($currentSuite, $infoToSave);
 	  next($execQuery);
 	}
       }
+      $this->mySuiteList[$testsuite_id] = $currentSuite;
       next($linked_tcversions);
     } 
     
   } // end get array of results
 } // end class result
 
-class suiteResult {
-  function suiteResult($suite_id){
-
-  }
-} // end class resultNode
-
-
-class suiteResultList {
-  function suiteResultList(){
-
-  }
-
-  function contains($suite_id){
-    return 0;
-  }
-}
 
 ?>

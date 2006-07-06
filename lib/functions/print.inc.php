@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: print.inc.php,v $
- * @version $Revision: 1.13 $
- * @modified $Date: 2006/05/17 19:12:17 $ by $Author: schlundus $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2006/07/06 19:20:37 $ by $Author: schlundus $
  *
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
@@ -175,7 +175,7 @@ function renderProjectNodeForPrinting(&$db,&$printingOptions,$title,&$node)
 	
 	$my_userID = isset($_SESSION['userID']) ? intval($_SESSION['userID']) : null;
 
-	$tproject = new testproject(&$db);
+	$tproject = new testproject($db);
 	$projectData = $tproject->get_by_id($node['id']);
 	unset($tproject);
 	$code = printHeader($stitle,$_SESSION['basehref']);

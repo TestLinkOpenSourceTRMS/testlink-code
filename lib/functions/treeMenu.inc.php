@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: treeMenu.inc.php,v $
  *
- * @version $Revision: 1.22 $
- * @modified $Date: 2006/06/30 18:41:25 $ by $Author: schlundus $
+ * @version $Revision: 1.23 $
+ * @modified $Date: 2006/07/06 19:20:37 $ by $Author: schlundus $
  * @author Martin Havlat
  *
  * 	This file generates tree menu for test specification and test execution.
@@ -141,7 +141,7 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,
 		$tck_map = null;
 		if($keyword_id)
 			$tck_map = $tproject_mgr->get_keywords_tcases($tproject_id,$keyword_id);
-		$testcase_count = prepareNode(&$test_spec,$hash_id_descr,$tck_map,null,$bHideTCs);
+		$testcase_count = prepareNode($test_spec,$hash_id_descr,$tck_map,null,$bHideTCs);
 		$test_spec['testcase_count'] = $testcase_count;
 		$menustring = renderTreeNode(1,$test_spec,$getArguments,$hash_id_descr,$tc_action_enabled,$linkto);
 	}
@@ -386,7 +386,7 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,$
 		$tck_map = null;
 		if($keyword_id)
 			$tck_map = $tproject_mgr->get_keywords_tcases($tproject_id,$keyword_id);
-		$testcase_count = prepareNode(&$test_spec,$hash_id_descr,$tck_map,$tp_tcs,$bForPrinting);
+		$testcase_count = prepareNode($test_spec,$hash_id_descr,$tck_map,$tp_tcs,$bForPrinting);
 		$test_spec['testcase_count'] = $testcase_count;
 	
 		$menustring = renderExecTreeNode(1,$test_spec,$getArguments,$hash_id_descr,1,$menuUrl,$bForPrinting);

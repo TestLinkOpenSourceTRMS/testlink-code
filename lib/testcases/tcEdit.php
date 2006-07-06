@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.34 $
- * @modified $Date: 2006/06/30 18:41:25 $  by $Author: schlundus $
+ * @version $Revision: 1.35 $
+ * @modified $Date: 2006/07/06 19:20:37 $  by $Author: schlundus $
  * This page manages all the editing of test cases.
  *
  * @author Martin Havlat
@@ -270,22 +270,22 @@ else if($do_delete)
 {
 	$msg='';
 	$action_result='deleted';
-  $verbose_result='ok';
-  $tcinfo=$tcase_mgr->get_by_id($tcase_id,$tcversion_id);
-
+	$verbose_result='ok';
+	$tcinfo=$tcase_mgr->get_by_id($tcase_id,$tcversion_id);
+	
 	if (!$tcase_mgr->delete($tcase_id,$tcversion_id))
 	{
-	    $action_result='';
-			$verbose_result=$db->error_msg();
+		$action_result='';
+		$verbose_result=$db->error_msg();
 	}
-
-  $the_title = lang_get('title_del_tc') . $tcinfo[0]['name'];
-  $refresh_tree="yes";
-  if( $tcversion_id != TC_ALL_VERSIONS )
-  {
-  		$the_title .= " " . lang_get('version') . " " . $tcinfo[0]['version'];
-  		$refresh_tree="no";
-  }
+	
+	$the_title = lang_get('title_del_tc') . $tcinfo[0]['name'];
+	$refresh_tree="yes";
+	if( $tcversion_id != TC_ALL_VERSIONS )
+	{
+		$the_title .= " " . lang_get('version') . " " . $tcinfo[0]['version'];
+		$refresh_tree="no";
+	}
 	$smarty->assign('title', $the_title);
 	$smarty->assign('sqlResult', $verbose_result);
 	$smarty->assign('testcase_id', $tcase_id);
@@ -298,7 +298,7 @@ else if($do_delete)
 else if($move_copy_tc)
 {
 	// need to get the testproject for the test case
-	$tproject_id=$tcase_mgr->get_testproject($tcase_id);
+	$tproject_id = $tcase_mgr->get_testproject($tcase_id);
 	$the_tc_node = $tree_mgr->get_node_hierachy_info($tcase_id);
 	$tc_parent_id = $the_tc_node['parent_id'];
 	$the_tree = $tree_mgr->get_subtree($tproject_id, array("testplan"=>"exclude me",

@@ -3,8 +3,8 @@
  * TestLink Open Source Project - @link http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: plan.core.inc.php,v $
- * @version $Revision: 1.32 $
- * @modified $Date: 2006/03/20 18:02:22 $ $Author: franciscom $
+ * @version $Revision: 1.33 $
+ * @modified $Date: 2006/07/06 19:20:37 $ $Author: schlundus $
  *  
  * 
  * @author 	Martin Havlat
@@ -79,7 +79,7 @@ function getAccessibleTestPlans(&$db,$testproject_id,$filter_by_product=0,$tpID 
  */
 function getNumberOfAccessibleTestPlans(&$db,$testproject_id, $filter_by_product=0,$tpID = null)
 {
-	$tpData = getAccessibleTestPlans(&$db,$testproject_id, $filter_by_product,$tpID);
+	$tpData = getAccessibleTestPlans($db,$testproject_id, $filter_by_product,$tpID);
 	return sizeof($tpData);	
 }
 

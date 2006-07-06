@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: plan.inc.php,v $
- * @version $Revision: 1.34 $
- * @modified $Date: 2006/06/03 23:23:04 $ $Author: kevinlevy $
+ * @version $Revision: 1.35 $
+ * @modified $Date: 2006/07/06 19:20:37 $ $Author: schlundus $
  * @author 	Martin Havlat
  *
  * Functions for management: 
@@ -22,9 +22,6 @@
 
 /** include core functions for collect information about Test Plans */
 require_once("plan.core.inc.php"); 
-
-// 20060219 - franciscom
-require_once("../functions/tree.class.php"); 
 
 
 /**

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: attachmentdownload.php,v $
  *
- * @version $Revision: 1.3 $
- * @modified $Date: 2006/06/30 18:41:25 $ by $Author: schlundus $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2006/07/06 19:20:37 $ by $Author: schlundus $
  *
  * Download dialog
 **/
@@ -27,7 +27,7 @@ if ($attachmentInfo && checkAttachmentID($db,$id,$attachmentInfo))
 		$content = getAttachmentContentFromFS($db,$id);
 	if (strlen($content))
 	{
-		ob_end_clean();
+		@ob_end_clean();
 		header('Pragma: no-cache');
 		header('Content-Type: '.$attachmentInfo['file_type']);
 		header('Content-Length: '.$attachmentInfo['file_size']);

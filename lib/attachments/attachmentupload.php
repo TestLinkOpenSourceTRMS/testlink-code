@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: attachmentupload.php,v $
  *
- * @version $Revision: 1.4 $
- * @modified $Date: 2006/06/30 18:41:25 $ by $Author: schlundus $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2006/07/06 19:20:37 $ by $Author: schlundus $
  *
  * Upload dialog
 **/
@@ -53,7 +53,7 @@ if ($bPostBack)
 			@unlink($fTmpName);			
 		}
 		if ($bUploaded)
-			$bUploaded = insertAttachment(&$db,$id,$tableName,$fName,$destFPath,$fContents,$fType,$fSize,$title);
+			$bUploaded = insertAttachment($db,$id,$tableName,$fName,$destFPath,$fContents,$fType,$fSize,$title);
 	}
 }
 

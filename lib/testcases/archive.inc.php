@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: archive.inc.php,v $
  *
- * @version $Revision: 1.34 $
- * @modified $Date: 2006/06/30 18:41:25 $ by $Author: schlundus $
+ * @version $Revision: 1.35 $
+ * @modified $Date: 2006/07/06 19:20:37 $ by $Author: schlundus $
  *
  * @author Martin Havlat
  * Purpose:  functions for test specification management have three parts:
@@ -217,13 +217,13 @@ function DEPR_moveTc(&$db,$newCat, $id)
 }
 
 //20050821 - fm - inteface changes, added $user to reduce global coupling 
-function copyTc(&$db,$newCat, $id, $user_id)
+function DEPR_copyTc(&$db,$newCat, $id, $user_id)
 {
 	$msg_status = 'ok';
 	
 	$tc = getTestcase($db,$id,false);
 	
-	if (!insertTestcase(&$db,$newCat,$tc['title'],$tc['summary'],
+	if (!insertTestcase($db,$newCat,$tc['title'],$tc['summary'],
 						$tc['steps'],$tc['exresult'],
 						          $user_id,$tc['TCorder'],$tc['keywords']))
 	{

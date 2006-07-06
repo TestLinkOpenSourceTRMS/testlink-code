@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/ 
 // This script is distributed under the GNU General Public License 2 or later. 
 //
-// $Id: testlink_library.js,v 1.14 2006/06/10 20:22:19 schlundus Exp $ 
+// $Id: testlink_library.js,v 1.15 2006/07/06 19:20:37 schlundus Exp $ 
 //
 // Javascript functions commonly used through the GUI
 // This library is automatically loaded with inc_header.tpl
@@ -29,12 +29,12 @@ function open_top(page)
 // test specification related functions
 function ST(id,version)
 {
-	parent.workframe.location = fRoot+'/'+menuUrl+"?version="+version+"&level=testcase&id="+id+args;
+	parent.workframe.location = fRoot+'/'+menuUrl+"?version_id="+version+"&level=testcase&id="+id+args;
 }
 
 function STS(id)
 {
-	parent.workframe.location = fRoot+'/'+menuUrl+"?level=component&id="+id+args;
+	parent.workframe.location = fRoot+'/'+menuUrl+"?level=testsuite&id="+id+args;
 }
 
 function SP()

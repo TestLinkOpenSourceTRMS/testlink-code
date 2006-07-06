@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: attachments.inc.php,v $
  *
- * @version $Revision: 1.5 $
- * @modified $Date: 2006/06/07 12:34:55 $ by $Author: franciscom $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2006/07/06 19:20:37 $ by $Author: schlundus $
  *
  * functions related to attachments
  *
@@ -359,8 +359,8 @@ function deleteAttachment($db,$id,$attachmentInfo = null)
 	{	
 		$bResult = true;
 		if (strlen($attachmentInfo['file_path']))
-			$bResult = deleteAttachmentFromFS(&$db,$id,$attachmentInfo);
-		$bResult = $bResult && deleteAttachmentFromDB(&$db,$id,$attachmentInfo);
+			$bResult = deleteAttachmentFromFS($db,$id,$attachmentInfo);
+		$bResult = $bResult && deleteAttachmentFromDB($db,$id,$attachmentInfo);
 	}
 	return $bResult ? 1 : 0;
 }

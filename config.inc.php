@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.67 $
- * @modified $Date: 2006/07/04 17:01:11 $ by $Author: franciscom $
+ * @version $Revision: 1.68 $
+ * @modified $Date: 2006/07/07 15:50:13 $ by $Author: franciscom $
  *
  *
  * Constants and configuration parameters used throughout TestLink 
@@ -249,9 +249,13 @@ define('TL_FRMWORKAREA_LEFT_FRAME_WIDTH', "30%");
 
 /* CSS configuration */
 /* Standard */
-define('TL_LOGIN_CSS','gui/css/tl_login.css');
-define('TL_TESTLINK_CSS','gui/css/testlink.css');
-define('TL_DOC_BASIC_CSS','gui/css/tl_doc_basic.css');
+define('TL_THEME_DIR','gui/css/');
+//define('TL_THEME_DIR','gui/css/theme_m1/');
+
+
+define('TL_LOGIN_CSS',TL_THEME_DIR . 'tl_login.css');
+define('TL_TESTLINK_CSS',TL_THEME_DIR . '/testlink.css');
+define('TL_DOC_BASIC_CSS',TL_THEME_DIR . '/tl_doc_basic.css');
 
 // logo for login page, if not defined nothing happens
 define('LOGO_LOGIN_PAGE','<img alt="TestLink" src="icons/company_logo.png" />');

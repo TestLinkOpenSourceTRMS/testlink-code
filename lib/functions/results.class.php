@@ -23,7 +23,8 @@ class results
   // map suite ids to arrays of results for those suites
   function buildSuiteList(){
     $linked_tcversions = $this->tp->get_linked_tcversions($_SESSION['testPlanId']);
-    
+    //    print count(array_keys($linked_tcversions));
+    // print "<BR>";
     while ($testcaseID = key($linked_tcversions)){
       $info = $linked_tcversions[$testcaseID];
       //$notSure = $info[0];
@@ -76,8 +77,10 @@ class results
       $this->mySuiteList[$testsuite_id] = $currentSuite;
       next($linked_tcversions);
     } 
-    
-  } // end get array of results
+
+    // $numberOfKeys = 
+    print_r($this->mySuiteList);
+  } // end function
 } // end class result
 
 

@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsMoreBuilds.php,v 1.26 2006/07/05 05:25:25 kevinlevy Exp $ 
+* $Id: resultsMoreBuilds.php,v 1.27 2006/07/09 05:55:27 kevinlevy Exp $ 
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 * 
@@ -26,7 +26,9 @@ testlinkInitPage($db);
 $tp = new testplan($db);
 $re = new results($db, $tp);
 $re->buildSuiteList();
-$suiteList = $re->getSuiteList();
+//$suiteList = $re->getSuiteList();
+$numberOfSuites = count(array_keys($suiteList));
+//print "numberOfItems = $numberOfItems <BR>";
 //print_r($suiteList);
 
 $prodID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;

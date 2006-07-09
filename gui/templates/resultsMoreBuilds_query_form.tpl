@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: resultsMoreBuilds_query_form.tpl,v 1.23 2006/07/05 05:37:47 kevinlevy Exp $
+$Id: resultsMoreBuilds_query_form.tpl,v 1.24 2006/07/09 05:56:39 kevinlevy Exp $
 @author Francisco Mancardi - fm - start solving BUGID 97/98
 20051022 - scs - removed ' in component id values
 20051121 - scs - added escaping of tpname
@@ -21,7 +21,6 @@ $Id: resultsMoreBuilds_query_form.tpl,v 1.23 2006/07/05 05:37:47 kevinlevy Exp $
 	{/foreach}				
 </table>
 -->
-
 
 	{foreach key=id item=array from=$suiteList}
 		<h3>suite id = {$id} </h3>

@@ -2,10 +2,11 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.21 $
- * @modified $Date: 2006/06/30 18:41:25 $
+ * @version $Revision: 1.22 $
+ * @modified $Date: 2006/07/10 13:17:32 $  $Author: franciscom $
  * @author franciscom
  *
+ * 20060709 - franciscom - changed return type and interface of create()
  * 20060425 - franciscom - changes in show() following Andreas Morsing advice (schlundus)
  *
 **/
@@ -27,23 +28,28 @@ class testproject
  * @param string $color
  * @param string $optReq [1,0]
  * @param string $notes
- * @return boolean result
+ * [@param boolean $active [1,0] ]
+ *
+ * @return everything OK -> test project id
+ *         problems      -> 0 (invalid node id) 
+ *
+ * 20060709 - franciscom - return type changed
+ *                         added new optional argument active
  *
  * 20060312 - franciscom - name is setted on nodes_hierarchy table
  * 20060101 - franciscom - added notes
  */
-function create($name,$color,$optReq,$notes)
+function create($name,$color,$optReq,$notes,$active=1)
 {
-	$status_ok = 0;
-
 	// Create Node and get the id
 	$root_node_id = $this->tree_manager->new_root_node($name);
 
-	$sql = " INSERT INTO testprojects (id,color,option_reqs,notes) " .
+	$sql = " INSERT INTO testprojects (id,color,option_reqs,notes,active) " .
 	       " VALUES (" . $root_node_id . ", '" .	
-	                 $this->db->prepare_string($color) . "',"  . 
-	                 $optReq . ",'" .
-		             $this->db->prepare_string($notes) . "')";
+	                     $this->db->prepare_string($color) . "'," . 
+	                     $optReq . ",'" .
+		                   $this->db->prepare_string($notes) . "'," . 
+		                   $active . ")";
 			             
 	$result = $this->db->exec_query($sql);
 	if ($result)
@@ -51,8 +57,12 @@ function create($name,$color,$optReq,$notes)
 		tLog('The new testproject '.$name.' was succesfully created.', 'INFO');
 		$status_ok = 1;
 	}
+	else
+	{
+	   $root_node_id=0;
+	}
 		
-	return $status_ok;
+	return($root_node_id);
 }
 
 /**

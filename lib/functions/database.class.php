@@ -3,10 +3,16 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
  * @filesource $RCSfile: database.class.php,v $
- * @version $Revision: 1.13 $
- * @modified $Date: 2006/05/29 06:39:11 $ by $Author: franciscom $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2006/07/10 13:16:56 $ by $Author: franciscom $
  * @author Francisco Mancardi
  * 
+ *
+ * 20060708 - franciscom -  changed Connect() to NConnect(), to avoid
+ *                          problems due to connection reuse, when
+ *                          you wanto to connect to more than one database at once
+ *                          See ADODB manuals
+ *
  *
  * 20060523 - franciscom -  added build_sql_create_db()
  *
@@ -65,6 +71,9 @@ class database
 	
 	
 	# Make a connection to the database
+	# 
+	# 20060708 - franciscom -  changed Connect() to NConnect() see ADODB Manuals
+	#             
 	function connect( $p_dsn, $p_hostname = null, $p_username = null, 
 	                          $p_password = null, $p_database_name = null ) {
 		
@@ -73,7 +82,7 @@ class database
 		$result = array('status' => 1, 'dbms_msg' => 'ok');
    	
 		if(  $p_dsn === false ) {
-			$t_result = @$this->db->Connect($p_hostname, $p_username, $p_password, $p_database_name );
+			$t_result = @$this->db->NConnect($p_hostname, $p_username, $p_password, $p_database_name );
 		} else {
 			$t_result = @$this->db->IsConnected();
 		}

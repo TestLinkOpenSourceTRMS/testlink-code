@@ -1,11 +1,14 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
 # This script is distributed under the GNU General Public License 2 or later.
-# $Id: testlink_create_tables.sql,v 1.1 2006/05/24 07:10:21 franciscom Exp $
+# $Id: testlink_create_tables.sql,v 1.2 2006/07/11 08:51:20 franciscom Exp $
 # SQL script - create db tables for TL   
 #
 # default rights & admin account are created via testlink_create_default_data.sql
 #
 # Rev :
+#       20060711 - franciscom
+#       added index pid_m_nodeorder on nodes_hierarchy, to improve performance
+#       (suggested by Andreas Morsing)
 #
 #       20060424 - franciscom - redoing asiel changes on users table due to wrong name
 #       20060312 - franciscom
@@ -88,7 +91,8 @@ CREATE TABLE `nodes_hierarchy` (
   `parent_id` int(10) unsigned default NULL,
   `node_type_id` int(10) unsigned NOT NULL default '1',
   `node_order` int(10) unsigned default NULL,
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY  (`id`),
+  KEY `pid_m_nodeorder` (`parent_id`,`node_order`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 CREATE TABLE `priorities` (

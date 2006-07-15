@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.6 2006/06/30 18:41:25 schlundus Exp $
+$Id: tcView_viewer.tpl,v 1.7 2006/07/15 19:55:30 schlundus Exp $
 viewer for test case in test specification
 
 20060427 - franciscom - added font-size in the table used for keywords
@@ -97,8 +97,8 @@ viewer for test case in test specification
 			
 				{section name=item loop=$args_reqs}
 					<span onclick="javascript: open_top(fRoot+'lib/req/reqView.php?idReq={$args_reqs[item].id}');"
-					style="cursor:  pointer;">
-					{$args_reqs[item].title|escape}</span>, 
+					style="cursor:  pointer;">{$args_reqs[item].title|escape}</span>
+					{if !$smarty.section.item.last},{/if}
 				{sectionelse}
 					{lang_get s='none'}
 				{/section}

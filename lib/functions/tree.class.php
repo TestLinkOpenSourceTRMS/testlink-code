@@ -5,23 +5,21 @@
  *
  * Filename $RCSfile: tree.class.php,v $
  *
- * @version $Revision: 1.17 $
- * @modified $Date: 2006/06/30 18:41:25 $ by $Author: schlundus $
+ * @version $Revision: 1.18 $
+ * @modified $Date: 2006/07/15 19:55:30 $ by $Author: schlundus $
  * @author Francisco Mancardi
  *
  * 20060511 - franciscom - changes in call to insert_id() due to problems with Postgres
  * 20060316 - franciscom - bug on get_path
 */
 
-// 20060218 - franciscom
 class tree 
 {
-
-  // configurable values - pseudoconstants
-  var $node_types = array( 1 => 'testproject','testsuite','testcase','tcversion','testplan');
-  var $node_descr_id = array();
-
-  var $node_tables = array('testproject' => 'testprojects',
+	// configurable values - pseudoconstants
+	var $node_types = array( 1 => 'testproject','testsuite','testcase','tcversion','testplan');
+	var $node_descr_id = array();
+	
+	var $node_tables = array('testproject' => 'testprojects',
                            'testsuite'   => 'testsuites',
                            'testplan'    => 'testplans',
                            'testcase'    => 'testcases',
@@ -29,217 +27,157 @@ class tree
  
   
   
-  var $ROOT_NODE_TYPE_ID=1;
-  var $ROOT_NODE_PARENT_ID=NULL;
-  
-  var $db;  // Database Handler
-  
-    var $obj_table='nodes_hierarchy';
+	var $ROOT_NODE_TYPE_ID = 1;
+	var $ROOT_NODE_PARENT_ID = NULL;
+	
+	var $db;
+    var $obj_table = 'nodes_hierarchy';
     
 	function tree(&$db) 
 	{
-    $this->db = &$db;
-    $this->node_descr_id = array_flip($this->node_types);
-  }
+		$this->db = &$db;
+		$this->node_descr_id = array_flip($this->node_types);
+	}
 
-  /*
-  20060219 - franciscom
-  
-  */
 	function get_available_node_types() 
 	{
-    $sql = " SELECT * FROM node_types "; 
+		$sql = " SELECT * FROM node_types "; 
+		$hash_ntypes = $this->db->fetchColumnsIntoMap($sql,"description","id");
+		
+		return $hash_ntypes;
+	}
 
-    $ntypes=$this->db->get_recordset($sql);
-    foreach($ntypes as $elem)
-    {
-     $hash_ntypes[$elem['description']] = $elem['id'];
-    }
-    return ($hash_ntypes);
-  }
-
-
-
-  /*
-    create a new root node in the hierarchy table
-    
-  
-    returns: node_id of the new node created
-    
-    rev    : 
-    					20060218 - franciscom
-              20060312 - franciscom - added optional parameter
-    
-  */
-	function new_root_node($name='') 
+	/*
+		create a new root node in the hierarchy table
+		returns: node_id of the new node created
+	*/
+	function new_root_node($name = '') 
 	{
-    $this->new_node(null,$this->ROOT_NODE_TYPE_ID,$name,1);
-    return ($this->db->insert_id($this->obj_table));
-  }
+		$this->new_node(null,$this->ROOT_NODE_TYPE_ID,$name,1);
+		return $this->db->insert_id($this->obj_table);
+	}
 
 
-  /*
-    create a new  node in the hierarchy table
-    returns: node_id of the new node created
-
-    rev    : 20060218 - franciscom
-             20060312 - franciscom - added optional parameter
-
-  */
-	function new_node($parent_id,$node_type_id,$name='',$node_order=0) 
+	/*
+	  create a new  node in the hierarchy table
+	  returns: node_id of the new node created
+	*/
+	function new_node($parent_id,$node_type_id,$name = '',$node_order = 0) 
 	{
-    
-    $sql = " INSERT INTO {$this->obj_table} ";
-    
-    if( is_null($parent_id) )
-    {
-        $sql .= " (node_type_id,node_order,name) 
-                  VALUES({$node_type_id},{$node_order},'" .
-                          $this->db->prepare_string($name). "')";
-    
-    }
-    else
-    {
-        $sql .= " (parent_id,node_type_id,node_order,name) 
-             VALUES({$parent_id},{$node_type_id},{$node_order},'" .
-                     $this->db->prepare_string($name). "')";
-    
-    }    
-    $this->db->exec_query($sql);
-    
-    return ($this->db->insert_id($this->obj_table));
-  }
+		$sql = "INSERT INTO {$this->obj_table} ";
+		
+		if(is_null($parent_id))
+			$sql .= " (node_type_id,node_order,name) VALUES({$node_type_id},{$node_order},'";
+		else
+			$sql .= " (parent_id,node_type_id,node_order,name) VALUES({$parent_id},{$node_type_id},{$node_order},'";
 
-  /*
-    get all node hierarchy info from hierarchy table
-    
-    
-  
-    returns: node_id of the new node created
-    rev    : 20060218 - franciscom
-    
-  */
+		$sql .=	$this->db->prepare_string($name). "')";
+		$this->db->exec_query($sql);
+		
+		return ($this->db->insert_id($this->obj_table));
+  	}
+
+	/*
+	get all node hierarchy info from hierarchy table
+	returns: node_id of the new node created
+	*/
 	function get_node_hierachy_info($node_id) 
 	{
-    $sql = " SELECT * FROM {$this->obj_table} 
-             WHERE id ={$node_id} ";
-             
-    $result=$this->db->exec_query($sql);
-    return ($this->db->fetch_array($result));
-  }
+		$sql = "SELECT * FROM {$this->obj_table} WHERE id = {$node_id}";
+		$result = $this->db->exec_query($sql);
+		
+		return $this->db->fetch_array($result);
+	}
 
-
-
-
-// 20060508 - franciscom - refactored as suggested
-function get_subtree_list($node_id)
-{
-  $sql = " SELECT * from {$this->obj_table} 
-          WHERE parent_id = {$node_id} ";
- 
-  $node_list = '';  
-  $result = $this->db->exec_query($sql);
-  
-  if( $this->db->num_rows($result) == 0 )
-  {
-    return(null); 	
-  }
-  
-  while ( $row = $this->db->fetch_array($result) )
-  {
-    $node_list .= $row['id'];
-    
-    $xx_list = $this->get_subtree_list($row['id']);	
-  	
-  	if( !is_null($xx_list) )
-  	{
-  		$node_list .= "," . $xx_list;
-  	}
-  }
-  return ($node_list);
-}
-
-
-
-function delete_subtree($node_id)
-{
- // echo "\$node_id ={$node_id} <br>";	
- $children=$this->get_subtree_list($node_id);
- $id2del=$node_id;
- if( strlen(trim($children)) > 0)
- {
-   $id2del .= ",{$children}";	
- }
- $sql = "DELETE FROM {$this->obj_table} WHERE id IN ({$id2del})";
- $result = $this->db->exec_query($sql);
- 
-}
-
-
-// 20060327 - franciscom
-function get_path_new($node_id,$to_node_id=null,$format='full') 
-{
- 		$the_path=array();
-    $this->_get_path($node_id,$the_path,$to_node_id,$format); 
-    return ($the_path);
-    
-}
-
-
-
-
-// $node is the name of the node we want the path of
-// 20060327 - franciscom
-function get_path($node_id,$to_node_id=null,$format='full') 
-{
-	
- // look up the parent of this node
- $sql = " SELECT * from {$this->obj_table} 
-          WHERE id = {$node_id} ";
- 
- $node_list=array();
- $result = $this->db->exec_query($sql);
- 
- if( $this->db->num_rows($result) == 0 )
- {
-    return(null); 	
- }
-  
- while ( $row = $this->db->fetch_array($result) )
- {
-   
-   // only continue if this $node isn't the root node
-   // (that's the node with no parent)
-   
-   if ($row['parent_id'] != '' && $row['id'] != $to_node_id) 
-   {
-   	  // 20060309 - franciscom
-      // Getting data from the node specific table
-      $node_table = $this->node_tables[$this->node_types[$row['node_type_id']]];
-      
-   		// the last part of the path to $node, is the name
-   		// of the parent of $node
-   		if( $format == "full" )
-   		{
-      		$node_list[] = array('id'        => $row['id'],
-          		                 'parent_id' => $row['parent_id'],
-              		             'node_type_id' => $row['node_type_id'],
-                  		         'node_order' => $row['node_order'],
-                      		     'node_table' => $node_table,
-                          		 'name' => $row['name'] );
-      }
-      else
-      {
-      		$node_list[$row['parent_id']] = $row['parent_id'];
-      }
+	function get_subtree_list($node_id)
+	{
+		$sql = "SELECT * from {$this->obj_table} WHERE parent_id = {$node_id}";
+		$node_list = '';  
+		$result = $this->db->exec_query($sql);
+		
+		if (!$result || !$this->db->num_rows($result))
+			return null;
+		
+		while($row = $this->db->fetch_array($result))
+		{
+			$node_list .= $row['id'];
 			
-      // we should add the path to the parent of this node
-      // to the path
-      $node_list = array_merge($this->get_path($row['parent_id'],$to_node_id,$format), $node_list);
-   }
- }
- return $node_list;
-}
+			$xx_list = $this->get_subtree_list($row['id']);	
+		
+			if(!is_null($xx_list))
+				$node_list .= "," . $xx_list;
+		}
+		return $node_list;
+	}
+
+	function delete_subtree($node_id)
+	{
+		$children = $this->get_subtree_list($node_id);
+		$id2del = $node_id;
+		if(strlen($children))
+		{
+			$id2del .= ",{$children}";	
+		}
+		$sql = "DELETE FROM {$this->obj_table} WHERE id IN ({$id2del})";
+	
+		$result = $this->db->exec_query($sql);
+	}
+
+	function get_path_new($node_id,$to_node_id = null,$format = 'full') 
+	{
+		$the_path = array();
+		$this->_get_path($node_id,$the_path,$to_node_id,$format); 
+		
+		return $the_path;
+	}
+
+	function get_path($node_id,$to_node_id = null,$format = 'full') 
+	{
+		// look up the parent of this node
+		$sql = " SELECT * from {$this->obj_table} WHERE id = {$node_id} ";
+	
+		$node_list = array();
+		$result = $this->db->exec_query($sql);
+	
+		if(!$result || !$this->db->num_rows($result))
+		{
+			return null;
+		}
+	
+		while ($row = $this->db->fetch_array($result))
+		{
+			// only continue if this $node isn't the root node
+			// (that's the node with no parent)
+			if ($row['parent_id'] != '' && $row['id'] != $to_node_id) 
+			{
+				// Getting data from the node specific table
+				$node_table = $this->node_tables[$this->node_types[$row['node_type_id']]];
+				
+				// the last part of the path to $node, is the name
+				// of the parent of $node
+				if($format == "full")
+				{
+					$node_list[] = array('id' => $row['id'],
+											'parent_id' => $row['parent_id'],
+											'node_type_id' => $row['node_type_id'],
+											'node_order' => $row['node_order'],
+											'node_table' => $node_table,
+											'name' => $row['name']
+										);
+				}
+				else
+				{
+					$node_list[$row['parent_id']] = $row['parent_id'];
+				}
+		
+				// we should add the path to the parent of this node
+				// to the path
+				$node_list = array_merge($this->get_path($row['parent_id'],$to_node_id,$format), $node_list);
+			}
+		}
+		
+		return $node_list;
+	}
 
 
 // $node is the name of the node we want the path of
@@ -295,28 +233,15 @@ function _get_path($node_id,&$node_list,$to_node_id=null,$format='full')
  }
 }
 
-
-
-
-
-
-
-
-
-/* 20060306 - franciscom */
 function change_parent($node_id, $parent_id) 
 {
-  $sql = "UPDATE nodes_hierarchy
-          SET parent_id = {$parent_id}
-          WHERE id = {$node_id}";
+  $sql = "UPDATE nodes_hierarchy SET parent_id = {$parent_id} WHERE id = {$node_id}";
   $result = $this->db->exec_query($sql);
  
-  return ($result);
-
+  return $result ? 1 : 0;
 }
  
  
-/* 20060306 - franciscom */
 function get_children($id,$exclude_node_types=null) 
 {
   $sql = " SELECT * from {$this->obj_table}

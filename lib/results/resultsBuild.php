@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsBuild.php,v 1.8 2006/03/11 23:04:50 kevinlevy Exp $ 
+* $Id: resultsBuild.php,v 1.9 2006/07/15 19:55:30 schlundus Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * 
@@ -13,7 +13,6 @@
 require('../../config.inc.php');
 require_once('common.php');
 require_once('results.inc.php');
-require_once("../../lib/functions/lang_api.php");
 require_once("../../lib/functions/builds.inc.php");
 testlinkInitPage($db);
 

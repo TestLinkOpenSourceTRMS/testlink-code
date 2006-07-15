@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: plan.inc.php,v $
- * @version $Revision: 1.35 $
- * @modified $Date: 2006/07/06 19:20:37 $ $Author: schlundus $
+ * @version $Revision: 1.36 $
+ * @modified $Date: 2006/07/15 19:55:30 $ $Author: schlundus $
  * @author 	Martin Havlat
  *
  * Functions for management: 
@@ -607,6 +607,8 @@ function checkMileStone($name,$date,$A,$B,$C)
 		$sqlResult = lang_get("warning_invalid_percentage_value");	
 	else if (intval($A) > 100 || intval($B) > 100 || intval($C) > 100)
 		$sqlResult = lang_get("warning_invalid_percentage_value");	
+	else if ((intval($A) + intval($B) + intval($A)) > 100)
+		$sqlResult = lang_get("warning_percentage_value_higher_than_100");	
 	else if (strlen($name))
 	{
 		if(strlen($date))

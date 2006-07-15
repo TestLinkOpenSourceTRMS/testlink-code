@@ -1,7 +1,7 @@
 <?php
 /** 
 *	TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* 	@version $Id: testSetNavigator.php,v 1.13 2006/07/06 19:20:37 schlundus Exp $
+* 	@version $Id: testSetNavigator.php,v 1.14 2006/07/15 19:55:30 schlundus Exp $
 *	@author Martin Havlat 
 *
 * This page navigate according to Test Set. It builds the javascript trees 
@@ -41,7 +41,6 @@ if ($_GET['feature'] == 'removeTC')
 	$title = lang_get('title_test_plan_navigator');
 	$tcHide = 0;
 	$help_file = "testSetRemove.html";
-	$operation='remove_testcase_from_testplan';
 }
 elseif ($_GET['feature'] == 'priorityAssign')
 {
@@ -62,8 +61,8 @@ define('FILTER_BY_OWNER_OFF',0);
 define('FILTER_BY_TC_STATUS_OFF',null);
 
 $sMenu = generateExecTree($db,$menuUrl,$tproject_id,$tproject_name,$tplan_id,$_SESSION['testPlanName'],
-                          FILTER_BY_BUILD_OFF,$help_file,$operation,
-                          FILTER_BY_TC_OFF,$keyword_id);
+                          FILTER_BY_BUILD_OFF,$help_file,
+                          $keyword_id,FILTER_BY_TC_OFF);
 
 $tree = invokeMenu($sMenu);
 

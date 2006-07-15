@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planRemoveTC_m1.tpl,v 1.1 2006/05/03 06:48:33 franciscom Exp $
+$Id: planRemoveTC_m1.tpl,v 1.2 2006/07/15 19:55:30 schlundus Exp $
 generate the list of TC that can be removed from a Test Plan 
 
 20060319 - franciscom
@@ -21,7 +21,7 @@ generate the list of TC that can be removed from a Test Plan
 	<input type='submit' name='remove_tc' value='{lang_get s='btn_remove_selected_tc'}' />
 </div>
 
-{include file="inc_update.tpl" result=$sqlResult}
+{include file="inc_update.tpl" result=$sqlResult refresh="yes"}
 {if $key ne ''}
 	<div style="margin-left: 20px; font-size: smaller;"><p>{lang_get s='note_keyword_filter'} '{$key|escape}'</p></div>
 {/if}

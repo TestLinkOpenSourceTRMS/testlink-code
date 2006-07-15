@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
  * @filesource $RCSfile: database.class.php,v $
- * @version $Revision: 1.14 $
- * @modified $Date: 2006/07/10 13:16:56 $ by $Author: franciscom $
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2006/07/15 19:55:30 $ by $Author: schlundus $
  * @author Francisco Mancardi
  * 
  *
@@ -489,7 +489,7 @@ class database
 	 **/
 	function get_version_info()
 	{
-		$version=$this->db->ServerInfo();
+		$version = $this->db->ServerInfo();
 		return $version;
 	}
 

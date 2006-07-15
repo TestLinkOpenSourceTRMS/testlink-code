@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqAssign.tpl,v 1.5 2005/10/21 22:17:58 asielb Exp $ *}
+{* $Id: reqAssign.tpl,v 1.6 2006/07/15 19:55:30 schlundus Exp $ *}
 {* Purpose: smarty template - assign REQ to one test case *}
 {*
 20051008 - am - removed escaping of scope
@@ -12,7 +12,7 @@
 	<img alt="{lang_get s='help'}: {lang_get s='req_spec'}" class="help" 
 	src="icons/sym_question.gif" style="float: right;"
 	onclick="javascript:open_popup('{$helphref}requirementsCoverage.html');" />
-	{lang_get s='req_title_assign'} {$tcTitle}
+	{lang_get s='req_title_assign'} {$tcTitle|escape}
 </h1>
 
 {include file="inc_update.tpl" result=$sqlResult action=$action item="Requirement"}
@@ -40,7 +40,7 @@
 	<tr>
 		<td><input type="checkbox" name="{$arrAssignedReq[row].id}" /></td>
 		<td><span class="bold">{$arrAssignedReq[row].req_doc_id|escape}</span></td>
-		<td><span class="bold"><a href="lib/req/reqSpecView.php?editReq={$arrAssignedReq[row].id}&idSRS={$selectedReqSpec}">
+		<td><span class="bold"><a href="lib/req/reqSpecView.php?editReq={$arrAssignedReq[row].id}&amp;idSRS={$selectedReqSpec}">
 			{$arrAssignedReq[row].title|escape}</a></span></td>
 		<td>{$arrAssignedReq[row].scope|truncate:30}</td>
 	</tr>
@@ -71,7 +71,7 @@
 	<tr>
 		<td><input type="checkbox" name="{$arrUnassignedReq[row2].id}" /></td>
 		<td><span class="bold">{$arrUnassignedReq[row2].req_doc_id|escape}</span></td>
-		<td><span class="bold"><a href="lib/req/reqSpecView.php?editReq={$arrUnassignedReq[row2].id}&idSRS={$selectedReqSpec}">
+		<td><span class="bold"><a href="lib/req/reqSpecView.php?editReq={$arrUnassignedReq[row2].id}&amp;idSRS={$selectedReqSpec}">
 			{$arrUnassignedReq[row2].title|escape}</a></span></td>
 		<td>{$arrUnassignedReq[row2].scope|truncate:30}</td>
 	</tr>

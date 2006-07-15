@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: requirements.inc.php,v $
- * @version $Revision: 1.33 $
- * @modified $Date: 2006/06/10 20:22:20 $ by $Author: schlundus $
+ * @version $Revision: 1.34 $
+ * @modified $Date: 2006/07/15 19:55:30 $ by $Author: schlundus $
  *
  * @author Martin Havlat <havlat@users.sourceforge.net>
  * 
@@ -139,10 +139,10 @@ function getOptionReqSpec(&$db,$testproject_id)
  */
 function getRequirements(&$db,$srs_id, $range = 'all', $testcase_id = null)
 {
-	if ($range == 'all') {
+	if ($range == 'all')
 		$sql = "SELECT * FROM requirements WHERE srs_id=" . $srs_id . " ORDER BY title";
-	}
-	elseif ($range == 'assigned') {
+	else if ($range == 'assigned')
+	{
 		$sql = "SELECT requirements.* FROM requirements,req_coverage WHERE srs_id=" . 
 				$srs_id . " AND req_coverage.req_id=requirements.id AND " . 
 				"req_coverage.testcase_id=" . $testcase_id . " ORDER BY title";
@@ -562,22 +562,22 @@ function assignTc2Req(&$db,$testcase_id, $req_id)
 				' AND testcase_id=' . $testcase_id;
 		$result = $db->exec_query($sql);
 
-    $row=$db->fetch_array($result);
-		if ($row['num_cov'] == 0) {
-	
+    	$row = $db->fetch_array($result);
+		if ($row['num_cov'] == 0)
+		{
 			// create coverage dependency
 			$sqlReqCov = 'INSERT INTO req_coverage (req_id,testcase_id) VALUES ' .
 					"(" . $req_id . "," . $testcase_id . ")";
 			$resultReqCov = $db->exec_query($sqlReqCov);
 			// collect results
-			if ($db->affected_rows() == 1) {
+			if ($db->affected_rows() == 1)
+			{
 				$output = 1;
 				tLog('Dependency was created between TC:' . $testcase_id . ' and REQ:' . $req_id, 'INFO');
 			}
 			else
 			{
-				tLog("Dependency wasn't created between TC:" . $testcase_id . ' and REQ:' . $req_id .
-					"\t" . $db->error_msg(), 'ERROR');
+				tLog("Dependency wasn't created between TC:" . $testcase_id . ' and REQ:' . $req_id, 'ERROR');
 			}
 		}
 		else
@@ -586,9 +586,9 @@ function assignTc2Req(&$db,$testcase_id, $req_id)
 			tLog('Dependency already exists between TC:' . $testcase_id . ' and REQ:' . $req_id, 'INFO');
 		}
 	}
-	else {
+	else
 		tLog('Wrong input values', 'ERROR');
-	}
+
 	return $output;
 }
 
@@ -611,14 +611,15 @@ function unassignTc2Req(&$db,$testcase_id, $req_id)
 			' AND testcase_id=' . $testcase_id;
 	$resultReqCov = $db->exec_query($sqlReqCov);
 
-	// collect results
-	if ($db->affected_rows() == 1) {
+	if ($db->affected_rows() == 1)
+	{
 		$output = 1;
 		tLog('Dependency was deleted between TC:' . $testcase_id . ' and REQ:' . $req_id, 'INFO');
 	}
-	else {
+	else
+	{
 		tLog("Dependency wasn't deleted between TC:" . $testcase_id . ' and REQ:' . $req_id .
-				"\n" . $sqlReqCov. "\n" . $db->error_msg(), 'ERROR');
+				"\n" . $sqlReqCov, 'ERROR');
 	}
 
 	return $output;

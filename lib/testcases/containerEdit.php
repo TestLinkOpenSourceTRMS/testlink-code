@@ -6,8 +6,8 @@
  * 20060701 - franciscom
  * Added the Test Project as the FIRST Container where is possible to copy
  *
- * @version $Revision: 1.40 $
- * @modified $Date: 2006/07/03 15:43:05 $ by $Author: franciscom $
+ * @version $Revision: 1.41 $
+ * @modified $Date: 2006/07/15 19:55:30 $ by $Author: schlundus $
  * @author Martin Havlat
 */
 require_once("../../config.inc.php");
@@ -68,7 +68,6 @@ foreach ($a_actions as $the_key => $the_val)
 	}
 }                    
 $smarty->assign('level', $level);
- 
 // --------------------------------------------------------------------
 // create  fckedit objects
 //
@@ -203,6 +202,7 @@ else if ($action == 'delete_testsuite')
 		}
 		
 		//if the user has clicked the delete button on the archive page show the delete confirmation page
+		$smarty->assign('objectID',$my_testsuiteID);
 		$smarty->assign('objectName', $tsuite_name);
 		$smarty->assign('warning', $warning);
 		$smarty->assign('link_msg', $link_msg);

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: treeMenu.inc.php,v $
  *
- * @version $Revision: 1.23 $
- * @modified $Date: 2006/07/06 19:20:37 $ by $Author: schlundus $
+ * @version $Revision: 1.24 $
+ * @modified $Date: 2006/07/15 19:55:30 $ by $Author: schlundus $
  * @author Martin Havlat
  *
  * 	This file generates tree menu for test specification and test execution.
@@ -375,7 +375,7 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,$
 	$test_spec = $tree_manager->get_subtree($tproject_id,array('testplan'=>'exclude me'),
 	                                                     array('testcase'=>'exclude my children'),null,null,true);
 	$tp_tcs = $tplan_mgr->get_linked_tcversions($tplan_id,$tc_id,$keyword_id);
-	if (($tc_id || $keyword_id) && is_null($tp_tcs))
+	if (is_null($tp_tcs))
 		$tp_tcs = array();
 	
 	$test_spec['name'] = $tproject_name;

@@ -1,13 +1,17 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
 # This script is distributed under the GNU General Public License 2 or later.
-# $Id: testlink_create_tables.sql,v 1.3 2006/07/15 19:55:30 schlundus Exp $
+# $Id: testlink_create_tables.sql,v 1.4 2006/07/18 06:39:11 franciscom Exp $
 # SQL script - create db tables for TL   
 #
 # default rights & admin account are created via testlink_create_default_data.sql
 #
 # Rev :
+#
+#       20060715 - schlundus - changes to milestones table.
+#        
 #       20060711 - franciscom - added index pid_m_nodeorder on nodes_hierarchy
-				   to improve performance
+#	 	    to improve performance
+#
 #
 #       20060424 - franciscom - redoing asiel changes on users table due to wrong name
 #       20060312 - franciscom

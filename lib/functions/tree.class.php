@@ -5,10 +5,11 @@
  *
  * Filename $RCSfile: tree.class.php,v $
  *
- * @version $Revision: 1.18 $
- * @modified $Date: 2006/07/15 19:55:30 $ by $Author: schlundus $
+ * @version $Revision: 1.19 $
+ * @modified $Date: 2006/07/26 08:19:13 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
+ * 20060722 - franciscom - added possibility to create a new node with an specific ID
  * 20060511 - franciscom - changes in call to insert_id() due to problems with Postgres
  * 20060316 - franciscom - bug on get_path
 */
@@ -61,19 +62,27 @@ class tree
 	/*
 	  create a new  node in the hierarchy table
 	  returns: node_id of the new node created
+	  
+	  20060722 - franciscom - interface changes - added [$node_id]
 	*/
-	function new_node($parent_id,$node_type_id,$name = '',$node_order = 0) 
+	function new_node($parent_id,$node_type_id,$name='',$node_order=0,$node_id=0) 
 	{
-		$sql = "INSERT INTO {$this->obj_table} ";
+		$sql = "INSERT INTO {$this->obj_table} " .
+		       "(name,node_type_id,node_order,id";
+		
+		$values=" VALUES('" . $this->db->prepare_string($name). "'," .
+		        " {$node_type_id},{$node_order},{$node_id}";
 		
 		if(is_null($parent_id))
-			$sql .= " (node_type_id,node_order,name) VALUES({$node_type_id},{$node_order},'";
+		{
+			$sql .= ") {$values} )";
+		}
 		else
-			$sql .= " (parent_id,node_type_id,node_order,name) VALUES({$parent_id},{$node_type_id},{$node_order},'";
+		{
+			$sql .= ",parent_id) {$values},{$parent_id})";
+    }
 
-		$sql .=	$this->db->prepare_string($name). "')";
 		$this->db->exec_query($sql);
-		
 		return ($this->db->insert_id($this->obj_table));
   	}
 

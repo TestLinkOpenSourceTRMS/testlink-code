@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.22 $
- * @modified $Date: 2006/07/10 13:17:32 $  $Author: franciscom $
+ * @version $Revision: 1.23 $
+ * @modified $Date: 2006/07/26 08:19:26 $  $Author: franciscom $
  * @author franciscom
  *
  * 20060709 - franciscom - changed return type and interface of create()
@@ -43,7 +43,6 @@ function create($name,$color,$optReq,$notes,$active=1)
 {
 	// Create Node and get the id
 	$root_node_id = $this->tree_manager->new_root_node($name);
-
 	$sql = " INSERT INTO testprojects (id,color,option_reqs,notes,active) " .
 	       " VALUES (" . $root_node_id . ", '" .	
 	                     $this->db->prepare_string($color) . "'," . 

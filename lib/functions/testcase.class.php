@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.23 $
- * @modified $Date: 2006/06/30 18:41:25 $ $Author: schlundus $
+ * @version $Revision: 1.24 $
+ * @modified $Date: 2006/07/26 08:19:00 $ $Author: franciscom $
  * @author franciscom
  *
  * 20060425 - franciscom - changes in show() following Andreas Morsing advice (schlundus)
@@ -34,16 +34,22 @@ function testcase(&$db)
 }
 
 
+// 20060722 - franciscom - interface changes added [$id]
+//            0 -> the id will be assigned by dbms
+//            x -> this will be the id 
+//                 Warning: no check is done before insert => can got error.
+//   
 // 20060425 - franciscom - - interface changes added $keywords_id
 // 20060226 - franciscom
 function create($parent_id,$name,$summary,$steps,
-                $expected_results,$author_id,$keywords_id='',$tc_order = null)
+                $expected_results,$author_id,$keywords_id='',
+                $tc_order=null,$id=0)
 {
 
 	
 	$first_version=1;
   $status_ok=1;
-  $ret = $this->create_tcase_only($parent_id,$name);
+  $ret = $this->create_tcase_only($parent_id,$name,$tc_order,$id);
   if( $ret['msg'] == 'ok' )
   {
     // 20060425 - franciscom
@@ -61,12 +67,21 @@ function create($parent_id,$name,$summary,$steps,
 
 
 
-/* 20060306 - franciscom */
-function create_tcase_only($parent_id,$name)
+/* 
+20060725 - franciscom - interface changes 
+           [$order]
+           
+           [$id]
+           0 -> the id will be assigned by dbms
+           x -> this will be the id 
+                Warning: no check is done before insert => can got error.
+
+20060306 - franciscom 
+*/
+function create_tcase_only($parent_id,$name,$order=0,$id=0)
 {
-  // get a new id
   $tcase_id = $this->tree_manager->new_node($parent_id,
-                                            $this->my_node_type,$name);
+                                            $this->my_node_type,$name,$order,$id);
   $ret['id'] = $tcase_id;
   $ret['msg'] = 'ok';
   return ($ret);

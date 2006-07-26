@@ -1,7 +1,8 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execSetResults.tpl,v 1.21 2006/06/19 19:35:37 schlundus Exp $ *}
+{* $Id: execSetResults.tpl,v 1.22 2006/07/26 08:31:13 franciscom Exp $ *}
 {* Purpose: smarty template - show tests to add results *}
 {* Revisions:
+              20060722 - franciscom - sintax for value on history_on
               20060602 - franciscom - new code for attachments display 
               20060528 - franciscom - $show_last_exec_any_build
 *}	
@@ -59,7 +60,7 @@
     		         name="{$history_status_btn_name}" 
     		         value="{lang_get s=$history_status_btn_name}" />
     		  <input type="hidden" id="history_on" 
-    		         name="history_on" value={$history_on} />
+    		         name="history_on" value="{$history_on}" />
       </div>
     <hr />
 

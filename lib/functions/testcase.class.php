@@ -2,9 +2,14 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.24 $
- * @modified $Date: 2006/07/26 08:19:00 $ $Author: franciscom $
+ * @version $Revision: 1.25 $
+ * @modified $Date: 2006/07/27 06:59:32 $ $Author: franciscom $
  * @author franciscom
+ *
+ * 20060726 - franciscom - create_tcversion() return array changed
+ *                         default value changed for optional argument $tc_order
+ *                         create(), update()
+ *
  *
  * 20060425 - franciscom - changes in show() following Andreas Morsing advice (schlundus)
  * 20060423 - franciscom - added order_by_clause argument - get_keywords_map()
@@ -34,6 +39,9 @@ function testcase(&$db)
 }
 
 
+// 20060726 - franciscom - default value changed for optional argument $tc_order
+//                         create(), update()
+//
 // 20060722 - franciscom - interface changes added [$id]
 //            0 -> the id will be assigned by dbms
 //            x -> this will be the id 
@@ -43,7 +51,7 @@ function testcase(&$db)
 // 20060226 - franciscom
 function create($parent_id,$name,$summary,$steps,
                 $expected_results,$author_id,$keywords_id='',
-                $tc_order=null,$id=0)
+                $tc_order=0,$id=0)
 {
 
 	
@@ -88,7 +96,10 @@ function create_tcase_only($parent_id,$name,$order=0,$id=0)
 }
 
 
-/* 20060323 - franciscom - create_tcversion() interface change added $version*/
+/* 
+20060726 - franciscom - struct of return array changed, added id
+20060323 - franciscom - interface change added $version
+*/
 function create_tcversion($id,$version,$summary,$steps,
                           $expected_results,$author_id)
 {
@@ -101,7 +112,9 @@ function create_tcversion($id,$version,$summary,$steps,
 	  	                           "'" . $this->db->prepare_string($expected_results) . "'," . $author_id . "," .
                     	  	       $this->db->db_now() . ")";
 	$result = $this->db->exec_query($sql);        
-	$ret['msg'] = 'ok';
+	$ret['msg']='ok';
+	$ret['id']=$tcase_version_id;
+	
   if (!$result)
 	{
 		$ret['msg'] = $this->db->error_msg();
@@ -252,11 +265,13 @@ function viewer_edit_new($amy_keys, $oFCK, $action, $parent_id, $id=null)
 	$smarty->display($the_tpl);
 }
 
-
+// 20060726 - franciscom - default value changed for optional argument $tc_order
+//                         create(), update()
+//
 // 20060424 - franciscom - interface changes added $keywords_id
 // 20060303 - franciscom
 function update($id,$tcversion_id,$name,$summary,$steps,
-                $expected_results,$user_id,$keywords_id='',$tc_order = null)
+                $expected_results,$user_id,$keywords_id='',$tc_order=0)
 {
 $status_ok=0;
 

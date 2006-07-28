@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.23 $
- * @modified $Date: 2006/07/26 08:19:26 $  $Author: franciscom $
+ * @version $Revision: 1.24 $
+ * @modified $Date: 2006/07/28 17:22:04 $  $Author: schlundus $
  * @author franciscom
  *
  * 20060709 - franciscom - changed return type and interface of create()
@@ -114,13 +114,16 @@ function update($id, $name, $color, $opt_req,$notes)
 	return $status_msg;
 }
 
-function get_by_name($name)
+function get_by_name($name,$addClause = null)
 {
 	$sql = " SELECT testprojects.*, nodes_hierarchy.name ".
 	       "  FROM testprojects, nodes_hierarchy ". 
-	       "  WHERE nodes_hierarchy.name = '" . 
+	       " WHERE testprojects.id = nodes_hierarchy.id AND".
+	       "  nodes_hierarchy.name = '" . 
 	         $this->db->prepare_string($name) . "'";
-
+	if (!is_null($addClause))
+		$sql .= " AND " . $addClause;
+			 
 	$recordset = $this->db->get_recordset($sql);
 	return $recordset;
 }

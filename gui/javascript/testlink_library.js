@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/ 
 // This script is distributed under the GNU General Public License 2 or later. 
 //
-// $Id: testlink_library.js,v 1.15 2006/07/06 19:20:37 schlundus Exp $ 
+// $Id: testlink_library.js,v 1.16 2006/07/28 17:22:03 schlundus Exp $ 
 //
 // Javascript functions commonly used through the GUI
 // This library is automatically loaded with inc_header.tpl
@@ -51,12 +51,14 @@ function SC(id)
 
 function EP(id)
 {
-	parent.workframe.location = fRoot+menuUrl+"?edit=testproject&data="+id+args;
+	var pParams = tree_getPrintPreferences();
+	parent.workframe.location = fRoot+menuUrl+"?edit=testproject&data="+id+args+"&"+pParams;
 }
 
 function ETS(id)
 {
-	parent.workframe.location = fRoot+menuUrl+"?edit=testsuite&data="+id+args;
+	var pParams = tree_getPrintPreferences();
+	parent.workframe.location = fRoot+menuUrl+"?edit=testsuite&data="+id+args+"&"+pParams;
 }
 
 function ET(id)
@@ -66,7 +68,8 @@ function ET(id)
 
 function PTS(id)
 {
-	parent.workframe.location = fRoot+menuUrl+"?level=testsuite&data="+id+args;
+	var pParams = tree_getPrintPreferences();
+	parent.workframe.location = fRoot+menuUrl+"?level=testsuite&data="+id+args+"&"+pParams;
 }
 /*
 function ECO(id)
@@ -82,7 +85,8 @@ function EC(id)
 
 function PTP(id)
 {
-	parent.workframe.location = fRoot+menuUrl+"?level=root&data="+id+args;
+	var pParams = tree_getPrintPreferences();
+	parent.workframe.location = fRoot+menuUrl+"?level=root&data="+id+args+"&"+pParams;
 }
 /*
 function PCO(id)
@@ -218,7 +222,6 @@ function attachmentDlg_onSubmit()
 }
 
 
-// 20060603 - franciscom
 function confirm_and_submit(msg,form_id,field_id,field_value)
 {
 	if (confirm(msg))
@@ -235,4 +238,31 @@ function confirm_and_submit(msg,form_id,field_id,field_value)
 		}
 	}
 	
+}
+
+function tree_getPrintPreferences()
+{
+	var params = [];
+	var fields = ['header','summary','toc','body'];
+	for (var i= 0;i < fields.length;i++)
+	{
+		var v = tree_getCheckBox(fields[i]);
+		if (v)
+			params.push(v);
+	}
+	var f = document.getElementById('format');
+	if(f)
+		params.push("format="+f.value);
+		
+	params = params.join('&');
+	
+	return params;
+}
+
+function tree_getCheckBox(id)
+{
+	var	cb = document.getElementById('cb'+id);
+	if (cb && cb.checked)
+		return id+'=y';
+	return null;
 }

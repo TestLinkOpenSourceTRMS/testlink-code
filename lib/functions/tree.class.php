@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: tree.class.php,v $
  *
- * @version $Revision: 1.19 $
- * @modified $Date: 2006/07/26 08:19:13 $ by $Author: franciscom $
+ * @version $Revision: 1.20 $
+ * @modified $Date: 2006/07/28 17:22:04 $ by $Author: schlundus $
  * @author Francisco Mancardi
  *
  * 20060722 - franciscom - added possibility to create a new node with an specific ID
@@ -68,10 +68,16 @@ class tree
 	function new_node($parent_id,$node_type_id,$name='',$node_order=0,$node_id=0) 
 	{
 		$sql = "INSERT INTO {$this->obj_table} " .
-		       "(name,node_type_id,node_order,id";
+		       "(name,node_type_id,node_order";
 		
 		$values=" VALUES('" . $this->db->prepare_string($name). "'," .
-		        " {$node_type_id},{$node_order},{$node_id}";
+		        " {$node_type_id},{$node_order}";
+		
+		if ($node_id)
+		{
+			$sql .= ",id";
+			$values = ",{$node_id}";
+		}
 		
 		if(is_null($parent_id))
 		{
@@ -80,7 +86,7 @@ class tree
 		else
 		{
 			$sql .= ",parent_id) {$values},{$parent_id})";
-    }
+	    }
 
 		$this->db->exec_query($sql);
 		return ($this->db->insert_id($this->obj_table));

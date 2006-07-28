@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: int_bugtracking.php,v $
  *
- * @version $Revision: 1.8 $
- * @modified $Date: 2005/12/29 20:59:00 $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2006/07/28 17:22:04 $
  *
  * @author Andreas Morsing
  *
@@ -30,6 +30,8 @@ $configFiles = array(
 					'BUGZILLA' => 'bugzilla.cfg.php',
 					'MANTIS' => 'mantis.cfg.php',
 					'JIRA' => 'jira.cfg.php',
+					'TRACKPLUS' => 'trackplus.cfg.php',
+
 				);
 //This holds the interface defintion file names for the bugtracking interfaces
 //located in the lib/bugtracking diectory
@@ -37,6 +39,7 @@ $interfaceFiles = array(
 					'BUGZILLA' => 'int_bugzilla.php',
 					'MANTIS' => 'int_mantis.php',
 					'JIRA' => 'int_jira.php',
+					'TRACKPLUS' => 'int_trackplus.php',
 				);
 
 				

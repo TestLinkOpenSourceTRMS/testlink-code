@@ -1,5 +1,5 @@
 {* smarty template - view all keywords of product; ver. 1.0 *}
-{* $Id: rolesview.tpl,v 1.5 2006/04/07 20:15:25 schlundus Exp $ *}
+{* $Id: rolesview.tpl,v 1.6 2006/07/28 17:22:03 schlundus Exp $ *}
 {* Purpose: smarty template - View all roless *}
 {include file="inc_head.tpl"}
 
@@ -74,4 +74,4 @@
 {/if}
 </div>
 
-</bod
+</body>

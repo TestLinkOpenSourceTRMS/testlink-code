@@ -1,6 +1,6 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: mainPage.tpl,v 1.16 2006/06/30 23:10:59 kevinlevy Exp $     
+ $Id: mainPage.tpl,v 1.17 2006/07/28 17:22:03 schlundus Exp $     
  Purpose: smarty template - main page / site map                 
                                                                  
  rev :                                                   
@@ -10,6 +10,10 @@
 <body>
 
 <h1>{lang_get s='title_testlink_site_map'}</h1>
+{if $securityNotes}
+	  {* 20060413 - franciscom *}
+    {include file="inc_msg_from_array.tpl" array_of_msg=$securityNotes }
+{/if}
 
 {****** TEST PLAN - Right Column ***************************}
 <div class="columnList" style="float: right">
@@ -247,22 +251,18 @@
 
 {if $metricsEnabled == 'TRUE'}
     <div style="width: 45%; padding: 5px">
-    <h2>{lang_get s='title_your_tp_metrics'}</h2>
-
-    <table class="mainTable" style="width: 100%">
-       <tr>
-          <th>{lang_get s='th_name'}</th>
-        	<th>{lang_get s='th_perc_completed'}</th>
-        	<th>{lang_get s='th_my_perc_completed'}</th>
-       </tr>
-       {$myTPdata}
-    </table>
+	    <table class="mainTable" style="width: 100%">
+		<tr>
+			<td colspan="3"><h2>{lang_get s='title_your_tp_metrics'}</h2></td>
+		</tr>
+		<tr>
+			<th>{lang_get s='th_name'}</th>
+			<th>{lang_get s='th_perc_completed'}</th>
+			<th>{lang_get s='th_my_perc_completed'}</th>
+		</tr>
+	       {$myTPdata}
+	    </table>
     </div>
-{/if}
-
-{if $securityNotes}
-	  {* 20060413 - franciscom *}
-    {include file="inc_msg_from_array.tpl" array_of_msg=$securityNotes }
 {/if}
 
 </body>

@@ -1,6 +1,6 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
 # This script is distributed under the GNU General Public License 2 or later.
-# $Id: testlink_create_tables.sql,v 1.4 2006/07/18 06:39:11 franciscom Exp $
+# $Id: testlink_create_tables.sql,v 1.5 2006/07/28 17:22:04 schlundus Exp $
 # SQL script - create db tables for TL   
 #
 # default rights & admin account are created via testlink_create_default_data.sql
@@ -256,7 +256,7 @@ CREATE TABLE `users` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `login` varchar(30) NOT NULL default '',
   `password` varchar(32) NOT NULL default '',
-  `role_id` tinyint(3) unsigned NOT NULL default '0',
+  `role_id` int(10) unsigned NOT NULL default '0',
   `email` varchar(100) NOT NULL default '',
   `first` varchar(30) NOT NULL default '',
   `last` varchar(30) NOT NULL default '',

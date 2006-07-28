@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: projectedit.php,v $
  *
- * @version $Revision: 1.2 $
- * @modified $Date: 2006/03/12 18:47:15 $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2006/07/28 17:22:04 $
  *
  * @author Martin Havlat
  *
@@ -74,11 +74,18 @@ switch($args->do)
 		$updateResult = 'ok';
 		if ($tproject->checkTestProjectName($args->name,$updateResult))
 		{
-			$args->id = $tproject->create($args->name, $args->color, $args->optReq, $args->notes);
-			if (!$args->id)
-				$updateResult = lang_get('refer_to_log');
+			if (!$tproject->get_by_name($args->name))
+			{
+				$args->id = $tproject->create($args->name, $args->color, $args->optReq, $args->notes);
+				if (!$args->id)
+					$updateResult = lang_get('refer_to_log');
+				else
+					$args->id = -1;
+			}
 			else
-				$args->id = -1;
+			{
+				$updateResult = lang_get('error_product_name_duplicate');
+			}
 			$action = 'updated';	
 		}
 		break;
@@ -87,8 +94,13 @@ switch($args->do)
 		$updateResult = 'ok';
 		if ($tproject->checkTestProjectName($args->name,$updateResult))
 		{
-			$updateResult = $tproject->update($args->id, $args->name, $args->color,$args->optReq, $args->notes);
-			$action = 'updated';
+			if (!$tproject->get_by_name($args->name,"testprojects.id <> {$args->id}"))
+			{
+				$updateResult = $tproject->update($args->id, $args->name, $args->color,$args->optReq, $args->notes);
+				$action = 'updated';
+			}
+			else
+				$updateResult = lang_get('error_product_name_duplicate');
 		}
 		break;
 	

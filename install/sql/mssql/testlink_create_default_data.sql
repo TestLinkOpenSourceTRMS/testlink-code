@@ -1,6 +1,6 @@
 --  -----------------------------------------------------------------------------------
 --  TestLink Open Source Project - http://testlink.sourceforge.net/
---  $Id: testlink_create_default_data.sql,v 1.1 2006/05/24 07:10:21 franciscom Exp $
+--  $Id: testlink_create_default_data.sql,v 1.2 2006/07/28 17:22:03 schlundus Exp $
 --  SQL script - create default data (rights & admin account)
 --  
 --  Database Type: Microsoft SQL Server
@@ -8,19 +8,23 @@
 
 --  admin account 
 --  SECURITY: change password after first login
+USE [testlink]
+
 INSERT INTO users (login,password,role_id,email,first,last,locale,active)
              VALUES ('admin','21232f297a57a5a743894a0e4a801fc3', 8,'', 'Testlink', 'Administrator', 'en_GB',1);
 
 
 --  Node types -
+SET IDENTITY_INSERT node_types ON
 INSERT INTO node_types (id,description) VALUES (1, 'testproject');
 INSERT INTO node_types (id,description) VALUES (2, 'testsuite');
 INSERT INTO node_types (id,description) VALUES (3, 'testcase');
 INSERT INTO node_types (id,description) VALUES (4, 'testcase_version');
 INSERT INTO node_types (id,description) VALUES (5, 'testplan');
-
+SET IDENTITY_INSERT node_types OFF
 
 --  Roles -
+SET IDENTITY_INSERT roles ON
 INSERT INTO roles (id,description) VALUES (8, 'admin');
 INSERT INTO roles (id,description) VALUES (9, 'leader');
 INSERT INTO roles (id,description) VALUES (6, 'senior tester');
@@ -28,8 +32,10 @@ INSERT INTO roles (id,description) VALUES (7, 'tester');
 INSERT INTO roles (id,description) VALUES (5, 'guest');
 INSERT INTO roles (id,description) VALUES (4, 'test designer');
 INSERT INTO roles (id,description) VALUES (3, '<no rights>');
+SET IDENTITY_INSERT roles OFF
 
 --  Rights - 
+SET IDENTITY_INSERT rights ON
 INSERT INTO rights (id,description) VALUES (1 ,'testplan_execute'      );
 INSERT INTO rights (id,description) VALUES (2 ,'testplan_create_build' );
 INSERT INTO rights (id,description) VALUES (3 ,'testplan_metrics'      );
@@ -43,7 +49,7 @@ INSERT INTO rights (id,description) VALUES (10,'mgt_view_req'          );
 INSERT INTO rights (id,description) VALUES (11,'mgt_modify_req'        );
 INSERT INTO rights (id,description) VALUES (12,'mgt_modify_product'    );
 INSERT INTO rights (id,description) VALUES (13,'mgt_users'             );
-
+SET IDENTITY_INSERT rights OFF
 
 --  Rights for Administrator (admin role)
 INSERT INTO role_rights (role_id,right_id) VALUES (8,1 );
@@ -66,7 +72,7 @@ INSERT INTO role_rights (role_id,right_id) VALUES (5,6 );
 INSERT INTO role_rights (role_id,right_id) VALUES (5,8 );
 
 
---  Rights for test dsigner (test dsigner role)
+--  Rights for test dsigner (test designer role)
 INSERT INTO role_rights (role_id,right_id) VALUES (4,3 );
 INSERT INTO role_rights (role_id,right_id) VALUES (4,6 );
 INSERT INTO role_rights (role_id,right_id) VALUES (4,7 );

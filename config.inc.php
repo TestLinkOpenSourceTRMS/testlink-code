@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.68 $
- * @modified $Date: 2006/07/07 15:50:13 $ by $Author: franciscom $
+ * @version $Revision: 1.69 $
+ * @modified $Date: 2006/07/28 17:22:03 $ by $Author: schlundus $
  *
  *
  * Constants and configuration parameters used throughout TestLink 
@@ -195,10 +195,11 @@ $g_exec_cfg->att_model = $att_model_m2;
 */
 
 /** 
-* @var STRING TL_INTERFACE_BUGS = ['NO', 'BUGZILLA','MANTIS','JIRA']
+* @var STRING TL_INTERFACE_BUGS = ['NO', 'BUGZILLA','MANTIS','JIRA','TRACKPLUS']
 * BUGZILLA: edit configuration in TL_ABS_PATH/cfg/bugzilla.cfg.php
 * MANTIS  : edit configuration in TL_ABS_PATH/cfg/mantis.cfg.php
 * JIRA    : edit configuration in TL_ABS_PATH/cfg/jira.cfg.php
+* TRACKPLUS : edit configuration in TL_ABS_PATH/cfg/trackplus.cfg.php
 */
 define('TL_INTERFACE_BUGS', 'NO');
 require_once(TL_ABS_PATH . 'lib/bugtracking/int_bugtracking.php');

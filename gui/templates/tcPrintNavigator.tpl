@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: tcPrintNavigator.tpl,v 1.3 2006/03/13 19:19:54 schlundus Exp $ *}
+{* $Id: tcPrintNavigator.tpl,v 1.4 2006/07/28 17:22:03 schlundus Exp $ *}
 {* Purpose: smarty template - show test specification tree *}
 {include file="inc_head.tpl" jsTree="yes"}
 
@@ -17,21 +17,16 @@
 		{section name=number loop=$arrCheckboxes}
 		<tr>
 			<td>{$arrCheckboxes[number].description}</td>
-			<td><input type="checkbox" name="{$arrCheckboxes[number].value}" 
+			<td><input type="checkbox" name="{$arrCheckboxes[number].value}" id="cb{$arrCheckboxes[number].value}"
 			{if $arrCheckboxes[number].checked == 'y'}checked="checked"{/if} 
-			onchange="javascript: document.getElementById('treeMenu').style.visibility = 'hidden';"/></td>
+			/></td>
 		</tr>
 		{/section}
 		<tr>
 			<td>{lang_get s='tr_td_show_as'}</td>
-			<td><select name="format">
+			<td><select id="format" name="format">
 			{html_options options=$arrFormat selected=$selFormat}
 			</select></td>
-		</tr>
-		<tr>
-			<td>&nbsp;</td>
-			<td><input type="submit" name="setPrefs" 
-                 value="{lang_get s='btn_set_pref'}" style="font-size: 90%;" /></td>
 		</tr>
 	</table>
 </form>

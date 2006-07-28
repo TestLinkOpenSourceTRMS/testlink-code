@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: attachments.inc.php,v $
  *
- * @version $Revision: 1.6 $
- * @modified $Date: 2006/07/06 19:20:37 $ by $Author: schlundus $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2006/07/28 17:22:04 $ by $Author: schlundus $
  *
  * functions related to attachments
  *
@@ -261,6 +261,10 @@ function getAttachmentInfos(&$db,$fkid,$tableName,$bStoreListInSession = true,$c
 	$attachmentInfos = $db->get_recordset($query);
 	if ($bStoreListInSession)
 	{
+		if (!$attachmentInfos)
+			$attachmentInfos = array();
+		if (!isset($_SESSION['s_lastAttachmentInfos']) || !$_SESSION['s_lastAttachmentInfos'])
+			$_SESSION['s_lastAttachmentInfos'] = array();
 		if ($counter == 0) 
 			$_SESSION['s_lastAttachmentInfos'] = $attachmentInfos;
 		else
@@ -336,7 +340,7 @@ function checkAttachmentID(&$db,$id,$attachmentInfo)
 	$bValid = false;
 	if ($attachmentInfo)
 	{
-		$sLastAttachmentInfos = $_SESSION['s_lastAttachmentInfos'];
+		$sLastAttachmentInfos = isset($_SESSION['s_lastAttachmentInfos']) ? $_SESSION['s_lastAttachmentInfos'] : null;
 		for($i = 0;$i < sizeof($sLastAttachmentInfos);$i++)
 		{
 			$info = $sLastAttachmentInfos[$i];

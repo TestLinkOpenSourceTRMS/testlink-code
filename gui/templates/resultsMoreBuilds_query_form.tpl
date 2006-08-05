@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: resultsMoreBuilds_query_form.tpl,v 1.26 2006/08/01 02:46:51 kevinlevy Exp $
+$Id: resultsMoreBuilds_query_form.tpl,v 1.27 2006/08/05 21:34:34 kevinlevy Exp $
 @author Francisco Mancardi - fm - start solving BUGID 97/98
 20051022 - scs - removed ' in component id values
 20051121 - scs - added escaping of tpname
@@ -19,7 +19,7 @@ $Id: resultsMoreBuilds_query_form.tpl,v 1.26 2006/08/01 02:46:51 kevinlevy Exp $
 
 	<table class="simple" style="width: 100%; text-align: center; margin-left: 0px;" border="2">
 		<tr><th>total cases</th><th>total pass</th><th>total fail</th><th>total block</th><th>total not run</th></tr> 
-		<tr><td>{$totals[0].total}</td><td>{$totals[0].pass}</td><td>{$totals[0].fail}</td><td>{$totals[0].blocked}</td><td>{$totals[0].notRun}</td></tr>
+		<tr><td>{$totals.total}</td><td>{$totals.pass}</td><td>{$totals.fail}</td><td>{$totals.blocked}</td><td>{$totals.notRun}</td></tr>
 	</table>		
 	
 	<a href="javascript:showOrCollapseAll()">{lang_get s='show_hide_all'}</a>

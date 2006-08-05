@@ -24,16 +24,13 @@ class results
   var $flatArrayIndex = 0;	
   var $depth = 0;	
   var $previousDepth = 0;
-  
-  
-  
+    
   // constants for flatArray
   var $ITEM_PATTERN_IN_FLAT_ARRAY = 3;
   var $DEPTH_IN_FLATARRAY  = 0;
   var $NAME_IN_FLATARRAY = 1;
   var $SUITE_ID_IN_FLATARRAY = 2;
-  
-  
+    
   // map test cases id to 2-item array containing last build_id and result
   var $mapOfLastResult = null;
  
@@ -87,6 +84,10 @@ class results
   
   function getAggregateMap(){
   	return $this->mapOfAggregate;
+  }
+  
+  function getTotalsForPlan(){
+  	return $this->totalsForPlan;
   }
   
   /**
@@ -267,13 +268,35 @@ class results
   		} // end for   		
   }
   
-  
-  
-  function createTotalsForPlan($suiteStructure, $mapOfSuiteSummary) 
+  /**
+   * iterates over top level suites and adds up totals using data from mapOfAggregate
+   */
+  function createTotalsForPlan() 
   {
-  	$totalsForPlan = array(total => 0, pass => 0, fail => 0, blocked => 0, notRun => 0);	
-  
- 	return $totalsForPlan; 	
+  	$total_sum = 0;
+  	$pass_sum = 0;
+  	$fail_sum = 0;
+  	$blocked_sum = 0;
+  	$notRun_sum = 0;
+  		
+  	for ($i = 0 ; $i < count($this->suiteStructure) ; $i++) {  		
+  		
+  		if (($i % $this->ITEM_PATTERN_IN_SUITE_STRUCTURE) ==  $this->ID_IN_SUITE_STRUCTURE) {  			
+  			$suiteId = $this->suiteStructure[$i];
+  			
+  			//print "suiteId = $suiteId <BR>";
+  			$resultsForSuite = $this->mapOfAggregate[$suiteId];
+  			//print_r($resultsForSuite);
+  			$total_sum += $resultsForSuite[total];
+  			$pass_sum += $resultsForSuite[pass];
+  			$fail_sum += $resultsForSuite[fail];
+  			$blocked_sum += $resultsForSuite[blocked];
+  			$notRun_sum += $resultsForSuite[notRun];
+  			
+  		} // end if
+  			
+  	}
+  	return array(total => $total_sum, pass => $pass_sum, fail => $fail_sum, blocked => $blocked_sum, notRun => $notRun_sum); 	
   }
   
  function addResultsToAggregate($t, $p, $f, $b, $nr) 

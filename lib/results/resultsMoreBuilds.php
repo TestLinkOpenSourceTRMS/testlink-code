@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsMoreBuilds.php,v 1.28 2006/07/30 02:52:40 kevinlevy Exp $ 
+* $Id: resultsMoreBuilds.php,v 1.29 2006/08/05 21:33:04 kevinlevy Exp $ 
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 * 
@@ -33,10 +33,12 @@ $suiteList = $re->getSuiteList();
 $flatArray = $re->getFlatArray();
 //$numberOfSuites = count(array_keys($suiteList));
 $mapOfSuiteSummary =  $re->getAggregateMap();
+$totals = $re->getTotalsForPlan();
 
 $arrBuilds = getBuilds($db,$tpID, " ORDER BY builds.name "); 
 $smarty = new TLSmarty();
 
+$smarty->assign('totals', $totals);
 $smarty->assign('testPlanName',$_SESSION['testPlanName']);
 $smarty->assign('testplanid', $tpID);
 $smarty->assign('arrBuilds', $arrBuilds); 

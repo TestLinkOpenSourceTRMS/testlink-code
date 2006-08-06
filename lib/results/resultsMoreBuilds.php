@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsMoreBuilds.php,v 1.31 2006/08/06 05:53:46 kevinlevy Exp $ 
+* $Id: resultsMoreBuilds.php,v 1.32 2006/08/06 05:57:03 kevinlevy Exp $ 
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 * 
@@ -33,8 +33,8 @@ $tree = new tree($db);
 $re = new results($db, $tp, $tree, $prodID);
 
 $arrKeywords = $tp->get_keywords_map($tpID); 
-print "print out keywords : <BR>";
-print_r($arrKeywords);
+//print "print out keywords : <BR>";
+//print_r($arrKeywords);
 
 $arrBuilds = $tp->get_builds($tpID); 
 

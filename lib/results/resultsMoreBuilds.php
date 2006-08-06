@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsMoreBuilds.php,v 1.29 2006/08/05 21:33:04 kevinlevy Exp $ 
+* $Id: resultsMoreBuilds.php,v 1.30 2006/08/06 02:38:16 kevinlevy Exp $ 
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 * 
@@ -9,42 +9,36 @@
 * the builds they would like to query results against.
 *
 * @author Francisco Mancardi - 20050912 - remove unused code
-* @author Kevin Levy - 20060603 - starting 1.7 changes
+*
 */
-
 require('../../config.inc.php');
 require_once('common.php');
 require_once('builds.inc.php');
-require_once('../functions/results.class.php');
-require_once('../functions/testplan.class.php');
-require_once('../functions/tree.class.php');
+// allow us to retreive array of users 
+require_once('plan.core.inc.php');
 require_once('resultsMoreBuilds.inc.php');
+require_once('../keywords/keywords.inc.php');
+testlinkInitPage();
 
-testlinkInitPage($db);
-
-$prodID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+$prodID = isset($_SESSION['productID']) ? $_SESSION['productID'] : 0;
 $tpID = $_SESSION['testPlanId'];
+//$arrBuilds = getBuilds($tpID, " ORDER BY build.name "); 
+//$arrOwners = getTestPlanUsers($tpID);
+//$arrKeywords = selectKeywords($prodID);
+//$arrComponents = getArrayOfComponentNames($tpID);
 
-$tp = new testplan($db);
-$tree = new tree($db);
-$re = new results($db, $tp, $tree, $prodID);
-
-$suiteList = $re->getSuiteList();
-$flatArray = $re->getFlatArray();
-//$numberOfSuites = count(array_keys($suiteList));
-$mapOfSuiteSummary =  $re->getAggregateMap();
-$totals = $re->getTotalsForPlan();
-
-$arrBuilds = getBuilds($db,$tpID, " ORDER BY builds.name "); 
 $smarty = new TLSmarty();
-
-$smarty->assign('totals', $totals);
 $smarty->assign('testPlanName',$_SESSION['testPlanName']);
-$smarty->assign('testplanid', $tpID);
+$smarty->assign('projectid', $tpID);
 $smarty->assign('arrBuilds', $arrBuilds); 
-$smarty->assign('suiteList', $suiteList);
-$smarty->assign('flatArray', $flatArray);
-$smarty->assign('mapOfSuiteSummary', $mapOfSuiteSummary);
-$smarty->display('resultsMoreBuilds_query_form.tpl');
-?>
+$smarty->assign('arrOwners', $arrOwners);
+$smarty->assign('arrKeywords', $arrKeywords);
+$smarty->assign('arrComponents', $arrComponents);
 
+// kl - 10182005 debug
+//print "resultMoreBuilds.php array of components = ";
+//print_r($arrComponents);
+
+$smarty->display('resultsMoreBuilds_query_form.tpl');
+
+?>

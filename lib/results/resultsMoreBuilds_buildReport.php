@@ -1,75 +1,50 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsMoreBuilds_buildReport.php,v 1.17 2006/01/05 07:30:34 franciscom Exp $ 
+* $Id: resultsMoreBuilds_buildReport.php,v 1.18 2006/08/06 02:38:16 kevinlevy Exp $ 
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 * 
-* This page show Metrics a test plan based on a start build,
-* end build, keyword, test plan id, and owner.
-* @author  Francisco Mancardi - 20050905 refactoring
-* 20051022 - scs - cosmetic code changes
+* This page will forward the user to a form where they can select
+* the builds they would like to query results against.
+*
+* @author Francisco Mancardi - 20050912 - remove unused code
+* @author Kevin Levy - 20060603 - starting 1.7 changes
 */
+
 require('../../config.inc.php');
 require_once('common.php');
-require_once('../functions/resultsMoreBuilds.inc.php');
-require_once('../functions/builds.inc.php');
 require_once('builds.inc.php');
-require_once('results.inc.php');
+require_once('../functions/results.class.php');
+require_once('../functions/testplan.class.php');
+require_once('../functions/tree.class.php');
+require_once('resultsMoreBuilds.inc.php');
+
 testlinkInitPage($db);
 
-$tpName = isset($_GET['testPlanName']) ? strings_stripSlashes($_GET['testPlanName']) : null;  
-$tpID = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0;  
-$keyword = isset($_GET['keyword']) ? strings_stripSlashes($_GET['keyword']) : null;  
-$owner = isset($_GET['owner']) ? strings_stripSlashes($_GET['owner']) : null;  
-$lastStatus = isset($_GET['lastStatus']) ? strings_stripSlashes($_GET['lastStatus']) : null;  
-$a2check = array('build','keyword','owner','testPlanName','testPlanName',"lastStatus"); 
-$format = isset($_GET['format']) ? strings_stripSlashes($_GET['format']) : null;
-if(!check_hash_keys($_GET, $a2check, "is not defined in \$GET")) 
-{
-	exit();
-}
+$prodID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+$tpID = $_SESSION['testPlanId'];
 
-$buildsSelected = array();
-$componentsSelected = array();
+$tp = new testplan($db);
+$tree = new tree($db);
+$re = new results($db, $tp, $tree, $prodID);
 
-$xls = FALSE;
-if ($format == lang_get('excel_format'))
-{
-	$xls = TRUE;
-} 
+$suiteList = $re->getSuiteList();
+$flatArray = $re->getFlatArray();
+//$numberOfSuites = count(array_keys($suiteList));
+$mapOfSuiteSummary =  $re->getAggregateMap();
+$totals = $re->getTotalsForPlan();
 
-if (isset($_REQUEST['build']))
-{
-	foreach($_REQUEST['build'] as $val)
-	{
-	    $buildsSelected[] = $val;
-	}
-}
-if (isset($_REQUEST['component']))
-{
-	foreach($_REQUEST['component'] as $val)
-	{
-		$componentsSelected[] = $val;
-	}
-}
-
-$reportData = createResultsForTestPlan($tpName,$tpID, $buildsSelected, $keyword, $owner, $lastStatus, $xls, $componentsSelected);
-$queryParameters = $reportData[0];
-$summaryOfResults = $reportData[1];
-$allComponentData = $reportData[2];
-
+$arrBuilds = getBuilds($db,$tpID, " ORDER BY builds.name "); 
 $smarty = new TLSmarty();
-$smarty->assign('queryParameters', $queryParameters);
-$smarty->assign('summaryOfResults', $summaryOfResults);
-$smarty->assign('allComponentData', $allComponentData);
-$smarty->assign('xls', $xls);
-if ($xls)
-{
-	sendXlsHeader();
-	$smarty->assign('printDate', strftime($g_date_format, time()) ); 
-	$smarty->assign('user', $_SESSION['user']);
-}
 
+$smarty->assign('totals', $totals);
+$smarty->assign('testPlanName',$_SESSION['testPlanName']);
+$smarty->assign('testplanid', $tpID);
+$smarty->assign('arrBuilds', $arrBuilds); 
+$smarty->assign('suiteList', $suiteList);
+$smarty->assign('flatArray', $flatArray);
+$smarty->assign('mapOfSuiteSummary', $mapOfSuiteSummary);
 $smarty->display('resultsMoreBuilds_report.tpl');
 ?>
+

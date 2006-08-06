@@ -14,7 +14,12 @@ class results
   // construct map linking suite ids to execution rows 
   var $SUITE_TYPE_ID = 2;  
   var $suiteList = null;  
+  
+  // suiteStructure is an array with pattern : name, id, array 
+  // array may contain another array in the same pattern
+  // this is used to describe tree structure
   var $suiteStructure = null;
+  
   var $ITEM_PATTERN_IN_SUITE_STRUCTURE = 3;
   var $NAME_IN_SUITE_STRUCTURE = 0; 
   var $ID_IN_SUITE_STRUCTURE = 1;
@@ -445,6 +450,29 @@ class results
     } 
     return $suiteList;
   } // end function
+  
+  /**
+   * return map of suite id to suite name pairs of top level suites
+   */
+  function getTopLevelSuites(){
+  /** iterates over top level suites and adds up totals using data from mapOfAggregate
+   */
+   $returnList = null;
+   $name = null;
+   $suiteId = null;
+  	for ($i = 0 ; $i < count($this->suiteStructure) ; $i++) {  		
+  		if (($i % $this->ITEM_PATTERN_IN_SUITE_STRUCTURE) == $this->NAME_IN_SUITE_STRUCTURE) {
+  			$name = $this->suiteStructure[$i];  			
+  		} // end if
+  		
+  		else if (($i % $this->ITEM_PATTERN_IN_SUITE_STRUCTURE) ==  $this->ID_IN_SUITE_STRUCTURE) {  			
+  			$suiteId = $this->suiteStructure[$i];
+  			$returnList[$i] = array(name => $name, id => $suiteId);
+  		} // end else if
+  		
+  	} // end for loop
+  	return $returnList;
+  } // end function getTopLevelSuites
 } // end class result
 
 

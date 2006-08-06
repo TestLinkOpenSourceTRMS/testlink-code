@@ -1,14 +1,13 @@
-{* TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: resultsMoreBuilds_report.tpl,v 1.12 2005/12/05 01:46:52 havlat Exp $
-Purpose: smarty template - show Test Results and Metrics
-Revisions:
-20051126 - scs - removed a-tags around indiv. desc.
-20051204 - mht - removed obsolete print button
+{* 
+TestLink Open Source Project - http://testlink.sourceforge.net/ 
+$Id: resultsMoreBuilds_report.tpl,v 1.13 2006/08/06 02:40:02 kevinlevy Exp $
+@author Francisco Mancardi - fm - start solving BUGID 97/98
+20051022 - scs - removed ' in component id values
+20051121 - scs - added escaping of tpname
+20051203 - scs - added missing apo in lang_get
 *}
-{include file="inc_head.tpl" openHead='yes'}
-<!-- added by Kevin Levy 8/27 -->
 
-{if !$xls}
+	{include file="inc_head.tpl" openHead='yes'} 
 		<script language="JavaScript" src="gui/javascript/expandAndCollapseFunctions.js" type="text/javascript"></script>
 		<script language="JavaScript">
 		var bAllShown = false;
@@ -17,39 +16,74 @@ Revisions:
 		progress();
 		</script>
 </head>
-	<body onLoad="onLoad();showOrCollapseAll();showOrCollapseAll()">
 
-		<div id="teaser">
-			<h1>{lang_get s='please_wait'}</h1>
-			<h1 id="progress"></h1>
-		</div>	
-
-		<div class="workBack">
-			<h2>{lang_get s='query_parameters_header'}</h2> 
-			{$queryParameters}
-		</div>
-
-		<div class="workBack">
-
-			<h3>{lang_get s='overall_status'}</h3>
-			{lang_get s='descr_res_totals'}
-			{$summaryOfResults}
-		</div>
-
-		<div id="detailsOfReport" class="workBack">
-			<h3>{lang_get s='case_return_by_query_header'}</h3>
-			{lang_get s='descr_indiv'}
-			<BR><BR><a href="javascript:showOrCollapseAll()">{lang_get s='show_hide_all'}</a>
-			<h2 onClick="plusMinus_onClick(this);"><img class="plus" src="icons/plus.gif">{lang_get s='results_by_component_header'}</h2>
+	<table class="simple" style="width: 100%; text-align: center; margin-left: 0px;" border="2">
+		<tr><th>total cases</th><th>total pass</th><th>total fail</th><th>total block</th><th>total not run</th></tr> 
+		<tr><td>{$totals.total}</td><td>{$totals.pass}</td><td>{$totals.fail}</td><td>{$totals.blocked}</td><td>{$totals.notRun}</td></tr>
+	</table>		
+	
+	<a href="javascript:showOrCollapseAll()">{lang_get s='show_hide_all'}</a>
+	<h2 onClick="plusMinus_onClick(this);"><img class="plus" src="icons/plus.gif">show/collapse</h2>
+			
+	<div class="workBack">
+	{foreach key=id item=array from=$flatArray}
+		{if ($id mod 3) == 0}
+			{assign var=depthChange value=$flatArray[$id]}
+		{elseif ($id mod 3) == 1}
+			{assign var=suiteNameText value=$flatArray[$id]}
+		{elseif ($id mod 3) == 2}
+			{assign var=currentSuiteId value=$flatArray[$id]}
+			
+			{if ($depthChange == 0)}	
 			<div class="workBack">
+			<h2 onClick="plusMinus_onClick(this);"><img class="plus" src="icons/plus.gif">show/collapse</h2>
+				
+			{elseif ($depthChange gt 0) }
+				{section name="loopOutDivs" loop="$flatArray" max="$depthChange"}
+					<div class="workBack">
+					<h2 onClick="plusMinus_onClick(this);"><img class="plus" src="icons/plus.gif">show/collapse</h2>
+				{/section}
+			{elseif ($depthChange == -1) }
+					</div>
+			{elseif ($depthChange == -2) }
+					</div></div>		
+			{elseif ($depthChange == -3) }
+					</div></div></div>		
+			{elseif ($depthChange == -4) }
+					</div></div></div></div>
+			{elseif ($depthChange == -5) }
+					</div></div></div></div></div>
+			{/if}
+			{assign var=previousDepth value=$depth}
+			
+			<h2>{$suiteNameText}</h2>
+			<table class="simple" style="width: 100%; text-align: center; margin-left: 0px;" border="2">
+				<tr><th>total cases</th><th>total pass</th><th>total fail</th><th>total block</th><th>total not run</th></tr> 
+				<tr><td>{$mapOfSuiteSummary[$currentSuiteId].total}</td><td>{$mapOfSuiteSummary[$currentSuiteId].pass}</td><td>{$mapOfSuiteSummary[$currentSuiteId].fail}</td><td>{$mapOfSuiteSummary[$currentSuiteId].blocked}</td><td>{$mapOfSuiteSummary[$currentSuiteId].notRun}</td></tr>
+			</table>		
+				
+			{foreach key=suiteId item=array from=$suiteList}
+				{* probably can be done better. If suiteId in $suiteList matches the current 
+				suite id - print that suite's information *}
+				{if ($suiteId == $currentSuiteId)} 
+					<table class="simple" style="width: 100%; text-align: center; margin-left: 0px;" border="2">
+					<tr><th>test case id</th><th>build id</th><th>tester_id</th><th>execution_ts</th><th>status</th><th>notes</th></tr> 
+					{foreach key=executionInstance item=array from=$suiteList[$suiteId]}
+						<tr>
+							<td>{$suiteList[$suiteId][$executionInstance].testcaseID} </td>
+							<td>{$suiteList[$suiteId][$executionInstance].build_id} </td> 
+							<td>{$suiteList[$suiteId][$executionInstance].tester_id} </td>
+							<td>{$suiteList[$suiteId][$executionInstance].execution_ts} </td>
+							<td>{$suiteList[$suiteId][$executionInstance].status} </td>
+							<td>{$suiteList[$suiteId][$executionInstance].notes} </td> 
+						</tr>
+					{/foreach}					
+					</table>
+				{/if}
+			{/foreach}											
+		{/if}
+	{/foreach}
+	</div>
 
-				{$allComponentData}
-				</div>
-		</div>
-	</body>
+</body>
 </html>
-{/if}
-
-{if $xls}
-	MS Excel Report - development in progress 10/18/2005 kl
-{/if}

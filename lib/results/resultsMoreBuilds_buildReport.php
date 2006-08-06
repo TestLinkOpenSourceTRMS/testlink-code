@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsMoreBuilds_buildReport.php,v 1.18 2006/08/06 02:38:16 kevinlevy Exp $ 
+* $Id: resultsMoreBuilds_buildReport.php,v 1.19 2006/08/06 05:53:46 kevinlevy Exp $ 
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 * 
@@ -14,11 +14,11 @@
 
 require('../../config.inc.php');
 require_once('common.php');
-require_once('builds.inc.php');
+//require_once('builds.inc.php');
 require_once('../functions/results.class.php');
 require_once('../functions/testplan.class.php');
 require_once('../functions/tree.class.php');
-require_once('resultsMoreBuilds.inc.php');
+//require_once('resultsMoreBuilds.inc.php');
 
 testlinkInitPage($db);
 
@@ -35,7 +35,7 @@ $flatArray = $re->getFlatArray();
 $mapOfSuiteSummary =  $re->getAggregateMap();
 $totals = $re->getTotalsForPlan();
 
-$arrBuilds = getBuilds($db,$tpID, " ORDER BY builds.name "); 
+ 
 $smarty = new TLSmarty();
 
 $smarty->assign('totals', $totals);

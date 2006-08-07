@@ -1,12 +1,16 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execNavigator.tpl,v 1.5 2006/05/03 06:48:33 franciscom Exp $ *}
+{* $Id: execNavigator.tpl,v 1.6 2006/08/07 09:43:12 franciscom Exp $ *}
 {* Purpose: smarty template - show test set tree *}
 {* 20050828 - scs - added searching for tcID *}
 {include file="inc_head.tpl" jsTree="yes"}
 
 <body>
 
-<h1>{lang_get s='title_tc_suite_navigator'}</h1>
+{* 
+20060806 - franciscom
+<h1>{lang_get s='title_tc_suite_navigator'}</h1> 
+*}
+<h1>{lang_get s='TestPlan'} {$tplan_name}</h1> 
 
 {* $filterForm *}
 <div style="margin: 3px;">

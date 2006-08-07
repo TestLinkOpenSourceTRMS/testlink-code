@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: containerView.tpl,v 1.18 2006/06/30 18:41:25 schlundus Exp $ *}
+{* $Id: containerView.tpl,v 1.19 2006/08/07 09:42:33 franciscom Exp $ *}
 {* 
 Purpose: smarty template - view test specification containers 
 
@@ -74,6 +74,7 @@ Purpose: smarty template - view test specification containers
 		</form>
 		</div>
 		<br/>	
+
 		{* Add a new testsuite children for this parent *}
 		<div>
 		<form method="post" action="lib/testcases/containerEdit.php?containerID={$container_data.id}">
@@ -81,6 +82,7 @@ Purpose: smarty template - view test specification containers
 		</form>
 		</div>
 		<br/>	
+
 		{* Add a new testcase *}
 		<div>
 		<form method="post" action="lib/testcases/tcEdit.php?containerID={$container_data.id}">
@@ -89,7 +91,7 @@ Purpose: smarty template - view test specification containers
 		</div>
 	{/if}
 
-		{include file="inc_testsuite_viewer_ro.tpl"}
+	{include file="inc_testsuite_viewer_ro.tpl"}
   
 	{assign var="bDownloadOnly" value=false}
 	{if modify_tc_rights neq 'yes'}

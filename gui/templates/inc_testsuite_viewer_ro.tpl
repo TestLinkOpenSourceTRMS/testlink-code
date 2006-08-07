@@ -1,8 +1,8 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: inc_testsuite_viewer_ro.tpl,v 1.2 2006/04/29 19:32:54 schlundus Exp $
+$Id: inc_testsuite_viewer_ro.tpl,v 1.3 2006/08/07 09:42:33 franciscom Exp $
 
-20060225 - franciscom 
+20060805 - franciscom - added keywords management
 *}
 <table class="simple" style="width: 90%">
 	<tr>
@@ -18,4 +18,26 @@ $Id: inc_testsuite_viewer_ro.tpl,v 1.2 2006/04/29 19:32:54 schlundus Exp $
 	<tr>
 		<td>&nbsp;</td>
 	</tr>
+	
+	{* ------------------------------------------- *}
+	{* 20060805 - franciscom - keywords management *}
+	<tr>
+	  <td>
+    	<table cellpadding="0" cellspacing="0" style="font-size:100%;">
+    	  <tr>
+    	  	<td width="35%"><a href="lib/keywords/keywordsView.php" 
+    				target="mainframe" class="bold">{lang_get s='keywords'}</a>: &nbsp;
+    			</td>
+    		<td>
+    		  	{foreach item=keyword_item from=$keywords_map}
+    			    {$keyword_item|escape}
+    			    <br />
+    			{/foreach}
+    		</td>
+    	</tr>
+    	</table>
+	  </td>	
+	</tr>
+	{* ------------------------------------------- *}
+
 </table>

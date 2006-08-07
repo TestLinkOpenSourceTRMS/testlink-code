@@ -2,10 +2,13 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testsuite.class.php,v $
- * @version $Revision: 1.15 $
- * @modified $Date: 2006/06/30 18:41:25 $
+ * @version $Revision: 1.16 $
+ * @modified $Date: 2006/08/07 09:44:09 $
  * @author franciscom
  *
+ * 20060805 - franciscom - changes in viewer_edit_new()
+ *                         keywords related functions
+ * 
  * 20060425 - franciscom - changes in show() following Andreas Morsing advice (schlundus)
  *
  */
@@ -168,13 +171,13 @@ function get_all()
 
 
 /**
- * Function-Documentation
+ * show()
  *
- * @param type $smarty [ref] documentation
- * @param type $id documentation
- * @param type $sqlResult [default = ''] documentation
- * @param type $action [default = 'update'] documentation
- * @param type $modded_item_id [default = 0] documentation
+ * @param type $smarty [reference]
+ * @param type $id 
+ * @param type $sqlResult [default = '']
+ * @param type $action [default = 'update']
+ * @param type $modded_item_id [default = 0]
  * @return type documentation
  *
  **/
@@ -195,6 +198,8 @@ function show(&$smarty,$id, $sqlResult = '', $action = 'update',$modded_item_id 
 		$modded_item = $this->get_by_id($modded_item_id);
 	}
   
+  $keywords_map=$this->get_keywords_map($id,' ORDER BY KEYWORD ASC ');
+  $smarty->assign('keywords_map',$keywords_map);
 	$smarty->assign('moddedItem',$modded_item);
 	$smarty->assign('level', 'testsuite');
 	$smarty->assign('container_data', $item);
@@ -203,21 +208,19 @@ function show(&$smarty,$id, $sqlResult = '', $action = 'update',$modded_item_id 
 }
 
 
-// 20060226 - franciscom
-function viewer_edit_new($amy_keys, $oFCK, $action, $parent_id, $id=null)
+// 20060805 - franciscom - added new argument smarty reference
+function viewer_edit_new(&$smarty,$amy_keys, $oFCK, $action, $parent_id, $id=null)
 {
 	$a_tpl = array( 'edit_testsuite' => 'containerEdit.tpl',
 					        'new_testsuite'  => 'containerNew.tpl');
 	
 	$the_tpl = $a_tpl[$action];
 	$component_name='';
-	$smarty = new TLSmarty();
+	//$smarty = new TLSmarty();
 	$smarty->assign('sqlResult', null);
 	$smarty->assign('containerID',$parent_id);	 
 	
 	$the_data = null;
-	
-	// 20060518 - franciscom
   $name='';
 	if ($action == 'edit_testsuite')
 	{
@@ -354,6 +357,76 @@ function delete_deep($id)
 
 	}
 } // end function
+
+
+
+// 20060805 - franciscom - creation
+function getKeywords($id,$kw_id = null)
+{
+	$sql = "SELECT keyword_id,keywords.keyword 
+	        FROM object_keywords,keywords 
+	        WHERE keyword_id = keywords.id AND fk_id = {$id}";
+	if (!is_null($kw_id))
+	{
+		$sql .= " AND keyword_id = {$kw_id}";
+	}	
+	$map_keywords = $this->db->fetchRowsIntoMap($sql,'keyword_id');
+	
+	return($map_keywords);
+} 
+
+function get_keywords_map($id,$order_by_clause='')
+{
+	$sql = "SELECT keyword_id,keywords.keyword 
+	        FROM object_keywords,keywords 
+	        WHERE keyword_id = keywords.id ";
+	if (is_array($id))
+		$sql .= " AND fk_id IN (".implode(",",$id).") ";
+	else
+		$sql .= " AND fk_id = {$id} ";
+		
+	$sql .= $order_by_clause;
+
+	$map_keywords = $this->db->fetchColumnsIntoMap($sql,'keyword_id','keyword');
+	return($map_keywords);
+} 
+
+
+
+function addKeyword($id,$kw_id)
+{
+	$kw = $this->getKeywords($id,$kw_id);
+	if (sizeof($kw))
+	{
+		return 1;
+	}	
+	$sql = " INSERT INTO object_keywords (fk_id,fk_table,keyword_id) " .
+		     " VALUES ($id,'nodes_hierarchy',$kw_id)";
+
+	return ($this->db->exec_query($sql) ? 1 : 0);
+}
+
+function addKeywords($id,$kw_ids)
+{
+	$status = 1;
+	$num_kws = sizeof($kw_ids);
+	for($idx = 0; $idx < $num_kws; $idx++)
+	{
+		$status = $status && $this->addKeyword($id,$kw_ids[$idx]);
+	}
+	return($status);
+}
+
+
+function deleteKeywords($id,$kw_id = null)
+{
+	$sql = " DELETE FROM object_keywords WHERE fk_id = {$id} ";
+	if (!is_null($kw_id))
+	{
+		$sql .= " AND keyword_id = {$kw_id}";
+	}	
+	return($this->db->exec_query($sql));
+}
 
 
 

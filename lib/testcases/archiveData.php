@@ -3,7 +3,7 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
- * @version $Id: archiveData.php,v 1.18 2006/06/30 18:41:25 schlundus Exp $
+ * @version $Id: archiveData.php,v 1.19 2006/08/07 09:44:09 franciscom Exp $
  * @author Martin Havlat
  *  
  * This page allows you to show data (test cases, categories, and
@@ -29,15 +29,17 @@ switch($feature)
 		$smarty->assign('attachmentInfos',$attachments);
 		$smarty->assign('id',$id);
 		$item_mgr = new testproject($db);
-	    $item_mgr->show($smarty,$id);
+    $item_mgr->show($smarty,$id);
 		break;
+
 	case 'testsuite':
 		$attachments = getAttachmentInfos($db,$id,'nodes_hierarchy');
 		$smarty->assign('attachmentInfos',$attachments);
 		$smarty->assign('id',$id);
 		$item_mgr = new testsuite($db);
-    	$item_mgr->show($smarty,$id);
+   	$item_mgr->show($smarty,$id);
 		break;
+
 	case 'testcase':
 		$attachments[$id] = getAttachmentInfos($db,$id,'nodes_hierarchy');
 		$smarty->assign('attachments',$attachments);
@@ -45,6 +47,7 @@ switch($feature)
 		$item_mgr = new testcase($db);
 		$item_mgr->show($smarty,$id,$user_id);
 		break;
+
 	default:
 		tLog('$_GET["edit"] has invalid value: ' . $feature , 'ERROR');
 		trigger_error($_SESSION['user'].'> $_GET["edit"] has invalid value.', E_USER_ERROR);

@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: plan.inc.php,v $
- * @version $Revision: 1.36 $
- * @modified $Date: 2006/07/15 19:55:30 $ $Author: schlundus $
+ * @version $Revision: 1.37 $
+ * @modified $Date: 2006/08/07 09:44:09 $ $Author: franciscom $
  * @author 	Martin Havlat
  *
  * Functions for management: 
@@ -336,8 +336,9 @@ function getTestPlanMileStones(&$db,$projID,&$mileStones,$mileStoneID = null)
 {
 	$sql = " SELECT id,name as title,date,A,B,C " .
 	       " FROM milestones " .
-	       " WHERE testplan_id=" . $projID . 
-	       " AND to_days(date) >= to_days(now()) ";
+	       " WHERE testplan_id=" . $projID ;
+	        
+	       // " AND to_days(date) >= to_days(now()) ";
 	if (!is_null($mileStoneID))
 		$sql .= "AND id = " . $mileStoneID;		   
 		   

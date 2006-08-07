@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: execNavigator.php,v $
  *
- * @version $Revision: 1.24 $
- * @modified $Date: 2006/06/10 20:22:20 $ by $Author: schlundus $
+ * @version $Revision: 1.25 $
+ * @modified $Date: 2006/08/07 09:44:09 $ by $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -38,7 +38,7 @@ $tc_id = isset($_POST['tcID']) ? intval($_POST['tcID']) : null;
 $keyword_id = isset($_POST['keyword_id']) ? $_POST['keyword_id'] : 0;             
 
 $tplan_id   = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0;
-$tplan_name = isset($_SESSION['testPlanName']) ? $_SESSION['testPlanName'] : 'xxx';
+$tplan_name = isset($_SESSION['testPlanName']) ? $_SESSION['testPlanName'] : 'null';
 $tplan_mgr = new testplan($db);
 $optBuild = $tplan_mgr->get_builds_for_html_options($tplan_id);
 $optBuildSelected = isset($_POST['build_id']) ? $_POST['build_id'] : key($optBuild);
@@ -79,6 +79,7 @@ $testCaseID = null;
 
 
 $smarty = new TLSmarty();
+$smarty->assign('tplan_name',$tplan_name);  // 20060806 - franciscom
 $smarty->assign('treeKind', TL_TREE_KIND);
 $smarty->assign('treeColored', $treeColored);
 $smarty->assign('optBuild', $optBuild);

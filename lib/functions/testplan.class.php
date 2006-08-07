@@ -2,10 +2,11 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.6 $
- * @modified $Date: 2006/06/07 12:34:55 $ $Author: franciscom $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2006/08/07 09:44:09 $ $Author: franciscom $
  * @author franciscom
  *
+ * 20060805 - franciscom - created update()
  * 20060603 - franciscom - changes in get_linked_tcversions()
  * 20060430 - franciscom - added get_keywords_map()
  *
@@ -53,21 +54,57 @@ function create($name,$notes,$testproject_id)
 
 
 /*
-update info on tables and on session
-
-		20060312 - franciscom - name is setted on nodes_hierarchy table
-
+  20060805 - franciscom - creation
 */
-function update($id,$name,$notes)
+function update($id,$name,$notes,$is_active)
 {
+  $do_update=1;
+  $result=null;
+	$active = to_boolean($is_active);
+	$name=trim($name);
+	
+	// 20060805 - franciscom - two tables to update and we have no transaction yet.
+  $rsa=$this->get_by_id($id);
+  $duplicate_check = (strcmp($rsa['name'],$name) != 0 );
+    
+  if($duplicate_check)
+  {
+    $rs=$this->get_by_name($name,$rsa['parent_id']);
+    $do_update=is_null($rs);
+  }
+  
+  if( $do_update )
+  {
+	  // Update name
+	  $sql = "UPDATE nodes_hierarchy " .
+	         "SET name='" . $this->db->prepare_string($name) . "'" .
+			     "WHERE id={$id}";
+  	$result=$this->db->exec_query($sql);
+	  
+	  if($result)
+	  {
+    	$sql = "UPDATE testplans " .
+    	       "SET active={$active}," .
+	           "notes='" . $this->db->prepare_string($notes). "' " .
+	           "WHERE id=" . $id;
+	    $result=$this->db->exec_query($sql); 
+	  }
+	}
+	return($result ? 1 : 0);
 }
 
-function get_by_name($name)
+// 20060805 - franciscom - added possibility to filter by test project id
+function get_by_name($name,$tproject_id=0)
 {
-	$sql = " SELECT testplans.*, nodes_hierarchy.name 
-	         FROM testplans, nodes_hierarchy 
-	         WHERE nodes_hierarchy.name = '" . 
-	         $this->db->prepare_string($name) . "'";
+	$sql = " SELECT testplans.*, NH.name " .
+	       " FROM testplans, nodes_hierarchy NH" .
+	       " WHERE testplans.id=NH.id " . 
+	       " AND NH.name = '" . $this->db->prepare_string($name) . "'";
+	         
+	if($tproject_id > 0 )
+	{
+	  $sql .= " AND NH.parent_id={$tproject_id}"; 
+	}         
 
   $recordset = $this->db->get_recordset($sql);
   return($recordset);
@@ -75,12 +112,14 @@ function get_by_name($name)
 
 /*
 get info for one test project
+
+20060805 - franciscom - added nodes_hierarchy.parent_id on result
 */
 function get_by_id($id)
 {
-	$sql = " SELECT testplans.*,nodes_hierarchy.name 
-	         FROM testplans, nodes_hierarchy
-	         WHERE testplans.id = nodes_hierarchy.id
+	$sql = " SELECT testplans.*,NH.name,NH.parent_id 
+	         FROM testplans, nodes_hierarchy NH
+	         WHERE testplans.id = NH.id
 	         AND   testplans.id = {$id}";
   $recordset = $this->db->get_recordset($sql);
   return($recordset ? $recordset[0] : null);

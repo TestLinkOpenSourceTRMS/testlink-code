@@ -4,10 +4,13 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.32 $
- * @modified $Date: 2006/06/30 18:41:25 $ $Author: schlundus $
+ * @version $Revision: 1.33 $
+ * @modified $Date: 2006/08/07 09:44:09 $ $Author: franciscom $
  *
  * @author Martin Havlat
+ *
+ *
+ * 20060806 - franciscom - changed component to testsuite
  *
  * 20060603 - franciscom - corrected bug is testplan has no test cases
  *                         corrected bug when history off
@@ -83,20 +86,21 @@ if(!is_null($xx))
     // Get the path for every test case, grouping test cases that
     // have same parent.
     $items_to_exec = array();
-	$_SESSION['s_lastAttachmentInfos'] = null;
+	  $_SESSION['s_lastAttachmentInfos'] = null;
+	  
     if($level == 'testcase')
     {
     	$items_to_exec[$id] = $xx[$id]['tcversion_id'];    
     	$tcase_id = $id;
     	$tcversion_id = $xx[$id]['tcversion_id'];
-		$tcAttachments[$id] = getAttachmentInfos($db,$id,'nodes_hierarchy',1);
+	  	$tcAttachments[$id] = getAttachmentInfos($db,$id,'nodes_hierarchy',1);
     }
     else
     {
     	$tcase_id = array();
     	$tcversion_id = array();
     	 
-		$i = 0; 
+		  $i = 0; 
     	foreach($xx as $item)
     	{
     		$path = $tree_mgr->get_path($item['tc_id'],null,'simplex');
@@ -106,16 +110,16 @@ if(!is_null($xx))
     			{
     				$tcase_id[] = $item['tc_id'];
     				$tcversion_id[] = $item['tcversion_id'];
-					$tcAttachments[$item['tc_id']] = getAttachmentInfos($db,$item['tc_id'],'nodes_hierarchy',true,1);
-
+					  $tcAttachments[$item['tc_id']] = getAttachmentInfos($db,$item['tc_id'],'nodes_hierarchy',true,1);
     				break;
     			}
     		} 
     	}
-		if ($level == 'component')
-		{
-			$tSuiteAttachments = getAttachmentInfos($db,$id,'nodes_hierarchy',true,1);
-		}
+		  
+		  if ($level == 'testsuite')
+		  {
+			  $tSuiteAttachments = getAttachmentInfos($db,$id,'nodes_hierarchy',true,1);
+		  }
     }
     
     // 
@@ -124,8 +128,9 @@ if(!is_null($xx))
                                                     $build_id,GET_NO_EXEC);
     
     if (isset($_REQUEST['save_results']) || isset($_REQUEST['do_bulk_save']))
+    {
     	$submitResult = write_execution($db,$user_id,$_REQUEST,$tplan_id,$build_id,$map_last_exec);
-    
+    }
     $map_last_exec_any_build = null;
     if( $exec_cfg->show_last_exec_any_build )
     {
@@ -161,7 +166,7 @@ if(!is_null($xx))
     {
         foreach($other_execs as $tcversion_id => $execInfo)
         {
-			$num_elem = sizeof($execInfo);   
+			    $num_elem = sizeof($execInfo);   
         	for($i = 0;$i < $num_elem;$i++)
         	{
         		$execID = $execInfo[$i]['execution_id'];
@@ -195,6 +200,8 @@ $smarty->assign('owner', $owner);
 $smarty->assign('updated', $submitResult);
 $smarty->assign('g_bugInterface', $g_bugInterface);
 $smarty->display($g_tpl['execSetResults']);
+
+
 
 function manage_history_on($hash_REQUEST,$hash_SESSION,
                            $exec_cfg,$btn_on_name,$btn_off_name,$hidden_on_name)

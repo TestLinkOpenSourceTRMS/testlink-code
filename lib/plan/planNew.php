@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: planNew.php,v $
  *
- * @version $Revision: 1.20 $
- * @modified $Date: 2006/05/17 11:08:07 $ $Author: franciscom $
+ * @version $Revision: 1.21 $
+ * @modified $Date: 2006/08/07 09:44:09 $ $Author: franciscom $
  *
  * Purpose:  Add new or edit existing Test Plan 
  *
@@ -107,7 +107,8 @@ else if($bNewTestPlan || $bEditTestPlan)
 			}
 			else
 			{
-				if (!updateTestPlan($db,$args->tpID,$args->name,$args->notes,$bActive))
+			  // 20060805 - franciscom - function call replaced with method call.
+				if (!$tplan_mgr->update($args->tpID,$args->name,$args->notes,$bActive))
 				{
 					$sqlResult = lang_get('update_tp_failed1'). $tpName . lang_get('update_tp_failed2').": " . 
 					                  $db->error_msg() . "<br />";

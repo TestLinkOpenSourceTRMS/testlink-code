@@ -1,7 +1,7 @@
 <?php
 /* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: installUtils.php,v 1.15 2006/05/24 07:11:59 franciscom Exp $ 
+$Id: installUtils.php,v 1.16 2006/08/07 09:41:47 franciscom Exp $ 
 
 20060428 - franciscom - new function check_db_loaded_extension()
 20060214 - franciscom - added warning regarding valid database names
@@ -61,7 +61,7 @@ return $filesArr;
 // | Authors: João Prado Maia <jpm@mysql.com>                             |
 // +----------------------------------------------------------------------+
 //
-// @(#) $Id: installUtils.php,v 1.15 2006/05/24 07:11:59 franciscom Exp $
+// @(#) $Id: installUtils.php,v 1.16 2006/08/07 09:41:47 franciscom Exp $
 //
 
 // a foolish wrapper - 20051231 - fm
@@ -260,7 +260,10 @@ exit;
 }  /* Function ends */
 
 
-function check_with_feedback()
+/*
+20060729 - franciscom - added [$dirs_to_check]
+*/
+function check_with_feedback($dirs_to_check=null)
 {
 $errors=0;	
 $final_msg ='';
@@ -271,8 +274,12 @@ $msg_ok = "<span class='ok'>OK!</span>";
 $msg_check_dir_existence = "</b><br />Checking if <span class='mono'>PLACE_HOLDER</span> directory exists:<b> ";
 $msg_check_dir_is_w = "</b><br />Checking if <span class='mono'>PLACE_HOLDER</span> directory is writable:<b> ";
 
-
+// 20060729 - franciscom
 $awtc = array('../gui/templates_c');
+if(!is_null($dirs_to_check) )
+{
+  $awtc=$dirs_to_check;
+} 
 
 
 foreach ($awtc as $the_d) 

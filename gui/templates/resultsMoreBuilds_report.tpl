@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: resultsMoreBuilds_report.tpl,v 1.13 2006/08/06 02:40:02 kevinlevy Exp $
+$Id: resultsMoreBuilds_report.tpl,v 1.14 2006/08/07 06:40:12 kevinlevy Exp $
 @author Francisco Mancardi - fm - start solving BUGID 97/98
 20051022 - scs - removed ' in component id values
 20051121 - scs - added escaping of tpname
@@ -16,6 +16,61 @@ $Id: resultsMoreBuilds_report.tpl,v 1.13 2006/08/06 02:40:02 kevinlevy Exp $
 		progress();
 		</script>
 </head>
+
+	<h2>user selected query parameters :</h2>
+	<table class="simple" style="width: 100%; text-align: center; margin-left: 0px;" border="2">
+		<tr><th>builds</th><th>test suites</th><th>keywords</th><th>owners</th><th>report format</th><th>last result</th></tr> 
+		<tr>
+			<td>
+				{foreach key=buildrow item=array from=$buildsSelected}
+					{assign var=buildid value=$buildsSelected[$buildrow]}
+					
+					<!-- x is hard to describe in this context -->
+					{foreach key=x item=array from=$arrBuilds}					
+
+						{if ($arrBuilds[$x].id) == $buildid}
+							{$arrBuilds[$x].name} <BR>
+						{/if}
+					{/foreach}
+				{/foreach}
+				
+			</td>
+			
+			<td>
+				{foreach key=componentrow item=array from=$componentsSelected}
+					{assign var=componentid value=$componentsSelected[$componentrow]}
+					
+					<!-- x is hard to describe in this context -->
+					{foreach key=x item=array from=$arrComponents}					
+
+						{if ($arrComponents[$x].id) == $componentid}
+							{$arrComponents[$x].name} <BR>
+						{/if}
+					{/foreach}
+				{/foreach}
+				
+			</td>
+			
+			<td>
+				{foreach key=keywordrow item=array from=$keywordsSelected}
+					{assign var=keywordid value=$keywordsSelected[$keywordrow]}
+					{$arrKeywords[$keywordid]}	<BR>
+				{/foreach}
+			</td>
+			
+			<td>
+				owners - n/a
+			</td>
+			
+			<td>
+				html only
+			</td>
+			
+			<td>{$lastStatus}</td>
+			
+		</tr>
+	</table>		
+	
 
 	<table class="simple" style="width: 100%; text-align: center; margin-left: 0px;" border="2">
 		<tr><th>total cases</th><th>total pass</th><th>total fail</th><th>total block</th><th>total not run</th></tr> 

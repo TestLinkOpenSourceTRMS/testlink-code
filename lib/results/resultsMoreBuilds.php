@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsMoreBuilds.php,v 1.32 2006/08/06 05:57:03 kevinlevy Exp $ 
+* $Id: resultsMoreBuilds.php,v 1.33 2006/08/07 06:38:45 kevinlevy Exp $ 
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 * 
@@ -15,13 +15,12 @@ require('../../config.inc.php');
 require_once('common.php');
 require_once('builds.inc.php');
 // allow us to retreive array of users 
-require_once('plan.core.inc.php');
-require_once('resultsMoreBuilds.inc.php');
-require_once('../keywords/keywords.inc.php');
+//require_once('plan.core.inc.php');
+//require_once('resultsMoreBuilds.inc.php');
+//require_once('../keywords/keywords.inc.php');
 require_once('../functions/results.class.php');
 require_once('../functions/testplan.class.php');
 require_once('../functions/tree.class.php');
-
 
 testlinkInitPage($db);
 

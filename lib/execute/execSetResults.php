@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.33 $
- * @modified $Date: 2006/08/07 09:44:09 $ $Author: franciscom $
+ * @version $Revision: 1.34 $
+ * @modified $Date: 2006/08/09 12:04:30 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -181,6 +181,23 @@ if(!is_null($xx))
     }
 }
 $smarty = new TLSmarty();
+
+
+// 20060808 - franciscom
+$rs=$tplan_mgr->get_by_id($tplan_id);
+$smarty->assign('tplan_notes',$rs['notes']);
+
+$rs=getBuild_by_id($db,$build_id);
+$smarty->assign('build_notes',$rs['notes']);
+
+$smarty->assign('tpn_view_status',
+                isset($_POST['tpn_view_status']) ? $_POST['tpn_view_status']:0);
+$smarty->assign('bn_view_status',
+                isset($_POST['bn_view_status']) ? $_POST['bn_view_status']:0);
+$smarty->assign('bc_view_status',
+                isset($_POST['bc_view_status']) ? $_POST['bc_view_status']:0);
+
+
 $smarty->assign('tcAttachments',$tcAttachments);
 $smarty->assign('id',$id);
 $smarty->assign('tSuiteAttachments',$tSuiteAttachments);

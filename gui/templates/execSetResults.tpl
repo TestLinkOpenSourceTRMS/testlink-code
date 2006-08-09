@@ -1,7 +1,8 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execSetResults.tpl,v 1.23 2006/07/28 17:22:03 schlundus Exp $ *}
+{* $Id: execSetResults.tpl,v 1.24 2006/08/09 12:04:30 franciscom Exp $ *}
 {* Purpose: smarty template - show tests to add results *}
 {* Revisions:
+              20060808 - franciscom - added display of test plan notes 
               20060722 - franciscom - syntax for value on history_on
               20060602 - franciscom - new code for attachments display 
               20060528 - franciscom - $show_last_exec_any_build
@@ -10,9 +11,14 @@
 {* {include file="inc_head.tpl" popup='yes'} *}
 {include file="inc_head.tpl" popup='yes' openHead='yes'}
 <script language="JavaScript" src="gui/javascript/radio_utils.js" type="text/javascript"></script>
+
+{* 20060808 - franciscom *}
+<script language="JavaScript" src="gui/javascript/expandAndCollapseFunctions.js" type="text/javascript"></script>
 </head>
 
-<body>
+<body onLoad="show_hide('tplan_notes','tpn_view_status',{$tpn_view_status});
+              show_hide('build_notes','bn_view_status',{$bn_view_status});
+              show_hide('bulk_controls','bc_view_status',{$bc_view_status})">
 
 <h1>	
 	<img alt="{lang_get s='help'}" class="help" 
@@ -29,7 +35,33 @@
 {assign var="input_enabled_disabled" value="disabled"}
   	
 <div id="main_content" class="workBack">
+
+<h1 onclick="show_hide('tplan_notes','tpn_view_status',
+                       document.getElementById('tplan_notes').style.display=='none')">
+{lang_get s='test_plan_notes'}</h1>
+<div id="tplan_notes" name="tplan_notes">
+{$tplan_notes}<br>
+</div>
+
+<h1 onclick="show_hide('build_notes','bn_view_status',
+                       document.getElementById('build_notes').style.display=='none')"> 
+{lang_get s='builds_notes'}</h1>
+<div id="build_notes" name="tplan_notes">
+{$build_notes}<br>
+</div>
+
 <form method="post">
+  <input type="hidden" id="tpn_view_status" 
+                       name="tpn_view_status" 
+                       value="{$tpn_view_status}">
+  <input type="hidden" id="bn_view_status" 
+                       name="bn_view_status" 
+                       value="{$bn_view_status}">
+  <input type="hidden" id="bc_view_status" 
+                       name="bc_view_status" 
+                       value="{$bc_view_status}">
+  
+  
   {if $map_last_exec eq ""}
      {lang_get s='no_data_available'}
   {else}
@@ -38,10 +70,13 @@
          Added to make Test Results editable only if Current build is latest Build - Tools-R-Us *}
       {* 20051108 - fm - BUGID 00082*}
       {if $rightsEdit == "yes" and $edit_test_results == "yes"}
-      	{assign var="input_enabled_disabled" value=""}
-        <h1> {lang_get s='bulk_tc_status_management'} </h1>
-        {* 20060528 - franciscom - bulk management of test case status *}
-        {foreach key=verbose_status item=locale_status from=$gsmarty_tc_status_for_ui}
+        {assign var="input_enabled_disabled" value=""}
+        <h1 onclick="show_hide('bulk_controls','bc_view_status',
+                       document.getElementById('bulk_controls').style.display=='none')">
+        {lang_get s='bulk_tc_status_management'} </h1>
+        
+        <div id="bulk_controls" name="bulk_controls">
+      	{foreach key=verbose_status item=locale_status from=$gsmarty_tc_status_for_ui}
       	   <input type="button" id="btn_{$verbose_status}" name="btn_{$verbose_status}"
       	          value="{lang_get s='set_all_tc_to'} {lang_get s=$locale_status}"
       	          onclick="javascript:check_all_radios('{$gsmarty_tc_status.$verbose_status}');" />
@@ -50,6 +85,7 @@
         <p>
     		  <input type="submit" id="do_bulk_save" name="do_bulk_save" value="{lang_get s='btn_save_all_tests_results'}"/>
         <hr />
+        </div>
     	{/if}
     
     

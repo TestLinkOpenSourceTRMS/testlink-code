@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execSetResults.tpl,v 1.24 2006/08/09 12:04:30 franciscom Exp $ *}
+{* $Id: execSetResults.tpl,v 1.25 2006/08/10 07:11:36 franciscom Exp $ *}
 {* Purpose: smarty template - show tests to add results *}
 {* Revisions:
               20060808 - franciscom - added display of test plan notes 
@@ -36,18 +36,22 @@
   	
 <div id="main_content" class="workBack">
 
-<h1 onclick="show_hide('tplan_notes','tpn_view_status',
-                       document.getElementById('tplan_notes').style.display=='none')">
-{lang_get s='test_plan_notes'}</h1>
+<img src="icons/icon-foldout.gif" border="0" alt="{lang_get s='show_hide'}" 
+     title="{lang_get s='show_hide'}" 
+     onclick="show_hide('tplan_notes','tpn_view_status',
+                        document.getElementById('tplan_notes').style.display=='none')">
+{lang_get s='test_plan_notes'}<br>
 <div id="tplan_notes" name="tplan_notes">
-{$tplan_notes}<br>
+{$tplan_notes}<p>
 </div>
 
-<h1 onclick="show_hide('build_notes','bn_view_status',
-                       document.getElementById('build_notes').style.display=='none')"> 
-{lang_get s='builds_notes'}</h1>
-<div id="build_notes" name="tplan_notes">
-{$build_notes}<br>
+<img src="icons/icon-foldout.gif" border="0" alt="{lang_get s='show_hide'}" 
+     title="{lang_get s='show_hide'}" 
+     onclick="show_hide('build_notes','bn_view_status',
+                        document.getElementById('build_notes').style.display=='none')">
+{lang_get s='builds_notes'}<br>
+<div id="build_notes" name="build_notes">
+{$build_notes}<p>
 </div>
 
 <form method="post">
@@ -71,24 +75,29 @@
       {* 20051108 - fm - BUGID 00082*}
       {if $rightsEdit == "yes" and $edit_test_results == "yes"}
         {assign var="input_enabled_disabled" value=""}
-        <h1 onclick="show_hide('bulk_controls','bc_view_status',
-                       document.getElementById('bulk_controls').style.display=='none')">
-        {lang_get s='bulk_tc_status_management'} </h1>
+
+        <img src="icons/icon-foldout.gif" border="0" alt="{lang_get s='show_hide'}" 
+            title="{lang_get s='show_hide'}" 
+            onclick="show_hide('bulk_controls','bc_view_status',
+                               document.getElementById('bulk_controls').style.display=='none')">
+        {lang_get s='bulk_tc_status_management'} <br>
+ 
         
         <div id="bulk_controls" name="bulk_controls">
-      	{foreach key=verbose_status item=locale_status from=$gsmarty_tc_status_for_ui}
-      	   <input type="button" id="btn_{$verbose_status}" name="btn_{$verbose_status}"
-      	          value="{lang_get s='set_all_tc_to'} {lang_get s=$locale_status}"
-      	          onclick="javascript:check_all_radios('{$gsmarty_tc_status.$verbose_status}');" />
-      	{/foreach}		
-        <br />
-        <p>
-    		  <input type="submit" id="do_bulk_save" name="do_bulk_save" value="{lang_get s='btn_save_all_tests_results'}"/>
-        <hr />
+        	{foreach key=verbose_status item=locale_status from=$gsmarty_tc_status_for_ui}
+        	   <input type="button" id="btn_{$verbose_status}" name="btn_{$verbose_status}"
+        	          value="{lang_get s='set_all_tc_to'} {lang_get s=$locale_status}"
+        	          onclick="javascript:check_all_radios('{$gsmarty_tc_status.$verbose_status}');" />
+        	{/foreach}		
+          <br />
+          <p>
+      		  <input type="submit" id="do_bulk_save" name="do_bulk_save" 
+      		         value="{lang_get s='btn_save_all_tests_results'}"/>
+          <hr />
         </div>
     	{/if}
     
-    
+      <hr>
       <div class="groupBtn">
     		  <input type="button" name="print" value="{lang_get s='btn_print'}" 
     		         onclick="javascript:window.print();" />
@@ -114,7 +123,19 @@
 	
 	  {assign var="tcversion_id" value=$tc_exec.id}
 		<input type='hidden' name='tc_version[{$tcversion_id}]' value='{$tc_exec.testcase_id}' />
-		<h2>{lang_get s='th_test_case_id'}{$tc_exec.testcase_id} :: {lang_get s='title_test_case'} {$tc_exec.name|escape}</h2>
+		<h2><img src="icons/icon-foldout.gif" border="0" alt="{lang_get s='show_hide'}" 
+             title="{lang_get s='show_hide'}" 
+             onclick="show_hide('tsdetails_{$tc_exec.testcase_id}','ts_view_status',
+                                 document.getElementById('tsdetails_{$tc_exec.testcase_id}').style.display=='none')">
+    
+		{lang_get s='th_testsuite'} {$tsuite_info[$tc_exec.testcase_id].tsuite_name|escape}</h2>
+
+		<div id="tsdetails_{$tc_exec.testcase_id}" name="tsdetails_{$tc_exec.testcase_id}">
+		{$tsuite_info[$tc_exec.testcase_id].details}<p>
+    </div>
+  
+
+		<h2>{lang_get s='title_test_case'} {lang_get s='th_test_case_id'}{$tc_exec.testcase_id} ::  {$tc_exec.name|escape}</h2>
 
 		<div id="execution_history" class="exec_history">
 		{if $history_on}
@@ -128,7 +149,7 @@
 		{if $show_last_exec_any_build}
     		{assign var="abs_last_exec" value=$map_last_exec_any_build.$tcversion_id}
         {if $abs_last_exec.status != '' and $abs_last_exec.status != $gsmarty_tc_status.not_run}			
-			{assign var="status_code" value=$abs_last_exec.status}
+			     {assign var="status_code" value=$abs_last_exec.status}
     
    			<div class="{$gsmarty_tc_status_css.$status_code}">
    			{lang_get s='test_exec_last_run_date'} {localize_timestamp ts=$abs_last_exec.execution_ts}

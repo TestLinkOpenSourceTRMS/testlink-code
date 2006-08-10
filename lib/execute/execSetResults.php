@@ -4,11 +4,14 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.34 $
- * @modified $Date: 2006/08/09 12:04:30 $ $Author: franciscom $
+ * @version $Revision: 1.35 $
+ * @modified $Date: 2006/08/10 07:11:36 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
+ * 20060809 - franciscom - send test plan notes, build notes
+ *                         and parent test suite details
+ *                         to smarty.
  *
  * 20060806 - franciscom - changed component to testsuite
  *
@@ -180,8 +183,10 @@ if(!is_null($xx))
         }
     }
 }
-$smarty = new TLSmarty();
 
+
+
+$smarty = new TLSmarty();
 
 // 20060808 - franciscom
 $rs=$tplan_mgr->get_by_id($tplan_id);
@@ -189,6 +194,11 @@ $smarty->assign('tplan_notes',$rs['notes']);
 
 $rs=getBuild_by_id($db,$build_id);
 $smarty->assign('build_notes',$rs['notes']);
+
+// 20060809 - franciscom
+$tsuite_info=get_ts_name_details($db,$tcase_id);
+$smarty->assign('tsuite_info',$tsuite_info);
+
 
 $smarty->assign('tpn_view_status',
                 isset($_POST['tpn_view_status']) ? $_POST['tpn_view_status']:0);
@@ -216,10 +226,15 @@ $smarty->assign('build_name', $build_name);
 $smarty->assign('owner', $owner);
 $smarty->assign('updated', $submitResult);
 $smarty->assign('g_bugInterface', $g_bugInterface);
+
+
+
+
 $smarty->display($g_tpl['execSetResults']);
 
 
 
+// --------------------------- Auxiliary Functions ----------------------------
 function manage_history_on($hash_REQUEST,$hash_SESSION,
                            $exec_cfg,$btn_on_name,$btn_off_name,$hidden_on_name)
 {
@@ -247,4 +262,41 @@ function manage_history_on($hash_REQUEST,$hash_SESSION,
     return $history_on;
 }
 
+
+// 20060809 - franciscom
+// returns map with key=TCID
+//                  values= assoc_array([tsuite_id => 5341
+//                                      [details] => my detailas ts1
+//                                      [tcid] => 5343
+//                                      [tsuite_name] => ts1)
+//       
+function get_ts_name_details(&$db,$tcase_id)
+{
+$rs='';
+$do_query=true;
+$sql="Select ts.id as tsuite_id, ts.details, 
+             nha.id as tc_id, nhb.name as tsuite_name 
+      FROM testsuites ts, nodes_hierarchy nha, nodes_hierarchy nhb
+      WHERE ts.id=nha.parent_id
+      AND   nhb.id=nha.parent_id ";
+if( is_array($tcase_id) && count($tcase_id) > 0)
+{
+  $in_list=implode(",",$tcase_id);
+  $sql .= "AND nha.id IN (" . $in_list . ")";
+}
+else if( !is_null($tcase_id) )
+{
+  $sql .= "AND nha.id={$tcase_id}";
+}
+else
+{
+  $do_query=false;
+}
+if($do_query)
+{
+  $rs=$db->fetchRowsIntoMap($sql,'tc_id');
+}
+
+return($rs);
+}
 ?>																																

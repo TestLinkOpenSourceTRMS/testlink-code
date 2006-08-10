@@ -4,15 +4,14 @@
  *
  * Filename $RCSfile: frmWorkArea.php,v $
  *
- * @version $Revision: 1.12 $
- * @modified $Date: 2006/05/16 19:35:40 $ by $Author: schlundus $
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2006/08/10 07:10:42 $ by $Author: franciscom $
  *
  * @author Martin Havlat
  *
- *This page is window for navigation and working area (eg tree + edit page).
+ * This page is window for navigation and working area (eg tree + edit page).
  *
- * @author Francisco Mancardi - 20050828
- * get default value for treewidth from config.inc.php DEFINE
+ * 20060809 - franciscom - changes in validateBuildAvailability()
  *
 **/
 require_once('../../config.inc.php');
@@ -51,8 +50,8 @@ if (isset($aa_tfp[$showFeature]) === FALSE)
 if (in_array($showFeature,array('executeTest','showMetrics')))
 {
 	validateBuildAvailability($db,$_SESSION['testPlanId'],
-	                          $_SESSION['testPlanName'],
-	                          $_SESSION['testprojectName']);
+	                              $_SESSION['testPlanName'],
+	                              $_SESSION['testprojectName']);
 }
 /// <enhancement version="???" date="2005-04-09" author="fm" >
 /// 1. get path from global var
@@ -73,28 +72,43 @@ $smarty->display('frmInner.tpl');
  *  If no valid build is found give feedback to user and exit.
  *
  * 	@author Martin Havlat 
- *  @author Andreas Morsing - added escaping of productNames and build identifiers
- *
- * @author Francisco Mancardi - 20050905 - added tpID, tpName, prodName
+ *  20060809 - franciscom - check if user can create builds,
+ *                          then put a link on the message page
+ *                          to create link feature
  *
  **/
-/// <enhancement date="2005-04-16" author="fm"> improved user message </<enhancement>
 function validateBuildAvailability(&$db,$tpID, $tpName, $prodName)
 {
 	require_once("exec.inc.php");
 	
+	$can_create_build=has_rights($db,"testplan_create_build");
 	
-	$message = '<p>' . lang_get('no_build_warning_part1') . 
-	          "<b>". htmlspecialchars($prodName) . "::" . 
-	                 htmlspecialchars($tpName) . "</b>" .
-	          "  (Product::Test Plan) "  . 
-	          '</p><p>' . lang_get('no_build_warning_part2') . '</p>';
-		
+	$message='<p>'  . lang_get('no_build_warning_part1') . 
+	          "<b>" . htmlspecialchars($prodName) . "::" . 
+	                  htmlspecialchars($tpName) . "</b>" .
+	                  " (Product::Test Plan) ";
+
 	if (!buildsNumber($db,$tpID))
 	{	           
+	  $link_to_op='';
+	  $hint_text='';
+	  if($can_create_build=='yes')
+	  {
+	     // final url will be composed adding to $basehref 
+	     // (one TL variable available on smarty templates) to $link_to_op
+	     $link_to_op="lib/plan/buildNew.php";
+	     $hint_text=lang_get('create_a_build');
+	  }  
+	  else
+	  {
+	     $message .= '</p><p>' . lang_get('no_build_warning_part2') . '</p>';
+	  }
+	  
 		// show info and exit
 		$smarty = new TLSmarty;
 		$smarty->assign('content', $message);
+		$smarty->assign('link_to_op', $link_to_op);
+		$smarty->assign('hint_text', $hint_text);
 		$smarty->display('workAreaSimple.tpl');
 		exit();
 	}

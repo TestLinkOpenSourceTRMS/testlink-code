@@ -3,8 +3,8 @@
  * TestLink Open Source Project - @link http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: plan.core.inc.php,v $
- * @version $Revision: 1.33 $
- * @modified $Date: 2006/07/06 19:20:37 $ $Author: schlundus $
+ * @version $Revision: 1.34 $
+ * @modified $Date: 2006/08/17 19:29:59 $ $Author: schlundus $
  *  
  * 
  * @author 	Martin Havlat
@@ -174,7 +174,7 @@ function getAllTestPlans(&$db,$testproject_id=ALL_PRODUCTS,$plan_status=null,$fi
 	
 	$sql .= $where . " ORDER BY name";
 
-	return selectData($db,$sql);
+	return $db->get_recordset($sql);
 }
 
 // 20051120 - fm

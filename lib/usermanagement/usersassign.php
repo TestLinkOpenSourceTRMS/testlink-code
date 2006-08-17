@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: usersassign.php,v $
 *
-* @version $Revision: 1.6 $
-* @modified $Date: 2006/03/10 22:35:59 $
+* @version $Revision: 1.7 $
+* @modified $Date: 2006/08/17 19:30:00 $
 * 
 * Allows assigning users roles to testplans or testprojects
 *
@@ -84,6 +84,7 @@ if ($featureID && $bUpdate)
 $userData = getAllUsers($db);
 
 $userFeatureRoles = null;
+$features = null;
 if ($bTestproject)
 {
 	$features = getAccessibleProducts($db);

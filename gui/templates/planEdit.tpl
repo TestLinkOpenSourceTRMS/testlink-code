@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: planEdit.tpl,v 1.4 2006/03/24 20:32:16 schlundus Exp $ *}
+{* $Id: planEdit.tpl,v 1.5 2006/08/17 19:29:59 schlundus Exp $ *}
 {* Purpose: smarty template - edit / delete Test Plan *}
 {* 20050810 - fm - changes in active field definition *}
 
@@ -36,14 +36,14 @@
 		</tr>
 		{section name=number loop=$arrPlan}
 		<tr>
-			<td><a href="lib/plan/planNew.php?tpID={$arrPlan[number][0]}"> 
-					{$arrPlan[number][1]|escape}</a>
+			<td><a href="lib/plan/planNew.php?tpID={$arrPlan[number].id}"> 
+					{$arrPlan[number].name|escape}</a>
 			</td>
 			<td>
-				{$arrPlan[number][2]|strip_tags|strip|truncate:100}
+				{$arrPlan[number].notes|strip_tags|strip|truncate:100}
 			</td>
 			<td>
-			{if $arrPlan[number][3] == 1}
+			{if $arrPlan[number].active == 1}
 				{lang_get s='Yes'}
 			{else}
 				{lang_get s='No'}

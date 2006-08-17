@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.35 $
- * @modified $Date: 2006/07/06 19:20:37 $  by $Author: schlundus $
+ * @version $Revision: 1.36 $
+ * @modified $Date: 2006/08/17 19:30:00 $  by $Author: schlundus $
  * This page manages all the editing of test cases.
  *
  * @author Martin Havlat
@@ -32,24 +32,20 @@ foreach ($a_ofck as $key)
 	$of->BasePath = $_SESSION['basehref'] . 'third_party/fckeditor/';
 	$of->ToolbarSet=$g_fckeditor_toolbar;;
 }
-
 // --------------------------------------------------------------------
 $testproject_id = $_SESSION['testprojectID'];
 $userID = $_SESSION['userID'];
 $show_newTC_form = 0;
-$smarty = new TLSmarty;
+$smarty = new TLSmarty();
 
 $container_id = isset($_GET['containerID']) ? intval($_GET['containerID']) : 0;
-
 $tcase_id = isset($_REQUEST['testcase_id']) ? intval($_REQUEST['testcase_id']) : 0;
 $tcversion_id = isset($_REQUEST['tcversion_id']) ? intval($_REQUEST['tcversion_id']) : 0;
-
 
 $name 		= isset($_POST['name']) ? strings_stripSlashes($_POST['name']) : null;
 $summary 	= isset($_POST['summary']) ? strings_stripSlashes($_POST['summary']) : null;
 $steps 		= isset($_POST['steps']) ? strings_stripSlashes($_POST['steps']) : null;
 $expected_results 	= isset($_POST['expected_results']) ? strings_stripSlashes($_POST['expected_results']) : null;
-
 $new_container_id = isset($_POST['new_container']) ? intval($_POST['new_container']) : 0;
 $old_container_id = isset($_POST['old_container']) ? intval($_POST['old_container']) : 0;
 
@@ -95,14 +91,12 @@ $name_ok = 1;
 if($init_opt_transfer)
 {
     $opt_cfg = opt_transf_empty_cfg();
-    $opt_cfg->js_ot_name='ot';
-    $opt_cfg->global_lbl='';
-    $opt_cfg->from->lbl=lang_get('available_kword');
+    $opt_cfg->js_ot_name = 'ot';
+    $opt_cfg->global_lbl = '';
+    $opt_cfg->from->lbl = lang_get('available_kword');
     $opt_cfg->from->map = $tproject_mgr->get_keywords_map($testproject_id);
     $opt_cfg->to->lbl=lang_get('assigned_kword');
 }
-
-
 if($do_create || $do_update)
 {
 	// BUGID 0000086
@@ -124,13 +118,13 @@ if($do_create || $do_update)
 //If the user has chosen to edit a testcase then show this code
 if($edit_tc)
 {
-    $opt_cfg->to->map=$tcase_mgr->get_keywords_map($tcase_id," ORDER BY keyword ASC ");
+    $opt_cfg->to->map = $tcase_mgr->get_keywords_map($tcase_id," ORDER BY keyword ASC ");
     keywords_opt_transf_cfg($opt_cfg, $assigned_keywords_list); 
     
   	$tc_data = $tcase_mgr->get_by_id($tcase_id,$tcversion_id);
   
   	foreach ($a_ofck as $key)
-    	{
+   	{
   	  	// Warning:
   	  	// the data assignment will work while the keys in $the_data are identical
   	  	// to the keys used on $oFCK.
@@ -140,38 +134,36 @@ if($edit_tc)
   	}
   
   	$smarty->assign('tc', $tc_data[0]);
-  	$smarty->assign('opt_cfg', $opt_cfg);   // 20060424 - franciscom
+  	$smarty->assign('opt_cfg', $opt_cfg);
 
   	$smarty->display($g_tpl['tcEdit']);
-
-
 } 
 else if($do_update)
 {
 	$refresh_tree='no';
-	if( $name_ok)
+	if($name_ok)
 	{
 		$msg = 'ok';
 
-    // to get the name before the user operation
- 	  $tc_old = $tcase_mgr->get_by_id($tcase_id,$tcversion_id);
+		// to get the name before the user operation
+		$tc_old = $tcase_mgr->get_by_id($tcase_id,$tcversion_id);
 						
 		if ($tcase_mgr->update($tcase_id,$tcversion_id,$name,$summary,$steps,$expected_results,
 		                        $userID,$assigned_keywords_list) )
 		{
-				if( strcmp($tc_old[0]['name'],$name) != 0 )
+			if( strcmp($tc_old[0]['name'],$name) != 0 )
     		{
   	  			// only refresh menu tree is name changed
   	  			$refresh_tree='yes';
 		    }	
 		}
-    else
-    {
-    	$sqlResult =  $db->error_msg();
-    }
+	    else
+	    {
+	    	$sqlResult =  $db->error_msg();
+	    }
 	}	
  	$action_result='updated';
-  $tcase_mgr->show($smarty,$tcase_id, $userID, $tcversion_id, $action_result,$msg,$refresh_tree);
+	$tcase_mgr->show($smarty,$tcase_id, $userID, $tcversion_id, $action_result,$msg,$refresh_tree);
 }
 else if($create_tc)
 {
@@ -198,73 +190,64 @@ else if($do_create)
 
 	keywords_opt_transf_cfg($opt_cfg, $assigned_keywords_list); 
  	$smarty->assign('opt_cfg', $opt_cfg);
-  
-	$smarty->assign('sqlResult', $msg);
+  	$smarty->assign('sqlResult', $msg);
 	$smarty->assign('name', $name);
 	$smarty->assign('item', 'Test case');
 }
 else if($delete_tc)
 {
-	$msg='';
+	$msg = '';
 	
-	$my_ret= $tcase_mgr->check_link_and_exec_status($tcase_id);
-	switch ($my_ret)
+	$my_ret = $tcase_mgr->check_link_and_exec_status($tcase_id);
+	switch($my_ret)
 	{
 		case "linked_and_executed":
-		$msg = " This test case has been linked to test plans <br>" .
-			     " and has been runned<br>" .
-			     " If you confirm the links to test plans, and execution related information will be removed";
-		break;
+			$msg = " This test case has been linked to test plans <br>" .
+				     " and has been runned<br>" .
+				     " If you confirm the links to test plans, and execution related information will be removed";
+			break;
 
 		case "linked_but_not_executed":
-		$msg = " This test case has been linked to test plans <br>" .
-			     " If you confirm the links to test plans will be removed";
-		break;
-		
+			$msg = " This test case has been linked to test plans <br>" .
+				     " If you confirm the links to test plans will be removed";
+			break;
 	}
 
-	$tcinfo=$tcase_mgr->get_by_id($tcase_id);
+	$tcinfo = $tcase_mgr->get_by_id($tcase_id);
 	$smarty->assign('title', lang_get('title_del_tc') . $tcinfo[0]['name']);
-	
 	$smarty->assign('testcase_id', $tcase_id);
 	$smarty->assign('tcversion_id', TC_ALL_VERSIONS);
-
 	$smarty->assign('delete_message', $msg);
-	//$smarty->assign('delete_input_name', 'do_delete');
-	
+
 	$smarty->display('tcDelete.tpl');
 }
 else if($delete_tc_version)
 {
-
-  $status_quo_map = $tcase_mgr->get_versions_status_quo($tcase_id);
-  if( intval($status_quo_map[$tcversion_id]['executed']) > 0)
-  {
-  	$msg = " This test case version has been linked to test plans <br>" .
-			     " and has been runned<br>" .
-			     " If you confirm the links to test plans, and execution related information will be removed";
-  }
-	else if( intval($status_quo_map[$tcversion_id]['linked']) > 0)
-  {
+	$status_quo_map = $tcase_mgr->get_versions_status_quo($tcase_id);
+	if(intval($status_quo_map[$tcversion_id]['executed']))
+	{
 		$msg = " This test case version has been linked to test plans <br>" .
-			     " If you confirm the links to test plans will be removed";
-  }
-  else
-  {
-  	$msg='';
-  }
+				" and has been runned<br>" .
+				" If you confirm the links to test plans, and execution related information will be removed";
+	}
+	else if(intval($status_quo_map[$tcversion_id]['linked']))
+	{
+			$msg = " This test case version has been linked to test plans <br>" .
+			" If you confirm the links to test plans will be removed";
+	}
+	else
+	{
+		$msg = '';
+	}
 
-  $tcinfo=$tcase_mgr->get_by_id($tcase_id,$tcversion_id);
+	$tcinfo = $tcase_mgr->get_by_id($tcase_id,$tcversion_id);
 	$smarty->assign('title', lang_get('title_del_tc') . 
 	                         $tcinfo[0]['name'] . lang_get('version') . $tcinfo[0]['version']);
 	
 	$smarty->assign('testcase_id', $tcase_id);
 	$smarty->assign('tcversion_id', $tcversion_id);
-	
 	$smarty->assign('delete_message', $msg);
-	//$smarty->assign('delete_input_name', 'do_delete_tc_version');
 	$smarty->display('tcDelete.tpl');
-  
 }
 else if($do_delete)
 {

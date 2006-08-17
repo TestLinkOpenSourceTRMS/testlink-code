@@ -1,5 +1,5 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/ 
-// $Id: expandAndCollapseFunctions.js,v 1.7 2006/08/09 12:04:30 franciscom Exp $ 
+// $Id: expandAndCollapseFunctions.js,v 1.8 2006/08/17 19:29:59 schlundus Exp $ 
 //
 //
 function plusMinus_onClick(elem)
@@ -75,10 +75,7 @@ function viewElement(obj,show_me)
 {
 	if (obj)
 	{
-    alert(show_me);
 		obj.style.display = (show_me ? '' : 'none');
-	  alert(obj.style.display);
-	
 	}	
 }
 

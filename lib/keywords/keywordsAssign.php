@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: keywordsAssign.php,v $
  *
- * @version $Revision: 1.18 $
- * @modified $Date: 2006/06/20 19:51:32 $
+ * @version $Revision: 1.19 $
+ * @modified $Date: 2006/08/17 19:29:59 $
  *
  * Purpose:  Assign keywords to set of testcases in tree structure
  *
@@ -22,7 +22,7 @@ require_once("../functions/opt_transfer.php");
 testlinkInitPage($db);
 
 $_REQUEST = strings_stripSlashes($_REQUEST);
-$id = isset($_REQUEST['data']) ? intval($_REQUEST['data']) : null;
+$id = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : null;
 $keyword = isset($_REQUEST['keywords']) ? $_REQUEST['keywords'] : null;
 $edit = isset($_REQUEST['edit']) ? $_REQUEST['edit'] : null;
 $bAssignTestCase = isset($_REQUEST['assigntestcase']) ? 1 : 0;

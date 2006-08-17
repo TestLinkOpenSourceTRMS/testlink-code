@@ -3,7 +3,7 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
- * @version $Id: archiveData.php,v 1.19 2006/08/07 09:44:09 franciscom Exp $
+ * @version $Id: archiveData.php,v 1.20 2006/08/17 19:30:00 schlundus Exp $
  * @author Martin Havlat
  *  
  * This page allows you to show data (test cases, categories, and
@@ -17,7 +17,7 @@ testlinkInitPage($db);
 
 $user_id = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
 $feature = isset($_GET['edit']) ? $_GET['edit'] : null;
-$id = isset($_GET['data']) ? intval($_GET['data']) : null;
+$id = isset($_GET['id']) ? intval($_GET['id']) : null;
 $allow_edit = isset($_GET['allow_edit']) ? intval($_GET['allow_edit']) : 1;
 
 // load data and show template

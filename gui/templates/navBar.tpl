@@ -1,5 +1,5 @@
 {* Testlink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: navBar.tpl,v 1.13 2006/03/24 20:32:16 schlundus Exp $ 
+$Id: navBar.tpl,v 1.14 2006/08/17 19:29:59 schlundus Exp $ 
 Purpose: smarty template - title bar + menu 
 
 20060226 - franciscom - logo
@@ -40,7 +40,7 @@ Andreas Morsing: changed the product selection
 	<div style="float: right;margin-right:5px">
 		<form style="display:inline" target="mainframe" name="searchTC" action="lib/testcases/archiveData.php" method="get"> 
 		<span style="font-size: 80%">{lang_get s='th_tcid'}: </span>
-		<input style="font-size: 75%" type="text" name="data" value="" size="5" maxlength="10"/>
+		<input style="font-size: 75%" type="text" name="id" value="" size="5" maxlength="10"/>
 		<input type="hidden" name="edit" value="testcase"/>
 		<input type="hidden" name="allow_edit" value="0"/>
 		</form>

@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
  * @filesource $RCSfile: database.class.php,v $
- * @version $Revision: 1.15 $
- * @modified $Date: 2006/07/15 19:55:30 $ by $Author: schlundus $
+ * @version $Revision: 1.16 $
+ * @modified $Date: 2006/08/17 19:29:59 $ by $Author: schlundus $
  * @author Francisco Mancardi
  * 
  *
@@ -267,8 +267,17 @@ class database
 
 	# --------------------
 	# return current timestamp for DB
-	function db_now() {
-		return $this->db->DBTimeStamp(time());
+	function db_now()
+	{
+	    switch($this->db->databaseType)
+    	{
+			/* @todo: maybe we should use this?
+      		case 'odbc_mssql':
+				return "GETDATE()";
+			*/
+			default:
+				return $this->db->DBTimeStamp(time());
+		}
 	}
 
 	# --------------------
@@ -494,9 +503,7 @@ class database
 	}
 
 
-	// 20060218 - franciscom
 	// the old selectData with new name.
-	//
 	function get_recordset($sql)
 	{
 		$output = null;
@@ -540,7 +547,7 @@ class database
   // 20060523 - franciscom
   function build_sql_create_db($db_name)
   {
-    $db_type=$this->db->databaseType;
+    $db_type = $this->db->databaseType;
     $sql='';
     
     switch($db_type)

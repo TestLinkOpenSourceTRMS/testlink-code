@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: planPriority.tpl,v 1.2 2005/08/16 17:59:13 franciscom Exp $ *}
+{* $Id: planPriority.tpl,v 1.3 2006/08/17 19:29:59 schlundus Exp $ *}
 {* Purpose: smarty template - define priority rules*}
 {include file="inc_head.tpl"}
 
@@ -21,11 +21,11 @@
 		<tr><th>{lang_get s='tr_th_risk'}</th><th>{lang_get s='tr_th_prio_cba'}</th></tr>
 		{section name=Row loop=$arrRules}
 		<tr>
-			<td>{$arrRules[Row].name|escape}
+			<td>{$arrRules[Row].risk_importance|escape}
 			<input type="hidden" name="id{$arrRules[Row].id}" value="{$arrRules[Row].id}" />
 			</td>
 			<td>
-			<select name="priority{$arrRules[Row].name|escape}">
+			<select name="priority{$arrRules[Row].risk_importance|escape}">
 				{html_options options=$optionPriority selected=$arrRules[Row].priority}
 			</select>
 			</td>

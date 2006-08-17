@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: reqTcAssign.php,v $
- * @version $Revision: 1.7 $
- * @modified $Date: 2006/07/15 19:55:30 $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2006/08/17 19:30:00 $
  * 
  * @author Martin Havlat
 **/
@@ -19,7 +19,7 @@ $arrAssignedReq = null;
 $arrUnassignedReq = null;
 $tcTitle = null;
 
-$idTc = isset($_GET['data']) ? intval($_GET['data']) : null;
+$idTc = isset($_GET['id']) ? intval($_GET['id']) : null;
 $edit = isset($_GET['edit']) ? strings_stripSlashes($_GET['edit']) : null;
 
 $idReq = isset($_POST['req']) ? intval($_POST['req']) : null;

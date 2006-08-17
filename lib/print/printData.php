@@ -2,7 +2,7 @@
 /**
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/ 
 *
-*  @version 	$Id: printData.php,v 1.20 2006/07/28 17:22:04 schlundus Exp $
+*  @version 	$Id: printData.php,v 1.21 2006/08/17 19:29:59 schlundus Exp $
 *  @author 	Martin Havlat
 * 
 * Shows the data that will be printed.
@@ -16,7 +16,7 @@ testlinkInitPage($db);
 $type = isset($_GET['edit']) ?  $_GET['edit'] : null;
 $level = isset($_GET['level']) ?  $_GET['level'] : null;
 $format = isset($_GET['format']) ? $_GET['format'] : null;
-$dataID = isset($_GET['data']) ? intval($_GET['data']) : 0;
+$dataID = isset($_GET['id']) ? intval($_GET['id']) : 0;
 $tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 $tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : 'xxx';
 $tplan_id = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0;
@@ -36,6 +36,8 @@ $tproject_mgr = new testproject($db);
 $tree_manager = &$tproject_mgr->tree_manager;
 $test_spec = $tree_manager->get_subtree($dataID,array('testplan'=>'exclude me'),
                                            array('testcase'=>'exclude my children'),null,null,true);
+$tree = null;
+$code = null;										   
 if ($type == 'testproject')
 {
 	$tree = &$test_spec;
@@ -57,7 +59,7 @@ else if ($type == 'testsuite')
 	$tree['childNodes'] = array($tInfo);
 	$printingOptions['title'] = $tInfo['name'];
 }
-if ($level == 'root')
+if ($level == 'testproject')
 {
 	$tplan_mgr = new testplan($db);
 	$tp_tcs = $tplan_mgr->get_linked_tcversions($tplan_id);

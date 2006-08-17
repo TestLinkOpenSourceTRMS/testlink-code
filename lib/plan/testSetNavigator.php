@@ -1,7 +1,7 @@
 <?php
 /** 
 *	TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* 	@version $Id: testSetNavigator.php,v 1.14 2006/07/15 19:55:30 schlundus Exp $
+* 	@version $Id: testSetNavigator.php,v 1.15 2006/08/17 19:29:59 schlundus Exp $
 *	@author Martin Havlat 
 *
 * This page navigate according to Test Set. It builds the javascript trees 
@@ -61,7 +61,7 @@ define('FILTER_BY_OWNER_OFF',0);
 define('FILTER_BY_TC_STATUS_OFF',null);
 
 $sMenu = generateExecTree($db,$menuUrl,$tproject_id,$tproject_name,$tplan_id,$_SESSION['testPlanName'],
-                          FILTER_BY_BUILD_OFF,$help_file,
+                          FILTER_BY_BUILD_OFF,null,
                           $keyword_id,FILTER_BY_TC_OFF);
 
 $tree = invokeMenu($sMenu);

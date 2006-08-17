@@ -1,7 +1,7 @@
 <?php
 
 ////////////////////////////////////////////////////////////////////////////////
-// @version $Id: planAddTC.php,v 1.20 2006/06/20 19:51:32 schlundus Exp $
+// @version $Id: planAddTC.php,v 1.21 2006/08/17 19:29:59 schlundus Exp $
 // File:     planAddTC.php
 // Author:   Chad Rosen
 // Purpose:  This page manages the importation of test cases into testlink.
@@ -11,11 +11,9 @@
 // 20051126 - scs - changed passing keyword to keywordID
 ////////////////////////////////////////////////////////////////////////////////
 require('../../config.inc.php');
-
 require_once("../functions/common.php");
 require_once("../keywords/keywords.inc.php");
 require_once("plan.inc.php");
-
 testlinkInitPage($db);
 
 $tree_mgr = new tree($db); 
@@ -26,7 +24,7 @@ $tplan_id =  $_SESSION['testPlanId'];
 $tproject_id =  $_SESSION['testprojectID'];
 
 $keyword_id = isset($_REQUEST['keyword_id']) ? intval($_REQUEST['keyword_id']) : 0;
-$object_id=$_GET['data'];
+$object_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 $smarty = new TLSmarty();
 $smarty->assign('testPlanName', $_SESSION['testPlanName']);
 

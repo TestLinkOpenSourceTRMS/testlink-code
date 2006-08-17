@@ -15,6 +15,7 @@ Other developers:
 
 Other Contributors (code, ideas, testing..):
 * Tools R Us
+* Oscar Castroviejo (trackplus interface)
 
 Localization
 * French

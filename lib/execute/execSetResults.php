@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.35 $
- * @modified $Date: 2006/08/10 07:11:36 $ $Author: franciscom $
+ * @version $Revision: 1.36 $
+ * @modified $Date: 2006/08/17 19:29:59 $ $Author: schlundus $
  *
  * @author Martin Havlat
  *
@@ -83,27 +83,26 @@ $map_last_exec_any_build=null;
 $tcAttachments = null;
 $tSuiteAttachments = null;
 $xx = $tplan_mgr->get_linked_tcversions($tplan_id,$tc_id,$keyword_id);
-
+$tcase_id = 0;
 if(!is_null($xx))
 {
     // Get the path for every test case, grouping test cases that
     // have same parent.
     $items_to_exec = array();
-	  $_SESSION['s_lastAttachmentInfos'] = null;
-	  
+	$_SESSION['s_lastAttachmentInfos'] = null;
     if($level == 'testcase')
     {
     	$items_to_exec[$id] = $xx[$id]['tcversion_id'];    
     	$tcase_id = $id;
     	$tcversion_id = $xx[$id]['tcversion_id'];
-	  	$tcAttachments[$id] = getAttachmentInfos($db,$id,'nodes_hierarchy',1);
+		$tcAttachments[$id] = getAttachmentInfos($db,$id,'nodes_hierarchy',1);
     }
     else
     {
     	$tcase_id = array();
     	$tcversion_id = array();
     	 
-		  $i = 0; 
+		$i = 0; 
     	foreach($xx as $item)
     	{
     		$path = $tree_mgr->get_path($item['tc_id'],null,'simplex');
@@ -113,7 +112,8 @@ if(!is_null($xx))
     			{
     				$tcase_id[] = $item['tc_id'];
     				$tcversion_id[] = $item['tcversion_id'];
-					  $tcAttachments[$item['tc_id']] = getAttachmentInfos($db,$item['tc_id'],'nodes_hierarchy',true,1);
+					$tcAttachments[$item['tc_id']] = getAttachmentInfos($db,$item['tc_id'],'nodes_hierarchy',true,1);
+
     				break;
     			}
     		} 
@@ -169,7 +169,7 @@ if(!is_null($xx))
     {
         foreach($other_execs as $tcversion_id => $execInfo)
         {
-			    $num_elem = sizeof($execInfo);   
+			$num_elem = sizeof($execInfo);   
         	for($i = 0;$i < $num_elem;$i++)
         	{
         		$execID = $execInfo[$i]['execution_id'];
@@ -183,9 +183,6 @@ if(!is_null($xx))
         }
     }
 }
-
-
-
 $smarty = new TLSmarty();
 
 // 20060808 - franciscom
@@ -195,8 +192,7 @@ $smarty->assign('tplan_notes',$rs['notes']);
 $rs=getBuild_by_id($db,$build_id);
 $smarty->assign('build_notes',$rs['notes']);
 
-// 20060809 - franciscom
-$tsuite_info=get_ts_name_details($db,$tcase_id);
+$tsuite_info = get_ts_name_details($db,$tcase_id);
 $smarty->assign('tsuite_info',$tsuite_info);
 
 
@@ -226,15 +222,8 @@ $smarty->assign('build_name', $build_name);
 $smarty->assign('owner', $owner);
 $smarty->assign('updated', $submitResult);
 $smarty->assign('g_bugInterface', $g_bugInterface);
-
-
-
-
 $smarty->display($g_tpl['execSetResults']);
 
-
-
-// --------------------------- Auxiliary Functions ----------------------------
 function manage_history_on($hash_REQUEST,$hash_SESSION,
                            $exec_cfg,$btn_on_name,$btn_off_name,$hidden_on_name)
 {

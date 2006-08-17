@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/ 
 // This script is distributed under the GNU General Public License 2 or later. 
 //
-// $Id: testlink_library.js,v 1.16 2006/07/28 17:22:03 schlundus Exp $ 
+// $Id: testlink_library.js,v 1.17 2006/08/17 19:29:59 schlundus Exp $ 
 //
 // Javascript functions commonly used through the GUI
 // This library is automatically loaded with inc_header.tpl
@@ -52,24 +52,24 @@ function SC(id)
 function EP(id)
 {
 	var pParams = tree_getPrintPreferences();
-	parent.workframe.location = fRoot+menuUrl+"?edit=testproject&data="+id+args+"&"+pParams;
+	parent.workframe.location = fRoot+menuUrl+"?edit=testproject&id="+id+args+"&"+pParams;
 }
 
 function ETS(id)
 {
 	var pParams = tree_getPrintPreferences();
-	parent.workframe.location = fRoot+menuUrl+"?edit=testsuite&data="+id+args+"&"+pParams;
+	parent.workframe.location = fRoot+menuUrl+"?edit=testsuite&id="+id+args+"&"+pParams;
 }
 
 function ET(id)
 {
-	parent.workframe.location = fRoot+menuUrl+"?edit=testcase&data="+id+args;
+	parent.workframe.location = fRoot+menuUrl+"?edit=testcase&id="+id+args;
 }
 
 function PTS(id)
 {
 	var pParams = tree_getPrintPreferences();
-	parent.workframe.location = fRoot+menuUrl+"?level=testsuite&data="+id+args+"&"+pParams;
+	parent.workframe.location = fRoot+menuUrl+"?level=testsuite&id="+id+args+"&"+pParams;
 }
 /*
 function ECO(id)
@@ -86,7 +86,7 @@ function EC(id)
 function PTP(id)
 {
 	var pParams = tree_getPrintPreferences();
-	parent.workframe.location = fRoot+menuUrl+"?level=root&data="+id+args+"&"+pParams;
+	parent.workframe.location = fRoot+menuUrl+"?level=testproject&id="+id+args+"&"+pParams;
 }
 /*
 function PCO(id)
@@ -102,7 +102,7 @@ function PC(id)
 
 function PT(id)
 {
-	parent.workframe.location = fRoot+menuUrl+"?level=tc&data="+id+args;
+	parent.workframe.location = fRoot+menuUrl+"?level=tc&id="+id+args;
 }
 
 

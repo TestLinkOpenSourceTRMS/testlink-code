@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
  * @filesource $RCSfile: roles.inc.php,v $
- * @version $Revision: 1.12 $
- * @modified $Date: 2006/06/05 05:33:51 $ by $Author: kevinlevy $
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2006/08/17 19:29:59 $ by $Author: schlundus $
  * @author Martin Havlat, Chad Rosen
  * 
  * This script provides the get_rights and has_rights functions for
@@ -326,7 +326,7 @@ function getAllUsersWithRole(&$db,$roleID)
 	$affectedGlobalUsers = getUsersWithGlobalRole($db,$roleID);
 	$affectedTestPlanUsers = getUsersWithTestPlanRole($db,$roleID);
 	$affectedProductUsers = getUsersWithTestProjectRole($db,$roleID);
-	$affectedUsers = array_unique(array_merge($affectedGlobalUsers,$affectedTestPlanUsers,$affectedProductUsers));
+	$affectedUsers = @array_unique(@array_merge($affectedGlobalUsers,$affectedTestPlanUsers,$affectedProductUsers));
 
 	return $affectedUsers;
 }

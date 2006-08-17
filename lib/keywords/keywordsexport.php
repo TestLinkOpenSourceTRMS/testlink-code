@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: keywordsexport.php,v $
  *
- * @version $Revision: 1.6 $
- * @modified $Date: 2006/04/08 19:51:42 $ by $Author: schlundus $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2006/08/17 19:29:59 $ by $Author: schlundus $
  *
  * This page this allows users to export keywords. 
  *
@@ -49,10 +49,9 @@ if ($bExport)
 }
 
 
-$smarty = new TLSmarty;
+$smarty = new TLSmarty();
 $smarty->assign('productName', $productName);
 $smarty->assign('productID', $testproject_id);
 $smarty->assign('importTypes',$g_keywordImportTypes);
 $smarty->display('keywordsexport.tpl');
-
 ?>

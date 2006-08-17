@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: planEdit.php,v $
  *
- * @version $Revision: 1.18 $
- * @modified $Date: 2006/04/26 07:07:55 $ $Author: franciscom $
+ * @version $Revision: 1.19 $
+ * @modified $Date: 2006/08/17 19:29:59 $ $Author: schlundus $
  *
  * Purpose:  ability to edit and delete testplans
  *
@@ -16,8 +16,6 @@
  * 20060114 - scs - removed bulk update
  */
 require('../../config.inc.php');
-
-// 20060425 - franciscom - require_once
 require_once("../functions/common.php");
 require_once("plan.inc.php");
 require_once("../functions/builds.inc.php");
@@ -58,7 +56,6 @@ if($bDelete)
 	$catIDs = null;
 	getTestPlanCategories($db,$id,$catIDs);
 
-	// 20050914 - fm 
 	$tcIDs = getCategories_TC_ids($db,$catIDs);
 	
 	//Delete all of the bugs associated with the testplans
@@ -67,7 +64,6 @@ if($bDelete)
 		if (sizeof($tcIDs))
 		{
 			$tcIDList = implode(",",$tcIDs);
-			// 20051009 - fm - my bug
 			$query = "DELETE FROM bugs WHERE tcid IN ({$tcIDList}) AND build_id IN ({$buildIDList})";
 			if (!$db->exec_query($query))
 			{
@@ -97,7 +93,6 @@ if($bDelete)
 	}
 	deleteTestCasesByCategories($db,$catIDs);
 
-    // 20051001 - fm
 	$comIDs = getTestPlanComponentIDs($db,$id);
 	deleteCategoriesByComponentIDs($db,$comIDs);
 	
@@ -135,8 +130,7 @@ if($bDelete)
 		$generalResult .= lang_get('delete_tp_failed1').$safeName. lang_get('delete_tp_failed2').": <br />" . 
 		                  $editResult . "<br />";
 }
-
-$smarty = new TLSmarty;
+$smarty = new TLSmarty();
 $smarty->assign('editResult',$generalResult);
 $smarty->assign('arrPlan', getAllTestPlans($db,$prodID,TP_ALL_STATUS,FILTER_BY_PRODUCT));
 $smarty->display('planEdit.tpl');

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: treeMenu.inc.php,v $
  *
- * @version $Revision: 1.24 $
- * @modified $Date: 2006/07/15 19:55:30 $ by $Author: schlundus $
+ * @version $Revision: 1.25 $
+ * @modified $Date: 2006/08/17 19:29:59 $ by $Author: schlundus $
  * @author Martin Havlat
  *
  * 	This file generates tree menu for test specification and test execution.
@@ -255,7 +255,7 @@ function layersmenu_renderTestSpecTreeNodeOnOpen($node,$nodeDesc,$linkto,$getArg
 	}	
 
 	if ($buildLinkTo)
-		$myLinkTo = "{$linkto}?edit={$nodeDesc}&data={$node['id']}{$getArguments}";
+		$myLinkTo = "{$linkto}?edit={$nodeDesc}&id={$node['id']}{$getArguments}";
 	else	
 		$myLinkTo = ' ';
 		
@@ -290,7 +290,7 @@ function dtree_renderTestSpecTreeNodeOnOpen($current,$nodeDesc,$linkto,$getArgum
 		$label = $name ." (" . $testcase_count . ")";
 	}
 	if ($buildLinkTo)
-		$myLinkTo = $linkto . "?edit={$nodeDesc}&data=" . $current['id'] . $getArguments;
+		$myLinkTo = $linkto . "?edit={$nodeDesc}&id=" . $current['id'] . $getArguments;
 	else
 		$myLinkTo = "";
 		

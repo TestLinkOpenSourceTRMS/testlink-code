@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.7 $
- * @modified $Date: 2006/08/07 09:44:09 $ $Author: franciscom $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2006/08/17 19:29:59 $ $Author: schlundus $
  * @author franciscom
  *
  * 20060805 - franciscom - created update()
@@ -243,16 +243,18 @@ function get_builds_for_html_options($id)
 	return $this->db->fetchColumnsIntoMap($sql,'id','name');
 }//end function
 
-// 20060322 - franciscom
 function get_max_build_id($id)
 {
-	$sql = " SELECT MAX(builds.id)
+	$sql = " SELECT MAX(builds.id) AS maxbuildid
 	         FROM builds WHERE builds.testplan_id = {$id}";
 	
 	$recordset = $this->db->get_recordset($sql);
-	return(intval($recordset[0][0]));
+	$maxBuildID = 0;
+	if ($recordset)
+		$maxBuildID = intval($recordset[0]['maxbuildid']);
 	
-}//end function
+	return $maxBuildID;
+}
 
 
 function get_builds($id)
@@ -261,7 +263,8 @@ function get_builds($id)
 	         FROM builds WHERE builds.testplan_id = {$id}
 	         ORDER BY builds.name";
   $recordset = $this->db->get_recordset($sql);
-  return($recordset);
+  
+  return $recordset;
 }//end function
 
 

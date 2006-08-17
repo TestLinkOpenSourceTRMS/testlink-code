@@ -1,7 +1,7 @@
 --  -----------------------------------------------------------------------------------
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.2 2006/07/28 17:22:03 schlundus Exp $
+-- $Id: testlink_create_tables.sql,v 1.3 2006/08/17 19:29:59 schlundus Exp $
 --
 -- SQL script - create db tables for TL
 -- Database Type: Microsoft SQL Server
@@ -352,13 +352,13 @@ CREATE TABLE [dbo].[attachments](
 	[fk_id] [int] NOT NULL CONSTRAINT [DF_attachments_fk_id]  DEFAULT ((0)),
 	[fk_table] [nvarchar](250) NULL,
 	[title] [nvarchar](250) NULL,
-	[description] [nvarchar](250) NOT NULL,
+	[description] [nvarchar](250) NULL,
 	[file_name] [nvarchar](250) NOT NULL,
 	[file_path] [nvarchar](250) NOT NULL,
 	[file_size] [int] NOT NULL CONSTRAINT [DF_attachments_file_size]  DEFAULT ((0)),
 	[file_type] [nvarchar](250) NOT NULL,
 	[date_added] [datetime] NOT NULL,
-	[content] [ntext] NOT NULL,
+	[content] [ntext] NULL,
 	[compression_type] [int] NOT NULL CONSTRAINT [DF_attachments_compression_type]  DEFAULT ((0)),
  CONSTRAINT [PK_attachments] PRIMARY KEY CLUSTERED 
 (

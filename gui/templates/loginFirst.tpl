@@ -1,50 +1,52 @@
-{* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: loginFirst.tpl,v 1.4 2006/05/17 11:00:25 franciscom Exp $ *}
-{* Purpose: smarty template - first login *}
+{* 
+TestLink Open Source Project - http://testlink.sourceforge.net/
+$Id: loginFirst.tpl,v 1.5 2006/08/21 13:17:37 franciscom Exp $
+Purpose: smarty template - first login
+
+rev :
+     20060819 - franciscom - added constant definitions through smarty conf file
+                             logo added 
+*}
+
 {include file="inc_head.tpl" title="TestLink - New Account" }
 
 <body onload="document.forms[0].elements[0].focus()">
 
-<div class="title">TestLink {$tlVersion|escape}</div>
+{config_load file="input_dimensions.conf" section="login"} {* Constant definitions *}
 
+<div class="title">{$login_logo}<br />TestLink {$tlVersion|escape}</div>
 <div class="forms">
-
-<p class="bold">{$message}</p>
+<p class="title">{$message}</p>
 
 <form method="post" action="firstLogin.php">
 
-	<p class="bold">{lang_get s='login_name'}<br />
-	<input type="text" name="loginName" size="20" maxlength="30" /></p>
+	<p class="label">{lang_get s='login_name'}<br />
+	<input type="text" name="loginName" size="{#LOGIN_SIZE#}" maxlength="{#LOGIN_MAXLEN#}" /></p>
 
   {* 20060507 - franciscom *}
   {if $external_password_mgmt eq 0}
-
-	<p class="bold">{lang_get s='password'}<br />
-	<input type="password" name="password" size="20" maxlength="32" /></p>
-	<p class="bold">{lang_get s='password_again'}<br />
-	<input type="password" name="password2" size="20" maxlength="32" /></p>
+  	<p class="label">{lang_get s='password'}<br />
+  	<input type="password" name="password" size="{#PASSWD_SIZE#}" maxlength="{#PASSWD_SIZE#}" /></p>
+  	<p class="label">{lang_get s='password_again'}<br />
+  	<input type="password" name="password2" size="{#PASSWD_SIZE#}" maxlength="{#PASSWD_SIZE#}" /></p>
   {/if}
   
-	<p class="bold">{lang_get s='first_name'}<br />
-	<input type="text" name="first" size="20" maxlength="30" /></p>
-	<p class="bold">{lang_get s='last_name'}<br />
-	<input type="text" name="last" size="20" maxlength="30" /></p>
-	<p class="bold">{lang_get s='e_mail'}<br />
-	<input type="text" name="email" size="20" maxlength="100" /></p>
+	<p class="label">{lang_get s='first_name'}<br />
+	<input type="text" name="first" size="{#NAMES_SIZE#}" maxlength="{#NAMES_SIZE#}" /></p>
+	<p class="label">{lang_get s='last_name'}<br />
+	<input type="text" name="last" size="{#NAMES_SIZE#}" maxlength="{#NAMES_SIZE#}" /></p>
+	<p class="label">{lang_get s='e_mail'}<br />
+	<input type="text" name="email" size="{#EMAIL_SIZE#}" maxlength="{#EMAIL_MAXLEN#}" /></p>
 
   {* 20060507 - franciscom *}
   {if $external_password_mgmt eq 1}
      <p>{lang_get s='password_mgmt_is_external'}<p>
 	{/if}
 
-	<p><input type="submit" name="editUser" value="{lang_get s='btn_add_user_data'}" /></p>
+	<br><input type="submit" name="editUser" value="{lang_get s='btn_add_user_data'}" />
 </form>
-
 <hr />
-
-<p><a href="login.php">{lang_get s='link_back_to_login'}</a></p>
-
-
+<br><a href="login.php">{lang_get s='link_back_to_login'}</a>
 </div>
 </body>
 </html>

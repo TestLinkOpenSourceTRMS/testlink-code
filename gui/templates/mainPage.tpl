@@ -1,35 +1,31 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: mainPage.tpl,v 1.17 2006/07/28 17:22:03 schlundus Exp $     
+ $Id: mainPage.tpl,v 1.18 2006/08/21 13:19:38 franciscom Exp $     
  Purpose: smarty template - main page / site map                 
                                                                  
  rev :                                                   
+       20060819 - franciscom - changed css classes name
+                               removed old comments
+       
 *}
 {include file="inc_head.tpl" popup="yes"}
 
 <body>
-
 <h1>{lang_get s='title_testlink_site_map'}</h1>
 {if $securityNotes}
-	  {* 20060413 - franciscom *}
-    {include file="inc_msg_from_array.tpl" array_of_msg=$securityNotes }
+    {include file="inc_msg_from_array.tpl" array_of_msg=$securityNotes arg_css_class="warning_message"}
 {/if}
 
-{****** TEST PLAN - Right Column ***************************}
-<div class="columnList" style="float: right">
-
-	{*** Begin product section ***}
-	<div class="productTitle">
+{* Right Column                             *}
+<div class="vertical_menu" style="float: right">
+	{*** Begin Test Project section ***}
+	<div class="testproject_title">
 		<img alt="Help: Test Plan" style="float: right; vertical-align: top;" 
 			src="icons/sym_question.gif" 
 			onclick="javascript:open_popup('{$helphref}testPlan.html');" />
 
  	  <form name="testplanForm" action="lib/general/mainPage.php">
-
-    	{* 20051002 - fm *}
       {if $show_filter_tp_by_product }
-      
-      	{* 20050928 - fm *}
       	<input type="hidden" name="filter_tp_by_product_hidden" value="0" /> 
         <input type="checkbox" name="filter_tp_by_product"  value="1" 
       	       {if $filter_tp_by_product}
@@ -70,13 +66,12 @@
 		{/if} {* testplan_execute *}
 
 
-    {* change date"2005-04-16" author="fm" feature=metrics -> feature=showMetrics*} 
-		{if $testplan_metrics == "yes"}
+  	{if $testplan_metrics == "yes"}
 	        <br />
 			<img alt="arrow" class="arrow" src="icons/arrow_org.gif" />
 	        <a href="{$launcher}?feature=showMetrics">{lang_get s='href_rep_and_metrics'}</a>
 		{/if} {* testplan_metrics *}
-	    </p>
+	  </p>
 	
 		{if $testplan_planning == "yes"}
 	    <h2>{lang_get s='title_test_case_suite'}</h2>
@@ -129,20 +124,22 @@
 </div>
 
 
-{******** product section - left column ***********************}
-<div class="columnList" style="float: left">
+{*   left column *}
+<div class="vertical_menu" style="float: left">
 
-	{*** tc management ***}
+	{*   tc management   *}
 	{if $view_tc_rights == "yes"}
     <h2>{lang_get s='title_test_spec'}</h2>
 	<p>
 		<img alt="arrow" class="arrow" src="icons/arrow_org.gif" />
+		<a href="{$launcher}?feature=editTc">
 		{if $modify_tc_rights eq "yes"}
-	        <a href="{$launcher}?feature=editTc">{lang_get s='href_edit_tc'}</a>
-	    {else}
-	        <a href="{$launcher}?feature=editTc">{lang_get s='href_browse_tc'}</a>
-	    {/if}
-        <br />
+	      {lang_get s='href_edit_tc'}
+	  {else}
+	      {lang_get s='href_browse_tc'}
+	  {/if}
+	  </a>
+    <br />
 		<img alt="arrow" class="arrow" src="icons/arrow_org.gif" />
         <a href="{$launcher}?feature=searchTc">{lang_get s='href_search_tc'}</a>
 		{if $modify_tc_rights eq "yes"}
@@ -156,8 +153,7 @@
     </p>
 	{/if} {* view_tc_rights *}
 
-	{****** requirements *****************************}
-	
+	{*   requirements   *}
 	{if $opt_requirements == TRUE && $view_req_rights == "yes"}
         <h2>{lang_get s='title_requirements'}</h2>
 		<p>
@@ -171,7 +167,7 @@
         </p>
      {/if}
 
-	{****** keywords management ***********************}
+	{*       keywords management                             *}
 	
 	{if $view_keys_rights == "yes"}
         <h2>{lang_get s='title_keywords'}</h2>
@@ -207,7 +203,7 @@
         </p>
 	{/if} {* modify_product_rights *}
 	
-	{****** user management ***********************}
+	{*       user management                             *}
 	
 	{if $usermanagement_rights == "yes"}
         <h2>{lang_get s='title_user_mgmt'}</h2>
@@ -220,7 +216,7 @@
         </p>
 	{/if}
 
-	{****** Class API information - added 20060630 by KL - I will localize this and 
+	{*       Class API information - added 20060630 by KL - I will localize this and 
 	make it optional to display at some point soon *******}
 	<h2>Class APIs (for developers)</h2>
 	<p>
@@ -247,7 +243,7 @@
 </div>
 
 
-{******** middle table ************}
+{*      ** middle table ************}
 
 {if $metricsEnabled == 'TRUE'}
     <div style="width: 45%; padding: 5px">

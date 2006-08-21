@@ -1,30 +1,26 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: login.tpl,v 1.6 2006/04/24 10:36:24 franciscom Exp $
+$Id: login.tpl,v 1.7 2006/08/21 13:17:05 franciscom Exp $
 Purpose: smarty template - login page 
-20060226 - franciscom - logo
-20050826 - scs - added display of security note 
+
+20060819 - franciscom - css changes, smarty config file
 *}
 {include file="inc_head.tpl" title="TestLink - Login" }
 
 <body onload="document.forms[0].elements[0].focus()">
 
-{* 20060226 - franciscom - logo *}
+{config_load file="input_dimensions.conf" section="login"} {* Constant definitions *}
 <div class="title">{$login_logo}<br />TestLink {$tlVersion|escape}</div>
-
 <div class="forms">
 
 	<form method="post" action="index.php">
-		{* <p>{$note}</p> *}
-	  <div class="bold" style="background-color:#990000; color:white; text-align:center;">
-	  {$note}
-    </div>
+	  <div class="warning_message" style="text-align:center;">{$note}</div>
 		
-		<p class="bold">{lang_get s='login_name'}<br />
-		<input type="text" name="login" size="20" maxlength="30" /></p>
+		<p class="label">{lang_get s='login_name'}<br />
+		<input type="text" name="login" size="{#LOGIN_SIZE#}" maxlength="{#LOGIN_MAXLEN#}" /></p>
 		
-		<p class="bold">{lang_get s='password'}<br />
-		<input type="password" name="password" size="20" maxlength="32" /></p>
+		<p class="label">{lang_get s='password'}<br />
+		<input type="password" name="password" size="{#PASSWD_SIZE#}" maxlength="{#PASSWD_SIZE#}" /></p>
 		
 		<input type="submit" name="submit" value="{lang_get s='btn_login'}" />
 	</form>
@@ -38,8 +34,7 @@ Purpose: smarty template - login page
 	{include file="inc_copyrightnotice.tpl"}
 
 	{if $securityNotes}
-	  {* 20060413 - franciscom *}
-    {include file="inc_msg_from_array.tpl" array_of_msg=$securityNotes }
+    {include file="inc_msg_from_array.tpl" array_of_msg=$securityNotes arg_css_class="warning_message"}
 	{/if}
 
 </div>

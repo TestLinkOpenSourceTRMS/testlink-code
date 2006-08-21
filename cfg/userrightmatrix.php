@@ -4,13 +4,21 @@
  *
  * Filename $RCSfile: userrightmatrix.php,v $
  *
- * @version $Revision: 1.10 $
- * @modified $Date: 2006/03/10 22:35:56 $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2006/08/21 13:24:10 $  $Author: franciscom $
  *
  * @author Andreas Morsing
  *
  * This page allows configuration of the accessrights needed for
  * executing pages
+ *
+ * 20060818 - franciscom - changes due to addition of new rights
+ *
+ *												 role_management
+ *                         user_role_assignment
+ *
+ *
+ *
  * 
 **/
 //user right matrix, 
@@ -20,8 +28,8 @@
 //keys are the filenames (lowercase)
 //values are the right(s) needed to execute it, 
 //maybe array : multiple rights needed
-//		string : exactly one right need
-//		null : no rights need
+//		  string : exactly one right need
+//		  null : no rights need
 $g_userRights = array(
 						//USERADMINISTRATION
 						"lib/usermanagement/usersnew.php"  => array (
@@ -34,13 +42,13 @@ $g_userRights = array(
 															"mgt_users",
 														),														
 						"lib/usermanagement/rolesview.php"  => array (
-															"mgt_users",
+															"role_view",
 														),														
 						"lib/usermanagement/rolesedit.php"  => array (
-															"mgt_users",
+															"role_management",
 														),														
 						"lib/usermanagement/usersassign.php"  => array (
-															"mgt_users",
+															"user_role_assignment",
 														),														
 						//PRODUCTADMINISTRATION
 						"lib/project/projectedit.php" => array (

@@ -1,11 +1,15 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
 # This script is distributed under the GNU General Public License 2 or later.
-# $Id: testlink_create_tables.sql,v 1.5 2006/07/28 17:22:04 schlundus Exp $
+# $Id: testlink_create_tables.sql,v 1.6 2006/08/21 13:25:16 franciscom Exp $
 # SQL script - create db tables for TL   
 #
 # default rights & admin account are created via testlink_create_default_data.sql
 #
 # Rev :
+#
+#       20060815 - franciscom - changes to user_assignments
+#                                          risk_assignments
+#                               added object_keywords
 #
 #       20060715 - schlundus - changes to milestones table.
 #        
@@ -159,6 +163,7 @@ CREATE TABLE `risk_assignments` (
   `testplan_id` int(10) unsigned NOT NULL default '0',
   `node_id` int(10) unsigned NOT NULL default '0',
   `risk` int(10) NOT NULL default '2',
+  `importance` char(1) NOT NULL default 'M',
   PRIMARY KEY  (`id`),
   UNIQUE KEY `tp_node_id` (`testplan_id`,`node_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
@@ -168,10 +173,10 @@ CREATE TABLE `user_assignments` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `type` int(10) unsigned NOT NULL default '0',
   `feature_id` int(10) unsigned NOT NULL default '0',
-  `owner_id` int(10) unsigned default NULL,
-  `deadline_ts` datetime NOT NULL default '0000-00-00 00:00:00',
-  `assigner_id`  int(10) unsigned default NULL,
-  `create_ts`  datetime NOT NULL default '0000-00-00 00:00:00',
+  `user_id` int(10) unsigned default '0',
+  `deadline_ts` datetime NULL,
+  `assigner_id`  int(10) unsigned default '0',
+  `creation_ts`  datetime NOT NULL default '0000-00-00 00:00:00',
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
@@ -343,5 +348,13 @@ CREATE TABLE `attachments` (
   `date_added` datetime NOT NULL default '1970-01-01 00:00:01',
   `content` longblob,
   `compression_type` int(11) NOT NULL default '0',
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8; 
+
+CREATE TABLE `object_keywords` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `fk_id` int(10) unsigned NOT NULL default '0',
+  `fk_table` varchar(30) default '',
+  `keyword_id` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8; 

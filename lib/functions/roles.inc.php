@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
  * @filesource $RCSfile: roles.inc.php,v $
- * @version $Revision: 1.13 $
- * @modified $Date: 2006/08/17 19:29:59 $ by $Author: schlundus $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2006/08/21 13:33:49 $ by $Author: franciscom $
  * @author Martin Havlat, Chad Rosen
  * 
  * This script provides the get_rights and has_rights functions for
@@ -29,17 +29,22 @@
  * testplan_execute - edit Test Results
  * mgt_modify_tc - edit Test Cases
  * mgt_modify_key - edit Keywords
- * mgt_modify_req - edit Product Requirements
+ * mgt_modify_req - edit Requirements
  * testplan_planning, testplan_create_build, testplan_assign_rights - Test Leader plans/prepares a testing
  * mgt_modify_product, mgt_users - just Admin edits Products and Users
  *
  *
+ * 20060818 - franciscom - new rights						
  * 20060224 - franciscom - changes in session product -> testproject
-                         - table name user -> users
-                         
+ *                       - table name user -> users
+ *                       
  */
 require_once( dirname(__FILE__). '/lang_api.php' );
 
+
+// Important:
+// Every array, defines a section in the define role page
+//
 $g_rights_tp = array (	"testplan_execute" => lang_get('desc_testplan_execute'),
 						"testplan_create_build" => lang_get('desc_testplan_create_build'),
 						"testplan_metrics" => lang_get('desc_testplan_metrics'),
@@ -67,6 +72,9 @@ $g_rights_product = array (
 						);						
 $g_rights_users = array (	
 							"mgt_users" => lang_get('desc_mgt_modify_users'),
+							"role_view" => lang_get('desc_role_view'),
+							"role_management" => lang_get('desc_role_management'),
+							"user_role_assignment" => lang_get('desc_user_role_assignment'),
 						);	
 
 						

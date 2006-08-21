@@ -1,12 +1,8 @@
 {* Testlink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: navBar.tpl,v 1.14 2006/08/17 19:29:59 schlundus Exp $ 
+$Id: navBar.tpl,v 1.15 2006/08/21 13:39:28 franciscom Exp $ 
 Purpose: smarty template - title bar + menu 
 
-20060226 - franciscom - logo
-20060224 - franciscom - productRole -> testprojectRole
-Andreas Morsing: changed the product selection 
-20050826 - scs - added input for entering tcid 
-
+20060819 - franciscom - css class name changes
 *}
 
 {*******************************************************************}
@@ -24,8 +20,8 @@ Andreas Morsing: changed the product selection
 		<div style="text-align:right;"><a style="width:100%;padding-right:5px;" href="logout.php" target="_parent" accesskey="q">{lang_get s='link_logout'}</a></div>
 	</div>
 </div>
-<div class="menu">
 
+<div class="menu_bar">
 	{if $arrayProducts ne ""}
 	<div style="float: right;">
 		<form name="productForm" action="lib/general/navBar.php" method="get"> 

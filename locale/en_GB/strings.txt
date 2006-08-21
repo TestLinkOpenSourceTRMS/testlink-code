@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.63 $
- * @modified $Date: 2006/06/10 20:22:20 $ $Author: schlundus $
+ * @version $Revision: 1.64 $
+ * @modified $Date: 2006/08/21 13:23:34 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
@@ -338,11 +338,11 @@ $TLS_password = "Password:";
 
 // gui/templates/loginFirst.tpl
 $TLS_btn_add_user_data = "Add User Data";
-$TLS_e_mail = "E-mail address (used e.g. for sending a forgotten password):";
+$TLS_e_mail = "E-mail address (needed for sending forgotten password):";
 $TLS_first_name = "First name:";
-$TLS_last_name = "Last name";
+$TLS_last_name = "Last name:";
 $TLS_link_back_to_login = "Back to login";
-$TLS_password_again = "Password again:";
+$TLS_password_again = "Repeat password:";
 
 
 
@@ -870,8 +870,8 @@ $TLS_title_keyword_import_to = "Import keywords to";
 // gui/templates/rolesview.tpl
 $TLS_btn_confirm_delete = "Delete";
 $TLS_caption_possible_affected_users = "Possibly affected users";
-$TLS_menu_assign_product_roles = "Assign testproject roles";
-$TLS_menu_assign_testplan_roles = "Assign testplan roles";
+$TLS_menu_assign_testproject_roles = "Assign test project roles";
+$TLS_menu_assign_testplan_roles = "Assign test plan roles";
 $TLS_menu_define_roles = "Define roles";
 $TLS_menu_mod_user = "Modify Users";
 $TLS_menu_new_user = "New User";

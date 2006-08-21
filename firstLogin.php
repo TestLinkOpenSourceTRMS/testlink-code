@@ -5,18 +5,16 @@
  *
  * Filename $RCSfile: firstLogin.php,v $
  *
- * @version $Revision: 1.10 $
- * @modified $Date: 2006/01/03 21:19:00 $ $Author: schlundus $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2006/08/21 13:21:59 $ $Author: franciscom $
  *
  * @author Asiel Brumfield
  * @author Martin Havlat 
  *
  * Anybody can have Guest rights to browse TL
  *
- * 20051011 - fm - config param for CSS
- * 20050831 - scs - moved POST params to the top
- * 20051118 - scs - removed $_SESSION['basehref'], because this will not be set
  * 20060103 - scs - ADOdb changes
+ * 20060819 - franciscom - logo added
 **/
 require_once('config.inc.php');
 require_once('common.php');
@@ -91,6 +89,7 @@ if($bEditUser)
 }
 
 $smarty = new TLSmarty();
+$smarty->assign('login_logo', LOGO_LOGIN_PAGE);
 $smarty->assign('css', TL_BASE_HREF . TL_LOGIN_CSS);
 $smarty->assign('message',$message);
 $smarty->display('loginFirst.tpl');

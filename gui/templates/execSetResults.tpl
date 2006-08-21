@@ -1,7 +1,8 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execSetResults.tpl,v 1.25 2006/08/10 07:11:36 franciscom Exp $ *}
+{* $Id: execSetResults.tpl,v 1.26 2006/08/21 13:19:53 franciscom Exp $ *}
 {* Purpose: smarty template - show tests to add results *}
 {* Revisions:
+              20060814 - franciscom - added display of test suites details
               20060808 - franciscom - added display of test plan notes 
               20060722 - franciscom - syntax for value on history_on
               20060602 - franciscom - new code for attachments display 
@@ -18,7 +19,9 @@
 
 <body onLoad="show_hide('tplan_notes','tpn_view_status',{$tpn_view_status});
               show_hide('build_notes','bn_view_status',{$bn_view_status});
-              show_hide('bulk_controls','bc_view_status',{$bc_view_status})">
+              show_hide('bulk_controls','bc_view_status',{$bc_view_status});
+              multiple_show_hide('{$tsd_div_id_list}','{$tsd_hidden_id_list}',
+                                 '{$tsd_val_for_hidden_list}');">
 
 <h1>	
 	<img alt="{lang_get s='help'}" class="help" 
@@ -55,15 +58,22 @@
 </div>
 
 <form method="post">
+  {* franciscom - implementation note - 
+     1. function of these inputs save the status when user saves executiosn.
+     2. value is setted via javascript using the body onload event
+     3. the same concepts applies to the hidden inputs tsdetails_view_status.
+  *}   
   <input type="hidden" id="tpn_view_status" 
                        name="tpn_view_status" 
-                       value="{$tpn_view_status}">
+                       value="0">
   <input type="hidden" id="bn_view_status" 
                        name="bn_view_status" 
-                       value="{$bn_view_status}">
+                       value="0">
   <input type="hidden" id="bc_view_status" 
                        name="bc_view_status" 
-                       value="{$bc_view_status}">
+                       value="0">
+  
+  
   
   
   {if $map_last_exec eq ""}
@@ -123,10 +133,14 @@
 	
 	  {assign var="tcversion_id" value=$tc_exec.id}
 		<input type='hidden' name='tc_version[{$tcversion_id}]' value='{$tc_exec.testcase_id}' />
+		<input type='hidden' id="tsdetails_view_status_{$tc_exec.testcase_id}" 
+		                     name="tsdetails_view_status_{$tc_exec.testcase_id}"  value="0">
+
 		<h2><img src="icons/icon-foldout.gif" border="0" alt="{lang_get s='show_hide'}" 
              title="{lang_get s='show_hide'}" 
-             onclick="show_hide('tsdetails_{$tc_exec.testcase_id}','ts_view_status',
-                                 document.getElementById('tsdetails_{$tc_exec.testcase_id}').style.display=='none')">
+             onclick="show_hide('tsdetails_{$tc_exec.testcase_id}',
+                                'tsdetails_view_status_{$tc_exec.testcase_id}',
+                                document.getElementById('tsdetails_{$tc_exec.testcase_id}').style.display=='none')">
     
 		{lang_get s='th_testsuite'} {$tsuite_info[$tc_exec.testcase_id].tsuite_name|escape}</h2>
 

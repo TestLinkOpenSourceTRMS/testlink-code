@@ -5,12 +5,11 @@
  *
  * Filename $RCSfile: lostPassword.php,v $
  *
- * @version $Revision: 1.14 $
- * @modified $Date: 2006/01/06 20:32:44 $ $Author: schlundus $
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2006/08/21 13:21:59 $ $Author: franciscom $
  *
- * 20050831 - scs - cosmetic changes
- * 20051209 - fm - BUGID 289
  * 20060103 - scs - ADOdb changes
+ * 20060819 - franciscom - logo added
 **/
 require_once('config.inc.php');
 require_once('common.php');
@@ -72,6 +71,7 @@ if (strlen($login))
 }
 
 $smarty = new TLSmarty();
+$smarty->assign('login_logo', LOGO_LOGIN_PAGE);
 $smarty->assign('css', TL_BASE_HREF . TL_LOGIN_CSS);
 $smarty->assign('note',$message);
 $smarty->assign('page_title',lang_get('page_title_lost_passwd'));

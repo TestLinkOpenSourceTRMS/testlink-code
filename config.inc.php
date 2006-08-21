@@ -5,14 +5,16 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.69 $
- * @modified $Date: 2006/07/28 17:22:03 $ by $Author: schlundus $
+ * @version $Revision: 1.70 $
+ * @modified $Date: 2006/08/21 13:14:30 $ by $Author: franciscom $
  *
  *
  * Constants and configuration parameters used throughout TestLink 
  * are defined within this file they should be changed for your environment
  *-------------------------------------------------------------------------
  * Revisions:
+ *
+ * 20060820 - franciscom - trying to remove useless CSS
  *
  * 20060602 - franciscom - new config param to manage attachments
  *                         different models for the attachments management 
@@ -254,9 +256,10 @@ define('TL_THEME_DIR','gui/css/');
 //define('TL_THEME_DIR','gui/css/theme_m1/');
 
 
-define('TL_LOGIN_CSS',TL_THEME_DIR . 'tl_login.css');
-define('TL_TESTLINK_CSS',TL_THEME_DIR . '/testlink.css');
-define('TL_DOC_BASIC_CSS',TL_THEME_DIR . '/tl_doc_basic.css');
+/* 20060820 - franciscom - trying to remove useless CSS */
+define('TL_TESTLINK_CSS',TL_THEME_DIR . 'testlink.css');
+define('TL_LOGIN_CSS', TL_TESTLINK_CSS);
+define('TL_DOC_BASIC_CSS',TL_THEME_DIR . 'tl_doc_basic.css');
 
 // logo for login page, if not defined nothing happens
 define('LOGO_LOGIN_PAGE','<img alt="TestLink" src="icons/company_logo.png" />');

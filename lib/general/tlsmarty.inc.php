@@ -4,13 +4,15 @@
  *
  * Filename $RCSfile: tlsmarty.inc.php,v $
  *
- * @version $Revision: 1.13 $
- * @modified $Date: 2006/06/20 19:51:32 $ $Author: schlundus $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2006/08/21 13:23:14 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
  * TLSmarty class implementation used in all templates
  *
+ * 
+ * 20060820 - franciscom - added config_dir
  * 20060602 - franciscom - added new global var $g_attachments
  * 20060528 - franciscom - added new global var $g_tc_status_for_ui
  *
@@ -26,9 +28,10 @@ class TLSmarty extends Smarty
 		global $g_attachments;
 
 
-        $this->Smarty();
-        $this->template_dir = TL_ABS_PATH . 'gui/templates/';
-        $this->compile_dir = TL_TEMP_PATH;
+    $this->Smarty();
+    $this->template_dir = TL_ABS_PATH . 'gui/templates/';
+    $this->compile_dir = TL_TEMP_PATH;
+		$this->config_dir = TL_ABS_PATH . 'gui/templates/';
 		
 		$testprojectColor = TL_BACKGROUND_DEFAULT;
 		if (isset($_SESSION['testprojectColor'])) 

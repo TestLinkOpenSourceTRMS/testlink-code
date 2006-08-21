@@ -1,28 +1,29 @@
 /* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: testlink.css,v 1.9 2006/04/10 09:16:43 franciscom Exp $
-Purpose: main css 
+$Id: testlink.css,v 1.10 2006/08/21 13:16:00 franciscom Exp $
+Purpose: main css - theme default
 
-20060328 - franciscom - removed silly definitions
+20060819 - franciscom - minor adjustemnts
+                        changes in class names
+                        div.menu -> div.menu_bar
+
 */
-
-
 body {
-	background:     #9BD;
-	font-family : 	Arial, Helvetica, sans-serif;
-	font-size : 	smaller;
-    margin:			0px;
+	background: #99BBDD;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: small;
+  margin: 0px;
 }
 
 
-/***** Title + Menu bar ***********************************/
-
+/* ----------------------------------------------------------------- */
+/*    Title + Menu bar                                               */
 div.tlTitle {
 	font-stretch:	wider;
 	padding:		1px;
 }
 
-div.menu {
+div.menu_bar {
 	background: 	#CDE;
 	background-image: url(../../icons/navbar.gif); 
 	border-style:	groove;
@@ -36,10 +37,12 @@ select.tlcombo1 {
 	font-size:	 	85%;
 	font-weight:    bold;
 }
+/* ----------------------------------------------------------------- */
 
-/***** main page *****************************************/
 
-div.columnList {
+/* ----------------------------------------------------------------- */
+/*    main page                                                      */
+div.vertical_menu {
 	background: 	#EEE;
 	font-size:      90%;
 	margin: 		3px; 
@@ -48,22 +51,27 @@ div.columnList {
 	width:			26%;
 }
 
-div.columnList h2 {
+div.vertical_menu h2 {
 	background:     #FFC;
 	border-style:	none;
 	color:			black;
 	font-weight:    bold;
 }
 
-div.productTitle {
+div.vertical_menu a {
+	font-weight:    normal;
+}
+
+div.testproject_title{
 	background:		#059;
 	border: 		1px solid black;
 	color:			white;
 	font-size:		110%;
 	padding: 		2px;
 }
-/***** main page table *****/
 
+
+/***** main page table *****/
 table.mainTable{
 	background: 	#EEE;
 	border: 		1px double black;
@@ -425,8 +433,47 @@ div.exec_history {
 }
 
 
+
+/* 20060819 - franciscom */
+.label {
+	font-weight:    bold;
+}
+
+.warning_message {
+background-color:#990000;
+color:white; 
+}
+
+
+/* 20060820 - franciscom - moved here from tl_login.css */
+div.title {
+	text-align: center;
+	width: 100%;
+	background: #CCDDEE;
+	margin: 0px; 
+	padding-bottom: 5px;
+	padding-top: 5px;
+	font-stretch: expanded;
+	font-weight : bold;
+	font-variant : small-caps;
+	letter-spacing: 5px;
+}
+
+/* For the HTML forms */
+div.forms {
+	text-align: left;
+	margin: 20%;
+	margin-top: 20px;
+	background: #CCDDEE;
+	padding: 25px; 
+	border: 1px;
+}
+
+p.title  {
+	text-align: center;
+	width: 100%;
+	font-weight : bold;
+}
+
+
 /* ----------------------------------------------------------------------------- */
-
-/***** END *************************************************/
-
-

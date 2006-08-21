@@ -1,5 +1,5 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/ 
-// $Id: expandAndCollapseFunctions.js,v 1.8 2006/08/17 19:29:59 schlundus Exp $ 
+// $Id: expandAndCollapseFunctions.js,v 1.9 2006/08/21 13:35:58 franciscom Exp $ 
 //
 //
 function plusMinus_onClick(elem)
@@ -91,4 +91,37 @@ function show_hide(elem_oid,hidden_oid,show)
 		obj.style.display=(show ? '' : 'none');
 		hidden_in.value=(show ? 1 : 0);
 	}	
+}
+
+// 20060813 - franciscom
+function multiple_show_hide(elem_oid_list,hidden_oid_list,show_list)
+{
+	var obj;
+	var hidden_in;
+  var show;
+  
+  var a_elem_oid=elem_oid_list.split(",");
+  var a_hidden_oid=hidden_oid_list.split(",");
+  var a_show=show_list.split(",");
+  var idx;
+
+	for(idx=0; idx < a_elem_oid.length; idx++)
+	{
+	  obj=document.getElementById(a_elem_oid[idx]);
+  	hidden_in=document.getElementById(a_hidden_oid[idx]);
+  	show=a_show[idx];
+  	if (obj)
+	  {
+	    if( show == 1  || show == true)
+	    {
+		    obj.style.display='';
+		    hidden_in.value=1;
+		  }
+		  else
+		  {
+		    obj.style.display='none';
+		    hidden_in.value=0;
+		  }
+	  }	
+	}
 }

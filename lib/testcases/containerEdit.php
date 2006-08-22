@@ -3,10 +3,11 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * @version $Revision: 1.42 $
- * @modified $Date: 2006/08/07 09:44:09 $ by $Author: franciscom $
+ * @version $Revision: 1.43 $
+ * @modified $Date: 2006/08/22 15:55:49 $ by $Author: franciscom $
  * @author Martin Havlat
  *
+ * 20060822 - franciscom - solved keyword presentation problem
  * 20060804 - franciscom - added option transfer to manage keywords
  * 20060701 - franciscom
  * Added the Test Project as the FIRST Container where is possible to copy
@@ -36,7 +37,6 @@ $objectID = isset($_GET['objectID']) ? intval($_GET['objectID']) : null;
 $bSure = (isset($_GET['sure']) && ($_GET['sure'] == 'yes'));
 
 // --------------------------------------------------------------------------------------------
-// 20060804 - franciscom
 $testproject_id = $_SESSION['testprojectID'];
 $opt_cfg->js_ot_name='ot';
 $rl_html_name = $opt_cfg->js_ot_name . "_newRight";
@@ -85,7 +85,6 @@ foreach ($a_actions as $the_key => $the_val)
 		$warning_empty_name = lang_get('warning_empty_com_name');
 		break;
 	}
-
 }                    
 $smarty->assign('level', $level);
 
@@ -143,6 +142,9 @@ if($action == 'edit_testsuite' || $action == 'new_testsuite')
 }
 else if($action == 'add_testsuite')
 {
+  // 20060822 - franciscom - internal bug
+	keywords_opt_transf_cfg($opt_cfg, ""); 
+  $smarty->assign('opt_cfg', $opt_cfg);
 	if ($name_ok)
 	{
 		$msg = 'ok';

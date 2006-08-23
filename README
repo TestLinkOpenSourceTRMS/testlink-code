@@ -1,5 +1,5 @@
 ===============================================================
-    TestLink 1.6.0 - ReadMe
+    TestLink 1.7.0 - Readme
 ===============================================================
 
 1. Introduction
@@ -20,42 +20,16 @@
 2. Installation and System Requirements
 ===============================================================
  
-    TestLink environment includes PHP4, MySQL and a Web-server (e.g.  
-    functional EasyPHP or XAMP installation).
-   
-    Download: You can get the newest version at sourceforge.net at 
-    https://sourceforge.net/projects/testlink/.
     
-    Installation and configuration is described in directory
-    <testlink_root>/documentation/installation-manual.html or Installation and
-    Configuration manual at http://testlink.sourceforge.net/docs/testlink.php.
-   
-    Update from previous versions of TestLink : Database schema was
-    changed. We recommend to use an installation script. See more 
-    in the manual.
-
 
 3. Release notes
 ===============================================================
  
-    This release is a final release for TestLink 1.6.0. Bug fixing 
-    will be applied on this release via 1.6.1, etc. 
-    The next development will be provides for 1.7.
-
-	Main new 1.6 features:
-	- Requirement based testing
-	- Localization
-	- Instalator
-    See CHANGELOG for more information about new features, bug fixes 
-    and changes.
 
 
 4. Known problems
 ===============================================================
-
-    - No blocking issue is known at the time.
-    - Several minor issues are listed in TestLink Bug Tracking System.
-    
+   
 
 5. Bug Reports and Feedback
 ===============================================================
@@ -66,7 +40,8 @@
     use our  Mantis installation at http://www.testlink.org/mantis/ for 
     TestLink. 
     
-    You can see ther also the current bugs and requests.You may also contact 
-    us at the TestLink forum at http://www.testlink.org/tiki/tiki-forums.php.
+    You can see ther also the current bugs and requests.
+    You may also contact us at the TestLink forum at 
+    http://www.teamst.org/
     
     

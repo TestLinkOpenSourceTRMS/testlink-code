@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.64 $
- * @modified $Date: 2006/08/21 13:23:34 $ $Author: franciscom $
+ * @version $Revision: 1.65 $
+ * @modified $Date: 2006/08/23 06:22:05 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
@@ -1364,4 +1364,5 @@ $TLS_no_data_available="No data available";
 $TLS_btn_history_off="show only last execution";
 $TLS_btn_history_on="show complete history";
 
+$TLS_attachment_feature_disabled="attachment disabled";
 ?>

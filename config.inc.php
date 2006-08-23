@@ -5,14 +5,17 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.70 $
- * @modified $Date: 2006/08/21 13:14:30 $ by $Author: franciscom $
+ * @version $Revision: 1.71 $
+ * @modified $Date: 2006/08/23 06:18:17 $ by $Author: franciscom $
  *
  *
  * Constants and configuration parameters used throughout TestLink 
  * are defined within this file they should be changed for your environment
  *-------------------------------------------------------------------------
  * Revisions:
+ *
+ * 20060822 - franciscom - new properties for $g_attachments
+ *                         enabled and disabled_msg
  *
  * 20060820 - franciscom - trying to remove useless CSS
  *
@@ -77,7 +80,6 @@
 require_once('config_db.inc.php');
 
 
-
 /** root of testlink directory location seen through the web server */
 define('TL_BASE_HREF', get_home_url()); 
 
@@ -112,6 +114,9 @@ define('TL_LOG_PATH', TL_TEMP_PATH );
 /** Default level of logging (NONE, ERROR, INFO, DEBUG, EXTENDED) */
 define('TL_LOG_LEVEL_DEFAULT', 'NONE');
 require_once(TL_ABS_PATH.'/lib/functions/logging.inc.php');
+require_once(TL_ABS_PATH.'/lib/functions/configCheck.php'); // 20060822 - franciscom
+
+
 
 /** Is the metrics table displayed on the main page enabled? Accepts TRUE or FALSE values */
 define('MAIN_PAGE_METRICS_ENABLED', 'FALSE');
@@ -392,6 +397,7 @@ if(false !== $serverLanguage)
 		$language = $serverLanguage;
 }
 define ('TL_DEFAULT_LOCALE',$language);
+require_once(TL_ABS_PATH.'/lib/functions/common.php'); // 20060822 - franciscom
 
 
 // ----------------------------------------------------------------------------
@@ -584,6 +590,21 @@ $g_attachments->action_on_display_empty_title='show_icon';
 
 $g_attachments->access_icon='<img src="icons/new_f2_16.png" style="border:none">';
 $g_attachments->access_string="[*]";
+
+
+// 20060822 - francisco.mancardi@gruppotesi.com
+// used to disable the attachment feature if there are problems with repository path
+$g_attachments->enabled=TRUE;
+$g_attachments->disabled_msg="";
+if( $g_repositoryType == TL_REPOSITORY_TYPE_FS )
+{
+  $ret = checkForRepositoryDir($g_repositoryPath);
+  if(!$ret['status_ok'])
+  {
+	  $g_attachments->enabled=FALSE;
+	  $g_attachments->disabled_msg=$ret['msg'];
+  }
+}
 // ----------------------------------------------------------------------------
 
 

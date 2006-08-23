@@ -1,6 +1,6 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: inc_attachments.tpl,v 1.5 2006/06/08 19:56:09 schlundus Exp $
+$Id: inc_attachments.tpl,v 1.6 2006/08/23 06:20:45 franciscom Exp $
 Generic attachment management 
 
 Input:
@@ -9,6 +9,13 @@ Input:
 	$tableName
 	$show_upload_btn
 	$downloadOnly
+
+Smarty global variables:
+$gsmarty_attachments
+
+20060823 - franciscom - added warning messagge if attachment not possible
+                        due to directory problems
+
 *}
 {literal}
 <script type="text/javascript">
@@ -27,7 +34,15 @@ var warning_delete_attachment = "{lang_get s='warning_delete_attachment'}";
 {assign var="tableStyles"  value=$tableStyles|default:"font-size:12px"}
 {* -------------------------------------------------------------------------------------- *}
 
-{if $attachmentInfos neq "" || $my_show_upload_btn }
+{if $gsmarty_attachments->enabled eq FALSE}
+ 	  <div class="warning_message">{lang_get s='attachment_feature_disabled'}<p>
+    {$gsmarty_attachments->disabled_msg}	
+    </div>
+{/if}
+
+
+{if $gsmarty_attachments->enabled && ($attachmentInfos neq "" || $my_show_upload_btn) }
+
 <table class="{$tableClassName}" style="{$tableStyles}">
 
  	{if $my_show_title}
@@ -59,11 +74,12 @@ var warning_delete_attachment = "{lang_get s='warning_delete_attachment'}";
 		</td>
 	</tr>
 	{/foreach}
-	
-	{if $my_show_upload_btn && !$downloadOnly}
-	<tr>
-		<td colspan="2"><input type="button" value="{lang_get s='button_upload'}..." onclick="openFileUploadWindow({$id},'{$tableName}')" />&nbsp;{lang_get s="upload_file_new_file"}</td>
-	</tr>
-	{/if}
+
+  {if $my_show_upload_btn && !$downloadOnly}
+  <tr>
+  	<td colspan="2"><input type="button" value="{lang_get s='button_upload'}..." onclick="openFileUploadWindow({$id},'{$tableName}')" />&nbsp;{lang_get s="upload_file_new_file"}</td>
+  </tr>
+  {/if}
+  
 </table>
 {/if}

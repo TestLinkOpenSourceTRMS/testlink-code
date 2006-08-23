@@ -1,18 +1,11 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: containerView.tpl,v 1.19 2006/08/07 09:42:33 franciscom Exp $ *}
+{* $Id: containerView.tpl,v 1.20 2006/08/23 06:19:07 franciscom Exp $ *}
 {* 
 Purpose: smarty template - view test specification containers 
 
-20050830 - fm - added hidden input fields to convey component or category name
-
-20050829 - fm
-1. remove |escape on all data fields that use fckeditor during the input phase.
-2. remove pre for the same fields
-3. use associative array instead of ordinal
-
-20050828 - scs - adding import of tcs to a specific category
-20051202 - scs - adding escaping of container names, fix for 267
-20060225 - franciscom - new 1.7 terms instead of deprecated
+20060822 - franciscom - fixed bug unable to attach files to test suites
+                        due to typo error
+                        
 20060311 - franciscom - added reorder test suites for test project
 *}
 {include file="inc_head.tpl"}
@@ -24,8 +17,8 @@ Purpose: smarty template - view test specification containers
 
 {include file="inc_update.tpl" result=$sqlResult item=$level name=$moddedItem.name refresh='yes'}
 
+{assign var="bDownloadOnly" value=false}
 {if $level == 'testproject'}
-	{assign var="bDownloadOnly" value=false}
 	{if $mgt_modify_product neq 'yes'}
 		{assign var="bDownloadOnly" value=true}
 	{/if}
@@ -92,9 +85,8 @@ Purpose: smarty template - view test specification containers
 	{/if}
 
 	{include file="inc_testsuite_viewer_ro.tpl"}
-  
-	{assign var="bDownloadOnly" value=false}
-	{if modify_tc_rights neq 'yes'}
+    
+	{if $modify_tc_rights neq 'yes'}
 		{assign var="bDownloadOnly" value=true}
 	{/if}
 	{include file="inc_attachments.tpl" id=$id tableName="nodes_hierarchy" downloadOnly=$bDownloadOnly}

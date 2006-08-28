@@ -241,3 +241,21 @@ font-size: 16px;}
 	float : left;
 	font-weight: bold;
 }
+
+
+.fancy{
+	background: #fff url(../img/buttonbar_gs.gif);
+}
+
+.fancy_2{
+	background: #fff url(../img/buttonbar.gif);
+}
+
+li.type2  {
+	padding: 0px;
+	list-style: disc outside url("../img/li.gif");
+}
+
+ul.type2 {
+	margin: 0px 0px 0px 0px;
+}

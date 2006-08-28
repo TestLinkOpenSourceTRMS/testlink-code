@@ -1,7 +1,7 @@
 <?php
 /* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: index.php,v 1.4 2006/05/24 07:11:59 franciscom Exp $ 
+$Id: index.php,v 1.5 2006/08/28 08:33:17 franciscom Exp $ 
 
 20060218 - franciscom
 */
@@ -38,15 +38,13 @@ $_SESSION['testlink_version']='1.7 alpha';
         <td class="pad" id="content" colspan="2">
 
 			<p><b>TestLink Setup</b></p>
-			
-			<!---
-			<p>Please choose your installation type:<p />
-			--->
-			
 			<a href="newInstallStart_TL.php?installationType=new">New installation</a>
 			<p />
 			<a href="newInstallStart_TL.php?installationType=upgrade">Upgrade installation</a>
 			</p>
+			<a href="./migration/index.php">Migration from 1.6.2 to 1.7.0 </a>
+			</p>
+			
 		</td>
       </tr>
     </table></td>

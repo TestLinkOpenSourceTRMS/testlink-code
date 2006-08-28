@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: license.php,v 1.3 2006/05/24 07:11:59 franciscom Exp $ */
+/* $Id: license.php,v 1.4 2006/08/28 08:32:46 franciscom Exp $ */
 session_start();
 foreach($_POST as $key => $val) {
 	$_SESSION[$key] = $val;
@@ -11,9 +11,8 @@ $inst_type = $_SESSION['installationType'];
 
 // 20060523 - franciscom
 $tl_and_version = "TestLink {$_SESSION['testlink_version']} ";
+print_r($_POST); 
 
-
-//print_r($_POST); 
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" 
   "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
@@ -89,7 +88,7 @@ function ableButton() {
     </table></td>
   </tr>
   <tr class="fancyRow2">
-  	<form action="installNewDB.php" method="post">
+  	<form action="<?php echo $_SESSION['page2launch'] ?>" method="post">
 		<td class="border-top-bottom" style="padding:0px"><input type="checkbox" id="licenseOK" name="licenseOK" onClick="ableButton()" /><label for="licenseOK">I agree to the terms set out in this license.</label></td>
 		<td class="border-top-bottom smallText" align="right" style="padding:0px"><input type="submit" id="submit" value="Proceed" disabled="disabled" class="button" style="border: 0px;" /></td>
 	</form>

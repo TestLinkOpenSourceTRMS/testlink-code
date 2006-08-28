@@ -1,7 +1,7 @@
 <?php
 /* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: installUtils.php,v 1.16 2006/08/07 09:41:47 franciscom Exp $ 
+$Id: installUtils.php,v 1.17 2006/08/28 08:33:17 franciscom Exp $ 
 
 20060428 - franciscom - new function check_db_loaded_extension()
 20060214 - franciscom - added warning regarding valid database names
@@ -61,7 +61,7 @@ return $filesArr;
 // | Authors: João Prado Maia <jpm@mysql.com>                             |
 // +----------------------------------------------------------------------+
 //
-// @(#) $Id: installUtils.php,v 1.16 2006/08/07 09:41:47 franciscom Exp $
+// @(#) $Id: installUtils.php,v 1.17 2006/08/28 08:33:17 franciscom Exp $
 //
 
 // a foolish wrapper - 20051231 - fm
@@ -319,16 +319,12 @@ return($ret);
 
 
 // 
-/*
-            <td align="left"><?php echo (strtoupper(substr(PHP_OS, 0, 3)) != 'WIN') ? '<b class="ok">'.$okImg.'</b><span class="item"> ('.php_uname().')</span>' : '<b class="error">'.$failedImg.'</b><span class="warning">
-            It seems you are using a proprietary operating system.  You might want to consider a Free Open Source operating system such as Linux.  dotProject is usually tested on Linux first and will always have better support for Linux than other operating systems.
-            </span>';?></td>
-*/
+// 20060825 - franciscom - added argument to point to info
 // 20050910 - fm
 // added warning regarding possible problems between MySQL and PHP on windows systems
 // due to MySQL password algorithm.
 //
-function check_php_version()
+function check_php_version($info_location="./info/")
 {
 $min_ver = "4.1.0";
 $ver_not_tested="5.0.0";
@@ -372,7 +368,7 @@ if( strcmp('WIN',$os_id) == 0 )
   $final_msg .= "<p><center><span class='notok'>" . 
   	            "Warning!: You are using a M$ Operating System, be careful with authentication problems <br>" .
   	            "          between PHP 4 and the new MySQL 4.1.x passwords<br>" . 
-  	            'Read this <A href="./info/MySQL-RefManual-A.2.3.pdf">' .
+  	            'Read this <A href="' . $info_location . 'MySQL-RefManual-A.2.3.pdf">' .
   	            "MySQL - A.2.3. Client does not support authentication protocol</A>" .
   	            "</span></center><p>";
 }
@@ -635,6 +631,8 @@ return ($ret);
 // 20060428 - franciscom
 function check_db_loaded_extension()
 {
+$msg_ko = "<span class='notok'>Failed!</span>";
+$msg_ok = '<span class="ok">OK!</span>';
 $tt=array_flip(get_loaded_extensions());
 
 $errors=0;	
@@ -644,7 +642,12 @@ if( !isset($tt['mysql']) )
 {
 	$final_msg .= "<span class='notok'>Warning!: Your PHP installation don't have the MySQL extension - " .
 	              "without it is IMPOSSIBLE to use Testlink.</span>";
+	$final_msg .= $msg_ko;
 	$errors += 1;
+}
+else
+{
+	$final_msg .= $msg_ok;
 }
 $ret = array ('errors' => $errors,
               'msg' => $final_msg);

@@ -1,6 +1,6 @@
 <?php 
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: newInstallStart_TL.php,v 1.10 2006/05/24 07:11:59 franciscom Exp $ */
+/* $Id: newInstallStart_TL.php,v 1.11 2006/08/28 08:33:17 franciscom Exp $ */
 
 // 20060428 - franciscom - added new check  check_db_loaded_extension()
 //
@@ -166,6 +166,7 @@ exit;
 				<form action="license.php" method="post" name="myForm" onsubmit="return validate()">
 
          <input type="hidden" name="installationType" value="<?php  echo $inst_type; ?>">
+         <input type="hidden" name="page2launch" value="installNewDB.php">
          <?php 
           echo ewigth($inst_type); 
          ?>

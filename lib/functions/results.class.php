@@ -1,4 +1,22 @@
 <?php
+/**
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later.
+ *
+ * Filename $RCSfile: results.class.php,v $
+ *
+ * @version $Revision: 1.8 $1.7
+ * @modified $Date: 2006/08/29 21:32:23 $ by $Author: kevinlevy $
+ *
+ *
+ * This class is encapsulates most functionality necessary to query the database
+ * for results to publish in reports.
+ *-------------------------------------------------------------------------
+ * Revisions:
+ *
+ * 20060829 - kevinlevy - development in progress
+**/
+
 
 class results
 
@@ -63,16 +81,16 @@ class results
  
   function results(&$db, &$tp, &$tree, $prodID, $builds_to_query = -1)
   {
-   	$this->db = &$db;	
-    $this->tp = &$tp;    
-    $this->tree = &$tree;
+   	$this->db = $db;	
+    $this->tp = $tp;    
+    $this->tree = $tree;
   	$this->prodID = $prodID;  	
     $this->suiteList = $this->buildSuiteList($builds_to_query);    
     $this->suiteStructure = $this->buildSuiteStructure($this->prodID);    
-    $this->createMapOfLastResult(&$this->suiteStructure, &$this->suiteList);
-    $this->createMapOfSuiteSummary(&$this->mapOfLastResult);
-    $this->createAggregateMap(&$this->suiteStructure, &$this->mapOfSuiteSummary);
-    $this->totalsForPlan = $this->createTotalsForPlan(&$this->suiteStructure, &$this->mapOfSuiteSummary);
+    $this->createMapOfLastResult($this->suiteStructure, $this->suiteList);
+    $this->createMapOfSuiteSummary($this->mapOfLastResult);
+    $this->createAggregateMap($this->suiteStructure, $this->mapOfSuiteSummary);
+    $this->totalsForPlan = $this->createTotalsForPlan($this->suiteStructure, $this->mapOfSuiteSummary);
   }
    
   function getSuiteList(){
@@ -373,7 +391,7 @@ class results
   			if (is_array($suiteStructure[$i])){
   				//print "array found <BR>";
   				$childSuite = $suiteStructure[$i];
-  				$summaryTreeForChild = $this->createMapOfLastResult($childSuite, &$suiteList);
+  				$summaryTreeForChild = $this->createMapOfLastResult($childSuite, $suiteList);
   			}
   			else {
   				//print "no array <BR>"; 				

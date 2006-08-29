@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsMoreBuilds_buildReport.php,v 1.21 2006/08/29 04:51:05 kevinlevy Exp $ 
+* $Id: resultsMoreBuilds_buildReport.php,v 1.22 2006/08/29 21:43:28 kevinlevy Exp $ 
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 * 
@@ -22,23 +22,6 @@ testlinkInitPage($db);
 
 $prodID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 $tpID = $_SESSION['testPlanId'];
-
-$tp = new testplan($db);
-$tree = new tree($db);
-$re = new results($db, $tp, $tree, $prodID);
-
-$suiteList = $re->getSuiteList();
-$flatArray = $re->getFlatArray();
-$mapOfSuiteSummary =  $re->getAggregateMap();
-$totals = $re->getTotalsForPlan();
-
-$arrKeywords = $tp->get_keywords_map($tpID); 
-$arrBuilds = $tp->get_builds($tpID); 
-$arrComponents = $re->getTopLevelSuites();
-
-$keyword = isset($_GET['keyword']) ? strings_stripSlashes($_GET['keyword']) : null;
-$owner = isset($_GET['owner']) ? strings_stripSlashes($_GET['owner']) : null;
-$lastStatus = isset($_GET['lastStatus']) ? strings_stripSlashes($_GET['lastStatus']) : null;
 
 $buildsSelected = array();
 $componentsSelected = array();
@@ -87,42 +70,25 @@ if (isset($_REQUEST['keyword']))
 }
 */
 
-/**
-print "component : "  ;
-print_r($componentsSelected);
-print "<BR>";
+$buildsToQuery = implode(",", $buildsSelected);
 
-print "build : " ;
-print_r($buildsSelected);
-print "<BR>";
+$tp = new testplan($db);
+$tree = new tree($db);
 
-print "keywords :   " ; 
-print_r($keyword);
-print "<BR>";
+$re = new results($db, $tp, $tree, $prodID, $buildsToQuery);
 
-print "owner :   " ; 
-print_r($owner);
-print "<BR>";
+$suiteList = $re->getSuiteList();
+$flatArray = $re->getFlatArray();
+$mapOfSuiteSummary =  $re->getAggregateMap();
+$totals = $re->getTotalsForPlan();
 
-print "lastStatus :   " ; 
-print_r($lastStatus);
-print "<BR>";
-**/
-/**
-print "keywords arr : ";
-print_r($arrKeywords);
-print "<BR>";
+$arrKeywords = $tp->get_keywords_map($tpID); 
+$arrBuilds = $tp->get_builds($tpID); 
+$arrComponents = $re->getTopLevelSuites();
 
-
-print "components arr : ";
-print_r($arrComponents);
-print "<BR>";
-
-
-print "builds arr : ";
-print_r($arrBuilds);
-print "<BR>";
-   **/
+$keyword = isset($_GET['keyword']) ? strings_stripSlashes($_GET['keyword']) : null;
+$owner = isset($_GET['owner']) ? strings_stripSlashes($_GET['owner']) : null;
+$lastStatus = isset($_GET['lastStatus']) ? strings_stripSlashes($_GET['lastStatus']) : null;
 
 $smarty = new TLSmarty();
 $smarty->assign('testplans', $testplansSelected);

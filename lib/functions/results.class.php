@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: results.class.php,v $
  *
- * @version $Revision: 1.8 $1.7
- * @modified $Date: 2006/08/29 21:32:23 $ by $Author: kevinlevy $
+ * @version $Revision: 1.8 
+ * @modified $Date: 2006/08/29 21:33:09 $ by $Author: kevinlevy $
  *
  *
  * This class is encapsulates most functionality necessary to query the database

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: resultsReqs.php,v $
- * @version $Revision: 1.5 $
- * @modified $Date: 2006/02/15 08:50:43 $ by $Author: franciscom $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2006/08/29 19:41:38 $ by $Author: schlundus $
  * @author Martin Havlat
  * 
  * Report requirement based results
@@ -14,42 +14,47 @@
  *
  * 
  */
-////////////////////////////////////////////////////////////////////////////////
-
 require_once("../../config.inc.php");
 require_once("common.php");
 require_once('requirements.inc.php');
 require_once('results.inc.php');
 
-// init page 
 testlinkInitPage($db);
 
 $idSRS = isset($_GET['idSRS']) ? strings_stripSlashes($_GET['idSRS']) : null;
 $prodID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+$tpID = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0;
 
 //get list of available Req Specification
 $arrReqSpec = getOptionReqSpec($db,$prodID);
 
 //set the first ReqSpec if not defined via $_GET
-if (!$idSRS && count($arrReqSpec)) {
+if (!$idSRS && count($arrReqSpec))
+{
 	reset($arrReqSpec);
 	$idSRS = key($arrReqSpec);
 	tLog('Set a first available SRS ID: ' . $idSRS);
 }
 
-// collect REQ data
-// 20060104 - fm - 
-// BUGID 0000311: Requirements based Report shows errors 
-//                when no SRS document is associated with Product
 $arrCoverage = null;
 $arrMetrics =  null;
-if( !is_null($idSRS))
+if(!is_null($idSRS))
 {
-	$arrCoverage = getReqCoverage_testPlan($db,$idSRS, $_SESSION['testPlanId']);
-	$arrMetrics = getReqMetrics_testPlan($db,$idSRS, $_SESSION['testPlanId']);
+	$tp = new testplan($db);
+	$tcs = $tp->get_linked_tcversions($tpID,null,0,1);
+	
+	$sql = "SELECT id,testcase_id,title,status FROM requirements LEFT OUTER JOIN req_coverage ON requirements.id = req_coverage.req_id WHERE status = 'v' AND srs_id = {$idSRS}"; 
+	$reqs = $db->fetchRowsIntoMap($sql,'id',1);
+	$execMap = getLastExecutions($db,$tcs,$tpID);
+	$arrMetrics = getReqMetrics_general($db,$idSRS);
+	$coveredReqs = 0;
+	$arrCoverage = getReqCoverage($reqs,$execMap,$coveredReqs);
+
+	$arrMetrics['coveredByTestPlan'] = sizeof($coveredReqs);
+	$arrMetrics['uncoveredByTestPlan'] = $arrMetrics['expectedTotal'] - $arrMetrics['coveredByTestPlan'] - $arrMetrics['notTestable'];
 }
 
-$smarty = new TLSmarty;
+$smarty = new TLSmarty();
 $smarty->assign('arrMetrics', $arrMetrics);
 $smarty->assign('arrCoverage', $arrCoverage);
 $smarty->assign('arrReqSpec', $arrReqSpec);

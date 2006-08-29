@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.46 $ $Author: schlundus $
- * @modified $Date: 2006/07/06 19:20:37 $
+ * @version $Revision: 1.47 $ $Author: schlundus $
+ * @modified $Date: 2006/08/29 19:41:37 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -240,6 +240,9 @@ function testlinkInitPage(&$db,$initProduct = FALSE, $bDontCheckSession = false)
 // 20060107 - fm
 function checkUserRights(&$db)
 {
+	//bypassed as long roles and rights aren't fully defined
+	return;
+	
 	// global $g_userRights;
 	$g_userRights = config_get('userRights');
 	

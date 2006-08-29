@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
  * @filesource $RCSfile: roles.inc.php,v $
- * @version $Revision: 1.14 $
- * @modified $Date: 2006/08/21 13:33:49 $ by $Author: franciscom $
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2006/08/29 19:41:37 $ by $Author: schlundus $
  * @author Martin Havlat, Chad Rosen
  * 
  * This script provides the get_rights and has_rights functions for
@@ -49,12 +49,13 @@ $g_rights_tp = array (	"testplan_execute" => lang_get('desc_testplan_execute'),
 						"testplan_create_build" => lang_get('desc_testplan_create_build'),
 						"testplan_metrics" => lang_get('desc_testplan_metrics'),
 						"testplan_planning" => lang_get('desc_testplan_planning'),
-						"testplan_assign_rights" => lang_get('desc_testplan_assign_rights'),
+						"user_role_assignment" => lang_get('desc_user_role_assignment'),
 					);
 
 					
 $g_rights_mgttc = array (	"mgt_view_tc" => lang_get('desc_mgt_view_tc'),
 							"mgt_modify_tc" => lang_get('desc_mgt_modify_tc'),
+							"mgt_testplan_create" => lang_get('mgt_testplan_create'),
 						);
 
 $g_rights_kw = array (	
@@ -70,15 +71,19 @@ $g_rights_req = array (
 $g_rights_product = array (	
 							"mgt_modify_product" => lang_get('desc_mgt_modify_product'),
 						);						
-$g_rights_users = array (	
+$g_rights_users_global = array (	
 							"mgt_users" => lang_get('desc_mgt_modify_users'),
-							"role_view" => lang_get('desc_role_view'),
 							"role_management" => lang_get('desc_role_management'),
+							); 
+						
+$g_rights_users = array_merge($g_rights_users_global,
+							array (	
 							"user_role_assignment" => lang_get('desc_user_role_assignment'),
-						);	
+						)	
+						);
 
 						
-$g_propRights_global = array_merge($g_rights_users,$g_rights_product);
+$g_propRights_global = array_merge($g_rights_users_global,$g_rights_product);
 $g_propRights_product = array_merge($g_propRights_global,$g_rights_mgttc,$g_rights_kw,$g_rights_req);
 						
 /**
@@ -535,7 +540,7 @@ function checkRole(&$db,$roleName,$rights,$id = null)
 * 20051231 - scs - added reloading the rights if the users role has changed
 *
 */
-function has_rights(&$db,$roleQuestion)
+function has_rights(&$db,$roleQuestion,$tprojectID = null,$tplanID = null)
 {
 	global $g_rights_product;
 	global $g_rights_users;
@@ -566,13 +571,22 @@ function has_rights(&$db,$roleQuestion)
 	$globalRights = isset($s_allRoles[$globalRoleID]['rights']) ? $s_allRoles[$globalRoleID]['rights'] : '';
 	$globalRights = explode(",",$globalRights);
 	
-	$testPlanID = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0;
+	if (!is_null($tplanID))
+		$testPlanID = $tplanID;
+	else
+		$testPlanID = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0;
 	$userTestPlanRoles = $_SESSION['testPlanRoles'];
 	
-	$productID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+	if (!is_null($tprojectID))
+		$productID = $tprojectID;
+	else
+		$productID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+		
 	$userProductRoles = $_SESSION['testprojectRoles'];
-
+	
 	$allRights = $globalRights;
+
+	/* if $productID == -1 we dont check rights at tp level! */
 	if (isset($userProductRoles[$productID]))
 	{
 		$productRoleID = $userProductRoles[$productID]['role_id'];
@@ -583,6 +597,7 @@ function has_rights(&$db,$roleQuestion)
 		$allRights = $productRights;
 	}
 
+	/* if $tplanID == -1 we dont check rights at tp level! */
 	if (isset($userTestPlanRoles[$testPlanID]))
 	{
 		$testPlanRoleID = $userTestPlanRoles[$testPlanID]['role_id'];

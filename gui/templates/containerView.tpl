@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: containerView.tpl,v 1.20 2006/08/23 06:19:07 franciscom Exp $ *}
+{* $Id: containerView.tpl,v 1.21 2006/08/29 19:41:36 schlundus Exp $ *}
 {* 
 Purpose: smarty template - view test specification containers 
 
@@ -13,7 +13,7 @@ Purpose: smarty template - view test specification containers
 <body>
 <div class="workBack">
 
-<h1>{$level|capitalize}: {$container_data.name|escape}</h1>
+<h1>{lang_get s=$level}: {$container_data.name|escape}</h1>
 
 {include file="inc_update.tpl" result=$sqlResult item=$level name=$moddedItem.name refresh='yes'}
 
@@ -80,6 +80,7 @@ Purpose: smarty template - view test specification containers
 		<div>
 		<form method="post" action="lib/testcases/tcEdit.php?containerID={$container_data.id}">
 			<input type="submit" id="create_tc" name="create_tc" value="{lang_get s='btn_new_tc'}" />  
+			<input type="button" onclick="location='tcimport.php?containerID={$container_data.id}'" value="{lang_get s='btn_import_tc'}" />  
 		</form>
 		</div>
 	{/if}

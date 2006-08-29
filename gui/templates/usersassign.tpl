@@ -1,8 +1,6 @@
 {* 
 Testlink: smarty template - 
-$Id: usersassign.tpl,v 1.4 2006/02/25 21:48:24 schlundus Exp $ 
-*}
-{* 
+$Id: usersassign.tpl,v 1.5 2006/08/29 19:41:37 schlundus Exp $ 
 *}
 {include file="inc_head.tpl" jsValidate="yes"}
 
@@ -14,17 +12,29 @@ $Id: usersassign.tpl,v 1.4 2006/02/25 21:48:24 schlundus Exp $
 
 {* tabs *}
 <div class="tabMenu">
+{if $mgt_users == "yes"}
 	<span class="unselected"><a href="lib/usermanagement/usersedit.php">{lang_get s='menu_new_user'}</a></span> 
 	<span class="unselected"><a href="lib/usermanagement/usersview.php">{lang_get s='menu_mod_user'}</a></span>
 	<br /><hr />
+{/if}
+{if $role_management == "yes"}
 	<span class="unselected"><a href="lib/usermanagement/rolesedit.php">{lang_get s='menu_define_roles'}</a></span> 
+{/if}
 	<span class="unselected"><a href="lib/usermanagement/rolesview.php">{lang_get s='menu_view_roles'}</a></span>
 	{if $feature == 'testproject'}
-		<span class="selected">{lang_get s='menu_assign_testproject_roles'}</span> 
-		<span class="unselected"><a href="lib/usermanagement/usersassign.php?feature=testplan">{lang_get s='menu_assign_testplan_roles'}</a></span>
+		{if $tp_user_role_assignment == "yes"}
+			<span class="selected">{lang_get s='menu_assign_testproject_roles'}</span> 
+		{/if}
+		{if $tproject_user_role_assignment == "yes"}
+			<span class="unselected"><a href="lib/usermanagement/usersassign.php?feature=testplan">{lang_get s='menu_assign_testplan_roles'}</a></span>
+		{/if}
 	{else}
-		<span class="unselected"><a href="lib/usermanagement/usersassign.php?feature=testproject">{lang_get s='menu_assign_testproject_roles'}</a></span>
-		<span class="selected">{lang_get s='menu_assign_testplan_roles'}</span> 
+		{if $tp_user_role_assignment == "yes"}
+			<span class="unselected"><a href="lib/usermanagement/usersassign.php?feature=testproject">{lang_get s='menu_assign_testproject_roles'}</a></span>
+		{/if}
+		{if $tproject_user_role_assignment == "yes"}
+			<span class="selected">{lang_get s='menu_assign_testplan_roles'}</span> 
+		{/if}
 	{/if}
 </div>
 

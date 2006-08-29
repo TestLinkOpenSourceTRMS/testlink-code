@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: usersedit.php,v $
 *
-* @version $Revision: 1.5 $
-* @modified $Date: 2006/05/17 11:11:11 $
+* @version $Revision: 1.6 $
+* @modified $Date: 2006/08/29 19:41:38 $
 * 
 * Allows editing a user
 *
@@ -28,7 +28,6 @@ $action = null;
 $update_title_bar = 0;
 $reload = 0;
 
-// 20060507 - franciscom
 $login_method = config_get('login_method');
 $external_password_mgmt = ('LDAP' == $login_method )? 1 : 0;
 
@@ -86,18 +85,17 @@ if ($user_id)
 }
 	
 $smarty = new TLSmarty();
-
-// 20060507 - franciscom
 $smarty->assign('external_password_mgmt', $external_password_mgmt);
-
+$smarty->assign('mgt_users',has_rights($db,"mgt_users"));
+$smarty->assign('role_management',has_rights($db,"role_management"));
+$smarty->assign('tp_user_role_assignment', has_rights($db,"mgt_users") ? "yes" : has_rights($db,"user_role_assignment"));
+$smarty->assign('tproject_user_role_assignment', has_rights($db,"mgt_users") ? "yes" : has_rights($db,"user_role_assignment",null,-1));
 $smarty->assign('optRights', getAllRoles($db));
 $smarty->assign('userData', $userResult);
 $smarty->assign('result',$sqlResult);
 $smarty->assign('action',$action);
 $smarty->display('usersedit.tpl');
 
-
-// 20060107 - fm
 function init_args($get_hash, $post_hash, $do_post_strip = TRUE)
 {
 	if($do_post_strip)

@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: containerEdit.tpl,v 1.11 2006/08/07 09:42:33 franciscom Exp $
+$Id: containerEdit.tpl,v 1.12 2006/08/29 19:41:36 schlundus Exp $
 Purpose: smarty template - edit test specification: containers 
 
 20060805 - franciscom - changes to add option transfer
@@ -21,7 +21,7 @@ var {$opt_cfg->js_ot_name} = new OptionTransfer("{$opt_cfg->from->name}","{$opt_
 <body onLoad="{$opt_cfg->js_ot_name}.init(document.forms[0])">
 <div class="workBack">
 
-<h1>{lang_get s='title_edit_level'} {$level}</h1> 
+<h1>{lang_get s='title_edit_level'} {lang_get s=$level}</h1> 
 {if $level == 'testsuite'}
 	<form method="post" action="lib/testcases/containerEdit.php?testsuiteID={$containerID}" /> 
 		<div style="float: right;">

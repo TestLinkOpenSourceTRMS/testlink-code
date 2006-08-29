@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: usersassign.php,v $
 *
-* @version $Revision: 1.7 $
-* @modified $Date: 2006/08/17 19:30:00 $
+* @version $Revision: 1.8 $
+* @modified $Date: 2006/08/29 19:41:38 $
 * 
 * Allows assigning users roles to testplans or testprojects
 *
@@ -102,7 +102,19 @@ if ($bTestproject)
 }
 else if($bTestPlan)
 {
-	$features = getAllActiveTestPlans($db,$testprojectID,$_SESSION['filter_tp_by_product']);
+	$activeFeatures = getAllActiveTestPlans($db,$testprojectID,$_SESSION['filter_tp_by_product']);
+	$features = array();
+	if (has_rights($db,"mgt_users"))
+		$features = $activeFeatures;
+	else if (sizeof($activeFeatures))
+	{
+		for($i = 0;$i < sizeof($activeFeatures);$i++)
+		{
+			$f = $activeFeatures[$i];
+			if (has_rights($db,"testplan_planning",null,$f['id']))
+				$features[] = $f;
+		}
+	}
 	//if nothing special was selected, use the one in the session or the first
 	if (!$featureID)
 	{
@@ -116,6 +128,10 @@ else if($bTestPlan)
 $roleList = getAllRoles($db);
 
 $smarty = new TLSmarty();
+$smarty->assign('mgt_users',has_rights($db,"mgt_users"));
+$smarty->assign('role_management',has_rights($db,"role_management"));
+$smarty->assign('tp_user_role_assignment', has_rights($db,"mgt_users") ? "yes" : has_rights($db,"user_role_assignment"));
+$smarty->assign('tproject_user_role_assignment', has_rights($db,"mgt_users") ? "yes" : has_rights($db,"user_role_assignment",null,-1));
 $smarty->assign('optRights', $roleList);
 $smarty->assign('userData', $userData);
 $smarty->assign('userFeatureRoles',$userFeatureRoles);

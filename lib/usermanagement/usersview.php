@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: usersview.php,v $
  *
- * @version $Revision: 1.3 $
- * @modified $Date: 2006/02/25 21:48:27 $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2006/08/29 19:41:38 $
  *
  * This page shows all users
  *
@@ -46,6 +46,10 @@ $roles = getAllRoles($db);
 
 $smarty = new TLSmarty();
 $smarty->assign('optRoles',$roles);
+$smarty->assign('mgt_users',has_rights($db,"mgt_users"));
+$smarty->assign('role_management',has_rights($db,"role_management"));
+$smarty->assign('tp_user_role_assignment', has_rights($db,"mgt_users") ? "yes" : has_rights($db,"user_role_assignment"));
+$smarty->assign('tproject_user_role_assignment', has_rights($db,"mgt_users") ? "yes" : has_rights($db,"user_role_assignment",null,-1));
 $smarty->assign('update_title_bar',$update_title_bar);
 $smarty->assign('reload',$reload);
 $smarty->assign('users',$users);

@@ -1,5 +1,5 @@
 {* smarty template - view all keywords of product; ver. 1.0 *}
-{* $Id: rolesedit.tpl,v 1.3 2006/04/07 20:15:25 schlundus Exp $ *}
+{* $Id: rolesedit.tpl,v 1.4 2006/08/29 19:41:36 schlundus Exp $ *}
 {* Purpose: smarty template - View all roless *}
 {include file="inc_head.tpl"}
 
@@ -16,13 +16,21 @@ var warning_modify_role = "{lang_get s='warning_modify_role'}";
 <h1>{lang_get s='title_roles'}</h1>
 
 <div class="tabMenu">
+{if $mgt_users == "yes"}
 	<span class="unselected"><a href="lib/usermanagement/usersedit.php">{lang_get s='menu_new_user'}</a></span> 
 	<span class="unselected"><a href="lib/usermanagement/usersview.php">{lang_get s='menu_mod_user'}</a></span>
 	<br /><hr />
+{/if}
+{if $role_management == "yes"}
 	<span class="selected">{lang_get s='menu_define_roles'}</span> 
+{/if}
 	<span class="unselected"><a href="lib/usermanagement/rolesview.php">{lang_get s='menu_view_roles'}</a></span>
+{if $tp_user_role_assignment == "yes"}
 	<span class="unselected"><a href="lib/usermanagement/usersassign.php?feature=testproject">{lang_get s='menu_assign_product_roles'}</a></span> 
+{/if}
+{if $tproject_user_role_assignment == "yes"}
 	<span class="unselected"><a href="lib/usermanagement/usersassign.php?feature=testplan">{lang_get s='menu_assign_testplan_roles'}</a></span>
+{/if}
 </div>
 
 {* show SQL result *}
@@ -31,7 +39,12 @@ var warning_modify_role = "{lang_get s='warning_modify_role'}";
 {* Create Form *}
 <div class="workBack">
 
-	<form name="addKey" method="post" action="lib/usermanagement/rolesedit.php">
+	<form name="addKey" 
+		method="post" action="lib/usermanagement/rolesedit.php"
+	{if $role_management != "yes"}
+		onsubmit="return false" 
+	{/if}
+	>
 	<input type="hidden" name="id" value="{$role.id}" />
 	<table class="common">
 		<caption>{lang_get s='caption_define_role'}</caption>
@@ -102,15 +115,17 @@ var warning_modify_role = "{lang_get s='warning_modify_role'}";
 		</tr>
 
 	</table>
-	<div class="groupBtn">	
-	{if $role == 0}
-		<input type="submit" name="newRole" value="{lang_get s='btn_create_role'}" />
-	{else}
-		<input type="submit" name="editRole" value="{lang_get s='btn_edit_role'}" 
-		{if $affectedUsers neq null}
-			onClick="return modifyRoles_warning()"
+	{if $role_management == "yes"}
+		<div class="groupBtn">	
+		{if $role == 0}
+			<input type="submit" name="newRole" value="{lang_get s='btn_create_role'}" />
+		{else}
+			<input type="submit" name="editRole" value="{lang_get s='btn_edit_role'}" 
+			{if $affectedUsers neq null}
+				onClick="return modifyRoles_warning()"
+			{/if}
+			/>
 		{/if}
-		/>
 	{/if}
 	</div>
 	<br />

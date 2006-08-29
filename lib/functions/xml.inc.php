@@ -1,10 +1,11 @@
 <?php
-function exportDataToXML($items,$rootTpl,$elemTpl,$elemInfo)
+function exportDataToXML($items,$rootTpl,$elemTpl,$elemInfo,$bNoXMLHeader = false)
 {
 	$xmlCode = '';
-	for($i = 0;$i < sizeof($items);$i++)
+	reset($items);
+	while($item = each($items))
 	{
-		$item = $items[$i];
+		$item = $item[1];
 		$xmlElemCode = $elemTpl;
 		foreach($elemInfo as $subject => $replacement)
 		{
@@ -23,8 +24,13 @@ function exportDataToXML($items,$rootTpl,$elemTpl,$elemInfo)
 		}
 		$xmlCode .= $xmlElemCode;
 	}
-	$xmlCode = TL_XMLEXPORT_HEADER."\n".str_replace("{{XMLCODE}}",$xmlCode,$rootTpl);
-	return $xmlCode;
+	reset($items);
+	
+	$result = null;
+	if (!$bNoXMLHeader)
+		$result .= TL_XMLEXPORT_HEADER."\n";
+	$result .= str_replace("{{XMLCODE}}",$xmlCode,$rootTpl);
+	return $result;
 }
 function getNodeContent(&$node,$tag)
 {

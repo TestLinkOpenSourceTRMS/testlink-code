@@ -1,6 +1,6 @@
 {* 
 Testlink: smarty template - 
-$Id: usersedit.tpl,v 1.4 2006/05/17 11:00:25 franciscom Exp $ 
+$Id: usersedit.tpl,v 1.5 2006/08/29 19:41:37 schlundus Exp $ 
 *}
 {* 
 20060425 - franciscom - better management of default locale 
@@ -15,13 +15,21 @@ $Id: usersedit.tpl,v 1.4 2006/05/17 11:00:25 franciscom Exp $
 
 {***** TABS *****}
 <div class="tabMenu">
+{if $mgt_users == "yes"}
 	<span class="selected">{lang_get s='menu_new_user'}</span> 
 	<span class="unselected"><a href="lib/usermanagement/usersview.php">{lang_get s='menu_mod_user'}</a></span>
 	<br /><hr />
+{/if}
+{if $role_management == "yes"}
 	<span class="unselected"><a href="lib/usermanagement/rolesedit.php">{lang_get s='menu_define_roles'}</a></span> 
+{/if}	
 	<span class="unselected"><a href="lib/usermanagement/rolesview.php">{lang_get s='menu_view_roles'}</a></span> 
+{if $tp_user_role_assignment == "yes"}
 	<span class="unselected"><a href="lib/usermanagement/usersassign.php?feature=testproject">{lang_get s='menu_assign_product_roles'}</a></span> 
+{/if}	
+{if $tproject_user_role_assignment == "yes"}
 	<span class="unselected"><a href="lib/usermanagement/usersassign.php?feature=testplan">{lang_get s='menu_assign_testplan_roles'}</a></span>
+{/if}
 </div>
 
 {include file="inc_update.tpl" result=$result item="user" action="$action"}

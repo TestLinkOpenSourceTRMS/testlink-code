@@ -1,5 +1,5 @@
 {* Testlink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: usersview.tpl,v 1.4 2006/05/03 06:48:02 franciscom Exp $ *}
+{* $Id: usersview.tpl,v 1.5 2006/08/29 19:41:37 schlundus Exp $ *}
 {* 
 Purpose: smarty template - users overview
 
@@ -22,13 +22,21 @@ var warning_delete_user = "{lang_get s='warning_delete_user'}";
 
 {***** TABS *****}
 <div class="tabMenu">
+{if $mgt_users == "yes"}
 	<span class="unselected"><a href="lib/usermanagement/usersedit.php">{lang_get s='menu_new_user'}</a></span> 
 	<span class="selected">{lang_get s='menu_mod_user'}</span>
 	<br /><hr />
+{/if}
+{if $role_management == "yes"}
 	<span class="unselected"><a href="lib/usermanagement/rolesedit.php">{lang_get s='menu_define_roles'}</a></span> 
+{/if}
 	<span class="unselected"><a href="lib/usermanagement/rolesview.php">{lang_get s='menu_view_roles'}</a></span> 
+{if $tp_user_role_assignment == "yes"}
 	<span class="unselected"><a href="lib/usermanagement/usersassign.php?feature=testproject">{lang_get s='menu_assign_product_roles'}</a></span> 
+{/if}	
+{if $tproject_user_role_assignment == "yes"}
 	<span class="unselected"><a href="lib/usermanagement/usersassign.php?feature=testplan">{lang_get s='menu_assign_testplan_roles'}</a></span>
+{/if}
 </div>
 
 {include file="inc_update.tpl" result=$result item="user" action="$action"}

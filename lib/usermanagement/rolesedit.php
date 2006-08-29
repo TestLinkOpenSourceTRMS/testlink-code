@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: rolesedit.php,v $
  *
- * @version $Revision: 1.3 $
- * @modified $Date: 2006/04/07 20:15:31 $ by $Author: schlundus $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2006/08/29 19:41:38 $ by $Author: schlundus $
  *
 **/
 require_once("../../config.inc.php");
@@ -28,7 +28,7 @@ $roleRights = null;
 $sqlResult = null;
 $action = null;
 
-if ($postBack)
+if ($postBack && has_rights($db,"role_management"))
 {
 	$roleName = isset($_POST['rolename']) ? $_POST['rolename'] : null;
 	$id = isset($_POST['id']) ? $_POST['id'] : 0;
@@ -91,6 +91,10 @@ if (sizeof($roles) && $id)
 
 $smarty = new TLSmarty();
 $smarty->assign('role',$role);
+$smarty->assign('role_management',has_rights($db,"role_management"));
+$smarty->assign('mgt_users',has_rights($db,"mgt_users"));
+$smarty->assign('tp_user_role_assignment', has_rights($db,"mgt_users") ? "yes" : has_rights($db,"user_role_assignment"));
+$smarty->assign('tproject_user_role_assignment', has_rights($db,"mgt_users") ? "yes" : has_rights($db,"user_role_assignment",null,-1));
 $smarty->assign('tpRights',$g_rights_tp);
 $smarty->assign('tcRights',$g_rights_mgttc);
 $smarty->assign('kwRights',$g_rights_kw);

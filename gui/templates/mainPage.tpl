@@ -1,6 +1,6 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: mainPage.tpl,v 1.18 2006/08/21 13:19:38 franciscom Exp $     
+ $Id: mainPage.tpl,v 1.19 2006/08/29 19:41:36 schlundus Exp $     
  Purpose: smarty template - main page / site map                 
                                                                  
  rev :                                                   
@@ -91,30 +91,29 @@
 		{/if} {* testplan_planning *}
 	{/if}
 
-	{if $testplan_planning == "yes"}
+	{if $testplan_planning == "yes" or $testplan_creating == "yes"}
     <h2>{lang_get s='title_test_plan_mgmt'}</h2>
-	<p>
-		<img alt="arrow" class="arrow" src="icons/arrow_org.gif" />
-   		<a href="lib/plan/planNew.php">{lang_get s='href_plan_new'}</a><br />
-   		
+		<p>
+		{if $testplan_creating == "yes"}
+			<img alt="arrow" class="arrow" src="icons/arrow_org.gif" />
+	   		<a href="lib/plan/planNew.php">{lang_get s='href_plan_new'}</a><br />
+		{/if}
 			<img alt="arrow" class="arrow" src="icons/arrow_org.gif" />
 	   		<a href="lib/plan/planEdit.php">{lang_get s='href_plan_edit'}</a>
 		{if $countPlans > 0}
 	        <br />
-			<!--
-			<img class="arrow" src="icons/arrow_org.gif" />
-	   		<a href="{$launcher}?feature=planAssignTesters">{lang_get s='href_plan_assign_users'}</a>
-			<br /><br />
-			-->
-			<img alt="arrow" class="arrow" src="icons/arrow_org.gif" />
-    	    <a href="lib/usermanagement/usersassign.php?feature=testplan&amp;featureID={$sessionTestPlanID}">{lang_get s='href_assign_user_roles'}</a>
-			<br /><br />
-	
 			<img alt="arrow" class="arrow" src="icons/arrow_org.gif" />
 	       	<a href="lib/plan/planMilestones.php">{lang_get s='href_plan_mstones'}</a>
    		{/if}
-    </p>
-	{/if} {* testplan_planning *}
+	    </p>
+	{/if}
+	{if $tp_user_role_assignment == "yes" && $countPlans > 0}
+	<p>
+			<img alt="arrow" class="arrow" src="icons/arrow_org.gif" />
+    	    <a href="lib/usermanagement/usersassign.php?feature=testplan&amp;featureID={$sessionTestPlanID}">{lang_get s='href_assign_user_roles'}</a>
+			<br />
+	</p>
+	{/if}
 	{if $testplan_create_build == "yes" and $countPlans > 0}
 	<p>
 		<img alt="arrow" class="arrow" src="icons/arrow_org.gif" />
@@ -192,16 +191,17 @@
         <h2>{lang_get s='title_product_mgmt'}</h2>
 		<p>
 		<img alt="arrow" class="arrow" src="icons/arrow_org.gif" />
-		    {* 20060305 - franciscom *}
         <a href="lib/project/projectedit.php?show_create_screen">{lang_get s='href_create_product'}</a>
         <br />
 		<img alt="arrow" class="arrow" src="icons/arrow_org.gif" />
         <a href="lib/project/projectedit.php">{lang_get s='href_edit_product'}</a>
+	{/if} {* modify_product_rights *}
+	{if $tproject_user_role_assignment == "yes"}
         <br />
 		<img alt="arrow" class="arrow" src="icons/arrow_org.gif" />
         <a href="lib/usermanagement/usersassign.php?feature=testproject&amp;featureID={$sessionProductID}">{lang_get s='href_assign_user_roles'}</a>
-        </p>
-	{/if} {* modify_product_rights *}
+	{/if}
+     </p>
 	
 	{*       user management                             *}
 	

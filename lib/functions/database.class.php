@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
  * @filesource $RCSfile: database.class.php,v $
- * @version $Revision: 1.16 $
- * @modified $Date: 2006/08/17 19:29:59 $ by $Author: schlundus $
+ * @version $Revision: 1.17 $
+ * @modified $Date: 2006/08/29 19:41:37 $ by $Author: schlundus $
  * @author Francisco Mancardi
  * 
  *
@@ -448,7 +448,7 @@ class database
 	 * @return array an assoc array whose keys are the values from the columns
 	 * 				 of the rows
 	 **/
-	function fetchRowsIntoMap($query,$column)
+	function fetchRowsIntoMap($query,$column,$bCumulative = 0)
 	{
 		$items = null;
 		$result = $this->exec_query($query);
@@ -456,7 +456,10 @@ class database
 		{
 			while($row = $this->fetch_array($result))
 			{
-				$items[$row[$column]] = $row;
+				if ($bCumulative)
+					$items[$row[$column]][] = $row;
+				else
+					$items[$row[$column]] = $row;
 			}
 		}
 		

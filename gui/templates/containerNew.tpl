@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: containerNew.tpl,v 1.8 2006/08/07 09:42:33 franciscom Exp $
+$Id: containerNew.tpl,v 1.9 2006/08/29 19:41:36 schlundus Exp $
 Purpose: smarty template - create containers
 
 20060804 - franciscom - changes to add option transfer
@@ -20,7 +20,7 @@ var {$opt_cfg->js_ot_name} = new OptionTransfer("{$opt_cfg->from->name}","{$opt_
 
 <body onLoad="{$opt_cfg->js_ot_name}.init(document.forms[0])">
 <div class="workBack">
-<h1>{lang_get s='title_create'}  {$level|escape}</h1>
+<h1>{lang_get s='title_create'}  {lang_get s=$level}</h1>
 	
 {include file="inc_update.tpl" result=$sqlResult 
                                item=$level action="add" name=$name

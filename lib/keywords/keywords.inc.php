@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: keywords.inc.php,v $
 * 
-* @version $Id: keywords.inc.php,v 1.24 2006/06/30 18:41:25 schlundus Exp $
-* @modified $Date: 2006/06/30 18:41:25 $ by $Author: schlundus $
+* @version $Id: keywords.inc.php,v 1.25 2006/08/29 19:41:38 schlundus Exp $
+* @modified $Date: 2006/08/29 19:41:38 $ by $Author: schlundus $
 *
 * Functions for support keywords management. 
 *
@@ -307,7 +307,7 @@ function exportKeywordDataToCSV($keywords)
  *
  * @author Andreas Morsing <schlundus@web.de>
  **/
-function exportKeywordDataToXML($keywords)
+function exportKeywordDataToXML($keywords,$bNoHeader = false)
 {
 	$keywordRootElem = "<keywords>{{XMLCODE}}</keywords>";
 	$keywordElemTpl = "\t".'<keyword name="{{NAME}}"><notes><![CDATA['."\n||NOTES||\n]]>".'</notes></keyword>'."\n";
@@ -315,7 +315,7 @@ function exportKeywordDataToXML($keywords)
 							"{{NAME}}" => "keyword",
 							"||NOTES||" => "notes",
 						);
-	return exportDataToXML($keywords,$keywordRootElem,$keywordElemTpl,$keywordInfo);
+	return exportDataToXML($keywords,$keywordRootElem,$keywordElemTpl,$keywordInfo,$bNoHeader);
 }
 
 /**

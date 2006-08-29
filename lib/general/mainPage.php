@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: mainPage.php,v $
  *
- * @version $Revision: 1.19 $ $Author: schlundus $
- * @modified $Date: 2006/03/10 22:35:59 $
+ * @version $Revision: 1.20 $ $Author: schlundus $
+ * @modified $Date: 2006/08/29 19:41:38 $
  *
  * @author Martin Havlat
  * 
@@ -106,7 +106,6 @@ if ($testPlanID && isset($_SESSION['testPlanRoles'][$testPlanID]))
 	$testPlanRole = ROLE_SEP_START . $roles[$idx] . ROLE_SEP_END;
 }
 
-//20050826 - scs - added displaying of security notes
 $securityNotes = getSecurityNotes($db);
 
 $smarty->assign('securityNotes',$securityNotes);
@@ -124,11 +123,12 @@ $smarty->assign('testplan_metrics', has_rights($db,"testplan_metrics"));
 
 //can the user manage Test Plan
 $smarty->assign('testplan_planning', has_rights($db,"testplan_planning"));
+$smarty->assign('testplan_creating', has_rights($db,"mgt_testplan_create"));
+$smarty->assign('tp_user_role_assignment', has_rights($db,"user_role_assignment"));
+$smarty->assign('tproject_user_role_assignment', has_rights($db,"user_role_assignment",null,-1));
 $smarty->assign('launcher','lib/general/frmWorkArea.php');
 
-$smarty->assign('show_filter_tp_by_product',
-                $g_ui_show_check_filter_tp_by_testproject);
-
+$smarty->assign('show_filter_tp_by_product',$g_ui_show_check_filter_tp_by_testproject);
 $smarty->assign('usermanagement_rights',has_rights($db,"mgt_users"));
 
 $smarty->assign('sessionProductID',$testprojectID);	

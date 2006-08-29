@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: requirements.inc.php,v $
- * @version $Revision: 1.34 $
- * @modified $Date: 2006/07/15 19:55:30 $ by $Author: schlundus $
+ * @version $Revision: 1.35 $
+ * @modified $Date: 2006/08/29 19:41:37 $ by $Author: schlundus $
  *
  * @author Martin Havlat <havlat@users.sourceforge.net>
  * 
@@ -43,8 +43,6 @@ $g_reqFormatStrings = array (
 							"XML" => lang_get('the_format_req_xml_import')
 							); 		
 
-
-// 20060425 - franciscom
 require_once(dirname(__FILE__) . "/print.inc.php");
 require_once(dirname(__FILE__) . "/../testcases/archive.inc.php");
 
@@ -85,13 +83,14 @@ function updateReqSpec(&$db,$id, $title, $scope, $countReq, $user_id, $type = 'n
  * 
  * @author Martin Havlat 
  **/
-function deleteReqSpec (&$db,$srs_id)
+function deleteReqSpec(&$db,$srs_id)
 {
 	// delete requirements and coverage
 	$arrReq = getRequirements($db,$srs_id);
 	if (sizeof($arrReq))
 	{
-		foreach ($arrReq as $oneReq) {
+		foreach ($arrReq as $oneReq)
+		{
 			$result = deleteRequirement($db,$oneReq['id']);
 		}
 	}
@@ -99,9 +98,12 @@ function deleteReqSpec (&$db,$srs_id)
 	// delete specification itself
 	$sql = "DELETE FROM req_specs WHERE id=" . $srs_id;
 	$result = $db->exec_query($sql); 
-	if ($result) {
+	if($result)
+	{
 		$result = 'ok';
-	} else {
+	}
+	else
+	{
 		$result = 'The DELETE SRS request fails.';
 		tLog('SQL: ' . $sql . ' fails: ' . $db->error_msg(), 'ERROR');
 	}
@@ -199,7 +201,11 @@ function array_diff_byId ($arrAll, $arrPart)
  */
 function getReqCoverage_general(&$db,$srs_id)
 {
-	$output = array('covered' => array(), 'uncovered' => array(), 'nottestable' => array());
+	$output = array(
+					'covered' => array(), 
+					'uncovered' => array(), 
+					'nottestable' => array()
+					);
 	
 	// get requirements
 	$sql_common = "SELECT id,title FROM requirements WHERE srs_id=" . $srs_id;
@@ -254,7 +260,8 @@ function getReqMetrics_general(&$db,$srs_id)
 	$output['expectedTotal'] = $db->fetchFirstRowSingleColumn($sql,'total_req');
 	tLog(' Redefined Count of total REQ in DB for srs_id:'.$srs_id.' = '.$output['total']);
 	
-	if ($output['expectedTotal'] == 0) {
+	if ($output['expectedTotal'] == 0)
+	{
 		$output['expectedTotal'] = $output['total'];
 	}
 	
@@ -262,12 +269,12 @@ function getReqMetrics_general(&$db,$srs_id)
 				" requirements.srs_id=" . $srs_id .
 				" AND requirements.id=req_coverage.req_id";
 	$result = $db->exec_query($sql);
-	if (!empty($result)) {
+	if (!empty($result))
+	{
 		$output['covered'] = $db->num_rows($result);
 	}
 
-	$output['uncovered'] = $output['expectedTotal'] - $output['covered'] 
-			- $output['notTestable'];
+	$output['uncovered'] = $output['expectedTotal'] - $output['covered'] - $output['notTestable'];
 
 	return $output;
 }
@@ -280,11 +287,10 @@ function getReqMetrics_general(&$db,$srs_id)
  * @return array Results
  * @author havlatm
  */
-function getReqMetrics_testPlan(&$db,$srs_id, $idTestPlan)
+function DEPR_getReqMetrics_testPlan(&$db,$srs_id, $idTestPlan)
 {
 	$output = getReqMetrics_general($db,$srs_id);
 	$output['coveredByTestPlan'] = 0;
-	
 	$sql = "SELECT DISTINCT requirements.id FROM requirements,testcase," .
 			"req_coverage,category,component WHERE requirements.srs_id=" . $srs_id .
 				" AND component.projid=" . $idTestPlan .
@@ -1040,5 +1046,72 @@ function exportReqDataToCSV($reqData)
 				   );
 	return exportDataToCSV($reqData,$sKeys,$sKeys,0,',');
 }
+function getReqCoverage($reqs,$execMap,$coveredReqs)
+{
+	$arrCoverage = array(
+						"passed" => array(),
+						"failed" => array(),
+						"blocked" => array(),
+						"not_run" => array(),
+					);
+	$coveredReqs = null;
+	foreach($reqs as $id => $tc)
+	{
+		$n = sizeof($tc);
+		$nPassed = 0;
+		$nBlocked = 0;
+		$nFailed = 0;
+		$req = array("id" => $id,
+					 "title" => "",
+					 );
+		if (sizeof($tc))
+			$coveredReqs[$id] = 1;
+		for($i = 0;$i < sizeof($tc);$i++)
+		{
+			$tcInfo = $tc[0];	
+			if (!$i)
+				$req['title'] = $tcInfo['title'];
+			$execTc = $tcInfo['testcase_id'];
+			
+			$exec = 'n';
+			if (isset($execMap[$execTc]) && sizeof($execMap[$execTc]))
+			{
+				$execInfo = array_pop($execMap[$execTc]);
+				$exec = isset($execInfo['status']) ? $execInfo['status'] : 'n';
+			}
+			if ($exec == 'p')
+				$nPassed++;		
+			else if ($exec == 'b')
+				$nBlocked++;		
+			else if ($exec == 'f')
+				$nFailed++;					
+		}
+		if ($nFailed)
+			$arrCoverage['failed'][] = $req;			
+		else if ($nBlocked)
+			$arrCoverage['blocked'][] = $req;			
+		else if (!$nPassed)
+			$arrCoverage['not_run'][] = $req;
+		else if ($nPassed == $n)
+			$arrCoverage['passed'][] = $req;
+		else 
+			$arrCoverage['failed'][] = $req;
+	}
+	return $arrCoverage;
+}
 
+function getLastExecutions(&$db,$tcs,$tpID)
+{	
+	$execMap = array();
+	if (sizeof($tcs))
+	{
+		$tcase_mgr = new testcase($db);
+		foreach($tcs as $tcID => $tcInfo)
+		{
+			$tcversion_id = $tcInfo['tcversion_id'];
+		    $execMap[$tcID] = $tcase_mgr->get_last_execution($tcID,$tcversion_id,$tpID,ANY_BUILD,GET_NO_EXEC);
+		}
+	}
+	return $execMap;
+}
 ?>

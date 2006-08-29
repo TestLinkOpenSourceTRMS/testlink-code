@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.26 $
- * @modified $Date: 2006/08/17 19:29:59 $ $Author: schlundus $
+ * @version $Revision: 1.27 $
+ * @modified $Date: 2006/08/29 19:41:37 $ $Author: schlundus $
  * @author franciscom
  *
  * 20060726 - franciscom - create_tcversion() return array changed
@@ -18,6 +18,14 @@
  */
 require_once( dirname(__FILE__) . '/requirements.inc.php' );
 
+$g_tcImportTypes = array( 
+							 "XML" => "XML",
+							 );
+
+$g_tcFormatStrings = array (
+							"XML" => lang_get('the_format_keyword_xml_import')
+							); 
+							
 define("TC_ALL_VERSIONS",0);
 
 class testcase
@@ -751,7 +759,7 @@ function get_versions_status_quo($id, $tcversion_id=null)
 // -------------------------------------------------------------------------------
 function getKeywords($tcID,$kwID = null)
 {
-	$sql = "SELECT keyword_id,keywords.keyword 
+	$sql = "SELECT keyword_id,keywords.keyword,keywords.notes 
 	        FROM testcase_keywords,keywords 
 	        WHERE keyword_id = keywords.id AND testcase_id = {$tcID}";
 	if (!is_null($kwID))
@@ -1048,6 +1056,37 @@ function get_last_execution($id,$version_id,$tplan_id,$build_id,$get_no_executio
 }
 
 
+
+function exportTestCaseDataToXML($tcase_id,$tcversion_id)
+{
+	$keywords = $this->getKeywords($tcase_id);
+	$tc_data = $this->get_by_id($tcase_id,$tcversion_id);
+	
+	$xmlKW = null;
+	if ($keywords);
+	{
+		$xmlKW = exportKeywordDataToXML($keywords,true);
+		$tc_data[0]['xmlkeywords'] = $xmlKW;
+	}
+	
+	$rootElem = "<testcases>{{XMLCODE}}</testcases>";
+	$elemTpl = "\t".'<testcase name="{{NAME}}">'.	
+						'<summary><![CDATA['."\n||SUMMARY||\n]]>".'</summary>'.
+						'<steps><![CDATA['."\n||STEPS||\n]]>".'</steps>'.
+						'<expectedresults><![CDATA['."\n||RESULTS||\n]]>".'</expectedresults>'.
+						'||KEYWORDS||</testcase>'."\n";
+	$info = array (
+							"{{NAME}}" => "name",
+							"||SUMMARY||" => "summary",
+							"||STEPS||" => "steps",
+							"||RESULTS||" => "expected_results",
+							"||KEYWORDS||" => "xmlkeywords",
+						);
+						
+	$xmlTC = exportDataToXML($tc_data,$rootElem,$elemTpl,$info);
+	
+	return $xmlTC;
+}
 
 
 } // end class

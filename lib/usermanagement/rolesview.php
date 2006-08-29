@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: rolesview.php,v $
  *
- * @version $Revision: 1.4 $
- * @modified $Date: 2006/02/25 21:48:27 $ by $Author: schlundus $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2006/08/29 19:41:38 $ by $Author: schlundus $
  *
  * 20060224 - franciscom - changes in session product -> testproject
 **/
@@ -59,6 +59,10 @@ if ($bDelete && $id)
 }
 
 $smarty = new TLSmarty();
+$smarty->assign('mgt_users',has_rights($db,"mgt_users"));
+$smarty->assign('role_management',has_rights($db,"role_management"));
+$smarty->assign('tp_user_role_assignment', has_rights($db,"mgt_users") ? "yes" : has_rights($db,"user_role_assignment"));
+$smarty->assign('tproject_user_role_assignment', has_rights($db,"mgt_users") ? "yes" : has_rights($db,"user_role_assignment",null,-1));
 $smarty->assign('roles',$roles);
 $smarty->assign('id',$id);
 $smarty->assign('sqlResult',$sqlResult);

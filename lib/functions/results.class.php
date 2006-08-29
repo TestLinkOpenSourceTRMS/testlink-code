@@ -61,13 +61,13 @@ class results
   // (total cases in plan, total pass, total fail, total blocked, total not run)
   var $totalsForPlan = null;
  
-  function results(&$db, &$tp, &$tree, $prodID)
+  function results(&$db, &$tp, &$tree, $prodID, $builds_to_query = -1)
   {
    	$this->db = &$db;	
     $this->tp = &$tp;    
     $this->tree = &$tree;
   	$this->prodID = $prodID;  	
-    $this->suiteList = $this->buildSuiteList();    
+    $this->suiteList = $this->buildSuiteList($builds_to_query);    
     $this->suiteStructure = $this->buildSuiteStructure($this->prodID);    
     $this->createMapOfLastResult(&$this->suiteStructure, &$this->suiteList);
     $this->createMapOfSuiteSummary(&$this->mapOfLastResult);
@@ -383,7 +383,7 @@ class results
   }
 	
   // build map of suite ids to  
-  function buildSuiteList(){
+  function buildSuiteList($builds_to_query){
     // first make sure we initialize the suiteList
     // otherwise duplicate executions will be added to suites
     $suiteList = null;
@@ -426,7 +426,7 @@ class results
 		// over multiple test plans - by modifying this select statement slightly
 		// to include multiple test plan ids
 
-		$execQuery = $this->db->fetchArrayRowsIntoMap("select * from executions where tcversion_id = $executed AND testplan_id = $_SESSION[testPlanId]", 'id');
+		$execQuery = $this->db->fetchArrayRowsIntoMap("select * from executions where tcversion_id = $executed AND testplan_id = $_SESSION[testPlanId] AND build_id IN ($builds_to_query) ", 'id');
 	    while($executions_id = key($execQuery)){
 	    	//print "in the loop <BR>";
 	  		$notSureA = $execQuery[$executions_id];

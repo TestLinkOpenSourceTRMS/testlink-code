@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: resultsMoreBuilds_query_form.tpl,v 1.29 2006/08/06 05:52:39 kevinlevy Exp $
+$Id: resultsMoreBuilds_query_form.tpl,v 1.30 2006/08/29 04:51:05 kevinlevy Exp $
 @author Francisco Mancardi - fm - start solving BUGID 97/98
 20051022 - scs - removed ' in component id values
 20051121 - scs - added escaping of tpname
@@ -16,6 +16,22 @@ $Id: resultsMoreBuilds_query_form.tpl,v 1.29 2006/08/06 05:52:39 kevinlevy Exp $
 	<INPUT TYPE="HIDDEN" NAME="projectid" VALUE="{$projectid}"/>
 	<INPUT TYPE="HIDDEN" NAME="testPlanName" VALUE="{$testPlanName|escape}" />
 	<table class="simple" style="width: 100%; text-align: center; margin-left: 0px;">
+		
+		<tr><th colspan="2">test plans in test project</th></tr>
+		<tr>
+			<td colspan="2">
+		
+				<select name='testplans[]' size=10 multiple>
+					{foreach key=row item=testplanid from=$testplans}
+						{* by default select all builds*}
+						<option value="{$testplans[$row].id}" selected>{$testplans[$row].name}</option>
+					{/foreach}				
+				</select>
+		
+			</td>
+		
+		</tr>
+		
 		<tr><th>{lang_get s='select_builds_header'}</th><th>{lang_get s='select_components_header'}</th></tr>
 		<tr>
 			<td>

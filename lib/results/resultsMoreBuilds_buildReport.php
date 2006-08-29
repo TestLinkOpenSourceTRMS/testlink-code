@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsMoreBuilds_buildReport.php,v 1.20 2006/08/07 06:38:45 kevinlevy Exp $ 
+* $Id: resultsMoreBuilds_buildReport.php,v 1.21 2006/08/29 04:51:05 kevinlevy Exp $ 
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 * 
@@ -32,8 +32,6 @@ $flatArray = $re->getFlatArray();
 $mapOfSuiteSummary =  $re->getAggregateMap();
 $totals = $re->getTotalsForPlan();
 
-
-
 $arrKeywords = $tp->get_keywords_map($tpID); 
 $arrBuilds = $tp->get_builds($tpID); 
 $arrComponents = $re->getTopLevelSuites();
@@ -45,6 +43,7 @@ $lastStatus = isset($_GET['lastStatus']) ? strings_stripSlashes($_GET['lastStatu
 $buildsSelected = array();
 $componentsSelected = array();
 $keywordsSelected = array();
+$testplansSelected = array();
 
 $xls = FALSE;
 if ($format == lang_get('excel_format'))  
@@ -67,6 +66,16 @@ if (isset($_REQUEST['component']))
     		$componentsSelected[] = $val;
     }
 }
+
+if (isset($_REQUEST['testplans'])) 
+{
+    foreach($_REQUEST['testplans'] as $val) 
+    {
+    		$testplansSelected[] = $val;
+    }
+}
+
+
 
 /** i may not needs this - need to investigate "keyword" key that is passed from query form
 if (isset($_REQUEST['keyword'])) 
@@ -114,7 +123,9 @@ print "builds arr : ";
 print_r($arrBuilds);
 print "<BR>";
    **/
+
 $smarty = new TLSmarty();
+$smarty->assign('testplans', $testplansSelected);
 $smarty->assign('arrBuilds', $arrBuilds);
 $smarty->assign('arrComponents', $arrComponents);
 $smarty->assign('arrKeywords', $arrKeywords);

@@ -6,11 +6,12 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8 
- * @modified $Date: 2006/08/29 21:33:09 $ by $Author: kevinlevy $
+ * @modified $Date: 2006/08/30 05:31:27 $ by $Author: kevinlevy $
  *
  *
  * This class is encapsulates most functionality necessary to query the database
- * for results to publish in reports.
+ * for results to publish in reports.  It returns data structures to the gui layer in a 
+ * manner that are easy to display in smarty templates.  
  *-------------------------------------------------------------------------
  * Revisions:
  *
@@ -22,7 +23,7 @@ class results
 
 {
 	
-  var $prodID = 0;	
+  var $suitesSelected = "";	
 
   // class references passed in by constructor
   var $db = null;
@@ -31,7 +32,7 @@ class results
 
   // construct map linking suite ids to execution rows 
   var $SUITE_TYPE_ID = 2;  
-  var $suiteList = null;  
+  var $executionsMap = null;  
   
   // suiteStructure is an array with pattern : name, id, array 
   // array may contain another array in the same pattern
@@ -67,7 +68,7 @@ class results
   
   // related to $mapOfAggregate creation
   // as we navigate up and down tree, $suiteId's are addded and removed from '$aggSuiteList
-  // when totals are added for a suite, we add to all suites listed in $suiteList
+  // when totals are added for a suite, we add to all suites listed in $executionsMap
   // suiteIds are are registered and de-registered from aggSuiteList using functions addToAggSuiteList(), removeFromAggSuiteList() 
   var $aggSuiteList  = array(); 
  
@@ -79,22 +80,34 @@ class results
   // (total cases in plan, total pass, total fail, total blocked, total not run)
   var $totalsForPlan = null;
  
-  function results(&$db, &$tp, &$tree, $prodID, $builds_to_query = -1)
+  function results(&$db, &$tp, &$tree, $suitesSelected, $builds_to_query = -1)
   {
    	$this->db = $db;	
     $this->tp = $tp;    
     $this->tree = $tree;
-  	$this->prodID = $prodID;  	
-    $this->suiteList = $this->buildSuiteList($builds_to_query);    
-    $this->suiteStructure = $this->buildSuiteStructure($this->prodID);    
-    $this->createMapOfLastResult($this->suiteStructure, $this->suiteList);
+  	$this->suitesSelected = $suitesSelected;  	
+  	
+  	// retrieve results from executions table
+    $this->executionsMap = $this->buildExecutionsMap($builds_to_query);    
+
+    // build data objects which can be used to describe the tree structure of the test project 
+    $this->suiteStructure = $this->buildSuiteStructure($this->suitesSelected);    
+    
+    // create data object which tallies last result for each test case
+    $this->createMapOfLastResult($this->suiteStructure, $this->executionsMap);
+    
+    // create data object which tallies totals for individual suites
+    // child suites are NOT taken into account in this step
     $this->createMapOfSuiteSummary($this->mapOfLastResult);
+    
+    // create data object which tallies totals for suites taking
+    // child suites into account
     $this->createAggregateMap($this->suiteStructure, $this->mapOfSuiteSummary);
     $this->totalsForPlan = $this->createTotalsForPlan($this->suiteStructure, $this->mapOfSuiteSummary);
   }
    
   function getSuiteList(){
-    return $this->suiteList;
+    return $this->executionsMap;
   }
   
   function getSuiteStructure(){
@@ -121,18 +134,28 @@ class results
   	return $this->flatArray;
   }
 
-	// array is returned
-	// every 3rd index is null if suite does not contain other suites
-	// or array of same patter if it does contain suites
-	// suite[0] = suite id
-	// suite[1] = suite name
-	// suite[2] = array() of child suites or null 
-	// suite[3] = suite id
-	// suite[4] = suite name
-	// suite[5] = array() of child suites or null 
-	
+/**
+ * Builds both $this->flatArray and $this->suiteStructure
+ * 
+ * Builds a multi-dimentional array which represents the tree structure.
+ * Specifically an array is returned in the following pattern 
+ * every 3rd index is null if suite does not contain other suites
+ * or array of same pattern if it does contain suites
+ *	
+ *  suite[0] = suite id
+ *	suite[1] = suite name
+ *	suite[2] = array() of child suites or null 
+ *	suite[3] = suite id
+ *	suite[4] = suite name
+ *	suite[5] = array() of child suites or null 
+ *
+ * 
+ *
+ */	
   function buildSuiteStructure($suiteId){
-  	$currentNode = null;
+  	// do not null this out 
+  	//$currentNode = null;
+	
 	$currentNodeIndex = 0;
   	$children = $this->tree->get_children($suiteId);
   	$suiteFound = false;	
@@ -190,8 +213,6 @@ class results
 	$this->depth--;
   	return $currentNode;
   }
-
-	// update $this->mapOfLastResult 
 	
 	/**
 	 * mapOfLastResult -> arrayOfSuiteIds
@@ -204,7 +225,6 @@ class results
 	 *
 	 * currently it does not account for user expliting marking a case "not run".
 	 *  */
-	
 	
   function addLastResultToMap($suiteId, $testcase_id, $buildNumber, $result){
   	
@@ -223,12 +243,14 @@ class results
 	}
 
   	else {
-  		//$totalCases =  count($this->suiteList[$suiteId]);
+  		//$totalCases =  count($this->executionsMap[$suiteId]);
   		$this->mapOfLastResult[$suiteId][$testcase_id] = array("buildIdLastExecuted" => $buildNumber, "result" => $result);  		
   	}  	
   }
   
-  
+  /**
+   * 
+   */
   function createMapOfSuiteSummary(&$mapOfLastResult){
   	while ($suiteId = key($mapOfLastResult)){  		  	
   		$totalCasesInSuite = count($mapOfLastResult[$suiteId]);  		
@@ -259,6 +281,9 @@ class results
   	}  	
   }
   
+  /**
+   * 
+   */
   function createAggregateMap(&$suiteStructure, &$mapOfSuiteSummary, $arrayOfSums)
   {  
   		for ($i = 0; $i < count($suiteStructure); $i++ ) {  			  			
@@ -322,6 +347,9 @@ class results
   	return array(total => $total_sum, pass => $pass_sum, fail => $fail_sum, blocked => $blocked_sum, notRun => $notRun_sum); 	
   }
   
+  /**
+   * 
+   */
  function addResultsToAggregate($t, $p, $f, $b, $nr) 
  {
   	//print "<BR>";
@@ -353,7 +381,10 @@ class results
   	} // end for loop  	 	
   }
   
-  function createMapOfLastResult(&$suiteStructure, &$suiteList){  
+  /**
+   * 
+   */
+  function createMapOfLastResult(&$suiteStructure, &$executionsMap){  
    	$totalCases = 0;
   	$passed = 0;
   	$failed = 0;
@@ -370,15 +401,15 @@ class results
   		elseif (($i % $this->ITEM_PATTERN_IN_SUITE_STRUCTURE) ==  $this->ID_IN_SUITE_STRUCTURE) {  			
   			$suiteId = $suiteStructure[$i];
   			// print "suite id = $suiteId <BR>";
-  			//print_r($suiteList[$suiteId]);  			
-  			$totalCases = count($suiteList[$suiteId]);  			 			
+  			//print_r($executionsMap[$suiteId]);  			
+  			$totalCases = count($executionsMap[$suiteId]);  			 			
   			$caseId = null;
   			$build = null;
   			$result = null;
   			  			
   			// iterate across all executions for this suite
-  			for ($j = 0 ; $j < count($suiteList[$suiteId]); $j++) {
-  				$currentExecution = $suiteList[$suiteId][$j];
+  			for ($j = 0 ; $j < count($executionsMap[$suiteId]); $j++) {
+  				$currentExecution = $executionsMap[$suiteId][$j];
   				//print_r($currentExecution);
   				$caseId = $currentExecution[testcaseID];
   				$build = $currentExecution[build_id];
@@ -391,7 +422,7 @@ class results
   			if (is_array($suiteStructure[$i])){
   				//print "array found <BR>";
   				$childSuite = $suiteStructure[$i];
-  				$summaryTreeForChild = $this->createMapOfLastResult($childSuite, $suiteList);
+  				$summaryTreeForChild = $this->createMapOfLastResult($childSuite, $executionsMap);
   			}
   			else {
   				//print "no array <BR>"; 				
@@ -400,25 +431,32 @@ class results
   	}
   }
 	
-  // build map of suite ids to  
-  function buildSuiteList($builds_to_query){
-    // first make sure we initialize the suiteList
+  /**  
+   * Builds $executionsMap map. $executionsMap contains all execution information for suites and test cases.
+   * 
+   * 
+   * $executionsMap = [testsuite_id_1_array, test_suite_id_2_array, ...]
+   * 
+   * testsuite_id_1_array = []
+   *
+   */
+  function buildExecutionsMap($builds_to_query){
+    // first make sure we initialize the executionsMap
     // otherwise duplicate executions will be added to suites
-    $suiteList = null;
-  
-    //print "buildSuiteList() <BR>";
+    $executionsMap = null;  
     $linked_tcversions = $this->tp->get_linked_tcversions($_SESSION['testPlanId']);
+    
     while ($testcaseID = key($linked_tcversions)){
       $info = $linked_tcversions[$testcaseID];
-      //$notSure = $info[0];
+            
       $testsuite_id = $info[testsuite_id];
-	
+		
       $currentSuite = null;
-      if (!(array_key_exists($testsuite_id, $suiteList))){
+      if (!(array_key_exists($testsuite_id, $executionsMap))){
 	    $currentSuite = array();
       }
       else {
-		$currentSuite = $suiteList[$testsuite_id];
+		$currentSuite = $executionsMap[$testsuite_id];
 	  }
 
       //$notSure2 = $info[1];
@@ -463,10 +501,10 @@ class results
 	  		next($execQuery);
 		}		
       }
-      $suiteList[$testsuite_id] = $currentSuite;
+      $executionsMap[$testsuite_id] = $currentSuite;
       next($linked_tcversions);
     } 
-    return $suiteList;
+    return $executionsMap;
   } // end function
   
   /**

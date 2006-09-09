@@ -1,6 +1,9 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
-# $Id: testlink_create_default_data.sql,v 1.3 2006/08/29 19:41:37 schlundus Exp $
+# $Id: testlink_create_default_data.sql,v 1.4 2006/09/09 07:12:30 franciscom Exp $
 # SQL script - create default data (rights & admin account)
+#
+# 20060908 - franciscom - values for tables:
+#                         assignment_types, assignment_status
 #
 # 20060818 - franciscom - new rights
 #
@@ -107,6 +110,17 @@ INSERT INTO `role_rights` (role_id,right_id) VALUES (9,15);
 INSERT INTO `role_rights` (role_id,right_id) VALUES (9,16);
 
 
+# Assignment types
+INSERT INTO assignment_types (id,fk_table,description) VALUES(1,'testplan_tcversions','testcase_execution');
+INSERT INTO assignment_types (id,fk_table,description) VALUES(2,'tcversions','testcase_review');
+
+
+# Assignment status
+INSERT INTO assignment_status (id,description) VALUES(1,'open');
+INSERT INTO assignment_status (id,description) VALUES(2,'closed');
+INSERT INTO assignment_status (id,description) VALUES(3,'completed');
+INSERT INTO assignment_status (id,description) VALUES(4,'todo_urgent');
+INSERT INTO assignment_status (id,description) VALUES(5,'todo');
 
 # Database version
 INSERT INTO db_version VALUES('1.7.0 Alpha', CURRENT_TIMESTAMP());

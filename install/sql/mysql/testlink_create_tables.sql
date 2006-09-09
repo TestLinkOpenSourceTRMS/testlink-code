@@ -1,11 +1,13 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
 # This script is distributed under the GNU General Public License 2 or later.
-# $Id: testlink_create_tables.sql,v 1.6 2006/08/21 13:25:16 franciscom Exp $
+# $Id: testlink_create_tables.sql,v 1.7 2006/09/09 07:12:30 franciscom Exp $
 # SQL script - create db tables for TL   
 #
 # default rights & admin account are created via testlink_create_default_data.sql
 #
 # Rev :
+#       20060908 - franciscom - changes to user_assignments
+#                               new tables assignment_types, assignment_status
 #
 #       20060815 - franciscom - changes to user_assignments
 #                                          risk_assignments
@@ -168,15 +170,15 @@ CREATE TABLE `risk_assignments` (
   UNIQUE KEY `tp_node_id` (`testplan_id`,`node_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-DROP TABLE IF EXISTS `user_assignments`;
 CREATE TABLE `user_assignments` (
   `id` int(10) unsigned NOT NULL auto_increment,
-  `type` int(10) unsigned NOT NULL default '0',
+  `type` int(10) unsigned NOT NULL default '1',
   `feature_id` int(10) unsigned NOT NULL default '0',
   `user_id` int(10) unsigned default '0',
   `deadline_ts` datetime NULL,
   `assigner_id`  int(10) unsigned default '0',
   `creation_ts`  datetime NOT NULL default '0000-00-00 00:00:00',
+  `status` int(10) unsigned default '1',
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
@@ -358,3 +360,19 @@ CREATE TABLE `object_keywords` (
   `keyword_id` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8; 
+
+
+/*  20060908 - franciscom */
+CREATE TABLE `assignment_types` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `fk_table` varchar(30) default '',
+  `description` varchar(100) NOT NULL default 'unknown',
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+/*  20060908 - franciscom */
+CREATE TABLE `assignment_status` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `description` varchar(100) NOT NULL default 'unknown',
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;

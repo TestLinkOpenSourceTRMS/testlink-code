@@ -1,9 +1,13 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: mainPage.tpl,v 1.19 2006/08/29 19:41:36 schlundus Exp $     
+ $Id: mainPage.tpl,v 1.20 2006/09/09 07:11:27 franciscom Exp $     
  Purpose: smarty template - main page / site map                 
                                                                  
- rev :                                                   
+ rev :                                                 
+       20060908 - franciscom - removed assign risk and ownership
+                               added define priority
+                               added tc exec assignment
+                                   
        20060819 - franciscom - changed css classes name
                                removed old comments
        
@@ -83,7 +87,7 @@
 	   		<a href="{$launcher}?feature=testSetRemove">{lang_get s='href_remove_test_case'}</a>
 	        <br />
 			<img alt="arrow" class="arrow" src="icons/arrow_org.gif" />
-	   		<a href="{$launcher}?feature=priority">{lang_get s='href_assign_risk_own'}</a>
+	   		<a href="{$launcher}?feature=tc_exec_assignment">{lang_get s='href_tc_exec_assignment'}</a>
 	        <br />
 			<img alt="arrow" class="arrow" src="icons/arrow_org.gif" />
 	   		<a href="lib/plan/planUpdateTC.php">{lang_get s='href_upd_mod_tc'}</a>
@@ -104,8 +108,13 @@
 	        <br />
 			<img alt="arrow" class="arrow" src="icons/arrow_org.gif" />
 	       	<a href="lib/plan/planMilestones.php">{lang_get s='href_plan_mstones'}</a>
-   		{/if}
-	    </p>
+
+      {* 20060908 - franciscom *}   	
+      <br />
+			<img alt="arrow" class="arrow" src="icons/arrow_org.gif" />
+	       	<a href="lib/plan/planPriority.php">{lang_get s='href_plan_define_priority'}</a>
+   	{/if}
+	  </p>
 	{/if}
 	{if $tp_user_role_assignment == "yes" && $countPlans > 0}
 	<p>

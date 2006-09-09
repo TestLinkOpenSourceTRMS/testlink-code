@@ -1,0 +1,14 @@
+*.html
+*.csv
+*.doc
+*.xls
+*.txt
+*.png
+*.jpg
+*.gif
+*.gz
+*.tar.gz
+*.tgz
+*.rar
+*.zip
+*.log

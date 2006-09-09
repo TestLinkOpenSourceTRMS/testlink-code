@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.65 $
- * @modified $Date: 2006/08/23 06:22:05 $ $Author: franciscom $
+ * @version $Revision: 1.66 $
+ * @modified $Date: 2006/09/09 07:10:55 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
@@ -449,7 +449,7 @@ $TLS_title_plan_ownership = "TestPlan ownership";
 $TLS_btn_upd_prio = "Update";
 $TLS_menu_assign_ownership = "Assign Ownership";
 $TLS_menu_define_prio = "Define Priority Rules";
-$TLS_title_priority = "Define Priority Rules for the Test Plan";
+$TLS_title_priority = "Define Priority Rules for Test Plan";
 $TLS_tr_th_prio_cba = "Priority (C/B/A)";
 $TLS_tr_th_risk = "Risk/Importance";
 
@@ -1365,4 +1365,9 @@ $TLS_btn_history_off="show only last execution";
 $TLS_btn_history_on="show complete history";
 
 $TLS_attachment_feature_disabled="attachment disabled";
+
+// 20060908 - franciscom
+$TLS_href_plan_define_priority="Define priority rules";
+$TLS_href_tc_exec_assignment = "Assign test case execution";
+
 ?>

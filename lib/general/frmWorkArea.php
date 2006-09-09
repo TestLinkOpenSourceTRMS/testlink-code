@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: frmWorkArea.php,v $
  *
- * @version $Revision: 1.13 $
- * @modified $Date: 2006/08/10 07:10:42 $ by $Author: franciscom $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2006/09/09 07:13:28 $ by $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -24,6 +24,8 @@ testlinkInitPage($db);
 // Associative Array TreeFramePath 
 // key  : feature
 // value: page to lauch
+//
+// 20060908 - franciscom - added tc_exec_assignment
 $aa_tfp = array( 
             'editTc' => 'lib/testcases/listTestCases.php?feature=edit_tc',
             'assignReqs' => 'lib/testcases/listTestCases.php?feature=assignReqs',
@@ -34,6 +36,7 @@ $aa_tfp = array(
             'testSetRemove' => 'lib/plan/testSetNavigator.php?feature=removeTC',
             'printTestSet'  => 'lib/print/selectData.php?type=testSet',
             'priority' => 'lib/plan/testSetNavigator.php?feature=priorityAssign',
+            'tc_exec_assignment' => 'lib/plan/testSetNavigator.php?feature=tc_exec_assignment',
             'executeTest' => 'lib/execute/execNavigator.php',
             'showMetrics' => 'lib/results/resultsNavigator.php',
             'planAssignTesters' => 'lib/plan/planTestersNavigator.php');

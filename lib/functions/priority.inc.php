@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * $Id: priority.inc.php,v 1.9 2006/08/17 19:29:59 schlundus Exp $ 
+ * $Id: priority.inc.php,v 1.10 2006/09/09 07:13:28 franciscom Exp $ 
  *
  * Functions for Priority management 
  *
@@ -27,28 +27,44 @@ function getPriority(&$db,$tpID)
 /**
  * Set rules for priority within actual Plan
  *
- * @param array $newArray $_POST input converted to simple numbered array
+ * @param hash with key  : priority id on priorities table.
+ *                  value: priority value
+ *        Example:
+ *                [priority] => Array
+ *                (
+ *                 [10] => b
+ *                 [11] => b
+ *                 [12] => a
+ *                 [13] => b
+ *                 [14] => b
+ *                 [15] => b
+ *                 [16] => b
+ *                 [17] => b
+ *                 [18] => b
+ *                )
+ *
+ *        Important: priority ID is system wide, can not be found in more
+ *                   than one test plan. 
+ *                   That's the reason we are not passing the test plan id
+ *                   to this function.
+ *
+ *      
  * @return string 'ok'
  * @todo return could depend on sql result
+ *
+ * 20060908 - franciscom - interface changes
  */
-function setPriority(&$db,$newArray)
+function setPriority(&$db,$priority_hash)
 {
-	$i = 0;
-	$len = count($newArray) - 1;
-	while ($i < $len)
+	foreach($priority_hash as $priID => $priority)
 	{
-		$priID = intval($newArray[$i]); //Then the first value is the ID
-		$priority = $newArray[$i+1]; //The second value is the priority
-		
 		$sql = "SELECT id, priority FROM priorities WHERE id = " . $priID;
-		
 		$oldPriority = $db->fetchFirstRowSingleColumn($sql,'priority');
 		if($oldPriority != null && $oldPriority != $priority)
 		{ 
 			$sql = "UPDATE priorities SET priority ='" . $priority . "' WHERE id = " . $priID;
 			$result = $db->exec_query($sql);
 		}
-		$i = $i + 2;
 	}
 	return 'ok';
 }

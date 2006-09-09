@@ -1,18 +1,12 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: license.php,v 1.4 2006/08/28 08:32:46 franciscom Exp $ */
+/* $Id: license.php,v 1.5 2006/09/09 07:11:43 franciscom Exp $ */
 session_start();
 foreach($_POST as $key => $val) {
 	$_SESSION[$key] = $val;
 }
-
-// 20050808 - fm
 $inst_type = $_SESSION['installationType'];
-
-// 20060523 - franciscom
 $tl_and_version = "TestLink {$_SESSION['testlink_version']} ";
-print_r($_POST); 
-
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" 
   "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">

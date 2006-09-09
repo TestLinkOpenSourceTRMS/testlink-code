@@ -1,11 +1,25 @@
+<?php
+require_once( dirname(__FILE__). '/../../lib/functions/database.class.php' );
+require_once(dirname(__FILE__) . "/../../lib/functions/common.php");
+require_once(dirname(__FILE__) . "/../../lib/functions/assignment_mgr.class.php");
+require_once("../installUtils.php");
+
+session_start();
+set_time_limit(300); // set_time_limit(t) -> t in seconds
+$inst_type = $_SESSION['installationType'];
+$tl_and_version = "TestLink {$_SESSION['testlink_version']} ";
+?>
+
 <html>
 <head>
 <!--
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: migrate_16_to_17.php,v 1.2 2006/08/28 08:33:17 franciscom Exp $ 
+$Id: migrate_16_to_17.php,v 1.3 2006/09/09 07:10:30 franciscom Exp $ 
 -->
-<title>Testlink Migration</title>
-<link rel="stylesheet" type="text/css" href="general.css" />
+<title><?php echo $tl_and_version ?>Installer</title>
+        <style type="text/css">
+             @import url('../css/style.css');
+        </style>
 
 <script type="text/javascript">
 // This code has been obtained from backbase examples pages
@@ -34,33 +48,22 @@ var DetailController = {
 </script>
 </head>
 <body>
+<table border="0" cellpadding="0" cellspacing="0" class="mainTable">
+  <tr class="fancyRow">
+    <td><span class="headers">&nbsp;<img src="./img/dot.gif" alt="" style="margin-top: 1px;" />&nbsp;<?php echo $tl_and_version?></span></td>
+    <td align="right"><span class="headers">Installation - <?php echo $inst_type; ?> </span></td>
+  </tr>
+  <tr class="fancyRow2">
+    <td colspan="2" class="border-top-bottom smallText" align="right">&nbsp;</td>
+  </tr>
+  <tr align="left" valign="top">
+    <td colspan="2"><table width="100%"  border="0" cellspacing="0" cellpadding="1">
+      <tr align="left" valign="top">
+        <td class="pad" id="content" colspan="2">
+
+
 <?php
-echo <<<THIS_TEXT
-<pre>
-Migration Process
-
-Migration is only supported from version 1.6.2.
-a new database with the 1.7 will be created   (target database). 
-no changes will be made to the 1.6.2 database (source database).
-
-The following IDs will be preserved:
-
-Keyword ID
-Test case ID
-User ID
-Build ID
-Bug ID
-Requirement ID
-
-Test cases added to a test plan, but without corresponding 
-Test case specification (i.e. the spec has been deleted) WILL BE LOST.
-
-The version for all Test cases specs will be setted to 1.
-</pre>
-THIS_TEXT;
-
-
-
+/*
 require_once( dirname(__FILE__). '/../../lib/functions/database.class.php' );
 require_once(dirname(__FILE__) . "/../../lib/functions/common.php");
 require_once("../installUtils.php");
@@ -68,33 +71,46 @@ require_once("../installUtils.php");
 session_start();
 set_time_limit(300); // set_time_limit(t) -> t in seconds
 $inst_type = $_SESSION['installationType'];
-
-echo "<pre>debug 20060825 \$inst_type" . __FUNCTION__ . " --- "; print_r($inst_type); echo "</pre>";
-
+*/
 
 // -----------------------------------------------------------------------------------
 $db_cfg['source']=array('db_type' => 'mysql',
-                        'db_server' => 'localhost',
-                        'db_name'   => 'tl_prod_agos',
-                        'db_admin_name' => 'root',
-                        'db_admin_pass' => 'mysqlroot');
+                        'db_server' => $_SESSION['databasehost'],
+                        'db_name'   => $_SESSION['source_databasename'],
+                        'db_admin_name' => $_SESSION['databaseloginname'],
+                        'db_admin_pass' => $_SESSION['databaseloginpassword']);
                         
 $db_cfg['target']=array('db_type' => 'mysql',
-                        'db_server' => 'it-bra-l0042',
-                        'db_name'   => 'tl_migra',
-                        'db_admin_name' => 'root',
-                        'db_admin_pass' => 'mysqlroot');
+                        'db_server' => $_SESSION['databasehost'],
+                        'db_name'   => $_SESSION['target_databasename'],
+                        'db_admin_name' => $_SESSION['databaseloginname'],
+                        'db_admin_pass' => $_SESSION['databaseloginpassword']);
 
-echo '<span>Connecting to Testlink 1.6 (source) database.</span>';
+echo '<span>Connecting to Testlink 1.6 (source) database. - ' .
+     $db_cfg['source']['db_name'] . ' - </span>';
+
 $source_db = connect_2_db($db_cfg['source']);
                         
-echo '<span>Connecting to Testlink 1.7 (target) database.</span>';
+echo '<span>Connecting to Testlink 1.7 (target) database. - ' .
+     $db_cfg['target']['db_name'] . ' - </span>';
 $target_db = connect_2_db($db_cfg['target']);
+
+if( is_null($source_db) || is_null($target_db) )
+{
+  exit();
+}
+// -----------------------------------------------------------------------------------
+
+
 
 $tproject_mgr=New testproject($target_db);
 $ts_mgr=New testsuite($target_db);
 $tc_mgr=New testcase($target_db);
 $tree_mgr=New tree($target_db);
+$assignment_mgr=New assignment_mgr($target_db);
+
+$assignment_types=$assignment_mgr->get_available_types(); 
+$assignment_status=$assignment_mgr->get_available_status();
 
 define('EMPTY_NOTES','');
 $old_new=array();
@@ -159,7 +175,8 @@ foreach($a_sql as $elem) {$target_db->exec_query($elem);}
 // Get list of 1.6 users
 $sql="SELECT * FROM user";
 $users=$source_db->fetchRowsIntoMap($sql,'login');
-echo "<a onclick=\"return DetailController.toggle('details-users')\" href=\"users/\">Users:</a>";
+echo "<a onclick=\"return DetailController.toggle('details-users')\" href=\"users/\">
+<img src='../img/icon-foldout.gif' align='top' title='show/hide'>Users:</a>";
 echo '<div class="detail-container" id="details-users" style="display: block;">';
 if(!is_null($users)) 
 {
@@ -185,7 +202,8 @@ $sql="SELECT mtc.* " .
      "ORDER BY mtc.id";
 
 $tc_specs=$source_db->fetchRowsIntoMap($sql,'id');
-echo "<a onclick=\"return DetailController.toggle('details-tcspecs')\" href=\"tcspecs/\">Test Case Specifications:</a>";
+echo "<a onclick=\"return DetailController.toggle('details-tcspecs')\" href=\"tcspecs/\">
+<img src='../img/icon-foldout.gif' align='top' title='show/hide'>Test Case Specifications:</a>";
 echo '<div class="detail-container" id="details-tcspecs" style="display: block;">';
 if(is_null($tc_specs)) 
 {
@@ -198,7 +216,9 @@ else
 echo "</div><p>";
 
 // -----------------------------------------------------------------------------------
-echo "<a onclick=\"return DetailController.toggle('details-pcc')\" href=\"pcc/\">Products, Components & Categories migration:</a>";
+echo "<a onclick=\"return DetailController.toggle('details-pcc')\" href=\"pcc/\">
+<img src='../img/icon-foldout.gif' align='top' title='show/hide'>
+Products, Components & Categories migration:</a>";
 echo '<div class="detail-container" id="details-pcc" style="display: block;">';
 
 // Get list of 1.6 Products
@@ -213,18 +233,21 @@ if(is_null($products))
 migrate_cc_specs($source_db,$target_db,$products,$old_new);
 echo "</div><p>";
 
-echo "<a onclick=\"return DetailController.toggle('details-kw')\" href=\"kw/\">Keywords migration:</a>";
+echo "<a onclick=\"return DetailController.toggle('details-kw')\" href=\"kw/\">
+<img src='../img/icon-foldout.gif' align='top' title='show/hide'>Keywords migration:</a>";
 echo '<div class="detail-container" id="details-kw" style="display: block;">';
 migrate_keywords($source_db,$target_db,$products,$old_new);
 echo "</div><p>";
 
-echo "<a onclick=\"return DetailController.toggle('details-tcpu')\" href=\"tcpu/\">Test case parent update:</a>";
+echo "<a onclick=\"return DetailController.toggle('details-tcpu')\" href=\"tcpu/\">
+<img src='../img/icon-foldout.gif' align='top' title='show/hide'>Test case parent update:</a>";
 echo '<div class="detail-container" id="details-tcpu" style="display: block;">';
 update_tc_specs_parents($source_db,$target_db,$tc_specs,$old_new);
 echo "</div><p>";
 
 
-echo "<a onclick=\"return DetailController.toggle('details-tplan')\" href=\"tplan/\">Test plans:</a>";
+echo "<a onclick=\"return DetailController.toggle('details-tplan')\" href=\"tplan/\">
+<img src='../img/icon-foldout.gif' align='top' title='show/hide'>Test plans:</a>";
 echo '<div class="detail-container" id="details-tplan" style="display: block;">';
 $sql="SELECT * FROM project ORDER BY ID";
 $tplans=$source_db->fetchRowsIntoMap($sql,'id');
@@ -238,9 +261,13 @@ else
 }
 echo "</div><p>";
 
-echo "<pre> ----------------------------------------------------------- </pre>";
-echo "<pre> Builds </pre>";
-$sql="SELECT * FROM build";
+echo "<a onclick=\"return DetailController.toggle('details-builds')\" href=\"tplan/\">
+<img src='../img/icon-foldout.gif' align='top' title='show/hide'>Builds:</a>";
+echo '<div class="detail-container" id="details-builds" style="display: block;">';
+
+// 20060908 - franciscom
+$sql="SELECT build.*,project.name AS TPLAN_NAME " .
+     "FROM build,project WHERE build.projid=project.id ORDER BY project.id";
 $builds=$source_db->fetchRowsIntoMap($sql,'id');
 
 if(is_null($builds)) 
@@ -251,11 +278,12 @@ else
 {
   migrate_builds($source_db,$target_db,$builds,$old_new);
 }
+echo "</div><p>";
 
-echo "<pre> ----------------------------------------------------------- </pre>";
-echo "<pre> Test case -> test plan assignments </pre>";
+echo "<a onclick=\"return DetailController.toggle('details-tctpa')\" href=\"tplan/\">
+<img src='../img/icon-foldout.gif' align='top' title='show/hide'>Test case -> test plan assignments:</a>";
+echo '<div class="detail-container" id="details-tctpa" style="display: block;">';
 
-//$sql="SELECT tplan.name as tplan_name,k.compid,c.*,tc.mgttcid AS MGTTCID " .
 $sql="SELECT tplan.name as tplan_name,tplan.id as projid,k.compid,tc.mgttcid AS MGTTCID " .
      "FROM component c,category k,testcase tc," .
      "     mgtcomponent mc, mgtcategory mk,mgttestcase mtc,project tplan " .
@@ -276,12 +304,13 @@ else
 {
   migrate_tplan_contents($source_db,$target_db,$tplan_elems,$map_tc_tcversion,$old_new);
 }
-echo "<pre> ----------------------------------------------------------- </pre>";
+echo "</div><p>";
 
 
 
-echo "<pre> ----------------------------------------------------------- </pre>";
-echo "<pre> Executions results </pre>";
+echo "<a onclick=\"return DetailController.toggle('details-results')\" href=\"tplan/\">
+<img src='../img/icon-foldout.gif' align='top' title='show/hide'>Executions results:</a>";
+echo '<div class="detail-container" id="details-results" style="display: block;">';
 $sql="SELECT MGT.id as MGTTCID, R.tcid, R.build_id,R.daterun," .
      "R.runby,R.notes,R.status " .
      "FROM mgttestcase MGT,testcase TC,results R " .
@@ -296,14 +325,13 @@ else
 {
   migrate_results($source_db,$target_db,$execs,$builds,$users,$map_tc_tcversion,$old_new);
 }
-echo "<pre> ----------------------------------------------------------- </pre>";
-//exit();
+echo "</div><p>";
 
 
 
-// 20060730 - franciscom
-echo "<pre> ----------------------------------------------------------- </pre>";
-echo "<pre> Executions bugs </pre>";
+echo "<a onclick=\"return DetailController.toggle('details-bugs')\" href=\"tplan/\">
+<img src='../img/icon-foldout.gif' align='top' title='show/hide'>Executions bugs:</a>";
+echo '<div class="detail-container" id="details-bugs" style="display: block;">';
 $sql="SELECT bugs.tcid,bugs.build_id,bugs.bug,mgt.id AS MGTTCID " .
      "FROM bugs,mgttestcase mgt,testcase t " .
      "WHERE bugs.tcid=t.id " .
@@ -318,10 +346,12 @@ else
 {
   migrate_bugs($source_db,$target_db,$bugs,$builds,$map_tc_tcversion,$old_new);
 }
-echo "<pre> ----------------------------------------------------------- </pre>";
+echo "</div><p>";
 
-echo "<pre> ----------------------------------------------------------- </pre>";
-echo "<pre> Users - Test plan assignments </pre>";
+
+echo "<a onclick=\"return DetailController.toggle('details-user_tpa')\" href=\"tplan/\">
+<img src='../img/icon-foldout.gif' align='top' title='show/hide'>Users - Test plan assignments:</a>";
+echo '<div class="detail-container" id="details-user_tpa" style="display: block;">';
 $sql="SELECT * from projrights ORDER BY userid";
 $user_tplans=$source_db->fetchRowsIntoMap($sql,'userid');
 if(is_null($user_tplans)) 
@@ -332,10 +362,12 @@ else
 {
   migrate_tesplan_assignments($source_db,$target_db,$user_tplans,$old_new);
 }
-echo "<pre> ----------------------------------------------------------- </pre>";
+echo "</div><p>";
 
-echo "<pre> ----------------------------------------------------------- </pre>";
-echo "<pre> Priority Rules </pre>";
+echo "<a onclick=\"return DetailController.toggle('details-prior')\" href=\"tplan/\">
+<img src='../img/icon-foldout.gif' align='top' title='show/hide'>Priority Rules:</a>";
+echo '<div class="detail-container" id="details-prior" style="display: block;">';
+
 $sql="SELECT * from priority";
 $prules=$source_db->fetchRowsIntoMap($sql,'projid');
 if(is_null($prules)) 
@@ -346,10 +378,12 @@ else
 {
   migrate_prules($source_db,$target_db,$prules,$old_new);
 }
-echo "<pre> ----------------------------------------------------------- </pre>";
+echo "</div><p>";
 
-echo "<pre> ----------------------------------------------------------- </pre>";
-echo "<pre> Milestones </pre>";
+echo "<a onclick=\"return DetailController.toggle('details-Milestones')\" href=\"tplan/\">
+<img src='../img/icon-foldout.gif' align='top' title='show/hide'>Milestones:</a>";
+echo '<div class="detail-container" id="details-Milestones" style="display: block;">';
+
 $sql="SELECT * from milestone";
 $ms=$source_db->fetchRowsIntoMap($sql,'projid');
 if(is_null($ms)) 
@@ -360,13 +394,15 @@ else
 {
   migrate_milestones($source_db,$target_db,$ms,$old_new);
 }
-echo "<pre> ----------------------------------------------------------- </pre>";
+echo "</div><p>";
 
 
 
-echo "<pre> ----------------------------------------------------------- </pre>";
-echo "<pre> Risk </pre>";
-echo "<pre> ----------------------------------------------------------- </pre>";
+echo "<a onclick=\"return DetailController.toggle('details-risk')\" href=\"tplan/\">
+<img src='../img/icon-foldout.gif' align='top' title='show/hide'>Risk TO BE DONE:</a>";
+echo '<div class="detail-container" id="details-risk" style="display: block;">';
+echo "</div><p>";
+
 $sql="SELECT tplan.name as tplan_name,tplan.id as projid," .
      "       k.mgtcatid,k.risk,k.importance,k.owner,tc.mgttcid " .
      "FROM   component c,category k,testcase tc," .
@@ -381,9 +417,10 @@ $sql="SELECT tplan.name as tplan_name,tplan.id as projid," .
 $tp4risk_own=$source_db->get_recordset($sql);
 
 
-echo "<pre> ----------------------------------------------------------- </pre>";
-echo "<pre> Ownership (becomes user assignments)                        </pre>";
-echo "<pre> ----------------------------------------------------------- </pre>";
+echo "<a onclick=\"return DetailController.toggle('details-own')\" href=\"tplan/\">
+<img src='../img/icon-foldout.gif' align='top' title='show/hide'>Ownership (becomes user assignment=test_execution):</a>";
+echo '<div class="detail-container" id="details-own" style="display: block;">';
+
 if(is_null($tp4risk_own)) 
 {
 		echo "<span class='notok'>There are no data to be migrated!</span></b>";
@@ -392,12 +429,13 @@ else
 {
   migrate_ownership($source_db,$target_db,$tp4risk_own,$map_tc_tcversion,$old_new);
 }
+echo "</div><p>";
 
 
+echo "<a onclick=\"return DetailController.toggle('details-reqtable')\" href=\"tplan/\">
+<img src='../img/icon-foldout.gif' align='top' title='show/hide'> Requirements Table:</a>";
+echo '<div class="detail-container" id="details-reqtable" style="display: block;">';
 
-echo "<pre> ----------------------------------------------------------- </pre>";
-echo "<pre> Requirements Table</pre>";
-echo "<pre> ----------------------------------------------------------- </pre>";
 $sql="SELECT * from requirements";
 $req=$source_db->fetchRowsIntoMap($sql,'id');
 if(is_null($req)) 
@@ -408,10 +446,12 @@ else
 {
   migrate_requirements($source_db,$target_db,$req,$old_new);
 }
+echo "</div><p>";
 
-echo "<pre> ----------------------------------------------------------- </pre>";
-echo "<pre> req_spec Table</pre>";
-echo "<pre> ----------------------------------------------------------- </pre>";
+echo "<a onclick=\"return DetailController.toggle('details-req_spec_table')\" href=\"tplan/\">
+<img src='../img/icon-foldout.gif' align='top' title='show/hide'> req_spec Table:</a>";
+echo '<div class="detail-container" id="details-req_spec_table" style="display: block;">';
+
 $sql="SELECT * from req_spec";
 $rspec=$source_db->fetchRowsIntoMap($sql,'id');
 if(is_null($rspec)) 
@@ -422,10 +462,12 @@ else
 {
   migrate_req_specs($source_db,$target_db,$rspec,$old_new);
 }
+echo "</div><p>";
 
-echo "<pre> ----------------------------------------------------------- </pre>";
-echo "<pre> requirement / test case relationship Table</pre>";
-echo "<pre> ----------------------------------------------------------- </pre>";
+echo "<a onclick=\"return DetailController.toggle('details-req_coverage')\" href=\"tplan/\">
+<img src='../img/icon-foldout.gif' align='top' title='show/hide'> Req. Coverage (requirement / test case relationship Table):</a>";
+echo '<div class="detail-container" id="details-req_coverage" style="display: block;">';
+
 $sql="SELECT * from req_coverage";
 $req_cov=$source_db->fetchRowsIntoMap($sql,'id');
 if(is_null($req_cov)) 
@@ -436,8 +478,22 @@ else
 {
   migrate_req_coverage($source_db,$target_db,$req_cov,$old_new);
 }
+echo "</div><p>";
+
 ?>
 
+  </td>
+  </tr>
+  </td>
+  </tr>
+  <tr class="fancyRow2">
+    <td class="border-top-bottom smallText">&nbsp;</td>
+    <td class="border-top-bottom smallText" align="right">&nbsp;</td>
+  </tr>
+  
+</table>
+</body>
+</html>
 
 
 
@@ -446,26 +502,45 @@ else
 // -----------------------------------   Auxiliary Functions -------------------------
 //
 //
-//cfg =array('db_type' => 'mysql',
-//           'db_server' => 'localhost',
-//           'db_admin_name' => 'root',
-//           'db_admin_pass' => 'mysqlroot');
+//
+// Tries to connect to a database, displaying ALWAYS an status message.
+//
+// args   :
+//         cfg=array('db_type' => 'mysql',
+//                   'db_server' => 'localhost',
+//                   'db_admin_name' => 'root',
+//                   'db_admin_pass' => 'mysqlroot');
+//
+//
+// returns: 
+//          if connection OK -> a database object
+//          if connection KO -> null
 //
 function connect_2_db($cfg)
 {
-$db = new database($cfg['db_type']);
-define('NO_DSN',FALSE);
-@$conn_result = $db->connect(NO_DSN,$cfg['db_server'], 
-                                    $cfg['db_admin_name'], $cfg['db_admin_pass'],$cfg['db_name']); 
-
-if( $conn_result['status'] == 0 ) 
+  
+if(strlen(trim($cfg['db_name']))== 0)
 {
-	echo '<span class="notok">Failed!</span><p />Please check the database login details and try again.';
-	echo '<br>Database Error Message: ' . $db->error_msg() . "<br>";
-} 
-else 
-{
-	echo "<span class='ok'>OK!</span><p />";
+	echo '<span class="notok">Failed!</span><p />Database Name is empty';
+	$db=null;
+}
+else
+{  
+  $db = new database($cfg['db_type']);
+  define('NO_DSN',FALSE);
+  @$conn_result = $db->connect(NO_DSN,$cfg['db_server'], 
+                                      $cfg['db_admin_name'], $cfg['db_admin_pass'],$cfg['db_name']); 
+  
+  if( $conn_result['status'] == 0 ) 
+  {
+  	echo '<span class="notok">Failed!</span><p />Please check the database login details and try again.';
+  	echo '<br>Database Error Message: ' . $db->error_msg() . "<br>";
+  	$db=null;
+  } 
+  else 
+  {
+  	echo "<span class='ok'>OK!</span><p />";
+  }
 }
 
 return ($db);
@@ -771,7 +846,6 @@ function migrate_test_plans(&$source_db,&$target_db,&$tplans,&$old_new)
       $tproj_id=$old_new['product'][$old_prodid];
     }
     $old_new['tplan'][$item_id]=$tplan_mgr->create($idata['name'],$idata['notes'],$tproj_id);
-
     //echo "OLD TPlan ID {$item_id} {$idata['name']} -> {$old_new['tplan'][$item_id]} <br>";
   }
 } // end function
@@ -782,8 +856,17 @@ function migrate_test_plans(&$source_db,&$target_db,&$tplans,&$old_new)
 //
 function migrate_builds(&$source_db,&$target_db,&$builds,&$old_new)
 {
+  $pivot_name="";
+  echo "   <b>Total number of builds: " . count($builds) . "</b><br>" ;  
   foreach($builds as $item_id => $idata)
   {
+    if( strcmp($idata['TPLAN_NAME'],$pivot_name) != 0)
+    {
+      echo "   <br>Migrating Builds for TestPlan: " . $idata['TPLAN_NAME'] . "<br>" ;  
+      $pivot_name=$idata['TPLAN_NAME'];
+    }
+    echo "             Build: " . $idata['name'] . "<br>" ;  
+
     $tplan_id=$old_new['tplan'][intval($idata['projid'])];
     create_build($target_db,$item_id,$idata['name'],$tplan_id,$idata['note']);
     $old_new['build'][$item_id]=$item_id;
@@ -1018,45 +1101,48 @@ function migrate_req_coverage(&$source_db,&$target_db,&$req_cov,&$old_new)
 } // end function
 
 
-// 20060815 - franciscom
+
+// 20060908 - franciscom
+// I will assign ownership testcase by testcase inside of every testplan
 function migrate_ownership(&$source_db,&$target_db,&$rs,&$map_tc_tcversion,&$old_new)
 {
   $db_now = $target_db->db_now();
+  $assignment_mgr=New assignment_mgr($target_db);
+	$assignment_types=$assignment_mgr->get_available_types(); 
+	$assignment_status=$assignment_mgr->get_available_status();
+  
   
   $sql="SELECT * FROM user";
   $users=$source_db->fetchRowsIntoMap($sql,'login');
 
   foreach($rs as $rid => $rdata)
   {
-     echo $rid . "<br>";
-     print_r($rdata);
-     $feature_id=$old_new['mgtcat'][$rdata['mgtcatid']];
+     //echo "<b>" . $rid . "</b><br>";
+     //echo "<pre>debug 20060902 " . __FUNCTION__ . " --- "; print_r($rdata); echo "</pre>";
+     
+     
+     $tcversion_id=$map_tc_tcversion[$rdata['mgttcid']];
+     $tplan_id=$rdata['projid'];
+     $sql=" SELECT id FROM testplan_tcversions " .
+          " WHERE testplan_id=" . $old_new['tplan'][$tplan_id] . 
+          " AND tcversion_id=" . $tcversion_id;
+   
+     $feature_row=$source_db->fetchRowsIntoMap($sql,'id');
+     $feature_id=$feature_row['id'];   
+          
+  
      $owner_login=$rdata['owner'];
      $user_id = isset($users[$owner_login]) ? $users[$owner_login]['id'] : 0;
      if( $user_id > 0 )
      {
       $sql="INSERT INTO user_assignments " .
-           "(feature_id,user_id,creation_ts) " .
-           " VALUES({$feature_id},{$user_id},{$db_now})";
+           "(feature_id,user_id,creation_ts,type,status) " .
+           " VALUES({$feature_id},{$user_id},{$db_now}," .
+           $assignment_types['testcase_execution']['id'] . "," .
+           $assignment_status['open']['id'] . ")";
       $exec_id=$target_db->exec_query($sql);
      }
   }
-  
-  /*
-  foreach($rs as $mgtcat_id => $rdata)
-  {
-    $feature_id=$old_new['mgtcat'][$mgtcat_id];
-    $owner_login=$rdata['owner'];
-    $user_id = isset($users[$owner_login]) ? $users[$owner_login]['id'] : 0;
-    if( $user_id > 0 )
-    {
-      $sql="INSERT INTO user_assignments " .
-           "(feature_id,user_id,creation_ts) " .
-           " VALUES({$feature_id},{$user_id},{$db_now})";
-      $exec_id=$target_db->exec_query($sql);
-    }
-  }
-  */
 }
 ?>
 </body>

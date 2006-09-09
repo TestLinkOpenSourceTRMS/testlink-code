@@ -1,6 +1,6 @@
 <?php 
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: migration_start.php,v 1.1 2006/08/28 08:41:25 franciscom Exp $ */
+/* $Id: migration_start.php,v 1.2 2006/09/09 07:10:30 franciscom Exp $ */
 
 // 20060428 - franciscom - added new check  check_db_loaded_extension()
 //
@@ -55,7 +55,9 @@ $tl_and_version = "TestLink {$_SESSION['testlink_version']} ";
 				alert('You need to enter your database login name (with Administrative Rights)!');
 				return false;
 			}
-			
+
+      /*			
+			20060831 - franciscom
 			if(f.tl_loginname.value=="") {
 				alert('You need to enter your TestLink database login name (For Normal TestLink Operation)!');
 				return false;
@@ -65,6 +67,8 @@ $tl_and_version = "TestLink {$_SESSION['testlink_version']} ";
 				alert('You need to enter your TestLink database password (For Security empty password is not allowed)!');
 				return false;
 			}
+			*/
+			
 			return true;
 		}
 		</script>
@@ -200,6 +204,9 @@ exit;
 					<div class="labelHolder"><label for="databaseloginpassword">Database password:</label></div><input type="password" id="databaseloginpassword" name="databaseloginpassword" style="width:200px" /><br />
 				</p>
 
+
+        <!---
+				20060831 - franciscom
 				<p class="headers">
 					Database User for Normal Testlink use.
 				</p>
@@ -207,8 +214,6 @@ exit;
 				This user will have permission only to work on TestLink databases.<br>
         All connections to the Database Server during normal operation will be done with this user.
 			  </p>
-			
-
 
 				<p>
 					<div class="labelHolder">
@@ -221,6 +226,7 @@ exit;
 					</div>
 					<input type="password" id="tl_loginpassword" name="tl_loginpassword" style="width:200px" /><br />
 				</p>
+				--->
 				
 				<p> &nbsp;</p>
 				<p>

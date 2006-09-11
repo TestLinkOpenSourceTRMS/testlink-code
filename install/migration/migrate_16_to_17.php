@@ -14,7 +14,7 @@ $tl_and_version = "TestLink {$_SESSION['testlink_version']} ";
 <head>
 <!--
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: migrate_16_to_17.php,v 1.3 2006/09/09 07:10:30 franciscom Exp $ 
+$Id: migrate_16_to_17.php,v 1.4 2006/09/11 09:14:08 franciscom Exp $ 
 -->
 <title><?php echo $tl_and_version ?>Installer</title>
         <style type="text/css">
@@ -481,21 +481,6 @@ else
 echo "</div><p>";
 
 ?>
-
-  </td>
-  </tr>
-  </td>
-  </tr>
-  <tr class="fancyRow2">
-    <td class="border-top-bottom smallText">&nbsp;</td>
-    <td class="border-top-bottom smallText" align="right">&nbsp;</td>
-  </tr>
-  
-</table>
-</body>
-</html>
-
-
 
 
 <?php
@@ -1117,23 +1102,18 @@ function migrate_ownership(&$source_db,&$target_db,&$rs,&$map_tc_tcversion,&$old
 
   foreach($rs as $rid => $rdata)
   {
-     //echo "<b>" . $rid . "</b><br>";
-     //echo "<pre>debug 20060902 " . __FUNCTION__ . " --- "; print_r($rdata); echo "</pre>";
-     
      
      $tcversion_id=$map_tc_tcversion[$rdata['mgttcid']];
-     $tplan_id=$rdata['projid'];
+     $tplan_id=intval($rdata['projid']);
      $sql=" SELECT id FROM testplan_tcversions " .
           " WHERE testplan_id=" . $old_new['tplan'][$tplan_id] . 
           " AND tcversion_id=" . $tcversion_id;
-   
-     $feature_row=$source_db->fetchRowsIntoMap($sql,'id');
-     $feature_id=$feature_row['id'];   
-          
+     $feature_row=$target_db->get_recordset($sql);
+     $feature_id=$feature_row[0]['id'];   
   
      $owner_login=$rdata['owner'];
      $user_id = isset($users[$owner_login]) ? $users[$owner_login]['id'] : 0;
-     if( $user_id > 0 )
+     if( $user_id > 0 && $feature_id)
      {
       $sql="INSERT INTO user_assignments " .
            "(feature_id,user_id,creation_ts,type,status) " .
@@ -1145,5 +1125,15 @@ function migrate_ownership(&$source_db,&$target_db,&$rs,&$map_tc_tcversion,&$old
   }
 }
 ?>
+
+  </td>
+  </tr>
+  </td>
+  </tr>
+  <tr class="fancyRow2">
+    <td class="border-top-bottom smallText">&nbsp;</td>
+    <td class="border-top-bottom smallText" align="right">&nbsp;</td>
+  </tr>
+</table>
 </body>
 </html>

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: users.inc.php,v $
  *
- * @version $Revision: 1.34 $
- * @modified $Date: 2006/05/17 11:01:15 $ $Author: franciscom $
+ * @version $Revision: 1.35 $
+ * @modified $Date: 2006/09/15 13:15:40 $ $Author: franciscom $
  *
  * Functions for usermanagement
  *
@@ -326,13 +326,22 @@ function getUserById(&$db,$id)
 /**
  * Function-Documentation
  *
- * @param type $db [ref] documentation
- * @param type $whereClause [default = null] documentation
+ * @param $db [ref]
+ * @param $whereClause [default = null]
+ * @param $column [default = null]
+ *        $column=column name of users table that will be used as key 
+ *                in the returned assoc. array
+ *
+ *        $column=null, the returned array will be a 'classic' array
+ *                
+ *
  * @return type documentation
  *
  * 20051112 - scs - where clause was added at the wrong place
  * 20060224 - franciscom - table name user -> users
  *                       - removed role_id AS
+ * 20060911 - some documentation improvements
+ *
  **/
 function getAllUsers(&$db,$whereClause = null,$column = null)
 {
@@ -471,29 +480,26 @@ function checkLogin(&$db,$login)
 	return $sqlResult;
 }
 
-// 20051228 - fm
-//NOT USED AT THE MOMENT
-/*
-function user_is_active($login)
+
+/* 20060911 - franciscom */
+function get_users_for_html_options(&$db,$whereClause = null,$add_blank_option=false)
 {
-	$is_active=0;
-	
-	$sql = " SELECT active
-	         FROM user
-	         WHERE login='" . $db->prepare_string($login) . "'";
-	
-	$result = do_sql_query($sql);
+  $users_map=null;
+  $users=getAllUsers($db,$whereClause,'id');
   
-	if ($result)
-	{
-		if ($row = db->fetch_array($result))
-		{
-			$is_active = $row['active'];
-		}	
-	}
+  if( !is_null($users) )
+  {
+    if($add_blank_option)
+    {
+      $users_map[0]='';
+    }
+    
+    foreach($users as $key => $value)
+    {
+      $users_map[$key]=$value['login'];
+    }  
+  }
+	return($users_map);
+}//end function
 
-  return ($is_active);
-
-}
-*/
 ?>

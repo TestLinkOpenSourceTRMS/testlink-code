@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.27 $
- * @modified $Date: 2006/08/29 19:41:37 $ $Author: schlundus $
+ * @version $Revision: 1.28 $
+ * @modified $Date: 2006/09/15 13:15:40 $ $Author: franciscom $
  * @author franciscom
  *
  * 20060726 - franciscom - create_tcversion() return array changed
@@ -17,6 +17,8 @@
  *
  */
 require_once( dirname(__FILE__) . '/requirements.inc.php' );
+require_once( dirname(__FILE__) . '/assignment_mgr.class.php' );
+
 
 $g_tcImportTypes = array( 
 							 "XML" => "XML",
@@ -36,6 +38,10 @@ class testcase
 	var $node_types_descr_id;
 	var $node_types_id_descr;
 	var $my_node_type;
+  
+  var $assignment_mgr;
+  var $assignment_types;
+  var $assignment_status;
 
 	function testcase(&$db)
 	{
@@ -44,6 +50,14 @@ class testcase
 		$this->node_types_descr_id=$this->tree_manager->get_available_node_types();
 		$this->node_types_id_descr=array_flip($this->node_types_descr_id);
 		$this->my_node_type=$this->node_types_descr_id['testcase'];
+
+    // 20060908 - franciscom
+    $this->assignment_mgr=New assignment_mgr($this->db);
+    $this->assignment_types=$this->assignment_mgr->get_available_types(); 
+    $this->assignment_status=$this->assignment_mgr->get_available_status();
+
+
+
 	}
 
 
@@ -1088,6 +1102,38 @@ function exportTestCaseDataToXML($tcase_id,$tcversion_id)
 	return $xmlTC;
 }
 
+// args:
+//       id: test case id
+//       [tcversion_id]: can be a single value or an array
+//
+// returns a recorset with the following fields
+//
+// tcversion_id, linked 
+//
+// linked field: will take the following values
+//               NULL if the tc version is not linked to any test plan
+//               tcversion_id if linked 
+//
+//
+// rev : 
+//       20060912 - franciscom
+//
+function get_version_exec_assignment($tcversion_id,$tplan_id)
+{
 
+$sql="SELECT T.tcversion_id AS tcversion_id,T.id AS feature_id," .
+     "       UA.user_id,UA.type,UA.status,UA.assigner_id ".
+     " FROM testplan_tcversions T " . 
+     " LEFT OUTER JOIN user_assignments UA ON UA.feature_id = T.id " .
+     " WHERE T.testplan_id={$tplan_id} " .
+     " AND   T.tcversion_id = {$tcversion_id} " .
+     " AND   (UA.type=" . $this->assignment_types['testcase_execution']['id'] . 
+     "        OR UA.type IS NULL) ";
+
+  echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
+          
+$recordset = $this->db->fetchRowsIntoMap($sql,'tcversion_id');
+return($recordset);
+}
 } // end class
 ?>

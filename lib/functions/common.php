@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.47 $ $Author: schlundus $
- * @modified $Date: 2006/08/29 19:41:37 $
+ * @version $Revision: 1.48 $ $Author: franciscom $
+ * @modified $Date: 2006/09/15 13:13:26 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -18,28 +18,7 @@
  * testPlanID, testPlanName
  *
  *
- * @author: francisco mancardi - 20051005 - set_dt_formats()
- * @author: francisco mancardi - 20051002 - more changes to support filter_tp_by_product
- * 20051002 - am - code reformatted, small corrections
- * @author: francisco mancardi - 20050929 - changes to support filter_tp_by_product
- * @author: francisco mancardi - 20050917 - BUG ID 0000120: Impossible to edit product
- *
- * @author: francisco mancardi - 
- * created updateSessionTp_Prod() and changed doInitSelection() to solve: 
- * BUGID  0000092: Two products each with one active test plan incorrectly prints the wrong plan
- * 
- * @author: francisco mancardi - 20050907 - added hash2array()
- * @author: francisco mancardi - 20050904 - added check_hash_keys()
- *
- * @author: francisco mancardi - 20050904
- * TL 1.5.1 compatibility, get also Test Plans without product id.
- *
- * @author: francisco mancardi - 20050813 - added localize_date_smarty()
- * @author: francisco mancardi - 20050813 - added TP filtered by Product *
- * @author: francisco mancardi - 20050810 - added function to_boolean($alt_boolean)
- * 
- * @author: Asiel Brumfield - 20051012 - optimize sql queries
-**/ 
+ **/ 
 
 // 20051227 - fm - ADODB
 require_once("database.class.php");
@@ -697,6 +676,9 @@ returns: array where every element is an associative array with the following
 
        level and write_buttons are used to generate the user interface
 
+rev :
+      20060913 - franciscom - added new member to the tcversions hash
+      
 */
 function gen_spec_view(&$db,$spec_view_type='testproject',
                             $tobj_id,$id,$name,&$linked_items,
@@ -813,6 +795,11 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
                 $out[$parent_idx]['write_buttons'] = $write_status;
                 $out[$parent_idx]['testcase_qty']++;
   	            $out[$parent_idx]['linked_testcase_qty'] = 0;
+  	  
+  	            // useful for tc_exec_assignment.php          
+  	            // 20060913 - franciscom
+                $out[$parent_idx]['testcases'][$tc_id]['user_id'] = 0;
+                $out[$parent_idx]['testcases'][$tc_id]['feature_id'] = 0;
 
                 $a_tcid[] = $current['id'];
             }
@@ -835,40 +822,50 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
    			}
 		}
 
-	$result['num_tc'] = count($a_tcid);
-	$result['has_linked_items'] = 0;
+	  $result['num_tc'] = count($a_tcid);
+	  $result['has_linked_items'] = 0;
 		
     if($result['num_tc'])
     {
-		$tcase_set = $tcase_mgr->get_by_id($a_tcid);
+		  $tcase_set = $tcase_mgr->get_by_id($a_tcid);
 		
-		foreach($tcase_set as $the_k => $the_tc)
+		  foreach($tcase_set as $the_k => $the_tc)
     	{
-			$tc_id = $the_tc['testcase_id'];
-			$parent_idx = $a_tsuite_idx[$tc_id];
-			$out[$parent_idx]['testcases'][$tc_id]['tcversions'][$the_tc['id']] = $the_tc['version'];
+			  $tc_id = $the_tc['testcase_id'];
+			  $parent_idx = $a_tsuite_idx[$tc_id];
+			  $out[$parent_idx]['testcases'][$tc_id]['tcversions'][$the_tc['id']] = $the_tc['version'];
             
-			if(!is_null($linked_items))
-			{
-				foreach($linked_items as $the_item)
-				{
-					if(($the_item['tc_id'] == $the_tc['testcase_id']) &&
-						($the_item['tcversion_id'] == $the_tc['id']) )
-					{
-						$out[$parent_idx]['testcases'][$tc_id]['linked_version_id'] = $the_item['tcversion_id'];
-						$out[$parent_idx]['write_buttons'] = 'yes';
-						$out[$parent_idx]['linked_testcase_qty']++;
+			  if(!is_null($linked_items))
+			  {
+				  foreach($linked_items as $the_item)
+				  {
+					  if(($the_item['tc_id'] == $the_tc['testcase_id']) &&
+						  ($the_item['tcversion_id'] == $the_tc['id']) )
+					  {
+						  $out[$parent_idx]['testcases'][$tc_id]['linked_version_id'] = $the_item['tcversion_id'];
+						  $out[$parent_idx]['write_buttons'] = 'yes';
+						  $out[$parent_idx]['linked_testcase_qty']++;
 						
-						$result['has_linked_items'] = 1;
+					  	$result['has_linked_items'] = 1;
 						
-						if( intval($the_item['executed']))
-						{
-							$out[$parent_idx]['testcases'][$tc_id]['executed']='yes';
-						} 
-						break;
-					}
-				}
-			}    
+						  if( intval($the_item['executed']))
+						  {
+							  $out[$parent_idx]['testcases'][$tc_id]['executed']='yes';
+						  } 
+
+              // 20060911 - franciscom
+						  if( isset($the_item['user_id']) )
+						  {
+							  $out[$parent_idx]['testcases'][$tc_id]['user_id']=intval($the_item['user_id']);
+						  } 
+						  if( isset($the_item['feature_id']) )
+						  {
+							  $out[$parent_idx]['testcases'][$tc_id]['feature_id']=intval($the_item['feature_id']);
+						  }
+						  break;
+					 }
+				 }
+			 }    
 		}
 	}
 	$result['spec_view'] = $out;

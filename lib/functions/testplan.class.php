@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.8 $
- * @modified $Date: 2006/08/17 19:29:59 $ $Author: schlundus $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2006/09/15 13:15:40 $ $Author: franciscom $
  * @author franciscom
  *
  * 20060805 - franciscom - created update()
@@ -13,16 +13,28 @@
  */
 
 require_once( dirname(__FILE__). '/tree.class.php' );
+require_once( dirname(__FILE__) . '/assignment_mgr.class.php' );
+
 class testplan
 {
 
 var $db;
 var $tree_manager;
+var $assignment_mgr;
+var $assignment_types;
+var $assignment_status;
+
 
 function testplan(&$db)
 {
   $this->db = &$db;	
   $this->tree_manager = New tree($this->db);
+
+  // 20060910 - franciscom
+  $this->assignment_mgr=New assignment_mgr($this->db);
+  $this->assignment_types=$this->assignment_mgr->get_available_types(); 
+  $this->assignment_status=$this->assignment_mgr->get_available_status();
+
 }
 
 
@@ -217,19 +229,21 @@ if( is_null($executed) )
 }          
 $executions_join .= " JOIN executions E ON NHA.id = E.tcversion_id ";
 
-
-$sql="SELECT DISTINCT NHB.parent_id AS testsuite_id,
-              NHA.parent_id AS tc_id, 
-              T.tcversion_id AS tcversion_id,
-              E.tcversion_id AS executed
-      FROM nodes_hierarchy NHA
-      JOIN nodes_hierarchy NHB ON NHA.parent_id = NHB.id 
-      JOIN testplan_tcversions T ON NHA.id = T.tcversion_id 
-      {$executions_join}
-      {$keywords_join}
-      WHERE T.testplan_id={$id} {$keywords_filter} {$tc_id_filter}      
-      ORDER BY testsuite_id";
-          
+$sql=" SELECT DISTINCT NHB.parent_id AS testsuite_id, " .
+     "        NHA.parent_id AS tc_id," .
+     "        T.tcversion_id AS tcversion_id, T.id AS feature_id," .
+     "        E.tcversion_id AS executed, " .
+     "        UA.user_id,UA.type,UA.status,UA.assigner_id ".
+     " FROM nodes_hierarchy NHA " .
+     " JOIN nodes_hierarchy NHB ON NHA.parent_id = NHB.id " .
+     " JOIN testplan_tcversions T ON NHA.id = T.tcversion_id " .
+     " {$executions_join} " .
+     " {$keywords_join} " .
+     " LEFT OUTER JOIN user_assignments UA ON UA.feature_id = T.id " . 
+     " WHERE T.testplan_id={$id} {$keywords_filter} {$tc_id_filter} " .
+     " AND (UA.type=" . $this->assignment_types['testcase_execution']['id'] . 
+     "      OR UA.type IS NULL) " .
+     " ORDER BY testsuite_id";
 $recordset = $this->db->fetchRowsIntoMap($sql,'tc_id');
 return($recordset);
 }
@@ -269,9 +283,12 @@ function get_builds($id)
 
 
 
-
-// 20060430 - franciscom
+// $id   : test plan id 
 // $items: assoc array key=tc_id value=tcversion_id
+//
+//
+// 20060910 - franciscom
+// added remove of records from user_assignments table
 //
 function unlink_tcversions($id,&$items)
 {
@@ -305,7 +322,23 @@ function unlink_tcversions($id,&$items)
           $result = $this->db->exec_query($sql);    
       }
       
-      // build sql
+      // ----------------------------------------------------------------
+      // 20060910 - franciscom 
+      // to remove the assignment to users (if any exists)
+      // we need the list of id
+      $sql=" SELECT id AS link_id FROM testplan_tcversions 
+             WHERE testplan_id={$id} {$in_clause} ";
+	    // $link_id = $this->db->get_recordset($sql);
+	    $link_ids = $this->db->fetchRowsIntoMap($sql,'link_id');
+	    $features = array_keys($link_ids);
+	    if( count($features) == 1)
+	    {
+	      $features=$features[0];
+	    }
+	    $this->assignment_mgr->delete_by_feature_id($features);
+	    // ----------------------------------------------------------------      
+	          
+      // Delete from link table
       $sql=" DELETE FROM testplan_tcversions 
              WHERE testplan_id={$id} {$in_clause} ";
 	    $result = $this->db->exec_query($sql);
@@ -363,6 +396,6 @@ function get_keywords_tcases($id,$keyword_id=0)
   }
   return ($map_keywords);
 } // end function
-
+// -------------------------------------------------------------------------------
 } // end class
 ?>

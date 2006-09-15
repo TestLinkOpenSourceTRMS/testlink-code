@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.66 $
- * @modified $Date: 2006/09/09 07:10:55 $ $Author: franciscom $
+ * @version $Revision: 1.67 $
+ * @modified $Date: 2006/09/15 13:26:21 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
@@ -1369,5 +1369,9 @@ $TLS_attachment_feature_disabled="attachment disabled";
 // 20060908 - franciscom
 $TLS_href_plan_define_priority="Define priority rules";
 $TLS_href_tc_exec_assignment = "Assign test case execution";
+
+
+// 20060914 - franciscom
+$TLS_title_tc_exec_assignment="Assing test case execution tasks for test plan ";
 
 ?>

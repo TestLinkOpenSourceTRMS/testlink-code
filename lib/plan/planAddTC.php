@@ -1,7 +1,7 @@
 <?php
 
 ////////////////////////////////////////////////////////////////////////////////
-// @version $Id: planAddTC.php,v 1.21 2006/08/17 19:29:59 schlundus Exp $
+// @version $Id: planAddTC.php,v 1.22 2006/09/15 13:16:43 franciscom Exp $
 // File:     planAddTC.php
 // Author:   Chad Rosen
 // Purpose:  This page manages the importation of test cases into testlink.
@@ -39,6 +39,7 @@ if($_GET['edit'] == 'testsuite')
                        $tproject_id,$object_id,$tsuite_data['name'],
                        $tplan_mgr->get_linked_tcversions($tplan_id,DONT_FILTER_BY_TCASE_ID,$keyword_id),
                        $keyword_id,DONT_FILTER_BY_TCASE_ID);
+                       
     $do_display = 1;  
 }
 else

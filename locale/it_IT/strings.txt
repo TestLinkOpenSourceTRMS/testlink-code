@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.10 $
- * @modified $Date: 2005/12/09 10:04:35 $ $Author: franciscom $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2006/09/15 13:26:21 $ $Author: franciscom $
  *
  * 20051208 - fm - corrected problems with javascript messages
  * \n must be \\n, ' must be \'
@@ -1137,6 +1137,14 @@ $TLS_req_import_finished = "Importazione finita!";
 // inc_reqView.tpl
 $TLS_Author = "Autore";
 $TLS_btn_close = "Chiudi";
+
+// 20060908 - franciscom
+$TLS_href_plan_define_priority="Define priority rules";
+$TLS_href_tc_exec_assignment = "Assign test case execution";
+
+
+// 20060914 - franciscom
+$TLS_title_tc_exec_assignment="Assing test case execution tasks for test plan ";
 
 
 ?>

@@ -1,7 +1,7 @@
 <?php
 /** 
 *	TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* 	@version $Id: testSetNavigator.php,v 1.15 2006/08/17 19:29:59 schlundus Exp $
+* 	@version $Id: testSetNavigator.php,v 1.16 2006/09/15 13:16:58 franciscom Exp $
 *	@author Martin Havlat 
 *
 * This page navigate according to Test Set. It builds the javascript trees 
@@ -45,6 +45,13 @@ if ($_GET['feature'] == 'removeTC')
 elseif ($_GET['feature'] == 'priorityAssign')
 {
 	$menuUrl = "lib/plan/planOwner.php";
+	$title = lang_get('title_test_plan_navigator');
+	$tcHide = 1;
+	$help_file = "planOwnerAndPriority.html";
+}
+elseif ($_GET['feature'] == 'tc_exec_assignment')
+{
+	$menuUrl = "lib/plan/tc_exec_assignment.php";
 	$title = lang_get('title_test_plan_navigator');
 	$tcHide = 1;
 	$help_file = "planOwnerAndPriority.html";

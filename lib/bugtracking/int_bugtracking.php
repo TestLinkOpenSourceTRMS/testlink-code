@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: int_bugtracking.php,v $
  *
- * @version $Revision: 1.9 $
- * @modified $Date: 2006/07/28 17:22:04 $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2006/09/15 13:14:07 $
  *
  * @author Andreas Morsing
  *
@@ -17,6 +17,8 @@
  * All bug tracking customization should be done in a sub class of this
  * class . for an example look at the bugzilla.cfg.php and mantis.cfg.php
  * 
+ * 20060914 - franciscom - solved hidden bug in connect
+ *
  * 20051229 - scs - added ADOdb support
  *
 **/
@@ -87,6 +89,10 @@ class bugtrackingInterface
 	 * db could be selected, false else
 	 *
 	 * @version 1.0
+	 * @author Francisco Mancardi
+	 * @since 14.09.2006
+	 *
+	 * @version 1.0
 	 * @author Andreas Morsing 
 	 * @since 22.04.2005, 21:05:25
 	 **/
@@ -101,7 +107,7 @@ class bugtrackingInterface
 		if (!$result['status'])
 			$this->m_dbConnection = null;
 			
-		$this->m_bConnected = $result ? 1 : 0;
+		$this->m_bConnected = $result['status'] ? 1 : 0;
 
 		return $this->m_bConnected;
 	}

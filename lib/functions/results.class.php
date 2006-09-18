@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8 
- * @modified $Date: 2006/08/30 05:31:27 $ by $Author: kevinlevy $
+ * @modified $Date: 2006/09/18 07:16:15 $ by $Author: franciscom $
  *
  *
  * This class is encapsulates most functionality necessary to query the database
@@ -273,7 +273,9 @@ class results
   			elseif($currentResult == 'n'){
   				$totalNotRun++;
   			}  			
-  			$this->mapOfSuiteSummary[$suiteId] =  array(total => $totalCasesInSuite, pass => $totalPass, fail => $totalFailed, blocked => $totalBlocked, notRun => $totalNotRun);
+  			$this->mapOfSuiteSummary[$suiteId] =  array(total => $totalCasesInSuite, 
+  			                                            pass => $totalPass, fail => $totalFailed, 
+  			                                            blocked => $totalBlocked, notRun => $totalNotRun);
   			next($mapOfLastResult[$suiteId]);
   		}  		
   		// print "current suite = " . $suiteId . " total cases = " . $totalCasesInSuite . "<BR>";  		
@@ -298,7 +300,11 @@ class results
  				
  				if (array_key_exists($suiteId, $mapOfSuiteSummary)) {
  					$summaryArray = $mapOfSuiteSummary[$suiteId];
- 					$this->addResultsToAggregate($summaryArray[total], $summaryArray[pass], $summaryArray[fail], $summaryArray[blocked], $summaryArray[notRun]);
+ 					$this->addResultsToAggregate($summaryArray[total], 
+ 					                             $summaryArray[pass], 
+ 					                             $summaryArray[fail], 
+ 					                             $summaryArray[blocked], 
+ 					                             $summaryArray[notRun]);
  				}
  				
   				  					
@@ -344,7 +350,8 @@ class results
   		} // end if
   			
   	}
-  	return array(total => $total_sum, pass => $pass_sum, fail => $fail_sum, blocked => $blocked_sum, notRun => $notRun_sum); 	
+  	return array(total => $total_sum, pass => $pass_sum, fail => $fail_sum, 
+  	             blocked => $blocked_sum, notRun => $notRun_sum); 	
   }
   
   /**
@@ -372,7 +379,8 @@ class results
  	 		$blocked = $currentSuite[blocked] + $b;
   			$notRun = $currentSuite[notRun] + $nr ;  		
   			
-  			$currentSuite = array(total => $total, pass => $pass, fail => $fail, blocked => $blocked, notRun => $notRun);	
+  			$currentSuite = array(total => $total, pass => $pass, fail => $fail, 
+  			                      blocked => $blocked, notRun => $notRun);	
   		}
   		else {
   			$currentSuite = array(total => $t, pass => $p, fail => $f, blocked => $b, notRun => $nr);	
@@ -471,7 +479,8 @@ class results
 			$executionExists = false;
 			// print "test case version id " . $tcversion_id . " not executed <BR>";
 			// print "executed = $executed <BR>";
-			$infoToSave = array(testcaseID => $testcaseID, tcversion_id => $tcversion_id, build_id => '', tester_id => '', execution_ts => '', status => 'n', notes => '');
+			$infoToSave = array(testcaseID => $testcaseID, tcversion_id => $tcversion_id, 
+			                    build_id => '', tester_id => '', execution_ts => '', status => 'n', notes => '');
 			array_push($currentSuite, $infoToSave);			
       }
 
@@ -482,7 +491,14 @@ class results
 		// over multiple test plans - by modifying this select statement slightly
 		// to include multiple test plan ids
 
-		$execQuery = $this->db->fetchArrayRowsIntoMap("select * from executions where tcversion_id = $executed AND testplan_id = $_SESSION[testPlanId] AND build_id IN ($builds_to_query) ", 'id');
+    // 20060917 - franciscom - REFACTORING
+    $sql="SELECT * FROM executions " .
+         "WHERE tcversion_id = $executed AND testplan_id = $_SESSION[testPlanId] " .
+         "AND build_id IN ($builds_to_query) ";
+		$execQuery = $this->db->fetchArrayRowsIntoMap($sql,'id');
+		// -----------------------------------------------------------
+		
+		
 	    while($executions_id = key($execQuery)){
 	    	//print "in the loop <BR>";
 	  		$notSureA = $execQuery[$executions_id];

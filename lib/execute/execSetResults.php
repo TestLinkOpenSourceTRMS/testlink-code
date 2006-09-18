@@ -4,10 +4,12 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.36 $
- * @modified $Date: 2006/08/17 19:29:59 $ $Author: schlundus $
+ * @version $Revision: 1.37 $
+ * @modified $Date: 2006/09/18 07:14:48 $ $Author: franciscom $
  *
  * @author Martin Havlat
+ *
+ * 20060917 - franciscom - bug management
  *
  * 20060809 - franciscom - send test plan notes, build notes
  *                         and parent test suite details
@@ -65,9 +67,6 @@ if($history_on)
 // Added to set Test Results editable by comparing themax Build ID and the requested Build ID.			
 $editTestResult = "yes";
 $latestBuild = 0;
-//$allbuilds = getBuilds($tpID, 'ORDER BY build.id DESC');
-//$latestBuild = array_keys($allbuilds);
-//$latestBuild = $latestBuild[0];
 if(($latestBuild > $build_id) && !(config_get('edit_old_build_results')))
 {
 	$editTestResult = "no";
@@ -76,6 +75,8 @@ if(($latestBuild > $build_id) && !(config_get('edit_old_build_results')))
 
 
 // ----------------------------------------------------------------
+$bugs=null; // 20060917 - franciscom
+
 $attachmentInfos=null;
 $map_last_exec=null;
 $other_execs=null;
@@ -167,9 +168,11 @@ if(!is_null($xx))
     
     if(!is_null($other_execs))
     {
+        $_bugInterfaceOn = config_get('bugInterfaceOn');
+
         foreach($other_execs as $tcversion_id => $execInfo)
         {
-			$num_elem = sizeof($execInfo);   
+			    $num_elem = sizeof($execInfo);   
         	for($i = 0;$i < $num_elem;$i++)
         	{
         		$execID = $execInfo[$i]['execution_id'];
@@ -179,11 +182,22 @@ if(!is_null($xx))
         		{
         			$attachmentInfos[$execID] = $aInfo;
         		}
+        		
+        		if($_bugInterfaceOn)
+        		{
+              $the_bugs=get_bugs_for_exec($db,config_get('bugInterface'),$execID);
+              if( count($the_bugs) > 0 )
+              { 
+        		    $bugs[$execID] = $the_bugs;
+        		  }
+        		}
         	}
         }
     }
 }
+
 $smarty = new TLSmarty();
+$smarty->assign('bugs_for_exec',$bugs); // 20060917 - franciscom
 
 // 20060808 - franciscom
 $rs=$tplan_mgr->get_by_id($tplan_id);

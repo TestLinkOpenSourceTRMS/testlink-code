@@ -1,5 +1,5 @@
 {* Testlink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: inc_head.tpl,v 1.6 2006/06/20 19:51:32 schlundus Exp $ *}
+{* $Id: inc_head.tpl,v 1.7 2006/09/18 07:12:06 franciscom Exp $ *}
 {* Purpose: smarty template - HTML Common Header *}
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
      "DTD/xhtml1-transitional.dtd">
@@ -37,6 +37,11 @@
 	var attachmentDlg_refWindow = null;
 	var attachmentDlg_refLocation = null;
 	var attachmentDlg_bNoRefresh = false;
+	
+	// 20060916 - franciscom
+	// bug management (using logic similar to attachment)
+	var bug_dialog=new bug_dialog();
+  
 	</script> 
 {if $openHead == "no"} {* 'no' is default defined in config *}
 </head>

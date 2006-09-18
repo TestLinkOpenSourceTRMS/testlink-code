@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/ 
 // This script is distributed under the GNU General Public License 2 or later. 
 //
-// $Id: testlink_library.js,v 1.17 2006/08/17 19:29:59 schlundus Exp $ 
+// $Id: testlink_library.js,v 1.18 2006/09/18 07:15:15 franciscom Exp $ 
 //
 // Javascript functions commonly used through the GUI
 // This library is automatically loaded with inc_header.tpl
@@ -265,4 +265,64 @@ function tree_getCheckBox(id)
 	if (cb && cb.checked)
 		return id+'=y';
 	return null;
+}
+
+
+function open_bug_add_window(exec_id)
+{
+	window.open(fRoot+"lib/execute/bug_add.php?exec_id="+exec_id,"bug_add","width=510,height=270,resizable=yes,dependent=yes");
+}
+
+// 20060916 - franciscom
+function bug_dialog() 
+{
+  this.refWindow = null;
+  this.refLocation = null;
+  this.NoRefresh = false;
+}
+
+function dialog_onSubmit(odialog)
+{
+	odialog.NoRefresh = true;
+	return true;
+}
+
+function dialog_onLoad(odialog)
+{
+	odialog.refWindow = null;
+	odialog.refLocation = null;
+	try
+	{
+		odialog.refWindow = top.opener;
+		odialog.refLocation = top.opener.location;
+	}
+	catch(e)
+	{}
+}
+
+function dialog_onUnload(odialog)
+{
+	if (odialog.NoRefresh)
+	{
+		odialog.NoRefresh = false;
+		return;
+	}
+	try
+	{
+		if (odialog.refWindow == top.opener)
+			top.opener.location = odialog.refLocation;		
+	}
+	catch(e)
+	{}
+	odialog.refWindow = null;
+	odialog.refLocation = null;
+}
+
+function deleteBug_onClick(execution_id,bug_id,warning_msg)
+{
+	if (confirm(warning_msg))
+	{
+		window.open(fRoot+"lib/execute/bug_delete.php?exec_id="+execution_id+"&bug_id="+bug_id,
+		            "Delete","width=510,height=150,resizable=yes,dependent=yes");
+	}	
 }

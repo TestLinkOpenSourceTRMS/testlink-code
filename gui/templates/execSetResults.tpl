@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execSetResults.tpl,v 1.26 2006/08/21 13:19:53 franciscom Exp $ *}
+{* $Id: execSetResults.tpl,v 1.27 2006/09/18 07:12:06 franciscom Exp $ *}
 {* Purpose: smarty template - show tests to add results *}
 {* Revisions:
               20060814 - franciscom - added display of test suites details
@@ -188,6 +188,12 @@
 				
 				{if $att_model->show_upload_column}
 						<th style="text-align:left">{lang_get s='attachment_mgmt'}</th>
+            {assign var="my_colspan" value=$att_model->num_cols}
+        {/if}
+
+				{if $g_bugInterfaceOn}
+          <th style="text-align:left">{lang_get s='bug_mgmt'}</th>
+          {assign var="my_colspan" value=$my_colspan+1}
         {/if}
         
 			 </tr>
@@ -199,14 +205,22 @@
 				<td>{$tc_old_exec.execution_notes|escape}</td>
 
 	        {if $att_model->show_upload_column}
-    			<td align="center"><a href="javascript:openFileUploadWindow({$tc_old_exec.execution_id},'executions')">
+    			  <td align="center"><a href="javascript:openFileUploadWindow({$tc_old_exec.execution_id},'executions')">
     			    <img src="icons/upload_16.png" alt="{lang_get s='alt_attachment_mgmt'}" 
     			         style="border:none" /></a>
             </td>
 	        {/if}
+
+  				{if $g_bugInterfaceOn}
+    			<td align="center"><a href="javascript:open_bug_add_window({$tc_old_exec.execution_id})">
+    			    <img src="icons/bug1.gif" title="{lang_get s='img_title_bug_mgmt'}" 
+    			         style="border:none" /></a>
+            </td>
+          {/if}
+          
 			</tr>  
 			<tr>
-			<td colspan="{$att_model->num_cols}">
+			<td colspan="{$my_colspan}">
 				{assign var="execID" value=$tc_old_exec.execution_id}
 
 				{assign var="attach_info" value=$attachments[$execID]}
@@ -217,6 +231,19 @@
 				         show_title=$att_model->show_title }
 			</td>
 			</tr>
+
+      {* Execution Bugs (if any) *}
+      {if $bugs_for_exec[$execID] neq ""}
+  			<tr>
+  			<td colspan="{$my_colspan}">
+  				{include file="inc_show_bug_table.tpl" 
+  				         bugs_map=$bugs_for_exec[$execID] 
+  				         can_delete=true
+  				         exec_id=$execID}
+  			</td>
+  			</tr>
+  		{/if}	
+			
 			{/foreach}
 			</table>
 		{/if}

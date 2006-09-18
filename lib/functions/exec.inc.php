@@ -4,20 +4,19 @@
  *
  * Filename $RCSfile: exec.inc.php,v $
  *
- * @version $Revision: 1.29 $
- * @modified $Date: 2006/05/29 06:39:11 $ $Author: franciscom $
+ * @version $Revision: 1.30 $
+ * @modified $Date: 2006/09/18 07:15:56 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
  * Functions for execution feature (add test results) 
  *
- * 20050926 - fm - db changes build -> build_id
- * 20050905 - fm - reduce global coupling
+ * 20050905 - franciscom - reduce global coupling
+ * 20050926 - franciscom - db changes build -> build_id
  *
- * 20050807 - fm
+ * 20050807 - franciscom
  * filterKeyword()   : added $idPlan to remove global coupling via _SESSION
  * createBuildMenu() : added $idPlan to remove global coupling via _SESSION
- *
  *
  * 20051118  - scs - FIXED: missing localization for test_Results_submitted
  * 20051119  - scs - added fix for 227
@@ -25,10 +24,13 @@
  *                 builds table in order to comply with new 1.7 schema
  *
  * 20060528 - franciscom - adding management of bulk update
- *
+ * 20060916 - franciscom - added write_execution_bug()
+ *                               get_bugs_for_exec()
  *
 **/
 require_once('../functions/common.php');
+
+define('GET_BUG_SUMMARY',true);
 
 /**
  * Function just grabs number of builds
@@ -431,5 +433,49 @@ function write_execution(&$db,$user_id, $exec_data, $tplan_id,$build_id,$map_las
 			$db->exec_query($sql);  	     
 		}
 	}
+}
+
+// 20060916 - franciscom
+function write_execution_bug(&$db,$exec_id, $bug_id,$just_delete=false)
+{
+	
+	// Instead of Check if record exists before inserting,
+	// do delete + insert
+	$prep_bug_id=$db->prepare_string($bug_id);
+	
+	$sql="DELETE FROM execution_bugs " .
+	     "WHERE execution_id={$exec_id} " .
+	     "AND bug_id='" . $prep_bug_id ."'";
+	$db->exec_query($sql);
+	
+	if( !$just_delete )
+	{
+    	$sql="INSERT INTO execution_bugs " .
+    	     "(execution_id,bug_id) " .
+    	     "VALUES({$exec_id},'" . $prep_bug_id . "')";
+    	$db->exec_query($sql);  	     
+	}
+}
+
+// 20060916 - franciscom
+function get_bugs_for_exec(&$db,&$bug_interface,$execution_id)
+{
+  $bug_list=array();
+	$sql = "SELECT execution_id,bug_id,builds.name AS build_name " .
+	       "FROM execution_bugs,executions,builds ".
+	       "WHERE execution_id={$execution_id} " .
+	       "AND   execution_id=executions.id " .
+	       "AND   executions.build_id=builds.id " .
+	       "ORDER BY builds.name,bug_id";
+	$map = $db->get_recordset($sql);
+	if( !is_null($map) )
+  {  	
+    	foreach($map as $elem)
+    	{
+    		$bug_list[$elem['bug_id']]['link_to_bts'] = $bug_interface->buildViewBugLink($elem['bug_id'],GET_BUG_SUMMARY);
+    		$bug_list[$elem['bug_id']]['build_name'] = $elem['build_name'];
+    	}
+  }
+  return($bug_list);
 }
 ?>

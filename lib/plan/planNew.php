@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: planNew.php,v $
  *
- * @version $Revision: 1.21 $
- * @modified $Date: 2006/08/07 09:44:09 $ $Author: franciscom $
+ * @version $Revision: 1.22 $
+ * @modified $Date: 2006/09/21 08:32:24 $ $Author: franciscom $
  *
  * Purpose:  Add new or edit existing Test Plan 
  *
@@ -101,7 +101,9 @@ else if($bNewTestPlan || $bEditTestPlan)
 					$result = insertTestPlanUserRight($db, $tp_id,$args->userID);
 		    
 				if($args->copy) 
-					copy_deep_testplan($db, $args->source_tpid, $tp_id);
+					//copy_deep_testplan($db, $args->source_tpid, $tp_id);
+ 					$tplan_mgr->copy_as($args->source_tpid, $tp_id);
+
 			  }
 			
 			}

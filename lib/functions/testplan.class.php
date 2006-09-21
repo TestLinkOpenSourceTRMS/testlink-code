@@ -2,9 +2,11 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.9 $
- * @modified $Date: 2006/09/15 13:15:40 $ $Author: franciscom $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2006/09/21 08:32:24 $ $Author: franciscom $
  * @author franciscom
+ *
+ * 20060919 - franciscom - copy_* functions
  *
  * 20060805 - franciscom - created update()
  * 20060603 - franciscom - changes in get_linked_tcversions()
@@ -14,6 +16,7 @@
 
 require_once( dirname(__FILE__). '/tree.class.php' );
 require_once( dirname(__FILE__) . '/assignment_mgr.class.php' );
+require_once( dirname(__FILE__) . '/attachments.inc.php' );
 
 class testplan
 {
@@ -397,5 +400,200 @@ function get_keywords_tcases($id,$keyword_id=0)
   return ($map_keywords);
 } // end function
 // -------------------------------------------------------------------------------
+
+// 20060919 - francisco.mancardi@gruppotesi.com
+// $id: source testplan id
+// $new_tplan_id: destination
+// $tplan_name  != null => set this as the new name
+// $tproject_id != null => set this as the new testproject for the testplan
+//                         this allow us to copy testplans to differents
+//                         test projects.
+//
+function copy_as($id,$new_tplan_id,$tplan_name=null,$tproject_id=null)
+{
+  // get source testplan general info
+  $rs_source=$this->get_by_id($id);
+  
+  if(!is_null($tplan_name))
+  {
+    $sql="UPDATE nodes_hierarchy " .
+         "SET name='" . $this->db->prepare_string(trim($tplan_name)) . "' " .
+         "WHERE id={$new_tplan_id}";
+    $this->db->exec_query($sql);
+  }  
+  
+  if(!is_null($tproject_id))
+  {
+    $sql="UPDATE testplans " .
+         "SET testproject_id={$tproject_id} " .
+         "WHERE id={$new_tplan_id}";
+    $this->db->exec_query($sql);
+  }  
+  
+  $this->copy_builds($id,$new_tplan_id);
+  $this->copy_linked_tcversions($id,$new_tplan_id);
+  $this->copy_milestones($id,$new_tplan_id);
+  //$this->copy_attachments($id,$new_tplan_id);
+  $this->copy_user_roles($id,$new_tplan_id);
+  $this->copy_priorities($id,$new_tplan_id);
+
+} // end function
+
+
+// $id: source testplan id
+// $new_tplan_id: destination
+//
+function copy_builds($id,$new_tplan_id)
+{
+  $rs=$this->get_builds($id);
+  
+  if(!is_null($rs))
+  {
+    foreach($rs as $build)
+    {
+      $sql="INSERT builds (name,notes,testplan_id) " .
+           "VALUES ('" . $this->db->prepare_string($build['name']) ."'," .
+           "'" . $this->db->prepare_string($build['notes']) ."',{$new_tplan_id})";
+           
+      $this->db->exec_query($sql);     
+    }
+  }
+}
+
+
+// $id: source testplan id
+// $new_tplan_id: destination
+//
+function copy_linked_tcversions($id,$new_tplan_id)
+{
+  $sql="SELECT * FROM testplan_tcversions WHERE testplan_id={$id} ";
+       
+  $rs=$this->db->get_recordset($sql);
+  
+  if(!is_null($rs))
+  {
+    foreach($rs as $elem)
+    {
+      $sql="INSERT INTO testplan_tcversions " .
+           "(testplan_id,tcversion_id) " .
+           "VALUES({$new_tplan_id}," . $elem['tcversion_id'] .")";
+      $this->db->exec_query($sql);     
+    }
+  }
+}
+
+// $id: source testplan id
+// $new_tplan_id: destination
+//
+function copy_milestones($id,$new_tplan_id)
+{
+  $sql="SELECT * FROM milestones WHERE testplan_id={$id} ";
+  $rs=$this->db->get_recordset($sql);
+  
+  if(!is_null($rs))
+  {
+    foreach($rs as $mstone)
+    {
+      $sql="INSERT milestones (name,A,B,C,date,testplan_id) " .
+           "VALUES ('" . $this->db->prepare_string($mstone['name']) ."'," .
+           $mstone['A'] . "," . $mstone['B'] . "," . $mstone['C'] . "," . 
+           "'" . $mstone['date'] . "',{$new_tplan_id})";
+           
+      $this->db->exec_query($sql);     
+    }
+  }
+}
+
+
+// $id: source testplan id
+// $new_tplan_id: destination
+//
+function copy_user_roles($id,$new_tplan_id)
+{
+  $sql="SELECT * FROM user_testplan_roles WHERE testplan_id={$id} ";
+       
+  $rs=$this->db->get_recordset($sql);
+  
+  if(!is_null($rs))
+  {
+    foreach($rs as $elem)
+    {
+      $sql="INSERT INTO user_testplan_roles " .
+           "(testplan_id,user_id,role_id) " .
+           "VALUES({$new_tplan_id}," . $elem['user_id'] ."," . $elem['role_id'] . ")";
+      $this->db->exec_query($sql);     
+    }
+  }
+}
+
+// $id: source testplan id
+// $new_tplan_id: destination
+//
+function copy_priorities($id,$new_tplan_id)
+{
+  $sql="SELECT * FROM priorities WHERE testplan_id={$id} ";
+  $rs=$this->db->get_recordset($sql);
+  if(!is_null($rs))
+  {
+    foreach($rs as $pr)
+    {
+      $sql="INSERT priorities (risk_importance,priority,testplan_id) " .
+           "VALUES ('" . $pr['risk_importance'] ."'," .
+           "'" . $pr['priority'] . "',{$new_tplan_id})";
+      $this->db->exec_query($sql);     
+    }
+  }
+}
+
+
+function delete($id)
+{
+  
+  $the_sql=array();
+  $main_sql=array();
+  
+  $the_sql[]="DELETE FROM user_testplan_roles WHERE testplan_id={$id}";
+  $the_sql[]="DELETE FROM milestones WHERE testplan_id={$id}";
+  $the_sql[]="DELETE FROM testplan_tcversions WHERE testplan_id={$id}";
+  $the_sql[]="DELETE FROM builds WHERE testplan_id={$id}";
+  $the_sql[]="DELETE FROM priorities WHERE testplan_id={$id}";
+  $the_sql[]="DELETE FROM risk_assignments WHERE testplan_id={$id}";
+  $the_sql[]="DELETE FROM cfield_execution_values WHERE testplan_id={$id}";
+  
+  // When deleting from executions, we need to clean related tables
+  $the_sql[]="DELETE FROM execution_bugs WHERE execution_id ".
+             "IN (SELECT id from executions WHERE testplan_id={$id})";
+  $the_sql[]="DELETE FROM executions WHERE testplan_id={$id}";
+  
+  
+  foreach($the_sql as $sql)
+  {
+    $this->db->exec_query($sql);  
+  }
+
+  // ------------------------------------------------------------------------
+  // attachments need special care
+  $sql="SELECT * FROM attachments WHERE fk_id={$id} AND fk_table='testplans'";
+  $rs=$this->db->exec_query($sql);  
+  if(!is_null($rs))
+  {
+    foreach($rs as $elem)
+    {
+       deleteAttachment($this->db,$elem['id']);
+    }  
+  }
+  // ------------------------------------------------------------------------  
+  
+  // Finally delete from main table
+  $main_sql[]="DELETE FROM testplans WHERE testplan_id={$id}";
+  $main_sql[]="DELETE FROM nodes_hierarchy WHERE id={$id}";
+  
+  foreach($main_sql as $sql)
+  {
+    $this->db->exec_query($sql);  
+  }
+} // end delete()
+
+
 } // end class
 ?>

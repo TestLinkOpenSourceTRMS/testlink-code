@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planNew.tpl,v 1.9 2006/02/25 07:02:24 franciscom Exp $
+$Id: planNew.tpl,v 1.10 2006/09/21 08:32:24 franciscom Exp $
 
 Purpose: smarty template - create Test Plan
 20060224 - franciscom - removed the rights check
@@ -38,7 +38,6 @@ Purpose: smarty template - create Test Plan
 		</tr>
 		<tr>
 			<td>{lang_get s='caption_tp_notes'}</td>
-			{* <td><input type="text" name="notes" size="50" /></td> *}
 			<td >{$notes}</td>
 		</tr>
 		{if $tpID eq 0}

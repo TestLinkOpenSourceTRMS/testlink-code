@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.28 $
- * @modified $Date: 2006/09/15 13:15:40 $ $Author: franciscom $
+ * @version $Revision: 1.29 $
+ * @modified $Date: 2006/09/25 07:07:06 $ $Author: franciscom $
  * @author franciscom
  *
  * 20060726 - franciscom - create_tcversion() return array changed
@@ -965,31 +965,6 @@ function get_last_execution($id,$version_id,$tplan_id,$build_id,$get_no_executio
   {
     $build_id_filter=" AND e.build_id = {$build_id} ";	
   } 
-
-
-
-  /*
-  $sql="SELECT MAX(e.id) AS execution_id, e.status,
-        NHB.name,NHA.parent_id AS testcase_id, tcversions.*, 
-		    users.login AS tester_login,
-		    users.first AS tester_first_name, 
-		    users.last AS tester_last_name, 
-		    e.notes AS execution_notes, e.execution_ts, e.build_id,
-		    builds.name AS build_name 
-	      FROM nodes_hierarchy NHA
-        JOIN nodes_hierarchy NHB ON NHA.parent_id = NHB.id 
-        JOIN tcversions ON NHA.id = tcversions.id 
-        JOIN executions e ON NHA.id = e.tcversion_id  
-                                      AND e.testplan_id = {$tplan_id}
-                                      {$build_id_filter}
-                                      AND e.status IS NOT NULL
-        JOIN builds     ON builds.id = e.build_id 
-                           AND builds.testplan_id = {$tplan_id}                                
-        LEFT OUTER JOIN users ON e.tester_id = users.id 
-        $where_clause 
-        GROUP BY tcversions.id
-        ORDER BY NHA.node_order ASC, execution_id DESC";
-  */
   $sql="SELECT MAX(e.id) AS execution_id, e.tcversion_id AS tcversion_id
   	    FROM nodes_hierarchy NHA
         JOIN executions e ON NHA.id = e.tcversion_id  
@@ -998,7 +973,7 @@ function get_last_execution($id,$version_id,$tplan_id,$build_id,$get_no_executio
                                       AND e.status IS NOT NULL
         $where_clause_1 
         GROUP BY tcversion_id";
-        $recordset = $this->db->fetchColumnsIntoMap($sql,'tcversion_id','execution_id');
+  $recordset = $this->db->fetchColumnsIntoMap($sql,'tcversion_id','execution_id');
 
   $and_exec_id='';
   if( !is_null($recordset) )
@@ -1014,25 +989,6 @@ function get_last_execution($id,$version_id,$tplan_id,$build_id,$get_no_executio
   		}
   }
   
-  /*
-  $sql="SELECT e.id AS execution_id, e.status,
-        NHB.name,NHA.parent_id AS testcase_id, tcversions.*, 
-		    users.login AS tester_login,
-		    users.first AS tester_first_name, 
-		    users.last AS tester_last_name, 
-		    e.notes AS execution_notes, e.execution_ts, e.build_id,
-		    builds.name AS build_name 
-	      FROM nodes_hierarchy NHA
-        JOIN nodes_hierarchy NHB ON NHA.parent_id = NHB.id 
-        JOIN tcversions ON NHA.id = tcversions.id 
-        {$executions_join}
-        LEFT OUTER JOIN builds     ON builds.id = e.build_id 
-                           AND builds.testplan_id = {$tplan_id}                                
-        LEFT OUTER JOIN users ON e.tester_id = users.id 
-        $where_clause 
-        ORDER BY NHA.node_order ASC, NHA.parent_id ASC, execution_id DESC";
-   
-  */
   $executions_join=" JOIN executions e ON NHA.id = e.tcversion_id  
                                            AND e.testplan_id = {$tplan_id}
                                            {$and_exec_id} 
@@ -1046,8 +1002,12 @@ function get_last_execution($id,$version_id,$tplan_id,$build_id,$get_no_executio
      $executions_join .= " AND e.status IS NOT NULL ";
   }
 
+  // 20060921 - franciscom - 
+  // added NHB.parent_id  to get same order as in the navigator tree
+  //
   $sql="SELECT e.id AS execution_id, e.status,
-        NHB.name,NHA.parent_id AS testcase_id, tcversions.*, 
+        NHB.name,NHA.parent_id AS testcase_id, NHB.parent_id AS tsuite_id,
+        tcversions.*, 
 		    users.login AS tester_login,
 		    users.first AS tester_first_name, 
 		    users.last AS tester_last_name, 
@@ -1061,7 +1021,7 @@ function get_last_execution($id,$version_id,$tplan_id,$build_id,$get_no_executio
                            AND builds.testplan_id = {$tplan_id}                                
         LEFT OUTER JOIN users ON e.tester_id = users.id 
         $where_clause_2 
-        ORDER BY NHA.node_order ASC, NHA.parent_id ASC, execution_id DESC";
+        ORDER BY NHB.parent_id ASC, NHA.node_order ASC, NHA.parent_id ASC, execution_id DESC";
 
 
 

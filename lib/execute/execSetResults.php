@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.37 $
- * @modified $Date: 2006/09/18 07:14:48 $ $Author: franciscom $
+ * @version $Revision: 1.38 $
+ * @modified $Date: 2006/09/25 07:07:06 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -83,51 +83,61 @@ $other_execs=null;
 $map_last_exec_any_build=null;
 $tcAttachments = null;
 $tSuiteAttachments = null;
-$xx = $tplan_mgr->get_linked_tcversions($tplan_id,$tc_id,$keyword_id);
+$linked_tcversions = $tplan_mgr->get_linked_tcversions($tplan_id,$tc_id,$keyword_id);
+
+//echo "<pre>debug 20060921 \$linked_tcversions" . __FUNCTION__ . " --- "; print_r($linked_tcversions); echo "</pre>";
+
 $tcase_id = 0;
-if(!is_null($xx))
+if(!is_null($linked_tcversions))
 {
     // Get the path for every test case, grouping test cases that
     // have same parent.
     $items_to_exec = array();
-	$_SESSION['s_lastAttachmentInfos'] = null;
+	  $_SESSION['s_lastAttachmentInfos'] = null;
     if($level == 'testcase')
     {
-    	$items_to_exec[$id] = $xx[$id]['tcversion_id'];    
+    	$items_to_exec[$id] = $linked_tcversions[$id]['tcversion_id'];    
     	$tcase_id = $id;
-    	$tcversion_id = $xx[$id]['tcversion_id'];
-		$tcAttachments[$id] = getAttachmentInfos($db,$id,'nodes_hierarchy',1);
+    	$tcversion_id = $linked_tcversions[$id]['tcversion_id'];
+		  $tcAttachments[$id] = getAttachmentInfos($db,$id,'nodes_hierarchy',1);
     }
     else
     {
     	$tcase_id = array();
     	$tcversion_id = array();
-    	 
-		$i = 0; 
-    	foreach($xx as $item)
+		  $idx = 0;
+		  
+    	foreach($linked_tcversions as $item)
     	{
-    		$path = $tree_mgr->get_path($item['tc_id'],null,'simplex');
-    		foreach($path as $key => $value)
+        //echo "<pre>debug 20060921 \$item" . __FUNCTION__ . " --- "; print_r($item); echo "</pre>";
+    	  
+    		// 20060922 - get path full instead of simplex
+    		
+    		$path_f = $tree_mgr->get_path($item['tc_id'],null,'full');
+    		//echo "<pre>debug 20060922 " . __FUNCTION__ . " --- "; print_r($path_f); echo "</pre>";
+
+    		foreach($path_f as $key => $path_elem)
     		{
-    			if( $value == $id )
+    			if( $path_elem['parent_id'] == $id )
     			{
+    			  // Can be added because is present in the branch the user wants to view
+    			  // ID of branch starting node is in $id
     				$tcase_id[] = $item['tc_id'];
     				$tcversion_id[] = $item['tcversion_id'];
-					$tcAttachments[$item['tc_id']] = getAttachmentInfos($db,$item['tc_id'],'nodes_hierarchy',true,1);
-
-    				break;
+					  $tcAttachments[$item['tc_id']] = getAttachmentInfos($db,$item['tc_id'],'nodes_hierarchy',true,1);
     			}
+    			
+          if( $path_elem['node_table'] == 'testsuites' && !isset($tSuiteAttachments[$path_elem['id']]) )
+          {
+            $tSuiteAttachments[$path_elem['id']] = getAttachmentInfos($db,$path_elem['id'],'nodes_hierarchy',true,1);
+          }
     		} 
     	}
-		  
-		  if ($level == 'testsuite')
-		  {
-			  $tSuiteAttachments = getAttachmentInfos($db,$id,'nodes_hierarchy',true,1);
-		  }
     }
     
     // 
     // will create a record even if the testcase version has not been executed (GET_NO_EXEC)
+    //echo "<pre>debug 20060922 \$tcase_id" . __FUNCTION__ . " --- "; print_r($tcase_id); echo "</pre>";
     $map_last_exec = $tcase_mgr->get_last_execution($tcase_id,$tcversion_id,$tplan_id,
                                                     $build_id,GET_NO_EXEC);
     
@@ -173,9 +183,9 @@ if(!is_null($xx))
         foreach($other_execs as $tcversion_id => $execInfo)
         {
 			    $num_elem = sizeof($execInfo);   
-        	for($i = 0;$i < $num_elem;$i++)
+        	for($idx = 0;$idx < $num_elem;$idx++)
         	{
-        		$execID = $execInfo[$i]['execution_id'];
+        		$execID = $execInfo[$idx]['execution_id'];
         		
         		$aInfo = getAttachmentInfos($db,$execID,'executions',true,1);
         		if ($aInfo)
@@ -219,9 +229,10 @@ $smarty->assign('bc_view_status',
 
 
 $smarty->assign('tcAttachments',$tcAttachments);
-$smarty->assign('id',$id);
-$smarty->assign('tSuiteAttachments',$tSuiteAttachments);
 $smarty->assign('attachments',$attachmentInfos);
+$smarty->assign('tSuiteAttachments',$tSuiteAttachments);
+
+$smarty->assign('id',$id);
 $smarty->assign('rightsEdit', has_rights($db,"testplan_execute"));
 $smarty->assign('edit_test_results', $editTestResult);
 $smarty->assign('map_last_exec', $map_last_exec);

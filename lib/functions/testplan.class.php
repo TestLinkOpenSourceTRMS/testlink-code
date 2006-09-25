@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.10 $
- * @modified $Date: 2006/09/21 08:32:24 $ $Author: franciscom $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2006/09/25 07:07:06 $ $Author: franciscom $
  * @author franciscom
  *
  * 20060919 - franciscom - copy_* functions
@@ -232,6 +232,8 @@ if( is_null($executed) )
 }          
 $executions_join .= " JOIN executions E ON NHA.id = E.tcversion_id ";
 
+// 20060921 - franciscom
+// added tc_id in order clause to maintain same order that navigation tree
 $sql=" SELECT DISTINCT NHB.parent_id AS testsuite_id, " .
      "        NHA.parent_id AS tc_id," .
      "        T.tcversion_id AS tcversion_id, T.id AS feature_id," .
@@ -246,7 +248,7 @@ $sql=" SELECT DISTINCT NHB.parent_id AS testsuite_id, " .
      " WHERE T.testplan_id={$id} {$keywords_filter} {$tc_id_filter} " .
      " AND (UA.type=" . $this->assignment_types['testcase_execution']['id'] . 
      "      OR UA.type IS NULL) " .
-     " ORDER BY testsuite_id";
+     " ORDER BY testsuite_id,tc_id";
 $recordset = $this->db->fetchRowsIntoMap($sql,'tc_id');
 return($recordset);
 }
@@ -574,7 +576,7 @@ function delete($id)
   // ------------------------------------------------------------------------
   // attachments need special care
   $sql="SELECT * FROM attachments WHERE fk_id={$id} AND fk_table='testplans'";
-  $rs=$this->db->exec_query($sql);  
+  $rs=$this->db->get_recordset($sql);  
   if(!is_null($rs))
   {
     foreach($rs as $elem)
@@ -585,7 +587,7 @@ function delete($id)
   // ------------------------------------------------------------------------  
   
   // Finally delete from main table
-  $main_sql[]="DELETE FROM testplans WHERE testplan_id={$id}";
+  $main_sql[]="DELETE FROM testplans WHERE id={$id}";
   $main_sql[]="DELETE FROM nodes_hierarchy WHERE id={$id}";
   
   foreach($main_sql as $sql)

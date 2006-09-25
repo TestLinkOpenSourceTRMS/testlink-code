@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: planEdit.php,v $
  *
- * @version $Revision: 1.20 $
- * @modified $Date: 2006/09/21 08:32:24 $ $Author: franciscom $
+ * @version $Revision: 1.21 $
+ * @modified $Date: 2006/09/25 07:07:06 $ $Author: franciscom $
  *
  * Purpose:  ability to edit and delete testplans
  *
@@ -25,7 +25,9 @@ $generalResult = null;
 $editResult = null;
 if($bDelete)
 {
-
+    
+    $tplan_mgr->delete($id);
+    
 		//unset the session tp if its deleted
 		if (isset($_SESSION['testPlanId']) && ($_SESSION['testPlanId'] = $id))
 		{

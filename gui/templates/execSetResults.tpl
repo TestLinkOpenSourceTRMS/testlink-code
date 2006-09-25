@@ -1,7 +1,8 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execSetResults.tpl,v 1.27 2006/09/18 07:12:06 franciscom Exp $ *}
+{* $Id: execSetResults.tpl,v 1.28 2006/09/25 07:07:06 franciscom Exp $ *}
 {* Purpose: smarty template - show tests to add results *}
 {* Revisions:
+              20060921 - franciscom - changed the display of tsuite attachments
               20060814 - franciscom - added display of test suites details
               20060808 - franciscom - added display of test plan notes 
               20060722 - franciscom - syntax for value on history_on
@@ -120,7 +121,8 @@
     <hr />
 
 	{/if}
-	
+
+  {* 20060921 - franciscom -------------------------------------- 
 	{if $tSuiteAttachments neq null}
 		<h2>{lang_get s='testsuite_attachments'}</h2>	
 		{include file="inc_attachments.tpl" tableName="nodes_hierarchy" downloadOnly=true 
@@ -128,6 +130,8 @@
 				 tableStyles="background-color:#dddddd;width:100%"
 		}
 	{/if}
+	*}	
+	
 		
 	{foreach item=tc_exec from=$map_last_exec}
 	
@@ -146,6 +150,12 @@
 
 		<div id="tsdetails_{$tc_exec.testcase_id}" name="tsdetails_{$tc_exec.testcase_id}">
 		{$tsuite_info[$tc_exec.testcase_id].details}<p>
+  	{if $tSuiteAttachments[$tc_exec.tsuite_id] neq null}
+		  {include file="inc_attachments.tpl" tableName="nodes_hierarchy" downloadOnly=true 
+			      	 attachmentInfos=$tSuiteAttachments[$tc_exec.tsuite_id] 
+			      	 tableClassName="bordered"
+				       tableStyles="background-color:#dddddd;width:100%" }
+	  {/if}
     </div>
   
 

@@ -1,15 +1,18 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: tc_exec_assignment.php,v 1.1 2006/09/15 13:16:25 franciscom Exp $ 
+ * @version $Id: tc_exec_assignment.php,v 1.2 2006/09/25 07:07:06 franciscom Exp $ 
  * 
  * 
  * 
  */         
-require('../../config.inc.php');
-require_once("../functions/common.php");
-require_once("../functions/assignment_mgr.class.php");
+require_once(dirname(__FILE__)."/../../config.inc.php");
+require_once(dirname(__FILE__)."/../functions/common.php");
+require_once(dirname(__FILE__)."/../functions/assignment_mgr.class.php");
 require_once("plan.inc.php");
+
+require_once(dirname(__FILE__)."/../functions/treeMenu.inc.php");
+
 
 testlinkInitPage($db);
 
@@ -19,8 +22,13 @@ $tplan_mgr = new testplan($db);
 $tcase_mgr = new testcase($db); 
 $assignment_mgr = new assignment_mgr($db); 
 
+$tproject_id = $_SESSION['testprojectID'];
+$tproject_name = $_SESSION['testprojectName'];
+
 $tplan_id = $_SESSION['testPlanId'];
 $tplan_name = $_SESSION['testPlanName'];
+
+
 
 $id = isset($_REQUEST['id']) ? $_REQUEST['id'] : null;
 $version_id = isset($_REQUEST['version_id']) ? $_REQUEST['version_id'] : 0;
@@ -31,12 +39,9 @@ $do_action = isset($_POST['assign_tc']) ? 1 : 0;
 $resultString = null;
 $arrData = array();
 
-echo "<pre>debug 20060912 \$_POST" . __FUNCTION__ . " --- "; print_r($_POST); echo "</pre>";
-
 // ---------------------------------------------------------------------------------------
 if($do_action)
 {
-  echo "<pre>debug 20060912 \$_POST" . __FUNCTION__ . " --- "; print_r($_POST); echo "</pre>";
   $a_tc = isset($_POST['achecked_tc']) ? $_POST['achecked_tc'] : null;
   if(!is_null($a_tc))
   {
@@ -47,12 +52,9 @@ if($do_action)
       $open=$status_map['open']['id'];
       $db_now=$db->db_now();
       
-      
       $features2upd=array();
       $features2ins=array();
       $features2del=array();
-      
-      //echo "<pre>debug 20060914 \$_POST" . __FUNCTION__ . " --- "; print_r($_POST); echo "</pre>";
       
       foreach($a_tc as $key_tc => $value_tcversion)
       {
@@ -82,10 +84,6 @@ if($do_action)
            $features2ins[$feature_id]['assigner_id']=$_SESSION['userID'];
         }
       }
-      echo "<pre>debug 20060913 \$features2upd" . __FUNCTION__ . " --- "; print_r($features2upd); echo "</pre>";
-      echo "<pre>debug 20060913 \$features2del" . __FUNCTION__ . " --- "; print_r($features2del); echo "</pre>";
-      echo "<pre>debug 20060913 \$features2ins" . __FUNCTION__ . " --- "; print_r($features2ins); echo "</pre>";
-      
       
       if( count($features2upd) > 0 )
       {
@@ -99,10 +97,6 @@ if($do_action)
       {
          $assignment_mgr->assign($features2ins);      
       }
-      
-      
-      
-      
       //      $assignment_mgr->update($feature_map,'testcase_execution');      
   }  
 }
@@ -113,6 +107,11 @@ define('WRITE_BUTTON_ONLY_IF_LINKED',1);
 define('ALL_USERS_FILTER',null); 
 define('ADD_BLANK_OPTION',true); 
 $users=get_users_for_html_options($db,ALL_USERS_FILTER,ADD_BLANK_OPTION);
+
+// 20060924 - franciscom
+$map_node_tccount=get_testplan_nodes_testcount(&$db,$tproject_id, $tproject_name,
+                                                    $tplan_id,$tplan_name,$keyword_id);
+
 
 switch($level)
 {
@@ -136,25 +135,21 @@ switch($level)
 			$linked_items[$id]['user_id'] = $p3[$version_id]['user_id'];
       $linked_items[$id]['feature_id'] = $p3[$version_id]['feature_id'];
 
-			//echo "<pre>debug 20060908 \$pp" . __FUNCTION__ . " --- "; print_r($pp); echo "</pre>";
-			//echo "<pre>debug 20060908 \$linked_items" . __FUNCTION__ . " --- "; print_r($linked_items); echo "</pre>";
-
-			
-			$out = gen_spec_view($db,'testplan',$tplan_id,$tsuite_data['id'],$tsuite_data['name'],
-			                     $linked_items,$keyword_id,FILTER_BY_TC_OFF,WRITE_BUTTON_ONLY_IF_LINKED);
+			$out = gen_spec_view($db,'testplan',$tplan_id,$tplan_name,
+			                     $tsuite_data['id'],$tsuite_data['name'],
+			                     $linked_items,$map_node_tccount,
+			                     $keyword_id,FILTER_BY_TC_OFF,WRITE_BUTTON_ONLY_IF_LINKED);
 			                     
-			echo "<pre>debug 20060908 \$out" . __FUNCTION__ . " --- "; print_r($out); echo "</pre>";                     
 		}
 		break;
 
 	case 'testsuite':
 		$tsuite_data = $tsuite_mgr->get_by_id($id);
-		$out = gen_spec_view($db,'testplan',
-                         $tplan_id,$id,$tsuite_data['name'],
+		$out = gen_spec_view($db,'testplan',$tplan_id,$tplan_name,
+		                     $id,$tsuite_data['name'],
                          $tplan_mgr->get_linked_tcversions($tplan_id,FILTER_BY_TC_OFF,$keyword_id),
+                         $map_node_tccount,
                          $keyword_id,FILTER_BY_TC_OFF,WRITE_BUTTON_ONLY_IF_LINKED);
-
-			echo "<pre>debug 20060908 \$out" . __FUNCTION__ . " --- "; print_r($out); echo "</pre>";                     
 		break;
 	default:
 		// show instructions

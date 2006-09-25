@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: treeMenu.inc.php,v $
  *
- * @version $Revision: 1.26 $
- * @modified $Date: 2006/08/29 19:41:37 $ by $Author: schlundus $
+ * @version $Revision: 1.27 $
+ * @modified $Date: 2006/09/25 07:07:06 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * 	This file generates tree menu for test specification and test execution.
@@ -20,9 +20,13 @@
  * 20060304 - franciscom - changes on invokeMenu()
  * 20060305 - franciscom - towards TL 1.7
  * 20060503 - franciscom - moved here generateExecTree()
+ * 20060924 - franciscom - added get_nodes_testcount()
+ *                         changes to prepareNode() in order to use it in get_nodes_testcount
+ *
  *
  **/
-require_once '../../config.inc.php';
+require_once(dirname(__FILE__)."/../../config.inc.php");
+
 
 if (TL_TREE_KIND == 'LAYERSMENU') 
 {
@@ -136,20 +140,33 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,
 	$test_spec['name'] = $tproject_name;
 	$test_spec['id'] = $tproject_id;
 	$test_spec['node_type_id'] = 1;
+	
+	$dummy=array(); // 20060924 - franciscom
+	
 	if($test_spec)
 	{
 		$tck_map = null;
 		if($keyword_id)
 			$tck_map = $tproject_mgr->get_keywords_tcases($tproject_id,$keyword_id);
-		$testcase_count = prepareNode($test_spec,$hash_id_descr,$tck_map,null,$bHideTCs);
+		$testcase_count = prepareNode($test_spec,$hash_id_descr,$tck_map,null,$bHideTCs,$dummy);
 		$test_spec['testcase_count'] = $testcase_count;
 		$menustring = renderTreeNode(1,$test_spec,$getArguments,$hash_id_descr,$tc_action_enabled,$linkto);
 	}
-
 	return $menustring;
 }
 
-function prepareNode(&$node,$hash_id_descr,$tck_map = null,$tp_tcs = null,$bHideTCs = 0)
+
+// 20060924 - franciscom
+// added argument:
+//                $map_node_tccount
+//                key => node_id
+//                values => node test case count
+//                          node name (useful only for debug purpouses
+//
+//                IMPORTANT: this new argument is not useful for tree rendering
+//                           but to avoid duplicating logic to get test case count
+//
+function prepareNode(&$node,$hash_id_descr,$tck_map = null,$tp_tcs = null,$bHideTCs = 0,&$map_node_tccount)
 {
 	$nodeDesc = $hash_id_descr[$node['node_type_id']];
 	
@@ -176,6 +193,9 @@ function prepareNode(&$node,$hash_id_descr,$tck_map = null,$tp_tcs = null,$bHide
 	}
 	if (isset($node['childNodes']) && $node['childNodes'])
 	{
+    //echo "NOME_NAME=>" . $node['name'] . "<br>";
+	  //echo "ENTRO<br>";
+	  
 		$childNodes = &$node['childNodes'];
 		for($i = 0;$i < sizeof($childNodes);$i++)
 		{
@@ -183,16 +203,29 @@ function prepareNode(&$node,$hash_id_descr,$tck_map = null,$tp_tcs = null,$bHide
 			// I use set an element to null to filter out leaf menu items
 			if(is_null($current))
 				continue;
-			$nTestCases += prepareNode($current,$hash_id_descr,$tck_map,$tp_tcs,$bHideTCs);
+      
+			$nTestCases += prepareNode($current,$hash_id_descr,$tck_map,$tp_tcs,$bHideTCs,$map_node_tccount);
 		}
 		$node['testcase_count'] = $nTestCases;
+		
+		$map_node_tccount[$node['id']]=array('testcount' => $node['testcase_count'],
+		                                     'name'      => $node['name']);
+		
 		if ((!is_null($tck_map) || !is_null($tp_tcs)) && !$nTestCases && ($nodeDesc != 'testproject'))
 		{
 			$node = null;
 		}
 	}
-	else if (!is_null($tp_tcs) && ($nodeDesc == 'testsuite'))
-		$node = null;
+  else if ($nodeDesc == 'testsuite')
+	{
+		$map_node_tccount[$node['id']]=array('testcount' => 0,
+		                                     'name'      => $node['name']);
+	  
+	  if (!is_null($tp_tcs))
+	  {
+	    $node = null;
+	  }
+	}
 	
 	return $nTestCases;
 }
@@ -382,12 +415,14 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,$
 	$test_spec['name'] = $tproject_name;
 	$test_spec['id'] = $tproject_id;
 	$test_spec['node_type_id'] = $hash_descr_id['testproject'];
+	$dummy=array(); // 20060924 - franciscom
+	
 	if($test_spec)
 	{
 		$tck_map = null;
 		if($keyword_id)
 			$tck_map = $tproject_mgr->get_keywords_tcases($tproject_id,$keyword_id);
-		$testcase_count = prepareNode($test_spec,$hash_id_descr,$tck_map,$tp_tcs,$bForPrinting);
+		$testcase_count = prepareNode($test_spec,$hash_id_descr,$tck_map,$tp_tcs,$bForPrinting,$dummy);
 		$test_spec['testcase_count'] = $testcase_count;
 	
 		$menustring = renderExecTreeNode(1,$test_spec,$getArguments,$hash_id_descr,1,$menuUrl,$bForPrinting);
@@ -531,6 +566,101 @@ function jtree_renderExecTreeNodeOnOpen($current,$nodeDesc,$tc_action_enabled,$b
 			
 	return $menustring;
 }
+
+
+//
+// Returns a map:
+//         key    => node_id
+//         values => node test case count considering test cases presents
+//                   in the nodes of the subtree that starts on node_id
+//                   Means test case can not be sons/daughters of node_id.
+// 
+//                   node name (useful only for debug purpouses).
+//
+function get_testproject_nodes_testcount(&$db,$tproject_id, $tproject_name,$keyword_id=0)
+{
+	$recurse_on=true;
+	$show_tc_on=0;
+	
+	$tproject_mgr = new testproject($db);
+	$tree_manager = &$tproject_mgr->tree_manager;
+
+	$tcase_node_type = $tree_manager->node_descr_id['testcase'];
+	$hash_descr_id = $tree_manager->get_available_node_types();
+	$hash_id_descr = array_flip($hash_descr_id);
+	
+	
+	$test_spec = $tree_manager->get_subtree($tproject_id,array('testplan'=>'exclude me'),
+												                               array('testcase'=>'exclude my children'),
+												                               null,null,$recurse_on);
+	$test_spec['name'] = $tproject_name;
+	$test_spec['id'] = $tproject_id;
+	$test_spec['node_type_id'] = 1;
+	
+	$map_node_tccount=array(); 
+	
+	if($test_spec)
+	{
+		$tck_map = null;
+		if($keyword_id)
+		{
+			$tck_map = $tproject_mgr->get_keywords_tcases($tproject_id,$keyword_id);
+		}	
+		$testcase_count = prepareNode($test_spec,$hash_id_descr,$tck_map,null,$show_tc_on,$map_node_tccount);
+		$test_spec['testcase_count'] = $testcase_count;
+	}
+
+	return($map_node_tccount);
+}
+
+// Returns a map:
+//         key    => node_id
+//         values => node test case count considering test cases presents
+//                   in the nodes of the subtree that starts on node_id
+//                   Means test case can not be sons/daughters of node_id.
+// 
+//                   node name (useful only for debug purpouses).
+//
+function get_testplan_nodes_testcount(&$db,$tproject_id, $tproject_name,
+                                      $tplan_id,$tplan_name,$keyword_id=0)
+{
+	$recurse_on=true;
+	$show_tc_on=0;
+
+	$tplan_mgr = new testplan($db);
+	$tproject_mgr = new testproject($db);
+	
+	$tree_manager = $tplan_mgr->tree_manager;
+	$tcase_node_type = $tree_manager->node_descr_id['testcase'];
+	$hash_descr_id = $tree_manager->get_available_node_types();
+	$hash_id_descr = array_flip($hash_descr_id);
+
+	$test_spec = $tree_manager->get_subtree($tproject_id,array('testplan'=>'exclude me'),
+	                                                     array('testcase'=>'exclude my children'),
+	                                                     null,null,$recurse_on);
+	$tp_tcs = $tplan_mgr->get_linked_tcversions($tplan_id,0,$keyword_id);
+	if (is_null($tp_tcs))
+		$tp_tcs = array();
+	
+	$test_spec['name'] = $tproject_name;
+	$test_spec['id'] = $tproject_id;
+	$test_spec['node_type_id'] = $hash_descr_id['testproject'];
+	$map_node_tccount=array(); 
+	
+	if($test_spec)
+	{
+		$tck_map = null;
+		if($keyword_id)
+		{
+			$tck_map = $tproject_mgr->get_keywords_tcases($tproject_id,$keyword_id);
+		}	
+		$testcase_count = prepareNode($test_spec,$hash_id_descr,$tck_map,$tp_tcs,$show_tc_on,$map_node_tccount);
+		$test_spec['testcase_count'] = $testcase_count;
+	}
+	return($map_node_tccount);
+}
+
+
 
 
 ?>

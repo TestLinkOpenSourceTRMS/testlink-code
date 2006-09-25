@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.48 $ $Author: franciscom $
- * @modified $Date: 2006/09/15 13:13:26 $
+ * @version $Revision: 1.49 $ $Author: franciscom $
+ * @modified $Date: 2006/09/25 07:07:06 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -30,6 +30,8 @@ require_once(dirname(__FILE__)."/testplan.class.php");
 require_once(dirname(__FILE__)."/testcase.class.php");
 require_once(dirname(__FILE__)."/testsuite.class.php");
 require_once(dirname(__FILE__)."/tree.class.php");
+
+require_once(dirname(__FILE__)."/treeMenu.inc.php");
 
 require_once("plan.core.inc.php");
 require_once("logging.inc.php");
@@ -677,69 +679,75 @@ returns: array where every element is an associative array with the following
        level and write_buttons are used to generate the user interface
 
 rev :
+      20060924 - franciscom - added $tobj_name
+                                    $map_node_tccount
       20060913 - franciscom - added new member to the tcversions hash
       
 */
 function gen_spec_view(&$db,$spec_view_type='testproject',
-                            $tobj_id,$id,$name,&$linked_items,
+                            $tobj_id,$tobj_name,$id,$name,&$linked_items,
+                            $map_node_tccount,
                             $keyword_id = 0,$tcase_id = null,
-							$write_button_only_if_linked=0)
+							              $write_button_only_if_linked=0)
 {
-    $write_status = 'yes';
-    if($write_button_only_if_linked)
-    {
-		$write_status = 'no';
-    }
+  $write_status = 'yes';
+  if($write_button_only_if_linked)
+  {
+	  $write_status = 'no';
+  }
 	$result = array('spec_view'=>array(), 'num_tc' => 0);
 	$out = array(); 
 	$a_tcid = array();
     
 	$tcase_mgr = new testcase($db); 
-	 
 	$tree_manager = new tree($db);
-  	$hash_descr_id = $tree_manager->get_available_node_types();
-  	$tcase_node_type = $hash_descr_id['testcase'];
-  	$hash_id_descr = array_flip($hash_descr_id);
+  $hash_descr_id = $tree_manager->get_available_node_types();
+  $tcase_node_type = $hash_descr_id['testcase'];
+  $hash_id_descr = array_flip($hash_descr_id);
 
-    $test_spec = $tree_manager->get_subtree($id,array('testplan'=>'exclude me'),
-                                                array('testcase'=>'exclude my_children'));
-
-    // filters
-    if($keyword_id)
-    {
-        switch ($spec_view_type)
-        {
-           case 'testproject':
-	           $tobj_mgr = new testproject($db); 
-	           break;  
-           case 'testplan':
-	           $tobj_mgr = new testplan($db); 
-	           break;  
-        }
-        $tck_map = $tobj_mgr->get_keywords_tcases($tobj_id,$keyword_id);
-       
-        // Get the Test Cases that has the Keyword_id
-        // filter the test_spec
-        foreach($test_spec as $key => $node)
-        {
-			if($node['node_type_id'] == $tcase_node_type && !isset($tck_map[$node['id']]) )
-			{
-				$test_spec[$key]=null;            
-			}      
-        }
-    }
-    if(!is_null($tcase_id))
-    {
-		// filter the test_spec
-		foreach($test_spec as $key => $node)
-		{
-			if($node['node_type_id'] == $tcase_node_type &&  $node['id'] != $tcase_id )
-			{
-				$test_spec[$key]=null;            
-			}      
-		}
-    }
-
+  $test_spec = $tree_manager->get_subtree($id,array('testplan'=>'exclude me'),
+                                              array('testcase'=>'exclude my_children'));
+	     
+  // --------------------------------------------------------------------------------------------
+  // filters
+  if($keyword_id)
+  {
+      switch ($spec_view_type)
+      {
+         case 'testproject':
+	         $tobj_mgr = new testproject($db); 
+           break;  
+  
+         case 'testplan':
+	         $tobj_mgr = new testplan($db); 
+	         break;  
+      }
+      $tck_map = $tobj_mgr->get_keywords_tcases($tobj_id,$keyword_id);
+     
+      // Get the Test Cases that has the Keyword_id
+      // filter the test_spec
+      foreach($test_spec as $key => $node)
+      {
+		    if($node['node_type_id'] == $tcase_node_type && !isset($tck_map[$node['id']]) )
+		    {
+			   $test_spec[$key]=null;            
+		    }      
+      }
+  }
+  
+  if(!is_null($tcase_id))
+  {
+	  // filter the test_spec
+	  foreach($test_spec as $key => $node)
+	  {
+		  if($node['node_type_id'] == $tcase_node_type &&  $node['id'] != $tcase_id )
+		  {
+			  $test_spec[$key]=null;            
+		  }      
+	  }
+  }
+  // --------------------------------------------------------------------------------------------
+  
     $idx = 0;
     $a_tcid = array();
     $a_tsuite_idx = array();
@@ -749,78 +757,97 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
   	$out[$idx]['write_buttons'] = 'no';
   	
   	$out[$idx]['testcase_qty'] = 0;
-    $idx++;
+  	$out[$idx]['level'] = 1;
 
+    $idx++;
+                                
   	if(count($test_spec))
   	{
-		$pivot = $test_spec[0];
-		$the_level = 1;
-		$level = array();
+		  $pivot = $test_spec[0];
+		  $the_level = 2;
+		  $level = array();
 
-		foreach ($test_spec as $elem)
-		{
-	        if(is_null($elem))
+		  foreach ($test_spec as $current)
+		  {
+	        if(is_null($current))
 	        {
 	           continue;
 	        }
-
-			$current = $elem;
-
-			if( $pivot['parent_id'] == $current['parent_id'])
-			{
-				$the_level = $the_level;
-			}
-			else if ($pivot['id'] == $current['parent_id'])
-			{
-  				$the_level++;
-  				$level[$current['parent_id']] = $the_level;
-			}
-			else 
-			{
-  				$the_level = $level[$current['parent_id']];
-			}
+          if($hash_id_descr[$current['node_type_id']] == "testcase")
+          {
+          	$tc_id = $current['id'];
+          	$parent_idx = $hash_id_pos[$current['parent_id']];
+            $a_tsuite_idx[$tc_id] = $parent_idx;
             
-            if($hash_id_descr[$current['node_type_id']] == "testcase")
-            {
-            	$tc_id = $current['id'];
-            	$parent_idx = $hash_id_pos[$current['parent_id']];
-              	$a_tsuite_idx[$tc_id] = $parent_idx;
-              	
-              	$out[$parent_idx]['testcases'][$tc_id] = array('id' => $tc_id,
-     				                                         'name' => $current['name']);
-              	$out[$parent_idx]['testcases'][$tc_id]['tcversions'] = array();             
-                $out[$parent_idx]['testcases'][$tc_id]['linked_version_id'] = 0;
-                $out[$parent_idx]['testcases'][$tc_id]['executed'] = 'no';
-                $out[$parent_idx]['level'] = $the_level;
-                $out[$parent_idx]['write_buttons'] = $write_status;
-                $out[$parent_idx]['testcase_qty']++;
-  	            $out[$parent_idx]['linked_testcase_qty'] = 0;
+            $out[$parent_idx]['testcases'][$tc_id] = array('id' => $tc_id,
+     			                                       'name' => $current['name']);
+            $out[$parent_idx]['testcases'][$tc_id]['tcversions'] = array();             
+            $out[$parent_idx]['testcases'][$tc_id]['linked_version_id'] = 0;
+            $out[$parent_idx]['testcases'][$tc_id]['executed'] = 'no';
+            // 20060921 - francisco.mancardi@gruppotesi.com 
+            //$out[$parent_idx]['level'] = $the_level;
+            $out[$parent_idx]['write_buttons'] = $write_status;
+            $out[$parent_idx]['testcase_qty']++;
+  	        $out[$parent_idx]['linked_testcase_qty'] = 0;
   	  
-  	            // useful for tc_exec_assignment.php          
-  	            // 20060913 - franciscom
-                $out[$parent_idx]['testcases'][$tc_id]['user_id'] = 0;
-                $out[$parent_idx]['testcases'][$tc_id]['feature_id'] = 0;
+  	        // useful for tc_exec_assignment.php          
+  	        // 20060913 - franciscom
+            $out[$parent_idx]['testcases'][$tc_id]['user_id'] = 0;
+            $out[$parent_idx]['testcases'][$tc_id]['feature_id'] = 0;
 
-                $a_tcid[] = $current['id'];
-            }
-            else
-            {
-              	$out[$idx]['testsuite']=array('id' => $current['id'],
-     			                              'name' => $current['name']);
-  	            $out[$idx]['testcases'] = array();
-  	            $out[$idx]['testcase_qty'] = 0;
-  	            $out[$idx]['linked_testcase_qty'] = 0;
-                $out[$idx]['level'] = $the_level;
-  	            $out[$idx]['write_buttons'] = 'no';
-  	            $hash_id_pos[$current['id']] = $idx;
-				$idx++;
-			}
+            $a_tcid[] = $current['id'];
+          }
+          else
+          {
+              // -----------------------------------------------
+              // 20060921 - franciscom   
+    			    if( $pivot['parent_id'] != $current['parent_id'])
+    			    {
+      			    if ($pivot['id'] == $current['parent_id'])
+      			    {
+        				  $the_level++;
+        				  $level[$current['parent_id']] = $the_level;
+      			    }
+      			    else 
+      			    {
+        				  $the_level = $level[$current['parent_id']];
+      			    }
+              }
+              // -----------------------------------------------
 
-			// update pivot
-			$level[$current['parent_id']] = $the_level;
-			$pivot = $elem;
-   			}
+            	$out[$idx]['testsuite']=array('id' => $current['id'],
+     			                            'name' => $current['name']);
+  	          $out[$idx]['testcases'] = array();
+  	          $out[$idx]['testcase_qty'] = 0;
+  	          $out[$idx]['linked_testcase_qty'] = 0;
+              $out[$idx]['level'] = $the_level;
+  	          $out[$idx]['write_buttons'] = 'no';
+  	          $hash_id_pos[$current['id']] = $idx;
+				      $idx++;
+			    
+    			    // update pivot.
+		    	    // 20060921 - franciscom - Only if current is a test suite ??? 
+    			    $level[$current['parent_id']] = $the_level;
+		    	    $pivot = $current;
+			    
+			    }
+			    
+   	  }  //for
 		}
+
+    // 20060924 - franciscom
+    if(!is_null($map_node_tccount))
+    {
+      foreach($out as $key => $elem)
+      {
+        if(isset($map_node_tccount[$elem['testsuite']['id']]) &&
+           $map_node_tccount[$elem['testsuite']['id']]['testcount'] == 0)  
+        {
+             $out[$key]=null;
+        }
+      }
+    }
+
 
 	  $result['num_tc'] = count($a_tcid);
 	  $result['has_linked_items'] = 0;

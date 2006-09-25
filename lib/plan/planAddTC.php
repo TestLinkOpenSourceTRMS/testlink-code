@@ -1,7 +1,7 @@
 <?php
 
 ////////////////////////////////////////////////////////////////////////////////
-// @version $Id: planAddTC.php,v 1.22 2006/09/15 13:16:43 franciscom Exp $
+// @version $Id: planAddTC.php,v 1.23 2006/09/25 07:07:06 franciscom Exp $
 // File:     planAddTC.php
 // Author:   Chad Rosen
 // Purpose:  This page manages the importation of test cases into testlink.
@@ -22,6 +22,9 @@ $tplan_mgr = new testplan($db);
 
 $tplan_id =  $_SESSION['testPlanId'];
 $tproject_id =  $_SESSION['testprojectID'];
+$tproject_name =  $_SESSION['testprojectName']; // 20060924 - franciscom
+
+
 
 $keyword_id = isset($_REQUEST['keyword_id']) ? intval($_REQUEST['keyword_id']) : 0;
 $object_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
@@ -33,12 +36,15 @@ define('DONT_FILTER_BY_TCASE_ID',null);
 // ----------------------------------------------------------------------------------
 if($_GET['edit'] == 'testsuite')
 {
-    
+    $map_node_tccount=get_testproject_nodes_testcount(&$db,$tproject_id, $tproject_name,
+                                                           $keyword_id);
+
     $tsuite_data=$tsuite_mgr->get_by_id($object_id);
-    $out = gen_spec_view($db,'testproject',
-                       $tproject_id,$object_id,$tsuite_data['name'],
-                       $tplan_mgr->get_linked_tcversions($tplan_id,DONT_FILTER_BY_TCASE_ID,$keyword_id),
-                       $keyword_id,DONT_FILTER_BY_TCASE_ID);
+    $out = gen_spec_view($db,'testproject',$tproject_id,$tproject_name,
+                         $object_id,$tsuite_data['name'],
+                         $tplan_mgr->get_linked_tcversions($tplan_id,DONT_FILTER_BY_TCASE_ID,$keyword_id),
+                         $map_node_tccount,
+                         $keyword_id,DONT_FILTER_BY_TCASE_ID);
                        
     $do_display = 1;  
 }
@@ -65,11 +71,14 @@ if(isset($_POST['do_action']))
 		$tplan_mgr->unlink_tcversions($tplan_id,$rtc);      
 	}
 
+    $map_node_tccount=get_testproject_nodes_testcount(&$db,$tproject_id, $tproject_name,
+                                                           $keyword_id);
+
     $tsuite_data = $tsuite_mgr->get_by_id($object_id);
     $out = gen_spec_view($db,'testproject',
                        $tproject_id,$object_id,$tsuite_data['name'],
                        $tplan_mgr->get_linked_tcversions($tplan_id,DONT_FILTER_BY_TCASE_ID,$keyword_id),
-                       $keyword_id,DONT_FILTER_BY_TCASE_ID);
+                       $map_node_tccount,$keyword_id,DONT_FILTER_BY_TCASE_ID);
 
     $do_display = 1;
 }

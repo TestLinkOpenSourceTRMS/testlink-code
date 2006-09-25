@@ -1,7 +1,7 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: testSetRemove.php,v 1.13 2006/07/06 19:20:37 schlundus Exp $ 
+ * @version $Id: testSetRemove.php,v 1.14 2006/09/25 07:07:06 franciscom Exp $ 
  * 
  * Remove Test Cases from Test Case Suite 
  * 
@@ -58,14 +58,14 @@ switch($level)
 			$linked_items[$id]['testsuite_id'] = $tsuite_data['id'];
 			$linked_items[$id]['tc_id'] = $id;
 			
-			$out = gen_spec_view($db,'testplan',$tplan_id,$tsuite_data['id'],$tsuite_data['name'],
+			$out = gen_spec_view($db,'testplan',$tplan_id,$tplan_name,$tsuite_data['id'],$tsuite_data['name'],
 			$linked_items,$keyword_id,FILTER_BY_TC_OFF,WRITE_BUTTON_ONLY_IF_LINKED);
 		}
 		break;
 	case 'testsuite':
 		$tsuite_data = $tsuite_mgr->get_by_id($id);
 		$out = gen_spec_view($db,'testplan',
-                     $tplan_id,$id,$tsuite_data['name'],
+                     $tplan_id,$tplan_name,$id,$tsuite_data['name'],
                      $tplan_mgr->get_linked_tcversions($tplan_id,FILTER_BY_TC_OFF,$keyword_id),
                      $keyword_id,FILTER_BY_TC_OFF,WRITE_BUTTON_ONLY_IF_LINKED);
 		break;

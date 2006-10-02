@@ -5,7 +5,7 @@
  *
  * Filename $RCSfile: keywordsimport.php,v $
  *
- * @modified $Date: 2006/03/11 23:09:28 $
+ * @modified $Date: 2006/10/02 17:36:56 $
  *
 */
 require('../../config.inc.php');
@@ -22,7 +22,7 @@ $location = isset($_POST['location']) ? strings_stripSlashes($_POST['location'])
 
 $testproject_id = $_SESSION['testprojectID'];
 $productName = $_SESSION['testprojectName'];
-$dest = TL_TEMP_PATH . session_id()."-importkeywords.csv";
+$dest = TL_TEMP_PATH . session_id()."-importkeywords.".$importType;
 
 // check the uploaded file
 if (($source != 'none') && ($source != ''))

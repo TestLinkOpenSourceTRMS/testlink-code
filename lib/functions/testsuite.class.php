@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testsuite.class.php,v $
- * @version $Revision: 1.16 $
- * @modified $Date: 2006/08/07 09:44:09 $
+ * @version $Revision: 1.17 $
+ * @modified $Date: 2006/10/02 17:36:56 $
  * @author franciscom
  *
  * 20060805 - franciscom - changes in viewer_edit_new()
@@ -198,8 +198,8 @@ function show(&$smarty,$id, $sqlResult = '', $action = 'update',$modded_item_id 
 		$modded_item = $this->get_by_id($modded_item_id);
 	}
   
-  $keywords_map=$this->get_keywords_map($id,' ORDER BY KEYWORD ASC ');
-  $smarty->assign('keywords_map',$keywords_map);
+	$keywords_map = $this->get_keywords_map($id,' ORDER BY KEYWORD ASC ');
+	$smarty->assign('keywords_map',$keywords_map);
 	$smarty->assign('moddedItem',$modded_item);
 	$smarty->assign('level', 'testsuite');
 	$smarty->assign('container_data', $item);
@@ -216,12 +216,11 @@ function viewer_edit_new(&$smarty,$amy_keys, $oFCK, $action, $parent_id, $id=nul
 	
 	$the_tpl = $a_tpl[$action];
 	$component_name='';
-	//$smarty = new TLSmarty();
 	$smarty->assign('sqlResult', null);
 	$smarty->assign('containerID',$parent_id);	 
 	
 	$the_data = null;
-  $name='';
+	$name = '';
 	if ($action == 'edit_testsuite')
 	{
 		$the_data = $this->get_by_id($id);
@@ -359,11 +358,9 @@ function delete_deep($id)
 } // end function
 
 
-
-// 20060805 - franciscom - creation
 function getKeywords($id,$kw_id = null)
 {
-	$sql = "SELECT keyword_id,keywords.keyword 
+	$sql = "SELECT keyword_id,keywords.keyword, keywords.keyword notes
 	        FROM object_keywords,keywords 
 	        WHERE keyword_id = keywords.id AND fk_id = {$id}";
 	if (!is_null($kw_id))
@@ -428,7 +425,49 @@ function deleteKeywords($id,$kw_id = null)
 	return($this->db->exec_query($sql));
 }
 
+function exportTestSuiteDataToXML($container_id,$optExport = array())
+{
+	$xmlTC = null;
+	$bRecursive = @$optExport['RECURSIVE'];
+	if ($bRecursive)
+	{
+		$tsuiteData = $this->get_by_id($container_id);
+		$kwXML = null;
+		if (@$optExport['KEYWORDS'])
+		{
+			$kwMap = $this->getKeywords($container_id);
+			if ($kwMap)
+				$kwXML = exportKeywordDataToXML($kwMap,true);
+		}
+		$xmlTC = "<testsuite name=\"".htmlspecialchars($tsuiteData['name'])."\"><details><![CDATA[\n{$tsuiteData['details']}\n]]>{$kwXML}</details>";
+	}
+	else
+		$xmlTC = "<testcases>";
 
+	$test_spec = $this->tree_manager->get_subtree($container_id,array('testplan'=>'exclude me'),
+												 array('testcase'=>'exclude my children'),null,null,true);
+	$childNodes = @$test_spec['childNodes'];
+	for($i = 0;$i < sizeof($childNodes);$i++)
+	{
+		$cNode = $childNodes[$i];
+		$nTable = $cNode['node_table'];
+		if ($bRecursive && $nTable == 'testsuites')
+		{
+			$ts = new testsuite($this->db);
+			$xmlTC .= $ts->exportTestSuiteDataToXML($cNode['id'],$optExport);
+		}
+		else if ($nTable == 'testcases')
+		{
+			$tc = new testcase($this->db);
+			$xmlTC .= $tc->exportTestCaseDataToXML($cNode['id'],TC_LATEST_VERSION,true,$optExport);
+		}
+	}
+	if ($bRecursive)
+		$xmlTC .= "</testsuite>";
+	else
+		$xmlTC .= "</testcases>";
+	return $xmlTC;
+}
 
 
 } // end class

@@ -1,12 +1,12 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: tcexport.tpl,v 1.1 2006/08/29 20:26:20 schlundus Exp $ *}
+{* $Id: tcexport.tpl,v 1.2 2006/10/02 17:36:55 schlundus Exp $ *}
 {* Purpose: smarty template - keyword export initial page *}
 {* revisions:
 *}
 {include file="inc_head.tpl"}
 
 <body>
-<h1>{lang_get s='title_req_import_to'} {$reqSpec.title|escape}</h1>
+<h1>{lang_get s='title_tc_export'} {$reqSpec.title|escape}</h1>
 
 <div class="workBack">
 
@@ -19,8 +19,11 @@
 	</select>
 	</p>
 	<div class="groupBtn">
-		<input type="hidden" name="tcID" value="{$tcID}" />
-		<input type="hidden" name="tcVersionID" value="{$tcVersionID}" />
+		<input type="hidden" name="testcase_id" value="{$tcID}" />
+		<input type="hidden" name="tcversion_id" value="{$tcVersionID}" />
+		<input type="hidden" name="containerID" value="{$containerID}" />
+		<input type="hidden" name="bRecursive" value="{$bRecursive}" />
+		<input type="checkbox" name="bKeywords" value="0" />{lang_get s='export_with_keywords'}<br /><br />
 		<input type="submit" name="export" value="{lang_get s='btn_export'}" />
 		<input type="button" name="cancel" value="{lang_get s='btn_cancel'}" 
 			onclick="javascript: history.back();" />

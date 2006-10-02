@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: keywords.inc.php,v $
 * 
-* @version $Id: keywords.inc.php,v 1.25 2006/08/29 19:41:38 schlundus Exp $
-* @modified $Date: 2006/08/29 19:41:38 $ by $Author: schlundus $
+* @version $Id: keywords.inc.php,v 1.26 2006/10/02 17:36:56 schlundus Exp $
+* @modified $Date: 2006/10/02 17:36:56 $ by $Author: schlundus $
 *
 * Functions for support keywords management. 
 *
@@ -334,8 +334,8 @@ function importKeywordDataFromXML($fileName)
 	$xmlKeywords = null;
 	if ($dom)
 		$xmlKeywords = $dom->get_elements_by_tagname("keyword");
-	
-	$keywordData = null;
+	$keywordData = importKeywordsFromXML($xmlKeywords);
+	/*
 	for($i = 0;$i < sizeof($xmlKeywords);$i++)
 	{
 		$xmlKeyword = $xmlKeywords[$i];
@@ -349,10 +349,36 @@ function importKeywordDataFromXML($fileName)
 			if ($xmlKeywordNote)
 				$keywordData[$i]['notes'] = $xmlKeywordNote->node_value();
 		}
-	}
+	}*/
 	return $keywordData;
 }
 
+function importKeywordsFromXML($xmlKeywords)
+{
+	if (!$xmlKeywords)
+		return null;
+		
+	$keywords = null;	
+	$j = 0;
+	for($i = 0;$i < sizeof($xmlKeywords);$i++)
+	{
+		$xmlKeyword = $xmlKeywords[$i];		
+		$keywordData = importKeywordFromXML($xmlKeyword);
+		if ($keywordData)
+			$keywords[$j++] = $keywordData;
+	}
+	return $keywords;
+}
+
+function importKeywordFromXML(&$xmlKeyword)
+{
+	if (!$xmlKeyword)
+		return null;
+	$keyword['keyword'] = $xmlKeyword->get_attribute("name");
+	$keyword['notes'] = trim(getNodeContent($xmlKeyword,'notes'));
+
+	return $keyword;
+}
 /**
  * Import keywords from a CSV file to keyword data which can be further processed
  *

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.30 $
- * @modified $Date: 2006/04/07 20:15:32 $
+ * @version $Revision: 1.31 $
+ * @modified $Date: 2006/10/02 17:36:56 $
  *
  * @author Andreas Morsing
  *
@@ -113,8 +113,8 @@ $TLS_btn_edit_com = "Ändern";
 $TLS_btn_import_tc = "TestCases importieren";
 $TLS_btn_move_cp_cat = "Verschieben/Kopieren";
 $TLS_btn_move_cp_com = "Verschieben/Kopieren";
-$TLS_btn_new_cat = "Neue Kategorie";
-$TLS_btn_new_com = "Neue Komponente";
+$TLS_btn_new_cat = "Neue Testsuite";
+$TLS_btn_new_com = "Neue Testsuite";
 $TLS_btn_new_tc = "Test Cases erstellen";
 $TLS_btn_reorder_cat = "Kategorien umordnen";
 $TLS_btn_reorder_tc = "Test Cases umordnen";
@@ -175,7 +175,7 @@ $TLS_href_browse_tc = "TestCases durchsuchen";
 $TLS_href_build_new = "Neuer Build erstellen";
 $TLS_href_create_product = "Neues Produkt erstellen";
 $TLS_href_edit_product = "Produkt ändern / löschen";
-$TLS_href_edit_tc = "TestCases ändern";
+$TLS_href_edit_tc = "TestCases verwalten";
 $TLS_href_execute_test = "Tests ausführen";
 $TLS_href_import_tc = "TestCases importieren";
 $TLS_href_keywords_assign = "Keywords zuweisen";

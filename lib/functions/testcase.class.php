@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.29 $
- * @modified $Date: 2006/09/25 07:07:06 $ $Author: franciscom $
+ * @version $Revision: 1.30 $
+ * @modified $Date: 2006/10/02 17:36:56 $ $Author: schlundus $
  * @author franciscom
  *
  * 20060726 - franciscom - create_tcversion() return array changed
@@ -25,10 +25,11 @@ $g_tcImportTypes = array(
 							 );
 
 $g_tcFormatStrings = array (
-							"XML" => lang_get('the_format_keyword_xml_import')
+							"XML" => lang_get('the_format_tc_xml_import')
 							); 
 							
 define("TC_ALL_VERSIONS",0);
+define("TC_LATEST_VERSION",-1);
 
 class testcase
 {
@@ -663,39 +664,35 @@ function get_by_id_bulk($id,$version_id=TC_ALL_VERSIONS, $get_active=0, $get_ope
   return($recordset ? $recordset : null);
 }
 
-
-
-// 20060313 - franciscom
-function get_by_id($id,$version_id=TC_ALL_VERSIONS, $get_active=0, $get_open=0)
+function get_by_id($id,$version_id = TC_ALL_VERSIONS,$get_active = 0,$get_open = 0)
 {
-	$tcid_list ='';
-	$where_clause ='';
+	$tcid_list = '';
+	$where_clause = '';
 	
-	if( is_array($id) )
+	if(is_array($id))
 	{
-		  $tcid_list = implode(",",$id);
-			$where_clause = " WHERE NHA.parent_id IN ({$tcid_list}) ";
+		$tcid_list = implode(",",$id);
+		$where_clause = " WHERE NHA.parent_id IN ({$tcid_list}) ";
 	}
 	else
 	{
-			$where_clause = " WHERE NHA.parent_id = {$id} ";
+		$where_clause = " WHERE NHA.parent_id = {$id} ";
 	}
 	
-	if( is_array($version_id) )
+	if(is_array($version_id))
 	{
 	    $versionid_list = implode(",",$version_id);
-	    $where_clause  .= " AND tcversions.id IN ({$versionid_list}) ";
+	    $where_clause .= " AND tcversions.id IN ({$versionid_list}) ";
 	}
 	else
 	{
-			if($version_id != TC_ALL_VERSIONS)
-			{
-				$where_clause  .= " AND tcversions.id = {$version_id} ";
-			}
+		if($version_id != TC_ALL_VERSIONS && $version_id != TC_LATEST_VERSION)
+		{
+			$where_clause .= " AND tcversions.id = {$version_id} ";
+		}
 	}
 
-	
-  $sql="SELECT	U.login AS updater_login,users.login as author_login,
+	$sql = "SELECT	U.login AS updater_login,users.login as author_login,
 		    NHB.name,NHA.parent_id AS testcase_id, tcversions.*, 
 		    users.first AS author_first_name, 
 		    users.last AS author_last_name, 
@@ -709,10 +706,13 @@ function get_by_id($id,$version_id=TC_ALL_VERSIONS, $get_active=0, $get_open=0)
         $where_clause 
         ORDER BY tcversions.version DESC";
 
-  $recordset = $this->db->get_recordset($sql);
-  return($recordset ? $recordset : null);
+	if ($version_id != TC_LATEST_VERSION)
+		$recordset = $this->db->get_recordset($sql);
+	else
+		$recordset = array($this->db->fetchFirstRow($sql));
+		
+	return ($recordset ? $recordset : null);
 }
-
 
 //
 // args:
@@ -973,7 +973,7 @@ function get_last_execution($id,$version_id,$tplan_id,$build_id,$get_no_executio
                                       AND e.status IS NOT NULL
         $where_clause_1 
         GROUP BY tcversion_id";
-  $recordset = $this->db->fetchColumnsIntoMap($sql,'tcversion_id','execution_id');
+        $recordset = $this->db->fetchColumnsIntoMap($sql,'tcversion_id','execution_id');
 
   $and_exec_id='';
   if( !is_null($recordset) )
@@ -1031,19 +1031,19 @@ function get_last_execution($id,$version_id,$tplan_id,$build_id,$get_no_executio
 
 
 
-function exportTestCaseDataToXML($tcase_id,$tcversion_id)
+function exportTestCaseDataToXML($tcase_id,$tcversion_id,$bNoXMLHeader = false,$optExport = array())
 {
-	$keywords = $this->getKeywords($tcase_id);
 	$tc_data = $this->get_by_id($tcase_id,$tcversion_id);
-	
-	$xmlKW = null;
-	if ($keywords);
+	if ($optExport['KEYWORDS'])
 	{
-		$xmlKW = exportKeywordDataToXML($keywords,true);
-		$tc_data[0]['xmlkeywords'] = $xmlKW;
-	}
-	
-	$rootElem = "<testcases>{{XMLCODE}}</testcases>";
+		$keywords = $this->getKeywords($tcase_id);
+		if ($keywords);
+		{
+			$xmlKW = exportKeywordDataToXML($keywords,true);
+			$tc_data[0]['xmlkeywords'] = $xmlKW;
+		}
+	}	
+	$rootElem = "{{XMLCODE}}";
 	$elemTpl = "\t".'<testcase name="{{NAME}}">'.	
 						'<summary><![CDATA['."\n||SUMMARY||\n]]>".'</summary>'.
 						'<steps><![CDATA['."\n||STEPS||\n]]>".'</steps>'.
@@ -1057,7 +1057,7 @@ function exportTestCaseDataToXML($tcase_id,$tcversion_id)
 							"||KEYWORDS||" => "xmlkeywords",
 						);
 						
-	$xmlTC = exportDataToXML($tc_data,$rootElem,$elemTpl,$info);
+	$xmlTC = exportDataToXML($tc_data,$rootElem,$elemTpl,$info,$bNoXMLHeader);
 	
 	return $xmlTC;
 }

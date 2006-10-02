@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: tcImport.tpl,v 1.6 2006/08/29 19:41:36 schlundus Exp $ *}
+{* $Id: tcImport.tpl,v 1.7 2006/10/02 17:36:55 schlundus Exp $ *}
 {* Purpose: smarty template - show Test Results and Metrics *}
 {* I18N: 20050528 - fm *}
 {* 20050828 - scs - changes for importing tc to a specific category *}
@@ -12,8 +12,8 @@
 
 <div class="workBack">
 
-<form method="post" enctype="multipart/form-data" action="{$SCRIPT_NAME}?idSRS={$reqSpec.id}">
-
+{if $resultMap eq null}
+<form method="post" enctype="multipart/form-data" action="{$SCRIPT_NAME}">
 	<h2>{lang_get s='title_choose_file_type'}</h2>
 	<p>{lang_get s='req_import_type'}
 	<select name="importType">
@@ -31,6 +31,7 @@
 	<p>{lang_get s='max_size_cvs_file1'} {$importLimitKB} {lang_get s='max_size_cvs_file2'}</p>
 	
 	<div class="groupBtn">
+		<input type="hidden" name="bRecursive" value="{$bRecursive}" />
 		<input type="hidden" name="containerID" value="{$containerID}" />
 		<input type="hidden" name="MAX_FILE_SIZE" value="{$importLimit}" /> {* restrict file size *}
 		<input type="submit" name="UploadFile" value="{lang_get s='btn_upload_file'}" />
@@ -38,6 +39,12 @@
 			onclick="javascript: location.href=fRoot+'lib/testcases/tcImport.php';" />
 	</div>
 </form>
+{else}
+	{foreach item=result from=$resultMap}
+		{lang_get s='title_imp_tc_data'} : <b>{$result[0]|escape}</b> : {$result[1]|escape}<br />
+	{/foreach}
+	{include file="inc_refreshTree.tpl"}
+{/if}
 
 </div>
 

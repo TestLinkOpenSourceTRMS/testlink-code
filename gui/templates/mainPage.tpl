@@ -1,6 +1,6 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: mainPage.tpl,v 1.20 2006/09/09 07:11:27 franciscom Exp $     
+ $Id: mainPage.tpl,v 1.21 2006/10/02 17:36:55 schlundus Exp $     
  Purpose: smarty template - main page / site map                 
                                                                  
  rev :                                                 
@@ -154,9 +154,6 @@
 	        <br />
 			<img alt="arrow" class="arrow" src="icons/arrow_org.gif" />
         	<a href="{$launcher}?feature=printTc">{lang_get s='href_print_tc'}</a>
-	        <br />
-			<img alt="arrow" class="arrow" src="icons/arrow_org.gif" />
-        	<a href="lib/testcases/tcImport.php">{lang_get s='href_import_tc'}</a>
 		{/if}
     </p>
 	{/if} {* view_tc_rights *}

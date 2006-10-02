@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.71 $
- * @modified $Date: 2006/08/23 06:18:17 $ by $Author: franciscom $
+ * @version $Revision: 1.72 $
+ * @modified $Date: 2006/10/02 17:36:55 $ by $Author: schlundus $
  *
  *
  * Constants and configuration parameters used throughout TestLink 
@@ -90,9 +90,11 @@ define('DB_SUPPORTS_UTF8', TRUE);
  * Chinese users must comment the next line and uncomment the second one 
  * @todo translate Chinese from gb2312 to UTF-8
  **/
-define('TL_TPL_CHARSET', DB_SUPPORTS_UTF8  ? 'UTF-8' : 'ISO-8859-1');
+//$g_defaultCharset =  'gb2312';
+$g_defaultCharset =  DB_SUPPORTS_UTF8  ? 'UTF-8' : 'ISO-8859-1';
+
+define('TL_TPL_CHARSET', $g_defaultCharset);
 define('TL_XMLEXPORT_HEADER', "<?xml version=\"1.0\" encoding=\"".TL_TPL_CHARSET."\"?>\n");
-//define('TL_TPL_CHARSET', 'gb2312'); // Chinese charset
 
 /* Directory separator */
 define('DS', DIRECTORY_SEPARATOR);
@@ -212,7 +214,7 @@ define('TL_INTERFACE_BUGS', 'NO');
 require_once(TL_ABS_PATH . 'lib/bugtracking/int_bugtracking.php');
 
 /** Setting up the global include path for testlink */
-ini_set('include_path', '.' . DELIM . TL_ABS_PATH . 'lib' . DS . 'functions' . DS . DELIM);
+ini_set('include_path',ini_get('include_path') .";". '.' . DELIM . TL_ABS_PATH . 'lib' . DS . 'functions' . DS . DELIM);
 
 /**
 * Set the session timeout value (in minutes).

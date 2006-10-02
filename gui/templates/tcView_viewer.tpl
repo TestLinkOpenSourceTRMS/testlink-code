@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.8 2006/08/29 19:41:37 schlundus Exp $
+$Id: tcView_viewer.tpl,v 1.9 2006/10/02 17:36:55 schlundus Exp $
 viewer for test case in test specification
 
 20060427 - franciscom - added font-size in the table used for keywords
@@ -37,6 +37,11 @@ viewer for test case in test specification
     {/if}		                     
 		<input type="submit" name="do_create_new_version"   value="{lang_get s='btn_new_version'}" />
 
+	</form>
+	<form method="post" action="lib/testcases/tcexport.php">
+		<br/>
+		<input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
+		<input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />
 		<input type="submit" name="export_tc"   value="{lang_get s='btn_export'}" />
 	</form>
 	</div>	

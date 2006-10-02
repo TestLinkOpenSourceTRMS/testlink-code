@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: keywordsimport.tpl,v 1.2 2005/12/31 14:38:10 schlundus Exp $ *}
+{* $Id: keywordsimport.tpl,v 1.3 2006/10/02 17:36:55 schlundus Exp $ *}
 {* Purpose: smarty template - keyword import initial page *}
 {* revisions:
 20051231 - scs - fixed incorrect cancel button link
@@ -11,7 +11,7 @@
 
 <div class="workBack">
 
-<form method="post" enctype="multipart/form-data" action="{$SCRIPT_NAME}?idSRS={$reqSpec.id}">
+<form method="post" enctype="multipart/form-data" action="{$SCRIPT_NAME}">
 
 	<h2>{lang_get s='title_choose_file_type'}</h2>
 	<p>{lang_get s='req_import_type'}

@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * @version $Revision: 1.43 $
- * @modified $Date: 2006/08/22 15:55:49 $ by $Author: franciscom $
+ * @version $Revision: 1.44 $
+ * @modified $Date: 2006/10/02 17:36:56 $ by $Author: schlundus $
  * @author Martin Havlat
  *
  * 20060822 - franciscom - solved keyword presentation problem
@@ -142,9 +142,8 @@ if($action == 'edit_testsuite' || $action == 'new_testsuite')
 }
 else if($action == 'add_testsuite')
 {
-  // 20060822 - franciscom - internal bug
 	keywords_opt_transf_cfg($opt_cfg, ""); 
-  $smarty->assign('opt_cfg', $opt_cfg);
+	$smarty->assign('opt_cfg', $opt_cfg);
 	if ($name_ok)
 	{
 		$msg = 'ok';

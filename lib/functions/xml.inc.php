@@ -1,6 +1,8 @@
 <?php
 function exportDataToXML($items,$rootTpl,$elemTpl,$elemInfo,$bNoXMLHeader = false)
 {
+	if (!$items)
+		return;
 	$xmlCode = '';
 	reset($items);
 	while($item = each($items))
@@ -34,6 +36,8 @@ function exportDataToXML($items,$rootTpl,$elemTpl,$elemInfo,$bNoXMLHeader = fals
 }
 function getNodeContent(&$node,$tag)
 {
+	if (!$node)
+		return null;
 	$nodes = $node->get_elements_by_tagname($tag);
 	if ($nodes)
 	{

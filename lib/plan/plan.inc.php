@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: plan.inc.php,v $
- * @version $Revision: 1.37 $
- * @modified $Date: 2006/08/07 09:44:09 $ $Author: franciscom $
+ * @version $Revision: 1.38 $
+ * @modified $Date: 2006/10/04 17:07:03 $ $Author: schlundus $
  * @author 	Martin Havlat
  *
  * Functions for management: 
@@ -334,13 +334,11 @@ function deleteMileStone(&$db,$id)
 
 function getTestPlanMileStones(&$db,$projID,&$mileStones,$mileStoneID = null)
 {
-	$sql = " SELECT id,name as title,date,A,B,C " .
-	       " FROM milestones " .
-	       " WHERE testplan_id=" . $projID ;
+	$sql = " SELECT id,name title,date,A,B,C FROM milestones " .
+	       " WHERE testplan_id = " . $projID ;
 	        
-	       // " AND to_days(date) >= to_days(now()) ";
 	if (!is_null($mileStoneID))
-		$sql .= "AND id = " . $mileStoneID;		   
+		$sql .= " AND id = " . $mileStoneID;		   
 		   
 	$sql .= " ORDER BY date";
 	       
@@ -358,8 +356,6 @@ function getTestPlanMileStones(&$db,$projID,&$mileStones,$mileStoneID = null)
 }
 
 
-// 20051222 - fm - contribution by ...
-//
 function getUsersOfPlan(&$db,$id)
 {
 	$show_realname = config_get('show_realname');
@@ -608,7 +604,7 @@ function checkMileStone($name,$date,$A,$B,$C)
 		$sqlResult = lang_get("warning_invalid_percentage_value");	
 	else if (intval($A) > 100 || intval($B) > 100 || intval($C) > 100)
 		$sqlResult = lang_get("warning_invalid_percentage_value");	
-	else if ((intval($A) + intval($B) + intval($A)) > 100)
+	else if ((intval($A) + intval($B) + intval($C)) > 100)
 		$sqlResult = lang_get("warning_percentage_value_higher_than_100");	
 	else if (strlen($name))
 	{

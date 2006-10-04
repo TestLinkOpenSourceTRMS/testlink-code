@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.49 $ $Author: franciscom $
- * @modified $Date: 2006/09/25 07:07:06 $
+ * @version $Revision: 1.50 $ $Author: schlundus $
+ * @modified $Date: 2006/10/04 17:07:03 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -685,7 +685,7 @@ rev :
       
 */
 function gen_spec_view(&$db,$spec_view_type='testproject',
-                            $tobj_id,$tobj_name,$id,$name,&$linked_items,
+                            $tobj_id,$id,$name,&$linked_items,
                             $map_node_tccount,
                             $keyword_id = 0,$tcase_id = null,
 							              $write_button_only_if_linked=0)

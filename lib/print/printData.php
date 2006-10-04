@@ -2,7 +2,7 @@
 /**
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/ 
 *
-*  @version 	$Id: printData.php,v 1.21 2006/08/17 19:29:59 schlundus Exp $
+*  @version 	$Id: printData.php,v 1.22 2006/10/04 17:07:03 schlundus Exp $
 *  @author 	Martin Havlat
 * 
 * Shows the data that will be printed.
@@ -10,7 +10,6 @@
 require('../../config.inc.php');
 require_once("common.php");
 require_once("print.inc.php");
-require_once("treemenu.inc.php");
 testlinkInitPage($db);
 
 $type = isset($_GET['edit']) ?  $_GET['edit'] : null;

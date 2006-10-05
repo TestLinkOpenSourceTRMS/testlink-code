@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.38 $
- * @modified $Date: 2006/09/25 07:07:06 $ $Author: franciscom $
+ * @version $Revision: 1.39 $
+ * @modified $Date: 2006/10/05 19:18:21 $ $Author: schlundus $
  *
  * @author Martin Havlat
  *
@@ -75,7 +75,7 @@ if(($latestBuild > $build_id) && !(config_get('edit_old_build_results')))
 
 
 // ----------------------------------------------------------------
-$bugs=null; // 20060917 - franciscom
+$bugs = null;
 
 $attachmentInfos=null;
 $map_last_exec=null;
@@ -195,7 +195,7 @@ if(!is_null($linked_tcversions))
         		
         		if($_bugInterfaceOn)
         		{
-              $the_bugs=get_bugs_for_exec($db,config_get('bugInterface'),$execID);
+              $the_bugs = get_bugs_for_exec($db,config_get('bugInterface'),$execID);
               if( count($the_bugs) > 0 )
               { 
         		    $bugs[$execID] = $the_bugs;

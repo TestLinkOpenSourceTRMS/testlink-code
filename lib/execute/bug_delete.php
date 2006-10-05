@@ -5,10 +5,10 @@
  *
  * Filename $RCSfile: bug_delete.php,v $
  *
- * @version $Revision: 1.1 $
- * @modified $Date: 2006/09/18 07:14:48 $ by $Author: franciscom $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2006/10/05 19:18:21 $ by $Author: schlundus $
  *
- * Deletes an attachment
+ * Deletes a bug
 **/
 require_once('../../config.inc.php');
 require_once('../functions/common.php');
@@ -18,11 +18,11 @@ testlinkInitPage($db);
 define('JUST_DELETE',TRUE);
 $exec_id = isset($_REQUEST['exec_id'])? intval($_REQUEST['exec_id']) : 0;
 $bug_id = isset($_REQUEST['bug_id'])? trim($_REQUEST['bug_id']) : null;
-$msg="";
+$msg = "";
 if ($exec_id > 0 && !is_null($bug_id) && strlen($bug_id) > 0)
 {
-  write_execution_bug($db,$exec_id, $bug_id,JUST_DELETE);
-  $msg=lang_get('deleting_was_ok');
+	write_execution_bug($db,$exec_id, $bug_id,JUST_DELETE);
+	$msg = lang_get('bugdeleting_was_ok');
 }
 
 $smarty = new TLSmarty();

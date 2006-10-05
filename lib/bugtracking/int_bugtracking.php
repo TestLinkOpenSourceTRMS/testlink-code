@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: int_bugtracking.php,v $
  *
- * @version $Revision: 1.10 $
- * @modified $Date: 2006/09/15 13:14:07 $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2006/10/05 19:18:21 $
  *
  * @author Andreas Morsing
  *
@@ -234,7 +234,15 @@ class bugtrackingInterface
 		return $this->m_enterBugURL;
 	}
 	
-	
+	/**
+	 * checks a bug id for validity  
+	 * 
+	 * @return bool returns true if the bugid has the right format, false else
+	 **/
+	function checkBugID($id)
+	{
+		return (intval($id) > 0);
+	}	
 	/**
 	 * default implementation for generating a link to the bugtracking page for viewing 
 	 * the bug with the given id in a new page

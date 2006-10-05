@@ -1,7 +1,7 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: tc_exec_assignment.php,v 1.2 2006/09/25 07:07:06 franciscom Exp $ 
+ * @version $Id: tc_exec_assignment.php,v 1.3 2006/10/05 19:18:21 schlundus Exp $ 
  * 
  * 
  * 
@@ -9,10 +9,8 @@
 require_once(dirname(__FILE__)."/../../config.inc.php");
 require_once(dirname(__FILE__)."/../functions/common.php");
 require_once(dirname(__FILE__)."/../functions/assignment_mgr.class.php");
-require_once("plan.inc.php");
-
 require_once(dirname(__FILE__)."/../functions/treeMenu.inc.php");
-
+require_once("plan.inc.php");
 
 testlinkInitPage($db);
 
@@ -27,8 +25,6 @@ $tproject_name = $_SESSION['testprojectName'];
 
 $tplan_id = $_SESSION['testPlanId'];
 $tplan_name = $_SESSION['testPlanName'];
-
-
 
 $id = isset($_REQUEST['id']) ? $_REQUEST['id'] : null;
 $version_id = isset($_REQUEST['version_id']) ? $_REQUEST['version_id'] : 0;
@@ -45,43 +41,42 @@ if($do_action)
   $a_tc = isset($_POST['achecked_tc']) ? $_POST['achecked_tc'] : null;
   if(!is_null($a_tc))
   {
-      $types_map=$assignment_mgr->get_available_types();
-      $status_map=$assignment_mgr->get_available_status();
+      $types_map = $assignment_mgr->get_available_types();
+      $status_map = $assignment_mgr->get_available_status();
       
-      $task_test_execution=$types_map['testcase_execution']['id'];
-      $open=$status_map['open']['id'];
-      $db_now=$db->db_now();
+      $task_test_execution = $types_map['testcase_execution']['id'];
+      $open = $status_map['open']['id'];
+      $db_now = $db->db_now();
       
-      $features2upd=array();
-      $features2ins=array();
-      $features2del=array();
+      $features2upd = array();
+      $features2ins = array();
+      $features2del = array();
       
       foreach($a_tc as $key_tc => $value_tcversion)
       {
-          
-        $feature_id=$_POST['feature_id'][$key_tc];
+        $feature_id = $_POST['feature_id'][$key_tc];
         
         if($_POST['has_prev_assignment'][$key_tc] > 0)
         {
            if( $_POST['tester_for_tcid'][$key_tc] > 0 )
            {
-              $features2upd[$feature_id]['user_id']=$_POST['tester_for_tcid'][$key_tc];
-              $features2upd[$feature_id]['assigner_id']=$_SESSION['userID'];
-              $features2upd[$feature_id]['type']=$task_test_execution;
-              $features2upd[$feature_id]['status']=$open;
+              $features2upd[$feature_id]['user_id'] = $_POST['tester_for_tcid'][$key_tc];
+              $features2upd[$feature_id]['assigner_id'] = $_SESSION['userID'];
+              $features2upd[$feature_id]['type'] = $task_test_execution;
+              $features2upd[$feature_id]['status'] = $open;
            } 
            else
            {
-              $features2del[$feature_id]=$feature_id;
+              $features2del[$feature_id] = $feature_id;
            }
         }
         else if($_POST['tester_for_tcid'][$key_tc] > 0)
         {
-           $features2ins[$feature_id]['user_id']=$_POST['tester_for_tcid'][$key_tc];
-           $features2ins[$feature_id]['type']=$task_test_execution;
-           $features2ins[$feature_id]['status']=$open;
-           $features2ins[$feature_id]['creation_ts']=$db_now;
-           $features2ins[$feature_id]['assigner_id']=$_SESSION['userID'];
+           $features2ins[$feature_id]['user_id'] = $_POST['tester_for_tcid'][$key_tc];
+           $features2ins[$feature_id]['type'] = $task_test_execution;
+           $features2ins[$feature_id]['status'] = $open;
+           $features2ins[$feature_id]['creation_ts'] = $db_now;
+           $features2ins[$feature_id]['assigner_id'] = $_SESSION['userID'];
         }
       }
       
@@ -97,19 +92,16 @@ if($do_action)
       {
          $assignment_mgr->assign($features2ins);      
       }
-      //      $assignment_mgr->update($feature_map,'testcase_execution');      
   }  
 }
 
 define('FILTER_BY_TC_OFF',null); 
 define('WRITE_BUTTON_ONLY_IF_LINKED',1);
-
 define('ALL_USERS_FILTER',null); 
 define('ADD_BLANK_OPTION',true); 
-$users=get_users_for_html_options($db,ALL_USERS_FILTER,ADD_BLANK_OPTION);
+$users = get_users_for_html_options($db,ALL_USERS_FILTER,ADD_BLANK_OPTION);
 
-// 20060924 - franciscom
-$map_node_tccount=get_testplan_nodes_testcount(&$db,$tproject_id, $tproject_name,
+$map_node_tccount = get_testplan_nodes_testcount($db,$tproject_id, $tproject_name,
                                                     $tplan_id,$tplan_name,$keyword_id);
 
 
@@ -117,36 +109,29 @@ switch($level)
 {
 	case 'testcase':
 		$out = null;
+		// build the data need to call gen_spec_view
+		$my_path = $tree_mgr->get_path($id);
+		$idx_ts = count($my_path) - 1;
+		$tsuite_data= $my_path[$idx_ts - 1];
 		
-		if(!$do_action) 
-		{
-			// build the data need to call gen_spec_view
-			$my_path = $tree_mgr->get_path($id);
-			$idx_ts = count($my_path)-1;
-			$tsuite_data= $my_path[$idx_ts-1];
-			
-			
-			$pp = $tcase_mgr->get_versions_status_quo($id, $version_id);
-			$linked_items[$id] = $pp[$version_id];
-			$linked_items[$id]['testsuite_id'] = $tsuite_data['id'];
-			$linked_items[$id]['tc_id'] = $id;
-
-      $p3 = $tcase_mgr->get_version_exec_assignment($version_id,$tplan_id);
-			$linked_items[$id]['user_id'] = $p3[$version_id]['user_id'];
-      $linked_items[$id]['feature_id'] = $p3[$version_id]['feature_id'];
-
-			$out = gen_spec_view($db,'testplan',$tplan_id,$tplan_name,
-			                     $tsuite_data['id'],$tsuite_data['name'],
-			                     $linked_items,$map_node_tccount,
-			                     $keyword_id,FILTER_BY_TC_OFF,WRITE_BUTTON_ONLY_IF_LINKED);
-			                     
-		}
+		
+		$pp = $tcase_mgr->get_versions_status_quo($id, $version_id);
+		$linked_items[$id] = $pp[$version_id];
+		$linked_items[$id]['testsuite_id'] = $tsuite_data['id'];
+		$linked_items[$id]['tc_id'] = $id;
+		
+		$p3 = $tcase_mgr->get_version_exec_assignment($version_id,$tplan_id);
+		$linked_items[$id]['user_id'] = $p3[$version_id]['user_id'];
+		$linked_items[$id]['feature_id'] = $p3[$version_id]['feature_id'];
+		
+		$out = gen_spec_view($db,'testplan',$tplan_id,$tsuite_data['id'],$tsuite_data['name'],
+							$linked_items,$map_node_tccount,
+							$keyword_id,FILTER_BY_TC_OFF,WRITE_BUTTON_ONLY_IF_LINKED);
 		break;
 
 	case 'testsuite':
 		$tsuite_data = $tsuite_mgr->get_by_id($id);
-		$out = gen_spec_view($db,'testplan',$tplan_id,$tplan_name,
-		                     $id,$tsuite_data['name'],
+		$out = gen_spec_view($db,'testplan',$tplan_id,$id,$tsuite_data['name'],
                          $tplan_mgr->get_linked_tcversions($tplan_id,FILTER_BY_TC_OFF,$keyword_id),
                          $map_node_tccount,
                          $keyword_id,FILTER_BY_TC_OFF,WRITE_BUTTON_ONLY_IF_LINKED);

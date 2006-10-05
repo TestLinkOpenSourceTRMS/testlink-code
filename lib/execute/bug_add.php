@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: bug_add.php,v $
  *
- * @version $Revision: 1.1 $
- * @modified $Date: 2006/09/18 07:14:48 $ by $Author: franciscom $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2006/10/05 19:18:21 $ by $Author: schlundus $
  *
  * 
 **/
@@ -15,16 +15,21 @@ require_once('../functions/common.php');
 require_once('exec.inc.php');
 testlinkInitPage($db);
 
-global $g_bugInterface;
 $exec_id = isset($_REQUEST['exec_id'])? intval($_REQUEST['exec_id']) : 0;
-
 $bug_id = isset($_REQUEST['bug_id'])? trim($_REQUEST['bug_id']) : null;
-$msg="";
+$msg = "";
 
-if( !is_null($bug_id) && strlen($bug_id) > 0 )
+if(!is_null($bug_id) && strlen($bug_id) > 0)
 {
-  write_execution_bug($db,$exec_id, $bug_id);
-  $msg="Bug Added";
+	if ($g_bugInterface->checkBugID($bug_id))
+	{
+		write_execution_bug($db,$exec_id, $bug_id);
+		$msg = lang_get("bug_added");
+	}
+	else
+	{
+		$msg = lang_get("error_wrong_BugID_format");
+	}
 }
 
 $smarty = new TLSmarty();

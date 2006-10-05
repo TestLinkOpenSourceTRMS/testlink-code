@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: int_mantis.php,v $
  *
- * @version $Revision: 1.7 $
- * @modified $Date: 2005/12/29 20:59:00 $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2006/10/05 19:18:21 $
  *
  * @author Francisco Mancardi - 20050916 - refactoring
  * @author Andreas Morsing
@@ -40,7 +40,7 @@ class mantisInterface extends bugtrackingInterface
 	 **/
 	function buildViewBugURL($id)
 	{
-		return $this->m_showBugURL.$id;		
+		return $this->m_showBugURL.urlencode($id);
 	}
 	
 	/**
@@ -55,6 +55,7 @@ class mantisInterface extends bugtrackingInterface
 			return false;
 
 		$status = false;
+		
 		$query = "SELECT status FROM {$this->m_dbName}.mantis_bug_table WHERE id=" . $id;
 		$result = $this->m_dbConnection->exec_query($query);
 		if ($result)
@@ -81,7 +82,7 @@ class mantisInterface extends bugtrackingInterface
 	 **/
 	function getBugStatusString($id)
 	{
-		$status = $this->getBUGStatus($id);
+		$status = $this->getBugStatus($id);
 		
 		$str = htmlspecialchars($id);
 		//if the bug wasn't found the status is null and we simply display the bugID
@@ -94,7 +95,6 @@ class mantisInterface extends bugtrackingInterface
 			if ($status == 80 || $status == 90)
 				$str = "<del>" . $id . "</del>";
 		}
-			
 		return $str;
 	}
 	/**

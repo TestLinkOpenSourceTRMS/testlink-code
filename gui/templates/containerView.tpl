@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: containerView.tpl,v 1.22 2006/10/02 17:36:55 schlundus Exp $ *}
+{* $Id: containerView.tpl,v 1.23 2006/10/07 11:17:15 schlundus Exp $ *}
 {* 
 Purpose: smarty template - view test specification containers 
 
@@ -29,7 +29,8 @@ Purpose: smarty template - view test specification containers
 				<input type="hidden" name="containerID" value={$container_data.id}>
 				<input type="submit" name="new_testsuite" value="{lang_get s='btn_new_com'}" />
 			  <input type="submit" name="reorder_testsuites" value="{lang_get s='btn_reorder_cat'}" />
-			  <input type="button" onclick="location='lib/testcases/tcImport.php?bRecursive=1&containerID={$container_data.id}'" value="{lang_get s='btn_import_testsuite'}" />  
+			  <input type="button" onclick="location='lib/testcases/tcImport.php?bIntoProject=1&bRecursive=1&containerID={$container_data.id}'" value="{lang_get s='btn_import_testsuite'}" />  
+			 <input type="button" onclick="location='lib/testcases/tcexport.php?bRecursive=1&containerID={$container_data.id}'" value="{lang_get s='btn_export_testsuite'}" />  			  
 			</form>
 		</div>
 	{/if}

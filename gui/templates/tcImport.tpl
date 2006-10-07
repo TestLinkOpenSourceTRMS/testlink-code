@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: tcImport.tpl,v 1.7 2006/10/02 17:36:55 schlundus Exp $ *}
+{* $Id: tcImport.tpl,v 1.8 2006/10/07 11:17:15 schlundus Exp $ *}
 {* Purpose: smarty template - show Test Results and Metrics *}
 {* I18N: 20050528 - fm *}
 {* 20050828 - scs - changes for importing tc to a specific category *}
@@ -32,6 +32,7 @@
 	
 	<div class="groupBtn">
 		<input type="hidden" name="bRecursive" value="{$bRecursive}" />
+		<input type="hidden" name="bIntoProject" value="{$bIntoProject}" />
 		<input type="hidden" name="containerID" value="{$containerID}" />
 		<input type="hidden" name="MAX_FILE_SIZE" value="{$importLimit}" /> {* restrict file size *}
 		<input type="submit" name="UploadFile" value="{lang_get s='btn_upload_file'}" />

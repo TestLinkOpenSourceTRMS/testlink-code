@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: keywordsexport.php,v $
  *
- * @version $Revision: 1.7 $
- * @modified $Date: 2006/08/17 19:29:59 $ by $Author: schlundus $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2006/10/09 10:27:00 $ by $Author: franciscom $
  *
  * This page this allows users to export keywords. 
  *
@@ -19,12 +19,12 @@ require_once("keywords.inc.php");
 testlinkInitPage($db);
 
 $bExport = isset($_POST['export']) ? $_POST['export'] : null;
-$exportType = isset($_POST['exportType']) ? $_POST['exportType'] : null;
+$exportType = isset($_REQUEST['exportType']) ? $_REQUEST['exportType'] : null;
 
 $testproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-$productName = $_SESSION['testprojectName'];
+$testprojectName = $_SESSION['testprojectName'];
 
-if ($bExport)
+if ($bExport || !is_null($exportType) )
 {
 	$tproject = new testproject($db);
 	$keywords = $tproject->getKeywords($testproject_id);
@@ -50,8 +50,8 @@ if ($bExport)
 
 
 $smarty = new TLSmarty();
-$smarty->assign('productName', $productName);
-$smarty->assign('productID', $testproject_id);
+$smarty->assign('testprojectName', $testprojectName);
+$smarty->assign('testprojectID', $testproject_id);
 $smarty->assign('importTypes',$g_keywordImportTypes);
 $smarty->display('keywordsexport.tpl');
 ?>

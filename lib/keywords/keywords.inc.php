@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: keywords.inc.php,v $
 * 
-* @version $Id: keywords.inc.php,v 1.26 2006/10/02 17:36:56 schlundus Exp $
-* @modified $Date: 2006/10/02 17:36:56 $ by $Author: schlundus $
+* @version $Id: keywords.inc.php,v 1.27 2006/10/09 10:27:00 franciscom Exp $
+* @modified $Date: 2006/10/09 10:27:00 $ by $Author: franciscom $
 *
 * Functions for support keywords management. 
 *
@@ -15,8 +15,10 @@
 * 20060224 - franciscom - changes due to new schema
 **/
 $g_keywordImportTypes = array( "CSV" => "CSV",
-							 "XML" => "XML",
-							 );
+							                 "XML" => "XML",
+							          );
+
+$g_keywordExportTypes = $g_keywordImportTypes;
 
 $g_keywordFormatStrings = array (
 							"CSV" => lang_get('the_format_keyword_csv_import'),

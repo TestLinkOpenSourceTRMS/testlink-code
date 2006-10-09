@@ -5,17 +5,19 @@
  *
  * Filename $RCSfile: keywordsView.php,v $
  *
- * @version $Revision: 1.13 $
- * @modified $Date: 2006/06/30 18:41:25 $ by $Author: schlundus $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2006/10/09 10:27:00 $ by $Author: franciscom $
  *
- * Purpose:  This page this allows users to view keywords. 
+ * allows users to manage keywords. 
  *
- * 20050907 - scs - cosmetic changes
- * 20051216 - scs - put all keyword management into this script
- * 20060104 - fm  - using nl2br() for the notes
+ * 20061007 - franciscom - export logic moved here
+ *
+ *
 **/
 require_once("../../config.inc.php");
 require_once("../functions/common.php");
+require_once("../functions/csv.inc.php");
+require_once("../functions/xml.inc.php");
 require_once("keywords.inc.php");
 testlinkInitPage($db);
 
@@ -27,12 +29,18 @@ $bNewKey = isset($_REQUEST['newKey']) ? 1 : 0;
 $bEditKey = isset($_REQUEST['editKey']) ? 1 : 0;
 $notes = isset($_REQUEST['notes']) ? $_REQUEST['notes'] : null;
 
+// 20061008 - franciscom
+$do_export = isset($_REQUEST['exportAll']) ? 1 : 0;
+$exportType = isset($_REQUEST['exportType']) ? $_REQUEST['exportType'] : null;
+
+
 $testproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 $bModifyKeywordRight = has_rights($db,"mgt_modify_key");
 
 $tproject = new testproject($db);
 $sqlResult = null;
 $action = null;
+
 //show the details of the keyword to edit
 if ($keywordID && !$bEditKey && !$bDeleteKey)
 {
@@ -43,6 +51,7 @@ if ($keywordID && !$bEditKey && !$bDeleteKey)
 		$notes = $info[0]['notes'];
 	}
 }
+
 if ($bModifyKeywordRight)
 {
 	//insert or update a keyword
@@ -78,6 +87,38 @@ if ($bModifyKeywordRight)
 		$notes = $keyword = $keywordID = null;
 }
 
+// 20061007 - franciscom
+if($do_export)
+{
+	$tproject = new testproject($db);
+	$keywords = $tproject->getKeywords($testproject_id);
+	$pfn = null;
+
+	switch(strtoupper($exportType))
+	{
+		case 'CSV':
+ 		  $pfn = "exportKeywordDataToCSV";
+		  $fileName = 'keywords.csv';
+			break;
+			
+		case 'XML':
+			$pfn = "exportKeywordDataToXML";
+			$fileName = 'keywords.xml';
+			break;
+	}
+	if ($pfn)
+	{
+		$content = $pfn($keywords);
+		downloadContentsToFile($content,$fileName);
+
+		// why this exit() ?
+		// If we don't use it, we will find in the exported file
+		// the contents of the smarty template.
+		exit();
+	}
+}
+
+
 $keywords = $tproject->getKeywords($testproject_id);
 
 $smarty = new TLSmarty();
@@ -89,5 +130,8 @@ $smarty->assign('name',$keyword);
 $smarty->assign('keyword',$keyword);
 $smarty->assign('notes',$notes);
 $smarty->assign('keywordID',$keywordID);
+
+$smarty->assign('exportTypes',$g_keywordExportTypes);
+
 $smarty->display('keywordsView.tpl');
 ?>

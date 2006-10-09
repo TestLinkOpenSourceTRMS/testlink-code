@@ -1,6 +1,14 @@
-{* smarty template - view all keywords of product; ver. 1.0 *}
-{* $Id: keywordsView.tpl,v 1.6 2006/03/11 22:58:02 schlundus Exp $ *}
-{* Purpose: smarty template - View all keywords *}
+{* 
+TestLink Open Source Project - http://testlink.sourceforge.net/
+$Id: keywordsView.tpl,v 1.7 2006/10/09 10:26:59 franciscom Exp $
+Purpose: smarty template - View all keywords 
+
+20061007 - franciscom
+1. removed message when no keyword availables (useless IMHO)
+2. Show export/import buttons only is there are keywords
+*}
+
+
 {include file="inc_head.tpl" jsValidate="yes"}
 
 <body>
@@ -30,43 +38,41 @@ var warning_enter_less2 = "{lang_get s='warning_enter_less2'}";
 {* show SQL result *}
 {include file="inc_update.tpl" result=$sqlResult item="Keyword" name=$name action="$action"}
 
-{* Create Form *}
+
+{* -------------------------- Create Form -----------------------------------------------   *}
 {if $rightsKey ne ""}
-<div class="workBack">
-
-	<form name="addKey" method="post" action="lib/keywords/keywordsView.php" 
-		onsubmit="return valTextLength(this.keyword, 100, 1);">
-	<input type="hidden" name="id" value="{$keywordID}" />
-	<table class="common">
-		<caption>{lang_get s='caption_new_keyword'}</caption>
-		<tr>
-			<th>{lang_get s='th_keyword'}</th>
-			<td><input type="text" name="keyword" size="66" maxlength="100" 
-				onblur="this.style.backgroundColor=''" value="{$keyword|escape}"/></td>
-		</tr>
-		<tr>
-			<th>{lang_get s='th_notes'}</th>
-			<td><textarea name="notes" rows="3" cols="50">{$notes|escape}</textarea></td>
-		</tr>
-	</table>
-	<div class="groupBtn">	
-	{if $keywordID == 0}
-		<input type="submit" name="newKey" value="{lang_get s='btn_create_keyword'}" />
-	{else}
-		<input type="submit" name="editKey" value="{lang_get s='btn_edit_keyword'}" />
-	{/if}
-	</div>
-	</form>
-
-</div>
+  <div class="workBack">
+  	<form name="addKey" method="post" action="lib/keywords/keywordsView.php" 
+  		    onsubmit="return valTextLength(this.keyword, 100, 1);">
+  	<input type="hidden" name="id" value="{$keywordID}" />
+  	<table class="common">
+  		{* <caption>{lang_get s='caption_new_keyword'}</caption> *}
+  		<tr>
+  			<th>{lang_get s='th_keyword'}</th>
+  			<td><input type="text" name="keyword" size="66" maxlength="100" 
+  				onblur="this.style.backgroundColor=''" value="{$keyword|escape}"/></td>
+  		</tr>
+  		<tr>
+  			<th>{lang_get s='th_notes'}</th>
+  			<td><textarea name="notes" rows="3" cols="50">{$notes|escape}</textarea></td>
+  		</tr>
+  	</table>
+  	<div class="groupBtn">	
+  	{if $keywordID == 0}
+  		<input type="submit" name="newKey" value="{lang_get s='btn_create_keyword'}" />
+  	{else}
+  		<input type="submit" name="editKey" value="{lang_get s='btn_edit_keyword'}" />
+  	{/if}
+  	</div>
+  	</form>
+  </div>
 {/if}
+{* --------------------------------------------------------------------------------------   *}
+
 
 <div class="workBack">
 
-{if $arrKeywords eq ''}
-	{lang_get s='no_keywords'}
-{else}
-	{* data table *}
+  {if $arrKeywords neq ''}
 	<table class="common" width="70%">
 		<tr>
 			<th width="30%">{lang_get s='th_keyword'}</th>
@@ -97,13 +103,34 @@ var warning_enter_less2 = "{lang_get s='warning_enter_less2'}";
 		</tr>
 		{/section}
 	</table>
+  {/if}
 	
-{/if}
+
 	<div class="groupBtn">	
-		<input type="submit" name="exportAll" value="{lang_get s='btn_export_keywords'}" onclick="location='lib/keywords/keywordsexport.php'" />
-		{if $rightsKey ne ""}
-		<input type="submit" name="importAll" value="{lang_get s='btn_import_keywords'}" onclick="location='lib/keywords/keywordsimport.php'" />
-		{/if}
+
+  	<form name="export" method="post" action="lib/keywords/keywordsView.php" 
+  		
+  		{*
+  		<input type="submit" name="export_XML" value="{lang_get s='btn_export_keywords_XML'}">
+  		<input type="submit" name="export_CSV" value="{lang_get s='btn_export_keywords_CSV'}">
+      *}
+
+
+		       
+		  {if $rightsKey ne ""}
+		    <input type="button" name="importAll" value="{lang_get s='btn_import_keywords'}" 
+	 	           onclick="location='lib/keywords/keywordsimport.php'" />
+		  {/if}
+
+      {if $arrKeywords neq ''}
+    	  <input type="submit" name="exportAll" value="{lang_get s='btn_export'}"> 
+	      <select name="exportType">
+		    {html_options options=$exportTypes}
+	      </select>
+      {/if}
+
+
+  	</form>
 	</div>
 </div>
 

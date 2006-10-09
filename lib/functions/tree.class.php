@@ -5,10 +5,11 @@
  *
  * Filename $RCSfile: tree.class.php,v $
  *
- * @version $Revision: 1.21 $
- * @modified $Date: 2006/07/31 16:44:33 $ by $Author: franciscom $
+ * @version $Revision: 1.22 $
+ * @modified $Date: 2006/10/09 10:29:34 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
+ * 20061008 - franciscom - ORDER BY node_order -> ORDER BY node_order,id
  * 20060729 - franciscom - fixed bug on new_node() after refactoring in version 1.20
  * 20060722 - franciscom - added possibility to create a new node with an specific ID
  * 20060511 - franciscom - changes in call to insert_id() due to problems with Postgres
@@ -257,10 +258,12 @@ function change_parent($node_id, $parent_id)
 }
  
  
+// 20061008 - franciscom - added ID in order by clause
+// 
 function get_children($id,$exclude_node_types=null) 
 {
   $sql = " SELECT * from {$this->obj_table}
-          WHERE parent_id = {$id} ORDER BY node_order";
+          WHERE parent_id = {$id} ORDER BY node_order,id";
 
   $node_list=array();  
   $result = $this->db->exec_query($sql);
@@ -341,6 +344,8 @@ function get_subtree($node_id,$exclude_node_types=null,
 }
 
 
+// 20061008 - franciscom - added ID in order by clause
+// 
 // 20060312 - franciscom
 // Changed and improved following some Andreas Morsing advice.
 //
@@ -353,7 +358,7 @@ function _get_subtree($node_id,&$node_list,$and_not_in_clause='',
 {
 
   	$sql = " SELECT * from nodes_hierarchy
-    	       WHERE parent_id = {$node_id}  {$and_not_in_clause} ORDER BY node_order";
+    	       WHERE parent_id = {$node_id}  {$and_not_in_clause} ORDER BY node_order,id";
  
     $result = $this->db->exec_query($sql);
   
@@ -401,12 +406,15 @@ function _get_subtree($node_id,&$node_list,$and_not_in_clause='',
   	}
 } // function end
  
+ 
+// 20061008 - franciscom - added ID in order by clause
+// 
 function _get_subtree_rec($node_id,&$pnode,$and_not_in_clause = '',
                                            $exclude_children_of = null,
                                            $exclude_branches = null)
 {
   	$sql = " SELECT * from {$this->obj_table} WHERE parent_id = {$node_id} {$and_not_in_clause}" .
-		   " ORDER BY node_order";
+		       " ORDER BY node_order,id";
  
     $result = $this->db->exec_query($sql);
     while($row = $this->db->fetch_array($result))

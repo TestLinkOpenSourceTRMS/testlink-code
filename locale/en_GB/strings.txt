@@ -4,11 +4,12 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.68 $
- * @modified $Date: 2006/10/02 17:36:56 $ $Author: schlundus $
+ * @version $Revision: 1.69 $
+ * @modified $Date: 2006/10/09 10:27:32 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
+ * 20061007 - franciscom - new export keywords buttons
  * 20060423 - franciscom - new labels for keyword assignment
  * 20060225 - franciscom - removed some deprecated names
 **/
@@ -504,7 +505,7 @@ $TLS_update_data = "Update data";
 // gui/templates/reqSpecList.tpl
 $TLS_btn_assign_tc = "Assign Test Case";
 $TLS_no_docs = "No available documents.";
-$TLS_req_list_docs = "List of documents";
+$TLS_req_list_docs = "Requirement Specifications"; // 20061007 - franciscom
 
 
 
@@ -777,6 +778,10 @@ $TLS_btn_close = "Close";
 
 // gui/templates/keywordsexport.tpl
 $TLS_btn_export = "Export";
+
+// 20061007 - franciscom
+$TLS_btn_export_keywords_XML = "Export - XML File";
+$TLS_btn_export_keywords_CSV = "Export - CVS File";
 
 
 

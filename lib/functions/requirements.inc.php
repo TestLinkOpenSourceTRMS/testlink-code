@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: requirements.inc.php,v $
- * @version $Revision: 1.35 $
- * @modified $Date: 2006/08/29 19:41:37 $ by $Author: schlundus $
+ * @version $Revision: 1.36 $
+ * @modified $Date: 2006/10/09 10:32:28 $ by $Author: franciscom $
  *
  * @author Martin Havlat <havlat@users.sourceforge.net>
  * 
@@ -652,91 +652,62 @@ function unassignTc2Req(&$db,$testcase_id, $req_id)
  */
 function createTcFromRequirement(&$db,&$tproject,$mixIdReq, $testproject_id, $srs_id, $user_id)
 {
-	//global $g_req_cfg;
-	//global $g_field_size;
-  // 20060110 - fm 
+ 	define('DEFAULT_TC_ORDER',0);
+  define('AUTOMATIC_ID',0);
+  define('NO_KEYWORDS','');
+  
+
 	$g_req_cfg = config_get('req_cfg');
 	$g_field_size = config_get('field_size');
-	$auto_category_name = $g_req_cfg->default_category_name;
-	$auto_component_name = $g_req_cfg->default_component_name;
-
-	tLog('createTcFromRequirement started:'.$mixIdReq.','.$testproject_id.','.$srs_id.','.$user_id);
+	$auto_testsuite_name = $g_req_cfg->default_testsuite_name;
+  
+  $empty_steps='';
+  $empty_results='';
+  
+  $tree_mgr=New tree($db);
+  $tcase_mgr=New testcase($db);
+  
+  $node_descr_type=$tree_mgr->get_available_node_types();
+  
+	tLog( __FUNCTION__ . ' started:' . $mixIdReq.','.$testproject_id.','.$srs_id.','.$user_id);
 	$output = null;
 	if (is_array($mixIdReq)) {
 		$arrIdReq = $mixIdReq;
 	} else {
 		$arrIdReq = array($mixIdReq);
 	}
-	if ( $g_req_cfg->use_req_spec_as_category_name )
+	if ( $g_req_cfg->use_req_spec_as_testsuite_name )
 	{
 	  // SRS Title
 	  $arrSpec = $tproject->getReqSpec($testproject_id,$srs_id);
-	  $auto_category_name = substr($arrSpec[0]['title'],0,$g_field_size->category_name);
+	  $auto_testsuite_name = substr($arrSpec[0]['title'],0,$g_field_size->testsuite_name);
 	}
 	
-	//find component
-	$sqlCOM = " SELECT id FROM mgtcomponent " .
-	          " WHERE name='" . $auto_component_name . "' " .
-	          " AND prodid=" . $testproject_id;
+	// find container with the following characteristics:
+	// 1. testproject_id is its father
+	// 2. has the searched name
 	          
-	$resultCOM = $db->exec_query($sqlCOM);
-  if ($db->num_rows($resultCOM) == 1) {
-		$row = $db->fetch_array($resultCOM);
-		$idCom = $row['id'];
+	$sql="SELECT id FROM nodes_hierarchy NH " .
+	     " WHERE name='" . $auto_testsuite_name . "' " .
+	     " AND parent_id=" . $testproject_id . " " .
+	     " AND node_type_id=" . $node_descr_type['testsuite'];
+	             
+	          
+	$result = $db->exec_query($sql);
+  if ($db->num_rows($result) == 1) {
+		$row = $db->fetch_array($result);
+		$tsuite_id = $row['id'];
 	}
 	else {
 		// not found -> create
-		tLog('Component:' . $auto_component_name . ' was not found.');
-		$sqlInsertCOM = " INSERT INTO mgtcomponent (name,scope,prodid) " .
-		                " VALUES (" . "'" . $db->prepare_string($auto_component_name) . "'," .
-		                              "'" . $db->prepare_string($g_req_cfg->scope_for_component) . "'," .  
-		                $testproject_id . ")";
-		                
-		$resultCOM = $db->exec_query($sqlInsertCOM);
-		if ($db->affected_rows()) {
-			$resultCOM = $db->exec_query($sqlCOM);
-			if ($db->num_rows($resultCOM) == 1) {
-				$row = $db->fetch_array($resultCOM);
-				$idCom = $row['id'];
-			} else {
-				tLog('Component:' . $auto_component_name . 
-				     ' was not found again! ' . $db->error_msg());
-			}
-		} else {
-			tLog($db->error_msg(), 'ERROR');
-		}
+		tLog('test suite:' . $auto_testsuite_name . ' was not found.');
+    $tsuite_mgr=New testsuite($db);
+    $new_tsuite=$tsuite_mgr->create($testproject_id,$auto_testsuite_name,$g_req_cfg->testsuite_details);
+    $tsuite_id=$new_tsuite['id'];
 	}
-	tLog('createTcFromRequirement: $idCom=' . $idCom);
 
-	//find category
-	$sqlCAT = " SELECT id FROM mgtcategory " .
-	          " WHERE name='" . $db->prepare_string($auto_category_name) . "' " .
-	          " AND compid=" . $idCom;
-	          
-	$resultCAT = $db->exec_query($sqlCAT);
-	if ($resultCAT && ($db->num_rows($resultCAT) == 1)) {
-		$row = $db->fetch_array($resultCAT);
-		$idCat = $row['id'];
-	}
-	else {
-		// not found -> create
-		// 20060110 - fm - added config,data,tools
-		$sqlInsertCAT = " INSERT INTO mgtcategory (name,objective,compid,config,data,tools) " .
-		                " VALUES (" . "'" . 
-		                $db->prepare_string($auto_category_name) . "'," . "'" . 
-		                $db->prepare_string($g_req_cfg->objective_for_category) . "'," .
-		                $idCom .  ",'','','')";
-				                     
-		$resultCAT = $db->exec_query($sqlInsertCAT);
-		$resultCAT = $db->exec_query($sqlCAT);
-		if ($db->num_rows($resultCAT) == 1) {
-			$row = $db->fetch_array($resultCAT);
-		  $idCat = $row['id'];
-		} else {
-			die($db->error_msg());
-		}
-	}
-	tLog('createTcFromRequirement: $idCat=' . $idCat);
+	tLog(__FUNCTION__ . ':  test suite id=' . $tsuite_id);
+
 
 	//create TC
 	foreach ($arrIdReq as $execIdReq) 
@@ -748,24 +719,24 @@ function createTcFromRequirement(&$db,&$tproject,$mixIdReq, $testproject_id, $sr
 		tLog('$reqData:' . implode(',',$reqData));
 		
 		// create TC
-		// 20051025 - MHT - corrected input parameters order
-		/* 
-		  // 20060110 - fm
-		  function insertTestcase(&$db,$catID,$title,$summary,$steps,
-                             $outcome,$user_id,$tcOrder = null,$keywords = null)
-    */
-		
-		$tcID =  insertTestcase($db,$idCat, $reqData['title'], "Verify requirement: \n" . 
-				                    $reqData['scope'], null, null, $user_id,null,null);
-		
+	  $tcase=$tcase_mgr->create($tsuite_id,$reqData['title'],
+	                            $g_req_cfg->testcase_summary_prefix . $reqData['scope'] , 
+	                            $empty_steps,$empty_results,$user_id,NO_KEYWORDS,
+	                            DEFAULT_TC_ORDER,AUTOMATIC_ID,
+		                          config_get('check_names_for_duplicates'),
+		                          config_get('action_on_duplicate_name'));
+
 		// create coverage dependency
-		if (!assignTc2Req($db,$tcID, $reqData['id'])) {
+		if (!assignTc2Req($db,$tcase['id'], $reqData['id'])) {
 			$output = 'Test case: ' . $reqData['title'] . "was not created </br>";
 		}
 	}
 
 	return (!$output) ? 'ok' : $output;
 }
+
+
+
 
 
 function exportReqDataToXML($reqData)

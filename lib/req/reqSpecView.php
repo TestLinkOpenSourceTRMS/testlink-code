@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqSpecView.php,v $
- * @version $Revision: 1.24 $
- * @modified $Date: 2006/05/22 15:43:32 $ by $Author: franciscom $
+ * @version $Revision: 1.25 $
+ * @modified $Date: 2006/10/09 10:32:28 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Screen to view existing requirements within a req. specification.
@@ -19,6 +19,9 @@ require_once("common.php");
 require_once("users.inc.php");
 require_once('requirements.inc.php');
 require_once('attachments.inc.php');
+require_once("../functions/csv.inc.php");
+require_once("../functions/xml.inc.php");
+
 require_once("../../third_party/fckeditor/fckeditor.php");
 require_once(dirname("__FILE__") . "/../functions/configCheck.php");
 testlinkInitPage($db);
@@ -44,6 +47,10 @@ $bCreate = isset($_REQUEST['create']) ? intval($_REQUEST['create']) : 0;
 $tprojectID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 $userID = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
 $login_name = isset($_SESSION['user']) ? $_SESSION['user'] : null;
+
+$do_export = isset($_REQUEST['exportAll']) ? 1 : 0;
+$exportType = isset($_REQUEST['exportType']) ? $_REQUEST['exportType'] : null;
+
 
 $arrCov = null;
 
@@ -184,6 +191,43 @@ else if ($action && $action != 'create')
 	$of->Value=$arrSpec[0]['scope'];
 }
 
+// 20061008 - franciscom
+//export to csv doors is not support
+global $g_reqImportTypes;
+$exportTypes = $g_reqImportTypes;
+unset($exportTypes['csv_doors']);
+
+if($do_export)
+{
+	$reqData = getRequirements($db,$idSRS);
+	$pfn = null;
+	switch(strtoupper($exportType))
+	{
+		case 'CSV':
+			$pfn = "exportReqDataToCSV";
+			$fileName = 'reqs.csv';
+			break;
+		case 'XML':
+			$pfn = "exportReqDataToXML";
+			$fileName = 'reqs.xml';
+			break;
+	}
+	if ($pfn)
+	{
+		$content = $pfn($reqData);
+		downloadContentsToFile($content,$fileName);
+		
+		// why this exit() ?
+		// If we don't use it, we will find in the exported file
+		// the contents of the smarty template.
+		exit();
+	}
+}
+// ----------------------------------------------------------
+
+
+
+$smarty->assign('exportTypes',$exportTypes);
 $smarty->assign('scope',$of->CreateHTML());
 $smarty->display($template);
 ?>

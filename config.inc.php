@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.72 $
- * @modified $Date: 2006/10/02 17:36:55 $ by $Author: schlundus $
+ * @version $Revision: 1.73 $
+ * @modified $Date: 2006/10/09 09:56:54 $ by $Author: franciscom $
  *
  *
  * Constants and configuration parameters used throughout TestLink 
@@ -14,6 +14,8 @@
  *-------------------------------------------------------------------------
  * Revisions:
  *
+ * 20061009 - franciscom - changed $g_req_cfg
+ * 
  * 20060822 - franciscom - new properties for $g_attachments
  *                         enabled and disabled_msg
  *
@@ -345,17 +347,36 @@ Test Case generation from Requirement
   TRUE  -> REQuirement Specification Title is used a category name     
        
 */
-$g_req_cfg->default_category_name = "TODO";
-$g_req_cfg->objective_for_category = "Category/Test Cases generated from Requirements";
 
-$g_req_cfg->default_component_name = "Component Created by Requirement - Auto";
-$g_req_cfg->scope_for_component = "Component/Category/Test Cases generated from Requirements";
-
-$g_req_cfg->use_req_spec_as_category_name = TRUE;
-
-
+// 20061008 - for 1.6
+//$g_req_cfg->use_req_spec_as_category_name = TRUE;
+//
+//$g_req_cfg->default_category_name = "TODO";
+//$g_req_cfg->objective_for_category = "Category/Test Cases generated from Requirements";
+//
+//$g_req_cfg->default_component_name = "Component Created by Requirement - Auto";
+//$g_req_cfg->scope_for_component = "Component/Category/Test Cases generated from Requirements";
+//
+//$g_req_cfg->default_category_name = "TODO";
+//$g_req_cfg->objective_for_category = "Category/Test Cases generated from Requirements";
+//
 //20051002 - fm - Must be changed if Table definition changes
-$g_field_size->category_name = 100;
+//$g_field_size->category_name = 100;
+
+
+
+// 20061008 - for 1.7
+$g_req_cfg->use_req_spec_as_testsuite_name = TRUE;
+$g_req_cfg->default_testsuite_name = "Test suite created by Requirement - Auto";
+$g_req_cfg->testsuite_details = "<b>Test suite/Test Cases generated from Requirements</b>";
+$g_req_cfg->testcase_summary_prefix = "<b>Test Case generated from Requirement</b><br>";
+
+$g_field_size->testsuite_name = 100;
+
+
+
+
+
 
 
 /* fckeditor Toolbar */

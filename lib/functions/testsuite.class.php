@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testsuite.class.php,v $
- * @version $Revision: 1.17 $
- * @modified $Date: 2006/10/02 17:36:56 $
+ * @version $Revision: 1.18 $
+ * @modified $Date: 2006/10/09 10:28:50 $
  * @author franciscom
  *
  * 20060805 - franciscom - changes in viewer_edit_new()
@@ -55,10 +55,6 @@ function create($parent_id,$name,$details,
 	if ($check_duplicate_name)
 	{
 		
-	// 1. node_type_id of the parent_id
-    // $p_node_info = $tree_manager->get_by_id($parent_id);
-    // $p_node_type_id = $p_node_info['node_type_id'];
-    
     $sql = " SELECT count(*) AS qty FROM testsuites,nodes_hierarchy 
 		         WHERE nodes_hierarchy.name = '" . $this->db->prepare_string($name) . "'" . 
 		       " AND testsuites.id=nodes_hierarchy.id
@@ -325,8 +321,6 @@ function delete_deep($id)
 	$subtree[]=array('id' => $id);
 	$testcases = $this->get_testcases_deep($id);
 
-  //echo "<pre>debug \$subtree" . __FUNCTION__ ; print_r($subtree); echo "</pre>";
-	
   if (!is_null($subtree))
 	{
     // -------------------------------------------------------------------

@@ -2,10 +2,15 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.30 $
- * @modified $Date: 2006/10/02 17:36:56 $ $Author: schlundus $
+ * @version $Revision: 1.31 $
+ * @modified $Date: 2006/10/09 10:28:50 $ $Author: franciscom $
  * @author franciscom
  *
+ *
+ * 20061008 - franciscom - changes in interface in:
+ *                         create()
+ *                         create_tcase_only()
+ * 
  * 20060726 - franciscom - create_tcversion() return array changed
  *                         default value changed for optional argument $tc_order
  *                         create(), update()
@@ -30,6 +35,9 @@ $g_tcFormatStrings = array (
 							
 define("TC_ALL_VERSIONS",0);
 define("TC_LATEST_VERSION",-1);
+define("TC_DEFAULT_ORDER",0);
+define("TC_AUTOMATIC_ID",0);
+define("TC_COPY_KEYWORDS",0);
 
 class testcase
 {
@@ -56,28 +64,33 @@ class testcase
     $this->assignment_mgr=New assignment_mgr($this->db);
     $this->assignment_types=$this->assignment_mgr->get_available_types(); 
     $this->assignment_status=$this->assignment_mgr->get_available_status();
-
-
-
 	}
 
 
+// 20061008 - franciscom - added
+//                         [$check_duplicate_name]
+//                         [$action_on_duplicate_name]
+//
 // 20060726 - franciscom - default value changed for optional argument $tc_order
 //                         create(), update()
 //
 // 20060722 - franciscom - interface changes added [$id]
-//            0 -> the id will be assigned by dbms
+//            TC_AUTOMATIC_ID -> the id will be assigned by dbms
 //            x -> this will be the id 
 //                 Warning: no check is done before insert => can got error.
 //   
 // 20060425 - franciscom - - interface changes added $keywords_id
 function create($parent_id,$name,$summary,$steps,
                 $expected_results,$author_id,$keywords_id='',
-                $tc_order=0,$id=0)
+                $tc_order=TC_DEFAULT_ORDER,$id=TC_AUTOMATIC_ID,
+                $check_duplicate_name=0,
+                $action_on_duplicate_name='generate_new')
 {
 	$first_version = 1;
 	$status_ok = 1;
-	$ret = $this->create_tcase_only($parent_id,$name,$tc_order,$id);
+	$ret = $this->create_tcase_only($parent_id,$name,$tc_order,$id,
+                                  $check_duplicate_name,
+                                  $action_on_duplicate_name);
 	if($ret['msg'] == 'ok')
 	{
 		if(strlen(trim($keywords_id)))
@@ -93,6 +106,10 @@ function create($parent_id,$name,$summary,$steps,
 }
 
 /* 
+20061008 - franciscom
+           added [$check_duplicate_name]
+                 [$action_on_duplicate_name]
+
 20060725 - franciscom - interface changes 
            [$order]
            
@@ -101,13 +118,50 @@ function create($parent_id,$name,$summary,$steps,
            x -> this will be the id 
                 Warning: no check is done before insert => can got error.
 */
-function create_tcase_only($parent_id,$name,$order = 0,$id = 0)
+function create_tcase_only($parent_id,$name,$order=TC_DEFAULT_ORDER,$id=TC_AUTOMATIC_ID,
+                           $check_duplicate_name=0,
+                           $action_on_duplicate_name='generate_new')
 {
-  $tcase_id = $this->tree_manager->new_node($parent_id,
-                                            $this->my_node_type,$name,$order,$id);
-  $ret['id'] = $tcase_id;
+  $ret['id'] = -1;
+  $ret['status_ok'] = 1;
   $ret['msg'] = 'ok';
-
+		
+ 	if ($check_duplicate_name)
+	{
+    $sql = " SELECT count(*) AS qty FROM nodes_hierarchy " . 
+		       " WHERE nodes_hierarchy.name = '" . $this->db->prepare_string($name) . "'" . 
+		       " AND node_type_id = {$this->my_node_type} " .
+		       " AND nodes_hierarchy.parent_id={$parent_id} "; 
+		
+		$result = $this->db->exec_query($sql);
+		$myrow = $this->db->fetch_array($result);
+		if( $myrow['qty'])
+		{
+			if ($action_on_duplicate_name == 'block')
+			{
+				$ret['status_ok'] = 0;
+				$ret['msg'] = lang_get('testcase_name_already_exists');	
+			} 
+			else
+			{
+				$ret['status_ok'] = 1;      
+				if ($action_on_duplicate_name == 'generate_new')
+				{ 
+					$ret['status_ok'] = 1;      
+					$name = config_get('prefix_name_for_copy') . " " . $name ;      
+				}
+			}
+		}       
+	}
+  
+  if( $ret['status_ok'] )
+  {
+    $tcase_id = $this->tree_manager->new_node($parent_id,
+                                               $this->my_node_type,$name,$order,$id);
+    $ret['id'] = $tcase_id;
+    $ret['msg'] = 'ok';
+  }
+  
   return $ret;
 }
 
@@ -284,7 +338,7 @@ function viewer_edit_new($amy_keys, $oFCK, $action, $parent_id, $id=null)
 //
 // 20060424 - franciscom - interface changes added $keywords_id
 function update($id,$tcversion_id,$name,$summary,$steps,
-                $expected_results,$user_id,$keywords_id='',$tc_order=0)
+                $expected_results,$user_id,$keywords_id='',$tc_order=TC_DEFAULT_ORDER)
 {
 	$status_ok = 0;
 	
@@ -496,15 +550,32 @@ function get_testproject($id)
   return ($a_path[0]['parent_id']);
 }
 
-
-function copy_to($id,$parent_id,$user_id,$copyKeywords = 0)
+/*
+20061008 - franciscom - added
+                        [$check_duplicate_name]
+                        [$action_on_duplicate_name]
+                        
+                        changed return type
+                        
+*/
+function copy_to($id,$parent_id,$user_id,
+                 $copy_keywords=0, 
+                 $check_duplicate_name=0,
+                 $action_on_duplicate_name='generate_new')
 {
-	$status_ok = 0;
+  $ret['id']=-1;
+  $ret['status_ok']=0;
+  $ret['msg']='ok';
+	
 	$tcase_info = $this->get_by_id($id);
 	if ($tcase_info)
 	{
-		$new_tc = $this->create_tcase_only($parent_id,$tcase_info[0]['name']);
-		if ($new_tc)
+		$new_tc = $this->create_tcase_only($parent_id,$tcase_info[0]['name'],
+		                                   TC_DEFAULT_ORDER,TC_AUTOMATIC_ID,
+                                       $check_duplicate_name,
+                                       'generate_new');
+
+		if ($new_tc['status_ok'])
 		{
 			foreach($tcase_info as $tcversion)
 			{
@@ -512,14 +583,13 @@ function copy_to($id,$parent_id,$user_id,$copyKeywords = 0)
 				                        $tcversion['summary'],$tcversion['steps'],
 				                        $tcversion['expected_results'],$tcversion['author_id']);
 			}
-			if ($copyKeywords)
+			if ($copy_keywords)
 			{
 				$this->copyKeywordsTo($id,$new_tc['id']);
 			}
-			$status_ok = 1;
 		}
 	}
-	return $status_ok;
+	return($ret);
 }
 	
 	

@@ -4,13 +4,16 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.36 $
- * @modified $Date: 2006/08/17 19:30:00 $  by $Author: schlundus $
+ * @version $Revision: 1.37 $
+ * @modified $Date: 2006/10/09 10:28:50 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
  * @author Martin Havlat
  *
- * 20060305 - franciscom
+ * 20061008 - franciscom - changes in call to:
+ *                         create(),copy_to()
+ *
+ *                                          
  * 20060106 - scs - refactoring, fixed bug 9
 **/
 require_once("../../config.inc.php");
@@ -179,12 +182,26 @@ else if($do_create)
 	
 	if ($name_ok)
 	{
+  	define('DEFAULT_TC_ORDER',0);
+    define('AUTOMATIC_ID',0);
+
 		$msg = lang_get('error_tc_add');
+		$tcase=$tcase_mgr->create($container_id,$name,$summary,$steps,
+		                       $expected_results,$userID,
+		                       $assigned_keywords_list,DEFAULT_TC_ORDER,AUTOMATIC_ID,
+		                       config_get('check_names_for_duplicates'),'block');
+		$msg = $tcase['msg'];                       
+		
+		/*
 		if ($tcase_mgr->create($container_id,$name,$summary,$steps,
-		                       $expected_results,$userID,$assigned_keywords_list))
+		                       $expected_results,$userID,
+		                       $assigned_keywords_list,DEFAULT_TC_ORDER,AUTOMATIC_ID,
+		                       config_get('check_names_for_duplicates'),
+		                       'block') )
 		{
 		  $msg = 'ok';
 		}
+		*/
 		
 	}
 
@@ -307,9 +324,9 @@ else if($do_copy)
 {
 	$msg = '';
 	$action_result = 'copied';
-	$result = $tcase_mgr->copy_to($tcase_id,$new_container_id,$userID,1);
-	if($result)
-		$msg = 'ok';
+	$result = $tcase_mgr->copy_to($tcase_id,$new_container_id,$userID,TC_COPY_KEYWORDS,
+	                              config_get('check_names_for_duplicates'),'block');
+	$msg = $result['msg'];
 	$tcase_mgr->show($smarty,$tcase_id, $userID,$tcversion_id,$action_result,$msg);
 }
 else if($do_create_new_version)

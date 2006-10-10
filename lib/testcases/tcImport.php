@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: tcImport.php,v $
  *
- * @version $Revision: 1.13 $
- * @modified $Date: 2006/10/07 11:17:16 $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2006/10/10 20:09:15 $
 */
 require('../../config.inc.php');
 require_once('common.php');
@@ -16,7 +16,6 @@ require_once('xml.inc.php');
 testlinkInitPage($db);
 
 $source = isset($HTTP_POST_FILES['uploadedFile']['tmp_name']) ? $HTTP_POST_FILES['uploadedFile']['tmp_name'] : null;
-$bImport = isset($_POST['import']) ? 1 : 0;
 $importType = isset($_POST['importType']) ? $_POST['importType'] : null;
 $bRecursive = isset($_REQUEST['bRecursive']) ? $_REQUEST['bRecursive'] : 0;
 $location = isset($_POST['location']) ? strings_stripSlashes($_POST['location']) : null; 
@@ -43,13 +42,18 @@ if (($source != 'none') && ($source != ''))
 		}
 		if ($pfn)
 		{
-			$pfn($db,$dest,$container_id,$tproject_id,$userID,$bRecursive,$bIntoProject);
+			$resultMap = $pfn($db,$dest,$container_id,$tproject_id,$userID,$bRecursive,$bIntoProject);
 		}
 	}
-} 
+}
+else
+{
+	$importType = null;
+}
 function importTestCaseDataFromXML(&$db,$fileName,$parentID,$tproject_id,$userID,$bRecursive,$importIntoProject = 0)
 {
 	$xmlTCs = null;
+	$resultMap  = null;
 	$dom = domxml_open_file($fileName);
 	if ($dom)
 	{
@@ -222,5 +226,6 @@ $smarty->assign('containerID', $container_id);
 $smarty->assign('bIntoProject',$bIntoProject);
 $smarty->assign('productID', $tproject_id);
 $smarty->assign('importLimitKB',TL_IMPORT_LIMIT / 1024);
+$smarty->assign('bImport',strlen($importType));
 $smarty->display('tcimport.tpl');
 ?>

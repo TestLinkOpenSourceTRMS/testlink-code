@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: tcImport.tpl,v 1.8 2006/10/07 11:17:15 schlundus Exp $ *}
+{* $Id: tcImport.tpl,v 1.9 2006/10/10 20:09:14 schlundus Exp $ *}
 {* Purpose: smarty template - show Test Results and Metrics *}
 {* I18N: 20050528 - fm *}
 {* 20050828 - scs - changes for importing tc to a specific category *}
@@ -44,6 +44,9 @@
 	{foreach item=result from=$resultMap}
 		{lang_get s='title_imp_tc_data'} : <b>{$result[0]|escape}</b> : {$result[1]|escape}<br />
 	{/foreach}
+	{include file="inc_refreshTree.tpl"}
+{/if}
+{if $bImport > 0}
 	{include file="inc_refreshTree.tpl"}
 {/if}
 

@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8 
- * @modified $Date: 2006/09/18 07:16:15 $ by $Author: franciscom $
+ * @modified $Date: 2006/10/10 20:09:14 $ by $Author: schlundus $
  *
  *
  * This class is encapsulates most functionality necessary to query the database
@@ -20,9 +20,7 @@
 
 
 class results
-
 {
-	
   var $suitesSelected = "";	
 
   // class references passed in by constructor
@@ -79,7 +77,8 @@ class results
   // array
   // (total cases in plan, total pass, total fail, total blocked, total not run)
   var $totalsForPlan = null;
- 
+	
+	//TODO: shallow initialization!  
   function results(&$db, &$tp, &$tree, $suitesSelected, $builds_to_query = -1)
   {
    	$this->db = $db;	
@@ -103,6 +102,7 @@ class results
     // create data object which tallies totals for suites taking
     // child suites into account
     $this->createAggregateMap($this->suiteStructure, $this->mapOfSuiteSummary);
+	
     $this->totalsForPlan = $this->createTotalsForPlan($this->suiteStructure, $this->mapOfSuiteSummary);
   }
    
@@ -152,17 +152,17 @@ class results
  * 
  *
  */	
-  function buildSuiteStructure($suiteId){
+  function buildSuiteStructure($suiteId)
+  {
   	// do not null this out 
-  	//$currentNode = null;
-	
+  	$currentNode = null;
 	$currentNodeIndex = 0;
   	$children = $this->tree->get_children($suiteId);
   	$suiteFound = false;	
   	
 	for ($i = 0 ; $i < count($children); $i++){		
 		$currentRow = $children[$i];		
-		if ($currentRow[node_type_id] == $this->SUITE_TYPE_ID) {			
+		if ($currentRow['node_type_id'] == $this->SUITE_TYPE_ID) {			
 			$suiteFound = true;	
 			$changeInDepth = ($this->depth - $this->previousDepth);
 			$this->previousDepth = $this->depth;
@@ -171,43 +171,43 @@ class results
 				print "ERROR 1 in flatArrayIndex creation in lib/functions/results.class.php <BR>";				
 			} 
 			$this->flatArray[$this->flatArrayIndex] = $changeInDepth;
-			$this->flatArrayIndex ++;
+			$this->flatArrayIndex++;
 			
 			
 			if (($currentNodeIndex % $this->ITEM_PATTERN_IN_SUITE_STRUCTURE) != $this->NAME_IN_SUITE_STRUCTURE){
 				print "ERROR 3 in lib/functions/results.class.php/buildSuiteStructure() <BR>";
 			}
-			$currentNode[$currentNodeIndex] = $currentRow[name];
-			$currentNodeIndex ++;
+			$currentNode[$currentNodeIndex] = $currentRow['name'];
+			$currentNodeIndex++;
 	
 			if (($this->flatArrayIndex % $this->ITEM_PATTERN_IN_FLAT_ARRAY) != $this->NAME_IN_FLATARRAY){
 				print "ERROR 2 in flatArrayIndex creation in lib/functions/results.class.php <BR>";				
 			} 
-			$this->flatArray[$this->flatArrayIndex] = $currentRow[name];
-			$this->flatArrayIndex ++;		
+			$this->flatArray[$this->flatArrayIndex] = $currentRow['name'];
+			$this->flatArrayIndex++;		
 	
 	
 			if (($currentNodeIndex % $this->ITEM_PATTERN_IN_SUITE_STRUCTURE) != $this->ID_IN_SUITE_STRUCTURE){
 				print "ERROR 5 in lib/functions/results.class.php/buildSuiteStructure() curentNodeIndex = " . $currentNodeIndex . "<BR>";
 			}
-			$currentNode[$currentNodeIndex] = $currentRow[id];
-			$currentNodeIndex ++;
+			$currentNode[$currentNodeIndex] = $currentRow['id'];
+			$currentNodeIndex++;
 	
 	
 			if (($this->flatArrayIndex % $this->ITEM_PATTERN_IN_FLAT_ARRAY) != $this->SUITE_ID_IN_FLATARRAY){
 				print "ERROR 6 in flatArrayIndex creation in lib/functions/results.class.php <BR>";				
 			} 
-			$this->flatArray[$this->flatArrayIndex] = $currentRow[id];
-			$this->flatArrayIndex ++;
+			$this->flatArray[$this->flatArrayIndex] = $currentRow['id'];
+			$this->flatArrayIndex++;
 			
-			$newRowId = $currentRow[id];			
+			$newRowId = $currentRow['id'];			
 			// depth must be increased because we are about to call recursively
 			$this->depth++;		
 			if (($currentNodeIndex % $this->ITEM_PATTERN_IN_SUITE_STRUCTURE) != $this->ARRAY_IN_SUITE_STRUCTURE){
 				print "ERROR 7 in lib/functions/results.class.php/buildSuiteStructure() <BR>";				
 			}						
 			$currentNode[$currentNodeIndex] = $this->buildSuiteStructure($newRowId);
-			$currentNodeIndex ++;						 				
+			$currentNodeIndex++;						 				
 		}		
 	}
 	$this->depth--;
@@ -228,9 +228,9 @@ class results
 	
   function addLastResultToMap($suiteId, $testcase_id, $buildNumber, $result){
   	
-  	if (array_key_exists($suiteId, $this->mapOfLastResult)) {
+  	if ($this->mapOfLastResult && array_key_exists($suiteId, $this->mapOfLastResult)) {
 		if (array_key_exists($testcase_id, $this->mapOfLastResult[$suiteId])) {
-			$buildInMap = $this->mapOfCaseResults[$testcase_id][buildNumber];	
+			$buildInMap = $this->mapOfCaseResults[$testcase_id]['buildNumber'];	
 			if ($buildInMap < $buildNumber) {				
 				// print "addLastResultMap suiteId = " . $suiteId . " testcase_id = " . $testcase_id . " <BR>";
 				$this->mapOfLastResult[$suiteId][$testcase_id] = null;
@@ -251,42 +251,47 @@ class results
   /**
    * 
    */
-  function createMapOfSuiteSummary(&$mapOfLastResult){
-  	while ($suiteId = key($mapOfLastResult)){  		  	
-  		$totalCasesInSuite = count($mapOfLastResult[$suiteId]);  		
-  		$totalPass = 0;
-  		$totalFailed = 0;
-  		$totalBlocked = 0;
-  		$totalNotRun = 0;  		
-  		while ($testcase_id = key ($mapOfLastResult[$suiteId])) {
-  			$currentResult =  $mapOfLastResult[$suiteId][$testcase_id][result];
-  			
-  			if ($currentResult == 'p'){
-  				$totalPass++;
-  			} 	
-  			elseif($currentResult == 'f'){
-  				$totalFailed++;
-  			} 	
-  			elseif($currentResult == 'b'){
-  				$totalBlocked++;
-  			} 	
-  			elseif($currentResult == 'n'){
-  				$totalNotRun++;
-  			}  			
-  			$this->mapOfSuiteSummary[$suiteId] =  array(total => $totalCasesInSuite, 
-  			                                            pass => $totalPass, fail => $totalFailed, 
-  			                                            blocked => $totalBlocked, notRun => $totalNotRun);
-  			next($mapOfLastResult[$suiteId]);
-  		}  		
-  		// print "current suite = " . $suiteId . " total cases = " . $totalCasesInSuite . "<BR>";  		
-  		next($mapOfLastResult);
-  	}  	
+  function createMapOfSuiteSummary(&$mapOfLastResult)
+  {
+	if ($mapOfLastResult)
+	{
+	  	while ($suiteId = key($mapOfLastResult))
+		{
+	  		$totalCasesInSuite = count($mapOfLastResult[$suiteId]);  		
+	  		$totalPass = 0;
+	  		$totalFailed = 0;
+	  		$totalBlocked = 0;
+	  		$totalNotRun = 0;  		
+	  		while ($testcase_id = key ($mapOfLastResult[$suiteId])) {
+	  			$currentResult =  $mapOfLastResult[$suiteId][$testcase_id]['result'];
+	  			
+	  			if ($currentResult == 'p'){
+	  				$totalPass++;
+	  			} 	
+	  			elseif($currentResult == 'f'){
+	  				$totalFailed++;
+	  			} 	
+	  			elseif($currentResult == 'b'){
+	  				$totalBlocked++;
+	  			} 	
+	  			elseif($currentResult == 'n'){
+	  				$totalNotRun++;
+	  			}  			
+	  			$this->mapOfSuiteSummary[$suiteId] =  array('total' => $totalCasesInSuite, 
+	  			                                            'pass' => $totalPass, 'fail' => $totalFailed, 
+	  			                                            'blocked' => $totalBlocked, 'notRun' => $totalNotRun);
+	  			next($mapOfLastResult[$suiteId]);
+	  		}  		
+	  		// print "current suite = " . $suiteId . " total cases = " . $totalCasesInSuite . "<BR>";  		
+	  		next($mapOfLastResult);
+  		}
+	}  	
   }
   
   /**
    * 
    */
-  function createAggregateMap(&$suiteStructure, &$mapOfSuiteSummary, $arrayOfSums)
+  function createAggregateMap(&$suiteStructure, &$mapOfSuiteSummary)
   {  
   		for ($i = 0; $i < count($suiteStructure); $i++ ) {  			  			
   			$suiteId = 0;
@@ -298,13 +303,13 @@ class results
   				$suiteId = $suiteStructure[$i];
   				array_push($this->aggSuiteList, $suiteId);
  				
- 				if (array_key_exists($suiteId, $mapOfSuiteSummary)) {
+ 				if ($mapOfSuiteSummary && array_key_exists($suiteId, $mapOfSuiteSummary)) {
  					$summaryArray = $mapOfSuiteSummary[$suiteId];
- 					$this->addResultsToAggregate($summaryArray[total], 
- 					                             $summaryArray[pass], 
- 					                             $summaryArray[fail], 
- 					                             $summaryArray[blocked], 
- 					                             $summaryArray[notRun]);
+ 					$this->addResultsToAggregate($summaryArray['total'], 
+ 					                             $summaryArray['pass'], 
+ 					                             $summaryArray['fail'], 
+ 					                             $summaryArray['blocked'], 
+ 					                             $summaryArray['notRun']);
  				}
  				
   				  					
@@ -339,19 +344,19 @@ class results
   			$suiteId = $this->suiteStructure[$i];
   			
   			//print "suiteId = $suiteId <BR>";
-  			$resultsForSuite = $this->mapOfAggregate[$suiteId];
+  			$resultsForSuite = isset($this->mapOfAggregate[$suiteId]) ? $this->mapOfAggregate[$suiteId] : 0;
   			//print_r($resultsForSuite);
-  			$total_sum += $resultsForSuite[total];
-  			$pass_sum += $resultsForSuite[pass];
-  			$fail_sum += $resultsForSuite[fail];
-  			$blocked_sum += $resultsForSuite[blocked];
-  			$notRun_sum += $resultsForSuite[notRun];
+  			$total_sum += $resultsForSuite['total'];
+  			$pass_sum += $resultsForSuite['pass'];
+  			$fail_sum += $resultsForSuite['fail'];
+  			$blocked_sum += $resultsForSuite['blocked'];
+  			$notRun_sum += $resultsForSuite['notRun'];
   			
   		} // end if
   			
   	}
-  	return array(total => $total_sum, pass => $pass_sum, fail => $fail_sum, 
-  	             blocked => $blocked_sum, notRun => $notRun_sum); 	
+  	return array("total" => $total_sum, "pass" => $pass_sum, "fail" => $fail_sum, 
+  	             "blocked" => $blocked_sum, "notRun" => $notRun_sum); 	
   }
   
   /**
@@ -371,19 +376,19 @@ class results
   	  	$fail = 0;
   	  	$blocked = 0;
   	  	$notRun = 0;	
-   		if (array_key_exists($suiteId, $this->mapOfAggregate)) {
+   		if ($this->mapOfAggregate && array_key_exists($suiteId, $this->mapOfAggregate)) {
   			$currentSuite = $this->mapOfAggregate[$suiteId];
-  			$total =  $currentSuite[total] + $t;
-  			$pass = $currentSuite[pass] + $p;
-  			$fail = $currentSuite[fail] + $f;
- 	 		$blocked = $currentSuite[blocked] + $b;
-  			$notRun = $currentSuite[notRun] + $nr ;  		
+  			$total =  $currentSuite['total'] + $t;
+  			$pass = $currentSuite['pass'] + $p;
+  			$fail = $currentSuite['fail'] + $f;
+ 	 		$blocked = $currentSuite['blocked'] + $b;
+  			$notRun = $currentSuite['notRun'] + $nr ;  		
   			
-  			$currentSuite = array(total => $total, pass => $pass, fail => $fail, 
-  			                      blocked => $blocked, notRun => $notRun);	
+  			$currentSuite = array('total' => $total, 'pass' => $pass, 'fail' => $fail, 
+  			                      'blocked' => $blocked, 'notRun' => $notRun);	
   		}
   		else {
-  			$currentSuite = array(total => $t, pass => $p, fail => $f, blocked => $b, notRun => $nr);	
+  			$currentSuite = array('total' => $t, 'pass' => $p, 'fail' => $f, 'blocked' => $b, 'notRun' => $nr);	
   		}  	  	
  	 	$this->mapOfAggregate[$suiteId] = $currentSuite;
   	} // end for loop  	 	
@@ -410,18 +415,18 @@ class results
   			$suiteId = $suiteStructure[$i];
   			// print "suite id = $suiteId <BR>";
   			//print_r($executionsMap[$suiteId]);  			
-  			$totalCases = count($executionsMap[$suiteId]);  			 			
+			$totalCases = isset($executionsMap[$suiteId]) ? count($executionsMap[$suiteId]) : 0;
   			$caseId = null;
   			$build = null;
   			$result = null;
   			  			
   			// iterate across all executions for this suite
-  			for ($j = 0 ; $j < count($executionsMap[$suiteId]); $j++) {
+  			for ($j = 0 ; $j < $totalCases; $j++) {
   				$currentExecution = $executionsMap[$suiteId][$j];
   				//print_r($currentExecution);
-  				$caseId = $currentExecution[testcaseID];
-  				$build = $currentExecution[build_id];
-  				$result = $currentExecution[status];
+  				$caseId = $currentExecution['testcaseID'];
+  				$build = $currentExecution['build_id'];
+  				$result = $currentExecution['status'];
   				$this->addLastResultToMap($suiteId, $caseId, $build, $result);
   			}
   		} // end elseif 
@@ -457,10 +462,10 @@ class results
     while ($testcaseID = key($linked_tcversions)){
       $info = $linked_tcversions[$testcaseID];
             
-      $testsuite_id = $info[testsuite_id];
+      $testsuite_id = $info['testsuite_id'];
 		
       $currentSuite = null;
-      if (!(array_key_exists($testsuite_id, $executionsMap))){
+      if (!$executionsMap || !(array_key_exists($testsuite_id, $executionsMap))){
 	    $currentSuite = array();
       }
       else {
@@ -469,9 +474,9 @@ class results
 
       //$notSure2 = $info[1];
       //$tc_id = $info[tc_id];
-      $tcversion_id = $info[tcversion_id];
+      $tcversion_id = $info['tcversion_id'];
       //$notSure3 = $info[3];
-      $executed = $info[executed];
+      $executed = $info['executed'];
       $executionExists = true;
 
       if ($tcversion_id != $executed){
@@ -498,24 +503,26 @@ class results
 		$execQuery = $this->db->fetchArrayRowsIntoMap($sql,'id');
 		// -----------------------------------------------------------
 		
-		
-	    while($executions_id = key($execQuery)){
-	    	//print "in the loop <BR>";
-	  		$notSureA = $execQuery[$executions_id];
-	  		$exec_row = $notSureA[0];
-	  		$build_id = $exec_row[build_id];
-	  		$tester_id = $exec_row[tester_id];
-	  		$execution_ts = $exec_row[execution_ts];
-	  		$status = $exec_row[status];
-	  		$testplan_id = $exec_row[testplan_id];
-	  		$notes = $exec_row[notes];
-
-	  		$infoToSave = array(testcaseID => $testcaseID, tcversion_id => $tcversion_id, build_id => $build_id, tester_id => $tester_id, execution_ts => $execution_ts, status => $status, notes => $notes);
+		if ($execQuery)
+		{
+		    while($executions_id = key($execQuery)){
+		    	//print "in the loop <BR>";
+		  		$notSureA = $execQuery[$executions_id];
+		  		$exec_row = $notSureA[0];
+		  		$build_id = $exec_row['build_id'];
+		  		$tester_id = $exec_row['tester_id'];
+		  		$execution_ts = $exec_row['execution_ts'];
+		  		$status = $exec_row['status'];
+		  		$testplan_id = $exec_row['testplan_id'];
+		  		$notes = $exec_row['notes'];
 	
-		    //print_r($infoToSave);
-	  		array_push($currentSuite, $infoToSave);
-	  		next($execQuery);
-		}		
+		  		$infoToSave = array('testcaseID' => $testcaseID, 'tcversion_id' => $tcversion_id, 'build_id' => $build_id, 'tester_id' => $tester_id, 'execution_ts' => $execution_ts, 'status' => $status, 'notes' => $notes);
+		
+			    //print_r($infoToSave);
+		  		array_push($currentSuite, $infoToSave);
+		  		next($execQuery);
+			}		
+		}
       }
       $executionsMap[$testsuite_id] = $currentSuite;
       next($linked_tcversions);
@@ -539,7 +546,7 @@ class results
   		
   		else if (($i % $this->ITEM_PATTERN_IN_SUITE_STRUCTURE) ==  $this->ID_IN_SUITE_STRUCTURE) {  			
   			$suiteId = $this->suiteStructure[$i];
-  			$returnList[$i] = array(name => $name, id => $suiteId);
+  			$returnList[$i] = array('name' => $name, 'id' => $suiteId);
   		} // end else if
   		
   	} // end for loop

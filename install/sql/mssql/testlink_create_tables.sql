@@ -1,7 +1,7 @@
 --  -----------------------------------------------------------------------------------
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.3 2006/08/17 19:29:59 schlundus Exp $
+-- $Id: testlink_create_tables.sql,v 1.4 2006/10/10 20:09:14 schlundus Exp $
 --
 -- SQL script - create db tables for TL
 -- Database Type: Microsoft SQL Server
@@ -690,3 +690,37 @@ CREATE NONCLUSTERED INDEX [IX_users_login] ON [dbo].[users]
 (
 	[login] ASC
 ) ON [PRIMARY]
+
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[dbo].[assignment_types]') AND OBJECTPROPERTY(id, N'IsUserTable') = 1)
+BEGIN
+CREATE TABLE [dbo].[assignment_types](
+	[id] [int] IDENTITY(1,1) NOT NULL,
+	[fk_table] [nchar](30) NOT NULL,
+	[description] [nchar](100) NOT NULL CONSTRAINT [DF_assignment_types_description]  DEFAULT (N'unknown'),
+ CONSTRAINT [PK_assignment_types] PRIMARY KEY CLUSTERED 
+(
+	[id] ASC
+) ON [PRIMARY]
+) ON [PRIMARY]
+END
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[dbo].[assignment_status]') AND OBJECTPROPERTY(id, N'IsUserTable') = 1)
+BEGIN
+CREATE TABLE [dbo].[assignment_status](
+	[id] [int] IDENTITY(1,1) NOT NULL,
+	[description] [nchar](100) NOT NULL CONSTRAINT [DF_assignment_status_description]  DEFAULT (N'unknown'),
+ CONSTRAINT [PK_assignment_status] PRIMARY KEY CLUSTERED 
+(
+	[id] ASC
+) ON [PRIMARY]
+) ON [PRIMARY]
+END

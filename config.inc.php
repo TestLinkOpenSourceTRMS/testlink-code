@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.73 $
- * @modified $Date: 2006/10/09 09:56:54 $ by $Author: franciscom $
+ * @version $Revision: 1.74 $
+ * @modified $Date: 2006/10/11 07:00:39 $ by $Author: franciscom $
  *
  *
  * Constants and configuration parameters used throughout TestLink 
@@ -666,6 +666,8 @@ define('FILTER_BY_PRODUCT',1);
 define('FILTER_BY_TESTPROJECT',FILTER_BY_PRODUCT);
 define('TP_STATUS_ACTIVE',1);
 define('NON_TESTABLE_REQ','n');
+define('VALID_REQ','v');
+
 define('DSN',FALSE);  // for method connect() of database.class
 define('ANY_BUILD',null);
 define('GET_NO_EXEC',1);

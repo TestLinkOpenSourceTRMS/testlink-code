@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: requirements.inc.php,v $
- * @version $Revision: 1.36 $
- * @modified $Date: 2006/10/09 10:32:28 $ by $Author: franciscom $
+ * @version $Revision: 1.37 $
+ * @modified $Date: 2006/10/11 07:00:39 $ by $Author: franciscom $
  *
  * @author Martin Havlat <havlat@users.sourceforge.net>
  * 
@@ -20,8 +20,7 @@
  * 20050829 - Martin Havlat - updated function headers 
  * 20050825 - Martin Havlat - updated global header;
  * 20051025 - MHT - corrected introduced bug with insert TC (Bug 197)
- *
- * 
+ * 20061009 - franciscom - added getReqByReqdocId()
  */
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -62,6 +61,8 @@ require_once(dirname(__FILE__) . "/../testcases/archive.inc.php");
 function updateReqSpec(&$db,$id, $title, $scope, $countReq, $user_id, $type = 'n')
 {
 	$result = 'ok';
+  $title=trim($title);
+    	
 	if (checkRequirementTitle($title,$result))
 	{
 		$sql = "UPDATE req_specs SET title='" . $db->prepare_string($title) . 
@@ -120,8 +121,10 @@ function deleteReqSpec(&$db,$srs_id)
  **/
 function getOptionReqSpec(&$db,$testproject_id)
 {
-	$sql = "SELECT id,title FROM req_specs WHERE testproject_id=" . $testproject_id . 
-			" ORDER BY title";
+	$sql = "SELECT id,title " .
+	       " FROM req_specs " .
+	       " WHERE testproject_id={$testproject_id} " . 
+			   " ORDER BY title";
 	
 	return $db->fetchColumnsIntoMap($sql,'id','title');
 }
@@ -141,14 +144,21 @@ function getOptionReqSpec(&$db,$testproject_id)
  */
 function getRequirements(&$db,$srs_id, $range = 'all', $testcase_id = null)
 {
+  $order_by=" ORDER BY req_doc_id,title";
 	if ($range == 'all')
-		$sql = "SELECT * FROM requirements WHERE srs_id=" . $srs_id . " ORDER BY title";
+	{
+		$sql = "SELECT * FROM requirements " .
+		       " WHERE srs_id={$srs_id}"; 
+	}	       
 	else if ($range == 'assigned')
 	{
-		$sql = "SELECT requirements.* FROM requirements,req_coverage WHERE srs_id=" . 
-				$srs_id . " AND req_coverage.req_id=requirements.id AND " . 
-				"req_coverage.testcase_id=" . $testcase_id . " ORDER BY title";
+		$sql = "SELECT requirements.* " .
+		       " FROM requirements,req_coverage " .
+		       " WHERE srs_id={$srs_id} " . 
+		       " AND req_coverage.req_id=requirements.id " .
+		       " AND req_coverage.testcase_id={$testcase_id}";
 	}
+	$sql .= $order_by;
 
 	return $db->get_recordset($sql);
 }
@@ -163,10 +173,12 @@ function getRequirements(&$db,$srs_id, $range = 'all', $testcase_id = null)
 function array_diff_byId ($arrAll, $arrPart)
 {
 	// solve empty arrays
-	if (!count($arrAll)) {
-		return array();
+	if (!count($arrAll) || is_null($arrAll))
+	{
+		return(null);
 	}
-	if (!count($arrPart)) {
+	if (!count($arrPart) || is_null($arrPart)) 
+	{
 		return $arrAll;
 	}
 
@@ -201,6 +213,7 @@ function array_diff_byId ($arrAll, $arrPart)
  */
 function getReqCoverage_general(&$db,$srs_id)
 {
+  $order_by=" ORDER BY req_doc_id,title";
 	$output = array(
 					'covered' => array(), 
 					'uncovered' => array(), 
@@ -208,12 +221,13 @@ function getReqCoverage_general(&$db,$srs_id)
 					);
 	
 	// get requirements
-	$sql_common = "SELECT id,title FROM requirements WHERE srs_id=" . $srs_id;
-	$sql = $sql_common . " AND status='v' ORDER BY title";
+	$sql_common = "SELECT id,title,req_doc_id " .
+	              " FROM requirements WHERE srs_id={$srs_id}";
+	$sql = $sql_common . " AND status='" . VALID_REQ . "' {$order_by}";
 	$arrReq = $db->get_recordset($sql);
 
 	// get not-testable requirements
-	$sql = $sql_common . " AND status='" . NON_TESTABLE_REQ . "' ORDER BY title";
+	$sql = $sql_common . " AND status='" . NON_TESTABLE_REQ . "' {$order_by}";
 	$output['nottestable'] = $db->get_recordset($sql);
 	
 	// get coverage
@@ -372,30 +386,45 @@ function getReq4Tc(&$db,$testcase_id, $srs_id = 'all')
 
 	return $db->get_recordset($sql);
 }
+
 /**
- * Function-Documentation
- *
- * @param type $title documentation
- * @param type $result [ref] documentation
- * @return type documentation
- *
- * @author Andreas Morsing <schlundus@web.de>
- * @since 12.03.2006, 22:04:20
  *
  **/
-function checkRequirementTitle($title,&$result)
+function check_req_basic_data(&$db,$title,$reqdoc_id)
 {
-	$bSuccess = 0;
+  $ret['status_ok']=1;
+  $ret['msg']='';
+  
 	if (!strlen($title))
-		$result = lang_get("warning_empty_req_title");
-	else
-		$bSuccess = 1;
-		
-	return $bSuccess;
+	{
+	  $ret['status_ok']=0;
+		$ret['msg'] = lang_get("warning_empty_req_title");
+	}
+	
+	if (!strlen($reqdoc_id))
+	{
+		$ret['status_ok']=0;
+		$ret['msg'] .=  "<br>" . lang_get("warning_empty_reqdoc_id");
+	}
+	
+	if($ret['status_ok'])
+	{
+	  $ret['msg']='ok';
+    $rs=getReqByReqdocId($db,$reqdoc_id);
+    
+    if( !is_null($rs) )
+    {
+		  $ret['msg']=lang_get("warning_duplicate_reqdoc_id");
+      $ret['status_ok']=0;  		  
+	  }
+	} 
+	return($ret);
 }
+
 /** 
- * creates a new Requiement 
+ * creates a new Requirement 
  * 
+ * @param string $reqdoc_id
  * @param string $title
  * @param string $scope
  * @param integer $srs_id
@@ -406,14 +435,19 @@ function checkRequirementTitle($title,&$result)
  * 
  * @author Martin Havlat 
  **/
-function createRequirement(&$db,$title, $scope, $srs_id, $user_id, 
-                           $status = TL_REQ_STATUS_VALID, $type = 'n', $req_doc_id = null)
+function createRequirement(&$db,$reqdoc_id,$title, $scope, $srs_id, $user_id, 
+                           $status = TL_REQ_STATUS_VALID, $type = 'n')
 {
 	$result = 'ok';
-	if (checkRequirementTitle($title,$result))
+	$reqdoc_id=trim($reqdoc_id);
+	$title=trim($title);
+	
+	
+	$chk=check_req_basic_data($db,$title,$reqdoc_id);
+	if($chk['status_ok'])
 	{
 		$sql = "INSERT INTO requirements (srs_id, req_doc_id, title, scope, status, type, author_id, creation_ts)" .
-				" VALUES (" . $srs_id . ",'" . $db->prepare_string($req_doc_id) .  
+				" VALUES (" . $srs_id . ",'" . $db->prepare_string($reqdoc_id) .  
 				"','" . $db->prepare_string($title) . "','" . $db->prepare_string($scope) . 
 				 "','" . $db->prepare_string($status) . "','" . $db->prepare_string($type) .
 				 "'," . $db->prepare_string($user_id) . ", CURRENT_DATE)";
@@ -421,15 +455,21 @@ function createRequirement(&$db,$title, $scope, $srs_id, $user_id,
 		if (!$db->exec_query($sql))
 		 	$result = lang_get('error_inserting_req');
 	}
+	else
+	{
+	  $result=$chk['msg']; 
+	}
 	 
-	return $result; 
+	return($result); 
 }
 
 
 /** 
  * update Requirement 
  * 
+ *
  * @param integer $id
+ * @param string $reqdoc_id
  * @param string $title
  * @param string $scope
  * @param integer $user_id
@@ -439,20 +479,28 @@ function createRequirement(&$db,$title, $scope, $srs_id, $user_id,
  * 
  * @author Martin Havlat 
  **/
-function updateRequirement(&$db,$id, $title, $scope, $user_id, $status, $type, $reqDocId=null)
+function updateRequirement(&$db,$id, $reqdoc_id,$title, $scope, $user_id, $status, $type)
 {
 	$result = 'ok';
-	if (checkRequirementTitle($title,$result))
+	$reqdoc_id=trim($reqdoc_id);
+	$title=trim($title);
+
+	$chk=check_req_basic_data($db,$title,$reqdoc_id);
+	if($chk['status_ok'])
 	{
 		$sql = "UPDATE requirements SET title='" . $db->prepare_string($title) . 
 				"', scope='" . $db->prepare_string($scope) . "', status='" . 
 				$db->prepare_string($status) . 
 				"', type='" . $db->prepare_string($type) . 
 				"', modifier_id='" . $db->prepare_string($user_id) . 
-				"', req_doc_id='" . $db->prepare_string($reqDocId) .
+				"', req_doc_id='" . $db->prepare_string($reqdoc_id) .
 				"', modification_ts=CURRENT_DATE WHERE id=" . $id;	
 		if (!$db->exec_query($sql))
 		 	$result = lang_get('error_updating_req');
+	}
+	else
+	{
+	  $result=$chk['msg']; 
 	}
 	
 	return $result; 
@@ -765,21 +813,33 @@ function exportReqDataToXML($reqData)
  */
 function trim_title($title, $len=100)
 {
+  $title=trim($title);
 	if (strlen($title) > $len ) {
 		$title = substr($title, 0, $len);
 	}
-	return $title;
+	return($title);
 }
 
 /** collect information about one Requirement from REQ Title
  * @param string $title of req.
+ * @param [boolean $ignore_case]
  * @return assoc_array list of requirements
  */
-function getReqDataByTitle(&$db,$title)
+function getReqDataByTitle(&$db,$title,$ignore_case=0)
 {
 	$output = array();
 	
-	$sql = "SELECT * FROM requirements WHERE title='" . $title . "'";
+	$sql = "SELECT * FROM requirements ";
+	
+	if($ignore_case)
+	{
+	  $sql .= " WHERE UPPER(title)='" . strupper($db->prepare_string($title)) . "'";
+	}
+	else
+	{
+	   $sql .= " WHERE title='" . $db->prepare_string($title) . "'";
+	}       
+	       
 	$result = $db->exec_query($sql);
 	if (!empty($result)) {
 		$output = $db->fetch_array($result);
@@ -1085,4 +1145,36 @@ function getLastExecutions(&$db,$tcs,$tpID)
 	}
 	return $execMap;
 }
+
+// 20061009 - franciscom
+function getReqByReqdocId(&$db,$reqdoc_id)
+{
+	$sql = "SELECT * FROM requirements " .
+	       " WHERE req_doc_id='" . $db->prepare_string($reqdoc_id) . "'";
+
+	return($db->fetchRowsIntoMap($sql,'id'));
+}
+
+/**
+ * Function-Documentation
+ *
+ * @param type $title documentation
+ * @param type $result [ref] documentation
+ * @return type documentation
+ *
+ * @author Andreas Morsing <schlundus@web.de>
+ * @since 12.03.2006, 22:04:20
+ *
+ **/
+function checkRequirementTitle($title,&$result)
+{
+	$bSuccess = 0;
+	if (!strlen($title))
+		$result = lang_get("warning_empty_req_title");
+	else
+		$bSuccess = 1;
+		
+	return $bSuccess;
+}
+
 ?>

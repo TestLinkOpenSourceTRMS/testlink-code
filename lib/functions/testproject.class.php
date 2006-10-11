@@ -2,10 +2,11 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.24 $
- * @modified $Date: 2006/07/28 17:22:04 $  $Author: schlundus $
+ * @version $Revision: 1.25 $
+ * @modified $Date: 2006/10/11 07:00:39 $  $Author: franciscom $
  * @author franciscom
  *
+ * 20061010 - franciscom - added get_srs_by_title()
  * 20060709 - franciscom - changed return type and interface of create()
  * 20060425 - franciscom - changes in show() following Andreas Morsing advice (schlundus)
  *
@@ -507,8 +508,12 @@ function count_testcases($id)
 	 */
 	function createReqSpec($testproject_id,$title, $scope, $countReq,$user_id,$type = 'n')
 	{
+	  $ignore_case=1;
 		$result = 'ok';
-		if (checkRequirementTitle($title,$result))
+    $title=trim($title);
+  	
+    $chk=$this->check_srs_title($testproject_id,$title,$ignore_case);
+		if ($chk['status_ok'])
 		{
 			$sql = "INSERT INTO req_specs (testproject_id, title, scope, type, total_req, author_id, creation_ts)
 					    VALUES (" . $testproject_id . ",'" . $this->db->prepare_string($title) . "','" . 
@@ -517,10 +522,71 @@ function count_testcases($id)
 					                $this->db->db_now() . ")";
 					
 			if (!$this->db->exec_query($sql))
+			{
 				$result = lang_get('error_creating_req_spec');
+			}	
+		}
+		else
+		{
+		  $result=$chk['msg'];
 		}
 		return $result; 
 	}
+
+
+  // 20061010 - franciscom
+  function get_srs_by_title($testproject_id,$title,$ignore_case=0)
+  {
+  	$output=null;
+  	$title=trim($title);
+  	
+  	$sql = "SELECT * FROM req_specs ";
+  	
+  	if($ignore_case)
+  	{
+  	  $sql .= " WHERE UPPER(title)='" . strtoupper($this->db->prepare_string($title)) . "'";
+  	}
+  	else
+  	{
+  	   $sql .= " WHERE title='" . $this->db->prepare_string($title) . "'";
+  	}       
+  	$sql .= " AND testproject_id={$testproject_id}";
+		$output = $this->db->fetchRowsIntoMap($sql,'id');
+
+  	return $output;
+  }
+
+  // 20061010 - franciscom
+  function check_srs_title($testproject_id,$title,$ignore_case=0)
+  {
+    $ret['status_ok']=1;
+    $ret['msg']='';
+    
+    $title=trim($title);
+  	
+  	if (!strlen($title))
+  	{
+  	  $ret['status_ok']=0;
+  		$ret['msg'] = lang_get("warning_empty_req_title");
+  	}
+  	
+  	if($ret['status_ok'])
+  	{
+  	  $ret['msg']='ok';
+      $rs=$this->get_srs_by_title($testproject_id,$title,$ignore_case);
+
+      if( !is_null($rs) )
+      {
+  		  $ret['msg']=lang_get("warning_duplicate_req_title");
+        $ret['status_ok']=0;  		  
+  	  }
+  	} 
+  	return($ret);
+  }
+
+
+
+
 
 	/* END REQUIREMENT RELATED */
 

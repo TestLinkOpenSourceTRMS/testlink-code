@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqSpecView.php,v $
- * @version $Revision: 1.25 $
- * @modified $Date: 2006/10/09 10:32:28 $ by $Author: franciscom $
+ * @version $Revision: 1.26 $
+ * @modified $Date: 2006/10/11 07:00:39 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Screen to view existing requirements within a req. specification.
@@ -34,10 +34,11 @@ $bGetReqs = TRUE; // collect requirements as default
 $template = 'reqSpecView.tpl';
 
 $_REQUEST = strings_stripSlashes($_REQUEST);
-$reqDocId = isset($_REQUEST['reqDocId']) ? $_REQUEST['reqDocId'] : null;
+$reqDocId = isset($_REQUEST['reqDocId']) ? trim($_REQUEST['reqDocId']) : null;
+$title = isset($_REQUEST['title']) ? trim($_REQUEST['title']) : null;
+
 $idSRS = isset($_REQUEST['idSRS']) ? $_REQUEST['idSRS'] : null;
 $idReq = isset($_REQUEST['idReq']) ? $_REQUEST['idReq'] : null;
-$title = isset($_REQUEST['title']) ? $_REQUEST['title'] : null;
 $scope = isset($_REQUEST['scope']) ? $_REQUEST['scope'] : null;
 $reqStatus = isset($_REQUEST['reqStatus']) ? $_REQUEST['reqStatus'] : null;
 $reqType = isset($_REQUEST['reqType']) ? $_REQUEST['reqType'] : null;
@@ -69,8 +70,8 @@ if(isset($_REQUEST['createReq']))
 {
 	if ($bCreate)
 	{
-		$sqlResult = createRequirement($db,$title, $scope, $idSRS, $userID, 
-			                               $reqStatus, $reqType, $reqDocId);
+		$sqlResult = createRequirement($db,$reqDocId,$title, $scope, $idSRS, $userID, 
+			                             $reqStatus, $reqType);
 	}
 	$action = 'create';
 	$scope = '';
@@ -112,7 +113,8 @@ elseif (isset($_REQUEST['editReq']))
 }
 elseif (isset($_REQUEST['updateReq']))
 {
-	$sqlResult = updateRequirement($db,$idReq, $title, $scope, $userID, $reqStatus, $reqType, $reqDocId);
+	$sqlResult = updateRequirement($db,$idReq,trim($reqDocId),$title, 
+	                               $scope, $userID, $reqStatus, $reqType);
 	$action = 'update';
 	$sqlItem = 'Requirement';
 }

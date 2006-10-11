@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: reqTcAssign.php,v $
- * @version $Revision: 1.8 $
- * @modified $Date: 2006/08/17 19:30:00 $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2006/10/11 07:00:39 $
  * 
  * @author Martin Havlat
 **/
@@ -19,7 +19,7 @@ $arrAssignedReq = null;
 $arrUnassignedReq = null;
 $tcTitle = null;
 
-$idTc = isset($_GET['id']) ? intval($_GET['id']) : null;
+$tc_id = isset($_GET['id']) ? intval($_GET['id']) : null;
 $edit = isset($_GET['edit']) ? strings_stripSlashes($_GET['edit']) : null;
 
 $idReq = isset($_POST['req']) ? intval($_POST['req']) : null;
@@ -42,9 +42,9 @@ if ($doAssign || $doUnassign)
 		foreach ($arrIdReq as $idOneReq)
 		{
 			if ($doAssign)
-				$result = assignTc2Req($db,$idTc, $idOneReq);
+				$result = assignTc2Req($db,$tc_id, $idOneReq);
 			else if ($doUnassign)
-				$result = unassignTc2Req($db,$idTc, $idOneReq);
+				$result = unassignTc2Req($db,$tc_id, $idOneReq);
 			if (!$result)
 				$tmpResult .= $idOneReq . ', ';
 		}
@@ -74,7 +74,7 @@ else if($edit == 'testcase')
 	$arrReqSpec = getOptionReqSpec($db,$tproject_id);
 
 	$tc_mgr = new testcase($db);
-	$arrTc = $tc_mgr->get_by_id($idTc);
+	$arrTc = $tc_mgr->get_by_id($tc_id);
 	if ($arrTc)
 	{
 		$tcTitle = $arrTc[0]['name'];
@@ -89,7 +89,7 @@ else if($edit == 'testcase')
 		
 		if ($idReqSpec)
 		{
-			$arrAssignedReq = getRequirements($db,$idReqSpec, 'assigned', $idTc);
+			$arrAssignedReq = getRequirements($db,$idReqSpec, 'assigned', $tc_id);
 			$arrAllReq = getRequirements($db,$idReqSpec);
 			$arrUnassignedReq = array_diff_byId($arrAllReq, $arrAssignedReq);
 		}

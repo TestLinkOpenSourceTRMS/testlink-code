@@ -1,11 +1,14 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
 # This script is distributed under the GNU General Public License 2 or later.
-# $Id: testlink_create_tables.sql,v 1.7 2006/09/09 07:12:30 franciscom Exp $
+# $Id: testlink_create_tables.sql,v 1.8 2006/10/11 07:00:39 franciscom Exp $
 # SQL script - create db tables for TL   
 #
 # default rights & admin account are created via testlink_create_default_data.sql
 #
 # Rev :
+#       20061009 - franciscom - changes to index names for rights and roles tables
+#                               added UNIQUE to req_doc_id KEY in table requirements
+#
 #       20060908 - franciscom - changes to user_assignments
 #                               new tables assignment_types, assignment_status
 #
@@ -149,14 +152,14 @@ CREATE TABLE `requirements` (
   `modification_ts` datetime NOT NULL default '0000-00-00 00:00:00',
   PRIMARY KEY  (`id`),
   KEY `srs_id` (`srs_id`,`status`),
-  KEY `req_doc_id` (`req_doc_id`)
+  UNIQUE KEY `req_doc_id` (`req_doc_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 CREATE TABLE `rights` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `description` varchar(100) NOT NULL default '',
   PRIMARY KEY  (`id`),
-  UNIQUE KEY `Index_2` (`description`)
+  UNIQUE KEY `rights_descr` (`description`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 
@@ -195,7 +198,7 @@ CREATE TABLE `roles` (
   `description` varchar(100) NOT NULL default '',
   `notes` text,
   PRIMARY KEY  (`id`),
-  UNIQUE KEY `Index_2` (`description`)
+  UNIQUE KEY `roles_descr` (`description`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 

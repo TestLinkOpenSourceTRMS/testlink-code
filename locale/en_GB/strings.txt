@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.69 $
- * @modified $Date: 2006/10/09 10:27:32 $ $Author: franciscom $
+ * @version $Revision: 1.70 $
+ * @modified $Date: 2006/10/11 07:00:39 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
@@ -1223,6 +1223,10 @@ $TLS_req_state_not_testable = "Not testable";
 $TLS_req_state_valid = "Valid";
 $TLS_the_format_req_xml_import = "LOCALIZE: TLS_the_format_req_xml_import";
 $TLS_warning_empty_req_title = "Requirement title cannot be empty!";
+
+$TLS_warning_empty_reqdoc_id = "Requirement document id cannot be empty!";
+$TLS_warning_duplicate_reqdoc_id = "Duplicate document id";
+
 
 
 

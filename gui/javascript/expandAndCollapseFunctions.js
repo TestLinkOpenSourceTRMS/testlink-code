@@ -1,10 +1,10 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/ 
-// $Id: expandAndCollapseFunctions.js,v 1.9 2006/08/21 13:35:58 franciscom Exp $ 
+// $Id: expandAndCollapseFunctions.js,v 1.10 2006/10/12 19:50:03 schlundus Exp $ 
 //
 //
 function plusMinus_onClick(elem)
 {
-var elem = elem.firstChild;
+	var elem = elem.firstChild;
 	toggleSection(elem);
 }
 
@@ -49,11 +49,11 @@ function showOrCollapseAll()
 
 function progress()
 {
-	var o  = document.getElementById('progress');
+	var o = document.getElementById('progress');
 	if (o)
 		o.innerHTML += ".";
 	g_pCount++;
-	if (g_pCount % 80 == 0)
+	if (o && (g_pCount % 80 == 0))
 		o.innerHTML += "<br>";
 	clearTimeout(g_progress);
 	g_progress = setTimeout("progress()",50);

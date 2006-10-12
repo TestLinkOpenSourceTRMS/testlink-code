@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8 
- * @modified $Date: 2006/10/10 20:09:14 $ by $Author: schlundus $
+ * @modified $Date: 2006/10/12 19:50:03 $ by $Author: schlundus $
  *
  *
  * This class is encapsulates most functionality necessary to query the database
@@ -496,10 +496,10 @@ class results
 		// over multiple test plans - by modifying this select statement slightly
 		// to include multiple test plan ids
 
-    // 20060917 - franciscom - REFACTORING
-    $sql="SELECT * FROM executions " .
-         "WHERE tcversion_id = $executed AND testplan_id = $_SESSION[testPlanId] " .
-         "AND build_id IN ($builds_to_query) ";
+		$sql = "SELECT * FROM executions " .
+			   "WHERE tcversion_id = $executed AND testplan_id = $_SESSION[testPlanId] ";
+		if ($builds_to_query != -1)
+			$sql .= " AND build_id IN ($builds_to_query) ";
 		$execQuery = $this->db->fetchArrayRowsIntoMap($sql,'id');
 		// -----------------------------------------------------------
 		

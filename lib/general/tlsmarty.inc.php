@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tlsmarty.inc.php,v $
  *
- * @version $Revision: 1.14 $
- * @modified $Date: 2006/08/21 13:23:14 $ $Author: franciscom $
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2006/10/12 19:50:03 $ $Author: schlundus $
  *
  * @author Martin Havlat
  *
@@ -28,9 +28,9 @@ class TLSmarty extends Smarty
 		global $g_attachments;
 
 
-    $this->Smarty();
-    $this->template_dir = TL_ABS_PATH . 'gui/templates/';
-    $this->compile_dir = TL_TEMP_PATH;
+	    $this->Smarty();
+	    $this->template_dir = TL_ABS_PATH . 'gui/templates/';
+	    $this->compile_dir = TL_TEMP_PATH;
 		$this->config_dir = TL_ABS_PATH . 'gui/templates/';
 		
 		$testprojectColor = TL_BACKGROUND_DEFAULT;

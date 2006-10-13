@@ -2,8 +2,8 @@
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: results.inc.php,v $
- * @version $Revision: 1.34 $
- * @modified $Date: 2006/06/08 19:56:09 $   $Author: schlundus $
+ * @version $Revision: 1.35 $
+ * @modified $Date: 2006/10/13 20:06:14 $   $Author: schlundus $
  * 
  * @author 	Martin Havlat 
  * @author 	Chad Rosen (original report definition)
@@ -97,14 +97,14 @@ function getPlanTCNumber(&$db,$tpID)
 * Function returns number of Test Cases in the Test Plan
 * @return string Link of Test ID + Title 
 */
-function getTCLink($rights, $result, $id, $title, $buildID)
+function getTCLink($rights, $tcID,$tcversionID, $title, $buildID)
 {
 	$title = htmlspecialchars($title);
-	$suffix = $result . '">' . $id . ": <b>" . $title. "</b></a>";
+	$suffix = $tcID . ":&nbsp;<b>" . $title. "</b></a>";
 	
-	// 20051108 - fm - BUGID 82
-	$testTitle = '<a href="lib/execute/execSetResults.php?keyword=All&level=testcase&owner=All&build='. 
-	             $buildID . '&id=' . $suffix;
+	$testTitle = '<a href="lib/execute/execSetResults.php?level=testcase&build_id='
+				 . $buildID . '&id=' . $tcID.'&version_id='.$tcversionID.'">';
+	$testTitle .= $suffix;
 		
 	return $testTitle;
 }

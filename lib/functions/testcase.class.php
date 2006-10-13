@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.31 $
- * @modified $Date: 2006/10/09 10:28:50 $ $Author: franciscom $
+ * @version $Revision: 1.32 $
+ * @modified $Date: 2006/10/13 20:06:15 $ $Author: schlundus $
  * @author franciscom
  *
  *
@@ -1019,7 +1019,7 @@ function get_last_execution($id,$version_id,$tplan_id,$build_id,$get_no_executio
 	{
 	    $versionid_list = implode(",",$version_id);
 	    $where_clause_1 = $where_clause . " AND NHA.id IN ({$versionid_list}) ";
-	    $where_clause_2= $where_clause . " AND tcversions.id IN ({$versionid_list}) ";
+	    $where_clause_2 = $where_clause . " AND tcversions.id IN ({$versionid_list}) ";
 
 	}
 	else

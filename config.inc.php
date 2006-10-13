@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.74 $
- * @modified $Date: 2006/10/11 07:00:39 $ by $Author: franciscom $
+ * @version $Revision: 1.75 $
+ * @modified $Date: 2006/10/13 20:06:14 $ by $Author: schlundus $
  *
  *
  * Constants and configuration parameters used throughout TestLink 
@@ -527,7 +527,7 @@ $g_show_realname = FALSE;
 // 'name_surname'          -> John Cook
 // 'name_surname_login'    -> John Cook [ux555]
 //$g_username_format='name_surname_login';
-$g_username_format='name_surname';
+$g_username_format = 'name_surname';
 
 
 // 20060207 - franciscom - BUGID 303
@@ -590,7 +590,7 @@ $g_repositoryCompressionType = TL_REPOSITORY_COMPRESSIONTYPE_NONE;
 
 // 20060602 - franciscom ---------------------------------------------------------
 // TRUE -> when you upload a file you can give no title
-$g_attachments->allow_empty_title=TRUE;
+$g_attachments->allow_empty_title = TRUE;
 
 // $g_attachments->allow_empty_title == TRUE, you can ask the system
 // to do something 
@@ -615,17 +615,16 @@ $g_attachments->access_icon='<img src="icons/new_f2_16.png" style="border:none">
 $g_attachments->access_string="[*]";
 
 
-// 20060822 - francisco.mancardi@gruppotesi.com
 // used to disable the attachment feature if there are problems with repository path
-$g_attachments->enabled=TRUE;
-$g_attachments->disabled_msg="";
-if( $g_repositoryType == TL_REPOSITORY_TYPE_FS )
+$g_attachments->enabled = TRUE;
+$g_attachments->disabled_msg = "";
+if($g_repositoryType == TL_REPOSITORY_TYPE_FS)
 {
   $ret = checkForRepositoryDir($g_repositoryPath);
   if(!$ret['status_ok'])
   {
-	  $g_attachments->enabled=FALSE;
-	  $g_attachments->disabled_msg=$ret['msg'];
+	  $g_attachments->enabled = FALSE;
+	  $g_attachments->disabled_msg = $ret['msg'];
   }
 }
 // ----------------------------------------------------------------------------

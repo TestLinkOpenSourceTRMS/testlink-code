@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsByStatus.php,v 1.11 2006/03/11 23:04:50 kevinlevy Exp $ 
+* $Id: resultsByStatus.php,v 1.12 2006/10/13 20:06:15 schlundus Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -15,10 +15,11 @@ require('../../config.inc.php');
 require_once('common.php');
 require_once('builds.inc.php');	
 require_once('results.inc.php');
+require_once('exec.inc.php');
 require_once("../../lib/functions/lang_api.php");
 testlinkInitPage($db);
 
-$type = $_GET['type'];
+$type = isset($_GET['type']) ? $_GET['type'] : 'n';
 if($type == $g_tc_status['failed'])
 	$title = lang_get('list_of_failed');
 else if($type == $g_tc_status['blocked'])
@@ -28,85 +29,62 @@ else
 	tlog('wrong value of GET type');
 	exit();
 }
-$arrBuilds = getBuilds($db,$_SESSION['testPlanId'], " ORDER BY builds.name ");
 
-//SQL to select the most current status of all the current test cases
+$tpID = isset($_SESSION['testPlanId']) ?  $_SESSION['testPlanId'] : 0;
+$bCanExecute = has_rights($db,"tp_execute");
+$arrData = array();
+$dummy = null;
 
-// 20050919 - fm - refactoring
-$sql = " SELECT tcid,status,build_id,runby,daterun,title,results.notes," .
-       " MGTCOMP.name  AS comp_name, MGTCAT.name AS cat_name, COMP.id, CAT.id,mgttcid  " .
-  		 " FROM results, testplans TP, component COMP, category CAT, " .
-  		 " mgtcomponent MGTCOMP, mgtcategory MGTCAT, testcase TC " .
-		   " WHERE TP.id = COMP.projid " .
-		   " AND COMP.id = CAT.compid " .
-		   " AND CAT.id = TC.catid " .
-		   " AND TC.id = results.tcid " .
-		   " AND MGTCOMP.id = COMP.mgtcompid " .
-		   " AND MGTCAT.id = CAT.mgtcatid " .
-		   " AND TP.id = " . $_SESSION['testPlanId'] . 
-		   " ORDER BY tcid,build_id DESC";
+$tp = new testplan($db);
+$tcs = $tp->get_linked_tcversions($tpID,null,0,1);
+$maxBuildID = $tp->get_max_build_id($tpID);
 
-$totalResult = $db->exec_query($sql,$db);
-
-reset($arrBuilds);
-$maxBuild = each($arrBuilds);
-$maxBuild = $maxBuild[0];
-$testCaseNumArray = null;
-//Looping through all of the test cases that we found
-$arrData = null;
-$tcIDArray = null;
-while($myrow = $db->fetch_array($totalResult))
+if ($tcs && $maxBuildID)
 {
-	$tcID = $myrow[0];
-	$status = $myrow[1];
-	if ($status == 'n' || isset($tcIDArray[$tcID]))
-		continue;
-	$tcIDArray[$tcID] = $myrow;
-}
-if (sizeof($tcIDArray))
-{
-	foreach($tcIDArray as $tcID => $myrow)
+	foreach($tcs as $tcID => $tcInfo)
 	{
-		$status = $myrow[1];
-		if ($status != $type)
-			continue;
-		$build = $myrow[2];
-		///This statement builds an array with the most current status
-		//the component and category 
-		$testSuite = $myrow[7] . "/" . $myrow[8];	
-	
-		//Display the test case with a hyper link to the execution pages
-		$testTitle = getTCLink(has_rights($db,"testplan_execute"), $tcID, $myrow[11], $myrow[5], $build); // TC title
-		$tester = $myrow[3]; //Run By
-		$testDate = $myrow[4]; //Date run
-		$notes = $myrow[6]; //notes
+		$tcMgr = new testcase($db); 
+		$exec = $tcMgr->get_last_execution($tcID,$tcInfo['tcversion_id'],$tpID,$maxBuildID,0);
+		if (!$exec)
+			$exec = $tcMgr->get_last_execution($tcID,$tcInfo['tcversion_id'],$tpID,null,0);
 		
-		//Grab all of the bugs for the test case in the build
-		$sqlBugs = " SELECT bug FROM bugs WHERE tcid=" . $tcID . 
-				       " AND build_id=" . $build;
-		$resultBugs = $db->exec_query($sqlBugs,$db);
-		$bugString = null;
-		while ($myrowBug = $db->fetch_array($resultBugs))
+		if ($exec)
 		{
-			if (!is_null($bugString))
-				$bugString .= ","; 
-			$bugID = $myrowBug[0];
-			if($g_bugInterfaceOn)
-				$bugString .= $g_bugInterface->buildViewBugLink($bugID);
-			else
-				$bugString .= $bugID;
+			$e = current($exec);
+			if ($e['status'] != $type)
+				continue;
+			
+			$localizedTS = localize_dateOrTimeStamp(null,$dummy,'timestamp_format',$e['execution_ts']);
+			$ts = new testsuite($db);
+			$tsData = $ts->get_by_id($e['tsuite_id']);
+			$testTitle = getTCLink($bCanExecute,$tcID,$tcInfo['tcversion_id'],$e['name'],$e['build_id']);
+			$arrData[] = 	array(
+									htmlspecialchars($tsData['name']),
+									$testTitle, 
+									htmlspecialchars($e['build_name']),
+									htmlspecialchars(format_username(array('first' => $e['tester_first_name'],
+														  'last' => $e['tester_last_name'], 
+														  'login' => $e['tester_login']))), 
+									htmlspecialchars($localizedTS), 
+									htmlspecialchars($e['execution_notes']),
+									buildBugString($db,$e['execution_id']),
+								);	
 		}
-		$arrData[] = 	array(
-								htmlspecialchars($testSuite), 
-								$testTitle, 
-								//20050815 - scs - added escaping of build identifiers
-								htmlspecialchars($arrBuilds[$build]),
-								htmlspecialchars($tester), 
-								htmlspecialchars($testDate), 
-								htmlspecialchars($notes),	
-								$bugString,
-							);
 	}
+}
+
+function buildBugString(&$db,$execID)
+{
+	$bugString = null;
+	$bugs = get_bugs_for_exec($db,config_get('bugInterface'),$execID);
+	if ($bugs)
+	{
+		foreach($bugs as $bugID => $bugInfo)
+		{
+			$bugString .= $bugInfo['link_to_bts']."<br />";
+		}
+	}
+	return $bugString;
 }
 
 $smarty = new TLSmarty;

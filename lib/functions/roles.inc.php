@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
  * @filesource $RCSfile: roles.inc.php,v $
- * @version $Revision: 1.15 $
- * @modified $Date: 2006/08/29 19:41:37 $ by $Author: schlundus $
+ * @version $Revision: 1.16 $
+ * @modified $Date: 2006/10/14 21:47:13 $ by $Author: schlundus $
  * @author Martin Havlat, Chad Rosen
  * 
  * This script provides the get_rights and has_rights functions for
@@ -586,13 +586,17 @@ function has_rights(&$db,$roleQuestion,$tprojectID = null,$tplanID = null)
 	
 	$allRights = $globalRights;
 
-	/* if $productID == -1 we dont check rights at tp level! */
+	
+	/* if $productID == -1 we dont check rights at product level! */
 	if (isset($userProductRoles[$productID]))
 	{
 		$productRoleID = $userProductRoles[$productID]['role_id'];
 		$productRights = $s_allRoles[$productRoleID]['rights'];
 		$productRights = explode(",",$productRights);
 		
+		//subtract global rights		
+		$productRights = array_diff($productRights,array_keys($g_propRights_global));
+
 		propagateRights($globalRights,$g_propRights_global,$productRights);
 		$allRights = $productRights;
 	}

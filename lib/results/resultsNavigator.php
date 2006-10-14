@@ -2,7 +2,7 @@
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
- * @version $Id: resultsNavigator.php,v 1.11 2006/10/13 20:06:15 schlundus Exp $ 
+ * @version $Id: resultsNavigator.php,v 1.12 2006/10/14 21:14:31 schlundus Exp $ 
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
  * This page list View of Test Results and Metrics.
@@ -10,15 +10,10 @@
  * @todo Reload all workarea if build is changed 
  * @todo xls ouput should be general over all builds
  *
- * Revisions:
- * 
- * 20050831 - MHT - added req report; removed doubled include for lang support; updated file header
- *
  */
 require('../../config.inc.php');
 require_once('common.php');
 require_once('builds.inc.php');
-
 testlinkInitPage($db);
 
 // there is list of available results and metrics view
@@ -35,11 +30,14 @@ $arrData = array(
 
 	array('name' => lang_get('link_report_failed'), 'href' => 'resultsByStatus.php?type=f'),
 	array('name' => lang_get('link_report_blocked_tcs'), 'href' => 'resultsByStatus.php?type=b'),
+);
 
+if ($g_bugInterfaceOn)
+	$arrData[] = array('name' => lang_get('link_report_total_bugs'), 'href' => 'resultsBugs.php');
+	
 // 'Query by Start and End Build'
 /**	array('name' => lang_get('link_report_test'), 'href' => 'resultsTC.php'),
 	array('name' => lang_get('link_report_excel'), 'href' => 'resultsTC.php?format=excel'),
-	array('name' => lang_get('link_report_total_bugs'), 'href' => 'resultsBugs.php') */
 	// KL - 20060618 - temporarly location of links to documentation on classes
 	/**
 	array('name' => 'database.class API', 'href' => '../functions/database.class.test.php'),
@@ -49,7 +47,6 @@ $arrData = array(
 	array('name' => 'testsuite.class API', 'href' => '../functions/testsuite.class.test.php'),
 	array('name' => 'tree.class API', 'href' => '../functions/tree.class.test.php'),
 	*/
-	);
 
 if ($_SESSION['testprojectOptReqs'])
 {
@@ -61,11 +58,9 @@ $arrDataB = array(
 	array('name' => lang_get('link_report_metrics_active_build'), 'href' => 'resultsBuild.php'),
 );
 
-// collect builds of Test Plan
-// 20050807 - fm 
 $arrBuilds = getBuilds($db,$_SESSION['testPlanId'], " ORDER BY builds.name ");
 if (isset($_GET['build']))
-	$selectedBuild = $_GET['build'];
+	$selectedBuild = intval($_GET['build']);
 else
 	$selectedBuild = sizeof($arrBuilds) ? key($arrBuilds) : null;
 
@@ -76,5 +71,4 @@ $smarty->assign('arrDataB', $arrDataB);
 $smarty->assign('arrBuilds', $arrBuilds);
 $smarty->assign('selectedBuild', $selectedBuild);
 $smarty->display('resultsNavigator.tpl');
-
 ?>

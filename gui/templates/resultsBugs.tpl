@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsBugs.tpl,v 1.7 2005/12/05 01:46:52 havlat Exp $
+$Id: resultsBugs.tpl,v 1.8 2006/10/14 21:14:31 schlundus Exp $
 Purpose: smarty template - show Bugs Report 
 
 20051004 - fm - added print button
@@ -15,28 +15,44 @@ Purpose: smarty template - show Bugs Report
 
 <h1>{$tpName|escape} {lang_get s='title_bugs_report'}</h1>
 <div class="workBack">
-
-<table class="simple" style="width: 100%; text-align: center; margin-left: 0px;">
+<table class="simple" style="width: 100%; text-align: left; margin-left: 0px;">
 	<tr>
 		<th>{lang_get s='th_test_suite'}</th> 
-		<th>{lang_get s='th_title'}</th>      
+		<th>{lang_get s='th_tc_title'}</th>      
+		<th>{lang_get s='th_execution_ts'}</th>       
 		<th>{lang_get s='th_bugs'}</th>       
 	</tr>
 	{section name=Row loop=$arrData}
 	<tr>
-		{section name=Item loop=$arrData[Row]}
-			<td>
-				{if $smarty.section.Item.index == 2}
-					{$arrData[Row][Item]}
-				{else}
-					{$arrData[Row][Item]|escape}
-				{/if}
+			<td class="bold" colspan="4">
+				{$arrData[Row].name}
 			</td>
-		{/section}
 	</tr>
-	 {/section}
+	{assign var=tcInfo value=$arrData[Row].tcInfo}
+	{foreach key=tcID item=tc from=$tcInfo}
+	<tr>
+		<td colspan="4"><hr/></td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td><td class="italic" >{$tc.tcName}</td>
+	</tr>	
+		{assign var=execInfo value=$tc.executions}
+		{foreach key=ts item=exec from=$execInfo}
+		<tr>
+			<td colspan="2">&nbsp;</td><td>{$ts}</td>
+			<td>
+				{foreach key=k item=bug from=$exec}
+					{$bug}<br />
+				{/foreach}
+			</td>
+		</tr>		
+		{/foreach}
+	{/foreach}
+	<tr>
+		<td colspan="4"><hr/></td>
+	</tr>
+	{/section}
 </table>
 </div>
-
 </body>
 </html>

@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.11 $
- * @modified $Date: 2006/09/25 07:07:06 $ $Author: franciscom $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2006/10/15 19:05:39 $ $Author: schlundus $
  * @author franciscom
  *
  * 20060919 - franciscom - copy_* functions
@@ -200,7 +200,7 @@ function link_tcversions($id,&$items_to_link)
 //                 NULL if the tc version has not been executed in THIS test plan
 //                 tcversion_id if has executions 
 //
-function get_linked_tcversions($id,$tcase_id=null,$keyword_id=0,$executed=null)
+function get_linked_tcversions($id,$tcase_id=null,$keyword_id=0,$executed=null,$owner = null)
 
 {
 $keywords_join = " ";
@@ -247,8 +247,10 @@ $sql=" SELECT DISTINCT NHB.parent_id AS testsuite_id, " .
      " LEFT OUTER JOIN user_assignments UA ON UA.feature_id = T.id " . 
      " WHERE T.testplan_id={$id} {$keywords_filter} {$tc_id_filter} " .
      " AND (UA.type=" . $this->assignment_types['testcase_execution']['id'] . 
-     "      OR UA.type IS NULL) " .
-     " ORDER BY testsuite_id,tc_id";
+     "      OR UA.type IS NULL) ";
+if (!is_null($owner))
+	$sql .= " AND UA.user_id = {$owner}"; 
+$sql .= " ORDER BY testsuite_id,tc_id";
 $recordset = $this->db->fetchRowsIntoMap($sql,'tc_id');
 return($recordset);
 }

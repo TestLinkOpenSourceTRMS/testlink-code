@@ -1,7 +1,7 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: testSetRemove.php,v 1.15 2006/10/05 19:18:21 schlundus Exp $ 
+ * @version $Id: testSetRemove.php,v 1.16 2006/10/15 19:05:39 schlundus Exp $ 
  * 
  * Remove Test Cases from Test Case Suite 
  * 
@@ -40,32 +40,29 @@ if($do_remove)
 
 define('FILTER_BY_TC_OFF',null); 
 define('WRITE_BUTTON_ONLY_IF_LINKED',1);
-
+$dummy = null;
 switch($level)
 {
 	case 'testcase':
 		$out = null;
 		
-		if(!$do_remove) 
-		{
-			// build the date need to call gen_spec_view
-			$my_path = $tree_mgr->get_path($id);
-			$idx_ts = count($my_path)-1;
-			$tsuite_data= $my_path[$idx_ts-1];
-			
-			$pp = $tcase_mgr->get_versions_status_quo($id, $version_id);
-			$linked_items[$id] = $pp[$version_id];
-			$linked_items[$id]['testsuite_id'] = $tsuite_data['id'];
-			$linked_items[$id]['tc_id'] = $id;
-			
-			$out = gen_spec_view($db,'testplan',$tplan_id,$tsuite_data['id'],$tsuite_data['name'],
-			$linked_items,$keyword_id,FILTER_BY_TC_OFF,WRITE_BUTTON_ONLY_IF_LINKED);
-		}
+		// build the date need to call gen_spec_view
+		$my_path = $tree_mgr->get_path($id);
+		$idx_ts = count($my_path)-1;
+		$tsuite_data= $my_path[$idx_ts-1];
+		
+		$pp = $tcase_mgr->get_versions_status_quo($id, $version_id);
+		$linked_items[$id] = $pp[$version_id];
+		$linked_items[$id]['testsuite_id'] = $tsuite_data['id'];
+		$linked_items[$id]['tc_id'] = $id;
+		
+		$out = gen_spec_view($db,'testplan',$tplan_id,$tsuite_data['id'],$tsuite_data['name'],
+				$linked_items,$dummy,$keyword_id,FILTER_BY_TC_OFF,WRITE_BUTTON_ONLY_IF_LINKED);
 		break;
 	case 'testsuite':
 		$tsuite_data = $tsuite_mgr->get_by_id($id);
 		$out = gen_spec_view($db,'testplan',$tplan_id,$id,$tsuite_data['name'],
-                     $tplan_mgr->get_linked_tcversions($tplan_id,FILTER_BY_TC_OFF,$keyword_id),
+                     $tplan_mgr->get_linked_tcversions($tplan_id,FILTER_BY_TC_OFF,$keyword_id),$dummy,
                      $keyword_id,FILTER_BY_TC_OFF,WRITE_BUTTON_ONLY_IF_LINKED);
 		break;
 	default:

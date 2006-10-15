@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.71 $
- * @modified $Date: 2006/10/15 03:29:39 $ $Author: kevinlevy $
+ * @version $Revision: 1.72 $
+ * @modified $Date: 2006/10/15 19:05:39 $ $Author: schlundus $
  *
  * @author Francisco Mancardi
  *

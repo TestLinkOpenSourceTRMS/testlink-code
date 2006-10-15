@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: execNavigator.php,v $
  *
- * @version $Revision: 1.25 $
- * @modified $Date: 2006/08/07 09:44:09 $ by $Author: franciscom $
+ * @version $Revision: 1.26 $
+ * @modified $Date: 2006/10/15 19:05:39 $ by $Author: schlundus $
  *
  * @author Martin Havlat
  *
@@ -32,8 +32,8 @@ testlinkInitPage($db);
 
 
 $treeColored = (isset($_POST['colored']) && ($_POST['colored'] == 'result')) ? 'selected="selected"' : null;
-$selectOwner = (isset($_POST['owner']) && ($_POST['owner'] == $_SESSION['user'])) ? 'selected="selected"' : null;
-$filterOwner = array (array('id' => $_SESSION['user'], 'selected' => $selectOwner));
+$selectedOwner = isset($_POST['owner']) ? intval($_POST['owner']) : 0;             
+
 $tc_id = isset($_POST['tcID']) ? intval($_POST['tcID']) : null;
 $keyword_id = isset($_POST['keyword_id']) ? $_POST['keyword_id'] : 0;             
 
@@ -65,9 +65,11 @@ if ($keyword_id)
 	$getArguments .= '&keyword_id='.$keyword_id;
 if ($tc_id)
 	$getArguments .= '&tc_id='.$tc_id;
-	
+if ($selectedOwner)
+	$getArguments .= '&owner='.$selectedOwner;
+
 $sMenu = generateExecTree($db,$menuUrl,$tproject_id,$tproject_name,$tplan_id,$tplan_name,
-                          $optBuildSelected,$getArguments,$keyword_id,$tc_id);
+                          $optBuildSelected,$getArguments,$keyword_id,$tc_id,false,$selectedOwner);
                      
 $tree = invokeMenu($sMenu);
 $tcData = null;
@@ -76,17 +78,18 @@ $optResult = null;
 $optResultSelected = null;
 $testCaseID = null;
 
-
+$users = get_users_for_html_options($db,null,true);
 
 $smarty = new TLSmarty();
-$smarty->assign('tplan_name',$tplan_name);  // 20060806 - franciscom
+$smarty->assign('tplan_name',$tplan_name);
+$smarty->assign('users',$users);
 $smarty->assign('treeKind', TL_TREE_KIND);
 $smarty->assign('treeColored', $treeColored);
 $smarty->assign('optBuild', $optBuild);
 $smarty->assign('optBuildSelected', $optBuildSelected);
 $smarty->assign('optResult', $optResult);
 $smarty->assign('optResultSelected', $optResultSelected); 
-$smarty->assign('arrOwner', $filterOwner);
+$smarty->assign('selectedOwner', $selectedOwner);
 $smarty->assign('keywords_map', $keywords_map);
 $smarty->assign('keyword_id', $keyword_id);
 $smarty->assign('tcID', intval($tc_id) > 0 ? $tc_id : '');

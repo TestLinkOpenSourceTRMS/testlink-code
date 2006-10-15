@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: treeMenu.inc.php,v $
  *
- * @version $Revision: 1.27 $
- * @modified $Date: 2006/09/25 07:07:06 $ by $Author: franciscom $
+ * @version $Revision: 1.28 $
+ * @modified $Date: 2006/10/15 19:05:39 $ by $Author: schlundus $
  * @author Martin Havlat
  *
  * 	This file generates tree menu for test specification and test execution.
@@ -166,7 +166,7 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,
 //                IMPORTANT: this new argument is not useful for tree rendering
 //                           but to avoid duplicating logic to get test case count
 //
-function prepareNode(&$node,$hash_id_descr,$tck_map = null,$tp_tcs = null,$bHideTCs = 0,&$map_node_tccount)
+function prepareNode(&$node,$hash_id_descr,$tck_map = null,$tp_tcs = null,$bHideTCs = 0,&$map_node_tccount,$assignedTo = 0)
 {
 	$nodeDesc = $hash_id_descr[$node['node_type_id']];
 	
@@ -184,8 +184,14 @@ function prepareNode(&$node,$hash_id_descr,$tck_map = null,$tp_tcs = null,$bHide
 			{
 				$node = null;
 			}
+			else if ($assignedTo && ($tp_tcs[$node['id']]['user_id'] != $assignedTo))
+			{
+				$node = null;
+			}
 			else
+			{
 				$node['tcversion_id'] = $tp_tcs[$node['id']]['tcversion_id'];		
+			}
 		}
 		$nTestCases = $node ? 1 : 0;
 		if ($bHideTCs)
@@ -193,9 +199,6 @@ function prepareNode(&$node,$hash_id_descr,$tck_map = null,$tp_tcs = null,$bHide
 	}
 	if (isset($node['childNodes']) && $node['childNodes'])
 	{
-    //echo "NOME_NAME=>" . $node['name'] . "<br>";
-	  //echo "ENTRO<br>";
-	  
 		$childNodes = &$node['childNodes'];
 		for($i = 0;$i < sizeof($childNodes);$i++)
 		{
@@ -204,7 +207,7 @@ function prepareNode(&$node,$hash_id_descr,$tck_map = null,$tp_tcs = null,$bHide
 			if(is_null($current))
 				continue;
       
-			$nTestCases += prepareNode($current,$hash_id_descr,$tck_map,$tp_tcs,$bHideTCs,$map_node_tccount);
+			$nTestCases += prepareNode($current,$hash_id_descr,$tck_map,$tp_tcs,$bHideTCs,$map_node_tccount,$assignedTo);
 		}
 		$node['testcase_count'] = $nTestCases;
 		
@@ -216,15 +219,14 @@ function prepareNode(&$node,$hash_id_descr,$tck_map = null,$tp_tcs = null,$bHide
 			$node = null;
 		}
 	}
-  else if ($nodeDesc == 'testsuite')
+ 	else if ($nodeDesc == 'testsuite')
 	{
-		$map_node_tccount[$node['id']]=array('testcount' => 0,
-		                                     'name'      => $node['name']);
-	  
-	  if (!is_null($tp_tcs))
-	  {
-	    $node = null;
-	  }
+		$map_node_tccount[$node['id']] = array(	'testcount' => 0,
+								                'name'      => $node['name']
+											  );
+		
+		if (!is_null($tp_tcs))
+			$node = null;
 	}
 	
 	return $nTestCases;
@@ -393,7 +395,8 @@ function jtree_renderTestSpecTreeNodeOnClose($current,$nodeDesc)
 
 function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,$tplan_name,$build_id,
                           $getArguments,
-                          $keyword_id = 0,$tc_id = 0,$bForPrinting = false
+                          $keyword_id = 0,$tc_id = 0,$bForPrinting = false,
+						  $assignedTo = 0
                           )
 {
 	$menustring = null;
@@ -415,14 +418,15 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,$
 	$test_spec['name'] = $tproject_name;
 	$test_spec['id'] = $tproject_id;
 	$test_spec['node_type_id'] = $hash_descr_id['testproject'];
-	$dummy=array(); // 20060924 - franciscom
+	$dummy = array();
 	
 	if($test_spec)
 	{
 		$tck_map = null;
 		if($keyword_id)
 			$tck_map = $tproject_mgr->get_keywords_tcases($tproject_id,$keyword_id);
-		$testcase_count = prepareNode($test_spec,$hash_id_descr,$tck_map,$tp_tcs,$bForPrinting,$dummy);
+		
+		$testcase_count = prepareNode($test_spec,$hash_id_descr,$tck_map,$tp_tcs,$bForPrinting,$dummy,$assignedTo);
 		$test_spec['testcase_count'] = $testcase_count;
 	
 		$menustring = renderExecTreeNode(1,$test_spec,$getArguments,$hash_id_descr,1,$menuUrl,$bForPrinting);

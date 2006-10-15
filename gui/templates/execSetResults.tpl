@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execSetResults.tpl,v 1.28 2006/09/25 07:07:06 franciscom Exp $ *}
+{* $Id: execSetResults.tpl,v 1.29 2006/10/15 19:05:38 schlundus Exp $ *}
 {* Purpose: smarty template - show tests to add results *}
 {* Revisions:
               20060921 - franciscom - changed the display of tsuite attachments
@@ -28,7 +28,7 @@
 	<img alt="{lang_get s='help'}" class="help" 
 	src="icons/sym_question.gif" style="float: right;"
 	onclick="javascript:open_popup('{$helphref}execMain.html');" />
-	{lang_get s='title_t_r_on_build'} {$build_name|escape} {lang_get s='title_t_r_owner'} ( {$owner|escape} )
+	{lang_get s='title_t_r_on_build'} {$build_name|escape} {lang_get s='title_t_r_owner'} ( {$ownerDisplayName|escape} )
 </h1>
 
 

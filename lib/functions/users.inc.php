@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: users.inc.php,v $
  *
- * @version $Revision: 1.35 $
- * @modified $Date: 2006/09/15 13:15:40 $ $Author: franciscom $
+ * @version $Revision: 1.36 $
+ * @modified $Date: 2006/10/15 19:05:39 $ $Author: schlundus $
  *
  * Functions for usermanagement
  *
@@ -447,7 +447,6 @@ function format_username($hash)
 	$username_format = config_get('username_format');
 	$username = $hash['first'] . " " . $hash['last'];
 	
-	$username_format = "name_surname_login";
 	switch($username_format)
 	{
 		case "name_surname_login":
@@ -481,25 +480,24 @@ function checkLogin(&$db,$login)
 }
 
 
-/* 20060911 - franciscom */
 function get_users_for_html_options(&$db,$whereClause = null,$add_blank_option=false)
 {
-  $users_map=null;
-  $users=getAllUsers($db,$whereClause,'id');
+	global $g_show_realname;
+	
+	$users_map = null;
+	$users = getAllUsers($db,$whereClause,'id');
   
-  if( !is_null($users) )
-  {
-    if($add_blank_option)
-    {
-      $users_map[0]='';
-    }
-    
-    foreach($users as $key => $value)
-    {
-      $users_map[$key]=$value['login'];
-    }  
-  }
+	if(!is_null($users) && $add_blank_option)
+		$users_map[0] = '';
+	
+	foreach($users as $key => $value)
+	{
+		if ($g_show_realname)
+			$label = $value['fullname'];
+		else
+			$label = $value['login'];
+		$users_map[$key] = $label;
+	}
 	return($users_map);
-}//end function
-
+}
 ?>

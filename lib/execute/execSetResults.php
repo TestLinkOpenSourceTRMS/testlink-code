@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.39 $
- * @modified $Date: 2006/10/05 19:18:21 $ $Author: schlundus $
+ * @version $Revision: 1.40 $
+ * @modified $Date: 2006/10/15 19:05:39 $ $Author: schlundus $
  *
  * @author Martin Havlat
  *
@@ -46,7 +46,11 @@ $build_id = isset($_REQUEST['build_id']) ? intval($_REQUEST['build_id']) : 0;
 $tc_id = isset($_REQUEST['tc_id']) ? intval($_REQUEST['tc_id']) : null;
 $keyword_id = isset($_REQUEST['keyword_id']) ? intval($_REQUEST['keyword_id']) : 0;
 $level = isset($_REQUEST['level']) ? $_REQUEST['level'] : '';
-$owner = isset($_REQUEST['owner']) ? $_REQUEST['owner'] : '';
+$owner = isset($_REQUEST['owner']) ? intval($_REQUEST['owner']) : null;
+
+$ownerDisplayName = null;
+if ($owner)
+	$ownerDisplayName = getUserName($db,$owner);
 
 $tplan_id = $_SESSION['testPlanId'];
 $user_id = $_SESSION['userID'];
@@ -83,9 +87,7 @@ $other_execs=null;
 $map_last_exec_any_build=null;
 $tcAttachments = null;
 $tSuiteAttachments = null;
-$linked_tcversions = $tplan_mgr->get_linked_tcversions($tplan_id,$tc_id,$keyword_id);
-
-//echo "<pre>debug 20060921 \$linked_tcversions" . __FUNCTION__ . " --- "; print_r($linked_tcversions); echo "</pre>";
+$linked_tcversions = $tplan_mgr->get_linked_tcversions($tplan_id,$tc_id,$keyword_id,null,$owner);
 
 $tcase_id = 0;
 if(!is_null($linked_tcversions))
@@ -209,11 +211,10 @@ if(!is_null($linked_tcversions))
 $smarty = new TLSmarty();
 $smarty->assign('bugs_for_exec',$bugs); // 20060917 - franciscom
 
-// 20060808 - franciscom
-$rs=$tplan_mgr->get_by_id($tplan_id);
+$rs = $tplan_mgr->get_by_id($tplan_id);
 $smarty->assign('tplan_notes',$rs['notes']);
 
-$rs=getBuild_by_id($db,$build_id);
+$rs = getBuild_by_id($db,$build_id);
 $smarty->assign('build_notes',$rs['notes']);
 
 $tsuite_info = get_ts_name_details($db,$tcase_id);
@@ -245,6 +246,7 @@ $smarty->assign('show_last_exec_any_build', $exec_cfg->show_last_exec_any_build)
 $smarty->assign('map_last_exec_any_build', $map_last_exec_any_build);
 $smarty->assign('build_name', $build_name);
 $smarty->assign('owner', $owner);
+$smarty->assign('ownerDisplayName', $ownerDisplayName);
 $smarty->assign('updated', $submitResult);
 $smarty->assign('g_bugInterface', $g_bugInterface);
 $smarty->display($g_tpl['execSetResults']);

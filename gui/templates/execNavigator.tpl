@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execNavigator.tpl,v 1.6 2006/08/07 09:43:12 franciscom Exp $ *}
+{* $Id: execNavigator.tpl,v 1.7 2006/10/15 19:05:38 schlundus Exp $ *}
 {* Purpose: smarty template - show test set tree *}
 {* 20050828 - scs - added searching for tcID *}
 {include file="inc_head.tpl" jsTree="yes"}
@@ -38,7 +38,13 @@
 			{html_options options=$optBuild selected=$optBuildSelected}
 			</select></td>
 		</tr>
-
+		<tr>
+			<td>{lang_get s='filter_owner'}</td>
+			<td><select name="owner">
+				{html_options options=$users selected=$selectedOwner}
+				</select>
+			</td>
+		</tr>
 		<tr>
 			<td>&nbsp;</td>
 			<td><input type="submit" name="submitOptions" value="{lang_get s='btn_update_menu'}" style="font-size: 90%;" /></td>

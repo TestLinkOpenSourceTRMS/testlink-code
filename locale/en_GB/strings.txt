@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.70 $
- * @modified $Date: 2006/10/11 07:00:39 $ $Author: franciscom $
+ * @version $Revision: 1.71 $
+ * @modified $Date: 2006/10/15 03:29:39 $ $Author: kevinlevy $
  *
  * @author Francisco Mancardi
  *
@@ -532,7 +532,22 @@ $TLS_test_status_failed = "Failed";
 $TLS_test_status_passed = "Pass";
 $TLS_th_build = "Build";
 $TLS_th_tc_total = "TC Total";
-
+$TLS_th_total_cases = "total cases";
+$TLS_th_total_pass = "total pass";
+$TLS_th_total_fail = "total fail";
+$TLS_th_total_block = "total block";
+$TLS_th_total_not_run ="total not run";
+$TLS_th_test = "test";
+$TLS_caption_user_selected_query_parameters = "Query Parameters";
+$TLS_th_builds = "build(s)";
+$TLS_th_test_suites = "suite(s)";
+$TLS_th_keywords = "keyword(s)";
+$TLS_th_owners = "owner(s)";
+$TLS_th_report_format = "report type";
+$TLS_th_last_result = "last result";
+$TLS_th_tester_id = "tester";
+$TLS_th_execution_ts = "time";
+$TLS_caption_show_collapse = "show/hide";
 
 
 // gui/templates/resultsBugs.tpl

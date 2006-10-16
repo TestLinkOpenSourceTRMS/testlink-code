@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecAnalyse.tpl,v 1.10 2006/10/11 07:00:39 franciscom Exp $ *}
+{* $Id: reqSpecAnalyse.tpl,v 1.11 2006/10/16 10:36:10 franciscom Exp $ *}
 {* Purpose: smarty template - Analyse REQ coverage *}
 {include file="inc_head.tpl"}
 
@@ -42,12 +42,16 @@
 {if $smarty.section.row.first}
 <table class="simple">
 	<tr>
+	
+		<th>{lang_get s="req_doc_id"}</th>
 		<th>{lang_get s="req"}</th>
 		<th>{lang_get s="testcases"}</th>
 	</tr>
 {/if}
 	<tr>
 		<td><span class="bold"><a href="lib/req/reqSpecView.php?editReq={$arrCoverage.covered[row].id}&amp;idSRS={$selectedReqSpec}">
+			{$arrCoverage.covered[row].req_doc_id|escape}</a></span></td>
+			<td><span class="bold"><a href="lib/req/reqSpecView.php?editReq={$arrCoverage.covered[row].id}&amp;idSRS={$selectedReqSpec}">
 			{$arrCoverage.covered[row].title|escape}</a></span></td>
 		<td>{section name=subrow loop=$arrCoverage.covered[row].coverage}
 <a href="lib/testcases/archiveData.php?id={$arrCoverage.covered[row].coverage[subrow].id|escape}&amp;edit=testcase&allow_edit=0">{$arrCoverage.covered[row].coverage[subrow].id|escape}</a>:{$arrCoverage.covered[row].coverage[subrow].name|escape}<br />
@@ -68,10 +72,12 @@
 {if $smarty.section.row2.first}
 <table class="simple">
 	<tr>
+		<th>{lang_get s="req_doc_id"}</th>
 		<th>{lang_get s="req"}</th>
 	</tr>
 {/if}
 	<tr>
+		<td><span class="bold"><a href="lib/req/reqSpecView.php?editReq={$arrCoverage.uncovered[row2].id}&amp;idSRS={$selectedReqSpec}">{$arrCoverage.uncovered[row2].req_doc_id|escape}</a></span></td>
 		<td><span class="bold"><a href="lib/req/reqSpecView.php?editReq={$arrCoverage.uncovered[row2].id}&amp;idSRS={$selectedReqSpec}">{$arrCoverage.uncovered[row2].title|escape}</a></span></td>
 	</tr>
 {if $smarty.section.row2.last}

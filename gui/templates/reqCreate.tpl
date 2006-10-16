@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqCreate.tpl,v 1.6 2006/04/08 19:51:38 schlundus Exp $ *}
+{* $Id: reqCreate.tpl,v 1.7 2006/10/16 10:36:10 franciscom Exp $ *}
 {* Purpose: smarty template - create / edit a req  *}
 {include file="inc_head.tpl"}
 
@@ -10,7 +10,7 @@
 	<img alt="{lang_get s='help'}: {lang_get s='reqs'}" class="help" 
 	src="icons/sym_question.gif" 
 	onclick="javascript:open_popup('{$helphref}requirementsCoverage.html#req');" />
-	{lang_get s='req_create'}
+	{lang_get s='req_create'} - {$srs_title|escape} 
 </h1>
 
 {* show SQL result *}

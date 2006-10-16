@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecView.tpl,v 1.18 2006/10/09 10:32:27 franciscom Exp $ *}
+{* $Id: reqSpecView.tpl,v 1.19 2006/10/16 10:36:11 franciscom Exp $ *}
 {* 
    Purpose: smarty template - view a requirement specification
    Author: Martin Havlat 
@@ -29,8 +29,12 @@ var warning_delete_requirements = "{lang_get s='warning_delete_requirements'}";
 {literal}
 </script>
 {/literal}
+
+
 {* show SQL result *}
 {include file="inc_update.tpl" result=$sqlResult item=$sqlItem name=$name action=$action}
+
+
 	
 <div class="workBack">
 
@@ -125,6 +129,13 @@ var warning_delete_requirements = "{lang_get s='warning_delete_requirements'}";
 </form>
 
 </div>
+
+{if $js_msg neq ""}
+<script type="text/javascript">
+alert("{$js_msg}");
+</script>
+{/if}
+
 
 </body>
 </html>

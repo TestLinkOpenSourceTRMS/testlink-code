@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: csv.inc.php,v $
  *
- * @version $Revision: 1.2 $
- * @modified $Date: 2006/04/07 20:15:26 $ by $Author: schlundus $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2006/10/16 10:36:11 $ by $Author: franciscom $
  *
  * functions related to csv export
  *
@@ -41,10 +41,19 @@ function exportDataToCSV($data,$sourceKeys,$destKeys,$bWithHeader = 0,$delimiter
 	return $csvContent;
 }
 
-function importCSVData($fileName,$destKeys,$delimiter = ';',$bWithHeader = false,$bSkipHeader = true)
+// 20061014 - franciscom
+// added [$num_fields] number of fields a line must have to be valid
+//                     if the number is not verified the line is discarded silently.
+//
+function importCSVData($fileName,$destKeys,$delimiter = ';',$num_fields=0,
+                       $bWithHeader = false,$bSkipHeader = true)
 {
+  
 	$handle = fopen ($fileName,"r"); 
 	$retData = null;
+	$check_syntax=$num_fields > 0;
+	$do_import=1;
+	
 	if ($handle)
 	{
 		$i = 0;
@@ -75,11 +84,21 @@ function importCSVData($fileName,$destKeys,$delimiter = ';',$bWithHeader = false
 					continue;
 				}
 			}
-			foreach($idx as $c => $key)
-			{ 
-				$retData[$i][$idx[$c]] = $data[$c];
-			} 
-			$i++;
+	
+	    // ---------------------------------------------		
+	    if( $check_syntax)
+	    {
+	      $do_import=(count($data)==$num_fields );
+	    }
+      if( $do_import )
+      { 
+			  foreach($idx as $c => $key)
+			  { 
+				  $retData[$i][$idx[$c]] = $data[$c];
+			  } 
+			  $i++;
+			}
+			// ---------------------------------------------
 		}
 	}
 	return $retData;

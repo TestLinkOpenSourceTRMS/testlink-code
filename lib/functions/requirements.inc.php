@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: requirements.inc.php,v $
- * @version $Revision: 1.37 $
- * @modified $Date: 2006/10/11 07:00:39 $ by $Author: franciscom $
+ * @version $Revision: 1.38 $
+ * @modified $Date: 2006/10/16 10:36:11 $ by $Author: franciscom $
  *
  * @author Martin Havlat <havlat@users.sourceforge.net>
  * 
@@ -21,20 +21,23 @@
  * 20050825 - Martin Havlat - updated global header;
  * 20051025 - MHT - corrected introduced bug with insert TC (Bug 197)
  * 20061009 - franciscom - added getReqByReqdocId()
+ * 20061014 - franciscom - added check_syntax* functions()
+ *
  */
 ////////////////////////////////////////////////////////////////////////////////
 
 define('TL_REQ_STATUS_VALID', 'v');
-define('TL_REQ_STATUS_NOTTESTABLE', 'n');
+define('TL_REQ_STATUS_NOT_TESTABLE', 'n');
+
 
 $arrReqStatus = array(TL_REQ_STATUS_VALID => lang_get('req_state_valid'), 
-					  TL_REQ_STATUS_NOTTESTABLE => lang_get('req_state_not_testable'),
-					  );
+					            TL_REQ_STATUS_NOT_TESTABLE => lang_get('req_state_not_testable')
+					           );
 
 $g_reqImportTypes = array( "csv" => "CSV",
-							"csv_doors" => "CSV (Doors)",
-							 "XML" => "XML",
-						 );
+							             "csv_doors" => "CSV (Doors)",
+							             "XML" => "XML",
+						              );
 
 $g_reqFormatStrings = array (
 							"csv" => lang_get('req_import_format_description1'),
@@ -44,6 +47,7 @@ $g_reqFormatStrings = array (
 
 require_once(dirname(__FILE__) . "/print.inc.php");
 require_once(dirname(__FILE__) . "/../testcases/archive.inc.php");
+
 
 /** 
  * update System Requirements Specification
@@ -58,10 +62,11 @@ require_once(dirname(__FILE__) . "/../testcases/archive.inc.php");
  * 
  * @author Martin Havlat 
  */
-function updateReqSpec(&$db,$id, $title, $scope, $countReq, $user_id, $type = 'n')
+function updateReqSpec(&$db,$id, $title, $scope, $countReq, $user_id, 
+                            $type = TL_REQ_STATUS_NOT_TESTABLE)
 {
 	$result = 'ok';
-  $title=trim($title);
+  $title=trim_and_limit($title);
     	
 	if (checkRequirementTitle($title,$result))
 	{
@@ -262,8 +267,10 @@ function getReqMetrics_general(&$db,$srs_id)
 	$output = array();
 	
 	// get nottestable REQs
-	$sql = "SELECT count(*) AS cnt FROM requirements WHERE srs_id=" . $srs_id . 
-			" AND status='n'";
+	$sql = "SELECT count(*) AS cnt " .
+	       " FROM requirements WHERE srs_id=" . $srs_id . 
+			   " AND status='" . TL_REQ_STATUS_NOT_TESTABLE . "'";
+			   
 	$output['notTestable'] = $db->fetchFirstRowSingleColumn($sql,'cnt');
 
 	$sql = "SELECT count(*) AS cnt FROM requirements WHERE srs_id=" . $srs_id;
@@ -292,36 +299,6 @@ function getReqMetrics_general(&$db,$srs_id)
 
 	return $output;
 }
-
-/**
- * get requirement coverage metrics for a Test Plan
- * 
- * @param integer $srs_id
- * @param integer $idTestPlan
- * @return array Results
- * @author havlatm
- */
-function DEPR_getReqMetrics_testPlan(&$db,$srs_id, $idTestPlan)
-{
-	$output = getReqMetrics_general($db,$srs_id);
-	$output['coveredByTestPlan'] = 0;
-	$sql = "SELECT DISTINCT requirements.id FROM requirements,testcase," .
-			"req_coverage,category,component WHERE requirements.srs_id=" . $srs_id .
-				" AND component.projid=" . $idTestPlan .
-				" AND category.compid=component.id AND category.id=testcase.catid" .
-				" AND testcase.mgttcid = req_coverage.testcase_id AND req_id=requirements.id" .
-				" AND requirements.status = 'v'"; 
-	$result = $db->exec_query($sql);
-	if (!empty($result)) {
-		$output['coveredByTestPlan'] = $db->num_rows($result);
-	}
-
-	$output['uncoveredByTestPlan'] = $output['expectedTotal'] 
-			- $output['coveredByTestPlan'] - $output['notTestable'];
-
-	return $output;
-}
-
 
 /** 
  * collect information about one Requirement
@@ -433,24 +410,29 @@ function check_req_basic_data(&$db,$title,$reqdoc_id)
  * @param char $status
  * @param char $type
  * 
- * @author Martin Havlat 
+ * @author Martin Havlat
+ *
+ * 20061015 - franciscom - interface changes
+ * 
  **/
 function createRequirement(&$db,$reqdoc_id,$title, $scope, $srs_id, $user_id, 
-                           $status = TL_REQ_STATUS_VALID, $type = 'n')
+                           $status = TL_REQ_STATUS_VALID, $type = TL_REQ_STATUS_NOT_TESTABLE)
 {
 	$result = 'ok';
-	$reqdoc_id=trim($reqdoc_id);
-	$title=trim($title);
-	
-	
+	$db_now = $db->db_now();
+	$field_size=config_get('field_size');
+
+	$reqdoc_id=trim_and_limit($reqdoc_id,$field_size->req_docid);
+	$title=trim_and_limit($title,$field_size->req_title);
+		
 	$chk=check_req_basic_data($db,$title,$reqdoc_id);
 	if($chk['status_ok'])
 	{
 		$sql = "INSERT INTO requirements (srs_id, req_doc_id, title, scope, status, type, author_id, creation_ts)" .
-				" VALUES (" . $srs_id . ",'" . $db->prepare_string($reqdoc_id) .  
-				"','" . $db->prepare_string($title) . "','" . $db->prepare_string($scope) . 
-				 "','" . $db->prepare_string($status) . "','" . $db->prepare_string($type) .
-				 "'," . $db->prepare_string($user_id) . ", CURRENT_DATE)";
+				   " VALUES (" . $srs_id . ",'" . $db->prepare_string($reqdoc_id) .  
+				   "','" . $db->prepare_string($title) . "','" . $db->prepare_string($scope) . 
+				   "','" . $db->prepare_string($status) . "','" . $db->prepare_string($type) .
+				   "'," . $db->prepare_string($user_id) . ", {$db_now})";
 
 		if (!$db->exec_query($sql))
 		 	$result = lang_get('error_inserting_req');
@@ -476,17 +458,23 @@ function createRequirement(&$db,$reqdoc_id,$title, $scope, $srs_id, $user_id,
  
  * @param string $status
  * @param string $type
+ *
+ * 
  * 
  * @author Martin Havlat 
  **/
-function updateRequirement(&$db,$id, $reqdoc_id,$title, $scope, $user_id, $status, $type)
+function updateRequirement(&$db,$id, $reqdoc_id,$title, $scope, $user_id, $status, $type,$skip_controls=0)
 {
 	$result = 'ok';
-	$reqdoc_id=trim($reqdoc_id);
-	$title=trim($title);
+	$db_now = $db->db_now();
+	$field_size=config_get('field_size');
+	
+	$reqdoc_id=trim_and_limit($reqdoc_id,$field_size->req_docid);
+	$title=trim_and_limit($title,$field_size->req_title);
 
-	$chk=check_req_basic_data($db,$title,$reqdoc_id);
-	if($chk['status_ok'])
+  $chk=check_req_basic_data($db,$title,$reqdoc_id);
+ 
+	if($chk['status_ok'] || $skip_controls)
 	{
 		$sql = "UPDATE requirements SET title='" . $db->prepare_string($title) . 
 				"', scope='" . $db->prepare_string($scope) . "', status='" . 
@@ -494,7 +482,9 @@ function updateRequirement(&$db,$id, $reqdoc_id,$title, $scope, $user_id, $statu
 				"', type='" . $db->prepare_string($type) . 
 				"', modifier_id='" . $db->prepare_string($user_id) . 
 				"', req_doc_id='" . $db->prepare_string($reqdoc_id) .
-				"', modification_ts=CURRENT_DATE WHERE id=" . $id;	
+				"', modification_ts={$db_now} " .
+				" WHERE id={$id}";
+			
 		if (!$db->exec_query($sql))
 		 	$result = lang_get('error_updating_req');
 	}
@@ -802,22 +792,22 @@ function exportReqDataToXML($reqData)
 }
 
 /** 
- * trim title to N chars
- * @param string title
+ * trim string and limit to N chars
+ * @param string
  * @param int [len]: how many chars return
  *
- * @return string trimmed title
+ * @return string trimmed string
  *
  * @author Francisco Mancardi - 20050905 - refactoring
  *
  */
-function trim_title($title, $len=100)
+function trim_and_limit($s, $len=100)
 {
-  $title=trim($title);
-	if (strlen($title) > $len ) {
-		$title = substr($title, 0, $len);
+  $s=trim($s);
+	if (strlen($s) > $len ) {
+		$s = substr($s, 0, $len);
 	}
-	return($title);
+	return($s);
 }
 
 /** collect information about one Requirement from REQ Title
@@ -848,52 +838,47 @@ function getReqDataByTitle(&$db,$title,$ignore_case=0)
 	return $output;
 }
 
-/** function process CVS file with requirements into TL and creates an array with reports 
- * @return array_of_strings list of particular REQ titles with resolution 
+/** Process CVS file contents with requirements into TL 
+ *  and creates an array with reports 
+ *  @return array_of_strings list of particular REQ data with resolution comment
  *
  *
- * @author Francisco Mancardi - 20050906 - added $userID
  **/
-function executeImportedReqs(&$db,$arrImportSource, $arrReqTitles, 
+function executeImportedReqs(&$db,$arrImportSource, $map_cur_reqdoc_id, 
                              $conflictSolution, $emptyScope, $idSRS, $userID)
 {
+  define('SKIP_CONTROLS',1);
+	$field_size=config_get('field_size');
+
 	foreach ($arrImportSource as $data)
 	{
-		$docID = isset($data['req_doc_id']) ? $data['req_doc_id'] : '';
-		$title = $data['title'];
-		$description = $data['description'];
-		if (($emptyScope == 'on') && empty($description))
+		$docID = trim_and_limit($data['req_doc_id'],$field_size->req_docid);
+		$title = trim_and_limit($data['title'],$field_size->req_title);
+		$scope = $data['description'];
+		
+		if (($emptyScope == 'on') && empty($scope))
 		{
 			// skip rows with empty scope
 			$status = lang_get('req_import_result_skipped');
 		}
 		else
 		{
-			$title = trim_title($title);
-			$scope = $description;
-		
-			if ($arrReqTitles && array_search($title, $arrReqTitles))
+			if ($map_cur_reqdoc_id && array_search($docID, $map_cur_reqdoc_id))
 			{
 				// process conflict according to choosen solution
 				tLog('Conflict found. solution: ' . $conflictSolution);
 				if ($conflictSolution == 'overwrite')
 				{
-					$arrOldReq = getReqDataByTitle($db,$title);
-					$status = updateRequirement($db,$arrOldReq[0]['id'],$title,$scope,$userID,
-							                        $arrOldReq[0]['status'],$arrOldReq[0]['type'],$docID);
+					$row_curr_data = getReqByReqdocId($db,$docID);
+					$req_id=key($row_curr_data);
+					$status = updateRequirement($db,$req_id,$docID,$title,$scope,$userID,
+							                            $row_curr_data[$req_id]['status'],
+							                            $row_curr_data[$req_id]['type'],SKIP_CONTROLS);
+							                            
 					if ($status == 'ok') {
 						$status = lang_get('req_import_result_overwritten');
 					}
 				} 
-
-				elseif ($conflictSolution == 'double') 
-				{
-					$status = createRequirement($db,$title, $scope, $idSRS, $userID,TL_REQ_STATUS_VALID, 'n',$docID); // default status and type
-					if ($status == 'ok') {
-						$status = lang_get('req_import_result_added');
-					}
-				} 
-
 				elseif ($conflictSolution == 'skip') {
 					// no work
 					$status = lang_get('req_import_result_skipped');
@@ -906,7 +891,8 @@ function executeImportedReqs(&$db,$arrImportSource, $arrReqTitles,
 
 			} else {
 				// no conflict - just add requirement
-				$status = createRequirement ($db, $title, $scope, $idSRS, $userID,TL_REQ_STATUS_VALID, 'n',$docID); // default status and type
+				$status = createRequirement ($db, $docID, $title, $scope, $idSRS, $userID,
+				                             TL_REQ_STATUS_VALID, TL_REQ_STATUS_NOT_TESTABLE);
 			}
 			$arrImport[] = array($docID,$title, $status);
 		}
@@ -915,8 +901,11 @@ function executeImportedReqs(&$db,$arrImportSource, $arrReqTitles,
 	return $arrImport;
 }
 
-/** compare titles of importing and existing requirements */
-function compareImportedReqs($arrImportSource, $arrReqTitles)
+/*
+20061014 - franciscom -
+algorithm changes, now is the docid the attribute that must be unique
+*/
+function compareImportedReqs($arrImportSource, $map_cur_reqdoc_id)
 {
 	$arrImport = null;
 	if (sizeof($arrImportSource))
@@ -924,18 +913,16 @@ function compareImportedReqs($arrImportSource, $arrReqTitles)
 		foreach ($arrImportSource as $data)
 		{
 			$status = lang_get('ok');
-			$title = $data['title'];
-			if (!strlen(trim($title)))
-				continue;
-			if ($arrReqTitles &&  in_array($title, $arrReqTitles,true))
+			$req_doc_id = $data['req_doc_id'];
+			
+			if ($map_cur_reqdoc_id &&  in_array($req_doc_id, $map_cur_reqdoc_id,true))
 			{
 				$status = lang_get('conflict');
-				tLog('REQ: '.$title. "\n CONTENT: ".$data['description']);
+				tLog('REQ: '. $data['req_doc_id'] . "\n CONTENT: ".$data['description']);
 			}
-			$arrImport[] = array(
-								isset($data['req_doc_id']) ? $data['req_doc_id'] : '',
-								$title, 
-								$data['description'], $status);
+			$arrImport[] = array($data['req_doc_id'],
+								           trim($data['title']), 
+								           $data['description'], $status);
 		}
 	}
 	
@@ -959,6 +946,26 @@ function getReqTitles(&$db,$idSRS)
 	
 	return $arrReqTitles;
 }
+
+
+// 20061014 - franciscom
+function getReqDocIDs(&$db,$srs_id)
+{
+	$arrCurrentReq = getRequirements($db,$srs_id);
+	$result = null;
+	if (count($arrCurrentReq))
+	{ 
+		// only if some reqs exist
+		foreach ($arrCurrentReq as $data)
+		{
+			$result[$data['id']] = $data['req_doc_id'];
+		}
+	}
+	
+	return($result);
+}
+
+
 
 /**
  * load imported data from file and parse it to array
@@ -988,65 +995,84 @@ function loadImportedReq($CSVfile, $importType)
 	
 }
 
-/**
- * Import keywords from a CSV file to keyword data which can be further processed
- *
- * @param string $fileName the input CSV filename
- * @return array return null on error or an array of
- * 				 keywordData[$i]['keyword'] => the keyword itself
- * 				 keywordData[$i]['notes'] => the notes of keyword
- *
- * @author Andreas Morsing <schlundus@web.de>
- **/
+
 function importReqDataFromCSV($fileName)
 {
-	$destKeys = array(
-					"req_doc_id",
-					"title",
-					"description",
-	 					);
-	$reqData = importCSVData($fileName,$destKeys,$delimiter = ',');
+  $field_size=config_get('field_size');  
+  $delimiter=',';
+  
+  // CSV line format
+	$destKeys = array("req_doc_id",
+					          "title",       
+					          "description");
+
+  // lenght will be adjusted to these values
+  $field_length = array("req_doc_id" => $field_size->req_docid,
+					              "title" => $field_size->req_title);
+					          
+	$reqData = importCSVData($fileName,$destKeys,$delimiter,count($destKeys));
 	
+	// 20061015 - franciscom
+	// adjust value length to field length to avoid problems during inset
+	foreach($reqData as $key => $value)
+	{
+     foreach($field_length as $fkey => $len)
+	   {
+       $reqData[$key][$fkey]=trim_and_limit($reqData[$key][$fkey],$len); 	      
+	   }
+	}
 	return $reqData;
 }
+
 
 function importReqDataFromCSVDoors($fileName)
 {
-	$destKeys = array(
-					"Object Identifier" => "title",
-					"Object Text" => "description",
-					"Created By",
-					"Created On",
-					"Last Modified By",
-					"Last Modified On",
-				);
+  $delimiter=',';
+  $bWithHeader = true;
+  $bDontSkipHeader = false;
+  
+	$destKeys = array("Object Identifier" => "title",
+					          "Object Text" => "description",
+					          "Created By",
+					          "Created On",
+					          "Last Modified By",
+					          "Last Modified On");
 				
-	$reqData = importCSVData($fileName,$destKeys,$delimiter = ',',true,false);
+	$reqData = importCSVData($fileName,$destKeys,$delimiter,0,$bWithHeader,$bDontSkipHeader);
 	
 	return $reqData;
 }
 
+/*
+20061015 - franciscom - added trim_and_limit
 
+*/
 function importReqDataFromXML($fileName)
 {
 	$dom = domxml_open_file($fileName);
 	$xmlReqs = null;
+  $field_size=config_get('field_size');  
+
+
 	if ($dom)
 		$xmlReqs = $dom->get_elements_by_tagname("requirement");
 	
 	$xmlData = null;
-	for($i = 0;$i < sizeof($xmlReqs);$i++)
+	$num_elem=sizeof($xmlReqs);
+	
+	for($i = 0;$i < $num_elem ;$i++)
 	{
 		$xmlReq = $xmlReqs[$i];
 		if ($xmlReq->node_type() != XML_ELEMENT_NODE)
 			continue;
-		$xmlData[$i]['req_doc_id'] = getNodeContent($xmlReq,"docid");
-		$xmlData[$i]['title'] = getNodeContent($xmlReq,"title");
+		$xmlData[$i]['req_doc_id'] = trim_and_limit(getNodeContent($xmlReq,"docid"),$field_size->req_docid);
+		$xmlData[$i]['title'] = trim_and_limit(getNodeContent($xmlReq,"title"),$field_size->req_title);
 		$xmlData[$i]['description'] = getNodeContent($xmlReq,"description");
 	}
 	
 	return $xmlData;
 }
+
 
 function doImport(&$db,$userID,$idSRS,$fileName,$importType,$emptyScope,$conflictSolution,$bImport)
 {
@@ -1055,15 +1081,18 @@ function doImport(&$db,$userID,$idSRS,$fileName,$importType,$emptyScope,$conflic
 	$arrImport = null;
 	if (count($arrImportSource))
 	{
-		$arrReqTitles = getReqTitles($db,$idSRS);
+		// $arrReqTitles = getReqTitles($db,$idSRS);
+		$map_cur_reqdoc_id=getReqDocIDs($db,$idSRS);
 		
 		if ($bImport)
 		{
-			$arrImport = executeImportedReqs($db,$arrImportSource, $arrReqTitles, 
-		                        $conflictSolution, $emptyScope, $idSRS, $userID);
+			$arrImport = executeImportedReqs($db,$arrImportSource, $map_cur_reqdoc_id, 
+		                                   $conflictSolution, $emptyScope, $idSRS, $userID);
 		}
 		else
-			$arrImport = compareImportedReqs($arrImportSource, $arrReqTitles);
+		{
+			$arrImport = compareImportedReqs($arrImportSource, $map_cur_reqdoc_id);
+		}	
 	}
 	return $arrImport;
 }
@@ -1077,6 +1106,8 @@ function exportReqDataToCSV($reqData)
 				   );
 	return exportDataToCSV($reqData,$sKeys,$sKeys,0,',');
 }
+
+
 function getReqCoverage($reqs,$execMap,$coveredReqs)
 {
 	$arrCoverage = array(
@@ -1176,5 +1207,68 @@ function checkRequirementTitle($title,&$result)
 		
 	return $bSuccess;
 }
+
+
+// 20061014 - franciscom
+function check_syntax($fileName,$importType)
+{
+	switch($importType)
+	{
+		case 'csv':
+			$pfn = "check_syntax_csv";
+			break;
+
+		case 'csv_doors':
+			$pfn = "check_syntax_csv_doors";
+			break;
+
+		case 'XML':
+			$pfn = "check_syntax_xml";
+			break;
+	}
+	if ($pfn)
+	{
+		$data = $pfn($fileName);
+		return $data;
+	}
+	return;
+}
+
+function check_syntax_xml($fileName)
+{
+  $ret=array();
+  $ret['status_ok']=1;
+  $ret['msg']='ok';
+  
+  //@ -> shhhh!!!! silence please
+  if (!$dom = @domxml_open_file($fileName)) 
+  {
+    $ret['status_ok']=0;
+    $ret['msg']=lang_get('file_is_not_xml');
+  }  
+  return($ret);
+}
+
+
+function check_syntax_csv($fileName)
+{
+  $ret=array();
+  $ret['status_ok']=1;
+  $ret['msg']='ok';
+  return($ret);
+}
+
+
+
+// Must be implemented !!!
+function check_syntax_csv_doors($fileName)
+{
+  $ret=array();
+  $ret['status_ok']=1;
+  $ret['msg']='ok';
+  
+  return($ret);
+}
+
 
 ?>

@@ -4,15 +4,13 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqSpecView.php,v $
- * @version $Revision: 1.26 $
- * @modified $Date: 2006/10/11 07:00:39 $ by $Author: franciscom $
+ * @version $Revision: 1.27 $
+ * @modified $Date: 2006/10/16 10:36:11 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Screen to view existing requirements within a req. specification.
  * 
- * 20050930 - MHT - Database schema changed (author, modifier, status, etc.)
- * 20060110 - fm  - removed onchange event management
- * 20060503 - franciscom - added control on attachement repository when FileSystem
+ * 20061014 - franciscom - added srs title
 **/
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -26,12 +24,19 @@ require_once("../../third_party/fckeditor/fckeditor.php");
 require_once(dirname("__FILE__") . "/../functions/configCheck.php");
 testlinkInitPage($db);
 
+echo "<pre>debug 20061015 " . __FUNCTION__ . " --- "; print_r($_REQUEST); echo "</pre>";
+
+$js_msg=null;
 $sqlResult = null;
 $action = null;
 $sqlItem = 'Requirement';
 $arrReq = array();
 $bGetReqs = TRUE; // collect requirements as default
 $template = 'reqSpecView.tpl';
+
+
+
+
 
 $_REQUEST = strings_stripSlashes($_REQUEST);
 $reqDocId = isset($_REQUEST['reqDocId']) ? trim($_REQUEST['reqDocId']) : null;
@@ -51,6 +56,10 @@ $login_name = isset($_SESSION['user']) ? $_SESSION['user'] : null;
 
 $do_export = isset($_REQUEST['exportAll']) ? 1 : 0;
 $exportType = isset($_REQUEST['exportType']) ? $_REQUEST['exportType'] : null;
+
+$do_create_tc_from_req=isset($_REQUEST['create_tc_from_req']) ? 1 : 0;
+$do_delete_req=isset($_REQUEST['req_select_delete']) ? 1 : 0;
+
 
 
 $arrCov = null;
@@ -133,11 +142,12 @@ elseif (isset($_REQUEST['updateSRS']))
 	$sqlResult = updateReqSpec($db,$idSRS,$title,$scope,$countReq,$userID);
 	$action = 'update';
 }
-elseif (isset($_REQUEST['create_tc_from_req']) || isset($_REQUEST['req_select_delete']) )
+elseif ($do_create_tc_from_req || $do_delete_req )
 {
 	$arrIdReq = isset($_POST['req_id_cbox']) ? $_POST['req_id_cbox'] : null;
+	
 	if (count($arrIdReq) != 0) {
-		if (isset($_REQUEST['req_select_delete'])) 
+		if($do_delete_req) 
 		{
 			foreach ($arrIdReq as $idReq) {
 				tLog("Delete requirement id=" . $idReq);
@@ -151,14 +161,23 @@ elseif (isset($_REQUEST['create_tc_from_req']) || isset($_REQUEST['req_select_de
 			}
 			$action = 'delete';
 		} 
-		elseif (isset($_REQUEST['create_tc_from_req'])) 
+		elseif ($do_create_tc_from_req) 
 		{
-			$sqlResult = createTcFromRequirement($db,$tproject,$arrIdReq,$tprojectID, $idSRS, $userID);
-			$action = 'create';
-			$sqlItem = 'test case(s)';
+			  $sqlResult = createTcFromRequirement($db,$tproject,$arrIdReq,$tprojectID, $idSRS, $userID);
+			  $action = 'create';
+			  $sqlItem = 'test case(s)';
 		}
-	} else {
-		  $sqlResult = lang_get('req_msg_noselect');
+	} 
+	else 
+	{
+    if($do_create_tc_from_req)
+    {
+      $js_msg=lang_get('cant_create_tc_from_req_nothing_sel');
+    }
+    if($do_delete_req)
+    {
+      $js_msg=lang_get('cant_delete_req_nothing_sel');
+    }
 	}
 }
 
@@ -172,6 +191,11 @@ $arrSpec = $tproject->getReqSpec($tprojectID,$idSRS);
 $arrSpec[0]['author'] = getUserName($db,$arrSpec[0]['author_id']);
 $arrSpec[0]['modifier'] = getUserName($db,$arrSpec[0]['modifier_id']);
 
+
+$sql = "SELECT * FROM req_specs WHERE id={$idSRS}";
+$srs_title=$db->fetchFirstRowSingleColumn($sql,'title');
+
+$smarty->assign('srs_title', $srs_title);  // 20061014 - franciscom
 
 $smarty->assign('attach', $attach);  // 20060503 - franciscom
 
@@ -228,7 +252,7 @@ if($do_export)
 // ----------------------------------------------------------
 
 
-
+$smarty->assign('js_msg',$js_msg);
 $smarty->assign('exportTypes',$exportTypes);
 $smarty->assign('scope',$of->CreateHTML());
 $smarty->display($template);

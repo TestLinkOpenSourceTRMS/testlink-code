@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.75 $
- * @modified $Date: 2006/10/13 20:06:14 $ by $Author: schlundus $
+ * @version $Revision: 1.76 $
+ * @modified $Date: 2006/10/16 10:32:45 $ by $Author: franciscom $
  *
  *
  * Constants and configuration parameters used throughout TestLink 
@@ -14,8 +14,8 @@
  *-------------------------------------------------------------------------
  * Revisions:
  *
+ * 20061016 - franciscom - added new keys to $g_field_size
  * 20061009 - franciscom - changed $g_req_cfg
- * 
  * 20060822 - franciscom - new properties for $g_attachments
  *                         enabled and disabled_msg
  *
@@ -373,6 +373,10 @@ $g_req_cfg->testcase_summary_prefix = "<b>Test Case generated from Requirement</
 
 $g_field_size->testsuite_name = 100;
 
+// requirements and req_spec tables
+$g_field_size->req_docid=16;
+$g_field_size->req_title=100;
+$g_field_size->requirement_title=100;
 
 
 

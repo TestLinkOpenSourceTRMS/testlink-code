@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: installNewDB.php,v 1.22 2006/07/05 17:58:06 franciscom Exp $ */
+/* $Id: installNewDB.php,v 1.23 2006/10/16 09:33:08 franciscom Exp $ */
 /*
 Parts of this file has been taken from:
 Etomite Content Management System
@@ -380,8 +380,6 @@ switch ($db_type)
 }
 */
 
-echo "<pre>debug 20060523 " . __FUNCTION__; print_r($db_type); echo "</pre>";
-
 $msg = create_user_for_db($db_type,$db_name, $db_server, $db_admin_name, $db_admin_pass, 
                           $tl_db_login, $tl_db_passwd);
 
@@ -407,7 +405,6 @@ $system_schema=null;
 //           Postgres: do it as tl_login NOT as db_admin
 //
 //           MySQL   : do it as db_admin NOT as tl_login 
-//echo "<pre>debug"; print_r($db); echo "</pre>";
 if( !is_null($db) )
 {
   $db->close();

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: assignment_mgr.class.php,v $
  *
- * @version $Revision: 1.1 $
- * @modified $Date: 2006/09/15 13:14:48 $ by $Author: franciscom $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2006/10/16 09:33:32 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for assignment activities
@@ -77,8 +77,6 @@ class assignment_mgr
   //
 	function assign($feature_map) 
 	{
-	  echo "<pre>debug 20060914 \$feature_map" . __FUNCTION__ . " --- "; print_r($feature_map); echo "</pre>";
-	  
 	  foreach($feature_map as $feature_id => $elem)
 	  {
 	    $sql="INSERT INTO user_assignments " .

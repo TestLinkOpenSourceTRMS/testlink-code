@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.51 $ $Author: schlundus $
- * @modified $Date: 2006/10/15 19:05:39 $
+ * @version $Revision: 1.52 $ $Author: franciscom $
+ * @modified $Date: 2006/10/16 10:33:44 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -558,7 +558,7 @@ function set_dt_formats()
 }
 
 
-// 20051105 - francisco.mancardi@gruppotesi.com
+// 20051105 - franciscom
 // idea from mantisbt
 function config_get($config_id)
 {
@@ -783,7 +783,7 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
             $out[$parent_idx]['testcases'][$tc_id]['tcversions'] = array();             
             $out[$parent_idx]['testcases'][$tc_id]['linked_version_id'] = 0;
             $out[$parent_idx]['testcases'][$tc_id]['executed'] = 'no';
-            // 20060921 - francisco.mancardi@gruppotesi.com 
+            // 20060921 - franciscom 
             //$out[$parent_idx]['level'] = $the_level;
             $out[$parent_idx]['write_buttons'] = $write_status;
             $out[$parent_idx]['testcase_qty']++;

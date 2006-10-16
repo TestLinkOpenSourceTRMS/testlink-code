@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.12 $
- * @modified $Date: 2006/10/15 19:05:39 $ $Author: schlundus $
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2006/10/16 10:34:22 $ $Author: franciscom $
  * @author franciscom
  *
  * 20060919 - franciscom - copy_* functions
@@ -405,7 +405,7 @@ function get_keywords_tcases($id,$keyword_id=0)
 } // end function
 // -------------------------------------------------------------------------------
 
-// 20060919 - francisco.mancardi@gruppotesi.com
+// 20060919 - franciscom
 // $id: source testplan id
 // $new_tplan_id: destination
 // $tplan_name  != null => set this as the new name

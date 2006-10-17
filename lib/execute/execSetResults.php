@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.40 $
- * @modified $Date: 2006/10/15 19:05:39 $ $Author: schlundus $
+ * @version $Revision: 1.41 $
+ * @modified $Date: 2006/10/17 16:39:10 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -111,13 +111,7 @@ if(!is_null($linked_tcversions))
 		  
     	foreach($linked_tcversions as $item)
     	{
-        //echo "<pre>debug 20060921 \$item" . __FUNCTION__ . " --- "; print_r($item); echo "</pre>";
-    	  
-    		// 20060922 - get path full instead of simplex
-    		
     		$path_f = $tree_mgr->get_path($item['tc_id'],null,'full');
-    		//echo "<pre>debug 20060922 " . __FUNCTION__ . " --- "; print_r($path_f); echo "</pre>";
-
     		foreach($path_f as $key => $path_elem)
     		{
     			if( $path_elem['parent_id'] == $id )
@@ -139,7 +133,6 @@ if(!is_null($linked_tcversions))
     
     // 
     // will create a record even if the testcase version has not been executed (GET_NO_EXEC)
-    //echo "<pre>debug 20060922 \$tcase_id" . __FUNCTION__ . " --- "; print_r($tcase_id); echo "</pre>";
     $map_last_exec = $tcase_mgr->get_last_execution($tcase_id,$tcversion_id,$tplan_id,
                                                     $build_id,GET_NO_EXEC);
     

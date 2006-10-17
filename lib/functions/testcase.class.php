@@ -2,10 +2,13 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.32 $
- * @modified $Date: 2006/10/13 20:06:15 $ $Author: schlundus $
+ * @version $Revision: 1.33 $
+ * @modified $Date: 2006/10/17 16:37:00 $ $Author: franciscom $
  * @author franciscom
  *
+ *
+ * 20061015 - franciscom - fixed bug on create()
+ *                         instead of returning tcid, returned tcversion id ->WRONG
  *
  * 20061008 - franciscom - changes in interface in:
  *                         create()
@@ -99,8 +102,10 @@ function create($parent_id,$name,$summary,$steps,
 			$this->addKeywords($ret['id'],$a_keywords);
 		}
 	
-		$ret = $this->create_tcversion($ret['id'],$first_version,$summary,$steps,
+		$op = $this->create_tcversion($ret['id'],$first_version,$summary,$steps,
 		$expected_results,$author_id);
+		                              
+		$ret['msg']=$op['msg'];
 	}
 	return $ret;
 }

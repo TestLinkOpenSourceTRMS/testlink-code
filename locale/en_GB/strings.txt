@@ -4,11 +4,12 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.72 $
- * @modified $Date: 2006/10/15 19:05:39 $ $Author: schlundus $
+ * @version $Revision: 1.73 $
+ * @modified $Date: 2006/10/17 16:35:20 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
+ * 20061014 - franciscom
  * 20061007 - franciscom - new export keywords buttons
  * 20060423 - franciscom - new labels for keyword assignment
  * 20060225 - franciscom - removed some deprecated names
@@ -704,6 +705,11 @@ $TLS_title_choose_file_type = "Choose file type";
 $TLS_title_choose_local_file = "Choose a Local File to Upload";
 $TLS_title_req_import_check_input = "Check import data";
 $TLS_title_req_import_to = "Import requirements to document:";
+$TLS_file_is_not_text="File is not a text file. Cannot be used";
+$TLS_file_is_not_xml="File is not well-formed XML. Cannot be used";
+$TLS_file_is_not_ok_for_import_type="File seems to be incompatible with the import type selected";
+$TLS_check_req_file_structure="Please check the file format, seems is not possible get any requirement";
+$TLS_please_choose_req_file="Please choose the file to upload";
 
 
 
@@ -1231,9 +1237,9 @@ $TLS_error_updating_reqspec = "Error while updating requirement specification";
 $TLS_ok = "OK";
 $TLS_req_import_format_description1 = " - CSV type requires three fields for each row: 'req_doc_id','title','description'";
 $TLS_req_import_format_description2 = " - CSV exported from DOORS requires header row.";
-$TLS_req_import_result_added = "Results have been added!";
-$TLS_req_import_result_overwritten = "Results have been overwritten!";
-$TLS_req_import_result_skipped = "Results are skipped";
+$TLS_req_import_result_added = "added!";
+$TLS_req_import_result_overwritten = "overwritten!";
+$TLS_req_import_result_skipped = "skipped";
 $TLS_req_state_not_testable = "Not testable";
 $TLS_req_state_valid = "Valid";
 $TLS_the_format_req_xml_import = "LOCALIZE: TLS_the_format_req_xml_import";

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: exec.inc.php,v $
  *
- * @version $Revision: 1.30 $
- * @modified $Date: 2006/09/18 07:15:56 $ $Author: franciscom $
+ * @version $Revision: 1.31 $
+ * @modified $Date: 2006/10/17 16:31:09 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -179,11 +179,6 @@ function editTestResults(&$db,$user_id, $exec_data, $tplan_id,$build_id,$map_las
       $status_changed=($current_status != $map_last_exec[$tcversion_id]['status'] ? TRUE : FALSE);
       
       echo "Status changed ???" . $status_changed;
-      
-      /*if( !$status_changed )
-      {
-      		$notes_changed = strcmp(	
-      }*/
       $do_write = $status_changed;
     }
     

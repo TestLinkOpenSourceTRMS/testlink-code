@@ -5,11 +5,9 @@
  *
  * Filename $RCSfile: lostPassword.php,v $
  *
- * @version $Revision: 1.15 $
- * @modified $Date: 2006/08/21 13:21:59 $ $Author: franciscom $
+ * @version $Revision: 1.16 $
+ * @modified $Date: 2006/10/17 20:17:53 $ $Author: schlundus $
  *
- * 20060103 - scs - ADOdb changes
- * 20060819 - franciscom - logo added
 **/
 require_once('config.inc.php');
 require_once('common.php');
@@ -50,7 +48,6 @@ if (strlen($login))
 			//Setup the message body
 			$msgBody = lang_get('your_password_is') . $newPassword .  lang_get('contact_admin');  
 
-      		// 20051209 - fm - BUGID 289
       		$mail_op = email_send(config_get('from_email'), $emailAddress,  
                                 lang_get('mail_passwd_subject'), $msgBody);
 			

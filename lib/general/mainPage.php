@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: mainPage.php,v $
  *
- * @version $Revision: 1.20 $ $Author: schlundus $
- * @modified $Date: 2006/08/29 19:41:38 $
+ * @version $Revision: 1.21 $ $Author: schlundus $
+ * @modified $Date: 2006/10/17 20:17:54 $
  *
  * @author Martin Havlat
  * 
@@ -39,7 +39,6 @@ $testprojectID = isset($_SESSION['testprojectID']) ? intval($_SESSION['testproje
 /** redirect admin to create product if not found */
 if (has_rights($db,'mgt_modify_product') && !isset($_SESSION['testprojectID']))
 { 
-	// 20060305 - franciscom
 	redirect($_SESSION['basehref'] . 'lib/project/projectedit.php?show_create_screen');
 }
 // ----------------------------------------------------------------------
@@ -76,12 +75,11 @@ if(MAIN_PAGE_METRICS_ENABLED == "TRUE")
     $smarty->assign('myTPdata', printMyTPData($db));
 }
 
-// 20050928 - fm
 $filter_tp_by_product = 1;
-if( isset($_REQUEST['filter_tp_by_product']) )
-  $filter_tp_by_product = 1;
-else if ( isset($_REQUEST['filter_tp_by_product_hidden']) )
-  $filter_tp_by_product = 0;
+if(isset($_REQUEST['filter_tp_by_product']))
+	$filter_tp_by_product = 1;
+else if(isset($_REQUEST['filter_tp_by_product_hidden']))
+	$filter_tp_by_product = 0;
 else
 {
 	if (isset($_SESSION['filter_tp_by_product']))
@@ -92,9 +90,6 @@ $smarty->assign('filter_tp_by_product',$filter_tp_by_product);
 
 // ----- Test Plan Section ----------------------------------  
 // get Test Plans available for the user 
-// 20050928 - fm - Interface changes
-// 20050810 - fm - Interface changes
-// 20050809 - fm - get only test plan for the selected product
 $arrPlans = getAccessibleTestPlans($db,$testprojectID,$filter_tp_by_product);
 $testPlanID = isset($_SESSION['testPlanId']) ? intval($_SESSION['testPlanId']) : 0;
 

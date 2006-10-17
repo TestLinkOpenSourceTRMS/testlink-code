@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
  * @filesource $RCSfile: roles.inc.php,v $
- * @version $Revision: 1.16 $
- * @modified $Date: 2006/10/14 21:47:13 $ by $Author: schlundus $
+ * @version $Revision: 1.17 $
+ * @modified $Date: 2006/10/17 20:17:54 $ by $Author: schlundus $
  * @author Martin Havlat, Chad Rosen
  * 
  * This script provides the get_rights and has_rights functions for
@@ -33,11 +33,6 @@
  * testplan_planning, testplan_create_build, testplan_assign_rights - Test Leader plans/prepares a testing
  * mgt_modify_product, mgt_users - just Admin edits Products and Users
  *
- *
- * 20060818 - franciscom - new rights						
- * 20060224 - franciscom - changes in session product -> testproject
- *                       - table name user -> users
- *                       
  */
 require_once( dirname(__FILE__). '/lang_api.php' );
 
@@ -340,7 +335,9 @@ function getAllUsersWithRole(&$db,$roleID)
 	$affectedTestPlanUsers = getUsersWithTestPlanRole($db,$roleID);
 	$affectedProductUsers = getUsersWithTestProjectRole($db,$roleID);
 	$affectedUsers = @array_unique(@array_merge($affectedGlobalUsers,$affectedTestPlanUsers,$affectedProductUsers));
-
+	if (!$affectedUsers)
+		$affectedUsers = null;
+	
 	return $affectedUsers;
 }
 
@@ -548,8 +545,8 @@ function has_rights(&$db,$roleQuestion,$tprojectID = null,$tplanID = null)
 	global $g_propRights_product;
 	
 	
-	// 20050819 - scs - we dont need to query the db for the rights every call
-	//				 - so the rights are fetched only once per script 
+	// we dont need to query the db for the rights every call
+	// so the rights are fetched only once per script 
 	static $s_allRoles = null;
 	static $s_userProductRoles = null;
 	static $s_userTestPlanRoles = null;
@@ -641,7 +638,6 @@ function checkForRights($rights,$roleQuestion,$bAND = 1)
 {
 	$ret = null;
 	//check to see if the $roleQuestion variable appears in the $roles variable
-	// 20050819 - scs - extended to so we can check for the presence of multiple rights
 	if (is_array($roleQuestion))
 	{
 		$r = array_intersect($roleQuestion,$rights);

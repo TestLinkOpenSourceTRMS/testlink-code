@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.76 $
- * @modified $Date: 2006/10/16 10:32:45 $ by $Author: franciscom $
+ * @version $Revision: 1.77 $
+ * @modified $Date: 2006/10/17 20:17:53 $ by $Author: schlundus $
  *
  *
  * Constants and configuration parameters used throughout TestLink 
@@ -510,6 +510,8 @@ $g_tl_admin_email     = 'tl_admin@127.0.0.1';  #
 $g_from_email         = 'testlink_system@127.0.0.1';  # email sender
 $g_return_path_email  = 'tl_admin@127.0.0.1';
 
+# Urgent = 1, Not Urgent = 5, Disable = 0
+$g_mail_priority = 5;   
 
 // SMTP Configuration
 $g_smtp_host        = 'localhost';  # SMTP server MUST BE configured  

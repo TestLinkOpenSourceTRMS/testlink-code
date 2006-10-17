@@ -5,12 +5,10 @@
 *
 * Filename $RCSfile: usersassign.php,v $
 *
-* @version $Revision: 1.8 $
-* @modified $Date: 2006/08/29 19:41:38 $
+* @version $Revision: 1.9 $
+* @modified $Date: 2006/10/17 20:17:54 $
 * 
 * Allows assigning users roles to testplans or testprojects
-*
-* 20060224 - franciscom - changes in session product -> testproject
 */
 require_once('../../config.inc.php');
 require_once('users.inc.php');
@@ -42,9 +40,9 @@ $bUpdate = isset($_POST['do_update']) ? 1 : 0;
 if ($bUpdate)
 {
 	$featureID = isset($_POST['featureID']) ? intval($_POST['featureID']) : 0;
+	$feature = isset($_POST['feature']) ? $_POST['feature'] : null;
 	if ($featureID)
 	{
-		$feature = isset($_POST['feature']) ? $_POST['feature'] : null;
 		if ($feature == "testproject")
 			$bTestproject = true;
 		else if ($feature == "testplan")

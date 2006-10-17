@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: rolesedit.php,v $
  *
- * @version $Revision: 1.4 $
- * @modified $Date: 2006/08/29 19:41:38 $ by $Author: schlundus $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2006/10/17 20:17:54 $ by $Author: schlundus $
  *
 **/
 require_once("../../config.inc.php");
@@ -85,7 +85,7 @@ if (sizeof($roles) && $id)
 		//get all users which are affected by changing the role definition
 		$allUsers = getAllUsers($db,null,'id');
 		$affectedUsers = getAllUsersWithRole($db,$id);
-		$of->Value = $role['notes'];
+		$of->Value = isset($role['notes']) ? $role['notes'] : '';
 	}
 }
 
@@ -107,5 +107,6 @@ $smarty->assign('allUsers',$allUsers);
 $smarty->assign('affectedUsers',$affectedUsers);
 $smarty->assign('action',$action);
 $smarty->assign('notes', $of->CreateHTML());
+$smarty->assign('noRightsRole',TL_ROLES_NONE);
 $smarty->display('rolesedit.tpl');
 ?>

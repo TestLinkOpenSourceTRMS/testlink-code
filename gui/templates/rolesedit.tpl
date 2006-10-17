@@ -1,5 +1,5 @@
 {* smarty template - view all keywords of product; ver. 1.0 *}
-{* $Id: rolesedit.tpl,v 1.4 2006/08/29 19:41:36 schlundus Exp $ *}
+{* $Id: rolesedit.tpl,v 1.5 2006/10/17 20:17:54 schlundus Exp $ *}
 {* Purpose: smarty template - View all roless *}
 {include file="inc_head.tpl"}
 
@@ -40,7 +40,7 @@ var warning_modify_role = "{lang_get s='warning_modify_role'}";
 <div class="workBack">
 
 	<form name="addKey" 
-		method="post" action="lib/usermanagement/rolesedit.php"
+		method="post" action="lib/usermanagement/rolesedit.php" 
 	{if $role_management != "yes"}
 		onsubmit="return false" 
 	{/if}
@@ -51,9 +51,10 @@ var warning_modify_role = "{lang_get s='warning_modify_role'}";
 		<tr>
 			<th>{lang_get s='th_rolename'}</th>
 			<td>
-				<input type="text" name="rolename" size="20" maxlength="20" value="{$role.role|escape}"/>
+				<input type="text" name="rolename" size="20" maxlength="100" value="{$role.role|escape}"/>
 			</td>
-			<td>&nbsp;
+			<td>
+				&nbsp;
 			</td>
 		</tr>
 		<tr>
@@ -115,7 +116,7 @@ var warning_modify_role = "{lang_get s='warning_modify_role'}";
 		</tr>
 
 	</table>
-	{if $role_management == "yes"}
+	{if $role_management == "yes" && $role.id != $noRightsRole}
 		<div class="groupBtn">	
 		{if $role == 0}
 			<input type="submit" name="newRole" value="{lang_get s='btn_create_role'}" />

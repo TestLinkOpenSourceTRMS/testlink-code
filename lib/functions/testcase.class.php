@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.33 $
- * @modified $Date: 2006/10/17 16:37:00 $ $Author: franciscom $
+ * @version $Revision: 1.34 $
+ * @modified $Date: 2006/10/17 20:17:54 $ $Author: schlundus $
  * @author franciscom
  *
  *
@@ -295,7 +295,7 @@ function show(&$smarty,$id, $user_id, $version_id=TC_ALL_VERSIONS, $action='',
 	
 	$smarty->assign('arrReqs',$arrReqs);
 	$smarty->assign('view_req_rights', has_rights($this->db,"mgt_view_req")); 
-	$smarty->assign('opt_requirements', $_SESSION['testprojectOptReqs']); 	
+	$smarty->assign('opt_requirements', isset($_SESSION['testprojectOptReqs']) ? $_SESSION['testprojectOptReqs'] : null); 	
 	$smarty->assign('keywords_map',$keywords_map);
 	
 	$smarty->display($the_tpl['tcView']);

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqSpecView.php,v $
- * @version $Revision: 1.27 $
- * @modified $Date: 2006/10/16 10:36:11 $ by $Author: franciscom $
+ * @version $Revision: 1.28 $
+ * @modified $Date: 2006/10/17 20:17:54 $ by $Author: schlundus $
  * @author Martin Havlat
  * 
  * Screen to view existing requirements within a req. specification.
@@ -24,8 +24,6 @@ require_once("../../third_party/fckeditor/fckeditor.php");
 require_once(dirname("__FILE__") . "/../functions/configCheck.php");
 testlinkInitPage($db);
 
-echo "<pre>debug 20061015 " . __FUNCTION__ . " --- "; print_r($_REQUEST); echo "</pre>";
-
 $js_msg=null;
 $sqlResult = null;
 $action = null;
@@ -33,10 +31,6 @@ $sqlItem = 'Requirement';
 $arrReq = array();
 $bGetReqs = TRUE; // collect requirements as default
 $template = 'reqSpecView.tpl';
-
-
-
-
 
 $_REQUEST = strings_stripSlashes($_REQUEST);
 $reqDocId = isset($_REQUEST['reqDocId']) ? trim($_REQUEST['reqDocId']) : null;

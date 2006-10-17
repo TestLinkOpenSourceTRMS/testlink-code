@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.52 $ $Author: franciscom $
- * @modified $Date: 2006/10/16 10:33:44 $
+ * @version $Revision: 1.53 $ $Author: schlundus $
+ * @modified $Date: 2006/10/17 20:17:54 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -19,12 +19,9 @@
  *
  *
  **/ 
-
-// 20051227 - fm - ADODB
+require_once("lang_api.php");
 require_once("database.class.php");
 
-require_once("roles.inc.php");
-require_once("product.core.inc.php");
 require_once(dirname(__FILE__)."/testproject.class.php");
 require_once(dirname(__FILE__)."/testplan.class.php");
 require_once(dirname(__FILE__)."/testcase.class.php");
@@ -32,15 +29,14 @@ require_once(dirname(__FILE__)."/testsuite.class.php");
 require_once(dirname(__FILE__)."/tree.class.php");
 require_once(dirname(__FILE__)."/treeMenu.inc.php");
 
+require_once("roles.inc.php");
+require_once("product.core.inc.php");
 require_once("plan.core.inc.php");
 require_once("logging.inc.php");
-require_once("lang_api.php");
 
 /** $db is a global used throughout the code when accessing the db. */
 $db = 0;
 
-
-// ----------------------------------------------------------------
 /** 
 * TestLink connects to the database
 *
@@ -80,13 +76,11 @@ function doDBConnect(&$db)
  	return $result;
 }
 
-
-// 20050622 mht added options and productID
 function setSessionTestProject($tproject_info)
 {
 	if ($tproject_info)
 	{
-		/** @todo check if the session product is updated when its modified per projectedit.php.php  */
+		/** @todo check if the session product is updated when its modified per projectedit.php  */
 		$_SESSION['testprojectID'] = $tproject_info['id']; 
 		$_SESSION['testprojectName'] = $tproject_info['name'];
 		$_SESSION['testprojectColor'] = $tproject_info['color'];
@@ -106,8 +100,6 @@ function setSessionTestProject($tproject_info)
 	}
 }
 
-
-// 20050926 - fm
 function setSessionTestPlan($tplan_info)
 {
 	if ($tplan_info)
@@ -155,7 +147,6 @@ function checkSessionValid()
 	{
 		$ip = getenv ("REMOTE_ADDR");
 	    tLog('Invalid session from ' . $ip . '. Redirected to login page.', 'INFO');
-		// 20051012 - am - fix for 134
 		$fName = "login.php";
 		for($i = 0;$i < 5;$i++)
 		{
@@ -217,7 +208,6 @@ function testlinkInitPage(&$db,$initProduct = FALSE, $bDontCheckSession = false)
 		doInitSelection($db) or die("Could not set session variables");
 }
 
-// 20060107 - fm
 function checkUserRights(&$db)
 {
 	//bypassed as long roles and rights aren't fully defined
@@ -284,10 +274,10 @@ function strings_stripSlashes($parameter,$bGPC = true)
 
 /** 
  * generalized execution SELECT query
+ *
  * @param string SQL request
  * @return associated array  
  */
-// MHT 200506 created
 function selectData(&$db,$sql)
 {
 	$output = null;
@@ -315,10 +305,6 @@ function selectData(&$db,$sql)
 //
 // If the key from $a_fields_msg doesn't exists in $a_fields_values
 // is considered has existent and empty.
-//
-//
-// 20050417 - fm
-// 
 function control_empty_fields( $a_fields_values, $a_fields_msg )
 {
 	$a_msg = array();
@@ -331,9 +317,6 @@ function control_empty_fields( $a_fields_values, $a_fields_msg )
 	return $a_msg;
 }
 
-
-// 20050809 - fm - to cope with the active field type change
-// 20050816 - scs - simplified
 function to_boolean($alt_boolean)
 {
 	$the_val = 1;
@@ -374,10 +357,12 @@ function localize_date_smarty($params, &$smarty)
 {
 	return localize_dateOrTimeStamp($params,$smarty,'date_format',$params['d']);
 }
+
 function localize_timestamp_smarty($params, &$smarty)
 {
 	return localize_dateOrTimeStamp($params,$smarty,'timestamp_format',$params['ts']);
 }
+
 function localize_dateOrTimeStamp($params,&$smarty,$what,$value)
 {
 	$format = config_get($what);
@@ -400,11 +385,8 @@ For every key not found a call to tlog() is done.
 
 @returns 1: all keys can be found
          0: at least one key not found  
-
-@author Francisco Mancardi - 20050905 - creation
- 20050905 - scs - corrected and refactored
 */
-function check_hash_keys($hash, $akeys2check, $msg='')
+function DEPR_check_hash_keys($hash, $akeys2check, $msg = '')
 {
 	$status = 1;
 	if (sizeof($akeys2check))
@@ -420,7 +402,7 @@ function check_hash_keys($hash, $akeys2check, $msg='')
 		}
 	}
 	
-	return ($status);
+	return $status;
 }
 
 /**
@@ -446,9 +428,6 @@ function hash2array($hash, $bStripInput = false)
  * @param string  $ereg_forbidden_chars: regular expression
  * 
  * @return  1: check ok, 0:check KO
- *
- * @author Francisco Mancardi - 20050907 
- *
  */
 function check_string($str2check, $ereg_forbidden_chars)
 {
@@ -494,7 +473,6 @@ function upd_session_tplan_tproject(&$db,$hash_user_sel)
 
 	$tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 	
-	// Now what to do ???
 	// test project is Test Plan container, then we start checking the container
 	if( $user_sel["tproject_id"] != 0 )
 	{
@@ -536,7 +514,6 @@ function upd_session_tplan_tproject(&$db,$hash_user_sel)
 	setSessionTestPlan($tplan_data);
 }
 
-// 20051005 - fm - SET Date and Time FORMATS 
 function set_dt_formats()
 {
 	global $g_date_format;
@@ -557,9 +534,6 @@ function set_dt_formats()
 	}
 }
 
-
-// 20051105 - franciscom
-// idea from mantisbt
 function config_get($config_id)
 {
 	$my = "g_" . $config_id;
@@ -572,7 +546,7 @@ function config_get($config_id)
 # Return true if the parameter is an empty string or a string
 #  containing only whitespace, false otherwise
 # --------------------------------------------------------
-# This piece of sowftare is based on work belonging to:
+# This piece of softare is based on work belonging to:
 # --------------------------------------------------------
 #
 # Mantis - a php based bugtracking system
@@ -580,7 +554,6 @@ function config_get($config_id)
 # Copyright (C) 2002 - 2004  Mantis Team   - mantisbt-dev@lists.sourceforge.net
 # This program is distributed under the terms and conditions of the GPL
 # See the README and LICENSE files for details
-
 function is_blank( $p_var ) {
 	$p_var = trim( $p_var );
 	$str_len = strlen( $p_var );
@@ -610,19 +583,17 @@ function downloadContentsToFile($content,$fileName)
 }
 
 
-
-/* 20060401 - franciscom */
 function translate_tc_status($status_code)
 {
-$map_tc_status = array_flip(config_get('tc_status'));
-
-$verbose = lang_get('test_status_not_run');
-if( $status_code != '')
-{
-	$suffix = $map_tc_status[$status_code];
-  $verbose=lang_get('test_status_' . $suffix);
-}
-return ($verbose);
+	$map_tc_status = array_flip(config_get('tc_status'));
+	
+	$verbose = lang_get('test_status_not_run');
+	if( $status_code != '')
+	{
+		$suffix = $map_tc_status[$status_code];
+		$verbose = lang_get('test_status_' . $suffix);
+	}
+	return $verbose;
 }
 
 function translate_tc_status_smarty($params, &$smarty)
@@ -637,10 +608,8 @@ function translate_tc_status_smarty($params, &$smarty)
 		return $the_ret;
 	}
 }
-// -----------------------------------------------
 
 /*
-
 arguments:
           spec_view_type: can get one of the following values:
                           'testproject','testplan'
@@ -676,76 +645,62 @@ returns: array where every element is an associative array with the following
        [write_buttons] => yes or no
 
        level and write_buttons are used to generate the user interface
-
-rev :
-      20060924 - franciscom - added $tobj_name
-                                    $map_node_tccount
-      20060913 - franciscom - added new member to the tcversions hash
-      
 */
 function gen_spec_view(&$db,$spec_view_type='testproject',
                             $tobj_id,$id,$name,&$linked_items,
                             $map_node_tccount,
                             $keyword_id = 0,$tcase_id = null,
-							              $write_button_only_if_linked=0)
+							$write_button_only_if_linked = 0)
 {
-  $write_status = 'yes';
-  if($write_button_only_if_linked)
-  {
-	  $write_status = 'no';
-  }
+	$write_status = 'yes';
+	if($write_button_only_if_linked)
+		$write_status = 'no';
+	
 	$result = array('spec_view'=>array(), 'num_tc' => 0);
 	$out = array(); 
 	$a_tcid = array();
-    
+	
 	$tcase_mgr = new testcase($db); 
 	$tree_manager = new tree($db);
-  $hash_descr_id = $tree_manager->get_available_node_types();
-  $tcase_node_type = $hash_descr_id['testcase'];
-  $hash_id_descr = array_flip($hash_descr_id);
+	$hash_descr_id = $tree_manager->get_available_node_types();
+	$tcase_node_type = $hash_descr_id['testcase'];
+	$hash_id_descr = array_flip($hash_descr_id);
 
-  $test_spec = $tree_manager->get_subtree($id,array('testplan'=>'exclude me'),
+	$test_spec = $tree_manager->get_subtree($id,array('testplan'=>'exclude me'),
                                               array('testcase'=>'exclude my_children'));
 	     
-  // --------------------------------------------------------------------------------------------
-  // filters
-  if($keyword_id)
-  {
-      switch ($spec_view_type)
-      {
-         case 'testproject':
-	         $tobj_mgr = new testproject($db); 
-           break;  
-  
-         case 'testplan':
-	         $tobj_mgr = new testplan($db); 
-	         break;  
-      }
-      $tck_map = $tobj_mgr->get_keywords_tcases($tobj_id,$keyword_id);
-     
-      // Get the Test Cases that has the Keyword_id
-      // filter the test_spec
-      foreach($test_spec as $key => $node)
-      {
+	// filters
+	if($keyword_id)
+	{
+	    switch ($spec_view_type)
+	    {
+			case 'testproject':
+				$tobj_mgr = new testproject($db); 
+				break;  
+			case 'testplan':
+				$tobj_mgr = new testplan($db); 
+				break;  
+	    }
+	    $tck_map = $tobj_mgr->get_keywords_tcases($tobj_id,$keyword_id);
+	   
+	    // Get the Test Cases that has the Keyword_id
+	    // filter the test_spec
+	    foreach($test_spec as $key => $node)
+	    {
 		    if($node['node_type_id'] == $tcase_node_type && !isset($tck_map[$node['id']]) )
-		    {
 			   $test_spec[$key]=null;            
-		    }      
-      }
-  }
+	    }
+	}
   
-  if(!is_null($tcase_id))
-  {
-	  // filter the test_spec
-	  foreach($test_spec as $key => $node)
-	  {
-		  if($node['node_type_id'] == $tcase_node_type &&  $node['id'] != $tcase_id )
-		  {
-			  $test_spec[$key]=null;            
-		  }      
-	  }
-  }
-  // --------------------------------------------------------------------------------------------
+	if(!is_null($tcase_id))
+	{
+		// filter the test_spec
+		foreach($test_spec as $key => $node)
+		{
+			if($node['node_type_id'] == $tcase_node_type &&  $node['id'] != $tcase_id )
+				$test_spec[$key]=null;            
+		}
+	}
   
     $idx = 0;
     $a_tcid = array();
@@ -762,136 +717,115 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
                                 
   	if(count($test_spec))
   	{
-		  $pivot = $test_spec[0];
-		  $the_level = 2;
-		  $level = array();
+		$pivot = $test_spec[0];
+		$the_level = 2;
+		$level = array();
 
-		  foreach ($test_spec as $current)
-		  {
-	        if(is_null($current))
-	        {
-	           continue;
-	        }
-          if($hash_id_descr[$current['node_type_id']] == "testcase")
-          {
-          	$tc_id = $current['id'];
-          	$parent_idx = $hash_id_pos[$current['parent_id']];
-            $a_tsuite_idx[$tc_id] = $parent_idx;
-            
-            $out[$parent_idx]['testcases'][$tc_id] = array('id' => $tc_id,
-     			                                       'name' => $current['name']);
-            $out[$parent_idx]['testcases'][$tc_id]['tcversions'] = array();             
-            $out[$parent_idx]['testcases'][$tc_id]['linked_version_id'] = 0;
-            $out[$parent_idx]['testcases'][$tc_id]['executed'] = 'no';
-            // 20060921 - franciscom 
-            //$out[$parent_idx]['level'] = $the_level;
-            $out[$parent_idx]['write_buttons'] = $write_status;
-            $out[$parent_idx]['testcase_qty']++;
-  	        $out[$parent_idx]['linked_testcase_qty'] = 0;
-  	  
-  	        // useful for tc_exec_assignment.php          
-  	        // 20060913 - franciscom
-            $out[$parent_idx]['testcases'][$tc_id]['user_id'] = 0;
-            $out[$parent_idx]['testcases'][$tc_id]['feature_id'] = 0;
-
-            $a_tcid[] = $current['id'];
-          }
-          else
-          {
-              // -----------------------------------------------
-              // 20060921 - franciscom   
-    			    if( $pivot['parent_id'] != $current['parent_id'])
-    			    {
-      			    if ($pivot['id'] == $current['parent_id'])
-      			    {
-        				  $the_level++;
-        				  $level[$current['parent_id']] = $the_level;
-      			    }
-      			    else 
-      			    {
-        				  $the_level = $level[$current['parent_id']];
-      			    }
-              }
-              // -----------------------------------------------
-
-            	$out[$idx]['testsuite']=array('id' => $current['id'],
-     			                            'name' => $current['name']);
-  	          $out[$idx]['testcases'] = array();
-  	          $out[$idx]['testcase_qty'] = 0;
-  	          $out[$idx]['linked_testcase_qty'] = 0;
-              $out[$idx]['level'] = $the_level;
-  	          $out[$idx]['write_buttons'] = 'no';
-  	          $hash_id_pos[$current['id']] = $idx;
-				      $idx++;
-			    
-    			    // update pivot.
-		    	    // 20060921 - franciscom - Only if current is a test suite ??? 
-    			    $level[$current['parent_id']] = $the_level;
-		    	    $pivot = $current;
-			    
-			    }
-			    
-   	  }  //for
+		foreach ($test_spec as $current)
+		{
+			if(is_null($current))
+				continue;
+			if($hash_id_descr[$current['node_type_id']] == "testcase")
+			{
+				$tc_id = $current['id'];
+				$parent_idx = $hash_id_pos[$current['parent_id']];
+				$a_tsuite_idx[$tc_id] = $parent_idx;
+				
+				$out[$parent_idx]['testcases'][$tc_id] = array('id' => $tc_id,
+				                  'name' => $current['name']);
+				$out[$parent_idx]['testcases'][$tc_id]['tcversions'] = array();             
+				$out[$parent_idx]['testcases'][$tc_id]['linked_version_id'] = 0;
+				$out[$parent_idx]['testcases'][$tc_id]['executed'] = 'no';
+				
+				$out[$parent_idx]['write_buttons'] = $write_status;
+				$out[$parent_idx]['testcase_qty']++;
+				$out[$parent_idx]['linked_testcase_qty'] = 0;
+				
+				// useful for tc_exec_assignment.php          
+				$out[$parent_idx]['testcases'][$tc_id]['user_id'] = 0;
+				$out[$parent_idx]['testcases'][$tc_id]['feature_id'] = 0;
+				
+				$a_tcid[] = $current['id'];
+			}
+			else
+			{
+				if($pivot['parent_id'] != $current['parent_id'])
+				{
+					if ($pivot['id'] == $current['parent_id'])
+					{
+						$the_level++;
+						$level[$current['parent_id']] = $the_level;
+					}
+					else 
+						$the_level = $level[$current['parent_id']];
+				}
+	            
+	            $out[$idx]['testsuite']=array('id' => $current['id'],
+	     			                            'name' => $current['name']);
+				$out[$idx]['testcases'] = array();
+				$out[$idx]['testcase_qty'] = 0;
+				$out[$idx]['linked_testcase_qty'] = 0;
+				$out[$idx]['level'] = $the_level;
+				$out[$idx]['write_buttons'] = 'no';
+				$hash_id_pos[$current['id']] = $idx;
+				$idx++;
+				    
+				// update pivot.
+				$level[$current['parent_id']] = $the_level;
+				$pivot = $current;
+		    }
 		}
+	}
 
-    // 20060924 - franciscom
-    if(!is_null($map_node_tccount))
-    {
-      foreach($out as $key => $elem)
-      {
-        if(isset($map_node_tccount[$elem['testsuite']['id']]) &&
-           $map_node_tccount[$elem['testsuite']['id']]['testcount'] == 0)  
-        {
-             $out[$key]=null;
-        }
-      }
-    }
+	if(!is_null($map_node_tccount))
+	{
+		foreach($out as $key => $elem)
+		{
+			if(isset($map_node_tccount[$elem['testsuite']['id']]) &&
+				$map_node_tccount[$elem['testsuite']['id']]['testcount'] == 0)  
+				{
+				$out[$key]=null;
+				}
+			}
+	}
 
-
-	  $result['num_tc'] = count($a_tcid);
-	  $result['has_linked_items'] = 0;
+	$result['num_tc'] = count($a_tcid);
+	$result['has_linked_items'] = 0;
 		
     if($result['num_tc'])
     {
-		  $tcase_set = $tcase_mgr->get_by_id($a_tcid);
+		$tcase_set = $tcase_mgr->get_by_id($a_tcid);
 		
-		  foreach($tcase_set as $the_k => $the_tc)
+		foreach($tcase_set as $the_k => $the_tc)
     	{
-			  $tc_id = $the_tc['testcase_id'];
-			  $parent_idx = $a_tsuite_idx[$tc_id];
-			  $out[$parent_idx]['testcases'][$tc_id]['tcversions'][$the_tc['id']] = $the_tc['version'];
+			$tc_id = $the_tc['testcase_id'];
+			$parent_idx = $a_tsuite_idx[$tc_id];
+			$out[$parent_idx]['testcases'][$tc_id]['tcversions'][$the_tc['id']] = $the_tc['version'];
             
-			  if(!is_null($linked_items))
-			  {
-				  foreach($linked_items as $the_item)
-				  {
-					  if(($the_item['tc_id'] == $the_tc['testcase_id']) &&
-						  ($the_item['tcversion_id'] == $the_tc['id']) )
-					  {
-						  $out[$parent_idx]['testcases'][$tc_id]['linked_version_id'] = $the_item['tcversion_id'];
-						  $out[$parent_idx]['write_buttons'] = 'yes';
-						  $out[$parent_idx]['linked_testcase_qty']++;
+			if(!is_null($linked_items))
+			{
+				foreach($linked_items as $the_item)
+				{
+					if(($the_item['tc_id'] == $the_tc['testcase_id']) &&
+						($the_item['tcversion_id'] == $the_tc['id']) )
+					{
+						$out[$parent_idx]['testcases'][$tc_id]['linked_version_id'] = $the_item['tcversion_id'];
+						$out[$parent_idx]['write_buttons'] = 'yes';
+						$out[$parent_idx]['linked_testcase_qty']++;
 						
-					  	$result['has_linked_items'] = 1;
+						$result['has_linked_items'] = 1;
 						
-						  if( intval($the_item['executed']))
-						  {
-							  $out[$parent_idx]['testcases'][$tc_id]['executed']='yes';
-						  } 
-
-              // 20060911 - franciscom
-						  if( isset($the_item['user_id']) )
-						  {
-							  $out[$parent_idx]['testcases'][$tc_id]['user_id']=intval($the_item['user_id']);
-						  } 
-						  if( isset($the_item['feature_id']) )
-						  {
-							  $out[$parent_idx]['testcases'][$tc_id]['feature_id']=intval($the_item['feature_id']);
-						  }
-						  break;
-					 }
-				 }
-			 }    
+						if(intval($the_item['executed']))
+							$out[$parent_idx]['testcases'][$tc_id]['executed']='yes';
+						
+						if( isset($the_item['user_id']))
+							$out[$parent_idx]['testcases'][$tc_id]['user_id']=intval($the_item['user_id']);
+						if( isset($the_item['feature_id']))
+							$out[$parent_idx]['testcases'][$tc_id]['feature_id']=intval($the_item['feature_id']);
+						break;
+					}
+				}
+			}    
 		}
 	}
 	$result['spec_view'] = $out;

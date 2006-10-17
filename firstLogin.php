@@ -5,16 +5,13 @@
  *
  * Filename $RCSfile: firstLogin.php,v $
  *
- * @version $Revision: 1.11 $
- * @modified $Date: 2006/08/21 13:21:59 $ $Author: franciscom $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2006/10/17 20:17:53 $ $Author: schlundus $
  *
  * @author Asiel Brumfield
  * @author Martin Havlat 
  *
  * Anybody can have Guest rights to browse TL
- *
- * 20060103 - scs - ADOdb changes
- * 20060819 - franciscom - logo added
 **/
 require_once('config.inc.php');
 require_once('common.php');
@@ -29,13 +26,9 @@ $first = isset($_POST['first']) ? $_POST['first'] : null;
 $last = isset($_POST['last']) ? $_POST['last'] : null;
 $email = isset($_POST['email']) ? $_POST['email'] : null;
 
-
 $message = lang_get('your_info_please');
 
-// 20051227 - fm
-global $db;
 $op = doDBConnect($db);
-
 if (!$op['status'])
 {
 	$smarty = new TLSmarty();
@@ -58,14 +51,14 @@ if($bEditUser)
 
 	if($user_ok === FALSE)
 	{
-		$message = lang_get('invalid_user_name') . "<br>" . 
+		$message = lang_get('invalid_user_name') . "<br />" . 
 		           lang_get('valid_user_name_format');
 	}	
 	else if (count($empty_fm))
 	{
 		$message = lang_get('user_cant_be_created_because');
-		foreach ( $empty_fm as $key_f => $value_m )
-			$message .= "<br>" . $value_m;
+		foreach ($empty_fm as $key_f => $value_m)
+			$message .= "<br />" . $value_m;
 	}
 	else if($passwordCompare)
 		$message = lang_get('passwd_dont_match');

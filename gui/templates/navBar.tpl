@@ -1,8 +1,7 @@
-{* Testlink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: navBar.tpl,v 1.15 2006/08/21 13:39:28 franciscom Exp $ 
-Purpose: smarty template - title bar + menu 
-
-20060819 - franciscom - css class name changes
+{* 
+	Testlink Open Source Project - http://testlink.sourceforge.net/ 
+	$Id: navBar.tpl,v 1.16 2006/10/17 20:17:54 schlundus Exp $ 
+	Purpose: smarty template - title bar + menu 
 *}
 
 {*******************************************************************}
@@ -26,13 +25,12 @@ Purpose: smarty template - title bar + menu
 	<div style="float: right;">
 		<form name="productForm" action="lib/general/navBar.php" method="get"> 
 		<span style="font-size: 80%">{lang_get s='product'} </span>
-		{* 20060224 - franciscom - name="product" *}
 		<select class="tlcombo1" name="testproject" onchange="this.form.submit();">
 			{html_options options=$arrayProducts selected=$currentProduct}
 		</select>
 		</form>
 	</div>
-	{if $view_tc_rights ne ""}
+	{if $currentTProjectID && $view_tc_rights ne ""}
 	<div style="float: right;margin-right:5px">
 		<form style="display:inline" target="mainframe" name="searchTC" action="lib/testcases/archiveData.php" method="get"> 
 		<span style="font-size: 80%">{lang_get s='th_tcid'}: </span>
@@ -46,7 +44,7 @@ Purpose: smarty template - title bar + menu
 	
 	<div style="padding: 2px;">
       	<a href="index.php" target="_parent" accesskey="h" tabindex="1">{lang_get s='home'}</a> | 
-      	{if $rightViewSpec == "yes"}
+      	{if $currentTProjectID && $rightViewSpec == "yes"}
       	<a href="lib/general/frmWorkArea.php?feature=editTc" target="mainframe" accesskey="s" 
       		tabindex="2">{lang_get s='title_specification'}</a> | 
       	{/if}	

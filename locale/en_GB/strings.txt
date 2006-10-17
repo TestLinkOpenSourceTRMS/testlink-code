@@ -4,15 +4,11 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.73 $
- * @modified $Date: 2006/10/17 16:35:20 $ $Author: franciscom $
+ * @version $Revision: 1.74 $
+ * @modified $Date: 2006/10/17 20:17:54 $ $Author: schlundus $
  *
  * @author Francisco Mancardi
  *
- * 20061014 - franciscom
- * 20061007 - franciscom - new export keywords buttons
- * 20060423 - franciscom - new labels for keyword assignment
- * 20060225 - franciscom - removed some deprecated names
 **/
 
 
@@ -110,7 +106,9 @@ $TLS_alt_move_cp_com = "Move or copy this test suite to another Test project";
 $TLS_btn_del_com = "Delete";
 $TLS_btn_edit_com = "Edit";
 $TLS_btn_export_tc = "Export Test Case(s)";
+$TLS_btn_export_testsuite = "Export Test Suite";
 $TLS_btn_import_tc = "Import Test Case(s)";
+$TLS_btn_import_testsuite = "Import Test Suite";
 $TLS_btn_move_cp_com = "Move/Copy";
 $TLS_btn_new_cat = "New test suite";
 $TLS_btn_new_com = "New test suite";
@@ -126,6 +124,7 @@ $TLS_TestPlan = "TestPlan";
 $TLS_btn_update_menu = "Update menu";
 $TLS_caption_nav_filter_settings = "Navigation Filter & Settings";
 $TLS_current_build = "Current build";
+$TLS_filter_owner = "Owner";
 $TLS_filter_tcID = "Filter: Test Case ID";
 $TLS_keyword = "Keyword";
 $TLS_title_tc_suite_navigator = "Test Case Suite Navigator";
@@ -297,10 +296,11 @@ $TLS_menu_manage_keywords = "Keyword Management";
 $TLS_alt_delete_keyword = "Delete the keyword?";
 $TLS_btn_create_keyword = "Create keyword";
 $TLS_btn_edit_keyword = "Edit";
-$TLS_btn_export_keywords = "Export";
+$TLS_btn_export = "Export";
+$TLS_btn_export_keywords_CSV = "Export - CVS File";
+$TLS_btn_export_keywords_XML = "Export - XML File";
 $TLS_btn_import_keywords = "Import";
 $TLS_caption_new_keyword = "Enter New Keyword";
-$TLS_no_keywords = "I'm sorry, there are no keywords defined!";
 $TLS_th_keyword = "Keyword";
 $TLS_warning_enter_at_least1 = "Please enter at least ";
 $TLS_warning_enter_at_least2 = " chars.";
@@ -332,6 +332,7 @@ $TLS_password_mgmt_is_external = "Password management is external";
 // gui/templates/loginLost.tpl
 $TLS_btn_send = "Send";
 $TLS_password_reset = "Reset password";
+
 
 
 // gui/templates/planAddTCNavigator.tpl
@@ -450,6 +451,7 @@ $TLS_btn_unassign = "Unassign";
 $TLS_req = "Requirement";
 $TLS_req_doc_id = "DOC-ID";
 $TLS_req_msg_norequirement = "No requirement";
+$TLS_req_msg_norequirement66 = "No requirement";
 $TLS_req_spec = "Requirements Specification";
 $TLS_req_title_assign = "Assign Requirements to Test Case";
 $TLS_req_title_assigned = "Assigned Requirements";
@@ -506,7 +508,7 @@ $TLS_update_data = "Update data";
 // gui/templates/reqSpecList.tpl
 $TLS_btn_assign_tc = "Assign Test Case";
 $TLS_no_docs = "No available documents.";
-$TLS_req_list_docs = "Requirement Specifications"; // 20061007 - franciscom
+$TLS_req_list_docs = "Requirement Specifications";
 
 
 
@@ -533,27 +535,13 @@ $TLS_test_status_failed = "Failed";
 $TLS_test_status_passed = "Pass";
 $TLS_th_build = "Build";
 $TLS_th_tc_total = "TC Total";
-$TLS_th_total_cases = "total cases";
-$TLS_th_total_pass = "total pass";
-$TLS_th_total_fail = "total fail";
-$TLS_th_total_block = "total block";
-$TLS_th_total_not_run ="total not run";
-$TLS_th_test = "test";
-$TLS_caption_user_selected_query_parameters = "Query Parameters";
-$TLS_th_builds = "build(s)";
-$TLS_th_test_suites = "suite(s)";
-$TLS_th_keywords = "keyword(s)";
-$TLS_th_owners = "owner(s)";
-$TLS_th_report_format = "report type";
-$TLS_th_last_result = "last result";
-$TLS_th_tester_id = "tester";
-$TLS_th_execution_ts = "time";
-$TLS_caption_show_collapse = "show/hide";
+
 
 
 // gui/templates/resultsBugs.tpl
 $TLS_th_bugs = "Bugs";
-$TLS_th_title = "Title";
+$TLS_th_execution_ts = "time";
+$TLS_th_tc_title = "Title";
 $TLS_title_bugs_report = " - Bug Report ";
 
 
@@ -567,6 +555,7 @@ $TLS_title_met_of_build = "Metrics of build";
 $TLS_info_test_results = "There are only last test results listed. I.e. Test case is not shown if test result for later build has another status (except not run).";
 $TLS_th_date = "Date";
 $TLS_th_run_by = "Run by";
+$TLS_th_title = "Title";
 
 
 
@@ -690,6 +679,7 @@ $TLS_Result = "Result";
 $TLS_Title = "Title";
 $TLS_btn_back2srs = "Back to Req. Specification";
 $TLS_btn_upload_file = "Upload file";
+$TLS_check_req_file_structure = "Please check the file format, seems is not possible get any requirement";
 $TLS_local_file = "File:";
 $TLS_max_size_cvs_file1 = "Max. size of the file is";
 $TLS_max_size_cvs_file2 = "kB";
@@ -705,11 +695,6 @@ $TLS_title_choose_file_type = "Choose file type";
 $TLS_title_choose_local_file = "Choose a Local File to Upload";
 $TLS_title_req_import_check_input = "Check import data";
 $TLS_title_req_import_to = "Import requirements to document:";
-$TLS_file_is_not_text="File is not a text file. Cannot be used";
-$TLS_file_is_not_xml="File is not well-formed XML. Cannot be used";
-$TLS_file_is_not_ok_for_import_type="File seems to be incompatible with the import type selected";
-$TLS_check_req_file_structure="Please check the file format, seems is not possible get any requirement";
-$TLS_please_choose_req_file="Please choose the file to upload";
 
 
 
@@ -775,7 +760,18 @@ $TLS_test_plan_header = "Test Plan : ";
 
 
 // gui/templates/resultsMoreBuilds_report.tpl
+$TLS_caption_user_selected_query_parameters = "Query Parameters";
+$TLS_not_yet_executed = "Not yetexecuted";
 $TLS_show_hide_all = "Show/Hide All";
+$TLS_th_builds = "build(s)";
+$TLS_th_keywords = "keyword(s)";
+$TLS_th_last_result = "last result";
+$TLS_th_owners = "owner(s)";
+$TLS_th_report_format = "report type";
+$TLS_th_test_plan = "Test plan";
+$TLS_th_test_suites = "suite(s)";
+$TLS_th_tester_id = "tester";
+$TLS_th_total_cases = "total cases";
 
 
 
@@ -798,11 +794,6 @@ $TLS_btn_close = "Close";
 
 
 // gui/templates/keywordsexport.tpl
-$TLS_btn_export = "Export";
-
-// 20061007 - franciscom
-$TLS_btn_export_keywords_XML = "Export - XML File";
-$TLS_btn_export_keywords_CSV = "Export - CVS File";
 
 
 
@@ -956,8 +947,8 @@ $TLS_title_remove_test_from_plan = "Remove tc from test plan";
 
 
 // gui/templates/tcexport.tpl
+$TLS_export_with_keywords = "Export with keywords";
 $TLS_title_tc_export = "Export Testcase(s)";
-
 
 
 // gui/templates/tcImport.tpl
@@ -1017,9 +1008,6 @@ $TLS_warning_empty_tc_title = "Please give a title to TestCase";
 
 
 
-
-
-
 // lib/results/resultsAllBuilds.php
 $TLS_title_metrics_x_build = " - Test Result Metrics per Build";
 
@@ -1056,21 +1044,22 @@ $TLS_title_test_report_all_builds = "Test Report: Results of Test cases for all 
 
 
 
-// lib/results/resultsMoreBuilds_buildReport.php
-
-
-
 // lib/req/reqSpecView.php
-$TLS_req_msg_noselect = "Nothing selected";
+$TLS_cant_create_tc_from_req_nothing_sel = "Please select a requirement!";
+$TLS_cant_delete_req_nothing_sel = "Please select a requirement!";
 
 
 
 // lib/req/reqTcAssign.php
+$TLS_req_msg_noselect = "Nothing selected";
 $TLS_req_msg_notupdated_coverage = "Coverage was not updated for Requirements: ";
 
 
 
 // lib/req/reqImport.php
+$TLS_file_is_not_ok_for_import_type = "File seems to be incompatible with the import type selected";
+$TLS_file_is_not_text = "File is not a text file. Cannot be used";
+$TLS_please_choose_req_file = "Please choose the file to upload";
 $TLS_req_import_finished = "The import is finished!";
 
 
@@ -1234,20 +1223,18 @@ $TLS_error_deleting_req = "Error while deleting requirements";
 $TLS_error_inserting_req = "Error while inserting requirements";
 $TLS_error_updating_req = "Error while updating requirements";
 $TLS_error_updating_reqspec = "Error while updating requirement specification";
+$TLS_file_is_not_xml = "File is not well-formed XML. Cannot be used";
 $TLS_ok = "OK";
 $TLS_req_import_format_description1 = " - CSV type requires three fields for each row: 'req_doc_id','title','description'";
 $TLS_req_import_format_description2 = " - CSV exported from DOORS requires header row.";
-$TLS_req_import_result_added = "added!";
 $TLS_req_import_result_overwritten = "overwritten!";
 $TLS_req_import_result_skipped = "skipped";
 $TLS_req_state_not_testable = "Not testable";
 $TLS_req_state_valid = "Valid";
 $TLS_the_format_req_xml_import = "LOCALIZE: TLS_the_format_req_xml_import";
-$TLS_warning_empty_req_title = "Requirement title cannot be empty!";
-
-$TLS_warning_empty_reqdoc_id = "Requirement document id cannot be empty!";
 $TLS_warning_duplicate_reqdoc_id = "Duplicate document id";
-
+$TLS_warning_empty_req_title = "Requirement title cannot be empty!";
+$TLS_warning_empty_reqdoc_id = "Requirement document id cannot be empty!";
 
 
 
@@ -1333,10 +1320,12 @@ $TLS_mgt_testplan_create = "LOCALIZE: TLS_mgt_testplan_create";
 $TLS_error_creating_req_spec = "Error while creating requirement specification";
 $TLS_info_product_name_empty = "Empty name is not possible.";
 $TLS_keyword_already_exists = "This keyword already exists";
+$TLS_warning_duplicate_req_title = "There's already a requirement with this title!";
 
 
 
 // lib/functions/testcase.class.php
+$TLS_testcase_name_already_exists = "There's already a test case with this title!";
 $TLS_the_format_tc_xml_import = "";
 
 
@@ -1345,12 +1334,19 @@ $TLS_the_format_tc_xml_import = "";
 
 
 
+// lib/execute/bug_add.php
+$TLS_bug_added = "Bug added";
+$TLS_error_wrong_BugID_format = "Wrong BugID format!";
+
+
+
 // lib/execute/bug_delete.php
+$TLS_bugdeleting_was_ok = "The bug was successfully deleted!";
 
 
 
 // lib/project/projectedit.php
-$TLS_error_product_name_duplicate = "LOCALIZE: TLS_error_product_name_duplicate";
+$TLS_error_product_name_duplicate = "There's already a product with this name!";
 $TLS_info_no_more_prods = "No more Test projects.";
 $TLS_info_product_activated = "The Test project was activated.";
 $TLS_info_product_inactivated = "The Test project was deactivated.";

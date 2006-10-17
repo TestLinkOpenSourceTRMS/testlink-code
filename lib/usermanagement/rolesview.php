@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: rolesview.php,v $
  *
- * @version $Revision: 1.5 $
- * @modified $Date: 2006/08/29 19:41:38 $ by $Author: schlundus $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2006/10/17 20:17:54 $ by $Author: schlundus $
  *
  * 20060224 - franciscom - changes in session product -> testproject
 **/
@@ -24,6 +24,7 @@ $userID = $_SESSION['userID'];
 $sqlResult = null;
 $affectedUsers = null;
 $allUsers = getAllUsers($db,null,'id');
+
 if ($bDelete && $id)
 {
 	$sqlResult = "ok";

@@ -1,6 +1,6 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: mainPage.tpl,v 1.21 2006/10/02 17:36:55 schlundus Exp $     
+ $Id: mainPage.tpl,v 1.22 2006/10/17 20:17:54 schlundus Exp $     
  Purpose: smarty template - main page / site map                 
                                                                  
  rev :                                                 
@@ -109,7 +109,6 @@
 			<img alt="arrow" class="arrow" src="icons/arrow_org.gif" />
 	       	<a href="lib/plan/planMilestones.php">{lang_get s='href_plan_mstones'}</a>
 
-      {* 20060908 - franciscom *}   	
       <br />
 			<img alt="arrow" class="arrow" src="icons/arrow_org.gif" />
 	       	<a href="lib/plan/planPriority.php">{lang_get s='href_plan_define_priority'}</a>
@@ -136,7 +135,7 @@
 <div class="vertical_menu" style="float: left">
 
 	{*   tc management   *}
-	{if $view_tc_rights == "yes"}
+	{if $sessionProductID && $view_tc_rights == "yes"}
     <h2>{lang_get s='title_test_spec'}</h2>
 	<p>
 		<img alt="arrow" class="arrow" src="icons/arrow_org.gif" />
@@ -159,7 +158,7 @@
 	{/if} {* view_tc_rights *}
 
 	{*   requirements   *}
-	{if $opt_requirements == TRUE && $view_req_rights == "yes"}
+	{if $sessionProductID && $opt_requirements == TRUE && $view_req_rights == "yes"}
         <h2>{lang_get s='title_requirements'}</h2>
 		<p>
 		<img alt="arrow" class="arrow" src="icons/arrow_org.gif" />
@@ -174,7 +173,7 @@
 
 	{*       keywords management                             *}
 	
-	{if $view_keys_rights == "yes"}
+	{if $sessionProductID && $view_keys_rights == "yes"}
         <h2>{lang_get s='title_keywords'}</h2>
 		<p>
 		{if $modify_keys_rights == "yes"}
@@ -192,7 +191,7 @@
 
 	{/if} {* view_keys_rights *}
 
-	{if $modify_product_rights == "yes"}
+	{if $sessionProductID && $modify_product_rights == "yes"}
 
         <h2>{lang_get s='title_product_mgmt'}</h2>
 		<p>
@@ -207,8 +206,9 @@
 		<img alt="arrow" class="arrow" src="icons/arrow_org.gif" />
         <a href="lib/usermanagement/usersassign.php?feature=testproject&amp;featureID={$sessionProductID}">{lang_get s='href_assign_user_roles'}</a>
 	{/if}
+	{if $sessionProductID && $modify_product_rights == "yes"}
      </p>
-	
+	{/if}	
 	{*       user management                             *}
 	
 	{if $usermanagement_rights == "yes"}

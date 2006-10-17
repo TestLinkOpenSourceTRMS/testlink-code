@@ -4,15 +4,10 @@
  *
  * Filename $RCSfile: navBar.php,v $
  *
- * @version $Revision: 1.18 $
- * @modified $Date: 2006/07/28 17:22:04 $
+ * @version $Revision: 1.19 $
+ * @modified $Date: 2006/10/17 20:17:54 $
  *
  * This file manages the navigation bar. 
- *
- * 20050813 - fm - added Product Filter con TestPlan 
- * 20060205 - JBA - Remember last product (BTS 221); added by MHT
- * 20060224 - franciscom - changes in session testproject instead of product
- * 20060226 - franciscom - gestione logo
 **/
 require('../../config.inc.php');
 require_once("common.php");
@@ -20,9 +15,10 @@ require_once("plan.core.inc.php");
 testlinkInitPage($db,true);
 
 $arr_tprojects = getAccessibleProducts($db);
-$curr_tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : null;
+$curr_tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+$tpID = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : null;
 if ($curr_tproject_id)
-	getAccessibleTestPlans($db,$curr_tproject_id,1,isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : null);
+	getAccessibleTestPlans($db,$curr_tproject_id,1,$tpID);
 	
 $roles = getAllRoles($db);
 $testprojectRole = null;
@@ -30,11 +26,9 @@ if ($curr_tproject_id && isset($_SESSION['testprojectRoles'][$curr_tproject_id])
 	$testprojectRole = '['.$roles[$_SESSION['testprojectRoles'][$curr_tproject_id]['role_id']].']';
 $roleName = $roles[$_SESSION['roleId']];
 
-// 20050810 - fm - interface changes
 $countPlans = getNumberOfAccessibleTestPlans($db,$curr_tproject_id, $_SESSION['filter_tp_by_product'],null);
 $smarty = new TLSmarty();
 
-// 20050813 - fm
 // only when the user has changed the product using the combo
 // the _GET has this key.
 // Use this clue to launch a refresh of other frames present on the screen
@@ -47,13 +41,10 @@ if (isset($_GET['testproject']))
 	setcookie('lastProductForUser'. $_SESSION['userID'], $_GET['testproject'], TL_COOKIE_KEEPTIME, '/');
 }
 
-
-// 20060226 - franciscom
-$logo_img='';
+$logo_img = '';
 if (defined('LOGO_NAVBAR') )
-{
-  $logo_img=LOGO_NAVBAR;
-}
+	$logo_img = LOGO_NAVBAR;
+	
 $smarty->assign('logo', $logo_img);
 $smarty->assign('view_tc_rights',has_rights($db,"mgt_view_tc"));
 $smarty->assign('user', $_SESSION['user'] . ' [' . $roleName . ']');
@@ -65,7 +56,7 @@ $smarty->assign('rightUserAdmin', has_rights($db,"mgt_users"));
 $smarty->assign('countPlans', $countPlans);
 $smarty->assign('arrayProducts', $arr_tprojects);
 $smarty->assign('currentProduct', $curr_tproject_id);
-// 20050816 - scs - added $updateMainPage, if set to 1, the mainpage should be reloaded
 $smarty->assign('updateMainPage', $updateMainPage); 
+$smarty->assign('currentTProjectID',$curr_tproject_id);
 $smarty->display('navBar.tpl');
 ?>

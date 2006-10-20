@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: product.inc.php,v $
- * @version $Revision: 1.16 $
- * @modified $Date: 2006/05/16 19:35:40 $
+ * @version $Revision: 1.17 $
+ * @modified $Date: 2006/10/20 18:31:35 $
  * @author Martin Havlat
  *
  * Functions for Product management (create,update,delete)
@@ -25,99 +25,175 @@ require_once('product.core.inc.php');
 /** @todo the function are not able to delete test plan data from another product (i.e. test case suite) */
 function deleteProduct(&$db,$id, &$error)
 {
-	/* TODO: this must be changed!*/
+	return 0;
+
+	//SCHLUNDUS: I'm working on this
 	$error = ''; //clear error string
 	
-	// list of sql commands + fail info id
-	// be aware order of delete commands (there are dependencies)
-	$arrExecSql = array (
-		// delete bugs
-		// 20051005 - am - non-existing build-column was used
-		array ("DELETE bugs FROM bugs,testplans,build WHERE build.projid=testplans.id" .
-			" AND bugs.build_id=build.id AND testplans.prodid=" . $id, 
-			'info_bugs_delete_fails'),
-		// delete builds
-		array ("DELETE build FROM testplans,build WHERE build.projid=testplans.id" .
-			" AND testplans.prodid=" . $id, 
-			'info_build_delete_fails'),
-		// delete milestones
-		array ("DELETE milestones FROM testplans,milestones WHERE milestones.projid=testplans.id" .
-				" AND testplans.prodid=" . $id, 
-			'info_milestones_delete_fails'),
-		// delete priority
-		array ("DELETE priority FROM testplans,priority WHERE priority.projid=testplans.id" .
-				" AND testplans.prodid=" . $id, 
-			'info_priority_delete_fails'),
-		// delete Test Plan rights
-		// 20060224 - franciscom
-		//array ("DELETE testplans_rights FROM testplans,testplans_rights WHERE testplans_rights.projid=testplans.id" .
-		//		" AND testplans.prodid=" . $id, 
-		//	'info_plan_rights_delete_fails'),
-		// delete test plans - should not be deleted if nested data were not deleted
-		array ("DELETE FROM testplans WHERE prodid=" . $id, 
-			'info_testplan_delete_fails'),
-
-		// delete results
-		array ("DELETE results FROM results,testcase," .
-			"mgtcomponent,mgtcategory,mgttestcase WHERE mgtcomponent.prodid=" . $id .
-			" AND mgtcomponent.id=mgtcategory.compid AND mgtcategory.id=mgttestcase.catid" .
-			" AND testcase.mgttcid=mgttestcase.id AND results.tcid=testcase.id", 
-			'info_results_delete_fails'),
-		// delete test case suites
-		array ("DELETE testcase,category,component FROM testcase,category,component," .
-			"mgtcomponent,mgtcategory,mgttestcase WHERE mgtcomponent.prodid=" . $id .
-			" AND mgtcomponent.id=mgtcategory.compid AND mgtcategory.id=mgttestcase.catid" .
-			" AND testcase.mgttcid=mgttestcase.id AND mgtcategory.id=category.mgtcatid" .
-			" AND component.mgtcompid=mgtcomponent.id", 
-			'info_testsuite_delete_fails'),
-		// delete test specification
-		array ("DELETE mgttestcase,mgtcategory,mgtcomponent FROM mgtcomponent," .
-			"mgtcategory,mgttestcase WHERE mgtcomponent.prodid=" . $id .
-			" AND mgtcomponent.id=mgtcategory.compid AND mgtcategory.id=mgttestcase.catid", 
-			'info_testspec_delete_fails'),
-
+	$arrExecSql = array();
+	$tp = new testproject($db);
+	$kwMap = $tp->get_keywords_map($id);
+	if ($kwMap)
+	{
+		$kwIDs = implode(",",array_keys($kwMap));
+		
+		$arrExecSql[] = array(
+							"DELETE FROM testcase_keywords  WHERE keyword_id IN ({$kwIDs})",
+							 'info_tc_keywords_delete_fails',
+							 );
+		$arrExecSql[] = array(
+							"DELETE FROM object_keywords  WHERE keyword_id IN ({$kwIDs})",
+							 'info_object_keywords_delete_fails',
+							 );					 
 		// delete keywords
-		// 20051005 - am - wrong column used for deleting keywords
-		array ("DELETE FROM keywords WHERE prodid=" . $id, 
-			'info_keywords_delete_fails'),
-		// delete requirements
-		array ("DELETE req_spec,requirements,req_coverage FROM req_spec,requirements,req_coverage " .
-			"WHERE req_spec.product_id=" . $id . " AND req_spec.id=requirements.srs_id" .
-			" AND req_coverage.req_id=requirements.id", 
-			'info_reqs_delete_fails'),
+		$arrExecSql[] = array (
+							 "DELETE FROM keywords WHERE testproject_id=" .$id,
+							 'info_keywords_delete_fails',
+							 );
+	}	
+	$sql = "SELECT id FROM req_specs WHERE testproject_id=" . $id;
+	$srsIDs = $db->fetchColumnsIntoArray($sql,"id");
+	if ($srsIDs)
+	{
+		$srsIDs = implode(",",$srsIDs);
+		$sql = "SELECT id FROM requirements WHERE srs_id IN ({$srsIDs})";
+		$reqIDs = $db->fetchColumnsIntoArray($sql,"id");
+		if ($reqIDs)
+		{
+			$reqIDs = implode(",",$reqIDs);
+			$arrExecSql[] = array (
+							 "DELETE FROM req_coverage WHERE req_id IN ({$reqIDs})",
+							 'info_req_coverage_delete_fails',
+							 );
+			$arrExecSql[] = array (
+							 "DELETE FROM requirements WHERE id IN ({$reqIDs})",
+							 'info_requirements_delete_fails',
+							 );
+		}
+		$arrExecSql[] = array (
+						 "DELETE FROM req_specs WHERE id IN ({$srsIDs})",
+						 'info_req_specs_delete_fails',
+						 );
+		
+		
+	}
+	
+	$arrExecSql[] = array(
+			"UPDATE users SET default_testproject_id = NULL WHERE default_testproject_id = {$id}",
+			 'info_resetting_default_project_fails',
+	);
+	
+	$arrExecSql[] = array(
+			"DELETE FROM user_testproject_roles WHERE testproject_id = {$id}",
+			 'info_deleting_project_roles_fails',
+	);
+	$tpIDs = $tp->get_all_testplans($id);
+	if ($tpIDs)
+	{
+		$tpIDs = implode(",",array_keys($tpIDs));
+		$arrExecSql[] = array(
+			"DELETE FROM user_testplan_roles WHERE testplan_id IN  ({$tpIDs})",
+			 'info_deleting_testplan_roles_fails',
+		);
+		$arrExecSql[] = array(
+			"DELETE FROM testplan_tcversions WHERE testplan_id IN ({$tpIDs})",
+			 'info_deleting_testplan_tcversions_fails',
+		);
 
-		array ("DELETE FROM user_testproject_roles WHERE testproject_id=" . $id, 
-			'info_productrights_delete_fails'),
-	); 
+		$arrExecSql[] = array(
+			"DELETE FROM risk_assignments WHERE testplan_id IN ({$tpIDs})",
+			 'info_deleting_testplan_risk_assignments_fails',
+		);
+		
+		$arrExecSql[] = array(
+			"DELETE FROM priorities WHERE testplan_id IN ({$tpIDs})",
+			 'info_deleting_testplan_risk_assignments_fails',
+		);
+		
+		$arrExecSql[] = array(
+			"DELETE FROM milestones WHERE testplan_id IN ({$tpIDs})",
+			 'info_deleting_testplan_milestones_fails',
+		);
+		
+		$sql = "SELECT id FROM executions WHERE testplan_id IN ({$tpIDs})";
+		$execIDs = $db->fetchColumnsIntoArray($sql,"id");
+		if ($execIDs)
+		{
+			$execIDs = implode(",",$execIDs);
+		
+			$arrExecSql[] = array(
+			"DELETE FROM execution_bugs WHERE execution_id IN ({$execIDs})",
+			 'info_deleting_execution_bugs_fails',
+				);
+		}
+			 
+		$arrExecSql[] = array(
+			"DELETE FROM builds WHERE testplan_id IN ({$tpIDs})",
+			 'info_deleting_builds_fails',
+		);
 
+		$arrExecSql[] = array(
+			"DELETE FROM executions WHERE testplan_id IN ({$tpIDs})",
+			 'info_deleting_execution_fails',
+		); 
+	}
+		
+	$test_spec = $tp->tree_manager->get_subtree($id);
+	var_dump($test_spec);	
+	if(count($test_spec))
+	{
+		$ids = array("nodes_hierarchy" => array());
+		foreach($test_spec as $elem)
+		{
+			$eID = $elem['id'];
+			$table = $elem['node_table'];
+			$ids[$table][] = $eID;
+			$ids["nodes_hierarchy"][] = $eID;
+			
+		}
+		foreach($ids as $tableName => $fkIDs)
+		{
+			$fkIDs = implode(",",$fkIDs);
+			
+			$arrExecSql[] = array(
+				"DELETE FROM {$tableName} WHERE id IN ({$fkIDs})",
+				 "info_deleting_{$tableName}_fails",
+			);
+		}
+		var_dump($arrExecSql);
+	}			
+	//MISSING DEPENDENT DATA:
+	/*
+	* ATTACHMENTS
+	* CUSTOM FIELDS
+	*/
+		
 	// delete all nested data over array $arrExecSql
 	foreach ($arrExecSql as $oneSQL)
 	{
 		if (empty($error))
 		{
-			tLog($oneSQL[0]);
 			$sql = $oneSQL[0];
 			$result = $db->exec_query($sql);	
-			if (!$result) {
+			if (!$result)
 				$error .= lang_get($oneSQL[1]);
-			}
 		}
 	}	
 	exit();
 	// delete product itself
 	if (empty($error))
 	{
-		$sql = "DELETE FROM mgtproduct WHERE id=" . $id;
+		$sql = "DELETE FROM testprojects WHERE id = {$id}";
 		$result = $db->exec_query($sql);
 
-		if ($result) {
+		if ($result)
+		{
 			$tproject_id_on_session = isset($_SESSION['testprojectID']) ? $_SESSION['testproject'] : $id;
-			if ($id == $tproject_id_on_session) {
+			if ($id == $tproject_id_on_session)
 				setSessionTestProject(null);
-			}
-		} else {
-			$error .= lang_get('info_product_delete_fails');
 		}
+		else
+			$error .= lang_get('info_product_delete_fails');
 	}
 
 	return empty($error) ? 1 : 0;

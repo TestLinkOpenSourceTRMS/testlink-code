@@ -1,10 +1,6 @@
 {* Testlink: smarty template - Edit own account *}
-{* $Id: userInfo.tpl,v 1.5 2006/05/17 11:00:25 franciscom Exp $ *}
-{* xhtml valid version - 1.1.2.3 *}
+{* $Id: userInfo.tpl,v 1.6 2006/10/20 18:31:35 schlundus Exp $ *}
 {* 
-20060507 - franciscom - changes due to external password management
-20050913 - fm - BUGID 0000103: Localization is changed but not strings
-20050815 - changed action to updated 
 *}
 {include file="inc_head.tpl" jsValidate="yes"}
 
@@ -41,11 +37,11 @@ function valAllText(form)
 {/literal}
 
 <form method="post" action="lib/usermanagement/userinfo.php" onsubmit="return valAllText(this)">
-	<input type="hidden" name="id" value="{$userData[2]}" />
+	<input type="hidden" name="id" value="{$userData.id}" />
 	<table class="common">
 		<tr>
 			<th>{lang_get s='th_login'}</th>
-			<td>{$userData[1]}</td>
+			<td>{$userData.login}</td>
 		</tr>
 		<tr>
 			<th>{lang_get s='th_first_name'}</th>
@@ -76,12 +72,10 @@ function valAllText(form)
 
 <h2>{lang_get s='title_change_your_passwd'}</h2>
 
-{* 20060507 - franciscom *}
 {if $external_password_mgmt eq 0 }
-
 <form name="changePass" method="post" action="lib/usermanagement/userinfo.php" 
 	onsubmit="return validatePassword(document.changePass);">
-	<input type="hidden" name="id" value="{$userData[2]}" />
+	<input type="hidden" name="id" value="{$userData.id}" />
 	<table class="common">
 		<tr><th>{lang_get s='th_old_passwd'}</th>
 			<td><input type="password" name="old" maxlength="32" /></td></tr>
@@ -101,7 +95,6 @@ function valAllText(form)
 
 </div>
 
-{*  BUGID 0000103: Localization is changed but not strings *}
 {if $update_title_bar == 1}
 {literal}
 <script type="text/javascript">

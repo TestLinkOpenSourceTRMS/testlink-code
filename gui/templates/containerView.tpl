@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: containerView.tpl,v 1.24 2006/10/20 07:27:55 franciscom Exp $ *}
+{* $Id: containerView.tpl,v 1.25 2006/10/20 18:31:35 schlundus Exp $ *}
 {* 
 Purpose: smarty template - view test specification containers 
 
@@ -12,8 +12,6 @@ Purpose: smarty template - view test specification containers
 
 <body>
 <div class="workBack">
-
-TTTTT{$level}
 
 <h1>{lang_get s=$level}: {$container_data.name|escape}</h1>
 

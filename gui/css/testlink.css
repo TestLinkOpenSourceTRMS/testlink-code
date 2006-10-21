@@ -1,8 +1,9 @@
 /* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: testlink.css,v 1.10 2006/08/21 13:16:00 franciscom Exp $
+$Id: testlink.css,v 1.11 2006/10/21 06:44:57 franciscom Exp $
 Purpose: main css - theme default
 
+20061020 - franciscom - new classes for time stamps
 20060819 - franciscom - minor adjustemnts
                         changes in class names
                         div.menu -> div.menu_bar
@@ -475,5 +476,12 @@ p.title  {
 	font-weight : bold;
 }
 
+.time_stamp_creation  {
+	font-style: 	italic;
+}
+
+.time_stamp_last_change  {
+	font-style: 	italic;
+}
 
 /* ----------------------------------------------------------------------------- */

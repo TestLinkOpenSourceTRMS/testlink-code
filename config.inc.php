@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.77 $
- * @modified $Date: 2006/10/17 20:17:53 $ by $Author: schlundus $
+ * @version $Revision: 1.78 $
+ * @modified $Date: 2006/10/21 06:43:26 $ by $Author: franciscom $
  *
  *
  * Constants and configuration parameters used throughout TestLink 
@@ -276,6 +276,9 @@ define('LOGO_LOGIN_PAGE','<img alt="TestLink" src="icons/company_logo.png" />');
 // logo for navbar page
 define('LOGO_NAVBAR','<img alt="TestLink" src="icons/company_logo.png" />');
 
+
+// use when componing an title using several strins
+define('TITLE_SEP',' : ');
 
 /* TRUE -> Check if:
            a. Product Name                   is unique

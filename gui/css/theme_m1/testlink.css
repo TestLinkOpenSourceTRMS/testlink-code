@@ -1,6 +1,6 @@
 /* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: testlink.css,v 1.2 2006/08/21 13:16:00 franciscom Exp $ 
+$Id: testlink.css,v 1.3 2006/10/21 06:44:57 franciscom Exp $ 
 Purpose: main css - theme m1
                   
 20060819 - franciscom - minor adjustemnts
@@ -485,4 +485,13 @@ p.title  {
 	width: 100%;
 	font-weight : bold;
 }
+
+.time_stamp_creation  {
+	font-style: 	italic;
+}
+
+.time_stamp_last_change  {
+	font-style: 	italic;
+}
+
 /* ----------------------------------------------------------------------------- */

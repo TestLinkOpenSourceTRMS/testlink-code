@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: product.inc.php,v $
- * @version $Revision: 1.17 $
- * @modified $Date: 2006/10/20 18:31:35 $
+ * @version $Revision: 1.18 $
+ * @modified $Date: 2006/10/21 20:24:36 $
  * @author Martin Havlat
  *
  * Functions for Product management (create,update,delete)
@@ -25,9 +25,6 @@ require_once('product.core.inc.php');
 /** @todo the function are not able to delete test plan data from another product (i.e. test case suite) */
 function deleteProduct(&$db,$id, &$error)
 {
-	return 0;
-
-	//SCHLUNDUS: I'm working on this
 	$error = ''; //clear error string
 	
 	$arrExecSql = array();
@@ -45,7 +42,6 @@ function deleteProduct(&$db,$id, &$error)
 							"DELETE FROM object_keywords  WHERE keyword_id IN ({$kwIDs})",
 							 'info_object_keywords_delete_fails',
 							 );					 
-		// delete keywords
 		$arrExecSql[] = array (
 							 "DELETE FROM keywords WHERE testproject_id=" .$id,
 							 'info_keywords_delete_fails',
@@ -139,7 +135,6 @@ function deleteProduct(&$db,$id, &$error)
 	}
 		
 	$test_spec = $tp->tree_manager->get_subtree($id);
-	var_dump($test_spec);	
 	if(count($test_spec))
 	{
 		$ids = array("nodes_hierarchy" => array());
@@ -149,18 +144,20 @@ function deleteProduct(&$db,$id, &$error)
 			$table = $elem['node_table'];
 			$ids[$table][] = $eID;
 			$ids["nodes_hierarchy"][] = $eID;
-			
 		}
+		
 		foreach($ids as $tableName => $fkIDs)
 		{
 			$fkIDs = implode(",",$fkIDs);
 			
-			$arrExecSql[] = array(
-				"DELETE FROM {$tableName} WHERE id IN ({$fkIDs})",
-				 "info_deleting_{$tableName}_fails",
-			);
+			if ($tableName != "testcases")
+			{
+				$arrExecSql[] = array(
+					"DELETE FROM {$tableName} WHERE id IN ({$fkIDs})",
+					 "info_deleting_{$tableName}_fails",
+					);
+			}
 		}
-		var_dump($arrExecSql);
 	}			
 	//MISSING DEPENDENT DATA:
 	/*
@@ -179,7 +176,6 @@ function deleteProduct(&$db,$id, &$error)
 				$error .= lang_get($oneSQL[1]);
 		}
 	}	
-	exit();
 	// delete product itself
 	if (empty($error))
 	{
@@ -188,7 +184,7 @@ function deleteProduct(&$db,$id, &$error)
 
 		if ($result)
 		{
-			$tproject_id_on_session = isset($_SESSION['testprojectID']) ? $_SESSION['testproject'] : $id;
+			$tproject_id_on_session = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : $id;
 			if ($id == $tproject_id_on_session)
 				setSessionTestProject(null);
 		}

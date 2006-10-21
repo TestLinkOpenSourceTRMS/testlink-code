@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: planEdit.php,v $
  *
- * @version $Revision: 1.21 $
- * @modified $Date: 2006/09/25 07:07:06 $ $Author: franciscom $
+ * @version $Revision: 1.22 $
+ * @modified $Date: 2006/10/21 20:24:36 $ $Author: schlundus $
  *
  * Purpose:  ability to edit and delete testplans
  *
@@ -20,9 +20,10 @@ $tproject_id = $_SESSION['testprojectID'];
 $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 $bDelete = isset($_GET['deleteTP']) ? intval($_GET['deleteTP']) : 0;
 
-$tplan_mgr=new testplan($db);
+$tplan_mgr = new testplan($db);
 $generalResult = null;
 $editResult = null;
+
 if($bDelete)
 {
     

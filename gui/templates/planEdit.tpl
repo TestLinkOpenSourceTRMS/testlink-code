@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: planEdit.tpl,v 1.5 2006/08/17 19:29:59 schlundus Exp $ *}
+{* $Id: planEdit.tpl,v 1.6 2006/10/21 20:24:36 schlundus Exp $ *}
 {* Purpose: smarty template - edit / delete Test Plan *}
 {* 20050810 - fm - changes in active field definition *}
 
@@ -50,7 +50,7 @@
 			{/if}
 			</td>
 			<td>
-				<a href="lib/plan/planEdit.php?deleteTP=1&id={$arrPlan[number][0]}">
+				<a href="lib/plan/planEdit.php?deleteTP=1&id={$arrPlan[number].id}">
 				<img style="border:none" alt="{lang_get s='alt_delete_testplan'}" src="icons/thrash.png"/>
 				</a>
 			</td>

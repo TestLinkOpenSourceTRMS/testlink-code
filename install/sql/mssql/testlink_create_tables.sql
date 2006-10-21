@@ -1,7 +1,7 @@
 --  -----------------------------------------------------------------------------------
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.4 2006/10/10 20:09:14 schlundus Exp $
+-- $Id: testlink_create_tables.sql,v 1.5 2006/10/21 20:24:36 schlundus Exp $
 --
 -- SQL script - create db tables for TL
 -- Database Type: Microsoft SQL Server
@@ -721,6 +721,94 @@ CREATE TABLE [dbo].[assignment_status](
  CONSTRAINT [PK_assignment_status] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
+) ON [PRIMARY]
+) ON [PRIMARY]
+END
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[dbo].[cfield_node_types]') AND OBJECTPROPERTY(id, N'IsUserTable') = 1)
+BEGIN
+CREATE TABLE [dbo].[cfield_node_types](
+	[field_id] [int] NOT NULL CONSTRAINT [DF_cfield_node_types_field_id]  DEFAULT ((0)),
+	[node_type_id] [int] NOT NULL CONSTRAINT [DF_cfield_node_types_node_type_id]  DEFAULT ((0)),
+ CONSTRAINT [PK_cfield_node_types] PRIMARY KEY CLUSTERED 
+(
+	[field_id] ASC,
+	[node_type_id] ASC
+) ON [PRIMARY]
+) ON [PRIMARY]
+END
+GO
+
+IF NOT EXISTS (SELECT * FROM dbo.sysindexes WHERE id = OBJECT_ID(N'[dbo].[cfield_node_types]') AND name = N'idx_custom_fields_assign')
+CREATE NONCLUSTERED INDEX [idx_custom_fields_assign] ON [dbo].[cfield_node_types] 
+(
+	[node_type_id] ASC
+) ON [PRIMARY]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[dbo].[cfield_testprojects]') AND OBJECTPROPERTY(id, N'IsUserTable') = 1)
+BEGIN
+CREATE TABLE [dbo].[cfield_testprojects](
+	[field_id] [int] NOT NULL CONSTRAINT [DF_cfield_testprojects_field_id]  DEFAULT ((0)),
+	[testproject_id] [int] NOT NULL CONSTRAINT [DF_cfield_testprojects_testproject_id]  DEFAULT ((0)),
+ CONSTRAINT [PK_cfield_testprojects] PRIMARY KEY CLUSTERED 
+(
+	[field_id] ASC,
+	[testproject_id] ASC
+) ON [PRIMARY]
+) ON [PRIMARY]
+END
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[dbo].[cfield_design_values]') AND OBJECTPROPERTY(id, N'IsUserTable') = 1)
+BEGIN
+CREATE TABLE [dbo].[cfield_design_values](
+	[field_id] [int] NOT NULL,
+	[node_id] [int] NOT NULL CONSTRAINT [DF_cfield_design_values_node_id]  DEFAULT ((0)),
+	[value] [nvarchar](255) NOT NULL CONSTRAINT [DF_cfield_design_values_value]  DEFAULT ((0)),
+ CONSTRAINT [PK_cfield_design_values] PRIMARY KEY CLUSTERED 
+(
+	[field_id] ASC,
+	[node_id] ASC
+) ON [PRIMARY]
+) ON [PRIMARY]
+END
+GO
+
+IF NOT EXISTS (SELECT * FROM dbo.sysindexes WHERE id = OBJECT_ID(N'[dbo].[cfield_design_values]') AND name = N'dx_cfield_design_values')
+CREATE NONCLUSTERED INDEX [dx_cfield_design_values] ON [dbo].[cfield_design_values] 
+(
+	[node_id] ASC
+) ON [PRIMARY]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[dbo].[cfield_execution_values]') AND OBJECTPROPERTY(id, N'IsUserTable') = 1)
+BEGIN
+CREATE TABLE [dbo].[cfield_execution_values](
+	[field_id] [int] NOT NULL CONSTRAINT [DF_cfield_execution_values_field_id]  DEFAULT ((0)),
+	[execution_id] [int] NOT NULL CONSTRAINT [DF_cfield_execution_values_execution_id]  DEFAULT ((0)),
+	[testplan_id] [int] NOT NULL CONSTRAINT [DF_cfield_execution_values_testplan_id]  DEFAULT ((0)),
+	[tcversion_id] [int] NOT NULL CONSTRAINT [DF_cfield_execution_values_tcversion_id]  DEFAULT ((0)),
+	[value] [nvarchar](255) NOT NULL,
+ CONSTRAINT [PK_cfield_execution_values] PRIMARY KEY CLUSTERED 
+(
+	[field_id] ASC,
+	[execution_id] ASC,
+	[testplan_id] ASC,
+	[tcversion_id] ASC
 ) ON [PRIMARY]
 ) ON [PRIMARY]
 END

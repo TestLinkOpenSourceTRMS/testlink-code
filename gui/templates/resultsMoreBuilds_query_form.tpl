@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsMoreBuilds_query_form.tpl,v 1.32 2006/10/12 19:50:03 schlundus Exp $
+$Id: resultsMoreBuilds_query_form.tpl,v 1.33 2006/10/21 23:15:18 kevinlevy Exp $
 @author Francisco Mancardi - fm - start solving BUGID 97/98
 20051022 - scs - removed ' in component id values
 20051121 - scs - added escaping of tpname
@@ -59,16 +59,21 @@ $Id: resultsMoreBuilds_query_form.tpl,v 1.32 2006/10/12 19:50:03 schlundus Exp $
 			</td>
 		</tr>
 	    <tr>
+		<!-- 10212006 - KL - commenting out until we have some other format besides HTML 
+		
 			<th>{lang_get s='select_report_format_header'}</th>
+		-->
 			<th>{lang_get s='select_last_result_header'} </th>
 		</tr>
 		<tr>
+		<!-- 10212006 - KL - commenting out until we have some other format besides HTML 
 			<td>
 				<select name="format" size="2">
 					<option selected="selected" value="HTML">{lang_get s='html_format'}</option>
 					<option value="EXCEL">{lang_get s='excel_format'}</option>
 				</select>
 			</td>
+			-->
 			<td>
 				<select name="lastStatus" size="5">
 					<option selected="selected">{lang_get s='last_status_any'}</option>

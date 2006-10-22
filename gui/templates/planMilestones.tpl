@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: planMilestones.tpl,v 1.1 2006/01/03 21:19:02 schlundus Exp $ *}
+{* $Id: planMilestones.tpl,v 1.2 2006/10/22 19:50:24 schlundus Exp $ *}
 {* Purpose: smarty template - edit milestones *}
 {*
 	20051203 - scs - corrected wrong maxlength for name and date,
@@ -40,19 +40,19 @@
 		<tr>
 			<td>{lang_get s='th_perc_a_prio'}:</td>
 			<td>
-				<input type="text" name="A" maxlength="3" value="{$mileStone.A|escape}"/>
+				<input type="text" name="A" maxlength="3" value="{$mileStone.apriority|escape}"/>
 			</td>
 		</tr>
 		<tr>
 			<td>{lang_get s='th_perc_b_prio'}:</td>
 			<td>
-				<input type="text" name="B" maxlength="3" value="{$mileStone.B|escape}"/>
+				<input type="text" name="B" maxlength="3" value="{$mileStone.bpriority|escape}"/>
 			</td>
 		</tr>
 		<tr>
 			<td>{lang_get s='th_perc_c_prio'}:</td>
 			<td>
-				<input type="text" name="C" maxlength="3" value="{$mileStone.C|escape}"/>
+				<input type="text" name="C" maxlength="3" value="{$mileStone.cpriority|escape}"/>
 			</td>
 		</tr>
 	</table>
@@ -92,13 +92,13 @@
 								{$arrMilestone[Row].date|escape}
 							</td>
 							<td>
-								{$arrMilestone[Row].A|escape}
+								{$arrMilestone[Row].apriority|escape}
 							</td>
 							<td>
-								{$arrMilestone[Row].B|escape}
+								{$arrMilestone[Row].bpriority|escape}
 							</td>
 							<td>
-								{$arrMilestone[Row].C|escape}
+								{$arrMilestone[Row].cpriority|escape}
 							</td>
 							<td>
 								<a href="lib/plan/planMilestones.php?delete=1&id={$arrMilestone[Row].id}">

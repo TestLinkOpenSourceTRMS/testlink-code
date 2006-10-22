@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: plan.inc.php,v $
- * @version $Revision: 1.38 $
- * @modified $Date: 2006/10/04 17:07:03 $ $Author: schlundus $
+ * @version $Revision: 1.39 $
+ * @modified $Date: 2006/10/22 19:50:25 $ $Author: schlundus $
  * @author 	Martin Havlat
  *
  * Functions for management: 
@@ -334,7 +334,7 @@ function deleteMileStone(&$db,$id)
 
 function getTestPlanMileStones(&$db,$projID,&$mileStones,$mileStoneID = null)
 {
-	$sql = " SELECT id,name title,date,A,B,C FROM milestones " .
+	$sql = " SELECT id,name title,date,A as apriority,B bpriority,C cpriority FROM milestones " .
 	       " WHERE testplan_id = " . $projID ;
 	        
 	if (!is_null($mileStoneID))

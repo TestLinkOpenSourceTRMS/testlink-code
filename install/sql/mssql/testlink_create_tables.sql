@@ -1,7 +1,7 @@
 --  -----------------------------------------------------------------------------------
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.5 2006/10/21 20:24:36 schlundus Exp $
+-- $Id: testlink_create_tables.sql,v 1.6 2006/10/22 19:50:25 schlundus Exp $
 --
 -- SQL script - create db tables for TL
 -- Database Type: Microsoft SQL Server
@@ -809,6 +809,25 @@ CREATE TABLE [dbo].[cfield_execution_values](
 	[execution_id] ASC,
 	[testplan_id] ASC,
 	[tcversion_id] ASC
+) ON [PRIMARY]
+) ON [PRIMARY]
+END
+
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[dbo].[object_keywords]') AND OBJECTPROPERTY(id, N'IsUserTable') = 1)
+BEGIN
+CREATE TABLE [dbo].[object_keywords](
+	[id] [int] NOT NULL CONSTRAINT [DF_object_keywords_id]  DEFAULT ((0)),
+	[fk_id] [int] NOT NULL CONSTRAINT [DF_object_keywords_fk_id]  DEFAULT ((0)),
+	[fk_table] [nvarchar](30) NOT NULL,
+	[keyword_id] [int] NOT NULL CONSTRAINT [DF_object_keywords_keyword_id]  DEFAULT ((0)),
+ CONSTRAINT [PK_object_keywords] PRIMARY KEY CLUSTERED 
+(
+	[id] ASC
 ) ON [PRIMARY]
 ) ON [PRIMARY]
 END

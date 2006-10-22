@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: keywords.inc.php,v $
 * 
-* @version $Id: keywords.inc.php,v 1.28 2006/10/17 16:33:55 franciscom Exp $
-* @modified $Date: 2006/10/17 16:33:55 $ by $Author: franciscom $
+* @version $Id: keywords.inc.php,v 1.29 2006/10/22 19:50:25 schlundus Exp $
+* @modified $Date: 2006/10/22 19:50:25 $ by $Author: schlundus $
 *
 * Functions for support keywords management. 
 *
@@ -235,12 +235,17 @@ function DEPR_addTCKeyword(&$db,$tcID, $newKey)
  **/
 function deleteKeyword(&$db,$id)
 {
-	$sql = "DELETE FROM testcase_keywords WHERE keyword_id=" . $id;
+	$sql = "DELETE FROM testcase_keywords WHERE keyword_id = " . $id;
 	$result = $db->exec_query($sql);
 	
 	if ($result)
 	{
-		$sql = "DELETE FROM keywords WHERE id=" . $id;
+		$sql = "DELETE FROM object_keywords WHERE keyword_id = " . $id;
+		$result = $db->exec_query($sql);
+	}
+	if ($result)
+	{
+		$sql = "DELETE FROM keywords WHERE id = " . $id;
 		$result = $db->exec_query($sql);
 	}
 		

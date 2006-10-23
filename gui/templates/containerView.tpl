@@ -1,8 +1,10 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: containerView.tpl,v 1.25 2006/10/20 18:31:35 schlundus Exp $ *}
+{* $Id: containerView.tpl,v 1.26 2006/10/23 06:44:26 franciscom Exp $ *}
 {* 
 Purpose: smarty template - view test specification containers 
 
+
+20061020 - franciscom - added page_title
 20060822 - franciscom - fixed bug unable to attach files to test suites
                         due to typo error
                         
@@ -12,8 +14,7 @@ Purpose: smarty template - view test specification containers
 
 <body>
 <div class="workBack">
-
-<h1>{lang_get s=$level}: {$container_data.name|escape}</h1>
+<h1>{$page_title}: {$container_data.name|escape}</h1>
 
 {include file="inc_update.tpl" result=$sqlResult item=$level name=$moddedItem.name refresh='yes'}
 

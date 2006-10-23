@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: int_bugtracking.php,v $
  *
- * @version $Revision: 1.11 $
- * @modified $Date: 2006/10/05 19:18:21 $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2006/10/23 20:11:28 $
  *
  * @author Andreas Morsing
  *
@@ -16,10 +16,6 @@
  * For supporting a bug tracking system this class has to be extended
  * All bug tracking customization should be done in a sub class of this
  * class . for an example look at the bugzilla.cfg.php and mantis.cfg.php
- * 
- * 20060914 - franciscom - solved hidden bug in connect
- *
- * 20051229 - scs - added ADOdb support
  *
 **/
 //Add new bugtracking interfaces here

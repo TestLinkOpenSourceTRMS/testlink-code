@@ -4,17 +4,10 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.38 $
- * @modified $Date: 2006/10/23 06:42:22 $  by $Author: franciscom $
+ * @version $Revision: 1.39 $
+ * @modified $Date: 2006/10/23 20:11:28 $  by $Author: schlundus $
  * This page manages all the editing of test cases.
  *
- * @author Martin Havlat
- *
- * 20061008 - franciscom - changes in call to:
- *                         create(),copy_to()
- *
- *                                          
- * 20060106 - scs - refactoring, fixed bug 9
 **/
 require_once("../../config.inc.php");
 require_once("../functions/common.php");
@@ -201,8 +194,7 @@ else if($do_create)
 }
 else if($delete_tc)
 {
-  
- 	$exec_status = 'ALL';
+  	$exec_status = 'ALL';
 	$linked_tcversions = $tcase_mgr->get_linked_versions($tcase_id,$exec_status);
   
 	$msg = '';
@@ -236,13 +228,11 @@ else if($delete_tc_version)
 	$exec_status_quo = $tcase_mgr->get_exec_status($tcase_id);
 	
 	
-	$sq=null;
+	$sq = null;
 	if(!is_null($exec_status_quo))
 	{
-	  if(isset($exec_status_quo[$tcversion_id]))
-	  {
-	    $sq=array($tcversion_id => $exec_status_quo[$tcversion_id]);
-	  }
+		if(isset($exec_status_quo[$tcversion_id]))
+			$sq=array($tcversion_id => $exec_status_quo[$tcversion_id]);
 	}
 	
 	if(intval($status_quo_map[$tcversion_id]['executed']))
@@ -252,7 +242,7 @@ else if($delete_tc_version)
 	else if(intval($status_quo_map[$tcversion_id]['linked']))
 	{
       $msg = lang_get('warning') . TITLE_SEP . lang_get('delete_linked');	
-  }
+	}
 	else
 	{
 		$msg = '';
@@ -310,17 +300,17 @@ else if($move_copy_tc)
 	$the_xx[$the_tc_node['parent_id']] .= ' (' . lang_get('current') . ')'; 
 	$tc_info = $tcase_mgr->get_by_id($tcase_id);
 
-	$smarty->assign('old_container', $container_id); // original container
+	$smarty->assign('old_container', $the_tc_node['parent_id']); // original container
 	$smarty->assign('array_container', $the_xx);
 	$smarty->assign('testcase_id', $tcase_id);
 	$smarty->assign('name', $tc_info[0]['name']);
 	$smarty->display('tcMove.tpl');
-
 // move test case to another category
 }
 else if($do_move)
 {
 	$result = $tree_mgr->change_parent($tcase_id,$new_container_id);
+	$smarty->assign('refreshTree',1);
 	$tsuite_mgr->show($smarty,$old_container_id);
 }
 else if($do_copy)
@@ -330,6 +320,7 @@ else if($do_copy)
 	$result = $tcase_mgr->copy_to($tcase_id,$new_container_id,$userID,TC_COPY_KEYWORDS,
 	                              config_get('check_names_for_duplicates'),'block');
 	$msg = $result['msg'];
+	$smarty->assign('refreshTree',1);
 	$tcase_mgr->show($smarty,$tcase_id, $userID,$tcversion_id,$action_result,$msg);
 }
 else if($do_create_new_version)

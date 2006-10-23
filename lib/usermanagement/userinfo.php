@@ -5,15 +5,11 @@
 *
 * Filename $RCSfile: userinfo.php,v $
 *
-* @version $Revision: 1.3 $
-* @modified $Date: 2006/10/20 18:31:36 $
+* @version $Revision: 1.4 $
+* @modified $Date: 2006/10/23 20:11:28 $
 * 
 * Displays the users' information and allows users to change 
 * their passwords and user info.
-* 
-*
-* 20060507 - franciscom - changes due external password management (LDAP authentication)
-* 20060102 - scs - changes due to ADOdb
 */
 require_once('../../config.inc.php');
 require_once('users.inc.php');

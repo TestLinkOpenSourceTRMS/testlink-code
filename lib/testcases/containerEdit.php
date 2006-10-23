@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * @version $Revision: 1.45 $
- * @modified $Date: 2006/10/23 06:42:22 $ by $Author: franciscom $
+ * @version $Revision: 1.46 $
+ * @modified $Date: 2006/10/23 20:11:28 $ by $Author: schlundus $
  * @author Martin Havlat
  *
  * 20060822 - franciscom - solved keyword presentation problem
@@ -32,6 +32,7 @@ if(!$my_containerID)
 {
 	$my_containerID = $my_tprojectID;	
 }
+$bRefreshTree = false;
 $tsuite_name = isset($_REQUEST['testsuiteName']) ? strings_stripSlashes($_REQUEST['testsuiteName']) : null;
 $objectID = isset($_GET['objectID']) ? intval($_GET['objectID']) : null;
 $bSure = (isset($_GET['sure']) && ($_GET['sure'] == 'yes'));
@@ -207,8 +208,9 @@ else if ($action == 'delete_testsuite')
 {
 	if($bSure)
 	{
-	    $tsuite_mgr->delete_deep($objectID);
-      $tsuite_mgr->deleteKeywords($objectID);   	 
+		$tsuite_mgr->delete_deep($objectID);
+		$tsuite_mgr->deleteKeywords($objectID);   	 
+		$bRefreshTree = true;
 	}
 	else
 	{
@@ -257,9 +259,8 @@ else if($action == 'move_testsuite_viewer')
 	$testsuites = $tproject_mgr->gen_combo_test_suites($my_tprojectID,
 	                                                  array($my_testsuiteID => 'exclude'));
   
-  // 20060701 - franciscom
-  // Added the Test Project as the FIRST Container where is possible to copy
-  $testsuites = array($my_tprojectID => $_SESSION['testprojectName']) + $testsuites;
+	// Added the Test Project as the FIRST Container where is possible to copy
+	$testsuites = array($my_tprojectID => $_SESSION['testprojectName']) + $testsuites;
   
 	$smarty->assign('old_containerID', $my_tprojectID); // original container
 	$smarty->assign('arraySelect', $testsuites);
@@ -306,6 +307,7 @@ else
 
 if ($the_tpl)
 {
+	$smarty->assign('refreshTree',$bRefreshTree);
 	$smarty->display($the_tpl);
 } 
 

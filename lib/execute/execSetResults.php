@@ -4,23 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.41 $
- * @modified $Date: 2006/10/17 16:39:10 $ $Author: franciscom $
- *
- * @author Martin Havlat
- *
- * 20060917 - franciscom - bug management
- *
- * 20060809 - franciscom - send test plan notes, build notes
- *                         and parent test suite details
- *                         to smarty.
- *
- * 20060806 - franciscom - changed component to testsuite
- *
- * 20060603 - franciscom - corrected bug is testplan has no test cases
- *                         corrected bug when history off
- *
- * 20060528 - franciscom - manage config option for history order
+ * @version $Revision: 1.42 $
+ * @modified $Date: 2006/10/23 20:11:28 $ $Author: schlundus $
  *
 **/
 require_once('../../config.inc.php');
@@ -66,8 +51,6 @@ if($history_on)
     $history_status_btn_name = 'btn_history_off';
 }
 
-// -------------------------------------------------------------------------------------------
-// 20060207 - franciscom - BUGID 0000303 - Solution by: scorpfromhell 
 // Added to set Test Results editable by comparing themax Build ID and the requested Build ID.			
 $editTestResult = "yes";
 $latestBuild = 0;
@@ -75,16 +58,12 @@ if(($latestBuild > $build_id) && !(config_get('edit_old_build_results')))
 {
 	$editTestResult = "no";
 }
-// -------------------------------------------------------------------------------------------
 
-
-// ----------------------------------------------------------------
 $bugs = null;
-
-$attachmentInfos=null;
-$map_last_exec=null;
-$other_execs=null;
-$map_last_exec_any_build=null;
+$attachmentInfos = null;
+$map_last_exec = null;
+$other_execs = null;
+$map_last_exec_any_build = null;
 $tcAttachments = null;
 $tSuiteAttachments = null;
 $linked_tcversions = $tplan_mgr->get_linked_tcversions($tplan_id,$tc_id,$keyword_id,null,$owner);
@@ -95,19 +74,19 @@ if(!is_null($linked_tcversions))
     // Get the path for every test case, grouping test cases that
     // have same parent.
     $items_to_exec = array();
-	  $_SESSION['s_lastAttachmentInfos'] = null;
+	$_SESSION['s_lastAttachmentInfos'] = null;
     if($level == 'testcase')
     {
     	$items_to_exec[$id] = $linked_tcversions[$id]['tcversion_id'];    
     	$tcase_id = $id;
     	$tcversion_id = $linked_tcversions[$id]['tcversion_id'];
-		  $tcAttachments[$id] = getAttachmentInfos($db,$id,'nodes_hierarchy',1);
+		$tcAttachments[$id] = getAttachmentInfos($db,$id,'nodes_hierarchy',1);
     }
     else
     {
     	$tcase_id = array();
     	$tcversion_id = array();
-		  $idx = 0;
+		$idx = 0;
 		  
     	foreach($linked_tcversions as $item)
     	{
@@ -116,22 +95,19 @@ if(!is_null($linked_tcversions))
     		{
     			if( $path_elem['parent_id'] == $id )
     			{
-    			  // Can be added because is present in the branch the user wants to view
-    			  // ID of branch starting node is in $id
-    				$tcase_id[] = $item['tc_id'];
-    				$tcversion_id[] = $item['tcversion_id'];
-					  $tcAttachments[$item['tc_id']] = getAttachmentInfos($db,$item['tc_id'],'nodes_hierarchy',true,1);
+					 // Can be added because is present in the branch the user wants to view
+					 // ID of branch starting node is in $id
+					$tcase_id[] = $item['tc_id'];
+					$tcversion_id[] = $item['tcversion_id'];
+					$tcAttachments[$item['tc_id']] = getAttachmentInfos($db,$item['tc_id'],'nodes_hierarchy',true,1);
     			}
     			
-          if( $path_elem['node_table'] == 'testsuites' && !isset($tSuiteAttachments[$path_elem['id']]) )
-          {
-            $tSuiteAttachments[$path_elem['id']] = getAttachmentInfos($db,$path_elem['id'],'nodes_hierarchy',true,1);
-          }
-    		} 
+				if($path_elem['node_table'] == 'testsuites' && !isset($tSuiteAttachments[$path_elem['id']]))
+					$tSuiteAttachments[$path_elem['id']] = getAttachmentInfos($db,$path_elem['id'],'nodes_hierarchy',true,1);
+			} 
     	}
     }
     
-    // 
     // will create a record even if the testcase version has not been executed (GET_NO_EXEC)
     $map_last_exec = $tcase_mgr->get_last_execution($tcase_id,$tcversion_id,$tplan_id,
                                                     $build_id,GET_NO_EXEC);

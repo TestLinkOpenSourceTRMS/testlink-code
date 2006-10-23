@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: tree.class.php,v $
  *
- * @version $Revision: 1.22 $
- * @modified $Date: 2006/10/09 10:29:34 $ by $Author: franciscom $
+ * @version $Revision: 1.23 $
+ * @modified $Date: 2006/10/23 20:11:28 $ by $Author: schlundus $
  * @author Francisco Mancardi
  *
  * 20061008 - franciscom - ORDER BY node_order -> ORDER BY node_order,id
@@ -301,15 +301,16 @@ function get_children($id,$exclude_node_types=null)
 */   
 function change_order_bulk($hash_node_id, $hash_node_order) 
 {
-	foreach( $hash_node_id as $the_id => $elem )
+	foreach($hash_node_id as $the_id => $elem)
 	{
-  	$sql = "UPDATE {$this->obj_table} 
-    	      SET id = {$the_id}, node_order = {$hash_node_order[$the_id]}
-      	    WHERE id = {$the_id}";
-  	$result = $this->db->exec_query($sql);
-  }
+		$order = intval($hash_node_order[$the_id]);
+		$the_id = intval($the_id);
+	  	$sql = "UPDATE {$this->obj_table} SET node_order = {$order}
+	      	    WHERE id = {$the_id}";
+	  	$result = $this->db->exec_query($sql);
+	}
   
-  return ($result);
+	return $result;
 }
 
 

@@ -5,10 +5,8 @@
  *
  * Filename $RCSfile: rolesview.php,v $
  *
- * @version $Revision: 1.6 $
- * @modified $Date: 2006/10/17 20:17:54 $ by $Author: schlundus $
- *
- * 20060224 - franciscom - changes in session product -> testproject
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2006/10/23 20:11:28 $ by $Author: schlundus $
 **/
 require_once("../../config.inc.php");
 require_once("../functions/common.php");

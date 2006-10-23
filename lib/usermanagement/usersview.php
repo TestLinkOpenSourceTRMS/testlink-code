@@ -5,15 +5,10 @@
  *
  * Filename $RCSfile: usersview.php,v $
  *
- * @version $Revision: 1.4 $
- * @modified $Date: 2006/08/29 19:41:38 $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2006/10/23 20:11:28 $
  *
  * This page shows all users
- *
- * 20053112 - scs - cleanup, due to removing bulk update of users
- * 20060103 - scs - ADOdb changes
- * 20060107 - fm  - refactoring init_args()
- *
 **/
 include('../../config.inc.php');
 require_once("users.inc.php");

@@ -1,9 +1,7 @@
 {* 
-TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: containerDelete.tpl,v 1.7 2006/04/29 19:32:54 schlundus Exp $ 
-Purpose: smarty template - delete containers in test specification
-
-20060309 - franciscom
+	TestLink Open Source Project - http://testlink.sourceforge.net/
+	$Id: containerDelete.tpl,v 1.8 2006/10/23 20:11:28 schlundus Exp $ 
+	Purpose: smarty template - delete containers in test specification
 *}
 {include file="inc_head.tpl"}
 
@@ -20,17 +18,18 @@ Purpose: smarty template - delete containers in test specification
   {/section}
 
   
-  <h2>{lang_get s='delete_notice'}</h2>
+	<h2>{lang_get s='delete_notice'}</h2>
 
 	<p>{lang_get s='question_del'} {$level|escape}?</p>
 
 	<form method="post" 
 	      action="lib/testcases/containerEdit.php?sure=yes&amp;objectID={$objectID|escape}">
-
-
-	
-	<input type="submit" name="delete_testsuite" value="{lang_get s='btn_yes_del_comp'}" />
+		<input type="submit" name="delete_testsuite" value="{lang_get s='btn_yes_del_comp'}" />
 	</form>
+{/if}
+
+{if $refreshTree}
+   {include file="inc_refreshTree.tpl"}
 {/if}
 
 </div>

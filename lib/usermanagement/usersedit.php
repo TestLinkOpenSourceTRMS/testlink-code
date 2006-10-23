@@ -5,14 +5,10 @@
 *
 * Filename $RCSfile: usersedit.php,v $
 *
-* @version $Revision: 1.6 $
-* @modified $Date: 2006/08/29 19:41:38 $
+* @version $Revision: 1.7 $
+* @modified $Date: 2006/10/23 20:11:28 $
 * 
 * Allows editing a user
-*
-* 20060507 - franciscom - changes in userInsert()
-* 20060507 - franciscom - changes due external password management (LDAP authentication)
-*
 */
 require_once('../../config.inc.php');
 require_once('testproject.class.php');
@@ -20,7 +16,7 @@ require_once('users.inc.php');
 testlinkInitPage($db);
 
 $user_id = isset($_GET['user_id']) ? intval($_GET['user_id']) : 0;
-$args = init_args($_GET,$_POST,TRUE);
+$args = init_args($_GET,$_POST);
 $sessionUserID = $_SESSION['userID'];
 
 $sqlResult = null;
@@ -39,13 +35,10 @@ if ($args->do_update)
 		$sqlResult = checkLogin($db,$args->login);
 		if ($sqlResult =='ok')
 		{
-      // 20060511 - franciscom
-		  $args->user_id = userInsert($db,$args->login, $args->password, $args->first, $args->last,  
-		  	                              $args->email, $args->rights_id, $args->locale, $args->user_is_active);
+			$args->user_id = userInsert($db,$args->login, $args->password, $args->first, $args->last,  
+			 	                              $args->email, $args->rights_id, $args->locale, $args->user_is_active);
 			if(!$args->user_id)
-			{
 				$sqlResult = lang_get('user_not_added');
-			}	
 		}		
 		$action = "added";
 	}
@@ -61,7 +54,6 @@ if ($args->do_update)
 	{
 		//if the user has no longer the mgt_users right, reload the index.php page,
 		//else we must update the titlebar
-		//BUGID 0000103: Localization is changed but not strings
 		if (!has_rights($db,'mgt_users'))
 			$reload = 1;
 		else
@@ -96,10 +88,9 @@ $smarty->assign('result',$sqlResult);
 $smarty->assign('action',$action);
 $smarty->display('usersedit.tpl');
 
-function init_args($get_hash, $post_hash, $do_post_strip = TRUE)
+function init_args($get_hash, $post_hash)
 {
-	if($do_post_strip)
-		$post_hash = strings_stripSlashes($post_hash);
+	$post_hash = strings_stripSlashes($post_hash);
 
 	$intval_keys = array('delete' => 0, 'user' => 0);
 	foreach ($intval_keys as $key => $value)

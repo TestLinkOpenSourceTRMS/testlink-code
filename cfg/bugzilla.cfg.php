@@ -1,13 +1,12 @@
 <?php
 /**
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: bugzilla.cfg.php,v 1.4 2005/12/29 20:59:00 schlundus Exp $ 
+* $Id: bugzilla.cfg.php,v 1.5 2006/10/23 20:11:28 schlundus Exp $ 
 * 
 * Currently the only bug tracking system is bugzilla. 
 * TestLink uses bugzilla to check if displayed bugs resolved, verified, 
 * and closed bugs. If they are it will strike through them
 * 
-* 20051229 - scs - added DEFINE for the DB-Type
 */
 
 //Set the bug tracking system Interface

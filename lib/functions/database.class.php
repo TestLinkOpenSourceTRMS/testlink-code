@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
  * @filesource $RCSfile: database.class.php,v $
- * @version $Revision: 1.17 $
- * @modified $Date: 2006/08/29 19:41:37 $ by $Author: schlundus $
+ * @version $Revision: 1.18 $
+ * @modified $Date: 2006/10/23 06:42:22 $ by $Author: franciscom $
  * @author Francisco Mancardi
  * 
  *
@@ -545,6 +545,25 @@ class database
 		
 		return $items;
 	}
+
+
+  // 20061020 
+	function fetchMapRowsIntoMap($query,$column_main_key,$column_sec_key)
+	{
+		$items = null;
+		$result = $this->exec_query($query);
+		if ($result)
+		{
+			while($row = $this->fetch_array($result))
+			{
+				$items[$row[$column_main_key]][$row[$column_sec_key]] = $row;
+			}
+		}
+		
+		return $items;
+	}
+
+
 
 
   // 20060523 - franciscom

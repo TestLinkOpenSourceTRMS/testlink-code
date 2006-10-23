@@ -3,7 +3,7 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
- * @version $Id: archiveData.php,v 1.21 2006/10/02 17:36:56 schlundus Exp $
+ * @version $Id: archiveData.php,v 1.22 2006/10/23 06:42:22 franciscom Exp $
  * @author Martin Havlat
  *  
  * This page allows you to show data (test cases, categories, and
@@ -22,6 +22,7 @@ $allow_edit = isset($_GET['allow_edit']) ? intval($_GET['allow_edit']) : 1;
 
 // load data and show template
 $smarty = new TLSmarty();
+$smarty->assign('page_title',lang_get('container_title_' . $feature));
 switch($feature)
 {
 	case 'testproject':

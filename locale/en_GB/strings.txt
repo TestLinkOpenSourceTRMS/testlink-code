@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.75 $
- * @modified $Date: 2006/10/20 07:27:55 $ $Author: franciscom $
+ * @version $Revision: 1.76 $
+ * @modified $Date: 2006/10/23 06:42:22 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
@@ -949,7 +949,12 @@ $TLS_title_remove_test_from_plan = "Remove tc from test plan";
 
 // gui/templates/tcexport.tpl
 $TLS_export_with_keywords = "Export with keywords";
-$TLS_title_tc_export = "Export Testcase(s)";
+$TLS_title_tc_export = "Export test case";
+$TLS_title_tc_export_all = "Export all test cases";
+$TLS_title_tsuite_export = "Export Test suite";
+$TLS_title_tsuite_export_all = "Export all test suites";
+
+
 
 
 // gui/templates/tcImport.tpl
@@ -1415,5 +1420,22 @@ $TLS_your_password_is = "Your new TestLink password is: <br>";
 
 
 // 
-$TL_testproject='Test project';
+$TLS_container_title_testproject='Test project';
+$TLS_container_title_testsuite='Test suite';
+
+$TLS_title_testproject='Test project';
+$TLS_title_testsuite='Test suite';
+
+$TLS_th_version = "Version";
+$TLS_th_linked_to_tplan="Linked to test plan";
+$TLS_th_executed="Executed";
+
+$TLS_warning="Warning!!";
+$TLS_delete_linked_and_exec="Links to test plans, and execution related information will be removed";
+$TLS_delete_linked="Links to test plans will be removed";
+
+$TLS_can_not_edit_tc="You can not edit this version because has been executed";
+
+
+  	
 ?>

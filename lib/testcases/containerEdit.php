@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * @version $Revision: 1.44 $
- * @modified $Date: 2006/10/02 17:36:56 $ by $Author: schlundus $
+ * @version $Revision: 1.45 $
+ * @modified $Date: 2006/10/23 06:42:22 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * 20060822 - franciscom - solved keyword presentation problem
@@ -71,6 +71,8 @@ $a_init_opt_transfer=array('edit_testsuite' => 1,
 					                 'add_testsuite'  => 1,
                            'update_testsuite' => 1);
 
+
+
 $the_tpl = null;
 foreach ($a_actions as $the_key => $the_val)
 {
@@ -87,6 +89,8 @@ foreach ($a_actions as $the_key => $the_val)
 	}
 }                    
 $smarty->assign('level', $level);
+$smarty->assign('page_title',lang_get('container_title_' . $level));
+
 
 if($init_opt_transfer)
 {

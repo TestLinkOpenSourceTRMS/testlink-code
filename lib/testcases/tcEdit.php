@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.37 $
- * @modified $Date: 2006/10/09 10:28:50 $  by $Author: franciscom $
+ * @version $Revision: 1.38 $
+ * @modified $Date: 2006/10/23 06:42:22 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
  * @author Martin Havlat
@@ -191,46 +191,38 @@ else if($do_create)
 		                       $assigned_keywords_list,DEFAULT_TC_ORDER,AUTOMATIC_ID,
 		                       config_get('check_names_for_duplicates'),'block');
 		$msg = $tcase['msg'];                       
-		
-		/*
-		if ($tcase_mgr->create($container_id,$name,$summary,$steps,
-		                       $expected_results,$userID,
-		                       $assigned_keywords_list,DEFAULT_TC_ORDER,AUTOMATIC_ID,
-		                       config_get('check_names_for_duplicates'),
-		                       'block') )
-		{
-		  $msg = 'ok';
-		}
-		*/
-		
 	}
 
 	keywords_opt_transf_cfg($opt_cfg, $assigned_keywords_list); 
  	$smarty->assign('opt_cfg', $opt_cfg);
-  	$smarty->assign('sqlResult', $msg);
+ 	$smarty->assign('sqlResult', $msg);
 	$smarty->assign('name', $name);
 	$smarty->assign('item', 'Test case');
 }
 else if($delete_tc)
 {
+  
+ 	$exec_status = 'ALL';
+	$linked_tcversions = $tcase_mgr->get_linked_versions($tcase_id,$exec_status);
+  
 	$msg = '';
-	
 	$my_ret = $tcase_mgr->check_link_and_exec_status($tcase_id);
+	$exec_status_quo = $tcase_mgr->get_exec_status($tcase_id);
+	
 	switch($my_ret)
 	{
 		case "linked_and_executed":
-			$msg = " This test case has been linked to test plans <br>" .
-				     " and has been runned<br>" .
-				     " If you confirm the links to test plans, and execution related information will be removed";
-			break;
+		$msg = lang_get('warning') . TITLE_SEP . lang_get('delete_linked_and_exec');
+		break;
 
 		case "linked_but_not_executed":
-			$msg = " This test case has been linked to test plans <br>" .
-				     " If you confirm the links to test plans will be removed";
-			break;
+		$msg = lang_get('warning') . TITLE_SEP . lang_get('delete_linked');
+		break;
 	}
 
 	$tcinfo = $tcase_mgr->get_by_id($tcase_id);
+	
+	$smarty->assign('exec_status_quo',$exec_status_quo);
 	$smarty->assign('title', lang_get('title_del_tc') . $tcinfo[0]['name']);
 	$smarty->assign('testcase_id', $tcase_id);
 	$smarty->assign('tcversion_id', TC_ALL_VERSIONS);
@@ -241,29 +233,40 @@ else if($delete_tc)
 else if($delete_tc_version)
 {
 	$status_quo_map = $tcase_mgr->get_versions_status_quo($tcase_id);
+	$exec_status_quo = $tcase_mgr->get_exec_status($tcase_id);
+	
+	
+	$sq=null;
+	if(!is_null($exec_status_quo))
+	{
+	  if(isset($exec_status_quo[$tcversion_id]))
+	  {
+	    $sq=array($tcversion_id => $exec_status_quo[$tcversion_id]);
+	  }
+	}
+	
 	if(intval($status_quo_map[$tcversion_id]['executed']))
 	{
-		$msg = " This test case version has been linked to test plans <br>" .
-				" and has been runned<br>" .
-				" If you confirm the links to test plans, and execution related information will be removed";
+			$msg = lang_get('warning') . TITLE_SEP . lang_get('delete_linked_and_exec');
 	}
 	else if(intval($status_quo_map[$tcversion_id]['linked']))
 	{
-			$msg = " This test case version has been linked to test plans <br>" .
-			" If you confirm the links to test plans will be removed";
-	}
+      $msg = lang_get('warning') . TITLE_SEP . lang_get('delete_linked');	
+  }
 	else
 	{
 		$msg = '';
 	}
-
+  
 	$tcinfo = $tcase_mgr->get_by_id($tcase_id,$tcversion_id);
 	$smarty->assign('title', lang_get('title_del_tc') . 
-	                         $tcinfo[0]['name'] . lang_get('version') . $tcinfo[0]['version']);
+	                         $tcinfo[0]['name'] . TITLE_SEP . 
+	                         lang_get('version') . " " . $tcinfo[0]['version']);
 	
 	$smarty->assign('testcase_id', $tcase_id);
 	$smarty->assign('tcversion_id', $tcversion_id);
 	$smarty->assign('delete_message', $msg);
+	$smarty->assign('exec_status_quo',$sq);
 	$smarty->display('tcDelete.tpl');
 }
 else if($do_delete)

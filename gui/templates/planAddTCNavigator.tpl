@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planAddTCNavigator.tpl,v 1.5 2006/06/20 19:51:32 schlundus Exp $
+$Id: planAddTCNavigator.tpl,v 1.6 2006/10/23 06:42:21 franciscom Exp $
 show test specification tree 
 *}
 
@@ -10,7 +10,7 @@ show test specification tree
 <h1>{lang_get s='title_navigator'}</h1>
 <div style="margin: 3px;">
 <form method="post">
-	<table class="smallGrey" >
+	<table class="smallGrey" width="100%">
 		<caption>
 			{lang_get s='caption_nav_filter_settings'}
 			{include file="inc_help.tpl" filename="execFilter.html"}

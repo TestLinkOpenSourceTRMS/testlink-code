@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.9 2006/10/02 17:36:55 schlundus Exp $
+$Id: tcView_viewer.tpl,v 1.10 2006/10/23 06:42:22 franciscom Exp $
 viewer for test case in test specification
 
 20060427 - franciscom - added font-size in the table used for keywords
@@ -11,10 +11,6 @@ viewer for test case in test specification
 {/if}
 
 {if $args_can_edit == "yes" }
-	{* 
-	  {include file="inc_update.tpl" result=$sqlResult action=$action item="test case" refresh="yes"}
-	*}
-  
 	<div class="groupBtn">
 	<form method="post" action="lib/testcases/tcEdit.php">
 	  <input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
@@ -22,6 +18,9 @@ viewer for test case in test specification
 
     {if $args_status_quo eq null or $args_status_quo[$args_testcase.id].executed eq null}
  	    <input type="submit" name="edit_tc"   value="{lang_get s='btn_edit'}" />
+      {assign var="warning_edit_msg" value=""}
+    {else}
+      {lang_get s='can_not_edit_tc' var="warning_edit_msg"}
     {/if}
 
 	{if $args_can_delete_testcase == "yes" }
@@ -36,7 +35,6 @@ viewer for test case in test specification
    		<input type="submit" name="move_copy_tc"   value="{lang_get s='btn_mv_cp'}" />
     {/if}		                     
 		<input type="submit" name="do_create_new_version"   value="{lang_get s='btn_new_version'}" />
-
 	</form>
 	<form method="post" action="lib/testcases/tcexport.php">
 		<br/>
@@ -44,6 +42,10 @@ viewer for test case in test specification
 		<input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />
 		<input type="submit" name="export_tc"   value="{lang_get s='btn_export'}" />
 	</form>
+
+  {if $warning_edit_msg neq ""}
+    <p><div class="warning_message" align="center">{$warning_edit_msg}</div>
+  {/if}
 	</div>	
 {/if}
 
@@ -112,17 +114,26 @@ viewer for test case in test specification
 			</td>
 		</tr>
 	{/if}
-	</table>
-	
-	<div>
-		<p>{lang_get s='title_created'}&nbsp;{localize_timestamp ts=$args_testcase.creation_ts }&nbsp;
+
+  <tr>
+  <td colspan="2">
+  &nbsp;
+  </td>
+  </tr>
+  <tr class="time_stamp_creation">
+  <td colspan="2">
+      {lang_get s='title_created'}&nbsp;{localize_timestamp ts=$args_testcase.creation_ts }&nbsp;
 			{lang_get s='by'}&nbsp;{$args_testcase.author_first_name|escape}&nbsp;{$args_testcase.author_last_name|escape}
-		
-		{if $args_testcase.updater_last_name ne "" || $args_testcase.updater_first_name ne ""}
-		<br />{lang_get s='title_last_mod'}&nbsp;{localize_timestamp ts=$args_testcase.modification_ts}
-		&nbsp;{lang_get s='by'}&nbsp;{$args_testcase.updater_first_name|escape}
+  </td>
+  </tr>
+  {if $args_testcase.updater_last_name ne "" || $args_testcase.updater_first_name ne ""}
+    <tr class="time_stamp_creation">
+    <td colspan="2">
+    {lang_get s='title_last_mod'}&nbsp;{localize_timestamp ts=$args_testcase.modification_ts}
+		  &nbsp;{lang_get s='by'}&nbsp;{$args_testcase.updater_first_name|escape}
 		                       &nbsp;{$args_testcase.updater_last_name|escape}
-		{/if}
-		</p>
-	</div>
+    </td>
+    </tr>
+  {/if}
+	</table>
 	

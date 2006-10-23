@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.34 $
- * @modified $Date: 2006/10/17 20:17:54 $ $Author: schlundus $
+ * @version $Revision: 1.35 $
+ * @modified $Date: 2006/10/23 06:42:22 $ $Author: franciscom $
  * @author franciscom
  *
  *
@@ -276,12 +276,13 @@ function show(&$smarty,$id, $user_id, $version_id=TC_ALL_VERSIONS, $action='',
 		{
 			$tc_other_versions[] = null;
 		}
-		$linked_tcversions = $this->get_linked_versions($tc_id,'EXECUTED');
+		
+		// $linked_tcversions = $this->get_linked_versions($tc_id,'EXECUTED');
 		// get assigned REQs
 		$arrReqs[] = getReq4Tc($this->db,$tc_id);
 	}
   	
-    $smarty->assign('action',$action);
+  $smarty->assign('action',$action);
 	$smarty->assign('sqlResult',$msg_result);
 	$smarty->assign('can_edit',$can_edit);
 	$smarty->assign('can_delete_testcase',$can_edit);
@@ -407,6 +408,7 @@ function check_link_and_exec_status($id)
 	return $status;
 }
 
+
 /* 20060326 - franciscom - interface changed */
 function delete($id,$version_id = TC_ALL_VERSIONS)
 {
@@ -418,6 +420,9 @@ function delete($id,$version_id = TC_ALL_VERSIONS)
 
 /*
 	get for one tc all versions that are linked to test plans
+	
+	20061020 - franciscom - changed return type
+	                        added test plan name in return data
 */
 function get_linked_versions($id,$status="ALL")
 {
@@ -430,38 +435,48 @@ function get_linked_versions($id,$status="ALL")
 		case "ALL":
 			$sql = "SELECT NH.parent_id AS testcase_id, NH.id AS tcversion_id,
 						tcversions.*,
-						TTC.testplan_id, TTC.tcversion_id
-					FROM   nodes_hierarchy NH,tcversions,testplan_tcversions TTC
+						TTC.testplan_id, TTC.tcversion_id,NHB.name AS tplan_name
+					FROM   nodes_hierarchy NH,tcversions,testplan_tcversions TTC,
+					       nodes_hierarchy NHB 
 					WHERE  TTC.tcversion_id = tcversions.id 
 					AND    tcversions.id = NH.id
+					AND    NHB.id = TTC.testplan_id
 					AND    NH.parent_id = {$id}"; 
 			break;
+			
     	case "EXECUTED":
 			$sql = "SELECT NH.parent_id AS testcase_id, NH.id AS tcversion_id,
 			             tcversions.*,
 			             TTC.testplan_id, TTC.tcversion_id,
-			             executions.id AS execution_id
-					FROM   nodes_hierarchy NH,tcversions,testplan_tcversions TTC,executions       
+			             executions.id AS execution_id,NHB.name AS tplan_name
+					FROM   nodes_hierarchy NH,tcversions,testplan_tcversions TTC,
+					       executions,nodes_hierarchy NHB
 					WHERE  TTC.tcversion_id = tcversions.id
 					AND    executions.tcversion_id = tcversions.id
 					AND    tcversions.id = NH.id
+					AND    NHB.id = TTC.testplan_id
 					AND    NH.parent_id = {$id}"; 
 		    break;
+		    
 	    case "NOT_EXECUTED":
 			$sql = "SELECT NH.parent_id AS testcase_id, NH.id AS tcversion_id,
 			             tcversions.*,
-			             TTC.testplan_id, TTC.tcversion_id
-					FROM   nodes_hierarchy NH,tcversions,testplan_tcversions TTC
+			             TTC.testplan_id, TTC.tcversion_id,NHB.name AS tplan_name
+					FROM   nodes_hierarchy NH,tcversions,testplan_tcversions TTC,
+					       nodes_hierarchy NHB 
 					WHERE  TTC.tcversion_id = tcversions.id
 					AND    tcversions.id = NH.id
+					AND    NHB.id = TTC.testplan_id
 					AND    NH.parent_id = {$id}
 					AND    tcversions.id NOT IN ( SELECT tcversion_id FROM executions
 	                WHERE executions.tcversion_id = tcversions.id )";
 	    	break;
   }
   
-  $recordset = $this->db->fetchRowsIntoMap($sql,'tcversion_id');
-
+  // $recordset = $this->db->fetchRowsIntoMap($sql,'tcversion_id');
+  //$recordset = $this->db->fetchArrayRowsIntoMap($sql,'tcversion_id');
+  $recordset = $this->db->fetchMapRowsIntoMap($sql,'tcversion_id','testplan_id');
+  
   return $recordset;
 }
 
@@ -834,9 +849,32 @@ function get_versions_status_quo($id, $tcversion_id=null)
 		      LEFT OUTER JOIN executions E ON E.tcversion_id = NH.id
 		      WHERE  NH.parent_id = {$id} {$tcversion_filter}"; 
 		$recordset = $this->db->fetchRowsIntoMap($sql,'tcversion_id');
+		//$recordset = $this->db->fetchArrayRowsIntoMap($sql,'tcversion_id');
   	return($recordset);
 }
 // -------------------------------------------------------------------------------
+
+
+// 20061020 
+function get_exec_status($id)
+{
+		$sql="SELECT NH.parent_id AS tcase_id, NH.id AS tcversion_id,
+		             T.tcversion_id AS linked,
+		             E.tcversion_id AS executed,
+		             T.testplan_id, NHB.name AS tplan_name, TCV.version
+		      FROM   nodes_hierarchy NH
+		      JOIN testplan_tcversions T ON T.tcversion_id = NH.id
+		      JOIN tcversions TCV ON T.tcversion_id = TCV.id
+		      JOIN nodes_hierarchy NHB ON T.testplan_id = NHB.id
+		      LEFT OUTER JOIN executions E ON E.tcversion_id = NH.id
+		      WHERE  NH.parent_id = {$id}"; 
+		
+		//$recordset = $this->db->fetchArrayRowsIntoMap($sql,'tcversion_id');
+		$recordset = $this->db->fetchMapRowsIntoMap($sql,'tcversion_id','testplan_id');
+  	return($recordset);
+}
+// -------------------------------------------------------------------------------
+
 
 
 
@@ -1165,7 +1203,6 @@ $sql="SELECT T.tcversion_id AS tcversion_id,T.id AS feature_id," .
      " AND   (UA.type=" . $this->assignment_types['testcase_execution']['id'] . 
      "        OR UA.type IS NULL) ";
 
-  echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
           
 $recordset = $this->db->fetchRowsIntoMap($sql,'tcversion_id');
 return($recordset);

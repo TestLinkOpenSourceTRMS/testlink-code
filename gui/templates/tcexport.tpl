@@ -1,12 +1,12 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: tcexport.tpl,v 1.2 2006/10/02 17:36:55 schlundus Exp $ *}
+{* $Id: tcexport.tpl,v 1.3 2006/10/23 06:42:22 franciscom Exp $ *}
 {* Purpose: smarty template - keyword export initial page *}
 {* revisions:
 *}
 {include file="inc_head.tpl"}
 
 <body>
-<h1>{lang_get s='title_tc_export'} {$reqSpec.title|escape}</h1>
+<h1>{$page_title} {$object_name|escape}</h1>
 
 <div class="workBack">
 

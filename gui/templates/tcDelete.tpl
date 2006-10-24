@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcDelete.tpl,v 1.7 2006/10/23 06:42:22 franciscom Exp $
+$Id: tcDelete.tpl,v 1.8 2006/10/24 06:53:14 franciscom Exp $
 Purpose: smarty template - delete test case in test specification
 
 *}
@@ -15,7 +15,7 @@ Purpose: smarty template - delete test case in test specification
 {if $sqlResult == ''}
   <p>
   {if $exec_status_quo neq ''}
-    <table class="smallGrey" >
+    <table class="link_and_exec" >
     <th>{lang_get s='th_version'}</th>
     <th>{lang_get s='th_linked_to_tplan'}</th> 
     <th>{lang_get s='th_executed'}</th> 

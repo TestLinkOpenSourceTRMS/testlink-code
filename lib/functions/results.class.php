@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8 
- * @modified $Date: 2006/10/24 19:06:42 $ by $Author: kevinlevy $
+ * @modified $Date: 2006/10/24 19:16:29 $ by $Author: kevinlevy $
  *
  *
  * This class is encapsulates most functionality necessary to query the database
@@ -179,88 +179,22 @@ class results
   	return $this->flatArray;
   }
 
-/**
- * Builds both $this->flatArray and $this->suiteStructure
- * 
- * Builds a multi-dimentional array which represents the tree structure.
- * Specifically an array is returned in the following pattern 
- * every 3rd index is null if suite does not contain other suites
- * or array of same pattern if it does contain suites
- *	
- *  suite[0] = suite id
- *	suite[1] = suite name
- *	suite[2] = array() of child suites or null 
- *	suite[3] = suite id
- *	suite[4] = suite name
- *	suite[5] = array() of child suites or null 
- *
- * 
- *
- */
-// KL - 20061023 - no longer using this method in favor of generateExecTree	
-/**
-  function buildSuiteStructure($suiteId)
-  {
-  	// do not null this out 
-  	$currentNode = null;
-	$currentNodeIndex = 0;
-  	$children = $this->tree->get_children($suiteId);
-  	$suiteFound = false;	
-  	
-	for ($i = 0 ; $i < count($children); $i++){		
-		$currentRow = $children[$i];		
-		if ($currentRow['node_type_id'] == $this->SUITE_TYPE_ID) {			
-			$suiteFound = true;	
-			$changeInDepth = ($this->depth - $this->previousDepth);
-			$this->previousDepth = $this->depth;
-			// depth only used by flatArrayIndex to help describe the tree
-			if (($this->flatArrayIndex % $this->ITEM_PATTERN_IN_FLAT_ARRAY) != $this->DEPTH_IN_FLATARRAY){
-				print "ERROR 1 in flatArrayIndex creation in lib/functions/results.class.php <BR>";				
-			} 
-			$this->flatArray[$this->flatArrayIndex] = $changeInDepth;
-			$this->flatArrayIndex++;
-			
-			
-			if (($currentNodeIndex % $this->ITEM_PATTERN_IN_SUITE_STRUCTURE) != $this->NAME_IN_SUITE_STRUCTURE){
-				print "ERROR 3 in lib/functions/results.class.php/buildSuiteStructure() <BR>";
-			}
-			$currentNode[$currentNodeIndex] = $currentRow['name'];
-			$currentNodeIndex++;
-	
-			if (($this->flatArrayIndex % $this->ITEM_PATTERN_IN_FLAT_ARRAY) != $this->NAME_IN_FLATARRAY){
-				print "ERROR 2 in flatArrayIndex creation in lib/functions/results.class.php <BR>";				
-			} 
-			$this->flatArray[$this->flatArrayIndex] = $currentRow['name'];
-			$this->flatArrayIndex++;		
-	
-	
-			if (($currentNodeIndex % $this->ITEM_PATTERN_IN_SUITE_STRUCTURE) != $this->ID_IN_SUITE_STRUCTURE){
-				print "ERROR 5 in lib/functions/results.class.php/buildSuiteStructure() curentNodeIndex = " . $currentNodeIndex . "<BR>";
-			}
-			$currentNode[$currentNodeIndex] = $currentRow['id'];
-			$currentNodeIndex++;
-	
-	
-			if (($this->flatArrayIndex % $this->ITEM_PATTERN_IN_FLAT_ARRAY) != $this->SUITE_ID_IN_FLATARRAY){
-				print "ERROR 6 in flatArrayIndex creation in lib/functions/results.class.php <BR>";				
-			} 
-			$this->flatArray[$this->flatArrayIndex] = $currentRow['id'];
-			$this->flatArrayIndex++;
-			
-			$newRowId = $currentRow['id'];			
-			// depth must be increased because we are about to call recursively
-			$this->depth++;		
-			if (($currentNodeIndex % $this->ITEM_PATTERN_IN_SUITE_STRUCTURE) != $this->ARRAY_IN_SUITE_STRUCTURE){
-				print "ERROR 7 in lib/functions/results.class.php/buildSuiteStructure() <BR>";				
-			}						
-			$currentNode[$currentNodeIndex] = $this->buildSuiteStructure($newRowId);
-			$currentNodeIndex++;						 				
-		}		
-	}
-	$this->depth--;
-  	return $currentNode;
-  }
-*/	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	/**
 	 * mapOfLastResult -> arrayOfSuiteIds
 	 * 
@@ -618,6 +552,26 @@ class results
   	return $returnList;
   } // end function getTopLevelSuites
 
+
+/**
+ * generateExecTree()
+ * KL took this code from menuTree.inc.php.
+ * Builds both $this->flatArray and $this->suiteStructure
+ * 
+ * Builds a multi-dimentional array which represents the tree structure.
+ * Specifically an array is returned in the following pattern 
+ * every 3rd index is null if suite does not contain other suites
+ * or array of same pattern if it does contain suites
+ *	
+ *  suite[0] = suite id
+ *	suite[1] = suite name
+ *	suite[2] = array() of child suites or null 
+ *	suite[3] = suite id
+ *	suite[4] = suite name
+ *	suite[5] = array() of child suites or null 
+ *
+ */
+
 function generateExecTree($keyword_id = 0,$bForPrinting = false,$tc_id = 0)
 {
 	// $menustring = null;
@@ -658,75 +612,15 @@ function generateExecTree($keyword_id = 0,$bForPrinting = false,$tc_id = 0)
 		$menuUrl = "menuUrl";
 		$currentNode = null;
 		$currentNodeIndex = 0;
-		//$suiteStructure = $this->processExecTreeNode(1,$test_spec,$getArguments,$hash_id_descr,1,$menuUrl,$bForPrinting);
-		$suiteStructure = $this->processExecTreeNode2(1,$test_spec,$getArguments,$hash_id_descr,1,$menuUrl,$bForPrinting);
+		$suiteStructure = $this->processExecTreeNode(1,$test_spec,$getArguments,$hash_id_descr,1,$menuUrl,$bForPrinting);
 
 	}
 	return $suiteStructure;	
 } // end generateExecTree
 
-
-function processExecTreeNode($level,&$node,$getArguments,$hash_id_descr,$tc_action_enabled,$linkto,$bForPrinting)
-{
-	$currentNode = null;
-	$currentNodeIndex = 0;
-
-	$nodeDesc = $hash_id_descr[$node['node_type_id']];
-	//$nodeInfo = $this->getSuiteInfoIfItExists($node,$nodeDesc,$tc_action_enabled,$bForPrinting, $currentNode, $currentNodeIndex);
-	$id = $node['id'];
-	$name = filterString($node['name']);
-	print "\$nodeDesc = $nodeDesc, \$id = $id, \$name = $name <BR>";
-
-	//$nodeIsTS = 0;
-	if (($nodeDesc == 'testsuite') || ($nodeDesc == 'testproject')){
-		/** flat array logic */
-		//$changeInDepth = $this->depth - $this->previousDepth;
-		//$this->previousDepth = $this->depth;
-		// depth only used by flatArrayIndex to help describe the tree
-	
-		//$this->flatArray[$this->flatArrayIndex] = $changeInDepth;
-		/**
-		$CONSTANT_DEPTH_ADJUSTMENT = 2;
-		$this->flatArray[$this->flatArrayIndex] = $level - $CONSTANT_DEPTH_ADJUSTMENT  ;
-		$this->flatArrayIndex++;
-		$this->flatArray[$this->flatArrayIndex] = $name;
-		$this->flatArrayIndex++;		
-		$this->flatArray[$this->flatArrayIndex] = $id;
-		$this->flatArrayIndex++;
-		*/
-		/** end flat array logic */
-
-		/** suite structure logic */
-		$currentNode[$currentNodeIndex] = $name;
-		$currentNodeIndex++;
-		$currentNode[$currentNodeIndex] = $id;
-		$currentNodeIndex++;
-		print "$name $id <BR>";
-		/** end suite structure logic */
-	}
-
-	if (isset($node['childNodes']) && $node['childNodes'] )
-	{
-		//print "$nodeInfo[2] has child nodes <BR>";
-		$childNodes = $node['childNodes'];
-		for($i = 0;$i < sizeof($childNodes);$i++)
-		{
-			$current = $childNodes[$i];
-			if(is_null($current)) {
-				print "zzz: id = $id, name = $name, nodeDesc = $nodeDesc, index = $currentNodeIndex <BR>";
-				$currentNodeIndex++;
-				continue;				
-			}
-			$currentNode[$currentNodeIndex] = $this->processExecTreeNode($level+1,$current,$getArguments,$hash_id_descr,$tc_action_enabled,$linkto,$bForPrinting);
-		}
-	}
-
-	return $currentNode;
-}
-
 // KL - try to do this correctly
 
-function processExecTreeNode2($level,&$node,$getArguments,$hash_id_descr,$tc_action_enabled,$linkto,$bForPrinting)
+function processExecTreeNode($level,&$node,$getArguments,$hash_id_descr,$tc_action_enabled,$linkto,$bForPrinting)
 {
 	//print "<BR><BR><BR><BR>processExecTreeNode2<BR><BR>";
 	
@@ -768,7 +662,7 @@ function processExecTreeNode2($level,&$node,$getArguments,$hash_id_descr,$tc_act
 				$currentNode[$currentNodeIndex] = $id;
 				$currentNodeIndex++;
 							
-				$currentNode[$currentNodeIndex] = $this->processExecTreeNode2($level+1,$current,$getArguments,$hash_id_descr,$tc_action_enabled,$linkto,$bForPrinting);
+				$currentNode[$currentNodeIndex] = $this->processExecTreeNode($level+1,$current,$getArguments,$hash_id_descr,$tc_action_enabled,$linkto,$bForPrinting);
 				$currentNodeIndex++;	
 
 				/** end suiteStructure logic */

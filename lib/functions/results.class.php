@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8 
- * @modified $Date: 2006/10/24 16:42:10 $ by $Author: kevinlevy $
+ * @modified $Date: 2006/10/24 17:19:27 $ by $Author: kevinlevy $
  *
  *
  * This class is encapsulates most functionality necessary to query the database
@@ -118,7 +118,7 @@ class results
    // END ONLY FOR COMPARING
 */
     $this->suiteStructure = $this->generateExecTree();
-    $this->suiteStructure = $this->suiteStructure[0];
+  //  $this->suiteStructure = $this->suiteStructure[0];
 	print_r($this->suiteStructure);
 /**		
     print "suiteStructure from generateExecTree <BR>";
@@ -666,10 +666,13 @@ function processExecTreeNode($level,&$node,$getArguments,$hash_id_descr,$tc_acti
 	$currentNodeIndex = 0;
 
 	$nodeDesc = $hash_id_descr[$node['node_type_id']];
-	$nodeInfo = $this->getSuiteInfoIfItExists($node,$nodeDesc,$tc_action_enabled,$bForPrinting, $currentNode, $currentNodeIndex);
+	//$nodeInfo = $this->getSuiteInfoIfItExists($node,$nodeDesc,$tc_action_enabled,$bForPrinting, $currentNode, $currentNodeIndex);
+	$id = $node['id'];
+	$name = filterString($node['name']);
+	print "\$nodeDesc = $nodeDesc, \$id = $id, \$name = $name <BR>";
 
 	//$nodeIsTS = 0;
-	if ($nodeInfo[0] == TS){
+	if (($nodeDesc == 'testsuite') || ($nodeDesc == 'testproject')){
 		/** flat array logic */
 		//$changeInDepth = $this->depth - $this->previousDepth;
 		//$this->previousDepth = $this->depth;
@@ -680,38 +683,41 @@ function processExecTreeNode($level,&$node,$getArguments,$hash_id_descr,$tc_acti
 		$CONSTANT_DEPTH_ADJUSTMENT = 2;
 		$this->flatArray[$this->flatArrayIndex] = $level - $CONSTANT_DEPTH_ADJUSTMENT  ;
 		$this->flatArrayIndex++;
-		$this->flatArray[$this->flatArrayIndex] = $nodeInfo[2];
+		$this->flatArray[$this->flatArrayIndex] = $name;
 		$this->flatArrayIndex++;		
-		$this->flatArray[$this->flatArrayIndex] = $nodeInfo[1];
+		$this->flatArray[$this->flatArrayIndex] = $id;
 		$this->flatArrayIndex++;
 		*/
 		/** end flat array logic */
 
 		/** suite structure logic */
-		$currentNode[$currentNodeIndex] = $nodeInfo[2];
+		$currentNode[$currentNodeIndex] = $name;
 		$currentNodeIndex++;
-		$currentNode[$currentNodeIndex] = $nodeInfo[1];
+		$currentNode[$currentNodeIndex] = $id;
 		$currentNodeIndex++;
 		/** end suite structure logic */
 	}
 	if (isset($node['childNodes']) && $node['childNodes'] )
 	{
-		print "$nodeInfo[2] has child nodes <BR>";
+		//print "$nodeInfo[2] has child nodes <BR>";
 		$childNodes = $node['childNodes'];
 		for($i = 0;$i < sizeof($childNodes);$i++)
 		{
 			$current = $childNodes[$i];
 			if(is_null($current)) {
+				print "zzz: id = $id, name = $name, nodeDesc = $nodeDesc, index = $currentNodeIndex <BR>";
+				$currentNodeIndex++;
 				continue;
 			}
 			$currentNode[$currentNodeIndex] = $this->processExecTreeNode($level+1,$current,$getArguments,$hash_id_descr,$tc_action_enabled,$linkto,$bForPrinting);
-			$currentNodeIndex++;
 		}
 	}
+	
 	return $currentNode;
 }
 
 // KL - 20061021
+/**
 function getSuiteInfoIfItExists($current,$nodeDesc,$tc_action_enabled,$bForPrinting, &$currentNode, $currentNodeIndex)
 {
 	//$menustring = "['";
@@ -742,7 +748,7 @@ function getSuiteInfoIfItExists($current,$nodeDesc,$tc_action_enabled,$bForPrint
 
 	return $returnValue;
 }
-
+*/
 /**
 function jtree_renderTestSpecTreeNodeOnClose2($current,$nodeDesc)
 {

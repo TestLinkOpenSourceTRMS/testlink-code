@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8 
- * @modified $Date: 2006/10/24 21:50:43 $ by $Author: kevinlevy $
+ * @modified $Date: 2006/10/24 22:09:47 $ by $Author: kevinlevy $
  *
  *
  * This class is encapsulates most functionality necessary to query the database
@@ -22,7 +22,6 @@ require_once('treeMenu.inc.php');
 
 class results
 {
-
   var $suitesSelected = "";	
 
   // class references passed in by constructor
@@ -89,64 +88,29 @@ class results
     $this->suitesSelected = $suitesSelected;  	
     $this->prodID = $prodID;
     $this->testPlanID = $testPlanID;
-	
-    // retrieve results from executions table
-    $this->executionsMap = $this->buildExecutionsMap($builds_to_query);    
 
     // build suiteStructure and flatArray
     $this->suiteStructure = $this->generateExecTree();
-    
-    // 'all' is passed in by reportsMoreBuilds.php
-    // and we don't need to prune the suiteStructure
-    // for the query form page
-    /** this concept won't work because flatArray is still being built
-     out incorrectly
-    if ($this->suitesSelected != 'all') {
-      $this->pruneSuiteStructure();
-    }
-    */
+
+    // print "builds_to_query = $builds_to_query <BR>";
+
+    // KL - if no builds are specified, no need to execute the following block of code
+    if ($builds_to_query != -1) {
+      // retrieve results from executions table
+      $this->executionsMap = $this->buildExecutionsMap($builds_to_query);    
  
-    // create data object which tallies last result for each test case
-    $this->createMapOfLastResult($this->suiteStructure, $this->executionsMap);
-	    
-    // create data object which tallies totals for individual suites
-    // child suites are NOT taken into account in this step
-    $this->createMapOfSuiteSummary($this->mapOfLastResult);
-    
-    // create data object which tallies totals for suites taking
-    // child suites into account
-    $this->createAggregateMap($this->suiteStructure, $this->mapOfSuiteSummary);
-    $this->totalsForPlan = $this->createTotalsForPlan($this->suiteStructure, $this->mapOfSuiteSummary);
-  }
-  /**  KL - this ain't gonna work
-  function pruneSuiteStructure(){
-    print "pruneSuiteStructure <BR>";
-    print "suitesSelected = <BR>";
-    print_r($this->suitesSelected);
-    print "<BR>";
-
-    $size = sizeOf($this->suiteStructure);
-    print "size = $size <BR>";
-    
-    $i = 0;
-    while ($i < $size){
-      if (($i % 3) == 1 ) {
-	$suiteId = $this->suiteStructure[$i];
-	print "suite id = " . $suiteId . "<BR>";
-	if (in_array($suiteId, $this->suitesSelected)){
-	  print "$suiteId is in suiteSelected <BR>";
-	}
-	else {
-	  print "$suiteId is NOT in suiteSelected <BR>";
-	  array_splice($this->suiteStructure, $i-1, 3);
-	}
-      }
-      $i++;
-    }
-  }
-  */
-
-
+      // create data object which tallies last result for each test case
+      $this->createMapOfLastResult($this->suiteStructure, $this->executionsMap);
+      
+      // create data object which tallies totals for individual suites
+      // child suites are NOT taken into account in this step
+      $this->createMapOfSuiteSummary($this->mapOfLastResult);
+      
+      // create data object which tallies totals for suites taking
+      // child suites into account
+      $this->createAggregateMap($this->suiteStructure, $this->mapOfSuiteSummary);
+      $this->totalsForPlan = $this->createTotalsForPlan($this->suiteStructure, $this->mapOfSuiteSummary);} // end if block
+  } // end results constructor
 
   function getSuiteList(){
     return $this->executionsMap;

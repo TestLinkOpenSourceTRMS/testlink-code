@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8 
- * @modified $Date: 2006/10/24 19:16:29 $ by $Author: kevinlevy $
+ * @modified $Date: 2006/10/24 19:18:53 $ by $Author: kevinlevy $
  *
  *
  * This class is encapsulates most functionality necessary to query the database
@@ -28,7 +28,6 @@ class results
   // class references passed in by constructor
   var $db = null;
   var $tp = null;
-//  var $tree = null;
   var $testPlanID = -1;
   var $prodID = -1;
 
@@ -85,56 +84,16 @@ class results
 	//TODO: shallow initialization!  
   function results(&$db,&$tp,$suitesSelected,$builds_to_query = -1,$prodID,$testPlanID)
   {
-
-    //print "builds_to_query = $builds_to_query <BR>";
     $this->db = $db;	
     $this->tp = $tp;    
-  //  $this->tree = $tree;
     $this->suitesSelected = $suitesSelected;  	
     $this->prodID = $prodID;
     $this->testPlanID = $testPlanID;
 	
     // retrieve results from executions table
     $this->executionsMap = $this->buildExecutionsMap($builds_to_query);    
-/**
-    // build data objects which can be used to describe the tree structure of the test project 
-    $this->suiteStructure = $this->buildSuiteStructure($this->suitesSelected);    
-    print "suiteStructure from buildSuiteStructure <BR>";
-    print_r($this->suiteStructure);
-    print "<BR><BR>";
-    print "flatarray from buildSuiteStructure <BR>";
-    print_r($this->flatArray);
-    print "<BR><BR>";
-    
-    // KL - 20061022 - call new method I am working on 
-   // ONLY FOR COMPARING
-	
-  $this->suiteStructure = null;
-  $this->flatArray = null;
-  // items assoicated with flatArray	
-   $this->flatArrayIndex = 0;	
-   $this->depth = 0;	
-    $this->previousDepth = 0;
-   // END ONLY FOR COMPARING
-*/
     $this->suiteStructure = $this->generateExecTree();
-  //  $this->suiteStructure = $this->suiteStructure[0];
-//	print_r($this->suiteStructure);
-
-//print "<BR><BR>";
-  //  print "flatarray from generateExecTree: <BR>";
-  //  print_r($this->flatArray);
-
-
-/**		
-    print "suiteStructure from generateExecTree <BR>";
-    print_r($this->suiteStructure);
-    
-    print "<BR>";
-
-*/
-
-
+ 
     // create data object which tallies last result for each test case
     $this->createMapOfLastResult($this->suiteStructure, $this->executionsMap);
 	    
@@ -145,10 +104,7 @@ class results
     // create data object which tallies totals for suites taking
     // child suites into account
     $this->createAggregateMap($this->suiteStructure, $this->mapOfSuiteSummary);
-	
     $this->totalsForPlan = $this->createTotalsForPlan($this->suiteStructure, $this->mapOfSuiteSummary);
-
- 	
   }
    
   function getSuiteList(){
@@ -178,22 +134,6 @@ class results
   function getFlatArray(){
   	return $this->flatArray;
   }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 	/**
 	 * mapOfLastResult -> arrayOfSuiteIds
@@ -618,8 +558,6 @@ function generateExecTree($keyword_id = 0,$bForPrinting = false,$tc_id = 0)
 	return $suiteStructure;	
 } // end generateExecTree
 
-// KL - try to do this correctly
-
 function processExecTreeNode($level,&$node,$getArguments,$hash_id_descr,$tc_action_enabled,$linkto,$bForPrinting)
 {
 	//print "<BR><BR><BR><BR>processExecTreeNode2<BR><BR>";
@@ -671,51 +609,5 @@ function processExecTreeNode($level,&$node,$getArguments,$hash_id_descr,$tc_acti
 	} // end if
 	return $currentNode;
 } //end function
-
-// KL - 20061021
-/**
-function getSuiteInfoIfItExists($current,$nodeDesc,$tc_action_enabled,$bForPrinting, &$currentNode, $currentNodeIndex)
-{
-	//$menustring = "['";
-	$name = filterString($current['name']);
-	//$buildLinkTo = 1;
-	//$pfn = "testCase";
-	//$testcase_count = isset($current['testcase_count']) ? $current['testcase_count'] : 0;	
-	//$versionID = 0;
-	
-	$returnValue = array();
-	$returnType = null;	
-	if($nodeDesc == 'testproject')
-	{
-		$returnType = "TP";
-	}
-	else if ($nodeDesc == 'testsuite')
-	{
-		$returnType = "TS";
-	}
-	else if ($nodeDesc == 'testcase')
-	{
-		$returnType = "TC";
-	}
-		
-	$returnValue[0] = $returnType;
-	$returnValue[1] = $current['id'];
-	$returnValue[2] = $name;	
-
-	return $returnValue;
-}
-*/
-/**
-function jtree_renderTestSpecTreeNodeOnClose2($current,$nodeDesc)
-{
-	//$menustring =  "],";
-	//return $menustring;
-	return null;
-}
-*/
-
-
 } // end class result
-
-
 ?>

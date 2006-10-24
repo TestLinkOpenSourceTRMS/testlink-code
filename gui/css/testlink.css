@@ -1,6 +1,6 @@
 /* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: testlink.css,v 1.11 2006/10/21 06:44:57 franciscom Exp $
+$Id: testlink.css,v 1.12 2006/10/24 06:52:43 franciscom Exp $
 Purpose: main css - theme default
 
 20061020 - franciscom - new classes for time stamps
@@ -85,6 +85,19 @@ table.mainTable td th {
 
 table.mainTable th {
 	background:     #FFFFCC;
+}
+
+
+table.link_and_exec {
+	background:     #EEE;
+	border: 		1px solid black;
+	margin-bottom:	10px;
+	margin-right:	0px;
+}
+
+
+table.link_and_exec th {
+	background:     #CCC;
 }
 
 

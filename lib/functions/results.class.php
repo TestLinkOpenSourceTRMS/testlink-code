@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8 
- * @modified $Date: 2006/10/24 20:35:01 $ by $Author: schlundus $
+ * @modified $Date: 2006/10/24 21:50:43 $ by $Author: kevinlevy $
  *
  *
  * This class is encapsulates most functionality necessary to query the database
@@ -92,7 +92,19 @@ class results
 	
     // retrieve results from executions table
     $this->executionsMap = $this->buildExecutionsMap($builds_to_query);    
+
+    // build suiteStructure and flatArray
     $this->suiteStructure = $this->generateExecTree();
+    
+    // 'all' is passed in by reportsMoreBuilds.php
+    // and we don't need to prune the suiteStructure
+    // for the query form page
+    /** this concept won't work because flatArray is still being built
+     out incorrectly
+    if ($this->suitesSelected != 'all') {
+      $this->pruneSuiteStructure();
+    }
+    */
  
     // create data object which tallies last result for each test case
     $this->createMapOfLastResult($this->suiteStructure, $this->executionsMap);
@@ -106,7 +118,36 @@ class results
     $this->createAggregateMap($this->suiteStructure, $this->mapOfSuiteSummary);
     $this->totalsForPlan = $this->createTotalsForPlan($this->suiteStructure, $this->mapOfSuiteSummary);
   }
-   
+  /**  KL - this ain't gonna work
+  function pruneSuiteStructure(){
+    print "pruneSuiteStructure <BR>";
+    print "suitesSelected = <BR>";
+    print_r($this->suitesSelected);
+    print "<BR>";
+
+    $size = sizeOf($this->suiteStructure);
+    print "size = $size <BR>";
+    
+    $i = 0;
+    while ($i < $size){
+      if (($i % 3) == 1 ) {
+	$suiteId = $this->suiteStructure[$i];
+	print "suite id = " . $suiteId . "<BR>";
+	if (in_array($suiteId, $this->suitesSelected)){
+	  print "$suiteId is in suiteSelected <BR>";
+	}
+	else {
+	  print "$suiteId is NOT in suiteSelected <BR>";
+	  array_splice($this->suiteStructure, $i-1, 3);
+	}
+      }
+      $i++;
+    }
+  }
+  */
+
+
+
   function getSuiteList(){
     return $this->executionsMap;
   }
@@ -574,6 +615,25 @@ function processExecTreeNode($level,&$node,$getArguments,$hash_id_descr,$tc_acti
 			$current = $childNodes[$i];
 			$nodeDesc = $hash_id_descr[$current['node_type_id']];
 			$id = $current['id'];
+			
+			// functionality that uses
+			// $this->suitesSelected
+			
+			$parentId = $current['parent_id'];
+			if (($parentId == $this->prodID) && ($this->suitesSelected != 'all')) {
+			  //print "parentId = $parentId, id = $id <BR>";
+			  //print "suitesSelected = <BR>";
+			  //print_r($this->suitesSelected);
+			  //print "<BR>";
+			  if (in_array($id, $this->suitesSelected)){
+			    //print "top level suite is in suitesSelected <BR>";
+			  }
+			  else {
+			    //print "top level suite is NOT in suitesSelected <BR>";
+			    // skip processing of this top level suite
+			    continue;
+			  }
+			} //end if
 			$name = filterString($current['name']);
 		
 			if (($id) && ($name) && ($nodeDesc == 'testsuite')) {

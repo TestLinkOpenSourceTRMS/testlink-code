@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsMoreBuilds_buildReport.php,v 1.26 2006/10/24 20:35:02 schlundus Exp $ 
+* $Id: resultsMoreBuilds_buildReport.php,v 1.27 2006/10/24 21:51:16 kevinlevy Exp $ 
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 * 
@@ -33,13 +33,8 @@ if (sizeof($buildsSelected))
 	$buildsToQuery = implode(",", $buildsSelected);
 	
 $tp = new testplan($db);
-// $tree = new tree($db);
-//$re = new results($db, $tp, $tree, $prodID, $buildsToQuery);
 
-
-$suitesSelected = $prodID;
-
-$re = new results($db, $tp, $suitesSelected, $buildsToQuery, $prodID, $tpID);
+$re = new results($db, $tp, $componentsSelected, $buildsToQuery, $prodID, $tpID);
 
 $suiteList = $re->getSuiteList();
 $flatArray = $re->getFlatArray();

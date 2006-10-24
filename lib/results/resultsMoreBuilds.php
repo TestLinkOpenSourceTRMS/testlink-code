@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsMoreBuilds.php,v 1.39 2006/10/24 20:35:02 schlundus Exp $ 
+* $Id: resultsMoreBuilds.php,v 1.40 2006/10/24 21:51:00 kevinlevy Exp $ 
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 * 
@@ -23,7 +23,7 @@ $tplanName = isset($_SESSION['testPlanName']) ? $_SESSION['testPlanName'] : null
 $tp = new testplan($db);
 //$tree = new tree($db);
 $builds_to_query = -1;
-$suitesSelected = $prodID;
+$suitesSelected = 'all';
 $re = new results($db, $tp, $suitesSelected, $builds_to_query, $prodID, $tpID);
 
 $arrKeywords = $tp->get_keywords_map($tpID); 

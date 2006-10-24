@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8 
- * @modified $Date: 2006/10/24 17:19:27 $ by $Author: kevinlevy $
+ * @modified $Date: 2006/10/24 19:06:42 $ by $Author: kevinlevy $
  *
  *
  * This class is encapsulates most functionality necessary to query the database
@@ -119,13 +119,17 @@ class results
 */
     $this->suiteStructure = $this->generateExecTree();
   //  $this->suiteStructure = $this->suiteStructure[0];
-	print_r($this->suiteStructure);
+//	print_r($this->suiteStructure);
+
+//print "<BR><BR>";
+  //  print "flatarray from generateExecTree: <BR>";
+  //  print_r($this->flatArray);
+
+
 /**		
     print "suiteStructure from generateExecTree <BR>";
     print_r($this->suiteStructure);
-    print "<BR><BR>";
-    print "flatarray from generateExecTree <BR>";
-    print_r($this->flatArray);
+    
     print "<BR>";
 
 */
@@ -654,7 +658,9 @@ function generateExecTree($keyword_id = 0,$bForPrinting = false,$tc_id = 0)
 		$menuUrl = "menuUrl";
 		$currentNode = null;
 		$currentNodeIndex = 0;
-		$suiteStructure = $this->processExecTreeNode(1,$test_spec,$getArguments,$hash_id_descr,1,$menuUrl,$bForPrinting);
+		//$suiteStructure = $this->processExecTreeNode(1,$test_spec,$getArguments,$hash_id_descr,1,$menuUrl,$bForPrinting);
+		$suiteStructure = $this->processExecTreeNode2(1,$test_spec,$getArguments,$hash_id_descr,1,$menuUrl,$bForPrinting);
+
 	}
 	return $suiteStructure;	
 } // end generateExecTree
@@ -695,8 +701,10 @@ function processExecTreeNode($level,&$node,$getArguments,$hash_id_descr,$tc_acti
 		$currentNodeIndex++;
 		$currentNode[$currentNodeIndex] = $id;
 		$currentNodeIndex++;
+		print "$name $id <BR>";
 		/** end suite structure logic */
 	}
+
 	if (isset($node['childNodes']) && $node['childNodes'] )
 	{
 		//print "$nodeInfo[2] has child nodes <BR>";
@@ -707,14 +715,68 @@ function processExecTreeNode($level,&$node,$getArguments,$hash_id_descr,$tc_acti
 			if(is_null($current)) {
 				print "zzz: id = $id, name = $name, nodeDesc = $nodeDesc, index = $currentNodeIndex <BR>";
 				$currentNodeIndex++;
-				continue;
+				continue;				
 			}
 			$currentNode[$currentNodeIndex] = $this->processExecTreeNode($level+1,$current,$getArguments,$hash_id_descr,$tc_action_enabled,$linkto,$bForPrinting);
 		}
 	}
-	
+
 	return $currentNode;
 }
+
+// KL - try to do this correctly
+
+function processExecTreeNode2($level,&$node,$getArguments,$hash_id_descr,$tc_action_enabled,$linkto,$bForPrinting)
+{
+	//print "<BR><BR><BR><BR>processExecTreeNode2<BR><BR>";
+	
+	$currentNode = null;
+	$currentNodeIndex = 0;
+	$suiteFound = false;
+
+	if (isset($node['childNodes']) && $node['childNodes'] )
+	{
+		$childNodes = $node['childNodes'];
+		for($i = 0;$i < sizeof($childNodes);$i++)
+		{
+			$current = $childNodes[$i];
+			$nodeDesc = $hash_id_descr[$current['node_type_id']];
+			$id = $current['id'];
+			$name = filterString($current['name']);
+		
+			if (($id) && ($name) && ($nodeDesc == 'testsuite')) {
+				//print "\$nodeDesc = $nodeDesc, \$id = $id, \$name = $name <BR>";
+				/** flat array logic */
+				$CONSTANT_DEPTH_ADJUSTMENT = 2;
+				$this->depth = $level - $CONSTANT_DEPTH_ADJUSTMENT  ;
+				$changeInDepth = $this->depth - $this->previousDepth;
+				$this->previousDepth = $this->depth;
+				// depth only used by flatArrayIndex to help describe the tree
+				$this->flatArray[$this->flatArrayIndex] = $changeInDepth;
+
+				$this->flatArrayIndex++;
+				$this->flatArray[$this->flatArrayIndex] = $name;
+				$this->flatArrayIndex++;		
+				$this->flatArray[$this->flatArrayIndex] = $id;
+				$this->flatArrayIndex++;
+				/** end flat array logic */
+
+				/** suiteStructure logic */
+				$currentNode[$currentNodeIndex] = $name;
+				$currentNodeIndex++;
+	
+				$currentNode[$currentNodeIndex] = $id;
+				$currentNodeIndex++;
+							
+				$currentNode[$currentNodeIndex] = $this->processExecTreeNode2($level+1,$current,$getArguments,$hash_id_descr,$tc_action_enabled,$linkto,$bForPrinting);
+				$currentNodeIndex++;	
+
+				/** end suiteStructure logic */
+			}
+		} // end for
+	} // end if
+	return $currentNode;
+} //end function
 
 // KL - 20061021
 /**

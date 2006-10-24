@@ -5,24 +5,15 @@
  *
  * Filename $RCSfile: buildNew.php,v $
  *
- * @version $Revision: 1.22 $
- * @modified $Date: 2006/04/26 07:07:55 $ $Author: franciscom $
+ * @version $Revision: 1.23 $
+ * @modified $Date: 2006/10/24 20:35:02 $ $Author: schlundus $
  *
- *
- * 20051006 - fm - added edit build
- * 20050826 - fm - htmlarea replaced with fckeditor
- * 20050710 - scs - refactored - removed build_label when deleting and editing
- * 20060311 - kl - adjusted SQL queries to comply with 1.7 schema
- * 20060322 - franciscom - using new classes
 */
 require('../../config.inc.php');
-
-// 20060425 - franciscom - require_once
 require_once("../functions/common.php");
 require_once("plan.inc.php");
 require_once("../functions/builds.inc.php");
 require_once("../../third_party/fckeditor/fckeditor.php");
-require_once("../functions/testplan.class.php");  // 20060322 - franciscom
 
 testlinkInitPage($db);
 
@@ -49,18 +40,16 @@ $sqlResult =  lang_get("invalid_build_id");
 if (strlen($build_name))
 {
 	$sqlResult = lang_get("warning_duplicate_build");
-	//20051007 - am - added check if no buildID (new build)
 	if (sizeof($the_builds) == 0 || !in_array($build_name,$the_builds)
 	    ||(isset($the_builds[$buildID]) && $the_builds[$buildID] == $build_name))
 	{
-  	$sqlResult = 'ok';
+  		$sqlResult = 'ok';
 		$can_insert_or_update = 1;
 	}
 }
 
 if(isset($_REQUEST['newBuild']))
 {
-
 	if ($can_insert_or_update)
 	{
 		if (!insertTestPlanBuild($db,$build_name,$tpID,$notes))
@@ -72,7 +61,6 @@ if(isset($_REQUEST['newBuild']))
 	$build_name = '';
 }
 
-// 20051005 - fm - refactoring
 if(isset($_REQUEST['del_build']))
 {
 	$sqlResult = 'ok';
@@ -84,7 +72,6 @@ if(isset($_REQUEST['del_build']))
 	$smarty->assign('action', 'delete');
 }
 
-// 20051005 - fm - refactoring
 if(isset($_REQUEST['edit_build']))
 {
 	if(strcasecmp($_REQUEST['edit_build'], "load_info") == 0 )

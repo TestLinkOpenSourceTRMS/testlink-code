@@ -1,13 +1,7 @@
 {* 
-TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsBugs.tpl,v 1.8 2006/10/14 21:14:31 schlundus Exp $
-Purpose: smarty template - show Bugs Report 
-
-20051004 - fm - added print button
-20051121 - scs - added escaping of tpname
-20051126 - scs - added escaping of items
-20051201 - scs - removed escaping bug link
-20051204 - mht - removed obsolete print button
+	TestLink Open Source Project - http://testlink.sourceforge.net/
+	$Id: resultsBugs.tpl,v 1.9 2006/10/24 20:35:01 schlundus Exp $
+	Purpose: smarty template - show Bugs Report 
 *}
 {include file="inc_head.tpl"}
 
@@ -25,7 +19,7 @@ Purpose: smarty template - show Bugs Report
 	{section name=Row loop=$arrData}
 	<tr>
 			<td class="bold" colspan="4">
-				{$arrData[Row].name}
+				{$arrData[Row].name|escape}
 			</td>
 	</tr>
 	{assign var=tcInfo value=$arrData[Row].tcInfo}
@@ -34,7 +28,7 @@ Purpose: smarty template - show Bugs Report
 		<td colspan="4"><hr/></td>
 	</tr>
 	<tr>
-		<td>&nbsp;</td><td class="italic" >{$tc.tcName}</td>
+		<td>&nbsp;</td><td class="italic" >{$tc.tcName|escape}</td>
 	</tr>	
 		{assign var=execInfo value=$tc.executions}
 		{foreach key=ts item=exec from=$execInfo}

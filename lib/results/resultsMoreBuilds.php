@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsMoreBuilds.php,v 1.38 2006/10/24 16:42:55 kevinlevy Exp $ 
+* $Id: resultsMoreBuilds.php,v 1.39 2006/10/24 20:35:02 schlundus Exp $ 
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 * 

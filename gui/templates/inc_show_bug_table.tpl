@@ -1,6 +1,6 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: inc_show_bug_table.tpl,v 1.1 2006/09/18 07:12:06 franciscom Exp $
+$Id: inc_show_bug_table.tpl,v 1.2 2006/10/24 20:35:01 schlundus Exp $
 *}
 {* -------------------------------------------------------------------------------------- *}
 {* Manage missing arguments                                                               *}
@@ -12,18 +12,16 @@ $Id: inc_show_bug_table.tpl,v 1.1 2006/09/18 07:12:06 franciscom Exp $
 	  <th style="text-align:left">{lang_get s='build'}</th>
 	  <th style="text-align:left">{lang_get s='caption_bugtable'}</th>
 		{if $can_delete}
-	    <th style="text-align:left">&nbsp</th>
-	  {/if}  
+	    	<th style="text-align:left">&nbsp;</th>
+		{/if}  
   </tr>
   
-  {foreach from=$bugs_map key=bug_id item=bug_elem}
+ 	{foreach from=$bugs_map key=bug_id item=bug_elem}
 	<tr>
 		<td>{$bug_elem.build_name|escape}</td>
-		<td>{$bug_elem.link_to_bts}
-		</td>
+		<td>{$bug_elem.link_to_bts}</td>
 		{if $can_delete}
-		  <td><a href="javascript:deleteBug_onClick({$exec_id},{$bug_id},'{lang_get s='del_bug_warning_msg'}');"><img style="border:none" alt="{lang_get s='alt_delete_build'}" src="icons/thrash.png"/></a>
-		  </td>
+		  <td><a href="javascript:deleteBug_onClick({$exec_id},{$bug_id},'{lang_get s='del_bug_warning_msg'}');"><img style="border:none" alt="{lang_get s='alt_delete_build'}" src="icons/thrash.png"/></a></td>
 		{/if}
 	</tr>
 	{/foreach}

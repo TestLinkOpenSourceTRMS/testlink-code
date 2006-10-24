@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.77 $
- * @modified $Date: 2006/10/24 06:53:14 $ $Author: franciscom $
+ * @version $Revision: 1.78 $
+ * @modified $Date: 2006/10/24 20:35:02 $ $Author: schlundus $
  *
  * @author Francisco Mancardi
  *
@@ -1434,7 +1434,7 @@ $TLS_warning="Warning!!";
 $TLS_delete_linked_and_exec="Links to test plans, and execution related information will be removed";
 $TLS_delete_linked="Links to test plans will be removed";
 
-$TLS_can_not_edit_tc="You can not edit this version because has been executed";
+$TLS_can_not_edit_tc="You can not edit this version because it has been executed";
 
 $TLS_linked_and_executed="Has been executed";
 $TLS_no_links="Has no links to any test plan";

@@ -1,20 +1,12 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execSetResults.tpl,v 1.29 2006/10/15 19:05:38 schlundus Exp $ *}
+{* $Id: execSetResults.tpl,v 1.30 2006/10/24 20:35:01 schlundus Exp $ *}
 {* Purpose: smarty template - show tests to add results *}
 {* Revisions:
-              20060921 - franciscom - changed the display of tsuite attachments
-              20060814 - franciscom - added display of test suites details
-              20060808 - franciscom - added display of test plan notes 
-              20060722 - franciscom - syntax for value on history_on
-              20060602 - franciscom - new code for attachments display 
-              20060528 - franciscom - $show_last_exec_any_build
 *}	
 
-{* {include file="inc_head.tpl" popup='yes'} *}
 {include file="inc_head.tpl" popup='yes' openHead='yes'}
 <script language="JavaScript" src="gui/javascript/radio_utils.js" type="text/javascript"></script>
 
-{* 20060808 - franciscom *}
 <script language="JavaScript" src="gui/javascript/expandAndCollapseFunctions.js" type="text/javascript"></script>
 </head>
 
@@ -35,7 +27,6 @@
 {* show echo about update if applicable *}
 {$updated}
 
-{* 20051108 - fm - BUGID 00082*}
 {assign var="input_enabled_disabled" value="disabled"}
   	
 <div id="main_content" class="workBack">
@@ -43,19 +34,19 @@
 <img src="icons/icon-foldout.gif" border="0" alt="{lang_get s='show_hide'}" 
      title="{lang_get s='show_hide'}" 
      onclick="show_hide('tplan_notes','tpn_view_status',
-                        document.getElementById('tplan_notes').style.display=='none')">
-{lang_get s='test_plan_notes'}<br>
-<div id="tplan_notes" name="tplan_notes">
-{$tplan_notes}<p>
+                        document.getElementById('tplan_notes').style.display=='none')" />
+{lang_get s='test_plan_notes'}<br />
+<div id="tplan_notes">
+{$tplan_notes}
 </div>
 
 <img src="icons/icon-foldout.gif" border="0" alt="{lang_get s='show_hide'}" 
      title="{lang_get s='show_hide'}" 
      onclick="show_hide('build_notes','bn_view_status',
-                        document.getElementById('build_notes').style.display=='none')">
-{lang_get s='builds_notes'}<br>
-<div id="build_notes" name="build_notes">
-{$build_notes}<p>
+                        document.getElementById('build_notes').style.display=='none')" />
+{lang_get s='builds_notes'}<br />
+<div id="build_notes">
+{$build_notes}
 </div>
 
 <form method="post">
@@ -66,13 +57,13 @@
   *}   
   <input type="hidden" id="tpn_view_status" 
                        name="tpn_view_status" 
-                       value="0">
+                       value="0" />
   <input type="hidden" id="bn_view_status" 
                        name="bn_view_status" 
-                       value="0">
+                       value="0" />
   <input type="hidden" id="bc_view_status" 
                        name="bc_view_status" 
-                       value="0">
+                       value="0" />
   
   
   
@@ -80,18 +71,15 @@
   {if $map_last_exec eq ""}
      {lang_get s='no_data_available'}
   {else}
-      {* -------------------------------------------------------------------------------------- *}
-      {* 20060207 - franciscom - BUGID 303
-         Added to make Test Results editable only if Current build is latest Build - Tools-R-Us *}
-      {* 20051108 - fm - BUGID 00082*}
+      {*  Added to make Test Results editable only if Current build is latest Build - Tools-R-Us *}
       {if $rightsEdit == "yes" and $edit_test_results == "yes"}
         {assign var="input_enabled_disabled" value=""}
 
         <img src="icons/icon-foldout.gif" border="0" alt="{lang_get s='show_hide'}" 
             title="{lang_get s='show_hide'}" 
             onclick="show_hide('bulk_controls','bc_view_status',
-                               document.getElementById('bulk_controls').style.display=='none')">
-        {lang_get s='bulk_tc_status_management'} <br>
+                               document.getElementById('bulk_controls').style.display=='none')" />
+        {lang_get s='bulk_tc_status_management'} <br />
  
         
         <div id="bulk_controls" name="bulk_controls">
@@ -108,7 +96,7 @@
         </div>
     	{/if}
     
-      <hr>
+      <hr />
       <div class="groupBtn">
     		  <input type="button" name="print" value="{lang_get s='btn_print'}" 
     		         onclick="javascript:window.print();" />
@@ -122,35 +110,24 @@
 
 	{/if}
 
-  {* 20060921 - franciscom -------------------------------------- 
-	{if $tSuiteAttachments neq null}
-		<h2>{lang_get s='testsuite_attachments'}</h2>	
-		{include file="inc_attachments.tpl" tableName="nodes_hierarchy" downloadOnly=true 
-				 attachmentInfos=$tSuiteAttachments tableClassName="bordered"
-				 tableStyles="background-color:#dddddd;width:100%"
-		}
-	{/if}
-	*}	
-	
-		
-	{foreach item=tc_exec from=$map_last_exec}
+  	{foreach item=tc_exec from=$map_last_exec}
 	
 	  {assign var="tcversion_id" value=$tc_exec.id}
 		<input type='hidden' name='tc_version[{$tcversion_id}]' value='{$tc_exec.testcase_id}' />
 		<input type='hidden' id="tsdetails_view_status_{$tc_exec.testcase_id}" 
-		                     name="tsdetails_view_status_{$tc_exec.testcase_id}"  value="0">
+		                     name="tsdetails_view_status_{$tc_exec.testcase_id}"  value="0" />
 
 		<h2><img src="icons/icon-foldout.gif" border="0" alt="{lang_get s='show_hide'}" 
              title="{lang_get s='show_hide'}" 
              onclick="show_hide('tsdetails_{$tc_exec.testcase_id}',
                                 'tsdetails_view_status_{$tc_exec.testcase_id}',
-                                document.getElementById('tsdetails_{$tc_exec.testcase_id}').style.display=='none')">
+                                document.getElementById('tsdetails_{$tc_exec.testcase_id}').style.display=='none')" />
     
 		{lang_get s='th_testsuite'} {$tsuite_info[$tc_exec.testcase_id].tsuite_name|escape}</h2>
 
 		<div id="tsdetails_{$tc_exec.testcase_id}" name="tsdetails_{$tc_exec.testcase_id}">
-		{$tsuite_info[$tc_exec.testcase_id].details}<p>
-  	{if $tSuiteAttachments[$tc_exec.tsuite_id] neq null}
+		{$tsuite_info[$tc_exec.testcase_id].details}
+  		{if $tSuiteAttachments[$tc_exec.tsuite_id] neq null}
 		  {include file="inc_attachments.tpl" tableName="nodes_hierarchy" downloadOnly=true 
 			      	 attachmentInfos=$tSuiteAttachments[$tc_exec.tsuite_id] 
 			      	 tableClassName="bordered"
@@ -169,7 +146,6 @@
 		{/if}
 
 		{* The very last execution for any build of this test plan                                                  *}
-		{* 20060528 - franciscom *}
 		{if $show_last_exec_any_build}
     		{assign var="abs_last_exec" value=$map_last_exec_any_build.$tcversion_id}
         {if $abs_last_exec.status != '' and $abs_last_exec.status != $gsmarty_tc_status.not_run}			

@@ -1,7 +1,7 @@
 --  -----------------------------------------------------------------------------------
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.7 2006/10/23 20:11:28 schlundus Exp $
+-- $Id: testlink_create_tables.sql,v 1.8 2006/10/24 20:35:01 schlundus Exp $
 --
 -- SQL script - create db tables for TL
 -- Database Type: Microsoft SQL Server
@@ -212,12 +212,12 @@ BEGIN
 CREATE TABLE [dbo].[user_assignments](
 	[id] [int] IDENTITY(1,1) NOT NULL,
 	[type] [int] NOT NULL CONSTRAINT [DF_user_assignments_type]  DEFAULT ((0)),
-	[feature_id] [int] NULL CONSTRAINT [DF_user_assignments_feature_id]  DEFAULT ((0)),
+	[feature_id] [int] NOT NULL CONSTRAINT [DF_user_assignments_feature_id]  DEFAULT ((0)),
 	[user_id] [int] NULL,
-	[deadline_ts] [datetime] NOT NULL,
-	[assigner_id] [int] NULL,
+	[deadline_ts] [datetime] NULL,
+	[assigner_id] [int] NULL default ((0)),
 	[creation_ts] [datetime] NOT NULL,
-	[status] [int] NULL,
+	[status] [int] NULL default ((1)),
  CONSTRAINT [PK_user_assignments] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
@@ -767,8 +767,8 @@ IF NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[dbo].[assign
 BEGIN
 CREATE TABLE [dbo].[assignment_types](
 	[id] [int] IDENTITY(1,1) NOT NULL,
-	[fk_table] [nchar](30) COLLATE Latin1_General_CI_AS NOT NULL,
-	[description] [nchar](100) COLLATE Latin1_General_CI_AS NOT NULL CONSTRAINT [DF_assignment_types_description]  DEFAULT (N'unknown'),
+	[fk_table] [nvarchar](30) COLLATE Latin1_General_CI_AS NOT NULL,
+	[description] [nvarchar](100) COLLATE Latin1_General_CI_AS NOT NULL CONSTRAINT [DF_assignment_types_description]  DEFAULT (N'unknown'),
  CONSTRAINT [PK_assignment_types] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
@@ -784,7 +784,7 @@ IF NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[dbo].[assign
 BEGIN
 CREATE TABLE [dbo].[assignment_status](
 	[id] [int] IDENTITY(1,1) NOT NULL,
-	[description] [nchar](100) COLLATE Latin1_General_CI_AS NOT NULL CONSTRAINT [DF_assignment_status_description]  DEFAULT (N'unknown'),
+	[description] [nvarchar](100) COLLATE Latin1_General_CI_AS NOT NULL CONSTRAINT [DF_assignment_status_description]  DEFAULT (N'unknown'),
  CONSTRAINT [PK_assignment_status] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC

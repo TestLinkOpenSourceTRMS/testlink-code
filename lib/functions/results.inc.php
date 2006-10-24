@@ -2,8 +2,8 @@
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: results.inc.php,v $
- * @version $Revision: 1.35 $
- * @modified $Date: 2006/10/13 20:06:14 $   $Author: schlundus $
+ * @version $Revision: 1.36 $
+ * @modified $Date: 2006/10/24 20:35:02 $   $Author: schlundus $
  * 
  * @author 	Martin Havlat 
  * @author 	Chad Rosen (original report definition)
@@ -82,7 +82,7 @@ function getStatusName($status)
 *      20060104 - fm - ADODB
 *            
 */
-function getPlanTCNumber(&$db,$tpID)
+function DEPR_getPlanTCNumber(&$db,$tpID)
 {
 	$sql = "SELECT count(testcase.id) FROM testplans,component,category,testcase WHERE " .
 			   "testplans.id =" . $tpID . " AND testplans.id = component.projid " .
@@ -121,7 +121,7 @@ function getTCLink($rights, $tcID,$tcversionID, $title, $buildID)
 *
 * 20051002 - fm - refactoring, return type changed
 */
-function getPlanStatus(&$db,$tpID, $buildID)
+function DEPR_getPlanStatus(&$db,$tpID, $buildID)
 {
 	global $g_tc_status;
 
@@ -172,7 +172,7 @@ function getPlanStatus(&$db,$tpID, $buildID)
 *       Added $tpID to remove Global Coupling via $_SESSION
 * 
 */
-function getTestSuiteReport(&$db,$tpID, $buildID = 'all')
+function DEPR_getTestSuiteReport(&$db,$tpID, $buildID = 'all')
 {
 	global $g_tc_status;
   
@@ -279,7 +279,7 @@ function getTestSuiteReport(&$db,$tpID, $buildID = 'all')
 *				$notRunTCs, $percentComplete
 */
 
-function getKeywordsReport(&$db,$tpID, $buildID = 'all')
+function DEPR_getKeywordsReport(&$db,$tpID, $buildID = 'all')
 {
 	global $g_tc_status;
   
@@ -405,7 +405,7 @@ function getKeywordsReport(&$db,$tpID, $buildID = 'all')
 * @return array $owner, $totalTCs, $pass, $fail, $blocked,
 *				$notRunTCs, $percentComplete
 */
-function getOwnerReport(&$db,$tpID)
+function DEPR_getOwnerReport(&$db,$tpID)
 {
 	global $g_tc_status;
 
@@ -501,7 +501,7 @@ function getOwnerReport(&$db,$tpID)
 // KL OCT 14, 2005 - setting $buildID to all is probably causing 
 // some problems for us and returning results for cases
 // not executed in the same test plan.
-function getPriorityReport(&$db,$tpID, $buildID = 'all')
+function DEPR_getPriorityReport(&$db,$tpID, $buildID = 'all')
 {
 	global $g_tc_status;
   
@@ -668,14 +668,13 @@ function getPriorityReport(&$db,$tpID, $buildID = 'all')
 * @return array 
 */
 // MHT 200507 refactorization, improved sql query
-function getPriorityDefine(&$db,$tpID)
+function DEPR_getPriorityDefine(&$db,$tpID)
 {
 	$sql = "SELECT riskImp,priority FROM priority WHERE priority.projid = " . $tpID;
 	return $db->fetchColumnsIntoMap($sql,'riskImp','priority');
 }
 
-// MHT 200507 refactorization
-function getPriority($priorityStatus, $dependencies)
+function DEPR_getPriority($priorityStatus, $dependencies)
 {
 	return $dependencies[$priorityStatus];
 }
@@ -686,7 +685,7 @@ function getPriority($priorityStatus, $dependencies)
 * @param string build ID 
 * @return array 
 */
-function getBuildMetricsCategory(&$db,$tpID, $buildID)
+function DEPR_getBuildMetricsCategory(&$db,$tpID, $buildID)
 {
 	global $g_tc_status;
 	

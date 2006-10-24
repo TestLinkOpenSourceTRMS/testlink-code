@@ -2,7 +2,7 @@
 /**
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/ 
 *
-*  @version 	$Id: printData.php,v 1.22 2006/10/04 17:07:03 schlundus Exp $
+*  @version 	$Id: printData.php,v 1.23 2006/10/24 20:35:02 schlundus Exp $
 *  @author 	Martin Havlat
 * 
 * Shows the data that will be printed.
@@ -30,7 +30,7 @@ foreach($printingOptions as $opt => $val)
 {
 	$printingOptions[$opt] = (isset($_GET[$opt]) && ($_GET[$opt] == 'y'));
 }						 
-
+$dummy = null;
 $tproject_mgr = new testproject($db);
 $tree_manager = &$tproject_mgr->tree_manager;
 $test_spec = $tree_manager->get_subtree($dataID,array('testplan'=>'exclude me'),
@@ -70,7 +70,7 @@ if ($level == 'testproject')
 	$tree['name'] = $tproject_name;
 	$tree['id'] = $tproject_id;
 	$tree['node_type_id'] = 1;
-	$testcase_count = prepareNode($tree,$hash_id_descr,null,$tp_tcs,0);
+	$testcase_count = prepareNode($tree,$hash_id_descr,null,$tp_tcs,0,$dummy);
 	$printingOptions['title'] = '';
 	
 }
@@ -86,7 +86,7 @@ else if ($level == 'testsuite')
 	
 	$tInfo['node_type_id'] = $hash_descr_id['testsuite'];
 	$tInfo['childNodes'] = isset($test_spec['childNodes']) ? $test_spec['childNodes'] : null;
-	$testcase_count = prepareNode($tInfo,$hash_id_descr,null,$tp_tcs,0);
+	$testcase_count = prepareNode($tInfo,$hash_id_descr,null,$tp_tcs,0,$dummy);
 	$printingOptions['title'] = $tInfo['name'];
 	
 	$tree['name'] = $tproject_name;

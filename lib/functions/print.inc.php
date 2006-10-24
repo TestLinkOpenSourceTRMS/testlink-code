@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: print.inc.php,v $
- * @version $Revision: 1.14 $
- * @modified $Date: 2006/07/06 19:20:37 $ by $Author: schlundus $
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2006/10/24 20:35:01 $ by $Author: schlundus $
  *
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
@@ -171,7 +171,7 @@ function renderProjectNodeForPrinting(&$db,&$printingOptions,$title,&$node)
 {
 	$stitle = lang_get('title_test_spec');
 	if (strlen($title))
-		$stitle .= " - " . htmlspecialchars($title);
+		$stitle .= " - " . $title;
 	
 	$my_userID = isset($_SESSION['userID']) ? intval($_SESSION['userID']) : null;
 

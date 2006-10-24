@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: plan.inc.php,v $
- * @version $Revision: 1.39 $
- * @modified $Date: 2006/10/22 19:50:25 $ $Author: schlundus $
+ * @version $Revision: 1.40 $
+ * @modified $Date: 2006/10/24 20:35:02 $ $Author: schlundus $
  * @author 	Martin Havlat
  *
  * Functions for management: 
@@ -174,25 +174,6 @@ function deleteTestCasesByCategories(&$db,$catIDs)
 	$result = $db->exec_query($sql);
 	
 	return $result ? 1 : 0;
-}
-
-
-/*
-20050922 - fm - BUGID 0000132: Cannot delete a test plan
-20050921 - fm - refactoring build.buildid -> build.id
-20050910 - fm - bug missing argument $buildID
-*/
-function deleteTestPlanBuilds(&$db,$tpID, $buildID=0)
-{
-	$sql = "DELETE FROM builds WHERE testplan_id=" . $tpID ;
-	       
-	if($buildID)
-	{       
-	   $sql .=  " AND builds.id=" . $buildID;
-	}       
-	$result = $db->exec_query($sql);
-	
-	return $result ? 1: 0;		
 }
 
 function deleteTestPlanRightsForTestPlan(&$db,$id)

@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.13 $
- * @modified $Date: 2006/10/16 10:34:22 $ $Author: franciscom $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2006/10/24 20:35:02 $ $Author: schlundus $
  * @author franciscom
  *
  * 20060919 - franciscom - copy_* functions
@@ -33,7 +33,6 @@ function testplan(&$db)
   $this->db = &$db;	
   $this->tree_manager = New tree($this->db);
 
-  // 20060910 - franciscom
   $this->assignment_mgr=New assignment_mgr($this->db);
   $this->assignment_types=$this->assignment_mgr->get_available_types(); 
   $this->assignment_status=$this->assignment_mgr->get_available_status();
@@ -51,7 +50,7 @@ function testplan(&$db)
 function create($name,$notes,$testproject_id)
 {
 	$node_types=$this->tree_manager->get_available_node_types();
-  $tplan_id = $this->tree_manager->new_node($testproject_id,$node_types['testplan'],$name);
+	$tplan_id = $this->tree_manager->new_node($testproject_id,$node_types['testplan'],$name);
 	
 	$sql = "INSERT INTO testplans (id,notes,testproject_id) 
 	        VALUES ( {$tplan_id} " . ", '" . 
@@ -201,58 +200,58 @@ function link_tcversions($id,&$items_to_link)
 //                 tcversion_id if has executions 
 //
 function get_linked_tcversions($id,$tcase_id=null,$keyword_id=0,$executed=null,$owner = null)
-
 {
-$keywords_join = " ";
-$keywords_filter = " ";
-$tc_id_filter = " ";
-$executions_join = " ";
+	$keywords_join = " ";
+	$keywords_filter = " ";
+	$tc_id_filter = " ";
+	$executions_join = " ";
+	
+	if($keyword_id > 0)
+	{
+	    $keywords_join = " JOIN testcase_keywords TK ON NHA.parent_id = TK.testcase_id ";   
+	    $keywords_filter = " AND TK.keyword_id = {$keyword_id} ";
+	}
+	if (!is_null($tcase_id) )
+	{
+	   if( is_array($tcase_id) )
+	   {
+	
+	   }
+	   else if ($tcase_id > 0 )
+	   {
+	      $tc_id_filter = " AND NHA.parent_id = {$tcase_id} ";
+	   }
+	}
 
-if( $keyword_id > 0 )
-{
-    $keywords_join = " JOIN testcase_keywords TK ON NHA.parent_id = TK.testcase_id ";   
-    $keywords_filter = " AND   TK.keyword_id = {$keyword_id} ";
-}
-if (!is_null($tcase_id) )
-{
-   if( is_array($tcase_id) )
-   {
+	if(is_null($executed))
+	{
+	     $executions_join = " LEFT OUTER ";
+	}          
+	$executions_join .= " JOIN executions E ON NHA.id = E.tcversion_id ";
 
-   }
-   else if ($tcase_id > 0 )
-   {
-      $tc_id_filter = " AND   NHA.parent_id = {$tcase_id} ";
-   }
-}
+	// added tc_id in order clause to maintain same order that navigation tree
+	$sql = " SELECT DISTINCT NHB.parent_id AS testsuite_id, " .
+	     "        NHA.parent_id AS tc_id," .
+	     "        T.tcversion_id AS tcversion_id, T.id AS feature_id," .
+	     "        E.tcversion_id AS executed, " .
+	     "        UA.user_id,UA.type,UA.status,UA.assigner_id ".
+	     " FROM nodes_hierarchy NHA " .
+	     " JOIN nodes_hierarchy NHB ON NHA.parent_id = NHB.id " .
+	     " JOIN testplan_tcversions T ON NHA.id = T.tcversion_id " .
+	     " {$executions_join} " .
+	     " {$keywords_join} " .
+	     " LEFT OUTER JOIN user_assignments UA ON UA.feature_id = T.id " . 
+	     " WHERE T.testplan_id={$id} {$keywords_filter} {$tc_id_filter} " .
+	     " AND (UA.type=" . $this->assignment_types['testcase_execution']['id'] . 
+	     "      OR UA.type IS NULL) ";
 
-// 20060603 - franciscom
-if( is_null($executed) )
-{
-     $executions_join = " LEFT OUTER ";
-}          
-$executions_join .= " JOIN executions E ON NHA.id = E.tcversion_id ";
+	if (!is_null($owner))
+		$sql .= " AND UA.user_id = {$owner}"; 
+		
+	$sql .= " ORDER BY testsuite_id,tc_id";
+	$recordset = $this->db->fetchRowsIntoMap($sql,'tc_id');
 
-// 20060921 - franciscom
-// added tc_id in order clause to maintain same order that navigation tree
-$sql=" SELECT DISTINCT NHB.parent_id AS testsuite_id, " .
-     "        NHA.parent_id AS tc_id," .
-     "        T.tcversion_id AS tcversion_id, T.id AS feature_id," .
-     "        E.tcversion_id AS executed, " .
-     "        UA.user_id,UA.type,UA.status,UA.assigner_id ".
-     " FROM nodes_hierarchy NHA " .
-     " JOIN nodes_hierarchy NHB ON NHA.parent_id = NHB.id " .
-     " JOIN testplan_tcversions T ON NHA.id = T.tcversion_id " .
-     " {$executions_join} " .
-     " {$keywords_join} " .
-     " LEFT OUTER JOIN user_assignments UA ON UA.feature_id = T.id " . 
-     " WHERE T.testplan_id={$id} {$keywords_filter} {$tc_id_filter} " .
-     " AND (UA.type=" . $this->assignment_types['testcase_execution']['id'] . 
-     "      OR UA.type IS NULL) ";
-if (!is_null($owner))
-	$sql .= " AND UA.user_id = {$owner}"; 
-$sql .= " ORDER BY testsuite_id,tc_id";
-$recordset = $this->db->fetchRowsIntoMap($sql,'tc_id');
-return($recordset);
+	return $recordset;
 }
 
 
@@ -260,9 +259,9 @@ function get_builds_for_html_options($id)
 {
 	$sql = " SELECT builds.id, builds.name 
 	         FROM builds WHERE builds.testplan_id = {$id}
-	         ORDER BY builds.name";
+	         ORDER BY builds.name DESC";
 	return $this->db->fetchColumnsIntoMap($sql,'id','name');
-}//end function
+}
 
 function get_max_build_id($id)
 {
@@ -283,10 +282,10 @@ function get_builds($id)
 	$sql = " SELECT builds.id, builds.name, builds.notes 
 	         FROM builds WHERE builds.testplan_id = {$id}
 	         ORDER BY builds.name";
-  $recordset = $this->db->get_recordset($sql);
+	$recordset = $this->db->get_recordset($sql);
   
-  return $recordset;
-}//end function
+	return $recordset;
+}
 
 
 

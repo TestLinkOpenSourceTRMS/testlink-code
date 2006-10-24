@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsBugs.php,v 1.6 2006/10/14 21:14:31 schlundus Exp $ 
+* $Id: resultsBugs.php,v 1.7 2006/10/24 20:35:02 schlundus Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * 
@@ -19,16 +19,18 @@ $tp = new testplan($db);
 $tpID = isset($_SESSION['testPlanId']) ?  $_SESSION['testPlanId'] : 0;
 $tcs = $tp->get_linked_tcversions($tpID,null,0,1);
 
-$query = "SELECT NHB.id tcID, NHC.id tsID, execution_ts,bug_id,NHB.name tcName,NHC.name tsName ".
+$query = "SELECT NHB.id tcid, NHC.id tsid, execution_ts,bug_id,NHB.name tcname,NHC.name tsname ".
 		 "FROM executions e JOIN execution_bugs eb ON e.id = eb.execution_id ".
 		 "JOIN nodes_hierarchy NHA ON e.tcversion_id = NHA.id ".
 		 "JOIN nodes_hierarchy NHB ON NHA.parent_id = NHB.id  ".
 		 "JOIN nodes_hierarchy NHC ON NHB.parent_id = NHC.id  ".
 		 "WHERE testplan_id = {$tpID} ".
 		 "ORDER BY NHC.node_order ASC,NHB.node_order ASC, execution_ts DESC";
-$result = $db->fetchRowsIntoMap($query,"tsID",1);
+
+		 
+$result = $db->fetchRowsIntoMap($query,"tsid",1);
 $tsInfos = array();
-$dummy  =null;
+$dummy = null;
 foreach($result as $tsID => $tcInfos)
 {
 	$tmpTcID = 0;
@@ -43,19 +45,19 @@ foreach($result as $tsID => $tcInfos)
 	for($i = 0;$i < sizeof($tcInfos);$i++)
 	{
 		$tc = $tcInfos[$i];
-		$currentTcID = $tc['tcID'];
+		$currentTcID = $tc['tcid'];
 		if ($i == 0)
 		{
-			$tsInfo['name'] = $tc['tsName'];
+			$tsInfo['name'] = $tc['tsname'];
 			$tmpTcID = $currentTcID;
-			$tsTCInfo['tcName'] = $tc['tcName'];
+			$tsTCInfo['tcName'] = $tc['tcname'];
 		}
 		if ($tmpTcID != $currentTcID)
 		{
 			$tsInfo['tcInfo'][$tmpTcID] = $tsTCInfo;
 			$tmpTcID = $currentTcID;
 			$tsTCInfo = array(
-							  "tcName" => $tc['tcName'],
+							  "tcName" => $tc['tcname'],
 							  "executions" => array(),
 							  );
 		}

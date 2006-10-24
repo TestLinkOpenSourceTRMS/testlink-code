@@ -5,31 +5,16 @@
  *
  * Filename $RCSfile: execNavigator.php,v $
  *
- * @version $Revision: 1.26 $
- * @modified $Date: 2006/10/15 19:05:39 $ by $Author: schlundus $
+ * @version $Revision: 1.27 $
+ * @modified $Date: 2006/10/24 20:35:01 $ by $Author: schlundus $
  *
- * @author Martin Havlat
- *
- *	@todo names of com, cat, TC should be grab from test specification tables
- *	@todo keywords are not collected from keywords table but from Test case suite
- *
- * 20060429 - franciscom - generateExecTree() move to treeMenu.inc.php
- * 20050807 - fm changes in filterKeyword() call.
- * 20050807 - fm changes in createBuildMenu() call.
- * 20050815 - scs - optimized and reducing Sql statements
- * 20050828 - scs - reduced the code
- * 20050828 - scs - added searching for tcID
- * 20050907 - scs - fixed problem with wrong coloring
- * 20051011 - MHT - fixed $g_tc_status['not_run'] + minor refactorization
  **/
- 
 require_once('../../config.inc.php');
 require_once('common.php');
 require_once('treeMenu.inc.php');
 require_once('exec.inc.php');
 require_once('builds.inc.php');
 testlinkInitPage($db);
-
 
 $treeColored = (isset($_POST['colored']) && ($_POST['colored'] == 'result')) ? 'selected="selected"' : null;
 $selectedOwner = isset($_POST['owner']) ? intval($_POST['owner']) : 0;             
@@ -41,7 +26,11 @@ $tplan_id   = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0;
 $tplan_name = isset($_SESSION['testPlanName']) ? $_SESSION['testPlanName'] : 'null';
 $tplan_mgr = new testplan($db);
 $optBuild = $tplan_mgr->get_builds_for_html_options($tplan_id);
-$optBuildSelected = isset($_POST['build_id']) ? $_POST['build_id'] : key($optBuild);
+
+$maxBuildID = $tplan_mgr->get_max_build_id($tplan_id);
+$optBuildSelected = isset($_POST['build_id']) ? $_POST['build_id'] : $maxBuildID;
+if (!$optBuildSelected && sizeof($optBuild))
+	$optBuildSelected = key($optBuild);
 
 $tproject_id   = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 $tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : 'xxx';
@@ -50,10 +39,10 @@ $tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectNam
 $keywords_map = $tplan_mgr->get_keywords_map($_SESSION['testPlanId'],' order by keyword ');
 if(!is_null($keywords_map))
 {
-  // add the blank option
-  // 0 -> id for no keyword
-  $blank_map[0] = '';
-  $keywords_map = $blank_map+$keywords_map;
+	// add the blank option
+	// 0 -> id for no keyword
+	$blank_map[0] = '';
+	$keywords_map = $blank_map+$keywords_map;
 }
 
 $menuUrl = null;
@@ -100,7 +89,6 @@ $smarty->assign('menuUrl',$menuUrl);
 $smarty->assign('args',$getArguments);
 $smarty->assign('SP_html_help_file',$SP_html_help_file);
 $smarty->display('execNavigator.tpl');
-
 
 
 /**

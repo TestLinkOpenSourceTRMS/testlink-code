@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.78 $
- * @modified $Date: 2006/10/24 20:35:02 $ $Author: schlundus $
+ * @version $Revision: 1.79 $
+ * @modified $Date: 2006/10/25 07:36:30 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
@@ -283,6 +283,7 @@ $TLS_update = "Update";
 $TLS_updated = "updated";
 $TLS_user = "User";
 $TLS_was_success = " was successfully ";
+$TLS_testsuite = "Test suite";
 
 
 
@@ -1441,8 +1442,5 @@ $TLS_no_links="Has no links to any test plan";
 $TLS_linked_but_not_executed="Has links to test plans";
 
 $TLS_th_link_exec_status="Link and execution status";
-
- 
-
-  	
+	
 ?>

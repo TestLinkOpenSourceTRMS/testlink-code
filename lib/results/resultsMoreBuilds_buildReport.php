@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsMoreBuilds_buildReport.php,v 1.28 2006/10/25 04:03:28 kevinlevy Exp $ 
+* $Id: resultsMoreBuilds_buildReport.php,v 1.29 2006/10/25 04:10:02 kevinlevy Exp $ 
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 * 
@@ -21,22 +21,24 @@ $owner = isset($_REQUEST['owner']) ? $_REQUEST['owner'] : null;
 $lastStatus = isset($_REQUEST['lastStatus']) ? $_REQUEST['lastStatus'] : null;
 // print "lastStatus = $lastStatus <BR>";
 
+// statusForClass is used for results.class.php
+// lastStatus is used to be displayed 
+$statusForClass = 'a';
 // TO-DO localize parameters passed from form
-
 if ($lastStatus == "Passed"){
-  $lastStatus = 'p';
+  $statusForClass = 'p';
  }
 elseif ($lastStatus == "Failed"){
-   $lastStatus = 'f';
+   $statusForClass = 'f';
 }
 elseif ($lastStatus == "Blocked"){
- $lastStatus = 'b';
+ $statusForClass = 'b';
 }
 elseif ($lastStatus == "Not Run"){
-  $lastStatus = 'n';
+  $statusForClass = 'n';
 }
 elseif ($lastStatus == "Any"){
-  $lastStatus = 'a';
+  $statusForClass = 'a';
 }
 
 // print "lastStatus = $lastStatus <BR>";
@@ -56,7 +58,7 @@ if (sizeof($buildsSelected))
 	
 $tp = new testplan($db);
 
-$re = new results($db, $tp, $componentsSelected, $buildsToQuery, $prodID, $tpID, $lastStatus);
+$re = new results($db, $tp, $componentsSelected, $buildsToQuery, $prodID, $tpID, $statusForClass);
 
 $suiteList = $re->getSuiteList();
 $flatArray = $re->getFlatArray();

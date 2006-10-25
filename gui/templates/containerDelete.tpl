@@ -1,17 +1,17 @@
 {* 
 	TestLink Open Source Project - http://testlink.sourceforge.net/
-	$Id: containerDelete.tpl,v 1.9 2006/10/24 07:34:40 franciscom Exp $ 
+	$Id: containerDelete.tpl,v 1.10 2006/10/25 07:34:28 franciscom Exp $ 
 	Purpose: smarty template - delete containers in test specification
 *}
 {include file="inc_head.tpl"}
 
 <body>
+
 <div class="workBack">
-{include file="inc_title.tpl" title="Delete $level $objectName"}
-{include file="inc_update.tpl" result=$sqlResult item=$level refresh="yes"}
+{include file="inc_title.tpl" title="$page_title $objectName"}
+{include file="inc_update.tpl" result=$sqlResult item=$level action='delete' refresh="yes"}
 
-{if $sqlResult == ''}
-
+{if $sqlResult == '' && $objectID != ''}
   <br />
   {if $warning neq ""}
     <table class="link_and_exec">
@@ -21,9 +21,11 @@
   		 <tr><td>{$warning[idx]}&nbsp;</td> <td>{lang_get s=$link_msg[idx]}<td></tr>
      {/section}
     </table>
+    {if $delete_msg neq ''}  
+ 	  <h2>{$delete_msg}</h2>
+    {/if}
   {/if}
   
-	<h2>{lang_get s='delete_notice'}</h2>
 
 	<p>{lang_get s='question_del'} {$level|escape}?</p>
 

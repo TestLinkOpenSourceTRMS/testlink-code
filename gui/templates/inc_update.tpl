@@ -1,5 +1,5 @@
 {* Testlink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: inc_update.tpl,v 1.10 2006/03/20 18:02:11 franciscom Exp $ *}
+{* $Id: inc_update.tpl,v 1.11 2006/10/25 07:34:28 franciscom Exp $ *}
 {* Purpose: smarty template - show SQL update result *}
 {* INPUT: $result (mandatory) = [ok, sql_error_description] 
 			If $result is empty do nothing.
@@ -9,9 +9,6 @@
 	$refresh = [yes] 
 	$action = [update (default), add, delete]
 	
-*}
-{*
- 20051112 - scs - changed "Test Suite" to "TestSuite"
 *}
 
 {if $result eq "ok"}

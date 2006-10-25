@@ -3,10 +3,11 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * @version $Revision: 1.46 $
- * @modified $Date: 2006/10/23 20:11:28 $ by $Author: schlundus $
+ * @version $Revision: 1.47 $
+ * @modified $Date: 2006/10/25 07:34:28 $ by $Author: franciscom $
  * @author Martin Havlat
  *
+ * 20061024 - franciscom - improved feedback in delete_testsuite
  * 20060822 - franciscom - solved keyword presentation problem
  * 20060804 - franciscom - added option transfer to manage keywords
  * 20060701 - franciscom
@@ -34,8 +35,8 @@ if(!$my_containerID)
 }
 $bRefreshTree = false;
 $tsuite_name = isset($_REQUEST['testsuiteName']) ? strings_stripSlashes($_REQUEST['testsuiteName']) : null;
-$objectID = isset($_GET['objectID']) ? intval($_GET['objectID']) : null;
-$bSure = (isset($_GET['sure']) && ($_GET['sure'] == 'yes'));
+$objectID = isset($_REQUEST['objectID']) ? intval($_REQUEST['objectID']) : null;
+$bSure = (isset($_REQUEST['sure']) && ($_REQUEST['sure'] == 'yes'));
 
 // --------------------------------------------------------------------------------------------
 $testproject_id = $_SESSION['testprojectID'];
@@ -206,52 +207,44 @@ else if($action == 'update_testsuite')
 }
 else if ($action == 'delete_testsuite')
 {
+  $feedback_msg='';
 	if($bSure)
 	{
+	  $tsuite=$tsuite_mgr->get_by_id($objectID);
 		$tsuite_mgr->delete_deep($objectID);
 		$tsuite_mgr->deleteKeywords($objectID);   	 
+		$smarty->assign('objectName', $tsuite['name']);
+
 		$bRefreshTree = true;
+		$feedback_msg='ok';
 	}
 	else
 	{
+	  
 		// Get test cases present in this testsuite and all children
 		$testcases = $tsuite_mgr->get_testcases_deep($my_testsuiteID);
 		
+		$map_msg['warning']=null;
+		$map_msg['link_msg']=null;
+		$map_msg['delete_msg']=null;
+		
 		if(!is_null($testcases))
 		{
-			$verbose = array();
-			$link_msg = array();
-			foreach($testcases as $the_key => $elem)
-			{
-				$verbose[] = $tree_mgr->get_path($elem['id'],$my_testsuiteID);
-				$link_msg[] = $tcase_mgr->check_link_and_exec_status($elem['id']);
-			}
-			
-			$idx = 0; 
-			$warning = array();
-			foreach($verbose as $the_key => $elem)
-			{
-				$warning[$idx] = '';
-				$bSlash = false;
-				foreach($elem as $tkey => $telem)
-				{
-					if ($bSlash)
-					{
-						$warning[$idx] .= "\\";
-					}	
-					$warning[$idx] .= $telem['name'];
-					$bSlash = true;
-				}	  
-				$idx++;
-			}	
+		  $map_msg=build_del_testsuite_warning_msg($tree_mgr,$tcase_mgr,$testcases,$my_testsuiteID);
 		}
 		
-		//if the user has clicked the delete button on the archive page show the delete confirmation page
+		// prepare to show the delete confirmation page
 		$smarty->assign('objectID',$my_testsuiteID);
 		$smarty->assign('objectName', $tsuite_name);
-		$smarty->assign('warning', $warning);
-		$smarty->assign('link_msg', $link_msg);
+		
+		$smarty->assign('delete_msg',$map_msg['delete_msg']);
+		$smarty->assign('warning', $map_msg['warning']);
+		$smarty->assign('link_msg', $map_msg['link_msg']);
 	}
+	$smarty->assign('page_title',
+	                lang_get('delete') . " " . lang_get('container_title_' . $level) . TITLE_SEP);
+ 	$smarty->assign('sqlResult',$feedback_msg);
+
 }
 else if($action == 'move_testsuite_viewer') 
 {
@@ -312,7 +305,7 @@ if ($the_tpl)
 } 
 
 
-
+// ----------------------------------------------------------------------------------------- 
 // Auxiliary functions
 function get_values_from_post($akeys2get)
 {
@@ -324,4 +317,74 @@ function get_values_from_post($akeys2get)
 	}
 	return $c_data;
 }	
+
+
+// 20061024 - franciscom
+function build_del_testsuite_warning_msg(&$tree_mgr,&$tcase_mgr,&$testcases,$tsuite_id)
+{
+  $msg['warning']=null;
+  $msg['link_msg']=null;
+  $msg['delete_msg']=null;
+  
+  if(!is_null($testcases))
+  {
+    $show_warning=0;
+    $delete_msg='';
+  	$verbose = array();
+  	$msg['link_msg'] = array();
+  
+    $status_warning=array('linked_and_executed' => 1,
+    	                    'linked_but_not_executed' => 1,
+    	                    'no_links' => 0);
+    	                    
+  	$delete_notice=array('linked_and_executed' => lang_get('delete_notice'),
+    	                    'linked_but_not_executed' => '',
+    	                    'no_links' => '');
+  				
+  	foreach($testcases as $the_key => $elem)
+  	{
+  		$verbose[] = $tree_mgr->get_path($elem['id'],$tsuite_id);
+  		
+  		$status=$tcase_mgr->check_link_and_exec_status($elem['id']);
+  		$msg['link_msg'][] = $status;
+  		
+  		if( $status_warning[$status] )
+  		{
+  		  $show_warning=1;
+  		  $msg['delete_msg']=$delete_notice[$status];
+  		}
+  		
+  	}
+  	
+  	$idx = 0; 
+  	if( $show_warning)
+  	{
+  		$msg['warning'] = array();
+  		foreach($verbose as $the_key => $elem)
+  		{
+  			$msg['warning'][$idx] = '';
+  			$bSlash = false;
+  			foreach($elem as $tkey => $telem)
+  			{
+  				if ($bSlash)
+  				{
+  					$msg['warning'][$idx] .= "\\";
+  				}	
+  				$msg['warning'][$idx] .= $telem['name'];
+  				$bSlash = true;
+  			}	  
+  			$idx++;
+  		}
+  	}	
+  	else
+  	{
+  	  $msg['link_msg']=null;
+  		$msg['warning']=null;
+  	}
+  }
+  return($msg);
+} // end function
+
 ?>
+
+

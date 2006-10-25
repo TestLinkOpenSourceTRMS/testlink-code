@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8 
- * @modified $Date: 2006/10/25 04:02:20 $ by $Author: kevinlevy $
+ * @modified $Date: 2006/10/25 04:38:05 $ by $Author: kevinlevy $
  *
  *
  * This class is encapsulates most functionality necessary to query the database
@@ -445,16 +445,17 @@ class results
 		  		$notes = $exec_row['notes'];
 				$infoToSave = array('testcaseID' => $testcaseID, 'tcversion_id' => $tcversion_id, 'build_id' => $build_id, 'tester_id' => $tester_id, 'execution_ts' => $execution_ts, 'status' => $status, 'notes' => $notes);
 			    //print_r($infoToSave);
-		  		array_push($currentSuite, $infoToSave);
+				if ($lastResult != 'n') {
+				  array_push($currentSuite, $infoToSave);
+				}
 		  		next($execQuery);
 			} // end while		
 		} // end if($execQuery)
-		// HANDLE scenario where execution does not exist		
+		// HANDLE scenario where execution does not exist		          
 		elseif (($lastResult == 'a') || ($lastResult == 'n')) {
 			$infoToSave = array(testcaseID => $testcaseID, tcversion_id => $tcversion_id, 
 			build_id => '', tester_id => '', execution_ts => '', status => 'n', notes => '');
 			array_push($currentSuite, $infoToSave);			
-
 		}
       } // end if($executionExists)
       $executionsMap[$testsuite_id] = $currentSuite;

@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsMoreBuilds_buildReport.php,v 1.27 2006/10/24 21:51:16 kevinlevy Exp $ 
+* $Id: resultsMoreBuilds_buildReport.php,v 1.28 2006/10/25 04:03:28 kevinlevy Exp $ 
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 * 
@@ -19,6 +19,28 @@ testlinkInitPage($db);
 $format = isset($_REQUEST['format']) ? $_REQUEST['format'] : 'HTML';
 $owner = isset($_REQUEST['owner']) ? $_REQUEST['owner'] : null;
 $lastStatus = isset($_REQUEST['lastStatus']) ? $_REQUEST['lastStatus'] : null;
+// print "lastStatus = $lastStatus <BR>";
+
+// TO-DO localize parameters passed from form
+
+if ($lastStatus == "Passed"){
+  $lastStatus = 'p';
+ }
+elseif ($lastStatus == "Failed"){
+   $lastStatus = 'f';
+}
+elseif ($lastStatus == "Blocked"){
+ $lastStatus = 'b';
+}
+elseif ($lastStatus == "Not Run"){
+  $lastStatus = 'n';
+}
+elseif ($lastStatus == "Any"){
+  $lastStatus = 'a';
+}
+
+// print "lastStatus = $lastStatus <BR>";
+
 $buildsSelected = isset($_REQUEST['build']) ? $_REQUEST['build'] : array();
 $componentsSelected = isset($_REQUEST['component']) ? $_REQUEST['component'] : array();
 $keywordSelected = isset($_REQUEST['keyword']) ? $_REQUEST['keyword'] : array();
@@ -34,7 +56,7 @@ if (sizeof($buildsSelected))
 	
 $tp = new testplan($db);
 
-$re = new results($db, $tp, $componentsSelected, $buildsToQuery, $prodID, $tpID);
+$re = new results($db, $tp, $componentsSelected, $buildsToQuery, $prodID, $tpID, $lastStatus);
 
 $suiteList = $re->getSuiteList();
 $flatArray = $re->getFlatArray();

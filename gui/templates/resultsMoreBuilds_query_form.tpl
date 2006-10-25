@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsMoreBuilds_query_form.tpl,v 1.33 2006/10/21 23:15:18 kevinlevy Exp $
+$Id: resultsMoreBuilds_query_form.tpl,v 1.34 2006/10/25 16:31:53 kevinlevy Exp $
 @author Francisco Mancardi - fm - start solving BUGID 97/98
 20051022 - scs - removed ' in component id values
 20051121 - scs - added escaping of tpname
@@ -41,10 +41,10 @@ $Id: resultsMoreBuilds_query_form.tpl,v 1.33 2006/10/21 23:15:18 kevinlevy Exp $
 		</tr>
 		<tr>
 			<td>
-				   	<select name="keyword[]" size="10" multiple="multiple">
-						{* by default select all components *}
+				   	<select name="keyword" size="10" >
+
 						{foreach key=keyword_id item=keyword_name from=$arrKeywords}
-							<option value="{$keyword_id}" selected="selected">{$arrKeywords[$keyword_id]|escape}</option>
+							<option value="{$keyword_id}" >{$arrKeywords[$keyword_id]|escape}</option>
 						{/foreach}
 					</select>
 			</td>

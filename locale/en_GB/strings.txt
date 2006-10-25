@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.79 $
- * @modified $Date: 2006/10/25 07:36:30 $ $Author: franciscom $
+ * @version $Revision: 1.80 $
+ * @modified $Date: 2006/10/25 16:35:31 $ $Author: kevinlevy $
  *
  * @author Francisco Mancardi
  *
@@ -766,7 +766,6 @@ $TLS_caption_user_selected_query_parameters = "Query Parameters";
 $TLS_not_yet_executed = "Not yetexecuted";
 $TLS_show_hide_all = "Show/Hide All";
 $TLS_th_builds = "build(s)";
-$TLS_th_keywords = "keyword(s)";
 $TLS_th_last_result = "last result";
 $TLS_th_owners = "owner(s)";
 $TLS_th_report_format = "report type";

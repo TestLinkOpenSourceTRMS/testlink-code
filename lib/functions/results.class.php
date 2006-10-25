@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8 
- * @modified $Date: 2006/10/24 22:09:47 $ by $Author: kevinlevy $
+ * @modified $Date: 2006/10/25 04:02:20 $ by $Author: kevinlevy $
  *
  *
  * This class is encapsulates most functionality necessary to query the database
@@ -80,8 +80,9 @@ class results
   // (total cases in plan, total pass, total fail, total blocked, total not run)
   var $totalsForPlan = null;
 	
-	//TODO: shallow initialization!  
-  function results(&$db,&$tp,$suitesSelected,$builds_to_query = -1,$prodID,$testPlanID)
+  //TODO: shallow initialization!  - KL started this - but not 100% completed
+  // TODO: localize default value for $lastResult
+  function results(&$db,&$tp,$suitesSelected,$builds_to_query = -1,$prodID,$testPlanID, $lastResult = 'a')
   {
     $this->db = $db;	
     $this->tp = $tp;    
@@ -93,11 +94,12 @@ class results
     $this->suiteStructure = $this->generateExecTree();
 
     // print "builds_to_query = $builds_to_query <BR>";
+    // print "lastResult = $lastResult <BR>";
 
     // KL - if no builds are specified, no need to execute the following block of code
     if ($builds_to_query != -1) {
       // retrieve results from executions table
-      $this->executionsMap = $this->buildExecutionsMap($builds_to_query);    
+      $this->executionsMap = $this->buildExecutionsMap($builds_to_query, $lastResult);    
  
       // create data object which tallies last result for each test case
       $this->createMapOfLastResult($this->suiteStructure, $this->executionsMap);
@@ -379,64 +381,53 @@ class results
    * testsuite_id_1_array = []
    *
    */
-  function buildExecutionsMap($builds_to_query){
+  function buildExecutionsMap($builds_to_query, $lastResult){
     // first make sure we initialize the executionsMap
     // otherwise duplicate executions will be added to suites
     $executionsMap = null;  
     $linked_tcversions = $this->tp->get_linked_tcversions($_SESSION['testPlanId']);
-    /**
-    print "\$linked_tcversions = <BR>";
-	print_r($linked_tcversions);
-	print "<BR>";
-	print "<BR>";
-    */
+
     while ($testcaseID = key($linked_tcversions)){
-	//print "\$testcaseID = $testcaseID <BR>";
       $info = $linked_tcversions[$testcaseID];
-            
       $testsuite_id = $info['testsuite_id'];
-		
       $currentSuite = null;
       if (!$executionsMap || !(array_key_exists($testsuite_id, $executionsMap))){
 	    $currentSuite = array();
       }
       else {
 		$currentSuite = $executionsMap[$testsuite_id];
-	  }
-
-      //$notSure2 = $info[1];
-      //$tc_id = $info[tc_id];
+      }
       $tcversion_id = $info['tcversion_id'];
-      //$notSure3 = $info[3];
       $executed = $info['executed'];
       $executionExists = true;
-	/**
-	print "\$tcversion_id = $tcversion_id <BR>";
-	print "\$executed = $executed <BR>";
-	print "<BR><BR>";	
-	*/
+
       if ($tcversion_id != $executed){
-			//print "test case \$tcversion_id $tcversion_id not executed <BR>";
-       		// this test case not been executed in this test plan
-			$executionExists = false;
-			// print "test case version id " . $tcversion_id . " not executed <BR>";
-			// print "executed = $executed <BR>";
-			$infoToSave = array(testcaseID => $testcaseID, tcversion_id => $tcversion_id, 
-			                    build_id => '', tester_id => '', execution_ts => '', status => 'n', notes => '');
-			array_push($currentSuite, $infoToSave);			
+	$executionExists = false;
+	if (($lastResult == 'a') || ($lastResult == 'n')) {
+	  $infoToSave = array(testcaseID => $testcaseID, tcversion_id => $tcversion_id, build_id => '', tester_id => '', execution_ts => '', status => 'n', notes => '');
+	  array_push($currentSuite, $infoToSave);			
+	}
+	  
       }
 
-      // select * from executions where tcversion_id = $executed;
-
       if ($executionExists) {
-	  	// NOTE TO SELF - this is where we can include the searching of results
-		// over multiple test plans - by modifying this select statement slightly
-		// to include multiple test plan ids
+	  // NOTE TO SELF - this is where we can include the searching of results
+	  // over multiple test plans - by modifying this select statement slightly
+	  // to include multiple test plan ids
 
 		$sql = "SELECT * FROM executions " .
 			   "WHERE tcversion_id = $executed AND testplan_id = $_SESSION[testPlanId] ";
+
+		//print "lastResult = $lastResult <BR>";
+		if (($lastResult == 'p') || ($lastResult == 'f') || ($lastResult == 'b')){
+		  $sql .= " AND status = '" . $lastResult . "' ";
+		}
+
 		if ($builds_to_query != -1)
 			$sql .= " AND build_id IN ($builds_to_query) ";
+
+		//print "sql = $sql <BR>";
+		
 		$execQuery = $this->db->fetchArrayRowsIntoMap($sql,'id');
 		// -----------------------------------------------------------
 		
@@ -444,24 +435,22 @@ class results
 		{
 		    while($executions_id = key($execQuery)){
 		    	//print "in the loop <BR>";
-		  		$notSureA = $execQuery[$executions_id];
-		  		$exec_row = $notSureA[0];
+		                $notSureA = $execQuery[$executions_id];
+		 		$exec_row = $notSureA[0];
 		  		$build_id = $exec_row['build_id'];
 		  		$tester_id = $exec_row['tester_id'];
 		  		$execution_ts = $exec_row['execution_ts'];
 		  		$status = $exec_row['status'];
 		  		$testplan_id = $exec_row['testplan_id'];
 		  		$notes = $exec_row['notes'];
-	
-		  		$infoToSave = array('testcaseID' => $testcaseID, 'tcversion_id' => $tcversion_id, 'build_id' => $build_id, 'tester_id' => $tester_id, 'execution_ts' => $execution_ts, 'status' => $status, 'notes' => $notes);
-		
+				$infoToSave = array('testcaseID' => $testcaseID, 'tcversion_id' => $tcversion_id, 'build_id' => $build_id, 'tester_id' => $tester_id, 'execution_ts' => $execution_ts, 'status' => $status, 'notes' => $notes);
 			    //print_r($infoToSave);
 		  		array_push($currentSuite, $infoToSave);
 		  		next($execQuery);
 			} // end while		
 		} // end if($execQuery)
 		// HANDLE scenario where execution does not exist		
-		else {
+		elseif (($lastResult == 'a') || ($lastResult == 'n')) {
 			$infoToSave = array(testcaseID => $testcaseID, tcversion_id => $tcversion_id, 
 			build_id => '', tester_id => '', execution_ts => '', status => 'n', notes => '');
 			array_push($currentSuite, $infoToSave);			

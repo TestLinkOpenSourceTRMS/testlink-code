@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8 
- * @modified $Date: 2006/10/26 18:29:47 $ by $Author: kevinlevy $
+ * @modified $Date: 2006/10/26 21:24:02 $ by $Author: kevinlevy $
  *
  *
  * This class is encapsulates most functionality necessary to query the database
@@ -90,7 +90,7 @@ class results
     $this->testPlanID = $testPlanID;
 
     // build suiteStructure and flatArray
-    $this->suiteStructure = $this->generateExecTree($keywordId);
+    $this->suiteStructure = $this->generateExecTree($keywordId, false, 0, $owner);
 
     // KL - if no builds are specified, no need to execute the following block of code
     if ($builds_to_query != -1) {
@@ -372,8 +372,8 @@ class results
   function buildExecutionsMap($builds_to_query, $lastResult = 'a', $keyword = 0, $owner = null){
     // first make sure we initialize the executionsMap
     // otherwise duplicate executions will be added to suites
-    $executionsMap = null;  
-    $linked_tcversions = $this->tp->get_linked_tcversions($_SESSION['testPlanId'], null, $keyword);
+    $executionsMap = null;
+    $linked_tcversions = $this->tp->get_linked_tcversions($_SESSION['testPlanId'], null, $keyword, null, $owner);
 
     while ($testcaseID = key($linked_tcversions)){
       $info = $linked_tcversions[$testcaseID];
@@ -494,7 +494,7 @@ class results
  *
  */
 
-function generateExecTree($keyword_id = 0,$bForPrinting = false,$tc_id = 0)
+  function generateExecTree($keyword_id = 0,$bForPrinting = false,$tc_id = 0, $owner = null)
 {
 	$tplan_mgr = $this->tp;
 	$tproject_mgr = new testproject($this->db);
@@ -521,8 +521,8 @@ function generateExecTree($keyword_id = 0,$bForPrinting = false,$tc_id = 0)
 		if($keyword_id) {
 			$tck_map = $tproject_mgr->get_keywords_tcases($this->prodID,$keyword_id);
 		}
-		// KL - comment back in when we add prepareNode() to this class
-		$testcase_count = prepareNode($test_spec,$hash_id_descr,$tck_map,$tp_tcs,$bForPrinting);
+		$count = 0;
+		$testcase_count = prepareNode($test_spec,$hash_id_descr,$tck_map,$tp_tcs,$bForPrinting, $count, $owner);
 		$test_spec['testcase_count'] = $testcase_count;
 		$getArguments = "getArguments";
 		$menuUrl = "menuUrl";

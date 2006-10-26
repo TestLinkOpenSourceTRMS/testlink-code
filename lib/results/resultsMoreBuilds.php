@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsMoreBuilds.php,v 1.41 2006/10/26 20:01:15 kevinlevy Exp $ 
+* $Id: resultsMoreBuilds.php,v 1.42 2006/10/26 21:24:24 kevinlevy Exp $ 
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 * 
@@ -25,7 +25,11 @@ $tplanName = isset($_SESSION['testPlanName']) ? $_SESSION['testPlanName'] : null
 define('ALL_USERS_FILTER', null);
 define('ADD_BLANK_OPTION', false);
 $arrOwners = get_users_for_html_options($db, ALL_USERS_FILTER, ADD_BLANK_OPTION);
-
+/**
+print "arrOwners = <BR>";
+print_r($arrOwners);
+print "<BR>";
+*/
 
 $tp = new testplan($db);
 //$tree = new tree($db);
@@ -35,7 +39,18 @@ $re = new results($db, $tp, $suitesSelected, $builds_to_query, $prodID, $tpID);
 
 $arrKeywords = $tp->get_keywords_map($tpID); 
 $arrBuilds = $tp->get_builds($tpID); 
+/**
+print "arrBuilds = <BR>";
+print_r($arrBuilds);
+print "<BR>";
+*/
+
 $arrComponents = $re->getTopLevelSuites();
+/**
+print "arrComponents = <BR>";
+print_r($arrComponents);
+print "<BR>";
+*/
 $mapOfSuiteSummary = $re->getAggregateMap();
 
 // $count = count($arrComponents);

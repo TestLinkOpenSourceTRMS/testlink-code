@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsMoreBuilds_buildReport.php,v 1.31 2006/10/26 20:15:11 kevinlevy Exp $ 
+* $Id: resultsMoreBuilds_buildReport.php,v 1.32 2006/10/26 21:24:34 kevinlevy Exp $ 
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 * 
@@ -14,10 +14,10 @@
 require('../../config.inc.php');
 require_once('common.php');
 require_once('../functions/results.class.php');
+require_once('../functions/users.inc.php');
 testlinkInitPage($db);
 
 $format = isset($_REQUEST['format']) ? $_REQUEST['format'] : 'HTML';
-$ownerSelected = isset($_REQUEST['owner']) ? $_REQUEST['owner'] : null;
 $lastStatus = isset($_REQUEST['lastStatus']) ? $_REQUEST['lastStatus'] : null;
 
 // statusForClass is used for results.class.php
@@ -40,10 +40,12 @@ elseif ($lastStatus == "Any"){
   $statusForClass = 'a';
 }
 
-
+$ownerSelected = isset($_REQUEST['owner']) ? $_REQUEST['owner'] : null;
 $buildsSelected = isset($_REQUEST['build']) ? $_REQUEST['build'] : array();
 $componentsSelected = isset($_REQUEST['component']) ? $_REQUEST['component'] : array();
 $keywordSelected = isset($_REQUEST['keyword']) ? $_REQUEST['keyword'] : 0;
+
+
 
 $tpID = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0;
 $prodID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
@@ -66,7 +68,10 @@ $arrKeywords = $tp->get_keywords_map($tpID);
 $arrBuilds = $tp->get_builds($tpID); 
 $mapBuilds = $tp->get_builds_for_html_options($tpID);
 $arrComponents = $re->getTopLevelSuites();
-$users = getAllUsers($db,null,'id');
+
+define('ALL_USERS_FILTER', null);
+define('ADD_BLANK_OPTION', false);
+$arrOwners = get_users_for_html_options($db, ALL_USERS_FILTER, ADD_BLANK_OPTION);
 
 $smarty = new TLSmarty();
 $smarty->assign('arrBuilds', $arrBuilds);
@@ -78,7 +83,7 @@ $smarty->assign('componentsSelected', $componentsSelected);
 $smarty->assign('lastStatus', $lastStatus);
 $smarty->assign('buildsSelected', $buildsSelected);
 $smarty->assign('keywordsSelected', $keywordSelected);
-$smarty->assign('ownerSelected', $ownerSelected);
+$smarty->assign('ownerSelected', $arrOwners[$ownerSelected]);
 $smarty->assign('totals', $totals);
 $smarty->assign('testPlanName',$tpName);
 $smarty->assign('testplanid', $tpID);

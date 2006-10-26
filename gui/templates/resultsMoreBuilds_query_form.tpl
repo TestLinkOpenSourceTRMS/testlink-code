@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsMoreBuilds_query_form.tpl,v 1.34 2006/10/25 16:31:53 kevinlevy Exp $
+$Id: resultsMoreBuilds_query_form.tpl,v 1.35 2006/10/26 21:25:10 kevinlevy Exp $
 @author Francisco Mancardi - fm - start solving BUGID 97/98
 20051022 - scs - removed ' in component id values
 20051121 - scs - added escaping of tpname
@@ -50,10 +50,10 @@ $Id: resultsMoreBuilds_query_form.tpl,v 1.34 2006/10/25 16:31:53 kevinlevy Exp $
 			</td>
 			<td>
 				<select name="owner" size="5">
-					<option value="" selected="selected">{lang_get s='do_not_query_by_owner'}</option>
+
 					{foreach key=owner item=ownerid from=$arrOwners}
 						{* by default the owner should be the current user *}
-						<option value="{$ownerid}">{$ownerid|escape}</option>
+						<option value="{$owner}">{$ownerid|escape}</option>
 					{/foreach}
 				</select>
 			</td>

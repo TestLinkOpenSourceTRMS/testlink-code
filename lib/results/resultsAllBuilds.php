@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsAllBuilds.php,v 1.5 2006/03/11 23:04:50 kevinlevy Exp $ 
+* $Id: resultsAllBuilds.php,v 1.6 2006/10/26 06:47:31 kevinlevy Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * 
@@ -13,16 +13,18 @@
 require('../../config.inc.php');
 require_once('common.php');
 require_once('builds.inc.php');	
-require_once('results.inc.php');
-require_once("../../lib/functions/lang_api.php");
+require_once('../functions/results.class.php');
 testlinkInitPage($db);
+print "KL - 20061025 - work in progress <BR>";
 
 // collect results for Test Plan
-$arrBuilds = getBuilds($db,$_SESSION['testPlanId'], " ORDER BY builds.name ");
-$total = getPlanTCNumber($db,$_SESSION['testPlanId']);
-
+//$arrBuilds = getBuilds($db,$_SESSION['testPlanId'], " ORDER BY builds.name ");
+$arrBuilds = null;
+//$total = getPlanTCNumber($db,$_SESSION['testPlanId']);
+$total = null;
 $arrData = array();
 ///SCHLUNDUS
+/**
 foreach ($arrBuilds as $myBuild=>$name)
 {
 	// get results for the build
@@ -46,6 +48,7 @@ foreach ($arrBuilds as $myBuild=>$name)
 	
 	}
 }
+*/
 
 $smarty = new TLSmarty;
 $smarty->assign('tcs_color', $g_tc_sd_color);

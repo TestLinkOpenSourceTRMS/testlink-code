@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8 
- * @modified $Date: 2006/10/25 04:38:05 $ by $Author: kevinlevy $
+ * @modified $Date: 2006/10/26 03:03:41 $ by $Author: kevinlevy $
  *
  *
  * This class is encapsulates most functionality necessary to query the database
@@ -81,9 +81,10 @@ class results
   var $totalsForPlan = null;
 	
   //TODO: shallow initialization!  - KL started this - but not 100% completed
-  // TODO: localize default value for $lastResult
-  function results(&$db,&$tp,$suitesSelected,$builds_to_query = -1,$prodID,$testPlanID, $lastResult = 'a')
+  function results(&$db,&$tp,$suitesSelected,$builds_to_query = -1,$prodID,$testPlanID, $lastResult = 'a', $keywordId = 0, $owner = null)
   {
+    print "keyword = $keywordId <BR>";
+
     $this->db = $db;	
     $this->tp = $tp;    
     $this->suitesSelected = $suitesSelected;  	
@@ -91,7 +92,7 @@ class results
     $this->testPlanID = $testPlanID;
 
     // build suiteStructure and flatArray
-    $this->suiteStructure = $this->generateExecTree();
+    $this->suiteStructure = $this->generateExecTree($keywordId);
 
     // print "builds_to_query = $builds_to_query <BR>";
     // print "lastResult = $lastResult <BR>";
@@ -99,7 +100,7 @@ class results
     // KL - if no builds are specified, no need to execute the following block of code
     if ($builds_to_query != -1) {
       // retrieve results from executions table
-      $this->executionsMap = $this->buildExecutionsMap($builds_to_query, $lastResult);    
+      $this->executionsMap = $this->buildExecutionsMap($builds_to_query, $lastResult, $keywordId, $owner);    
  
       // create data object which tallies last result for each test case
       $this->createMapOfLastResult($this->suiteStructure, $this->executionsMap);
@@ -381,11 +382,11 @@ class results
    * testsuite_id_1_array = []
    *
    */
-  function buildExecutionsMap($builds_to_query, $lastResult){
+  function buildExecutionsMap($builds_to_query, $lastResult = 'a', $keyword = 0, $owner = null){
     // first make sure we initialize the executionsMap
     // otherwise duplicate executions will be added to suites
     $executionsMap = null;  
-    $linked_tcversions = $this->tp->get_linked_tcversions($_SESSION['testPlanId']);
+    $linked_tcversions = $this->tp->get_linked_tcversions($_SESSION['testPlanId'], null, $keyword);
 
     while ($testcaseID = key($linked_tcversions)){
       $info = $linked_tcversions[$testcaseID];
@@ -509,6 +510,8 @@ class results
 
 function generateExecTree($keyword_id = 0,$bForPrinting = false,$tc_id = 0)
 {
+  print "generateExecTree() keyword_id = $keyword_id <BR>";
+
 	// $menustring = null;
 	// print "generateExecTree() <BR>";
 	
@@ -521,8 +524,9 @@ function generateExecTree($keyword_id = 0,$bForPrinting = false,$tc_id = 0)
 	$hash_id_descr = array_flip($hash_descr_id);
 	$test_spec = $tree_manager->get_subtree($this->prodID,array('testplan'=>'exclude me'),
 	                                                     array('testcase'=>'exclude my children'),null,null,true);
-
+	print "point A <BR>";
 	$tp_tcs = $tplan_mgr->get_linked_tcversions($this->testPlanID,$tc_id,$keyword_id);
+	print "point B <BR>";
 	if (is_null($tp_tcs)) { 
 		$tp_tcs = array();
 	}
@@ -530,15 +534,17 @@ function generateExecTree($keyword_id = 0,$bForPrinting = false,$tc_id = 0)
 	$test_spec['name'] = "test_spec_name";
 	$test_spec['id'] = $this->prodID;
 	$test_spec['node_type_id'] = $hash_descr_id['testproject'];
-	// KL - not sure what to name this var
 	$suiteStructure = null;
 
 	if($test_spec)
 	{
 		$tck_map = null;
+		print "point B.1 <BR>";
+		print "keyword_id = $keyword_id <BR>";
 		if($keyword_id) {
 			$tck_map = $tproject_mgr->get_keywords_tcases($this->prodid,$keyword_id);
 		}
+		print "point C <BR>";
 		// KL - comment back in when we add prepareNode() to this class
 		$testcase_count = prepareNode($test_spec,$hash_id_descr,$tck_map,$tp_tcs,$bForPrinting);
 		//print "\$testcase_count = $testcase_count <BR>";

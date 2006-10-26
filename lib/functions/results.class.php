@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8 
- * @modified $Date: 2006/10/26 03:40:46 $ by $Author: kevinlevy $
+ * @modified $Date: 2006/10/26 18:29:47 $ by $Author: kevinlevy $
  *
  *
  * This class is encapsulates most functionality necessary to query the database
@@ -519,7 +519,7 @@ function generateExecTree($keyword_id = 0,$bForPrinting = false,$tc_id = 0)
 	{
 		$tck_map = null;
 		if($keyword_id) {
-			$tck_map = $tproject_mgr->get_keywords_tcases($this->prodid,$keyword_id);
+			$tck_map = $tproject_mgr->get_keywords_tcases($this->prodID,$keyword_id);
 		}
 		// KL - comment back in when we add prepareNode() to this class
 		$testcase_count = prepareNode($test_spec,$hash_id_descr,$tck_map,$tp_tcs,$bForPrinting);

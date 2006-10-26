@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8 
- * @modified $Date: 2006/10/26 03:03:41 $ by $Author: kevinlevy $
+ * @modified $Date: 2006/10/26 03:40:46 $ by $Author: kevinlevy $
  *
  *
  * This class is encapsulates most functionality necessary to query the database
@@ -83,8 +83,6 @@ class results
   //TODO: shallow initialization!  - KL started this - but not 100% completed
   function results(&$db,&$tp,$suitesSelected,$builds_to_query = -1,$prodID,$testPlanID, $lastResult = 'a', $keywordId = 0, $owner = null)
   {
-    print "keyword = $keywordId <BR>";
-
     $this->db = $db;	
     $this->tp = $tp;    
     $this->suitesSelected = $suitesSelected;  	
@@ -93,9 +91,6 @@ class results
 
     // build suiteStructure and flatArray
     $this->suiteStructure = $this->generateExecTree($keywordId);
-
-    // print "builds_to_query = $builds_to_query <BR>";
-    // print "lastResult = $lastResult <BR>";
 
     // KL - if no builds are specified, no need to execute the following block of code
     if ($builds_to_query != -1) {
@@ -161,7 +156,7 @@ class results
 		if (array_key_exists($testcase_id, $this->mapOfLastResult[$suiteId])) {
 			$buildInMap = $this->mapOfCaseResults[$testcase_id]['buildNumber'];	
 			if ($buildInMap < $buildNumber) {				
-				// print "addLastResultMap suiteId = " . $suiteId . " testcase_id = " . $testcase_id . " <BR>";
+
 				$this->mapOfLastResult[$suiteId][$testcase_id] = null;
 				$this->mapOfLastResult[$suiteId][$testcase_id] = array("buildIdLastExecuted" => $buildNumber, "result" => $result);
 			}	
@@ -211,7 +206,7 @@ class results
 	  			                                            'blocked' => $totalBlocked, 'notRun' => $totalNotRun);
 	  			next($mapOfLastResult[$suiteId]);
 	  		}  		
-	  		// print "current suite = " . $suiteId . " total cases = " . $totalCasesInSuite . "<BR>";  		
+
 	  		next($mapOfLastResult);
   		}
 	}  	
@@ -272,9 +267,8 @@ class results
   		if (($i % $this->ITEM_PATTERN_IN_SUITE_STRUCTURE) ==  $this->ID_IN_SUITE_STRUCTURE) {  			
   			$suiteId = $this->suiteStructure[$i];
   			
-  			//print "suiteId = $suiteId <BR>";
+
   			$resultsForSuite = isset($this->mapOfAggregate[$suiteId]) ? $this->mapOfAggregate[$suiteId] : 0;
-  			//print_r($resultsForSuite);
   			$total_sum += $resultsForSuite['total'];
   			$pass_sum += $resultsForSuite['pass'];
   			$fail_sum += $resultsForSuite['fail'];
@@ -293,12 +287,8 @@ class results
    */
  function addResultsToAggregate($t, $p, $f, $b, $nr) 
  {
-  	//print "<BR>";
-  	//print_r($this->aggSuiteList);
-  	//print "<BR>";
   	for ($i = 0 ; $i < count($this->aggSuiteList); $i++){
   	  	$suiteId = $this->aggSuiteList[$i];
-  	  	//print "suiteId = " . $suiteId . "<BR>";
   	  	$currentSuite = null;  
   	  	$total = 0;
   	  	$pass = 0;
@@ -342,8 +332,6 @@ class results
   		
   		elseif (($i % $this->ITEM_PATTERN_IN_SUITE_STRUCTURE) ==  $this->ID_IN_SUITE_STRUCTURE) {  			
   			$suiteId = $suiteStructure[$i];
-  			// print "suite id = $suiteId <BR>";
-  			//print_r($executionsMap[$suiteId]);  			
 			$totalCases = isset($executionsMap[$suiteId]) ? count($executionsMap[$suiteId]) : 0;
   			$caseId = null;
   			$build = null;
@@ -352,7 +340,6 @@ class results
   			// iterate across all executions for this suite
   			for ($j = 0 ; $j < $totalCases; $j++) {
   				$currentExecution = $executionsMap[$suiteId][$j];
-  				//print_r($currentExecution);
   				$caseId = $currentExecution['testcaseID'];
   				$build = $currentExecution['build_id'];
   				$result = $currentExecution['status'];
@@ -362,12 +349,12 @@ class results
   		
   		elseif (($i % $this->ITEM_PATTERN_IN_SUITE_STRUCTURE) ==  $this->ARRAY_IN_SUITE_STRUCTURE){
   			if (is_array($suiteStructure[$i])){
-  				//print "array found <BR>";
+
   				$childSuite = $suiteStructure[$i];
   				$summaryTreeForChild = $this->createMapOfLastResult($childSuite, $executionsMap);
   			}
   			else {
-  				//print "no array <BR>"; 				
+
   			}  			
   		}   // end elseif	
   	}
@@ -419,7 +406,7 @@ class results
 		$sql = "SELECT * FROM executions " .
 			   "WHERE tcversion_id = $executed AND testplan_id = $_SESSION[testPlanId] ";
 
-		//print "lastResult = $lastResult <BR>";
+
 		if (($lastResult == 'p') || ($lastResult == 'f') || ($lastResult == 'b')){
 		  $sql .= " AND status = '" . $lastResult . "' ";
 		}
@@ -427,7 +414,7 @@ class results
 		if ($builds_to_query != -1)
 			$sql .= " AND build_id IN ($builds_to_query) ";
 
-		//print "sql = $sql <BR>";
+
 		
 		$execQuery = $this->db->fetchArrayRowsIntoMap($sql,'id');
 		// -----------------------------------------------------------
@@ -435,7 +422,6 @@ class results
 		if ($execQuery)
 		{
 		    while($executions_id = key($execQuery)){
-		    	//print "in the loop <BR>";
 		                $notSureA = $execQuery[$executions_id];
 		 		$exec_row = $notSureA[0];
 		  		$build_id = $exec_row['build_id'];
@@ -445,7 +431,7 @@ class results
 		  		$testplan_id = $exec_row['testplan_id'];
 		  		$notes = $exec_row['notes'];
 				$infoToSave = array('testcaseID' => $testcaseID, 'tcversion_id' => $tcversion_id, 'build_id' => $build_id, 'tester_id' => $tester_id, 'execution_ts' => $execution_ts, 'status' => $status, 'notes' => $notes);
-			    //print_r($infoToSave);
+
 				if ($lastResult != 'n') {
 				  array_push($currentSuite, $infoToSave);
 				}
@@ -510,11 +496,6 @@ class results
 
 function generateExecTree($keyword_id = 0,$bForPrinting = false,$tc_id = 0)
 {
-  print "generateExecTree() keyword_id = $keyword_id <BR>";
-
-	// $menustring = null;
-	// print "generateExecTree() <BR>";
-	
 	$tplan_mgr = $this->tp;
 	$tproject_mgr = new testproject($this->db);
 	
@@ -524,9 +505,7 @@ function generateExecTree($keyword_id = 0,$bForPrinting = false,$tc_id = 0)
 	$hash_id_descr = array_flip($hash_descr_id);
 	$test_spec = $tree_manager->get_subtree($this->prodID,array('testplan'=>'exclude me'),
 	                                                     array('testcase'=>'exclude my children'),null,null,true);
-	print "point A <BR>";
 	$tp_tcs = $tplan_mgr->get_linked_tcversions($this->testPlanID,$tc_id,$keyword_id);
-	print "point B <BR>";
 	if (is_null($tp_tcs)) { 
 		$tp_tcs = array();
 	}
@@ -539,15 +518,11 @@ function generateExecTree($keyword_id = 0,$bForPrinting = false,$tc_id = 0)
 	if($test_spec)
 	{
 		$tck_map = null;
-		print "point B.1 <BR>";
-		print "keyword_id = $keyword_id <BR>";
 		if($keyword_id) {
 			$tck_map = $tproject_mgr->get_keywords_tcases($this->prodid,$keyword_id);
 		}
-		print "point C <BR>";
 		// KL - comment back in when we add prepareNode() to this class
 		$testcase_count = prepareNode($test_spec,$hash_id_descr,$tck_map,$tp_tcs,$bForPrinting);
-		//print "\$testcase_count = $testcase_count <BR>";
 		$test_spec['testcase_count'] = $testcase_count;
 		$getArguments = "getArguments";
 		$menuUrl = "menuUrl";
@@ -561,8 +536,6 @@ function generateExecTree($keyword_id = 0,$bForPrinting = false,$tc_id = 0)
 
 function processExecTreeNode($level,&$node,$getArguments,$hash_id_descr,$tc_action_enabled,$linkto,$bForPrinting)
 {
-	//print "<BR><BR><BR><BR>processExecTreeNode2<BR><BR>";
-	
 	$currentNode = null;
 	$currentNodeIndex = 0;
 	$suiteFound = false;
@@ -581,15 +554,11 @@ function processExecTreeNode($level,&$node,$getArguments,$hash_id_descr,$tc_acti
 			
 			$parentId = $current['parent_id'];
 			if (($parentId == $this->prodID) && ($this->suitesSelected != 'all')) {
-			  //print "parentId = $parentId, id = $id <BR>";
-			  //print "suitesSelected = <BR>";
-			  //print_r($this->suitesSelected);
-			  //print "<BR>";
 			  if (in_array($id, $this->suitesSelected)){
-			    //print "top level suite is in suitesSelected <BR>";
+
 			  }
 			  else {
-			    //print "top level suite is NOT in suitesSelected <BR>";
+
 			    // skip processing of this top level suite
 			    continue;
 			  }
@@ -597,7 +566,7 @@ function processExecTreeNode($level,&$node,$getArguments,$hash_id_descr,$tc_acti
 			$name = filterString($current['name']);
 		
 			if (($id) && ($name) && ($nodeDesc == 'testsuite')) {
-				//print "\$nodeDesc = $nodeDesc, \$id = $id, \$name = $name <BR>";
+
 				/** flat array logic */
 				$CONSTANT_DEPTH_ADJUSTMENT = 2;
 				$this->depth = $level - $CONSTANT_DEPTH_ADJUSTMENT  ;

@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsMoreBuilds_buildReport.php,v 1.29 2006/10/25 04:10:02 kevinlevy Exp $ 
+* $Id: resultsMoreBuilds_buildReport.php,v 1.30 2006/10/26 03:27:08 kevinlevy Exp $ 
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 * 
@@ -45,7 +45,7 @@ elseif ($lastStatus == "Any"){
 
 $buildsSelected = isset($_REQUEST['build']) ? $_REQUEST['build'] : array();
 $componentsSelected = isset($_REQUEST['component']) ? $_REQUEST['component'] : array();
-$keywordSelected = isset($_REQUEST['keyword']) ? $_REQUEST['keyword'] : array();
+$keywordSelected = isset($_REQUEST['keyword']) ? $_REQUEST['keyword'] : 0;
 
 $tpID = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0;
 $prodID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
@@ -58,7 +58,7 @@ if (sizeof($buildsSelected))
 	
 $tp = new testplan($db);
 
-$re = new results($db, $tp, $componentsSelected, $buildsToQuery, $prodID, $tpID, $statusForClass);
+$re = new results($db, $tp, $componentsSelected, $buildsToQuery, $prodID, $tpID, $statusForClass, $keywordSelected, $owner);
 
 $suiteList = $re->getSuiteList();
 $flatArray = $re->getFlatArray();

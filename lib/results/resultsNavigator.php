@@ -2,7 +2,7 @@
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
- * @version $Id: resultsNavigator.php,v 1.12 2006/10/14 21:14:31 schlundus Exp $ 
+ * @version $Id: resultsNavigator.php,v 1.13 2006/10/26 06:06:04 kevinlevy Exp $ 
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
  * This page list View of Test Results and Metrics.
@@ -21,10 +21,8 @@ $arrData = array(
 		 // KL - 29072006 - comment out non-functional reports. Add links back in as 
 		 // functionality in 1.7 becomes available
 
-		 /**   array('name' => lang_get('link_report_general_tp_metrics'), 'href' => 'resultsGeneral.php'), 
+		    array('name' => lang_get('link_report_general_tp_metrics'), 'href' => 'resultsGeneral.php'), 
 		  array('name' => lang_get('link_report_overall_build'), 'href' => 'resultsAllBuilds.php'), 
-
-*/
 
     array('name' => lang_get('link_report_metrics_more_builds'), 'href' => 'resultsMoreBuilds.php'), 
 

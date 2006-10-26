@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsMoreBuilds_buildReport.php,v 1.30 2006/10/26 03:27:08 kevinlevy Exp $ 
+* $Id: resultsMoreBuilds_buildReport.php,v 1.31 2006/10/26 20:15:11 kevinlevy Exp $ 
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 * 
@@ -17,9 +17,8 @@ require_once('../functions/results.class.php');
 testlinkInitPage($db);
 
 $format = isset($_REQUEST['format']) ? $_REQUEST['format'] : 'HTML';
-$owner = isset($_REQUEST['owner']) ? $_REQUEST['owner'] : null;
+$ownerSelected = isset($_REQUEST['owner']) ? $_REQUEST['owner'] : null;
 $lastStatus = isset($_REQUEST['lastStatus']) ? $_REQUEST['lastStatus'] : null;
-// print "lastStatus = $lastStatus <BR>";
 
 // statusForClass is used for results.class.php
 // lastStatus is used to be displayed 
@@ -41,7 +40,6 @@ elseif ($lastStatus == "Any"){
   $statusForClass = 'a';
 }
 
-// print "lastStatus = $lastStatus <BR>";
 
 $buildsSelected = isset($_REQUEST['build']) ? $_REQUEST['build'] : array();
 $componentsSelected = isset($_REQUEST['component']) ? $_REQUEST['component'] : array();
@@ -58,7 +56,7 @@ if (sizeof($buildsSelected))
 	
 $tp = new testplan($db);
 
-$re = new results($db, $tp, $componentsSelected, $buildsToQuery, $prodID, $tpID, $statusForClass, $keywordSelected, $owner);
+$re = new results($db, $tp, $componentsSelected, $buildsToQuery, $prodID, $tpID, $statusForClass, $keywordSelected, $ownerSelected);
 
 $suiteList = $re->getSuiteList();
 $flatArray = $re->getFlatArray();
@@ -70,12 +68,6 @@ $mapBuilds = $tp->get_builds_for_html_options($tpID);
 $arrComponents = $re->getTopLevelSuites();
 $users = getAllUsers($db,null,'id');
 
-/**
-print "\$suiteList = <BR>";
-print_r($suiteList);
-print "<BR>"; 
-*/
-
 $smarty = new TLSmarty();
 $smarty->assign('arrBuilds', $arrBuilds);
 $smarty->assign('mapBuilds', $mapBuilds);
@@ -86,6 +78,7 @@ $smarty->assign('componentsSelected', $componentsSelected);
 $smarty->assign('lastStatus', $lastStatus);
 $smarty->assign('buildsSelected', $buildsSelected);
 $smarty->assign('keywordsSelected', $keywordSelected);
+$smarty->assign('ownerSelected', $ownerSelected);
 $smarty->assign('totals', $totals);
 $smarty->assign('testPlanName',$tpName);
 $smarty->assign('testplanid', $tpID);

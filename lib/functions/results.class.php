@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8 
- * @modified $Date: 2006/10/26 21:24:02 $ by $Author: kevinlevy $
+ * @modified $Date: 2006/10/27 02:21:18 $ by $Author: kevinlevy $
  *
  *
  * This class is encapsulates most functionality necessary to query the database
@@ -22,6 +22,9 @@ require_once('treeMenu.inc.php');
 
 class results
 {
+  // only call get_linked_tcversions only once, and save it to
+  // $this->linked_tcversions
+  var $linked_tcversions = null;
   var $suitesSelected = "";	
 
   // class references passed in by constructor
@@ -373,10 +376,9 @@ class results
     // first make sure we initialize the executionsMap
     // otherwise duplicate executions will be added to suites
     $executionsMap = null;
-    $linked_tcversions = $this->tp->get_linked_tcversions($_SESSION['testPlanId'], null, $keyword, null, $owner);
 
-    while ($testcaseID = key($linked_tcversions)){
-      $info = $linked_tcversions[$testcaseID];
+    while ($testcaseID = key($this->linked_tcversions)){
+      $info = $this->linked_tcversions[$testcaseID];
       $testsuite_id = $info['testsuite_id'];
       $currentSuite = null;
       if (!$executionsMap || !(array_key_exists($testsuite_id, $executionsMap))){
@@ -446,7 +448,7 @@ class results
 		}
       } // end if($executionExists)
       $executionsMap[$testsuite_id] = $currentSuite;
-      next($linked_tcversions);
+      next($this->linked_tcversions);
     } 
     return $executionsMap;
   } // end function
@@ -505,7 +507,8 @@ class results
 	$hash_id_descr = array_flip($hash_descr_id);
 	$test_spec = $tree_manager->get_subtree($this->prodID,array('testplan'=>'exclude me'),
 	                                                     array('testcase'=>'exclude my children'),null,null,true);
-	$tp_tcs = $tplan_mgr->get_linked_tcversions($this->testPlanID,$tc_id,$keyword_id);
+	$tp_tcs = $tplan_mgr->get_linked_tcversions($this->testPlanID,$tc_id,$keyword_id, null, $owner);
+	$this->linked_tcversions = &$tp_tcs;
 	if (is_null($tp_tcs)) { 
 		$tp_tcs = array();
 	}

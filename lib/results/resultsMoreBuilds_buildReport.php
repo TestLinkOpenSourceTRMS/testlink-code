@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsMoreBuilds_buildReport.php,v 1.32 2006/10/26 21:24:34 kevinlevy Exp $ 
+* $Id: resultsMoreBuilds_buildReport.php,v 1.33 2006/10/27 04:03:23 kevinlevy Exp $ 
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 * 
@@ -45,6 +45,11 @@ $buildsSelected = isset($_REQUEST['build']) ? $_REQUEST['build'] : array();
 $componentsSelected = isset($_REQUEST['component']) ? $_REQUEST['component'] : array();
 $keywordSelected = isset($_REQUEST['keyword']) ? $_REQUEST['keyword'] : 0;
 
+/**
+print "components selected = <BR>";
+print_r($componentsSelected);
+print "<BR>";
+*/
 
 
 $tpID = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0;
@@ -67,7 +72,15 @@ $totals = $re->getTotalsForPlan();
 $arrKeywords = $tp->get_keywords_map($tpID); 
 $arrBuilds = $tp->get_builds($tpID); 
 $mapBuilds = $tp->get_builds_for_html_options($tpID);
+// getTopLevelSuites may not return 
+// all top level suites 
+// only the top level suites in the resultant set
 $arrComponents = $re->getTopLevelSuites();
+/**
+print "arrComponents = <BR>";
+print_r($arrComponents);
+print "<BR>";
+*/
 
 define('ALL_USERS_FILTER', null);
 define('ADD_BLANK_OPTION', false);

@@ -1,13 +1,13 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsAllBuilds.php,v 1.6 2006/10/26 06:47:31 kevinlevy Exp $ 
+* $Id: resultsAllBuilds.php,v 1.7 2006/10/29 10:18:08 kevinlevy Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * 
 * This page show Test Results over all Builds.
 *
-* @author Francisco Mancardi - 20051002 - refactoring
+* @author Kevin Levy 20061029 - 1.7 upgrate
 */
 
 require('../../config.inc.php');
@@ -15,44 +15,37 @@ require_once('common.php');
 require_once('builds.inc.php');	
 require_once('../functions/results.class.php');
 testlinkInitPage($db);
-print "KL - 20061025 - work in progress <BR>";
 
-// collect results for Test Plan
-//$arrBuilds = getBuilds($db,$_SESSION['testPlanId'], " ORDER BY builds.name ");
-$arrBuilds = null;
-//$total = getPlanTCNumber($db,$_SESSION['testPlanId']);
-$total = null;
-$arrData = array();
-///SCHLUNDUS
-/**
-foreach ($arrBuilds as $myBuild=>$name)
-{
-	// get results for the build
-	$buildResults = getPlanStatus($db,$_SESSION['testPlanId'], $myBuild);
-	$notRun = $total - ($buildResults['passed'] + $buildResults['failed'] + $buildResults['blocked']);
-	
-	if ($total)
-	{
-	///SCHLUNDUS
-		array_push($arrData, 
-		           array($name, $total, 
-			               $buildResults['passed'], round((100 * ($buildResults['passed']/$total)),2),
-			               $buildResults['failed'], round((100 * ($buildResults['failed']/$total)),2),
-			               $buildResults['blocked'], round((100 * ($buildResults['blocked']/$total)),2),
-			               $notRun, round((100 * ($notRun/$total)),2) ));
-	}
-	else
-	{
-	///SCHLUNDUS
-		array_push($arrData, array($name, 0, 0,0,0,$notRun, 0) );
-	
-	}
+$tp = new testplan($db);
+$tpID = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0 ;
+$arrBuilds = $tp->get_builds($tpID); 
+$SUITES_SELECTED = 'all';
+
+$arrDataBuilds = null;
+$arrDataBuildsIndex = 0;
+for ($i = 0; $i < sizeOf($arrBuilds); $i++) {
+	$currentArray = $arrBuilds[$i] ;
+	$build_id = $currentArray['id'];
+	$build_name = $currentArray['name'];
+	$specificBuildResults = new results($db, $tp, $SUITES_SELECTED, $build_id);
+	$resultArray = $specificBuildResults->getTotalsForPlan();
+	$total = $resultArray['total'];
+	$notRun = $resultArray['notRun'];
+	$percentNotRun = ($notRun / $total) * 100;
+	$percentCompleted = (($total - $notRun) / $total) * 100;
+	$pass = $resultArray['pass'];
+	$percentPass = ($pass / $total ) * 100;
+	$fail = $resultArray['fail'];
+	$percentFail = ($fail / $total) * 100;
+	$blocked = $resultArray['blocked'];
+	$percentBlocked = ($blocked / $total ) * 100;
+	$arrDataBuilds[$arrDataBuildsIndex] = array($build_name,$total, $pass, $percentPass, $fail, $percentFail, $blocked, $percentBlocked, $notRun, $percentNotRun);
+	$arrDataBuildsIndex++;
 }
-*/
 
 $smarty = new TLSmarty;
 $smarty->assign('tcs_color', $g_tc_sd_color);
 $smarty->assign('title', $_SESSION['testPlanName'] . lang_get('title_metrics_x_build'));
-$smarty->assign('arrData', $arrData);
+$smarty->assign('arrData', $arrDataBuilds);
 $smarty->display('resultsAllBuilds.tpl');
 ?>

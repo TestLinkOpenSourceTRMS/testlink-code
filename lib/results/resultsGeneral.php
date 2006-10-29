@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: resultsGeneral.php,v $
- * @version $Revision: 1.8 $
- * @modified $Date: 2006/10/29 08:32:02 $ by $Author: kevinlevy $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2006/10/29 09:13:12 $ by $Author: kevinlevy $
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
  * This page show Test Results over all Builds.
@@ -31,13 +31,18 @@ $tp = new testplan($db);
 $builds_to_query = 'a';
 $suitesSelected = 'all';
 $re = new results($db, $tp, $suitesSelected, $builds_to_query);
+
+
+
+/** 
+* COMPONENTS REPORT 
+*/
+
 $topLevelSuites = $re->getTopLevelSuites();
 $mapOfAggregate = $re->getAggregateMap();
-
 $arrDataSuite = null;
 $arrDataSuiteIndex = 0;
 while ($i = key($topLevelSuites)) {
-	
 	//print_r($arrDataSuite);
 	//print "<BR>";
 	$pairArray = $topLevelSuites[$i];
@@ -51,21 +56,46 @@ while ($i = key($topLevelSuites)) {
 	$arrDataSuite[$arrDataSuiteIndex] = array($currentSuiteName,$total,$resultArray['pass'],$resultArray['fail'],$resultArray['blocked'],$notRun,$percentCompleted);
 	$arrDataSuiteIndex++;
 	next($topLevelSuites);
-
 } 
 
+/**
+* PRIORITY REPORT
+*/
 //$arrDataPriority = getPriorityReport($db,$tpID);
 $arrDataPriority = null;
 
-//$arrDataSuite = getTestSuiteReport($db,$tpID);
-//print_r($arrDataSuite);
-//print "<BR>";
 
+/**
+* KEYWORDS REPORT
+*/
 //$arrDataKeys = getKeywordsReport($db,$tpID);
 $arrDataKeys = null;
 
+/** 
+* OWNERS REPORT 
+*/
+define('ALL_USERS_FILTER', null);
+define('ADD_BLANK_OPTION', false);
+$arrOwners = get_users_for_html_options($db, ALL_USERS_FILTER, ADD_BLANK_OPTION);
 //$arrDataOwner = getOwnerReport($db,$tpID);
 $arrDataOwner = null;
+$arrDataOwnerIndex = 0;
+while ($owner_id = key($arrOwners)) {
+	$owner_name = $arrOwners[$owner_id] ;
+	$specificOwnerResults = new results($db, $tp, $suitesSelected, $builds_to_query, 'a', 0, $owner_id);
+	$resultArray = $specificOwnerResults->getTotalsForPlan();
+	$total = $resultArray['total'];
+	$notRun = $resultArray['notRun'];
+	$percentCompleted = (($total - $notRun) / $total) * 100;
+	$arrDataOwner[$arrDataOwnerIndex] = array($owner_name,$total,$resultArray['pass'],$resultArray['fail'],$resultArray['blocked'],$notRun,$percentCompleted);
+	$arrDataOwnerIndex++;
+	next($arrOwners);
+}
+
+
+/**
+* SMARTY ASSIGNMENTS
+*/ 
 
 $smarty = new TLSmarty;
 $smarty->assign('tpName', $_SESSION['testPlanName']);

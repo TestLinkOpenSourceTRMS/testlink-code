@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8 
- * @modified $Date: 2006/10/27 02:21:18 $ by $Author: kevinlevy $
+ * @modified $Date: 2006/10/29 06:44:50 $ by $Author: kevinlevy $
  *
  *
  * This class is encapsulates most functionality necessary to query the database
@@ -22,7 +22,7 @@ require_once('treeMenu.inc.php');
 
 class results
 {
-  // only call get_linked_tcversions only once, and save it to
+  // only call get_linked_tcversions() only once, and save it to
   // $this->linked_tcversions
   var $linked_tcversions = null;
   var $suitesSelected = "";	
@@ -32,6 +32,10 @@ class results
   var $tp = null;
   var $testPlanID = -1;
   var $prodID = -1;
+  
+  //var $prodID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+  //var $testPlanID = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0 ;
+  //var $tplanName = isset($_SESSION['testPlanName']) ? $_SESSION['testPlanName'] : null;
 
   // construct map linking suite ids to execution rows 
   var $SUITE_TYPE_ID = 2;  
@@ -84,13 +88,22 @@ class results
   var $totalsForPlan = null;
 	
   //TODO: shallow initialization!  - KL started this - but not 100% completed
-  function results(&$db,&$tp,$suitesSelected,$builds_to_query = -1,$prodID,$testPlanID, $lastResult = 'a', $keywordId = 0, $owner = null)
+  //function results(&$db,&$tp,$suitesSelected,$builds_to_query = -1,$prodID,$testPlanID, $lastResult = 'a', $keywordId = 0, $owner = null)
+    function results(&$db,&$tp,$suitesSelected,$builds_to_query = -1, $lastResult = 'a', $keywordId = 0, $owner = null)
+
   {
+  	
+    //print "suitesSelected = $suitesSelected <BR>";
+	//print_r($suitesSelected);
+	//print "<BR>";
     $this->db = $db;	
     $this->tp = $tp;    
     $this->suitesSelected = $suitesSelected;  	
-    $this->prodID = $prodID;
-    $this->testPlanID = $testPlanID;
+    //$this->prodID = $prodID;
+    //$this->testPlanID = $testPlanID;
+
+     $this->prodID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+     $this->testPlanID = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0 ;
 
     // build suiteStructure and flatArray
     $this->suiteStructure = $this->generateExecTree($keywordId, false, 0, $owner);

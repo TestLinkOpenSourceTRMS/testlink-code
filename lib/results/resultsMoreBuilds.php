@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsMoreBuilds.php,v 1.42 2006/10/26 21:24:24 kevinlevy Exp $ 
+* $Id: resultsMoreBuilds.php,v 1.43 2006/10/29 06:44:16 kevinlevy Exp $ 
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 * 
@@ -35,7 +35,7 @@ $tp = new testplan($db);
 //$tree = new tree($db);
 $builds_to_query = -1;
 $suitesSelected = 'all';
-$re = new results($db, $tp, $suitesSelected, $builds_to_query, $prodID, $tpID);
+$re = new results($db, $tp, $suitesSelected, $builds_to_query);
 
 $arrKeywords = $tp->get_keywords_map($tpID); 
 $arrBuilds = $tp->get_builds($tpID); 

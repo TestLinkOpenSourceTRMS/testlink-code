@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8 
- * @modified $Date: 2006/10/29 08:32:40 $ by $Author: kevinlevy $
+ * @modified $Date: 2006/10/29 10:19:02 $ by $Author: kevinlevy $
  *
  *
  * This class is encapsulates most functionality necessary to query the database
@@ -92,6 +92,11 @@ class results
 
    // $builds_to_query = 'a' will query all build, $builds_to_query = -1 will prevent
    // most logic in constructor from executing/ executions table from being queried
+
+
+   // if keyword = 0, search by keyword would not be performed
+   //
+   //
 
     function results(&$db,&$tp,$suitesSelected,$builds_to_query = -1, $lastResult = 'a', $keywordId = 0, $owner = null)
 

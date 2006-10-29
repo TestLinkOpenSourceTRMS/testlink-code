@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8 
- * @modified $Date: 2006/10/29 06:44:50 $ by $Author: kevinlevy $
+ * @modified $Date: 2006/10/29 08:32:40 $ by $Author: kevinlevy $
  *
  *
  * This class is encapsulates most functionality necessary to query the database
@@ -89,6 +89,10 @@ class results
 	
   //TODO: shallow initialization!  - KL started this - but not 100% completed
   //function results(&$db,&$tp,$suitesSelected,$builds_to_query = -1,$prodID,$testPlanID, $lastResult = 'a', $keywordId = 0, $owner = null)
+
+   // $builds_to_query = 'a' will query all build, $builds_to_query = -1 will prevent
+   // most logic in constructor from executing/ executions table from being queried
+
     function results(&$db,&$tp,$suitesSelected,$builds_to_query = -1, $lastResult = 'a', $keywordId = 0, $owner = null)
 
   {
@@ -426,9 +430,9 @@ class results
 		  $sql .= " AND status = '" . $lastResult . "' ";
 		}
 
-		if ($builds_to_query != -1)
+		if (($builds_to_query != -1) && ($builds_to_query != 'a')) { 
 			$sql .= " AND build_id IN ($builds_to_query) ";
-
+		}
 
 		
 		$execQuery = $this->db->fetchArrayRowsIntoMap($sql,'id');

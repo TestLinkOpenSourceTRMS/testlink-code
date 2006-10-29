@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsMoreBuilds_buildReport.php,v 1.34 2006/10/29 06:43:13 kevinlevy Exp $ 
+* $Id: resultsMoreBuilds_buildReport.php,v 1.35 2006/10/29 08:32:02 kevinlevy Exp $ 
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 * 
@@ -95,15 +95,6 @@ $totals = $re->getTotalsForPlan();
 $arrKeywords = $tp->get_keywords_map($tpID); 
 $arrBuilds = $tp->get_builds($tpID); 
 $mapBuilds = $tp->get_builds_for_html_options($tpID);
-// getTopLevelSuites may not return 
-// all top level suites 
-// only the top level suites in the resultant set
-$arrComponents = $re->getTopLevelSuites();
-/**
-print "arrComponents = <BR>";
-print_r($arrComponents);
-print "<BR>";
-*/
 
 define('ALL_USERS_FILTER', null);
 define('ADD_BLANK_OPTION', false);

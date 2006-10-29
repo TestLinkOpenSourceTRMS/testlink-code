@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: inc_res_by_comp.tpl,v 1.3 2005/11/26 19:58:21 schlundus Exp $ *}
+{* $Id: inc_res_by_comp.tpl,v 1.4 2006/10/29 08:32:57 kevinlevy Exp $ *}
 {* Purpose: smarty template - show Test Results and Metrics *}
 {* I18N: 20050528 - fm *}
 {*

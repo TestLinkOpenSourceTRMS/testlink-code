@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: resultsGeneral.php,v $
- * @version $Revision: 1.9 $
- * @modified $Date: 2006/10/29 09:13:12 $ by $Author: kevinlevy $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2006/10/29 09:34:40 $ by $Author: kevinlevy $
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
  * This page show Test Results over all Builds.
@@ -68,8 +68,23 @@ $arrDataPriority = null;
 /**
 * KEYWORDS REPORT
 */
-//$arrDataKeys = getKeywordsReport($db,$tpID);
+
 $arrDataKeys = null;
+$arrDataKeysIndex = 0;
+$arrKeywords = $tp->get_keywords_map($tpID); 
+while ($keyword_id = key($arrKeywords)) {
+	$keyword_name = $arrKeywords[$keyword_id] ;
+	$specificKeywordResults = new results($db, $tp, $suitesSelected, $builds_to_query, 'a', $keyword_id);
+	$resultArray = $specificKeywordResults->getTotalsForPlan();
+	$total = $resultArray['total'];
+	$notRun = $resultArray['notRun'];
+	$percentCompleted = (($total - $notRun) / $total) * 100;
+	$arrDataKeys[$arrDataKeysIndex] = array($keyword_name,$total,$resultArray['pass'],$resultArray['fail'],$resultArray['blocked'],$notRun,$percentCompleted);
+	$arrDataKeysIndex++;
+	next($arrKeywords);
+}
+
+
 
 /** 
 * OWNERS REPORT 

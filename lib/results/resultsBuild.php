@@ -1,38 +1,119 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsBuild.php,v 1.9 2006/07/15 19:55:30 schlundus Exp $ 
+* $Id: resultsBuild.php,v 1.10 2006/10/29 10:39:16 kevinlevy Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * 
 * This page show Metrics of one Build.
 *
-* @author Francisco Mancardi - fm - reduce global coupling
+* @author Kevin Levy - KL - update to 1.7
+* 
 *
 */
-require('../../config.inc.php');
-require_once('common.php');
-require_once('results.inc.php');
-require_once("../../lib/functions/builds.inc.php");
-testlinkInitPage($db);
 
-$buildID = isset($_GET['build']) ? intval($_GET['build']) : null;
+$builds_to_query = isset($_GET['build']) ? intval($_GET['build']) : null;
 if (!isset($_GET['build']))
 {
 	tlog('$_GET["build"] is not defined');
 	exit();
 }
 
-$tpID = $_SESSION['testPlanId'];
+print "KL - 20061025 - work in progress <BR>";
+require('../../config.inc.php');
+require_once('common.php');
+require_once('builds.inc.php');
+require_once('../functions/results.class.php');
+require_once('../functions/testplan.class.php');
 
-$builds = getBuilds($db,$tpID, " ORDER BY builds.name ");
-$buildName = $builds[$buildID];
-$arrDataPriority = getPriorityReport($db,$tpID,$buildID);
+testlinkInitPage($db);
+$tpID = $_SESSION['testPlanId']; 
 
-// get Test Suite data
-$arrDataSuite = getBuildMetricsComponent($db,$tpID,$buildID);
-$arrDataCategory = getBuildMetricsCategory($db,$tpID,$buildID);
-$arrDataKeys = getKeywordsReport($db,$tpID,$buildID);
+$tp = new testplan($db);
+$suitesSelected = 'all';
+$re = new results($db, $tp, $suitesSelected, $builds_to_query);
+
+
+
+/** 
+* COMPONENTS REPORT 
+*/
+
+$topLevelSuites = $re->getTopLevelSuites();
+$mapOfAggregate = $re->getAggregateMap();
+$arrDataSuite = null;
+$arrDataSuiteIndex = 0;
+while ($i = key($topLevelSuites)) {
+	//print_r($arrDataSuite);
+	//print "<BR>";
+	$pairArray = $topLevelSuites[$i];
+	$currentSuiteId = $pairArray['id'];
+	$currentSuiteName = $pairArray['name'];
+
+	$resultArray = $mapOfAggregate[$currentSuiteId];	
+	$total = $resultArray['total'];
+	$notRun = $resultArray['notRun'];
+	$percentCompleted = (($total - $notRun) / $total) * 100;
+	$arrDataSuite[$arrDataSuiteIndex] = array($currentSuiteName,$total,$resultArray['pass'],$resultArray['fail'],$resultArray['blocked'],$notRun,$percentCompleted);
+	$arrDataSuiteIndex++;
+	next($topLevelSuites);
+} 
+
+/**
+* PRIORITY REPORT
+*/
+//$arrDataPriority = getPriorityReport($db,$tpID);
+$arrDataPriority = null;
+
+
+/**
+* KEYWORDS REPORT
+*/
+
+$arrDataKeys = null;
+$arrDataKeysIndex = 0;
+$arrKeywords = $tp->get_keywords_map($tpID); 
+while ($keyword_id = key($arrKeywords)) {
+	$keyword_name = $arrKeywords[$keyword_id] ;
+	$specificKeywordResults = new results($db, $tp, $suitesSelected, $builds_to_query, 'a', $keyword_id);
+	$resultArray = $specificKeywordResults->getTotalsForPlan();
+	$total = $resultArray['total'];
+	$notRun = $resultArray['notRun'];
+	$percentCompleted = (($total - $notRun) / $total) * 100;
+	$arrDataKeys[$arrDataKeysIndex] = array($keyword_name,$total,$resultArray['pass'],$resultArray['fail'],$resultArray['blocked'],$notRun,$percentCompleted);
+	$arrDataKeysIndex++;
+	next($arrKeywords);
+}
+
+
+
+/** 
+* OWNERS REPORT 
+*/
+define('ALL_USERS_FILTER', null);
+define('ADD_BLANK_OPTION', false);
+$arrOwners = get_users_for_html_options($db, ALL_USERS_FILTER, ADD_BLANK_OPTION);
+//$arrDataOwner = getOwnerReport($db,$tpID);
+$arrDataOwner = null;
+$arrDataOwnerIndex = 0;
+while ($owner_id = key($arrOwners)) {
+	$owner_name = $arrOwners[$owner_id] ;
+	$specificOwnerResults = new results($db, $tp, $suitesSelected, $builds_to_query, 'a', 0, $owner_id);
+	$resultArray = $specificOwnerResults->getTotalsForPlan();
+	$total = $resultArray['total'];
+	$notRun = $resultArray['notRun'];
+	$percentCompleted = (($total - $notRun) / $total) * 100;
+	$arrDataOwner[$arrDataOwnerIndex] = array($owner_name,$total,$resultArray['pass'],$resultArray['fail'],$resultArray['blocked'],$notRun,$percentCompleted);
+	$arrDataOwnerIndex++;
+	next($arrOwners);
+}
+
+
+
+
+/**
+* SMARTY ASSIGNMENTS
+*/
 
 
 $smarty = new TLSmarty;

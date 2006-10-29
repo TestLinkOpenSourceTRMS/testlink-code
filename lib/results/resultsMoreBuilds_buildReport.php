@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsMoreBuilds_buildReport.php,v 1.33 2006/10/27 04:03:23 kevinlevy Exp $ 
+* $Id: resultsMoreBuilds_buildReport.php,v 1.34 2006/10/29 06:43:13 kevinlevy Exp $ 
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 * 
@@ -43,14 +43,37 @@ elseif ($lastStatus == "Any"){
 $ownerSelected = isset($_REQUEST['owner']) ? $_REQUEST['owner'] : null;
 $buildsSelected = isset($_REQUEST['build']) ? $_REQUEST['build'] : array();
 $componentsSelected = isset($_REQUEST['component']) ? $_REQUEST['component'] : array();
+
+
+$componentIds = null;
+$componentNames = null;
+
+
+for ($id = 0; $id < sizeOf($componentsSelected); $id++)
+{
+
+//print "IN LOOP <BR>";
+//print "componentsSelected[id] = $componentsSelected[$id] <BR>";
+	list($suiteId, $suiteName) = split("\,", $componentsSelected[$id], 2);
+//	print "suiteId = $suiteId <BR>";
+//	print "name = $suiteName <BR>";
+	$componentIds[$id] = $suiteId;
+	$componentNames[$id] = $suiteName;
+	
+}
+
 $keywordSelected = isset($_REQUEST['keyword']) ? $_REQUEST['keyword'] : 0;
 
 /**
+
 print "components selected = <BR>";
 print_r($componentsSelected);
 print "<BR>";
-*/
 
+print "component ids = <BR>";
+print_r($componentIds);
+print "<BR>";
+*/
 
 $tpID = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0;
 $prodID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
@@ -63,7 +86,7 @@ if (sizeof($buildsSelected))
 	
 $tp = new testplan($db);
 
-$re = new results($db, $tp, $componentsSelected, $buildsToQuery, $prodID, $tpID, $statusForClass, $keywordSelected, $ownerSelected);
+$re = new results($db, $tp, $componentIds, $buildsToQuery, $statusForClass, $keywordSelected, $ownerSelected);
 
 $suiteList = $re->getSuiteList();
 $flatArray = $re->getFlatArray();
@@ -90,9 +113,8 @@ $smarty = new TLSmarty();
 $smarty->assign('arrBuilds', $arrBuilds);
 $smarty->assign('mapBuilds', $mapBuilds);
 $smarty->assign('mapUsers',$users);
-$smarty->assign('arrComponents', $arrComponents);
 $smarty->assign('arrKeywords', $arrKeywords);
-$smarty->assign('componentsSelected', $componentsSelected);
+$smarty->assign('componentsSelected', $componentNames);
 $smarty->assign('lastStatus', $lastStatus);
 $smarty->assign('buildsSelected', $buildsSelected);
 $smarty->assign('keywordsSelected', $keywordSelected);

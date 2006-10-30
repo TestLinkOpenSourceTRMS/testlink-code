@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8 
- * @modified $Date: 2006/10/29 10:19:02 $ by $Author: kevinlevy $
+ * @modified $Date: 2006/10/30 00:51:26 $ by $Author: kevinlevy $
  *
  *
  * This class is encapsulates most functionality necessary to query the database
@@ -61,8 +61,9 @@ class results
   var $DEPTH_IN_FLATARRAY  = 0;
   var $NAME_IN_FLATARRAY = 1;
   var $SUITE_ID_IN_FLATARRAY = 2;
-    
-  // map test cases id to 2-item array containing last build_id and result
+  
+  // mapOfLastResult is in the following format  
+  // array ([suiteId] => array ([tcId] => Array([buildIdLastExecuted][result]))) 
   var $mapOfLastResult = null;
  
   // map test suite id's to array of [total, pass, fail, block, notRun]
@@ -86,31 +87,16 @@ class results
   // array
   // (total cases in plan, total pass, total fail, total blocked, total not run)
   var $totalsForPlan = null;
-	
-  //TODO: shallow initialization!  - KL started this - but not 100% completed
-  //function results(&$db,&$tp,$suitesSelected,$builds_to_query = -1,$prodID,$testPlanID, $lastResult = 'a', $keywordId = 0, $owner = null)
-
    // $builds_to_query = 'a' will query all build, $builds_to_query = -1 will prevent
    // most logic in constructor from executing/ executions table from being queried
-
-
    // if keyword = 0, search by keyword would not be performed
    //
    //
-
     function results(&$db,&$tp,$suitesSelected,$builds_to_query = -1, $lastResult = 'a', $keywordId = 0, $owner = null)
-
-  {
-  	
-    //print "suitesSelected = $suitesSelected <BR>";
-	//print_r($suitesSelected);
-	//print "<BR>";
+	{
     $this->db = $db;	
     $this->tp = $tp;    
     $this->suitesSelected = $suitesSelected;  	
-    //$this->prodID = $prodID;
-    //$this->testPlanID = $testPlanID;
-
      $this->prodID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
      $this->testPlanID = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0 ;
 
@@ -146,7 +132,12 @@ class results
   function getMapOfSuiteSummary(){
   	return $this->mapOfSuiteSummary;
   }
-  
+
+  function getMapOfLastResult() {
+	//print "results.class.php getMapOfLastResult() <BR>";
+	return $this->mapOfLastResult;
+  }  
+
   function getAggregateMap(){
   	return $this->mapOfAggregate;
   }

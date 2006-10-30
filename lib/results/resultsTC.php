@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsTC.php,v 1.11 2006/03/11 23:04:50 kevinlevy Exp $ 
+* $Id: resultsTC.php,v 1.12 2006/10/30 01:07:58 kevinlevy Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -12,15 +12,18 @@
 * 
 * 20051022 - scs - correct wrong index
 */
+
+print "KL - 20061029 - work in progress <BR>";
 require('../../config.inc.php');
 require_once('common.php');
-require_once('builds.inc.php');
-require_once('results.inc.php');
+//require_once('builds.inc.php');
+//require_once('results.inc.php');
 require_once("../../lib/functions/lang_api.php");
 testlinkInitPage($db);
 
 $arrData = array();
-$arrBuilds = getBuilds($db,$_SESSION['testPlanId'], " ORDER BY builds.name ");
+
+//$arrBuilds = getBuilds($db,$_SESSION['testPlanId'], " ORDER BY builds.name ");
 
 // is output is excel?
 $xls = FALSE;
@@ -29,6 +32,7 @@ if (isset($_GET['format']) && $_GET['format'] =='excel'){
 }
 
 // 20050919 - fm
+/**
 $sql = " SELECT MGTCOMP.name AS comp_name, MGTCAT.name as cat_name, TC.title, TC.id AS tcid, mgttcid" .
        " FROM testplans TP, component COMP, category CAT, testcase TC, mgtcomponent MGTCOMP, mgtcategory MGTCAT " .
        " WHERE MGTCOMP.id = COMP.mgtcompid " .
@@ -69,7 +73,7 @@ while ($myrow = $db->fetch_array($result))
 	}
 	$arrData[] = $container;
 }
-
+*/
 // for excel send header
 if ($xls)
 	sendXlsHeader();

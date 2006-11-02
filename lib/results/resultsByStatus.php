@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsByStatus.php,v 1.13 2006/10/30 00:50:48 kevinlevy Exp $ 
+* $Id: resultsByStatus.php,v 1.15 2006/11/04 21:25:31 schlundus Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen

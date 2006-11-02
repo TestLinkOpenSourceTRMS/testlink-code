@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: int_mantis.php,v $
  *
- * @version $Revision: 1.8 $
- * @modified $Date: 2006/10/05 19:18:21 $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2006/11/02 21:47:12 $
  *
  * @author Francisco Mancardi - 20050916 - refactoring
  * @author Andreas Morsing
@@ -56,7 +56,7 @@ class mantisInterface extends bugtrackingInterface
 
 		$status = false;
 		
-		$query = "SELECT status FROM {$this->m_dbName}.mantis_bug_table WHERE id=" . $id;
+		$query = "SELECT status FROM {$this->m_dbName}.mantis_bug_table WHERE id='" . $id."'";
 		$result = $this->m_dbConnection->exec_query($query);
 		if ($result)
 		{
@@ -110,7 +110,7 @@ class mantisInterface extends bugtrackingInterface
 			return false;
 
 		$status = null;
-		$query = "SELECT summary FROM {$this->m_dbName}.mantis_bug_table WHERE id=" . $id;
+		$query = "SELECT summary FROM {$this->m_dbName}.mantis_bug_table WHERE id='" . $id."'";
 		$result = $this->m_dbConnection->exec_query($query);
 		if ($result)
 		{

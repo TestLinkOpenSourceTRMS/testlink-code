@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8 
- * @modified $Date: 2006/10/30 00:51:26 $ by $Author: kevinlevy $
+ * @modified $Date: 2006/11/04 21:25:31 $ by $Author: schlundus $
  *
  *
  * This class is encapsulates most functionality necessary to query the database
@@ -102,7 +102,6 @@ class results
 
     // build suiteStructure and flatArray
     $this->suiteStructure = $this->generateExecTree($keywordId, false, 0, $owner);
-
     // KL - if no builds are specified, no need to execute the following block of code
     if ($builds_to_query != -1) {
       // retrieve results from executions table
@@ -537,7 +536,7 @@ class results
 		if($keyword_id) {
 			$tck_map = $tproject_mgr->get_keywords_tcases($this->prodID,$keyword_id);
 		}
-		$count = 0;
+		$count = array();
 		$testcase_count = prepareNode($test_spec,$hash_id_descr,$tck_map,$tp_tcs,$bForPrinting, $count, $owner);
 		$test_spec['testcase_count'] = $testcase_count;
 		$getArguments = "getArguments";
@@ -562,6 +561,8 @@ function processExecTreeNode($level,&$node,$getArguments,$hash_id_descr,$tc_acti
 		for($i = 0;$i < sizeof($childNodes);$i++)
 		{
 			$current = $childNodes[$i];
+			if (!$current)
+				continue;
 			$nodeDesc = $hash_id_descr[$current['node_type_id']];
 			$id = $current['id'];
 			

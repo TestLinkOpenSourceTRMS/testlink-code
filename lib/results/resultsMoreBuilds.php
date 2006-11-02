@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsMoreBuilds.php,v 1.44 2006/10/29 10:18:08 kevinlevy Exp $ 
+* $Id: resultsMoreBuilds.php,v 1.45 2006/11/02 21:47:12 schlundus Exp $ 
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 * 
@@ -36,10 +36,11 @@ $arrBuilds = $tp->get_builds($tpID);
 $arrComponents = $re->getTopLevelSuites();
 $mapOfSuiteSummary = $re->getAggregateMap();
 
-while ($key2 = key($mapOfSuiteSummary)){
-  // print "key2 = $key2 <BR>";
-  next ($mapOfSuiteSummary);
- }
+while ($mapOfSuiteSummary && ($key2 = key($mapOfSuiteSummary)))
+{
+	// print "key2 = $key2 <BR>";
+	next($mapOfSuiteSummary);
+}
 
 $smarty = new TLSmarty();
 $smarty->assign('testPlanName',$tplanName);

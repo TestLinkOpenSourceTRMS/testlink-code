@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: resultsGeneral.php,v $
- * @version $Revision: 1.10 $
- * @modified $Date: 2006/10/29 09:34:40 $ by $Author: kevinlevy $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2006/11/04 21:25:31 $ by $Author: schlundus $
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
  * This page show Test Results over all Builds.
@@ -101,7 +101,10 @@ while ($owner_id = key($arrOwners)) {
 	$resultArray = $specificOwnerResults->getTotalsForPlan();
 	$total = $resultArray['total'];
 	$notRun = $resultArray['notRun'];
-	$percentCompleted = (($total - $notRun) / $total) * 100;
+	if ($total)
+		$percentCompleted = (($total - $notRun) / $total) * 100;
+	else
+		$percentCompleted = 0;
 	$arrDataOwner[$arrDataOwnerIndex] = array($owner_name,$total,$resultArray['pass'],$resultArray['fail'],$resultArray['blocked'],$notRun,$percentCompleted);
 	$arrDataOwnerIndex++;
 	next($arrOwners);

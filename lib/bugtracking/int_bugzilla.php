@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: int_bugzilla.php,v $
  *
- * @version $Revision: 1.9 $
- * @modified $Date: 2005/12/29 20:59:00 $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2006/11/02 21:47:12 $
  *
  * @author Arjen van Summeren - 20051010 - inserted function getBugSummary($id) again, corrected getBugStatusString($id)
  * @author Raphael Bosshard - 20051010 - inserted function getBugSummary($id) again
@@ -60,7 +60,7 @@ class bugzillaInterface extends bugtrackingInterface
 			return null;
 	
 		$status = null;
-		$query = "SELECT bug_status FROM {$this->m_dbName}.bugs WHERE bug_id=" . $id;
+		$query = "SELECT bug_status FROM {$this->m_dbName}.bugs WHERE bug_id='" . $id."'";
 		$result = $this->m_dbConnection->exec_query($query);
 		if ($result)
 		{
@@ -93,7 +93,7 @@ class bugzillaInterface extends bugtrackingInterface
     }
     
 		$status = null;
-		$query = "SELECT short_desc FROM {$this->m_dbName}.bugs WHERE bug_id=" . $id;
+		$query = "SELECT short_desc FROM {$this->m_dbName}.bugs WHERE bug_id='" . $id."'";
 		
 		$result = $this->m_dbConnection->exec_query($query);
 		$summary = null;

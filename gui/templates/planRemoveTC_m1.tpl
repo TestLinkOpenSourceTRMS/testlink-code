@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planRemoveTC_m1.tpl,v 1.3 2006/09/15 13:21:14 franciscom Exp $
+$Id: planRemoveTC_m1.tpl,v 1.4 2006/11/02 10:07:37 franciscom Exp $
 generate the list of TC that can be removed from a Test Plan 
 
 20060319 - franciscom
@@ -11,7 +11,7 @@ generate the list of TC that can be removed from a Test Plan
 
 <body>
 
-<h1>{lang_get s='title_remove_test_from_plan'} '{$testPlanName|escape}'</h1>
+<h1>{lang_get s='title_remove_test_from_plan'} {$testPlanName|escape}</h1>
 
 
 {if $has_tc }
@@ -44,19 +44,27 @@ generate the list of TC that can be removed from a Test Plan
   			</p>
   			<p>
       {/if}
-
-      {if $arrData[tsuite_idx].testcase_qty gt 0 }
+ 
+      {if $arrData[tsuite_idx].linked_testcase_qty gt 0 }
           <table cellspacing="0" style="font-size:small;" width="100%">
+            <tr style="background-color:blue;font-weight:bold;color:white;">
+     		      <td class="checkbox_cell">&nbsp;</td>
+				      <td>{lang_get s='th_test_case'}</td>
+				      <td>{lang_get s='version'}</td>
+     		      <td>&nbsp;</td>
+            </tr>   
+
           {foreach from=$arrData[tsuite_idx].testcases item=tcase }
           	{if $tcase.linked_version_id ne 0}
               <tr>
             	<td>
       				<input type='checkbox' name='achecked_tc[{$tcase.id}]' value='{$tcase.linked_version_id}'>
+            	</td>
+            	<td>
             	<input type='hidden' name='a_tcid[{$tcase.id}]' value='{$tcase.linked_version_id}'>
             	{$tcase.name|escape}
               </td>
               <td>
-      				&nbsp;&nbsp;{lang_get s='version'}
       				<select name="tcversion_for_tcid[{$tcase.id}]" disabled>
       				{html_options options=$tcase.tcversions selected=$tcase.linked_version_id}
       				</select>
@@ -80,7 +88,11 @@ generate the list of TC that can be removed from a Test Plan
 </form>
 
 {else}
- <h2>{lang_get s='no_testcase_available'}</h2>
+ <h2>{lang_get s='remove_ok'}</h2>
+{/if}
+
+{if $refreshTree}
+   {include file="inc_refreshTree.tpl"}
 {/if}
 
 </body>

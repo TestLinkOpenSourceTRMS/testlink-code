@@ -5,8 +5,13 @@
  *
  * Filename $RCSfile: execNavigator.php,v $
  *
- * @version $Revision: 1.27 $
- * @modified $Date: 2006/10/24 20:35:01 $ by $Author: schlundus $
+ * @version $Revision: 1.28 $
+ * @modified $Date: 2006/11/02 10:07:37 $ by $Author: franciscom $
+ *
+ *
+ * 20061030 - franciscom
+ * added new variable to allow the update of frame name='workframe', 
+ * when filter is changed in frame name='treeframe'
  *
  **/
 require_once('../../config.inc.php');
@@ -59,6 +64,14 @@ if ($selectedOwner)
 
 $sMenu = generateExecTree($db,$menuUrl,$tproject_id,$tproject_name,$tplan_id,$tplan_name,
                           $optBuildSelected,$getArguments,$keyword_id,$tc_id,false,$selectedOwner);
+
+// 20061030 - franciscom
+// link to load frame named 'workframe' when the update button is pressed
+$src_workframe=null;
+if( isset($_REQUEST['submitOptions']) )
+{
+ $src_workframe=$menuUrl . "?level=testproject&id={$tproject_id}" . $getArguments;
+}
                      
 $tree = invokeMenu($sMenu);
 $tcData = null;
@@ -70,6 +83,7 @@ $testCaseID = null;
 $users = get_users_for_html_options($db,null,true);
 
 $smarty = new TLSmarty();
+$smarty->assign('src_workframe',$src_workframe);
 $smarty->assign('tplan_name',$tplan_name);
 $smarty->assign('users',$users);
 $smarty->assign('treeKind', TL_TREE_KIND);
@@ -89,6 +103,7 @@ $smarty->assign('menuUrl',$menuUrl);
 $smarty->assign('args',$getArguments);
 $smarty->assign('SP_html_help_file',$SP_html_help_file);
 $smarty->display('execNavigator.tpl');
+
 
 
 /**

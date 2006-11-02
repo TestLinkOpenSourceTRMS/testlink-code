@@ -1,6 +1,6 @@
 <?php
 ////////////////////////////////////////////////////////////////////////////////
-// @version $Id: planAddTC.php,v 1.24 2006/10/04 17:07:03 schlundus Exp $
+// @version $Id: planAddTC.php,v 1.25 2006/11/02 10:07:37 franciscom Exp $
 // File:     planAddTC.php
 // Author:   Chad Rosen
 // Purpose:  This page manages the importation of test cases into testlink.
@@ -77,7 +77,6 @@ if(isset($_POST['do_action']))
                        $map_node_tccount,$keyword_id,DONT_FILTER_BY_TCASE_ID);
     $do_display = 1;
 }
-
 
 if($do_display)
 {

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.42 $
- * @modified $Date: 2006/10/23 20:11:28 $ $Author: schlundus $
+ * @version $Revision: 1.43 $
+ * @modified $Date: 2006/11/02 10:07:37 $ $Author: franciscom $
  *
 **/
 require_once('../../config.inc.php');
@@ -50,6 +50,11 @@ if($history_on)
 {
     $history_status_btn_name = 'btn_history_off';
 }
+
+
+// 20061029 - francisco.mancardi@gruppotesi.com
+
+//echo "<pre>debug 20061029 \$_REQUEST" . __FUNCTION__ . " --- "; print_r($_REQUEST); echo "</pre>";
 
 // Added to set Test Results editable by comparing themax Build ID and the requested Build ID.			
 $editTestResult = "yes";
@@ -189,6 +194,27 @@ $smarty->assign('build_notes',$rs['notes']);
 $tsuite_info = get_ts_name_details($db,$tcase_id);
 $smarty->assign('tsuite_info',$tsuite_info);
 
+// --------------------------------------------------------------------------------
+// 20061029 - missing logic
+if( !is_null($tsuite_info) )
+{
+  $a_tsvw=array();
+  $a_ts=array();
+  $a_tsval=array();
+  
+  foreach($tsuite_info as $key => $elem)
+  {
+    $main_k='tsdetails_view_status_' . $key;
+    $a_tsvw[]=$main_k;
+    $a_ts[]='tsdetails_' . $key;
+    $a_tsval[]=isset($_REQUEST[$main_k]) ? $_REQUEST[$main_k] : 0;
+  }
+  $smarty->assign('tsd_div_id_list',implode(",",$a_ts));
+  $smarty->assign('tsd_hidden_id_list',implode(",",$a_tsvw));
+  $smarty->assign('tsd_val_for_hidden_list',implode(",",$a_tsval));
+}  
+// --------------------------------------------------------------------------------
+
 
 $smarty->assign('tpn_view_status',
                 isset($_POST['tpn_view_status']) ? $_POST['tpn_view_status']:0);
@@ -220,6 +246,9 @@ $smarty->assign('updated', $submitResult);
 $smarty->assign('g_bugInterface', $g_bugInterface);
 $smarty->display($g_tpl['execSetResults']);
 
+
+
+// 
 function manage_history_on($hash_REQUEST,$hash_SESSION,
                            $exec_cfg,$btn_on_name,$btn_off_name,$hidden_on_name)
 {

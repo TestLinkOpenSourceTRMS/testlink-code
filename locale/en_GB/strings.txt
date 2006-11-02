@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.80 $
- * @modified $Date: 2006/10/25 16:35:31 $ $Author: kevinlevy $
+ * @version $Revision: 1.81 $
+ * @modified $Date: 2006/11/02 10:09:33 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
@@ -940,6 +940,8 @@ $TLS_title_last_mod = "Last modified on ";
 $TLS_btn_remove_selected_tc = "Remove selected tcs";
 $TLS_has_been_executed = "has been executed";
 $TLS_title_remove_test_from_plan = "Remove tc from test plan";
+$TLS_remove_ok="Remove ok";
+
 
 
 
@@ -1441,5 +1443,9 @@ $TLS_no_links="Has no links to any test plan";
 $TLS_linked_but_not_executed="Has links to test plans";
 
 $TLS_th_link_exec_status="Link and execution status";
+
+$TLS_btn_history_on="Show full execution history";
+$TLS_btn_history_off="Show only last execution";
+
 	
 ?>

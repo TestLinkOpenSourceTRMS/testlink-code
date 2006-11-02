@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execSetResults.tpl,v 1.30 2006/10/24 20:35:01 schlundus Exp $ *}
+{* $Id: execSetResults.tpl,v 1.31 2006/11/02 10:07:36 franciscom Exp $ *}
 {* Purpose: smarty template - show tests to add results *}
 {* Revisions:
 *}	
@@ -20,34 +20,40 @@
 	<img alt="{lang_get s='help'}" class="help" 
 	src="icons/sym_question.gif" style="float: right;"
 	onclick="javascript:open_popup('{$helphref}execMain.html');" />
-	{lang_get s='title_t_r_on_build'} {$build_name|escape} {lang_get s='title_t_r_owner'} ( {$ownerDisplayName|escape} )
+	{lang_get s='title_t_r_on_build'} {$build_name|escape} 
+	
+	{if $ownerDisplayName != ""}{lang_get s='title_t_r_owner'} ( {$ownerDisplayName|escape} ) {/if}
 </h1>
 
 
 {* show echo about update if applicable *}
 {$updated}
-
 {assign var="input_enabled_disabled" value="disabled"}
   	
 <div id="main_content" class="workBack">
 
-<img src="icons/icon-foldout.gif" border="0" alt="{lang_get s='show_hide'}" 
-     title="{lang_get s='show_hide'}" 
-     onclick="show_hide('tplan_notes','tpn_view_status',
-                        document.getElementById('tplan_notes').style.display=='none')" />
-{lang_get s='test_plan_notes'}<br />
-<div id="tplan_notes">
-{$tplan_notes}
-</div>
+  <div class="show_hide_title">
+    <img src="icons/icon-foldout.gif" border="0" alt="{lang_get s='show_hide'}" 
+         title="{lang_get s='show_hide'}" 
+         onclick="show_hide('tplan_notes','tpn_view_status',
+                            document.getElementById('tplan_notes').style.display=='none')" />
+    {lang_get s='test_plan_notes'}
+  </div>
+  <div id="tplan_notes"  class="notes">
+  {$tplan_notes}
+  </div>
 
+<div class="show_hide_title">
 <img src="icons/icon-foldout.gif" border="0" alt="{lang_get s='show_hide'}" 
      title="{lang_get s='show_hide'}" 
      onclick="show_hide('build_notes','bn_view_status',
                         document.getElementById('build_notes').style.display=='none')" />
-{lang_get s='builds_notes'}<br />
-<div id="build_notes">
+{lang_get s='builds_notes'}
+</div>
+<div id="build_notes" class="notes">
 {$build_notes}
 </div>
+
 
 <form method="post">
   {* franciscom - implementation note - 
@@ -65,21 +71,19 @@
                        name="bc_view_status" 
                        value="0" />
   
-  
-  
-  
   {if $map_last_exec eq ""}
-     {lang_get s='no_data_available'}
+     <div class="warning_message" style="text-align:center"> {lang_get s='no_data_available'}</div>
   {else}
       {*  Added to make Test Results editable only if Current build is latest Build - Tools-R-Us *}
       {if $rightsEdit == "yes" and $edit_test_results == "yes"}
         {assign var="input_enabled_disabled" value=""}
 
+        <div class="show_hide_title">
         <img src="icons/icon-foldout.gif" border="0" alt="{lang_get s='show_hide'}" 
             title="{lang_get s='show_hide'}" 
             onclick="show_hide('bulk_controls','bc_view_status',
                                document.getElementById('bulk_controls').style.display=='none')" />
-        {lang_get s='bulk_tc_status_management'} <br />
+        {lang_get s='bulk_tc_status_management'} </div>
  
         
         <div id="bulk_controls" name="bulk_controls">
@@ -117,35 +121,42 @@
 		<input type='hidden' id="tsdetails_view_status_{$tc_exec.testcase_id}" 
 		                     name="tsdetails_view_status_{$tc_exec.testcase_id}"  value="0" />
 
-		<h2><img src="icons/icon-foldout.gif" border="0" alt="{lang_get s='show_hide'}" 
+		<div class="show_hide_title">
+		<img src="icons/icon-foldout.gif" border="0" alt="{lang_get s='show_hide'}" 
              title="{lang_get s='show_hide'}" 
              onclick="show_hide('tsdetails_{$tc_exec.testcase_id}',
                                 'tsdetails_view_status_{$tc_exec.testcase_id}',
                                 document.getElementById('tsdetails_{$tc_exec.testcase_id}').style.display=='none')" />
     
-		{lang_get s='th_testsuite'} {$tsuite_info[$tc_exec.testcase_id].tsuite_name|escape}</h2>
+		{lang_get s='th_testsuite'} {$tsuite_info[$tc_exec.testcase_id].tsuite_name|escape}
+		</div>
 
-		<div id="tsdetails_{$tc_exec.testcase_id}" name="tsdetails_{$tc_exec.testcase_id}">
+		<div id="tsdetails_{$tc_exec.testcase_id}" name="tsdetails_{$tc_exec.testcase_id}" class="notes">
 		{$tsuite_info[$tc_exec.testcase_id].details}
   		{if $tSuiteAttachments[$tc_exec.tsuite_id] neq null}
+  		<p>
 		  {include file="inc_attachments.tpl" tableName="nodes_hierarchy" downloadOnly=true 
 			      	 attachmentInfos=$tSuiteAttachments[$tc_exec.tsuite_id] 
 			      	 tableClassName="bordered"
-				       tableStyles="background-color:#dddddd;width:100%" }
+				       tableStyles="background-color:#ffffcc;width:100%" }
 	  {/if}
     </div>
   
 
-		<h2>{lang_get s='title_test_case'} {lang_get s='th_test_case_id'}{$tc_exec.testcase_id} ::  {$tc_exec.name|escape}</h2>
+		<h1>{lang_get s='title_test_case'} {lang_get s='th_test_case_id'}{$tc_exec.testcase_id} :: {lang_get s='version'}: {$tc_exec.version}<br>
+		    {$tc_exec.name|escape}
+    </h1>
 
 		<div id="execution_history" class="exec_history">
-		{if $history_on}
-		    <h3>{lang_get s='execution_history'}</h3>
-		{else}
-			<h3>{lang_get s='just_last_execution_for_this_build'}</h3>
-		{/if}
+  		<div class="exec_history_title">
+  		{if $history_on}
+  		    {lang_get s='execution_history'}
+  		{else}
+  			  {lang_get s='just_last_execution_for_this_build'}
+  		{/if}
+  		</div>
 
-		{* The very last execution for any build of this test plan                                                  *}
+		{* The very last execution for any build of this test plan *}
 		{if $show_last_exec_any_build}
     		{assign var="abs_last_exec" value=$map_last_exec_any_build.$tcversion_id}
         {if $abs_last_exec.status != '' and $abs_last_exec.status != $gsmarty_tc_status.not_run}			
@@ -235,8 +246,10 @@
 		{/if}
   </div> 
 
+  <p>
   <div>
-		<table class="notesBox">
+   
+		<table class="test_exec">
 		<tr>
 			<td colspan="2" class="title">{lang_get s='test_exec_summary'}</td>
 		</tr>
@@ -264,14 +277,14 @@
 		</tr>
 		</table>
 
-		<table border="2">
+		<table border="0" width="100%">
 		<tr>
-			<td rowspan="2">
+			<td rowspan="2" align="center">
 				<div class="title">{lang_get s='test_exec_notes'}</div>
 				<textarea {$input_enabled_disabled} class="tcDesc" name='notes[{$tcversion_id}]' 
 					cols=50 rows=10></textarea>			
 			</td>
-			<td>			
+			<td valign="top">			
   				{* status of test *}
   				<div class="title" style="text-align: center;">{lang_get s='test_exec_result'}</div>
   				<div class="resultBox">

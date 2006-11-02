@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.14 $
- * @modified $Date: 2006/10/24 20:35:02 $ $Author: schlundus $
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2006/11/02 10:07:37 $ $Author: franciscom $
  * @author franciscom
  *
  * 20060919 - franciscom - copy_* functions
@@ -189,12 +189,18 @@ function link_tcversions($id,&$items_to_link)
 		}
 }
 
+
+//  20061030 - franciscom - 
+//  1. found a bug on query 
+//  2. new column in result set exec_on_tplan
+//
 //  20060603 - franciscom - new argument executed
 //                          not_null     -> get only executed tcversions
 //                          null         -> get executed and NOT executed
 // 
 //
 //  20060430 - franciscom - new join to get the execution status 
+//
 // executed field: will take the following values
 //                 NULL if the tc version has not been executed in THIS test plan
 //                 tcversion_id if has executions 
@@ -227,13 +233,16 @@ function get_linked_tcversions($id,$tcase_id=null,$keyword_id=0,$executed=null,$
 	{
 	     $executions_join = " LEFT OUTER ";
 	}          
-	$executions_join .= " JOIN executions E ON NHA.id = E.tcversion_id ";
+	$executions_join .= " JOIN executions E ON (NHA.id = E.tcversion_id AND E.testplan_id=T.testplan_id) ";
+	
+	// 20061030 - franciscom 
+	// missing condition on testplan_id between execution and testplan_tcversions
 
 	// added tc_id in order clause to maintain same order that navigation tree
 	$sql = " SELECT DISTINCT NHB.parent_id AS testsuite_id, " .
 	     "        NHA.parent_id AS tc_id," .
 	     "        T.tcversion_id AS tcversion_id, T.id AS feature_id," .
-	     "        E.tcversion_id AS executed, " .
+	     "        E.tcversion_id AS executed, E.testplan_id AS exec_on_tplan, " .
 	     "        UA.user_id,UA.type,UA.status,UA.assigner_id ".
 	     " FROM nodes_hierarchy NHA " .
 	     " JOIN nodes_hierarchy NHB ON NHA.parent_id = NHB.id " .
@@ -245,10 +254,14 @@ function get_linked_tcversions($id,$tcase_id=null,$keyword_id=0,$executed=null,$
 	     " AND (UA.type=" . $this->assignment_types['testcase_execution']['id'] . 
 	     "      OR UA.type IS NULL) ";
 
+  //        " AND (E.testplan_id IS NULL OR E.testplan_id=T.testplan_id) " .
+
 	if (!is_null($owner))
 		$sql .= " AND UA.user_id = {$owner}"; 
 		
 	$sql .= " ORDER BY testsuite_id,tc_id";
+
+
 	$recordset = $this->db->fetchRowsIntoMap($sql,'tc_id');
 
 	return $recordset;

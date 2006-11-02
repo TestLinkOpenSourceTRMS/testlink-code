@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planAddTCNavigator.tpl,v 1.6 2006/10/23 06:42:21 franciscom Exp $
+$Id: planAddTCNavigator.tpl,v 1.7 2006/11/02 10:07:37 franciscom Exp $
 show test specification tree 
 *}
 
@@ -35,6 +35,14 @@ show test specification tree
 <div class="tree" id="tree">
 	{$tree}
 </div>
+
+{* 20061030 - update the right pane *}
+{if $src_workframe != ''}
+<script type="text/javascript">
+	parent.workframe.location='{$src_workframe}';
+</script>
+{/if}
+
 
 </body>
 </html>

@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execNavigator.tpl,v 1.8 2006/10/24 20:35:01 schlundus Exp $ *}
+{* $Id: execNavigator.tpl,v 1.9 2006/11/02 10:07:36 franciscom Exp $ *}
 {* Purpose: smarty template - show test set tree *}
 {* 20050828 - scs - added searching for tcID *}
 {include file="inc_head.tpl" jsTree="yes"}
@@ -11,7 +11,7 @@
 <div style="margin: 3px;">
 <form method="post" onchange="document.tree.style.display = 'hidden';">
 
-	<table class="smallGrey" >
+	<table class="smallGrey" width="100%">
 		<caption>
 			{lang_get s='caption_nav_filter_settings'}
 			{include file="inc_help.tpl" filename="execFilter.html"}
@@ -62,5 +62,13 @@
 		</script>
 	{/literal}
 {/if}
+
+{* 20061030 - update the right pane *}
+{if $src_workframe != ''}
+<script type="text/javascript">
+	parent.workframe.location='{$src_workframe}';
+</script>
+{/if}
+
 </body>
 </html>

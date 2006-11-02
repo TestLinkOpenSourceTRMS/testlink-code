@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.39 $
- * @modified $Date: 2006/10/23 20:11:28 $  by $Author: schlundus $
+ * @version $Revision: 1.40 $
+ * @modified $Date: 2006/11/02 10:07:37 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
 **/
@@ -194,7 +194,7 @@ else if($do_create)
 }
 else if($delete_tc)
 {
-  	$exec_status = 'ALL';
+  $exec_status = 'ALL';
 	$linked_tcversions = $tcase_mgr->get_linked_versions($tcase_id,$exec_status);
   
 	$msg = '';

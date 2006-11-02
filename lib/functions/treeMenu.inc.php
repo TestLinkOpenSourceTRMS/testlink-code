@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: treeMenu.inc.php,v $
  *
- * @version $Revision: 1.28 $
- * @modified $Date: 2006/10/15 19:05:39 $ by $Author: schlundus $
+ * @version $Revision: 1.29 $
+ * @modified $Date: 2006/11/02 10:07:37 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * 	This file generates tree menu for test specification and test execution.
@@ -136,7 +136,7 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,
 	$hash_id_descr = array_flip($hash_descr_id);
 	
 	$test_spec = $tree_manager->get_subtree($tproject_id,array('testplan'=>'exclude me'),
-												 array('testcase'=>'exclude my children'),null,null,true);
+												                  array('testcase'=>'exclude my children'),null,null,true);
 	$test_spec['name'] = $tproject_name;
 	$test_spec['id'] = $tproject_id;
 	$test_spec['node_type_id'] = 1;
@@ -145,9 +145,15 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,
 	
 	if($test_spec)
 	{
-		$tck_map = null;
+		$tck_map = null;  // means no filter
 		if($keyword_id)
+		{
 			$tck_map = $tproject_mgr->get_keywords_tcases($tproject_id,$keyword_id);
+			if( is_null($tck_map) )
+			{
+			  $tck_map=array();  // means filter everything
+			}
+		}
 		$testcase_count = prepareNode($test_spec,$hash_id_descr,$tck_map,null,$bHideTCs,$dummy);
 		$test_spec['testcase_count'] = $testcase_count;
 		$menustring = renderTreeNode(1,$test_spec,$getArguments,$hash_id_descr,$tc_action_enabled,$linkto);
@@ -155,7 +161,13 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,
 	return $menustring;
 }
 
-
+// 20061030 - franciscom
+// tck_map: Test Case Keyword map:
+//          null        => no filter
+//          empty map   => filter out test case ALWAYS
+//          initialized map => filter out test case ONLY if present in map.
+//
+//
 // 20060924 - franciscom
 // added argument:
 //                $map_node_tccount
@@ -166,14 +178,16 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,
 //                IMPORTANT: this new argument is not useful for tree rendering
 //                           but to avoid duplicating logic to get test case count
 //
-function prepareNode(&$node,$hash_id_descr,$tck_map = null,$tp_tcs = null,$bHideTCs = 0,&$map_node_tccount,$assignedTo = 0)
+function prepareNode(&$node,$hash_id_descr,$tck_map = null,$tp_tcs = null,
+                     $bHideTCs = 0,&$map_node_tccount,$assignedTo = 0)
 {
 	$nodeDesc = $hash_id_descr[$node['node_type_id']];
 	
 	$nTestCases = 0;
 	if ($nodeDesc == 'testcase')
 	{
-		if ($tck_map)
+	  // 20061030 - franciscom 
+		if (!is_null($tck_map))
 		{
 			if (!isset($tck_map[$node['id']]))
 				$node = null;
@@ -396,8 +410,7 @@ function jtree_renderTestSpecTreeNodeOnClose($current,$nodeDesc)
 function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,$tplan_name,$build_id,
                           $getArguments,
                           $keyword_id = 0,$tc_id = 0,$bForPrinting = false,
-						  $assignedTo = 0
-                          )
+						              $assignedTo = 0)
 {
 	$menustring = null;
 
@@ -492,7 +505,6 @@ function layersmenu_renderExecTreeNodeOnOpen($node,$nodeDesc,$linkto,$getArgumen
 
 	
 	$myLinkTo = $linkto."?level={$nodeDesc}&id={$node['id']}".$versionID.$getArguments;
-		
 	$menustring = "{$dots}|{$label}|{$myLinkTo}|{$nodeDesc}". 
 		           "|{$icon}|workframe|\n";
 	

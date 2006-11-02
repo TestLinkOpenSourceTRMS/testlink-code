@@ -2,10 +2,12 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.35 $
- * @modified $Date: 2006/10/23 06:42:22 $ $Author: franciscom $
+ * @version $Revision: 1.36 $
+ * @modified $Date: 2006/11/02 10:07:37 $ $Author: franciscom $
  * @author franciscom
  *
+ * 20061030 - franciscom - new argument in get_versions_status_quo()
+ *                         corrected bug in get_linked_versions()
  *
  * 20061015 - franciscom - fixed bug on create()
  *                         instead of returning tcid, returned tcversion id ->WRONG
@@ -445,6 +447,7 @@ function get_linked_versions($id,$status="ALL")
 			break;
 			
     	case "EXECUTED":
+    	// 20061030 - franciscom
 			$sql = "SELECT NH.parent_id AS testcase_id, NH.id AS tcversion_id,
 			             tcversions.*,
 			             TTC.testplan_id, TTC.tcversion_id,
@@ -452,9 +455,10 @@ function get_linked_versions($id,$status="ALL")
 					FROM   nodes_hierarchy NH,tcversions,testplan_tcversions TTC,
 					       executions,nodes_hierarchy NHB
 					WHERE  TTC.tcversion_id = tcversions.id
+					AND    TTC.testplan_id = NHB.id 
+					AND    TTC.testplan_id = executions.testplan_id
 					AND    executions.tcversion_id = tcversions.id
-					AND    tcversions.id = NH.id
-					AND    NHB.id = TTC.testplan_id
+					AND    NH.id = tcversions.id
 					AND    NH.parent_id = {$id}"; 
 		    break;
 		    
@@ -814,20 +818,35 @@ function get_by_id($id,$version_id = TC_ALL_VERSIONS,$get_active = 0,$get_open =
 // tcversion_id, linked , executed
 //
 // linked field: will take the following values
-//               NULL if the tc version is not linked to any test plan
-//               tcversion_id if linked 
+//               if $testplan_id == null
+//                  NULL if the tc version is not linked to ANY TEST PLAN
+//                  tcversion_id if linked
+// 
+//               if $testplan_id != null
+//                  NULL if the tc version is not linked to $testplan_id
+//
 //
 // executed field: will take the following values
-//                 NULL if the tc version has not been executed in any test plan
+//               if $testplan_id == null
+//                 NULL if the tc version has not been executed in ANY TEST PLAN
 //                 tcversion_id if has executions 
 //
+//               if $testplan_id != null
+//                 NULL if the tc version has not been executed in $testplan_id
 //
-// rev : 
+//
+//
+// rev :
+//      20061030 - franciscom
+//      added optional argument testplan_id
+// 
 //      20060430 - franciscom 
 //      added new argument 
+//
 //      20060326 - franciscom
-function get_versions_status_quo($id, $tcversion_id=null)
+function get_versions_status_quo($id, $tcversion_id=null, $testplan_id=null)
 {
+    $testplan_filter='';
     $tcversion_filter='';
     if(!is_null($tcversion_id))
     {
@@ -841,13 +860,23 @@ function get_versions_status_quo($id, $tcversion_id=null)
       }
       
     }  
+		
+		// 20061030 - franciscom
+		$testplan_filter='';
+		if(!is_null($testplan_id))
+    {
+      $testplan_filter=" AND E.testplan_id = {$testplan_id} ";
+    }
+    $execution_join=" LEFT OUTER JOIN executions E ON (E.tcversion_id = NH.id {$testplan_filter})";
+		
 		$sql="SELECT DISTINCT NH.id AS tcversion_id,
 		                      T.tcversion_id AS linked,
 		                      E.tcversion_id AS executed
 		      FROM   nodes_hierarchy NH
 		      LEFT OUTER JOIN testplan_tcversions T ON T.tcversion_id = NH.id
-		      LEFT OUTER JOIN executions E ON E.tcversion_id = NH.id
+		      {$execution_join}
 		      WHERE  NH.parent_id = {$id} {$tcversion_filter}"; 
+
 		$recordset = $this->db->fetchRowsIntoMap($sql,'tcversion_id');
 		//$recordset = $this->db->fetchArrayRowsIntoMap($sql,'tcversion_id');
   	return($recordset);
@@ -855,21 +884,26 @@ function get_versions_status_quo($id, $tcversion_id=null)
 // -------------------------------------------------------------------------------
 
 
+// 20061030 - franciscom
+// 1. bug on LEFT JOIN condition
+// 2. added order by
+//
 // 20061020 
 function get_exec_status($id)
 {
 		$sql="SELECT NH.parent_id AS tcase_id, NH.id AS tcversion_id,
 		             T.tcversion_id AS linked,
-		             E.tcversion_id AS executed,
+		             E.tcversion_id AS executed, E.testplan_id AS exec_on_tplan,
 		             T.testplan_id, NHB.name AS tplan_name, TCV.version
 		      FROM   nodes_hierarchy NH
 		      JOIN testplan_tcversions T ON T.tcversion_id = NH.id
 		      JOIN tcversions TCV ON T.tcversion_id = TCV.id
 		      JOIN nodes_hierarchy NHB ON T.testplan_id = NHB.id
-		      LEFT OUTER JOIN executions E ON E.tcversion_id = NH.id
-		      WHERE  NH.parent_id = {$id}"; 
-		
-		//$recordset = $this->db->fetchArrayRowsIntoMap($sql,'tcversion_id');
+		      LEFT OUTER JOIN executions E ON (E.tcversion_id = NH.id AND E.testplan_id=T.testplan_id)
+		      WHERE  NH.parent_id = {$id}
+		      ORDER BY version,tplan_name";
+		      
+			//$recordset = $this->db->fetchArrayRowsIntoMap($sql,'tcversion_id');
 		$recordset = $this->db->fetchMapRowsIntoMap($sql,'tcversion_id','testplan_id');
   	return($recordset);
 }

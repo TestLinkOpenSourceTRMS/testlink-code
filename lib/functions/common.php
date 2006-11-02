@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.53 $ $Author: schlundus $
- * @modified $Date: 2006/10/17 20:17:54 $
+ * @version $Revision: 1.54 $ $Author: franciscom $
+ * @modified $Date: 2006/11/02 10:07:37 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -619,12 +619,14 @@ arguments:
                           And indicates the type of id (testproject/testplan) 
                           contained in the argument tobj_id.
 
+         id: node id
+         
 
 returns: array where every element is an associative array with the following
          structure:
         
          [testsuite] => Array( [id] => 28
-                          [name] => TS1 )
+                               [name] => TS1 )
 
          [testcases] => Array( [79] => Array( [id] => 79
                                              [name] => TC0
@@ -645,12 +647,18 @@ returns: array where every element is an associative array with the following
        [write_buttons] => yes or no
 
        level and write_buttons are used to generate the user interface
+       
+       
+       Warning:
+       if the root element of the spec_view, has 0 test => then the default
+       structure is returned ( $result = array('spec_view'=>array(), 'num_tc' => 0))
+       
 */
 function gen_spec_view(&$db,$spec_view_type='testproject',
                             $tobj_id,$id,$name,&$linked_items,
                             $map_node_tccount,
                             $keyword_id = 0,$tcase_id = null,
-							$write_button_only_if_linked = 0)
+							              $write_button_only_if_linked = 0)
 {
 	$write_status = 'yes';
 	if($write_button_only_if_linked)
@@ -784,51 +792,58 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
 			if(isset($map_node_tccount[$elem['testsuite']['id']]) &&
 				$map_node_tccount[$elem['testsuite']['id']]['testcount'] == 0)  
 				{
-				$out[$key]=null;
+				  $out[$key]=null;
 				}
 			}
 	}
-
-	$result['num_tc'] = count($a_tcid);
-	$result['has_linked_items'] = 0;
+	
+	
+	// 20061030 - franciscom
+	// internal bug
+	if( !is_null($out[0]) )
+	{
+	  $result['num_tc'] = count($a_tcid);
+	  $result['has_linked_items'] = 0;
 		
     if($result['num_tc'])
     {
-		$tcase_set = $tcase_mgr->get_by_id($a_tcid);
-		
-		foreach($tcase_set as $the_k => $the_tc)
+  		$tcase_set = $tcase_mgr->get_by_id($a_tcid);
+  		
+  		foreach($tcase_set as $the_k => $the_tc)
     	{
-			$tc_id = $the_tc['testcase_id'];
-			$parent_idx = $a_tsuite_idx[$tc_id];
-			$out[$parent_idx]['testcases'][$tc_id]['tcversions'][$the_tc['id']] = $the_tc['version'];
-            
-			if(!is_null($linked_items))
-			{
-				foreach($linked_items as $the_item)
-				{
-					if(($the_item['tc_id'] == $the_tc['testcase_id']) &&
-						($the_item['tcversion_id'] == $the_tc['id']) )
-					{
-						$out[$parent_idx]['testcases'][$tc_id]['linked_version_id'] = $the_item['tcversion_id'];
-						$out[$parent_idx]['write_buttons'] = 'yes';
-						$out[$parent_idx]['linked_testcase_qty']++;
-						
-						$result['has_linked_items'] = 1;
-						
-						if(intval($the_item['executed']))
-							$out[$parent_idx]['testcases'][$tc_id]['executed']='yes';
-						
-						if( isset($the_item['user_id']))
-							$out[$parent_idx]['testcases'][$tc_id]['user_id']=intval($the_item['user_id']);
-						if( isset($the_item['feature_id']))
-							$out[$parent_idx]['testcases'][$tc_id]['feature_id']=intval($the_item['feature_id']);
-						break;
-					}
-				}
-			}    
-		}
-	}
-	$result['spec_view'] = $out;
+  			$tc_id = $the_tc['testcase_id'];
+  			$parent_idx = $a_tsuite_idx[$tc_id];
+  			$out[$parent_idx]['testcases'][$tc_id]['tcversions'][$the_tc['id']] = $the_tc['version'];
+              
+  			if(!is_null($linked_items))
+  			{
+  				foreach($linked_items as $the_item)
+  				{
+  					if(($the_item['tc_id'] == $the_tc['testcase_id']) &&
+  						($the_item['tcversion_id'] == $the_tc['id']) )
+  					{
+  						$out[$parent_idx]['testcases'][$tc_id]['linked_version_id'] = $the_item['tcversion_id'];
+  						$out[$parent_idx]['write_buttons'] = 'yes';
+  						$out[$parent_idx]['linked_testcase_qty']++;
+  						
+  						$result['has_linked_items'] = 1;
+  						
+  						if(intval($the_item['executed']))
+  							$out[$parent_idx]['testcases'][$tc_id]['executed']='yes';
+  						
+  						if( isset($the_item['user_id']))
+  							$out[$parent_idx]['testcases'][$tc_id]['user_id']=intval($the_item['user_id']);
+  						if( isset($the_item['feature_id']))
+  							$out[$parent_idx]['testcases'][$tc_id]['feature_id']=intval($the_item['feature_id']);
+  						break;
+  					}
+  				}
+  			}    
+  		} //foreach($tcase_set
+  	} 
+  	$result['spec_view'] = $out;
+  	
+	} // !is_null($out[0])
 	
 	return $result;
 }

@@ -2,7 +2,7 @@
 /** 
 *	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version $Id: planAddTCNavigator.php,v 1.15 2006/06/20 19:51:32 schlundus Exp $
+* 	@version $Id: planAddTCNavigator.php,v 1.16 2006/11/02 10:07:37 franciscom Exp $
 *	@author Martin Havlat
 * 
 * 	Navigator for feature: add Test Cases to a Test Case Suite in Test Plan. 
@@ -41,9 +41,19 @@ if ($keyword_id)
 $treeString = generateTestSpecTree($db,$tproject_id, $tproject_name, 
                                    $workPath,1,0,
                                    $args, $keyword_id);
+
+// 20061030 - franciscom
+// link to load frame named 'workframe' when the update button is pressed
+$src_workframe=null;
+if( isset($_REQUEST['filter']) )
+{
+ $src_workframe= $workPath . "?edit=testproject&id={$tproject_id}" . $args;
+}
+
                                    
 $tree = invokeMenu($treeString);
 $smarty = new TLSmarty();
+$smarty->assign('src_workframe',$src_workframe);
 
 $smarty->assign('treeKind', TL_TREE_KIND);
 $smarty->assign('tree', $tree);

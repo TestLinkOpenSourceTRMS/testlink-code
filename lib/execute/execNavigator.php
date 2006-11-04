@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: execNavigator.php,v $
  *
- * @version $Revision: 1.28 $
- * @modified $Date: 2006/11/02 10:07:37 $ by $Author: franciscom $
+ * @version $Revision: 1.29 $
+ * @modified $Date: 2006/11/04 21:25:31 $ by $Author: schlundus $
  *
  *
  * 20061030 - franciscom
@@ -31,6 +31,7 @@ $tplan_id   = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0;
 $tplan_name = isset($_SESSION['testPlanName']) ? $_SESSION['testPlanName'] : 'null';
 $tplan_mgr = new testplan($db);
 $optBuild = $tplan_mgr->get_builds_for_html_options($tplan_id);
+$optResultSelected = isset($_POST['result']) ? $_POST['result'] : 'All';
 
 $maxBuildID = $tplan_mgr->get_max_build_id($tplan_id);
 $optBuildSelected = isset($_POST['build_id']) ? $_POST['build_id'] : $maxBuildID;
@@ -61,23 +62,26 @@ if ($tc_id)
 	$getArguments .= '&tc_id='.$tc_id;
 if ($selectedOwner)
 	$getArguments .= '&owner='.$selectedOwner;
+if ($optResultSelected != 'all')
+	$getArguments .= '&status='.$optResultSelected;
 
+$optResult = createResultsMenu();
+
+if ($optResultSelected == 'all')
+	$optResultSelected = null;
 $sMenu = generateExecTree($db,$menuUrl,$tproject_id,$tproject_name,$tplan_id,$tplan_name,
-                          $optBuildSelected,$getArguments,$keyword_id,$tc_id,false,$selectedOwner);
+                          $optBuildSelected,$getArguments,$keyword_id,$tc_id,false,$selectedOwner,$optResultSelected);
 
-// 20061030 - franciscom
 // link to load frame named 'workframe' when the update button is pressed
-$src_workframe=null;
-if( isset($_REQUEST['submitOptions']) )
+$src_workframe = null;
+if(isset($_REQUEST['submitOptions']))
 {
- $src_workframe=$menuUrl . "?level=testproject&id={$tproject_id}" . $getArguments;
+	$src_workframe = $menuUrl . "?level=testproject&id={$tproject_id}" . $getArguments;
 }
                      
 $tree = invokeMenu($sMenu);
 $tcData = null;
 $testCaseID = null;
-$optResult = null;
-$optResultSelected = null;
 $testCaseID = null;
 
 $users = get_users_for_html_options($db,null,true);

@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execNavigator.tpl,v 1.9 2006/11/02 10:07:36 franciscom Exp $ *}
+{* $Id: execNavigator.tpl,v 1.10 2006/11/04 21:25:31 schlundus Exp $ *}
 {* Purpose: smarty template - show test set tree *}
 {* 20050828 - scs - added searching for tcID *}
 {include file="inc_head.tpl" jsTree="yes"}
@@ -26,6 +26,12 @@
 			    {html_options options=$keywords_map selected=$keyword_id}
 				</select>
 			</td>
+		</tr>
+		<tr>
+				<td>{lang_get s='filter_result'}</td>
+			<td><select name="result">
+			{html_options options=$optResult selected=$optResultSelected}
+			</select></td>
 		</tr>
 		<tr>
 			<td>{lang_get s='current_build'}</td>

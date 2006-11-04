@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.43 $
- * @modified $Date: 2006/11/02 10:07:37 $ $Author: franciscom $
+ * @version $Revision: 1.44 $
+ * @modified $Date: 2006/11/04 21:25:31 $ $Author: schlundus $
  *
 **/
 require_once('../../config.inc.php');
@@ -32,7 +32,7 @@ $tc_id = isset($_REQUEST['tc_id']) ? intval($_REQUEST['tc_id']) : null;
 $keyword_id = isset($_REQUEST['keyword_id']) ? intval($_REQUEST['keyword_id']) : 0;
 $level = isset($_REQUEST['level']) ? $_REQUEST['level'] : '';
 $owner = isset($_REQUEST['owner']) ? intval($_REQUEST['owner']) : null;
-
+$status = isset($_REQUEST['status']) ? $_REQUEST['status'] : null;
 $ownerDisplayName = null;
 if ($owner)
 	$ownerDisplayName = getUserName($db,$owner);
@@ -51,11 +51,6 @@ if($history_on)
     $history_status_btn_name = 'btn_history_off';
 }
 
-
-// 20061029 - francisco.mancardi@gruppotesi.com
-
-//echo "<pre>debug 20061029 \$_REQUEST" . __FUNCTION__ . " --- "; print_r($_REQUEST); echo "</pre>";
-
 // Added to set Test Results editable by comparing themax Build ID and the requested Build ID.			
 $editTestResult = "yes";
 $latestBuild = 0;
@@ -71,8 +66,7 @@ $other_execs = null;
 $map_last_exec_any_build = null;
 $tcAttachments = null;
 $tSuiteAttachments = null;
-$linked_tcversions = $tplan_mgr->get_linked_tcversions($tplan_id,$tc_id,$keyword_id,null,$owner);
-
+$linked_tcversions = $tplan_mgr->get_linked_tcversions($tplan_id,$tc_id,$keyword_id,null,$owner,$status);
 $tcase_id = 0;
 if(!is_null($linked_tcversions))
 {
@@ -183,7 +177,7 @@ if(!is_null($linked_tcversions))
 }
 
 $smarty = new TLSmarty();
-$smarty->assign('bugs_for_exec',$bugs); // 20060917 - franciscom
+$smarty->assign('bugs_for_exec',$bugs);
 
 $rs = $tplan_mgr->get_by_id($tplan_id);
 $smarty->assign('tplan_notes',$rs['notes']);
@@ -195,8 +189,7 @@ $tsuite_info = get_ts_name_details($db,$tcase_id);
 $smarty->assign('tsuite_info',$tsuite_info);
 
 // --------------------------------------------------------------------------------
-// 20061029 - missing logic
-if( !is_null($tsuite_info) )
+if(!is_null($tsuite_info))
 {
   $a_tsvw=array();
   $a_ts=array();
@@ -247,8 +240,6 @@ $smarty->assign('g_bugInterface', $g_bugInterface);
 $smarty->display($g_tpl['execSetResults']);
 
 
-
-// 
 function manage_history_on($hash_REQUEST,$hash_SESSION,
                            $exec_cfg,$btn_on_name,$btn_off_name,$hidden_on_name)
 {
@@ -276,8 +267,6 @@ function manage_history_on($hash_REQUEST,$hash_SESSION,
     return $history_on;
 }
 
-
-// 20060809 - franciscom
 // returns map with key=TCID
 //                  values= assoc_array([tsuite_id => 5341
 //                                      [details] => my detailas ts1
@@ -286,31 +275,31 @@ function manage_history_on($hash_REQUEST,$hash_SESSION,
 //       
 function get_ts_name_details(&$db,$tcase_id)
 {
-$rs='';
-$do_query=true;
-$sql="Select ts.id as tsuite_id, ts.details, 
-             nha.id as tc_id, nhb.name as tsuite_name 
-      FROM testsuites ts, nodes_hierarchy nha, nodes_hierarchy nhb
-      WHERE ts.id=nha.parent_id
-      AND   nhb.id=nha.parent_id ";
-if( is_array($tcase_id) && count($tcase_id) > 0)
-{
-  $in_list=implode(",",$tcase_id);
-  $sql .= "AND nha.id IN (" . $in_list . ")";
-}
-else if( !is_null($tcase_id) )
-{
-  $sql .= "AND nha.id={$tcase_id}";
-}
-else
-{
-  $do_query=false;
-}
-if($do_query)
-{
-  $rs=$db->fetchRowsIntoMap($sql,'tc_id');
-}
-
-return($rs);
+	$rs = '';
+	$do_query = true;
+	$sql="Select ts.id as tsuite_id, ts.details, 
+	             nha.id as tc_id, nhb.name as tsuite_name 
+	      FROM testsuites ts, nodes_hierarchy nha, nodes_hierarchy nhb
+	      WHERE ts.id=nha.parent_id
+	      AND   nhb.id=nha.parent_id ";
+	if( is_array($tcase_id) && count($tcase_id) > 0)
+	{
+		$in_list = implode(",",$tcase_id);
+		$sql .= "AND nha.id IN (" . $in_list . ")";
+	}
+	else if(!is_null($tcase_id))
+	{
+		$sql .= "AND nha.id={$tcase_id}";
+	}
+	else
+	{
+		$do_query = false;
+	}
+	if($do_query)
+	{
+		$rs = $db->fetchRowsIntoMap($sql,'tc_id');
+	}
+	
+	return $rs;
 }
 ?>																																

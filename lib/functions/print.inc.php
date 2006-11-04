@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: print.inc.php,v $
- * @version $Revision: 1.15 $
- * @modified $Date: 2006/10/24 20:35:01 $ by $Author: schlundus $
+ * @version $Revision: 1.16 $
+ * @modified $Date: 2006/11/04 21:25:31 $ by $Author: schlundus $
  *
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
@@ -194,7 +194,7 @@ function renderProjectNodeForPrinting(&$db,&$printingOptions,$title,&$node)
 function renderTestSuiteNodeForPrinting(&$db,&$printingOptions,&$node,$tocPrefix,$level) 
 {
 	$code = null;
-	$name = htmlspecialchars($node['name']);
+	$name = isset($node['name']) ? htmlspecialchars($node['name']) : '';
 	if ($printingOptions['toc']) 
 	{
 	 	$printingOptions['tocCode'] .= '<p style="padding-left: '.(10*$level).'px;"><a href="#cat' . $node['id'] . '">' . 

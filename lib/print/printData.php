@@ -2,7 +2,7 @@
 /**
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/ 
 *
-*  @version 	$Id: printData.php,v 1.23 2006/10/24 20:35:02 schlundus Exp $
+*  @version 	$Id: printData.php,v 1.24 2006/11/04 21:25:31 schlundus Exp $
 *  @author 	Martin Havlat
 * 
 * Shows the data that will be printed.
@@ -87,7 +87,7 @@ else if ($level == 'testsuite')
 	$tInfo['node_type_id'] = $hash_descr_id['testsuite'];
 	$tInfo['childNodes'] = isset($test_spec['childNodes']) ? $test_spec['childNodes'] : null;
 	$testcase_count = prepareNode($tInfo,$hash_id_descr,null,$tp_tcs,0,$dummy);
-	$printingOptions['title'] = $tInfo['name'];
+	$printingOptions['title'] = $tproject_name;
 	
 	$tree['name'] = $tproject_name;
 	$tree['id'] = $tproject_id;

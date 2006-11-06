@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: execNavigator.php,v $
  *
- * @version $Revision: 1.29 $
- * @modified $Date: 2006/11/04 21:25:31 $ by $Author: schlundus $
+ * @version $Revision: 1.30 $
+ * @modified $Date: 2006/11/06 20:22:30 $ by $Author: schlundus $
  *
  *
  * 20061030 - franciscom
@@ -31,7 +31,7 @@ $tplan_id   = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0;
 $tplan_name = isset($_SESSION['testPlanName']) ? $_SESSION['testPlanName'] : 'null';
 $tplan_mgr = new testplan($db);
 $optBuild = $tplan_mgr->get_builds_for_html_options($tplan_id);
-$optResultSelected = isset($_POST['result']) ? $_POST['result'] : 'All';
+$optResultSelected = isset($_POST['result']) ? $_POST['result'] : 'all';
 
 $maxBuildID = $tplan_mgr->get_max_build_id($tplan_id);
 $optBuildSelected = isset($_POST['build_id']) ? $_POST['build_id'] : $maxBuildID;

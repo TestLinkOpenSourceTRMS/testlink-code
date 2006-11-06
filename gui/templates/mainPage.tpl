@@ -1,6 +1,6 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: mainPage.tpl,v 1.22 2006/10/17 20:17:54 schlundus Exp $     
+ $Id: mainPage.tpl,v 1.23 2006/11/06 20:22:30 schlundus Exp $     
  Purpose: smarty template - main page / site map                 
                                                                  
  rev :                                                 
@@ -221,30 +221,6 @@
         <a href="lib/usermanagement/rolesview.php">{lang_get s='href_roles_management'}</a>
         </p>
 	{/if}
-
-	{*       Class API information - added 20060630 by KL - I will localize this and 
-	make it optional to display at some point soon *******}
-	<h2>Class APIs (for developers)</h2>
-	<p>
-		<img alt="arrow" class="arrow" src="icons/arrow_org.gif" />
-		<a href="lib/functions/database.class.test.php">database.class.php</a>
-		<br />
-		<img alt="arrow" class="arrow" src="icons/arrow_org.gif" />
-		<a href="lib/functions/testcase.class.test.php">testcase.class.php</a>
-		<br />
-		<img alt="arrow" class="arrow" src="icons/arrow_org.gif" />
-		<a href="lib/functions/testplan.class.test.php">testplan.class.php</a>
-		<br />
-		<img alt="arrow" class="arrow" src="icons/arrow_org.gif" />
-		<a href="lib/functions/testproject.class.test.php">testproject.class.php</a>
-		<br />
-		<img alt="arrow" class="arrow" src="icons/arrow_org.gif" />
-		<a href="lib/functions/testsuite.class.test.php">testsuite.class.php</a>
-		<br />
-		<img alt="arrow" class="arrow" src="icons/arrow_org.gif" />
-		<a href="lib/functions/tree.class.test.php">tree.class.php</a>
-		<br />
-	</p>
 
 </div>
 

@@ -2,7 +2,7 @@
 /**
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/ 
 *
-*  @version 	$Id: printData.php,v 1.24 2006/11/04 21:25:31 schlundus Exp $
+*  @version 	$Id: printData.php,v 1.25 2006/11/06 20:22:30 schlundus Exp $
 *  @author 	Martin Havlat
 * 
 * Shows the data that will be printed.
@@ -56,7 +56,7 @@ else if ($type == 'testsuite')
 	$tree['id'] = $tproject_id;
 	$tree['node_type_id'] = 1;
 	$tree['childNodes'] = array($tInfo);
-	$printingOptions['title'] = $tInfo['name'];
+	$printingOptions['title'] = isset($tInfo['name']) ? $tInfo['name'] : $tproject_name;
 }
 if ($level == 'testproject')
 {
@@ -71,7 +71,7 @@ if ($level == 'testproject')
 	$tree['id'] = $tproject_id;
 	$tree['node_type_id'] = 1;
 	$testcase_count = prepareNode($tree,$hash_id_descr,null,$tp_tcs,0,$dummy);
-	$printingOptions['title'] = '';
+	$printingOptions['title'] = $tproject_name;
 	
 }
 else if ($level == 'testsuite')
@@ -87,7 +87,7 @@ else if ($level == 'testsuite')
 	$tInfo['node_type_id'] = $hash_descr_id['testsuite'];
 	$tInfo['childNodes'] = isset($test_spec['childNodes']) ? $test_spec['childNodes'] : null;
 	$testcase_count = prepareNode($tInfo,$hash_id_descr,null,$tp_tcs,0,$dummy);
-	$printingOptions['title'] = $tproject_name;
+	$printingOptions['title'] = isset($tInfo['name']) ? $tInfo['name'] : $tproject_name;
 	
 	$tree['name'] = $tproject_name;
 	$tree['id'] = $tproject_id;

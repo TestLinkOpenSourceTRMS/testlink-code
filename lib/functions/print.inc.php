@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: print.inc.php,v $
- * @version $Revision: 1.16 $
- * @modified $Date: 2006/11/04 21:25:31 $ by $Author: schlundus $
+ * @version $Revision: 1.17 $
+ * @modified $Date: 2006/11/06 20:22:30 $ by $Author: schlundus $
  *
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
@@ -90,20 +90,23 @@ function renderTestSpecTreeForPrinting(&$db,&$printingOptions,&$node,$tocPrefix,
 {
 	$code = null;
 	$bCloseTOC = 0;	
-	switch($node['node_type_id'])
+	if (isset($node['node_type_id']))
 	{
-		case 1:
-			$code .= renderProjectNodeForPrinting($db,$printingOptions,$printingOptions['title'],$node);
-			break;	
-		case 2:
-			if (!is_null($tocPrefix))
-				$tocPrefix .= ".";
-			$tocPrefix .= $tcCnt;
-			$code .= renderTestSuiteNodeForPrinting($db,$printingOptions,$node,$tocPrefix,$level);
-			break;
-		case 3:
-			$code .= renderTestCaseForPrinting($db,$printingOptions,$node,$level);
-			break;
+		switch($node['node_type_id'])
+		{
+			case 1:
+				$code .= renderProjectNodeForPrinting($db,$printingOptions,$printingOptions['title'],$node);
+				break;	
+			case 2:
+				if (!is_null($tocPrefix))
+					$tocPrefix .= ".";
+				$tocPrefix .= $tcCnt;
+				$code .= renderTestSuiteNodeForPrinting($db,$printingOptions,$node,$tocPrefix,$level);
+				break;
+			case 3:
+				$code .= renderTestCaseForPrinting($db,$printingOptions,$node,$level);
+				break;
+		}
 	}
 	if (isset($node['childNodes']) && $node['childNodes'])
 	{
@@ -115,12 +118,12 @@ function renderTestSpecTreeForPrinting(&$db,&$printingOptions,&$node,$tocPrefix,
 			if(is_null($current))
 				continue;
 			
-			if ($current['node_type_id'] == 2)
+			if (isset($current['node_type_id']) && $current['node_type_id'] == 2)
 				$tsCnt++;
 			$code .= renderTestSpecTreeForPrinting($db,$printingOptions,$current,$tocPrefix,$tsCnt,$level+1);
 		}
 	}
-	if ($node['node_type_id'] == 1)
+	if (isset($node['node_type_id']) && $node['node_type_id'] == 1)
 	{
 		if ($printingOptions['toc'])
 		{

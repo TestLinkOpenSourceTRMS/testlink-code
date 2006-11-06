@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8 
- * @modified $Date: 2006/11/04 21:25:31 $ by $Author: schlundus $
+ * @modified $Date: 2006/11/06 20:22:30 $ by $Author: schlundus $
  *
  *
  * This class is encapsulates most functionality necessary to query the database
@@ -83,7 +83,7 @@ class results
   // map test suite id to number of (total, passed, failed, blocked, not run) 
   // only counts test cases in current suite
   var $mapOfTotalCases = null;
-  
+	var $mapOfCaseResults = null;
   // array
   // (total cases in plan, total pass, total fail, total blocked, total not run)
   var $totalsForPlan = null;

@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8 
- * @modified $Date: 2006/11/06 20:22:30 $ by $Author: schlundus $
+ * @modified $Date: 2006/11/11 23:33:06 $ by $Author: kevinlevy $
  *
  *
  * This class is encapsulates most functionality necessary to query the database
@@ -35,7 +35,7 @@ class results
   
   //var $prodID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
   //var $testPlanID = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0 ;
-  //var $tplanName = isset($_SESSION['testPlanName']) ? $_SESSION['testPlanName'] : null;
+  var $tplanName = null; //isset($_SESSION['testPlanName']) ? $_SESSION['testPlanName'] : null;
 
   // construct map linking suite ids to execution rows 
   var $SUITE_TYPE_ID = 2;  
@@ -99,9 +99,10 @@ class results
     $this->suitesSelected = $suitesSelected;  	
      $this->prodID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
      $this->testPlanID = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0 ;
+	$this->tplanName = isset($_SESSION['testPlanName']) ? $_SESSION['testPlanName'] : null;
 
     // build suiteStructure and flatArray
-    $this->suiteStructure = $this->generateExecTree($keywordId, false, 0, $owner);
+    $this->suiteStructure = $this->generateExecTree($keywordId, $owner);
     // KL - if no builds are specified, no need to execute the following block of code
     if ($builds_to_query != -1) {
       // retrieve results from executions table
@@ -508,7 +509,7 @@ class results
  *
  */
 
-  function generateExecTree($keyword_id = 0,$bForPrinting = false,$tc_id = 0, $owner = null)
+  function generateExecTree($keyword_id = 0, $owner = null)
 {
 	$tplan_mgr = $this->tp;
 	$tproject_mgr = new testproject($this->db);
@@ -519,13 +520,15 @@ class results
 	$hash_id_descr = array_flip($hash_descr_id);
 	$test_spec = $tree_manager->get_subtree($this->prodID,array('testplan'=>'exclude me'),
 	                                                     array('testcase'=>'exclude my children'),null,null,true);
-	$tp_tcs = $tplan_mgr->get_linked_tcversions($this->testPlanID,$tc_id,$keyword_id, null, $owner);
+
+	// KL - 20061111 - I do not forsee having to pass a specific test case id into this method
+	$DEFAULT_VALUE_FOR_TC_ID = 0;
+	$tp_tcs = $tplan_mgr->get_linked_tcversions($this->testPlanID,$DEFAULT_VALUE_FOR_TC_ID,$keyword_id, null, $owner);
 	$this->linked_tcversions = &$tp_tcs;
 	if (is_null($tp_tcs)) { 
 		$tp_tcs = array();
 	}
-	// KL - TO-DO pass in test plan name
-	$test_spec['name'] = "test_spec_name";
+	$test_spec['name'] = $this->tplanName;
 	$test_spec['id'] = $this->prodID;
 	$test_spec['node_type_id'] = $hash_descr_id['testproject'];
 	$suiteStructure = null;
@@ -536,20 +539,16 @@ class results
 		if($keyword_id) {
 			$tck_map = $tproject_mgr->get_keywords_tcases($this->prodID,$keyword_id);
 		}
-		$count = array();
-		$testcase_count = prepareNode($test_spec,$hash_id_descr,$tck_map,$tp_tcs,$bForPrinting, $count, $owner);
-		$test_spec['testcase_count'] = $testcase_count;
-		$getArguments = "getArguments";
-		$menuUrl = "menuUrl";
+		// $menuUrl = "menuUrl";
 		$currentNode = null;
 		$currentNodeIndex = 0;
-		$suiteStructure = $this->processExecTreeNode(1,$test_spec,$getArguments,$hash_id_descr,1,$menuUrl,$bForPrinting);
+		$suiteStructure = $this->processExecTreeNode(1,$test_spec,$hash_id_descr);
 
 	}
 	return $suiteStructure;	
 } // end generateExecTree
 
-function processExecTreeNode($level,&$node,$getArguments,$hash_id_descr,$tc_action_enabled,$linkto,$bForPrinting)
+function processExecTreeNode($level,&$node,$hash_id_descr)
 {
 	$currentNode = null;
 	$currentNodeIndex = 0;
@@ -565,12 +564,16 @@ function processExecTreeNode($level,&$node,$getArguments,$hash_id_descr,$tc_acti
 				continue;
 			$nodeDesc = $hash_id_descr[$current['node_type_id']];
 			$id = $current['id'];
+			// TO-DO - KL - 20061111 - Retreive name of node here
+			// possibly build "hierachy name" 
 			
 			// functionality that uses
 			// $this->suitesSelected
 			
 			$parentId = $current['parent_id'];
 			if (($parentId == $this->prodID) && ($this->suitesSelected != 'all')) {
+
+			  // TO-DO - KL - 20061111 - Refactor this if statement
 			  if (in_array($id, $this->suitesSelected)){
 
 			  }
@@ -579,7 +582,10 @@ function processExecTreeNode($level,&$node,$getArguments,$hash_id_descr,$tc_acti
 			    // skip processing of this top level suite
 			    continue;
 			  }
+
 			} //end if
+			
+			// TO-DO - KL - 20061111 - is this where I can retrieve the name?
 			$name = filterString($current['name']);
 		
 			if (($id) && ($name) && ($nodeDesc == 'testsuite')) {
@@ -606,7 +612,7 @@ function processExecTreeNode($level,&$node,$getArguments,$hash_id_descr,$tc_acti
 				$currentNode[$currentNodeIndex] = $id;
 				$currentNodeIndex++;
 							
-				$currentNode[$currentNodeIndex] = $this->processExecTreeNode($level+1,$current,$getArguments,$hash_id_descr,$tc_action_enabled,$linkto,$bForPrinting);
+				$currentNode[$currentNodeIndex] = $this->processExecTreeNode($level+1,$current,$hash_id_descr,$tc_action_enabled);
 				$currentNodeIndex++;	
 
 				/** end suiteStructure logic */

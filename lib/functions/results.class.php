@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8 
- * @modified $Date: 2006/11/11 23:33:06 $ by $Author: kevinlevy $
+ * @modified $Date: 2006/11/12 01:34:25 $ by $Author: kevinlevy $
  *
  *
  * This class is encapsulates most functionality necessary to query the database
@@ -539,6 +539,13 @@ class results
 		if($keyword_id) {
 			$tck_map = $tproject_mgr->get_keywords_tcases($this->prodID,$keyword_id);
 		}
+		
+		// testcase_count is required to skip components which don't have cases in the plan
+		$count = array();
+		$bForPrinting = 0;
+		$testcase_count = prepareNode($test_spec,$hash_id_descr,$tck_map,$tp_tcs,$bForPrinting, $count, $owner);
+		$test_spec['testcase_count'] = $testcase_count;
+	
 		// $menuUrl = "menuUrl";
 		$currentNode = null;
 		$currentNodeIndex = 0;
@@ -612,7 +619,7 @@ function processExecTreeNode($level,&$node,$hash_id_descr)
 				$currentNode[$currentNodeIndex] = $id;
 				$currentNodeIndex++;
 							
-				$currentNode[$currentNodeIndex] = $this->processExecTreeNode($level+1,$current,$hash_id_descr,$tc_action_enabled);
+				$currentNode[$currentNodeIndex] = $this->processExecTreeNode($level+1,$current,$hash_id_descrss);
 				$currentNodeIndex++;	
 
 				/** end suiteStructure logic */

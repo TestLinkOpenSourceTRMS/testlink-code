@@ -1,6 +1,6 @@
 {* smarty template - view all keywords of product; ver. 1.0 *}
-{* $Id: rolesedit.tpl,v 1.5 2006/10/17 20:17:54 schlundus Exp $ *}
-{* Purpose: smarty template - View all roless *}
+{* $Id: rolesedit.tpl,v 1.6 2006/11/13 23:17:39 havlat Exp $ *}
+{* Purpose: smarty template - create/edit user role *}
 {include file="inc_head.tpl"}
 
 <body>
@@ -13,13 +13,12 @@ var warning_modify_role = "{lang_get s='warning_modify_role'}";
 </script>
 {/literal}
 
-<h1>{lang_get s='title_roles'}</h1>
+<h1>{lang_get s='title_user_mgmt'} - {lang_get s='caption_define_role'}</h1>
 
 <div class="tabMenu">
 {if $mgt_users == "yes"}
 	<span class="unselected"><a href="lib/usermanagement/usersedit.php">{lang_get s='menu_new_user'}</a></span> 
 	<span class="unselected"><a href="lib/usermanagement/usersview.php">{lang_get s='menu_mod_user'}</a></span>
-	<br /><hr />
 {/if}
 {if $role_management == "yes"}
 	<span class="selected">{lang_get s='menu_define_roles'}</span> 
@@ -47,18 +46,12 @@ var warning_modify_role = "{lang_get s='warning_modify_role'}";
 	>
 	<input type="hidden" name="id" value="{$role.id}" />
 	<table class="common">
-		<caption>{lang_get s='caption_define_role'}</caption>
+		<tr><th>{lang_get s='th_rolename'}</th></tr>
+		<tr><td>
+			<input type="text" name="rolename" size="30" maxlength="100" value="{$role.role|escape}"/>
+		</td></tr>
+		<tr><th>{lang_get s='th_rights'}</th></tr>
 		<tr>
-			<th>{lang_get s='th_rolename'}</th>
-			<td>
-				<input type="text" name="rolename" size="20" maxlength="100" value="{$role.role|escape}"/>
-			</td>
-			<td>
-				&nbsp;
-			</td>
-		</tr>
-		<tr>
-			<th>{lang_get s='th_rights'}</th>
 			<td>
 				<table>
 				<tr>
@@ -110,8 +103,8 @@ var warning_modify_role = "{lang_get s='warning_modify_role'}";
 			</table>
 			</td>
 		</tr>
+		<tr><th>{lang_get s='enter_role_notes'}</th></tr>
 		<tr>
-			<th>{lang_get s='enter_role_notes'}</th>
 			<td width="80%">{$notes}</td>
 		</tr>
 

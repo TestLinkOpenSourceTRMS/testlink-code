@@ -1,5 +1,5 @@
 {* Testlink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: usersview.tpl,v 1.5 2006/08/29 19:41:37 schlundus Exp $ *}
+{* $Id: usersview.tpl,v 1.6 2006/11/13 23:17:39 havlat Exp $ *}
 {* 
 Purpose: smarty template - users overview
 
@@ -25,7 +25,6 @@ var warning_delete_user = "{lang_get s='warning_delete_user'}";
 {if $mgt_users == "yes"}
 	<span class="unselected"><a href="lib/usermanagement/usersedit.php">{lang_get s='menu_new_user'}</a></span> 
 	<span class="selected">{lang_get s='menu_mod_user'}</span>
-	<br /><hr />
 {/if}
 {if $role_management == "yes"}
 	<span class="unselected"><a href="lib/usermanagement/rolesedit.php">{lang_get s='menu_define_roles'}</a></span> 
@@ -44,7 +43,7 @@ var warning_delete_user = "{lang_get s='warning_delete_user'}";
 {***** existing users form *****}
 <div class="workBack">
 	<form method="post" action="lib/usermanagement/usersview.php">
-	<table class="common" width="95%">
+	<table class="simple" width="95%">
 		<tr>
 			<th>{lang_get s='th_login'}</th>
 			<th>{lang_get s='th_first_name'}</th>
@@ -52,20 +51,22 @@ var warning_delete_user = "{lang_get s='warning_delete_user'}";
 			<th>{lang_get s='th_email'}</th>
 			<th>{lang_get s='th_role'}</th>
 			<th>{lang_get s='th_locale'}</th>	
-			<th>{lang_get s='th_active'}</th>	
-			<th>{lang_get s='th_delete'}</th>
+			<th style="width:50px;">{lang_get s='th_active'}</th>	
+			<th style="width:50px;">{lang_get s='th_delete'}</th>
 		</tr>
 		
 		{section name=row loop=$users start=0}
 		<tr>
 			<td><a href="lib/usermanagement/usersedit.php?user_id={$users[row].id}"> 
-			    {$users[row].login|escape}</a></td>
+			    {$users[row].login|escape}
+			    <img alt="{lang_get s='alt_edit_user'}" src="gui/images/icon_edit.png"/></a>
+			</td>
 			<td>{$users[row].first|escape}</td>
 			<td>{$users[row].last|escape}</td>
 			<td>{$users[row].email|escape}</td>
 			<td>
 				{assign var="roleID" value="$users[row].role_id"}
-				{$optRoles[$roleID]|escape}
+				{$optRoles[$role_id]|escape}
 			</td>
 			<td>
 				{assign var="lc" value="$users[row]"}
@@ -80,8 +81,7 @@ var warning_delete_user = "{lang_get s='warning_delete_user'}";
 			</td>
 			<td>
 				<a href="javascript:deleteUser_onClick({$users[row].id})">
-				<img style="border:none" alt="{lang_get s='alt_delete_user'}"	 src="icons/thrash.png"/>
-				</a>
+				<img alt="{lang_get s='alt_delete_user'}" src="gui/images/icon_thrash.png"/></a>
 			</td>
 		</tr>
 		{/section}

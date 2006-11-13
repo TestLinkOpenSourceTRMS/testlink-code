@@ -1,18 +1,17 @@
 {* smarty template - view all keywords of product; ver. 1.0 *}
-{* $Id: rolesview.tpl,v 1.7 2006/08/29 19:41:36 schlundus Exp $ *}
-{* Purpose: smarty template - View all roless *}
+{* $Id: rolesview.tpl,v 1.8 2006/11/13 23:17:39 havlat Exp $ *}
+{* Purpose: smarty template - View defined roles *}
 {include file="inc_head.tpl"}
 
 <body>
 
-<h1>{lang_get s='title_roles'}</h1>
+<h1>{lang_get s='title_user_mgmt'} - {lang_get s='title_roles'}</h1>
 
 {* tabs *}
 <div class="tabMenu">
 {if $mgt_users == "yes"}
 	<span class="unselected"><a href="lib/usermanagement/usersedit.php">{lang_get s='menu_new_user'}</a></span> 
 	<span class="unselected"><a href="lib/usermanagement/usersview.php">{lang_get s='menu_mod_user'}</a></span>
-	<br /><hr />
 {/if}
 {if $role_management == "yes"}
 	<span class="unselected"><a href="lib/usermanagement/rolesedit.php">{lang_get s='menu_define_roles'}</a></span> 

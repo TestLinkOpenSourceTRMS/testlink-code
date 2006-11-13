@@ -1,21 +1,18 @@
 {* 
 Testlink: smarty template - 
-$Id: usersassign.tpl,v 1.5 2006/08/29 19:41:37 schlundus Exp $ 
+$Id: usersassign.tpl,v 1.6 2006/11/13 23:17:39 havlat Exp $ 
 *}
 {include file="inc_head.tpl" jsValidate="yes"}
 
 <body>
 
-<h1>
-	{lang_get s='title_assign_roles'}
-</h1>
+<h1>{lang_get s='title_user_mgmt'} - {lang_get s='title_assign_roles'}</h1>
 
 {* tabs *}
 <div class="tabMenu">
 {if $mgt_users == "yes"}
 	<span class="unselected"><a href="lib/usermanagement/usersedit.php">{lang_get s='menu_new_user'}</a></span> 
 	<span class="unselected"><a href="lib/usermanagement/usersview.php">{lang_get s='menu_mod_user'}</a></span>
-	<br /><hr />
 {/if}
 {if $role_management == "yes"}
 	<span class="unselected"><a href="lib/usermanagement/rolesedit.php">{lang_get s='menu_define_roles'}</a></span> 
@@ -45,8 +42,8 @@ $Id: usersassign.tpl,v 1.5 2006/08/29 19:41:37 schlundus Exp $
 <form method="post" action="lib/usermanagement/usersassign.php">
 	<input type="hidden" name="featureID" value="{$featureID}" />
 	<input type="hidden" name="feature" value="{$feature}" />
-	<table class="common" width="75%">
-	<caption>
+
+	<p>
 	{if $feature == 'testproject'}
 		{lang_get s='caption_assign_testproject_user_roles'} - {lang_get s='TestProject'}
 		<select id="featureSel">
@@ -72,7 +69,9 @@ $Id: usersassign.tpl,v 1.5 2006/08/29 19:41:37 schlundus Exp $
 	{/if}
 	<input type="button" value="{lang_get s='btn_change'}" onclick="changeFeature('{$feature}');"/>
 	
-	</caption>
+	</p>
+
+	<table class="common" width="75%">
 	<tr>
 		<th>{lang_get s='User'}</th>
 		<th>{lang_get s='Role'}</th>

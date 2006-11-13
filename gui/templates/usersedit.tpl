@@ -1,6 +1,6 @@
 {* 
 Testlink: smarty template - 
-$Id: usersedit.tpl,v 1.5 2006/08/29 19:41:37 schlundus Exp $ 
+$Id: usersedit.tpl,v 1.6 2006/11/13 23:17:39 havlat Exp $ 
 *}
 {* 
 20060425 - franciscom - better management of default locale 
@@ -11,14 +11,13 @@ $Id: usersedit.tpl,v 1.5 2006/08/29 19:41:37 schlundus Exp $
 
 <body>
 
-<h1> {lang_get s='title_account_settings'} </h1>
+<h1>{lang_get s='title_user_mgmt'} - {lang_get s='title_account_settings'} </h1>
 
 {***** TABS *****}
 <div class="tabMenu">
 {if $mgt_users == "yes"}
 	<span class="selected">{lang_get s='menu_new_user'}</span> 
 	<span class="unselected"><a href="lib/usermanagement/usersview.php">{lang_get s='menu_mod_user'}</a></span>
-	<br /><hr />
 {/if}
 {if $role_management == "yes"}
 	<span class="unselected"><a href="lib/usermanagement/rolesedit.php">{lang_get s='menu_define_roles'}</a></span> 
@@ -57,11 +56,11 @@ function valAllText(form)
 </script>
 {/literal}
 
+<h2>{lang_get s='caption_user_details'}</h2>
 <form method="post" action="lib/usermanagement/usersedit.php" onsubmit="return valAllText(this)">
 	<input type="hidden" name="user_id" value="{$userData.id}" />
 	<input type="hidden" name="user_login" value="{$userData.login}" />
 	<table class="common">
-		<caption>{lang_get s='caption_user_details'}</caption>
 		<tr>
 			<th>{lang_get s='th_login'}</th>
 			<td><input type="text" name="login" maxlength="30" 

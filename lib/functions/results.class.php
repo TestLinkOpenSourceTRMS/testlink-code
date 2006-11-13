@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8 
- * @modified $Date: 2006/11/12 01:34:25 $ by $Author: kevinlevy $
+ * @modified $Date: 2006/11/13 07:23:19 $ by $Author: franciscom $
  *
  *
  * This class is encapsulates most functionality necessary to query the database
@@ -15,6 +15,7 @@
  *-------------------------------------------------------------------------
  * Revisions:
  *
+ * 20061113 - franciscom - changes to preparenode() interface
  * 20060829 - kevinlevy - development in progress
 **/
 
@@ -543,7 +544,7 @@ class results
 		// testcase_count is required to skip components which don't have cases in the plan
 		$count = array();
 		$bForPrinting = 0;
-		$testcase_count = prepareNode($test_spec,$hash_id_descr,$tck_map,$tp_tcs,$bForPrinting, $count, $owner);
+		$testcase_count = prepareNode($db,$test_spec,$hash_id_descr,$count,$tck_map,$tp_tcs,$bForPrinting,$owner);
 		$test_spec['testcase_count'] = $testcase_count;
 	
 		// $menuUrl = "menuUrl";

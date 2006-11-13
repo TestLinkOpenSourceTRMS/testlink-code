@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.82 $
- * @modified $Date: 2006/11/06 20:22:31 $ $Author: schlundus $
+ * @version $Revision: 1.83 $
+ * @modified $Date: 2006/11/13 07:10:56 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
@@ -57,6 +57,7 @@ $TLS_warning_delete_build = "Do really want to delete this build? All dependant 
 
 // gui/templates/containerDelete.tpl
 $TLS_btn_yes_del_comp = "Yes, delete test suite!";
+$TLS_delete_notice = "Warning: All Related Execution Results will be deleted";
 $TLS_question_del = "Really delete";
 $TLS_test_case = "Test Case";
 $TLS_th_link_exec_status = "Link and execution status";
@@ -121,7 +122,7 @@ $TLS_th_product_name = "Test project Name";
 
 
 // gui/templates/execNavigator.tpl
-$TLS_TestPlan = "TestPlan";
+$TLS_TestPlan = "Test plan";
 $TLS_btn_update_menu = "Update menu";
 $TLS_caption_nav_filter_settings = "Navigation Filter & Settings";
 $TLS_current_build = "Current build";
@@ -283,6 +284,7 @@ $TLS_update = "Update";
 $TLS_updated = "updated";
 $TLS_user = "User";
 $TLS_was_success = " was successfully ";
+$TLS_testsuite = "Test suite";
 
 
 
@@ -358,7 +360,7 @@ $TLS_title_specification = "Specification";
 // gui/templates/planEdit.tpl
 $TLS_No = "No";
 $TLS_Yes = "Yes";
-$TLS_alt_delete_testplan = "Delete the testplan?";
+$TLS_alt_delete_testplan = "Delete the test plan?";
 $TLS_btn_upd_tp = "Update";
 $TLS_caption_edit_tp = "Edit existing Test Plans";
 $TLS_menu_create = "Create";
@@ -406,7 +408,7 @@ $TLS_th_imp = "Importance";
 $TLS_th_owner = "Owner";
 $TLS_th_risk = "Risk";
 $TLS_th_test_suite = "Test Suite";
-$TLS_title_plan_ownership = "TestPlan ownership";
+$TLS_title_plan_ownership = "Test Plan ownership";
 
 
 
@@ -826,11 +828,11 @@ $TLS_caption_define_role = "Define role";
 $TLS_enter_role_notes = "Enter role notes";
 $TLS_th_kw_rights = "Keyword rights";
 $TLS_th_mgttc_rights = "Test Case management rights";
-$TLS_th_product_rights = "TestProject right";
+$TLS_th_product_rights = "Test Project right";
 $TLS_th_req_rights = "Requirement rights";
 $TLS_th_rights = "Permissions";
 $TLS_th_rolename = "Rolename";
-$TLS_th_tp_rights = "TestPlan rights";
+$TLS_th_tp_rights = "Test Plan rights";
 $TLS_th_user_rights = "User rights";
 $TLS_warning_modify_role = "Really modify the role?";
 
@@ -852,10 +854,10 @@ $TLS_warning_delete_user = "Really delete the selected user?";
 
 // gui/templates/usersassign.tpl
 $TLS_Role = "Roles";
-$TLS_TestProject = "TestProject";
+$TLS_TestProject = "Test Project";
 $TLS_User = "User";
 $TLS_btn_change = "Change";
-$TLS_caption_assign_testplan_user_roles = "Assign testplan roles to users";
+$TLS_caption_assign_testplan_user_roles = "Assign test plan roles to users";
 $TLS_caption_assign_testproject_user_roles = "Assign test project user roles";
 $TLS_menu_assign_testproject_roles = "Assign test project roles";
 $TLS_title_assign_roles = "Assign roles";
@@ -934,6 +936,7 @@ $TLS_by = "by";
 $TLS_can_not_edit_tc = "You can not edit this version because it has been executed";
 $TLS_title_created = "Created on";
 $TLS_title_last_mod = "Last modified on ";
+$TLS_tcversion_is_inactive_msg="This version is INACTIVE => will be not available to be included in a test plan";
 
 
 
@@ -1116,10 +1119,10 @@ $TLS_warning_milestone_update_failed = "The milestone couldn't be updated!";
 
 
 // lib/plan/planNew.php
-$TLS_duplicate_tp_name = "There is already a TestPlan with this name!";
+$TLS_duplicate_tp_name = "There is already a Test Plan with this name!";
 $TLS_update_tp_failed1 = "Update of Test Plan '";
 $TLS_update_tp_failed2 = "' failed";
-$TLS_warning_empty_tp_name = "You cannot enter Testplan without a name!";
+$TLS_warning_empty_tp_name = "You cannot enter Test plan without a name!";
 
 
 
@@ -1428,4 +1431,35 @@ $TLS_page_title_lost_passwd = "TestLink - Lost password";
 $TLS_your_info_for_passwd = "Enter Your User Information so that your new password can be mailed to you.";
 $TLS_your_password_is = "Your new TestLink password is: <br>";
 
+
+// 
+$TLS_container_title_testproject='Test project';
+$TLS_container_title_testsuite='Test suite';
+
+$TLS_title_testproject='Test project';
+$TLS_title_testsuite='Test suite';
+
+$TLS_th_version = "Version";
+$TLS_th_linked_to_tplan="Linked to test plan";
+$TLS_th_executed="Executed";
+
+$TLS_warning="Warning!!";
+$TLS_delete_linked_and_exec="Links to test plans, and execution related information will be removed";
+$TLS_delete_linked="Links to test plans will be removed";
+
+$TLS_can_not_edit_tc="You can not edit this version because it has been executed";
+
+$TLS_linked_and_executed="Has been executed";
+$TLS_no_links="Has no links to any test plan";
+$TLS_linked_but_not_executed="Has links to test plans";
+
+$TLS_th_link_exec_status="Link and execution status";
+
+$TLS_btn_history_on="Show full execution history";
+$TLS_btn_history_off="Show only last execution";
+
+$TLS_inactive_testcase="inactive";
+$TLS_deactivate_this_tcversion="Deactivate this version";
+$TLS_activate_this_tcversion="Activate this version";
+	
 ?>

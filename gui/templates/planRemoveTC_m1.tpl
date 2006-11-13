@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planRemoveTC_m1.tpl,v 1.4 2006/11/02 10:07:37 franciscom Exp $
+$Id: planRemoveTC_m1.tpl,v 1.5 2006/11/13 07:07:46 franciscom Exp $
 generate the list of TC that can be removed from a Test Plan 
 
 20060319 - franciscom
@@ -49,6 +49,7 @@ generate the list of TC that can be removed from a Test Plan
           <table cellspacing="0" style="font-size:small;" width="100%">
             <tr style="background-color:blue;font-weight:bold;color:white;">
      		      <td class="checkbox_cell">&nbsp;</td>
+			        <td class="tcase_id_cell">{lang_get s='th_id'}</td> 
 				      <td>{lang_get s='th_test_case'}</td>
 				      <td>{lang_get s='version'}</td>
      		      <td>&nbsp;</td>
@@ -60,6 +61,9 @@ generate the list of TC that can be removed from a Test Plan
             	<td>
       				<input type='checkbox' name='achecked_tc[{$tcase.id}]' value='{$tcase.linked_version_id}'>
             	</td>
+   			      <td>
+    				    {$tcase.id}
+   			      </td>
             	<td>
             	<input type='hidden' name='a_tcid[{$tcase.id}]' value='{$tcase.linked_version_id}'>
             	{$tcase.name|escape}

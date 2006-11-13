@@ -1,7 +1,10 @@
-{* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execSetResults.tpl,v 1.31 2006/11/02 10:07:36 franciscom Exp $ *}
-{* Purpose: smarty template - show tests to add results *}
-{* Revisions:
+{* 
+TestLink Open Source Project - http://testlink.sourceforge.net/
+$Id: execSetResults.tpl,v 1.32 2006/11/13 07:07:46 franciscom Exp $
+Purpose: smarty template - show tests to add results
+Revisions:
+          20061112 - franciscom - added class management to assign
+                                  color to status cells
 *}	
 
 {include file="inc_head.tpl" popup='yes' openHead='yes'}
@@ -194,54 +197,61 @@
         {/if}
         
 			 </tr>
+			 
+			{* ----------------------------------------------------------------------------------- *} 
 			{foreach item=tc_old_exec from=$other_exec.$tcversion_id}
- 			<tr style="border-top:1px solid black">
-				<td>{localize_timestamp ts=$tc_old_exec.execution_ts}</td>
-				<td>{$tc_old_exec.tester_first_name|escape} {$tc_old_exec.tester_last_name|escape}</td> 
-				<td>{localize_tc_status s=$tc_old_exec.status}</td>
-				<td>{$tc_old_exec.execution_notes|escape}</td>
+  	    
+	     {assign var="tc_status_code" value=$tc_old_exec.status}
 
-	        {if $att_model->show_upload_column}
-    			  <td align="center"><a href="javascript:openFileUploadWindow({$tc_old_exec.execution_id},'executions')">
-    			    <img src="icons/upload_16.png" alt="{lang_get s='alt_attachment_mgmt'}" 
-    			         style="border:none" /></a>
-            </td>
-	        {/if}
-
-  				{if $g_bugInterfaceOn}
-    			<td align="center"><a href="javascript:open_bug_add_window({$tc_old_exec.execution_id})">
-    			    <img src="icons/bug1.gif" title="{lang_get s='img_title_bug_mgmt'}" 
-    			         style="border:none" /></a>
-            </td>
-          {/if}
-          
-			</tr>  
-			<tr>
-			<td colspan="{$my_colspan}">
-				{assign var="execID" value=$tc_old_exec.execution_id}
-
-				{assign var="attach_info" value=$attachments[$execID]}
-				{include file="inc_attachments.tpl" 
-				         attachmentInfos=$attach_info 
-				         id=$execID tableName="executions"
-				         show_upload_btn=$att_model->show_upload_btn
-				         show_title=$att_model->show_title }
-			</td>
-			</tr>
-
-      {* Execution Bugs (if any) *}
-      {if $bugs_for_exec[$execID] neq ""}
+   			<tr style="border-top:1px solid black">
+  				<td>{localize_timestamp ts=$tc_old_exec.execution_ts}</td>
+  				<td>{$tc_old_exec.tester_first_name|escape} {$tc_old_exec.tester_last_name|escape}</td> 
+  				<td class="{$gsmarty_tc_status_css.$tc_status_code}">
+  				    {localize_tc_status s=$tc_old_exec.status}</td>
+  				<td>{$tc_old_exec.execution_notes|escape}</td>
+  
+  	        {if $att_model->show_upload_column}
+      			  <td align="center"><a href="javascript:openFileUploadWindow({$tc_old_exec.execution_id},'executions')">
+      			    <img src="icons/upload_16.png" alt="{lang_get s='alt_attachment_mgmt'}" 
+      			         style="border:none" /></a>
+              </td>
+  	        {/if}
+  
+    				{if $g_bugInterfaceOn}
+      			<td align="center"><a href="javascript:open_bug_add_window({$tc_old_exec.execution_id})">
+      			    <img src="icons/bug1.gif" title="{lang_get s='img_title_bug_mgmt'}" 
+      			         style="border:none" /></a>
+              </td>
+            {/if}
+            
+  			</tr>  
   			<tr>
   			<td colspan="{$my_colspan}">
-  				{include file="inc_show_bug_table.tpl" 
-  				         bugs_map=$bugs_for_exec[$execID] 
-  				         can_delete=true
-  				         exec_id=$execID}
+  				{assign var="execID" value=$tc_old_exec.execution_id}
+  
+  				{assign var="attach_info" value=$attachments[$execID]}
+  				{include file="inc_attachments.tpl" 
+  				         attachmentInfos=$attach_info 
+  				         id=$execID tableName="executions"
+  				         show_upload_btn=$att_model->show_upload_btn
+  				         show_title=$att_model->show_title }
   			</td>
   			</tr>
-  		{/if}	
-			
+  
+        {* Execution Bugs (if any) *}
+        {if $bugs_for_exec[$execID] neq ""}
+    			<tr>
+    			<td colspan="{$my_colspan}">
+    				{include file="inc_show_bug_table.tpl" 
+    				         bugs_map=$bugs_for_exec[$execID] 
+    				         can_delete=true
+    				         exec_id=$execID}
+    			</td>
+    			</tr>
+    		{/if}	
 			{/foreach}
+			{* ----------------------------------------------------------------------------------- *} 
+
 			</table>
 		{/if}
   </div> 

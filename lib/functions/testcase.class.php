@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.36 $
- * @modified $Date: 2006/11/02 10:07:37 $ $Author: franciscom $
+ * @version $Revision: 1.37 $
+ * @modified $Date: 2006/11/13 07:09:32 $ $Author: franciscom $
  * @author franciscom
  *
  * 20061030 - franciscom - new argument in get_versions_status_quo()
@@ -279,11 +279,10 @@ function show(&$smarty,$id, $user_id, $version_id=TC_ALL_VERSIONS, $action='',
 			$tc_other_versions[] = null;
 		}
 		
-		// $linked_tcversions = $this->get_linked_versions($tc_id,'EXECUTED');
 		// get assigned REQs
 		$arrReqs[] = getReq4Tc($this->db,$tc_id);
 	}
-  	
+
   $smarty->assign('action',$action);
 	$smarty->assign('sqlResult',$msg_result);
 	$smarty->assign('can_edit',$can_edit);
@@ -426,13 +425,21 @@ function delete($id,$version_id = TC_ALL_VERSIONS)
 	20061020 - franciscom - changed return type
 	                        added test plan name in return data
 */
-function get_linked_versions($id,$status="ALL")
+function get_linked_versions($id,$exec_status="ALL",$active_status='ALL')
 {
-	// status = ALL
-	// status = EXECUTED
-	// status = NOT_EXECUTED
+	// exec_status = ALL,EXECUTED,NOT_EXECUTED
 	//
-	switch ($status)
+	// active_status = ALL,ACTIVE,INACTIVE
+	//
+  $active_filter='';
+  $active_status=strtoupper($active_status);
+	if($active_status !='ALL')
+	{
+	  $active_filter=' AND tcversions.active=' . $active_status=='ACTIVE' ? 1 : 0;
+  }
+	// --------------------------------------------------------------------
+	
+	switch ($exec_status)
 	{
 		case "ALL":
 			$sql = "SELECT NH.parent_id AS testcase_id, NH.id AS tcversion_id,
@@ -441,6 +448,7 @@ function get_linked_versions($id,$status="ALL")
 					FROM   nodes_hierarchy NH,tcversions,testplan_tcversions TTC,
 					       nodes_hierarchy NHB 
 					WHERE  TTC.tcversion_id = tcversions.id 
+          {$active_filter}
 					AND    tcversions.id = NH.id
 					AND    NHB.id = TTC.testplan_id
 					AND    NH.parent_id = {$id}"; 
@@ -455,6 +463,7 @@ function get_linked_versions($id,$status="ALL")
 					FROM   nodes_hierarchy NH,tcversions,testplan_tcversions TTC,
 					       executions,nodes_hierarchy NHB
 					WHERE  TTC.tcversion_id = tcversions.id
+          {$active_filter}
 					AND    TTC.testplan_id = NHB.id 
 					AND    TTC.testplan_id = executions.testplan_id
 					AND    executions.tcversion_id = tcversions.id
@@ -469,16 +478,15 @@ function get_linked_versions($id,$status="ALL")
 					FROM   nodes_hierarchy NH,tcversions,testplan_tcversions TTC,
 					       nodes_hierarchy NHB 
 					WHERE  TTC.tcversion_id = tcversions.id
+			    {$active_filter}
 					AND    tcversions.id = NH.id
-					AND    NHB.id = TTC.testplan_id
+      		AND    NHB.id = TTC.testplan_id
 					AND    NH.parent_id = {$id}
 					AND    tcversions.id NOT IN ( SELECT tcversion_id FROM executions
 	                WHERE executions.tcversion_id = tcversions.id )";
 	    	break;
   }
   
-  // $recordset = $this->db->fetchRowsIntoMap($sql,'tcversion_id');
-  //$recordset = $this->db->fetchArrayRowsIntoMap($sql,'tcversion_id');
   $recordset = $this->db->fetchMapRowsIntoMap($sql,'tcversion_id','testplan_id');
   
   return $recordset;
@@ -758,10 +766,22 @@ function get_by_id_bulk($id,$version_id=TC_ALL_VERSIONS, $get_active=0, $get_ope
   return($recordset ? $recordset : null);
 }
 
-function get_by_id($id,$version_id = TC_ALL_VERSIONS,$get_active = 0,$get_open = 0)
+
+// 20061104 - interface changes
+//
+// id: testcase id
+// [version_id]: default TC_ALL_VERSIONS => all versions
+// [active_status]: default 'ALL', range: 'ALL','ACTIVE','INACTIVE'
+//                  has effect for the following version_id values:
+//                  TC_ALL_VERSIONS,TC_LAST_VERSION, version_id is NOT an array 
+//  
+// [open_status]: default 'ALL'
+//
+function get_by_id($id,$version_id = TC_ALL_VERSIONS, $active_status='ALL',$open_status='ALL')
 {
 	$tcid_list = '';
 	$where_clause = '';
+  $active_filter='';
 	
 	if(is_array($id))
 	{
@@ -784,6 +804,13 @@ function get_by_id($id,$version_id = TC_ALL_VERSIONS,$get_active = 0,$get_open =
 		{
 			$where_clause .= " AND tcversions.id = {$version_id} ";
 		}
+
+    $active_status=strtoupper($active_status);
+	  if($active_status !='ALL')
+	  {
+	    $active_filter=' AND tcversions.active=' . ($active_status=='ACTIVE' ? 1 : 0) . ' ';
+    }
+
 	}
 
 	$sql = "SELECT	U.login AS updater_login,users.login as author_login,
@@ -798,7 +825,9 @@ function get_by_id($id,$version_id = TC_ALL_VERSIONS,$get_active = 0,$get_open =
         LEFT OUTER JOIN users ON tcversions.author_id = users.id 
         LEFT OUTER JOIN users U ON tcversions.updater_id = U.id  
         $where_clause 
+        $active_filter
         ORDER BY tcversions.version DESC";
+
 
 	if ($version_id != TC_LATEST_VERSION)
 		$recordset = $this->db->get_recordset($sql);
@@ -1241,5 +1270,24 @@ $sql="SELECT T.tcversion_id AS tcversion_id,T.id AS feature_id," .
 $recordset = $this->db->fetchRowsIntoMap($sql,'tcversion_id');
 return($recordset);
 }
+
+// 20061104 - franciscom
+function update_active_status($id,$tcversion_id,$active_status)
+{
+  // test case version
+	$sql = " UPDATE tcversions SET active={$active_status}" .
+  			 " WHERE tcversions.id = {$tcversion_id}";
+	
+  $result = $this->db->exec_query($sql);
+	$status_ok = $result ? 1: 0;
+	return $status_ok;
+}
+
+
+
+
+
 } // end class
+
+
 ?>

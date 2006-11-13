@@ -2,13 +2,16 @@
 /** 
 *	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version $Id: planAddTCNavigator.php,v 1.16 2006/11/02 10:07:37 franciscom Exp $
+* 	@version $Id: planAddTCNavigator.php,v 1.17 2006/11/13 07:09:32 franciscom Exp $
 *	@author Martin Havlat
 * 
 * 	Navigator for feature: add Test Cases to a Test Case Suite in Test Plan. 
 *	It builds the javascript tree that allow the user select a required part 
 *	Test specification. Keywords should be used for filter.
 * 
+* 20061112 - franciscom - changes in call to generateTestSpecTree()
+*                         to manage the display ONLY of ACTIVE test case versions .
+*
 * 20051126 - scs - changed passing keyword to keyword id
 */
 require('../../config.inc.php');
@@ -38,9 +41,15 @@ $args = null;
 if ($keyword_id)
 	$args = '&keyword_id=' . $keyword_id;
 
-$treeString = generateTestSpecTree($db,$tproject_id, $tproject_name, 
-                                   $workPath,1,0,
-                                   $args, $keyword_id);
+// 20061112
+define('SHOW_TESTCASES',1);
+define('ACTION_TESTCASE_DISABLE',0);
+define('IGNORE_INACTIVE_TESTCASES',1);
+
+
+$treeString = generateTestSpecTree($db,$tproject_id, $tproject_name,$workPath,
+                                   SHOW_TESTCASES,ACTION_TESTCASE_DISABLE,
+                                   $args, $keyword_id,IGNORE_INACTIVE_TESTCASES);
 
 // 20061030 - franciscom
 // link to load frame named 'workframe' when the update button is pressed

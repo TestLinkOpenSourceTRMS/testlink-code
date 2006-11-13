@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.10 2006/10/23 06:42:22 franciscom Exp $
+$Id: tcView_viewer.tpl,v 1.11 2006/11/13 07:07:46 franciscom Exp $
 viewer for test case in test specification
 
 20060427 - franciscom - added font-size in the table used for keywords
@@ -19,6 +19,7 @@ viewer for test case in test specification
     {if $args_status_quo eq null or $args_status_quo[$args_testcase.id].executed eq null}
  	    <input type="submit" name="edit_tc"   value="{lang_get s='btn_edit'}" />
       {assign var="warning_edit_msg" value=""}
+      
     {else}
       {lang_get s='can_not_edit_tc' var="warning_edit_msg"}
     {/if}
@@ -35,6 +36,24 @@ viewer for test case in test specification
    		<input type="submit" name="move_copy_tc"   value="{lang_get s='btn_mv_cp'}" />
     {/if}		                     
 		<input type="submit" name="do_create_new_version"   value="{lang_get s='btn_new_version'}" />
+	
+	 {* --------------------------------------------------------------------------------------- *} 
+	 {if $args_status_quo eq null or $args_status_quo[$args_testcase.id].executed eq null}
+      <br>
+ 	    {if $args_testcase.active eq 0}
+         {assign var="act_deact_btn" value="activate_this_tcversion"}
+         {assign var="act_deact_value" value="activate_this_tcversion"}
+         {assign var="version_title_class" value="inactivate_version"}
+      {else}
+         {assign var="act_deact_btn" value="deactivate_this_tcversion"}
+         {assign var="act_deact_value" value="deactivate_this_tcversion"}
+         {assign var="version_title_class" value="activate_version"}
+      {/if}
+      <input type="submit" name="{$act_deact_btn}" 
+                           value="{lang_get s=$act_deact_value}" />
+    {/if}
+	 {* --------------------------------------------------------------------------------------- *} 
+	
 	</form>
 	<form method="post" action="lib/testcases/tcexport.php">
 		<br/>
@@ -49,11 +68,15 @@ viewer for test case in test specification
 	</div>	
 {/if}
 
-	<table width="95%" class="simple" border="0">
+  {if $args_testcase.active eq 0}
+    <p><div class="warning_message" align="center">{lang_get s='tcversion_is_inactive_msg'}</div>
+  {/if}
 
+	<table width="95%" class="simple" border="0">
     {if $args_show_title == "yes"}
 		<tr>
-			<th  colspan="2">{lang_get s='th_test_case_id'}{$args_testcase.testcase_id} :: 
+			<th  colspan="2">
+			{lang_get s='th_test_case_id'}{$args_testcase.testcase_id} :: 
 			{lang_get s='title_test_case'} {$args_testcase.name|escape}</th>
 		</tr>
     {/if} 

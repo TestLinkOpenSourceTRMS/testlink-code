@@ -1,13 +1,13 @@
 <?php
 ////////////////////////////////////////////////////////////////////////////////
-// @version $Id: planAddTC.php,v 1.25 2006/11/02 10:07:37 franciscom Exp $
+// @version $Id: planAddTC.php,v 1.26 2006/11/13 07:09:32 franciscom Exp $
 // File:     planAddTC.php
 // Author:   Chad Rosen
 // Purpose:  This page manages the importation of test cases into testlink.
 //
-// 20051001 - fm - refactoring
-// 20050926 - fm - removed name from category and component insert
-// 20051126 - scs - changed passing keyword to keywordID
+//
+// 20061112 - franciscom - minimun refactoring
+//
 ////////////////////////////////////////////////////////////////////////////////
 require('../../config.inc.php');
 require_once("../functions/common.php");
@@ -21,9 +21,7 @@ $tplan_mgr = new testplan($db);
 
 $tplan_id =  $_SESSION['testPlanId'];
 $tproject_id =  $_SESSION['testprojectID'];
-$tproject_name =  $_SESSION['testprojectName']; // 20060924 - franciscom
-
-
+$tproject_name =  $_SESSION['testprojectName'];
 
 $keyword_id = isset($_REQUEST['keyword_id']) ? intval($_REQUEST['keyword_id']) : 0;
 $object_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
@@ -31,6 +29,9 @@ $smarty = new TLSmarty();
 $smarty->assign('testPlanName', $_SESSION['testPlanName']);
 
 define('DONT_FILTER_BY_TCASE_ID',null);
+define('ANY_EXEC_STATUS',null);
+define('ANY_OWNER',null);
+
 
 // ----------------------------------------------------------------------------------
 if($_GET['edit'] == 'testsuite')
@@ -39,10 +40,13 @@ if($_GET['edit'] == 'testsuite')
                                                            $keyword_id);
 
     $tsuite_data=$tsuite_mgr->get_by_id($object_id);
+
+    // 20061112 - franciscom
+    $tplan_linked_tcversions=$tplan_mgr->get_linked_tcversions($tplan_id,DONT_FILTER_BY_TCASE_ID,
+                                                               $keyword_id,ANY_EXEC_STATUS,ANY_OWNER);
+
     $out = gen_spec_view($db,'testproject',$tproject_id,$object_id,$tsuite_data['name'],
-                         $tplan_mgr->get_linked_tcversions($tplan_id,DONT_FILTER_BY_TCASE_ID,$keyword_id),
-                         $map_node_tccount,
-                         $keyword_id,DONT_FILTER_BY_TCASE_ID);
+                         $tplan_linked_tcversions,$map_node_tccount,$keyword_id,DONT_FILTER_BY_TCASE_ID);
                        
     $do_display = 1;  
 }

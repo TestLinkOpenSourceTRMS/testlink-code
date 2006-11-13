@@ -4,9 +4,13 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.40 $
- * @modified $Date: 2006/11/02 10:07:37 $  by $Author: franciscom $
+ * @version $Revision: 1.41 $
+ * @modified $Date: 2006/11/13 07:09:32 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
+ *
+ *
+ * 20061112 - franciscom
+ * added logic for new operations: activate/deactivate test case version
  *
 **/
 require_once("../../config.inc.php");
@@ -65,6 +69,19 @@ $do_copy   = isset($_POST['do_copy']) ? 1 : 0;
 $do_delete = isset($_POST['do_delete']) ? 1 : 0;
 $do_create_new_version = isset($_POST['do_create_new_version']) ? 1 : 0;
 $do_delete_tc_version = isset($_POST['do_delete_tc_version']) ? 1 : 0;
+
+
+// 20061104 - franciscom
+$do_activate_this = isset($_POST['activate_this_tcversion']) ? 1 : 0;
+$do_deactivate_this = isset($_POST['deactivate_this_tcversion']) ? 1 : 0;
+
+$active_status=0;
+$action_result = "deactivate_this_version";
+if($do_activate_this)
+{
+ $active_status=1;
+ $action_result = "activate_this_version";
+}
 
 $login_name = $_SESSION['user'];
 $version = isset($_POST['version']) ? intval($_POST['version']) : 0; 
@@ -336,6 +353,18 @@ else if($do_create_new_version)
 	$tcase_mgr->show($smarty,$tcase_id, $userID, TC_ALL_VERSIONS, 
 	                            $action_result,$msg,DONT_REFRESH);
 }
+else if($do_activate_this || $do_deactivate_this)
+{
+	$tcase_mgr->update_active_status($tcase_id, $tcversion_id, $active_status);
+
+	define('DONT_REFRESH','no');
+	define('DONT_SAY_A_WORD',null);
+	
+  $msg = DONT_SAY_A_WORD; 
+	$tcase_mgr->show($smarty,$tcase_id, $userID, TC_ALL_VERSIONS,
+	                 $action_result,$msg,DONT_REFRESH);
+}
+
 else
 {
 	tlog("A correct POST argument is not found.");

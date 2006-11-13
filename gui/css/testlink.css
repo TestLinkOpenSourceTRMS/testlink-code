@@ -1,6 +1,6 @@
 /* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: testlink.css,v 1.15 2006/11/13 07:06:50 franciscom Exp $
+$Id: testlink.css,v 1.16 2006/11/13 22:26:04 havlat Exp $
 Purpose: main css - theme default
 
 20061020 - franciscom - new classes for time stamps
@@ -16,6 +16,9 @@ body {
   margin: 0px;
 }
 
+img {
+	border: 		none;
+}
 
 /* ----------------------------------------------------------------- */
 /*    Title + Menu bar                                               */
@@ -261,7 +264,7 @@ span.unselected a, span.unselected a:visited {
 table.common {
 	background:     #EEE;
 	border: 		1px solid black;
-	margin-bottom:	20px;
+	margin:			15px 0px;
 	min-width:		50%;
 }
 
@@ -286,7 +289,7 @@ table.simple {
 	background:     #EEE;
 	border: 		thin solid black;
 	font-size:		90%;
-	margin:			20px;
+	margin:			15px 0px;
 	width:			90%;
 }
 

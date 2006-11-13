@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.83 $
- * @modified $Date: 2006/11/13 07:10:56 $ $Author: franciscom $
+ * @version $Revision: 1.84 $
+ * @modified $Date: 2006/11/13 22:25:45 $ $Author: havlat $
  *
  * @author Francisco Mancardi
  *
@@ -42,16 +42,20 @@ $TLS_title_product_mgmt = "Test project Management";
 
 // gui/templates/buildNew.tpl
 $TLS_alt_delete_build = "Click here to delete this build";
-$TLS_enter_build = "Enter identifier";
-$TLS_enter_build_notes = "Notes:";
-$TLS_msg_build = "Each build is related to the active Test Plan.";
-$TLS_no_builds = "There are no builds for this Test Plan!";
-$TLS_th_build_notes = "Notes";
+$TLS_alt_edit_build = "Click here to edit this build";
+$TLS_enter_build = "Build Title (unique identifier)";
+$TLS_enter_build_notes = "Description";
+$TLS_msg_build = "Notes: Each build is related to the active Test Plan. Description should include: list of delivered packages, approvals, status,etc.";
+$TLS_no_builds = "No builds are defined within this Test Plan!";
+$TLS_th_description = "Description";
 $TLS_th_delete = "Delete?";
-$TLS_th_existing_builds = "Existing builds within the Test Plan ";
-$TLS_title_create_build_for_tp = "Create build for Test plan";
-$TLS_title_notes = "Notes:";
-$TLS_warning_delete_build = "Do really want to delete this build? All dependant data will also be deleted!";
+$TLS_th_title = "Title";
+$TLS_title_build_1 = "Test plan";
+$TLS_title_build_2 = "Build management";
+$TLS_title_build_create = "Create a new Build";
+$TLS_title_build_update = "Update Build";
+$TLS_title_build_list = "List of existing builds";
+$TLS_warning_delete_build = "Do really want to delete this build? All dependant data (test results) will also be deleted!";
 
 
 

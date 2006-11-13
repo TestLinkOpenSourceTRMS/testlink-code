@@ -1,7 +1,7 @@
 <?php
 /** 
 *	TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* 	@version $Id: testSetNavigator.php,v 1.17 2006/11/02 10:07:37 franciscom Exp $
+* 	@version $Id: testSetNavigator.php,v 1.18 2006/11/13 07:10:41 franciscom Exp $
 *	@author Martin Havlat 
 *
 * Used in the remove test case feature
@@ -18,8 +18,10 @@ $workPath = null;
 
 $tplan_mgr = new testplan($db);
 $tplan_id = $_SESSION['testPlanId'];
+$tplan_name =$_SESSION['testPlanName'];
 $tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 $tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : '';
+
 
 $keyword_id = 0;
 
@@ -76,7 +78,7 @@ if ($keyword_id)
 	$getArguments .= '&keyword_id='.$keyword_id;
 }
 
-$sMenu = generateExecTree($db,$menuUrl,$tproject_id,$tproject_name,$tplan_id,$_SESSION['testPlanName'],
+$sMenu = generateExecTree($db,$menuUrl,$tproject_id,$tproject_name,$tplan_id,$tplan_name,
                           FILTER_BY_BUILD_OFF,$getArguments,$keyword_id,FILTER_BY_TC_OFF);
 
 $tree = invokeMenu($sMenu);
@@ -90,5 +92,6 @@ $smarty->assign('keyword_id', $keyword_id);
 $smarty->assign('treeHeader', $title);
 $smarty->assign('menuUrl',$menuUrl);
 $smarty->assign('SP_html_help_file',TL_INSTRUCTIONS_RPATH . $_SESSION['locale'] ."/". $help_file);
+$smarty->assign('additional_string',$tplan_name);
 $smarty->display('testSetNavigator.tpl');
 ?>

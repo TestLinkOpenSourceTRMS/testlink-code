@@ -2,10 +2,13 @@
 /**
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/ 
 *
-*  @version 	$Id: printData.php,v 1.25 2006/11/06 20:22:30 schlundus Exp $
+*  @version 	$Id: printData.php,v 1.26 2006/11/13 07:10:41 franciscom Exp $
 *  @author 	Martin Havlat
 * 
 * Shows the data that will be printed.
+*
+* 20061112 - franciscom - prepareNode() interface changes
+*
 */
 require('../../config.inc.php');
 require_once("common.php");
@@ -30,7 +33,13 @@ foreach($printingOptions as $opt => $val)
 {
 	$printingOptions[$opt] = (isset($_GET[$opt]) && ($_GET[$opt] == 'y'));
 }						 
-$dummy = null;
+
+$tck_map = null;
+$map_node_tccount=array();
+define('SHOW_TESTCASES',0);
+
+
+
 $tproject_mgr = new testproject($db);
 $tree_manager = &$tproject_mgr->tree_manager;
 $test_spec = $tree_manager->get_subtree($dataID,array('testplan'=>'exclude me'),
@@ -70,7 +79,8 @@ if ($level == 'testproject')
 	$tree['name'] = $tproject_name;
 	$tree['id'] = $tproject_id;
 	$tree['node_type_id'] = 1;
-	$testcase_count = prepareNode($tree,$hash_id_descr,null,$tp_tcs,0,$dummy);
+
+	$testcase_count = prepareNode($db,$tree,$hash_id_descr,$map_node_tccount,$tck_map,$tp_tcs,SHOW_TESTCASES);
 	$printingOptions['title'] = $tproject_name;
 	
 }
@@ -86,7 +96,7 @@ else if ($level == 'testsuite')
 	
 	$tInfo['node_type_id'] = $hash_descr_id['testsuite'];
 	$tInfo['childNodes'] = isset($test_spec['childNodes']) ? $test_spec['childNodes'] : null;
-	$testcase_count = prepareNode($tInfo,$hash_id_descr,null,$tp_tcs,0,$dummy);
+	$testcase_count = prepareNode($db,$tInfo,$hash_id_descr,$map_node_tccount,$tck_map,$tp_tcs,SHOW_TESTCASES);
 	$printingOptions['title'] = isset($tInfo['name']) ? $tInfo['name'] : $tproject_name;
 	
 	$tree['name'] = $tproject_name;

@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.54 $ $Author: franciscom $
- * @modified $Date: 2006/11/02 10:07:37 $
+ * @version $Revision: 1.55 $ $Author: franciscom $
+ * @modified $Date: 2006/11/13 07:08:24 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -635,7 +635,7 @@ returns: array where every element is an associative array with the following
                                                               [1093] => 2   // key=tcversion id,value=version
                                                               [6] => 1
                                                              )
-                    
+                                                             [testcase_qty] => 
                                                              [linked_version_id] => 0
                                              )
 
@@ -652,6 +652,14 @@ returns: array where every element is an associative array with the following
        Warning:
        if the root element of the spec_view, has 0 test => then the default
        structure is returned ( $result = array('spec_view'=>array(), 'num_tc' => 0))
+
+20061105 - franciscom
+added new data on output: [tcversions_qty] 
+                          used in the logic to filter out inactive tcversions,
+                          and inactive test cases.
+                          Counts the quantity of active versions of a test case.
+                          If 0 => test case is considered INACTIVE
+                                          
        
 */
 function gen_spec_view(&$db,$spec_view_type='testproject',
@@ -741,7 +749,9 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
 				
 				$out[$parent_idx]['testcases'][$tc_id] = array('id' => $tc_id,
 				                  'name' => $current['name']);
-				$out[$parent_idx]['testcases'][$tc_id]['tcversions'] = array();             
+				$out[$parent_idx]['testcases'][$tc_id]['tcversions'] = array();
+				$out[$parent_idx]['testcases'][$tc_id]['tcversions_qty'] = 0;   // 20061104 - franciscom
+				             
 				$out[$parent_idx]['testcases'][$tc_id]['linked_version_id'] = 0;
 				$out[$parent_idx]['testcases'][$tc_id]['executed'] = 'no';
 				
@@ -802,18 +812,32 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
 	// internal bug
 	if( !is_null($out[0]) )
 	{
-	  $result['num_tc'] = count($a_tcid);
+	  // 20061105 - franciscom
+	  // $result['num_tc'] = count($a_tcid);
 	  $result['has_linked_items'] = 0;
 		
-    if($result['num_tc'])
+    if(count($a_tcid))
     {
-  		$tcase_set = $tcase_mgr->get_by_id($a_tcid);
+  		$tcase_set = $tcase_mgr->get_by_id($a_tcid,TC_ALL_VERSIONS,'ACTIVE');
+  		
+  		$result['num_tc']=0;
+  		$pivot_id=-1;
   		
   		foreach($tcase_set as $the_k => $the_tc)
     	{
   			$tc_id = $the_tc['testcase_id'];
+  			
+  			// 20061105 - franciscom
+  		  if( $pivot_id != $tc_id )
+  		  {
+  		    $pivot_id=$tc_id;
+  		    $result['num_tc']++;
+  		  }
+  		  
   			$parent_idx = $a_tsuite_idx[$tc_id];
   			$out[$parent_idx]['testcases'][$tc_id]['tcversions'][$the_tc['id']] = $the_tc['version'];
+              
+        $out[$parent_idx]['testcases'][$tc_id]['tcversions_qty']++; // 20061104 - franciscom
               
   			if(!is_null($linked_items))
   			{
@@ -844,7 +868,6 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
   	$result['spec_view'] = $out;
   	
 	} // !is_null($out[0])
-	
 	return $result;
 }
 

@@ -1,6 +1,6 @@
 /* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: testlink.css,v 1.14 2006/11/07 23:00:24 havlat Exp $
+$Id: testlink.css,v 1.15 2006/11/13 07:06:50 franciscom Exp $
 Purpose: main css - theme default
 
 20061020 - franciscom - new classes for time stamps
@@ -521,6 +521,10 @@ td.checkbox_cell{
 	width: 1px;
 }
 
+td.tcase_id_cell{
+	width: 30px;
+}
+
 
 div.test_exec,table.test_exec {
 	background: 	#FFC;
@@ -528,6 +532,24 @@ div.test_exec,table.test_exec {
 	color: 			black;
 	padding: 		12px;
 	width: 100%;
+}
+
+/* 
+20061112 - franciscom - to manage status cells
+*/   
+td.passed {
+	color: 			white;
+	background:		green;
+}
+
+td.failed {
+	color: 			white;
+	background:		red;
+}
+
+td.blocked {
+	color: 			white;
+	background:		blue;
 }
 
 

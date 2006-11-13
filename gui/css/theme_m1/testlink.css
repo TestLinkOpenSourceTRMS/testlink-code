@@ -1,6 +1,6 @@
 /* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: testlink.css,v 1.4 2006/10/25 07:34:27 franciscom Exp $ 
+$Id: testlink.css,v 1.5 2006/11/13 07:06:50 franciscom Exp $ 
 Purpose: main css - theme m1
                   
 20060819 - franciscom - minor adjustemnts
@@ -506,4 +506,37 @@ p.title  {
 	font-style: 	italic;
 }
 
+
+div.show_hide_title {
+	font-weight : bold;
+}
+
+div.exec_history_title {
+	font-weight : bold;
+}
+
+div.notes{
+	background: 	#FFC;
+	border: 		1px solid black;
+	color: 			black;
+	margin: 		1px;
+	padding: 		1px;
+	width: 100%;
+}
+
+td.checkbox_cell{
+	width: 1px;
+}
+
+td.tcase_id_cell{
+	width: 25px;
+}
+
+div.test_exec,table.test_exec {
+	background: 	#FFC;
+	border: 		thin dashed black;
+	color: 			black;
+	padding: 		12px;
+	width: 100%;
+}
 /* ----------------------------------------------------------------------------- */

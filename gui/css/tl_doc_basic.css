@@ -1,5 +1,5 @@
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: tl_doc_basic.css,v 1.2 2005/08/16 17:59:11 franciscom Exp $ */
+/* $Id: tl_doc_basic.css,v 1.3 2006/11/17 19:52:58 schlundus Exp $ */
 /* Purpose: Basic schema for print documentation css */
 /*******************************************************************/
 
@@ -69,12 +69,57 @@ th {
 	background:     #EEE;
 	text-align:		left;
 }
-
+/* the header displaying the product name and some info */
 div.pageheader {
-	border-bottom: 	1px solid grey; 
-	font-size: 		110%; 
-	font-weight: 	bold;
-	padding: 		5px; 
+	border-bottom: 1px solid grey; 
+	font-size: 110%; 
+	font-weight: bold;
+	margin-top: 5px; 
+	text-align:	right;
+}
+
+/* class for displaying the productname in the pageheader */
+span.pageheader 
+{
+}
+
+/* class for displaying the companyname in the pageheader */
+#companyname
+{
+}
+
+/* class for displaying the document title in the pageheader */
+#doctitle
+{
+}
+
+#summary
+{
+	margin: 50px;
+}
+
+#prodname
+{
+}
+
+#prodnotes
+{
+}
+
+#author
+{
+}
+
+#printedby
+{
+}
+
+#copyright
+{
+}
+
+#confidential
+{
 }
 
 div.pagefooter {
@@ -82,3 +127,8 @@ div.pagefooter {
 	font-size: 		90%; 
 }
 
+
+div.toc
+{
+
+}

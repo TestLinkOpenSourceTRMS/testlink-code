@@ -3,18 +3,14 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: print.inc.php,v $
- * @version $Revision: 1.17 $
- * @modified $Date: 2006/11/06 20:22:30 $ by $Author: schlundus $
+ * @version $Revision: 1.18 $
+ * @modified $Date: 2006/11/17 19:52:59 $ by $Author: schlundus $
  *
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
  * Functions for support printing of documents. 
- *
- * 20050830 - fm - refactoring
- * 
  */
 /** 
-
 @parameter $userID
 @return string First + Last name 
 */
@@ -35,8 +31,6 @@ function getAuthor(&$db,$userID)
 /** 
  * print HTML header 
  * Standard: HTML 4.01 trans (because is more flexible to bugs in user data)
- *
- * 20050905 - fm - added argument base_href
  */
 function printHeader($title, $base_href, $cssTemplate = TL_DOC_BASIC_CSS)
 {
@@ -52,8 +46,6 @@ function printHeader($title, $base_href, $cssTemplate = TL_DOC_BASIC_CSS)
 
 /** 
   print HTML - initial page of document 
-
-  20060102 - fm - product notes
 */
 function printFirstPage(&$db,$title, $prodName, $prodNotes, $userID)
 {
@@ -63,24 +55,24 @@ function printFirstPage(&$db,$title, $prodName, $prodNotes, $userID)
 	$title = htmlspecialchars($title);
 	
 	$output = '<div class="pageheader">';
-	$output .= '<span style="float: right;">'. $prodName ."</span>";
+	$output .= '<span class="pageheader">'. $prodName ."</span>";
 	if (TL_COMPANY != '')
-		$output .= '<span>'. htmlspecialchars(TL_COMPANY) ."</span>\n";
+		$output .= '<span id="companyname">'. htmlspecialchars(TL_COMPANY) ."</span>\n";
 	
 	$output .= "</div>\n";
-	$output .= "<h1>".$title."</h1>\n";
-	$output .= "<div style='margin: 50px;'>" .
-		       "<p>". lang_get('product').": " . $prodName . "</p>";
+	$output .= "<h1 id=\"doctitle\">".$title."</h1>\n";
+	$output .= "<div id=\"summary\">" .
+		       "<p id=\"prodname\">". lang_get('product').": " . $prodName . "</p>";
 	if (strlen($prodNotes))
-		$output .= "<p>". $prodNotes . "</p>";
+		$output .= "<p id=\"prodnotes\">". $prodNotes . "</p>";
 		       
-	$output .= "<p>".lang_get('author').": " . $author . "</p>" .
-		       "<p>".lang_get('printed_by_TestLink_on')." ". strftime($g_date_format, time()) . "</p></div>";
+	$output .= "<p id=\"author\">".lang_get('author').": " . $author . "</p>" .
+		       "<p id=\"printedby\">".lang_get('printed_by_TestLink_on')." ". strftime($g_date_format, time()) . "</p></div>";
 
 	if (TL_DOC_COPYRIGHT != '')
-		$output .= '<div class="pagefooter">'.htmlspecialchars(TL_DOC_COPYRIGHT)."</div>\n";
+		$output .= '<div class="pagefooter" id="copyright">'.htmlspecialchars(TL_DOC_COPYRIGHT)."</div>\n";
 	if (TL_DOC_CONFIDENT != '')
-		$output .= '<div class="pagefooter">'.htmlspecialchars(TL_DOC_CONFIDENT)."</div>\n";
+		$output .= '<div class="pagefooter" id="confidential">'.htmlspecialchars(TL_DOC_CONFIDENT)."</div>\n";
 
 	return $output;
 }
@@ -148,7 +140,7 @@ function renderTestCaseForPrinting(&$db,&$printingOptions,&$node,$level)
 	  	                 $name . '</a></p>';
 		$code .= "<a name='tc" . $id . "'></a>";
 	}
- 	$code .= "<div class='tc'><table width=90%>";
+ 	$code .= "<div class=\"tc\"><table width=\"90%\">";
  	$code .= "<tr><th>".lang_get('test_case')." " . $id . ": " . 
  	            $name . "</th></tr>";
 	

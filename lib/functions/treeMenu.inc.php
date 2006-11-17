@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: treeMenu.inc.php,v $
  *
- * @version $Revision: 1.31 $
- * @modified $Date: 2006/11/13 07:08:55 $ by $Author: franciscom $
+ * @version $Revision: 1.32 $
+ * @modified $Date: 2006/11/17 19:52:59 $ by $Author: schlundus $
  * @author Martin Havlat
  *
  * 	This file generates tree menu for test specification and test execution.
@@ -231,12 +231,12 @@ function prepareNode(&$db,&$node,&$hash_id_descr,&$map_node_tccount,
 	$nTestCases = 0;
 	if ($nodeDesc == 'testcase')
 	{
-	  	if (!is_null($tck_map))
+		if (!is_null($tck_map))
 		{
 			if (!isset($tck_map[$node['id']]))
 				$node = null;
 		}
-		if ($node && !is_null($tp_tcs))
+	  	if ($node && !is_null($tp_tcs))
 		{
 		  // We are buildind a execution tree.
 			if (!isset($tp_tcs[$node['id']]))
@@ -256,24 +256,23 @@ function prepareNode(&$db,&$node,&$hash_id_descr,&$map_node_tccount,
 				$node['tcversion_id'] = $tp_tcs[$node['id']]['tcversion_id'];		
 			}
 		}
-		else if ($ignore_inactive_testcases)
+		if ($node && $ignore_inactive_testcases)
 		{
-		  // 20061105 - franciscom   
-		  // there are active tcversions for this node ???
-		  // I'm doing this instead of creating a test case manager object, because
-		  // I think is better for performance.
-		  //
-		  $sql=" SELECT count(TCV.id) AS NUM_ACTIVE_VERSIONS " .
-		       " FROM tcversions TCV, nodes_hierarchy NH " .
-		       " WHERE NH.parent_id=" . $node['id'] .
-		       " AND   NH.id = TCV.id AND TCV.active=1";
-	    
-		  $result = $db->exec_query($sql);
-      $myrow = $db->fetch_array($result);
-		  if( $myrow['NUM_ACTIVE_VERSIONS'] == 0)
-		  {
-		    $node=null;
-		  }
+			// there are active tcversions for this node ???
+			// I'm doing this instead of creating a test case manager object, because
+			// I think is better for performance.
+			//
+			$sql=" SELECT count(TCV.id) NUM_ACTIVE_VERSIONS " .
+			   " FROM tcversions TCV, nodes_hierarchy NH " .
+			   " WHERE NH.parent_id=" . $node['id'] .
+			   " AND NH.id = TCV.id AND TCV.active=1";
+			
+			$result = $db->exec_query($sql);
+			$myrow = $db->fetch_array($result);
+			if($myrow['NUM_ACTIVE_VERSIONS'] == 0)
+			{
+				$node = null;
+			}
 		}
 		
 		$nTestCases = $node ? 1 : 0;

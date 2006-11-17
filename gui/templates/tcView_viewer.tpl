@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.11 2006/11/13 07:07:46 franciscom Exp $
+$Id: tcView_viewer.tpl,v 1.12 2006/11/17 19:52:59 schlundus Exp $
 viewer for test case in test specification
 
 20060427 - franciscom - added font-size in the table used for keywords
@@ -28,19 +28,19 @@ viewer for test case in test specification
 		<input type="submit" name="delete_tc" value="{lang_get s='btn_del'}" />
     {/if}
 
-    {if $args_can_delete_version == "yes" }
-		<input type="submit" name="delete_tc_version" value="{lang_get s='btn_del_this_version'}" />
-    {/if}
-    
     {if $args_can_move_copy == "yes" }
    		<input type="submit" name="move_copy_tc"   value="{lang_get s='btn_mv_cp'}" />
     {/if}		                     
-		<input type="submit" name="do_create_new_version"   value="{lang_get s='btn_new_version'}" />
+	<br />
+     <br />
+ 	{if $args_can_delete_version == "yes" }
+		<input type="submit" name="delete_tc_version" value="{lang_get s='btn_del_this_version'}" />
+    {/if}
+	<input type="submit" name="do_create_new_version"   value="{lang_get s='btn_new_version'}" />
 	
 	 {* --------------------------------------------------------------------------------------- *} 
 	 {if $args_status_quo eq null or $args_status_quo[$args_testcase.id].executed eq null}
-      <br>
- 	    {if $args_testcase.active eq 0}
+        {if $args_testcase.active eq 0}
          {assign var="act_deact_btn" value="activate_this_tcversion"}
          {assign var="act_deact_value" value="activate_this_tcversion"}
          {assign var="version_title_class" value="inactivate_version"}

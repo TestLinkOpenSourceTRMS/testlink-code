@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.84 $
- * @modified $Date: 2006/11/13 22:25:45 $ $Author: havlat $
+ * @version $Revision: 1.85 $
+ * @modified $Date: 2006/11/17 19:52:59 $ $Author: schlundus $
  *
  * @author Francisco Mancardi
  *
@@ -90,7 +90,7 @@ $TLS_title_move_cp = "Move/Copy";
 
 
 // gui/templates/containerNew.tpl
-$TLS_btn_create_comp = "Create test suite";
+$TLS_btn_create_comp = "Create Test Suite";
 $TLS_title_create = "Create";
 
 
@@ -105,9 +105,9 @@ $TLS_title_change_node_order = "Change this test suite's child node(s) order";
 
 
 // gui/templates/containerView.tpl
-$TLS_alt_del_com = "Delete this test suite";
-$TLS_alt_edit_com = "Modify this test suite data and title";
-$TLS_alt_move_cp_com = "Move or copy this test suite to another Test project";
+$TLS_alt_del_com = "Delete this Test Suite";
+$TLS_alt_edit_com = "Modify this Test Suite data and title";
+$TLS_alt_move_cp_com = "Move or copy this Test Suite to another Test project";
 $TLS_btn_del_com = "Delete";
 $TLS_btn_edit_com = "Edit";
 $TLS_btn_export_all_testsuites = "Export All Test Suites";
@@ -116,9 +116,9 @@ $TLS_btn_export_testsuite = "Export Test Suite";
 $TLS_btn_import_tc = "Import Test Case(s)";
 $TLS_btn_import_testsuite = "Import Test Suite";
 $TLS_btn_move_cp_com = "Move/Copy";
-$TLS_btn_new_cat = "New test suite";
-$TLS_btn_new_com = "New test suite";
-$TLS_btn_new_tc = "Create Test Cases";
+$TLS_btn_new_cat = "New Test Suite";
+$TLS_btn_new_com = "New Test Suite";
+$TLS_btn_new_tc = "Create Test Case(s)";
 $TLS_btn_reorder_cat = "Reorder children";
 $TLS_th_notes = "Notes";
 $TLS_th_product_name = "Test project Name";
@@ -1280,9 +1280,9 @@ $TLS_wrong_old_password = "Wrong old password!";
 
 // lib/functions/configCheck.php
 $TLS_attachments_dir = "directory for attachments:";
-$TLS_bts_connection_problems = "Connection to your Bug Traking System has failed:<br> 
+$TLS_bts_connection_problems = "Connection to your Bug Tracking System has failed:<br> 
                                 Please check your configuration.<br>
-                                Be careful this problem will degrade the Testlink performance.";
+                                Be careful this problem will degrade the TestLink performance.";
 $TLS_but_directory_is_not_writable = "The directory is not writable!";
 $TLS_directory_is_writable = "The directory is writable";
 $TLS_does_not_exist = "does not exist";

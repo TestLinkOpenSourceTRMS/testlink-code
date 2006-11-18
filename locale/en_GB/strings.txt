@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.85 $
- * @modified $Date: 2006/11/17 19:52:59 $ $Author: schlundus $
+ * @version $Revision: 1.86 $
+ * @modified $Date: 2006/11/18 21:33:23 $ $Author: schlundus $
  *
  * @author Francisco Mancardi
  *
@@ -812,7 +812,7 @@ $TLS_title_keyword_import_to = "Import keywords to";
 $TLS_N_A = "N/A";
 $TLS_btn_confirm_delete = "Delete";
 $TLS_caption_possible_affected_users = "Possibly affected users";
-$TLS_menu_assign_product_roles = "Assign test project roles";
+$TLS_menu_assign_product_roles = "Assign Test Project roles";
 $TLS_menu_assign_testplan_roles = "Assign test plan roles";
 $TLS_menu_define_roles = "Define roles";
 $TLS_menu_mod_user = "Modify Users";
@@ -862,8 +862,8 @@ $TLS_TestProject = "Test Project";
 $TLS_User = "User";
 $TLS_btn_change = "Change";
 $TLS_caption_assign_testplan_user_roles = "Assign test plan roles to users";
-$TLS_caption_assign_testproject_user_roles = "Assign test project user roles";
-$TLS_menu_assign_testproject_roles = "Assign test project roles";
+$TLS_caption_assign_testproject_user_roles = "Assign Test Project user roles";
+$TLS_menu_assign_testproject_roles = "Assign Test Project roles";
 $TLS_title_assign_roles = "Assign roles";
 
 

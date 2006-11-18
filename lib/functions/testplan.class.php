@@ -2,17 +2,10 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.16 $
- * @modified $Date: 2006/11/04 21:25:31 $ $Author: schlundus $
+ * @version $Revision: 1.17 $
+ * @modified $Date: 2006/11/18 21:33:23 $ $Author: schlundus $
  * @author franciscom
- *
- * 20060919 - franciscom - copy_* functions
- *
- * 20060805 - franciscom - created update()
- * 20060603 - franciscom - changes in get_linked_tcversions()
- * 20060430 - franciscom - added get_keywords_map()
- *
- */
+*/
 
 require_once( dirname(__FILE__). '/tree.class.php' );
 require_once( dirname(__FILE__) . '/assignment_mgr.class.php' );
@@ -20,33 +13,23 @@ require_once( dirname(__FILE__) . '/attachments.inc.php' );
 
 class testplan
 {
-
-var $db;
-var $tree_manager;
-var $assignment_mgr;
-var $assignment_types;
-var $assignment_status;
-
-
-function testplan(&$db)
-{
-  $this->db = &$db;	
-  $this->tree_manager = New tree($this->db);
-
-  $this->assignment_mgr=New assignment_mgr($this->db);
-  $this->assignment_types=$this->assignment_mgr->get_available_types(); 
-  $this->assignment_status=$this->assignment_mgr->get_available_status();
-
-}
+	var $db;
+	var $tree_manager;
+	var $assignment_mgr;
+	var $assignment_types;
+	var $assignment_status;
 
 
-/** 
- * create 
- *
- * 20060511 - franciscom - wrong use of insert_id() [not needed]
- * 20060312 - franciscom - name is setted on nodes_hierarchy table
- * 20060101 - franciscom - added notes
- */
+	function testplan(&$db)
+	{
+		$this->db = &$db;	
+		$this->tree_manager = New tree($this->db);
+		
+		$this->assignment_mgr=New assignment_mgr($this->db);
+		$this->assignment_types=$this->assignment_mgr->get_available_types(); 
+		$this->assignment_status=$this->assignment_mgr->get_available_status();
+	}
+
 function create($name,$notes,$testproject_id)
 {
 	$node_types=$this->tree_manager->get_available_node_types();
@@ -60,55 +43,49 @@ function create($name,$notes,$testproject_id)
 	$id = 0;
 	if ($result)
 	{
-		$id =  $tplan_id;
+		$id = $tplan_id;
 	}
-	return($id);
+	return $id;
 }
 
-
-
-/*
-  20060805 - franciscom - creation
-*/
 function update($id,$name,$notes,$is_active)
 {
-  $do_update=1;
-  $result=null;
+	$do_update = 1;
+	$result = null;
 	$active = to_boolean($is_active);
-	$name=trim($name);
+	$name = trim($name);
 	
-	// 20060805 - franciscom - two tables to update and we have no transaction yet.
-  $rsa=$this->get_by_id($id);
-  $duplicate_check = (strcmp($rsa['name'],$name) != 0 );
+	// two tables to update and we have no transaction yet.
+	$rsa = $this->get_by_id($id);
+	$duplicate_check = (strcmp($rsa['name'],$name) != 0 );
     
-  if($duplicate_check)
-  {
-    $rs=$this->get_by_name($name,$rsa['parent_id']);
-    $do_update=is_null($rs);
-  }
-  
-  if( $do_update )
-  {
-	  // Update name
-	  $sql = "UPDATE nodes_hierarchy " .
-	         "SET name='" . $this->db->prepare_string($name) . "'" .
-			     "WHERE id={$id}";
-  	$result=$this->db->exec_query($sql);
-	  
-	  if($result)
-	  {
-    	$sql = "UPDATE testplans " .
-    	       "SET active={$active}," .
-	           "notes='" . $this->db->prepare_string($notes). "' " .
-	           "WHERE id=" . $id;
-	    $result=$this->db->exec_query($sql); 
-	  }
+	if($duplicate_check)
+	{
+		$rs = $this->get_by_name($name,$rsa['parent_id']);
+		$do_update = is_null($rs);
 	}
-	return($result ? 1 : 0);
+  
+	if($do_update)
+	{
+		// Update name
+		$sql = "UPDATE nodes_hierarchy " .
+				"SET name='" . $this->db->prepare_string($name) . "'" .
+				"WHERE id={$id}";
+		$result = $this->db->exec_query($sql);
+		
+		if($result)
+		{
+			$sql = "UPDATE testplans " .
+					"SET active={$active}," .
+					"notes='" . $this->db->prepare_string($notes). "' " .
+					"WHERE id=" . $id;
+			$result = $this->db->exec_query($sql); 
+		}
+	}
+	return ($result ? 1 : 0);
 }
 
-// 20060805 - franciscom - added possibility to filter by test project id
-function get_by_name($name,$tproject_id=0)
+function get_by_name($name,$tproject_id = 0)
 {
 	$sql = " SELECT testplans.*, NH.name " .
 	       " FROM testplans, nodes_hierarchy NH" .
@@ -117,17 +94,15 @@ function get_by_name($name,$tproject_id=0)
 	         
 	if($tproject_id > 0 )
 	{
-	  $sql .= " AND NH.parent_id={$tproject_id}"; 
+		$sql .= " AND NH.parent_id={$tproject_id}"; 
 	}         
 
-  $recordset = $this->db->get_recordset($sql);
-  return($recordset);
+	$recordset = $this->db->get_recordset($sql);
+	return $recordset;
 }
 
 /*
 get info for one test project
-
-20060805 - franciscom - added nodes_hierarchy.parent_id on result
 */
 function get_by_id($id)
 {
@@ -135,8 +110,8 @@ function get_by_id($id)
 	         FROM testplans, nodes_hierarchy NH
 	         WHERE testplans.id = NH.id
 	         AND   testplans.id = {$id}";
-  $recordset = $this->db->get_recordset($sql);
-  return($recordset ? $recordset[0] : null);
+	$recordset = $this->db->get_recordset($sql);
+	return($recordset ? $recordset[0] : null);
 }
 
 
@@ -144,36 +119,29 @@ function get_by_id($id)
 get array of info for every test project
 without any kind of filter.
 Every array element contains an assoc array
-
 */
 function get_all()
 {
 	$sql = " SELECT testplans.*, nodes_hierarchy.name 
 	         FROM testplans, nodes_hierarchy
 	         WHERE testplans.id=nodes_hierarchy.id";
-  $recordset = $this->db->get_recordset($sql);
-  return($recordset);
+	$recordset = $this->db->get_recordset($sql);
+	return $recordset;
 }
 
-
-
-/* 20060305 - franciscom */
 function count_testcases($id)
 {
-	$sql = "SELECT COUNT(testplan_id) AS qty
-	        FROM testplan_tcversions
+	$sql = "SELECT COUNT(testplan_id) AS qty FROM testplan_tcversions
 	        WHERE testplan_id={$id}";
 	$recordset = $this->db->get_recordset($sql);
-  $qty=0;        
-  if( !is_null($recordset) )
-  {
-	  $qty=$recordset[0]['qty'];
+	$qty = 0;
+	if(!is_null($recordset))
+	{
+		$qty = $recordset[0]['qty'];
 	}  
-	return($qty);
+	return $qty;
 }
 
-
-// 20060319 - franciscom
 // $items_to_link: assoc array key=tc_id value=tcversion_id
 //                 passed by reference for speed
 //
@@ -237,7 +205,7 @@ function get_linked_tcversions($id,$tcase_id=null,$keyword_id=0,$executed=null,$
 	
 	// missing condition on testplan_id between execution and testplan_tcversions
 	// added tc_id in order clause to maintain same order that navigation tree
-	$sql = " SELECT DISTINCT NHB.parent_id AS testsuite_id, " .
+	$sql = " SELECT NHB.parent_id AS testsuite_id, " .
 	     "        NHA.parent_id AS tc_id," .
 	     "        T.tcversion_id AS tcversion_id, T.id AS feature_id," .
 	     "        E.tcversion_id AS executed, E.testplan_id AS exec_on_tplan, " .
@@ -251,8 +219,6 @@ function get_linked_tcversions($id,$tcase_id=null,$keyword_id=0,$executed=null,$
 	     " WHERE T.testplan_id={$id} {$keywords_filter} {$tc_id_filter} " .
 	     " AND (UA.type=" . $this->assignment_types['testcase_execution']['id'] . 
 	     "      OR UA.type IS NULL) ";
-
-	// 	" AND (E.testplan_id IS NULL OR E.testplan_id=T.testplan_id) " .
 
 	if (!is_null($owner))
 		$sql .= " AND UA.user_id = {$owner}"; 
@@ -385,7 +351,6 @@ function get_keywords_map($id,$order_by_clause='')
 } // end function
 
 
-// 20060501 - franciscom
 function get_keywords_tcases($id,$keyword_id=0)
 {
   $map_keywords=null;

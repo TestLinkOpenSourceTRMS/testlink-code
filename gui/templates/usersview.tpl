@@ -1,5 +1,5 @@
 {* Testlink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: usersview.tpl,v 1.6 2006/11/13 23:17:39 havlat Exp $ *}
+{* $Id: usersview.tpl,v 1.7 2006/11/18 21:33:22 schlundus Exp $ *}
 {* 
 Purpose: smarty template - users overview
 
@@ -59,7 +59,7 @@ var warning_delete_user = "{lang_get s='warning_delete_user'}";
 		<tr>
 			<td><a href="lib/usermanagement/usersedit.php?user_id={$users[row].id}"> 
 			    {$users[row].login|escape}
-			    <img alt="{lang_get s='alt_edit_user'}" src="gui/images/icon_edit.png"/></a>
+			    <img title="{lang_get s='alt_edit_user'}" alt="{lang_get s='alt_edit_user'}" src="gui/images/icon_edit.png"/></a>
 			</td>
 			<td>{$users[row].first|escape}</td>
 			<td>{$users[row].last|escape}</td>

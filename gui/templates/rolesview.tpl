@@ -1,5 +1,5 @@
 {* smarty template - view all keywords of product; ver. 1.0 *}
-{* $Id: rolesview.tpl,v 1.8 2006/11/13 23:17:39 havlat Exp $ *}
+{* $Id: rolesview.tpl,v 1.9 2006/11/18 21:33:22 schlundus Exp $ *}
 {* Purpose: smarty template - View defined roles *}
 {include file="inc_head.tpl"}
 
@@ -60,6 +60,7 @@
 				<td>
 					<a href="lib/usermanagement/rolesedit.php?id={$role.id}">
 						{$role.role|escape}
+						<img title="{lang_get s='alt_edit_role'}" alt="{lang_get s='alt_edit_role'}" src="gui/images/icon_edit.png"/>
 					</a>
 				</td>
 				<td>

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.78 $
- * @modified $Date: 2006/10/21 06:43:26 $ by $Author: franciscom $
+ * @version $Revision: 1.79 $
+ * @modified $Date: 2006/11/18 21:33:22 $ by $Author: schlundus $
  *
  *
  * Constants and configuration parameters used throughout TestLink 
@@ -262,10 +262,7 @@ define('TL_FRMWORKAREA_LEFT_FRAME_WIDTH', "30%");
 /* CSS configuration */
 /* Standard */
 define('TL_THEME_DIR','gui/css/');
-//define('TL_THEME_DIR','gui/css/theme_m1/');
 
-
-/* 20060820 - franciscom - trying to remove useless CSS */
 define('TL_TESTLINK_CSS',TL_THEME_DIR . 'testlink.css');
 define('TL_LOGIN_CSS', TL_TESTLINK_CSS);
 define('TL_DOC_BASIC_CSS',TL_THEME_DIR . 'tl_doc_basic.css');
@@ -277,7 +274,7 @@ define('LOGO_LOGIN_PAGE','<img alt="TestLink" src="icons/company_logo.png" />');
 define('LOGO_NAVBAR','<img alt="TestLink" src="icons/company_logo.png" />');
 
 
-// use when componing an title using several strins
+// use when componing an title using several strings
 define('TITLE_SEP',' : ');
 
 /* TRUE -> Check if:

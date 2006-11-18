@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: rolesedit.php,v $
  *
- * @version $Revision: 1.5 $
- * @modified $Date: 2006/10/17 20:17:54 $ by $Author: schlundus $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2006/11/18 21:33:23 $ by $Author: schlundus $
  *
 **/
 require_once("../../config.inc.php");
@@ -17,7 +17,7 @@ testlinkInitPage($db);
 
 $_POST = strings_stripSlashes($_POST);
 $id = isset($_GET['id']) ? $_GET['id'] : 0;
-$postBack = sizeof($_POST) ? 1 : 0;
+$postBack = (sizeof($_POST) > 2) ? 1 : 0;
 
 $of = new fckeditor('notes') ;
 $of->BasePath = $_SESSION['basehref'] . 'third_party/fckeditor/';

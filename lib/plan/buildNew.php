@@ -5,8 +5,11 @@
  *
  * Filename $RCSfile: buildNew.php,v $
  *
- * @version $Revision: 1.23 $
- * @modified $Date: 2006/10/24 20:35:02 $ $Author: schlundus $
+ * @version $Revision: 1.24 $
+ * @modified $Date: 2006/11/20 07:27:18 $ $Author: franciscom $
+ *
+ * rev :
+ *       20061118 - franciscom - added check_build_name_existence()
  *
 */
 require('../../config.inc.php');
@@ -37,14 +40,16 @@ $button_value = lang_get('btn_create');
 
 $can_insert_or_update = 0;
 $sqlResult =  lang_get("invalid_build_id");
+
 if (strlen($build_name))
 {
-	$sqlResult = lang_get("warning_duplicate_build");
-	if (sizeof($the_builds) == 0 || !in_array($build_name,$the_builds)
-	    ||(isset($the_builds[$buildID]) && $the_builds[$buildID] == $build_name))
+	$sqlResult = lang_get("warning_duplicate_build");  
+	if(sizeof($the_builds) == 0 || 
+	   !$tplan_mgr->check_build_name_existence($tpID,$build_name) ||
+	   (isset($the_builds[$buildID]) && $the_builds[$buildID] == $build_name))
 	{
-  		$sqlResult = 'ok';
-		$can_insert_or_update = 1;
+  	$sqlResult = 'ok';
+	  $can_insert_or_update = 1;
 	}
 }
 

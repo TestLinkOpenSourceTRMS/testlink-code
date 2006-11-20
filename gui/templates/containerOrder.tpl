@@ -1,13 +1,18 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: containerOrder.tpl,v 1.5 2006/06/30 18:41:25 schlundus Exp $ 
-Purpose: smarty template - reorder containers (actually categories only) 
+$Id: containerOrder.tpl,v 1.6 2006/11/20 07:24:52 franciscom Exp $ 
+Purpose: smarty template - reorder container contents
+
+20061119 - franciscom - trying to improve user interface
+
 *}
 {include file="inc_head.tpl"}
 
 <body>
+{config_load file="input_dimensions.conf" section="containerOrder"} {* Constant definitions *}
+
 <div class="workBack">
 
-<h1>{lang_get s='title_change_node_order'}</h1>
+<h1>{lang_get s='title_change_node_order'} {$object_name|escape}</h1>
 
 <div>	
 	{if $arraySelect eq ''}
@@ -15,25 +20,31 @@ Purpose: smarty template - reorder containers (actually categories only)
 	{else}
 	<form method="post" action="lib/testcases/containerEdit.php?containerID={$data}">
 		<div style="padding: 3px;">
-			<input id="submit" type="submit" name="do_testsuite_reorder" value="{lang_get s='btn_upd'}" />
+			<input type="submit" id="do_testsuite_reorder" 
+			       name="do_testsuite_reorder" value="{lang_get s='btn_upd'}" />
 		</div>	
 	
 		<table class="common" style="width: 70%">
 			<tr>
 				<th style="width: 10%;">{lang_get s='th_id'}</th>
 				<th>{lang_get s='node'}</th>
+				<th>{lang_get s='th_node_type'}</th>
 				<th style="width: 15%;">{lang_get s='th_order'}</th>
 			</tr>
 	
 			{section name=idx loop=$arraySelect}
-			<tr>
+   		{assign var="node_table" value=$arraySelect[idx].node_table}
+			<tr {if $node_table=='testsuites'} style="font-style:italic;" {/if}>
 				<td>{$arraySelect[idx].id}</td>
 				<td class="bold">{$arraySelect[idx].name|escape}</td>
 				<td>
+				{lang_get s=node_type_dbtable_$node_table }</td>
+				<td>
 					<input type="hidden" name="id[{$arraySelect[idx].id}]" 
 						value="{$arraySelect[idx].id}" />
-					<input type="text" size="5" name="order[{$arraySelect[idx].id}]" 
-						value="{$arraySelect[idx].node_order|escape}" />
+					<input type="text" size="{#ORDER_SIZE#}" maxlength="{#ORDER_MAXLEN#}"
+					       name="order[{$arraySelect[idx].id}]" 
+						     value="{$arraySelect[idx].node_order|escape}"/>
 				</td>
 			</tr>
 			{/section}

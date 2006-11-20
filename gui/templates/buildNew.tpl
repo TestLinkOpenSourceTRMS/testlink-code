@@ -1,8 +1,15 @@
-{* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: buildNew.tpl,v 1.10 2006/11/13 22:24:58 havlat Exp $ *}
-{* Purpose: smarty template - Add new build and show existing 
+{* 
+TestLink Open Source Project - http://testlink.sourceforge.net/
+$Id: buildNew.tpl,v 1.11 2006/11/20 07:25:20 franciscom Exp $
+
+Purpose: smarty template - Add new build and show existing
+
+Rev :
+     20061118 - franciscom
+     added config_load 
 
 *}
+{config_load file="input_dimensions.conf" section="buildNew"} {* Constant definitions *}
 {include file="inc_head.tpl"}
 
 <body>
@@ -23,7 +30,8 @@
 	<table class="common" style="width:80%">
 		<tr><th>{lang_get s='enter_build'}</th></tr>
 		<tr>
-			<td><input type="text" name="build_name" maxlength="100" value="{$build_name}" size="50"/></td>
+			<td><input type="text" name="build_name" maxlength="{#BUILD_NAME_MAXLEN#}" 
+			           value="{$build_name}" size="{#BUILD_NAME_SIZE#}"/></td>
 		</tr>
 		<tr><th>{lang_get s='enter_build_notes'}</th></tr>
 		<tr>

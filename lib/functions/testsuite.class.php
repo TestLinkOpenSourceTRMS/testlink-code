@@ -2,9 +2,12 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testsuite.class.php,v $
- * @version $Revision: 1.18 $
- * @modified $Date: 2006/10/09 10:28:50 $
+ * @version $Revision: 1.19 $
+ * @modified $Date: 2006/11/20 07:28:29 $ - $Author: franciscom $
  * @author franciscom
+ *
+ *
+ * 20061119 - franciscom - changes in create()
  *
  * 20060805 - franciscom - changes in viewer_edit_new()
  *                         keywords related functions
@@ -31,7 +34,12 @@ function testsuite(&$db)
 	$this->my_node_type=$this->node_types_descr_id['testsuite'];
 }
 
+//
+// 20061119 - franciscom
+// get default order in tree using config_get()
+//
 // 20060309 - franciscom
+//
 // returns hash with:	$ret['status_ok'] -> 0/1
 //                    $ret['msg']
 //                    $ret['id']        -> when status_ok=1, id of the new element
@@ -41,14 +49,13 @@ function create($parent_id,$name,$details,
                 $check_duplicate_name=0,
                 $action_on_duplicate_name='allow_repeat')
 {
-  
-  // 20060309 - franciscom
   $ret['status_ok']=0;
   $ret['msg']='ok';
   $ret['id']=-1;
   
     
 	$prefix_name_for_copy = config_get('prefix_name_for_copy');
+	$order_cfg = config_get('tree_node_ordering');
 	
 	$name = trim($name);
 	$ret = array('status_ok' => 1, 'id' => 0, 'msg' => 'ok');
@@ -86,9 +93,10 @@ function create($parent_id,$name,$details,
 	if ($ret['status_ok'])
 	{
 		// get a new id
-		$tsuite_id = $this->tree_manager->new_node($parent_id,$this->my_node_type,$name);
+		$tsuite_id = $this->tree_manager->new_node($parent_id,$this->my_node_type,
+		                                           $name,$order_cfg->default_testsuite_order);
 		$sql = "INSERT INTO testsuites (id,details) " .
-				"VALUES ({$tsuite_id},'" . $this->db->prepare_string($details) . "')";
+				   "VALUES ({$tsuite_id},'" . $this->db->prepare_string($details) . "')";
 		             
 		$result = $this->db->exec_query($sql);
 		if ($result)

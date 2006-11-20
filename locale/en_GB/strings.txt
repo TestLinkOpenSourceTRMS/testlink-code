@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.86 $
- * @modified $Date: 2006/11/18 21:33:23 $ $Author: schlundus $
+ * @version $Revision: 1.87 $
+ * @modified $Date: 2006/11/20 00:10:22 $ $Author: havlat $
  *
  * @author Francisco Mancardi
  *
@@ -120,7 +120,7 @@ $TLS_btn_new_cat = "New Test Suite";
 $TLS_btn_new_com = "New Test Suite";
 $TLS_btn_new_tc = "Create Test Case(s)";
 $TLS_btn_reorder_cat = "Reorder children";
-$TLS_th_notes = "Notes";
+$TLS_th_notes = "Description";
 $TLS_th_product_name = "Test project Name";
 
 
@@ -144,7 +144,7 @@ $TLS_btn_print = "Print";
 $TLS_btn_save_all_tests_results = "Save all executions";
 $TLS_btn_save_tc_exec_results = "Save execution";
 $TLS_bug_mgmt = "BUG management";
-$TLS_builds_notes = "Build's notes";
+$TLS_builds_notes = "Build's description";
 $TLS_bulk_tc_status_management = "Bulk TC status management";
 $TLS_date_time_run = "Date";
 $TLS_exec_notes = "Notes";
@@ -364,15 +364,39 @@ $TLS_title_specification = "Specification";
 // gui/templates/planEdit.tpl
 $TLS_No = "No";
 $TLS_Yes = "Yes";
-$TLS_alt_delete_testplan = "Delete the test plan?";
-$TLS_btn_upd_tp = "Update";
-$TLS_caption_edit_tp = "Edit existing Test Plans";
-$TLS_menu_create = "Create";
-$TLS_menu_edit_del = "Edit / Delete";
-$TLS_no_test_plans = "There are no Test Plans defined!";
-$TLS_th_active = "Active";
-$TLS_th_delete_tp = "Delete";
-$TLS_th_tp_notes = "Notes";
+$TLS_testplan_title_tp_management = "Test Plan Management";
+$TLS_testplan_alt_delete_tp = "Delete the test plan?";
+$TLS_testplan_alt_edit_tp = "Edit the test plan";
+$TLS_testplan_btn_update = "Update";
+$TLS_testplan_title_list = "List of existing Test Plans";
+$TLS_testplan_menu_create = "Create";
+$TLS_testplan_menu_list = "List";
+$TLS_testplan_menu_edit = "Edit";
+$TLS_testplan_txt_empty_list = "There are no Test Plans defined! Create one to allow test execution functionality";
+$TLS_testplan_msg_delete_confirm = "Are you sure you want to delete the complete Test Plan? You can use a deactivation via TP Edit link.";
+$TLS_testplan_th_name = "Name";
+$TLS_testplan_th_active = "Active";
+$TLS_testplan_th_delete = "Delete";
+$TLS_testplan_th_notes = "Description";
+
+
+// gui/templates/planNew.tpl
+$TLS_testplan_btn_edit = "Update";
+$TLS_testplan_btn_new = "Create";
+$TLS_testplan_title_for_project = "for Test project: ";
+$TLS_testplan_title_create = "Create a new Test plan";
+$TLS_testplan_title_edit = "Edit the Test plan";
+$TLS_opt_no = "No";
+$TLS_testplan_question_create_tp_from = "Create from existing Test Plan?";
+$TLS_testplan_txt_notes = "Test plan should be clearly defined task(s) with a timeframe " . 
+	"and a content. It could contain a testing activity for a new version of product " . 
+	"(include hot fixes) or also just simple change request for one customer.<br />" .
+	"Description field serves for links to Project plan and related documentation, " .
+	"List of features to be tested, risks, etc.<br />" . 
+	"You can create a new Test Plan from an existing one. The next items are copied: " .
+	"Builds, Test cases, Priorities, Milestones and user roles.<br />" .
+	"A Test plan could be deactiveted; i.e. no editing and no results change is allowed. " .
+	"Such Test Plan is visible only via 'Reporting' and this page.";
 
 
 
@@ -389,18 +413,6 @@ $TLS_th_perc_c_prio = "% C priority";
 $TLS_title_existing_milestones = "Existing Milestones";
 $TLS_title_milestones = "Milestones for Test Plan";
 $TLS_title_new_milestone = "Milestone";
-
-
-
-// gui/templates/planNew.tpl
-$TLS_btn_edit = "Edit";
-$TLS_btn_new = "Save Changes";
-$TLS_caption_for_product = "for Test project: ";
-$TLS_caption_new_tp = "New Test Plan";
-$TLS_caption_tp_name = "Name";
-$TLS_caption_tp_notes = "Notes";
-$TLS_opt_no = "No";
-$TLS_question_create_tp_from = "Create from existing Test Plan?";
 
 
 
@@ -829,7 +841,7 @@ $TLS_warning_users_will_be_reset = "The affected users will be resetted to guest
 $TLS_btn_create_role = "Create";
 $TLS_btn_edit_role = "Edit";
 $TLS_caption_define_role = "Define role";
-$TLS_enter_role_notes = "Enter role notes";
+$TLS_enter_role_notes = "Enter role description";
 $TLS_th_kw_rights = "Keyword rights";
 $TLS_th_mgttc_rights = "Test Case management rights";
 $TLS_th_product_rights = "Test Project right";
@@ -1127,6 +1139,8 @@ $TLS_duplicate_tp_name = "There is already a Test Plan with this name!";
 $TLS_update_tp_failed1 = "Update of Test Plan '";
 $TLS_update_tp_failed2 = "' failed";
 $TLS_warning_empty_tp_name = "You cannot enter Test plan without a name!";
+$TLS_testplan_result_created = "The Test plan created successfully.";
+$TLS_testplan_result_updated = "The Test plan updated successfully.";
 
 
 

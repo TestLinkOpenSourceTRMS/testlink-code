@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.79 $
- * @modified $Date: 2006/11/18 21:33:22 $ by $Author: schlundus $
+ * @version $Revision: 1.80 $
+ * @modified $Date: 2006/11/20 07:23:47 $ by $Author: franciscom $
  *
  *
  * Constants and configuration parameters used throughout TestLink 
@@ -164,6 +164,23 @@ $g_ldap_organization	= '';    # e.g. '(organizationname=*Traffic)'
 $g_ldap_uid_field		= 'uid'; # Use 'sAMAccountName' for Active Directory
 $g_ldap_bind_dn			= '';
 $g_ldap_bind_passwd	= '';
+// --------------------------------------------------------------------------------------
+
+// --------------------------------------------------------------------------------------
+//                    [Section: tree]
+//
+// When creating an node in the tree, when can choose if:
+// Any node added independent of the type is added with order 0,
+// then the initial display order will be by node id.
+//
+// An useful alternative is mantain, inside of a container two groups:
+// one for test cases, and one for test suites.
+// This can be achived assigned a default order different for every type of node.
+//                 
+// This values must be >= 0
+//
+$g_tree_node_ordering->default_testcase_order=100;
+$g_tree_node_ordering->default_testsuite_order=1;
 // --------------------------------------------------------------------------------------
 
 

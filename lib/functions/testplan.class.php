@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.17 $
- * @modified $Date: 2006/11/18 21:33:23 $ $Author: schlundus $
+ * @version $Revision: 1.18 $
+ * @modified $Date: 2006/11/20 07:35:12 $ $Author: franciscom $
  * @author franciscom
 */
 
@@ -98,7 +98,7 @@ function get_by_name($name,$tproject_id = 0)
 	}         
 
 	$recordset = $this->db->get_recordset($sql);
-	return $recordset;
+	return($recordset);
 }
 
 /*
@@ -571,6 +571,31 @@ function delete($id)
     $this->db->exec_query($sql);  
   }
 } // end delete()
+
+
+function check_build_name_existence($tproject_id,$build_name,$case_sensitive=0)
+{
+ 	$sql = " SELECT builds.id, builds.name, builds.notes " .
+	       " FROM builds " .
+	       " WHERE builds.testplan_id = {$tproject_id} ";
+	       
+	       
+	if($case_sensitive)
+	{
+	    $sql .= " AND builds.name=";
+	}       
+	else
+	{
+      $build_name=strtoupper($build_name);	    
+	    $sql .= " AND UPPER(builds.name)=";
+	}          
+	$sql .= "'" . $this->db->prepare_string($build_name) . "'";	
+	
+  $result = $this->db->exec_query($sql);
+  $status= $this->db->num_rows($result) ? 1 : 0;
+  
+	return($status);
+}
 
 
 } // end class

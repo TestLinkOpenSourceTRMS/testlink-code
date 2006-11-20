@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.32 $
- * @modified $Date: 2006/11/06 20:22:30 $
+ * @version $Revision: 1.33 $
+ * @modified $Date: 2006/11/20 20:35:59 $
  *
  * @author Andreas Morsing
  *
@@ -43,15 +43,19 @@ $TLS_title_product_mgmt = "Produkt Management";
 
 // gui/templates/buildNew.tpl
 $TLS_alt_delete_build = "Klicken Sie hier um den Build zu löschen";
+$TLS_alt_edit_build = "Click here to edit this build";
 $TLS_enter_build = "Build-Identifier eingeben";
 $TLS_enter_build_notes = "Notes:";
 $TLS_msg_build = "Jeder Build ist mit dem aktuellen TestPlan verbunden";
 $TLS_no_builds = "Für diesen TestPlan gibt es keine Builds!";
-$TLS_th_build_notes = "Build Notizen";
 $TLS_th_delete = "Löschen?";
-$TLS_th_existing_builds = "Bestehende Builds für diesen TestPlan ";
-$TLS_title_create_build_for_tp = "Build erstellen für TestPlan";
-$TLS_title_notes = "Notizen:";
+$TLS_th_description = "Description";
+$TLS_th_title = "Titel";
+$TLS_title_build_1 = "Test plan";
+$TLS_title_build_2 = "Build management";
+$TLS_title_build_create = "Create a new Build";
+$TLS_title_build_list = "List of existing builds";
+$TLS_title_build_update = "Update Build";
 $TLS_warning_delete_build = "Wollen Sie den Build wirklich löschen, dadurch werden auch alle abhängigen Daten gelöscht?";
 
 
@@ -95,6 +99,7 @@ $TLS_title_create = "Erstellen";
 $TLS_no_nodes_to_reorder = "Es gibt nichts umzusortieren";
 $TLS_node = "Node";
 $TLS_th_id = "ID";
+$TLS_th_node_type = "Test Case / Test Suite";
 $TLS_th_order = "Reihenfolge";
 $TLS_title_change_node_order = "Ändern der Reihenfolge";
 
@@ -348,7 +353,6 @@ $TLS_link_logout = "Abmelden";
 $TLS_product = "Produkt";
 $TLS_product_role = "LOCALIZE: TLS_product_role";
 $TLS_th_tcid = "TestCase ID";
-$TLS_title_documentation = "Dokumentation";
 $TLS_title_edit_personal_data = "Persönliche Einstellungen ändern";
 $TLS_title_execute = "Ausführen";
 $TLS_title_results = "Resultate";
@@ -359,15 +363,18 @@ $TLS_title_specification = "Spezifikation";
 // gui/templates/planEdit.tpl
 $TLS_No = "Nein";
 $TLS_Yes = "Ja";
-$TLS_alt_delete_testplan = "TestPlan löschen?";
-$TLS_btn_upd_tp = "Speichern";
-$TLS_caption_edit_tp = "Bestehende TestPläne editieren";
-$TLS_menu_create = "Erstellen";
-$TLS_menu_edit_del = "Ändern / Löschen";
-$TLS_no_test_plans = "Es sind keine TestPläne angelegt!";
-$TLS_th_active = "Aktiv";
-$TLS_th_delete_tp = "Löschen";
-$TLS_th_tp_notes = "Notizen";
+$TLS_testplan_alt_delete_tp = "Delete the test plan?";
+$TLS_testplan_alt_edit_tp = "Edit the test plan";
+$TLS_testplan_menu_create = "Create";
+$TLS_testplan_menu_list = "List";
+$TLS_testplan_msg_delete_confirm = "Are you sure you want to delete the complete Test Plan? You can use a deactivation via TP Edit link.";
+$TLS_testplan_th_active = "Active";
+$TLS_testplan_th_delete = "Delete";
+$TLS_testplan_th_name = "Name";
+$TLS_testplan_th_notes = "Description";
+$TLS_testplan_title_list = "List of existing Test Plans";
+$TLS_testplan_title_tp_management = "Test Plan Management";
+$TLS_testplan_txt_empty_list = "There are no Test Plans defined! Create one to allow test execution functionality";
 
 
 
@@ -388,14 +395,15 @@ $TLS_title_new_milestone = "Meilenstein";
 
 
 // gui/templates/planNew.tpl
-$TLS_btn_edit = "Editieren";
-$TLS_btn_new = "Neu";
-$TLS_caption_for_product = "for Product: ";
-$TLS_caption_new_tp = "Neuen TestPlan erstellen";
-$TLS_caption_tp_name = "Name";
-$TLS_caption_tp_notes = "Hinweise";
 $TLS_opt_no = "Nein";
-$TLS_question_create_tp_from = "TestPlan auf Basis eines bestehenden erstellen";
+$TLS_testplan_btn_edit = "Update";
+$TLS_testplan_btn_new = "Create";
+$TLS_testplan_menu_edit = "Edit";
+$TLS_testplan_question_create_tp_from = "Create from existing Test Plan?";
+$TLS_testplan_title_create = "Create a new Test plan";
+$TLS_testplan_title_edit = "Edit the Test plan";
+$TLS_testplan_title_for_project = "for Test Project: ";
+$TLS_testplan_txt_notes = "Test plan should be clearly defined task(s) with a timeframe and a content. It could contain a testing activity for a new version of product (include hot fixes) or also just simple change request for one customer.<br />Description field serves for links to Project plan and related documentation, List of features to be tested, risks, etc.<br />You can create a new Test Plan from an existing one. The next items are copied: Builds, Test Cases, Priorities, Milestones and user roles.<br />A Test plan could be deactiveted; i.e. no editing and no results change is allowed. Such Test Plan is visible only via 'Reporting' and this page.";
 
 
 
@@ -557,7 +565,6 @@ $TLS_title_met_of_build = "Build Metriken";
 $TLS_info_test_results = "Es sind nur die letzten Ergebnisse aufgeführt. Z.Bsp. Test case wird nicht angezeigt, wenn das Testergebnis für einen späteren Build einen anderen Status hat (Ausnahme 'nicht durchgeführt').";
 $TLS_th_date = "Datum";
 $TLS_th_run_by = "Getestet durch";
-$TLS_th_title = "Titel";
 
 
 
@@ -805,6 +812,7 @@ $TLS_title_keyword_import_to = "Import keywords to";
 
 // gui/templates/rolesview.tpl
 $TLS_N_A = "N/A";
+$TLS_alt_edit_role = "LOCALIZE: TLS_alt_edit_role";
 $TLS_btn_confirm_delete = "LOCALIZE: TLS_btn_confirm_delete";
 $TLS_caption_possible_affected_users = "LOCALIZE: TLS_caption_possible_affected_users";
 $TLS_menu_assign_product_roles = "LOCALIZE: TLS_menu_assign_product_roles";
@@ -840,6 +848,7 @@ $TLS_warning_modify_role = "LOCALIZE: TLS_warning_modify_role";
 // gui/templates/usersedit.tpl
 $TLS_btn_add = "Hinzufügen";
 $TLS_caption_user_details = "LOCALIZE: TLS_caption_user_details";
+$TLS_th_active = "Aktiv";
 $TLS_th_password = "Passwort";
 $TLS_th_role = "Rolle";
 
@@ -847,6 +856,7 @@ $TLS_th_role = "Rolle";
 
 // gui/templates/usersview.tpl
 $TLS_alt_delete_user = "LOCALIZE: TLS_alt_delete_user";
+$TLS_alt_edit_user = "LOCALIZE: TLS_alt_edit_user";
 $TLS_warning_delete_user = "Really delete the selected user?";
 
 
@@ -901,6 +911,7 @@ $TLS_btn_check = "Markieren";
 $TLS_btn_uncheck = "Markierung aufheben";
 $TLS_check_uncheck_tc = "TestCases der Kategorie.";
 $TLS_has_been_executed = "has been executed";
+$TLS_inactive_testcase = "inactive";
 $TLS_no_testcase_available = "No test case available";
 $TLS_note_keyword_filter = "TestCase sind gefilter durch Keyword";
 $TLS_remove_tc = "Remove";
@@ -929,10 +940,12 @@ $TLS_title_req_export_to = "Export requirement";
 
 // gui/templates/tcView_viewer.tpl
 $TLS_btn_del_this_version = "Delete this version";
+$TLS_btn_edit = "Editieren";
 $TLS_btn_mv_cp = "Verschieben/Kopieren";
 $TLS_btn_new_version = "Create a new version";
 $TLS_by = "von";
 $TLS_can_not_edit_tc = "You can not edit this version because it has been executed";
+$TLS_tcversion_is_inactive_msg = "This version is INACTIVE => will be not available to be included in a test plan";
 $TLS_title_created = "Erstellt";
 $TLS_title_last_mod = "Letzte Änderung";
 
@@ -956,7 +969,6 @@ $TLS_export_with_keywords = "Export with keywords";
 
 // gui/templates/tcImport.tpl
 $TLS_title_imp_tc_data = "Import TestCase data";
-$TLS_title_tc_import_to = "Import Testcase(s)";
 
 
 
@@ -1025,6 +1037,18 @@ $TLS_title_tsuite_export_all = "Export all test suites";
 
 
 
+// lib/testcases/tcImport.php
+$TLS_file_is_not_ok_for_import_type = "File seems to be incompatible with the import type selected";
+$TLS_file_is_not_text = "File is not a text file. Cannot be used";
+$TLS_file_is_not_xml = "File is not well-formed XML. Cannot be used";
+$TLS_please_choose_file_to_import = "LOCALIZE: TLS_please_choose_file_to_import";
+$TLS_title_tc_import_to = "Import Testcase(s)";
+$TLS_title_tsuite_import_to = "LOCALIZE: TLS_title_tsuite_import_to";
+$TLS_wrong_xml_tcase_file = "LOCALIZE: TLS_wrong_xml_tcase_file";
+$TLS_wrong_xml_tsuite_file = "LOCALIZE: TLS_wrong_xml_tsuite_file";
+
+
+
 // lib/results/resultsAllBuilds.php
 $TLS_title_metrics_x_build = " - Test Resultate Metriken pro Build";
 
@@ -1074,8 +1098,6 @@ $TLS_req_msg_notupdated_coverage = "Abdeckung für die Anfordungen konnte nicht a
 
 
 // lib/req/reqImport.php
-$TLS_file_is_not_ok_for_import_type = "File seems to be incompatible with the import type selected";
-$TLS_file_is_not_text = "File is not a text file. Cannot be used";
 $TLS_please_choose_req_file = "Please choose the file to upload";
 $TLS_req_import_finished = "Der Import ist abgeschlossen";
 
@@ -1109,6 +1131,16 @@ $TLS_warning_percentage_value_higher_than_100 = "All percentage values summed up
 
 
 
+// lib/plan/planEdit.php
+$TLS_duplicate_tp_name = "Es gibt schon einen TestPlan mit diesem Namen!";
+$TLS_testplan_result_created = "The Test plan created successfully.";
+$TLS_testplan_result_updated = "The Test plan updated successfully.";
+$TLS_update_tp_failed1 = "Das Aktualisieren des Test Plan '";
+$TLS_update_tp_failed2 = "' schlug fehl";
+$TLS_warning_empty_tp_name = "Sie können keinen Test Plan ohne Namen erstellen!";
+
+
+
 // lib/plan/planMilestones.php
 $TLS_milestone_delete_fails = "The milestone couldn't be deleted!";
 $TLS_warning_milestone_add_failed = "Der Meilenstein konnte nicht erstellt werden!";
@@ -1117,10 +1149,6 @@ $TLS_warning_milestone_update_failed = "The milestone couldn't be updated!";
 
 
 // lib/plan/planNew.php
-$TLS_duplicate_tp_name = "Es gibt schon einen TestPlan mit diesem Namen!";
-$TLS_update_tp_failed1 = "Das Aktualisieren des Test Plan '";
-$TLS_update_tp_failed2 = "' schlug fehl";
-$TLS_warning_empty_tp_name = "Sie können keinen Test Plan ohne Namen erstellen!";
 
 
 
@@ -1240,7 +1268,6 @@ $TLS_error_deleting_req = "Error while deleting requirements";
 $TLS_error_inserting_req = "Error while inserting requirements";
 $TLS_error_updating_req = "Error while updating requirements";
 $TLS_error_updating_reqspec = "Error while updating requirement specification";
-$TLS_file_is_not_xml = "File is not well-formed XML. Cannot be used";
 $TLS_ok = "OK";
 $TLS_req_import_format_description1 = " - CSV Typ erfordert zwei Spalten pro Zeile: 'Titel','Beschreibung'";
 $TLS_req_import_format_description2 = " - CSV mittels DOORS exportiert erfordert eine Header-Zeile.";

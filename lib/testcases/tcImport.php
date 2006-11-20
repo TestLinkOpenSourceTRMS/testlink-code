@@ -5,15 +5,9 @@
  *
  * Filename $RCSfile: tcImport.php,v $
  * Filename $RCSfile: tcImport.php,v $
- * @version $Revision: 1.15 $
- * @modified $Date: 2006/11/20 07:27:43 $ by $Author: franciscom $
+ * @version $Revision: 1.16 $
  *
- *
- * 20061114 - franciscom - added check on file mime type
- *                         using check_valid_ftype()
- *
- * 20061118 - franciscom - added simple check of file validity format
- *                         check_xml()
+ * @modified $Date: 2006/11/20 20:35:59 $ by $Author: schlundus $
 */
 require('../../config.inc.php');
 require_once('common.php');
@@ -29,79 +23,72 @@ $container_id = isset($_REQUEST['containerID']) ? intval($_REQUEST['containerID'
 $bIntoProject = isset($_REQUEST['bIntoProject']) ? intval($_REQUEST['bIntoProject']) : 0;
 $resultMap = null;
 $containerType = isset($_REQUEST['containerType']) ? intval($_REQUEST['containerType']) : 0;
-
 $do_upload = isset($_REQUEST['UploadFile']) ? 1 : 0;
 
 $userID = $_SESSION['userID'];
 $tproject_id = $_SESSION['testprojectID'];
 $testprojectName = $_SESSION['testprojectName'];
+
 $dest = TL_TEMP_PATH . session_id()."-importtcs.csv";
+$file_check = array('status_ok' => 1, 'msg' => 'ok');
 
-$file_check=array('status_ok' => 1, 'msg' => 'ok');
-
-$import_title=lang_get('title_tc_import_to');
+$import_title = lang_get('title_tc_import_to');
 if($bRecursive)
 {
-  $import_title=lang_get('title_tsuite_import_to');  
+	$import_title = lang_get('title_tsuite_import_to');  
 }
 
-$container_name='';
+$container_name = '';
 if($container_id)
 {
-  $tree_mgr=new tree($db);
-  $node_info=$tree_mgr->get_node_hierachy_info($container_id);    
-  $container_name=$node_info['name'];
+  $tree_mgr = new tree($db);
+  $node_info = $tree_mgr->get_node_hierachy_info($container_id);    
+  $container_name = $node_info['name'];
 }
-
 
 if ($do_upload)
 {
-  // check the uploaded file
-  $source = isset($_FILES['uploadedFile']['tmp_name']) ? $_FILES['uploadedFile']['tmp_name'] : null;
-  if (($source != 'none') && ($source != ''))
-  { 
-  	// 20061114 - franciscom
-    $file_check=check_valid_ftype($_FILES['uploadedFile'],$importType);
-    if( $file_check['status_ok'] )
-    {
-    	if (move_uploaded_file($source, $dest))
-    	{
-    		switch($importType)
-    		{
-    			case 'XML':
-    			$pcheck_fn  = "check_xml_tc_tsuite";
-    			$pimport_fn = "importTestCaseDataFromXML";
-    			break;
-    		}
-    		if ($pcheck_fn)
-    		{
-    		  $file_check=$pcheck_fn($dest,$bRecursive);
-    		  if( $file_check['status_ok'] )
-    		  {
-    		    if ($pimport_fn)
-    		    {
-    		    	$resultMap = $pimport_fn($db,$dest,$container_id,$tproject_id,
-    		    	                         $userID,$bRecursive,$bIntoProject);
-    		    }
-    		  }
-    		}  // if ($pcheck_fn)
-    	} // if (move_uploaded_file(
-    } // if( $file_check['status_ok'] )
-  }
-  else
-  {
-    $file_check=array('status_ok' => 0, 'msg' => lang_get('please_choose_file_to_import'));
-  	$importType = null;
-  }
+	// check the uploaded file
+	$source = isset($_FILES['uploadedFile']['tmp_name']) ? $_FILES['uploadedFile']['tmp_name'] : null;
+	if (($source != 'none') && ($source != ''))
+	{ 
+		$file_check = check_valid_ftype($_FILES['uploadedFile'],$importType);
+		if($file_check['status_ok'])
+		{
+			if (move_uploaded_file($source, $dest))
+			{
+				switch($importType)
+				{
+					case 'XML':
+					$pcheck_fn  = "check_xml_tc_tsuite";
+					$pimport_fn = "importTestCaseDataFromXML";
+					break;
+				}
+				if ($pcheck_fn)
+				{
+					$file_check = $pcheck_fn($dest,$bRecursive);
+					if($file_check['status_ok'])
+					{
+						if ($pimport_fn)
+						{
+							$resultMap = $pimport_fn($db,$dest,$container_id,$tproject_id,
+											$userID,$bRecursive,$bIntoProject);
+						}
+					}
+				}
+			}
+		}
+	}
+	else
+	{
+		$file_check = array('status_ok' => 0, 'msg' => lang_get('please_choose_file_to_import'));
+		$importType = null;
+	}
 }
 
-
 $smarty = new TLSmarty();
-
 $smarty->assign('import_title',$import_title);  
-
 $smarty->assign('file_check',$file_check);  
-
 $smarty->assign('bRecursive',$bRecursive); 
 $smarty->assign('resultMap',$resultMap); 
 $smarty->assign('tcFormatStrings',$g_tcFormatStrings);
@@ -109,22 +96,11 @@ $smarty->assign('importTypes',$g_tcImportTypes);
 $smarty->assign('testprojectName', $testprojectName);
 $smarty->assign('containerID', $container_id);
 $smarty->assign('container_name', $container_name);
-
 $smarty->assign('bIntoProject',$bIntoProject);
 $smarty->assign('importLimitKB',TL_IMPORT_LIMIT / 1024);
 $smarty->assign('bImport',strlen($importType));
 $smarty->display('tcimport.tpl');
-?>
 
-
-
-
-
-<?php
-/* --------------------------------------------------------------------------------------- */
-/*
-
-*/
 function importTestCaseDataFromXML(&$db,$fileName,$parentID,$tproject_id,$userID,$bRecursive,$importIntoProject = 0)
 {
 	$xmlTCs = null;
@@ -152,9 +128,6 @@ function importTestCaseDataFromXML(&$db,$fileName,$parentID,$tproject_id,$userID
 	return $resultMap;
 }
 
-/*
-
-*/
 function importTestCases(&$db,&$node,$parentID,$tproject_id,$userID,$kwMap)
 {
 	$resultMap = null;
@@ -168,9 +141,6 @@ function importTestCases(&$db,&$node,$parentID,$tproject_id,$userID,$kwMap)
 	return $resultMap;
 }
 
-/*
-
-*/
 function importTestSuite(&$db,&$node,$parentID,$tproject_id,$userID,$kwMap,$importIntoProject = 0)
 {
 	$resultMap = null;
@@ -180,21 +150,18 @@ function importTestSuite(&$db,&$node,$parentID,$tproject_id,$userID,$kwMap,$impo
 		$details = getNodeContent($node,'details');
 		
 		$ts = null;
-		if (!$importIntoProject)
+		if (strlen($name))
 		{
 			$ts = new testsuite($db);
-			
-			echo "<pre>debug 20061119 " . __FUNCTION__ . " --- "; print_r($parentID); echo "</pre>";
-			echo "<pre>debug 20061119 " . __FUNCTION__ . " --- "; print_r($name); echo "</pre>";
-			echo "<pre>debug 20061119 " . __FUNCTION__ . " --- "; print_r($details); echo "</pre>";
-			
 			$ret = $ts->create($parentID,$name,$details);
 			$tsID = $ret['id'];
 			if (!$tsID)
 				return null;
 		}
-		else
+		else if ($importIntoProject)
 			$tsID = $tproject_id;
+		else
+			$tsID = $parentID;
 
 		$cNodes = $node->child_nodes();	
 		for($i = 0;$i < sizeof($cNodes);$i++)
@@ -230,25 +197,19 @@ function importTestSuite(&$db,&$node,$parentID,$tproject_id,$userID,$kwMap,$impo
 	}
 }
 
-/*
-
-*/
 function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,$userID,$kwMap)
 {
 	if (!$tcData)
 		return;
 		
-	
 	$resultMap = array();
 	
-	// 20061115 - franciscom
-	$tc_qty=sizeof($tcData);
-  if( $tc_qty > 0 )
-  {
-    $tcase_mgr = new testcase($db);
-	  $tproject = new testproject($db);
+	$tc_qty = sizeof($tcData);
+	if($tc_qty)
+	{
+		$tcase_mgr = new testcase($db);
+		$tproject = new testproject($db);
 	}
-	
 	for($i = 0; $i <$tc_qty ;$i++)
 	{
 		$tc = $tcData[$i];
@@ -265,12 +226,10 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,$userID,$kwM
 		if ($ret = $tcase_mgr->create($container_id,$name,$summary,$steps,$expected_results,$userID,$kwIDs))
 			$resultMap[] = array($name,$ret['msg']);
 	}
+
 	return $resultMap;
 }
 
-/*
-
-*/
 function buildKeywordList($kwMap,$keywords,$bList = false)
 {
 	$kwIDs = array();
@@ -283,9 +242,6 @@ function buildKeywordList($kwMap,$keywords,$bList = false)
 	return $kwIDs;
 }
 
-/*
-
-*/
 function importTCsFromXML($xmlTCs)
 {
 	$tcs = null;
@@ -310,9 +266,7 @@ function importTCsFromXML($xmlTCs)
 	return $tcs;
 }
 
-/*
 
-*/
 function importTCFromXML(&$xmlTC)
 {
 	if (!$xmlTC)
@@ -326,81 +280,66 @@ function importTCFromXML(&$xmlTC)
 	
 	return $tc; 		
 }
-?>
 
-
-
-<?php
 function check_valid_ftype($upload_info,$import_type)
 {
-  $ret=array();
-  $ret['status_ok']=0;
-  $ret['msg']='ok';
-  
-  $mime_types=array();
-  $import_type=strtoupper($import_type);
-  
-  //$mime_types['check_ext']=array();
-  $mime_import_types['text/xml']=array('XML' => 'XML');
-  
-  if( isset($mime_import_types[$upload_info['type']]) ) 
-  {
-    if( isset($mime_import_types[$upload_info['type']][$import_type] ) )
-    {
-      $ret['status_ok']=1;
-      if( isset($mime_types['check_ext'][$upload_info['type']]) )
-      {
-        echo "WSWE";
-        $path_parts = pathinfo($upload_info['name']);
-        if( $path_parts['extension']!=$mime_types['check_ext'][$upload_info['type']] )
-        {
-          $status_ok=0;    
-          $ret['msg']=lang_get('file_is_not_text');
-        }
-      }
-    }
-    else
-    {
-       $ret['msg']=lang_get('file_is_not_ok_for_import_type');
-    }
-  }
-  else
-  {
-    $ret['msg']=lang_get('file_is_not_xml');
-  }
-  return($ret);
+	$ret = array();
+	$ret['status_ok'] = 0;
+	$ret['msg']='ok';
+	
+	$mime_types = array();
+	$import_type = strtoupper($import_type);
+	
+	$mime_import_types['text/xml'] = array('XML' => 'XML');
+	
+	if(isset($mime_import_types[$upload_info['type']])) 
+	{
+		if(isset($mime_import_types[$upload_info['type']][$import_type]))
+		{
+			$ret['status_ok'] = 1;
+			if( isset($mime_types['check_ext'][$upload_info['type']]))
+			{
+				$path_parts = pathinfo($upload_info['name']);
+				if($path_parts['extension'] != $mime_types['check_ext'][$upload_info['type']])
+				{
+					$status_ok = 0;    
+					$ret['msg'] = lang_get('file_is_not_text');
+				}
+			}
+		}
+		else
+			$ret['msg'] = lang_get('file_is_not_ok_for_import_type');
+	}
+	else
+		$ret['msg'] = lang_get('file_is_not_xml');
+	
+	return $ret;
 }
 
 
-// 20061118 - franciscom
 //
 // Check if at least the file starts seems OK
 //
 function check_xml_tc_tsuite($fileName,$bRecursive)
 {
 	$dom = domxml_open_file($fileName);
-  $file_check=array('status_ok' => 0, 'msg' => 'dom_ko');    		  
-  	
+	$file_check = array('status_ok' => 0, 'msg' => 'dom_ko');    		  
+	
 	if ($dom)
 	{
-    $file_check=array('status_ok' => 1, 'msg' => 'ok');    		  
+		$file_check = array('status_ok' => 1, 'msg' => 'ok');    		  
 		$root = $dom->document_element();
 		if($bRecursive)
 		{
-		   if($root->tagname != 'testsuite')
-		   {
-		     $file_check=array('status_ok' => 0, 'msg' => lang_get('wrong_xml_tsuite_file'));
-		   }
-    }
-    else
-    {
-       if($root->tagname != 'testcases')
-       {
-         $file_check=array('status_ok' => 0, 'msg' => lang_get('wrong_xml_tcase_file'));
-       }
-    }
+			if($root->tagname != 'testsuite')
+				$file_check=array('status_ok' => 0, 'msg' => lang_get('wrong_xml_tsuite_file'));
+		}
+		else
+		{
+			if($root->tagname != 'testcases')
+				$file_check=array('status_ok' => 0, 'msg' => lang_get('wrong_xml_tcase_file'));
+		}
 	}
-	return($file_check);
+	return $file_check;
 }
-
 ?>

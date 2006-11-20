@@ -12,7 +12,7 @@ function exportDataToXML($items,$rootTpl,$elemTpl,$elemInfo,$bNoXMLHeader = fals
 		foreach($elemInfo as $subject => $replacement)
 		{
 			$fm = substr($subject,0,2);
-			$content = $item[$replacement];
+			$content = isset($item[$replacement]) ? $item[$replacement] : null;
 			switch($fm)
 			{
 				case '||':

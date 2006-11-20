@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: tcexport.php,v $
  *
- * @version $Revision: 1.4 $
- * @modified $Date: 2006/11/20 07:29:06 $ by $Author: franciscom $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2006/11/20 20:35:59 $ by $Author: schlundus $
  *
  * test case and test suites export
  *
@@ -31,7 +31,7 @@ $bRecursive = isset($_REQUEST['bRecursive']) ? $_REQUEST['bRecursive'] : false;
 $testproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 $testprojectName = $_SESSION['testprojectName'];
 
-
+$exporting_just_one_tc = 0;
 $node_id=$container_id;
 if($bRecursive)
 {
@@ -54,7 +54,7 @@ else
   // Exporting situations:
   // All test cases in test suite.
   // One test case.
-  $exporting_just_one_tc=($tcase_id && $tcversion_id);
+	$exporting_just_one_tc = ($tcase_id && $tcversion_id);
 	$fileName = 'testcases.xml';
   
   if($exporting_just_one_tc)

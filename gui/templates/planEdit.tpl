@@ -1,43 +1,54 @@
-{* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: planEdit.tpl,v 1.6 2006/10/21 20:24:36 schlundus Exp $ *}
-{* Purpose: smarty template - edit / delete Test Plan *}
-{* 20050810 - fm - changes in active field definition *}
-
+{* TestLink Open Source Project - http://testlink.sourceforge.net/ 
+   $Id: planEdit.tpl,v 1.7 2006/11/20 00:08:12 havlat Exp $ 
+   Purpose: smarty template - edit / delete Test Plan 
+   Revisions:
+	20050810 - fm - changes in active field definition 
+	20061119 - mht - refactorization; update for TL1.7
+*}
 {include file="inc_head.tpl"}
+
+<script type="text/javascript">
+function delete_confirmation(delUrl) {ldelim}
+	if (confirm("{lang_get s='testplan_msg_delete_confirm'}")){ldelim}
+		window.location = delUrl;
+	{rdelim}
+{rdelim}
+</script>
 
 <body>
 
-<h1>{lang_get s='title_test_plan'}</h1>
+<h1>{lang_get s='testplan_title_tp_management'}</h1>
 
 <div class="tabMenu">
-	<span class="unselected"><a href="lib/plan/planNew.php">{lang_get s='menu_create'}</a></span> 
-	<span class="selected">{lang_get s='menu_edit_del'}</span> 
+	<span class="unselected"><a href="lib/plan/planEdit.php?action=empty">{lang_get s='testplan_menu_create'}</a></span> 
+	<span class="selected">{lang_get s='testplan_menu_list'}</span> 
 </div>
 
 {if $editResult ne ""}
 	<div>
-		<p>{$editResult}</p>
+		<p class="info">{$editResult}</p>
 	</div>
 {/if}
 
 <div class="workBack">
+<div id="testplan_management_list">
 {if $arrPlan eq ''}
-	{lang_get s='no_test_plans'}
-{else}
-	<form method="post">
+	{lang_get s='testplan_txt_empty_list'}
 
-	<table class="common" width="95%">
-		<caption>{lang_get s='caption_edit_tp'}</caption>
+{else}
+	<h2>{lang_get s='testplan_title_list'}</h2>
+	<table class="simple" width="95%">
 		<tr>
-			<th>{lang_get s='th_name'}</th>
-			<th>{lang_get s='th_tp_notes'}</th>
-			<th>{lang_get s='th_active'}</th>
-			<th>{lang_get s='th_delete_tp'}</th>
+			<th>{lang_get s='testplan_th_name'}</th>
+			<th>{lang_get s='testplan_th_notes'}</th>
+			<th style="width: 60px;">{lang_get s='testplan_th_active'}</th>
+			<th style="width: 60px;">{lang_get s='testplan_th_delete'}</th>
 		</tr>
 		{section name=number loop=$arrPlan}
 		<tr>
 			<td><a href="lib/plan/planNew.php?tpID={$arrPlan[number].id}"> 
-					{$arrPlan[number].name|escape}</a>
+				{$arrPlan[number].name|escape} <img alt="{lang_get s='alt_edit_build'}" 
+				alt="{lang_get s='testplan_alt_edit_tp'}" src="gui/images/icon_edit.png"/></a>
 			</td>
 			<td>
 				{$arrPlan[number].notes|strip_tags|strip|truncate:100}
@@ -50,8 +61,8 @@
 			{/if}
 			</td>
 			<td>
-				<a href="lib/plan/planEdit.php?deleteTP=1&id={$arrPlan[number].id}">
-				<img style="border:none" alt="{lang_get s='alt_delete_testplan'}" src="icons/thrash.png"/>
+				<a href="javascript:delete_confirmation('lib/plan/planEdit.php?action=delete&id={$arrPlan[number].id}');">
+				<img alt="{lang_get s='testplan_alt_delete_tp'}" src="gui/images/icon_thrash.png"/>
 				</a>
 			</td>
 		</tr>
@@ -59,12 +70,8 @@
 
 	</table>
 
-	<div style="padding: 20px;">
-		<input type="submit" name="editTestPlan" value="{lang_get s='btn_upd_tp'}" />
-	</div>
-
-	</form>
-{/if}	
+{/if}
+</div>
 </div>
 
 </body>

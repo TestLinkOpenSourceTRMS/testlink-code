@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.87 $
- * @modified $Date: 2006/11/20 00:10:22 $ $Author: havlat $
+ * @version $Revision: 1.88 $
+ * @modified $Date: 2006/11/20 07:32:02 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
@@ -97,10 +97,15 @@ $TLS_title_create = "Create";
 
 // gui/templates/containerOrder.tpl
 $TLS_no_nodes_to_reorder = "I'm sorry there is nothing to reorder!";
-$TLS_node = "Node";
+$TLS_node = "Name";
 $TLS_th_id = "ID";
 $TLS_th_order = "Order";
-$TLS_title_change_node_order = "Change this test suite's child node(s) order";
+$TLS_th_node_type = "Test Case / Test Suite";
+//$TLS_title_change_node_order = "Change this test suite's child node(s) order";
+$TLS_title_change_node_order = "Change children order for ";
+$TLS_node_type_dbtable_testcases = "Test Case";
+$TLS_node_type_dbtable_testsuites = "Test Suite";
+
 
 
 

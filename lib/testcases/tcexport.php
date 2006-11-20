@@ -5,10 +5,13 @@
  *
  * Filename $RCSfile: tcexport.php,v $
  *
- * @version $Revision: 1.3 $
- * @modified $Date: 2006/10/23 06:42:22 $ by $Author: franciscom $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2006/11/20 07:29:06 $ by $Author: franciscom $
  *
- * This page this allows users to export keywords. 
+ * test case and test suites export
+ *
+ * 20061118 - franciscom - using different file name, depending the
+ *                         type of exported elements.
  *
 **/
 require_once("../../config.inc.php");
@@ -36,11 +39,15 @@ if($bRecursive)
   // All test suites in test project
   // One test suite 
   $page_title=lang_get('title_tsuite_export') . TITLE_SEP;
+
+  $fileName = 'testsuites.xml';
   if( $node_id == $testproject_id )
   {
      $page_title=lang_get('title_tsuite_export_all') . TITLE_SEP . 
                  lang_get('title_testproject') . TITLE_SEP;  
+     $fileName = 'all_testsuites.xml';
   }
+  
 } 
 else
 {
@@ -48,6 +55,7 @@ else
   // All test cases in test suite.
   // One test case.
   $exporting_just_one_tc=($tcase_id && $tcversion_id);
+	$fileName = 'testcases.xml';
   
   if($exporting_just_one_tc)
   {
@@ -65,8 +73,6 @@ $tree_mgr=New tree($db);
 $node=$tree_mgr->get_node_hierachy_info($node_id);
 
 
-
-
 if ($bExport)
 {
 	$tcase_mgr = new testcase($db);
@@ -81,11 +87,10 @@ if ($bExport)
 	switch($exportType)
 	{
 		case 'XML':
-			if ($exporting_just_one_tc)	
+			if ($exporting_just_one_tc)
 				$pfn = 'exportTestCaseDataToXML';
 			else
 				$pfn = 'exportTestSuiteDataToXML';				
-			$fileName = 'testcase.xml';
 			break;
 	}
 	if ($pfn)

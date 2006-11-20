@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: tree.class.php,v $
  *
- * @version $Revision: 1.23 $
- * @modified $Date: 2006/10/23 20:11:28 $ by $Author: schlundus $
+ * @version $Revision: 1.24 $
+ * @modified $Date: 2006/11/20 07:28:49 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * 20061008 - franciscom - ORDER BY node_order -> ORDER BY node_order,id
@@ -14,6 +14,7 @@
  * 20060722 - franciscom - added possibility to create a new node with an specific ID
  * 20060511 - franciscom - changes in call to insert_id() due to problems with Postgres
  * 20060316 - franciscom - bug on get_path
+ * 20061119 - franciscom - change_order_bulk() added abs() to order.
 */
 
 class tree 
@@ -293,6 +294,7 @@ function get_children($id,$exclude_node_types=null)
 }
  
  
+/* 20061119 - franciscom - use abs() to avoid problem with negatives */ 
 /* 20060310 - franciscom */
 /* both hash indexed by the same value -> the node_id
    example:
@@ -303,7 +305,7 @@ function change_order_bulk($hash_node_id, $hash_node_order)
 {
 	foreach($hash_node_id as $the_id => $elem)
 	{
-		$order = intval($hash_node_order[$the_id]);
+		$order = abs(intval($hash_node_order[$the_id]));
 		$the_id = intval($the_id);
 	  	$sql = "UPDATE {$this->obj_table} SET node_order = {$order}
 	      	    WHERE id = {$the_id}";

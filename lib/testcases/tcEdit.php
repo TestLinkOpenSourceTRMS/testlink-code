@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.41 $
- * @modified $Date: 2006/11/13 07:09:32 $  by $Author: franciscom $
+ * @version $Revision: 1.42 $
+ * @modified $Date: 2006/11/20 07:29:06 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
  *
@@ -192,14 +192,14 @@ else if($do_create)
 	
 	if ($name_ok)
 	{
-  	define('DEFAULT_TC_ORDER',0);
     define('AUTOMATIC_ID',0);
+    $order_cfg=config_get('tree_node_ordering');
 
 		$msg = lang_get('error_tc_add');
 		$tcase=$tcase_mgr->create($container_id,$name,$summary,$steps,
-		                       $expected_results,$userID,
-		                       $assigned_keywords_list,DEFAULT_TC_ORDER,AUTOMATIC_ID,
-		                       config_get('check_names_for_duplicates'),'block');
+		                          $expected_results,$userID,$assigned_keywords_list,
+		                          $order_cfg->default_testcase_order,AUTOMATIC_ID,
+		                          config_get('check_names_for_duplicates'),'block');
 		$msg = $tcase['msg'];                       
 	}
 

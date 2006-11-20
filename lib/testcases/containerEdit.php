@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * @version $Revision: 1.47 $
- * @modified $Date: 2006/10/25 07:34:28 $ by $Author: franciscom $
+ * @version $Revision: 1.48 $
+ * @modified $Date: 2006/11/20 07:29:06 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * 20061024 - franciscom - improved feedback in delete_testsuite
@@ -264,11 +264,15 @@ else if($action == 'reorder_testsuites')
 {
 	$object_id = is_null($my_testsuiteID) ? $my_containerID : $my_testsuiteID;
 	$children = $tree_mgr->get_children($object_id, array("testplan" => "exclude_me"));	
-  	if (!sizeof($children))
+  $object_info = $tree_mgr->get_node_hierachy_info($object_id);
+  $object_name = $object_info['name'];
+
+ 	if (!sizeof($children))
 		$children = null;
-  	
 	$smarty->assign('arraySelect', $children);
 	$smarty->assign('data', $my_testsuiteID);
+  $smarty->assign('object_name', $object_name);
+
 }
 else if($action == 'do_testsuite_reorder')
 {

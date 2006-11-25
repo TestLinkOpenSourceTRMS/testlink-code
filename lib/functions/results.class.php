@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8 
- * @modified $Date: 2006/11/13 07:23:19 $ by $Author: franciscom $
+ * @modified $Date: 2006/11/25 23:35:20 $ by $Author: kevinlevy $
  *
  *
  * This class is encapsulates most functionality necessary to query the database
@@ -545,6 +545,7 @@ class results
 		$count = array();
 		$bForPrinting = 0;
 		$testcase_count = prepareNode($db,$test_spec,$hash_id_descr,$count,$tck_map,$tp_tcs,$bForPrinting,$owner);
+		//print "testcase count = $testcase_count <BR>";
 		$test_spec['testcase_count'] = $testcase_count;
 	
 		// $menuUrl = "menuUrl";
@@ -595,7 +596,9 @@ function processExecTreeNode($level,&$node,$hash_id_descr)
 			
 			// TO-DO - KL - 20061111 - is this where I can retrieve the name?
 			$name = filterString($current['name']);
-		
+
+			//print "name = $name <BR>";
+
 			if (($id) && ($name) && ($nodeDesc == 'testsuite')) {
 
 				/** flat array logic */
@@ -620,7 +623,7 @@ function processExecTreeNode($level,&$node,$hash_id_descr)
 				$currentNode[$currentNodeIndex] = $id;
 				$currentNodeIndex++;
 							
-				$currentNode[$currentNodeIndex] = $this->processExecTreeNode($level+1,$current,$hash_id_descrss);
+				$currentNode[$currentNodeIndex] = $this->processExecTreeNode($level+1,$current,$hash_id_descr);
 				$currentNodeIndex++;	
 
 				/** end suiteStructure logic */

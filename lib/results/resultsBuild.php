@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsBuild.php,v 1.14 2006/11/26 20:03:29 kevinlevy Exp $ 
+* $Id: resultsBuild.php,v 1.15 2006/11/26 20:29:44 kevinlevy Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * 
@@ -39,13 +39,10 @@ $re = new results($db, $tp, $suitesSelected, $builds_to_query);
 
 /** 
 
-* SUITES REPORT 
+* TOP LEVEL SUITES REPORT 
 
 */
-//$allSuites = $re->getAllSuites();
-//$topLevelSuites = $re->getTopLevelSuites();
-$topLevelSuites = $re->getAllSuites();
-//print_r($topLevelSuites);
+$topLevelSuites = $re->getTopLevelSuites();
 $mapOfAggregate = $re->getAggregateMap();
 $arrDataSuite = null;
 $arrDataSuiteIndex = 0;
@@ -62,6 +59,34 @@ while ($i = key($topLevelSuites)) {
 	$arrDataSuiteIndex++;
 	next($topLevelSuites);
 } 
+
+/** 
+
+* ALL SUITES REPORT 
+
+*/
+$allSuites = $re->getAllSuites();
+$arrDataAllSuites = null;
+$index = 0;
+// TO-DO - lookup risk, importance, and priority for each suites
+$risk = '?';
+$importance = '?';
+$priority = '?';
+while ($i = key($allSuites)) {
+	$pairArray = $allSuites[$i];
+	$currentSuiteId = $pairArray['id'];
+	$currentSuiteName = $pairArray['name'];
+	$resultArray = $mapOfAggregate[$currentSuiteId];	
+	$total = $resultArray['total'];
+	$notRun = $resultArray['notRun'];
+	$percentCompleted = (($total - $notRun) / $total) * 100;
+	$percentCompleted = number_format($percentCompleted,2);
+	$arrDataAllSuites[$index] = array($currentSuiteName, $risk, $importance, $priority,$total,$resultArray['pass'],$resultArray['fail'],$resultArray['blocked'],$notRun,$percentCompleted);
+	$index++;
+	next($allSuites);
+} 
+
+
 
 /**
 * PRIORITY REPORT
@@ -126,6 +151,7 @@ $smarty = new TLSmarty;
 $smarty->assign('tpName', $_SESSION['testPlanName']);
 $smarty->assign('buildName', $buildName);
 $smarty->assign('arrDataPriority', $arrDataPriority);
+$smarty->assign('arrDataAllSuites', $arrDataAllSuites);
 $smarty->assign('arrDataSuite', $arrDataSuite);
 $smarty->assign('arrDataKeys', $arrDataKeys);
 $smarty->display('resultsBuild.tpl');

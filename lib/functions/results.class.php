@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8 
- * @modified $Date: 2006/11/26 06:26:07 $ by $Author: kevinlevy $
+ * @modified $Date: 2006/11/26 20:01:16 $ by $Author: kevinlevy $
  *
  *
  * This class is encapsulates most functionality necessary to query the database
@@ -467,6 +467,28 @@ class results
     return $executionsMap;
   } // end function
   
+
+   /**
+   * return map of suite id to suite name pairs of all suites
+   */
+  function getAllSuites() {
+	$returnList = null;
+	$name = null;
+	$suiteId = null;
+	for ($i = 0 ; $i < sizeof($this->flatArray); $i++) {
+		if (($i % $this->ITEM_PATTERN_IN_FLAT_ARRAY) == $this->NAME_IN_FLATARRAY) {
+			$name = $this->flatArray[$i];
+			
+		}
+		elseif (($i % $this->ITEM_PATTERN_IN_FLAT_ARRAY) == $this->SUITE_ID_IN_FLATARRAY) {
+			$suiteId = $this->flatArray[$i];
+			$returnList[$i] = array('name' => $name, 'id' => $suiteId);
+		}
+
+	} 
+	return $returnList;
+  }
+
   /**
    * return map of suite id to suite name pairs of top level suites
    */

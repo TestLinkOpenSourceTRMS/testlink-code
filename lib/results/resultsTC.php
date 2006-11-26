@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsTC.php,v 1.12 2006/10/30 01:07:58 kevinlevy Exp $ 
+* $Id: resultsTC.php,v 1.13 2006/11/26 06:45:38 kevinlevy Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -81,7 +81,8 @@ if ($xls)
 $smarty = new TLSmarty;
 $smarty->assign('title', lang_get('title_test_report_all_builds'));
 $smarty->assign('arrData', $arrData);
-$smarty->assign('arrBuilds', $arrBuilds);
+// $arrBuilds not defined
+//$smarty->assign('arrBuilds', $arrBuilds);
 if ($xls) {
 	$smarty->assign('printDate', strftime($g_date_format, time()) );
 	$smarty->assign('user', $_SESSION['user']);

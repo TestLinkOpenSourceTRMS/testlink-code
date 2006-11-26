@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsBuild.php,v 1.13 2006/11/26 06:30:01 kevinlevy Exp $ 
+* $Id: resultsBuild.php,v 1.14 2006/11/26 20:03:29 kevinlevy Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * 
@@ -39,11 +39,13 @@ $re = new results($db, $tp, $suitesSelected, $builds_to_query);
 
 /** 
 
-* COMPONENTS REPORT 
+* SUITES REPORT 
 
 */
-
-$topLevelSuites = $re->getTopLevelSuites();
+//$allSuites = $re->getAllSuites();
+//$topLevelSuites = $re->getTopLevelSuites();
+$topLevelSuites = $re->getAllSuites();
+//print_r($topLevelSuites);
 $mapOfAggregate = $re->getAggregateMap();
 $arrDataSuite = null;
 $arrDataSuiteIndex = 0;

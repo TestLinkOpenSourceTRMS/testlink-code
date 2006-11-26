@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8 
- * @modified $Date: 2006/11/26 00:16:42 $ by $Author: kevinlevy $
+ * @modified $Date: 2006/11/26 00:30:11 $ by $Author: kevinlevy $
  *
  *
  * This class is encapsulates most functionality necessary to query the database
@@ -594,7 +594,7 @@ function processExecTreeNode($level,&$node,$hash_id_descr,$parent_suite_name = '
 			$name = filterString($current['name']);
 			if (($id) && ($name) && ($nodeDesc == 'testsuite')) {
 				if ($parent_suite_name) {
-					$hierarchySuiteName = $parent_suite_name  . " -> " . $name;
+					$hierarchySuiteName = $parent_suite_name  . " / " . $name;
 				}
 				else {
 					$hierarchySuiteName = $current['name'];

@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8 
- * @modified $Date: 2006/11/26 20:01:16 $ by $Author: kevinlevy $
+ * @modified $Date: 2006/11/26 23:10:21 $ by $Author: kevinlevy $
  *
  *
  * This class is encapsulates most functionality necessary to query the database
@@ -167,25 +167,24 @@ class results
 	 * currently it does not account for user expliting marking a case "not run".
 	 *  */
 	
-  function addLastResultToMap($suiteId, $testcase_id, $buildNumber, $result){
-  	
+  function addLastResultToMap($suiteId, $testcase_id, $buildNumber, $result, $tcversion_id, $execution_ts, $notes){
+	// print "addLastResultToMap() notes = $notes <BR>";  	
   	if ($this->mapOfLastResult && array_key_exists($suiteId, $this->mapOfLastResult)) {
 		if (array_key_exists($testcase_id, $this->mapOfLastResult[$suiteId])) {
 			$buildInMap = $this->mapOfCaseResults[$testcase_id]['buildNumber'];	
 			if ($buildInMap < $buildNumber) {				
-
 				$this->mapOfLastResult[$suiteId][$testcase_id] = null;
-				$this->mapOfLastResult[$suiteId][$testcase_id] = array("buildIdLastExecuted" => $buildNumber, "result" => $result);
+				$this->mapOfLastResult[$suiteId][$testcase_id] = array("buildIdLastExecuted" => $buildNumber, "result" => $result, "tcversion_id" => $tcversion_id, "execution_ts" => $execution_ts, "notes" => $notes);
 			}	
 		}	
 		else {
-			$this->mapOfLastResult[$suiteId][$testcase_id] = array("buildIdLastExecuted" => $buildNumber, "result" => $result);
+			$this->mapOfLastResult[$suiteId][$testcase_id] = array("buildIdLastExecuted" => $buildNumber, "result" => $result, "tcversion_id" => $tcversion_id, "execution_ts" => $execution_ts, "notes" => $notes);
 		}	
 	}
 
   	else {
   		//$totalCases =  count($this->executionsMap[$suiteId]);
-  		$this->mapOfLastResult[$suiteId][$testcase_id] = array("buildIdLastExecuted" => $buildNumber, "result" => $result);  		
+  		$this->mapOfLastResult[$suiteId][$testcase_id] = array("buildIdLastExecuted" => $buildNumber, "result" => $result, "tcversion_id" => $tcversion_id, "execution_ts" => $execution_ts, "notes" => $notes);  		
   	}  	
   }
   
@@ -358,9 +357,14 @@ class results
   			for ($j = 0 ; $j < $totalCases; $j++) {
   				$currentExecution = $executionsMap[$suiteId][$j];
   				$caseId = $currentExecution['testcaseID'];
-  				$build = $currentExecution['build_id'];
+				$build = $currentExecution['build_id'];
   				$result = $currentExecution['status'];
-  				$this->addLastResultToMap($suiteId, $caseId, $build, $result);
+				$tcversion_id = $currentExecution['tcversion_id'];
+				$execution_ts = $currentExecution['execution_ts'];
+				$notes = $currentExecution['notes'];
+				// ($suiteId, $testcase_id, $buildNumber, $result, $tcversion_id, $execution_ts, $notes, $feature_id, $assigner_id)			
+
+  				$this->addLastResultToMap($suiteId, $caseId, $build, $result, $tcversion_id, $execution_ts, $notes);
   			}
   		} // end elseif 
   		

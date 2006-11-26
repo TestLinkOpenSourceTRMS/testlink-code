@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsByStatus.php,v 1.15 2006/11/04 21:25:31 schlundus Exp $ 
+* $Id: resultsByStatus.php,v 1.16 2006/11/26 23:13:18 kevinlevy Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -51,10 +51,16 @@ $arrDataIndex = 0;
 while ($suiteId = key($mapOfLastResult)){
 //	print "suiteId = $suiteId <BR>";
 	while($tcId = key($mapOfLastResult[$suiteId])){
-//		print "tcId = $tcId <BR>";
 		$lastBuildIdExecuted = $mapOfLastResult[$suiteId][$tcId]['buildIdLastExecuted'];
-//		print "lastBuildIdExecuted = $lastBuildIdExecuted <BR>";
-		$arrData[$arrDataIndex] = array("suiteId=". $suiteId,"tcID=" . $tcId,"buildId=" . $lastBuildIdExecuted,'run by','date','notes','bugs');
+		$notes = $mapOfLastResult[$suiteId][$tcId]['notes'];
+		$execution_ts = $mapOfLastResult[$suiteId][$tcId]['execution_ts'];
+
+		$localizedTS = localize_dateOrTimeStamp(null,$dummy,'timestamp_format',$execution_ts);
+		
+		
+		// print "execution_ts = $execution_ts <BR>";		
+		//buildBugString($db,$e['execution_id'])
+		$arrData[$arrDataIndex] = array("suiteId=". $suiteId,"tcID=" . $tcId,"buildId=" . $lastBuildIdExecuted,'run by',htmlspecialchars($execution_ts),htmlspecialchars($notes),'bugs');
 		$arrDataIndex++;
 		next($mapOfLastResult[$suiteId]);
 	}
@@ -108,6 +114,14 @@ if ($tcs && $maxBuildID)
 
 
 
+
+
+*/
+
+/**
+* builds bug information for execution id
+* written by Andreas, being implemented again by KL
+*/
 function buildBugString(&$db,$execID)
 {
 	$bugString = null;
@@ -121,8 +135,6 @@ function buildBugString(&$db,$execID)
 	}
 	return $bugString;
 }
-
-*/
 
 $smarty = new TLSmarty;
 $smarty->assign('title', $title);

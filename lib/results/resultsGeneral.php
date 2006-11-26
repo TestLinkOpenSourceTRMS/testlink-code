@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: resultsGeneral.php,v $
- * @version $Revision: 1.12 $
- * @modified $Date: 2006/11/04 21:25:31 $ by $Author: schlundus $
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2006/11/26 05:49:28 $ by $Author: kevinlevy $
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
  * This page show Test Results over all Builds.
@@ -53,6 +53,7 @@ while ($i = key($topLevelSuites)) {
 	$total = $resultArray['total'];
 	$notRun = $resultArray['notRun'];
 	$percentCompleted = (($total - $notRun) / $total) * 100;
+	$percentCompleted = number_format($percentCompleted,2);
 	$arrDataSuite[$arrDataSuiteIndex] = array($currentSuiteName,$total,$resultArray['pass'],$resultArray['fail'],$resultArray['blocked'],$notRun,$percentCompleted);
 	$arrDataSuiteIndex++;
 	next($topLevelSuites);
@@ -79,6 +80,7 @@ while ($keyword_id = key($arrKeywords)) {
 	$total = $resultArray['total'];
 	$notRun = $resultArray['notRun'];
 	$percentCompleted = (($total - $notRun) / $total) * 100;
+	$percentCompleted = number_format($percentCompleted,2);
 	$arrDataKeys[$arrDataKeysIndex] = array($keyword_name,$total,$resultArray['pass'],$resultArray['fail'],$resultArray['blocked'],$notRun,$percentCompleted);
 	$arrDataKeysIndex++;
 	next($arrKeywords);
@@ -95,16 +97,19 @@ $arrOwners = get_users_for_html_options($db, ALL_USERS_FILTER, ADD_BLANK_OPTION)
 //$arrDataOwner = getOwnerReport($db,$tpID);
 $arrDataOwner = null;
 $arrDataOwnerIndex = 0;
+
 while ($owner_id = key($arrOwners)) {
 	$owner_name = $arrOwners[$owner_id] ;
 	$specificOwnerResults = new results($db, $tp, $suitesSelected, $builds_to_query, 'a', 0, $owner_id);
 	$resultArray = $specificOwnerResults->getTotalsForPlan();
 	$total = $resultArray['total'];
 	$notRun = $resultArray['notRun'];
-	if ($total)
+	if ($total) {
 		$percentCompleted = (($total - $notRun) / $total) * 100;
+		$percentCompleted = number_format($percentCompleted,2);
+	}
 	else
-		$percentCompleted = 0;
+		$percentCompleted = 0.00;
 	$arrDataOwner[$arrDataOwnerIndex] = array($owner_name,$total,$resultArray['pass'],$resultArray['fail'],$resultArray['blocked'],$notRun,$percentCompleted);
 	$arrDataOwnerIndex++;
 	next($arrOwners);

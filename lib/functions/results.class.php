@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8 
- * @modified $Date: 2006/11/26 00:30:11 $ by $Author: kevinlevy $
+ * @modified $Date: 2006/11/26 06:26:07 $ by $Author: kevinlevy $
  *
  *
  * This class is encapsulates most functionality necessary to query the database
@@ -408,7 +408,7 @@ class results
       if ($tcversion_id != $executed){
 	$executionExists = false;
 	if (($lastResult == 'a') || ($lastResult == 'n')) {
-	  $infoToSave = array(testcaseID => $testcaseID, tcversion_id => $tcversion_id, build_id => '', tester_id => '', execution_ts => '', status => 'n', notes => '');
+	  $infoToSave = array('testcaseID' => $testcaseID, 'tcversion_id' => $tcversion_id, 'build_id' => '', 'tester_id' => '', 'execution_ts' => '', 'status' => 'n', 'notes' => '');
 	  array_push($currentSuite, $infoToSave);			
 	}
 	  
@@ -456,8 +456,8 @@ class results
 		} // end if($execQuery)
 		// HANDLE scenario where execution does not exist		          
 		elseif (($lastResult == 'a') || ($lastResult == 'n')) {
-			$infoToSave = array(testcaseID => $testcaseID, tcversion_id => $tcversion_id, 
-			build_id => '', tester_id => '', execution_ts => '', status => 'n', notes => '');
+			$infoToSave = array('testcaseID' => $testcaseID, 'tcversion_id' => $tcversion_id, 
+			'build_id' => '', 'tester_id' => '', 'execution_ts' => '', 'status' => 'n', 'notes' => '');
 			array_push($currentSuite, $infoToSave);			
 		}
       } // end if($executionExists)

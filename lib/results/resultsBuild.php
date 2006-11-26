@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsBuild.php,v 1.12 2006/11/26 05:57:24 kevinlevy Exp $ 
+* $Id: resultsBuild.php,v 1.13 2006/11/26 06:30:01 kevinlevy Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * 
@@ -125,7 +125,6 @@ $smarty->assign('tpName', $_SESSION['testPlanName']);
 $smarty->assign('buildName', $buildName);
 $smarty->assign('arrDataPriority', $arrDataPriority);
 $smarty->assign('arrDataSuite', $arrDataSuite);
-$smarty->assign('arrDataCategory', $arrDataCategory);
 $smarty->assign('arrDataKeys', $arrDataKeys);
 $smarty->display('resultsBuild.tpl');
 

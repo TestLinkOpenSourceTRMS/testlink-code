@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8 
- * @modified $Date: 2006/11/25 23:35:20 $ by $Author: kevinlevy $
+ * @modified $Date: 2006/11/26 00:16:42 $ by $Author: kevinlevy $
  *
  *
  * This class is encapsulates most functionality necessary to query the database
@@ -557,7 +557,9 @@ class results
 	return $suiteStructure;	
 } // end generateExecTree
 
-function processExecTreeNode($level,&$node,$hash_id_descr)
+// parent_suite_name is used to construct the full hierachy name of the suite
+// ex: "A->A.A->A.A.A"
+function processExecTreeNode($level,&$node,$hash_id_descr,$parent_suite_name = '')
 {
 	$currentNode = null;
 	$currentNodeIndex = 0;
@@ -573,12 +575,7 @@ function processExecTreeNode($level,&$node,$hash_id_descr)
 				continue;
 			$nodeDesc = $hash_id_descr[$current['node_type_id']];
 			$id = $current['id'];
-			// TO-DO - KL - 20061111 - Retreive name of node here
-			// possibly build "hierachy name" 
-			
-			// functionality that uses
-			// $this->suitesSelected
-			
+
 			$parentId = $current['parent_id'];
 			if (($parentId == $this->prodID) && ($this->suitesSelected != 'all')) {
 
@@ -594,12 +591,15 @@ function processExecTreeNode($level,&$node,$hash_id_descr)
 
 			} //end if
 			
-			// TO-DO - KL - 20061111 - is this where I can retrieve the name?
 			$name = filterString($current['name']);
-
-			//print "name = $name <BR>";
-
 			if (($id) && ($name) && ($nodeDesc == 'testsuite')) {
+				if ($parent_suite_name) {
+					$hierarchySuiteName = $parent_suite_name  . " -> " . $name;
+				}
+				else {
+					$hierarchySuiteName = $current['name'];
+				}
+				//print "hierarchySuiteName = $hierarchySuiteName <BR>";
 
 				/** flat array logic */
 				$CONSTANT_DEPTH_ADJUSTMENT = 2;
@@ -610,20 +610,20 @@ function processExecTreeNode($level,&$node,$hash_id_descr)
 				$this->flatArray[$this->flatArrayIndex] = $changeInDepth;
 
 				$this->flatArrayIndex++;
-				$this->flatArray[$this->flatArrayIndex] = $name;
+				$this->flatArray[$this->flatArrayIndex] = $hierarchySuiteName;
 				$this->flatArrayIndex++;		
 				$this->flatArray[$this->flatArrayIndex] = $id;
 				$this->flatArrayIndex++;
 				/** end flat array logic */
 
 				/** suiteStructure logic */
-				$currentNode[$currentNodeIndex] = $name;
+				$currentNode[$currentNodeIndex] = $hierarchySuiteName;
 				$currentNodeIndex++;
 	
 				$currentNode[$currentNodeIndex] = $id;
 				$currentNodeIndex++;
 							
-				$currentNode[$currentNodeIndex] = $this->processExecTreeNode($level+1,$current,$hash_id_descr);
+				$currentNode[$currentNodeIndex] = $this->processExecTreeNode($level+1,$current,$hash_id_descr,$hierarchySuiteName);
 				$currentNodeIndex++;	
 
 				/** end suiteStructure logic */

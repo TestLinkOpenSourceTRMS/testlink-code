@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsAllBuilds.php,v 1.7 2006/10/29 10:18:08 kevinlevy Exp $ 
+* $Id: resultsAllBuilds.php,v 1.8 2006/11/26 06:15:15 kevinlevy Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * 
@@ -31,14 +31,19 @@ for ($i = 0; $i < sizeOf($arrBuilds); $i++) {
 	$resultArray = $specificBuildResults->getTotalsForPlan();
 	$total = $resultArray['total'];
 	$notRun = $resultArray['notRun'];
-	$percentNotRun = ($notRun / $total) * 100;
+	$percentNotRun = (($notRun / $total) * 100);
+	$percentNotRun = number_format($percentNotRun, 2);
 	$percentCompleted = (($total - $notRun) / $total) * 100;
+	$percentCompleted = number_format($percentCompleted, 2);
 	$pass = $resultArray['pass'];
 	$percentPass = ($pass / $total ) * 100;
+	$percentPass = number_format($percentPass, 2);
 	$fail = $resultArray['fail'];
 	$percentFail = ($fail / $total) * 100;
+	$percentFail = number_format($percentFail, 2);
 	$blocked = $resultArray['blocked'];
 	$percentBlocked = ($blocked / $total ) * 100;
+	$percentBlocked = number_format($percentBlocked, 2);
 	$arrDataBuilds[$arrDataBuildsIndex] = array($build_name,$total, $pass, $percentPass, $fail, $percentFail, $blocked, $percentBlocked, $notRun, $percentNotRun);
 	$arrDataBuildsIndex++;
 }

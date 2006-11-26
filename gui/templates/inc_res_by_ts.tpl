@@ -1,9 +1,10 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: inc_res_by_ts.tpl,v 1.3 2005/11/26 19:58:21 schlundus Exp $ *}
+{* $Id: inc_res_by_ts.tpl,v 1.4 2006/11/26 20:30:40 kevinlevy Exp $ *}
 {* Purpose: smarty template - show Test Results and Metrics *}
 {* I18N: 20050528 - fm *}
 {*
 	20051126 - scs - added escaping of all items
+	20061126 - kl - upgraded to 1.7 
 *}
 
 <h2>{lang_get s='title_res_by_ts'}</h2>
@@ -21,10 +22,10 @@
 		<th>{lang_get s='trep_comp_perc'}</th>
 
 	</tr>
-{section name=Row loop=$arrDataCategory}
+{section name=Row loop=$arrDataAllSuites}
 	<tr>
-	{section name=Item loop=$arrDataCategory[Row]}
-		<td>{$arrDataCategory[Row][Item]|escape}</td>
+	{section name=Item loop=$arrDataAllSuites[Row]}
+		<td>{$arrDataAllSuites[Row][Item]|escape}</td>
 	{/section}
 	</tr>
 {/section}

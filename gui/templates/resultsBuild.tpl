@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: resultsBuild.tpl,v 1.4 2006/10/29 10:40:01 kevinlevy Exp $ *}
+{* $Id: resultsBuild.tpl,v 1.5 2006/11/26 20:30:40 kevinlevy Exp $ *}
 {* Purpose: smarty template - show Test Results of one build *}
 {include file="inc_head.tpl"}
 {*
@@ -13,12 +13,7 @@
 
 {include file="inc_res_by_prio.tpl"}
 {include file="inc_res_by_comp.tpl"}
-{* KL - 20061029 - it's debatable if we want this type of table 
-	report now that there is unlimited hiearchy
-	the query results page can provide very similiar functionality
 {include file="inc_res_by_ts.tpl"} 
-*}
-
 {include file="inc_res_by_keyw.tpl"}
 
 </div>

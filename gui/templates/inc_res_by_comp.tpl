@@ -1,12 +1,12 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: inc_res_by_comp.tpl,v 1.4 2006/10/29 08:32:57 kevinlevy Exp $ *}
+{* $Id: inc_res_by_comp.tpl,v 1.5 2006/11/26 20:30:40 kevinlevy Exp $ *}
 {* Purpose: smarty template - show Test Results and Metrics *}
 {* I18N: 20050528 - fm *}
 {*
 	20051126 - scs - added escaping of all items
 *}
 
-<h2>{lang_get s='title_res_by_comp'}</h2>
+<h2>{lang_get s='title_res_by_top_level_suites'}</h2>
 <table class="simple" style="width: 100%; text-align: center; margin-left: 0px;">
 	<tr>
 		<th>{lang_get s='trep_comp'}</th>

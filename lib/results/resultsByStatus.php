@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsByStatus.php,v 1.17 2006/11/27 04:17:05 kevinlevy Exp $ 
+* $Id: resultsByStatus.php,v 1.18 2006/11/27 04:59:39 kevinlevy Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -56,12 +56,7 @@ while ($suiteId = key($mapOfLastResult)){
 		$execution_ts = $mapOfLastResult[$suiteId][$tcId]['execution_ts'];
 		$suiteName = $mapOfLastResult[$suiteId][$tcId]['suiteName'];
 		$executions_id = $mapOfLastResult[$suiteId][$tcId]['executions_id'];
-		//print "executions_id = $executions_id <BR>";
-
 		$localizedTS = localize_dateOrTimeStamp(null,$dummy,'timestamp_format',$execution_ts);
-		
-		
-		// print "execution_ts = $execution_ts <BR>";		
 		$bugString = buildBugString($db, $executions_id);
 		$arrData[$arrDataIndex] = array(htmlspecialchars($suiteName),"tcID=" . $tcId,"buildId=" . $lastBuildIdExecuted,'run by',htmlspecialchars($execution_ts),htmlspecialchars($notes),$bugString);
 		$arrDataIndex++;

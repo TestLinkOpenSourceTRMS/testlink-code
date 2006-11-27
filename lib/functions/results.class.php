@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8 
- * @modified $Date: 2006/11/27 07:47:32 $ by $Author: kevinlevy $
+ * @modified $Date: 2006/11/27 22:17:23 $ by $Author: kevinlevy $
  *
  *
  * This class is encapsulates most functionality necessary to query the database
@@ -122,6 +122,8 @@ class results
       $this->totalsForPlan = $this->createTotalsForPlan($this->suiteStructure, $this->mapOfSuiteSummary);} // end if block
   } // end results constructor
 
+
+  // TO-DO- rename getExecutionsMap() (resultsTC.php is 1 file (may not be only file) that references this method)
   function getSuiteList(){
     return $this->executionsMap;
   }

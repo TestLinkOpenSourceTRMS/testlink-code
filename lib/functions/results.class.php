@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8 
- * @modified $Date: 2006/11/27 22:17:23 $ by $Author: kevinlevy $
+ * @modified $Date: 2006/11/27 22:26:49 $ by $Author: kevinlevy $
  *
  *
  * This class is encapsulates most functionality necessary to query the database
@@ -697,5 +697,19 @@ function processExecTreeNode($level,&$node,$hash_id_descr,$parent_suite_name = '
 	} // end if
 	return $currentNode;
 } //end function
+
+/**
+* used to display XLS reports
+* TO-DO : figure out where this method really should be at
+*/
+function sendXlsHeader()
+{
+        header("Content-Disposition: inline; filename=testReport.xls");
+        header("Content-Description: PHP Generated Data");
+        header("Content-type: application/vnd.ms-excel; name='My_Excel'");
+        flush();
+}
+
+
 } // end class result
 ?>

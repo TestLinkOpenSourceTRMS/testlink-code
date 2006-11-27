@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8 
- * @modified $Date: 2006/11/27 04:18:51 $ by $Author: kevinlevy $
+ * @modified $Date: 2006/11/27 04:58:25 $ by $Author: kevinlevy $
  *
  *
  * This class is encapsulates most functionality necessary to query the database
@@ -177,13 +177,13 @@ class results
 			}	
 		}	
 		else {
-			$this->mapOfLastResult[$suiteId][$testcase_id] = array("buildIdLastExecuted" => $buildNumber, "result" => $result, "tcversion_id" => $tcversion_id, "execution_ts" => $execution_ts, "notes" => $notes, "executions_id" => $executions_id);
+			$this->mapOfLastResult[$suiteId][$testcase_id] = array("buildIdLastExecuted" => $buildNumber, "result" => $result, "tcversion_id" => $tcversion_id, "execution_ts" => $execution_ts, "notes" => $notes, "suiteName" => $suiteName, "executions_id" => $executions_id);
 		}	
 	}
 
   	else {
   		//$totalCases =  count($this->executionsMap[$suiteId]);
-  		$this->mapOfLastResult[$suiteId][$testcase_id] = array("buildIdLastExecuted" => $buildNumber, "result" => $result, "tcversion_id" => $tcversion_id, "execution_ts" => $execution_ts, "notes" => $notes, "executions_id" => $executions_id);  		
+  		$this->mapOfLastResult[$suiteId][$testcase_id] = array("buildIdLastExecuted" => $buildNumber, "result" => $result, "tcversion_id" => $tcversion_id, "execution_ts" => $execution_ts, "notes" => $notes, "suiteName" => $suiteName, "executions_id" => $executions_id);  		
   	}  	
   }
   
@@ -363,8 +363,7 @@ class results
 				$execution_ts = $currentExecution['execution_ts'];
 				$notes = $currentExecution['notes'];
 				$executions_id = $currentExecution['executions_id'];
-				//print "executions_id = $executions_id <BR>";
-  				$this->addLastResultToMap($suiteId, $caseId, $build, $result, $tcversion_id, $execution_ts, $notes, $suiteName, $executions_id);
+				$this->addLastResultToMap($suiteId, $caseId, $build, $result, $tcversion_id, $execution_ts, $notes, $suiteName, $executions_id);
   			}
   		} // end elseif 
   		

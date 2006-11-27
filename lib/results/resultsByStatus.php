@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsByStatus.php,v 1.20 2006/11/27 07:15:34 kevinlevy Exp $ 
+* $Id: resultsByStatus.php,v 1.21 2006/11/27 07:46:49 kevinlevy Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -20,6 +20,11 @@ require_once('common.php');
 require_once('exec.inc.php');
 require_once("../../lib/functions/lang_api.php");
 require_once("../../lib/functions/results.class.php");
+
+// used to retrieve users 
+require_once('../functions/users.inc.php');
+
+
 testlinkInitPage($db);
 $tp = new testplan($db);
 $type = isset($_GET['type']) ? $_GET['type'] : 'n';
@@ -46,6 +51,14 @@ $tp = new testplan($db);
 $arrBuilds = $tp->get_builds($tpID); 
 $results = new results($db, $tp, $SUITES_SELECTED, $builds, $type);
 $mapOfLastResult = $results->getMapOfLastResult();
+
+// KL - get users array
+define('ALL_USERS_FILTER', null);
+define('ADD_BLANK_OPTION', false);
+$arrOwners = get_users_for_html_options($db, ALL_USERS_FILTER, ADD_BLANK_OPTION);
+//print_r($arrOwners);
+//print "<BR>";
+
 //print "map of last results = <BR>";
 //print_r($mapOfLastResult);
 //print "<BR>";
@@ -67,11 +80,12 @@ while ($suiteId = key($mapOfLastResult)){
 		$execution_ts = $mapOfLastResult[$suiteId][$tcId]['execution_ts'];
 		$suiteName = $mapOfLastResult[$suiteId][$tcId]['suiteName'];
 		$name = $mapOfLastResult[$suiteId][$tcId]['name'];
+		$tester_id = $mapOfLastResult[$suiteId][$tcId]['tester_id'];
 		$executions_id = $mapOfLastResult[$suiteId][$tcId]['executions_id'];
 		$localizedTS = localize_dateOrTimeStamp(null,$dummy,'timestamp_format',$execution_ts);
 		$bugString = buildBugString($db, $executions_id);
 		
-		$arrData[$arrDataIndex] = array(htmlspecialchars($suiteName),$tcId . ":" . htmlspecialchars($name),htmlspecialchars($buildName),'run by',htmlspecialchars($execution_ts),htmlspecialchars($notes),$bugString);
+		$arrData[$arrDataIndex] = array(htmlspecialchars($suiteName),$tcId . ":" . htmlspecialchars($name),htmlspecialchars($buildName),htmlspecialchars($arrOwners[$tester_id]),htmlspecialchars($execution_ts),htmlspecialchars($notes),$bugString);
 		$arrDataIndex++;
 		next($mapOfLastResult[$suiteId]);
 	}

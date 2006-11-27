@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsTC.php,v 1.14 2006/11/27 20:19:18 kevinlevy Exp $ 
+* $Id: resultsTC.php,v 1.15 2006/11/27 22:16:08 kevinlevy Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -11,27 +11,64 @@
 * @author 20050919 - fm - refactoring
 * 
 * 20051022 - scs - correct wrong index
+* 20061127 - kl - upgrading to 1.7
 */
 
-print "KL - 20061029 - work in progress <BR>";
+print "KL - 20061127 - should be functional. There may be an issue with test case results which have multiple executions associated with the same build<BR>";
 require('../../config.inc.php');
 require_once('common.php');
 require_once('../functions/results.class.php');
-//require_once("../functions/lang_api.php");
 testlinkInitPage($db);
-
 $tp = new testplan($db);
-
-//$arrBuilds = $tp->getBuilds($db,$_SESSION['testPlanId'], " ORDER BY builds.name ");
-
 $tpID = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0 ;
-
 $arrBuilds = $tp->get_builds($tpID); 
-
-print_r($arrBuilds);
-print "<BR>";
-
 $arrData = array();
+
+
+$suitesSelected = 'all';
+// get results for all builds
+$buildsToQuery = 'a';
+$re = new results($db, $tp, $suitesSelected, $buildsToQuery);
+$executionsMap = $re->getSuiteList();
+
+// lastResultMap provides list of all test cases in plan - data set includes title and suite names
+$lastResultMap = $re->getMapOfLastResult();
+$indexOfArrData = 0;
+while($suiteId = key($lastResultMap)) {
+	$currentSuiteInfo = $lastResultMap[$suiteId];
+	while ($testCaseId = key($currentSuiteInfo)){
+		$currentTestCaseInfo = $currentSuiteInfo[$testCaseId];
+		$suiteName = $currentTestCaseInfo['suiteName'];
+		$name = $currentTestCaseInfo['name'];		
+		$rowArray = array($suiteName, $testCaseId . ":" . $name);
+		$suiteExecutions = $executionsMap[$suiteId];
+		
+		// iterate over all builds and lookup results for current test case
+		for($i = 0; $i < sizeOf($arrBuilds); $i++) {
+			$buildId = $arrBuilds[$i]['id'];
+			$resultsForBuild = "?";
+		
+			// iterate over executions for this suite, look for 
+			// entries that match current test case id and build id 
+			for ($j = 0; $j < sizeOf($suiteExecutions); $j++) {
+				$execution_array = $suiteExecutions[$j];
+				if (($execution_array['testcaseID'] == $testCaseId) && ($execution_array['build_id'] == $buildId)) {
+					$resultsForBuild = $execution_array['status'];					
+				}
+			}	
+			array_push($rowArray, $resultsForBuild);
+			next($arrBuilds);
+		}
+
+		$arrData[$indexOfArrData] = $rowArray;
+		$indexOfArrData++;
+		next($currentSuiteInfo);		
+	}
+	next($lastResultMap);
+}
+
+//print_r($lastResultMap);
+
 
 // is output is excel?
 $xls = FALSE;
@@ -39,57 +76,15 @@ if (isset($_GET['format']) && $_GET['format'] =='excel'){
 	$xls = TRUE;
 }
 
-// 20050919 - fm
-/**
-$sql = " SELECT MGTCOMP.name AS comp_name, MGTCAT.name as cat_name, TC.title, TC.id AS tcid, mgttcid" .
-       " FROM testplans TP, component COMP, category CAT, testcase TC, mgtcomponent MGTCOMP, mgtcategory MGTCAT " .
-       " WHERE MGTCOMP.id = COMP.mgtcompid " .
-       " AND MGTCAT.id = CAT.mgtcatid " .
-		   " AND COMP.projid=TP.id " .
-		   " AND CAT.compid=COMP.id " .
-		   " AND TC.catid=CAT.id" .
-  	   " AND TP.id=" . $_SESSION['testPlanId'];
 
-$result = $db->exec_query($sql);
-$bRights = has_rights($db,"testplan_execute") && !$xls;
-
-while ($myrow = $db->fetch_array($result))
-{ //Cycle through all of the test cases
-	$container = null;
-	$container[] = htmlspecialchars($myrow['comp_name'] . ' / ' . $myrow['cat_name']);
-	$container[] = "<b>" . $myrow['mgttcid'] . "</b>:" . htmlspecialchars($myrow['title']); 
-	
-	///SCHLUNDUS
-	foreach ($arrBuilds as $build => $name)
-	{
-		$tcID = $myrow['tcid'];
-		$tcStatus = getStatus($db,$tcID, $build);
-		if($tcStatus != $g_tc_status['not_run'])
-		{
-			//This displays the pass,failed or blocked test case result
-			//The hyperlink will take the user to the test case result in the execution page
-			$descrStatus = getStatusName($tcStatus);
-			if($bRights)
-			{
-				$container[] = '<a href="lib/execute/execSetResults.php?keyword=All&level=testcase&owner=All' . 
-					'&id=' . $tcID . "&build=" . $build . '">'.$descrStatus . "</a>";
-			}
-			else
-				$container[] = $descrStatus;
-		}else
-			$container[] = "-";
-	}
-	$arrData[] = $container;
-}
-*/
 // for excel send header
-if ($xls)
+if ($xls) {
 	sendXlsHeader();
+}
 
 $smarty = new TLSmarty;
 $smarty->assign('title', lang_get('title_test_report_all_builds'));
 $smarty->assign('arrData', $arrData);
-// $arrBuilds not defined
 $smarty->assign('arrBuilds', $arrBuilds);
 if ($xls) {
 	$smarty->assign('printDate', strftime($g_date_format, time()) );

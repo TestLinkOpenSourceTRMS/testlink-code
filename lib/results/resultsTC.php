@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsTC.php,v 1.13 2006/11/26 06:45:38 kevinlevy Exp $ 
+* $Id: resultsTC.php,v 1.14 2006/11/27 20:19:18 kevinlevy Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -16,14 +16,22 @@
 print "KL - 20061029 - work in progress <BR>";
 require('../../config.inc.php');
 require_once('common.php');
-//require_once('builds.inc.php');
-//require_once('results.inc.php');
-require_once("../../lib/functions/lang_api.php");
+require_once('../functions/results.class.php');
+//require_once("../functions/lang_api.php");
 testlinkInitPage($db);
 
-$arrData = array();
+$tp = new testplan($db);
 
-//$arrBuilds = getBuilds($db,$_SESSION['testPlanId'], " ORDER BY builds.name ");
+//$arrBuilds = $tp->getBuilds($db,$_SESSION['testPlanId'], " ORDER BY builds.name ");
+
+$tpID = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0 ;
+
+$arrBuilds = $tp->get_builds($tpID); 
+
+print_r($arrBuilds);
+print "<BR>";
+
+$arrData = array();
 
 // is output is excel?
 $xls = FALSE;
@@ -82,7 +90,7 @@ $smarty = new TLSmarty;
 $smarty->assign('title', lang_get('title_test_report_all_builds'));
 $smarty->assign('arrData', $arrData);
 // $arrBuilds not defined
-//$smarty->assign('arrBuilds', $arrBuilds);
+$smarty->assign('arrBuilds', $arrBuilds);
 if ($xls) {
 	$smarty->assign('printDate', strftime($g_date_format, time()) );
 	$smarty->assign('user', $_SESSION['user']);

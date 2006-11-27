@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: resultsTC.tpl,v 1.4 2005/12/05 01:46:52 havlat Exp $ *}
+{* $Id: resultsTC.tpl,v 1.5 2006/11/27 20:19:46 kevinlevy Exp $ *}
 {* Purpose: smarty template - show Test Results and Metrics *}
 {* Revisions:
 20051204 - mht - removed obsolete print button
@@ -24,8 +24,9 @@
 	<tr>
 		<th>{lang_get s='title_test_case_suite'}</th>
 		<th>{lang_get s='title_test_case_title'}</th>
-		{foreach item=row from=$arrBuilds}
-		<th>{lang_get s='th_build'} {$row|escape}</th>
+		
+		{foreach key=row item=buildid from=$arrBuilds}
+			<th>{$arrBuilds[$row].name|escape}</th>
 		{/foreach}
 	</tr>
 {section name=Row loop=$arrData}

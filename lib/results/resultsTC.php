@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsTC.php,v 1.15 2006/11/27 22:16:08 kevinlevy Exp $ 
+* $Id: resultsTC.php,v 1.16 2006/11/27 22:27:27 kevinlevy Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -67,7 +67,6 @@ while($suiteId = key($lastResultMap)) {
 	next($lastResultMap);
 }
 
-//print_r($lastResultMap);
 
 
 // is output is excel?
@@ -76,10 +75,9 @@ if (isset($_GET['format']) && $_GET['format'] =='excel'){
 	$xls = TRUE;
 }
 
-
 // for excel send header
 if ($xls) {
-	sendXlsHeader();
+	$re->sendXlsHeader();
 }
 
 $smarty = new TLSmarty;

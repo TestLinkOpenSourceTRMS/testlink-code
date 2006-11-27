@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsBuild.php,v 1.15 2006/11/26 20:29:44 kevinlevy Exp $ 
+* $Id: resultsBuild.php,v 1.16 2006/11/27 06:59:03 kevinlevy Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * 
@@ -16,6 +16,8 @@ require_once('common.php');
 require_once('builds.inc.php');
 require_once('../functions/results.class.php');
 require_once('../functions/testplan.class.php');
+
+print "KL - 20061126 - all tables functional except for priority report <BR>";
 
 $builds_to_query = isset($_GET['build']) ? intval($_GET['build']) : null;
 if (!isset($_GET['build']))

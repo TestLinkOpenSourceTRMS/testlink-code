@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsMoreBuilds_buildReport.php,v 1.35 2006/10/29 08:32:02 kevinlevy Exp $ 
+* $Id: resultsMoreBuilds_buildReport.php,v 1.36 2006/11/27 06:59:03 kevinlevy Exp $ 
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 * 
@@ -103,6 +103,9 @@ $arrOwners = get_users_for_html_options($db, ALL_USERS_FILTER, ADD_BLANK_OPTION)
 $smarty = new TLSmarty();
 $smarty->assign('arrBuilds', $arrBuilds);
 $smarty->assign('mapBuilds', $mapBuilds);
+
+// TO-DO - figure out if i need users var
+$users = null;
 $smarty->assign('mapUsers',$users);
 $smarty->assign('arrKeywords', $arrKeywords);
 $smarty->assign('componentsSelected', $componentNames);

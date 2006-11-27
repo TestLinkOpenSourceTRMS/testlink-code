@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsByStatus.php,v 1.18 2006/11/27 04:59:39 kevinlevy Exp $ 
+* $Id: resultsByStatus.php,v 1.19 2006/11/27 06:39:34 kevinlevy Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -55,10 +55,12 @@ while ($suiteId = key($mapOfLastResult)){
 		$notes = $mapOfLastResult[$suiteId][$tcId]['notes'];
 		$execution_ts = $mapOfLastResult[$suiteId][$tcId]['execution_ts'];
 		$suiteName = $mapOfLastResult[$suiteId][$tcId]['suiteName'];
+		$name = $mapOfLastResult[$suiteId][$tcId]['name'];
 		$executions_id = $mapOfLastResult[$suiteId][$tcId]['executions_id'];
 		$localizedTS = localize_dateOrTimeStamp(null,$dummy,'timestamp_format',$execution_ts);
 		$bugString = buildBugString($db, $executions_id);
-		$arrData[$arrDataIndex] = array(htmlspecialchars($suiteName),"tcID=" . $tcId,"buildId=" . $lastBuildIdExecuted,'run by',htmlspecialchars($execution_ts),htmlspecialchars($notes),$bugString);
+		
+		$arrData[$arrDataIndex] = array(htmlspecialchars($suiteName),$tcId . ":" . htmlspecialchars($name),"buildId=" . $lastBuildIdExecuted,'run by',htmlspecialchars($execution_ts),htmlspecialchars($notes),$bugString);
 		$arrDataIndex++;
 		next($mapOfLastResult[$suiteId]);
 	}

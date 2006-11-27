@@ -1,15 +1,17 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsByStatus.php,v 1.19 2006/11/27 06:39:34 kevinlevy Exp $ 
+* $Id: resultsByStatus.php,v 1.20 2006/11/27 07:15:34 kevinlevy Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
+* @author     KL
 * 
 * This page show Test Results over all Builds.
 *
 * @author 20050919 - fm - refactoring cat/comp name
 * 20050901 - scs - added fix for Mantis 81
+* 20061126 - KL - upgrade to 1.7
 */
 require('../../config.inc.php');
 require_once('common.php');
@@ -41,6 +43,7 @@ $SUITES_SELECTED = "all";
 $builds = 'a';
 
 $tp = new testplan($db);
+$arrBuilds = $tp->get_builds($tpID); 
 $results = new results($db, $tp, $SUITES_SELECTED, $builds, $type);
 $mapOfLastResult = $results->getMapOfLastResult();
 //print "map of last results = <BR>";
@@ -52,6 +55,14 @@ while ($suiteId = key($mapOfLastResult)){
 //	print "suiteId = $suiteId <BR>";
 	while($tcId = key($mapOfLastResult[$suiteId])){
 		$lastBuildIdExecuted = $mapOfLastResult[$suiteId][$tcId]['buildIdLastExecuted'];
+		$buildName = null;
+		for ($i = 0 ; $i < sizeof($arrBuilds); $i++) {
+			$currentBuildInfo = 	$arrBuilds[$i];
+			if ($currentBuildInfo['id'] == $lastBuildIdExecuted) {
+				$buildName = $currentBuildInfo['name'];
+			}
+		}
+
 		$notes = $mapOfLastResult[$suiteId][$tcId]['notes'];
 		$execution_ts = $mapOfLastResult[$suiteId][$tcId]['execution_ts'];
 		$suiteName = $mapOfLastResult[$suiteId][$tcId]['suiteName'];
@@ -60,7 +71,7 @@ while ($suiteId = key($mapOfLastResult)){
 		$localizedTS = localize_dateOrTimeStamp(null,$dummy,'timestamp_format',$execution_ts);
 		$bugString = buildBugString($db, $executions_id);
 		
-		$arrData[$arrDataIndex] = array(htmlspecialchars($suiteName),$tcId . ":" . htmlspecialchars($name),"buildId=" . $lastBuildIdExecuted,'run by',htmlspecialchars($execution_ts),htmlspecialchars($notes),$bugString);
+		$arrData[$arrDataIndex] = array(htmlspecialchars($suiteName),$tcId . ":" . htmlspecialchars($name),htmlspecialchars($buildName),'run by',htmlspecialchars($execution_ts),htmlspecialchars($notes),$bugString);
 		$arrDataIndex++;
 		next($mapOfLastResult[$suiteId]);
 	}
@@ -138,6 +149,8 @@ function buildBugString(&$db,$execID)
 
 $smarty = new TLSmarty;
 $smarty->assign('title', $title);
+
+$smarty->assign('arrBuilds', $arrBuilds); 
 $smarty->assign('arrData', $arrData);
 $smarty->display('resultsByStatus.tpl');
 ?>

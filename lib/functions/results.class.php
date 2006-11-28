@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8 
- * @modified $Date: 2006/11/27 22:26:49 $ by $Author: kevinlevy $
+ * @modified $Date: 2006/11/28 11:47:37 $ by $Author: franciscom $
  *
  *
  * This class is encapsulates most functionality necessary to query the database
@@ -168,24 +168,40 @@ class results
 	 * currently it does not account for user expliting marking a case "not run".
 	 *  */
 	
-  function addLastResultToMap($suiteId, $testcase_id, $buildNumber, $result, $tcversion_id, $execution_ts, $notes, $suiteName, $executions_id, $name, $tester_id){
+  function addLastResultToMap($suiteId, $testcase_id, $buildNumber, $result, $tcversion_id, 
+                              $execution_ts, $notes, $suiteName, $executions_id, $name, $tester_id){
 	if ($this->mapOfLastResult && array_key_exists($suiteId, $this->mapOfLastResult)) {
 		if (array_key_exists($testcase_id, $this->mapOfLastResult[$suiteId])) {
 			$buildInMap = $this->mapOfCaseResults[$testcase_id]['buildNumber'];	
 			if ($buildInMap < $buildNumber) {				
 				$this->mapOfLastResult[$suiteId][$testcase_id] = null;
 				
-				$this->mapOfLastResult[$suiteId][$testcase_id] = array("buildIdLastExecuted" => $buildNumber, "result" => $result, "tcversion_id" => $tcversion_id, "execution_ts" => $execution_ts, "notes" => $notes, "suiteName" => $suiteName, "executions_id" => $executions_id, "name" => $name, "tester_id" => $tester_id);
+				$this->mapOfLastResult[$suiteId][$testcase_id] = array("buildIdLastExecuted" => $buildNumber, 
+				                                                       "result" => $result, "tcversion_id" => $tcversion_id, 
+				                                                       "execution_ts" => $execution_ts, "notes" => $notes, 
+				                                                       "suiteName" => $suiteName, 
+				                                                       "executions_id" => $executions_id, 
+				                                                       "name" => $name, "tester_id" => $tester_id);
 			}	
 		}	
 		else {
-			$this->mapOfLastResult[$suiteId][$testcase_id] = array("buildIdLastExecuted" => $buildNumber, "result" => $result, "tcversion_id" => $tcversion_id, "execution_ts" => $execution_ts, "notes" => $notes, "suiteName" => $suiteName, "executions_id" => $executions_id, "name" => $name, "tester_id" => $tester_id);
+			$this->mapOfLastResult[$suiteId][$testcase_id] = array("buildIdLastExecuted" => $buildNumber, 
+			                                                        "result" => $result, "tcversion_id" => $tcversion_id, 
+			                                                        "execution_ts" => $execution_ts, "notes" => $notes, 
+			                                                        "suiteName" => $suiteName, 
+			                                                        "executions_id" => $executions_id, 
+			                                                        "name" => $name, "tester_id" => $tester_id);
 		}	
 	}
 
   	else {
   		//$totalCases =  count($this->executionsMap[$suiteId]);
-  		$this->mapOfLastResult[$suiteId][$testcase_id] = array("buildIdLastExecuted" => $buildNumber, "result" => $result, "tcversion_id" => $tcversion_id, "execution_ts" => $execution_ts, "notes" => $notes, "suiteName" => $suiteName, "executions_id" => $executions_id, "name" => $name, "tester_id" => $tester_id);  		
+  		$this->mapOfLastResult[$suiteId][$testcase_id] = array("buildIdLastExecuted" => $buildNumber, 
+  		                                                       "result" => $result, "tcversion_id" => $tcversion_id, 
+  		                                                       "execution_ts" => $execution_ts, "notes" => $notes, 
+  		                                                       "suiteName" => $suiteName, 
+  		                                                       "executions_id" => $executions_id, 
+  		                                                       "name" => $name, "tester_id" => $tester_id);  		
   	}  	
   }
   

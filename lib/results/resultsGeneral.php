@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: resultsGeneral.php,v $
- * @version $Revision: 1.14 $
- * @modified $Date: 2006/11/27 06:59:03 $ by $Author: kevinlevy $
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2006/11/28 13:43:31 $ by $Author: franciscom $
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
  * This page show Test Results over all Builds.
@@ -17,7 +17,7 @@
  * 
  */
 
-print "KL - 20061126 - all tables functional except for priority report <BR>";
+print "Warning Message - KL - 20061126 - all tables functional except for priority report <BR>";
 require('../../config.inc.php');
 require_once('common.php');
 require_once('builds.inc.php');

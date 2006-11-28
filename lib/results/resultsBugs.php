@@ -1,76 +1,106 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsBugs.php,v 1.7 2006/10/24 20:35:02 schlundus Exp $ 
-*
-* @author	Martin Havlat <havlat@users.sourceforge.net>
-* 
-* This page show Bug Report.
-*
+* @author kevinlevy
+* 20061127 - kl - upgrading to 1.7
 */
+
 require('../../config.inc.php');
 require_once('common.php');
-require_once('results.inc.php');
+require_once('../functions/results.class.php');
 require_once("../../lib/functions/lang_api.php");
+// exec.inc.php required by buildBugString()
+require_once('exec.inc.php');
 testlinkInitPage($db);
-
-$tpName = $_SESSION['testPlanName'];
 $tp = new testplan($db);
-$tpID = isset($_SESSION['testPlanId']) ?  $_SESSION['testPlanId'] : 0;
-$tcs = $tp->get_linked_tcversions($tpID,null,0,1);
+$tpID = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0 ;
+$arrBuilds = $tp->get_builds($tpID); 
+$arrData = array();
 
-$query = "SELECT NHB.id tcid, NHC.id tsid, execution_ts,bug_id,NHB.name tcname,NHC.name tsname ".
-		 "FROM executions e JOIN execution_bugs eb ON e.id = eb.execution_id ".
-		 "JOIN nodes_hierarchy NHA ON e.tcversion_id = NHA.id ".
-		 "JOIN nodes_hierarchy NHB ON NHA.parent_id = NHB.id  ".
-		 "JOIN nodes_hierarchy NHC ON NHB.parent_id = NHC.id  ".
-		 "WHERE testplan_id = {$tpID} ".
-		 "ORDER BY NHC.node_order ASC,NHB.node_order ASC, execution_ts DESC";
 
-		 
-$result = $db->fetchRowsIntoMap($query,"tsid",1);
-$tsInfos = array();
-$dummy = null;
-foreach($result as $tsID => $tcInfos)
-{
-	$tmpTcID = 0;
-	
-	$tsInfo = array(	"name" => "", 
-						"tcInfo" => array()
-					);
-	$tsTCInfo = array(
-						"tcName" => '',
-						"executions" => array(),
-					 );
-	for($i = 0;$i < sizeof($tcInfos);$i++)
-	{
-		$tc = $tcInfos[$i];
-		$currentTcID = $tc['tcid'];
-		if ($i == 0)
-		{
-			$tsInfo['name'] = $tc['tsname'];
-			$tmpTcID = $currentTcID;
-			$tsTCInfo['tcName'] = $tc['tcname'];
-		}
-		if ($tmpTcID != $currentTcID)
-		{
-			$tsInfo['tcInfo'][$tmpTcID] = $tsTCInfo;
-			$tmpTcID = $currentTcID;
-			$tsTCInfo = array(
-							  "tcName" => $tc['tcname'],
-							  "executions" => array(),
-							  );
-		}
-		$ts = localize_dateOrTimeStamp(null,$dummy,'timestamp_format',$tc['execution_ts']);
-		$tsTCInfo["executions"][$ts][] = $g_bugInterface->buildViewBugLink($tc['bug_id'],1);
+$suitesSelected = 'all';
+// get results for all builds
+$buildsToQuery = 'a';
+$re = new results($db, $tp, $suitesSelected, $buildsToQuery);
+$executionsMap = $re->getSuiteList();
+
+// lastResultMap provides list of all test cases in plan - data set includes title and suite names
+$lastResultMap = $re->getMapOfLastResult();
+$indexOfArrData = 0;
+while($suiteId = key($lastResultMap)) {
+	$currentSuiteInfo = $lastResultMap[$suiteId];
+	$timestampInfo = null;
+	$bugInfo = null;
+
+	while ($testCaseId = key($currentSuiteInfo)){
+		$currentTestCaseInfo = $currentSuiteInfo[$testCaseId];
+		$suiteName = $currentTestCaseInfo['suiteName'];
+		$name = $currentTestCaseInfo['name'];		
+		
+		$suiteExecutions = $executionsMap[$suiteId];
+		
+		$rowArray = array($suiteName, $testCaseId . ":" . $name);
+		for ($i = 0; $i < sizeOf($suiteExecutions); $i++) {
+			$currentExecution = $suiteExecutions[$i];
+			$currentTimeStamp = $currentExecution['execution_ts'];
+			$executions_id = $currentExecution['executions_id'];
+			if ($executions_id) {
+				$bugString = buildBugString($db, $executions_id);
+			}
+			if ($bugString) {
+				// there is always only 1 timestamp
+				// but there can be multiple bugs
+				// print "bugString = $bugString <BR>";
+				$timestampInfo = $timestampInfo .  $currentTimeStamp . "<BR>";
+				$bugInfo = $bugInfo . $bugString ;			
+			}		
+		}		
+		//array_push($rowArray, $timestampInfo);
+		array_push($rowArray, $bugInfo);
+		$arrData[$indexOfArrData] = $rowArray;
+		$indexOfArrData++;	
+		next($currentSuiteInfo);		
 	}
-	$tsInfo['tcInfo'][$tmpTcID] = $tsTCInfo;	
-	$tsInfos[] = $tsInfo;
+	next($lastResultMap);
 }
 
 
-$smarty = new TLSmarty();
-$smarty->assign('tpName', $tpName);
-$smarty->assign('arrData', $tsInfos);
+
+// is output is excel?
+$xls = FALSE;
+if (isset($_GET['format']) && $_GET['format'] =='excel'){
+	$xls = TRUE;
+}
+
+// for excel send header
+if ($xls) {
+	$re->sendXlsHeader();
+}
+
+$smarty = new TLSmarty;
+$smarty->assign('title', lang_get('title_test_report_all_builds'));
+$smarty->assign('arrData', $arrData);
+$smarty->assign('arrBuilds', $arrBuilds);
+if ($xls) {
+	$smarty->assign('printDate', strftime($g_date_format, time()) );
+	$smarty->assign('user', $_SESSION['user']);
+}
 $smarty->display('resultsBugs.tpl');
+
+
+function buildBugString(&$db,$execID)
+{
+	$bugString = null;
+	$bugs = get_bugs_for_exec($db,config_get('bugInterface'),$execID);
+	if ($bugs)
+	{
+		foreach($bugs as $bugID => $bugInfo)
+		{
+			$bugString .= $bugInfo['link_to_bts']."<br />";
+		}
+	}
+	return $bugString;
+}
 ?>
+
+

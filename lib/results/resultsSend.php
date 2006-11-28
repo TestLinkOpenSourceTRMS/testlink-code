@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsSend.php,v 1.10 2006/11/28 03:42:04 kevinlevy Exp $ 
+* $Id: resultsSend.php,v 1.11 2006/11/28 03:53:00 kevinlevy Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author	Chad Rosen
@@ -59,28 +59,32 @@ if(isset($_POST['submit']))
 		{
 			 //if the user has chosen to sent the entire testplan priority info
 			//grab all of the priority info and stuff it into the message body
-			$msgBody .= reportGeneralStatus($db,$_SESSION['testPlanId']);
+			$msgBody .= "reportGeneralStatus in progress";
+				// reportGeneralStatus($db,$_SESSION['testPlanId']);
 		} 
 		else if($status == 'comAll')
 		{ 
 		  // user has chosen to send a specific component status across all builds
 		  
 		  // 20051106 - fm - missed argument
-			$msgBody .= reportSuiteStatus($db,$_SESSION['testPlanId'],$_POST['comSelectAll']);
+			$msgBody .= "reportSuiteStatus"; 
+				//reportSuiteStatus($db,$_SESSION['testPlanId'],$_POST['comSelectAll']);
 		}	
 		else if($status == 'projBuild') 
 		{ 
 			// 20051106 - fm - missed argument
 		  //user has chosen to send the status of a particular build
-			$msgBody .= reportBuildStatus($db,$_SESSION['testPlanId'],
-			                              $_POST['buildProj'],$builds[$_POST['buildProj']]);
+			$msgBody .= "reportBuildStatus"; 
+				// reportBuildStatus($db,$_SESSION['testPlanId'],
+			                         //     $_POST['buildProj'],$builds[$_POST['buildProj']]);
 		}	
 		else
 		{ 
 			// 20051106 - fm - missed argument
 		  //user has chosen to send the status of a particular component for a build
-			$msgBody .= reportSuiteBuildStatus($db,$_SESSION['testPlanId'],$_POST['comSelectBuild'], 
-			                                   $_POST['buildCom'],$builds[$_POST['buildCom']]);
+			$msgBody .= "reportSuiteBuildStatus"; 
+				//reportSuiteBuildStatus($db,$_SESSION['testPlanId'],$_POST['comSelectBuild'], 
+			                       //            $_POST['buildCom'],$builds[$_POST['buildCom']]);
 		}
 		
 			

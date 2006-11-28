@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsSend.php,v 1.9 2006/11/28 01:11:02 kevinlevy Exp $ 
+* $Id: resultsSend.php,v 1.10 2006/11/28 03:42:04 kevinlevy Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author	Chad Rosen
@@ -22,20 +22,26 @@ require_once('../functions/results.class.php');
 testlinkInitPage($db);
 
 $tp = new testplan($db);
+$tpID = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0 ;
+$builds = $tp->get_builds($tpID); 
+$builds_two = array();
+for ($i = 0; $i < sizeOf($builds); $i++ ) {
+	$array = $builds[$i];
+	$builds_two[$array['id']] = $array['name'];
+}
+
+$tp = new testplan($db);
 $builds_to_query = -1;
 $suitesSelected = 'all';
 $re = new results($db, $tp, $suitesSelected, $builds_to_query);
 $topLevelSuites= $re->getTopLevelSuites();
-$topLevelSuites_2 = array();
+$topLevelSuites_two = array();
 while ($i = key($topLevelSuites)){
 	$array = $topLevelSuites[$i];
-	//print_r($array);
-	//print "<BR>";
 	$topLevelSuites_two[$array['id']] = $array['name'];
 	next($topLevelSuites);	
 }
 
-//print_r($topLevelSuites);
 $message = null;
 // process input data
 if(isset($_POST['submit']))
@@ -47,7 +53,7 @@ if(isset($_POST['submit']))
 		// create message body
 		$msgBody = (isset($_POST['body']) ? $_POST['body'] : null) . "\n\n";
 		$status = isset($_POST['status']) ? $_POST['status'] : null;
-		$builds = getBuilds($db,$_SESSION['testPlanId']," ORDER BY builds.name ");
+		//$builds = getBuilds($db,$_SESSION['testPlanId']," ORDER BY builds.name ");
 
 		if($status == 'projAll')
 		{
@@ -96,19 +102,21 @@ if(isset($_POST['submit']))
 
 /**
 * 20061127 - KL - temporarily comment out
-//Gather all of the current TP components for the dropdown box
-$suites = listTPComponent($db,$_SESSION['testPlanId']);
-// Gather info for the build dropdown box
-$builds = getBuilds($db,$_SESSION['testPlanId']," ORDER BY builds.name ");
-// warning if no build or component
-if(count($suites) == 0 || count($builds) == 0)
-	displayInfo($_SESSION['testPlanName'], lang_get("warning_create_build_first"));
 */
-	
+//Gather all of the current TP components for the dropdown box
+//$suites = listTPComponent($db,$_SESSION['testPlanId']);
+// Gather info for the build dropdown box
+//$builds = getBuilds($db,$_SESSION['testPlanId']," ORDER BY builds.name ");
+// warning if no build or component
+
+if(count($topLevelSuites_two) == 0 || count($builds_two) == 0) {
+	displayInfo($_SESSION['testPlanName'], lang_get("warning_create_build_first"));
+}
+
 $smarty = new TLSmarty;
 $smarty->assign('tpName', $_SESSION['testPlanName']);
 $smarty->assign('message', $message);
 $smarty->assign('suites', $topLevelSuites_two);
-$smarty->assign('builds', $builds);
+$smarty->assign('builds', $builds_two);
 $smarty->display('resultsSend.tpl');
 ?>

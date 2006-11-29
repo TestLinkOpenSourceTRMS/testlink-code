@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: resultsMoreBuilds_report.tpl,v 1.25 2006/11/29 06:34:01 kevinlevy Exp $
+$Id: resultsMoreBuilds_report.tpl,v 1.26 2006/11/29 07:35:17 kevinlevy Exp $
 @author Francisco Mancardi - fm - start solving BUGID 97/98
 20051022 - scs - removed ' in component id values
 20051121 - scs - added escaping of tpname
@@ -170,11 +170,12 @@ $Id: resultsMoreBuilds_report.tpl,v 1.25 2006/11/29 06:34:01 kevinlevy Exp $
 						<th>{lang_get s='th_execution_ts'}</th>
 						<th>{lang_get s='th_status'}</th>
 						<th>{lang_get s='th_notes'}</th>
+						<th>{lang_get s='th_bugs'}</th>
 					</tr> 
 					{foreach key=executionInstance item=array from=$suiteList[$suiteId]}
 						{assign var=inst value=$suiteList[$suiteId][$executionInstance]}
 						<tr>
-							<td>{$inst.testcaseID} </td>
+							<td>{$inst.testcaseID}: {$inst.name} </td>
 							<td>{$mapBuilds[$inst.build_id]|escape}</td>
 
  
@@ -183,6 +184,7 @@ $Id: resultsMoreBuilds_report.tpl,v 1.25 2006/11/29 06:34:01 kevinlevy Exp $
 							<td>{$inst.execution_ts} </td>
 							<td>{$gsmarty_tc_status_css[$inst.status]|escape}</td>
 							<td>{$inst.notes|escape} </td> 
+							<td>{$inst.bugString} </td> 
 						</tr>
 					
 					{/foreach}					

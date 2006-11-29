@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsByStatus.php,v 1.21 2006/11/27 07:46:49 kevinlevy Exp $ 
+* $Id: resultsByStatus.php,v 1.22 2006/11/29 19:59:19 kevinlevy Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -18,7 +18,7 @@ require_once('common.php');
 //require_once('builds.inc.php');	
 //require_once('results.inc.php');
 require_once('exec.inc.php');
-require_once("../../lib/functions/lang_api.php");
+//require_once("../../lib/functions/lang_api.php");
 require_once("../../lib/functions/results.class.php");
 
 // used to retrieve users 

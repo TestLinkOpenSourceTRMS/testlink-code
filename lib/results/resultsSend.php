@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsSend.php,v 1.11 2006/11/28 03:53:00 kevinlevy Exp $ 
+* $Id: resultsSend.php,v 1.12 2006/11/29 19:59:19 kevinlevy Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author	Chad Rosen
@@ -50,6 +50,11 @@ if(isset($_POST['submit']))
 		$message = lang_get("send_to_empty_email_warning");
 	else
 	{
+
+		print "testPlanId = " . $_SESSION['testPlanId'] . " <BR>";
+		print "buildProj = " . $_POST['buildProj'] . "<BR>";
+		print "buildCom = " . $_POST['buildCom'] . " <BR>";
+
 		// create message body
 		$msgBody = (isset($_POST['body']) ? $_POST['body'] : null) . "\n\n";
 		$status = isset($_POST['status']) ? $_POST['status'] : null;

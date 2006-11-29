@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8 
- * @modified $Date: 2006/11/29 04:50:54 $ by $Author: kevinlevy $
+ * @modified $Date: 2006/11/29 07:33:56 $ by $Author: kevinlevy $
  *
  *
  * This class is encapsulates most functionality necessary to query the database
@@ -20,6 +20,8 @@
 **/
 
 require_once('treeMenu.inc.php');
+// used for bug string lookup
+require_once('exec.inc.php');
 
 class results
 {
@@ -500,7 +502,7 @@ mysql> desc nodes_hierarchy;
 		{
 		    $executions_id = null;
 		    while($executions_id = key($execQuery)){
-		              $notSureA = $execQuery[$executions_id];
+				$notSureA = $execQuery[$executions_id];
 		 		$exec_row = $notSureA[0];
 		  		$build_id = $exec_row['build_id'];
 		  		$tester_id = $exec_row['tester_id'];
@@ -508,7 +510,16 @@ mysql> desc nodes_hierarchy;
 		  		$status = $exec_row['status'];
 		  		$testplan_id = $exec_row['testplan_id'];
 		  		$notes = $exec_row['notes'];
-				$infoToSave = array('testcaseID' => $testcaseID, 'tcversion_id' => $tcversion_id, 'build_id' => $build_id, 'tester_id' => $tester_id, 'execution_ts' => $execution_ts, 'status' => $status, 'notes' => $notes, 'executions_id' => $executions_id, 'name' => $name);
+
+				// TO-DO use localizedTS
+				//$localizedTS = localize_dateOrTimeStamp(null,$dummy,'timestamp_format',$execution_ts);
+				$bugString = $this->buildBugString($this->db, $executions_id);
+				//print "bugString = $bugString <BR>";
+				//print "<BR>";
+			
+				// TO-DO - only add bugString if it's needed - build logic into results contructor
+				// to pass this request in
+				$infoToSave = array('testcaseID' => $testcaseID, 'tcversion_id' => $tcversion_id, 'build_id' => $build_id, 'tester_id' => $tester_id, 'execution_ts' => $execution_ts, 'status' => $status, 'notes' => $notes, 'executions_id' => $executions_id, 'name' => $name, 'bugString' => $bugString);
 
 				if ($lastResult != 'n') {
 				  array_push($currentSuite, $infoToSave);
@@ -529,6 +540,32 @@ mysql> desc nodes_hierarchy;
     return $executionsMap;
   } // end function
   
+
+
+/**
+* TO-DO - figure out what file to include so i don't have
+* to redefine this
+* builds bug information for execution id
+* written by Andreas, being implemented again by KL
+*/
+function buildBugString(&$db,$execID)
+{
+	$bugString = null;
+	
+	$bugs = get_bugs_for_exec($db,config_get('bugInterface'),$execID);
+	if ($bugs)
+	{
+		foreach($bugs as $bugID => $bugInfo)
+		{
+			$bugString .= $bugInfo['link_to_bts']."<br />";
+		}
+	}
+	
+	return $bugString;
+}
+
+
+
 
    /**
    * return map of suite id to suite name pairs of all suites

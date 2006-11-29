@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsMoreBuilds_buildReport.php,v 1.36 2006/11/27 06:59:03 kevinlevy Exp $ 
+* $Id: resultsMoreBuilds_buildReport.php,v 1.37 2006/11/29 06:35:49 kevinlevy Exp $ 
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 * 
@@ -43,51 +43,29 @@ elseif ($lastStatus == "Any"){
 $ownerSelected = isset($_REQUEST['owner']) ? $_REQUEST['owner'] : null;
 $buildsSelected = isset($_REQUEST['build']) ? $_REQUEST['build'] : array();
 $componentsSelected = isset($_REQUEST['component']) ? $_REQUEST['component'] : array();
-
-
 $componentIds = null;
 $componentNames = null;
 
-
 for ($id = 0; $id < sizeOf($componentsSelected); $id++)
 {
-
-//print "IN LOOP <BR>";
-//print "componentsSelected[id] = $componentsSelected[$id] <BR>";
 	list($suiteId, $suiteName) = split("\,", $componentsSelected[$id], 2);
-//	print "suiteId = $suiteId <BR>";
-//	print "name = $suiteName <BR>";
 	$componentIds[$id] = $suiteId;
-	$componentNames[$id] = $suiteName;
-	
+	$componentNames[$id] = $suiteName;	
 }
 
 $keywordSelected = isset($_REQUEST['keyword']) ? $_REQUEST['keyword'] : 0;
-
-/**
-
-print "components selected = <BR>";
-print_r($componentsSelected);
-print "<BR>";
-
-print "component ids = <BR>";
-print_r($componentIds);
-print "<BR>";
-*/
-
 $tpID = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0;
 $prodID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 $tpName = isset($_SESSION['testPlanName']) ? $_SESSION['testPlanName'] : '';
 $xls = ($format == 'EXCEL') ? true : false;
-
 $buildsToQuery = -1;
-if (sizeof($buildsSelected))
+
+if (sizeof($buildsSelected)) {
 	$buildsToQuery = implode(",", $buildsSelected);
-	
+}
+
 $tp = new testplan($db);
-
 $re = new results($db, $tp, $componentIds, $buildsToQuery, $statusForClass, $keywordSelected, $ownerSelected);
-
 $suiteList = $re->getSuiteList();
 $flatArray = $re->getFlatArray();
 $mapOfSuiteSummary =  $re->getAggregateMap();
@@ -99,14 +77,10 @@ $mapBuilds = $tp->get_builds_for_html_options($tpID);
 define('ALL_USERS_FILTER', null);
 define('ADD_BLANK_OPTION', false);
 $arrOwners = get_users_for_html_options($db, ALL_USERS_FILTER, ADD_BLANK_OPTION);
-
 $smarty = new TLSmarty();
 $smarty->assign('arrBuilds', $arrBuilds);
 $smarty->assign('mapBuilds', $mapBuilds);
-
-// TO-DO - figure out if i need users var
-$users = null;
-$smarty->assign('mapUsers',$users);
+$smarty->assign('mapUsers',$arrOwners);
 $smarty->assign('arrKeywords', $arrKeywords);
 $smarty->assign('componentsSelected', $componentNames);
 $smarty->assign('lastStatus', $lastStatus);

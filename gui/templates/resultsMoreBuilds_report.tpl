@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: resultsMoreBuilds_report.tpl,v 1.24 2006/10/29 06:46:02 kevinlevy Exp $
+$Id: resultsMoreBuilds_report.tpl,v 1.25 2006/11/29 06:34:01 kevinlevy Exp $
 @author Francisco Mancardi - fm - start solving BUGID 97/98
 20051022 - scs - removed ' in component id values
 20051121 - scs - added escaping of tpname
@@ -175,8 +175,11 @@ $Id: resultsMoreBuilds_report.tpl,v 1.24 2006/10/29 06:46:02 kevinlevy Exp $
 						{assign var=inst value=$suiteList[$suiteId][$executionInstance]}
 						<tr>
 							<td>{$inst.testcaseID} </td>
-							<td>{$mapBuilds[$inst.build_id]|escape}</td> 
-							<td>{$mapUsers[$inst.tester_id].fullname|escape}</td>
+							<td>{$mapBuilds[$inst.build_id]|escape}</td>
+
+ 
+							<td>{$mapUsers[$inst.tester_id]|escape}</td>
+
 							<td>{$inst.execution_ts} </td>
 							<td>{$gsmarty_tc_status_css[$inst.status]|escape}</td>
 							<td>{$inst.notes|escape} </td> 

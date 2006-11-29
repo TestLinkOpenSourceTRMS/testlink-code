@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8 
- * @modified $Date: 2006/11/28 11:47:37 $ by $Author: franciscom $
+ * @modified $Date: 2006/11/29 04:50:54 $ by $Author: kevinlevy $
  *
  *
  * This class is encapsulates most functionality necessary to query the database
@@ -498,6 +498,7 @@ mysql> desc nodes_hierarchy;
 		
 		if ($execQuery)
 		{
+		    $executions_id = null;
 		    while($executions_id = key($execQuery)){
 		              $notSureA = $execQuery[$executions_id];
 		 		$exec_row = $notSureA[0];

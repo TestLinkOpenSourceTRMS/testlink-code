@@ -1,6 +1,6 @@
 <?php 
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: newInstallStart_TL.php,v 1.11 2006/08/28 08:33:17 franciscom Exp $ */
+/* $Id: newInstallStart_TL.php,v 1.12 2006/12/04 22:20:48 asielb Exp $ */
 
 // 20060428 - franciscom - added new check  check_db_loaded_extension()
 //
@@ -75,6 +75,10 @@ $errors += $check['errors'];
 echo $check['msg'];
 
 $check = check_with_feedback();
+echo $check['msg'];
+$errors += $check['errors'];
+
+$check = check_pear_modules();
 echo $check['msg'];
 $errors += $check['errors'];
 

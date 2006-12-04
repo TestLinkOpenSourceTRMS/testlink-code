@@ -1,7 +1,7 @@
 <?php
 /* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: installUtils.php,v 1.17 2006/08/28 08:33:17 franciscom Exp $ 
+$Id: installUtils.php,v 1.18 2006/12/04 22:20:48 asielb Exp $ 
 
 20060428 - franciscom - new function check_db_loaded_extension()
 20060214 - franciscom - added warning regarding valid database names
@@ -58,10 +58,10 @@ return $filesArr;
 // | Copyright (c) 2003, 2004, 2005 MySQL AB                              |
 // |                                                                      |
 // +----------------------------------------------------------------------+
-// | Authors: João Prado Maia <jpm@mysql.com>                             |
+// | Authors: Joï¿½o Prado Maia <jpm@mysql.com>                             |
 // +----------------------------------------------------------------------+
 //
-// @(#) $Id: installUtils.php,v 1.17 2006/08/28 08:33:17 franciscom Exp $
+// @(#) $Id: installUtils.php,v 1.18 2006/12/04 22:20:48 asielb Exp $
 //
 
 // a foolish wrapper - 20051231 - fm
@@ -326,8 +326,8 @@ return($ret);
 //
 function check_php_version($info_location="./info/")
 {
-$min_ver = "4.1.0";
-$ver_not_tested="5.0.0";
+$min_ver = "5.0.0";
+$ver_not_tested="5.2.0";
 
 $errors=0;	
 $check_title="Checking PHP version:";
@@ -568,6 +568,30 @@ $ret = array ('errors' => $errors,
 return ($ret);
 }  //function end
 
+// check to see if required PEAR modules are installed
+function check_pear_modules()
+{
+    $errors = 0;    
+    $final_msg = '</b><br />Checking if PEAR modules are installed:<b>';
+    
+    // SpreadSheet_Excel_Writer is needed for TestPlanResultsObj that does excel reporting
+    if(false == include_once('Spreadsheet/Excel/Writer.php'))
+    {
+        $final_msg .= '<span class="notok">Failed! - Spreadsheet_Excel_Writer PEAR Module is required.</span><br />See' .
+                '<a href="http://pear.php.net/package/Spreadsheet_Excel_Writer">' .
+                'http://pear.php.net/package/Spreadsheet_Excel_Writer</a> for additional information';
+        $errors += 1;                        
+    }
+    else
+    {
+        $final_msg .= "<span class='ok'>OK!</span>";
+    }
+
+$ret = array ('errors' => $errors,
+              'msg' => $final_msg);
+
+return ($ret);  
+} // function end
 
 // 20051231 - fm
 function check_db_version($dbhandler)

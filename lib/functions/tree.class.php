@@ -5,16 +5,17 @@
  *
  * Filename $RCSfile: tree.class.php,v $
  *
- * @version $Revision: 1.24 $
- * @modified $Date: 2006/11/20 07:28:49 $ by $Author: franciscom $
+ * @version $Revision: 1.25 $
+ * @modified $Date: 2006/12/05 08:20:20 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
+ * 20061203 - franciscom - removing error due to undefined var in change_order_bulk()
+ * 20061119 - franciscom - change_order_bulk() added abs() to order.
  * 20061008 - franciscom - ORDER BY node_order -> ORDER BY node_order,id
  * 20060729 - franciscom - fixed bug on new_node() after refactoring in version 1.20
  * 20060722 - franciscom - added possibility to create a new node with an specific ID
  * 20060511 - franciscom - changes in call to insert_id() due to problems with Postgres
  * 20060316 - franciscom - bug on get_path
- * 20061119 - franciscom - change_order_bulk() added abs() to order.
 */
 
 class tree 
@@ -303,6 +304,8 @@ function get_children($id,$exclude_node_types=null)
 */   
 function change_order_bulk($hash_node_id, $hash_node_order) 
 {
+  $result=null;
+  
 	foreach($hash_node_id as $the_id => $elem)
 	{
 		$order = abs(intval($hash_node_order[$the_id]));

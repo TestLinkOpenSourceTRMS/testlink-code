@@ -5,7 +5,7 @@ require_once(dirname(__FILE__) . "/../../lib/functions/assignment_mgr.class.php"
 require_once("../installUtils.php");
 
 session_start();
-set_time_limit(300); // set_time_limit(t) -> t in seconds
+set_time_limit(60*30); // set_time_limit(t) -> t in seconds
 $inst_type = $_SESSION['installationType'];
 $tl_and_version = "TestLink {$_SESSION['testlink_version']} ";
 ?>
@@ -14,7 +14,7 @@ $tl_and_version = "TestLink {$_SESSION['testlink_version']} ";
 <head>
 <!--
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: migrate_16_to_17.php,v 1.4 2006/09/11 09:14:08 franciscom Exp $ 
+$Id: migrate_16_to_17.php,v 1.5 2006/12/05 08:20:19 franciscom Exp $ 
 -->
 <title><?php echo $tl_and_version ?>Installer</title>
         <style type="text/css">
@@ -102,7 +102,6 @@ if( is_null($source_db) || is_null($target_db) )
 // -----------------------------------------------------------------------------------
 
 
-
 $tproject_mgr=New testproject($target_db);
 $ts_mgr=New testsuite($target_db);
 $tc_mgr=New testcase($target_db);
@@ -164,13 +163,16 @@ $a_sql[]="TRUNCATE TABLE user_testproject_roles";
 $a_sql[]="TRUNCATE TABLE user_testplan_roles";
 
 
+echo '<span>Truncating tables in Testlink 1.7 (target) database. - ' .
+     $db_cfg['target']['db_name'] . ' - </span>';
+     
 foreach($a_sql as $elem) {$target_db->exec_query($elem);}
 
 //exit();
 // -----------------------------------------------------------------------------------
 
 
-
+echo "<P><hr>";
 // -----------------------------------------------------------------------------------
 // Get list of 1.6 users
 $sql="SELECT * FROM user";
@@ -469,7 +471,9 @@ echo "<a onclick=\"return DetailController.toggle('details-req_coverage')\" href
 echo '<div class="detail-container" id="details-req_coverage" style="display: block;">';
 
 $sql="SELECT * from req_coverage";
-$req_cov=$source_db->fetchRowsIntoMap($sql,'id');
+
+// 20061203 - franciscom - id (wrong) -> id_req
+$req_cov=$source_db->fetchRowsIntoMap($sql,'id_req');
 if(is_null($req_cov)) 
 {
 		echo "<span class='notok'>There are no req specs to be migrated!</span></b>";
@@ -480,7 +484,24 @@ else
 }
 echo "</div><p>";
 
+
+echo "<span class='ok'>Migration process finished!</span></b>";
+
 ?>
+  </td>
+  </tr>
+  </td>
+  </tr>
+  <tr class="fancyRow2">
+    <td class="border-top-bottom smallText">&nbsp;</td>
+    <td class="border-top-bottom smallText" align="right">&nbsp;</td>
+  </tr>
+</table>
+</body>
+</html>
+
+
+
 
 
 <?php
@@ -501,9 +522,18 @@ echo "</div><p>";
 //          if connection OK -> a database object
 //          if connection KO -> null
 //
+// rev :
+//      20061203 - franciscom
+//      removed warning due to constant redefinition
+//
 function connect_2_db($cfg)
 {
   
+if( !defined('NO_DSN') )
+{
+  define('NO_DSN',FALSE);
+}  
+
 if(strlen(trim($cfg['db_name']))== 0)
 {
 	echo '<span class="notok">Failed!</span><p />Database Name is empty';
@@ -512,7 +542,6 @@ if(strlen(trim($cfg['db_name']))== 0)
 else
 {  
   $db = new database($cfg['db_type']);
-  define('NO_DSN',FALSE);
   @$conn_result = $db->connect(NO_DSN,$cfg['db_server'], 
                                       $cfg['db_admin_name'], $cfg['db_admin_pass'],$cfg['db_name']); 
   
@@ -720,7 +749,7 @@ foreach($items as $prod_id => $pd)
                                                      EMPTY_NOTES,$pd['active']);
 
 
-  echo "<pre><font color='red'>Product {$pd['name']} has become a test project!</font></pre>";
+  echo "<pre><font color='blue'>Product {$pd['name']} has become a test project!</font></pre>";
 
   $tproject_id=$old_new['product'][$prod_id];
   
@@ -890,7 +919,7 @@ function migrate_results(&$source_db,&$target_db,&$execs,&$builds,&$users,&$tc_t
 	  if($has_been_executed)
 	  { 
 	    $user_id=intval(isset($users[$idata['runby']]) ? $users[$idata['runby']]['id'] : $admin_id);  
-			$my_notes = $target_db->prepare_string(trim($idata['note']));		
+			$my_notes = $target_db->prepare_string(trim($idata['notes']));		
 			$sql = "INSERT INTO executions ".
 				     "(build_id,tester_id,status,testplan_id,tcversion_id,execution_ts,notes)".
 				     " VALUES ( {$build_id}, {$user_id}, '" . $idata['status'] . "',".
@@ -1042,10 +1071,18 @@ function migrate_req_specs(&$source_db,&$target_db,&$rspec,&$old_new)
 {
   foreach($rspec as $req_id => $rdata)
   {
+
     $sql="INSERT INTO req_specs " .
          "(id,testproject_id,title,scope,total_req,type,author_id,creation_ts";
-     
-    $tproject_id=$old_new['product'][$rdata['id_product']];
+
+    // ----------------------------------------------------------------------------
+    // 20061203 - franciscom     
+    $tproject_id=-1;
+    if(isset($old_new['product'][$rdata['id_product']]) ) 
+    {
+      $tproject_id=$old_new['product'][$rdata['id_product']];
+    }
+    // ----------------------------------------------------------------------------
     
     if( intval($tproject_id) > 0 )
     {
@@ -1065,7 +1102,8 @@ function migrate_req_specs(&$source_db,&$target_db,&$rspec,&$old_new)
     }
     else
     {
-      echo "Problems migrating REQ_SPEC ID: {$rdata['id']} - Product ID:{$rdata['id_product']}<br>";
+      echo "<font color='red'>Problems migrating REQ_SPEC ID: " .
+           "{$rdata['id']} - Product ID:{$rdata['id_product']}</font><br>";
     }
     
     
@@ -1126,14 +1164,3 @@ function migrate_ownership(&$source_db,&$target_db,&$rs,&$map_tc_tcversion,&$old
 }
 ?>
 
-  </td>
-  </tr>
-  </td>
-  </tr>
-  <tr class="fancyRow2">
-    <td class="border-top-bottom smallText">&nbsp;</td>
-    <td class="border-top-bottom smallText" align="right">&nbsp;</td>
-  </tr>
-</table>
-</body>
-</html>

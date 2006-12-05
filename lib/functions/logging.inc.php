@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: logging.inc.php,v $
  *
- * @version $Revision: 1.8 $
- * @modified $Date: 2005/12/29 20:59:00 $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2006/12/05 08:20:19 $
  *
  * @author Martin Havlat
  *
@@ -18,8 +18,12 @@
  * @author Andreas Morsing: added new loglevel for inlining the log messages 
 **/
 /** Set default logging level */
+// 20061203 - franciscom
+if( !defined(TL_LOG_LEVEL_DEFAULT) )
+{
+  define(TL_LOG_LEVEL_DEFAULT,'NONE');
+}
 tlLogSetLevel(TL_LOG_LEVEL_DEFAULT);
-
 
 $tl_log_levels = array(
     'NONE'  => 0,

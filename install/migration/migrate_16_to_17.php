@@ -1,8 +1,26 @@
 <?php
+/*
+TestLink Open Source Project - http://testlink.sourceforge.net/
+$Id: migrate_16_to_17.php,v 1.6 2006/12/09 08:12:48 franciscom Exp $ 
+
+
+20061208 - franciscom -
+changes after test with a big (10000 test cases) database.
+1. using abs() on tcorder (on 1.6.x negative order was ok, but on 1.7 not)
+2. using flush to improve user feeedback
+
+*/
+
 require_once( dirname(__FILE__). '/../../lib/functions/database.class.php' );
 require_once(dirname(__FILE__) . "/../../lib/functions/common.php");
 require_once(dirname(__FILE__) . "/../../lib/functions/assignment_mgr.class.php");
 require_once("../installUtils.php");
+
+
+// over this qty, the process will take a lot of time
+define('CRITICAL_TC_SPECS_QTY',5000);
+define('FEEDBACK_STEP',2500);
+
 
 session_start();
 set_time_limit(60*30); // set_time_limit(t) -> t in seconds
@@ -12,10 +30,6 @@ $tl_and_version = "TestLink {$_SESSION['testlink_version']} ";
 
 <html>
 <head>
-<!--
-TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: migrate_16_to_17.php,v 1.5 2006/12/05 08:20:19 franciscom Exp $ 
--->
 <title><?php echo $tl_and_version ?>Installer</title>
         <style type="text/css">
              @import url('../css/style.css');
@@ -171,23 +185,34 @@ foreach($a_sql as $elem) {$target_db->exec_query($elem);}
 //exit();
 // -----------------------------------------------------------------------------------
 
+$msg_click_to_show=' [Click to show details] ';
 
 echo "<P><hr>";
 // -----------------------------------------------------------------------------------
 // Get list of 1.6 users
 $sql="SELECT * FROM user";
 $users=$source_db->fetchRowsIntoMap($sql,'login');
+
+$msg='Users: ';
+$hhmmss=date("H:i:s");
+
+if(!is_null($users)) 
+{
+  $users_qty=count($users);  
+  $msg .= " (Found " . $users_qty . " users to migrate) ";
+}
+else
+{
+  $msg .= " Ooops! no users to migrate !!!! ";
+}  
+
 echo "<a onclick=\"return DetailController.toggle('details-users')\" href=\"users/\">
-<img src='../img/icon-foldout.gif' align='top' title='show/hide'>Users:</a>";
-echo '<div class="detail-container" id="details-users" style="display: block;">';
+<img src='../img/icon-foldout.gif' align='top' title='show/hide'>{$msg} {$msg_click_to_show} {$hhmmss}</a>";
+echo '<div class="detail-container" id="details-users" style="display: none;">';
 if(!is_null($users)) 
 {
   migrate_users($target_db,$users);
 }
-else
-{
-  echo "<pre> Ooops! no users to migrate !!!! </pre>";
-}  
 echo "</div><p>";
 // -----------------------------------------------------------------------------------
 
@@ -204,9 +229,33 @@ $sql="SELECT mtc.* " .
      "ORDER BY mtc.id";
 
 $tc_specs=$source_db->fetchRowsIntoMap($sql,'id');
+$msg="Test Case Specifications:";
+$hhmmss=date("H:i:s");
+
+if(!is_null($tc_specs)) 
+{
+  $tc_specs_qty=count($tc_specs);
+  
+  if( $tc_specs_qty > CRITICAL_TC_SPECS_QTY )
+  {
+     echo "<b>Warning!!!! You have a big number of tc specs to migrate ({$tc_specs_qty}) <br>" .
+          "According to your servers processing power, " .
+          "the time to complete migration can exceed 15 minutes. <br>" .
+          "Example: <br>" .
+          "10500 test cases takes 30 min to migrate using " .
+          "a Pentium mobile 1.6GHz with 1.2GB RAM.<br>" .
+          "You will receive limited feedback on your browser.<br>" .
+          "PLEASE BE Patiente</b><p>"; 
+     
+  }
+  
+  $msg .= " (Found " . $tc_specs_qty . " to migrate) ";
+}
+
+
 echo "<a onclick=\"return DetailController.toggle('details-tcspecs')\" href=\"tcspecs/\">
-<img src='../img/icon-foldout.gif' align='top' title='show/hide'>Test Case Specifications:</a>";
-echo '<div class="detail-container" id="details-tcspecs" style="display: block;">';
+<img src='../img/icon-foldout.gif' align='top' title='show/hide'>{$msg} {$msg_click_to_show} {$hhmmss}</a>";
+echo '<div class="detail-container" id="details-tcspecs" style="display: none;">';
 if(is_null($tc_specs)) 
 {
 		echo "<span class='notok'>There are no test case to be migrated!</span></b>";
@@ -221,7 +270,7 @@ echo "</div><p>";
 echo "<a onclick=\"return DetailController.toggle('details-pcc')\" href=\"pcc/\">
 <img src='../img/icon-foldout.gif' align='top' title='show/hide'>
 Products, Components & Categories migration:</a>";
-echo '<div class="detail-container" id="details-pcc" style="display: block;">';
+echo '<div class="detail-container" id="details-pcc" style="display: none;">';
 
 // Get list of 1.6 Products
 $sql="SELECT * FROM mgtproduct";
@@ -237,20 +286,20 @@ echo "</div><p>";
 
 echo "<a onclick=\"return DetailController.toggle('details-kw')\" href=\"kw/\">
 <img src='../img/icon-foldout.gif' align='top' title='show/hide'>Keywords migration:</a>";
-echo '<div class="detail-container" id="details-kw" style="display: block;">';
+echo '<div class="detail-container" id="details-kw" style="display: none;">';
 migrate_keywords($source_db,$target_db,$products,$old_new);
 echo "</div><p>";
 
 echo "<a onclick=\"return DetailController.toggle('details-tcpu')\" href=\"tcpu/\">
 <img src='../img/icon-foldout.gif' align='top' title='show/hide'>Test case parent update:</a>";
-echo '<div class="detail-container" id="details-tcpu" style="display: block;">';
+echo '<div class="detail-container" id="details-tcpu" style="display: none;">';
 update_tc_specs_parents($source_db,$target_db,$tc_specs,$old_new);
 echo "</div><p>";
 
 
 echo "<a onclick=\"return DetailController.toggle('details-tplan')\" href=\"tplan/\">
 <img src='../img/icon-foldout.gif' align='top' title='show/hide'>Test plans:</a>";
-echo '<div class="detail-container" id="details-tplan" style="display: block;">';
+echo '<div class="detail-container" id="details-tplan" style="display: none;">';
 $sql="SELECT * FROM project ORDER BY ID";
 $tplans=$source_db->fetchRowsIntoMap($sql,'id');
 if(is_null($tplans)) 
@@ -265,7 +314,7 @@ echo "</div><p>";
 
 echo "<a onclick=\"return DetailController.toggle('details-builds')\" href=\"tplan/\">
 <img src='../img/icon-foldout.gif' align='top' title='show/hide'>Builds:</a>";
-echo '<div class="detail-container" id="details-builds" style="display: block;">';
+echo '<div class="detail-container" id="details-builds" style="display: none;">';
 
 // 20060908 - franciscom
 $sql="SELECT build.*,project.name AS TPLAN_NAME " .
@@ -284,7 +333,7 @@ echo "</div><p>";
 
 echo "<a onclick=\"return DetailController.toggle('details-tctpa')\" href=\"tplan/\">
 <img src='../img/icon-foldout.gif' align='top' title='show/hide'>Test case -> test plan assignments:</a>";
-echo '<div class="detail-container" id="details-tctpa" style="display: block;">';
+echo '<div class="detail-container" id="details-tctpa" style="display: none;">';
 
 $sql="SELECT tplan.name as tplan_name,tplan.id as projid,k.compid,tc.mgttcid AS MGTTCID " .
      "FROM component c,category k,testcase tc," .
@@ -312,7 +361,7 @@ echo "</div><p>";
 
 echo "<a onclick=\"return DetailController.toggle('details-results')\" href=\"tplan/\">
 <img src='../img/icon-foldout.gif' align='top' title='show/hide'>Executions results:</a>";
-echo '<div class="detail-container" id="details-results" style="display: block;">';
+echo '<div class="detail-container" id="details-results" style="display: none;">';
 $sql="SELECT MGT.id as MGTTCID, R.tcid, R.build_id,R.daterun," .
      "R.runby,R.notes,R.status " .
      "FROM mgttestcase MGT,testcase TC,results R " .
@@ -333,7 +382,7 @@ echo "</div><p>";
 
 echo "<a onclick=\"return DetailController.toggle('details-bugs')\" href=\"tplan/\">
 <img src='../img/icon-foldout.gif' align='top' title='show/hide'>Executions bugs:</a>";
-echo '<div class="detail-container" id="details-bugs" style="display: block;">';
+echo '<div class="detail-container" id="details-bugs" style="display: none;">';
 $sql="SELECT bugs.tcid,bugs.build_id,bugs.bug,mgt.id AS MGTTCID " .
      "FROM bugs,mgttestcase mgt,testcase t " .
      "WHERE bugs.tcid=t.id " .
@@ -353,7 +402,7 @@ echo "</div><p>";
 
 echo "<a onclick=\"return DetailController.toggle('details-user_tpa')\" href=\"tplan/\">
 <img src='../img/icon-foldout.gif' align='top' title='show/hide'>Users - Test plan assignments:</a>";
-echo '<div class="detail-container" id="details-user_tpa" style="display: block;">';
+echo '<div class="detail-container" id="details-user_tpa" style="display: none;">';
 $sql="SELECT * from projrights ORDER BY userid";
 $user_tplans=$source_db->fetchRowsIntoMap($sql,'userid');
 if(is_null($user_tplans)) 
@@ -368,7 +417,7 @@ echo "</div><p>";
 
 echo "<a onclick=\"return DetailController.toggle('details-prior')\" href=\"tplan/\">
 <img src='../img/icon-foldout.gif' align='top' title='show/hide'>Priority Rules:</a>";
-echo '<div class="detail-container" id="details-prior" style="display: block;">';
+echo '<div class="detail-container" id="details-prior" style="display: none;">';
 
 $sql="SELECT * from priority";
 $prules=$source_db->fetchRowsIntoMap($sql,'projid');
@@ -384,7 +433,7 @@ echo "</div><p>";
 
 echo "<a onclick=\"return DetailController.toggle('details-Milestones')\" href=\"tplan/\">
 <img src='../img/icon-foldout.gif' align='top' title='show/hide'>Milestones:</a>";
-echo '<div class="detail-container" id="details-Milestones" style="display: block;">';
+echo '<div class="detail-container" id="details-Milestones" style="display: none;">';
 
 $sql="SELECT * from milestone";
 $ms=$source_db->fetchRowsIntoMap($sql,'projid');
@@ -402,7 +451,7 @@ echo "</div><p>";
 
 echo "<a onclick=\"return DetailController.toggle('details-risk')\" href=\"tplan/\">
 <img src='../img/icon-foldout.gif' align='top' title='show/hide'>Risk TO BE DONE:</a>";
-echo '<div class="detail-container" id="details-risk" style="display: block;">';
+echo '<div class="detail-container" id="details-risk" style="display: none;">';
 echo "</div><p>";
 
 $sql="SELECT tplan.name as tplan_name,tplan.id as projid," .
@@ -421,7 +470,7 @@ $tp4risk_own=$source_db->get_recordset($sql);
 
 echo "<a onclick=\"return DetailController.toggle('details-own')\" href=\"tplan/\">
 <img src='../img/icon-foldout.gif' align='top' title='show/hide'>Ownership (becomes user assignment=test_execution):</a>";
-echo '<div class="detail-container" id="details-own" style="display: block;">';
+echo '<div class="detail-container" id="details-own" style="display: none;">';
 
 if(is_null($tp4risk_own)) 
 {
@@ -436,7 +485,7 @@ echo "</div><p>";
 
 echo "<a onclick=\"return DetailController.toggle('details-reqtable')\" href=\"tplan/\">
 <img src='../img/icon-foldout.gif' align='top' title='show/hide'> Requirements Table:</a>";
-echo '<div class="detail-container" id="details-reqtable" style="display: block;">';
+echo '<div class="detail-container" id="details-reqtable" style="display: none;">';
 
 $sql="SELECT * from requirements";
 $req=$source_db->fetchRowsIntoMap($sql,'id');
@@ -452,7 +501,7 @@ echo "</div><p>";
 
 echo "<a onclick=\"return DetailController.toggle('details-req_spec_table')\" href=\"tplan/\">
 <img src='../img/icon-foldout.gif' align='top' title='show/hide'> req_spec Table:</a>";
-echo '<div class="detail-container" id="details-req_spec_table" style="display: block;">';
+echo '<div class="detail-container" id="details-req_spec_table" style="display: none;">';
 
 $sql="SELECT * from req_spec";
 $rspec=$source_db->fetchRowsIntoMap($sql,'id');
@@ -468,7 +517,7 @@ echo "</div><p>";
 
 echo "<a onclick=\"return DetailController.toggle('details-req_coverage')\" href=\"tplan/\">
 <img src='../img/icon-foldout.gif' align='top' title='show/hide'> Req. Coverage (requirement / test case relationship Table):</a>";
-echo '<div class="detail-container" id="details-req_coverage" style="display: block;">';
+echo '<div class="detail-container" id="details-req_coverage" style="display: none;">';
 
 $sql="SELECT * from req_coverage";
 
@@ -485,7 +534,7 @@ else
 echo "</div><p>";
 
 
-echo "<span class='ok'>Migration process finished!</span></b>";
+echo "<span class='ok'>Migration process finished!" . date("H:i:s"). "</span></b>";
 
 ?>
   </td>
@@ -637,7 +686,7 @@ function migrate_users(&$target_db,&$users)
   
 $users_qty=count($users);  
 echo "<pre>   Number of users: " . $users_qty; echo "</pre>";
- echo "<pre>";
+echo "<pre>";
 
 foreach($users as $login => $the_u)
 {
@@ -666,9 +715,9 @@ echo "</pre>";
 
 
 
-// 20060725
-//
-//
+// 20061208 - franciscom
+// When the amount of feedback is high (greater than 5000 rows), 
+// old plain series of echo are not good
 //
 function migrate_tc_specs(&$source_db,&$target_db,&$items,&$users)
 {
@@ -676,18 +725,41 @@ function migrate_tc_specs(&$source_db,&$target_db,&$items,&$users)
   $tc_mgr=New testcase($target_db);
   $map_tc_tcversion=array();
   $admin_id=1;
-  
-  echo "Migrating Test Cases - Part I - <br>";
+  $items_processed=0;
+  $msg="<b><center>Migrating Test Cases - Part I - " . date("H:i:s") . " -</center></b><br>";
+  echo str_pad($msg,4096);
+  flush(); 
+  $msg='';
+    
+    
   foreach($items as $item_id => $idata)
   {
-     echo "TCID:{$item_id} - {$idata['title']}<br>";
-     $tc_mgr->create_tcase_only(0,$idata['title'],$idata['TCorder'],$item_id);  
+     // 20061208 - franciscom - 
+     // added abs()
+     // added htmlentities()
+     $msg .= "TCID:{$item_id} - " . htmlentities($idata['title']) ."<br>";
+     $tc_mgr->create_tcase_only(0,$idata['title'],abs($idata['TCorder']),$item_id);  
+     $items_processed++;
+     if( ($items_processed % FEEDBACK_STEP)== 0 )
+     {
+       echo str_pad($msg,4096);  // from PHP manual notes
+       echo str_pad('<br><span class="processed">Part I - Processed: ' . $items_processed . " - " . date("H:i:s") . "</span><br>",4096);
+       flush(); 
+       $msg='';
+     } 
   }
- 
+  echo $msg;
+  echo str_pad("Finished Part I -" . date("H:i:s"),4096);
+  flush(); 
+  
   
   // Now create the TC version
-  echo "<br>";
-  echo "Migrating Test Cases - Part II - <br>";
+  $msg="<br> <b><center>Migrating Test Cases - Part II - " . date("H:i:s") . " -</center></b><br>";
+  echo str_pad($msg,4096);
+  flush(); 
+  $msg='';
+  $items_processed=0;
+
   foreach($items as $item_id => $idata)
   {
      $author_id=intval(isset($users[$idata['author']]) ? $users[$idata['author']]['id'] : $admin_id);  
@@ -708,11 +780,24 @@ function migrate_tc_specs(&$source_db,&$target_db,&$items,&$users)
      $target_db->exec_query($sql);
       
      $map_tc_tcversion[$item_id]= $x['id'];
-     echo "TCID:{$item_id} - {$idata['title']} - TCVERSION_ID:{$x['id']}<br>";
-
+     
+     // 20061208 - franciscom
+     $msg .="TCID:{$item_id} - " . htmlentities($idata['title']) . " - TCVERSION_ID:{$x['id']}<br>";
+     $items_processed++;
+     if( ($items_processed % FEEDBACK_STEP)== 0 )
+     {
+       echo str_pad($msg,4096);  // from PHP manual notes
+       echo str_pad('<br><span class="processed">Part II - Processed: ' . $items_processed . " - " . date("H:i:s") . "</span><br>",4096);
+       flush(); 
+       $msg='';
+     } 
   }
-
-  echo "Test Case Specifications MIGRATION ENDED<br>";
+  echo $msg;
+  flush(); 
+  
+  echo "Test Case Specifications MIGRATION ENDED" . date("H:i:s") . "<br>";
+  flush(); 
+  
   return($map_tc_tcversion);
 } // end function
 
@@ -749,8 +834,9 @@ foreach($items as $prod_id => $pd)
                                                      EMPTY_NOTES,$pd['active']);
 
 
-  echo "<pre><font color='blue'>Product {$pd['name']} has become a test project!</font></pre>";
-
+  echo "<pre><font color='blue'>Product {$pd['name']} has became a test project!</font></pre>";
+  flush();
+  
   $tproject_id=$old_new['product'][$prod_id];
   
   $sql="SELECT * FROM mgtcomponent WHERE prodid={$prod_id}";
@@ -776,7 +862,9 @@ foreach($items as $prod_id => $pd)
       $ret=$ts_mgr->create($tproject_id,$cod['name'],$details);
       if( $ret['status_ok'] )
       {
-        echo "<pre>Component {$cod['name']} Migrated<br></pre>";  
+        echo "<pre>Component " . htmlentities($cod['name']) . " Migrated<br></pre>";
+        flush();
+          
         $mgtcomp_id=$ret['id'];
         $old_new['mgtcomp'][$coid]=$mgtcomp_id;
       }
@@ -800,7 +888,9 @@ foreach($items as $prod_id => $pd)
           $ret=$ts_mgr->create($mgtcomp_id,$cad['name'],$details);
           if( $ret['status_ok'] )
           {
-            echo "<pre>    Category {$cad['name']} Migrated<br></pre>";  
+            echo "<pre>    Category " . htmlentities($cad['name']) . " Migrated<br></pre>";  
+            flush();
+            
             $mgtcat_id=$ret['id'];
             $old_new['mgtcat'][$caid]=$mgtcat_id;
 

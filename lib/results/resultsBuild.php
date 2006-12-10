@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsBuild.php,v 1.17 2006/11/28 13:43:16 franciscom Exp $ 
+* $Id: resultsBuild.php,v 1.19 2006/12/11 06:43:10 kevinlevy Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * 
@@ -17,7 +17,7 @@ require_once('builds.inc.php');
 require_once('../functions/results.class.php');
 require_once('../functions/testplan.class.php');
 
-print "Warning Message - KL - 20061126 - all tables functional except for priority report <BR>";
+//print "Warning Message - KL - 20061126 - all tables functional except for priority report <BR>";
 
 $builds_to_query = isset($_GET['build']) ? intval($_GET['build']) : null;
 if (!isset($_GET['build']))
@@ -104,7 +104,8 @@ $arrDataKeys = null;
 $arrDataKeysIndex = 0;
 $arrKeywords = $tp->get_keywords_map($tpID); 
 
-while ($keyword_id = key($arrKeywords)) {
+if (is_array($arrKeywords)) {
+  while ($keyword_id = key($arrKeywords)) {
 	$keyword_name = $arrKeywords[$keyword_id] ;
 	$specificKeywordResults = new results($db, $tp, $suitesSelected, $builds_to_query, 'a', $keyword_id);
 	$resultArray = $specificKeywordResults->getTotalsForPlan();
@@ -115,8 +116,8 @@ while ($keyword_id = key($arrKeywords)) {
 	$arrDataKeys[$arrDataKeysIndex] = array($keyword_name,$total,$resultArray['pass'],$resultArray['fail'],$resultArray['blocked'],$notRun,$percentCompleted);
 	$arrDataKeysIndex++;
 	next($arrKeywords);
-}
-
+  } //end while
+} // end if
 /** 
 * OWNERS REPORT 
 */

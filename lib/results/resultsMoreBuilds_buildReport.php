@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsMoreBuilds_buildReport.php,v 1.37 2006/11/29 06:35:49 kevinlevy Exp $ 
+* $Id: resultsMoreBuilds_buildReport.php,v 1.39 2006/12/11 06:43:10 kevinlevy Exp $ 
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 * 
@@ -86,7 +86,10 @@ $smarty->assign('componentsSelected', $componentNames);
 $smarty->assign('lastStatus', $lastStatus);
 $smarty->assign('buildsSelected', $buildsSelected);
 $smarty->assign('keywordsSelected', $keywordSelected);
+
+if ($ownerSelected) {
 $smarty->assign('ownerSelected', $arrOwners[$ownerSelected]);
+}
 $smarty->assign('totals', $totals);
 $smarty->assign('testPlanName',$tpName);
 $smarty->assign('testplanid', $tpID);

@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: resultsGeneral.php,v $
- * @version $Revision: 1.15 $
- * @modified $Date: 2006/11/28 13:43:31 $ by $Author: franciscom $
+ * @version $Revision: 1.16 $
+ * @modified $Date: 2006/12/10 05:11:30 $ by $Author: kevinlevy $
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
  * This page show Test Results over all Builds.
@@ -17,7 +17,7 @@
  * 
  */
 
-print "Warning Message - KL - 20061126 - all tables functional except for priority report <BR>";
+//print "Warning Message - KL - 20061126 - all tables functional except for priority report <BR>";
 require('../../config.inc.php');
 require_once('common.php');
 require_once('builds.inc.php');
@@ -73,7 +73,8 @@ $arrDataPriority = null;
 $arrDataKeys = null;
 $arrDataKeysIndex = 0;
 $arrKeywords = $tp->get_keywords_map($tpID); 
-while ($keyword_id = key($arrKeywords)) {
+if (is_array($arrKeywords)) {
+   while ($keyword_id = key($arrKeywords)) {
 	$keyword_name = $arrKeywords[$keyword_id] ;
 	$specificKeywordResults = new results($db, $tp, $suitesSelected, $builds_to_query, 'a', $keyword_id);
 	$resultArray = $specificKeywordResults->getTotalsForPlan();
@@ -84,7 +85,8 @@ while ($keyword_id = key($arrKeywords)) {
 	$arrDataKeys[$arrDataKeysIndex] = array($keyword_name,$total,$resultArray['pass'],$resultArray['fail'],$resultArray['blocked'],$notRun,$percentCompleted);
 	$arrDataKeysIndex++;
 	next($arrKeywords);
-}
+  } // end while
+} // end if
 
 
 

@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsTC.php,v 1.16 2006/11/27 22:27:27 kevinlevy Exp $ 
+* $Id: resultsTC.php,v 1.18 2006/12/11 06:43:10 kevinlevy Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -14,7 +14,7 @@
 * 20061127 - kl - upgrading to 1.7
 */
 
-print "KL - 20061127 - should be functional. There may be an issue with test case results which have multiple executions associated with the same build<BR>";
+//print "KL - 20061127 - should be functional. There may be an issue with test case results which have multiple executions associated with the same build<BR>";
 require('../../config.inc.php');
 require_once('common.php');
 require_once('../functions/results.class.php');

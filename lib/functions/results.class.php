@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8 
- * @modified $Date: 2006/11/29 07:33:56 $ by $Author: kevinlevy $
+ * @modified $Date: 2006/12/10 05:10:24 $ by $Author: kevinlevy $
  *
  *
  * This class is encapsulates most functionality necessary to query the database
@@ -375,6 +375,7 @@ class results
   			$result = null;		
   			// iterate across all executions for this suite
   			for ($j = 0 ; $j < $totalCases; $j++) {
+				//print_r($currentExecution);
   				$currentExecution = $executionsMap[$suiteId][$j];
 				$caseId = $currentExecution['testcaseID'];
 				$build = $currentExecution['build_id'];
@@ -383,8 +384,13 @@ class results
 				$execution_ts = $currentExecution['execution_ts'];
 				$notes = $currentExecution['notes'];
 				$tester_id = $currentExecution['tester_id'];
-				$executions_id = $currentExecution['executions_id'];
-				$name = $currentExecution['name'];
+				// TO-DO : make sure i don't need $executions_id from currentExecutions
+				//$executions_id = $currentExecution['executions_id'];
+				// print "executions_id = $executions_id <BR>";
+				// TO-DO : do i need name?
+				//$name = $currentExecution['name'];
+				$executions_id = 0;
+				$name = 0;
 				$this->addLastResultToMap($suiteId, $caseId, $build, $result, $tcversion_id, $execution_ts, $notes, $suiteName, $executions_id, $name, $tester_id);
   			}
   		} // end elseif 

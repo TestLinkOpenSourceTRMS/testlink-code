@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsByStatus.php,v 1.22 2006/11/29 19:59:19 kevinlevy Exp $ 
+* $Id: resultsByStatus.php,v 1.24 2006/12/11 06:43:10 kevinlevy Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -64,9 +64,10 @@ $arrOwners = get_users_for_html_options($db, ALL_USERS_FILTER, ADD_BLANK_OPTION)
 //print "<BR>";
 
 $arrDataIndex = 0;
-while ($suiteId = key($mapOfLastResult)){
-//	print "suiteId = $suiteId <BR>";
-	while($tcId = key($mapOfLastResult[$suiteId])){
+$arrData = null;
+if (is_array($mapOfLastResult)) {
+  while ($suiteId = key($mapOfLastResult)){
+   while($tcId = key($mapOfLastResult[$suiteId])){
 		$lastBuildIdExecuted = $mapOfLastResult[$suiteId][$tcId]['buildIdLastExecuted'];
 		$buildName = null;
 		for ($i = 0 ; $i < sizeof($arrBuilds); $i++) {
@@ -90,7 +91,8 @@ while ($suiteId = key($mapOfLastResult)){
 		next($mapOfLastResult[$suiteId]);
 	}
 	next($mapOfLastResult);
-}
+  } // end while
+} // end if
 
 /**  ****************************************************************************
 KL - 20061029 - I will review this code and use some logic and thoughts that Andreas has added herer

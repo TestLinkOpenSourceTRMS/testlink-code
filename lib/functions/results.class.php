@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8 
- * @modified $Date: 2006/12/10 05:10:24 $ by $Author: kevinlevy $
+ * @modified $Date: 2006/12/11 06:44:21 $ by $Author: kevinlevy $
  *
  *
  * This class is encapsulates most functionality necessary to query the database
@@ -22,6 +22,7 @@
 require_once('treeMenu.inc.php');
 // used for bug string lookup
 require_once('exec.inc.php');
+require_once('timer.php');
 
 class results
 {
@@ -102,25 +103,51 @@ class results
     		$this->suitesSelected = $suitesSelected;  	
     		$this->prodID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
     		$this->testPlanID = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0 ;
-		$this->tplanName = isset($_SESSION['testPlanName']) ? $_SESSION['testPlanName'] : null;
+			$this->tplanName = isset($_SESSION['testPlanName']) ? $_SESSION['testPlanName'] : null;
 
     // build suiteStructure and flatArray
-    $this->suiteStructure = $this->generateExecTree($keywordId, $owner);
+	
+	//print "results.class.php - call generateExecTree() <BR>";
+    
+	$time_start2 = microtime_float();		
+	$this->suiteStructure = $this->generateExecTree($keywordId, $owner);
+	$time_end2 = microtime_float();
+	$time2 = $time_end2 - $time_start2;
+	print "time for generateExecTree() = $time2 <BR>";
+	
     // KL - if no builds are specified, no need to execute the following block of code
     if ($builds_to_query != -1) {
       // retrieve results from executions table
-      $this->executionsMap = $this->buildExecutionsMap($builds_to_query, $lastResult, $keywordId, $owner);    
- 
+	 
+	  //print "results.class.phph - call buildExecutionsMap() <BR>";
+    
+	   $time_start3 = microtime_float();		
+	   $this->executionsMap = $this->buildExecutionsMap($builds_to_query, $lastResult, $keywordId, $owner);    
+	   $time_end3 = microtime_float();
+	   $time3 = $time_end3 - $time_start3;
+	   print "time for buildExecutionsMap() = $time3 <BR>";
+	
       // create data object which tallies last result for each test case
-      $this->createMapOfLastResult($this->suiteStructure, $this->executionsMap);
+	 
+	  //print "results.class.php - call createMapOfLastResult <BR>";
+     
+	  $this->createMapOfLastResult($this->suiteStructure, $this->executionsMap);
       
       // create data object which tallies totals for individual suites
       // child suites are NOT taken into account in this step
-      $this->createMapOfSuiteSummary($this->mapOfLastResult);
+	 
+	  //print "results.class.php - call createMapOfSuiteSummary <BR>";
+     
+	  $this->createMapOfSuiteSummary($this->mapOfLastResult);
       
       // create data object which tallies totals for suites taking
       // child suites into account
-      $this->createAggregateMap($this->suiteStructure, $this->mapOfSuiteSummary);
+	  //print "results.class.php - call createAggregateMap() <BR>";
+     
+	  $this->createAggregateMap($this->suiteStructure, $this->mapOfSuiteSummary);
+	
+	  //print "results.class.php - call createTotalsForPlan <BR>";
+
       $this->totalsForPlan = $this->createTotalsForPlan($this->suiteStructure, $this->mapOfSuiteSummary);} // end if block
   } // end results constructor
 
@@ -301,17 +328,13 @@ class results
   		
   		if (($i % $this->ITEM_PATTERN_IN_SUITE_STRUCTURE) ==  $this->ID_IN_SUITE_STRUCTURE) {  			
   			$suiteId = $this->suiteStructure[$i];
-  			
-
   			$resultsForSuite = isset($this->mapOfAggregate[$suiteId]) ? $this->mapOfAggregate[$suiteId] : 0;
   			$total_sum += $resultsForSuite['total'];
   			$pass_sum += $resultsForSuite['pass'];
   			$fail_sum += $resultsForSuite['fail'];
   			$blocked_sum += $resultsForSuite['blocked'];
   			$notRun_sum += $resultsForSuite['notRun'];
-  			
   		} // end if
-  			
   	}
   	return array("total" => $total_sum, "pass" => $pass_sum, "fail" => $fail_sum, 
   	             "blocked" => $blocked_sum, "notRun" => $notRun_sum); 	
@@ -375,23 +398,8 @@ class results
   			$result = null;		
   			// iterate across all executions for this suite
   			for ($j = 0 ; $j < $totalCases; $j++) {
-				//print_r($currentExecution);
-  				$currentExecution = $executionsMap[$suiteId][$j];
-				$caseId = $currentExecution['testcaseID'];
-				$build = $currentExecution['build_id'];
-  				$result = $currentExecution['status'];
-				$tcversion_id = $currentExecution['tcversion_id'];
-				$execution_ts = $currentExecution['execution_ts'];
-				$notes = $currentExecution['notes'];
-				$tester_id = $currentExecution['tester_id'];
-				// TO-DO : make sure i don't need $executions_id from currentExecutions
-				//$executions_id = $currentExecution['executions_id'];
-				// print "executions_id = $executions_id <BR>";
-				// TO-DO : do i need name?
-				//$name = $currentExecution['name'];
-				$executions_id = 0;
-				$name = 0;
-				$this->addLastResultToMap($suiteId, $caseId, $build, $result, $tcversion_id, $execution_ts, $notes, $suiteName, $executions_id, $name, $tester_id);
+				$currentExecution = $executionsMap[$suiteId][$j];
+				$this->addLastResultToMap($suiteId, $currentExecution['testcaseID'], $currentExecution['build_id'], $currentExecution['status'], $currentExecution['tcversion_id'], $currentExecution['execution_ts'], $currentExecution['notes'], $suiteName,$currentExecution['executions_id'], $currentExecution['name'], $currentExecution['tester_id']); 
   			}
   		} // end elseif 
   		
@@ -419,7 +427,10 @@ class results
   function buildExecutionsMap($builds_to_query, $lastResult = 'a', $keyword = 0, $owner = null){
     // first make sure we initialize the executionsMap
     // otherwise duplicate executions will be added to suites
-    $executionsMap = null;
+    
+	//print "buildExecutionsMap() - beginning of method <BR>";
+	
+	$executionsMap = null;
 
     while ($testcaseID = key($this->linked_tcversions)){
       $info = $this->linked_tcversions[$testcaseID];
@@ -470,28 +481,33 @@ mysql> desc nodes_hierarchy;
 		$sql = "select name from nodes_hierarchy where id = $testcaseID ";
 		$results = $this->db->fetchFirstRow($sql);
 		$name = $results['name'];
-      $executed = $info['executed'];
+        $executed = $info['executed'];
       $executionExists = true;
 
       if ($tcversion_id != $executed){
-	$executionExists = false;
-	if (($lastResult == 'a') || ($lastResult == 'n')) {
-	  // Initialize information on testcaseID to be "not run"
-	  $infoToSave = array('testcaseID' => $testcaseID, 'tcversion_id' => $tcversion_id, 'build_id' => '', 'tester_id' => '', 'execution_ts' => '', 'status' => 'n', 'notes' => '', 'name' => $name);
-	  array_push($currentSuite, $infoToSave);			
-	}
-	  
+		$executionExists = false;
+		if (($lastResult == 'a') || ($lastResult == 'n')) {
+			// Initialize information on testcaseID to be "not run"
+		    $infoToSave = array('testcaseID' => $testcaseID, 
+			'tcversion_id' => $tcversion_id, 
+			'build_id' => '', 
+			'tester_id' => '', 
+			'execution_ts' => '', 
+			'status' => 'n', 
+			'executions_id' => '',
+			'notes' => '', 
+			'name' => $name);
+			array_push($currentSuite, $infoToSave);			
+		}	  
       }
 
       if ($executionExists) {
-	  // NOTE TO SELF - this is where we can include the searching of results
-	  // over multiple test plans - by modifying this select statement slightly
-	  // to include multiple test plan ids
+		// NOTE TO SELF - this is where we can include the searching of results
+		// over multiple test plans - by modifying this select statement slightly
+		// to include multiple test plan ids
 
 		$sql = "SELECT * FROM executions " .
 			   "WHERE tcversion_id = $executed AND testplan_id = $_SESSION[testPlanId] ";
-
-
 		if (($lastResult == 'p') || ($lastResult == 'f') || ($lastResult == 'b')){
 		  $sql .= " AND status = '" . $lastResult . "' ";
 		}
@@ -499,34 +515,51 @@ mysql> desc nodes_hierarchy;
 		if (($builds_to_query != -1) && ($builds_to_query != 'a')) { 
 			$sql .= " AND build_id IN ($builds_to_query) ";
 		}
-
-		
 		$execQuery = $this->db->fetchArrayRowsIntoMap($sql,'id');
-		// -----------------------------------------------------------
-		
 		if ($execQuery)
 		{
 		    $executions_id = null;
 		    while($executions_id = key($execQuery)){
 				$notSureA = $execQuery[$executions_id];
 		 		$exec_row = $notSureA[0];
-		  		$build_id = $exec_row['build_id'];
-		  		$tester_id = $exec_row['tester_id'];
-		  		$execution_ts = $exec_row['execution_ts'];
-		  		$status = $exec_row['status'];
+		  		// $build_id = $exec_row['build_id'];
+		  		//$tester_id = $exec_row['tester_id'];
+		  		// $execution_ts = $exec_row['execution_ts'];
+		  		// $status = $exec_row['status'];
 		  		$testplan_id = $exec_row['testplan_id'];
-		  		$notes = $exec_row['notes'];
+		  		//$notes = $exec_row['notes'];
 
 				// TO-DO use localizedTS
 				//$localizedTS = localize_dateOrTimeStamp(null,$dummy,'timestamp_format',$execution_ts);
-				$bugString = $this->buildBugString($this->db, $executions_id);
+				
+				// TO-DO - fix bugString call
+				//$bugString = $this->buildBugString($this->db, $executions_id);
+				//$bugString = "x";
+				
 				//print "bugString = $bugString <BR>";
 				//print "<BR>";
 			
 				// TO-DO - only add bugString if it's needed - build logic into results contructor
 				// to pass this request in
-				$infoToSave = array('testcaseID' => $testcaseID, 'tcversion_id' => $tcversion_id, 'build_id' => $build_id, 'tester_id' => $tester_id, 'execution_ts' => $execution_ts, 'status' => $status, 'notes' => $notes, 'executions_id' => $executions_id, 'name' => $name, 'bugString' => $bugString);
-
+				
+				/**
+				$infoToSave = array('testcaseID' => $testcaseID, 'tcversion_id' => $tcversion_id, 
+						'build_id' => $build_id, 'tester_id' => $tester_id, 
+						'execution_ts' => $execution_ts, 'status' => $status, 
+						'notes' => $notes, 'executions_id' => $executions_id, 
+						'name' => $name, 'bugString' => $bugString);
+				*/
+				$infoToSave = array('testcaseID' => $exec_row['tester_id'], 
+									'tcversion_id' => $tcversion_id, 
+									'build_id' => $exec_row['build_id'], 
+									'tester_id' => $exec_row['tester_id'], 
+									'execution_ts' => $exec_row['execution_ts'], 
+									'status' => $exec_row['status'], 
+									'notes' => $exec_row['notes'], 
+									'executions_id' => $executions_id, 
+									'name' => $name, 
+									'bugString' => 'x');
+				
 				if ($lastResult != 'n') {
 				  array_push($currentSuite, $infoToSave);
 				}
@@ -535,8 +568,15 @@ mysql> desc nodes_hierarchy;
 		} // end if($execQuery)
 		// HANDLE scenario where execution does not exist		          
 		elseif (($lastResult == 'a') || ($lastResult == 'n')) {
-			$infoToSave = array('testcaseID' => $testcaseID, 'tcversion_id' => $tcversion_id, 
-			'build_id' => '', 'tester_id' => '', 'execution_ts' => '', 'status' => 'n', 'notes' => '');
+			$infoToSave = array('testcaseID' => $testcaseID, 
+			'tcversion_id' => $tcversion_id, 
+			'build_id' => '', 
+			'tester_id' => '', 
+			'execution_ts' => '', 
+			'executions_id' => '',
+			'status' => 'n',
+			'name' => $name, 
+			'notes' => '');
 			array_push($currentSuite, $infoToSave);			
 		}
       } // end if($executionExists)
@@ -651,7 +691,13 @@ function buildBugString(&$db,$execID)
 
 	// KL - 20061111 - I do not forsee having to pass a specific test case id into this method
 	$DEFAULT_VALUE_FOR_TC_ID = 0;
+	
+	$time_start4 = microtime_float();		
 	$tp_tcs = $tplan_mgr->get_linked_tcversions($this->testPlanID,$DEFAULT_VALUE_FOR_TC_ID,$keyword_id, null, $owner);
+	$time_end4 = microtime_float();
+	$time4 = $time_end4 - $time_start4;
+	print "time for get_linked_tcversion = $time4 <BR>";
+	
 	$this->linked_tcversions = &$tp_tcs;
 	if (is_null($tp_tcs)) { 
 		$tp_tcs = array();

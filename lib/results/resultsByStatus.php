@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsByStatus.php,v 1.24 2006/12/11 06:43:10 kevinlevy Exp $ 
+* $Id: resultsByStatus.php,v 1.25 2006/12/12 05:49:14 kevinlevy Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -84,8 +84,9 @@ if (is_array($mapOfLastResult)) {
 		$tester_id = $mapOfLastResult[$suiteId][$tcId]['tester_id'];
 		$executions_id = $mapOfLastResult[$suiteId][$tcId]['executions_id'];
 		$localizedTS = localize_dateOrTimeStamp(null,$dummy,'timestamp_format',$execution_ts);
-		$bugString = buildBugString($db, $executions_id);
-		
+		// TO-DO - KL 20061212 - fix buildBugString call
+		//$bugString = buildBugString($db, $executions_id);
+		$bugString = 'x';
 		$arrData[$arrDataIndex] = array(htmlspecialchars($suiteName),$tcId . ":" . htmlspecialchars($name),htmlspecialchars($buildName),htmlspecialchars($arrOwners[$tester_id]),htmlspecialchars($execution_ts),htmlspecialchars($notes),$bugString);
 		$arrDataIndex++;
 		next($mapOfLastResult[$suiteId]);

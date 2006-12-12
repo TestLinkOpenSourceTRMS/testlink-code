@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8 
- * @modified $Date: 2006/12/11 06:44:21 $ by $Author: kevinlevy $
+ * @modified $Date: 2006/12/12 05:50:58 $ by $Author: kevinlevy $
  *
  *
  * This class is encapsulates most functionality necessary to query the database
@@ -22,7 +22,7 @@
 require_once('treeMenu.inc.php');
 // used for bug string lookup
 require_once('exec.inc.php');
-require_once('timer.php');
+require_once('../results/timer.php');
 
 class results
 {

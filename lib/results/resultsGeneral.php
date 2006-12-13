@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: resultsGeneral.php,v $
- * @version $Revision: 1.17 $
- * @modified $Date: 2006/12/11 06:43:10 $ by $Author: kevinlevy $
+ * @version $Revision: 1.18 $
+ * @modified $Date: 2006/12/13 07:44:30 $ by $Author: kevinlevy $
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
  * This page show Test Results over all Builds.
@@ -21,6 +21,7 @@
 require('../../config.inc.php');
 require_once('common.php');
 require_once('builds.inc.php');
+require_once('TestPlanResultsObj.php');
 require_once('timer.php');
 require_once('../functions/results.class.php');
 require_once('../functions/testplan.class.php');
@@ -42,6 +43,9 @@ print "results object created in $time <BR>";
 
 //print "<BR>";
 //print "resultsGeneral.php - finished creating object <BR>";
+
+
+$excelWriter = new TestPlanResultsObj();
 
 /** 
 * COMPONENTS REPORT 

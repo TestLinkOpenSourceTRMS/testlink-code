@@ -31,8 +31,12 @@
      // row header information should be written to
      private $headerRow = 1;
      
-     function __construct($tpName,$tpID, $buildsSelected, $keyword, $owner, $lastStatus, $xls, $componentsSelected)
+	 // 20061212 - KL - For 1.7 I'd like to use this for it's excel writing purposes
+	 // for now - just create the excelWorkbook object
+	 // $tpName,$tpID, $buildsSelected, $keyword, $owner, $lastStatus, $xls, $componentsSelected
+     function __construct()
      {
+		/**
          $this->testPlanName = $tpName;
          $this->testPlanID = $tpID;
          $this->buildsSelected = $buildsSelected;
@@ -42,9 +46,14 @@
          $this->xls = $xls;
          $this->componentsSelected = $componentsSelected;
          $this->columnAssignments = array("component" => 0, "category" => 1, "tcid" => 2, "tctitle" => 3 );
-         $this->excelWorkbook = new Spreadsheet_Excel_Writer();
+         */
+		 $this->excelWorkbook = new Spreadsheet_Excel_Writer();
+		 
      }     
      
+	 /** 
+	 * 20061212 - KL - deprecated in 1.7 (for now)
+	 * 
      private function getTestCasesAndInfo()
      {
          // TODO: support keyword, owner, and last result        
@@ -141,6 +150,8 @@
          return $fullResult;
      }
      
+	 */
+	 
      public function createExcelFile($fileName)
      {                  
          $this->excelWorkbook->send($fileName);

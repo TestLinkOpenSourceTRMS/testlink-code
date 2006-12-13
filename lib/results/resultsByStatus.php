@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsByStatus.php,v 1.25 2006/12/12 05:49:14 kevinlevy Exp $ 
+* $Id: resultsByStatus.php,v 1.26 2006/12/13 07:44:52 kevinlevy Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -14,10 +14,10 @@
 * 20061126 - KL - upgrade to 1.7
 */
 require('../../config.inc.php');
-require_once('common.php');
+require_once('../functions/common.php');
 //require_once('builds.inc.php');	
 //require_once('results.inc.php');
-require_once('exec.inc.php');
+require_once('../functions/exec.inc.php');
 //require_once("../../lib/functions/lang_api.php");
 require_once("../../lib/functions/results.class.php");
 

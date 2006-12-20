@@ -1,11 +1,15 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
 # This script is distributed under the GNU General Public License 2 or later.
-# $Id: testlink_create_tables.sql,v 1.8 2006/10/11 07:00:39 franciscom Exp $
+# $Id: testlink_create_tables.sql,v 1.9 2006/12/20 18:19:10 franciscom Exp $
 # SQL script - create db tables for TL   
 #
 # default rights & admin account are created via testlink_create_default_data.sql
 #
 # Rev :
+#       20061220 - franciscom - added new indexes to solve performance problems
+#                               executions, user_assignment, testplan_tcversions
+#                               changed column order on index on testplan_tcversions
+#
 #       20061009 - franciscom - changes to index names for rights and roles tables
 #                               added UNIQUE to req_doc_id KEY in table requirements
 #
@@ -65,7 +69,8 @@ CREATE TABLE `executions` (
   `testplan_id` int(10) unsigned NOT NULL default '0',
   `tcversion_id` int(10) unsigned NOT NULL default '0',
   `notes` text,
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY  (`id`),
+  KEY `testplan_id_tcversion_id`(`testplan_id`,`tcversion_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 CREATE TABLE `keywords` (
@@ -182,7 +187,8 @@ CREATE TABLE `user_assignments` (
   `assigner_id`  int(10) unsigned default '0',
   `creation_ts`  datetime NOT NULL default '0000-00-00 00:00:00',
   `status` int(10) unsigned default '1',
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY  (`id`),
+  KEY `feature_id` (`feature_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 
@@ -228,10 +234,10 @@ CREATE TABLE `tcversions` (
 
 CREATE TABLE `testplan_tcversions` (
   `id` int(10) unsigned NOT NULL auto_increment,
-  `tcversion_id` int(10) unsigned NOT NULL default '0',
   `testplan_id` int(10) unsigned NOT NULL default '0',
+  `tcversion_id` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id`),
-  UNIQUE KEY `tp_tcversion` (`tcversion_id`,`testplan_id`)
+  UNIQUE KEY `tp_tcversion` (`testplan_id`,`tcversion_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 

@@ -1,7 +1,7 @@
 <?php
 /* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: installUtils.php,v 1.18 2006/12/04 22:20:48 asielb Exp $ 
+$Id: installUtils.php,v 1.19 2006/12/20 18:20:11 franciscom Exp $ 
 
 20060428 - franciscom - new function check_db_loaded_extension()
 20060214 - franciscom - added warning regarding valid database names
@@ -61,7 +61,7 @@ return $filesArr;
 // | Authors: Jo�o Prado Maia <jpm@mysql.com>                             |
 // +----------------------------------------------------------------------+
 //
-// @(#) $Id: installUtils.php,v 1.18 2006/12/04 22:20:48 asielb Exp $
+// @(#) $Id: installUtils.php,v 1.19 2006/12/20 18:20:11 franciscom Exp $
 //
 
 // a foolish wrapper - 20051231 - fm
@@ -326,8 +326,12 @@ return($ret);
 //
 function check_php_version($info_location="./info/")
 {
-$min_ver = "5.0.0";
-$ver_not_tested="5.2.0";
+//$min_ver = "5.0.0";
+//$ver_not_tested="5.2.0";
+
+$min_ver = "4.1.0";
+$ver_not_tested="5.0.0";
+
 
 $errors=0;	
 $check_title="Checking PHP version:";

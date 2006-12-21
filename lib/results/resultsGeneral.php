@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: resultsGeneral.php,v $
- * @version $Revision: 1.18 $
- * @modified $Date: 2006/12/13 07:44:30 $ by $Author: kevinlevy $
+ * @version $Revision: 1.19 $
+ * @modified $Date: 2006/12/21 07:37:01 $ by $Author: kevinlevy $
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
  * This page show Test Results over all Builds.
@@ -38,7 +38,7 @@ $time_start = microtime_float();
 $re = new results($db, $tp, $suitesSelected, $builds_to_query);
 $time_end = microtime_float();
 $time = $time_end - $time_start;
-print "results object created in $time <BR>";
+// print "results object created in $time <BR>";
 
 
 //print "<BR>";
@@ -90,7 +90,7 @@ $arrDataKeys = null;
 /**
 * TO-DO : fix performance of keywords report
 * KL - 20061210 - commenting out since performance of this is not good enough
-
+*/
 $arrDataKeysIndex = 0;
 $arrKeywords = $tp->get_keywords_map($tpID); 
 
@@ -108,7 +108,7 @@ if (is_array($arrKeywords)) {
 	next($arrKeywords);
   } // end while
 } // end if
-*/
+
 //print "resultsGeneral end keywords report <BR>";
 
 
@@ -122,7 +122,7 @@ $arrOwners = get_users_for_html_options($db, ALL_USERS_FILTER, ADD_BLANK_OPTION)
 $arrDataOwner = null;
 $arrDataOwnerIndex = 0;
 /**
-*  KL - 20061210 - comment out for performance reasons
+*  KL - 20061210 - comment out for performance reasons */
 while ($owner_id = key($arrOwners)) {
 	$owner_name = $arrOwners[$owner_id] ;
 	$specificOwnerResults = new results($db, $tp, $suitesSelected, $builds_to_query, 'a', 0, $owner_id);
@@ -139,7 +139,7 @@ while ($owner_id = key($arrOwners)) {
 	$arrDataOwnerIndex++;
 	next($arrOwners);
 }
-*/
+
 //print "resultsGeneral - end owners report <BR>";
 
 /**

@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8 
- * @modified $Date: 2006/12/12 05:50:58 $ by $Author: kevinlevy $
+ * @modified $Date: 2006/12/21 07:32:32 $ by $Author: kevinlevy $
  *
  *
  * This class is encapsulates most functionality necessary to query the database
@@ -113,7 +113,7 @@ class results
 	$this->suiteStructure = $this->generateExecTree($keywordId, $owner);
 	$time_end2 = microtime_float();
 	$time2 = $time_end2 - $time_start2;
-	print "time for generateExecTree() = $time2 <BR>";
+	// print "time for generateExecTree() = $time2 <BR>";
 	
     // KL - if no builds are specified, no need to execute the following block of code
     if ($builds_to_query != -1) {
@@ -125,7 +125,7 @@ class results
 	   $this->executionsMap = $this->buildExecutionsMap($builds_to_query, $lastResult, $keywordId, $owner);    
 	   $time_end3 = microtime_float();
 	   $time3 = $time_end3 - $time_start3;
-	   print "time for buildExecutionsMap() = $time3 <BR>";
+	  // print "time for buildExecutionsMap() = $time3 <BR>";
 	
       // create data object which tallies last result for each test case
 	 
@@ -696,7 +696,7 @@ function buildBugString(&$db,$execID)
 	$tp_tcs = $tplan_mgr->get_linked_tcversions($this->testPlanID,$DEFAULT_VALUE_FOR_TC_ID,$keyword_id, null, $owner);
 	$time_end4 = microtime_float();
 	$time4 = $time_end4 - $time_start4;
-	print "time for get_linked_tcversion = $time4 <BR>";
+	// print "time for get_linked_tcversion = $time4 <BR>";
 	
 	$this->linked_tcversions = &$tp_tcs;
 	if (is_null($tp_tcs)) { 

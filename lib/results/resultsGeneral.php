@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: resultsGeneral.php,v $
- * @version $Revision: 1.19 $
- * @modified $Date: 2006/12/21 07:37:01 $ by $Author: kevinlevy $
+ * @version $Revision: 1.20 $
+ * @modified $Date: 2006/12/24 22:11:45 $ by $Author: kevinlevy $
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
  * This page show Test Results over all Builds.
@@ -66,7 +66,12 @@ while ($i = key($topLevelSuites)) {
 	$resultArray = $mapOfAggregate[$currentSuiteId];	
 	$total = $resultArray['total'];
 	$notRun = $resultArray['notRun'];
-	$percentCompleted = (($total - $notRun) / $total) * 100;
+	if ($total > 0) {
+	   $percentCompleted = (($total - $notRun) / $total) * 100;
+	}
+	else {
+	   $percentCompleted = 0;
+	}
 	$percentCompleted = number_format($percentCompleted,2);
 	$arrDataSuite[$arrDataSuiteIndex] = array($currentSuiteName,$total,$resultArray['pass'],$resultArray['fail'],$resultArray['blocked'],$notRun,$percentCompleted);
 	$arrDataSuiteIndex++;

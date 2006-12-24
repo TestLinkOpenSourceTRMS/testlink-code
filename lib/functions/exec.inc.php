@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: exec.inc.php,v $
  *
- * @version $Revision: 1.31 $
- * @modified $Date: 2006/10/17 16:31:09 $ $Author: franciscom $
+ * @version $Revision: 1.32 $
+ * @modified $Date: 2006/12/24 11:50:33 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -472,5 +472,17 @@ function get_bugs_for_exec(&$db,&$bug_interface,$execution_id)
     	}
   }
   return($bug_list);
+}
+
+
+// 20060916 - franciscom
+function get_execution(&$db,$execution_id)
+{
+	$sql = "SELECT * " .
+	       "FROM executions ".
+	       "WHERE id={$execution_id} ";
+	       
+	$map = $db->get_recordset($sql);
+  return($map);
 }
 ?>

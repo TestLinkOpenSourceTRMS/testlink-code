@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.80 $
- * @modified $Date: 2006/11/20 07:23:47 $ by $Author: franciscom $
+ * @version $Revision: 1.81 $
+ * @modified $Date: 2006/12/24 11:50:32 $ by $Author: franciscom $
  *
  *
  * Constants and configuration parameters used throughout TestLink 
@@ -654,6 +654,10 @@ if($g_repositoryType == TL_REPOSITORY_TYPE_FS)
 
 
 /* END ATTACHMENTS */
+
+// 20061223 - franciscom
+// true: icon edit will be added to <a href> used to access edit features
+$g_gui->show_icon_edit=false;
 
 // 20050821 - fm - configurable templates this help is you want to use a non standard template 
 $g_tpl = array();

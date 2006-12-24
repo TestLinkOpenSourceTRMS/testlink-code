@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqView.php,v $
- * @version $Revision: 1.7 $
- * @modified $Date: 2006/04/08 19:51:42 $ by $Author: schlundus $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2006/12/24 11:50:33 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Screen to view content of requirement.
@@ -22,6 +22,8 @@ $arrReq = getReqData($db,$idReq);
 $arrReq['author'] = getUserName($db,$arrReq['author_id']);
 $arrReq['modifier'] = getUserName($db,$arrReq['modifier_id']);
 $arrReq['coverage'] = getTc4Req($db,$idReq);
+
+echo "<pre>debug 20061223 " . __FUNCTION__ . " --- "; print_r($arrReq); echo "</pre>";
 
 
 $smarty = new TLSmarty();

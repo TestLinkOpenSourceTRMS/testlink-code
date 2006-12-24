@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: attachmentupload.php,v $
  *
- * @version $Revision: 1.6 $
- * @modified $Date: 2006/11/17 19:52:59 $ by $Author: schlundus $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2006/12/24 11:50:33 $ by $Author: franciscom $
  *
  * Upload dialog
 **/
@@ -15,12 +15,14 @@ require_once('../functions/common.php');
 require_once('../functions/attachments.inc.php');
 testlinkInitPage($db);
 
+
 $id = isset($_GET['id'])? intval($_GET['id']) : 0;
 $tableName = isset($_GET['tableName'])? $_GET['tableName'] : null;
 $bPostBack = sizeof($_POST);
 $bUploaded = false;
 if ($bPostBack > 2)
 {
+  
 	$fInfo  = isset($HTTP_POST_FILES['uploadedFile']) ? $HTTP_POST_FILES['uploadedFile'] : null;
 	$title = isset($_POST['title']) ? $_POST['title'] : "";
 	$id = isset($_POST['id'])? intval($_POST['id']) : 0;

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqSpecView.php,v $
- * @version $Revision: 1.28 $
- * @modified $Date: 2006/10/17 20:17:54 $ by $Author: schlundus $
+ * @version $Revision: 1.29 $
+ * @modified $Date: 2006/12/24 11:50:33 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Screen to view existing requirements within a req. specification.
@@ -23,6 +23,7 @@ require_once("../functions/xml.inc.php");
 require_once("../../third_party/fckeditor/fckeditor.php");
 require_once(dirname("__FILE__") . "/../functions/configCheck.php");
 testlinkInitPage($db);
+
 
 $js_msg=null;
 $sqlResult = null;
@@ -83,6 +84,10 @@ if(isset($_REQUEST['createReq']))
 } 
 elseif (isset($_REQUEST['editReq']))
 {
+  // 20061224 - franciscom
+  $srs=get_srs_by_id($db,$idSRS);
+	$smarty->assign('srs_title',$srs[$idSRS]['title']);	
+
 	$idReq = intval($_REQUEST['editReq']);
 	$arrReq = getReqData($db,$idReq);
 	if ($arrReq)
@@ -90,12 +95,13 @@ elseif (isset($_REQUEST['editReq']))
 		$arrReq['author'] = getUserName($db,$arrReq['author_id']);
 		$arrReq['modifier'] = getUserName($db,$arrReq['modifier_id']);
 		$arrReq['coverage'] = getTc4Req($db,$idReq);
-		
 		$reqDocId = $arrReq['req_doc_id'];
 		$scope = $arrReq['scope']; 
 	}
 	$action = 'editReq';
 	$template = 'reqEdit.tpl';
+
+
 	$smarty->assign('id',$idReq);	
 	$smarty->assign('tableName','requirements');	
 	$attachmentInfos = getAttachmentInfos($db,$idReq,'requirements');

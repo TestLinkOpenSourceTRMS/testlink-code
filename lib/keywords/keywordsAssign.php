@@ -5,10 +5,12 @@
  *
  * Filename $RCSfile: keywordsAssign.php,v $
  *
- * @version $Revision: 1.19 $
- * @modified $Date: 2006/08/17 19:29:59 $
+ * @version $Revision: 1.20 $
+ * @modified $Date: 2006/12/24 11:50:33 $
  *
  * Purpose:  Assign keywords to set of testcases in tree structure
+ *
+ * 20061223 - franciscom - improvements on user feedback
  *
  * 20060410 - franciscom - using option transfer
  *
@@ -31,19 +33,22 @@ $testproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID']
 
 if ($edit == 'testproject')
 {
+  // We can assign/remove keywords on a whole test project
 	redirect($_SESSION['basehref'] . $g_rpath['help'] . '/keywordsAssign.html');
 	exit();
 }
 
 $smarty = new TLSmarty();
-$title = null;
 $result = null;
+$keyword_assignment_subtitle=null;
 $tproject_mgr = new testproject($db);
 $tcase_mgr = new testcase($db);
 
 $opt_cfg = opt_transf_empty_cfg();
 $opt_cfg->js_ot_name = 'ot';
-$opt_cfg->global_lbl = lang_get('title_assign_kw_to_tc');
+$opt_cfg->global_lbl = '';
+$opt_cfg->additional_global_lbl=null;
+
 $opt_cfg->from->lbl = lang_get('available_kword');
 $opt_cfg->to->lbl = lang_get('assigned_kword');
 $opt_cfg->from->map = $tproject_mgr->get_keywords_map($testproject_id);
@@ -54,8 +59,15 @@ $right_list = isset($_REQUEST[$rl_html_name])? $_REQUEST[$rl_html_name] : "";
 
 if ($edit == 'testsuite')
 {
-	$tsuite = new testsuite($db);
-	$tcs = $tsuite->get_testcases_deep($id,true);
+  // We are going to walk all test suites contained
+  // in the selected container, and assign/remove keywords on each test case.
+  //
+  
+	$tsuite_mgr = new testsuite($db);
+  $testsuite=$tsuite_mgr->get_by_id($id);
+  $keyword_assignment_subtitle=lang_get('test_suite') . TITLE_SEP . $testsuite['name'];
+
+	$tcs = $tsuite_mgr->get_testcases_deep($id,true);
 	if (sizeof($tcs))
 	{
 		if ($bAssignTestSuite)
@@ -87,7 +99,7 @@ else if($edit == 'testcase')
 	if (sizeof($tcData))
 	{
 		$tcData = $tcData[0];
-		$title = $tcData['name'];
+    $keyword_assignment_subtitle=lang_get('test_case') . TITLE_SEP . $tcData['name'];
 	}
 	if($bAssignTestCase)
 	{
@@ -111,7 +123,7 @@ keywords_opt_transf_cfg($opt_cfg, $right_list);
 $smarty->assign('sqlResult', $result);
 $smarty->assign('data', $id);
 $smarty->assign('level', $edit);
-$smarty->assign('title',$title);
 $smarty->assign('opt_cfg', $opt_cfg);
+$smarty->assign('keyword_assignment_subtitle',$keyword_assignment_subtitle);
 $smarty->display('keywordsAssign.tpl');
 ?>

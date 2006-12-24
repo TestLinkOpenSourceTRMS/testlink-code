@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.42 $
- * @modified $Date: 2006/11/20 07:29:06 $  by $Author: franciscom $
+ * @version $Revision: 1.43 $
+ * @modified $Date: 2006/12/24 11:50:33 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
  *
@@ -135,7 +135,7 @@ if($edit_tc)
     keywords_opt_transf_cfg($opt_cfg, $assigned_keywords_list); 
     
   	$tc_data = $tcase_mgr->get_by_id($tcase_id,$tcversion_id);
-  
+
   	foreach ($a_ofck as $key)
    	{
   	  	// Warning:

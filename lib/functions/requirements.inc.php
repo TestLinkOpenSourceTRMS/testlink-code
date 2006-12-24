@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: requirements.inc.php,v $
- * @version $Revision: 1.38 $
- * @modified $Date: 2006/10/16 10:36:11 $ by $Author: franciscom $
+ * @version $Revision: 1.39 $
+ * @modified $Date: 2006/12/24 11:50:33 $ by $Author: franciscom $
  *
  * @author Martin Havlat <havlat@users.sourceforge.net>
  * 
@@ -13,6 +13,7 @@
  *
  * Revisions:
  *
+ * 20061223 - franciscom - fixed bugs on getReqByReqdocId()
  * 20051002 - francisco mancardi - Changes in createTcFromRequirement()
  * 20050906 - francisco mancardi - reduce global coupling 
  * 20050901 - Martin Havlat - updated metrics/results related functions 
@@ -367,7 +368,7 @@ function getReq4Tc(&$db,$testcase_id, $srs_id = 'all')
 /**
  *
  **/
-function check_req_basic_data(&$db,$title,$reqdoc_id)
+function check_req_basic_data(&$db,$title,$reqdoc_id,$id=null)
 {
   $ret['status_ok']=1;
   $ret['msg']='';
@@ -389,7 +390,7 @@ function check_req_basic_data(&$db,$title,$reqdoc_id)
 	  $ret['msg']='ok';
     $rs=getReqByReqdocId($db,$reqdoc_id);
     
-    if( !is_null($rs) )
+    if( !is_null($rs) && (is_null($id) || !isset($rs[$id])) )
     {
 		  $ret['msg']=lang_get("warning_duplicate_reqdoc_id");
       $ret['status_ok']=0;  		  
@@ -425,6 +426,7 @@ function createRequirement(&$db,$reqdoc_id,$title, $scope, $srs_id, $user_id,
 	$reqdoc_id=trim_and_limit($reqdoc_id,$field_size->req_docid);
 	$title=trim_and_limit($title,$field_size->req_title);
 		
+	// 20061223 - franciscom	
 	$chk=check_req_basic_data($db,$title,$reqdoc_id);
 	if($chk['status_ok'])
 	{
@@ -472,7 +474,8 @@ function updateRequirement(&$db,$id, $reqdoc_id,$title, $scope, $user_id, $statu
 	$reqdoc_id=trim_and_limit($reqdoc_id,$field_size->req_docid);
 	$title=trim_and_limit($title,$field_size->req_title);
 
-  $chk=check_req_basic_data($db,$title,$reqdoc_id);
+  // 20061223 - franciscom
+  $chk=check_req_basic_data($db,$title,$reqdoc_id,$id);
  
 	if($chk['status_ok'] || $skip_controls)
 	{
@@ -1186,6 +1189,18 @@ function getReqByReqdocId(&$db,$reqdoc_id)
 	return($db->fetchRowsIntoMap($sql,'id'));
 }
 
+// 20061223 - franciscom
+/*
+function getReqByReqdocIdAndSRS(&$db,$srs_id,$reqdoc_id)
+{
+	$sql = "SELECT * FROM requirements " .
+	       " WHERE req_doc_id='" . $db->prepare_string($reqdoc_id) . "'";
+
+	return($db->fetchRowsIntoMap($sql,'id'));
+}
+*/
+
+
 /**
  * Function-Documentation
  *
@@ -1271,4 +1286,13 @@ function check_syntax_csv_doors($fileName)
 }
 
 
+// 20061224 - francisco.mancardi@gruppotesi.com
+function get_srs_by_id(&$db,$srs_id)
+{
+	$output=null;
+	
+	$sql = "SELECT * FROM req_specs WHERE id={$srs_id}";
+	$output = $db->fetchRowsIntoMap($sql,'id');
+	return($output);
+}
 ?>

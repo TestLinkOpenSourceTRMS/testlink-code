@@ -4,14 +4,15 @@
  *
  * Filename $RCSfile: tlsmarty.inc.php,v $
  *
- * @version $Revision: 1.15 $
- * @modified $Date: 2006/10/12 19:50:03 $ $Author: schlundus $
+ * @version $Revision: 1.16 $
+ * @modified $Date: 2006/12/24 11:50:33 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
  * TLSmarty class implementation used in all templates
  *
  * 
+ * 20061223 - franciscom - added g_gui
  * 20060820 - franciscom - added config_dir
  * 20060602 - franciscom - added new global var $g_attachments
  * 20060528 - franciscom - added new global var $g_tc_status_for_ui
@@ -26,6 +27,8 @@ class TLSmarty extends Smarty
 		global $g_bugInterfaceOn;
 		global $g_tc_status_for_ui;
 		global $g_attachments;
+		global $g_gui;
+
 
 
 	    $this->Smarty();
@@ -58,6 +61,10 @@ class TLSmarty extends Smarty
 		$this->assign('gsmarty_tc_status_for_ui',$g_tc_status_for_ui);
 		$this->assign('gsmarty_attachments',$g_attachments);
 		
+		// 20061223 - franciscom
+		$this->assign('gsmarty_gui',$g_gui);
+		
+		
 	
 		$this->assign('pageCharset',TL_TPL_CHARSET);
 		$this->assign('tlVersion',TL_VERSION);
@@ -80,7 +87,7 @@ class TLSmarty extends Smarty
 		
 		$this->register_function("localize_date", "localize_date_smarty");
 		$this->register_function("localize_timestamp", "localize_timestamp_smarty");
-	    $this->register_function("localize_tc_status","translate_tc_status_smarty");
+    $this->register_function("localize_tc_status","translate_tc_status_smarty");
 		
 		// define a select structure for {html_options ...}
 		$this->assign('option_yes_no', array(0 => lang_get('No'), 1 => lang_get('Yes')));

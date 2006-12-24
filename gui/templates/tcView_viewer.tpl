@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.12 2006/11/17 19:52:59 schlundus Exp $
+$Id: tcView_viewer.tpl,v 1.13 2006/12/24 11:48:18 franciscom Exp $
 viewer for test case in test specification
 
 20060427 - franciscom - added font-size in the table used for keywords
@@ -103,13 +103,13 @@ viewer for test case in test specification
 			<td>{$args_testcase.expected_results}</td>
 		</tr>
 		<tr>
-		  		<td colspan="2">
+		  	<td colspan="2">
 				<table cellpadding="0" cellspacing="0" style="font-size:100%;">
 			    <tr>
 				  	<td width="35%"><a href="lib/keywords/keywordsView.php" 
 							target="mainframe" class="bold">{lang_get s='keywords'}</a>: &nbsp;
 						</td>
-					<td>
+				 	  <td>
 					  	{foreach item=keyword_item from=$args_keywords_map}
 						    {$keyword_item|escape}
 						    <br />
@@ -123,18 +123,25 @@ viewer for test case in test specification
 		
 	{if $opt_requirements == TRUE && $view_req_rights == "yes"}
 		<tr>
-			<td colspan="2"><span><a href="lib/req/reqSpecList.php" 
-				target="mainframe" class="bold">{lang_get s='Requirements'}</a>
-				: &nbsp;</span>
-			
-				{section name=item loop=$args_reqs}
-					<span onclick="javascript: open_top(fRoot+'lib/req/reqView.php?idReq={$args_reqs[item].id}');"
-					style="cursor:  pointer;">{$args_reqs[item].title|escape}</span>
-					{if !$smarty.section.item.last},{/if}
-				{sectionelse}
-					{lang_get s='none'}
-				{/section}
-			</td>
+		  	<td colspan="2">
+  				<table cellpadding="0" cellspacing="0" style="font-size:100%;">
+     			  <tr>
+       			  <td colspan="2"><span><a href="lib/req/reqSpecList.php" 
+      				target="mainframe" class="bold">{lang_get s='Requirements'}</a>
+      				: &nbsp;</span>
+      			  </td>
+      			  <td>
+      				{section name=item loop=$args_reqs}
+      					<span onclick="javascript: open_top(fRoot+'lib/req/reqView.php?idReq={$args_reqs[item].id}');"
+      					style="cursor:  pointer;">{$args_reqs[item].title|escape}</span>
+      					{if !$smarty.section.item.last}<br>{/if}
+      				{sectionelse}
+      					{lang_get s='none'}
+      				{/section}
+      			  </td>
+    		    </tr>
+    		  </table>
+    		</td>    	  
 		</tr>
 	{/if}
 

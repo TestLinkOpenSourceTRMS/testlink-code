@@ -1,13 +1,14 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: opt_transfer.inc.tpl,v 1.3 2006/06/10 20:22:20 schlundus Exp $
+$Id: opt_transfer.inc.tpl,v 1.4 2006/12/24 11:48:18 franciscom Exp $
 Purpose: manage the OptionTransfer.js created by Matt Kruse
          http://www.JavascriptToolbox.com/
          JavaScript Toolbox - Option Transfer - Move Select Box Options Back And Forth
 
 Author: Francisco Mancardi
         Based on Cold Fusion code by Alessandro Lia (alessandro.lia@gruppotesi.com
-        
+      
+        20061223 - franciscom - $title -> $option_transfer->additional_global_lbl  
         20060423 - franciscom - improved label management 
                                 added double-click management
 *}
@@ -15,7 +16,7 @@ Author: Francisco Mancardi
   <table cellspacing="0" cellpadding="0" border="0" width="100%">
   		<caption style="font-weight:bold;">
   	  {$option_transfer->global_lbl}
-    	&nbsp;{$title|escape}
+    	&nbsp;{$option_transfer->additional_global_lbl|escape}
 		  </caption>
 
     <tr>

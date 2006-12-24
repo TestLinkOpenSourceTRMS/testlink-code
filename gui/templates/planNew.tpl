@@ -1,16 +1,19 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planNew.tpl,v 1.11 2006/11/20 00:08:12 havlat Exp $
+$Id: planNew.tpl,v 1.12 2006/12/24 11:48:18 franciscom Exp $
 
 Purpose: smarty template - create Test Plan
 Revisions:
+
 	20060224 - franciscom - removed the rights check
 	20061109 - mht - update for TL1.7; GUI update
+	20061223 - franciscom - utilizzo input_dimensions.conf
 *}
 
 {include file="inc_head.tpl"}
 
 <body>
+{config_load file="input_dimensions.conf" section="planNew"} {* Constant definitions *}
 
 <h1>{lang_get s='testplan_title_tp_management'}</h1>
 
@@ -44,7 +47,10 @@ Revisions:
 	  {* 20051120 - fm *}
 		<tr><th>{lang_get s='testplan_th_name'}</th></tr>
 		<tr>
-			<td><input type="text" name="name" maxlength="100" value="{$tpName|escape}"/></td>
+			<td><input type="text" name="name" 
+			           size="{#TESTPLAN_NAME_SIZE#}" 
+			           maxlength="{#TESTPLAN_NAME_MAXLEN#}" 
+			           value="{$tpName|escape}"/></td>
 		</tr>
 		<tr><th>{lang_get s='testplan_th_notes'}</th></tr>
 		<tr>

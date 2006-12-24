@@ -1,6 +1,11 @@
-{* smarty template - view all keywords of product; ver. 1.0 *}
-{* $Id: rolesview.tpl,v 1.9 2006/11/18 21:33:22 schlundus Exp $ *}
-{* Purpose: smarty template - View defined roles *}
+{* 
+TestLink Open Source Project - http://testlink.sourceforge.net/ 
+$Id: rolesview.tpl,v 1.10 2006/12/24 11:48:18 franciscom Exp $ 
+Purpose: smarty template - View defined roles 
+
+Revisions:
+20061223 - franciscom - use of gsmarty_gui
+*}
 {include file="inc_head.tpl"}
 
 <body>
@@ -60,7 +65,10 @@
 				<td>
 					<a href="lib/usermanagement/rolesedit.php?id={$role.id}">
 						{$role.role|escape}
-						<img title="{lang_get s='alt_edit_role'}" alt="{lang_get s='alt_edit_role'}" src="gui/images/icon_edit.png"/>
+   		      {if $gsmarty_gui->show_icon_edit}
+ 						  <img title="{lang_get s='alt_edit_role'}" 
+ 						       alt="{lang_get s='alt_edit_role'}" src="gui/images/icon_edit.png"/>
+ 						{/if}       
 					</a>
 				</td>
 				<td>

@@ -1,9 +1,11 @@
-{* TestLink Open Source Project - http://testlink.sourceforge.net/ 
-   $Id: planEdit.tpl,v 1.7 2006/11/20 00:08:12 havlat Exp $ 
-   Purpose: smarty template - edit / delete Test Plan 
-   Revisions:
+{* 
+TestLink Open Source Project - http://testlink.sourceforge.net/ 
+$Id: planEdit.tpl,v 1.8 2006/12/24 11:48:18 franciscom Exp $ 
+Purpose: smarty template - edit / delete Test Plan 
+Revisions:
 	20050810 - fm - changes in active field definition 
 	20061119 - mht - refactorization; update for TL1.7
+	20061223 - franciscom - use of gsmarty_gui
 *}
 {include file="inc_head.tpl"}
 
@@ -47,8 +49,11 @@ function delete_confirmation(delUrl) {ldelim}
 		{section name=number loop=$arrPlan}
 		<tr>
 			<td><a href="lib/plan/planNew.php?tpID={$arrPlan[number].id}"> 
-				{$arrPlan[number].name|escape} <img alt="{lang_get s='alt_edit_build'}" 
-				alt="{lang_get s='testplan_alt_edit_tp'}" src="gui/images/icon_edit.png"/></a>
+				     {$arrPlan[number].name|escape} 
+				     {if $gsmarty_gui->show_icon_edit}
+ 				         <img alt="{lang_get s='testplan_alt_edit_tp'}" src="gui/images/icon_edit.png"/>
+ 				     {/if}  
+ 				  </a>
 			</td>
 			<td>
 				{$arrPlan[number].notes|strip_tags|strip|truncate:100}
@@ -62,8 +67,7 @@ function delete_confirmation(delUrl) {ldelim}
 			</td>
 			<td>
 				<a href="javascript:delete_confirmation('lib/plan/planEdit.php?action=delete&id={$arrPlan[number].id}');">
-				<img alt="{lang_get s='testplan_alt_delete_tp'}" src="gui/images/icon_thrash.png"/>
-				</a>
+				  <img alt="{lang_get s='testplan_alt_delete_tp'}" src="gui/images/icon_thrash.png"/></a>
 			</td>
 		</tr>
 		{/section}

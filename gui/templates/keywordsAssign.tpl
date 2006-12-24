@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: keywordsAssign.tpl,v 1.7 2006/08/17 19:29:59 schlundus Exp $
+$Id: keywordsAssign.tpl,v 1.8 2006/12/24 11:48:18 franciscom Exp $
 Purpose: smarty template - assign keywords to one or more test cases
 Andreas Morsing : changed action to updated 
 *}
@@ -21,7 +21,14 @@ var {$opt_cfg->js_ot_name} = new OptionTransfer("{$opt_cfg->from->name}","{$opt_
 
 <body onLoad="{$opt_cfg->js_ot_name}.init(document.forms[0])">
 
+{* improved feedback *}
+
+
+
 <div class="workBack">
+     {if $keyword_assignment_subtitle neq ''}
+      <h2> {$keyword_assignment_subtitle}</h2>
+     {/if}
 
     <h1>{lang_get s='title_keywords'}</h1>
     {* tabs *}
@@ -32,6 +39,7 @@ var {$opt_cfg->js_ot_name} = new OptionTransfer("{$opt_cfg->from->name}","{$opt_
     </div>
     
     {include file="inc_update.tpl" result=$sqlResult item=$level action='updated'}
+   
     
     {* data form *}
     <div style="margin-top: 25px;">

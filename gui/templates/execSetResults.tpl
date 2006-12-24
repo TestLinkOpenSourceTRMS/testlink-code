@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: execSetResults.tpl,v 1.32 2006/11/13 07:07:46 franciscom Exp $
+$Id: execSetResults.tpl,v 1.33 2006/12/24 11:48:18 franciscom Exp $
 Purpose: smarty template - show tests to add results
 Revisions:
           20061112 - franciscom - added class management to assign
@@ -208,7 +208,11 @@ Revisions:
   				<td>{$tc_old_exec.tester_first_name|escape} {$tc_old_exec.tester_last_name|escape}</td> 
   				<td class="{$gsmarty_tc_status_css.$tc_status_code}">
   				    {localize_tc_status s=$tc_old_exec.status}</td>
-  				<td>{$tc_old_exec.execution_notes|escape}</td>
+   			  <td align="center">
+   			  <a href="javascript:open_show_notes_window({$tc_old_exec.execution_id})">
+      			    <img src="icons/contact_16.png" alt="{lang_get s='alt_notes'}" 
+      			         style="border:none" /></a>
+              </td>
   
   	        {if $att_model->show_upload_column}
       			  <td align="center"><a href="javascript:openFileUploadWindow({$tc_old_exec.execution_id},'executions')">

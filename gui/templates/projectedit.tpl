@@ -1,16 +1,19 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: projectedit.tpl,v 1.5 2006/10/17 20:17:54 schlundus Exp $
+$Id: projectedit.tpl,v 1.6 2006/12/24 11:48:18 franciscom Exp $
 Purpose: smarty template - Edit existing product 
 
  20051211 - fm - poor workaround for BUGID 180 Unable to delete Product
  20060106 - scs - added createProduct functionality
  20060305 - franciscom - changes input names
+ 20061223 - franciscom - utilizzo input_dimensions.conf
+
 *}
 {include file="inc_head.tpl" openHead="yes"}
 {include file="inc_jsPicker.tpl"}
 </head>
 <body>
+{config_load file="input_dimensions.conf" section="projectedit"} {* Constant definitions *}
 
 {* 20051211 - fm - deleted $name as additional workaround for BUG 180} *}
 {* 20060412 - MHT - get $name back with condition because of BUG 416 *}
@@ -60,7 +63,10 @@ Purpose: smarty template - Edit existing product
 				{$name|escape}</caption>
 			<tr>
 				<td>{lang_get s='name'}</td>
-				<td><input type="text" name="name" value="{$name|escape}" maxlength="100" /></td>
+				<td><input type="text" name="name" 
+  			           size="{#TESTPROJECT_NAME_SIZE#}" 
+	  		           maxlength="{#TESTPROJECT_NAME_MAXLEN#}" 
+				           value="{$name|escape}"/></td>
 			</tr>
      {* 20060101 - fm *}
 	   <tr>

@@ -1,13 +1,14 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/ 
 // This script is distributed under the GNU General Public License 2 or later. 
 //
-// $Id: testlink_library.js,v 1.18 2006/09/18 07:15:15 franciscom Exp $ 
+// $Id: testlink_library.js,v 1.19 2006/12/24 11:48:18 franciscom Exp $ 
 //
 // Javascript functions commonly used through the GUI
 // This library is automatically loaded with inc_header.tpl
 //
 // DO NOT ADD FUNCTIONS FOR ONE USING
 //
+// 20061223 - franciscom - added open_show_notes_window()
 // 20060603 - franciscom - added confirm_and_submit()
 //
 
@@ -326,3 +327,11 @@ function deleteBug_onClick(execution_id,bug_id,warning_msg)
 		            "Delete","width=510,height=150,resizable=yes,dependent=yes");
 	}	
 }
+
+// 20061223 - franciscom
+function open_show_notes_window(exec_id)
+{
+	window.open(fRoot+"lib/execute/show_exec_notes.php?exec_id="+exec_id,
+	            "execution_notes","width=510,height=270,resizable=yes,dependent=yes");
+}
+

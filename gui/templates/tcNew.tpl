@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: tcNew.tpl,v 1.13 2006/06/30 18:41:25 schlundus Exp $ *}
+{* $Id: tcNew.tpl,v 1.14 2006/12/24 11:48:18 franciscom Exp $ *}
 {* Purpose: smarty template - create new testcase *}
 {* 20050831 - scs - change item to TestCase *}
 {* 
@@ -28,6 +28,7 @@ var {$opt_cfg->js_ot_name} = new OptionTransfer("{$opt_cfg->from->name}","{$opt_
 </head>
 
 <body onLoad="{$opt_cfg->js_ot_name}.init(document.forms[0])">
+{config_load file="input_dimensions.conf" section="tcNew"} {* Constant definitions *}
 
 
 <h1>{lang_get s='title_new_tc'}</h1>
@@ -43,8 +44,11 @@ var {$opt_cfg->js_ot_name} = new OptionTransfer("{$opt_cfg->from->name}","{$opt_
 	</div>	
 
 	<p>{lang_get s='tc_title'}<br />
-	<input type="text" name="name" size="50" value=""
-			alt="{lang_get s='alt_add_tc_name'}"/></p>
+	<input type="text" name="name" 
+	       size="{#TESTCASE_NAME_SIZE#}" 
+         maxlength="{#TESTCASE_NAME_MAXLEN#}" 
+	       value=""
+			   alt="{lang_get s='alt_add_tc_name'}"/></p>
 	
 	<div>{lang_get s='summary'}<br />
 	{$summary}</div>

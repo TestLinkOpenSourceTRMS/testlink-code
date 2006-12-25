@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsMoreBuilds.php,v 1.45 2006/11/02 21:47:12 schlundus Exp $ 
+* $Id: resultsMoreBuilds.php,v 1.46 2006/12/25 02:23:59 kevinlevy Exp $ 
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 * 
@@ -24,23 +24,25 @@ $tplanName = isset($_SESSION['testPlanName']) ? $_SESSION['testPlanName'] : null
 define('ALL_USERS_FILTER', null);
 define('ADD_BLANK_OPTION', false);
 $arrOwners = get_users_for_html_options($db, ALL_USERS_FILTER, ADD_BLANK_OPTION);
-
 $tp = new testplan($db);
 //$tree = new tree($db);
 $builds_to_query = -1;
 $suitesSelected = 'all';
-$re = new results($db, $tp, $suitesSelected, $builds_to_query);
+//$re = new results($db, $tp, $suitesSelected, $builds_to_query);
+$re = new results($db, $tp);
 
 $arrKeywords = $tp->get_keywords_map($tpID); 
 $arrBuilds = $tp->get_builds($tpID); 
 $arrComponents = $re->getTopLevelSuites();
-$mapOfSuiteSummary = $re->getAggregateMap();
 
+/**
+$mapOfSuiteSummary = $re->getAggregateMap();
 while ($mapOfSuiteSummary && ($key2 = key($mapOfSuiteSummary)))
 {
-	// print "key2 = $key2 <BR>";
+	print "key2 = $key2 <BR>";
 	next($mapOfSuiteSummary);
 }
+*/
 
 $smarty = new TLSmarty();
 $smarty->assign('testPlanName',$tplanName);

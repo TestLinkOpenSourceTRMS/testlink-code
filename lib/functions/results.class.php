@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8 
- * @modified $Date: 2006/12/21 07:32:32 $ by $Author: kevinlevy $
+ * @modified $Date: 2006/12/25 02:23:37 $ by $Author: kevinlevy $
  *
  *
  * This class is encapsulates most functionality necessary to query the database
@@ -96,7 +96,7 @@ class results
    // if keyword = 0, search by keyword would not be performed
    //
    //
-    function results(&$db,&$tp,$suitesSelected,$builds_to_query = -1, $lastResult = 'a', $keywordId = 0, $owner = null)
+    function results(&$db, &$tp, $suitesSelected = 'all', $builds_to_query = -1, $lastResult = 'a', $keywordId = 0, $owner = null)
 	{
     		$this->db = $db;	
     		$this->tp = $tp;    
@@ -109,11 +109,16 @@ class results
 	
 	//print "results.class.php - call generateExecTree() <BR>";
     
+	/**
 	$time_start2 = microtime_float();		
+	*/
+	
 	$this->suiteStructure = $this->generateExecTree($keywordId, $owner);
+	/*
 	$time_end2 = microtime_float();
 	$time2 = $time_end2 - $time_start2;
-	// print "time for generateExecTree() = $time2 <BR>";
+	print "time for generateExecTree() = $time2 <BR>";
+	*/
 	
     // KL - if no builds are specified, no need to execute the following block of code
     if ($builds_to_query != -1) {
@@ -121,11 +126,15 @@ class results
 	 
 	  //print "results.class.phph - call buildExecutionsMap() <BR>";
     
+	/**
 	   $time_start3 = microtime_float();		
+	*/
 	   $this->executionsMap = $this->buildExecutionsMap($builds_to_query, $lastResult, $keywordId, $owner);    
+	/**
 	   $time_end3 = microtime_float();
 	   $time3 = $time_end3 - $time_start3;
-	  // print "time for buildExecutionsMap() = $time3 <BR>";
+	   print "time for buildExecutionsMap() = $time3 <BR>";
+	*/
 	
       // create data object which tallies last result for each test case
 	 
@@ -148,7 +157,8 @@ class results
 	
 	  //print "results.class.php - call createTotalsForPlan <BR>";
 
-      $this->totalsForPlan = $this->createTotalsForPlan($this->suiteStructure, $this->mapOfSuiteSummary);} // end if block
+      $this->totalsForPlan = $this->createTotalsForPlan($this->suiteStructure, $this->mapOfSuiteSummary);
+	  } // end if block
   } // end results constructor
 
 
@@ -186,6 +196,12 @@ class results
   }
 
 	/**
+	 * function addLastResultToMap()
+	 * author - KL
+	 *
+	 * Creates $this->mapOfLastResult - which provides information on the last result 
+	 * for each test case.
+	 *  
 	 * mapOfLastResult -> arrayOfSuiteIds
 	 * 
 	 * 
@@ -199,43 +215,50 @@ class results
 	
   function addLastResultToMap($suiteId, $testcase_id, $buildNumber, $result, $tcversion_id, 
                               $execution_ts, $notes, $suiteName, $executions_id, $name, $tester_id){
+	
 	if ($this->mapOfLastResult && array_key_exists($suiteId, $this->mapOfLastResult)) {
 		if (array_key_exists($testcase_id, $this->mapOfLastResult[$suiteId])) {
 			$buildInMap = $this->mapOfCaseResults[$testcase_id]['buildNumber'];	
 			if ($buildInMap < $buildNumber) {				
 				$this->mapOfLastResult[$suiteId][$testcase_id] = null;
-				
 				$this->mapOfLastResult[$suiteId][$testcase_id] = array("buildIdLastExecuted" => $buildNumber, 
-				                                                       "result" => $result, "tcversion_id" => $tcversion_id, 
-				                                                       "execution_ts" => $execution_ts, "notes" => $notes, 
+				                                                       "result" => $result, 
+																	   "tcversion_id" => $tcversion_id, 
+				                                                       "execution_ts" => $execution_ts, 
+																	   "notes" => $notes, 
 				                                                       "suiteName" => $suiteName, 
 				                                                       "executions_id" => $executions_id, 
-				                                                       "name" => $name, "tester_id" => $tester_id);
+				                                                       "name" => $name, 
+																	   "tester_id" => $tester_id);
 			}	
 		}	
 		else {
 			$this->mapOfLastResult[$suiteId][$testcase_id] = array("buildIdLastExecuted" => $buildNumber, 
-			                                                        "result" => $result, "tcversion_id" => $tcversion_id, 
-			                                                        "execution_ts" => $execution_ts, "notes" => $notes, 
+			                                                        "result" => $result, 
+																	"tcversion_id" => $tcversion_id, 
+			                                                        "execution_ts" => $execution_ts, 
+																	"notes" => $notes, 
 			                                                        "suiteName" => $suiteName, 
 			                                                        "executions_id" => $executions_id, 
-			                                                        "name" => $name, "tester_id" => $tester_id);
+			                                                        "name" => $name, 
+																	"tester_id" => $tester_id);
 		}	
 	}
-
-  	else {
-  		//$totalCases =  count($this->executionsMap[$suiteId]);
+	else {
   		$this->mapOfLastResult[$suiteId][$testcase_id] = array("buildIdLastExecuted" => $buildNumber, 
-  		                                                       "result" => $result, "tcversion_id" => $tcversion_id, 
-  		                                                       "execution_ts" => $execution_ts, "notes" => $notes, 
+  		                                                       "result" => $result, 
+															   "tcversion_id" => $tcversion_id, 
+  		                                                       "execution_ts" => $execution_ts, 
+															   "notes" => $notes, 
   		                                                       "suiteName" => $suiteName, 
   		                                                       "executions_id" => $executions_id, 
-  		                                                       "name" => $name, "tester_id" => $tester_id);  		
+  		                                                       "name" => $name, 
+															   "tester_id" => $tester_id);  		
   	}  	
   }
   
   /**
-   * 
+   *  Create statistics on each suite
    */
   function createMapOfSuiteSummary(&$mapOfLastResult)
   {
@@ -250,7 +273,6 @@ class results
 	  		$totalNotRun = 0;  		
 	  		while ($testcase_id = key ($mapOfLastResult[$suiteId])) {
 	  			$currentResult =  $mapOfLastResult[$suiteId][$testcase_id]['result'];
-	  			
 	  			if ($currentResult == 'p'){
 	  				$totalPass++;
 	  			} 	
@@ -381,28 +403,25 @@ class results
   	$blocked = 0;
   	$suiteName = null;
   	for ($i = 0; $i < count($suiteStructure); $i++){  		
-		
-  		if (($i % $this->ITEM_PATTERN_IN_SUITE_STRUCTURE) == $this->NAME_IN_SUITE_STRUCTURE) {
+		if (($i % $this->ITEM_PATTERN_IN_SUITE_STRUCTURE) == $this->NAME_IN_SUITE_STRUCTURE) {
 			$suiteName = $suiteStructure[$i];
 			$totalCases = 0;
   			$passed = 0;
   			$failed = 0;
   			$blocked = 0;  			
   		} // end elseif
-  		
   		elseif (($i % $this->ITEM_PATTERN_IN_SUITE_STRUCTURE) ==  $this->ID_IN_SUITE_STRUCTURE) {  			
   			$suiteId = $suiteStructure[$i];
 			$totalCases = isset($executionsMap[$suiteId]) ? count($executionsMap[$suiteId]) : 0;
-  			$caseId = null;
-  			$build = null;
-  			$result = null;		
+  			//$caseId = null;
+  			//$build = null;
+  			//$result = null;		
   			// iterate across all executions for this suite
   			for ($j = 0 ; $j < $totalCases; $j++) {
 				$currentExecution = $executionsMap[$suiteId][$j];
-				$this->addLastResultToMap($suiteId, $currentExecution['testcaseID'], $currentExecution['build_id'], $currentExecution['status'], $currentExecution['tcversion_id'], $currentExecution['execution_ts'], $currentExecution['notes'], $suiteName,$currentExecution['executions_id'], $currentExecution['name'], $currentExecution['tester_id']); 
+				$this->addLastResultToMap($suiteId, $currentExecution['testcaseID'], $currentExecution['build_id'], $currentExecution['status'], $currentExecution['tcversion_id'], $currentExecution['execution_ts'], $currentExecution['notes'], $suiteName, $currentExecution['executions_id'], $currentExecution['name'], $currentExecution['tester_id']); 
   			}
   		} // end elseif 
-  		
   		elseif (($i % $this->ITEM_PATTERN_IN_SUITE_STRUCTURE) ==  $this->ARRAY_IN_SUITE_STRUCTURE){
   			if (is_array($suiteStructure[$i])){
   				$childSuite = $suiteStructure[$i];
@@ -427,11 +446,8 @@ class results
   function buildExecutionsMap($builds_to_query, $lastResult = 'a', $keyword = 0, $owner = null){
     // first make sure we initialize the executionsMap
     // otherwise duplicate executions will be added to suites
-    
 	//print "buildExecutionsMap() - beginning of method <BR>";
-	
 	$executionsMap = null;
-
     while ($testcaseID = key($this->linked_tcversions)){
       $info = $this->linked_tcversions[$testcaseID];
       $testsuite_id = $info['testsuite_id'];
@@ -443,47 +459,11 @@ class results
 		$currentSuite = $executionsMap[$testsuite_id];
       }
       $tcversion_id = $info['tcversion_id'];
-
-
-/**	
-20061125 - KL  - tables I may need to query from
-mysql> desc tcversions;
-+------------------+----------------------+------+-----+---------------------+-------+
-| Field            | Type                 | Null | Key | Default             | Extra |
-+------------------+----------------------+------+-----+---------------------+-------+
-| id               | int(10) unsigned     |      | PRI | 0                   |       |
-| version          | smallint(5) unsigned |      |     | 1                   |       |
-| summary          | text                 | YES  |     | NULL                |       |
-| steps            | text                 | YES  |     | NULL                |       |
-| expected_results | text                 | YES  |     | NULL                |       |
-| importance       | char(1)              |      |     | M                   |       |
-| author_id        | int(10) unsigned     | YES  |     | NULL                |       |
-| creation_ts      | datetime             |      |     | 0000-00-00 00:00:00 |       |
-| updater_id       | int(10) unsigned     | YES  |     | NULL                |       |
-| modification_ts  | datetime             |      |     | 0000-00-00 00:00:00 |       |
-| active           | tinyint(1)           |      |     | 1                   |       |
-| open             | tinyint(1)           |      |     | 1                   |       |
-+------------------+----------------------+------+-----+---------------------+-------+
-
-mysql> desc nodes_hierarchy;
-+--------------+------------------+------+-----+---------+----------------+
-| Field        | Type             | Null | Key | Default | Extra          |
-+--------------+------------------+------+-----+---------+----------------+
-| id           | int(10) unsigned |      | PRI | NULL    | auto_increment |
-| name         | varchar(100)     | YES  |     | NULL    |                |
-| parent_id    | int(10) unsigned | YES  | MUL | NULL    |                |
-| node_type_id | int(10) unsigned |      |     | 1       |                |
-| node_order   | int(10) unsigned | YES  |     | NULL    |                |
-+--------------+------------------+------+-----+---------+----------------+
-
-*/
-
-		$sql = "select name from nodes_hierarchy where id = $testcaseID ";
-		$results = $this->db->fetchFirstRow($sql);
-		$name = $results['name'];
-        $executed = $info['executed'];
+      $sql = "select name from nodes_hierarchy where id = $testcaseID ";
+	  $results = $this->db->fetchFirstRow($sql);
+	  $name = $results['name'];
+      $executed = $info['executed'];
       $executionExists = true;
-
       if ($tcversion_id != $executed){
 		$executionExists = false;
 		if (($lastResult == 'a') || ($lastResult == 'n')) {
@@ -500,9 +480,8 @@ mysql> desc nodes_hierarchy;
 			array_push($currentSuite, $infoToSave);			
 		}	  
       }
-
       if ($executionExists) {
-		// NOTE TO SELF - this is where we can include the searching of results
+		// TO-DO - this is where we can include the searching of results
 		// over multiple test plans - by modifying this select statement slightly
 		// to include multiple test plan ids
 
@@ -511,7 +490,6 @@ mysql> desc nodes_hierarchy;
 		if (($lastResult == 'p') || ($lastResult == 'f') || ($lastResult == 'b')){
 		  $sql .= " AND status = '" . $lastResult . "' ";
 		}
-
 		if (($builds_to_query != -1) && ($builds_to_query != 'a')) { 
 			$sql .= " AND build_id IN ($builds_to_query) ";
 		}
@@ -534,7 +512,7 @@ mysql> desc nodes_hierarchy;
 				
 				// TO-DO - fix bugString call
 				//$bugString = $this->buildBugString($this->db, $executions_id);
-				//$bugString = "x";
+				$bugString = "x";
 				
 				//print "bugString = $bugString <BR>";
 				//print "<BR>";
@@ -549,7 +527,7 @@ mysql> desc nodes_hierarchy;
 						'notes' => $notes, 'executions_id' => $executions_id, 
 						'name' => $name, 'bugString' => $bugString);
 				*/
-				$infoToSave = array('testcaseID' => $exec_row['tester_id'], 
+				$infoToSave = array('testcaseID' => $testcaseID, 
 									'tcversion_id' => $tcversion_id, 
 									'build_id' => $exec_row['build_id'], 
 									'tester_id' => $exec_row['tester_id'], 
@@ -558,7 +536,7 @@ mysql> desc nodes_hierarchy;
 									'notes' => $exec_row['notes'], 
 									'executions_id' => $executions_id, 
 									'name' => $name, 
-									'bugString' => 'x');
+									'bugString' => $bugString);
 				
 				if ($lastResult != 'n') {
 				  array_push($currentSuite, $infoToSave);
@@ -644,7 +622,7 @@ function buildBugString(&$db,$execID)
    $name = null;
    $suiteId = null;
   	for ($i = 0 ; $i < count($this->suiteStructure) ; $i++) {  		
-  		if (($i % $this->ITEM_PATTERN_IN_SUITE_STRUCTURE) == $this->NAME_IN_SUITE_STRUCTURE) {
+						  		if (($i % $this->ITEM_PATTERN_IN_SUITE_STRUCTURE) == $this->NAME_IN_SUITE_STRUCTURE) {
   			$name = $this->suiteStructure[$i];  			
   		} // end if
   		

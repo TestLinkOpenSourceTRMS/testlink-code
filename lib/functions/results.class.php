@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8 
- * @modified $Date: 2006/12/25 02:23:37 $ by $Author: kevinlevy $
+ * @modified $Date: 2006/12/27 20:49:45 $ by $Author: kevinlevy $
  *
  *
  * This class is encapsulates most functionality necessary to query the database
@@ -195,26 +195,26 @@ class results
   	return $this->flatArray;
   }
 
+// KL - 20061225 - creating map specifically for owner and keyword
+  var mapOfLastResultByOwner = null;
+  var mapOfLastResultByKeyword = null;
+
 	/**
 	 * function addLastResultToMap()
 	 * author - KL
 	 *
 	 * Creates $this->mapOfLastResult - which provides information on the last result 
 	 * for each test case.
-	 *  
-	 * mapOfLastResult -> arrayOfSuiteIds
 	 * 
-	 * 
-	 * suiteId -> arrayOfTCresults, arrayOfSummaryResults
-	 * 
+	 * $this->mapOfLastResult is an array of suite ids 
+	 * each suiteId -> arrayOfTCresults, arrayOfSummaryResults
 	 * arrayOfTCresults      ->  array of rows containing (buildIdLastExecuted, result) where row id = testcaseId
 	 * 	 
-	 *
 	 * currently it does not account for user expliting marking a case "not run".
-	 *  */
-	
+	 *  */ 	
   function addLastResultToMap($suiteId, $testcase_id, $buildNumber, $result, $tcversion_id, 
                               $execution_ts, $notes, $suiteName, $executions_id, $name, $tester_id){
+	
 	
 	if ($this->mapOfLastResult && array_key_exists($suiteId, $this->mapOfLastResult)) {
 		if (array_key_exists($testcase_id, $this->mapOfLastResult[$suiteId])) {
@@ -230,8 +230,8 @@ class results
 				                                                       "executions_id" => $executions_id, 
 				                                                       "name" => $name, 
 																	   "tester_id" => $tester_id);
-			}	
-		}	
+			} // end if
+		} // end if
 		else {
 			$this->mapOfLastResult[$suiteId][$testcase_id] = array("buildIdLastExecuted" => $buildNumber, 
 			                                                        "result" => $result, 

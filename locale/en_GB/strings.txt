@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.90 $
- * @modified $Date: 2006/12/24 11:50:33 $ $Author: franciscom $
+ * @version $Revision: 1.91 $
+ * @modified $Date: 2006/12/27 10:50:31 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
@@ -1488,22 +1488,22 @@ $TLS_th_active="Active";
 
 $TLS_requirement_spec = "Requirement Specification";
 
-
-/*
-LOCALIZE: TLS_desc_mgt_view_tc
-LOCALIZE: TLS_desc_mgt_modify_tc
-LOCALIZE: TLS_mgt_testplan_create
-LOCALIZE: TLS_desc_mgt_modify_product
-LOCALIZE: TLS_desc_mgt_view_key
-LOCALIZE: TLS_desc_mgt_modify_key
-LOCALIZE: TLS_desc_mgt_view_req
-LOCALIZE: TLS_desc_mgt_modify_req
-LOCALIZE: TLS_desc_mgt_modify_users
-LOCALIZE: TLS_desc_role_management
-LOCALIZE: TLS_desc_user_role_assignment
-*/
+$TLS_title_cfields_mgmt="Custom fields";
+$TLS_href_cfields_management="Custom field management";
 
 
+$TLS_label='Label';
+$TLS_type='type';
+$TLS_show_on_design='Display on <br>test specification';
+$TLS_enable_on_design='Enable on <br>test specification';
+$TLS_show_on_exec='Display on <br>test execution';
+$TLS_enable_on_exec='Enable on <br>test execution';
+$TLS_available_on='Available for';
+$TLS_testsuite=$TLS_test_suite;
+$TLS_testcase=$TLS_test_case;
+
+$TLS_node_type_dbtable_testsuites=$TLS_test_suite;
+$TLS_node_type_dbtable_testcases=$TLS_test_case;
 
 
 ?>

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.91 $
- * @modified $Date: 2006/12/27 10:50:31 $ $Author: franciscom $
+ * @version $Revision: 1.92 $
+ * @modified $Date: 2006/12/28 18:49:02 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
@@ -134,7 +134,8 @@ $TLS_th_product_name = "Test Project Name";
 
 
 // gui/templates/execNavigator.tpl
-$TLS_TestPlan = "Test plan";
+$TLS_TestPlan = "Test Plan";
+$TLS_testplan = $TLS_TestPlan;
 $TLS_btn_update_menu = "Update menu";
 $TLS_caption_nav_filter_settings = "Navigation Filter & Settings";
 $TLS_current_build = "Current build";
@@ -278,10 +279,11 @@ $TLS_Keyword = "Keyword";
 $TLS_Milestone = "Milestone";
 $TLS_Priority = "Priority";
 $TLS_Product = "Test Project";
+$TLS_testproject = "Test Project";
 $TLS_Requirement = "Requirement";
 $TLS_Requirements = "Requirements";
 $TLS_TestCase = "Test Case";
-$TLS_TestSuite = "TestSuite";
+$TLS_TestSuite = "Test Suite";
 $TLS_add = "added";
 $TLS_added = "added";
 $TLS_assigned = "assigned";
@@ -1050,11 +1052,11 @@ $TLS_title_tsuite_export_all = "Export all Test Suites";
 $TLS_file_is_not_ok_for_import_type = "File seems to be incompatible with the import type selected";
 $TLS_file_is_not_text = "File is not a text file. Cannot be used";
 $TLS_file_is_not_xml = "File is not well-formed XML. Cannot be used";
-$TLS_please_choose_file_to_import = "LOCALIZE: TLS_please_choose_file_to_import";
+$TLS_please_choose_file_to_import = "Please choose file to import";
 $TLS_title_tc_import_to = "Import Testcase(s)";
-$TLS_title_tsuite_import_to = "LOCALIZE: TLS_title_tsuite_import_to";
-$TLS_wrong_xml_tcase_file = "LOCALIZE: TLS_wrong_xml_tcase_file";
-$TLS_wrong_xml_tsuite_file = "LOCALIZE: TLS_wrong_xml_tsuite_file";
+$TLS_title_tsuite_import_to = "Import Test Suite to ";
+$TLS_wrong_xml_tcase_file = "Wrong xml Test Case file";
+$TLS_wrong_xml_tsuite_file = "Wrong xml Test Suite file";
 
 
 
@@ -1493,7 +1495,7 @@ $TLS_href_cfields_management="Custom field management";
 
 
 $TLS_label='Label';
-$TLS_type='type';
+$TLS_type='Type';
 $TLS_show_on_design='Display on <br>test specification';
 $TLS_enable_on_design='Enable on <br>test specification';
 $TLS_show_on_exec='Display on <br>test execution';
@@ -1505,5 +1507,14 @@ $TLS_testcase=$TLS_test_case;
 $TLS_node_type_dbtable_testsuites=$TLS_test_suite;
 $TLS_node_type_dbtable_testcases=$TLS_test_case;
 
+$TLS_href_cfields_tproject_assign="Assign custom fields";
+$TLS_cfields_tproject_assign="Assign custom fields";
+$TLS_title_assigned_cfields="Assigned custom fields";
+$TLS_title_available_cfields="Available custom fields";
+
+$TLS_cfields_active="Active";
+$TLS_btn_cfields_active_mgmt="Update active status";
+$TLS_container_title_testproject=$TLS_testproject;
+$TLS_btn_cfields_create="Create";
 
 ?>

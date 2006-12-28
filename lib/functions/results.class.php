@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8 
- * @modified $Date: 2006/12/28 00:04:58 $ by $Author: kevinlevy $
+ * @modified $Date: 2006/12/28 20:42:34 $ by $Author: kevinlevy $
  *
  *
  * This class is encapsulates most functionality necessary to query the database
@@ -110,58 +110,25 @@ class results
 			$this->tplanName = isset($_SESSION['testPlanName']) ? $_SESSION['testPlanName'] : null;
 
     // build suiteStructure and flatArray
-	
-	//print "results.class.php - call generateExecTree() <BR>";
-    
-	/**
-	$time_start2 = microtime_float();		
-	*/
-	
 	$this->suiteStructure = $this->generateExecTree($keywordId, $owner);
-	/*
-	$time_end2 = microtime_float();
-	$time2 = $time_end2 - $time_start2;
-	print "time for generateExecTree() = $time2 <BR>";
-	*/
 	
     // KL - if no builds are specified, no need to execute the following block of code
     if ($builds_to_query != -1) {
       // retrieve results from executions table
-	 
-	  //print "results.class.phph - call buildExecutionsMap() <BR>";
-    
-	/**
-	   $time_start3 = microtime_float();		
-	*/
 	   $this->executionsMap = $this->buildExecutionsMap($builds_to_query, $lastResult, $keywordId, $owner);    
-	/**
-	   $time_end3 = microtime_float();
-	   $time3 = $time_end3 - $time_start3;
-	   print "time for buildExecutionsMap() = $time3 <BR>";
-	*/
 	
       // create data object which tallies last result for each test case
-	 
-	  //print "results.class.php - call createMapOfLastResult <BR>";
-     
 	  $this->createMapOfLastResult($this->suiteStructure, $this->executionsMap);
       
       // create data object which tallies totals for individual suites
       // child suites are NOT taken into account in this step
-	 
-	  //print "results.class.php - call createMapOfSuiteSummary <BR>";
-     
 	  $this->createMapOfSuiteSummary($this->mapOfLastResult);
       
       // create data object which tallies totals for suites taking
       // child suites into account
-	  //print "results.class.php - call createAggregateMap() <BR>";
-     
 	  $this->createAggregateMap($this->suiteStructure, $this->mapOfSuiteSummary);
-	
-	  //print "results.class.php - call createTotalsForPlan <BR>";
 
-      $this->totalsForPlan = $this->createTotalsForPlan($this->suiteStructure, $this->mapOfSuiteSummary);
+	  $this->totalsForPlan = $this->createTotalsForPlan($this->suiteStructure, $this->mapOfSuiteSummary);
 	  } // end if block
   } // end results constructor
 
@@ -216,8 +183,6 @@ class results
 	 *  */ 	
   function addLastResultToMap($suiteId, $testcase_id, $buildNumber, $result, $tcversion_id, 
                               $execution_ts, $notes, $suiteName, $executions_id, $name, $tester_id){
-	
-	
 	if ($this->mapOfLastResult && array_key_exists($suiteId, $this->mapOfLastResult)) {
 		if (array_key_exists($testcase_id, $this->mapOfLastResult[$suiteId])) {
 			$buildInMap = $this->mapOfCaseResults[$testcase_id]['buildNumber'];	
@@ -399,18 +364,12 @@ class results
    * 
    */
   function createMapOfLastResult(&$suiteStructure, &$executionsMap){  
-   	$totalCases = 0;
-  	$passed = 0;
-  	$failed = 0;
-  	$blocked = 0;
+   
   	$suiteName = null;
   	for ($i = 0; $i < count($suiteStructure); $i++){  		
 		if (($i % $this->ITEM_PATTERN_IN_SUITE_STRUCTURE) == $this->NAME_IN_SUITE_STRUCTURE) {
 			$suiteName = $suiteStructure[$i];
-			$totalCases = 0;
-  			$passed = 0;
-  			$failed = 0;
-  			$blocked = 0;  			
+			
   		} // end elseif
   		elseif (($i % $this->ITEM_PATTERN_IN_SUITE_STRUCTURE) ==  $this->ID_IN_SUITE_STRUCTURE) {  			
   			$suiteId = $suiteStructure[$i];
@@ -421,11 +380,27 @@ class results
   			// iterate across all executions for this suite
   			for ($j = 0 ; $j < $totalCases; $j++) {
 				$currentExecution = $executionsMap[$suiteId][$j];
-				/**
+			/**
 				print "currentExecution = <BR>";
 				print_r($currentExecution);
 				print "<BR>";
-				*/
+			
+			currentExecution contains the following info:	
+				
+			[testcaseID] => 13151 
+			[tcversion_id] => 23961 
+			[build_id] => 1021 
+			[tester_id] => 157 
+			[execution_ts] => 2006-11-15 00:00:00 
+			[status] => p 
+			[notes] => 
+			[executions_id] => 6024 
+			[name] => selectservice($$locators[0].channel-vcn) 
+			[bugString] => x ) 
+			[assigner_id]
+			[feature_id]		
+			*/
+			
 				$this->addLastResultToMap($suiteId, $currentExecution['testcaseID'], $currentExecution['build_id'], $currentExecution['status'], $currentExecution['tcversion_id'], $currentExecution['execution_ts'], $currentExecution['notes'], $suiteName, $currentExecution['executions_id'], $currentExecution['name'], $currentExecution['tester_id']); 
   			}
   		} // end elseif 
@@ -457,6 +432,27 @@ class results
 	$executionsMap = null;
     while ($testcaseID = key($this->linked_tcversions)){
       $info = $this->linked_tcversions[$testcaseID];
+	  
+	  /**
+	  print "info = <BR>";
+	  print_r($info);
+	  print "<BR>";
+	  
+	  the $info array contains the following information
+	  Array ( [0] => 25372 [testsuite_id] => 25372 
+			  [1] => 7874 [tc_id] => 7874 
+			  [2] => 19787 [tcversion_id] => 19787 
+			  [3] => 18544 [feature_id] => 18544 
+			  [4] => [executed] => 
+			  [5] => [exec_on_tplan] => 
+			  [6] => [user_id] => 
+			  [7] => [type] => 
+			  [8] => [status] => 
+			  [9] => [assigner_id] => 
+			  [10] => n [exec_status] => n ) 
+	  */
+	  
+	  
       $testsuite_id = $info['testsuite_id'];
       $currentSuite = null;
       if (!$executionsMap || !(array_key_exists($testsuite_id, $executionsMap))){
@@ -483,7 +479,9 @@ class results
 			'status' => 'n', 
 			'executions_id' => '',
 			'notes' => '', 
-			'name' => $name);
+			'name' => $name,
+			'assigner_id' => $info['assigner_id'],
+			'feature_id' => $info['feature_id']);
 			array_push($currentSuite, $infoToSave);			
 		}	  
       }
@@ -543,7 +541,9 @@ class results
 									'notes' => $exec_row['notes'], 
 									'executions_id' => $executions_id, 
 									'name' => $name, 
-									'bugString' => $bugString);
+									'bugString' => $bugString,									
+									'assigner_id' => $info['assigner_id'],
+									'feature_id' => $info['feature_id']);
 				
 				if ($lastResult != 'n') {
 				  array_push($currentSuite, $infoToSave);
@@ -561,7 +561,9 @@ class results
 			'executions_id' => '',
 			'status' => 'n',
 			'name' => $name, 
-			'notes' => '');
+			'notes' => '',
+			'assigner_id' => $info['assigner_id'],
+			'feature_id' => $info['feature_id']);
 			array_push($currentSuite, $infoToSave);			
 		}
       } // end if($executionExists)
@@ -665,8 +667,7 @@ function buildBugString(&$db,$execID)
   function generateExecTree($keyword_id = 0, $owner = null)
 {
 	$tplan_mgr = $this->tp;
-	$tproject_mgr = new testproject($this->db);
-	
+	$tproject_mgr = new testproject($this->db);	
 	$tree_manager = $tplan_mgr->tree_manager;
 	$tcase_node_type = $tree_manager->node_descr_id['testcase'];
 	$hash_descr_id = $tree_manager->get_available_node_types();
@@ -676,13 +677,7 @@ function buildBugString(&$db,$execID)
 
 	// KL - 20061111 - I do not forsee having to pass a specific test case id into this method
 	$DEFAULT_VALUE_FOR_TC_ID = 0;
-	
-	$time_start4 = microtime_float();		
 	$tp_tcs = $tplan_mgr->get_linked_tcversions($this->testPlanID,$DEFAULT_VALUE_FOR_TC_ID,$keyword_id, null, $owner);
-	$time_end4 = microtime_float();
-	$time4 = $time_end4 - $time_start4;
-	// print "time for get_linked_tcversion = $time4 <BR>";
-	
 	$this->linked_tcversions = &$tp_tcs;
 	if (is_null($tp_tcs)) { 
 		$tp_tcs = array();
@@ -691,7 +686,6 @@ function buildBugString(&$db,$execID)
 	$test_spec['id'] = $this->prodID;
 	$test_spec['node_type_id'] = $hash_descr_id['testproject'];
 	$suiteStructure = null;
-
 	if($test_spec)
 	{
 		$tck_map = null;

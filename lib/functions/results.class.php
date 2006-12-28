@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8 
- * @modified $Date: 2006/12/27 20:49:45 $ by $Author: kevinlevy $
+ * @modified $Date: 2006/12/28 00:04:58 $ by $Author: kevinlevy $
  *
  *
  * This class is encapsulates most functionality necessary to query the database
@@ -36,6 +36,10 @@ class results
   var $tp = null;
   var $testPlanID = -1;
   var $prodID = -1;
+  
+  // KL - 20061225 - creating map specifically for owner and keyword
+  var $mapOfLastResultByOwner = null;
+  var $mapOfLastResultByKeyword = null;
   
   //var $prodID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
   //var $testPlanID = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0 ;
@@ -195,9 +199,7 @@ class results
   	return $this->flatArray;
   }
 
-// KL - 20061225 - creating map specifically for owner and keyword
-  var mapOfLastResultByOwner = null;
-  var mapOfLastResultByKeyword = null;
+
 
 	/**
 	 * function addLastResultToMap()
@@ -419,6 +421,11 @@ class results
   			// iterate across all executions for this suite
   			for ($j = 0 ; $j < $totalCases; $j++) {
 				$currentExecution = $executionsMap[$suiteId][$j];
+				/**
+				print "currentExecution = <BR>";
+				print_r($currentExecution);
+				print "<BR>";
+				*/
 				$this->addLastResultToMap($suiteId, $currentExecution['testcaseID'], $currentExecution['build_id'], $currentExecution['status'], $currentExecution['tcversion_id'], $currentExecution['execution_ts'], $currentExecution['notes'], $suiteName, $currentExecution['executions_id'], $currentExecution['name'], $currentExecution['tester_id']); 
   			}
   		} // end elseif 

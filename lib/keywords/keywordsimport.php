@@ -5,7 +5,7 @@
  *
  * Filename $RCSfile: keywordsimport.php,v $
  *
- * @modified $Date: 2006/10/02 17:36:56 $
+ * @modified $Date: 2006/12/29 19:32:10 $
  *
 */
 require('../../config.inc.php');
@@ -15,7 +15,7 @@ require_once('csv.inc.php');
 require_once('xml.inc.php');
 testlinkInitPage($db);
 
-$source = isset($HTTP_POST_FILES['uploadedFile']['tmp_name']) ? $HTTP_POST_FILES['uploadedFile']['tmp_name'] : null;
+$source = isset($_FILES['uploadedFile']['tmp_name']) ? $_FILES29.12.2006 16:49:50['uploadedFile']['tmp_name'] : null;
 $bImport = isset($_POST['import']) ? 1 : 0;
 $importType = isset($_POST['importType']) ? $_POST['importType'] : null;
 $location = isset($_POST['location']) ? strings_stripSlashes($_POST['location']) : null; 

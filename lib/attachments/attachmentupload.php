@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: attachmentupload.php,v $
  *
- * @version $Revision: 1.7 $
- * @modified $Date: 2006/12/24 11:50:33 $ by $Author: franciscom $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2006/12/29 19:32:10 $ by $Author: schlundus $
  *
  * Upload dialog
 **/
@@ -23,7 +23,7 @@ $bUploaded = false;
 if ($bPostBack > 2)
 {
   
-	$fInfo  = isset($HTTP_POST_FILES['uploadedFile']) ? $HTTP_POST_FILES['uploadedFile'] : null;
+	$fInfo  = isset($_FILES['uploadedFile']) ? $_FILES['uploadedFile'] : null;
 	$title = isset($_POST['title']) ? $_POST['title'] : "";
 	$id = isset($_POST['id'])? intval($_POST['id']) : 0;
 	$tableName = isset($_POST['tableName'])? $_POST['tableName'] : null;

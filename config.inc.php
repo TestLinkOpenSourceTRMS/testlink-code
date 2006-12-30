@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.81 $
- * @modified $Date: 2006/12/24 11:50:32 $ by $Author: franciscom $
+ * @version $Revision: 1.82 $
+ * @modified $Date: 2006/12/30 09:22:09 $ by $Author: franciscom $
  *
  *
  * Constants and configuration parameters used throughout TestLink 
@@ -293,6 +293,10 @@ define('LOGO_NAVBAR','<img alt="TestLink" src="icons/company_logo.png" />');
 
 // use when componing an title using several strings
 define('TITLE_SEP',' : ');
+define('TITLE_SEP_TYPE2',' >> ');
+define('TITLE_SEP_TYPE3',' - ');
+
+
 
 /* TRUE -> Check if:
            a. Product Name                   is unique
@@ -493,9 +497,9 @@ $g_tc_status = array ( "failed"        => 'f',
 //          used to localize the strings.
 //
 $g_tc_status_for_ui = array("not_run" => "test_status_not_run",
-                          "passed"  => "test_status_passed",
-                          "failed"  => "test_status_failed",
-                          "blocked" => "test_status_blocked");
+                            "passed"  => "test_status_passed",
+                            "failed"  => "test_status_failed",
+                            "blocked" => "test_status_blocked");
 
 $g_tc_status_css = array_flip($g_tc_status);
 
@@ -658,6 +662,8 @@ if($g_repositoryType == TL_REPOSITORY_TYPE_FS)
 // 20061223 - franciscom
 // true: icon edit will be added to <a href> used to access edit features
 $g_gui->show_icon_edit=false;
+$g_gui->enable_custom_fields=false;
+
 
 // 20050821 - fm - configurable templates this help is you want to use a non standard template 
 $g_tpl = array();

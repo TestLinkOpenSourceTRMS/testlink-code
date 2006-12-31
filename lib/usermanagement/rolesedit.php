@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: rolesedit.php,v $
  *
- * @version $Revision: 1.6 $
- * @modified $Date: 2006/11/18 21:33:23 $ by $Author: schlundus $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2006/12/31 16:27:12 $ by $Author: franciscom $
  *
 **/
 require_once("../../config.inc.php");
@@ -14,6 +14,8 @@ require_once("../functions/users.inc.php");
 require_once("../functions/common.php");
 require_once("../../third_party/fckeditor/fckeditor.php");
 testlinkInitPage($db);
+
+$user_rights_matrix=config_get('userRights');
 
 $_POST = strings_stripSlashes($_POST);
 $id = isset($_GET['id']) ? $_GET['id'] : 0;
@@ -101,6 +103,9 @@ $smarty->assign('kwRights',$g_rights_kw);
 $smarty->assign('pRights',$g_rights_product);
 $smarty->assign('uRights',$g_rights_users);
 $smarty->assign('reqRights',$g_rights_req);
+$smarty->assign('cfRights',$g_rights_cf);   /* 20061231 - franciscom */
+
+
 $smarty->assign('roleRights',$roleRights);
 $smarty->assign('sqlResult',$sqlResult);
 $smarty->assign('allUsers',$allUsers);

@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: projectedit.tpl,v 1.6 2006/12/24 11:48:18 franciscom Exp $
+$Id: projectedit.tpl,v 1.7 2006/12/31 16:27:09 franciscom Exp $
 Purpose: smarty template - Edit existing product 
 
  20051211 - fm - poor workaround for BUGID 180 Unable to delete Product
@@ -89,7 +89,7 @@ Purpose: smarty template - Edit existing product
 				<td>{lang_get s='enable_requirements'}</td>
 				<td>
 					<select name="optReq">
-					{html_options options=$option_yes_no selected=$reqs_default}
+					{html_options options=$gsmarty_option_yes_no selected=$reqs_default}
 					</select>
 				</td>
 			</tr>

@@ -3,10 +3,12 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * @version $Revision: 1.48 $
- * @modified $Date: 2006/11/20 07:29:06 $ by $Author: franciscom $
+ * @version $Revision: 1.49 $
+ * @modified $Date: 2006/12/31 16:27:09 $ by $Author: franciscom $
  * @author Martin Havlat
  *
+ * 20061230 - franciscom - refactoring on add_testsuite
+ * 20061230 - franciscom - added custom field management
  * 20061024 - franciscom - improved feedback in delete_testsuite
  * 20060822 - franciscom - solved keyword presentation problem
  * 20060804 - franciscom - added option transfer to manage keywords
@@ -33,10 +35,13 @@ if(!$my_containerID)
 {
 	$my_containerID = $my_tprojectID;	
 }
+
 $bRefreshTree = false;
 $tsuite_name = isset($_REQUEST['testsuiteName']) ? strings_stripSlashes($_REQUEST['testsuiteName']) : null;
 $objectID = isset($_REQUEST['objectID']) ? intval($_REQUEST['objectID']) : null;
 $bSure = (isset($_REQUEST['sure']) && ($_REQUEST['sure'] == 'yes'));
+
+
 
 // --------------------------------------------------------------------------------------------
 $testproject_id = $_SESSION['testprojectID'];
@@ -45,12 +50,15 @@ $rl_html_name = $opt_cfg->js_ot_name . "_newRight";
 $assigned_keyword_list = isset($_REQUEST[$rl_html_name])? $_REQUEST[$rl_html_name] : "";
 // --------------------------------------------------------------------------------------------
 
+
+$gui_cfg=config_get('gui');
+
 $smarty = new TLSmarty();
 
 $a_keys['testsuite'] = array('details');
 
 $a_tpl = array( 'move_testsuite_viewer' => 'containerMove.tpl',
-                'add_testsuite' => 'containerNew.tpl',
+                /* 'add_testsuite' => 'containerNew.tpl', */
                 'delete_testsuite' => 'containerDelete.tpl',
                 'reorder_testsuites' => 'containerOrder.tpl',
                 'updateTCorder' => 'containerView.tpl',
@@ -90,6 +98,7 @@ foreach ($a_actions as $the_key => $the_val)
 		break;
 	}
 }                    
+
 $smarty->assign('level', $level);
 $smarty->assign('page_title',lang_get('container_title_' . $level));
 
@@ -164,12 +173,19 @@ else if($action == 'add_testsuite')
          $a_keywords=explode(",",$assigned_keyword_list);
          $tsuite_mgr->addKeywords($ret['id'],$a_keywords);   	 
       }   
+
+      if( $gui_cfg->enable_custom_fields )
+      {
+        $cfield_mgr= new cfield_mgr($db);
+        $cfield_mgr->design_values_to_db($_REQUEST,$ret['id']);
+      }  
 		}                             
 		else
 		{                             
 			$msg = $ret['msg'];
 		}	
 	}
+
 
 	// setup for displaying an empty form
 	foreach ($amy_keys as $key)
@@ -180,8 +196,15 @@ else if($action == 'add_testsuite')
 		$of = &$oFCK[$key];
 		$smarty->assign($key, $of->CreateHTML());
 	}
-	$smarty->assign('sqlResult',$msg);
-	$smarty->assign('containerID',$my_tprojectID);
+	// $smarty->assign('sqlResult',$msg);
+	// $smarty->assign('containerID',$my_tprojectID);
+	
+	
+	// 20061231 - franciscom
+	$tsuite_mgr->viewer_edit_new($smarty,$amy_keys, $oFCK, $action,
+	                             $my_containerID, null,$msg);
+	
+	
 }
 else if($action == 'update_testsuite')
 {
@@ -193,10 +216,15 @@ else if($action == 'update_testsuite')
         $tsuite_mgr->deleteKeywords($my_testsuiteID);   	 
         if( strlen(trim($assigned_keyword_list)) > 0 )
         {
-           // add keywords		  
            $a_keywords=explode(",",$assigned_keyword_list);
            $tsuite_mgr->addKeywords($my_testsuiteID,$a_keywords);   	 
         }
+
+        if( $gui_cfg->enable_custom_fields )
+        {
+          $cfield_mgr= new cfield_mgr($db);
+          $cfield_mgr->design_values_to_db($_REQUEST,$my_testsuiteID);
+        }  
       }   
       else
 	  	{ 
@@ -267,12 +295,20 @@ else if($action == 'reorder_testsuites')
   $object_info = $tree_mgr->get_node_hierachy_info($object_id);
   $object_name = $object_info['name'];
 
+
  	if (!sizeof($children))
 		$children = null;
 	$smarty->assign('arraySelect', $children);
 	$smarty->assign('data', $my_testsuiteID);
   $smarty->assign('object_name', $object_name);
-
+  
+  // 20061231 - franciscom
+  if( $object_id == $testproject_id)
+  {
+    $level='testproject';
+    $smarty->assign('level', $level);
+    $smarty->assign('page_title',lang_get('container_title_' . $level));
+  }
 }
 else if($action == 'do_testsuite_reorder')
 {
@@ -307,6 +343,8 @@ if ($the_tpl)
 	$smarty->assign('refreshTree',$bRefreshTree);
 	$smarty->display($the_tpl);
 } 
+
+
 
 
 // ----------------------------------------------------------------------------------------- 

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.43 $
- * @modified $Date: 2006/12/24 11:50:33 $  by $Author: franciscom $
+ * @version $Revision: 1.44 $
+ * @modified $Date: 2006/12/31 16:27:09 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
  *
@@ -98,6 +98,16 @@ $tcase_mgr = new testcase($db);
 $tproject_mgr = new testproject($db);
 $tree_mgr = new tree($db);
 $tsuite_mgr = new testsuite($db);
+
+// 20061231 - franciscom
+if($container_id > 0 )
+{
+  $pnode_info = $tree_mgr->get_node_hierachy_info($container_id);    
+  $node_descr = array_flip($tree_mgr->get_available_node_types());
+  $parent_info['name']=$pnode_info['name'];
+  $parent_info['description']=lang_get($node_descr[$pnode_info['node_type_id']]);
+  $smarty->assign('parent_info',$parent_info);
+}
 
 $name_ok = 1;
 

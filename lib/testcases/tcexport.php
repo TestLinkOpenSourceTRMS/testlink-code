@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: tcexport.php,v $
  *
- * @version $Revision: 1.5 $
- * @modified $Date: 2006/11/20 20:35:59 $ by $Author: schlundus $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2006/12/31 16:27:09 $ by $Author: franciscom $
  *
  * test case and test suites export
  *
@@ -38,13 +38,14 @@ if($bRecursive)
   // Exporting situations:
   // All test suites in test project
   // One test suite 
-  $page_title=lang_get('title_tsuite_export') . TITLE_SEP;
+  $page_title=lang_get('title_tsuite_export');
+  $container_description=lang_get('test_suite');
 
   $fileName = 'testsuites.xml';
   if( $node_id == $testproject_id )
   {
-     $page_title=lang_get('title_tsuite_export_all') . TITLE_SEP . 
-                 lang_get('title_testproject') . TITLE_SEP;  
+     $container_description=lang_get('testproject');
+     $page_title=lang_get('title_tsuite_export_all');
      $fileName = 'all_testsuites.xml';
   }
   
@@ -59,13 +60,14 @@ else
   
   if($exporting_just_one_tc)
   {
+    $container_description=lang_get('test_case');
     $node_id=$tcase_id;
-    $page_title=lang_get('title_tc_export'). TITLE_SEP;
+    $page_title=lang_get('title_tc_export');
   }
   else
   {
-    $page_title=lang_get('title_tc_export_all') . TITLE_SEP .
-                lang_get('title_testsuite') . TITLE_SEP;  
+    $container_description=lang_get('test_suite');
+    $page_title=lang_get('title_tc_export_all');
   }
 }
 
@@ -120,6 +122,8 @@ $smarty->assign('tcID', $tcase_id);
 $smarty->assign('bRecursive',$bRecursive ? 1 : 0);
 $smarty->assign('tcVersionID', $tcversion_id);
 $smarty->assign('containerID', $container_id);
+$smarty->assign('container_description', $container_description);
+
 $smarty->assign('exportTypes',$g_tcImportTypes);
 $smarty->display('tcexport.tpl');
 ?>

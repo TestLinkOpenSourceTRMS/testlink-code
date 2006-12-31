@@ -1,11 +1,15 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
 # This script is distributed under the GNU General Public License 2 or later.
-# $Id: testlink_create_tables.sql,v 1.9 2006/12/20 18:19:10 franciscom Exp $
+# $Id: testlink_create_tables.sql,v 1.10 2006/12/31 16:27:09 franciscom Exp $
 # SQL script - create db tables for TL   
 #
 # default rights & admin account are created via testlink_create_default_data.sql
 #
 # Rev :
+#       20061228 - franciscom - added field active on table cfield_testprojects
+#
+#       20061224 - franciscom - changes to custom field related tables
+#
 #       20061220 - franciscom - added new indexes to solve performance problems
 #                               executions, user_assignment, testplan_tcversions
 #                               changed column order on index on testplan_tcversions
@@ -293,6 +297,8 @@ CREATE TABLE `cfield_node_types` (
 CREATE TABLE `cfield_testprojects` (
   `field_id` int(10) unsigned NOT NULL default '0',
   `testproject_id` int(10) unsigned NOT NULL default '0',
+  `display_order` smallint(5) unsigned NOT NULL default '0',
+  `active` tinyint(1) NOT NULL default '1',
   PRIMARY KEY  (`field_id`,`testproject_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
@@ -316,19 +322,19 @@ CREATE TABLE `cfield_execution_values` (
 CREATE TABLE `custom_fields` (
   `id` int(10) NOT NULL auto_increment,
   `name` varchar(64) NOT NULL default '',
+  `label` varchar(64) NOT NULL default '' COMMENT 'label to display on user interface' ,
   `type` smallint(6) NOT NULL default '0',
   `possible_values` varchar(255) NOT NULL default '',
   `default_value` varchar(255) NOT NULL default '',
   `valid_regexp` varchar(255) NOT NULL default '',
   `length_min` int(10) NOT NULL default '0',
   `length_max` int(10) NOT NULL default '0',
-  `display_order` smallint(5) unsigned NOT NULL default '0',
   `show_on_design` tinyint(3) unsigned NOT NULL default '1' COMMENT '1=> show it during specification design',
   `enable_on_design` tinyint(3) unsigned NOT NULL default '1' COMMENT '1=> user can write/manage it during specification design',
   `show_on_execution` tinyint(3) unsigned NOT NULL default '0' COMMENT '1=> show it during test case execution',
   `enable_on_execution` tinyint(3) unsigned NOT NULL default '0' COMMENT '1=> user can write/manage it during test case execution',
   PRIMARY KEY  (`id`),
-  KEY `idx_custom_fields_name` (`name`)
+  UNIQUE `idx_custom_fields_name` (`name`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 

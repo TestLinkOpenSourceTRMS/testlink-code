@@ -5,9 +5,9 @@
  *
  * Filename $RCSfile: tcImport.php,v $
  * Filename $RCSfile: tcImport.php,v $
- * @version $Revision: 1.16 $
+ * @version $Revision: 1.17 $
  *
- * @modified $Date: 2006/11/20 20:35:59 $ by $Author: schlundus $
+ * @modified $Date: 2006/12/31 16:27:09 $ by $Author: franciscom $
 */
 require('../../config.inc.php');
 require_once('common.php');
@@ -33,9 +33,11 @@ $dest = TL_TEMP_PATH . session_id()."-importtcs.csv";
 $file_check = array('status_ok' => 1, 'msg' => 'ok');
 
 $import_title = lang_get('title_tc_import_to');
+$container_description=lang_get('test_case');
 if($bRecursive)
 {
 	$import_title = lang_get('title_tsuite_import_to');  
+  $container_description=lang_get('test_suite');
 }
 
 $container_name = '';
@@ -44,6 +46,10 @@ if($container_id)
   $tree_mgr = new tree($db);
   $node_info = $tree_mgr->get_node_hierachy_info($container_id);    
   $container_name = $node_info['name'];
+  if( $container_id == $tproject_id )
+  {
+    $container_description=lang_get('testproject');
+  }
 }
 
 if ($do_upload)
@@ -96,11 +102,22 @@ $smarty->assign('importTypes',$g_tcImportTypes);
 $smarty->assign('testprojectName', $testprojectName);
 $smarty->assign('containerID', $container_id);
 $smarty->assign('container_name', $container_name);
+$smarty->assign('container_description', $container_description);
 $smarty->assign('bIntoProject',$bIntoProject);
 $smarty->assign('importLimitKB',TL_IMPORT_LIMIT / 1024);
 $smarty->assign('bImport',strlen($importType));
 $smarty->display('tcimport.tpl');
+?>
 
+<?php
+/*
+  function: 
+
+  args :
+  
+  returns: 
+
+*/
 function importTestCaseDataFromXML(&$db,$fileName,$parentID,$tproject_id,$userID,$bRecursive,$importIntoProject = 0)
 {
 	$xmlTCs = null;
@@ -128,6 +145,14 @@ function importTestCaseDataFromXML(&$db,$fileName,$parentID,$tproject_id,$userID
 	return $resultMap;
 }
 
+/*
+  function: 
+
+  args :
+  
+  returns: 
+
+*/
 function importTestCases(&$db,&$node,$parentID,$tproject_id,$userID,$kwMap)
 {
 	$resultMap = null;
@@ -141,6 +166,14 @@ function importTestCases(&$db,&$node,$parentID,$tproject_id,$userID,$kwMap)
 	return $resultMap;
 }
 
+/*
+  function: 
+
+  args :
+  
+  returns: 
+
+*/
 function importTestSuite(&$db,&$node,$parentID,$tproject_id,$userID,$kwMap,$importIntoProject = 0)
 {
 	$resultMap = null;
@@ -197,6 +230,14 @@ function importTestSuite(&$db,&$node,$parentID,$tproject_id,$userID,$kwMap,$impo
 	}
 }
 
+/*
+  function: 
+
+  args :
+  
+  returns: 
+
+*/
 function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,$userID,$kwMap)
 {
 	if (!$tcData)
@@ -230,6 +271,14 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,$userID,$kwM
 	return $resultMap;
 }
 
+/*
+  function: 
+
+  args :
+  
+  returns: 
+
+*/
 function buildKeywordList($kwMap,$keywords,$bList = false)
 {
 	$kwIDs = array();
@@ -242,6 +291,14 @@ function buildKeywordList($kwMap,$keywords,$bList = false)
 	return $kwIDs;
 }
 
+/*
+  function: 
+
+  args :
+  
+  returns: 
+
+*/
 function importTCsFromXML($xmlTCs)
 {
 	$tcs = null;
@@ -267,6 +324,14 @@ function importTCsFromXML($xmlTCs)
 }
 
 
+/*
+  function: 
+
+  args :
+  
+  returns: 
+
+*/
 function importTCFromXML(&$xmlTC)
 {
 	if (!$xmlTC)
@@ -281,6 +346,14 @@ function importTCFromXML(&$xmlTC)
 	return $tc; 		
 }
 
+/*
+  function: 
+
+  args :
+  
+  returns: 
+
+*/
 function check_valid_ftype($upload_info,$import_type)
 {
 	$ret = array();
@@ -317,9 +390,16 @@ function check_valid_ftype($upload_info,$import_type)
 }
 
 
-//
-// Check if at least the file starts seems OK
-//
+/*
+  function: 
+
+           Check if at least the file starts seems OK
+
+  args :
+  
+  returns: 
+
+*/
 function check_xml_tc_tsuite($fileName,$bRecursive)
 {
 	$dom = domxml_open_file($fileName);

@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
  * @filesource $RCSfile: roles.inc.php,v $
- * @version $Revision: 1.17 $
- * @modified $Date: 2006/10/17 20:17:54 $ by $Author: schlundus $
+ * @version $Revision: 1.18 $
+ * @modified $Date: 2006/12/31 16:27:09 $ by $Author: franciscom $
  * @author Martin Havlat, Chad Rosen
  * 
  * This script provides the get_rights and has_rights functions for
@@ -66,10 +66,19 @@ $g_rights_req = array (
 $g_rights_product = array (	
 							"mgt_modify_product" => lang_get('desc_mgt_modify_product'),
 						);						
+
+// 20061231 - franciscom
+$g_rights_cf = array (	
+							"cfield_view" => lang_get('desc_cfield_view'),
+							"cfield_management" => lang_get('desc_cfield_management'));
+
+
 $g_rights_users_global = array (	
 							"mgt_users" => lang_get('desc_mgt_modify_users'),
 							"role_management" => lang_get('desc_role_management'),
 							); 
+						
+						
 						
 $g_rights_users = array_merge($g_rights_users_global,
 							array (	
@@ -77,6 +86,7 @@ $g_rights_users = array_merge($g_rights_users_global,
 						)	
 						);
 
+						
 						
 $g_propRights_global = array_merge($g_rights_users_global,$g_rights_product);
 $g_propRights_product = array_merge($g_propRights_global,$g_rights_mgttc,$g_rights_kw,$g_rights_req);

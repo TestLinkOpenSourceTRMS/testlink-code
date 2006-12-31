@@ -4,14 +4,15 @@
  *
  * Filename $RCSfile: tlsmarty.inc.php,v $
  *
- * @version $Revision: 1.16 $
- * @modified $Date: 2006/12/24 11:50:33 $ $Author: franciscom $
+ * @version $Revision: 1.17 $
+ * @modified $Date: 2006/12/31 16:24:51 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
  * TLSmarty class implementation used in all templates
  *
  * 
+ * 20061227 - franciscom -
  * 20061223 - franciscom - added g_gui
  * 20060820 - franciscom - added config_dir
  * 20060602 - franciscom - added new global var $g_attachments
@@ -27,6 +28,7 @@ class TLSmarty extends Smarty
 		global $g_bugInterfaceOn;
 		global $g_tc_status_for_ui;
 		global $g_attachments;
+		global $g_locales;
 		global $g_gui;
 
 
@@ -64,6 +66,14 @@ class TLSmarty extends Smarty
 		// 20061223 - franciscom
 		$this->assign('gsmarty_gui',$g_gui);
 		
+		// 20061227 - franciscom
+		$this->assign('gsmarty_title_sep',TITLE_SEP);
+		$this->assign('gsmarty_title_sep_type2',TITLE_SEP_TYPE2);
+		$this->assign('gsmarty_title_sep_type3',TITLE_SEP_TYPE3);
+
+		// define a select structure for {html_options ...}
+		$this->assign('gsmarty_option_yes_no', array(0 => lang_get('No'), 1 => lang_get('Yes')));
+		
 		
 	
 		$this->assign('pageCharset',TL_TPL_CHARSET);
@@ -81,16 +91,21 @@ class TLSmarty extends Smarty
 		//20050831 - scs - changed default action to updated
 		$this->assign('action', 'updated');
 	
-		global $g_locales;
 		$this->assign('optLocale',$g_locales);
+
+    // 20061230 - franciscom
+    $this->assign('gsmarty_href_keywordsView',
+                  ' "lib/keywords/keywordsView.php" ' .
+							    ' target="mainframe" class="bold" ' .
+							    ' title="' . lang_get('menu_manage_keywords') . '"'); 
+
+
+    // Registered functions
 		$this->register_function("lang_get", "lang_get_smarty");
-		
 		$this->register_function("localize_date", "localize_date_smarty");
 		$this->register_function("localize_timestamp", "localize_timestamp_smarty");
     $this->register_function("localize_tc_status","translate_tc_status_smarty");
 		
-		// define a select structure for {html_options ...}
-		$this->assign('option_yes_no', array(0 => lang_get('No'), 1 => lang_get('Yes')));
 	}
 }
 ?>

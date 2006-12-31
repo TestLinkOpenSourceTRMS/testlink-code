@@ -1,14 +1,10 @@
-{* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: tcNew.tpl,v 1.15 2006/12/31 16:21:45 franciscom Exp $ *}
-{* Purpose: smarty template - create new testcase *}
-{* 20050831 - scs - change item to TestCase *}
 {* 
-20050829 - fm
-data -> categoryID 
-fckeditor
-20050825 - scs - changed item to testcase 
-20060106 - scs - fix bug 9
-20060425 - franciscom - added new interface for keywords
+TestLink Open Source Project - http://testlink.sourceforge.net/
+$Id: tcNew.tpl,v 1.16 2006/12/31 18:20:49 franciscom Exp $
+Purpose: smarty template - create new testcase
+
+20061231 - franciscom - use of $gsmarty_href_keywordsView
+                        use a class for the labels
 
 *}
 
@@ -42,27 +38,9 @@ var {$opt_cfg->js_ot_name} = new OptionTransfer("{$opt_cfg->from->name}","{$opt_
 			<input id="do_create" type="submit" name="do_create" value="{lang_get s='btn_create'}" />
 	</div>	
 
-	<p>{lang_get s='tc_title'}<br />
-	<input type="text" name="name" 
-	       size="{#TESTCASE_NAME_SIZE#}" 
-         maxlength="{#TESTCASE_NAME_MAXLEN#}" 
-	       value=""
-			   alt="{lang_get s='alt_add_tc_name'}"/></p>
-	
-	<div>{lang_get s='summary'}<br />
-	{$summary}</div>
-	<div>{lang_get s='steps'}<br />
-	{$steps}
-	<div>{lang_get s='expected_results'}<br />
-	{$expected_results}</div>
-	</div>
+  {include file="tcEdit_New_viewer.tpl"}
 
-	<div><a href="lib/keywords/keywordsView.php" target="mainframe">{lang_get s='tc_keywords'}</a>
-	{include file="opt_transfer.inc.tpl" option_transfer=$opt_cfg}
-	</div>
-	
 </form>
-
 </div>
 
 {if $sqlResult eq 'ok'}

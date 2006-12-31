@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testsuite.class.php,v $
- * @version $Revision: 1.20 $
- * @modified $Date: 2006/12/31 16:18:15 $ - $Author: franciscom $
+ * @version $Revision: 1.21 $
+ * @modified $Date: 2006/12/31 18:24:17 $ - $Author: franciscom $
  * @author franciscom
  *
  * 20061230 - franciscom - custom field management
@@ -216,7 +216,8 @@ function show(&$smarty,$id, $sqlResult = '', $action = 'update',$modded_item_id 
   } // if( $gui_cfg
   
 	$keywords_map = $this->get_keywords_map($id,' ORDER BY KEYWORD ASC ');
-	
+
+  $smarty->assign('page_title',lang_get('testsuite'));
 	$smarty->assign('cf',$cf_smarty);
 	$smarty->assign('keywords_map',$keywords_map);
 	$smarty->assign('moddedItem',$modded_item);

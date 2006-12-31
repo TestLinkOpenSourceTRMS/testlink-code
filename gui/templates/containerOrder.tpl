@@ -1,7 +1,8 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: containerOrder.tpl,v 1.7 2006/12/31 16:21:45 franciscom Exp $ 
+$Id: containerOrder.tpl,v 1.8 2006/12/31 18:20:49 franciscom Exp $ 
 Purpose: smarty template - reorder container contents
 
+20061231 - franciscom - $data -> $objectID
 20061119 - franciscom - trying to improve user interface
 
 *}
@@ -18,7 +19,7 @@ Purpose: smarty template - reorder container contents
 	{if $arraySelect eq ''}
 		{lang_get s='no_nodes_to_reorder'}
 	{else}
-	<form method="post" action="lib/testcases/containerEdit.php?containerID={$data}">
+	<form method="post" action="lib/testcases/containerEdit.php?containerID={$objectID}">
 	
 		<table class="common" style="width: 70%">
 			<tr>

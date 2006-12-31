@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.94 $
- * @modified $Date: 2006/12/31 16:10:48 $ $Author: franciscom $
+ * @version $Revision: 1.95 $
+ * @modified $Date: 2006/12/31 18:21:19 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
@@ -643,7 +643,7 @@ $TLS_filter_tcID = "Filter: Test Case ID";
 
 // gui/templates/execSetResults.tpl
 $TLS_alt_attachment_mgmt = "attachments";
-$TLS_alt_notes = "LOCALIZE: TLS_alt_notes";
+$TLS_alt_notes = "notes";
 $TLS_attachment_mgmt = "attachments";
 $TLS_btn_print = "Print";
 $TLS_btn_save_all_tests_results = "Save all executions";
@@ -1039,10 +1039,10 @@ $TLS_th_tc_total = "TC Total";
 // gui/templates/resultsBugs.tpl
 $TLS_date = "Date:";
 $TLS_printed_by = "Printed by:";
-$TLS_title_test_case_bugs = "LOCALIZE: TLS_title_test_case_bugs";
-$TLS_title_test_case_timestamp = "LOCALIZE: TLS_title_test_case_timestamp";
+$TLS_title_test_case_bugs = "Test case bugs";  /* 20061231 - franciscom */
+$TLS_title_test_case_timestamp = "Test Case timestamp"; /* 20061231 - franciscom */
 $TLS_title_test_case_title = "Test Title";
-$TLS_title_test_suite_name = "LOCALIZE: TLS_title_test_suite_name";
+$TLS_title_test_suite_name = "Test Suite name"; /* 20061231 - franciscom */
 
 
 
@@ -1108,6 +1108,7 @@ $TLS_title_edit_tc = "Edit Test Case";
 // gui/templates/tcMove.tpl
 $TLS_btn_mv = "Move";
 $TLS_choose_cat = "Choose Test Suite";
+$TLS_copied = "copied";  /* 20061231 - franciscom */
 $TLS_inst_move = "Move this Test Case to a different Test Suite (within the same Test Suite).";
 $TLS_title_mv_cp_tc = "Move/Copy Test Case";
 
@@ -1148,7 +1149,6 @@ $TLS_no_tc_spec_av = "No Test Specification available!";
 
 // gui/templates/tcView.tpl
 $TLS_no_records_found = "Your search delivered no results!";
-
 
 
 // gui/templates/userInfo.tpl
@@ -1293,7 +1293,7 @@ $TLS_title_keyword_import_to = "Import keywords to";
 
 // gui/templates/rolesview.tpl
 $TLS_N_A = "N/A";
-$TLS_alt_edit_role = "LOCALIZE: TLS_alt_edit_role";
+$TLS_alt_edit_role = "Edit role"; /* 20061231 - franciscom */
 $TLS_btn_confirm_delete = "Delete";
 $TLS_caption_possible_affected_users = "Possibly affected users";
 $TLS_menu_assign_product_roles = "Assign Test Project roles";
@@ -1338,7 +1338,7 @@ $TLS_th_role = "Role";
 
 // gui/templates/usersview.tpl
 $TLS_alt_delete_user = "Really delete the selected user?";
-$TLS_alt_edit_user = "LOCALIZE: TLS_alt_edit_user";
+$TLS_alt_edit_user = "Edit user"; /* 20061231 - franciscom */
 $TLS_warning_delete_user = "Really delete the selected user?";
 
 

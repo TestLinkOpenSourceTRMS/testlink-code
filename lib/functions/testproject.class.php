@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.26 $
- * @modified $Date: 2006/12/31 16:18:15 $  $Author: franciscom $
+ * @version $Revision: 1.27 $
+ * @modified $Date: 2006/12/31 18:24:17 $  $Author: franciscom $
  * @author franciscom
  *
  * 20061010 - franciscom - added get_srs_by_title()
@@ -171,7 +171,7 @@ function get_all()
  *
  *
  **/
-function show(&$smarty,$id, $sqlResult = '', $action = 'update',$modded_item_id = 0)
+function show(&$smarty,$id,$sqlResult='', $action = 'update',$modded_item_id = 0)
 {
 	$smarty->assign('modify_tc_rights', has_rights($this->db,"mgt_modify_tc"));
 	$smarty->assign('mgt_modify_product', has_rights($this->db,"mgt_modify_product"));
@@ -191,6 +191,7 @@ function show(&$smarty,$id, $sqlResult = '', $action = 'update',$modded_item_id 
   
 	$smarty->assign('moddedItem',$modded_item);
 	$smarty->assign('level', 'testproject');
+	$smarty->assign('page_title', lang_get('testproject'));
 	$smarty->assign('container_data', $item);
 	$smarty->display('containerView.tpl');
 }
@@ -705,7 +706,6 @@ function get_linked_custom_fields($id,$node_type=null,$node_id=null)
        " AND   CFTP.testproject_id={$id} " .
        $additional_join .  
        " ORDER BY display_order";
-    echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
      
   $map = $this->db->fetchRowsIntoMap($sql,'id');     
   return($map);                                 

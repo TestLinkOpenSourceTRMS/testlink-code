@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: containerView.tpl,v 1.27 2006/10/23 20:11:28 schlundus Exp $ *}
+{* $Id: containerView.tpl,v 1.28 2006/12/31 18:20:49 franciscom Exp $ *}
 {* 
 Purpose: smarty template - view test specification containers 
 
@@ -14,7 +14,7 @@ Purpose: smarty template - view test specification containers
 
 <body>
 <div class="workBack">
-<h1>{$page_title}: {$container_data.name|escape}</h1>
+<h1>{$page_title}{$smarty.const.TITLE_SEP}{$container_data.name|escape}</h1>
 
 {include file="inc_update.tpl" result=$sqlResult item=$level name=$moddedItem.name refresh='yes'}
 

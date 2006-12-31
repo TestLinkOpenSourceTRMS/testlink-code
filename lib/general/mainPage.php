@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: mainPage.php,v $
  *
- * @version $Revision: 1.21 $ $Author: schlundus $
- * @modified $Date: 2006/10/17 20:17:54 $
+ * @version $Revision: 1.22 $ $Author: franciscom $
+ * @modified $Date: 2006/12/31 16:25:29 $
  *
  * @author Martin Havlat
  * 
@@ -23,6 +23,7 @@
  * 20051112 - scs - removed undefined index notices
  * 20050103 - scs - ADOdb changes
  * 20060106 - scs - changes because new product functionality
+ * 20061231 - franciscom - cfield_* rights
 **/
 require_once('../../config.inc.php');
 require_once('common.php');
@@ -121,14 +122,21 @@ $smarty->assign('testplan_planning', has_rights($db,"testplan_planning"));
 $smarty->assign('testplan_creating', has_rights($db,"mgt_testplan_create"));
 $smarty->assign('tp_user_role_assignment', has_rights($db,"user_role_assignment"));
 $smarty->assign('tproject_user_role_assignment', has_rights($db,"user_role_assignment",null,-1));
-$smarty->assign('launcher','lib/general/frmWorkArea.php');
 
-$smarty->assign('show_filter_tp_by_product',$g_ui_show_check_filter_tp_by_testproject);
+
+// 20061231 - franciscom
+// custom fields rights
+$smarty->assign('cfield_view', has_rights($db,"cfield_view"));
+$smarty->assign('cfield_management', has_rights($db,"cfield_management"));
+
+
 $smarty->assign('usermanagement_rights',has_rights($db,"mgt_users"));
 
+
+$smarty->assign('launcher','lib/general/frmWorkArea.php');
+$smarty->assign('show_filter_tp_by_product',$g_ui_show_check_filter_tp_by_testproject);
 $smarty->assign('sessionProductID',$testprojectID);	
 $smarty->assign('sessionTestPlanID',$testPlanID);
-
 $smarty->assign('testPlanRole',$testPlanRole);
 $smarty->display('mainPage.tpl');
 ?>

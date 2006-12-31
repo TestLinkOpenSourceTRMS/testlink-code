@@ -4,12 +4,16 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.93 $
- * @modified $Date: 2006/12/29 19:32:10 $ $Author: schlundus $
+ * @version $Revision: 1.94 $
+ * @modified $Date: 2006/12/31 16:10:48 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
 **/
+
+// General
+$TLS_test_suite="Test Suite";
+$TLS_test_case = "Test Case";
 
 
 // firstLogin.php
@@ -127,7 +131,7 @@ $TLS_printed_by_TestLink_on = "Printed by TestLink on";
 $TLS_product = "Test Project";
 $TLS_steps = "Steps";
 $TLS_summary = "Summary";
-$TLS_test_case = "Test Case";
+//$TLS_test_case = "Test Case";
 $TLS_title_test_spec = "Test Specification";
 $TLS_title_toc = "Table Of Contents";
 
@@ -233,24 +237,26 @@ $TLS_stmp_host_unconfigured = "SMTP host not properly configured!";
 
 
 // lib/functions/roles.inc.php
-$TLS_desc_mgt_modify_key = "LOCALIZE: TLS_desc_mgt_modify_key";
-$TLS_desc_mgt_modify_product = "LOCALIZE: TLS_desc_mgt_modify_product";
-$TLS_desc_mgt_modify_req = "LOCALIZE: TLS_desc_mgt_modify_req";
+$TLS_desc_cfield_management="Custom field management";
+$TLS_desc_cfield_view="Custom field view (read only access)";
+$TLS_desc_mgt_modify_key = "Keyword management";
+$TLS_desc_mgt_modify_product = "Test Project management";
+$TLS_desc_mgt_modify_req = "Requirement management";
 $TLS_desc_mgt_modify_tc = "Test Case create/edit";
-$TLS_desc_mgt_modify_users = "LOCALIZE: TLS_desc_mgt_modify_users";
-$TLS_desc_mgt_view_key = "LOCALIZE: TLS_desc_mgt_view_key";
-$TLS_desc_mgt_view_req = "LOCALIZE: TLS_desc_mgt_view_req";
+$TLS_desc_mgt_modify_users = "User management";
+$TLS_desc_mgt_view_key = "Keyword view (read only access)";
+$TLS_desc_mgt_view_req = "Requirement view (read only access)";
 $TLS_desc_mgt_view_tc = "Test Case view (read only access)";
-$TLS_desc_role_management = "LOCALIZE: TLS_desc_role_management";
-$TLS_desc_testplan_create_build = "Create build";
+$TLS_desc_role_management = "Role management";
+$TLS_desc_testplan_create_build = "Build create/edit";
 $TLS_desc_testplan_execute = "Test Plan execute";
 $TLS_desc_testplan_metrics = "Test Plan metrics";
 $TLS_desc_testplan_planning = "Test Plan planning";
-$TLS_desc_user_role_assignment = "Roles assignment";
+$TLS_desc_user_role_assignment = "Role assignment";
 $TLS_error_duplicate_rolename = "There's already a role with that name!";
 $TLS_error_role_no_rights = "You cannot save roles without any rights!";
 $TLS_error_role_no_rolename = "You must enter a name for the role!";
-$TLS_mgt_testplan_create = "LOCALIZE: TLS_mgt_testplan_create";
+$TLS_mgt_testplan_create = "Test Plan create/edit";
 
 
 
@@ -305,7 +311,7 @@ $TLS_the_format_keyword_xml_import = "&lt;keywords>&lt;keyword name=\"name\">Not
 // lib/keywords/keywordsAssign.php
 $TLS_assigned_kword = "Assigned Keywords";
 $TLS_available_kword = "Available Keywords";
-$TLS_test_suite = "Test Suite";
+//$TLS_test_suite = "Test Suite";
 
 
 
@@ -506,7 +512,7 @@ $TLS_title_tsuite_export_all = "Export all Test Suites";
 // lib/testcases/tcImport.php
 $TLS_please_choose_file_to_import = "Please choose file to import";
 $TLS_title_tc_import_to = "Import Testcase(s)";
-$TLS_title_tsuite_import_to = "Import Test Suite to ";
+$TLS_title_tsuite_import_to = "Import Test Suite";
 $TLS_wrong_xml_tcase_file = "Wrong xml Test Case file";
 $TLS_wrong_xml_tsuite_file = "Wrong xml Test Suite file";
 
@@ -558,16 +564,19 @@ $TLS_warning_delete_build = "Do really want to delete this build? All dependant 
 
 // gui/templates/containerDelete.tpl
 $TLS_btn_yes_del_comp = "Yes, delete Test Suite";
+$TLS_linked_and_executed="Linked and executed";
+$TLS_linked_but_not_executed="Linked but not executed";
+$TLS_no_links="Not linked";
+
 $TLS_question_del = "Really delete";
 $TLS_th_link_exec_status = "Link and execution status";
 
 
-
 // gui/templates/containerEdit.tpl
 $TLS_btn_update_cat = "Update Test Suite";
+$TLS_btn_update_testsuite = "Update Test Suite";  /* 20061231 - franciscom */
 $TLS_tc_keywords = "Keywords";
 $TLS_title_edit_level = "Edit";
-
 
 
 // gui/templates/containerMove.tpl
@@ -587,7 +596,7 @@ $TLS_title_move_cp = "Move/Copy";
 // gui/templates/containerNew.tpl
 $TLS_btn_create_comp = "Create Test Suite";
 $TLS_title_create = "Create";
-
+$TLS_btn_create_testsuite = "Create Test Suite";
 
 
 // gui/templates/containerOrder.tpl
@@ -596,7 +605,7 @@ $TLS_node = "Name";
 $TLS_th_id = "ID";
 $TLS_th_node_type = "Test Case / Test Suite";
 $TLS_th_order = "Order";
-$TLS_title_change_node_order = "Change children order for ";
+$TLS_title_change_node_order = "Change children order";
 
 
 
@@ -1305,16 +1314,17 @@ $TLS_btn_create_role = "Create";
 $TLS_btn_edit_role = "Edit";
 $TLS_caption_define_role = "Define role";
 $TLS_enter_role_notes = "Enter role description";
+
+$TLS_th_cf_rights = "Custom field rights";
 $TLS_th_kw_rights = "Keyword rights";
 $TLS_th_mgttc_rights = "Test Case management rights";
-$TLS_th_product_rights = "Test Project right";
+$TLS_th_product_rights = "Test Project rights";
 $TLS_th_req_rights = "Requirement rights";
 $TLS_th_rights = "Permissions";
 $TLS_th_rolename = "Rolename";
 $TLS_th_tp_rights = "Test Plan rights";
 $TLS_th_user_rights = "User rights";
 $TLS_warning_modify_role = "Really modify the role?";
-
 
 
 // gui/templates/usersedit.tpl
@@ -1342,7 +1352,7 @@ $TLS_caption_assign_testplan_user_roles = "Assign test plan roles to users";
 $TLS_caption_assign_testproject_user_roles = "Assign Test Project user roles";
 $TLS_menu_assign_testproject_roles = "Assign Test Project roles";
 $TLS_title_assign_roles = "Assign roles";
-
+$TLS_testproject = $TLS_TestProject;
 
 
 // gui/templates/attachmentupload.tpl
@@ -1410,11 +1420,13 @@ $TLS_title_req_export_to = "Export requirement";
 
 
 // gui/templates/tcView_viewer.tpl
+$TLS_activate_this_tcversion = "Activate this version";
 $TLS_btn_del_this_version = "Delete this version";
 $TLS_btn_edit = "Edit";
 $TLS_btn_mv_cp = "Move / Copy";
 $TLS_btn_new_version = "Create a new version";
 $TLS_can_not_edit_tc = "You can not edit this version because it has been executed";
+$TLS_deactivate_this_tcversion = "Deactivate this version";
 $TLS_tcversion_is_inactive_msg = "This version is INACTIVE => will be not available to be included in a test plan";
 
 
@@ -1462,5 +1474,51 @@ $TLS_del_bug_warning_msg = "Really delete this bug?";
 // gui/templates/tc_exec_assignment.tpl
 $TLS_btn_update_selected_tc = "Update selected tc(s)";
 $TLS_title_tc_exec_assignment = "Assigning Test Case execution tasks for test plan ";
+
+
+// gui/templates/cfields_view.tpl
+$TLS_title_cfields_mgmt="Custom fields";
+$TLS_href_cfields_management="Custom field management";
+
+$TLS_label='Label';
+$TLS_type='Type';
+$TLS_possible_values='Possible values';
+
+$TLS_show_on_design='Display on <br>test specification';
+$TLS_enable_on_design='Enable on <br>test specification';
+$TLS_show_on_exec='Display on <br>test execution';
+$TLS_enable_on_exec='Enable on <br>test execution';
+$TLS_available_on='Available for';
+$TLS_testsuite=$TLS_test_suite;
+$TLS_testcase=$TLS_test_case;
+
+$TLS_node_type_dbtable_testsuites=$TLS_test_suite;
+$TLS_node_type_dbtable_testcases=$TLS_test_case;
+
+$TLS_href_cfields_tproject_assign="Assign custom fields";
+$TLS_cfields_tproject_assign="Assign custom fields";
+$TLS_title_assigned_cfields="Assigned custom fields";
+$TLS_title_available_cfields="Available custom fields";
+
+$TLS_cfields_active="Active";
+$TLS_btn_cfields_active_mgmt="Update active status";
+$TLS_container_title_testproject=$TLS_testproject;
+$TLS_container_title_testsuite=$TLS_test_suite;
+$TLS_btn_cfields_create="Create";
+
+
+$TLS_warning_empty_cfield_name="Please enter the name of this custom field.";
+$TLS_warning_empty_cfield_label="Please enter the label of this custom field.";
+
+$TLS_cf_name_exists="Custom field name already exists. Please choose a new one";
+$TLS_custom_field="Custom field";
+$TLS_popup_delete_custom_field="Are you sure you want to delete the custom field?";
+
+$TLS_do_update=$TLS_updated;
+$TLS_do_delete=$TLS_deleted;
+$TLS_do_add="created";
+
+$TLS_btn_ok="Ok";
+
 
 ?>

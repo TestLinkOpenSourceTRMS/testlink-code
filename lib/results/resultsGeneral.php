@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: resultsGeneral.php,v $
- * @version $Revision: 1.20 $
- * @modified $Date: 2006/12/24 22:11:45 $ by $Author: kevinlevy $
+ * @version $Revision: 1.21 $
+ * @modified $Date: 2006/12/31 20:56:00 $ by $Author: kevinlevy $
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
  * This page show Test Results over all Builds.
@@ -33,19 +33,16 @@ $tp = new testplan($db);
 $builds_to_query = 'a';
 $suitesSelected = 'all';
 //print "resultsGeneral.php - create results object <BR>";
-
-$time_start = microtime_float();
+//$time_start = microtime_float();
 $re = new results($db, $tp, $suitesSelected, $builds_to_query);
-$time_end = microtime_float();
-$time = $time_end - $time_start;
+//$time_end = microtime_float();
+//$time = $time_end - $time_start;
 // print "results object created in $time <BR>";
-
-
 //print "<BR>";
 //print "resultsGeneral.php - finished creating object <BR>";
 
-
-$excelWriter = new TestPlanResultsObj();
+// TO-DO figure out how to use TestPlanResultsObj
+//$excelWriter = new TestPlanResultsObj();
 
 /** 
 * COMPONENTS REPORT 
@@ -91,14 +88,25 @@ $arrDataPriority = null;
 * KEYWORDS REPORT
 */
 //print "resultsGeneral start keywords report <BR>";
-$arrDataKeys = null;
+//$arrDataKeys = null;
 /**
 * TO-DO : fix performance of keywords report
 * KL - 20061210 - commenting out since performance of this is not good enough
 */
-$arrDataKeysIndex = 0;
-$arrKeywords = $tp->get_keywords_map($tpID); 
+//$arrDataKeysIndex = 0;
+//$arrKeywords = $tp->get_keywords_map($tpID); 
+$arrDataKeys = $re->getAggregateKeywordResults();
+//$arrDataKeys2[0] = array('name','0','1','2','3','4','5');
+$i = 0;
+$arrDataKeys2 = null;
+while ($keywordId = key($arrDataKeys)) {
+   $arr = $arrDataKeys[$keywordId];
+   $arrDataKeys2[$i] = $arr;
+   $i++;
+   next($arrDataKeys);
+}
 
+/**
 if (is_array($arrKeywords)) {
    while ($keyword_id = key($arrKeywords)) {
 	$keyword_name = $arrKeywords[$keyword_id] ;
@@ -113,21 +121,20 @@ if (is_array($arrKeywords)) {
 	next($arrKeywords);
   } // end while
 } // end if
-
+*/
 //print "resultsGeneral end keywords report <BR>";
 
 
 /** 
 * OWNERS REPORT 
 */
+/** KL - 20061231 - temporarily commenting out
 define('ALL_USERS_FILTER', null);
 define('ADD_BLANK_OPTION', false);
 $arrOwners = get_users_for_html_options($db, ALL_USERS_FILTER, ADD_BLANK_OPTION);
 //$arrDataOwner = getOwnerReport($db,$tpID);
 $arrDataOwner = null;
 $arrDataOwnerIndex = 0;
-/**
-*  KL - 20061210 - comment out for performance reasons */
 while ($owner_id = key($arrOwners)) {
 	$owner_name = $arrOwners[$owner_id] ;
 	$specificOwnerResults = new results($db, $tp, $suitesSelected, $builds_to_query, 'a', 0, $owner_id);
@@ -138,12 +145,14 @@ while ($owner_id = key($arrOwners)) {
 		$percentCompleted = (($total - $notRun) / $total) * 100;
 		$percentCompleted = number_format($percentCompleted,2);
 	}
-	else
-		$percentCompleted = 0.00;
+	else {
+	  $percentCompleted = 0.00;
+	}
 	$arrDataOwner[$arrDataOwnerIndex] = array($owner_name,$total,$resultArray['pass'],$resultArray['fail'],$resultArray['blocked'],$notRun,$percentCompleted);
 	$arrDataOwnerIndex++;
 	next($arrOwners);
 }
+*/
 
 //print "resultsGeneral - end owners report <BR>";
 
@@ -156,7 +165,7 @@ $smarty->assign('tpName', $_SESSION['testPlanName']);
 $smarty->assign('arrDataPriority', $arrDataPriority);
 $smarty->assign('arrDataSuite', $arrDataSuite);
 $smarty->assign('arrDataOwner', $arrDataOwner);
-$smarty->assign('arrDataKeys', $arrDataKeys);
+$smarty->assign('arrDataKeys', $arrDataKeys2);
 $smarty->display('resultsGeneral.tpl');
 
 

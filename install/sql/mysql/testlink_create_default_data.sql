@@ -1,7 +1,8 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
-# $Id: testlink_create_default_data.sql,v 1.5 2006/10/02 17:36:55 schlundus Exp $
+# $Id: testlink_create_default_data.sql,v 1.6 2006/12/31 16:14:04 franciscom Exp $
 # SQL script - create default data (rights & admin account)
 #
+# 20061231 - franciscom - new rights: cfield_view,cfield_management
 # 20060908 - franciscom - values for tables:
 #                         assignment_types, assignment_status
 #
@@ -49,6 +50,10 @@ INSERT INTO `rights` (id,description) VALUES (13,'mgt_users'             );
 INSERT INTO `rights` (id,description) VALUES (14,'role_management'       );
 INSERT INTO `rights` (id,description) VALUES (15,'user_role_assignment'  );
 INSERT INTO `rights` (id,description) VALUES (16,'mgt_testplan_create');
+
+# 20061231 - franciscom
+INSERT INTO `rights` (id,description) VALUES (17,'cfield_view');
+INSERT INTO `rights` (id,description) VALUES (18,'cfield_management');
 
 
 # Rights for Administrator (admin role)

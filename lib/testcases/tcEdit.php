@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.44 $
- * @modified $Date: 2006/12/31 16:27:09 $  by $Author: franciscom $
+ * @version $Revision: 1.45 $
+ * @modified $Date: 2006/12/31 18:22:58 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
  *
@@ -242,7 +242,9 @@ else if($delete_tc)
 	$tcinfo = $tcase_mgr->get_by_id($tcase_id);
 	
 	$smarty->assign('exec_status_quo',$exec_status_quo);
-	$smarty->assign('title', lang_get('title_del_tc') . $tcinfo[0]['name']);
+	//$smarty->assign('title', lang_get('title_del_tc') . $tcinfo[0]['name']);
+	$smarty->assign('title', lang_get('title_del_tc'));
+	$smarty->assign('testcase_name', $tcinfo[0]['name']);
 	$smarty->assign('testcase_id', $tcase_id);
 	$smarty->assign('tcversion_id', TC_ALL_VERSIONS);
 	$smarty->assign('delete_message', $msg);
@@ -276,10 +278,14 @@ else if($delete_tc_version)
 	}
   
 	$tcinfo = $tcase_mgr->get_by_id($tcase_id,$tcversion_id);
-	$smarty->assign('title', lang_get('title_del_tc') . 
-	                         $tcinfo[0]['name'] . TITLE_SEP . 
+	//$smarty->assign('title', lang_get('title_del_tc') . 
+	//                         $tcinfo[0]['name'] . TITLE_SEP . 
+	//                         lang_get('version') . " " . $tcinfo[0]['version']);
+	
+	$smarty->assign('title', lang_get('title_del_tc') . TITLE_SEP_TYPE3 . 
 	                         lang_get('version') . " " . $tcinfo[0]['version']);
 	
+	$smarty->assign('testcase_name', $tcinfo[0]['name']);
 	$smarty->assign('testcase_id', $tcase_id);
 	$smarty->assign('tcversion_id', $tcversion_id);
 	$smarty->assign('delete_message', $msg);

@@ -3,10 +3,11 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * @version $Revision: 1.49 $
- * @modified $Date: 2006/12/31 16:27:09 $ by $Author: franciscom $
+ * @version $Revision: 1.50 $
+ * @modified $Date: 2006/12/31 18:22:58 $ by $Author: franciscom $
  * @author Martin Havlat
  *
+ * 20061231 - franciscom - problems with test project test suite reorder
  * 20061230 - franciscom - refactoring on add_testsuite
  * 20061230 - franciscom - added custom field management
  * 20061024 - franciscom - improved feedback in delete_testsuite
@@ -31,15 +32,18 @@ $tcase_mgr = new testcase($db);
 $my_tprojectID = $_SESSION['testprojectID'];
 $my_testsuiteID = isset($_REQUEST['testsuiteID']) ? intval($_REQUEST['testsuiteID']) : null;
 $my_containerID = isset($_REQUEST['containerID']) ? intval($_REQUEST['containerID']) : null;
-if(!$my_containerID)
+if(is_null($my_containerID))
 {
 	$my_containerID = $my_tprojectID;	
 }
-
-$bRefreshTree = false;
-$tsuite_name = isset($_REQUEST['testsuiteName']) ? strings_stripSlashes($_REQUEST['testsuiteName']) : null;
 $objectID = isset($_REQUEST['objectID']) ? intval($_REQUEST['objectID']) : null;
+//
+//$objectID = isset($_REQUEST['objectID']) ? intval($_REQUEST['objectID']) :$my_containerID;
+
+$tsuite_name = isset($_REQUEST['testsuiteName']) ? strings_stripSlashes($_REQUEST['testsuiteName']) : null;
+
 $bSure = (isset($_REQUEST['sure']) && ($_REQUEST['sure'] == 'yes'));
+$bRefreshTree = false;
 
 
 
@@ -299,7 +303,7 @@ else if($action == 'reorder_testsuites')
  	if (!sizeof($children))
 		$children = null;
 	$smarty->assign('arraySelect', $children);
-	$smarty->assign('data', $my_testsuiteID);
+	$smarty->assign('objectID', $object_id);
   $smarty->assign('object_name', $object_name);
   
   // 20061231 - franciscom
@@ -314,8 +318,14 @@ else if($action == 'do_testsuite_reorder')
 {
 	$generalResult = 'ok';
 	$tree_mgr->change_order_bulk($_POST['id'],$_POST['order']);
-	
-	$tsuite_mgr->show($smarty,$my_containerID,'ok');
+	if( $my_containerID == $my_tprojectID )
+	{
+	  $tproject_mgr->show($smarty,$my_containerID,$generalResult);
+	}
+	else
+	{
+	  $tsuite_mgr->show($smarty,$my_containerID,$generalResult);
+	}
 }
 else if($action == 'do_move')
 {

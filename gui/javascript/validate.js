@@ -1,9 +1,10 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/ 
-// $Id: validate.js,v 1.2 2005/08/16 17:59:13 franciscom Exp $ 
+// $Id: validate.js,v 1.3 2006/12/31 16:19:27 franciscom Exp $ 
 //
 // Functions for validation of input on client side
 //
-
+// 20061228 - franciscom - added function get from Eventum Open Source Project
+//
 
 // Function validate length of field
 // fieldName = e.g. document.forms[0].login
@@ -55,3 +56,174 @@ function validatePassword(form)
 	return true ;
 }
 
+
+// ---------------------------------------------------------------------------------------------
+// This code is part of eventum Open Source Project
+//
+function selectField(f, field_name, old_onchange)
+{
+    for (var i = 0; i < f.elements.length; i++) {
+        if (f.elements[i].name == field_name) {
+            if (f.elements[i].type != 'hidden') {
+                f.elements[i].focus();
+            }
+            errorDetails(f, field_name, true);
+            if (isWhitespace(f.name)) {
+                return false;
+            }
+            f.elements[i].onchange = new Function('e', 'checkErrorCondition(e, \'' + f.name + '\', \'' + field_name + '\', ' + old_onchange + ');');
+            if (f.elements[i].select) {
+                f.elements[i].select();
+            }
+        }
+    }
+}
+
+function errorDetails(f, field_name, show)
+{
+    var field = getFormElement(f, field_name);
+    var icon = getPageElement('error_icon_' + field_name);
+    if (icon == null) {
+        return false;
+    }
+    if (show) {
+        field.style.backgroundColor = '#FF9999';
+        icon.style.visibility = 'visible';
+        icon.width = 14;
+        icon.height = 14;
+    } else {
+        field.style.backgroundColor = '#FFFFFF';
+        icon.style.visibility = 'hidden';
+        icon.width = 1;
+        icon.height = 1;
+    }
+}
+
+function isWhitespace(s)
+{
+    var whitespace = " \t\n\r";
+
+    if (s.length == 0) {
+        // empty field!
+        return true;
+    } else {
+        // check for whitespace now!
+        for (var z = 0; z < s.length; z++) {
+            // Check that current character isn't whitespace.
+            var c = s.charAt(z);
+            if (whitespace.indexOf(c) == -1) return false;
+        }
+        return true;
+    }
+}
+
+function checkErrorCondition(e, form_name, field_name, old_onchange)
+{
+    var f = getForm(form_name);
+    var field = getFormElement(f, field_name);
+    if ((field.type == 'text') || (field.type == 'textarea') || (field.type == 'password')) {
+        if (!isWhitespace(field.value)) {
+            errorDetails(f, field_name, false);
+            if (old_onchange != false) {
+                field.onchange = old_onchange;
+                eval('trash = ' + old_onchange + '(e)');
+            }
+        }
+    } else if (field.type == 'select-one') {
+        if (getSelectedOption(f, field_name) != '-1') {
+            errorDetails(f, field_name, false);
+            if (old_onchange != false) {
+                field.onchange = old_onchange;
+                eval('trash = ' + old_onchange + '(e)');
+            }
+        }
+    } else if (field.type == 'select-multiple') {
+        if (hasOneSelected(f, field_name)) {
+            errorDetails(f, field_name, false);
+            if (old_onchange != false) {
+                field.onchange = old_onchange;
+                eval('trash = ' + old_onchange + '(e)');
+            }
+        }
+    }
+}
+
+function hasOneSelected(f, field_name)
+{
+    for (var i = 0; i < f.elements.length; i++) {
+        if (f.elements[i].name == field_name) {
+            var multi = f.elements[i];
+            for (var y = 0; y < multi.options.length; y++) {
+                if (multi.options[y].selected) {
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
+}
+
+function getSelectedOption(f, field_name)
+{
+    for (var i = 0; i < f.elements.length; i++) {
+        if (f.elements[i].name == field_name) {
+            if (f.elements[i].options.length > 0) {
+                if (f.elements[i].selectedIndex == -1) {
+                    return -1;
+                }
+                return f.elements[i].options[f.elements[i].selectedIndex].value;
+            } else {
+                return -1;
+            }
+        }
+    }
+}
+
+function getSelectedOptionObject(f, field_name)
+{
+    for (var i = 0; i < f.elements.length; i++) {
+        if (f.elements[i].name == field_name) {
+            return f.elements[i].options[f.elements[i].selectedIndex];
+        }
+    }
+}
+
+function getFormElement(f, field_name, num)
+{
+    var elements = document.getElementsByName(field_name);
+    var y = 0;
+    for (var i = 0; i < elements.length; i++) {
+        if (f != elements[i].form) {
+            continue;
+        }
+        if (num != null) {
+            if (y == num) {
+                return elements[i];
+            }
+            y++;
+        } else {
+            return elements[i];
+        }
+    }
+    return false;
+}
+
+function getPageElement(id)
+{
+    if (document.getElementById) {
+        return document.getElementById(id);
+    } else if (document.all) {
+        return document.all[id];
+    }
+}
+
+function getForm(form_name)
+{
+    for (var i = 0; i < document.forms.length; i++) {
+        if (document.forms[i].name == form_name) {
+            return document.forms[i];
+        }
+    }
+}
+
+// ------------------------------------------------------------------------------

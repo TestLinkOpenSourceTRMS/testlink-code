@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8 
- * @modified $Date: 2006/12/28 20:42:34 $ by $Author: kevinlevy $
+ * @modified $Date: 2006/12/31 04:10:44 $ by $Author: kevinlevy $
  *
  *
  * This class is encapsulates most functionality necessary to query the database
@@ -91,7 +91,7 @@ class results
   // map test suite id to number of (total, passed, failed, blocked, not run) 
   // only counts test cases in current suite
   var $mapOfTotalCases = null;
-	var $mapOfCaseResults = null;
+  var $mapOfCaseResults = null;
   // array
   // (total cases in plan, total pass, total fail, total blocked, total not run)
   var $totalsForPlan = null;
@@ -100,6 +100,12 @@ class results
    // if keyword = 0, search by keyword would not be performed
    //
    //
+   
+	// map test case ids to array of keywords associated with test case
+   var $keywordData = null;
+
+	// map of keywordIds to Array (total, passed, failed, blocked, notRun) 
+	var $aggregateKeyResults = null;
     function results(&$db, &$tp, $suitesSelected = 'all', $builds_to_query = -1, $lastResult = 'a', $keywordId = 0, $owner = null)
 	{
     		$this->db = $db;	
@@ -117,10 +123,19 @@ class results
       // retrieve results from executions table
 	   $this->executionsMap = $this->buildExecutionsMap($builds_to_query, $lastResult, $keywordId, $owner);    
 	
+	  // KL - 20061229 - this call may not be necessary for all reports 
+	  // only those that require info on results for keywords
+	  // Map of test case ids to array of associated keywords
+	  $this->keywordData = $this->getKeywordData();
+		
       // create data object which tallies last result for each test case
 	  $this->createMapOfLastResult($this->suiteStructure, $this->executionsMap);
-      
-      // create data object which tallies totals for individual suites
+    
+	  $this->aggregateKeyResults = $this->tallyKeywordResults($this->mapOfLastResultByKeyword);
+		print "aggregate key results = ";
+		print_r($this->aggregateKeyResults);
+		print "<BR>";
+	  // create data object which tallies totals for individual suites
       // child suites are NOT taken into account in this step
 	  $this->createMapOfSuiteSummary($this->mapOfLastResult);
       
@@ -131,6 +146,52 @@ class results
 	  $this->totalsForPlan = $this->createTotalsForPlan($this->suiteStructure, $this->mapOfSuiteSummary);
 	  } // end if block
   } // end results constructor
+
+  /**
+  * tallyKeywordResults(parameter)
+  *   
+  * parameter format:
+  * Array ([keyword id] => Array ( [test case id] => result ))
+  * example:  
+  * Array ( [128] => Array ( [14308] => p [14309] => n [14310] => n [14311] => f [14312] => n [14313] => n ) 
+  *			 [11] => Array ( [14309] => n [14310] => n [14311] => f [14312] => n [14313] => n ))
+  *
+  * output format :
+  * Array ( [keyword id] => Array ( total, passed, failed, blocked, not run))       
+  */
+  function tallyKeywordResults($keywordResults) {
+	/**
+	print "keyword results : ";
+	print_r($keywordResults);
+	print "<BR>";
+	*/
+	$rValue = null;
+	while ($keywordId = key($keywordResults)) {
+		$arrResults = $keywordResults[$keywordId];
+		$totalCases = sizeOf($arrResults);
+		$totalPass =0;
+		$totalFail =0;
+		$totalBlocked =0;
+		$totalNotRun =0;
+		while ($testcaseId = key($arrResults)) {
+			if ($arrResults[$testcaseId] == 'p') {
+				$totalPass++;
+			}
+			elseif($arrResults[$testcaseId] == 'f') {
+				$totalFail++;
+			}
+			elseif($arrResults[$testcaseId] == 'b') {
+				$totalBlocked++;
+			}
+			next($arrResults);
+		}
+		$totalNotRun = $totalCases - ($totalPass + $totalFail + $totalBlocked);
+		$rArray = array($totalCases, $totalPass, $totalFail, $totalBlocked, $totalNotRun);
+		$rValue[$keywordId] = $rArray;
+		next($keywordResults);
+	}
+	return $rValue;
+  }
 
 
   // TO-DO- rename getExecutionsMap() (resultsTC.php is 1 file (may not be only file) that references this method)
@@ -182,11 +243,26 @@ class results
 	 * currently it does not account for user expliting marking a case "not run".
 	 *  */ 	
   function addLastResultToMap($suiteId, $testcase_id, $buildNumber, $result, $tcversion_id, 
-                              $execution_ts, $notes, $suiteName, $executions_id, $name, $tester_id){
+                              $execution_ts, $notes, $suiteName, $executions_id, $name, $tester_id, $feature_id, $assigner_id){
+	
+	//  KL - 20061229 - figuring out how to create map of results by keyword
+	if (array_key_exists($testcase_id, $this->keywordData)) {
+		$associatedKeywords = $this->keywordData[$testcase_id];
+		//print "there are keywords associated with test case $testcase_id : <BR>";
+		//print_r($associatedKeywords);
+		//print "<BR>";
+	}
+							  
 	if ($this->mapOfLastResult && array_key_exists($suiteId, $this->mapOfLastResult)) {
 		if (array_key_exists($testcase_id, $this->mapOfLastResult[$suiteId])) {
 			$buildInMap = $this->mapOfCaseResults[$testcase_id]['buildNumber'];	
 			if ($buildInMap < $buildNumber) {				
+		
+			    // keyword assignments
+				for ($i=0 ; $i < sizeof($associatedKeywords); $i++){
+					$this->mapOfLastResultByKeyword[$associatedKeywords[$i]][$testcase_id] = $result;
+				}
+				
 				$this->mapOfLastResult[$suiteId][$testcase_id] = null;
 				$this->mapOfLastResult[$suiteId][$testcase_id] = array("buildIdLastExecuted" => $buildNumber, 
 				                                                       "result" => $result, 
@@ -197,9 +273,14 @@ class results
 				                                                       "executions_id" => $executions_id, 
 				                                                       "name" => $name, 
 																	   "tester_id" => $tester_id);
-			} // end if
-		} // end if
+			} // end $buildInMap < $buildNumber if
+		} // end array_key_exists if
 		else {
+		    // keyword assignments
+			for ($i=0 ; $i < sizeof($associatedKeywords); $i++){
+				$this->mapOfLastResultByKeyword[$associatedKeywords[$i]][$testcase_id] = $result;
+			}
+		
 			$this->mapOfLastResult[$suiteId][$testcase_id] = array("buildIdLastExecuted" => $buildNumber, 
 			                                                        "result" => $result, 
 																	"tcversion_id" => $tcversion_id, 
@@ -212,6 +293,11 @@ class results
 		}	
 	}
 	else {
+		// keyword assignments
+		for ($i=0 ; $i < sizeof($associatedKeywords); $i++){
+			$this->mapOfLastResultByKeyword[$associatedKeywords[$i]][$testcase_id] = $result;
+		}
+		
   		$this->mapOfLastResult[$suiteId][$testcase_id] = array("buildIdLastExecuted" => $buildNumber, 
   		                                                       "result" => $result, 
 															   "tcversion_id" => $tcversion_id, 
@@ -360,48 +446,45 @@ class results
   	} // end for loop  	 	
   }
   
+  function getKeywordData() {
+	$sql = "select testcase_id, keyword_id from testcase_keywords";
+	$tempKeywordStructure =  $this->db->fetchRowsIntoMap($sql,'testcase_id', 1);
+	$returnMap = null;
+	while ($testcase_id = key($tempKeywordStructure)){
+		$arrayOfData = $tempKeywordStructure[$testcase_id];		
+		$arrKeyIds = array();
+		for ($i = 0 ;$i < sizeof($arrayOfData); $i++) {
+			$keywordId = $arrayOfData[$i]['keyword_id'];
+			array_push($arrKeyIds, $keywordId);
+		}
+		$returnMap[$testcase_id] = $arrKeyIds;
+		next($tempKeywordStructure);
+	}	
+	return $returnMap;
+  }
+  
   /**
    * 
    */
   function createMapOfLastResult(&$suiteStructure, &$executionsMap){  
-   
   	$suiteName = null;
+	
   	for ($i = 0; $i < count($suiteStructure); $i++){  		
 		if (($i % $this->ITEM_PATTERN_IN_SUITE_STRUCTURE) == $this->NAME_IN_SUITE_STRUCTURE) {
-			$suiteName = $suiteStructure[$i];
-			
+			$suiteName = $suiteStructure[$i];		
   		} // end elseif
   		elseif (($i % $this->ITEM_PATTERN_IN_SUITE_STRUCTURE) ==  $this->ID_IN_SUITE_STRUCTURE) {  			
   			$suiteId = $suiteStructure[$i];
 			$totalCases = isset($executionsMap[$suiteId]) ? count($executionsMap[$suiteId]) : 0;
-  			//$caseId = null;
-  			//$build = null;
-  			//$result = null;		
-  			// iterate across all executions for this suite
-  			for ($j = 0 ; $j < $totalCases; $j++) {
+			//print "totalCases in $suiteName = $totalCases <BR>";
+			  	
+			for ($j = 0 ; $j < $totalCases; $j++) {
 				$currentExecution = $executionsMap[$suiteId][$j];
-			/**
-				print "currentExecution = <BR>";
-				print_r($currentExecution);
-				print "<BR>";
-			
-			currentExecution contains the following info:	
-				
-			[testcaseID] => 13151 
-			[tcversion_id] => 23961 
-			[build_id] => 1021 
-			[tester_id] => 157 
-			[execution_ts] => 2006-11-15 00:00:00 
-			[status] => p 
-			[notes] => 
-			[executions_id] => 6024 
-			[name] => selectservice($$locators[0].channel-vcn) 
-			[bugString] => x ) 
-			[assigner_id]
-			[feature_id]		
-			*/
-			
-				$this->addLastResultToMap($suiteId, $currentExecution['testcaseID'], $currentExecution['build_id'], $currentExecution['status'], $currentExecution['tcversion_id'], $currentExecution['execution_ts'], $currentExecution['notes'], $suiteName, $currentExecution['executions_id'], $currentExecution['name'], $currentExecution['tester_id']); 
+				$this->addLastResultToMap($suiteId, $currentExecution['testcaseID'], $currentExecution['build_id'], 
+					$currentExecution['status'], $currentExecution['tcversion_id'], $currentExecution['execution_ts'], 
+					$currentExecution['notes'], $suiteName, $currentExecution['executions_id'], 
+					$currentExecution['name'], $currentExecution['tester_id'], $currentExecution['feature_id'], 
+					$currentExecution['assigner_id']); 
   			}
   		} // end elseif 
   		elseif (($i % $this->ITEM_PATTERN_IN_SUITE_STRUCTURE) ==  $this->ARRAY_IN_SUITE_STRUCTURE){
@@ -413,8 +496,8 @@ class results
 
   			}  			
   		}   // end elseif	
-  	}
-  }
+  	} // end for loop
+  } // end function
 	
   /**  
    * Builds $executionsMap map. $executionsMap contains all execution information for suites and test cases.
@@ -431,28 +514,7 @@ class results
 	//print "buildExecutionsMap() - beginning of method <BR>";
 	$executionsMap = null;
     while ($testcaseID = key($this->linked_tcversions)){
-      $info = $this->linked_tcversions[$testcaseID];
-	  
-	  /**
-	  print "info = <BR>";
-	  print_r($info);
-	  print "<BR>";
-	  
-	  the $info array contains the following information
-	  Array ( [0] => 25372 [testsuite_id] => 25372 
-			  [1] => 7874 [tc_id] => 7874 
-			  [2] => 19787 [tcversion_id] => 19787 
-			  [3] => 18544 [feature_id] => 18544 
-			  [4] => [executed] => 
-			  [5] => [exec_on_tplan] => 
-			  [6] => [user_id] => 
-			  [7] => [type] => 
-			  [8] => [status] => 
-			  [9] => [assigner_id] => 
-			  [10] => n [exec_status] => n ) 
-	  */
-	  
-	  
+      $info = $this->linked_tcversions[$testcaseID]; 
       $testsuite_id = $info['testsuite_id'];
       $currentSuite = null;
       if (!$executionsMap || !(array_key_exists($testsuite_id, $executionsMap))){
@@ -463,6 +525,7 @@ class results
       }
       $tcversion_id = $info['tcversion_id'];
       $sql = "select name from nodes_hierarchy where id = $testcaseID ";
+	  // print "sql 1 = $sql <BR>";
 	  $results = $this->db->fetchFirstRow($sql);
 	  $name = $results['name'];
       $executed = $info['executed'];
@@ -492,12 +555,21 @@ class results
 
 		$sql = "SELECT * FROM executions " .
 			   "WHERE tcversion_id = $executed AND testplan_id = $_SESSION[testPlanId] ";
+			   
 		if (($lastResult == 'p') || ($lastResult == 'f') || ($lastResult == 'b')){
 		  $sql .= " AND status = '" . $lastResult . "' ";
 		}
 		if (($builds_to_query != -1) && ($builds_to_query != 'a')) { 
 			$sql .= " AND build_id IN ($builds_to_query) ";
 		}
+		
+		/**
+		print "test case id = $testcaseID <BR>";
+		print "tcversion_id = $tcversion_id <BR>";
+		print "sql query 2 = $sql <BR>";
+		print "================ <BR>";
+		*/
+		
 		$execQuery = $this->db->fetchArrayRowsIntoMap($sql,'id');
 		if ($execQuery)
 		{

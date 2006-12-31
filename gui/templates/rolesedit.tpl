@@ -1,5 +1,5 @@
 {* smarty template - view all keywords of product; ver. 1.0 *}
-{* $Id: rolesedit.tpl,v 1.6 2006/11/13 23:17:39 havlat Exp $ *}
+{* $Id: rolesedit.tpl,v 1.7 2006/12/31 16:21:45 franciscom Exp $ *}
 {* Purpose: smarty template - create/edit user role *}
 {include file="inc_head.tpl"}
 
@@ -99,7 +99,14 @@ var warning_modify_role = "{lang_get s='warning_modify_role'}";
 							{/foreach}
 						</fieldset>
 					</td>
+					<td><fieldset><legend >{lang_get s='th_cf_rights'}</legend>
+							{foreach from=$cfRights item=id key=k}
+							<input type="checkbox" name="{$k}" {$roleRights[$k]} />{$id}<br />
+							{/foreach}
+						</fieldset>
+					</td>
 				</tr>
+
 			</table>
 			</td>
 		</tr>

@@ -1,6 +1,6 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: mainPage.tpl,v 1.23 2006/11/06 20:22:30 schlundus Exp $     
+ $Id: mainPage.tpl,v 1.24 2006/12/31 16:21:45 franciscom Exp $     
  Purpose: smarty template - main page / site map                 
                                                                  
  rev :                                                 
@@ -200,17 +200,18 @@
         <br />
 		<img alt="arrow" class="arrow" src="icons/arrow_org.gif" />
         <a href="lib/project/projectedit.php">{lang_get s='href_edit_product'}</a>
-	{/if} {* modify_product_rights *}
+  {/if} {* modify_product_rights *}
 	{if $tproject_user_role_assignment == "yes"}
         <br />
 		<img alt="arrow" class="arrow" src="icons/arrow_org.gif" />
         <a href="lib/usermanagement/usersassign.php?feature=testproject&amp;featureID={$sessionProductID}">{lang_get s='href_assign_user_roles'}</a>
 	{/if}
 	{if $sessionProductID && $modify_product_rights == "yes"}
+		<p>
      </p>
 	{/if}	
+
 	{*       user management                             *}
-	
 	{if $usermanagement_rights == "yes"}
         <h2>{lang_get s='title_user_mgmt'}</h2>
 		<p>
@@ -221,6 +222,26 @@
         <a href="lib/usermanagement/rolesview.php">{lang_get s='href_roles_management'}</a>
         </p>
 	{/if}
+
+
+	{* Custom field management                            *}
+	{if $cfield_view == "yes" || $cfield_management == "yes"}
+        <h2>{lang_get s='title_cfields_mgmt'}</h2>
+        
+	 {if $cfield_management == "yes"}
+  	<p>
+		<img alt="arrow" class="arrow" src="icons/arrow_org.gif" />
+        <a href="lib/cfields/cfields_view.php">{lang_get s='href_cfields_management'}</a>
+   {/if}     
+   <br />
+	{/if}
+  
+  {if $sessionProductID && $cfield_management == "yes"}
+		<img alt="arrow" class="arrow" src="icons/arrow_org.gif" />
+        <a href="lib/cfields/cfields_tproject_assign.php">{lang_get s='href_cfields_tproject_assign'}</a>
+  {/if}
+
+
 
 </div>
 

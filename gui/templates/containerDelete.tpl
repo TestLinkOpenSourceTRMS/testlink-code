@@ -1,14 +1,15 @@
 {* 
 	TestLink Open Source Project - http://testlink.sourceforge.net/
-	$Id: containerDelete.tpl,v 1.10 2006/10/25 07:34:28 franciscom Exp $ 
+	$Id: containerDelete.tpl,v 1.11 2006/12/31 16:21:45 franciscom Exp $ 
 	Purpose: smarty template - delete containers in test specification
 *}
 {include file="inc_head.tpl"}
 
 <body>
+<h1>{lang_get s=$level}{$gsmarty_title_sep}{$objectName|escape}</h1> 
 
 <div class="workBack">
-{include file="inc_title.tpl" title="$page_title $objectName"}
+<h1>{$page_title}</h1>
 {include file="inc_update.tpl" result=$sqlResult item=$level action='delete' refresh="yes"}
 
 {if $sqlResult == '' && $objectID != ''}

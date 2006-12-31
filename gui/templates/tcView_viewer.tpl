@@ -1,8 +1,11 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.13 2006/12/24 11:48:18 franciscom Exp $
+$Id: tcView_viewer.tpl,v 1.14 2006/12/31 16:21:45 franciscom Exp $
 viewer for test case in test specification
 
+20061230 - franciscom - an experiment to make simple management
+                        of frequent used href
+                        
 20060427 - franciscom - added font-size in the table used for keywords
 *}
 
@@ -106,8 +109,8 @@ viewer for test case in test specification
 		  	<td colspan="2">
 				<table cellpadding="0" cellspacing="0" style="font-size:100%;">
 			    <tr>
-				  	<td width="35%"><a href="lib/keywords/keywordsView.php" 
-							target="mainframe" class="bold">{lang_get s='keywords'}</a>: &nbsp;
+			      {* 20061230 - franciscom *}
+						<td width="35%"><a href={$gsmarty_href_keywordsView}>{lang_get s='keywords'}</a>: &nbsp;
 						</td>
 				 	  <td>
 					  	{foreach item=keyword_item from=$args_keywords_map}

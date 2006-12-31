@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: containerOrder.tpl,v 1.6 2006/11/20 07:24:52 franciscom Exp $ 
+$Id: containerOrder.tpl,v 1.7 2006/12/31 16:21:45 franciscom Exp $ 
 Purpose: smarty template - reorder container contents
 
 20061119 - franciscom - trying to improve user interface
@@ -9,20 +9,16 @@ Purpose: smarty template - reorder container contents
 
 <body>
 {config_load file="input_dimensions.conf" section="containerOrder"} {* Constant definitions *}
+<h1>{lang_get s=$level}{$gsmarty_title_sep}{$object_name|escape}</h1>
 
 <div class="workBack">
-
-<h1>{lang_get s='title_change_node_order'} {$object_name|escape}</h1>
+<h1>{lang_get s='title_change_node_order'}</h1>
 
 <div>	
 	{if $arraySelect eq ''}
 		{lang_get s='no_nodes_to_reorder'}
 	{else}
 	<form method="post" action="lib/testcases/containerEdit.php?containerID={$data}">
-		<div style="padding: 3px;">
-			<input type="submit" id="do_testsuite_reorder" 
-			       name="do_testsuite_reorder" value="{lang_get s='btn_upd'}" />
-		</div>	
 	
 		<table class="common" style="width: 70%">
 			<tr>
@@ -49,6 +45,10 @@ Purpose: smarty template - reorder container contents
 			</tr>
 			{/section}
 		</table>
+		<div style="padding: 3px;">
+			<input type="submit" id="do_testsuite_reorder" 
+			       name="do_testsuite_reorder" value="{lang_get s='btn_upd'}" />
+		</div>	
 	</form>
 	{/if}
 </div>

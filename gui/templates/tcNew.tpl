@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: tcNew.tpl,v 1.14 2006/12/24 11:48:18 franciscom Exp $ *}
+{* $Id: tcNew.tpl,v 1.15 2006/12/31 16:21:45 franciscom Exp $ *}
 {* Purpose: smarty template - create new testcase *}
 {* 20050831 - scs - change item to TestCase *}
 {* 
@@ -30,12 +30,11 @@ var {$opt_cfg->js_ot_name} = new OptionTransfer("{$opt_cfg->from->name}","{$opt_
 <body onLoad="{$opt_cfg->js_ot_name}.init(document.forms[0])">
 {config_load file="input_dimensions.conf" section="tcNew"} {* Constant definitions *}
 
-
+<h1>{$parent_info.description}{$gsmarty_title_sep}{$parent_info.name|escape}</h1>
+<div class="workBack">
 <h1>{lang_get s='title_new_tc'}</h1>
 
 {include file="inc_update.tpl" result=$sqlResult item="TestCase" name=$name}
-
-<div class="workBack">
 
 <form method="post" action="lib/testcases/tcEdit.php?containerID={$containerID}">
 

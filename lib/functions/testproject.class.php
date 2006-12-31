@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.25 $
- * @modified $Date: 2006/10/11 07:00:39 $  $Author: franciscom $
+ * @version $Revision: 1.26 $
+ * @modified $Date: 2006/12/31 16:18:15 $  $Author: franciscom $
  * @author franciscom
  *
  * 20061010 - franciscom - added get_srs_by_title()
@@ -681,7 +681,35 @@ function get_all_testplans($testproject_id,$get_tp_without_tproject_id=0,$plan_s
 	
 }
 
+// -------------------------------------------------------------------------------
+// Custom field related methods
+// -------------------------------------------------------------------------------
+// The ids will be sorted based on the sequence number associated with the binding
+function get_linked_custom_fields($id,$node_type=null,$node_id=null) 
+{
+  $additional_table="";
+  $additional_join="";
 
+  if( !is_null($node_type) )
+  {
+ 		$hash_descr_id = $this->tree_manager->get_available_node_types();
+    $node_type_id=$hash_descr_id[$node_type]; 
+  
+    $additional_table=",cfield_node_types CFNT ";
+    $additional_join=" AND CFNT.field_id=CF.id AND CFNT.node_type_id={$node_type_id} ";
+  }
+  $sql="SELECT CF.*,CFTP.display_order " .
+       " FROM custom_fields CF, cfield_testprojects CFTP " .
+       $additional_table .  
+       " WHERE CF.id=CFTP.field_id " .
+       " AND   CFTP.testproject_id={$id} " .
+       $additional_join .  
+       " ORDER BY display_order";
+    echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
+     
+  $map = $this->db->fetchRowsIntoMap($sql,'id');     
+  return($map);                                 
+}
 
 } // end class
 

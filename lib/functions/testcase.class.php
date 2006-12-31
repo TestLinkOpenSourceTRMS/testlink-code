@@ -2,9 +2,11 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.37 $
- * @modified $Date: 2006/11/13 07:09:32 $ $Author: franciscom $
+ * @version $Revision: 1.38 $
+ * @modified $Date: 2006/12/31 16:18:15 $ $Author: franciscom $
  * @author franciscom
+ *
+ * 20061230 - franciscom - custom fields management
  *
  * 20061030 - franciscom - new argument in get_versions_status_quo()
  *                         corrected bug in get_linked_versions()
@@ -57,6 +59,8 @@ class testcase
   var $assignment_types;
   var $assignment_status;
 
+  var $cfield_mgr;
+
 	function testcase(&$db)
 	{
 		$this->db = &$db;	
@@ -69,6 +73,9 @@ class testcase
     $this->assignment_mgr=New assignment_mgr($this->db);
     $this->assignment_types=$this->assignment_mgr->get_available_types(); 
     $this->assignment_status=$this->assignment_mgr->get_available_status();
+
+    // 20061230 - franciscom
+  	$this->cfield_mgr=new cfield_mgr($this->db);
 	}
 
 
@@ -199,6 +206,13 @@ function create_tcversion($id,$version,$summary,$steps,
 	return $ret;
 }
 
+/*
+  function: get_by_name
+            
+  args: $name
+  
+  returns: hash
+*/
 function get_by_name($name)
 {
 	$sql = " SELECT nodes_hierarchy.id,nodes_hierarchy.name 
@@ -216,7 +230,7 @@ function get_by_name($name)
 
 
 /*
-get array of info for every test suite
+get array of info for every test case
 without any kind of filter.
 Every array element contains an assoc array with test suite info
 
@@ -231,12 +245,15 @@ function get_all()
 	return $recordset;
 }
 
+
 // 20060425 - franciscom - added $smarty argument (by reference) 
 //                         can accept an array of id
 //
 function show(&$smarty,$id, $user_id, $version_id=TC_ALL_VERSIONS, $action='', 
               $msg_result='', $refresh_tree='yes')
 {
+  
+  $gui_cfg = config_get('gui');
 	$the_tpl = config_get('tpl');
 	$arrReqs = null;
 	$can_edit = has_rights($this->db,"mgt_modify_tc");
@@ -281,6 +298,13 @@ function show(&$smarty,$id, $user_id, $version_id=TC_ALL_VERSIONS, $action='',
 		
 		// get assigned REQs
 		$arrReqs[] = getReq4Tc($this->db,$tc_id);
+
+    // 20061230 - franciscom
+    // custom fields
+    if( $gui_cfg->enable_custom_fields ) 
+    {
+      $cf_map=$this->get_linked_cfields_at_design($id);
+    }
 	}
 
   $smarty->assign('action',$action);
@@ -303,13 +327,23 @@ function show(&$smarty,$id, $user_id, $version_id=TC_ALL_VERSIONS, $action='',
 	$smarty->display($the_tpl['tcView']);
 }
 
+
+
+/*
+  function: viewer_edit_new
+            
+            
+  args: 
+  
+  returns: -
+  
+*/
 function viewer_edit_new($amy_keys, $oFCK, $action, $parent_id, $id=null)
 {
 	$a_tpl = array( 'edit_testsuite' => 'containerEdit.tpl',
 					        'new_testsuite'  => 'containerNew.tpl');
 	
 	$the_tpl = $a_tpl[$action];
-	$component_name = '';
 	$smarty = new TLSmarty();
 	$smarty->assign('sqlResult', null);
 	$smarty->assign('containerID',$parent_id);	 
@@ -320,6 +354,21 @@ function viewer_edit_new($amy_keys, $oFCK, $action, $parent_id, $id=null)
 		$the_data = $this->get_by_id($id);
 		$name = $the_data['name'];
 		$smarty->assign('containerID',$id);	
+	
+	
+    // --------------------------------------------------------------------------------
+    // 20061226 - franciscom
+    // Custom fields
+    if( $gui_cfg->enable_custom_fields ) 
+    {
+      $cf_smarty = html_table_of_custom_field_inputs($id);
+    } // if( $gui_cfg
+    
+    $smarty->assign('cf',$cf_smarty);	
+    // --------------------------------------------------------------------------------
+
+	
+	
 	}
 	
 	// fckeditor 
@@ -339,6 +388,9 @@ function viewer_edit_new($amy_keys, $oFCK, $action, $parent_id, $id=null)
 	
 	$smarty->display($the_tpl);
 }
+
+
+
 
 // 20060726 - franciscom - default value changed for optional argument $tc_order
 //                         create(), update()
@@ -1281,6 +1333,52 @@ function update_active_status($id,$tcversion_id,$active_status)
   $result = $this->db->exec_query($sql);
 	$status_ok = $result ? 1: 0;
 	return $status_ok;
+}
+
+
+/*
+  function: get_linked_cfields_at_design
+            
+            
+  args: $id
+  
+  returns: hash
+*/
+function get_linked_cfields_at_design($id) 
+{
+  $enabled=1;
+  $tproject_mgr= new testproject($this->db);
+  
+  $the_path=$this->tree_manager->get_path_new($id);
+  $tproject_id=$the_path[count($the_path)-1]['parent_id'];
+  $cf_map=$this->cfield_mgr->get_linked_cfields_at_design($tproject_id,$enabled,'testcase',$id);
+  return($cf_map);
+}
+
+/*
+  function: html_table_of_custom_field_inputs
+            
+            
+  args: $id
+  
+  returns: html string
+  
+*/
+function html_table_of_custom_field_inputs($id) 
+{
+  $cf_smarty='';
+  $cf_map=$this->get_linked_cfields_at_design($id);
+  if( !is_null($cf_map) )
+  {
+    foreach($cf_map as $cf_id => $cf_info)
+    {
+      $cf_smarty .= "<tr><td> " . $cf_info['label'] . "</td><td>" .
+                    $this->cfield_mgr->string_custom_field_input($cf_info) .
+                    "</td></tr>\n";
+    } //foreach($cf_map
+  }
+  $cf_smarty = "<table>" . $cf_smarty . "</table>";
+  return($cf_smarty);
 }
 
 

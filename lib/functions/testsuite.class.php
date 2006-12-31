@@ -2,11 +2,11 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testsuite.class.php,v $
- * @version $Revision: 1.19 $
- * @modified $Date: 2006/11/20 07:28:29 $ - $Author: franciscom $
+ * @version $Revision: 1.20 $
+ * @modified $Date: 2006/12/31 16:18:15 $ - $Author: franciscom $
  * @author franciscom
  *
- *
+ * 20061230 - franciscom - custom field management
  * 20061119 - franciscom - changes in create()
  *
  * 20060805 - franciscom - changes in viewer_edit_new()
@@ -23,6 +23,7 @@ class testsuite
 	var $node_types_descr_id;
 	var $node_types_id_descr;
 	var $my_node_type;
+  var $cfield_mgr;
 
 function testsuite(&$db)
 {
@@ -32,6 +33,8 @@ function testsuite(&$db)
 	$this->node_types_descr_id=$this->tree_manager->get_available_node_types();
 	$this->node_types_id_descr=array_flip($this->node_types_descr_id);
 	$this->my_node_type=$this->node_types_descr_id['testsuite'];
+	
+	$this->cfield_mgr=new cfield_mgr($this->db);
 }
 
 //
@@ -187,6 +190,9 @@ function get_all()
  **/
 function show(&$smarty,$id, $sqlResult = '', $action = 'update',$modded_item_id = 0)
 {
+  $gui_cfg=config_get('gui');
+  $cf_smarty='';
+  
 	$smarty->assign('modify_tc_rights', has_rights($this->db,"mgt_modify_tc"));
 
 	if($sqlResult)
@@ -202,7 +208,16 @@ function show(&$smarty,$id, $sqlResult = '', $action = 'update',$modded_item_id 
 		$modded_item = $this->get_by_id($modded_item_id);
 	}
   
+  // 20061224 - franciscom
+  // Custom field management 
+  if( $gui_cfg->enable_custom_fields ) 
+  {
+    $cf_smarty = $this->html_table_of_custom_field_values($id);
+  } // if( $gui_cfg
+  
 	$keywords_map = $this->get_keywords_map($id,' ORDER BY KEYWORD ASC ');
+	
+	$smarty->assign('cf',$cf_smarty);
 	$smarty->assign('keywords_map',$keywords_map);
 	$smarty->assign('moddedItem',$modded_item);
 	$smarty->assign('level', 'testsuite');
@@ -212,16 +227,29 @@ function show(&$smarty,$id, $sqlResult = '', $action = 'update',$modded_item_id 
 }
 
 
+// 20061231 - franciscom
+// 20061230 - franciscom - custom field management
 // 20060805 - franciscom - added new argument smarty reference
-function viewer_edit_new(&$smarty,$amy_keys, $oFCK, $action, $parent_id, $id=null)
+function viewer_edit_new(&$smarty,$amy_keys, $oFCK, $action, $parent_id, $id=null, $result_msg=null)
 {
+  $gui_cfg=config_get('gui');
+  $cf_smarty='';
+
+  $pnode_info=$this->tree_manager->get_node_hierachy_info($parent_id);
+  $parent_info['description']=lang_get($this->node_types_id_descr[$pnode_info['node_type_id']]);
+  $parent_info['name']=$pnode_info['name'];
+  
+
 	$a_tpl = array( 'edit_testsuite' => 'containerEdit.tpl',
-					        'new_testsuite'  => 'containerNew.tpl');
+					        'new_testsuite'  => 'containerNew.tpl',
+					        'add_testsuite'  => 'containerNew.tpl');
 	
 	$the_tpl = $a_tpl[$action];
-	$component_name='';
-	$smarty->assign('sqlResult', null);
+	$smarty->assign('sqlResult', $result_msg);
 	$smarty->assign('containerID',$parent_id);	 
+
+
+
 	
 	$the_data = null;
 	$name = '';
@@ -230,7 +258,17 @@ function viewer_edit_new(&$smarty,$amy_keys, $oFCK, $action, $parent_id, $id=nul
 		$the_data = $this->get_by_id($id);
 		$name=$the_data['name'];
 		$smarty->assign('containerID',$id);	
-	}
+  }
+  
+  // ----------------------------------------------------------------------
+  // 20061226 - franciscom
+  // Custom fields
+  if( $gui_cfg->enable_custom_fields ) 
+  {
+    $cf_smarty = $this->html_table_of_custom_field_inputs($id,$parent_id);
+  } // if( $gui_cfg
+  $smarty->assign('cf',$cf_smarty);	
+  // ----------------------------------------------------------------------
 	
 	// fckeditor 
 	foreach ($amy_keys as $key)
@@ -243,6 +281,7 @@ function viewer_edit_new(&$smarty,$amy_keys, $oFCK, $action, $parent_id, $id=nul
 		$smarty->assign($key, $of->CreateHTML());
 	}
 	
+	$smarty->assign('parent_info', $parent_info);
 	$smarty->assign('level', 'testsuite');
 	$smarty->assign('name',$name);
 	$smarty->assign('container_data',$the_data);
@@ -250,6 +289,15 @@ function viewer_edit_new(&$smarty,$amy_keys, $oFCK, $action, $parent_id, $id=nul
 	$smarty->display($the_tpl);
 }
 
+
+/*
+  function: copy_to
+
+  args :
+  
+  returns: 
+
+*/
 function copy_to($id, $parent_id, $user_id,
                  $check_duplicate_name = 0,
 				 $action_on_duplicate_name = 'allow_repeat',
@@ -290,8 +338,17 @@ function copy_to($id, $parent_id, $user_id,
 	}
 }
 
-// get all test cases in the test suite and all children test suites
-// no info about tcversions is returned
+
+/*
+  function: get_testcases_deep
+            get all test cases in the test suite and all children test suites
+            no info about tcversions is returned
+
+  args :
+  
+  returns: 
+
+*/
 function get_testcases_deep($id,$bIdsOnly = false)
 {
 	$subtree = $this->tree_manager->get_subtree($id,
@@ -317,6 +374,15 @@ function get_testcases_deep($id,$bIdsOnly = false)
 	return $testcases; 
 }
 
+
+/*
+  function: delete_deep
+
+  args : $id
+  
+  returns: 
+
+*/
 function delete_deep($id)
 {
   $tcase_mgr = New testcase($this->db);
@@ -360,6 +426,14 @@ function delete_deep($id)
 } // end function
 
 
+/*
+  function: getKeywords
+
+  args :
+  
+  returns: 
+
+*/
 function getKeywords($id,$kw_id = null)
 {
 	$sql = "SELECT keyword_id,keywords.keyword, keywords.keyword notes
@@ -471,6 +545,103 @@ function exportTestSuiteDataToXML($container_id,$optExport = array())
 	return $xmlTC;
 }
 
+
+// -------------------------------------------------------------------------------
+// Custom field related methods
+// -------------------------------------------------------------------------------
+function get_spec_cfields($id) 
+{
+  $sql="SELECT CF.*,CFTP.display_order " .
+       " FROM custom_fields CF, cfield_testprojects CFTP " .
+       $additional_table .  
+       " WHERE CF.id=CFTP.field_id " .
+       " AND   CFTP.testproject_id={$id} " .
+       $additional_join .  
+       " ORDER BY display_order";
+
+}
+
+/*
+  function: get_linked_cfields_at_design
+            
+            
+  args: $id
+        [$parent_id]
+        
+  returns: hash
+  
+  rev :
+        20061231 - franciscom - added $parent_id
+*/
+function get_linked_cfields_at_design($id,$parent_id=null) 
+{
+  $enabled=1;
+  $tproject_mgr= new testproject($this->db);
+  
+  $the_path=$this->tree_manager->get_path_new(!is_null($id) ? $id : $parent_id);
+  $path_len=count($the_path);
+  $tproject_id=($path_len > 0)? $the_path[$path_len-1]['parent_id'] : $parent_id;
+
+  $cf_map=$this->cfield_mgr->get_linked_cfields_at_design($tproject_id,$enabled,'testsuite',$id);
+  return($cf_map);
+}
+
+/*
+  function: html_table_of_custom_field_inputs
+            
+            
+  args: $id
+  
+  returns: html string
+  
+*/
+function html_table_of_custom_field_inputs($id,$parent_id=null) 
+{
+  $cf_smarty='';
+  $cf_map=$this->get_linked_cfields_at_design($id,$parent_id);
+  if( !is_null($cf_map) )
+  {
+    foreach($cf_map as $cf_id => $cf_info)
+    {
+      $cf_smarty .= '<tr><td class="labelHolder">' . $cf_info['label'] . "</td><td>" .
+                    $this->cfield_mgr->string_custom_field_input($cf_info) .
+                    "</td></tr>\n";
+    } //foreach($cf_map
+  }
+  $cf_smarty = "<table>" . $cf_smarty . "</table>";
+  return($cf_smarty);
+}
+
+
+/*
+  function: html_table_of_custom_field_values
+            
+            
+  args: $id
+  
+  returns: html string
+  
+*/
+function html_table_of_custom_field_values($id) 
+{
+  $cf_smarty='';
+  $cf_map=$this->get_linked_cfields_at_design($id);
+  if( !is_null($cf_map) )
+  {
+    foreach($cf_map as $cf_id => $cf_info)
+    {
+      // if user has assigned a value, then node_id is not null
+      if($cf_info['node_id'])
+      {
+        $cf_smarty .= '<tr><td class="labelHolder">' . $cf_info['label'] . "</td><td>" .
+                      $this->cfield_mgr->string_custom_field_value($cf_info,$id) .
+                      "</td></tr>\n";
+      }
+    }
+  }
+  $cf_smarty = "<table>" . $cf_smarty . "</table>";
+  return($cf_smarty);
+} // function end
 
 } // end class
 

@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.55 $ $Author: franciscom $
- * @modified $Date: 2006/11/13 07:08:24 $
+ * @version $Revision: 1.56 $ $Author: franciscom $
+ * @modified $Date: 2006/12/31 16:18:15 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -28,6 +28,9 @@ require_once(dirname(__FILE__)."/testcase.class.php");
 require_once(dirname(__FILE__)."/testsuite.class.php");
 require_once(dirname(__FILE__)."/tree.class.php");
 require_once(dirname(__FILE__)."/treeMenu.inc.php");
+
+// 20061225 - franciscom
+require_once(dirname(__FILE__)."/cfield_mgr.class.php");
 
 require_once("roles.inc.php");
 require_once("product.core.inc.php");

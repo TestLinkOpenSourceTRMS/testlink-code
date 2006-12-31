@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8 
- * @modified $Date: 2006/12/31 04:10:44 $ by $Author: kevinlevy $
+ * @modified $Date: 2006/12/31 20:56:35 $ by $Author: kevinlevy $
  *
  *
  * This class is encapsulates most functionality necessary to query the database
@@ -119,33 +119,41 @@ class results
 	$this->suiteStructure = $this->generateExecTree($keywordId, $owner);
 	
     // KL - if no builds are specified, no need to execute the following block of code
-    if ($builds_to_query != -1) {
-      // retrieve results from executions table
-	   $this->executionsMap = $this->buildExecutionsMap($builds_to_query, $lastResult, $keywordId, $owner);    
-	
-	  // KL - 20061229 - this call may not be necessary for all reports 
-	  // only those that require info on results for keywords
-	  // Map of test case ids to array of associated keywords
-	  $this->keywordData = $this->getKeywordData();
+	if ($builds_to_query != -1) {
+		// retrieve results from executions table
+	    $this->executionsMap = $this->buildExecutionsMap($builds_to_query, $lastResult, $keywordId, $owner);    
+
+		// get list of keywords used in this test plan
+		$arrKeywords = $tp->get_keywords_map($this->testPlanID); 	
 		
-      // create data object which tallies last result for each test case
-	  $this->createMapOfLastResult($this->suiteStructure, $this->executionsMap);
-    
-	  $this->aggregateKeyResults = $this->tallyKeywordResults($this->mapOfLastResultByKeyword);
+		// KL - 20061229 - this call may not be necessary for all reports 
+		// only those that require info on results for keywords
+		// Map of test case ids to array of associated keywords
+		$this->keywordData = $this->getKeywordData($arrKeywords);
+		
+		// create data object which tallies last result for each test case
+		// this function now also creates mapOfLastResultByKeyword
+		$this->createMapOfLastResult($this->suiteStructure, $this->executionsMap);
+	  
+		$this->aggregateKeywordResults = $this->tallyKeywordResults($this->mapOfLastResultByKeyword, $arrKeywords);
+		/**
 		print "aggregate key results = ";
 		print_r($this->aggregateKeyResults);
 		print "<BR>";
-	  // create data object which tallies totals for individual suites
-      // child suites are NOT taken into account in this step
-	  $this->createMapOfSuiteSummary($this->mapOfLastResult);
+		*/
+		
+		// create data object which tallies totals for individual suites
+		// child suites are NOT taken into account in this step
+		$this->createMapOfSuiteSummary($this->mapOfLastResult);
       
-      // create data object which tallies totals for suites taking
-      // child suites into account
-	  $this->createAggregateMap($this->suiteStructure, $this->mapOfSuiteSummary);
+		// create data object which tallies totals for suites taking
+		// child suites into account
+		$this->createAggregateMap($this->suiteStructure, $this->mapOfSuiteSummary);
 
-	  $this->totalsForPlan = $this->createTotalsForPlan($this->suiteStructure, $this->mapOfSuiteSummary);
-	  } // end if block
+		$this->totalsForPlan = $this->createTotalsForPlan($this->suiteStructure, $this->mapOfSuiteSummary);
+	} // end if block
   } // end results constructor
+
 
   /**
   * tallyKeywordResults(parameter)
@@ -159,12 +167,12 @@ class results
   * output format :
   * Array ( [keyword id] => Array ( total, passed, failed, blocked, not run))       
   */
-  function tallyKeywordResults($keywordResults) {
-	/**
-	print "keyword results : ";
-	print_r($keywordResults);
-	print "<BR>";
-	*/
+  function tallyKeywordResults($keywordResults, $keywordIdNamePairs) {
+	
+	if ($keywordResults == null) {
+		return;
+	}
+	
 	$rValue = null;
 	while ($keywordId = key($keywordResults)) {
 		$arrResults = $keywordResults[$keywordId];
@@ -186,13 +194,18 @@ class results
 			next($arrResults);
 		}
 		$totalNotRun = $totalCases - ($totalPass + $totalFail + $totalBlocked);
-		$rArray = array($totalCases, $totalPass, $totalFail, $totalBlocked, $totalNotRun);
+		$percentCompleted = (($totalCases - $totalNotRun) / $totalCases) * 100;
+		$percentCompleted = number_format($percentCompleted,2);		
+		$rArray = array($keywordIdNamePairs[$keywordId], $totalCases, $totalPass, $totalFail, $totalBlocked, $totalNotRun, $percentCompleted);
 		$rValue[$keywordId] = $rArray;
 		next($keywordResults);
 	}
 	return $rValue;
   }
 
+	function getAggregateKeywordResults() {
+		return $this->aggregateKeywordResults;
+	}
 
   // TO-DO- rename getExecutionsMap() (resultsTC.php is 1 file (may not be only file) that references this method)
   function getSuiteList(){
@@ -244,7 +257,7 @@ class results
 	 *  */ 	
   function addLastResultToMap($suiteId, $testcase_id, $buildNumber, $result, $tcversion_id, 
                               $execution_ts, $notes, $suiteName, $executions_id, $name, $tester_id, $feature_id, $assigner_id){
-	
+	$associatedKeywords = null;
 	//  KL - 20061229 - figuring out how to create map of results by keyword
 	if (array_key_exists($testcase_id, $this->keywordData)) {
 		$associatedKeywords = $this->keywordData[$testcase_id];
@@ -446,8 +459,10 @@ class results
   	} // end for loop  	 	
   }
   
-  function getKeywordData() {
-	$sql = "select testcase_id, keyword_id from testcase_keywords";
+  function getKeywordData($keywordsInPlan) {
+	// limit the sql query to just those keys in this test plan
+	$keys = implode(array_keys($keywordsInPlan), ',');
+ 	$sql = "select testcase_id, keyword_id from testcase_keywords where keyword_id IN ($keys)";
 	$tempKeywordStructure =  $this->db->fetchRowsIntoMap($sql,'testcase_id', 1);
 	$returnMap = null;
 	while ($testcase_id = key($tempKeywordStructure)){
@@ -460,6 +475,8 @@ class results
 		$returnMap[$testcase_id] = $arrKeyIds;
 		next($tempKeywordStructure);
 	}	
+	//print "r value from getKeywordData <BR>";
+	//print_r($returnMap);
 	return $returnMap;
   }
   

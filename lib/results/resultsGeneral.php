@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: resultsGeneral.php,v $
- * @version $Revision: 1.21 $
- * @modified $Date: 2006/12/31 20:56:00 $ by $Author: kevinlevy $
+ * @version $Revision: 1.22 $
+ * @modified $Date: 2007/01/01 21:02:49 $ by $Author: kevinlevy $
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
  * This page show Test Results over all Builds.
@@ -14,10 +14,11 @@
  * @author 20050807 - fm
  * refactoring:  changes in getTestSuiteReport() call
  *
+ * @author 20070101 - KL
+ * upgraded to 1.7
  * 
  */
 
-//print "Warning Message - KL - 20061126 - all tables functional except for priority report <BR>";
 require('../../config.inc.php');
 require_once('common.php');
 require_once('builds.inc.php');
@@ -32,14 +33,7 @@ $tpID = $_SESSION['testPlanId'];
 $tp = new testplan($db);
 $builds_to_query = 'a';
 $suitesSelected = 'all';
-//print "resultsGeneral.php - create results object <BR>";
-//$time_start = microtime_float();
 $re = new results($db, $tp, $suitesSelected, $builds_to_query);
-//$time_end = microtime_float();
-//$time = $time_end - $time_start;
-// print "results object created in $time <BR>";
-//print "<BR>";
-//print "resultsGeneral.php - finished creating object <BR>";
 
 // TO-DO figure out how to use TestPlanResultsObj
 //$excelWriter = new TestPlanResultsObj();
@@ -47,19 +41,14 @@ $re = new results($db, $tp, $suitesSelected, $builds_to_query);
 /** 
 * COMPONENTS REPORT 
 */
-
-//print "resultsGeneral start components report <BR>";
 $topLevelSuites = $re->getTopLevelSuites();
 $mapOfAggregate = $re->getAggregateMap();
 $arrDataSuite = null;
 $arrDataSuiteIndex = 0;
 while ($i = key($topLevelSuites)) {
-	//print_r($arrDataSuite);
-	//print "<BR>";
 	$pairArray = $topLevelSuites[$i];
 	$currentSuiteId = $pairArray['id'];
 	$currentSuiteName = $pairArray['name'];
-
 	$resultArray = $mapOfAggregate[$currentSuiteId];	
 	$total = $resultArray['total'];
 	$notRun = $resultArray['notRun'];
@@ -74,29 +63,16 @@ while ($i = key($topLevelSuites)) {
 	$arrDataSuiteIndex++;
 	next($topLevelSuites);
 } 
-//print "resultsGeneral end components report <BR>";
-
 
 /**
 * PRIORITY REPORT
 */
-//$arrDataPriority = getPriorityReport($db,$tpID);
 $arrDataPriority = null;
-
 
 /**
 * KEYWORDS REPORT
 */
-//print "resultsGeneral start keywords report <BR>";
-//$arrDataKeys = null;
-/**
-* TO-DO : fix performance of keywords report
-* KL - 20061210 - commenting out since performance of this is not good enough
-*/
-//$arrDataKeysIndex = 0;
-//$arrKeywords = $tp->get_keywords_map($tpID); 
 $arrDataKeys = $re->getAggregateKeywordResults();
-//$arrDataKeys2[0] = array('name','0','1','2','3','4','5');
 $i = 0;
 $arrDataKeys2 = null;
 while ($keywordId = key($arrDataKeys)) {
@@ -106,34 +82,16 @@ while ($keywordId = key($arrDataKeys)) {
    next($arrDataKeys);
 }
 
-/**
-if (is_array($arrKeywords)) {
-   while ($keyword_id = key($arrKeywords)) {
-	$keyword_name = $arrKeywords[$keyword_id] ;
-	$specificKeywordResults = new results($db, $tp, $suitesSelected, $builds_to_query, 'a', $keyword_id);
-	$resultArray = $specificKeywordResults->getTotalsForPlan();
-	$total = $resultArray['total'];
-	$notRun = $resultArray['notRun'];
-	$percentCompleted = (($total - $notRun) / $total) * 100;
-	$percentCompleted = number_format($percentCompleted,2);
-	$arrDataKeys[$arrDataKeysIndex] = array($keyword_name,$total,$resultArray['pass'],$resultArray['fail'],$resultArray['blocked'],$notRun,$percentCompleted);
-	$arrDataKeysIndex++;
-	next($arrKeywords);
-  } // end while
-} // end if
-*/
-//print "resultsGeneral end keywords report <BR>";
-
-
 /** 
 * OWNERS REPORT 
 */
+$arrDataOwner = null;
+
 /** KL - 20061231 - temporarily commenting out
 define('ALL_USERS_FILTER', null);
 define('ADD_BLANK_OPTION', false);
 $arrOwners = get_users_for_html_options($db, ALL_USERS_FILTER, ADD_BLANK_OPTION);
 //$arrDataOwner = getOwnerReport($db,$tpID);
-$arrDataOwner = null;
 $arrDataOwnerIndex = 0;
 while ($owner_id = key($arrOwners)) {
 	$owner_name = $arrOwners[$owner_id] ;

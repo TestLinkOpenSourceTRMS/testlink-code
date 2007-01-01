@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8 
- * @modified $Date: 2006/12/31 20:56:35 $ by $Author: kevinlevy $
+ * @modified $Date: 2007/01/01 21:03:09 $ by $Author: kevinlevy $
  *
  *
  * This class is encapsulates most functionality necessary to query the database
@@ -123,7 +123,7 @@ class results
 		// retrieve results from executions table
 	    $this->executionsMap = $this->buildExecutionsMap($builds_to_query, $lastResult, $keywordId, $owner);    
 
-		// get list of keywords used in this test plan
+		// get keyword id -> keyword name pairs used in this test plan
 		$arrKeywords = $tp->get_keywords_map($this->testPlanID); 	
 		
 		// KL - 20061229 - this call may not be necessary for all reports 
@@ -497,6 +497,9 @@ class results
 			  	
 			for ($j = 0 ; $j < $totalCases; $j++) {
 				$currentExecution = $executionsMap[$suiteId][$j];
+				//print_r($currentExecution);
+				//print "<BR>";
+				//print "assigner_id = " . $currentExecution['assigner_id'] . " <BR>";
 				$this->addLastResultToMap($suiteId, $currentExecution['testcaseID'], $currentExecution['build_id'], 
 					$currentExecution['status'], $currentExecution['tcversion_id'], $currentExecution['execution_ts'], 
 					$currentExecution['notes'], $suiteName, $currentExecution['executions_id'], 

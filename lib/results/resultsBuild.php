@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsBuild.php,v 1.19 2006/12/11 06:43:10 kevinlevy Exp $ 
+* $Id: resultsBuild.php,v 1.20 2007/01/01 20:57:49 kevinlevy Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * 
@@ -63,9 +63,7 @@ while ($i = key($topLevelSuites)) {
 } 
 
 /** 
-
 * ALL SUITES REPORT 
-
 */
 $allSuites = $re->getAllSuites();
 $arrDataAllSuites = null;
@@ -88,8 +86,6 @@ while ($i = key($allSuites)) {
 	next($allSuites);
 } 
 
-
-
 /**
 * PRIORITY REPORT
 */
@@ -99,25 +95,16 @@ $arrDataPriority = null;
 /**
 * KEYWORDS REPORT
 */
+$arrDataKeys = $re->getAggregateKeywordResults();
+$i = 0;
+$arrDataKeys2 = null;
+while ($keywordId = key($arrDataKeys)) {
+   $arr = $arrDataKeys[$keywordId];
+   $arrDataKeys2[$i] = $arr;
+   $i++;
+   next($arrDataKeys);
+}
 
-$arrDataKeys = null;
-$arrDataKeysIndex = 0;
-$arrKeywords = $tp->get_keywords_map($tpID); 
-
-if (is_array($arrKeywords)) {
-  while ($keyword_id = key($arrKeywords)) {
-	$keyword_name = $arrKeywords[$keyword_id] ;
-	$specificKeywordResults = new results($db, $tp, $suitesSelected, $builds_to_query, 'a', $keyword_id);
-	$resultArray = $specificKeywordResults->getTotalsForPlan();
-	$total = $resultArray['total'];
-	$notRun = $resultArray['notRun'];
-	$percentCompleted = (($total - $notRun) / $total) * 100;
-	$percentCompleted = number_format($percentCompleted,2);
-	$arrDataKeys[$arrDataKeysIndex] = array($keyword_name,$total,$resultArray['pass'],$resultArray['fail'],$resultArray['blocked'],$notRun,$percentCompleted);
-	$arrDataKeysIndex++;
-	next($arrKeywords);
-  } //end while
-} // end if
 /** 
 * OWNERS REPORT 
 */
@@ -127,7 +114,7 @@ $arrOwners = get_users_for_html_options($db, ALL_USERS_FILTER, ADD_BLANK_OPTION)
 //$arrDataOwner = getOwnerReport($db,$tpID);
 $arrDataOwner = null;
 $arrDataOwnerIndex = 0;
-
+/**
 while ($owner_id = key($arrOwners)) {
 	$owner_name = $arrOwners[$owner_id] ;
 	$specificOwnerResults = new results($db, $tp, $suitesSelected, $builds_to_query, 'a', 0, $owner_id);
@@ -143,6 +130,7 @@ while ($owner_id = key($arrOwners)) {
 	$arrDataOwnerIndex++;
 	next($arrOwners);
 }
+*/
 
 /**
 
@@ -156,7 +144,7 @@ $smarty->assign('buildName', $buildName);
 $smarty->assign('arrDataPriority', $arrDataPriority);
 $smarty->assign('arrDataAllSuites', $arrDataAllSuites);
 $smarty->assign('arrDataSuite', $arrDataSuite);
-$smarty->assign('arrDataKeys', $arrDataKeys);
+$smarty->assign('arrDataKeys', $arrDataKeys2);
 $smarty->display('resultsBuild.tpl');
 
 ?>

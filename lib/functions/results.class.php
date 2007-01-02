@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8 
- * @modified $Date: 2007/01/02 03:16:26 $ by $Author: kevinlevy $
+ * @modified $Date: 2007/01/02 03:28:30 $ by $Author: kevinlevy $
  *
  *
  * This class is encapsulates most functionality necessary to query the database
@@ -131,9 +131,7 @@ class results
 		// get keyword id -> keyword name pairs used in this test plan
 		$arrKeywords = $tp->get_keywords_map($this->testPlanID); 	
 	
-		define('ALL_USERS_FILTER', null);
-		define('ADD_BLANK_OPTION', false);
-		$arrOwners = get_users_for_html_options($db, ALL_USERS_FILTER, ADD_BLANK_OPTION);
+		$arrOwners = get_users_for_html_options($db, null, false);
    	
 		// KL - 20061229 - this call may not be necessary for all reports 
 		// only those that require info on results for keywords

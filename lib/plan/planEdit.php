@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: planEdit.php,v $
  *
- * @version $Revision: 1.23 $
- * @modified $Date: 2006/11/20 00:09:30 $ by $Author: havlat $
+ * @version $Revision: 1.24 $
+ * @modified $Date: 2007/01/02 22:02:33 $ by $Author: franciscom $
  *
  * Purpose:  ability to edit and delete test plans
  *-------------------------------------------------------------------------
@@ -78,10 +78,10 @@ elseif ($bNewTestPlan || $bEditTestPlan)
 	$args = init_args($_REQUEST,$_SESSION);
 
 	$of->Value = $args->notes;
-	$tpName = $args->name;
+	$tpName = $args->testplan_name;
 	$bActive = ($args->active == 'on') ? 1 :0 ;
 	
-	if (!strlen($args->name))
+	if (!strlen($args->testplan_name))
 		$generalResult = lang_get('warning_empty_tp_name');
 	else
 	{
@@ -94,7 +94,7 @@ elseif ($bNewTestPlan || $bEditTestPlan)
 		$num_plans = sizeof($plans);
 		for($idx = 0; $idx < $num_plans; $idx++)
 		{
-			if ($plans[$idx]['name'] == $args->name)
+			if ($plans[$idx]['name'] == $args->testplan_name)
 			{
 				//if we edit the edited tp must be skipped!
 				if ($bNewTestPlan || ($bEditTestPlan && ($args->tpID != $plans[$idx]['id'])))
@@ -109,7 +109,7 @@ elseif ($bNewTestPlan || $bEditTestPlan)
 			if ($bNewTestPlan)
 			{
 				// 20060319 - franciscom
-				$tp_id = $tplan_mgr->create($args->name,$args->notes,$args->testprojectID);
+				$tp_id = $tplan_mgr->create($args->testplan_name,$args->notes,$args->testprojectID);
 				
 				if ($tp_id == 0)
 				{
@@ -132,7 +132,7 @@ elseif ($bNewTestPlan || $bEditTestPlan)
 			else
 			{
 			  // 20060805 - franciscom - function call replaced with method call.
-				if (!$tplan_mgr->update($args->tpID,$args->name,$args->notes,$bActive))
+				if (!$tplan_mgr->update($args->tpID,$args->testplan_name,$args->notes,$bActive))
 				{
 					$generalResult = lang_get('update_tp_failed1'). $tpName . lang_get('update_tp_failed2').": " . 
 					                  $db->error_msg() . "<br />";
@@ -140,7 +140,7 @@ elseif ($bNewTestPlan || $bEditTestPlan)
 				else
 				{
 					if (isset($_SESSION['testPlanId']) && ($args->tpID == $_SESSION['testPlanId']))
-						$_SESSION['testPlanName'] = $args->name;
+						$_SESSION['testPlanName'] = $args->testplan_name;
 				}
 			}
 		}
@@ -210,7 +210,7 @@ function init_args($request_hash, $session_hash)
 	$args = null;
 	$request_hash = strings_stripSlashes($request_hash);
 	
-	$nullable_keys = array('name','notes','rights','active');
+	$nullable_keys = array('testplan_name','notes','rights','active');
 	foreach($nullable_keys as $value)
 	{
 		$args->$value = isset($request_hash[$value]) ? $request_hash[$value] : null;

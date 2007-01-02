@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: execSetResults.tpl,v 1.34 2007/01/02 13:42:05 franciscom Exp $
+$Id: execSetResults.tpl,v 1.35 2007/01/02 22:02:33 franciscom Exp $
 Purpose: smarty template - show tests to add results
 Revisions:
           20070101 - franciscom - custom field management for test suite div
@@ -43,7 +43,7 @@ Revisions:
                             document.getElementById('tplan_notes').style.display=='none')" />
     {lang_get s='test_plan_notes'}
   </div>
-  <div id="tplan_notes"  class="notes">
+  <div id="tplan_notes"  class="notes" style="background: 	#CDE;">
   {$tplan_notes}
   </div>
 

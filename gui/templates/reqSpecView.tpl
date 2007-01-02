@@ -1,14 +1,10 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecView.tpl,v 1.20 2007/01/02 13:42:06 franciscom Exp $ *}
+{* $Id: reqSpecView.tpl,v 1.21 2007/01/02 22:02:33 franciscom Exp $ *}
 {* 
    Purpose: smarty template - view a requirement specification
    Author: Martin Havlat 
 
-20050828 - fm - localize_date
-20050810 - scs - added escaping of title/author
-20051125 - scs - removed title for the deling of SRS
-20051202 - scs - fixed 211
-20061007 - franciscom - layout changes
+20070102 - franciscom - added javascript validation of checked requirements 
 *}
 
 {include file="inc_head.tpl" openHead="yes"}
@@ -31,7 +27,31 @@
 <script type="text/javascript">
 {/literal}
 var warning_delete_requirements = "{lang_get s='warning_delete_requirements'}";
+var please_select_a_req="{lang_get s='cant_delete_req_nothing_sel'}";
 {literal}
+
+/* 20070102 - franciscom */
+function check_action_precondition(form_id,action)
+{
+ if( checkbox_count_checked(form_id) > 0) 
+ {
+    if( action=='delete')
+    {
+      return confirm(warning_delete_requirements);
+    }
+    if( action=='create')
+    {
+      return true;
+    }
+ }
+ else
+ {
+    confirm(please_select_a_req);
+    return false; 
+ }  
+
+}
+
 </script>
 {/literal}
 
@@ -80,7 +100,7 @@ var warning_delete_requirements = "{lang_get s='warning_delete_requirements'}";
 
   {* ----------------------------------------------------------------------------------------- *}
   <div class="groupBtn">
-    <form method="post">
+    <form id="SRS" name="SRS" method="post">
     	<input type="hidden" name="idSRS" value="{$arrSpec[0].id}" />
     	{if $modify_req_rights == "yes"}
     	<input type="submit" name="editSRS" value="{lang_get s='btn_edit_spec'}" />
@@ -159,9 +179,11 @@ var warning_delete_requirements = "{lang_get s='warning_delete_requirements'}";
       	<input type="button" name="clearAll" value="{lang_get s='btn_uncheck_all'}" 
       		onclick="javascript: box('frmReqList', false);" />
       
-       <input type="submit" name="create_tc_from_req" value="{lang_get s='req_select_create_tc'}" />
-       <input type="submit" onclick="return confirm(warning_delete_requirements)" 
-              name="req_select_delete" value="{lang_get s='req_select_delete'}" />
+       <input type="submit" name="create_tc_from_req" value="{lang_get s='req_select_create_tc'}" 
+              onclick="return check_action_precondition('frmReqList','create');"/>
+              
+       <input type="submit" name="req_select_delete" value="{lang_get s='req_select_delete'}"
+              onclick="return check_action_precondition('frmReqList','delete');"/>
       </div>
      {/if}
      {* ------------------------------------------------------------------------------------------ *}

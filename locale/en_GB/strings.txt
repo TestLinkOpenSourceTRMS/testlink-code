@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.96 $
- * @modified $Date: 2007/01/02 13:47:41 $ $Author: franciscom $
+ * @version $Revision: 1.97 $
+ * @modified $Date: 2007/01/02 22:02:34 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
@@ -307,7 +307,7 @@ $TLS_Yes = "Yes";
 // lib/keywords/keywords.inc.php
 $TLS_empty_keyword_no = "You cannot enter an empty keyword!";
 $TLS_keywords_char_not_allowed = "Commas and quotes aren't allowed within keywords!";
-$TLS_tc_kw_update_fails1 = "TestCase";
+$TLS_tc_kw_update_fails1 = "Test Case";
 $TLS_tc_kw_update_fails2 = "fails";
 $TLS_the_format_keyword_csv_import = "keyword;notes";
 $TLS_the_format_keyword_xml_import = "&lt;keywords>&lt;keyword name=\"name\">Notes&lt;/keyword>&lt;/keywords>";
@@ -335,7 +335,7 @@ $TLS_cannot_delete_build = "The build cannot be deleted!";
 $TLS_cannot_update_build = "Error while updating build!";
 $TLS_invalid_build_id = "Invalid build identification was used.";
 $TLS_warning_duplicate_build = "There is already a build with this identifier";
-
+$TLS_warning_empty_build_name="Please give a name to build";
 
 
 // lib/plan/plan.inc.php
@@ -497,11 +497,11 @@ $TLS_title_navigator = "Navigator";
 $TLS_current = "current";
 $TLS_delete_linked = "Links to test plans will be removed";
 $TLS_delete_linked_and_exec = "Links to test plans, and execution related information will be removed";
-$TLS_error_tc_add = "There was an error while adding the TestCase";
+$TLS_error_tc_add = "There was an error while adding the Test Case";
 $TLS_title_del_tc = "Delete Test Case ";
 $TLS_version = "Version";
 $TLS_warning = "Warning!!";
-$TLS_warning_empty_tc_title = "Please give a title to TestCase";
+$TLS_warning_empty_tc_title = "Please give a title to Test Case";
 
 
 
@@ -517,7 +517,7 @@ $TLS_title_tsuite_export_all = "Export all Test Suites";
 
 // lib/testcases/tcImport.php
 $TLS_please_choose_file_to_import = "Please choose file to import";
-$TLS_title_tc_import_to = "Import Testcase(s)";
+$TLS_title_tc_import_to = "Import Test Case(s)";
 $TLS_title_tsuite_import_to = "Import Test Suite";
 $TLS_wrong_xml_tcase_file = "Wrong xml Test Case file";
 $TLS_wrong_xml_tsuite_file = "Wrong xml Test Suite file";
@@ -546,6 +546,8 @@ $TLS_invalid_query = "Invalid query";
 $TLS_name = "Name";
 $TLS_popup_product_delete = "Warning! This action deletes irrevocable all Test Project related data (including test results, plans, etc.). You can also use to deactivate instead of delete.\\nRecommendation: Execute a dump of database at first.\\nAre you sure to delete the Test Project?";
 $TLS_title_product_mgmt = "Test Project Management";
+$TLS_warning_empty_tproject_name = "Test Project name cannot be empty!";
+
 
 
 
@@ -807,6 +809,7 @@ $TLS_btn_export_keywords_XML = "Export - XML File";
 $TLS_btn_import_keywords = "Import";
 $TLS_caption_new_keyword = "Enter New Keyword";
 $TLS_th_keyword = "Keyword";
+$TLS_warning_delete_keyword="Are you sure you want to delete the keyword?";
 $TLS_warning_enter_at_least1 = "Please enter at least ";
 $TLS_warning_enter_at_least2 = " chars.";
 $TLS_warning_enter_less1 = "Please enter less than";

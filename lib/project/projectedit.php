@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: projectedit.php,v $
  *
- * @version $Revision: 1.3 $
- * @modified $Date: 2006/07/28 17:22:04 $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2007/01/02 22:02:33 $
  *
  * @author Martin Havlat
  *
@@ -45,7 +45,7 @@ $of->ToolbarSet = 'TL_Medium';
 if ($session_tproject_id)
 	$tlog_msg .= $session_tproject_id . ': ' . $_SESSION['testprojectName'];
 else
-	$tlog_msg .= $args->id . ': ' . $args->name;
+	$tlog_msg .= $args->id . ': ' . $args->tproject_name;
 
 switch($args->do)
 {
@@ -72,11 +72,11 @@ switch($args->do)
 		
 	case 'do_create':
 		$updateResult = 'ok';
-		if ($tproject->checkTestProjectName($args->name,$updateResult))
+		if ($tproject->checkTestProjectName($args->tproject_name,$updateResult))
 		{
-			if (!$tproject->get_by_name($args->name))
+			if (!$tproject->get_by_name($args->tproject_name))
 			{
-				$args->id = $tproject->create($args->name, $args->color, $args->optReq, $args->notes);
+				$args->id = $tproject->create($args->tproject_name, $args->color, $args->optReq, $args->notes);
 				if (!$args->id)
 					$updateResult = lang_get('refer_to_log');
 				else
@@ -92,11 +92,11 @@ switch($args->do)
 		
 	case 'do_edit':
 		$updateResult = 'ok';
-		if ($tproject->checkTestProjectName($args->name,$updateResult))
+		if ($tproject->checkTestProjectName($args->tproject_name,$updateResult))
 		{
-			if (!$tproject->get_by_name($args->name,"testprojects.id <> {$args->id}"))
+			if (!$tproject->get_by_name($args->tproject_name,"testprojects.id <> {$args->id}"))
 			{
-				$updateResult = $tproject->update($args->id, $args->name, $args->color,$args->optReq, $args->notes);
+				$updateResult = $tproject->update($args->id, $args->tproject_name, $args->color,$args->optReq, $args->notes);
 				$action = 'updated';
 			}
 			else
@@ -133,7 +133,7 @@ if ($args->do != 'deleteProduct')
 			$the_data = $tproject->get_by_id($session_tproject_id);
 			if ($the_data)
 			{
-				$args->name = $the_data['name'];
+				$args->tproject_name = $the_data['name'];
 				$smarty->assign('found', 'yes');
 				$smarty->assign('id', $the_data['id']);
 				$smarty->assign('color', $the_data['color']);
@@ -150,7 +150,7 @@ if ($args->do != 'deleteProduct')
 	{
 		$smarty->assign('found', 'yes');
 		$smarty->assign('id', -1);
-		$args->name = '';
+		$args->tproject_name = '';
 		$args->notes = '';
 		$args->color = '';
 	}
@@ -162,7 +162,7 @@ if($action != 'no')
 $of->Value = $args->notes;
 $smarty->assign('action', $action);
 $smarty->assign('sqlResult', $updateResult);
-$smarty->assign('name', $args->name);
+$smarty->assign('name', $args->tproject_name);
 $smarty->assign('show_prod_attributes', $show_prod_attributes);
 $smarty->assign('notes', $of->CreateHTML());
 $smarty->display('projectedit.tpl');
@@ -194,7 +194,7 @@ function init_args($tproject,$request_hash, $session_tproject_id)
 		$args->do = isset($request_hash[$value]) ? $value : $args->do;
 	}
 	
-	$nullable_keys = array('name','color','notes');
+	$nullable_keys = array('tproject_name','color','notes');
 	foreach ($nullable_keys as $value)
 	{
 		$args->$value = isset($request_hash[$value]) ? $request_hash[$value] : null;

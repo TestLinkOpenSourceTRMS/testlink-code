@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: projectedit.tpl,v 1.7 2006/12/31 16:27:09 franciscom Exp $
+$Id: projectedit.tpl,v 1.8 2007/01/02 22:02:33 franciscom Exp $
 Purpose: smarty template - Edit existing product 
 
  20051211 - fm - poor workaround for BUGID 180 Unable to delete Product
@@ -9,9 +9,30 @@ Purpose: smarty template - Edit existing product
  20061223 - franciscom - utilizzo input_dimensions.conf
 
 *}
-{include file="inc_head.tpl" openHead="yes"}
+{include file="inc_head.tpl" openHead="yes" jsValidate="yes"}
 {include file="inc_jsPicker.tpl"}
+
+{literal}
+<script type="text/javascript">
+{/literal}
+var warning_empty_tproject_name = "{lang_get s='warning_empty_tproject_name'}";
+{literal}
+function validateForm(f)
+{
+  if (isWhitespace(f.tproject_name.value)) 
+  {
+      alert(warning_empty_tproject_name);
+      selectField(f, 'tproject_name');
+      return false;
+  }
+  return true;
+}
+</script>
+{/literal}
 </head>
+
+
+
 <body>
 {config_load file="input_dimensions.conf" section="projectedit"} {* Constant definitions *}
 
@@ -50,7 +71,10 @@ Purpose: smarty template - Edit existing product
 	{* edit product form *}
 	{if $found == "yes"}
 		<div>
-		<form name="edit_testproject" method="post" action="lib/project/projectedit.php">
+		<form name="edit_testproject" id="edit_testproject"
+		      method="post" action="lib/project/projectedit.php"
+		      onSubmit="javascript:return validateForm(this);">
+		      
 		<input type="hidden" name="id" value="{$id}" />
 		<table class="common" width="80%">
 		  {* 20051208 - fm #{$id} -> {$name} *} 
@@ -63,12 +87,13 @@ Purpose: smarty template - Edit existing product
 				{$name|escape}</caption>
 			<tr>
 				<td>{lang_get s='name'}</td>
-				<td><input type="text" name="name" 
+				<td><input type="text" name="tproject_name" 
   			           size="{#TESTPROJECT_NAME_SIZE#}" 
 	  		           maxlength="{#TESTPROJECT_NAME_MAXLEN#}" 
-				           value="{$name|escape}"/></td>
+				           value="{$name|escape}"/>
+				  				{include file="error_icon.tpl" field="tproject_name"}
+				</td>
 			</tr>
-     {* 20060101 - fm *}
 	   <tr>
 		  <td>{lang_get s='notes'}</td>
 		  <td width="80%">{$notes}</td>

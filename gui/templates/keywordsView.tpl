@@ -1,7 +1,11 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: keywordsView.tpl,v 1.7 2006/10/09 10:26:59 franciscom Exp $
+$Id: keywordsView.tpl,v 1.8 2007/01/02 22:02:33 franciscom Exp $
 Purpose: smarty template - View all keywords 
+
+20070102 - franciscom
+1. Tab assign to test case will be displayed only if at least one keyword exists
+2. add confirmation before deleting
 
 20061007 - franciscom
 1. removed message when no keyword availables (useless IMHO)
@@ -12,6 +16,10 @@ Purpose: smarty template - View all keywords
 {include file="inc_head.tpl" jsValidate="yes"}
 
 <body>
+{assign var="cfg_section" value=$smarty.template|replace:".tpl":"" }
+{config_load file="input_dimensions.conf" section=$cfg_section}
+
+
 {literal}
 <script type="text/javascript">
 {/literal}
@@ -19,6 +27,7 @@ var warning_enter_less1 = "{lang_get s='warning_enter_less1'}";
 var warning_enter_at_least1 = "{lang_get s='warning_enter_at_least1'}";
 var warning_enter_at_least2 = "{lang_get s='warning_enter_at_least2'}";
 var warning_enter_less2 = "{lang_get s='warning_enter_less2'}";
+var warning_delete_keyword="{lang_get s='warning_delete_keyword'}";
 {literal}
 </script>
 {/literal}
@@ -31,7 +40,11 @@ var warning_enter_less2 = "{lang_get s='warning_enter_less2'}";
 	{* tabs *}
 	<div class="tabMenu">
 		<span class="selected">{lang_get s='menu_manage_keywords'}</span> 
-		<span class="unselected"><a href="lib/general/frmWorkArea.php?feature=keywordsAssign">{lang_get s='menu_assign_kw_to_tc'}</a></span> 
+    {if $arrKeywords neq ''}
+       <span class="unselected">
+         <a href="lib/general/frmWorkArea.php?feature=keywordsAssign">{lang_get s='menu_assign_kw_to_tc'}</a>
+       </span>
+    {/if}    
 	</div>
 {/if}
 
@@ -46,15 +59,15 @@ var warning_enter_less2 = "{lang_get s='warning_enter_less2'}";
   		    onsubmit="return valTextLength(this.keyword, 100, 1);">
   	<input type="hidden" name="id" value="{$keywordID}" />
   	<table class="common">
-  		{* <caption>{lang_get s='caption_new_keyword'}</caption> *}
   		<tr>
   			<th>{lang_get s='th_keyword'}</th>
-  			<td><input type="text" name="keyword" size="66" maxlength="100" 
-  				onblur="this.style.backgroundColor=''" value="{$keyword|escape}"/></td>
+  			<td><input type="text" name="keyword" 
+  			           size="{#KEYWORD_SIZE#}" maxlength="{#KEYWORD_MAXLEN#}" 
+  				         onblur="this.style.backgroundColor=''" value="{$keyword|escape}"/></td>
   		</tr>
   		<tr>
   			<th>{lang_get s='th_notes'}</th>
-  			<td><textarea name="notes" rows="3" cols="50">{$notes|escape}</textarea></td>
+  			<td><textarea name="notes" rows="{#NOTES_ROWS#}" cols="{#NOTES_COLS#}">{$notes|escape}</textarea></td>
   		</tr>
   	</table>
   	<div class="groupBtn">	
@@ -95,8 +108,10 @@ var warning_enter_less2 = "{lang_get s='warning_enter_less2'}";
 			<td>{$arrKeywords[myKeyword].notes|escape|nl2br}</td>
 			{if $rightsKey ne ""}
 			<td>
-				<a href="lib/keywords/keywordsView.php?deleteKey=1&amp;id={$arrKeywords[myKeyword].id}">
-				<img style="border:none" alt="{lang_get s='alt_delete_keyword'}" src="icons/thrash.png"/>
+				<a href="lib/keywords/keywordsView.php?deleteKey=1&amp;id={$arrKeywords[myKeyword].id}"
+				   onclick="return confirm(warning_delete_keyword);">
+				<img style="border:none" title="{lang_get s='alt_delete_keyword'}"
+				     alt="{lang_get s='alt_delete_keyword'}" src="icons/thrash.png"/>
 				</a>
 			</td>
 			{/if}
@@ -109,14 +124,6 @@ var warning_enter_less2 = "{lang_get s='warning_enter_less2'}";
 	<div class="groupBtn">	
 
   	<form name="export" method="post" action="lib/keywords/keywordsView.php" 
-  		
-  		{*
-  		<input type="submit" name="export_XML" value="{lang_get s='btn_export_keywords_XML'}">
-  		<input type="submit" name="export_CSV" value="{lang_get s='btn_export_keywords_CSV'}">
-      *}
-
-
-		       
 		  {if $rightsKey ne ""}
 		    <input type="button" name="importAll" value="{lang_get s='btn_import_keywords'}" 
 	 	           onclick="location='lib/keywords/keywordsimport.php'" />

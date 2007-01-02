@@ -1,19 +1,40 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planNew.tpl,v 1.12 2006/12/24 11:48:18 franciscom Exp $
+$Id: planNew.tpl,v 1.13 2007/01/02 22:02:33 franciscom Exp $
 
 Purpose: smarty template - create Test Plan
 Revisions:
 
 	20060224 - franciscom - removed the rights check
 	20061109 - mht - update for TL1.7; GUI update
-	20061223 - franciscom - utilizzo input_dimensions.conf
+	20061223 - franciscom - input_dimensions.conf
+	20070102 - franciscom - added javascript validation for testplan_name
+
 *}
 
-{include file="inc_head.tpl"}
+{include file="inc_head.tpl" openHead="yes" jsValidate="yes"}
+{literal}
+<script type="text/javascript">
+{/literal}
+var warning_empty_tp_name = "{lang_get s='warning_empty_tp_name'}";
+{literal}
+function validateForm(f)
+{
+  if (isWhitespace(f.testplan_name.value)) 
+  {
+      alert(warning_empty_tp_name);
+      selectField(f, 'testplan_name');
+      return false;
+  }
+  return true;
+}
+</script>
+{/literal}
+</head>
 
 <body>
-{config_load file="input_dimensions.conf" section="planNew"} {* Constant definitions *}
+{assign var="cfg_section" value=$smarty.template|replace:".tpl":"" }
+{config_load file="input_dimensions.conf" section=$cfg_section}
 
 <h1>{lang_get s='testplan_title_tp_management'}</h1>
 
@@ -27,9 +48,9 @@ Revisions:
 	<span class="unselected"><a href="lib/plan/planEdit.php">{lang_get s='testplan_menu_list'}</a></span> 
 </div>
 
-{include file="inc_update.tpl" result=$sqlResult item="TestPlan" action="add"}
 
 <div class="workBack">
+{include file="inc_update.tpl" result=$sqlResult item="TestPlan" action="add"}
 
 	<h2>
 	{if $tpID eq 0}
@@ -39,18 +60,22 @@ Revisions:
 		{lang_get s='testplan_title_edit'} 
 		{assign var='form_action' value='update'} 
 	{/if}
-	{lang_get s='testplan_title_for_project'} '{$prod_name|escape}'</h2>
+	{lang_get s='testplan_title_for_project'} {$prod_name|escape}</h2>
 
-	<form method="post" action="lib/plan/planEdit.php?action={$form_action}">
+	<form method="post" name="testplan_mgmt" id="testplan_mgmt"
+	      action="lib/plan/planEdit.php?action={$form_action}"
+	      onSubmit="javascript:return validateForm(this);">
+	
 	<input type="hidden" name="tpID" value="{$tpID}">
 	<table class="common" width="80%">
-	  {* 20051120 - fm *}
 		<tr><th>{lang_get s='testplan_th_name'}</th></tr>
 		<tr>
-			<td><input type="text" name="name" 
+			<td><input type="text" name="testplan_name" 
 			           size="{#TESTPLAN_NAME_SIZE#}" 
 			           maxlength="{#TESTPLAN_NAME_MAXLEN#}" 
-			           value="{$tpName|escape}"/></td>
+			           value="{$tpName|escape}"/>
+  				{include file="error_icon.tpl" field="testplan_name"}
+			</td>
 		</tr>
 		<tr><th>{lang_get s='testplan_th_notes'}</th></tr>
 		<tr>

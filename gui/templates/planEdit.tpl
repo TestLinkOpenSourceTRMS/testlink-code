@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planEdit.tpl,v 1.8 2006/12/24 11:48:18 franciscom Exp $ 
+$Id: planEdit.tpl,v 1.9 2007/01/02 22:02:33 franciscom Exp $ 
 Purpose: smarty template - edit / delete Test Plan 
 Revisions:
 	20050810 - fm - changes in active field definition 
@@ -51,7 +51,9 @@ function delete_confirmation(delUrl) {ldelim}
 			<td><a href="lib/plan/planNew.php?tpID={$arrPlan[number].id}"> 
 				     {$arrPlan[number].name|escape} 
 				     {if $gsmarty_gui->show_icon_edit}
- 				         <img alt="{lang_get s='testplan_alt_edit_tp'}" src="gui/images/icon_edit.png"/>
+ 				         <img title="{lang_get s='testplan_alt_edit_tp'}" 
+ 				              alt="{lang_get s='testplan_alt_edit_tp'}" 
+ 				              src="gui/images/icon_edit.png"/>
  				     {/if}  
  				  </a>
 			</td>
@@ -67,7 +69,9 @@ function delete_confirmation(delUrl) {ldelim}
 			</td>
 			<td>
 				<a href="javascript:delete_confirmation('lib/plan/planEdit.php?action=delete&id={$arrPlan[number].id}');">
-				  <img alt="{lang_get s='testplan_alt_delete_tp'}" src="gui/images/icon_thrash.png"/></a>
+				  <img title="{lang_get s='testplan_alt_delete_tp'}" 
+				       alt="{lang_get s='testplan_alt_delete_tp'}" 
+				       src="gui/images/icon_thrash.png"/></a>
 			</td>
 		</tr>
 		{/section}

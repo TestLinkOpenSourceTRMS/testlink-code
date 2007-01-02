@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecList.tpl,v 1.6 2006/10/09 10:32:27 franciscom Exp $ *}
+{* $Id: reqSpecList.tpl,v 1.7 2007/01/02 13:42:06 franciscom Exp $ *}
 {* Purpose: smarty template - create view and create a new req document *}
 {include file="inc_head.tpl"}
 {*
@@ -11,31 +11,24 @@
 <body>
 
 <h1> 
-	<img alt="{lang_get s='help'}: {lang_get s='req_spec'}" class="help" 
-	src="icons/sym_question.gif" 
-	onclick="javascript: open_popup('{$helphref}requirementsCoverage.html');" />
-	{lang_get s='req_spec'} - {$productName|escape} 
+	<img src="icons/sym_question.gif"
+	     title="{lang_get s='help'}: {lang_get s='req_spec'}" 
+	     alt="{lang_get s='help'}: {lang_get s='req_spec'}" 
+	     class="help" 
+       onclick="javascript: open_popup('{$helphref}requirementsCoverage.html');" />
+	{lang_get s='req_spec'}{$smarty.const.TITLE_SEP_TYPE3}
+	{lang_get s='testproject'}{$smarty.const.TITLE_SEP}{$productName|escape} 
 </h1>
 
 
-{* show SQL result *}
-{include file="inc_update.tpl" result=$sqlResult item="Requirements Specification" name=$name action=$action}
 	
 <div class="workBack">
 
-  {if $modify_req_rights == 'yes'}
-  <div class="groupBtn">
-  	<input type="button" name="createSRS" value="{lang_get s='btn_create'}" 
-  		onclick="javascript: location.href=fRoot + 'lib/req/reqSpecList.php?createForm=';" />
-  	{if $arrSpecCount > 0}
-  	<input type="button" name="assign" value="{lang_get s='btn_assign_tc'}" 
-  		onclick="javascript: location.href=fRoot + 'lib/general/frmWorkArea.php?feature=assignReqs';" />
-  	{/if}
-  </div>
-  {/if}
+{include file="inc_update.tpl" result=$sqlResult item="SRS" name=$name action=$action}
 
 
 
+  <div id="SRS_list">
   {* existing docs *}	
   {if $arrSpec ne ""}
     <h2>{lang_get s='req_list_docs'}</h2>
@@ -58,7 +51,19 @@
     	{/section}
     </table>
   {/if}  
+  </div>
 
+  {if $modify_req_rights == 'yes'}
+  <div class="groupBtn">
+  	<input type="button" name="createSRS" value="{lang_get s='btn_create'}" 
+  		onclick="javascript: location.href=fRoot + 'lib/req/reqSpecList.php?createForm=';" />
+  	{if $arrSpecCount > 0}
+  	<input type="button" name="assign" value="{lang_get s='btn_assign_tc'}" 
+  		onclick="javascript: location.href=fRoot + 'lib/general/frmWorkArea.php?feature=assignReqs';" />
+  	{/if}
+  </div>
+  {/if}
+  
 </div>
 
 </body>

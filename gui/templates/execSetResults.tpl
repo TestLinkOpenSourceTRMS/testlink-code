@@ -1,8 +1,9 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: execSetResults.tpl,v 1.33 2006/12/24 11:48:18 franciscom Exp $
+$Id: execSetResults.tpl,v 1.34 2007/01/02 13:42:05 franciscom Exp $
 Purpose: smarty template - show tests to add results
 Revisions:
+          20070101 - franciscom - custom field management for test suite div
           20061112 - franciscom - added class management to assign
                                   color to status cells
 *}	
@@ -135,7 +136,18 @@ Revisions:
 		</div>
 
 		<div id="tsdetails_{$tc_exec.testcase_id}" name="tsdetails_{$tc_exec.testcase_id}" class="notes">
-		{$tsuite_info[$tc_exec.testcase_id].details}
+
+      <fieldset><legend class="legend_container">{lang_get s='details'}</legend>
+		  {$tsuite_info[$tc_exec.testcase_id].details}
+		  </fieldset>
+		  
+		  {if $ts_cf_smarty neq ''}
+		    <p>
+		    <div class="custom_field_container">
+        {$ts_cf_smarty}
+        </div>
+		  {/if}
+		  
   		{if $tSuiteAttachments[$tc_exec.tsuite_id] neq null}
   		<p>
 		  {include file="inc_attachments.tpl" tableName="nodes_hierarchy" downloadOnly=true 

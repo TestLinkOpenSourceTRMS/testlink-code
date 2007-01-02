@@ -2,10 +2,11 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testsuite.class.php,v $
- * @version $Revision: 1.21 $
- * @modified $Date: 2006/12/31 18:24:17 $ - $Author: franciscom $
+ * @version $Revision: 1.22 $
+ * @modified $Date: 2007/01/02 13:43:41 $ - $Author: franciscom $
  * @author franciscom
  *
+ * 20070102 - franciscom - changes to delete_deep() to support custom fields
  * 20061230 - franciscom - custom field management
  * 20061119 - franciscom - changes in create()
  *
@@ -398,6 +399,19 @@ function delete_deep($id)
 
   if (!is_null($subtree))
 	{
+
+    // -------------------------------------------------------------------
+    // First delete dependent objects
+    //
+    if (!is_null($testcases))
+	  {
+	    foreach($testcases as $the_key => $elem)
+	    {
+        $tcase_mgr->delete($elem['id']);
+	    }
+	  }  
+    // -------------------------------------------------------------------
+
     // -------------------------------------------------------------------
 		$node_list = array();
 		$node_list[]=$id;
@@ -411,18 +425,11 @@ function delete_deep($id)
 		$result = $this->db->exec_query($sql);
     // -------------------------------------------------------------------
 
-    // -------------------------------------------------------------------
-    if (!is_null($testcases))
-	  {
-	    foreach($testcases as $the_key => $elem)
-	    {
-        $tcase_mgr->delete($elem['id']);
-	    }
-	  }  
-    // -------------------------------------------------------------------
-
+    // 20070102 - franciscom
+    $this->cfield_mgr->remove_all_design_values_from_node($node_list);
+    
+    // Delete tree structure (from node_hierarchy)
     $this->tree_manager->delete_subtree($id);
-
 	}
 } // end function
 
@@ -568,13 +575,17 @@ function get_spec_cfields($id)
             
   args: $id
         [$parent_id]
+        [$show_on_execution]: default: null
+                              1 -> filter on field show_on_execution=1
+                              0 or null -> don't filter
+        
         
   returns: hash
   
   rev :
         20061231 - franciscom - added $parent_id
 */
-function get_linked_cfields_at_design($id,$parent_id=null) 
+function get_linked_cfields_at_design($id,$parent_id=null,$show_on_execution=null) 
 {
   $enabled=1;
   $tproject_mgr= new testproject($this->db);
@@ -583,23 +594,68 @@ function get_linked_cfields_at_design($id,$parent_id=null)
   $path_len=count($the_path);
   $tproject_id=($path_len > 0)? $the_path[$path_len-1]['parent_id'] : $parent_id;
 
-  $cf_map=$this->cfield_mgr->get_linked_cfields_at_design($tproject_id,$enabled,'testsuite',$id);
+  $cf_map=$this->cfield_mgr->get_linked_cfields_at_design($tproject_id,$enabled,
+                                                          $show_on_execution,'testsuite',$id);
   return($cf_map);
 }
+
+
+/*
+  function: get_linked_cfields_at_execution
+            
+            
+  args: $id
+        [$parent_id]
+        [$show_on_execution]: default: null
+                              1 -> filter on field show_on_execution=1
+                              0 or null -> don't filter
+        
+        
+  returns: hash
+  
+  rev :
+        20061231 - franciscom - added $parent_id
+*/
+function get_linked_cfields_at_execution($id,$parent_id=null,$show_on_execution=null) 
+{
+  $enabled=1;
+  $tproject_mgr= new testproject($this->db);
+  
+  $the_path=$this->tree_manager->get_path_new(!is_null($id) ? $id : $parent_id);
+  $path_len=count($the_path);
+  $tproject_id=($path_len > 0)? $the_path[$path_len-1]['parent_id'] : $parent_id;
+
+  $cf_map=$this->cfield_mgr->get_linked_cfields_at_design($tproject_id,$enabled,
+                                                          $show_on_execution,'testsuite',$id);
+  return($cf_map);
+}
+
+
 
 /*
   function: html_table_of_custom_field_inputs
             
             
   args: $id
-  
+        [$parent_id]
+        [$scope]: 'design','execution'
+        
   returns: html string
   
 */
-function html_table_of_custom_field_inputs($id,$parent_id=null) 
+function html_table_of_custom_field_inputs($id,$parent_id=null,$scope='design') 
 {
   $cf_smarty='';
-  $cf_map=$this->get_linked_cfields_at_design($id,$parent_id);
+  
+  if( $scope=='design' )
+  {
+    $cf_map=$this->get_linked_cfields_at_design($id,$parent_id);
+  }
+  else
+  {
+    $cf_map=$this->get_linked_cfields_at_execution($id,$parent_id);
+  }
+  
   if( !is_null($cf_map) )
   {
     foreach($cf_map as $cf_id => $cf_info)
@@ -619,14 +675,25 @@ function html_table_of_custom_field_inputs($id,$parent_id=null)
             
             
   args: $id
+        [$scope]: 'design','execution'
   
   returns: html string
   
 */
-function html_table_of_custom_field_values($id) 
+function html_table_of_custom_field_values($id,$scope='design') 
 {
   $cf_smarty='';
-  $cf_map=$this->get_linked_cfields_at_design($id);
+  
+  if( $scope=='design' )
+  {
+    $cf_map=$this->get_linked_cfields_at_design($id);
+    //echo "<pre>debug 20070101 \$cf_map" . __FUNCTION__ . " --- "; print_r($cf_map); echo "</pre>";
+  }
+  else 
+  {
+    $cf_map=$this->get_linked_cfields_at_execution($id);
+  }
+    
   if( !is_null($cf_map) )
   {
     foreach($cf_map as $cf_id => $cf_info)

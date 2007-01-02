@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: tcEdit.tpl,v 1.11 2006/12/31 18:20:49 franciscom Exp $ *}
+{* $Id: tcEdit.tpl,v 1.12 2007/01/02 13:42:06 franciscom Exp $ *}
 {* Purpose: smarty template - edit test specification: test case *}
 {*
 20060425 - franciscom - added update button at page bottom
@@ -23,10 +23,10 @@ var {$opt_cfg->js_ot_name} = new OptionTransfer("{$opt_cfg->from->name}","{$opt_
 
 <body onLoad="{$opt_cfg->js_ot_name}.init(document.forms[0])">
 {config_load file="input_dimensions.conf" section="tcNew"} {* Constant definitions *}
-<h1>{lang_get s='test_case'}{$gsmarty_title_sep}{$tc.name|escape}</h1> 
+<h1>{lang_get s='test_case'}{$smarty.const.TITLE_SEP}{$tc.name|escape}</h1> 
 
 <div class="workBack" style="font-weight: bold;">
-<h1>{lang_get s='title_edit_tc'}{$gsmarty_title_sep_type3}{lang_get s='version'} {$tc.version}</h1> 
+<h1>{lang_get s='title_edit_tc'}{$smarty.const.TITLE_SEP_TYPE3}{lang_get s='version'} {$tc.version}</h1> 
 
 <form method="post" action="lib/testcases/tcEdit.php">
   <input type="hidden" name="testcase_id"  value="{$tc.testcase_id}">

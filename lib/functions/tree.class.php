@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: tree.class.php,v $
  *
- * @version $Revision: 1.25 $
- * @modified $Date: 2006/12/05 08:20:20 $ by $Author: franciscom $
+ * @version $Revision: 1.26 $
+ * @modified $Date: 2007/01/02 13:43:41 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * 20061203 - franciscom - removing error due to undefined var in change_order_bulk()
@@ -293,7 +293,7 @@ function get_children($id,$exclude_node_types=null)
   }
   return ($node_list);
 }
- 
+
  
 /* 20061119 - franciscom - use abs() to avoid problem with negatives */ 
 /* 20060310 - franciscom */

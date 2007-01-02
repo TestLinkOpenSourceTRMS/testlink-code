@@ -4,16 +4,22 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.95 $
- * @modified $Date: 2006/12/31 18:21:19 $ $Author: franciscom $
+ * @version $Revision: 1.96 $
+ * @modified $Date: 2007/01/02 13:47:41 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
 **/
 
 // General
-$TLS_test_suite="Test Suite";
 $TLS_test_case = "Test Case";
+$TLS_test_plan = "Test Plan";
+$TLS_test_suite="Test Suite";
+
+
+// lib/execute/execSetResults.php
+$TLS_btn_history_on="History on";
+$TLS_btn_history_off="History OFF";
 
 
 // firstLogin.php
@@ -958,10 +964,8 @@ $TLS_req_title_unassigned = "Available Requirements";
 
 // gui/templates/reqCreate.tpl
 $TLS_btn_cancel = "Cancel";
-$TLS_req_create = "Create a new Requirement";
+$TLS_req_create = "Create requirement";
 $TLS_title = "Title";
-
-
 
 // gui/templates/reqEdit.tpl
 $TLS_btn_delete = "Delete";
@@ -991,6 +995,7 @@ $TLS_testcases = "Test Cases";
 
 
 // gui/templates/reqSpecCreate.tpl
+$TLS_action_create_srs="Create requirement specification";
 $TLS_create = "created";
 $TLS_req_total = "Total req.";
 
@@ -1005,6 +1010,8 @@ $TLS_update_data = "Update data";
 $TLS_btn_assign_tc = "Assign Test Case";
 $TLS_no_docs = "No available documents.";
 $TLS_req_list_docs = "Requirement Specifications";
+$TLS_SRS = "Requirement Specification";
+
 
 
 
@@ -1030,7 +1037,7 @@ $TLS_warning_delete_requirements = "Are you sure to delete the selected requirem
 // gui/templates/resultsAllBuilds.tpl
 $TLS_test_status_blocked = "Blocked";
 $TLS_test_status_failed = "Failed";
-$TLS_test_status_passed = "Pass";
+$TLS_test_status_passed = "Passed";
 $TLS_th_build = "Build";
 $TLS_th_tc_total = "TC Total";
 
@@ -1191,6 +1198,7 @@ $TLS_title_choose_file_type = "Choose file type";
 $TLS_title_choose_local_file = "Choose a Local File to Upload";
 $TLS_title_req_import_check_input = "Check import data";
 $TLS_title_req_import_to = "Import requirements to document:";
+$TLS_title_req_import = "Import requirements";
 
 
 
@@ -1474,6 +1482,11 @@ $TLS_del_bug_warning_msg = "Really delete this bug?";
 // gui/templates/tc_exec_assignment.tpl
 $TLS_btn_update_selected_tc = "Update selected tc(s)";
 $TLS_title_tc_exec_assignment = "Assigning Test Case execution tasks for test plan ";
+
+
+// gui/templates/show_exec_notes.tpl
+$TLS_title_execution_notes="Execution notes";
+
 
 
 // gui/templates/cfields_view.tpl

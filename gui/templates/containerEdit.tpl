@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: containerEdit.tpl,v 1.14 2006/12/31 16:21:45 franciscom Exp $
+$Id: containerEdit.tpl,v 1.15 2007/01/02 13:42:05 franciscom Exp $
 Purpose: smarty template - edit test specification: containers 
 
 20061230 - franciscom - added custom field management
@@ -21,7 +21,7 @@ var {$opt_cfg->js_ot_name} = new OptionTransfer("{$opt_cfg->from->name}","{$opt_
 
 <body onLoad="{$opt_cfg->js_ot_name}.init(document.forms[0])">
 {config_load file="input_dimensions.conf" section="containerEdit"} {* Constant definitions *}
-<h1>{lang_get s=$level}{$gsmarty_title_sep}{$name|escape}</h1> 
+<h1>{lang_get s=$level}{$smarty.const.TITLE_SEP}{$name|escape}</h1> 
 
 <div class="workBack">
   <h1>{lang_get s='title_edit_level'} {lang_get s=$level}</h1> 

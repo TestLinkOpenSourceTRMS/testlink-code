@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: containerMove.tpl,v 1.8 2006/12/31 16:21:45 franciscom Exp $ *}
+{* $Id: containerMove.tpl,v 1.9 2007/01/02 13:42:05 franciscom Exp $ *}
 {* Purpose: smarty template - form for move/copy container in test specification 
 
 20050825 - fm - moveCopy -> containerID
@@ -14,7 +14,7 @@
 	{assign var='parent' value='container'}
 {/if}
 <body>
-<h1>{lang_get s=$level}{$gsmarty_title_sep}{$object_name|escape} </h1>
+<h1>{lang_get s=$level}{$smarty.const.TITLE_SEP}{$object_name|escape} </h1>
 
 <div class="workBack">
 <h1>{lang_get s='title_move_cp'}</h1>

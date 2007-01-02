@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: cfield_mgr.class.php,v $
- * @version $Revision: 1.1 $
- * @modified $Date: 2006/12/31 16:15:45 $  $Author: franciscom $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2007/01/02 13:43:41 $  $Author: franciscom $
  * @author franciscom
  *
  * 20061225 - franciscom - 
@@ -89,14 +89,20 @@ class cfield_mgr
                        Remember that also exist custom fields
                        that can be only used during TEST CASE EXECUTION.
 
+    [$show_on_execution]: default: null
+                          1 -> filter on field show_on_execution=1
+                          0 or null -> don't filter
+                          
     
-    [$node_type]: verbose id ('testcase', 'testsuite', etc) of a node type.
+    [$node_type]: default: null
+                  verbose id ('testcase', 'testsuite', etc) of a node type.
                   custom fields are linked also to different node types.
                   Example:
                   I can define a custom field "Aspect" with values
                   Performace, Usability and wnat use it only for test suites.
                    
-    [$node_id]: identification of a node/element on node hierarchy.
+    [$node_id]: default: null
+                identification of a node/element on node hierarchy.
                 Needed when I want to get the value of custom fields 
                 linked to a node.
                 Example:
@@ -107,12 +113,20 @@ class cfield_mgr
     returns: hash
              key: custom field id
                          
+
+    rev :
+          20070101 - franciscom
+          1. added filter on cfield_testprojects.active=1
+          2. added new argument $show_on_execution
+             
+          
   */
-  function get_linked_cfields_at_design($tproject_id,$enabled,$node_type=null,$node_id=null) 
+  function get_linked_cfields_at_design($tproject_id,$enabled,$show_on_execution=null,
+                                        $node_type=null,$node_id=null) 
   {
     $additional_join="";
-    $additional_table="";
     $additional_values="";
+    $additional_filter="";
   
     if( !is_null($node_type) )
     {
@@ -129,15 +143,23 @@ class cfield_mgr
                           " AND CFDV.node_id={$node_id} ";
     }
     
+    if( !is_null($show_on_execution) )
+    {
+     $additional_filter .= " AND CF.show_on_execution=1 ";     
+    }
+    
     $sql="SELECT CF.*,CFTP.display_order" .
          $additional_values .
          " FROM custom_fields CF " .
          " JOIN cfield_testprojects CFTP ON CFTP.field_id=CF.id " .
          $additional_join .
          " WHERE CFTP.testproject_id={$tproject_id} " .
+         " AND   CFTP.active=1     " . 
          " AND   CF.show_on_design=1     " . 
-         " AND   CF.enable_on_design={$enabled} ";
+         " AND   CF.enable_on_design={$enabled} " .
+         $additional_filter .
          " ORDER BY display_order ";
+    
     
     $map = $this->db->fetchRowsIntoMap($sql,'id');     
     return($map);                                 
@@ -271,12 +293,27 @@ class cfield_mgr
               remove the values of ALL custom fields linked to 
               a node. (example test case 5555)
               
-    args: $node_id:           
+    args: $node_id: single value or array
+    
+    returns: -
+    
+    rev :
+          20070102 - franciscom - $node_id can be an array
+                    
   */
   function remove_all_design_values_from_node($node_id)
-  {                                  
-    $sql="DELETE FROM cfield_design_values" .
-         " WHERE node_id={$node_id}";
+  {             
+    
+    $sql="DELETE FROM cfield_design_values "; 
+    if( is_array($node_id) )
+    {
+      
+      $sql .= " WHERE node_id IN(" . implode(",",$node_id) . ") ";
+    }         
+    else
+    {
+      $sql .= " WHERE node_id={$node_id}";
+    }            
     $this->db->exec_query($sql);
   } //function end
   

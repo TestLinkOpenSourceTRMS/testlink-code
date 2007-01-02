@@ -4,8 +4,10 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.44 $
- * @modified $Date: 2006/11/04 21:25:31 $ $Author: schlundus $
+ * @version $Revision: 1.45 $
+ * @modified $Date: 2007/01/02 13:42:16 $ $Author: franciscom $
+ *
+ * 20070101 - franciscom - custom field management for test suites
  *
 **/
 require_once('../../config.inc.php');
@@ -23,6 +25,7 @@ $tplan_mgr = new testplan($db);
 $tcase_mgr = new testcase($db);
 
 $testdata = array();
+$ts_cf_smarty = '';
 $submitResult = null;
 
 $_REQUEST = strings_stripSlashes($_REQUEST);
@@ -205,6 +208,18 @@ if(!is_null($tsuite_info))
   $smarty->assign('tsd_div_id_list',implode(",",$a_ts));
   $smarty->assign('tsd_hidden_id_list',implode(",",$a_tsvw));
   $smarty->assign('tsd_val_for_hidden_list',implode(",",$a_tsval));
+
+
+  // 20070101 - franciscom
+  $gui_cfg = config_get('gui');
+  if( $gui_cfg->enable_custom_fields ) 
+  {
+    $tsuite_mgr = New testsuite($db);
+    $xkeys = array_keys($tsuite_info);
+    $tsuite_id=$tsuite_info[$xkeys[0]]['tsuite_id'];
+    $ts_cf_smarty = $tsuite_mgr->html_table_of_custom_field_values($tsuite_id);
+    $smarty->assign('ts_cf_smarty',$ts_cf_smarty);
+  } // if( $gui_cfg
 }  
 // --------------------------------------------------------------------------------
 
@@ -240,6 +255,14 @@ $smarty->assign('g_bugInterface', $g_bugInterface);
 $smarty->display($g_tpl['execSetResults']);
 
 
+/*
+  function: 
+
+  args :
+  
+  returns: 
+
+*/
 function manage_history_on($hash_REQUEST,$hash_SESSION,
                            $exec_cfg,$btn_on_name,$btn_off_name,$hidden_on_name)
 {
@@ -267,12 +290,20 @@ function manage_history_on($hash_REQUEST,$hash_SESSION,
     return $history_on;
 }
 
-// returns map with key=TCID
-//                  values= assoc_array([tsuite_id => 5341
-//                                      [details] => my detailas ts1
-//                                      [tcid] => 5343
-//                                      [tsuite_name] => ts1)
-//       
+
+
+
+/*
+  function: 
+
+  args :
+  
+  returns: map with key=TCID
+           values= assoc_array([tsuite_id => 5341
+                               [details] => my detailas ts1
+                               [tcid] => 5343
+                               [tsuite_name] => ts1)
+*/
 function get_ts_name_details(&$db,$tcase_id)
 {
 	$rs = '';

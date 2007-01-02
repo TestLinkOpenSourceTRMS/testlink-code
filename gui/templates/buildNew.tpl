@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: buildNew.tpl,v 1.11 2006/11/20 07:25:20 franciscom Exp $
+$Id: buildNew.tpl,v 1.12 2007/01/02 13:42:05 franciscom Exp $
 
 Purpose: smarty template - Add new build and show existing
 
@@ -9,15 +9,16 @@ Rev :
      added config_load 
 
 *}
-{config_load file="input_dimensions.conf" section="buildNew"} {* Constant definitions *}
 {include file="inc_head.tpl"}
 
 <body>
-<h1>{lang_get s='title_build_1'} ' {$TPname|escape} ' - {lang_get s='title_build_2'}</h1>
+{assign var="cfg_section" value=$smarty.template|replace:".tpl":"" }
+{config_load file="input_dimensions.conf" section=$cfg_section}
 
-{include file="inc_update.tpl" result=$sqlResult item="Build" name=$name}
+<h1>{lang_get s='title_build_2'}{$smarty.const.TITLE_SEP_TYPE3}{lang_get s='test_plan'}{$smarty.const.TITLE_SEP}{$TPname|escape}</h1>
 
 <div class="workBack">
+{include file="inc_update.tpl" result=$sqlResult item="Build" name=$name}
 
 <div> {* new build form *}
 	{if $build_name ne ""}

@@ -2,10 +2,12 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.38 $
- * @modified $Date: 2006/12/31 16:18:15 $ $Author: franciscom $
+ * @version $Revision: 1.39 $
+ * @modified $Date: 2007/01/02 13:43:41 $ $Author: franciscom $
  * @author franciscom
  *
+ * 20070102 - franciscom - solved bugs on delete, 
+ *                         that produce a negative impact on performance.
  * 20061230 - franciscom - custom fields management
  *
  * 20061030 - franciscom - new argument in get_versions_status_quo()
@@ -465,8 +467,28 @@ function check_link_and_exec_status($id)
 /* 20060326 - franciscom - interface changed */
 function delete($id,$version_id = TC_ALL_VERSIONS)
 {
-	$this->_execution_delete($id,$version_id);
-	$this->_blind_delete($id,$version_id);
+  $children=null;
+  if($version_id == TC_ALL_VERSIONS)
+  { 
+    // I'm trying to speedup the next deletes   
+    $sql="SELECT nodes_hierarchy.id FROM nodes_hierarchy ";
+    if( is_array($id) )
+    {
+      $sql .= " WHERE nodes_hierarchy.parent_id IN (" .implode(',',$id) . ") ";
+    }
+    else
+    {
+      $sql .= " WHERE nodes_hierarchy.parent_id={$id} ";
+    }
+    
+    $children_rs=$this->db->get_recordset($sql);
+    foreach($children_rs as $value)
+    {
+      $children[]=$value['id'];
+    }
+  }
+	$this->_execution_delete($id,$version_id,$children);
+	$this->_blind_delete($id,$version_id,$children);
 
 	return 1;
 }
@@ -554,28 +576,36 @@ function get_linked_versions($id,$exec_status="ALL",$active_status='ALL')
 	tcversions
 	nodes from hierarchy
 */
-function _blind_delete($id, $version_id=TC_ALL_VERSIONS)
+function _blind_delete($id,$version_id=TC_ALL_VERSIONS,$children=null)
 {
     $sql = array();
 
     if( $version_id == TC_ALL_VERSIONS)
     {    
-		$sql[]="DELETE FROM testcase_keywords WHERE testcase_id = {$id}";
-		$sql[]="DELETE FROM req_coverage WHERE testcase_id = {$id}";
-		
-		$sql[]="DELETE FROM testplan_tcversions 
-		          WHERE tcversion_id IN (SELECT nodes_hierarchy.id 
-		                                 FROM nodes_hierarchy WHERE nodes_hierarchy.parent_id = {$id})";
-        $sql[]="DELETE FROM tcversions 
-                WHERE tcversions.id IN (SELECT nodes_hierarchy.id 
-                                        FROM nodes_hierarchy WHERE nodes_hierarchy.parent_id = {$id})";
-        $item_id = $id;
+	    $sql[]="DELETE FROM testcase_keywords WHERE testcase_id = {$id}";
+	    $sql[]="DELETE FROM req_coverage WHERE testcase_id = {$id}";
+	
+	    //$sql[]="DELETE FROM testplan_tcversions 
+	    //        WHERE tcversion_id IN (SELECT nodes_hierarchy.id 
+	    //                               FROM nodes_hierarchy WHERE nodes_hierarchy.parent_id = {$id})";
+      //$sql[]="DELETE FROM tcversions 
+      //        WHERE tcversions.id IN (SELECT nodes_hierarchy.id 
+      //                                FROM nodes_hierarchy WHERE nodes_hierarchy.parent_id = {$id})";
+
+	    $children_list=implode(',',$children);
+	    $sql[]="DELETE FROM testplan_tcversions " . 
+	           " WHERE tcversion_id IN ({$children_list})";
+
+      $sql[]="DELETE FROM tcversions " .
+	           " WHERE id IN ({$children_list})";
+                                      
+      $item_id = $id;
     }
     else
     {
-		$sql[] = "DELETE FROM testplan_tcversions 
-				WHERE tcversion_id = {$version_id}";
-        $sql[] = "DELETE FROM tcversions 
+		  $sql[] = "DELETE FROM testplan_tcversions 
+				        WHERE tcversion_id = {$version_id}";
+      $sql[] = "DELETE FROM tcversions 
                 WHERE tcversions.id = {$version_id}";
     	
     	$item_id = $version_id;
@@ -583,7 +613,7 @@ function _blind_delete($id, $version_id=TC_ALL_VERSIONS)
 
     foreach ($sql as $the_stm)
     {
-		$result = $this->db->exec_query($the_stm);
+		  $result = $this->db->exec_query($the_stm);
     }
     $this->tree_manager->delete_subtree($item_id);
 }
@@ -594,31 +624,38 @@ Delete the following info:
 	bugs
 	executions
 */
-function _execution_delete($id,$version_id=TC_ALL_VERSIONS)
+function _execution_delete($id,$version_id=TC_ALL_VERSIONS,$children=null)
 {
 	  $sql = array();
 		if( $version_id	== TC_ALL_VERSIONS )
 		{ 
-    		$sql[]="DELETE FROM execution_bugs 
-          		  WHERE execution_id IN (SELECT execution_id FROM executions 
-              		                     WHERE tcversion_id IN (SELECT nodes_hierarchy.id 
-                  		                                        FROM nodes_hierarchy 
-                      		                                    WHERE nodes_hierarchy.parent_id = {$id}))";
-
-    		$sql[]="DELETE FROM executions 
-        		    WHERE tcversion_id IN (SELECT nodes_hierarchy.id 
-            		                       FROM nodes_hierarchy WHERE nodes_hierarchy.parent_id = {$id})";
+    	//	$sql[]="DELETE FROM execution_bugs 
+      //    		  WHERE execution_id IN (SELECT id FROM executions 
+      //        		                     WHERE tcversion_id IN (SELECT nodes_hierarchy.id 
+      //            		                                        FROM nodes_hierarchy 
+      //                		                                    WHERE nodes_hierarchy.parent_id = {$id}))";
+      //
+    	//$sql[]="DELETE FROM executions 
+      //		    WHERE tcversion_id IN (SELECT id 
+      //    		                       FROM nodes_hierarchy WHERE nodes_hierarchy.parent_id = {$id})";
+      
+	    $children_list=implode(',',$children);
+    	$sql[]="DELETE FROM execution_bugs 
+        		  WHERE execution_id IN (SELECT id FROM executions 
+            		                     WHERE tcversion_id IN ({$children_list}))";
+                    		                                   
+      $sql[]="DELETE FROM executions " .
+      		   " WHERE tcversion_id IN ({$children_list})";
     }
     else
     {
     		$sql[]="DELETE FROM execution_bugs 
-        	  	  WHERE execution_id IN (SELECT execution_id FROM executions 
+        	  	  WHERE execution_id IN (SELECT id FROM executions 
               		                     WHERE tcversion_id = {$version_id})";
     	
-    		$sql[]="DELETE FROM executions 
-        		    WHERE tcversion_id = {$version_id}";
+    		$sql[]="DELETE FROM executions " .
+        		   " WHERE tcversion_id = {$version_id}";
     }
-
     foreach ($sql as $the_stm)
     {
     		$result = $this->db->exec_query($the_stm);
@@ -1346,6 +1383,7 @@ function update_active_status($id,$tcversion_id,$active_status)
 */
 function get_linked_cfields_at_design($id) 
 {
+  /*
   $enabled=1;
   $tproject_mgr= new testproject($this->db);
   
@@ -1353,6 +1391,7 @@ function get_linked_cfields_at_design($id)
   $tproject_id=$the_path[count($the_path)-1]['parent_id'];
   $cf_map=$this->cfield_mgr->get_linked_cfields_at_design($tproject_id,$enabled,'testcase',$id);
   return($cf_map);
+  */
 }
 
 /*
@@ -1366,6 +1405,7 @@ function get_linked_cfields_at_design($id)
 */
 function html_table_of_custom_field_inputs($id) 
 {
+  /*
   $cf_smarty='';
   $cf_map=$this->get_linked_cfields_at_design($id);
   if( !is_null($cf_map) )
@@ -1379,6 +1419,7 @@ function html_table_of_custom_field_inputs($id)
   }
   $cf_smarty = "<table>" . $cf_smarty . "</table>";
   return($cf_smarty);
+  */
 }
 
 
@@ -1386,6 +1427,4 @@ function html_table_of_custom_field_inputs($id)
 
 
 } // end class
-
-
 ?>

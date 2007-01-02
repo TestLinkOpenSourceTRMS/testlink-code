@@ -1,6 +1,6 @@
 /* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: testlink.css,v 1.17 2006/12/31 16:19:58 franciscom Exp $
+$Id: testlink.css,v 1.18 2007/01/02 13:41:22 franciscom Exp $
 Purpose: main css - theme default
 
 20061020 - franciscom - new warning classes
@@ -590,6 +590,11 @@ td.blocked {
 .option_transfer_container {
   border: thin solid white;
   padding: 5px;
+}
+
+
+table.srs_view td {
+	border: 		1px solid black;
 }
 
 

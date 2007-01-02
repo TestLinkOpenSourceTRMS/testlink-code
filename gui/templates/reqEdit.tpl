@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqEdit.tpl,v 1.14 2006/12/24 11:48:18 franciscom Exp $ *}
+{* $Id: reqEdit.tpl,v 1.15 2007/01/02 13:42:06 franciscom Exp $ *}
 {* Purpose: smarty template - create / edit a req *}
 {* Author: Martin Havlat *}
 {* Revisions:
@@ -15,12 +15,14 @@
 {include file="inc_head.tpl"}
 
 <body onload="document.forms[0].elements[0].focus()">
-{config_load file="input_dimensions.conf" section="reqEdit"} {* Constant definitions *}
+{assign var="cfg_section" value=$smarty.template|replace:".tpl":"" }
+{config_load file="input_dimensions.conf" section=$cfg_section}
 
 <h1>
-	<img alt="{lang_get s='help'}: {lang_get s='req_spec'}" class="help" 
-	src="icons/sym_question.gif" 
-	onclick="javascript:open_popup('{$helphref}requirementsCoverage.html');" />
+	<img src="icons/sym_question.gif" 
+	     title="{lang_get s='help'}: {lang_get s='req_spec'}"
+	     alt="{lang_get s='help'}: {lang_get s='req_spec'}" class="help" 
+	   	 onclick="javascript:open_popup('{$helphref}requirementsCoverage.html');" />
 	{lang_get s='req_edit'}: {$arrReq.title|escape}
 </h1>
 
@@ -28,7 +30,7 @@
 
 
 <form name="formSRSUpdate" method="post" 
-	action="lib/req/reqSpecView.php?idSRS={$arrSpec[0].id}">
+	    action="lib/req/reqSpecView.php?idSRS={$arrSpec[0].id}">
 <table class="common" style="width: 90%">
 	<tr>
 		<th colspan="2">{lang_get s='requirement_spec'} {$srs_title|escape}</th>
@@ -49,8 +51,9 @@
 	<tr>
 		<th>{lang_get s='title'}</th>
 		<td>{if $modify_req_rights == "yes"}
-			<input type="text" name="title" size="50" maxlength="100" 
-			value="{$arrReq.title|escape}"/>
+			<input type="text" name="title" 
+			       size="{#REQ_TITLE_SIZE#}" maxlength="{#REQ_TITLE_MAXLEN#}" 
+			       value="{$arrReq.title|escape}"/>
 			{else}
 				{$arrReq.title|escape}
 			{/if}
@@ -59,7 +62,6 @@
 	<tr>
 		<th>{lang_get s='scope'}</th>
 		<td>{if $modify_req_rights == "yes"}
-		    {* 20050826 - fm*}
 				{$scope}
 			{else}
 				{$arrReq.scope}

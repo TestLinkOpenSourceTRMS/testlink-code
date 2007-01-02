@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: requirements.inc.php,v $
- * @version $Revision: 1.39 $
- * @modified $Date: 2006/12/24 11:50:33 $ by $Author: franciscom $
+ * @version $Revision: 1.40 $
+ * @modified $Date: 2007/01/02 13:43:41 $ by $Author: franciscom $
  *
  * @author Martin Havlat <havlat@users.sourceforge.net>
  * 
@@ -62,6 +62,9 @@ require_once(dirname(__FILE__) . "/../testcases/archive.inc.php");
  * @return string result
  * 
  * @author Martin Havlat 
+ *
+ * rev :
+ *      20070101 - franciscom - use of db_now()
  */
 function updateReqSpec(&$db,$id, $title, $scope, $countReq, $user_id, 
                             $type = TL_REQ_STATUS_NOT_TESTABLE)
@@ -71,10 +74,11 @@ function updateReqSpec(&$db,$id, $title, $scope, $countReq, $user_id,
     	
 	if (checkRequirementTitle($title,$result))
 	{
+	  $db_now = $db->db_now();
 		$sql = "UPDATE req_specs SET title='" . $db->prepare_string($title) . 
 				"', scope='" . $db->prepare_string($scope) . "', type='" . $db->prepare_string($type) .
 				"', total_req ='" . $db->prepare_string($countReq) . "', modifier_id='" . 
-				$db->prepare_string($user_id) . "', modification_ts=CURRENT_DATE WHERE id=" . $id;
+				$db->prepare_string($user_id) . "', modification_ts={$db_now} WHERE id=" . $id;
 		if (!$db->exec_query($sql))
 			$result = lang_get('error_updating_reqspec');
 	}
@@ -465,7 +469,8 @@ function createRequirement(&$db,$reqdoc_id,$title, $scope, $srs_id, $user_id,
  * 
  * @author Martin Havlat 
  **/
-function updateRequirement(&$db,$id, $reqdoc_id,$title, $scope, $user_id, $status, $type,$skip_controls=0)
+function updateRequirement(&$db,$id, $reqdoc_id,$title, $scope, $user_id, 
+                           $status, $type,$skip_controls=0)
 {
 	$result = 'ok';
 	$db_now = $db->db_now();

@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: containerOrder.tpl,v 1.8 2006/12/31 18:20:49 franciscom Exp $ 
+$Id: containerOrder.tpl,v 1.9 2007/01/02 13:42:05 franciscom Exp $ 
 Purpose: smarty template - reorder container contents
 
 20061231 - franciscom - $data -> $objectID
@@ -10,7 +10,7 @@ Purpose: smarty template - reorder container contents
 
 <body>
 {config_load file="input_dimensions.conf" section="containerOrder"} {* Constant definitions *}
-<h1>{lang_get s=$level}{$gsmarty_title_sep}{$object_name|escape}</h1>
+<h1>{lang_get s=$level}{$smarty.const.TITLE_SEP}{$object_name|escape}</h1>
 
 <div class="workBack">
 <h1>{lang_get s='title_change_node_order'}</h1>

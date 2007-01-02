@@ -1,20 +1,21 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecAnalyse.tpl,v 1.11 2006/10/16 10:36:10 franciscom Exp $ *}
+{* $Id: reqSpecAnalyse.tpl,v 1.12 2007/01/02 13:42:06 franciscom Exp $ *}
 {* Purpose: smarty template - Analyse REQ coverage *}
 {include file="inc_head.tpl"}
 
 <body>
 
-<h1>
-	<img alt="{lang_get s='help'}: {lang_get s='req_spec'}" class="help" 
-	src="icons/sym_question.gif" style="float: right;"
-	onclick="javascript:open_popup('{$helphref}requirementsCoverage.html');" />
-	{lang_get s='req_title_analyse'} {$arrReqSpec[$selectedReqSpec]|escape}
+<h1><img title="{lang_get s='help'}: {lang_get s='req_spec'}"
+	       alt="{lang_get s='help'}: {lang_get s='req_spec'}" class="help" 
+	       src="icons/sym_question.gif" style="float: right;"
+	       onclick="javascript:open_popup('{$helphref}requirementsCoverage.html');" />
+	  {lang_get s='req_spec'}{$smarty.const.TITLE_SEP}{$arrReqSpec[$selectedReqSpec]|escape}
 </h1>
 
-{include file="inc_update.tpl" result=$sqlResult action=$action}
 
 <div class="workBack">
+{include file="inc_update.tpl" result=$sqlResult action=$action}
+<h1>{lang_get s='req_title_analyse'}</h1>
 
 <div class="onright">
 <form method="get">{lang_get s='req_spec_change'}<br />

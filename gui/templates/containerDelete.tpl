@@ -1,12 +1,12 @@
 {* 
 	TestLink Open Source Project - http://testlink.sourceforge.net/
-	$Id: containerDelete.tpl,v 1.11 2006/12/31 16:21:45 franciscom Exp $ 
+	$Id: containerDelete.tpl,v 1.12 2007/01/02 13:42:05 franciscom Exp $ 
 	Purpose: smarty template - delete containers in test specification
 *}
 {include file="inc_head.tpl"}
 
 <body>
-<h1>{lang_get s=$level}{$gsmarty_title_sep}{$objectName|escape}</h1> 
+<h1>{lang_get s=$level}{$smarty.const.TITLE_SEP}{$objectName|escape}</h1> 
 
 <div class="workBack">
 <h1>{$page_title}</h1>

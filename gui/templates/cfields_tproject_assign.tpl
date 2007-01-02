@@ -9,7 +9,7 @@ Purpose: management Custom fields assignment to a test project
 <body>
 
 <h1>
-	{lang_get s='cfields_tproject_assign'}{$gsmarty_title_sep_type2}{lang_get s="testproject"}{$gsmarty_title_sep}{$tproject_name|escape}
+{lang_get s='cfields_tproject_assign'}{$smarty.const.TITLE_SEP_TYPE2}{lang_get s="testproject"}{$smarty.const.TITLE_SEP}{$tproject_name|escape}
 </h1>
 
 {include file="inc_update.tpl" result=$sqlResult action=$action item="custom_field"}

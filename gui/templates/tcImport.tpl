@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcImport.tpl,v 1.11 2006/12/31 16:21:45 franciscom Exp $
+$Id: tcImport.tpl,v 1.12 2007/01/02 13:42:06 franciscom Exp $
 Purpose: smarty template - manage import of test cases and test suites
 *}
 {include file="inc_head.tpl"}
@@ -8,7 +8,7 @@ Purpose: smarty template - manage import of test cases and test suites
 <body>
 {config_load file="input_dimensions.conf" section="tcImport"} {* Constant definitions *}
 
-<h1>{$container_description}{$gsmarty_title_sep}{$container_name|escape}</h1>
+<h1>{$container_description}{$smarty.const.TITLE_SEP}{$container_name|escape}</h1>
 
 <div class="workBack">
 <h1>{$import_title}</h1>

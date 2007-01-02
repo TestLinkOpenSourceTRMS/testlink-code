@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcNew.tpl,v 1.16 2006/12/31 18:20:49 franciscom Exp $
+$Id: tcNew.tpl,v 1.17 2007/01/02 13:42:06 franciscom Exp $
 Purpose: smarty template - create new testcase
 
 20061231 - franciscom - use of $gsmarty_href_keywordsView
@@ -26,7 +26,7 @@ var {$opt_cfg->js_ot_name} = new OptionTransfer("{$opt_cfg->from->name}","{$opt_
 <body onLoad="{$opt_cfg->js_ot_name}.init(document.forms[0])">
 {config_load file="input_dimensions.conf" section="tcNew"} {* Constant definitions *}
 
-<h1>{$parent_info.description}{$gsmarty_title_sep}{$parent_info.name|escape}</h1>
+<h1>{$parent_info.description}{$smarty.const.TITLE_SEP}{$parent_info.name|escape}</h1>
 <div class="workBack">
 <h1>{lang_get s='title_new_tc'}</h1>
 

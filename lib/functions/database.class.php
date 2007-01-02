@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
  * @filesource $RCSfile: database.class.php,v $
- * @version $Revision: 1.19 $
- * @modified $Date: 2006/10/24 20:35:01 $ by $Author: schlundus $
+ * @version $Revision: 1.20 $
+ * @modified $Date: 2007/01/02 13:43:41 $ by $Author: franciscom $
  * @author Francisco Mancardi
  * 
  *
@@ -507,7 +507,7 @@ class database
 
 
 	// the old selectData with new name.
-	function get_recordset($sql)
+	function get_recordset($sql,$fetch_mode=null)
 	{
 		$output = null;
 

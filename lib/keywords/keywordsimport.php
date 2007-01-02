@@ -3,11 +3,16 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
+ * Scope: Import keywords page
+ *
  * Filename $RCSfile: keywordsimport.php,v $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2007/01/02 12:23:36 $ by $Author: havlat $
  *
- * @modified $Date: 2006/12/29 19:32:10 $
- *
-*/
+ * Revisions:
+ * 20070102 - MHT - Fixed typo error, updated header
+ * 
+ */
 require('../../config.inc.php');
 require_once('common.php');
 require_once('import.inc.php');
@@ -15,7 +20,7 @@ require_once('csv.inc.php');
 require_once('xml.inc.php');
 testlinkInitPage($db);
 
-$source = isset($_FILES['uploadedFile']['tmp_name']) ? $_FILES29.12.2006 16:49:50['uploadedFile']['tmp_name'] : null;
+$source = isset($_FILES['uploadedFile']['tmp_name']) ? $_FILES['uploadedFile']['tmp_name'] : null;
 $bImport = isset($_POST['import']) ? 1 : 0;
 $importType = isset($_POST['importType']) ? $_POST['importType'] : null;
 $location = isset($_POST['location']) ? strings_stripSlashes($_POST['location']) : null; 

@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: resultsGeneral.php,v $
- * @version $Revision: 1.22 $
- * @modified $Date: 2007/01/01 21:02:49 $ by $Author: kevinlevy $
+ * @version $Revision: 1.23 $
+ * @modified $Date: 2007/01/02 03:15:53 $ by $Author: kevinlevy $
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
  * This page show Test Results over all Builds.
@@ -85,34 +85,16 @@ while ($keywordId = key($arrDataKeys)) {
 /** 
 * OWNERS REPORT 
 */
-$arrDataOwner = null;
+$arrDataOwner = $re->getAggregateOwnerResults();
 
-/** KL - 20061231 - temporarily commenting out
-define('ALL_USERS_FILTER', null);
-define('ADD_BLANK_OPTION', false);
-$arrOwners = get_users_for_html_options($db, ALL_USERS_FILTER, ADD_BLANK_OPTION);
-//$arrDataOwner = getOwnerReport($db,$tpID);
-$arrDataOwnerIndex = 0;
-while ($owner_id = key($arrOwners)) {
-	$owner_name = $arrOwners[$owner_id] ;
-	$specificOwnerResults = new results($db, $tp, $suitesSelected, $builds_to_query, 'a', 0, $owner_id);
-	$resultArray = $specificOwnerResults->getTotalsForPlan();
-	$total = $resultArray['total'];
-	$notRun = $resultArray['notRun'];
-	if ($total) {
-		$percentCompleted = (($total - $notRun) / $total) * 100;
-		$percentCompleted = number_format($percentCompleted,2);
-	}
-	else {
-	  $percentCompleted = 0.00;
-	}
-	$arrDataOwner[$arrDataOwnerIndex] = array($owner_name,$total,$resultArray['pass'],$resultArray['fail'],$resultArray['blocked'],$notRun,$percentCompleted);
-	$arrDataOwnerIndex++;
-	next($arrOwners);
+$i = 0;
+$arrDataOwner2 = null;
+while ($ownerId = key($arrDataOwner)) {
+   $arr = $arrDataOwner[$ownerId];
+   $arrDataOwner2[$i] = $arr;
+   $i++;
+   next($arrDataOwner);
 }
-*/
-
-//print "resultsGeneral - end owners report <BR>";
 
 /**
 * SMARTY ASSIGNMENTS
@@ -122,7 +104,7 @@ $smarty = new TLSmarty;
 $smarty->assign('tpName', $_SESSION['testPlanName']);
 $smarty->assign('arrDataPriority', $arrDataPriority);
 $smarty->assign('arrDataSuite', $arrDataSuite);
-$smarty->assign('arrDataOwner', $arrDataOwner);
+$smarty->assign('arrDataOwner', $arrDataOwner2);
 $smarty->assign('arrDataKeys', $arrDataKeys2);
 $smarty->display('resultsGeneral.tpl');
 

@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8 
- * @modified $Date: 2007/01/01 21:03:09 $ by $Author: kevinlevy $
+ * @modified $Date: 2007/01/02 03:16:26 $ by $Author: kevinlevy $
  *
  *
  * This class is encapsulates most functionality necessary to query the database
@@ -95,18 +95,23 @@ class results
   // array
   // (total cases in plan, total pass, total fail, total blocked, total not run)
   var $totalsForPlan = null;
-   // $builds_to_query = 'a' will query all build, $builds_to_query = -1 will prevent
-   // most logic in constructor from executing/ executions table from being queried
-   // if keyword = 0, search by keyword would not be performed
-   //
-   //
    
+    
 	// map test case ids to array of keywords associated with test case
    var $keywordData = null;
 
+	// TO-DO check this description of this object
 	// map of keywordIds to Array (total, passed, failed, blocked, notRun) 
 	var $aggregateKeyResults = null;
-    function results(&$db, &$tp, $suitesSelected = 'all', $builds_to_query = -1, $lastResult = 'a', $keywordId = 0, $owner = null)
+
+	// TO-DO check this description of this object    
+	// map of ownerIds to Array (total, passed, failed, blocked, notRun) 
+	var $aggregateOwnerResults = null;
+    
+	// $builds_to_query = 'a' will query all build, $builds_to_query = -1 will prevent
+   // most logic in constructor from executing/ executions table from being queried
+   // if keyword = 0, search by keyword would not be performed
+	function results(&$db, &$tp, $suitesSelected = 'all', $builds_to_query = -1, $lastResult = 'a', $keywordId = 0, $owner = null)
 	{
     		$this->db = $db;	
     		$this->tp = $tp;    
@@ -125,23 +130,23 @@ class results
 
 		// get keyword id -> keyword name pairs used in this test plan
 		$arrKeywords = $tp->get_keywords_map($this->testPlanID); 	
-		
+	
+		define('ALL_USERS_FILTER', null);
+		define('ADD_BLANK_OPTION', false);
+		$arrOwners = get_users_for_html_options($db, ALL_USERS_FILTER, ADD_BLANK_OPTION);
+   	
 		// KL - 20061229 - this call may not be necessary for all reports 
 		// only those that require info on results for keywords
 		// Map of test case ids to array of associated keywords
 		$this->keywordData = $this->getKeywordData($arrKeywords);
-		
+	
 		// create data object which tallies last result for each test case
 		// this function now also creates mapOfLastResultByKeyword
 		$this->createMapOfLastResult($this->suiteStructure, $this->executionsMap);
 	  
 		$this->aggregateKeywordResults = $this->tallyKeywordResults($this->mapOfLastResultByKeyword, $arrKeywords);
-		/**
-		print "aggregate key results = ";
-		print_r($this->aggregateKeyResults);
-		print "<BR>";
-		*/
-		
+		$this->aggregateOwnerResults = $this->tallyOwnerResults($this->mapOfLastResultByOwner, $arrOwners);
+						
 		// create data object which tallies totals for individual suites
 		// child suites are NOT taken into account in this step
 		$this->createMapOfSuiteSummary($this->mapOfLastResult);
@@ -156,9 +161,9 @@ class results
 
 
   /**
-  * tallyKeywordResults(parameter)
+  * tallyKeywordResults(parameter1, parameter2)
   *   
-  * parameter format:
+  * parameter1 format:
   * Array ([keyword id] => Array ( [test case id] => result ))
   * example:  
   * Array ( [128] => Array ( [14308] => p [14309] => n [14310] => n [14311] => f [14312] => n [14313] => n ) 
@@ -203,8 +208,57 @@ class results
 	return $rValue;
   }
 
+/**
+  * tallyOwnerResults(parameter1, parameter2)
+  *   returns keyword results
+  * parameter1 format:
+  * Array ([owner id] => Array ( [test case id] => result ))
+  * output format :
+  * Array ( [owner id] => Array ( total, passed, failed, blocked, not run))       
+  */
+  function tallyOwnerResults($ownerResults, $ownerIdNamePairs) {
+	
+	if ($ownerResults == null) {
+		return;
+	}
+	
+	$rValue = null;
+	while ($ownerId = key($ownerResults)) {
+		$arrResults = $ownerResults[$ownerId];
+		$totalCases = sizeOf($arrResults);
+		$totalPass =0;
+		$totalFail =0;
+		$totalBlocked =0;
+		$totalNotRun =0;
+		while ($testcaseId = key($arrResults)) {
+			if ($arrResults[$testcaseId] == 'p') {
+				$totalPass++;
+			}
+			elseif($arrResults[$testcaseId] == 'f') {
+				$totalFail++;
+			}
+			elseif($arrResults[$testcaseId] == 'b') {
+				$totalBlocked++;
+			}
+			next($arrResults);
+		}
+		$totalNotRun = $totalCases - ($totalPass + $totalFail + $totalBlocked);
+		$percentCompleted = (($totalCases - $totalNotRun) / $totalCases) * 100;
+		$percentCompleted = number_format($percentCompleted,2);		
+		$rArray = array($ownerIdNamePairs[$ownerId], $totalCases, $totalPass, $totalFail, $totalBlocked, $totalNotRun, $percentCompleted);
+		$rValue[$ownerId] = $rArray;
+		next($ownerResults);
+	}
+	return $rValue;
+  }
+
+
 	function getAggregateKeywordResults() {
 		return $this->aggregateKeywordResults;
+	}
+
+	function getAggregateOwnerResults() {
+		return $this->aggregateOwnerResults;
 	}
 
   // TO-DO- rename getExecutionsMap() (resultsTC.php is 1 file (may not be only file) that references this method)
@@ -258,18 +312,30 @@ class results
   function addLastResultToMap($suiteId, $testcase_id, $buildNumber, $result, $tcversion_id, 
                               $execution_ts, $notes, $suiteName, $executions_id, $name, $tester_id, $feature_id, $assigner_id){
 	$associatedKeywords = null;
+	
+	//print "feature_id = $feature_id <BR>";
+	/**
+	*  get user_id assigned to this tcversion 
+	*/
+	// mysql> select user_id, users.first, users.last from user_assignments, users where feature_id = '18302' and user_assignments.user_id = users.id;
+	
+	$sql = "select user_id from user_assignments where feature_id = "  . $feature_id ;
+	$owner_row =  $this->db->fetchFirstRow($sql,'testcase_id', 1);
+	
+	$owner_id = $owner_row['user_id'];
+	//print "owner_id = $owner_id <BR>";
+	
 	//  KL - 20061229 - figuring out how to create map of results by keyword
 	if (array_key_exists($testcase_id, $this->keywordData)) {
 		$associatedKeywords = $this->keywordData[$testcase_id];
-		//print "there are keywords associated with test case $testcase_id : <BR>";
-		//print_r($associatedKeywords);
-		//print "<BR>";
 	}
 							  
 	if ($this->mapOfLastResult && array_key_exists($suiteId, $this->mapOfLastResult)) {
 		if (array_key_exists($testcase_id, $this->mapOfLastResult[$suiteId])) {
 			$buildInMap = $this->mapOfCaseResults[$testcase_id]['buildNumber'];	
 			if ($buildInMap < $buildNumber) {				
+				// owner assignments
+				$this->mapOfLastResultByOwner[$owner_id][$testcase_id] = $result;
 		
 			    // keyword assignments
 				for ($i=0 ; $i < sizeof($associatedKeywords); $i++){
@@ -289,6 +355,9 @@ class results
 			} // end $buildInMap < $buildNumber if
 		} // end array_key_exists if
 		else {
+			// owner assignments
+			$this->mapOfLastResultByOwner[$owner_id][$testcase_id] = $result;
+			
 		    // keyword assignments
 			for ($i=0 ; $i < sizeof($associatedKeywords); $i++){
 				$this->mapOfLastResultByKeyword[$associatedKeywords[$i]][$testcase_id] = $result;
@@ -306,6 +375,9 @@ class results
 		}	
 	}
 	else {
+		// owner assignments
+		$this->mapOfLastResultByOwner[$owner_id][$testcase_id] = $result;
+			
 		// keyword assignments
 		for ($i=0 ; $i < sizeof($associatedKeywords); $i++){
 			$this->mapOfLastResultByKeyword[$associatedKeywords[$i]][$testcase_id] = $result;

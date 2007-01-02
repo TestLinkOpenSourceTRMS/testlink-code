@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.82 $
- * @modified $Date: 2006/12/30 09:22:09 $ by $Author: franciscom $
+ * @version $Revision: 1.83 $
+ * @modified $Date: 2007/01/02 12:35:23 $ by $Author: havlat $
  *
  *
  * Constants and configuration parameters used throughout TestLink 
@@ -255,7 +255,7 @@ error_reporting(E_ALL);
 /** GUI related constants *///////////////////////////////////////////////////
 
 /* CVS will not released, MUST BE changed at the release day */
-define('TL_VERSION', '1.7.0 Alpha'); 
+define('TL_VERSION', '1.7 Beta 1'); 
 define('TL_BACKGROUND_DEFAULT', "#9BD");
 define('TL_COOKIE_KEEPTIME', (time()+60*60*24*30)); // 30 days
 
@@ -431,6 +431,7 @@ $g_locales = array(	'zh_CN' => 'Chinese Simplified',
 			        'fr_FR' => 'Fran&ccedil;ais',
 			        'de_DE' => 'German',
 			        'it_IT' => 'Italian',
+			        'pl_PL' => 'Polski',
 			        'pt_BR' => 'Portuguese (Brazil)',
 			        'es_AR' => 'Spanish (Argentine)',
 			        'es_ES' => 'Spanish'
@@ -462,9 +463,10 @@ $g_locales_date_format = array('en_GB' => "%d/%m/%Y",
                                'es_AR' => "%d/%m/%Y",
                                'es_ES' => "%d/%m/%Y",
                                'de_DE' => "%d.%m.%Y",
+                               'pl_PL' => "%d.%m.%Y",
                                'fr_FR' => "%d/%m/%Y",
                                'pt_BR' => "%d/%m/%Y",
-                               'zh_CN' => "%YÄê%mÔÂ%dÈÕ"
+                               'zh_CN' => "%Yï¿½ï¿½%mï¿½ï¿½%dï¿½ï¿½"
                                 ); 
 
 $g_locales_timestamp_format = array('en_GB' => "%d/%m/%Y %H:%M:%S",
@@ -473,9 +475,10 @@ $g_locales_timestamp_format = array('en_GB' => "%d/%m/%Y %H:%M:%S",
                                     'es_AR' => "%d/%m/%Y %H:%M:%S",
                                     'es_ES' => "%d/%m/%Y %H:%M:%S",
                                     'de_DE' => "%d.%m.%Y %H:%M:%S",
+                                    'pl_PL' => "%d.%m.%Y %H:%M:%S",
                                     'fr_FR' => "%d/%m/%Y %H:%M:%S",
                                     'pt_BR' => "%d/%m/%Y %H:%M:%S",
-                                    'zh_CN' => "%YÄê%mÔÂ%dÈÕ %HÊ±%M·Ö%SÃë"
+                                    'zh_CN' => "%Yï¿½ï¿½%mï¿½ï¿½%dï¿½ï¿½ %HÊ±%Mï¿½ï¿½%Sï¿½ï¿½"
                                     ); 
 // ----------------------------------------------------------------------------
 

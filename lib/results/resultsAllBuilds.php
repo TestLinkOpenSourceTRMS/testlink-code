@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsAllBuilds.php,v 1.8 2006/11/26 06:15:15 kevinlevy Exp $ 
+* $Id: resultsAllBuilds.php,v 1.9 2007/01/02 07:08:19 kevinlevy Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * 
@@ -18,10 +18,25 @@ testlinkInitPage($db);
 
 $tp = new testplan($db);
 $tpID = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0 ;
-$arrBuilds = $tp->get_builds($tpID); 
-$SUITES_SELECTED = 'all';
+// $arrBuilds = $tp->get_builds($tpID); 
 
-$arrDataBuilds = null;
+$re = new results($db, $tp, 'all', 'a');
+$arrDataBuilds = $re->getAggregateBuildResults();
+//print_r($arrDataBuilds);
+
+$i = 0;
+$arrData = null;
+while ($buildId = key($arrDataBuilds)) {
+   $arr = $arrDataBuilds[$buildId];
+   $arrData[$i] = $arr;
+   $i++;
+   next($arrDataBuilds);
+}
+
+//print_r($arrData);
+
+// $arrDataBuilds = null;
+/**
 $arrDataBuildsIndex = 0;
 for ($i = 0; $i < sizeOf($arrBuilds); $i++) {
 	$currentArray = $arrBuilds[$i] ;
@@ -47,10 +62,11 @@ for ($i = 0; $i < sizeOf($arrBuilds); $i++) {
 	$arrDataBuilds[$arrDataBuildsIndex] = array($build_name,$total, $pass, $percentPass, $fail, $percentFail, $blocked, $percentBlocked, $notRun, $percentNotRun);
 	$arrDataBuildsIndex++;
 }
+*/
 
 $smarty = new TLSmarty;
 $smarty->assign('tcs_color', $g_tc_sd_color);
 $smarty->assign('title', $_SESSION['testPlanName'] . lang_get('title_metrics_x_build'));
-$smarty->assign('arrData', $arrDataBuilds);
+$smarty->assign('arrData', $arrData);
 $smarty->display('resultsAllBuilds.tpl');
 ?>

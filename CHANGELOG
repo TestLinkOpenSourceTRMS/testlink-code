@@ -3,13 +3,43 @@
    Changelog for TestLink
 ***************************************************************
 
-TestLink development team of 1.6 version:
+TestLink core development team of 1.7 version:
 
 	Andreas  Morsing  (schlundus)
 	Francisco  Mancardi  (fman)
 	Kevin  Levy  (kevin)
 	Martin  Havlat  (mhavlat)
 
+
+Testlink 1.7 BETA 1
+=========================
+- 0000464: [User Interface General] Debug output on the import page (schlundus)
+- 0000438: [Installer] Installer stops on message (fman)
+- 0000416: [Product Management] Product edit/delete option should be dropdown or not allow text to be typed. Wrong product might get deleted. (mhavlat)
+- 0000078: [General] Clarify Titles of User Roles (schlundus)
+- 0000079: [User Management] Make roles configurable (schlundus)
+- 0000019: [New Feature] [SF 887465 ] Make permissions configurible (schlundus)
+- 0000176: [New Feature] Role Management (schlundus)
+- 0000370: [Installer] not escaping - characters during install (fman)
+- 0000339: [General] code still contains short style <? php tags (schlundus)
+- 0000303: [New Feature] Option to disable Test Execution of old Build when a new Build is created (fman)
+- 0000221: [New Feature] User login should take you to the last product the user selected (mhavlat)
+- 0000367: [Test Plan (milestones, test assign)] Define User / Test Plan Rights - must use the Test Plan Filtering by Product (fman)
+- 0000190: [New Feature] Add Notes to Products (fman)
+- 0000297: [Test Specification (tc, comp, cat)] Cannot copy Component to same product (schlundus)
+- 0000326: [Test Specification (tc, comp, cat)] Can't copy component when only 1 product exists (schlundus)
+- 0000009: [New Feature] [SF 1208354 ] Can not assign keyword at creation (schlundus)
+- 0000329: [Requirements Coverage] Unnable to Change requirement type to "untestable" (fman)
+- 0000213: [Test Plan (milestones, test assign)] User name can not display when assign test plans to the user (fman)
+- 0000179: [New Feature] User Management Improvements (schlundus)
+- 0000224: [User Management] Saving of users is not possible in all cases! (schlundus)
+- 0000311: [Reports, Metrics, Export and Print] Requirements based Report shows errors when no SRS document is associated with Product (fman)
+- 0000272: [Test Plan (milestones, test assign)] Percentage values for prioritity in milestones should be within 0 and 100 and not zeropadded (fman)
+- 0000318: [Test Plan (milestones, test assign)] Maxlength attribute in the name field is misspelled -> ignored (schlundus)
+- 0000300: [User Interface General] Display name and surename in all user lists (fman)
+- 0000301: [Installer] can't connect to db after install if dbuser -> dbu@webserver (fman)
+- 0000294: [Test Execute] Keywords do not increment the version number. (mhavlat)
+- 0000180: [Product Management] Unable to delete Product (fman)
 
 ===============================================================
 2005/12/04	Version: 1.6.0 Build 1

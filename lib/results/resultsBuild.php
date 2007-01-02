@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsBuild.php,v 1.20 2007/01/01 20:57:49 kevinlevy Exp $ 
+* $Id: resultsBuild.php,v 1.21 2007/01/02 03:16:07 kevinlevy Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * 
@@ -108,36 +108,20 @@ while ($keywordId = key($arrDataKeys)) {
 /** 
 * OWNERS REPORT 
 */
-define('ALL_USERS_FILTER', null);
-define('ADD_BLANK_OPTION', false);
-$arrOwners = get_users_for_html_options($db, ALL_USERS_FILTER, ADD_BLANK_OPTION);
-//$arrDataOwner = getOwnerReport($db,$tpID);
-$arrDataOwner = null;
-$arrDataOwnerIndex = 0;
-/**
-while ($owner_id = key($arrOwners)) {
-	$owner_name = $arrOwners[$owner_id] ;
-	$specificOwnerResults = new results($db, $tp, $suitesSelected, $builds_to_query, 'a', 0, $owner_id);
-	$resultArray = $specificOwnerResults->getTotalsForPlan();
-	$total = $resultArray['total'];
-	$notRun = $resultArray['notRun'];
-	$percentCompleted = 0;
-	if ($total) {
-		$percentCompleted = (($total - $notRun) / $total) * 100;
-		$percentCompleted = number_format($percentCompleted,2);
-	}
-	$arrDataOwner[$arrDataOwnerIndex] = array($owner_name,$total,$resultArray['pass'],$resultArray['fail'],$resultArray['blocked'],$notRun,$percentCompleted);
-	$arrDataOwnerIndex++;
-	next($arrOwners);
+$arrDataOwner = $re->getAggregateOwnerResults();
+
+$i = 0;
+$arrDataOwner2 = null;
+while ($ownerId = key($arrDataOwner)) {
+   $arr = $arrDataOwner[$ownerId];
+   $arrDataOwner2[$i] = $arr;
+   $i++;
+   next($arrDataOwner);
 }
-*/
 
 /**
-
 * SMARTY ASSIGNMENTS
-
 */
-
 $smarty = new TLSmarty;
 $smarty->assign('tpName', $_SESSION['testPlanName']);
 $smarty->assign('buildName', $buildName);

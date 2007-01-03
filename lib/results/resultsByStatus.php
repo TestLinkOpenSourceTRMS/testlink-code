@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsByStatus.php,v 1.26 2006/12/13 07:44:52 kevinlevy Exp $ 
+* $Id: resultsByStatus.php,v 1.27 2007/01/03 19:34:08 kevinlevy Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -15,15 +15,11 @@
 */
 require('../../config.inc.php');
 require_once('../functions/common.php');
-//require_once('builds.inc.php');	
-//require_once('results.inc.php');
 require_once('../functions/exec.inc.php');
-//require_once("../../lib/functions/lang_api.php");
 require_once("../../lib/functions/results.class.php");
 
 // used to retrieve users 
 require_once('../functions/users.inc.php');
-
 
 testlinkInitPage($db);
 $tp = new testplan($db);
@@ -56,13 +52,6 @@ $mapOfLastResult = $results->getMapOfLastResult();
 define('ALL_USERS_FILTER', null);
 define('ADD_BLANK_OPTION', false);
 $arrOwners = get_users_for_html_options($db, ALL_USERS_FILTER, ADD_BLANK_OPTION);
-//print_r($arrOwners);
-//print "<BR>";
-
-//print "map of last results = <BR>";
-//print_r($mapOfLastResult);
-//print "<BR>";
-
 $arrDataIndex = 0;
 $arrData = null;
 if (is_array($mapOfLastResult)) {
@@ -80,13 +69,13 @@ if (is_array($mapOfLastResult)) {
 		$notes = $mapOfLastResult[$suiteId][$tcId]['notes'];
 		$execution_ts = $mapOfLastResult[$suiteId][$tcId]['execution_ts'];
 		$suiteName = $mapOfLastResult[$suiteId][$tcId]['suiteName'];
-		$name = $mapOfLastResult[$suiteId][$tcId]['name'];
+		$name = $mapOfLastResult[$suiteId][$tcId]['name'];		
 		$tester_id = $mapOfLastResult[$suiteId][$tcId]['tester_id'];
 		$executions_id = $mapOfLastResult[$suiteId][$tcId]['executions_id'];
 		$localizedTS = localize_dateOrTimeStamp(null,$dummy,'timestamp_format',$execution_ts);
-		// TO-DO - KL 20061212 - fix buildBugString call
-		//$bugString = buildBugString($db, $executions_id);
-		$bugString = 'x';
+		// TO-DO - KL 20070103 - prevent buildBugString call from being made when 
+		// bug tracking information is not configured
+		$bugString = buildBugString($db, $executions_id);
 		$arrData[$arrDataIndex] = array(htmlspecialchars($suiteName),$tcId . ":" . htmlspecialchars($name),htmlspecialchars($buildName),htmlspecialchars($arrOwners[$tester_id]),htmlspecialchars($execution_ts),htmlspecialchars($notes),$bugString);
 		$arrDataIndex++;
 		next($mapOfLastResult[$suiteId]);

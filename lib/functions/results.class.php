@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8 
- * @modified $Date: 2007/01/03 02:38:52 $ by $Author: kevinlevy $
+ * @modified $Date: 2007/01/03 19:33:52 $ by $Author: kevinlevy $
  *
  *
  * This class is encapsulates most functionality necessary to query the database
@@ -763,9 +763,9 @@ class results
 				// TO-DO use localizedTS
 				//$localizedTS = localize_dateOrTimeStamp(null,$dummy,'timestamp_format',$execution_ts);
 				
-				// TO-DO - fix bugString call
-				//$bugString = $this->buildBugString($this->db, $executions_id);
-				$bugString = "x";
+				// TO-DO - fix bugString call when bug database is not configured
+				$bugString = $this->buildBugString($this->db, $executions_id);
+				//$bugString = "x";
 				
 				//print "bugString = $bugString <BR>";
 				//print "<BR>";

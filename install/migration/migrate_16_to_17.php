@@ -1,8 +1,10 @@
 <?php
 /*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: migrate_16_to_17.php,v 1.6 2006/12/09 08:12:48 franciscom Exp $ 
+$Id: migrate_16_to_17.php,v 1.7 2007/01/03 22:34:53 franciscom Exp $ 
 
+20070103 - franciscom -
+added missing processing of keyword-tc links
 
 20061208 - franciscom -
 changes after test with a big (10000 test cases) database.
@@ -221,12 +223,14 @@ echo "</div><p>";
 // Using all these joins we will considered only well formed tc =>
 // no dangling records.
 //
-$sql="SELECT mtc.* " .
-     "FROM mgtproduct mp, mgtcomponent mc, mgtcategory mk,mgttestcase mtc " .
-     "where mc.prodid=mp.id " .
-     "AND   mk.compid=mc.id " .
-     "AND   mtc.catid=mk.id " .
-     "ORDER BY mtc.id";
+// 20070103 - franciscom - added prodid column in results record set.
+//
+$sql="SELECT mtc.*, mc.prodid " .
+     " FROM mgtproduct mp, mgtcomponent mc, mgtcategory mk,mgttestcase mtc " .
+     " WHERE mc.prodid=mp.id " .
+     " AND   mk.compid=mc.id " .
+     " AND   mtc.catid=mk.id " .
+     " ORDER BY mtc.id";
 
 $tc_specs=$source_db->fetchRowsIntoMap($sql,'id');
 $msg="Test Case Specifications:";
@@ -287,7 +291,12 @@ echo "</div><p>";
 echo "<a onclick=\"return DetailController.toggle('details-kw')\" href=\"kw/\">
 <img src='../img/icon-foldout.gif' align='top' title='show/hide'>Keywords migration:</a>";
 echo '<div class="detail-container" id="details-kw" style="display: none;">';
-migrate_keywords($source_db,$target_db,$products,$old_new);
+
+//echo "<pre>debug 20070103 " . __FUNCTION__ . " --- "; print_r($tc_specs); echo "</pre>";
+
+$keyword_tc=extract_kw_tc_links($source_db,$target_db,$tc_specs);
+//exit();
+migrate_keywords($source_db,$target_db,$products,$keyword_tc,$old_new);
 echo "</div><p>";
 
 echo "<a onclick=\"return DetailController.toggle('details-tcpu')\" href=\"tcpu/\">
@@ -487,7 +496,9 @@ echo "<a onclick=\"return DetailController.toggle('details-reqtable')\" href=\"t
 <img src='../img/icon-foldout.gif' align='top' title='show/hide'> Requirements Table:</a>";
 echo '<div class="detail-container" id="details-reqtable" style="display: none;">';
 
-$sql="SELECT * from requirements";
+// 20070103 - franciscom - added filter on NULL
+$sql="SELECT * from requirements " . 
+     " WHERE req_doc_id <> NULL OR req_doc_id <> '' ";
 $req=$source_db->fetchRowsIntoMap($sql,'id');
 if(is_null($req)) 
 {
@@ -612,46 +623,68 @@ return ($db);
 
 
 // 20060712 
-function migrate_keywords(&$source_db,&$target_db,&$products,&$old_new)
+// 20070103 - added $keyword_tc
+//
+function migrate_keywords(&$source_db,&$target_db,&$products,&$keyword_tc,&$old_new)
 {
   
-foreach($products as $prod_id => $pd)
-{
+  $link_kw_tc_exists=!is_null($keyword_tc);
   
-  echo "<pre>Processing Test project: " . $pd['name']; echo "</pre>";
-  $tproject_id=$old_new['product'][$prod_id];
-  $sql="SELECT * FROM keywords WHERE prodid={$prod_id}";
-  $kw=$source_db->fetchRowsIntoMap($sql,'id');
-
-  $kw_qty=count($kw);
-  if( $kw_qty > 0 )
-  {  
-    echo "<pre>   Number of keywords: " . $kw_qty; echo "</pre>";
-    
-    foreach($kw as $key => $value)
-    {
-      if( strlen(trim($value['keyword'])) > 0 )
-      {
-        $sql="INSERT INTO keywords (id,keyword,testproject_id,notes) " .
-             " VALUES({$value['id']}," .
-             "'" . $target_db->prepare_string($value['keyword']) . "',{$tproject_id}," .
-             "'" . $target_db->prepare_string($value['notes']) . "')";
-        $target_db->exec_query($sql);     
-     
-        echo "<pre>   {$value['keyword']} migrated</pre>";
-      }
-      else
-      {
-        echo "<pre>   Empty keyword for id: {$value['id']} - no migrated</pre>";
-      }
-    }
-
-  }
-  else
+  foreach($products as $prod_id => $pd)
   {
-    echo "<pre>   There are no keywords defined for this product</pre>";
+    
+    echo "<pre>Processing Test project: " . $pd['name']; echo "</pre>";
+    $tproject_id=$old_new['product'][$prod_id];
+    $sql="SELECT * FROM keywords WHERE prodid={$prod_id}";
+    $kw=$source_db->fetchRowsIntoMap($sql,'id');
+  
+    $kw_qty=count($kw);
+    if( $kw_qty > 0 )
+    {  
+      echo "<pre>   Number of keywords: " . $kw_qty; echo "</pre>";
+      
+      foreach($kw as $key => $value)
+      {
+        $the_kw=trim($value['keyword']);
+        if( strlen($the_kw) > 0 )
+        {
+          $sql="INSERT INTO keywords (id,keyword,testproject_id,notes) " .
+               " VALUES({$value['id']}," .
+               "'" . $target_db->prepare_string($the_kw) . "',{$tproject_id}," .
+               "'" . $target_db->prepare_string(trim($value['notes'])) . "')";
+          $target_db->exec_query($sql);     
+    
+          //echo "<pre>debug 20070103 " . __FUNCTION__ . " --- "; print_r($the_kw); echo "</pre>";
+          // 20070103 - franciscom
+          if( $link_kw_tc_exists && isset($keyword_tc[$the_kw])) 
+          {
+            foreach($keyword_tc[$the_kw] as $tcid => $the_prod_id )
+            {
+              if($the_prod_id==$prod_id)
+              { 
+                //echo "<pre>debug 20070103 ][ " . __FUNCTION__ . " --- "; print_r($the_kw); echo "</pre>";
+                $xsql="INSERT INTO testcase_keywords (keyword_id,testcase_id) " .
+                      " VALUES({$value['id']},{$tcid}) ";
+                $target_db->exec_query($xsql);     
+                //echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $xsql . "</b><br>";
+                break;
+              }
+            }
+          }
+          echo "<pre>   {$value['keyword']} migrated</pre>";
+        }
+        else
+        {
+          echo "<pre>   Empty keyword for id: {$value['id']} - no migrated</pre>";
+        }
+      }
+  
+    }
+    else
+    {
+      echo "<pre>   There are no keywords defined for this product</pre>";
+    }
   }
-}
 
 } // function end
 
@@ -805,6 +838,8 @@ function migrate_tc_specs(&$source_db,&$target_db,&$items,&$users)
 
 
 // 20060725
+// migrate components and categories (cc)
+//
 function migrate_cc_specs(&$source_db,&$target_db,&$items,&$old_new)
 {
 
@@ -1137,22 +1172,31 @@ function migrate_requirements(&$source_db,&$target_db,&$req,&$old_new)
     $sql="INSERT INTO requirements " .
          "(id,srs_id,req_doc_id,title,scope,status,type,author_id,creation_ts";
      
-    $values=" VALUES({$rdata['id']},{$rdata['id_srs']}," . "'" . $rdata['req_doc_id'] . "'," .
+    // 20070103 - franciscom
+    // some sanity checks
+    $req_doc_id=trim($rdata['req_doc_id']);
+    
+    if(strlen($req_doc_id)==0)
+    {
+       $req_doc_id="NO_DOC_ID-" . $rdata['id']; 
+    }
+    
+    $create_date = "'" . $rdata['create_date'] . "'";;
+    $values=" VALUES({$rdata['id']},{$rdata['id_srs']}," . 
+            "'" . $target_db->prepare_string($req_doc_id) . "'," .
             "'" . $target_db->prepare_string($rdata['title']) . "',"  .
             "'" . $target_db->prepare_string($rdata['scope']) . "',"  .
             "'" . $rdata['status'] . "','" . $rdata['type'] . "',"  .
-                  $rdata['id_author'] . ",'" . $rdata['create_date'] . "'";
+                  intval($rdata['id_author']) . "," . $create_date ;
 
     if( strlen(trim($rdata['id_modifier'])) )
     {
        $sql .= ",modifier_id,modification_ts";
-       $values .= ",{$rdata['id_modifier']}," . "'" . $rdata['modified_date'] ."'";
+       $values .= "," . intval($rdata['id_modifier']) . "," . "'" . $rdata['modified_date'] ."'";
     }
     $sql .=") " . $values . ")";
     $exec_id=$target_db->exec_query($sql);
- 
   }
-  
 } // end function
 
 
@@ -1252,5 +1296,31 @@ function migrate_ownership(&$source_db,&$target_db,&$rs,&$map_tc_tcversion,&$old
      }
   }
 }
+
+// 20070103 - franciscom
+function extract_kw_tc_links($source_db,$target_db,$tc_specs)
+{
+  //echo "<pre>debug 20070103 \$tc_specs" . __FUNCTION__ . " --- "; print_r($tc_specs); echo "</pre>";
+  $map_kw_tc=null;
+  foreach($tc_specs as $tcid => $value)
+  {
+    $the_kw=trim($value['keywords']);
+    if(strlen($the_kw) > 0)
+    {
+      $akeywords=explode(',',$the_kw);
+      foreach($akeywords as $vkw)
+      {
+        $the_vkm=trim($vkw);
+        if(strlen($the_vkm) > 0)
+        {
+          $map_kw_tc[$the_vkm][$tcid]=$value['prodid'];  
+        }  
+      }
+    }  
+  }
+  //echo "<pre>debug 20070103 " . __FUNCTION__ . " --- "; print_r($map_kw_tc); echo "</pre>";
+  return($map_kw_tc);
+}
+
 ?>
 

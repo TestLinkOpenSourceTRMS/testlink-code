@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsByStatus.php,v 1.29 2007/01/03 20:10:21 kevinlevy Exp $ 
+* $Id: resultsByStatus.php,v 1.30 2007/01/03 20:44:04 kevinlevy Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -37,7 +37,7 @@ else
 
 
 $tpID = isset($_SESSION['testPlanId']) ?  $_SESSION['testPlanId'] : 0;
-$bCanExecute = has_rights($db,"tp_execute");
+
 $SUITES_SELECTED = "all";
 
 // TO-DO : KL define constants and verify localization is not necessary
@@ -71,9 +71,16 @@ if (is_array($mapOfLastResult)) {
 		$name = $mapOfLastResult[$suiteId][$tcId]['name'];		
 		$tester_id = $mapOfLastResult[$suiteId][$tcId]['tester_id'];
 		$executions_id = $mapOfLastResult[$suiteId][$tcId]['executions_id'];
+		$tcversion_id = $mapOfLastResult[$suiteId][$tcId]['tcversion_id'];
 		$localizedTS = localize_dateOrTimeStamp(null,$dummy,'timestamp_format',$execution_ts);
 		$bugString = buildBugString($db, $executions_id);
-		$arrData[$arrDataIndex] = array($suiteName,$tcId . ":" . htmlspecialchars($name),htmlspecialchars($buildName),htmlspecialchars($arrOwners[$tester_id]),htmlspecialchars($execution_ts),htmlspecialchars($notes),$bugString);
+        $bCanExecute = has_rights($db,"tp_execute");
+		
+		$testTitle = getTCLink($bCanExecute,$tcId,$tcversion_id,$name,$lastBuildIdExecuted);
+		
+		// $tcId . ":" . htmlspecialchars($name)
+		
+		$arrData[$arrDataIndex] = array($suiteName,$testTitle,htmlspecialchars($buildName),htmlspecialchars($arrOwners[$tester_id]),htmlspecialchars($execution_ts),htmlspecialchars($notes),$bugString);
 		$arrDataIndex++;
 		next($mapOfLastResult[$suiteId]);
 	}
@@ -152,6 +159,23 @@ function buildBugString(&$db,$execID)
 		}
 	}
 	return $bugString;
+}
+
+
+/**
+* Function returns number of Test Cases in the Test Plan
+* @return string Link of Test ID + Title 
+*/
+function getTCLink($rights, $tcID,$tcversionID, $title, $buildID)
+{
+	$title = htmlspecialchars($title);
+	$suffix = $tcID . ":&nbsp;<b>" . $title. "</b></a>";
+	
+	$testTitle = '<a href="lib/execute/execSetResults.php?level=testcase&build_id='
+				 . $buildID . '&id=' . $tcID.'&version_id='.$tcversionID.'">';
+	$testTitle .= $suffix;
+		
+	return $testTitle;
 }
 
 $smarty = new TLSmarty;

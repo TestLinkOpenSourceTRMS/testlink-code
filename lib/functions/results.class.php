@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8 
- * @modified $Date: 2007/01/02 07:09:02 $ by $Author: kevinlevy $
+ * @modified $Date: 2007/01/03 01:29:10 $ by $Author: kevinlevy $
  *
  *
  * This class is encapsulates most functionality necessary to query the database
@@ -403,7 +403,10 @@ class results
 	$owner_id = $owner_row['user_id'];
 	//print "owner_id = $owner_id <BR>";
 	
-	//  KL - 20061229 - figuring out how to create map of results by keyword
+	if ($this->keywordData == null) {
+		return;
+	}
+	
 	if (array_key_exists($testcase_id, $this->keywordData)) {
 		$associatedKeywords = $this->keywordData[$testcase_id];
 	}
@@ -611,6 +614,9 @@ class results
   
   function getKeywordData($keywordsInPlan) {
 	// limit the sql query to just those keys in this test plan
+	if ($keywordsInPlan == null) {
+		return;
+	}
 	$keys = implode(array_keys($keywordsInPlan), ',');
  	$sql = "select testcase_id, keyword_id from testcase_keywords where keyword_id IN ($keys)";
 	$tempKeywordStructure =  $this->db->fetchRowsIntoMap($sql,'testcase_id', 1);
@@ -826,7 +832,6 @@ class results
 function buildBugString(&$db,$execID)
 {
 	$bugString = null;
-	
 	$bugs = get_bugs_for_exec($db,config_get('bugInterface'),$execID);
 	if ($bugs)
 	{
@@ -835,7 +840,6 @@ function buildBugString(&$db,$execID)
 			$bugString .= $bugInfo['link_to_bts']."<br />";
 		}
 	}
-	
 	return $bugString;
 }
 

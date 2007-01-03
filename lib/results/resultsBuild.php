@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsBuild.php,v 1.21 2007/01/02 03:16:07 kevinlevy Exp $ 
+* $Id: resultsBuild.php,v 1.22 2007/01/03 01:37:26 kevinlevy Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * 
@@ -55,7 +55,10 @@ while ($i = key($topLevelSuites)) {
 	$resultArray = $mapOfAggregate[$currentSuiteId];	
 	$total = $resultArray['total'];
 	$notRun = $resultArray['notRun'];
-	$percentCompleted = (($total - $notRun) / $total) * 100;
+	$percentCompleted = 0;
+	if ($total != 0) {
+	   $percentCompleted = (($total - $notRun) / $total) * 100;
+	}
 	$percentCompleted = number_format($percentCompleted,2);
 	$arrDataSuite[$arrDataSuiteIndex] = array($currentSuiteName,$total,$resultArray['pass'],$resultArray['fail'],$resultArray['blocked'],$notRun,$percentCompleted);
 	$arrDataSuiteIndex++;
@@ -79,7 +82,10 @@ while ($i = key($allSuites)) {
 	$resultArray = $mapOfAggregate[$currentSuiteId];	
 	$total = $resultArray['total'];
 	$notRun = $resultArray['notRun'];
-	$percentCompleted = (($total - $notRun) / $total) * 100;
+	$percentCompleted = 0;
+	if ($total != 0) {
+	   $percentCompleted = (($total - $notRun) / $total) * 100;
+	}
 	$percentCompleted = number_format($percentCompleted,2);
 	$arrDataAllSuites[$index] = array($currentSuiteName, $risk, $importance, $priority,$total,$resultArray['pass'],$resultArray['fail'],$resultArray['blocked'],$notRun,$percentCompleted);
 	$index++;
@@ -97,14 +103,14 @@ $arrDataPriority = null;
 */
 $arrDataKeys = $re->getAggregateKeywordResults();
 $i = 0;
-$arrDataKeys2 = null;
-while ($keywordId = key($arrDataKeys)) {
-   $arr = $arrDataKeys[$keywordId];
-   $arrDataKeys2[$i] = $arr;
-   $i++;
-   next($arrDataKeys);
+if ($arrDataKeys != 0) {
+   while ($keywordId = key($arrDataKeys)) {
+     $arr = $arrDataKeys[$keywordId];
+     $arrDataKeys2[$i] = $arr;
+     $i++;
+     next($arrDataKeys);
+   }
 }
-
 /** 
 * OWNERS REPORT 
 */
@@ -112,11 +118,13 @@ $arrDataOwner = $re->getAggregateOwnerResults();
 
 $i = 0;
 $arrDataOwner2 = null;
-while ($ownerId = key($arrDataOwner)) {
-   $arr = $arrDataOwner[$ownerId];
-   $arrDataOwner2[$i] = $arr;
-   $i++;
-   next($arrDataOwner);
+if ($arrDataOwner != null) {
+   while ($ownerId = key($arrDataOwner)) {
+      $arr = $arrDataOwner[$ownerId];
+      $arrDataOwner2[$i] = $arr;
+      $i++;
+      next($arrDataOwner);
+   }
 }
 
 /**

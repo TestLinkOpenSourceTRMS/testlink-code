@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8 
- * @modified $Date: 2007/01/03 01:29:10 $ by $Author: kevinlevy $
+ * @modified $Date: 2007/01/03 02:38:52 $ by $Author: kevinlevy $
  *
  *
  * This class is encapsulates most functionality necessary to query the database
@@ -54,7 +54,7 @@ class results
   // array may contain another array in the same pattern
   // this is used to describe tree structure
   var $suiteStructure = null;
-  
+								
   var $ITEM_PATTERN_IN_SUITE_STRUCTURE = 3;
   var $NAME_IN_SUITE_STRUCTURE = 0; 
   var $ID_IN_SUITE_STRUCTURE = 1;

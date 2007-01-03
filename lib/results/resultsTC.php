@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsTC.php,v 1.18 2006/12/11 06:43:10 kevinlevy Exp $ 
+* $Id: resultsTC.php,v 1.19 2007/01/03 02:36:58 kevinlevy Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -34,6 +34,8 @@ $executionsMap = $re->getSuiteList();
 // lastResultMap provides list of all test cases in plan - data set includes title and suite names
 $lastResultMap = $re->getMapOfLastResult();
 $indexOfArrData = 0;
+
+if ($lastResultMap != null) {
 while($suiteId = key($lastResultMap)) {
 	$currentSuiteInfo = $lastResultMap[$suiteId];
 	while ($testCaseId = key($currentSuiteInfo)){
@@ -65,8 +67,8 @@ while($suiteId = key($lastResultMap)) {
 		next($currentSuiteInfo);		
 	}
 	next($lastResultMap);
-}
-
+} // end while
+} // end if
 
 
 // is output is excel?

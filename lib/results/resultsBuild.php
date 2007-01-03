@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsBuild.php,v 1.22 2007/01/03 01:37:26 kevinlevy Exp $ 
+* $Id: resultsBuild.php,v 1.23 2007/01/03 01:45:42 kevinlevy Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * 
@@ -102,6 +102,7 @@ $arrDataPriority = null;
 * KEYWORDS REPORT
 */
 $arrDataKeys = $re->getAggregateKeywordResults();
+$arrDataKeys2 = null;
 $i = 0;
 if ($arrDataKeys != 0) {
    while ($keywordId = key($arrDataKeys)) {

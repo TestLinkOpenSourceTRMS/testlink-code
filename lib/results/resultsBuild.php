@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsBuild.php,v 1.23 2007/01/03 01:45:42 kevinlevy Exp $ 
+* $Id: resultsBuild.php,v 1.24 2007/01/03 20:43:48 kevinlevy Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * 
@@ -87,7 +87,7 @@ while ($i = key($allSuites)) {
 	   $percentCompleted = (($total - $notRun) / $total) * 100;
 	}
 	$percentCompleted = number_format($percentCompleted,2);
-	$arrDataAllSuites[$index] = array($currentSuiteName, $risk, $importance, $priority,$total,$resultArray['pass'],$resultArray['fail'],$resultArray['blocked'],$notRun,$percentCompleted);
+	$arrDataAllSuites[$index] = array($currentSuiteName, $risk, $importance, $priority, $total, $resultArray['pass'], $resultArray['fail'], $resultArray['blocked'], $notRun, $percentCompleted);
 	$index++;
 	next($allSuites);
 } 

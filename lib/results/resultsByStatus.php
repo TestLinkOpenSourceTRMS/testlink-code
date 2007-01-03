@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsByStatus.php,v 1.28 2007/01/03 20:00:36 kevinlevy Exp $ 
+* $Id: resultsByStatus.php,v 1.29 2007/01/03 20:10:21 kevinlevy Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -72,11 +72,8 @@ if (is_array($mapOfLastResult)) {
 		$tester_id = $mapOfLastResult[$suiteId][$tcId]['tester_id'];
 		$executions_id = $mapOfLastResult[$suiteId][$tcId]['executions_id'];
 		$localizedTS = localize_dateOrTimeStamp(null,$dummy,'timestamp_format',$execution_ts);
-		// TO-DO - KL 20070103 - prevent buildBugString call from being made when 
-		// bug tracking information is not configured
-		
 		$bugString = buildBugString($db, $executions_id);
-		$arrData[$arrDataIndex] = array(htmlspecialchars($suiteName),$tcId . ":" . htmlspecialchars($name),htmlspecialchars($buildName),htmlspecialchars($arrOwners[$tester_id]),htmlspecialchars($execution_ts),htmlspecialchars($notes),$bugString);
+		$arrData[$arrDataIndex] = array($suiteName,$tcId . ":" . htmlspecialchars($name),htmlspecialchars($buildName),htmlspecialchars($arrOwners[$tester_id]),htmlspecialchars($execution_ts),htmlspecialchars($notes),$bugString);
 		$arrDataIndex++;
 		next($mapOfLastResult[$suiteId]);
 	}

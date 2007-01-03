@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: resultsGeneral.php,v $
- * @version $Revision: 1.23 $
- * @modified $Date: 2007/01/02 03:15:53 $ by $Author: kevinlevy $
+ * @version $Revision: 1.24 $
+ * @modified $Date: 2007/01/03 02:37:23 $ by $Author: kevinlevy $
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
  * This page show Test Results over all Builds.
@@ -75,11 +75,14 @@ $arrDataPriority = null;
 $arrDataKeys = $re->getAggregateKeywordResults();
 $i = 0;
 $arrDataKeys2 = null;
-while ($keywordId = key($arrDataKeys)) {
-   $arr = $arrDataKeys[$keywordId];
-   $arrDataKeys2[$i] = $arr;
-   $i++;
-   next($arrDataKeys);
+
+if ($arrDataKeys != null) {
+   while ($keywordId = key($arrDataKeys)) {
+      $arr = $arrDataKeys[$keywordId];
+      $arrDataKeys2[$i] = $arr;
+      $i++;
+      next($arrDataKeys);
+   }
 }
 
 /** 
@@ -89,11 +92,13 @@ $arrDataOwner = $re->getAggregateOwnerResults();
 
 $i = 0;
 $arrDataOwner2 = null;
-while ($ownerId = key($arrDataOwner)) {
-   $arr = $arrDataOwner[$ownerId];
-   $arrDataOwner2[$i] = $arr;
-   $i++;
-   next($arrDataOwner);
+if ($arrDataOwner != null) {
+   while ($ownerId = key($arrDataOwner)) {
+     $arr = $arrDataOwner[$ownerId];
+     $arrDataOwner2[$i] = $arr;
+     $i++;
+     next($arrDataOwner);
+   }
 }
 
 /**

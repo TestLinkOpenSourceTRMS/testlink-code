@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsByStatus.php,v 1.27 2007/01/03 19:34:08 kevinlevy Exp $ 
+* $Id: resultsByStatus.php,v 1.28 2007/01/03 20:00:36 kevinlevy Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -24,7 +24,6 @@ require_once('../functions/users.inc.php');
 testlinkInitPage($db);
 $tp = new testplan($db);
 $type = isset($_GET['type']) ? $_GET['type'] : 'n';
-//print "type = $type <BR>";
 
 if($type == $g_tc_status['failed'])
 	$title = lang_get('list_of_failed');
@@ -35,6 +34,7 @@ else
 	tlog('wrong value of GET type');
 	exit();
 }
+
 
 $tpID = isset($_SESSION['testPlanId']) ?  $_SESSION['testPlanId'] : 0;
 $bCanExecute = has_rights($db,"tp_execute");
@@ -65,7 +65,6 @@ if (is_array($mapOfLastResult)) {
 				$buildName = $currentBuildInfo['name'];
 			}
 		}
-
 		$notes = $mapOfLastResult[$suiteId][$tcId]['notes'];
 		$execution_ts = $mapOfLastResult[$suiteId][$tcId]['execution_ts'];
 		$suiteName = $mapOfLastResult[$suiteId][$tcId]['suiteName'];
@@ -75,6 +74,7 @@ if (is_array($mapOfLastResult)) {
 		$localizedTS = localize_dateOrTimeStamp(null,$dummy,'timestamp_format',$execution_ts);
 		// TO-DO - KL 20070103 - prevent buildBugString call from being made when 
 		// bug tracking information is not configured
+		
 		$bugString = buildBugString($db, $executions_id);
 		$arrData[$arrDataIndex] = array(htmlspecialchars($suiteName),$tcId . ":" . htmlspecialchars($name),htmlspecialchars($buildName),htmlspecialchars($arrOwners[$tester_id]),htmlspecialchars($execution_ts),htmlspecialchars($notes),$bugString);
 		$arrDataIndex++;
@@ -142,6 +142,10 @@ if ($tcs && $maxBuildID)
 function buildBugString(&$db,$execID)
 {
 	$bugString = null;
+	$bugsOn = config_get('bugInterfaceOn');
+	if ($bugsOn == null) {
+		return $bugString;
+	}
 	$bugs = get_bugs_for_exec($db,config_get('bugInterface'),$execID);
 	if ($bugs)
 	{

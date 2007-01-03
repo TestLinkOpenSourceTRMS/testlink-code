@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8 
- * @modified $Date: 2007/01/03 19:33:52 $ by $Author: kevinlevy $
+ * @modified $Date: 2007/01/03 20:00:19 $ by $Author: kevinlevy $
  *
  *
  * This class is encapsulates most functionality necessary to query the database
@@ -832,6 +832,12 @@ class results
 function buildBugString(&$db,$execID)
 {
 	$bugString = null;
+
+    $bugsOn = config_get('bugInterfaceOn');
+
+    if ($bugsOn == null || $bugsOn == false){
+	  return $bugString;
+	}
 	$bugs = get_bugs_for_exec($db,config_get('bugInterface'),$execID);
 	if ($bugs)
 	{

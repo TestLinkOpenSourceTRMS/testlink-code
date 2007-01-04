@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8 
- * @modified $Date: 2007/01/03 20:00:19 $ by $Author: kevinlevy $
+ * @modified $Date: 2007/01/04 06:38:00 $ by $Author: kevinlevy $
  *
  *
  * This class is encapsulates most functionality necessary to query the database
@@ -284,8 +284,13 @@ class results
 		return;
 	}
 	$rValue = null;
-	while ($buildId = key($buildResults)) {
-		$arrResults = $buildResults[$buildId];
+	while ($buildId = key($arrBuilds)) {
+		if (array_key_exists($buildId, $buildResults)) {
+		   $arrResults = $buildResults[$buildId];
+		}
+		else {
+		   $arrResults = array();
+		}
 		$totalPass =0;
 		$totalFail =0;
 		$totalBlocked =0;
@@ -317,7 +322,7 @@ class results
 		
 		$rArray = array($arrBuilds[$buildId], $totalCases, $totalPass, $percentPass, $totalFail, $percentFail, $totalBlocked, $percentBlocked, $totalNotRun, $percentCompleted);
 		$rValue[$buildId] = $rArray;
-		next($buildResults);
+		next($arrBuilds);
 	}
 	return $rValue;
   }

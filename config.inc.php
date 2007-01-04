@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.83 $
- * @modified $Date: 2007/01/02 12:35:23 $ by $Author: havlat $
+ * @version $Revision: 1.84 $
+ * @modified $Date: 2007/01/04 15:27:58 $ by $Author: franciscom $
  *
  *
  * Constants and configuration parameters used throughout TestLink 
@@ -116,7 +116,7 @@ define('TL_LOG_PATH', TL_TEMP_PATH );
 
 
 /** Default level of logging (NONE, ERROR, INFO, DEBUG, EXTENDED) */
-define('TL_LOG_LEVEL_DEFAULT', 'NONE');
+define('TL_LOG_LEVEL_DEFAULT', 'DEBUG');
 require_once(TL_ABS_PATH.'/lib/functions/logging.inc.php');
 require_once(TL_ABS_PATH.'/lib/functions/configCheck.php'); // 20060822 - franciscom
 
@@ -665,7 +665,7 @@ if($g_repositoryType == TL_REPOSITORY_TYPE_FS)
 // 20061223 - franciscom
 // true: icon edit will be added to <a href> used to access edit features
 $g_gui->show_icon_edit=false;
-$g_gui->enable_custom_fields=false;
+$g_gui->enable_custom_fields=true;
 
 
 // 20050821 - fm - configurable templates this help is you want to use a non standard template 

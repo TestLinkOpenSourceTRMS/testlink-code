@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: cfield_mgr.class.php,v $
- * @version $Revision: 1.2 $
- * @modified $Date: 2007/01/02 13:43:41 $  $Author: franciscom $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2007/01/04 15:27:58 $  $Author: franciscom $
  * @author franciscom
  *
  * 20061225 - franciscom - 
@@ -16,24 +16,38 @@ class cfield_mgr
 	var $tree_manager;
 	
 	// I'm using the same codes used by Mantis
-  var $custom_field_types = array(0=>'string',
-                                  1=>'numeric',
-                                  2=>'float',
-                                  3=>'enum',
-                                  4=>'email',
-                                  5=>'checkbox',
-                                  6=>'list',
-                                  7=>'multiselection list',
-                                  8=>'date');
-
+  // var $custom_field_types = array(0=>'string',
+  //                                 1=>'numeric',
+  //                                 2=>'float',
+  //                                 3=>'enum',
+  //                                 4=>'email',
+  //                                 5=>'checkbox',
+  //                                 6=>'list',
+  //                                 7=>'multiselection list',
+  //                                 8=>'date',
+  //                                 20=>'text area');
+  //
+   var $custom_field_types = array(0=>'string',
+                                   1=>'numeric',
+                                   2=>'float',
+                                   4=>'email',
+                                   5=>'checkbox',
+                                   6=>'list',
+                                   7=>'multiselection list',
+                                   8=>'date');
+     
+     
   // only the types listed here can have custom fields
 	var $node_types = array('testproject',
 	                        'testsuite',
 	                        'testcase',
 	                        'testplan');
 
-  
-  
+  // the name of html input will have the following format
+  // <name_prefix>_<custom_field_type_id>_<progressive>
+  //
+  var $name_prefix='custom_field_';
+    
   /*
     function: cfield_mgr
               class constructor
@@ -175,12 +189,20 @@ class cfield_mgr
     args: $p_field_def: contains the definition of the custom field 
                         (including it's field id)
               
+    
+    returns:          
+    
+    rev :
+         20070104 - franciscom - added 'multiselection list'
+              
   */
 	function string_custom_field_input($p_field_def)
 	{
-
+    $WINDOW_SIZE_MULTILIST=5;
+    
 		$str_out='';
 		$t_id = $p_field_def['id'];
+		$t_type = $p_field_def['type'];
 		
 	  $t_custom_field_value = $p_field_def['default_value'];	
 	  if( isset($p_field_def['design_value']) )
@@ -189,15 +211,32 @@ class cfield_mgr
 		}
     
 		$t_custom_field_value = htmlspecialchars( $t_custom_field_value );
-    //echo "<pre>debug 20061230 " . __FUNCTION__ . " --- "; print_r($t_custom_field_value); echo "</pre>";
 
-		switch ($this->custom_field_types[$p_field_def['type']]) 
+    $verbose_type=$this->custom_field_types[$t_type];
+    $input_name="{$this->name_prefix}{$t_type}_{$t_id}";
+		switch ($verbose_type) 
 		{
   		case 'list':
+  		case 'multiselection list':
    			$t_values = explode( '|', $p_field_def['possible_values']);
-
-        $t_list_size =1;
-  			$str_out .='<select name="custom_field_' . $t_id . '"';
+        if( $verbose_type == 'list' )
+        {
+           $t_multiple=' ';
+           $t_list_size =1;
+           $t_name_suffix=' ';
+        }
+        else
+        {
+           $t_name_suffix='[]';
+           $t_multiple=' multiple="multiple" ';
+           $t_list_size = count( $t_values );   
+           if($t_list_size > $WINDOW_SIZE_MULTILIST)
+           { 
+            $t_list_size=$WINDOW_SIZE_MULTILIST;
+           } 
+        }
+        // 20070104 - franciscom
+  			$str_out .='<select name="' . $input_name . $t_name_suffix . '"' . $t_multiple;
   			$str_out .= ' size="' . $t_list_size . '">';
   
   			$t_selected_values = explode( '|', $t_custom_field_value );
@@ -211,11 +250,30 @@ class cfield_mgr
    			$str_out .='</select>';
 			  break;
 
+		  case 'checkbox':
+			  $t_values = explode( '|', $p_field_def['possible_values']);
+        $t_checked_values = explode( '|', $t_custom_field_value );
+			  foreach( $t_values as $t_option ) 
+			  {
+				  $str_out .= '<input type="checkbox" name="' . $input_name . '[]"';
+				  if( in_array( $t_option, $t_checked_values ) ) 
+				  {
+					  $str_out .= ' value="' . $t_option . '" checked="checked">&nbsp;' . $t_option . '&nbsp;&nbsp;';
+				  } 
+				  else 
+				  {
+					  $str_out .= ' value="' . $t_option . '">&nbsp;' . $t_option . '&nbsp;&nbsp;';
+				  }
+			  }
+ 			  break;
+
+
+
   		case 'string':
   		case 'email':
   		case 'float':
   		case 'numeric':
-  			$str_out .= '<input type="text" name="custom_field_' . $t_id . '" size="80"';
+  			$str_out .= '<input type="text" name="' . $input_name . '" size="80"';
 			  if( 0 < $p_field_def['length_max'] ) 
 			  {
 				  $str_out .= ' maxlength="' . $p_field_def['length_max'] . '"';
@@ -241,22 +299,44 @@ class cfield_mgr
               write values of custom fields that are used at design time.
               
     args: $hash: 
-          key: custom_field_<cfield_id>. Example custom_field_67
+          key: custom_field_<field_type_id>_<cfield_id>. 
+               Example custom_field_0_67 -> 0=> string field
           
           $node_id:           
+          
+    rev:
+         20070104 - franciscom - need to manage multiselection in a different way      
   */
   function design_values_to_db($hash,$node_id)
   {                                  
     $cf_prefix='custom_field_';
     $len_cfp=strlen($cf_prefix);
-    $cfid_pos=2;
+    $cftype_pos=2;
+    $cfid_pos=3;
     foreach($hash as $key => $value)
     {
       if( strncmp($key,$cf_prefix,$len_cfp) == 0 )
       {
         $dummy=explode('_',$key);
         $field_id=$dummy[$cfid_pos];
-
+        $field_type_id=$dummy[$cftype_pos];
+        $verbose_type=$this->custom_field_types[$field_type_id];        
+        
+        switch ($verbose_type) 
+        {
+          case 'multiselection list':
+          case 'checkbox':
+            if( count($value) > 1)
+            {
+              $value=implode('|',$value);
+            }
+            else
+            {
+              $value=$value[0];  
+            }
+          break;          
+        }
+        
         // do I need to update or insert this value?
         $sql = "SELECT value FROM cfield_design_values " .
     		 			 " WHERE field_id={$field_id} AND	node_id={$node_id}";
@@ -281,6 +361,7 @@ class cfield_mgr
 			  }  
         $this->db->exec_query($sql);
 
+        echo "<pre>debug 20070104 " . __FUNCTION__ . " --- "; print_r($sql); echo "</pre>";
 	    } //if( strncmp  
     } //foreach($hash
     
@@ -706,7 +787,7 @@ class cfield_mgr
 	
 			case 'enum':
 			case 'list':
-			case 'multilist':
+			case 'multiselection list':
 			case 'checkbox':
 				return str_replace( '|', ', ', $t_custom_field_value );
 				break;

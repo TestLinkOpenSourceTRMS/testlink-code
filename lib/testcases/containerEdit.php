@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * @version $Revision: 1.50 $
- * @modified $Date: 2006/12/31 18:22:58 $ by $Author: franciscom $
+ * @version $Revision: 1.51 $
+ * @modified $Date: 2007/01/04 15:27:59 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * 20061231 - franciscom - problems with test project test suite reorder
@@ -23,6 +23,7 @@ require_once("../../third_party/fckeditor/fckeditor.php");
 require_once("../../lib/plan/plan.inc.php");
 require_once("../functions/opt_transfer.php");
 testlinkInitPage($db);
+//echo "<pre>debug 20070104 " . __FUNCTION__ . " --- "; print_r($_REQUEST); echo "</pre>";
 
 $tree_mgr = new tree($db);
 $tproject_mgr = new testproject($db);
@@ -140,13 +141,13 @@ if($get_c_data)
 	$name_ok = 1;
 	$c_data = get_values_from_post($amy_keys);
 	
-	if($name_ok && !check_string($c_data['name'],$g_ereg_forbidden))
+	if($name_ok && !check_string($c_data['container_name'],$g_ereg_forbidden))
 	{
 		$msg = lang_get('string_contains_bad_chars');
 		$name_ok = 0;
 	}
 	
-	if($name_ok && !strlen($c_data['name']))
+	if($name_ok && !strlen($c_data['container_name']))
 	{
 		$msg = $warning_empty_name;
 		$name_ok = 0;
@@ -166,7 +167,7 @@ else if($action == 'add_testsuite')
 	if ($name_ok)
 	{
 		$msg = 'ok';
-		$ret =$tsuite_mgr->create($my_containerID,$c_data['name'],$c_data['details'],
+		$ret =$tsuite_mgr->create($my_containerID,$c_data['container_name'],$c_data['details'],
 								              $g_check_names_for_duplicates,
 								              $g_action_on_duplicate_name);
 		if($ret['status_ok'])
@@ -215,7 +216,7 @@ else if($action == 'update_testsuite')
 	if($name_ok)
 	{
 	    $msg = 'ok';
-	  	if ($tsuite_mgr->update($my_testsuiteID,$c_data['name'],$c_data['details'])) 
+	  	if ($tsuite_mgr->update($my_testsuiteID,$c_data['container_name'],$c_data['details'])) 
 	  	{
         $tsuite_mgr->deleteKeywords($my_testsuiteID);   	 
         if( strlen(trim($assigned_keyword_list)) > 0 )
@@ -361,7 +362,7 @@ if ($the_tpl)
 // Auxiliary functions
 function get_values_from_post($akeys2get)
 {
-	$akeys2get[] = 'name';
+	$akeys2get[] = 'container_name';
 	$c_data = array();
 	foreach($akeys2get as $key)
 	{

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqSpecView.php,v $
- * @version $Revision: 1.29 $
- * @modified $Date: 2006/12/24 11:50:33 $ by $Author: franciscom $
+ * @version $Revision: 1.30 $
+ * @modified $Date: 2007/01/04 15:27:59 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Screen to view existing requirements within a req. specification.
@@ -188,9 +188,8 @@ if ($bGetReqs)
 // collect existing document data
 $arrSpec = $tproject->getReqSpec($tprojectID,$idSRS);
 
-$arrSpec[0]['author'] = getUserName($db,$arrSpec[0]['author_id']);
-$arrSpec[0]['modifier'] = getUserName($db,$arrSpec[0]['modifier_id']);
-
+$arrSpec[0]['author'] = trim(getUserName($db,$arrSpec[0]['author_id']));
+$arrSpec[0]['modifier'] = trim(getUserName($db,$arrSpec[0]['modifier_id']));
 
 $sql = "SELECT * FROM req_specs WHERE id={$idSRS}";
 $srs_title=$db->fetchFirstRowSingleColumn($sql,'title');

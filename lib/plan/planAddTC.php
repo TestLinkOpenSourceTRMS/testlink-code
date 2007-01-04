@@ -1,6 +1,6 @@
 <?php
 ////////////////////////////////////////////////////////////////////////////////
-// @version $Id: planAddTC.php,v 1.26 2006/11/13 07:09:32 franciscom Exp $
+// @version $Id: planAddTC.php,v 1.27 2007/01/04 15:27:59 franciscom Exp $
 // File:     planAddTC.php
 // Author:   Chad Rosen
 // Purpose:  This page manages the importation of test cases into testlink.
@@ -79,12 +79,12 @@ if(isset($_POST['do_action']))
 	$out = gen_spec_view($db,'testproject',$tproject_id,$object_id,$tsuite_data['name'],
                        $tplan_mgr->get_linked_tcversions($tplan_id,DONT_FILTER_BY_TCASE_ID,$keyword_id),
                        $map_node_tccount,$keyword_id,DONT_FILTER_BY_TCASE_ID);
-    $do_display = 1;
+  $do_display = 1;
 }
 
 if($do_display)
 {
-	$smarty->assign('has_tc', ($out['num_tc'] > 0 ? 1 : 0));
+  $smarty->assign('has_tc', ($out['num_tc'] > 0 ? 1 : 0));
 	$smarty->assign('arrData', $out['spec_view']);
 	$smarty->assign('has_linked_items',$out['has_linked_items']);
 	

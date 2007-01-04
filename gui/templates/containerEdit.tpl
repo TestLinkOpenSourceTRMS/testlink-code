@@ -1,12 +1,13 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: containerEdit.tpl,v 1.15 2007/01/02 13:42:05 franciscom Exp $
+$Id: containerEdit.tpl,v 1.16 2007/01/04 15:27:58 franciscom Exp $
 Purpose: smarty template - edit test specification: containers 
 
 20061230 - franciscom - added custom field management
                         removed TL 1.6 useless code
 *}
-{include file="inc_head.tpl" openHead='yes'}
+{include file="inc_head.tpl" openHead='yes' jsValidate="yes"}
+
 <script language="JavaScript" src="gui/javascript/OptionTransfer.js" type="text/javascript"></script>
 <script language="JavaScript" type="text/javascript">
 var {$opt_cfg->js_ot_name} = new OptionTransfer("{$opt_cfg->from->name}","{$opt_cfg->to->name}");
@@ -17,6 +18,26 @@ var {$opt_cfg->js_ot_name} = new OptionTransfer("{$opt_cfg->from->name}","{$opt_
 {$opt_cfg->js_ot_name}.saveNewLeftOptions("{$opt_cfg->js_ot_name}_newLeft");
 {$opt_cfg->js_ot_name}.saveNewRightOptions("{$opt_cfg->js_ot_name}_newRight");
 </script>
+
+{literal}
+<script type="text/javascript">
+{/literal}
+var warning_empty_container_name = "{lang_get s='warning_empty_testsuite_name'}";
+{literal}
+function validateForm(f)
+{
+  if (isWhitespace(f.container_name.value)) 
+  {
+      alert(warning_empty_container_name);
+      selectField(f, 'container_name');
+      return false;
+  }
+  return true;
+}
+</script>
+{/literal}
+
+
 </head>
 
 <body onLoad="{$opt_cfg->js_ot_name}.init(document.forms[0])">
@@ -25,7 +46,10 @@ var {$opt_cfg->js_ot_name} = new OptionTransfer("{$opt_cfg->from->name}","{$opt_
 
 <div class="workBack">
   <h1>{lang_get s='title_edit_level'} {lang_get s=$level}</h1> 
-	<form method="post" action="lib/testcases/containerEdit.php?testsuiteID={$containerID}" /> 
+	<form method="post" action="lib/testcases/containerEdit.php?testsuiteID={$containerID}" 
+	      name="container_edit" id="container_edit"
+        onSubmit="javascript:return validateForm(this);">
+
 		<div style="float: right;">
 			<input type="submit" name="update_testsuite" value="{lang_get s='btn_update_testsuite'}" />
 		</div>

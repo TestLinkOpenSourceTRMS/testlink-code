@@ -1,6 +1,6 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: mainPage.tpl,v 1.24 2006/12/31 16:21:45 franciscom Exp $     
+ $Id: mainPage.tpl,v 1.25 2007/01/04 15:27:58 franciscom Exp $     
  Purpose: smarty template - main page / site map                 
                                                                  
  rev :                                                 
@@ -89,10 +89,12 @@
 			<img alt="arrow" class="arrow" src="icons/arrow_org.gif" />
 	   		<a href="{$launcher}?feature=tc_exec_assignment">{lang_get s='href_tc_exec_assignment'}</a>
 	        <br />
+			{*
 			<img alt="arrow" class="arrow" src="icons/arrow_org.gif" />
 	   		<a href="lib/plan/planUpdateTC.php">{lang_get s='href_upd_mod_tc'}</a>
-	    </p>
-		{/if} {* testplan_planning *}
+	    *}
+		</p>
+	  {/if} {* testplan_planning *}
 	{/if}
 
 	{if $testplan_planning == "yes" or $testplan_creating == "yes"}

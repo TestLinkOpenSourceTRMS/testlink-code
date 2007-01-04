@@ -1,12 +1,13 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: containerNew.tpl,v 1.11 2007/01/02 13:42:05 franciscom Exp $
+$Id: containerNew.tpl,v 1.12 2007/01/04 15:27:58 franciscom Exp $
 Purpose: smarty template - create containers
 
 20061231 - franciscom - using parent_info
 20060804 - franciscom - changes to add option transfer
 *}
-{include file="inc_head.tpl" openHead='yes'}
+{include file="inc_head.tpl" openHead='yes' jsValidate="yes"}
+
 <script language="JavaScript" src="gui/javascript/OptionTransfer.js" type="text/javascript"></script>
 <script language="JavaScript" type="text/javascript">
 var {$opt_cfg->js_ot_name} = new OptionTransfer("{$opt_cfg->from->name}","{$opt_cfg->to->name}");
@@ -17,6 +18,25 @@ var {$opt_cfg->js_ot_name} = new OptionTransfer("{$opt_cfg->from->name}","{$opt_
 {$opt_cfg->js_ot_name}.saveNewLeftOptions("{$opt_cfg->js_ot_name}_newLeft");
 {$opt_cfg->js_ot_name}.saveNewRightOptions("{$opt_cfg->js_ot_name}_newRight");
 </script>
+
+{literal}
+<script type="text/javascript">
+{/literal}
+var warning_empty_container_name = "{lang_get s='warning_empty_testsuite_name'}";
+{literal}
+function validateForm(f)
+{
+  if (isWhitespace(f.container_name.value)) 
+  {
+      alert(warning_empty_container_name);
+      selectField(f, 'container_name');
+      return false;
+  }
+  return true;
+}
+</script>
+{/literal}
+
 </head>
 
 <body onLoad="{$opt_cfg->js_ot_name}.init(document.forms[0])">
@@ -31,7 +51,11 @@ var {$opt_cfg->js_ot_name} = new OptionTransfer("{$opt_cfg->from->name}","{$opt_
                                item=$level action="add" name=$name
                                refresh="yes"}
 
-<form method="post" action="lib/testcases/containerEdit.php?containerID={$containerID}">
+<form method="post" action="lib/testcases/containerEdit.php?containerID={$containerID}"
+	      name="container_new" id="container_new"
+        onSubmit="javascript:return validateForm(this);">
+
+
 	<div style="font-weight: bold;">
 		<div style="float: right;">
 			<input type="submit" name="add_testsuite" value="{lang_get s='btn_create_testsuite'}" />

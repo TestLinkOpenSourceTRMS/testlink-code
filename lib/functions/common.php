@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.56 $ $Author: franciscom $
- * @modified $Date: 2006/12/31 16:18:15 $
+ * @version $Revision: 1.57 $ $Author: franciscom $
+ * @modified $Date: 2007/01/04 15:27:58 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -17,6 +17,7 @@
  * email, userID, productID, productName, testplan (use rather testPlanID),
  * testPlanID, testPlanName
  *
+ * 20070104 - franciscom - gen_spec_view() warning message removed
  *
  **/ 
 require_once("lang_api.php");
@@ -675,7 +676,8 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
 	if($write_button_only_if_linked)
 		$write_status = 'no';
 	
-	$result = array('spec_view'=>array(), 'num_tc' => 0);
+	//  20070104 - franciscom - added 'has_linked_items' => 0, to remove a warning message.
+	$result = array('spec_view'=>array(), 'num_tc' => 0, 'has_linked_items' => 0);
 	$out = array(); 
 	$a_tcid = array();
 	

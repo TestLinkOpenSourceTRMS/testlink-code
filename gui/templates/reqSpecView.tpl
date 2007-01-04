@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecView.tpl,v 1.21 2007/01/02 22:02:33 franciscom Exp $ *}
+{* $Id: reqSpecView.tpl,v 1.22 2007/01/04 15:27:58 franciscom Exp $ *}
 {* 
    Purpose: smarty template - view a requirement specification
    Author: Martin Havlat 
@@ -9,19 +9,6 @@
 
 {include file="inc_head.tpl" openHead="yes"}
 {include file="inc_jsCheckboxes.tpl"}
-</head>
-
-<body>
-{assign var="cfg_section" value=$smarty.template|replace:".tpl":"" }
-{config_load file="input_dimensions.conf" section=$cfg_section}
-
-<h1>
-	<img title="{lang_get s='help'}: {lang_get s='req_spec'}"
-	     alt="{lang_get s='help'}: {lang_get s='req_spec'}" class="help" 
-	     src="icons/sym_question.gif" 
-	     onclick="javascript:open_popup('{$helphref}requirementsCoverage.html');" />
-  {lang_get s='req_spec'}{$smarty.const.TITLE_SEP}{$arrSpec[0].title|escape}   
-</h1>
 
 {literal}
 <script type="text/javascript">
@@ -49,11 +36,23 @@ function check_action_precondition(form_id,action)
     confirm(please_select_a_req);
     return false; 
  }  
-
 }
-
 </script>
 {/literal}
+</head>
+
+<body>
+{assign var="cfg_section" value=$smarty.template|replace:".tpl":"" }
+{config_load file="input_dimensions.conf" section=$cfg_section}
+
+<h1>
+	<img title="{lang_get s='help'}: {lang_get s='req_spec'}"
+	     alt="{lang_get s='help'}: {lang_get s='req_spec'}" class="help" 
+	     src="icons/sym_question.gif" 
+	     onclick="javascript:open_popup('{$helphref}requirementsCoverage.html');" />
+  {lang_get s='req_spec'}{$smarty.const.TITLE_SEP}{$arrSpec[0].title|escape}   
+</h1>
+
 
 
 <div class="workBack">

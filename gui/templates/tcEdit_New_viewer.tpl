@@ -1,18 +1,19 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcEdit_New_viewer.tpl,v 1.1 2006/12/31 18:20:49 franciscom Exp $
+$Id: tcEdit_New_viewer.tpl,v 1.2 2007/01/04 15:27:58 franciscom Exp $
 Purpose: smarty template - create new testcase
 
 20061231 - franciscom - viewer for tcEdit.tpl and tcNew.tpl
 *}
  <p>
-	<div class="labelHolder"><label for="name">{lang_get s='tc_title'}</label></div>
+	<div class="labelHolder"><label for="testcase_name">{lang_get s='tc_title'}</label></div>
 	<div>	
-		<input type="text" name="name"
+		<input type="text" name="testcase_name"
    	       size="{#TESTCASE_NAME_SIZE#}" 
            maxlength="{#TESTCASE_NAME_MAXLEN#}" 
 		       value="{$tc.name|escape}"
 			     title="{lang_get s='alt_add_tc_name'}"/>
+  				{include file="error_icon.tpl" field="testcase_name"}
 	<p>
 
 	<div class="labelHolder">{lang_get s='summary'}</div>

@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planAddTC_m1.tpl,v 1.7 2006/11/13 07:07:46 franciscom Exp $
+$Id: planAddTC_m1.tpl,v 1.8 2007/01/04 15:27:58 franciscom Exp $
 Purpose: smarty template - generate a list of TC for adding to Test Plan 
 
 20061105 - franciscom
@@ -12,39 +12,41 @@ added logic to manage active/inactive tcversions
 {include file="inc_jsCheckboxes.tpl"}
 
 <body>
-
-<h1>{if $has_linked_items eq 0} 
-		{lang_get s='title_add_test_to_plan'}
-    {else}
-		{lang_get s='title_add_remove_test_to_plan'}
-    {/if}     
-    {$testPlanName|escape}
+<h1>{lang_get s='test_plan'}{$smarty.const.TITLE_SEP}{$testPlanName|escape}
 </h1>
 
 
 {if $has_tc }
-
-<form name='addTcForm' method='post'>
-<div style="padding-right: 20px; float: right;">
-    <input type='submit' name='do_action' 
-		{if $has_linked_items eq 0}
-	    	value='{lang_get s='btn_add_selected_tc'}'
-		{else}
-        value='{lang_get s='btn_add_remove_selected_tc'}' 
-		{/if}
-    />
-</div>
-
-{include file="inc_update.tpl" result=$sqlResult}
-{if $key ne ''}
-	<div style="margin-left: 20px; font-size: smaller;">
-		<p>{lang_get s='note_keyword_filter'} '{$key|escape}'</p>
-	</div>
-{/if}
-
-
 <div class="workBack">
 
+<form name='addTcForm' method='post'>
+ 
+    <h1>
+    {if $has_linked_items eq 0} 
+		   {lang_get s='title_add_test_to_plan'}
+    {else}
+		   {lang_get s='title_add_remove_test_to_plan'}
+    {/if}     
+    </h1>
+    {include file="inc_update.tpl" result=$sqlResult}
+    <div style="padding-right: 20px; float: right;">
+      <p><input type='submit' name='do_action' 
+		     {if $has_linked_items eq 0}
+	      	   value='{lang_get s='btn_add_selected_tc'}'
+		     {else}
+             value='{lang_get s='btn_add_remove_selected_tc'}' 
+		     {/if}
+         />
+   </div>
+   <p>
+   <p>
+  
+  {if $key ne ''}
+	  <div style="margin-left: 20px; font-size: smaller;">
+		  <p>{lang_get s='note_keyword_filter'}{$key|escape}</p>
+	  </div>
+  {/if}
+  <p>
 	{section name=tsuite_idx loop=$arrData}
 	<div id="div_{$arrData[tsuite_idx].testsuite.id}" style="margin:0px 0px 0px {$arrData[tsuite_idx].level}0px;">
 	    <h3>{$arrData[tsuite_idx].testsuite.name|escape}</h3>

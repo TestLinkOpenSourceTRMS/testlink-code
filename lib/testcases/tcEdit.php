@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.45 $
- * @modified $Date: 2006/12/31 18:22:58 $  by $Author: franciscom $
+ * @version $Revision: 1.46 $
+ * @modified $Date: 2007/01/04 15:27:59 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
  *
@@ -42,7 +42,7 @@ $container_id = isset($_GET['containerID']) ? intval($_GET['containerID']) : 0;
 $tcase_id = isset($_REQUEST['testcase_id']) ? intval($_REQUEST['testcase_id']) : 0;
 $tcversion_id = isset($_REQUEST['tcversion_id']) ? intval($_REQUEST['tcversion_id']) : 0;
 
-$name 		= isset($_POST['name']) ? strings_stripSlashes($_POST['name']) : null;
+$name 		= isset($_POST['testcase_name']) ? strings_stripSlashes($_POST['testcase_name']) : null;
 $summary 	= isset($_POST['summary']) ? strings_stripSlashes($_POST['summary']) : null;
 $steps 		= isset($_POST['steps']) ? strings_stripSlashes($_POST['steps']) : null;
 $expected_results 	= isset($_POST['expected_results']) ? strings_stripSlashes($_POST['expected_results']) : null;
@@ -216,7 +216,7 @@ else if($do_create)
 	keywords_opt_transf_cfg($opt_cfg, $assigned_keywords_list); 
  	$smarty->assign('opt_cfg', $opt_cfg);
  	$smarty->assign('sqlResult', $msg);
-	$smarty->assign('name', $name);
+	$smarty->assign('testcase_name', $name);
 	$smarty->assign('item', 'Test case');
 }
 else if($delete_tc)

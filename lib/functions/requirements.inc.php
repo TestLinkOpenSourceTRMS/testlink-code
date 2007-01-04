@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: requirements.inc.php,v $
- * @version $Revision: 1.40 $
- * @modified $Date: 2007/01/02 13:43:41 $ by $Author: franciscom $
+ * @version $Revision: 1.41 $
+ * @modified $Date: 2007/01/04 15:27:58 $ by $Author: franciscom $
  *
  * @author Martin Havlat <havlat@users.sourceforge.net>
  * 
@@ -23,6 +23,7 @@
  * 20051025 - MHT - corrected introduced bug with insert TC (Bug 197)
  * 20061009 - franciscom - added getReqByReqdocId()
  * 20061014 - franciscom - added check_syntax* functions()
+ * 20070104 - franciscom - getOptionReqSpec()
  *
  */
 ////////////////////////////////////////////////////////////////////////////////
@@ -123,19 +124,30 @@ function deleteReqSpec(&$db,$srs_id)
 
 
 /** 
- * get list of all SRS for the current product 
+ * get list of all SRS for a test project
+ * 
  * 
  * @return associated array List of titles according to IDs
  * 
  * @author Martin Havlat 
+ *
+ * rev :
+ *      20070104 - franciscom - added [$get_not_empy]
  **/
-function getOptionReqSpec(&$db,$testproject_id)
+function getOptionReqSpec(&$db,$testproject_id,$get_not_empty=0)
 {
-	$sql = "SELECT id,title " .
-	       " FROM req_specs " .
-	       " WHERE testproject_id={$testproject_id} " . 
-			   " ORDER BY title";
-	
+  $additional_table='';
+  $additional_join='';
+  if( $get_not_empty )
+  {
+		$additional_table=", requirements REQ ";
+		$additional_join=" AND SRS.id = REQ.srs_id ";
+	}
+  $sql = " SELECT SRS.id,SRS.title " .
+         " FROM req_specs SRS " . $additional_table .
+         " WHERE testproject_id={$testproject_id} " .
+         $additional_join . 
+		     " ORDER BY title";
 	return $db->fetchColumnsIntoMap($sql,'id','title');
 }
 

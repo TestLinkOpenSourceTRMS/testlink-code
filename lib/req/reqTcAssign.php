@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: reqTcAssign.php,v $
- * @version $Revision: 1.9 $
- * @modified $Date: 2006/10/11 07:00:39 $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2007/01/04 15:27:59 $
  * 
  * @author Martin Havlat
 **/
@@ -70,30 +70,36 @@ if ($edit == 'testproject' || $edit == 'testsuite')
 } 
 else if($edit == 'testcase')
 {
-	//get list of ReqSpec
-	$arrReqSpec = getOptionReqSpec($db,$tproject_id);
+	//get list of ReqSpec (not_empty)
+	$get_not_empty=1;
+	$arrReqSpec = getOptionReqSpec($db,$tproject_id,$get_not_empty);
 
-	$tc_mgr = new testcase($db);
-	$arrTc = $tc_mgr->get_by_id($tc_id);
-	if ($arrTc)
-	{
-		$tcTitle = $arrTc[0]['name'];
-	
-		//get first ReqSpec if not defined
-		if (!$idReqSpec && count($arrReqSpec))
-		{
-			reset($arrReqSpec);
-			$idReqSpec = key($arrReqSpec);
-			tLog('Set first SRS ID: ' . $idReqSpec);
-		}
-		
-		if ($idReqSpec)
-		{
-			$arrAssignedReq = getRequirements($db,$idReqSpec, 'assigned', $tc_id);
-			$arrAllReq = getRequirements($db,$idReqSpec);
-			$arrUnassignedReq = array_diff_byId($arrAllReq, $arrAssignedReq);
-		}
-	}
+  $SRS_qty=count($arrReqSpec);
+  
+  if( $SRS_qty > 0 )
+  {
+  	$tc_mgr = new testcase($db);
+  	$arrTc = $tc_mgr->get_by_id($tc_id);
+  	if ($arrTc)
+  	{
+  		$tcTitle = $arrTc[0]['name'];
+  	
+  		//get first ReqSpec if not defined
+  		if (!$idReqSpec && $SRS_qty > 0)
+  		{
+  			reset($arrReqSpec);
+  			$idReqSpec = key($arrReqSpec);
+  			tLog('Set first SRS ID: ' . $idReqSpec);
+  		}
+  		
+  		if ($idReqSpec)
+  		{
+  			$arrAssignedReq = getRequirements($db,$idReqSpec, 'assigned', $tc_id);
+  			$arrAllReq = getRequirements($db,$idReqSpec);
+  			$arrUnassignedReq = array_diff_byId($arrAllReq, $arrAssignedReq);
+  		}
+  	}
+  }  // if( $SRS_qty > 0 )	
 }
 else
 {

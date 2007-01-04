@@ -1,6 +1,7 @@
 {* Testlink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: inc_help.tpl,v 1.2 2005/08/16 17:59:13 franciscom Exp $ *}
+{* $Id: inc_help.tpl,v 1.3 2007/01/04 15:27:58 franciscom Exp $ *}
 {* Purpose: smarty template - help link/icon *}
-	<img alt="Help" style="vertical-align: top;" 
-			src="icons/sym_question.gif" 
-			onclick="javascript:open_popup('{$helphref}{$filename}');" />
+	<img title="Help"
+	     alt="Help" style="vertical-align: top;" 
+			 src="icons/sym_question.gif" 
+			 onclick="javascript:open_popup('{$helphref}{$filename}');" />

@@ -5,17 +5,17 @@
  *
  * Filename $RCSfile: users.inc.php,v $
  *
- * @version $Revision: 1.36 $
- * @modified $Date: 2006/10/15 19:05:39 $ $Author: schlundus $
+ * @version $Revision: 1.37 $
+ * @modified $Date: 2007/01/04 15:27:58 $ $Author: franciscom $
  *
  * Functions for usermanagement
  *
- * 20051228 - fm - added active attribute
  * 20050821 - fm - BUGID 239
  * 20051231 - scs - changes due to ADBdb
  * 20060205 - JBA - Remember last product (BTS 221); added by MHT
  * 20060224 - franciscom - changes in session product -> testproject
  * 20060511 - franciscom - changes in userInsert()
+ * 20070104 - franciscom - changes in getUserName()
 **/
 require_once("common.php");
 
@@ -421,10 +421,20 @@ function user_is_name_valid($p_username)
  * 20051015 - scs - added check of userId of 0
  * 20060102 - scs - refactored 
  * 20060224 - franciscom - table name user -> users
+ * 20070104 - franciscom - refactoring to return unknown user 
+ *                         when id_user range invalid.
+ *                         Needed to cope with the situation
+ *                         of modifier_id, that before any
+ *                         modification is null.
  **/
 function getUserName(&$db,$id_user)
 {
-	$username = lang_get('Unknown');
+	$username = '';
+	if(intval($id_user) > 0 )
+	{
+	  $username = lang_get('Unknown');
+  }
+  
 	if ($id_user)
 	{
 		$sql = "SELECT login, first, last FROM users WHERE id=" . $id_user;

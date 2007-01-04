@@ -1,12 +1,12 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: inc_testsuite_viewer_ro.tpl,v 1.4 2006/12/31 16:21:45 franciscom Exp $
+$Id: inc_testsuite_viewer_ro.tpl,v 1.5 2007/01/04 15:27:58 franciscom Exp $
 
 20060805 - franciscom - added keywords management
 *}
 <table class="simple" style="width: 90%">
 	<tr>
-		<th>{lang_get s='component'}: {$container_data.name|escape}</th>
+		<th>{lang_get s='test_suite'}: {$container_data.name|escape}</th>
 	</tr>
 	<tr>
 		<td>

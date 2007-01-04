@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.97 $
- * @modified $Date: 2007/01/02 22:02:34 $ $Author: franciscom $
+ * @version $Revision: 1.98 $
+ * @modified $Date: 2007/01/04 15:27:59 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
@@ -485,6 +485,7 @@ $TLS_warning_create_build_first = "You must create builds or import data at firs
 $TLS_delete = "Delete";
 $TLS_delete_notice = "Warning: All Related Execution Results will be deleted";
 $TLS_warning_empty_com_name = "Please give a name to Test Suite";
+$TLS_warning_empty_testsuite_name = "Please give a name to Test Suite";
 
 
 
@@ -954,6 +955,7 @@ $TLS_title_upd_mod_tc = "Update Modified Test Case(s) in ";
 
 // gui/templates/reqAssign.tpl
 $TLS_btn_unassign = "Unassign";
+$TLS_please_select_a_req="Please select a requirement";
 $TLS_req = "Requirement";
 $TLS_req_doc_id = "DOC-ID";
 $TLS_req_msg_norequirement = "No requirement";
@@ -962,7 +964,11 @@ $TLS_req_spec = "Requirements Specification";
 $TLS_req_title_assign = "Assign Requirements to Test Case";
 $TLS_req_title_assigned = "Assigned Requirements";
 $TLS_req_title_unassigned = "Available Requirements";
-
+$TLS_unassigned="unassigned";
+$TLS_warning_req_tc_assignment_impossible="You <b>can't do</b> the assignment due to " . 
+                                          "one of these causes:<br>" .
+                                          "<ul><li>There are no Requirement Specification defined</li>".
+                                          "<li>The Requirement Specifications are empty</ul></li></ul>";
 
 
 // gui/templates/reqCreate.tpl
@@ -1126,7 +1132,6 @@ $TLS_title_mv_cp_tc = "Move/Copy Test Case";
 
 // gui/templates/tcNew.tpl
 $TLS_title_new_tc = "Create Test Case";
-
 
 
 // gui/templates/tcPrintNavigator.tpl
@@ -1397,8 +1402,8 @@ $TLS_warning_delete_attachment = "Really delete this attachment?";
 
 
 // gui/templates/planAddTC_m1.tpl
-$TLS_btn_add_remove_selected_tc = "Add/Remove selected Test Cases";
-$TLS_btn_add_selected_tc = "Add selected Test Cases";
+$TLS_btn_add_remove_selected_tc = "Add/Remove selected";
+$TLS_btn_add_selected_tc = "Add selected";
 $TLS_btn_check = "Check";
 $TLS_btn_uncheck = "Uncheck";
 $TLS_check_uncheck_tc = "Test Cases in the Test Suite.";
@@ -1535,6 +1540,5 @@ $TLS_do_delete=$TLS_deleted;
 $TLS_do_add="created";
 
 $TLS_btn_ok="Ok";
-
 
 ?>

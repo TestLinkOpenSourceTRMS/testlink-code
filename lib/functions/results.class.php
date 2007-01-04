@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8 
- * @modified $Date: 2007/01/04 06:38:00 $ by $Author: kevinlevy $
+ * @modified $Date: 2007/01/04 06:51:50 $ by $Author: kevinlevy $
  *
  *
  * This class is encapsulates most functionality necessary to query the database
@@ -308,16 +308,27 @@ class results
 			next($arrResults);
 		}
 		$totalNotRun = $totalCases - ($totalPass + $totalFail + $totalBlocked);
-		$percentCompleted = (($totalCases - $totalNotRun) / $totalCases) * 100;
+		
+		$percentCompleted = 0;
+		if ($totalCases != 0) {
+			$percentCompleted = (($totalCases - $totalNotRun) / $totalCases) * 100;
+		}
+		
 		$percentCompleted = number_format($percentCompleted,2);		
 		
-		$percentPass = (($totalPass) / $totalCases) * 100;
+		$percentPass = 0;
+		$percentFail = 0;
+		$percentBlocked = 0;
+		if ($totalCases != 0) {
+			$percentPass = (($totalPass) / $totalCases) * 100;
+			$percentFail = (($totalFail) / $totalCases) * 100;
+			$percentBlocked = (($totalBlocked) / $totalCases) * 100;
+		}
+		
+		$percentFail = number_format($percentFail,2);		
+		
 		$percentPass = number_format($percentPass,2);		
 		
-		$percentFail = (($totalFail) / $totalCases) * 100;
-		$percentFail = number_format($percentFail,2);		
-
-		$percentBlocked = (($totalBlocked) / $totalCases) * 100;
 		$percentBlocked = number_format($percentBlocked,2);		
 		
 		$rArray = array($arrBuilds[$buildId], $totalCases, $totalPass, $percentPass, $totalFail, $percentFail, $totalBlocked, $percentBlocked, $totalNotRun, $percentCompleted);

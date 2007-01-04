@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8 
- * @modified $Date: 2007/01/04 06:51:50 $ by $Author: kevinlevy $
+ * @modified $Date: 2007/01/04 07:13:56 $ by $Author: kevinlevy $
  *
  *
  * This class is encapsulates most functionality necessary to query the database
@@ -325,10 +325,8 @@ class results
 			$percentBlocked = (($totalBlocked) / $totalCases) * 100;
 		}
 		
-		$percentFail = number_format($percentFail,2);		
-		
-		$percentPass = number_format($percentPass,2);		
-		
+		$percentFail = number_format($percentFail,2);			
+		$percentPass = number_format($percentPass,2);			
 		$percentBlocked = number_format($percentBlocked,2);		
 		
 		$rArray = array($arrBuilds[$buildId], $totalCases, $totalPass, $percentPass, $totalFail, $percentFail, $totalBlocked, $percentBlocked, $totalNotRun, $percentCompleted);

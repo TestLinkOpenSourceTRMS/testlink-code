@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8 
- * @modified $Date: 2007/01/04 07:13:56 $ by $Author: kevinlevy $
+ * @modified $Date: 2007/01/04 07:39:37 $ by $Author: kevinlevy $
  *
  *
  * This class is encapsulates most functionality necessary to query the database
@@ -417,12 +417,10 @@ class results
 	$owner_id = $owner_row['user_id'];
 	//print "owner_id = $owner_id <BR>";
 	
-	if ($this->keywordData == null) {
-		return;
-	}
-	
-	if (array_key_exists($testcase_id, $this->keywordData)) {
-		$associatedKeywords = $this->keywordData[$testcase_id];
+	if ($this->keywordData != null) {
+		if (array_key_exists($testcase_id, $this->keywordData)) {
+			$associatedKeywords = $this->keywordData[$testcase_id];
+		}
 	}
 							  
 	if ($this->mapOfLastResult && array_key_exists($suiteId, $this->mapOfLastResult)) {

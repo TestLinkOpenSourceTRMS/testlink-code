@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcEdit_New_viewer.tpl,v 1.2 2007/01/04 15:27:58 franciscom Exp $
+$Id: tcEdit_New_viewer.tpl,v 1.3 2007/01/05 13:57:30 franciscom Exp $
 Purpose: smarty template - create new testcase
 
 20061231 - franciscom - viewer for tcEdit.tpl and tcNew.tpl
@@ -24,6 +24,15 @@ Purpose: smarty template - create new testcase
 
 	<div class="labelHolder">{lang_get s='expected_results'}</div>
 	<div>{$expected_results}</div><p>
+
+  {* Custom fields *}
+   {if $cf neq ""}
+     <p>
+     <div class="custom_field_container">
+     {$cf}
+     </div>
+     <p>
+   {/if}
 
   <div>
   <a href={$gsmarty_href_keywordsView}>{lang_get s='tc_keywords'}</a>

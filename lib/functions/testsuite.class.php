@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testsuite.class.php,v $
- * @version $Revision: 1.22 $
- * @modified $Date: 2007/01/02 13:43:41 $ - $Author: franciscom $
+ * @version $Revision: 1.23 $
+ * @modified $Date: 2007/01/05 13:57:30 $ - $Author: franciscom $
  * @author franciscom
  *
  * 20070102 - franciscom - changes to delete_deep() to support custom fields
@@ -574,7 +574,7 @@ function get_spec_cfields($id)
             
             
   args: $id
-        [$parent_id]
+        [$parent_id]:
         [$show_on_execution]: default: null
                               1 -> filter on field show_on_execution=1
                               0 or null -> don't filter
@@ -637,7 +637,9 @@ function get_linked_cfields_at_execution($id,$parent_id=null,$show_on_execution=
             
             
   args: $id
-        [$parent_id]
+        [$parent_id]: need when you call this method during the creation
+                      of a test suite, because the $id will be 0 or null.
+                      
         [$scope]: 'design','execution'
         
   returns: html string
@@ -676,18 +678,21 @@ function html_table_of_custom_field_inputs($id,$parent_id=null,$scope='design')
             
   args: $id
         [$scope]: 'design','execution'
+        [$show_on_execution]: default: null
+                              1 -> filter on field show_on_execution=1
+                              0 or null -> don't filter
   
   returns: html string
   
 */
-function html_table_of_custom_field_values($id,$scope='design') 
+function html_table_of_custom_field_values($id,$scope='design',$show_on_execution=null) 
 {
   $cf_smarty='';
+  $parent_id=null;
   
   if( $scope=='design' )
   {
-    $cf_map=$this->get_linked_cfields_at_design($id);
-    //echo "<pre>debug 20070101 \$cf_map" . __FUNCTION__ . " --- "; print_r($cf_map); echo "</pre>";
+    $cf_map=$this->get_linked_cfields_at_design($id,$parent_id,$show_on_execution);
   }
   else 
   {

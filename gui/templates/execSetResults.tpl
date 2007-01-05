@@ -1,8 +1,9 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: execSetResults.tpl,v 1.35 2007/01/02 22:02:33 franciscom Exp $
+$Id: execSetResults.tpl,v 1.36 2007/01/05 13:57:30 franciscom Exp $
 Purpose: smarty template - show tests to add results
 Revisions:
+          20070104 - franciscom - custom field management for test cases
           20070101 - franciscom - custom field management for test suite div
           20061112 - franciscom - added class management to assign
                                   color to status cells
@@ -141,10 +142,11 @@ Revisions:
 		  {$tsuite_info[$tc_exec.testcase_id].details}
 		  </fieldset>
 		  
-		  {if $ts_cf_smarty neq ''}
+		  {* 20070104 - franciscom *}
+		  {if $ts_cf_smarty[$tc_exec.testcase_id] neq ''}
 		    <p>
 		    <div class="custom_field_container">
-        {$ts_cf_smarty}
+        {$ts_cf_smarty[$tc_exec.testcase_id]}
         </div>
 		  {/if}
 		  
@@ -290,6 +292,39 @@ Revisions:
 			<td>{$tc_exec.steps}</td>
 			<td>{$tc_exec.expected_results}</td>
 		</tr>
+		
+    
+    {* ------------------------------------------------------------------------------- *}    
+    {* 20070104 - franciscom *}
+		<tr>
+			<td colspan="2">
+			  {if $execution_time_cf[$tc_exec.testcase_id] neq ''}
+			      <div class="custom_field_container" 
+			           style="background-color:#dddddd;">{$execution_time_cf[$tc_exec.testcase_id]}</div>
+			  {else}
+			      &nbsp;
+			  {/if} 
+			 </td>
+		</tr>
+    {* ------------------------------------------------------------------------------- *}    
+
+    
+    {* ------------------------------------------------------------------------------- *}    
+    {* 20070104 - franciscom *}
+		<tr>
+			<td colspan="2">
+			  {if $design_time_cf[$tc_exec.testcase_id] neq ''}
+			      <div class="custom_field_container" 
+			           style="background-color:#dddddd;">{$design_time_cf[$tc_exec.testcase_id]}</div>
+			  {else}
+			      &nbsp;
+			  {/if} 
+			 </td>
+		</tr>
+    {* ------------------------------------------------------------------------------- *}    
+		
+		
+
 		<tr>
 			<td colspan="2">
 			{assign var="tcID" value=$tc_exec.testcase_id}

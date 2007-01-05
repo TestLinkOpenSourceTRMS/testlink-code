@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.14 2006/12/31 16:21:45 franciscom Exp $
+$Id: tcView_viewer.tpl,v 1.15 2007/01/05 13:57:30 franciscom Exp $
 viewer for test case in test specification
 
 20061230 - franciscom - an experiment to make simple management
@@ -105,6 +105,19 @@ viewer for test case in test specification
 			<td>{$args_testcase.steps}</td>
 			<td>{$args_testcase.expected_results}</td>
 		</tr>
+		<tr>
+			<td colspan="2">&nbsp;</td>
+		</tr>
+
+		<tr> {* 20070104 - franciscom *}
+			<td colspan="2">{if $args_cf neq ''}
+			                 <div class="custom_field_container">{$args_cf}</div>
+			                {else}
+			                   &nbsp;
+			                {/if} 
+			 </td>
+		</tr>
+
 		<tr>
 		  	<td colspan="2">
 				<table cellpadding="0" cellspacing="0" style="font-size:100%;">

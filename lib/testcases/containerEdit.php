@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * @version $Revision: 1.51 $
- * @modified $Date: 2007/01/04 15:27:59 $ by $Author: franciscom $
+ * @version $Revision: 1.52 $
+ * @modified $Date: 2007/01/05 13:57:30 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * 20061231 - franciscom - problems with test project test suite reorder
@@ -57,7 +57,7 @@ $assigned_keyword_list = isset($_REQUEST[$rl_html_name])? $_REQUEST[$rl_html_nam
 
 
 $gui_cfg=config_get('gui');
-
+ 
 $smarty = new TLSmarty();
 
 $a_keys['testsuite'] = array('details');
@@ -181,8 +181,11 @@ else if($action == 'add_testsuite')
 
       if( $gui_cfg->enable_custom_fields )
       {
+        $ENABLED=1;
+        $NO_FILTER_SHOW_ON_EXEC=null;
         $cfield_mgr= new cfield_mgr($db);
-        $cfield_mgr->design_values_to_db($_REQUEST,$ret['id']);
+        $cf_map=$cfield_mgr->get_linked_cfields_at_design($my_tprojectID,$ENABLED,$NO_FILTER_SHOW_ON_EXEC,'testsuite') ;
+        $cfield_mgr->design_values_to_db($_REQUEST,$ret['id'],$cf_map);
       }  
 		}                             
 		else
@@ -227,8 +230,11 @@ else if($action == 'update_testsuite')
 
         if( $gui_cfg->enable_custom_fields )
         {
+          $ENABLED=1;
+          $NO_FILTER_SHOW_ON_EXEC=null;
           $cfield_mgr= new cfield_mgr($db);
-          $cfield_mgr->design_values_to_db($_REQUEST,$my_testsuiteID);
+          $cf_map=$cfield_mgr->get_linked_cfields_at_design($my_tprojectID,$ENABLED,$NO_FILTER_SHOW_ON_EXEC,'testsuite') ;
+          $cfield_mgr->design_values_to_db($_REQUEST,$my_testsuiteID,$cf_map);
         }  
       }   
       else

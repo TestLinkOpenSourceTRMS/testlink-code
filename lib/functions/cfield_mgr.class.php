@@ -2,10 +2,15 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: cfield_mgr.class.php,v $
- * @version $Revision: 1.3 $
- * @modified $Date: 2007/01/04 15:27:58 $  $Author: franciscom $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2007/01/05 13:57:30 $  $Author: franciscom $
  * @author franciscom
  *
+ * 20070105 - franciscom - 
+ * 1. solved bugs on design_values_to_db()
+ * 2. refactoring - design_values_to_db()
+ *                  execution_values_to_db()
+ *                         
  * 20061225 - franciscom - 
  *
 **/
@@ -69,6 +74,18 @@ class cfield_mgr
 	{
     return($this->custom_field_types);
   }
+
+  /*
+    function: get_name_prefix
+    
+    returns: string
+  */
+	function get_name_prefix() 
+	{
+    return($this->name_prefix);
+  }
+
+
 
   /*
     function: get_allowed_nodes
@@ -189,6 +206,8 @@ class cfield_mgr
     args: $p_field_def: contains the definition of the custom field 
                         (including it's field id)
               
+          [$name_suffix]: if used must start with _.
+                          example _TCID017
     
     returns:          
     
@@ -196,7 +215,7 @@ class cfield_mgr
          20070104 - franciscom - added 'multiselection list'
               
   */
-	function string_custom_field_input($p_field_def)
+	function string_custom_field_input($p_field_def,$name_suffix='')
 	{
     $WINDOW_SIZE_MULTILIST=5;
     
@@ -213,7 +232,9 @@ class cfield_mgr
 		$t_custom_field_value = htmlspecialchars( $t_custom_field_value );
 
     $verbose_type=$this->custom_field_types[$t_type];
-    $input_name="{$this->name_prefix}{$t_type}_{$t_id}";
+    
+    // 20070105 - franciscom
+    $input_name="{$this->name_prefix}{$t_type}_{$t_id}{$name_suffix}";
 		switch ($verbose_type) 
 		{
   		case 'list':
@@ -304,66 +325,62 @@ class cfield_mgr
           
           $node_id:           
           
+          [$cf_map]:  hash -> all the custom fields linked and enabled
+                              that are applicable to the node type of $node_id.
+                              
+                              For the keys not present in $hash, we will write
+                              an appropriate value according to custom field
+                              type.
+                              
+                              This is needed because when trying to udpate
+                              with hash being $_REQUEST, $_POST or $_GET
+                              some kind of custom fields (checkbox, list, multiple list)
+                              when has been deselected by user.
+                              
+          
     rev:
+         20070105 - franciscom - added $cf_map
          20070104 - franciscom - need to manage multiselection in a different way      
   */
-  function design_values_to_db($hash,$node_id)
+  function design_values_to_db($hash,$node_id,$cf_map=null)
   {                                  
-    $cf_prefix='custom_field_';
-    $len_cfp=strlen($cf_prefix);
-    $cftype_pos=2;
-    $cfid_pos=3;
-    foreach($hash as $key => $value)
+    if( is_null($hash) && is_null($cf_map) )
     {
-      if( strncmp($key,$cf_prefix,$len_cfp) == 0 )
+       return;
+    }
+    $cfield=$this->_build_cfield($hash,$cf_map);
+    
+    if( !is_null($cfield) )
+    {
+      foreach($cfield as $field_id => $type_and_value)
       {
-        $dummy=explode('_',$key);
-        $field_id=$dummy[$cfid_pos];
-        $field_type_id=$dummy[$cftype_pos];
-        $verbose_type=$this->custom_field_types[$field_type_id];        
-        
-        switch ($verbose_type) 
-        {
-          case 'multiselection list':
-          case 'checkbox':
-            if( count($value) > 1)
-            {
-              $value=implode('|',$value);
-            }
-            else
-            {
-              $value=$value[0];  
-            }
-          break;          
-        }
+        $value = $type_and_value['cf_value'];
         
         // do I need to update or insert this value?
         $sql = "SELECT value FROM cfield_design_values " .
     		 			 " WHERE field_id={$field_id} AND	node_id={$node_id}";
-
-	      $result = $this->db->exec_query($sql);
-	      if($this->db->num_rows( $result ) > 0 ) 
-	      {
-	        
-	        $sql = "UPDATE cfield_design_values " .
-	               " SET value='{$value}' " .
+  
+        $result = $this->db->exec_query($sql);
+        if($this->db->num_rows( $result ) > 0 ) 
+        {
+          
+          $sql = "UPDATE cfield_design_values " .
+                 " SET value='{$value}' " .
     		 			   " WHERE field_id={$field_id} AND	node_id={$node_id}";
         }  
         else 
         {
           # Remark got from Mantis code:
-			    # Always store the value, even if it's the dafault value
-			    # This is important, as the definitions might change but the
-			    #  values stored with a bug must not change
-			    $sql = "INSERT INTO cfield_design_values " .
-						     " ( field_id, node_id, value ) " .
-					       " VALUES	( {$field_id}, {$node_id}, '{$value}' )";
-			  }  
+  		    # Always store the value, even if it's the dafault value
+  		    # This is important, as the definitions might change but the
+  		    #  values stored with a bug must not change
+  		    $sql = "INSERT INTO cfield_design_values " .
+  					     " ( field_id, node_id, value ) " .
+  				       " VALUES	( {$field_id}, {$node_id}, '{$value}' )";
+  		  }  
         $this->db->exec_query($sql);
-
-        echo "<pre>debug 20070104 " . __FUNCTION__ . " --- "; print_r($sql); echo "</pre>";
-	    } //if( strncmp  
-    } //foreach($hash
+      } //foreach($cfield
+    } //if( !is_null($cfield) )
     
   } //function end
 
@@ -548,11 +565,9 @@ class cfield_mgr
     $node_map=$this->db->fetchArrayRowsIntoMap($sql,'node_id');
     
     // now I need to get the path for every node
-    //echo "<pre>debug 20061227 " . __FUNCTION__ . " --- "; print_r($node_map); echo "</pre>";
     if(!is_null($node_map))
     {
       $node_list=array_keys($node_map);  
-      //echo "<pre>debug 20061227 \$node_list" . __FUNCTION__ . " --- "; print_r($node_list); echo "</pre>";
       $node2del=null;
       foreach($node_list as $node_id)
       {
@@ -560,14 +575,12 @@ class cfield_mgr
         if( !is_null($the_path) )
         {
           $root=array_pop($the_path);
-          //echo "<pre>debug 20061227 \$root" . __FUNCTION__ . " --- "; print_r($root); echo "</pre>";
           if($root['parent_id'] == $tproject_id)
           {
             $node2del[]=$node_id;  
           }
         }
       }
-      //echo "<pre>debug 20061227 \$node2del" . __FUNCTION__ . " --- "; print_r($node2del); echo "</pre>";
       
     }
   } //function end
@@ -804,6 +817,238 @@ class cfield_mgr
 	}
 
 
+
+  /*
+    function: get_linked_cfields_at_execution
+              returns information about custom fields that can be used 
+              at least at executed, with the value assigned (is any has been assigned). 
+    
+
+    $tproject_id: needed because is possible to associate/link 
+                  a different set of custom field for every test project
+                  
+    $enabled    : 1 -> get custom fields that are has been configured
+                       to be shown during test case execution AND are enabled.
+
+    [$node_type]: default: null
+                  verbose id ('testcase', 'testsuite', etc) of a node type.
+                  custom fields are linked also to different node types.
+                  Example:
+                  I can define a custom field "Aspect" with values
+                  Performace, Usability and wnat use it only for test suites.
+                   
+    [$node_id]: default: null
+                identification of a node/element on node hierarchy.
+                Needed when I want to get the value of custom fields 
+                linked to a node.
+                Example:
+                Have two test cases (ID:9999, ID:89800), and want to get
+                the value assigned to custom field "Operating System".
+                I will do two calls to this method.
+    
+    
+    [execution_id]
+    [testplan_id]
+    
+    
+    returns: hash
+             key: custom field id
+                         
+
+    rev :
+             
+          
+  */
+  function get_linked_cfields_at_execution($tproject_id,$enabled,
+                                           $node_type=null,$node_id=null,
+                                           $execution_id=null,$testplan_id=null) 
+  {
+    $additional_join="";
+    $additional_values="";
+    $additional_filter="";
+  
+    if( !is_null($node_type) )
+    {
+   		$hash_descr_id = $this->tree_manager->get_available_node_types();
+      $node_type_id=$hash_descr_id[$node_type]; 
+    
+      $additional_join  .= " JOIN cfield_node_types CFNT ON CFNT.field_id=CF.id " .
+                           " AND CFNT.node_type_id={$node_type_id} ";
+    }
+    if( !is_null($node_id) )
+    {
+      $additional_values .= ",CFEV.value AS design_value,CFEV.tcversion_id AS node_id";
+      $additional_join .= " LEFT OUTER JOIN cfield_execution_values CFEV ON CFEV.field_id=CF.id " .
+                          " AND CFEV.tcversion_id={$node_id} ";
+    }
+    
+    
+    $sql="SELECT CF.*,CFTP.display_order" .
+         $additional_values .
+         " FROM custom_fields CF " .
+         " JOIN cfield_testprojects CFTP ON CFTP.field_id=CF.id " .
+         $additional_join .
+         " WHERE CFTP.testproject_id={$tproject_id} " .
+         " AND   CFTP.active=1     " . 
+         " AND   CF.enable_on_execution={$enabled} " .
+         " AND   CF.show_on_execution=1 " .
+         " ORDER BY display_order ";
+    
+    $map = $this->db->fetchRowsIntoMap($sql,'id');     
+    return($map);                                 
+  }
+
+
+
+
+  /*
+    function: execution_values_to_db
+              write values of custom fields that are used at execution time.
+              
+    args: $hash: 
+          key: custom_field_<field_type_id>_<cfield_id>. 
+               Example custom_field_0_67 -> 0=> string field
+          
+          $node_id:
+          $execution_id:
+          $testplan_id:           
+  
+          [$cf_map]:  hash -> all the custom fields linked and enabled
+                            that are applicable to the node type of $node_id.
+                            
+                            For the keys not present in $hash, we will write
+                            an appropriate value according to custom field
+                            type.
+                            
+                            This is needed because when trying to udpate
+                            with hash being $_REQUEST, $_POST or $_GET
+                            some kind of custom fields (checkbox, list, multiple list)
+                            when has been deselected by user.
+        
+    rev:
+        20070105 - franciscom - added $cf_map
+   
+  */
+  function execution_values_to_db($hash,$node_id,$execution_id,$testplan_id,$cf_map=null)
+  {                                  
+    
+    if( is_null($hash) && is_null($cf_map) )
+    {
+       return;
+    }
+
+    $cfield=$this->_build_cfield($hash,$cf_map);
+    
+    if( !is_null($cfield) )
+    {
+      foreach($cfield as $field_id => $type_and_value)
+      {
+        $value = $type_and_value['cf_value'];
+        
+        # Remark got from Mantis code:
+  		  # Always store the value, even if it's the dafault value
+  		  # This is important, as the definitions might change but the
+  		  #  values stored with a bug must not change
+  		  $sql = "INSERT INTO cfield_execution_values " .
+  				     " ( field_id, tcversion_id, execution_id,testplan_id,value ) " .
+  			       " VALUES	( {$field_id}, {$node_id}, {$execution_id}, {$testplan_id}, '{$value}' )";
+  		  
+        $this->db->exec_query($sql);
+      } //foreach($cfield
+    } //if( !is_null($cfield) )
+   
+  } //function end
+
+
+  
+  /*
+    function: _build_cfield
+              support function useful for:
+              design_values_to_db()
+              execution_values_to_db()
+              
+
+    args: $hash: 
+           key: custom_field_<field_type_id>_<cfield_id>. 
+                Example custom_field_0_67 -> 0=> string field
+           value: can be an array, or a string depending the <field_type_id>
+           
+           $cf_map: hash
+           key: cfield_id
+           value: custom field definition data 
+
+    
+    returns: hash or null.
+              
+             key: cfield_id
+             value: hash ('type_id'  => field_type_id,
+                          'cf_value' => value)
+
+  */
+  function _build_cfield($hash,$cf_map)
+  {
+    
+    $cf_prefix=$this->name_prefix;
+    $len_cfp=strlen($cf_prefix);
+    $cftype_pos=2;
+    $cfid_pos=3;
+    $cfield=null;
+    
+    // -------------------------------------------------------------------------
+    if( !is_null($cf_map) )
+    {
+      foreach($cf_map as $key => $value)
+      {
+        $cfield[$key]=array("type_id"  => $value['type'],
+                            "cf_value" => '');
+      }
+    }
+    // -------------------------------------------------------------------------
+    
+    // -------------------------------------------------------------------------
+    // Overwrite with values if custom field id exist
+    if( !is_null($hash) )
+    {
+      foreach($hash as $key => $value)
+      {
+        if( strncmp($key,$cf_prefix,$len_cfp) == 0 )
+        {
+          $dummy=explode('_',$key);
+          $cfield[$dummy[$cfid_pos]]=array("type_id"  => $dummy[$cftype_pos],
+                                           "cf_value" => $value);
+        }
+      }
+    } //if( !is_null($hash) )
+
+    if( !is_null($cfield) )
+    {
+      foreach($cfield as $field_id => $type_and_value)
+      {
+        $value = $type_and_value['cf_value'];
+        $verbose_type=$this->custom_field_types[$type_and_value['type_id']];        
+    
+        switch ($verbose_type) 
+        {
+          case 'multiselection list':
+          case 'checkbox':
+            if( count($value) > 1)
+            {
+              $value=implode('|',$value);
+            }
+            else
+            {
+              $value=is_array($value) ? $value[0] :$value;  
+            }
+            $cfield[$field_id]['cf_value']=$value;
+          break;          
+        }
+      } // foreach
+    }
+      
+    return($cfield);
+ } // function end
+  
+  
   
 } // end class
 ?>

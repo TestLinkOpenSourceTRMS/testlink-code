@@ -2,9 +2,15 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.39 $
- * @modified $Date: 2007/01/02 13:43:41 $ $Author: franciscom $
+ * @version $Revision: 1.40 $
+ * @modified $Date: 2007/01/05 13:57:30 $ $Author: franciscom $
  * @author franciscom
+ *
+ * 20070105 - franciscom - changes in copy_to(),get_by_id()
+ *
+ * 20070104 - franciscom
+ * 1. removed wrong method viewer_edit_new();
+ * 2. custom field management continues.
  *
  * 20070102 - franciscom - solved bugs on delete, 
  *                         that produce a negative impact on performance.
@@ -94,6 +100,7 @@ class testcase
 //                 Warning: no check is done before insert => can got error.
 //   
 // 20060425 - franciscom - - interface changes added $keywords_id
+//
 function create($parent_id,$name,$summary,$steps,
                 $expected_results,$author_id,$keywords_id='',
                 $tc_order=TC_DEFAULT_ORDER,$id=TC_AUTOMATIC_ID,
@@ -303,11 +310,13 @@ function show(&$smarty,$id, $user_id, $version_id=TC_ALL_VERSIONS, $action='',
 
     // 20061230 - franciscom
     // custom fields
+    $cf_smarty=null;
     if( $gui_cfg->enable_custom_fields ) 
     {
-      $cf_map=$this->get_linked_cfields_at_design($id);
+      $cf_smarty[] = $this->html_table_of_custom_field_values($tc_id);
     }
-	}
+    $smarty->assign('cf',$cf_smarty);	
+ 	}
 
   $smarty->assign('action',$action);
 	$smarty->assign('sqlResult',$msg_result);
@@ -345,6 +354,7 @@ function viewer_edit_new($amy_keys, $oFCK, $action, $parent_id, $id=null)
 	$a_tpl = array( 'edit_testsuite' => 'containerEdit.tpl',
 					        'new_testsuite'  => 'containerNew.tpl');
 	
+
 	$the_tpl = $a_tpl[$action];
 	$smarty = new TLSmarty();
 	$smarty->assign('sqlResult', null);
@@ -363,14 +373,11 @@ function viewer_edit_new($amy_keys, $oFCK, $action, $parent_id, $id=null)
     // Custom fields
     if( $gui_cfg->enable_custom_fields ) 
     {
-      $cf_smarty = html_table_of_custom_field_inputs($id);
+      $cf_smarty = $this->html_table_of_custom_field_inputs($id,$parent_id);
     } // if( $gui_cfg
     
     $smarty->assign('cf',$cf_smarty);	
     // --------------------------------------------------------------------------------
-
-	
-	
 	}
 	
 	// fckeditor 
@@ -692,7 +699,7 @@ function copy_to($id,$parent_id,$user_id,
 	if ($tcase_info)
 	{
 		$new_tc = $this->create_tcase_only($parent_id,$tcase_info[0]['name'],
-		                                   TC_DEFAULT_ORDER,TC_AUTOMATIC_ID,
+		                                   $tcase_info[0]['node_order'],TC_AUTOMATIC_ID,
                                        $check_duplicate_name,
                                        'generate_new');
 
@@ -856,6 +863,8 @@ function get_by_id_bulk($id,$version_id=TC_ALL_VERSIONS, $get_active=0, $get_ope
 }
 
 
+// 20070105 - added tc_order in the result
+//
 // 20061104 - interface changes
 //
 // id: testcase id
@@ -903,7 +912,7 @@ function get_by_id($id,$version_id = TC_ALL_VERSIONS, $active_status='ALL',$open
 	}
 
 	$sql = "SELECT	U.login AS updater_login,users.login as author_login,
-		    NHB.name,NHA.parent_id AS testcase_id, tcversions.*, 
+		    NHB.name,NHB.node_order,NHA.parent_id AS testcase_id, tcversions.*, 
 		    users.first AS author_first_name, 
 		    users.last AS author_last_name, 
 		    U.first AS updater_first_name, 
@@ -1373,25 +1382,38 @@ function update_active_status($id,$tcversion_id,$active_status)
 }
 
 
+// ---------------------------------------------------------------------------------------
+// Custom field related functions
+// ---------------------------------------------------------------------------------------
+
 /*
   function: get_linked_cfields_at_design
             
             
   args: $id
-  
+        [$parent_id]
+        [$show_on_execution]: default: null
+                              1 -> filter on field show_on_execution=1
+                              0 or null -> don't filter
+        
+        
   returns: hash
+  
+  rev :
+        20061231 - franciscom - added $parent_id
 */
-function get_linked_cfields_at_design($id) 
+function get_linked_cfields_at_design($id,$parent_id=null,$show_on_execution=null) 
 {
-  /*
   $enabled=1;
   $tproject_mgr= new testproject($this->db);
   
-  $the_path=$this->tree_manager->get_path_new($id);
-  $tproject_id=$the_path[count($the_path)-1]['parent_id'];
-  $cf_map=$this->cfield_mgr->get_linked_cfields_at_design($tproject_id,$enabled,'testcase',$id);
+  $the_path=$this->tree_manager->get_path_new(!is_null($id) ? $id : $parent_id);
+  $path_len=count($the_path);
+  $tproject_id=($path_len > 0)? $the_path[$path_len-1]['parent_id'] : $parent_id;
+
+  $cf_map=$this->cfield_mgr->get_linked_cfields_at_design($tproject_id,$enabled,
+                                                          $show_on_execution,'testcase',$id);
   return($cf_map);
-  */
 }
 
 /*
@@ -1399,27 +1421,124 @@ function get_linked_cfields_at_design($id)
             
             
   args: $id
-  
+        [$parent_id]
+        [$scope]: 'design','execution'
+        [$name_suffix]: must start with '_' (underscore).
+                        Used when we display in a page several items
+                        (example during test case execution, several test cases)
+                        that have the same custom fields.
+                        In this kind of situation we can use the item id as name suffix.
+                         
+        
   returns: html string
   
 */
-function html_table_of_custom_field_inputs($id) 
+function html_table_of_custom_field_inputs($id,$parent_id=null,$scope='design',$name_suffix='') 
 {
-  /*
   $cf_smarty='';
-  $cf_map=$this->get_linked_cfields_at_design($id);
+  
+  if( $scope=='design' )
+  {
+    $cf_map=$this->get_linked_cfields_at_design($id,$parent_id);
+  }
+  else
+  {
+    $cf_map=$this->get_linked_cfields_at_execution($id,$parent_id);
+  }
+  
   if( !is_null($cf_map) )
   {
     foreach($cf_map as $cf_id => $cf_info)
     {
-      $cf_smarty .= "<tr><td> " . $cf_info['label'] . "</td><td>" .
-                    $this->cfield_mgr->string_custom_field_input($cf_info) .
+      $cf_smarty .= '<tr><td class="labelHolder">' . $cf_info['label'] . "</td><td>" .
+                    $this->cfield_mgr->string_custom_field_input($cf_info,$name_suffix) .
                     "</td></tr>\n";
     } //foreach($cf_map
   }
   $cf_smarty = "<table>" . $cf_smarty . "</table>";
   return($cf_smarty);
-  */
+}
+
+
+/*
+  function: html_table_of_custom_field_values
+            
+            
+  args: $id
+        [$scope]: 'design','execution'
+        [$show_on_execution]: default: null
+                              1 -> filter on field show_on_execution=1
+                              0 or null -> don't filter
+  
+  returns: html string
+  
+*/
+function html_table_of_custom_field_values($id,$scope='design',$show_on_execution=null) 
+{
+  $cf_smarty='';
+  $parent_id=null;
+  
+  if( $scope=='design' )
+  {
+    $cf_map=$this->get_linked_cfields_at_design($id,$parent_id,$show_on_execution);
+  }
+  else 
+  {
+    $cf_map=$this->get_linked_cfields_at_execution($id);
+  }
+    
+  if( !is_null($cf_map) )
+  {
+    foreach($cf_map as $cf_id => $cf_info)
+    {
+      // if user has assigned a value, then node_id is not null
+      if($cf_info['node_id'])
+      {
+        $cf_smarty .= '<tr><td class="labelHolder">' . $cf_info['label'] . "</td><td>" .
+                      $this->cfield_mgr->string_custom_field_value($cf_info,$id) .
+                      "</td></tr>\n";
+      }
+    }
+  }
+  $cf_smarty = "<table>" . $cf_smarty . "</table>";
+  return($cf_smarty);
+} // function end
+
+
+/*
+  function: get_linked_cfields_at_execution
+            
+            
+  args: $id
+        [$parent_id]
+        [$show_on_execution]: default: null
+                              1 -> filter on field show_on_execution=1
+                              0 or null -> don't filter
+        
+        
+  returns: hash
+  
+  rev :
+        20061231 - franciscom - added $parent_id
+*/
+function get_linked_cfields_at_execution($id,$parent_id=null,$show_on_execution=null,
+                                         $execution_id=null,$testplan_id=null) 
+{
+  $enabled=1;
+  $tproject_mgr= new testproject($this->db);
+  
+  $the_path=$this->tree_manager->get_path_new(!is_null($id) ? $id : $parent_id);
+  $path_len=count($the_path);
+  $tproject_id=($path_len > 0)? $the_path[$path_len-1]['parent_id'] : $parent_id;
+
+
+  // Warning:
+  // I'm setting node type to test case, but $id is the tcversion_id, because
+  // execution data is related to tcversion NO testcase
+  //
+  $cf_map=$this->cfield_mgr->get_linked_cfields_at_execution($tproject_id,$enabled,
+                                                             'testcase',$id);
+  return($cf_map);
 }
 
 

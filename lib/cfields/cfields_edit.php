@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: cfields_edit.php,v $
  *
- * @version $Revision: 1.1 $
- * @modified $Date: 2006/12/31 16:16:20 $ by $Author: franciscom $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2007/01/05 13:57:30 $ by $Author: franciscom $
 **/
 require_once("../../config.inc.php");
 require_once("../functions/common.php");
@@ -94,7 +94,8 @@ switch ($action)
        }
   break;
 
-  case 'do_delete':  
+  case 'do_delete':
+       $cf='';  
        $result_msg="ok";
        $cfield_mgr->delete($id); 
   break; 

@@ -4,19 +4,13 @@
  *
  * Filename $RCSfile: exec.inc.php,v $
  *
- * @version $Revision: 1.32 $
- * @modified $Date: 2006/12/24 11:50:33 $ $Author: franciscom $
+ * @version $Revision: 1.33 $
+ * @modified $Date: 2007/01/05 13:57:30 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
  * Functions for execution feature (add test results) 
  *
- * 20050905 - franciscom - reduce global coupling
- * 20050926 - franciscom - db changes build -> build_id
- *
- * 20050807 - franciscom
- * filterKeyword()   : added $idPlan to remove global coupling via _SESSION
- * createBuildMenu() : added $idPlan to remove global coupling via _SESSION
  *
  * 20051118  - scs - FIXED: missing localization for test_Results_submitted
  * 20051119  - scs - added fix for 227
@@ -26,6 +20,8 @@
  * 20060528 - franciscom - adding management of bulk update
  * 20060916 - franciscom - added write_execution_bug()
  *                               get_bugs_for_exec()
+ *
+ * 20070105 - franciscom - interface changes write_execution()
  *
 **/
 require_once('../functions/common.php');
@@ -396,12 +392,45 @@ function defineColor($buildResult)
 }
 
 
-// 20060528 - franciscom - adding management of bulk update
-function write_execution(&$db,$user_id, $exec_data, $tplan_id,$build_id,$map_last_exec)
+/*
+  function: write_execution
+
+  args :
+  
+  returns: 
+
+  rev :
+       20070105 - franciscom - added $tproject_id
+*/
+function write_execution(&$db,$user_id, $exec_data,$tproject_id,$tplan_id,$build_id,$map_last_exec)
 {
 	$map_tc_status = config_get('tc_status');
 	$bugInterfaceOn = config_get('bugInterfaceOn');
 	$db_now = $db->db_now();
+	$cfield_mgr=New cfield_mgr($db);
+  $cf_prefix=$cfield_mgr->get_name_prefix();
+	$len_cfp=strlen($cf_prefix);
+  $cf_nodeid_pos=4;
+	
+	// --------------------------------------------------------------------------------------
+	$ENABLED=1;
+  $cf_map= $cfield_mgr->get_linked_cfields_at_execution($tproject_id,$ENABLED,'testcase');
+  $has_custom_fields=is_null($cf_map) ? 0 : 1;
+  // --------------------------------------------------------------------------------------
+
+	// --------------------------------------------------------------
+	// extract custom fields id.
+	$cf_keys=null;
+  foreach($exec_data as $input_name => $value)
+  {
+      if( strncmp($input_name,$cf_prefix,$len_cfp) == 0 )
+      {
+        $dummy=explode('_',$input_name);
+        $cf_keys[$dummy[$cf_nodeid_pos]]=$input_name;
+      } 
+  }
+  reset($exec_data);
+  // --------------------------------------------------------------
 	
 	// is a bulk save ???
   if( isset($exec_data['do_bulk_save']) )
@@ -416,21 +445,46 @@ function write_execution(&$db,$user_id, $exec_data, $tplan_id,$build_id,$map_las
 	
 	foreach ( $item2loop as $tcversion_id => $val)
 	{
+	  $tcase_id=$exec_data['tc_version'][$tcversion_id];
 		$current_status = $exec_data['status'][$tcversion_id];
 		$has_been_executed = ($current_status != $map_tc_status['not_run'] ? TRUE : FALSE);
 		if($has_been_executed)
 		{ 
 			$my_notes = $db->prepare_string(trim($exec_data['notes'][$tcversion_id]));		
 			$sql = "INSERT INTO executions ".
-				  "(build_id,tester_id,status,testplan_id,tcversion_id,execution_ts,notes)".
-				  " VALUES ( {$build_id}, {$user_id}, '{$exec_data['status'][$tcversion_id]}',".
-				  "{$tplan_id}, {$tcversion_id},{$db_now},'{$my_notes}')";
+				     "(build_id,tester_id,status,testplan_id,tcversion_id,execution_ts,notes)".
+				     " VALUES ( {$build_id}, {$user_id}, '{$exec_data['status'][$tcversion_id]}',".
+				     "{$tplan_id}, {$tcversion_id},{$db_now},'{$my_notes}')";
 			$db->exec_query($sql);  	     
+			$execution_id=$db->insert_id();
+			
+      if( $has_custom_fields )
+      {
+        // test useful when doing bulk update, because some type of custom fields
+        // like checkbox can not exist on exec_data
+        //
+        $hash_cf=null;
+        if( isset($cf_keys[$tcase_id]) )
+        { 
+          $hash_cf=array($cf_keys[$tcase_id] => $exec_data[$cf_keys[$tcase_id]]);
+			  }                                     
+		    // 20070105 - custom field management
+		    $cfield_mgr->execution_values_to_db($hash_cf,$tcversion_id, $execution_id, $tplan_id,$cf_map);
+
+
+			}                                     
 		}
 	}
 }
 
-// 20060916 - franciscom
+/*
+  function: write_execution_bug
+
+  args :
+  
+  returns: 
+
+*/
 function write_execution_bug(&$db,$exec_id, $bug_id,$just_delete=false)
 {
 	
@@ -485,4 +539,5 @@ function get_execution(&$db,$execution_id)
 	$map = $db->get_recordset($sql);
   return($map);
 }
+
 ?>

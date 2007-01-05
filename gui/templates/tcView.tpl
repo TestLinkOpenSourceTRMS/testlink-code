@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView.tpl,v 1.22 2006/12/31 18:20:49 franciscom Exp $
+$Id: tcView.tpl,v 1.23 2007/01/05 13:57:30 franciscom Exp $
 Purpose: smarty template - view test case in test specification
 
 20060425 - franciscom - can manage multiple test cases
@@ -22,6 +22,7 @@ Purpose: smarty template - view test case in test specification
         {assign var="my_delete_version" value="yes"}
     {/if}
 
+    {* added args_cf *}
 		{include file="tcView_viewer.tpl" 
 		         args_testcase=$testcase_curr_version[idx][0]
 		         args_keywords_map=$keywords_map[idx] 
@@ -37,7 +38,7 @@ Purpose: smarty template - view test case in test specification
 		         
 		         args_activate_deactivate_name='activate'
 		         args_activate_deactivate='bnt_activate'
-		         
+		         args_cf=$cf[idx] 
 		         }
 		
 		{assign var="tcID" value=$testcase_curr_version[idx][0].testcase_id}
@@ -45,7 +46,8 @@ Purpose: smarty template - view test case in test specification
 		{if $can_edit neq 'yes'}
 			{assign var="bDownloadOnly" value=true}
 		{/if}
-		{include file="inc_attachments.tpl" attachmentInfos=$attachments[$tcID] id=$tcID tableName="nodes_hierarchy" downloadOnly=$bDownloadOnly}
+		{include file="inc_attachments.tpl" id=$tcID  tableName="nodes_hierarchy"
+		         attachmentInfos=$attachments[$tcID]  downloadOnly=$bDownloadOnly}
 
     {* Other Versions *}
     {if $testcase_other_versions[idx] neq null}
@@ -62,17 +64,20 @@ Purpose: smarty template - view test case in test specification
   	          <div id="v{$vid}_{$my_testcase.version}" class="workBack">
 				
 				      {include file="tcView_viewer.tpl" 
-						args_testcase=$my_testcase 
-						args_keywords_map=$keywords_map[idx] 
-						args_reqs=$arrReqs[idx]
-						args_status_quo=$status_quo[idx]
-						
-						args_can_edit=$can_edit 
-						args_can_move_copy="no" 
-						args_can_delete_testcase='no'
-						args_can_delete_version=$can_delete_version
-						args_show_version="no" 
-						args_show_title="no"}
+                       args_testcase=$my_testcase 
+                       args_keywords_map=$keywords_map[idx] 
+                       args_reqs=$arrReqs[idx]
+                       args_status_quo=$status_quo[idx]
+                       			
+                       args_can_edit=$can_edit 
+                       args_can_move_copy="no" 
+                       args_can_delete_testcase='no'
+                       args_can_delete_version=$can_delete_version
+                       args_show_version="no" 
+                       args_show_title="no"
+                       
+           		         args_cf=$cf[idx] 
+                       }
   	         </div>
   	         <br />
   	         

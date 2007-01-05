@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.46 $
- * @modified $Date: 2007/01/04 15:27:59 $  by $Author: franciscom $
+ * @version $Revision: 1.47 $
+ * @modified $Date: 2007/01/05 13:57:30 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
  *
@@ -20,6 +20,10 @@ require_once('../keywords/keywords.inc.php');
 require_once("../../third_party/fckeditor/fckeditor.php");
 require_once("../functions/opt_transfer.php");
 testlinkInitPage($db);
+
+
+$gui_cfg=config_get('gui');
+$order_cfg=config_get('tree_node_ordering');
 
 // --------------------------------------------------------------------
 // create  fckedit objects
@@ -155,6 +159,16 @@ if($edit_tc)
   	  	$of->Value = $tc_data[0][$key];
   	  	$smarty->assign($key, $of->CreateHTML());
   	}
+
+    // ----------------------------------------------------------------------
+    // 20070104 - franciscom
+    $cf_smarty='';
+    if( $gui_cfg->enable_custom_fields ) 
+    {
+      $cf_smarty = $tcase_mgr->html_table_of_custom_field_inputs($tcase_id);
+    } // if( $gui_cfg
+    $smarty->assign('cf',$cf_smarty);	
+    // ----------------------------------------------------------------------
   
   	$smarty->assign('tc', $tc_data[0]);
   	$smarty->assign('opt_cfg', $opt_cfg);
@@ -167,23 +181,37 @@ else if($do_update)
 	if($name_ok)
 	{
 		$msg = 'ok';
-
+    $status_ok=0;
+    
 		// to get the name before the user operation
 		$tc_old = $tcase_mgr->get_by_id($tcase_id,$tcversion_id);
 						
 		if ($tcase_mgr->update($tcase_id,$tcversion_id,$name,$summary,$steps,$expected_results,
 		                        $userID,$assigned_keywords_list) )
 		{
+			$status_ok=1;
 			if( strcmp($tc_old[0]['name'],$name) != 0 )
-    		{
+    	{
   	  			// only refresh menu tree is name changed
   	  			$refresh_tree='yes';
-		    }	
+		  }	
 		}
-	    else
-	    {
+	  else
+	  {
 	    	$sqlResult =  $db->error_msg();
-	    }
+	  }
+	  
+	  // 20070104 - franciscom
+	  if($status_ok && $gui_cfg->enable_custom_fields )
+	  {
+	     $ENABLED=1;
+       $NO_FILTER_SHOW_ON_EXEC=null;
+       $cf_map=$tcase_mgr->cfield_mgr->get_linked_cfields_at_design($testproject_id,$ENABLED,$NO_FILTER_SHOW_ON_EXEC,
+                                                                    'testcase') ;
+ 	     $tcase_mgr->cfield_mgr->design_values_to_db($_REQUEST,$tcase_id);
+	  }
+	  
+	  
 	}	
  	$action_result='updated';
 	$tcase_mgr->show($smarty,$tcase_id, $userID, $tcversion_id, $action_result,$msg,$refresh_tree);
@@ -203,7 +231,6 @@ else if($do_create)
 	if ($name_ok)
 	{
     define('AUTOMATIC_ID',0);
-    $order_cfg=config_get('tree_node_ordering');
 
 		$msg = lang_get('error_tc_add');
 		$tcase=$tcase_mgr->create($container_id,$name,$summary,$steps,

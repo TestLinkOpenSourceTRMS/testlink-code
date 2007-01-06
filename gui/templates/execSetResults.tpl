@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: execSetResults.tpl,v 1.36 2007/01/05 13:57:30 franciscom Exp $
+$Id: execSetResults.tpl,v 1.37 2007/01/06 15:14:35 franciscom Exp $
 Purpose: smarty template - show tests to add results
 Revisions:
           20070104 - franciscom - custom field management for test cases
@@ -22,7 +22,7 @@ Revisions:
                                  '{$tsd_val_for_hidden_list}');">
 
 <h1>	
-	<img alt="{lang_get s='help'}" class="help" 
+	<img alt="{lang_get s='help'}" title="{lang_get s='help'}" class="help" 
 	src="icons/sym_question.gif" style="float: right;"
 	onclick="javascript:open_popup('{$helphref}execMain.html');" />
 	{lang_get s='title_t_r_on_build'} {$build_name|escape} 
@@ -198,10 +198,12 @@ Revisions:
 				<th style="text-align:left">{lang_get s='date_time_run'}</th>
 				<th style="text-align:left">{lang_get s='test_exec_by'}</th>
 				<th style="text-align:left">{lang_get s='exec_status'}</th>
-				<th style="text-align:left">{lang_get s='exec_notes'}</th>
+				<th style="text-align:center" >
+				   {lang_get s='exec_notes'}{* <img title="{lang_get s='help_exec_notes'}" src="icons/sym_question.gif"> *}
+  			</th>
 				
 				{if $att_model->show_upload_column}
-						<th style="text-align:left">{lang_get s='attachment_mgmt'}</th>
+						<th style="text-align:center">{lang_get s='attachment_mgmt'}</th>
             {assign var="my_colspan" value=$att_model->num_cols}
         {/if}
 
@@ -221,16 +223,23 @@ Revisions:
   				<td>{localize_timestamp ts=$tc_old_exec.execution_ts}</td>
   				<td>{$tc_old_exec.tester_first_name|escape} {$tc_old_exec.tester_last_name|escape}</td> 
   				<td class="{$gsmarty_tc_status_css.$tc_status_code}">
-  				    {localize_tc_status s=$tc_old_exec.status}</td>
+  				    {localize_tc_status s=$tc_old_exec.status}
+  				</td>
+
    			  <td align="center">
-   			  <a href="javascript:open_show_notes_window({$tc_old_exec.execution_id})">
-      			    <img src="icons/contact_16.png" alt="{lang_get s='alt_notes'}" 
-      			         style="border:none" /></a>
-              </td>
+     			  {if $tc_old_exec.execution_notes neq ""}
+       			  <a href="javascript:open_show_notes_window({$tc_old_exec.execution_id})">
+          			    <img src="icons/contact_16.png" alt="{lang_get s='alt_notes'}" 
+          			         title="{lang_get s='alt_notes'}"  style="border:none" /></a>
+          	{else}
+          	 &nbsp;
+          	{/if}		         
+          </td>
   
   	        {if $att_model->show_upload_column}
       			  <td align="center"><a href="javascript:openFileUploadWindow({$tc_old_exec.execution_id},'executions')">
-      			    <img src="icons/upload_16.png" alt="{lang_get s='alt_attachment_mgmt'}" 
+      			    <img src="icons/upload_16.png" title="{lang_get s='alt_attachment_mgmt'}"
+      			         alt="{lang_get s='alt_attachment_mgmt'}" 
       			         style="border:none" /></a>
               </td>
   	        {/if}
@@ -243,6 +252,19 @@ Revisions:
             {/if}
             
   			</tr>  
+  
+  			{* 20070105 - Custom field values  *}
+  			<tr>
+  			<td colspan="{$my_colspan}">
+  				{assign var="execID" value=$tc_old_exec.execution_id}
+  				{assign var="cf_value_info" value=$other_exec_cfexec[$execID]}
+          {$cf_value_info}
+  			</td>
+  			</tr>
+  
+  			
+  			
+  			{* Attachments *}
   			<tr>
   			<td colspan="{$my_colspan}">
   				{assign var="execID" value=$tc_old_exec.execution_id}

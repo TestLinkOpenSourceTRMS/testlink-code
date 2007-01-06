@@ -1,8 +1,11 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: keywordsAssign.tpl,v 1.8 2006/12/24 11:48:18 franciscom Exp $
+$Id: keywordsAssign.tpl,v 1.9 2007/01/06 15:14:35 franciscom Exp $
 Purpose: smarty template - assign keywords to one or more test cases
 Andreas Morsing : changed action to updated 
+
+rev : 
+     20070106 - franciscom - can_do=0 => test suite without test cases
 *}
 {include file="inc_head.tpl" openHead='yes'}
 <script language="JavaScript" src="gui/javascript/OptionTransfer.js" type="text/javascript"></script>
@@ -22,10 +25,8 @@ var {$opt_cfg->js_ot_name} = new OptionTransfer("{$opt_cfg->from->name}","{$opt_
 <body onLoad="{$opt_cfg->js_ot_name}.init(document.forms[0])">
 
 {* improved feedback *}
-
-
-
 <div class="workBack">
+  {if $can_do} 
      {if $keyword_assignment_subtitle neq ''}
       <h2> {$keyword_assignment_subtitle}</h2>
      {/if}
@@ -49,6 +50,12 @@ var {$opt_cfg->js_ot_name} = new OptionTransfer("{$opt_cfg->from->name}","{$opt_
     	<input type="submit" name="assign{$level}" value="{lang_get s='btn_assign'}" />
     	</form>
     </div>
+  {else}
+     {if $keyword_assignment_subtitle neq ''}
+      <h2> {$keyword_assignment_subtitle}</h2>
+     {/if}
+    {lang_get s="keyword_assignment_empty_tsuite"}
+  {/if}  
 </div>
 </body>
 </html>

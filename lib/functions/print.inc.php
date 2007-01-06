@@ -3,12 +3,16 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: print.inc.php,v $
- * @version $Revision: 1.18 $
- * @modified $Date: 2006/11/17 19:52:59 $ by $Author: schlundus $
+ * @version $Revision: 1.19 $
+ * @modified $Date: 2007/01/06 15:12:17 $ by $Author: franciscom $
  *
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
  * Functions for support printing of documents. 
+ *
+ * 20070106 - franciscom
+ * 1. remove of some magic numbers
+ * 
  */
 /** 
 @parameter $userID
@@ -54,20 +58,40 @@ function printFirstPage(&$db,$title, $prodName, $prodNotes, $userID)
 	$author = htmlspecialchars(getAuthor($db,$userID));
 	$title = htmlspecialchars($title);
 	
-	$output = '<div class="pageheader">';
-	$output .= '<span class="pageheader">'. $prodName ."</span>";
-	if (TL_COMPANY != '')
-		$output .= '<span id="companyname">'. htmlspecialchars(TL_COMPANY) ."</span>\n";
+	$output = '<div>';
+	$output .= '<div class="pageheader">'. $prodName ."</div>\n";
+	
+	if (TL_DOC_COMPANY != '' ||  TL_DOC_COMPANY_LOGO != '' )
+	{
+		$output .= '<br /><center><table class="company">';
+
+  	if (TL_DOC_COMPANY != '' )
+  	{
+		  $output .= '<tr><td id="company_name">'. htmlspecialchars(TL_DOC_COMPANY) ."</td></tr>";
+		}
+		$output .= '<tr><td/></tr>'; 
+	  
+  	if (TL_DOC_COMPANY_LOGO != '' )
+	  {
+	    $output .= '<tr><td id="company_logo">'. 
+	               str_replace('%BASE_HREF%',$_SESSION['basehref'],TL_DOC_COMPANY_LOGO) ."</td></tr>";
+	  }
+		$output .= "</table></center>\n";
+	}
 	
 	$output .= "</div>\n";
-	$output .= "<h1 id=\"doctitle\">".$title."</h1>\n";
-	$output .= "<div id=\"summary\">" .
-		       "<p id=\"prodname\">". lang_get('product').": " . $prodName . "</p>";
+
+
+
+	$output .= '<h1 id="doctitle">'.$title."</h1>\n";
+	$output .= '<div id="summary">' .
+		         '<p id="prodname">'. lang_get('product').": " . $prodName . "</p>\n";
 	if (strlen($prodNotes))
-		$output .= "<p id=\"prodnotes\">". $prodNotes . "</p>";
+		$output .= '<p id="prodnotes">'. $prodNotes . "</p>\n";
 		       
-	$output .= "<p id=\"author\">".lang_get('author').": " . $author . "</p>" .
-		       "<p id=\"printedby\">".lang_get('printed_by_TestLink_on')." ". strftime($g_date_format, time()) . "</p></div>";
+	$output .= '<p id="author">' . lang_get('author').": " . $author . "</p>\n" .
+		         '<p id="printedby">' . lang_get('printed_by_TestLink_on')." ". 
+		         strftime($g_date_format, time()) . "</p></div>\n";
 
 	if (TL_DOC_COPYRIGHT != '')
 		$output .= '<div class="pagefooter" id="copyright">'.htmlspecialchars(TL_DOC_COPYRIGHT)."</div>\n";
@@ -77,25 +101,41 @@ function printFirstPage(&$db,$title, $prodName, $prodNotes, $userID)
 	return $output;
 }
 
+/*
+  function: renderTestSpecTreeForPrinting
 
+  args :
+  
+  returns: 
+  
+  rev :
+        20070106 - franciscom - remove magic numbers
+
+*/
 function renderTestSpecTreeForPrinting(&$db,&$printingOptions,&$node,$tocPrefix,$tcCnt,$level)
 {
+  $tree_mgr=New tree($db);
+  $map_id_descr=array_flip($tree_mgr->get_available_node_types());
+  
 	$code = null;
 	$bCloseTOC = 0;	
 	if (isset($node['node_type_id']))
 	{
-		switch($node['node_type_id'])
+	  $verbose_node_type=$map_id_descr[$node['node_type_id']];
+		switch($verbose_node_type)
 		{
-			case 1:
+			case 'testproject':
 				$code .= renderProjectNodeForPrinting($db,$printingOptions,$printingOptions['title'],$node);
-				break;	
-			case 2:
+				break;
+					
+			case 'testsuite':
 				if (!is_null($tocPrefix))
 					$tocPrefix .= ".";
 				$tocPrefix .= $tcCnt;
 				$code .= renderTestSuiteNodeForPrinting($db,$printingOptions,$node,$tocPrefix,$level);
 				break;
-			case 3:
+			
+			case 'testcase':
 				$code .= renderTestCaseForPrinting($db,$printingOptions,$node,$level);
 				break;
 		}
@@ -104,18 +144,19 @@ function renderTestSpecTreeForPrinting(&$db,&$printingOptions,&$node,$tocPrefix,
 	{
 		$childNodes = $node['childNodes'];
 		$tsCnt = 0;
-		for($i = 0;$i < sizeof($childNodes);$i++)
+    $children_qty=sizeof($childNodes);
+		for($i = 0;$i <$children_qty ;$i++)
 		{
 			$current = $childNodes[$i];
 			if(is_null($current))
 				continue;
 			
-			if (isset($current['node_type_id']) && $current['node_type_id'] == 2)
+			if (isset($current['node_type_id']) && $map_id_descr[$current['node_type_id']] == 'testsuite')
 				$tsCnt++;
 			$code .= renderTestSpecTreeForPrinting($db,$printingOptions,$current,$tocPrefix,$tsCnt,$level+1);
 		}
 	}
-	if (isset($node['node_type_id']) && $node['node_type_id'] == 1)
+	if (isset($node['node_type_id']) && $map_id_descr[$node['node_type_id']] == 'testproject')
 	{
 		if ($printingOptions['toc'])
 		{
@@ -128,6 +169,14 @@ function renderTestSpecTreeForPrinting(&$db,&$printingOptions,&$node,$tocPrefix,
 	return $code;
 }
 
+/*
+  function: renderTestCaseForPrinting
+
+  args :
+  
+  returns: 
+
+*/
 function renderTestCaseForPrinting(&$db,&$printingOptions,&$node,$level) 
 {
  	$id = $node['id'];
@@ -140,7 +189,7 @@ function renderTestCaseForPrinting(&$db,&$printingOptions,&$node,$level)
 	  	                 $name . '</a></p>';
 		$code .= "<a name='tc" . $id . "'></a>";
 	}
- 	$code .= "<div class=\"tc\"><table width=\"90%\">";
+ 	$code .= "<div class=\"tc\"><table class=\"tc\" width=\"90%\">";
  	$code .= "<tr><th>".lang_get('test_case')." " . $id . ": " . 
  	            $name . "</th></tr>";
 	
@@ -162,6 +211,14 @@ function renderTestCaseForPrinting(&$db,&$printingOptions,&$node,$level)
 	return $code;
 }
 
+/*
+  function: renderTestCaseForPrinting
+
+  args :
+  
+  returns: 
+
+*/
 function renderProjectNodeForPrinting(&$db,&$printingOptions,$title,&$node)
 {
 	$stitle = lang_get('title_test_spec');
@@ -186,6 +243,14 @@ function renderProjectNodeForPrinting(&$db,&$printingOptions,$title,&$node)
 	return $code;
 }
 
+/*
+  function: renderTestCaseForPrinting
+
+  args :
+  
+  returns: 
+
+*/
 function renderTestSuiteNodeForPrinting(&$db,&$printingOptions,&$node,$tocPrefix,$level) 
 {
 	$code = null;
@@ -196,7 +261,7 @@ function renderTestSuiteNodeForPrinting(&$db,&$printingOptions,&$node,$tocPrefix
 	 	                 $name . '</a></p>';
 		$code .= "<a name='cat{$node['id']}'></a>";
 	}
- 	$code .= "<h1>{$tocPrefix} ". lang_get('test suite') ." {$name}</h1>";
+ 	$code .= "<h1>{$tocPrefix} ". lang_get('test_suite') ." {$name}</h1>";
 						 
 	if ($printingOptions['header']) 
   	{

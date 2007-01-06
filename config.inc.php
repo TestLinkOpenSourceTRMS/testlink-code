@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.84 $
- * @modified $Date: 2007/01/04 15:27:58 $ by $Author: franciscom $
+ * @version $Revision: 1.85 $
+ * @modified $Date: 2007/01/06 15:12:16 $ by $Author: franciscom $
  *
  *
  * Constants and configuration parameters used throughout TestLink 
@@ -14,6 +14,7 @@
  *-------------------------------------------------------------------------
  * Revisions:
  *
+ * 20070105 - franciscom - added $g_gui->custom_fields->sizes
  * 20061016 - franciscom - added new keys to $g_field_size
  * 20061009 - franciscom - changed $g_req_cfg
  * 20060822 - franciscom - new properties for $g_attachments
@@ -83,6 +84,10 @@ require_once('config_db.inc.php');
 
 
 /** root of testlink directory location seen through the web server */
+/*  
+    20070106 - franciscom - this statement it's not 100% right      
+    better use $_SESSION['basehref'] in the scripts.
+*/      
 define('TL_BASE_HREF', get_home_url()); 
 
 /** Set this to TRUE if your MySQL DB supports UTF8 (MySQL version >= 4.1) */
@@ -116,9 +121,9 @@ define('TL_LOG_PATH', TL_TEMP_PATH );
 
 
 /** Default level of logging (NONE, ERROR, INFO, DEBUG, EXTENDED) */
-define('TL_LOG_LEVEL_DEFAULT', 'DEBUG');
+define('TL_LOG_LEVEL_DEFAULT', 'NONE');
 require_once(TL_ABS_PATH.'/lib/functions/logging.inc.php');
-require_once(TL_ABS_PATH.'/lib/functions/configCheck.php'); // 20060822 - franciscom
+require_once(TL_ABS_PATH.'/lib/functions/configCheck.php');
 
 
 
@@ -128,6 +133,7 @@ define('MAIN_PAGE_METRICS_ENABLED', 'FALSE');
 /** some maxmima related to importing stuff in TL */
 /** maximum uploadfile size */
 define('TL_IMPORT_LIMIT', '204800'); // in bytes
+
 /** maximum line size of the imported file */
 define('TL_IMPORT_ROW_MAX', '10000'); // in chars
 
@@ -278,17 +284,22 @@ define('TL_FRMWORKAREA_LEFT_FRAME_WIDTH', "30%");
 
 /* CSS configuration */
 /* Standard */
-define('TL_THEME_DIR','gui/css/');
-
-define('TL_TESTLINK_CSS',TL_THEME_DIR . 'testlink.css');
+define('TL_THEME_CSS_DIR','gui/css/');
+define('TL_TESTLINK_CSS',TL_THEME_CSS_DIR . 'testlink.css');
 define('TL_LOGIN_CSS', TL_TESTLINK_CSS);
-define('TL_DOC_BASIC_CSS',TL_THEME_DIR . 'tl_doc_basic.css');
+
+
+// 
+define('TL_THEME_IMG_DIR','icons/');
+
 
 // logo for login page, if not defined nothing happens
-define('LOGO_LOGIN_PAGE','<img alt="TestLink" src="icons/company_logo.png" />');
+define('LOGO_LOGIN_PAGE',
+       '<img alt="TestLink" title="TestLink" src="' . TL_THEME_IMG_DIR . 'company_logo.png" />');
 
 // logo for navbar page
-define('LOGO_NAVBAR','<img alt="TestLink" src="icons/company_logo.png" />');
+define('LOGO_NAVBAR',
+       '<img alt="TestLink" title="TestLink" src="' . TL_THEME_IMG_DIR . 'company_logo.png" />');
 
 
 // use when componing an title using several strings
@@ -446,7 +457,7 @@ if(false !== $serverLanguage)
 		$language = $serverLanguage;
 }
 define ('TL_DEFAULT_LOCALE',$language);
-require_once(TL_ABS_PATH.'/lib/functions/common.php'); // 20060822 - franciscom
+require_once(TL_ABS_PATH.'/lib/functions/common.php');
 
 
 // ----------------------------------------------------------------------------
@@ -575,13 +586,19 @@ $g_edit_old_build_results = FALSE;
 require_once(TL_ABS_PATH . 'third_party/smarty/Smarty.class.php'); 
 require_once(TL_ABS_PATH . 'lib/general/tlsmarty.inc.php'); 
 
-/** 
- * Next constants are used in printed documents.
- * Leave them empty if you would not to use.
- */ 
-define('TL_COMPANY', '');
-define('TL_DOC_COPYRIGHT', '');
-define('TL_DOC_CONFIDENT', '');
+
+// ----------------------------------------------------------------------
+// Constants used in printed documents.
+define('TL_DOC_BASIC_CSS',TL_THEME_CSS_DIR . 'tl_doc_basic.css');
+
+// Leave them empty if you would not to use.
+define('TL_DOC_COMPANY', "Testlink Development Team [configure using TL_DOC_COMPANY]");
+define('TL_DOC_COMPANY_LOGO', 
+       '<img alt="TestLink" title="configure using TL_DOC_COMPANY_LOGO" src="%BASE_HREF%' .
+             TL_THEME_IMG_DIR . 'company_logo.png" />');
+define('TL_DOC_COPYRIGHT', 'copyright - Testlink Development Team [configure using TL_DOC_COPYRIGHT]');
+define('TL_DOC_CONFIDENT', 'this document is not confidential [configure using TL_DOC_CONFIDENT]');
+// ----------------------------------------------------------------------
 
 
 
@@ -666,6 +683,14 @@ if($g_repositoryType == TL_REPOSITORY_TYPE_FS)
 // true: icon edit will be added to <a href> used to access edit features
 $g_gui->show_icon_edit=false;
 $g_gui->enable_custom_fields=true;
+$g_gui->custom_fields->sizes=array( 'string' => 50,
+                                    'numeric'=> 10,
+                                    'float'  => 10,
+                                    'email'  => 50,
+                                    'list'   => 1,
+                                    'multiselection list' => 5);
+
+
 
 
 // 20050821 - fm - configurable templates this help is you want to use a non standard template 

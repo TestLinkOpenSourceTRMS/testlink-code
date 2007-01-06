@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: keywordsView.tpl,v 1.8 2007/01/02 22:02:33 franciscom Exp $
+$Id: keywordsView.tpl,v 1.9 2007/01/06 15:14:35 franciscom Exp $
 Purpose: smarty template - View all keywords 
 
 20070102 - franciscom
@@ -48,13 +48,14 @@ var warning_delete_keyword="{lang_get s='warning_delete_keyword'}";
 	</div>
 {/if}
 
-{* show SQL result *}
-{include file="inc_update.tpl" result=$sqlResult item="Keyword" name=$name action="$action"}
 
 
 {* -------------------------- Create Form -----------------------------------------------   *}
 {if $rightsKey ne ""}
   <div class="workBack">
+     {* show SQL result *}
+    {include file="inc_update.tpl" result=$sqlResult item="Keyword" name=$name action="$action"}
+
   	<form name="addKey" method="post" action="lib/keywords/keywordsView.php" 
   		    onsubmit="return valTextLength(this.keyword, 100, 1);">
   	<input type="hidden" name="id" value="{$keywordID}" />

@@ -1,6 +1,6 @@
 {* 
 Testlink: smarty template - 
-$Id: cfields_view.tpl,v 1.1 2006/12/31 16:23:39 franciscom Exp $ 
+$Id: cfields_view.tpl,v 1.2 2007/01/06 15:14:35 franciscom Exp $ 
 *}
 {include file="inc_head.tpl"}
 
@@ -25,8 +25,9 @@ $Id: cfields_view.tpl,v 1.1 2006/12/31 16:23:39 franciscom Exp $
   
    	{foreach key=cf_id item=cf_def from=$cf_map}
    	<tr>
-   	<td><a href="lib/cfields/cfields_edit.php?action=edit&id={$cf_def.id}">{$cf_def.name}</a></td>
-   	<td>{$cf_def.label}</td>
+   	<td class="bold"><a href="lib/cfields/cfields_edit.php?action=edit&id={$cf_def.id}"
+   	                    title="{lang_get s='manage_cfield'}">{$cf_def.name|escape}</a></td>
+   	<td>{$cf_def.label|escape}</td>
    	<td>{$cf_types[$cf_def.type]}</td>
    	<td align="center">{if $cf_def.show_on_design eq 1}<img src="icons/apply_f2_16.png">{/if} </td>
    	<td align="center">{if $cf_def.enable_on_design eq 1}<img src="icons/apply_f2_16.png">{/if} </td>

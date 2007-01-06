@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.98 $
- * @modified $Date: 2007/01/04 15:27:59 $ $Author: franciscom $
+ * @version $Revision: 1.99 $
+ * @modified $Date: 2007/01/06 15:14:35 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
@@ -795,9 +795,10 @@ $TLS_was_success = " was successfully ";
 
 // gui/templates/keywordsAssign.tpl
 $TLS_btn_assign = "Assign";
+$TLS_keyword_assignment_empty_tsuite="There are no Test Cases in this Test Suite " .
+                                     "=> keyword assignment is not possible";
 $TLS_menu_assign_kw_to_tc = "Assign to Test Cases";
 $TLS_menu_manage_keywords = "Keyword Management";
-
 
 
 // gui/templates/keywordsView.tpl
@@ -1516,10 +1517,17 @@ $TLS_testcase=$TLS_test_case;
 $TLS_node_type_dbtable_testsuites=$TLS_test_suite;
 $TLS_node_type_dbtable_testcases=$TLS_test_case;
 
-$TLS_href_cfields_tproject_assign="Assign custom fields";
+// /gui/templates/cfields_tproject_assign.tpl
+$TLS_btn_cfields_display_order="Save display order";
 $TLS_cfields_tproject_assign="Assign custom fields";
+$TLS_display_order="Display order";
+$TLS_href_cfields_tproject_assign="Assign custom fields";
+$TLS_manage_cfield="Manage custom field";
+
 $TLS_title_assigned_cfields="Assigned custom fields";
 $TLS_title_available_cfields="Available custom fields";
+
+
 
 $TLS_cfields_active="Active";
 $TLS_btn_cfields_active_mgmt="Update active status";

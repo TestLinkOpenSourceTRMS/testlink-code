@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: exec.inc.php,v $
  *
- * @version $Revision: 1.33 $
- * @modified $Date: 2007/01/05 13:57:30 $ $Author: franciscom $
+ * @version $Revision: 1.34 $
+ * @modified $Date: 2007/01/06 15:16:26 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -420,16 +420,15 @@ function write_execution(&$db,$user_id, $exec_data,$tproject_id,$tplan_id,$build
 
 	// --------------------------------------------------------------
 	// extract custom fields id.
-	$cf_keys=null;
+	$map_nodeid_array_cfnames=null;
   foreach($exec_data as $input_name => $value)
   {
       if( strncmp($input_name,$cf_prefix,$len_cfp) == 0 )
       {
         $dummy=explode('_',$input_name);
-        $cf_keys[$dummy[$cf_nodeid_pos]]=$input_name;
+        $map_nodeid_array_cfnames[$dummy[$cf_nodeid_pos]][]=$input_name;
       } 
   }
-  reset($exec_data);
   // --------------------------------------------------------------
 	
 	// is a bulk save ???
@@ -464,14 +463,15 @@ function write_execution(&$db,$user_id, $exec_data,$tproject_id,$tplan_id,$build
         // like checkbox can not exist on exec_data
         //
         $hash_cf=null;
-        if( isset($cf_keys[$tcase_id]) )
+        if( isset($map_nodeid_array_cfnames[$tcase_id]) )
         { 
-          $hash_cf=array($cf_keys[$tcase_id] => $exec_data[$cf_keys[$tcase_id]]);
+          foreach($map_nodeid_array_cfnames[$tcase_id] as $cf_v)
+          {
+             $hash_cf[$cf_v]=$exec_data[$cf_v];
+          }  
 			  }                                     
 		    // 20070105 - custom field management
 		    $cfield_mgr->execution_values_to_db($hash_cf,$tcversion_id, $execution_id, $tplan_id,$cf_map);
-
-
 			}                                     
 		}
 	}

@@ -1,11 +1,13 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
 # This script is distributed under the GNU General Public License 2 or later.
-# $Id: testlink_create_tables.sql,v 1.10 2006/12/31 16:27:09 franciscom Exp $
+# $Id: testlink_create_tables.sql,v 1.11 2007/01/06 15:16:26 franciscom Exp $
 # SQL script - create db tables for TL   
 #
 # default rights & admin account are created via testlink_create_default_data.sql
 #
 # Rev :
+#       20070106 - franciscom - again, and again  'en_GB' as default NOT en_US
+#
 #       20061228 - franciscom - added field active on table cfield_testprojects
 #
 #       20061224 - franciscom - changes to custom field related tables
@@ -280,7 +282,7 @@ CREATE TABLE `users` (
   `email` varchar(100) NOT NULL default '',
   `first` varchar(30) NOT NULL default '',
   `last` varchar(30) NOT NULL default '',
-  `locale` varchar(10) NOT NULL default 'en_US',
+  `locale` varchar(10) NOT NULL default 'en_GB',
   `default_testproject_id` int(10) default NULL,
   `active` tinyint(1) NOT NULL default '1',
   PRIMARY KEY  (`id`),
@@ -297,7 +299,7 @@ CREATE TABLE `cfield_node_types` (
 CREATE TABLE `cfield_testprojects` (
   `field_id` int(10) unsigned NOT NULL default '0',
   `testproject_id` int(10) unsigned NOT NULL default '0',
-  `display_order` smallint(5) unsigned NOT NULL default '0',
+  `display_order` smallint(5) unsigned NOT NULL default '1',
   `active` tinyint(1) NOT NULL default '1',
   PRIMARY KEY  (`field_id`,`testproject_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
@@ -362,7 +364,7 @@ CREATE TABLE `attachments` (
   `file_path` varchar(250) default '',
   `file_size` int(11) NOT NULL default '0',
   `file_type` varchar(250) NOT NULL default '',
-  `date_added` datetime NOT NULL default '1970-01-01 00:00:01',
+  `date_added` datetime NOT NULL default '0000-00-00 00:00:00',
   `content` longblob,
   `compression_type` int(11) NOT NULL default '0',
   PRIMARY KEY  (`id`)

@@ -5,13 +5,13 @@
  *
  * Filename $RCSfile: keywordsAssign.php,v $
  *
- * @version $Revision: 1.20 $
- * @modified $Date: 2006/12/24 11:50:33 $
+ * @version $Revision: 1.21 $
+ * @modified $Date: 2007/01/06 15:16:26 $
  *
  * Purpose:  Assign keywords to set of testcases in tree structure
  *
+ * 20070106 - franciscom - give feedback is choosen a Test suite without test cases.
  * 20061223 - franciscom - improvements on user feedback
- *
  * 20060410 - franciscom - using option transfer
  *
 **/
@@ -33,7 +33,7 @@ $testproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID']
 
 if ($edit == 'testproject')
 {
-  // We can assign/remove keywords on a whole test project
+  // We can NOT assign/remove keywords on a whole test project
 	redirect($_SESSION['basehref'] . $g_rpath['help'] . '/keywordsAssign.html');
 	exit();
 }
@@ -68,8 +68,11 @@ if ($edit == 'testsuite')
   $keyword_assignment_subtitle=lang_get('test_suite') . TITLE_SEP . $testsuite['name'];
 
 	$tcs = $tsuite_mgr->get_testcases_deep($id,true);
+	$can_do=0;
+	
 	if (sizeof($tcs))
 	{
+	  $can_do=1;
 		if ($bAssignTestSuite)
 		{
 			$result = 'ok';
@@ -91,9 +94,13 @@ if ($edit == 'testsuite')
 		}
 		$opt_cfg->to->map = $tcase_mgr->get_keywords_map($tcs," ORDER BY keyword ASC ");
 	}
+	else
+	{
+	}
 }
 else if($edit == 'testcase')
 {
+  $can_do=1;
 	$tcase_mgr = new testcase($db);
 	$tcData = $tcase_mgr->get_by_id($id);
 	if (sizeof($tcData))
@@ -120,6 +127,7 @@ else
 }
 keywords_opt_transf_cfg($opt_cfg, $right_list);
 
+$smarty->assign('can_do', $can_do);
 $smarty->assign('sqlResult', $result);
 $smarty->assign('data', $id);
 $smarty->assign('level', $edit);

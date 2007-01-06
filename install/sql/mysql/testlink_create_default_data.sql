@@ -1,5 +1,5 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
-# $Id: testlink_create_default_data.sql,v 1.6 2006/12/31 16:14:04 franciscom Exp $
+# $Id: testlink_create_default_data.sql,v 1.7 2007/01/06 15:16:26 franciscom Exp $
 # SQL script - create default data (rights & admin account)
 #
 # 20061231 - franciscom - new rights: cfield_view,cfield_management
@@ -128,4 +128,4 @@ INSERT INTO assignment_status (id,description) VALUES(4,'todo_urgent');
 INSERT INTO assignment_status (id,description) VALUES(5,'todo');
 
 # Database version
-INSERT INTO db_version VALUES('1.7.0 Alpha', CURRENT_TIMESTAMP());
+INSERT INTO db_version VALUES('1.7.0 Beta 1', CURRENT_TIMESTAMP());

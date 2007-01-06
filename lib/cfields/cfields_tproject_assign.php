@@ -5,8 +5,10 @@
  *
  * Filename $RCSfile: cfields_tproject_assign.php,v $
  *
- * @version $Revision: 1.1 $
- * @modified $Date: 2006/12/31 16:16:20 $ by $Author: franciscom $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2007/01/06 15:16:26 $ by $Author: franciscom $
+ *
+ * 20070105 - franciscom - added reorder feature
 **/
 require_once("../../config.inc.php");
 require_once("../functions/common.php");
@@ -20,6 +22,7 @@ $cfield_mgr=New cfield_mgr($db);
 $do_assign=(isset($_REQUEST['assign']) && isset($_REQUEST['cfield'])) ? 1 : 0;
 $do_unassign=(isset($_REQUEST['unassign']) && isset($_REQUEST['cfield'])) ? 1 : 0;
 $do_active_mgmt=isset($_REQUEST['active_mgmt']) ? 1 : 0;
+$do_reorder=isset($_REQUEST['reorder']) ? 1 : 0;
 
 
 if($do_assign)
@@ -67,22 +70,19 @@ if($do_active_mgmt)
   }
 }
 
+if($do_reorder)
+{
+  $cfield_ids=array_keys($_REQUEST['display_order']);
+  $cfield_mgr->set_display_order($testproject_id,$_REQUEST['display_order']);
+} //if($do_reorder)
+
+
 // Get all available custom fields
 $cfield_map=$cfield_mgr->get_all();
 
 $my_cfield_map=$cfield_mgr->get_linked_to_testproject($testproject_id);
 $cf2exclude = is_null($my_cfield_map) ? null :array_keys($my_cfield_map);
 $other_cfield_map=$cfield_mgr->get_all($cf2exclude);
-
-/*
-echo "<pre>debug 20061227 \$exclude" . __FUNCTION__ . " --- "; print_r($exclude); echo "</pre>";
-echo "<pre>debug 20061227 \$my_cfield_map" . __FUNCTION__ . " --- "; print_r($my_cfield_map); echo "</pre>";
-
-echo "<pre>debug 20061227 \$cfield_map" . __FUNCTION__ . " --- "; print_r($cfield_map); echo "</pre>";
-echo "<pre>debug 20061227 \$my_cfield_map" . __FUNCTION__ . " --- "; print_r($my_cfield_map); echo "</pre>";
-echo "<pre>debug 20061227 \$other_cfield_map" . __FUNCTION__ . " --- "; print_r($other_cfield_map); echo "</pre>";
-*/
-
 
 
 $smarty = new TLSmarty();

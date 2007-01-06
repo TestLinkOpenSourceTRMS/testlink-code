@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: cfield_mgr.class.php,v $
- * @version $Revision: 1.4 $
- * @modified $Date: 2007/01/05 13:57:30 $  $Author: franciscom $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2007/01/06 15:16:26 $  $Author: franciscom $
  * @author franciscom
  *
  * 20070105 - franciscom - 
@@ -53,6 +53,8 @@ class cfield_mgr
   //
   var $name_prefix='custom_field_';
     
+  var $sizes = null;
+    
   /*
     function: cfield_mgr
               class constructor
@@ -61,6 +63,8 @@ class cfield_mgr
 	{
 		$this->db = &$db;	
 		$this->tree_manager = new tree($this->db);
+    $gui_cfg=config_get('gui');
+    $this->sizes=$gui_cfg->custom_fields->sizes;
 	}
 
   /*
@@ -169,7 +173,7 @@ class cfield_mgr
     }
     if( !is_null($node_id) )
     {
-      $additional_values .= ",CFDV.value AS design_value,CFDV.node_id AS node_id";
+      $additional_values .= ",CFDV.value AS value,CFDV.node_id AS node_id";
       $additional_join .= " LEFT OUTER JOIN cfield_design_values CFDV ON CFDV.field_id=CF.id " .
                           " AND CFDV.node_id={$node_id} ";
     }
@@ -218,15 +222,16 @@ class cfield_mgr
 	function string_custom_field_input($p_field_def,$name_suffix='')
 	{
     $WINDOW_SIZE_MULTILIST=5;
+    $DEFAULT_SIZE=50;
     
 		$str_out='';
 		$t_id = $p_field_def['id'];
 		$t_type = $p_field_def['type'];
 		
 	  $t_custom_field_value = $p_field_def['default_value'];	
-	  if( isset($p_field_def['design_value']) )
+	  if( isset($p_field_def['value']) )
 		{
-		  $t_custom_field_value = $p_field_def['design_value'];   
+		  $t_custom_field_value = $p_field_def['value'];   
 		}
     
 		$t_custom_field_value = htmlspecialchars( $t_custom_field_value );
@@ -235,6 +240,7 @@ class cfield_mgr
     
     // 20070105 - franciscom
     $input_name="{$this->name_prefix}{$t_type}_{$t_id}{$name_suffix}";
+    $size = isset($this->sizes[$verbose_type]) ? intval($this->sizes[$verbose_type]) : 0;
 		switch ($verbose_type) 
 		{
   		case 'list':
@@ -243,20 +249,20 @@ class cfield_mgr
         if( $verbose_type == 'list' )
         {
            $t_multiple=' ';
-           $t_list_size =1;
+           $t_list_size = intval($size) > 0 ? $size :1;
            $t_name_suffix=' ';
         }
         else
         {
+           $window_size = intval($size) > 1 ? $size : $WINDOW_SIZE_MULTILIST;
            $t_name_suffix='[]';
            $t_multiple=' multiple="multiple" ';
            $t_list_size = count( $t_values );   
-           if($t_list_size > $WINDOW_SIZE_MULTILIST)
+           if($t_list_size > $window_size)
            { 
-            $t_list_size=$WINDOW_SIZE_MULTILIST;
+            $t_list_size=$window_size;
            } 
         }
-        // 20070104 - franciscom
   			$str_out .='<select name="' . $input_name . $t_name_suffix . '"' . $t_multiple;
   			$str_out .= ' size="' . $t_list_size . '">';
   
@@ -294,7 +300,8 @@ class cfield_mgr
   		case 'email':
   		case 'float':
   		case 'numeric':
-  			$str_out .= '<input type="text" name="' . $input_name . '" size="80"';
+  		  $size = intval($size) > 0 ? $size : $DEFAULT_SIZE;
+  			$str_out .= '<input type="text" name="' . $input_name . '" size="' . $size .'"';
 			  if( 0 < $p_field_def['length_max'] ) 
 			  {
 				  $str_out .= ' maxlength="' . $p_field_def['length_max'] . '"';
@@ -787,10 +794,13 @@ class cfield_mgr
 	# Prepare a string containing a custom field value for display
 	# $p_field_def 		  definition of the custom field
 	# $p_node_id	bug id to display the custom field value for
-	function string_custom_field_value( $p_field_def, $p_node_id) 
+	# 
+	# [$p_value_field]: field id, to point to the field value in $p_field_def
+	#
+	function string_custom_field_value( $p_field_def, $p_node_id,$p_value_field='value') 
 	{
 		
-		$t_custom_field_value=htmlspecialchars($p_field_def['design_value']);
+		$t_custom_field_value=htmlspecialchars($p_field_def[$p_value_field]);
 
 		switch ($this->custom_field_types[$p_field_def['type']]) 
   	{
@@ -811,6 +821,7 @@ class cfield_mgr
 					return date( config_get( 'short_date_format'), $t_custom_field_value) ;
 				}
 				break ;
+	
 			default:
 				return($t_custom_field_value);
 		}
@@ -875,11 +886,13 @@ class cfield_mgr
       $additional_join  .= " JOIN cfield_node_types CFNT ON CFNT.field_id=CF.id " .
                            " AND CFNT.node_type_id={$node_type_id} ";
     }
-    if( !is_null($node_id) )
+    if( !is_null($node_id) && !is_null($execution_id) && !is_null($testplan_id) )
     {
-      $additional_values .= ",CFEV.value AS design_value,CFEV.tcversion_id AS node_id";
+      $additional_values .= ",CFEV.value AS value,CFEV.tcversion_id AS node_id";
       $additional_join .= " LEFT OUTER JOIN cfield_execution_values CFEV ON CFEV.field_id=CF.id " .
-                          " AND CFEV.tcversion_id={$node_id} ";
+                          " AND CFEV.tcversion_id={$node_id} " .
+                          " AND CFEV.execution_id={$execution_id} " .
+                          " AND CFEV.testplan_id={$testplan_id} ";
     }
     
     
@@ -931,7 +944,6 @@ class cfield_mgr
   */
   function execution_values_to_db($hash,$node_id,$execution_id,$testplan_id,$cf_map=null)
   {                                  
-    
     if( is_null($hash) && is_null($cf_map) )
     {
        return;
@@ -1040,7 +1052,12 @@ class cfield_mgr
               $value=is_array($value) ? $value[0] :$value;  
             }
             $cfield[$field_id]['cf_value']=$value;
-          break;          
+          break;        
+          
+          default:
+            $cfield[$field_id]['cf_value']=$value;
+          break;        
+            
         }
       } // foreach
     }
@@ -1048,6 +1065,31 @@ class cfield_mgr
     return($cfield);
  } // function end
   
+ 
+ /*
+   function: 
+ 
+   args :  $tproject_id: needed because is possible to associate/link 
+                         a different set of custom field for every test project
+           $map_field_id_display_order
+           
+           
+
+   returns: 
+
+ */
+ function set_display_order($tproject_id, $map_field_id_display_order)
+ {
+    foreach($map_field_id_display_order as $field_id => $display_order)
+    {
+       $sql="UPDATE cfield_testprojects " .
+            " SET display_order=" . intval($display_order) .
+            " WHERE testproject_id={$tproject_id} " . 
+            " AND field_id={$field_id} ";
+
+       $this->db->exec_query($sql);     
+    }
+ } // function end
   
   
 } // end class

@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.18 $
- * @modified $Date: 2006/11/20 07:35:12 $ $Author: franciscom $
+ * @version $Revision: 1.19 $
+ * @modified $Date: 2007/01/06 15:16:26 $ $Author: franciscom $
  * @author franciscom
 */
 
@@ -205,11 +205,15 @@ function get_linked_tcversions($id,$tcase_id=null,$keyword_id=0,$executed=null,$
 	
 	// missing condition on testplan_id between execution and testplan_tcversions
 	// added tc_id in order clause to maintain same order that navigation tree
+	
+	// 20070106 - francisco.mancardi@gruppotesi.com
+	// Postgres does not like Column alias without AS, and (IMHO) he is right
+	//
 	$sql = " SELECT NHB.parent_id AS testsuite_id, " .
 	     "        NHA.parent_id AS tc_id," .
 	     "        T.tcversion_id AS tcversion_id, T.id AS feature_id," .
 	     "        E.tcversion_id AS executed, E.testplan_id AS exec_on_tplan, " .
-	     "        UA.user_id,UA.type,UA.status,UA.assigner_id, COALESCE(E.status,'n') exec_status ".
+	     "        UA.user_id,UA.type,UA.status,UA.assigner_id, COALESCE(E.status,'n') AS exec_status ".
 	     " FROM nodes_hierarchy NHA " .
 	     " JOIN nodes_hierarchy NHB ON NHA.parent_id = NHB.id " .
 	     " JOIN testplan_tcversions T ON NHA.id = T.tcversion_id " .

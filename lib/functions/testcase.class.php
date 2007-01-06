@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.40 $
- * @modified $Date: 2007/01/05 13:57:30 $ $Author: franciscom $
+ * @version $Revision: 1.41 $
+ * @modified $Date: 2007/01/06 15:16:26 $ $Author: franciscom $
  * @author franciscom
  *
  * 20070105 - franciscom - changes in copy_to(),get_by_id()
@@ -1470,21 +1470,27 @@ function html_table_of_custom_field_inputs($id,$parent_id=null,$scope='design',$
                               1 -> filter on field show_on_execution=1
                               0 or null -> don't filter
   
+        [$execution_id]
+        [$testplan_id]
+
   returns: html string
   
 */
-function html_table_of_custom_field_values($id,$scope='design',$show_on_execution=null) 
+function html_table_of_custom_field_values($id,$scope='design',$show_on_execution=null,
+                                           $execution_id=null,$testplan_id=null) 
 {
+
   $cf_smarty='';
-  $parent_id=null;
+  $PID_NO_NEEDED=null;
   
   if( $scope=='design' )
   {
-    $cf_map=$this->get_linked_cfields_at_design($id,$parent_id,$show_on_execution);
+    $cf_map=$this->get_linked_cfields_at_design($id,$PID_NO_NEEDED,$show_on_execution);
   }
   else 
   {
-    $cf_map=$this->get_linked_cfields_at_execution($id);
+    $cf_map=$this->get_linked_cfields_at_execution($id,$PID_NO_NEEDED,$show_on_execution,
+                                                   $execution_id,$testplan_id);
   }
     
   if( !is_null($cf_map) )
@@ -1514,7 +1520,8 @@ function html_table_of_custom_field_values($id,$scope='design',$show_on_executio
         [$show_on_execution]: default: null
                               1 -> filter on field show_on_execution=1
                               0 or null -> don't filter
-        
+        [$execution_id]
+        [$testplan_id]
         
   returns: hash
   
@@ -1536,8 +1543,8 @@ function get_linked_cfields_at_execution($id,$parent_id=null,$show_on_execution=
   // I'm setting node type to test case, but $id is the tcversion_id, because
   // execution data is related to tcversion NO testcase
   //
-  $cf_map=$this->cfield_mgr->get_linked_cfields_at_execution($tproject_id,$enabled,
-                                                             'testcase',$id);
+  $cf_map=$this->cfield_mgr->get_linked_cfields_at_execution($tproject_id,$enabled,'testcase',
+                                                             $id,$execution_id,$testplan_id);
   return($cf_map);
 }
 

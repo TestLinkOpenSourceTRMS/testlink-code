@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: treeMenu.inc.php,v $
  *
- * @version $Revision: 1.33 $
- * @modified $Date: 2006/11/18 21:33:23 $ by $Author: schlundus $
+ * @version $Revision: 1.34 $
+ * @modified $Date: 2007/01/06 15:16:26 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * 	This file generates tree menu for test specification and test execution.
@@ -262,14 +262,32 @@ function prepareNode(&$db,&$node,&$hash_id_descr,&$map_node_tccount,
 			// I'm doing this instead of creating a test case manager object, because
 			// I think is better for performance.
 			//
-			$sql=" SELECT count(TCV.id) NUM_ACTIVE_VERSIONS " .
-			   " FROM tcversions TCV, nodes_hierarchy NH " .
-			   " WHERE NH.parent_id=" . $node['id'] .
-			   " AND NH.id = TCV.id AND TCV.active=1";
+			// =======================================================================================
+			// 20070106 - franciscom
+			// Postgres Problems
+			// =======================================================================================
+			// Problem 1 - SQL Sintax
+			//   While testing witrh postgres
+			//   SELECT count(TCV.id) NUM_ACTIVE_VERSIONS   -> Error
+			//
+			//   At least for what I remember using AS to create COLUMN ALIAS IS REQUIRED and Standard
+			//   while AS is NOT REQUIRED (and with some DBMS causes errors) when you want to give a 
+			//   TABLE ALIAS
+			//
+			// Problem 2 - alias cas
+			//   At least in my installation the aliases column name is returned lower case, then
+			//   PHP fails when:
+			//                  if($myrow['NUM_ACTIVE_VERSIONS'] == 0)
+			//
+			//
+			$sql=" SELECT count(TCV.id) AS num_active_versions " .
+			     " FROM tcversions TCV, nodes_hierarchy NH " .
+			     " WHERE NH.parent_id=" . $node['id'] .
+			     " AND NH.id = TCV.id AND TCV.active=1";
 			
 			$result = $db->exec_query($sql);
 			$myrow = $db->fetch_array($result);
-			if($myrow['NUM_ACTIVE_VERSIONS'] == 0)
+			if($myrow['num_active_versions'] == 0)
 			{
 				$node = null;
 			}

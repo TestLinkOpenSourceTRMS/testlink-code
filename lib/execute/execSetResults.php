@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.46 $
- * @modified $Date: 2007/01/05 13:57:30 $ $Author: franciscom $
+ * @version $Revision: 1.47 $
+ * @modified $Date: 2007/01/06 15:16:26 $ $Author: franciscom $
  *
  * 20070105 - franciscom - refactoring
  *
@@ -77,6 +77,7 @@ if(($latestBuild > $build_id) && !(config_get('edit_old_build_results')))
 	$editTestResult = "no";
 }
 
+$cfexec_val_smarty= null;
 $bugs = null;
 $attachmentInfos = null;
 $map_last_exec = null;
@@ -203,38 +204,19 @@ if(!is_null($linked_tcversions))
         }
     }
     
+    // Get attachment,bugs, etc
     if(!is_null($other_execs))
     {
-        $_bugInterfaceOn = config_get('bugInterfaceOn');
-
-        foreach($other_execs as $tcversion_id => $execInfo)
-        {
-			    $num_elem = sizeof($execInfo);   
-        	for($idx = 0;$idx < $num_elem;$idx++)
-        	{
-        		$execID = $execInfo[$idx]['execution_id'];
-        		
-        		$aInfo = getAttachmentInfos($db,$execID,'executions',true,1);
-        		if ($aInfo)
-        		{
-        			$attachmentInfos[$execID] = $aInfo;
-        		}
-        		
-        		if($_bugInterfaceOn)
-        		{
-              $the_bugs = get_bugs_for_exec($db,config_get('bugInterface'),$execID);
-              if( count($the_bugs) > 0 )
-              { 
-        		    $bugs[$execID] = $the_bugs;
-        		  }
-        		}
-        	}
-        }
+      $other_info=exec_additional_info($db,$tcase_mgr,$other_execs,$tplan_id);
+ 			$attachmentInfos=$other_info['attachment'];
+      $bugs=$other_info['bugs'];
+      $cfexec_val_smarty=$other_info['cfexec_values'];
     }
+
 }
 
+$smarty->assign('other_exec_cfexec',$cfexec_val_smarty);
 $smarty->assign('bugs_for_exec',$bugs);
-
 
 $rs = getBuild_by_id($db,$build_id);
 $smarty->assign('build_notes',$rs['notes']);
@@ -416,7 +398,59 @@ function smarty_assign_tsuite_info(&$smarty,&$request_hash, &$db,$tcase_id)
 
 
 
+/*
+function: exec_additional_info 
 
+args :
+
+returns: 
+
+*/
+function exec_additional_info(&$db,&$tcase_mgr,$other_execs,$tplan_id)
+{
+  $_bugInterfaceOn = config_get('bugInterfaceOn');
+  $_bugInterface = config_get('bugInterface');
+  $attachmentInfos=null;
+  $bugs=null;
+  $cfexec_values=null;
+
+  foreach($other_execs as $tcversion_id => $execInfo)
+  {
+    $num_elem = sizeof($execInfo);   
+  	for($idx = 0;$idx < $num_elem;$idx++)
+  	{
+  		$exec_id = $execInfo[$idx]['execution_id'];
+  		
+  		$aInfo = getAttachmentInfos($db,$exec_id,'executions',true,1);
+  		if ($aInfo)
+  		{
+  			$attachmentInfos[$exec_id] = $aInfo;
+  		}
+  		
+  		if($_bugInterfaceOn)
+  		{
+        $the_bugs = get_bugs_for_exec($db,_bugInterface,$exec_id);
+        if( count($the_bugs) > 0 )
+        { 
+  		    $bugs[$exec_id] = $the_bugs;
+  		  }
+  		}
+
+     
+      // Custom fields
+      $cfexec_values[$exec_id] = $tcase_mgr->html_table_of_custom_field_values($tcversion_id,'execution',null,
+                                                                               $exec_id,$tplan_id);
+
+
+  	}
+  } // foreach
+  
+  $info=array( 'attachment' => $attachmentInfos,
+               'bugs' => $bugs,
+               'cfexec_values' => $cfexec_values);      
+               
+  return($info);
+} // function end
 
 
 

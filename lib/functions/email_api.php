@@ -31,8 +31,9 @@ $g_phpMailer_smtp = null;
 # if $p_exit_on_error == true (default) - calls exit() on errors, else - returns true on success and false on errors
 # @@@@ (thraxisp) $p_header doesn't work as expected, it adds a list of names to the bcc list, rather than headers
 #         this is ok for now as nothing uses it
+# 20070107 - KL - modified signature to allow caller to specify htmlFormat = true if they so choose
 function email_send( $p_from, $p_recipient, $p_subject, $p_message, 
-                     $p_cc='', $p_category='', $p_exit_on_error=false ) {
+                     $p_cc='', $p_category='', $p_exit_on_error=false, $htmlFormat = 'false' ) {
                      	
 	global $g_phpMailer_smtp;
 
@@ -105,7 +106,7 @@ function email_send( $p_from, $p_recipient, $p_subject, $p_message,
 
 
 
-	$mail->IsHTML(false);    # set email format to plain text
+	$mail->IsHTML($htmlFormat);    # set email format to plain text
 	$mail->WordWrap = 80;    
 	$mail->Priority = config_get( 'mail_priority' );   # Urgent = 1, Not Urgent = 5, Disable = 0
 	

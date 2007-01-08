@@ -1,13 +1,14 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/ 
 // This script is distributed under the GNU General Public License 2 or later. 
 //
-// $Id: testlink_library.js,v 1.19 2006/12/24 11:48:18 franciscom Exp $ 
+// $Id: testlink_library.js,v 1.20 2007/01/08 08:06:07 franciscom Exp $ 
 //
 // Javascript functions commonly used through the GUI
 // This library is automatically loaded with inc_header.tpl
 //
 // DO NOT ADD FUNCTIONS FOR ONE USING
 //
+// 20070107 - franciscom - subtle bug deleteUser_onClick()
 // 20061223 - franciscom - added open_show_notes_window()
 // 20060603 - franciscom - added confirm_and_submit()
 //
@@ -138,10 +139,20 @@ function deleteBuild_onClick(buildID,msg)
                      buildID);
 }
 
-function deleteUser_onClick(userID)
+/*
+  function: deleteUser_onClick()
+
+  args :
+  
+  returns: 
+
+  rev :
+        20070107 - franciscom - added fRoot
+*/
+function deleteUser_onClick(userID,userName)
 {
-	if (confirm(warning_delete_user))
-		location = "lib/usermanagement/usersview.php?delete=1&user="+userID;
+	if (confirm(warning_delete_user+"\n(" + userName +")"))
+		location = fRoot+"lib/usermanagement/usersview.php?operation=delete&user="+userID;
 }
 
 /**

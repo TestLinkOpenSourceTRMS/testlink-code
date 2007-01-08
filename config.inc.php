@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.85 $
- * @modified $Date: 2007/01/06 15:12:16 $ by $Author: franciscom $
+ * @version $Revision: 1.86 $
+ * @modified $Date: 2007/01/08 08:05:46 $ by $Author: franciscom $
  *
  *
  * Constants and configuration parameters used throughout TestLink 
@@ -284,7 +284,9 @@ define('TL_FRMWORKAREA_LEFT_FRAME_WIDTH', "30%");
 
 /* CSS configuration */
 /* Standard */
-define('TL_THEME_CSS_DIR','gui/css/');
+//define('TL_THEME_CSS_DIR','gui/css/');
+define('TL_THEME_CSS_DIR','gui/css/theme_m1/');
+
 define('TL_TESTLINK_CSS',TL_THEME_CSS_DIR . 'testlink.css');
 define('TL_LOGIN_CSS', TL_TESTLINK_CSS);
 
@@ -533,6 +535,17 @@ define("TL_ROLES_NONE_DESC","<no rights>");
 define("TL_ROLES_UNDEFINED",0);
 define("TL_ROLES_UNDEFINED_DESC","<inherited>");
 define("TL_DEFAULT_ROLEID",TL_ROLES_GUEST);
+
+// 20070106 - franciscom
+$g_role_colour = array ( "admin"         => 'white',
+                         "tester"        => 'wheat',
+                         'leader'        => 'acqua',
+                         'senior tester' => '#FFA',
+                         'guest'         => 'pink',
+                         'test designer' => 'cyan',
+                         '<no rights>'   => 'salmon',
+                         '<inherited>'   => 'seashell' );
+
 
 $g_tc_risks = array('L1', 'L2', 'L3','M1', 'M2', 'M3','H1', 'H2', 'H3');
 

@@ -1,6 +1,6 @@
 {* 
 Testlink: smarty template - 
-$Id: cfields_edit.tpl,v 1.1 2006/12/31 16:23:39 franciscom Exp $ 
+$Id: cfields_edit.tpl,v 1.2 2007/01/09 10:55:06 franciscom Exp $ 
 *}
 {include file="inc_head.tpl" jsValidate="yes"}
 
@@ -34,7 +34,11 @@ function validateForm(f)
 {/literal}
 
 
-<h1>{lang_get s='title_cfields_mgmt'}</h1>
+<h1>
+<img alt="{lang_get s='help'}"  title="{lang_get s='help'}"
+	   src="icons/sym_question.gif" class="help"
+	   onclick="javascript:open_popup('{$helphref}custom_fields.html');" />
+     {lang_get s='title_cfields_mgmt'} </h1>
 
 {include file="inc_update.tpl" result=$result item="custom_field" action="$action" feedback_type="soft"}
 
@@ -53,8 +57,18 @@ function validateForm(f)
       onSubmit="javascript:return validateForm(this);">
   <input type="hidden" id="hidden_id" name="id" value="{$cf.id}">   
 	<table class="common">
-		<tr>
-			<th>{lang_get s='name'}</th>
+    <tr> 
+      <td colspan="2"> 
+      <img alt="{lang_get s='help'}"  title="{lang_get s='help'}"
+	   src="icons/sym_question.gif" class="help"
+	   onclick="javascript:open_popup('{$helphref}custom_fields.html');" />
+
+      </td>
+    </tr> 
+	
+	 <tr>
+			<th>{lang_get s='name'}	
+      </th>
 			<td><input type="text" name="cf_name" 
 			                       size="{#CFIELD_NAME_SIZE#}" 
 			                       maxlength="{#CFIELD_NAME_MAXLEN#}" 
@@ -147,9 +161,6 @@ function validateForm(f)
 				{/if}
 			</td>
 		</tr>
-
-
-
 	</table>
 	
 	<div class="groupBtn">	

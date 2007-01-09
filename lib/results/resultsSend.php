@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsSend.php,v 1.12 2006/11/29 19:59:19 kevinlevy Exp $ 
+* $Id: resultsSend.php,v 1.13 2007/01/09 06:56:06 kevinlevy Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author	Chad Rosen
@@ -36,12 +36,13 @@ $suitesSelected = 'all';
 $re = new results($db, $tp, $suitesSelected, $builds_to_query);
 $topLevelSuites= $re->getTopLevelSuites();
 $topLevelSuites_two = array();
+if (is_array($topLevelSuites)) {
 while ($i = key($topLevelSuites)){
 	$array = $topLevelSuites[$i];
 	$topLevelSuites_two[$array['id']] = $array['name'];
 	next($topLevelSuites);	
 }
-
+} // end if 
 $message = null;
 // process input data
 if(isset($_POST['submit']))
@@ -51,21 +52,50 @@ if(isset($_POST['submit']))
 	else
 	{
 
-		print "testPlanId = " . $_SESSION['testPlanId'] . " <BR>";
-		print "buildProj = " . $_POST['buildProj'] . "<BR>";
-		print "buildCom = " . $_POST['buildCom'] . " <BR>";
-
 		// create message body
-		$msgBody = (isset($_POST['body']) ? $_POST['body'] : null) . "\n\n";
+		$msgBody = "<html><body>";
+		$msgBody .= (isset($_POST['body']) ? $_POST['body'] : null) . "\n\n";
 		$status = isset($_POST['status']) ? $_POST['status'] : null;
 		//$builds = getBuilds($db,$_SESSION['testPlanId']," ORDER BY builds.name ");
 
 		if($status == 'projAll')
 		{
-			 //if the user has chosen to sent the entire testplan priority info
-			//grab all of the priority info and stuff it into the message body
-			$msgBody .= "reportGeneralStatus in progress";
-				// reportGeneralStatus($db,$_SESSION['testPlanId']);
+				// query on all builds
+				$builds_to_query = 'a';
+				$re2 = new results($db, $tp, $suitesSelected, $builds_to_query);
+				
+				/** 
+				* COMPONENTS REPORT 
+				*/
+				
+				$topLevelSuites = $re2->getTopLevelSuites();
+				$mapOfAggregate = $re2->getAggregateMap();
+				$arrDataSuite = null;
+				$arrDataSuiteIndex = 0;
+				$msgBody .= "<h2>Results by Suite</h2>";
+				$msgBody .= "<table border=2>";
+                $msgBody .= "<tr><th>suite name</th><th>total cases</th><th>passed</th><th>failed</th><th>blocked</th><th>not run</th><th>% completed</th></tr>";
+				while ($i = key($topLevelSuites)) {
+					$pairArray = $topLevelSuites[$i];
+					$currentSuiteId = $pairArray['id'];
+					$currentSuiteName = $pairArray['name'];
+					$resultArray = $mapOfAggregate[$currentSuiteId];	
+					$total = $resultArray['total'];
+					$notRun = $resultArray['notRun'];
+					if ($total > 0) {
+					   $percentCompleted = (($total - $notRun) / $total) * 100;
+					}
+					else {
+					   $percentCompleted = 0;
+					}
+					$percentCompleted = number_format($percentCompleted,2);
+					$arrDataSuite[$arrDataSuiteIndex] = array($currentSuiteName,$total,$resultArray['pass'],$resultArray['fail'],$resultArray['blocked'],$notRun,$percentCompleted);
+					$appendThis = "<tr><td>" . $currentSuiteName . "</td><td>" . $total . "</td><td>" . $resultArray['pass'] . "</td><td>" . $resultArray['fail'] . "</td><td>" . $resultArray['blocked'] . "</td><td>" . $notRun . "</td><td>" . $percentCompleted . "</td></tr>";
+					$msgBody .= $appendThis;
+					$arrDataSuiteIndex++;
+					next($topLevelSuites);
+				}  // end while
+				$msgBody .= "</table>";
 		} 
 		else if($status == 'comAll')
 		{ 
@@ -104,6 +134,7 @@ if(isset($_POST['submit']))
     }
     
     // 20050906 - fm
+		$msgBody .= "</body></html>";
 		$message = sendMail($_SESSION['email'],$_POST['to'], $_POST['subject'],
 		                    $msgBody,$send_cc_to_myself);
 	}

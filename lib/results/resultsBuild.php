@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsBuild.php,v 1.24 2007/01/03 20:43:48 kevinlevy Exp $ 
+* $Id: resultsBuild.php,v 1.25 2007/01/09 06:27:36 kevinlevy Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * 
@@ -40,14 +40,15 @@ $suitesSelected = 'all';
 $re = new results($db, $tp, $suitesSelected, $builds_to_query);
 
 /** 
-
 * TOP LEVEL SUITES REPORT 
-
 */
 $topLevelSuites = $re->getTopLevelSuites();
 $mapOfAggregate = $re->getAggregateMap();
 $arrDataSuite = null;
 $arrDataSuiteIndex = 0;
+
+
+if (is_array($topLevelSuites)) {
 while ($i = key($topLevelSuites)) {
 	$pairArray = $topLevelSuites[$i];
 	$currentSuiteId = $pairArray['id'];
@@ -64,6 +65,7 @@ while ($i = key($topLevelSuites)) {
 	$arrDataSuiteIndex++;
 	next($topLevelSuites);
 } 
+} // end if 
 
 /** 
 * ALL SUITES REPORT 
@@ -75,6 +77,7 @@ $index = 0;
 $risk = '?';
 $importance = '?';
 $priority = '?';
+if (is_array($allSuites)) {
 while ($i = key($allSuites)) {
 	$pairArray = $allSuites[$i];
 	$currentSuiteId = $pairArray['id'];
@@ -91,7 +94,7 @@ while ($i = key($allSuites)) {
 	$index++;
 	next($allSuites);
 } 
-
+} // end if
 /**
 * PRIORITY REPORT
 */

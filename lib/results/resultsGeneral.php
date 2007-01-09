@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: resultsGeneral.php,v $
- * @version $Revision: 1.24 $
- * @modified $Date: 2007/01/03 02:37:23 $ by $Author: kevinlevy $
+ * @version $Revision: 1.25 $
+ * @modified $Date: 2007/01/09 06:27:59 $ by $Author: kevinlevy $
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
  * This page show Test Results over all Builds.
@@ -45,6 +45,7 @@ $topLevelSuites = $re->getTopLevelSuites();
 $mapOfAggregate = $re->getAggregateMap();
 $arrDataSuite = null;
 $arrDataSuiteIndex = 0;
+if (is_array($topLevelSuites)) {
 while ($i = key($topLevelSuites)) {
 	$pairArray = $topLevelSuites[$i];
 	$currentSuiteId = $pairArray['id'];
@@ -63,7 +64,7 @@ while ($i = key($topLevelSuites)) {
 	$arrDataSuiteIndex++;
 	next($topLevelSuites);
 } 
-
+} // end if 
 /**
 * PRIORITY REPORT
 */

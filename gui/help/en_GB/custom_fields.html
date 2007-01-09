@@ -1,0 +1,72 @@
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta http-equiv="Content-language" content="en" />
+	<meta name="author" content="Martin Havlat" />
+	<meta name="copyright" content="GNU" />
+	<meta name="robots" content="NOFOLLOW" />
+	<title>TestLink Help: Custom Fields</title>
+ 	<link rel="stylesheet" type="text/css" href="../../css/tl_docs.css" />
+</head>
+
+<body>
+<h1>Custom Fields </h1>
+Info borrowed and adapted from Mantis Bug Tracking System manual
+<h2>Description</h2>
+Following are some facts about the implementation of custom fields:<br>
+<ul>
+<li>Custom fields are defined system wide.</li>
+<li>Custom fields are linked to a type of element (Test Suite, Test Case)</li>
+<li>Custom fields can be linked to multiple Test Projects.</li>
+<li>The sequence of displaying custom fields can be different per Test Project.</li>
+<li>Custom fields can be turned inactive for an specific Test Project.</li>
+<li>Number of custom fields is not restricted.</li>
+</ul>
+<br>
+The definition of a custom field includes the following logical
+attributes:<br>
+<ul>
+<li>Custom field name<br>
+</li>
+<li>Caption variable name (eg: This is the value that is
+supplied to lang_get() API <b>(NOT IMPLEMENTED YET)</b>, or displayed as-is if not found in language
+file).</li>
+<li>Custom field type (string, numeric, float, enum,
+email)</li>
+<li>Enumeration possible values (eg: RED|YELLOW|BLUE),
+applicable to list, multiselection list and combo types.<br>
+<div class="note">Use the pipe ('|') character to
+separate possible values for an enumeration. One of the possible values
+can be an empty string.</div>
+</li>
+<li>Default value. <b>(NOT IMPLEMENTED YET)</b><br>
+</li>
+<li>Minimum/maximum length for the custom field value
+(use 0 to disable). <b>(NOT IMPLEMENTED YET)</b></li>
+<li>Regular expression to use for validating user input
+(use <a href="http://au.php.net/manual/en/function.ereg.php">ereg()</a>
+syntax). <b>(NOT IMPLEMENTED YET)</b></li>
+<li>All custom fields are currently saved to a field of
+type VARCHAR(255) in the database. <br>
+</li>
+<li>Display on test specification.</li>
+<li>Enable on test specification. User can change the value during Test Case Specification Design <br>
+</li>
+<li>Display on test execution.</li>
+<li>Enable on test execution. User can change the value during Test Case execution<br>
+</li>
+<li>Available for. User choose to what kind of item the field belows.<br>
+</li>
+
+
+</ul>
+
+
+
+
+<br>
+</body>
+</html>

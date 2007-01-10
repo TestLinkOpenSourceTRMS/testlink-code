@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.87 $
- * @modified $Date: 2007/01/10 16:19:20 $ by $Author: havlat $
+ * @version $Revision: 1.88 $
+ * @modified $Date: 2007/01/10 21:35:28 $ by $Author: schlundus $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink 
@@ -89,7 +89,26 @@ ini_set('include_path',ini_get('include_path') .";". '.' . DELIM . TL_ABS_PATH .
 /** Include database consts (the file is generated automatically by TL installer) */ 
 require_once('config_db.inc.php');
 
-/** include support for lacalization */
+// ----------------------------------------------------------------------------
+/** [LOCALIZATION] */
+
+// Your first/suggested choice for default locale, this must be one of $g_locales (see below).
+// An attempt will be done to stablish the default locale 
+// automatically using $_SERVER['HTTP_ACCEPT_LANGUAGE']
+
+$language = 'en_GB'; // default
+
+
+// check for !== false because getenv() returns false on error
+$serverLanguage = getenv($_SERVER['HTTP_ACCEPT_LANGUAGE']);
+if(false !== $serverLanguage)
+{
+	if (array_key_exists($serverLanguage,$g_locales))
+		$language = $serverLanguage;
+}
+define ('TL_DEFAULT_LOCALE',$language);
+
+/** include support for localization */
 require_once("lang_api.php");
 
 /** Functions for check request status */
@@ -99,8 +118,6 @@ require_once('configCheck.php');
 /*  20070106 - franciscom - this statement it's not 100% right      
     better use $_SESSION['basehref'] in the scripts. */      
 define('TL_BASE_HREF', get_home_url()); 
-
-
 
 // ----------------------------------------------------------------------------
 /** [GLOBAL] */
@@ -404,29 +421,6 @@ $g_field_size->testsuite_name = 100;
 $g_field_size->req_docid=16;
 $g_field_size->req_title=100;
 $g_field_size->requirement_title=100;
-
-
-
-// ----------------------------------------------------------------------------
-/** [LOCALIZATION] */
-
-// Your first/suggested choice for default locale, this must be one of $g_locales (see below).
-// An attempt will be done to stablish the default locale 
-// automatically using $_SERVER['HTTP_ACCEPT_LANGUAGE']
-
-$language = 'en_GB'; // default
-
-
-// check for !== false because getenv() returns false on error
-$serverLanguage = getenv($_SERVER['HTTP_ACCEPT_LANGUAGE']);
-if(false !== $serverLanguage)
-{
-	if (array_key_exists($serverLanguage,$g_locales))
-		$language = $serverLanguage;
-}
-define ('TL_DEFAULT_LOCALE',$language);
-
-
 
 
 // ----------------------------------------------------------------------------

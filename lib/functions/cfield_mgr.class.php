@@ -2,9 +2,11 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: cfield_mgr.class.php,v $
- * @version $Revision: 1.5 $
- * @modified $Date: 2007/01/06 15:16:26 $  $Author: franciscom $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2007/01/10 15:09:15 $  $Author: franciscom $
  * @author franciscom
+ *
+ * 20070110 - franciscom - solved bug set_active()
  *
  * 20070105 - franciscom - 
  * 1. solved bugs on design_values_to_db()
@@ -553,7 +555,7 @@ class cfield_mgr
   function unlink_from_testproject($tproject_id,$cfield_ids)
   {
     // Step 1: set to active
-    $this->set_active($tproject_id,$cfield_ids,1);
+    $this->set_active_for_testproject($tproject_id,$cfield_ids,1);
     
     
     // Step 2: get all node id that has been linked

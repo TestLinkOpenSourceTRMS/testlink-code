@@ -1,0 +1,208 @@
+<?php
+/**
+ * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ * This script is distributed under the GNU General Public License 2 or later. 
+ *
+ * Filename $RCSfile: const.inc.php,v $
+ *
+ * @version $Revision: 1.1 $
+ * @modified $Date: 2007/01/10 16:19:54 $ by $Author: havlat $
+ * @author Martin Havlát
+ *
+ * SCOPE:
+ * Global Constants used throughout TestLink 
+ * Script is included via config.inc.php
+ * There should be changed for your environment
+ * 
+ *-------------------------------------------------------------------
+ * Revisions:
+ *
+ *
+ *-------------------------------------------------------------------
+**/
+
+// ----------------------------------------------------------------------------
+/** [GLOBAL] */
+
+/** Directory separator */
+define('DS', DIRECTORY_SEPARATOR);
+
+/** set the delimeter properly for the include_path */
+define('DELIM', (PHP_OS == "WIN32" || PHP_OS == "WINNT") ? ';' : ':');
+
+/** The temporary dir for temporary files */
+define('TL_TEMP_PATH', TL_ABS_PATH . 'gui'.DS.'templates_c'.DS);
+
+
+
+// ----------------------------------------------------------------------------
+/** [GUI] */
+
+/* Release MUST BE changed at the release day */
+define('TL_VERSION', '1.7 Beta 2'); 
+define('TL_BACKGROUND_DEFAULT', "#9BD"); // default color
+define('TL_COOKIE_KEEPTIME', (time()+60*60*24*30)); // 30 days
+
+/* Some defines for I18N,L10N, don't touch */
+define('TL_LOCALE_PATH',TL_ABS_PATH . 'locale/');
+define('TL_HELP_RPATH','gui/help/');
+define('TL_INSTRUCTIONS_RPATH','gui/help/');
+
+// 20050821 - fm - configurable templates this help is you want to use a non standard template 
+$g_tpl = array();
+// Standard
+$g_tpl['tcView'] = "tcView.tpl";
+$g_tpl['tcSearchView'] = "tcSearchView.tpl";
+$g_tpl['tcEdit'] = "tcEdit.tpl";
+$g_tpl['tcNew'] = "tcNew.tpl";
+$g_tpl['execSetResults'] = "execSetResults.tpl";
+$g_tpl['tcView'] = "tcView.tpl";
+$g_tpl['tcSearchView'] = "tcView.tpl";
+$g_tpl['usersview'] = "usersview.tpl";
+
+
+
+// -------------------------------------------------------------------
+/** [LDAP authentication errors */
+// 
+// Based on mantis issue tracking system code
+// ERROR_LDAP_*
+define( 'ERROR_LDAP_AUTH_FAILED',				1400 );
+define( 'ERROR_LDAP_SERVER_CONNECT_FAILED',		1401 );
+define( 'ERROR_LDAP_UPDATE_FAILED',				1402 );
+define( 'ERROR_LDAP_USER_NOT_FOUND',			1403 );
+define( 'ERROR_LDAP_BIND_FAILED',				1404 );
+
+
+
+// ----------------------------------------------------------------------------
+/** [LOCALIZATION] */
+
+// These are the supported locales.
+// This array will be used to create combo box at user interface.
+// Please mantain the alphabetical order when adding new locales.
+// Attention:
+//           The locale selected by default in the combo box when
+//           creating a new user WILL BE fixed by the value of the default locale,
+//           NOT by the order of the elements in this array.
+//
+$g_locales = array(	'zh_CN' => 'Chinese Simplified',
+                    'en_GB' => 'English (UK)',
+			        'en_US' => 'English (US)',
+			        'fr_FR' => 'Fran&ccedil;ais',
+			        'de_DE' => 'German',
+			        'it_IT' => 'Italian',
+			        'pl_PL' => 'Polski',
+			        'pt_BR' => 'Portuguese (Brazil)',
+			        'es_AR' => 'Spanish (Argentine)',
+			        'es_ES' => 'Spanish'
+                    );
+
+// 20051005 - fm - see strftime() in PHP manual
+// Very IMPORTANT: 
+// setting according local is done in testlinkInitPage() using set_dt_formats()
+// Default values
+$g_date_format ="%d/%m/%Y";
+$g_timestamp_format = "%d/%m/%Y %H:%M:%S";
+
+$g_locales_date_format = array('en_GB' => "%d/%m/%Y",
+                               'en_US' => "%m/%d/%Y",
+                               'it_IT' => "%d/%m/%Y",
+                               'es_AR' => "%d/%m/%Y",
+                               'es_ES' => "%d/%m/%Y",
+                               'de_DE' => "%d.%m.%Y",
+                               'pl_PL' => "%d.%m.%Y",
+                               'fr_FR' => "%d/%m/%Y",
+                               'pt_BR' => "%d/%m/%Y",
+                               'zh_CN' => "%Y��%m��%d��"
+                                ); 
+
+$g_locales_timestamp_format = array('en_GB' => "%d/%m/%Y %H:%M:%S",
+                                    'en_US' => "%m/%d/%Y %H:%M:%S",
+                                    'it_IT' => "%d/%m/%Y %H:%M:%S",
+                                    'es_AR' => "%d/%m/%Y %H:%M:%S",
+                                    'es_ES' => "%d/%m/%Y %H:%M:%S",
+                                    'de_DE' => "%d.%m.%Y %H:%M:%S",
+                                    'pl_PL' => "%d.%m.%Y %H:%M:%S",
+                                    'fr_FR' => "%d/%m/%Y %H:%M:%S",
+                                    'pt_BR' => "%d/%m/%Y %H:%M:%S",
+                                    'zh_CN' => "%Y��%m��%d�� %Hʱ%M��%S��"
+                                    ); 
+
+
+
+// -------------------------------------------------------------------
+/** [MISC] */
+
+/* These are the possible TestCase statuses */
+$g_tc_status = array ( "failed"        => 'f',
+                       "blocked"       => 'b',
+                       "passed"        => 'p',
+                       "not_run"       => 'n',
+                       "not_available" => 'x',
+                       "unknown"       => 'u',
+                       "all"           => 'all'
+                      ); 
+
+// 20060528 - franciscom
+// Used to generate radio and buttons at user interface level.
+// Order is important
+// key   => verbose status as defined in $g_tc_status
+// value => string id defined in the strings.txt file, 
+//          used to localize the strings.
+//
+$g_tc_status_for_ui = array("not_run" => "test_status_not_run",
+                            "passed"  => "test_status_passed",
+                            "failed"  => "test_status_failed",
+                            "blocked" => "test_status_blocked");
+
+$g_tc_status_css = array_flip($g_tc_status);
+
+//20050508 - fm - TestCase Status Description -> color
+$g_tc_sd_color = array ( "failed"        => 'red',
+                         "blocked"       => 'blue',
+                         "passed"        => 'green',
+                         "not_run"       => 'black',
+                         "not_available" => 'yellow',
+                         "unknown"       => 'black',
+                         "all"           => 'cyan'
+                       ); 
+
+define("TL_ROLES_GUEST",5);
+define("TL_ROLES_NONE",3);
+define("TL_ROLES_NONE_DESC","<no rights>");
+define("TL_ROLES_UNDEFINED",0);
+define("TL_ROLES_UNDEFINED_DESC","<inherited>");
+define("TL_DEFAULT_ROLEID",TL_ROLES_GUEST);
+
+// 20070106 - franciscom
+$g_role_colour = array ( "admin"         => 'white',
+                         "tester"        => 'wheat',
+                         'leader'        => 'acqua',
+                         'senior tester' => '#FFA',
+                         'guest'         => 'pink',
+                         'test designer' => 'cyan',
+                         '<no rights>'   => 'salmon',
+                         '<inherited>'   => 'seashell' );
+
+
+$g_tc_risks = array('L1', 'L2', 'L3','M1', 'M2', 'M3','H1', 'H2', 'H3');
+
+// used in several functions instead of MAGIC NUMBERS - Don't change 
+define('ALL_PRODUCTS',0);
+define('TP_ALL_STATUS',null);
+define('FILTER_BY_PRODUCT',1);
+define('FILTER_BY_TESTPROJECT',FILTER_BY_PRODUCT);
+define('TP_STATUS_ACTIVE',1);
+define('NON_TESTABLE_REQ','n');
+define('VALID_REQ','v');
+
+define('DSN',FALSE);  // for method connect() of database.class
+define('ANY_BUILD',null);
+define('GET_NO_EXEC',1);
+
+
+
+// -------------------------------------------------------------------
+
+?>

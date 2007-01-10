@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: login.php,v $
  *
- * @version $Revision: 1.16 $
- * @modified $Date: 2006/04/10 20:18:39 $ by $Author: havlat $
+ * @version $Revision: 1.17 $
+ * @modified $Date: 2007/01/10 16:19:00 $ by $Author: havlat $
  * @author Martin Havlat
  * 
  * The page allows adjust login data
@@ -53,7 +53,8 @@ switch($note)
 		session_start();
 		session_unset();
 		session_destroy();
-		$message = lang_get('session_expired');
+		// 20070110 - MHT - removed note because it confuses in some cases 	
+		// $message = lang_get('session_expired');
 		break;
 
 	case 'wrong':

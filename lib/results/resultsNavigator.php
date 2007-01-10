@@ -2,7 +2,7 @@
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
- * @version $Id: resultsNavigator.php,v 1.15 2006/11/27 20:18:38 kevinlevy Exp $ 
+ * @version $Id: resultsNavigator.php,v 1.16 2007/01/10 07:31:25 kevinlevy Exp $ 
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
  * This page list View of Test Results and Metrics.
@@ -20,13 +20,14 @@ testlinkInitPage($db);
 $arrData = array(
 	array('name' => lang_get('link_report_general_tp_metrics'), 'href' => 'resultsGeneral.php'), 
 	array('name' => lang_get('link_report_overall_build'), 'href' => 'resultsAllBuilds.php'), 
-      array('name' => lang_get('link_report_metrics_more_builds'), 'href' => 'resultsMoreBuilds.php'), 
+    array('name' => lang_get('link_report_metrics_more_builds'), 'href' => 'resultsMoreBuilds.php'), 
 	array('name' => lang_get('link_report_failed'), 'href' => 'resultsByStatus.php?type=f'),
 	array('name' => lang_get('link_report_blocked_tcs'), 'href' => 'resultsByStatus.php?type=b'),
 	array('name' => lang_get('link_report_test'), 'href' => 'resultsTC.php'),
 	array('name' => lang_get('link_report_excel'), 'href' => 'resultsTC.php?format=excel'),
 );
 
+$arrReportTypes = array('normal', 'MS Excel', 'HTML email', 'text email');
 
 if ($g_bugInterfaceOn)
 	$arrData[] = array('name' => lang_get('link_report_total_bugs'), 'href' => 'resultsBugs.php');
@@ -43,10 +44,16 @@ $arrDataB = array(
 );
 
 $arrBuilds = getBuilds($db,$_SESSION['testPlanId'], " ORDER BY builds.name ");
+
 if (isset($_GET['build']))
 	$selectedBuild = intval($_GET['build']);
 else
 	$selectedBuild = sizeof($arrBuilds) ? key($arrBuilds) : null;
+
+if (isset($_GET['report_type']))
+	$selectedReportType = intval($_GET['report_type']);
+else
+	$selectedReportType = sizeof($arrReportTypes) ? key($arrReportTypes) : null;
 
 $smarty = new TLSmarty;
 $smarty->assign('title', 'Navigator - Results');
@@ -54,5 +61,7 @@ $smarty->assign('arrData', $arrData);
 $smarty->assign('arrDataB', $arrDataB);
 $smarty->assign('arrBuilds', $arrBuilds);
 $smarty->assign('selectedBuild', $selectedBuild);
+$smarty->assign('selectedReportType', $selectedReportType);
+$smarty->assign('arrReportTypes', $arrReportTypes);
 $smarty->display('resultsNavigator.tpl');
 ?>

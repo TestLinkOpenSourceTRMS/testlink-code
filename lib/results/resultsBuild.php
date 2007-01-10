@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsBuild.php,v 1.25 2007/01/09 06:27:36 kevinlevy Exp $ 
+* $Id: resultsBuild.php,v 1.26 2007/01/10 07:31:42 kevinlevy Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * 
@@ -16,6 +16,8 @@ require_once('common.php');
 require_once('builds.inc.php');
 require_once('../functions/results.class.php');
 require_once('../functions/testplan.class.php');
+// has the sendMail() method
+require_once('info.inc.php');
 
 //print "Warning Message - KL - 20061126 - all tables functional except for priority report <BR>";
 
@@ -23,6 +25,13 @@ $builds_to_query = isset($_GET['build']) ? intval($_GET['build']) : null;
 if (!isset($_GET['build']))
 {
 	tlog('$_GET["build"] is not defined');
+	exit();
+}
+
+$report_type = isset($_GET['report_type']) ? intval($_GET['report_type']) : null;
+if (!isset($_GET['report_type']))
+{
+	tlog('$_GET["report_type"] is not defined');
 	exit();
 }
 
@@ -46,7 +55,6 @@ $topLevelSuites = $re->getTopLevelSuites();
 $mapOfAggregate = $re->getAggregateMap();
 $arrDataSuite = null;
 $arrDataSuiteIndex = 0;
-
 
 if (is_array($topLevelSuites)) {
 while ($i = key($topLevelSuites)) {
@@ -141,6 +149,36 @@ $smarty->assign('arrDataPriority', $arrDataPriority);
 $smarty->assign('arrDataAllSuites', $arrDataAllSuites);
 $smarty->assign('arrDataSuite', $arrDataSuite);
 $smarty->assign('arrDataKeys', $arrDataKeys2);
-$smarty->display('resultsBuild.tpl');
+
+if ($report_type == '0') {
+	$smarty->display('resultsBuild.tpl');
+}
+else if ($report_type == '1'){
+	print "MS Excel report for resultsBuild.php is not yet implemented - KL - 20070109 <BR>";
+}
+else if ($report_type == '2'){
+	//print "HTML email report for resultsBuild.php is not yet implemented - KL - 20070109 <BR>";	
+	$html_report = $smarty->fetch('resultsBuild.tpl');
+	// $message = sendMail($_SESSION['email'],$_POST['to'], $_POST['subject'], $msgBody,$send_cc_to_myself);
+	$htmlReportType = true;
+	$send_cc_to_myself = false;
+	$subjectOfMail = $_SESSION['testPlanName'] . ": Metrics Of Active Build: " .  $buildName;
+	
+	$emailFrom = $_SESSION['email'];
+	$emailTo = $_SESSION['email'];
+	print "emailTo = $emailTo <BR>";
+	$message = sendMail($emailFrom, $emailTo, $subjectOfMail, $send_cc_to_myself, $htmlReportType);
+	
+	$smarty = new TLSmarty;
+	$smarty->assign('message', $message);
+	$smarty->display('emailSent.tpl');
+
+}
+else if ($report_type == '3'){
+	print "text email report for resultsBuild.php is not yet implemented - KL - 20070109 <BR>";
+}
+
+
+
 
 ?>

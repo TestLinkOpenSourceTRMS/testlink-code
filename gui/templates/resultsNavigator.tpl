@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: resultsNavigator.tpl,v 1.3 2005/12/05 01:30:59 havlat Exp $ *}
+{* $Id: resultsNavigator.tpl,v 1.4 2007/01/10 07:30:09 kevinlevy Exp $ *}
 {* Purpose: smarty template - show Test Results and Metrics *}
 {* Revisions:
 	20050528 - fm - I18N
@@ -31,21 +31,37 @@ function reportPrint(){
 	</select>
 </form>
 </div>
+
+<div>
+<form method="get">
+	{lang_get s='title_report_type'}
+	<select name="report_type" onchange="this.form.submit();">
+		{html_options options=$arrReportTypes selected=$selectedReportType}
+	</select>
+</form>
+</div>
+
+
 <p>
 {section name=Row loop=$arrDataB}
-	<a href="lib/results/{$arrDataB[Row].href}?build={$selectedBuild}" target="workframe">{$arrDataB[Row].name}</a><br />
+	<a href="lib/results/{$arrDataB[Row].href}?build={$selectedBuild}&report_type={$selectedReportType}" target="workframe">{$arrDataB[Row].name}</a><br />
 {/section}
 </p>
+<!--
 <hr />
+-->
 <p>
 {section name=Row loop=$arrData}
 	<a href="lib/results/{$arrData[Row].href}" target="workframe">{$arrData[Row].name}</a><br />
 {/section}
 </p>
+<!--
+
 <hr />
 <p>
 	<a href="lib/results/resultsSend.php" target="workframe">{lang_get s='send_results'}</a> {lang_get s='via_email'}
 </p>
+-->
 </div>
 
 </body>

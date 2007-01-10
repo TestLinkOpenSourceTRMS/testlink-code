@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: users.inc.php,v $
  *
- * @version $Revision: 1.37 $
- * @modified $Date: 2007/01/04 15:27:58 $ $Author: franciscom $
+ * @version $Revision: 1.38 $
+ * @modified $Date: 2007/01/10 10:41:47 $ $Author: franciscom $
  *
  * Functions for usermanagement
  *
@@ -16,6 +16,7 @@
  * 20060224 - franciscom - changes in session product -> testproject
  * 20060511 - franciscom - changes in userInsert()
  * 20070104 - franciscom - changes in getUserName()
+ * 20070106 - franciscom - getAllUsers() - new argument order_by
 **/
 require_once("common.php");
 
@@ -334,7 +335,8 @@ function getUserById(&$db,$id)
  *
  *        $column=null, the returned array will be a 'classic' array
  *                
- *
+ * @param $order_by [default=null, the following order is used " ORDER BY login "]
+ * 
  * @return type documentation
  *
  * 20051112 - scs - where clause was added at the wrong place
@@ -343,17 +345,21 @@ function getUserById(&$db,$id)
  * 20060911 - some documentation improvements
  *
  **/
-function getAllUsers(&$db,$whereClause = null,$column = null)
+function getAllUsers(&$db,$whereClause = null,$column = null, $order_by=null)
 {
 	$show_realname = config_get('show_realname');
 	
 	$sql = " SELECT id,login,password,first,last,email,role_id,locale,".
-		   " login AS fullname, active FROM users";
+	       " login AS fullname, active FROM users";
+		     
+		     
+		     
 	if (!is_null($whereClause))
 	{
 		$sql .= ' '.$whereClause;
 	}
-	$sql .= " ORDER BY login";
+	
+	$sql .= is_null($order_by) ? " ORDER BY login " : $order_by;
 	
 	$users = null;
 	$result = $db->exec_query($sql);
@@ -510,4 +516,44 @@ function get_users_for_html_options(&$db,$whereClause = null,$add_blank_option=f
 	}
 	return($users_map);
 }
+
+
+/*
+  function: 
+
+  args :
+  
+  returns: 
+
+*/
+function get_all_users_roles(&$db,$order_by=null)
+{
+	$show_realname = config_get('show_realname');
+	
+	$sql = " SELECT users.id,login,password,first,last,email, " .
+	       "        roles.description AS role_description,locale,".
+	       " login AS fullname, active " .
+	       " FROM users LEFT OUTER JOIN roles ON users.role_id=roles.id ";
+	    
+	$sql .= is_null($order_by) ? " ORDER BY login " : $order_by;
+	
+	$users = null;
+	$result = $db->exec_query($sql);
+	if ($result)
+	{
+		while($user = $db->fetch_array($result))
+		{
+			if($show_realname)
+			{
+				$user['fullname'] = format_username($user);
+			}	
+  		$users[] = $user;
+		}	
+	}
+	
+	return $users;
+}
+
+
+
 ?>

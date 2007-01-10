@@ -1,9 +1,10 @@
 <?php
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: info.inc.php,v 1.5 2006/02/04 20:13:14 schlundus Exp $
+* $Id: info.inc.php,v 1.6 2007/01/10 07:32:14 kevinlevy Exp $
 * 
 * @author Martin Havlat
-*
+* 
+* KL - 20070109 - altered to allow for html reports if caller so chooses
 * Functions for GUI Communication
 */
 require_once('../../config.inc.php');
@@ -44,7 +45,7 @@ function displayInfo($title, $message)
 * 20051106 - fm - use of email_send()
 * 20050906 - fm - added from
 */
-function sendMail($from,$to, $title, $message, $send_cc_to_myself = false)
+function sendMail($from,$to, $title, $message, $send_cc_to_myself = false, $isHtmlFormat = false)
 {
 	
 	// 20051106 - fm
@@ -67,7 +68,7 @@ function sendMail($from,$to, $title, $message, $send_cc_to_myself = false)
 	
 	
 	// $email_op = @email_send($to, $title, $message, $headers);
-	$email_op = @email_send($from, $to, $title, $message, $cc);
+	$email_op = @email_send($from, $to, $title, $message, $cc, $isHtmlFormat);
 	
 	if ($email_op->status_ok)
 	{

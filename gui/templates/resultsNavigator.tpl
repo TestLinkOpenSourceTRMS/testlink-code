@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: resultsNavigator.tpl,v 1.4 2007/01/10 07:30:09 kevinlevy Exp $ *}
+{* $Id: resultsNavigator.tpl,v 1.5 2007/01/10 08:06:41 kevinlevy Exp $ *}
 {* Purpose: smarty template - show Test Results and Metrics *}
 {* Revisions:
 	20050528 - fm - I18N
@@ -32,16 +32,6 @@ function reportPrint(){
 </form>
 </div>
 
-<div>
-<form method="get">
-	{lang_get s='title_report_type'}
-	<select name="report_type" onchange="this.form.submit();">
-		{html_options options=$arrReportTypes selected=$selectedReportType}
-	</select>
-</form>
-</div>
-
-
 <p>
 {section name=Row loop=$arrDataB}
 	<a href="lib/results/{$arrDataB[Row].href}?build={$selectedBuild}&report_type={$selectedReportType}" target="workframe">{$arrDataB[Row].name}</a><br />
@@ -62,6 +52,33 @@ function reportPrint(){
 	<a href="lib/results/resultsSend.php" target="workframe">{lang_get s='send_results'}</a> {lang_get s='via_email'}
 </p>
 -->
+</div>
+
+<div>
+<form method="get">
+	<table>
+	<tr><td>
+	{lang_get s='title_report_type'}
+	</td></tr>
+	<tr><td>
+	<select name="report_type" onchange="this.form.submit();">
+		{html_options options=$arrReportTypes selected=$selectedReportType}
+	</select>
+	</td></tr>
+	<tr><td>
+	TO:
+	</td></tr> 
+	<tr><td>
+	<input name='to' type='text' size='50' onchange="this.form.submit();"/>
+	</td></tr>
+	<tr><td>
+	SUBJECT : 
+	</td></tr>
+	<tr><td>
+	<input name='subject' type='text' size='50' value="" onchange="this.form.submit();"/>
+	</td></tr>
+	</table>
+</form>
 </div>
 
 </body>

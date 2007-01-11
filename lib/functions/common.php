@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.57 $ $Author: franciscom $
- * @modified $Date: 2007/01/04 15:27:58 $
+ * @version $Revision: 1.58 $ $Author: havlat $
+ * @modified $Date: 2007/01/11 16:09:04 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -20,23 +20,21 @@
  * 20070104 - franciscom - gen_spec_view() warning message removed
  *
  **/ 
-require_once("lang_api.php");
+// require_once("lang_api.php"); included in config
+// require_once("logging.inc.php"); included in config
 require_once("database.class.php");
+require_once("roles.inc.php");
 
+/** @TODO use the next include only if it is used -> must be removed*/
 require_once(dirname(__FILE__)."/testproject.class.php");
 require_once(dirname(__FILE__)."/testplan.class.php");
 require_once(dirname(__FILE__)."/testcase.class.php");
 require_once(dirname(__FILE__)."/testsuite.class.php");
 require_once(dirname(__FILE__)."/tree.class.php");
 require_once(dirname(__FILE__)."/treeMenu.inc.php");
-
-// 20061225 - franciscom
-require_once(dirname(__FILE__)."/cfield_mgr.class.php");
-
-require_once("roles.inc.php");
+require_once(dirname(__FILE__)."/cfield_mgr.class.php"); // 20061225 - franciscom
 require_once("product.core.inc.php");
 require_once("plan.core.inc.php");
-require_once("logging.inc.php");
 
 /** $db is a global used throughout the code when accessing the db. */
 $db = 0;

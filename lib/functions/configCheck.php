@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: configCheck.php,v ${file_name} $
  *
- * @version $Revision: 1.6 $
- * @modified $Date: 2006/05/29 06:39:11 ${date} ${time} $ by $Author: franciscom $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2007/01/11 16:09:52 ${date} ${time} $ by $Author: havlat $
  *
  * @author Martin Havlat
  * 
@@ -16,6 +16,65 @@
  * 20060103 - scs - ADOdb changes
  **/
 // ---------------------------------------------------------------------------------------------------
+
+function get_home_url()
+{
+  if ( isset ( $_SERVER['PHP_SELF'] ) ) {
+	$t_protocol = 'http';
+	if ( isset( $_SERVER['HTTPS'] ) && ( strtolower( $_SERVER['HTTPS'] ) != 'off' ) ) {
+		$t_protocol = 'https';
+	}
+
+	// $_SERVER['SERVER_PORT'] is not defined in case of php-cgi.exe
+	if ( isset( $_SERVER['SERVER_PORT'] ) ) {
+		$t_port = ':' . $_SERVER['SERVER_PORT'];
+		if ( ( ':80' == $t_port && 'http' == $t_protocol )
+		  || ( ':443' == $t_port && 'https' == $t_protocol )) {
+			$t_port = '';
+		}
+	} else {
+		$t_port = '';
+	}
+
+	if ( isset( $_SERVER['HTTP_HOST'] ) ) {
+		$t_host = $_SERVER['HTTP_HOST'];
+	} else if ( isset( $_SERVER['SERVER_NAME'] ) ) {
+		$t_host = $_SERVER['SERVER_NAME'] . $t_port;
+	} else if ( isset( $_SERVER['SERVER_ADDR'] ) ) {
+		$t_host = $_SERVER['SERVER_ADDR'] . $t_port;
+	} else {
+		$t_host = 'www.example.com';
+	}
+
+	$t_path = dirname( $_SERVER['PHP_SELF'] );
+	if ( '/' == $t_path || '\\' == $t_path ) {
+		$t_path = '';
+	}
+
+	$t_url	= $t_protocol . '://' . $t_host . $t_path.'/';
+	
+	return ($t_url);
+  }
+}
+
+/** check language acceptance by web client */
+function checkServerLanguageSettings($defaultLanguage)
+{
+	$language = $defaultLanguage;
+
+	// check for !== false because getenv() returns false on error
+	$serverLanguage = getenv($_SERVER['HTTP_ACCEPT_LANGUAGE']);
+	if(false !== $serverLanguage)
+	{
+		if (array_key_exists($serverLanguage,$g_locales))
+			$language = $serverLanguage;
+	}
+
+	return ($language);
+}
+
+
+
 /** check if we need to run the install program */
 function checkConfiguration()
 {

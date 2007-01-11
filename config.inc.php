@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.88 $
- * @modified $Date: 2007/01/10 21:35:28 $ by $Author: schlundus $
+ * @version $Revision: 1.89 $
+ * @modified $Date: 2007/01/11 16:08:01 $ by $Author: havlat $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink 
@@ -89,10 +89,12 @@ ini_set('include_path',ini_get('include_path') .";". '.' . DELIM . TL_ABS_PATH .
 /** Include database consts (the file is generated automatically by TL installer) */ 
 require_once('config_db.inc.php');
 
+
+
 // ----------------------------------------------------------------------------
 /** [LOCALIZATION] */
 
-// Your first/suggested choice for default locale, this must be one of $g_locales (see below).
+// Your first/suggested choice for default locale, this must be one of $g_locales (see cfg/const.inc.php).
 // An attempt will be done to stablish the default locale 
 // automatically using $_SERVER['HTTP_ACCEPT_LANGUAGE']
 
@@ -106,7 +108,7 @@ if(false !== $serverLanguage)
 	if (array_key_exists($serverLanguage,$g_locales))
 		$language = $serverLanguage;
 }
-define ('TL_DEFAULT_LOCALE',$language);
+define ('TL_DEFAULT_LOCALE', $language);
 
 /** include support for localization */
 require_once("lang_api.php");
@@ -160,6 +162,24 @@ define('TL_LOG_PATH', TL_TEMP_PATH );
 
 /** Default level of logging (NONE, ERROR, INFO, DEBUG, EXTENDED) */
 define('TL_LOG_LEVEL_DEFAULT', 'NONE');
+
+
+
+// ----------------------------------------------------------------------------
+/** [Bug Tracking systems] */
+/** 
+* TestLink uses bugtracking systems to check if displayed bugs resolved, verified, 
+* and closed bugs. If they are it will strike through them
+*/
+
+/** 
+* @var STRING TL_INTERFACE_BUGS = ['NO', 'BUGZILLA','MANTIS','JIRA','TRACKPLUS']
+* BUGZILLA: edit configuration in TL_ABS_PATH/cfg/bugzilla.cfg.php
+* MANTIS  : edit configuration in TL_ABS_PATH/cfg/mantis.cfg.php
+* JIRA    : edit configuration in TL_ABS_PATH/cfg/jira.cfg.php
+* TRACKPLUS : edit configuration in TL_ABS_PATH/cfg/trackplus.cfg.php
+*/
+define('TL_INTERFACE_BUGS', 'NO');
 
 
 
@@ -226,8 +246,10 @@ define('TITLE_SEP',' : ');
 define('TITLE_SEP_TYPE2',' >> ');
 define('TITLE_SEP_TYPE3',' - ');
 
-/* fckeditor Toolbar */
-//$g_fckeditor_toolbar = "TL_Medium";
+/** fckeditor Toolbar 
+ * modify which icons will be available in html edit pages
+ * refer to fckeditor configuration file 
+ **/
 $g_fckeditor_toolbar = "TL_Medium_2";
 
 // 20060528 - franciscom
@@ -242,8 +264,6 @@ $g_exec_cfg->history_on=FALSE;
 
 // TRUE  ->  test case VERY LAST (i.e. in any build) execution status 
 //           will be displayed
-//
-//
 $g_exec_cfg->show_last_exec_any_build=FALSE;
 
 /* 
@@ -269,6 +289,12 @@ $g_show_realname = FALSE;
 //$g_username_format='name_surname_login';
 $g_username_format = 'name_surname';
 
+/** characters used to surround the role description in the user interface */
+define('ROLE_SEP_START','[');
+define('ROLE_SEP_END',']');
+
+/** true => icon edit will be added into <a href> as indication an edit features */
+$g_gui->show_icon_edit=false;
 
 
 
@@ -299,50 +325,57 @@ $g_tree_node_ordering->default_testsuite_order=1;
 
 
 // ----------------------------------------------------------------------------
+/** [GENERATED DOCUMENTATION] */
+// Constants used in printed documents.
+define('TL_DOC_BASIC_CSS', TL_THEME_CSS_DIR . 'tl_doc_basic.css');
+
+// Leave them empty if you would not to use.
+define('TL_DOC_COMPANY', "Testlink Development Team [configure using TL_DOC_COMPANY]");
+define('TL_DOC_COMPANY_LOGO', 
+       '<img alt="TestLink logo" title="configure using TL_DOC_COMPANY_LOGO" src="%BASE_HREF%' .
+             TL_THEME_IMG_DIR . 'company_logo.png" />');
+define('TL_DOC_COPYRIGHT', 'copyright - Testlink Development Team [configure using TL_DOC_COPYRIGHT]');
+define('TL_DOC_CONFIDENT', 'this document is not confidential [configure using TL_DOC_CONFIDENT]');
+
+
+
+// ----------------------------------------------------------------------------
 /** [ATTACHMENTS] */
 
-// 20060602 - franciscom - different models for the attachments management on execution page
-$att_model_m1->show_upload_btn = true;
-$att_model_m1->show_title = true;
-$att_model_m1->num_cols = 4;
-$att_model_m1->show_upload_column = false;
+$g_attachments->enabled = TRUE;
 
-$att_model_m2->show_upload_btn = false;
-$att_model_m2->show_title = false;
-$att_model_m2->num_cols = 5;
-$att_model_m2->show_upload_column = true;
-
-$g_exec_cfg->att_model = $att_model_m2;
-
-/* ATTACHMENTS */
-/* some attachment related defines, no need to modify them */
-define("TL_REPOSITORY_TYPE_DB",1);
-define("TL_REPOSITORY_TYPE_FS",2);
-
-define("TL_REPOSITORY_COMPRESSIONTYPE_NONE",1);
-define("TL_REPOSITORY_COMPRESSIONTYPE_GZIP",2);
-
-/* the maximum allowed file size for each repository entry, default 1MB */
-define("TL_REPOSITORY_MAXFILESIZE_MB",1);
-define("TL_REPOSITORY_MAXFILESIZE",1024*1024*TL_REPOSITORY_MAXFILESIZE_MB);
-
-/* the type of the repository can be database or filesystem
-* TL_REPOSITORY_TYPE_DB => database
-* TL_REPOSITORY_TYPE_FS => filesystem
-**/
+/** the type of the repository can be database or filesystem
+ * TL_REPOSITORY_TYPE_DB => database
+ * TL_REPOSITORY_TYPE_FS => filesystem
+ **/
 $g_repositoryType = TL_REPOSITORY_TYPE_FS;
-/* the where the filesystem repository should be located */
+
+/** 
+ * TL_REPOSITORY_TYPE_FS: the where the filesystem repository should be located
+ * We recommend to change the directory for security reason. 
+ **/
 $g_repositoryPath = TL_ABS_PATH . "upload_area" . DS;
 
-
-/* compression used within the repository 
+/** 
+ * compression used within the repository 
  * TL_REPOSITORY_COMPRESSIONTYPE_NONE => no compression
  * TL_REPOSITORY_COMPRESSIONTYPE_GZIP => gzip compression
-*/
+ */
 $g_repositoryCompressionType = TL_REPOSITORY_COMPRESSIONTYPE_NONE;
 
+/** the maximum allowed file size for each repository entry, default 1MB */
+define("TL_REPOSITORY_MAXFILESIZE_MB", 1);
+define("TL_REPOSITORY_MAXFILESIZE", 1024*1024*TL_REPOSITORY_MAXFILESIZE_MB); // don't change
 
-// 20060602 - franciscom ---------------------------------------------------------
+// 20060602 - franciscom - different models for the attachments management on execution page
+/** @TODO description 
+ * $att_model_m1 -> ?
+ * $att_model_m2 -> ?
+ **/
+$g_exec_cfg->att_model = $att_model_m2;
+
+
+// 20060602 - franciscom -
 // TRUE -> when you upload a file you can give no title
 $g_attachments->allow_empty_title = TRUE;
 
@@ -353,24 +386,17 @@ $g_attachments->allow_empty_title = TRUE;
 $g_attachments->action_on_save_empty_title='none';
 //$g_attachments->action_on_save_empty_title='use_filename';
 
-
 // Remember that title is used as link description for download
 // then if title is empty, what the system has to do when displaying ?
-//
 // 'show_icon'  -> the $g_attachments->access_icon will be used.
-//
-//
 // 'show_label' -> the value of $g_attachments->access_string will be used .
-// 
 $g_attachments->action_on_display_empty_title='show_icon';
-//$g_attachments->action_on_display_empty_title='show_label';
 
-$g_attachments->access_icon='<img src="icons/new_f2_16.png" style="border:none">';
+$g_attachments->access_icon='<img src="' . TL_THEME_IMG_DIR . 'new_f2_16.png" style="border:none">';
 $g_attachments->access_string="[*]";
 
 
 // used to disable the attachment feature if there are problems with repository path
-$g_attachments->enabled = TRUE;
 $g_attachments->disabled_msg = "";
 if($g_repositoryType == TL_REPOSITORY_TYPE_FS)
 {
@@ -381,24 +407,6 @@ if($g_repositoryType == TL_REPOSITORY_TYPE_FS)
 	  $g_attachments->disabled_msg = $ret['msg'];
   }
 }
-
-
-// ----------------------------------------------------------------------------
-/** [Bug Tracking systems] */
-/** 
-* TestLink uses bugtracking systems to check if displayed bugs resolved, verified, 
-* and closed bugs. If they are it will strike through them
-*/
-
-/** 
-* @var STRING TL_INTERFACE_BUGS = ['NO', 'BUGZILLA','MANTIS','JIRA','TRACKPLUS']
-* BUGZILLA: edit configuration in TL_ABS_PATH/cfg/bugzilla.cfg.php
-* MANTIS  : edit configuration in TL_ABS_PATH/cfg/mantis.cfg.php
-* JIRA    : edit configuration in TL_ABS_PATH/cfg/jira.cfg.php
-* TRACKPLUS : edit configuration in TL_ABS_PATH/cfg/trackplus.cfg.php
-*/
-define('TL_INTERFACE_BUGS', 'NO');
-require_once(TL_ABS_PATH . 'lib/bugtracking/int_bugtracking.php');
 
 
 // ----------------------------------------------------------------------------
@@ -415,9 +423,11 @@ $g_req_cfg->default_testsuite_name = "Test suite created by Requirement - Auto";
 $g_req_cfg->testsuite_details = "<b>Test suite/Test Cases generated from Requirements</b>";
 $g_req_cfg->testcase_summary_prefix = "<b>Test Case generated from Requirement</b><br>";
 
+/** @TODO description */
 $g_field_size->testsuite_name = 100;
 
 // requirements and req_spec tables
+/** @TODO description */
 $g_field_size->req_docid=16;
 $g_field_size->req_title=100;
 $g_field_size->requirement_title=100;
@@ -447,152 +457,87 @@ $g_smtp_password    = '';  # password
 
 
 // ----------------------------------------------------------------------------
-/** [GENERATED DOCUMENTATION] */
-// Constants used in printed documents.
-define('TL_DOC_BASIC_CSS', TL_THEME_CSS_DIR . 'tl_doc_basic.css');
-
-// Leave them empty if you would not to use.
-define('TL_DOC_COMPANY', "Testlink Development Team [configure using TL_DOC_COMPANY]");
-define('TL_DOC_COMPANY_LOGO', 
-       '<img alt="TestLink" title="configure using TL_DOC_COMPANY_LOGO" src="%BASE_HREF%' .
-             TL_THEME_IMG_DIR . 'company_logo.png" />');
-define('TL_DOC_COPYRIGHT', 'copyright - Testlink Development Team [configure using TL_DOC_COPYRIGHT]');
-define('TL_DOC_CONFIDENT', 'this document is not confidential [configure using TL_DOC_CONFIDENT]');
-// ----------------------------------------------------------------------
-
-
-
-
-// ----------------------------------------------------------------------------
 /** [MISC] */
 
-/* TRUE -> Check if:
-           a. Product Name                   is unique
-           b. Component Name Inside Product  is unique
-           c. Category Name Inside Component is unique
-           d. Test Case Name inside Category is unique 
-   FALSE -> don't check
-*/
+/** Check unique titles of Test Project, Test Suite and Test Case
+ * TRUE => Check if:
+ *  FALSE => don't check
+ **/
 $g_check_names_for_duplicates = TRUE;
 
-/* 
-if you have choose to check for unique names, what to do
-when a duplicate name is found
-
-'allow_repeat': allow the name to be repeated (backward compatibility)
-'generate_new': generate a new name using $g_prefix_name_for_copy
-'block'       : return with an error 
-
-*/    
-// $g_action_on_duplicate_name = 'allow_repeat';
+/** 
+ * Action for duplication check (only if TRUE)
+ * 'allow_repeat' => allow the name to be repeated (backward compatibility)
+ * 'generate_new' => generate a new name using $g_prefix_name_for_copy
+ * 'block'        => return with an error 
+ **/    
 $g_action_on_duplicate_name = 'generate_new';
 
-/* Used when creating a Test Suite using copy 
+/** Used when creating a Test Suite using copy 
    and you have choose  $g_action_on_duplicate_name = 'generate_new'
    if the name exist.
  */
 $g_prefix_name_for_copy = strftime("%Y%m%d-%H:%M:%S", time());
         
-/* 
+/** 
 BUGID 0000086: Using "|" in the component or category name causes malformed URLs
 regexp used to check for chars not allowed in product, component , category name, 
 and testcase title 
 */
 $g_ereg_forbidden = "[|]";
 
-/* TRUE -> TL 1.5 compatibility, get also Test Plans without product id. */
-$g_show_tp_without_prodid = FALSE; // all Test Plans should have own Test Project
+/** Allow/disallow to have Test Plans without dependency to Test Project.
+ * TRUE  => allow Test Plan over all Test Projects (TL 1.5 compatibility)
+ * FALSE => all Test Plans should have own Test Project
+ **/
+$g_show_tp_without_tproject_id = FALSE;
 
-// 20060219 - franciscom
-$g_show_tp_without_tproject_id = $g_show_tp_without_prodid;
+// obsolete (use $g_show_tp_without_tproject_id)
+$g_show_tp_without_prodid = $g_show_tp_without_tproject_id;
 
 /* TRUE -> you can create multiple time the same keyword 
            for the same product (term used on TL < 1.7) / test project (term used on TL>= 1.7) */
 $g_allow_duplicate_keywords = FALSE;
 
-// 20060207 - franciscom - BUGID 303
-// Contributed by Tools-R-Us@Cognizant.com
-// Should Test Results of older builds be editable?
-// FALSE --> Not editable
-// TRUE  --> Editable
+
+/** Should Test Results of older builds be editable?
+ * 20060207 - franciscom - BUGID 303 - Contributed by Tools-R-Us@Cognizant.com
+ * FALSE --> Not editable
+ * TRUE  --> Editable
+ **/
 $g_edit_old_build_results = FALSE;
 
-// characters used to surround the role description in the user interface
-define('ROLE_SEP_START','[');
-define('ROLE_SEP_END',']');
+/** @TODO description */
+$g_gui->enable_custom_fields = TRUE;
+$g_gui->custom_fields->sizes = array( 
+	'string' => 50,
+	'numeric'=> 10,
+	'float'  => 10,
+	'email'  => 50,
+	'list'   => 1,
+	'multiselection list' => 5
+);
 
-
-// 20061223 - franciscom
-// true: icon edit will be added to <a href> used to access edit features
-$g_gui->show_icon_edit=false;
-$g_gui->enable_custom_fields=true;
-$g_gui->custom_fields->sizes=array( 'string' => 50,
-                                    'numeric'=> 10,
-                                    'float'  => 10,
-                                    'email'  => 50,
-                                    'list'   => 1,
-                                    'multiselection list' => 5);
 
 
 // ----- End of Config ------------------------------------------------
+/** Include important libraries */
+
+/** Bug tracking include */
+if (TL_INTERFACE_BUGS != 'NO')
+  require_once(TL_ABS_PATH . 'lib/bugtracking/int_bugtracking.php');
 
 
-
-
-
-// -------------------------------------------------------------------
-function get_home_url()
-{
-if ( isset ( $_SERVER['PHP_SELF'] ) ) {
-	$t_protocol = 'http';
-	if ( isset( $_SERVER['HTTPS'] ) && ( strtolower( $_SERVER['HTTPS'] ) != 'off' ) ) {
-		$t_protocol = 'https';
-	}
-
-	// $_SERVER['SERVER_PORT'] is not defined in case of php-cgi.exe
-	if ( isset( $_SERVER['SERVER_PORT'] ) ) {
-		$t_port = ':' . $_SERVER['SERVER_PORT'];
-		if ( ( ':80' == $t_port && 'http' == $t_protocol )
-		  || ( ':443' == $t_port && 'https' == $t_protocol )) {
-			$t_port = '';
-		}
-	} else {
-		$t_port = '';
-	}
-
-	if ( isset( $_SERVER['HTTP_HOST'] ) ) {
-		$t_host = $_SERVER['HTTP_HOST'];
-	} else if ( isset( $_SERVER['SERVER_NAME'] ) ) {
-		$t_host = $_SERVER['SERVER_NAME'] . $t_port;
-	} else if ( isset( $_SERVER['SERVER_ADDR'] ) ) {
-		$t_host = $_SERVER['SERVER_ADDR'] . $t_port;
-	} else {
-		$t_host = 'www.example.com';
-	}
-
-	$t_path = dirname( $_SERVER['PHP_SELF'] );
-	if ( '/' == $t_path || '\\' == $t_path ) {
-		$t_path = '';
-	}
-
-	$t_url	= $t_protocol . '://' . $t_host . $t_path.'/';
-	
-	return ($t_url);
-}
-
-}
-
-/** 
-* Testlink Smarty class sets up the default smarty settings for testlink
-*/
+/** Testlink Smarty class sets up the default smarty settings for testlink */
 require_once(TL_ABS_PATH . 'third_party/smarty/Smarty.class.php'); 
 require_once(TL_ABS_PATH . 'lib/general/tlsmarty.inc.php'); 
 
-
+/** logging functions */
 require_once('logging.inc.php');
-//includes needed for userright checking
+
+/** user right checking */
 require_once(TL_ABS_PATH . 'lib/functions/roles.inc.php');
 require_once(TL_ABS_PATH . 'cfg/userrightmatrix.php');
-//require_once(TL_ABS_PATH.'/lib/functions/common.php');
 
+// ----- END OF FILE --------------------------------------------------
 ?>

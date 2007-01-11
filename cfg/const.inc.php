@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: const.inc.php,v $
  *
- * @version $Revision: 1.1 $
- * @modified $Date: 2007/01/10 16:19:54 $ by $Author: havlat $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2007/01/11 16:07:32 $ by $Author: havlat $
  * @author Martin Havlát
  *
  * SCOPE:
@@ -16,7 +16,7 @@
  * 
  *-------------------------------------------------------------------
  * Revisions:
- *
+ *	20060111 - MHT - moved several new consts from config
  *
  *-------------------------------------------------------------------
 **/
@@ -49,16 +49,16 @@ define('TL_HELP_RPATH','gui/help/');
 define('TL_INSTRUCTIONS_RPATH','gui/help/');
 
 // 20050821 - fm - configurable templates this help is you want to use a non standard template 
-$g_tpl = array();
-// Standard
-$g_tpl['tcView'] = "tcView.tpl";
-$g_tpl['tcSearchView'] = "tcSearchView.tpl";
-$g_tpl['tcEdit'] = "tcEdit.tpl";
-$g_tpl['tcNew'] = "tcNew.tpl";
-$g_tpl['execSetResults'] = "execSetResults.tpl";
-$g_tpl['tcView'] = "tcView.tpl";
-$g_tpl['tcSearchView'] = "tcView.tpl";
-$g_tpl['usersview'] = "usersview.tpl";
+$g_tpl = array(
+	'tcView' 		=> "tcView.tpl",
+	'tcSearchView' 	=> "tcSearchView.tpl",
+	'tcEdit' 		=> "tcEdit.tpl",
+	'tcNew' 		=> "tcNew.tpl",
+	'execSetResults' => "execSetResults.tpl",
+	'tcView' 		=> "tcView.tpl",
+	'tcSearchView' 	=> "tcView.tpl",
+	'usersview' 	=> "usersview.tpl"
+);
 
 
 
@@ -86,17 +86,18 @@ define( 'ERROR_LDAP_BIND_FAILED',				1404 );
 //           creating a new user WILL BE fixed by the value of the default locale,
 //           NOT by the order of the elements in this array.
 //
-$g_locales = array(	'zh_CN' => 'Chinese Simplified',
-                    'en_GB' => 'English (UK)',
-			        'en_US' => 'English (US)',
-			        'fr_FR' => 'Fran&ccedil;ais',
-			        'de_DE' => 'German',
-			        'it_IT' => 'Italian',
-			        'pl_PL' => 'Polski',
-			        'pt_BR' => 'Portuguese (Brazil)',
-			        'es_AR' => 'Spanish (Argentine)',
-			        'es_ES' => 'Spanish'
-                    );
+$g_locales = array(	
+	'zh_CN' => 'Chinese Simplified',
+	'en_GB' => 'English (UK)',
+	'en_US' => 'English (US)',
+	'fr_FR' => 'Fran&ccedil;ais',
+	'de_DE' => 'German',
+	'it_IT' => 'Italian',
+	'pl_PL' => 'Polski',
+	'pt_BR' => 'Portuguese (Brazil)',
+	'es_AR' => 'Spanish (Argentine)',
+	'es_ES' => 'Spanish'
+);
 
 // 20051005 - fm - see strftime() in PHP manual
 // Very IMPORTANT: 
@@ -105,44 +106,67 @@ $g_locales = array(	'zh_CN' => 'Chinese Simplified',
 $g_date_format ="%d/%m/%Y";
 $g_timestamp_format = "%d/%m/%Y %H:%M:%S";
 
-$g_locales_date_format = array('en_GB' => "%d/%m/%Y",
-                               'en_US' => "%m/%d/%Y",
-                               'it_IT' => "%d/%m/%Y",
-                               'es_AR' => "%d/%m/%Y",
-                               'es_ES' => "%d/%m/%Y",
-                               'de_DE' => "%d.%m.%Y",
-                               'pl_PL' => "%d.%m.%Y",
-                               'fr_FR' => "%d/%m/%Y",
-                               'pt_BR' => "%d/%m/%Y",
-                               'zh_CN' => "%Y��%m��%d��"
-                                ); 
+$g_locales_date_format = array(
+	'en_GB' => "%d/%m/%Y",
+	'en_US' => "%m/%d/%Y",
+	'it_IT' => "%d/%m/%Y",
+	'es_AR' => "%d/%m/%Y",
+	'es_ES' => "%d/%m/%Y",
+	'de_DE' => "%d.%m.%Y",
+	'pl_PL' => "%d.%m.%Y",
+	'fr_FR' => "%d/%m/%Y",
+	'pt_BR' => "%d/%m/%Y",
+	'zh_CN' => "%Y��%m��%d��"
+); 
 
-$g_locales_timestamp_format = array('en_GB' => "%d/%m/%Y %H:%M:%S",
-                                    'en_US' => "%m/%d/%Y %H:%M:%S",
-                                    'it_IT' => "%d/%m/%Y %H:%M:%S",
-                                    'es_AR' => "%d/%m/%Y %H:%M:%S",
-                                    'es_ES' => "%d/%m/%Y %H:%M:%S",
-                                    'de_DE' => "%d.%m.%Y %H:%M:%S",
-                                    'pl_PL' => "%d.%m.%Y %H:%M:%S",
-                                    'fr_FR' => "%d/%m/%Y %H:%M:%S",
-                                    'pt_BR' => "%d/%m/%Y %H:%M:%S",
-                                    'zh_CN' => "%Y��%m��%d�� %Hʱ%M��%S��"
-                                    ); 
+$g_locales_timestamp_format = array(
+	'en_GB' => "%d/%m/%Y %H:%M:%S",
+	'en_US' => "%m/%d/%Y %H:%M:%S",
+	'it_IT' => "%d/%m/%Y %H:%M:%S",
+	'es_AR' => "%d/%m/%Y %H:%M:%S",
+	'es_ES' => "%d/%m/%Y %H:%M:%S",
+	'de_DE' => "%d.%m.%Y %H:%M:%S",
+	'pl_PL' => "%d.%m.%Y %H:%M:%S",
+	'fr_FR' => "%d/%m/%Y %H:%M:%S",
+	'pt_BR' => "%d/%m/%Y %H:%M:%S",
+	'zh_CN' => "%Y��%m��%d�� %Hʱ%M��%S��"
+); 
 
+// -------------------------------------------------------------------
+/** ATTACHMENTS */
+
+/* some attachment related defines, no need to modify them */
+define("TL_REPOSITORY_TYPE_DB",1);
+define("TL_REPOSITORY_TYPE_FS",2);
+
+define("TL_REPOSITORY_COMPRESSIONTYPE_NONE",1);
+define("TL_REPOSITORY_COMPRESSIONTYPE_GZIP",2);
+
+/** @TODO description */
+$att_model_m1->show_upload_btn = true;
+$att_model_m1->show_title = true;
+$att_model_m1->num_cols = 4;
+$att_model_m1->show_upload_column = false;
+
+$att_model_m2->show_upload_btn = false;
+$att_model_m2->show_title = false;
+$att_model_m2->num_cols = 5;
+$att_model_m2->show_upload_column = true;
 
 
 // -------------------------------------------------------------------
 /** [MISC] */
 
 /* These are the possible TestCase statuses */
-$g_tc_status = array ( "failed"        => 'f',
-                       "blocked"       => 'b',
-                       "passed"        => 'p',
-                       "not_run"       => 'n',
-                       "not_available" => 'x',
-                       "unknown"       => 'u',
-                       "all"           => 'all'
-                      ); 
+$g_tc_status = array (
+	"failed"        => 'f',
+	"blocked"       => 'b',
+	"passed"        => 'p',
+	"not_run"       => 'n',
+	"not_available" => 'x',
+	"unknown"       => 'u',
+	"all"           => 'all'
+); 
 
 // 20060528 - franciscom
 // Used to generate radio and buttons at user interface level.
@@ -151,22 +175,25 @@ $g_tc_status = array ( "failed"        => 'f',
 // value => string id defined in the strings.txt file, 
 //          used to localize the strings.
 //
-$g_tc_status_for_ui = array("not_run" => "test_status_not_run",
-                            "passed"  => "test_status_passed",
-                            "failed"  => "test_status_failed",
-                            "blocked" => "test_status_blocked");
+$g_tc_status_for_ui = array(
+	"not_run" => "test_status_not_run",
+	"passed"  => "test_status_passed",
+	"failed"  => "test_status_failed",
+	"blocked" => "test_status_blocked"
+);
 
 $g_tc_status_css = array_flip($g_tc_status);
 
 //20050508 - fm - TestCase Status Description -> color
-$g_tc_sd_color = array ( "failed"        => 'red',
-                         "blocked"       => 'blue',
-                         "passed"        => 'green',
-                         "not_run"       => 'black',
-                         "not_available" => 'yellow',
-                         "unknown"       => 'black',
-                         "all"           => 'cyan'
-                       ); 
+$g_tc_sd_color = array ( 
+	"failed"        => 'red',
+	"blocked"       => 'blue',
+	"passed"        => 'green',
+	"not_run"       => 'black',
+	"not_available" => 'yellow',
+	"unknown"       => 'black',
+	"all"           => 'cyan'
+); 
 
 define("TL_ROLES_GUEST",5);
 define("TL_ROLES_NONE",3);
@@ -176,14 +203,16 @@ define("TL_ROLES_UNDEFINED_DESC","<inherited>");
 define("TL_DEFAULT_ROLEID",TL_ROLES_GUEST);
 
 // 20070106 - franciscom
-$g_role_colour = array ( "admin"         => 'white',
-                         "tester"        => 'wheat',
-                         'leader'        => 'acqua',
-                         'senior tester' => '#FFA',
-                         'guest'         => 'pink',
-                         'test designer' => 'cyan',
-                         '<no rights>'   => 'salmon',
-                         '<inherited>'   => 'seashell' );
+$g_role_colour = array ( 
+	"admin"         => 'white',
+	"tester"        => 'wheat',
+	'leader'        => 'acqua',
+	'senior tester' => '#FFA',
+	'guest'         => 'pink',
+	'test designer' => 'cyan',
+	'<no rights>'   => 'salmon',
+	'<inherited>'   => 'seashell' 
+);
 
 
 $g_tc_risks = array('L1', 'L2', 'L3','M1', 'M2', 'M3','H1', 'H2', 'H3');

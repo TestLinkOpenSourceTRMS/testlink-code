@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.58 $ $Author: havlat $
- * @modified $Date: 2007/01/11 16:09:04 $
+ * @version $Revision: 1.59 $ $Author: schlundus $
+ * @modified $Date: 2007/01/12 21:06:17 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -20,8 +20,6 @@
  * 20070104 - franciscom - gen_spec_view() warning message removed
  *
  **/ 
-// require_once("lang_api.php"); included in config
-// require_once("logging.inc.php"); included in config
 require_once("database.class.php");
 require_once("roles.inc.php");
 
@@ -818,7 +816,6 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
 	  // 20061105 - franciscom
 	  // $result['num_tc'] = count($a_tcid);
 	  $result['has_linked_items'] = 0;
-		
     if(count($a_tcid))
     {
   		$tcase_set = $tcase_mgr->get_by_id($a_tcid,TC_ALL_VERSIONS,'ACTIVE');

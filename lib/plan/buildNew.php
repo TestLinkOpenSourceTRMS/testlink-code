@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: buildNew.php,v $
  *
- * @version $Revision: 1.24 $
- * @modified $Date: 2006/11/20 07:27:18 $ $Author: franciscom $
+ * @version $Revision: 1.25 $
+ * @modified $Date: 2007/01/12 21:06:18 $ $Author: schlundus $
  *
  * rev :
  *       20061118 - franciscom - added check_build_name_existence()

@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: buildNew.tpl,v 1.13 2007/01/02 22:02:33 franciscom Exp $
+$Id: buildNew.tpl,v 1.14 2007/01/12 21:06:17 schlundus Exp $
 
 Purpose: smarty template - Add new build and show existing
 
@@ -90,7 +90,7 @@ function validateForm(f)
   			<tr>
   				<td><a href="lib/plan/buildNew.php?edit_build=load_info&buildID={$build.id}"
   				       title="{lang_get s='alt_edit_build'}">{$build.name|escape}
-  					     {if $gsmarty_gui.show_icon_edit}
+  					     {if $gsmarty_gui->show_icon_edit}
   					         <img style="border:none"
   					              alt="{lang_get s='alt_edit_build'}" 
   					              title="{lang_get s='alt_edit_build'}"

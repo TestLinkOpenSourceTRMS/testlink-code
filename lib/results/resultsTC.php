@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsTC.php,v 1.21 2007/01/13 23:51:45 kevinlevy Exp $ 
+* $Id: resultsTC.php,v 1.22 2007/01/13 23:57:17 kevinlevy Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -76,11 +76,12 @@ $smarty = new TLSmarty;
 $smarty->assign('title', lang_get('title_test_report_all_builds'));
 $smarty->assign('arrData', $arrData);
 $smarty->assign('arrBuilds', $arrBuilds);
+/**
 if ($xls) {
 	$smarty->assign('printDate', strftime($g_date_format, time()) );
 	$smarty->assign('user', $_SESSION['user']);
 }
-
+*/
 $report_type = isset($_GET['report_type']) ? intval($_GET['report_type']) : null;
 if (!isset($_GET['report_type']))
 {

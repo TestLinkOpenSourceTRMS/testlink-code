@@ -13,7 +13,9 @@ function displayReport($template_file, &$smarty, $report_type, $buildName = null
 		$smarty->display($template_file);
 	}
 	else if ($report_type == '1'){
-		print "MS Excel report for $template_file is not yet implemented - KL - 20070109 <BR>";
+		//print "MS Excel report for $template_file is not yet implemented - KL - 20070109 <BR>";
+		sendXlsHeader();
+		$smarty->display($template_file);
 	}
 	else if ($report_type == '2'){
 		//print "HTML email report for resultsBuild.php is not yet implemented - KL - 20070109 <BR>";	
@@ -42,5 +44,20 @@ function displayReport($template_file, &$smarty, $report_type, $buildName = null
 	}
 
 } //end function
+
+
+
+/**
+* used to display XLS reports
+* TO-DO : figure out where this method really should be at
+*/
+function sendXlsHeader()
+{
+        header("Content-Disposition: inline; filename=testReport.xls");
+        header("Content-Description: PHP Generated Data");
+        header("Content-type: application/vnd.ms-excel; name='My_Excel'");
+        flush();
+}
+
 
 ?>

@@ -47,6 +47,8 @@
          $this->componentsSelected = $componentsSelected;
          $this->columnAssignments = array("component" => 0, "category" => 1, "tcid" => 2, "tctitle" => 3 );
          */
+		 
+		
 		 $this->excelWorkbook = new Spreadsheet_Excel_Writer();
 		 
      }     
@@ -151,7 +153,7 @@
      }
      
 	 */
-	 
+	 // last thing that gets called
      public function createExcelFile($fileName)
      {                  
          $this->excelWorkbook->send($fileName);
@@ -160,6 +162,7 @@
          $this->excelWorkbook->close();
      }
      
+	 // insert data into worksheet - this is where more work is done
      private function inputSheetData($worksheet)
      {
          $this->getTestCasesAndInfo();

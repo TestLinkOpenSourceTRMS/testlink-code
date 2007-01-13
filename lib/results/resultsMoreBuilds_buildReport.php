@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsMoreBuilds_buildReport.php,v 1.39 2006/12/11 06:43:10 kevinlevy Exp $ 
+* $Id: resultsMoreBuilds_buildReport.php,v 1.40 2007/01/13 23:43:42 kevinlevy Exp $ 
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 * 
@@ -15,6 +15,7 @@ require('../../config.inc.php');
 require_once('common.php');
 require_once('../functions/results.class.php');
 require_once('../functions/users.inc.php');
+require_once('displayMgr.php');
 testlinkInitPage($db);
 
 $format = isset($_REQUEST['format']) ? $_REQUEST['format'] : 'HTML';
@@ -97,5 +98,15 @@ $smarty->assign('arrBuilds', $arrBuilds);
 $smarty->assign('suiteList', $suiteList);
 $smarty->assign('flatArray', $flatArray);
 $smarty->assign('mapOfSuiteSummary', $mapOfSuiteSummary);
-$smarty->display('resultsMoreBuilds_report.tpl');
+
+$report_type = isset($_GET['report_type']) ? intval($_GET['report_type']) : null;
+$smarty->assign('report_type', $report_type);
+if (!isset($_GET['report_type']))
+{
+	tlog('$_GET["report_type"] is not defined');
+	exit();
+}
+
+displayReport('resultsMoreBuilds_report.tpl', $smarty, $report_type);
+
 ?>

@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: resultsGeneral.php,v $
- * @version $Revision: 1.25 $
- * @modified $Date: 2007/01/09 06:27:59 $ by $Author: kevinlevy $
+ * @version $Revision: 1.26 $
+ * @modified $Date: 2007/01/13 23:43:42 $ by $Author: kevinlevy $
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
  * This page show Test Results over all Builds.
@@ -26,6 +26,7 @@ require_once('TestPlanResultsObj.php');
 require_once('timer.php');
 require_once('../functions/results.class.php');
 require_once('../functions/testplan.class.php');
+require_once('displayMgr.php');
 
 testlinkInitPage($db);
 $tpID = $_SESSION['testPlanId']; 
@@ -112,8 +113,14 @@ $smarty->assign('arrDataPriority', $arrDataPriority);
 $smarty->assign('arrDataSuite', $arrDataSuite);
 $smarty->assign('arrDataOwner', $arrDataOwner2);
 $smarty->assign('arrDataKeys', $arrDataKeys2);
-$smarty->display('resultsGeneral.tpl');
 
+$report_type = isset($_GET['report_type']) ? intval($_GET['report_type']) : null;
+if (!isset($_GET['report_type']))
+{
+	tlog('$_GET["report_type"] is not defined');
+	exit();
+}
 
+displayReport('resultsGeneral.tpl', $smarty, $report_type);
 
 ?>

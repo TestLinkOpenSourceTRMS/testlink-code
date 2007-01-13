@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsAllBuilds.php,v 1.11 2007/01/03 02:38:31 kevinlevy Exp $ 
+* $Id: resultsAllBuilds.php,v 1.12 2007/01/13 23:43:42 kevinlevy Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * 
@@ -13,6 +13,7 @@
 require('../../config.inc.php');
 require_once('common.php');
 require_once('../functions/results.class.php');
+require_once('displayMgr.php');
 testlinkInitPage($db);
 
 $tp = new testplan($db);
@@ -36,5 +37,8 @@ $smarty = new TLSmarty;
 $smarty->assign('tcs_color', $g_tc_sd_color);
 $smarty->assign('title', $_SESSION['testPlanName'] . lang_get('title_metrics_x_build'));
 $smarty->assign('arrData', $arrData);
-$smarty->display('resultsAllBuilds.tpl');
+
+$report_type = isset($_GET['report_type']) ? intval($_GET['report_type']) : null;
+displayReport('resultsAllBuilds.tpl', $smarty, $report_type);
+
 ?>

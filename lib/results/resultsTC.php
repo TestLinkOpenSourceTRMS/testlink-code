@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsTC.php,v 1.19 2007/01/03 02:36:58 kevinlevy Exp $ 
+* $Id: resultsTC.php,v 1.20 2007/01/13 23:43:42 kevinlevy Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -18,6 +18,8 @@
 require('../../config.inc.php');
 require_once('common.php');
 require_once('../functions/results.class.php');
+require_once('displayMgr.php');
+
 testlinkInitPage($db);
 $tp = new testplan($db);
 $tpID = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0 ;
@@ -90,7 +92,17 @@ if ($xls) {
 	$smarty->assign('printDate', strftime($g_date_format, time()) );
 	$smarty->assign('user', $_SESSION['user']);
 }
-$smarty->display('resultsTC.tpl');
+
+
+$report_type = isset($_GET['report_type']) ? intval($_GET['report_type']) : null;
+if (!isset($_GET['report_type']))
+{
+	tlog('$_GET["report_type"] is not defined');
+	exit();
+}
+
+displayReport('resultsTC.tpl', $smarty, $report_type);
+//$smarty->display('resultsTC.tpl');
 ?>
 
 

@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsByStatus.php,v 1.30 2007/01/03 20:44:04 kevinlevy Exp $ 
+* $Id: resultsByStatus.php,v 1.31 2007/01/13 23:43:42 kevinlevy Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -17,6 +17,7 @@ require('../../config.inc.php');
 require_once('../functions/common.php');
 require_once('../functions/exec.inc.php');
 require_once("../../lib/functions/results.class.php");
+require_once('displayMgr.php');
 
 // used to retrieve users 
 require_once('../functions/users.inc.php');
@@ -183,5 +184,17 @@ $smarty->assign('title', $title);
 
 $smarty->assign('arrBuilds', $arrBuilds); 
 $smarty->assign('arrData', $arrData);
-$smarty->display('resultsByStatus.tpl');
+
+
+$report_type = isset($_GET['report_type']) ? intval($_GET['report_type']) : null;
+if (!isset($_GET['report_type']))
+{
+	tlog('$_GET["report_type"] is not defined');
+	exit();
+}
+
+displayReport('resultsByStatus.tpl', $smarty, $report_type);
+
+
+//$smarty->display('resultsByStatus.tpl');
 ?>

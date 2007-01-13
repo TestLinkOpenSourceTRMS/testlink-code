@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsMoreBuilds.php,v 1.46 2006/12/25 02:23:59 kevinlevy Exp $ 
+* $Id: resultsMoreBuilds.php,v 1.47 2007/01/13 23:43:42 kevinlevy Exp $ 
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 * 
@@ -50,5 +50,13 @@ $smarty->assign('arrBuilds', $arrBuilds);
 $smarty->assign('arrKeywords', $arrKeywords);
 $smarty->assign('arrComponents', $arrComponents);
 $smarty->assign('arrOwners', $arrOwners);
+
+$report_type = isset($_GET['report_type']) ? intval($_GET['report_type']) : null;
+if (!isset($_GET['report_type']))
+{
+	tlog('$_GET["report_type"] is not defined');
+	exit();
+}
+$smarty->assign('report_type', $report_type);
 $smarty->display('resultsMoreBuilds_query_form.tpl');
 ?>

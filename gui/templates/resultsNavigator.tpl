@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: resultsNavigator.tpl,v 1.5 2007/01/10 08:06:41 kevinlevy Exp $ *}
+{* $Id: resultsNavigator.tpl,v 1.6 2007/01/13 23:44:13 kevinlevy Exp $ *}
 {* Purpose: smarty template - show Test Results and Metrics *}
 {* Revisions:
 	20050528 - fm - I18N
@@ -36,13 +36,24 @@ function reportPrint(){
 {section name=Row loop=$arrDataB}
 	<a href="lib/results/{$arrDataB[Row].href}?build={$selectedBuild}&report_type={$selectedReportType}" target="workframe">{$arrDataB[Row].name}</a><br />
 {/section}
+<!--
+$arrData = array(
+	array('name' => lang_get('link_report_general_tp_metrics'), 'href' => 'resultsGeneral.php'), 
+	array('name' => lang_get('link_report_overall_build'), 'href' => 'resultsAllBuilds.php'), 
+    array('name' => lang_get('link_report_metrics_more_builds'), 'href' => 'resultsMoreBuilds.php'), 
+	array('name' => lang_get('link_report_failed'), 'href' => 'resultsByStatus.php?type=f'),
+	array('name' => lang_get('link_report_blocked_tcs'), 'href' => 'resultsByStatus.php?type=b'),
+	array('name' => lang_get('link_report_test'), 'href' => 'resultsTC.php'),
+	array('name' => lang_get('link_report_excel'), 'href' => 'resultsTC.php?format=excel'),
+);
+-->
 </p>
 <!--
 <hr />
 -->
 <p>
 {section name=Row loop=$arrData}
-	<a href="lib/results/{$arrData[Row].href}" target="workframe">{$arrData[Row].name}</a><br />
+	<a href="lib/results/{$arrData[Row].href}{$selectedReportType}" target="workframe">{$arrData[Row].name}</a><br />
 {/section}
 </p>
 <!--

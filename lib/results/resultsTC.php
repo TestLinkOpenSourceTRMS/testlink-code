@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsTC.php,v 1.20 2007/01/13 23:43:42 kevinlevy Exp $ 
+* $Id: resultsTC.php,v 1.21 2007/01/13 23:51:45 kevinlevy Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -72,18 +72,6 @@ while($suiteId = key($lastResultMap)) {
 } // end while
 } // end if
 
-
-// is output is excel?
-$xls = FALSE;
-if (isset($_GET['format']) && $_GET['format'] =='excel'){
-	$xls = TRUE;
-}
-
-// for excel send header
-if ($xls) {
-	$re->sendXlsHeader();
-}
-
 $smarty = new TLSmarty;
 $smarty->assign('title', lang_get('title_test_report_all_builds'));
 $smarty->assign('arrData', $arrData);
@@ -93,7 +81,6 @@ if ($xls) {
 	$smarty->assign('user', $_SESSION['user']);
 }
 
-
 $report_type = isset($_GET['report_type']) ? intval($_GET['report_type']) : null;
 if (!isset($_GET['report_type']))
 {
@@ -102,7 +89,6 @@ if (!isset($_GET['report_type']))
 }
 
 displayReport('resultsTC.tpl', $smarty, $report_type);
-//$smarty->display('resultsTC.tpl');
 ?>
 
 

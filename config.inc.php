@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.90 $
- * @modified $Date: 2007/01/12 21:06:17 $ by $Author: schlundus $
+ * @version $Revision: 1.91 $
+ * @modified $Date: 2007/01/13 23:45:36 $ by $Author: schlundus $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink 
@@ -524,6 +524,7 @@ $g_gui->custom_fields->sizes = array(
 /** Include important libraries */
 
 /** Bug tracking include */
+$g_bugInterfaceOn = false;
 $g_bugInterface = null;
 if (TL_INTERFACE_BUGS != 'NO')
   require_once(TL_ABS_PATH . 'lib/bugtracking/int_bugtracking.php');

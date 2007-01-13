@@ -4,11 +4,8 @@
  *
  * Filename $RCSfile: planMilestones.php,v $
  *
- * @version $Revision: 1.7 $
- * @modified $Date: 2006/01/05 07:30:34 $
- *
- * 20051203 - scs - added displaying of tpname, cosmetic changes
- * 20060103 - scs - refactored, removed bulk update
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2007/01/13 23:45:37 $
  */
 require_once('../../config.inc.php');
 require_once("../functions/common.php");

@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.59 $ $Author: schlundus $
- * @modified $Date: 2007/01/12 21:06:17 $
+ * @version $Revision: 1.60 $ $Author: schlundus $
+ * @modified $Date: 2007/01/13 23:45:36 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -751,7 +751,7 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
 				$out[$parent_idx]['testcases'][$tc_id] = array('id' => $tc_id,
 				                  'name' => $current['name']);
 				$out[$parent_idx]['testcases'][$tc_id]['tcversions'] = array();
-				$out[$parent_idx]['testcases'][$tc_id]['tcversions_qty'] = 0;   // 20061104 - franciscom
+				$out[$parent_idx]['testcases'][$tc_id]['tcversions_qty'] = 0;
 				             
 				$out[$parent_idx]['testcases'][$tc_id]['linked_version_id'] = 0;
 				$out[$parent_idx]['testcases'][$tc_id]['executed'] = 'no';
@@ -825,10 +825,9 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
   		
   		foreach($tcase_set as $the_k => $the_tc)
     	{
-  			$tc_id = $the_tc['testcase_id'];
+			$tc_id = $the_tc['testcase_id'];
   			
-  			// 20061105 - franciscom
-  		  if( $pivot_id != $tc_id )
+  		  if($pivot_id != $tc_id )
   		  {
   		    $pivot_id=$tc_id;
   		    $result['num_tc']++;
@@ -836,8 +835,11 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
   		  
   			$parent_idx = $a_tsuite_idx[$tc_id];
   			$out[$parent_idx]['testcases'][$tc_id]['tcversions'][$the_tc['id']] = $the_tc['version'];
-              
-        $out[$parent_idx]['testcases'][$tc_id]['tcversions_qty']++; // 20061104 - franciscom
+            
+			if (isset($out[$parent_idx]['testcases'][$tc_id]['tcversions_qty']))  
+				$out[$parent_idx]['testcases'][$tc_id]['tcversions_qty']++;
+			else
+				$out[$parent_idx]['testcases'][$tc_id]['tcversions_qty'] = 1;
               
   			if(!is_null($linked_items))
   			{

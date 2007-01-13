@@ -1,6 +1,6 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_update.tpl,v 1.12 2006/12/31 16:27:09 franciscom Exp $
+$Id: inc_update.tpl,v 1.13 2007/01/13 23:45:36 schlundus Exp $
 Purpose: show message after an SQL operation
 *}
 {* 
@@ -15,9 +15,7 @@ Purpose: show message after an SQL operation
             the localized strings file, to give a localized feedback
   $feedback_type:
                  used to managed different types of message types.
-                 If empty, the traditional (too hard - IMHO - franciscom)
-                 message will be displayed.
-                 
+                 If empty, the traditional message will be displayed.
                  You can see a different effect selecting "soft".
 *}
 
@@ -27,19 +25,18 @@ Purpose: show message after an SQL operation
 	{lang_get s=$item var='item'}
 	
   {if $feedback_type eq "soft"}
-		<div class="warning_{$feedback_type}">	
-	  	<p>{$item|default:"item"} {$name|escape} 
-      <p>{lang_get s='was_success'} {$action|default:"updated"}!
+  	<div class="warning_{$feedback_type}">	
+		<p>{$item|default:"item"} {$name|escape}</p> 
+      	<p>{lang_get s='was_success'} {$action|default:"updated"}!</p>
   	</div>
 	{else}
   	<div class="error">
 	  	<p>{$item|default:"item"} {$name|escape} 
          {lang_get s='was_success'} {$action|default:"updated"}!</p>
-	  </div>
+	</div>
   {/if}
   
-  
-	{* reload tree *}
+  {* reload tree *}
 	{if $refresh == "yes"}
 		{include file="inc_refreshTree.tpl"}
 	{/if}
@@ -48,8 +45,8 @@ Purpose: show message after an SQL operation
 
   {if $feedback_type eq "soft"}
 		<div class="warning_{$feedback_type}">	
-		  <p>{lang_get s='warning'} 
-			<p>{$result|escape}
+		  <p>{lang_get s='warning'}</p> 
+			<p>{$result|escape}</p>
   	</div>
 	{else}
   	<div class="error">

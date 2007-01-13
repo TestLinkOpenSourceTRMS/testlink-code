@@ -1,16 +1,13 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: buildNew.tpl,v 1.14 2007/01/12 21:06:17 schlundus Exp $
+$Id: buildNew.tpl,v 1.15 2007/01/13 23:45:36 schlundus Exp $
 
 Purpose: smarty template - Add new build and show existing
 
 Rev :
-  
-     20070102 - franciscom
      1. added config_load 
      2. added javascript validation for build_name
      3. added title attribute
-
 *}
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes"}
 
@@ -41,11 +38,11 @@ function validateForm(f)
 <h1>{lang_get s='title_build_2'}{$smarty.const.TITLE_SEP_TYPE3}{lang_get s='test_plan'}{$smarty.const.TITLE_SEP}{$TPname|escape}</h1>
 
 <div class="workBack">
-{include file="inc_update.tpl" result=$sqlResult item="Build" name=$name}
+{include file="inc_update.tpl" result=$sqlResult item="build" name=$name}
 
 <div> {* new build form *}
 	{if $build_name ne ""}
-		<h2>{lang_get s='title_build_update'}{$build_name}</h2>
+		<h2>{lang_get s='title_build_update'}{$build_name|escape}</h2>
 	{else}
 		<h2>{lang_get s='title_build_create'}</h2>
 	{/if}
@@ -54,10 +51,12 @@ function validateForm(f)
 	      onSubmit="javascript:return validateForm(this);">
 	      
 	<table class="common" style="width:80%">
-		<tr><th>{lang_get s='enter_build'}</th></tr>
+		<tr>
+			<th>{lang_get s='enter_build'}</th>
+		</tr>
 		<tr>
 			<td><input type="text" name="build_name" maxlength="{#BUILD_NAME_MAXLEN#}" 
-			           value="{$build_name}" size="{#BUILD_NAME_SIZE#}"/>
+			           value="{$build_name|escape}" size="{#BUILD_NAME_SIZE#}"/>
 			  				{include file="error_icon.tpl" field="build_name"}
 			</td>
 		</tr>
@@ -68,11 +67,11 @@ function validateForm(f)
 	</table>
 	<p>{lang_get s='msg_build'}</p>
 	<div class="groupBtn">	
-		<input type="submit" name="{$button_name}" value="{$button_value}" />
+		<input type="submit" name="{$button_name|escape}" value="{$button_value|escape}" />
 	</div>
 	</form>
 </div>
-<hr>
+<hr />
 
 {* ------------------------------------------------------------------------------------------- *}
 <div id="existing_builds">
@@ -88,7 +87,7 @@ function validateForm(f)
   		</tr>
   		{foreach item=build from=$arrBuilds}
   			<tr>
-  				<td><a href="lib/plan/buildNew.php?edit_build=load_info&buildID={$build.id}"
+  				<td><a href="lib/plan/buildNew.php?edit_build=load_info&amp;buildID={$build.id}"
   				       title="{lang_get s='alt_edit_build'}">{$build.name|escape}
   					     {if $gsmarty_gui->show_icon_edit}
   					         <img style="border:none"
@@ -117,8 +116,8 @@ function validateForm(f)
 
 
 <form method="POST" action="lib/plan/buildNew.php" id="deleteBuildForm" onsubmit="return false">
-	<input type="hidden" name="buildID" id="buildID">
-	<input type="hidden" name="del_build" id="del_build">
+	<input type="hidden" name="buildID" id="buildID" />
+	<input type="hidden" name="del_build" id="del_build" />
 </form>
 </div>
 

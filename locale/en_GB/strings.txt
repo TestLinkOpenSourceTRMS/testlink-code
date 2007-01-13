@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.99 $
- * @modified $Date: 2007/01/06 15:14:35 $ $Author: franciscom $
+ * @version $Revision: 1.100 $
+ * @modified $Date: 2007/01/13 23:45:37 $ $Author: schlundus $
  *
  * @author Francisco Mancardi
  *
@@ -335,11 +335,11 @@ $TLS_cannot_delete_build = "The build cannot be deleted!";
 $TLS_cannot_update_build = "Error while updating build!";
 $TLS_invalid_build_id = "Invalid build identification was used.";
 $TLS_warning_duplicate_build = "There is already a build with this identifier";
-$TLS_warning_empty_build_name="Please give a name to build";
+$TLS_warning_empty_build_name="Please enter a name for the Build!";
 
 
 // lib/plan/plan.inc.php
-$TLS_warning_empty_milestone_name = "You cannot enter a milestone without a name!";
+$TLS_warning_empty_milestone_name = "You cannot enter a Milestone without a name!";
 $TLS_warning_enter_valid_date = "You have to enter a valid date!";
 $TLS_warning_invalid_percentage_value = "Percentage values must range from 0 to 100%";
 $TLS_warning_milestone_date = "Milestones have to be created at today's date or greater!";
@@ -882,7 +882,7 @@ $TLS_alt_delete_milestone = "Delete the milestone?";
 $TLS_btn_edit_milestone = "Edit";
 $TLS_btn_new_milestone = "Create";
 $TLS_info_milestones_date = "Milestones must be created at today's date or greater";
-$TLS_no_milestones = "There are no milestones for this Test Plan!";
+$TLS_no_milestones = "There are no Milestones for this Test Plan!";
 $TLS_th_date_format = "Date (YYYY-MM-DD)";
 $TLS_th_perc_a_prio = "% A Priority";
 $TLS_th_perc_b_prio = "% B priority";
@@ -920,7 +920,7 @@ $TLS_title_plan_ownership = "Test Plan ownership";
 
 // gui/templates/planPriority.tpl
 $TLS_btn_upd_prio = "Update";
-$TLS_title_priority = "Define Priority Rules for Test Plan";
+$TLS_title_priority = "Define priority rules for Test Plan";
 $TLS_tr_th_prio_cba = "Priority (C/B/A)";
 $TLS_tr_th_risk = "Risk/Importance";
 
@@ -1403,17 +1403,17 @@ $TLS_warning_delete_attachment = "Really delete this attachment?";
 
 
 // gui/templates/planAddTC_m1.tpl
-$TLS_btn_add_remove_selected_tc = "Add/Remove selected";
+$TLS_btn_add_remove_selected_tc = "Add/Remove selected Test Case(s)";
 $TLS_btn_add_selected_tc = "Add selected";
 $TLS_btn_check = "Check";
 $TLS_btn_uncheck = "Uncheck";
-$TLS_check_uncheck_tc = "Test Cases in the Test Suite.";
+$TLS_check_uncheck_tc = "All Test Cases in the Test Suite.";
 $TLS_has_been_executed = "has been executed";
 $TLS_inactive_testcase = "inactive";
 $TLS_no_testcase_available = "No Test Case available";
 $TLS_note_keyword_filter = "Test Cases are filtered by keyword";
 $TLS_remove_tc = "Remove";
-$TLS_title_add_remove_test_to_plan = "Add/Remove Test Cases to the Test Plan";
+$TLS_title_add_remove_test_to_plan = "Add/Remove Test Case(s) to the Test Plan";
 $TLS_title_add_test_to_plan = "Add Test Cases to the Test Plan";
 
 
@@ -1489,7 +1489,7 @@ $TLS_del_bug_warning_msg = "Really delete this bug?";
 
 
 // gui/templates/tc_exec_assignment.tpl
-$TLS_btn_update_selected_tc = "Update selected tc(s)";
+$TLS_btn_update_selected_tc = "Update selected Test Case(s)";
 $TLS_title_tc_exec_assignment = "Assigning Test Case execution tasks for test plan ";
 
 

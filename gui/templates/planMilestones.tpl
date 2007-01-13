@@ -1,11 +1,6 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: planMilestones.tpl,v 1.2 2006/10/22 19:50:24 schlundus Exp $ *}
+{* $Id: planMilestones.tpl,v 1.3 2007/01/13 23:45:36 schlundus Exp $ *}
 {* Purpose: smarty template - edit milestones *}
-{*
-	20051203 - scs - corrected wrong maxlength for name and date,
-					 added displaying of tpName
-	20060103 - scs - removed bulk update 					 
-*}
 {include file="inc_head.tpl"}
 
 <body>
@@ -101,7 +96,7 @@
 								{$arrMilestone[Row].cpriority|escape}
 							</td>
 							<td>
-								<a href="lib/plan/planMilestones.php?delete=1&id={$arrMilestone[Row].id}">
+								<a href="lib/plan/planMilestones.php?delete=1&amp;id={$arrMilestone[Row].id}">
 								<img style="border:none" alt="{lang_get s='alt_delete_milestone'}" src="icons/thrash.png"/>
 								</a>
 							</td>

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: buildNew.php,v $
  *
- * @version $Revision: 1.25 $
- * @modified $Date: 2007/01/12 21:06:18 $ $Author: schlundus $
+ * @version $Revision: 1.26 $
+ * @modified $Date: 2007/01/13 23:45:37 $ $Author: schlundus $
  *
  * rev :
  *       20061118 - franciscom - added check_build_name_existence()
@@ -21,13 +21,12 @@ require_once("../../third_party/fckeditor/fckeditor.php");
 testlinkInitPage($db);
 
 $tplan_mgr = new testplan($db);
-
 $tpID    = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0;
 $buildID = isset($_REQUEST['buildID']) ? intval($_REQUEST['buildID']) : 0;
 $build_name = isset($_REQUEST['build_name']) ? trim(strings_stripSlashes($_REQUEST['build_name'])) : null;
 $notes = isset($_REQUEST['notes']) ? strings_stripSlashes($_REQUEST['notes']) : null;
 $tpName = $_SESSION['testPlanName'];
-$the_builds = $tplan_mgr->get_builds($tpID);
+$the_builds = $tplan_mgr->get_builds_for_html_options($tpID);
 
 $smarty = new TLSmarty();
 
@@ -48,22 +47,24 @@ if (strlen($build_name))
 	   !$tplan_mgr->check_build_name_existence($tpID,$build_name) ||
 	   (isset($the_builds[$buildID]) && $the_builds[$buildID] == $build_name))
 	{
-  	$sqlResult = 'ok';
-	  $can_insert_or_update = 1;
+		$sqlResult = 'ok';
+		$can_insert_or_update = 1;
 	}
 }
-
 if(isset($_REQUEST['newBuild']))
 {
+	$of->Value = $notes;
 	if ($can_insert_or_update)
 	{
 		if (!insertTestPlanBuild($db,$build_name,$tpID,$notes))
-		{
 			$sqlResult = lang_get("cannot_add_build");
-		}	
+		else
+		{
+			$build_name = '';
+			$of->Value = '';
+		} 	
 	}
 	$smarty->assign('sqlResult', $sqlResult);
-	$build_name = '';
 }
 
 if(isset($_REQUEST['del_build']))
@@ -74,30 +75,36 @@ if(isset($_REQUEST['del_build']))
 		$sqlResult = lang_get("cannot_delete_build");
 	}
 	$smarty->assign('sqlResult', $sqlResult);
-	$smarty->assign('action', 'delete');
+	$smarty->assign('action', 'deleted');
 }
 
 if(isset($_REQUEST['edit_build']))
 {
+	$build_action = 'edit_build';
+	$button_value = lang_get('btn_save');
 	if(strcasecmp($_REQUEST['edit_build'], "load_info") == 0 )
 	{
 		$my_b_info = getBuild_by_id($db,$buildID);
 		$build_name = $my_b_info['name'];
 		$of->Value = $my_b_info['notes'];
-		$build_action = 'edit_build';
-		$button_value = lang_get('btn_save');
 	}
 	else
 	{
-		$build_action = 'newBuild';
-		$button_value = lang_get('btn_create');
+		$of->Value = $notes;
 		if ($can_insert_or_update)
 		{
 		   	if (!updateTestPlanBuild($db,$buildID,$build_name,$notes))
-		 		$sqlResult = lang_get("cannot_update_build");
+			 	$sqlResult = lang_get("cannot_update_build");
+			else
+			{
+				$build_name = '';
+				$of->Value = '';
+				$build_action = 'newBuild';
+				$button_value = lang_get('btn_create');
+			}
 		}
 		$smarty->assign('sqlResult', $sqlResult);
-		$build_name = '';
+		
 	}
 }
 

@@ -2,23 +2,13 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: plan.inc.php,v $
- * @version $Revision: 1.40 $
- * @modified $Date: 2006/10/24 20:35:02 $ $Author: schlundus $
+ * @version $Revision: 1.41 $
+ * @modified $Date: 2007/01/13 23:45:37 $ $Author: schlundus $
  * @author 	Martin Havlat
  *
  * Functions for management: 
  * Test Plans, Test Case Suites, Milestones, Testers assignment
- *
- * 20060429 - franciscom - adjust table name
- * 20060104 - fm - added copy_deep_testplan() 
- * 20060103 - scs - ADOdb changes
- * 20051008 - scs - refactored
- * 20051006 - fm - updateTestPlanBuild()
- * 20051001 - fm - del_category_deep(), del_component_deep
- * 20050922 - fm - BUGID 0000132: Cannot delete a test plan
- * 20050914 - fm - refactoring
  */
-////////////////////////////////////////////////////////////////////////////////
 
 /** include core functions for collect information about Test Plans */
 require_once("plan.core.inc.php"); 
@@ -581,7 +571,8 @@ function del_tp_info_by_mgtcat(&$db,$mgtcat_id)
 function checkMileStone($name,$date,$A,$B,$C)
 {
 	$sqlResult = null;
-	if (preg_match("/\D/",$A) || preg_match("/\D/",$B) || preg_match("/\D/",$C))
+	if (preg_match("/\D/",$A) || preg_match("/\D/",$B) || preg_match("/\D/",$C)
+		|| !strlen($A) || !strlen($B) || !strlen($C))
 		$sqlResult = lang_get("warning_invalid_percentage_value");	
 	else if (intval($A) > 100 || intval($B) > 100 || intval($C) > 100)
 		$sqlResult = lang_get("warning_invalid_percentage_value");	

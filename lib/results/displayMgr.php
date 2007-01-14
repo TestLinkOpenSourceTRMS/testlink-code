@@ -42,15 +42,13 @@ function displayReport($template_file, &$smarty, $report_type, $buildName = null
 	else if ($report_type == '3'){
 		print "text email report for $template_file is not yet implemented - KL - 20070109 <BR>";
 	}
-
+	else if ($report_type == '4'){
+		sendPdfHeader();
+		$smarty->display($template_file);
+	}
 } //end function
 
 
-
-/**
-* used to display XLS reports
-* TO-DO : figure out where this method really should be at
-*/
 function sendXlsHeader()
 {
         header("Content-Disposition: inline; filename=testReport.xls");
@@ -59,5 +57,15 @@ function sendXlsHeader()
         flush();
 }
 
+
+function sendPdfHeader()
+{
+	// We'll be outputting a PDF
+	header('Content-type: application/pdf');
+
+	// It will be called downloaded.pdf
+	header('Content-Disposition: attachment; filename="testReport.pdf"');
+	
+}
 
 ?>

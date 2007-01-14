@@ -2,7 +2,7 @@
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
- * @version $Id: resultsNavigator.php,v 1.18 2007/01/13 23:51:27 kevinlevy Exp $ 
+ * @version $Id: resultsNavigator.php,v 1.19 2007/01/14 01:00:32 kevinlevy Exp $ 
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
  * This page list View of Test Results and Metrics.
@@ -26,7 +26,7 @@ $arrData = array(
 	array('name' => lang_get('link_report_test'), 'href' => 'resultsTC.php?report_type=')
 );
 
-$arrReportTypes = array('normal', 'MS Excel', 'HTML email', 'text email');
+$arrReportTypes = array('normal', 'MS Excel', 'HTML email', 'text email', 'PDF');
 
 if ($g_bugInterfaceOn)
 	$arrData[] = array('name' => lang_get('link_report_total_bugs'), 'href' => 'resultsBugs.php');

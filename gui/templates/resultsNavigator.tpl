@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: resultsNavigator.tpl,v 1.6 2007/01/13 23:44:13 kevinlevy Exp $ *}
+{* $Id: resultsNavigator.tpl,v 1.7 2007/01/14 07:04:46 kevinlevy Exp $ *}
 {* Purpose: smarty template - show Test Results and Metrics *}
 {* Revisions:
 	20050528 - fm - I18N
@@ -76,18 +76,23 @@ $arrData = array(
 		{html_options options=$arrReportTypes selected=$selectedReportType}
 	</select>
 	</td></tr>
+	<!--
 	<tr><td>
 	TO:
 	</td></tr> 
 	<tr><td>
-	<input name='to' type='text' size='50' onchange="this.form.submit();"/>
+	<input name='email_to' type='text' size='50' value="{$email_to}" onchange="this.form.submit();"/>
 	</td></tr>
 	<tr><td>
 	SUBJECT : 
 	</td></tr>
 	<tr><td>
-	<input name='subject' type='text' size='50' value="" onchange="this.form.submit();"/>
+	<input name='email_subject' type='text' size='50' value="{$email_subject}" onchange="this.form.submit();"/>
 	</td></tr>
+	-->
+	<p>
+	Note: Emails are sent to user's email account.
+	</p>
 	</table>
 </form>
 </div>

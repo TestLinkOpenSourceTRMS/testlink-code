@@ -2,7 +2,7 @@
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
- * @version $Id: resultsNavigator.php,v 1.19 2007/01/14 01:00:32 kevinlevy Exp $ 
+ * @version $Id: resultsNavigator.php,v 1.20 2007/01/14 07:41:21 kevinlevy Exp $ 
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
  * This page list View of Test Results and Metrics.
@@ -54,6 +54,22 @@ if (isset($_GET['report_type']))
 else
 	$selectedReportType = sizeof($arrReportTypes) ? key($arrReportTypes) : null;
 
+/** comment out until further notice
+for now, send email to user
+
+if (isset($_POST['email_to']))
+	$email_to = intval($_POST['email_to']);
+else
+	$email_to = $_SESSION['email'];
+
+if (isset($_POST['email_subject']))
+	$email_subject = intval($_POST['email_subject']);
+else
+	$email_subject = "";
+	
+print "$email_to, $email_subject <BR>";
+*/
+
 $smarty = new TLSmarty;
 $smarty->assign('title', 'Navigator - Results');
 $smarty->assign('arrData', $arrData);
@@ -62,5 +78,6 @@ $smarty->assign('arrBuilds', $arrBuilds);
 $smarty->assign('selectedBuild', $selectedBuild);
 $smarty->assign('selectedReportType', $selectedReportType);
 $smarty->assign('arrReportTypes', $arrReportTypes);
+//$smarty->assign('email_to', $email_to);
 $smarty->display('resultsNavigator.tpl');
 ?>

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.101 $
- * @modified $Date: 2007/01/15 08:18:10 $ $Author: franciscom $
+ * @version $Revision: 1.102 $
+ * @modified $Date: 2007/01/15 08:23:15 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
@@ -1094,6 +1094,7 @@ $TLS_subject = "Subject:";
 $TLS_title_active_build = "Active Build";
 $TLS_title_report_type="Report type";
 $TLS_via_email = "per eMail";
+$TLS_note_email_sent_t="Note: Emails are sent to user's email account.";
 
 
 

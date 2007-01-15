@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.60 $ $Author: schlundus $
- * @modified $Date: 2007/01/13 23:45:36 $
+ * @version $Revision: 1.61 $ $Author: franciscom $
+ * @modified $Date: 2007/01/15 08:27:20 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -534,6 +534,15 @@ function set_dt_formats()
 	}
 }
 
+
+/*
+  function: 
+
+  args :
+  
+  returns: 
+
+*/
 function config_get($config_id)
 {
 	$my = "g_" . $config_id;
@@ -583,6 +592,14 @@ function downloadContentsToFile($content,$fileName)
 }
 
 
+/*
+  function: translate_tc_status
+
+  args :
+  
+  returns: 
+
+*/
 function translate_tc_status($status_code)
 {
 	$map_tc_status = array_flip(config_get('tc_status'));
@@ -596,6 +613,15 @@ function translate_tc_status($status_code)
 	return $verbose;
 }
 
+
+/*
+  function: translate_tc_status_smarty
+
+  args :
+  
+  returns: 
+
+*/
 function translate_tc_status_smarty($params, &$smarty)
 {
 	$the_ret = translate_tc_status($params['s']);  

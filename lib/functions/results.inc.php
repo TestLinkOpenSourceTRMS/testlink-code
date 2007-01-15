@@ -2,8 +2,8 @@
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: results.inc.php,v $
- * @version $Revision: 1.36 $
- * @modified $Date: 2006/10/24 20:35:02 $   $Author: schlundus $
+ * @version $Revision: 1.37 $
+ * @modified $Date: 2007/01/15 08:28:56 $   $Author: franciscom $
  * 
  * @author 	Martin Havlat 
  * @author 	Chad Rosen (original report definition)
@@ -1261,7 +1261,9 @@ function getLastResult(&$db,$idSuiteTC)
  */
 function getReqCoverage_testPlan(&$db,$idSRS, $tpID)
 {
-	global $g_tc_status, $g_tc_sd_color;
+	global $g_tc_status, $g_tc_status_css;
+	
+	
 	$output = array('passed' => array(), 'failed' => array(), 
 				          'blocked' => array(), 'not_run' => array());
 	
@@ -1298,16 +1300,16 @@ function getReqCoverage_testPlan(&$db,$idSRS, $tpID)
 					// parse particular TC
 					if ($tcResult == $g_tc_status['failed']) {
 						$counterFail++;
-						$htmlClass = $g_tc_sd_color['failed'];
+						$htmlClass = $g_tc_status_css['failed'];
 					} elseif ($tcResult == $g_tc_status['blocked']) {
 						$counterBlocked++;
-						$htmlClass = $g_tc_sd_color['blocked'];
+						$htmlClass = $g_tc_status_css['blocked'];
 					} elseif ($tcResult == $g_tc_status['passed']) {
 						$counterPassed++;
-						$htmlClass = $g_tc_sd_color['passed'];
+						$htmlClass = $g_tc_status_css['passed'];
 					} elseif ($tcResult == $g_tc_status['not_run']) {
 						$counterNotRun++;
-						$htmlClass = $g_tc_sd_color['not_run'];
+						$htmlClass = $g_tc_status_css['not_run'];
 					} else {
 						tLog('getReqCoverage_testPlan: Invalid $tcResult', 'ERROR');
 					}

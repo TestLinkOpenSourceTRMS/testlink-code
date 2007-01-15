@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsAllBuilds.php,v 1.13 2007/01/15 00:49:52 kevinlevy Exp $ 
+* $Id: resultsAllBuilds.php,v 1.14 2007/01/15 08:31:51 franciscom Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * 
@@ -34,7 +34,7 @@ if ($arrDataBuilds != null) {
   }
 }
 $smarty = new TLSmarty;
-$smarty->assign('tcs_color', $g_tc_sd_color);
+$smarty->assign('tcs_css', $g_tc_status_css);
 $smarty->assign('title', $_SESSION['testPlanName'] . lang_get('title_metrics_x_build'));
 $smarty->assign('arrData', $arrData);
 

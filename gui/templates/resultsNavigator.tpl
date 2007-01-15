@@ -1,9 +1,8 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: resultsNavigator.tpl,v 1.7 2007/01/14 07:04:46 kevinlevy Exp $ *}
+{* $Id: resultsNavigator.tpl,v 1.8 2007/01/15 08:22:56 franciscom Exp $ *}
 {* Purpose: smarty template - show Test Results and Metrics *}
 {* Revisions:
-	20050528 - fm - I18N
-	20051204 - mht - added print button
+   20070113 - franciscom - use of smarty config file
 *}
 {include file="inc_head.tpl" openHead="yes"}
 {literal}<script type="text/javascript">
@@ -14,6 +13,8 @@ function reportPrint(){
 </script>{/literal}
 </head>
 <body>
+{assign var="cfg_section" value=$smarty.template|replace:".tpl":"" }
+{config_load file="input_dimensions.conf" section=$cfg_section}
 
 <h1>{$title|escape}</h1>
 
@@ -34,7 +35,8 @@ function reportPrint(){
 
 <p>
 {section name=Row loop=$arrDataB}
-	<a href="lib/results/{$arrDataB[Row].href}?build={$selectedBuild}&report_type={$selectedReportType}" target="workframe">{$arrDataB[Row].name}</a><br />
+	<a href="lib/results/{$arrDataB[Row].href}?build={$selectedBuild}&report_type={$selectedReportType}" 
+	   target="workframe">{$arrDataB[Row].name}</a><br />
 {/section}
 <!--
 $arrData = array(
@@ -78,20 +80,21 @@ $arrData = array(
 	</td></tr>
 	<!--
 	<tr><td>
-	TO:
+	{lang_get s="send_to"}
 	</td></tr> 
 	<tr><td>
-	<input name='email_to' type='text' size='50' value="{$email_to}" onchange="this.form.submit();"/>
+	<input name='to' type='text' size="{#EMAIL_TO_SIZE#}" onchange="this.form.submit();"/>
 	</td></tr>
 	<tr><td>
-	SUBJECT : 
+	{lang_get s="subject"}
 	</td></tr>
 	<tr><td>
-	<input name='email_subject' type='text' size='50' value="{$email_subject}" onchange="this.form.submit();"/>
+	<input name='subject' type='text' size="{#EMAIL_SUBJECT_SIZE#}" 
+	       value="" onchange="this.form.submit();"/>
 	</td></tr>
 	-->
 	<p>
-	Note: Emails are sent to user's email account.
+	{lang_get s="note_email_sent_t"}
 	</p>
 	</table>
 </form>

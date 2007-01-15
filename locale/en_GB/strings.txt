@@ -4,22 +4,26 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.100 $
- * @modified $Date: 2007/01/13 23:45:37 $ $Author: schlundus $
+ * @version $Revision: 1.101 $
+ * @modified $Date: 2007/01/15 08:18:10 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
 **/
 
 // General
+$TLS_asc = "ascending";
+$TLS_desc = "descending";
 $TLS_test_case = "Test Case";
 $TLS_test_plan = "Test Plan";
 $TLS_test_suite="Test Suite";
 
 
 // lib/execute/execSetResults.php
-$TLS_btn_history_on="History on";
-$TLS_btn_history_off="History OFF";
+//$TLS_btn_history_on="History on";
+//$TLS_btn_history_off="History OFF";
+$TLS_btn_history_on="Show complete execution history";
+$TLS_btn_history_off="Show only last execution";
 
 
 // firstLogin.php
@@ -107,6 +111,10 @@ $TLS_bugdeleting_was_ok = "The bug was successfully deleted!";
 
 // lib/functions/common.php
 $TLS_test_status_not_run = "Not Run";
+$TLS_test_status_blocked = "Blocked";
+$TLS_test_status_failed = "Failed";
+$TLS_test_status_passed = "Passed";
+$TLS_test_status_not_available = "Not Available";
 
 
 
@@ -634,6 +642,7 @@ $TLS_btn_new_cat = "New Test Suite";
 $TLS_btn_new_com = "New Test Suite";
 $TLS_btn_new_tc = "Create Test Case(s)";
 $TLS_btn_reorder_cat = "Reorder children";
+$TLS_edit_testproject_basic_data="Edit Test Project basic data";
 $TLS_th_notes = "Description";
 $TLS_th_product_name = "Test Project Name";
 
@@ -1045,9 +1054,6 @@ $TLS_warning_delete_requirements = "Are you sure to delete the selected requirem
 
 
 // gui/templates/resultsAllBuilds.tpl
-$TLS_test_status_blocked = "Blocked";
-$TLS_test_status_failed = "Failed";
-$TLS_test_status_passed = "Passed";
 $TLS_th_build = "Build";
 $TLS_th_tc_total = "TC Total";
 
@@ -1082,8 +1088,11 @@ $TLS_title_gen_test_rep = "General Test Plan Metrics";
 
 
 // gui/templates/resultsNavigator.tpl
+$TLS_send_to = "To:";
 $TLS_send_results = "Send results";
+$TLS_subject = "Subject:";
 $TLS_title_active_build = "Active Build";
+$TLS_title_report_type="Report type";
 $TLS_via_email = "per eMail";
 
 
@@ -1350,12 +1359,19 @@ $TLS_caption_user_details = "User details";
 $TLS_th_active = "Active";
 $TLS_th_password = "Password";
 $TLS_th_role = "Role";
+$TLS_warning_empty_login      = "Please enter a login";
+$TLS_warning_empty_first_name = "Please enter a name";
+$TLS_warning_empty_last_name  = "Please enter a surname";
+
+
 
 
 
 // gui/templates/usersview.tpl
 $TLS_alt_delete_user = "Really delete the selected user?";
 $TLS_alt_edit_user = "Edit user"; /* 20061231 - franciscom */
+$TLS_order_by_login ="Order by login";
+$TLS_order_by_role_descr ="Order by role description";
 $TLS_warning_delete_user = "Really delete the selected user?";
 
 
@@ -1403,7 +1419,7 @@ $TLS_warning_delete_attachment = "Really delete this attachment?";
 
 
 // gui/templates/planAddTC_m1.tpl
-$TLS_btn_add_remove_selected_tc = "Add/Remove selected Test Case(s)";
+$TLS_btn_add_remove_selected_tc = "Add/Remove selected";
 $TLS_btn_add_selected_tc = "Add selected";
 $TLS_btn_check = "Check";
 $TLS_btn_uncheck = "Uncheck";
@@ -1461,6 +1477,8 @@ $TLS_title_remove_test_from_plan = "Remove tc from test plan";
 
 // gui/templates/tcexport.tpl
 $TLS_export_with_keywords = "Export with keywords";
+$TLS_no_testsuites_to_export = "There are no Test Suites to export";
+$TLS_no_testcases_to_export = "There are no Test Cases to export";
 
 
 

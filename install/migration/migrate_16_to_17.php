@@ -1,7 +1,10 @@
 <?php
 /*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: migrate_16_to_17.php,v 1.7 2007/01/03 22:34:53 franciscom Exp $ 
+$Id: migrate_16_to_17.php,v 1.8 2007/01/15 08:03:18 franciscom Exp $ 
+                      
+20070113 - franciscom -                      
+fixed migration of results.
 
 20070103 - franciscom -
 added missing processing of keyword-tc links
@@ -25,7 +28,7 @@ define('FEEDBACK_STEP',2500);
 
 
 session_start();
-set_time_limit(60*30); // set_time_limit(t) -> t in seconds
+set_time_limit(60*40); // set_time_limit(t) -> t in seconds
 $inst_type = $_SESSION['installationType'];
 $tl_and_version = "TestLink {$_SESSION['testlink_version']} ";
 ?>
@@ -183,8 +186,6 @@ echo '<span>Truncating tables in Testlink 1.7 (target) database. - ' .
      $db_cfg['target']['db_name'] . ' - </span>';
      
 foreach($a_sql as $elem) {$target_db->exec_query($elem);}
-
-//exit();
 // -----------------------------------------------------------------------------------
 
 $msg_click_to_show=' [Click to show details] ';
@@ -344,7 +345,7 @@ echo "<a onclick=\"return DetailController.toggle('details-tctpa')\" href=\"tpla
 <img src='../img/icon-foldout.gif' align='top' title='show/hide'>Test case -> test plan assignments:</a>";
 echo '<div class="detail-container" id="details-tctpa" style="display: none;">';
 
-$sql="SELECT tplan.name as tplan_name,tplan.id as projid,k.compid,tc.mgttcid AS MGTTCID " .
+$sql="SELECT tplan.name as tplan_name,tplan.id as projid,k.compid,tc.mgttcid AS mgttcid " .
      "FROM component c,category k,testcase tc," .
      "     mgtcomponent mc, mgtcategory mk,mgttestcase mtc,project tplan " .
      "where c.id=k.compid " .
@@ -371,12 +372,19 @@ echo "</div><p>";
 echo "<a onclick=\"return DetailController.toggle('details-results')\" href=\"tplan/\">
 <img src='../img/icon-foldout.gif' align='top' title='show/hide'>Executions results:</a>";
 echo '<div class="detail-container" id="details-results" style="display: none;">';
-$sql="SELECT MGT.id as MGTTCID, R.tcid, R.build_id,R.daterun," .
+
+// 20070113 - franciscoM
+// added filter on status, because executions with NOT RUN will not be migrated
+// 
+$sql="SELECT MGT.id as mgttcid, R.tcid, R.build_id,R.daterun," .
      "R.runby,R.notes,R.status " .
      "FROM mgttestcase MGT,testcase TC,results R " .
      "WHERE TC.mgttcid=MGT.id " .
-     "AND   TC.id=R.tcid ";
-$execs=$source_db->fetchRowsIntoMap($sql,'MGTTCID');
+     "AND   TC.id=R.tcid  AND R.status <> 'n'" .
+     " ORDER BY tcid,build_id";
+echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
+
+$execs=$source_db->get_recordset($sql);
 if(is_null($execs)) 
 {
 		echo "<span class='notok'>There are no results to be migrated!</span></b>";
@@ -385,14 +393,14 @@ else
 {
   migrate_results($source_db,$target_db,$execs,$builds,$users,$map_tc_tcversion,$old_new);
 }
-echo "</div><p>";
+//echo "</div><p>";
 
 
 
 echo "<a onclick=\"return DetailController.toggle('details-bugs')\" href=\"tplan/\">
 <img src='../img/icon-foldout.gif' align='top' title='show/hide'>Executions bugs:</a>";
 echo '<div class="detail-container" id="details-bugs" style="display: none;">';
-$sql="SELECT bugs.tcid,bugs.build_id,bugs.bug,mgt.id AS MGTTCID " .
+$sql="SELECT bugs.tcid,bugs.build_id,bugs.bug,mgt.id AS mgttcid " .
      "FROM bugs,mgttestcase mgt,testcase t " .
      "WHERE bugs.tcid=t.id " .
      "AND   t.mgttcid=mgt.id";
@@ -775,13 +783,13 @@ function migrate_tc_specs(&$source_db,&$target_db,&$items,&$users)
      $items_processed++;
      if( ($items_processed % FEEDBACK_STEP)== 0 )
      {
-       echo str_pad($msg,4096);  // from PHP manual notes
-       echo str_pad('<br><span class="processed">Part I - Processed: ' . $items_processed . " - " . date("H:i:s") . "</span><br>",4096);
+       //echo str_pad($msg,4096);  // from PHP manual notes
+       //echo str_pad('<br><span class="processed">Part I - Processed: ' . $items_processed . " - " . date("H:i:s") . "</span><br>",4096);
        flush(); 
        $msg='';
      } 
   }
-  echo $msg;
+  //echo $msg;
   echo str_pad("Finished Part I -" . date("H:i:s"),4096);
   flush(); 
   
@@ -819,13 +827,13 @@ function migrate_tc_specs(&$source_db,&$target_db,&$items,&$users)
      $items_processed++;
      if( ($items_processed % FEEDBACK_STEP)== 0 )
      {
-       echo str_pad($msg,4096);  // from PHP manual notes
+       //echo str_pad($msg,4096);  // from PHP manual notes
        echo str_pad('<br><span class="processed">Part II - Processed: ' . $items_processed . " - " . date("H:i:s") . "</span><br>",4096);
        flush(); 
        $msg='';
      } 
   }
-  echo $msg;
+  //echo $msg;
   flush(); 
   
   echo "Test Case Specifications MIGRATION ENDED" . date("H:i:s") . "<br>";
@@ -1026,20 +1034,30 @@ function create_build(&$db,$build_id,$buildName,$testplanID,$notes = '')
 } // end function
 
 
-// 20060726 - franciscom
+
+/*
+  function: migrate_results
+
+  args :
+  
+  returns: 
+
+*/
 function migrate_results(&$source_db,&$target_db,&$execs,&$builds,&$users,&$tc_tcversion,&$old_new)
 {
 	$map_tc_status = config_get('tc_status');
 	$db_now = $target_db->db_now();
 	$admin_id=1;
  
-  foreach($execs as $item_id => $idata)
+  echo "Quantity of results to migrate: " . count($execs) . "<br>";
+
+  foreach($execs as $idata)
   {
     $old_tplan_id=$builds[$idata['build_id']]['projid'];
     $tplan_id=$old_new['tplan'][intval($old_tplan_id)];
     $build_id=$old_new['build'][$idata['build_id']];
     $has_been_executed = ($idata['status'] != $map_tc_status['not_run'] ? TRUE : FALSE);
-	  $tcversion_id=$tc_tcversion[$idata['MGTTCID']];
+	  $tcversion_id=$tc_tcversion[$idata['mgttcid']];
    
 	  if($has_been_executed)
 	  { 
@@ -1051,10 +1069,24 @@ function migrate_results(&$source_db,&$target_db,&$execs,&$builds,&$users,&$tc_t
 				     "{$tplan_id}, {$tcversion_id},'" . $idata['daterun'] . "','{$my_notes}')";
 			$target_db->exec_query($sql);  	     
 	  }
+	  else
+	  {
+	    echo "<pre>Not migrated ";  
+	    echo("status=" . $idata['status'] . " TCID/mgttcid=" . $idata['TCID'] . "/" . $idata['mgttcid']); echo "</pre><br>";  
+	  }
  }
 } // end function
 
-// 20060727 - franciscom
+
+/*
+  function: migrate_tplan_contents
+            migrate Test plan contents
+
+  args :
+  
+  returns: 
+
+*/
 function migrate_tplan_contents(&$source_db,&$target_db,&$tplan_elems,&$tc_tcversion,&$old_new)
 {
   $qta_loops=count($tplan_elems);
@@ -1063,7 +1095,7 @@ function migrate_tplan_contents(&$source_db,&$target_db,&$tplan_elems,&$tc_tcver
   foreach($tplan_elems as $idata)
   {
     $tplan_id=$old_new['tplan'][intval($idata['projid'])];
-	  $tcversion_id=$tc_tcversion[$idata['MGTTCID']];
+	  $tcversion_id=$tc_tcversion[$idata['mgttcid']];
     $sql = "INSERT INTO testplan_tcversions " .
            "(testplan_id,tcversion_id) " .
            "VALUES({$tplan_id},{$tcversion_id})";
@@ -1072,7 +1104,15 @@ function migrate_tplan_contents(&$source_db,&$target_db,&$tplan_elems,&$tc_tcver
 } // end function
 
 
-// 20060730 - franciscom
+/*
+  function: migrate_tesplan_assignments
+            
+
+  args :
+  
+  returns: 
+
+*/
 function migrate_tesplan_assignments(&$source_db,&$target_db,&$user_tplans,&$old_new)
 {
   define('NO_RIGHTS',3);
@@ -1110,6 +1150,16 @@ function migrate_tesplan_assignments(&$source_db,&$target_db,&$user_tplans,&$old
 } // end function
 
 
+
+/*
+  function: migrate_prules
+            migrate Priority rules
+
+  args :
+  
+  returns: 
+
+*/
 function migrate_prules(&$source_db,&$target_db,&$prules,&$old_new)
 {
   foreach($prules as $item_id => $idata)
@@ -1146,7 +1196,7 @@ function migrate_bugs($source_db,$target_db,$bugs,$builds,$map_tc_tcversion,$old
 {
   foreach($bugs as $bdata)
   {
-     $tcversion_id=$map_tc_tcversion[$bdata['MGTTCID']];
+     $tcversion_id=$map_tc_tcversion[$bdata['mgttcid']];
      $sql="SELECT id FROM executions " .
           "WHERE tcversion_id={$tcversion_id} " .
           "AND   build_id={$bdata['build_id']}";

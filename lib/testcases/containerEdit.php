@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * @version $Revision: 1.52 $
- * @modified $Date: 2007/01/05 13:57:30 $ by $Author: franciscom $
+ * @version $Revision: 1.53 $
+ * @modified $Date: 2007/01/15 08:04:54 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * 20061231 - franciscom - problems with test project test suite reorder
@@ -309,6 +309,7 @@ else if($action == 'reorder_testsuites')
 
  	if (!sizeof($children))
 		$children = null;
+		
 	$smarty->assign('arraySelect', $children);
 	$smarty->assign('objectID', $object_id);
   $smarty->assign('object_name', $object_name);

@@ -1,15 +1,68 @@
 {* 
 Testlink: smarty template - 
-$Id: usersedit.tpl,v 1.6 2006/11/13 23:17:39 havlat Exp $ 
+$Id: usersedit.tpl,v 1.7 2007/01/15 08:01:26 franciscom Exp $ 
 *}
 {* 
+20070114 - franciscom - 
+1. using smarty config file
+2. improved management of default role id
+
+                      
 20060425 - franciscom - better management of default locale 
 20050913 - fm - BUGID 0000103: Localization is changed but not strings
 20050815 - changed action to updated 
 *}
-{include file="inc_head.tpl" jsValidate="yes"}
+{include file="inc_head.tpl" jsValidate="yes" openhead="yes"}
+
+
+{literal}
+<script type="text/javascript">
+{/literal}
+var warning_empty_login      = "{lang_get s='warning_empty_login'}";
+var warning_empty_first_name = "{lang_get s='warning_empty_first_name'}";
+var warning_empty_last_name  = "{lang_get s='warning_empty_last_name'}";
+
+var warning_empty_pwd = "{lang_get s='warning_empty_pwd'}";
+var warning_different_pwd = "{lang_get s='warning_different_pwd'}";
+var warning_enter_less1 = "{lang_get s='warning_enter_less1'}";
+var warning_enter_at_least1 = "{lang_get s='warning_enter_at_least1'}";
+var warning_enter_at_least2 = "{lang_get s='warning_enter_at_least2'}";
+var warning_enter_less2 = "{lang_get s='warning_enter_less2'}";
+
+{literal}
+function validateForm(f)
+{
+  if (isWhitespace(f.login.value)) 
+  {
+      alert(warning_empty_login);
+      selectField(f, 'login');
+      return false;
+  }
+
+  if (isWhitespace(f.first.value)) 
+  {
+      alert(warning_empty_first_name);
+      selectField(f, 'first');
+      return false;
+  }
+  
+  if (isWhitespace(f.last.value)) 
+  {
+      alert(warning_empty_last_name);
+      selectField(f, 'last');
+      return false;
+  }
+  return true;
+}
+</script>
+{/literal}
+
+
+
+</head>
 
 <body>
+{config_load file="input_dimensions.conf" section='login'}
 
 <h1>{lang_get s='title_user_mgmt'} - {lang_get s='title_account_settings'} </h1>
 
@@ -35,53 +88,44 @@ $Id: usersedit.tpl,v 1.6 2006/11/13 23:17:39 havlat Exp $
 
 <div class="workBack">
 
-{literal}
-<script type="text/javascript">
-{/literal}
-var warning_empty_pwd = "{lang_get s='warning_empty_pwd'}";
-var warning_different_pwd = "{lang_get s='warning_different_pwd'}";
-var warning_enter_less1 = "{lang_get s='warning_enter_less1'}";
-var warning_enter_at_least1 = "{lang_get s='warning_enter_at_least1'}";
-var warning_enter_at_least2 = "{lang_get s='warning_enter_at_least2'}";
-var warning_enter_less2 = "{lang_get s='warning_enter_less2'}";
-{literal}
-function valAllText(form)
-{
-	if (valTextLength(form.first,30,1) && valTextLength(form.last,30,1))
-	{
-		return true;
-	}
-	return false;
-}
-</script>
-{/literal}
-
 <h2>{lang_get s='caption_user_details'}</h2>
-<form method="post" action="lib/usermanagement/usersedit.php" onsubmit="return valAllText(this)">
+<form method="post" action="lib/usermanagement/usersedit.php" 
+      name="useredit" onSubmit="javascript:return validateForm(this);">
+      
 	<input type="hidden" name="user_id" value="{$userData.id}" />
 	<input type="hidden" name="user_login" value="{$userData.login}" />
 	<table class="common">
 		<tr>
 			<th>{lang_get s='th_login'}</th>
-			<td><input type="text" name="login" maxlength="30" 
+			<td><input type="text" name="login" size="{#LOGIN_SIZE#}" maxlength="{#LOGIN_MAXLEN#}" 
 			{if $userData neq null}
 				disabled="disabled"
 			{/if}
-			 value="{$userData.login|escape}" /></td>
+			 value="{$userData.login|escape}" />
+      {include file="error_icon.tpl" field="login"}
+			 </td>
 		</tr>
 		<tr>
 			<th>{lang_get s='th_first_name'}</th>
-			<td><input type="text" name="first" value="{$userData.first|escape}" maxlength="30" /></td></tr>
+			<td><input type="text" name="first" value="{$userData.first|escape}" 
+			     size="{#NAMES_SIZE#}" maxlength="{#NAMES_SIZE#}" />
+			     {include file="error_icon.tpl" field="first"}
+			</td></tr>
 		<tr>
 			<th>{lang_get s='th_last_name'}</th>
-			<td><input type="text" name="last" value="{$userData.last|escape}" maxlength="30" /></td>
+			<td><input type="text" name="last" value="{$userData.last|escape}" 
+			     size="{#NAMES_SIZE#}" maxlength="{#NAMES_SIZE#}" />
+ 			     {include file="error_icon.tpl" field="last"}
+			     </td>
 		</tr>
 
 		{if $userData eq null}
 		     <tr>
 			     <th>{lang_get s='th_password'}:</th>
 			    {if $external_password_mgmt eq 0 }
-		        <td><input type="password" name="password" maxlength="32" /></td>
+		        <td><input type="password" name="password" 
+		                   size="{#PASSWD_SIZE#}" 
+		                   maxlength="{#PASSWD_SIZE#}" /></td>
 		      {else}      
             <td>{lang_get s='password_mgmt_is_external'}</td>
 		      {/if}      
@@ -91,13 +135,20 @@ function valAllText(form)
    
 		<tr>
 			<th>{lang_get s='th_email'}</th>
-			<td><input type="text" name="email" value="{$userData.email|escape}" size="50" maxlength="100" /></td>
+			<td><input type="text" name="email" value="{$userData.email|escape}" 
+			           size="{#EMAIL_SIZE#}" maxlength="{#EMAIL_MAXLEN#}" /></td>
 		</tr>
 		<tr>
 			<th>{lang_get s='th_role'}:</th>
 			<td>
+			  {* 20070114 - franciscom *}
+  	    {assign var=selected_role value=$userData.role_id}
+			  {if $userData.role_id eq 0}
+          {assign var=selected_role value=$smarty.const.TL_DEFAULT_ROLEID}	  
+			  {/if}
 				<select name="rights_id"> 
-				{html_options options=$optRights selected=$userData.role_id}
+				{html_options options=$optRights 
+				              selected=$selected_role}
 				</select>
 			</td>
 		</tr>

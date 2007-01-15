@@ -1,6 +1,8 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
-# $Id: testlink_create_default_data.sql,v 1.7 2007/01/06 15:16:26 franciscom Exp $
+# $Id: testlink_create_default_data.sql,v 1.8 2007/01/15 08:03:18 franciscom Exp $
 # SQL script - create default data (rights & admin account)
+#
+# 20070113 - franciscom - new node_types
 #
 # 20061231 - franciscom - new rights: cfield_view,cfield_management
 # 20060908 - franciscom - values for tables:
@@ -22,6 +24,10 @@ INSERT INTO `node_types` (id,description) VALUES (2, 'testsuite');
 INSERT INTO `node_types` (id,description) VALUES (3, 'testcase');
 INSERT INTO `node_types` (id,description) VALUES (4, 'testcase_version');
 INSERT INTO `node_types` (id,description) VALUES (5, 'testplan');
+
+# 20070113 - franciscom
+INSERT INTO `node_types` (id,description) VALUES (6, 'requirement_spec');
+INSERT INTO `node_types` (id,description) VALUES (7, 'requirement');
 
 
 # Roles -

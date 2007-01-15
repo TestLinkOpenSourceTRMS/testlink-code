@@ -1,6 +1,6 @@
 /* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: testlink.css,v 1.5 2006/11/13 07:06:50 franciscom Exp $ 
+$Id: testlink.css,v 1.6 2007/01/15 08:02:58 franciscom Exp $ 
 Purpose: main css - theme m1
                   
 20060819 - franciscom - minor adjustemnts
@@ -16,9 +16,13 @@ body {
   margin:			0px;
 }
 
+img {
+	border: 		none;
+}
 
-/***** Title + Menu bar ***********************************/
-div.tlTitle {
+/* ----------------------------------------------------------------- */
+/*    Title + Menu bar                                               */
+div.menu_title {
 	font-stretch:	wider;
 	padding:		1px;
 }
@@ -31,12 +35,14 @@ div.menu_bar {
 	padding: 		1px 5px;
 }
 
-select.tlcombo1 {
+select.menu_combo {
 	background: 	#EEE;
 	border-style:	none;
 	font-size:	 	smaller;
 	font-weight:    bold;
 }
+/* ----------------------------------------------------------------- */
+
 
 /* ----------------------------------------------------------------- */
 /*    main page                                                      */
@@ -164,8 +170,18 @@ div.groupBtn input {
 
 /* show results of SQL actions or important information for user */
 div.error, .info {
-	font-size:		85%;
+	font-size:		110%;
 	text-align:		center;
+	color:			red;
+	font-weight:    bold;
+	padding: 		2px;
+}
+
+/* 20061229 - franciscom */
+div.warning_soft
+{
+	text-align:		center;
+	background-color: white;
 	color:			red;
 	font-weight:    bold;
 	padding: 		2px;
@@ -320,6 +336,23 @@ table.invisible {
 }
 
 
+/* 20060402 - franciscom */
+table.exec_history {
+	background:     #EEE;
+	border: 		thin solid black;
+	font-size:		90%;
+	margin:			20px;
+	width:			95%;
+}
+
+/* 20060402 - franciscom */
+table.exec_history th {
+	background:     #CCC;
+	border-bottom:	1px solid black;
+	padding:		2px;
+}
+
+
 /***** Special button *****/
 a.tlButton {
 	background:		#CDE;
@@ -334,48 +367,7 @@ a.tlButton:hover {
 } 
 
 
-/***** EXECUTION & RESULTS ****************************************/
 
-/* colors for results (pass=green, fail=red, blocked=blue, not run=black, n/a=purple) */
-.green {
-	color:			green;
-}
-.red {
-	color:			red;
-}
-.blue {
-	color:			blue;
-}
-.black {
-	color:			black;
-}
-.purple {
-	color:			purple;
-}
-.white {
-	color:			white;
-}
-.bgGreen, div.passBox {
-	background:		green;
-}
-.bgRed, div.failBox {
-	background:		red;
-}
-.bgBlue, div.blockedBox {
-	background:		blue;
-}
-.bgBlack, div.notRunBox {
-	background:		black;
-}
-.bgPurple {
-	background:		purple;
-}
-
-div.passBox, div.failBox, div.blockedBox, div.notRunBox {
-	color: 			white;
-	margin: 		12px;
-	padding: 		12px;
-}
 
 
 /* execution boxes (result, test scenario, notes) */
@@ -383,7 +375,7 @@ div.resultBox {
 	background: 	white;
 	border: 		medium solid grey;
 	color: 			black;
-	margin: 		12px;
+	margin: 		0px 12px 12px 12px;
 	padding: 		12px;
 }
 
@@ -414,7 +406,19 @@ img.arrow {
 
 pre
 {
-		FONT-FAMILY: 'Trebuchet MS', Verdana, Arial, sans-serif;
+	font-family : 	Arial, Helvetica, sans-serif;
+}
+
+
+/* 20060328 - franciscom - I must to comment this better later :( */
+span.type1 {
+	background:		#059;
+	border: 		1px solid black;
+	color:			white;
+	font-size:		110%;
+	margin-bottom:	4px;
+	padding: 		2px;
+	text-align: 	left;
 }
 
 
@@ -539,4 +543,64 @@ div.test_exec,table.test_exec {
 	padding: 		12px;
 	width: 100%;
 }
+
+/* 
+20061112 - franciscom - to manage status
+*/   
+.passed {
+	color: 			white;
+	background:		green;
+}
+
+.failed {
+	color: 			white;
+	background:		red;
+}
+
+.blocked {
+	color: 			white;
+	background:		blue;
+}
+
+.not_run {
+	color: 			white;
+	background:		black;
+}
+
+.not_available {
+	color: 			black;
+	background:		yellow;
+}
+
+.unknown {
+	color: 			black;
+	background:		cyan;
+}
+
+
+/* 20061230 - franciscom */
+.labelHolder {
+	font-weight: bold;
+}
+
+.legend_container {
+	font-weight: bold;
+}
+
+.custom_field_container {
+  border: thin solid white;
+  padding: 5px;
+}
+
+.option_transfer_container {
+  border: thin solid white;
+  padding: 5px;
+}
+
+
+table.srs_view td {
+	border: 		1px solid black;
+}
+
+
 /* ----------------------------------------------------------------------------- */

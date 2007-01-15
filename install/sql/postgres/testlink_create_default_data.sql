@@ -1,6 +1,9 @@
 --  TestLink Open Source Project - http://testlink.sourceforge.net/
---  $Id: testlink_create_default_data.sql,v 1.1 2006/05/24 07:10:21 franciscom Exp $
+--  $Id: testlink_create_default_data.sql,v 1.2 2007/01/15 08:03:18 franciscom Exp $
 --  SQL script - create default data (rights & admin account)
+--
+--  20070113 - franciscom - new node_types
+--
 --  --------------------------------------------------------
 
 --  admin account 
@@ -15,6 +18,10 @@ INSERT INTO node_types (id,description) VALUES (2, 'testsuite');
 INSERT INTO node_types (id,description) VALUES (3, 'testcase');
 INSERT INTO node_types (id,description) VALUES (4, 'testcase_version');
 INSERT INTO node_types (id,description) VALUES (5, 'testplan');
+
+-- 20070113 - franciscom
+INSERT INTO node_types (id,description) VALUES (6, 'requirement_spec');
+INSERT INTO node_types (id,description) VALUES (7, 'requirement');
 
 
 --  Roles -

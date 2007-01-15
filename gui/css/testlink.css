@@ -1,6 +1,6 @@
 /* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: testlink.css,v 1.18 2007/01/02 13:41:22 franciscom Exp $
+$Id: testlink.css,v 1.19 2007/01/15 08:02:58 franciscom Exp $
 Purpose: main css - theme default
 
 20061020 - franciscom - new warning classes
@@ -556,22 +556,39 @@ div.test_exec,table.test_exec {
 }
 
 /* 
-20061112 - franciscom - to manage status cells
+20061112 - franciscom - to manage status
 */   
-td.passed {
+.passed {
 	color: 			white;
 	background:		green;
 }
 
-td.failed {
+.failed {
 	color: 			white;
 	background:		red;
 }
 
-td.blocked {
+.blocked {
 	color: 			white;
 	background:		blue;
 }
+
+.not_run {
+	color: 			white;
+	background:		black;
+}
+
+.not_available {
+	color: 			black;
+	background:		yellow;
+}
+
+.unknown {
+	color: 			black;
+	background:		cyan;
+}
+
+
 
 /* 20061230 - franciscom */
 .labelHolder {

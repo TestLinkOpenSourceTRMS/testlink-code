@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: cfield_mgr.class.php,v $
- * @version $Revision: 1.6 $
- * @modified $Date: 2007/01/10 15:09:15 $  $Author: franciscom $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2007/01/15 08:04:54 $  $Author: franciscom $
  * @author franciscom
  *
  * 20070110 - franciscom - solved bug set_active()
@@ -45,11 +45,17 @@ class cfield_mgr
      
      
   // only the types listed here can have custom fields
-	var $node_types = array('testproject',
-	                        'testsuite',
-	                        'testcase',
-	                        'testplan');
-
+	//var $node_types = array('testproject',
+	//                        'testsuite',
+	//                        'testcase',
+	//                        'testplan');
+  //
+  // 20070113 - franciscom
+	var $node_types = array('testsuite',
+	                        'testcase');
+  
+  
+  
   // the name of html input will have the following format
   // <name_prefix>_<custom_field_type_id>_<progressive>
   //

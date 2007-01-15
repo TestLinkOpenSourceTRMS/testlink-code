@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: const.inc.php,v $
  *
- * @version $Revision: 1.2 $
- * @modified $Date: 2007/01/11 16:07:32 $ by $Author: havlat $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2007/01/15 08:03:59 $ by $Author: franciscom $
  * @author Martin Havlát
  *
  * SCOPE:
@@ -142,7 +142,8 @@ define("TL_REPOSITORY_TYPE_FS",2);
 define("TL_REPOSITORY_COMPRESSIONTYPE_NONE",1);
 define("TL_REPOSITORY_COMPRESSIONTYPE_GZIP",2);
 
-/** @TODO description */
+
+// Two models to manage attachment interface in the execution screen
 $att_model_m1->show_upload_btn = true;
 $att_model_m1->show_title = true;
 $att_model_m1->num_cols = 4;
@@ -157,7 +158,9 @@ $att_model_m2->show_upload_column = true;
 // -------------------------------------------------------------------
 /** [MISC] */
 
-/* These are the possible TestCase statuses */
+// These are the possible Test Case statuses
+// See also $g_tc_status_for_ui
+//
 $g_tc_status = array (
 	"failed"        => 'f',
 	"blocked"       => 'b',
@@ -168,9 +171,15 @@ $g_tc_status = array (
 	"all"           => 'all'
 ); 
 
+// Please if you add an status you need to add a corresponding CSS Class
+// in the CSS files (see the gui directory)
+$g_tc_status_css = array_flip($g_tc_status);
+
+
 // 20060528 - franciscom
 // Used to generate radio and buttons at user interface level.
-// Order is important
+// Order is important, because fixed the order on User Interface
+//
 // key   => verbose status as defined in $g_tc_status
 // value => string id defined in the strings.txt file, 
 //          used to localize the strings.
@@ -182,18 +191,16 @@ $g_tc_status_for_ui = array(
 	"blocked" => "test_status_blocked"
 );
 
-$g_tc_status_css = array_flip($g_tc_status);
+/*
+$g_tc_status_for_ui = array(
+	"not_run" => "test_status_not_run",
+	"not_available" => "test_status_not_available",
+	"passed"  => "test_status_passed",
+	"failed"  => "test_status_failed",
+	"blocked" => "test_status_blocked"
+);
+*/
 
-//20050508 - fm - TestCase Status Description -> color
-$g_tc_sd_color = array ( 
-	"failed"        => 'red',
-	"blocked"       => 'blue',
-	"passed"        => 'green',
-	"not_run"       => 'black',
-	"not_available" => 'yellow',
-	"unknown"       => 'black',
-	"all"           => 'cyan'
-); 
 
 define("TL_ROLES_GUEST",5);
 define("TL_ROLES_NONE",3);

@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: containerView.tpl,v 1.28 2006/12/31 18:20:49 franciscom Exp $ *}
+{* $Id: containerView.tpl,v 1.29 2007/01/15 08:01:57 franciscom Exp $ *}
 {* 
 Purpose: smarty template - view test specification containers 
 
@@ -41,7 +41,9 @@ Purpose: smarty template - view test specification containers
 			<th>{lang_get s='th_product_name'}</th>
 		</tr>
 		<tr>
-			<td>{$container_data.name|escape}</td>
+			<td><a href="lib/project/projectedit.php" 
+			       target="mainframe"
+			       title="{lang_get s='edit_testproject_basic_data'}">{$container_data.name|escape}</a></td>
 		</tr>
 		<tr>
 			<th>{lang_get s='th_notes'}</th>

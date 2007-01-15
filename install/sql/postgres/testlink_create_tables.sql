@@ -1,12 +1,14 @@
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.2 2006/12/29 19:55:08 schlundus Exp $
+-- $Id: testlink_create_tables.sql,v 1.3 2007/01/15 08:03:18 franciscom Exp $
 --
 -- SQL script - create db tables for TL on Postgres   
 -- 
 --
 -- 
 -- Rev :
+--       20070113 - franciscom - table cfield_testprojects added fields
+--                               required_on_design,required_on_execution
 --       20060515 - franciscom - creation
 --
 -- Table structure for table `attachments`
@@ -78,12 +80,17 @@ CREATE INDEX "cfield_node_types_idx_custom_fields_assign" ON "cfield_node_types"
 --
 CREATE TABLE "cfield_testprojects" (  "field_id" BIGINT NOT NULL DEFAULT '0',
   "testproject_id" BIGINT NOT NULL DEFAULT '0',
+  "display_order" SMALLINT unsigned NOT NULL default '1',
+  "active" INT2 NOT NULL default '1',
+  "required_on_design" INT2 NOT NULL default '0',
+  "required_on_execution" INT2 NOT NULL default '0',
+
   PRIMARY KEY ("field_id","testproject_id")
 ); 
 
 
 --
--- Table structure for table `custom_fields`
+-- Table structure for table "custom_fields"
 --
 CREATE TABLE "custom_fields" (  "id" SERIAL NOT NULL ,
   "name" VARCHAR(64) NOT NULL DEFAULT '',
@@ -104,7 +111,7 @@ CREATE INDEX "custom_fields_idx_custom_fields_name" ON "custom_fields" ("name");
 
 
 --
--- Table structure for table `db_version`
+-- Table structure for table "db_version"
 --
 CREATE TABLE "db_version" (  "version" VARCHAR(50) NOT NULL DEFAULT 'unknown',
   "upgrade_ts" TIMESTAMP NOT NULL DEFAULT now() 
@@ -114,7 +121,7 @@ CREATE TABLE "db_version" (  "version" VARCHAR(50) NOT NULL DEFAULT 'unknown',
 
 
 --
--- Table structure for table `execution_bugs`
+-- Table structure for table "execution_bugs"
 --
 CREATE TABLE "execution_bugs" (  "execution_id" BIGINT NOT NULL DEFAULT '0',
   "bug_id" VARCHAR(16) NOT NULL DEFAULT '0',
@@ -123,7 +130,7 @@ CREATE TABLE "execution_bugs" (  "execution_id" BIGINT NOT NULL DEFAULT '0',
 
 
 --
--- Table structure for table `executions`
+-- Table structure for table "executions"
 --
 CREATE TABLE "executions" (  "id" BIGSERIAL NOT NULL ,
   "build_id" INTEGER NOT NULL DEFAULT '0',
@@ -138,7 +145,7 @@ CREATE TABLE "executions" (  "id" BIGSERIAL NOT NULL ,
 
 
 --
--- Table structure for table `keywords`
+-- Table structure for table "keywords"
 --
 CREATE TABLE "keywords" (  "id" BIGSERIAL NOT NULL ,
   "keyword" VARCHAR(100) NOT NULL DEFAULT '',
@@ -151,7 +158,7 @@ CREATE INDEX "keywords_keyword" ON "keywords" ("keyword");
 
 
 --
--- Table structure for table `milestones`
+-- Table structure for table "milestones"
 --
 CREATE TABLE "milestones" (  "id" BIGSERIAL NOT NULL ,
   "testplan_id" BIGINT NOT NULL DEFAULT '0',
@@ -166,7 +173,7 @@ CREATE INDEX "milestones_testplan_id" ON "milestones" ("testplan_id");
 
 
 --
--- Table structure for table `node_types`
+-- Table structure for table "node_types"
 --
 CREATE TABLE "node_types" (  "id" BIGSERIAL NOT NULL ,
   "description" VARCHAR(100) NOT NULL DEFAULT 'testproject',
@@ -175,7 +182,7 @@ CREATE TABLE "node_types" (  "id" BIGSERIAL NOT NULL ,
 
 
 --
--- Table structure for table `nodes_hierarchy`
+-- Table structure for table "nodes_hierarchy"
 --
 CREATE TABLE "nodes_hierarchy" (  "id" BIGSERIAL NOT NULL ,
   "name" VARCHAR(100) NULL DEFAULT NULL,
@@ -187,7 +194,7 @@ CREATE TABLE "nodes_hierarchy" (  "id" BIGSERIAL NOT NULL ,
 
 
 --
--- Table structure for table `priorities`
+-- Table structure for table "priorities"
 --
 CREATE TABLE "priorities" (  "id" BIGSERIAL NOT NULL ,
   "testplan_id" BIGINT NOT NULL DEFAULT '0',
@@ -199,7 +206,7 @@ CREATE INDEX "priorities_testplan_id" ON "priorities" ("testplan_id");
 
 
 --
--- Table structure for table `req_coverage`
+-- Table structure for table "req_coverage"
 --
 CREATE TABLE "req_coverage" (  "req_id" INTEGER NOT NULL DEFAULT '0',
   "testcase_id" INTEGER NOT NULL DEFAULT '0'
@@ -208,7 +215,7 @@ CREATE INDEX "req_coverage_req_testcase" ON "req_coverage" ("req_id","testcase_i
 
 
 --
--- Table structure for table `req_specs`
+-- Table structure for table "req_specs"
 --
 CREATE TABLE "req_specs" (  "id" BIGSERIAL NOT NULL ,
   "testproject_id" BIGINT NOT NULL DEFAULT '0',
@@ -226,7 +233,7 @@ CREATE INDEX "req_specs_testproject_id" ON "req_specs" ("testproject_id");
 
 
 --
--- Table structure for table `requirements`
+-- Table structure for table "requirements"
 --
 CREATE TABLE "requirements" (  "id" BIGSERIAL NOT NULL ,
   "srs_id" BIGINT NOT NULL DEFAULT '0',
@@ -246,7 +253,7 @@ CREATE INDEX "requirements_req_doc_id" ON "requirements" ("req_doc_id");
 
 
 --
--- Table structure for table `rights`
+-- Table structure for table "rights"
 --
 CREATE TABLE "rights" (  "id" BIGSERIAL NOT NULL ,
   "description" VARCHAR(100) NOT NULL DEFAULT '',
@@ -256,7 +263,7 @@ CREATE TABLE "rights" (  "id" BIGSERIAL NOT NULL ,
 
 
 --
--- Table structure for table `risk_assignments`
+-- Table structure for table "risk_assignments"
 --
 CREATE TABLE "risk_assignments" (  "id" BIGSERIAL NOT NULL ,
   "testplan_id" BIGINT NOT NULL DEFAULT '0',
@@ -268,7 +275,7 @@ CREATE TABLE "risk_assignments" (  "id" BIGSERIAL NOT NULL ,
 
 
 --
--- Table structure for table `role_rights`
+-- Table structure for table "role_rights"
 --
 CREATE TABLE "role_rights" (  "role_id" INTEGER NOT NULL DEFAULT '0',
   "right_id" INTEGER NOT NULL DEFAULT '0',
@@ -279,7 +286,7 @@ CREATE TABLE "role_rights" (  "role_id" INTEGER NOT NULL DEFAULT '0',
 
 
 --
--- Table structure for table `roles`
+-- Table structure for table "roles"
 --
 CREATE TABLE "roles" (  "id" BIGSERIAL NOT NULL ,
   "description" VARCHAR(100) NOT NULL DEFAULT '',
@@ -290,7 +297,7 @@ CREATE TABLE "roles" (  "id" BIGSERIAL NOT NULL ,
 
 
 --
--- Table structure for table `tcversions`
+-- Table structure for table "tcversions"
 --
 CREATE TABLE "tcversions" (  "id" BIGINT NOT NULL DEFAULT '0',
   "version" INTEGER NOT NULL DEFAULT '1',
@@ -310,7 +317,7 @@ CREATE TABLE "tcversions" (  "id" BIGINT NOT NULL DEFAULT '0',
 
 
 --
--- Table structure for table `testcase_keywords`
+-- Table structure for table "testcase_keywords"
 --
 CREATE TABLE "testcase_keywords" (  "testcase_id" BIGINT NOT NULL DEFAULT '0',
   "keyword_id" BIGINT NOT NULL DEFAULT '0',
@@ -319,7 +326,7 @@ CREATE TABLE "testcase_keywords" (  "testcase_id" BIGINT NOT NULL DEFAULT '0',
 
 
 --
--- Table structure for table `testplan_tcversions`
+-- Table structure for table "testplan_tcversions"
 --
 CREATE TABLE "testplan_tcversions" (  "id" BIGSERIAL NOT NULL ,
   "tcversion_id" BIGINT NOT NULL DEFAULT '0',
@@ -330,7 +337,7 @@ CREATE TABLE "testplan_tcversions" (  "id" BIGSERIAL NOT NULL ,
 
 
 --
--- Table structure for table `testplans`
+-- Table structure for table "testplans"
 --
 CREATE TABLE "testplans" (  "id" BIGINT NOT NULL DEFAULT '0',
   "testproject_id" BIGINT NOT NULL DEFAULT '0',
@@ -344,7 +351,7 @@ CREATE INDEX "testplans_testproject_id_active" ON "testplans" ("testproject_id",
 
 
 --
--- Table structure for table `testprojects`
+-- Table structure for table "testprojects"
 --
 CREATE TABLE "testprojects" (  "id" BIGINT NOT NULL DEFAULT '0',
   "notes" TEXT NULL DEFAULT NULL,
@@ -358,7 +365,7 @@ CREATE INDEX "testprojects_id_active" ON "testprojects" ("id","active");
 
 
 --
--- Table structure for table `testsuites`
+-- Table structure for table "testsuites"
 --
 CREATE TABLE "testsuites" (  "id" BIGINT NOT NULL DEFAULT '0',
   "details" TEXT NULL DEFAULT NULL,
@@ -367,7 +374,7 @@ CREATE TABLE "testsuites" (  "id" BIGINT NOT NULL DEFAULT '0',
 
 
 --
--- Table structure for table `user_assignments`
+-- Table structure for table "user_assignments"
 --
 CREATE TABLE "user_assignments" (  "id" BIGSERIAL NOT NULL ,
   "type" BIGINT NOT NULL DEFAULT '0',
@@ -381,7 +388,7 @@ CREATE TABLE "user_assignments" (  "id" BIGSERIAL NOT NULL ,
 
 
 --
--- Table structure for table `user_testplan_roles`
+-- Table structure for table "user_testplan_roles"
 --
 CREATE TABLE "user_testplan_roles" (  "user_id" INTEGER NOT NULL DEFAULT '0',
   "testplan_id" INTEGER NOT NULL DEFAULT '0',
@@ -391,7 +398,7 @@ CREATE TABLE "user_testplan_roles" (  "user_id" INTEGER NOT NULL DEFAULT '0',
 
 
 --
--- Table structure for table `user_testproject_roles`
+-- Table structure for table "user_testproject_roles"
 --
 CREATE TABLE "user_testproject_roles" (  "user_id" INTEGER NOT NULL DEFAULT '0',
   "testproject_id" INTEGER NOT NULL DEFAULT '0',
@@ -401,7 +408,7 @@ CREATE TABLE "user_testproject_roles" (  "user_id" INTEGER NOT NULL DEFAULT '0',
 
 
 --
--- Table structure for table `users`
+-- Table structure for table "users"
 --
 CREATE TABLE "users" (  "id" BIGSERIAL NOT NULL ,
   "login" VARCHAR(30) NOT NULL DEFAULT '',

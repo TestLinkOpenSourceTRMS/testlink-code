@@ -1,8 +1,9 @@
 <?php
 /* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: index.php,v 1.5 2006/08/28 08:33:17 franciscom Exp $ 
+$Id: index.php,v 1.6 2007/01/15 08:03:18 franciscom Exp $ 
 
+20070113 - franciscom - updated version string
 20060218 - franciscom
 */
 
@@ -10,7 +11,7 @@ session_start();
 $_SESSION['session_test'] = 1;
 
 // 20060523 - franciscom - configure before creating a new release
-$_SESSION['testlink_version']='1.7 alpha';
+$_SESSION['testlink_version']='1.7 beta';
 ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">

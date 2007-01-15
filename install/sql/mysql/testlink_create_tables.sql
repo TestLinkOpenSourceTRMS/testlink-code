@@ -1,11 +1,14 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
 # This script is distributed under the GNU General Public License 2 or later.
-# $Id: testlink_create_tables.sql,v 1.11 2007/01/06 15:16:26 franciscom Exp $
+# $Id: testlink_create_tables.sql,v 1.12 2007/01/15 08:03:18 franciscom Exp $
 # SQL script - create db tables for TL   
 #
 # default rights & admin account are created via testlink_create_default_data.sql
 #
 # Rev :
+#       20070113 - franciscom - table cfield_testprojects added fields
+#                               required_on_design,required_on_execution
+# 
 #       20070106 - franciscom - again, and again  'en_GB' as default NOT en_US
 #
 #       20061228 - franciscom - added field active on table cfield_testprojects
@@ -301,6 +304,8 @@ CREATE TABLE `cfield_testprojects` (
   `testproject_id` int(10) unsigned NOT NULL default '0',
   `display_order` smallint(5) unsigned NOT NULL default '1',
   `active` tinyint(1) NOT NULL default '1',
+  `required_on_design` tinyint(1) NOT NULL default '0',
+  `required_on_execution` tinyint(1) NOT NULL default '0',
   PRIMARY KEY  (`field_id`,`testproject_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 

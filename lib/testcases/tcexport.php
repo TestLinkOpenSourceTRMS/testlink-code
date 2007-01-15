@@ -5,10 +5,13 @@
  *
  * Filename $RCSfile: tcexport.php,v $
  *
- * @version $Revision: 1.6 $
- * @modified $Date: 2006/12/31 16:27:09 $ by $Author: franciscom $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2007/01/15 08:04:54 $ by $Author: franciscom $
  *
  * test case and test suites export
+ *
+ * 20070113 - franciscom - added logic to create message when there is 
+ *                         nothing to export.
  *
  * 20061118 - franciscom - using different file name, depending the
  *                         type of exported elements.
@@ -33,6 +36,10 @@ $testprojectName = $_SESSION['testprojectName'];
 
 $exporting_just_one_tc = 0;
 $node_id=$container_id;
+$do_it=1;
+$nothing_todo_msg='';
+$check_children=0;
+
 if($bRecursive)
 {
   // Exporting situations:
@@ -47,8 +54,9 @@ if($bRecursive)
      $container_description=lang_get('testproject');
      $page_title=lang_get('title_tsuite_export_all');
      $fileName = 'all_testsuites.xml';
+     $check_children=1; 
+     $nothing_todo_msg=lang_get('no_testsuites_to_export');
   }
-  
 } 
 else
 {
@@ -68,6 +76,24 @@ else
   {
     $container_description=lang_get('test_suite');
     $page_title=lang_get('title_tc_export_all');
+    $check_children=1;
+    $nothing_todo_msg=lang_get('no_testcases_to_export');
+  }
+}
+
+// 20070113 - franciscom
+if( $check_children )
+{
+  // Check if there is something to export
+  $tree_mgr = New tree($db);
+  $children=$tree_mgr->get_children($node_id, array("testplan" => "exclude_me"));	
+  if( count($children)==0 )
+  {
+      $do_it=0;
+  }
+  else
+  {
+     $nothing_todo_msg='';
   }
 }
 
@@ -113,6 +139,11 @@ if ($bExport)
 }
 
 $smarty = new TLSmarty();
+
+$smarty->assign('do_it',$do_it);
+$smarty->assign('nothing_todo_msg',$nothing_todo_msg);
+
+
 $smarty->assign('object_name',$node['name']);
 
 $smarty->assign('page_title',$page_title);

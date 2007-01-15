@@ -1,9 +1,10 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: mainPage.tpl,v 1.25 2007/01/04 15:27:58 franciscom Exp $     
+ $Id: mainPage.tpl,v 1.26 2007/01/15 08:02:27 franciscom Exp $     
  Purpose: smarty template - main page / site map                 
                                                                  
  rev :                                                 
+       20070113 - franciscom - truncate on test plan name combo box
        20060908 - franciscom - removed assign risk and ownership
                                added define priority
                                added tc exec assignment
@@ -15,6 +16,10 @@
 {include file="inc_head.tpl" popup="yes"}
 
 <body>
+{assign var="cfg_section" value=$smarty.template|replace:".tpl":"" }
+{config_load file="input_dimensions.conf" section=$cfg_section}
+
+
 <h1>{lang_get s='title_testlink_site_map'}</h1>
 {if $securityNotes}
     {include file="inc_msg_from_array.tpl" array_of_msg=$securityNotes arg_css_class="warning_message"}
@@ -43,10 +48,13 @@
         
 		{lang_get s='title_test_plan'}
     {if $countPlans > 0}
-				<select name="testplan" onchange="this.form.submit();">
+				<select name="testplan" onchange="this.form.submit();" style="width:100%;">
 				{section name=tPlan loop=$arrPlans}
 					<option value="{$arrPlans[tPlan].id}" 
-					{$arrPlans[tPlan].selected} >{$arrPlans[tPlan].name|escape}</option>
+					        {$arrPlans[tPlan].selected}
+					        title="{$arrPlans[tPlan].name|escape}">
+					        {$arrPlans[tPlan].name|escape|truncate:#TESTPLAN_TRUNCATE_SIZE#}
+					</option>
 				{/section}
 				</select>
 				{if $testPlanRole neq null}

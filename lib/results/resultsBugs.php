@@ -11,6 +11,8 @@ require_once('../functions/results.class.php');
 require_once("../../lib/functions/lang_api.php");
 // exec.inc.php required by buildBugString()
 require_once('exec.inc.php');
+require_once('displayMgr.php');
+
 testlinkInitPage($db);
 $tp = new testplan($db);
 $tpID = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0 ;
@@ -64,18 +66,6 @@ while($suiteId = key($lastResultMap)) {
 	next($lastResultMap);
 }
 
-
-
-// is output is excel?
-$xls = FALSE;
-if (isset($_GET['format']) && $_GET['format'] =='excel'){
-	$xls = TRUE;
-}
-
-// for excel send header
-if ($xls) {
-	$re->sendXlsHeader();
-}
 
 $smarty = new TLSmarty;
 $smarty->assign('title', lang_get('title_test_report_all_builds'));

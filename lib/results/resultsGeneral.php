@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: resultsGeneral.php,v $
- * @version $Revision: 1.26 $
- * @modified $Date: 2007/01/13 23:43:42 $ by $Author: kevinlevy $
+ * @version $Revision: 1.27 $
+ * @modified $Date: 2007/01/15 00:49:52 $ by $Author: kevinlevy $
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
  * This page show Test Results over all Builds.
@@ -121,6 +121,6 @@ if (!isset($_GET['report_type']))
 	exit();
 }
 
-displayReport('resultsGeneral.tpl', $smarty, $report_type);
+displayReport('resultsGeneral', $smarty, $report_type);
 
 ?>

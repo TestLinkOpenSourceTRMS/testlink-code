@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsByStatus.php,v 1.31 2007/01/13 23:43:42 kevinlevy Exp $ 
+* $Id: resultsByStatus.php,v 1.32 2007/01/15 00:49:52 kevinlevy Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -193,7 +193,7 @@ if (!isset($_GET['report_type']))
 	exit();
 }
 
-displayReport('resultsByStatus.tpl', $smarty, $report_type);
+displayReport('resultsByStatus', $smarty, $report_type);
 
 
 //$smarty->display('resultsByStatus.tpl');

@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsBuild.php,v 1.27 2007/01/13 23:43:42 kevinlevy Exp $ 
+* $Id: resultsBuild.php,v 1.28 2007/01/15 00:49:52 kevinlevy Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * 
@@ -149,6 +149,6 @@ if (!isset($_GET['report_type']))
 	exit();
 }
 
-displayReport('resultsBuild.tpl', $smarty, $report_type, $buildName);
+displayReport('resultsBuild', $smarty, $report_type, $buildName);
 
 ?>

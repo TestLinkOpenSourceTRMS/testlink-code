@@ -2,7 +2,7 @@
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
- * @version $Id: resultsNavigator.php,v 1.21 2007/01/15 01:05:56 kevinlevy Exp $ 
+ * @version $Id: resultsNavigator.php,v 1.22 2007/01/15 01:16:28 kevinlevy Exp $ 
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
  * This page list View of Test Results and Metrics.
@@ -30,12 +30,12 @@ $arrData = array(
 
 $arrReportTypes = array('normal', 'MS Excel', 'HTML email');
 if ($g_bugInterfaceOn)
-	$arrData[] = array('name' => lang_get('link_report_total_bugs'), 'href' => 'resultsBugs.php');
+	$arrData[] = array('name' => lang_get('link_report_total_bugs'), 'href' => 'resultsBugs.php?report_type=');
 
 
 if ($_SESSION['testprojectOptReqs'])
 {
-	$arrData[] = array('name' => lang_get('link_report_reqs_coverage'), 'href' => 'resultsReqs.php');
+	$arrData[] = array('name' => lang_get('link_report_reqs_coverage'), 'href' => 'resultsReqs.php?report_type=');
 }
 
 // this results are related to selected build
@@ -55,7 +55,8 @@ if (isset($_GET['report_type']))
 else
 	$selectedReportType = sizeof($arrReportTypes) ? key($arrReportTypes) : null;
 
-/** comment out until further notice
+/** KL - 20070114
+comment out until further notice
 for now, send email to user
 
 if (isset($_POST['email_to']))

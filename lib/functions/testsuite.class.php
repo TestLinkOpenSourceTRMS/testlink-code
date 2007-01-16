@@ -2,10 +2,11 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testsuite.class.php,v $
- * @version $Revision: 1.23 $
- * @modified $Date: 2007/01/05 13:57:30 $ - $Author: franciscom $
+ * @version $Revision: 1.24 $
+ * @modified $Date: 2007/01/16 16:08:24 $ - $Author: franciscom $
  * @author franciscom
  *
+ * 20070116 - franciscom - BUGID 543
  * 20070102 - franciscom - changes to delete_deep() to support custom fields
  * 20061230 - franciscom - custom field management
  * 20061119 - franciscom - changes in create()
@@ -440,11 +441,14 @@ function delete_deep($id)
   args :
   
   returns: 
+  
+  rev : 
+        20070116 - franciscom - BUGID 543
 
 */
 function getKeywords($id,$kw_id = null)
 {
-	$sql = "SELECT keyword_id,keywords.keyword, keywords.keyword notes
+	$sql = "SELECT keyword_id,keywords.keyword, keywords.keyword AS notes
 	        FROM object_keywords,keywords 
 	        WHERE keyword_id = keywords.id AND fk_id = {$id}";
 	if (!is_null($kw_id))

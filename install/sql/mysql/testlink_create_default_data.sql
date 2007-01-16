@@ -1,5 +1,5 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
-# $Id: testlink_create_default_data.sql,v 1.8 2007/01/15 08:03:18 franciscom Exp $
+# $Id: testlink_create_default_data.sql,v 1.9 2007/01/16 16:50:35 franciscom Exp $
 # SQL script - create default data (rights & admin account)
 #
 # 20070113 - franciscom - new node_types
@@ -86,7 +86,7 @@ INSERT INTO `role_rights` (role_id,right_id) VALUES (5,6 );
 INSERT INTO `role_rights` (role_id,right_id) VALUES (5,8 );
 
 
-# Rights for test dsigner (test dsigner role)
+# Rights for test designer (test dsigner role)
 INSERT INTO `role_rights` (role_id,right_id) VALUES (4,3 );
 INSERT INTO `role_rights` (role_id,right_id) VALUES (4,6 );
 INSERT INTO `role_rights` (role_id,right_id) VALUES (4,7 );

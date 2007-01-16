@@ -1,6 +1,6 @@
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.4 2007/01/16 16:09:01 franciscom Exp $
+-- $Id: testlink_create_tables.sql,v 1.5 2007/01/16 16:24:51 franciscom Exp $
 --
 -- SQL script - create db tables for TL on Postgres   
 -- 
@@ -387,8 +387,8 @@ CREATE TABLE "user_assignments" (  "id" BIGSERIAL NOT NULL ,
   "create_ts" TIMESTAMP NOT NULL DEFAULT now(),
   "status" INTEGER NOT NULL DEFAULT '1',
   PRIMARY KEY ("id")
-  KEY "feature_id" ("feature_id")
 ); 
+CREATE INDEX feature_id ON user_assignments ("feature_id");
 
 
 

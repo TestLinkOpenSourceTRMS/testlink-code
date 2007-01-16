@@ -1,5 +1,5 @@
 --  TestLink Open Source Project - http://testlink.sourceforge.net/
---  $Id: testlink_create_default_data.sql,v 1.3 2007/01/16 16:39:59 franciscom Exp $
+--  $Id: testlink_create_default_data.sql,v 1.4 2007/01/16 17:01:28 franciscom Exp $
 --  SQL script - create default data (rights & admin account)
 --
 --  20070116 - franciscom - added missing assignment values
@@ -69,6 +69,12 @@ INSERT INTO role_rights (role_id,right_id) VALUES (8,10);
 INSERT INTO role_rights (role_id,right_id) VALUES (8,11);
 INSERT INTO role_rights (role_id,right_id) VALUES (8,12);
 INSERT INTO role_rights (role_id,right_id) VALUES (8,13);
+
+-- 20070116 - franciscom
+INSERT INTO role_rights (role_id,right_id) VALUES (8,14);
+INSERT INTO role_rights (role_id,right_id) VALUES (8,15);
+INSERT INTO role_rights (role_id,right_id) VALUES (8,16);
+
 
 --  Rights for guest (guest role)
 INSERT INTO role_rights (role_id,right_id) VALUES (5,3 );

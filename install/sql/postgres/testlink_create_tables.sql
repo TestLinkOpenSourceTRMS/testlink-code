@@ -1,6 +1,6 @@
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.5 2007/01/16 16:24:51 franciscom Exp $
+-- $Id: testlink_create_tables.sql,v 1.6 2007/01/16 16:39:59 franciscom Exp $
 --
 -- SQL script - create db tables for TL on Postgres   
 -- 
@@ -12,6 +12,27 @@
 --       20070113 - franciscom - table cfield_testprojects added fields
 --                               required_on_design,required_on_execution
 --       20060515 - franciscom - creation
+--
+
+--
+-- Table structure for table `assignment_status`
+--
+CREATE TABLE "assignment_status" (  "id" BIGSERIAL NOT NULL ,
+  "description" VARCHAR(100) NOT NULL DEFAULT 'unknown',
+  PRIMARY KEY ("id")
+); 
+
+
+--
+-- Table structure for table `assignment_types`
+--
+CREATE TABLE "assignment_types" (  "id" BIGSERIAL NOT NULL ,
+  "fk_table" VARCHAR(30) NULL DEFAULT '',
+  "description" VARCHAR(100) NOT NULL DEFAULT 'unknown',
+  PRIMARY KEY ("id")
+); 
+
+
 --
 -- Table structure for table `attachments`
 --
@@ -52,7 +73,7 @@ CREATE TABLE "cfield_design_values" (  "field_id" INTEGER NOT NULL DEFAULT '0',
   "value" VARCHAR(255) NOT NULL DEFAULT '',
   PRIMARY KEY ("field_id","node_id")
 ); 
-CREATE INDEX "cfield_design_values_idx_cfield_design_values" ON "cfield_design_values" ("node_id");
+CREATE INDEX "idx_cfield_design_values" ON "cfield_design_values" ("node_id");
 
 
 --
@@ -96,6 +117,7 @@ CREATE TABLE "cfield_testprojects" (  "field_id" BIGINT NOT NULL DEFAULT '0',
 --
 CREATE TABLE "custom_fields" (  "id" SERIAL NOT NULL ,
   "name" VARCHAR(64) NOT NULL DEFAULT '',
+  "label" VARCHAR(64) NOT NULL DEFAULT '',
   "type" SMALLINT NOT NULL DEFAULT '0',
   "possible_values" VARCHAR(255) NOT NULL DEFAULT '',
   "default_value" VARCHAR(255) NOT NULL DEFAULT '',
@@ -192,6 +214,19 @@ CREATE TABLE "nodes_hierarchy" (  "id" BIGSERIAL NOT NULL ,
   "node_order" BIGINT NULL DEFAULT NULL,
   PRIMARY KEY ("id")
 ); 
+CREATE INDEX "nodes_hierarchy_pid_m_nodeorder" ON "nodes_hierarchy" ("parent_id","node_order");
+
+--
+-- Table structure for table `object_keywords`
+--
+
+
+CREATE TABLE "object_keywords" (  "id" BIGINT NOT NULL ,
+  "fk_id" BIGINT NOT NULL DEFAULT '0',
+  "fk_table" VARCHAR(30) NULL DEFAULT '',
+  "keyword_id" BIGINT NOT NULL DEFAULT '0',
+  PRIMARY KEY ("id")
+); 
 
 
 --
@@ -270,6 +305,7 @@ CREATE TABLE "risk_assignments" (  "id" BIGSERIAL NOT NULL ,
   "testplan_id" BIGINT NOT NULL DEFAULT '0',
   "node_id" BIGINT NOT NULL DEFAULT '0',
   "risk" INTEGER NOT NULL DEFAULT '2',
+  "importance" CHAR(1) NOT NULL DEFAULT 'M',
   PRIMARY KEY ("id"),
   UNIQUE ("testplan_id","node_id")
 ); 
@@ -330,10 +366,10 @@ CREATE TABLE "testcase_keywords" (  "testcase_id" BIGINT NOT NULL DEFAULT '0',
 -- Table structure for table "testplan_tcversions"
 --
 CREATE TABLE "testplan_tcversions" (  "id" BIGSERIAL NOT NULL ,
-  "tcversion_id" BIGINT NOT NULL DEFAULT '0',
-  "testplan_id" BIGINT NOT NULL DEFAULT '0',
+ "testplan_id" BIGINT NOT NULL DEFAULT '0',
+ "tcversion_id" BIGINT NOT NULL DEFAULT '0',  
   PRIMARY KEY ("id"),
-  UNIQUE ("tcversion_id","testplan_id")
+  UNIQUE ("testplan_id","tcversion_id")
 ); 
 
 
@@ -430,24 +466,3 @@ CREATE TABLE "users" (  "id" BIGSERIAL NOT NULL ,
   PRIMARY KEY ("id"),
   UNIQUE ("login")
 );
-
-CREATE TABLE "object_keywords" (
-  "id" BIGINT NOT NULL default 0,
-  "fk_id" BIGINT NOT NULL default '0',
-  "fk_table" varchar(30) default '',
-  "keyword_id" BIGINT NOT NULL default '0',
-  PRIMARY KEY ("id")
-);
-
-CREATE TABLE "assignment_types" (
-  "id" BIGINT NOT NULL default 0,
-  "fk_table" varchar(30) default '',
-  "description" varchar(100) NOT NULL default 'unknown',
-  PRIMARY KEY ("id")
-) ;
-
-CREATE TABLE "assignment_status" (
-  "id" BIGINT NOT NULL default 0,
-  "description" varchar(100) NOT NULL default 'unknown',
-  PRIMARY KEY ("id")
-) ;

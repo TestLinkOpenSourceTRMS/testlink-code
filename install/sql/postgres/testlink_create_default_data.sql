@@ -1,7 +1,8 @@
 --  TestLink Open Source Project - http://testlink.sourceforge.net/
---  $Id: testlink_create_default_data.sql,v 1.2 2007/01/15 08:03:18 franciscom Exp $
+--  $Id: testlink_create_default_data.sql,v 1.3 2007/01/16 16:39:59 franciscom Exp $
 --  SQL script - create default data (rights & admin account)
 --
+--  20070116 - franciscom - added missing assignment values
 --  20070113 - franciscom - new node_types
 --
 --  --------------------------------------------------------
@@ -47,6 +48,11 @@ INSERT INTO rights (id,description) VALUES (10,'mgt_view_req'          );
 INSERT INTO rights (id,description) VALUES (11,'mgt_modify_req'        );
 INSERT INTO rights (id,description) VALUES (12,'mgt_modify_product'    );
 INSERT INTO rights (id,description) VALUES (13,'mgt_users'             );
+INSERT INTO rights (id,description) VALUES (14,'role_management'       );
+INSERT INTO rights (id,description) VALUES (15,'user_role_assignment'  );
+INSERT INTO rights (id,description) VALUES (16,'mgt_testplan_create');
+INSERT INTO rights (id,description) VALUES (17,'cfield_view');
+INSERT INTO rights (id,description) VALUES (18,'cfield_management');
 
 
 --  Rights for Administrator (admin role)
@@ -102,10 +108,21 @@ INSERT INTO role_rights (role_id,right_id) VALUES (9,8 );
 INSERT INTO role_rights (role_id,right_id) VALUES (9,9 );
 INSERT INTO role_rights (role_id,right_id) VALUES (9,11);
 
+-- assignment_status
+INSERT INTO "assignment_status" ("id","description") VALUES (1,'open');
+INSERT INTO "assignment_status" ("id","description") VALUES (2,'closed');
+INSERT INTO "assignment_status" ("id","description") VALUES (3,'completed');
+INSERT INTO "assignment_status" ("id","description") VALUES (4,'todo_urgent');
+INSERT INTO "assignment_status" ("id","description") VALUES (5,'todo');
+
+-- assignment_types
+INSERT INTO "assignment_types" ("id","fk_table","description") VALUES (1,'testplan_tcversions','testcase_execution');
+INSERT INTO "assignment_types" ("id","fk_table","description") VALUES (2,'tcversions','testcase_review');
+
 
 
 --  Database version
 --
 -- Dumping data for table db_version
 --
-INSERT INTO "db_version" ("version","upgrade_ts") VALUES ('1.7.0 Alpha','2006-05-09 19:25:35');
+INSERT INTO "db_version" ("version","upgrade_ts") VALUES ('1.7.0 Beta 2','2007-01-06 19:25:35');

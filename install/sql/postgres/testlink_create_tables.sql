@@ -1,12 +1,14 @@
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.3 2007/01/15 08:03:18 franciscom Exp $
+-- $Id: testlink_create_tables.sql,v 1.4 2007/01/16 16:09:01 franciscom Exp $
 --
 -- SQL script - create db tables for TL on Postgres   
 -- 
 --
 -- 
 -- Rev :
+--       20070116 - franciscom - fixed BUGID 545
+--
 --       20070113 - franciscom - table cfield_testprojects added fields
 --                               required_on_design,required_on_execution
 --       20060515 - franciscom - creation
@@ -80,7 +82,7 @@ CREATE INDEX "cfield_node_types_idx_custom_fields_assign" ON "cfield_node_types"
 --
 CREATE TABLE "cfield_testprojects" (  "field_id" BIGINT NOT NULL DEFAULT '0',
   "testproject_id" BIGINT NOT NULL DEFAULT '0',
-  "display_order" SMALLINT unsigned NOT NULL default '1',
+  "display_order" INTEGER NOT NULL default '1',
   "active" INT2 NOT NULL default '1',
   "required_on_design" INT2 NOT NULL default '0',
   "required_on_execution" INT2 NOT NULL default '0',
@@ -100,7 +102,6 @@ CREATE TABLE "custom_fields" (  "id" SERIAL NOT NULL ,
   "valid_regexp" VARCHAR(255) NOT NULL DEFAULT '',
   "length_min" INTEGER NOT NULL DEFAULT '0',
   "length_max" INTEGER NOT NULL DEFAULT '0',
-  "display_order" INTEGER NOT NULL DEFAULT '0',
   "show_on_design" SMALLINT NOT NULL DEFAULT '1',
   "enable_on_design" SMALLINT NOT NULL DEFAULT '1',
   "show_on_execution" SMALLINT NOT NULL DEFAULT '0',
@@ -376,15 +377,21 @@ CREATE TABLE "testsuites" (  "id" BIGINT NOT NULL DEFAULT '0',
 --
 -- Table structure for table "user_assignments"
 --
+-- 20070116 - francisco.mancardi@gruppotesi.com
 CREATE TABLE "user_assignments" (  "id" BIGSERIAL NOT NULL ,
   "type" BIGINT NOT NULL DEFAULT '0',
   "feature_id" BIGINT NOT NULL DEFAULT '0',
-  "owner_id" BIGINT NULL DEFAULT NULL,
+  "user_id" BIGINT NULL DEFAULT NULL,
   "deadline_ts" TIMESTAMP NOT NULL DEFAULT (now() + '10 days'::interval),
   "assigner_id" BIGINT NULL DEFAULT NULL,
   "create_ts" TIMESTAMP NOT NULL DEFAULT now(),
+  "status" INTEGER NOT NULL DEFAULT '1',
   PRIMARY KEY ("id")
+  KEY "feature_id" ("feature_id")
 ); 
+
+
+
 
 
 --

@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.41 $
- * @modified $Date: 2007/01/06 15:16:26 $ $Author: franciscom $
+ * @version $Revision: 1.42 $
+ * @modified $Date: 2007/01/17 20:47:56 $ $Author: schlundus $
  * @author franciscom
  *
  * 20070105 - franciscom - changes in copy_to(),get_by_id()
@@ -334,7 +334,6 @@ function show(&$smarty,$id, $user_id, $version_id=TC_ALL_VERSIONS, $action='',
 	$smarty->assign('view_req_rights', has_rights($this->db,"mgt_view_req")); 
 	$smarty->assign('opt_requirements', isset($_SESSION['testprojectOptReqs']) ? $_SESSION['testprojectOptReqs'] : null); 	
 	$smarty->assign('keywords_map',$keywords_map);
-	
 	$smarty->display($the_tpl['tcView']);
 }
 
@@ -1435,28 +1434,28 @@ function get_linked_cfields_at_design($id,$parent_id=null,$show_on_execution=nul
 */
 function html_table_of_custom_field_inputs($id,$parent_id=null,$scope='design',$name_suffix='') 
 {
-  $cf_smarty='';
-  
-  if( $scope=='design' )
-  {
-    $cf_map=$this->get_linked_cfields_at_design($id,$parent_id);
-  }
-  else
-  {
-    $cf_map=$this->get_linked_cfields_at_execution($id,$parent_id);
-  }
-  
-  if( !is_null($cf_map) )
-  {
-    foreach($cf_map as $cf_id => $cf_info)
-    {
-      $cf_smarty .= '<tr><td class="labelHolder">' . $cf_info['label'] . "</td><td>" .
-                    $this->cfield_mgr->string_custom_field_input($cf_info,$name_suffix) .
-                    "</td></tr>\n";
-    } //foreach($cf_map
-  }
-  $cf_smarty = "<table>" . $cf_smarty . "</table>";
-  return($cf_smarty);
+	$cf_smarty = '';
+	
+	if($scope=='design')
+	{
+		$cf_map = $this->get_linked_cfields_at_design($id,$parent_id);
+	}
+	else
+	{
+		$cf_map = $this->get_linked_cfields_at_execution($id,$parent_id);
+	}
+	
+	if(!is_null($cf_map))
+	{
+		foreach($cf_map as $cf_id => $cf_info)
+		{
+			$cf_smarty .= '<tr><td class="labelHolder">' . htmlspecialchars($cf_info['label']) . ":</td><td>" .
+				$this->cfield_mgr->string_custom_field_input($cf_info,$name_suffix) .
+						"</td></tr>\n";
+		}
+	}
+	$cf_smarty = "<table>" . $cf_smarty . "</table>";
+	return $cf_smarty;
 }
 
 
@@ -1500,7 +1499,7 @@ function html_table_of_custom_field_values($id,$scope='design',$show_on_executio
       // if user has assigned a value, then node_id is not null
       if($cf_info['node_id'])
       {
-        $cf_smarty .= '<tr><td class="labelHolder">' . $cf_info['label'] . "</td><td>" .
+        $cf_smarty .= '<tr><td class="labelHolder">' . htmlspecialchars($cf_info['label']) . ":</td><td>" .
                       $this->cfield_mgr->string_custom_field_value($cf_info,$id) .
                       "</td></tr>\n";
       }

@@ -1,11 +1,11 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcEdit_New_viewer.tpl,v 1.3 2007/01/05 13:57:30 franciscom Exp $
+$Id: tcEdit_New_viewer.tpl,v 1.4 2007/01/17 20:47:55 schlundus Exp $
 Purpose: smarty template - create new testcase
 
 20061231 - franciscom - viewer for tcEdit.tpl and tcNew.tpl
 *}
- <p>
+ <br/>
 	<div class="labelHolder"><label for="testcase_name">{lang_get s='tc_title'}</label></div>
 	<div>	
 		<input type="text" name="testcase_name"
@@ -14,27 +14,28 @@ Purpose: smarty template - create new testcase
 		       value="{$tc.name|escape}"
 			     title="{lang_get s='alt_add_tc_name'}"/>
   				{include file="error_icon.tpl" field="testcase_name"}
-	<p>
-
-	<div class="labelHolder">{lang_get s='summary'}</div>
-	<div>{$summary}</div><p>
+		<br/>
 	
-	<div class="labelHolder">{lang_get s='steps'}</div>
-	<div>{$steps}</div><p>
-
-	<div class="labelHolder">{lang_get s='expected_results'}</div>
-	<div>{$expected_results}</div><p>
-
-  {* Custom fields *}
-   {if $cf neq ""}
-     <p>
-     <div class="custom_field_container">
-     {$cf}
-     </div>
-     <p>
-   {/if}
-
+			<div class="labelHolder">{lang_get s='summary'}</div>
+			<div>{$summary}</div>
+			
+			<div class="labelHolder">{lang_get s='steps'}</div>
+			<div>{$steps}</div>
+		<br/>
+	
+			<div class="labelHolder">{lang_get s='expected_results'}</div>
+			<div>{$expected_results}</div>
+		<br/>
+	
+	  {* Custom fields *}
+	   {if $cf neq ""}
+		<br/>
+		     <div class="custom_field_container">
+	     {$cf}
+	     </div>
+	   {/if}
+	</div>
   <div>
   <a href={$gsmarty_href_keywordsView}>{lang_get s='tc_keywords'}</a>
 	{include file="opt_transfer.inc.tpl" option_transfer=$opt_cfg}
-	</div><p>
+	</div>

@@ -1,17 +1,12 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: opt_transfer.inc.tpl,v 1.5 2006/12/31 16:21:45 franciscom Exp $
+$Id: opt_transfer.inc.tpl,v 1.6 2007/01/17 20:47:55 schlundus Exp $
 Purpose: manage the OptionTransfer.js created by Matt Kruse
          http://www.JavascriptToolbox.com/
          JavaScript Toolbox - Option Transfer - Move Select Box Options Back And Forth
 
 Author: Francisco Mancardi
         Based on Cold Fusion code by Alessandro Lia (alessandro.lia@gruppotesi.com
-      
-        20061231 - franciscom - added a div as master container
-        20061223 - franciscom - $title -> $option_transfer->additional_global_lbl  
-        20060423 - franciscom - improved label management 
-                                added double-click management
 *}
   
    <div class="option_transfer_container">
@@ -24,7 +19,7 @@ Author: Francisco Mancardi
 		  {/if}
 
     <tr>
-      <td align="center">
+      <td align="center" width="*">
          <div class="labelHolder">{$option_transfer->from->lbl}</div>
          {html_options name=$option_transfer->from->name 
                        id=$option_transfer->from->name
@@ -34,7 +29,7 @@ Author: Francisco Mancardi
                        ondblclick=$opt_cfg->js_events->left2right_click  
                        options=$option_transfer->from->map}
       </td>
-      <td align="center" width="10%">
+      <td align="center" width="40">
         <img src="icons/ico_all_r.gif" 
               onclick="{$opt_cfg->js_events->all_right_click}"
               alt=">>" style="cursor: pointer;" /><br />
@@ -48,7 +43,7 @@ Author: Francisco Mancardi
               onclick="{$opt_cfg->js_events->all_left_click}"
               alt="<<" style="cursor: pointer;" />
       </td>
-      <td align="center">
+      <td align="center" align="center">
          <div class="labelHolder">{$option_transfer->to->lbl}</div>
          {html_options name=$option_transfer->to->name 
                        id=$option_transfer->to->name

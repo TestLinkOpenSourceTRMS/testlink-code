@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: resultsMoreBuilds_report.tpl,v 1.26 2006/11/29 07:35:17 kevinlevy Exp $
+$Id: resultsMoreBuilds_report.tpl,v 1.27 2007/01/17 20:47:55 schlundus Exp $
 @author Francisco Mancardi - fm - start solving BUGID 97/98
 20051022 - scs - removed ' in component id values
 20051121 - scs - added escaping of tpname
@@ -8,13 +8,14 @@ $Id: resultsMoreBuilds_report.tpl,v 1.26 2006/11/29 07:35:17 kevinlevy Exp $
 *}
 	{include file="inc_head.tpl" openHead='yes'} 
 		<script language="JavaScript" src="gui/javascript/expandAndCollapseFunctions.js" type="text/javascript"></script>
-		<script language="JavaScript">
+		<script language="JavaScript" type="text/javascript">
 		var bAllShown = false;
 		var g_progress = null;
 		var g_pCount = 0;
 		progress();
 		</script>
 </head>
+<body>
 	<h2>{lang_get s="caption_user_selected_query_parameters"} :</h2>
 	<table class="simple" style="width: 100%; text-align: center; margin-left: 0px;" border="2">
 		<tr>
@@ -49,7 +50,7 @@ $Id: resultsMoreBuilds_report.tpl,v 1.26 2006/11/29 07:35:17 kevinlevy Exp $
 			</td>
 			
 			<td>
-				{$ownerSelected}
+				{$ownerSelected}&nbsp;
 			</td>
 			
 			<td>
@@ -62,11 +63,11 @@ $Id: resultsMoreBuilds_report.tpl,v 1.26 2006/11/29 07:35:17 kevinlevy Exp $
 	
 	<table class="simple" style="width: 100%; text-align: center; margin-left: 0px;" border="2">
 		<tr>
-			<th>{lang_get s='th_total_cases'}</th>
-			<th>{lang_get s='th_total_pass}</th>
-			<th>{lang_get s='th_total_fail}</th>
-			<th>{lang_get s='th_total_block}</th>
-			<th>{lang_get s='th_total_not_run}</th>
+			<th>{lang_get s="th_total_cases"}</th>
+			<th>{lang_get s="th_total_pass"}</th>
+			<th>{lang_get s="th_total_fail"}</th>
+			<th>{lang_get s="th_total_block"}</th>
+			<th>{lang_get s="th_total_not_run"}</th>
 		</tr> 
 		<tr>
 			<td>{$totals.total}</td>
@@ -80,7 +81,7 @@ $Id: resultsMoreBuilds_report.tpl,v 1.26 2006/11/29 07:35:17 kevinlevy Exp $
 <!-- KL - 20061021 - comment out until I can figure out how to fix
 	<a href="javascript:showOrCollapseAll()">{lang_get s='show_hide_all'}</a>
 
-	<h2 onClick="plusMinus_onClick(this);"><img class="minus" src="icons/minus.gif" />{lang_get s='caption_show_collapse}</h2>
+	<h2 onClick="plusMinus_onClick(this);"><img class="minus" src="icons/minus.gif" />{lang_get s="caption_show_collapse"}</h2>
 	-->
 	<!-- KL - 20061021 - don't think we need this 
 	<div class="workBack">
@@ -99,7 +100,7 @@ $Id: resultsMoreBuilds_report.tpl,v 1.26 2006/11/29 07:35:17 kevinlevy Exp $
 				DIV -->
 				<!-- KL - 20061021 - comment out until I can figure out how to fix
 				<h2 onClick="plusMinus_onClick(this);"><img class="minus" src="icons/minus.gif" />
-				{lang_get s='caption_show_collapse}</h2>
+				{lang_get s="caption_show_collapse"}</h2>
 				-->		
 			{elseif ($depthChange gt 0) && ($mapOfSuiteSummary[$currentSuiteId])}
 				{section name="loopOutDivs" loop="$flatArray" max="$depthChange"}
@@ -108,7 +109,7 @@ $Id: resultsMoreBuilds_report.tpl,v 1.26 2006/11/29 07:35:17 kevinlevy Exp $
 				<!-- KL - 20061021 - comment out until I can figure out how to fix
 				<h2 onClick="plusMinus_onClick(this);">
 				<img class="minus" src="icons/minus.gif" />
-				{lang_get s='caption_show_collapse}</h2>
+				{lang_get s="caption_show_collapse"}</h2>
 				-->	
 				{/section}
 			{elseif ($depthChange == -1) && ($mapOfSuiteSummary[$currentSuiteId])}
@@ -131,15 +132,15 @@ $Id: resultsMoreBuilds_report.tpl,v 1.26 2006/11/29 07:35:17 kevinlevy Exp $
 			<!-- KL 20061021 - Only display title of category if it has test cases in the test plan -->
 			<!-- not a total fix - I need to adjust results.class.php to not pass suite names in
 				which are not in the plan -->
-			<h2>{$suiteNameText|escape}</h2>			
+			<h2>{$suiteNameText}</h2>			
 
 			<table class="simple" style="width: 100%; text-align: center; margin-left: 0px;" border="2">
 				<tr>
-					<th>{lang_get s='th_total_cases'}</th>
-					<th>{lang_get s='th_total_pass}</th>
-					<th>{lang_get s='th_total_fail}</th>
-					<th>{lang_get s='th_total_block}</th>
-					<th>{lang_get s='th_total_not_run}</th>
+					<th>{lang_get s="th_total_cases"}</th>
+					<th>{lang_get s="th_total_pass"}</th>
+					<th>{lang_get s="th_total_fail"}</th>
+					<th>{lang_get s="th_total_block"}</th>
+					<th>{lang_get s="th_total_not_run"}</th>
 				</tr> 
 				<tr>
 					<td>{$mapOfSuiteSummary[$currentSuiteId].total}</td>
@@ -164,7 +165,7 @@ $Id: resultsMoreBuilds_report.tpl,v 1.26 2006/11/29 07:35:17 kevinlevy Exp $
 				{if $suiteList[$suiteId]}
 					<table class="simple" style="width: 100%; text-align: center; margin-left: 0px;" border="2">
 					<tr>
-						<th>{lang_get s='th_test case id'}</th>
+						<th>{lang_get s='th_test_case_id'}</th>
 						<th>{lang_get s='th_build'}</th>
 						<th>{lang_get s='th_tester_id'}</th>
 						<th>{lang_get s='th_execution_ts'}</th>
@@ -175,16 +176,16 @@ $Id: resultsMoreBuilds_report.tpl,v 1.26 2006/11/29 07:35:17 kevinlevy Exp $
 					{foreach key=executionInstance item=array from=$suiteList[$suiteId]}
 						{assign var=inst value=$suiteList[$suiteId][$executionInstance]}
 						<tr>
-							<td>{$inst.testcaseID}: {$inst.name} </td>
+							<td>{$inst.testcaseID}: {$inst.name|escape} </td>
 							<td>{$mapBuilds[$inst.build_id]|escape}</td>
 
  
 							<td>{$mapUsers[$inst.tester_id]|escape}</td>
 
-							<td>{$inst.execution_ts} </td>
+							<td>{$inst.execution_ts|escape} </td>
 							<td>{$gsmarty_tc_status_css[$inst.status]|escape}</td>
-							<td>{$inst.notes|escape} </td> 
-							<td>{$inst.bugString} </td> 
+							<td>{$inst.notes|escape}&nbsp;</td> 
+							<td>{$inst.bugString}&nbsp;</td> 
 						</tr>
 					
 					{/foreach}					

@@ -5,9 +5,9 @@
  *
  * Filename $RCSfile: tcImport.php,v $
  * Filename $RCSfile: tcImport.php,v $
- * @version $Revision: 1.17 $
+ * @version $Revision: 1.18 $
  *
- * @modified $Date: 2006/12/31 16:27:09 $ by $Author: franciscom $
+ * @modified $Date: 2007/01/17 20:47:56 $ by $Author: schlundus $
 */
 require('../../config.inc.php');
 require_once('common.php');
@@ -106,18 +106,8 @@ $smarty->assign('container_description', $container_description);
 $smarty->assign('bIntoProject',$bIntoProject);
 $smarty->assign('importLimitKB',TL_IMPORT_LIMIT / 1024);
 $smarty->assign('bImport',strlen($importType));
-$smarty->display('tcimport.tpl');
-?>
+$smarty->display('tcImport.tpl');
 
-<?php
-/*
-  function: 
-
-  args :
-  
-  returns: 
-
-*/
 function importTestCaseDataFromXML(&$db,$fileName,$parentID,$tproject_id,$userID,$bRecursive,$importIntoProject = 0)
 {
 	$xmlTCs = null;
@@ -145,14 +135,6 @@ function importTestCaseDataFromXML(&$db,$fileName,$parentID,$tproject_id,$userID
 	return $resultMap;
 }
 
-/*
-  function: 
-
-  args :
-  
-  returns: 
-
-*/
 function importTestCases(&$db,&$node,$parentID,$tproject_id,$userID,$kwMap)
 {
 	$resultMap = null;
@@ -166,14 +148,6 @@ function importTestCases(&$db,&$node,$parentID,$tproject_id,$userID,$kwMap)
 	return $resultMap;
 }
 
-/*
-  function: 
-
-  args :
-  
-  returns: 
-
-*/
 function importTestSuite(&$db,&$node,$parentID,$tproject_id,$userID,$kwMap,$importIntoProject = 0)
 {
 	$resultMap = null;
@@ -230,14 +204,7 @@ function importTestSuite(&$db,&$node,$parentID,$tproject_id,$userID,$kwMap,$impo
 	}
 }
 
-/*
-  function: 
 
-  args :
-  
-  returns: 
-
-*/
 function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,$userID,$kwMap)
 {
 	if (!$tcData)
@@ -271,14 +238,6 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,$userID,$kwM
 	return $resultMap;
 }
 
-/*
-  function: 
-
-  args :
-  
-  returns: 
-
-*/
 function buildKeywordList($kwMap,$keywords,$bList = false)
 {
 	$kwIDs = array();
@@ -291,14 +250,6 @@ function buildKeywordList($kwMap,$keywords,$bList = false)
 	return $kwIDs;
 }
 
-/*
-  function: 
-
-  args :
-  
-  returns: 
-
-*/
 function importTCsFromXML($xmlTCs)
 {
 	$tcs = null;
@@ -324,14 +275,6 @@ function importTCsFromXML($xmlTCs)
 }
 
 
-/*
-  function: 
-
-  args :
-  
-  returns: 
-
-*/
 function importTCFromXML(&$xmlTC)
 {
 	if (!$xmlTC)
@@ -346,14 +289,6 @@ function importTCFromXML(&$xmlTC)
 	return $tc; 		
 }
 
-/*
-  function: 
-
-  args :
-  
-  returns: 
-
-*/
 function check_valid_ftype($upload_info,$import_type)
 {
 	$ret = array();
@@ -394,10 +329,6 @@ function check_valid_ftype($upload_info,$import_type)
   function: 
 
            Check if at least the file starts seems OK
-
-  args :
-  
-  returns: 
 
 */
 function check_xml_tc_tsuite($fileName,$bRecursive)

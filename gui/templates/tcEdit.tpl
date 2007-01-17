@@ -1,11 +1,6 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: tcEdit.tpl,v 1.13 2007/01/04 15:27:58 franciscom Exp $ *}
+{* $Id: tcEdit.tpl,v 1.14 2007/01/17 20:47:55 schlundus Exp $ *}
 {* Purpose: smarty template - edit test specification: test case *}
-{*
-
-20070104 - franciscom - added javascript validation for testcase_name
-*}
-
 {include file="inc_head.tpl" openHead='yes' jsValidate="yes"}
 <script language="JavaScript" src="gui/javascript/OptionTransfer.js" type="text/javascript"></script>
 <script language="JavaScript" src="gui/javascript/expandAndCollapseFunctions.js" type="text/javascript"></script>
@@ -41,7 +36,7 @@ function validateForm(f)
 </head>
 
 <body onLoad="{$opt_cfg->js_ot_name}.init(document.forms[0])">
-{config_load file="input_dimensions.conf" section="tcNew"} {* Constant definitions *}
+{config_load file="input_dimensions.conf" section="tcNew"}
 <h1>{lang_get s='test_case'}{$smarty.const.TITLE_SEP}{$tc.name|escape}</h1> 
 
 <div class="workBack" style="font-weight: bold;">
@@ -50,22 +45,20 @@ function validateForm(f)
 <form method="post" action="lib/testcases/tcEdit.php" name="tc_edit"
       onSubmit="javascript:return validateForm(this);">
 
-  <input type="hidden" name="testcase_id"  value="{$tc.testcase_id}">
-  <input type="hidden" name="tcversion_id"  value="{$tc.id}">
+	<input type="hidden" name="testcase_id" value="{$tc.testcase_id}" />
+	<input type="hidden" name="tcversion_id" value="{$tc.id}" />
 	<input type="hidden" name="version" value="{$tc.version}" />
 	
 
 	<div style="float: right;">
-		<input id="do_update" type="submit" name="do_update" value="update" />
+		<input id="do_update" type="submit" name="do_update" value="{lang_get s='btn_update'}" />
 	</div>	
 
-  {include file="tcEdit_New_viewer.tpl"}
+	{include file="tcEdit_New_viewer.tpl"}
     
-	{* 20060425 - franciscom - same Name DIFFERENT ID *}
 	<div style="float: right;">
-		<input id="do_update_bottom" type="submit" name="do_update" value="update" />
+		<input id="do_update_bottom" type="submit" name="do_update" value="{lang_get s='btn_update'}"/>
 	</div>	
-
 
 </form>
 

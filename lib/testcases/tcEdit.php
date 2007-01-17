@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.47 $
- * @modified $Date: 2007/01/05 13:57:30 $  by $Author: franciscom $
+ * @version $Revision: 1.48 $
+ * @modified $Date: 2007/01/17 20:47:56 $  by $Author: schlundus $
  * This page manages all the editing of test cases.
  *
  *
@@ -22,8 +22,8 @@ require_once("../functions/opt_transfer.php");
 testlinkInitPage($db);
 
 
-$gui_cfg=config_get('gui');
-$order_cfg=config_get('tree_node_ordering');
+$gui_cfg = config_get('gui');
+$order_cfg = config_get('tree_node_ordering');
 
 // --------------------------------------------------------------------
 // create  fckedit objects
@@ -53,7 +53,7 @@ $expected_results 	= isset($_POST['expected_results']) ? strings_stripSlashes($_
 $new_container_id = isset($_POST['new_container']) ? intval($_POST['new_container']) : 0;
 $old_container_id = isset($_POST['old_container']) ? intval($_POST['old_container']) : 0;
 
-$opt_cfg->js_ot_name='ot';
+$opt_cfg->js_ot_name = 'ot';
 $rl_html_name = $opt_cfg->js_ot_name . "_newRight";
 $assigned_keywords_list = isset($_REQUEST[$rl_html_name])? $_REQUEST[$rl_html_name] : "";
 
@@ -74,8 +74,6 @@ $do_delete = isset($_POST['do_delete']) ? 1 : 0;
 $do_create_new_version = isset($_POST['do_create_new_version']) ? 1 : 0;
 $do_delete_tc_version = isset($_POST['do_delete_tc_version']) ? 1 : 0;
 
-
-// 20061104 - franciscom
 $do_activate_this = isset($_POST['activate_this_tcversion']) ? 1 : 0;
 $do_deactivate_this = isset($_POST['deactivate_this_tcversion']) ? 1 : 0;
 
@@ -169,8 +167,7 @@ if($edit_tc)
     } // if( $gui_cfg
     $smarty->assign('cf',$cf_smarty);	
     // ----------------------------------------------------------------------
-  
-  	$smarty->assign('tc', $tc_data[0]);
+   	$smarty->assign('tc', $tc_data[0]);
   	$smarty->assign('opt_cfg', $opt_cfg);
 
   	$smarty->display($g_tpl['tcEdit']);
@@ -269,7 +266,6 @@ else if($delete_tc)
 	$tcinfo = $tcase_mgr->get_by_id($tcase_id);
 	
 	$smarty->assign('exec_status_quo',$exec_status_quo);
-	//$smarty->assign('title', lang_get('title_del_tc') . $tcinfo[0]['name']);
 	$smarty->assign('title', lang_get('title_del_tc'));
 	$smarty->assign('testcase_name', $tcinfo[0]['name']);
 	$smarty->assign('testcase_id', $tcase_id);
@@ -412,7 +408,6 @@ else
 {
 	tlog("A correct POST argument is not found.");
 }
-
 // --------------------------------------------------------------------------
 if ($show_newTC_form)
 {

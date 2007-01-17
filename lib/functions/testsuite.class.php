@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testsuite.class.php,v $
- * @version $Revision: 1.24 $
- * @modified $Date: 2007/01/16 16:08:24 $ - $Author: franciscom $
+ * @version $Revision: 1.25 $
+ * @modified $Date: 2007/01/17 08:06:39 $ - $Author: franciscom $
  * @author franciscom
  *
  * 20070116 - franciscom - BUGID 543
@@ -448,9 +448,9 @@ function delete_deep($id)
 */
 function getKeywords($id,$kw_id = null)
 {
-	$sql = "SELECT keyword_id,keywords.keyword, keywords.keyword AS notes
-	        FROM object_keywords,keywords 
-	        WHERE keyword_id = keywords.id AND fk_id = {$id}";
+	$sql = "SELECT keyword_id,keywords.keyword, notes " .
+	       " FROM object_keywords,keywords " .
+	       " WHERE keyword_id = keywords.id AND fk_id = {$id}";
 	if (!is_null($kw_id))
 	{
 		$sql .= " AND keyword_id = {$kw_id}";

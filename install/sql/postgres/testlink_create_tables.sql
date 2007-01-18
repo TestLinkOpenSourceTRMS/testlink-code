@@ -1,12 +1,14 @@
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.6 2007/01/16 16:39:59 franciscom Exp $
+-- $Id: testlink_create_tables.sql,v 1.7 2007/01/18 14:22:49 franciscom Exp $
 --
 -- SQL script - create db tables for TL on Postgres   
 -- 
 --
 -- 
 -- Rev :
+--       20070117 - franciscom - create_ts -> creation_ts
+--
 --       20070116 - franciscom - fixed BUGID 545
 --
 --       20070113 - franciscom - table cfield_testprojects added fields
@@ -413,14 +415,15 @@ CREATE TABLE "testsuites" (  "id" BIGINT NOT NULL DEFAULT '0',
 --
 -- Table structure for table "user_assignments"
 --
--- 20070116 - francisco.mancardi@gruppotesi.com
+-- 20070117 - franciscom
+-- 20070116 - franciscom
 CREATE TABLE "user_assignments" (  "id" BIGSERIAL NOT NULL ,
   "type" BIGINT NOT NULL DEFAULT '0',
   "feature_id" BIGINT NOT NULL DEFAULT '0',
   "user_id" BIGINT NULL DEFAULT NULL,
   "deadline_ts" TIMESTAMP NOT NULL DEFAULT (now() + '10 days'::interval),
   "assigner_id" BIGINT NULL DEFAULT NULL,
-  "create_ts" TIMESTAMP NOT NULL DEFAULT now(),
+  "creation_ts" TIMESTAMP NOT NULL DEFAULT now(),
   "status" INTEGER NOT NULL DEFAULT '1',
   PRIMARY KEY ("id")
 ); 

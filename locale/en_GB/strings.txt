@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.104 $
- * @modified $Date: 2007/01/19 16:59:25 $ $Author: franciscom $
+ * @version $Revision: 1.105 $
+ * @modified $Date: 2007/01/19 17:02:38 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
@@ -1546,4 +1546,10 @@ $TLS_error_role_update = "The role couldn't be updated!";
 $TLS_cf_name_exists = "Custom field name already exists. Please choose a new one";
 $TLS_error_creating_cf = "The custom field couldn't be created!";
 
+$TLS_popup_delete_custom_field="Are you sure you want to delete the custom field?";
+$TLS_do_update=$TLS_updated;
+$TLS_do_delete=$TLS_deleted;
+$TLS_do_add="created";
+
+$TLS_btn_ok="Ok";
 ?>

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.106 $
- * @modified $Date: 2007/01/19 20:02:57 $ $Author: schlundus $
+ * @version $Revision: 1.108 $
+ * @modified $Date: 2007/01/19 21:16:29 $ $Author: schlundus $
  *
  * @author Francisco Mancardi
  *
@@ -578,7 +578,7 @@ $TLS_title_search_tcs = "Search";
 $TLS_btn_yes_iw2del = "Yes, delete Test Case!";
 $TLS_question_del_tc = "Really delete Test Case?";
 $TLS_th_executed = "Executed";
-$TLS_th_linked_to_tplan = "Linked to ". $TLS_test_plan;
+$TLS_th_linked_to_tplan = "Linked to Test Plan";
 $TLS_th_version = "Version";
 
 
@@ -679,8 +679,8 @@ $TLS_no_records_found = "Your search delivered no results!";
 $TLS_alt_attachment_mgmt = "attachments";
 $TLS_alt_notes = "notes";
 $TLS_attachment_mgmt = "attachments";
-$TLS_btn_history_off = "Toggle history on";
-$TLS_btn_history_on = "Toggle history off";
+$TLS_btn_history_off = "Show only last execution";
+$TLS_btn_history_on = "Show complete execution history";
 $TLS_btn_save_all_tests_results = "Save all executions";
 $TLS_btn_save_tc_exec_results = "Save execution";
 $TLS_bug_mgmt = "BUG management";
@@ -719,6 +719,8 @@ $TLS_version = "Version";
 
 // gui/templates/inc_testsuite_viewer_ro.tpl
 $TLS_keywords = "Keywords";
+$TLS_test_suite = "Test Suite";
+
 
 
 // gui/templates/navBar.tpl
@@ -1125,7 +1127,6 @@ $TLS_export_with_keywords = "Export with keywords";
 
 
 
-
 // lib/execute/bug_add.php
 $TLS_bug_added = "Bug added";
 $TLS_error_wrong_BugID_format = "Wrong BugID format!";
@@ -1135,12 +1136,6 @@ $TLS_error_wrong_BugID_format = "Wrong BugID format!";
 // lib/execute/bug_delete.php
 $TLS_bugdeleting_was_ok = "The bug was successfully deleted!";
 
-
-// lib/execute/execSetResults.php
-//$TLS_btn_history_on="History on";
-//$TLS_btn_history_off="History OFF";
-$TLS_btn_history_on="Show complete execution history";
-$TLS_btn_history_off="Show only last execution";
 
 
 // lib/functions/doAuthorize.php
@@ -1547,11 +1542,7 @@ $TLS_error_role_update = "The role couldn't be updated!";
 // lib/cfields/cfields_edit.php
 $TLS_cf_name_exists = "Custom field name already exists. Please choose a new one";
 $TLS_error_creating_cf = "The custom field couldn't be created!";
-
-$TLS_popup_delete_custom_field="Are you sure you want to delete the custom field?";
-$TLS_do_update=$TLS_updated;
-$TLS_do_delete=$TLS_deleted;
-$TLS_do_add="created";
-
-$TLS_btn_ok="Ok";
+$TLS_do_update = "updated";
+$TLS_do_delete = "deleted";
+$TLS_do_add = "created";
 ?>

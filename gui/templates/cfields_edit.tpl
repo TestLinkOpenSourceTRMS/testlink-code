@@ -1,6 +1,6 @@
 {* 
 Testlink: smarty template - 
-$Id: cfields_edit.tpl,v 1.2 2007/01/09 10:55:06 franciscom Exp $ 
+$Id: cfields_edit.tpl,v 1.3 2007/01/19 21:13:58 schlundus Exp $ 
 *}
 {include file="inc_head.tpl" jsValidate="yes"}
 
@@ -170,7 +170,7 @@ function validateForm(f)
 		       onclick="action.value='do_update'"/>
 		       
 		{if is_used eq 0}       
-  		<input type="submit" name="do_delete" value="{lang_get s='btn_delete'}"
+  		<input type="button" name="do_delete" value="{lang_get s='btn_delete'}"
   		       onclick="action.value='do_delete';
   		                if (confirm('{lang_get s='popup_delete_custom_field'}'))
   		                {ldelim}cfields_edit.submit();{rdelim};" />

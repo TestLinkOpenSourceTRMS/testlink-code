@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: mainPage.php,v $
  *
- * @version $Revision: 1.22 $ $Author: franciscom $
- * @modified $Date: 2006/12/31 16:25:29 $
+ * @version $Revision: 1.24 $ $Author: schlundus $
+ * @modified $Date: 2007/01/19 21:16:29 $
  *
  * @author Martin Havlat
  * 
@@ -15,15 +15,6 @@
  * Most of the code in it is html but there is some logic that displays
  * based upon the login. 
  * There is also some javascript that handles the form information.
- *
- *
- * 20050928 - fm - changes to filter test plan by product
- * 20050928 - fm - adding new User Interface feature: filter test plan by product
- * 
- * 20051112 - scs - removed undefined index notices
- * 20050103 - scs - ADOdb changes
- * 20060106 - scs - changes because new product functionality
- * 20061231 - franciscom - cfield_* rights
 **/
 require_once('../../config.inc.php');
 require_once('common.php');
@@ -124,8 +115,6 @@ $smarty->assign('tp_user_role_assignment', has_rights($db,"user_role_assignment"
 $smarty->assign('tproject_user_role_assignment', has_rights($db,"user_role_assignment",null,-1));
 
 
-// 20061231 - franciscom
-// custom fields rights
 $smarty->assign('cfield_view', has_rights($db,"cfield_view"));
 $smarty->assign('cfield_management', has_rights($db,"cfield_management"));
 

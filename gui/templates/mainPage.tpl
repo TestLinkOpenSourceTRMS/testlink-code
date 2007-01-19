@@ -1,6 +1,6 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: mainPage.tpl,v 1.26 2007/01/15 08:02:27 franciscom Exp $     
+ $Id: mainPage.tpl,v 1.27 2007/01/19 21:13:58 schlundus Exp $     
  Purpose: smarty template - main page / site map                 
                                                                  
  rev :                                                 
@@ -53,7 +53,7 @@
 					<option value="{$arrPlans[tPlan].id}" 
 					        {$arrPlans[tPlan].selected}
 					        title="{$arrPlans[tPlan].name|escape}">
-					        {$arrPlans[tPlan].name|escape|truncate:#TESTPLAN_TRUNCATE_SIZE#}
+					        {$arrPlans[tPlan].name|truncate:#TESTPLAN_TRUNCATE_SIZE#|escape}
 					</option>
 				{/section}
 				</select>

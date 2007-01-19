@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: print.inc.php,v $
- * @version $Revision: 1.19 $
- * @modified $Date: 2007/01/06 15:12:17 $ by $Author: franciscom $
+ * @version $Revision: 1.20 $
+ * @modified $Date: 2007/01/19 20:40:05 $ by $Author: schlundus $
  *
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
@@ -101,17 +101,7 @@ function printFirstPage(&$db,$title, $prodName, $prodNotes, $userID)
 	return $output;
 }
 
-/*
-  function: renderTestSpecTreeForPrinting
 
-  args :
-  
-  returns: 
-  
-  rev :
-        20070106 - franciscom - remove magic numbers
-
-*/
 function renderTestSpecTreeForPrinting(&$db,&$printingOptions,&$node,$tocPrefix,$tcCnt,$level)
 {
   $tree_mgr=New tree($db);
@@ -169,14 +159,6 @@ function renderTestSpecTreeForPrinting(&$db,&$printingOptions,&$node,$tocPrefix,
 	return $code;
 }
 
-/*
-  function: renderTestCaseForPrinting
-
-  args :
-  
-  returns: 
-
-*/
 function renderTestCaseForPrinting(&$db,&$printingOptions,&$node,$level) 
 {
  	$id = $node['id'];
@@ -211,14 +193,6 @@ function renderTestCaseForPrinting(&$db,&$printingOptions,&$node,$level)
 	return $code;
 }
 
-/*
-  function: renderTestCaseForPrinting
-
-  args :
-  
-  returns: 
-
-*/
 function renderProjectNodeForPrinting(&$db,&$printingOptions,$title,&$node)
 {
 	$stitle = lang_get('title_test_spec');
@@ -243,14 +217,7 @@ function renderProjectNodeForPrinting(&$db,&$printingOptions,$title,&$node)
 	return $code;
 }
 
-/*
-  function: renderTestCaseForPrinting
 
-  args :
-  
-  returns: 
-
-*/
 function renderTestSuiteNodeForPrinting(&$db,&$printingOptions,&$node,$tocPrefix,$level) 
 {
 	$code = null;

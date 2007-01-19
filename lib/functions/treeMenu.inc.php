@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: treeMenu.inc.php,v $
  *
- * @version $Revision: 1.34 $
- * @modified $Date: 2007/01/06 15:16:26 $ by $Author: franciscom $
+ * @version $Revision: 1.35 $
+ * @modified $Date: 2007/01/19 20:40:05 $ by $Author: schlundus $
  * @author Martin Havlat
  *
  * 	This file generates tree menu for test specification and test execution.
@@ -51,7 +51,7 @@ if (TL_TREE_KIND == 'LAYERSMENU')
  * 20060304 - franciscom - setting config params for icons
  *
  **/
-function invokeMenu($menustring, $highLight = "")
+function invokeMenu($menustring, $highLight = "",$target = "workframe")
 {
 	tLog('invokeMenu started');
 	
@@ -83,7 +83,8 @@ function invokeMenu($menustring, $highLight = "")
 		$data = "<script type='text/javascript'>\n<!--\n";
 		$data .= "tlTree = new dTree('tlTree');\n";
 		$data .= "tlTree.config.inOrder = true;\n";
-		$data .= "tlTree.config.target = 'workframe';\n";
+		if ($target)
+			$data .= "tlTree.config.target = 'workframe';\n";
 		$data .= $menustring;
 		$data .= "document.write(tlTree);\n";
 		$data .= "//-->\n</script>\n";
@@ -384,6 +385,7 @@ function renderTreeNode($level,&$node,$getArguments,$hash_id_descr,$tc_action_en
 //
 function layersmenu_renderTestSpecTreeNodeOnOpen($node,$nodeDesc,$linkto,$getArguments,$level,$tc_action_enabled)
 {
+	$pfn = "ETS";
 	$name = filterString($node['name']);
 	$label = $name;
 	$icon = "";
@@ -391,11 +393,11 @@ function layersmenu_renderTestSpecTreeNodeOnOpen($node,$nodeDesc,$linkto,$getArg
 	$dots  = str_repeat('.',$level);
 	
 	$testcase_count = isset($node['testcase_count']) ? $node['testcase_count'] : 0;
-	
 	if ($nodeDesc == 'testproject')
 	{
 		$label = $name . " ({$testcase_count})";
 		$dots = ".";
+		$pfn = 'EP';
 	}
 	else
 	{			
@@ -403,19 +405,19 @@ function layersmenu_renderTestSpecTreeNodeOnOpen($node,$nodeDesc,$linkto,$getArg
 		{
 			$icon = "gnome-starthere-mini.png";
 			$buildLinkTo = $tc_action_enabled;
+			$pfn = 'ET';
 			$label = "<b>{$node['id']}</b>: {$name}";
 		}		   
 		else if ($nodeDesc == "testsuite")
 			$label = $name . " ({$testcase_count})";
 	}	
-
 	if ($buildLinkTo)
-		$myLinkTo = "{$linkto}?edit={$nodeDesc}&id={$node['id']}{$getArguments}";
+		$myLinkTo = "javascript:{$pfn}({$node['id']})";
 	else	
 		$myLinkTo = ' ';
 		
 	$menustring = "{$dots}|{$label}|{$myLinkTo}|{$nodeDesc}". 
-		           "|{$icon}|workframe|\n";
+		           "|{$icon}||\n";
 		
 	return $menustring;				
 }
@@ -435,16 +437,19 @@ function dtree_renderTestSpecTreeNodeOnOpen($current,$nodeDesc,$linkto,$getArgum
 	$name = filterString($current['name']);
 	$buildLinkTo = 1;
 	
+	$pfn = 'ETS';
 	$edit = 'testcase';
 	$label = $name;
 	$testcase_count = isset($current['testcase_count']) ? $current['testcase_count'] : 0;
 	if ($nodeDesc == 'testproject')
 	{
+		$pfn = 'EP';
 		$label = $name ." (" . $testcase_count . ")";
 	}
 	else if ($nodeDesc == 'testcase')
 	{
 		$label = "<b>{$current['id']}</b>:".$name;
+		$pfn = 'ET';
 		$buildLinkTo = $tc_action_enabled;
 	}
 	else
@@ -452,7 +457,7 @@ function dtree_renderTestSpecTreeNodeOnOpen($current,$nodeDesc,$linkto,$getArgum
 		$label = $name ." (" . $testcase_count . ")";
 	}
 	if ($buildLinkTo)
-		$myLinkTo = $linkto . "?edit={$nodeDesc}&id=" . $current['id'] . $getArguments;
+		$myLinkTo = "javascript:{$pfn}({$current['id']})";// . $getArguments;
 	else
 		$myLinkTo = "";
 		

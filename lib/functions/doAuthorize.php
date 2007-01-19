@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  * 
  * @filesource $RCSfile: doAuthorize.php,v $
- * @version $Revision: 1.12 $
- * @modified $Date: 2006/05/17 10:13:28 $ by $Author: franciscom $
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2007/01/19 21:16:29 $ by $Author: schlundus $
  * @author Chad Rosen, Martin Havlat
  *
  * This file handles the initial login and creates all user session variables.
@@ -30,6 +30,7 @@ require_once("roles.inc.php");
 //20060102 - scs - ADOdb changes
 function doAuthorize(&$db,$login,$pwd)
 {
+	global $g_ui_show_check_filter_tp_by_testproject;
 	$bSuccess = false;
 	$sProblem = 'wrong'; // default problem attribute value
 	

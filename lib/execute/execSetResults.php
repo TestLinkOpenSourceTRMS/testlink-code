@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.47 $
- * @modified $Date: 2007/01/06 15:16:26 $ $Author: franciscom $
+ * @version $Revision: 1.48 $
+ * @modified $Date: 2007/01/19 20:02:56 $ $Author: schlundus $
  *
  * 20070105 - franciscom - refactoring
  *
@@ -106,16 +106,14 @@ if(!is_null($linked_tcversions))
     	$tcversion_id = $linked_tcversions[$id]['tcversion_id'];
 		  $tcAttachments[$id] = getAttachmentInfos($db,$id,'nodes_hierarchy',1);
  
-      // 20070104 - franciscom
       if( $gui_cfg->enable_custom_fields )
       {
-        $cf_smarty[$id] = $tcase_mgr->html_table_of_custom_field_values($id,'design',$SHOW_ON_EXECUTION);
-        $cfexec_smarty[$id] = $tcase_mgr->html_table_of_custom_field_inputs($id,$PID_NOT_NEEDED,
-                                                                            'execution',"_{$id}");
+		$cf_smarty[$id] = $tcase_mgr->html_table_of_custom_field_values($id,'design',$SHOW_ON_EXECUTION);
+		$cfexec_smarty[$id] = $tcase_mgr->html_table_of_custom_field_inputs($id,$PID_NOT_NEEDED,
+	                                                                'execution',"_{$id}");
       }
-      $smarty->assign('design_time_cf',$cf_smarty);	
-      $smarty->assign('execution_time_cf',$cfexec_smarty);	
-
+      $smarty->assign('design_time_cf',$cf_smarty);
+	  $smarty->assign('execution_time_cf',$cfexec_smarty);	
     }
     else
     {

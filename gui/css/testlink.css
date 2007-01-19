@@ -1,6 +1,6 @@
 /* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: testlink.css,v 1.19 2007/01/15 08:02:58 franciscom Exp $
+$Id: testlink.css,v 1.20 2007/01/19 20:02:56 schlundus Exp $
 Purpose: main css - theme default
 
 20061020 - franciscom - new warning classes
@@ -383,6 +383,7 @@ div.resultBox {
 	color: 			black;
 	margin: 		0px 12px 12px 12px;
 	padding: 		12px;
+	width:			99%;
 }
 
 textarea.tcDesc {
@@ -396,7 +397,7 @@ div.notesBox,table.notesBox {
 	color: 			black;
 	margin: 		12px;
 	padding: 		12px;
-	width: 97%;
+	width: 			97%;
 }
 
 table.notesBox td

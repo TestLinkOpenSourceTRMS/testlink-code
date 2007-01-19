@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.105 $
- * @modified $Date: 2007/01/19 17:02:38 $ $Author: franciscom $
+ * @version $Revision: 1.106 $
+ * @modified $Date: 2007/01/19 20:02:57 $ $Author: schlundus $
  *
  * @author Francisco Mancardi
  *
@@ -679,6 +679,8 @@ $TLS_no_records_found = "Your search delivered no results!";
 $TLS_alt_attachment_mgmt = "attachments";
 $TLS_alt_notes = "notes";
 $TLS_attachment_mgmt = "attachments";
+$TLS_btn_history_off = "Toggle history on";
+$TLS_btn_history_on = "Toggle history off";
 $TLS_btn_save_all_tests_results = "Save all executions";
 $TLS_btn_save_tc_exec_results = "Save execution";
 $TLS_bug_mgmt = "BUG management";

@@ -1,12 +1,16 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: execSetResults.tpl,v 1.37 2007/01/06 15:14:35 franciscom Exp $
+$Id: execSetResults.tpl,v 1.38 2007/01/19 20:02:56 schlundus Exp $
 Purpose: smarty template - show tests to add results
 Revisions:
           20070104 - franciscom - custom field management for test cases
           20070101 - franciscom - custom field management for test suite div
           20061112 - franciscom - added class management to assign
                                   color to status cells
+                          
+ don't touch!						          
+ lang_get('btn_history_on');
+ lang_get('btn_history_off');                                  
 *}	
 
 {include file="inc_head.tpl" popup='yes' openHead='yes'}
@@ -101,7 +105,6 @@ Revisions:
           <p>
       		  <input type="submit" id="do_bulk_save" name="do_bulk_save" 
       		         value="{lang_get s='btn_save_all_tests_results'}"/>
-          <hr />
         </div>
     	{/if}
     
@@ -160,7 +163,7 @@ Revisions:
     </div>
   
 
-		<h1>{lang_get s='title_test_case'} {lang_get s='th_test_case_id'}{$tc_exec.testcase_id} :: {lang_get s='version'}: {$tc_exec.version}<br>
+		<h1>{lang_get s='title_test_case'} {lang_get s='th_test_case_id'}{$tc_exec.testcase_id} :: {lang_get s='version'}: {$tc_exec.version}<br />
 		    {$tc_exec.name|escape}
     </h1>
 
@@ -280,16 +283,16 @@ Revisions:
   
         {* Execution Bugs (if any) *}
         {if $bugs_for_exec[$execID] neq ""}
-    			<tr>
-    			<td colspan="{$my_colspan}">
-    				{include file="inc_show_bug_table.tpl" 
-    				         bugs_map=$bugs_for_exec[$execID] 
-    				         can_delete=true
-    				         exec_id=$execID}
-    			</td>
-    			</tr>
-    		{/if}	
-			{/foreach}
+   		<tr>
+   			<td colspan="{$my_colspan}">
+   				{include file="inc_show_bug_table.tpl" 
+   			         bugs_map=$bugs_for_exec[$execID] 
+   			         can_delete=true
+   			         exec_id=$execID}
+   			</td>
+   		</tr>
+   		{/if}	
+		{/foreach}
 			{* ----------------------------------------------------------------------------------- *} 
 
 			</table>
@@ -316,37 +319,26 @@ Revisions:
 		</tr>
 		
     
-    {* ------------------------------------------------------------------------------- *}    
-    {* 20070104 - franciscom *}
-		<tr>
-			<td colspan="2">
-			  {if $execution_time_cf[$tc_exec.testcase_id] neq ''}
-			      <div class="custom_field_container" 
-			           style="background-color:#dddddd;">{$execution_time_cf[$tc_exec.testcase_id]}</div>
-			  {else}
-			      &nbsp;
-			  {/if} 
-			 </td>
-		</tr>
-    {* ------------------------------------------------------------------------------- *}    
+	  {if $execution_time_cf[$tc_exec.testcase_id]}
+	 		<tr>
+				<td colspan="2">
+					<div class="custom_field_container" 
+						style="background-color:#dddddd;">{$execution_time_cf[$tc_exec.testcase_id]}
+					</div>
+				</td>
+			</tr>
+		{/if}
 
-    
-    {* ------------------------------------------------------------------------------- *}    
-    {* 20070104 - franciscom *}
-		<tr>
-			<td colspan="2">
-			  {if $design_time_cf[$tc_exec.testcase_id] neq ''}
-			      <div class="custom_field_container" 
-			           style="background-color:#dddddd;">{$design_time_cf[$tc_exec.testcase_id]}</div>
-			  {else}
-			      &nbsp;
-			  {/if} 
-			 </td>
-		</tr>
-    {* ------------------------------------------------------------------------------- *}    
+    	{if $design_time_cf[$tc_exec.testcase_id] neq ''}
+			<tr>
+				<td colspan="2">
+					<div class="custom_field_container" 
+					style="background-color:#dddddd;">{$design_time_cf[$tc_exec.testcase_id]}
+					</div>
+				</td>
+			</tr>
+ 		{/if} 
 		
-		
-
 		<tr>
 			<td colspan="2">
 			{assign var="tcID" value=$tc_exec.testcase_id}
@@ -365,9 +357,9 @@ Revisions:
 			<td rowspan="2" align="center">
 				<div class="title">{lang_get s='test_exec_notes'}</div>
 				<textarea {$input_enabled_disabled} class="tcDesc" name='notes[{$tcversion_id}]' 
-					cols=50 rows=10></textarea>			
+					rows="10" style="width:99%"></textarea>			
 			</td>
-			<td valign="top">			
+			<td valign="top" style="width:30%">			
   				{* status of test *}
   				<div class="title" style="text-align: center;">{lang_get s='test_exec_result'}</div>
   				<div class="resultBox">

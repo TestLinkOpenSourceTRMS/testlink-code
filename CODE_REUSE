@@ -1,0 +1,12 @@
+I think a clever use of Open Source is reusing and adapting
+code written by others.
+
+I have taken code and ideas from the following projects:
+
+Etomite    : the installer
+Mantis     : custom fields, ldap authentication, lang_api, database class
+Eventum    : some javascript
+Dotproject : ideas for custom fields and database class
+
+
+franciscom

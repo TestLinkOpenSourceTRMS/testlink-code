@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.91 $
- * @modified $Date: 2007/01/13 23:45:36 $ by $Author: schlundus $
+ * @version $Revision: 1.92 $
+ * @modified $Date: 2007/01/20 18:45:36 $ by $Author: franciscom $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink 
@@ -14,6 +14,7 @@
  *-----------------------------------------------------------------------------
  * Revisions:
  *
+ * 20070120 - franciscom - added check for TL_LOG_LEVEL_DEFAULT
  * 20070110 - havlatm - refactorization; unchangable const moved to const.inc.php
  * 20070105 - franciscom - added $g_gui->custom_fields->sizes
  * 20061016 - franciscom - added new keys to $g_field_size
@@ -161,8 +162,12 @@ define('TL_XMLEXPORT_HEADER', "<?xml version=\"1.0\" encoding=\"".TL_TPL_CHARSET
 define('TL_LOG_PATH', TL_TEMP_PATH );
 
 /** Default level of logging (NONE, ERROR, INFO, DEBUG, EXTENDED) */
-define('TL_LOG_LEVEL_DEFAULT', 'NONE');
-
+// 20070120 - franciscom - 
+// added check to avoid notice message in the migration pages
+if( !defined('TL_LOG_LEVEL_DEFAULT') )
+{
+  define('TL_LOG_LEVEL_DEFAULT', 'NONE');
+}
 
 
 // ----------------------------------------------------------------------------

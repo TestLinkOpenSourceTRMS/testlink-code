@@ -1,20 +1,42 @@
 <?php
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: builds.inc.php,v 1.21 2006/10/24 20:35:01 schlundus Exp $
+* $Id: builds.inc.php,v 1.22 2007/01/20 18:45:39 franciscom Exp $
 * 
 * @author Martin Havlat
 *
 * Functions for Test Plan management - build related
+*
+* 20070120 - franciscom - changes to getBuilds()
+*
 */
 require_once('../../config.inc.php');
 require_once("../functions/common.php");
 
 /**
  * Collect all builds for the Test Plan
+ *
+ * 20070120 - franciscom
+ * 
+ * args:
+ *
+ *       [active]: default:null -> all, 1 -> active, 0 -> inactive
+ *       [open]  : default:null -> all, 1 -> open  , 0 -> closed/completed
  */
-function getBuilds(&$db,$idPlan, $order_by="ORDER BY builds.id DESC")
+function getBuilds(&$db,$idPlan, $order_by="ORDER BY builds.id DESC",$active=null,$open=null)
 {
  	$sql = "SELECT builds.id, name FROM builds WHERE testplan_id = " . $idPlan;
+ 	
+ 	
+ 	// 20070120 - franciscom
+ 	if( !is_null($active) )
+ 	{
+ 	   $sql .= " AND active=" . intval($active) . " ";   
+ 	}
+ 	if( !is_null($open) )
+ 	{
+ 	   $sql .= " AND open=" . intval($open) . " ";   
+ 	}
+ 		
  	
  	if (strlen(trim($order_by)))
  	{

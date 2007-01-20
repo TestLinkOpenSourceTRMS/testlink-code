@@ -1,12 +1,16 @@
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.7 2007/01/18 14:22:49 franciscom Exp $
+-- $Id: testlink_create_tables.sql,v 1.8 2007/01/20 18:45:39 franciscom Exp $
 --
 -- SQL script - create db tables for TL on Postgres   
 -- 
 --
 -- 
 -- Rev :
+--       20070120 - franciscom - following BUGID 458 ( really a new feature request)
+--                               two new fields on builds table
+--                               active, open
+--
 --       20070117 - franciscom - create_ts -> creation_ts
 --
 --       20070116 - franciscom - fixed BUGID 545
@@ -61,6 +65,8 @@ CREATE TABLE "builds" (  "id" BIGSERIAL NOT NULL ,
   "testplan_id" BIGINT NOT NULL DEFAULT '0',
   "name" VARCHAR(100) NOT NULL DEFAULT 'undefined',
   "notes" TEXT NULL DEFAULT NULL,
+  "active" INT2 NOT NULL DEFAULT '1',
+  "open" INT2 NOT NULL DEFAULT '1',
   PRIMARY KEY ("id"),
   UNIQUE ("testplan_id","name")
 ); 

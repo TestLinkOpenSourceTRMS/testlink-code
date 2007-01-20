@@ -1,11 +1,15 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
 # This script is distributed under the GNU General Public License 2 or later.
-# $Id: testlink_create_tables.sql,v 1.12 2007/01/15 08:03:18 franciscom Exp $
+# $Id: testlink_create_tables.sql,v 1.13 2007/01/20 18:45:39 franciscom Exp $
 # SQL script - create db tables for TL   
 #
 # default rights & admin account are created via testlink_create_default_data.sql
 #
 # Rev :
+#       20070120 - franciscom - following BUGID 458 ( really a new feature request)
+#                               two new fields on builds table
+#                               active, open
+# 
 #       20070113 - franciscom - table cfield_testprojects added fields
 #                               required_on_design,required_on_execution
 # 
@@ -46,11 +50,14 @@
 #       changed some int(11) to int(10)
 # --------------------------------------------------------
 #
+#
 CREATE TABLE `builds` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `testplan_id` int(10) unsigned NOT NULL default '0',
   `name` varchar(100) NOT NULL default 'undefined',
   `notes` text,
+  `active` tinyint(1) NOT NULL default '1',
+  `open` tinyint(1) NOT NULL default '1',
   PRIMARY KEY  (`id`),
   UNIQUE KEY `name` (`testplan_id`,`name`),
   KEY `testplan_id` (`testplan_id`)

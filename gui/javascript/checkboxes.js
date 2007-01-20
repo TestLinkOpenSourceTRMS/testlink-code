@@ -1,9 +1,10 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/ 
-// $Id: checkboxes.js,v 1.3 2007/01/02 22:02:32 franciscom Exp $ 
+// $Id: checkboxes.js,v 1.4 2007/01/20 18:45:38 franciscom Exp $ 
 //
 //
 // rev :
-//      20070102 - francisco.mancardi@gruppotesi.com - new function checkbox_count_checked()
+//      20070120 - franciscom - new function set_combo_if_checkbox()
+//      20070102 - franciscom - new function checkbox_count_checked()
 //
 
 /*
@@ -107,4 +108,89 @@ function checkbox_count_checked(form_id)
 	}
   return(count_checked);
 }
+
+
+
+/*
+  function: set_combo_if_checkbox
+
+  args : oid
+  
+  returns: 
+
+  rev :
+        20070118 - franciscom
+*/
+function set_combo_if_checkbox(oid,combo_id_prefix,value_to_assign)
+{
+  var f=document.getElementById(oid);
+	var all_inputs = f.getElementsByTagName('input');
+	var input_element;
+	var check_id='';
+	var apieces='';
+	var combo_id_suffix='';
+	var cb_id= new Array();
+	var jdx=0;
+	var idx=0;
+		
+	// Build an array with the html select ids
+	//	
+	for(idx = 0; idx < all_inputs.length; idx++)
+	{
+	  input_element=all_inputs[idx];		
+		if(input_element.type == "checkbox" &&  
+		   input_element.checked  &&
+		   !input_element.disabled)
+		{
+      check_id=input_element.id;
+      
+      // Consider the id a list with '_' as element separator
+      //    
+      apieces=check_id.split("_");
+      combo_id_suffix=apieces[apieces.length-1];
+      cb_id[jdx]=combo_id_prefix + combo_id_suffix;
+      jdx++;
+		}	
+	}
+	
+	// now set the combos
+	for(idx = 0; idx < cb_id.length; idx++)
+	{
+	   // debug - alert(cb_id[idx] + " will be" + value_to_assign);
+	   input_element=document.getElementById(cb_id[idx]);
+	   input_element.value=value_to_assign;
+	}
+}
+
+
+
+
+/*
+  function: checkbox_get_checked 
+
+  args : oid
+  
+  returns: 
+
+  rev :
+        20070118 - franciscom
+*/
+function checkbox_get_checked(oid)
+{
+  var f=document.getElementById(oid);
+	var all_inputs = f.getElementsByTagName('input');
+	var input_element;
+	for(var idx = 0; idx < all_inputs.length; idx++)
+	{
+	  input_element=all_inputs[idx];		
+		if(input_element.type == "checkbox" &&  
+		   input_element.checked  &&
+		   !input_element.disabled)
+		{
+
+			alert("checkbox found. " + input_element.id);
+		}	
+	}
+}
+
 

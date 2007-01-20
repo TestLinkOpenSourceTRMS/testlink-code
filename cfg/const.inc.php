@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: const.inc.php,v $
  *
- * @version $Revision: 1.3 $
- * @modified $Date: 2007/01/15 08:03:59 $ by $Author: franciscom $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2007/01/20 18:45:35 $ by $Author: franciscom $
  * @author Martin Havlát
  *
  * SCOPE:
@@ -16,6 +16,9 @@
  * 
  *-------------------------------------------------------------------
  * Revisions:
+ *  20070120 - franciscom - 
+ *  added TL_ROLES_OPEN_CHAR,TL_ROLES_CLOSE_CHAR,TL_INACTIVE_MARKUP
+ *
  *	20060111 - MHT - moved several new consts from config
  *
  *-------------------------------------------------------------------
@@ -209,7 +212,20 @@ define("TL_ROLES_UNDEFINED",0);
 define("TL_ROLES_UNDEFINED_DESC","<inherited>");
 define("TL_DEFAULT_ROLEID",TL_ROLES_GUEST);
 
+// used on User Interface whiel showing roles
+define("TL_ROLES_OPEN_CHAR","[");
+define("TL_ROLES_CLOSE_CHAR","]");
+
+// used to mark inactive objects (test projects, etc)
+define("TL_INACTIVE_MARKUP","* ");
+
+
 // 20070106 - franciscom
+// used on user management page to give different colour to different
+// roles.
+// If you dont want use colouring then configure in this way
+// $g_role_colour = array ( );
+//
 $g_role_colour = array ( 
 	"admin"         => 'white',
 	"tester"        => 'wheat',

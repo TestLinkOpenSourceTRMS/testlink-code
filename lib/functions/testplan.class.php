@@ -2,9 +2,16 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.19 $
- * @modified $Date: 2007/01/06 15:16:26 $ $Author: franciscom $
+ * @version $Revision: 1.20 $
+ * @modified $Date: 2007/01/20 18:45:39 $ $Author: franciscom $
  * @author franciscom
+ *
+ * rev :
+ *       20070120 - franciscom - added active and open argument
+ *                               to build functions
+ *                               get_builds_for_html_options()
+ *                               get_builds()
+ * 
 */
 
 require_once( dirname(__FILE__). '/tree.class.php' );
@@ -235,14 +242,53 @@ function get_linked_tcversions($id,$tcase_id=null,$keyword_id=0,$executed=null,$
 }
 
 
-function get_builds_for_html_options($id)
+/*
+  function: 
+
+  args :
+        $id     : test plan id. 
+        [active]: default:null -> all, 1 -> active, 0 -> inactive BUILDS
+        [open]  : default:null -> all, 1 -> open  , 0 -> closed/completed BUILDS
+  
+  returns: 
+
+  rev :
+        20070120 - franciscom
+        added active, open
+*/
+function get_builds_for_html_options($id,$active=null,$open=null)
 {
-	$sql = " SELECT builds.id, builds.name 
-	         FROM builds WHERE builds.testplan_id = {$id}
-	         ORDER BY builds.name DESC";
+	$sql = " SELECT builds.id, builds.name " .
+	       " FROM builds WHERE builds.testplan_id = {$id} ";
+	       
+	// 20070120 - franciscom
+ 	if( !is_null($active) )
+ 	{
+ 	   $sql .= " AND active=" . intval($active) . " ";   
+ 	}
+ 	if( !is_null($open) )
+ 	{
+ 	   $sql .= " AND open=" . intval($open) . " ";   
+ 	}
+      
+  $sql .= " ORDER BY builds.name DESC";
+	         
+	         
 	return $this->db->fetchColumnsIntoMap($sql,'id','name');
 }
 
+
+
+/*
+  function: get_max_build_id
+
+  args :
+        $id     : test plan id. 
+  
+  returns: 
+
+  rev :
+*/
 function get_max_build_id($id)
 {
 	$sql = " SELECT MAX(builds.id) AS maxbuildid
@@ -257,11 +303,37 @@ function get_max_build_id($id)
 }
 
 
-function get_builds($id)
+
+/*
+  function: 
+
+  args :
+        $id     : test plan id. 
+        [active]: default:null -> all, 1 -> active, 0 -> inactive BUILDS
+        [open]  : default:null -> all, 1 -> open  , 0 -> closed/completed BUILDS
+  
+  returns: 
+
+  rev :
+        20070120 - franciscom
+        added active, open
+*/
+function get_builds($id,$active=null,$open=null)
 {
-	$sql = " SELECT builds.id, builds.name, builds.notes 
-	         FROM builds WHERE builds.testplan_id = {$id}
-	         ORDER BY builds.name";
+	$sql = " SELECT * " . 
+	       "  FROM builds WHERE builds.testplan_id = {$id} " ;
+	       
+	// 20070120 - franciscom
+ 	if( !is_null($active) )
+ 	{
+ 	   $sql .= " AND active=" . intval($active) . " ";   
+ 	}
+ 	if( !is_null($open) )
+ 	{
+ 	   $sql .= " AND open=" . intval($open) . " ";   
+ 	}
+	       
+	$sql .= "  ORDER BY builds.name";
 	$recordset = $this->db->get_recordset($sql);
   
 	return $recordset;

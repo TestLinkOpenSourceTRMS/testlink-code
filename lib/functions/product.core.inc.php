@@ -2,40 +2,17 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: product.core.inc.php,v $
- * @version $Revision: 1.9 $
- * @modified $Date: 2006/03/13 09:37:49 $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2007/01/20 18:45:39 $  $Author: franciscom $
  * @author Martin Havlat
  *
  * Core Functions for Product management (get data)
  * To edit product see ./product.inc.php
  * 
+ * 20070120 - franciscom 
+ * removed "dead code"
+ * added TL_INACTIVE_MARKUP
  */
-
-/*
-function getProducts(&$db,$id = null)
-{
-	$sql = "SELECT * FROM mgtproduct";
-	
-	if (!is_null($id)) {
-		$sql .= " WHERE id = " . $id;
-	}
-	
-	return selectData($db,$sql);
-}
-*/
-
-
-/** collect all information about Product */
-/*
-function getProduct(&$db,$id)
-{
-	$products = getProducts($db,$id);
-
-	return $products ? $products[0] : null;
-}
-*/
-
-
 
 function getAllProductsBut(&$db,$id,&$products)
 {
@@ -82,7 +59,7 @@ function getAccessibleProducts(&$db)
 		{
 			$noteActive = '';
 			if (!$row['active'])
-				$noteActive = '* ';
+				$noteActive = TL_INACTIVE_MARKUP;
 			$arrProducts[$id] = $noteActive . $row['name'];
 		}
 	}

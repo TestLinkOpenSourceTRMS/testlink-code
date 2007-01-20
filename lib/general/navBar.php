@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: navBar.php,v $
  *
- * @version $Revision: 1.19 $
- * @modified $Date: 2006/10/17 20:17:54 $
+ * @version $Revision: 1.20 $
+ * @modified $Date: 2007/01/20 18:45:39 $
  *
  * This file manages the navigation bar. 
 **/
@@ -20,10 +20,13 @@ $tpID = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : null;
 if ($curr_tproject_id)
 	getAccessibleTestPlans($db,$curr_tproject_id,1,$tpID);
 	
+	
+	
 $roles = getAllRoles($db);
 $testprojectRole = null;
 if ($curr_tproject_id && isset($_SESSION['testprojectRoles'][$curr_tproject_id]))
-	$testprojectRole = '['.$roles[$_SESSION['testprojectRoles'][$curr_tproject_id]['role_id']].']';
+	$testprojectRole = TL_ROLES_OPEN_CHAR . 
+	                   $roles[$_SESSION['testprojectRoles'][$curr_tproject_id]['role_id']] . TL_ROLES_CLOSE_CHAR;
 $roleName = $roles[$_SESSION['roleId']];
 
 $countPlans = getNumberOfAccessibleTestPlans($db,$curr_tproject_id, $_SESSION['filter_tp_by_product'],null);
@@ -37,7 +40,7 @@ $updateMainPage = 0;
 if (isset($_GET['testproject']))
 {
 	$updateMainPage = 1;
-	// set product ID for the next session
+	// set test project ID for the next session
 	setcookie('lastProductForUser'. $_SESSION['userID'], $_GET['testproject'], TL_COOKIE_KEEPTIME, '/');
 }
 

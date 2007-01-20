@@ -1,10 +1,11 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: usersview.tpl,v 1.9 2007/01/08 08:06:50 franciscom Exp $
+$Id: usersview.tpl,v 1.10 2007/01/20 18:45:39 franciscom Exp $
 
 Purpose: smarty template - users overview
 
 rev :
+     20070120 - franciscom - role_colour management improved
      20070106 - franciscom - added order by login and order by role
 *}
 {include file="inc_head.tpl"}
@@ -82,7 +83,7 @@ var warning_delete_user = "{lang_get s='warning_delete_user'}";
 		{section name=row loop=$users start=0}
 			{assign var="r_d" value=$users[row].role_description}
 			
-		<tr  style="background-color: {$role_colour[$r_d]};">
+		<tr {if $role_colour[$r_d] neq ''} style="background-color: {$role_colour[$r_d]};" {/if}>
 			<td><a href="lib/usermanagement/usersedit.php?user_id={$users[row].id}"> 
 			    {$users[row].login|escape}
 		      {if $gsmarty_gui->show_icon_edit}

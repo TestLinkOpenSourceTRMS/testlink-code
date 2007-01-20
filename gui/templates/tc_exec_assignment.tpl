@@ -1,9 +1,10 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tc_exec_assignment.tpl,v 1.1 2006/09/15 13:22:10 franciscom Exp $
+$Id: tc_exec_assignment.tpl,v 1.2 2007/01/20 18:45:39 franciscom Exp $
 generate the list of TC that can be removed from a Test Plan 
 
-20060319 - franciscom
+rev :
+     20070120 - franciscom - BUGID 530
 *}
 
 {include file="inc_head.tpl"}
@@ -43,33 +44,53 @@ generate the list of TC that can be removed from a Test Plan
   			<b> {lang_get s='check_uncheck_tc'}</b>
   			</p>
   			<p>
+  			{* 20070117 - franciscom *}
+  			{lang_get s="user_bulk_assignment"}
+  			
+  			{assign var=xdx value=$arrData[tsuite_idx].testsuite.id}
+  			{* Bulk Tester Object ID (BTOID)*}
+  			{assign var=btoid value=bulk_tester_div_$xdx}
+  			<select name="bulk_tester_div[{$xdx}]"  id="{$btoid}">
+      		{html_options options=$users selected=0}
+      	</select>
+      	<input type='button' name='{$arrData[tsuite_idx].testsuite.name|escape}_mua' 
+      	      onclick='javascript: set_combo_if_checkbox("div_{$arrData[tsuite_idx].testsuite.id}",
+      	                                                 "tester_for_tcid_",
+      	                                                 document.getElementById("{$btoid}").value)' 
+      	       value='{lang_get s='btn_do'}' />
+  			<p>
+              	
       {/if}
 
       {if $arrData[tsuite_idx].testcase_qty gt 0 }
           <table cellspacing="0" style="font-size:small;" width="100%">
            <tr style="background-color:blue;font-weight:bold;">
           	<td>&nbsp;</td>
+          	<td>&nbsp;</td>
           	<td align="center">&nbsp;&nbsp;{lang_get s='version'}</td>
           	<td align="center">&nbsp;&nbsp;{lang_get s='user'}</td>
           </tr>
           {foreach from=$arrData[tsuite_idx].testcases item=tcase }
           	{if $tcase.linked_version_id ne 0}
-
+           	  <input type="hidden" name="a_tcid[{$tcase.id}]" value="{$tcase.linked_version_id}">
+     				  <input type="hidden" name="has_prev_assignment[{$tcase.id}]" value="{$tcase.user_id}"}>
+     				  <input type="hidden" name="feature_id[{$tcase.id}]" value="{$tcase.feature_id}"}>
           	  <tr>
             	  <td>
-      				  <input type='checkbox' name='achecked_tc[{$tcase.id}]' value='{$tcase.linked_version_id}'>
-            	  <input type='hidden' name='a_tcid[{$tcase.id}]' value='{$tcase.linked_version_id}'>
+        				  <input type="checkbox" name="achecked_tc[{$tcase.id}]" 
+        				                         id="achecked_tc_{$tcase.id}"  
+        				                         value="{$tcase.linked_version_id}">
+       				  </td>
+            	  <td>
             	  {$tcase.name|escape}
                 </td>
                 <td align="center">
         				{$tcase.tcversions[$tcase.linked_version_id]}
                 </td>
                 <td align="center">
-      		  		<select name="tester_for_tcid[{$tcase.id}]">
+      		  		<select name="tester_for_tcid[{$tcase.id}]" id="tester_for_tcid_{$tcase.id}">
       			  	{html_options options=$users selected=$tcase.user_id}
       				  </select>
-      				  <input type="hidden" name="has_prev_assignment[{$tcase.id}]" value="{$tcase.user_id}"}>
-      				  <input type="hidden" name="feature_id[{$tcase.id}]" value="{$tcase.feature_id}"}>
               </td>
               </tr>
     	      {/if}		

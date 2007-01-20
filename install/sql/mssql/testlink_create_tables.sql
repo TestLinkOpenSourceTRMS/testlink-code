@@ -1,11 +1,17 @@
 --  -----------------------------------------------------------------------------------
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.8 2006/10/24 20:35:01 schlundus Exp $
+-- $Id: testlink_create_tables.sql,v 1.9 2007/01/20 18:45:39 franciscom Exp $
 --
 -- SQL script - create db tables for TL
 -- Database Type: Microsoft SQL Server
 -- 
+-- Rev :
+--       20070120 - franciscom - following BUGID 458 ( really a new feature request)
+--                               two new fields on builds table
+--                               active, open
+--                               
+--                               
 --  -----------------------------------------------------------------------------------
 USE [master]
 GO
@@ -302,6 +308,8 @@ CREATE TABLE [dbo].[builds](
 	[testplan_id] [int] NOT NULL CONSTRAINT [DF_builds_testplan_id]  DEFAULT ((0)),
 	[name] [nvarchar](100) COLLATE Latin1_General_CI_AS NOT NULL CONSTRAINT [DF_builds_name]  DEFAULT (N'undefined'),
 	[notes] [ntext] COLLATE Latin1_General_CI_AS NULL,
+  [active] [tinyint] NOT NULL CONSTRAINT [DF_testplans_active]  DEFAULT ((1)),
+	[open] [tinyint] NOT NULL CONSTRAINT [DF_testplans_open]  DEFAULT ((1)),	
  CONSTRAINT [PK_builds] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC

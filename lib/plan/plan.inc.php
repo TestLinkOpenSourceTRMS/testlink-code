@@ -2,12 +2,15 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: plan.inc.php,v $
- * @version $Revision: 1.41 $
- * @modified $Date: 2007/01/13 23:45:37 $ $Author: schlundus $
+ * @version $Revision: 1.42 $
+ * @modified $Date: 2007/01/20 18:45:39 $ $Author: franciscom $
  * @author 	Martin Havlat
  *
  * Functions for management: 
  * Test Plans, Test Case Suites, Milestones, Testers assignment
+ *
+ * 20070119 - franciscom - BUGID 510 
+ * 
  */
 
 /** include core functions for collect information about Test Plans */
@@ -303,9 +306,12 @@ function deleteMileStone(&$db,$id)
 	return $result ? 1 : 0;
 }
 
+// 20070119 - franciscom - BUGID 510
+//
 function getTestPlanMileStones(&$db,$projID,&$mileStones,$mileStoneID = null)
 {
-	$sql = " SELECT id,name title,date,A as apriority,B bpriority,C cpriority FROM milestones " .
+	$sql = " SELECT id,name AS title,date,A AS apriority, " .
+	       " B AS bpriority, C AS cpriority FROM milestones " .
 	       " WHERE testplan_id = " . $projID ;
 	        
 	if (!is_null($mileStoneID))

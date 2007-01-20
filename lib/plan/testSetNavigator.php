@@ -1,11 +1,12 @@
 <?php
 /** 
 *	TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* 	@version $Id: testSetNavigator.php,v 1.18 2006/11/13 07:10:41 franciscom Exp $
+* 	@version $Id: testSetNavigator.php,v 1.19 2007/01/20 18:45:39 franciscom Exp $
 *	@author Martin Havlat 
 *
 * Used in the remove test case feature
 *
+* 20070120 - franciscom - fixed init of tplan_id.
 * 20061030 - franciscom
 * added management of $getArguments() - [wrongly forgetted]
 */ 	
@@ -17,8 +18,13 @@ testlinkInitPage($db);
 $workPath = null;
 
 $tplan_mgr = new testplan($db);
-$tplan_id = $_SESSION['testPlanId'];
-$tplan_name =$_SESSION['testPlanName'];
+
+// 20070120 - franciscom - 
+// is possible to call this page using a Test Project that have no test plans
+// in this situation the next to entries are undefined in SESSION
+$tplan_id = isset($_SESSION['testPlanId']) ? intval($_SESSION['testPlanId']) : 0;
+$tplan_name =isset($_SESSION['testPlanName']) ? $_SESSION['testPlanName'] : '';
+
 $tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 $tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : '';
 

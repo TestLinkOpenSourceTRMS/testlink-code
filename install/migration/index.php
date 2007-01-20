@@ -1,7 +1,7 @@
 <?php
 /* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: index.php,v 1.2 2007/01/15 08:03:18 franciscom Exp $ 
+$Id: index.php,v 1.3 2007/01/20 14:21:07 franciscom Exp $ 
 
 20060218 - franciscom
 */
@@ -17,7 +17,7 @@ $operation='Migration from 1.6.2';
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-	<title>Testlink <?php echo $_SESSION['testlink_version']  - $operation ?> </title>
+	<title>Testlink <?php echo ($_SESSION['testlink_version'] . "-" . $operation) ?> </title>
 	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
         <style type="text/css">
              @import url('../css/style.css');
@@ -70,9 +70,10 @@ $operation='Migration from 1.6.2';
       THIS MIGRATION PROCESS IS NOT 100% AUTOMATIC.
       </p>
       <ul>
-      <li><span class="headers">STEP ONE:</span> Go back to the main installation screen and start a New Installation.
-      <li><span class="headers">STEP TWO:</span> After a successful installation, return to this page and click
-			<a href="migration_start.php?installationType=<?php echo $operation?>">here</a> to start the migration.
+      <li><span class="headers">STEP ONE:</span> Add this page to your bookmarks or save the URL.
+      <li><span class="headers">STEP TWO:</span> Go back to the main installation screen and start a New Installation.
+      <li><span class="headers">STEP THREE:</span> After a successful installation, return to this page and click
+			<a href="migration_start.php?installationType=<?php echo $operation?>"><b>here</b></a> to start the migration.
 			</ul>
 		</td>
       </tr>

@@ -1,7 +1,12 @@
 <?php
 /*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: migrate_16_to_17.php,v 1.8 2007/01/15 08:03:18 franciscom Exp $ 
+$Id: migrate_16_to_17.php,v 1.9 2007/01/20 14:21:07 franciscom Exp $ 
+
+20070120 - franciscom - feedback improvements
+
+20070119 - franciscom -
+fixed bug in  migrate_tc_specs()
                       
 20070113 - franciscom -                      
 fixed migration of results.
@@ -26,16 +31,17 @@ require_once("../installUtils.php");
 define('CRITICAL_TC_SPECS_QTY',5000);
 define('FEEDBACK_STEP',2500);
 
+define('FULL_FEEDBACK',FALSE);
 
 session_start();
 set_time_limit(60*40); // set_time_limit(t) -> t in seconds
 $inst_type = $_SESSION['installationType'];
-$tl_and_version = "TestLink {$_SESSION['testlink_version']} ";
+$tl_and_version = "TestLink {$_SESSION['testlink_version']}";
 ?>
 
 <html>
 <head>
-<title><?php echo $tl_and_version ?>Installer</title>
+<title><?php echo $tl_and_version ?></title>
         <style type="text/css">
              @import url('../css/style.css');
         </style>
@@ -82,16 +88,6 @@ var DetailController = {
 
 
 <?php
-/*
-require_once( dirname(__FILE__). '/../../lib/functions/database.class.php' );
-require_once(dirname(__FILE__) . "/../../lib/functions/common.php");
-require_once("../installUtils.php");
-
-session_start();
-set_time_limit(300); // set_time_limit(t) -> t in seconds
-$inst_type = $_SESSION['installationType'];
-*/
-
 // -----------------------------------------------------------------------------------
 $db_cfg['source']=array('db_type' => 'mysql',
                         'db_server' => $_SESSION['databasehost'],
@@ -189,8 +185,49 @@ foreach($a_sql as $elem) {$target_db->exec_query($elem);}
 // -----------------------------------------------------------------------------------
 
 $msg_click_to_show=' [Click to show details] ';
-
 echo "<P><hr>";
+
+// -----------------------------------------------------------------------------------
+// To preserve test case ID, I will create first all test cases.
+// Using all these joins we will considered only well formed tc =>
+// no dangling records.
+//
+// 20070103 - franciscom - added prodid column in results record set.
+//
+$sql="SELECT mtc.*, mc.prodid " .
+     " FROM mgtproduct mp, mgtcomponent mc, mgtcategory mk,mgttestcase mtc " .
+     " WHERE mc.prodid=mp.id " .
+     " AND   mk.compid=mc.id " .
+     " AND   mtc.catid=mk.id " .
+     " ORDER BY mtc.id";
+
+$tc_specs=$source_db->fetchRowsIntoMap($sql,'id');
+
+
+$tcspecs_msg="Test Case Specifications:";
+if(!is_null($tc_specs)) 
+{
+  $tc_specs_qty=count($tc_specs);
+  
+  if( $tc_specs_qty > CRITICAL_TC_SPECS_QTY )
+  {
+     echo "<b>Warning!!!! You have a big number of tc specs to migrate ({$tc_specs_qty}) <br>" .
+          "According to your servers processing power, " .
+          "the time to complete migration can exceed 15 minutes. <br>" .
+          "Example: <br>" .
+          "10500 test cases takes 30 min to migrate using " .
+          "a Pentium mobile 1.6GHz with 1.2GB RAM, if you enabled full feedback " .
+          "using: <br> <center>define('FULL_FEEDBACK',TRUE) in migrate_16_to_17.php</center><br><br>" .
+          "You will receive limited feedback on your browser.<br>" .
+          "PLEASE BE Patiente</b><p><hr><p>"; 
+     
+  }
+  
+  $tcspecs_msg .= " (Found " . $tc_specs_qty . " to migrate) ";
+}
+// ------------------------------------------------------------------------------------------------
+
+
 // -----------------------------------------------------------------------------------
 // Get list of 1.6 users
 $sql="SELECT * FROM user";
@@ -219,45 +256,10 @@ if(!is_null($users))
 echo "</div><p>";
 // -----------------------------------------------------------------------------------
 
+
 // -----------------------------------------------------------------------------------
-// To preserve test case ID, I will create first all test cases.
-// Using all these joins we will considered only well formed tc =>
-// no dangling records.
-//
-// 20070103 - franciscom - added prodid column in results record set.
-//
-$sql="SELECT mtc.*, mc.prodid " .
-     " FROM mgtproduct mp, mgtcomponent mc, mgtcategory mk,mgttestcase mtc " .
-     " WHERE mc.prodid=mp.id " .
-     " AND   mk.compid=mc.id " .
-     " AND   mtc.catid=mk.id " .
-     " ORDER BY mtc.id";
-
-$tc_specs=$source_db->fetchRowsIntoMap($sql,'id');
-$msg="Test Case Specifications:";
+$msg=$tcspecs_msg;
 $hhmmss=date("H:i:s");
-
-if(!is_null($tc_specs)) 
-{
-  $tc_specs_qty=count($tc_specs);
-  
-  if( $tc_specs_qty > CRITICAL_TC_SPECS_QTY )
-  {
-     echo "<b>Warning!!!! You have a big number of tc specs to migrate ({$tc_specs_qty}) <br>" .
-          "According to your servers processing power, " .
-          "the time to complete migration can exceed 15 minutes. <br>" .
-          "Example: <br>" .
-          "10500 test cases takes 30 min to migrate using " .
-          "a Pentium mobile 1.6GHz with 1.2GB RAM.<br>" .
-          "You will receive limited feedback on your browser.<br>" .
-          "PLEASE BE Patiente</b><p>"; 
-     
-  }
-  
-  $msg .= " (Found " . $tc_specs_qty . " to migrate) ";
-}
-
-
 echo "<a onclick=\"return DetailController.toggle('details-tcspecs')\" href=\"tcspecs/\">
 <img src='../img/icon-foldout.gif' align='top' title='show/hide'>{$msg} {$msg_click_to_show} {$hhmmss}</a>";
 echo '<div class="detail-container" id="details-tcspecs" style="display: none;">';
@@ -293,10 +295,7 @@ echo "<a onclick=\"return DetailController.toggle('details-kw')\" href=\"kw/\">
 <img src='../img/icon-foldout.gif' align='top' title='show/hide'>Keywords migration:</a>";
 echo '<div class="detail-container" id="details-kw" style="display: none;">';
 
-//echo "<pre>debug 20070103 " . __FUNCTION__ . " --- "; print_r($tc_specs); echo "</pre>";
-
 $keyword_tc=extract_kw_tc_links($source_db,$target_db,$tc_specs);
-//exit();
 migrate_keywords($source_db,$target_db,$products,$keyword_tc,$old_new);
 echo "</div><p>";
 
@@ -373,16 +372,20 @@ echo "<a onclick=\"return DetailController.toggle('details-results')\" href=\"tp
 <img src='../img/icon-foldout.gif' align='top' title='show/hide'>Executions results:</a>";
 echo '<div class="detail-container" id="details-results" style="display: none;">';
 
-// 20070113 - franciscoM
+
+// 20070120 - franciscom
+// added join with build, to filter out results records that belong to deleted builds
+//
+// 20070113 - franciscom
 // added filter on status, because executions with NOT RUN will not be migrated
 // 
 $sql="SELECT MGT.id as mgttcid, R.tcid, R.build_id,R.daterun," .
-     "R.runby,R.notes,R.status " .
-     "FROM mgttestcase MGT,testcase TC,results R " .
-     "WHERE TC.mgttcid=MGT.id " .
-     "AND   TC.id=R.tcid  AND R.status <> 'n'" .
+     " R.runby,R.notes,R.status " .
+     " FROM mgttestcase MGT,testcase TC,results R, build B " .
+     " WHERE TC.mgttcid=MGT.id " .
+     " AND   TC.id=R.tcid  AND R.status <> 'n'" .
+     " AND   B.id=R.build_id " .
      " ORDER BY tcid,build_id";
-echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
 
 $execs=$source_db->get_recordset($sql);
 if(is_null($execs)) 
@@ -393,8 +396,7 @@ else
 {
   migrate_results($source_db,$target_db,$execs,$builds,$users,$map_tc_tcversion,$old_new);
 }
-//echo "</div><p>";
-
+echo "</div><p>";
 
 
 echo "<a onclick=\"return DetailController.toggle('details-bugs')\" href=\"tplan/\">
@@ -440,7 +442,7 @@ $sql="SELECT * from priority";
 $prules=$source_db->fetchRowsIntoMap($sql,'projid');
 if(is_null($prules)) 
 {
-		echo "<span class='notok'>There are no results to be migrated!</span></b>";
+		echo "<span class='notok'>There are no priority rules to be migrated!</span></b>";
 }
 else
 {
@@ -467,7 +469,7 @@ echo "</div><p>";
 
 
 echo "<a onclick=\"return DetailController.toggle('details-risk')\" href=\"tplan/\">
-<img src='../img/icon-foldout.gif' align='top' title='show/hide'>Risk TO BE DONE:</a>";
+<img src='../img/icon-foldout.gif' align='top' title='show/hide'>Risk TO BE DONE - No data wll be migrated:</a>";
 echo '<div class="detail-container" id="details-risk" style="display: none;">';
 echo "</div><p>";
 
@@ -500,6 +502,25 @@ else
 echo "</div><p>";
 
 
+
+echo "<a onclick=\"return DetailController.toggle('details-req_spec_table')\" href=\"tplan/\">
+<img src='../img/icon-foldout.gif' align='top' title='show/hide'> req_spec Table:</a>";
+echo '<div class="detail-container" id="details-req_spec_table" style="display: none;">';
+
+$sql="SELECT * from req_spec";
+$rspec=$source_db->fetchRowsIntoMap($sql,'id');
+if(is_null($rspec)) 
+{
+		echo "<span class='notok'>There are no req specs to be migrated!</span></b>";
+}
+else
+{
+  migrate_req_specs($source_db,$target_db,$rspec,$old_new);
+}
+echo "</div><p>";
+
+
+
 echo "<a onclick=\"return DetailController.toggle('details-reqtable')\" href=\"tplan/\">
 <img src='../img/icon-foldout.gif' align='top' title='show/hide'> Requirements Table:</a>";
 echo '<div class="detail-container" id="details-reqtable" style="display: none;">';
@@ -518,21 +539,7 @@ else
 }
 echo "</div><p>";
 
-echo "<a onclick=\"return DetailController.toggle('details-req_spec_table')\" href=\"tplan/\">
-<img src='../img/icon-foldout.gif' align='top' title='show/hide'> req_spec Table:</a>";
-echo '<div class="detail-container" id="details-req_spec_table" style="display: none;">';
 
-$sql="SELECT * from req_spec";
-$rspec=$source_db->fetchRowsIntoMap($sql,'id');
-if(is_null($rspec)) 
-{
-		echo "<span class='notok'>There are no req specs to be migrated!</span></b>";
-}
-else
-{
-  migrate_req_specs($source_db,$target_db,$rspec,$old_new);
-}
-echo "</div><p>";
 
 echo "<a onclick=\"return DetailController.toggle('details-req_coverage')\" href=\"tplan/\">
 <img src='../img/icon-foldout.gif' align='top' title='show/hide'> Req. Coverage (requirement / test case relationship Table):</a>";
@@ -551,22 +558,34 @@ else
   migrate_req_coverage($source_db,$target_db,$req_cov,$old_new);
 }
 echo "</div><p>";
-
-
-echo "<span class='ok'>Migration process finished!" . date("H:i:s"). "</span></b>";
-
 ?>
   </td>
   </tr>
   </td>
   </tr>
   <tr class="fancyRow2">
-    <td class="border-top-bottom smallText">&nbsp;</td>
+    <td class="border-top-bottom">
+    <?php
+    echo '<span class="headers">Migration process finished! :: ' . date("H:i:s"). "</span></b>";
+    
+    if( isset($_SESSION['basehref']) )
+    {
+     echo '<p><span class="headers">' .
+          '<a href="' . $_SESSION['basehref'] . '">Click Here to login</span></b>';
+    }
+    else
+    {
+      echo '<p><span class="headers">Use your browser to point to your TestLink home page</span></b>';
+    }
+    ?>
+    </td>
     <td class="border-top-bottom smallText" align="right">&nbsp;</td>
   </tr>
 </table>
 </body>
 </html>
+
+
 
 
 
@@ -662,7 +681,6 @@ function migrate_keywords(&$source_db,&$target_db,&$products,&$keyword_tc,&$old_
                "'" . $target_db->prepare_string(trim($value['notes'])) . "')";
           $target_db->exec_query($sql);     
     
-          //echo "<pre>debug 20070103 " . __FUNCTION__ . " --- "; print_r($the_kw); echo "</pre>";
           // 20070103 - franciscom
           if( $link_kw_tc_exists && isset($keyword_tc[$the_kw])) 
           {
@@ -670,11 +688,9 @@ function migrate_keywords(&$source_db,&$target_db,&$products,&$keyword_tc,&$old_
             {
               if($the_prod_id==$prod_id)
               { 
-                //echo "<pre>debug 20070103 ][ " . __FUNCTION__ . " --- "; print_r($the_kw); echo "</pre>";
                 $xsql="INSERT INTO testcase_keywords (keyword_id,testcase_id) " .
                       " VALUES({$value['id']},{$tcid}) ";
                 $target_db->exec_query($xsql);     
-                //echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $xsql . "</b><br>";
                 break;
               }
             }
@@ -755,7 +771,8 @@ echo "</pre>";
 
 
 
-
+// 20070119 - franciscom - found bug due to missing where condition
+//
 // 20061208 - franciscom
 // When the amount of feedback is high (greater than 5000 rows), 
 // old plain series of echo are not good
@@ -783,13 +800,19 @@ function migrate_tc_specs(&$source_db,&$target_db,&$items,&$users)
      $items_processed++;
      if( ($items_processed % FEEDBACK_STEP)== 0 )
      {
-       //echo str_pad($msg,4096);  // from PHP manual notes
-       //echo str_pad('<br><span class="processed">Part I - Processed: ' . $items_processed . " - " . date("H:i:s") . "</span><br>",4096);
+       if( FULL_FEEDBACK )
+       { 
+         echo str_pad($msg,4096);  // from PHP manual notes
+         echo str_pad('<br><span class="processed">Part I - Processed: ' . $items_processed . " - " . date("H:i:s") . "</span><br>",4096);
+       }
        flush(); 
        $msg='';
      } 
   }
-  //echo $msg;
+  if( FULL_FEEDBACK )
+  { 
+    echo $msg;
+  }
   echo str_pad("Finished Part I -" . date("H:i:s"),4096);
   flush(); 
   
@@ -818,6 +841,8 @@ function migrate_tc_specs(&$source_db,&$target_db,&$items,&$users)
        $sql .=",updater_id={$reviewer_id}". 
               ",modification_ts='" . $idata['modified_date'] . "'";
      }
+     // 20070119 - franciscom - very big bug - missing where clause
+     $sql .=" WHERE tcversions.id={$x['id']} ";
      $target_db->exec_query($sql);
       
      $map_tc_tcversion[$item_id]= $x['id'];
@@ -827,16 +852,23 @@ function migrate_tc_specs(&$source_db,&$target_db,&$items,&$users)
      $items_processed++;
      if( ($items_processed % FEEDBACK_STEP)== 0 )
      {
-       //echo str_pad($msg,4096);  // from PHP manual notes
+       if(FULL_FEEDBACK)
+       {
+        echo str_pad($msg,4096);  // from PHP manual notes
+       }
+       
        echo str_pad('<br><span class="processed">Part II - Processed: ' . $items_processed . " - " . date("H:i:s") . "</span><br>",4096);
        flush(); 
        $msg='';
      } 
   }
-  //echo $msg;
+  if(FULL_FEEDBACK)
+  {
+    echo $msg;
+  }  
   flush(); 
   
-  echo "Test Case Specifications MIGRATION ENDED" . date("H:i:s") . "<br>";
+  echo "Test Case Specifications MIGRATION ENDED ::: " . date("H:i:s") . "<br>";
   flush(); 
   
   return($map_tc_tcversion);
@@ -960,6 +992,10 @@ foreach($items as $prod_id => $pd)
 function update_tc_specs_parents(&$source_db,&$target_db,&$tc_specs,&$old_new)
 {
   $tree_mgr=New tree($target_db);
+  
+  $tc_specs_qty = count($tc_specs);
+  echo "<pre>   Number of items to update: " . $tc_specs_qty; echo "</pre>";
+  
   foreach($tc_specs as $item_id => $idata)
   {
     // change_parent($node_id, $parent_id)
@@ -983,7 +1019,11 @@ function update_tc_specs_parents(&$source_db,&$target_db,&$tc_specs,&$old_new)
 //
 function migrate_test_plans(&$source_db,&$target_db,&$tplans,&$old_new)
 {
+  
   $tplan_mgr=New testplan($target_db);
+  $tplan_qty=count($tplans);
+  echo "<pre>   Test plans to migrate: " . $tplan_qty; echo "</pre>";
+  
   foreach($tplans as $item_id => $idata)
   {
     $old_prodid=intval($idata['prodid']);
@@ -1054,26 +1094,36 @@ function migrate_results(&$source_db,&$target_db,&$execs,&$builds,&$users,&$tc_t
   foreach($execs as $idata)
   {
     $old_tplan_id=$builds[$idata['build_id']]['projid'];
-    $tplan_id=$old_new['tplan'][intval($old_tplan_id)];
+    $tplan_id=intval($old_new['tplan'][intval($old_tplan_id)]);
     $build_id=$old_new['build'][$idata['build_id']];
     $has_been_executed = ($idata['status'] != $map_tc_status['not_run'] ? TRUE : FALSE);
 	  $tcversion_id=$tc_tcversion[$idata['mgttcid']];
    
-	  if($has_been_executed)
-	  { 
-	    $user_id=intval(isset($users[$idata['runby']]) ? $users[$idata['runby']]['id'] : $admin_id);  
-			$my_notes = $target_db->prepare_string(trim($idata['notes']));		
-			$sql = "INSERT INTO executions ".
-				     "(build_id,tester_id,status,testplan_id,tcversion_id,execution_ts,notes)".
-				     " VALUES ( {$build_id}, {$user_id}, '" . $idata['status'] . "',".
-				     "{$tplan_id}, {$tcversion_id},'" . $idata['daterun'] . "','{$my_notes}')";
-			$target_db->exec_query($sql);  	     
+    if($build_id != '' && $tplan_id > 0 )
+    {
+  	  if($has_been_executed)
+  	  { 
+  	    $user_id=intval(isset($users[$idata['runby']]) ? $users[$idata['runby']]['id'] : $admin_id);  
+  			$my_notes = $target_db->prepare_string(trim($idata['notes']));		
+  			$sql = "INSERT INTO executions ".
+  				     "(build_id,tester_id,status,testplan_id,tcversion_id,execution_ts,notes)".
+  				     " VALUES ( {$build_id}, {$user_id}, '" . $idata['status'] . "',".
+  				     "{$tplan_id}, {$tcversion_id},'" . $idata['daterun'] . "','{$my_notes}')";
+  			$target_db->exec_query($sql);  	     
+  	  }
+  	  else
+  	  {
+  	    echo "<pre>Not migrated ";  
+  	    echo("status=" . $idata['status'] . " TCID/mgttcid=" . $idata['TCID'] . "/" . $idata['mgttcid']); echo "</pre><br>";  
+  	  }
 	  }
 	  else
 	  {
-	    echo "<pre>Not migrated ";  
-	    echo("status=" . $idata['status'] . " TCID/mgttcid=" . $idata['TCID'] . "/" . $idata['mgttcid']); echo "</pre><br>";  
-	  }
+	      echo "<pre>Not migrated ";  
+  	    echo("TCID/mgttcid=" . $idata['TCID'] . "/" . $idata['mgttcid']);
+  	    echo("BUILDID tx=" . $idata['build_id']); 
+  	    echo "</pre><br>";  
+   }
  }
 } // end function
 
@@ -1117,6 +1167,8 @@ function migrate_tesplan_assignments(&$source_db,&$target_db,&$user_tplans,&$old
 {
   define('NO_RIGHTS',3);
 
+  $counter=0;
+   
   $sql="SELECT * FROM user";
   $users=$source_db->fetchRowsIntoMap($sql,'id');
   
@@ -1143,9 +1195,12 @@ function migrate_tesplan_assignments(&$source_db,&$target_db,&$user_tplans,&$old
              "(user_id,testplan_id,role_id) " .
              "VALUES({$user_id},{$tplan_id},{$user_role})";
         $target_db->exec_query($sql);  	     
+        $counter++;
       }  
     }
   }
+  echo "<pre> Number of user/test plan assignments migrated: " . $counter; echo "</pre>";
+  
   
 } // end function
 
@@ -1162,6 +1217,8 @@ function migrate_tesplan_assignments(&$source_db,&$target_db,&$user_tplans,&$old
 */
 function migrate_prules(&$source_db,&$target_db,&$prules,&$old_new)
 {
+  $prules_qty=count($prules);
+  echo "<pre>Number of rules: " . $prules_qty; echo "</pre>";
   foreach($prules as $item_id => $idata)
   {
     $tplan_id=$old_new['tplan'][intval($item_id)];
@@ -1175,8 +1232,18 @@ function migrate_prules(&$source_db,&$target_db,&$prules,&$old_new)
 } // end function
 
 
+/*
+  function: 
+
+  args :
+  
+  returns: 
+
+*/
 function migrate_milestones(&$source_db,&$target_db,&$ms,&$old_new)
 {
+  $ms_qty=count($ms);
+  echo "<pre>Number of milestones: " . $ms_qty; echo "</pre>";
   foreach($ms as $item_id => $idata)
   {
     $tplan_id=$old_new['tplan'][intval($item_id)];
@@ -1191,32 +1258,48 @@ function migrate_milestones(&$source_db,&$target_db,&$ms,&$old_new)
   }
 } // end function
 
+
 //
 function migrate_bugs($source_db,$target_db,$bugs,$builds,$map_tc_tcversion,$old_new)
 {
-  foreach($bugs as $bdata)
-  {
-     $tcversion_id=$map_tc_tcversion[$bdata['mgttcid']];
-     $sql="SELECT id FROM executions " .
-          "WHERE tcversion_id={$tcversion_id} " .
-          "AND   build_id={$bdata['build_id']}";
-     $exec_id=$target_db->fetchFirstRowSingleColumn($sql,'id');
   
-     if( intval($exec_id) > 0 )
-     {
-        $sql="INSERT INTO execution_bugs " .
-             "(execution_id,bug_id) " .
-             "VALUES({$exec_id}, {$bdata['bug']}) ";
-        $target_db->exec_query($sql);
-        //echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
-     }
+  $bug_qty=count($bugs);
+  if( $bug_qty > 0 )
+  {  
+    echo "<pre>   Number of bugs: " . $bug_qty; echo "</pre>";
+    foreach($bugs as $bdata)
+    {
+       $tcversion_id=$map_tc_tcversion[$bdata['mgttcid']];
+       $sql="SELECT id FROM executions " .
+            "WHERE tcversion_id={$tcversion_id} " .
+            "AND   build_id={$bdata['build_id']}";
+       $exec_id=$target_db->fetchFirstRowSingleColumn($sql,'id');
+    
+       if( intval($exec_id) > 0 )
+       {
+          $sql="INSERT INTO execution_bugs " .
+               "(execution_id,bug_id) " .
+               "VALUES({$exec_id}, {$bdata['bug']}) ";
+          $target_db->exec_query($sql);
+       }
+    } //foreach
+    
   }
+  else
+  {
+      echo "<pre>   Nothing to do </pre>";
+  }
+  
 } // end function
 
 
 // 20060803 - franciscom
 function migrate_requirements(&$source_db,&$target_db,&$req,&$old_new)
 {
+  
+  $req_qty=count($req);
+  echo "<pre>Number of requirements: " . $req_qty; echo "</pre>";
+  
   foreach($req as $req_id => $rdata)
   {
     $sql="INSERT INTO requirements " .
@@ -1247,12 +1330,24 @@ function migrate_requirements(&$source_db,&$target_db,&$req,&$old_new)
     $sql .=") " . $values . ")";
     $exec_id=$target_db->exec_query($sql);
   }
+  
 } // end function
 
 
-// 20060803 - franciscom
+/*
+  function: 
+
+  args :
+  
+  returns: 
+
+*/
 function migrate_req_specs(&$source_db,&$target_db,&$rspec,&$old_new)
 {
+  $counter=0;
+  $rspec_qty=count($rspec);
+  echo "<pre>Number of Requirements Specifications (SRS): " . $rspec_qty; echo "</pre>";
+     
   foreach($rspec as $req_id => $rdata)
   {
 
@@ -1283,21 +1378,33 @@ function migrate_req_specs(&$source_db,&$target_db,&$rspec,&$old_new)
       }
       $sql .=") " . $values . ")";
       $exec_id=$target_db->exec_query($sql);
+      $counter++;
     }
     else
     {
       echo "<font color='red'>Problems migrating REQ_SPEC ID: " .
            "{$rdata['id']} - Product ID:{$rdata['id_product']}</font><br>";
     }
-    
-    
   }
+  
 } // end function
 
 
-// 20060803 - franciscom
+/*
+  function: 
+
+  args :
+  
+  returns: 
+
+  rev :
+        20060803 - franciscom
+*/
 function migrate_req_coverage(&$source_db,&$target_db,&$req_cov,&$old_new)
 {
+  $req_cov_qty=count($req_cov);
+  echo "<pre>Number of relationships: " . $req_cov_qty; echo "</pre>";
+  
   foreach($req_cov as $req_id => $rdata)
   {
     $sql="INSERT INTO req_coverage " .
@@ -1322,6 +1429,10 @@ function migrate_ownership(&$source_db,&$target_db,&$rs,&$map_tc_tcversion,&$old
   $sql="SELECT * FROM user";
   $users=$source_db->fetchRowsIntoMap($sql,'login');
 
+  $qty_item=count($rs);
+  echo "<pre>   Number of ownership assignments to update: " . $qty_item; echo "</pre>";
+  
+  
   foreach($rs as $rid => $rdata)
   {
      
@@ -1350,7 +1461,6 @@ function migrate_ownership(&$source_db,&$target_db,&$rs,&$map_tc_tcversion,&$old
 // 20070103 - franciscom
 function extract_kw_tc_links($source_db,$target_db,$tc_specs)
 {
-  //echo "<pre>debug 20070103 \$tc_specs" . __FUNCTION__ . " --- "; print_r($tc_specs); echo "</pre>";
   $map_kw_tc=null;
   foreach($tc_specs as $tcid => $value)
   {
@@ -1368,7 +1478,6 @@ function extract_kw_tc_links($source_db,$target_db,$tc_specs)
       }
     }  
   }
-  //echo "<pre>debug 20070103 " . __FUNCTION__ . " --- "; print_r($map_kw_tc); echo "</pre>";
   return($map_kw_tc);
 }
 

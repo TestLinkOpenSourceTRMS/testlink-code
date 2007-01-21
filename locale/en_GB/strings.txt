@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.108 $
- * @modified $Date: 2007/01/19 21:16:29 $ $Author: schlundus $
+ * @version $Revision: 1.109 $
+ * @modified $Date: 2007/01/21 19:36:13 $ $Author: schlundus $
  *
  * @author Francisco Mancardi
  *
@@ -1054,9 +1054,11 @@ $TLS_no_tc_spec_av = "No Test Specification available!";
 
 
 // gui/templates/tc_exec_assignment.tpl
+$TLS_btn_do = "Do";
 $TLS_btn_update_selected_tc = "Update selected Test Case(s)";
 $TLS_title_tc_exec_assignment = "Assigning Test Case execution tasks for test plan ";
 $TLS_user = "User";
+$TLS_user_bulk_assignment = "Bulk user assignment";
 
 
 
@@ -1120,10 +1122,6 @@ $TLS_warning_users_will_be_reset = "The affected users will be resetted to guest
 
 // gui/templates/tcexport.tpl
 $TLS_export_with_keywords = "Export with keywords";
-
-
-
-// gui/templates_c/%%99^996^99654D56%%resultsNavigator.tpl.php
 
 
 

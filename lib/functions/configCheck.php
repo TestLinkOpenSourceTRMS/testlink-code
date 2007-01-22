@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: configCheck.php,v ${file_name} $
  *
- * @version $Revision: 1.7 $
- * @modified $Date: 2007/01/11 16:09:52 ${date} ${time} $ by $Author: havlat $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2007/01/22 08:31:13 ${date} ${time} $ by $Author: franciscom $
  *
  * @author Martin Havlat
  * 
@@ -17,6 +17,17 @@
  **/
 // ---------------------------------------------------------------------------------------------------
 
+/*
+  function: 
+           try to get home url.
+           Code from Mantis Bugtracking system
+
+  args :
+  
+  returns: 
+
+ 
+*/
 function get_home_url()
 {
   if ( isset ( $_SERVER['PHP_SELF'] ) ) {
@@ -168,8 +179,15 @@ function getSecurityNotes(&$db)
 		  $securityNotes[] = $ret['msg'];
 	  }
 	}
-	
-		
+
+  // 20070121 - needed when schemas change has been done
+  // This call can be removed when release is stable
+  $my_msg=check_schema_version($db);
+  if( strlen(trim($my_msg)) > 0 )
+  {
+    $securityNotes[] = $my_msg;
+  }
+ 	
 	return $securityNotes;
 }
 
@@ -257,6 +275,42 @@ function checkForRepositoryDir($the_dir)
     $ret['msg'] .= lang_get('does_not_exist');
   }
   return($ret);
+}
+
+
+/*
+  function: check_schema_version
+
+  args :
+  
+  returns: 
+
+*/
+function check_schema_version($db)
+{
+  $sql = "SELECT * FROM db_version ORDER BY upgrade_ts DESC LIMIT 1";
+  $res = $db->exec_query($sql);  
+
+  $myrow = $db->fetch_array($res);
+  switch (trim($myrow['version']))
+  {
+    case '1.7.0 Alpha':
+   	case '1.7.0 Beta 1':
+   	case '1.7.0 Beta 2':
+   	     $msg="You need to upgrade your Testlink Database to 1.7.0 Beta 3 - <br>" .
+   	          '<a href="SCHEMA_CHANGES" style="color: white"> click here to see the Schema changes </a><br>' .
+   	          '<a href="./install/index.php" style="color: white">click here access install and upgrade page </a><br>';
+   	     break;
+   	          
+    case '1.7.0 Beta 3':
+         $msg='';
+   	     break;
+         
+    default:
+   	     $msg="Unknown Schema version, please upgrade your Testlink Database to 1.7 Beta 3";
+   	     break;
+  }
+  return ($msg);
 }
 
 ?>

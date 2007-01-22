@@ -1,5 +1,5 @@
 --  TestLink Open Source Project - http://testlink.sourceforge.net/
---  $Id: testlink_create_default_data.sql,v 1.4 2007/01/16 17:01:28 franciscom Exp $
+--  $Id: testlink_create_default_data.sql,v 1.5 2007/01/22 08:31:13 franciscom Exp $
 --  SQL script - create default data (rights & admin account)
 --
 --  20070116 - franciscom - added missing assignment values
@@ -131,4 +131,4 @@ INSERT INTO "assignment_types" ("id","fk_table","description") VALUES (2,'tcvers
 --
 -- Dumping data for table db_version
 --
-INSERT INTO "db_version" ("version","upgrade_ts") VALUES ('1.7.0 Beta 2','2007-01-06 19:25:35');
+INSERT INTO "db_version" ("version","upgrade_ts") VALUES ('1.7.0 Beta 3','2007-01-21 12:00:00');

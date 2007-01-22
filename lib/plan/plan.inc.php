@@ -2,12 +2,15 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: plan.inc.php,v $
- * @version $Revision: 1.42 $
- * @modified $Date: 2007/01/20 18:45:39 $ $Author: franciscom $
+ * @version $Revision: 1.43 $
+ * @modified $Date: 2007/01/22 08:31:14 $ $Author: franciscom $
  * @author 	Martin Havlat
  *
  * Functions for management: 
  * Test Plans, Test Case Suites, Milestones, Testers assignment
+ *
+ * 20070121 - franciscom - deprecated insertTestPlanBuild()
+ *                         use testplan->create_build() method
  *
  * 20070119 - franciscom - BUGID 510 
  * 
@@ -371,78 +374,6 @@ function getUsersOfPlan(&$db,$id)
 	}
 	return ($arrUsers);
 }
-
-
-
-// 20050815 - scs - $notes now became a default parameter
-// 20050905 - scs - function now returns the build value
-// 20050921 - fm - refactoring build
-// 20060311 - kl - adjusting SQL to 1.7 schema
-function insertTestPlanBuild(&$db,$buildName,$testplanID,$notes = '')
-{
-	$sql = " INSERT INTO builds (testplan_id,name,notes) " .
-	       " VALUES ('". $testplanID . "','" . $db->prepare_string($buildName) . "','" . 
-	       $db->prepare_string($notes) . "')";
-	       
-	$new_build_id = 0;
-	$result = $db->exec_query($sql);
-	if ($result)
-	{
-		$new_build_id = $db->insert_id('builds');
-	}
-	
-	return $new_build_id;
-}
-
-// 20050914 - fm - using also mgtcategory changed return type
-//20051112 - scs - removed non-existing MGTCOMP.name order by column
-function getAllTestPlanComponentCategories(&$db,$testPlanID,$compID)
-{
-	$aCategories = array();
-	$query = " SELECT CAT.id, MGTCAT.name, importance, risk, owner " .
-	         " FROM component COMP, category CAT, mgtcategory MGTCAT " .
-	         " WHERE CAT.mgtcatid = MGTCAT.id " .
-	         " AND CAT.compid = COMP.id " .
-	         " AND COMP.projid = " .	$testPlanID  . 
-	         " AND COMP.id = " . $compID . 
-	         " ORDER BY MGTCAT.CATorder";
-	         
-	$result = $db->exec_query($query);
-	if ($result)
-	{
-		while($row = $db->fetch_array($result))
-		{
-			$aCategories[] = $row;
-		}	
-	}
-	
-	return $aCategories;
-}
-
-
-/*
-20050914 - fm - 
-using also mgtcategory
-changed return type
-*/
-function getCategories_TC_ids(&$db,$catIDs)
-{
-	$tcIDs = array();
-	if (sizeof($catIDs))
-	{
-		$catIDList = implode(",",$catIDs);
-		$sql = "SELECT id FROM testcase WHERE catid IN ({$catIDList})";
-		
-		$result = $db->exec_query($sql);
-		if ($result)
-		{
-			while ($row = $db->fetch_array($result))
-				$tcIDs[] = $row['id'];
-		}
-	}	
-	return $tcIDs;
-}
-
 
 /*
  delete from all tables related to Test Plan (tescase, results, bugs, category)

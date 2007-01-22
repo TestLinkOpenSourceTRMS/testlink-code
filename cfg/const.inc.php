@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: const.inc.php,v $
  *
- * @version $Revision: 1.4 $
- * @modified $Date: 2007/01/20 18:45:35 $ by $Author: franciscom $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2007/01/22 08:31:13 $ by $Author: franciscom $
  * @author Martin Havlát
  *
  * SCOPE:
@@ -16,6 +16,8 @@
  * 
  *-------------------------------------------------------------------
  * Revisions:
+ *  20070120 - franciscom - Beta 3, due changes in builds table
+ *
  *  20070120 - franciscom - 
  *  added TL_ROLES_OPEN_CHAR,TL_ROLES_CLOSE_CHAR,TL_INACTIVE_MARKUP
  *
@@ -42,7 +44,7 @@ define('TL_TEMP_PATH', TL_ABS_PATH . 'gui'.DS.'templates_c'.DS);
 /** [GUI] */
 
 /* Release MUST BE changed at the release day */
-define('TL_VERSION', '1.7 Beta 2'); 
+define('TL_VERSION', '1.7 Beta 3'); 
 define('TL_BACKGROUND_DEFAULT', "#9BD"); // default color
 define('TL_COOKIE_KEEPTIME', (time()+60*60*24*30)); // 30 days
 
@@ -240,6 +242,8 @@ $g_role_colour = array (
 
 $g_tc_risks = array('L1', 'L2', 'L3','M1', 'M2', 'M3','H1', 'H2', 'H3');
 
+// 
+// [FUNCTION MAGIC NUMBERS] 
 // used in several functions instead of MAGIC NUMBERS - Don't change 
 define('ALL_PRODUCTS',0);
 define('TP_ALL_STATUS',null);
@@ -254,6 +258,9 @@ define('ANY_BUILD',null);
 define('GET_NO_EXEC',1);
 
 
+// 20070121 - franciscom
+define('ACTIVE',1);
+define('OPEN',1);
 
 // -------------------------------------------------------------------
 

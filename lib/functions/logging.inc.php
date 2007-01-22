@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: logging.inc.php,v $
  *
- * @version $Revision: 1.9 $
- * @modified $Date: 2006/12/05 08:20:19 $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2007/01/22 08:31:13 $
  *
  * @author Martin Havlat
  *
@@ -19,9 +19,9 @@
 **/
 /** Set default logging level */
 // 20061203 - franciscom
-if( !defined(TL_LOG_LEVEL_DEFAULT) )
+if( !defined('TL_LOG_LEVEL_DEFAULT') )
 {
-  define(TL_LOG_LEVEL_DEFAULT,'NONE');
+  define('TL_LOG_LEVEL_DEFAULT','NONE');
 }
 tlLogSetLevel(TL_LOG_LEVEL_DEFAULT);
 

@@ -1,6 +1,6 @@
 <?php
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
- *$Id: resultsMoreBuilds.inc.php,v 1.50 2006/06/05 05:33:51 kevinlevy Exp $ 
+ *$Id: resultsMoreBuilds.inc.php,v 1.51 2007/01/22 08:31:13 franciscom Exp $ 
  * 
  * @author Kevin Levy
  *
@@ -105,7 +105,7 @@ function createTestPlanReportHeader($testPlanName, $build_name_set,
 function createResultsForTestPlan(&$db,$testPlanName, $testPlanID, 
 				  $buildsArray, $keyword, $owner, $lastStatus, $xls, $componentsSelected)
 {
-
+ 
   $totalCasesForTestPlan = 0;
   $totalLastResultPassesForTestPlan = 0;
   $totalLastResultFailuresForTestPlan = 0;

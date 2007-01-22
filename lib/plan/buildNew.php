@@ -5,10 +5,11 @@
  *
  * Filename $RCSfile: buildNew.php,v $
  *
- * @version $Revision: 1.26 $
- * @modified $Date: 2007/01/13 23:45:37 $ $Author: schlundus $
+ * @version $Revision: 1.27 $
+ * @modified $Date: 2007/01/22 08:31:14 $ $Author: franciscom $
  *
  * rev :
+ *       20070121 - franciscom - active and open management
  *       20061118 - franciscom - added check_build_name_existence()
  *
 */
@@ -26,6 +27,11 @@ $buildID = isset($_REQUEST['buildID']) ? intval($_REQUEST['buildID']) : 0;
 $build_name = isset($_REQUEST['build_name']) ? trim(strings_stripSlashes($_REQUEST['build_name'])) : null;
 $notes = isset($_REQUEST['notes']) ? strings_stripSlashes($_REQUEST['notes']) : null;
 $tpName = $_SESSION['testPlanName'];
+
+$is_active = isset($_REQUEST['is_active']) ? intval($_REQUEST['is_active']) : ACTIVE;
+$is_open = isset($_REQUEST['is_open']) ? intval($_REQUEST['is_open']) : OPEN;
+
+
 $the_builds = $tplan_mgr->get_builds_for_html_options($tpID);
 
 $smarty = new TLSmarty();
@@ -51,12 +57,13 @@ if (strlen($build_name))
 		$can_insert_or_update = 1;
 	}
 }
+
 if(isset($_REQUEST['newBuild']))
 {
 	$of->Value = $notes;
 	if ($can_insert_or_update)
 	{
-		if (!insertTestPlanBuild($db,$build_name,$tpID,$notes))
+		if (!$tplan_mgr->create_build($tpID,$build_name,$notes,$is_active,$is_open))
 			$sqlResult = lang_get("cannot_add_build");
 		else
 		{

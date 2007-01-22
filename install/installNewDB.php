@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: installNewDB.php,v 1.23 2006/10/16 09:33:08 franciscom Exp $ */
+/* $Id: installNewDB.php,v 1.24 2007/01/22 08:31:13 franciscom Exp $ */
 /*
 Parts of this file has been taken from:
 Etomite Content Management System
@@ -8,17 +8,10 @@ Copyright 2003, 2004 Alexander Andrew Butter
 */
 
 /*
+20070121 - franciscom -
+upgrade code for 1.7 Beta
+
 20060523 - franciscom - adding postgres support
-
-20050918 - franciscom -
-Found error upgrading from 1.0.4 to 1.6 on RH
-due to case sensitive on table name. (USER)
-
-20050829 - franciscom -
-BUGID Mantis: 0000073: DB Creation fails with no message
-wrong call to create_user_for_db()
-
-
 */
 
 require_once( dirname(__FILE__). '/../lib/functions/database.class.php' );
@@ -113,14 +106,7 @@ TestLink setup will now attempt to setup the database:<br />
 $update_pwd=0;
 $create = false;
 $errors = 0;
-
-
-// $table_prefix = $_SESSION['tableprefix'];
 $table_prefix ='';
-
-// 20050731 - fm
-//$adminname = $_SESSION['cmsadmin'];
-//$adminpass = $_SESSION['cmspassword'];
 $adminname = '';
 $adminpass = '';
 
@@ -277,8 +263,9 @@ if ($inst_type == "upgrade" )
   if ( $pwd_field_len == LEN_PWD_TL_1_0_4 )
   {
     $update_pwd=1;
-    echo "<br>You are upgrading from a TL pre 1.5" .
-         "<br>user's password will be crypted using MD5"; 	
+    echo "<br>You are trying to upgrade from a TL pre 1.5" .
+         "<br>this kind of upgrade is NOT AVAILABLE"; 	
+    close_html_and_exit();          
   }
 }
 // ------------------------------------------------------------------------------------------------
@@ -287,23 +274,17 @@ if ($inst_type == "upgrade" )
 // 20050908 - fm
 if ( $inst_type == "upgrade") 
 {
-  if ($update_pwd)
-  {
-  	$sql_upd_dir = 'sql/alter_tables/1.0.4_to_1.6/';
-  }
-  else
-  {
     $the_version_table=$my_ado->MetaTables('TABLES',false,'db_version');
     if( count($the_version_table) == 0 )
     {
-      // We are upgrading from a pre 1.6 version
-  	  $sql_upd_dir = 'sql/alter_tables/1.5_to_1.6/';
+       echo "<br>You are trying to upgrade from a TL pre 1.7" .
+            "<br>this kind of upgrade is NOT AVAILABLE"; 	
+             close_html_and_exit();          
     }
     else
     {
-      // 20050927 - fm
       // try to know what db version is installed
-      $sql = "SELECT * FROM db_version ORDER BY upgrade_date DESC LIMIT 1";
+      $sql = "SELECT * FROM db_version ORDER BY upgrade_ts DESC LIMIT 1";
       $res = $db->exec_query($sql);  
       if (!$res)
       {
@@ -312,24 +293,32 @@ if ( $inst_type == "upgrade")
       }
 
       $myrow = $db->fetch_array($res);
-      switch (trim($myrow['version']))
+      $schema_version=trim($myrow['version']);
+      
+      switch ($schema_version)
       {
-      	case '1.6':
+      	case '1.7.0 Beta 1':
+      	case '1.7.0 Beta 2':
+      	$sql_upd_dir = "sql/alter_tables/1.7/{$db_type}/beta_3/";
       	break;
       	
-        case '1.6 BETA 1':
-        $sql_upd_dir = 'sql/alter_tables/1.6/';
-        break;
-       
         default:
-        echo "<br>Upgrade not need from version " . trim($myrow['version']) . "<br>";
-        echo "Just open your Browser and login to TestLink <br>";
+        if( strlen($schema_version) == 0 )
+        {
+          echo "<br>Sorry but I have got no schema version information, don't know how to upgrade <br>";
+        }
+        else
+        {
+          echo "<br>Sorry but I don't know how to upgrade from your schema version: " . $schema_version . "<br>";
+        }
+        echo "Please contact Test Link develpment Team<br>";
         echo "<br>bye!";
-        exit(); 
-        break;
+        close_html_and_exit();          
+        break;  
+
+        
       }
     }
-  }
 
   //
   $sql_schema = getDirFiles($sql_upd_dir,ADD_DIR);

@@ -1,7 +1,7 @@
 <?php
 /*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: migrate_16_to_17.php,v 1.9 2007/01/20 14:21:07 franciscom Exp $ 
+$Id: migrate_16_to_17.php,v 1.10 2007/01/23 00:48:17 jbarchibald Exp $ 
 
 20070120 - franciscom - feedback improvements
 
@@ -1279,7 +1279,7 @@ function migrate_bugs($source_db,$target_db,$bugs,$builds,$map_tc_tcversion,$old
        {
           $sql="INSERT INTO execution_bugs " .
                "(execution_id,bug_id) " .
-               "VALUES({$exec_id}, {$bdata['bug']}) ";
+               "VALUES({$exec_id}, '{$bdata['bug']}') ";
           $target_db->exec_query($sql);
        }
     } //foreach

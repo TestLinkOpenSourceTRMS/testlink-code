@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.109 $
- * @modified $Date: 2007/01/21 19:36:13 $ $Author: schlundus $
+ * @version $Revision: 1.110 $
+ * @modified $Date: 2007/01/23 08:04:19 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
@@ -364,11 +364,13 @@ $TLS_title_last_mod = "Last modified on ";
 
 
 // gui/templates/buildNew.tpl
+$TLS_active="Active";
 $TLS_alt_edit_build = "Click here to edit this build";
 $TLS_enter_build = "Build Title (unique identifier)";
 $TLS_enter_build_notes = "Description";
 $TLS_msg_build = "Notes: Each build is related to the active Test Plan. Description should include: list of delivered packages, approvals, status,etc.";
 $TLS_no_builds = "No builds are defined within this Test Plan!";
+$TLS_open="Open";
 $TLS_test_plan = "Test Plan";
 $TLS_th_delete = "Delete?";
 $TLS_th_description = "Description";

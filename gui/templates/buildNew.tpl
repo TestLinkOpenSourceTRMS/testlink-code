@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: buildNew.tpl,v 1.16 2007/01/23 07:51:23 franciscom Exp $
+$Id: buildNew.tpl,v 1.17 2007/01/23 09:03:22 franciscom Exp $
 
 Purpose: smarty template - Add new build and show existing
 
@@ -114,7 +114,7 @@ function validateForm(f)
   				     <img style="border:none" 
   				            title="{lang_get s='alt_active_build'}" 
   				            alt="{lang_get s='alt_active_build'}" 
-  				            src="icons/apply_f2_16.png"/>
+  				            src="{$smarty.const.TL_THEME_IMG_DIR}/apply_f2_16.png"/>
   				    {else}
   				    &nbsp;        
   				    {/if}
@@ -123,7 +123,7 @@ function validateForm(f)
   				     <img style="border:none" 
   				            title="{lang_get s='alt_open_build'}" 
   				            alt="{lang_get s='alt_open_build'}" 
-  				            src="icons/apply_f2_16.png"/>
+  				            src="{$smarty.const.TL_THEME_IMG_DIR}/apply_f2_16.png"/>
   				    {else}
   				    &nbsp;        
   				    {/if}
@@ -132,7 +132,7 @@ function validateForm(f)
   				       <img style="border:none" 
   				            title="{lang_get s='alt_delete_build'}" 
   				            alt="{lang_get s='alt_delete_build'}" 
-  				            src="{smarty.const.TL_THEME_IMG_DIR}/trash.png"/>
+  				            src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png"/>
   				   </a>
   				</td>
   			</tr>

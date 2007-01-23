@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: const.inc.php,v $
  *
- * @version $Revision: 1.5 $
- * @modified $Date: 2007/01/22 08:31:13 $ by $Author: franciscom $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2007/01/23 07:51:23 $ by $Author: franciscom $
  * @author Martin Havlát
  *
  * SCOPE:
@@ -16,6 +16,7 @@
  * 
  *-------------------------------------------------------------------
  * Revisions:
+ *  20070122 - franciscom - INACTIVE,CLOSED 
  *  20070120 - franciscom - Beta 3, due changes in builds table
  *
  *  20070120 - franciscom - 
@@ -260,8 +261,10 @@ define('GET_NO_EXEC',1);
 
 // 20070121 - franciscom
 define('ACTIVE',1);
+define('INACTIVE',0);
 define('OPEN',1);
+define('CLOSED',0);
+
 
 // -------------------------------------------------------------------
-
 ?>

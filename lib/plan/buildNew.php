@@ -5,10 +5,11 @@
  *
  * Filename $RCSfile: buildNew.php,v $
  *
- * @version $Revision: 1.27 $
- * @modified $Date: 2007/01/22 08:31:14 $ $Author: franciscom $
+ * @version $Revision: 1.28 $
+ * @modified $Date: 2007/01/23 07:51:23 $ $Author: franciscom $
  *
  * rev :
+ *       20070122 - franciscom - use build_mgr methods
  *       20070121 - franciscom - active and open management
  *       20061118 - franciscom - added check_build_name_existence()
  *
@@ -22,15 +23,19 @@ require_once("../../third_party/fckeditor/fckeditor.php");
 testlinkInitPage($db);
 
 $tplan_mgr = new testplan($db);
+$build_mgr = new build_mgr($db);
+
 $tpID    = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0;
 $buildID = isset($_REQUEST['buildID']) ? intval($_REQUEST['buildID']) : 0;
 $build_name = isset($_REQUEST['build_name']) ? trim(strings_stripSlashes($_REQUEST['build_name'])) : null;
 $notes = isset($_REQUEST['notes']) ? strings_stripSlashes($_REQUEST['notes']) : null;
 $tpName = $_SESSION['testPlanName'];
 
-$is_active = isset($_REQUEST['is_active']) ? intval($_REQUEST['is_active']) : ACTIVE;
-$is_open = isset($_REQUEST['is_open']) ? intval($_REQUEST['is_open']) : OPEN;
+$is_active = isset($_REQUEST['is_active']) ? ACTIVE : INACTIVE;
+$is_open = isset($_REQUEST['is_open']) ? OPEN : CLOSED;
 
+
+echo "<pre>debug 20070122 " . __FUNCTION__ . " --- "; print_r($_REQUEST); echo "</pre>";
 
 $the_builds = $tplan_mgr->get_builds_for_html_options($tpID);
 
@@ -63,7 +68,7 @@ if(isset($_REQUEST['newBuild']))
 	$of->Value = $notes;
 	if ($can_insert_or_update)
 	{
-		if (!$tplan_mgr->create_build($tpID,$build_name,$notes,$is_active,$is_open))
+		if (!$build_mgr->create($tpID,$build_name,$notes,$is_active,$is_open))
 			$sqlResult = lang_get("cannot_add_build");
 		else
 		{
@@ -77,7 +82,7 @@ if(isset($_REQUEST['newBuild']))
 if(isset($_REQUEST['del_build']))
 {
 	$sqlResult = 'ok';
-	if (!delete_build($db,$buildID))
+	if (!$build_mgr->delete($buildID))
 	{
 		$sqlResult = lang_get("cannot_delete_build");
 	}
@@ -91,16 +96,22 @@ if(isset($_REQUEST['edit_build']))
 	$button_value = lang_get('btn_save');
 	if(strcasecmp($_REQUEST['edit_build'], "load_info") == 0 )
 	{
-		$my_b_info = getBuild_by_id($db,$buildID);
+		$my_b_info = $build_mgr->get_by_id($buildID);
 		$build_name = $my_b_info['name'];
 		$of->Value = $my_b_info['notes'];
+		$is_active = $my_b_info['active'];
+		$is_open = $my_b_info['open'];
+		
 	}
 	else
 	{
+    echo "<pre>debug 20070122 " . __FUNCTION__ . " --- "; print_r($is_active); echo "</pre>";
+    echo "<pre>debug 20070122 " . __FUNCTION__ . " --- "; print_r($is_open); echo "</pre>";
+    
 		$of->Value = $notes;
 		if ($can_insert_or_update)
 		{
-		   	if (!updateTestPlanBuild($db,$buildID,$build_name,$notes))
+		   	if (!$build_mgr->update($buildID,$build_name,$notes,$is_active,$is_open))
 			 	$sqlResult = lang_get("cannot_update_build");
 			else
 			{
@@ -117,6 +128,11 @@ if(isset($_REQUEST['edit_build']))
 
 // Refesh data after operation
 $the_builds = $tplan_mgr->get_builds($tpID);
+
+
+$smarty->assign('is_active', $is_active);
+$smarty->assign('is_open', $is_open);
+
 
 $smarty->assign('TPname', $tpName);
 $smarty->assign('arrBuilds', $the_builds);

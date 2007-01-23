@@ -2,11 +2,13 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.21 $
- * @modified $Date: 2007/01/22 08:31:13 $ $Author: franciscom $
+ * @version $Revision: 1.22 $
+ * @modified $Date: 2007/01/23 07:51:23 $ $Author: franciscom $
  * @author franciscom
  *
  * rev :
+ *       20070120 - franciscom - added Class build_mgr
+ *
  *       20070120 - franciscom - added active and open argument
  *                               to build functions
  *                               get_builds_for_html_options()
@@ -753,7 +755,7 @@ function check_build_name_existence($tproject_id,$build_name,$case_sensitive=0)
 
 
 /*
-  function: get_max_build_id
+  function: create_build
 
   args :
         $tplan_id
@@ -786,11 +788,162 @@ function create_build($tplan_id,$name,$notes = '',$active=1,$open=1)
 	return $new_build_id;
 }
 
+} // end class testplan
+
+
+
+
+// Build Manager Class
+class build_mgr
+{
+	var $db;
+	
+  /*
+   function: 
+
+   args :
+  
+   returns: 
+
+  */
+	function build_mgr(&$db)
+	{
+		$this->db = &$db;	
+	}
+
+
+  /*
+    function: create
+  
+    args :
+          $tplan_id
+          $name
+          $notes
+          [$active]: default: 1 
+          [$open]: default: 1 
+          
+          
+    
+    returns: 
+  
+    rev :
+  */
+  function create($tplan_id,$name,$notes = '',$active=1,$open=1)
+  {
+  	$sql = " INSERT INTO builds (testplan_id,name,notes,active,open) " .
+  	       " VALUES ('". $tplan_id . "','" . 
+  	                     $this->db->prepare_string($name) . "','" . 
+  	                     $this->db->prepare_string($notes) . "'," .
+  	                     "{$active},{$open})";
+  	       
+  	$new_build_id = 0;
+  	$result = $this->db->exec_query($sql);
+  	if ($result)
+  	{
+  		$new_build_id = $this->db->insert_id('builds');
+  	}
+  	
+  	return $new_build_id;
+  }
+
+
+  /*
+    function: update
+  
+    args :
+          $id
+          $name
+          $notes
+          [$active]: default: 1 
+          [$open]: default: 1 
+          
+          
+    
+    returns: 
+  
+    rev :
+  */
+  function update($id,$name,$notes,$active=null,$open=null)
+  {
+  	$sql = " UPDATE builds " .
+  	       " SET name='" . $this->db->prepare_string($name) . "'," .  
+  	       "     notes='" . $this->db->prepare_string($notes) . "'";
+  	       
+  	if( !is_null($active) )
+  	{
+  	   $sql .=" , active=" . intval($active);  
+  	}       
+  	
+  	if( !is_null($open) )
+  	{
+  	   $sql .=" , open=" . intval($open);  
+  	}       
+  	
+  	       
+  	$sql .= " WHERE id={$id}";
+  	       
+  	$result = $this->db->exec_query($sql);
+  	return $result ? 1 : 0;
+  }
 
 
 
 
 
+  /*
+    function: delete
+  
+    args :
+          $id
+         
+    
+    returns: 
+  
+    rev :
+  */
+  function delete($id)
+  {
+    
+    // 
+  	$sql = " DELETE FROM executions " .
+  	       " WHERE build_id={$id}";
+  	       
+  	$result=$this->db->exec_query($sql);
+  	
+  	//        
+  	$sql = " DELETE FROM builds " .
+  	       " WHERE id={$id}";
+  	
+  	$result=$this->db->exec_query($sql);
+  	return $result ? 1 : 0;
+  }
 
-} // end class
+
+  /*
+    function: get_by_id
+  
+    args :
+          $id
+         
+    
+    returns: 
+  
+    rev :
+  */
+  function get_by_id($id)
+  {
+  	$sql = "SELECT * FROM builds WHERE id = {$id}";
+  	$result = $this->db->exec_query($sql);
+  	$myrow = $this->db->fetch_array($result);
+  	return $myrow;
+  }
+
+
+
+
+
+	
+
+} // end class build_mgr
+
 ?>

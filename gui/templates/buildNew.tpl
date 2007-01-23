@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: buildNew.tpl,v 1.15 2007/01/13 23:45:36 schlundus Exp $
+$Id: buildNew.tpl,v 1.16 2007/01/23 07:51:23 franciscom Exp $
 
 Purpose: smarty template - Add new build and show existing
 
@@ -53,17 +53,27 @@ function validateForm(f)
 	<table class="common" style="width:80%">
 		<tr>
 			<th>{lang_get s='enter_build'}</th>
-		</tr>
-		<tr>
 			<td><input type="text" name="build_name" maxlength="{#BUILD_NAME_MAXLEN#}" 
 			           value="{$build_name|escape}" size="{#BUILD_NAME_SIZE#}"/>
 			  				{include file="error_icon.tpl" field="build_name"}
 			</td>
 		</tr>
-		<tr><th>{lang_get s='enter_build_notes'}</th></tr>
-		<tr>
+		<tr><th>{lang_get s='enter_build_notes'}</th>
 			<td>{$notes}</td>
 		</tr>
+		<tr><th>{lang_get s='active'}</th>
+		    <td><input type="checkbox"  name="is_active" id="is_active"  
+		               {if $is_active eq 1} checked {/if} />
+        </td>
+		</tr>
+    <tr>
+		    <th>{lang_get s='open'}</th>
+		    <td><input type="checkbox"  name="is_open" id="is_open"  
+		               {if $is_open eq 1} checked {/if} />
+        </td>
+		</tr>
+
+    
 	</table>
 	<p>{lang_get s='msg_build'}</p>
 	<div class="groupBtn">	
@@ -83,6 +93,8 @@ function validateForm(f)
   		<tr>
   			<th>{lang_get s='th_title'} {$TPname|escape}</th>
   			<th>{lang_get s='th_description'}</th>
+  			<th style="width: 30px;">{lang_get s='th_active'}</th>
+  			<th style="width: 30px;">{lang_get s='th_open'}</th>
   			<th style="width: 60px;">{lang_get s='th_delete'}</th>
   		</tr>
   		{foreach item=build from=$arrBuilds}
@@ -97,12 +109,30 @@ function validateForm(f)
   					     {/if}    
   					  </a>   
   				</td>
-  				<td>{$build.notes|truncate:120}</td>
-  				<td><a href="javascript:deleteBuild_onClick({$build.id},'{$warning_msg}')">
+  				<td>{$build.notes|truncate:#BUILD_NOTES_TRUNCATE_LEN#}</td>
+  				<td align="center">{if $build.active eq 1} 
+  				     <img style="border:none" 
+  				            title="{lang_get s='alt_active_build'}" 
+  				            alt="{lang_get s='alt_active_build'}" 
+  				            src="icons/apply_f2_16.png"/>
+  				    {else}
+  				    &nbsp;        
+  				    {/if}
+  				</td>
+  				<td align="center">{if $build.open eq 1} 
+  				     <img style="border:none" 
+  				            title="{lang_get s='alt_open_build'}" 
+  				            alt="{lang_get s='alt_open_build'}" 
+  				            src="icons/apply_f2_16.png"/>
+  				    {else}
+  				    &nbsp;        
+  				    {/if}
+  				</td>
+  				<td align="center"><a href="javascript:deleteBuild_onClick({$build.id},'{$warning_msg}')">
   				       <img style="border:none" 
   				            title="{lang_get s='alt_delete_build'}" 
   				            alt="{lang_get s='alt_delete_build'}" 
-  				            src="icons/thrash.png"/>
+  				            src="{smarty.const.TL_THEME_IMG_DIR}/trash.png"/>
   				   </a>
   				</td>
   			</tr>

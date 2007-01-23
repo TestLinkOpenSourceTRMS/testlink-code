@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.92 $
- * @modified $Date: 2007/01/20 18:45:36 $ by $Author: franciscom $
+ * @version $Revision: 1.93 $
+ * @modified $Date: 2007/01/23 14:02:37 $ by $Author: franciscom $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink 
@@ -229,22 +229,23 @@ define('TL_IMPORT_ROW_MAX', '10000'); // in chars
 define('TL_FRMWORKAREA_LEFT_FRAME_WIDTH', "30%"); 
 
 /** CSS themes - modify if you create own*/
-//define('TL_THEME_CSS_DIR','gui/css/');
+//define('TL_THEME_CSS_DIR','gui/css/theme_m0/');
 define('TL_THEME_CSS_DIR','gui/css/theme_m1/');
 
 define('TL_TESTLINK_CSS',TL_THEME_CSS_DIR . 'testlink.css');
 define('TL_LOGIN_CSS', TL_TESTLINK_CSS);
 
-// path to IMAGE directory
-define('TL_THEME_IMG_DIR','icons/');
+// path to IMAGE directory - DO NOT ADD FINAL /
+//define('TL_THEME_IMG_DIR','gui/images/theme_m0');
+define('TL_THEME_IMG_DIR','gui/images/theme_m1');
 
 // logo for login page, if not defined nothing happens
 define('LOGO_LOGIN_PAGE',
-       '<img alt="TestLink" title="TestLink" src="' . TL_THEME_IMG_DIR . 'company_logo.png" />');
+       '<img alt="TestLink" title="TestLink" src="' . TL_THEME_IMG_DIR . '/company_logo.png" />');
 
 // logo for navbar page
 define('LOGO_NAVBAR',
-       '<img alt="TestLink" title="TestLink" src="' . TL_THEME_IMG_DIR . 'company_logo.png" />');
+       '<img alt="TestLink" title="TestLink" src="' . TL_THEME_IMG_DIR . '/company_logo.png" />');
 
 // use when componing an title using several strings
 define('TITLE_SEP',' : ');
@@ -338,7 +339,7 @@ define('TL_DOC_BASIC_CSS', TL_THEME_CSS_DIR . 'tl_doc_basic.css');
 define('TL_DOC_COMPANY', "Testlink Development Team [configure using TL_DOC_COMPANY]");
 define('TL_DOC_COMPANY_LOGO', 
        '<img alt="TestLink logo" title="configure using TL_DOC_COMPANY_LOGO" src="%BASE_HREF%' .
-             TL_THEME_IMG_DIR . 'company_logo.png" />');
+             TL_THEME_IMG_DIR . '/company_logo.png" />');
 define('TL_DOC_COPYRIGHT', 'copyright - Testlink Development Team [configure using TL_DOC_COPYRIGHT]');
 define('TL_DOC_CONFIDENT', 'this document is not confidential [configure using TL_DOC_CONFIDENT]');
 
@@ -397,7 +398,7 @@ $g_attachments->action_on_save_empty_title='none';
 // 'show_label' -> the value of $g_attachments->access_string will be used .
 $g_attachments->action_on_display_empty_title='show_icon';
 
-$g_attachments->access_icon='<img src="' . TL_THEME_IMG_DIR . 'new_f2_16.png" style="border:none">';
+$g_attachments->access_icon='<img src="' . TL_THEME_IMG_DIR . '/new_f2_16.png" style="border:none">';
 $g_attachments->access_string="[*]";
 
 

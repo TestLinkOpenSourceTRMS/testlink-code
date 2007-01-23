@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: keywordsView.tpl,v 1.9 2007/01/06 15:14:35 franciscom Exp $
+$Id: keywordsView.tpl,v 1.10 2007/01/23 18:26:41 franciscom Exp $
 Purpose: smarty template - View all keywords 
 
 20070102 - franciscom
@@ -112,7 +112,7 @@ var warning_delete_keyword="{lang_get s='warning_delete_keyword'}";
 				<a href="lib/keywords/keywordsView.php?deleteKey=1&amp;id={$arrKeywords[myKeyword].id}"
 				   onclick="return confirm(warning_delete_keyword);">
 				<img style="border:none" title="{lang_get s='alt_delete_keyword'}"
-				     alt="{lang_get s='alt_delete_keyword'}" src="icons/thrash.png"/>
+				     alt="{lang_get s='alt_delete_keyword'}" src="{$smarty.const.TL_THEME_IMG_DIR}/thrash.png"/>
 				</a>
 			</td>
 			{/if}

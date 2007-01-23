@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planEdit.tpl,v 1.10 2007/01/13 23:45:36 schlundus Exp $ 
+$Id: planEdit.tpl,v 1.11 2007/01/23 18:26:41 franciscom Exp $ 
 Purpose: smarty template - edit / delete Test Plan 
 Revisions:
 	20050810 - fm - changes in active field definition 
@@ -52,7 +52,7 @@ function delete_confirmation(delUrl) {ldelim}
 				     {if $gsmarty_gui->show_icon_edit}
  				         <img title="{lang_get s='testplan_alt_edit_tp'}" 
  				              alt="{lang_get s='testplan_alt_edit_tp'}" 
- 				              src="gui/images/icon_edit.png"/>
+ 				              src="{$smarty.const.TL_THEME_IMG_DIR}/icon_edit.png"/>
  				     {/if}  
  				  </a>
 			</td>
@@ -70,7 +70,7 @@ function delete_confirmation(delUrl) {ldelim}
 				<a href="javascript:delete_confirmation('lib/plan/planEdit.php?action=delete&amp;id={$arrPlan[number].id}');">
 				  <img style="border:none" title="{lang_get s='testplan_alt_delete_tp'}" 
 				       alt="{lang_get s='testplan_alt_delete_tp'}" 
-				       src="gui/images/icon_thrash.png"/></a>
+				       src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png"/></a>
 			</td>
 		</tr>
 		{/section}

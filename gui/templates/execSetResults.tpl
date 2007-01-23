@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: execSetResults.tpl,v 1.38 2007/01/19 20:02:56 schlundus Exp $
+$Id: execSetResults.tpl,v 1.39 2007/01/23 18:26:41 franciscom Exp $
 Purpose: smarty template - show tests to add results
 Revisions:
           20070104 - franciscom - custom field management for test cases
@@ -27,7 +27,7 @@ Revisions:
 
 <h1>	
 	<img alt="{lang_get s='help'}" title="{lang_get s='help'}" class="help" 
-	src="icons/sym_question.gif" style="float: right;"
+	src="{$smarty.const.TL_THEME_IMG_DIR}/sym_question.gif" style="float: right;"
 	onclick="javascript:open_popup('{$helphref}execMain.html');" />
 	{lang_get s='title_t_r_on_build'} {$build_name|escape} 
 	
@@ -42,7 +42,7 @@ Revisions:
 <div id="main_content" class="workBack">
 
   <div class="show_hide_title">
-    <img src="icons/icon-foldout.gif" border="0" alt="{lang_get s='show_hide'}" 
+    <img src="{$smarty.const.TL_THEME_IMG_DIR}/icon-foldout.gif" border="0" alt="{lang_get s='show_hide'}" 
          title="{lang_get s='show_hide'}" 
          onclick="show_hide('tplan_notes','tpn_view_status',
                             document.getElementById('tplan_notes').style.display=='none')" />
@@ -53,7 +53,7 @@ Revisions:
   </div>
 
 <div class="show_hide_title">
-<img src="icons/icon-foldout.gif" border="0" alt="{lang_get s='show_hide'}" 
+<img src="{$smarty.const.TL_THEME_IMG_DIR}/icon-foldout.gif" border="0" alt="{lang_get s='show_hide'}" 
      title="{lang_get s='show_hide'}" 
      onclick="show_hide('build_notes','bn_view_status',
                         document.getElementById('build_notes').style.display=='none')" />
@@ -88,7 +88,7 @@ Revisions:
         {assign var="input_enabled_disabled" value=""}
 
         <div class="show_hide_title">
-        <img src="icons/icon-foldout.gif" border="0" alt="{lang_get s='show_hide'}" 
+        <img src="{$smarty.const.TL_THEME_IMG_DIR}/icon-foldout.gif" border="0" alt="{lang_get s='show_hide'}" 
             title="{lang_get s='show_hide'}" 
             onclick="show_hide('bulk_controls','bc_view_status',
                                document.getElementById('bulk_controls').style.display=='none')" />
@@ -130,7 +130,7 @@ Revisions:
 		                     name="tsdetails_view_status_{$tc_exec.testcase_id}"  value="0" />
 
 		<div class="show_hide_title">
-		<img src="icons/icon-foldout.gif" border="0" alt="{lang_get s='show_hide'}" 
+		<img src="{$smarty.const.TL_THEME_IMG_DIR}/icon-foldout.gif" border="0" alt="{lang_get s='show_hide'}" 
              title="{lang_get s='show_hide'}" 
              onclick="show_hide('tsdetails_{$tc_exec.testcase_id}',
                                 'tsdetails_view_status_{$tc_exec.testcase_id}',
@@ -202,7 +202,7 @@ Revisions:
 				<th style="text-align:left">{lang_get s='test_exec_by'}</th>
 				<th style="text-align:left">{lang_get s='exec_status'}</th>
 				<th style="text-align:center" >
-				   {lang_get s='exec_notes'}{* <img title="{lang_get s='help_exec_notes'}" src="icons/sym_question.gif"> *}
+				   {lang_get s='exec_notes'}{* <img title="{lang_get s='help_exec_notes'}" src="{$smarty.const.TL_THEME_IMG_DIR}/sym_question.gif"> *}
   			</th>
 				
 				{if $att_model->show_upload_column}
@@ -232,7 +232,7 @@ Revisions:
    			  <td align="center">
      			  {if $tc_old_exec.execution_notes neq ""}
        			  <a href="javascript:open_show_notes_window({$tc_old_exec.execution_id})">
-          			    <img src="icons/contact_16.png" alt="{lang_get s='alt_notes'}" 
+          			    <img src="{$smarty.const.TL_THEME_IMG_DIR}/contact_16.png" alt="{lang_get s='alt_notes'}" 
           			         title="{lang_get s='alt_notes'}"  style="border:none" /></a>
           	{else}
           	 &nbsp;
@@ -241,7 +241,7 @@ Revisions:
   
   	        {if $att_model->show_upload_column}
       			  <td align="center"><a href="javascript:openFileUploadWindow({$tc_old_exec.execution_id},'executions')">
-      			    <img src="icons/upload_16.png" title="{lang_get s='alt_attachment_mgmt'}"
+      			    <img src="{$smarty.const.TL_THEME_IMG_DIR}/upload_16.png" title="{lang_get s='alt_attachment_mgmt'}"
       			         alt="{lang_get s='alt_attachment_mgmt'}" 
       			         style="border:none" /></a>
               </td>
@@ -249,7 +249,7 @@ Revisions:
   
     				{if $g_bugInterfaceOn}
       			<td align="center"><a href="javascript:open_bug_add_window({$tc_old_exec.execution_id})">
-      			    <img src="icons/bug1.gif" title="{lang_get s='img_title_bug_mgmt'}" 
+      			    <img src="{$smarty.const.TL_THEME_IMG_DIR}/bug1.gif" title="{lang_get s='img_title_bug_mgmt'}" 
       			         style="border:none" /></a>
               </td>
             {/if}

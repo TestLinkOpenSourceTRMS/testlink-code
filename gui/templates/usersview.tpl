@@ -1,6 +1,6 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: usersview.tpl,v 1.10 2007/01/20 18:45:39 franciscom Exp $
+$Id: usersview.tpl,v 1.11 2007/01/23 18:26:41 franciscom Exp $
 
 Purpose: smarty template - users overview
 
@@ -55,7 +55,7 @@ var warning_delete_user = "{lang_get s='warning_delete_user'}";
 		<tr>
 			<th {if $user_order_by == 'order_by_login'}style="background-color: white;"{/if}>
 			    {lang_get s='th_login'}
-			    <img src="icons/order_{$order_by_login_dir}.gif" 
+			    <img src="{$smarty.const.TL_THEME_IMG_DIR}/order_{$order_by_login_dir}.gif" 
 			         title="{lang_get s='order_by_login'} {lang_get s=$order_by_login_dir}"
 			         onclick="usersview.operation.value='order_by_login';
 			                  usersview.user_order_by.value='order_by_login'; 
@@ -68,7 +68,7 @@ var warning_delete_user = "{lang_get s='warning_delete_user'}";
 			
 			<th {if $user_order_by == 'order_by_role'}style="background-color: white;"{/if}>
 			    {lang_get s='th_role'}
-    			<img src="icons/order_{$order_by_role_dir}.gif" 
+    			<img src="{$smarty.const.TL_THEME_IMG_DIR}/order_{$order_by_role_dir}.gif" 
     			     title="{lang_get s='order_by_role_descr'} {lang_get s=$order_by_role_dir}"
     			     onclick="usersview.operation.value='order_by_role';
     			              usersview.user_order_by.value='order_by_role'; 

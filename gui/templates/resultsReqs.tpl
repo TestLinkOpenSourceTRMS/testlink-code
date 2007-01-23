@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsReqs.tpl,v 1.5 2006/03/08 22:22:07 kevinlevy Exp $
+$Id: resultsReqs.tpl,v 1.6 2007/01/23 18:26:41 franciscom Exp $
 Purpose: report REQ coverage 
 Author Martin Havlat 
 
@@ -15,7 +15,7 @@ Author Martin Havlat
 
 <h1>
 		<img alt="{lang_get s='help'}: {lang_get s='req_spec'}" class="help" 
-	src="icons/sym_question.gif" style="float: right;"
+	src="{$smarty.const.TL_THEME_IMG_DIR}/sym_question.gif" style="float: right;"
 	onclick="javascript:open_popup('{$helphref}requirementsCoverage.html');" />
 	{lang_get s='title_result_req_testplan'} {$arrReqSpec[$selectedReqSpec]|escape} - {lang_get s='title_test_plan'}
 </h1>

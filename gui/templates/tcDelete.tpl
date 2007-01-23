@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcDelete.tpl,v 1.10 2007/01/02 13:42:06 franciscom Exp $
+$Id: tcDelete.tpl,v 1.11 2007/01/23 18:26:41 franciscom Exp $
 Purpose: smarty template - delete test case in test specification
 
 *}
@@ -27,7 +27,7 @@ Purpose: smarty template - delete test case in test specification
       <tr>
       <td align="right">{$status.version}</td>
       <td align="right">{$status.tplan_name}</td>
-      <td align="center">{if $status.executed neq ""}<img src="icons/apply_f2_16.png">{/if}</td>
+      <td align="center">{if $status.executed neq ""}<img src="{$smarty.const.TL_THEME_IMG_DIR}/apply_f2_16.png">{/if}</td>
       </tr>
       {/foreach}  
   	{/foreach}

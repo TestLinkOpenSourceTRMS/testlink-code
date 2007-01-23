@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: buildNew.tpl,v 1.17 2007/01/23 09:03:22 franciscom Exp $
+$Id: buildNew.tpl,v 1.18 2007/01/23 18:26:40 franciscom Exp $
 
 Purpose: smarty template - Add new build and show existing
 
@@ -105,7 +105,7 @@ function validateForm(f)
   					         <img style="border:none"
   					              alt="{lang_get s='alt_edit_build'}" 
   					              title="{lang_get s='alt_edit_build'}"
-  					              src="gui/images/icon_edit.png"/>
+  					              src="{$smarty.const.TL_THEME_IMG_DIR}/icon_edit.png"/>
   					     {/if}    
   					  </a>   
   				</td>

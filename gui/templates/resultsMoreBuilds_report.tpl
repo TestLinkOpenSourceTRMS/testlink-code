@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: resultsMoreBuilds_report.tpl,v 1.27 2007/01/17 20:47:55 schlundus Exp $
+$Id: resultsMoreBuilds_report.tpl,v 1.28 2007/01/23 18:26:41 franciscom Exp $
 @author Francisco Mancardi - fm - start solving BUGID 97/98
 20051022 - scs - removed ' in component id values
 20051121 - scs - added escaping of tpname
@@ -81,7 +81,7 @@ $Id: resultsMoreBuilds_report.tpl,v 1.27 2007/01/17 20:47:55 schlundus Exp $
 <!-- KL - 20061021 - comment out until I can figure out how to fix
 	<a href="javascript:showOrCollapseAll()">{lang_get s='show_hide_all'}</a>
 
-	<h2 onClick="plusMinus_onClick(this);"><img class="minus" src="icons/minus.gif" />{lang_get s="caption_show_collapse"}</h2>
+	<h2 onClick="plusMinus_onClick(this);"><img class="minus" src="{$smarty.const.TL_THEME_IMG_DIR}/minus.gif" />{lang_get s="caption_show_collapse"}</h2>
 	-->
 	<!-- KL - 20061021 - don't think we need this 
 	<div class="workBack">
@@ -99,7 +99,7 @@ $Id: resultsMoreBuilds_report.tpl,v 1.27 2007/01/17 20:47:55 schlundus Exp $
 <!--				<div class="workBack">
 				DIV -->
 				<!-- KL - 20061021 - comment out until I can figure out how to fix
-				<h2 onClick="plusMinus_onClick(this);"><img class="minus" src="icons/minus.gif" />
+				<h2 onClick="plusMinus_onClick(this);"><img class="minus" src="{$smarty.const.TL_THEME_IMG_DIR}/minus.gif" />
 				{lang_get s="caption_show_collapse"}</h2>
 				-->		
 			{elseif ($depthChange gt 0) && ($mapOfSuiteSummary[$currentSuiteId])}
@@ -108,7 +108,7 @@ $Id: resultsMoreBuilds_report.tpl,v 1.27 2007/01/17 20:47:55 schlundus Exp $
 
 				<!-- KL - 20061021 - comment out until I can figure out how to fix
 				<h2 onClick="plusMinus_onClick(this);">
-				<img class="minus" src="icons/minus.gif" />
+				<img class="minus" src="{$smarty.const.TL_THEME_IMG_DIR}/minus.gif" />
 				{lang_get s="caption_show_collapse"}</h2>
 				-->	
 				{/section}

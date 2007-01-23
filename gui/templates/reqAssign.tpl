@@ -39,7 +39,7 @@ function check_action_precondition(form_id,action)
 
 <h1>
 	<img alt="{lang_get s='help'}: {lang_get s='req_spec'}" class="help" 
-	src="icons/sym_question.gif" style="float: right;"
+	src="{$smarty.const.TL_THEME_IMG_DIR}/sym_question.gif" style="float: right;"
 	onclick="javascript:open_popup('{$helphref}requirementsCoverage.html');" />
 	{lang_get s='test_case'}{$smarty.const.TITLE_SEP}{$tcTitle|escape}
 </h1>

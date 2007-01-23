@@ -1,11 +1,12 @@
 <?php
 /** 
 *	TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* 	@version $Id: testSetNavigator.php,v 1.19 2007/01/20 18:45:39 franciscom Exp $
+* 	@version $Id: testSetNavigator.php,v 1.20 2007/01/23 18:26:41 franciscom Exp $
 *	@author Martin Havlat 
 *
 * Used in the remove test case feature
 *
+* 20070123 - franciscom - define moved to const.inc.php
 * 20070120 - franciscom - fixed init of tplan_id.
 * 20061030 - franciscom
 * added management of $getArguments() - [wrongly forgetted]
@@ -72,11 +73,6 @@ else
 	tLog("Wrong or missing GET argument 'feature'.", 'ERROR');
 	exit();
 }
-
-define('FILTER_BY_BUILD_OFF',0);
-define('FILTER_BY_TC_OFF',null);
-define('FILTER_BY_OWNER_OFF',0);
-define('FILTER_BY_TC_STATUS_OFF',null);
 
 $getArguments='';
 if ($keyword_id)

@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqEdit.tpl,v 1.15 2007/01/02 13:42:06 franciscom Exp $ *}
+{* $Id: reqEdit.tpl,v 1.16 2007/01/23 18:26:41 franciscom Exp $ *}
 {* Purpose: smarty template - create / edit a req *}
 {* Author: Martin Havlat *}
 {* Revisions:
@@ -19,7 +19,7 @@
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 <h1>
-	<img src="icons/sym_question.gif" 
+	<img src="{$smarty.const.TL_THEME_IMG_DIR}/sym_question.gif" 
 	     title="{lang_get s='help'}: {lang_get s='req_spec'}"
 	     alt="{lang_get s='help'}: {lang_get s='req_spec'}" class="help" 
 	   	 onclick="javascript:open_popup('{$helphref}requirementsCoverage.html');" />

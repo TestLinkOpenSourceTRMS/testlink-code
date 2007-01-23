@@ -1,6 +1,6 @@
 {* 
 Testlink: smarty template - 
-$Id: cfields_edit.tpl,v 1.3 2007/01/19 21:13:58 schlundus Exp $ 
+$Id: cfields_edit.tpl,v 1.4 2007/01/23 18:26:41 franciscom Exp $ 
 *}
 {include file="inc_head.tpl" jsValidate="yes"}
 
@@ -36,7 +36,7 @@ function validateForm(f)
 
 <h1>
 <img alt="{lang_get s='help'}"  title="{lang_get s='help'}"
-	   src="icons/sym_question.gif" class="help"
+	   src="{$smarty.const.TL_THEME_IMG_DIR}/sym_question.gif" class="help"
 	   onclick="javascript:open_popup('{$helphref}custom_fields.html');" />
      {lang_get s='title_cfields_mgmt'} </h1>
 
@@ -60,7 +60,7 @@ function validateForm(f)
     <tr> 
       <td colspan="2"> 
       <img alt="{lang_get s='help'}"  title="{lang_get s='help'}"
-	   src="icons/sym_question.gif" class="help"
+	   src="{$smarty.const.TL_THEME_IMG_DIR}/sym_question.gif" class="help"
 	   onclick="javascript:open_popup('{$helphref}custom_fields.html');" />
 
       </td>

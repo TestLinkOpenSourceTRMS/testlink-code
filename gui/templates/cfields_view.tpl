@@ -1,6 +1,6 @@
 {* 
 Testlink: smarty template - 
-$Id: cfields_view.tpl,v 1.2 2007/01/06 15:14:35 franciscom Exp $ 
+$Id: cfields_view.tpl,v 1.3 2007/01/23 18:26:41 franciscom Exp $ 
 *}
 {include file="inc_head.tpl"}
 
@@ -29,10 +29,10 @@ $Id: cfields_view.tpl,v 1.2 2007/01/06 15:14:35 franciscom Exp $
    	                    title="{lang_get s='manage_cfield'}">{$cf_def.name|escape}</a></td>
    	<td>{$cf_def.label|escape}</td>
    	<td>{$cf_types[$cf_def.type]}</td>
-   	<td align="center">{if $cf_def.show_on_design eq 1}<img src="icons/apply_f2_16.png">{/if} </td>
-   	<td align="center">{if $cf_def.enable_on_design eq 1}<img src="icons/apply_f2_16.png">{/if} </td>
-   	<td align="center">{if $cf_def.show_on_execution eq 1}<img src="icons/apply_f2_16.png">{/if} </td>
-   	<td align="center">{if $cf_def.enable_on_execution eq 1}<img src="icons/apply_f2_16.png">{/if} </td>
+   	<td align="center">{if $cf_def.show_on_design eq 1}<img src="{$smarty.const.TL_THEME_IMG_DIR}/apply_f2_16.png">{/if} </td>
+   	<td align="center">{if $cf_def.enable_on_design eq 1}<img src="{$smarty.const.TL_THEME_IMG_DIR}/apply_f2_16.png">{/if} </td>
+   	<td align="center">{if $cf_def.show_on_execution eq 1}<img src="{$smarty.const.TL_THEME_IMG_DIR}/apply_f2_16.png">{/if} </td>
+   	<td align="center">{if $cf_def.enable_on_execution eq 1}<img src="{$smarty.const.TL_THEME_IMG_DIR}/apply_f2_16.png">{/if} </td>
    	<td>{lang_get s=$cf_def.node_description}</td>
    	
    	</tr>

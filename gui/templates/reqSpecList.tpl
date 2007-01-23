@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecList.tpl,v 1.7 2007/01/02 13:42:06 franciscom Exp $ *}
+{* $Id: reqSpecList.tpl,v 1.8 2007/01/23 18:26:41 franciscom Exp $ *}
 {* Purpose: smarty template - create view and create a new req document *}
 {include file="inc_head.tpl"}
 {*
@@ -11,7 +11,7 @@
 <body>
 
 <h1> 
-	<img src="icons/sym_question.gif"
+	<img src="{$smarty.const.TL_THEME_IMG_DIR}/sym_question.gif"
 	     title="{lang_get s='help'}: {lang_get s='req_spec'}" 
 	     alt="{lang_get s='help'}: {lang_get s='req_spec'}" 
 	     class="help" 

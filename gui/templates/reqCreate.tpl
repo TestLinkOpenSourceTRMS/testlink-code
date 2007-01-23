@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqCreate.tpl,v 1.8 2007/01/02 13:42:06 franciscom Exp $
+$Id: reqCreate.tpl,v 1.9 2007/01/23 18:26:41 franciscom Exp $
 Purpose: smarty template - create / edit a req  
 *}
 
@@ -39,7 +39,7 @@ function validateForm(f)
 <h1>
 	<img title="{lang_get s='help'}: {lang_get s='reqs'}"
 	     alt="{lang_get s='help'}: {lang_get s='reqs'}" class="help" 
-	     src="icons/sym_question.gif" 
+	     src="{$smarty.const.TL_THEME_IMG_DIR}/sym_question.gif" 
 	     onclick="javascript:open_popup('{$helphref}requirementsCoverage.html#req');" />
 	{lang_get s='req_spec'}{$smarty.const.TITLE_SEP}{$srs_title|escape} 
 </h1>

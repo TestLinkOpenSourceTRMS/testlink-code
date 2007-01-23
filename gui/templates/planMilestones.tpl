@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: planMilestones.tpl,v 1.3 2007/01/13 23:45:36 schlundus Exp $ *}
+{* $Id: planMilestones.tpl,v 1.4 2007/01/23 18:26:41 franciscom Exp $ *}
 {* Purpose: smarty template - edit milestones *}
 {include file="inc_head.tpl"}
 
@@ -97,7 +97,7 @@
 							</td>
 							<td>
 								<a href="lib/plan/planMilestones.php?delete=1&amp;id={$arrMilestone[Row].id}">
-								<img style="border:none" alt="{lang_get s='alt_delete_milestone'}" src="icons/thrash.png"/>
+								<img style="border:none" alt="{lang_get s='alt_delete_milestone'}" src="{$smarty.const.TL_THEME_IMG_DIR}/thrash.png"/>
 								</a>
 							</td>
 						</tr>

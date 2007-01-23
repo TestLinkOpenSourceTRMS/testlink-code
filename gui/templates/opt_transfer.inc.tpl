@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: opt_transfer.inc.tpl,v 1.6 2007/01/17 20:47:55 schlundus Exp $
+$Id: opt_transfer.inc.tpl,v 1.7 2007/01/23 18:26:41 franciscom Exp $
 Purpose: manage the OptionTransfer.js created by Matt Kruse
          http://www.JavascriptToolbox.com/
          JavaScript Toolbox - Option Transfer - Move Select Box Options Back And Forth
@@ -30,16 +30,16 @@ Author: Francisco Mancardi
                        options=$option_transfer->from->map}
       </td>
       <td align="center" width="40">
-        <img src="icons/ico_all_r.gif" 
+        <img src="{$smarty.const.TL_THEME_IMG_DIR}/ico_all_r.gif" 
               onclick="{$opt_cfg->js_events->all_right_click}"
               alt=">>" style="cursor: pointer;" /><br />
-        <img src="icons/ico_l2r.gif" 
+        <img src="{$smarty.const.TL_THEME_IMG_DIR}/ico_l2r.gif" 
               onclick="{$opt_cfg->js_events->left2right_click}"
               alt=">" style="cursor: pointer;" /><br />
-        <img src="icons/ico_r2l.gif" 
+        <img src="{$smarty.const.TL_THEME_IMG_DIR}/ico_r2l.gif" 
               onclick="{$opt_cfg->js_events->right2left_click}"
               alt="<" style="cursor: pointer;" /><br />
-        <img src="icons/ico_all_l.gif" 
+        <img src="{$smarty.const.TL_THEME_IMG_DIR}/ico_all_l.gif" 
               onclick="{$opt_cfg->js_events->all_left_click}"
               alt="<<" style="cursor: pointer;" />
       </td>

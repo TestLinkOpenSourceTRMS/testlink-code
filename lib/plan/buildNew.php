@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: buildNew.php,v $
  *
- * @version $Revision: 1.28 $
- * @modified $Date: 2007/01/23 07:51:23 $ $Author: franciscom $
+ * @version $Revision: 1.29 $
+ * @modified $Date: 2007/01/23 13:58:59 $ $Author: franciscom $
  *
  * rev :
  *       20070122 - franciscom - use build_mgr methods
@@ -33,9 +33,6 @@ $tpName = $_SESSION['testPlanName'];
 
 $is_active = isset($_REQUEST['is_active']) ? ACTIVE : INACTIVE;
 $is_open = isset($_REQUEST['is_open']) ? OPEN : CLOSED;
-
-
-echo "<pre>debug 20070122 " . __FUNCTION__ . " --- "; print_r($_REQUEST); echo "</pre>";
 
 $the_builds = $tplan_mgr->get_builds_for_html_options($tpID);
 

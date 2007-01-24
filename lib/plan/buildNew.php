@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: buildNew.php,v $
  *
- * @version $Revision: 1.29 $
- * @modified $Date: 2007/01/23 13:58:59 $ $Author: franciscom $
+ * @version $Revision: 1.30 $
+ * @modified $Date: 2007/01/24 20:41:17 $ $Author: schlundus $
  *
  * rev :
  *       20070122 - franciscom - use build_mgr methods
@@ -102,9 +102,6 @@ if(isset($_REQUEST['edit_build']))
 	}
 	else
 	{
-    echo "<pre>debug 20070122 " . __FUNCTION__ . " --- "; print_r($is_active); echo "</pre>";
-    echo "<pre>debug 20070122 " . __FUNCTION__ . " --- "; print_r($is_open); echo "</pre>";
-    
 		$of->Value = $notes;
 		if ($can_insert_or_update)
 		{

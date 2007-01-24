@@ -1,12 +1,15 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.15 2007/01/05 13:57:30 franciscom Exp $
+$Id: tcView_viewer.tpl,v 1.16 2007/01/24 20:41:17 schlundus Exp $
 viewer for test case in test specification
 
 20061230 - franciscom - an experiment to make simple management
                         of frequent used href
                         
 20060427 - franciscom - added font-size in the table used for keywords
+
+Dont touch this:
+lang_get('deactivate_this_tcversion');
 *}
 
 {if $args_show_title == "yes"}

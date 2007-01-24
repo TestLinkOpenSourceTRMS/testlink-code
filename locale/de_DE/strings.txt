@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.39 $
- * @modified $Date: 2007/01/21 19:36:13 $
+ * @version $Revision: 1.40 $
+ * @modified $Date: 2007/01/24 20:41:18 $
  *
  * @author Andreas Morsing
  *
@@ -357,14 +357,20 @@ $TLS_title_last_mod = "Letzte Änderung";
 
 
 // gui/templates/buildNew.tpl
+$TLS_active = "Aktiv";
+$TLS_alt_active_build = "Aktiver Build";
 $TLS_alt_edit_build = "Klicken Sie hier, um den Build zu verändern";
+$TLS_alt_open_build = "Offener Build";
 $TLS_enter_build = "Build-Identifier eingeben";
 $TLS_enter_build_notes = "Notizen:";
 $TLS_msg_build = "Jeder Build ist mit dem aktuellen Test Plan verbunden";
 $TLS_no_builds = "Für diesen Test Plan gibt es keine Builds!";
+$TLS_open = "Offen";
 $TLS_test_plan = "Test Plan";
+$TLS_th_active = "Aktiv";
 $TLS_th_delete = "Löschen?";
 $TLS_th_description = "Beschreibung";
+$TLS_th_open = "Open";
 $TLS_th_title = "Titel";
 $TLS_title_build_2 = "Build management";
 $TLS_title_build_create = "Neuer Build erstellen";
@@ -858,6 +864,7 @@ $TLS_btn_edit = "Editieren";
 $TLS_btn_mv_cp = "Verschieben / Kopieren";
 $TLS_btn_new_version = "Neue Version erstellen";
 $TLS_can_not_edit_tc = "Sie können diese Version nicht verändern, da Sie schon ausgeführt wurde!";
+$TLS_deactivate_this_tcversion = "Version deaktivieren";
 $TLS_tcversion_is_inactive_msg = "Diese Version ist inaktiv und ist dadurch in Test Plans nicht verfügbar";
 
 

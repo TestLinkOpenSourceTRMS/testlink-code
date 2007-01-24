@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.111 $
- * @modified $Date: 2007/01/23 13:58:20 $ $Author: franciscom $
+ * @version $Revision: 1.112 $
+ * @modified $Date: 2007/01/24 20:41:18 $ $Author: schlundus $
  *
  * @author Francisco Mancardi
  *
@@ -364,17 +364,20 @@ $TLS_title_last_mod = "Last modified on ";
 
 
 // gui/templates/buildNew.tpl
-$TLS_active="Active";
+$TLS_active = "Active";
+$TLS_alt_active_build = "Active build";
 $TLS_alt_edit_build = "Click here to edit this build";
+$TLS_alt_open_build = "Open build";
 $TLS_enter_build = "Build Title (unique identifier)";
 $TLS_enter_build_notes = "Description";
 $TLS_msg_build = "Notes: Each build is related to the active Test Plan. Description should include: list of delivered packages, approvals, status,etc.";
 $TLS_no_builds = "No builds are defined within this Test Plan!";
-$TLS_open="Open";
+$TLS_open = "Open";
 $TLS_test_plan = "Test Plan";
+$TLS_th_active = "Active";
 $TLS_th_delete = "Delete?";
 $TLS_th_description = "Description";
-$TLS_th_open="Open";
+$TLS_th_open = "Open";
 $TLS_th_title = "Title";
 $TLS_title_build_2 = "Build management";
 $TLS_title_build_create = "Create a new Build";
@@ -628,7 +631,6 @@ $TLS_alt_delete_user = "Really delete the selected user?";
 $TLS_alt_edit_user = "Edit user";
 $TLS_order_by_login = "Order by login";
 $TLS_order_by_role_descr = "Order by role description";
-$TLS_th_active = "Active";
 $TLS_th_email = "Email";
 $TLS_th_first_name = "First Name";
 $TLS_th_last_name = "Last  Name";
@@ -868,6 +870,7 @@ $TLS_btn_edit = "Edit";
 $TLS_btn_mv_cp = "Move / Copy";
 $TLS_btn_new_version = "Create a new version";
 $TLS_can_not_edit_tc = "You can not edit this version because it has been executed";
+$TLS_deactivate_this_tcversion = "Deactivate this version";
 $TLS_tcversion_is_inactive_msg = "This version is INACTIVE => will be not available to be included in a test plan";
 
 

@@ -1,7 +1,7 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: tc_exec_assignment.php,v 1.4 2007/01/24 08:10:25 franciscom Exp $ 
+ * @version $Id: tc_exec_assignment.php,v 1.5 2007/01/24 20:41:17 schlundus Exp $ 
  * 
  * 20070124 - franciscom
  * use show_help.php to apply css configuration to help pages
@@ -95,8 +95,6 @@ if($do_action)
   }  
 }
 
-define('FILTER_BY_TC_OFF',null); 
-define('WRITE_BUTTON_ONLY_IF_LINKED',1);
 define('ALL_USERS_FILTER',null); 
 define('ADD_BLANK_OPTION',true); 
 $users = get_users_for_html_options($db,ALL_USERS_FILTER,ADD_BLANK_OPTION);

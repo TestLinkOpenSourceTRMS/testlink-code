@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: usersedit.php,v $
 *
-* @version $Revision: 1.8 $
-* @modified $Date: 2007/01/15 08:04:54 $
+* @version $Revision: 1.9 $
+* @modified $Date: 2007/01/24 20:41:17 $
 * 
 * Allows editing a user
 */
@@ -40,7 +40,7 @@ if ($args->do_update)
 			if(!$args->user_id)
 				$sqlResult = lang_get('user_not_added');
 		}		
-		$action = "added";
+		$action = "do_add";
 	}
 	else
 	{

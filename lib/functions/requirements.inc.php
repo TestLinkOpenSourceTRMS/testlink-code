@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: requirements.inc.php,v $
- * @version $Revision: 1.41 $
- * @modified $Date: 2007/01/04 15:27:58 $ by $Author: franciscom $
+ * @version $Revision: 1.42 $
+ * @modified $Date: 2007/01/24 20:41:17 $ by $Author: schlundus $
  *
  * @author Martin Havlat <havlat@users.sourceforge.net>
  * 
@@ -1137,47 +1137,50 @@ function getReqCoverage($reqs,$execMap,$coveredReqs)
 						"not_run" => array(),
 					);
 	$coveredReqs = null;
-	foreach($reqs as $id => $tc)
+	if (sizeof($reqs))
 	{
-		$n = sizeof($tc);
-		$nPassed = 0;
-		$nBlocked = 0;
-		$nFailed = 0;
-		$req = array("id" => $id,
-					 "title" => "",
-					 );
-		if (sizeof($tc))
-			$coveredReqs[$id] = 1;
-		for($i = 0;$i < sizeof($tc);$i++)
+		foreach($reqs as $id => $tc)
 		{
-			$tcInfo = $tc[0];	
-			if (!$i)
-				$req['title'] = $tcInfo['title'];
-			$execTc = $tcInfo['testcase_id'];
-			
-			$exec = 'n';
-			if (isset($execMap[$execTc]) && sizeof($execMap[$execTc]))
+			$n = sizeof($tc);
+			$nPassed = 0;
+			$nBlocked = 0;
+			$nFailed = 0;
+			$req = array("id" => $id,
+						 "title" => "",
+						 );
+			if (sizeof($tc))
+				$coveredReqs[$id] = 1;
+			for($i = 0;$i < sizeof($tc);$i++)
 			{
-				$execInfo = array_pop($execMap[$execTc]);
-				$exec = isset($execInfo['status']) ? $execInfo['status'] : 'n';
+				$tcInfo = $tc[0];	
+				if (!$i)
+					$req['title'] = $tcInfo['title'];
+				$execTc = $tcInfo['testcase_id'];
+				
+				$exec = 'n';
+				if (isset($execMap[$execTc]) && sizeof($execMap[$execTc]))
+				{
+					$execInfo = array_pop($execMap[$execTc]);
+					$exec = isset($execInfo['status']) ? $execInfo['status'] : 'n';
+				}
+				if ($exec == 'p')
+					$nPassed++;		
+				else if ($exec == 'b')
+					$nBlocked++;		
+				else if ($exec == 'f')
+					$nFailed++;					
 			}
-			if ($exec == 'p')
-				$nPassed++;		
-			else if ($exec == 'b')
-				$nBlocked++;		
-			else if ($exec == 'f')
-				$nFailed++;					
+			if ($nFailed)
+				$arrCoverage['failed'][] = $req;			
+			else if ($nBlocked)
+				$arrCoverage['blocked'][] = $req;			
+			else if (!$nPassed)
+				$arrCoverage['not_run'][] = $req;
+			else if ($nPassed == $n)
+				$arrCoverage['passed'][] = $req;
+			else 
+				$arrCoverage['failed'][] = $req;
 		}
-		if ($nFailed)
-			$arrCoverage['failed'][] = $req;			
-		else if ($nBlocked)
-			$arrCoverage['blocked'][] = $req;			
-		else if (!$nPassed)
-			$arrCoverage['not_run'][] = $req;
-		else if ($nPassed == $n)
-			$arrCoverage['passed'][] = $req;
-		else 
-			$arrCoverage['failed'][] = $req;
 	}
 	return $arrCoverage;
 }

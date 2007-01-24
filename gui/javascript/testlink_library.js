@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/ 
 // This script is distributed under the GNU General Public License 2 or later. 
 //
-// $Id: testlink_library.js,v 1.20 2007/01/08 08:06:07 franciscom Exp $ 
+// $Id: testlink_library.js,v 1.21 2007/01/24 08:10:24 franciscom Exp $ 
 //
 // Javascript functions commonly used through the GUI
 // This library is automatically loaded with inc_header.tpl
@@ -344,5 +344,12 @@ function open_show_notes_window(exec_id)
 {
 	window.open(fRoot+"lib/execute/show_exec_notes.php?exec_id="+exec_id,
 	            "execution_notes","width=510,height=270,resizable=yes,dependent=yes");
+}
+
+// 20070124 - franciscom
+function open_help_window(help_page,locale)
+{
+	// window.open(fRoot+"lib/general/show_help.php?help="+help_page+"&locale="+locale,"Help","width=510,height=270,resizable=yes,dependent=yes");
+  window.open(fRoot+"lib/general/show_help.php?help="+help_page+"&locale="+locale,"_blank", "left=350,top=50,screenX=350,screenY=50,fullscreen=no,resizable=yes,toolbar=no,status=no,menubar=no,scrollbars=yes,directories=no,location=no,width=400,height=650")
 }
 

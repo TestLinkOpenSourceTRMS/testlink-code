@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planAddTCNavigator.tpl,v 1.7 2006/11/02 10:07:37 franciscom Exp $
+$Id: planAddTCNavigator.tpl,v 1.8 2007/01/24 08:10:24 franciscom Exp $
 show test specification tree 
 *}
 
@@ -13,7 +13,7 @@ show test specification tree
 	<table class="smallGrey" width="100%">
 		<caption>
 			{lang_get s='caption_nav_filter_settings'}
-			{include file="inc_help.tpl" filename="execFilter.html"}
+			{include file="inc_help.tpl" filename="execFilter.html" help="execFilter" locale="$locale"}}
 		</caption>
 		<tr>
 			<td>{lang_get s='keyword'}</td>

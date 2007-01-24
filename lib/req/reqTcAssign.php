@@ -3,10 +3,14 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: reqTcAssign.php,v $
- * @version $Revision: 1.10 $
- * @modified $Date: 2007/01/04 15:27:59 $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2007/01/24 08:10:25 $  $Author: franciscom $
  * 
  * @author Martin Havlat
+ *
+ * 20070124 - franciscom
+ * use show_help.php to apply css configuration to help pages
+ *
 **/
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -65,7 +69,9 @@ if ($doAssign || $doUnassign)
 // redirect if a user doesn't choose test case 
 if ($edit == 'testproject' || $edit == 'testsuite')
 {
-	redirect($_SESSION['basehref'] . $g_rpath['help'] . '/assignReqs.html');
+  
+	// redirect($_SESSION['basehref'] . $g_rpath['help'] . '/assignReqs.html');
+ 	redirect($_SESSION['basehref'] . "/lib/general/show_help.php?help=assignReqs&locale={$_SESSION['locale']}");
 	exit();
 } 
 else if($edit == 'testcase')

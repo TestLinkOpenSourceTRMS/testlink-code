@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: planTestersEdit.php,v $
- * @version $Revision: 1.17 $
- * @modified $Date: 2006/02/25 21:48:26 $ $ by $Author: schlundus $
+ * @version $Revision: 1.18 $
+ * @modified $Date: 2007/01/24 08:10:25 $ $ by $Author: franciscom $
  * 
  * @author Martin Havlat
  * 
@@ -26,6 +26,9 @@
  * 20051231 - scs - changes due to ADBdb
  * 20060103 - scs - ADOdb changes
  *
+ * 20070124 - franciscom
+ * use show_help.php to apply css configuration to help pages
+  *
  */
 require('../../config.inc.php');
 require_once('common.php');
@@ -38,10 +41,9 @@ $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
 if(!$type || !$id)
 {
-	redirect( $_SESSION['basehref'] . "/gui/instructions/planTesters.html");
+ 	redirect($_SESSION['basehref'] . "/lib/general/show_help.php?help=planTesters&locale={$_SESSION['locale']}");
 }
 
-// 20051120 - fm
 // The current selected Product
 $prod->id   = $_SESSION['testprojectID'];
 $prod->name = $_SESSION['testprojectName'];

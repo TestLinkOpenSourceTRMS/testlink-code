@@ -1,15 +1,20 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: planOwner.php,v 1.14 2006/08/17 19:29:59 schlundus Exp $ */
+/* $Id: planOwner.php,v 1.15 2007/01/24 08:10:25 franciscom Exp $ */
 /**
  * Manage the ownership and priority of test suite
  *
  * @author Francisco Mancardi - 20050914 - refactoring         
  * @author Francisco Mancardi - 20050907 - bug on help          
  * 
+ *
  * 20051112 - scs - simplified case 'component', added localization of imp's
  * 					small cosmetic changes
  * 20051203 - scs - added filtering of tp users by tpid
+ *
+ * 20070124 - franciscom
+ * use show_help.php to apply css configuration to help pages
+ *
  */
 require('../../config.inc.php');
 require_once("../functions/common.php");
@@ -30,7 +35,9 @@ if(isset($_POST['updateSuiteAttribute']) && $_POST['updateSuiteAttribute'])
 $arrSuites = null;
 if($level == 'testproject')
 {
-	redirect("../../" . TL_INSTRUCTIONS_RPATH . $_SESSION['locale'] . '/planOwnerAndPriority.html');
+	//redirect("../../" . TL_INSTRUCTIONS_RPATH . $_SESSION['locale'] . '/planOwnerAndPriority.html');
+ 	redirect($_SESSION['basehref'] . "/lib/general/show_help.php?help=planOwnerAndPriority&locale={$_SESSION['locale']}");
+
 }	
 else if($level == 'component')
 {

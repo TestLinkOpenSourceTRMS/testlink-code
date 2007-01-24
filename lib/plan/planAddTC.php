@@ -1,12 +1,13 @@
 <?php
 ////////////////////////////////////////////////////////////////////////////////
-// @version $Id: planAddTC.php,v 1.27 2007/01/04 15:27:59 franciscom Exp $
+// @version $Id: planAddTC.php,v 1.28 2007/01/24 08:10:25 franciscom Exp $
 // File:     planAddTC.php
 // Author:   Chad Rosen
-// Purpose:  This page manages the importation of test cases into testlink.
+// Purpose:  link/unlink test cases to a test plan
 //
 //
-// 20061112 - franciscom - minimun refactoring
+// 20070124 - franciscom
+// use show_help.php to apply css configuration to help pages
 //
 ////////////////////////////////////////////////////////////////////////////////
 require('../../config.inc.php');
@@ -52,7 +53,8 @@ if($_GET['edit'] == 'testsuite')
 }
 else
 {
-	redirect($_SESSION['basehref'] .$g_rpath['help'].'/planAddTC.html');
+	//redirect($_SESSION['basehref'] . $g_rpath['help'].'/planAddTC.html');
+	redirect($_SESSION['basehref'] . "/lib/general/show_help.php?help=planAddTC&locale={$_SESSION['locale']}");
 }
 
 if(isset($_POST['do_action']))

@@ -1,10 +1,10 @@
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: tl_docs.css,v 1.1 2006/04/24 10:34:41 franciscom Exp $ */
+/* $Id: tl_docs.css,v 1.2 2007/01/24 08:10:06 franciscom Exp $ */
 /* Purpose: css for documents and help */
 /*******************************************************************/
 
 body {
-	font-family : 	Arial, Helvetica, sans-serif;
+	font-family : 	'Trebuchet MS', Helvetica, sans-serif;
 	font-size : 	smaller;
 	background: 	#CDE;
     margin:			0px;

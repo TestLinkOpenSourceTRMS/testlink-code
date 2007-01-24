@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execNavigator.tpl,v 1.10 2006/11/04 21:25:31 schlundus Exp $ *}
+{* $Id: execNavigator.tpl,v 1.11 2007/01/24 08:10:24 franciscom Exp $ *}
 {* Purpose: smarty template - show test set tree *}
 {* 20050828 - scs - added searching for tcID *}
 {include file="inc_head.tpl" jsTree="yes"}
@@ -14,7 +14,7 @@
 	<table class="smallGrey" width="100%">
 		<caption>
 			{lang_get s='caption_nav_filter_settings'}
-			{include file="inc_help.tpl" filename="execFilter.html"}
+			{include file="inc_help.tpl" filename="execFilter.html" help="execFilter" locale="$locale"}
 		</caption>
 		<tr>
 			<td>{lang_get s='filter_tcID'}</td>

@@ -1,10 +1,10 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: tc_exec_assignment.php,v 1.3 2006/10/05 19:18:21 schlundus Exp $ 
+ * @version $Id: tc_exec_assignment.php,v 1.4 2007/01/24 08:10:25 franciscom Exp $ 
  * 
- * 
- * 
+ * 20070124 - franciscom
+ * use show_help.php to apply css configuration to help pages
  */         
 require_once(dirname(__FILE__)."/../../config.inc.php");
 require_once(dirname(__FILE__)."/../functions/common.php");
@@ -138,7 +138,8 @@ switch($level)
 		break;
 	default:
 		// show instructions
-		redirect( $_SESSION['basehref'] . $g_rpath['instructions'].'/tc_exec_assignment.html');
+		//redirect( $_SESSION['basehref'] . $g_rpath['instructions'].'/tc_exec_assignment.html');
+  	redirect($_SESSION['basehref'] . "/lib/general/show_help.php?help=tc_exec_assignment&locale={$_SESSION['locale']}");
 	break;
 }
 

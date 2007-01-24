@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: const.inc.php,v $
  *
- * @version $Revision: 1.7 $
- * @modified $Date: 2007/01/23 18:26:40 $ by $Author: franciscom $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2007/01/24 08:08:33 $ by $Author: franciscom $
  * @author Martin Havlát
  *
  * SCOPE:
@@ -270,6 +270,9 @@ define('FILTER_BY_BUILD_OFF',0);
 define('FILTER_BY_TC_OFF',null);
 define('FILTER_BY_OWNER_OFF',0);
 define('FILTER_BY_TC_STATUS_OFF',null);
+
+// moved from testSetRemove
+define('WRITE_BUTTON_ONLY_IF_LINKED',1);
 
 
 // -------------------------------------------------------------------

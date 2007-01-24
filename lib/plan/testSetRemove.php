@@ -1,10 +1,13 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: testSetRemove.php,v 1.17 2006/11/02 10:07:37 franciscom Exp $ 
+ * @version $Id: testSetRemove.php,v 1.18 2007/01/24 08:10:25 franciscom Exp $ 
  * 
- * Remove Test Cases from Test Case Suite 
+ * Remove Test Cases from Test Plan
  * 
+ * 20070124 - franciscom
+ * use show_help.php to apply css configuration to help pages
+ *
  */         
 require('../../config.inc.php');
 require_once("../functions/common.php");
@@ -44,8 +47,6 @@ if($do_remove)
   }  
 }
 
-define('FILTER_BY_TC_OFF',null); 
-define('WRITE_BUTTON_ONLY_IF_LINKED',1);
 $dummy = null;
 $out = null;
 
@@ -94,7 +95,9 @@ switch($level)
 		
 	default:
 		// show instructions
-		redirect( $_SESSION['basehref'] . $g_rpath['instructions'].'/testSetRemove.html');
+		//redirect( $_SESSION['basehref'] . $g_rpath['instructions'].'/testSetRemove.html');
+  	redirect($_SESSION['basehref'] . "/lib/general/show_help.php?help=testSetRemove&locale={$_SESSION['locale']}");
+
 	break;
 }
 

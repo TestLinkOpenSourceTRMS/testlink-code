@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: tcPrintNavigator.tpl,v 1.4 2006/07/28 17:22:03 schlundus Exp $ *}
+{* $Id: tcPrintNavigator.tpl,v 1.5 2007/01/24 08:10:24 franciscom Exp $ *}
 {* Purpose: smarty template - show test specification tree *}
 {include file="inc_head.tpl" jsTree="yes"}
 
@@ -12,7 +12,7 @@
 
 	<table class="smallGrey" >
 		<caption>{lang_get s='caption_print_opt'}
-				{include file="inc_help.tpl" filename="printFilter.html"}
+				{include file="inc_help.tpl" filename="printFilter.html" help="printFilter" locale="$locale"}
 		</caption>
 		{section name=number loop=$arrCheckboxes}
 		<tr>

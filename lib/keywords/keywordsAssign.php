@@ -5,10 +5,13 @@
  *
  * Filename $RCSfile: keywordsAssign.php,v $
  *
- * @version $Revision: 1.21 $
- * @modified $Date: 2007/01/06 15:16:26 $
+ * @version $Revision: 1.22 $
+ * @modified $Date: 2007/01/24 08:10:24 $
  *
  * Purpose:  Assign keywords to set of testcases in tree structure
+ *
+ * 20070124 - franciscom
+ * use show_help.php to apply css configuration to help pages
  *
  * 20070106 - franciscom - give feedback is choosen a Test suite without test cases.
  * 20061223 - franciscom - improvements on user feedback
@@ -34,7 +37,8 @@ $testproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID']
 if ($edit == 'testproject')
 {
   // We can NOT assign/remove keywords on a whole test project
-	redirect($_SESSION['basehref'] . $g_rpath['help'] . '/keywordsAssign.html');
+  //	redirect($_SESSION['basehref'] . $g_rpath['help'] . '/keywordsAssign.html');
+ 	redirect($_SESSION['basehref'] . "/lib/general/show_help.php?help=keywordsAssign&locale={$_SESSION['locale']}");
 	exit();
 }
 

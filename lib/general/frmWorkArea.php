@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: frmWorkArea.php,v $
  *
- * @version $Revision: 1.14 $
- * @modified $Date: 2006/09/09 07:13:28 $ by $Author: franciscom $
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2007/01/24 08:10:24 $ by $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -67,8 +67,13 @@ $smarty = new TLSmarty();
 // 20050828 - fm
 $smarty->assign('treewidth', TL_FRMWORKAREA_LEFT_FRAME_WIDTH);
 $smarty->assign('treeframe', $aa_tfp[$showFeature]);
-$smarty->assign('workframe', $g_rpath['help'] . "/{$showFeature}" . ".html");
+// $smarty->assign('workframe', $g_rpath['help'] . "/{$showFeature}" . ".html");
+$smarty->assign('workframe', "lib/general/show_help.php?help=$showFeature&locale={$_SESSION['locale']}");
+
 $smarty->display('frmInner.tpl');
+// $smarty->display("help/" . $_SESSION['locale'] . "/{$showFeature}" . ".html");
+
+
 
 /** 
  * 	validate that some build exists (for Test Plan related features).

@@ -1,6 +1,6 @@
 {* 
 Testlink: smarty template - 
-$Id: cfields_edit.tpl,v 1.4 2007/01/23 18:26:41 franciscom Exp $ 
+$Id: cfields_edit.tpl,v 1.5 2007/01/25 14:04:30 franciscom Exp $ 
 *}
 {include file="inc_head.tpl" jsValidate="yes"}
 
@@ -35,10 +35,11 @@ function validateForm(f)
 
 
 <h1>
-<img alt="{lang_get s='help'}"  title="{lang_get s='help'}"
-	   src="{$smarty.const.TL_THEME_IMG_DIR}/sym_question.gif" class="help"
-	   onclick="javascript:open_popup('{$helphref}custom_fields.html');" />
-     {lang_get s='title_cfields_mgmt'} </h1>
+ {lang_get s='help' var='common_prefix'}
+ {assign var="text_hint" value="$common_prefix"}
+ {include file="inc_help.tpl" help="custom_fields" locale=$locale 
+          alt="$text_hint" title="$text_hint"  style="float: right;"}
+ {lang_get s='title_cfields_mgmt'} </h1>
 
 {include file="inc_update.tpl" result=$result item="custom_field" action="$action" feedback_type="soft"}
 
@@ -59,10 +60,10 @@ function validateForm(f)
 	<table class="common">
     <tr> 
       <td colspan="2"> 
-      <img alt="{lang_get s='help'}"  title="{lang_get s='help'}"
-	   src="{$smarty.const.TL_THEME_IMG_DIR}/sym_question.gif" class="help"
-	   onclick="javascript:open_popup('{$helphref}custom_fields.html');" />
-
+       {lang_get s='help' var='common_prefix'}
+       {assign var="text_hint" value="$common_prefix"}
+       {include file="inc_help.tpl" help="custom_fields" locale=$locale 
+                alt="$text_hint" title="$text_hint"  style="float: right;"}
       </td>
     </tr> 
 	

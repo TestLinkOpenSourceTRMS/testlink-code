@@ -1,6 +1,6 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: mainPage.tpl,v 1.28 2007/01/23 18:26:41 franciscom Exp $     
+ $Id: mainPage.tpl,v 1.29 2007/01/25 14:04:05 franciscom Exp $     
  Purpose: smarty template - main page / site map                 
                                                                  
  rev :                                                 
@@ -29,9 +29,13 @@
 <div class="vertical_menu" style="float: right">
 	{*** Begin Test Project section ***}
 	<div class="testproject_title">
-		<img alt="Help: Test Plan" style="float: right; vertical-align: top;" 
-			src="{$smarty.const.TL_THEME_IMG_DIR}/sym_question.gif" 
-			onclick="javascript:open_popup('{$helphref}testPlan.html');" />
+ {lang_get s='help' var='common_prefix'}
+ {lang_get s='test_plan' var="xx_alt"}
+ {assign var="text_hint" value="$common_prefix: $xx_alt"}
+ {include file="inc_help.tpl" help="testPlan" locale=$locale 
+          alt="$text_hint" title="$text_hint"  style="float: right;vertical-align: top;"}
+
+
 
  	  <form name="testplanForm" action="lib/general/mainPage.php">
       {if $show_filter_tp_by_product }

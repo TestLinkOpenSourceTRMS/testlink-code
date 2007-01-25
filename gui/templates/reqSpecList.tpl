@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecList.tpl,v 1.8 2007/01/23 18:26:41 franciscom Exp $ *}
+{* $Id: reqSpecList.tpl,v 1.9 2007/01/25 14:05:32 franciscom Exp $ *}
 {* Purpose: smarty template - create view and create a new req document *}
 {include file="inc_head.tpl"}
 {*
@@ -11,11 +11,12 @@
 <body>
 
 <h1> 
-	<img src="{$smarty.const.TL_THEME_IMG_DIR}/sym_question.gif"
-	     title="{lang_get s='help'}: {lang_get s='req_spec'}" 
-	     alt="{lang_get s='help'}: {lang_get s='req_spec'}" 
-	     class="help" 
-       onclick="javascript: open_popup('{$helphref}requirementsCoverage.html');" />
+ {lang_get s='help' var='common_prefix'}
+ {lang_get s='req_spec' var="xx_alt"}
+ {assign var="text_hint" value="$common_prefix: $xx_alt"}
+ 
+ {include file="inc_help.tpl" help="requirementsCoverage" locale=$locale 
+          alt="$text_hint" title="$text_hint"  style="float: right;"}
 	{lang_get s='req_spec'}{$smarty.const.TITLE_SEP_TYPE3}
 	{lang_get s='testproject'}{$smarty.const.TITLE_SEP}{$productName|escape} 
 </h1>

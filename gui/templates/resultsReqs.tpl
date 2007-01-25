@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsReqs.tpl,v 1.6 2007/01/23 18:26:41 franciscom Exp $
+$Id: resultsReqs.tpl,v 1.7 2007/01/25 14:04:47 franciscom Exp $
 Purpose: report REQ coverage 
 Author Martin Havlat 
 
@@ -14,10 +14,12 @@ Author Martin Havlat
 <body>
 
 <h1>
-		<img alt="{lang_get s='help'}: {lang_get s='req_spec'}" class="help" 
-	src="{$smarty.const.TL_THEME_IMG_DIR}/sym_question.gif" style="float: right;"
-	onclick="javascript:open_popup('{$helphref}requirementsCoverage.html');" />
-	{lang_get s='title_result_req_testplan'} {$arrReqSpec[$selectedReqSpec]|escape} - {lang_get s='title_test_plan'}
+ {lang_get s='help' var='common_prefix'}
+ {lang_get s='req_spec' var="xx_alt"}
+ {assign var="text_hint" value="$common_prefix: $xx_alt"}
+ {include file="inc_help.tpl" help="requirementsCoverage" locale=$locale 
+          alt="$text_hint" title="$text_hint"  style="float: right;"}
+ {lang_get s='title_result_req_testplan'} {$arrReqSpec[$selectedReqSpec]|escape} - {lang_get s='title_test_plan'}
 </h1>
 
 <div class="workBack">

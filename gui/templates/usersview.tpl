@@ -1,6 +1,6 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: usersview.tpl,v 1.11 2007/01/23 18:26:41 franciscom Exp $
+$Id: usersview.tpl,v 1.12 2007/01/25 14:03:30 franciscom Exp $
 
 Purpose: smarty template - users overview
 
@@ -88,7 +88,7 @@ var warning_delete_user = "{lang_get s='warning_delete_user'}";
 			    {$users[row].login|escape}
 		      {if $gsmarty_gui->show_icon_edit}
 			      <img title="{lang_get s='alt_edit_user'}" 
-			           alt="{lang_get s='alt_edit_user'}" src="gui/images/icon_edit.png"/>
+			           alt="{lang_get s='alt_edit_user'}" src="{$smarty.const.TL_THEME_IMG_DIR}/icon_edit.png"/>
 			    {/if}       
 			    </a>
 			</td>
@@ -111,7 +111,7 @@ var warning_delete_user = "{lang_get s='warning_delete_user'}";
 				<a href="javascript:deleteUser_onClick({$users[row].id},'{$users[row].login|escape}')">
 				   <img alt="{lang_get s='alt_delete_user'}"
 				        title="{lang_get s='alt_delete_user'}" 
-				        src="gui/images/icon_thrash.png"/></a>
+				        src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png"/></a>
 			</td>
 		</tr>
 		{/section}

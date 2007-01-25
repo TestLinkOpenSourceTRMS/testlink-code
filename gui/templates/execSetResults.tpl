@@ -1,21 +1,16 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: execSetResults.tpl,v 1.39 2007/01/23 18:26:41 franciscom Exp $
+$Id: execSetResults.tpl,v 1.40 2007/01/25 14:03:15 franciscom Exp $
 Purpose: smarty template - show tests to add results
 Revisions:
           20070104 - franciscom - custom field management for test cases
           20070101 - franciscom - custom field management for test suite div
           20061112 - franciscom - added class management to assign
                                   color to status cells
-                          
- don't touch!						          
- lang_get('btn_history_on');
- lang_get('btn_history_off');                                  
 *}	
 
 {include file="inc_head.tpl" popup='yes' openHead='yes'}
 <script language="JavaScript" src="gui/javascript/radio_utils.js" type="text/javascript"></script>
-
 <script language="JavaScript" src="gui/javascript/expandAndCollapseFunctions.js" type="text/javascript"></script>
 </head>
 
@@ -26,9 +21,11 @@ Revisions:
                                  '{$tsd_val_for_hidden_list}');">
 
 <h1>	
-	<img alt="{lang_get s='help'}" title="{lang_get s='help'}" class="help" 
-	src="{$smarty.const.TL_THEME_IMG_DIR}/sym_question.gif" style="float: right;"
-	onclick="javascript:open_popup('{$helphref}execMain.html');" />
+ {lang_get s='help' var='common_prefix'}
+ {assign var="text_hint" value="$common_prefix"}
+ {include file="inc_help.tpl" help="execMain" locale=$locale 
+          alt="$text_hint" title="$text_hint"  style="float: right;"}
+ 
 	{lang_get s='title_t_r_on_build'} {$build_name|escape} 
 	
 	{if $ownerDisplayName != ""}{lang_get s='title_t_r_owner'} ( {$ownerDisplayName|escape} ) {/if}
@@ -38,9 +35,17 @@ Revisions:
 {* show echo about update if applicable *}
 {$updated}
 {assign var="input_enabled_disabled" value="disabled"}
-  	
+ 	
 <div id="main_content" class="workBack">
 
+  {if $edit_test_results eq "no"}
+  <div class="warning_message" style="align:center;">
+     {lang_get s="build_is_closed"}<br>
+     {lang_get s="test_cases_cannot_be_executed"}
+  </div>
+  <p>
+  {/if}
+  
   <div class="show_hide_title">
     <img src="{$smarty.const.TL_THEME_IMG_DIR}/icon-foldout.gif" border="0" alt="{lang_get s='show_hide'}" 
          title="{lang_get s='show_hide'}" 
@@ -83,7 +88,7 @@ Revisions:
   {if $map_last_exec eq ""}
      <div class="warning_message" style="text-align:center"> {lang_get s='no_data_available'}</div>
   {else}
-      {*  Added to make Test Results editable only if Current build is latest Build - Tools-R-Us *}
+      {* $edit_test_results = "no" if build is closed  *}
       {if $rightsEdit == "yes" and $edit_test_results == "yes"}
         {assign var="input_enabled_disabled" value=""}
 
@@ -202,7 +207,7 @@ Revisions:
 				<th style="text-align:left">{lang_get s='test_exec_by'}</th>
 				<th style="text-align:left">{lang_get s='exec_status'}</th>
 				<th style="text-align:center" >
-				   {lang_get s='exec_notes'}{* <img title="{lang_get s='help_exec_notes'}" src="{$smarty.const.TL_THEME_IMG_DIR}/sym_question.gif"> *}
+				   {lang_get s='exec_notes'}
   			</th>
 				
 				{if $att_model->show_upload_column}
@@ -352,6 +357,8 @@ Revisions:
 		</tr>
 		</table>
 
+
+  	{if $edit_test_results eq "yes"}
 		<table border="0" width="100%">
 		<tr>
 			<td rowspan="2" align="center">
@@ -361,7 +368,9 @@ Revisions:
 			</td>
 			<td valign="top" style="width:30%">			
   				{* status of test *}
+
   				<div class="title" style="text-align: center;">{lang_get s='test_exec_result'}</div>
+  				
   				<div class="resultBox">
 
               {foreach key=verbose_status item=locale_status from=$gsmarty_tc_status_for_ui}
@@ -377,7 +386,8 @@ Revisions:
   			</td>
   		</tr>
 		</table>
-
+	 {/if}
+  
 	<hr />
 	</div>
 	{/foreach}

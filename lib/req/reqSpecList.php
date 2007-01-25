@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: reqSpecList.php,v $
- * @version $Revision: 1.13 $
- * @modified $Date: 2006/03/23 20:46:30 $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2007/01/25 20:02:23 $
  * 
  * @author Martin Havlat
  * 
@@ -43,12 +43,12 @@ $tproject = new testproject($db);
 if($bCreate)
 {
 	$sqlResult = $tproject->createReqSpec($tprojectID,$title,$scope,$countReq,$userID);
-	$action = 'create';
+	$action = 'do_add';
 } 
 else if($bDelete)
 {
 	$sqlResult = deleteReqSpec($db,$idSRS);
-	$action = 'delete';
+	$action = 'do_delete';
 } 
 else if($bCreateForm)
 {
@@ -64,7 +64,7 @@ $of->ToolbarSet=$g_fckeditor_toolbar;;
 $of->Value="";
 if($scope)
 	$of->Value = $scope;
-else if ($action && ($action != 'create'))
+else if ($action && ($action != 'do_add'))
 	$of->Value = $arrSpec[0]['scope'];
 
 $smarty = new TLSmarty();

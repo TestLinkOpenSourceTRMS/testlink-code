@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecView.tpl,v 1.24 2007/01/25 14:05:19 franciscom Exp $ *}
+{* $Id: reqSpecView.tpl,v 1.25 2007/01/25 20:02:23 schlundus Exp $ *}
 {* 
    Purpose: smarty template - view a requirement specification
    Author: Martin Havlat 
@@ -65,9 +65,9 @@ function check_action_precondition(form_id,action)
     
     {* ----------------------------------------------------------------------------------------- *}
     <div class="workBack">
-    <table class="common" style="width: 100%">
+    <table class="common" style="width:100%">
       <tr>
-      	<th width="120px">{lang_get s='title'}</th>
+      	<th style="width:15%">{lang_get s='title'}</th>
       	<td>{$arrSpec[0].title|escape}</td>
       </tr>
       <tr>
@@ -78,24 +78,17 @@ function check_action_precondition(form_id,action)
       	<th>{lang_get s='req_total'}</th>
       	<td>{$arrSpec[0].total_req}</td>
       </tr>
-      <tr class="time_stamp_creation">
-        <td colspan="2">&nbsp; </td>
-	    </tr>
-      <tr class="time_stamp_creation">
-        <td colspan="2">
+    </table>
+    <div class="time_stamp_creation">
         {lang_get s='title_created'}&nbsp;{localize_timestamp ts=$arrSpec[0].creation_ts}&nbsp;
-        {lang_get s='by'}&nbsp;{$arrSpec[0].author|escape}     
-        </td>
-    	</tr>
+        {lang_get s='by'}&nbsp;{$arrSpec[0].author|escape}
       {if $arrSpec[0].modifier neq ""}
-        <tr class="time_stamp_creation">
-          <td colspan="2">
+		<br />     
           {lang_get s='title_last_mod'}&nbsp;{localize_timestamp ts=$arrSpec[0].modification_ts}&nbsp;
           {lang_get s='by'}&nbsp;{$arrSpec[0].modifier|escape}     
-          </td>
-    	  </tr>
       {/if}
-    </table>
+    </div>
+	<br />
     {* ----------------------------------------------------------------------------------------- *}
 
   {* ----------------------------------------------------------------------------------------- *}

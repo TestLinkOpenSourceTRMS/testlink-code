@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqSpecView.php,v $
- * @version $Revision: 1.30 $
- * @modified $Date: 2007/01/04 15:27:59 $ by $Author: franciscom $
+ * @version $Revision: 1.31 $
+ * @modified $Date: 2007/01/25 20:02:23 $ by $Author: schlundus $
  * @author Martin Havlat
  * 
  * Screen to view existing requirements within a req. specification.
@@ -28,7 +28,7 @@ testlinkInitPage($db);
 $js_msg=null;
 $sqlResult = null;
 $action = null;
-$sqlItem = 'Requirement';
+$sqlItem = 'SRS';
 $arrReq = array();
 $bGetReqs = TRUE; // collect requirements as default
 $template = 'reqSpecView.tpl';
@@ -84,8 +84,7 @@ if(isset($_REQUEST['createReq']))
 } 
 elseif (isset($_REQUEST['editReq']))
 {
-  // 20061224 - franciscom
-  $srs=get_srs_by_id($db,$idSRS);
+  	$srs = get_srs_by_id($db,$idSRS);
 	$smarty->assign('srs_title',$srs[$idSRS]['title']);	
 
 	$idReq = intval($_REQUEST['editReq']);
@@ -140,7 +139,7 @@ elseif (isset($_REQUEST['editSRS']))
 elseif (isset($_REQUEST['updateSRS']))
 {
 	$sqlResult = updateReqSpec($db,$idSRS,$title,$scope,$countReq,$userID);
-	$action = 'update';
+	$action = 'do_update';
 }
 elseif ($do_create_tc_from_req || $do_delete_req )
 {
@@ -170,14 +169,14 @@ elseif ($do_create_tc_from_req || $do_delete_req )
 	} 
 	else 
 	{
-    if($do_create_tc_from_req)
-    {
-      $js_msg=lang_get('cant_create_tc_from_req_nothing_sel');
-    }
-    if($do_delete_req)
-    {
-      $js_msg=lang_get('cant_delete_req_nothing_sel');
-    }
+	    if($do_create_tc_from_req)
+	    {
+			$js_msg=lang_get('cant_create_tc_from_req_nothing_sel');
+	    }
+	    if($do_delete_req)
+	    {
+			$js_msg=lang_get('cant_delete_req_nothing_sel');
+	    }
 	}
 }
 
@@ -187,17 +186,14 @@ if ($bGetReqs)
 
 // collect existing document data
 $arrSpec = $tproject->getReqSpec($tprojectID,$idSRS);
-
 $arrSpec[0]['author'] = trim(getUserName($db,$arrSpec[0]['author_id']));
 $arrSpec[0]['modifier'] = trim(getUserName($db,$arrSpec[0]['modifier_id']));
 
 $sql = "SELECT * FROM req_specs WHERE id={$idSRS}";
 $srs_title=$db->fetchFirstRowSingleColumn($sql,'title');
 
-$smarty->assign('srs_title', $srs_title);  // 20061014 - franciscom
-
-$smarty->assign('attach', $attach);  // 20060503 - franciscom
-
+$smarty->assign('srs_title', $srs_title);
+$smarty->assign('attach', $attach);
 $smarty->assign('arrSpec', $arrSpec);
 $smarty->assign('arrReq', $arrReq);
 $smarty->assign('arrCov', $arrCov);
@@ -249,7 +245,6 @@ if($do_export)
 	}
 }
 // ----------------------------------------------------------
-
 
 $smarty->assign('js_msg',$js_msg);
 $smarty->assign('exportTypes',$exportTypes);

@@ -4,14 +4,21 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.40 $
- * @modified $Date: 2007/01/24 20:41:18 $
+ * @version $Revision: 1.41 $
+ * @modified $Date: 2007/01/25 20:02:24 $
  *
  * @author Andreas Morsing
  *
  * 
 **/
-
+// General - Leave it here in this way can be reused !!!
+$TLS_asc = "aufsteigend";
+$TLS_desc = "absteigend";
+$TLS_test_case = "Test Case";
+$TLS_test_plan = "Test Plan";
+$TLS_test_suite = "Test Suite";
+$TLS_testcase = "Test Case";
+$TLS_SRS = "SRS";
 
 // firstLogin.php
 $TLS_cant_create_user = "Der Benutzer konnte nicht angelegt werden. Bitte informieren Sie Ihren Systemadministrator über dieses Problem!";

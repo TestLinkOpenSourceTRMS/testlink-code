@@ -1,12 +1,7 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecList.tpl,v 1.9 2007/01/25 14:05:32 franciscom Exp $ *}
+{* $Id: reqSpecList.tpl,v 1.10 2007/01/25 20:02:23 schlundus Exp $ *}
 {* Purpose: smarty template - create view and create a new req document *}
 {include file="inc_head.tpl"}
-{*
-20051125 - scs - added escaping of productnames
-20051202 - scs - fixed 211
-20061007 - franciscom - layout changes
-*}
 
 <body>
 

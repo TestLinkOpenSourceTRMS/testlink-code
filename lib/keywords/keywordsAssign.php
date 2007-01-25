@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: keywordsAssign.php,v $
  *
- * @version $Revision: 1.22 $
- * @modified $Date: 2007/01/24 08:10:24 $
+ * @version $Revision: 1.23 $
+ * @modified $Date: 2007/01/25 20:02:23 $
  *
  * Purpose:  Assign keywords to set of testcases in tree structure
  *
@@ -37,8 +37,7 @@ $testproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID']
 if ($edit == 'testproject')
 {
   // We can NOT assign/remove keywords on a whole test project
-  //	redirect($_SESSION['basehref'] . $g_rpath['help'] . '/keywordsAssign.html');
- 	redirect($_SESSION['basehref'] . "/lib/general/show_help.php?help=keywordsAssign&locale={$_SESSION['locale']}");
+  	redirect($_SESSION['basehref'] . "/lib/general/show_help.php?help=keywordsAssign&locale={$_SESSION['locale']}");
 	exit();
 }
 
@@ -68,11 +67,11 @@ if ($edit == 'testsuite')
   //
   
 	$tsuite_mgr = new testsuite($db);
-  $testsuite=$tsuite_mgr->get_by_id($id);
-  $keyword_assignment_subtitle=lang_get('test_suite') . TITLE_SEP . $testsuite['name'];
-
+	$testsuite=$tsuite_mgr->get_by_id($id);
+	$keyword_assignment_subtitle=lang_get('test_suite') . TITLE_SEP . $testsuite['name'];
+	
 	$tcs = $tsuite_mgr->get_testcases_deep($id,true);
-	$can_do=0;
+	$can_do = 0;
 	
 	if (sizeof($tcs))
 	{
@@ -104,13 +103,13 @@ if ($edit == 'testsuite')
 }
 else if($edit == 'testcase')
 {
-  $can_do=1;
+	$can_do = 1;
 	$tcase_mgr = new testcase($db);
 	$tcData = $tcase_mgr->get_by_id($id);
 	if (sizeof($tcData))
 	{
 		$tcData = $tcData[0];
-    $keyword_assignment_subtitle=lang_get('test_case') . TITLE_SEP . $tcData['name'];
+    	$keyword_assignment_subtitle=lang_get('test_case') . TITLE_SEP . $tcData['name'];
 	}
 	if($bAssignTestCase)
 	{

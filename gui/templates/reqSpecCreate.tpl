@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecCreate.tpl,v 1.9 2007/01/25 14:12:35 franciscom Exp $ *}
+{* $Id: reqSpecCreate.tpl,v 1.10 2007/01/25 20:02:23 schlundus Exp $ *}
 {* Purpose: smarty template - create a new req document *}
 {include file="inc_head.tpl"}
 
@@ -31,10 +31,8 @@
 		<td>{$scope}</td>
 	</tr>
 	<tr>
-		<th><img title="{lang_get s='help'}: {lang_get s='req_total_count'}"
-		     alt="{lang_get s='help'}: {lang_get s='req_total_count'}"
-			   class="help" src="{$smarty.const.TL_THEME_IMG_DIR}/sym_question.gif" 
-			   onclick="javascript:open_popup('{$helphref}requirementsCoverage.html#total_count');" />
+		<th>{include file="inc_help.tpl" help="requirementsCoverage" locale=$locale 
+          alt="$text_hint" title="$text_hint"  style="float: right;"}
 			{lang_get s='req_total'}
 		 </th>
 		<td><input type="text" name="countReq" size="5" maxlength="5" 

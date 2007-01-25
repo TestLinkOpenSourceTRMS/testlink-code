@@ -31,17 +31,16 @@ function check_action_precondition(form_id,action)
 {/literal}
 </head>
 
-
-
-
-
 <body>
 
 <h1>
-	<img alt="{lang_get s='help'}: {lang_get s='req_spec'}" class="help" 
-	src="{$smarty.const.TL_THEME_IMG_DIR}/sym_question.gif" style="float: right;"
-	onclick="javascript:open_popup('{$helphref}requirementsCoverage.html');" />
-	{lang_get s='test_case'}{$smarty.const.TITLE_SEP}{$tcTitle|escape}
+ {lang_get s='help' var='common_prefix'}
+ {lang_get s='req_spec' var="xx_alt"}
+ {assign var="text_hint" value="$common_prefix: $xx_alt"}
+ 
+ {include file="inc_help.tpl" help="requirementsCoverage" locale=$locale 
+          alt="$text_hint" title="$text_hint"  style="float: right;"}
+ {lang_get s='test_case'}{$smarty.const.TITLE_SEP}{$tcTitle|escape}
 </h1>
 
 

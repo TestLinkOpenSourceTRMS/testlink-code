@@ -1,14 +1,18 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecAnalyse.tpl,v 1.13 2007/01/23 18:26:41 franciscom Exp $ *}
+{* $Id: reqSpecAnalyse.tpl,v 1.14 2007/01/25 14:12:53 franciscom Exp $ *}
 {* Purpose: smarty template - Analyse REQ coverage *}
 {include file="inc_head.tpl"}
 
 <body>
 
-<h1><img title="{lang_get s='help'}: {lang_get s='req_spec'}"
-	       alt="{lang_get s='help'}: {lang_get s='req_spec'}" class="help" 
-	       src="{$smarty.const.TL_THEME_IMG_DIR}/sym_question.gif" style="float: right;"
-	       onclick="javascript:open_popup('{$helphref}requirementsCoverage.html');" />
+<h1>
+ {lang_get s='help' var='common_prefix'}
+ {lang_get s='req_spec' var="xx_alt"}
+ {assign var="text_hint" value="$common_prefix: $xx_alt"}
+ 
+ {include file="inc_help.tpl" help="requirementsCoverage" locale=$locale 
+          alt="$text_hint" title="$text_hint"  style="float: right;"}
+
 	  {lang_get s='req_spec'}{$smarty.const.TITLE_SEP}{$arrReqSpec[$selectedReqSpec]|escape}
 </h1>
 

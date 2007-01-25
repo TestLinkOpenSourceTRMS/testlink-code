@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.112 $
- * @modified $Date: 2007/01/24 20:41:18 $ $Author: schlundus $
+ * @version $Revision: 1.113 $
+ * @modified $Date: 2007/01/25 14:36:47 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
@@ -689,6 +689,7 @@ $TLS_btn_history_on = "Show complete execution history";
 $TLS_btn_save_all_tests_results = "Save all executions";
 $TLS_btn_save_tc_exec_results = "Save execution";
 $TLS_bug_mgmt = "BUG management";
+$TLS_build_is_closed = "Build is closed";
 $TLS_builds_notes = "Build's description";
 $TLS_bulk_tc_status_management = "Bulk TC status management";
 $TLS_date_time_run = "Date";
@@ -696,13 +697,14 @@ $TLS_details = "Details";
 $TLS_exec_notes = "Notes";
 $TLS_exec_status = "Status";
 $TLS_execution_history = "Execution history";
-$TLS_help_exec_notes = "LOCALIZE: TLS_help_exec_notes";
+$TLS_help_exec_notes = "Notes";
 $TLS_img_title_bug_mgmt = "BUG management";
 $TLS_just_last_execution_for_this_build = "Last execution for this build";
 $TLS_no_data_available = "No data available";
 $TLS_set_all_tc_to = "Set all to status ";
 $TLS_show_hide = "Show / hide";
 $TLS_tc_not_tested_yet = "Not Tested Yet";
+$TLS_test_cases_cannot_be_executed = "Test cases can not be executed";
 $TLS_test_exec_by = "Tested by";
 $TLS_test_exec_expected_r = "Expected Results";
 $TLS_test_exec_last_run_date = "Most recent Run:";

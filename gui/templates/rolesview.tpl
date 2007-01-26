@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: rolesview.tpl,v 1.11 2007/01/23 18:26:41 franciscom Exp $ 
+$Id: rolesview.tpl,v 1.12 2007/01/26 19:17:48 franciscom Exp $ 
 Purpose: smarty template - View defined roles 
 
 Revisions:
@@ -67,7 +67,9 @@ Revisions:
 						{$role.role|escape}
    		      {if $gsmarty_gui->show_icon_edit}
  						  <img title="{lang_get s='alt_edit_role'}" 
- 						       alt="{lang_get s='alt_edit_role'}" src="{$smarty.const.TL_THEME_IMG_DIR}/icon_edit.png"/>
+ 						       alt="{lang_get s='alt_edit_role'}" 
+ 						       title="{lang_get s='alt_edit_role'}" 
+ 						       src="{$smarty.const.TL_THEME_IMG_DIR}/icon_edit.png"/>
  						{/if}       
 					</a>
 				</td>
@@ -77,7 +79,9 @@ Revisions:
 				<td>
 				{if $role.id > 9}
 					<a href="lib/usermanagement/rolesview.php?deleterole=1&amp;id={$role.id}">
-					<img style="border:none" alt="{lang_get s='alt_delete_keyword'}" src="{$smarty.const.TL_THEME_IMG_DIR}/thrash.png"/>
+					<img style="border:none" alt="{lang_get s='alt_delete_role'}"
+					     title="{lang_get s='alt_delete_role'}"
+					     src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png"/>
 					</a>
 				{else}
 					{lang_get s='N_A'}

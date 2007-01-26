@@ -1,6 +1,6 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: inc_show_bug_table.tpl,v 1.3 2007/01/23 18:26:41 franciscom Exp $
+$Id: inc_show_bug_table.tpl,v 1.4 2007/01/26 19:17:48 franciscom Exp $
 *}
 {* -------------------------------------------------------------------------------------- *}
 {* Manage missing arguments                                                               *}
@@ -21,7 +21,7 @@ $Id: inc_show_bug_table.tpl,v 1.3 2007/01/23 18:26:41 franciscom Exp $
 		<td>{$bug_elem.build_name|escape}</td>
 		<td>{$bug_elem.link_to_bts}</td>
 		{if $can_delete}
-		  <td><a href="javascript:deleteBug_onClick({$exec_id},{$bug_id},'{lang_get s='del_bug_warning_msg'}');"><img style="border:none" alt="{lang_get s='alt_delete_build'}" src="{$smarty.const.TL_THEME_IMG_DIR}/thrash.png"/></a></td>
+		  <td><a href="javascript:deleteBug_onClick({$exec_id},{$bug_id},'{lang_get s='del_bug_warning_msg'}');"><img style="border:none" alt="{lang_get s='alt_delete_build'}" src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png"/></a></td>
 		{/if}
 	</tr>
 	{/foreach}

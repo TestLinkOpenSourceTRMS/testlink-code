@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: const.inc.php,v $
  *
- * @version $Revision: 1.8 $
- * @modified $Date: 2007/01/24 08:08:33 $ by $Author: franciscom $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2007/01/26 08:10:32 $ by $Author: franciscom $
  * @author Martin Havlát
  *
  * SCOPE:
@@ -271,8 +271,13 @@ define('FILTER_BY_TC_OFF',null);
 define('FILTER_BY_OWNER_OFF',0);
 define('FILTER_BY_TC_STATUS_OFF',null);
 
-// moved from testSetRemove
+// moved from testSetRemove.php
 define('WRITE_BUTTON_ONLY_IF_LINKED',1);
+
+// moved from tc_exec_assignment.php
+define('FILTER_BY_TC_OFF',null); 
+define('ALL_USERS_FILTER',null); 
+define('ADD_BLANK_OPTION',true); 
 
 
 // -------------------------------------------------------------------

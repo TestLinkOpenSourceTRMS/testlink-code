@@ -1,7 +1,7 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: tc_exec_assignment.php,v 1.5 2007/01/24 20:41:17 schlundus Exp $ 
+ * @version $Id: tc_exec_assignment.php,v 1.6 2007/01/26 08:13:47 franciscom Exp $ 
  * 
  * 20070124 - franciscom
  * use show_help.php to apply css configuration to help pages
@@ -95,8 +95,6 @@ if($do_action)
   }  
 }
 
-define('ALL_USERS_FILTER',null); 
-define('ADD_BLANK_OPTION',true); 
 $users = get_users_for_html_options($db,ALL_USERS_FILTER,ADD_BLANK_OPTION);
 
 $map_node_tccount = get_testplan_nodes_testcount($db,$tproject_id, $tproject_name,

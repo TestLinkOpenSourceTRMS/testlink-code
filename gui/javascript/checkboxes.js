@@ -1,8 +1,9 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/ 
-// $Id: checkboxes.js,v 1.4 2007/01/20 18:45:38 franciscom Exp $ 
+// $Id: checkboxes.js,v 1.5 2007/01/26 08:10:33 franciscom Exp $ 
 //
 //
 // rev :
+//      20070125 - francisco- - new function set_checkbox()
 //      20070120 - franciscom - new function set_combo_if_checkbox()
 //      20070102 - franciscom - new function checkbox_count_checked()
 //
@@ -162,7 +163,22 @@ function set_combo_if_checkbox(oid,combo_id_prefix,value_to_assign)
 	}
 }
 
+/*
+  function: set_checkbox 
 
+  args : oid
+         value_to_assign
+  
+  returns: 
+
+  rev :
+        20070118 - franciscom
+*/
+function set_checkbox(oid,value_to_assign)
+{
+  var cb=document.getElementById(oid);
+	cb.checked=value_to_assign;
+}
 
 
 /*

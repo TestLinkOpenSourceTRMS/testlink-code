@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tc_exec_assignment.tpl,v 1.2 2007/01/20 18:45:39 franciscom Exp $
+$Id: tc_exec_assignment.tpl,v 1.3 2007/01/26 08:25:40 franciscom Exp $
 generate the list of TC that can be removed from a Test Plan 
 
 rev :
@@ -44,7 +44,6 @@ rev :
   			<b> {lang_get s='check_uncheck_tc'}</b>
   			</p>
   			<p>
-  			{* 20070117 - franciscom *}
   			{lang_get s="user_bulk_assignment"}
   			
   			{assign var=xdx value=$arrData[tsuite_idx].testsuite.id}
@@ -88,7 +87,9 @@ rev :
         				{$tcase.tcversions[$tcase.linked_version_id]}
                 </td>
                 <td align="center">
-      		  		<select name="tester_for_tcid[{$tcase.id}]" id="tester_for_tcid_{$tcase.id}">
+      		  		<select name="tester_for_tcid[{$tcase.id}]" 
+      		  		        id="tester_for_tcid_{$tcase.id}"
+      		  		        onchange='javascript: set_checkbox("achecked_tc_{$tcase.id}",1)' >
       			  	{html_options options=$users selected=$tcase.user_id}
       				  </select>
               </td>

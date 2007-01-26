@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.115 $
- * @modified $Date: 2007/01/26 08:37:22 $ $Author: franciscom $
+ * @version $Revision: 1.116 $
+ * @modified $Date: 2007/01/26 19:19:23 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
@@ -543,6 +543,7 @@ $TLS_title_execution_notes = "Execution notes";
 
 
 // gui/templates/rolesedit.tpl
+$TLS_alt_delete_role = "delete role";
 $TLS_btn_create_role = "Create";
 $TLS_btn_edit_role = "Edit";
 $TLS_caption_define_role = "Define role";

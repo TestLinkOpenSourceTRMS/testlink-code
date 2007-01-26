@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.48 $
- * @modified $Date: 2007/01/19 20:02:56 $ $Author: schlundus $
+ * @version $Revision: 1.49 $
+ * @modified $Date: 2007/01/26 08:36:06 $ $Author: franciscom $
  *
  * 20070105 - franciscom - refactoring
  *
@@ -38,6 +38,8 @@ $gui_cfg = config_get('gui');
 $tree_mgr = new tree($db);
 $tplan_mgr = new testplan($db);
 $tcase_mgr = new testcase($db);
+$build_mgr = new build_mgr($db);
+
 
 $testdata = array();
 $ts_cf_smarty = '';
@@ -51,6 +53,7 @@ $keyword_id = isset($_REQUEST['keyword_id']) ? intval($_REQUEST['keyword_id']) :
 $level = isset($_REQUEST['level']) ? $_REQUEST['level'] : '';
 $owner = isset($_REQUEST['owner']) ? intval($_REQUEST['owner']) : null;
 $status = isset($_REQUEST['status']) ? $_REQUEST['status'] : null;
+
 $ownerDisplayName = null;
 if ($owner)
 	$ownerDisplayName = getUserName($db,$owner);
@@ -67,14 +70,6 @@ $history_status_btn_name = 'btn_history_on';
 if($history_on)
 {
     $history_status_btn_name = 'btn_history_off';
-}
-
-// Added to set Test Results editable by comparing the max Build ID and the requested Build ID.			
-$editTestResult = "yes";
-$latestBuild = 0;
-if(($latestBuild > $build_id) && !(config_get('edit_old_build_results')))
-{
-	$editTestResult = "no";
 }
 
 $cfexec_val_smarty= null;
@@ -216,8 +211,16 @@ if(!is_null($linked_tcversions))
 $smarty->assign('other_exec_cfexec',$cfexec_val_smarty);
 $smarty->assign('bugs_for_exec',$bugs);
 
-$rs = getBuild_by_id($db,$build_id);
+$rs = $build_mgr->get_by_id($build_id);
 $smarty->assign('build_notes',$rs['notes']);
+
+// 20070125 - francisco.mancardi@gruppotesi.com
+$editTestResult = ($rs['open']==1) ? "yes" : "no";
+$smarty->assign('edit_test_results', $editTestResult);
+// -------------------------------------------------------
+
+
+
 
 // 20070105 - franciscom - refactoring
 smarty_assign_tsuite_info($smarty,$_REQUEST,$db,$tcase_id);
@@ -237,7 +240,6 @@ $smarty->assign('tSuiteAttachments',$tSuiteAttachments);
 
 $smarty->assign('id',$id);
 $smarty->assign('rightsEdit', has_rights($db,"testplan_execute"));
-$smarty->assign('edit_test_results', $editTestResult);
 $smarty->assign('map_last_exec', $map_last_exec);
 $smarty->assign('other_exec', $other_execs);
 $smarty->assign('show_last_exec_any_build', $exec_cfg->show_last_exec_any_build);

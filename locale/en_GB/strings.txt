@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.114 $
- * @modified $Date: 2007/01/25 20:02:24 $ $Author: schlundus $
+ * @version $Revision: 1.115 $
+ * @modified $Date: 2007/01/26 08:37:22 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
@@ -183,6 +183,7 @@ $TLS_popup_delete_custom_field = "Are you sure you want to delete the custom fie
 $TLS_possible_values = "Possible values";
 $TLS_show_on_design = "Display on <br>test specification";
 $TLS_show_on_exec = "Display on <br>test execution";
+$TLS_testcase=$TLS_test_case;
 $TLS_title_cfields_mgmt = "Custom fields";
 $TLS_type = "Type";
 $TLS_warning_empty_cfield_label = "Please enter the label of this custom field.";

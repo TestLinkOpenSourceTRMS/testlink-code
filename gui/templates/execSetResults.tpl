@@ -1,8 +1,9 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: execSetResults.tpl,v 1.40 2007/01/25 14:03:15 franciscom Exp $
+$Id: execSetResults.tpl,v 1.41 2007/01/26 08:36:06 franciscom Exp $
 Purpose: smarty template - show tests to add results
 Revisions:
+          20070125 - franciscom - management of closed build
           20070104 - franciscom - custom field management for test cases
           20070101 - franciscom - custom field management for test suite div
           20061112 - franciscom - added class management to assign
@@ -68,6 +69,9 @@ Revisions:
 {$build_notes}
 </div>
 
+{assign var="att_download_only" value=true}
+{assign var="enable_custom_fields" value=false}
+
 
 <form method="post">
   {* franciscom - implementation note - 
@@ -91,6 +95,8 @@ Revisions:
       {* $edit_test_results = "no" if build is closed  *}
       {if $rightsEdit == "yes" and $edit_test_results == "yes"}
         {assign var="input_enabled_disabled" value=""}
+        {assign var="att_download_only" value=false}
+        {assign var="enable_custom_fields" value=true}
 
         <div class="show_hide_title">
         <img src="{$smarty.const.TL_THEME_IMG_DIR}/icon-foldout.gif" border="0" alt="{lang_get s='show_hide'}" 
@@ -210,7 +216,7 @@ Revisions:
 				   {lang_get s='exec_notes'}
   			</th>
 				
-				{if $att_model->show_upload_column}
+				{if $att_model->show_upload_column && !$att_download_only}
 						<th style="text-align:center">{lang_get s='attachment_mgmt'}</th>
             {assign var="my_colspan" value=$att_model->num_cols}
         {/if}
@@ -243,8 +249,7 @@ Revisions:
           	 &nbsp;
           	{/if}		         
           </td>
-  
-  	        {if $att_model->show_upload_column}
+            {if $att_model->show_upload_column && !$att_download_only}
       			  <td align="center"><a href="javascript:openFileUploadWindow({$tc_old_exec.execution_id},'executions')">
       			    <img src="{$smarty.const.TL_THEME_IMG_DIR}/upload_16.png" title="{lang_get s='alt_attachment_mgmt'}"
       			         alt="{lang_get s='alt_attachment_mgmt'}" 
@@ -282,7 +287,9 @@ Revisions:
   				         attachmentInfos=$attach_info 
   				         id=$execID tableName="executions"
   				         show_upload_btn=$att_model->show_upload_btn
-  				         show_title=$att_model->show_title }
+  				         show_title=$att_model->show_title 
+  				         downloadOnly=$att_download_only
+  				         }
   			</td>
   			</tr>
   
@@ -323,17 +330,21 @@ Revisions:
 			<td>{$tc_exec.expected_results}</td>
 		</tr>
 		
+    {* ------------------------------------------------------------------------------------- *}
+    {if $enable_custom_field}
+  	  {if $execution_time_cf[$tc_exec.testcase_id]}
+  	 		<tr>
+  				<td colspan="2">
+  					<div class="custom_field_container" 
+  						style="background-color:#dddddd;">{$execution_time_cf[$tc_exec.testcase_id]}
+  					</div>
+  				</td>
+  			</tr>
+  		{/if}
+    {/if} {* if $enable_custom_field *}
+    {* ------------------------------------------------------------------------------------- *}
     
-	  {if $execution_time_cf[$tc_exec.testcase_id]}
-	 		<tr>
-				<td colspan="2">
-					<div class="custom_field_container" 
-						style="background-color:#dddddd;">{$execution_time_cf[$tc_exec.testcase_id]}
-					</div>
-				</td>
-			</tr>
-		{/if}
-
+    
     	{if $design_time_cf[$tc_exec.testcase_id] neq ''}
 			<tr>
 				<td colspan="2">
@@ -359,33 +370,34 @@ Revisions:
 
 
   	{if $edit_test_results eq "yes"}
-		<table border="0" width="100%">
-		<tr>
-			<td rowspan="2" align="center">
-				<div class="title">{lang_get s='test_exec_notes'}</div>
-				<textarea {$input_enabled_disabled} class="tcDesc" name='notes[{$tcversion_id}]' 
-					rows="10" style="width:99%"></textarea>			
-			</td>
-			<td valign="top" style="width:30%">			
-  				{* status of test *}
-
-  				<div class="title" style="text-align: center;">{lang_get s='test_exec_result'}</div>
-  				
-  				<div class="resultBox">
-
-              {foreach key=verbose_status item=locale_status from=$gsmarty_tc_status_for_ui}
-  						<input type="radio" {$input_enabled_disabled} name="status[{$tcversion_id}]" 
-  							value="{$gsmarty_tc_status.$verbose_status}"
-  							{if $gsmarty_tc_status.$verbose_status eq $gsmarty_tc_status.not_run}
-  							checked="checked" 
-  							{/if} />{lang_get s=$locale_status}<br />
-  					 {/foreach}		
-  					<br />		
-  		 			<input type='submit' name='save_results[{$tcversion_id}]' value="{lang_get s='btn_save_tc_exec_results'}" />
-  				</div>
+  		<table border="0" width="100%">
+  		<tr>
+  			<td rowspan="2" align="center">
+  				<div class="title">{lang_get s='test_exec_notes'}</div>
+  				<textarea {$input_enabled_disabled} class="tcDesc" name='notes[{$tcversion_id}]' 
+  					rows="10" style="width:99%"></textarea>			
   			</td>
-  		</tr>
-		</table>
+  			<td valign="top" style="width:30%">			
+    				{* status of test *}
+  
+    				<div class="title" style="text-align: center;">{lang_get s='test_exec_result'}</div>
+    				
+    				<div class="resultBox">
+  
+                {foreach key=verbose_status item=locale_status from=$gsmarty_tc_status_for_ui}
+    						<input type="radio" {$input_enabled_disabled} name="status[{$tcversion_id}]" 
+    							value="{$gsmarty_tc_status.$verbose_status}"
+    							{if $gsmarty_tc_status.$verbose_status eq $gsmarty_tc_status.not_run}
+    							checked="checked" 
+    							{/if} />{lang_get s=$locale_status}<br />
+    					 {/foreach}		
+    					<br />		
+    		 			<input type='submit' name='save_results[{$tcversion_id}]' 
+    		 			       value="{lang_get s='btn_save_tc_exec_results'}" />
+    				</div>
+    			</td>
+    		</tr>
+  		</table>
 	 {/if}
   
 	<hr />

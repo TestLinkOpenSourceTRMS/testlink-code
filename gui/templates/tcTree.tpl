@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: tcTree.tpl,v 1.4 2005/08/26 21:01:27 schlundus Exp $ *}
+{* $Id: tcTree.tpl,v 1.5 2007/01/26 21:26:40 schlundus Exp $ *}
 {* Purpose: smarty template - show test specification tree menu *}
 {*
 	20050821 - scs - localized the refresh button
@@ -15,8 +15,9 @@
 {lang_get s='no_tc_spec_av'}
 {/if}
 {$tree}
+<br />
 </div>
-
+<br />
 <form style="margin-left: 20px;">
 	<input type="button" value="{lang_get s='button_refresh'}" onClick="javascript: parent.treeframe.location.reload();" />
 </form>

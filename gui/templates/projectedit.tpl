@@ -1,13 +1,7 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: projectedit.tpl,v 1.8 2007/01/02 22:02:33 franciscom Exp $
+$Id: projectedit.tpl,v 1.9 2007/01/26 21:01:23 schlundus Exp $
 Purpose: smarty template - Edit existing product 
-
- 20051211 - fm - poor workaround for BUGID 180 Unable to delete Product
- 20060106 - scs - added createProduct functionality
- 20060305 - franciscom - changes input names
- 20061223 - franciscom - utilizzo input_dimensions.conf
-
 *}
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes"}
 {include file="inc_jsPicker.tpl"}
@@ -36,8 +30,6 @@ function validateForm(f)
 <body>
 {config_load file="input_dimensions.conf" section="projectedit"} {* Constant definitions *}
 
-{* 20051211 - fm - deleted $name as additional workaround for BUG 180} *}
-{* 20060412 - MHT - get $name back with condition because of BUG 416 *}
 <h1>{lang_get s='title_product_mgmt'}
 {if $action != "delete"} - {$name|escape}{/if}
 </h1>
@@ -57,7 +49,7 @@ function validateForm(f)
 	{if $action == "activate" || $action == "inactivate"}
 		<div class="info">{$sqlResult}</div>
 	{else}
-		{include file="inc_update.tpl" result=$sqlResult item="Product" name=$name}
+		{include file="inc_update.tpl" result=$sqlResult item="product" name=$name}
 	{/if}
 
 <div class="workBack">

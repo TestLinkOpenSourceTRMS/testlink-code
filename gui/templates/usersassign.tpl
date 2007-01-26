@@ -1,6 +1,6 @@
 {* 
 Testlink: smarty template - 
-$Id: usersassign.tpl,v 1.6 2006/11/13 23:17:39 havlat Exp $ 
+$Id: usersassign.tpl,v 1.7 2007/01/26 21:01:23 schlundus Exp $ 
 *}
 {include file="inc_head.tpl" jsValidate="yes"}
 
@@ -74,7 +74,7 @@ $Id: usersassign.tpl,v 1.6 2006/11/13 23:17:39 havlat Exp $
 	<table class="common" width="75%">
 	<tr>
 		<th>{lang_get s='User'}</th>
-		<th>{lang_get s='Role'}</th>
+		<th>{lang_get s='th_roles'}</th>
 	</tr>
 	{foreach from=$userData item=user}
 	<tr>

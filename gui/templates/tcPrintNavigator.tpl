@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: tcPrintNavigator.tpl,v 1.6 2007/01/26 08:11:06 franciscom Exp $ *}
+{* $Id: tcPrintNavigator.tpl,v 1.7 2007/01/26 21:01:23 schlundus Exp $ *}
 {* Purpose: smarty template - show test specification tree *}
 {include file="inc_head.tpl" jsTree="yes"}
 
@@ -28,13 +28,6 @@
 			{html_options options=$arrFormat selected=$selFormat}
 			</select></td>
 		</tr>
-
-		<tr>
-			<td>&nbsp;</td>
-			<td><input type="submit" name="setPrefs" 
-                 value="{lang_get s='btn_set_pref'}" style="font-size: 90%;" /></td>
-		</tr>
-
 	</table>
 </form>
 </div>

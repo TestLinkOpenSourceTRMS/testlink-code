@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: treeMenu.inc.php,v $
  *
- * @version $Revision: 1.35 $
- * @modified $Date: 2007/01/19 20:40:05 $ by $Author: schlundus $
+ * @version $Revision: 1.36 $
+ * @modified $Date: 2007/01/26 21:01:23 $ by $Author: schlundus $
  * @author Martin Havlat
  *
  * 	This file generates tree menu for test specification and test execution.
@@ -228,8 +228,7 @@ function prepareNode(&$db,&$node,&$hash_id_descr,&$map_node_tccount,
                      $assignedTo = 0,$status = null, $ignore_inactive_testcases=0)
 {
 	$nodeDesc = $hash_id_descr[$node['node_type_id']];
-  	
-	$nTestCases = 0;
+  	$nTestCases = 0;
 	if ($nodeDesc == 'testcase')
 	{
 		if (!is_null($tck_map))
@@ -615,9 +614,9 @@ function renderExecTreeNode($level,&$node,$getArguments,$hash_id_descr,$tc_actio
 	
 	return $menustring;
 }
-
 function layersmenu_renderExecTreeNodeOnOpen($node,$nodeDesc,$linkto,$getArguments,$level,$tc_action_enabled,$bForPrinting)
 {
+	$pfn = "ST";
 	$name = filterString($node['name']);
 	$label = $name;
 	$icon = "";
@@ -626,33 +625,40 @@ function layersmenu_renderExecTreeNodeOnOpen($node,$nodeDesc,$linkto,$getArgumen
 	
 	$testcase_count = isset($node['testcase_count']) ? $node['testcase_count'] : 0;
 	
-	$versionID = null;
+	$versionID = 0;
 	if ($nodeDesc == 'testproject')
 	{
+		$pfn = $bForPrinting ? 'PTP' : 'SP';
 		$label = $name . " ({$testcase_count})";
 		$dots = ".";
 	}
-	else
-	{			
-		if($nodeDesc == "testcase") 
-		{
-			$icon = "gnome-starthere-mini.png";
-			$label = "<b>{$node['id']}</b>: {$name}";
-			$versionID = "&version_id=" . $node['tcversion_id'];
-		}		   
-		else if ($nodeDesc == "testsuite")
-			$label = $name . " ({$testcase_count})";
+	else if($nodeDesc == "testcase") 
+	{
+		if (!$tc_action_enabled)
+			$pfn = "void";
+		$icon = "gnome-starthere-mini.png";
+		$label = "<b>{$node['id']}</b>: {$name}";
+		$versionID = $node['tcversion_id'];
+	}		   
+	else if ($nodeDesc == "testsuite")
+	{
+		$label = $name . " ({$testcase_count})";
+		$pfn = $bForPrinting ? 'PTS' : 'STS';
 	}	
 
-	
 	$myLinkTo = $linkto."?level={$nodeDesc}&id={$node['id']}".$versionID.$getArguments;
+	if ($buildLinkTo)
+		$myLinkTo = "javascript:{$pfn}({$node['id']},{$versionID})";
+	else	
+		$myLinkTo = ' ';
+
+	
 	$menustring = "{$dots}|{$label}|{$myLinkTo}|{$nodeDesc}". 
-		           "|{$icon}|workframe|\n";
+		           "|{$icon}||\n";
 	
 	
 	return $menustring;				
 }
-
 function dtree_renderExecTreeNodeOnOpen($current,$nodeDesc,$linkto,$getArguments,$tc_action_enabled,$bForPrinting)
 {
 	$dtreeCounter = $current['id'];
@@ -661,26 +667,31 @@ function dtree_renderExecTreeNodeOnOpen($current,$nodeDesc,$linkto,$getArguments
 	$name = filterString($current['name']);
 	$buildLinkTo = 1;
 	
+	$pfn = 'ST';
 	$edit = 'testcase';
 	$label = $name;
 	$testcase_count = isset($current['testcase_count']) ? $current['testcase_count'] : 0;
 	$versionID = 0;
 	if ($nodeDesc == 'testproject')
 	{
+		$pfn = $bForPrinting ? 'PTP' : 'SP';
 		$label = $name ." (" . $testcase_count . ")";
 	}
 	else if ($nodeDesc == 'testcase')
 	{
 		$label = "<b>{$current['id']}</b>:".$name;
-		$buildLinkTo = $tc_action_enabled;
 		$versionID = $current['tcversion_id'];
+		$buildLinkTo = $tc_action_enabled;
+		if (!$buildLinkTo)
+			$pfn = "void";
 	}
 	else
 	{
+		$pfn = $bForPrinting ? 'PTS' : 'STS';
 		$label = $name ." (" . $testcase_count . ")";
 	}
 	if ($buildLinkTo)
-		$myLinkTo = $linkto . "?version_id={$versionID}&level={$nodeDesc}&id=" . $current['id'] . $getArguments;
+		$myLinkTo = "javascript:{$pfn}({$current['id']},{$versionID})";// . $getArguments;
 	else
 		$myLinkTo = "";
 		

@@ -1,5 +1,5 @@
 {* smarty template - view all keywords of product; ver. 1.0 *}
-{* $Id: rolesedit.tpl,v 1.7 2006/12/31 16:21:45 franciscom Exp $ *}
+{* $Id: rolesedit.tpl,v 1.8 2007/01/26 21:01:23 schlundus Exp $ *}
 {* Purpose: smarty template - create/edit user role *}
 {include file="inc_head.tpl"}
 
@@ -33,7 +33,7 @@ var warning_modify_role = "{lang_get s='warning_modify_role'}";
 </div>
 
 {* show SQL result *}
-{include file="inc_update.tpl" result=$sqlResult item="role" name=$role.role action="$action"}
+{include file="inc_update.tpl" result=$sqlResult item="Role" name=$role.role action="$action"}
 
 {* Create Form *}
 <div class="workBack">

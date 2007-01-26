@@ -2,7 +2,7 @@
 /**
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/ 
 *
-*  @version 	$Id: printData.php,v 1.26 2006/11/13 07:10:41 franciscom Exp $
+*  @version 	$Id: printData.php,v 1.27 2007/01/26 21:01:24 schlundus Exp $
 *  @author 	Martin Havlat
 * 
 * Shows the data that will be printed.

@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.43 $
- * @modified $Date: 2007/01/19 20:02:56 $ $Author: schlundus $
+ * @version $Revision: 1.44 $
+ * @modified $Date: 2007/01/26 21:01:23 $ $Author: schlundus $
  * @author franciscom
  *
  * 20070105 - franciscom - changes in copy_to(),get_by_id()
@@ -1037,10 +1037,6 @@ function get_exec_status($id)
 
 
 
-
-
-
-
 // -------------------------------------------------------------------------------
 //                            Keyword related methods	
 // -------------------------------------------------------------------------------
@@ -1058,8 +1054,6 @@ function getKeywords($tcID,$kwID = null)
 	return $tcKeywords;
 } 
 
-// 20060423 - franciscom - added order_by_clause argument
-// 
 function get_keywords_map($id,$order_by_clause='')
 {
 	$sql = "SELECT keyword_id,keywords.keyword 
@@ -1348,36 +1342,32 @@ function exportTestCaseDataToXML($tcase_id,$tcversion_id,$bNoXMLHeader = false,$
 //               tcversion_id if linked 
 //
 //
-// rev : 
-//       20060912 - franciscom
 //
 function get_version_exec_assignment($tcversion_id,$tplan_id)
 {
-
-$sql="SELECT T.tcversion_id AS tcversion_id,T.id AS feature_id," .
-     "       UA.user_id,UA.type,UA.status,UA.assigner_id ".
-     " FROM testplan_tcversions T " . 
-     " LEFT OUTER JOIN user_assignments UA ON UA.feature_id = T.id " .
-     " WHERE T.testplan_id={$tplan_id} " .
-     " AND   T.tcversion_id = {$tcversion_id} " .
-     " AND   (UA.type=" . $this->assignment_types['testcase_execution']['id'] . 
-     "        OR UA.type IS NULL) ";
-
-          
-$recordset = $this->db->fetchRowsIntoMap($sql,'tcversion_id');
-return($recordset);
+	$sql = "SELECT T.tcversion_id AS tcversion_id,T.id AS feature_id," .
+			"       UA.user_id,UA.type,UA.status,UA.assigner_id ".
+			" FROM testplan_tcversions T " . 
+			" LEFT OUTER JOIN user_assignments UA ON UA.feature_id = T.id " .
+			" WHERE T.testplan_id={$tplan_id} " .
+			" AND   T.tcversion_id = {$tcversion_id} " .
+			" AND   (UA.type=" . $this->assignment_types['testcase_execution']['id'] . 
+			"        OR UA.type IS NULL) ";
+		
+		  
+	$recordset = $this->db->fetchRowsIntoMap($sql,'tcversion_id');
+	return $recordset;
 }
 
-// 20061104 - franciscom
 function update_active_status($id,$tcversion_id,$active_status)
 {
-  // test case version
+	// test case version
 	$sql = " UPDATE tcversions SET active={$active_status}" .
-  			 " WHERE tcversions.id = {$tcversion_id}";
+			" WHERE tcversions.id = {$tcversion_id}";
 	
-  $result = $this->db->exec_query($sql);
-	$status_ok = $result ? 1: 0;
-	return $status_ok;
+	$result = $this->db->exec_query($sql);
+	
+	return $result ? 1: 0;
 }
 
 
@@ -1397,22 +1387,19 @@ function update_active_status($id,$tcversion_id,$active_status)
         
         
   returns: hash
-  
-  rev :
-        20061231 - franciscom - added $parent_id
 */
 function get_linked_cfields_at_design($id,$parent_id=null,$show_on_execution=null) 
 {
-  $enabled=1;
-  $tproject_mgr= new testproject($this->db);
-  
-  $the_path=$this->tree_manager->get_path_new(!is_null($id) ? $id : $parent_id);
-  $path_len=count($the_path);
-  $tproject_id=($path_len > 0)? $the_path[$path_len-1]['parent_id'] : $parent_id;
-
-  $cf_map=$this->cfield_mgr->get_linked_cfields_at_design($tproject_id,$enabled,
-                                                          $show_on_execution,'testcase',$id);
-  return($cf_map);
+	$enabled = 1;
+	$tproject_mgr = new testproject($this->db);
+	
+	$the_path = $this->tree_manager->get_path_new(!is_null($id) ? $id : $parent_id);
+	$path_len = count($the_path);
+	$tproject_id = ($path_len > 0)? $the_path[$path_len-1]['parent_id'] : $parent_id;
+	
+	$cf_map = $this->cfield_mgr->get_linked_cfields_at_design($tproject_id,$enabled,
+	                                                      $show_on_execution,'testcase',$id);
+	return $cf_map;
 }
 
 /*
@@ -1480,9 +1467,8 @@ function html_table_of_custom_field_inputs($id,$parent_id=null,$scope='design',$
 function html_table_of_custom_field_values($id,$scope='design',$show_on_execution=null,
                                            $execution_id=null,$testplan_id=null) 
 {
-
-  $cf_smarty = '';
-  $PID_NO_NEEDED = null;
+	$cf_smarty = '';
+	$PID_NO_NEEDED = null;
   
 	if($scope=='design')
 	{
@@ -1526,33 +1512,26 @@ function html_table_of_custom_field_values($id,$scope='design',$show_on_executio
         [$testplan_id]
         
   returns: hash
-  
-  rev :
-        20061231 - franciscom - added $parent_id
 */
 function get_linked_cfields_at_execution($id,$parent_id=null,$show_on_execution=null,
                                          $execution_id=null,$testplan_id=null) 
 {
-  $enabled=1;
-  $tproject_mgr= new testproject($this->db);
-  
-  $the_path=$this->tree_manager->get_path_new(!is_null($id) ? $id : $parent_id);
-  $path_len=count($the_path);
-  $tproject_id=($path_len > 0)? $the_path[$path_len-1]['parent_id'] : $parent_id;
-
-
-  // Warning:
-  // I'm setting node type to test case, but $id is the tcversion_id, because
-  // execution data is related to tcversion NO testcase
-  //
-  $cf_map=$this->cfield_mgr->get_linked_cfields_at_execution($tproject_id,$enabled,'testcase',
-                                                             $id,$execution_id,$testplan_id);
-  return($cf_map);
+	$enabled = 1;
+	$tproject_mgr = new testproject($this->db);
+	
+	$the_path=$this->tree_manager->get_path_new(!is_null($id) ? $id : $parent_id);
+	$path_len = count($the_path);
+	$tproject_id = ($path_len > 0)? $the_path[$path_len-1]['parent_id'] : $parent_id;
+	
+	
+	// Warning:
+	// I'm setting node type to test case, but $id is the tcversion_id, because
+	// execution data is related to tcversion NO testcase
+	//
+	$cf_map = $this->cfield_mgr->get_linked_cfields_at_execution($tproject_id,$enabled,'testcase',
+	                                                         $id,$execution_id,$testplan_id);
+	return($cf_map);
 }
-
-
-
-
 
 } // end class
 ?>

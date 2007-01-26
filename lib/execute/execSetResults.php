@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.49 $
- * @modified $Date: 2007/01/26 08:36:06 $ $Author: franciscom $
+ * @version $Revision: 1.50 $
+ * @modified $Date: 2007/01/26 21:01:23 $ $Author: schlundus $
  *
  * 20070105 - franciscom - refactoring
  *
@@ -53,7 +53,6 @@ $keyword_id = isset($_REQUEST['keyword_id']) ? intval($_REQUEST['keyword_id']) :
 $level = isset($_REQUEST['level']) ? $_REQUEST['level'] : '';
 $owner = isset($_REQUEST['owner']) ? intval($_REQUEST['owner']) : null;
 $status = isset($_REQUEST['status']) ? $_REQUEST['status'] : null;
-
 $ownerDisplayName = null;
 if ($owner)
 	$ownerDisplayName = getUserName($db,$owner);

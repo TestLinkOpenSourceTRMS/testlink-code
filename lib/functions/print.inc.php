@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: print.inc.php,v $
- * @version $Revision: 1.20 $
- * @modified $Date: 2007/01/19 20:40:05 $ by $Author: schlundus $
+ * @version $Revision: 1.21 $
+ * @modified $Date: 2007/01/26 21:01:23 $ by $Author: schlundus $
  *
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
@@ -178,7 +178,9 @@ function renderTestCaseForPrinting(&$db,&$printingOptions,&$node,$level)
 	if ($printingOptions['body'] || $printingOptions['summary'])
 	{
 		$tc = new testcase($db);
-		$tcInfo = $tc->get_last_version_info($id);
+		$tcInfo = $tc->get_by_id($id,$node['tcversion_id']);
+		if ($tcInfo)
+			$tcInfo = $tcInfo[0];
 		unset($tc);			
 		$code .= "<tr><td><u>".lang_get('summary')."</u>: " .  $tcInfo['summary'] . "</td></tr>";
 	 	if ($printingOptions['body']) 

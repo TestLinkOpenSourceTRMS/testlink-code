@@ -1,13 +1,13 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: testSetNavigator.tpl,v 1.4 2007/01/24 08:10:24 franciscom Exp $
+$Id: testSetNavigator.tpl,v 1.5 2007/01/26 21:01:23 schlundus Exp $
 show test specification tree 
 *}
 
 {include file="inc_head.tpl" jsTree="yes"}
 <body>
 
-<h1>{lang_get s='title_navigator'} {lang_get s='TestPlan'} {$additional_string}</h1>
+<h1>{lang_get s='title_navigator'} {lang_get s='TestPlan'} {$additional_string|escape}</h1>
 <div style="margin: 3px;">
 <form method="post">
 	<table class="smallGrey" style="width:100%;">

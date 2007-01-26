@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/ 
 // This script is distributed under the GNU General Public License 2 or later. 
 //
-// $Id: testlink_library.js,v 1.21 2007/01/24 08:10:24 franciscom Exp $ 
+// $Id: testlink_library.js,v 1.22 2007/01/26 21:01:23 schlundus Exp $ 
 //
 // Javascript functions commonly used through the GUI
 // This library is automatically loaded with inc_header.tpl
@@ -44,12 +44,6 @@ function SP()
 	parent.workframe.location = fRoot+'/'+SP_html_help_file;
 }
 
-/*
-function SC(id)
-{
-	parent.workframe.location = fRoot+'/'+menuUrl+"&level=category&id="+id;
-}
-*/
 
 function EP(id)
 {
@@ -63,9 +57,9 @@ function ETS(id)
 	parent.workframe.location = fRoot+menuUrl+"?edit=testsuite&id="+id+args+"&"+pParams;
 }
 
-function ET(id)
+function ET(id,v)
 {
-	parent.workframe.location = fRoot+menuUrl+"?edit=testcase&id="+id+args;
+	parent.workframe.location = fRoot+menuUrl+"?version_id="+v+"&edit=testcase&id="+id+args;
 }
 
 function PTS(id)
@@ -73,34 +67,12 @@ function PTS(id)
 	var pParams = tree_getPrintPreferences();
 	parent.workframe.location = fRoot+menuUrl+"?level=testsuite&id="+id+args+"&"+pParams;
 }
-/*
-function ECO(id)
-{
-	parent.workframe.location = fRoot+menuUrl+"?edit=component&data="+id+args;
-}
-
-function EC(id)
-{
-	parent.workframe.location = fRoot+menuUrl+"?edit=category&data="+id+args;
-}
-*/
 
 function PTP(id)
 {
 	var pParams = tree_getPrintPreferences();
 	parent.workframe.location = fRoot+menuUrl+"?level=testproject&id="+id+args+"&"+pParams;
 }
-/*
-function PCO(id)
-{
-	parent.workframe.location = fRoot+menuUrl+"?level=component&data="+id+args;
-}
-
-function PC(id)
-{
-	parent.workframe.location = fRoot+menuUrl+"?level=category&data="+id+args;
-}
-*/
 
 function PT(id)
 {
@@ -339,17 +311,14 @@ function deleteBug_onClick(execution_id,bug_id,warning_msg)
 	}	
 }
 
-// 20061223 - franciscom
 function open_show_notes_window(exec_id)
 {
 	window.open(fRoot+"lib/execute/show_exec_notes.php?exec_id="+exec_id,
 	            "execution_notes","width=510,height=270,resizable=yes,dependent=yes");
 }
 
-// 20070124 - franciscom
 function open_help_window(help_page,locale)
 {
-	// window.open(fRoot+"lib/general/show_help.php?help="+help_page+"&locale="+locale,"Help","width=510,height=270,resizable=yes,dependent=yes");
-  window.open(fRoot+"lib/general/show_help.php?help="+help_page+"&locale="+locale,"_blank", "left=350,top=50,screenX=350,screenY=50,fullscreen=no,resizable=yes,toolbar=no,status=no,menubar=no,scrollbars=yes,directories=no,location=no,width=400,height=650")
+	window.open(fRoot+"lib/general/show_help.php?help="+help_page+"&locale="+locale,"_blank", "left=350,top=50,screenX=350,screenY=50,fullscreen=no,resizable=yes,toolbar=no,status=no,menubar=no,scrollbars=yes,directories=no,location=no,width=400,height=650")
 }
 

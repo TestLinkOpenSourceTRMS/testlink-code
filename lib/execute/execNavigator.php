@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: execNavigator.php,v $
  *
- * @version $Revision: 1.31 $
- * @modified $Date: 2007/01/24 08:10:24 $ by $Author: franciscom $
+ * @version $Revision: 1.32 $
+ * @modified $Date: 2007/01/26 21:01:23 $ by $Author: schlundus $
  *
  *
  * 20070123 - franciscom - 
@@ -87,7 +87,7 @@ if(isset($_REQUEST['submitOptions']))
 	$src_workframe = $menuUrl . "?level=testproject&id={$tproject_id}" . $getArguments;
 }
                      
-$tree = invokeMenu($sMenu);
+$tree = invokeMenu($sMenu,null,null);
 $tcData = null;
 $testCaseID = null;
 $testCaseID = null;

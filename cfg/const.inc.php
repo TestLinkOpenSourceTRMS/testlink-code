@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: const.inc.php,v $
  *
- * @version $Revision: 1.9 $
- * @modified $Date: 2007/01/26 08:10:32 $ by $Author: franciscom $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2007/01/26 21:01:22 $ by $Author: schlundus $
  * @author Martin Havlát
  *
  * SCOPE:
@@ -259,7 +259,6 @@ define('ANY_BUILD',null);
 define('GET_NO_EXEC',1);
 
 
-// 20070121 - franciscom
 define('ACTIVE',1);
 define('INACTIVE',0);
 define('OPEN',1);
@@ -267,7 +266,6 @@ define('CLOSED',0);
 
 // moved from testSetNavigator.php
 define('FILTER_BY_BUILD_OFF',0);
-define('FILTER_BY_TC_OFF',null);
 define('FILTER_BY_OWNER_OFF',0);
 define('FILTER_BY_TC_STATUS_OFF',null);
 

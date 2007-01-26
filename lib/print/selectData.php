@@ -1,17 +1,12 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* @version 	$Id: selectData.php,v 1.13 2007/01/19 20:40:05 schlundus Exp $
+* @version 	$Id: selectData.php,v 1.14 2007/01/26 21:01:24 schlundus Exp $
 * @author 	Martin Havlat
 * 
 * 	Navigator for print/export functionality. 
 *	It builds the javascript tree that allow the user select a required part 
 *	test specification.
-*
-* 	@todo export to XML, PDF
-*
-* 20050911 - fm - different titles
-*
 */
 require('../../config.inc.php');
 require_once("common.php");
@@ -74,7 +69,6 @@ else if ($type == 'testSet')
 
 	$smarty->assign('title', lang_get('title_tp_print_navigator'));
 }	
-
 $tree = invokeMenu($treeString,null,null);
 $smarty->assign('treeKind', TL_TREE_KIND);
 $smarty->assign('arrCheckboxes', $arrCheckboxes);

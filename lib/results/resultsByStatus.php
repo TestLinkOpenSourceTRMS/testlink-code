@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsByStatus.php,v 1.32 2007/01/15 00:49:52 kevinlevy Exp $ 
+* $Id: resultsByStatus.php,v 1.33 2007/01/27 09:53:46 franciscom Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -49,10 +49,8 @@ $arrBuilds = $tp->get_builds($tpID);
 $results = new results($db, $tp, $SUITES_SELECTED, $builds, $type);
 $mapOfLastResult = $results->getMapOfLastResult();
 
-// KL - get users array
-define('ALL_USERS_FILTER', null);
-define('ADD_BLANK_OPTION', false);
-$arrOwners = get_users_for_html_options($db, ALL_USERS_FILTER, ADD_BLANK_OPTION);
+
+$arrOwners = get_users_for_html_options($db, ALL_USERS_FILTER, !ADD_BLANK_OPTION);
 $arrDataIndex = 0;
 $arrData = null;
 if (is_array($mapOfLastResult)) {

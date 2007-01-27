@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsMoreBuilds.php,v 1.47 2007/01/13 23:43:42 kevinlevy Exp $ 
+* $Id: resultsMoreBuilds.php,v 1.48 2007/01/27 09:53:46 franciscom Exp $ 
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 * 
@@ -21,9 +21,7 @@ $prodID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 $tpID = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0 ;
 $tplanName = isset($_SESSION['testPlanName']) ? $_SESSION['testPlanName'] : null;
 
-define('ALL_USERS_FILTER', null);
-define('ADD_BLANK_OPTION', false);
-$arrOwners = get_users_for_html_options($db, ALL_USERS_FILTER, ADD_BLANK_OPTION);
+$arrOwners = get_users_for_html_options($db, ALL_USERS_FILTER, !ADD_BLANK_OPTION);
 $tp = new testplan($db);
 //$tree = new tree($db);
 $builds_to_query = -1;

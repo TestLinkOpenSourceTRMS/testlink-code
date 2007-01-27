@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsMoreBuilds_buildReport.php,v 1.41 2007/01/15 00:49:52 kevinlevy Exp $ 
+* $Id: resultsMoreBuilds_buildReport.php,v 1.42 2007/01/27 09:53:46 franciscom Exp $ 
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 * 
@@ -75,9 +75,7 @@ $arrKeywords = $tp->get_keywords_map($tpID);
 $arrBuilds = $tp->get_builds($tpID); 
 $mapBuilds = $tp->get_builds_for_html_options($tpID);
 
-define('ALL_USERS_FILTER', null);
-define('ADD_BLANK_OPTION', false);
-$arrOwners = get_users_for_html_options($db, ALL_USERS_FILTER, ADD_BLANK_OPTION);
+$arrOwners = get_users_for_html_options($db, ALL_USERS_FILTER, !ADD_BLANK_OPTION);
 $smarty = new TLSmarty();
 $smarty->assign('arrBuilds', $arrBuilds);
 $smarty->assign('mapBuilds', $mapBuilds);

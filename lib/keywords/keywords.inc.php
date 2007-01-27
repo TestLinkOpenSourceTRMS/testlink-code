@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: keywords.inc.php,v $
 * 
-* @version $Id: keywords.inc.php,v 1.29 2006/10/22 19:50:25 schlundus Exp $
-* @modified $Date: 2006/10/22 19:50:25 $ by $Author: schlundus $
+* @version $Id: keywords.inc.php,v 1.30 2007/01/27 09:38:54 franciscom Exp $
+* @modified $Date: 2007/01/27 09:38:54 $ by $Author: franciscom $
 *
 * Functions for support keywords management. 
 *
@@ -14,6 +14,11 @@
 * 20051229 - scs - added support for ADODB, added some functions related to import/export
 * 20060224 - franciscom - changes due to new schema
 **/
+if (version_compare(PHP_VERSION,'5','>=')&&extension_loaded('xsl'))
+{
+  require_once(dirname(__FILE__) . '/../../third_party/domxml-php4-to-php5.php');
+}
+
 $g_keywordImportTypes = array( "CSV" => "CSV",
 							                 "XML" => "XML",
 							          );

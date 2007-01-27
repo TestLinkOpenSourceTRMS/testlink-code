@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: requirements.inc.php,v $
- * @version $Revision: 1.42 $
- * @modified $Date: 2007/01/24 20:41:17 $ by $Author: schlundus $
+ * @version $Revision: 1.43 $
+ * @modified $Date: 2007/01/27 09:38:06 $ by $Author: franciscom $
  *
  * @author Martin Havlat <havlat@users.sourceforge.net>
  * 
@@ -27,6 +27,12 @@
  *
  */
 ////////////////////////////////////////////////////////////////////////////////
+
+if (version_compare(PHP_VERSION,'5','>=')&&extension_loaded('xsl'))
+{
+  require_once(dirname(__FILE__) . '/../../third_party/domxml-php4-to-php5.php');
+}
+
 
 define('TL_REQ_STATUS_VALID', 'v');
 define('TL_REQ_STATUS_NOT_TESTABLE', 'n');
@@ -1069,6 +1075,8 @@ function importReqDataFromCSVDoors($fileName)
 */
 function importReqDataFromXML($fileName)
 {
+  
+   
 	$dom = domxml_open_file($fileName);
 	$xmlReqs = null;
   $field_size=config_get('field_size');  

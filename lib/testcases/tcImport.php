@@ -5,15 +5,22 @@
  *
  * Filename $RCSfile: tcImport.php,v $
  * Filename $RCSfile: tcImport.php,v $
- * @version $Revision: 1.18 $
+ * @version $Revision: 1.19 $
  *
- * @modified $Date: 2007/01/17 20:47:56 $ by $Author: schlundus $
+ * @modified $Date: 2007/01/27 09:38:06 $ by $Author: franciscom $
 */
 require('../../config.inc.php');
 require_once('common.php');
 require_once('import.inc.php');
 require_once('csv.inc.php');
 require_once('xml.inc.php');
+
+if (version_compare(PHP_VERSION,'5','>=')&&extension_loaded('xsl'))
+{
+  require_once(dirname(__FILE__) . '/../../third_party/domxml-php4-to-php5.php');
+}
+
+
 testlinkInitPage($db);
 
 $importType = isset($_POST['importType']) ? $_POST['importType'] : null;
@@ -340,6 +347,7 @@ function check_xml_tc_tsuite($fileName,$bRecursive)
 	{
 		$file_check = array('status_ok' => 1, 'msg' => 'ok');    		  
 		$root = $dom->document_element();
+	
 		if($bRecursive)
 		{
 			if($root->tagname != 'testsuite')
@@ -347,7 +355,8 @@ function check_xml_tc_tsuite($fileName,$bRecursive)
 		}
 		else
 		{
-			if($root->tagname != 'testcases')
+		  // 20070127 - franciscom 
+			if($root->tagname != 'testcases' && $root->tagname != 'testcase')
 				$file_check=array('status_ok' => 0, 'msg' => lang_get('wrong_xml_tcase_file'));
 		}
 	}

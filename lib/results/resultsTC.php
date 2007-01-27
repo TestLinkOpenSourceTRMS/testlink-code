@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsTC.php,v 1.23 2007/01/15 00:49:52 kevinlevy Exp $ 
+* $Id: resultsTC.php,v 1.24 2007/01/27 10:17:55 franciscom Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -10,11 +10,14 @@
 *
 * @author 20050919 - fm - refactoring
 * 
-* 20051022 - scs - correct wrong index
-* 20061127 - kl - upgrading to 1.7
+* 20070127 - franciscom
+* code to change display of test case status from code to label
+*
 */
 
-//print "KL - 20061127 - should be functional. There may be an issue with test case results which have multiple executions associated with the same build<BR>";
+// print "KL - 20061127 - should be functional. T
+// here may be an issue with test case results which have 
+// multiple executions associated with the same build<BR>";
 require('../../config.inc.php');
 require_once('common.php');
 require_once('../functions/results.class.php');
@@ -37,6 +40,22 @@ $executionsMap = $re->getSuiteList();
 $lastResultMap = $re->getMapOfLastResult();
 $indexOfArrData = 0;
 
+
+// -----------------------------------------------------------------------------------
+// 20070127 - franciscom
+$map_tc_status_verbose_code=array_flip(config_get('tc_status'));
+$map_tc_status_verbose_label=config_get('tc_status_for_ui');
+foreach($map_tc_status_verbose_code as $code => $verbose )
+{
+  if( isset($map_tc_status_verbose_label[$verbose]) )
+  {
+    $label=$map_tc_status_verbose_label[$verbose];
+    $map_tc_status_code_langet[$code]=lang_get($label);  
+  }
+}
+// -----------------------------------------------------------------------------------
+
+
 if ($lastResultMap != null) {
 while($suiteId = key($lastResultMap)) {
 	$currentSuiteInfo = $lastResultMap[$suiteId];
@@ -48,16 +67,20 @@ while($suiteId = key($lastResultMap)) {
 		$suiteExecutions = $executionsMap[$suiteId];
 		
 		// iterate over all builds and lookup results for current test case
-		for($i = 0; $i < sizeOf($arrBuilds); $i++) {
+		$qta_builds = sizeOf($arrBuilds);
+		for($i = 0; $i < $qta_builds; $i++) {
 			$buildId = $arrBuilds[$i]['id'];
 			$resultsForBuild = "?";
 		
 			// iterate over executions for this suite, look for 
 			// entries that match current test case id and build id 
-			for ($j = 0; $j < sizeOf($suiteExecutions); $j++) {
+			$qta_suites=sizeOf($suiteExecutions);
+			for ($j = 0; $j < $qta_suites; $j++) {
 				$execution_array = $suiteExecutions[$j];
 				if (($execution_array['testcaseID'] == $testCaseId) && ($execution_array['build_id'] == $buildId)) {
-					$resultsForBuild = $execution_array['status'];					
+
+          // 20070127 - franciscom
+					$resultsForBuild = $map_tc_status_code_langet[$execution_array['status']];					
 				}
 			}	
 			array_push($rowArray, $resultsForBuild);

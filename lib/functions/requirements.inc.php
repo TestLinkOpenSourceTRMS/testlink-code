@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: requirements.inc.php,v $
- * @version $Revision: 1.43 $
- * @modified $Date: 2007/01/27 09:38:06 $ by $Author: franciscom $
+ * @version $Revision: 1.44 $
+ * @modified $Date: 2007/01/28 19:03:17 $ by $Author: schlundus $
  *
  * @author Martin Havlat <havlat@users.sourceforge.net>
  * 
@@ -1075,8 +1075,6 @@ function importReqDataFromCSVDoors($fileName)
 */
 function importReqDataFromXML($fileName)
 {
-  
-   
 	$dom = domxml_open_file($fileName);
 	$xmlReqs = null;
   $field_size=config_get('field_size');  

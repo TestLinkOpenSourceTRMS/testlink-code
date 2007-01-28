@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: tcexport.php,v $
  *
- * @version $Revision: 1.7 $
- * @modified $Date: 2007/01/15 08:04:54 $ by $Author: franciscom $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2007/01/28 19:03:17 $ by $Author: schlundus $
  *
  * test case and test suites export
  *
@@ -35,70 +35,65 @@ $testproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID']
 $testprojectName = $_SESSION['testprojectName'];
 
 $exporting_just_one_tc = 0;
-$node_id=$container_id;
-$do_it=1;
-$nothing_todo_msg='';
-$check_children=0;
+$node_id = $container_id;
+$do_it = 1;
+$nothing_todo_msg = '';
+$check_children = 0;
 
 if($bRecursive)
 {
-  // Exporting situations:
-  // All test suites in test project
-  // One test suite 
-  $page_title=lang_get('title_tsuite_export');
-  $container_description=lang_get('test_suite');
+	// Exporting situations:
+	// All test suites in test project
+	// One test suite 
+	$page_title=lang_get('title_tsuite_export');
+	$container_description=lang_get('test_suite');
 
-  $fileName = 'testsuites.xml';
-  if( $node_id == $testproject_id )
-  {
-     $container_description=lang_get('testproject');
-     $page_title=lang_get('title_tsuite_export_all');
-     $fileName = 'all_testsuites.xml';
-     $check_children=1; 
-     $nothing_todo_msg=lang_get('no_testsuites_to_export');
-  }
+	$fileName = 'testsuites.xml';
+	if($node_id == $testproject_id)
+	{
+		$container_description=lang_get('testproject');
+		$page_title=lang_get('title_tsuite_export_all');
+		$fileName = 'all_testsuites.xml';
+		$check_children=1; 
+		$nothing_todo_msg=lang_get('no_testsuites_to_export');
+	}
 } 
 else
 {
-  // Exporting situations:
-  // All test cases in test suite.
-  // One test case.
+	// Exporting situations:
+	// All test cases in test suite.
+	// One test case.
 	$exporting_just_one_tc = ($tcase_id && $tcversion_id);
 	$fileName = 'testcases.xml';
-  
-  if($exporting_just_one_tc)
-  {
-    $container_description=lang_get('test_case');
-    $node_id=$tcase_id;
-    $page_title=lang_get('title_tc_export');
-  }
-  else
-  {
-    $container_description=lang_get('test_suite');
-    $page_title=lang_get('title_tc_export_all');
-    $check_children=1;
-    $nothing_todo_msg=lang_get('no_testcases_to_export');
-  }
+	
+	if($exporting_just_one_tc)
+	{
+		$container_description = lang_get('test_case');
+		$node_id = $tcase_id;
+		$page_title = lang_get('title_tc_export');
+	}
+	else
+	{
+		$container_description = lang_get('test_suite');
+		$page_title = lang_get('title_tc_export_all');
+		$check_children = 1;
+		$nothing_todo_msg = lang_get('no_testcases_to_export');
+	}
 }
 
-// 20070113 - franciscom
 if( $check_children )
 {
-  // Check if there is something to export
-  $tree_mgr = New tree($db);
-  $children=$tree_mgr->get_children($node_id, array("testplan" => "exclude_me"));	
-  if( count($children)==0 )
-  {
-      $do_it=0;
-  }
-  else
-  {
-     $nothing_todo_msg='';
-  }
+	// Check if there is something to export
+	$tree_mgr = new tree($db);
+	$children=$tree_mgr->get_children($node_id, array("testplan" => "exclude_me"));	
+	if(count($children)==0)
+		$do_it = 0 ;
+	else
+		$nothing_todo_msg='';
 }
 
-$tree_mgr=New tree($db);
-$node=$tree_mgr->get_node_hierachy_info($node_id);
+$tree_mgr = new tree($db);
+$node = $tree_mgr->get_node_hierachy_info($node_id);
 
 
 if ($bExport)
@@ -142,10 +137,7 @@ $smarty = new TLSmarty();
 
 $smarty->assign('do_it',$do_it);
 $smarty->assign('nothing_todo_msg',$nothing_todo_msg);
-
-
 $smarty->assign('object_name',$node['name']);
-
 $smarty->assign('page_title',$page_title);
 $smarty->assign('productName', $testprojectName);
 $smarty->assign('productID', $testproject_id);
@@ -154,7 +146,6 @@ $smarty->assign('bRecursive',$bRecursive ? 1 : 0);
 $smarty->assign('tcVersionID', $tcversion_id);
 $smarty->assign('containerID', $container_id);
 $smarty->assign('container_description', $container_description);
-
 $smarty->assign('exportTypes',$g_tcImportTypes);
 $smarty->display('tcexport.tpl');
 ?>

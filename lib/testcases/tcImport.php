@@ -5,9 +5,9 @@
  *
  * Filename $RCSfile: tcImport.php,v $
  * Filename $RCSfile: tcImport.php,v $
- * @version $Revision: 1.19 $
+ * @version $Revision: 1.20 $
  *
- * @modified $Date: 2007/01/27 09:38:06 $ by $Author: franciscom $
+ * @modified $Date: 2007/01/28 19:03:17 $ by $Author: schlundus $
 */
 require('../../config.inc.php');
 require_once('common.php');
@@ -44,19 +44,17 @@ $container_description=lang_get('test_case');
 if($bRecursive)
 {
 	$import_title = lang_get('title_tsuite_import_to');  
-  $container_description=lang_get('test_suite');
+	$container_description=lang_get('test_suite');
 }
 
 $container_name = '';
 if($container_id)
 {
-  $tree_mgr = new tree($db);
-  $node_info = $tree_mgr->get_node_hierachy_info($container_id);    
-  $container_name = $node_info['name'];
-  if( $container_id == $tproject_id )
-  {
-    $container_description=lang_get('testproject');
-  }
+	$tree_mgr = new tree($db);
+	$node_info = $tree_mgr->get_node_hierachy_info($container_id);    
+	$container_name = $node_info['name'];
+	if($container_id == $tproject_id)
+		$container_description=lang_get('testproject');
 }
 
 if ($do_upload)
@@ -347,7 +345,6 @@ function check_xml_tc_tsuite($fileName,$bRecursive)
 	{
 		$file_check = array('status_ok' => 1, 'msg' => 'ok');    		  
 		$root = $dom->document_element();
-	
 		if($bRecursive)
 		{
 			if($root->tagname != 'testsuite')

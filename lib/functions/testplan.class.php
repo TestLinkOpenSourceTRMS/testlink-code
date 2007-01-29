@@ -2,11 +2,13 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.22 $
- * @modified $Date: 2007/01/23 07:51:23 $ $Author: franciscom $
+ * @version $Revision: 1.23 $
+ * @modified $Date: 2007/01/29 08:13:32 $ $Author: franciscom $
  * @author franciscom
  *
  * rev :
+ *
+ *       20070127 - franciscom - custom field management
  *       20070120 - franciscom - added Class build_mgr
  *
  *       20070120 - franciscom - added active and open argument
@@ -25,6 +27,9 @@ class testplan
 	var $db;
 	var $tree_manager;
 	var $assignment_mgr;
+  var $cfield_mgr;      // 20070127 - franciscom
+
+
 	var $assignment_types;
 	var $assignment_status;
 
@@ -45,6 +50,9 @@ class testplan
 		$this->assignment_mgr=New assignment_mgr($this->db);
 		$this->assignment_types=$this->assignment_mgr->get_available_types(); 
 		$this->assignment_status=$this->assignment_mgr->get_available_status();
+	
+	  // 20070127 	
+  	$this->cfield_mgr=new cfield_mgr($this->db);
 	}
 
 
@@ -449,7 +457,7 @@ function copy_as($id,$new_tplan_id,$tplan_name=null,$tproject_id=null)
          "WHERE id={$new_tplan_id}";
     $this->db->exec_query($sql);
   }  
-  
+ 
   $this->copy_builds($id,$new_tplan_id);
   $this->copy_linked_tcversions($id,$new_tplan_id);
   $this->copy_milestones($id,$new_tplan_id);
@@ -566,6 +574,16 @@ function copy_priorities($id,$new_tplan_id)
 }
 
 
+/*
+  function: 
+
+  args :
+  
+  returns: 
+
+  rev :
+        20070129 - franciscom - added custom field management
+*/
 function delete($id)
 {
   
@@ -602,6 +620,8 @@ function delete($id)
        deleteAttachment($this->db,$elem['id']);
     }  
   }
+  
+  $this->cfield_mgr->remove_all_design_values_from_node($id);
   // ------------------------------------------------------------------------  
   
   // Finally delete from main table
@@ -722,17 +742,17 @@ function get_builds($id,$active=null,$open=null)
   function: check_build_name_existence
 
   args :
-        $id     : test plan id. 
+        $tplan_id     : test plan id. 
   
   returns: 
 
   rev :
 */
-function check_build_name_existence($tproject_id,$build_name,$case_sensitive=0)
+function check_build_name_existence($tplan_id,$build_name,$case_sensitive=0)
 {
  	$sql = " SELECT builds.id, builds.name, builds.notes " .
 	       " FROM builds " .
-	       " WHERE builds.testplan_id = {$tproject_id} ";
+	       " WHERE builds.testplan_id = {$tplan_id} ";
 	       
 	       
 	if($case_sensitive)
@@ -788,12 +808,169 @@ function create_build($tplan_id,$name,$notes = '',$active=1,$open=1)
 	return $new_build_id;
 }
 
+// -------------------------------------------------------------------------------
+// Custom field related methods
+// -------------------------------------------------------------------------------
+/*
+  function: get_linked_cfields_at_design
+            
+            
+  args: $id
+        [$parent_id]:
+        [$show_on_execution]: default: null
+                              1 -> filter on field show_on_execution=1
+                              0 or null -> don't filter
+        
+        
+  returns: hash
+  
+  rev :
+        20061231 - franciscom - added $parent_id
+*/
+function get_linked_cfields_at_design($id,$parent_id=null,$show_on_execution=null) 
+{
+  $enabled=1;
+  $tproject_mgr= new testproject($this->db);
+  $the_path=$this->tree_manager->get_path_new(!is_null($id) ? $id : $parent_id);
+  $path_len=count($the_path);
+  $tproject_id=($path_len > 0)? $the_path[$path_len-1]['parent_id'] : $parent_id;
+
+  $cf_map=$this->cfield_mgr->get_linked_cfields_at_design($tproject_id,$enabled,
+                                                          $show_on_execution,'testplan',$id);
+  return($cf_map);
+}
+
+/*
+  function: get_linked_cfields_at_execution
+            
+            
+  args: $id
+        [$parent_id]
+        [$show_on_execution]: default: null
+                              1 -> filter on field show_on_execution=1
+                              0 or null -> don't filter
+        
+        
+  returns: hash
+  
+  rev :
+        20061231 - franciscom - added $parent_id
+*/
+function get_linked_cfields_at_execution($id,$parent_id=null,$show_on_execution=null) 
+{
+  $enabled=1;
+  $tproject_mgr= new testproject($this->db);
+  
+  $the_path=$this->tree_manager->get_path_new(!is_null($id) ? $id : $parent_id);
+  $path_len=count($the_path);
+  $tproject_id=($path_len > 0)? $the_path[$path_len-1]['parent_id'] : $parent_id;
+
+  $cf_map=$this->cfield_mgr->get_linked_cfields_at_design($tproject_id,$enabled,
+                                                          $show_on_execution,'testplan',$id);
+  return($cf_map);
+}
+
+
+
+
+/*
+  function: html_table_of_custom_field_inputs
+            
+            
+  args: $id
+        [$parent_id]: need when you call this method during the creation
+                      of a test suite, because the $id will be 0 or null.
+                      
+        [$scope]: 'design','execution'
+        
+  returns: html string
+  
+*/
+function html_table_of_custom_field_inputs($id,$parent_id=null,$scope='design') 
+{
+  $cf_smarty='';
+  
+  if( $scope=='design' )
+  {
+    $cf_map=$this->get_linked_cfields_at_design($id,$parent_id);
+  }
+  else
+  {
+    $cf_map=$this->get_linked_cfields_at_execution($id,$parent_id);
+  }
+  
+  if( !is_null($cf_map) )
+  {
+    foreach($cf_map as $cf_id => $cf_info)
+    {
+      $cf_smarty .= '<tr><td class="labelHolder">' . $cf_info['label'] . "</td><td>" .
+                    $this->cfield_mgr->string_custom_field_input($cf_info) .
+                    "</td></tr>\n";
+    } //foreach($cf_map
+  }
+  $cf_smarty = "<table>" . $cf_smarty . "</table>";
+  return($cf_smarty);
+}
+
+/*
+  function: html_table_of_custom_field_values
+            
+            
+  args: $id
+        [$scope]: 'design','execution'
+        [$show_on_execution]: default: null
+                              1 -> filter on field show_on_execution=1
+                              0 or null -> don't filter
+  
+  returns: html string
+  
+*/
+function html_table_of_custom_field_values($id,$scope='design',$show_on_execution=null) 
+{
+  $cf_smarty='';
+  $parent_id=null;
+  
+  if( $scope=='design' )
+  {
+    $cf_map=$this->get_linked_cfields_at_design($id,$parent_id,$show_on_execution);
+  }
+  else 
+  {
+    $cf_map=$this->get_linked_cfields_at_execution($id);
+  }
+    
+  if( !is_null($cf_map) )
+  {
+    foreach($cf_map as $cf_id => $cf_info)
+    {
+      // if user has assigned a value, then node_id is not null
+      if($cf_info['node_id'])
+      {
+        $cf_smarty .= '<tr><td class="labelHolder">' . $cf_info['label'] . "</td><td>" .
+                      $this->cfield_mgr->string_custom_field_value($cf_info,$id) .
+                      "</td></tr>\n";
+      }
+    }
+  }
+  $cf_smarty = "<table>" . $cf_smarty . "</table>";
+  return($cf_smarty);
+} // function end
+
+
 } // end class testplan
+// ##################################################################################
 
 
 
 
+
+
+
+// ##################################################################################
+// 
 // Build Manager Class
+//
+// ##################################################################################
 class build_mgr
 {
 	var $db;
@@ -937,12 +1114,6 @@ class build_mgr
   	$myrow = $this->db->fetch_array($result);
   	return $myrow;
   }
-
-
-
-
-
-	
 
 } // end class build_mgr
 

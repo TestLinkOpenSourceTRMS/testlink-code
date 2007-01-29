@@ -1,6 +1,9 @@
 {* 
 Testlink: smarty template - 
-$Id: cfields_edit.tpl,v 1.5 2007/01/25 14:04:30 franciscom Exp $ 
+$Id: cfields_edit.tpl,v 1.6 2007/01/29 08:13:32 franciscom Exp $ 
+
+rev :
+     20070128 - franciscom - variable name changes
 *}
 {include file="inc_head.tpl" jsValidate="yes"}
 
@@ -41,12 +44,12 @@ function validateForm(f)
           alt="$text_hint" title="$text_hint"  style="float: right;"}
  {lang_get s='title_cfields_mgmt'} </h1>
 
-{include file="inc_update.tpl" result=$result item="custom_field" action="$action" feedback_type="soft"}
+{include file="inc_update.tpl" result=$result item="custom_field" action="$user_action" feedback_type="soft"}
 
 <div class="workBack">
 
 
-{if $action eq "do_delete"}
+{if $user_action eq "do_delete"}
   <form method="post" name="cfields_edit" action="lib/cfields/cfields_view.php">
    <div class="groupBtn">	
 		<input type="submit" name="ok" value="{lang_get s='btn_ok'}"> 
@@ -56,7 +59,7 @@ function validateForm(f)
 {else}
 <form method="post" name="cfields_edit" action="lib/cfields/cfields_edit.php" 
       onSubmit="javascript:return validateForm(this);">
-  <input type="hidden" id="hidden_id" name="id" value="{$cf.id}">   
+  <input type="hidden" id="hidden_id" name="cfield_id" value="{$cf.id}">   
 	<table class="common">
     <tr> 
       <td colspan="2"> 
@@ -165,14 +168,14 @@ function validateForm(f)
 	</table>
 	
 	<div class="groupBtn">	
-	<input type="hidden" name="action" value="">
-	{if $action eq 'edit'}
+	<input type="hidden" name="do_action" value="">
+	{if $user_action eq 'edit'}
 		<input type="submit" name="do_update" value="{lang_get s='btn_upd'}"
-		       onclick="action.value='do_update'"/>
+		       onclick="do_action.value='do_update'"/>
 		       
 		{if is_used eq 0}       
   		<input type="button" name="do_delete" value="{lang_get s='btn_delete'}"
-  		       onclick="action.value='do_delete';
+  		       onclick="do_action.value='do_delete';
   		                if (confirm('{lang_get s='popup_delete_custom_field'}'))
   		                {ldelim}cfields_edit.submit();{rdelim};" />
     {/if}
@@ -180,7 +183,7 @@ function validateForm(f)
 		       
 	{else}
 		<input type="submit" name="do_update" value="{lang_get s='btn_add'}" 
-		       onclick="action.value='do_add'"/>
+		       onclick="do_action.value='do_add'"/>
 	{/if}
 		<input type="button" name="cancel" value="{lang_get s='btn_cancel'}" 
 			onclick="javascript: location.href=fRoot+'lib/cfields/cfields_view.php';" />

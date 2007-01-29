@@ -5,17 +5,24 @@
  *
  * Filename $RCSfile: cfields_edit.php,v $
  *
- * @version $Revision: 1.3 $
- * @modified $Date: 2007/01/19 20:02:56 $ by $Author: schlundus $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2007/01/29 08:13:32 $ by $Author: franciscom $
+ *
+ *
+ * rev :
+ *      to avoid potential problems with HTML dom:  action -> do_action
+ *           
 **/
 require_once("../../config.inc.php");
 require_once("../functions/common.php");
 testlinkInitPage($db);
 
-$action = isset($_REQUEST['action']) ? $_REQUEST['action']:null;
-$id = isset($_REQUEST['id']) ? $_REQUEST['id']:0;
+$do_action = isset($_REQUEST['do_action']) ? $_REQUEST['do_action']:null;
+$cfield_id = isset($_REQUEST['cfield_id']) ? $_REQUEST['cfield_id']:0;
 $cf_is_used = 0;
 $result_msg = null;
+$cf = '';  
+	
 $cfield_mgr = new cfield_mgr($db);
 
 $allowed_nodes = $cfield_mgr->get_allowed_nodes();
@@ -25,24 +32,26 @@ foreach($allowed_nodes as $verbose_type => $type_id)
 	$cf_allowed_nodes[$type_id] = lang_get($verbose_type);
 }
 
-switch ($action)
+switch ($do_action)
 {
 	case 'create':
-		$cf = array('id' => $id,
-		'name' => ' ', 'label' => ' ', 'type' => 0,
-		'possible_values' => '',
-		'show_on_design' => 1,
-		'enable_on_design' => 1,
-		'show_on_execution' => 1,
-		'enable_on_execution' => 1,
-		'node_type_id' => $allowed_nodes['testcase']
+		$cf = array('id' => $cfield_id,
+		            'name' => ' ', 'label' => ' ', 'type' => 0,
+		            'possible_values' => '',
+		            'show_on_design' => 1,
+		            'enable_on_design' => 1,
+		            'show_on_execution' => 1,
+		            'enable_on_execution' => 1,
+		            'node_type_id' => $allowed_nodes['testcase']
 		);    
 		break;
+	
 	case 'edit':
-		$cf=$cfield_mgr->get_by_id($id);
-		$cf=$cf[$id];
-		$cf_is_used=$cfield_mgr->is_used($id);
+		$cf=$cfield_mgr->get_by_id($cfield_id);
+		$cf=$cf[$cfield_id];
+		$cf_is_used=$cfield_mgr->is_used($cfield_id);
 		break;
+	
 	case 'do_add':  
 		$cf = request2cf($_REQUEST);
 		$cf['name'] = trim($cf['name']);
@@ -61,10 +70,11 @@ switch ($action)
 		else
 			$result_msg = lang_get("cf_name_exists"); 
 		break;
+	
 	case 'do_update':  
 		$cf = request2cf($_REQUEST);
 		
-		$cf['id'] = $id;
+		$cf['id'] = $cfield_id;
 		$cf['name'] = trim($cf['name']);
 		$cf['label'] = trim($cf['label']);
 		$cf['possible_values'] = trim($cf['possible_values']);
@@ -79,23 +89,35 @@ switch ($action)
 		else
 			$result_msg = lang_get("cf_name_exists"); 
 		break;
+	
 	case 'do_delete':
 		$cf = '';  
 		$result_msg = "ok";
-		$cfield_mgr->delete($id); 
+		$cfield_mgr->delete($cfield_id); 
 		break; 
 }
 
 $smarty = new TLSmarty();
 
 $smarty->assign('result',$result_msg);
-$smarty->assign('action',$action);
+$smarty->assign('user_action',$do_action);
 $smarty->assign('cf_types',$cfield_mgr->get_available_types());
 $smarty->assign('cf_allowed_nodes',$cf_allowed_nodes);
 $smarty->assign('is_used',$cf_is_used);
 $smarty->assign('cf',$cf);
 $smarty->display('cfields_edit.tpl');
+?>
 
+
+<?php
+/*
+  function: 
+
+  args :
+  
+  returns: 
+
+*/
 function request2cf($hash)
 {
 	$cf_prefix = 'cf_';

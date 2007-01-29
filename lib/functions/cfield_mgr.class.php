@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: cfield_mgr.class.php,v $
- * @version $Revision: 1.7 $
- * @modified $Date: 2007/01/15 08:04:54 $  $Author: franciscom $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2007/01/29 08:13:32 $  $Author: franciscom $
  * @author franciscom
  *
  * 20070110 - franciscom - solved bug set_active()
@@ -52,6 +52,7 @@ class cfield_mgr
   //
   // 20070113 - franciscom
 	var $node_types = array('testsuite',
+	                        'testplan',
 	                        'testcase');
   
   

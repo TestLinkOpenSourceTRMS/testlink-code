@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * @version $Revision: 1.53 $
- * @modified $Date: 2007/01/15 08:04:54 $ by $Author: franciscom $
+ * @version $Revision: 1.54 $
+ * @modified $Date: 2007/01/29 08:13:32 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * 20061231 - franciscom - problems with test project test suite reorder
@@ -23,7 +23,6 @@ require_once("../../third_party/fckeditor/fckeditor.php");
 require_once("../../lib/plan/plan.inc.php");
 require_once("../functions/opt_transfer.php");
 testlinkInitPage($db);
-//echo "<pre>debug 20070104 " . __FUNCTION__ . " --- "; print_r($_REQUEST); echo "</pre>";
 
 $tree_mgr = new tree($db);
 $tproject_mgr = new testproject($db);

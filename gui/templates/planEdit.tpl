@@ -1,85 +1,133 @@
 {* 
-TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planEdit.tpl,v 1.11 2007/01/23 18:26:41 franciscom Exp $ 
-Purpose: smarty template - edit / delete Test Plan 
+TestLink Open Source Project - http://testlink.sourceforge.net/
+$Id: planEdit.tpl,v 1.12 2007/01/29 08:13:32 franciscom Exp $
+
+Purpose: smarty template - create Test Plan
 Revisions:
-	20050810 - fm - changes in active field definition 
-	20061119 - mht - refactorization; update for TL1.7
-	20061223 - franciscom - use of gsmarty_gui
+
+	20060224 - franciscom - removed the rights check
+	20061109 - mht - update for TL1.7; GUI update
+	20061223 - franciscom - input_dimensions.conf
+	20070102 - franciscom - added javascript validation for testplan_name
+  20070127 - franciscom - custom fields management
+  
 *}
-{include file="inc_head.tpl"}
+
+{include file="inc_head.tpl" openHead="yes" jsValidate="yes"}
+{literal}
+<script type="text/javascript">
+{/literal}
+var warning_empty_tp_name = "{lang_get s='warning_empty_tp_name'}";
+{literal}
+function validateForm(f)
+{
+  if (isWhitespace(f.testplan_name.value)) 
+  {
+      alert(warning_empty_tp_name);
+      selectField(f, 'testplan_name');
+      return false;
+  }
+  return true;
+}
+</script>
+{/literal}
+</head>
 
 <body>
-<script type="text/javascript">
-function delete_confirmation(delUrl) {ldelim}
-	if (confirm("{lang_get s='testplan_msg_delete_confirm'}")){ldelim}
-		window.location = delUrl;
-	{rdelim}
-{rdelim}
-</script>
+{assign var="cfg_section" value=$smarty.template|replace:".tpl":"" }
+{config_load file="input_dimensions.conf" section=$cfg_section}
 
 <h1>{lang_get s='testplan_title_tp_management'}</h1>
 
-<div class="tabMenu">
-	<span class="unselected"><a href="lib/plan/planEdit.php?action=empty">{lang_get s='testplan_menu_create'}</a></span> 
-	<span class="selected">{lang_get s='testplan_menu_list'}</span> 
-</div>
-
-{if $editResult ne ""}
-	<div>
-		<p class="info">{$editResult}</p>
-	</div>
-{/if}
-
 <div class="workBack">
-<div id="testplan_management_list">
-{if $arrPlan eq ''}
-	{lang_get s='testplan_txt_empty_list'}
+{include file="inc_update.tpl" user_feedback=$user_feedback 
+         result=$sqlResult item="TestPlan" action="add"}
 
-{else}
-	<h2>{lang_get s='testplan_title_list'}</h2>
-	<table class="simple" width="95%">
-		<tr>
-			<th>{lang_get s='testplan_th_name'}</th>
-			<th>{lang_get s='testplan_th_notes'}</th>
-			<th style="width: 60px;">{lang_get s='testplan_th_active'}</th>
-			<th style="width: 60px;">{lang_get s='testplan_th_delete'}</th>
-		</tr>
-		{section name=number loop=$arrPlan}
-		<tr>
-			<td><a href="lib/plan/planNew.php?tpID={$arrPlan[number].id}"> 
-				     {$arrPlan[number].name|escape} 
-				     {if $gsmarty_gui->show_icon_edit}
- 				         <img title="{lang_get s='testplan_alt_edit_tp'}" 
- 				              alt="{lang_get s='testplan_alt_edit_tp'}" 
- 				              src="{$smarty.const.TL_THEME_IMG_DIR}/icon_edit.png"/>
- 				     {/if}  
- 				  </a>
-			</td>
-			<td>
-				{$arrPlan[number].notes|strip_tags|strip|truncate:100}
-			</td>
-			<td>
-			{if $arrPlan[number].active == 1}
-				{lang_get s='Yes'}
-			{else}
-				{lang_get s='No'}
-			{/if}
-			</td>
-			<td>
-				<a href="javascript:delete_confirmation('lib/plan/planEdit.php?action=delete&amp;id={$arrPlan[number].id}');">
-				  <img style="border:none" title="{lang_get s='testplan_alt_delete_tp'}" 
-				       alt="{lang_get s='testplan_alt_delete_tp'}" 
-				       src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png"/></a>
-			</td>
-		</tr>
-		{/section}
+	<h2>
+	{if $tplan_id eq 0}
+		{lang_get s='testplan_title_create'}
+		{assign var='form_action' value='create'} 
+	{else}
+		{lang_get s='testplan_title_edit'} 
+		{assign var='form_action' value='update'} 
+	{/if}
+	{lang_get s='testplan_title_for_project'} {$tproject_name|escape}</h2>
 
+	<form method="post" name="testplan_mgmt" id="testplan_mgmt"
+	      action="lib/plan/planEdit.php?action={$form_action}"
+	      onSubmit="javascript:return validateForm(this);">
+	
+	<input type="hidden" id="tplan_id" name="tplan_id" value="{$tplan_id}">
+	<table class="common" width="80%">
+	
+		<tr><th>{lang_get s='testplan_th_name'}</th>
+			<td><input type="text" name="testplan_name" 
+			           size="{#TESTPLAN_NAME_SIZE#}" 
+			           maxlength="{#TESTPLAN_NAME_MAXLEN#}" 
+			           value="{$tpName|escape}"/>
+  				{include file="error_icon.tpl" field="testplan_name"}
+			</td>
+		</tr>	
+		<tr><th>{lang_get s='testplan_th_notes'}</th>
+			<td >{$notes}</td>
+		</tr>
+		{if $tplan_id eq 0}
+			<tr><th>{lang_get s='testplan_question_create_tp_from'}</th>
+			<td>
+				<select name="copy">
+				<option value="noCopy">{lang_get s='opt_no'}</option>
+				{foreach item=testplan from=$tplans}
+					<option value="{$testplan.id}">{$testplan.name|escape}</option>
+				{/foreach}
+				</select>
+			</td>
+			</tr>
+		{else}
+			<tr><td>
+				{lang_get s='testplan_th_active'}
+				<input type="checkbox" name="active" 
+				{if $tpActive eq 1}
+					checked="checked"
+				{/if}
+				/>
+      </td></tr>
+		{/if}
+	
+	  {* 20070127 - franciscom *}
+	  {if $cf neq ''}
+	  <tr> 
+	    <td  colspan="2">
+     <div class="custom_field_container">
+     {$cf}
+     </div>
+	    </td>
+	  </tr>
+	  {/if}
 	</table>
 
-{/if}
+	<div class="groupBtn">	
+		<input type="hidden" name="do_action" value="">
+
+		{if $tplan_id eq 0}
+		<input type="submit" name="do_create" value="{lang_get s='btn_testplan_create'}"
+		       onclick="do_action.value='do_create'"/>
+		{else}
+		<input type="submit" name="do_update" value="{lang_get s='btn_upd'}"
+		       onclick="do_action.value='do_update'"/>
+
+		{/if}
+
+		<input type="button" name="go_back" value="{lang_get s='cancel'}" 
+		       onclick="javascript:history.back()/>
+
+	</div>
+
+	</form>
+
+<p>{lang_get s='testplan_txt_notes'}</p>
+	
 </div>
-</div>
+
 
 </body>
 </html>

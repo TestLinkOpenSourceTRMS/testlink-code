@@ -1,6 +1,6 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: mainPage.tpl,v 1.29 2007/01/25 14:04:05 franciscom Exp $     
+ $Id: mainPage.tpl,v 1.30 2007/01/29 08:13:32 franciscom Exp $     
  Purpose: smarty template - main page / site map                 
                                                                  
  rev :                                                 
@@ -112,12 +112,8 @@
 	{if $testplan_planning == "yes" or $testplan_creating == "yes"}
     <h2>{lang_get s='title_test_plan_mgmt'}</h2>
 		<p>
-		{if $testplan_creating == "yes"}
-			<img alt="arrow" class="arrow" src="{$smarty.const.TL_THEME_IMG_DIR}/arrow_org.gif" />
-	   		<a href="lib/plan/planNew.php">{lang_get s='href_plan_new'}</a><br />
-		{/if}
-			<img alt="arrow" class="arrow" src="{$smarty.const.TL_THEME_IMG_DIR}/arrow_org.gif" />
-	   		<a href="lib/plan/planEdit.php">{lang_get s='href_plan_edit'}</a>
+		<img alt="arrow" class="arrow" src="{$smarty.const.TL_THEME_IMG_DIR}/arrow_org.gif" />
+	   		<a href="lib/plan/planView.php">{lang_get s='href_plan_management'}</a><br />
 		{if $countPlans > 0}
 	        <br />
 			<img alt="arrow" class="arrow" src="{$smarty.const.TL_THEME_IMG_DIR}/arrow_org.gif" />

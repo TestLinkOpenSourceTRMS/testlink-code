@@ -1,13 +1,14 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/ 
 // This script is distributed under the GNU General Public License 2 or later. 
 //
-// $Id: testlink_library.js,v 1.22 2007/01/26 21:01:23 schlundus Exp $ 
+// $Id: testlink_library.js,v 1.23 2007/01/29 08:13:32 franciscom Exp $ 
 //
 // Javascript functions commonly used through the GUI
 // This library is automatically loaded with inc_header.tpl
 //
 // DO NOT ADD FUNCTIONS FOR ONE USING
 //
+// 20070129 - franciscom - changes in SP() 
 // 20070107 - franciscom - subtle bug deleteUser_onClick()
 // 20061223 - franciscom - added open_show_notes_window()
 // 20060603 - franciscom - added confirm_and_submit()
@@ -39,9 +40,12 @@ function STS(id)
 	parent.workframe.location = fRoot+'/'+menuUrl+"?level=testsuite&id="+id+args;
 }
 
+
 function SP()
 {
-	parent.workframe.location = fRoot+'/'+SP_html_help_file;
+  // 20070129 - franciscom - to solve css problems
+	//parent.workframe.location = fRoot+'/'+SP_html_help_file;
+	parent.workframe.location = fRoot+menuUrl;
 }
 
 
@@ -68,6 +72,14 @@ function PTS(id)
 	parent.workframe.location = fRoot+menuUrl+"?level=testsuite&id="+id+args+"&"+pParams;
 }
 
+/*
+  function: Print Test Plan (PTP)
+
+  args :
+  
+  returns: 
+
+*/
 function PTP(id)
 {
 	var pParams = tree_getPrintPreferences();

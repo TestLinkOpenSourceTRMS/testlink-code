@@ -2,10 +2,11 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.27 $
- * @modified $Date: 2006/12/31 18:24:17 $  $Author: franciscom $
+ * @version $Revision: 1.28 $
+ * @modified $Date: 2007/01/29 08:13:32 $  $Author: franciscom $
  * @author franciscom
  *
+ * 20070128 - franciscom - added check_tplan_name_existence()
  * 20061010 - franciscom - added get_srs_by_title()
  * 20060709 - franciscom - changed return type and interface of create()
  * 20060425 - franciscom - changes in show() following Andreas Morsing advice (schlundus)
@@ -681,6 +682,57 @@ function get_all_testplans($testproject_id,$get_tp_without_tproject_id=0,$plan_s
 	return($map);
 	
 }
+
+
+/*
+  function: check_tplan_name_existence
+
+  args :
+        $tplan_id     : test plan id. 
+  
+  returns: 
+
+  rev :
+*/
+function check_tplan_name_existence($tproject_id,$tplan_name,$case_sensitive=0)
+{
+	$sql = " SELECT NH.id, NH.name, testproject_id " .
+	       " FROM nodes_hierarchy NH, testplans " .
+         " WHERE NH.id=testplans.id " .
+         " AND testproject_id = {$tproject_id} ";  	
+
+	if($case_sensitive)
+	{
+	    $sql .= " AND NH.name=";
+	}       
+	else
+	{
+      $tplan_name=strtoupper($tplan_name);	    
+	    $sql .= " AND UPPER(NH.name)=";
+	}          
+	$sql .= "'" . $this->db->prepare_string($tplan_name) . "'";	
+  $result = $this->db->exec_query($sql);
+  $status= $this->db->num_rows($result) ? 1 : 0;
+  
+	return($status);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // -------------------------------------------------------------------------------
 // Custom field related methods

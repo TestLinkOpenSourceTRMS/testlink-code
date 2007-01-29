@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: buildNew.php,v $
  *
- * @version $Revision: 1.30 $
- * @modified $Date: 2007/01/24 20:41:17 $ $Author: schlundus $
+ * @version $Revision: 1.31 $
+ * @modified $Date: 2007/01/29 14:02:26 $ $Author: franciscom $
  *
  * rev :
  *       20070122 - franciscom - use build_mgr methods
@@ -22,117 +22,215 @@ require_once("../../third_party/fckeditor/fckeditor.php");
 
 testlinkInitPage($db);
 
+$user_feedback='';
+$template=null;
+$button_name="";
+$button_value="";  
+
+$smarty = new TLSmarty();
 $tplan_mgr = new testplan($db);
 $build_mgr = new build_mgr($db);
 
-$tpID    = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0;
-$buildID = isset($_REQUEST['buildID']) ? intval($_REQUEST['buildID']) : 0;
-$build_name = isset($_REQUEST['build_name']) ? trim(strings_stripSlashes($_REQUEST['build_name'])) : null;
-$notes = isset($_REQUEST['notes']) ? strings_stripSlashes($_REQUEST['notes']) : null;
-$tpName = $_SESSION['testPlanName'];
-
-$is_active = isset($_REQUEST['is_active']) ? ACTIVE : INACTIVE;
-$is_open = isset($_REQUEST['is_open']) ? OPEN : CLOSED;
-
-$the_builds = $tplan_mgr->get_builds_for_html_options($tpID);
-
-$smarty = new TLSmarty();
+$args = init_args($_REQUEST,$_SESSION);
 
 $of = new fckeditor('notes') ;
 $of->BasePath = $_SESSION['basehref'] . 'third_party/fckeditor/';
 $of->ToolbarSet = 'TL_Medium';
+$of->Value = null;
 
-$build_action = 'newBuild';
-$button_value = lang_get('btn_create');
+$the_builds = $tplan_mgr->get_builds($args->tplan_id);
 
-$can_insert_or_update = 0;
-$sqlResult =  lang_get("invalid_build_id");
-
-if (strlen($build_name))
+// Checks on build name, and build name<=>build id 
+if( $args->do_action == "do_create" || $args->do_action == "do_update" )
 {
-	$sqlResult = lang_get("warning_duplicate_build");  
-	if(sizeof($the_builds) == 0 || 
-	   !$tplan_mgr->check_build_name_existence($tpID,$build_name) ||
-	   (isset($the_builds[$buildID]) && $the_builds[$buildID] == $build_name))
-	{
-		$sqlResult = 'ok';
-		$can_insert_or_update = 1;
-	}
+  $user_feedback = lang_get("warning_duplicate_build") . TITLE_SEP_TYPE3 . $args->build_name;
+	$name_exists=$tplan_mgr->check_build_name_existence($args->tplan_id,$args->build_name);
+	$name_id_rel_ok=(isset($the_builds[$args->build_id]) && $the_builds[$args->build_id]['name'] == $args->build_name);
+	$can_insert_or_update = (!$name_exists || $name_id_rel_ok) ? 1 : 0;
 }
 
-if(isset($_REQUEST['newBuild']))
+switch($args->do_action)
 {
-	$of->Value = $notes;
+  case 'edit':
+  $button_name="do_update";
+  $button_value=lang_get('btn_update');  
+	$my_b_info = $build_mgr->get_by_id($args->build_id);
+	$args->build_name = $my_b_info['name'];
+	$of->Value = $my_b_info['notes'];
+	$args->is_active = $my_b_info['active'];
+	$args->is_open = $my_b_info['open'];
+  break;
+  
+  case 'create':
+  $button_name="do_create";
+  $button_value=lang_get('btn_create');  
+  break;
+
+
+  case 'do_delete':
+ 	if (!$build_mgr->delete($args->build_id))
+	{
+		$user_feedback = lang_get("cannot_delete_build");
+	}
+  break;
+
+
+  case 'do_update':
+  $of->Value = $args->notes;
+  $template="buildNew.tpl";
+  $status_ok=false;
 	if ($can_insert_or_update)
 	{
-		if (!$build_mgr->create($tpID,$build_name,$notes,$is_active,$is_open))
-			$sqlResult = lang_get("cannot_add_build");
-		else
-		{
-			$build_name = '';
+	  $user_feedback=lang_get("cannot_update_build");
+	  $template="buildNew.tpl";
+   	if ($build_mgr->update($args->build_id,$args->build_name,$args->notes,$args->is_active,$args->is_open))
+   	{
+			$user_feedback = '';
 			$of->Value = '';
+      $template=null;
+	    $status_ok=true;
+		}
+	}
+  if(!$status_ok)
+  {
+    $button_name="do_update";
+    $button_value=lang_get('btn_update');  
+	  
+   	$smarty->assign('build_id',$args->build_id);
+	  $smarty->assign('build_name',$the_builds[$args->build_id]['name']);
+	  $smarty->assign('notes', $of->CreateHTML());
+    $smarty->assign('is_active', $args->is_active);
+    $smarty->assign('is_open', $args->is_open);
+	}
+  break;
+
+
+  case 'do_create':
+	$of->Value = $args->notes;
+  $template="buildNew.tpl";
+  $status_ok=false;
+	if ($can_insert_or_update)
+	{
+		$user_feedback = lang_get("cannot_add_build");
+	  $template="buildNew.tpl";
+		if ($build_mgr->create($args->tplan_id,$args->build_name,$args->notes,$args->is_active,$args->is_open))
+		{
+			$user_feedback = '';
+			$of->Value = '';
+      $template=null;
+      $status_ok=true;
 		} 	
 	}
-	$smarty->assign('sqlResult', $sqlResult);
-}
 
-if(isset($_REQUEST['del_build']))
+  if(!$status_ok)
+  {
+    $button_name="do_create";
+    $button_value=lang_get('btn_create');  
+	  
+   	$smarty->assign('build_id',$args->build_id);
+	  $smarty->assign('build_name',$the_builds[$args->build_id]['name']);
+	  $smarty->assign('notes', $of->CreateHTML());
+    $smarty->assign('is_active', $args->is_active);
+    $smarty->assign('is_open', $args->is_open);
+	}
+  break;
+
+
+
+
+}  
+// ----------------------------------------------------------------------
+
+
+// ----------------------------------------------------------------------
+// render GUI
+//
+$smarty->assign('user_feedback',$user_feedback);
+$smarty->assign('button_name',$button_name);
+$smarty->assign('button_value',$button_value);
+$smarty->assign('tplan_name', $args->tplan_name);
+$smarty->assign('testplan_create', has_rights($db,"mgt_testplan_create"));
+
+switch($args->do_action)
 {
-	$sqlResult = 'ok';
-	if (!$build_mgr->delete($buildID))
-	{
-		$sqlResult = lang_get("cannot_delete_build");
-	}
-	$smarty->assign('sqlResult', $sqlResult);
-	$smarty->assign('action', 'deleted');
-}
+   case "do_create":
+   case "do_delete":
+   case "do_update":
+        $the_builds = $tplan_mgr->get_builds($args->tplan_id);
+        $template= is_null($template) ? 'buildView.tpl' : $template;
+        $smarty->assign('the_builds',$the_builds);
+        $smarty->display($template);
+   break; 
 
-if(isset($_REQUEST['edit_build']))
+
+   case "edit":
+   case "create":
+        $template= is_null($template) ? 'buildNew.tpl' : $template;
+        $smarty->assign('the_builds',$the_builds);
+      	$smarty->assign('build_id',$args->build_id);
+      	$smarty->assign('build_name', $args->build_name);
+      	$smarty->assign('is_active', $args->is_active);
+      	$smarty->assign('is_open', $args->is_open);
+      	$smarty->assign('notes', $of->CreateHTML());
+        $smarty->display($template);
+   break;
+   
+   default:
+   	    die("Invalid action parameter");
+   break;
+}
+// -----------------------------------------------------------------------------------------------	
+?>
+
+
+
+
+<?php
+/*
+ * INITialize page ARGuments, using the $_REQUEST and $_SESSION
+ * super-global hashes.
+ * Important: changes in HTML input elements on the Smarty template
+ *            must be reflected here.
+ *
+ *  
+ * @parameter hash request_hash the $_REQUEST
+ * @parameter hash session_hash the $_SESSION
+ * @return    object with html values tranformed and other
+ *                   generated variables.
+ *
+ * 20060103 - fm 
+*/
+function init_args($request_hash, $session_hash)
 {
-	$build_action = 'edit_build';
-	$button_value = lang_get('btn_save');
-	if(strcasecmp($_REQUEST['edit_build'], "load_info") == 0 )
+	$args = null;
+	$request_hash = strings_stripSlashes($request_hash);
+
+	$nullable_keys = array('notes','do_action','build_name');
+	foreach($nullable_keys as $value)
 	{
-		$my_b_info = $build_mgr->get_by_id($buildID);
-		$build_name = $my_b_info['name'];
-		$of->Value = $my_b_info['notes'];
-		$is_active = $my_b_info['active'];
-		$is_open = $my_b_info['open'];
-		
+		$args->$value = isset($request_hash[$value]) ? $request_hash[$value] : null;
 	}
-	else
+
+	$intval_keys = array('build_id' => 0);
+	foreach($intval_keys as $key => $value)
 	{
-		$of->Value = $notes;
-		if ($can_insert_or_update)
-		{
-		   	if (!$build_mgr->update($buildID,$build_name,$notes,$is_active,$is_open))
-			 	$sqlResult = lang_get("cannot_update_build");
-			else
-			{
-				$build_name = '';
-				$of->Value = '';
-				$build_action = 'newBuild';
-				$button_value = lang_get('btn_create');
-			}
-		}
-		$smarty->assign('sqlResult', $sqlResult);
-		
+		$args->$key = isset($request_hash[$key]) ? intval($request_hash[$key]) : $value;
 	}
+
+	$bool_keys = array('is_active' => 0,'is_open' => 0);
+	foreach($bool_keys as $key => $value)
+	{
+		$args->$key = isset($request_hash[$key]) ? 1 : $value;
+	}
+
+
+	
+  $args->tplan_id	       = isset($session_hash['testPlanId']) ? $session_hash['testPlanId']: 0;
+  $args->tplan_name      = isset($session_hash['testPlanName']) ? $session_hash['testPlanName']: '';
+	$args->testprojectID   = $session_hash['testprojectID'];
+	$args->testprojectName = $session_hash['testprojectName'];
+	$args->userID          = $session_hash['userID'];
+	
+	return $args;
 }
-
-// Refesh data after operation
-$the_builds = $tplan_mgr->get_builds($tpID);
-
-
-$smarty->assign('is_active', $is_active);
-$smarty->assign('is_open', $is_open);
-
-
-$smarty->assign('TPname', $tpName);
-$smarty->assign('arrBuilds', $the_builds);
-$smarty->assign('build_name', $build_name);
-$smarty->assign('notes', $of->CreateHTML());
-$smarty->assign('button_name', $build_action);
-$smarty->assign('button_value', $button_value);
-$smarty->display('buildNew.tpl');
 ?>

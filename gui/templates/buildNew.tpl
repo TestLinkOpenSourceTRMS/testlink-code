@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: buildNew.tpl,v 1.18 2007/01/23 18:26:40 franciscom Exp $
+$Id: buildNew.tpl,v 1.19 2007/01/29 14:02:26 franciscom Exp $
 
 Purpose: smarty template - Add new build and show existing
 
@@ -35,14 +35,15 @@ function validateForm(f)
 {assign var="cfg_section" value=$smarty.template|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
-<h1>{lang_get s='title_build_2'}{$smarty.const.TITLE_SEP_TYPE3}{lang_get s='test_plan'}{$smarty.const.TITLE_SEP}{$TPname|escape}</h1>
+<h1>{lang_get s='title_build_2'}{$smarty.const.TITLE_SEP_TYPE3}{lang_get s='test_plan'}{$smarty.const.TITLE_SEP}{$tplan_name|escape}</h1>
 
 <div class="workBack">
-{include file="inc_update.tpl" result=$sqlResult item="build" name=$name}
+{include file="inc_update.tpl" user_feedback=$user_feedback 
+         result=$sqlResult item="build" name=$name}
 
 <div> {* new build form *}
 	{if $build_name ne ""}
-		<h2>{lang_get s='title_build_update'}{$build_name|escape}</h2>
+		<h2>{lang_get s='title_build_update'}{$smarty.const.TITLE_SEP_TYPE3}{$build_name|escape}</h2>
 	{else}
 		<h2>{lang_get s='title_build_create'}</h2>
 	{/if}
@@ -77,78 +78,12 @@ function validateForm(f)
 	</table>
 	<p>{lang_get s='msg_build'}</p>
 	<div class="groupBtn">	
-		<input type="submit" name="{$button_name|escape}" value="{$button_value|escape}" />
+		<input type="hidden" name="do_action" value="">
+		<input type="submit" name="{$button_name}" value="{$button_value|escape}"
+				   onclick="do_action.value='{$button_name}'"/>
+
 	</div>
 	</form>
-</div>
-<hr />
-
-{* ------------------------------------------------------------------------------------------- *}
-<div id="existing_builds">
-  <h2>{lang_get s='title_build_list'}</h2>
-  {if $arrBuilds ne ""}
-    {lang_get s='warning_delete_build' var="warning_msg" }
-  
-  	<table class="simple" style="width:80%">
-  		<tr>
-  			<th>{lang_get s='th_title'} {$TPname|escape}</th>
-  			<th>{lang_get s='th_description'}</th>
-  			<th style="width: 30px;">{lang_get s='th_active'}</th>
-  			<th style="width: 30px;">{lang_get s='th_open'}</th>
-  			<th style="width: 60px;">{lang_get s='th_delete'}</th>
-  		</tr>
-  		{foreach item=build from=$arrBuilds}
-  			<tr>
-  				<td><a href="lib/plan/buildNew.php?edit_build=load_info&amp;buildID={$build.id}"
-  				       title="{lang_get s='alt_edit_build'}">{$build.name|escape}
-  					     {if $gsmarty_gui->show_icon_edit}
-  					         <img style="border:none"
-  					              alt="{lang_get s='alt_edit_build'}" 
-  					              title="{lang_get s='alt_edit_build'}"
-  					              src="{$smarty.const.TL_THEME_IMG_DIR}/icon_edit.png"/>
-  					     {/if}    
-  					  </a>   
-  				</td>
-  				<td>{$build.notes|truncate:#BUILD_NOTES_TRUNCATE_LEN#}</td>
-  				<td align="center">{if $build.active eq 1} 
-  				     <img style="border:none" 
-  				            title="{lang_get s='alt_active_build'}" 
-  				            alt="{lang_get s='alt_active_build'}" 
-  				            src="{$smarty.const.TL_THEME_IMG_DIR}/apply_f2_16.png"/>
-  				    {else}
-  				    &nbsp;        
-  				    {/if}
-  				</td>
-  				<td align="center">{if $build.open eq 1} 
-  				     <img style="border:none" 
-  				            title="{lang_get s='alt_open_build'}" 
-  				            alt="{lang_get s='alt_open_build'}" 
-  				            src="{$smarty.const.TL_THEME_IMG_DIR}/apply_f2_16.png"/>
-  				    {else}
-  				    &nbsp;        
-  				    {/if}
-  				</td>
-  				<td align="center"><a href="javascript:deleteBuild_onClick({$build.id},'{$warning_msg}')">
-  				       <img style="border:none" 
-  				            title="{lang_get s='alt_delete_build'}" 
-  				            alt="{lang_get s='alt_delete_build'}" 
-  				            src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png"/>
-  				   </a>
-  				</td>
-  			</tr>
-  		{/foreach}
-  	</table>
-  {else}
-  	<p>{lang_get s='no_builds'}</p>
-  {/if}
-</div>
-{* ------------------------------------------------------------------------------------------- *}
-
-
-<form method="POST" action="lib/plan/buildNew.php" id="deleteBuildForm" onsubmit="return false">
-	<input type="hidden" name="buildID" id="buildID" />
-	<input type="hidden" name="del_build" id="del_build" />
-</form>
 </div>
 
 </body>

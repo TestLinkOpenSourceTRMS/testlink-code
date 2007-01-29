@@ -1,6 +1,6 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: mainPage.tpl,v 1.30 2007/01/29 08:13:32 franciscom Exp $     
+ $Id: mainPage.tpl,v 1.31 2007/01/29 14:02:26 franciscom Exp $     
  Purpose: smarty template - main page / site map                 
                                                                  
  rev :                                                 
@@ -135,7 +135,7 @@
 	{if $testplan_create_build == "yes" and $countPlans > 0}
 	<p>
 		<img alt="arrow" class="arrow" src="{$smarty.const.TL_THEME_IMG_DIR}/arrow_org.gif" />
-       	<a href="lib/plan/buildNew.php">{lang_get s='href_build_new'}</a>
+       	<a href="lib/plan/buildView.php">{lang_get s='href_build_new'}</a>
     </p>
 	{/if} {* testplan_create_build *}
 </div>

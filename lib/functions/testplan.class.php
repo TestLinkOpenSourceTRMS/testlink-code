@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.23 $
- * @modified $Date: 2007/01/29 08:13:32 $ $Author: franciscom $
+ * @version $Revision: 1.24 $
+ * @modified $Date: 2007/01/29 14:02:26 $ $Author: franciscom $
  * @author franciscom
  *
  * rev :
@@ -652,6 +652,7 @@ function delete($id)
   returns: 
 
   rev :
+        20070129 - franciscom - order to ASC
         20070120 - franciscom
         added active, open
 */
@@ -670,7 +671,7 @@ function get_builds_for_html_options($id,$active=null,$open=null)
  	   $sql .= " AND open=" . intval($open) . " ";   
  	}
       
-  $sql .= " ORDER BY builds.name DESC";
+  $sql .= " ORDER BY builds.name ASC";
 	         
 	         
 	return $this->db->fetchColumnsIntoMap($sql,'id','name');
@@ -731,8 +732,10 @@ function get_builds($id,$active=null,$open=null)
  	}
 	       
 	$sql .= "  ORDER BY builds.name";
-	$recordset = $this->db->get_recordset($sql);
-  
+
+	//$recordset = $this->db->get_recordset($sql);
+ 	$recordset = $this->db->fetchRowsIntoMap($sql,'id');
+
 	return $recordset;
 }
 

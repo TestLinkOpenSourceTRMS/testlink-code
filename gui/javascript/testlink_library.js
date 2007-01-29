@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/ 
 // This script is distributed under the GNU General Public License 2 or later. 
 //
-// $Id: testlink_library.js,v 1.23 2007/01/29 08:13:32 franciscom Exp $ 
+// $Id: testlink_library.js,v 1.24 2007/01/29 14:02:26 franciscom Exp $ 
 //
 // Javascript functions commonly used through the GUI
 // This library is automatically loaded with inc_header.tpl
@@ -116,11 +116,10 @@ function my_show_div(itm)
 
 // MHT: TODO move it to validate.js
 // 20051007 - am - removed build name
-function deleteBuild_onClick(buildID,msg)
+function deleteBuild_onClick(build_id,msg)
 {
-  confirm_and_submit(msg,
-                     'deleteBuildForm','buildID',
-                     buildID);
+  confirm_and_submit(msg,'deleteBuildForm',
+                     'build_id',build_id,'do_action','do_delete');
 }
 
 /*
@@ -218,7 +217,7 @@ function attachmentDlg_onSubmit()
 }
 
 
-function confirm_and_submit(msg,form_id,field_id,field_value)
+function confirm_and_submit(msg,form_id,field_id,field_value,action_field_id,action_field_value)
 {
 	if (confirm(msg))
 	{
@@ -230,6 +229,14 @@ function confirm_and_submit(msg,form_id,field_id,field_value)
 			{
 				field.value = field_value;
 			}	
+			
+      // 20070129 
+			var field_a = document.getElementById(action_field_id);
+			if (field_a)
+			{
+				field_a.value = action_field_value;
+			}	
+			
 			f.submit();
 		}
 	}

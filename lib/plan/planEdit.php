@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: planEdit.php,v $
  *
- * @version $Revision: 1.25 $
- * @modified $Date: 2007/01/29 08:12:33 $ by $Author: franciscom $
+ * @version $Revision: 1.26 $
+ * @modified $Date: 2007/01/29 14:02:26 $ by $Author: franciscom $
  *
  * Purpose:  ability to edit and delete test plans
  *-------------------------------------------------------------------------
@@ -26,12 +26,7 @@ $args = init_args($_REQUEST,$_SESSION);
 
 $gui_cfg=config_get('gui');
 
-
 tLog(__FILE__ + "Edit Test plan: " + $args->do_action, 'INFO');
-
-//$bNewTestPlan = isset($_POST['newTestPlan']) ? $_REQUEST['newTestPlan'] : 0;
-//$bEditTestPlan = isset($_POST['editTestPlan']) ? $_POST['editTestPlan'] : 0;
-
 $tplan_mgr = new testplan($db);
 $tproject_mgr = New testproject($db);
 $tplans = $tproject_mgr->get_all_testplans($args->testprojectID,FILTER_BY_PRODUCT,TP_ALL_STATUS);

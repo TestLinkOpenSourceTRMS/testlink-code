@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.117 $
- * @modified $Date: 2007/01/29 08:13:32 $ $Author: franciscom $
+ * @version $Revision: 1.118 $
+ * @modified $Date: 2007/01/29 13:14:47 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
@@ -375,7 +375,7 @@ $TLS_active = "Active";
 $TLS_alt_active_build = "Active build";
 $TLS_alt_edit_build = "Click here to edit this build";
 $TLS_alt_open_build = "Open build";
-$TLS_enter_build = "Build Title (unique identifier)";
+$TLS_enter_build = "Title";
 $TLS_enter_build_notes = "Description";
 $TLS_msg_build = "Notes: Each build is related to the active Test Plan. Description should include: list of delivered packages, approvals, status,etc.";
 $TLS_no_builds = "No builds are defined within this Test Plan!";
@@ -393,6 +393,9 @@ $TLS_title_build_update = "Update Build";
 $TLS_warning_delete_build = "Do really want to delete this build? All dependant data (test results) will also be deleted!";
 $TLS_warning_empty_build_name = "Please enter a name for the Build!";
 
+
+// gui/templates/buildView.tpl
+$TLS_btn_build_create="Create";
 
 
 // gui/templates/inc_comp_viewer_ro.tpl

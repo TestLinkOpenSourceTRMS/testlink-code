@@ -1,6 +1,6 @@
 <?php 
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: newInstallStart_TL.php,v 1.13 2006/12/20 18:20:11 franciscom Exp $ */
+/* $Id: newInstallStart_TL.php,v 1.14 2007/01/29 09:26:47 franciscom Exp $ */
 
 // 20060428 - franciscom - added new check  check_db_loaded_extension()
 //
@@ -204,7 +204,7 @@ exit;
 					<div class="labelHolder"><label for="databasename">Database name:</label></div>
 					<input type="text" id="databasename" name="databasename" 
                  maxlength="50" 
-					       style="width:200px" value="TestLink"><br />
+					       style="width:200px" value="testlink"><br />
 					<!--
 					20050611 - fm
 					<div class="labelHolder"><label for="tableprefix">Table prefix:</label></div><input type="text" id="tableprefix" name="tableprefix" style="width:200px" value="TestLink_">

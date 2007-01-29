@@ -5,192 +5,233 @@
  *
  * Filename $RCSfile: planEdit.php,v $
  *
- * @version $Revision: 1.24 $
- * @modified $Date: 2007/01/02 22:02:33 $ by $Author: franciscom $
+ * @version $Revision: 1.25 $
+ * @modified $Date: 2007/01/29 08:12:33 $ by $Author: franciscom $
  *
  * Purpose:  ability to edit and delete test plans
  *-------------------------------------------------------------------------
  * Revisions:
- * 	20061119 - mht - refactorization
  *
  */
 require('../../config.inc.php');
 require_once("../functions/common.php");
 require_once("plan.inc.php");
-require_once('../functions/testplan.class.php'); // 20060319 - franciscom
+require_once('../functions/testplan.class.php'); // 
 testlinkInitPage($db);
 
-// the page could [list,create,update,delete,view,empty]
-$action = isset($_GET['action']) ? $_GET['action'] : "list";
-tLog("Edit Test plan: " + $action, 'INFO');
+$smarty = new TLSmarty();
+$user_feedback='';
+$template=null;
+$args = init_args($_REQUEST,$_SESSION);
 
-$id = isset($_GET['id']) ? intval($_GET['id']) : 0;
-$bNewTestPlan = isset($_POST['newTestPlan']) ? $_REQUEST['newTestPlan'] : 0;
-$bEditTestPlan = isset($_POST['editTestPlan']) ? $_POST['editTestPlan'] : 0;
+$gui_cfg=config_get('gui');
+
+
+tLog(__FILE__ + "Edit Test plan: " + $args->do_action, 'INFO');
+
+//$bNewTestPlan = isset($_POST['newTestPlan']) ? $_REQUEST['newTestPlan'] : 0;
+//$bEditTestPlan = isset($_POST['editTestPlan']) ? $_POST['editTestPlan'] : 0;
 
 $tplan_mgr = new testplan($db);
-$generalResult = null;
+$tproject_mgr = New testproject($db);
+$tplans = $tproject_mgr->get_all_testplans($args->testprojectID,FILTER_BY_PRODUCT,TP_ALL_STATUS);
 
-// from planNew
+
 $tpName = null;
 $bActive = 0;
+$cf_smarty = '';
 
-	// 20060101 - fm
-	require_once("../../third_party/fckeditor/fckeditor.php");
-	$of = new fckeditor('notes') ;
-	$of->BasePath = $_SESSION['basehref'] . 'third_party/fckeditor/';
-	$of->ToolbarSet = 'TL_Medium';
-	$of->Value = null;
 
-// delete test plan
-if ($action == "delete")
+// 20060101 - fm
+require_once("../../third_party/fckeditor/fckeditor.php");
+$of = new fckeditor('notes') ;
+$of->BasePath = $_SESSION['basehref'] . 'third_party/fckeditor/';
+$of->ToolbarSet = 'TL_Medium';
+$of->Value = null;
+
+// Checks on testplan name, and testplan name<=>testplan id 
+if( $args->do_action == "do_create" || $args->do_action == "do_update" )
 {
-	tLog("requested delete Test plan id=" + $id, 'INFO');
-    $tplan_mgr->delete($id);
-    
-	//unset the session tp if its deleted
-	if (isset($_SESSION['testPlanId']) && ($_SESSION['testPlanId'] = $id))
-	{
-		$_SESSION['testPlanId'] = 0;
-		$_SESSION['testPlanName'] = null;
-	}
+  $tpName=$args->testplan_name;
+	$user_feedback = lang_get("warning_duplicate_tplan_name");
+	$name_exists=$tproject_mgr->check_tplan_name_existence($args->testprojectID,$tpName);
+	$name_id_rel_ok=(isset($tplans[$args->tplan_id]) && $tplans[$args->tplan_id]['name'] == $tpName);
 }
-	
 
-//get testplan info
-//if($args->tpID && !($bNewTestPlan || $bEditTestPlan))
-elseif ($action == "view" || $action == "empty")
+if( $gui_cfg->enable_custom_fields )
 {
-	$args = init_args($_REQUEST,$_SESSION);
+  $cf_smarty = $tplan_mgr->html_table_of_custom_field_inputs($args->tplan_id,$args->testprojectID);
+}
 
-	$tpInfo = getAllTestPlans($db,$args->testprojectID,TP_ALL_STATUS,FILTER_BY_PRODUCT,$args->tpID);
-	if (sizeof($tpInfo))
+switch($args->do_action)
+{
+  case 'edit':
+	$tpInfo = $tplan_mgr->get_by_id($args->tplan_id);
+  if (sizeof($tpInfo))
 	{
-		$tpInfo = $tpInfo[0];
 		$notes = $tpInfo['notes'];
 		$of->Value = $notes;
 		$tpName = $tpInfo['name'];
 		$bActive = $tpInfo['active'];
 	}
-}
-elseif ($bNewTestPlan || $bEditTestPlan) 
-{
-	$args = init_args($_REQUEST,$_SESSION);
+  break;  
 
-	$of->Value = $args->notes;
-	$tpName = $args->testplan_name;
-	$bActive = ($args->active == 'on') ? 1 :0 ;
-	
-	if (!strlen($args->testplan_name))
-		$generalResult = lang_get('warning_empty_tp_name');
-	else
-	{
-		$tp_id = 0;
-		$generalResult = 'ok';
-		
-		//20051125 - scs - added checking for duplicate tp names
-		$plans = getAllTestPlans($db,$args->testprojectID,null,1);
-		$bDuplicate = false;
-		$num_plans = sizeof($plans);
-		for($idx = 0; $idx < $num_plans; $idx++)
-		{
-			if ($plans[$idx]['name'] == $args->testplan_name)
-			{
-				//if we edit the edited tp must be skipped!
-				if ($bNewTestPlan || ($bEditTestPlan && ($args->tpID != $plans[$idx]['id'])))
-				{
-					$bDuplicate = true;
-					break;
-				}
-			}
-		}
-		if (!$bDuplicate)
-		{
-			if ($bNewTestPlan)
-			{
-				// 20060319 - franciscom
-				$tp_id = $tplan_mgr->create($args->testplan_name,$args->notes,$args->testprojectID);
-				
-				if ($tp_id == 0)
-				{
-					$generalResult = $db->error_msg();
-				}	
-				else
-        {
-				$result = insertTestPlanPriorities($db, $tp_id);
-				
-				if($args->rights == 'on')
-					$result = insertTestPlanUserRight($db, $tp_id,$args->userID);
-		    
-				if($args->copy) 
-					//copy_deep_testplan($db, $args->source_tpid, $tp_id);
- 					$tplan_mgr->copy_as($args->source_tpid, $tp_id);
+  case 'do_delete':
+  	tLog("requested delete Test plan id=" + $args->tplan_id, 'INFO');
+    $tplan_mgr->delete($args->tplan_id);
+    
+	  //unset the session tp if its deleted
+	  if (isset($_SESSION['testPlanId']) && ($_SESSION['testPlanId'] = $args->tplan_id))
+	  {
+		  $_SESSION['testPlanId'] = 0;
+		  $_SESSION['testPlanName'] = null;
+	  }
+  break;  
 
-			  }
-			
-			}
-			else
-			{
-			  // 20060805 - franciscom - function call replaced with method call.
-				if (!$tplan_mgr->update($args->tpID,$args->testplan_name,$args->notes,$bActive))
-				{
-					$generalResult = lang_get('update_tp_failed1'). $tpName . lang_get('update_tp_failed2').": " . 
-					                  $db->error_msg() . "<br />";
-				}
-				else
-				{
-					if (isset($_SESSION['testPlanId']) && ($args->tpID == $_SESSION['testPlanId']))
-						$_SESSION['testPlanName'] = $args->testplan_name;
-				}
-			}
-		}
-		else
-			$generalResult = lang_get('duplicate_tp_name');
-	}
-	//if all was ok, the gui is cleared	
-	if ($generalResult == 'ok')
-	{
-		$args->tpID = 0;
-		$tpName = '';
-		$bActive = 1;
-		$of->Value = null;
-		if ($action == "create"){
-			$generalResult = lang_get('testplan_result_created');
-		}
-		elseif ($action == "update"){
-			$generalResult = lang_get('testplan_result_updated');
-		}
-	}
+
+  case 'do_update':
+       $of->Value = $args->notes;
+     	 $tpName = $args->testplan_name;
+     	 $bActive = ($args->active == 'on') ? 1 :0 ;
+     
+       $template='planEdit.tpl';
+       $status_ok=false;
+      
+       if( !$name_exists || $name_id_rel_ok )
+       {
+       	if (!$tplan_mgr->update($args->tplan_id,$args->testplan_name,$args->notes,$bActive))
+     		{
+     			$user_feedback = lang_get('update_tp_failed1'). $tpName . lang_get('update_tp_failed2').": " . 
+     			                  $db->error_msg() . "<br />";
+       	}
+     		else
+     		{
+          if( $gui_cfg->enable_custom_fields )
+          {
+            $cf_map=$tplan_mgr->get_linked_cfields_at_design($args->tplan_id);
+            $tplan_mgr->cfield_mgr->design_values_to_db($_REQUEST,$args->tplan_id,$cf_map);
+          }  
+
+     			if (isset($_SESSION['testPlanId']) && ($args->tplan_id == $_SESSION['testPlanId']))
+     			{
+     				$_SESSION['testPlanName'] = $args->testplan_name;
+     			}	
+       	
+       	  $status_ok=true;  
+       	  $template=null;
+     		}
+       }  
+       if(!$status_ok)
+       {
+          $smarty->assign('tplan_id',$args->tplan_id);
+          $smarty->assign('tpName', $tpName);
+          $smarty->assign('tpActive', $bActive);
+          $smarty->assign('tproject_name', $args->testprojectName);
+       	  $smarty->assign('notes', $of->CreateHTML());
+       }
+  break;  
+
+
+
+  case 'do_create':
+       $template='planEdit.tpl';
+       $status_ok=false;
+
+       $of->Value = $args->notes;
+	     $tpName = $args->testplan_name;
+	     $bActive = ($args->active == 'on') ? 1 :0 ;
+       if( !$name_exists )
+       {
+     		 $tplan_id = $tplan_mgr->create($args->testplan_name,$args->notes,$args->testprojectID);
+  
+  			 if ($tplan_id == 0)
+  			 {
+  					$user_feedback = $db->error_msg();
+  			 }	
+         else
+         {
+          if( $gui_cfg->enable_custom_fields )
+          {
+            $cf_map=$tplan_mgr->get_linked_cfields_at_design($tplan_id);
+            $tplan_mgr->cfield_mgr->design_values_to_db($_REQUEST,$tplan_id,$cf_map);
+          }  
+
+          $status_ok=true;
+          $template=null;
+          $user_feedback=lang_get('testplan_created_ok');
+  				$result = insertTestPlanPriorities($db, $tplan_id);
+  				
+  				if($args->rights == 'on')
+  					$result = insertTestPlanUserRight($db, $tplan_id,$args->userID);
+  		    
+  				if($args->copy)
+   					$tplan_mgr->copy_as($args->source_tpid, $tplan_id);
+         }
+       } // !$name_exists
+       
+       if(!$status_ok)
+       {
+          $smarty->assign('tplan_id',$args->tplan_id);
+          $smarty->assign('tpName', $tpName);
+          $smarty->assign('tpActive', $bActive);
+          $smarty->assign('tproject_name', $args->testprojectName);
+       	  $smarty->assign('notes', $of->CreateHTML());
+       }
+  
+  
+  break;  
 }
+// ----------------------------------------------------------------------
+
+
 
 // ----------------------------------------------------------------------
 // render GUI
-$smarty = new TLSmarty();
+//
+$smarty->assign('cf',$cf_smarty);
+$smarty->assign('user_feedback',$user_feedback);
+$smarty->assign('testplan_create', has_rights($db,"mgt_testplan_create"));
 
-if ($action == "list" || $action == "delete" || $action == "create" || $action == "update")
+switch($args->do_action)
 {
-	$smarty->assign('editResult',$generalResult);
-	$smarty->assign('arrPlan', getAllTestPlans($db, $_SESSION['testprojectID'], 
-		TP_ALL_STATUS, FILTER_BY_PRODUCT));
-	$smarty->display('planEdit.tpl');
+   case "do_create":
+   case "do_delete":
+   case "do_update":
+   case "list":
+        $tplans = $tproject_mgr->get_all_testplans($args->testprojectID,FILTER_BY_PRODUCT,TP_ALL_STATUS);
+
+        $template= is_null($template) ? 'planView.tpl' : $template;
+        $smarty->assign('tplans',$tplans);
+        $smarty->display($template);
+   break; 
+
+
+   case "edit":
+   case "create":
+        $template= is_null($template) ? 'planEdit.tpl' : $template;
+
+        $smarty->assign('tplans',$tplans);
+      	$smarty->assign('tplan_id',$args->tplan_id);
+      	$smarty->assign('tpName', $tpName);
+      	$smarty->assign('tpActive', $bActive);
+      	$smarty->assign('tproject_name', $args->testprojectName);
+      	$smarty->assign('notes', $of->CreateHTML());
+        $smarty->display($template);
+   break;
+   
+   default:
+   	    die("Invalid action parameter");
+   break;
 }
+// -----------------------------------------------------------------------------------------------	
+?>
 
-elseif ($action == "view" || $action == "empty")
-{
-	$smarty->assign('tpID',$args->tpID);
-	$smarty->assign('tpName', $tpName);
-	$smarty->assign('tpActive', $bActive);
-	$smarty->assign('prod_name', $args->testprojectName);
-	$smarty->assign('arrPlan', getAllActiveTestPlans($db,$args->testprojectID,FILTER_BY_PRODUCT));
-	$smarty->assign('sqlResult', $generalResult);
-	$smarty->assign('notes', $of->CreateHTML());
-	$smarty->display('planNew.tpl');
-}
-else
-{
-	die("Invalid action parameter");
-}	
 
+
+
+
+
+<?php
 /*
  * INITialize page ARGuments, using the $_REQUEST and $_SESSION
  * super-global hashes.
@@ -210,13 +251,13 @@ function init_args($request_hash, $session_hash)
 	$args = null;
 	$request_hash = strings_stripSlashes($request_hash);
 	
-	$nullable_keys = array('testplan_name','notes','rights','active');
+	$nullable_keys = array('testplan_name','notes','rights','active','do_action');
 	foreach($nullable_keys as $value)
 	{
 		$args->$value = isset($request_hash[$value]) ? $request_hash[$value] : null;
 	}
 	
-	$intval_keys = array('copy' => 0,'tpID' => 0, 'tpID' => 0);
+	$intval_keys = array('copy' => 0,'tplan_id' => 0);
 	foreach($intval_keys as $key => $value)
 	{
 		$args->$key = isset($request_hash[$key]) ? intval($request_hash[$key]) : $value;
@@ -224,9 +265,10 @@ function init_args($request_hash, $session_hash)
 	$args->source_tpid = $args->copy;
 	$args->copy = ($args->copy > 0) ? TRUE : FALSE;
 	
+	
 	$args->testprojectID   = $session_hash['testprojectID'];
 	$args->testprojectName = $session_hash['testprojectName'];
-	$args->userID      = $session_hash['userID'];
+	$args->userID          = $session_hash['userID'];
 	
 	return $args;
 }

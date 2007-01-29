@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.50 $
- * @modified $Date: 2007/01/26 21:01:23 $ $Author: schlundus $
+ * @version $Revision: 1.51 $
+ * @modified $Date: 2007/01/29 20:19:42 $ $Author: schlundus $
  *
  * 20070105 - franciscom - refactoring
  *
@@ -29,8 +29,8 @@ testlinkInitPage($db);
 
 $smarty = new TLSmarty();
 
-$PID_NOT_NEEDED=null;
-$SHOW_ON_EXECUTION=1;
+$PID_NOT_NEEDED = null;
+$SHOW_ON_EXECUTION = 1;
 
 $exec_cfg = config_get('exec_cfg');
 $gui_cfg = config_get('gui'); 
@@ -39,7 +39,6 @@ $tree_mgr = new tree($db);
 $tplan_mgr = new testplan($db);
 $tcase_mgr = new testcase($db);
 $build_mgr = new build_mgr($db);
-
 
 $testdata = array();
 $ts_cf_smarty = '';
@@ -53,9 +52,16 @@ $keyword_id = isset($_REQUEST['keyword_id']) ? intval($_REQUEST['keyword_id']) :
 $level = isset($_REQUEST['level']) ? $_REQUEST['level'] : '';
 $owner = isset($_REQUEST['owner']) ? intval($_REQUEST['owner']) : null;
 $status = isset($_REQUEST['status']) ? $_REQUEST['status'] : null;
+
+if (!strlen($level))
+{
+  	redirect($_SESSION['basehref'] . "/lib/general/show_help.php?help=executeTest&locale={$_SESSION['locale']}");
+	exit();
+}
 $ownerDisplayName = null;
 if ($owner)
 	$ownerDisplayName = getUserName($db,$owner);
+
 
 $tplan_id = $_SESSION['testPlanId'];
 $user_id = $_SESSION['userID'];
@@ -88,34 +94,34 @@ $smarty->assign('tplan_notes',$rs['notes']);
 
 if(!is_null($linked_tcversions))
 {
-    $items_to_exec = array();
-	  $_SESSION['s_lastAttachmentInfos'] = null;
+	$items_to_exec = array();
+	$_SESSION['s_lastAttachmentInfos'] = null;
     if($level == 'testcase')
     {
-      $cf_smarty = '';
-      $cfexec_smarty = '';
-
-    	$items_to_exec[$id] = $linked_tcversions[$id]['tcversion_id'];    
-    	$tcase_id = $id;
-    	$tcversion_id = $linked_tcversions[$id]['tcversion_id'];
-		  $tcAttachments[$id] = getAttachmentInfos($db,$id,'nodes_hierarchy',1);
+		$cf_smarty = '';
+		$cfexec_smarty = '';
+		
+		$items_to_exec[$id] = $linked_tcversions[$id]['tcversion_id'];    
+		$tcase_id = $id;
+		$tcversion_id = $linked_tcversions[$id]['tcversion_id'];
+		$tcAttachments[$id] = getAttachmentInfos($db,$id,'nodes_hierarchy',1);
  
-      if( $gui_cfg->enable_custom_fields )
-      {
-		$cf_smarty[$id] = $tcase_mgr->html_table_of_custom_field_values($id,'design',$SHOW_ON_EXECUTION);
-		$cfexec_smarty[$id] = $tcase_mgr->html_table_of_custom_field_inputs($id,$PID_NOT_NEEDED,
-	                                                                'execution',"_{$id}");
-      }
-      $smarty->assign('design_time_cf',$cf_smarty);
-	  $smarty->assign('execution_time_cf',$cfexec_smarty);	
+		if($gui_cfg->enable_custom_fields)
+		{
+			$cf_smarty[$id] = $tcase_mgr->html_table_of_custom_field_values($id,'design',$SHOW_ON_EXECUTION);
+			$cfexec_smarty[$id] = $tcase_mgr->html_table_of_custom_field_inputs($id,$PID_NOT_NEEDED,
+			                                'execution',"_{$id}");
+		}
+		$smarty->assign('design_time_cf',$cf_smarty);
+		$smarty->assign('execution_time_cf',$cfexec_smarty);	
     }
     else
     {
-      // Get the path for every test case, grouping test cases that
-      // have same parent.
+		// Get the path for every test case, grouping test cases that
+		// have same parent.
     	$tcase_id = array();
     	$tcversion_id = array();
-		  $idx = 0;
+		$idx = 0;
 		  
     	foreach($linked_tcversions as $item)
     	{
@@ -130,31 +136,28 @@ if(!is_null($linked_tcversions))
 					 $tcversion_id[] = $item['tcversion_id'];
 					 $tcAttachments[$item['tc_id']] = getAttachmentInfos($db,$item['tc_id'],'nodes_hierarchy',true,1);
 
-           // --------------------------------------------------------------------------------------
-           // 20070104 - franciscom
-           if( $gui_cfg->enable_custom_fields )
-           {
-             $cf_smarty[$item['tc_id']] = $tcase_mgr->html_table_of_custom_field_values($item['tc_id'],
-                                                                                        'design',$SHOW_ON_EXECUTION);
-             $cfexec_smarty[$item['tc_id']] = $tcase_mgr->html_table_of_custom_field_inputs($item['tc_id'],
-                                                                            $PID_NOT_NEEDED,'execution',
-                                                                            "_".$item['tc_id']);
-           }
-           $smarty->assign('design_time_cf',$cf_smarty);	
-           $smarty->assign('execution_time_cf',$cfexec_smarty);	
-           // --------------------------------------------------------------------------------------
+			           // --------------------------------------------------------------------------------------
+			           if($gui_cfg->enable_custom_fields)
+			           {
+							$cf_smarty[$item['tc_id']] = $tcase_mgr->html_table_of_custom_field_values($item['tc_id'],
+							                                                                        'design',$SHOW_ON_EXECUTION);
+							$cfexec_smarty[$item['tc_id']] = $tcase_mgr->html_table_of_custom_field_inputs($item['tc_id'],
+							                                                            $PID_NOT_NEEDED,'execution',
+							                                                            "_".$item['tc_id']);
+			           }
+			           $smarty->assign('design_time_cf',$cf_smarty);	
+			           $smarty->assign('execution_time_cf',$cfexec_smarty);	
+			           // --------------------------------------------------------------------------------------
     			}
     			
-				  if($path_elem['node_table'] == 'testsuites' && !isset($tSuiteAttachments[$path_elem['id']]))
+				if($path_elem['node_table'] == 'testsuites' && !isset($tSuiteAttachments[$path_elem['id']]))
 					   $tSuiteAttachments[$path_elem['id']] = getAttachmentInfos($db,$path_elem['id'],'nodes_hierarchy',true,1);
 			  } //foreach($path_f as $key => $path_elem) 
     	}
     }
-    
     // will create a record even if the testcase version has not been executed (GET_NO_EXEC)
     $map_last_exec = $tcase_mgr->get_last_execution($tcase_id,$tcversion_id,$tplan_id,
                                                     $build_id,GET_NO_EXEC);
-    
     
     // --------------------------------------------------------------------------------------------
     // Results to DB
@@ -213,13 +216,9 @@ $smarty->assign('bugs_for_exec',$bugs);
 $rs = $build_mgr->get_by_id($build_id);
 $smarty->assign('build_notes',$rs['notes']);
 
-// 20070125 - francisco.mancardi@gruppotesi.com
 $editTestResult = ($rs['open']==1) ? "yes" : "no";
 $smarty->assign('edit_test_results', $editTestResult);
 // -------------------------------------------------------
-
-
-
 
 // 20070105 - franciscom - refactoring
 smarty_assign_tsuite_info($smarty,$_REQUEST,$db,$tcase_id);
@@ -254,18 +253,6 @@ $smarty->assign('updated', $submitResult);
 $smarty->assign('g_bugInterface', $g_bugInterface);
 $smarty->display($g_tpl['execSetResults']);
 
-?>
-
-
-<?php
-/*
-  function: 
-
-  args :
-  
-  returns: 
-
-*/
 function manage_history_on($hash_REQUEST,$hash_SESSION,
                            $exec_cfg,$btn_on_name,$btn_off_name,$hidden_on_name)
 {
@@ -337,14 +324,6 @@ function get_ts_name_details(&$db,$tcase_id)
 	return $rs;
 }
 
-/*
-  function: smarty_assign_tsuite_info 
-
-  args :
-  
-  returns: 
-
-*/
 function smarty_assign_tsuite_info(&$smarty,&$request_hash, &$db,$tcase_id)
 {
 
@@ -358,60 +337,44 @@ function smarty_assign_tsuite_info(&$smarty,&$request_hash, &$db,$tcase_id)
     $a_ts=array();
     $a_tsval=array();
    
-    // 20070101 - franciscom
     $gui_cfg = config_get('gui');
     $tsuite_mgr = New testsuite($db);
     
     foreach($tsuite_info as $key => $elem)
     {
-      
-      $main_k='tsdetails_view_status_' . $key;
-      $a_tsvw[]=$main_k;
-      $a_ts[]='tsdetails_' . $key;
-      $a_tsval[]=isset($request_hash[$main_k]) ? $request_hash[$main_k] : 0;
-   
+      $main_k = 'tsdetails_view_status_' . $key;
+      $a_tsvw[] = $main_k;
+      $a_ts[] = 'tsdetails_' . $key;
+      $a_tsval[] = isset($request_hash[$main_k]) ? $request_hash[$main_k] : 0;
    
       if( $gui_cfg->enable_custom_fields ) 
       {
-        $tsuite_id=$elem['tsuite_id'];
-        $tc_id=$elem['tc_id'];
-        if( !isset($cached_cf[$tsuite_id]) )
-        {
+        $tsuite_id = $elem['tsuite_id'];
+        $tc_id = $elem['tc_id'];
+        if(!isset($cached_cf[$tsuite_id]))
            $cached_cf[$tsuite_id] = $tsuite_mgr->html_table_of_custom_field_values($tsuite_id);
-        }
+
         $ts_cf_smarty[$tc_id] = $cached_cf[$tsuite_id];
-      } // if( $gui_cfg
+      }
    
     }
     $smarty->assign('tsd_div_id_list',implode(",",$a_ts));
     $smarty->assign('tsd_hidden_id_list',implode(",",$a_tsvw));
     $smarty->assign('tsd_val_for_hidden_list',implode(",",$a_tsval));
   
-    // 20070104 - franciscom
-    $smarty->assign('ts_cf_smarty',$ts_cf_smarty);
+	$smarty->assign('ts_cf_smarty',$ts_cf_smarty);
   }
 
-} // function end  
+}  
 // --------------------------------------------------------------------------------
 
-
-
-
-/*
-function: exec_additional_info 
-
-args :
-
-returns: 
-
-*/
 function exec_additional_info(&$db,&$tcase_mgr,$other_execs,$tplan_id)
 {
   $_bugInterfaceOn = config_get('bugInterfaceOn');
   $_bugInterface = config_get('bugInterface');
-  $attachmentInfos=null;
-  $bugs=null;
-  $cfexec_values=null;
+  $attachmentInfos = null;
+  $bugs = null;
+  $cfexec_values = null;
 
   foreach($other_execs as $tcversion_id => $execInfo)
   {
@@ -422,37 +385,26 @@ function exec_additional_info(&$db,&$tcase_mgr,$other_execs,$tplan_id)
   		
   		$aInfo = getAttachmentInfos($db,$exec_id,'executions',true,1);
   		if ($aInfo)
-  		{
   			$attachmentInfos[$exec_id] = $aInfo;
-  		}
   		
   		if($_bugInterfaceOn)
   		{
-        $the_bugs = get_bugs_for_exec($db,_bugInterface,$exec_id);
-        if( count($the_bugs) > 0 )
-        { 
-  		    $bugs[$exec_id] = $the_bugs;
-  		  }
+			$the_bugs = get_bugs_for_exec($db,_bugInterface,$exec_id);
+			if(count($the_bugs) > 0)
+				$bugs[$exec_id] = $the_bugs;
   		}
 
      
       // Custom fields
       $cfexec_values[$exec_id] = $tcase_mgr->html_table_of_custom_field_values($tcversion_id,'execution',null,
                                                                                $exec_id,$tplan_id);
-
-
   	}
-  } // foreach
+  }
   
-  $info=array( 'attachment' => $attachmentInfos,
+  $info = array( 'attachment' => $attachmentInfos,
                'bugs' => $bugs,
                'cfexec_values' => $cfexec_values);      
                
-  return($info);
-} // function end
-
-
-
-
-
+  return $info;
+}
 ?>																																

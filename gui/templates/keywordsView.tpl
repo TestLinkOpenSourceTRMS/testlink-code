@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: keywordsView.tpl,v 1.11 2007/01/26 19:17:48 franciscom Exp $
+$Id: keywordsView.tpl,v 1.12 2007/01/29 20:19:42 schlundus Exp $
 Purpose: smarty template - View all keywords 
 
 20070102 - franciscom
@@ -124,12 +124,11 @@ var warning_delete_keyword="{lang_get s='warning_delete_keyword'}";
 
 	<div class="groupBtn">	
 
-  	<form name="export" method="post" action="lib/keywords/keywordsView.php" 
+  	<form name="export" method="post" action="lib/keywords/keywordsView.php"> 
 		  {if $rightsKey ne ""}
 		    <input type="button" name="importAll" value="{lang_get s='btn_import_keywords'}" 
-	 	           onclick="location='lib/keywords/keywordsimport.php'" />
+	 	           onclick="location='keywordsimport.php'" />
 		  {/if}
-
       {if $arrKeywords neq ''}
     	  <input type="submit" name="exportAll" value="{lang_get s='btn_export'}"> 
 	      <select name="exportType">

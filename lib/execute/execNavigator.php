@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: execNavigator.php,v $
  *
- * @version $Revision: 1.32 $
- * @modified $Date: 2007/01/26 21:01:23 $ by $Author: schlundus $
+ * @version $Revision: 1.33 $
+ * @modified $Date: 2007/01/29 20:19:42 $ by $Author: schlundus $
  *
  *
  * 20070123 - franciscom - 
@@ -84,7 +84,7 @@ $sMenu = generateExecTree($db,$menuUrl,$tproject_id,$tproject_name,$tplan_id,$tp
 $src_workframe = null;
 if(isset($_REQUEST['submitOptions']))
 {
-	$src_workframe = $menuUrl . "?level=testproject&id={$tproject_id}" . $getArguments;
+	$src_workframe = $_SESSION['basehref'].$menuUrl . "?level=testproject&id={$tproject_id}" . $getArguments;
 }
                      
 $tree = invokeMenu($sMenu,null,null);

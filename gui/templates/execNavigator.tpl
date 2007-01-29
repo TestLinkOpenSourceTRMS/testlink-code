@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execNavigator.tpl,v 1.11 2007/01/24 08:10:24 franciscom Exp $ *}
+{* $Id: execNavigator.tpl,v 1.12 2007/01/29 20:19:42 schlundus Exp $ *}
 {* Purpose: smarty template - show test set tree *}
 {* 20050828 - scs - added searching for tcID *}
 {include file="inc_head.tpl" jsTree="yes"}
@@ -69,7 +69,6 @@
 	{/literal}
 {/if}
 
-{* 20061030 - update the right pane *}
 {if $src_workframe != ''}
 <script type="text/javascript">
 	parent.workframe.location='{$src_workframe}';

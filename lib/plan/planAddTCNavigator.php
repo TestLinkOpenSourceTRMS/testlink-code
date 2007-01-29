@@ -2,7 +2,7 @@
 /** 
 *	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version $Id: planAddTCNavigator.php,v 1.18 2006/11/17 19:52:59 schlundus Exp $
+* 	@version $Id: planAddTCNavigator.php,v 1.19 2007/01/29 20:19:43 schlundus Exp $
 *	@author Martin Havlat
 * 
 * 	Navigator for feature: add Test Cases to a Test Case Suite in Test Plan. 
@@ -55,7 +55,7 @@ $treeString = generateTestSpecTree($db,$tproject_id, $tproject_name,$workPath,
 $src_workframe=null;
 if(isset($_REQUEST['filter']))
 {
-	$src_workframe = $workPath . "?edit=testproject&id={$tproject_id}" . $args;
+	$src_workframe = $_SESSION['basehref'].$workPath . "?edit=testproject&id={$tproject_id}" . $args;
 }
 
                                    

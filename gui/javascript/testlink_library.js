@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/ 
 // This script is distributed under the GNU General Public License 2 or later. 
 //
-// $Id: testlink_library.js,v 1.24 2007/01/29 14:02:26 franciscom Exp $ 
+// $Id: testlink_library.js,v 1.25 2007/01/29 20:19:42 schlundus Exp $ 
 //
 // Javascript functions commonly used through the GUI
 // This library is automatically loaded with inc_header.tpl
@@ -43,9 +43,7 @@ function STS(id)
 
 function SP()
 {
-  // 20070129 - franciscom - to solve css problems
-	//parent.workframe.location = fRoot+'/'+SP_html_help_file;
-	parent.workframe.location = fRoot+menuUrl;
+  	parent.workframe.location = fRoot+menuUrl;
 }
 
 
@@ -74,11 +72,6 @@ function PTS(id)
 
 /*
   function: Print Test Plan (PTP)
-
-  args :
-  
-  returns: 
-
 */
 function PTP(id)
 {
@@ -230,7 +223,6 @@ function confirm_and_submit(msg,form_id,field_id,field_value,action_field_id,act
 				field.value = field_value;
 			}	
 			
-      // 20070129 
 			var field_a = document.getElementById(action_field_id);
 			if (field_a)
 			{

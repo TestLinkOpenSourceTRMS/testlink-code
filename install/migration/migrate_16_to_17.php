@@ -1,7 +1,10 @@
 <?php
 /*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: migrate_16_to_17.php,v 1.10 2007/01/23 00:48:17 jbarchibald Exp $ 
+$Id: migrate_16_to_17.php,v 1.11 2007/01/30 23:52:07 jbarchibald Exp $ 
+
+20070130 - jbarchibald - 
+added code to update inactive testplans in migrate_test_plans()
 
 20070120 - franciscom - feedback improvements
 
@@ -1034,6 +1037,13 @@ function migrate_test_plans(&$source_db,&$target_db,&$tplans,&$old_new)
     }
     $old_new['tplan'][$item_id]=$tplan_mgr->create($idata['name'],$idata['notes'],$tproj_id);
     //echo "OLD TPlan ID {$item_id} {$idata['name']} -> {$old_new['tplan'][$item_id]} <br>";
+
+    // 20070130 - jbarchibald
+    if( intval($idata['active']) == 0)
+     {
+         $sql = "UPDATE testplans SET active=0 WHERE testplans.id={$old_new['tplan'][$item_id]}";
+         $target_db->exec_query($sql);
+     }
   }
 } // end function
 

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: requirements.inc.php,v $
- * @version $Revision: 1.44 $
- * @modified $Date: 2007/01/28 19:03:17 $ by $Author: schlundus $
+ * @version $Revision: 1.45 $
+ * @modified $Date: 2007/01/31 08:11:18 $ by $Author: franciscom $
  *
  * @author Martin Havlat <havlat@users.sourceforge.net>
  * 
@@ -34,8 +34,6 @@ if (version_compare(PHP_VERSION,'5','>=')&&extension_loaded('xsl'))
 }
 
 
-define('TL_REQ_STATUS_VALID', 'v');
-define('TL_REQ_STATUS_NOT_TESTABLE', 'n');
 
 
 $arrReqStatus = array(TL_REQ_STATUS_VALID => lang_get('req_state_valid'), 

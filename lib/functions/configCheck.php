@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: configCheck.php,v ${file_name} $
  *
- * @version $Revision: 1.8 $
- * @modified $Date: 2007/01/22 08:31:13 ${date} ${time} $ by $Author: franciscom $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2007/01/31 14:19:44 ${date} ${time} $ by $Author: franciscom $
  *
  * @author Martin Havlat
  * 
@@ -303,7 +303,13 @@ function check_schema_version($db)
    	     break;
    	          
     case '1.7.0 Beta 3':
-         $msg='';
+   	     $msg="You need to upgrade your Testlink Database to 1.7.0 Beta 4 - <br>" .
+   	          '<a href="SCHEMA_CHANGES" style="color: white"> click here to see the Schema changes </a><br>' .
+   	          '<a href="./install/index.php" style="color: white">click here access install and upgrade page </a><br>';
+   	     break;
+
+    case '1.7.0 Beta 4':
+   	     $msg="";
    	     break;
          
     default:

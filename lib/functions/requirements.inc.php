@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: requirements.inc.php,v $
- * @version $Revision: 1.45 $
- * @modified $Date: 2007/01/31 08:11:18 $ by $Author: franciscom $
+ * @version $Revision: 1.46 $
+ * @modified $Date: 2007/01/31 14:19:44 $ by $Author: franciscom $
  *
  * @author Martin Havlat <havlat@users.sourceforge.net>
  * 
@@ -387,9 +387,14 @@ function getReq4Tc(&$db,$testcase_id, $srs_id = 'all')
 
 /**
  *
+ * rev :
+ *       20070131 - franciscom - interface changes - added srs_id
  **/
-function check_req_basic_data(&$db,$title,$reqdoc_id,$id=null)
+function check_req_basic_data(&$db,$title,$reqdoc_id,$srs_id,$id=null)
 {
+  // 20070131 - franciscom
+  $req_cfg=config_get('req_cfg');
+  
   $ret['status_ok']=1;
   $ret['msg']='';
   
@@ -408,14 +413,28 @@ function check_req_basic_data(&$db,$title,$reqdoc_id,$id=null)
 	if($ret['status_ok'])
 	{
 	  $ret['msg']='ok';
-    $rs=getReqByReqdocId($db,$reqdoc_id);
-    
+  
+    // 20070131 - franciscom
+    if( $req_cfg->reqdoc_id->is_system_wide)
+    {
+      // req doc id MUST BE unique inside the whole DB
+      $rs=getReqByReqdocId($db,$reqdoc_id);
+    }
+    else
+    {   
+      // req doc id MUST BE unique inside an SRS
+      $rs=getReqByReqdocIdAndSRS($db,$reqdoc_id,$srs_id);
+    }
+      
+    // 20070131 - franciscom
+    //
     if( !is_null($rs) && (is_null($id) || !isset($rs[$id])) )
     {
-		  $ret['msg']=lang_get("warning_duplicate_reqdoc_id");
-      $ret['status_ok']=0;  		  
-	  }
-	} 
+    	  $ret['msg']=lang_get("warning_duplicate_reqdoc_id");
+        $ret['status_ok']=0;  		  
+    }
+    
+ } 
 	return($ret);
 }
 
@@ -447,7 +466,9 @@ function createRequirement(&$db,$reqdoc_id,$title, $scope, $srs_id, $user_id,
 	$title=trim_and_limit($title,$field_size->req_title);
 		
 	// 20061223 - franciscom	
-	$chk=check_req_basic_data($db,$title,$reqdoc_id);
+	// 20070131 - added srs_id
+	//
+	$chk=check_req_basic_data($db,$title,$reqdoc_id,$srs_id);
 	if($chk['status_ok'])
 	{
 		$sql = "INSERT INTO requirements (srs_id, req_doc_id, title, scope, status, type, author_id, creation_ts)" .
@@ -484,6 +505,9 @@ function createRequirement(&$db,$reqdoc_id,$title, $scope, $srs_id, $user_id,
  * 
  * 
  * @author Martin Havlat 
+ *
+ * rev :
+ *       20070131 - interface changes
  **/
 function updateRequirement(&$db,$id, $reqdoc_id,$title, $scope, $user_id, 
                            $status, $type,$skip_controls=0)
@@ -492,11 +516,15 @@ function updateRequirement(&$db,$id, $reqdoc_id,$title, $scope, $user_id,
 	$db_now = $db->db_now();
 	$field_size=config_get('field_size');
 	
+	// get SRSid, needed to do controls
+	$rs=getReqData($db,$id);
+  $srs_id=$rs['srs_id'];
+	
 	$reqdoc_id=trim_and_limit($reqdoc_id,$field_size->req_docid);
 	$title=trim_and_limit($title,$field_size->req_title);
 
-  // 20061223 - franciscom
-  $chk=check_req_basic_data($db,$title,$reqdoc_id,$id);
+  // 20070131 - franciscom - interface changes
+  $chk=check_req_basic_data($db,$title,$reqdoc_id,$srs_id,$id);
  
 	if($chk['status_ok'] || $skip_controls)
 	{
@@ -1214,15 +1242,14 @@ function getReqByReqdocId(&$db,$reqdoc_id)
 }
 
 // 20061223 - franciscom
-/*
-function getReqByReqdocIdAndSRS(&$db,$srs_id,$reqdoc_id)
+function getReqByReqdocIdAndSRS(&$db,$reqdoc_id,$srs_id)
 {
 	$sql = "SELECT * FROM requirements " .
-	       " WHERE req_doc_id='" . $db->prepare_string($reqdoc_id) . "'";
+	       " WHERE req_doc_id='" . $db->prepare_string($reqdoc_id) . "'" .
+	       " AND srs_id={$srs_id}";
 
 	return($db->fetchRowsIntoMap($sql,'id'));
 }
-*/
 
 
 /**

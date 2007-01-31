@@ -1,11 +1,13 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
 # This script is distributed under the GNU General Public License 2 or later.
-# $Id: testlink_create_tables.sql,v 1.13 2007/01/20 18:45:39 franciscom Exp $
+# $Id: testlink_create_tables.sql,v 1.14 2007/01/31 14:15:20 franciscom Exp $
 # SQL script - create db tables for TL   
 #
 # default rights & admin account are created via testlink_create_default_data.sql
 #
 # Rev :
+#       20070131 - franciscom - requirements -> req_doc_id(32), 
+#
 #       20070120 - franciscom - following BUGID 458 ( really a new feature request)
 #                               two new fields on builds table
 #                               active, open
@@ -162,7 +164,7 @@ CREATE TABLE `req_specs` (
 CREATE TABLE `requirements` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `srs_id` int(10) unsigned NOT NULL,
-  `req_doc_id` varchar(16) default NULL,
+  `req_doc_id` varchar(32) default NULL,
   `title` varchar(100) NOT NULL,
   `scope` text,
   `status` char(1) NOT NULL default 'v',
@@ -173,7 +175,7 @@ CREATE TABLE `requirements` (
   `modification_ts` datetime NOT NULL default '0000-00-00 00:00:00',
   PRIMARY KEY  (`id`),
   KEY `srs_id` (`srs_id`,`status`),
-  UNIQUE KEY `req_doc_id` (`req_doc_id`)
+  UNIQUE KEY `req_doc_id` (`srs_id`,`req_doc_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 CREATE TABLE `rights` (

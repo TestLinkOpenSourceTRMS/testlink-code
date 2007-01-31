@@ -1,12 +1,15 @@
 --  -----------------------------------------------------------------------------------
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.9 2007/01/20 18:45:39 franciscom Exp $
+-- $Id: testlink_create_tables.sql,v 1.10 2007/01/31 14:15:19 franciscom Exp $
 --
 -- SQL script - create db tables for TL
 -- Database Type: Microsoft SQL Server
 -- 
 -- Rev :
+--
+--       20070131 - franciscom - requirements -> req_doc_id(32), 
+--
 --       20070120 - franciscom - following BUGID 458 ( really a new feature request)
 --                               two new fields on builds table
 --                               active, open
@@ -546,7 +549,7 @@ BEGIN
 CREATE TABLE [dbo].[requirements](
 	[id] [int] IDENTITY(1,1) NOT NULL,
 	[srs_id] [int] NOT NULL,
-	[req_doc_id] [nvarchar](16) COLLATE Latin1_General_CI_AS NULL,
+	[req_doc_id] [nvarchar](32) COLLATE Latin1_General_CI_AS NULL,
 	[title] [nvarchar](100) COLLATE Latin1_General_CI_AS NOT NULL,
 	[scope] [ntext] COLLATE Latin1_General_CI_AS NULL,
 	[status] [nchar](1) COLLATE Latin1_General_CI_AS NOT NULL CONSTRAINT [DF_requirements_status]  DEFAULT (N'n'),

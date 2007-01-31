@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: installNewDB.php,v 1.24 2007/01/22 08:31:13 franciscom Exp $ */
+/* $Id: installNewDB.php,v 1.25 2007/01/31 14:15:19 franciscom Exp $ */
 /*
 Parts of this file has been taken from:
 Etomite Content Management System
@@ -8,6 +8,8 @@ Copyright 2003, 2004 Alexander Andrew Butter
 */
 
 /*
+20070131 - franciscom - added 1.7.0 Beta 4
+
 20070121 - franciscom -
 upgrade code for 1.7 Beta
 
@@ -50,13 +52,17 @@ $tl_and_version = "TestLink {$_SESSION['testlink_version']} ";
 $sql_create_schema[1] = "sql/{$db_type}/testlink_create_tables.sql";
 $sql_default_data [1] = "sql/{$db_type}/testlink_create_default_data.sql";
 
-$sql_schema = $sql_create_schema;
-$sql_data   = $sql_default_data;
+
+// 20070131 - franciscom
+$a_sql_schema[] = $sql_create_schema;
+$a_sql_data[]   = $sql_default_data;
+
+
 $msg_process_data = "</b><br />Importing StartUp data<b> ";
 if ($inst_type == "upgrade" )
 {
 	$msg_process_data = "</b><br />Updating Database Contents<b> ";
-  $sql_data   = array();
+  $a_sql_data   = array();
 }
 $the_title = "{$tl_and_version} Install - " . $inst_type;
 ?>
@@ -274,6 +280,8 @@ if ($inst_type == "upgrade" )
 // 20050908 - fm
 if ( $inst_type == "upgrade") 
 {
+    $a_sql_upd_dir=array();
+    
     $the_version_table=$my_ado->MetaTables('TABLES',false,'db_version');
     if( count($the_version_table) == 0 )
     {
@@ -299,8 +307,14 @@ if ( $inst_type == "upgrade")
       {
       	case '1.7.0 Beta 1':
       	case '1.7.0 Beta 2':
-      	$sql_upd_dir = "sql/alter_tables/1.7/{$db_type}/beta_3/";
+      	$a_sql_upd_dir[] = "sql/alter_tables/1.7/{$db_type}/beta_3/";
+      	$a_sql_upd_dir[] = "sql/alter_tables/1.7/{$db_type}/beta_4/";
       	break;
+
+      	case '1.7.0 Beta 3':
+      	$a_sql_upd_dir[] = "sql/alter_tables/1.7/{$db_type}/beta_4/";
+      	break;
+      	
       	
         default:
         if( strlen($schema_version) == 0 )
@@ -321,11 +335,11 @@ if ( $inst_type == "upgrade")
     }
 
   //
-  $sql_schema = getDirFiles($sql_upd_dir,ADD_DIR);
+  $a_sql_schema = getDirFiles($a_sql_upd_dir,ADD_DIR);
 }
 // ------------------------------------------------------------------------------------------------
 
-
+echo "<pre>debug 20070131 " . __FUNCTION__ . " --- "; print_r($a_sql_schema); echo "</pre>";
 
 
 // ------------------------------------------------------------------------------------------------
@@ -415,22 +429,34 @@ switch($db_type)
 
 // 20060523 - franciscom
 $sqlParser = new SqlParser($db,$db_type);
-foreach ($sql_schema as $sql_file) 
-{
-	echo "<br>Processing:" . $sql_file;
-	$sqlParser->process($sql_file);
-}
-echo "<br>";
 
-// Data Operations
-if ( count($sql_data > 0) )
+foreach($a_sql_schema as $sql_schema)
 {
-	echo $msg_process_data;
-  foreach ($sql_data as $sql_file) 
+  foreach ($sql_schema as $sql_file) 
   {
-	  $sqlParser->process($sql_file);
+  	echo "<br>Processing:" . $sql_file;
+  	$sqlParser->process($sql_file);
   }
+  echo "<br>";
 }
+
+// -------------------------------------------------
+// Data Operations
+if ( count($a_sql_data > 0) )
+{
+  foreach($a_sql_data as $sql_data )
+  {
+    if ( count($sql_data > 0) )
+    {
+    	echo $msg_process_data;
+      foreach ($sql_data as $sql_file) 
+      {
+    	  $sqlParser->process($sql_file);
+      }
+    }
+  }  
+}
+// -------------------------------------------------
 
 // 20050806 - fm
 if ($update_pwd)

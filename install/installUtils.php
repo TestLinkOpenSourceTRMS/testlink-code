@@ -1,7 +1,7 @@
 <?php
 /* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: installUtils.php,v 1.19 2006/12/20 18:20:11 franciscom Exp $ 
+$Id: installUtils.php,v 1.20 2007/01/31 14:15:19 franciscom Exp $ 
 
 20060428 - franciscom - new function check_db_loaded_extension()
 20060214 - franciscom - added warning regarding valid database names
@@ -20,32 +20,42 @@ $Id: installUtils.php,v 1.19 2006/12/20 18:20:11 franciscom Exp $
 // From PHP Manual - User's Notes
 // +----------------------------------------------------------------------+
 //
+// 20070131 - franciscom - now returns an array
+//
 // 20050925 - added sort()
 function getDirFiles($dirPath, $add_dirpath=0)
 {
+$aFileSets=array(); 
 $my_dir_path = '';	
-if ( $add_dirpath )
-{
-  $my_dir_path = $dirPath;
-}    		           
-if ($handle = opendir($dirPath)) 
-{
-    while (false !== ($file = readdir($handle))) 
-    
-    // 20050808 - fm 
-    // added is_dir() to exclude dirs
-    if ($file != "." && $file != ".." && !is_dir($file))
-    {
-        $filesArr[] = $my_dir_path . trim($file);
-    }            
-    closedir($handle);
-}  
 
-// 20050925 - fm
-sort($filesArr);
-reset($filesArr);
+foreach( $dirPath as $the_dir)
+{
+  if ( $add_dirpath )
+  {
+    $my_dir_path = $the_dir;
+  }    		           
 
-return $filesArr; 
+  if ($handle = opendir($the_dir)) 
+  {
+      while (false !== ($file = readdir($handle))) 
+      
+      // 20050808 - fm 
+      // added is_dir() to exclude dirs
+      if ($file != "." && $file != ".." && !is_dir($file))
+      {
+          $filesArr[] = $my_dir_path . trim($file);
+      }            
+      closedir($handle);
+  }  
+  
+  // 20050925 - fm
+  sort($filesArr);
+  reset($filesArr);
+  $aFileSets[]=$filesArr;
+}
+
+
+return $aFileSets; 
 }
 // +----------------------------------------------------------------------+
 
@@ -61,7 +71,7 @@ return $filesArr;
 // | Authors: Jo�o Prado Maia <jpm@mysql.com>                             |
 // +----------------------------------------------------------------------+
 //
-// @(#) $Id: installUtils.php,v 1.19 2006/12/20 18:20:11 franciscom Exp $
+// @(#) $Id: installUtils.php,v 1.20 2007/01/31 14:15:19 franciscom Exp $
 //
 
 // a foolish wrapper - 20051231 - fm

@@ -1,12 +1,14 @@
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.8 2007/01/20 18:45:39 franciscom Exp $
+-- $Id: testlink_create_tables.sql,v 1.9 2007/01/31 14:15:20 franciscom Exp $
 --
 -- SQL script - create db tables for TL on Postgres   
 -- 
 --
 -- 
 -- Rev :
+--       20070131 - franciscom - requirements -> req_doc_id(32), 
+--
 --       20070120 - franciscom - following BUGID 458 ( really a new feature request)
 --                               two new fields on builds table
 --                               active, open
@@ -281,7 +283,7 @@ CREATE INDEX "req_specs_testproject_id" ON "req_specs" ("testproject_id");
 --
 CREATE TABLE "requirements" (  "id" BIGSERIAL NOT NULL ,
   "srs_id" BIGINT NOT NULL DEFAULT '0',
-  "req_doc_id" VARCHAR(16) NULL DEFAULT NULL,
+  "req_doc_id" VARCHAR(32) NULL DEFAULT NULL,
   "title" VARCHAR(100) NOT NULL DEFAULT '',
   "scope" TEXT NULL DEFAULT NULL,
   "status" CHAR(1) NOT NULL DEFAULT 'v',
@@ -293,7 +295,7 @@ CREATE TABLE "requirements" (  "id" BIGSERIAL NOT NULL ,
   PRIMARY KEY ("id")
 ); 
 CREATE INDEX "requirements_srs_id" ON "requirements" ("srs_id","status");
-CREATE INDEX "requirements_req_doc_id" ON "requirements" ("req_doc_id");
+CREATE INDEX "requirements_req_doc_id" ON "requirements" ("srs_id","req_doc_id");
 
 
 --

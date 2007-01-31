@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.94 $
- * @modified $Date: 2007/01/29 08:13:32 $ by $Author: franciscom $
+ * @version $Revision: 1.95 $
+ * @modified $Date: 2007/01/31 14:19:17 $ by $Author: franciscom $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink 
@@ -14,6 +14,7 @@
  *-----------------------------------------------------------------------------
  * Revisions:
  *
+ * 20070131 - franciscom - added g_req_cfg->reqdoc_id->is_system_wide
  * 20070120 - franciscom - added check for TL_LOG_LEVEL_DEFAULT
  * 20070110 - havlatm - refactorization; unchangable const moved to const.inc.php
  * 20070105 - franciscom - added $g_gui->custom_fields->sizes
@@ -429,6 +430,15 @@ $g_req_cfg->use_req_spec_as_testsuite_name = TRUE;
 $g_req_cfg->default_testsuite_name = "Test suite created by Requirement - Auto";
 $g_req_cfg->testsuite_details = "<b>Test suite/Test Cases generated from Requirements</b>";
 $g_req_cfg->testcase_summary_prefix = "<b>Test Case generated from Requirement</b><br>";
+
+
+// 20070131 - franciscom
+// true : you want req_doc_id UNIQUE IN THE WHOLE DB (system_wide)
+// false: you want req_doc_id UNIQUE INSIDE a SRS
+//
+$g_req_cfg->reqdoc_id->is_system_wide=false;
+
+
 
 /** @TODO description */
 $g_field_size->testsuite_name = 100;

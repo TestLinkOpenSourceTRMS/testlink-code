@@ -1,7 +1,9 @@
 <?php
 /*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: migrate_16_to_17.php,v 1.11 2007/01/30 23:52:07 jbarchibald Exp $ 
+$Id: migrate_16_to_17.php,v 1.12 2007/01/31 16:55:01 franciscom Exp $ 
+
+20070131 - franciscom - removed truncate of db_version table
 
 20070130 - jbarchibald - 
 added code to update inactive testplans in migrate_test_plans()
@@ -150,7 +152,8 @@ $a_sql[]="TRUNCATE TABLE cfield_design_values";
 $a_sql[]="TRUNCATE TABLE cfield_execution_values";
 $a_sql[]="TRUNCATE TABLE custom_fields";
 
-$a_sql[]="TRUNCATE TABLE db_version";
+// 20070131 - franciscom - seems wrong
+//$a_sql[]="TRUNCATE TABLE db_version";
 $a_sql[]="TRUNCATE TABLE executions";
 $a_sql[]="TRUNCATE TABLE execution_bugs";
 

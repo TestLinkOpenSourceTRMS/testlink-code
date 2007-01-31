@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: const.inc.php,v $
  *
- * @version $Revision: 1.10 $
- * @modified $Date: 2007/01/26 21:01:22 $ by $Author: schlundus $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2007/01/31 08:10:32 $ by $Author: franciscom $
  * @author Martin Havlát
  *
  * SCOPE:
@@ -16,6 +16,7 @@
  * 
  *-------------------------------------------------------------------
  * Revisions:
+ *  20070131 - franciscom - moved defined from requirements.inc.php
  *  20070122 - franciscom - INACTIVE,CLOSED 
  *  20070120 - franciscom - Beta 3, due changes in builds table
  *
@@ -277,6 +278,9 @@ define('FILTER_BY_TC_OFF',null);
 define('ALL_USERS_FILTER',null); 
 define('ADD_BLANK_OPTION',true); 
 
+// moved from requirements.inc.php
+define('TL_REQ_STATUS_VALID', 'v');
+define('TL_REQ_STATUS_NOT_TESTABLE', 'n');
 
 // -------------------------------------------------------------------
 ?>

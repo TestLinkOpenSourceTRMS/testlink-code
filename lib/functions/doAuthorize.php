@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  * 
  * @filesource $RCSfile: doAuthorize.php,v $
- * @version $Revision: 1.13 $
- * @modified $Date: 2007/01/19 21:16:29 $ by $Author: schlundus $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2007/01/31 23:18:25 $ by $Author: jbarchibald $
  * @author Chad Rosen, Martin Havlat
  *
  * This file handles the initial login and creates all user session variables.
@@ -13,6 +13,9 @@
  * @todo Setting up cookies so that the user can automatically login next time
  * 
  * Revision:
+ *           20070130 - jbarchibald -
+ *           $_SESSION['filter_tp_by_product'] should always default to = 1;
+ *
  *           20060507 - franciscom - 
  *           added bare bones LDAP authentication using mantis code
  *                                  
@@ -30,7 +33,8 @@ require_once("roles.inc.php");
 //20060102 - scs - ADOdb changes
 function doAuthorize(&$db,$login,$pwd)
 {
-	global $g_ui_show_check_filter_tp_by_testproject;
+    // 20070131 - jbarchibald - global import not needed. 
+	// global $g_ui_show_check_filter_tp_by_testproject;
 	$bSuccess = false;
 	$sProblem = 'wrong'; // default problem attribute value
 	
@@ -57,8 +61,9 @@ function doAuthorize(&$db,$login,$pwd)
 				tLog("Session exists. No second login is allowed", 'INFO');
 			}
 			else
-			{
-				$_SESSION['filter_tp_by_product'] = $g_ui_show_check_filter_tp_by_testproject;
+			{ 
+                // 20070131 - jbarchibald
+                $_SESSION['filter_tp_by_product'] = 1;
 				$userProductRoles = getUserProductRoles($db,$userInfo['id']);
 				$userTestPlanRoles = getUserTestPlanRoles($db,$userInfo['id']);
 			    //Setting user's session information

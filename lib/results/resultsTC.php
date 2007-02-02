@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsTC.php,v 1.24 2007/01/27 10:17:55 franciscom Exp $ 
+* $Id: resultsTC.php,v 1.25 2007/02/02 06:19:01 kevinlevy Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -67,9 +67,8 @@ while($suiteId = key($lastResultMap)) {
 		$suiteExecutions = $executionsMap[$suiteId];
 		
 		// iterate over all builds and lookup results for current test case
-		$qta_builds = sizeOf($arrBuilds);
-		for($i = 0; $i < $qta_builds; $i++) {
-			$buildId = $arrBuilds[$i]['id'];
+		while ($key = key($arrBuilds)) {
+			$buildId = $arrBuilds[$key]['id'];
 			$resultsForBuild = "?";
 		
 			// iterate over executions for this suite, look for 

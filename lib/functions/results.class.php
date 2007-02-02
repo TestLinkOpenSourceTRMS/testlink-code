@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8 
- * @modified $Date: 2007/01/13 23:52:24 $ by $Author: kevinlevy $
+ * @modified $Date: 2007/02/02 06:13:07 $ by $Author: kevinlevy $
  *
  *
  * This class is encapsulates most functionality necessary to query the database
@@ -141,8 +141,11 @@ class results
 	     // get build id -> build name pairs used in this test plan
 		$arrBuilds1 = $tp->get_builds($this->testPlanID); 
 		$arrBuilds = null;
-		for ($i = 0; $i < sizeOf($arrBuilds1); $i++) {
-			$currentArray = $arrBuilds1[$i] ;
+		
+		// use while instead of for loop
+		//for ($i = 0; $i < sizeOf($arrBuilds1); $i++) {
+		while ($key = key($arrBuilds1)){
+			$currentArray = $arrBuilds1[$key] ;
 			$build_id = $currentArray['id'];
 			$build_name = $currentArray['name'];
 			$arrBuilds[$build_id] = $build_name;

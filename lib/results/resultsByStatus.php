@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsByStatus.php,v 1.33 2007/01/27 09:53:46 franciscom Exp $ 
+* $Id: resultsByStatus.php,v 1.34 2007/02/02 06:15:15 kevinlevy Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -58,11 +58,12 @@ if (is_array($mapOfLastResult)) {
    while($tcId = key($mapOfLastResult[$suiteId])){
 		$lastBuildIdExecuted = $mapOfLastResult[$suiteId][$tcId]['buildIdLastExecuted'];
 		$buildName = null;
-		for ($i = 0 ; $i < sizeof($arrBuilds); $i++) {
-			$currentBuildInfo = 	$arrBuilds[$i];
+		while ($key = key($arrBuilds)) {
+			$currentBuildInfo = $arrBuilds[$key];
 			if ($currentBuildInfo['id'] == $lastBuildIdExecuted) {
 				$buildName = $currentBuildInfo['name'];
 			}
+		    next($arrBuilds);	
 		}
 		$notes = $mapOfLastResult[$suiteId][$tcId]['notes'];
 		$execution_ts = $mapOfLastResult[$suiteId][$tcId]['execution_ts'];

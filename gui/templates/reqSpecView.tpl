@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecView.tpl,v 1.25 2007/01/25 20:02:23 schlundus Exp $ *}
+{* $Id: reqSpecView.tpl,v 1.26 2007/02/03 22:14:07 schlundus Exp $ *}
 {* 
    Purpose: smarty template - view a requirement specification
    Author: Martin Havlat 
@@ -42,6 +42,8 @@ function check_action_precondition(form_id,action)
 </head>
 
 <body>
+
+
 {assign var="cfg_section" value=$smarty.template|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
 

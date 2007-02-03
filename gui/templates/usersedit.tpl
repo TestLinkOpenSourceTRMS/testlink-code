@@ -1,19 +1,13 @@
 {* 
 Testlink: smarty template - 
-$Id: usersedit.tpl,v 1.7 2007/01/15 08:01:26 franciscom Exp $ 
+$Id: usersedit.tpl,v 1.8 2007/02/03 22:14:07 schlundus Exp $ 
 *}
 {* 
 20070114 - franciscom - 
-1. using smarty config file
-2. improved management of default role id
-
-                      
-20060425 - franciscom - better management of default locale 
-20050913 - fm - BUGID 0000103: Localization is changed but not strings
-20050815 - changed action to updated 
+	1. using smarty config file
+	2. improved management of default role id
 *}
 {include file="inc_head.tpl" jsValidate="yes" openhead="yes"}
-
 
 {literal}
 <script type="text/javascript">

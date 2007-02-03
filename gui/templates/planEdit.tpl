@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planEdit.tpl,v 1.12 2007/01/29 08:13:32 franciscom Exp $
+$Id: planEdit.tpl,v 1.13 2007/02/03 22:14:07 schlundus Exp $
 
 Purpose: smarty template - create Test Plan
 Revisions:
@@ -117,8 +117,7 @@ function validateForm(f)
 
 		{/if}
 
-		<input type="button" name="go_back" value="{lang_get s='cancel'}" 
-		       onclick="javascript:history.back()/>
+		<input type="button" name="go_back" value="{lang_get s='cancel'}"  onclick="javascript:history.back()"/>
 
 	</div>
 

@@ -2,8 +2,8 @@
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: results.inc.php,v $
- * @version $Revision: 1.37 $
- * @modified $Date: 2007/01/15 08:28:56 $   $Author: franciscom $
+ * @version $Revision: 1.38 $
+ * @modified $Date: 2007/02/03 22:14:07 $   $Author: schlundus $
  * 
  * @author 	Martin Havlat 
  * @author 	Chad Rosen (original report definition)
@@ -18,16 +18,17 @@
  * @author 20050428 - fm
  * use g_tc_status instead of MAGIC CONSTANTS 'f','b', ecc
  * refactoring of sql (using base_sql)
- *   
+ * 
+ * THIS FILE IS DEPRECATED AND WILL BE DELETED   
  */
-require_once('../../config.inc.php');
-require_once("common.php");
-require_once("builds.inc.php");
+#require_once('../../config.inc.php');
+#require_once("common.php");
+#require_once("builds.inc.php");
 
 /**
 * Function send header which initiate MS excel
 */
-function sendXlsHeader()
+function DEPR_sendXlsHeader()
 {
 	header("Content-Disposition: inline; filename=testReport.xls");
 	header("Content-Description: PHP Generated Data");
@@ -44,7 +45,7 @@ function sendXlsHeader()
 *
 * @author Francisco Mancardi - 20050905 - refactoring fetch_assoc
 */
-function getStatus(&$db,$tcId, $buildID)
+function DEPR_getStatus(&$db,$tcId, $buildID)
 {
 	$sql = " SELECT status FROM results WHERE results.tcid=" . $tcId . 
 	       " AND results.build_id=" . $buildID;
@@ -61,7 +62,7 @@ function getStatus(&$db,$tcId, $buildID)
 *
 * 20050425 - fm
 */
-function getStatusName($status)
+function DEPR_getStatusName($status)
 {
 	global $g_tc_status;
 	
@@ -97,7 +98,7 @@ function DEPR_getPlanTCNumber(&$db,$tpID)
 * Function returns number of Test Cases in the Test Plan
 * @return string Link of Test ID + Title 
 */
-function getTCLink($rights, $tcID,$tcversionID, $title, $buildID)
+function DEPR_getTCLink($rights, $tcID,$tcversionID, $title, $buildID)
 {
 	$title = htmlspecialchars($title);
 	$suffix = $tcID . ":&nbsp;<b>" . $title. "</b></a>";
@@ -792,7 +793,7 @@ function DEPR_getBuildMetricsCategory(&$db,$tpID, $buildID)
 * @param string build ID 
 * @return array 
 */
-function getBuildMetricsComponent(&$db,$tpID,$buildID)
+function DEPR_getBuildMetricsComponent(&$db,$tpID,$buildID)
 {
 	global $g_tc_status;
 
@@ -876,7 +877,7 @@ function getBuildMetricsComponent(&$db,$tpID,$buildID)
 /*
 20050911 - fm - bug due to fetch_assoc
 */
-function getBugsReport(&$db,$tpID, $buildID = 'all')
+function DEPR_getBugsReport(&$db,$tpID, $buildID = 'all')
 {
 	global $g_bugInterfaceOn;
 	global $g_bugInterface;
@@ -935,7 +936,7 @@ function getBugsReport(&$db,$tpID, $buildID = 'all')
 * @param integer $run = $totalPassed + $totalFailed + $totalBlocked
 * @return real $percentageCompleted
 */
-function getPercentageCompleted($total, $run)
+function DEPR_getPercentageCompleted($total, $run)
 {
 	if($total == 0)	{
 		$percentComplete = 0;
@@ -954,7 +955,7 @@ function getPercentageCompleted($total, $run)
 *
 * @author Francisco Mancardi - fm - reduce global coupling
 */
-function listTPComponent(&$db,$tpID)
+function DEPR_listTPComponent(&$db,$tpID)
 {
 	$suites = array();
 	$sqlCom = " SELECT COMP.id,MGTCOMP.name " .
@@ -979,7 +980,7 @@ function listTPComponent(&$db,$tpID)
 * @author Francisco Mancardi - 20050905 - add parameter
 *
 */
-function reportGeneralStatus(&$db,$tpID)
+function DEPR_reportGeneralStatus(&$db,$tpID)
 {
 	$arrData = getPriorityReport($db,$tpID);
 	
@@ -1012,7 +1013,7 @@ function reportGeneralStatus(&$db,$tpID)
 }
 
 
-function reportBuildStatus(&$db,$tpID, $buildID,$buildName)
+function DEPR_reportBuildStatus(&$db,$tpID, $buildID,$buildName)
 {
 	global $g_tc_status;
 	
@@ -1071,7 +1072,7 @@ function reportBuildStatus(&$db,$tpID, $buildID,$buildName)
 	return $msgBody;
 }
 
-function reportSuiteBuildStatus(&$db,$tpID, $comID, $buildID,$buildName)
+function DEPR_reportSuiteBuildStatus(&$db,$tpID, $comID, $buildID,$buildName)
 {
 	global  $g_tc_status;  
 	
@@ -1143,7 +1144,7 @@ function reportSuiteBuildStatus(&$db,$tpID, $comID, $buildID,$buildName)
 
 // 20051106 - fm
 // build_id
-function reportSuiteStatus(&$db,$tpID, $comID)
+function DEPR_reportSuiteStatus(&$db,$tpID, $comID)
 {
 	global $g_tc_status;
   
@@ -1229,7 +1230,7 @@ function reportSuiteStatus(&$db,$tpID, $comID)
  * @return string last test result
  * @author martin havlat
  **/
-function getLastResult(&$db,$idSuiteTC)
+function DEPR_getLastResult(&$db,$idSuiteTC)
 {
 	global $g_tc_status;
 	
@@ -1259,7 +1260,7 @@ function getLastResult(&$db,$idSuiteTC)
  * 		failed, passed, blocked, not_run REQ (include related TC)
  * @author martin havlat
  */
-function getReqCoverage_testPlan(&$db,$idSRS, $tpID)
+function DEPR_getReqCoverage_testPlan(&$db,$idSRS, $tpID)
 {
 	global $g_tc_status, $g_tc_status_css;
 	
@@ -1340,7 +1341,4 @@ function getReqCoverage_testPlan(&$db,$idSRS, $tpID)
 	}	
 	return $output;
 }
-
-
-
 ?>

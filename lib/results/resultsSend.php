@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsSend.php,v 1.14 2007/01/10 07:31:12 kevinlevy Exp $ 
+* $Id: resultsSend.php,v 1.15 2007/02/03 22:14:08 schlundus Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author	Chad Rosen
@@ -14,7 +14,6 @@
 */
 require('../../config.inc.php');
 require_once('common.php');
-// require_once('results.inc.php');
 require_once('builds.inc.php');
 // has the sendMail() method
 require_once('info.inc.php');

@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: print.inc.php,v $
- * @version $Revision: 1.21 $
- * @modified $Date: 2007/01/26 21:01:23 $ by $Author: schlundus $
+ * @version $Revision: 1.22 $
+ * @modified $Date: 2007/02/03 22:14:07 $ by $Author: schlundus $
  *
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
@@ -43,6 +43,7 @@ function printHeader($title, $base_href, $cssTemplate = TL_DOC_BASIC_CSS)
 	$output .= '<meta http-equiv="Content-Type" content="text/html; charset='.TL_TPL_CHARSET.'" />';
 	$output .= '<title>' . htmlspecialchars($title). "</title>\n";
 	$output .= '<link type="text/css" rel="stylesheet" href="' . $base_href . $cssTemplate . '" />';
+	$output .= '<style type="text/css" media="print">.notprintable { display:none;}</style>';
 	$output .= "\n</head>\n<body>\n";
 
 	return $output;
@@ -59,6 +60,8 @@ function printFirstPage(&$db,$title, $prodName, $prodNotes, $userID)
 	$title = htmlspecialchars($title);
 	
 	$output = '<div>';
+	$output .= '<div class="groupBtn" style="text-align:right"><input class="notprintable" type="button" name="print" value="'.lang_get('btn_print').'" onclick="javascript: print();" style="margin-left:2px;" /></div>';
+
 	$output .= '<div class="pageheader">'. $prodName ."</div>\n";
 	
 	if (TL_DOC_COMPANY != '' ||  TL_DOC_COMPANY_LOGO != '' )

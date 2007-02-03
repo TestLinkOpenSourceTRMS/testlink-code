@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.95 $
- * @modified $Date: 2007/01/31 14:19:17 $ by $Author: franciscom $
+ * @version $Revision: 1.96 $
+ * @modified $Date: 2007/02/03 22:14:07 $ by $Author: schlundus $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink 
@@ -102,9 +102,10 @@ require_once('config_db.inc.php');
 
 $language = 'en_GB'; // default
 
-
+$serverLanguage = false;
 // check for !== false because getenv() returns false on error
-$serverLanguage = getenv($_SERVER['HTTP_ACCEPT_LANGUAGE']);
+if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE']))
+	$serverLanguage = getenv($_SERVER['HTTP_ACCEPT_LANGUAGE']);
 if(false !== $serverLanguage)
 {
 	if (array_key_exists($serverLanguage,$g_locales))

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: resultsReqs.php,v $
- * @version $Revision: 1.6 $
- * @modified $Date: 2006/08/29 19:41:38 $ by $Author: schlundus $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2007/02/03 22:14:08 $ by $Author: schlundus $
  * @author Martin Havlat
  * 
  * Report requirement based results
@@ -17,7 +17,6 @@
 require_once("../../config.inc.php");
 require_once("common.php");
 require_once('requirements.inc.php');
-require_once('results.inc.php');
 
 testlinkInitPage($db);
 

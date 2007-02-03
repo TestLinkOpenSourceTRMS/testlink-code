@@ -1,10 +1,8 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: tcPrintNavigator.tpl,v 1.7 2007/01/26 21:01:23 schlundus Exp $ *}
+{* $Id: tcPrintNavigator.tpl,v 1.8 2007/02/03 22:14:07 schlundus Exp $ *}
 {* Purpose: smarty template - show test specification tree *}
 {include file="inc_head.tpl" jsTree="yes"}
-
 <body>
-
 <h1>{$title|escape}</h1>
 
 <div style="margin: 10px;">
@@ -35,6 +33,7 @@
 <div class="tree" name="treeMenu" id="treeMenu">
 	{$tree}
 </div>
+<br />
 
 </body>
 </html>

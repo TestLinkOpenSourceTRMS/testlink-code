@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.119 $
- * @modified $Date: 2007/01/31 07:50:33 $ $Author: franciscom $
+ * @version $Revision: 1.120 $
+ * @modified $Date: 2007/02/03 22:14:08 $ $Author: schlundus $
  *
  * @author Francisco Mancardi
  *
@@ -185,7 +185,6 @@ $TLS_popup_delete_custom_field = "Are you sure you want to delete the custom fie
 $TLS_possible_values = "Possible values";
 $TLS_show_on_design = "Display on <br>test specification";
 $TLS_show_on_exec = "Display on <br>test execution";
-$TLS_testcase=$TLS_test_case;
 $TLS_title_cfields_mgmt = "Custom fields";
 $TLS_type = "Type";
 $TLS_warning_empty_cfield_label = "Please enter the label of this custom field.";
@@ -230,10 +229,8 @@ $TLS_href_keywords_assign = "Assign Keywords";
 $TLS_href_keywords_manage = "Keyword Management";
 $TLS_href_keywords_view = "View Keywords";
 $TLS_href_plan_define_priority = "Define priority rules";
-$TLS_href_plan_edit = "Edit / Delete Test Plan";
-$TLS_href_plan_management="Test Plan Management";
+$TLS_href_plan_management = "Test Plan Management";
 $TLS_href_plan_mstones = "Milestone Management";
-$TLS_href_plan_new = "Create Test Plan";
 $TLS_href_print_tc = "Print Test Cases";
 $TLS_href_print_tc_suite = "Print Test Plan";
 $TLS_href_remove_test_case = "Remove Test Case(s)";
@@ -246,6 +243,7 @@ $TLS_href_tc_exec_assignment = "Assign Test Case execution";
 $TLS_href_upd_mod_tc = "Update modified Test Case(s)";
 $TLS_href_user_management = "User Management";
 $TLS_msg_no_rights_for_tp = "- unavailable (You don't have permissions for any Test Plan)";
+$TLS_test_plan = "Test Plan";
 $TLS_testplan_role = "TestPlan role";
 $TLS_th_my_perc_completed = "My completed [%]";
 $TLS_th_name = "Name";
@@ -307,13 +305,6 @@ $TLS_warning_delete_attachment = "Really delete this attachment?";
 
 // gui/templates/resultsNavigator.tpl
 $TLS_btn_print = "Print";
-$TLS_link_report_blocked_tcs = "Blocked Test Cases";
-$TLS_link_report_excel = "&#8195;&#8594; Excel export";
-$TLS_link_report_failed = "Failed Test Cases";
-$TLS_link_report_general_tp_metrics = "General Test Plan Metrics";
-$TLS_link_report_metrics_more_builds = "Query Metrics";
-$TLS_link_report_overall_build = "The Overall Build Status";
-$TLS_link_report_test = "Test Report";
 $TLS_note_email_sent_t = "Note: Emails are sent to user's email account.";
 $TLS_send_results = "Send results";
 $TLS_send_to = "To:";
@@ -323,9 +314,6 @@ $TLS_title_report_type = "Report type";
 $TLS_via_email = "per eMail";
 
 
-
-// gui/templates/planView.tpl
-$TLS_btn_testplan_create = $TLS_create;
 
 // gui/templates/inc_attachments_upload.tpl
 
@@ -372,30 +360,15 @@ $TLS_title_last_mod = "Last modified on ";
 
 // gui/templates/buildNew.tpl
 $TLS_active = "Active";
-$TLS_alt_active_build = "Active build";
-$TLS_alt_edit_build = "Click here to edit this build";
-$TLS_alt_open_build = "Open build";
 $TLS_enter_build = "Title";
 $TLS_enter_build_notes = "Description";
 $TLS_msg_build = "Notes: Each build is related to the active Test Plan. Description should include: list of delivered packages, approvals, status,etc.";
-$TLS_no_builds = "No builds are defined within this Test Plan!";
 $TLS_open = "Open";
-$TLS_test_plan = "Test Plan";
-$TLS_th_active = "Active";
-$TLS_th_delete = "Delete?";
-$TLS_th_description = "Description";
-$TLS_th_open = "Open";
-$TLS_th_title = "Title";
 $TLS_title_build_2 = "Build management";
 $TLS_title_build_create = "Create a new Build";
-$TLS_title_build_list = "List of existing builds";
 $TLS_title_build_update = "Update Build";
-$TLS_warning_delete_build = "Do really want to delete this build? All dependant data (test results) will also be deleted!";
 $TLS_warning_empty_build_name = "Please enter a name for the Build!";
 
-
-// gui/templates/buildView.tpl
-$TLS_btn_build_create="Create";
 
 
 // gui/templates/inc_comp_viewer_ro.tpl
@@ -552,7 +525,6 @@ $TLS_title_execution_notes = "Execution notes";
 
 
 // gui/templates/rolesedit.tpl
-$TLS_alt_delete_role = "delete role";
 $TLS_btn_create_role = "Create";
 $TLS_btn_edit_role = "Edit";
 $TLS_caption_define_role = "Define role";
@@ -583,6 +555,7 @@ $TLS_caption_search_form = "Search Test Cases";
 $TLS_not_applied = "Not applied";
 $TLS_th_tcid = "Test Case ID";
 $TLS_th_tcversion = "Version";
+$TLS_th_title = "Title";
 $TLS_title_search_tcs = "Search";
 
 
@@ -642,6 +615,8 @@ $TLS_alt_delete_user = "Really delete the selected user?";
 $TLS_alt_edit_user = "Edit user";
 $TLS_order_by_login = "Order by login";
 $TLS_order_by_role_descr = "Order by role description";
+$TLS_th_active = "Active";
+$TLS_th_delete = "Delete?";
 $TLS_th_email = "Email";
 $TLS_th_first_name = "First Name";
 $TLS_th_last_name = "Last  Name";
@@ -663,7 +638,7 @@ $TLS_password = "Password:";
 
 // gui/templates/loginFirst.tpl
 $TLS_btn_add_user_data = "Add User Data";
-$TLS_e_mail = "E-mail address (needed for sending forgotten password):";
+$TLS_e_mail = "E-mail address (needed for sending a new password):";
 $TLS_first_name = "First name:";
 $TLS_last_name = "Last name:";
 $TLS_link_back_to_login = "Back to login";
@@ -695,8 +670,6 @@ $TLS_no_records_found = "Your search delivered no results!";
 $TLS_alt_attachment_mgmt = "attachments";
 $TLS_alt_notes = "notes";
 $TLS_attachment_mgmt = "attachments";
-$TLS_btn_history_off = "Show only last execution";
-$TLS_btn_history_on = "Show complete execution history";
 $TLS_btn_save_all_tests_results = "Save all executions";
 $TLS_btn_save_tc_exec_results = "Save execution";
 $TLS_bug_mgmt = "BUG management";
@@ -708,7 +681,6 @@ $TLS_details = "Details";
 $TLS_exec_notes = "Notes";
 $TLS_exec_status = "Status";
 $TLS_execution_history = "Execution history";
-$TLS_help_exec_notes = "Notes";
 $TLS_img_title_bug_mgmt = "BUG management";
 $TLS_just_last_execution_for_this_build = "Last execution for this build";
 $TLS_no_data_available = "No data available";
@@ -788,32 +760,28 @@ $TLS_tr_th_risk = "Risk/Importance";
 
 
 // gui/templates/planEdit.tpl
-$TLS_testplan_alt_delete_tp = "Delete the test plan?";
-$TLS_testplan_alt_edit_tp = "Edit the test plan";
-$TLS_testplan_menu_create = "Create";
-$TLS_testplan_menu_list = "List";
-$TLS_testplan_msg_delete_confirm = "Are you sure you want to delete the complete Test Plan? You can use a deactivation via TP Edit link.";
+$TLS_btn_testplan_create = "Create";
+$TLS_cancel = "Cancel";
+$TLS_opt_no = "No";
+$TLS_testplan_question_create_tp_from = "Create from existing Test Plan?";
 $TLS_testplan_th_active = "Active";
-$TLS_testplan_th_delete = "Delete";
 $TLS_testplan_th_name = "Name";
 $TLS_testplan_th_notes = "Description";
-$TLS_testplan_title_list = "List of existing Test Plans";
+$TLS_testplan_title_create = "Create a new Test plan";
+$TLS_testplan_title_edit = "Edit the Test plan";
+$TLS_testplan_title_for_project = "for Test Project: ";
 $TLS_testplan_title_tp_management = "Test Plan Management";
-$TLS_testplan_txt_empty_list = "There are no Test Plans defined! Create one to allow test execution functionality";
+$TLS_testplan_txt_notes = "Test plan should be clearly defined task(s) with a timeframe and a content. It could contain a testing activity for a new version of product (include hot fixes) or also just simple change request for one customer.<br />Description field serves for links to Project plan and related documentation, List of features to be tested, risks, etc.<br />You can create a new Test Plan from an existing one. The next items are copied: Builds, Test Cases, Priorities, Milestones and user roles.<br />A Test plan could be deactiveted; i.e. no editing and no results change is allowed. Such Test Plan is visible only via 'Reporting' and this page.";
+$TLS_warning_empty_tp_name = "You cannot enter Test plan without a name!";
 
 
 
 // gui/templates/planNew.tpl
-$TLS_opt_no = "No";
 $TLS_testplan_btn_edit = "Update";
 $TLS_testplan_btn_new = "Create";
+$TLS_testplan_menu_create = "Create";
 $TLS_testplan_menu_edit = "Edit";
-$TLS_testplan_question_create_tp_from = "Create from existing Test Plan?";
-$TLS_testplan_title_create = "Create a new Test plan";
-$TLS_testplan_title_edit = "Edit the Test plan";
-$TLS_testplan_title_for_project = "for Test Project: ";
-$TLS_testplan_txt_notes = "Test plan should be clearly defined task(s) with a timeframe and a content. It could contain a testing activity for a new version of product (include hot fixes) or also just simple change request for one customer.<br />Description field serves for links to Project plan and related documentation, List of features to be tested, risks, etc.<br />You can create a new Test Plan from an existing one. The next items are copied: Builds, Test Cases, Priorities, Milestones and user roles.<br />A Test plan could be deactiveted; i.e. no editing and no results change is allowed. Such Test Plan is visible only via 'Reporting' and this page.";
-$TLS_warning_empty_tp_name = "You cannot enter Test plan without a name!";
+$TLS_testplan_menu_list = "List";
 
 
 
@@ -844,7 +812,7 @@ $TLS_color = "Color";
 $TLS_enable_requirements = "Enable Requirements functionality";
 $TLS_info_failed_loc_prod = "Failed to localize the Test Project.";
 $TLS_notes = "Related Notes";
-$TLS_popup_product_delete = "Warning! This action deletes irrevocable all Test Project related data (including test results, plans, etc.). You can also use to deactivate instead of delete.\\nRecommendation: Execute a dump of database at first.\\nAre you sure to delete the Test Project?";
+$TLS_popup_product_delete = "Warning! This action deletes irrevocable all Test Project related data (including test results, plans, etc.). You can also use to deactivate instead of delete.\nRecommendation: Execute a dump of database at first.\nAre you sure to delete the Test Project?";
 $TLS_warning_empty_tproject_name = "Test Project name cannot be empty!";
 
 
@@ -1100,13 +1068,13 @@ $TLS_your_password_is_external = "Your password is external";
 
 
 // gui/templates/usersassign.tpl
-$TLS_Role = "Roles";
 $TLS_TestProject = "Test Project";
 $TLS_User = "User";
 $TLS_btn_change = "Change";
 $TLS_caption_assign_testplan_user_roles = "Assign test plan roles to users";
 $TLS_caption_assign_testproject_user_roles = "Assign Test Project user roles";
 $TLS_menu_assign_testproject_roles = "Assign Test Project roles";
+$TLS_th_roles = "Roles";
 $TLS_title_assign_roles = "Assign roles";
 
 
@@ -1119,7 +1087,6 @@ $TLS_warning_empty_last_name = "Please enter a surname";
 $TLS_warning_empty_login = "Please enter a login";
 
 
-
 // gui/templates/attachmentupload.tpl
 $TLS_enter_attachment_title = "Enter title for the attachment";
 $TLS_import_was_ok = "The import was ok";
@@ -1130,10 +1097,10 @@ $TLS_title_upload_attachment = "Upload attachment";
 
 // gui/templates/rolesview.tpl
 $TLS_N_A = "N/A";
+$TLS_alt_delete_role = "delete role";
 $TLS_alt_edit_role = "Edit role";
 $TLS_btn_confirm_delete = "Delete";
 $TLS_no_roles = "No roles";
-$TLS_th_roles = "Roles";
 $TLS_title_roles = "Available roles";
 $TLS_warning_users_will_be_reset = "The affected users will be resetted to guest role!";
 
@@ -1141,6 +1108,29 @@ $TLS_warning_users_will_be_reset = "The affected users will be resetted to guest
 
 // gui/templates/tcexport.tpl
 $TLS_export_with_keywords = "Export with keywords";
+
+
+
+// gui/templates/buildView.tpl
+$TLS_alt_active_build = "Active build";
+$TLS_alt_edit_build = "Click here to edit this build";
+$TLS_alt_open_build = "Open build";
+$TLS_btn_build_create = "Create";
+$TLS_no_builds = "No builds are defined within this Test Plan!";
+$TLS_th_description = "Description";
+$TLS_th_open = "Open";
+$TLS_title_build_list = "List of existing builds";
+$TLS_warning_delete_build = "Do really want to delete this build? All dependant data (test results) will also be deleted!";
+
+
+
+// gui/templates/planView.tpl
+$TLS_testplan_alt_delete_tp = "Delete the test plan?";
+$TLS_testplan_alt_edit_tp = "Edit the test plan";
+$TLS_testplan_msg_delete_confirm = "Are you sure you want to delete the complete Test Plan? You can use a deactivation via TP Edit link.";
+$TLS_testplan_th_delete = "Delete";
+$TLS_testplan_title_list = "List of existing Test Plans";
+$TLS_testplan_txt_empty_list = "There are no Test Plans defined! Create one to allow test execution functionality";
 
 
 
@@ -1351,7 +1341,6 @@ $TLS_available_kword = "Available Keywords";
 $TLS_cannot_add_build = "The build cannot be added!";
 $TLS_cannot_delete_build = "The build cannot be deleted!";
 $TLS_cannot_update_build = "Error while updating build!";
-$TLS_invalid_build_id = "Invalid build identification was used.";
 $TLS_warning_duplicate_build = "There is already a build with this identifier";
 
 
@@ -1411,16 +1400,11 @@ $TLS_title_test_plan_navigator = "Test plan navigator";
 
 
 
-// lib/plan/planNew.php
-$TLS_duplicate_tp_name = "There is already a Test Plan with this name!";
+// lib/plan/planEdit.php
+$TLS_testplan_created_ok = "Test Plan was created";
 $TLS_update_tp_failed1 = "Update of Test Plan '";
 $TLS_update_tp_failed2 = "' failed";
-
-
-
-// lib/plan/planEdit.php
-$TLS_testplan_result_created = "The Test plan created successfully.";
-$TLS_testplan_result_updated = "The Test plan updated successfully.";
+$TLS_warning_duplicate_tplan_name = "There is already a Test Plan with this name. Please choose another name!";
 
 
 
@@ -1485,8 +1469,14 @@ $TLS_list_of_failed = "List of Failed Test Cases";
 
 
 // lib/results/resultsNavigator.php
+$TLS_link_report_blocked_tcs = "Blocked Test Cases";
+$TLS_link_report_failed = "Failed Test Cases";
+$TLS_link_report_general_tp_metrics = "General Test Plan Metrics";
 $TLS_link_report_metrics_active_build = "Metrics of active Build";
+$TLS_link_report_metrics_more_builds = "Query Metrics";
+$TLS_link_report_overall_build = "The Overall Build Status";
 $TLS_link_report_reqs_coverage = "Requirements based Report";
+$TLS_link_report_test = "Test Report";
 $TLS_link_report_total_bugs = "Total Bugs For Each Test Case";
 
 
@@ -1494,6 +1484,11 @@ $TLS_link_report_total_bugs = "Total Bugs For Each Test Case";
 // lib/results/resultsSend.php
 $TLS_send_to_empty_email_warning = "I'm sorry but email cannot be sent with a blank to field. Please enter a valid address.";
 $TLS_warning_create_build_first = "You must create builds or import data at first.";
+
+
+
+// lib/results/displayMgr.php
+$TLS_error_sendreport_no_email_credentials = "Email for this user is not specified, please edit email credentials in 'Personal' tab";
 
 
 

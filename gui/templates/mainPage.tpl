@@ -1,17 +1,10 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: mainPage.tpl,v 1.31 2007/01/29 14:02:26 franciscom Exp $     
+ $Id: mainPage.tpl,v 1.32 2007/02/03 22:14:07 schlundus Exp $     
  Purpose: smarty template - main page / site map                 
                                                                  
  rev :                                                 
        20070113 - franciscom - truncate on test plan name combo box
-       20060908 - franciscom - removed assign risk and ownership
-                               added define priority
-                               added tc exec assignment
-                                   
-       20060819 - franciscom - changed css classes name
-                               removed old comments
-       
 *}
 {include file="inc_head.tpl" popup="yes"}
 
@@ -250,11 +243,7 @@
 		<img alt="arrow" class="arrow" src="{$smarty.const.TL_THEME_IMG_DIR}/arrow_org.gif" />
         <a href="lib/cfields/cfields_tproject_assign.php">{lang_get s='href_cfields_tproject_assign'}</a>
   {/if}
-
-
-
 </div>
-
 
 {*      ** middle table ************}
 

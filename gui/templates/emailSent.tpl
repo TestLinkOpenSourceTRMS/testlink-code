@@ -1,10 +1,7 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: emailSent.tpl,v 1.1 2007/01/10 07:28:35 kevinlevy Exp $ *}
+{* $Id: emailSent.tpl,v 1.2 2007/02/03 22:14:07 schlundus Exp $ *}
 {* Purpose: smarty template - confirm email has been sent successfully *}
 {include file="inc_head.tpl"}
-{*
-	20051126 - scs - added escaping of tpname
-*}
 <body>
 
 <h1>{$tpName|escape} {lang_get s='send_test_report'}</h1>

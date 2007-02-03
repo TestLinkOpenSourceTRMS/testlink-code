@@ -9,18 +9,18 @@ require_once('info.inc.php');
 function displayReport($template_file, &$smarty, $report_type, $buildName = null)
 {
 	// default report
-    if ($report_type == '0') {
-		$template_file = $template_file . ".tpl";
-		$smarty->display($template_file);
+    if ($report_type == '0')
+	{
+		
 	}
 	// excel report
-	else if ($report_type == '1'){
+	else if ($report_type == '1')
+	{
 		sendXlsHeader();
-		$template_file = $template_file . ".tpl";
-		$smarty->display($template_file);
 	}
 	// html email report
-	else if ($report_type == '2'){
+	else if ($report_type == '2')
+	{
 		$template_file = $template_file . ".tpl";
 		$html_report = $smarty->fetch($template_file);
 		$emailIsHtml = true;
@@ -29,13 +29,18 @@ function displayReport($template_file, &$smarty, $report_type, $buildName = null
 		
 		$emailFrom = $_SESSION['email'];
 		$emailTo = $_SESSION['email'];
-		if (!$emailTo) {
-			print "email for this user is not specified, please edit email credentials in \"Personal\" tab. <BR>";
+		if (!$emailTo)
+		{
+			//Email for this user is not specified, please edit email credentials in \"Personal\" tab.
+			$message = lang_get("error_sendreport_no_email_credentials");
 		}
-		$message = sendMail($emailFrom, $emailTo, $subjectOfMail, $html_report, $send_cc_to_myself, $emailIsHtml);
-		$smarty = new TLSmarty;
+		else
+		{
+			$message = sendMail($emailFrom, $emailTo, $subjectOfMail, $html_report, $send_cc_to_myself, $emailIsHtml);
+		}
+		$smarty = new TLSmarty();
 		$smarty->assign('message', $message);
-		$smarty->display('emailSent.tpl');
+		$template_file = "emailSent";
 	}
 	// text email report
 	else if ($report_type == '3'){
@@ -54,16 +59,18 @@ function displayReport($template_file, &$smarty, $report_type, $buildName = null
 		$message = sendMail($emailFrom, $emailTo, $subjectOfMail, $text_report, $send_cc_to_myself, $emailIsHtml);
 		*/
 		$message = "text email messages not implemented <BR>";
-		$smarty = new TLSmarty;
+		$smarty = new TLSmarty();
 		$smarty->assign('message', $message);
-		$smarty->display('emailSent.tpl');
+		
+		$template_file = "emailSent";
 	}
 	// PDF report
-	else if ($report_type == '4'){
+	else if ($report_type == '4')
+	{
 		sendPdfHeader();
-		$template_file = $template_file . ".tpl";		
-		$smarty->display($template_file);
 	}
+	$template_file = $template_file . ".tpl";
+	$smarty->display($template_file);
 } //end function
 
 

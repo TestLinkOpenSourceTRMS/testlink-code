@@ -2,7 +2,7 @@
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
- * @version $Id: resultsNavigator.php,v 1.22 2007/01/15 01:16:28 kevinlevy Exp $ 
+ * @version $Id: resultsNavigator.php,v 1.23 2007/02/03 22:14:08 schlundus Exp $ 
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
  * This page list View of Test Results and Metrics.
@@ -21,8 +21,8 @@ $arrData = array(
 	array('name' => lang_get('link_report_general_tp_metrics'), 'href' => 'resultsGeneral.php?report_type='), 
 	array('name' => lang_get('link_report_overall_build'), 'href' => 'resultsAllBuilds.php?report_type='), 
     array('name' => lang_get('link_report_metrics_more_builds'), 'href' => 'resultsMoreBuilds.php?report_type='), 
-	array('name' => lang_get('link_report_failed'), 'href' => 'resultsByStatus.php?type=f&report_type='),
-	array('name' => lang_get('link_report_blocked_tcs'), 'href' => 'resultsByStatus.php?type=b&report_type='),
+	array('name' => lang_get('link_report_failed'), 'href' => 'resultsByStatus.php?type=f&amp;report_type='),
+	array('name' => lang_get('link_report_blocked_tcs'), 'href' => 'resultsByStatus.php?type=b&amp;report_type='),
 	array('name' => lang_get('link_report_test'), 'href' => 'resultsTC.php?report_type=')
 );
 
@@ -33,7 +33,7 @@ if ($g_bugInterfaceOn)
 	$arrData[] = array('name' => lang_get('link_report_total_bugs'), 'href' => 'resultsBugs.php?report_type=');
 
 
-if ($_SESSION['testprojectOptReqs'])
+if ($_SESSION['testprojectOptReqs'] && has_rights($db,"mgt_view_req"))
 {
 	$arrData[] = array('name' => lang_get('link_report_reqs_coverage'), 'href' => 'resultsReqs.php?report_type=');
 }

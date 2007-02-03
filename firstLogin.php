@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: firstLogin.php,v $
  *
- * @version $Revision: 1.12 $
- * @modified $Date: 2006/10/17 20:17:53 $ $Author: schlundus $
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2007/02/03 22:14:07 $ $Author: schlundus $
  *
  * @author Asiel Brumfield
  * @author Martin Havlat 
@@ -82,6 +82,10 @@ if($bEditUser)
 }
 
 $smarty = new TLSmarty();
+$smarty->assign('login', $login);
+$smarty->assign('firstName', $first);
+$smarty->assign('lastName', $last);
+$smarty->assign('email', $email);
 $smarty->assign('login_logo', LOGO_LOGIN_PAGE);
 $smarty->assign('css', TL_BASE_HREF . TL_LOGIN_CSS);
 $smarty->assign('message',$message);

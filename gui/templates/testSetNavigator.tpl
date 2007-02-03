@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: testSetNavigator.tpl,v 1.5 2007/01/26 21:01:23 schlundus Exp $
+$Id: testSetNavigator.tpl,v 1.6 2007/02/03 22:14:07 schlundus Exp $
 show test specification tree 
 *}
 

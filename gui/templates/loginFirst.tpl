@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: loginFirst.tpl,v 1.6 2006/10/17 20:17:54 schlundus Exp $
+$Id: loginFirst.tpl,v 1.7 2007/02/03 22:14:07 schlundus Exp $
 Purpose: smarty template - first login
 *}
 
@@ -17,7 +17,7 @@ Purpose: smarty template - first login
 <form method="post" action="firstLogin.php">
 
 	<p class="label">{lang_get s='login_name'}<br />
-	<input type="text" name="loginName" size="{#LOGIN_SIZE#}" maxlength="{#LOGIN_MAXLEN#}" /></p>
+	<input type="text" name="loginName" size="{#LOGIN_SIZE#}" maxlength="{#LOGIN_MAXLEN#}" value="{$login|escape}"/></p>
 
   {if $external_password_mgmt eq 0}
   	<p class="label">{lang_get s='password'}<br />
@@ -27,11 +27,11 @@ Purpose: smarty template - first login
   {/if}
   
 	<p class="label">{lang_get s='first_name'}<br />
-	<input type="text" name="first" size="{#NAMES_SIZE#}" maxlength="{#NAMES_SIZE#}" /></p>
+	<input type="text" name="first" size="{#NAMES_SIZE#}" maxlength="{#NAMES_SIZE#}" value="{$firstName|escape}"/></p>
 	<p class="label">{lang_get s='last_name'}<br />
-	<input type="text" name="last" size="{#NAMES_SIZE#}" maxlength="{#NAMES_SIZE#}" /></p>
+	<input type="text" name="last" size="{#NAMES_SIZE#}" maxlength="{#NAMES_SIZE#}" value="{$lastName|escape}"/></p>
 	<p class="label">{lang_get s='e_mail'}<br />
-	<input type="text" name="email" size="{#EMAIL_SIZE#}" maxlength="{#EMAIL_MAXLEN#}" /></p>
+	<input type="text" name="email" size="{#EMAIL_SIZE#}" maxlength="{#EMAIL_MAXLEN#}" value="{$email|escape}"/></p>
 
   {if $external_password_mgmt eq 1}
      <p>{lang_get s='password_mgmt_is_external'}<p>

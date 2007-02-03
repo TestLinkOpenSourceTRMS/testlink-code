@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: rolesedit.php,v $
  *
- * @version $Revision: 1.7 $
- * @modified $Date: 2006/12/31 16:27:12 $ by $Author: franciscom $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2007/02/03 22:41:04 $ by $Author: schlundus $
  *
 **/
 require_once("../../config.inc.php");
@@ -15,8 +15,6 @@ require_once("../functions/common.php");
 require_once("../../third_party/fckeditor/fckeditor.php");
 testlinkInitPage($db);
 
-$user_rights_matrix=config_get('userRights');
-
 $_POST = strings_stripSlashes($_POST);
 $id = isset($_GET['id']) ? $_GET['id'] : 0;
 $postBack = (sizeof($_POST) > 2) ? 1 : 0;
@@ -24,7 +22,6 @@ $postBack = (sizeof($_POST) > 2) ? 1 : 0;
 $of = new fckeditor('notes') ;
 $of->BasePath = $_SESSION['basehref'] . 'third_party/fckeditor/';
 $of->ToolbarSet = 'TL_Medium';
-
 
 $roleRights = null;
 $sqlResult = null;
@@ -53,7 +50,7 @@ if ($postBack && has_rights($db,"role_management"))
 			$id = createRole($db,$roleName,$rights,$notes);
 			if (!$id)
 				$sqlResult = lang_get('error_role_creation');
-			$action = "added";
+			$action = "do_add";
 			//reset id if all was ok
 			if ($sqlResult == "ok")
 				$id = 0;
@@ -103,9 +100,7 @@ $smarty->assign('kwRights',$g_rights_kw);
 $smarty->assign('pRights',$g_rights_product);
 $smarty->assign('uRights',$g_rights_users);
 $smarty->assign('reqRights',$g_rights_req);
-$smarty->assign('cfRights',$g_rights_cf);   /* 20061231 - franciscom */
-
-
+$smarty->assign('cfRights',$g_rights_cf);
 $smarty->assign('roleRights',$roleRights);
 $smarty->assign('sqlResult',$sqlResult);
 $smarty->assign('allUsers',$allUsers);

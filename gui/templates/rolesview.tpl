@@ -1,10 +1,8 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: rolesview.tpl,v 1.12 2007/01/26 19:17:48 franciscom Exp $ 
+$Id: rolesview.tpl,v 1.13 2007/02/03 22:41:04 schlundus Exp $ 
 Purpose: smarty template - View defined roles 
 
-Revisions:
-20061223 - franciscom - use of gsmarty_gui
 *}
 {include file="inc_head.tpl"}
 
@@ -31,7 +29,7 @@ Revisions:
 </div>
 
 {* show SQL result *}
-{include file="inc_update.tpl" result=$sqlResult item="role" name=$role.role action="deleted"}
+{include file="inc_update.tpl" result=$sqlResult item="Role" name=$role.role action="deleted"}
 
 
 <div class="workBack">

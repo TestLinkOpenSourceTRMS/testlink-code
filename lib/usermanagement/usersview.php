@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: usersview.php,v $
  *
- * @version $Revision: 1.6 $
- * @modified $Date: 2007/01/08 08:07:15 $ -  $Author: franciscom $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2007/02/04 20:18:32 $ -  $Author: schlundus $
  *
  * This page shows all users
  * 
@@ -21,46 +21,44 @@ $action = null;
 $do_toogle=0;
 
 $operation = isset($_REQUEST['operation']) ? $_REQUEST['operation'] : '';
-$user_order_by=isset($_REQUEST['user_order_by']) ? $_REQUEST['user_order_by'] : 'order_by_login';
+$user_order_by = isset($_REQUEST['user_order_by']) ? $_REQUEST['user_order_by'] : 'order_by_login';
 $order_by_dir['order_by_role_dir']=isset($_REQUEST['order_by_role_dir']) ? $_REQUEST['order_by_role_dir'] : 'asc';
 $order_by_dir['order_by_login_dir']=isset($_REQUEST['order_by_login_dir']) ? $_REQUEST['order_by_login_dir'] : 'asc';
 
 switch($operation)
 {
-  case 'delete':
-    $user_id=isset($_REQUEST['user']) ? $_REQUEST['user'] : 0;
-    $user_data=getUserByID($db,$user_id);
-   	$sqlResult = userDelete($db,$user_id);
+	case 'delete':
+		$user_id = isset($_REQUEST['user']) ? $_REQUEST['user'] : 0;
+		$user_data = getUserByID($db,$user_id);
+		$sqlResult = userDelete($db,$user_id);
 		//if the users deletes itself then logout
-	  if ($user_id == $_SESSION['userID'])
-	  {
-		  header("Location: ../../logout.php");
-		  exit();
-	  }
-	  $action = "deleted";
-    $order_by_clause=get_order_by_clause($user_order_by,$order_by_dir);
-	  $do_toogle=0;
-  break;
-    
-  case 'order_by_role':
-  case 'order_by_login':
-    $order_by_clause=get_order_by_clause($operation,$order_by_dir);
-    $do_toogle=1;
-    $user_order_by=$operation;
-  break;
-
-  default:
-    $order_by_clause=get_order_by_clause('order_by_login',
-                                         array('order_by_login_dir' => 'asc'));
-    $order_by_dir['order_by_login_dir']='desc';
-  break;
+		if ($user_id == $_SESSION['userID'])
+		{
+			header("Location: ../../logout.php");
+			exit();
+		}
+		$action = "deleted";
+		$order_by_clause = get_order_by_clause($user_order_by,$order_by_dir);
+		$do_toogle = 0;
+		break;
+	case 'order_by_role':
+	case 'order_by_login':
+		$order_by_clause = get_order_by_clause($operation,$order_by_dir);
+		$do_toogle = 1;
+		$user_order_by = $operation;
+		break;
+	default:
+		$order_by_clause = get_order_by_clause('order_by_login',
+												array('order_by_login_dir' => 'asc'));
+		$order_by_dir['order_by_login_dir'] = 'desc';
+		break;
 }
 
 $users = get_all_users_roles($db,$order_by_clause);
-if( $do_toogle )
+if($do_toogle)
 {
-  $the_k=$operation . "_dir";
-  $order_by_dir[$the_k]=$order_by_dir[$the_k] == 'asc' ? 'desc' : 'asc'; 
+	$the_k = $operation . "_dir";
+	$order_by_dir[$the_k] = $order_by_dir[$the_k] == 'asc' ? 'desc' : 'asc'; 
 }
 
 $smarty = new TLSmarty();
@@ -80,46 +78,24 @@ $smarty->assign('users',$users);
 $smarty->assign('result',$sqlResult);
 $smarty->assign('action',$action);
 $smarty->display($g_tpl['usersview']);
-?>
 
-
-<?php
-/*
-  function: 
-
-  args :
-  
-  returns: 
-
-*/
 function toogle_order_by_dir($which_order_by,$order_by_dir_map)
 {
-  $obm[$which_order_by]=$order_by_dir_map[$which_order_by] == 'asc' ? 'desc' : 'asc'; 
-  return($obm);
+  $obm[$which_order_by] = $order_by_dir_map[$which_order_by] == 'asc' ? 'desc' : 'asc'; 
+  return $obm;
 }
 
-
-/*
-  function: get_order_by_clause
-
-  args :
-  
-  returns: 
-
-*/
 function get_order_by_clause($order_by_type,$order_by_dir)
 {
-  switch($order_by_type)
-  {
-    case 'order_by_role':
-      $order_by_clause=" ORDER BY role_description " . $order_by_dir['order_by_role_dir'];
-    break;
-    
-    case 'order_by_login':
-      $order_by_clause=" ORDER BY login " . $order_by_dir['order_by_login_dir'];
-    break;
-  }
-  return($order_by_clause);
+	switch($order_by_type)
+	{
+		case 'order_by_role':
+			$order_by_clause = " ORDER BY role_description " . $order_by_dir['order_by_role_dir'];
+			break;
+		case 'order_by_login':
+			$order_by_clause = " ORDER BY login " . $order_by_dir['order_by_login_dir'];
+			break;
+	}
+	return $order_by_clause;
 }
-
 ?>

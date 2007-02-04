@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tlsmarty.inc.php,v $
  *
- * @version $Revision: 1.17 $
- * @modified $Date: 2006/12/31 16:24:51 $ $Author: franciscom $
+ * @version $Revision: 1.18 $
+ * @modified $Date: 2007/02/04 20:18:32 $ $Author: schlundus $
  *
  * @author Martin Havlat
  *
@@ -30,7 +30,6 @@ class TLSmarty extends Smarty
 		global $g_attachments;
 		global $g_locales;
 		global $g_gui;
-
 
 
 	    $this->Smarty();
@@ -63,10 +62,8 @@ class TLSmarty extends Smarty
 		$this->assign('gsmarty_tc_status_for_ui',$g_tc_status_for_ui);
 		$this->assign('gsmarty_attachments',$g_attachments);
 		
-		// 20061223 - franciscom
 		$this->assign('gsmarty_gui',$g_gui);
 		
-		// 20061227 - franciscom
 		$this->assign('gsmarty_title_sep',TITLE_SEP);
 		$this->assign('gsmarty_title_sep_type2',TITLE_SEP_TYPE2);
 		$this->assign('gsmarty_title_sep_type3',TITLE_SEP_TYPE3);
@@ -88,23 +85,21 @@ class TLSmarty extends Smarty
 		$this->assign('jsTree', null);
 		$this->assign('sqlResult', null);
 		
-		//20050831 - scs - changed default action to updated
 		$this->assign('action', 'updated');
 	
 		$this->assign('optLocale',$g_locales);
 
-    // 20061230 - franciscom
-    $this->assign('gsmarty_href_keywordsView',
+    	$this->assign('gsmarty_href_keywordsView',
                   ' "lib/keywords/keywordsView.php" ' .
-							    ' target="mainframe" class="bold" ' .
-							    ' title="' . lang_get('menu_manage_keywords') . '"'); 
+				   ' target="mainframe" class="bold" ' .
+				   ' title="' . lang_get('menu_manage_keywords') . '"'); 
 
 
     // Registered functions
 		$this->register_function("lang_get", "lang_get_smarty");
 		$this->register_function("localize_date", "localize_date_smarty");
 		$this->register_function("localize_timestamp", "localize_timestamp_smarty");
-    $this->register_function("localize_tc_status","translate_tc_status_smarty");
+    	$this->register_function("localize_tc_status","translate_tc_status_smarty");
 		
 	}
 }

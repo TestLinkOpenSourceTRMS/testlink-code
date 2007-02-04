@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: firstLogin.php,v $
  *
- * @version $Revision: 1.13 $
- * @modified $Date: 2007/02/03 22:14:07 $ $Author: schlundus $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2007/02/04 20:18:32 $ $Author: schlundus $
  *
  * @author Asiel Brumfield
  * @author Martin Havlat 
@@ -43,7 +43,9 @@ if($bEditUser)
 	// Fields that can't be empty
 	$fields_not_empty = array ('first' => lang_get('empty_first_name'),
 	                           'last'  => lang_get('empty_last_name'),
-	                           'email' => lang_get('empty_email_address'));
+	                           'email' => lang_get('empty_email_address'),
+	                           'password' => lang_get('warning_empty_pwd'),
+							   );
 
 	$empty_fm = control_empty_fields( $_POST, $fields_not_empty );
 	$passwordCompare = strcmp($password,$password2);

@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: usersedit.php,v $
 *
-* @version $Revision: 1.9 $
-* @modified $Date: 2007/01/24 20:41:17 $
+* @version $Revision: 1.10 $
+* @modified $Date: 2007/02/04 20:18:32 $
 * 
 * Allows editing a user
 */
@@ -87,17 +87,7 @@ $smarty->assign('userData', $userResult);
 $smarty->assign('result',$sqlResult);
 $smarty->assign('action',$action);
 $smarty->display('usersedit.tpl');
-?>
 
-<?php
-/*
-  function: init_args
-
-  args :
-  
-  returns: 
-
-*/
 function init_args($get_hash, $post_hash)
 {
 	$post_hash = strings_stripSlashes($post_hash);

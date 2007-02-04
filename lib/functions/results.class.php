@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8 
- * @modified $Date: 2007/02/04 02:39:48 $ by $Author: kevinlevy $
+ * @modified $Date: 2007/02/04 08:36:52 $ by $Author: kevinlevy $
  *
  *
  * This class is encapsulates most functionality necessary to query the database
@@ -123,6 +123,8 @@ class results
     		$this->prodID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
     		$this->testPlanID = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0 ;
 			$this->tplanName = isset($_SESSION['testPlanName']) ? $_SESSION['testPlanName'] : null;
+
+	//print "lastResult = $lastResult <BR>";
 
     // build suiteStructure and flatArray
 	$this->suiteStructure = $this->generateExecTree($keywordId, $owner);
@@ -408,7 +410,7 @@ class results
 	 *  */ 	
   function addLastResultToMap($suiteId, $testcase_id, $buildNumber, $result, $tcversion_id, 
                               $execution_ts, $notes, $suiteName, $executions_id, $name, $tester_id, $feature_id, $assigner_id, $lastResultToTrack){
-	
+	//print "lastResultToTrack = $lastResultToTrack <BR>";
 	if ($buildNumber) {
 		$this->mapOfLastResultByBuild[$buildNumber][$testcase_id] = $result;
 	}
@@ -435,12 +437,16 @@ class results
 	
 	// handle case where suite has already been added to mapOfLastResult						  
 	if ($this->mapOfLastResult && array_key_exists($suiteId, $this->mapOfLastResult)) {
+		// print "suite already in mapOfLastResult <BR>";
 		// handle case where both suite and test case have been added to elmapOfLastResult
 		if (array_key_exists($testcase_id, $this->mapOfLastResult[$suiteId])) {
+			// print "test case already in mapOfLastResult <BR>";
 			$buildInMap = $this->mapOfCaseResults[$testcase_id]['buildNumber'];	
 			if ($buildInMap < $buildNumber) {				
-				if (($lastResultToTrack == 'a') || ($lastResultToTrack = $result)) {	
+				// print "build in map less than current build number <BR>";
+				if (($lastResultToTrack == 'a') || ($lastResultToTrack == $result)) {	
 					// owner assignments
+					//print "aaa <BR>";
 					$this->mapOfLastResultByOwner[$owner_id][$testcase_id] = $result;
 		
 					// keyword assignments
@@ -462,19 +468,20 @@ class results
 				} // end if -- last result logic
 				// cancel previous result for this build
 				else {
+					//print "cancel out previous result! <BR>";
 					// owner assignments
-					$this->mapOfLastResultByOwner[$owner_id][$testcase_id] = null;
+					unset($this->mapOfLastResultByOwner[$owner_id][$testcase_id]);
 					// keyword assignments
 					for ($i=0 ; $i < sizeof($associatedKeywords); $i++){
-						$this->mapOfLastResultByKeyword[$associatedKeywords[$i]][$testcase_id] = null;
+						unset($this->mapOfLastResultByKeyword[$associatedKeywords[$i]][$testcase_id]);
 					} // end for
-					$this->mapOfLastResult[$suiteId][$testcase_id] = null;
+					unset($this->mapOfLastResult[$suiteId][$testcase_id]);
 				} // end else
 			} // end if -- $buildInMap < $buildNumber 
 		} // end array_key_exists if
 		// handle case where suite is in mapOfLastResult but test case has not been added
 		else {
-			if (($lastResultToTrack == 'a') || ($lastResultToTrack = $result)) {
+			if (($lastResultToTrack == 'a') || ($lastResultToTrack == $result)) {
 				// owner assignments
 				$this->mapOfLastResultByOwner[$owner_id][$testcase_id] = $result;
 			
@@ -497,7 +504,8 @@ class results
 	} // end if
 	// handle case where suite has not been added to mapOfLastResult
 	else {
-		if (($lastResultToTrack == 'a') || ($lastResultToTrack = $result)) {
+		//print "suite first added to mapOfLastResult <BR>";
+		if (($lastResultToTrack == 'a') || ($lastResultToTrack == $result)) {
 			
 			// owner assignments
 			$this->mapOfLastResultByOwner[$owner_id][$testcase_id] = $result;
@@ -685,7 +693,8 @@ class results
    * 
    */
   function createMapOfLastResult(&$suiteStructure, &$executionsMap, $lastResult){  
-  	$suiteName = null;
+  	//print "createMapOfLastResult() lastResult = $lastResult <BR>";
+	$suiteName = null;
 	
   	for ($i = 0; $i < count($suiteStructure); $i++){  		
 		if (($i % $this->ITEM_PATTERN_IN_SUITE_STRUCTURE) == $this->NAME_IN_SUITE_STRUCTURE) {

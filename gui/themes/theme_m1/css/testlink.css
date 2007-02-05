@@ -1,6 +1,6 @@
 /* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: testlink.css,v 1.1 2007/01/29 08:04:05 franciscom Exp $ 
+$Id: testlink.css,v 1.2 2007/02/05 07:54:31 franciscom Exp $ 
 Purpose: main css - theme m1
                   
 20060819 - franciscom - minor adjustemnts
@@ -10,7 +10,7 @@ Purpose: main css - theme m1
 */
 
 body {
-	background:     #9BD;
+	background:  #EEE; /*#9BD;*/ 
 	font-family: 'Trebuchet MS', Verdana, Arial, sans-serif;
 	font-size: small;
   margin:			0px;
@@ -47,11 +47,11 @@ select.menu_combo {
 /* ----------------------------------------------------------------- */
 /*    main page                                                      */
 div.vertical_menu {
-	background: 	#EEE;
+	background: #EEE;
 	font-size:      90%;
 	margin: 		3px; 
 	padding: 		2px;
-	padding-bottom:	30px;
+	padding-bottom:	1px;
 	width:			26%;
 }
 
@@ -61,6 +61,7 @@ div.vertical_menu h2 {
 	color:			black;
 	font-weight:    bold;
 }
+
 
 div.vertical_menu a {
 	font-weight:    normal;
@@ -467,10 +468,24 @@ div.exec_history {
 	font-weight:    bold;
 }
 
+/* 20070204 - franciscom */
 .warning_message {
+background-color:#059;
+color:white; 
+}
+
+.login_warning_message {
+background-color:#059;
+color:white; 
+}
+
+
+/* 20070204 - franciscom */
+.red_alert {
 background-color:#990000;
 color:white; 
 }
+
 
 /* 20060820 - franciscom - moved here from tl_login.css */
 div.title {
@@ -602,5 +617,21 @@ table.srs_view td {
 	border: 		1px solid black;
 }
 
+/* 20070203 - franciscom */
+.xx {
+	background:		#059;
+	color:			white;
+	font-weight:    bold;
+	padding: 		2px 12px 2px 5px;
+	margin:			5px 0px 0px 0px;
+}
+
+.yy {
+	background:		red;
+	color:			white;
+	font-weight:    bold;
+	padding: 		2px 2px 2px 0px;
+	margin:			5px 0px 0px 0px;
+}
 
 /* ----------------------------------------------------------------------------- */

@@ -5,14 +5,18 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.96 $
- * @modified $Date: 2007/02/03 22:14:07 $ by $Author: schlundus $
+ * @version $Revision: 1.97 $
+ * @modified $Date: 2007/02/05 08:12:27 $ by $Author: franciscom $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink 
  * are defined within this file they should be changed for your environment
  *-----------------------------------------------------------------------------
  * Revisions:
+ *
+ * 20070205 - franciscom - $g_risk,$g_importance,$g_priority
+ *
+ * 20070203 - franciscom - added TL_TESTPROJECT_COLORING
  *
  * 20070131 - franciscom - added g_req_cfg->reqdoc_id->is_system_wide
  * 20070120 - franciscom - added check for TL_LOG_LEVEL_DEFAULT
@@ -238,6 +242,10 @@ define('TL_THEME_CSS_DIR','gui/themes/theme_m1/css/');
 define('TL_TESTLINK_CSS',TL_THEME_CSS_DIR . 'testlink.css');
 define('TL_LOGIN_CSS', TL_TESTLINK_CSS);
 
+// 20070204 - franciscom
+//define('TL_JOMLA_1_CSS', '');
+define('TL_JOMLA_1_CSS', TL_THEME_CSS_DIR . 'jos_template_css.css');
+
 // path to IMAGE directory - DO NOT ADD FINAL /
 //define('TL_THEME_IMG_DIR','gui/images/theme_m0');
 define('TL_THEME_IMG_DIR','gui/themes/theme_m1/images');
@@ -254,6 +262,14 @@ define('LOGO_NAVBAR',
 define('TITLE_SEP',' : ');
 define('TITLE_SEP_TYPE2',' >> ');
 define('TITLE_SEP_TYPE3',' - ');
+
+
+// 20070203 - franciscom
+// 'background'  -> standard behaivour
+// 'none'        -> new behaivour no background color change 
+//
+// define('TL_TESTPROJECT_COLORING','background');
+define('TL_TESTPROJECT_COLORING','none');
 
 /** fckeditor Toolbar 
  * modify which icons will be available in html edit pages
@@ -535,6 +551,24 @@ $g_gui->custom_fields->sizes = array(
 	'list'   => 1,
 	'multiselection list' => 5
 );
+
+
+/** [Risk, Priority, Importance] */
+// item_id => item_label (must be defined in strings.txt file)
+$g_risk=array( '1' => 'high_risk',
+               '2' => 'medium_risk',
+               '3' => 'low_risk');
+
+$g_importance=array( 'H' => 'high_importance',
+                     'M' => 'medium_importance',
+                     'L' => 'low_importance');
+
+$g_priority=array( 'A' => 'high_priority',
+                   'B' => 'medium_priority',
+                   'C' => 'low_priority');
+
+
+
 
 
 

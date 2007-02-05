@@ -1,5 +1,10 @@
 Schema Changes on TL 1.7 Beta 
 
+TL 1.7 Beta 5 - 20070204
+table: priorities
+table: risk_assignment
+       
+
 TL 1.7 Beta 4 - 20070131
 table: requirements
        field req_doc_id size increased to 32

@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: plan.inc.php,v $
- * @version $Revision: 1.43 $
- * @modified $Date: 2007/01/22 08:31:14 $ $Author: franciscom $
+ * @version $Revision: 1.44 $
+ * @modified $Date: 2007/02/05 08:34:22 $ $Author: franciscom $
  * @author 	Martin Havlat
  *
  * Functions for management: 
@@ -217,18 +217,6 @@ function deleteTestPlanMilestones(&$db,$id)
 	return $result ? 1: 0;
 }
 
-
-function insertTestPlanPriorities(&$db,$tplan_id)
-{
-	//Create the priority table
-	$risk_array = config_get('tc_risks');
-	$result = 1;
-	foreach ($risk_array as $risk)
-	{
-		$result = $result && insertTestPlanPriority($db,$tplan_id,$risk);
-	}
-	return $result ? 1 : 0;
-}
 
 function insertTestPlanPriority(&$db,$tplan_id,$risk)
 {

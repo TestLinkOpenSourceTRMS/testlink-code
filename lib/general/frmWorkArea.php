@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: frmWorkArea.php,v $
  *
- * @version $Revision: 1.16 $
- * @modified $Date: 2007/01/31 07:50:33 $ by $Author: franciscom $
+ * @version $Revision: 1.17 $
+ * @modified $Date: 2007/02/05 08:34:22 $ by $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -35,7 +35,7 @@ $aa_tfp = array(
             'testSetAdd'    => 'lib/plan/planAddTCNavigator.php',
             'testSetRemove' => 'lib/plan/testSetNavigator.php?feature=removeTC',
             'printTestSet'  => 'lib/print/selectData.php?type=testSet',
-            'priority' => 'lib/plan/testSetNavigator.php?feature=priorityAssign',
+            'priority'           => 'lib/plan/testSetNavigator.php?feature=plan_risk_assignment',
             'tc_exec_assignment' => 'lib/plan/testSetNavigator.php?feature=tc_exec_assignment',
             'executeTest' => 'lib/execute/execNavigator.php',
             'showMetrics' => 'lib/results/resultsNavigator.php',
@@ -56,7 +56,7 @@ if (in_array($showFeature,array('executeTest','showMetrics')))
 	                              $_SESSION['testPlanName'],
 	                              $_SESSION['testprojectName']);
 }
-/// <enhancement version="???" date="2005-04-09" author="fm" >
+
 /// 1. get path from global var
 /// 2. the URL made easier after setting some rules for help/instruction files
 ///    naming convention.
@@ -67,12 +67,9 @@ $smarty = new TLSmarty();
 // 20050828 - fm
 $smarty->assign('treewidth', TL_FRMWORKAREA_LEFT_FRAME_WIDTH);
 $smarty->assign('treeframe', $aa_tfp[$showFeature]);
-// $smarty->assign('workframe', $g_rpath['help'] . "/{$showFeature}" . ".html");
 $smarty->assign('workframe', "lib/general/show_help.php?help=$showFeature&locale={$_SESSION['locale']}");
 
 $smarty->display('frmInner.tpl');
-// $smarty->display("help/" . $_SESSION['locale'] . "/{$showFeature}" . ".html");
-
 
 
 /** 

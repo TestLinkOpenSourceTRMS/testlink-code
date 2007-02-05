@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: planEdit.php,v $
  *
- * @version $Revision: 1.26 $
- * @modified $Date: 2007/01/29 14:02:26 $ by $Author: franciscom $
+ * @version $Revision: 1.27 $
+ * @modified $Date: 2007/02/05 08:34:22 $ by $Author: franciscom $
  *
  * Purpose:  ability to edit and delete test plans
  *-------------------------------------------------------------------------
@@ -154,13 +154,20 @@ switch($args->do_action)
           $status_ok=true;
           $template=null;
           $user_feedback=lang_get('testplan_created_ok');
-  				$result = insertTestPlanPriorities($db, $tplan_id);
+          
   				
   				if($args->rights == 'on')
   					$result = insertTestPlanUserRight($db, $tplan_id,$args->userID);
   		    
+ 				  // 20070204 - franciscom
   				if($args->copy)
+  				{
    					$tplan_mgr->copy_as($args->source_tpid, $tplan_id);
+   				}
+   				else
+   				{
+  				  $tplan_mgr->insert_default_priorities($tplan_id);
+  				}
          }
        } // !$name_exists
        

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: const.inc.php,v $
  *
- * @version $Revision: 1.12 $
- * @modified $Date: 2007/01/31 14:18:37 $ by $Author: franciscom $
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2007/02/05 08:34:22 $ by $Author: franciscom $
  * @author Martin Havlát
  *
  * SCOPE:
@@ -46,8 +46,9 @@ define('TL_TEMP_PATH', TL_ABS_PATH . 'gui'.DS.'templates_c'.DS);
 /** [GUI] */
 
 /* Release MUST BE changed at the release day */
-define('TL_VERSION', '1.7.0 Beta 4'); 
+define('TL_VERSION', '1.7.0 Beta 5'); 
 define('TL_BACKGROUND_DEFAULT', "#9BD"); // default color
+
 define('TL_COOKIE_KEEPTIME', (time()+60*60*24*30)); // 30 days
 
 /* Some defines for I18N,L10N, don't touch */
@@ -279,8 +280,12 @@ define('ALL_USERS_FILTER',null);
 define('ADD_BLANK_OPTION',true); 
 
 // moved from requirements.inc.php
-define('TL_REQ_STATUS_VALID', 'v');
-define('TL_REQ_STATUS_NOT_TESTABLE', 'n');
+define('TL_REQ_STATUS_VALID', 'V');
+define('TL_REQ_STATUS_NOT_TESTABLE', 'N');
+
+
+define('DO_LANG_GET',1);
+define('DONT_DO_LANG_GET',0);
 
 // -------------------------------------------------------------------
 ?>

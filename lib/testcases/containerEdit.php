@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * @version $Revision: 1.54 $
- * @modified $Date: 2007/01/29 08:13:32 $ by $Author: franciscom $
+ * @version $Revision: 1.55 $
+ * @modified $Date: 2007/02/05 08:34:22 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * 20061231 - franciscom - problems with test project test suite reorder
@@ -171,6 +171,8 @@ else if($action == 'add_testsuite')
 								              $g_action_on_duplicate_name);
 		if($ret['status_ok'])
 		{
+		  $user_feedback=lang_get('testsuite_created');
+		  
       if( strlen(trim($assigned_keyword_list)) > 0 )
       {
          // add keywords		  
@@ -203,13 +205,10 @@ else if($action == 'add_testsuite')
 		$of = &$oFCK[$key];
 		$smarty->assign($key, $of->CreateHTML());
 	}
-	// $smarty->assign('sqlResult',$msg);
-	// $smarty->assign('containerID',$my_tprojectID);
-	
 	
 	// 20061231 - franciscom
 	$tsuite_mgr->viewer_edit_new($smarty,$amy_keys, $oFCK, $action,
-	                             $my_containerID, null,$msg);
+	                             $my_containerID, null,$msg,$user_feedback);
 	
 	
 }

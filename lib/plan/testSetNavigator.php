@@ -1,11 +1,12 @@
 <?php
 /** 
 *	TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* 	@version $Id: testSetNavigator.php,v 1.20 2007/01/23 18:26:41 franciscom Exp $
+* 	@version $Id: testSetNavigator.php,v 1.21 2007/02/05 08:34:22 franciscom Exp $
 *	@author Martin Havlat 
 *
 * Used in the remove test case feature
 *
+* 20070204 - franciscom - priority
 * 20070123 - franciscom - define moved to const.inc.php
 * 20070120 - franciscom - fixed init of tplan_id.
 * 20061030 - franciscom
@@ -47,31 +48,34 @@ if(isset($_POST['filter']))
 
 
 // set feature data
-if ($_GET['feature'] == 'removeTC')
+switch($_GET['feature'])
 {
+  case 'removeTC':
 	$menuUrl = "lib/plan/testSetRemove.php";
 	$title = lang_get('title_test_plan_navigator');
-	$tcHide = 0;
+	$hide_tc = 0;
 	$help_file = "testSetRemove.html";
-}
-elseif ($_GET['feature'] == 'priorityAssign')
-{
-	$menuUrl = "lib/plan/planOwner.php";
+  break;
+  
+  case 'plan_risk_assignment':
+	$menuUrl = "lib/plan/plan_risk_assignment.php";
 	$title = lang_get('title_test_plan_navigator');
-	$tcHide = 1;
-	$help_file = "planOwnerAndPriority.html";
-}
-elseif ($_GET['feature'] == 'tc_exec_assignment')
-{
+	$hide_tc = 1;
+	$help_file = "priority.html";
+  break;
+
+  case 'tc_exec_assignment':
 	$menuUrl = "lib/plan/tc_exec_assignment.php";
 	$title = lang_get('title_test_plan_navigator');
-	$tcHide = 1;
+	$hide_tc = 0;
 	$help_file = "planOwnerAndPriority.html";
-}
-else
-{
+  break;
+  
+  default:   
 	tLog("Wrong or missing GET argument 'feature'.", 'ERROR');
 	exit();
+	break;
+	
 }
 
 $getArguments='';
@@ -80,8 +84,10 @@ if ($keyword_id)
 	$getArguments .= '&keyword_id='.$keyword_id;
 }
 
+// 20070204 - franciscom - added $hide_tc
 $sMenu = generateExecTree($db,$menuUrl,$tproject_id,$tproject_name,$tplan_id,$tplan_name,
-                          FILTER_BY_BUILD_OFF,$getArguments,$keyword_id,FILTER_BY_TC_OFF);
+                          FILTER_BY_BUILD_OFF,$getArguments,$keyword_id,FILTER_BY_TC_OFF,
+                          $hide_tc);
 
 $tree = invokeMenu($sMenu);
 

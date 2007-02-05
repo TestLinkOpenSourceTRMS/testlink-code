@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.123 $
- * @modified $Date: 2007/02/05 08:16:34 $ $Author: franciscom $
+ * @version $Revision: 1.124 $
+ * @modified $Date: 2007/02/05 15:32:27 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
@@ -19,6 +19,7 @@ $TLS_test_case = "Test Case";
 $TLS_test_plan = "Test Plan";
 $TLS_test_suite = "Test Suite";
 $TLS_testcase = "Test Case";
+$TLS_testplan = $TLS_test_plan;
 $TLS_SRS = "SRS";
 $TLS_Role = "Role";
 $TLS_Keyword = "Keyword";
@@ -194,6 +195,7 @@ $TLS_available_on = "Available for";
 $TLS_btn_add = "Add";
 $TLS_btn_delete = "Delete";
 $TLS_btn_ok = "Ok";
+$TLS_custom_field = "Custom field";
 $TLS_enable_on_design = "Enable on <br>test specification";
 $TLS_enable_on_exec = "Enable on <br>test execution";
 $TLS_label = "Label";

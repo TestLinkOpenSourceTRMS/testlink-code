@@ -1,12 +1,13 @@
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.9 2007/01/31 14:15:20 franciscom Exp $
+-- $Id: testlink_create_tables.sql,v 1.10 2007/02/05 08:06:54 franciscom Exp $
 --
 -- SQL script - create db tables for TL on Postgres   
 -- 
 --
 -- 
 -- Rev :
+--       20070204 - franciscom - changes in tables priorities, risk_assignments 
 --       20070131 - franciscom - requirements -> req_doc_id(32), 
 --
 --       20070120 - franciscom - following BUGID 458 ( really a new feature request)
@@ -244,9 +245,11 @@ CREATE TABLE "object_keywords" (  "id" BIGINT NOT NULL ,
 --
 CREATE TABLE "priorities" (  "id" BIGSERIAL NOT NULL ,
   "testplan_id" BIGINT NOT NULL DEFAULT '0',
-  "risk_importance" CHAR(2) NOT NULL DEFAULT '',
-  "priority" CHAR(1) NOT NULL DEFAULT 'b',
-  PRIMARY KEY ("id")
+  "priority" CHAR(1) NOT NULL DEFAULT 'B',
+  "risk" CHAR(1) NOT NULL DEFAULT '2',
+  "importance" CHAR(1) NOT NULL DEFAULT 'M',
+  PRIMARY KEY ("id"),
+  UNIQUE ("testplan_id","priority", "risk", "importance")
 ); 
 CREATE INDEX "priorities_testplan_id" ON "priorities" ("testplan_id");
 
@@ -268,7 +271,7 @@ CREATE TABLE "req_specs" (  "id" BIGSERIAL NOT NULL ,
   "title" VARCHAR(100) NOT NULL DEFAULT '',
   "scope" TEXT NULL DEFAULT NULL,
   "total_req" INTEGER NOT NULL DEFAULT '0',
-  "type" CHAR(1) NULL DEFAULT 'n',
+  "type" CHAR(1) NULL DEFAULT 'N',
   "author_id" BIGINT NULL DEFAULT NULL,
   "creation_ts" TIMESTAMP NOT NULL DEFAULT now(),
   "modifier_id" BIGINT NULL DEFAULT NULL,
@@ -286,7 +289,7 @@ CREATE TABLE "requirements" (  "id" BIGSERIAL NOT NULL ,
   "req_doc_id" VARCHAR(32) NULL DEFAULT NULL,
   "title" VARCHAR(100) NOT NULL DEFAULT '',
   "scope" TEXT NULL DEFAULT NULL,
-  "status" CHAR(1) NOT NULL DEFAULT 'v',
+  "status" CHAR(1) NOT NULL DEFAULT 'V',
   "type" CHAR(1) NULL DEFAULT NULL,
   "author_id" BIGINT NULL DEFAULT NULL,
   "creation_ts" TIMESTAMP NOT NULL DEFAULT now(),
@@ -314,7 +317,7 @@ CREATE TABLE "rights" (  "id" BIGSERIAL NOT NULL ,
 CREATE TABLE "risk_assignments" (  "id" BIGSERIAL NOT NULL ,
   "testplan_id" BIGINT NOT NULL DEFAULT '0',
   "node_id" BIGINT NOT NULL DEFAULT '0',
-  "risk" INTEGER NOT NULL DEFAULT '2',
+  "risk" CHAR(1) NOT NULL DEFAULT '2',
   "importance" CHAR(1) NOT NULL DEFAULT 'M',
   PRIMARY KEY ("id"),
   UNIQUE ("testplan_id","node_id")

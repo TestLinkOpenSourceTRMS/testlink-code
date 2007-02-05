@@ -1,7 +1,9 @@
 <?php
 /*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: migrate_16_to_17.php,v 1.12 2007/01/31 16:55:01 franciscom Exp $ 
+$Id: migrate_16_to_17.php,v 1.13 2007/02/05 08:06:53 franciscom Exp $ 
+
+20070204 - franciscom - changes in prules migration
 
 20070131 - franciscom - removed truncate of db_version table
 
@@ -1227,6 +1229,9 @@ function migrate_tesplan_assignments(&$source_db,&$target_db,&$user_tplans,&$old
   
   returns: 
 
+  rev  :
+         20070204 - francisco.mancardi@gruppotesi.com
+         
 */
 function migrate_prules(&$source_db,&$target_db,&$prules,&$old_new)
 {
@@ -1235,10 +1240,14 @@ function migrate_prules(&$source_db,&$target_db,&$prules,&$old_new)
   foreach($prules as $item_id => $idata)
   {
     $tplan_id=$old_new['tplan'][intval($item_id)];
+    
+    $risk=substr($idata['riskImp'],0,1);
+    $importance=substr($idata['riskImp'],1,1);
+    $priority=$idata['priority'];
+    
     $sql="INSERT INTO priorities " .
-         "(testplan_id,risk_importance,priority) " .
-         "VALUES({$tplan_id},'" . $idata['riskImp'] . "','" .
-         $idata['priority'] . "')";
+         "(testplan_id,risk,importance,priority) " .
+         "VALUES({$tplan_id},'{$risk}','{$importance}','{$priority}')";
 
     $target_db->exec_query($sql);  	     
   }

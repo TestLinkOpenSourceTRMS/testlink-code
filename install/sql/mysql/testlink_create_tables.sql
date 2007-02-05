@@ -1,11 +1,13 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
 # This script is distributed under the GNU General Public License 2 or later.
-# $Id: testlink_create_tables.sql,v 1.14 2007/01/31 14:15:20 franciscom Exp $
+# $Id: testlink_create_tables.sql,v 1.15 2007/02/05 08:06:54 franciscom Exp $
 # SQL script - create db tables for TL   
 #
 # default rights & admin account are created via testlink_create_default_data.sql
 #
 # Rev :
+#       20070204 - franciscom - changes in tables priorities, risk_assignments 
+#
 #       20070131 - franciscom - requirements -> req_doc_id(32), 
 #
 #       20070120 - franciscom - following BUGID 458 ( really a new feature request)
@@ -130,13 +132,16 @@ CREATE TABLE `nodes_hierarchy` (
   KEY `pid_m_nodeorder` (`parent_id`,`node_order`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
+
 CREATE TABLE `priorities` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `testplan_id` int(10) unsigned NOT NULL default '0',
-  `risk_importance` char(2) NOT NULL default '',
-  `priority` char(1) NOT NULL default 'b',
+  `priority` char(1) NOT NULL default 'B',
+  `risk`     char(1) NOT NULL default '2',
+  `importance` char(1) NOT NULL default 'M',
   PRIMARY KEY  (`id`),
-  KEY `testplan_id` (`testplan_id`)
+  KEY `testplan_id` (`testplan_id`),
+  UNIQUE KEY `prio_risk_imp` (`testplan_id`,`priority`, `risk`, `importance`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 CREATE TABLE `req_coverage` (
@@ -167,7 +172,7 @@ CREATE TABLE `requirements` (
   `req_doc_id` varchar(32) default NULL,
   `title` varchar(100) NOT NULL,
   `scope` text,
-  `status` char(1) NOT NULL default 'v',
+  `status` char(1) NOT NULL default 'V',
   `type` char(1) default NULL,
   `author_id` int(10) unsigned default NULL,
   `creation_ts` datetime NOT NULL default '0000-00-00 00:00:00',
@@ -190,7 +195,7 @@ CREATE TABLE `risk_assignments` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `testplan_id` int(10) unsigned NOT NULL default '0',
   `node_id` int(10) unsigned NOT NULL default '0',
-  `risk` int(10) NOT NULL default '2',
+  `risk` char(1) NOT NULL default '2',
   `importance` char(1) NOT NULL default 'M',
   PRIMARY KEY  (`id`),
   UNIQUE KEY `tp_node_id` (`testplan_id`,`node_id`)
@@ -350,7 +355,7 @@ CREATE TABLE `custom_fields` (
   `show_on_execution` tinyint(3) unsigned NOT NULL default '0' COMMENT '1=> show it during test case execution',
   `enable_on_execution` tinyint(3) unsigned NOT NULL default '0' COMMENT '1=> user can write/manage it during test case execution',
   PRIMARY KEY  (`id`),
-  UNIQUE `idx_custom_fields_name` (`name`)
+  UNIQUE KEY `idx_custom_fields_name` (`name`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 

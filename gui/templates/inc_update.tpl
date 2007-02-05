@@ -1,6 +1,6 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_update.tpl,v 1.14 2007/01/29 08:13:32 franciscom Exp $
+$Id: inc_update.tpl,v 1.15 2007/02/05 07:59:58 franciscom Exp $
 Purpose: show message after an SQL operation
 *}
 {* 
@@ -50,10 +50,6 @@ Purpose: show message after an SQL operation
   	</div>
     {/if}
     
-    {* reload tree *}
-  	{if $refresh == "yes"}
-  		{include file="inc_refreshTree.tpl"}
-  	{/if}
   
   {elseif $result ne ""}
   
@@ -76,3 +72,11 @@ Purpose: show message after an SQL operation
   	{/if}
   {/if}
 {/if}  {* user_feedback*}
+
+{* 20070204 *}
+{if $result eq "ok"}
+  {* reload tree *}
+  {if $refresh == "yes"}
+		{include file="inc_refreshTree.tpl"}
+  {/if}
+{/if}  

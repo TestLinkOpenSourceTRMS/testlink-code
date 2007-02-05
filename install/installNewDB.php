@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: installNewDB.php,v 1.25 2007/01/31 14:15:19 franciscom Exp $ */
+/* $Id: installNewDB.php,v 1.26 2007/02/05 08:04:54 franciscom Exp $ */
 /*
 Parts of this file has been taken from:
 Etomite Content Management System
@@ -8,6 +8,8 @@ Copyright 2003, 2004 Alexander Andrew Butter
 */
 
 /*
+20070204 - franciscom - added 1.7.0 Beta 5
+
 20070131 - franciscom - added 1.7.0 Beta 4
 
 20070121 - franciscom -
@@ -309,12 +311,17 @@ if ( $inst_type == "upgrade")
       	case '1.7.0 Beta 2':
       	$a_sql_upd_dir[] = "sql/alter_tables/1.7/{$db_type}/beta_3/";
       	$a_sql_upd_dir[] = "sql/alter_tables/1.7/{$db_type}/beta_4/";
+      	$a_sql_upd_dir[] = "sql/alter_tables/1.7/{$db_type}/beta_5/";
       	break;
 
       	case '1.7.0 Beta 3':
       	$a_sql_upd_dir[] = "sql/alter_tables/1.7/{$db_type}/beta_4/";
+      	$a_sql_upd_dir[] = "sql/alter_tables/1.7/{$db_type}/beta_5/";
       	break;
       	
+      	case '1.7.0 Beta 4':
+      	$a_sql_upd_dir[] = "sql/alter_tables/1.7/{$db_type}/beta_5/";
+      	break;
       	
         default:
         if( strlen($schema_version) == 0 )
@@ -338,9 +345,6 @@ if ( $inst_type == "upgrade")
   $a_sql_schema = getDirFiles($a_sql_upd_dir,ADD_DIR);
 }
 // ------------------------------------------------------------------------------------------------
-
-echo "<pre>debug 20070131 " . __FUNCTION__ . " --- "; print_r($a_sql_schema); echo "</pre>";
-
 
 // ------------------------------------------------------------------------------------------------
 // Now proceed with user checks and user creation (if needed)

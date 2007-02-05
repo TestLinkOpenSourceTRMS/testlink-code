@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planPriority.tpl,v 1.6 2007/01/02 22:02:33 franciscom Exp $ 
+$Id: planPriority.tpl,v 1.7 2007/02/05 07:59:58 franciscom Exp $ 
 Purpose: smarty template - define priority rules
 
 20060908 - franciscom - added test plan name to title
@@ -19,17 +19,23 @@ Purpose: smarty template - define priority rules
 
 	<form method="post">
 	<table class="common" width="40%">
-		<tr><th>{lang_get s='tr_th_risk'}</th><th>{lang_get s='tr_th_prio_cba'}</th></tr>
-		{section name=Row loop=$arrRules}
 		<tr>
-			<td>{$arrRules[Row].risk_importance|escape}</td>
+		    <th>{lang_get s='tr_th_risk'}</th>
+		    <th>{lang_get s='tr_th_importance'}</th>
+		    <th>{lang_get s='tr_th_prio_cba'}</th>
+		</tr>
+	  {foreach item=risk_imp from=$rip_rules}
+		<tr>
+			<td>{$risk_imp.risk_verbose|escape}</td>
+			<td>{$risk_imp.importance_verbose|escape}</td>
+			
 			<td>
-			<select name="priority[{$arrRules[Row].id}]">
-				{html_options options=$optionPriority selected=$arrRules[Row].priority}
+			<select name="priority[{$risk_imp.id}]">
+				{html_options options=$optionPriority selected=$risk_imp.priority}
 			</select>
 			</td>
 		</tr>
-		{/section}
+		{/foreach}
 	</table>
 
 	<div style="padding: 20px;">

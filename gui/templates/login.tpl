@@ -1,11 +1,13 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: login.tpl,v 1.7 2006/08/21 13:17:05 franciscom Exp $
+$Id: login.tpl,v 1.8 2007/02/05 07:59:38 franciscom Exp $
 Purpose: smarty template - login page 
 
 20060819 - franciscom - css changes, smarty config file
 *}
-{include file="inc_head.tpl" title="TestLink - Login" }
+{include file="inc_head.tpl" title="TestLink - Login" openHead='yes'}
+<script language="JavaScript" src="gui/javascript/rounded.js" type="text/javascript"></script>
+</head>
 
 <body onload="document.forms[0].elements[0].focus()">
 
@@ -14,7 +16,7 @@ Purpose: smarty template - login page
 <div class="forms">
 
 	<form method="post" action="index.php">
-	  <div class="warning_message" style="text-align:center;">{$note}</div>
+	  <div class="login_warning_message" style="text-align:center;">{$note}</div>
 		
 		<p class="label">{lang_get s='login_name'}<br />
 		<input type="text" name="login" size="{#LOGIN_SIZE#}" maxlength="{#LOGIN_MAXLEN#}" /></p>
@@ -38,5 +40,9 @@ Purpose: smarty template - login page
 	{/if}
 
 </div>
+<script type="text/javascript">
+Rounded('warning_message', 8, 8);
+</script>
+
 </body>
 </html>

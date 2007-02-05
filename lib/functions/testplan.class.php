@@ -2,12 +2,12 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.24 $
- * @modified $Date: 2007/01/29 14:02:26 $ $Author: franciscom $
+ * @version $Revision: 1.25 $
+ * @modified $Date: 2007/02/05 08:01:12 $ $Author: franciscom $
  * @author franciscom
  *
  * rev :
- *
+ *       20070127 - franciscom -  added insert_default_priorities()
  *       20070127 - franciscom - custom field management
  *       20070120 - franciscom - added Class build_mgr
  *
@@ -554,6 +554,7 @@ function copy_user_roles($id,$new_tplan_id)
   }
 }
 
+// 20070204 - franciscom
 // $id: source testplan id
 // $new_tplan_id: destination
 //
@@ -565,9 +566,11 @@ function copy_priorities($id,$new_tplan_id)
   {
     foreach($rs as $pr)
     {
-      $sql="INSERT priorities (risk_importance,priority,testplan_id) " .
-           "VALUES ('" . $pr['risk_importance'] ."'," .
-           "'" . $pr['priority'] . "',{$new_tplan_id})";
+      $sql="INSERT priorities (risk_importance,priority,risk,importance,testplan_id) " .
+           " VALUES ('" . $pr['risk_importance'] ."'," .
+           "'" . $pr['priority'] . "','" . $pr['risk'] . "','" . $pr['importance'] . "'" . 
+           ",{$new_tplan_id})";
+
       $this->db->exec_query($sql);     
     }
   }
@@ -958,6 +961,115 @@ function html_table_of_custom_field_values($id,$scope='design',$show_on_executio
   $cf_smarty = "<table>" . $cf_smarty . "</table>";
   return($cf_smarty);
 } // function end
+
+
+
+
+
+/*
+  function: 
+
+  args :
+  
+  returns: 
+
+*/
+function insert_default_priorities($tplan_id)
+{
+  $risk_range=array_keys(config_get('risk'));
+  $importance_range=array_keys(config_get('importance'));  
+  
+  foreach($risk_range as $risk)
+  {
+    foreach($importance_range as $importance)
+    {
+	    $sql = "INSERT into priorities (testplan_id,risk,importance) " .
+	           " VALUES ({$tplan_id},'{$risk}', '{$importance}')";
+	    $result = $this->db->exec_query($sql);		
+    }  
+  }
+}
+
+
+/*
+  function: 
+
+  args :
+  
+  returns: 
+
+*/
+function get_priority_rules($tplan_id,$do_lang_get=0)
+{
+	$sql = "SELECT * FROM priorities " .
+	       " WHERE testplan_id = {$tplan_id}" .
+	       " ORDER BY risk,importance";
+	       
+	$rs=$this->db->get_recordset($sql); 
+	
+	if($do_lang_get)
+	{
+	  $risk_range=config_get('risk');
+	  $importance_range=config_get('importance');
+
+    foreach($rs as $key => $row )
+    {
+      $rs[$key]['risk_verbose']='';
+      $rs[$key]['importance_verbose']='';
+      
+      if(isset($risk_range[$row['risk']]))
+      {
+        $rs[$key]['risk_verbose']=lang_get($risk_range[$row['risk']]);
+      }
+   
+      if(isset($importance_range[$row['importance']]))
+      {
+        $rs[$key]['importance_verbose']=lang_get($importance_range[$row['importance']]);
+      }
+      
+    }
+	}
+	
+	return($rs);
+}
+
+
+/**
+ * Set rules for priority within actual Plan
+ *
+ * @param hash with key  : priority id on priorities table.
+ *                  value: priority value
+ *        Example:
+ *                [priority] => Array
+ *                (
+ *                 [10] => b
+ *                 [11] => b
+ *                 [12] => a
+ *                 [13] => b
+ *                 [14] => b
+ *                 [15] => b
+ *                 [16] => b
+ *                 [17] => b
+ *                 [18] => b
+ *                )
+ *
+ *        Important: priority ID is system wide, can not be found in more
+ *                   than one test plan, then passing test plan id seems 
+ *                   superflous. Anyway we use it.
+ *
+ *      
+ */
+function set_priority_rules($tplan_id,$priority_hash)
+{
+	foreach($priority_hash as $priID => $priority)
+	{
+			$sql = "UPDATE priorities " .
+			       " SET priority ='{$priority}' " .
+			       " WHERE id = {$priID} AND testplan_id={$tplan_id}";
+			$result = $this->db->exec_query($sql);
+	}
+}
+
 
 
 } // end class testplan

@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.28 $
- * @modified $Date: 2007/01/29 08:13:32 $  $Author: franciscom $
+ * @version $Revision: 1.29 $
+ * @modified $Date: 2007/02/05 08:01:12 $  $Author: franciscom $
  * @author franciscom
  *
  * 20070128 - franciscom - added check_tplan_name_existence()
@@ -218,9 +218,32 @@ function count_testcases($id)
 }
 
 
+  // 20070204 - removed dead code
+  //
 	// 20060308 - franciscom - added exclude_branches
-	// 
-	function gen_combo_test_suites($id,$exclude_branches=null)
+  /*
+    function: gen_combo_test_suites
+              create array with test suite names
+              test suites are ordered in parent-child way.
+              
+              
+
+    args :  $id
+            [$exclude_branches]: array with test case id to exclude
+                                 useful to exclude myself ($id)
+            [$mode]: dotted -> $level number of dot characters are appended to 
+                               the left of test suite name to create an indent effect.
+                               every array element is an string.
+                               
+                               
+                     array  -> every array element is a map with teh following keys
+                               'name', 'level'
+    
+    returns: 
+            array
+
+  */
+	function gen_combo_test_suites($id,$exclude_branches=null,$mode='dotted')
 	{
 		$aa = array(); 
 	
@@ -252,11 +275,17 @@ function count_testcases($id)
 					$the_level = $level[$current['parent_id']];
 				}
 				
-				if($hash_id_descr[$current['node_type_id']] == "testcase")
+				switch($mode)
 				{
-					$icon = "gnome-starthere-mini.png";	
-				}
-				$aa[$current['id']] = str_repeat('.',$the_level) . $current['name'];
+  				case 'dotted':
+				  $aa[$current['id']] = str_repeat('.',$the_level) . $current['name'];
+          break;
+          				  
+  				case 'array':
+				  $aa[$current['id']] = array('name' => $current['name'], 'level' =>$the_level);
+				  break;				  
+        }
+        
 				// update pivot
 				$level[$current['parent_id']]= $the_level;
 				$pivot=$elem;

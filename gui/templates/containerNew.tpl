@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: containerNew.tpl,v 1.12 2007/01/04 15:27:58 franciscom Exp $
+$Id: containerNew.tpl,v 1.13 2007/02/05 07:59:58 franciscom Exp $
 Purpose: smarty template - create containers
 
 20061231 - franciscom - using parent_info
@@ -48,6 +48,7 @@ function validateForm(f)
 <h1>{lang_get s='title_create'} {lang_get s=$level}</h1>
 	
 {include file="inc_update.tpl" result=$sqlResult 
+                               user_feedback=$user_feedback
                                item=$level action="add" name=$name
                                refresh="yes"}
 
@@ -68,9 +69,9 @@ function validateForm(f)
      <div class="custom_field_container">
      {$cf}
      </div>
-     <p>
    {/if}
    
+   <p>
    <div>
    <a href={$gsmarty_href_keywordsView}>{lang_get s='tc_keywords'}</a>
 	 {include file="opt_transfer.inc.tpl" option_transfer=$opt_cfg}

@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: projectedit.tpl,v 1.9 2007/01/26 21:01:23 schlundus Exp $
+$Id: projectedit.tpl,v 1.10 2007/02/05 08:00:37 franciscom Exp $
 Purpose: smarty template - Edit existing product 
 *}
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes"}
@@ -90,6 +90,8 @@ function validateForm(f)
 		  <td>{lang_get s='notes'}</td>
 		  <td width="80%">{$notes}</td>
 	   </tr>
+	   
+	   {if $smarty.const.TL_TESTPROJECT_COLORING neq 'none'}
 			<tr>
 				<td>{lang_get s='color'}</td>
 				<td>
@@ -102,6 +104,7 @@ function validateForm(f)
 					</a>
 				</td>
 			</tr>
+		 {/if}	
 			<tr>
 				<td>{lang_get s='enable_requirements'}</td>
 				<td>

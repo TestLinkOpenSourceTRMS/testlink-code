@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: treeMenu.inc.php,v $
  *
- * @version $Revision: 1.36 $
- * @modified $Date: 2007/01/26 21:01:23 $ by $Author: schlundus $
+ * @version $Revision: 1.37 $
+ * @modified $Date: 2007/02/05 08:01:12 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * 	This file generates tree menu for test specification and test execution.
@@ -517,9 +517,8 @@ function jtree_renderTestSpecTreeNodeOnClose($current,$nodeDesc)
 * Execution of Test Cases
 * Remove Test cases from test plan
 * 
-* 20060429 - franciscom - 
-* removing coupling with _POST
-* interface changes
+*
+* 20070204 - franciscom - changed $bForPrinting -> $bHideTCs
 *
 * operation: string that can take the following values:
 *            testcase_execution
@@ -529,7 +528,7 @@ function jtree_renderTestSpecTreeNodeOnClose($current,$nodeDesc)
 * 
 */
 function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,$tplan_name,$build_id,
-                          $getArguments, $keyword_id = 0,$tc_id = 0,$bForPrinting = false,
+                          $getArguments, $keyword_id = 0,$tc_id = 0, $bHideTCs = false,
 			                    $assignedTo = 0, $status = null)
 {
 	$menustring = null;
@@ -577,26 +576,38 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,$
 		// This was not this ways before this change.
 		//
 		$testcase_count = prepareNode($db,$test_spec,$hash_id_descr,$map_node_tccount,
-		                              $tck_map,$tp_tcs,$bForPrinting,$assignedTo,$status);
+		                              $tck_map,$tp_tcs,$bHideTCs,$assignedTo,$status);
 
 
 		$test_spec['testcase_count'] = $testcase_count;
 	
-		$menustring = renderExecTreeNode(1,$test_spec,$getArguments,$hash_id_descr,1,$menuUrl,$bForPrinting);
+		$menustring = renderExecTreeNode(1,$test_spec,$getArguments,$hash_id_descr,1,$menuUrl,$bHideTCs);
 	}
 	return $menustring;
 }
 
-function renderExecTreeNode($level,&$node,$getArguments,$hash_id_descr,$tc_action_enabled,$linkto,$bForPrinting)
+
+/*
+  function: 
+
+  args :
+  
+  returns: 
+
+*/
+function renderExecTreeNode($level,&$node,$getArguments,$hash_id_descr,
+                            $tc_action_enabled,$linkto,$bHideTCs)
 {
 	$nodeDesc = $hash_id_descr[$node['node_type_id']];
 
 	if (TL_TREE_KIND == 'JTREE')
-		$menustring = jtree_renderExecTreeNodeOnOpen($node,$nodeDesc,$tc_action_enabled,$bForPrinting);
+		$menustring = jtree_renderExecTreeNodeOnOpen($node,$nodeDesc,$tc_action_enabled,$bHideTCs);
 	else if (TL_TREE_KIND == 'DTREE')
-		$menustring = dtree_renderExecTreeNodeOnOpen($node,$nodeDesc,$linkto,$getArguments,$tc_action_enabled,$bForPrinting);
+		$menustring = dtree_renderExecTreeNodeOnOpen($node,$nodeDesc,$linkto,$getArguments,
+		                                             $tc_action_enabled,$bHideTCs);
 	else 
-		$menustring = layersmenu_renderExecTreeNodeOnOpen($node,$nodeDesc,$linkto,$getArguments,$level,$tc_action_enabled,$bForPrinting);
+		$menustring = layersmenu_renderExecTreeNodeOnOpen($node,$nodeDesc,$linkto,$getArguments,$level,
+		                                                  $tc_action_enabled,$bHideTCs);
 	if (isset($node['childNodes']) && $node['childNodes'])
 	{
 		$childNodes = $node['childNodes'];
@@ -606,7 +617,8 @@ function renderExecTreeNode($level,&$node,$getArguments,$hash_id_descr,$tc_actio
 			if(is_null($current))
 				continue;
 			
-			$menustring .= renderExecTreeNode($level+1,$current,$getArguments,$hash_id_descr,$tc_action_enabled,$linkto,$bForPrinting);
+			$menustring .= renderExecTreeNode($level+1,$current,$getArguments,$hash_id_descr,
+			                                  $tc_action_enabled,$linkto,$bHideTCs);
 		}
 	}
 	if (TL_TREE_KIND == 'JTREE')
@@ -614,7 +626,18 @@ function renderExecTreeNode($level,&$node,$getArguments,$hash_id_descr,$tc_actio
 	
 	return $menustring;
 }
-function layersmenu_renderExecTreeNodeOnOpen($node,$nodeDesc,$linkto,$getArguments,$level,$tc_action_enabled,$bForPrinting)
+
+
+/*
+  function: 
+
+  args :
+  
+  returns: 
+
+*/
+function layersmenu_renderExecTreeNodeOnOpen($node,$nodeDesc,$linkto,$getArguments,$level,
+                                             $tc_action_enabled,$bForPrinting)
 {
 	$pfn = "ST";
 	$name = filterString($node['name']);
@@ -659,6 +682,15 @@ function layersmenu_renderExecTreeNodeOnOpen($node,$nodeDesc,$linkto,$getArgumen
 	
 	return $menustring;				
 }
+
+/*
+  function: 
+
+  args :
+  
+  returns: 
+
+*/
 function dtree_renderExecTreeNodeOnOpen($current,$nodeDesc,$linkto,$getArguments,$tc_action_enabled,$bForPrinting)
 {
 	$dtreeCounter = $current['id'];
@@ -702,6 +734,14 @@ function dtree_renderExecTreeNodeOnOpen($current,$nodeDesc,$linkto,$getArguments
 	return $menustring;				   
 }
 
+/*
+  function: 
+
+  args :
+  
+  returns: 
+
+*/
 function jtree_renderExecTreeNodeOnOpen($current,$nodeDesc,$tc_action_enabled,$bForPrinting)
 {
 	$menustring = "['";

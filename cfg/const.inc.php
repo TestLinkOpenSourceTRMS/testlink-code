@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: const.inc.php,v $
  *
- * @version $Revision: 1.13 $
- * @modified $Date: 2007/02/05 08:34:22 $ by $Author: franciscom $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2007/02/05 15:51:10 $ by $Author: franciscom $
  * @author Martin Havlát
  *
  * SCOPE:
@@ -286,6 +286,10 @@ define('TL_REQ_STATUS_NOT_TESTABLE', 'N');
 
 define('DO_LANG_GET',1);
 define('DONT_DO_LANG_GET',0);
+
+
+// 
+define('FILTER_BY_SHOW_ON_EXECUTION',1);
 
 // -------------------------------------------------------------------
 ?>

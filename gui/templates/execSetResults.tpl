@@ -1,13 +1,12 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: execSetResults.tpl,v 1.41 2007/01/26 08:36:06 franciscom Exp $
+$Id: execSetResults.tpl,v 1.42 2007/02/05 15:51:10 franciscom Exp $
 Purpose: smarty template - show tests to add results
 Revisions:
+          20070205 - franciscom - disply test plan custom fields.
           20070125 - franciscom - management of closed build
           20070104 - franciscom - custom field management for test cases
           20070101 - franciscom - custom field management for test suite div
-          20061112 - franciscom - added class management to assign
-                                  color to status cells
 *}	
 
 {include file="inc_head.tpl" popup='yes' openHead='yes'}
@@ -54,10 +53,16 @@ Revisions:
                             document.getElementById('tplan_notes').style.display=='none')" />
     {lang_get s='test_plan_notes'}
   </div>
-  <div id="tplan_notes"  class="notes" style="background: 	#CDE;">
+  <div id="tplan_notes"  class="notes" style="background: #CDE;">
   {$tplan_notes}
+  {if $tplan_cf neq ''}
+     <div class="custom_field_container">
+     {$tplan_cf} 
+     </div>
+  {/if}
   </div>
-
+  <p>
+  
 <div class="show_hide_title">
 <img src="{$smarty.const.TL_THEME_IMG_DIR}/icon-foldout.gif" border="0" alt="{lang_get s='show_hide'}" 
      title="{lang_get s='show_hide'}" 

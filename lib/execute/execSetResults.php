@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.51 $
- * @modified $Date: 2007/01/29 20:19:42 $ $Author: schlundus $
+ * @version $Revision: 1.52 $
+ * @modified $Date: 2007/02/05 15:51:10 $ $Author: franciscom $
  *
  * 20070105 - franciscom - refactoring
  *
@@ -77,6 +77,7 @@ if($history_on)
     $history_status_btn_name = 'btn_history_off';
 }
 
+$testplan_cf=null;
 $cfexec_val_smarty= null;
 $bugs = null;
 $attachmentInfos = null;
@@ -88,9 +89,12 @@ $tSuiteAttachments = null;
 $linked_tcversions = $tplan_mgr->get_linked_tcversions($tplan_id,$tc_id,$keyword_id,null,$owner,$status);
 $tcase_id = 0;
 
+// -------------------------------------------------
 $rs = $tplan_mgr->get_by_id($tplan_id);
+$testplan_cf=$tplan_mgr->html_table_of_custom_field_values($tplan_id,'execution',FILTER_BY_SHOW_ON_EXECUTION);
 $testproject_id=$rs['parent_id'];
 $smarty->assign('tplan_notes',$rs['notes']);
+$smarty->assign('tplan_cf',$testplan_cf);
 
 if(!is_null($linked_tcversions))
 {

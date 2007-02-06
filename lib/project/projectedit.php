@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: projectedit.php,v $
  *
- * @version $Revision: 1.4 $
- * @modified $Date: 2007/01/02 22:02:33 $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2007/02/06 16:32:29 $
  *
  * @author Martin Havlat
  *
@@ -16,8 +16,8 @@
  *
  * 20051211 - fm - poor workaround for the delete loop - BUGID 180 Unable to delete Product
  * 20050908 - fm - BUGID 0000086
- * 20050831 - scs - moved POST to top, some small changes
- * 20060107 - scs - added new product functionality
+ * 20070206 - franciscom - BUGID 617
+ *
 **/
 include('../../config.inc.php');
 require_once('common.php');
@@ -37,6 +37,9 @@ $tlog_level = 'INFO';
 
 $tproject = new testproject($db);
 $args = init_args($tproject, $_REQUEST, $session_tproject_id);
+
+echo "<pre>debug 20070206 " . __FUNCTION__ . " --- "; print_r($args); echo "</pre>";
+
 
 $of = new fckeditor('notes') ;
 $of->BasePath = $_SESSION['basehref'] . 'third_party/fckeditor/';
@@ -179,8 +182,7 @@ $smarty->display('projectedit.tpl');
  * @return    object with html values tranformed and other
  *                   generated variables.
  *
- * 20060219 - franciscom
- * 20060102 - fm 
+ * 20070206 - franciscom - BUGID 617
 */
 function init_args($tproject,$request_hash, $session_tproject_id)
 {
@@ -218,7 +220,8 @@ function init_args($tproject,$request_hash, $session_tproject_id)
 	else if(!is_null($args->id))
 		$the_tproject_id = $args->id;
 
-	if( $args->do != 'do_edit')
+  // 20070206 - BUGID 617
+	if( $args->do != 'do_edit' && $args->do != 'do_create')
 	{
 		if ($the_tproject_id > 0)
 		{
@@ -226,7 +229,9 @@ function init_args($tproject,$request_hash, $session_tproject_id)
 			$args->notes = 	$the_data['notes'];
 		}
 		else
+		{
 			$args->notes = '';
+		}	
 	}
 	
 	return $args;

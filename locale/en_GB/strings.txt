@@ -4,10 +4,12 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.125 $
- * @modified $Date: 2007/02/05 16:15:19 $ $Author: franciscom $
+ * @version $Revision: 1.126 $
+ * @modified $Date: 2007/02/06 16:20:10 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
+ *
+ * 20070206 - franciscom - BUGID 618 - \n on JS messages
  *
 **/
 
@@ -841,7 +843,14 @@ $TLS_color = "Color";
 $TLS_enable_requirements = "Enable Requirements functionality";
 $TLS_info_failed_loc_prod = "Failed to localize the Test Project.";
 $TLS_notes = "Related Notes";
-$TLS_popup_product_delete = "Warning! This action deletes irrevocable all Test Project related data (including test results, plans, etc.). You can also use to deactivate instead of delete.\nRecommendation: Execute a dump of database at first.\nAre you sure to delete the Test Project?";
+     
+// Warning!!! - if JS string you must use \\n to get \n                                       
+$TLS_popup_product_delete = "Warning! This action deletes irrevocable all Test Project related " .
+                            "data (including test results, plans, etc.). " .
+                            "You can also use to deactivate instead of delete.\\n" .
+                            "Recommendation: Execute a dump of database at first.\\n" .
+                            "Are you sure to delete the Test Project?";
+//                            
 $TLS_warning_empty_tproject_name = "Test Project name cannot be empty!";
 
 

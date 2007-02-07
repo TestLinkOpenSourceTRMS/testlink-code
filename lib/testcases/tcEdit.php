@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.48 $
- * @modified $Date: 2007/01/17 20:47:56 $  by $Author: schlundus $
+ * @version $Revision: 1.49 $
+ * @modified $Date: 2007/02/07 09:23:46 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
  *
@@ -20,7 +20,6 @@ require_once('../keywords/keywords.inc.php');
 require_once("../../third_party/fckeditor/fckeditor.php");
 require_once("../functions/opt_transfer.php");
 testlinkInitPage($db);
-
 
 $gui_cfg = config_get('gui');
 $order_cfg = config_get('tree_node_ordering');
@@ -52,6 +51,12 @@ $steps 		= isset($_POST['steps']) ? strings_stripSlashes($_POST['steps']) : null
 $expected_results 	= isset($_POST['expected_results']) ? strings_stripSlashes($_POST['expected_results']) : null;
 $new_container_id = isset($_POST['new_container']) ? intval($_POST['new_container']) : 0;
 $old_container_id = isset($_POST['old_container']) ? intval($_POST['old_container']) : 0;
+
+
+// 20070207 - franciscom
+$has_been_executed=isset($_REQUEST['has_been_executed']) ? intval($_REQUEST['has_been_executed']) : 0;
+$smarty->assign('has_been_executed',$has_been_executed);
+
 
 $opt_cfg->js_ot_name = 'ot';
 $rl_html_name = $opt_cfg->js_ot_name . "_newRight";

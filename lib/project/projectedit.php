@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: projectedit.php,v $
  *
- * @version $Revision: 1.5 $
- * @modified $Date: 2007/02/06 16:32:29 $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2007/02/07 09:22:39 $
  *
  * @author Martin Havlat
  *
@@ -37,9 +37,6 @@ $tlog_level = 'INFO';
 
 $tproject = new testproject($db);
 $args = init_args($tproject, $_REQUEST, $session_tproject_id);
-
-echo "<pre>debug 20070206 " . __FUNCTION__ . " --- "; print_r($args); echo "</pre>";
-
 
 $of = new fckeditor('notes') ;
 $of->BasePath = $_SESSION['basehref'] . 'third_party/fckeditor/';

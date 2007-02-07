@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: tcEdit.tpl,v 1.14 2007/01/17 20:47:55 schlundus Exp $ *}
+{* $Id: tcEdit.tpl,v 1.15 2007/02/07 09:24:43 franciscom Exp $ *}
 {* Purpose: smarty template - edit test specification: test case *}
 {include file="inc_head.tpl" openHead='yes' jsValidate="yes"}
 <script language="JavaScript" src="gui/javascript/OptionTransfer.js" type="text/javascript"></script>
@@ -41,6 +41,11 @@ function validateForm(f)
 
 <div class="workBack" style="font-weight: bold;">
 <h1>{lang_get s='title_edit_tc'}{$smarty.const.TITLE_SEP_TYPE3}{lang_get s='version'} {$tc.version}</h1> 
+
+{if $has_been_executed}
+    {lang_get s='warning_editing_executed_tc' var="warning_edit_msg"}
+    <p><div class="warning_message" align="center">{$warning_edit_msg}</div>
+{/if}
 
 <form method="post" action="lib/testcases/tcEdit.php" name="tc_edit"
       onSubmit="javascript:return validateForm(this);">

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.126 $
- * @modified $Date: 2007/02/06 16:20:10 $ $Author: franciscom $
+ * @version $Revision: 1.127 $
+ * @modified $Date: 2007/02/07 09:24:43 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
@@ -891,7 +891,7 @@ $TLS_btn_new_version = "Create a new version";
 $TLS_can_not_edit_tc = "You can not edit this version because it has been executed";
 $TLS_deactivate_this_tcversion = "Deactivate this version";
 $TLS_tcversion_is_inactive_msg = "This version is INACTIVE => will be not available to be included in a test plan";
-
+$TLS_warning_editing_executed_tc="Warning!: this Test Case version has been executed";
 
 
 // gui/templates/planRemoveTC_m1.tpl

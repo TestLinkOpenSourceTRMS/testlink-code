@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.45 $
- * @modified $Date: 2007/01/28 19:03:17 $ $Author: schlundus $
+ * @version $Revision: 1.46 $
+ * @modified $Date: 2007/02/07 09:24:43 $ $Author: franciscom $
  * @author franciscom
  *
  * 20070105 - franciscom - changes in copy_to(),get_by_id()
@@ -264,6 +264,8 @@ function show(&$smarty,$id, $user_id, $version_id=TC_ALL_VERSIONS, $action='',
   
   $gui_cfg = config_get('gui');
 	$the_tpl = config_get('tpl');
+  $tcase_cfg =config_get('testcase_cfg');
+
 	$arrReqs = null;
 	$can_edit = has_rights($this->db,"mgt_modify_tc");
 
@@ -318,6 +320,8 @@ function show(&$smarty,$id, $user_id, $version_id=TC_ALL_VERSIONS, $action='',
     $smarty->assign('cf',$cf_smarty);	
  	}
 
+
+  $smarty->assign('tcase_cfg',$tcase_cfg);
   $smarty->assign('action',$action);
 	$smarty->assign('sqlResult',$msg_result);
 	$smarty->assign('can_edit',$can_edit);

@@ -1,15 +1,11 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.16 2007/01/24 20:41:17 schlundus Exp $
+$Id: tcView_viewer.tpl,v 1.17 2007/02/07 09:24:43 franciscom Exp $
 viewer for test case in test specification
 
+20070207 - franciscom -
 20061230 - franciscom - an experiment to make simple management
                         of frequent used href
-                        
-20060427 - franciscom - added font-size in the table used for keywords
-
-Dont touch this:
-lang_get('deactivate_this_tcversion');
 *}
 
 {if $args_show_title == "yes"}
@@ -17,17 +13,40 @@ lang_get('deactivate_this_tcversion');
 {/if}
 
 {if $args_can_edit == "yes" }
+
+ {* 20070207 - francisco.mancardi@gruppotesi.com *}
+  {assign var="edit_enabled" value=0}
+  {assign var="active_status_op_enabled" value=0}
+  {assign var="has_been_executed" value=0}
+  {lang_get s='can_not_edit_tc' var="warning_edit_msg"}
+
+  {if $args_status_quo eq null or 
+      $args_status_quo[$args_testcase.id].executed eq null}
+      
+      {assign var="edit_enabled" value=1}
+      {assign var="active_status_op_enabled" value=1}    
+      {assign var="warning_edit_msg" value=""}
+  
+  {else} 
+     {if $args_tcase_cfg->can_edit_executed eq 1}
+       {assign var="edit_enabled" value=1}
+       {assign var="has_been_executed" value=1}
+       {lang_get s='warning_editing_executed_tc' var="warning_edit_msg"}
+     {/if}  
+  {/if}
+
+
 	<div class="groupBtn">
 	<form method="post" action="lib/testcases/tcEdit.php">
 	  <input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
 	  <input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />
+	  
+	  {* 20070207 - franciscom *}
+    <input type="hidden" name="has_been_executed" value="{$has_been_executed}" />
+    
 
-    {if $args_status_quo eq null or $args_status_quo[$args_testcase.id].executed eq null}
+    {if $edit_enabled}
  	    <input type="submit" name="edit_tc"   value="{lang_get s='btn_edit'}" />
-      {assign var="warning_edit_msg" value=""}
-      
-    {else}
-      {lang_get s='can_not_edit_tc' var="warning_edit_msg"}
     {/if}
 
 	{if $args_can_delete_testcase == "yes" }
@@ -45,7 +64,7 @@ lang_get('deactivate_this_tcversion');
 	<input type="submit" name="do_create_new_version"   value="{lang_get s='btn_new_version'}" />
 	
 	 {* --------------------------------------------------------------------------------------- *} 
-	 {if $args_status_quo eq null or $args_status_quo[$args_testcase.id].executed eq null}
+	  {if $active_status_op_enabled eq 1}
         {if $args_testcase.active eq 0}
          {assign var="act_deact_btn" value="activate_this_tcversion"}
          {assign var="act_deact_value" value="activate_this_tcversion"}

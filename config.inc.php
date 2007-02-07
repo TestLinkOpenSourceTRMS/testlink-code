@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.97 $
- * @modified $Date: 2007/02/05 08:12:27 $ by $Author: franciscom $
+ * @version $Revision: 1.98 $
+ * @modified $Date: 2007/02/07 09:24:19 $ by $Author: franciscom $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink 
@@ -14,6 +14,7 @@
  *-----------------------------------------------------------------------------
  * Revisions:
  *
+ * 20070207 - franciscom - $g_testcase_cfg->can_edit_executed
  * 20070205 - franciscom - $g_risk,$g_importance,$g_priority
  *
  * 20070203 - franciscom - added TL_TESTPROJECT_COLORING
@@ -569,6 +570,11 @@ $g_priority=array( 'A' => 'high_priority',
 
 
 
+/** [Test case] */
+
+// 1 -> user can edit executed tc versions
+// 0 -> editing of executed tc versions is blocked
+$g_testcase_cfg->can_edit_executed=0;
 
 
 

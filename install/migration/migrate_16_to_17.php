@@ -1,10 +1,10 @@
 <?php
 /*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: migrate_16_to_17.php,v 1.13 2007/02/05 08:06:53 franciscom Exp $ 
+$Id: migrate_16_to_17.php,v 1.14 2007/02/08 07:55:14 franciscom Exp $ 
 
+20070208 - franciscom - trying to solve keyword-tc assignment migration bug
 20070204 - franciscom - changes in prules migration
-
 20070131 - franciscom - removed truncate of db_version table
 
 20070130 - jbarchibald - 
@@ -211,7 +211,6 @@ $sql="SELECT mtc.*, mc.prodid " .
 
 $tc_specs=$source_db->fetchRowsIntoMap($sql,'id');
 
-
 $tcspecs_msg="Test Case Specifications:";
 if(!is_null($tc_specs)) 
 {
@@ -303,8 +302,8 @@ echo "<a onclick=\"return DetailController.toggle('details-kw')\" href=\"kw/\">
 <img src='../img/icon-foldout.gif' align='top' title='show/hide'>Keywords migration:</a>";
 echo '<div class="detail-container" id="details-kw" style="display: none;">';
 
-$keyword_tc=extract_kw_tc_links($source_db,$target_db,$tc_specs);
-migrate_keywords($source_db,$target_db,$products,$keyword_tc,$old_new);
+$prod_keyword_tc=extract_kw_tc_links($source_db,$target_db,$tc_specs);
+migrate_keywords($source_db,$target_db,$products,$prod_keyword_tc,$old_new);
 echo "</div><p>";
 
 echo "<a onclick=\"return DetailController.toggle('details-tcpu')\" href=\"tcpu/\">
@@ -656,18 +655,23 @@ return ($db);
 }
 
 
-
-// 20060712 
-// 20070103 - added $keyword_tc
 //
-function migrate_keywords(&$source_db,&$target_db,&$products,&$keyword_tc,&$old_new)
+function migrate_keywords(&$source_db,&$target_db,&$products,&$prod_keyword_tc,&$old_new)
 {
   
-  $link_kw_tc_exists=!is_null($keyword_tc);
   
   foreach($products as $prod_id => $pd)
   {
-    
+
+    // 20070208 - franciscom
+    $keyword_tc = null;
+    $link_kw_tc_exists=0;
+    if( isset($prod_keyword_tc[$prod_id]) )
+    {
+      $keyword_tc=$prod_keyword_tc[$prod_id];
+      $link_kw_tc_exists=1;  
+    }
+        
     echo "<pre>Processing Test project: " . $pd['name']; echo "</pre>";
     $tproject_id=$old_new['product'][$prod_id];
     $sql="SELECT * FROM keywords WHERE prodid={$prod_id}";
@@ -689,18 +693,16 @@ function migrate_keywords(&$source_db,&$target_db,&$products,&$keyword_tc,&$old_
                "'" . $target_db->prepare_string(trim($value['notes'])) . "')";
           $target_db->exec_query($sql);     
     
-          // 20070103 - franciscom
+ 
+          // Keyword - TC - Assignment 
           if( $link_kw_tc_exists && isset($keyword_tc[$the_kw])) 
           {
-            foreach($keyword_tc[$the_kw] as $tcid => $the_prod_id )
+            foreach($keyword_tc[$the_kw] as $tcid)
             {
-              if($the_prod_id==$prod_id)
-              { 
-                $xsql="INSERT INTO testcase_keywords (keyword_id,testcase_id) " .
-                      " VALUES({$value['id']},{$tcid}) ";
-                $target_db->exec_query($xsql);     
-                break;
-              }
+              $xsql="INSERT INTO testcase_keywords (keyword_id,testcase_id) " .
+                    " VALUES({$value['id']},{$tcid}) ";
+              $target_db->exec_query($xsql);     
+              break;
             }
           }
           echo "<pre>   {$value['keyword']} migrated</pre>";
@@ -1480,10 +1482,12 @@ function migrate_ownership(&$source_db,&$target_db,&$rs,&$map_tc_tcversion,&$old
   }
 }
 
+
+// 20070208 - franciscom - fixed error, changing structure of return map
 // 20070103 - franciscom
 function extract_kw_tc_links($source_db,$target_db,$tc_specs)
 {
-  $map_kw_tc=null;
+  $map_prod_kw_tc=null;
   foreach($tc_specs as $tcid => $value)
   {
     $the_kw=trim($value['keywords']);
@@ -1495,12 +1499,14 @@ function extract_kw_tc_links($source_db,$target_db,$tc_specs)
         $the_vkm=trim($vkw);
         if(strlen($the_vkm) > 0)
         {
-          $map_kw_tc[$the_vkm][$tcid]=$value['prodid'];  
+          // 20070208 - francisco.mancardi@gruppotesi.com
+          $map_prod_kw_tc[$value['prodid']][$the_vkm][]=$tcid;  
+          //$map_kw_tc[$the_vkm][$tcid]=$value['prodid'];  
         }  
       }
     }  
   }
-  return($map_kw_tc);
+  return($map_prod_kw_tc);
 }
 
 ?>

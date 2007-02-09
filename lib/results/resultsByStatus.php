@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsByStatus.php,v 1.34 2007/02/02 06:15:15 kevinlevy Exp $ 
+* $Id: resultsByStatus.php,v 1.35 2007/02/09 21:34:20 schlundus Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -18,13 +18,15 @@ require_once('../functions/common.php');
 require_once('../functions/exec.inc.php');
 require_once("../../lib/functions/results.class.php");
 require_once('displayMgr.php');
-
-// used to retrieve users 
 require_once('../functions/users.inc.php');
 
 testlinkInitPage($db);
-$tp = new testplan($db);
+
+$tpID = isset($_SESSION['testPlanId']) ?  $_SESSION['testPlanId'] : 0;
 $type = isset($_GET['type']) ? $_GET['type'] : 'n';
+$report_type = isset($_GET['report_type']) ? intval($_GET['report_type']) : null;
+
+$tp = new testplan($db);
 
 if($type == $g_tc_status['failed'])
 	$title = lang_get('list_of_failed');
@@ -35,9 +37,6 @@ else
 	tlog('wrong value of GET type');
 	exit();
 }
-
-
-$tpID = isset($_SESSION['testPlanId']) ?  $_SESSION['testPlanId'] : 0;
 
 $SUITES_SELECTED = "all";
 
@@ -132,11 +131,6 @@ if ($tcs && $maxBuildID)
 		}
 	}
 }
-
-
-
-
-
 */
 
 /**
@@ -180,20 +174,8 @@ function getTCLink($rights, $tcID,$tcversionID, $title, $buildID)
 
 $smarty = new TLSmarty;
 $smarty->assign('title', $title);
-
 $smarty->assign('arrBuilds', $arrBuilds); 
 $smarty->assign('arrData', $arrData);
 
-
-$report_type = isset($_GET['report_type']) ? intval($_GET['report_type']) : null;
-if (!isset($_GET['report_type']))
-{
-	tlog('$_GET["report_type"] is not defined');
-	exit();
-}
-
 displayReport('resultsByStatus', $smarty, $report_type);
-
-
-//$smarty->display('resultsByStatus.tpl');
 ?>

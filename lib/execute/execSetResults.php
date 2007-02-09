@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.52 $
- * @modified $Date: 2007/02/05 15:51:10 $ $Author: franciscom $
+ * @version $Revision: 1.54 $
+ * @modified $Date: 2007/02/10 12:15:51 $ $Author: schlundus $
  *
  * 20070105 - franciscom - refactoring
  *
@@ -374,8 +374,8 @@ function smarty_assign_tsuite_info(&$smarty,&$request_hash, &$db,$tcase_id)
 
 function exec_additional_info(&$db,&$tcase_mgr,$other_execs,$tplan_id)
 {
-  $_bugInterfaceOn = config_get('bugInterfaceOn');
-  $_bugInterface = config_get('bugInterface');
+  $bugInterfaceOn = config_get('bugInterfaceOn');
+  $bugInterface = config_get('bugInterface');
   $attachmentInfos = null;
   $bugs = null;
   $cfexec_values = null;
@@ -391,9 +391,9 @@ function exec_additional_info(&$db,&$tcase_mgr,$other_execs,$tplan_id)
   		if ($aInfo)
   			$attachmentInfos[$exec_id] = $aInfo;
   		
-  		if($_bugInterfaceOn)
+  		if($bugInterfaceOn)
   		{
-			$the_bugs = get_bugs_for_exec($db,_bugInterface,$exec_id);
+			$the_bugs = get_bugs_for_exec($db,$bugInterface,$exec_id);
 			if(count($the_bugs) > 0)
 				$bugs[$exec_id] = $the_bugs;
   		}

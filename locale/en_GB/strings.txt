@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.127 $
- * @modified $Date: 2007/02/07 09:24:43 $ $Author: franciscom $
+ * @version $Revision: 1.128 $
+ * @modified $Date: 2007/02/09 21:34:20 $ $Author: schlundus $
  *
  * @author Francisco Mancardi
  *
@@ -38,6 +38,7 @@ $TLS_passwd_dont_match = "The two passwords entered did not match. Note that pas
 $TLS_user_cant_be_created_because = "Your account can't be created because:";
 $TLS_user_name_exists = "This User Name is already in use, please select another one.";
 $TLS_valid_user_name_format = "User Names may only contain letters, numbers, spaces, hyphens and underscores.";
+$TLS_warning_empty_pwd = "Your password should not be empty!";
 $TLS_your_info_please = "Enter Your User Information";
 
 
@@ -206,7 +207,7 @@ $TLS_popup_delete_custom_field = "Are you sure you want to delete the custom fie
 $TLS_possible_values = "Possible values";
 $TLS_show_on_design = "Display on <br>test specification";
 $TLS_show_on_exec = "Display on <br>test execution";
-$TLS_testcase=$TLS_test_case;
+$TLS_testcase = $TLS_test_case;
 $TLS_title_cfields_mgmt = "Custom fields";
 $TLS_type = "Type";
 $TLS_warning_empty_cfield_label = "Please enter the label of this custom field.";
@@ -236,51 +237,9 @@ $TLS_keyword = "Keyword";
 
 
 // gui/templates/mainPage.tpl
-$TLS_filter_tp_by_product = "Filter Test Plans by Test Project";
-$TLS_href_add_test_case = "Add Test Case(s)";
-$TLS_href_assign_user_roles = "Assign user roles";
-$TLS_href_browse_tc = "Browse Test Case(s)";
-$TLS_href_build_new = "Build Management";
-$TLS_href_cfields_management = "Custom field management";
-$TLS_href_cfields_tproject_assign = "Assign custom fields";
-$TLS_href_create_product = "Create new Test Project";
-$TLS_href_edit_product = "Edit / Delete Test Project";
-$TLS_href_edit_tc = "Edit Test Case(s)";
-$TLS_href_execute_test = "Execute Tests";
-$TLS_href_keywords_assign = "Assign Keywords";
-$TLS_href_keywords_manage = "Keyword Management";
-$TLS_href_keywords_view = "View Keywords";
-$TLS_href_plan_assign_priority = "Assign priorities";
-$TLS_href_plan_define_priority = "Define priority rules";
-$TLS_href_plan_management = "Test Plan Management";
-$TLS_href_plan_mstones = "Milestone Management";
-$TLS_href_print_tc = "Print Test Cases";
-$TLS_href_print_tc_suite = "Print Test Plan";
-$TLS_href_remove_test_case = "Remove Test Case(s)";
-$TLS_href_rep_and_metrics = "Test reports and Metrics";
-$TLS_href_req_assign = "Assign Requirements";
-$TLS_href_req_spec = "Requirement Specification";
-$TLS_href_roles_management = "Role Management";
-$TLS_href_search_tc = "Search Test Case(s)";
-$TLS_href_tc_exec_assignment = "Assign Test Case execution";
-$TLS_href_upd_mod_tc = "Update modified Test Case(s)";
-$TLS_href_user_management = "User Management";
-$TLS_msg_no_rights_for_tp = "- unavailable (You don't have permissions for any Test Plan)";
-$TLS_test_plan = "Test Plan";
-$TLS_testplan_role = "TestPlan role";
 $TLS_th_my_perc_completed = "My completed [%]";
 $TLS_th_name = "Name";
 $TLS_th_perc_completed = "Completed [%]";
-$TLS_title_keywords = "Keywords";
-$TLS_title_product_mgmt = "Test Project Management";
-$TLS_title_requirements = "Requirements";
-$TLS_title_test_case_suite = "Test Plan contents";
-$TLS_title_test_execution = "Test Execution";
-$TLS_title_test_plan = "Test Plan";
-$TLS_title_test_plan_mgmt = "Test Plan Management";
-$TLS_title_test_spec = "Test Specification";
-$TLS_title_testlink_site_map = "TestLink - Desktop";
-$TLS_title_user_mgmt = "User Administration";
 $TLS_title_your_tp_metrics = "Your Test Plan Metrics";
 
 
@@ -338,9 +297,6 @@ $TLS_via_email = "per eMail";
 
 
 
-// gui/templates/planView.tpl
-$TLS_btn_testplan_create = $TLS_create;
-
 // gui/templates/inc_attachments_upload.tpl
 
 
@@ -390,14 +346,12 @@ $TLS_enter_build = "Title";
 $TLS_enter_build_notes = "Description";
 $TLS_msg_build = "Notes: Each build is related to the active Test Plan. Description should include: list of delivered packages, approvals, status,etc.";
 $TLS_open = "Open";
+$TLS_test_plan = "Test Plan";
 $TLS_title_build_2 = "Build management";
 $TLS_title_build_create = "Create a new Build";
 $TLS_title_build_update = "Update Build";
 $TLS_warning_empty_build_name = "Please enter a name for the Build!";
 
-
-// gui/templates/buildView.tpl
-$TLS_btn_build_create="Create";
 
 
 // gui/templates/inc_comp_viewer_ro.tpl
@@ -574,6 +528,7 @@ $TLS_th_rights = "Permissions";
 $TLS_th_rolename = "Rolename";
 $TLS_th_tp_rights = "Test Plan rights";
 $TLS_th_user_rights = "User rights";
+$TLS_title_user_mgmt = "User Administration";
 $TLS_warning_modify_role = "Really modify the role?";
 
 
@@ -785,6 +740,7 @@ $TLS_title_navigator = "Navigator";
 // gui/templates/planPriority.tpl
 $TLS_btn_upd_prio = "Update";
 $TLS_title_priority = "Define priority rules for Test Plan";
+$TLS_tr_th_importance = "Importance";
 $TLS_tr_th_prio_cba = "Priority (C/B/A)";
 $TLS_tr_th_risk = "Risk/Importance";
 
@@ -867,6 +823,7 @@ $TLS_warning_req_tc_assignment_impossible = "You <b>can't do</b> the assignment 
 
 // gui/templates/tcEdit.tpl
 $TLS_title_edit_tc = "Edit Test Case";
+$TLS_warning_editing_executed_tc = "Warning!: this Test Case version has been executed";
 
 
 
@@ -891,7 +848,7 @@ $TLS_btn_new_version = "Create a new version";
 $TLS_can_not_edit_tc = "You can not edit this version because it has been executed";
 $TLS_deactivate_this_tcversion = "Deactivate this version";
 $TLS_tcversion_is_inactive_msg = "This version is INACTIVE => will be not available to be included in a test plan";
-$TLS_warning_editing_executed_tc="Warning!: this Test Case version has been executed";
+
 
 
 // gui/templates/planRemoveTC_m1.tpl
@@ -910,6 +867,7 @@ $TLS_btn_save = "Save";
 $TLS_keyword_assignment_empty_tsuite = "There are no Test Cases in this Test Suite => keyword assignment is not possible";
 $TLS_menu_assign_kw_to_tc = "Assign to Test Cases";
 $TLS_menu_manage_keywords = "Keyword Management";
+$TLS_title_keywords = "Keywords";
 
 
 
@@ -1036,6 +994,7 @@ $TLS_req_title_failed = "Failed Requirements";
 $TLS_req_title_notrun = "Unexecuted Requirements";
 $TLS_req_title_passed = "Passed Requirements";
 $TLS_title_result_req_testplan = "Test Results based on Requirements Specification";
+$TLS_title_test_plan = "Test Plan";
 
 
 
@@ -1125,6 +1084,7 @@ $TLS_warning_empty_last_name = "Please enter a surname";
 $TLS_warning_empty_login = "Please enter a login";
 
 
+
 // gui/templates/attachmentupload.tpl
 $TLS_enter_attachment_title = "Enter title for the attachment";
 $TLS_import_was_ok = "The import was ok";
@@ -1169,6 +1129,50 @@ $TLS_testplan_msg_delete_confirm = "Are you sure you want to delete the complete
 $TLS_testplan_th_delete = "Delete";
 $TLS_testplan_title_list = "List of existing Test Plans";
 $TLS_testplan_txt_empty_list = "There are no Test Plans defined! Create one to allow test execution functionality";
+
+
+
+// gui/templates/mainPage_left.tpl
+$TLS_href_assign_user_roles = "Assign user roles";
+$TLS_href_browse_tc = "Browse Test Case(s)";
+$TLS_href_cfields_management = "Custom field management";
+$TLS_href_cfields_tproject_assign = "Assign custom fields";
+$TLS_href_create_product = "Create new Test Project";
+$TLS_href_edit_product = "Edit / Delete Test Project";
+$TLS_href_edit_tc = "Edit Test Case(s)";
+$TLS_href_keywords_assign = "Assign Keywords";
+$TLS_href_keywords_manage = "Keyword Management";
+$TLS_href_keywords_view = "View Keywords";
+$TLS_href_print_tc = "Print Test Cases";
+$TLS_href_req_assign = "Assign Requirements";
+$TLS_href_req_spec = "Requirement Specification";
+$TLS_href_roles_management = "Role Management";
+$TLS_href_search_tc = "Search Test Case(s)";
+$TLS_href_user_management = "User Management";
+$TLS_title_requirements = "Requirements";
+$TLS_title_test_spec = "Test Specification";
+
+
+
+// gui/templates/mainPage_right.tpl
+$TLS_filter_tp_by_product = "Filter Test Plans by Test Project";
+$TLS_href_add_test_case = "Add Test Case(s)";
+$TLS_href_build_new = "Build Management";
+$TLS_href_execute_test = "Execute Tests";
+$TLS_href_plan_assign_priority = "Assign priorities";
+$TLS_href_plan_define_priority = "Define priority rules";
+$TLS_href_plan_management = "Test Plan Management";
+$TLS_href_plan_mstones = "Milestone Management";
+$TLS_href_print_tc_suite = "Print Test Plan";
+$TLS_href_remove_test_case = "Remove Test Case(s)";
+$TLS_href_rep_and_metrics = "Test reports and Metrics";
+$TLS_href_tc_exec_assignment = "Assign Test Case execution";
+$TLS_href_upd_mod_tc = "Update modified Test Case(s)";
+$TLS_msg_no_rights_for_tp = "- unavailable (You don't have permissions for any Test Plan)";
+$TLS_testplan_role = "TestPlan role";
+$TLS_title_test_case_suite = "Test Plan contents";
+$TLS_title_test_execution = "Test Execution";
+$TLS_title_test_plan_mgmt = "Test Plan Management";
 
 
 
@@ -1560,6 +1564,7 @@ $TLS_title_tsuite_export_all = "Export all Test Suites";
 // lib/testcases/containerEdit.php
 $TLS_delete = "Delete";
 $TLS_delete_notice = "Warning: All Related Execution Results will be deleted";
+$TLS_testsuite_created = "Test Suite created";
 $TLS_warning_empty_com_name = "Please give a name to Test Suite";
 
 

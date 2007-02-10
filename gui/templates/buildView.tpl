@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: buildView.tpl,v 1.1 2007/01/29 14:02:26 franciscom Exp $
+$Id: buildView.tpl,v 1.2 2007/02/10 16:46:00 schlundus Exp $
 
 Purpose: smarty template - Show existing builds
 
@@ -52,7 +52,7 @@ function validateForm(f)
   		</tr>
   		{foreach item=build from=$the_builds}
   			<tr>
-  				<td><a href="lib/plan/buildNew.php?do_action=edit&build_id={$build.id}"
+  				<td><a href="lib/plan/buildNew.php?do_action=edit&amp;build_id={$build.id}"
   				       title="{lang_get s='alt_edit_build'}">{$build.name|escape}
   					     {if $gsmarty_gui->show_icon_edit}
   					         <img style="border:none"
@@ -97,7 +97,7 @@ function validateForm(f)
 </div>
 {* ------------------------------------------------------------------------------------------- *}
 
-<form method="POST" action="lib/plan/buildNew.php" 
+<form method="post" action="lib/plan/buildNew.php" 
       id="deleteBuildForm" onsubmit="return false">
 	<input type="hidden" name="build_id" id="build_id" />
 	<input type="hidden" name="do_action" id="do_action" />

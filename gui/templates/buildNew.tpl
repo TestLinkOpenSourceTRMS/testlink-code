@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: buildNew.tpl,v 1.19 2007/01/29 14:02:26 franciscom Exp $
+$Id: buildNew.tpl,v 1.20 2007/02/10 16:46:00 schlundus Exp $
 
 Purpose: smarty template - Add new build and show existing
 
@@ -78,13 +78,13 @@ function validateForm(f)
 	</table>
 	<p>{lang_get s='msg_build'}</p>
 	<div class="groupBtn">	
-		<input type="hidden" name="do_action" value="">
+		<input type="hidden" name="do_action" value="" />
 		<input type="submit" name="{$button_name}" value="{$button_value|escape}"
 				   onclick="do_action.value='{$button_name}'"/>
 
 	</div>
 	</form>
 </div>
-
+</div>
 </body>
 </html>

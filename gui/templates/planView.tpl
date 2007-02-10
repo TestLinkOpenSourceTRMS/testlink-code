@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planView.tpl,v 1.1 2007/01/29 09:17:54 franciscom Exp $ 
+$Id: planView.tpl,v 1.2 2007/02/10 16:46:00 schlundus Exp $ 
 Purpose: smarty template - edit / delete Test Plan 
 Revisions:
 *}
@@ -51,16 +51,20 @@ function delete_confirmation(delUrl) {ldelim}
 				{$testplan.notes|strip_tags|strip|truncate:100}
 			</td>
 			<td>
-			{if $testplan.active == 1}
-				{lang_get s='Yes'}
-			{else}
-				{lang_get s='No'}
-			{/if}
+				{if $testplan.active eq 1} 
+  					<img style="border:none" 
+  				            title="{lang_get s='alt_active_testplan'}" 
+  				            alt="{lang_get s='alt_active_testplan'}" 
+  				            src="{$smarty.const.TL_THEME_IMG_DIR}/apply_f2_16.png"/>
+  				{else}
+  					&nbsp;        
+  				{/if}
 			</td>
 			<td>
 				<a href="javascript:delete_confirmation(fRoot+'lib/plan/planEdit.php?do_action=do_delete&amp;tplan_id={$testplan.id}');">
 				  <img style="border:none" title="{lang_get s='testplan_alt_delete_tp'}" 
-				       alt="{lang_get s='testplan_alt_delete_tp'}" 
+				       alt="{lang_get s='testplan_alt_delete_tp'}"
+					   title="{lang_get s='testplan_alt_delete_tp'}" 
 				       src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png"/></a>
 			</td>
 		</tr>

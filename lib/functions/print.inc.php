@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: print.inc.php,v $
- * @version $Revision: 1.22 $
- * @modified $Date: 2007/02/03 22:14:07 $ by $Author: schlundus $
+ * @version $Revision: 1.23 $
+ * @modified $Date: 2007/02/10 16:46:00 $ by $Author: schlundus $
  *
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
@@ -180,18 +180,21 @@ function renderTestCaseForPrinting(&$db,&$printingOptions,&$node,$level)
 	
 	if ($printingOptions['body'] || $printingOptions['summary'])
 	{
-		$tc = new testcase($db);
-		$tcInfo = $tc->get_by_id($id,$node['tcversion_id']);
-		if ($tcInfo)
-			$tcInfo = $tcInfo[0];
-		unset($tc);			
-		$code .= "<tr><td><u>".lang_get('summary')."</u>: " .  $tcInfo['summary'] . "</td></tr>";
-	 	if ($printingOptions['body']) 
-	 	{
-		   	$code .= "<tr><td><u>".lang_get('steps')."</u>:<br />" .  $tcInfo['steps'] . "</td></tr>";
-		   	$code .= "<tr><td><u>".lang_get('expected_results')."</u>:<br />" .  $tcInfo['expected_results'] . "</td></tr>";
-	 	}
-		unset($tc);
+		if (isset($node['tcversion_id']))
+		{	
+			$tc = new testcase($db);
+			$tcInfo = $tc->get_by_id($id,$node['tcversion_id']);
+			if ($tcInfo)
+				$tcInfo = $tcInfo[0];
+			unset($tc);			
+			$code .= "<tr><td><u>".lang_get('summary')."</u>: " .  $tcInfo['summary'] . "</td></tr>";
+		 	if ($printingOptions['body']) 
+		 	{
+			   	$code .= "<tr><td><u>".lang_get('steps')."</u>:<br />" .  $tcInfo['steps'] . "</td></tr>";
+			   	$code .= "<tr><td><u>".lang_get('expected_results')."</u>:<br />" .  $tcInfo['expected_results'] . "</td></tr>";
+		 	}
+			unset($tc);
+		}
 	}
   	$code .= "</table></div>";
 	

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: planMilestones.php,v $
  *
- * @version $Revision: 1.8 $
- * @modified $Date: 2007/01/13 23:45:37 $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2007/02/10 16:46:00 $
  */
 require_once('../../config.inc.php');
 require_once("../functions/common.php");
@@ -62,7 +62,7 @@ else if($newMileStone || $bUpdate)
 		}
 	}
 	//reset info, after successful updating	
-	$action = $bUpdate ? "updated" : "add";
+	$action = $bUpdate ? "updated" : "do_add";
 }
 
 $mileStones = null;

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: planMilestones.php,v $
  *
- * @version $Revision: 1.9 $
- * @modified $Date: 2007/02/10 16:46:00 $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2007/02/10 20:52:53 $
  */
 require_once('../../config.inc.php');
 require_once("../functions/common.php");
@@ -46,6 +46,13 @@ else if ($bDelete && $id)
 }
 else if($newMileStone || $bUpdate)
 {
+	$mileStone = array(
+		"title" => $name,
+		"date" => $date,
+		"apriority" => $A,
+		"bpriority" => $B,
+		"cpriority" => $C,
+	);
 	$sqlResult = checkMileStone($name,$date,$A,$B,$C);
 	if (is_null($sqlResult))
 	{
@@ -60,6 +67,8 @@ else if($newMileStone || $bUpdate)
 			if (!updateMileStone($db,$pid,$name,$date,$A,$B,$C))
 				$sqlResult = lang_get("warning_milestone_update_failed") . $db->error_msg();
 		}
+		if ($sqlResult == 'ok')
+			$mileStone = null;
 	}
 	//reset info, after successful updating	
 	$action = $bUpdate ? "updated" : "do_add";

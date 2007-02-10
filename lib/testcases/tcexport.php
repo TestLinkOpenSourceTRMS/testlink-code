@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: tcexport.php,v $
  *
- * @version $Revision: 1.8 $
- * @modified $Date: 2007/01/28 19:03:17 $ by $Author: schlundus $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2007/02/10 12:15:52 $ by $Author: schlundus $
  *
  * test case and test suites export
  *
@@ -120,6 +120,7 @@ if ($bExport)
 	{
 		if ($exporting_just_one_tc)
 		{
+			$optExport['ROOTELEM'] = "<testcases>{{XMLCODE}}</testcases>";
 			$content = $tcase_mgr->$pfn($tcase_id,$tcversion_id,null,$optExport);
 		}	
 		else

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.128 $
- * @modified $Date: 2007/02/09 21:34:20 $ $Author: schlundus $
+ * @version $Revision: 1.129 $
+ * @modified $Date: 2007/02/10 12:15:52 $ $Author: schlundus $
  *
  * @author Francisco Mancardi
  *
@@ -1151,7 +1151,7 @@ $TLS_href_search_tc = "Search Test Case(s)";
 $TLS_href_user_management = "User Management";
 $TLS_title_requirements = "Requirements";
 $TLS_title_test_spec = "Test Specification";
-
+$TLS_title_product_mgmt = "Test Project Management";
 
 
 // gui/templates/mainPage_right.tpl

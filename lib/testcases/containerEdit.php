@@ -3,17 +3,10 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * @version $Revision: 1.55 $
- * @modified $Date: 2007/02/05 08:34:22 $ by $Author: franciscom $
+ * @version $Revision: 1.56 $
+ * @modified $Date: 2007/02/10 12:15:52 $ by $Author: schlundus $
  * @author Martin Havlat
  *
- * 20061231 - franciscom - problems with test project test suite reorder
- * 20061230 - franciscom - refactoring on add_testsuite
- * 20061230 - franciscom - added custom field management
- * 20061024 - franciscom - improved feedback in delete_testsuite
- * 20060822 - franciscom - solved keyword presentation problem
- * 20060804 - franciscom - added option transfer to manage keywords
- * 20060701 - franciscom
  * Added the Test Project as the FIRST Container where is possible to copy
  *
 */
@@ -37,14 +30,10 @@ if(is_null($my_containerID))
 	$my_containerID = $my_tprojectID;	
 }
 $objectID = isset($_REQUEST['objectID']) ? intval($_REQUEST['objectID']) : null;
-//
-//$objectID = isset($_REQUEST['objectID']) ? intval($_REQUEST['objectID']) :$my_containerID;
-
 $tsuite_name = isset($_REQUEST['testsuiteName']) ? strings_stripSlashes($_REQUEST['testsuiteName']) : null;
 
 $bSure = (isset($_REQUEST['sure']) && ($_REQUEST['sure'] == 'yes'));
 $bRefreshTree = false;
-
 
 
 // --------------------------------------------------------------------------------------------
@@ -376,8 +365,6 @@ function get_values_from_post($akeys2get)
 	return $c_data;
 }	
 
-
-// 20061024 - franciscom
 function build_del_testsuite_warning_msg(&$tree_mgr,&$tcase_mgr,&$testcases,$tsuite_id)
 {
   $msg['warning']=null;

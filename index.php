@@ -5,17 +5,12 @@
  *
  * Filename $RCSfile: index.php,v $
  *
- * @version $Revision: 1.10 $
- * @modified $Date: 2006/02/22 20:26:38 $ by $Author: schlundus $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2007/02/10 12:15:41 $ by $Author: schlundus $
  *
  * @author Martin Havlat
  *
  * This file is main window. Include authorization of user and define frames (navBar and main).
- * 
- * 20050823 - fm - if installer directory exists,  block login
- * 20050806 - fm - Installer
- * 20060103 - scs - ADOdb changes
- * 20050808 - MHT - moved code to procedure
 **/
 require_once('lib/functions/configCheck.php');
 checkConfiguration();

@@ -5,21 +5,12 @@
  *
  * Filename $RCSfile: login.php,v $
  *
- * @version $Revision: 1.17 $
- * @modified $Date: 2007/01/10 16:19:00 $ by $Author: havlat $
+ * @version $Revision: 1.18 $
+ * @modified $Date: 2007/02/10 12:15:42 $ by $Author: schlundus $
  * @author Martin Havlat
  * 
  * The page allows adjust login data
- * ----------------------------------------------------------------------
- * Revisions:  
- * 20050831 - scs - cosmetic changes
- * 200508 - MHT - added config check
- * 20060103 - scs - ADOdb changes
- * 20060226 - franciscom - adding logo management
- * 20060410 - MHT - refactorize
- * ----------------------------------------------------------------------
  **/
-global $db; 
 require_once('lib/functions/configCheck.php');
 checkConfiguration();
 
@@ -49,7 +40,6 @@ $message = lang_get('please_login');
 switch($note)
 {
 	case 'expired':
-		// 20051012 - am - fix for 134
 		session_start();
 		session_unset();
 		session_destroy();
@@ -71,16 +61,14 @@ switch($note)
 
 	case 'sessionExists':
 		$message = lang_get('login_msg_session_exists1') . ' <a href="logout.php">' . 
-			lang_get('logout_link') . '</a>' . lang_get('login_msg_session_exists2');
+				   lang_get('logout_link') . '</a>' . lang_get('login_msg_session_exists2');
 		break;
 	default:
 		break;
 }
 
-//20050826 - scs - added displaying of security notes
 $securityNotes = getSecurityNotes($db);
 
-	
 $smarty = new TLSmarty();
 $smarty->assign('login_logo', LOGO_LOGIN_PAGE);
 $smarty->assign('securityNotes',$securityNotes);

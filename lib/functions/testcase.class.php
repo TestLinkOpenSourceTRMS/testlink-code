@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.46 $
- * @modified $Date: 2007/02/07 09:24:43 $ $Author: franciscom $
+ * @version $Revision: 1.47 $
+ * @modified $Date: 2007/02/10 12:15:51 $ $Author: schlundus $
  * @author franciscom
  *
  * 20070105 - franciscom - changes in copy_to(),get_by_id()
@@ -1314,7 +1314,9 @@ function exportTestCaseDataToXML($tcase_id,$tcversion_id,$bNoXMLHeader = false,$
 			$tc_data[0]['xmlkeywords'] = $xmlKW;
 		}
 	}	
-	$rootElem = "<testcases>{{XMLCODE}}</testcases>";
+	$rootElem = "{{XMLCODE}}";
+	if (isset($optExport['ROOTELEM']))
+		$rootElem = $optExport['ROOTELEM'];
 	$elemTpl = "\t".'<testcase name="{{NAME}}">'.	
 						'<summary><![CDATA['."\n||SUMMARY||\n]]>".'</summary>'.
 						'<steps><![CDATA['."\n||STEPS||\n]]>".'</steps>'.

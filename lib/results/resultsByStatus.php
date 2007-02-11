@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsByStatus.php,v 1.36 2007/02/11 01:51:08 kevinlevy Exp $ 
+* $Id: resultsByStatus.php,v 1.37 2007/02/11 01:55:14 kevinlevy Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -33,14 +33,14 @@ if($type == $g_tc_status['failed'])
 else if($type == $g_tc_status['blocked'])
 	$title = lang_get('list_of_blocked');
 else if($type == $g_tc_status['not_run'])
-	$title = lang_get('not_run');
-/**
+	$title = lang_get('list_of_not_run');
+
 else
 {
 	tlog('wrong value of GET type');
 	exit();
 }
-*/
+
 
 $SUITES_SELECTED = "all";
 

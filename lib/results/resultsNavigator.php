@@ -2,7 +2,7 @@
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
- * @version $Id: resultsNavigator.php,v 1.23 2007/02/03 22:14:08 schlundus Exp $ 
+ * @version $Id: resultsNavigator.php,v 1.24 2007/02/11 01:51:08 kevinlevy Exp $ 
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
  * This page list View of Test Results and Metrics.
@@ -23,6 +23,7 @@ $arrData = array(
     array('name' => lang_get('link_report_metrics_more_builds'), 'href' => 'resultsMoreBuilds.php?report_type='), 
 	array('name' => lang_get('link_report_failed'), 'href' => 'resultsByStatus.php?type=f&amp;report_type='),
 	array('name' => lang_get('link_report_blocked_tcs'), 'href' => 'resultsByStatus.php?type=b&amp;report_type='),
+	array('name' => lang_get('link_report_not_run'), 'href' => 'resultsByStatus.php?type=n&amp;report_type='),	
 	array('name' => lang_get('link_report_test'), 'href' => 'resultsTC.php?report_type=')
 );
 

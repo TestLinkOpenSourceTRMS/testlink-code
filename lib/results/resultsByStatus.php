@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsByStatus.php,v 1.35 2007/02/09 21:34:20 schlundus Exp $ 
+* $Id: resultsByStatus.php,v 1.36 2007/02/11 01:51:08 kevinlevy Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -32,11 +32,15 @@ if($type == $g_tc_status['failed'])
 	$title = lang_get('list_of_failed');
 else if($type == $g_tc_status['blocked'])
 	$title = lang_get('list_of_blocked');
+else if($type == $g_tc_status['not_run'])
+	$title = lang_get('not_run');
+/**
 else
 {
 	tlog('wrong value of GET type');
 	exit();
 }
+*/
 
 $SUITES_SELECTED = "all";
 
@@ -71,15 +75,22 @@ if (is_array($mapOfLastResult)) {
 		$tester_id = $mapOfLastResult[$suiteId][$tcId]['tester_id'];
 		$executions_id = $mapOfLastResult[$suiteId][$tcId]['executions_id'];
 		$tcversion_id = $mapOfLastResult[$suiteId][$tcId]['tcversion_id'];
-		$localizedTS = localize_dateOrTimeStamp(null,$dummy,'timestamp_format',$execution_ts);
+		
+		$localizedTS = '';
+		if ($execution_ts != null) {
+		   $localizedTS = localize_dateOrTimeStamp(null,$dummy,'timestamp_format',$execution_ts);
+		}
 		$bugString = buildBugString($db, $executions_id);
         $bCanExecute = has_rights($db,"tp_execute");
 		
 		$testTitle = getTCLink($bCanExecute,$tcId,$tcversion_id,$name,$lastBuildIdExecuted);
 		
 		// $tcId . ":" . htmlspecialchars($name)
-		
-		$arrData[$arrDataIndex] = array($suiteName,$testTitle,htmlspecialchars($buildName),htmlspecialchars($arrOwners[$tester_id]),htmlspecialchars($execution_ts),htmlspecialchars($notes),$bugString);
+        $testerName = '';
+		if (array_key_exists($tester_id, $arrOwners)) {
+		   $testerName = $arrOwners[$tester_id];
+		}
+		$arrData[$arrDataIndex] = array($suiteName,$testTitle,htmlspecialchars($buildName),htmlspecialchars($testerName),htmlspecialchars($execution_ts),htmlspecialchars($notes),$bugString);
 		$arrDataIndex++;
 		next($mapOfLastResult[$suiteId]);
 	}

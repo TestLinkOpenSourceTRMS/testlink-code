@@ -1,9 +1,10 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: execSetResults.tpl,v 1.42 2007/02/05 15:51:10 franciscom Exp $
+$Id: execSetResults.tpl,v 1.43 2007/02/12 08:01:35 franciscom Exp $
 Purpose: smarty template - show tests to add results
 Revisions:
-          20070205 - franciscom - disply test plan custom fields.
+          20070211 - franciscom - addede delete logic
+          20070205 - franciscom - display test plan custom fields.
           20070125 - franciscom - management of closed build
           20070104 - franciscom - custom field management for test cases
           20070101 - franciscom - custom field management for test suite div
@@ -12,7 +13,14 @@ Revisions:
 {include file="inc_head.tpl" popup='yes' openHead='yes'}
 <script language="JavaScript" src="gui/javascript/radio_utils.js" type="text/javascript"></script>
 <script language="JavaScript" src="gui/javascript/expandAndCollapseFunctions.js" type="text/javascript"></script>
+
+<script language="JavaScript">
+var msg="{lang_get s='warning_delete_execution'}";
+</script>
+
 </head>
+
+
 
 <body onLoad="show_hide('tplan_notes','tpn_view_status',{$tpn_view_status});
               show_hide('build_notes','bn_view_status',{$bn_view_status});
@@ -78,7 +86,7 @@ Revisions:
 {assign var="enable_custom_fields" value=false}
 
 
-<form method="post">
+<form method="post" id="execSetResults" name="execSetResults" >
   {* franciscom - implementation note - 
      1. function of these inputs save the status when user saves executiosn.
      2. value is setted via javascript using the body onload event
@@ -93,6 +101,11 @@ Revisions:
   <input type="hidden" id="bc_view_status" 
                        name="bc_view_status" 
                        value="0" />
+  
+  {* 20070211 - franciscom *}
+  <input type="hidden" id="do_delete"  name="do_delete" value="0" />
+  <input type="hidden" id="exec_to_delete"  name="exec_to_delete" value="0" />
+  
   
   {if $map_last_exec eq ""}
      <div class="warning_message" style="text-align:center"> {lang_get s='no_data_available'}</div>
@@ -231,6 +244,13 @@ Revisions:
           {assign var="my_colspan" value=$my_colspan+1}
         {/if}
         
+        {* 20070211 - franciscom *}
+				{if $can_delete_execution}
+          <th style="text-align:left">{lang_get s='delete'}</th>
+          {assign var="my_colspan" value=$my_colspan+1}
+        {/if}
+
+
 			 </tr>
 			 
 			{* ----------------------------------------------------------------------------------- *} 
@@ -254,20 +274,32 @@ Revisions:
           	 &nbsp;
           	{/if}		         
           </td>
-            {if $att_model->show_upload_column && !$att_download_only}
+            
+          {if $att_model->show_upload_column && !$att_download_only}
       			  <td align="center"><a href="javascript:openFileUploadWindow({$tc_old_exec.execution_id},'executions')">
       			    <img src="{$smarty.const.TL_THEME_IMG_DIR}/upload_16.png" title="{lang_get s='alt_attachment_mgmt'}"
       			         alt="{lang_get s='alt_attachment_mgmt'}" 
       			         style="border:none" /></a>
               </td>
-  	        {/if}
+  	      {/if}
   
-    				{if $g_bugInterfaceOn}
-      			<td align="center"><a href="javascript:open_bug_add_window({$tc_old_exec.execution_id})">
+    			{if $g_bugInterfaceOn}
+       		  	<td align="center"><a href="javascript:open_bug_add_window({$tc_old_exec.execution_id})">
       			    <img src="{$smarty.const.TL_THEME_IMG_DIR}/bug1.gif" title="{lang_get s='img_title_bug_mgmt'}" 
       			         style="border:none" /></a>
               </td>
-            {/if}
+          {/if}
+
+
+    			{if $can_delete_execution}
+       		  	<td align="center">
+             	<a href="javascript:confirm_and_submit(msg,'execSetResults','exec_to_delete',
+             	                                       {$tc_old_exec.execution_id},'do_delete',1);">
+      			    <img src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png" title="{lang_get s='img_title_delete_execution'}" 
+      			         style="border:none" /></a>
+              </td>
+          {/if}
+
             
   			</tr>  
   
@@ -392,7 +424,7 @@ Revisions:
                 {foreach key=verbose_status item=locale_status from=$gsmarty_tc_status_for_ui}
     						<input type="radio" {$input_enabled_disabled} name="status[{$tcversion_id}]" 
     							value="{$gsmarty_tc_status.$verbose_status}"
-    							{if $gsmarty_tc_status.$verbose_status eq $gsmarty_tc_status.not_run}
+    							{if $gsmarty_tc_status.$verbose_status eq $gsmarty_tc_status.$default_status}
     							checked="checked" 
     							{/if} />{lang_get s=$locale_status}<br />
     					 {/foreach}		

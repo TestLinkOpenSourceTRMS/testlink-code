@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: resultsBugs.tpl,v 1.10 2006/11/28 00:14:59 kevinlevy Exp $ *}
+{* $Id: resultsBugs.tpl,v 1.11 2007/02/12 06:11:53 kevinlevy Exp $ *}
 {* Purpose: smarty template - show Test Results and Metrics *}
 {* Revisions:
 20051204 - mht - removed obsolete print button
@@ -24,8 +24,8 @@
 	<tr>
 		<th>{lang_get s='title_test_suite_name'}</th>
 		<th>{lang_get s='title_test_case_title'}</th>
-	{*	<th>{lang_get s='title_test_case_timestamp'}</th> *}
 		<th>{lang_get s='title_test_case_bugs'}</th>	
+		{* <th>original date</th> *}
 	
 	</tr>
 {section name=Row loop=$arrData}

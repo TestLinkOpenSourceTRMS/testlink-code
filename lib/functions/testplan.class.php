@@ -2,12 +2,13 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.25 $
- * @modified $Date: 2007/02/05 08:01:12 $ $Author: franciscom $
+ * @version $Revision: 1.26 $
+ * @modified $Date: 2007/02/12 08:09:02 $ $Author: franciscom $
  * @author franciscom
  *
  * rev :
- *       20070127 - franciscom -  added insert_default_priorities()
+ *       20070211 - franciscom - changes in get_linked_tcversions()
+ *       20070127 - franciscom - added insert_default_priorities()
  *       20070127 - franciscom - custom field management
  *       20070120 - franciscom - added Class build_mgr
  *
@@ -232,6 +233,8 @@ function link_tcversions($id,&$items_to_link)
 }
 
 
+//  20070211 - franciscom -  added $exec_status argument
+//
 //  20061030 - franciscom - 
 //  1. found a bug on query 
 //  2. new column in result set exec_on_tplan
@@ -247,12 +250,17 @@ function link_tcversions($id,&$items_to_link)
 //                 NULL if the tc version has not been executed in THIS test plan
 //                 tcversion_id if has executions 
 //
-function get_linked_tcversions($id,$tcase_id=null,$keyword_id=0,$executed=null,$owner = null)
+function get_linked_tcversions($id,$tcase_id=null,$keyword_id=0,$executed=null,
+                               $assigned_to=null,$exec_status=null)
 {
+  $tc_status=config_get('tc_status');
+  $status_not_run=$tc_status['not_run'];
+  
 	$keywords_join = " ";
 	$keywords_filter = " ";
 	$tc_id_filter = " ";
 	$executions_join = " ";
+	$executions_filter=" ";
 	
 	if($keyword_id > 0)
 	{
@@ -274,7 +282,22 @@ function get_linked_tcversions($id,$tcase_id=null,$keyword_id=0,$executed=null,$
 	if(is_null($executed))
 	{
 	     $executions_join = " LEFT OUTER ";
-	}          
+	}     
+	     
+	// --------------------------------------------------------------     
+	if(!is_null($exec_status) )
+	{
+	    if( $exec_status == $status_not_run)
+	    {
+	      $executions_filter=" AND E.status IS NULL ";
+	    }
+	    else
+	    {
+	      $executions_filter=" AND E.status='" . $exec_status . "' ";
+	    }  
+	}  
+	// --------------------------------------------------------------
+	
 	$executions_join .= " JOIN executions E ON (NHA.id = E.tcversion_id AND E.testplan_id=T.testplan_id) ";
 	
 	// missing condition on testplan_id between execution and testplan_tcversions
@@ -287,7 +310,8 @@ function get_linked_tcversions($id,$tcase_id=null,$keyword_id=0,$executed=null,$
 	     "        NHA.parent_id AS tc_id," .
 	     "        T.tcversion_id AS tcversion_id, T.id AS feature_id," .
 	     "        E.tcversion_id AS executed, E.testplan_id AS exec_on_tplan, " .
-	     "        UA.user_id,UA.type,UA.status,UA.assigner_id, COALESCE(E.status,'n') AS exec_status ".
+	     "        UA.user_id,UA.type,UA.status,UA.assigner_id, " .
+	     "        COALESCE(E.status,'" . $status_not_run . "') AS exec_status ".
 	     " FROM nodes_hierarchy NHA " .
 	     " JOIN nodes_hierarchy NHB ON NHA.parent_id = NHB.id " .
 	     " JOIN testplan_tcversions T ON NHA.id = T.tcversion_id " .
@@ -296,10 +320,13 @@ function get_linked_tcversions($id,$tcase_id=null,$keyword_id=0,$executed=null,$
 	     " LEFT OUTER JOIN user_assignments UA ON UA.feature_id = T.id " . 
 	     " WHERE T.testplan_id={$id} {$keywords_filter} {$tc_id_filter} " .
 	     " AND (UA.type=" . $this->assignment_types['testcase_execution']['id'] . 
-	     "      OR UA.type IS NULL) ";
+	     "      OR UA.type IS NULL) " . $executions_filter;
+	     
 
-	if (!is_null($owner))
-		$sql .= " AND UA.user_id = {$owner}"; 
+	if (!is_null($assigned_to))
+	{
+		$sql .= " AND UA.user_id = {$assigned_to}"; 
+	}
 		
 	$sql .= " ORDER BY testsuite_id,tc_id,E.id ASC";
 

@@ -5,9 +5,9 @@
  *
  * Filename $RCSfile: tcImport.php,v $
  * Filename $RCSfile: tcImport.php,v $
- * @version $Revision: 1.20 $
+ * @version $Revision: 1.21 $
  *
- * @modified $Date: 2007/01/28 19:03:17 $ by $Author: schlundus $
+ * @modified $Date: 2007/02/12 08:08:42 $ by $Author: franciscom $
 */
 require('../../config.inc.php');
 require_once('common.php');
@@ -280,6 +280,14 @@ function importTCsFromXML($xmlTCs)
 }
 
 
+/*
+  function: importTCFromXML()
+
+  args :
+  
+  returns: 
+
+*/
 function importTCFromXML(&$xmlTC)
 {
 	if (!$xmlTC)
@@ -294,6 +302,15 @@ function importTCFromXML(&$xmlTC)
 	return $tc; 		
 }
 
+
+/*
+  function: check_valid_ftype()
+
+  args :
+  
+  returns: 
+
+*/
 function check_valid_ftype($upload_info,$import_type)
 {
 	$ret = array();

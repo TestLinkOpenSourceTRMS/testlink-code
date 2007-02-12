@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: keywords.inc.php,v $
 * 
-* @version $Id: keywords.inc.php,v 1.31 2007/02/04 20:18:32 schlundus Exp $
-* @modified $Date: 2007/02/04 20:18:32 $ by $Author: schlundus $
+* @version $Id: keywords.inc.php,v 1.32 2007/02/12 08:08:42 franciscom Exp $
+* @modified $Date: 2007/02/12 08:08:42 $ by $Author: franciscom $
 *
 * Functions for support keywords management. 
 *
@@ -163,7 +163,7 @@ function importKeywordFromXML(&$xmlKeyword)
  **/
 function importKeywordDataFromCSV($fileName)
 {
-  	$delimiter = ';';
+  $delimiter = ';';
 	$destKeys = array("keyword","notes");
 	 					
 	$keywordData = importCSVData($fileName,$destKeys,$delimiter,count($destKeys));

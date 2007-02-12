@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.47 $
- * @modified $Date: 2007/02/10 12:15:51 $ $Author: schlundus $
+ * @version $Revision: 1.48 $
+ * @modified $Date: 2007/02/12 08:11:41 $ $Author: franciscom $
  * @author franciscom
  *
  * 20070105 - franciscom - changes in copy_to(),get_by_id()
@@ -744,7 +744,7 @@ function create_new_version($id,$user_id)
 function get_last_version_info($id)
 {
 	$sql = "SELECT MAX(version) AS version FROM tcversions,nodes_hierarchy WHERE ".
-		   " nodes_hierarchy.id = tcversions.id ".
+		     " nodes_hierarchy.id = tcversions.id ".
 	       " AND nodes_hierarchy.parent_id = {$id} ";
 	
 	$max_version = $this->db->fetchFirstRowSingleColumn($sql,'version');
@@ -1236,15 +1236,13 @@ function get_last_execution($id,$version_id,$tplan_id,$build_id,$get_no_executio
   {
     $build_id_filter=" AND e.build_id = {$build_id} ";	
   } 
-  $sql="SELECT MAX(e.id) AS execution_id, e.tcversion_id AS tcversion_id
-  	    FROM nodes_hierarchy NHA
-        JOIN executions e ON NHA.id = e.tcversion_id  
-                                     AND e.testplan_id = {$tplan_id}
-                                      {$build_id_filter}
-                                      AND e.status IS NOT NULL
-        $where_clause_1 
-        GROUP BY tcversion_id";
-        $recordset = $this->db->fetchColumnsIntoMap($sql,'tcversion_id','execution_id');
+  $sql="SELECT MAX(e.id) AS execution_id, e.tcversion_id AS tcversion_id " .
+  	   " FROM nodes_hierarchy NHA " .
+       " JOIN executions e ON NHA.id = e.tcversion_id  AND e.testplan_id = {$tplan_id} " .
+       " {$build_id_filter} AND e.status IS NOT NULL " .
+       " $where_clause_1 GROUP BY tcversion_id";
+       
+  $recordset = $this->db->fetchColumnsIntoMap($sql,'tcversion_id','execution_id');
 
   $and_exec_id='';
   if( !is_null($recordset) )

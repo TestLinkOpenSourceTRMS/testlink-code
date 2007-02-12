@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: exec.inc.php,v $
  *
- * @version $Revision: 1.34 $
- * @modified $Date: 2007/01/06 15:16:26 $ $Author: franciscom $
+ * @version $Revision: 1.35 $
+ * @modified $Date: 2007/02/12 08:07:53 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -540,4 +540,37 @@ function get_execution(&$db,$execution_id)
   return($map);
 }
 
+
+
+
+/*
+  function: delete_execution
+
+  args :
+  
+  returns: 
+
+  rev :
+       
+*/
+function delete_execution(&$db,$exec_id)
+{
+  $sql=array();
+  
+  // delete bugs
+  $sql[]="DELETE FROM execution_bugs WHERE execution_id = {$exec_id}";
+
+ 
+  // delete custom field values
+  $sql[]="DELETE FROM cfield_execution_values WHERE execution_id = {$exec_id}";
+ 
+  // delete execution 
+  $sql[]="DELETE FROM executions WHERE id = {$exec_id}";
+
+  foreach ($sql as $the_stm)
+  {
+  		$result = $db->exec_query($the_stm);
+  }
+
+}
 ?>

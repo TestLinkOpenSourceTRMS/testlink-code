@@ -1,0 +1,46 @@
+/*
+ * FCKeditor - The text editor for internet
+ * Copyright (C) 2003-2005 Frederico Caldeira Knabben
+ * 
+ * Licensed under the terms of the GNU Lesser General Public License:
+ * 		http://www.opensource.org/licenses/lgpl-license.php
+ * 
+ * For further information visit:
+ * 		http://www.fckeditor.net/
+ * 
+ * File Name: fck_internal.css
+ * 	This CSS Style Sheet defines rules used by the editor for its internal use.
+ * 
+ * File Authors:
+ * 		Frederico Caldeira Knabben (fredck@fckeditor.net)
+ */
+
+TABLE.FCK__ShowTableBorders, TABLE.FCK__ShowTableBorders TD
+{
+	border: #d3d3d3 1px solid ;
+}
+
+FORM
+{
+	border: 1px dotted #FF0000;
+	padding: 2px ;
+}
+
+.FCK__Flash
+{
+	border: darkgray 1px solid;
+	background-position: center center;
+	background-image: url(images/fck_flashlogo.gif);
+	background-repeat: no-repeat;
+	width: 80px ;
+	height: 80px ;
+}
+
+.FCK__Anchor
+{
+	background-position: center center;
+	background-image: url(images/fck_anchor.gif);
+	background-repeat: no-repeat;
+	width: 16px ;
+	height: 15px ;
+}

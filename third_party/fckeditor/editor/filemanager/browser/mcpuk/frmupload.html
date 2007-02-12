@@ -1,0 +1,231 @@
+<!--
+ * FCKeditor - The text editor for internet
+ * Copyright (C) 2003-2005 Frederico Caldeira Knabben
+ * 
+ * Licensed under the terms of the GNU Lesser General Public License:
+ * 		http://www.opensource.org/licenses/lgpl-license.php
+ * 
+ * For further information visit:
+ * 		http://www.fckeditor.net/
+ * 
+ * File Name: frmupload.html
+ * 	Page used to upload new files in the current folder.
+ * 
+ * File Authors:
+ * 		Frederico Caldeira Knabben (fredck@fckeditor.net)
+ * 		Grant French (grant@mcpuk.net)
+-->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+	<head>
+		<link href="browser.css" type="text/css" rel="stylesheet" />
+		<script type="text/javascript" src="js/fckxml.js"></script>
+		<script type="text/javascript" src="js/common.js"></script>
+		<script language="javascript">
+
+var randomnumber=Math.floor(Math.random()*65535);
+var refreshURL='';
+var uploading=false;
+
+function SetCurrentFolder( resourceType, folderPath )
+{
+	var sUrl = oConnector.UploadHandler +'?uploadID='+randomnumber+'&Connector='+escape(oConnector.ConnectorUrl)+'&Command=FileUpload' ;
+	sUrl += '&Type=' + resourceType ;
+	sUrl += '&CurrentFolder=' + folderPath ;
+	sUrl += '&ExtraParams=' + oConnector.ExtraParams ;
+	document.getElementById('frmUpload').action = sUrl ;
+	
+	oConnector.ResourceType = resourceType ;
+	oConnector.CurrentFolder = folderPath ;
+}
+
+function OnSubmit()
+{
+	if ( document.getElementById('NewFile').value.length == 0 )
+	{
+		alert( 'Please select a file from your computer' ) ;
+		return false ;
+	}
+
+	// Set the interface elements.
+	document.getElementById('eUploadMessage').innerHTML = 'Upload a new file in this folder (Upload in progress, please wait... 0%)' ;
+	document.getElementById('filebox').style.display="none";
+	resetProgressBar();
+	document.getElementById('progressbox').style.display="inline";
+	document.getElementById('btnUpload').disabled = true ;
+	
+	uploading=true;
+	setTimeout("GetUploadProgress()",2000);
+	
+	return true ;
+}
+
+function OnUploadCompleted( errorNumber, fileName )
+{
+	uploading=false;
+	
+	// Reset the Upload Worker Frame.
+	window.parent.frames['frmUploadWorker'].location = '' ;
+	
+	// Reset the upload form.
+	//Sometimes causes IE to get itself in a mess (wont allow second upload)
+	//document.getElementById('NewFile').reset() ;
+	
+	// Reset the interface elements.
+	document.getElementById('eUploadMessage').innerHTML = 'Upload a new file in this folder' ;
+	document.getElementById('btnUpload').disabled = false ;
+	
+	var randomnumber=Math.floor(Math.random()*65535);
+	SetCurrentFolder(oConnector.ResourceType,oConnector.CurrentFolder);
+	
+	switch ( errorNumber )
+	{
+		case 0 :
+			window.parent.frames['frmResourcesList'].Refresh() ;
+			document.getElementById('filebox').style.display="inline";
+			document.getElementById('progressbox').style.display="none";
+			break ;
+		case 201 :
+			window.parent.frames['frmResourcesList'].Refresh() ;
+			document.getElementById('filebox').style.display="inline";
+			document.getElementById('progressbox').style.display="none";
+			alert( 'A file with the same name is already available. The uploaded file has been renamed to "' + fileName + '"' ) ;
+			break ;
+		case 202 :
+			document.getElementById('filebox').style.display="inline";
+			document.getElementById('progressbox').style.display="none";
+			alert( 'Error, "'+fileName+'"' ) ;
+			break ;
+		default :
+			document.getElementById('filebox').style.display="inline";
+			document.getElementById('progressbox').style.display="none";
+			alert( 'Error on file upload. Error number: ' + errorNumber ) ;
+			break ;
+	}
+}
+
+function resetProgressBar() {
+	oProgressBar=document.getElementById('progress');
+	var rows=oProgressBar.getElementsByTagName('tr');
+	var row=rows[0];
+	var cols=row.getElementsByTagName('td');
+//	var label=document.getElementById("progress_label");
+	
+//	label.innerHTML="0%"
+	for (i=0;i<(cols.length-1);i++) {
+		cols[i].className="progress_hollow";	
+	}
+}
+
+warned=false;
+function GetUploadProgressCallback( fckXml ) {
+	// Get the current folder path.
+	
+	if (!uploading) return false;
+	
+	var oNode = fckXml.SelectSingleNode( 'Connector/CurrentFolder' ) ;
+	if (oNode==null) { if(!warned) { alert("Invalid XML response from connector."); warned=true; } return false; }
+	if ((oNode.attributes.getNamedItem('path')==null)||(oNode.attributes.getNamedItem('url')==null)) {
+		if(!warned) { alert("Invalid XML response from connector."); warned=true; }
+		return;
+	}
+	
+	var sCurrentFolderPath	= oNode.attributes.getNamedItem('path').value ;
+	var sCurrentFolderUrl	= oNode.attributes.getNamedItem('url').value ;
+
+	// Add the Folders.	
+	var oNode = fckXml.SelectSingleNode( 'Connector/Progress' ) ;
+	if (oNode==null) { if(!warned) { alert("Invalid XML response from connector."); warned=true; } return false; }
+	if ((oNode.attributes.getNamedItem('max')==null)||(oNode.attributes.getNamedItem('value')==null)) {
+		if(!warned) { alert("Invalid XML response from connector."); warned=true; }
+		return;
+	}
+	
+	var iMax	= oNode.attributes.getNamedItem('max').value ;
+	var iValue	= oNode.attributes.getNamedItem('value').value ;
+	
+	var oNode = fckXml.SelectSingleNode( 'Connector/RefreshURL' ) ;
+	if (oNode==null) { if(!warned) { alert("Invalid XML response from connector."); warned=true; } return false; }
+	if ((oNode.attributes.getNamedItem('url')==null)) {
+		if(!warned) { alert("Invalid XML response from connector."); warned=true; }
+		return;
+	}
+	refreshURL	= oNode.attributes.getNamedItem('url').value ;
+	
+	var oProgressBar=document.getElementById('progress');
+	//var label=document.getElementById("progress_label");
+	var rows=oProgressBar.getElementsByTagName('tr');
+	var row=rows[0];
+	var cols=row.getElementsByTagName('td');
+	var percentage=Math.floor((iValue/iMax)*100);
+	document.getElementById('eUploadMessage').innerHTML = 'Upload a new file in this folder (Upload in progress, please wait.. ' + percentage + '% )' ;
+	
+	//label.innerHTML=percentage+"%"
+	for (i=0;i<(cols.length-1);i++) {
+		if (((i+1)*(100/cols.length))<=percentage) {
+			cols[i].className="progress_filled";	
+		} else {
+			cols[i].className="progress_hollow";
+		}
+	}
+	
+	if (uploading) getProgressTimer=setTimeout("GetUploadProgress()",1000);
+}
+
+function GetUploadProgress() {
+	if (uploading) oConnector.SendCommand( 'GetUploadProgress', 'uploadID='+randomnumber+'&refreshURL='+escape(refreshURL), GetUploadProgressCallback ) ;
+}
+
+window.onload = function()
+{
+	window.top.IsLoadedUpload = true ;
+}
+		</script>
+	</head>
+	<body bottomMargin="0" topMargin="0">
+		<form id="frmUpload" action="" target="frmUploadWorker" method="post" enctype="multipart/form-data" onsubmit="return OnSubmit();">
+			<table height="100%" cellSpacing="0" cellPadding="0" width="100%" border="0">
+				<tr>
+					<td nowrap>
+						<span id="eUploadMessage">Upload a new file in this folder</span><br>
+						<table cellSpacing="0" cellPadding="0" width="100%" border="0">
+							<tr>
+								<td width="100%">
+									<div id="filebox"><input id="NewFile" name="NewFile" style="width: 100%; background-color: transparent;" type="file"></div>
+									<div id="progressbox" style="display: none">
+										<table id="progress" style="width: 100%" class="progress_bar">
+											<tr>
+												<td class="progress_hollow">&nbsp;</td>
+												<td class="progress_hollow">&nbsp;</td>
+												<td class="progress_hollow">&nbsp;</td>
+												<td class="progress_hollow">&nbsp;</td>
+												<td class="progress_hollow">&nbsp;</td>
+												<td class="progress_hollow">&nbsp;</td>
+												<td class="progress_hollow">&nbsp;</td>
+												<td class="progress_hollow">&nbsp;</td>
+												<td class="progress_hollow">&nbsp;</td>
+												<td class="progress_hollow">&nbsp;</td>
+												<td class="progress_hollow">&nbsp;</td>
+												<td class="progress_hollow">&nbsp;</td>
+												<td class="progress_hollow">&nbsp;</td>
+												<td class="progress_hollow">&nbsp;</td>
+												<td class="progress_hollow">&nbsp;</td>
+												<td class="progress_hollow">&nbsp;</td>
+												<td class="progress_hollow">&nbsp;</td>
+												<td class="progress_hollow">&nbsp;</td>
+												<td class="progress_hollow">&nbsp;</td>
+												<td class="progress_hollow">&nbsp;</td>
+											</tr>
+										</table>
+										<!--<div id="progress_label"></div>-->
+									</div>
+								</td>
+								<td nowrap>&nbsp;<input id="btnUpload" type="submit" value="Upload"></td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</form>
+	</body>
+</html>

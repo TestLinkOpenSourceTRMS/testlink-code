@@ -1,8 +1,9 @@
 <?php
 /*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: migrate_16_to_17.php,v 1.14 2007/02/08 07:55:14 franciscom Exp $ 
+$Id: migrate_16_to_17.php,v 1.15 2007/02/12 07:59:11 franciscom Exp $ 
 
+20070210 - franciscom - Second try to solve keyword-tc assignment migration bug
 20070208 - franciscom - trying to solve keyword-tc assignment migration bug
 20070204 - franciscom - changes in prules migration
 20070131 - franciscom - removed truncate of db_version table
@@ -211,6 +212,7 @@ $sql="SELECT mtc.*, mc.prodid " .
 
 $tc_specs=$source_db->fetchRowsIntoMap($sql,'id');
 
+
 $tcspecs_msg="Test Case Specifications:";
 if(!is_null($tc_specs)) 
 {
@@ -281,9 +283,10 @@ else
 echo "</div><p>";
 
 // -----------------------------------------------------------------------------------
+$hhmmss=date("H:i:s");
 echo "<a onclick=\"return DetailController.toggle('details-pcc')\" href=\"pcc/\">
 <img src='../img/icon-foldout.gif' align='top' title='show/hide'>
-Products, Components & Categories migration:</a>";
+Products, Components & Categories migration: {$msg_click_to_show} {$hhmmss}</a>";
 echo '<div class="detail-container" id="details-pcc" style="display: none;">';
 
 // Get list of 1.6 Products
@@ -298,23 +301,25 @@ if(is_null($products))
 migrate_cc_specs($source_db,$target_db,$products,$old_new);
 echo "</div><p>";
 
+$hhmmss=date("H:i:s");
 echo "<a onclick=\"return DetailController.toggle('details-kw')\" href=\"kw/\">
-<img src='../img/icon-foldout.gif' align='top' title='show/hide'>Keywords migration:</a>";
+<img src='../img/icon-foldout.gif' align='top' title='show/hide'>Keywords migration: {$msg_click_to_show} {$hhmmss}</a>";
 echo '<div class="detail-container" id="details-kw" style="display: none;">';
 
 $prod_keyword_tc=extract_kw_tc_links($source_db,$target_db,$tc_specs);
 migrate_keywords($source_db,$target_db,$products,$prod_keyword_tc,$old_new);
 echo "</div><p>";
 
+$hhmmss=date("H:i:s");
 echo "<a onclick=\"return DetailController.toggle('details-tcpu')\" href=\"tcpu/\">
-<img src='../img/icon-foldout.gif' align='top' title='show/hide'>Test case parent update:</a>";
+<img src='../img/icon-foldout.gif' align='top' title='show/hide'>Test case parent update: {$msg_click_to_show} {$hhmmss}</a>";
 echo '<div class="detail-container" id="details-tcpu" style="display: none;">';
 update_tc_specs_parents($source_db,$target_db,$tc_specs,$old_new);
 echo "</div><p>";
 
-
+$hhmmss=date("H:i:s");
 echo "<a onclick=\"return DetailController.toggle('details-tplan')\" href=\"tplan/\">
-<img src='../img/icon-foldout.gif' align='top' title='show/hide'>Test plans:</a>";
+<img src='../img/icon-foldout.gif' align='top' title='show/hide'>Test plans: {$msg_click_to_show} {$hhmmss}</a>";
 echo '<div class="detail-container" id="details-tplan" style="display: none;">';
 $sql="SELECT * FROM project ORDER BY ID";
 $tplans=$source_db->fetchRowsIntoMap($sql,'id');
@@ -328,8 +333,9 @@ else
 }
 echo "</div><p>";
 
+$hhmmss=date("H:i:s");
 echo "<a onclick=\"return DetailController.toggle('details-builds')\" href=\"tplan/\">
-<img src='../img/icon-foldout.gif' align='top' title='show/hide'>Builds:</a>";
+<img src='../img/icon-foldout.gif' align='top' title='show/hide'>Builds: {$msg_click_to_show} {$hhmmss}</a>";
 echo '<div class="detail-container" id="details-builds" style="display: none;">';
 
 // 20060908 - franciscom
@@ -347,8 +353,9 @@ else
 }
 echo "</div><p>";
 
+$hhmmss=date("H:i:s");
 echo "<a onclick=\"return DetailController.toggle('details-tctpa')\" href=\"tplan/\">
-<img src='../img/icon-foldout.gif' align='top' title='show/hide'>Test case -> test plan assignments:</a>";
+<img src='../img/icon-foldout.gif' align='top' title='show/hide'>Test case -> test plan assignments: {$msg_click_to_show} {$hhmmss}</a>";
 echo '<div class="detail-container" id="details-tctpa" style="display: none;">';
 
 $sql="SELECT tplan.name as tplan_name,tplan.id as projid,k.compid,tc.mgttcid AS mgttcid " .
@@ -375,8 +382,9 @@ echo "</div><p>";
 
 
 
+$hhmmss=date("H:i:s");
 echo "<a onclick=\"return DetailController.toggle('details-results')\" href=\"tplan/\">
-<img src='../img/icon-foldout.gif' align='top' title='show/hide'>Executions results:</a>";
+<img src='../img/icon-foldout.gif' align='top' title='show/hide'>Executions results: {$msg_click_to_show} {$hhmmss}</a>";
 echo '<div class="detail-container" id="details-results" style="display: none;">';
 
 
@@ -406,8 +414,9 @@ else
 echo "</div><p>";
 
 
+$hhmmss=date("H:i:s");
 echo "<a onclick=\"return DetailController.toggle('details-bugs')\" href=\"tplan/\">
-<img src='../img/icon-foldout.gif' align='top' title='show/hide'>Executions bugs:</a>";
+<img src='../img/icon-foldout.gif' align='top' title='show/hide'>Executions bugs: {$msg_click_to_show} {$hhmmss}</a>";
 echo '<div class="detail-container" id="details-bugs" style="display: none;">';
 $sql="SELECT bugs.tcid,bugs.build_id,bugs.bug,mgt.id AS mgttcid " .
      "FROM bugs,mgttestcase mgt,testcase t " .
@@ -426,8 +435,9 @@ else
 echo "</div><p>";
 
 
+$hhmmss=date("H:i:s");
 echo "<a onclick=\"return DetailController.toggle('details-user_tpa')\" href=\"tplan/\">
-<img src='../img/icon-foldout.gif' align='top' title='show/hide'>Users - Test plan assignments:</a>";
+<img src='../img/icon-foldout.gif' align='top' title='show/hide'>Users - Test plan assignments: {$msg_click_to_show} {$hhmmss}</a>";
 echo '<div class="detail-container" id="details-user_tpa" style="display: none;">';
 $sql="SELECT * from projrights ORDER BY userid";
 $user_tplans=$source_db->fetchRowsIntoMap($sql,'userid');
@@ -441,8 +451,9 @@ else
 }
 echo "</div><p>";
 
+$hhmmss=date("H:i:s");
 echo "<a onclick=\"return DetailController.toggle('details-prior')\" href=\"tplan/\">
-<img src='../img/icon-foldout.gif' align='top' title='show/hide'>Priority Rules:</a>";
+<img src='../img/icon-foldout.gif' align='top' title='show/hide'>Priority Rules: {$msg_click_to_show} {$hhmmss}</a>";
 echo '<div class="detail-container" id="details-prior" style="display: none;">';
 
 $sql="SELECT * from priority";
@@ -457,8 +468,9 @@ else
 }
 echo "</div><p>";
 
+$hhmmss=date("H:i:s");
 echo "<a onclick=\"return DetailController.toggle('details-Milestones')\" href=\"tplan/\">
-<img src='../img/icon-foldout.gif' align='top' title='show/hide'>Milestones:</a>";
+<img src='../img/icon-foldout.gif' align='top' title='show/hide'>Milestones: {$msg_click_to_show} {$hhmmss}</a>";
 echo '<div class="detail-container" id="details-Milestones" style="display: none;">';
 
 $sql="SELECT * from milestone";
@@ -494,8 +506,9 @@ $sql="SELECT tplan.name as tplan_name,tplan.id as projid," .
 $tp4risk_own=$source_db->get_recordset($sql);
 
 
+$hhmmss=date("H:i:s");
 echo "<a onclick=\"return DetailController.toggle('details-own')\" href=\"tplan/\">
-<img src='../img/icon-foldout.gif' align='top' title='show/hide'>Ownership (becomes user assignment=test_execution):</a>";
+<img src='../img/icon-foldout.gif' align='top' title='show/hide'>Ownership (becomes user assignment=test_execution): {$msg_click_to_show} {$hhmmss}</a>";
 echo '<div class="detail-container" id="details-own" style="display: none;">';
 
 if(is_null($tp4risk_own)) 
@@ -510,8 +523,9 @@ echo "</div><p>";
 
 
 
+$hhmmss=date("H:i:s");
 echo "<a onclick=\"return DetailController.toggle('details-req_spec_table')\" href=\"tplan/\">
-<img src='../img/icon-foldout.gif' align='top' title='show/hide'> req_spec Table:</a>";
+<img src='../img/icon-foldout.gif' align='top' title='show/hide'> Requirement Specification: {$msg_click_to_show} {$hhmmss}</a>";
 echo '<div class="detail-container" id="details-req_spec_table" style="display: none;">';
 
 $sql="SELECT * from req_spec";
@@ -528,8 +542,9 @@ echo "</div><p>";
 
 
 
+$hhmmss=date("H:i:s");
 echo "<a onclick=\"return DetailController.toggle('details-reqtable')\" href=\"tplan/\">
-<img src='../img/icon-foldout.gif' align='top' title='show/hide'> Requirements Table:</a>";
+<img src='../img/icon-foldout.gif' align='top' title='show/hide'> Requirements: {$msg_click_to_show} {$hhmmss}</a>";
 echo '<div class="detail-container" id="details-reqtable" style="display: none;">';
 
 // 20070103 - franciscom - added filter on NULL
@@ -548,8 +563,9 @@ echo "</div><p>";
 
 
 
+$hhmmss=date("H:i:s");
 echo "<a onclick=\"return DetailController.toggle('details-req_coverage')\" href=\"tplan/\">
-<img src='../img/icon-foldout.gif' align='top' title='show/hide'> Req. Coverage (requirement / test case relationship Table):</a>";
+<img src='../img/icon-foldout.gif' align='top' title='show/hide'> Req. Coverage (requirement / test case relationship): {$msg_click_to_show} {$hhmmss}</a>";
 echo '<div class="detail-container" id="details-req_coverage" style="display: none;">';
 
 $sql="SELECT * from req_coverage";
@@ -702,7 +718,6 @@ function migrate_keywords(&$source_db,&$target_db,&$products,&$prod_keyword_tc,&
               $xsql="INSERT INTO testcase_keywords (keyword_id,testcase_id) " .
                     " VALUES({$value['id']},{$tcid}) ";
               $target_db->exec_query($xsql);     
-              break;
             }
           }
           echo "<pre>   {$value['keyword']} migrated</pre>";
@@ -1506,6 +1521,7 @@ function extract_kw_tc_links($source_db,$target_db,$tc_specs)
       }
     }  
   }
+  //echo "<pre>debug 20070210 " . __FUNCTION__ . " --- "; print_r($map_prod_kw_tc); echo "</pre>";
   return($map_prod_kw_tc);
 }
 

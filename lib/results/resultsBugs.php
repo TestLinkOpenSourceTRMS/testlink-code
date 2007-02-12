@@ -34,18 +34,20 @@ while($suiteId = key($lastResultMap)) {
 	$bugInfo = null;
 
 	while ($testCaseId = key($currentSuiteInfo)){
+		// initialize bugInfo
+		// $allTimeStamps = array();
+		// initialize list of bugs associated with this testCaseId
+		$allBugLinks = array();
+		
 		$currentTestCaseInfo = $currentSuiteInfo[$testCaseId];
 		$suiteName = $currentTestCaseInfo['suiteName'];
 		$name = $currentTestCaseInfo['name'];		
-		
 		$suiteExecutions = $executionsMap[$suiteId];
-		
 		$rowArray = array($suiteName, $testCaseId . ":" . $name);
-		// initialize bugInfo
-		$bugLink = null;
-		$allBugLinks = array();
-		$allTimeStamps = array();
+
 		for ($i = 0; $i < sizeOf($suiteExecutions); $i++) {
+			// initialize bug associated with an execution
+			$bugLink = null;
 			$currentExecution = $suiteExecutions[$i];
 			//$currentTimeStamp = $currentExecution['execution_ts'];
 			//$dummy = null;
@@ -63,18 +65,18 @@ while($suiteId = key($lastResultMap)) {
 					array_push($allBugLinks, $bugLink);
 					//array_push($allTimeStamps, $currentTimeStamp);
 				}
-			}		
+			}					
 		}		
 		//array_push($rowArray, $timestampInfo);
 		$allBugLinksString = implode("", $allBugLinks);
-		$allTimeStampsString = implode("<BR>", $allTimeStamps);
-		array_push($rowArray, $allBugLinksString, $allTimeStampsString);
+		//$allTimeStampsString = implode("<BR>", $allTimeStamps);
+		array_push($rowArray, $allBugLinksString);
 		$arrData[$indexOfArrData] = $rowArray;
 		$indexOfArrData++;	
 		next($currentSuiteInfo);		
-	}
+	}  // end while
 	next($lastResultMap);
-}
+} // end while
 
 $smarty = new TLSmarty;
 $smarty->assign('title', lang_get('title_test_report_all_builds'));

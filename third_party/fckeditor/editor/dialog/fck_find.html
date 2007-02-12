@@ -1,25 +1,36 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <!--
- * FCKeditor - The text editor for internet
- * Copyright (C) 2003-2005 Frederico Caldeira Knabben
+ * FCKeditor - The text editor for Internet - http://www.fckeditor.net
+ * Copyright (C) 2003-2007 Frederico Caldeira Knabben
  * 
- * Licensed under the terms of the GNU Lesser General Public License:
- * 		http://www.opensource.org/licenses/lgpl-license.php
+ * == BEGIN LICENSE ==
  * 
- * For further information visit:
- * 		http://www.fckeditor.net/
+ * Licensed under the terms of any of the following licenses at your
+ * choice:
+ * 
+ *  - GNU General Public License Version 2 or later (the "GPL")
+ *    http://www.gnu.org/licenses/gpl.html
+ * 
+ *  - GNU Lesser General Public License Version 2.1 or later (the "LGPL")
+ *    http://www.gnu.org/licenses/lgpl.html
+ * 
+ *  - Mozilla Public License Version 1.1 or later (the "MPL")
+ *    http://www.mozilla.org/MPL/MPL-1.1.html
+ * 
+ * == END LICENSE ==
  * 
  * File Name: fck_find.html
  * 	"Find" dialog window.
  * 
  * File Authors:
- * 		Frederico Caldeira Knabben (fredck@fckeditor.net)
+ * 		Frederico Caldeira Knabben (www.fckeditor.net)
 -->
-<html>
-	<head>
-		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-		<meta content="noindex, nofollow" name="robots">
-		<script type="text/javascript">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title></title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta content="noindex, nofollow" name="robots" />
+	<script type="text/javascript">
 
 var oEditor = window.parent.InnerDialogLoaded() ;
 
@@ -67,10 +78,12 @@ function ReplaceTextNodes( parentNode, regex, replaceValue, replaceAll )
 
 function GetRegexExpr()
 {
+	var sExpr ;
+
 	if ( document.getElementById('chkWord').checked )
-		var sExpr = '\\b' + document.getElementById('txtFind').value + '\\b' ;
+		sExpr = '\\b' + document.getElementById('txtFind').value + '\\b' ;
 	else
-		var sExpr = document.getElementById('txtFind').value ;
+		sExpr = document.getElementById('txtFind').value ;
 
 	return sExpr ;
 }
@@ -79,8 +92,6 @@ function GetCase()
 {
 	return ( document.getElementById('chkCase').checked ? '' : 'i' ) ;
 }
-
-var oRange = oEditor.FCK.EditorDocument.body.createTextRange() ;
 
 function Ok()
 {
@@ -92,6 +103,11 @@ function Ok()
 	else
 		FindGecko() ;
 }
+
+var oRange ;
+
+if ( oEditor.FCKBrowserInfo.IsIE )
+	oRange = oEditor.FCK.EditorDocument.body.createTextRange() ;
 
 function FindIE()
 {
@@ -125,36 +141,37 @@ function FindGecko()
 	var bWord = document.getElementById('chkWord').checked ;
 
 	// window.find( searchString, caseSensitive, backwards, wrapAround, wholeWord, searchInFrames, showDialog ) ;
-	oEditor.FCK.EditorWindow.find( document.getElementById('txtFind').value, bCase, false, false, bWord, false, false ) ;
-
+	if ( !oEditor.FCK.EditorWindow.find( document.getElementById('txtFind').value, bCase, false, false, bWord, false, false ) )
+		alert( oEditor.FCKLang.DlgFindNotFoundMsg ) ;
 }
-		</script>
-	</head>
-	<body onload="OnLoad()" scroll="no" style="OVERFLOW: hidden">
-		<table cellSpacing="3" cellPadding="2" width="100%" border="0">
-			<tr>
-				<td nowrap>
-					<label for="txtFind" fckLang="DlgReplaceFindLbl">Find what:</label>&nbsp;
-				</td>
-				<td width="100%">
-					<input id="txtFind" style="WIDTH: 100%" tabIndex="1" type="text">
-				</td>
-				<td>
-					<input id="btnFind" style="WIDTH: 100%; PADDING-RIGHT: 5px; PADDING-LEFT: 5px" onclick="Ok();"
-						type="button" value="Find" fckLang="DlgFindFindBtn">
-				</td>
-			</tr>
-			<tr>
-				<td valign="bottom" colSpan="3">
-					&nbsp;<input id="chkCase" tabIndex="3" type="checkbox"><label for="chkCase" fckLang="DlgReplaceCaseChk">Match 
-						case</label>
-					<br>
-					<div id="divWord" style="DISPLAY: none">
-						&nbsp;<input id="chkWord" tabIndex="4" type="checkbox"><label for="chkWord" fckLang="DlgReplaceWordChk">Match 
-							whole word</label>
-					</div>
-				</td>
-			</tr>
-		</table>
-	</body>
+	</script>
+</head>
+<body onload="OnLoad()" style="overflow: hidden">
+	<table cellspacing="3" cellpadding="2" width="100%" border="0">
+		<tr>
+			<td nowrap="nowrap">
+				<label for="txtFind" fcklang="DlgReplaceFindLbl">
+					Find what:</label>&nbsp;
+			</td>
+			<td width="100%">
+				<input id="txtFind" style="width: 100%" tabindex="1" type="text" />
+			</td>
+			<td>
+				<input id="btnFind" style="padding-right: 5px; padding-left: 5px" onclick="Ok();"
+					type="button" value="Find" fcklang="DlgFindFindBtn" />
+			</td>
+		</tr>
+		<tr>
+			<td valign="bottom" colspan="3">
+				&nbsp;<input id="chkCase" tabindex="3" type="checkbox" /><label for="chkCase" fcklang="DlgReplaceCaseChk">Match
+					case</label>
+				<br />
+				<div id="divWord" style="display: none">
+					&nbsp;<input id="chkWord" tabindex="4" type="checkbox" /><label for="chkWord" fcklang="DlgReplaceWordChk">Match
+						whole word</label>
+				</div>
+			</td>
+		</tr>
+	</table>
+</body>
 </html>

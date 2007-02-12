@@ -1,12 +1,22 @@
 ﻿/*
- * FCKeditor - The text editor for internet
- * Copyright (C) 2003-2005 Frederico Caldeira Knabben
+ * FCKeditor - The text editor for Internet - http://www.fckeditor.net
+ * Copyright (C) 2003-2007 Frederico Caldeira Knabben
  * 
- * Licensed under the terms of the GNU Lesser General Public License:
- * 		http://www.opensource.org/licenses/lgpl-license.php
+ * == BEGIN LICENSE ==
  * 
- * For further information visit:
- * 		http://www.fckeditor.net/
+ * Licensed under the terms of any of the following licenses at your
+ * choice:
+ * 
+ *  - GNU General Public License Version 2 or later (the "GPL")
+ *    http://www.gnu.org/licenses/gpl.html
+ * 
+ *  - GNU Lesser General Public License Version 2.1 or later (the "LGPL")
+ *    http://www.gnu.org/licenses/lgpl.html
+ * 
+ *  - Mozilla Public License Version 1.1 or later (the "MPL")
+ *    http://www.mozilla.org/MPL/MPL-1.1.html
+ * 
+ * == END LICENSE ==
  * 
  * File Name: zh.js
  * 	Chinese Traditional language file.
@@ -82,7 +92,9 @@ Source				: "原始碼",
 Find				: "尋找",
 Replace				: "取代",
 SpellCheck			: "拼字檢查",
-UniversalKeyboard	: "各國鍵盤",
+UniversalKeyboard	: "萬國鍵盤",
+PageBreakLbl		: "分頁符號",
+PageBreak			: "插入分頁符號",
 
 Form			: "表單",
 Checkbox		: "核取方塊",
@@ -94,8 +106,13 @@ Button			: "按鈕",
 SelectionField	: "清單/選單",
 ImageButton		: "影像按鈕",
 
+FitWindow		: "編輯器最大化",
+
 // Context Menu
 EditLink			: "編輯超連結",
+CellCM				: "儲存格",
+RowCM				: "列",
+ColumnCM			: "欄",
 InsertRow			: "插入列",
 DeleteRows			: "刪除列",
 InsertColumn		: "插入欄",
@@ -104,6 +121,7 @@ InsertCell			: "插入儲存格",
 DeleteCells			: "刪除儲存格",
 MergeCells			: "合併儲存格",
 SplitCell			: "分割儲存格",
+TableDelete			: "刪除表格",
 CellProperties		: "儲存格屬性",
 TableProperties		: "表格屬性",
 ImageProperties		: "影像屬性",
@@ -120,17 +138,20 @@ SelectionFieldProp	: "清單/選單屬性",
 TextareaProp		: "文字區域屬性",
 FormProp			: "表單屬性",
 
-FontFormats			: "一般;格式化;地址;標題 1;標題 2;標題 3;標題 4;標題 5;標題 6;段落 (DIV)",
+FontFormats			: "本文;已格式化;位址;標題 1;標題 2;標題 3;標題 4;標題 5;標題 6;本文 (DIV)",		//REVIEW : Check _getfontformat.html
 
 // Alerts and Messages
 ProcessingXHTML		: "處理 XHTML 中，請稍候…",
 Done				: "完成",
-PasteWordConfirm	: "您想要貼上的文字似乎是自 Word 複製而來，請問您是否要先清除 Word 的格式後再行貼上？",
+PasteWordConfirm	: "您想貼上的文字似乎是自 Word 複製而來，請問您是否要先清除 Word 的格式後再行貼上？",
 NotCompatiblePaste	: "此指令僅在 Internet Explorer 5.5 或以上的版本有效。請問您是否同意不清除格式即貼上？",
 UnknownToolbarItem	: "未知工具列項目 \"%1\"",
 UnknownCommand		: "未知指令名稱 \"%1\"",
 NotImplemented		: "尚未安裝此指令",
 UnknownToolbarSet	: "工具列設定 \"%1\" 不存在",
+NoActiveX			: "瀏覽器的安全性設定限制了本編輯器的某些功能。您必須啟用安全性設定中的「執行ActiveX控制項與外掛程式」項目，否則本編輯器將會出現錯誤並缺少某些功能",
+BrowseServerBlocked : "無法開啟資源瀏覽器，請確定所有快顯視窗封鎖程式是否關閉",
+DialogBlocked		: "無法開啟對話視窗，請確定所有快顯視窗封鎖程式是否關閉",
 
 // Dialogs
 DlgBtnOK			: "確定",
@@ -138,12 +159,12 @@ DlgBtnCancel		: "取消",
 DlgBtnClose			: "關閉",
 DlgBtnBrowseServer	: "瀏覽伺服器端",
 DlgAdvancedTag		: "進階",
-DlgOpOther			: "&lt;其他&gt;",
+DlgOpOther			: "<其他>",
 DlgInfoTab			: "資訊",
 DlgAlertUrl			: "請插入 URL",
 
 // General Dialogs Labels
-DlgGenNotSet		: "&lt;尚未設定&gt;",
+DlgGenNotSet		: "<尚未設定>",
 DlgGenId			: "ID",
 DlgGenLangDir		: "語言方向",
 DlgGenLangDirLtr	: "由左而右 (LTR)",
@@ -207,12 +228,12 @@ DlgLnkTypeURL		: "URL",
 DlgLnkTypeAnchor	: "本頁錨點",
 DlgLnkTypeEMail		: "電子郵件",
 DlgLnkProto			: "通訊協定",
-DlgLnkProtoOther	: "&lt;其他&gt;",
+DlgLnkProtoOther	: "<其他>",
 DlgLnkURL			: "URL",
 DlgLnkAnchorSel		: "請選擇錨點",
 DlgLnkAnchorByName	: "依錨點名稱",
 DlgLnkAnchorById	: "依元件 ID",
-DlgLnkNoAnchors		: "&lt;本文件尚無可用之錨點&gt;",
+DlgLnkNoAnchors		: "<本文件尚無可用之錨點>",		//REVIEW : Change < and > with ( and )
 DlgLnkEMail			: "電子郵件",
 DlgLnkEMailSubject	: "郵件主旨",
 DlgLnkEMailBody		: "郵件內容",
@@ -220,8 +241,8 @@ DlgLnkUpload		: "上傳",
 DlgLnkBtnUpload		: "傳送至伺服器",
 
 DlgLnkTarget		: "目標",
-DlgLnkTargetFrame	: "&lt;框架&gt;",
-DlgLnkTargetPopup	: "&lt;快顯視窗&gt;",
+DlgLnkTargetFrame	: "<框架>",
+DlgLnkTargetPopup	: "<快顯視窗>",
 DlgLnkTargetBlank	: "新視窗 (_blank)",
 DlgLnkTargetParent	: "父視窗 (_parent)",
 DlgLnkTargetSelf	: "本視窗 (_self)",
@@ -245,6 +266,7 @@ DlgLnkPopTop		: "右",
 DlnLnkMsgNoUrl		: "請輸入欲連結的 URL",
 DlnLnkMsgNoEMail	: "請輸入電子郵件位址",
 DlnLnkMsgNoAnchor	: "請選擇錨點",
+DlnLnkMsgInvPopName	: "快顯名稱必須以「英文字母」為開頭，且不得含有空白",
 
 // Color Dialog
 DlgColorTitle		: "請選擇顏色",
@@ -264,7 +286,7 @@ DlgTableRows		: "列數",
 DlgTableColumns		: "欄數",
 DlgTableBorder		: "邊框",
 DlgTableAlign		: "對齊",
-DlgTableAlignNotSet	: "&lt;未設定&gt;",
+DlgTableAlignNotSet	: "<未設定>",
 DlgTableAlignLeft	: "靠左對齊",
 DlgTableAlignCenter	: "置中",
 DlgTableAlignRight	: "靠右對齊",
@@ -275,6 +297,7 @@ DlgTableHeight		: "高度",
 DlgTableCellSpace	: "間距",
 DlgTableCellPad		: "內距",
 DlgTableCaption		: "標題",
+DlgTableSummary		: "摘要",
 
 // Table Cell Dialog
 DlgCellTitle		: "儲存格屬性",
@@ -283,16 +306,16 @@ DlgCellWidthPx		: "像素",
 DlgCellWidthPc		: "百分比",
 DlgCellHeight		: "高度",
 DlgCellWordWrap		: "自動換行",
-DlgCellWordWrapNotSet	: "&lt;尚未設定&gt;",
+DlgCellWordWrapNotSet	: "<尚未設定>",
 DlgCellWordWrapYes	: "是",
 DlgCellWordWrapNo	: "否",
 DlgCellHorAlign		: "水平對齊",
-DlgCellHorAlignNotSet	: "&lt;尚未設定&gt;",
+DlgCellHorAlignNotSet	: "<尚未設定>",
 DlgCellHorAlignLeft	: "靠左對齊",
 DlgCellHorAlignCenter	: "置中",
 DlgCellHorAlignRight: "靠右對齊",
 DlgCellVerAlign		: "垂直對齊",
-DlgCellVerAlignNotSet	: "&lt;尚未設定&gt;",
+DlgCellVerAlignNotSet	: "<尚未設定>",
 DlgCellVerAlignTop	: "靠上對齊",
 DlgCellVerAlignMiddle	: "置中",
 DlgCellVerAlignBottom	: "靠下對齊",
@@ -318,9 +341,9 @@ DlgReplaceReplAllBtn	: "全部取代",
 DlgReplaceWordChk		: "全字相符",
 
 // Paste Operations / Dialog
-PasteErrorPaste	: "您的瀏覽器的安全性設定不允編輯器自動執行貼上動作。請使用快捷鍵 (Ctrl+V) 貼上。",
-PasteErrorCut	: "您的瀏覽器的安全性設定不允編輯器自動執行剪下動作。請使用快捷鍵 (Ctrl+X) 剪下。",
-PasteErrorCopy	: "您的瀏覽器的安全性設定不允編輯器自動執行複製動作。請使用快捷鍵 (Ctrl+C) 複製。",
+PasteErrorPaste	: "瀏覽器的安全性設定不允許編輯器自動執行貼上動作。請使用快捷鍵 (Ctrl+V) 貼上。",
+PasteErrorCut	: "瀏覽器的安全性設定不允許編輯器自動執行剪下動作。請使用快捷鍵 (Ctrl+X) 剪下。",
+PasteErrorCopy	: "瀏覽器的安全性設定不允許編輯器自動執行複製動作。請使用快捷鍵 (Ctrl+C) 複製。",
 
 PasteAsText		: "貼為純文字格式",
 PasteFromWord	: "自 Word 貼上",
@@ -329,7 +352,6 @@ DlgPasteMsg2	: "請使用快捷鍵 (<strong>Ctrl+V</strong>) 貼到下方區域�
 DlgPasteIgnoreFont		: "移除字型設定",
 DlgPasteRemoveStyles	: "移除樣式設定",
 DlgPasteCleanBox		: "清除文字區域",
-
 
 // Color Picker
 ColorAutomatic	: "自動",
@@ -361,8 +383,11 @@ DlgSpellManyChanges		: "拼字檢查完成：更改了 %1 個單字",
 IeSpellDownload			: "尚未安裝拼字檢查元件。您是否想要現在下載？",
 
 // Button Dialog
-DlgButtonText	: "顯示文字 (值)",
-DlgButtonType	: "類型",
+DlgButtonText		: "顯示文字 (值)",
+DlgButtonType		: "類型",
+DlgButtonTypeBtn	: "按鈕 (Button)",
+DlgButtonTypeSbm	: "送出 (Submit)",
+DlgButtonTypeRst	: "重設 (Reset)",
 
 // Checkbox and Radio Button Dialogs
 DlgCheckboxName		: "名稱",
@@ -411,9 +436,10 @@ DlgHiddenValue	: "值",
 // Bulleted List Dialog
 BulletedListProp	: "項目清單屬性",
 NumberedListProp	: "編號清單屬性",
+DlgLstStart			: "起始編號",
 DlgLstType			: "清單類型",
 DlgLstTypeCircle	: "圓圈",
-DlgLstTypeDisk		: "圓點",
+DlgLstTypeDisc		: "圓點",
 DlgLstTypeSquare	: "方塊",
 DlgLstTypeNumbers	: "數字 (1, 2, 3)",
 DlgLstTypeLCase		: "小寫字母 (a, b, c)",
@@ -433,6 +459,15 @@ DlgDocLangDirLTR	: "由左而右 (LTR)",
 DlgDocLangDirRTL	: "由右而左 (RTL)",
 DlgDocLangCode		: "語言代碼",
 DlgDocCharSet		: "字元編碼",
+DlgDocCharSetCE		: "中歐語系",
+DlgDocCharSetCT		: "正體中文 (Big5)",
+DlgDocCharSetCR		: "斯拉夫文",
+DlgDocCharSetGR		: "希臘文",
+DlgDocCharSetJP		: "日文",
+DlgDocCharSetKR		: "韓文",
+DlgDocCharSetTR		: "土耳其文",
+DlgDocCharSetUN		: "Unicode (UTF-8)",
+DlgDocCharSetWE		: "西歐語系",
 DlgDocCharSetOther	: "其他字元編碼",
 
 DlgDocDocType		: "文件類型",
@@ -462,11 +497,12 @@ DlgTemplatesTitle	: "內容樣版",
 DlgTemplatesSelMsg	: "請選擇欲開啟的樣版<br> (原有的內容將會被清除):",
 DlgTemplatesLoading	: "讀取樣版清單中，請稍候…",
 DlgTemplatesNoTpl	: "(無樣版)",
+DlgTemplatesReplace	: "取代原有內容",
 
 // About Dialog
 DlgAboutAboutTab	: "關於",
 DlgAboutBrowserInfoTab	: "瀏覽器資訊",
+DlgAboutLicenseTab	: "許可證",
 DlgAboutVersion		: "版本",
-DlgAboutLicense		: "依據 GNU 較寬鬆公共許可證(LGPL)發佈",
 DlgAboutInfo		: "想獲得更多資訊請至 "
-}
+};

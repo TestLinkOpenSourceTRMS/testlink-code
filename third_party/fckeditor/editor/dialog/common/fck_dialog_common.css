@@ -1,25 +1,34 @@
 /*
- * FCKeditor - The text editor for internet
- * Copyright (C) 2003-2005 Frederico Caldeira Knabben
+ * FCKeditor - The text editor for Internet - http://www.fckeditor.net
+ * Copyright (C) 2003-2007 Frederico Caldeira Knabben
  * 
- * Licensed under the terms of the GNU Lesser General Public License:
- * 		http://www.opensource.org/licenses/lgpl-license.php
+ * == BEGIN LICENSE ==
  * 
- * For further information visit:
- * 		http://www.fckeditor.net/
+ * Licensed under the terms of any of the following licenses at your
+ * choice:
+ * 
+ *  - GNU General Public License Version 2 or later (the "GPL")
+ *    http://www.gnu.org/licenses/gpl.html
+ * 
+ *  - GNU Lesser General Public License Version 2.1 or later (the "LGPL")
+ *    http://www.gnu.org/licenses/lgpl.html
+ * 
+ *  - Mozilla Public License Version 1.1 or later (the "MPL")
+ *    http://www.mozilla.org/MPL/MPL-1.1.html
+ * 
+ * == END LICENSE ==
  * 
  * File Name: fck_dialog_common.css
  * 	This is the CSS file used for interface details in some dialog
  * 	windows.
  * 
  * File Authors:
- * 		Frederico Caldeira Knabben (fredck@fckeditor.net)
+ * 		Frederico Caldeira Knabben (www.fckeditor.net)
  */
 
 .ImagePreviewArea
 {
 	border: #000000 1px solid;
-	padding: 5px;
 	overflow: auto;
 	width: 100%;
 	height: 170px;
@@ -56,7 +65,7 @@
 	width: 16px;
 	height: 16px;
 	background-repeat: no-repeat;
-	border: 1px none;
+	border: none 1px;
 	font-size: 1px ;
 }
 
@@ -67,12 +76,12 @@
 
 .BtnOver
 {
-	border: 1px outset;
+	border: outset 1px;
 	cursor: pointer;
 	cursor: hand;
 }
 
 .FCK__FieldNumeric
 {
-	behavior: url(fcknumericfield.htc) ;
+	behavior: url(common/fcknumericfield.htc) ;
 }

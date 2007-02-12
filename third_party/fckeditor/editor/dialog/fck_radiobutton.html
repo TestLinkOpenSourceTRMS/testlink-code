@@ -1,19 +1,29 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" >
 <!--
- * FCKeditor - The text editor for internet
- * Copyright (C) 2003-2005 Frederico Caldeira Knabben
+ * FCKeditor - The text editor for Internet - http://www.fckeditor.net
+ * Copyright (C) 2003-2007 Frederico Caldeira Knabben
  * 
- * Licensed under the terms of the GNU Lesser General Public License:
- * 		http://www.opensource.org/licenses/lgpl-license.php
+ * == BEGIN LICENSE ==
  * 
- * For further information visit:
- * 		http://www.fckeditor.net/
+ * Licensed under the terms of any of the following licenses at your
+ * choice:
+ * 
+ *  - GNU General Public License Version 2 or later (the "GPL")
+ *    http://www.gnu.org/licenses/gpl.html
+ * 
+ *  - GNU Lesser General Public License Version 2.1 or later (the "LGPL")
+ *    http://www.gnu.org/licenses/lgpl.html
+ * 
+ *  - Mozilla Public License Version 1.1 or later (the "MPL")
+ *    http://www.mozilla.org/MPL/MPL-1.1.html
+ * 
+ * == END LICENSE ==
  * 
  * File Name: fck_radiobutton.html
  * 	Radio Button dialog window.
  * 
  * File Authors:
- * 		Frederico Caldeira Knabben (fredck@fckeditor.net)
+ * 		Frederico Caldeira Knabben (www.fckeditor.net)
 -->
 <html>
 	<head>
@@ -38,7 +48,7 @@ window.onload = function()
 	if ( oActiveEl && oActiveEl.tagName.toUpperCase() == 'INPUT' && oActiveEl.type == 'radio' )
 	{
 		GetE('txtName').value		= oActiveEl.name ;
-		GetE('txtValue').value		= oActiveEl.value ;
+		GetE('txtValue').value		= oEditor.FCKBrowserInfo.IsIE ? oActiveEl.value : GetAttribute( oActiveEl, 'value' ) ;
 		GetE('txtSelected').checked	= oActiveEl.checked ;
 	}
 	else
@@ -56,14 +66,17 @@ function Ok()
 		oActiveEl = oEditor.FCK.InsertElementAndGetIt( oActiveEl ) ;
 	}
 
-	oActiveEl.name = GetE('txtName').value ;
-	SetAttribute( oActiveEl, 'value', GetE('txtValue').value ) ;
+	if ( GetE('txtName').value.length > 0 )
+		oActiveEl.name = GetE('txtName').value ;
+		
+	if ( oEditor.FCKBrowserInfo.IsIE )
+		oActiveEl.value = GetE('txtValue').value ;
+	else
+		SetAttribute( oActiveEl, 'value', GetE('txtValue').value ) ;
 
-	if ( GetE('txtSelected').checked )
-	{
-		SetAttribute( oActiveEl, 'checked', 'checked' ) ;
-		oActiveEl.checked = GetE('txtSelected').checked ;
-	}
+	var bIsChecked = GetE('txtSelected').checked ;
+	SetAttribute( oActiveEl, 'checked', bIsChecked ? 'checked' : null ) ;	// For Firefox
+	oActiveEl.checked = bIsChecked ;
 
 	return true ;
 }

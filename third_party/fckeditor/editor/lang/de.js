@@ -1,12 +1,22 @@
 ﻿/*
- * FCKeditor - The text editor for internet
- * Copyright (C) 2003-2005 Frederico Caldeira Knabben
+ * FCKeditor - The text editor for Internet - http://www.fckeditor.net
+ * Copyright (C) 2003-2007 Frederico Caldeira Knabben
  * 
- * Licensed under the terms of the GNU Lesser General Public License:
- * 		http://www.opensource.org/licenses/lgpl-license.php
+ * == BEGIN LICENSE ==
  * 
- * For further information visit:
- * 		http://www.fckeditor.net/
+ * Licensed under the terms of any of the following licenses at your
+ * choice:
+ * 
+ *  - GNU General Public License Version 2 or later (the "GPL")
+ *    http://www.gnu.org/licenses/gpl.html
+ * 
+ *  - GNU Lesser General Public License Version 2.1 or later (the "LGPL")
+ *    http://www.gnu.org/licenses/lgpl.html
+ * 
+ *  - Mozilla Public License Version 1.1 or later (the "MPL")
+ *    http://www.mozilla.org/MPL/MPL-1.1.html
+ * 
+ * == END LICENSE ==
  * 
  * File Name: de.js
  * 	German language file.
@@ -21,8 +31,8 @@ var FCKLang =
 // Language direction : "ltr" (left to right) or "rtl" (right to left).
 Dir					: "ltr",
 
-ToolbarCollapse		: "Toolbar einklappen",
-ToolbarExpand		: "Toolbar ausklappen",
+ToolbarCollapse		: "Symbolleiste einklappen",
+ToolbarExpand		: "Symbolleiste ausklappen",
 
 // Toolbar Items and Context Menu
 Save				: "Speichern",
@@ -32,7 +42,7 @@ Cut					: "Ausschneiden",
 Copy				: "Kopieren",
 Paste				: "Einfügen",
 PasteText			: "aus Textdatei einfügen",
-PasteWord			: "aus Word einfügen",
+PasteWord			: "aus MS-Word einfügen",
 Print				: "Drucken",
 SelectAll			: "Alles auswählen",
 RemoveFormat		: "Formatierungen entfernen",
@@ -73,17 +83,19 @@ BulletedListLbl		: "Liste",
 BulletedList		: "Liste einfügen/entfernen",
 ShowTableBorders	: "Zeige Tabellenrahmen",
 ShowDetails			: "Zeige Details",
-Style				: "Style",
+Style				: "Stil",
 FontFormat			: "Format",
-Font				: "Font",
-FontSize			: "Size",
+Font				: "Schriftart",
+FontSize			: "Größe",
 TextColor			: "Textfarbe",
 BGColor				: "Hintergrundfarbe",
 Source				: "Quellcode",
 Find				: "Finden",
 Replace				: "Ersetzen",
-SpellCheck			: "Rechtschreibprü:fung",
+SpellCheck			: "Rechtschreibprüfung",
 UniversalKeyboard	: "Universal-Tastatur",
+PageBreakLbl		: "Seitenumbruch",
+PageBreak			: "Seitenumbruch einfügen",
 
 Form			: "Formular",
 Checkbox		: "Checkbox",
@@ -95,8 +107,13 @@ Button			: "Klickbutton",
 SelectionField	: "Auswahlfeld",
 ImageButton		: "Bildbutton",
 
+FitWindow		: "Editor maximieren",
+
 // Context Menu
 EditLink			: "Link editieren",
+CellCM				: "Zelle",
+RowCM				: "Zeile",
+ColumnCM			: "Spalte",
 InsertRow			: "Zeile einfügen",
 DeleteRows			: "Zeile entfernen",
 InsertColumn		: "Spalte einfügen",
@@ -105,6 +122,7 @@ InsertCell			: "Zelle einfügen",
 DeleteCells			: "Zelle löschen",
 MergeCells			: "Zellen vereinen",
 SplitCell			: "Zelle teilen",
+TableDelete			: "Tabelle löschen",
 CellProperties		: "Zellen Eigenschaften",
 TableProperties		: "Tabellen Eigenschaften",
 ImageProperties		: "Bild Eigenschaften",
@@ -114,24 +132,27 @@ AnchorProp			: "Anker Eigenschaften",
 ButtonProp			: "Button Eigenschaften",
 CheckboxProp		: "Checkbox Eigenschaften",
 HiddenFieldProp		: "Verstecktes Feld Eigenschaften",
-RadioButtonProp		: "Radiobutton Eigenschaften",
+RadioButtonProp		: "Optionsfeld Eigenschaften",
 ImageButtonProp		: "Bildbutton Eigenschaften",
-TextFieldProp		: "Textfeld einzeilig Eigenschaften",
+TextFieldProp		: "Textfeld (einzeilig) Eigenschaften",
 SelectionFieldProp	: "Auswahlfeld Eigenschaften",
-TextareaProp		: "Textfeld mehrzeilig Eigenschaften",
+TextareaProp		: "Textfeld (mehrzeilig) Eigenschaften",
 FormProp			: "Formular Eigenschaften",
 
-FontFormats			: "Normal;Formatiert;Addresse;Überschrift 1;Überschrift 2;Überschrift 3;Überschrift 4;Überschrift 5;Überschrift 6",
+FontFormats			: "Normal;Formatiert;Addresse;Überschrift 1;Überschrift 2;Überschrift 3;Überschrift 4;Überschrift 5;Überschrift 6;Normal (DIV)",		//REVIEW : Check _getfontformat.html
 
 // Alerts and Messages
 ProcessingXHTML		: "Bearbeite XHTML. Bitte warten...",
 Done				: "Fertig",
-PasteWordConfirm	: "Der Text, den Sie einfügen Möchten, scheint aus Word kopiert zu sein. Möchten Sie ihn zuvor bereinigen lassen?",
+PasteWordConfirm	: "Der Text, den Sie einfügen möchten, scheint aus MS-Word kopiert zu sein. Möchten Sie ihn zuvor bereinigen lassen?",
 NotCompatiblePaste	: "Diese Funktion steht nur im Internet Explorer ab Version 5.5 zur Verfügung. Möchten Sie den Text unbereinigt einfügen?",
 UnknownToolbarItem	: "Unbekanntes Menüleisten-Objekt \"%1\"",
 UnknownCommand		: "Unbekannter Befehl \"%1\"",
 NotImplemented		: "Befehl nicht implementiert",
 UnknownToolbarSet	: "Menüleiste \"%1\" existiert nicht",
+NoActiveX			: "Die Sicherheitseinstellungen Ihres Browsers beschränken evtl. einige Funktionen des Editors. Aktivieren Sie die Option \"ActiveX-Steuerelemente und Plugins ausführen\" in den Sicherheitseinstellungen, um diese Funktionen nutzen zu können",
+BrowseServerBlocked : "Ein Auswahlfenster konnte nicht geöffnet werden. Stellen Sie sicher, das alle Popup-Blocker ausgeschaltet sind.",
+DialogBlocked		: "Das Dialog-Fenster konnte nicht geöffnet werden. Stellen Sie sicher, das alle Popup-Blocker ausgeschaltet sind.",
 
 // Dialogs
 DlgBtnOK			: "OK",
@@ -139,12 +160,12 @@ DlgBtnCancel		: "Abbrechen",
 DlgBtnClose			: "Schließen",
 DlgBtnBrowseServer	: "Server durchsuchen",
 DlgAdvancedTag		: "Erweitert",
-DlgOpOther			: "&lt;andere&gt;",
+DlgOpOther			: "<andere>",
 DlgInfoTab			: "Info",
 DlgAlertUrl			: "Bitte tragen Sie die URL ein",
 
 // General Dialogs Labels
-DlgGenNotSet		: "&lt; nichts &gt;",
+DlgGenNotSet		: "< nichts >",
 DlgGenId			: "ID",
 DlgGenLangDir		: "Schreibrichtung",
 DlgGenLangDirLtr	: "Links nach Rechts (LTR)",
@@ -169,11 +190,11 @@ DlgImgUpload		: "Upload",
 DlgImgAlt			: "Alternativer Text",
 DlgImgWidth			: "Breite",
 DlgImgHeight		: "Höhe",
-DlgImgLockRatio		: "Größenverhaeltniss beibehalten",
-DlgBtnResetSize		: "Größe zuruecksetzen",
+DlgImgLockRatio		: "Größenverhältniss beibehalten",
+DlgBtnResetSize		: "Größe zurücksetzen",
 DlgImgBorder		: "Rahmen",
-DlgImgHSpace		: "H-Freiraum",
-DlgImgVSpace		: "V-Freiraum",
+DlgImgHSpace		: "H-Abstand",
+DlgImgVSpace		: "V-Abstand",
 DlgImgAlign			: "Ausrichtung",
 DlgImgAlignLeft		: "Links",
 DlgImgAlignAbsBottom: "Abs Unten",
@@ -192,7 +213,7 @@ DlgImgLinkTab		: "Link",
 DlgFlashTitle		: "Flash Eigenschaften",
 DlgFlashChkPlay		: "autom. Abspielen",
 DlgFlashChkLoop		: "Endlosschleife",
-DlgFlashChkMenu		: "Aktiviere Flash Menü",
+DlgFlashChkMenu		: "Flash-Menü aktivieren",
 DlgFlashScale		: "Skalierung",
 DlgFlashScaleAll	: "Alles anzeigen",
 DlgFlashScaleNoBorder	: "ohne Rand",
@@ -208,33 +229,33 @@ DlgLnkTypeURL		: "URL",
 DlgLnkTypeAnchor	: "Anker in dieser Seite",
 DlgLnkTypeEMail		: "E-Mail",
 DlgLnkProto			: "Protokoll",
-DlgLnkProtoOther	: "&lt;anderes&gt;",
+DlgLnkProtoOther	: "<anderes>",
 DlgLnkURL			: "URL",
 DlgLnkAnchorSel		: "Anker auswählen",
 DlgLnkAnchorByName	: "nach Anker Name",
 DlgLnkAnchorById	: "nach Element Id",
-DlgLnkNoAnchors		: "&lt;keine Anker im Dokument vorhanden&gt;",
+DlgLnkNoAnchors		: "<keine Anker im Dokument vorhanden>",		//REVIEW : Change < and > with ( and )
 DlgLnkEMail			: "E-Mail Addresse",
 DlgLnkEMailSubject	: "Betreffzeile",
 DlgLnkEMailBody		: "Nachrichtentext",
 DlgLnkUpload		: "Upload",
-DlgLnkBtnUpload		: "Uum Server senden",
+DlgLnkBtnUpload		: "Zum Server senden",
 
 DlgLnkTarget		: "Zielseite",
-DlgLnkTargetFrame	: "&lt;Frame&gt;",
-DlgLnkTargetPopup	: "&lt;Pop-up Fenster&gt;",
+DlgLnkTargetFrame	: "<Frame>",
+DlgLnkTargetPopup	: "<Pop-up Fenster>",
 DlgLnkTargetBlank	: "Neues Fenster (_blank)",
 DlgLnkTargetParent	: "Oberes Fenster (_parent)",
 DlgLnkTargetSelf	: "Gleiches Fenster (_self)",
 DlgLnkTargetTop		: "Oberstes Fenster (_top)",
-DlgLnkTargetFrameName	: "Ziel-Frame Name",
+DlgLnkTargetFrameName	: "Ziel-Fenster Name",
 DlgLnkPopWinName	: "Pop-up Fenster Name",
 DlgLnkPopWinFeat	: "Pop-up Fenster Eigenschaften",
 DlgLnkPopResize		: "Vergrößerbar",
 DlgLnkPopLocation	: "Adress-Leiste",
 DlgLnkPopMenu		: "Menü-Leiste",
-DlgLnkPopScroll		: "Scroll-Leisten",
-DlgLnkPopStatus		: "Status-Leiste",
+DlgLnkPopScroll		: "Rollbalken",
+DlgLnkPopStatus		: "Statusleiste",
 DlgLnkPopToolbar	: "Werkzeugleiste",
 DlgLnkPopFullScrn	: "Vollbild (IE)",
 DlgLnkPopDependent	: "Abhängig (Netscape)",
@@ -245,7 +266,8 @@ DlgLnkPopTop		: "Obere Position",
 
 DlnLnkMsgNoUrl		: "Bitte geben Sie die Link-URL an",
 DlnLnkMsgNoEMail	: "Bitte geben Sie e-Mail Adresse an",
-DlnLnkMsgNoAnchor	: "Bitte waehlen Sie einen Anker aus",
+DlnLnkMsgNoAnchor	: "Bitte wählen Sie einen Anker aus",
+DlnLnkMsgInvPopName	: "Der Name des Popups muss mit einem Buchstaben beginnen und darf keine Leerzeichen enthalten",
 
 // Color Dialog
 DlgColorTitle		: "Farbauswahl",
@@ -275,7 +297,8 @@ DlgTableWidthPc		: "%",
 DlgTableHeight		: "Höhe",
 DlgTableCellSpace	: "Zellenabstand außen",
 DlgTableCellPad		: "Zellenabstand innen",
-DlgTableCaption		: "Üeberschrift",
+DlgTableCaption		: "Überschrift",
+DlgTableSummary		: "Inhaltsübersicht",
 
 // Table Cell Dialog
 DlgCellTitle		: "Zellen-Eigenschaften",
@@ -284,20 +307,20 @@ DlgCellWidthPx		: "Pixel",
 DlgCellWidthPc		: "%",
 DlgCellHeight		: "Höhe",
 DlgCellWordWrap		: "Umbruch",
-DlgCellWordWrapNotSet	: "&lt;nichts&gt;",
+DlgCellWordWrapNotSet	: "<nichts>",
 DlgCellWordWrapYes	: "Ja",
 DlgCellWordWrapNo	: "Nein",
 DlgCellHorAlign		: "Horizontale Ausrichtung",
-DlgCellHorAlignNotSet	: "&lt;nichts&gt;",
+DlgCellHorAlignNotSet	: "<nichts>",
 DlgCellHorAlignLeft	: "Links",
 DlgCellHorAlignCenter	: "Zentriert",
 DlgCellHorAlignRight: "Rechts",
 DlgCellVerAlign		: "Vertikale Ausrichtung",
-DlgCellVerAlignNotSet	: "&lt;nichts&gt;",
+DlgCellVerAlignNotSet	: "<nichts>",
 DlgCellVerAlignTop	: "Oben",
 DlgCellVerAlignMiddle	: "Mitte",
 DlgCellVerAlignBottom	: "Unten",
-DlgCellVerAlignBaseline	: "Baseline",
+DlgCellVerAlignBaseline	: "Grundlinie",
 DlgCellRowSpan		: "Zeilen zusammenfassen",
 DlgCellCollSpan		: "Spalten zusammenfassen",
 DlgCellBackColor	: "Hintergrundfarbe",
@@ -307,7 +330,7 @@ DlgCellBtnSelect	: "Auswahl...",
 // Find Dialog
 DlgFindTitle		: "Finden",
 DlgFindFindBtn		: "Finden",
-DlgFindNotFoundMsg	: "Der Suchtext wurde nicht gefunden.",
+DlgFindNotFoundMsg	: "Der gesuchte Text wurde nicht gefunden.",
 
 // Replace Dialog
 DlgReplaceTitle			: "Ersetzen",
@@ -319,9 +342,9 @@ DlgReplaceReplAllBtn	: "Alle Ersetzen",
 DlgReplaceWordChk		: "Nur ganze Worte suchen",
 
 // Paste Operations / Dialog
-PasteErrorPaste	: "Die Sicherheitseinstellungen Ihres Browsers lassen es nicht zu, den Text automatisch einzufügen. Bitte benutzen Sie die System-Zwischenablage ueber STRG-C (kopieren) und STRG-V (einfügen).",
-PasteErrorCut	: "Die Sicherheitseinstellungen Ihres Browsers lassen es nicht zu, den Text automatisch auszuschneiden. Bitte benutzen Sie die System-Zwischenablage ueber STRG-X (ausschneiden) und STRG-V (einfügen).",
-PasteErrorCopy	: "Die Sicherheitseinstellungen Ihres Browsers lassen es nicht zu, den Text automatisch kopieren. Bitte benutzen Sie die System-Zwischenablage ueber STRG-C (kopieren).",
+PasteErrorPaste	: "Die Sicherheitseinstellungen Ihres Browsers lassen es nicht zu, den Text automatisch einzufügen. Bitte benutzen Sie die System-Zwischenablage über STRG-C (kopieren) und STRG-V (einfügen).",
+PasteErrorCut	: "Die Sicherheitseinstellungen Ihres Browsers lassen es nicht zu, den Text automatisch auszuschneiden. Bitte benutzen Sie die System-Zwischenablage über STRG-X (ausschneiden) und STRG-V (einfügen).",
+PasteErrorCopy	: "Die Sicherheitseinstellungen Ihres Browsers lassen es nicht zu, den Text automatisch kopieren. Bitte benutzen Sie die System-Zwischenablage über STRG-C (kopieren).",
 
 PasteAsText		: "Als Text einfügen",
 PasteFromWord	: "Aus Word einfügen",
@@ -330,7 +353,6 @@ DlgPasteMsg2	: "Bitte fügen Sie den Text in der folgenden Box über die Tastatu
 DlgPasteIgnoreFont		: "Ignoriere Schriftart-Definitionen",
 DlgPasteRemoveStyles	: "Entferne Style-Definitionen",
 DlgPasteCleanBox		: "Inhalt aufräumen",
-
 
 // Color Picker
 ColorAutomatic	: "Automatisch",
@@ -346,7 +368,7 @@ DlgAnchorErrorName	: "Bitte geben Sie den Namen des Ankers ein",
 
 // Speller Pages Dialog
 DlgSpellNotInDic		: "Nicht im Wörterbuch",
-DlgSpellChangeTo		: "Äendern in",
+DlgSpellChangeTo		: "Ändern in",
 DlgSpellBtnIgnore		: "Ignorieren",
 DlgSpellBtnIgnoreAll	: "Alle Ignorieren",
 DlgSpellBtnReplace		: "Ersetzen",
@@ -362,8 +384,11 @@ DlgSpellManyChanges		: "Rechtschreibprüfung abgeschlossen - %1 Wörter geänder
 IeSpellDownload			: "Rechtschreibprüfung nicht installiert. Möchten Sie sie jetzt herunterladen?",
 
 // Button Dialog
-DlgButtonText	: "Text (Wert)",
-DlgButtonType	: "Typ",
+DlgButtonText		: "Text (Wert)",
+DlgButtonType		: "Typ",
+DlgButtonTypeBtn	: "Button",
+DlgButtonTypeSbm	: "Absenden",
+DlgButtonTypeRst	: "Zurücksetzen",
 
 // Checkbox and Radio Button Dialogs
 DlgCheckboxName		: "Name",
@@ -385,7 +410,7 @@ DlgSelectOpAvail	: "Mögliche Optionen",
 DlgSelectOpText		: "Text",
 DlgSelectOpValue	: "Wert",
 DlgSelectBtnAdd		: "Hinzufügen",
-DlgSelectBtnModify	: "Äendern",
+DlgSelectBtnModify	: "Ändern",
 DlgSelectBtnUp		: "Hoch",
 DlgSelectBtnDown	: "Runter",
 DlgSelectBtnSetValue : "Setze als Standardwert",
@@ -412,9 +437,10 @@ DlgHiddenValue	: "Wert",
 // Bulleted List Dialog
 BulletedListProp	: "Listen-Eigenschaften",
 NumberedListProp	: "Nummerierte Listen-Eigenschaften",
+DlgLstStart			: "Start",
 DlgLstType			: "Typ",
-DlgLstTypeCircle	: "Kreis",
-DlgLstTypeDisk		: "Disk",
+DlgLstTypeCircle	: "Ring",
+DlgLstTypeDisc		: "Kreis",
 DlgLstTypeSquare	: "Quadrat",
 DlgLstTypeNumbers	: "Nummern (1, 2, 3)",
 DlgLstTypeLCase		: "Kleinbuchstaben (a, b, c)",
@@ -431,9 +457,18 @@ DlgDocMetaTab		: "Metadaten",
 DlgDocPageTitle		: "Seitentitel",
 DlgDocLangDir		: "Schriftrichtung",
 DlgDocLangDirLTR	: "Links nach Rechts",
-DlgDocLangDirRTL	: "rechts nach Links",
+DlgDocLangDirRTL	: "Rechts nach Links",
 DlgDocLangCode		: "Sprachkürzel",
 DlgDocCharSet		: "Zeichenkodierung",
+DlgDocCharSetCE		: "Zentraleuropäisch",
+DlgDocCharSetCT		: "traditionell Chinesisch (Big5)",
+DlgDocCharSetCR		: "Kyrillisch",
+DlgDocCharSetGR		: "Griechisch",
+DlgDocCharSetJP		: "Japanisch",
+DlgDocCharSetKR		: "Koreanisch",
+DlgDocCharSetTR		: "Türkisch",
+DlgDocCharSetUN		: "Unicode (UTF-8)",
+DlgDocCharSetWE		: "Westeuropäisch",
 DlgDocCharSetOther	: "Andere Zeichenkodierung",
 
 DlgDocDocType		: "Dokumententyp",
@@ -441,7 +476,7 @@ DlgDocDocTypeOther	: "Anderer Dokumententyp",
 DlgDocIncXHTML		: "Beziehe XHTML Deklarationen ein",
 DlgDocBgColor		: "Hintergrundfarbe",
 DlgDocBgImage		: "Hintergrundbild URL",
-DlgDocBgNoScroll	: "Nicht-Scrollender Hintergrund",
+DlgDocBgNoScroll	: "feststehender Hintergrund",
 DlgDocCText			: "Text",
 DlgDocCLink			: "Link",
 DlgDocCVisited		: "Besuchter Link",
@@ -451,7 +486,7 @@ DlgDocMaTop			: "Oben",
 DlgDocMaLeft		: "Links",
 DlgDocMaRight		: "Rechts",
 DlgDocMaBottom		: "Unten",
-DlgDocMeIndex		: "Schlüsselwörter (Komma-getrennt)",
+DlgDocMeIndex		: "Schlüsselwörter (durch Komma getrennt)",
 DlgDocMeDescr		: "Dokument-Beschreibung",
 DlgDocMeAuthor		: "Autor",
 DlgDocMeCopy		: "Copyright",
@@ -460,14 +495,15 @@ DlgDocPreview		: "Vorschau",
 // Templates Dialog
 Templates			: "Vorlagen",
 DlgTemplatesTitle	: "Vorlagen",
-DlgTemplatesSelMsg	: "Klicken Sie auf eine Vorlage, um sie im Editor zu öffnen(der aktuelle Inhalt wird dabei gelöscht!):",
+DlgTemplatesSelMsg	: "Klicken Sie auf eine Vorlage, um sie im Editor zu öffnen (der aktuelle Inhalt wird dabei gelöscht!):",
 DlgTemplatesLoading	: "Liste der Vorlagen wird geladen. Bitte warten...",
 DlgTemplatesNoTpl	: "(keine Vorlagen definiert)",
+DlgTemplatesReplace	: "Aktuellen Inhalt ersetzen",
 
 // About Dialog
 DlgAboutAboutTab	: "Über",
 DlgAboutBrowserInfoTab	: "Browser-Info",
+DlgAboutLicenseTab	: "Lizenz",
 DlgAboutVersion		: "Version",
-DlgAboutLicense		: "Lizensiert unter den Richtlinien der GNU Lesser General Public License",
 DlgAboutInfo		: "Für weitere Informationen siehe"
-}
+};

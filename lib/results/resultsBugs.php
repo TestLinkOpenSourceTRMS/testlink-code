@@ -19,7 +19,6 @@ $tpID = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0 ;
 $arrBuilds = $tp->get_builds($tpID); 
 $arrData = array();
 
-
 $suitesSelected = 'all';
 // get results for all builds
 $buildsToQuery = 'a';
@@ -67,19 +66,11 @@ while($suiteId = key($lastResultMap)) {
 	next($lastResultMap);
 }
 
-
 $smarty = new TLSmarty;
 $smarty->assign('title', lang_get('title_test_report_all_builds'));
 $smarty->assign('arrData', $arrData);
 $smarty->assign('arrBuilds', $arrBuilds);
-/**
-if ($xls) {
-	$smarty->assign('printDate', strftime($g_date_format, time()) );
-	$smarty->assign('user', $_SESSION['user']);
-}
-*/
 $smarty->display('resultsBugs.tpl');
-
 
 function buildBugString(&$db,$execID)
 {
@@ -95,5 +86,3 @@ function buildBugString(&$db,$execID)
 	return $bugString;
 }
 ?>
-
-

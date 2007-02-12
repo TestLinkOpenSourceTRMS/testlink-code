@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: const.inc.php,v $
  *
- * @version $Revision: 1.14 $
- * @modified $Date: 2007/02/05 15:51:10 $ by $Author: franciscom $
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2007/02/12 07:56:47 $ by $Author: franciscom $
  * @author Martin Havlát
  *
  * SCOPE:
@@ -16,6 +16,8 @@
  * 
  *-------------------------------------------------------------------
  * Revisions:
+ *
+ *  20070211 - franciscom - added $g_tc_status_for_ui_default
  *  20070131 - franciscom - moved defined from requirements.inc.php
  *  20070122 - franciscom - INACTIVE,CLOSED 
  *  20070120 - franciscom - Beta 3, due changes in builds table
@@ -184,7 +186,6 @@ $g_tc_status = array (
 $g_tc_status_css = array_flip($g_tc_status);
 
 
-// 20060528 - franciscom
 // Used to generate radio and buttons at user interface level.
 // Order is important, because fixed the order on User Interface
 //
@@ -192,12 +193,25 @@ $g_tc_status_css = array_flip($g_tc_status);
 // value => string id defined in the strings.txt file, 
 //          used to localize the strings.
 //
+// 20070211 - franciscom - removed not_run
+//
+// $g_tc_status_for_ui = array(
+// 	"not_run" => "test_status_not_run",
+// 	"passed"  => "test_status_passed",
+// 	"failed"  => "test_status_failed",
+// 	"blocked" => "test_status_blocked"
+// );
+
 $g_tc_status_for_ui = array(
-	"not_run" => "test_status_not_run",
 	"passed"  => "test_status_passed",
 	"failed"  => "test_status_failed",
 	"blocked" => "test_status_blocked"
 );
+
+// radio button selected by default
+$g_tc_status_for_ui_default="blocked";
+
+
 
 /*
 $g_tc_status_for_ui = array(
@@ -287,9 +301,11 @@ define('TL_REQ_STATUS_NOT_TESTABLE', 'N');
 define('DO_LANG_GET',1);
 define('DONT_DO_LANG_GET',0);
 
-
 // 
 define('FILTER_BY_SHOW_ON_EXECUTION',1);
+
+define('GET_ALSO_NOT_EXECUTED',null);
+define('GET_ONLY_EXECUTED','executed');
 
 // -------------------------------------------------------------------
 ?>

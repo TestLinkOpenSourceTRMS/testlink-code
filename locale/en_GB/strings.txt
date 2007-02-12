@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.130 $
- * @modified $Date: 2007/02/10 16:46:00 $ $Author: schlundus $
+ * @version $Revision: 1.131 $
+ * @modified $Date: 2007/02/12 07:56:10 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
@@ -26,7 +26,7 @@ $TLS_SRS = "SRS";
 $TLS_Role = "Role";
 $TLS_Keyword = "Keyword";
 $TLS_Milestone = "Milestone";
-
+$TLS_testsuite_created = "Test Suite created";
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////7
 // firstLogin.php
@@ -49,6 +49,8 @@ $TLS_your_info_please = "Enter Your User Information";
 $TLS_main_page_title = "TestLink ::: Main Page";
 
 
+// keywordsimport.php
+$TLS_please_choose_keywords_file = "Please choose the file to upload";
 
 // lostPassword.php
 $TLS_bad_user = "User not found, please try again";
@@ -228,6 +230,7 @@ $TLS_was_success = " was successfully ";
 
 // gui/templates/execNavigator.tpl
 $TLS_TestPlan = "Test Plan";
+$TLS_btn_apply_filter = "Apply filter";
 $TLS_btn_update_menu = "Update menu";
 $TLS_caption_nav_filter_settings = "Navigation Filter & Settings";
 $TLS_current_build = "Current build";
@@ -669,7 +672,8 @@ $TLS_details = "Details";
 $TLS_exec_notes = "Notes";
 $TLS_exec_status = "Status";
 $TLS_execution_history = "Execution history";
-$TLS_img_title_bug_mgmt = "BUG management";
+$TLS_img_title_bug_mgmt = "Bug management";
+$TLS_img_title_delete_execution= "Delete execution";
 $TLS_just_last_execution_for_this_build = "Last execution for this build";
 $TLS_no_data_available = "No data available";
 $TLS_set_all_tc_to = "Set all to status ";

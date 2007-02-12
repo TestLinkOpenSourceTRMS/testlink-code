@@ -4,8 +4,10 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.54 $
- * @modified $Date: 2007/02/10 12:15:51 $ $Author: schlundus $
+ * @version $Revision: 1.55 $
+ * @modified $Date: 2007/02/12 08:07:08 $ $Author: franciscom $
+ *
+ * 20070211 - franciscom - added execution delete logic
  *
  * 20070105 - franciscom - refactoring
  *
@@ -33,7 +35,9 @@ $PID_NOT_NEEDED = null;
 $SHOW_ON_EXECUTION = 1;
 
 $exec_cfg = config_get('exec_cfg');
-$gui_cfg = config_get('gui'); 
+$gui_cfg = config_get('gui');
+$tc_status = config_get('tc_status'); 
+
 
 $tree_mgr = new tree($db);
 $tplan_mgr = new testplan($db);
@@ -49,9 +53,20 @@ $id = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0;
 $build_id = isset($_REQUEST['build_id']) ? intval($_REQUEST['build_id']) : 0;
 $tc_id = isset($_REQUEST['tc_id']) ? intval($_REQUEST['tc_id']) : null;
 $keyword_id = isset($_REQUEST['keyword_id']) ? intval($_REQUEST['keyword_id']) : 0;
+
+$filter_assigned_to = isset($_REQUEST['filter_assigned_to']) ? intval($_REQUEST['filter_assigned_to']) : null;
+$filter_status = isset($_REQUEST['filter_status']) ? $_REQUEST['filter_status'] : null;
+
 $level = isset($_REQUEST['level']) ? $_REQUEST['level'] : '';
-$owner = isset($_REQUEST['owner']) ? intval($_REQUEST['owner']) : null;
 $status = isset($_REQUEST['status']) ? $_REQUEST['status'] : null;
+
+
+// 20070211 - franciscom
+$do_delete=isset($_REQUEST['do_delete']) ? intval($_REQUEST['do_delete']) : 0;
+if($do_delete)
+{
+  $exec_to_delete =isset($_REQUEST['exec_to_delete']) ? intval($_REQUEST['exec_to_delete']) : 0;
+}
 
 if (!strlen($level))
 {
@@ -59,8 +74,8 @@ if (!strlen($level))
 	exit();
 }
 $ownerDisplayName = null;
-if ($owner)
-	$ownerDisplayName = getUserName($db,$owner);
+if ($filter_assigned_to)
+	$ownerDisplayName = getUserName($db,$filter_assigned_to);
 
 
 $tplan_id = $_SESSION['testPlanId'];
@@ -86,7 +101,16 @@ $other_execs = null;
 $map_last_exec_any_build = null;
 $tcAttachments = null;
 $tSuiteAttachments = null;
-$linked_tcversions = $tplan_mgr->get_linked_tcversions($tplan_id,$tc_id,$keyword_id,null,$owner,$status);
+
+
+$get_mode=GET_ONLY_EXECUTED;
+if( is_null($filter_status) || $filter_status == $tc_status['not_run'])
+{
+  $get_mode=GET_ALSO_NOT_EXECUTED;
+}
+
+$linked_tcversions = $tplan_mgr->get_linked_tcversions($tplan_id,$tc_id,$keyword_id,$get_mode,
+                                                       $filter_assigned_to,$filter_status);
 $tcase_id = 0;
 
 // -------------------------------------------------
@@ -98,34 +122,34 @@ $smarty->assign('tplan_cf',$testplan_cf);
 
 if(!is_null($linked_tcversions))
 {
-	$items_to_exec = array();
-	$_SESSION['s_lastAttachmentInfos'] = null;
+	  $items_to_exec = array();
+	  $_SESSION['s_lastAttachmentInfos'] = null;
     if($level == 'testcase')
     {
-		$cf_smarty = '';
-		$cfexec_smarty = '';
-		
-		$items_to_exec[$id] = $linked_tcversions[$id]['tcversion_id'];    
-		$tcase_id = $id;
-		$tcversion_id = $linked_tcversions[$id]['tcversion_id'];
-		$tcAttachments[$id] = getAttachmentInfos($db,$id,'nodes_hierarchy',1);
- 
-		if($gui_cfg->enable_custom_fields)
-		{
-			$cf_smarty[$id] = $tcase_mgr->html_table_of_custom_field_values($id,'design',$SHOW_ON_EXECUTION);
-			$cfexec_smarty[$id] = $tcase_mgr->html_table_of_custom_field_inputs($id,$PID_NOT_NEEDED,
-			                                'execution',"_{$id}");
-		}
-		$smarty->assign('design_time_cf',$cf_smarty);
-		$smarty->assign('execution_time_cf',$cfexec_smarty);	
+  		$cf_smarty = '';
+  		$cfexec_smarty = '';
+  		
+  		$items_to_exec[$id] = $linked_tcversions[$id]['tcversion_id'];    
+  		$tcase_id = $id;
+  		$tcversion_id = $linked_tcversions[$id]['tcversion_id'];
+  		$tcAttachments[$id] = getAttachmentInfos($db,$id,'nodes_hierarchy',1);
+   
+  		if($gui_cfg->enable_custom_fields)
+  		{
+  			$cf_smarty[$id] = $tcase_mgr->html_table_of_custom_field_values($id,'design',$SHOW_ON_EXECUTION);
+  			$cfexec_smarty[$id] = $tcase_mgr->html_table_of_custom_field_inputs($id,$PID_NOT_NEEDED,
+  			                                                                    'execution',"_{$id}");
+  		}
+  		$smarty->assign('design_time_cf',$cf_smarty);
+  		$smarty->assign('execution_time_cf',$cfexec_smarty);	
     }
     else
     {
-		// Get the path for every test case, grouping test cases that
-		// have same parent.
+		  // Get the path for every test case, grouping test cases that
+		  // have same parent.
     	$tcase_id = array();
     	$tcversion_id = array();
-		$idx = 0;
+		  $idx = 0;
 		  
     	foreach($linked_tcversions as $item)
     	{
@@ -140,28 +164,30 @@ if(!is_null($linked_tcversions))
 					 $tcversion_id[] = $item['tcversion_id'];
 					 $tcAttachments[$item['tc_id']] = getAttachmentInfos($db,$item['tc_id'],'nodes_hierarchy',true,1);
 
-			           // --------------------------------------------------------------------------------------
-			           if($gui_cfg->enable_custom_fields)
-			           {
+		       // --------------------------------------------------------------------------------------
+			     if($gui_cfg->enable_custom_fields)
+			     {
 							$cf_smarty[$item['tc_id']] = $tcase_mgr->html_table_of_custom_field_values($item['tc_id'],
 							                                                                        'design',$SHOW_ON_EXECUTION);
 							$cfexec_smarty[$item['tc_id']] = $tcase_mgr->html_table_of_custom_field_inputs($item['tc_id'],
 							                                                            $PID_NOT_NEEDED,'execution',
 							                                                            "_".$item['tc_id']);
-			           }
-			           $smarty->assign('design_time_cf',$cf_smarty);	
-			           $smarty->assign('execution_time_cf',$cfexec_smarty);	
-			           // --------------------------------------------------------------------------------------
-    			}
+			     }
+			     $smarty->assign('design_time_cf',$cf_smarty);	
+			     $smarty->assign('execution_time_cf',$cfexec_smarty);	
+			     // --------------------------------------------------------------------------------------
+    			} // if( $path_elem['parent_id'] == $id )
     			
-				if($path_elem['node_table'] == 'testsuites' && !isset($tSuiteAttachments[$path_elem['id']]))
+				  if($path_elem['node_table'] == 'testsuites' && !isset($tSuiteAttachments[$path_elem['id']]))
 					   $tSuiteAttachments[$path_elem['id']] = getAttachmentInfos($db,$path_elem['id'],'nodes_hierarchy',true,1);
+					   
 			  } //foreach($path_f as $key => $path_elem) 
-    	}
+    	} // foreach($linked_tcversions as $item)
     }
+    
+    
     // will create a record even if the testcase version has not been executed (GET_NO_EXEC)
-    $map_last_exec = $tcase_mgr->get_last_execution($tcase_id,$tcversion_id,$tplan_id,
-                                                    $build_id,GET_NO_EXEC);
+    $map_last_exec = $tcase_mgr->get_last_execution($tcase_id,$tcversion_id,$tplan_id,$build_id,GET_NO_EXEC);
     
     // --------------------------------------------------------------------------------------------
     // Results to DB
@@ -170,7 +196,17 @@ if(!is_null($linked_tcversions))
       // 20070105 - added $testproject_id
     	$submitResult = write_execution($db,$user_id,$_REQUEST,$testproject_id,$tplan_id,$build_id,$map_last_exec);
     }
+
+    if ($do_delete)
+    {
+      // 20070105 - added $testproject_id
+    	delete_execution($db,$exec_to_delete);
+    }
     // --------------------------------------------------------------------------------------------
+    
+    
+    
+    
     
     $map_last_exec_any_build = null;
     if( $exec_cfg->show_last_exec_any_build )
@@ -214,6 +250,8 @@ if(!is_null($linked_tcversions))
 
 }
 
+
+
 $smarty->assign('other_exec_cfexec',$cfexec_val_smarty);
 $smarty->assign('bugs_for_exec',$bugs);
 
@@ -236,6 +274,11 @@ $smarty->assign('bc_view_status',
                 isset($_POST['bc_view_status']) ? $_POST['bc_view_status']:0);
 
 
+
+$smarty->assign('can_delete_execution',$exec_cfg->can_delete_execution);
+$smarty->assign('default_status',config_get('tc_status_for_ui_default'));
+
+
 $smarty->assign('tcAttachments',$tcAttachments);
 $smarty->assign('attachments',$attachmentInfos);
 $smarty->assign('tSuiteAttachments',$tSuiteAttachments);
@@ -251,12 +294,26 @@ $smarty->assign('att_model',$exec_cfg->att_model);
 $smarty->assign('show_last_exec_any_build', $exec_cfg->show_last_exec_any_build);
 $smarty->assign('map_last_exec_any_build', $map_last_exec_any_build);
 $smarty->assign('build_name', $build_name);
-$smarty->assign('owner', $owner);
+$smarty->assign('owner', $filter_assigned_to);
 $smarty->assign('ownerDisplayName', $ownerDisplayName);
 $smarty->assign('updated', $submitResult);
 $smarty->assign('g_bugInterface', $g_bugInterface);
-$smarty->display($g_tpl['execSetResults']);
 
+
+$smarty->display($g_tpl['execSetResults']);
+?>
+
+
+
+<?php
+/*
+  function: 
+
+  args :
+  
+  returns: 
+
+*/
 function manage_history_on($hash_REQUEST,$hash_SESSION,
                            $exec_cfg,$btn_on_name,$btn_off_name,$hidden_on_name)
 {
@@ -328,6 +385,14 @@ function get_ts_name_details(&$db,$tcase_id)
 	return $rs;
 }
 
+/*
+  function: 
+
+  args :
+  
+  returns: 
+
+*/
 function smarty_assign_tsuite_info(&$smarty,&$request_hash, &$db,$tcase_id)
 {
 
@@ -372,6 +437,15 @@ function smarty_assign_tsuite_info(&$smarty,&$request_hash, &$db,$tcase_id)
 }  
 // --------------------------------------------------------------------------------
 
+
+/*
+  function: 
+
+  args :
+  
+  returns: 
+
+*/
 function exec_additional_info(&$db,&$tcase_mgr,$other_execs,$tplan_id)
 {
   $bugInterfaceOn = config_get('bugInterfaceOn');

@@ -41,24 +41,29 @@ while($suiteId = key($lastResultMap)) {
 		$suiteExecutions = $executionsMap[$suiteId];
 		
 		$rowArray = array($suiteName, $testCaseId . ":" . $name);
+		// initialize bugInfo
+		$bugLink = null;
+		$allBugLinks = array();
 		for ($i = 0; $i < sizeOf($suiteExecutions); $i++) {
 			$currentExecution = $suiteExecutions[$i];
 			$currentTimeStamp = $currentExecution['execution_ts'];
 			$executions_id = $currentExecution['executions_id'];
-			$bugString = '';
 			if ($executions_id) {
-				$bugString = buildBugString($db, $executions_id);
+				$bugLink = buildBugString($db, $executions_id);
 			}
-			if ($bugString) {
+			if ($bugLink) {
 				// there is always only 1 timestamp
 				// but there can be multiple bugs
 				// print "bugString = $bugString <BR>";
-				$timestampInfo = $timestampInfo .  $currentTimeStamp . "<BR>";
-				$bugInfo = $bugInfo . $bugString ;			
+				// $timestampInfo = $timestampInfo .  $currentTimeStamp . "<BR>";
+				if (!in_array($bugLink, $allBugLinks)) {
+					array_push($allBugLinks, $bugLink);
+				}
 			}		
 		}		
 		//array_push($rowArray, $timestampInfo);
-		array_push($rowArray, $bugInfo);
+		$allBugLinksString = implode("<BR>", $allBugLinks);
+		array_push($rowArray, $allBugLinksString);
 		$arrData[$indexOfArrData] = $rowArray;
 		$indexOfArrData++;	
 		next($currentSuiteInfo);		

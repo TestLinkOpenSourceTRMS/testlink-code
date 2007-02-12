@@ -1,12 +1,22 @@
 ﻿/*
- * FCKeditor - The text editor for internet
- * Copyright (C) 2003-2005 Frederico Caldeira Knabben
+ * FCKeditor - The text editor for Internet - http://www.fckeditor.net
+ * Copyright (C) 2003-2007 Frederico Caldeira Knabben
  * 
- * Licensed under the terms of the GNU Lesser General Public License:
- * 		http://www.opensource.org/licenses/lgpl-license.php
+ * == BEGIN LICENSE ==
  * 
- * For further information visit:
- * 		http://www.fckeditor.net/
+ * Licensed under the terms of any of the following licenses at your
+ * choice:
+ * 
+ *  - GNU General Public License Version 2 or later (the "GPL")
+ *    http://www.gnu.org/licenses/gpl.html
+ * 
+ *  - GNU Lesser General Public License Version 2.1 or later (the "LGPL")
+ *    http://www.gnu.org/licenses/lgpl.html
+ * 
+ *  - Mozilla Public License Version 1.1 or later (the "MPL")
+ *    http://www.mozilla.org/MPL/MPL-1.1.html
+ * 
+ * == END LICENSE ==
  * 
  * File Name: fcktoolbarbreak_ie.js
  * 	FCKToolbarBreak Class: breaks the toolbars.
@@ -14,16 +24,19 @@
  * 	This is the IE specific implementation.
  * 
  * File Authors:
- * 		Frederico Caldeira Knabben (fredck@fckeditor.net)
+ * 		Frederico Caldeira Knabben (www.fckeditor.net)
  */
 
 var FCKToolbarBreak = function()
+{}
+
+FCKToolbarBreak.prototype.Create = function( targetElement )
 {
-	var oBreakDiv = document.createElement( 'div' ) ;
+	var oBreakDiv = FCKTools.GetElementDocument( targetElement ).createElement( 'div' ) ;
 	
 	oBreakDiv.className = 'TB_Break' ;
 	
 	oBreakDiv.style.clear = FCKLang.Dir == 'rtl' ? 'left' : 'right' ;
 	
-	FCKToolbarSet.DOMElement.appendChild( oBreakDiv ) ;
+	targetElement.appendChild( oBreakDiv ) ;
 }

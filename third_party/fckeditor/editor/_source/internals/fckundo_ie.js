@@ -1,4 +1,31 @@
-﻿var FCKUndo = new Object() ;
+﻿/*
+ * FCKeditor - The text editor for Internet - http://www.fckeditor.net
+ * Copyright (C) 2003-2007 Frederico Caldeira Knabben
+ * 
+ * == BEGIN LICENSE ==
+ * 
+ * Licensed under the terms of any of the following licenses at your
+ * choice:
+ * 
+ *  - GNU General Public License Version 2 or later (the "GPL")
+ *    http://www.gnu.org/licenses/gpl.html
+ * 
+ *  - GNU Lesser General Public License Version 2.1 or later (the "LGPL")
+ *    http://www.gnu.org/licenses/lgpl.html
+ * 
+ *  - Mozilla Public License Version 1.1 or later (the "MPL")
+ *    http://www.mozilla.org/MPL/MPL-1.1.html
+ * 
+ * == END LICENSE ==
+ * 
+ * File Name: fckundo_ie.js
+ * 	IE specific implementation for the Undo/Redo system.
+ * 
+ * File Authors:
+ * 		Frederico Caldeira Knabben (www.fckeditor.net)
+ */
+
+var FCKUndo = new Object() ;
 
 FCKUndo.SavedData = new Array() ;
 FCKUndo.CurrentIndex = -1 ;
@@ -7,6 +34,9 @@ FCKUndo.Typing = false ;
 
 FCKUndo.SaveUndoStep = function()
 {
+	if ( FCK.EditMode != FCK_EDITMODE_WYSIWYG )
+		return ;
+
 	// Shrink the array to the current level.
 	FCKUndo.SavedData = FCKUndo.SavedData.slice( 0, FCKUndo.CurrentIndex + 1 ) ;
 
@@ -35,9 +65,19 @@ FCKUndo.SaveUndoStep = function()
 	FCK.Events.FireEvent( "OnSelectionChange" ) ;
 }
 
+FCKUndo.CheckUndoState = function()
+{
+	return ( FCKUndo.Typing || FCKUndo.CurrentIndex > 0 ) ;
+}
+
+FCKUndo.CheckRedoState = function()
+{
+	return ( !FCKUndo.Typing && FCKUndo.CurrentIndex < ( FCKUndo.SavedData.length - 1 ) ) ;
+}
+
 FCKUndo.Undo = function()
 {
-	if ( FCKUndo.CurrentIndex >= 0 )
+	if ( FCKUndo.CheckUndoState() )
 	{
 		// If it is the first step.
 		if ( FCKUndo.CurrentIndex == ( FCKUndo.SavedData.length - 1 ) )
@@ -55,7 +95,7 @@ FCKUndo.Undo = function()
 
 FCKUndo.Redo = function()
 {
-	if ( FCKUndo.CurrentIndex < ( FCKUndo.SavedData.length - 1 ) )
+	if ( FCKUndo.CheckRedoState() )
 	{
 		// Go a step forward.
 		FCKUndo._ApplyUndoLevel( ++FCKUndo.CurrentIndex ) ;
@@ -67,9 +107,13 @@ FCKUndo.Redo = function()
 FCKUndo._ApplyUndoLevel = function(level)
 {
 	var oData = FCKUndo.SavedData[ level ] ;
+	
+	if ( !oData )
+		return ;
 
 	// Update the editor contents with that step data.
-	FCK.EditorDocument.body.innerHTML = oData[0] ;
+	FCK.SetInnerHtml( oData[0] ) ;
+//	FCK.EditorDocument.body.innerHTML = oData[0] ;
 
 	if ( oData[1] ) 
 	{

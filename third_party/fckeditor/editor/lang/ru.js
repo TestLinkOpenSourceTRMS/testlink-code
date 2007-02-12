@@ -1,12 +1,22 @@
 ﻿/*
- * FCKeditor - The text editor for internet
- * Copyright (C) 2003-2005 Frederico Caldeira Knabben
+ * FCKeditor - The text editor for Internet - http://www.fckeditor.net
+ * Copyright (C) 2003-2007 Frederico Caldeira Knabben
  * 
- * Licensed under the terms of the GNU Lesser General Public License:
- * 		http://www.opensource.org/licenses/lgpl-license.php
+ * == BEGIN LICENSE ==
  * 
- * For further information visit:
- * 		http://www.fckeditor.net/
+ * Licensed under the terms of any of the following licenses at your
+ * choice:
+ * 
+ *  - GNU General Public License Version 2 or later (the "GPL")
+ *    http://www.gnu.org/licenses/gpl.html
+ * 
+ *  - GNU Lesser General Public License Version 2.1 or later (the "LGPL")
+ *    http://www.gnu.org/licenses/lgpl.html
+ * 
+ *  - Mozilla Public License Version 1.1 or later (the "MPL")
+ *    http://www.mozilla.org/MPL/MPL-1.1.html
+ * 
+ * == END LICENSE ==
  * 
  * File Name: ru.js
  * 	Russian language file.
@@ -83,6 +93,8 @@ Find				: "Найти",
 Replace				: "Заменить",
 SpellCheck			: "Проверить орфографию",
 UniversalKeyboard	: "Универсальная клавиатура",
+PageBreakLbl		: "Разрыв страницы",
+PageBreak			: "Вставить разрыв страницы",
 
 Form			: "Форма",
 Checkbox		: "Флаговая кнопка",
@@ -94,8 +106,13 @@ Button			: "Кнопка",
 SelectionField	: "Список",
 ImageButton		: "Кнопка с изображением",
 
+FitWindow		: "Развернуть окно редактора",
+
 // Context Menu
 EditLink			: "Вставить ссылку",
+CellCM				: "Ячейка",
+RowCM				: "Строка",
+ColumnCM			: "Колонка",
 InsertRow			: "Вставить строку",
 DeleteRows			: "Удалить строки",
 InsertColumn		: "Вставить колонку",
@@ -104,6 +121,7 @@ InsertCell			: "Вставить ячейку",
 DeleteCells			: "Удалить ячейки",
 MergeCells			: "Соединить ячейки",
 SplitCell			: "Разбить ячейку",
+TableDelete			: "Удалить таблицу",
 CellProperties		: "Свойства ячейки",
 TableProperties		: "Свойства таблицы",
 ImageProperties		: "Свойства изображения",
@@ -120,7 +138,7 @@ SelectionFieldProp	: "Свойства списка",
 TextareaProp		: "Свойства текстовой области",
 FormProp			: "Свойства формы",
 
-FontFormats			: "Нормальный;Форматированный;Адрес;Заголовок 1;Заголовок 2;Заголовок 3;Заголовок 4;Заголовок 5;Заголовок 6",
+FontFormats			: "Нормальный;Форматированный;Адрес;Заголовок 1;Заголовок 2;Заголовок 3;Заголовок 4;Заголовок 5;Заголовок 6;Нормальный (DIV)",		//REVIEW : Check _getfontformat.html
 
 // Alerts and Messages
 ProcessingXHTML		: "Обработка XHTML. Пожалуйста подождите...",
@@ -131,6 +149,9 @@ UnknownToolbarItem	: "Не известный элемент панели инс
 UnknownCommand		: "Не известное имя команды \"%1\"",
 NotImplemented		: "Команда не реализована",
 UnknownToolbarSet	: "Панель инструментов \"%1\" не существует",
+NoActiveX			: "Настройки безопасности вашего браузера могут ограничивать некоторые свойства редактора. Вы должны включить опцию \"Запускать элементы управления ActiveX и плугины\". Вы можете видеть ошибки и замечать отсутствие возможностей.",
+BrowseServerBlocked : "Ресурсы браузера не могут быть открыты. Проверьте что блокировки всплывающих окон выключены.",
+DialogBlocked		: "Не возможно открыть окно диалога. Проверьте что блокировки всплывающих окон выключены.",
 
 // Dialogs
 DlgBtnOK			: "ОК",
@@ -138,12 +159,12 @@ DlgBtnCancel		: "Отмена",
 DlgBtnClose			: "Закрыть",
 DlgBtnBrowseServer	: "Просмотреть на сервере",
 DlgAdvancedTag		: "Расширенный",
-DlgOpOther			: "&lt;Другое&gt;",
+DlgOpOther			: "<Другое>",
 DlgInfoTab			: "Информация",
 DlgAlertUrl			: "Пожалуйста вставьте URL",
 
 // General Dialogs Labels
-DlgGenNotSet		: "&lt;не определено&gt;",
+DlgGenNotSet		: "<не определено>",
 DlgGenId			: "Идентификатор",
 DlgGenLangDir		: "Направление языка",
 DlgGenLangDirLtr	: "Слева на право (LTR)",
@@ -207,12 +228,12 @@ DlgLnkTypeURL		: "URL",
 DlgLnkTypeAnchor	: "Якорь на эту страницу",
 DlgLnkTypeEMail		: "Эл. почта",
 DlgLnkProto			: "Протокол",
-DlgLnkProtoOther	: "&lt;другое&gt;",
+DlgLnkProtoOther	: "<другое>",
 DlgLnkURL			: "URL",
 DlgLnkAnchorSel		: "Выберите якорь",
 DlgLnkAnchorByName	: "По имени якоря",
 DlgLnkAnchorById	: "По идентификатору элемента",
-DlgLnkNoAnchors		: "&lt;Нет якорей доступных в этом документе&gt;",
+DlgLnkNoAnchors		: "<Нет якорей доступных в этом документе>",		//REVIEW : Change < and > with ( and )
 DlgLnkEMail			: "Адрес эл. почты",
 DlgLnkEMailSubject	: "Заголовок сообщения",
 DlgLnkEMailBody		: "Тело сообщения",
@@ -220,8 +241,8 @@ DlgLnkUpload		: "Закачать",
 DlgLnkBtnUpload		: "Послать на сервер",
 
 DlgLnkTarget		: "Цель",
-DlgLnkTargetFrame	: "&lt;фрейм&gt;",
-DlgLnkTargetPopup	: "&lt;всплывающее окно&gt;",
+DlgLnkTargetFrame	: "<фрейм>",
+DlgLnkTargetPopup	: "<всплывающее окно>",
 DlgLnkTargetBlank	: "Новое окно (_blank)",
 DlgLnkTargetParent	: "Родительское окно (_parent)",
 DlgLnkTargetSelf	: "Тоже окно (_self)",
@@ -245,6 +266,7 @@ DlgLnkPopTop		: "Позиция сверху",
 DlnLnkMsgNoUrl		: "Пожалуйста введите URL ссылки",
 DlnLnkMsgNoEMail	: "Пожалуйста введите адрес эл. почты",
 DlnLnkMsgNoAnchor	: "Пожалуйста выберете якорь",
+DlnLnkMsgInvPopName	: "Название вспывающего окна должно начинаться буквы и не может содержать пробелов",
 
 // Color Dialog
 DlgColorTitle		: "Выберите цвет",
@@ -275,6 +297,7 @@ DlgTableHeight		: "Высота",
 DlgTableCellSpace	: "Промежуток (spacing)",
 DlgTableCellPad		: "Отступ (padding)",
 DlgTableCaption		: "Заголовок",
+DlgTableSummary		: "Резюме",
 
 // Table Cell Dialog
 DlgCellTitle		: "Свойства ячейки",
@@ -330,7 +353,6 @@ DlgPasteIgnoreFont		: "Игнорировать определения гарн�
 DlgPasteRemoveStyles	: "Убрать определения стилей",
 DlgPasteCleanBox		: "Очистить",
 
-
 // Color Picker
 ColorAutomatic	: "Автоматический",
 ColorMoreColors	: "Цвета...",
@@ -361,8 +383,11 @@ DlgSpellManyChanges		: "Проверка орфографии закончена
 IeSpellDownload			: "Модуль проверки орфографии не установлен. Хотите скачать его сейчас?",
 
 // Button Dialog
-DlgButtonText	: "Текст (Значение)",
-DlgButtonType	: "Тип",
+DlgButtonText		: "Текст (Значение)",
+DlgButtonType		: "Тип",
+DlgButtonTypeBtn	: "Кнопка",
+DlgButtonTypeSbm	: "Отправить",
+DlgButtonTypeRst	: "Сбросить",
 
 // Checkbox and Radio Button Dialogs
 DlgCheckboxName		: "Имя",
@@ -411,9 +436,10 @@ DlgHiddenValue	: "Значение",
 // Bulleted List Dialog
 BulletedListProp	: "Свойства маркированного списка",
 NumberedListProp	: "Свойства нумерованного списка",
+DlgLstStart			: "Начало",
 DlgLstType			: "Тип",
 DlgLstTypeCircle	: "Круг",
-DlgLstTypeDisk		: "Диск",
+DlgLstTypeDisc		: "Диск",
 DlgLstTypeSquare	: "Квадрат",
 DlgLstTypeNumbers	: "Номера (1, 2, 3)",
 DlgLstTypeLCase		: "Буквы нижнего регистра (a, b, c)",
@@ -433,6 +459,15 @@ DlgDocLangDirLTR	: "Слева на право (LTR)",
 DlgDocLangDirRTL	: "Справа на лево (RTL)",
 DlgDocLangCode		: "Код языка",
 DlgDocCharSet		: "Кодировка набора символов",
+DlgDocCharSetCE		: "Центрально-европейская",
+DlgDocCharSetCT		: "Китайская традиционная (Big5)",
+DlgDocCharSetCR		: "Кириллица",
+DlgDocCharSetGR		: "Греческая",
+DlgDocCharSetJP		: "Японская",
+DlgDocCharSetKR		: "Корейская",
+DlgDocCharSetTR		: "Турецкая",
+DlgDocCharSetUN		: "Юникод (UTF-8)",
+DlgDocCharSetWE		: "Западно-европейская",
 DlgDocCharSetOther	: "Другая кодировка набора символов",
 
 DlgDocDocType		: "Заголовок типа документа",
@@ -462,11 +497,12 @@ DlgTemplatesTitle	: "Шаблоны содержимого",
 DlgTemplatesSelMsg	: "Пожалуйста выберете шаблон для открытия в редакторе<br>(текущее содержимое будет потеряно):",
 DlgTemplatesLoading	: "Загрузка списка шаблонов. Пожалуйста подождите...",
 DlgTemplatesNoTpl	: "(Ни одного шаблона не определено)",
+DlgTemplatesReplace	: "Заменить текущее содержание",
 
 // About Dialog
 DlgAboutAboutTab	: "О программе",
 DlgAboutBrowserInfoTab	: "Информация браузера",
+DlgAboutLicenseTab	: "Лицензия",
 DlgAboutVersion		: "Версия",
-DlgAboutLicense		: "Лицензировано в соответствии с условиями GNU Lesser General Public License",
 DlgAboutInfo		: "Для большей информации, посетите"
-}
+};

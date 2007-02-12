@@ -7,18 +7,20 @@
 			</constructor>
 			<method name="CheckIsDigit">
 				<body>
+					<![CDATA[
 					var iCode = keyCode ;
 
 					var bAccepted =
 						(
 							( iCode >= 48 && iCode <= 57 )		// Numbers
 							|| (iCode >= 37 && iCode <= 40)		// Arrows
-							|| iCode == 8						// Backspace
-							|| iCode == 46						// Delete
+							|| iCode == 8											// Backspace
+							|| iCode == 46										// Delete
 						) ;
 
 					return bAccepted ;
-			   </body>
+					]]>
+				</body>
 			</method>
 		</implementation>
 		<events>

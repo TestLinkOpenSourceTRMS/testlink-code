@@ -1,22 +1,46 @@
 ﻿/*
- * FCKeditor - The text editor for internet
- * Copyright (C) 2003-2005 Frederico Caldeira Knabben
+ * FCKeditor - The text editor for Internet - http://www.fckeditor.net
+ * Copyright (C) 2003-2007 Frederico Caldeira Knabben
  * 
- * Licensed under the terms of the GNU Lesser General Public License:
- * 		http://www.opensource.org/licenses/lgpl-license.php
+ * == BEGIN LICENSE ==
  * 
- * For further information visit:
- * 		http://www.fckeditor.net/
+ * Licensed under the terms of any of the following licenses at your
+ * choice:
+ * 
+ *  - GNU General Public License Version 2 or later (the "GPL")
+ *    http://www.gnu.org/licenses/gpl.html
+ * 
+ *  - GNU Lesser General Public License Version 2.1 or later (the "LGPL")
+ *    http://www.gnu.org/licenses/lgpl.html
+ * 
+ *  - Mozilla Public License Version 1.1 or later (the "MPL")
+ *    http://www.mozilla.org/MPL/MPL-1.1.html
+ * 
+ * == END LICENSE ==
  * 
  * File Name: fcktools_gecko.js
  * 	Utility functions. (Gecko version).
  * 
  * File Authors:
- * 		Frederico Caldeira Knabben (fredck@fckeditor.net)
+ * 		Frederico Caldeira Knabben (www.fckeditor.net)
  */
 
+FCKTools.CancelEvent = function( e )
+{
+	if ( e )
+		e.preventDefault() ;
+}
+
+FCKTools.DisableSelection = function( element )
+{
+	if ( FCKBrowserInfo.IsGecko )
+		element.style.MozUserSelect	= 'none' ;	// Gecko only.	
+	else
+		element.style.userSelect	= 'none' ;	// CSS3 (not supported yet).
+}
+
 // Appends a CSS file to a document.
-FCKTools.AppendStyleSheet = function( documentElement, cssFileUrl )
+FCKTools._AppendStyleSheet = function( documentElement, cssFileUrl )
 {
 	var e = documentElement.createElement( 'LINK' ) ;
 	e.rel	= 'stylesheet' ;
@@ -64,12 +88,14 @@ FCKTools.GetAllChildrenIds = function( parentElement )
 	return aIds ;
 }
 
+// Replaces a tag with its contents. For example "<span>My <b>tag</b></span>"
+// will be replaced with "My <b>tag</b>".
 FCKTools.RemoveOuterTags = function( e )
 {
 	var oFragment = e.ownerDocument.createDocumentFragment() ;
 			
 	for ( var i = 0 ; i < e.childNodes.length ; i++ )
-		oFragment.appendChild( e.childNodes[i] ) ;
+		oFragment.appendChild( e.childNodes[i].cloneNode(true) ) ;
 			
 	e.parentNode.replaceChild( oFragment, e ) ;
 }
@@ -83,4 +109,131 @@ FCKTools.CreateXmlObject = function( object )
 		case 'DOMDocument' :
 			return document.implementation.createDocument( '', '', null ) ;
 	}
+	return null ;
+}
+
+FCKTools.GetScrollPosition = function( relativeWindow )
+{
+	return { X : relativeWindow.pageXOffset, Y : relativeWindow.pageYOffset } ;
+}
+
+FCKTools.AddEventListener = function( sourceObject, eventName, listener )
+{
+	sourceObject.addEventListener( eventName, listener, false ) ;
+}
+
+FCKTools.RemoveEventListener = function( sourceObject, eventName, listener )
+{
+	sourceObject.removeEventListener( eventName, listener, false ) ;
+}
+
+// Listeners attached with this function cannot be detached.
+FCKTools.AddEventListenerEx = function( sourceObject, eventName, listener, paramsArray )
+{
+	sourceObject.addEventListener( 
+		eventName, 
+		function( e )
+		{
+			listener.apply( sourceObject, [ e ].concat( paramsArray || [] ) ) ;
+		},
+		false 
+	) ;
+}
+
+// Returns and object with the "Width" and "Height" properties.
+FCKTools.GetViewPaneSize = function( win )
+{
+	return { Width : win.innerWidth, Height : win.innerHeight } ;
+}
+
+FCKTools.SaveStyles = function( element )
+{
+	var oSavedStyles = new Object() ;
+	
+	if ( element.className.length > 0 )
+	{
+		oSavedStyles.Class = element.className ;
+		element.className = '' ;
+	}
+
+	var sInlineStyle = element.getAttribute( 'style' ) ;
+
+	if ( sInlineStyle && sInlineStyle.length > 0 )
+	{
+		oSavedStyles.Inline = sInlineStyle ;
+		element.setAttribute( 'style', '', 0 ) ;	// 0 : Case Insensitive
+	}
+
+	return oSavedStyles ;
+}
+
+FCKTools.RestoreStyles = function( element, savedStyles )
+{
+	element.className = savedStyles.Class || '' ;
+
+	if ( savedStyles.Inline )
+		element.setAttribute( 'style', savedStyles.Inline, 0 ) ;	// 0 : Case Insensitive
+	else
+		element.removeAttribute( 'style', 0 ) ;
+}
+
+FCKTools.RegisterDollarFunction = function( targetWindow )
+{
+	targetWindow.$ = function( id ) 
+	{ 
+		return this.document.getElementById( id ) ;
+	} ;
+}
+
+FCKTools.AppendElement = function( target, elementName )
+{
+	return target.appendChild( target.ownerDocument.createElement( elementName ) ) ;
+}
+
+// Get the coordinates of an element.
+//		@el : The element to get the position.
+//		@relativeWindow: The window to which we want the coordinates relative to.
+FCKTools.GetElementPosition = function( el, relativeWindow )
+{
+	// Initializes the Coordinates object that will be returned by the function.
+	var c = { X:0, Y:0 } ;
+	
+	var oWindow = relativeWindow || window ;
+
+	var oOwnerWindow = FCKTools.GetElementWindow( el ) ;
+
+	// Loop throw the offset chain.
+	while ( el )
+	{
+		var sPosition = oOwnerWindow.getComputedStyle(el, '').position ;
+
+		// Check for non "static" elements.
+		// 'FCKConfig.FloatingPanelsZIndex' -- Submenus are under a positioned IFRAME.
+		if ( sPosition && sPosition != 'static' && el.style.zIndex != FCKConfig.FloatingPanelsZIndex ) 
+			break ;
+
+		c.X += el.offsetLeft - el.scrollLeft ;
+		c.Y += el.offsetTop - el.scrollTop  ;
+
+		if ( el.offsetParent )
+			el = el.offsetParent ;
+		else
+		{
+			if ( oOwnerWindow != oWindow )
+			{
+				el = oOwnerWindow.frameElement ;
+				if ( el )
+					oOwnerWindow = FCKTools.GetElementWindow( el ) ;
+			}
+			else
+			{
+				c.X += el.scrollLeft ;
+				c.Y += el.scrollTop  ;
+				break ;
+			}
+		}
+	}
+
+	// Return the Coordinates object
+	return c ;
 }

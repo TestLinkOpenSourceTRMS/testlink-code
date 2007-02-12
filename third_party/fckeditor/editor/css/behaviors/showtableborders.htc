@@ -4,8 +4,8 @@
 <public:attach event="onpropertychange" onevent="OnPropertyChange()" />
 
 <script language="javascript">
+
 var oClassRegex = /\s*FCK__ShowTableBorders/ ;
-var FCKConfig = window.parent.FCKConfig ;
 
 function ShowBorders()
 {
@@ -28,7 +28,7 @@ function ShowBorders()
 function OnPropertyChange()
 {
 	if ( event.propertyName == 'border' || event.propertyName == 'className' )
-		ShowBorders() ;
+		ShowBorders.call(this) ;
 }
 
 </script>

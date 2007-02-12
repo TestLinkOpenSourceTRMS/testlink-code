@@ -1,62 +1,124 @@
 ﻿/*
- * FCKeditor - The text editor for internet
- * Copyright (C) 2003-2005 Frederico Caldeira Knabben
+ * FCKeditor - The text editor for Internet - http://www.fckeditor.net
+ * Copyright (C) 2003-2007 Frederico Caldeira Knabben
  * 
- * Licensed under the terms of the GNU Lesser General Public License:
- * 		http://www.opensource.org/licenses/lgpl-license.php
+ * == BEGIN LICENSE ==
  * 
- * For further information visit:
- * 		http://www.fckeditor.net/
+ * Licensed under the terms of any of the following licenses at your
+ * choice:
+ * 
+ *  - GNU General Public License Version 2 or later (the "GPL")
+ *    http://www.gnu.org/licenses/gpl.html
+ * 
+ *  - GNU Lesser General Public License Version 2.1 or later (the "LGPL")
+ *    http://www.gnu.org/licenses/lgpl.html
+ * 
+ *  - Mozilla Public License Version 1.1 or later (the "MPL")
+ *    http://www.mozilla.org/MPL/MPL-1.1.html
+ * 
+ * == END LICENSE ==
  * 
  * File Name: fcktoolbar.js
- * 	FCKToolbar Class: represents a toolbar. A toolbar is not the complete
- * 	toolbar set visible, but just a strip on it... a group of items.
+ * 	FCKToolbar Class: represents a toolbar in the toolbarset. It is a group of
+ * 	toolbar items.
  * 
  * File Authors:
- * 		Frederico Caldeira Knabben (fredck@fckeditor.net)
+ * 		Frederico Caldeira Knabben (www.fckeditor.net)
  */
 
 var FCKToolbar = function()
 {
 	this.Items = new Array() ;
-	
-	this.DOMTable = document.createElement( 'table' ) ;
-	this.DOMTable.className = 'TB_Toolbar' ;
-	with ( this.DOMTable )
-	{
-		// Sets the toolbar direction. IE uses "styleFloat" and Gecko uses "cssFloat".
-		style.styleFloat = style.cssFloat = FCKLang.Dir == 'rtl' ? 'right' : 'left' ;
-		
-		cellPadding = 0 ;
-		cellSpacing = 0 ;
-		border = 0 ;
-	}
 
-	this.DOMRow = this.DOMTable.insertRow(-1) ;
-
-	var oCell = this.DOMRow.insertCell(-1) ;
-	oCell.className = 'TB_Start' ;
-	oCell.innerHTML = '<img src="' + FCKConfig.SkinPath + 'images/toolbar.start.gif" width="7" height="21" style="VISIBILITY: hidden" onload="this.style.visibility = \'\';" unselectable="on">' ;
-
-	FCKToolbarSet.DOMElement.appendChild( this.DOMTable ) ;
+	if ( FCK.IECleanup )
+		FCK.IECleanup.AddItem( this, FCKToolbar_Cleanup ) ;
 }
 
-FCKToolbar.prototype.AddItem = function( toolbarItem )
+FCKToolbar.prototype.AddItem = function( item )
 {
-	this.Items[ this.Items.length ] = toolbarItem ;
-	toolbarItem.CreateInstance( this ) ;
+	return this.Items[ this.Items.length ] = item ;
+}
+
+FCKToolbar.prototype.AddButton = function( name, label, tooltip, iconPathOrStripInfoArrayOrIndex, style, state )
+{
+	if ( typeof( iconPathOrStripInfoArrayOrIndex ) == 'number' )
+		 iconPathOrStripInfoArrayOrIndex = [ this.DefaultIconsStrip, this.DefaultIconSize, iconPathOrStripInfoArrayOrIndex ] ;
+
+	var oButton = new FCKToolbarButtonUI( name, label, tooltip, iconPathOrStripInfoArrayOrIndex, style, state ) ;
+	oButton._FCKToolbar = this ;
+	oButton.OnClick = FCKToolbar_OnItemClick ;
+	
+	return this.AddItem( oButton ) ;
+}
+
+function FCKToolbar_OnItemClick( item )
+{
+	var oToolbar = item._FCKToolbar ;
+	
+	if ( oToolbar.OnItemClick )
+		oToolbar.OnItemClick( oToolbar, item ) ;
 }
 
 FCKToolbar.prototype.AddSeparator = function()
 {
-	var oCell = this.DOMRow.insertCell(-1) ;
-	oCell.unselectable = 'on' ;
-	oCell.innerHTML = '<img src="' + FCKConfig.SkinPath + 'images/toolbar.separator.gif" width="5" height="21" style="VISIBILITY: hidden" onload="this.style.visibility = \'\';" unselectable="on">' ;
+	this.AddItem( new FCKToolbarSeparator() ) ;
 }
 
-FCKToolbar.prototype.AddTerminator = function()
+FCKToolbar.prototype.Create = function( parentElement )
 {
-	var oCell = this.DOMRow.insertCell(-1) ;
-	oCell.className = 'TB_End' ;
-	oCell.innerHTML = '<img src="' + FCKConfig.SkinPath + 'images/toolbar.end.gif" width="12" height="21" style="VISIBILITY: hidden" onload="this.style.visibility = \'\';" unselectable="on">' ;
+	if ( this.MainElement )
+	{
+//		this._Cleanup() ;
+		if ( this.MainElement.parentNode )
+			this.MainElement.parentNode.removeChild( this.MainElement ) ;
+		this.MainElement = null ;
+	}
+
+	var oDoc = FCKTools.GetElementDocument( parentElement ) ;
+
+	var e = this.MainElement = oDoc.createElement( 'table' ) ;
+	e.className = 'TB_Toolbar' ;
+	e.style.styleFloat = e.style.cssFloat = ( FCKLang.Dir == 'ltr' ? 'left' : 'right' ) ;
+	e.dir = FCKLang.Dir ;
+	e.cellPadding = 0 ;
+	e.cellSpacing = 0 ;
+	
+	this.RowElement = e.insertRow(-1) ;
+	
+	// Insert the start cell.
+	var eCell ;
+	
+	if ( !this.HideStart )
+	{
+		eCell = this.RowElement.insertCell(-1) ;
+		eCell.appendChild( oDoc.createElement( 'div' ) ).className = 'TB_Start' ;
+	}
+	
+	for ( var i = 0 ; i < this.Items.length ; i++ )
+	{
+		this.Items[i].Create( this.RowElement.insertCell(-1) ) ;
+	}
+	
+	// Insert the ending cell.
+	if ( !this.HideEnd )
+	{
+		eCell = this.RowElement.insertCell(-1) ;
+		eCell.appendChild( oDoc.createElement( 'div' ) ).className = 'TB_End' ;
+	}
+
+	parentElement.appendChild( e ) ;
+}
+
+function FCKToolbar_Cleanup()
+{
+	this.MainElement = null ;
+	this.RowElement = null ;
+}
+
+var FCKToolbarSeparator = function()
+{}
+
+FCKToolbarSeparator.prototype.Create = function( parentElement )
+{
+	FCKTools.AppendElement( parentElement, 'div' ).className = 'TB_Separator' ;
 }

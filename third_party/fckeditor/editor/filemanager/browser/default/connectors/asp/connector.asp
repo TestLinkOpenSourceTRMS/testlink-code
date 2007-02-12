@@ -1,22 +1,33 @@
 ﻿<%@ CodePage=65001 Language="VBScript"%>
 <%
 Option Explicit
+Response.Buffer = True
 %>
 <!--
- * FCKeditor - The text editor for internet
- * Copyright (C) 2003-2005 Frederico Caldeira Knabben
+ * FCKeditor - The text editor for Internet - http://www.fckeditor.net
+ * Copyright (C) 2003-2007 Frederico Caldeira Knabben
  * 
- * Licensed under the terms of the GNU Lesser General Public License:
- * 		http://www.opensource.org/licenses/lgpl-license.php
+ * == BEGIN LICENSE ==
  * 
- * For further information visit:
- * 		http://www.fckeditor.net/
+ * Licensed under the terms of any of the following licenses at your
+ * choice:
+ * 
+ *  - GNU General Public License Version 2 or later (the "GPL")
+ *    http://www.gnu.org/licenses/gpl.html
+ * 
+ *  - GNU Lesser General Public License Version 2.1 or later (the "LGPL")
+ *    http://www.gnu.org/licenses/lgpl.html
+ * 
+ *  - Mozilla Public License Version 1.1 or later (the "MPL")
+ *    http://www.mozilla.org/MPL/MPL-1.1.html
+ * 
+ * == END LICENSE ==
  * 
  * File Name: connector.asp
  * 	This is the File Manager Connector for ASP.
  * 
  * File Authors:
- * 		Frederico Caldeira Knabben (fredck@fckeditor.net)
+ * 		Frederico Caldeira Knabben (www.fckeditor.net)
 -->
 <!--#include file="config.asp"-->
 <!--#include file="util.asp"-->
@@ -40,7 +51,7 @@ If ( Not IsEmpty( ConfigUserFilesPath ) ) Then
 		sUserFilesPath = sUserFilesPath & "/"
 	End If
 Else
-	sUserFilesPath = "/UserFiles/"
+	sUserFilesPath = "/userfiles/"
 End If
 
 ' Map the "UserFiles" path to a local directory.
@@ -56,15 +67,18 @@ DoResponse
 Sub DoResponse()
 	Dim sCommand, sResourceType, sCurrentFolder
 	
-	' Get the main request informaiton.
+	' Get the main request information.
 	sCommand = Request.QueryString("Command")
 	If ( sCommand = "" ) Then Exit Sub
 
 	sResourceType = Request.QueryString("Type")
 	If ( sResourceType = "" ) Then Exit Sub
-
+	
 	sCurrentFolder = Request.QueryString("CurrentFolder")
 	If ( sCurrentFolder = "" ) Then Exit Sub
+
+	' Check if it is an allower resource type.
+	if ( Not IsAllowedType( sResourceType ) ) Then Exit Sub
 
 	' Check the current folder syntax (must begin and start with a slash).
 	If ( Right( sCurrentFolder, 1 ) <> "/" ) Then sCurrentFolder = sCurrentFolder & "/"
@@ -99,4 +113,16 @@ Sub DoResponse()
 
 	Response.End
 End Sub
+
+Function IsAllowedType( resourceType )
+	Dim oRE
+	Set oRE	= New RegExp
+	oRE.IgnoreCase	= True
+	oRE.Global		= True
+	oRE.Pattern		= "^(File|Image|Flash|Media)$"
+	
+	IsAllowedType = oRE.Test( resourceType )
+	
+	Set oRE	= Nothing
+End Function
 %>

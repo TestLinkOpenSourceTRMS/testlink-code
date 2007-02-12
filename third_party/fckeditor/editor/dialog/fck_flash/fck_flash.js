@@ -1,18 +1,28 @@
 ﻿/*
- * FCKeditor - The text editor for internet
- * Copyright (C) 2003-2005 Frederico Caldeira Knabben
+ * FCKeditor - The text editor for Internet - http://www.fckeditor.net
+ * Copyright (C) 2003-2007 Frederico Caldeira Knabben
  * 
- * Licensed under the terms of the GNU Lesser General Public License:
- * 		http://www.opensource.org/licenses/lgpl-license.php
+ * == BEGIN LICENSE ==
  * 
- * For further information visit:
- * 		http://www.fckeditor.net/
+ * Licensed under the terms of any of the following licenses at your
+ * choice:
+ * 
+ *  - GNU General Public License Version 2 or later (the "GPL")
+ *    http://www.gnu.org/licenses/gpl.html
+ * 
+ *  - GNU Lesser General Public License Version 2.1 or later (the "LGPL")
+ *    http://www.gnu.org/licenses/lgpl.html
+ * 
+ *  - Mozilla Public License Version 1.1 or later (the "MPL")
+ *    http://www.mozilla.org/MPL/MPL-1.1.html
+ * 
+ * == END LICENSE ==
  * 
  * File Name: fck_flash.js
  * 	Scripts related to the Flash dialog window (see fck_flash.html).
  * 
  * File Authors:
- * 		Frederico Caldeira Knabben (fredck@fckeditor.net)
+ * 		Frederico Caldeira Knabben (www.fckeditor.net)
  */
 
 var oEditor		= window.parent.InnerDialogLoaded() ;
@@ -90,12 +100,17 @@ function LoadSelection()
 	GetE('cmbScale').value		= GetAttribute( oEmbed, 'scale', '' ).toLowerCase() ;
 	
 	GetE('txtAttTitle').value		= oEmbed.title ;
-	GetE('txtAttClasses').value		= oEmbed.getAttribute('class',2) || '' ;
 
 	if ( oEditor.FCKBrowserInfo.IsIE )
-		GetE('txtAttStyle').value	= oEmbed.style.cssText ;
+	{
+		GetE('txtAttClasses').value = oEmbed.getAttribute('className') || '' ;
+		GetE('txtAttStyle').value = oEmbed.style.cssText ;
+	}
 	else
-		GetE('txtAttStyle').value	= oEmbed.getAttribute('style',2) ;
+	{
+		GetE('txtAttClasses').value = oEmbed.getAttribute('class',2) || '' ;
+		GetE('txtAttStyle').value = oEmbed.getAttribute('style',2) ;
+	}
 
 	UpdatePreview() ;
 }
@@ -122,7 +137,7 @@ function Ok()
 	
 	if ( !oFakeImage )
 	{
-		oFakeImage	= oEditor.FCKDocumentProcessors_CreateFakeImage( 'FCK__Flash', oEmbed ) ;
+		oFakeImage	= oEditor.FCKDocumentProcessor_CreateFakeImage( 'FCK__Flash', oEmbed ) ;
 		oFakeImage.setAttribute( '_fckflash', 'true', 0 ) ;
 		oFakeImage	= FCK.InsertElementAndGetIt( oFakeImage ) ;
 	}
@@ -148,38 +163,55 @@ function UpdateEmbed( e )
 	SetAttribute( e, 'id'	, GetE('txtAttId').value ) ;
 	SetAttribute( e, 'scale', GetE('cmbScale').value ) ;
 	
-	if ( !GetE('chkAutoPlay').checked )	SetAttribute( e, 'play', 'false' ) ;
-	if ( !GetE('chkLoop').checked )		SetAttribute( e, 'loop', 'false' ) ;
-	if ( !GetE('chkMenu').checked )		SetAttribute( e, 'menu', 'false' ) ;
+	SetAttribute( e, 'play', GetE('chkAutoPlay').checked ? 'true' : 'false' ) ;
+	SetAttribute( e, 'loop', GetE('chkLoop').checked ? 'true' : 'false' ) ;
+	SetAttribute( e, 'menu', GetE('chkMenu').checked ? 'true' : 'false' ) ;
 
 	SetAttribute( e, 'title'	, GetE('txtAttTitle').value ) ;
-	SetAttribute( e, 'class'	, GetE('txtAttClasses').value ) ;
 
 	if ( oEditor.FCKBrowserInfo.IsIE )
+	{
+		SetAttribute( e, 'className', GetE('txtAttClasses').value ) ;
 		e.style.cssText = GetE('txtAttStyle').value ;
+	}
 	else
+	{
+		SetAttribute( e, 'class', GetE('txtAttClasses').value ) ;
 		SetAttribute( e, 'style', GetE('txtAttStyle').value ) ;
+	}
+}
+
+var ePreview ;
+
+function SetPreviewElement( previewEl )
+{
+	ePreview = previewEl ;
+	
+	if ( GetE('txtUrl').value.length > 0 )
+		UpdatePreview() ;
 }
 
 function UpdatePreview()
 {
-	var oCell = GetE('ePreviewCell') ;
-	
-	while ( oCell.firstChild )
-		oCell.removeChild( oCell.firstChild ) ;
+	if ( !ePreview )
+		return ;
+		
+	while ( ePreview.firstChild )
+		ePreview.removeChild( ePreview.firstChild ) ;
 
 	if ( GetE('txtUrl').value.length == 0 )
-		oCell.innerHTML = '&nbsp;' ;
+		ePreview.innerHTML = '&nbsp;' ;
 	else
 	{
-		var e = document.createElement( 'EMBED' ) ;
+		var oDoc	= ePreview.ownerDocument || ePreview.document ;
+		var e		= oDoc.createElement( 'EMBED' ) ;
 		
 		e.src		= GetE('txtUrl').value ;
 		e.type		= 'application/x-shockwave-flash' ;
 		e.width		= '100%' ;
 		e.height	= '100%' ;
 		
-		oCell.appendChild( e ) ;
+		ePreview.appendChild( e ) ;
 	}
 }
 
@@ -187,30 +219,19 @@ function UpdatePreview()
 
 function BrowseServer()
 {
-	OpenServerBrowser(
-		'Flash',
-		FCKConfig.FlashBrowserURL,
-		FCKConfig.FlashBrowserWindowWidth,
-		FCKConfig.FlashBrowserWindowHeight ) ;
+	OpenFileBrowser( FCKConfig.FlashBrowserURL, FCKConfig.FlashBrowserWindowWidth, FCKConfig.FlashBrowserWindowHeight ) ;
 }
 
-function OpenServerBrowser( type, url, width, height )
-{
-	var iLeft = (screen.width  - width) / 2 ;
-	var iTop  = (screen.height - height) / 2 ;
-
-	var sOptions = "toolbar=no,status=no,resizable=yes,dependent=yes" ;
-	sOptions += ",width=" + width ;
-	sOptions += ",height=" + height ;
-	sOptions += ",left=" + iLeft ;
-	sOptions += ",top=" + iTop ;
-
-	var oWindow = window.open( url, "FCKBrowseWindow", sOptions ) ;
-}
-
-function SetUrl( url )
+function SetUrl( url, width, height )
 {
 	GetE('txtUrl').value = url ;
+	
+	if ( width )
+		GetE('txtWidth').value = width ;
+		
+	if ( height ) 
+		GetE('txtHeight').value = height ;
+
 	UpdatePreview() ;
 
 	window.parent.SetSelectedTab( 'Info' ) ;

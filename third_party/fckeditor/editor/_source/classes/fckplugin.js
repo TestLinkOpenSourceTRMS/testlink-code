@@ -1,23 +1,29 @@
 ﻿/*
- * FCKeditor - The text editor for internet
- * Copyright (C) 2003-2005 Frederico Caldeira Knabben
+ * FCKeditor - The text editor for Internet - http://www.fckeditor.net
+ * Copyright (C) 2003-2007 Frederico Caldeira Knabben
  * 
- * Licensed under the terms of the GNU Lesser General Public License:
- * 		http://www.opensource.org/licenses/lgpl-license.php
+ * == BEGIN LICENSE ==
  * 
- * For further information visit:
- * 		http://www.fckeditor.net/
+ * Licensed under the terms of any of the following licenses at your
+ * choice:
+ * 
+ *  - GNU General Public License Version 2 or later (the "GPL")
+ *    http://www.gnu.org/licenses/gpl.html
+ * 
+ *  - GNU Lesser General Public License Version 2.1 or later (the "LGPL")
+ *    http://www.gnu.org/licenses/lgpl.html
+ * 
+ *  - Mozilla Public License Version 1.1 or later (the "MPL")
+ *    http://www.mozilla.org/MPL/MPL-1.1.html
+ * 
+ * == END LICENSE ==
  * 
  * File Name: fckplugin.js
  * 	FCKPlugin Class: Represents a single plugin.
  * 
  * File Authors:
- * 		Frederico Caldeira Knabben (fredck@fckeditor.net)
+ * 		Frederico Caldeira Knabben (www.fckeditor.net)
  */
-
-// Certifies that the "PluginsPath" configuration ends with a slash.
-if ( !FCKConfig.PluginsPath.endsWith('/') )
-	FCKConfig.PluginsPath += '/' ;
 
 var FCKPlugin = function( name, availableLangs, basePath )
 {
@@ -36,17 +42,19 @@ FCKPlugin.prototype.Load = function()
 	// Load the language file, if defined.
 	if ( this.AvailableLangs.length > 0 )
 	{
+		var sLang ;
+		
 		// Check if the plugin has the language file for the active language.
-		if ( this.AvailableLangs.indexOf( FCKLanguageManager.ActiveLanguage.Code ) >= 0 )
-			var sLang = FCKLanguageManager.ActiveLanguage.Code ;
+		if ( this.AvailableLangs.IndexOf( FCKLanguageManager.ActiveLanguage.Code ) >= 0 )
+			sLang = FCKLanguageManager.ActiveLanguage.Code ;
 		else
 			// Load the default language file (first one) if the current one is not available.
-			var sLang = this.AvailableLangs[0] ;
+			sLang = this.AvailableLangs[0] ;
 		
 		// Add the main plugin script.
-		FCKScriptLoader.AddScript( this.Path + 'lang/' + sLang + '.js' ) ;		
+		LoadScript( this.Path + 'lang/' + sLang + '.js' ) ;		
 	}
 		
 	// Add the main plugin script.
-	FCKScriptLoader.AddScript( this.Path + 'fckplugin.js' ) ;
+	LoadScript( this.Path + 'fckplugin.js' ) ;
 }

@@ -1,28 +1,38 @@
 ﻿/*
- * FCKeditor - The text editor for internet
- * Copyright (C) 2003-2005 Frederico Caldeira Knabben
+ * FCKeditor - The text editor for Internet - http://www.fckeditor.net
+ * Copyright (C) 2003-2007 Frederico Caldeira Knabben
  * 
- * Licensed under the terms of the GNU Lesser General Public License:
- * 		http://www.opensource.org/licenses/lgpl-license.php
+ * == BEGIN LICENSE ==
  * 
- * For further information visit:
- * 		http://www.fckeditor.net/
+ * Licensed under the terms of any of the following licenses at your
+ * choice:
+ * 
+ *  - GNU General Public License Version 2 or later (the "GPL")
+ *    http://www.gnu.org/licenses/gpl.html
+ * 
+ *  - GNU Lesser General Public License Version 2.1 or later (the "LGPL")
+ *    http://www.gnu.org/licenses/lgpl.html
+ * 
+ *  - Mozilla Public License Version 1.1 or later (the "MPL")
+ *    http://www.mozilla.org/MPL/MPL-1.1.html
+ * 
+ * == END LICENSE ==
  * 
  * File Name: fckstyledef_gecko.js
  * 	FCKStyleDef Class: represents a single stylke definition. (Gecko specific)
  * 
  * File Authors:
- * 		Frederico Caldeira Knabben (fredck@fckeditor.net)
+ * 		Frederico Caldeira Knabben (www.fckeditor.net)
  */
 
 FCKStyleDef.prototype.ApplyToSelection = function()
 {
 	if ( FCKSelection.GetType() == 'Text' && !this.IsObjectElement )
 	{
-		var oSelection = FCK.EditorWindow.getSelection() ;
+		var oSelection = FCK.ToolbarSet.CurrentInstance.EditorWindow.getSelection() ;
 		
 		// Create the main element.
-		var e = FCK.EditorDocument.createElement( this.Element ) ;
+		var e = FCK.ToolbarSet.CurrentInstance.EditorDocument.createElement( this.Element ) ;
 		
 		for ( var i = 0 ; i < oSelection.rangeCount ; i++ )
 		{
@@ -40,7 +50,7 @@ FCKStyleDef.prototype.ApplyToSelection = function()
 	}
 	else
 	{
-		var oControl = FCKSelection.GetSelectedElement() ;
+		var oControl = FCK.ToolbarSet.CurrentInstance.Selection.GetSelectedElement() ;
 		if ( oControl.tagName == this.Element )
 			this._AddAttributes( oControl ) ;
 	}
@@ -49,7 +59,15 @@ FCKStyleDef.prototype.ApplyToSelection = function()
 FCKStyleDef.prototype._AddAttributes = function( targetElement )
 {
 	for ( var a in this.Attributes )
-		targetElement.setAttribute( a, this.Attributes[a], 0 ) ;
+	{
+		switch ( a.toLowerCase() )
+		{
+			case 'src' :
+				targetElement.setAttribute( '_fcksavedurl', this.Attributes[a], 0 ) ;
+			default :
+				targetElement.setAttribute( a, this.Attributes[a], 0 ) ;
+		}
+	}
 }
 
 FCKStyleDef.prototype._RemoveDuplicates = function( parent )

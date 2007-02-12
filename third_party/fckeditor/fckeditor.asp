@@ -1,12 +1,22 @@
 ﻿<!--
- * FCKeditor - The text editor for internet
- * Copyright (C) 2003-2005 Frederico Caldeira Knabben
+ * FCKeditor - The text editor for Internet - http://www.fckeditor.net
+ * Copyright (C) 2003-2007 Frederico Caldeira Knabben
  * 
- * Licensed under the terms of the GNU Lesser General Public License:
- * 		http://www.opensource.org/licenses/lgpl-license.php
+ * == BEGIN LICENSE ==
  * 
- * For further information visit:
- * 		http://www.fckeditor.net/
+ * Licensed under the terms of any of the following licenses at your
+ * choice:
+ * 
+ *  - GNU General Public License Version 2 or later (the "GPL")
+ *    http://www.gnu.org/licenses/gpl.html
+ * 
+ *  - GNU Lesser General Public License Version 2.1 or later (the "LGPL")
+ *    http://www.gnu.org/licenses/lgpl.html
+ * 
+ *  - Mozilla Public License Version 1.1 or later (the "MPL")
+ *    http://www.mozilla.org/MPL/MPL-1.1.html
+ * 
+ * == END LICENSE ==
  * 
  * File Name: fckeditor.asp
  * 	This is the integration file for ASP.
@@ -15,7 +25,7 @@
  * 	instances in ASP pages on server side.
  * 
  * File Authors:
- * 		Frederico Caldeira Knabben (fredck@fckeditor.net)
+ * 		Frederico Caldeira Knabben (www.fckeditor.net)
 -->
 <%
 Class FCKeditor
@@ -30,7 +40,7 @@ Class FCKeditor
 	private oConfig
 
 	Private Sub Class_Initialize()
-		sBasePath		= "/FCKeditor/"
+		sBasePath		= "/fckeditor/"
 		sWidth			= "100%"
 		sHeight			= "200"
 		sToolbarSet		= "Default"
@@ -77,21 +87,28 @@ Class FCKeditor
 
 		If IsCompatible() Then
 
+			Dim sFile
+			If Request.QueryString( "fcksource" ) = "true" Then
+				sFile = "fckeditor.original.html"
+			Else
+				sFile = "fckeditor.html"
+			End If
+
 			Dim sLink
-			sLink = sBasePath & "editor/fckeditor.html?InstanceName=" + instanceName
+			sLink = sBasePath & "editor/" & sFile & "?InstanceName=" + instanceName
 
 			If (sToolbarSet & "") <> "" Then
 				sLink = sLink + "&amp;Toolbar=" & sToolbarSet
 			End If
 
 			' Render the linked hidden field.
-			Response.Write "<input type=""hidden"" id=""" & instanceName & """ name=""" & instanceName & """ value=""" & Server.HTMLEncode( sValue ) & """ />"
+			Response.Write "<input type=""hidden"" id=""" & instanceName & """ name=""" & instanceName & """ value=""" & Server.HTMLEncode( sValue ) & """ style=""display:none"" />"
 
 			' Render the configurations hidden field.
-			Response.Write "<input type=""hidden"" id=""" & instanceName & "___Config"" value=""" & GetConfigFieldString() & """ />"
+			Response.Write "<input type=""hidden"" id=""" & instanceName & "___Config"" value=""" & GetConfigFieldString() & """ style=""display:none"" />"
 
 			' Render the editor IFRAME.
-			Response.Write "<iframe id=""" & instanceName & "___Frame"" src=""" & sLink & """ width=""" & sWidth & """ height=""" & sHeight & """ frameborder=""no"" scrolling=""no""></iframe>"
+			Response.Write "<iframe id=""" & instanceName & "___Frame"" src=""" & sLink & """ width=""" & sWidth & """ height=""" & sHeight & """ frameborder=""0"" scrolling=""no""></iframe>"
 
 		Else
 
@@ -109,7 +126,7 @@ Class FCKeditor
 				sHeightCSS = sHeight & "px"
 			End If
 
-			Response.Write "<textarea name=""" & instanceName & """ rows=""4"" cols=""40"" style=""width: " & sWidthCSS & "; height: " & sHeightCSS & """ wrap=""virtual"">" & Server.HTMLEncode( sValue ) & "</textarea>"
+			Response.Write "<textarea name=""" & instanceName & """ rows=""4"" cols=""40"" style=""width: " & sWidthCSS & "; height: " & sHeightCSS & """>" & Server.HTMLEncode( sValue ) & "</textarea>"
 
 		End If
 

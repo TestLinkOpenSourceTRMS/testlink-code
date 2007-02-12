@@ -1,18 +1,29 @@
 ﻿/*
- * FCKeditor - The text editor for internet
- * Copyright (C) 2003-2005 Frederico Caldeira Knabben
+ * FCKeditor - The text editor for Internet - http://www.fckeditor.net
+ * Copyright (C) 2003-2007 Frederico Caldeira Knabben
  * 
- * Licensed under the terms of the GNU Lesser General Public License:
- * 		http://www.opensource.org/licenses/lgpl-license.php
+ * == BEGIN LICENSE ==
  * 
- * For further information visit:
- * 		http://www.fckeditor.net/
+ * Licensed under the terms of any of the following licenses at your
+ * choice:
+ * 
+ *  - GNU General Public License Version 2 or later (the "GPL")
+ *    http://www.gnu.org/licenses/gpl.html
+ * 
+ *  - GNU Lesser General Public License Version 2.1 or later (the "LGPL")
+ *    http://www.gnu.org/licenses/lgpl.html
+ * 
+ *  - Mozilla Public License Version 1.1 or later (the "MPL")
+ *    http://www.mozilla.org/MPL/MPL-1.1.html
+ * 
+ * == END LICENSE ==
  * 
  * File Name: hu.js
  * 	Hungarian language file.
  * 
  * File Authors:
  * 		Varga Zsolt (meridian@netteszt.hu)
+ * 		Géza Szűcs (flextor@flextor.hu)
  */
 
 var FCKLang =
@@ -20,29 +31,29 @@ var FCKLang =
 // Language direction : "ltr" (left to right) or "rtl" (right to left).
 Dir					: "ltr",
 
-ToolbarCollapse		: "Egyszerû eszköztár",
-ToolbarExpand		: "Bõvített eszköztár",
+ToolbarCollapse		: "Eszköztár elrejtése",
+ToolbarExpand		: "Eszköztár megjelenítése",
 
 // Toolbar Items and Context Menu
 Save				: "Mentés",
 NewPage				: "Új oldal",
-Preview				: "Elõnézet",
+Preview				: "Előnézet",
 Cut					: "Kivágás",
 Copy				: "Másolás",
 Paste				: "Beillesztés",
-PasteText			: "Beillesztés formázatlan szövegként",
-PasteWord			: "Beillesztés Wordbõl",
+PasteText			: "Beillesztés formázás nélkül",
+PasteWord			: "Beillesztés Word-ből",
 Print				: "Nyomtatás",
-SelectAll			: "Minden kijelölése",
-RemoveFormat		: "Formázás törlése",
+SelectAll			: "Mindent kijelöl",
+RemoveFormat		: "Formázás eltávolítása",
 InsertLinkLbl		: "Hivatkozás",
 InsertLink			: "Hivatkozás beillesztése/módosítása",
 RemoveLink			: "Hivatkozás törlése",
 Anchor				: "Horgony beillesztése/szerkesztése",
 InsertImageLbl		: "Kép",
 InsertImage			: "Kép beillesztése/módosítása",
-InsertFlashLbl		: "Flash",	//MISSING
-InsertFlash			: "Insert/Edit Flash",	//MISSING
+InsertFlashLbl		: "Flash",
+InsertFlash			: "Flash beillesztése, módosítása",
 InsertTableLbl		: "Táblázat",
 InsertTable			: "Táblázat beillesztése/módosítása",
 InsertLineLbl		: "Vonal",
@@ -53,11 +64,11 @@ InsertSmileyLbl		: "Hangulatjelek",
 InsertSmiley		: "Hangulatjelek beillesztése",
 About				: "FCKeditor névjegy",
 Bold				: "Félkövér",
-Italic				: "Dõlt",
+Italic				: "Dőlt",
 Underline			: "Aláhúzott",
 StrikeThrough		: "Áthúzott",
 Subscript			: "Alsó index",
-Superscript			: "Felsõ index",
+Superscript			: "Felső index",
 LeftJustify			: "Balra",
 CenterJustify		: "Középre",
 RightJustify		: "Jobbra",
@@ -74,15 +85,17 @@ ShowTableBorders	: "Táblázat szegély mutatása",
 ShowDetails			: "Részletek mutatása",
 Style				: "Stílus",
 FontFormat			: "Formátum",
-Font				: "Betûtipus",
+Font				: "Betűtípus",
 FontSize			: "Méret",
-TextColor			: "Betûszín",
+TextColor			: "Betűszín",
 BGColor				: "Háttérszín",
 Source				: "Forráskód",
 Find				: "Keresés",
 Replace				: "Csere",
-SpellCheck			: "Helyesírásellenőrzés",
-UniversalKeyboard	: "Általános billentyűzet",
+SpellCheck			: "Helyesírás-ellenőrzés",
+UniversalKeyboard	: "Univerzális billentyűzet",
+PageBreakLbl		: "Oldaltörés",
+PageBreak			: "Oldaltörés beillesztése",
 
 Form			: "Űrlap",
 Checkbox		: "Jelölőnégyzet",
@@ -91,79 +104,88 @@ TextField		: "Szövegmező",
 Textarea		: "Szövegterület",
 HiddenField		: "Rejtettmező",
 Button			: "Gomb",
-SelectionField	: "Választómező",
+SelectionField	: "Legördülő lista",
 ImageButton		: "Képgomb",
+
+FitWindow		: "Maximalizálás",
 
 // Context Menu
 EditLink			: "Hivatkozás módosítása",
+CellCM				: "Cella",
+RowCM				: "Sor",
+ColumnCM			: "Oszlop",
 InsertRow			: "Sor beszúrása",
-DeleteRows			: "Sor(ok) törlése",
+DeleteRows			: "Sorok törlése",
 InsertColumn		: "Oszlop beszúrása",
-DeleteColumns		: "Oszlop(ok) törlése",
+DeleteColumns		: "Oszlopok törlése",
 InsertCell			: "Cella beszúrása",
 DeleteCells			: "Cellák törlése",
 MergeCells			: "Cellák egyesítése",
-SplitCell			: "Cellák szétválasztása",
-CellProperties		: "Cellák tulajdonsága",
-TableProperties		: "Táblázat tulajdonsága",
-ImageProperties		: "Kép tulajdonsága",
-FlashProperties		: "Flash Properties",	//MISSING
+SplitCell			: "Cella szétválasztása",
+TableDelete			: "Táblázat törlése",
+CellProperties		: "Cella tulajdonságai",
+TableProperties		: "Táblázat tulajdonságai",
+ImageProperties		: "Kép tulajdonságai",
+FlashProperties		: "Flash tulajdonságai",
 
-AnchorProp			: "Horgony(ok) tulajdonsága(i)",
-ButtonProp			: "Gomb(ok) tulajdonsága(i) ",
-CheckboxProp		: "Jelölőnégyzet(ek) tulajdonsága(i)",
-HiddenFieldProp		: "Rejtettmező(k) tulajdonsága(i)",
-RadioButtonProp		: "Választógomb(ok) tulajdonsága(i)",
-ImageButtonProp		: "Képgomb(ok) tulajdonsága(i)",
-TextFieldProp		: "Szövegmező(k) tulajdonsága(i)",
-SelectionFieldProp	: "Választómező(k) tulajdonsága(i)",
-TextareaProp		: "Szövegterület(ek) tulajdonsága(i)",
-FormProp			: "Űrlap(ok) tulajdonsága(i)",
+AnchorProp			: "Horgony tulajdonságai",
+ButtonProp			: "Gomb tulajdonságai",
+CheckboxProp		: "Jelölőnégyzet tulajdonságai",
+HiddenFieldProp		: "Rejtett mező tulajdonságai",
+RadioButtonProp		: "Választógomb tulajdonságai",
+ImageButtonProp		: "Képgomb tulajdonságai",
+TextFieldProp		: "Szövegmező tulajdonságai",
+SelectionFieldProp	: "Legördülő lista tulajdonságai",
+TextareaProp		: "Szövegterület tulajdonságai",
+FormProp			: "Űrlap tulajdonságai",
 
-FontFormats			: "Normál;Formázott;Címsor;Fejléc 1;Fejléc 2;Fejléc 3;Fejléc 4;Fejléc 5;Fejléc 6;Bekezdés (DIV)",
+FontFormats			: "Normál;Formázott;Címsor;Fejléc 1;Fejléc 2;Fejléc 3;Fejléc 4;Fejléc 5;Fejléc 6;Bekezdés (DIV)",		//REVIEW : Check _getfontformat.html
 
 // Alerts and Messages
 ProcessingXHTML		: "XHTML feldolgozása. Kérem várjon...",
 Done				: "Kész",
-PasteWordConfirm	: "A szöveg amit be szeretnél illeszteni úgy néz ki Word-bõl van másolva. Do you want to clean it before pasting?",
-NotCompatiblePaste	: "Ez a parancs csak Internet Explorer 5.5 verziótól használható (Firefox rulez). Do you want to paste without cleaning?",
+PasteWordConfirm	: "A beilleszteni kívánt szöveg Word-ből van másolva. El kívánja távolítani a formázást a beillesztés előtt?",
+NotCompatiblePaste	: "Ez a parancs csak Internet Explorer 5.5 verziótól használható. Megpróbálja beilleszteni a szöveget az eredeti formázással?",
 UnknownToolbarItem	: "Ismeretlen eszköztár elem \"%1\"",
 UnknownCommand		: "Ismeretlen parancs \"%1\"",
-NotImplemented		: "A parancs nincs beágyazva",
-UnknownToolbarSet	: "Eszközkészlet beállítás \"%1\" nem létezik",
+NotImplemented		: "A parancs nem hajtható végre",
+UnknownToolbarSet	: "Az eszközkészlet \"%1\" nem létezik",
+NoActiveX			: "A böngésző biztonsági beállításai korlátozzák a szerkesztő lehetőségeit. Engedélyezni kell ezt az opciót: \"Run ActiveX controls and plug-ins\". Ettől függetlenül előfordulhatnak hibaüzenetek ill. bizonyos funkciók hiányozhatnak.",
+BrowseServerBlocked : "Nem lehet megnyitni a fájlböngészőt. Bizonyosodjon meg róla, hogy a felbukkanó ablakok engedélyezve vannak.",
+DialogBlocked		: "Nem lehet megnyitni a párbeszédablakot. Bizonyosodjon meg róla, hogy a felbukkanó ablakok engedélyezve vannak.",
 
 // Dialogs
-DlgBtnOK			: "OK",
+DlgBtnOK			: "Rendben",
 DlgBtnCancel		: "Mégsem",
 DlgBtnClose			: "Bezárás",
-DlgBtnBrowseServer	: "Szerver tallózása",
-DlgAdvancedTag		: "Haladó",
+DlgBtnBrowseServer	: "Böngészés a szerveren",
+DlgAdvancedTag		: "További opciók",
 DlgOpOther			: "Egyéb",
-DlgInfoTab			: "Info",	//MISSING
-DlgAlertUrl			: "Please insert the URL",	//MISSING
+DlgInfoTab			: "Alaptulajdonságok",
+DlgAlertUrl			: "Illessze be a webcímet",
 
 // General Dialogs Labels
-DlgGenNotSet		: "&lt;nincs beállítva&gt;",
+DlgGenNotSet		: "<nincs beállítva>",
 DlgGenId			: "Azonosító",
-DlgGenLangDir		: "Nyelv útmutató",
+DlgGenLangDir		: "Írás iránya",
 DlgGenLangDirLtr	: "Balról jobbra",
 DlgGenLangDirRtl	: "Jobbról balra",
-DlgGenLangCode		: "Nyelv kód",
-DlgGenAccessKey		: "Elérési kulcs",
+DlgGenLangCode		: "Nyelv kódja",
+DlgGenAccessKey		: "Billentyűkombináció",
 DlgGenName			: "Név",
 DlgGenTabIndex		: "Tabulátor index",
-DlgGenLongDescr		: "Hosszú URL",
+DlgGenLongDescr		: "Részletes leírás webcíme",
 DlgGenClass			: "Stíluskészlet",
-DlgGenTitle			: "Advisory Title",
-DlgGenContType		: "Advisory Content Type",
-DlgGenLinkCharset	: "Hivatkozott kódlap készlet",
+DlgGenTitle			: "Súgócimke",
+DlgGenContType		: "Súgó tartalomtípusa",
+DlgGenLinkCharset	: "Hivatkozott tartalom kódlapja",
 DlgGenStyle			: "Stílus",
 
 // Image Dialog
-DlgImgTitle			: "Kép tulajdonsága",
-DlgImgInfoTab		: "Kép információ",
-DlgImgBtnUpload		: "Küldés a szervernek",
-DlgImgURL			: "URL",
+DlgImgTitle			: "Kép tulajdonságai",
+DlgImgInfoTab		: "Alaptulajdonságok",
+DlgImgBtnUpload		: "Küldés a szerverre",
+DlgImgURL			: "Hivatkozás",
 DlgImgUpload		: "Feltöltés",
 DlgImgAlt			: "Buborék szöveg",
 DlgImgWidth			: "Szélesség",
@@ -177,80 +199,81 @@ DlgImgAlign			: "Igazítás",
 DlgImgAlignLeft		: "Bal",
 DlgImgAlignAbsBottom: "Legaljára",
 DlgImgAlignAbsMiddle: "Közepére",
-DlgImgAlignBaseline	: "Baseline",
+DlgImgAlignBaseline	: "Alapvonalhoz",
 DlgImgAlignBottom	: "Aljára",
 DlgImgAlignMiddle	: "Középre",
 DlgImgAlignRight	: "Jobbra",
-DlgImgAlignTextTop	: "Szöveg tetjére",
+DlgImgAlignTextTop	: "Szöveg tetejére",
 DlgImgAlignTop		: "Tetejére",
-DlgImgPreview		: "Elõnézet",
-DlgImgAlertUrl		: "Töltse ki a kép URL-ét",
-DlgImgLinkTab		: "Link",	//MISSING
+DlgImgPreview		: "Előnézet",
+DlgImgAlertUrl		: "Töltse ki a kép webcímét",
+DlgImgLinkTab		: "Hivatkozás",
 
 // Flash Dialog
-DlgFlashTitle		: "Flash Properties",	//MISSING
-DlgFlashChkPlay		: "Auto Play",	//MISSING
-DlgFlashChkLoop		: "Loop",	//MISSING
-DlgFlashChkMenu		: "Enable Flash Menu",	//MISSING
-DlgFlashScale		: "Scale",	//MISSING
-DlgFlashScaleAll	: "Show all",	//MISSING
-DlgFlashScaleNoBorder	: "No Border",	//MISSING
-DlgFlashScaleFit	: "Exact Fit",	//MISSING
+DlgFlashTitle		: "Flash tulajdonságai",
+DlgFlashChkPlay		: "Automata lejátszás",
+DlgFlashChkLoop		: "Folyamatosan",
+DlgFlashChkMenu		: "Flash menü engedélyezése",
+DlgFlashScale		: "Méretezés",
+DlgFlashScaleAll	: "Mindent mutat",
+DlgFlashScaleNoBorder	: "Keret nélkül",
+DlgFlashScaleFit	: "Teljes kitöltés",
 
 // Link Dialog
-DlgLnkWindowTitle	: "Hivatkozás",
-DlgLnkInfoTab		: "Hivatkozás információ",
-DlgLnkTargetTab		: "Cél",
+DlgLnkWindowTitle	: "Hivatkozás tulajdonságai",
+DlgLnkInfoTab		: "Alaptulajdonságok",
+DlgLnkTargetTab		: "Megjelenítés",
 
-DlgLnkType			: "Hivatkozás tipusa",
-DlgLnkTypeURL		: "URL",
+DlgLnkType			: "Hivatkozás típusa",
+DlgLnkTypeURL		: "Webcím",
 DlgLnkTypeAnchor	: "Horgony az oldalon",
 DlgLnkTypeEMail		: "E-Mail",
 DlgLnkProto			: "Protokoll",
-DlgLnkProtoOther	: "&lt;más&gt;",
-DlgLnkURL			: "URL",
+DlgLnkProtoOther	: "<más>",
+DlgLnkURL			: "Webcím",
 DlgLnkAnchorSel		: "Horgony választása",
 DlgLnkAnchorByName	: "Horgony név szerint",
-DlgLnkAnchorById	: "Azonosító szerint elõsorban ",
-DlgLnkNoAnchors		: "&lt;Nincs horgony a dokumentumban&gt;",
+DlgLnkAnchorById	: "Azonosító szerint",
+DlgLnkNoAnchors		: "<Nincs horgony a dokumentumban>",		//REVIEW : Change < and > with ( and )
 DlgLnkEMail			: "E-Mail cím",
 DlgLnkEMailSubject	: "Üzenet tárgya",
 DlgLnkEMailBody		: "Üzenet",
 DlgLnkUpload		: "Feltöltés",
-DlgLnkBtnUpload		: "Küldés a szerverhez",
+DlgLnkBtnUpload		: "Küldés a szerverre",
 
-DlgLnkTarget		: "Cél",
-DlgLnkTargetFrame	: "&lt;keret&gt;",
-DlgLnkTargetPopup	: "&lt;felugró ablak&gt;",
-DlgLnkTargetBlank	: "Új ablak (_blank)",
-DlgLnkTargetParent	: "Szülõ ablak (_parent)",
-DlgLnkTargetSelf	: "Azonos ablak (_self)",
-DlgLnkTargetTop		: "Legfelsõ ablak (_top)",
-DlgLnkTargetFrameName	: "Cél frame neve",
+DlgLnkTarget		: "Tartalom megjelenítése",
+DlgLnkTargetFrame	: "<keretben>",
+DlgLnkTargetPopup	: "<felugró ablakban>",
+DlgLnkTargetBlank	: "Új ablakban (_blank)",
+DlgLnkTargetParent	: "Szülő ablakban (_parent)",
+DlgLnkTargetSelf	: "Azonos ablakban (_self)",
+DlgLnkTargetTop		: "Legfelső ablakban (_top)",
+DlgLnkTargetFrameName	: "Keret neve",
 DlgLnkPopWinName	: "Felugró ablak neve",
-DlgLnkPopWinFeat	: "Felugró ablak jellemzõi",
-DlgLnkPopResize		: "Méretezhetõ",
-DlgLnkPopLocation	: "Location Bar",
+DlgLnkPopWinFeat	: "Felugró ablak jellemzői",
+DlgLnkPopResize		: "Méretezhető",
+DlgLnkPopLocation	: "Címsor",
 DlgLnkPopMenu		: "Menü sor",
-DlgLnkPopScroll		: "Gördítõsáv",
+DlgLnkPopScroll		: "Gördítősáv",
 DlgLnkPopStatus		: "Állapotsor",
 DlgLnkPopToolbar	: "Eszköztár",
-DlgLnkPopFullScrn	: "Teljes képernyõ (IE)",
-DlgLnkPopDependent	: "Netscape sajátosság",
+DlgLnkPopFullScrn	: "Teljes képernyő (csak IE)",
+DlgLnkPopDependent	: "Szülőhöz kapcsolt (csak Netscape)",
 DlgLnkPopWidth		: "Szélesség",
 DlgLnkPopHeight		: "Magasság",
 DlgLnkPopLeft		: "Bal pozíció",
-DlgLnkPopTop		: "Felsõ pozíció",
+DlgLnkPopTop		: "Felső pozíció",
 
-DlnLnkMsgNoUrl		: "Adja meg a hivatkozás URL-ét",
-DlnLnkMsgNoEMail	: "Adja meg az e-mail címet",
+DlnLnkMsgNoUrl		: "Adja meg a hivatkozás webcímét",
+DlnLnkMsgNoEMail	: "Adja meg az E-Mail címet",
 DlnLnkMsgNoAnchor	: "Válasszon egy horgonyt",
+DlnLnkMsgInvPopName	: "A felbukkanó ablak neve alfanumerikus karakterrel kezdôdjön, valamint ne tartalmazzon szóközt",
 
 // Color Dialog
-DlgColorTitle		: "Szinválasztás",
+DlgColorTitle		: "Színválasztás",
 DlgColorBtnClear	: "Törlés",
-DlgColorHighlight	: "Világos rész",
-DlgColorSelected	: "Választott",
+DlgColorHighlight	: "Előnézet",
+DlgColorSelected	: "Kiválasztott",
 
 // Smiley Dialog
 DlgSmileyTitle		: "Hangulatjel beszúrása",
@@ -265,34 +288,35 @@ DlgTableColumns		: "Oszlopok",
 DlgTableBorder		: "Szegélyméret",
 DlgTableAlign		: "Igazítás",
 DlgTableAlignNotSet	: "<Nincs beállítva>",
-DlgTableAlignLeft	: "Bal",
-DlgTableAlignCenter	: "Közép",
-DlgTableAlignRight	: "Jobb",
+DlgTableAlignLeft	: "Balra",
+DlgTableAlignCenter	: "Középre",
+DlgTableAlignRight	: "Jobbra",
 DlgTableWidth		: "Szélesség",
-DlgTableWidthPx		: "képpontok",
+DlgTableWidthPx		: "képpont",
 DlgTableWidthPc		: "százalék",
 DlgTableHeight		: "Magasság",
-DlgTableCellSpace	: "Cell spacing",
-DlgTableCellPad		: "Cell padding",
+DlgTableCellSpace	: "Cella térköz",
+DlgTableCellPad		: "Cella belső margó",
 DlgTableCaption		: "Felirat",
+DlgTableSummary		: "Leírás",
 
 // Table Cell Dialog
 DlgCellTitle		: "Cella tulajdonságai",
 DlgCellWidth		: "Szélesség",
-DlgCellWidthPx		: "képpontok",
+DlgCellWidthPx		: "képpont",
 DlgCellWidthPc		: "százalék",
-DlgCellHeight		: "Height",
+DlgCellHeight		: "Magasság",
 DlgCellWordWrap		: "Sortörés",
-DlgCellWordWrapNotSet	: "&lt;Nincs beállítva&gt;",
+DlgCellWordWrapNotSet	: "<Nincs beállítva>",
 DlgCellWordWrapYes	: "Igen",
 DlgCellWordWrapNo	: "Nem",
-DlgCellHorAlign		: "Vízszintes igazítás",
-DlgCellHorAlignNotSet	: "&lt;Nincs beállítva&gt;",
-DlgCellHorAlignLeft	: "Bal",
-DlgCellHorAlignCenter	: "Közép",
-DlgCellHorAlignRight: "Jobb",
-DlgCellVerAlign		: "Függõleges igazítás",
-DlgCellVerAlignNotSet	: "&lt;Nincs beállítva&gt;",
+DlgCellHorAlign		: "Vízsz. igazítás",
+DlgCellHorAlignNotSet	: "<Nincs beállítva>",
+DlgCellHorAlignLeft	: "Balra",
+DlgCellHorAlignCenter	: "Középre",
+DlgCellHorAlignRight: "Jobbra",
+DlgCellVerAlign		: "Függ. igazítás",
+DlgCellVerAlignNotSet	: "<Nincs beállítva>",
 DlgCellVerAlignTop	: "Tetejére",
 DlgCellVerAlignMiddle	: "Középre",
 DlgCellVerAlignBottom	: "Aljára",
@@ -310,96 +334,98 @@ DlgFindNotFoundMsg	: "A keresett szöveg nem található.",
 
 // Replace Dialog
 DlgReplaceTitle			: "Csere",
-DlgReplaceFindLbl		: "Keresendõ:",
-DlgReplaceReplaceLbl	: "Cserélendõ:",
-DlgReplaceCaseChk		: "Találatok",
+DlgReplaceFindLbl		: "Keresett szöveg:",
+DlgReplaceReplaceLbl	: "Csere erre:",
+DlgReplaceCaseChk		: "kis- és nagybetű megkülönböztetése",
 DlgReplaceReplaceBtn	: "Csere",
-DlgReplaceReplAllBtn	: "Összes cseréje",
-DlgReplaceWordChk		: "Egész dokumentumban",
+DlgReplaceReplAllBtn	: "Az összes cseréje",
+DlgReplaceWordChk		: "csak ha ez a teljes szó",
 
 // Paste Operations / Dialog
-PasteErrorPaste	: "A böngészõ biztonsági beállításai nem engedélyezik a szerkesztõnek, hogy végrehatjsa a beillesztés mûveletet.Használja az alábbi billentyûzetkombinációt (Ctrl+V).",
-PasteErrorCut	: "A böngészõ biztonsági beállításai nem engedélyezik a szerkesztõnek, hogy végrehatjsa a kivágás mûveletet.Használja az alábbi billentyûzetkombinációt (Ctrl+X).",
-PasteErrorCopy	: "A böngészõ biztonsági beállításai nem engedélyezik a szerkesztõnek, hogy végrehatjsa a másolás mûveletet.Használja az alábbi billentyûzetkombinációt (Ctrl+X).",
+PasteErrorPaste	: "A böngésző biztonsági beállításai nem engedélyezik a szerkesztőnek, hogy végrehajtsa a beillesztés műveletet. Használja az alábbi billentyűkombinációt (Ctrl+V).",
+PasteErrorCut	: "A böngésző biztonsági beállításai nem engedélyezik a szerkesztőnek, hogy végrehajtsa a kivágás műveletet. Használja az alábbi billentyűkombinációt (Ctrl+X).",
+PasteErrorCopy	: "A böngésző biztonsági beállításai nem engedélyezik a szerkesztőnek, hogy végrehajtsa a másolás műveletet. Használja az alábbi billentyűkombinációt (Ctrl+X).",
 
 PasteAsText		: "Beillesztés formázatlan szövegként",
-PasteFromWord	: "Beillesztés Wordbõl",
+PasteFromWord	: "Beillesztés Word-ből",
 
-DlgPasteMsg2	: "Please paste inside the following box using the keyboard (<STRONG>Ctrl+V</STRONG>) and hit <STRONG>OK</STRONG>.",	//MISSING
-DlgPasteIgnoreFont		: "Ignore Font Face definitions",	//MISSING
-DlgPasteRemoveStyles	: "Remove Styles definitions",	//MISSING
-DlgPasteCleanBox		: "Clean Up Box",	//MISSING
-
+DlgPasteMsg2	: "Másolja be az alábbi mezőbe a <STRONG>Ctrl+V</STRONG> billentyűk lenyomásával, majd nyomjon <STRONG>Rendben</STRONG>-t.",
+DlgPasteIgnoreFont		: "Betű formázások megszüntetése",
+DlgPasteRemoveStyles	: "Stílusok eltávolítása",
+DlgPasteCleanBox		: "Törlés",
 
 // Color Picker
 ColorAutomatic	: "Automatikus",
-ColorMoreColors	: "Több szín...",
+ColorMoreColors	: "További színek...",
 
 // Document Properties
-DocProps		: "Dokumentum tulajdonsága",
+DocProps		: "Dokumentum tulajdonságai",
 
 // Anchor Dialog
-DlgAnchorTitle		: "Horgony tulajdonsága",
+DlgAnchorTitle		: "Horgony tulajdonságai",
 DlgAnchorName		: "Horgony neve",
 DlgAnchorErrorName	: "Kérem adja meg a horgony nevét",
 
 // Speller Pages Dialog
-DlgSpellNotInDic		: "Nincs a könyvtárban",
-DlgSpellChangeTo		: "Átváltás",
+DlgSpellNotInDic		: "Nincs a szótárban",
+DlgSpellChangeTo		: "Módosítás",
 DlgSpellBtnIgnore		: "Kihagyja",
-DlgSpellBtnIgnoreAll	: "Összeset kihagyja",
+DlgSpellBtnIgnoreAll	: "Mindet kihagyja",
 DlgSpellBtnReplace		: "Csere",
 DlgSpellBtnReplaceAll	: "Összes cseréje",
 DlgSpellBtnUndo			: "Visszavonás",
-DlgSpellNoSuggestions	: "Nincs feltevés",
-DlgSpellProgress		: "Helyesírásellenőrzés folyamatban...",
-DlgSpellNoMispell		: "Helyesírásellenőrzés kész: Nem találtam hibát",
-DlgSpellNoChanges		: "Helyesírásellenőrzés kész: Nincs változtatott szó",
-DlgSpellOneChange		: "Helyesírásellenőrzés kész: Egy szó cserélve",
-DlgSpellManyChanges		: "Helyesírásellenőrzés kész: %1 szó cserélve",
+DlgSpellNoSuggestions	: "Nincs javaslat",
+DlgSpellProgress		: "Helyesírás-ellenőrzés folyamatban...",
+DlgSpellNoMispell		: "Helyesírás-ellenőrzés kész: Nem találtam hibát",
+DlgSpellNoChanges		: "Helyesírás-ellenőrzés kész: Nincs változtatott szó",
+DlgSpellOneChange		: "Helyesírás-ellenőrzés kész: Egy szó cserélve",
+DlgSpellManyChanges		: "Helyesírás-ellenőrzés kész: %1 szó cserélve",
 
-IeSpellDownload			: "A helyesírásellenőrző nincs telepítve. Szeretné letölteni most?",
+IeSpellDownload			: "A helyesírás-ellenőrző nincs telepítve. Szeretné letölteni most?",
 
 // Button Dialog
-DlgButtonText	: "Szöveg (Érték)",
-DlgButtonType	: "Típus",
+DlgButtonText		: "Szöveg (Érték)",
+DlgButtonType		: "Típus",
+DlgButtonTypeBtn	: "Gomb",
+DlgButtonTypeSbm	: "Küldés",
+DlgButtonTypeRst	: "Alaphelyzet",
 
 // Checkbox and Radio Button Dialogs
 DlgCheckboxName		: "Név",
 DlgCheckboxValue	: "Érték",
-DlgCheckboxSelected	: "Választott",
+DlgCheckboxSelected	: "Kiválasztott",
 
 // Form Dialog
 DlgFormName		: "Név",
-DlgFormAction	: "Esemény",
-DlgFormMethod	: "Metódus",
+DlgFormAction	: "Adatfeldolgozást végző hivatkozás",
+DlgFormMethod	: "Adatküldés módja",
 
 // Select Field Dialog
 DlgSelectName		: "Név",
 DlgSelectValue		: "Érték",
 DlgSelectSize		: "Méret",
-DlgSelectLines		: "sorok",
-DlgSelectChkMulti	: "Engedi a többszörös kiválasztást",
+DlgSelectLines		: "sor",
+DlgSelectChkMulti	: "több sor is kiválasztható",
 DlgSelectOpAvail	: "Elérhető opciók",
 DlgSelectOpText		: "Szöveg",
 DlgSelectOpValue	: "Érték",
-DlgSelectBtnAdd		: "Bővít",
+DlgSelectBtnAdd		: "Hozzáad",
 DlgSelectBtnModify	: "Módosít",
 DlgSelectBtnUp		: "Fel",
 DlgSelectBtnDown	: "Le",
-DlgSelectBtnSetValue : "Beállítja a kiválasztott értéket",
+DlgSelectBtnSetValue : "Legyen az alapértelmezett érték",
 DlgSelectBtnDelete	: "Töröl",
 
 // Textarea Dialog
 DlgTextareaName	: "Név",
-DlgTextareaCols	: "Oszlopok",
-DlgTextareaRows	: "Sorok",
+DlgTextareaCols	: "Karakterek száma egy sorban",
+DlgTextareaRows	: "Sorok száma",
 
 // Text Field Dialog
 DlgTextName			: "Név",
 DlgTextValue		: "Érték",
-DlgTextCharWidth	: "Karakter szélesség",
-DlgTextMaxChars		: "Maximum karakterek",
+DlgTextCharWidth	: "Megjelenített karakterek száma",
+DlgTextMaxChars		: "Maximális karakterszám",
 DlgTextType			: "Típus",
 DlgTextTypeText		: "Szöveg",
 DlgTextTypePass		: "Jelszó",
@@ -411,13 +437,14 @@ DlgHiddenValue	: "Érték",
 // Bulleted List Dialog
 BulletedListProp	: "Felsorolás tulajdonságai",
 NumberedListProp	: "Számozás tulajdonságai",
-DlgLstType			: "Típus",
-DlgLstTypeCircle	: "Ciklus",
-DlgLstTypeDisk		: "Lemez",
+DlgLstStart			: "Start",
+DlgLstType			: "Formátum",
+DlgLstTypeCircle	: "Kör",
+DlgLstTypeDisc		: "Lemez",
 DlgLstTypeSquare	: "Négyzet",
 DlgLstTypeNumbers	: "Számok (1, 2, 3)",
-DlgLstTypeLCase		: "Kisbetűs (a, b, c)",
-DlgLstTypeUCase		: "Nagybetűs (a, b, c)",
+DlgLstTypeLCase		: "Kisbetűk (a, b, c)",
+DlgLstTypeUCase		: "Nagybetűk (A, B, C)",
 DlgLstTypeSRoman	: "Kis római számok (i, ii, iii)",
 DlgLstTypeLRoman	: "Nagy római számok (I, II, III)",
 
@@ -428,16 +455,25 @@ DlgDocColorsTab		: "Színek és margók",
 DlgDocMetaTab		: "Meta adatok",
 
 DlgDocPageTitle		: "Oldalcím",
-DlgDocLangDir		: "Nyelv utasítás",
-DlgDocLangDirLTR	: "Balról jobbra (LTR)",
-DlgDocLangDirRTL	: "Jobbról balra (RTL)",
+DlgDocLangDir		: "Írás iránya",
+DlgDocLangDirLTR	: "Balról jobbra",
+DlgDocLangDirRTL	: "Jobbról balra",
 DlgDocLangCode		: "Nyelv kód",
 DlgDocCharSet		: "Karakterkódolás",
+DlgDocCharSetCE		: "Közép-Európai",
+DlgDocCharSetCT		: "Kínai Tradicionális (Big5)",
+DlgDocCharSetCR		: "Cyrill",
+DlgDocCharSetGR		: "Görög",
+DlgDocCharSetJP		: "Japán",
+DlgDocCharSetKR		: "Koreai",
+DlgDocCharSetTR		: "Török",
+DlgDocCharSetUN		: "Unicode (UTF-8)",
+DlgDocCharSetWE		: "Nyugat-Európai",
 DlgDocCharSetOther	: "Más karakterkódolás",
 
-DlgDocDocType		: "Dokumentum címsor típus",
-DlgDocDocTypeOther	: "Más dokumentum címsor típus",
-DlgDocIncXHTML		: "XHTML elemeket tartalmaz",
+DlgDocDocType		: "Dokumentum típus fejléc",
+DlgDocDocTypeOther	: "Más dokumentum típus fejléc",
+DlgDocIncXHTML		: "XHTML deklarációk beillesztése",
 DlgDocBgColor		: "Háttérszín",
 DlgDocBgImage		: "Háttérkép cím",
 DlgDocBgNoScroll	: "Nem gördíthető háttér",
@@ -449,7 +485,7 @@ DlgDocMargins		: "Oldal margók",
 DlgDocMaTop			: "Felső",
 DlgDocMaLeft		: "Bal",
 DlgDocMaRight		: "Jobb",
-DlgDocMaBottom		: "Felül",
+DlgDocMaBottom		: "Alsó",
 DlgDocMeIndex		: "Dokumentum keresőszavak (vesszővel elválasztva)",
 DlgDocMeDescr		: "Dokumentum leírás",
 DlgDocMeAuthor		: "Szerző",
@@ -457,16 +493,17 @@ DlgDocMeCopy		: "Szerzői jog",
 DlgDocPreview		: "Előnézet",
 
 // Templates Dialog
-Templates			: "Templates",	//MISSING
-DlgTemplatesTitle	: "Content Templates",	//MISSING
-DlgTemplatesSelMsg	: "Please select the template to open in the editor<br>(the actual contents will be lost):",	//MISSING
-DlgTemplatesLoading	: "Loading templates list. Please wait...",	//MISSING
-DlgTemplatesNoTpl	: "(No templates defined)",	//MISSING
+Templates			: "Sablonok",
+DlgTemplatesTitle	: "Elérhető sablonok",
+DlgTemplatesSelMsg	: "Válassza ki melyik sablon nyíljon meg a szerkesztőben<br>(a jelenlegi tartalom elveszik):",
+DlgTemplatesLoading	: "Sablon lista betöltése. Kis türelmet...",
+DlgTemplatesNoTpl	: "(Nincs sablon megadva)",
+DlgTemplatesReplace	: "Kicseréli a jelenlegi tartalmat",
 
 // About Dialog
-DlgAboutAboutTab	: "About",
+DlgAboutAboutTab	: "Névjegy",
 DlgAboutBrowserInfoTab	: "Böngésző információ",
+DlgAboutLicenseTab	: "Licensz",
 DlgAboutVersion		: "verzió",
-DlgAboutLicense		: "GNU Lesser General Public License szabadalom alá tartozik",
-DlgAboutInfo		: "További információkért menjen"
-}
+DlgAboutInfo		: "További információkért látogasson el ide:"
+};

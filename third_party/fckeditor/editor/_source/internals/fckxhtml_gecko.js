@@ -1,19 +1,29 @@
 ﻿/*
- * FCKeditor - The text editor for internet
- * Copyright (C) 2003-2005 Frederico Caldeira Knabben
+ * FCKeditor - The text editor for Internet - http://www.fckeditor.net
+ * Copyright (C) 2003-2007 Frederico Caldeira Knabben
  * 
- * Licensed under the terms of the GNU Lesser General Public License:
- * 		http://www.opensource.org/licenses/lgpl-license.php
+ * == BEGIN LICENSE ==
  * 
- * For further information visit:
- * 		http://www.fckeditor.net/
+ * Licensed under the terms of any of the following licenses at your
+ * choice:
+ * 
+ *  - GNU General Public License Version 2 or later (the "GPL")
+ *    http://www.gnu.org/licenses/gpl.html
+ * 
+ *  - GNU Lesser General Public License Version 2.1 or later (the "LGPL")
+ *    http://www.gnu.org/licenses/lgpl.html
+ * 
+ *  - Mozilla Public License Version 1.1 or later (the "MPL")
+ *    http://www.mozilla.org/MPL/MPL-1.1.html
+ * 
+ * == END LICENSE ==
  * 
  * File Name: fckxhtml_gecko.js
  * 	Defines the FCKXHtml object, responsible for the XHTML operations.
  * 	Gecko specific.
  * 
  * File Authors:
- * 		Frederico Caldeira Knabben (fredck@fckeditor.net)
+ * 		Frederico Caldeira Knabben (www.fckeditor.net)
  */
 
 FCKXHtml._GetMainXmlString = function()
@@ -21,22 +31,8 @@ FCKXHtml._GetMainXmlString = function()
 	// Create the XMLSerializer.
 	var oSerializer = new XMLSerializer() ;
 
-	if ( FCKConfig.ProcessHTMLEntities )
-	{
-		// Return the serialized XML as a string.
-		// Due to a BUG on Gecko, the special chars sequence "#?-:" must be replaced with "&"
-		// for the XHTML entities.
-		return oSerializer.serializeToString( this.MainNode ).replace( FCKXHtmlEntities.GeckoEntitiesMarkerRegex, '&' ) ;
-	}
-	else
-		return oSerializer.serializeToString( this.MainNode ) ;
-}
-
-// There is a BUG on Gecko... createEntityReference returns null.
-// So we use a trick to append entities on it.
-FCKXHtml._AppendEntity = function( xmlNode, entity )
-{
-	xmlNode.appendChild( this.XML.createTextNode( '#?-:' + entity + ';' ) ) ;
+	// Return the serialized XML as a string.
+	return oSerializer.serializeToString( this.MainNode ) ;
 }
 
 FCKXHtml._AppendAttributes = function( xmlNode, htmlNode, node )
@@ -50,9 +46,10 @@ FCKXHtml._AppendAttributes = function( xmlNode, htmlNode, node )
 		if ( oAttribute.specified )
 		{
 			var sAttName = oAttribute.nodeName.toLowerCase() ;
+			var sAttValue ;
 
-			// The "_fckxhtmljob" attribute is used to mark the already processed elements.
-			if ( sAttName == '_fckxhtmljob' )
+			// Ignore any attribute starting with "_fck".
+			if ( sAttName.StartsWith( '_fck' ) )
 				continue ;
 			// There is a bug in Mozilla that returns '_moz_xxx' attributes as specified.
 			else if ( sAttName.indexOf( '_moz' ) == 0 )
@@ -60,16 +57,13 @@ FCKXHtml._AppendAttributes = function( xmlNode, htmlNode, node )
 			// There are one cases (on Gecko) when the oAttribute.nodeValue must be used:
 			//		- for the "class" attribute
 			else if ( sAttName == 'class' )
-				var sAttValue = oAttribute.nodeValue ;
+				sAttValue = oAttribute.nodeValue ;
 			// XHTML doens't support attribute minimization like "CHECKED". It must be trasformed to cheched="checked".
 			else if ( oAttribute.nodeValue === true )
 				sAttValue = sAttName ;
 			else
-				var sAttValue = htmlNode.getAttribute( sAttName, 2 ) ;	// We must use getAttribute to get it exactly as it is defined.
+				sAttValue = htmlNode.getAttribute( sAttName, 2 ) ;	// We must use getAttribute to get it exactly as it is defined.
 
-			if ( FCKConfig.ForceSimpleAmpersand && sAttValue.replace )
-				sAttValue = sAttValue.replace( /&/g, '___FCKAmp___' ) ;
-			
 			this._AppendAttribute( node, sAttName, sAttValue ) ;
 		}
 	}

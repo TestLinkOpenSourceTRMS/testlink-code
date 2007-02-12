@@ -2,7 +2,7 @@
 
 <script language="javascript">
 
-function CancelEvent()
+function CheckIsDigit()
 {
 	var iCode = event.keyCode ;
 

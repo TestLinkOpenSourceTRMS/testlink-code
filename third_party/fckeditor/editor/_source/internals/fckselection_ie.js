@@ -1,18 +1,28 @@
 ﻿/*
- * FCKeditor - The text editor for internet
- * Copyright (C) 2003-2005 Frederico Caldeira Knabben
+ * FCKeditor - The text editor for Internet - http://www.fckeditor.net
+ * Copyright (C) 2003-2007 Frederico Caldeira Knabben
  * 
- * Licensed under the terms of the GNU Lesser General Public License:
- * 		http://www.opensource.org/licenses/lgpl-license.php
+ * == BEGIN LICENSE ==
  * 
- * For further information visit:
- * 		http://www.fckeditor.net/
+ * Licensed under the terms of any of the following licenses at your
+ * choice:
+ * 
+ *  - GNU General Public License Version 2 or later (the "GPL")
+ *    http://www.gnu.org/licenses/gpl.html
+ * 
+ *  - GNU Lesser General Public License Version 2.1 or later (the "LGPL")
+ *    http://www.gnu.org/licenses/lgpl.html
+ * 
+ *  - Mozilla Public License Version 1.1 or later (the "MPL")
+ *    http://www.mozilla.org/MPL/MPL-1.1.html
+ * 
+ * == END LICENSE ==
  * 
  * File Name: fckselection_ie.js
  * 	Active selection functions. (IE specific implementation)
  * 
  * File Authors:
- * 		Frederico Caldeira Knabben (fredck@fckeditor.net)
+ * 		Frederico Caldeira Knabben (www.fckeditor.net)
  */
 
 // Get the selection type.
@@ -36,27 +46,47 @@ FCKSelection.GetSelectedElement = function()
 
 FCKSelection.GetParentElement = function()
 {
-	if ( this.GetType() == 'Control' )
-		return FCKSelection.GetSelectedElement().parentElement ;
-	else
-		return FCK.EditorDocument.selection.createRange().parentElement() ;
+	switch ( this.GetType() )
+	{
+		case 'Control' :
+			return FCKSelection.GetSelectedElement().parentElement ;
+		case 'None' :
+			return null ;
+		default :
+			return FCK.EditorDocument.selection.createRange().parentElement() ;
+	}
 }
 
 FCKSelection.SelectNode = function( node )
 {
 	FCK.Focus() ;
 	FCK.EditorDocument.selection.empty() ;
-	var oRange = FCK.EditorDocument.selection.createRange() ;
-	oRange.moveToElementText( node ) ;
+	var oRange ;
+	try 
+	{
+		// Try to select the node as a control.
+		oRange = FCK.EditorDocument.body.createControlRange() ;
+		oRange.addElement( node ) ;
+	} 
+	catch(e) 
+	{
+		// If failed, select it as a text range.
+		oRange = FCK.EditorDocument.selection.createRange() ;
+		oRange.moveToElementText( node ) ;
+	}
+
 	oRange.select() ;
 }
 
 FCKSelection.Collapse = function( toStart )
 {
 	FCK.Focus() ;
-	var oRange = FCK.EditorDocument.selection.createRange() ;
-	oRange.collapse( toStart == null || toStart === true ) ;
-	oRange.select() ;
+	if ( this.GetType() == 'Text' )
+	{
+		var oRange = FCK.EditorDocument.selection.createRange() ;
+		oRange.collapse( toStart == null || toStart === true ) ;
+		oRange.select() ;
+	}
 }
 
 // The "nodeTagName" parameter must be Upper Case.
@@ -86,11 +116,14 @@ FCKSelection.HasAncestorNode = function( nodeTagName )
 // The "nodeTagName" parameter must be UPPER CASE.
 FCKSelection.MoveToAncestorNode = function( nodeTagName )
 {
-	var oNode ;
+	var oNode, oRange ;
+
+	if ( ! FCK.EditorDocument )
+		return null ;
 
 	if ( FCK.EditorDocument.selection.type == "Control" )
 	{
-		var oRange = FCK.EditorDocument.selection.createRange() ;
+		oRange = FCK.EditorDocument.selection.createRange() ;
 		for ( i = 0 ; i < oRange.length ; i++ )
 		{
 			if (oRange(i).parentNode)
@@ -102,7 +135,7 @@ FCKSelection.MoveToAncestorNode = function( nodeTagName )
 	}
 	else
 	{
-		var oRange  = FCK.EditorDocument.selection.createRange() ;
+		oRange  = FCK.EditorDocument.selection.createRange() ;
 		oNode = oRange.parentElement() ;
 	}
 
@@ -125,3 +158,5 @@ FCKSelection.Delete = function()
 
 	return oSel ;
 }
+
+

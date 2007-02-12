@@ -1,12 +1,22 @@
 ﻿/*
- * FCKeditor - The text editor for internet
- * Copyright (C) 2003-2005 Frederico Caldeira Knabben
+ * FCKeditor - The text editor for Internet - http://www.fckeditor.net
+ * Copyright (C) 2003-2007 Frederico Caldeira Knabben
  * 
- * Licensed under the terms of the GNU Lesser General Public License:
- * 		http://www.opensource.org/licenses/lgpl-license.php
+ * == BEGIN LICENSE ==
  * 
- * For further information visit:
- * 		http://www.fckeditor.net/
+ * Licensed under the terms of any of the following licenses at your
+ * choice:
+ * 
+ *  - GNU General Public License Version 2 or later (the "GPL")
+ *    http://www.gnu.org/licenses/gpl.html
+ * 
+ *  - GNU Lesser General Public License Version 2.1 or later (the "LGPL")
+ *    http://www.gnu.org/licenses/lgpl.html
+ * 
+ *  - Mozilla Public License Version 1.1 or later (the "MPL")
+ *    http://www.mozilla.org/MPL/MPL-1.1.html
+ * 
+ * == END LICENSE ==
  * 
  * File Name: ja.js
  * 	Japanese language file.
@@ -83,6 +93,8 @@ Find				: "検索",
 Replace				: "置き換え",
 SpellCheck			: "スペルチェック",
 UniversalKeyboard	: "ユニバーサル・キーボード",
+PageBreakLbl		: "改ページ",
+PageBreak			: "改ページ挿入",
 
 Form			: "フォーム",
 Checkbox		: "チェックボックス",
@@ -94,8 +106,13 @@ Button			: "ボタン",
 SelectionField	: "選択フィールド",
 ImageButton		: "画像ボタン",
 
+FitWindow		: "エディタサイズを最大にします",
+
 // Context Menu
 EditLink			: "リンク編集",
+CellCM				: "セル",
+RowCM				: "行",
+ColumnCM			: "カラム",
 InsertRow			: "行挿入",
 DeleteRows			: "行削除",
 InsertColumn		: "列挿入",
@@ -104,6 +121,7 @@ InsertCell			: "セル挿入",
 DeleteCells			: "セル削除",
 MergeCells			: "セル結合",
 SplitCell			: "セル分割",
+TableDelete			: "テーブル削除",
 CellProperties		: "セル プロパティ",
 TableProperties		: "テーブル プロパティ",
 ImageProperties		: "イメージ プロパティ",
@@ -120,7 +138,7 @@ SelectionFieldProp	: "選択フィールド プロパティ",
 TextareaProp		: "テキストエリア プロパティ",
 FormProp			: "フォーム プロパティ",
 
-FontFormats			: "Normal;Formatted;Address;Heading 1;Heading 2;Heading 3;Heading 4;Heading 5;Heading 6;Paragraph (DIV)",
+FontFormats			: "標準;書式付き;アドレス;見出し 1;見出し 2;見出し 3;見出し 4;見出し 5;見出し 6;標準 (DIV)",		//REVIEW : Check _getfontformat.html
 
 // Alerts and Messages
 ProcessingXHTML		: "XHTML処理中. しばらくお待ちください...",
@@ -131,6 +149,9 @@ UnknownToolbarItem	: "未知のツールバー項目 \"%1\"",
 UnknownCommand		: "未知のコマンド名 \"%1\"",
 NotImplemented		: "コマンドはインプリメントされませんでした。",
 UnknownToolbarSet	: "ツールバー設定 \"%1\" 存在しません。",
+NoActiveX			: "エラー、警告メッセージなどが発生した場合、ブラウザーのセキュリティ設定によりエディタのいくつかの機能が制限されている可能性があります。セキュリティ設定のオプションで\"ActiveXコントロールとプラグインの実行\"を有効にするにしてください。",
+BrowseServerBlocked : "サーバーブラウザーを開くことができませんでした。ポップアップ・ブロック機能が無効になっているか確認してください。",
+DialogBlocked		: "ダイアログウィンドウを開くことができませんでした。ポップアップ・ブロック機能が無効になっているか確認してください。",
 
 // Dialogs
 DlgBtnOK			: "OK",
@@ -138,12 +159,12 @@ DlgBtnCancel		: "キャンセル",
 DlgBtnClose			: "閉じる",
 DlgBtnBrowseServer	: "サーバーブラウザー",
 DlgAdvancedTag		: "高度な設定",
-DlgOpOther			: "&lt;その他&gt;",
+DlgOpOther			: "<その他>",
 DlgInfoTab			: "情報",
 DlgAlertUrl			: "URLを挿入してください",
 
 // General Dialogs Labels
-DlgGenNotSet		: "&lt;なし&gt;",
+DlgGenNotSet		: "<なし>",
 DlgGenId			: "Id",
 DlgGenLangDir		: "文字表記の方向",
 DlgGenLangDirLtr	: "左から右 (LTR)",
@@ -207,12 +228,12 @@ DlgLnkTypeURL		: "URL",
 DlgLnkTypeAnchor	: "このページのアンカー",
 DlgLnkTypeEMail		: "E-Mail",
 DlgLnkProto			: "プロトコル",
-DlgLnkProtoOther	: "&lt;その他&gt;",
+DlgLnkProtoOther	: "<その他>",
 DlgLnkURL			: "URL",
 DlgLnkAnchorSel		: "アンカーを選択",
 DlgLnkAnchorByName	: "アンカー名",
 DlgLnkAnchorById	: "エレメントID",
-DlgLnkNoAnchors		: "&lt;ドキュメントにおいて利用可能なアンカーはありません。&gt;",
+DlgLnkNoAnchors		: "<ドキュメントにおいて利用可能なアンカーはありません。>",		//REVIEW : Change < and > with ( and )
 DlgLnkEMail			: "E-Mail アドレス",
 DlgLnkEMailSubject	: "件名",
 DlgLnkEMailBody		: "本文",
@@ -220,8 +241,8 @@ DlgLnkUpload		: "アップロード",
 DlgLnkBtnUpload		: "サーバーに送信",
 
 DlgLnkTarget		: "ターゲット",
-DlgLnkTargetFrame	: "&lt;フレーム&gt;",
-DlgLnkTargetPopup	: "&lt;ポップアップウィンドウ&gt;",
+DlgLnkTargetFrame	: "<フレーム>",
+DlgLnkTargetPopup	: "<ポップアップウィンドウ>",
 DlgLnkTargetBlank	: "新しいウィンドウ (_blank)",
 DlgLnkTargetParent	: "親ウィンドウ (_parent)",
 DlgLnkTargetSelf	: "同じウィンドウ (_self)",
@@ -245,6 +266,7 @@ DlgLnkPopTop		: "上端からの座標で指定",
 DlnLnkMsgNoUrl		: "リンクURLを入力してください。",
 DlnLnkMsgNoEMail	: "メールアドレスを入力してください。",
 DlnLnkMsgNoAnchor	: "アンカーを選択してください。",
+DlnLnkMsgInvPopName	: "ポップ・アップ名は英字で始まる文字で指定してくだい。ポップ・アップ名にスペースは含めません",
 
 // Color Dialog
 DlgColorTitle		: "色選択",
@@ -275,6 +297,7 @@ DlgTableHeight		: "テーブル高さ",
 DlgTableCellSpace	: "セル内余白",
 DlgTableCellPad		: "セル内間隔",
 DlgTableCaption		: "ｷｬﾌﾟｼｮﾝ",
+DlgTableSummary		: "テーブル目的/構造",
 
 // Table Cell Dialog
 DlgCellTitle		: "セル プロパティ",
@@ -283,16 +306,16 @@ DlgCellWidthPx		: "ピクセル",
 DlgCellWidthPc		: "パーセント",
 DlgCellHeight		: "高さ",
 DlgCellWordWrap		: "折り返し",
-DlgCellWordWrapNotSet	: "&lt;なし&gt;",
+DlgCellWordWrapNotSet	: "<なし>",
 DlgCellWordWrapYes	: "Yes",
 DlgCellWordWrapNo	: "No",
 DlgCellHorAlign		: "セル横の整列",
-DlgCellHorAlignNotSet	: "&lt;なし&gt;",
+DlgCellHorAlignNotSet	: "<なし>",
 DlgCellHorAlignLeft	: "左",
 DlgCellHorAlignCenter	: "中央",
 DlgCellHorAlignRight: "右",
 DlgCellVerAlign		: "セル縦の整列",
-DlgCellVerAlignNotSet	: "&lt;なし&gt;",
+DlgCellVerAlignNotSet	: "<なし>",
 DlgCellVerAlignTop	: "上",
 DlgCellVerAlignMiddle	: "中央",
 DlgCellVerAlignBottom	: "下",
@@ -330,7 +353,6 @@ DlgPasteIgnoreFont		: "FontタグのFace属性を無視します。",
 DlgPasteRemoveStyles	: "スタイル定義を削除します。",
 DlgPasteCleanBox		: "入力エリアクリア",
 
-
 // Color Picker
 ColorAutomatic	: "自動",
 ColorMoreColors	: "その他の色...",
@@ -361,8 +383,11 @@ DlgSpellManyChanges		: "スペルチェック完了: %1 語句変更されまし
 IeSpellDownload			: "スペルチェッカーがインストールされていません。今すぐダウンロードしますか?",
 
 // Button Dialog
-DlgButtonText	: "テキスト (値)",
-DlgButtonType	: "タイプ",
+DlgButtonText		: "テキスト (値)",
+DlgButtonType		: "タイプ",
+DlgButtonTypeBtn	: "ボタン",
+DlgButtonTypeSbm	: "送信",
+DlgButtonTypeRst	: "リセット",
 
 // Checkbox and Radio Button Dialogs
 DlgCheckboxName		: "名前",
@@ -411,9 +436,10 @@ DlgHiddenValue	: "値",
 // Bulleted List Dialog
 BulletedListProp	: "箇条書き プロパティ",
 NumberedListProp	: "段落番号 プロパティ",
+DlgLstStart			: "開始文字",
 DlgLstType			: "タイプ",
 DlgLstTypeCircle	: "白丸",
-DlgLstTypeDisk		: "黒丸",
+DlgLstTypeDisc		: "黒丸",
 DlgLstTypeSquare	: "四角",
 DlgLstTypeNumbers	: "アラビア数字 (1, 2, 3)",
 DlgLstTypeLCase		: "英字小文字 (a, b, c)",
@@ -429,10 +455,19 @@ DlgDocMetaTab		: "メタデータ",
 
 DlgDocPageTitle		: "ページタイトル",
 DlgDocLangDir		: "言語文字表記の方向",
-DlgDocLangDirLTR	: "左から右に文字表記します(LTR)",
-DlgDocLangDirRTL	: "右から左に文字表記します(RTL)",
+DlgDocLangDirLTR	: "左から右に表記(LTR)",
+DlgDocLangDirRTL	: "右から左に表記(RTL)",
 DlgDocLangCode		: "言語コード",
 DlgDocCharSet		: "文字セット符号化",
+DlgDocCharSetCE		: "Central European",
+DlgDocCharSetCT		: "Chinese Traditional (Big5)",
+DlgDocCharSetCR		: "Cyrillic",
+DlgDocCharSetGR		: "Greek",
+DlgDocCharSetJP		: "Japanese",
+DlgDocCharSetKR		: "Korean",
+DlgDocCharSetTR		: "Turkish",
+DlgDocCharSetUN		: "Unicode (UTF-8)",
+DlgDocCharSetWE		: "Western European",
 DlgDocCharSetOther	: "他の文字セット符号化",
 
 DlgDocDocType		: "文書タイプヘッダー",
@@ -462,11 +497,12 @@ DlgTemplatesTitle	: "テンプレート内容",
 DlgTemplatesSelMsg	: "エディターで使用するテンプレートを選択してください。<br>(現在のエディタの内容は失われます):",
 DlgTemplatesLoading	: "テンプレート一覧読み込み中. しばらくお待ちください...",
 DlgTemplatesNoTpl	: "(テンプレートが定義されていません)",
+DlgTemplatesReplace	: "現在のエディタの内容と置換えをします",
 
 // About Dialog
 DlgAboutAboutTab	: "バージョン情報",
 DlgAboutBrowserInfoTab	: "ブラウザ情報",
+DlgAboutLicenseTab	: "ライセンス",
 DlgAboutVersion		: "バージョン",
-DlgAboutLicense		: "Licensed under the terms of the GNU Lesser General Public License",
 DlgAboutInfo		: "より詳しい情報はこちらで"
-}
+};

@@ -1,37 +1,60 @@
 ﻿/*
- * FCKeditor - The text editor for internet
- * Copyright (C) 2003-2005 Frederico Caldeira Knabben
+ * FCKeditor - The text editor for Internet - http://www.fckeditor.net
+ * Copyright (C) 2003-2007 Frederico Caldeira Knabben
  * 
- * Licensed under the terms of the GNU Lesser General Public License:
- * 		http://www.opensource.org/licenses/lgpl-license.php
+ * == BEGIN LICENSE ==
  * 
- * For further information visit:
- * 		http://www.fckeditor.net/
+ * Licensed under the terms of any of the following licenses at your
+ * choice:
+ * 
+ *  - GNU General Public License Version 2 or later (the "GPL")
+ *    http://www.gnu.org/licenses/gpl.html
+ * 
+ *  - GNU Lesser General Public License Version 2.1 or later (the "LGPL")
+ *    http://www.gnu.org/licenses/lgpl.html
+ * 
+ *  - Mozilla Public License Version 1.1 or later (the "MPL")
+ *    http://www.mozilla.org/MPL/MPL-1.1.html
+ * 
+ * == END LICENSE ==
  * 
  * File Name: fckdebug.js
  * 	Debug window control and operations.
  * 
  * File Authors:
- * 		Frederico Caldeira Knabben (fredck@fckeditor.net)
+ * 		Frederico Caldeira Knabben (www.fckeditor.net)
  */
 
 var FCKDebug = new Object() ;
 
-if ( FCKConfig.Debug )
+FCKDebug._GetWindow = function()
 {
-	FCKDebug.Output = function( message, color )
-	{
-		if ( ! FCKConfig.Debug ) return ;
-		
-		if ( message != null && isNaN( message ) )
-			message = message.replace(/</g, "&lt;") ;
-
-		if ( !this.DebugWindow || this.DebugWindow.closed )
-			this.DebugWindow = window.open( 'fckdebug.html', 'FCKeditorDebug', 'menubar=no,scrollbars=no,resizable=yes,location=no,toolbar=no,width=600,height=500', true ) ;
-		
-		if ( this.DebugWindow.Output)
-			this.DebugWindow.Output( message, color ) ;
-	}
+	if ( !this.DebugWindow || this.DebugWindow.closed )
+		this.DebugWindow = window.open( FCKConfig.BasePath + 'fckdebug.html', 'FCKeditorDebug', 'menubar=no,scrollbars=yes,resizable=yes,location=no,toolbar=no,width=600,height=500', true ) ;
+	
+	return this.DebugWindow ;
 }
-else
-	FCKDebug.Output = function() {}
+
+FCKDebug.Output = function( message, color, noParse )
+{
+	if ( ! FCKConfig.Debug ) 
+		return ;
+
+	try 
+	{
+		this._GetWindow().Output( message, color ) ;
+	} 
+	catch ( e ) {}	 // Ignore errors
+}
+
+FCKDebug.OutputObject = function( anyObject, color )
+{
+	if ( ! FCKConfig.Debug ) 
+		return ;
+
+	try 
+	{
+		this._GetWindow().OutputObject( anyObject, color ) ;
+	} 
+	catch ( e ) {}	 // Ignore errors
+}

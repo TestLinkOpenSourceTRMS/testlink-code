@@ -46,6 +46,7 @@ while($suiteId = key($lastResultMap)) {
 			$currentExecution = $suiteExecutions[$i];
 			$currentTimeStamp = $currentExecution['execution_ts'];
 			$executions_id = $currentExecution['executions_id'];
+			$bugString = '';
 			if ($executions_id) {
 				$bugString = buildBugString($db, $executions_id);
 			}

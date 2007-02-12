@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.98 $
- * @modified $Date: 2007/02/07 09:24:19 $ by $Author: franciscom $
+ * @version $Revision: 1.99 $
+ * @modified $Date: 2007/02/12 07:58:05 $ by $Author: franciscom $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink 
@@ -14,6 +14,7 @@
  *-----------------------------------------------------------------------------
  * Revisions:
  *
+ * 20070212 - franciscom - $g_exec_cfg->can_delete_execution
  * 20070207 - franciscom - $g_testcase_cfg->can_edit_executed
  * 20070205 - franciscom - $g_risk,$g_importance,$g_priority
  *
@@ -278,19 +279,7 @@ define('TL_TESTPROJECT_COLORING','none');
  **/
 $g_fckeditor_toolbar = "TL_Medium_2";
 
-// 20060528 - franciscom
-// ASCending   -> last execution at bottom
-// DESCending  -> last execution on top
-$g_exec_cfg->history_order='DESC';
 
-// TRUE  -> the whole execution history for the choosen build will be showed
-// FALSE -> just last execution for the choosen build will be showed
-$g_exec_cfg->history_on=FALSE;
-
-
-// TRUE  ->  test case VERY LAST (i.e. in any build) execution status 
-//           will be displayed
-$g_exec_cfg->show_last_exec_any_build=FALSE;
 
 /* 
 TRUE -> user can enable/disable test plan filter by 
@@ -393,12 +382,6 @@ $g_repositoryCompressionType = TL_REPOSITORY_COMPRESSIONTYPE_NONE;
 define("TL_REPOSITORY_MAXFILESIZE_MB", 1);
 define("TL_REPOSITORY_MAXFILESIZE", 1024*1024*TL_REPOSITORY_MAXFILESIZE_MB); // don't change
 
-// 20060602 - franciscom - different models for the attachments management on execution page
-/** @TODO description 
- * $att_model_m1 -> ?
- * $att_model_m2 -> ?
- **/
-$g_exec_cfg->att_model = $att_model_m2;
 
 
 // 20060602 - franciscom -
@@ -576,6 +559,34 @@ $g_priority=array( 'A' => 'high_priority',
 // 0 -> editing of executed tc versions is blocked
 $g_testcase_cfg->can_edit_executed=0;
 
+
+/** [Executions] */
+
+// ASCending   -> last execution at bottom
+// DESCending  -> last execution on top
+$g_exec_cfg->history_order='DESC';
+
+// TRUE  -> the whole execution history for the choosen build will be showed
+// FALSE -> just last execution for the choosen build will be showed
+$g_exec_cfg->history_on=FALSE;
+
+
+// TRUE  ->  test case VERY LAST (i.e. in any build) execution status 
+//           will be displayed
+$g_exec_cfg->show_last_exec_any_build=FALSE;
+
+
+// different models for the attachments management on execution page
+// $att_model_m1 ->  shows upload button and title 
+//   
+// $att_model_m2 ->  hides upload button and title
+//
+$g_exec_cfg->att_model = $att_model_m2;   //defined in const.inc.php
+
+
+// 1 ->
+// 0 ->
+$g_exec_cfg->can_delete_execution=0;
 
 
 // ----- End of Config ------------------------------------------------

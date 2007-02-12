@@ -71,10 +71,12 @@ $smarty = new TLSmarty;
 $smarty->assign('title', lang_get('title_test_report_all_builds'));
 $smarty->assign('arrData', $arrData);
 $smarty->assign('arrBuilds', $arrBuilds);
+/**
 if ($xls) {
 	$smarty->assign('printDate', strftime($g_date_format, time()) );
 	$smarty->assign('user', $_SESSION['user']);
 }
+*/
 $smarty->display('resultsBugs.tpl');
 
 

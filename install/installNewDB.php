@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: installNewDB.php,v 1.26 2007/02/05 08:04:54 franciscom Exp $ */
+/* $Id: installNewDB.php,v 1.27 2007/02/13 13:04:09 franciscom Exp $ */
 /*
 Parts of this file has been taken from:
 Etomite Content Management System
@@ -22,7 +22,11 @@ require_once( dirname(__FILE__). '/../lib/functions/database.class.php' );
 require_once("installUtils.php");
 require_once("sqlParser.class.php");
 
-session_start();
+if( !isset($_SESSION) )
+{ 
+  session_start();
+}
+
 set_time_limit(180);
 $inst_type = $_SESSION['installationType'];
 

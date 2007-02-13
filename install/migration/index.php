@@ -1,12 +1,15 @@
 <?php
 /* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: index.php,v 1.3 2007/01/20 14:21:07 franciscom Exp $ 
+$Id: index.php,v 1.4 2007/02/13 13:04:09 franciscom Exp $ 
 
 20060218 - franciscom
 */
 
-session_start();
+if( !isset($_SESSION) )
+{ 
+  session_start();
+}
 $_SESSION['session_test'] = 1;
 
 // 20060523 - franciscom - configure before creating a new release

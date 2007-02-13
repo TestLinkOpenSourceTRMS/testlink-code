@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.61 $ $Author: franciscom $
- * @modified $Date: 2007/01/15 08:27:20 $
+ * @version $Revision: 1.62 $ $Author: franciscom $
+ * @modified $Date: 2007/02/13 13:04:10 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -178,8 +178,11 @@ function doInitSelection(&$db)
 function doSessionStart()
 {
 	session_set_cookie_params(99999);
-	session_start();
 
+  if( !isset($_SESSION) )
+  { 
+    session_start();
+  }
 	return 1;
 }
 

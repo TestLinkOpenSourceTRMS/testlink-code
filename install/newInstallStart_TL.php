@@ -1,13 +1,16 @@
 <?php 
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: newInstallStart_TL.php,v 1.14 2007/01/29 09:26:47 franciscom Exp $ */
+/* $Id: newInstallStart_TL.php,v 1.15 2007/02/13 13:04:09 franciscom Exp $ */
 
 // 20060428 - franciscom - added new check  check_db_loaded_extension()
 //
 // 20050824 - fm
 require_once("installUtils.php");
 
-session_start(); 
+if( !isset($_SESSION) )
+{ 
+  session_start();
+}
 
 // 20060523 - franciscom
 $tl_and_version = "TestLink {$_SESSION['testlink_version']} ";

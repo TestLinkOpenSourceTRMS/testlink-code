@@ -1,7 +1,7 @@
 <?php
 /*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: migrate_16_to_17.php,v 1.15 2007/02/12 07:59:11 franciscom Exp $ 
+$Id: migrate_16_to_17.php,v 1.16 2007/02/13 13:04:10 franciscom Exp $ 
 
 20070210 - franciscom - Second try to solve keyword-tc assignment migration bug
 20070208 - franciscom - trying to solve keyword-tc assignment migration bug
@@ -41,7 +41,11 @@ define('FEEDBACK_STEP',2500);
 
 define('FULL_FEEDBACK',FALSE);
 
-session_start();
+if( !isset($_SESSION) )
+{ 
+  session_start();
+}
+
 set_time_limit(60*40); // set_time_limit(t) -> t in seconds
 $inst_type = $_SESSION['installationType'];
 $tl_and_version = "TestLink {$_SESSION['testlink_version']}";

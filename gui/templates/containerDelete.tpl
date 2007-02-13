@@ -1,6 +1,6 @@
 {* 
 	TestLink Open Source Project - http://testlink.sourceforge.net/
-	$Id: containerDelete.tpl,v 1.12 2007/01/02 13:42:05 franciscom Exp $ 
+	$Id: containerDelete.tpl,v 1.13 2007/02/13 10:32:42 franciscom Exp $ 
 	Purpose: smarty template - delete containers in test specification
 *}
 {include file="inc_head.tpl"}
@@ -30,8 +30,13 @@
 
 	<p>{lang_get s='question_del'} {$level|escape}?</p>
 
+  <!---
 	<form method="post" 
 	      action="lib/testcases/containerEdit.php?sure=yes&amp;objectID={$objectID|escape}">
+	---> 
+	<form method="post" 
+	      action="lib/testcases/containerEdit.php?objectID={$objectID|escape}">
+	     
 		<input type="submit" name="delete_testsuite" value="{lang_get s='btn_yes_del_comp'}" />
 	</form>
 {/if}

@@ -1,7 +1,9 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcDelete.tpl,v 1.11 2007/01/23 18:26:41 franciscom Exp $
+$Id: tcDelete.tpl,v 1.12 2007/02/13 10:37:26 franciscom Exp $
 Purpose: smarty template - delete test case in test specification
+
+rev : 20070213 - franciscom - BUGID 0000629: Test Case/Suite - Delete confirmation without Cancel or No option
 
 *}
 
@@ -41,6 +43,12 @@ Purpose: smarty template - delete test case in test specification
 	  <input type="hidden" name="testcase_id" value="{$testcase_id}">
 	  <input type="hidden" name="tcversion_id" value="{$tcversion_id}">
 		<input type="submit" id="do_delete" name="do_delete" value="{lang_get s='btn_yes_iw2del'}" />
+
+		{* 20070213 - franciscom - BUGID 0000629 *}
+		<input type="button" name="cancel_delete" 
+		                     onclick='javascript:history.go(-1);'
+		                     value="{lang_get s='btn_no'}" />
+
 	</form>
 {/if}
 

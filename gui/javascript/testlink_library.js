@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/ 
 // This script is distributed under the GNU General Public License 2 or later. 
 //
-// $Id: testlink_library.js,v 1.25 2007/01/29 20:19:42 schlundus Exp $ 
+// $Id: testlink_library.js,v 1.26 2007/02/13 13:04:31 franciscom Exp $ 
 //
 // Javascript functions commonly used through the GUI
 // This library is automatically loaded with inc_header.tpl
@@ -53,6 +53,14 @@ function EP(id)
 	parent.workframe.location = fRoot+menuUrl+"?edit=testproject&id="+id+args+"&"+pParams;
 }
 
+/*
+  function: Edit Test Suite
+
+  args :
+  
+  returns: 
+
+*/
 function ETS(id)
 {
 	var pParams = tree_getPrintPreferences();

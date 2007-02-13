@@ -18,14 +18,14 @@
  * 
  * == END LICENSE ==
  * 
- * File Name: en.js
- * 	Placholder English language file.
+ * File Name: pl.js
+ * 	Placholder Polish language file.
  * 
  * File Authors:
- * 		Frederico Caldeira Knabben (www.fckeditor.net)
+ * 		Marcin Pietrzak (fck@iworks.pl)
  */
-FCKLang.PlaceholderBtn			= 'Insert/Edit Placeholder' ;
-FCKLang.PlaceholderDlgTitle		= 'Placeholder Properties' ;
-FCKLang.PlaceholderDlgName		= 'Placeholder Name' ;
-FCKLang.PlaceholderErrNoName	= 'Please type the placeholder name' ;
-FCKLang.PlaceholderErrNameInUse	= 'The specified name is already in use' ;
+FCKLang.PlaceholderBtn			= 'Wstaw/Edytuj nagłówek' ;
+FCKLang.PlaceholderDlgTitle		= 'Właśności nagłówka' ;
+FCKLang.PlaceholderDlgName		= 'Nazwa nagłówka' ;
+FCKLang.PlaceholderErrNoName	= 'Proszę wprowadzić nazwę nagłówka' ;
+FCKLang.PlaceholderErrNameInUse	= 'Podana nazwa jest już w użyciu' ;

@@ -18,14 +18,14 @@
  * 
  * == END LICENSE ==
  * 
- * File Name: en.js
- * 	Placholder English language file.
+ * File Name: de.js
+ * 	Placholder German language file.
  * 
  * File Authors:
- * 		Frederico Caldeira Knabben (www.fckeditor.net)
+ * 		José Fontanil
  */
-FCKLang.PlaceholderBtn			= 'Insert/Edit Placeholder' ;
-FCKLang.PlaceholderDlgTitle		= 'Placeholder Properties' ;
-FCKLang.PlaceholderDlgName		= 'Placeholder Name' ;
-FCKLang.PlaceholderErrNoName	= 'Please type the placeholder name' ;
-FCKLang.PlaceholderErrNameInUse	= 'The specified name is already in use' ;
+FCKLang.PlaceholderBtn			= 'Einfügen/editieren Platzhalter' ;
+FCKLang.PlaceholderDlgTitle		= 'Platzhalter Eigenschaften' ;
+FCKLang.PlaceholderDlgName		= 'Platzhalter Name' ;
+FCKLang.PlaceholderErrNoName	= 'Bitte den Namen des Platzhalters schreiben' ;
+FCKLang.PlaceholderErrNameInUse	= 'Der angegebene Namen ist schon in Gebrauch' ;

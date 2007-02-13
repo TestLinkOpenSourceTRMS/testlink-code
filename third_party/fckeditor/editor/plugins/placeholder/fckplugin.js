@@ -1,18 +1,28 @@
 ﻿/*
- * FCKeditor - The text editor for internet
- * Copyright (C) 2003-2005 Frederico Caldeira Knabben
+ * FCKeditor - The text editor for Internet - http://www.fckeditor.net
+ * Copyright (C) 2003-2007 Frederico Caldeira Knabben
  * 
- * Licensed under the terms of the GNU Lesser General Public License:
- * 		http://www.opensource.org/licenses/lgpl-license.php
+ * == BEGIN LICENSE ==
  * 
- * For further information visit:
- * 		http://www.fckeditor.net/
+ * Licensed under the terms of any of the following licenses at your
+ * choice:
+ * 
+ *  - GNU General Public License Version 2 or later (the "GPL")
+ *    http://www.gnu.org/licenses/gpl.html
+ * 
+ *  - GNU Lesser General Public License Version 2.1 or later (the "LGPL")
+ *    http://www.gnu.org/licenses/lgpl.html
+ * 
+ *  - Mozilla Public License Version 1.1 or later (the "MPL")
+ *    http://www.mozilla.org/MPL/MPL-1.1.html
+ * 
+ * == END LICENSE ==
  * 
  * File Name: fckplugin.js
  * 	Plugin to insert "Placeholders" in the editor.
  * 
  * File Authors:
- * 		Frederico Caldeira Knabben (fredck@fckeditor.net)
+ * 		Frederico Caldeira Knabben (www.fckeditor.net)
  */
 
 // Register the related command.
@@ -21,6 +31,7 @@ FCKCommands.RegisterCommand( 'Placeholder', new FCKDialogCommand( 'Placeholder',
 // Create the "Plaholder" toolbar button.
 var oPlaceholderItem = new FCKToolbarButton( 'Placeholder', FCKLang.PlaceholderBtn ) ;
 oPlaceholderItem.IconPath = FCKPlugins.Items['placeholder'].Path + 'placeholder.gif' ;
+
 FCKToolbarItems.RegisterItem( 'Placeholder', oPlaceholderItem ) ;
 
 
@@ -79,19 +90,24 @@ FCK.RegisterDoubleClickHandler( FCKPlaceholders.OnDoubleClick, 'SPAN' ) ;
 // Check if a Placholder name is already in use.
 FCKPlaceholders.Exist = function( name )
 {
-	var aSpans = FCK.EditorDocument.getElementsByTagName( 'SPAN' )
+	var aSpans = FCK.EditorDocument.getElementsByTagName( 'SPAN' ) ;
 
 	for ( var i = 0 ; i < aSpans.length ; i++ )
 	{
 		if ( aSpans[i]._fckplaceholder == name )
 			return true ;
 	}
+
+	return false ;
 }
 
 if ( FCKBrowserInfo.IsIE )
 {
 	FCKPlaceholders.Redraw = function()
 	{
+		if ( FCK.EditMode != FCK_EDITMODE_WYSIWYG )
+			return ;
+	
 		var aPlaholders = FCK.EditorDocument.body.innerText.match( /\[\[[^\[\]]+\]\]/g ) ;
 		if ( !aPlaholders )
 			return ;
@@ -112,11 +128,14 @@ else
 {
 	FCKPlaceholders.Redraw = function()
 	{
+		if ( FCK.EditMode != FCK_EDITMODE_WYSIWYG )
+			return ;
+	
 		var oInteractor = FCK.EditorDocument.createTreeWalker( FCK.EditorDocument.body, NodeFilter.SHOW_TEXT, FCKPlaceholders._AcceptNode, true ) ;
 
 		var	aNodes = new Array() ;
 
-		while ( oNode = oInteractor.nextNode() )
+		while ( ( oNode = oInteractor.nextNode() ) )
 		{
 			aNodes[ aNodes.length ] = oNode ;
 		}
@@ -159,9 +178,6 @@ else
 }
 
 FCK.Events.AttachEvent( 'OnAfterSetHTML', FCKPlaceholders.Redraw ) ;
-
-// The "Redraw" method must be called on startup.
-FCKPlaceholders.Redraw() ;
 
 // We must process the SPAN tags to replace then with the real resulting value of the placeholder.
 FCKXHtml.TagProcessors['span'] = function( node, htmlNode )

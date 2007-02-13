@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.132 $
- * @modified $Date: 2007/02/13 10:15:29 $ $Author: franciscom $
+ * @version $Revision: 1.133 $
+ * @modified $Date: 2007/02/13 10:28:33 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
@@ -15,6 +15,7 @@
 
 // General - Leave it here in this way can be reused !!!
 $TLS_asc = "ascending";
+$TLS_btn_no = "No";
 $TLS_create = "Create";
 $TLS_desc = "descending";
 $TLS_test_case = "Test Case";

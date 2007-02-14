@@ -1,7 +1,12 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: projectedit.tpl,v 1.10 2007/02/05 08:00:37 franciscom Exp $
+$Id: projectedit.tpl,v 1.11 2007/02/14 17:47:36 franciscom Exp $
 Purpose: smarty template - Edit existing product 
+
+rev:
+    20070214 - franciscom 
+    BUGID 628: Name edit – Invalid action parameter/other behaviours if “Enter” pressed. 
+
 *}
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes"}
 {include file="inc_jsPicker.tpl"}
@@ -116,10 +121,16 @@ function validateForm(f)
 	
 		</table>
 		<div class="groupBtn">
+		
+    {* BUGID 628: Name edit – Invalid action parameter/other behaviours if “Enter” pressed. 
+       added hidden    
+    *}
 		{if $id neq '-1'}
-			<input type="submit" name="do_edit" value="{lang_get s='btn_upd'}" />
+			<input type="hidden" name="do_edit" value="do_edit" />
+			<input type="submit" name="do_edit_button" value="{lang_get s='btn_upd'}" />
 		{else}
-			<input type="submit" name="do_create" value="{lang_get s='btn_create'}" />
+			<input type="hidden" name="do_create" value="do_create" />
+			<input type="submit" name="do_create_button" value="{lang_get s='btn_create'}" />
 		{/if}
 		
 			{if $id neq '-1'}

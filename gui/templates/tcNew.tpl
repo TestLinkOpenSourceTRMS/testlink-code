@@ -1,12 +1,16 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcNew.tpl,v 1.18 2007/01/04 15:27:58 franciscom Exp $
+$Id: tcNew.tpl,v 1.19 2007/02/14 17:44:02 franciscom Exp $
 Purpose: smarty template - create new testcase
+
+20070214 - franciscom -
+BUGID 628: Name edit – Invalid action parameter/other behaviours if “Enter” pressed.
+
+20070104 - franciscom - added javascript validation for testcase_name
 
 20061231 - franciscom - use of $gsmarty_href_keywordsView
                         use a class for the labels
 
-20070104 - franciscom - added javascript validation for testcase_name
 *}
 
 {include file="inc_head.tpl" openHead='yes' jsValidate="yes"}
@@ -57,7 +61,9 @@ function validateForm(f)
       onSubmit="javascript:return validateForm(this);">
 
 	<div style="float: right;">
-			<input id="do_create" type="submit" name="do_create" value="{lang_get s='btn_create'}" />
+	    {* BUGID 628: Name edit – Invalid action parameter/other behaviours if “Enter” pressed. *}
+			<input type="hidden" id="do_create"  name="do_create" value="do_create" />
+			<input type="submit" id="do_create_button"  name="do_create_button" value="{lang_get s='btn_create'}" />
 	</div>	
 
   {include file="tcEdit_New_viewer.tpl"}

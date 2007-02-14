@@ -1,7 +1,10 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: containerNew.tpl,v 1.13 2007/02/05 07:59:58 franciscom Exp $
+$Id: containerNew.tpl,v 1.14 2007/02/14 17:25:17 franciscom Exp $
 Purpose: smarty template - create containers
+
+20070214 - franciscom -
+BUGID 628: Name edit – Invalid action parameter/other behaviours if “Enter” pressed.
 
 20061231 - franciscom - using parent_info
 20060804 - franciscom - changes to add option transfer
@@ -59,7 +62,9 @@ function validateForm(f)
 
 	<div style="font-weight: bold;">
 		<div style="float: right;">
-			<input type="submit" name="add_testsuite" value="{lang_get s='btn_create_testsuite'}" />
+		  {* BUGID 628: Name edit – Invalid action parameter/other behaviours if “Enter” pressed. *}
+      <input type="hidden" name="add_testsuite" id="add_testsuite">
+			<input type="submit" name="add_testsuite_button" value="{lang_get s='btn_create_testsuite'}" />
 		</div>	
 		{include file="inc_testsuite_viewer_rw.tpl"}
 

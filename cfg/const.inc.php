@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: const.inc.php,v $
  *
- * @version $Revision: 1.15 $
- * @modified $Date: 2007/02/12 07:56:47 $ by $Author: franciscom $
+ * @version $Revision: 1.16 $
+ * @modified $Date: 2007/02/14 08:02:07 $ by $Author: franciscom $
  * @author Martin Havlát
  *
  * SCOPE:
@@ -17,6 +17,7 @@
  *-------------------------------------------------------------------
  * Revisions:
  *
+ *  20070214 - franciscom - added $g_tc_status_verbose_labels
  *  20070211 - franciscom - added $g_tc_status_for_ui_default
  *  20070131 - franciscom - moved defined from requirements.inc.php
  *  20070122 - franciscom - INACTIVE,CLOSED 
@@ -222,6 +223,14 @@ $g_tc_status_for_ui = array(
 	"blocked" => "test_status_blocked"
 );
 */
+
+$g_tc_status_verbose_labels = array(
+	"not_run"  => "test_status_not_run",
+	"passed"   => "test_status_passed",
+	"failed"   => "test_status_failed",
+	"blocked"  => "test_status_blocked"
+);
+
 
 
 define("TL_ROLES_GUEST",5);

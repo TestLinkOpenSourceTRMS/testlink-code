@@ -1,4 +1,4 @@
-<h2>Graphical Reports</h2><h6>created by Copyright © 2003-2007, maani.us</h6>
+<h2>Graphical Reports</h2><h6>Copyright © 2003-2007, maani.us</h6>
 <h3>
 	Overall Metrics
 </h3>

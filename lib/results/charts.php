@@ -14,7 +14,7 @@ Copyright © 2003-2007, maani.us
 <h3>Results by Keyword</h3>
 
 <?php
-echo InsertChart ( "../../third_party/charts/charts.swf", "../../third_party/charts/charts_library", "priorityBarChart.php", 450, 300 );
+echo InsertChart ( "../../third_party/charts/charts.swf", "../../third_party/charts/charts_library", "keywordBarChart.php", 450, 300 );
 ?>
 <h6>
 Copyright © 2003-2007, maani.us

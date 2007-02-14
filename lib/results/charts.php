@@ -1,3 +1,4 @@
+<h2>Graphical Reports</h2><h6>created by Copyright © 2003-2007, maani.us</h6>
 <h3>
 	Overall Metrics
 </h3>
@@ -7,15 +8,13 @@ include "../../third_party/charts/charts.php";
 echo InsertChart ( "../../third_party/charts/charts.swf", "../../third_party/charts/charts_library", "overallPieChart.php", 400, 250 );
 ?>
 
-<h6>
-Copyright © 2003-2007, maani.us
-</h6>
-
 <h3>Results by Keyword</h3>
-
 <?php
-echo InsertChart ( "../../third_party/charts/charts.swf", "../../third_party/charts/charts_library", "keywordBarChart.php", 450, 300 );
+echo InsertChart ( "../../third_party/charts/charts.swf", "../../third_party/charts/charts_library", "keywordBarChart.php", 800, 600 );
 ?>
-<h6>
-Copyright © 2003-2007, maani.us
-</h6>
+
+
+<h3>Results by Owner</h3>
+<?php
+echo InsertChart ( "../../third_party/charts/charts.swf", "../../third_party/charts/charts_library", "ownerBarChart.php", 800, 600);
+?>

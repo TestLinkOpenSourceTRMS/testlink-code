@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * @version $Revision: 1.56 $
- * @modified $Date: 2007/02/10 12:15:52 $ by $Author: schlundus $
+ * @version $Revision: 1.57 $
+ * @modified $Date: 2007/02/14 17:59:41 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * Added the Test Project as the FIRST Container where is possible to copy
@@ -16,6 +16,9 @@ require_once("../../third_party/fckeditor/fckeditor.php");
 require_once("../../lib/plan/plan.inc.php");
 require_once("../functions/opt_transfer.php");
 testlinkInitPage($db);
+
+echo "<pre>debug 20070214 " . __FUNCTION__ . " --- "; print_r($_REQUEST); echo "</pre>";
+
 
 $tree_mgr = new tree($db);
 $tproject_mgr = new testproject($db);
@@ -35,6 +38,8 @@ $tsuite_name = isset($_REQUEST['testsuiteName']) ? strings_stripSlashes($_REQUES
 $bSure = (isset($_REQUEST['sure']) && ($_REQUEST['sure'] == 'yes'));
 $bRefreshTree = false;
 
+// 20070214 - franciscom
+$level=null;
 
 // --------------------------------------------------------------------------------------------
 $testproject_id = $_SESSION['testprojectID'];
@@ -81,6 +86,7 @@ foreach ($a_actions as $the_key => $the_val)
 {
 	if (isset($_POST[$the_key]) )
 	{
+  
 		$the_tpl = isset($a_tpl[$the_key]) ? $a_tpl[$the_key] : null;
     $init_opt_transfer = isset($a_init_opt_transfer[$the_key])?1:0;
 

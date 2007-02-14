@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.26 $
- * @modified $Date: 2007/02/12 08:09:02 $ $Author: franciscom $
+ * @version $Revision: 1.27 $
+ * @modified $Date: 2007/02/14 18:00:10 $ $Author: franciscom $
  * @author franciscom
  *
  * rev :
@@ -941,7 +941,12 @@ function html_table_of_custom_field_inputs($id,$parent_id=null,$scope='design')
                     "</td></tr>\n";
     } //foreach($cf_map
   }
-  $cf_smarty = "<table>" . $cf_smarty . "</table>";
+  
+  // 20070214 - franciscom
+  if($cf_smarty != '')
+  {
+    $cf_smarty = "<table>" . $cf_smarty . "</table>";
+  }  
   return($cf_smarty);
 }
 

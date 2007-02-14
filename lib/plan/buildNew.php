@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: buildNew.php,v $
  *
- * @version $Revision: 1.31 $
- * @modified $Date: 2007/01/29 14:02:26 $ $Author: franciscom $
+ * @version $Revision: 1.32 $
+ * @modified $Date: 2007/02/14 17:52:30 $ $Author: franciscom $
  *
  * rev :
  *       20070122 - franciscom - use build_mgr methods
@@ -128,7 +128,13 @@ switch($args->do_action)
     $button_value=lang_get('btn_create');  
 	  
    	$smarty->assign('build_id',$args->build_id);
-	  $smarty->assign('build_name',$the_builds[$args->build_id]['name']);
+   	
+   	// 20070214 - franciscom
+   	if( $args->build_id > 0 )
+   	{
+	    $smarty->assign('build_name',$the_builds[$args->build_id]['name']);
+	  }
+	    
 	  $smarty->assign('notes', $of->CreateHTML());
     $smarty->assign('is_active', $args->is_active);
     $smarty->assign('is_open', $args->is_open);

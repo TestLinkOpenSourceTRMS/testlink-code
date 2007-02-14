@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tlsmarty.inc.php,v $
  *
- * @version $Revision: 1.19 $
- * @modified $Date: 2007/02/14 08:17:17 $ $Author: franciscom $
+ * @version $Revision: 1.20 $
+ * @modified $Date: 2007/02/14 15:56:45 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -27,6 +27,7 @@ class TLSmarty extends Smarty
 		global $g_tc_status_css;
 		global $g_bugInterfaceOn;
 		global $g_tc_status_for_ui;
+		global $g_tc_status_verbose_labels;
 		global $g_attachments;
 		global $g_locales;
 		global $g_gui;

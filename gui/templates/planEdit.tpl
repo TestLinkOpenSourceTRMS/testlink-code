@@ -1,16 +1,14 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planEdit.tpl,v 1.13 2007/02/03 22:14:07 schlundus Exp $
+$Id: planEdit.tpl,v 1.14 2007/02/14 16:26:16 franciscom Exp $
 
 Purpose: smarty template - create Test Plan
 Revisions:
 
-	20060224 - franciscom - removed the rights check
-	20061109 - mht - update for TL1.7; GUI update
-	20061223 - franciscom - input_dimensions.conf
-	20070102 - franciscom - added javascript validation for testplan_name
-  20070127 - franciscom - custom fields management
-  
+20070214 - franciscom -
+BUGID 628: Name edit – Invalid action parameter/other behaviours if “Enter” pressed  
+Bug confirmed on IE
+
 *}
 
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes"}
@@ -106,14 +104,17 @@ function validateForm(f)
 	</table>
 
 	<div class="groupBtn">	
-		<input type="hidden" name="do_action" value="">
-
+		
+		{* BUGID 628: Name edit – Invalid action parameter/other behaviours if “Enter” pressed. *}
 		{if $tplan_id eq 0}
-		<input type="submit" name="do_create" value="{lang_get s='btn_testplan_create'}"
-		       onclick="do_action.value='do_create'"/>
+		  <input type="hidden" name="do_action" value="do_create">
+		  <input type="submit" name="do_create" value="{lang_get s='btn_testplan_create'}"
+		         onclick="do_action.value='do_create'"/>
 		{else}
-		<input type="submit" name="do_update" value="{lang_get s='btn_upd'}"
-		       onclick="do_action.value='do_update'"/>
+		
+		  <input type="hidden" name="do_action" value="do_update">
+		  <input type="submit" name="do_update" value="{lang_get s='btn_upd'}"
+		         onclick="do_action.value='do_update'"/>
 
 		{/if}
 

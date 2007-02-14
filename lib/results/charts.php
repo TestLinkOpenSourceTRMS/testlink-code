@@ -18,3 +18,9 @@ echo InsertChart ( "../../third_party/charts/charts.swf", "../../third_party/cha
 <?php
 echo InsertChart ( "../../third_party/charts/charts.swf", "../../third_party/charts/charts_library", "ownerBarChart.php", 800, 600);
 ?>
+
+
+<h3>Results for Top Level Suites</h3>
+<?php
+echo InsertChart ( "../../third_party/charts/charts.swf", "../../third_party/charts/charts_library", "topLevelSuitesBarChart.php", 800, 600);
+?>

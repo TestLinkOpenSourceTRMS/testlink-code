@@ -4,15 +4,15 @@
  *
  * Filename $RCSfile: tlsmarty.inc.php,v $
  *
- * @version $Revision: 1.18 $
- * @modified $Date: 2007/02/04 20:18:32 $ $Author: schlundus $
+ * @version $Revision: 1.19 $
+ * @modified $Date: 2007/02/14 08:17:17 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
  * TLSmarty class implementation used in all templates
  *
  * 
- * 20061227 - franciscom -
+ * 20070214 - franciscom - gsmarty_tc_status_verbose_labels
  * 20061223 - franciscom - added g_gui
  * 20060820 - franciscom - added config_dir
  * 20060602 - franciscom - added new global var $g_attachments
@@ -55,11 +55,12 @@ class TLSmarty extends Smarty
 		$this->assign('locale', $my_locale);
 		
 		$this->assign('gsmarty_tc_status',$g_tc_status);
-		$this->assign('g_bugInterfaceOn', $g_bugInterfaceOn);
-
 		$this->assign('gsmarty_tc_status_css',$g_tc_status_css);
-	  
 		$this->assign('gsmarty_tc_status_for_ui',$g_tc_status_for_ui);
+		$this->assign('gsmarty_tc_status_verbose_labels',$g_tc_status_verbose_labels);
+
+
+		$this->assign('g_bugInterfaceOn', $g_bugInterfaceOn);
 		$this->assign('gsmarty_attachments',$g_attachments);
 		
 		$this->assign('gsmarty_gui',$g_gui);

@@ -2,7 +2,7 @@
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
- * @version $Id: resultsNavigator.php,v 1.24 2007/02/11 01:51:08 kevinlevy Exp $ 
+ * @version $Id: resultsNavigator.php,v 1.25 2007/02/14 22:32:41 kevinlevy Exp $ 
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
  * This page list View of Test Results and Metrics.
@@ -24,13 +24,14 @@ $arrData = array(
 	array('name' => lang_get('link_report_failed'), 'href' => 'resultsByStatus.php?type=f&amp;report_type='),
 	array('name' => lang_get('link_report_blocked_tcs'), 'href' => 'resultsByStatus.php?type=b&amp;report_type='),
 	array('name' => lang_get('link_report_not_run'), 'href' => 'resultsByStatus.php?type=n&amp;report_type='),	
-	array('name' => lang_get('link_report_test'), 'href' => 'resultsTC.php?report_type=')
+	array('name' => lang_get('link_report_test'), 'href' => 'resultsTC.php?report_type='),
+	array('name' => lang_get('link_charts'), 'href' => 'charts.php?report_type=')
 );
 
 // $arrReportTypes = array('normal', 'MS Excel', 'HTML email', 'text email', 'PDF');
 
 $arrReportTypes = array('normal', 'MS Excel', 'HTML email');
-if ($g_bugInterfaceOn)
+//if ($g_bugInterfaceOn)
 	$arrData[] = array('name' => lang_get('link_report_total_bugs'), 'href' => 'resultsBugs.php?report_type=');
 
 

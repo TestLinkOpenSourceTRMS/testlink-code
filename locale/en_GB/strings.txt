@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.133 $
- * @modified $Date: 2007/02/13 10:28:33 $ $Author: franciscom $
+ * @version $Revision: 1.134 $
+ * @modified $Date: 2007/02/16 20:41:17 $ $Author: schlundus $
  *
  * @author Francisco Mancardi
  *
@@ -807,14 +807,12 @@ $TLS_color = "Color";
 $TLS_enable_requirements = "Enable Requirements functionality";
 $TLS_info_failed_loc_prod = "Failed to localize the Test Project.";
 $TLS_notes = "Related Notes";
-     
 // Warning!!! - if JS string you must use \\n to get \n                                       
 $TLS_popup_product_delete = "Warning! This action deletes irrevocable all Test Project related " .
                             "data (including test results, plans, etc.). " .
                             "You can also use to deactivate instead of delete.\\n" .
                             "Recommendation: Execute a dump of database at first.\\n" .
-                            "Are you sure to delete the Test Project?";
-//                            
+                            "Are you sure to delete the Test Project?"; 
 $TLS_warning_empty_tproject_name = "Test Project name cannot be empty!";
 
 
@@ -831,7 +829,7 @@ $TLS_warning_req_tc_assignment_impossible = "You <b>can't do</b> the assignment 
 
 // gui/templates/tcEdit.tpl
 $TLS_title_edit_tc = "Edit Test Case";
-$TLS_warning_editing_executed_tc = "Warning!: this Test Case version has been executed";
+$TLS_warning_editing_executed_tc = "Warning!: This Test Case version has been executed";
 
 
 
@@ -972,7 +970,7 @@ $TLS_select_last_result_header = "Select Last Result";
 $TLS_select_owner_header = "Select Owner";
 $TLS_select_report_format_header = "Select Report Format";
 $TLS_submit_query = "Submit Query";
-$TLS_test_plan_header = "Test Plan : ";
+$TLS_test_plan_header = "Test Plan: ";
 
 
 

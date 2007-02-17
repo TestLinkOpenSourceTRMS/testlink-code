@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: installNewDB.php,v 1.27 2007/02/13 13:04:09 franciscom Exp $ */
+/* $Id: installNewDB.php,v 1.28 2007/02/17 09:16:38 franciscom Exp $ */
 /*
 Parts of this file has been taken from:
 Etomite Content Management System
@@ -8,6 +8,8 @@ Copyright 2003, 2004 Alexander Andrew Butter
 */
 
 /*
+20070216 - franciscom - added dropping of all tables if DB exists
+
 20070204 - franciscom - added 1.7.0 Beta 5
 
 20070131 - franciscom - added 1.7.0 Beta 4
@@ -261,6 +263,8 @@ if($create)
 	else 
 	{
 		echo "<span class='ok'>OK!</span>";
+		
+		
 	}
 }
 
@@ -434,6 +438,28 @@ switch($db_type)
     break;
 }
   
+  
+// --------------------------------------------------------------------------------------------
+// 20070216 - franciscom
+if( $inst_type=='new' && $conn_result['status'] != 0 )
+{
+  // Drop tables
+  $my_ado=$db->get_dbmgr_object();
+  $the_tables =$my_ado->MetaTables('TABLES');  
+  if( count($the_tables) > 0 )
+  {
+    echo "<br>Dropping all existent tables:";
+    foreach($the_tables as $table2drop )
+    {
+      $sql="DROP TABLE {$table2drop}";
+      $db->exec_query($sql);
+    }
+   echo "<span class='ok'>Done!</span>";
+
+  }
+}  
+// --------------------------------------------------------------------------------------------
+
 
 // 20060523 - franciscom
 $sqlParser = new SqlParser($db,$db_type);

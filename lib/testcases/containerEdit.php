@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * @version $Revision: 1.57 $
- * @modified $Date: 2007/02/14 17:59:41 $ by $Author: franciscom $
+ * @version $Revision: 1.58 $
+ * @modified $Date: 2007/02/17 09:17:31 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * Added the Test Project as the FIRST Container where is possible to copy
@@ -16,8 +16,6 @@ require_once("../../third_party/fckeditor/fckeditor.php");
 require_once("../../lib/plan/plan.inc.php");
 require_once("../functions/opt_transfer.php");
 testlinkInitPage($db);
-
-echo "<pre>debug 20070214 " . __FUNCTION__ . " --- "; print_r($_REQUEST); echo "</pre>";
 
 
 $tree_mgr = new tree($db);

@@ -1,10 +1,8 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: containerOrder.tpl,v 1.9 2007/01/02 13:42:05 franciscom Exp $ 
+$Id: containerOrder.tpl,v 1.10 2007/02/17 09:17:31 franciscom Exp $ 
 Purpose: smarty template - reorder container contents
 
-20061231 - franciscom - $data -> $objectID
-20061119 - franciscom - trying to improve user interface
-
+20070216 - franciscom - added cancel button
 *}
 {include file="inc_head.tpl"}
 
@@ -49,6 +47,11 @@ Purpose: smarty template - reorder container contents
 		<div style="padding: 3px;">
 			<input type="submit" id="do_testsuite_reorder" 
 			       name="do_testsuite_reorder" value="{lang_get s='btn_upd'}" />
+		       
+			<input type="button" name="goback" 
+		                     onclick='javascript:history.go(-1);'
+		                     value="{lang_get s='btn_cancel'}" />
+       
 		</div>	
 	</form>
 	{/if}

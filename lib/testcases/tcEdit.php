@@ -4,13 +4,11 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.49 $
- * @modified $Date: 2007/02/07 09:23:46 $  by $Author: franciscom $
+ * @version $Revision: 1.50 $
+ * @modified $Date: 2007/02/17 09:17:31 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
- *
- * 20061112 - franciscom
- * added logic for new operations: activate/deactivate test case version
+ * 20070216 - franciscom - changed access to container_id
  *
 **/
 require_once("../../config.inc.php");
@@ -41,7 +39,7 @@ $userID = $_SESSION['userID'];
 $show_newTC_form = 0;
 $smarty = new TLSmarty();
 
-$container_id = isset($_GET['containerID']) ? intval($_GET['containerID']) : 0;
+$container_id = isset($_REQUEST['containerID']) ? intval($_REQUEST['containerID']) : 0;
 $tcase_id = isset($_REQUEST['testcase_id']) ? intval($_REQUEST['testcase_id']) : 0;
 $tcversion_id = isset($_REQUEST['tcversion_id']) ? intval($_REQUEST['tcversion_id']) : 0;
 

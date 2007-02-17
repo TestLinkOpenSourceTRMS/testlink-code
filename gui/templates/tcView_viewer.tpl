@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.17 2007/02/07 09:24:43 franciscom Exp $
+$Id: tcView_viewer.tpl,v 1.18 2007/02/17 09:17:31 franciscom Exp $
 viewer for test case in test specification
 
 20070207 - franciscom -
@@ -44,24 +44,25 @@ viewer for test case in test specification
 	  {* 20070207 - franciscom *}
     <input type="hidden" name="has_been_executed" value="{$has_been_executed}" />
     
-
+    {assign var="go_newline" value=""}
     {if $edit_enabled}
  	    <input type="submit" name="edit_tc"   value="{lang_get s='btn_edit'}" />
     {/if}
 
-	{if $args_can_delete_testcase == "yes" }
-		<input type="submit" name="delete_tc" value="{lang_get s='btn_del'}" />
+	  {if $args_can_delete_testcase == "yes" }
+		   <input type="submit" name="delete_tc" value="{lang_get s='btn_del'}" />
     {/if}
 
     {if $args_can_move_copy == "yes" }
    		<input type="submit" name="move_copy_tc"   value="{lang_get s='btn_mv_cp'}" />
-    {/if}		                     
-	<br />
      <br />
- 	{if $args_can_delete_version == "yes" }
-		<input type="submit" name="delete_tc_version" value="{lang_get s='btn_del_this_version'}" />
+     {assign var="go_newline" value="<br>"}
+    {/if}		                     
+	   
+    {$go_newline}
+ 	  {if $args_can_delete_version == "yes" }
+		  <input type="submit" name="delete_tc_version" value="{lang_get s='btn_del_this_version'}" />
     {/if}
-	<input type="submit" name="do_create_new_version"   value="{lang_get s='btn_new_version'}" />
 	
 	 {* --------------------------------------------------------------------------------------- *} 
 	  {if $active_status_op_enabled eq 1}
@@ -78,6 +79,8 @@ viewer for test case in test specification
                            value="{lang_get s=$act_deact_value}" />
     {/if}
 	 {* --------------------------------------------------------------------------------------- *} 
+   &nbsp;&nbsp;
+   <input type="submit" name="do_create_new_version"   value="{lang_get s='btn_new_version'}" />
 	
 	</form>
 	<form method="post" action="lib/testcases/tcexport.php">

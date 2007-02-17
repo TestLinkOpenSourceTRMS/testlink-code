@@ -1,14 +1,11 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: containerView.tpl,v 1.31 2007/02/08 16:25:07 franciscom Exp $ *}
+{* $Id: containerView.tpl,v 1.32 2007/02/17 09:17:31 franciscom Exp $ *}
 {* 
 Purpose: smarty template - view test specification containers 
 
-
-20061020 - franciscom - added page_title
-20060822 - franciscom - fixed bug unable to attach files to test suites
-                        due to typo error
-                        
-20060311 - franciscom - added reorder test suites for test project
+rev :
+      20070216 - franciscom
+      moved parameters from GET to hidden
 *}
 {include file="inc_head.tpl"}
 
@@ -58,7 +55,8 @@ Purpose: smarty template - view test specification containers
 
 	{if $modify_tc_rights == 'yes' || $sqlResult ne ''}
 		<div>
-		<form method="post" action="lib/testcases/containerEdit.php?testsuiteID={$container_data.id}">
+		<form method="post" action="lib/testcases/containerEdit.php">
+		  <input type="hidden" name="testsuiteID" value="{$container_data.id}">
 			<input type="hidden" name="testsuiteName" value="{$container_data.name|escape}" />
 
 			<input type="submit" name="edit_testsuite" value="{lang_get s='btn_edit_com'}"
@@ -68,23 +66,25 @@ Purpose: smarty template - view test specification containers
 			<input type="submit" name="move_testsuite_viewer" value="{lang_get s='btn_move_cp_com'}" 
 				     alt="{lang_get s='alt_move_cp_com'}" />
 			<input type="submit" name="reorder_testsuites" value="{lang_get s='btn_reorder_cat'}" />
+			<input type="button" onclick="location='{$basehref}lib/testcases/tcexport.php?bRecursive=1&containerID={$container_data.id}'" value="{lang_get s='btn_export_testsuite'}" />  
 		</form>
 		</div>
 		<br/>	
 
 		{* Add a new testsuite children for this parent *}
 		<div>
-		<form method="post" action="lib/testcases/containerEdit.php?containerID={$container_data.id}">
+		<form method="post" action="lib/testcases/containerEdit.php">
+			<input type="hidden" name="containerID" value={$container_data.id}>
 			<input type="submit" name="new_testsuite" value="{lang_get s='btn_new_cat'}" />
 			<input type="button" onclick="location='{$basehref}lib/testcases/tcImport.php?bRecursive=1&containerID={$container_data.id}'" value="{lang_get s='btn_import_testsuite'}" />  
-			<input type="button" onclick="location='{$basehref}lib/testcases/tcexport.php?bRecursive=1&containerID={$container_data.id}'" value="{lang_get s='btn_export_testsuite'}" />  
 		</form>
 		</div>
 		<br/>	
 
 		{* Add a new testcase *}
 		<div>
-		<form method="post" action="lib/testcases/tcEdit.php?containerID={$container_data.id}">
+		<form method="post" action="lib/testcases/tcEdit.php">
+		  <input type="hidden" name="containerID" value="{$container_data.id}">
 			<input type="submit" id="create_tc" name="create_tc" value="{lang_get s='btn_new_tc'}" />  
 			<input type="button" onclick="location='{$basehref}lib/testcases/tcImport.php?containerID={$container_data.id}'" value="{lang_get s='btn_import_tc'}" />  
 			<input type="button" onclick="location='{$basehref}lib/testcases/tcexport.php?containerID={$container_data.id}'" value="{lang_get s='btn_export_tc'}" />  

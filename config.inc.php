@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.99 $
- * @modified $Date: 2007/02/12 07:58:05 $ by $Author: franciscom $
+ * @version $Revision: 1.100 $
+ * @modified $Date: 2007/02/17 09:17:31 $ by $Author: franciscom $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink 
@@ -227,9 +227,11 @@ $g_ldap_bind_passwd	= ''; // Left empty if you LDAP server allows anonymous bind
 /** Is the metrics table displayed on the main page enabled? Accepts TRUE or FALSE values */
 define('MAIN_PAGE_METRICS_ENABLED', 'FALSE');
 
-/** some maxmima related to importing stuff in TL */
-/** maximum uploadfile size */
+/** some maxima related to importing stuff in TL */
+// Maximum uploadfile size 
+// Also check your PHP settings (default is usually 2MBs)
 define('TL_IMPORT_LIMIT', '204800'); // in bytes
+
 /** maximum line size of the imported file */
 define('TL_IMPORT_ROW_MAX', '10000'); // in chars
 
@@ -378,13 +380,12 @@ $g_repositoryPath = TL_ABS_PATH . "upload_area" . DS;
  */
 $g_repositoryCompressionType = TL_REPOSITORY_COMPRESSIONTYPE_NONE;
 
-/** the maximum allowed file size for each repository entry, default 1MB */
+// the maximum allowed file size for each repository entry, default 1MB.
+// Also check your PHP settings (default is usually 2MBs)
 define("TL_REPOSITORY_MAXFILESIZE_MB", 1);
 define("TL_REPOSITORY_MAXFILESIZE", 1024*1024*TL_REPOSITORY_MAXFILESIZE_MB); // don't change
 
 
-
-// 20060602 - franciscom -
 // TRUE -> when you upload a file you can give no title
 $g_attachments->allow_empty_title = TRUE;
 
@@ -433,7 +434,6 @@ $g_req_cfg->testsuite_details = "<b>Test suite/Test Cases generated from Require
 $g_req_cfg->testcase_summary_prefix = "<b>Test Case generated from Requirement</b><br>";
 
 
-// 20070131 - franciscom
 // true : you want req_doc_id UNIQUE IN THE WHOLE DB (system_wide)
 // false: you want req_doc_id UNIQUE INSIDE a SRS
 //
@@ -441,12 +441,12 @@ $g_req_cfg->reqdoc_id->is_system_wide=false;
 
 
 
-/** @TODO description */
+// Used to force the max len of this field, during the automatic creation
+// of requirements
 $g_field_size->testsuite_name = 100;
 
 // requirements and req_spec tables
-/** @TODO description */
-$g_field_size->req_docid=16;
+$g_field_size->req_docid=32;
 $g_field_size->req_title=100;
 $g_field_size->requirement_title=100;
 
@@ -454,11 +454,11 @@ $g_field_size->requirement_title=100;
 // ----------------------------------------------------------------------------
 /** [SMTP] */
 
-# 20051106 - fm - Taken from mantis for phpmailer config
+# 20051106 - franciscom - Taken from mantis for phpmailer config
 define ("SMTP_SEND",2);
 $g_phpMailer_method = SMTP_SEND;
 
-$g_tl_admin_email     = 'tl_admin@127.0.0.1';  # for problem/error notification 
+$g_tl_admin_email     = 'tl_admin@127.0.0.1';         # for problem/error notification 
 $g_from_email         = 'testlink_system@127.0.0.1';  # email sender
 $g_return_path_email  = 'no_replay@127.0.0.1';
 
@@ -478,7 +478,7 @@ $g_smtp_password    = '';  # password
 /** [MISC] */
 
 /** Check unique titles of Test Project, Test Suite and Test Case
- * TRUE => Check if:
+ *  TRUE  => Check              [STANDARD BEHAIVOUR]
  *  FALSE => don't check
  **/
 $g_check_names_for_duplicates = TRUE;
@@ -506,27 +506,29 @@ $g_ereg_forbidden = "[|]";
 
 /** Allow/disallow to have Test Plans without dependency to Test Project.
  * TRUE  => allow Test Plan over all Test Projects (TL 1.5 compatibility)
- * FALSE => all Test Plans should have own Test Project
+ * FALSE => all Test Plans should have own Test Project   [STANDARD BEHAIVOUR]
  **/
 $g_show_tp_without_tproject_id = FALSE;
 
 // obsolete (use $g_show_tp_without_tproject_id)
 $g_show_tp_without_prodid = $g_show_tp_without_tproject_id;
 
-/* TRUE -> you can create multiple time the same keyword 
-           for the same product (term used on TL < 1.7) / test project (term used on TL>= 1.7) */
+// TRUE  -> you can create multiple time the same keyword 
+//           for the same product (term used on TL < 1.7) / test project (term used on TL>= 1.7) 
+// FALSE ->   [STANDARD BEHAIVOUR]
 $g_allow_duplicate_keywords = FALSE;
 
 
-/** Should Test Results of older builds be editable?
- * 20060207 - franciscom - BUGID 303 - Contributed by Tools-R-Us@Cognizant.com
- * FALSE --> Not editable
- * TRUE  --> Editable
- **/
-$g_edit_old_build_results = FALSE;
-
 /** @TODO description */
+// TRUE   -> custom field logic will be executed  [STANDARD BEHAIVOUR]
+// FALSE  -> no possibility to use custom fields
 $g_gui->enable_custom_fields = TRUE;
+
+// Applied to HTML inputs created to get/show custom field contents
+// 
+// For string,numeric,float,email: size & maxlenght of the input type text.
+// For list,email size of the select input.
+//
 $g_gui->custom_fields->sizes = array( 
 	'string' => 50,
 	'numeric'=> 10,
@@ -556,23 +558,33 @@ $g_priority=array( 'A' => 'high_priority',
 /** [Test case] */
 
 // 1 -> user can edit executed tc versions
-// 0 -> editing of executed tc versions is blocked
+// 0 -> editing of executed tc versions is blocked.  [STANDARD BEHAIVOUR]
 $g_testcase_cfg->can_edit_executed=0;
+
+
+/** [Test Plan] */
+// TRUE  -> standard behaivour, user can remove assigned test cases
+//          using the assign/add page.
+//
+// FALSE -> user need to use the remove page
+//
+$g_testplan_cfg->can_remove_tc_on_add=TRUE;  // To be developed
 
 
 /** [Executions] */
 
 // ASCending   -> last execution at bottom
-// DESCending  -> last execution on top
+// DESCending  -> last execution on top      [STANDARD BEHAIVOUR]
 $g_exec_cfg->history_order='DESC';
 
 // TRUE  -> the whole execution history for the choosen build will be showed
-// FALSE -> just last execution for the choosen build will be showed
+// FALSE -> just last execution for the choosen build will be showed [STANDARD BEHAIVOUR]
 $g_exec_cfg->history_on=FALSE;
 
 
 // TRUE  ->  test case VERY LAST (i.e. in any build) execution status 
 //           will be displayed
+// FALSE -> only last result on current build.  [STANDARD BEHAIVOUR]
 $g_exec_cfg->show_last_exec_any_build=FALSE;
 
 
@@ -584,8 +596,8 @@ $g_exec_cfg->show_last_exec_any_build=FALSE;
 $g_exec_cfg->att_model = $att_model_m2;   //defined in const.inc.php
 
 
-// 1 ->
-// 0 ->
+// 1 -> User can delete an execution result
+// 0 -> User can not.  [STANDARD BEHAIVOUR]
 $g_exec_cfg->can_delete_execution=0;
 
 

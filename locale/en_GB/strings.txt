@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.134 $
- * @modified $Date: 2007/02/16 20:41:17 $ $Author: schlundus $
+ * @version $Revision: 1.135 $
+ * @modified $Date: 2007/02/17 09:28:45 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
@@ -846,6 +846,7 @@ $TLS_title_plan_ownership = "Test Plan ownership";
 
 
 // gui/templates/tcView_viewer.tpl
+$TLS_activate_this_tcversion = "Activate this version";
 $TLS_Requirements = "Requirements";
 $TLS_btn_del_this_version = "Delete this version";
 $TLS_btn_edit = "Edit";

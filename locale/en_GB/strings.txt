@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.138 $
- * @modified $Date: 2007/02/19 13:05:42 $ $Author: franciscom $
+ * @version $Revision: 1.139 $
+ * @modified $Date: 2007/02/19 13:18:22 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
@@ -1479,6 +1479,14 @@ $TLS_info_product_not_deleted_check_log = "Test Project was not deleted. Please 
 $TLS_info_product_was_deleted = "The Test Project was successfully deleted.";
 $TLS_refer_to_log = " Please refer to TestLink log for more information.";
 
+
+// lib/results/charts.php
+$TLS_maani_copyright="Copyright © 2003-2007, maani.us";
+$TLS_graphical_reports="Graphical Reports";
+$TLS_overall_metrics="Overall Metrics";
+$TLS_results_by_keyword="Results by Keyword";
+$TLS_results_by_tester="Results by Tester";
+$TLS_results_top_level_suites="Results for Top Level Suites";
 
 
 // lib/req/reqImport.php

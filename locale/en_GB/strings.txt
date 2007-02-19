@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.136 $
- * @modified $Date: 2007/02/19 07:31:00 $ $Author: franciscom $
+ * @version $Revision: 1.137 $
+ * @modified $Date: 2007/02/19 13:03:50 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
@@ -1521,11 +1521,13 @@ $TLS_list_of_failed = "List of Failed Test Cases";
 
 
 // lib/results/resultsNavigator.php
+$TLS_link_charts="Charts";
 $TLS_link_report_blocked_tcs = "Blocked Test Cases";
 $TLS_link_report_failed = "Failed Test Cases";
 $TLS_link_report_general_tp_metrics = "General Test Plan Metrics";
 $TLS_link_report_metrics_active_build = "Metrics of active Build";
 $TLS_link_report_metrics_more_builds = "Query Metrics";
+$TLS_link_report_not_run="Not run Test Cases";
 $TLS_link_report_overall_build = "The Overall Build Status";
 $TLS_link_report_reqs_coverage = "Requirements based Report";
 $TLS_link_report_test = "Test Report";

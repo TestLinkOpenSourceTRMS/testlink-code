@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/ 
 // This script is distributed under the GNU General Public License 2 or later. 
 //
-// $Id: testlink_library.js,v 1.27 2007/02/19 07:30:19 franciscom Exp $ 
+// $Id: testlink_library.js,v 1.28 2007/02/19 14:03:42 schlundus Exp $ 
 //
 // Javascript functions commonly used through the GUI
 // This library is automatically loaded with inc_header.tpl
@@ -239,14 +239,6 @@ function attachmentDlg_onSubmit()
 }
 
 
-/*
-  function: 
-
-  args :
-  
-  returns: 
-
-*/
 function confirm_and_submit(msg,form_id,field_id,field_value,action_field_id,action_field_value)
 {
 	if (confirm(msg))
@@ -302,14 +294,6 @@ function tree_getPrintPreferences()
 	return params;
 }
 
-/*
-  function: 
-
-  args :
-  
-  returns: 
-
-*/
 function tree_getCheckBox(id)
 {
 	var	cb = document.getElementById('cb'+id);
@@ -325,13 +309,11 @@ function open_bug_add_window(exec_id)
 {
 	window.open(fRoot+"lib/execute/bug_add.php?exec_id="+exec_id,"bug_add","width=510,height=270,resizable=yes,dependent=yes");
 }
-
-// 20060916 - franciscom
 function bug_dialog() 
 {
-  this.refWindow = null;
-  this.refLocation = null;
-  this.NoRefresh = false;
+	this.refWindow = null;
+	this.refLocation = null;
+	this.NoRefresh = false;
 }
 
 function dialog_onSubmit(odialog)
@@ -380,6 +362,28 @@ function deleteBug_onClick(execution_id,bug_id,warning_msg)
 	}	
 }
 
+function planRemoveTC(warning_msg)
+{
+	var cbs = document.getElementsByTagName('input');
+	var bRemoveTC = false;
+	var len = cbs.length;
+	for (var i = 0;i < len;i++)
+	{
+		var item = cbs[i];
+		if (item.type == 'checkbox' && item.checked && item.name.substring(0,17) == "remove_checked_tc")
+		{	
+			bRemoveTC = true;
+			break;
+		}
+	}
+	if (bRemoveTC)
+	{
+		if (!confirm(warning_msg))
+			return false;
+	}
+	
+	return true;
+}
 function open_show_notes_window(exec_id)
 {
 	window.open(fRoot+"lib/execute/show_exec_notes.php?exec_id="+exec_id,

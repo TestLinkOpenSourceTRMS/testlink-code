@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.101 $
- * @modified $Date: 2007/02/19 07:30:19 $ by $Author: franciscom $
+ * @version $Revision: 1.102 $
+ * @modified $Date: 2007/02/19 14:03:42 $ by $Author: schlundus $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink 
@@ -175,11 +175,10 @@ define('TL_XMLEXPORT_HEADER', "<?xml version=\"1.0\" encoding=\"".TL_TPL_CHARSET
 define('TL_LOG_PATH', TL_TEMP_PATH );
 
 /** Default level of logging (NONE, ERROR, INFO, DEBUG, EXTENDED) */
-// 20070120 - franciscom - 
 // added check to avoid notice message in the migration pages
-if( !defined('TL_LOG_LEVEL_DEFAULT') )
+if(!defined('TL_LOG_LEVEL_DEFAULT'))
 {
-  define('TL_LOG_LEVEL_DEFAULT', 'NONE');
+	define('TL_LOG_LEVEL_DEFAULT', 'NONE');
 }
 
 

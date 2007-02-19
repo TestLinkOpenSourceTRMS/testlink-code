@@ -1,6 +1,6 @@
 <?php
 ////////////////////////////////////////////////////////////////////////////////
-// @version $Id: planAddTC.php,v 1.28 2007/01/24 08:10:25 franciscom Exp $
+// @version $Id: planAddTC.php,v 1.29 2007/02/19 14:03:42 schlundus Exp $
 // File:     planAddTC.php
 // Author:   Chad Rosen
 // Purpose:  link/unlink test cases to a test plan
@@ -31,7 +31,6 @@ $smarty->assign('testPlanName', $_SESSION['testPlanName']);
 
 define('DONT_FILTER_BY_TCASE_ID',null);
 define('ANY_EXEC_STATUS',null);
-define('ANY_OWNER',null);
 
 
 // ----------------------------------------------------------------------------------

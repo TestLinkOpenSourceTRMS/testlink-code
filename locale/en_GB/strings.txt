@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.139 $
- * @modified $Date: 2007/02/19 13:18:22 $ $Author: franciscom $
+ * @version $Revision: 1.140 $
+ * @modified $Date: 2007/02/19 14:03:42 $ $Author: schlundus $
  *
  * @author Francisco Mancardi
  *
@@ -738,6 +738,7 @@ $TLS_remove_tc = "Remove";
 $TLS_th_test_case = "Test Case";
 $TLS_title_add_remove_test_to_plan = "Add/Remove Test Case(s) to the Test Plan";
 $TLS_title_add_test_to_plan = "Add Test Cases to the Test Plan";
+$TLS_warning_add_remove_selected_tc = "Warning! Are you sure to remove the selected Test Cases from the Test Plan?";
 
 
 
@@ -1542,12 +1543,9 @@ $TLS_link_report_test = "Test Report";
 $TLS_link_report_total_bugs = "Total Bugs For Each Test Case";
 
 
-
 // lib/results/resultsSend.php
 $TLS_send_to_empty_email_warning = "I'm sorry but email cannot be sent with a blank to field. Please enter a valid address.";
 $TLS_warning_create_build_first = "You must create builds or import data at first.";
-
-
 
 // lib/results/displayMgr.php
 $TLS_error_sendreport_no_email_credentials = "Email for this user is not specified, please edit email credentials in 'Personal' tab";

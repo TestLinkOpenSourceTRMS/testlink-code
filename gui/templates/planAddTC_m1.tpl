@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planAddTC_m1.tpl,v 1.8 2007/01/04 15:27:58 franciscom Exp $
+$Id: planAddTC_m1.tpl,v 1.9 2007/02/19 14:03:42 schlundus Exp $
 Purpose: smarty template - generate a list of TC for adding to Test Plan 
 
 20061105 - franciscom
@@ -30,7 +30,7 @@ added logic to manage active/inactive tcversions
     </h1>
     {include file="inc_update.tpl" result=$sqlResult}
     <div style="padding-right: 20px; float: right;">
-      <p><input type='submit' name='do_action' 
+      <br /><input type='submit' name='do_action' 
 		     {if $has_linked_items eq 0}
 	      	   value='{lang_get s='btn_add_selected_tc'}'
 		     {else}
@@ -38,15 +38,15 @@ added logic to manage active/inactive tcversions
 		     {/if}
          />
    </div>
-   <p>
-   <p>
-  
+   <br />
+   <br />
+     
   {if $key ne ''}
 	  <div style="margin-left: 20px; font-size: smaller;">
-		  <p>{lang_get s='note_keyword_filter'}{$key|escape}</p>
+		  <br />{lang_get s='note_keyword_filter'}{$key|escape}</p>
 	  </div>
   {/if}
-  <p>
+  <br />
 	{section name=tsuite_idx loop=$arrData}
 	<div id="div_{$arrData[tsuite_idx].testsuite.id}" style="margin:0px 0px 0px {$arrData[tsuite_idx].level}0px;">
 	    <h3>{$arrData[tsuite_idx].testsuite.name|escape}</h3>
@@ -141,12 +141,13 @@ added logic to manage active/inactive tcversions
       
         </table>
         
-        <br>
-        <input type='submit' name='do_action' 
+        <br />
+        <input type="submit" name="do_action" 
       		{if $has_linked_items eq 0}
-      	    	value='{lang_get s='btn_add_selected_tc'}'
+      	    	value="{lang_get s='btn_add_selected_tc'}"
       		{else}
-              value='{lang_get s='btn_add_remove_selected_tc'}' 
+              value="{lang_get s='btn_add_remove_selected_tc'}"
+			  onclick = "return planRemoveTC(&quot;{lang_get s='warning_add_remove_selected_tc'}&quot;)" 
       		{/if}
         />
           
@@ -155,8 +156,8 @@ added logic to manage active/inactive tcversions
 
 	{/section}
 
-</div>
 </form>
+</div>
 
 {else}
 	<h2>{lang_get s='no_testcase_available'}</h2>

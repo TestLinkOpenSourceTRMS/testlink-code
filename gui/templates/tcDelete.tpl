@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcDelete.tpl,v 1.12 2007/02/13 10:37:26 franciscom Exp $
+$Id: tcDelete.tpl,v 1.13 2007/02/19 07:30:20 franciscom Exp $
 Purpose: smarty template - delete test case in test specification
 
 rev : 20070213 - franciscom - BUGID 0000629: Test Case/Suite - Delete confirmation without Cancel or No option
@@ -15,7 +15,8 @@ rev : 20070213 - franciscom - BUGID 0000629: Test Case/Suite - Delete confirmati
 <div class="workBack">
 <h1>{$title}</h1> 
 
-{include file="inc_update.tpl" result=$sqlResult action=$action item="test case" refresh=$refresh_tree}
+{include file="inc_update.tpl" result=$sqlResult action=$action item="test case" 
+         refresh=$smarty.const.REFRESH_SPEC_TREE}
 
 {if $sqlResult == ''}
   <p>

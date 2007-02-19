@@ -6,8 +6,8 @@
  * Scope: Import keywords page
  *
  * Filename $RCSfile: keywordsimport.php,v $
- * @version $Revision: 1.9 $
- * @modified $Date: 2007/02/12 08:08:42 $ by $Author: franciscom $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2007/02/19 07:30:20 $ by $Author: franciscom $
  *
  * Revisions:
  * 20070210 - franciscom - added checks: user has choosen a file
@@ -123,8 +123,6 @@ function check_valid_ftype($upload_info,$import_type)
   $mime_import_types['application/octet-stream']=array('CSV' => 'CSV');
   $mime_import_types['text/xml']=array('XML' => 'XML');
  
-	echo "<pre>debug 20070210 " . __FUNCTION__ . " --- "; print_r($upload_info['type']); echo "</pre>";
-	
 	if(isset($mime_import_types[$upload_info['type']])) 
 	{
 		if(isset($mime_import_types[$upload_info['type']][$import_type]))

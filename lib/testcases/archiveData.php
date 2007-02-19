@@ -3,7 +3,7 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
- * @version $Id: archiveData.php,v 1.22 2006/10/23 06:42:22 franciscom Exp $
+ * @version $Id: archiveData.php,v 1.23 2007/02/19 07:30:20 franciscom Exp $
  * @author Martin Havlat
  *  
  * This page allows you to show data (test cases, categories, and
@@ -14,6 +14,7 @@ require_once('../../config.inc.php');
 require_once('common.php');
 require_once("../functions/attachments.inc.php");
 testlinkInitPage($db);
+
 
 $user_id = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
 $feature = isset($_GET['edit']) ? $_GET['edit'] : null;

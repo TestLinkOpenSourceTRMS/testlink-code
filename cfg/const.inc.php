@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: const.inc.php,v $
  *
- * @version $Revision: 1.16 $
- * @modified $Date: 2007/02/14 08:02:07 $ by $Author: franciscom $
+ * @version $Revision: 1.17 $
+ * @modified $Date: 2007/02/19 07:30:19 $ by $Author: franciscom $
  * @author Martin Havlát
  *
  * SCOPE:
@@ -315,6 +315,23 @@ define('FILTER_BY_SHOW_ON_EXECUTION',1);
 
 define('GET_ALSO_NOT_EXECUTED',null);
 define('GET_ONLY_EXECUTED','executed');
+
+// generateTestSpecTree()
+define('HIDE_TESTCASES',1);
+define('SHOW_TESTCASES',0);
+define('FILTER_INACTIVE_TESTCASES',1);
+define('DO_NOT_FILTER_INACTIVE_TESTCASES',0);
+
+define('DO_ON_TESTCASE_CLICK',1);
+define('NO_ADDITIONAL_ARGS','');
+define('NO_KEYWORD_ID_TO_FILTER',0);
+
+
+define('RECURSIVE_MODE',TRUE);
+define('NO_NODE_TYPE_TO_FILTER',null);
+define('ANY_OWNER',null);
+
+
 
 // -------------------------------------------------------------------
 ?>

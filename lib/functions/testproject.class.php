@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.29 $
- * @modified $Date: 2007/02/05 08:01:12 $  $Author: franciscom $
+ * @version $Revision: 1.30 $
+ * @modified $Date: 2007/02/19 07:30:20 $  $Author: franciscom $
  * @author franciscom
  *
  * 20070128 - franciscom - added check_tplan_name_existence()
@@ -116,6 +116,15 @@ function update($id, $name, $color, $opt_req,$notes)
 	return $status_msg;
 }
 
+
+/*
+  function: get_by_name
+
+  args :
+  
+  returns: 
+
+*/
 function get_by_name($name,$addClause = null)
 {
 	$sql = " SELECT testprojects.*, nodes_hierarchy.name ".
@@ -198,6 +207,14 @@ function show(&$smarty,$id,$sqlResult='', $action = 'update',$modded_item_id = 0
 }
 
 
+/*
+  function: count_testcases
+
+  args :
+  
+  returns: 
+
+*/
 function count_testcases($id)
 {
 	$test_spec = $this->tree_manager->get_subtree($id,array('testplan'=>'exclude me'),
@@ -236,7 +253,7 @@ function count_testcases($id)
                                every array element is an string.
                                
                                
-                     array  -> every array element is a map with teh following keys
+                     array  -> every array element is a map with the following keys
                                'name', 'level'
     
     returns: 
@@ -333,6 +350,8 @@ function count_testcases($id)
 	
 		return $result ? 1 : 0;
 	}
+	
+	
 	/* KEYWORDS RELATED */	
 	/**
 	 * Adds a new keyword to the given product
@@ -747,6 +766,38 @@ function check_tplan_name_existence($tproject_id,$tplan_name,$case_sensitive=0)
 }
 
 
+ /*
+    function: gen_combo_first_level_test_suites
+              create array with test suite names
+
+    args :  $id
+    returns: 
+            array, every element is a map
+
+*/
+function get_first_level_test_suites($tproject_id,$mode='simple')
+{
+  $fl=$this->tree_manager->get_children($tproject_id, array('testplan' => 'exclude_me'));
+    
+  switch ($mode)
+  {
+    case 'simple':
+    break;
+    
+    case 'smarty_html_options':
+    if( !is_null($fl) )
+    {
+      foreach($fl as $idx => $map)
+      {
+        $dummy[$map['id']]=$map['name'];
+      }
+      $fl=null;
+      $fl=$dummy;
+    }
+    break;
+  }
+	return($fl);
+}
 
 
 

@@ -4,11 +4,13 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.50 $
- * @modified $Date: 2007/02/17 09:17:31 $  by $Author: franciscom $
+ * @version $Revision: 1.51 $
+ * @modified $Date: 2007/02/19 07:30:20 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
- * 20070216 - franciscom - changed access to container_id
+ * 20070218 - franciscom - added $g_spec_cfg->automatic_tree_refresh to the
+ *                         refresh tree logic
+ *
  *
 **/
 require_once("../../config.inc.php");
@@ -21,6 +23,8 @@ testlinkInitPage($db);
 
 $gui_cfg = config_get('gui');
 $order_cfg = config_get('tree_node_ordering');
+$spec_cfg=config_get('spec_cfg');
+
 
 // --------------------------------------------------------------------
 // create  fckedit objects
@@ -104,7 +108,6 @@ $tproject_mgr = new testproject($db);
 $tree_mgr = new tree($db);
 $tsuite_mgr = new testsuite($db);
 
-// 20061231 - franciscom
 if($container_id > 0 )
 {
   $pnode_info = $tree_mgr->get_node_hierachy_info($container_id);    
@@ -190,7 +193,9 @@ else if($do_update)
 		                        $userID,$assigned_keywords_list) )
 		{
 			$status_ok=1;
-			if( strcmp($tc_old[0]['name'],$name) != 0 )
+			
+			// 20070218 - franciscom
+			if( (strcmp($tc_old[0]['name'],$name) != 0)  && $spec_cfg->automatic_tree_refresh)
     	{
   	  			// only refresh menu tree is name changed
   	  			$refresh_tree='yes';
@@ -332,7 +337,10 @@ else if($do_delete)
 	}
 	
 	$the_title = lang_get('title_del_tc') . $tcinfo[0]['name'];
-	$refresh_tree="yes";
+	
+  // 20070218 - franciscom
+	$refresh_tree=$spec_cfg->automatic_tree_refresh ? "yes" : "no";
+	
 	if( $tcversion_id != TC_ALL_VERSIONS )
 	{
 		$the_title .= " " . lang_get('version') . " " . $tcinfo[0]['version'];

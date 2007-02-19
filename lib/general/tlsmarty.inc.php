@@ -4,14 +4,15 @@
  *
  * Filename $RCSfile: tlsmarty.inc.php,v $
  *
- * @version $Revision: 1.20 $
- * @modified $Date: 2007/02/14 15:56:45 $ $Author: franciscom $
+ * @version $Revision: 1.21 $
+ * @modified $Date: 2007/02/19 07:30:20 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
  * TLSmarty class implementation used in all templates
  *
  * 
+ * 20070218 - franciscom - gsmarty_spec_cfg
  * 20070214 - franciscom - gsmarty_tc_status_verbose_labels
  * 20061223 - franciscom - added g_gui
  * 20060820 - franciscom - added config_dir
@@ -31,18 +32,19 @@ class TLSmarty extends Smarty
 		global $g_attachments;
 		global $g_locales;
 		global $g_gui;
+		global $g_spec_cfg;
 
 
-	    $this->Smarty();
-	    $this->template_dir = TL_ABS_PATH . 'gui/templates/';
-	    $this->compile_dir = TL_TEMP_PATH;
+	  $this->Smarty();
+	  $this->template_dir = TL_ABS_PATH . 'gui/templates/';
+	  $this->compile_dir = TL_TEMP_PATH;
 		$this->config_dir = TL_ABS_PATH . 'gui/templates/';
 		
 		$testprojectColor = TL_BACKGROUND_DEFAULT;
 		if (isset($_SESSION['testprojectColor'])) 
-        {
+    {
 			$testprojectColor =  $_SESSION['testprojectColor'];
-        	if (!strlen($testprojectColor))
+     	if (!strlen($testprojectColor))
         		$testprojectColor = TL_BACKGROUND_DEFAULT;
 		}
 		$this->assign('testprojectColor', $testprojectColor);
@@ -65,6 +67,8 @@ class TLSmarty extends Smarty
 		$this->assign('gsmarty_attachments',$g_attachments);
 		
 		$this->assign('gsmarty_gui',$g_gui);
+    $this->assign('gsmarty_spec_cfg',$g_spec_cfg);
+
 		
 		$this->assign('gsmarty_title_sep',TITLE_SEP);
 		$this->assign('gsmarty_title_sep_type2',TITLE_SEP_TYPE2);
@@ -91,17 +95,19 @@ class TLSmarty extends Smarty
 	
 		$this->assign('optLocale',$g_locales);
 
-    	$this->assign('gsmarty_href_keywordsView',
+    $this->assign('gsmarty_href_keywordsView',
                   ' "lib/keywords/keywordsView.php" ' .
-				   ' target="mainframe" class="bold" ' .
-				   ' title="' . lang_get('menu_manage_keywords') . '"'); 
+		          	  ' target="mainframe" class="bold" ' .
+				          ' title="' . lang_get('menu_manage_keywords') . '"'); 
+
+
 
 
     // Registered functions
 		$this->register_function("lang_get", "lang_get_smarty");
 		$this->register_function("localize_date", "localize_date_smarty");
 		$this->register_function("localize_timestamp", "localize_timestamp_smarty");
-    	$this->register_function("localize_tc_status","translate_tc_status_smarty");
+    $this->register_function("localize_tc_status","translate_tc_status_smarty");
 		
 	}
 }

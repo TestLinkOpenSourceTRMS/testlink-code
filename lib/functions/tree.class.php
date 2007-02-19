@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: tree.class.php,v $
  *
- * @version $Revision: 1.26 $
- * @modified $Date: 2007/01/02 13:43:41 $ by $Author: franciscom $
+ * @version $Revision: 1.27 $
+ * @modified $Date: 2007/02/19 07:30:20 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * 20061203 - franciscom - removing error due to undefined var in change_order_bulk()
@@ -319,6 +319,17 @@ function change_order_bulk($hash_node_id, $hash_node_order)
 }
 
 
+
+/*
+  function: 
+
+  args :
+
+        [$and_not_in_clause]: node types to exclude
+          
+  returns: 
+
+*/
 function get_subtree($node_id,$exclude_node_types=null,
                               $exclude_children_of=null,
                               $exclude_branches=null, $and_not_in_clause='',$bRecursive = false)

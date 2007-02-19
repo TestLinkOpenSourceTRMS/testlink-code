@@ -5,14 +5,19 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.100 $
- * @modified $Date: 2007/02/17 09:17:31 $ by $Author: franciscom $
+ * @version $Revision: 1.101 $
+ * @modified $Date: 2007/02/19 07:30:19 $ by $Author: franciscom $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink 
  * are defined within this file they should be changed for your environment
  *-----------------------------------------------------------------------------
  * Revisions:
+ *
+ * 20070218 - franciscom - added $g_spec_cfg->show_tsuite_filter
+ *                               $g_spec_cfg->automatic_tree_refresh
+ *                               REFRESH_SPEC_TREE
+ *                               $g_spec_cfg->steps_results_layout
  *
  * 20070212 - franciscom - $g_exec_cfg->can_delete_execution
  * 20070207 - franciscom - $g_testcase_cfg->can_edit_executed
@@ -599,6 +604,38 @@ $g_exec_cfg->att_model = $att_model_m2;   //defined in const.inc.php
 // 1 -> User can delete an execution result
 // 0 -> User can not.  [STANDARD BEHAIVOUR]
 $g_exec_cfg->can_delete_execution=0;
+
+
+
+
+/** [Test case specification] */
+
+// 'horizontal' ->  step and results on the same row
+// 'vertical'   ->  steps on one row, results in the row bellow
+//                   
+$g_spec_cfg->steps_results_layout='horizontal';
+//$g_spec_cfg->steps_results_layout='vertical';
+
+// 1 -> User will see a test suite filter while creating test specification
+// 0 -> no filter available
+$g_spec_cfg->show_tsuite_filter=1;
+
+
+// 1 -> every time user do some operation on test specification
+//      tree is updated on screen.
+// 0 -> tree will not be updated, user can update it manually.
+//
+$g_spec_cfg->automatic_tree_refresh=1;
+if( $g_spec_cfg->automatic_tree_refresh)
+{
+  define('REFRESH_SPEC_TREE','yes');
+}
+else
+{
+  define('REFRESH_SPEC_TREE','no');
+}
+
+
 
 
 // ----- End of Config ------------------------------------------------

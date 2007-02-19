@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/ 
 // This script is distributed under the GNU General Public License 2 or later. 
 //
-// $Id: testlink_library.js,v 1.26 2007/02/13 13:04:31 franciscom Exp $ 
+// $Id: testlink_library.js,v 1.27 2007/02/19 07:30:19 franciscom Exp $ 
 //
 // Javascript functions commonly used through the GUI
 // This library is automatically loaded with inc_header.tpl
@@ -60,18 +60,39 @@ function EP(id)
   
   returns: 
 
+  rev :
+        20070218 - franciscom
 */
 function ETS(id)
 {
 	var pParams = tree_getPrintPreferences();
+  
 	parent.workframe.location = fRoot+menuUrl+"?edit=testsuite&id="+id+args+"&"+pParams;
 }
 
+
+/*
+  function: Edit Test case
+
+  args :
+  
+  returns: 
+
+*/
 function ET(id,v)
 {
 	parent.workframe.location = fRoot+menuUrl+"?version_id="+v+"&edit=testcase&id="+id+args;
 }
 
+
+/*
+  function: Print Test Suite
+
+  args :
+  
+  returns: 
+
+*/
 function PTS(id)
 {
 	var pParams = tree_getPrintPreferences();
@@ -218,6 +239,14 @@ function attachmentDlg_onSubmit()
 }
 
 
+/*
+  function: 
+
+  args :
+  
+  returns: 
+
+*/
 function confirm_and_submit(msg,form_id,field_id,field_value,action_field_id,action_field_value)
 {
 	if (confirm(msg))
@@ -243,10 +272,21 @@ function confirm_and_submit(msg,form_id,field_id,field_value,action_field_id,act
 	
 }
 
+/*
+  function: 
+
+  args :
+  
+  returns: 
+
+  rev  :
+        20070218 - franciscom - added do_automatic_refresh_on_action
+                                useful on test case specification edit NOT Printing
+*/
 function tree_getPrintPreferences()
 {
 	var params = [];
-	var fields = ['header','summary','toc','body'];
+	var fields = ['header','summary','toc','body','do_automatic_refresh_on_action'];
 	for (var i= 0;i < fields.length;i++)
 	{
 		var v = tree_getCheckBox(fields[i]);
@@ -262,11 +302,21 @@ function tree_getPrintPreferences()
 	return params;
 }
 
+/*
+  function: 
+
+  args :
+  
+  returns: 
+
+*/
 function tree_getCheckBox(id)
 {
 	var	cb = document.getElementById('cb'+id);
 	if (cb && cb.checked)
+	{
 		return id+'=y';
+	}	
 	return null;
 }
 

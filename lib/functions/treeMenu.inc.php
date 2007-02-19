@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: treeMenu.inc.php,v $
  *
- * @version $Revision: 1.37 $
- * @modified $Date: 2007/02/05 08:01:12 $ by $Author: franciscom $
+ * @version $Revision: 1.38 $
+ * @modified $Date: 2007/02/19 07:30:20 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * 	This file generates tree menu for test specification and test execution.
@@ -124,15 +124,20 @@ function filterString($str)
 /** 
  * generate data for tree menu of Test Specification
  *
+ * 20070217 - franciscom - added $exclude_branches
+ *
  * 20061105 - franciscom - added $ignore_inactive_testcases
  *                         
  * ignore_inactive_testcases: if all test case versions are inactive, 
  *                            the test case will ignored.
  *
+ * exclude_branches: map key=node_id
+ *
 */
-function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto, $bHideTCs, 
-                              $tc_action_enabled = 1,$getArguments = '',$keyword_id = 0,
-                              $ignore_inactive_testcases=0)
+function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto, 
+                              $bHideTCs = 0,$tc_action_enabled = 1,
+                              $getArguments = '',$keyword_id = 0,
+                              $ignore_inactive_testcases=0,$exclude_branches=null)
 {
 	$menustring = null;
 
@@ -143,8 +148,10 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto, $bHideT
 	$hash_descr_id = $tree_manager->get_available_node_types();
 	$hash_id_descr = array_flip($hash_descr_id);
 	
+	// 20070217
 	$test_spec = $tree_manager->get_subtree($tproject_id,array('testplan'=>'exclude me'),
-												                  array('testcase'=>'exclude my children'),null,null,true);
+												                  array('testcase'=>'exclude my children'),
+												                  $exclude_branches,NO_NODE_TYPE_TO_FILTER,RECURSIVE_MODE);
 	$test_spec['name'] = $tproject_name;
 	$test_spec['id'] = $tproject_id;
 	$test_spec['node_type_id'] = 1;
@@ -533,9 +540,6 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,$
 {
 	$menustring = null;
 	$any_exec_status=null;
-  
-	define('ANY_OWNER',null);
-	define('RECURSIVE_MODE',true);
   
   
 	$tplan_mgr = new testplan($db);

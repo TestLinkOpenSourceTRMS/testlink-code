@@ -3,12 +3,16 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * @version $Revision: 1.58 $
- * @modified $Date: 2007/02/17 09:17:31 $ by $Author: franciscom $
+ * @version $Revision: 1.59 $
+ * @modified $Date: 2007/02/19 07:30:20 $ by $Author: franciscom $
  * @author Martin Havlat
  *
- * Added the Test Project as the FIRST Container where is possible to copy
+ * 
  *
+ * 20070218 - franciscom - added $g_spec_cfg->automatic_tree_refresh to the
+ *                         refresh tree logic
+ *
+ * xxxxxxxx - Added the Test Project as the FIRST Container where is possible to copy
 */
 require_once("../../config.inc.php");
 require_once("../functions/common.php");
@@ -16,7 +20,6 @@ require_once("../../third_party/fckeditor/fckeditor.php");
 require_once("../../lib/plan/plan.inc.php");
 require_once("../functions/opt_transfer.php");
 testlinkInitPage($db);
-
 
 $tree_mgr = new tree($db);
 $tproject_mgr = new testproject($db);
@@ -48,6 +51,7 @@ $assigned_keyword_list = isset($_REQUEST[$rl_html_name])? $_REQUEST[$rl_html_nam
 
 
 $gui_cfg=config_get('gui');
+$spec_cfg=config_get('spec_cfg');
  
 $smarty = new TLSmarty();
 
@@ -349,7 +353,9 @@ else
 
 if ($the_tpl)
 {
-	$smarty->assign('refreshTree',$bRefreshTree);
+  
+  // 20070218 - franciscom
+	$smarty->assign('refreshTree',$bRefreshTree && $spec_cfg->automatic_tree_refresh);
 	$smarty->display($the_tpl);
 } 
 

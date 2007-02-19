@@ -1,9 +1,12 @@
 {* 
 	TestLink Open Source Project - http://testlink.sourceforge.net/
-	$Id: containerDelete.tpl,v 1.14 2007/02/13 10:38:25 franciscom Exp $ 
+	$Id: containerDelete.tpl,v 1.15 2007/02/19 07:30:20 franciscom Exp $ 
 	Purpose: smarty template - delete containers in test specification
 
-rev : 20070213 - franciscom - BUGID 0000629: Test Case/Suite - Delete confirmation without Cancel or No option
+rev : 
+     20070218 - franciscom - changed refresh management
+     20070213 - franciscom - BUGID 0000629: Test Case/Suite - Delete confirmation without Cancel or No option
+
 
 *}
 {include file="inc_head.tpl"}
@@ -13,7 +16,8 @@ rev : 20070213 - franciscom - BUGID 0000629: Test Case/Suite - Delete confirmati
 
 <div class="workBack">
 <h1>{$page_title}</h1>
-{include file="inc_update.tpl" result=$sqlResult item=$level action='delete' refresh="yes"}
+{include file="inc_update.tpl" result=$sqlResult item=$level action='delete' 
+         refresh=$smarty.const.REFRESH_SPEC_TREE}
 
 {if $sqlResult == '' && $objectID != ''}
   <br />

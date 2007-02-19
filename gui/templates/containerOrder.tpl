@@ -1,8 +1,9 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: containerOrder.tpl,v 1.10 2007/02/17 09:17:31 franciscom Exp $ 
+$Id: containerOrder.tpl,v 1.11 2007/02/19 07:30:20 franciscom Exp $ 
 Purpose: smarty template - reorder container contents
 
-20070216 - franciscom - added cancel button
+rev :
+     20070216 - franciscom - added cancel button
 *}
 {include file="inc_head.tpl"}
 

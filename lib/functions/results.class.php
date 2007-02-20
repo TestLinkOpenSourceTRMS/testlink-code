@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8 
- * @modified $Date: 2007/02/20 07:04:37 $ by $Author: kevinlevy $
+ * @modified $Date: 2007/02/20 07:26:23 $ by $Author: kevinlevy $
  *
  *
  * This class is encapsulates most functionality necessary to query the database
@@ -20,7 +20,9 @@
 **/
 
 require_once('treeMenu.inc.php');
-// used for bug string lookup
+/**
+* used for bug string lookup
+*/
 require_once('exec.inc.php');
 require_once('../results/timer.php');
 
@@ -33,87 +35,125 @@ class results
 {
 	// only call get_linked_tcversions() only once, and save it to
 	// $this->linked_tcversions
-	var $linked_tcversions = null;
-	var $suitesSelected = "";	
+	private $linked_tcversions = null;
+	private $suitesSelected = "";	
 
 	// class references passed in by constructor
-	var $db = null;
-	var $tp = null;
-	var $testPlanID = -1;
-	var $prodID = -1;
+	private $db = null;
+	private $tp = null;
+	private $testPlanID = -1;
+	private	$prodID = -1;
   
-	// KL - 20061225 - creating map specifically for owner and keyword
-	var $mapOfLastResultByOwner = null;
-	var $mapOfLastResultByKeyword = null;
-	var $mapOfLastResultByBuild = null;
+	/**
+	* KL - 20061225 - creating map specifically for owner and keyword
+	*/
+	private $mapOfLastResultByOwner = null;
+	private $mapOfLastResultByKeyword = null;
+	private $mapOfLastResultByBuild = null;
+	private $tplanName = null; 
 	
-	var $tplanName = null; //isset($_SESSION['testPlanName']) ? $_SESSION['testPlanName'] : null;
-
-	// construct map linking suite ids to execution rows 
-	var $SUITE_TYPE_ID = 2;  
-	var $executionsMap = null;  
+	/** 
+	* construct map linking suite ids to execution rows 
+	*/
+	private $SUITE_TYPE_ID = 2;  
+	private $executionsMap = null;  
   
-	// suiteStructure is an array with pattern : name, id, array 
-	// array may contain another array in the same pattern
-	// this is used to describe tree structure
-	var $suiteStructure = null;
-								
-	var $ITEM_PATTERN_IN_SUITE_STRUCTURE = 3;
-	var $NAME_IN_SUITE_STRUCTURE = 0; 
-	var $ID_IN_SUITE_STRUCTURE = 1;
-	var $ARRAY_IN_SUITE_STRUCTURE = 2;
-	var $flatArray = null;
-	// items assoicated with flatArray	
-	var $flatArrayIndex = 0;	
-	var $depth = 0;	
-	var $previousDepth = 0;
+	/**
+	* suiteStructure is an array with pattern : name, id, array 
+	* array may contain another array in the same pattern
+	* this is used to describe tree structure
+	*/
+	private $suiteStructure = null;
+							
+	private $ITEM_PATTERN_IN_SUITE_STRUCTURE = 3;
+	private $NAME_IN_SUITE_STRUCTURE = 0; 
+	private $ID_IN_SUITE_STRUCTURE = 1;
+	private $ARRAY_IN_SUITE_STRUCTURE = 2;
+	private $flatArray = null;
+	
+	/**
+	* assoicated with flatArray	
+	*/
+	private $flatArrayIndex = 0;	
+	
+	/**
+	* assoicated with flatArray	
+	*/
+	private $depth = 0;	
+	
+	/**
+	* assoicated with flatArray	
+	*/
+	private $previousDepth = 0;
     
-	// constants for flatArray
-	var $ITEM_PATTERN_IN_FLAT_ARRAY = 3;
-	var $DEPTH_IN_FLATARRAY  = 0;
-	var $NAME_IN_FLATARRAY = 1;
-	var $SUITE_ID_IN_FLATARRAY = 2;
+	/**
+	* constants for flatArray
+	*/
+	private $ITEM_PATTERN_IN_FLAT_ARRAY = 3;
+	private $DEPTH_IN_FLATARRAY  = 0;
+	private $NAME_IN_FLATARRAY = 1;
+	private $SUITE_ID_IN_FLATARRAY = 2;
   
-	// mapOfLastResult is in the following format  
-	// array ([suiteId] => array ([tcId] => Array([buildIdLastExecuted][result]))) 
-	var $mapOfLastResult = null;
+	/** mapOfLastResult is in the following format  
+	* array ([suiteId] => array ([tcId] => Array([buildIdLastExecuted][result]))) 
+	*/
+	private $mapOfLastResult = null;
  
-	// map test suite id's to array of [total, pass, fail, block, notRun]
-	// for cases in that suite
-	var $mapOfSuiteSummary = null;
+	/** 
+	* map test suite id's to array of [total, pass, fail, block, notRun]
+	* for cases in that suite
+	*/ 
+	private $mapOfSuiteSummary = null;
 
-	// map test suite id's to array of [total, pass, fail, block, notRun]
-	// for cases in that suite and in all child suites  
-	var $mapOfAggregate = null;
+	/**
+	* map test suite id's to array of [total, pass, fail, block, notRun]
+	* for cases in that suite and in all child suites  
+	*/
+	private $mapOfAggregate = null;
   
-	// related to $mapOfAggregate creation
-	// as we navigate up and down tree, $suiteId's are addded and removed from '$aggSuiteList
-	// when totals are added for a suite, we add to all suites listed in $executionsMap
-	// suiteIds are are registered and de-registered from aggSuiteList using functions addToAggSuiteList(), removeFromAggSuiteList() 
-	var $aggSuiteList  = array(); 
+	/**
+	* related to $mapOfAggregate creation
+	* as we navigate up and down tree, $suiteId's are addded and removed from '$aggSuiteList
+	* when totals are added for a suite, we add to all suites listed in $executionsMap
+	* suiteIds are are registered and de-registered from aggSuiteList using functions addToAggSuiteList(), removeFromAggSuiteList() 
+	*/
+	private $aggSuiteList  = array(); 
  
-	// map test suite id to number of (total, passed, failed, blocked, not run) 
-	// only counts test cases in current suite
-	var $mapOfTotalCases = null;
-	var $mapOfCaseResults = null;
-	// array
-	// (total cases in plan, total pass, total fail, total blocked, total not run)
-	var $totalsForPlan = null;
+	/**
+	* map test suite id to number of (total, passed, failed, blocked, not run) 
+	* only counts test cases in current suite
+	*/
+	private $mapOfTotalCases = null;
+	
+	private $mapOfCaseResults = null;
+	
+	/**
+	* array(total cases in plan, total pass, total fail, total blocked, total not run)
+	*/
+	private $totalsForPlan = null;
    
-	// map test case ids to array of keywords associated with test case
-	var $keywordData = null;
+	/**
+	* map test case ids to array of keywords associated with test case
+	*/
+	private $keywordData = null;
 
-	// TO-DO check this description of this object
-	// map of keywordIds to Array (total, passed, failed, blocked, notRun) 
-	var $aggregateKeyResults = null;
+	/** 
+	* TO-DO check this description of this object
+	* map of keywordIds to Array (total, passed, failed, blocked, notRun) 
+	*/
+	private $aggregateKeyResults = null;
 
-	// TO-DO check this description of this object    
-	// map of ownerIds to Array (total, passed, failed, blocked, notRun) 
-	var $aggregateOwnerResults = null;
+	/** 
+	* TO-DO check this description of this object    
+	* map of ownerIds to Array (total, passed, failed, blocked, notRun) 
+	*/
+	private $aggregateOwnerResults = null;
     
-	// TO-DO check this description of this object    
-	// map of buildsIds to Array (total, passed, failed, blocked, notRun) 
-	var $aggregateBuildResults = null;
+	/** 
+	* TO-DO check this description of this object    
+	* map of buildsIds to Array (total, passed, failed, blocked, notRun) 
+	*/
+	private $aggregateBuildResults = null;
     
 	/**
 	* $builds_to_query = 'a' will query all build, $builds_to_query = -1 will prevent

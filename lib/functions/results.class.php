@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8 
- * @modified $Date: 2007/02/20 02:22:34 $ by $Author: kevinlevy $
+ * @modified $Date: 2007/02/20 02:47:49 $ by $Author: kevinlevy $
  *
  *
  * This class is encapsulates most functionality necessary to query the database
@@ -273,7 +273,11 @@ class results
 			next($arrResults);
 		}
 		$totalNotRun = $totalCases - ($totalPass + $totalFail + $totalBlocked);
-		$percentCompleted = (($totalCases - $totalNotRun) / $totalCases) * 100;
+        $percentCompleted = 0;
+		if ($totalCases > 0) {
+		  $percentCompleted = (($totalCases - $totalNotRun) / $totalCases) * 100;
+        }
+		
 		$percentCompleted = number_format($percentCompleted,2);		
 		
 		if ($ownerId == -1) {

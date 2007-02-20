@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8 
- * @modified $Date: 2007/02/04 08:36:52 $ by $Author: kevinlevy $
+ * @modified $Date: 2007/02/20 02:22:34 $ by $Author: kevinlevy $
  *
  *
  * This class is encapsulates most functionality necessary to query the database
@@ -146,7 +146,7 @@ class results
 		$arrKeywords = $tp->get_keywords_map($this->testPlanID); 	
 		// get owner id -> owner name pairs used in this test plan
 	    $arrOwners = get_users_for_html_options($db, null, false);
-   	
+		
 	     // get build id -> build name pairs used in this test plan
 		$arrBuilds1 = $tp->get_builds($this->testPlanID); 
 		$arrBuilds = null;
@@ -171,6 +171,7 @@ class results
 		$this->createMapOfLastResult($this->suiteStructure, $this->executionsMap, $lastResult);
 	  
 		$this->aggregateKeywordResults = $this->tallyKeywordResults($this->mapOfLastResultByKeyword, $arrKeywords);
+		
 		$this->aggregateOwnerResults = $this->tallyOwnerResults($this->mapOfLastResultByOwner, $arrOwners);
 						
 		// create data object which tallies totals for individual suites
@@ -247,7 +248,6 @@ class results
   * Array ( [owner id] => Array ( total, passed, failed, blocked, not run))       
   */
   function tallyOwnerResults($ownerResults, $ownerIdNamePairs) {
-	
 	if ($ownerResults == null) {
 		return;
 	}
@@ -275,7 +275,16 @@ class results
 		$totalNotRun = $totalCases - ($totalPass + $totalFail + $totalBlocked);
 		$percentCompleted = (($totalCases - $totalNotRun) / $totalCases) * 100;
 		$percentCompleted = number_format($percentCompleted,2);		
-		$rArray = array($ownerIdNamePairs[$ownerId], $totalCases, $totalPass, $totalFail, $totalBlocked, $totalNotRun, $percentCompleted);
+		
+		if ($ownerId == -1) {
+			// TO-DO - localize "unassigned"
+			$name = lang_get('unassigned');
+		}
+		else
+		{
+			$name = $ownerIdNamePairs[$ownerId];
+		}
+		$rArray = array($name, $totalCases, $totalPass, $totalFail, $totalBlocked, $totalNotRun, $percentCompleted);
 		$rValue[$ownerId] = $rArray;
 		next($ownerResults);
 	}
@@ -407,28 +416,23 @@ class results
 	 * arrayOfTCresults      ->  array of rows containing (buildIdLastExecuted, result) where row id = testcaseId
 	 * 	 
 	 * currently it does not account for user expliting marking a case "not run".
+	 *
 	 *  */ 	
   function addLastResultToMap($suiteId, $testcase_id, $buildNumber, $result, $tcversion_id, 
-                              $execution_ts, $notes, $suiteName, $executions_id, $name, $tester_id, $feature_id, $assigner_id, $lastResultToTrack){
-	//print "lastResultToTrack = $lastResultToTrack <BR>";
+                              $execution_ts, $notes, $suiteName, $executions_id, $name, $tester_id, $feature_id, $assigner_id = -1, $lastResultToTrack){
 	if ($buildNumber) {
 		$this->mapOfLastResultByBuild[$buildNumber][$testcase_id] = $result;
 	}
 	
-	$associatedKeywords = null;
-	
-	//print "feature_id = $feature_id <BR>";
-	/**
-	*  get user_id assigned to this tcversion 
-	*/
-	// mysql> select user_id, users.first, users.last from user_assignments, users where feature_id = '18302' and user_assignments.user_id = users.id;
-	
 	$sql = "select user_id from user_assignments where feature_id = "  . $feature_id ;
 	$owner_row =  $this->db->fetchFirstRow($sql,'testcase_id', 1);
-	
 	$owner_id = $owner_row['user_id'];
-	//print "owner_id = $owner_id <BR>";
-	
+	if ($owner_id == '') {
+		$owner_id = -1;
+	}
+	// print "owner_id = $owner_id <BR>";
+
+	$associatedKeywords = null;
 	if ($this->keywordData != null) {
 		if (array_key_exists($testcase_id, $this->keywordData)) {
 			$associatedKeywords = $this->keywordData[$testcase_id];
@@ -446,7 +450,6 @@ class results
 				// print "build in map less than current build number <BR>";
 				if (($lastResultToTrack == 'a') || ($lastResultToTrack == $result)) {	
 					// owner assignments
-					//print "aaa <BR>";
 					$this->mapOfLastResultByOwner[$owner_id][$testcase_id] = $result;
 		
 					// keyword assignments
@@ -707,6 +710,8 @@ class results
 			  	
 			for ($j = 0 ; $j < $totalCases; $j++) {
 				$currentExecution = $executionsMap[$suiteId][$j];
+				//print_r($currentExecution);
+				//print "<BR>";
 				//print_r($currentExecution);
 				//print "<BR>";
 				//print "assigner_id = " . $currentExecution['assigner_id'] . " <BR>";

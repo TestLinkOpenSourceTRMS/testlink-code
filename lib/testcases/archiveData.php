@@ -3,7 +3,7 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
- * @version $Id: archiveData.php,v 1.23 2007/02/19 07:30:20 franciscom Exp $
+ * @version $Id: archiveData.php,v 1.24 2007/02/20 18:48:50 franciscom Exp $
  * @author Martin Havlat
  *  
  * This page allows you to show data (test cases, categories, and
@@ -35,6 +35,11 @@ switch($feature)
 		break;
 
 	case 'testsuite':
+
+    // 20070220 - franciscom - a question for myself. Do I really need to do this ???
+    //
+    $_SESSION['tcspec_refresh_on_action']=isset($_REQUEST['tcspec_refresh_on_action'])? "yes":"no";
+
 		$attachments = getAttachmentInfos($db,$id,'nodes_hierarchy');
 		$smarty->assign('attachmentInfos',$attachments);
 		$smarty->assign('id',$id);
@@ -47,7 +52,17 @@ switch($feature)
 		$smarty->assign('attachments',$attachments);
 		$smarty->assign('id',$id);
 		$item_mgr = new testcase($db);
-		$item_mgr->show($smarty,$id,$user_id);
+		
+		// 20070220 - franciscom - automatic tree refresh logic
+		$no_msg='';
+		$no_action='';
+		$spec_cfg=config_get('spec_cfg');
+		$do_refresh_yes_no=$spec_cfg->automatic_tree_refresh?"yes":"no";
+		if( isset($_SESSION['tcspec_refresh_on_action']) )
+    {
+        $do_refresh_yes_no=$_SESSION['tcspec_refresh_on_action'];
+    }
+		$item_mgr->show($smarty,$id,$user_id,TC_ALL_VERSIONS,$no_action,$no_msg,$do_refresh_yes_no);
 		break;
 
 	default:

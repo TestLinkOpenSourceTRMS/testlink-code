@@ -2,7 +2,7 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: listTestCases.php,v 1.18 2007/02/19 07:30:20 franciscom Exp $
+* 	@version 	$Id: listTestCases.php,v 1.19 2007/02/20 18:48:50 franciscom Exp $
 * 	@author 	Martin Havlat
 * 
 * 	This page generates tree menu with test specification. It builds the
@@ -23,6 +23,15 @@ $spec_cfg = config_get('spec_cfg');
 $feature = isset($_REQUEST['feature']) ? $_REQUEST['feature'] : null;
 $tproject_id   = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 $tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : 'xxx';
+
+$do_refresh_on_action=manage_tcspec($_REQUEST,$_SESSION,
+                                    'tcspec_refresh_on_action','hidden_tcspec_refresh_on_action',
+                                    $spec_cfg->automatic_tree_refresh);
+
+$_SESSION['tcspec_refresh_on_action']=$do_refresh_on_action;
+
+
+
 
 $tsuites_to_show = isset($_REQUEST['tsuites_to_show']) ? $_REQUEST['tsuites_to_show'] : 0;
 $title = lang_get('title_navigator'). ' - ' . lang_get('title_test_spec');
@@ -68,6 +77,10 @@ if (strlen($treeString))
 	$tree = invokeMenu($treeString);
 		
 $smarty = new TLSmarty();
+
+// 20070219 - franciscom
+$smarty->assign('tcspec_refresh_on_action',$do_refresh_on_action);
+
 
 // 20070217 - franciscom
 $smarty->assign('tsuites_combo',$tsuites_combo);
@@ -122,6 +135,37 @@ function tsuite_filter_mgmt(&$db,$tproject_id,$tsuites_to_show)
     $ret['html_options'] += $fl_tsuites;
   }
   return($ret);
+}
+
+
+/*
+  function: 
+
+  args :
+  
+  returns: 
+
+*/
+function manage_tcspec($hash_REQUEST,$hash_SESSION,$key2check,$hidden_name,$default)
+{
+    
+    if (isset($hash_REQUEST[$hidden_name]))
+    {
+      $do_refresh = "no";
+      if( isset($hash_REQUEST[$key2check]) )
+      {
+  	    $do_refresh = $hash_REQUEST[$key2check] > 0 ? "yes": "no";
+      }
+    }
+    elseif (isset($hash_SESSION[$key2check]))
+    {
+       $do_refresh = $hash_SESSION[$key2check] > 0 ? "yes": "no";
+    }
+    else
+    {  
+       $do_refresh = $default > 0 ? "yes": "no";
+    }
+    return $do_refresh;
 }
 
 ?>

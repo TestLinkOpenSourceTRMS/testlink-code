@@ -1,6 +1,6 @@
 {* 
 	TestLink Open Source Project - http://testlink.sourceforge.net/
-	$Id: containerDelete.tpl,v 1.15 2007/02/19 07:30:20 franciscom Exp $ 
+	$Id: containerDelete.tpl,v 1.16 2007/02/20 18:48:50 franciscom Exp $ 
 	Purpose: smarty template - delete containers in test specification
 
 rev : 
@@ -17,7 +17,7 @@ rev :
 <div class="workBack">
 <h1>{$page_title}</h1>
 {include file="inc_update.tpl" result=$sqlResult item=$level action='delete' 
-         refresh=$smarty.const.REFRESH_SPEC_TREE}
+         refresh=$smarty.session.tcspec_refresh_on_action}
 
 {if $sqlResult == '' && $objectID != ''}
   <br />

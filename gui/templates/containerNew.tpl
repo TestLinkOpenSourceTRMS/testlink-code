@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: containerNew.tpl,v 1.15 2007/02/19 07:30:20 franciscom Exp $
+$Id: containerNew.tpl,v 1.16 2007/02/20 18:48:50 franciscom Exp $
 Purpose: smarty template - create containers
 
 20070214 - franciscom -
@@ -53,7 +53,8 @@ function validateForm(f)
 {include file="inc_update.tpl" result=$sqlResult 
                                user_feedback=$user_feedback
                                item=$level action="add" name=$name
-                               refresh=$smarty.const.REFRESH_SPEC_TREE }
+                               refresh=$smarty.session.tcspec_refresh_on_action }
+
 
 <form method="post" action="lib/testcases/containerEdit.php?containerID={$containerID}"
 	      name="container_new" id="container_new"

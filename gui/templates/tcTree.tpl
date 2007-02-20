@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: tcTree.tpl,v 1.6 2007/02/19 07:30:20 franciscom Exp $ *}
+{* $Id: tcTree.tpl,v 1.7 2007/02/20 18:48:50 franciscom Exp $ *}
 {* Purpose: smarty template - show test specification tree menu *}
 {*
 	20070217 - franciscom - added test suite filter
@@ -16,7 +16,8 @@
 <div style="margin: 3px;">
 
 {if $draw_filter}
-  <form method="get" onchange="document.tree.style.display = 'hidden';">
+  <form method="get" id="tree_filter_and_settings" 
+        onchange="document.tree.style.display = 'hidden';">
     <input type="hidden" name="feature" value={$smarty.get.feature}>
   	<table class="smallGrey" width="100%">
     		<caption>
@@ -28,7 +29,21 @@
     			{html_options name="tsuites_to_show" options=$tsuites_combo selected=$tsuite_choice}
     			</td>
     		</tr>
-
+ 
+  		<tr>
+   			<td>{lang_get s='do_auto_update'}</td>
+  			<td>
+  			   <input type="hidden" id="hidden_tcspec_refresh_on_action"   
+  			           name="hidden_tcspec_refresh_on_action" />
+  			
+  			   <input type="checkbox" 
+  			           id="cbtcspec_refresh_on_action"   name="tcspec_refresh_on_action"
+  			           value="1"
+  			           {if $tcspec_refresh_on_action eq "yes"} checked {/if}
+  			           style="font-size: 90%;" onclick="submit()"/>
+  			</td>
+  		</tr>
+  
   		<tr>
   			<td>&nbsp;</td>
   			<td><input type="submit" name="refresh_view" 

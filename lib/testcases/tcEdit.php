@@ -4,10 +4,11 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.51 $
- * @modified $Date: 2007/02/19 07:30:20 $  by $Author: franciscom $
+ * @version $Revision: 1.52 $
+ * @modified $Date: 2007/02/20 18:48:50 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
+ * 20070220 - franciscom - automatic tree refresh management
  * 20070218 - franciscom - added $g_spec_cfg->automatic_tree_refresh to the
  *                         refresh tree logic
  *
@@ -24,6 +25,16 @@ testlinkInitPage($db);
 $gui_cfg = config_get('gui');
 $order_cfg = config_get('tree_node_ordering');
 $spec_cfg=config_get('spec_cfg');
+
+// --------------------------------------------------------------------------
+// 20070220 - franciscom
+$do_refresh=$spec_cfg->automatic_tree_refresh;
+if( isset($_SESSION['tcspec_refresh_on_action']) )
+{
+  $do_refresh=$_SESSION['tcspec_refresh_on_action'] == "yes" ? 1 : 0 ;
+}
+// --------------------------------------------------------------------------
+
 
 
 // --------------------------------------------------------------------
@@ -377,7 +388,7 @@ else if($move_copy_tc)
 else if($do_move)
 {
 	$result = $tree_mgr->change_parent($tcase_id,$new_container_id);
-	$smarty->assign('refreshTree',1);
+	$smarty->assign('refreshTree',$do_refresh);
 	$tsuite_mgr->show($smarty,$old_container_id);
 }
 else if($do_copy)
@@ -387,8 +398,11 @@ else if($do_copy)
 	$result = $tcase_mgr->copy_to($tcase_id,$new_container_id,$userID,TC_COPY_KEYWORDS,
 	                              config_get('check_names_for_duplicates'),'block');
 	$msg = $result['msg'];
-	$smarty->assign('refreshTree',1);
-	$tcase_mgr->show($smarty,$tcase_id, $userID,$tcversion_id,$action_result,$msg);
+	$smarty->assign('refreshTree',$do_refresh);
+	
+	$do_refresh_yes_no=$do_refresh?"yes":"no";
+	$tcase_mgr->show($smarty,$tcase_id, $userID,$tcversion_id,
+	                 $action_result,$msg,$do_refresh_yes_no);
 }
 else if($do_create_new_version)
 {

@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcNew.tpl,v 1.19 2007/02/14 17:44:02 franciscom Exp $
+$Id: tcNew.tpl,v 1.20 2007/02/20 18:48:50 franciscom Exp $
 Purpose: smarty template - create new testcase
 
 20070214 - franciscom -
@@ -72,7 +72,10 @@ function validateForm(f)
 </div>
 
 {if $sqlResult eq 'ok'}
-	{include file="inc_refreshTree.tpl"}
+  {* 20070220 - franciscom *}
+  {if ($smarty.session.tcspec_refresh_on_action eq "yes") }
+	 {include file="inc_refreshTree.tpl"}
+	{/if}
 {/if}
 
 </body>

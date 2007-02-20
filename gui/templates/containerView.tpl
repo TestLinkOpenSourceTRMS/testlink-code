@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: containerView.tpl,v 1.33 2007/02/19 07:30:20 franciscom Exp $ *}
+{* $Id: containerView.tpl,v 1.34 2007/02/20 18:48:50 franciscom Exp $ *}
 {* 
 Purpose: smarty template - view test specification containers 
 
@@ -14,7 +14,7 @@ rev :
 <h1>{$page_title}{$smarty.const.TITLE_SEP}{$container_data.name|escape}</h1>
 
 {include file="inc_update.tpl" result=$sqlResult item=$level 
-         name=$moddedItem.name refresh=$smarty.const.REFRESH_SPEC_TREE }
+         name=$moddedItem.name refresh=$smarty.session.tcspec_refresh_on_action }
          
 {assign var="bDownloadOnly" value=false}
 {if $level == 'testproject'}
@@ -104,6 +104,7 @@ rev :
 	{/if}
 
 </div>
+
 {if $refreshTree}
    {include file="inc_refreshTree.tpl"}
 {/if}

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.140 $
- * @modified $Date: 2007/02/19 14:03:42 $ $Author: schlundus $
+ * @version $Revision: 1.141 $
+ * @modified $Date: 2007/02/20 17:41:05 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
@@ -1043,7 +1043,7 @@ $TLS_title_change_tc_order = "Change this Test Suite's Test Case order.";
 // gui/templates/tcTree.tpl
 $TLS_button_refresh = "Refresh";
 $TLS_button_update_tree = "Update tree";
-
+$TLS_do_auto_update = "Update tree after every operation";
 $TLS_no_tc_spec_av = "No Test Specification available!";
 
 

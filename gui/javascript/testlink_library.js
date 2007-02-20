@@ -1,13 +1,14 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/ 
 // This script is distributed under the GNU General Public License 2 or later. 
 //
-// $Id: testlink_library.js,v 1.28 2007/02/19 14:03:42 schlundus Exp $ 
+// $Id: testlink_library.js,v 1.29 2007/02/20 17:43:59 franciscom Exp $ 
 //
 // Javascript functions commonly used through the GUI
 // This library is automatically loaded with inc_header.tpl
 //
 // DO NOT ADD FUNCTIONS FOR ONE USING
 //
+// 20070220 - franciscom - changes in ET(), and tree_getPrintPreferences()
 // 20070129 - franciscom - changes in SP() 
 // 20070107 - franciscom - subtle bug deleteUser_onClick()
 // 20061223 - franciscom - added open_show_notes_window()
@@ -47,8 +48,17 @@ function SP()
 }
 
 
+/*
+  function: 
+
+  args :
+  
+  returns: 
+
+*/
 function EP(id)
 {
+  // get checkboxes status
 	var pParams = tree_getPrintPreferences();
 	parent.workframe.location = fRoot+menuUrl+"?edit=testproject&id="+id+args+"&"+pParams;
 }
@@ -65,8 +75,8 @@ function EP(id)
 */
 function ETS(id)
 {
+  // get checkboxes status
 	var pParams = tree_getPrintPreferences();
-  
 	parent.workframe.location = fRoot+menuUrl+"?edit=testsuite&id="+id+args+"&"+pParams;
 }
 
@@ -81,6 +91,8 @@ function ETS(id)
 */
 function ET(id,v)
 {
+  // get checkboxes status
+	var pParams = tree_getPrintPreferences();
 	parent.workframe.location = fRoot+menuUrl+"?version_id="+v+"&edit=testcase&id="+id+args;
 }
 
@@ -272,13 +284,13 @@ function confirm_and_submit(msg,form_id,field_id,field_value,action_field_id,act
   returns: 
 
   rev  :
-        20070218 - franciscom - added do_automatic_refresh_on_action
+        20070218 - franciscom - added tcspec_refresh_on_action
                                 useful on test case specification edit NOT Printing
 */
 function tree_getPrintPreferences()
 {
 	var params = [];
-	var fields = ['header','summary','toc','body','do_automatic_refresh_on_action'];
+	var fields = ['header','summary','toc','body','tcspec_refresh_on_action'];
 	for (var i= 0;i < fields.length;i++)
 	{
 		var v = tree_getCheckBox(fields[i]);

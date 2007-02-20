@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8 
- * @modified $Date: 2007/02/20 05:57:42 $ by $Author: kevinlevy $
+ * @modified $Date: 2007/02/20 07:04:37 $ by $Author: kevinlevy $
  *
  *
  * This class is encapsulates most functionality necessary to query the database
@@ -24,6 +24,11 @@ require_once('treeMenu.inc.php');
 require_once('exec.inc.php');
 require_once('../results/timer.php');
 
+/**
+* @author kevinlevy
+* The results class encapsulates all necessary logic for 
+* viewing execution metrics.
+*/
 class results
 {
 	// only call get_linked_tcversions() only once, and save it to
@@ -110,10 +115,13 @@ class results
 	// map of buildsIds to Array (total, passed, failed, blocked, notRun) 
 	var $aggregateBuildResults = null;
     
-	// $builds_to_query = 'a' will query all build, $builds_to_query = -1 will prevent
-	// most logic in constructor from executing/ executions table from being queried
-	// if keyword = 0, search by keyword would not be performed
-	function results(&$db, &$tp, $suitesSelected = 'all', $builds_to_query = -1, $lastResult = 'a', $keywordId = 0, $owner = null)
+	/**
+	* $builds_to_query = 'a' will query all build, $builds_to_query = -1 will prevent
+	* most logic in constructor from executing/ executions table from being queried
+	* if keyword = 0, search by keyword would not be performed
+	*/ 
+	
+	public function results(&$db, &$tp, $suitesSelected = 'all', $builds_to_query = -1, $lastResult = 'a', $keywordId = 0, $owner = null)
 	{
 		$this->db = $db;	
     	$this->tp = $tp;    
@@ -192,10 +200,9 @@ class results
 	* Array ( [128] => Array ( [14308] => p [14309] => n [14310] => n [14311] => f [14312] => n [14313] => n ) 
 	*			 [11] => Array ( [14309] => n [14310] => n [14311] => f [14312] => n [14313] => n ))
 	*
-	* output format :
-	* Array ( [keyword id] => Array ( total, passed, failed, blocked, not run))       
+	* @return Array ( [keyword id] => Array ( total, passed, failed, blocked, not run))       
 	*/
-	function tallyKeywordResults($keywordResults, $keywordIdNamePairs) {
+	private function tallyKeywordResults($keywordResults, $keywordIdNamePairs) {
 		if ($keywordResults == null) {
 			return;
 		}
@@ -237,7 +244,7 @@ class results
 	* output format :
 	* Array ( [owner id] => Array ( total, passed, failed, blocked, not run))       
 	*/
-	function tallyOwnerResults($ownerResults, $ownerIdNamePairs) {
+	private function tallyOwnerResults($ownerResults, $ownerIdNamePairs) {
 		if ($ownerResults == null) {
 			return;
 		}
@@ -289,7 +296,7 @@ class results
 	* output format :
 	* Array ( [owner id] => Array ( total, passed, failed, blocked, not run))       
 	*/
-	function tallyBuildResults($buildResults, $arrBuilds, $finalResults) {
+	private function tallyBuildResults($buildResults, $arrBuilds, $finalResults) {
 		$totalCases = $finalResults['total'];
 		if ($buildResults == null) {
 			return;
@@ -341,55 +348,89 @@ class results
 		} // end $buildId while
 		return $rValue;
 	} // end function
-
-	function getAggregateKeywordResults() {
+	
+	/**
+	* returns total / pass / fail / blocked / not run results for each keyword id
+	* @return array
+	*/
+	public function getAggregateKeywordResults() {
 		return $this->aggregateKeywordResults;
 	}
 
-	function getAggregateOwnerResults() {
+	/**
+	* returns total / pass / fail / blocked / not run results for each owner id
+	* unassigned test cases show up under owner id = -1
+	* @return array
+	*/
+	public function getAggregateOwnerResults() {
 		return $this->aggregateOwnerResults;
 	}
 	
-	function getAggregateBuildResults() {
+	/**
+	* returns total / pass / fail / blocked / not run results for each build id
+	* @return array
+	*/
+	public function getAggregateBuildResults() {
 		return $this->aggregateBuildResults;
 	}
 
-	// TO-DO- rename getExecutionsMap() (resultsTC.php is 1 file (may not be only file) that references this method)
-	function getSuiteList(){
+	/**
+	* TO-DO: rename this method to getExecutionsMap() 
+	* (resultsTC.php is 1 file (may not be only file) that references this method)
+	* @return array
+	*/ 
+	public function getSuiteList(){
 		return $this->executionsMap;
 	}
   
-	function getSuiteStructure(){
+	/**
+	* returns array which describes suite hierachy
+	* @return array
+	*/
+	public function getSuiteStructure(){
 		return $this->suiteStructure;
 	}
-  
-	function getMapOfSuiteSummary(){
+	
+	/**
+	* @return array
+	*/
+	public function getMapOfSuiteSummary(){
 		return $this->mapOfSuiteSummary;
 	}
 
-	function getMapOfLastResult() {
+	/**
+	* @return array
+	*/
+	public function getMapOfLastResult() {
 		return $this->mapOfLastResult;
 	}  
-
-	function getAggregateMap(){
+	
+	/**
+	* @return array
+	*/
+	public function getAggregateMap(){
 		return $this->mapOfAggregate;
 	}
   
-	function getTotalsForPlan(){
+	/**
+	* @return array
+	*/
+	public function getTotalsForPlan(){
 		return $this->totalsForPlan;
 	}
   
-	/**
+	/** 
 	* single-dimension array
 	* with pattern level, suite name, suite id
+	* @return array
 	*/
-	function getFlatArray(){
+	public function getFlatArray(){
 		return $this->flatArray;
 	}
 
 	/**
 	* function addLastResultToMap()
-	* author - KL
+	* @author kevinlevy
 	*
 	* Creates $this->mapOfLastResult - which provides information on the last result 
 	* for each test case.
@@ -400,9 +441,9 @@ class results
 	* 	 
 	* currently it does not account for user expliting marking a case "not run".
 	*
-	*  
+	* @return void
 	*/ 	
-	function addLastResultToMap($suiteId, $testcase_id, $buildNumber, $result, $tcversion_id, 
+	private function addLastResultToMap($suiteId, $testcase_id, $buildNumber, $result, $tcversion_id, 
                               $execution_ts, $notes, $suiteName, $executions_id, $name, $tester_id, $feature_id, $assigner_id = -1, $lastResultToTrack){
 		if ($buildNumber) {
 			$this->mapOfLastResultByBuild[$buildNumber][$testcase_id] = $result;
@@ -507,9 +548,10 @@ class results
 	} // end function
   
 	/**
-	*  Create statistics on each suite
+	*  Creates statistics on each suite
+	*  @return void
 	*/
-	function createMapOfSuiteSummary(&$mapOfLastResult) {
+	private function createMapOfSuiteSummary(&$mapOfLastResult) {
 		if ($mapOfLastResult) {
 			while ($suiteId = key($mapOfLastResult)) {
 				$totalCasesInSuite = count($mapOfLastResult[$suiteId]);  		
@@ -547,7 +589,7 @@ class results
 	*  ex : if suite A contains suites A.1 and A.2, this function
 	*  adds up A.1, A.2, and test cases within A
 	*/
-	function createAggregateMap(&$suiteStructure, &$mapOfSuiteSummary) {  
+	private function createAggregateMap(&$suiteStructure, &$mapOfSuiteSummary) {  
   		for ($i = 0; $i < count($suiteStructure); $i++ ) {  			  			
   			$suiteId = 0;
   			if (($i % $this->ITEM_PATTERN_IN_SUITE_STRUCTURE) == $this->NAME_IN_SUITE_STRUCTURE) {
@@ -583,7 +625,7 @@ class results
 	/**
 	* iterates over top level suites and adds up totals using data from mapOfAggregate
 	*/
-	function createTotalsForPlan() {
+	private function createTotalsForPlan() {
 		$total_sum = 0;
 		$pass_sum = 0;
 		$fail_sum = 0;
@@ -607,7 +649,7 @@ class results
 	/**
 	* 
 	*/
-	function addResultsToAggregate($t, $p, $f, $b, $nr) 
+	private function addResultsToAggregate($t, $p, $f, $b, $nr) 
 	{
 		for ($i = 0 ; $i < count($this->aggSuiteList); $i++){
 			$suiteId = $this->aggSuiteList[$i];
@@ -637,7 +679,7 @@ class results
 	/**
 	* 
 	*/
-	function getKeywordData($keywordsInPlan) {
+	private function getKeywordData($keywordsInPlan) {
 		// limit the sql query to just those keys in this test plan
 		if ($keywordsInPlan == null) {
 			return;
@@ -662,7 +704,7 @@ class results
 	/**
 	* 
 	*/
-	function createMapOfLastResult(&$suiteStructure, &$executionsMap, $lastResult){  
+	private function createMapOfLastResult(&$suiteStructure, &$executionsMap, $lastResult){  
 		$suiteName = null;
 		for ($i = 0; $i < count($suiteStructure); $i++){  		
 			if (($i % $this->ITEM_PATTERN_IN_SUITE_STRUCTURE) == $this->NAME_IN_SUITE_STRUCTURE) {
@@ -698,7 +740,7 @@ class results
 	* testsuite_id_1_array = []
 	* all test cases are included, even cases that have not been executed yet
 	*/
-	function buildExecutionsMap($builds_to_query, $lastResult = 'a', $keyword = 0, $owner = null){
+	private function buildExecutionsMap($builds_to_query, $lastResult = 'a', $keyword = 0, $owner = null){
 		// first make sure we initialize the executionsMap
 		// otherwise duplicate executions will be added to suites
 		$executionsMap = null;
@@ -808,7 +850,7 @@ class results
 	* builds bug information for execution id
 	* written by Andreas, being implemented again by KL
 	*/
-	function buildBugString(&$db,$execID) {
+	private function buildBugString(&$db,$execID) {
 		$bugString = null;
 	    $bugsOn = config_get('bugInterfaceOn');
 	    if ($bugsOn == null || $bugsOn == false){
@@ -826,7 +868,7 @@ class results
 	/**
 	* return map of suite id to suite name pairs of all suites
 	*/
-	function getAllSuites() {
+	public function getAllSuites() {
 		$returnList = null;
 		$name = null;
 		$suiteId = null;
@@ -846,7 +888,7 @@ class results
 	* return map of suite id to suite name pairs of top level suites
 	* iterates over top level suites and adds up totals using data from mapOfAggregate
 	*/
-	function getTopLevelSuites(){
+	public function getTopLevelSuites(){
 		$returnList = null;
 		$name = null;
 		$suiteId = null;
@@ -880,7 +922,7 @@ class results
 	*	suite[5] = array() of child suites or null 
 	*
 	*/
-	function generateExecTree($keyword_id = 0, $owner = null) {
+	private function generateExecTree($keyword_id = 0, $owner = null) {
 		$tplan_mgr = $this->tp;
 		$tproject_mgr = new testproject($this->db);	
 		$tree_manager = $tplan_mgr->tree_manager;
@@ -923,7 +965,7 @@ class results
 	* parent_suite_name is used to construct the full hierachy name of the suite
 	* ex: "A->A.A->A.A.A"
 	*/ 
-	function processExecTreeNode($level,&$node,$hash_id_descr,$parent_suite_name = '')
+	private function processExecTreeNode($level,&$node,$hash_id_descr,$parent_suite_name = '')
 	{
 		$currentNode = null;
 		$currentNodeIndex = 0;

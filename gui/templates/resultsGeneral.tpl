@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsGeneral.tpl,v 1.5 2005/12/05 01:46:52 havlat Exp $
+$Id: resultsGeneral.tpl,v 1.6 2007/02/20 01:01:14 kevinlevy Exp $
 Purpose: smarty template - show Test Results and Metrics
 Revisions:
 20051004 - fm - added print button
@@ -16,7 +16,10 @@ Revisions:
 <h1>{lang_get s='title_gen_test_rep'} {$tpName|escape}</h1>
 
 <div class="workBack">
+{*
 {include file="inc_res_by_prio.tpl"}
+*}
+
 {include file="inc_res_by_comp.tpl"}
 {include file="inc_res_by_owner.tpl"}
 {include file="inc_res_by_keyw.tpl"}

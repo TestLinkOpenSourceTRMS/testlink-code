@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsMoreBuilds_query_form.tpl,v 1.37 2007/01/13 23:44:13 kevinlevy Exp $
+$Id: resultsMoreBuilds_query_form.tpl,v 1.38 2007/02/21 05:55:51 kevinlevy Exp $
 @author Francisco Mancardi - fm - start solving BUGID 97/98
 20051022 - scs - removed ' in component id values
 20051121 - scs - added escaping of tpname
@@ -58,22 +58,13 @@ $Id: resultsMoreBuilds_query_form.tpl,v 1.37 2007/01/13 23:44:13 kevinlevy Exp $
 				</select>
 			</td>
 		</tr>
+
+<!-- KL - 20070220 - commented out until fixed
 	    <tr>
-		<!-- 10212006 - KL - commenting out until we have some other format besides HTML 
-		
-			<th>{lang_get s='select_report_format_header'}</th>
-		-->
 			<th>{lang_get s='select_last_result_header'} </th>
 		</tr>
 		<tr>
-		<!-- 10212006 - KL - commenting out until we have some other format besides HTML 
-			<td>
-				<select name="format" size="2">
-					<option selected="selected" value="HTML">{lang_get s='html_format'}</option>
-					<option value="EXCEL">{lang_get s='excel_format'}</option>
-				</select>
-			</td>
-			-->
+
 			<td>
 				<select name="lastStatus" size="5">
 					<option selected="selected">{lang_get s='last_status_any'}</option>
@@ -84,6 +75,7 @@ $Id: resultsMoreBuilds_query_form.tpl,v 1.37 2007/01/13 23:44:13 kevinlevy Exp $
 				</select>
 			</td>
 		</tr>
+-->
 		<tr>
 			<td colspan="2">
 				<input type="submit" value="{lang_get s='submit_query'}"/>

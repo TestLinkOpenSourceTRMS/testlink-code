@@ -6,12 +6,8 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8 
- * @modified $Date: 2007/02/20 07:26:23 $ by $Author: kevinlevy $
+ * @modified $Date: 2007/02/21 05:09:37 $ by $Author: kevinlevy $
  *
- *
- * This class is encapsulates most functionality necessary to query the database
- * for results to publish in reports.  It returns data structures to the gui layer in a 
- * manner that are easy to display in smarty templates.  
  *-------------------------------------------------------------------------
  * Revisions:
  * 20070219 - kevinlevy - nearing completion for 1.7 release
@@ -28,13 +24,16 @@ require_once('../results/timer.php');
 
 /**
 * @author kevinlevy
-* The results class encapsulates all necessary logic for 
-* viewing execution metrics.
+* This class is encapsulates most functionality necessary to query the database
+* for results to publish in reports.  It returns data structures to the gui layer in a 
+* manner that are easy to display in smarty templates.  
 */
 class results
 {
-	// only call get_linked_tcversions() only once, and save it to
-	// $this->linked_tcversions
+	/*
+	* only call get_linked_tcversions() only once, and save it to
+	* $this->linked_tcversions
+	*/ 
 	private $linked_tcversions = null;
 	private $suitesSelected = "";	
 
@@ -159,8 +158,8 @@ class results
 	* $builds_to_query = 'a' will query all build, $builds_to_query = -1 will prevent
 	* most logic in constructor from executing/ executions table from being queried
 	* if keyword = 0, search by keyword would not be performed
+	* @author kevinlevy
 	*/ 
-	
 	public function results(&$db, &$tp, $suitesSelected = 'all', $builds_to_query = -1, $lastResult = 'a', $keywordId = 0, $owner = null)
 	{
 		$this->db = $db;	

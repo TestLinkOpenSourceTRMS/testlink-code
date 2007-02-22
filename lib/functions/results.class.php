@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8 
- * @modified $Date: 2007/02/21 05:09:37 $ by $Author: kevinlevy $
+ * @modified $Date: 2007/02/22 16:23:27 $ by $Author: kevinlevy $
  *
  *-------------------------------------------------------------------------
  * Revisions:
@@ -266,7 +266,10 @@ class results
 				next($arrResults);
 			} // end $testcaseId while
 			$totalNotRun = $totalCases - ($totalPass + $totalFail + $totalBlocked);
-			$percentCompleted = (($totalCases - $totalNotRun) / $totalCases) * 100;
+			$percentCompleted = 0;
+			if ($totalCases > 0 ) {
+				$percentCompleted = (($totalCases - $totalNotRun) / $totalCases) * 100;
+			}
 			$percentCompleted = number_format($percentCompleted,2);		
 			$rArray = array($keywordIdNamePairs[$keywordId], $totalCases, $totalPass, $totalFail, $totalBlocked, $totalNotRun, $percentCompleted);
 			$rValue[$keywordId] = $rArray;

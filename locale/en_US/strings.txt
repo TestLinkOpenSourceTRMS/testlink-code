@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.4 $
- * @modified $Date: 2006/05/29 06:39:12 $ $Author: franciscom $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2007/02/22 22:07:29 $ $Author: kevinlevy $
  *
  * @author Francisco Mancardi
  *
@@ -957,7 +957,7 @@ $TLS_title_metrics_x_build = " - Test Result Metrics per Build";
 // lib/results/resultsByStatus.php
 $TLS_list_of_blocked = "List of Blocked Test Cases";
 $TLS_list_of_failed = "List of Failed Test Cases";
-
+$TLS_list_of_not_run = "List of Not Run Test Cases";
 
 
 // lib/results/resultsNavigator.php

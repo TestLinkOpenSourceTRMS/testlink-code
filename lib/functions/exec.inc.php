@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: exec.inc.php,v $
  *
- * @version $Revision: 1.35 $
- * @modified $Date: 2007/02/12 08:07:53 $ $Author: franciscom $
+ * @version $Revision: 1.36 $
+ * @modified $Date: 2007/02/22 08:23:24 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -22,6 +22,8 @@
  *                               get_bugs_for_exec()
  *
  * 20070105 - franciscom - interface changes write_execution()
+ * 20070222 - franciscom - BUGID 645 createResultsMenu()
+ *
  *
 **/
 require_once('../functions/common.php');
@@ -117,16 +119,30 @@ function buildKeyWordArray(&$db,$sqlKeyword)
 	
 	return $keyArray;
 }
+
+
 /** Building the dropdown box of results filter */
+// 20070222 - franciscom - BUGID 645 
 function createResultsMenu()
 {
-	$data['all'] = 'All';
-	$data['n'] = 'Not Run';
-	$data['p'] = 'Passed';
-	$data['f'] = 'Failed';
-	$data['b'] = 'Blocked';
+  $map_verbose_status_code=config_get('tc_status');
+  $tc_status_verbose_labels = config_get('tc_status_verbose_labels');
+  $tc_status_for_ui = config_get('tc_status_for_ui');
+  
+  // Fixed values, that has to be added always
+	$menu_data[$map_verbose_status_code['all']] = lang_get($tc_status_verbose_labels['all']);
+	$menu_data[$map_verbose_status_code['not_run']] = lang_get($tc_status_verbose_labels['not_run']);
+	
+	// loop over tc_status_for_ui, because these are the statuses
+	// user can assign while executing test cases
+	//
+	foreach($tc_status_for_ui as $verbose_status => $status_label)
+	{
+	   $code=$map_verbose_status_code[$verbose_status];
+	   $menu_data[$code]=lang_get($status_label); 
+  }
 
-	return $data;
+	return $menu_data;
 }//end results function
 
 

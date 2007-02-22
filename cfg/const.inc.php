@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: const.inc.php,v $
  *
- * @version $Revision: 1.17 $
- * @modified $Date: 2007/02/19 07:30:19 $ by $Author: franciscom $
+ * @version $Revision: 1.18 $
+ * @modified $Date: 2007/02/22 08:23:24 $ by $Author: franciscom $
  * @author Martin Havlát
  *
  * SCOPE:
@@ -225,6 +225,7 @@ $g_tc_status_for_ui = array(
 */
 
 $g_tc_status_verbose_labels = array(
+  "all"      => "test_status_all_status",
 	"not_run"  => "test_status_not_run",
 	"passed"   => "test_status_passed",
 	"failed"   => "test_status_failed",

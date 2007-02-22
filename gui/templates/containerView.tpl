@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: containerView.tpl,v 1.35 2007/02/22 20:26:26 schlundus Exp $ *}
+{* $Id: containerView.tpl,v 1.36 2007/02/22 20:43:20 schlundus Exp $ *}
 {* 
 Purpose: smarty template - view test specification containers 
 

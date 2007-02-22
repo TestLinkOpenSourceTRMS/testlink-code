@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testsuite.class.php,v $
- * @version $Revision: 1.26 $
- * @modified $Date: 2007/02/05 08:01:12 $ - $Author: franciscom $
+ * @version $Revision: 1.27 $
+ * @modified $Date: 2007/02/22 20:43:20 $ - $Author: schlundus $
  * @author franciscom
  *
  * 20070204 - franciscom - fixed minor GUI bug on html_table_of_custom_field_inputs()
@@ -194,8 +194,8 @@ function get_all()
  **/
 function show(&$smarty,$id, $sqlResult = '', $action = 'update',$modded_item_id = 0)
 {
-  $gui_cfg=config_get('gui');
-  $cf_smarty='';
+	$gui_cfg = config_get('gui');
+	$cf_smarty = '';
   
 	$smarty->assign('modify_tc_rights', has_rights($this->db,"mgt_modify_tc"));
 
@@ -212,16 +212,19 @@ function show(&$smarty,$id, $sqlResult = '', $action = 'update',$modded_item_id 
 		$modded_item = $this->get_by_id($modded_item_id);
 	}
   
-  // 20061224 - franciscom
-  // Custom field management 
-  if( $gui_cfg->enable_custom_fields ) 
-  {
-    $cf_smarty = $this->html_table_of_custom_field_values($id);
-  } // if( $gui_cfg
+	// 20061224 - franciscom
+	// Custom field management 
+	if( $gui_cfg->enable_custom_fields ) 
+	{
+		$cf_smarty = $this->html_table_of_custom_field_values($id);
+	}
   
 	$keywords_map = $this->get_keywords_map($id,' ORDER BY KEYWORD ASC ');
-
-  $smarty->assign('page_title',lang_get('testsuite'));
+	$attachments = getAttachmentInfos($this->db,$id,'nodes_hierarchy');
+	
+	$smarty->assign('attachmentInfos',$attachments);
+	$smarty->assign('id',$id);
+  	$smarty->assign('page_title',lang_get('testsuite'));
 	$smarty->assign('cf',$cf_smarty);
 	$smarty->assign('keywords_map',$keywords_map);
 	$smarty->assign('moddedItem',$modded_item);

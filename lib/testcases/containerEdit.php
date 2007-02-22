@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * @version $Revision: 1.59 $
- * @modified $Date: 2007/02/19 07:30:20 $ by $Author: franciscom $
+ * @version $Revision: 1.60 $
+ * @modified $Date: 2007/02/22 20:43:21 $ by $Author: schlundus $
  * @author Martin Havlat
  *
  * 
@@ -39,8 +39,7 @@ $tsuite_name = isset($_REQUEST['testsuiteName']) ? strings_stripSlashes($_REQUES
 $bSure = (isset($_REQUEST['sure']) && ($_REQUEST['sure'] == 'yes'));
 $bRefreshTree = false;
 
-// 20070214 - franciscom
-$level=null;
+$level = null;
 
 // --------------------------------------------------------------------------------------------
 $testproject_id = $_SESSION['testprojectID'];
@@ -48,7 +47,6 @@ $opt_cfg->js_ot_name='ot';
 $rl_html_name = $opt_cfg->js_ot_name . "_newRight";
 $assigned_keyword_list = isset($_REQUEST[$rl_html_name])? $_REQUEST[$rl_html_name] : "";
 // --------------------------------------------------------------------------------------------
-
 
 $gui_cfg=config_get('gui');
 $spec_cfg=config_get('spec_cfg');
@@ -80,7 +78,6 @@ $a_init_opt_transfer=array('edit_testsuite' => 1,
 					                 'new_testsuite'  => 1,
 					                 'add_testsuite'  => 1,
                            'update_testsuite' => 1);
-
 
 
 $the_tpl = null;
@@ -149,7 +146,6 @@ if($get_c_data)
 		$name_ok = 0;
 	}
 }
-
 if($action == 'edit_testsuite' || $action == 'new_testsuite')
 {
 	keywords_opt_transf_cfg($opt_cfg, $assigned_keyword_list); 
@@ -353,9 +349,7 @@ else
 
 if ($the_tpl)
 {
-  
-  // 20070218 - franciscom
-	$smarty->assign('refreshTree',$bRefreshTree && $spec_cfg->automatic_tree_refresh);
+  	$smarty->assign('refreshTree',$bRefreshTree && $spec_cfg->automatic_tree_refresh);
 	$smarty->display($the_tpl);
 } 
 

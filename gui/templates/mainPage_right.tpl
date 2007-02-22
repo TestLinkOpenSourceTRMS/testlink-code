@@ -1,6 +1,6 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: mainPage_right.tpl,v 1.1 2007/02/05 07:59:22 franciscom Exp $     
+ $Id: mainPage_right.tpl,v 1.2 2007/02/22 23:22:10 kevinlevy Exp $     
  Purpose: smarty template - main page / site map                 
                                                                  
  rev :                                                 
@@ -129,15 +129,21 @@
 		<p>
 		<img alt="arrow" class="arrow" src="{$smarty.const.TL_THEME_IMG_DIR}/arrow_org.gif" />
 	   		<a href="lib/plan/planView.php">{lang_get s='href_plan_management'}</a><br />
+		<!-- KL 20070222 - Milestones and Priority are currently not supported in 1.7
+		
 		{if $countPlans > 0}
+	        
 	        <br />
+	        
 			<img alt="arrow" class="arrow" src="{$smarty.const.TL_THEME_IMG_DIR}/arrow_org.gif" />
 	       	<a href="lib/plan/planMilestones.php">{lang_get s='href_plan_mstones'}</a>
 
       <br />
 			<img alt="arrow" class="arrow" src="{$smarty.const.TL_THEME_IMG_DIR}/arrow_org.gif" />
 	       	<a href="lib/plan/planPriority.php">{lang_get s='href_plan_define_priority'}</a>
+	       	
    	{/if}
+   	-->
 	  </p>
 	{/if}
 	{if $tp_user_role_assignment == "yes" && $countPlans > 0}

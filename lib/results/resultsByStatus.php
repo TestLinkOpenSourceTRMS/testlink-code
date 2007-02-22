@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsByStatus.php,v 1.37 2007/02/11 01:55:14 kevinlevy Exp $ 
+* $Id: resultsByStatus.php,v 1.38 2007/02/22 23:37:04 kevinlevy Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -15,7 +15,7 @@
 */
 require('../../config.inc.php');
 require_once('../functions/common.php');
-require_once('../functions/exec.inc.php');
+//require_once('../functions/exec.inc.php');
 require_once("../../lib/functions/results.class.php");
 require_once('displayMgr.php');
 require_once('../functions/users.inc.php');
@@ -148,8 +148,13 @@ if ($tcs && $maxBuildID)
 * builds bug information for execution id
 * written by Andreas, being implemented again by KL
 */
+
 function buildBugString(&$db,$execID)
 {
+    if (!$execID) {
+	  return null;
+	}
+	
 	$bugString = null;
 	$bugsOn = config_get('bugInterfaceOn');
 	if ($bugsOn == null) {

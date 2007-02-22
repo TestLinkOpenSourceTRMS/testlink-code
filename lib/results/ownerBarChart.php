@@ -4,15 +4,8 @@ include "../../third_party/charts/charts.php";
 /**
 NEW STUFF
 */
-
-//require('../../config.inc.php');
-//require_once('common.php');
-//require_once('builds.inc.php');
-//require_once('TestPlanResultsObj.php');
-//require_once('timer.php');
 require_once('../functions/results.class.php');
 require_once('../functions/testplan.class.php');
-//require_once('displayMgr.php');
 
 testlinkInitPage($db);
 $tpID = $_SESSION['testPlanId']; 

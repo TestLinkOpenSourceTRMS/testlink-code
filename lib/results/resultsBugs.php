@@ -6,11 +6,8 @@
 */
 
 require('../../config.inc.php');
-require_once('common.php');
 require_once('../functions/results.class.php');
 require_once("../../lib/functions/lang_api.php");
-// exec.inc.php required by buildBugString()
-require_once('exec.inc.php');
 require_once('displayMgr.php');
 
 testlinkInitPage($db);
@@ -46,26 +43,25 @@ if ($lastResultMap) {
 			$suiteExecutions = $executionsMap[$suiteId];
 			$rowArray = array($suiteName, $testCaseId . ":" . $name);
 			for ($i = 0; $i < sizeOf($suiteExecutions); $i++) {
-				// initialize bug associated with an execution
-				$bugLink = null;
 				$currentExecution = $suiteExecutions[$i];
-				//$currentTimeStamp = $currentExecution['execution_ts'];
-				//$dummy = null;
-			    //$currentTimeStamp = localize_dateOrTimeStamp(null,$dummy,'timestamp_format',$currentTimeStamp);
-				$executions_id = $currentExecution['executions_id'];
-				if ($executions_id) {
-					$bugLink = buildBugString($db, $executions_id);
-				}
-				if ($bugLink) {
-					// there is always only 1 timestamp
-					// but there can be multiple bugs
-					// print "bugString = $bugString <BR>";
-					// $timestampInfo = $timestampInfo .  $currentTimeStamp . "<BR>";
-					if (!in_array($bugLink, $allBugLinks)) {
-						array_push($allBugLinks, $bugLink);
-						//array_push($allTimeStamps, $currentTimeStamp);
+				if ($currentExecution['testcaseID'] == $testCaseId) {
+					$executions_id = $currentExecution['executions_id'];
+					// initialize bug associated with an execution
+					$bugLink = null;
+					if ($executions_id) {
+						$bugLink = buildBugString($db, $executions_id);
 					}
-				}					
+					if ($bugLink) {
+						// there is always only 1 timestamp
+						// but there can be multiple bugs
+						// print "bugString = $bugString <BR>";
+						// $timestampInfo = $timestampInfo .  $currentTimeStamp . "<BR>";
+						if (!in_array($bugLink, $allBugLinks)) {
+							array_push($allBugLinks, $bugLink);
+							//array_push($allTimeStamps, $currentTimeStamp);
+						}
+					}
+				}
 			}		
 			//array_push($rowArray, $timestampInfo);
 			$allBugLinksString = implode("", $allBugLinks);

@@ -4,9 +4,10 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.55 $
- * @modified $Date: 2007/02/12 08:07:08 $ $Author: franciscom $
+ * @version $Revision: 1.56 $
+ * @modified $Date: 2007/02/22 18:41:00 $ $Author: franciscom $
  *
+ * 20070222 - franciscom - BUGID 647
  * 20070211 - franciscom - added execution delete logic
  *
  * 20070105 - franciscom - refactoring
@@ -18,7 +19,6 @@
  *
  * 2. start of test case custom field management
  *
- * 20070101 - franciscom - custom field management for test suites
  *
 **/
 require_once('../../config.inc.php');
@@ -38,6 +38,8 @@ $exec_cfg = config_get('exec_cfg');
 $gui_cfg = config_get('gui');
 $tc_status = config_get('tc_status'); 
 
+// BUGID 647
+$smarty->assign('enable_custom_field',$gui_cfg->enable_custom_fields);
 
 $tree_mgr = new tree($db);
 $tplan_mgr = new testplan($db);

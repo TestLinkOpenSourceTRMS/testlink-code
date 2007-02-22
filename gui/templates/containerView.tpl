@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: containerView.tpl,v 1.34 2007/02/20 18:48:50 franciscom Exp $ *}
+{* $Id: containerView.tpl,v 1.35 2007/02/22 20:26:26 schlundus Exp $ *}
 {* 
 Purpose: smarty template - view test specification containers 
 
@@ -104,7 +104,6 @@ rev :
 	{/if}
 
 </div>
-
 {if $refreshTree}
    {include file="inc_refreshTree.tpl"}
 {/if}

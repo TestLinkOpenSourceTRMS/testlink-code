@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.141 $
- * @modified $Date: 2007/02/20 17:41:05 $ $Author: franciscom $
+ * @version $Revision: 1.142 $
+ * @modified $Date: 2007/02/22 08:22:39 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
@@ -241,7 +241,7 @@ $TLS_filter_owner = "Assigned to";
 $TLS_filter_result = "Result";
 $TLS_filter_tcID = "Filter: Test Case ID";
 $TLS_keyword = "Keyword";
-
+$TLS_test_status_all_status="All";
 
 
 // gui/templates/mainPage.tpl
@@ -1472,13 +1472,21 @@ $TLS_title_tp_print_navigator = "Navigator - Print Test Plan ";
 
 
 // lib/project/projectedit.php
-$TLS_error_product_name_duplicate = "There's already a product with this name!";
+$TLS_error_product_name_duplicate = "There's already Test Project named %s. <br>Please choose a different name";
 $TLS_info_no_more_prods = "No more Test Projects.";
 $TLS_info_product_activated = "The Test Project was activated.";
 $TLS_info_product_inactivated = "The Test Project was deactivated.";
 $TLS_info_product_not_deleted_check_log = "Test Project was not deleted. Please check TestLink log.";
 $TLS_info_product_was_deleted = "The Test Project was successfully deleted.";
 $TLS_refer_to_log = " Please refer to TestLink log for more information.";
+
+$TLS_test_project_activated="Test Project %s was succesfully activated";
+$TLS_test_project_created="Test Project %s was succesfully created";
+$TLS_test_project_deleted="Test Project %s was succesfully deleted";
+$TLS_test_project_inactivated="Test Project %s was succesfully inactivated";
+$TLS_test_project_updated="Test Project %s was succesfully updated";
+$TLS_test_project_update_failed="Update of Test Project %s failed!";
+
 
 
 // lib/results/charts.php

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.14 $
- * @modified $Date: 2007/02/03 11:34:29 $ $Author: franciscom $
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2007/02/22 08:22:40 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
@@ -211,7 +211,7 @@ $TLS_filter_owner = "Filtro: Owner";
 $TLS_filter_result = "Filtro: Result";
 $TLS_filter_tcID = "Filtro: TestCase ID";
 $TLS_keyword = "Parola chiave";
-
+$TLS_test_status_all_status="Tutti";
 
 
 // gui/templates/mainPage.tpl
@@ -834,6 +834,7 @@ $TLS_title_new_milestone = "Milestone";
 
 
 // gui/templates/projectedit.tpl
+$TLS_error_product_name_duplicate = "Esiste già un Test Project chiamato %s. <br>Per favore scgeliere un'altro nome";
 $TLS_btn_activate = "Attiva";
 $TLS_btn_del = "Elimina";
 $TLS_btn_edit_del = "Modifica / Elimina";

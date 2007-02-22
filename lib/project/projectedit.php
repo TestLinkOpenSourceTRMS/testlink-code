@@ -5,18 +5,19 @@
  *
  * Filename $RCSfile: projectedit.php,v $
  *
- * @version $Revision: 1.6 $
- * @modified $Date: 2007/02/07 09:22:39 $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2007/02/22 08:22:39 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
- * This page allows users to edit/delete products.
+ * Allows users to edit/delete test projetcs.
  * 
  * @todo Verify dependency before delete testplan 
  *
+ * 20070221 - franciscom - BUGID 652
+ * 20070206 - franciscom - BUGID 617
  * 20051211 - fm - poor workaround for the delete loop - BUGID 180 Unable to delete Product
  * 20050908 - fm - BUGID 0000086
- * 20070206 - franciscom - BUGID 617
  *
 **/
 include('../../config.inc.php');
@@ -28,6 +29,7 @@ testlinkInitPage($db,true);
 
 $session_tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 
+$user_feedback ='';
 $updateResult = null;
 $action = 'no';
 $show_prod_attributes = 'yes';
@@ -54,7 +56,7 @@ switch($args->do)
 		$error = null;
 		if (deleteProduct($db,$args->id,$error))
 		{
-			$updateResult = lang_get('info_product_was_deleted');
+		  $user_feedback = sprintf(lang_get('test_project_deleted'),$args->tproject_name);
 			$tlog_msg .= " was deleted.";
 		} 
 		else 
@@ -71,22 +73,24 @@ switch($args->do)
 		break;	 
 		
 	case 'do_create':
-		$updateResult = 'ok';
 		if ($tproject->checkTestProjectName($args->tproject_name,$updateResult))
 		{
 			if (!$tproject->get_by_name($args->tproject_name))
 			{
 				$args->id = $tproject->create($args->tproject_name, $args->color, $args->optReq, $args->notes);
 				if (!$args->id)
-					$updateResult = lang_get('refer_to_log');
+					$user_feedback = lang_get('refer_to_log');
 				else
+				{
 					$args->id = -1;
+					// 20070221 - BUGID 652 
+					$user_feedback = sprintf(lang_get('test_project_created'),$args->tproject_name);
+				}	
 			}
 			else
 			{
-				$updateResult = lang_get('error_product_name_duplicate');
+				$user_feedback = sprintf(lang_get('error_product_name_duplicate'),$args->tproject_name);
 			}
-			$action = 'updated';	
 		}
 		break;
 		
@@ -96,8 +100,14 @@ switch($args->do)
 		{
 			if (!$tproject->get_by_name($args->tproject_name,"testprojects.id <> {$args->id}"))
 			{
-				$updateResult = $tproject->update($args->id, $args->tproject_name, $args->color,$args->optReq, $args->notes);
 				$action = 'updated';
+				
+				$user_feedback = sprintf(lang_get('test_project_update_failed'),$args->tproject_name);
+				if( $tproject->update($args->id, $args->tproject_name, $args->color,$args->optReq, $args->notes) )
+				{
+				  $user_feedback = sprintf(lang_get('test_project_updated'),$args->tproject_name);
+				}
+				
 			}
 			else
 				$updateResult = lang_get('error_product_name_duplicate');
@@ -107,7 +117,7 @@ switch($args->do)
 	case 'inactivateProduct':
 		if ($tproject->activateTestProject($args->id,0))
 		{
-			$updateResult = lang_get('info_product_inactivated');
+			$user_feedback = sprintf(lang_get('test_project_inactivated'),$args->tproject_name);
 			$tlog_msg .= 'was inactivated.';
 		}
 		$action = 'inactivate';
@@ -116,7 +126,7 @@ switch($args->do)
 	case 'activateProduct':
 		if ($tproject->activateTestProject($args->id,1))
 		{
-			$updateResult = lang_get('info_product_activated');
+			$user_feedback = sprintf(lang_get('test_project_activated'),$args->tproject_name);
 			$tlog_msg .= 'was activated.';
 		}
 		$action = 'activate';
@@ -160,13 +170,17 @@ if($action != 'no')
 	tLog($tlog_msg, $tlog_level);
 
 $of->Value = $args->notes;
+
+$smarty->assign('user_feedback', $user_feedback);
 $smarty->assign('action', $action);
 $smarty->assign('sqlResult', $updateResult);
 $smarty->assign('name', $args->tproject_name);
 $smarty->assign('show_prod_attributes', $show_prod_attributes);
 $smarty->assign('notes', $of->CreateHTML());
 $smarty->display('projectedit.tpl');
+?>
 
+<?php
 /*
  * INITialize page ARGuments, using the $_REQUEST and $_SESSION
  * super-global hashes.

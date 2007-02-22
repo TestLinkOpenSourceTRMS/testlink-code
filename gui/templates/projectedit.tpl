@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: projectedit.tpl,v 1.11 2007/02/14 17:47:36 franciscom Exp $
+$Id: projectedit.tpl,v 1.12 2007/02/22 08:22:39 franciscom Exp $
 Purpose: smarty template - Edit existing product 
 
 rev:
@@ -51,17 +51,9 @@ function validateForm(f)
 
 </div>
 
-	{if $action == "activate" || $action == "inactivate"}
-		<div class="info">{$sqlResult}</div>
-	{else}
-		{include file="inc_update.tpl" result=$sqlResult item="product" name=$name}
-	{/if}
-
 <div class="workBack">
 
-{if $action == "delete"}
-	{$sqlResult}
-{/if}
+{include file="inc_update.tpl" result=$sqlResult item="product" name=$name user_feedback=$user_feedback}
 	
 {if $show_prod_attributes == "yes"}
 

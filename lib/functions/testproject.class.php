@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.31 $
- * @modified $Date: 2007/02/20 07:37:23 $  $Author: franciscom $
+ * @version $Revision: 1.32 $
+ * @modified $Date: 2007/02/22 08:22:39 $  $Author: franciscom $
  * @author franciscom
  *
  * 20070219 - franciscom - fixed bug on get_first_level_test_suites()
@@ -82,6 +82,8 @@ function create($name,$color,$optReq,$notes,$active=1)
  **/
 function update($id, $name, $color, $opt_req,$notes)
 {
+  $status_ok=1;
+	
 	$status_msg = 'ok';
 	$log_msg = 'Test project ' . $name . ' update: Ok.';
 	$log_level = 'INFO';
@@ -108,13 +110,14 @@ function update($id, $name, $color, $opt_req,$notes)
 	}
 	else
 	{
-		$status_msg = 'Update product FAILED!';
+		$status_msg = 'Update FAILED!';
+	  $status_ok=0;
 		$log_level ='ERROR';
 		$log_msg = $status_msg;
 	}
 	
 	tLog($log_msg,$log_level);
-	return $status_msg;
+	return ($status_ok);
 }
 
 

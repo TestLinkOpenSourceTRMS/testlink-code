@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: resultsTC.tpl,v 1.6 2006/11/28 00:15:38 kevinlevy Exp $ *}
+{* $Id: resultsTC.tpl,v 1.7 2007/02/23 01:00:36 kevinlevy Exp $ *}
 {* Purpose: smarty template - show Test Results and Metrics *}
 {* Revisions:
 20051204 - mht - removed obsolete print button
@@ -20,6 +20,7 @@
 {/if}
 
 <div class="workBack">
+? = {lang_get s='trep_not_run'}
 <table class="simple" style="width: 100%; text-align: center; margin-left: 0px;">
 	<tr>
 		<th>{lang_get s='title_test_suite_name'}</th>

@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsByStatus.php,v 1.38 2007/02/22 23:37:04 kevinlevy Exp $ 
+* $Id: resultsByStatus.php,v 1.39 2007/02/23 00:24:09 kevinlevy Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -51,40 +51,34 @@ $tp = new testplan($db);
 $arrBuilds = $tp->get_builds($tpID); 
 $results = new results($db, $tp, $SUITES_SELECTED, $builds, $type);
 $mapOfLastResult = $results->getMapOfLastResult();
-
-
 $arrOwners = get_users_for_html_options($db, ALL_USERS_FILTER, !ADD_BLANK_OPTION);
 $arrDataIndex = 0;
 $arrData = null;
 if (is_array($mapOfLastResult)) {
   while ($suiteId = key($mapOfLastResult)){
    while($tcId = key($mapOfLastResult[$suiteId])){
+		$lastBuildIdExecuted = null;
 		$lastBuildIdExecuted = $mapOfLastResult[$suiteId][$tcId]['buildIdLastExecuted'];
 		$buildName = null;
-		while ($key = key($arrBuilds)) {
-			$currentBuildInfo = $arrBuilds[$key];
-			if ($currentBuildInfo['id'] == $lastBuildIdExecuted) {
-				$buildName = $currentBuildInfo['name'];
-			}
-		    next($arrBuilds);	
+		$currentBuildInfo = null;
+		if ($lastBuildIdExecuted) {
+			$currentBuildInfo = $arrBuilds[$lastBuildIdExecuted];
 		}
+		$buildName = $currentBuildInfo['name'];
 		$notes = $mapOfLastResult[$suiteId][$tcId]['notes'];
 		$execution_ts = $mapOfLastResult[$suiteId][$tcId]['execution_ts'];
 		$suiteName = $mapOfLastResult[$suiteId][$tcId]['suiteName'];
 		$name = $mapOfLastResult[$suiteId][$tcId]['name'];		
 		$tester_id = $mapOfLastResult[$suiteId][$tcId]['tester_id'];
 		$executions_id = $mapOfLastResult[$suiteId][$tcId]['executions_id'];
-		$tcversion_id = $mapOfLastResult[$suiteId][$tcId]['tcversion_id'];
-		
+		$tcversion_id = $mapOfLastResult[$suiteId][$tcId]['tcversion_id'];		
 		$localizedTS = '';
 		if ($execution_ts != null) {
 		   $localizedTS = localize_dateOrTimeStamp(null,$dummy,'timestamp_format',$execution_ts);
 		}
 		$bugString = buildBugString($db, $executions_id);
         $bCanExecute = has_rights($db,"tp_execute");
-		
 		$testTitle = getTCLink($bCanExecute,$tcId,$tcversion_id,$name,$lastBuildIdExecuted);
-		
 		// $tcId . ":" . htmlspecialchars($name)
         $testerName = '';
 		if (array_key_exists($tester_id, $arrOwners)) {

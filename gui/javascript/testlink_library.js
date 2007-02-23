@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/ 
 // This script is distributed under the GNU General Public License 2 or later. 
 //
-// $Id: testlink_library.js,v 1.29 2007/02/20 17:43:59 franciscom Exp $ 
+// $Id: testlink_library.js,v 1.30 2007/02/23 07:52:43 franciscom Exp $ 
 //
 // Javascript functions commonly used through the GUI
 // This library is automatically loaded with inc_header.tpl
@@ -201,11 +201,22 @@ function changeFeature(feature)
 		location = fRoot+"lib/usermanagement/usersassign.php?feature="+feature+"&featureID="+fID;
 }
 
+// 20070222 - changed height to solve BUGID 627
 function openFileUploadWindow(id,tableName)
 {
-	window.open(fRoot+"lib/attachments/attachmentupload.php?id="+id+"&tableName="+tableName,"FileUpload","width=510,height=270,resizable=yes,dependent=yes");
+	window.open(fRoot+"lib/attachments/attachmentupload.php?id="+id+"&tableName="+tableName,
+	            "FileUpload","width=510,height=300,resizable=yes,dependent=yes");
 }
 
+
+/*
+  function: 
+
+  args :  object id
+  
+  returns: 
+
+*/
 function deleteAttachment_onClick(id)
 {
 	if (confirm(warning_delete_attachment))

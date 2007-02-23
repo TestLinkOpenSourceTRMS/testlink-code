@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: attachmentupload.tpl,v 1.5 2006/12/24 11:48:18 franciscom Exp $ *}
+{* $Id: attachmentupload.tpl,v 1.6 2007/02/23 07:52:43 franciscom Exp $ *}
 {* Purpose: smarty template - the template for the attachment upload dialog *}
 {include file="inc_head.tpl"}
 
@@ -8,11 +8,10 @@
 
 <h1>{lang_get s='title_upload_attachment'}</h1>
 {if $bUploaded == 1}
-	<p class='info'>{lang_get s='import_was_ok'}</p>
+	<div class='info'>{lang_get s='import_was_ok'}</div>
 {/if}
 
 <div class="workBack">
-
 	<h2>{lang_get s='title_choose_local_file'}</h2>
 	
 	<form action="lib/attachments/attachmentupload.php" method="post" enctype="multipart/form-data">

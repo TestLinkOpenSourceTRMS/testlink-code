@@ -2,10 +2,12 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.48 $
- * @modified $Date: 2007/02/12 08:11:41 $ $Author: franciscom $
+ * @version $Revision: 1.49 $
+ * @modified $Date: 2007/02/23 07:52:52 $ $Author: franciscom $
  * @author franciscom
  *
+ *
+ * 20070222 - franciscom - minor fix html_table_of_custom_field_values()
  * 20070105 - franciscom - changes in copy_to(),get_by_id()
  *
  * 20070104 - franciscom
@@ -16,24 +18,6 @@
  *                         that produce a negative impact on performance.
  * 20061230 - franciscom - custom fields management
  *
- * 20061030 - franciscom - new argument in get_versions_status_quo()
- *                         corrected bug in get_linked_versions()
- *
- * 20061015 - franciscom - fixed bug on create()
- *                         instead of returning tcid, returned tcversion id ->WRONG
- *
- * 20061008 - franciscom - changes in interface in:
- *                         create()
- *                         create_tcase_only()
- * 
- * 20060726 - franciscom - create_tcversion() return array changed
- *                         default value changed for optional argument $tc_order
- *                         create(), update()
- *
- *
- * 20060425 - franciscom - changes in show() following Andreas Morsing advice (schlundus)
- * 20060423 - franciscom - added order_by_clause argument - get_keywords_map()
- * 20060323 - franciscom - create_tcversion() interface change added $version
  *
  */
 require_once( dirname(__FILE__) . '/requirements.inc.php' );
@@ -77,12 +61,10 @@ class testcase
 		$this->node_types_id_descr=array_flip($this->node_types_descr_id);
 		$this->my_node_type=$this->node_types_descr_id['testcase'];
 
-    // 20060908 - franciscom
     $this->assignment_mgr=New assignment_mgr($this->db);
     $this->assignment_types=$this->assignment_mgr->get_available_types(); 
     $this->assignment_status=$this->assignment_mgr->get_available_status();
 
-    // 20061230 - franciscom
   	$this->cfield_mgr=new cfield_mgr($this->db);
 	}
 
@@ -694,9 +676,9 @@ function copy_to($id,$parent_id,$user_id,
                  $check_duplicate_name=0,
                  $action_on_duplicate_name='generate_new')
 {
-  $ret['id']=-1;
-  $ret['status_ok']=0;
-  $ret['msg']='ok';
+  $new_tc['id']=-1;
+  $new_tc['status_ok']=0;
+  $new_tc['msg']='ok';
 	
 	$tcase_info = $this->get_by_id($id);
 	if ($tcase_info)
@@ -705,10 +687,10 @@ function copy_to($id,$parent_id,$user_id,
 		                                   $tcase_info[0]['node_order'],TC_AUTOMATIC_ID,
                                        $check_duplicate_name,
                                        'generate_new');
-
 		if ($new_tc['status_ok'])
 		{
-			foreach($tcase_info as $tcversion)
+	    $ret['status_ok']=1;
+ 			foreach($tcase_info as $tcversion)
 			{
 				$this->create_tcversion($new_tc['id'],$tcversion['version'],
 				                        $tcversion['summary'],$tcversion['steps'],
@@ -720,7 +702,7 @@ function copy_to($id,$parent_id,$user_id,
 			}
 		}
 	}
-	return($ret);
+	return($new_tc);
 }
 	
 	
@@ -1446,6 +1428,7 @@ function html_table_of_custom_field_inputs($id,$parent_id=null,$scope='design',$
 						"</td></tr>\n";
 		}
 		$cf_smarty .= "</table>";
+		
 	}
 	
 	return $cf_smarty;
@@ -1496,8 +1479,13 @@ function html_table_of_custom_field_values($id,$scope='design',$show_on_executio
 								$this->cfield_mgr->string_custom_field_value($cf_info,$id) .
 								"</td></tr>\n";
 			}
-			}
-		$cf_smarty = "<table>" . $cf_smarty . "</table>";
+		}
+		
+		// 20070222 - francisco.mancardi@gruppotesi.com
+		if(strlen(trim($cf_smarty)) > 0)
+		{
+		  $cf_smarty = "<table>" . $cf_smarty . "</table>";
+		}  
 	}
 	return $cf_smarty;
 } // function end

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.52 $
- * @modified $Date: 2007/02/20 18:48:50 $  by $Author: franciscom $
+ * @version $Revision: 1.53 $
+ * @modified $Date: 2007/02/23 07:52:05 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
  * 20070220 - franciscom - automatic tree refresh management
@@ -397,6 +397,9 @@ else if($do_copy)
 	$action_result = 'copied';
 	$result = $tcase_mgr->copy_to($tcase_id,$new_container_id,$userID,TC_COPY_KEYWORDS,
 	                              config_get('check_names_for_duplicates'),'block');
+	                              
+	echo "<pre>debug 20070222 \$result" . __FUNCTION__ . " --- "; print_r($result); echo "</pre>";                              
+	                              
 	$msg = $result['msg'];
 	$smarty->assign('refreshTree',$do_refresh);
 	

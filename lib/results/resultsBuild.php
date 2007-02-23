@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsBuild.php,v 1.29 2007/02/03 22:14:08 schlundus Exp $ 
+* $Id: resultsBuild.php,v 1.30 2007/02/23 00:30:15 kevinlevy Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * 
@@ -71,9 +71,13 @@ $allSuites = $re->getAllSuites();
 $arrDataAllSuites = null;
 $index = 0;
 // TO-DO - lookup risk, importance, and priority for each suites
+/**
+ KL - 20070222 - NOT in the 1.7 release
 $risk = '?';
 $importance = '?';
 $priority = '?';
+*/
+
 if (is_array($allSuites))
 {
 	while ($i = key($allSuites))
@@ -89,7 +93,8 @@ if (is_array($allSuites))
 		   $percentCompleted = (($total - $notRun) / $total) * 100;
 		
 		$percentCompleted = number_format($percentCompleted,2);
-		$arrDataAllSuites[$index] = array($currentSuiteName, $risk, $importance, $priority, $total, $resultArray['pass'], $resultArray['fail'], $resultArray['blocked'], $notRun, $percentCompleted);
+		// KL - 20070222 - these are not in 1.7 $risk, $importance, $priority,  
+		$arrDataAllSuites[$index] = array($currentSuiteName, $total, $resultArray['pass'], $resultArray['fail'], $resultArray['blocked'], $notRun, $percentCompleted);
 		$index++;
 		next($allSuites);
 	} 

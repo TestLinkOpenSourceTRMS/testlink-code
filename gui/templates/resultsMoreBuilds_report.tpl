@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: resultsMoreBuilds_report.tpl,v 1.28 2007/01/23 18:26:41 franciscom Exp $
+$Id: resultsMoreBuilds_report.tpl,v 1.29 2007/02/23 06:26:13 kevinlevy Exp $
 @author Francisco Mancardi - fm - start solving BUGID 97/98
 20051022 - scs - removed ' in component id values
 20051121 - scs - added escaping of tpname
@@ -24,7 +24,7 @@ $Id: resultsMoreBuilds_report.tpl,v 1.28 2007/01/23 18:26:41 franciscom Exp $
 			<th>{lang_get s="th_test_suites"}</th> 
 			<th>{lang_get s="th_keyword"}</th>
 			<th>{lang_get s="th_owner"}</th>
-			<th>{lang_get s="th_report_format"}</th>
+<!--			<th>{lang_get s="th_report_format"}</th> -->
 			<th>{lang_get s="th_last_result"}</th>
 		</tr> 
 		<tr>
@@ -52,11 +52,11 @@ $Id: resultsMoreBuilds_report.tpl,v 1.28 2007/01/23 18:26:41 franciscom Exp $
 			<td>
 				{$ownerSelected}&nbsp;
 			</td>
-			
+			<!--
 			<td>
 				html only
 			</td>
-			
+			-->
 			<td>{$lastStatus|escape}</td>
 		</tr>
 	</table>		

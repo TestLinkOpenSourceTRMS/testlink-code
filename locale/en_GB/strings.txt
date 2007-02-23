@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.147 $
- * @modified $Date: 2007/02/23 06:53:11 $ $Author: kevinlevy $
+ * @version $Revision: 1.148 $
+ * @modified $Date: 2007/02/23 23:26:23 $ $Author: schlundus $
  *
  * @author Francisco Mancardi
  *
@@ -303,7 +303,11 @@ $TLS_title_active_build = "Active Build - only effects \"Metrics of Active build
 $TLS_title_report_type = "Report Format - not available for \"Charts\"";
 $TLS_via_email = "per eMail";
 
+
+
 // gui/templates/inc_attachments_upload.tpl
+
+
 
 // gui/templates/cfields_view.tpl
 $TLS_btn_cfields_create = "Create";
@@ -1205,6 +1209,8 @@ $TLS_error_ldap_user_not_found = "LDAP user notfound";
 
 // lib/functions/product.inc.php
 $TLS_info_product_delete_fails = "An error occured while deleting the Test Project";
+
+
 
 // lib/functions/results.inc.php
 $TLS_trep_failing = "Failing";

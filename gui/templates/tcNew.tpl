@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcNew.tpl,v 1.20 2007/02/20 18:48:50 franciscom Exp $
+$Id: tcNew.tpl,v 1.21 2007/02/23 23:26:23 schlundus Exp $
 Purpose: smarty template - create new testcase
 
 20070214 - franciscom -
@@ -54,7 +54,7 @@ function validateForm(f)
 <div class="workBack">
 <h1>{lang_get s='title_new_tc'}</h1>
 
-{include file="inc_update.tpl" result=$sqlResult item="TestCase" name=$name}
+{include file="inc_update.tpl" result=$sqlResult item="testcase" name=$name}
 
 <form method="post" action="lib/testcases/tcEdit.php?containerID={$containerID}"
       name="tc_new" id="tc_new"
@@ -72,9 +72,8 @@ function validateForm(f)
 </div>
 
 {if $sqlResult eq 'ok'}
-  {* 20070220 - franciscom *}
-  {if ($smarty.session.tcspec_refresh_on_action eq "yes") }
-	 {include file="inc_refreshTree.tpl"}
+	{if ($smarty.session.tcspec_refresh_on_action eq "yes") }
+		{include file="inc_refreshTree.tpl"}
 	{/if}
 {/if}
 

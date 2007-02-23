@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: opt_transfer.inc.tpl,v 1.7 2007/01/23 18:26:41 franciscom Exp $
+$Id: opt_transfer.inc.tpl,v 1.8 2007/02/23 23:26:23 schlundus Exp $
 Purpose: manage the OptionTransfer.js created by Matt Kruse
          http://www.JavascriptToolbox.com/
          JavaScript Toolbox - Option Transfer - Move Select Box Options Back And Forth
@@ -43,7 +43,7 @@ Author: Francisco Mancardi
               onclick="{$opt_cfg->js_events->all_left_click}"
               alt="<<" style="cursor: pointer;" />
       </td>
-      <td align="center" align="center">
+      <td align="center">
          <div class="labelHolder">{$option_transfer->to->lbl}</div>
          {html_options name=$option_transfer->to->name 
                        id=$option_transfer->to->name

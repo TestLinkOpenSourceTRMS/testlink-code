@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: keywordsView.php,v $
  *
- * @version $Revision: 1.14 $
- * @modified $Date: 2006/10/09 10:27:00 $ by $Author: franciscom $
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2007/02/23 23:26:23 $ by $Author: schlundus $
  *
  * allows users to manage keywords. 
  *
@@ -28,11 +28,8 @@ $keyword = isset($_REQUEST['keyword']) ? $_REQUEST['keyword'] : null;
 $bNewKey = isset($_REQUEST['newKey']) ? 1 : 0;
 $bEditKey = isset($_REQUEST['editKey']) ? 1 : 0;
 $notes = isset($_REQUEST['notes']) ? $_REQUEST['notes'] : null;
-
-// 20061008 - franciscom
 $do_export = isset($_REQUEST['exportAll']) ? 1 : 0;
 $exportType = isset($_REQUEST['exportType']) ? $_REQUEST['exportType'] : null;
-
 
 $testproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 $bModifyKeywordRight = has_rights($db,"mgt_modify_key");
@@ -72,7 +69,7 @@ if ($bModifyKeywordRight)
 			}
 		}
 		//reset info, after successful updating	
-		$action = $bEditKey ? "updated" : "add";
+		$action = $bEditKey ? "updated" : "do_add";
 	}
 	//delete the keyword
 	if ($bDeleteKey)
@@ -87,7 +84,6 @@ if ($bModifyKeywordRight)
 		$notes = $keyword = $keywordID = null;
 }
 
-// 20061007 - franciscom
 if($do_export)
 {
 	$tproject = new testproject($db);
@@ -118,7 +114,6 @@ if($do_export)
 	}
 }
 
-
 $keywords = $tproject->getKeywords($testproject_id);
 
 $smarty = new TLSmarty();
@@ -130,7 +125,6 @@ $smarty->assign('name',$keyword);
 $smarty->assign('keyword',$keyword);
 $smarty->assign('notes',$notes);
 $smarty->assign('keywordID',$keywordID);
-
 $smarty->assign('exportTypes',$g_keywordExportTypes);
 
 $smarty->display('keywordsView.tpl');

@@ -1,9 +1,8 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.18 2007/02/17 09:17:31 franciscom Exp $
+$Id: tcView_viewer.tpl,v 1.19 2007/02/23 23:26:23 schlundus Exp $
 viewer for test case in test specification
 
-20070207 - franciscom -
 20061230 - franciscom - an experiment to make simple management
                         of frequent used href
 *}
@@ -14,7 +13,6 @@ viewer for test case in test specification
 
 {if $args_can_edit == "yes" }
 
- {* 20070207 - francisco.mancardi@gruppotesi.com *}
   {assign var="edit_enabled" value=0}
   {assign var="active_status_op_enabled" value=0}
   {assign var="has_been_executed" value=0}
@@ -41,8 +39,7 @@ viewer for test case in test specification
 	  <input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
 	  <input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />
 	  
-	  {* 20070207 - franciscom *}
-    <input type="hidden" name="has_been_executed" value="{$has_been_executed}" />
+	<input type="hidden" name="has_been_executed" value="{$has_been_executed}" />
     
     {assign var="go_newline" value=""}
     {if $edit_enabled}
@@ -56,7 +53,7 @@ viewer for test case in test specification
     {if $args_can_move_copy == "yes" }
    		<input type="submit" name="move_copy_tc"   value="{lang_get s='btn_mv_cp'}" />
      <br />
-     {assign var="go_newline" value="<br>"}
+     {assign var="go_newline" value="<br />"}
     {/if}		                     
 	   
     {$go_newline}
@@ -134,7 +131,7 @@ viewer for test case in test specification
 			<td colspan="2">&nbsp;</td>
 		</tr>
 
-		<tr> {* 20070104 - franciscom *}
+		<tr> 
 			<td colspan="2">{if $args_cf neq ''}
 			                 <div class="custom_field_container">{$args_cf}</div>
 			                {else}
@@ -147,8 +144,7 @@ viewer for test case in test specification
 		  	<td colspan="2">
 				<table cellpadding="0" cellspacing="0" style="font-size:100%;">
 			    <tr>
-			      {* 20061230 - franciscom *}
-						<td width="35%"><a href={$gsmarty_href_keywordsView}>{lang_get s='keywords'}</a>: &nbsp;
+			     	  <td width="35%"><a href={$gsmarty_href_keywordsView}>{lang_get s='keywords'}</a>: &nbsp;
 						</td>
 				 	  <td>
 					  	{foreach item=keyword_item from=$args_keywords_map}
@@ -175,7 +171,7 @@ viewer for test case in test specification
       				{section name=item loop=$args_reqs}
       					<span onclick="javascript: open_top(fRoot+'lib/req/reqView.php?idReq={$args_reqs[item].id}');"
       					style="cursor:  pointer;">{$args_reqs[item].title|escape}</span>
-      					{if !$smarty.section.item.last}<br>{/if}
+      					{if !$smarty.section.item.last}<br />{/if}
       				{sectionelse}
       					{lang_get s='none'}
       				{/section}

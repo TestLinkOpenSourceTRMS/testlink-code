@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcEdit_New_viewer.tpl,v 1.5 2007/02/19 07:30:20 franciscom Exp $
+$Id: tcEdit_New_viewer.tpl,v 1.6 2007/02/23 23:26:23 schlundus Exp $
 Purpose: smarty template - create new testcase
 
 20061231 - franciscom - viewer for tcEdit.tpl and tcNew.tpl
@@ -8,14 +8,14 @@ Purpose: smarty template - create new testcase
 
 {* ---------------------------------------------------------------- *}
 {* Steps and results Layout management *}
-{assign var="layout1" value="<br>"}
-{assign var="layout2" value="<br>"}
-{assign var="layout3" value="<br>"}
+{assign var="layout1" value="<br />"}
+{assign var="layout2" value="<br />"}
+{assign var="layout3" value="<br />"}
 
 {if $gsmarty_spec_cfg->steps_results_layout == 'horizontal'}
-  {assign var="layout1" value='<br><table width="100%"><tr><td>'}
+  {assign var="layout1" value='<br /><table width="100%"><tr><td>'}
   {assign var="layout2" value="</td><td>"}
-	{assign var="layout3" value="</td></tr></table><br>"}
+	{assign var="layout3" value="</td></tr></table><br />"}
 {/if}
 {* ---------------------------------------------------------------- *}
 

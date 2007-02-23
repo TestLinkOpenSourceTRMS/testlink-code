@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: keywordsView.tpl,v 1.13 2007/02/04 20:18:32 schlundus Exp $
+$Id: keywordsView.tpl,v 1.14 2007/02/23 23:26:22 schlundus Exp $
 Purpose: smarty template - View all keywords 
 
 20070102 - franciscom
@@ -75,7 +75,7 @@ var warning_delete_keyword="{lang_get s='warning_delete_keyword'}";
   	{if $keywordID == 0}
   		<input type="submit" name="newKey" value="{lang_get s='btn_create_keyword'}" />
   	{else}
-  		<input type="submit" name="editKey" value="{lang_get s='btn_edit_keyword'}" />
+  		<input type="submit" name="editKey" value="{lang_get s='btn_update'}" />
   	{/if}
   	</div>
   	</form>

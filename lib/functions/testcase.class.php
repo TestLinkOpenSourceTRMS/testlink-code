@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.49 $
- * @modified $Date: 2007/02/23 07:52:52 $ $Author: franciscom $
+ * @version $Revision: 1.50 $
+ * @modified $Date: 2007/02/23 23:26:23 $ $Author: schlundus $
  * @author franciscom
  *
  *
@@ -60,12 +60,12 @@ class testcase
 		$this->node_types_descr_id=$this->tree_manager->get_available_node_types();
 		$this->node_types_id_descr=array_flip($this->node_types_descr_id);
 		$this->my_node_type=$this->node_types_descr_id['testcase'];
-
-    $this->assignment_mgr=New assignment_mgr($this->db);
-    $this->assignment_types=$this->assignment_mgr->get_available_types(); 
-    $this->assignment_status=$this->assignment_mgr->get_available_status();
-
-  	$this->cfield_mgr=new cfield_mgr($this->db);
+		
+		$this->assignment_mgr=New assignment_mgr($this->db);
+		$this->assignment_types=$this->assignment_mgr->get_available_types(); 
+		$this->assignment_status=$this->assignment_mgr->get_available_status();
+		
+		$this->cfield_mgr=new cfield_mgr($this->db);
 	}
 
 
@@ -244,9 +244,9 @@ function show(&$smarty,$id, $user_id, $version_id=TC_ALL_VERSIONS, $action='',
               $msg_result='', $refresh_tree='yes')
 {
   
-  $gui_cfg = config_get('gui');
+  	$gui_cfg = config_get('gui');
 	$the_tpl = config_get('tpl');
-  $tcase_cfg =config_get('testcase_cfg');
+  	$tcase_cfg = config_get('testcase_cfg');
 
 	$arrReqs = null;
 	$can_edit = has_rights($this->db,"mgt_modify_tc");
@@ -292,30 +292,25 @@ function show(&$smarty,$id, $user_id, $version_id=TC_ALL_VERSIONS, $action='',
 		// get assigned REQs
 		$arrReqs[] = getReq4Tc($this->db,$tc_id);
 
-    // 20061230 - franciscom
-    // custom fields
+  	// custom fields
     $cf_smarty=null;
     if( $gui_cfg->enable_custom_fields ) 
     {
-      $cf_smarty[] = $this->html_table_of_custom_field_values($tc_id);
+		$cf_smarty[] = $this->html_table_of_custom_field_values($tc_id);
     }
     $smarty->assign('cf',$cf_smarty);	
  	}
 
-
-  $smarty->assign('tcase_cfg',$tcase_cfg);
-  $smarty->assign('action',$action);
+	$smarty->assign('tcase_cfg',$tcase_cfg);
+	$smarty->assign('action',$action);
 	$smarty->assign('sqlResult',$msg_result);
 	$smarty->assign('can_edit',$can_edit);
 	$smarty->assign('can_delete_testcase',$can_edit);
 	$smarty->assign('can_delete_version',$can_edit);
 	$smarty->assign('status_quo',$status_quo_map);
-	
 	$smarty->assign('refresh_tree',$refresh_tree);
-	
 	$smarty->assign('testcase_curr_version',$tc_current_version);
 	$smarty->assign('testcase_other_versions',$tc_other_versions);
-	
 	$smarty->assign('arrReqs',$arrReqs);
 	$smarty->assign('view_req_rights', has_rights($this->db,"mgt_view_req")); 
 	$smarty->assign('opt_requirements', isset($_SESSION['testprojectOptReqs']) ? $_SESSION['testprojectOptReqs'] : null); 	

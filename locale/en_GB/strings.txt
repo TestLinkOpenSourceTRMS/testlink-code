@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.149 $
- * @modified $Date: 2007/02/24 08:44:09 $ $Author: franciscom $
+ * @version $Revision: 1.150 $
+ * @modified $Date: 2007/02/24 19:50:36 $ $Author: kevinlevy $
  *
  * @author Francisco Mancardi
  *
@@ -299,8 +299,8 @@ $TLS_note_email_sent_t = "note: email format sent to user's email";
 $TLS_send_results = "Send results";
 $TLS_send_to = "To:";
 $TLS_subject = "Subject:";
-$TLS_title_active_build = "Active Build - only effects \"Metrics of Active build\"";
-$TLS_title_report_type = "Report Format - not available for \"Charts\"";
+$TLS_title_active_build = "Active Build";
+$TLS_title_report_type = "Report Format";
 $TLS_via_email = "per eMail";
 
 

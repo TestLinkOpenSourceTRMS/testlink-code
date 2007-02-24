@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: resultsNavigator.tpl,v 1.10 2007/02/23 03:48:49 kevinlevy Exp $ *}
+{* $Id: resultsNavigator.tpl,v 1.11 2007/02/24 19:51:02 kevinlevy Exp $ *}
 {* Purpose: smarty template - show Test Results and Metrics *}
 {* Revisions:
    20070113 - franciscom - use of smarty config file
@@ -63,11 +63,13 @@ function reportPrint(){
 		{html_options options=$arrReportTypes selected=$selectedReportType}
 	</select>
 	</td></tr>
+	<!--
 	<tr>
 		<td>
 		{lang_get s="note_email_sent_t"}
 		</td>
 	</tr>
+	-->
 	</table>
 </form>
 </div>

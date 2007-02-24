@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: usersview.php,v $
  *
- * @version $Revision: 1.7 $
- * @modified $Date: 2007/02/04 20:18:32 $ -  $Author: schlundus $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2007/02/24 08:20:29 $ -  $Author: franciscom $
  *
  * This page shows all users
  * 
@@ -19,6 +19,7 @@ testlinkInitPage($db);
 $sqlResult = null;
 $action = null;
 $do_toogle=0;
+$user_feedback='';
 
 $operation = isset($_REQUEST['operation']) ? $_REQUEST['operation'] : '';
 $user_order_by = isset($_REQUEST['user_order_by']) ? $_REQUEST['user_order_by'] : 'order_by_login';
@@ -37,16 +38,20 @@ switch($operation)
 			header("Location: ../../logout.php");
 			exit();
 		}
-		$action = "deleted";
+		$user_feedback=sprintf(lang_get('user_deleted'),$user_data[0]['login']);
+
+		//$action = "deleted";
 		$order_by_clause = get_order_by_clause($user_order_by,$order_by_dir);
 		$do_toogle = 0;
 		break;
+		
 	case 'order_by_role':
 	case 'order_by_login':
 		$order_by_clause = get_order_by_clause($operation,$order_by_dir);
 		$do_toogle = 1;
 		$user_order_by = $operation;
 		break;
+		
 	default:
 		$order_by_clause = get_order_by_clause('order_by_login',
 												array('order_by_login_dir' => 'asc'));
@@ -62,6 +67,9 @@ if($do_toogle)
 }
 
 $smarty = new TLSmarty();
+
+$smarty->assign('user_feedback',$user_feedback);
+
 $smarty->assign('user_order_by',$user_order_by);
 $smarty->assign('order_by_role_dir',$order_by_dir['order_by_role_dir']);
 $smarty->assign('order_by_login_dir',$order_by_dir['order_by_login_dir']);
@@ -79,6 +87,15 @@ $smarty->assign('result',$sqlResult);
 $smarty->assign('action',$action);
 $smarty->display($g_tpl['usersview']);
 
+
+/*
+  function: 
+
+  args :
+  
+  returns: 
+
+*/
 function toogle_order_by_dir($which_order_by,$order_by_dir_map)
 {
   $obm[$which_order_by] = $order_by_dir_map[$which_order_by] == 'asc' ? 'desc' : 'asc'; 

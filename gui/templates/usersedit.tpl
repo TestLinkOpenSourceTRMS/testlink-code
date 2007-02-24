@@ -1,8 +1,11 @@
 {* 
 Testlink: smarty template - 
-$Id: usersedit.tpl,v 1.8 2007/02/03 22:14:07 schlundus Exp $ 
+$Id: usersedit.tpl,v 1.9 2007/02/24 08:20:17 franciscom Exp $ 
 *}
 {* 
+
+20070223 - franciscom - BUGID
+ 
 20070114 - franciscom - 
 	1. using smarty config file
 	2. improved management of default role id
@@ -63,8 +66,12 @@ function validateForm(f)
 {***** TABS *****}
 <div class="tabMenu">
 {if $mgt_users == "yes"}
-	<span class="selected">{lang_get s='menu_new_user'}</span> 
-	<span class="unselected"><a href="lib/usermanagement/usersview.php">{lang_get s='menu_mod_user'}</a></span>
+  {if $userData neq null}
+	  <span class="selected">{lang_get s='menu_mod_user'}</span> 
+	{else}
+	  <span class="selected">{lang_get s='menu_new_user'}</span> 
+	{/if}
+	<span class="unselected"><a href="lib/usermanagement/usersview.php">{lang_get s='menu_view_users'}</a></span>
 {/if}
 {if $role_management == "yes"}
 	<span class="unselected"><a href="lib/usermanagement/rolesedit.php">{lang_get s='menu_define_roles'}</a></span> 
@@ -78,7 +85,7 @@ function validateForm(f)
 {/if}
 </div>
 
-{include file="inc_update.tpl" result=$result item="user" action="$action"}
+{include file="inc_update.tpl" result=$result item="user" action="$action" user_feedback=$user_feedback}
 
 <div class="workBack">
 

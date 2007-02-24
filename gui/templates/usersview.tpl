@@ -1,6 +1,6 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: usersview.tpl,v 1.12 2007/01/25 14:03:30 franciscom Exp $
+$Id: usersview.tpl,v 1.13 2007/02/24 08:20:17 franciscom Exp $
 
 Purpose: smarty template - users overview
 
@@ -49,7 +49,7 @@ var warning_delete_user = "{lang_get s='warning_delete_user'}";
 	<input type="hidden" id="order_by_login_dir" name="order_by_login_dir" value="{$order_by_login_dir}">
 	<input type="hidden" id="user_order_by" name="user_order_by" value="{$user_order_by}">
 
-  {include file="inc_update.tpl" result=$result item="user" action="$action"}
+  {include file="inc_update.tpl" result=$result item="user" action="$action" user_feedback=$user_feedback}
 
 	<table class="simple" width="95%">
 		<tr>

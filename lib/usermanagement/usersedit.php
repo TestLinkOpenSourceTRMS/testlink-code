@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: usersedit.php,v $
 *
-* @version $Revision: 1.10 $
-* @modified $Date: 2007/02/04 20:18:32 $
+* @version $Revision: 1.11 $
+* @modified $Date: 2007/02/24 08:20:29 $
 * 
 * Allows editing a user
 */
@@ -15,14 +15,16 @@ require_once('testproject.class.php');
 require_once('users.inc.php');
 testlinkInitPage($db);
 
-$user_id = isset($_GET['user_id']) ? intval($_GET['user_id']) : 0;
+
 $args = init_args($_GET,$_POST);
+$user_id = $args->user_id;
 $sessionUserID = $_SESSION['userID'];
 
 $sqlResult = null;
 $action = null;
 $update_title_bar = 0;
 $reload = 0;
+$user_feedback='';
 
 $login_method = config_get('login_method');
 $external_password_mgmt = ('LDAP' == $login_method )? 1 : 0;
@@ -39,6 +41,8 @@ if ($args->do_update)
 			 	                              $args->email, $args->rights_id, $args->locale, $args->user_is_active);
 			if(!$args->user_id)
 				$sqlResult = lang_get('user_not_added');
+			else
+			  $user_feedback=sprintf(lang_get('user_created'),$args->login);	
 		}		
 		$action = "do_add";
 	}
@@ -48,6 +52,7 @@ if ($args->do_update)
 	                        $args->email,null,$args->rights_id,$args->locale,$args->user_is_active);
 		$action = "updated";							
 		$user_id = $args->user_id;
+		
 	}
 
 	if ($sqlResult == 'ok' && ($args->user_id == $sessionUserID))
@@ -77,6 +82,8 @@ if ($user_id)
 }
 	
 $smarty = new TLSmarty();
+
+$smarty->assign('user_feedback',$user_feedback);
 $smarty->assign('external_password_mgmt', $external_password_mgmt);
 $smarty->assign('mgt_users',has_rights($db,"mgt_users"));
 $smarty->assign('role_management',has_rights($db,"role_management"));
@@ -88,17 +95,32 @@ $smarty->assign('result',$sqlResult);
 $smarty->assign('action',$action);
 $smarty->display('usersedit.tpl');
 
+
+// -------------------------------------------------------------------------------------------------
+/*
+  function: 
+
+  args :
+  
+  returns: 
+
+*/
 function init_args($get_hash, $post_hash)
 {
 	$post_hash = strings_stripSlashes($post_hash);
 
-	$intval_keys = array('delete' => 0, 'user' => 0);
+	$intval_keys = array('delete' => 0, 'user' => 0,'user_id' => 0);
 	foreach ($intval_keys as $key => $value)
 	{
 		$args->$key = isset($get_hash[$key]) ? intval($get_hash[$key]) : $value;
 	}
-	 
-	$intval_keys = array('rights_id' => TL_ROLES_GUEST, 'user_id' => 0);
+	
+	$intval_keys = array('rights_id' => TL_ROLES_GUEST);
+	if( !isset($get_hash['user_id']) )
+	{
+	  $intval_keys['user_id']=0; 
+	}
+	
 	foreach ($intval_keys as $key => $value)
 	{
 		$args->$key = isset($post_hash[$key]) ? intval($post_hash[$key]) : $value;

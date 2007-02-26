@@ -1,8 +1,9 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execNavigator.tpl,v 1.13 2007/02/12 08:02:16 franciscom Exp $ *}
+{* $Id: execNavigator.tpl,v 1.14 2007/02/26 08:01:44 franciscom Exp $ *}
 {* Purpose: smarty template - show test set tree *}
 {* 
 rev :
+     20070225 - franciscom - fixed auto-bug BUGID 642
      20070212 - franciscom - name changes on html inputs
                              use input_dimensions.conf
 
@@ -51,7 +52,7 @@ rev :
 		<tr>
 			<td>{lang_get s='filter_owner'}</td>
 			<td><select name="filter_assigned_to">
-				{html_options options=$users selected=$selectedOwner}
+				{html_options options=$users selected=$filter_assigned_to}
 				</select>
 			</td>
 		</tr>

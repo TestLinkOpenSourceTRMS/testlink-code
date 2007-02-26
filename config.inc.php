@@ -5,85 +5,15 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.102 $
- * @modified $Date: 2007/02/19 14:03:42 $ by $Author: schlundus $
+ * @version $Revision: 1.103 $
+ * @modified $Date: 2007/02/26 08:01:43 $ by $Author: franciscom $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink 
  * are defined within this file they should be changed for your environment
  *-----------------------------------------------------------------------------
+ *
  * Revisions:
- *
- * 20070218 - franciscom - added $g_spec_cfg->show_tsuite_filter
- *                               $g_spec_cfg->automatic_tree_refresh
- *                               REFRESH_SPEC_TREE
- *                               $g_spec_cfg->steps_results_layout
- *
- * 20070212 - franciscom - $g_exec_cfg->can_delete_execution
- * 20070207 - franciscom - $g_testcase_cfg->can_edit_executed
- * 20070205 - franciscom - $g_risk,$g_importance,$g_priority
- *
- * 20070203 - franciscom - added TL_TESTPROJECT_COLORING
- *
- * 20070131 - franciscom - added g_req_cfg->reqdoc_id->is_system_wide
- * 20070120 - franciscom - added check for TL_LOG_LEVEL_DEFAULT
- * 20070110 - havlatm - refactorization; unchangable const moved to const.inc.php
- * 20070105 - franciscom - added $g_gui->custom_fields->sizes
- * 20061016 - franciscom - added new keys to $g_field_size
- * 20061009 - franciscom - changed $g_req_cfg
- * 20060822 - franciscom - new properties for $g_attachments
- *                         enabled and disabled_msg
- *
- * 20060820 - franciscom - trying to remove useless CSS
- *
- * 20060602 - franciscom - new config param to manage attachments
- *                         different models for the attachments management 
- *                         on execution page.
- *
- * 20060528 - franciscom - new config param to choose order of execution history
- *                         $g_tc_status_for_ui for generation of radio buttons
- *
- * 20060508 - franciscom - new config params for LDAP
- *
- * 20060207 - franciscom - reorder of element on $g_locales
- *            Again English UK is DEFAULT, rest of element ordered in
- *            alphabetical fashion
- *
- * 20060421 - azl - Added en_US locale
- * 20060207 - franciscom - some changes in config vars related to testproject
- * 20060223 - scs - added basic stuff for attachments
- * 20060207 - franciscom - BUGID 303
- * 20060205 - JBA - 	Remember last product (BTS 221)
- * 20060101 - fm - 	version 1.7.0 Alpha
- * 20051227 - fm - 	fixed BUGID 300
- * 20051204 - mht -	added HTTP_ACCEPT_LANGUAGE support; 
- *                  added patch for Chinese
- * 20051115 - fm - 	added constant for JIRA
- * 20051106 - fm - 	Adding configuration parameters to use PHPMAILER, to send mail.
- * 					The PHPMAILER solution uses code from Mantis Bugtracking System.
- * 20051022 - fm - 	added french locale and translations
- * 					added portuguese locale and translations
- * 20051011 - fm -	New constant to configure CSS files Boolean values managed 
- * 					with TRUE/FALSE instead of 1/0 .
- * 20051005 - fm -	new config structures to manage L18N for date and time format
- * 					$g_locales_date_format, $g_locales_timestamp_format
- * 20051004 - fm - 	$g_allow_duplicate_keywords
- * 20051002 - fm - 	Test Plan filtering by product related configuration parameters
- *   				$g_ui_show_check_filter_tp_by_testproject
- * 				 - 	New configuration parameters for Requirements Functionality
- * 20050919 - fm - 	g_timestamp_format
- * 20050915 - fm - 	from 1.6.Beta1 to 1.6.RC1
- * 20050908 - fm - 	New configuration parameters:
- * 					$g_check_names_for_duplicates
- *					$g_action_on_duplicate_name
- * 					$g_prefix_name_for_copy
- *					Fixed BUGID 0000086: Using "|" in the component or category name causes malformed URLs
- * 20050904 - fm - 	added $g_show_tp_without_prodid to manage TL 1.5.1 compatibility.
- * 20050827 - fm - 	changes in $g_tc_status, $g_tc_sd_color
- * 					new config parameters: $g_date_format, $g_fckeditor_toolbar
- * 20050822 - fm - 	$tpl -> $g_tpl
- * 20050821 - fm - 	template configuration/customization
- * 20050806 - fm - 	Changes to support the installer
  *
  *-----------------------------------------------------------------------------
  **/
@@ -97,7 +27,8 @@ define('TL_ABS_PATH', dirname(__FILE__) . DIRECTORY_SEPARATOR);
 require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'cfg' . DIRECTORY_SEPARATOR.'const.inc.php');
 
 /** Setting up the global include path for testlink */
-ini_set('include_path',ini_get('include_path') .";". '.' . DELIM . TL_ABS_PATH . 'lib' . DS . 'functions' . DS . DELIM);
+ini_set('include_path',ini_get('include_path') . ";" . '.' . 
+                       DELIM . TL_ABS_PATH . 'lib' . DS . 'functions' . DS . DELIM);
 
 /** Include database consts (the file is generated automatically by TL installer) */ 
 require_once('config_db.inc.php');
@@ -107,7 +38,8 @@ require_once('config_db.inc.php');
 // ----------------------------------------------------------------------------
 /** [LOCALIZATION] */
 
-// Your first/suggested choice for default locale, this must be one of $g_locales (see cfg/const.inc.php).
+// Your first/suggested choice for default locale.
+// This must be one of $g_locales (see cfg/const.inc.php).
 // An attempt will be done to stablish the default locale 
 // automatically using $_SERVER['HTTP_ACCEPT_LANGUAGE']
 
@@ -117,6 +49,7 @@ $serverLanguage = false;
 // check for !== false because getenv() returns false on error
 if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE']))
 	$serverLanguage = getenv($_SERVER['HTTP_ACCEPT_LANGUAGE']);
+	
 if(false !== $serverLanguage)
 {
 	if (array_key_exists($serverLanguage,$g_locales))
@@ -156,7 +89,7 @@ error_reporting(E_ALL);
 // ----------------------------------------------------------------------------
 /** [CHARSET] */
 
-/** Set this to TRUE if your MySQL DB supports UTF8 (MySQL version >= 4.1) */
+/** Set this to TRUE if your DB supports UTF8 (For MySQL version >= 4.1) */
 define('DB_SUPPORTS_UTF8', TRUE);
 
 /** CHARSET - UTF-8 is only officially supported charset */
@@ -187,13 +120,11 @@ if(!defined('TL_LOG_LEVEL_DEFAULT'))
 /** 
 * TestLink uses bugtracking systems to check if displayed bugs resolved, verified, 
 * and closed bugs. If they are it will strike through them
-*/
-
-/** 
-* @var STRING TL_INTERFACE_BUGS = ['NO', 'BUGZILLA','MANTIS','JIRA','TRACKPLUS']
-* BUGZILLA: edit configuration in TL_ABS_PATH/cfg/bugzilla.cfg.php
-* MANTIS  : edit configuration in TL_ABS_PATH/cfg/mantis.cfg.php
-* JIRA    : edit configuration in TL_ABS_PATH/cfg/jira.cfg.php
+*
+* NO        : no bug tracking system integration 
+* BUGZILLA  : edit configuration in TL_ABS_PATH/cfg/bugzilla.cfg.php
+* MANTIS    : edit configuration in TL_ABS_PATH/cfg/mantis.cfg.php
+* JIRA      : edit configuration in TL_ABS_PATH/cfg/jira.cfg.php
 * TRACKPLUS : edit configuration in TL_ABS_PATH/cfg/trackplus.cfg.php
 */
 define('TL_INTERFACE_BUGS', 'NO');
@@ -228,7 +159,7 @@ $g_ldap_bind_passwd	= ''; // Left empty if you LDAP server allows anonymous bind
 // ----------------------------------------------------------------------------
 /** [GUI] */
 
-/** Is the metrics table displayed on the main page enabled? Accepts TRUE or FALSE values */
+// TRUE : metrics table displayed on the main page.
 define('MAIN_PAGE_METRICS_ENABLED', 'FALSE');
 
 /** some maxima related to importing stuff in TL */
@@ -243,19 +174,18 @@ define('TL_IMPORT_ROW_MAX', '10000'); // in chars
 define('TL_FRMWORKAREA_LEFT_FRAME_WIDTH', "30%"); 
 
 /** CSS themes - modify if you create own*/
-//define('TL_THEME_CSS_DIR','gui/css/theme_m0/');
+//define('TL_THEME_CSS_DIR','gui/themes/theme_m0/css/');
 //
 define('TL_THEME_CSS_DIR','gui/themes/theme_m1/css/');
 
 define('TL_TESTLINK_CSS',TL_THEME_CSS_DIR . 'testlink.css');
 define('TL_LOGIN_CSS', TL_TESTLINK_CSS);
 
-// 20070204 - franciscom
 //define('TL_JOMLA_1_CSS', '');
 define('TL_JOMLA_1_CSS', TL_THEME_CSS_DIR . 'jos_template_css.css');
 
 // path to IMAGE directory - DO NOT ADD FINAL /
-//define('TL_THEME_IMG_DIR','gui/images/theme_m0');
+//define('TL_THEME_IMG_DIR','gui/themes/theme_m0/images');
 define('TL_THEME_IMG_DIR','gui/themes/theme_m1/images');
 
 // logo for login page, if not defined nothing happens
@@ -272,9 +202,10 @@ define('TITLE_SEP_TYPE2',' >> ');
 define('TITLE_SEP_TYPE3',' - ');
 
 
-// 20070203 - franciscom
-// 'background'  -> standard behaivour
-// 'none'        -> new behaivour no background color change 
+// 'background'  -> standard behaviour for 1.6.x you can have a different
+//                  background colour for every test project.
+//
+// 'none'        -> new behaviour no background color change 
 //
 // define('TL_TESTPROJECT_COLORING','background');
 define('TL_TESTPROJECT_COLORING','none');
@@ -297,7 +228,7 @@ FALSE -> user can do nothing, no changes at UI.
 */
 $g_ui_show_check_filter_tp_by_testproject = TRUE;
 
-// 20051227 - fm - BUGID 300: Display name and surename in all user lists 
+// Display name and surename in all user lists 
 // $g_show_realname=TRUE; -> use the function format_username()
 //                           to display user identification
 //                           using $g_username_format
@@ -330,15 +261,16 @@ $g_gui->show_icon_edit=false;
  */
 define('TL_TREE_KIND', 'LAYERSMENU');
 
-// When creating an node in the tree, when can choose if:
+// When creating an node in the tree, you can choose if:
+//
 // Any node added independent of the type is added with order 0,
 // then the initial display order will be by node id.
 //
-// An useful alternative is mantain, inside of a container two groups:
+// An useful alternative is maintain, inside of a container two groups:
 // one for test cases, and one for test suites.
 // This can be achived assigned a default order different for every type of node.
 //                 
-// This values must be >= 0
+// These values must be >= 0
 //
 $g_tree_node_ordering->default_testcase_order=100;
 $g_tree_node_ordering->default_testsuite_order=1;
@@ -363,6 +295,8 @@ define('TL_DOC_CONFIDENT', 'this document is not confidential [configure using T
 // ----------------------------------------------------------------------------
 /** [ATTACHMENTS] */
 
+// TRUE: attachment feature available
+//
 $g_attachments->enabled = TRUE;
 
 /** the type of the repository can be database or filesystem
@@ -396,9 +330,11 @@ $g_attachments->allow_empty_title = TRUE;
 // $g_attachments->allow_empty_title == TRUE, you can ask the system
 // to do something 
 // 
-// 'none' -> just write on db an empty title
-$g_attachments->action_on_save_empty_title='none';
+// 'none'         -> just write on db an empty title
+// 'use_filename' -> use filename as title
 //$g_attachments->action_on_save_empty_title='use_filename';
+//
+$g_attachments->action_on_save_empty_title='none';
 
 // Remember that title is used as link description for download
 // then if title is empty, what the system has to do when displaying ?
@@ -426,11 +362,13 @@ if($g_repositoryType == TL_REPOSITORY_TYPE_FS)
 // ----------------------------------------------------------------------------
 /** [Requirements] */
 
-/** Test Case generation from Requirement
-	- use_req_spec_as_category_name
-  	FALSE -> test cases are created and assigned 
-           to a category with name $g_req_cfg->default_category_name
-  	TRUE  -> REQuirement Specification Title is used a category name     
+/** Test Case generation from Requirements
+
+	- use_req_spec_as_testsuite_name
+  	FALSE -> test cases are created and assigned to a test suite 
+  	         with name $g_req_cfg->default_testsuite_name
+  	         
+  	TRUE  -> REQuirement Specification Title is used as testsuite name     
 */
 $g_req_cfg->use_req_spec_as_testsuite_name = TRUE;
 $g_req_cfg->default_testsuite_name = "Test suite created by Requirement - Auto";
@@ -449,7 +387,7 @@ $g_req_cfg->reqdoc_id->is_system_wide=false;
 // of requirements
 $g_field_size->testsuite_name = 100;
 
-// requirements and req_spec tables
+// requirements and req_spec tables field sizes
 $g_field_size->req_docid=32;
 $g_field_size->req_title=100;
 $g_field_size->requirement_title=100;
@@ -458,7 +396,7 @@ $g_field_size->requirement_title=100;
 // ----------------------------------------------------------------------------
 /** [SMTP] */
 
-# 20051106 - franciscom - Taken from mantis for phpmailer config
+# Taken from mantis for phpmailer config
 define ("SMTP_SEND",2);
 $g_phpMailer_method = SMTP_SEND;
 
@@ -482,13 +420,13 @@ $g_smtp_password    = '';  # password
 /** [MISC] */
 
 /** Check unique titles of Test Project, Test Suite and Test Case
- *  TRUE  => Check              [STANDARD BEHAIVOUR]
+ *  TRUE  => Check              [STANDARD BEHAVIOUR]
  *  FALSE => don't check
  **/
 $g_check_names_for_duplicates = TRUE;
 
 /** 
- * Action for duplication check (only if TRUE)
+ * Action for duplication check (only if $g_check_names_for_duplicates=TRUE)
  * 'allow_repeat' => allow the name to be repeated (backward compatibility)
  * 'generate_new' => generate a new name using $g_prefix_name_for_copy
  * 'block'        => return with an error 
@@ -502,15 +440,15 @@ $g_action_on_duplicate_name = 'generate_new';
 $g_prefix_name_for_copy = strftime("%Y%m%d-%H:%M:%S", time());
         
 /** 
-BUGID 0000086: Using "|" in the component or category name causes malformed URLs
-regexp used to check for chars not allowed in product, component , category name, 
-and testcase title 
+BUGID 0000086: Using "|" in the testsuite name causes malformed URLs
+regexp used to check for chars not allowed in:
+test project, test suite and testcase names.
 */
 $g_ereg_forbidden = "[|]";
 
 /** Allow/disallow to have Test Plans without dependency to Test Project.
  * TRUE  => allow Test Plan over all Test Projects (TL 1.5 compatibility)
- * FALSE => all Test Plans should have own Test Project   [STANDARD BEHAIVOUR]
+ * FALSE => all Test Plans should have own Test Project   [STANDARD BEHAVIOUR]
  **/
 $g_show_tp_without_tproject_id = FALSE;
 
@@ -523,8 +461,7 @@ $g_show_tp_without_prodid = $g_show_tp_without_tproject_id;
 $g_allow_duplicate_keywords = FALSE;
 
 
-/** @TODO description */
-// TRUE   -> custom field logic will be executed  [STANDARD BEHAIVOUR]
+// TRUE   -> custom field logic will be executed  [STANDARD BEHAVIOUR]
 // FALSE  -> no possibility to use custom fields
 $g_gui->enable_custom_fields = TRUE;
 
@@ -562,12 +499,12 @@ $g_priority=array( 'A' => 'high_priority',
 /** [Test case] */
 
 // 1 -> user can edit executed tc versions
-// 0 -> editing of executed tc versions is blocked.  [STANDARD BEHAIVOUR]
+// 0 -> editing of executed tc versions is blocked.  [STANDARD BEHAVIOUR]
 $g_testcase_cfg->can_edit_executed=0;
 
 
 /** [Test Plan] */
-// TRUE  -> standard behaivour, user can remove assigned test cases
+// TRUE  -> standard behaviour, user can remove assigned test cases
 //          using the assign/add page.
 //
 // FALSE -> user need to use the remove page
@@ -578,17 +515,17 @@ $g_testplan_cfg->can_remove_tc_on_add=TRUE;  // To be developed
 /** [Executions] */
 
 // ASCending   -> last execution at bottom
-// DESCending  -> last execution on top      [STANDARD BEHAIVOUR]
+// DESCending  -> last execution on top      [STANDARD BEHAVIOUR]
 $g_exec_cfg->history_order='DESC';
 
 // TRUE  -> the whole execution history for the choosen build will be showed
-// FALSE -> just last execution for the choosen build will be showed [STANDARD BEHAIVOUR]
+// FALSE -> just last execution for the choosen build will be showed [STANDARD BEHAVIOUR]
 $g_exec_cfg->history_on=FALSE;
 
 
 // TRUE  ->  test case VERY LAST (i.e. in any build) execution status 
 //           will be displayed
-// FALSE -> only last result on current build.  [STANDARD BEHAIVOUR]
+// FALSE -> only last result on current build.  [STANDARD BEHAVIOUR]
 $g_exec_cfg->show_last_exec_any_build=FALSE;
 
 
@@ -601,7 +538,7 @@ $g_exec_cfg->att_model = $att_model_m2;   //defined in const.inc.php
 
 
 // 1 -> User can delete an execution result
-// 0 -> User can not.  [STANDARD BEHAIVOUR]
+// 0 -> User can not.  [STANDARD BEHAVIOUR]
 $g_exec_cfg->can_delete_execution=0;
 
 

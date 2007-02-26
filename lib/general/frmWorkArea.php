@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: frmWorkArea.php,v $
  *
- * @version $Revision: 1.17 $
- * @modified $Date: 2007/02/05 08:34:22 $ by $Author: franciscom $
+ * @version $Revision: 1.18 $
+ * @modified $Date: 2007/02/26 08:01:44 $ by $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -52,9 +52,21 @@ if (isset($aa_tfp[$showFeature]) === FALSE)
 // features that need to run the validate build function
 if (in_array($showFeature,array('executeTest','showMetrics')))
 {
-	validateBuildAvailability($db,$_SESSION['testPlanId'],
-	                              $_SESSION['testPlanName'],
-	                              $_SESSION['testprojectName']);
+  
+  // BUGID 623
+  // Check if for test project selected at least a test plan exist
+  if( isset($_SESSION['testPlanId']) )
+  {
+  	validateBuildAvailability($db,$_SESSION['testPlanId'],
+	                                $_SESSION['testPlanName'],
+	                                $_SESSION['testprojectName']);
+     
+  }
+  else
+  {
+  	redirect("../plan/planView.php");
+		exit();
+  }   
 }
 
 /// 1. get path from global var
@@ -89,9 +101,7 @@ function validateBuildAvailability(&$db,$tpID, $tpName, $prodName)
 	$can_create_build=has_rights($db,"testplan_create_build");
 	
 	$message='<p>'  . lang_get('no_build_warning_part1') . 
-	          "<b>" . htmlspecialchars($prodName) . "::" . 
-	                  htmlspecialchars($tpName) . "</b>" .
-	                  " (Product::Test Plan) ";
+	          "<b> " . htmlspecialchars($tpName) . "</b>";
 
 	if (!buildsNumber($db,$tpID))
 	{	           
@@ -118,4 +128,5 @@ function validateBuildAvailability(&$db,$tpID, $tpName, $prodName)
 		exit();
 	}
 }
+
 ?>

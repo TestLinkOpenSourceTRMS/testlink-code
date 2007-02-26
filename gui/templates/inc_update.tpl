@@ -1,6 +1,6 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_update.tpl,v 1.16 2007/02/24 08:20:17 franciscom Exp $
+$Id: inc_update.tpl,v 1.17 2007/02/26 08:01:44 franciscom Exp $
 Purpose: show message after an SQL operation
 *}
 {* 
@@ -27,7 +27,7 @@ Purpose: show message after an SQL operation
     {if $feedback_type eq "soft"}
     	<div class="warning_{$feedback_type}">	
   	{else}
-     <div class="error">
+     <div class="user_feedback">
   	 {/if}
        <p>{$user_feedback}</p>
      </div>
@@ -44,7 +44,7 @@ Purpose: show message after an SQL operation
         	<p>{lang_get s='was_success'} {$action|default:"updated"}!</p>
     	</div>
   	{else}
-    	<div class="error">
+    	<div class="user_feedback">
   	  	<p>{$item|default:"item"} {$name|escape} 
            {lang_get s='was_success'} {$action|default:"updated"}!</p>
   	</div>

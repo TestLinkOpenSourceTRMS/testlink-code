@@ -1,7 +1,7 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: testSetRemove.php,v 1.18 2007/01/24 08:10:25 franciscom Exp $ 
+ * @version $Id: testSetRemove.php,v 1.19 2007/02/26 08:01:44 franciscom Exp $ 
  * 
  * Remove Test Cases from Test Plan
  * 
@@ -22,7 +22,6 @@ $tcase_mgr = new testcase($db);
 $tplan_id = $_SESSION['testPlanId'];
 $tplan_name = $_SESSION['testPlanName'];
 
-// 20061029 - franciscom
 $tproject_id =  $_SESSION['testprojectID'];
 $tproject_name =  $_SESSION['testprojectName'];
 
@@ -32,6 +31,7 @@ $version_id = isset($_REQUEST['version_id']) ? $_REQUEST['version_id'] : 0;
 $level = isset($_REQUEST['level']) ? $_REQUEST['level'] : null;
 $keyword_id = isset($_REQUEST['keyword_id']) ? $_REQUEST['keyword_id'] : 0;
 $do_remove = isset($_POST['remove_tc']) ? 1 : 0;
+$user_feedback='';
 
 $resultString = null;
 $arrData = array();
@@ -44,13 +44,22 @@ if($do_remove)
   {
       // remove without warning
       $tplan_mgr->unlink_tcversions($tplan_id,$a_tc);   
+      
+      $user_feedback=lang_get("tcase_removed_from_tplan");
+      if( count($a_tc) > 1 )
+      {
+        $user_feedback=lang_get("multiple_tcase_removed_from_tplan");
+      }
   }  
+  else
+  {
+    // 20070225 - BUGID 644
+    $do_remove=0;
+  }
 }
 
 $dummy = null;
 $out = null;
-
-
 $map_node_tccount = get_testplan_nodes_testcount($db,$tproject_id,$tproject_name,
                                                      $tplan_id,$tplan_name,$keyword_id);
 $total_tccount=0;
@@ -79,7 +88,7 @@ switch($level)
 	  			                 $linked_items,$map_node_tccount,$keyword_id,
 	  			                 FILTER_BY_TC_OFF,WRITE_BUTTON_ONLY_IF_LINKED);
 		}
-		break;
+	  break;
 		
 	case 'testsuite':
 		if( $total_tccount > 0 )
@@ -95,7 +104,6 @@ switch($level)
 		
 	default:
 		// show instructions
-		//redirect( $_SESSION['basehref'] . $g_rpath['instructions'].'/testSetRemove.html');
   	redirect($_SESSION['basehref'] . "/lib/general/show_help.php?help=testSetRemove&locale={$_SESSION['locale']}");
 
 	break;
@@ -103,7 +111,8 @@ switch($level)
 
 
 $smarty = new TLSmarty();
-$smarty->assign('has_tc', 0);
+
+$smarty->assign('has_tc', 1);
 $smarty->assign('arrData',null);
 
 if( !is_null($out) )
@@ -112,6 +121,7 @@ if( !is_null($out) )
   $smarty->assign('arrData', $out['spec_view']);
 }
 
+$smarty->assign('user_feedback', $user_feedback);
 $smarty->assign('testPlanName', $tplan_name);
 $smarty->assign('refreshTree', $do_remove ? 1 : 0);
 

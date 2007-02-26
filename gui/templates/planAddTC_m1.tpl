@@ -1,7 +1,10 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planAddTC_m1.tpl,v 1.9 2007/02/19 14:03:42 schlundus Exp $
+$Id: planAddTC_m1.tpl,v 1.10 2007/02/26 08:01:44 franciscom Exp $
 Purpose: smarty template - generate a list of TC for adding to Test Plan 
+
+20070224 - franciscom 
+BUGID 600
 
 20061105 - franciscom
 added logic to manage active/inactive tcversions
@@ -142,14 +145,16 @@ added logic to manage active/inactive tcversions
         </table>
         
         <br />
-        <input type="submit" name="do_action" 
+        <input type="submit" name="do_action"  
       		{if $has_linked_items eq 0}
       	    	value="{lang_get s='btn_add_selected_tc'}"
       		{else}
               value="{lang_get s='btn_add_remove_selected_tc'}"
-			  onclick = "return planRemoveTC(&quot;{lang_get s='warning_add_remove_selected_tc'}&quot;)" 
+			        onclick = "return planRemoveTC(&quot;{lang_get s='warning_add_remove_selected_tc'}&quot;)" 
       		{/if}
         />
+        <img src="{$smarty.const.TL_THEME_IMG_DIR}/sym_question.gif" 
+             title="{lang_get s='add_remove_selected_tc_hint'}">
           
      {/if}  {* there are test cases to show ??? *}
     </div>

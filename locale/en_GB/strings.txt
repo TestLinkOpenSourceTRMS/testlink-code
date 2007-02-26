@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.150 $
- * @modified $Date: 2007/02/24 19:50:36 $ $Author: kevinlevy $
+ * @version $Revision: 1.151 $
+ * @modified $Date: 2007/02/26 08:05:22 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
@@ -77,17 +77,17 @@ $TLS_your_first_login = "Welcome to TestLink! You have guest access now. Please 
 
 
 // planPriority.php
-$TLS_high_priority="High";
-$TLS_low_priority="Low";
-$TLS_medium_priority="Medium";
+$TLS_high_priority = "High";
+$TLS_low_priority = "Low";
+$TLS_medium_priority = "Medium";
 
-$TLS_high_risk="High";
-$TLS_low_risk="Low";
-$TLS_medium_risk="Medium";
+$TLS_high_risk = "High";
+$TLS_low_risk = "Low";
+$TLS_medium_risk = "Medium";
 
-$TLS_high_importance="High";
-$TLS_low_importance="Low";
-$TLS_medium_importance="Medium";
+$TLS_high_importance = "High";
+$TLS_low_importance = "Low";
+$TLS_medium_importance = "Medium";
 
 
 // gui/templates/attachment404.tpl
@@ -109,7 +109,6 @@ $TLS_btn_yes_del_comp = "Yes, delete Test Suite";
 $TLS_container_title_testsuite =$TLS_test_suite;
 $TLS_linked_but_not_executed="Linked to one or more Test Plan, but not executed";
 $TLS_question_del = "Really delete";
-$TLS_test_case = "Test Case";
 $TLS_th_link_exec_status = "Link and execution status";
 
 
@@ -203,7 +202,7 @@ $TLS_th_product_name = "Test Project Name";
 // gui/templates/cfields_edit.tpl
 $TLS_available_on = "Available for";
 $TLS_btn_add = "Add";
-$TLS_btn_delete = "Delete";
+$TLS_btn_delete = "Delete"; 
 $TLS_btn_ok = "Ok";
 $TLS_custom_field = "Custom field";
 $TLS_enable_on_design = "Enable on <br>test specification";
@@ -524,8 +523,9 @@ $TLS_enter_role_notes = "Enter role description";
 $TLS_menu_assign_product_roles = "Assign Test Project roles";
 $TLS_menu_assign_testplan_roles = "Assign test plan roles";
 $TLS_menu_define_roles = "Define roles";
-$TLS_menu_mod_user = "Modify Users";
+$TLS_menu_mod_user = "Modify User";
 $TLS_menu_new_user = "New User";
+$TLS_menu_view_users = "View Users";
 $TLS_menu_view_roles = "View roles";
 $TLS_th_cf_rights = "Custom field rights";
 $TLS_th_kw_rights = "Keyword rights";
@@ -537,8 +537,6 @@ $TLS_th_rolename = "Rolename";
 $TLS_th_tp_rights = "Test Plan rights";
 $TLS_th_user_rights = "User rights";
 $TLS_title_user_mgmt = "User Administration";
-$TLS_user_created="User %s was successfully created";
-$TLS_user_deleted="User %s was successfully deleted";
 $TLS_warning_modify_role = "Really modify the role?";
 
 
@@ -727,6 +725,7 @@ $TLS_title_specification = "Specification";
 
 
 // gui/templates/planAddTC_m1.tpl
+$TLS_add_remove_selected_tc_hint = "Operation will be applied to ALL Test suites";
 $TLS_btn_add_remove_selected_tc = "Add / Remove selected";
 $TLS_btn_add_selected_tc = "Add selected";
 $TLS_btn_check = "Check";
@@ -1072,7 +1071,6 @@ $TLS_th_old_passwd = "Old Password";
 $TLS_title_account_settings = "Account Settings";
 $TLS_title_change_your_passwd = "Change your password";
 $TLS_warning_different_pwd = "Please re-enter your new password. Added values were different.";
-$TLS_warning_empty_pwd = "Your password should not be empty!";
 $TLS_your_password_is_external = "Your password is external";
 
 
@@ -1356,7 +1354,7 @@ $TLS_sec_note_remove_install_dir = "Install directory should be removed!";
 
 // lib/general/frmWorkArea.php
 $TLS_create_a_build = "Create a new build";
-$TLS_no_build_warning_part1 = "There are no Builds created for this Test Plan.";
+$TLS_no_build_warning_part1 = "There are no Builds created for this Test Plan: ";
 $TLS_no_build_warning_part2 = "Please create it first or ask your administrator.";
 
 
@@ -1453,6 +1451,9 @@ $TLS_updated = "updated";
 // lib/plan/testSetNavigator.php
 $TLS_title_test_plan_navigator = "Test plan navigator";
 
+// lib/plan/testSetRemove.php
+$TLS_tcase_removed_from_tplan="Test Case removed from Test Plan";
+$TLS_multiple_tcase_removed_from_tplan="Test Cases removed from Test Plan";
 
 
 // lib/plan/planEdit.php
@@ -1593,7 +1594,6 @@ $TLS_title_tsuite_export_all = "Export all Test Suites";
 // lib/testcases/containerEdit.php
 $TLS_delete = "Delete";
 $TLS_delete_notice = "Warning: All Related Execution Results will be deleted";
-$TLS_testsuite_created = "Test Suite created";
 $TLS_warning_empty_com_name = "Please give a name to Test Suite";
 
 
@@ -1613,6 +1613,8 @@ $TLS_error_role_deletion = "The role couldn't be deleted!";
 
 
 // lib/usermanagement/usersedit.php
+$TLS_user_created="User %s was successfully created";
+$TLS_user_deleted="User %s was successfully deleted";
 $TLS_user_not_added = "The user wasn't added!";
 
 

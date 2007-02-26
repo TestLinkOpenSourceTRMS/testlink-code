@@ -2,10 +2,12 @@
 /**
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/ 
 *
-*  @version 	$Id: printData.php,v 1.27 2007/01/26 21:01:24 schlundus Exp $
+*  @version 	$Id: printData.php,v 1.28 2007/02/26 08:01:45 franciscom Exp $
 *  @author 	Martin Havlat
 * 
 * Shows the data that will be printed.
+*
+* 20070225 - franciscom - removed duplicate constant definition
 *
 * 20061112 - franciscom - prepareNode() interface changes
 *
@@ -36,8 +38,6 @@ foreach($printingOptions as $opt => $val)
 
 $tck_map = null;
 $map_node_tccount=array();
-define('SHOW_TESTCASES',0);
-
 
 
 $tproject_mgr = new testproject($db);

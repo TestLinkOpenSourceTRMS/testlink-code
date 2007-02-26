@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: const.inc.php,v $
  *
- * @version $Revision: 1.18 $
- * @modified $Date: 2007/02/22 08:23:24 $ by $Author: franciscom $
+ * @version $Revision: 1.19 $
+ * @modified $Date: 2007/02/26 09:48:00 $ by $Author: franciscom $
  * @author Martin Havlát
  *
  * SCOPE:
@@ -16,17 +16,6 @@
  * 
  *-------------------------------------------------------------------
  * Revisions:
- *
- *  20070214 - franciscom - added $g_tc_status_verbose_labels
- *  20070211 - franciscom - added $g_tc_status_for_ui_default
- *  20070131 - franciscom - moved defined from requirements.inc.php
- *  20070122 - franciscom - INACTIVE,CLOSED 
- *  20070120 - franciscom - Beta 3, due changes in builds table
- *
- *  20070120 - franciscom - 
- *  added TL_ROLES_OPEN_CHAR,TL_ROLES_CLOSE_CHAR,TL_INACTIVE_MARKUP
- *
- *	20060111 - MHT - moved several new consts from config
  *
  *-------------------------------------------------------------------
 **/
@@ -59,7 +48,9 @@ define('TL_LOCALE_PATH',TL_ABS_PATH . 'locale/');
 define('TL_HELP_RPATH','gui/help/');
 define('TL_INSTRUCTIONS_RPATH','gui/help/');
 
-// 20050821 - fm - configurable templates this help is you want to use a non standard template 
+// Configurable templates this can help if you want to use a non standard template.
+// i.e. you want to develop a new one without loosing the original template.
+// 
 $g_tpl = array(
 	'tcView' 		=> "tcView.tpl",
 	'tcSearchView' 	=> "tcSearchView.tpl",
@@ -110,7 +101,7 @@ $g_locales = array(
 	'es_ES' => 'Spanish'
 );
 
-// 20051005 - fm - see strftime() in PHP manual
+// see strftime() in PHP manual
 // Very IMPORTANT: 
 // setting according local is done in testlinkInitPage() using set_dt_formats()
 // Default values
@@ -155,11 +146,15 @@ define("TL_REPOSITORY_COMPRESSIONTYPE_GZIP",2);
 
 
 // Two models to manage attachment interface in the execution screen
+// $att_model_m1 ->  shows upload button and title 
+//
 $att_model_m1->show_upload_btn = true;
 $att_model_m1->show_title = true;
 $att_model_m1->num_cols = 4;
 $att_model_m1->show_upload_column = false;
 
+// $att_model_m2 ->  hides upload button and title
+// 
 $att_model_m2->show_upload_btn = false;
 $att_model_m2->show_title = false;
 $att_model_m2->num_cols = 5;
@@ -188,13 +183,11 @@ $g_tc_status_css = array_flip($g_tc_status);
 
 
 // Used to generate radio and buttons at user interface level.
-// Order is important, because fixed the order on User Interface
+// Order is important, because this will be display order on User Interface
 //
 // key   => verbose status as defined in $g_tc_status
 // value => string id defined in the strings.txt file, 
 //          used to localize the strings.
-//
-// 20070211 - franciscom - removed not_run
 //
 // $g_tc_status_for_ui = array(
 // 	"not_run" => "test_status_not_run",
@@ -245,14 +238,13 @@ define("TL_DEFAULT_ROLEID",TL_ROLES_GUEST);
 define("TL_ROLES_OPEN_CHAR","[");
 define("TL_ROLES_CLOSE_CHAR","]");
 
-// used to mark inactive objects (test projects, etc)
+// used to mark up inactive objects (test projects, etc)
 define("TL_INACTIVE_MARKUP","* ");
 
 
-// 20070106 - franciscom
-// used on user management page to give different colour to different
-// roles.
-// If you dont want use colouring then configure in this way
+// used on user management page to give different colour 
+// to different roles.
+// If you don't want use colouring then configure in this way
 // $g_role_colour = array ( );
 //
 $g_role_colour = array ( 
@@ -270,7 +262,7 @@ $g_role_colour = array (
 $g_tc_risks = array('L1', 'L2', 'L3','M1', 'M2', 'M3','H1', 'H2', 'H3');
 
 // 
-// [FUNCTION MAGIC NUMBERS] 
+// [FUNCTION MAGIC NUMBERS] [DON'T BOTHER ABOUT]
 // used in several functions instead of MAGIC NUMBERS - Don't change 
 define('ALL_PRODUCTS',0);
 define('TP_ALL_STATUS',null);
@@ -331,8 +323,5 @@ define('NO_KEYWORD_ID_TO_FILTER',0);
 define('RECURSIVE_MODE',TRUE);
 define('NO_NODE_TYPE_TO_FILTER',null);
 define('ANY_OWNER',null);
-
-
-
 // -------------------------------------------------------------------
 ?>

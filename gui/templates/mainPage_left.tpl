@@ -1,9 +1,10 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: mainPage_left.tpl,v 1.1 2007/02/05 08:33:39 franciscom Exp $     
+ $Id: mainPage_left.tpl,v 1.2 2007/02/27 15:36:41 franciscom Exp $     
  Purpose: smarty template - main page / site map                 
                                                                  
  rev :                                                 
+      20070227 - franciscom - fixed minor presentation bug
 *}
 <div class="vertical_menu" style="float: left">
   {* ---------------------------------------------------------------------------------------- *}
@@ -13,7 +14,7 @@
     <div>
     <div>
     <div>
-      <h3>{lang_get s='title_test_spec'}</h3>
+      <h3>{lang_get s='title_test_specRRRR'}</h3>
   		<img alt="arrow" class="arrow" src="{$smarty.const.TL_THEME_IMG_DIR}/arrow_org.gif" />
   		<a href="{$launcher}?feature=editTc">
     		{if $modify_tc_rights eq "yes"}
@@ -95,7 +96,8 @@
   {* ---------------------------------------------------------------------------------------- *}
 
   {* ---------------------------------------------------------------------------------------- *}
-	{if $sessionProductID}
+	{if $sessionProductID && 
+	   ($modify_product_rights == "yes" || $tproject_user_role_assignment == "yes")}
   	<div class="module-grey">
     <div>
     <div>

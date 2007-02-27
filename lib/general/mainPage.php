@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: mainPage.php,v $
  *
- * @version $Revision: 1.25 $ $Author: schlundus $
- * @modified $Date: 2007/02/03 22:14:08 $
+ * @version $Revision: 1.26 $ $Author: franciscom $
+ * @modified $Date: 2007/02/27 15:35:55 $
  *
  * @author Martin Havlat
  * 
@@ -15,6 +15,10 @@
  * Most of the code in it is html but there is some logic that displays
  * based upon the login. 
  * There is also some javascript that handles the form information.
+ *
+ * rev :
+ *       20070227 - franciscom - minor refactoring
+ *
 **/
 require_once('../../config.inc.php');
 require_once('common.php');
@@ -29,7 +33,8 @@ $testprojectID = isset($_SESSION['testprojectID']) ? intval($_SESSION['testproje
 
 // ----------------------------------------------------------------------
 /** redirect admin to create product if not found */
-if (has_rights($db,'mgt_modify_product') && !isset($_SESSION['testprojectID']))
+$can_manage_tprojects=has_rights($db,'mgt_modify_product');
+if ($can_manage_tprojects && !isset($_SESSION['testprojectID']))
 { 
 	redirect($_SESSION['basehref'] . 'lib/project/projectedit.php?show_create_screen');
 }
@@ -54,8 +59,8 @@ $smarty->assign('opt_requirements', isset($_SESSION['testprojectOptReqs']) ? $_S
 $smarty->assign('view_keys_rights', has_rights($db,"mgt_view_key"));
 $smarty->assign('modify_keys_rights', has_rights($db,"mgt_modify_key"));
 
-// User has Product rights
-$smarty->assign('modify_product_rights', has_rights($db,"mgt_modify_product"));
+// User has test project rights
+$smarty->assign('modify_product_rights', $can_manage_tprojects);
 
 
 // ----- Test Statistics Section --------------------------

@@ -2,10 +2,11 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: cfield_mgr.class.php,v $
- * @version $Revision: 1.8 $
- * @modified $Date: 2007/01/29 08:13:32 $  $Author: franciscom $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2007/02/27 15:02:53 $  $Author: franciscom $
  * @author franciscom
  *
+ * 20070227 - franciscom - BUGID 677
  * 20070110 - franciscom - solved bug set_active()
  *
  * 20070105 - franciscom - 
@@ -562,6 +563,7 @@ class cfield_mgr
   function unlink_from_testproject($tproject_id,$cfield_ids)
   {
     // Step 1: set to active
+    // 20070227 - why ??
     $this->set_active_for_testproject($tproject_id,$cfield_ids,1);
     
     
@@ -597,8 +599,12 @@ class cfield_mgr
           }
         }
       }
-      
     }
+  
+    // BUGID 0000677 
+    $sql="DELETE FROM cfield_testprojects " .
+         $filter . " AND testproject_id = {$tproject_id} ";
+    $this->db->exec_query($sql);     
   } //function end
 
 

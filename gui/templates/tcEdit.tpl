@@ -1,11 +1,11 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: tcEdit.tpl,v 1.15 2007/02/07 09:24:43 franciscom Exp $ *}
+{* $Id: tcEdit.tpl,v 1.16 2007/02/27 19:56:24 schlundus Exp $ *}
 {* Purpose: smarty template - edit test specification: test case *}
 {include file="inc_head.tpl" openHead='yes' jsValidate="yes"}
 <script language="JavaScript" src="gui/javascript/OptionTransfer.js" type="text/javascript"></script>
 <script language="JavaScript" src="gui/javascript/expandAndCollapseFunctions.js" type="text/javascript"></script>
 
-<script language="JavaScript">
+<script type="text/javascript" language="JavaScript">
 var {$opt_cfg->js_ot_name} = new OptionTransfer("{$opt_cfg->from->name}","{$opt_cfg->to->name}");
 {$opt_cfg->js_ot_name}.saveRemovedLeftOptions("{$opt_cfg->js_ot_name}_removedLeft");
 {$opt_cfg->js_ot_name}.saveRemovedRightOptions("{$opt_cfg->js_ot_name}_removedRight");
@@ -14,7 +14,6 @@ var {$opt_cfg->js_ot_name} = new OptionTransfer("{$opt_cfg->from->name}","{$opt_
 {$opt_cfg->js_ot_name}.saveNewLeftOptions("{$opt_cfg->js_ot_name}_newLeft");
 {$opt_cfg->js_ot_name}.saveNewRightOptions("{$opt_cfg->js_ot_name}_newRight");
 </script>
-
 {literal}
 <script type="text/javascript">
 {/literal}
@@ -39,12 +38,12 @@ function validateForm(f)
 {config_load file="input_dimensions.conf" section="tcNew"}
 <h1>{lang_get s='test_case'}{$smarty.const.TITLE_SEP}{$tc.name|escape}</h1> 
 
-<div class="workBack" style="font-weight: bold;">
+<div class="workBack" style="width:97%;">
 <h1>{lang_get s='title_edit_tc'}{$smarty.const.TITLE_SEP_TYPE3}{lang_get s='version'} {$tc.version}</h1> 
 
 {if $has_been_executed}
     {lang_get s='warning_editing_executed_tc' var="warning_edit_msg"}
-    <p><div class="warning_message" align="center">{$warning_edit_msg}</div>
+    <div class="warning_message" align="center">{$warning_edit_msg}</div>
 {/if}
 
 <form method="post" action="lib/testcases/tcEdit.php" name="tc_edit"
@@ -55,16 +54,17 @@ function validateForm(f)
 	<input type="hidden" name="version" value="{$tc.version}" />
 	
 
-	<div style="float: right;">
+	<div style="margin-right:5px;float: right;">
 		<input id="do_update" type="submit" name="do_update" value="{lang_get s='btn_update'}" />
 	</div>	
 
 	{include file="tcEdit_New_viewer.tpl"}
     
-	<div style="float: right;">
+    <br />
+	<div style="margin-right:5px;float: right;">
 		<input id="do_update_bottom" type="submit" name="do_update" value="{lang_get s='btn_update'}"/>
 	</div>	
-
+	<br/>
 </form>
 
 <script type="text/javascript" defer="1">

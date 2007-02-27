@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.151 $
- * @modified $Date: 2007/02/26 08:05:22 $ $Author: franciscom $
+ * @version $Revision: 1.152 $
+ * @modified $Date: 2007/02/27 19:56:24 $ $Author: schlundus $
  *
  * @author Francisco Mancardi
  *
@@ -1071,6 +1071,7 @@ $TLS_th_old_passwd = "Old Password";
 $TLS_title_account_settings = "Account Settings";
 $TLS_title_change_your_passwd = "Change your password";
 $TLS_warning_different_pwd = "Please re-enter your new password. Added values were different.";
+$TLS_warning_empty_pwd = "The password must not be empty!";
 $TLS_your_password_is_external = "Your password is external";
 
 
@@ -1482,23 +1483,21 @@ $TLS_info_product_inactivated = "The Test Project was deactivated.";
 $TLS_info_product_not_deleted_check_log = "Test Project was not deleted. Please check TestLink log.";
 $TLS_info_product_was_deleted = "The Test Project was successfully deleted.";
 $TLS_refer_to_log = " Please refer to TestLink log for more information.";
-
-$TLS_test_project_activated="Test Project %s was succesfully activated";
-$TLS_test_project_created="Test Project %s was succesfully created";
-$TLS_test_project_deleted="Test Project %s was succesfully deleted";
-$TLS_test_project_inactivated="Test Project %s was succesfully inactivated";
-$TLS_test_project_updated="Test Project %s was succesfully updated";
-$TLS_test_project_update_failed="Update of Test Project %s failed!";
-
+$TLS_test_project_activated = "Test Project %s was succesfully activated";
+$TLS_test_project_created = "Test Project %s was succesfully created";
+$TLS_test_project_deleted = "Test Project %s was succesfully deleted";
+$TLS_test_project_inactivated = "Test Project %s was succesfully inactivated";
+$TLS_test_project_updated = "Test Project %s was succesfully updated";
+$TLS_test_project_update_failed = "Update of Test Project %s failed!";
 
 
 // lib/results/charts.php
-$TLS_maani_copyright="flash technology provided by http://www.maani.us";
-$TLS_graphical_reports="Graphical Reports";
-$TLS_overall_metrics="Overall Metrics";
-$TLS_results_by_keyword="Results by Keyword";
-$TLS_results_by_tester="Results by Tester";
-$TLS_results_top_level_suites="Results for Top Level Suites";
+$TLS_maani_copyright = "flash technology provided by http://www.maani.us";
+$TLS_graphical_reports = "Graphical Reports";
+$TLS_overall_metrics = "Overall Metrics";
+$TLS_results_by_keyword = "Results by Keyword";
+$TLS_results_by_tester = "Results by Tester";
+$TLS_results_top_level_suites = "Results for Top Level Suites";
 
 
 // lib/req/reqImport.php
@@ -1630,5 +1629,5 @@ $TLS_cf_name_exists = "Custom field name already exists. Please choose a new one
 $TLS_error_creating_cf = "The custom field couldn't be created!";
 $TLS_do_update = "updated";
 $TLS_do_delete = "deleted";
-$TLS_do_add = "created";
+$TLS_do_add = "added";
 ?>

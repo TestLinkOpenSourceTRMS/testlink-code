@@ -2,16 +2,18 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: charts.php,v $
- * @version $Revision: 1.7 $
- * @modified $Date: 2007/02/19 13:22:35 $  $Author: franciscom $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2007/02/28 07:16:22 $  $Author: kevinlevy $
  * @author kevin
  *
  *
 **/
 require_once('../../config.inc.php');
 require_once('../functions/common.php');
+testlinkInitPage($db);
+$testPlanName = $_SESSION['testPlanName']; 
 
-echo "<h2>",lang_get('graphical_reports'),"</h2><h6>",lang_get('maani_copyright'),"</h6>";
+echo "<h2>",$_SESSION['testPlanName']," ",lang_get('graphical_reports'),"</h2><h6>",lang_get('maani_copyright'),"</h6>";
 echo "<h3>",lang_get('overall_metrics'),"</h3>";
 	
 

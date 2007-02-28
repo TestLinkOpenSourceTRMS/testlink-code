@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: const.inc.php,v $
  *
- * @version $Revision: 1.19 $
- * @modified $Date: 2007/02/26 09:48:00 $ by $Author: franciscom $
+ * @version $Revision: 1.20 $
+ * @modified $Date: 2007/02/28 22:07:10 $ by $Author: havlat $
  * @author Martin Havlát
  *
  * SCOPE:
@@ -38,7 +38,7 @@ define('TL_TEMP_PATH', TL_ABS_PATH . 'gui'.DS.'templates_c'.DS);
 /** [GUI] */
 
 /* Release MUST BE changed at the release day */
-define('TL_VERSION', '1.7.0 Beta 5'); 
+define('TL_VERSION', '1.7.0 - RC1'); 
 define('TL_BACKGROUND_DEFAULT', "#9BD"); // default color
 
 define('TL_COOKIE_KEEPTIME', (time()+60*60*24*30)); // 30 days

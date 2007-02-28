@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.154 $
- * @modified $Date: 2007/02/28 08:04:34 $ $Author: franciscom $
+ * @version $Revision: 1.155 $
+ * @modified $Date: 2007/02/28 15:37:14 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
@@ -712,7 +712,7 @@ $TLS_test_suite = "Test Suite";
 $TLS_home = "Home";
 $TLS_link_logout = "Logout";
 $TLS_product = "Test Project";
-$TLS_product_role = "Test Project role";
+$TLS_product_role = "Test Project role ";
 $TLS_title_edit_personal_data = "Personal";
 $TLS_title_execute = "Execute";
 $TLS_title_results = "Results";
@@ -1180,7 +1180,7 @@ $TLS_href_rep_and_metrics = "Test reports and Metrics";
 $TLS_href_tc_exec_assignment = "Assign Test Case execution";
 $TLS_href_upd_mod_tc = "Update modified Test Case(s)";
 $TLS_msg_no_rights_for_tp = "- unavailable (You don't have permissions for any Test Plan)";
-$TLS_testplan_role = "TestPlan role";
+$TLS_testplan_role = "Test Plan role ";
 $TLS_title_test_case_suite = "Test Plan contents";
 $TLS_title_test_execution = "Test Execution";
 $TLS_title_test_plan_mgmt = "Test Plan Management";

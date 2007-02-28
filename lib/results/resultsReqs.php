@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: resultsReqs.php,v $
- * @version $Revision: 1.7 $
- * @modified $Date: 2007/02/03 22:14:08 $ by $Author: schlundus $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2007/02/28 07:56:09 $ by $Author: kevinlevy $
  * @author Martin Havlat
  * 
  * Report requirement based results
@@ -58,5 +58,6 @@ $smarty->assign('arrMetrics', $arrMetrics);
 $smarty->assign('arrCoverage', $arrCoverage);
 $smarty->assign('arrReqSpec', $arrReqSpec);
 $smarty->assign('selectedReqSpec', $idSRS);
+$smarty->assign('tpName', $_SESSION['testPlanName']);
 $smarty->display('resultsReqs.tpl');
 ?>

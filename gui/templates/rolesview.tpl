@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: rolesview.tpl,v 1.13 2007/02/03 22:41:04 schlundus Exp $ 
+$Id: rolesview.tpl,v 1.14 2007/02/28 08:02:26 franciscom Exp $ 
 Purpose: smarty template - View defined roles 
 
 *}
@@ -14,7 +14,7 @@ Purpose: smarty template - View defined roles
 <div class="tabMenu">
 {if $mgt_users == "yes"}
 	<span class="unselected"><a href="lib/usermanagement/usersedit.php">{lang_get s='menu_new_user'}</a></span> 
-	<span class="unselected"><a href="lib/usermanagement/usersview.php">{lang_get s='menu_mod_user'}</a></span>
+	<span class="unselected"><a href="lib/usermanagement/usersview.php">{lang_get s='menu_view_users'}</a></span>
 {/if}
 {if $role_management == "yes"}
 	<span class="unselected"><a href="lib/usermanagement/rolesedit.php">{lang_get s='menu_define_roles'}</a></span> 

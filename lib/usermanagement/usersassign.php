@@ -5,79 +5,71 @@
 *
 * Filename $RCSfile: usersassign.php,v $
 *
-* @version $Revision: 1.9 $
-* @modified $Date: 2006/10/17 20:17:54 $
+* @version $Revision: 1.10 $
+* @modified $Date: 2007/02/28 08:04:58 $ $Author: franciscom $
 * 
 * Allows assigning users roles to testplans or testprojects
+*
+* rev :
+*      20070227 - franciscom - refatoring to solve refresh problem
+*                              when changing test project on navBar
 */
 require_once('../../config.inc.php');
 require_once('users.inc.php');
 testlinkInitPage($db);
 
-$feature = isset($_GET['feature']) ? $_GET['feature'] : null;
+$feature = isset($_REQUEST['feature']) ? $_REQUEST['feature'] : null;
+$featureID = isset($_REQUEST['featureID']) ? intval($_REQUEST['featureID']) : 0;
+
 $testprojectID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 $tpID = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0;
 $userID = $_SESSION['userID'];
 
-$sqlResult = null;
-$action = null;
+$user_feedback='';
+$no_features='';
+$roles_updated='';
+
 $testPlans = null;
 $bTestproject = false;
 $bTestPlan = false;
-$featureID = isset($_GET['featureID']) ? $_GET['featureID'] : 0;
+$featureID = isset($_REQUEST['featureID']) ? $_REQUEST['featureID'] : 0;
 
 if ($feature == "testproject")
 {
+  $roles_updated=lang_get("test_project_user_roles_updated");
+	$no_features=lang_get("no_test_projects");
 	$bTestproject = true;
 }
 else if ($feature == "testplan")
 {
+  $roles_updated=lang_get("test_plan_user_roles_updated");
+  $no_features=lang_get("no_test_plans");
 	$bTestPlan = true;
 }
 
-//postback
-$bUpdate = isset($_POST['do_update']) ? 1 : 0;
-if ($bUpdate)
-{
-	$featureID = isset($_POST['featureID']) ? intval($_POST['featureID']) : 0;
-	$feature = isset($_POST['feature']) ? $_POST['feature'] : null;
-	if ($featureID)
-	{
-		if ($feature == "testproject")
-			$bTestproject = true;
-		else if ($feature == "testplan")
-			$bTestPlan = true;
-	}
-}
+$bUpdate = isset($_REQUEST['do_update']) ? 1 : 0;
 
 if ($featureID && $bUpdate)
 {
-	//remove keys which are no longer used 
-	unset($_POST['featureID']);
-	unset($_POST['do_update']);
-	unset($_POST['feature']);
-	$users = $_POST;
+	$map_userid_roleid = $_REQUEST['userRole'];
 	
 	if ($bTestproject)
 		deleteProductUserRoles($db,$featureID);			
+		
 	else if ($bTestPlan)
 		deleteTestPlanUserRoles($db,$featureID);					
 	
-	$subStr = "userRole";
-	$subLen = strlen($subStr);
-	foreach($users as $userRole => $roleID)
+	foreach($map_userid_roleid as $user_id => $role_id)
 	{
-		if ($roleID && (substr($userRole,0,$subLen) == $subStr))
+		if ($role_id)
 		{
-			$userID = intval(substr($userRole,$subLen));
 			if ($bTestproject)
-				insertUserTestProjectRole($db,$userID,$featureID,$roleID);
+				insertUserTestProjectRole($db,$user_id,$featureID,$role_id);
 			else if ($bTestPlan)
-				insertUserTestPlanRole($db,$userID,$featureID,$roleID);
+				insertUserTestPlanRole($db,$user_id,$featureID,$role_id);
 		}
-		$sqlResult = 'ok';
-		$action = "updated";
 	}
+	$user_feedback=$roles_updated; 
 }
 $userData = getAllUsers($db);
 
@@ -125,18 +117,28 @@ else if($bTestPlan)
 }
 $roleList = getAllRoles($db);
 
+$can_manage_users = has_rights($db,"mgt_users");
+
 $smarty = new TLSmarty();
-$smarty->assign('mgt_users',has_rights($db,"mgt_users"));
+
+if( is_null($features) )
+{
+  $user_feedback=$no_features;
+}
+$smarty->assign('user_feedback',$user_feedback);
+
+$smarty->assign('mgt_users',$can_manage_users);
 $smarty->assign('role_management',has_rights($db,"role_management"));
-$smarty->assign('tp_user_role_assignment', has_rights($db,"mgt_users") ? "yes" : has_rights($db,"user_role_assignment"));
-$smarty->assign('tproject_user_role_assignment', has_rights($db,"mgt_users") ? "yes" : has_rights($db,"user_role_assignment",null,-1));
+$smarty->assign('tp_user_role_assignment', 
+                $can_manage_users ? "yes" : has_rights($db,"user_role_assignment"));
+$smarty->assign('tproject_user_role_assignment', 
+                $can_manage_users ? "yes" : has_rights($db,"user_role_assignment",null,-1));
+                
 $smarty->assign('optRights', $roleList);
 $smarty->assign('userData', $userData);
 $smarty->assign('userFeatureRoles',$userFeatureRoles);
 $smarty->assign('featureID',$featureID);
 $smarty->assign('feature',$feature);
-$smarty->assign('result',$sqlResult);
-$smarty->assign('action',$action);
 $smarty->assign('features',$features);
 $smarty->display('usersassign.tpl');
 ?>

@@ -1,6 +1,6 @@
 {* 
 Testlink: smarty template - 
-$Id: usersassign.tpl,v 1.7 2007/01/26 21:01:23 schlundus Exp $ 
+$Id: usersassign.tpl,v 1.8 2007/02/28 08:02:26 franciscom Exp $ 
 *}
 {include file="inc_head.tpl" jsValidate="yes"}
 
@@ -12,7 +12,7 @@ $Id: usersassign.tpl,v 1.7 2007/01/26 21:01:23 schlundus Exp $
 <div class="tabMenu">
 {if $mgt_users == "yes"}
 	<span class="unselected"><a href="lib/usermanagement/usersedit.php">{lang_get s='menu_new_user'}</a></span> 
-	<span class="unselected"><a href="lib/usermanagement/usersview.php">{lang_get s='menu_mod_user'}</a></span>
+	<span class="unselected"><a href="lib/usermanagement/usersview.php">{lang_get s='menu_view_users'}</a></span>
 {/if}
 {if $role_management == "yes"}
 	<span class="unselected"><a href="lib/usermanagement/rolesedit.php">{lang_get s='menu_define_roles'}</a></span> 
@@ -35,69 +35,81 @@ $Id: usersassign.tpl,v 1.7 2007/01/26 21:01:23 schlundus Exp $
 	{/if}
 </div>
 
-{include file="inc_update.tpl" result=$result item="$feature" action="$action"}
 
 <div class="workBack">
 
-<form method="post" action="lib/usermanagement/usersassign.php">
-	<input type="hidden" name="featureID" value="{$featureID}" />
-	<input type="hidden" name="feature" value="{$feature}" />
+  {include file="inc_update.tpl" result=$result item="$feature" action="$action" user_feedback=$user_feedback}
 
-	<p>
-	{if $feature == 'testproject'}
-		{lang_get s='caption_assign_testproject_user_roles'} - {lang_get s='TestProject'}
-		<select id="featureSel">
-		{foreach from=$features key=id item=f}
-		<option value="{$id}" 
-		{if $featureID == $id}
-			selected="selected" 
-		{/if}
-		>{$f|escape}</option>
-		{/foreach}
-		</select>
-	{else}
-		{lang_get s='caption_assign_testplan_user_roles'} - {lang_get s='TestPlan'}
-		<select id="featureSel">
-		{foreach from=$features item=f}
-		<option value="{$f.id}" 
-		{if $featureID == $f.id}
-			selected="selected" 
-		{/if}
-		>{$f.name|escape}</option>
-		{/foreach}
-		</select>
-	{/if}
-	<input type="button" value="{lang_get s='btn_change'}" onclick="changeFeature('{$feature}');"/>
-	
-	</p>
 
-	<table class="common" width="75%">
-	<tr>
-		<th>{lang_get s='User'}</th>
-		<th>{lang_get s='th_roles'}</th>
-	</tr>
-	{foreach from=$userData item=user}
-	<tr>
-		<td>{$user.fullname|escape}</td>
-		<td>
-			{assign var=uID value=$user.id}
-			<select name="userRole{$uID}"> 
-			{if $userFeatureRoles[$uID].role_id neq null}
-				{html_options options=$optRights selected=$userFeatureRoles[$uID].role_id}
-			{else}
-				{html_options options=$optRights selected=0}
-			{/if}
-				{$userFeatureRoles[pID]}
-			</select>
-		</td>
-	</tr>
-	{/foreach}
-	</table>
-	<div class="groupBtn">	
-		<input type="submit" name="do_update" value="{lang_get s='btn_upd_user_data'}" />
-	</div>
-</form>
-<hr />
+{* 20070227 - franciscom
+   Because this page can be reloaded due to a test project change done by
+   user on navBar.tpl, if method of form below is post we don't get
+   during refresh feature, and then we have a bad refresh on page gettin a bug.
+*}
+{if $features neq ''}
+  <form method="get" action="lib/usermanagement/usersassign.php">
+  	<input type="hidden" name="featureID" value="{$featureID}" />
+  	<input type="hidden" name="feature" value="{$feature}" />
+    
+    
+    	<p>
+    	{if $feature == 'testproject'}
+    		{lang_get s='caption_assign_testproject_user_roles'} - {lang_get s='TestProject'}
+    		<select id="featureSel">
+    		{foreach from=$features key=id item=f}
+    		<option value="{$id}" 
+    		{if $featureID == $id}
+    			selected="selected" 
+    		{/if}
+    		>{$f|escape}</option>
+    		{/foreach}
+    		</select>
+    	{else}
+    		{lang_get s='caption_assign_testplan_user_roles'} - {lang_get s='TestPlan'}
+    		<select id="featureSel">
+    		{foreach from=$features item=f}
+    		<option value="{$f.id}" 
+    		{if $featureID == $f.id}
+    			selected="selected" 
+    		{/if}
+    		>{$f.name|escape}</option>
+    		{/foreach}
+    		</select>
+    	{/if}
+    	<input type="button" value="{lang_get s='btn_change'}" onclick="changeFeature('{$feature}');"/>
+    	
+    	</p>
+    
+    	<table class="common" width="75%">
+    	<tr>
+    		<th>{lang_get s='User'}</th>
+    		<th>{lang_get s='th_roles'}</th>
+    	</tr>
+    	{foreach from=$userData item=user}
+    	<tr>
+    		<td>{$user.fullname|escape}</td>
+    		<td>
+    			{assign var=uID value=$user.id}
+    			<select name="userRole[{$uID}]"> 
+    			{if $userFeatureRoles[$uID].role_id neq null}
+    				{html_options options=$optRights selected=$userFeatureRoles[$uID].role_id}
+    			{else}
+    				{html_options options=$optRights selected=0}
+    			{/if}
+    				{$userFeatureRoles[pID]}
+    			</select>
+    		</td>
+    	</tr>
+    	{/foreach}
+    	</table>
+    	<div class="groupBtn">	
+    		<input type="submit" name="do_update" value="{lang_get s='btn_upd_user_data'}" />
+    	</div>
+  
+  </form>
+  <hr />
+{/if} {* if $features *}
+
 
 </div>
 

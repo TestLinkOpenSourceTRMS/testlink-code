@@ -1,5 +1,5 @@
 {* smarty template - view all keywords of product; ver. 1.0 *}
-{* $Id: rolesedit.tpl,v 1.8 2007/01/26 21:01:23 schlundus Exp $ *}
+{* $Id: rolesedit.tpl,v 1.9 2007/02/28 08:02:26 franciscom Exp $ *}
 {* Purpose: smarty template - create/edit user role *}
 {include file="inc_head.tpl"}
 
@@ -18,7 +18,7 @@ var warning_modify_role = "{lang_get s='warning_modify_role'}";
 <div class="tabMenu">
 {if $mgt_users == "yes"}
 	<span class="unselected"><a href="lib/usermanagement/usersedit.php">{lang_get s='menu_new_user'}</a></span> 
-	<span class="unselected"><a href="lib/usermanagement/usersview.php">{lang_get s='menu_mod_user'}</a></span>
+	<span class="unselected"><a href="lib/usermanagement/usersview.php">{lang_get s='menu_view_users'}</a></span>
 {/if}
 {if $role_management == "yes"}
 	<span class="selected">{lang_get s='menu_define_roles'}</span> 

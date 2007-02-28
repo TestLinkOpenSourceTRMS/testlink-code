@@ -1,6 +1,6 @@
 {* 
 Testlink: smarty template - 
-$Id: usersedit.tpl,v 1.9 2007/02/24 08:20:17 franciscom Exp $ 
+$Id: usersedit.tpl,v 1.10 2007/02/28 08:02:26 franciscom Exp $ 
 *}
 {* 
 
@@ -67,7 +67,7 @@ function validateForm(f)
 <div class="tabMenu">
 {if $mgt_users == "yes"}
   {if $userData neq null}
-	  <span class="selected">{lang_get s='menu_mod_user'}</span> 
+	  <span class="selected">{lang_get s='menu_view_users'}</span> 
 	{else}
 	  <span class="selected">{lang_get s='menu_new_user'}</span> 
 	{/if}

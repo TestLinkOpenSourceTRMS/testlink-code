@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.153 $
- * @modified $Date: 2007/02/28 07:40:53 $ $Author: kevinlevy $
+ * @version $Revision: 1.154 $
+ * @modified $Date: 2007/02/28 08:04:34 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
@@ -1608,6 +1608,12 @@ $TLS_title_del_tc = "Delete Test Case ";
 // lib/usermanagement/rolesview.php
 $TLS_error_role_deletion = "The role couldn't be deleted!";
 
+
+// lib/usermanagement/usersassign.php
+$TLS_no_test_projects="There are no Test Projects defined";
+$TLS_no_test_plans="There are no Test Plans defined for this Test Project";
+$TLS_test_project_user_roles_updated="User Roles updated";
+$TLS_test_plan_user_roles_updated="User Roles updated";
 
 
 // lib/usermanagement/usersedit.php

@@ -76,7 +76,7 @@ if ($lastResultMap) {
 } // end if
 
 $smarty = new TLSmarty;
-$smarty->assign('title', lang_get('title_test_report_all_builds'));
+$smarty->assign('title', $_SESSION['testPlanName'] . " " . lang_get('title_total_bugs_for_each_test_case'));
 $smarty->assign('arrData', $arrData);
 $smarty->assign('arrBuilds', $arrBuilds);
 $smarty->display('resultsBugs.tpl');

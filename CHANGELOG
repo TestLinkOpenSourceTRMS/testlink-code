@@ -3,16 +3,61 @@
    Changelog for TestLink
 ***************************************************************
 
-TestLink core development team of 1.7 version:
-
-	Andreas  Morsing  (schlundus)
-	Francisco  Mancardi  (fman)
-	Kevin  Levy  (kevin)
-	Martin  Havlat  (mhavlat)
+TestLink was developed by TestLink community:
+http://www.teamst.org/index.php?option=com_content&task=view&id=12&Itemid=31
 
 
-Testlink 1.7 BETA 1
+Testlink 1.7 RC 1
 =========================
+- 0000684: [Test Specification] Specification – Always a horizontal scroll bar in IE (schlundus)
+- 0000191: [New Feature] User should be able to add/remove a test case field (fman)
+- 0000642: [Test Execute] filter in test execution dont store user (fman)
+- 0000623: [General] Change to project without builds in Execution or Results (fman)
+- 0000621: [New Feature] Success messages should be green instead of red (fman)
+- 0000600: [User Interface General] Potential misleading user interface in Add Test Cases to TP (fman)
+- 0000644: [Test Plan (milestones, test assign)] Test Plan contents – Remove Test Case without checking (fman)
+- 0000670: [New Feature] Test Case specification - tree refresh configuration (fman)
+- 0000646: [User Management] selected navigation entry in user administration (fman)
+- 0000607: [Database MS-SQL] Errors while printing test cases (jbarchibald)
+- 0000584: [Test Specification] Print button is missing while printing the test case in HTML format (fman)
+- 0000665: [Keywords] Keyword Management – Edit button makes update (schlundus)
+- 0000663: [Test Project Management] Attachments no more listed after updating a Test Suite (schlundus)
+- 0000031: [New Feature] [SF 931429 ] Support for testing of different platforms (fman)
+- 0000108: [New Feature] Need the ability to execute testcases, store and view results for a single build multiple times. (fman)
+- 0000165: [New Feature] Insert new feature that allow to create personal fields for Test Case, requirement, Test Plan (fman)
+- 0000357: [New Feature] Hide Test Cases (fman)
+- 0000264: [New Feature] Time Metrics - Time of test execution (fman)
+- 0000395: [New Feature] Additional Test Case Field for Intended Browser/Platform (fman)
+- 0000637: [Test Plan (milestones, test assign)] Adding test cases - Very easy to lose all the execution information (schlundus)
+- 0000612: [Database MS-SQL] $g_ui_show_check_filter_tp_by_testproject = FALSE not working (jbarchibald)
+- 0000569: [Installer] Project converstion - not converting active status (jbarchibald)
+- 0000589: [Test Plan (milestones, test assign)] In Assign Test Case execution section “check all” is not functioning. (fman)
+- 0000625: [Integration with Other Systems] Mantis integration - undefined constant _bugInterface (schlundus)
+- 0000576: [Reports, Metrics, Export and Print] While printing the SRS document extra space is coming in between. (schlundus)
+- 0000597: [User Interface General] GUI error when user hasn't email configured and wants to send Results per Mail (schlundus)
+- 0000592: [Reports, Metrics, Export and Print] Problem in printing the test plans. (schlundus)
+- 0000579: [General] Increase the height of JTREE displaying the testcases. (schlundus)
+- 0000602: [Test Specification] Import Test cases throws error (schlundus)
+- 0000580: [General] While importing the keywords if you select CSV as option, it takes us to page cannot found. (schlundus)
+- 0000591: [Test Execute] In Test Execution phase if you select the keyword and update menu it takes you to page not found (schlundus)
+- 0000053: [New Feature] [SF 1163318 ] don't use /icons for images (fman)
+- 0000574: [User Management] While updating the role success message shows “LOCALIZE:” (schlundus)
+- 0000575: [General] While displaying the SRS document GUI has to be improved here (schlundus)
+- 0000581: [Localization] While assigning Keywords to TC it shows “LOCALIZE” in success message (schlundus)
+- 0000594: [Reports, Metrics, Export and Print] Requirements based reports are showing some error. (schlundus)
+- 0000573: [User Management] “LOCALIZE:” is been displayed while adding the user (schlundus)
+- 0000557: [Installer] Data Conversion from 1.6.2 failing (jbarchibald)
+- 0000566: [Localization] Update to localization (schlundus)
+- 0000561: [Test Execute] Notes/Results boxes do not resize (schlundus)
+- 0000565: [Database MS-SQL] Undefined variable warning at login (schlundus)
+- 0000564: [Reports, Metrics, Export and Print] Print options checkboxes do not change the printed document (schlundus)
+- 0000560: [Test Execute] Test case box contains two empty boxes. (schlundus)
+- 0000552: [Localization] Missing Translations (schlundus)
+- 0000553: [Localization] Query Metrics Report strings (schlundus)
+- 0000551: [General] Upload/Import broken. tcimport (schlundus)
+- 0000554: [Test Specification (tc, comp, cat)] Creating new Test Case - Keywords boxes are fixed size (schlundus)
+- 0000388: [New Feature] Assign Tester by Test Case not by Category (fman)
+- 0000040: [New Feature] [SF 1110037 ] Ownership of Test Plans (mhavlat)
 - 0000464: [User Interface General] Debug output on the import page (schlundus)
 - 0000438: [Installer] Installer stops on message (fman)
 - 0000416: [Product Management] Product edit/delete option should be dropdown or not allow text to be typed. Wrong product might get deleted. (mhavlat)

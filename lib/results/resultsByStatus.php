@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsByStatus.php,v 1.39 2007/02/23 00:24:09 kevinlevy Exp $ 
+* $Id: resultsByStatus.php,v 1.40 2007/02/28 07:04:06 kevinlevy Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -183,7 +183,8 @@ function getTCLink($rights, $tcID,$tcversionID, $title, $buildID)
 }
 
 $smarty = new TLSmarty;
-$smarty->assign('title', $title);
+$smarty->assign('title', $_SESSION['testPlanName'] . " " . $title);
+//$smarty->assign('title', $title);
 $smarty->assign('arrBuilds', $arrBuilds); 
 $smarty->assign('arrData', $arrData);
 

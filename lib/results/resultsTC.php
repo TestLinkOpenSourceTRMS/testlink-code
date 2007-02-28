@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsTC.php,v 1.26 2007/02/07 04:50:18 kevinlevy Exp $ 
+* $Id: resultsTC.php,v 1.27 2007/02/28 07:08:47 kevinlevy Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -94,7 +94,7 @@ if ($lastResultMap != null) {
 } // end if
 
 $smarty = new TLSmarty;
-$smarty->assign('title', lang_get('title_test_report_all_builds'));
+$smarty->assign('title', $_SESSION['testPlanName'] .  " " . lang_get('title_test_report_all_builds'));
 $smarty->assign('arrData', $arrData);
 $smarty->assign('arrBuilds', $arrBuilds);
 $report_type = isset($_GET['report_type']) ? intval($_GET['report_type']) : null;

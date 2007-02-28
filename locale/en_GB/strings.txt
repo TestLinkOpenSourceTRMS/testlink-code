@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.152 $
- * @modified $Date: 2007/02/27 19:56:24 $ $Author: schlundus $
+ * @version $Revision: 1.153 $
+ * @modified $Date: 2007/02/28 07:40:53 $ $Author: kevinlevy $
  *
  * @author Francisco Mancardi
  *
@@ -975,8 +975,7 @@ $TLS_select_owner_header = "Select Owner";
 $TLS_select_report_format_header = "Select Report Format";
 $TLS_submit_query = "Submit Query";
 $TLS_test_plan_header = "Test Plan: ";
-
-
+$TLS_query_metrics_report = "Query Metrics Report";
 
 // gui/templates/resultsMoreBuilds_report.tpl
 $TLS_caption_show_collapse = "Show / Collapse";

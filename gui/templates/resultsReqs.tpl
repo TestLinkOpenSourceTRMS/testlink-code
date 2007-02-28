@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsReqs.tpl,v 1.7 2007/01/25 14:04:47 franciscom Exp $
+$Id: resultsReqs.tpl,v 1.8 2007/02/28 07:54:12 kevinlevy Exp $
 Purpose: report REQ coverage 
 Author Martin Havlat 
 
@@ -19,7 +19,7 @@ Author Martin Havlat
  {assign var="text_hint" value="$common_prefix: $xx_alt"}
  {include file="inc_help.tpl" help="requirementsCoverage" locale=$locale 
           alt="$text_hint" title="$text_hint"  style="float: right;"}
- {lang_get s='title_result_req_testplan'} {$arrReqSpec[$selectedReqSpec]|escape} - {lang_get s='title_test_plan'}
+ {$tpName} : {lang_get s='title_result_req_testplan'} {$arrReqSpec[$selectedReqSpec]|escape}
 </h1>
 
 <div class="workBack">

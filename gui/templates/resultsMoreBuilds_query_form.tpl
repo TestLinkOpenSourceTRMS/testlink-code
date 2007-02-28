@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsMoreBuilds_query_form.tpl,v 1.38 2007/02/21 05:55:51 kevinlevy Exp $
+$Id: resultsMoreBuilds_query_form.tpl,v 1.39 2007/02/28 07:42:31 kevinlevy Exp $
 @author Francisco Mancardi - fm - start solving BUGID 97/98
 20051022 - scs - removed ' in component id values
 20051121 - scs - added escaping of tpname
@@ -9,7 +9,7 @@ $Id: resultsMoreBuilds_query_form.tpl,v 1.38 2007/02/21 05:55:51 kevinlevy Exp $
 *}
 {include file="inc_head.tpl"}
 <body>
-<h1>{lang_get s='test_plan_header'} {$testPlanName|escape}</h1>
+<h1> {$testPlanName|escape} {lang_get s='query_metrics_report'}</h1>
 <div class="workBack">
 <form action="lib/results/resultsMoreBuilds_buildReport.php?report_type={$report_type}" method="POST">
 	<table class="simple" style="width: 100%; text-align: center; margin-left: 0px;">

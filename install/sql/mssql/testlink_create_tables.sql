@@ -1,13 +1,14 @@
 --  -----------------------------------------------------------------------------------
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.10 2007/01/31 14:15:19 franciscom Exp $
+-- $Id: testlink_create_tables.sql,v 1.11 2007/02/28 17:16:11 franciscom Exp $
 --
 -- SQL script - create db tables for TL
 -- Database Type: Microsoft SQL Server
 -- 
 -- Rev :
 --
+--       20070228 - franciscom -  BUGID 697 - builds table
 --       20070131 - franciscom - requirements -> req_doc_id(32), 
 --
 --       20070120 - franciscom - following BUGID 458 ( really a new feature request)
@@ -311,8 +312,8 @@ CREATE TABLE [dbo].[builds](
 	[testplan_id] [int] NOT NULL CONSTRAINT [DF_builds_testplan_id]  DEFAULT ((0)),
 	[name] [nvarchar](100) COLLATE Latin1_General_CI_AS NOT NULL CONSTRAINT [DF_builds_name]  DEFAULT (N'undefined'),
 	[notes] [ntext] COLLATE Latin1_General_CI_AS NULL,
-  [active] [tinyint] NOT NULL CONSTRAINT [DF_testplans_active]  DEFAULT ((1)),
-	[open] [tinyint] NOT NULL CONSTRAINT [DF_testplans_open]  DEFAULT ((1)),	
+  [active] [tinyint] NOT NULL CONSTRAINT [DF_builds_active]  DEFAULT ((1)),
+	[open] [tinyint] NOT NULL CONSTRAINT [DF_builds_open]  DEFAULT ((1)),	
  CONSTRAINT [PK_builds] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC

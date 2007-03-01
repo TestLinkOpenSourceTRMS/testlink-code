@@ -1,9 +1,9 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: login.tpl,v 1.8 2007/02/05 07:59:38 franciscom Exp $
+$Id: login.tpl,v 1.9 2007/03/01 16:10:12 franciscom Exp $
 Purpose: smarty template - login page 
 
-20060819 - franciscom - css changes, smarty config file
+20070301 - franciscom - BUGID 695 (fawel contribute)
 *}
 {include file="inc_head.tpl" title="TestLink - Login" openHead='yes'}
 <script language="JavaScript" src="gui/javascript/rounded.js" type="text/javascript"></script>
@@ -28,7 +28,10 @@ Purpose: smarty template - login page
 	</form>
 	
 	<p>
-	<a href="firstLogin.php">{lang_get s='new_user_q'}</a><br />
+	{* BUGID 695 *} 
+	{if $g_user_self_signup eq true}
+	  <a href="firstLogin.php">{lang_get s='new_user_q'}</a><br />
+	{/if}
 	<a href="lostPassword.php">{lang_get s='lost_password_q'}</a>
 	</p>
 

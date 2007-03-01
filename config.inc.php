@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.103 $
- * @modified $Date: 2007/02/26 08:01:43 $ by $Author: franciscom $
+ * @version $Revision: 1.104 $
+ * @modified $Date: 2007/03/01 16:10:11 $ by $Author: franciscom $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink 
@@ -14,6 +14,9 @@
  *-----------------------------------------------------------------------------
  *
  * Revisions:
+ *
+ *           20070301 - franciscom - 
+ *           BUGID 695 - $g_user_self_signup (fawel contribute)
  *
  *-----------------------------------------------------------------------------
  **/
@@ -571,7 +574,14 @@ else
   define('REFRESH_SPEC_TREE','no');
 }
 
-
+//
+// [LOGIN]
+//
+// Allow Users to create their own accounts by new user link on login page
+// TRUE => allow [STANDARD BEHAVIOUR]
+// FALSE => disallow
+//
+$g_user_self_signup = TRUE; 
 
 
 // ----- End of Config ------------------------------------------------

@@ -5,11 +5,15 @@
  *
  * Filename $RCSfile: login.php,v $
  *
- * @version $Revision: 1.19 $
- * @modified $Date: 2007/02/13 13:04:10 $ by $Author: franciscom $
+ * @version $Revision: 1.20 $
+ * @modified $Date: 2007/03/01 16:10:11 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
- * The page allows adjust login data
+ * Login management
+ *
+ * rev :
+ *       20070301 - franciscom - BUGID 695 (fawel contribute)
+ *
  **/
 require_once('lib/functions/configCheck.php');
 checkConfiguration();
@@ -73,6 +77,10 @@ switch($note)
 $securityNotes = getSecurityNotes($db);
 
 $smarty = new TLSmarty();
+
+// 20070301 - BUGID 695
+$smarty->assign('g_user_self_signup', config_get('user_self_signup'));
+
 $smarty->assign('login_logo', LOGO_LOGIN_PAGE);
 $smarty->assign('securityNotes',$securityNotes);
 $smarty->assign('note',$message);

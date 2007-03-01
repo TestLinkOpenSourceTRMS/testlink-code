@@ -1,13 +1,14 @@
 --  -----------------------------------------------------------------------------------
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.11 2007/02/28 17:16:11 franciscom Exp $
+-- $Id: testlink_create_tables.sql,v 1.12 2007/03/01 08:08:49 franciscom Exp $
 --
 -- SQL script - create db tables for TL
 -- Database Type: Microsoft SQL Server
 -- 
 -- Rev :
 --
+--       20070228 - franciscom -  BUGID 697 - priority table
 --       20070228 - franciscom -  BUGID 697 - builds table
 --       20070131 - franciscom - requirements -> req_doc_id(32), 
 --
@@ -343,10 +344,11 @@ GO
 IF NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[dbo].[priorities]') AND OBJECTPROPERTY(id, N'IsUserTable') = 1)
 BEGIN
 CREATE TABLE [dbo].[priorities](
-	[id] [int] IDENTITY(1,1) NOT NULL,
-	[testplan_id] [int] NOT NULL CONSTRAINT [DF_priorities_testplan_id]  DEFAULT ((0)),
-	[risk_importance] [nchar](2) COLLATE Latin1_General_CI_AS NOT NULL,
-	[priority] [nchar](1) COLLATE Latin1_General_CI_AS NOT NULL CONSTRAINT [DF_priorities_priority]  DEFAULT (N'b'),
+    [id] [int] IDENTITY(1,1) NOT NULL,
+    [testplan_id] [int] NOT NULL CONSTRAINT [DF_priorities_testplan_id] DEFAULT ((0)),
+    [risk] [nchar](1) COLLATE Latin1_General_CI_AS NOT NULL,
+    [importance] [nchar](1) COLLATE Latin1_General_CI_AS NOT NULL,
+    [priority] [nchar](1) COLLATE Latin1_General_CI_AS NOT NULL CONSTRAINT [DF_priorities_priority] DEFAULT (N'b'),	
  CONSTRAINT [PK_priorities] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC

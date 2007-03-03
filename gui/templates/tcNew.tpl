@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcNew.tpl,v 1.21 2007/02/23 23:26:23 schlundus Exp $
+$Id: tcNew.tpl,v 1.22 2007/03/03 08:39:03 franciscom Exp $
 Purpose: smarty template - create new testcase
 
 20070214 - franciscom -
@@ -54,7 +54,7 @@ function validateForm(f)
 <div class="workBack">
 <h1>{lang_get s='title_new_tc'}</h1>
 
-{include file="inc_update.tpl" result=$sqlResult item="testcase" name=$name}
+{include file="inc_update.tpl" result=$sqlResult item="testcase" name=$name user_feedback=$user_feedback}
 
 <form method="post" action="lib/testcases/tcEdit.php?containerID={$containerID}"
       name="tc_new" id="tc_new"
@@ -67,6 +67,14 @@ function validateForm(f)
 	</div>	
 
   {include file="tcEdit_New_viewer.tpl"}
+
+  <br>
+	<div style="margin-right:5px;float: right;">
+			<input type="hidden" id="do_create_2"  name="do_create" value="do_create" />
+			<input type="submit" id="do_create_button_2"  name="do_create_button" value="{lang_get s='btn_create'}" />
+	</div>	
+	<br/>
+
 
 </form>
 </div>

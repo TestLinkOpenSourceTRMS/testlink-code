@@ -4,10 +4,11 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.54 $
- * @modified $Date: 2007/02/23 23:26:23 $  by $Author: schlundus $
+ * @version $Revision: 1.55 $
+ * @modified $Date: 2007/03/03 08:39:15 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
+ * 20070302 - franciscom - BUGID
  * 20070220 - franciscom - automatic tree refresh management
  * 20070218 - franciscom - added $g_spec_cfg->automatic_tree_refresh to the
  *                         refresh tree logic
@@ -111,6 +112,8 @@ $tproject_mgr = new testproject($db);
 $tree_mgr = new tree($db);
 $tsuite_mgr = new testsuite($db);
 
+$user_feedback='';
+
 if($container_id > 0 )
 {
   $pnode_info = $tree_mgr->get_node_hierachy_info($container_id);    
@@ -168,7 +171,8 @@ if($edit_tc)
     $cf_smarty = '';
     if($gui_cfg->enable_custom_fields) 
     {
-		$cf_smarty = $tcase_mgr->html_table_of_custom_field_inputs($tcase_id);
+		  //echo "<pre>debug 20070302 \$cf_smarty" . __FUNCTION__ . " --- "; print_r($cf_smarty); echo "</pre>";
+		  $cf_smarty = $tcase_mgr->html_table_of_custom_field_inputs($tcase_id);
     }
     $smarty->assign('cf',$cf_smarty);	
    	$smarty->assign('tc', $tc_data[0]);
@@ -208,7 +212,7 @@ else if($do_update)
 			$ENABLED=1;
 			$NO_FILTER_SHOW_ON_EXEC=null;
 			$cf_map=$tcase_mgr->cfield_mgr->get_linked_cfields_at_design($testproject_id,$ENABLED,$NO_FILTER_SHOW_ON_EXEC,
-			                        'testcase') ;
+			                                                             'testcase') ;
 			$tcase_mgr->cfield_mgr->design_values_to_db($_REQUEST,$tcase_id);
 		}
 	}	
@@ -229,19 +233,33 @@ else if($do_create)
 	
 	if ($name_ok)
 	{
-    	define('AUTOMATIC_ID',0);
+   	define('AUTOMATIC_ID',0);
 
-		$msg = lang_get('error_tc_add');
+		$user_feedback = lang_get('error_tc_add');
+    $sqlResult='ko';
 		$tcase=$tcase_mgr->create($container_id,$name,$summary,$steps,
 		                          $expected_results,$userID,$assigned_keywords_list,
 		                          $order_cfg->default_testcase_order,AUTOMATIC_ID,
 		                          config_get('check_names_for_duplicates'),'block');
-		$msg = $tcase['msg'];                       
+		                          
+		// 20070302 
+		if($tcase['status_ok'] && $gui_cfg->enable_custom_fields )
+		{
+			$ENABLED=1;
+			$NO_FILTER_SHOW_ON_EXEC=null;
+			$cf_map=$tcase_mgr->cfield_mgr->get_linked_cfields_at_design($testproject_id,$ENABLED,$NO_FILTER_SHOW_ON_EXEC,
+			                                                             'testcase') ;
+			$tcase_mgr->cfield_mgr->design_values_to_db($_REQUEST,$tcase['id']);
+
+      $user_feedback=sprintf(lang_get('tc_created'),$name);
+      $sqlResult='ok';        
+		}
 	}
 
 	keywords_opt_transf_cfg($opt_cfg, $assigned_keywords_list); 
  	$smarty->assign('opt_cfg', $opt_cfg);
- 	$smarty->assign('sqlResult', $msg);
+ 	$smarty->assign('sqlResult', $sqlResult);
+	$smarty->assign('user_feedback', $user_feedback);
 	$smarty->assign('testcase_name', $name);
 	$smarty->assign('item', 'testcase');
 }
@@ -427,6 +445,16 @@ if ($show_newTC_form)
 		$of->Value = "";
 		$smarty->assign($key, $of->CreateHTML());
 	}
+
+  // ------------------------------------------------------------------------------------------------------
+  // 20070302 - franciscom
+  $cf_smarty = '';
+  if($gui_cfg->enable_custom_fields) 
+  {
+	  $cf_smarty = $tcase_mgr->html_table_of_custom_field_inputs($tcase_id,$container_id);
+  }
+  $smarty->assign('cf',$cf_smarty);	
+	// ------------------------------------------------------------------------------------------------------
 	
 	$smarty->display($g_tpl['tcNew']);
 }

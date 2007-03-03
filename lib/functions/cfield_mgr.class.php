@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: cfield_mgr.class.php,v $
- * @version $Revision: 1.9 $
- * @modified $Date: 2007/02/27 15:02:53 $  $Author: franciscom $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2007/03/03 08:39:14 $  $Author: franciscom $
  * @author franciscom
  *
  * 20070227 - franciscom - BUGID 677
@@ -205,7 +205,8 @@ class cfield_mgr
          $additional_filter .
          " ORDER BY display_order ";
     
-    
+    // echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
+
     $map = $this->db->fetchRowsIntoMap($sql,'id');     
     return($map);                                 
   }

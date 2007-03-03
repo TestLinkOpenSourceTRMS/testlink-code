@@ -2,11 +2,12 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.50 $
- * @modified $Date: 2007/02/23 23:26:23 $ $Author: schlundus $
+ * @version $Revision: 1.51 $
+ * @modified $Date: 2007/03/03 08:39:14 $ $Author: franciscom $
  * @author franciscom
  *
  *
+ * 20070302 - franciscom - fixed bug on get_linked_cfields_at_design()
  * 20070222 - franciscom - minor fix html_table_of_custom_field_values()
  * 20070105 - franciscom - changes in copy_to(),get_by_id()
  *
@@ -244,9 +245,9 @@ function show(&$smarty,$id, $user_id, $version_id=TC_ALL_VERSIONS, $action='',
               $msg_result='', $refresh_tree='yes')
 {
   
-  	$gui_cfg = config_get('gui');
+  $gui_cfg = config_get('gui');
 	$the_tpl = config_get('tpl');
-  	$tcase_cfg = config_get('testcase_cfg');
+  $tcase_cfg = config_get('testcase_cfg');
 
 	$arrReqs = null;
 	$can_edit = has_rights($this->db,"mgt_modify_tc");
@@ -296,7 +297,7 @@ function show(&$smarty,$id, $user_id, $version_id=TC_ALL_VERSIONS, $action='',
     $cf_smarty=null;
     if( $gui_cfg->enable_custom_fields ) 
     {
-		$cf_smarty[] = $this->html_table_of_custom_field_values($tc_id);
+		  $cf_smarty[] = $this->html_table_of_custom_field_values($tc_id);
     }
     $smarty->assign('cf',$cf_smarty);	
  	}
@@ -316,66 +317,6 @@ function show(&$smarty,$id, $user_id, $version_id=TC_ALL_VERSIONS, $action='',
 	$smarty->assign('opt_requirements', isset($_SESSION['testprojectOptReqs']) ? $_SESSION['testprojectOptReqs'] : null); 	
 	$smarty->assign('keywords_map',$keywords_map);
 	$smarty->display($the_tpl['tcView']);
-}
-
-
-
-/*
-  function: viewer_edit_new
-            
-            
-  args: 
-  
-  returns: -
-  
-*/
-function viewer_edit_new($amy_keys, $oFCK, $action, $parent_id, $id=null)
-{
-	$a_tpl = array( 'edit_testsuite' => 'containerEdit.tpl',
-					        'new_testsuite'  => 'containerNew.tpl');
-	
-
-	$the_tpl = $a_tpl[$action];
-	$smarty = new TLSmarty();
-	$smarty->assign('sqlResult', null);
-	$smarty->assign('containerID',$parent_id);	 
-	
-	$the_data = null;
-	if ($action == 'edit_testsuite')
-	{
-		$the_data = $this->get_by_id($id);
-		$name = $the_data['name'];
-		$smarty->assign('containerID',$id);	
-	
-	
-    // --------------------------------------------------------------------------------
-    // 20061226 - franciscom
-    // Custom fields
-    if( $gui_cfg->enable_custom_fields ) 
-    {
-      $cf_smarty = $this->html_table_of_custom_field_inputs($id,$parent_id);
-    } // if( $gui_cfg
-    
-    $smarty->assign('cf',$cf_smarty);	
-    // --------------------------------------------------------------------------------
-	}
-	
-	// fckeditor 
-	foreach ($amy_keys as $key)
-	{
-		// Warning:
-		// the data assignment will work while the keys in $the_data are identical
-		// to the keys used on $oFCK.
-		$of = &$oFCK[$key];
-		$of->Value = isset($the_data[$key]) ? $the_data[$key] : null;
-		$smarty->assign($key, $of->CreateHTML());
-	}
-	
-	$smarty->assign('level', 'testsuite');
-	$smarty->assign('name',$name);
-	$smarty->assign('container_data',$the_data);
-	
-	$smarty->display($the_tpl);
 }
 
 
@@ -1368,18 +1309,25 @@ function update_active_status($id,$tcversion_id,$active_status)
         
         
   returns: hash
+  
+  rev :
+       20070302 - check for $id not null, is not enough, need to check is > 0
+       
 */
 function get_linked_cfields_at_design($id,$parent_id=null,$show_on_execution=null) 
 {
 	$enabled = 1;
 	$tproject_mgr = new testproject($this->db);
 	
-	$the_path = $this->tree_manager->get_path_new(!is_null($id) ? $id : $parent_id);
+	// 20070302 - added $id > 0
+	$the_path = $this->tree_manager->get_path_new( (!is_null($id) && $id > 0) ? $id : $parent_id);
 	$path_len = count($the_path);
 	$tproject_id = ($path_len > 0)? $the_path[$path_len-1]['parent_id'] : $parent_id;
 	
 	$cf_map = $this->cfield_mgr->get_linked_cfields_at_design($tproject_id,$enabled,
-	                                                      $show_on_execution,'testcase',$id);
+	                                                          $show_on_execution,'testcase',$id);
+	
+	// echo "<pre>debug 20070302 \$cf_map" . __FUNCTION__ . " --- "; print_r($cf_map); echo "</pre>";
 	return $cf_map;
 }
 
@@ -1415,6 +1363,7 @@ function html_table_of_custom_field_inputs($id,$parent_id=null,$scope='design',$
 	
 	if(!is_null($cf_map))
 	{
+	  // echo "<pre>debug 20070302 \$cf_map" . __FUNCTION__ . " --- "; print_r($cf_map); echo "</pre>";
 		$cf_smarty = "<table>";
 		foreach($cf_map as $cf_id => $cf_info)
 		{
@@ -1464,6 +1413,7 @@ function html_table_of_custom_field_values($id,$scope='design',$show_on_executio
     
 	if(!is_null($cf_map))
 	{
+	  // echo "<pre>debug 20070302 \$cf_map" . __FUNCTION__ . " --- "; print_r($cf_map); echo "</pre>";
 		foreach($cf_map as $cf_id => $cf_info)
 		{
 			// if user has assigned a value, then node_id is not null

@@ -4,17 +4,21 @@
  *
  * Filename $RCSfile: int_mantis.php,v $
  *
- * @version $Revision: 1.9 $
- * @modified $Date: 2006/11/02 21:47:12 $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2007/03/03 08:35:41 $ $Author: franciscom $
  *
- * @author Francisco Mancardi - 20050916 - refactoring
  * @author Andreas Morsing
  *
  * Constants used throughout TestLink are defined within this file
  * they should be changed for your environment
  *
- * 20051202 - scs - added returning null in some cases
- * 20051229 - scs - added ADOdb support
+ * 20070302 - BUGID 
+ * Problems on getBugSummaryString($id), when DB is MS SQL
+ * On MS-SQL fetch_array() does not returns numeric indexes, then
+ * only choice is accessing my field name (IMHO better)
+ *
+ * Removed also DBNAME on Queries because causes problems with MS-SQL
+ *
 **/
 /** Interface name */
 define('BUG_INTERFACE_CLASSNAME',"mantisInterface");
@@ -56,7 +60,10 @@ class mantisInterface extends bugtrackingInterface
 
 		$status = false;
 		
-		$query = "SELECT status FROM {$this->m_dbName}.mantis_bug_table WHERE id='" . $id."'";
+		// 20070302 - {$this->m_dbName}.mantis_bug_table -> mantis_bug_table
+		// Problems with MS-SQL
+		$query = "SELECT status FROM mantis_bug_table WHERE id='" . $id."'";
+		
 		$result = $this->m_dbConnection->exec_query($query);
 		if ($result)
 		{
@@ -110,13 +117,19 @@ class mantisInterface extends bugtrackingInterface
 			return false;
 
 		$status = null;
-		$query = "SELECT summary FROM {$this->m_dbName}.mantis_bug_table WHERE id='" . $id."'";
+		// 20070302 - {$this->m_dbName}.mantis_bug_table -> mantis_bug_table
+		// Problems with MS-SQL
+		$query = "SELECT summary FROM mantis_bug_table WHERE id='" . $id."'";
+		
 		$result = $this->m_dbConnection->exec_query($query);
 		if ($result)
 		{
 			$summary = $this->m_dbConnection->fetch_array($result);
+
+			// 20070302 - BUGID - on MS-SQL fetch_array() does not returns numeric indexes, then
+			//                    only choice is accessing my field name (IMHO better)
 			if ($summary)
-				$summary = $summary[0];
+				$summary = $summary['summary'];
 			else
 				$summary = null;
 		}

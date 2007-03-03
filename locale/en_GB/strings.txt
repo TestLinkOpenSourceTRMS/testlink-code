@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.155 $
- * @modified $Date: 2007/02/28 15:37:14 $ $Author: franciscom $
+ * @version $Revision: 1.156 $
+ * @modified $Date: 2007/03/03 08:39:37 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
@@ -88,6 +88,13 @@ $TLS_medium_risk = "Medium";
 $TLS_high_importance = "High";
 $TLS_low_importance = "Low";
 $TLS_medium_importance = "Medium";
+
+
+// tcEdit.php
+$TLS_tc_created = "Test Case %s was succesfully created";
+$TLS_tc_deleted = "Test Case %s was succesfully deleted";
+$TLS_tc_updated = "Test Case %s was succesfully updated";
+$TLS_tc_update_failed = "Update of Test Case %s failed!";
 
 
 // gui/templates/attachment404.tpl
@@ -1342,7 +1349,7 @@ $TLS_stmp_host_unconfigured = "SMTP host not properly configured!";
 $TLS_attachments_dir = "directory for attachments:";
 $TLS_bts_connection_problems = "Connection to your Bug Tracking System has failed:<br> 
                                 Please check your configuration.<br>
-                                Be careful this problem will degrade the TestLink performance.";
+                                Be careful this problem will degrade TestLink performance.";
 $TLS_but_directory_is_not_writable = "The directory is not writable!";
 $TLS_directory_is_writable = "The directory is writable";
 $TLS_does_not_exist = "does not exist";

@@ -1,16 +1,10 @@
 <?php
 /* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: installUtils.php,v 1.20 2007/01/31 14:15:19 franciscom Exp $ 
+$Id: installUtils.php,v 1.21 2007/03/03 08:37:05 franciscom Exp $ 
 
-20060428 - franciscom - new function check_db_loaded_extension()
-20060214 - franciscom - added warning regarding valid database names
-20060108 - fm - removed some functions
-20051231 - fm - changes due to ADODB
-20051002 - fm - messages changes
-20050925 - fm - changes to getDirFiles()
-20050910 - fm - refactoring
-20050830 - fm - added check_php_settings()
+20070302 - franciscom - changed PHP minimun required versions
+
 */
 
 
@@ -21,8 +15,6 @@ $Id: installUtils.php,v 1.20 2007/01/31 14:15:19 franciscom Exp $
 // +----------------------------------------------------------------------+
 //
 // 20070131 - franciscom - now returns an array
-//
-// 20050925 - added sort()
 function getDirFiles($dirPath, $add_dirpath=0)
 {
 $aFileSets=array(); 
@@ -71,7 +63,7 @@ return $aFileSets;
 // | Authors: Jo�o Prado Maia <jpm@mysql.com>                             |
 // +----------------------------------------------------------------------+
 //
-// @(#) $Id: installUtils.php,v 1.20 2007/01/31 14:15:19 franciscom Exp $
+// @(#) $Id: installUtils.php,v 1.21 2007/03/03 08:37:05 franciscom Exp $
 //
 
 // a foolish wrapper - 20051231 - fm
@@ -179,7 +171,6 @@ $user_list = getUserList($db,$db_type);
 $login_lc = strtolower($login);
 $msg = "ko - fatal error - can't get db server user list !!!";
 
-// 20060514 - franciscom
 if (!is_null($user_list) && count($user_list) > 0) 
 {
 
@@ -247,9 +238,12 @@ return($msg);
 
 
 /*
+  function: close_html_and_exit()
 
-Rev : 
-     20050724 - fm
+  args :
+  
+  returns: 
+
 */
 function close_html_and_exit()
 {
@@ -271,7 +265,12 @@ exit;
 
 
 /*
-20060729 - franciscom - added [$dirs_to_check]
+  function: check_with_feedback()
+
+  args : [$dirs_to_check]
+  
+  returns: 
+
 */
 function check_with_feedback($dirs_to_check=null)
 {
@@ -327,20 +326,22 @@ return($ret);
 }  //function end
 
 
+/*
+  function: check_php_version()
 
-// 
-// 20060825 - franciscom - added argument to point to info
-// 20050910 - fm
-// added warning regarding possible problems between MySQL and PHP on windows systems
-// due to MySQL password algorithm.
-//
+  args : [$info_location]
+  
+  returns: 
+
+  rev :
+        - added argument to point to info
+        - added warning regarding possible problems between MySQL and PHP 
+          on windows systems due to MySQL password algorithm.
+*/
 function check_php_version($info_location="./info/")
 {
-//$min_ver = "5.0.0";
-//$ver_not_tested="5.2.0";
-
-$min_ver = "4.1.0";
-$ver_not_tested="5.0.0";
+$min_ver = "5.2.0";
+$ver_not_tested="";
 
 
 $errors=0;	
@@ -351,7 +352,13 @@ $my_version = phpversion();
 // version_compare:
 // -1 if left is less, 0 if equal, +1 if left is higher
 $php_ver_comp =  version_compare($my_version, $min_ver);
-$check_not_tested = version_compare($my_version, $ver_not_tested);
+
+$has_ver_not_tested=strlen(trim($ver_not_tested)) > 0;
+$check_not_tested = -1;
+if($has_ver_not_tested)
+{
+  $check_not_tested = version_compare($my_version, $ver_not_tested);
+}
 
 if($php_ver_comp < 0) 
 {
@@ -361,26 +368,30 @@ if($php_ver_comp < 0)
 } 
 else if($check_not_tested >= 0) 
 {
-  // 20051218 - fm - Just a Warning
+  // Just a Warning
   $final_msg .= "<br><span class='ok'>WARNING! You are running on PHP " . $my_version . 
                 ", and TestLink has not been tested on versions >= " . $ver_not_tested . "</span>";
 }
 else 
 {
-	$final_msg .= "<span class='ok'>OK! (" . 
-	              $min_ver . " <= " .$my_version . "[your version] < " . $ver_not_tested . " [not tested yet]  )</span>";
+	$final_msg .= "<span class='ok'>OK! ( {$min_ver} [minimun version] ";
+	$final_msg .= ($php_ver_comp == 0 ? " = " : " <= ");
+	$final_msg .=	$my_version . " [your version] " ;
+	              
+	if( $has_ver_not_tested )
+	{
+	  $final_msg .= " < {$ver_not_tested} [not tested yet]";
+	}              
+  $final_msg .= " ) </span>";
 }
 
 
-
-
-
-// 20050910 - fm
 $os_id = strtoupper(substr(PHP_OS, 0, 3));
 if( strcmp('WIN',$os_id) == 0 )
 {
   $final_msg .= "<p><center><span class='notok'>" . 
-  	            "Warning!: You are using a M$ Operating System, be careful with authentication problems <br>" .
+  	            "Warning!: You are using a M$ Operating System, " .
+  	            "be careful with authentication problems <br>" .
   	            "          between PHP 4 and the new MySQL 4.1.x passwords<br>" . 
   	            'Read this <A href="' . $info_location . 'MySQL-RefManual-A.2.3.pdf">' .
   	            "MySQL - A.2.3. Client does not support authentication protocol</A>" .
@@ -397,7 +408,16 @@ return ($ret);
 
 
 
+/*
+  function: check_mysql_version()
 
+  args : [$conn]
+  
+  returns: 
+
+  rev :
+
+*/
 function check_mysql_version($conn=null)
 {
 $min_ver = "4.1.0";
@@ -418,7 +438,6 @@ $final_msg = "</b><br/>Checking MySQL version:<b> ";
 // In my experience thi will succed only if anonymous connection to MySQL is allowed
 // 
 
-// 20050824 - fm
 if( !$conn )
 {
 	$my_version = @mysql_get_server_info($conn);
@@ -461,6 +480,16 @@ return ($ret);
 
 
 
+/*
+  function: check_session()
+
+  args : -
+  
+  returns: 
+
+  rev :
+
+*/
 function check_session()
 {
 $errors = 0;
@@ -486,7 +515,7 @@ return ($ret);
 
 
 /*
-Explain What is Going To Happen 
+Explain What is Going To Happen (ewigth)
 */
 function ewigth($inst_type)
 {
@@ -518,7 +547,8 @@ return($msg);
 }  //function end
 
 
-// 20060214 - franciscom - added warning regarding valid database names
+// 
+// - added warning regarding valid database names
 function db_msg($inst_type)
 {
 

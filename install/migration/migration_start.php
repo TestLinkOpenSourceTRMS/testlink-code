@@ -1,6 +1,6 @@
 <?php 
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: migration_start.php,v 1.2 2006/09/09 07:10:30 franciscom Exp $ */
+/* $Id: migration_start.php,v 1.3 2007/03/03 08:37:05 franciscom Exp $ */
 
 // 20060428 - franciscom - added new check  check_db_loaded_extension()
 //
@@ -109,8 +109,11 @@ if($errors>0) {
 ?>
 <br />
 <br />
-Unfortunately, TestLink setup cannot continue at the moment, due to the above <?php echo $errors > 1 ? $errors." " : "" ; ?>error<?php echo $errors > 1 ? "s" : "" ; ?> . 
-Please correct the error<?php echo $errors > 1 ? "s" : "" ; ?>, and try again. If you need help figuring out how to fix the problem<?php echo $errors > 1 ? "s" : "" ; ?>, please read the documentation in the <a href="http://www.testlink.org" target="_blank">TestLink Wiki</a>, or visit the <a href="http://www.testlink.org" target="_blank">TestLink Forums</a>.
+Unfortunately, TestLink setup cannot continue at the moment, due to the above 
+<?php echo $errors > 1 ? $errors." " : "" ; ?>error<?php echo $errors > 1 ? "s" : "" ; ?> . 
+<br>Please correct the error<?php echo $errors > 1 ? "s" : "" ; ?>, and try again. 
+<br>If you need help figuring out how to fix the problem<?php echo $errors > 1 ? "s" : "" ; ?>, 
+please visit the <a href="http://www.teamst.org" target="_blank">TestLink Forums [click here]</a>.
 <br />
 			</p>
 		</td>

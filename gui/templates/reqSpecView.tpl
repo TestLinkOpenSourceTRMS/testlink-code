@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecView.tpl,v 1.26 2007/02/03 22:14:07 schlundus Exp $ *}
+{* $Id: reqSpecView.tpl,v 1.27 2007/03/04 00:03:19 schlundus Exp $ *}
 {* 
    Purpose: smarty template - view a requirement specification
    Author: Martin Havlat 
@@ -17,7 +17,6 @@ var warning_delete_requirements = "{lang_get s='warning_delete_requirements'}";
 var please_select_a_req="{lang_get s='cant_delete_req_nothing_sel'}";
 {literal}
 
-/* 20070102 - franciscom */
 function check_action_precondition(form_id,action)
 {
  if( checkbox_count_checked(form_id) > 0) 
@@ -114,8 +113,8 @@ function check_action_precondition(form_id,action)
     </form>
   </div>
   </div>
-  <p>
-  <p>
+  <br />
+  <br />
   {* ----------------------------------------------------------------------------------------- *}
 
 
@@ -185,10 +184,10 @@ function check_action_precondition(form_id,action)
     
   {/if}  
   {* ------------------------------------------------------------------------------------------ *}
-  </div>
 </form>
+  </div>
 </div>
-
+</div>
 
 {if $js_msg neq ""}
 <script type="text/javascript">

@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: execSetResults.tpl,v 1.43 2007/02/12 08:01:35 franciscom Exp $
+$Id: execSetResults.tpl,v 1.44 2007/03/04 00:03:19 schlundus Exp $
 Purpose: smarty template - show tests to add results
 Revisions:
           20070211 - franciscom - addede delete logic
@@ -213,7 +213,7 @@ var msg="{lang_get s='warning_delete_execution'}";
     
    			<div class="{$gsmarty_tc_status_css.$status_code}">
    			{lang_get s='test_exec_last_run_date'} {localize_timestamp ts=$abs_last_exec.execution_ts}
-   			{lang_get s='test_exec_by'} {$abs_last_exec.tester_first_name|escape} {$abs_last_exec.tester_last_name|escape} 
+   			{lang_get s='test_exec_by'} {$alluserInfo[$abs_last_exec.tester_id].fullname|escape} 
    			{lang_get s='test_exec_on_build'} {$abs_last_exec.build_name|escape}: 			
    			{localize_tc_status s=$status_code}
    			</div>
@@ -255,12 +255,11 @@ var msg="{lang_get s='warning_delete_execution'}";
 			 
 			{* ----------------------------------------------------------------------------------- *} 
 			{foreach item=tc_old_exec from=$other_exec.$tcversion_id}
-  	    
-	     {assign var="tc_status_code" value=$tc_old_exec.status}
+  	     {assign var="tc_status_code" value=$tc_old_exec.status}
 
    			<tr style="border-top:1px solid black">
   				<td>{localize_timestamp ts=$tc_old_exec.execution_ts}</td>
-  				<td>{$tc_old_exec.tester_first_name|escape} {$tc_old_exec.tester_last_name|escape}</td> 
+  				<td>{$alluserInfo[$tc_old_exec.tester_id].fullname|escape}</td> 
   				<td class="{$gsmarty_tc_status_css.$tc_status_code}">
   				    {localize_tc_status s=$tc_old_exec.status}
   				</td>

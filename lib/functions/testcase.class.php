@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.51 $
- * @modified $Date: 2007/03/03 08:39:14 $ $Author: franciscom $
+ * @version $Revision: 1.52 $
+ * @modified $Date: 2007/03/04 00:03:19 $ $Author: schlundus $
  * @author franciscom
  *
  *
@@ -293,17 +293,19 @@ function show(&$smarty,$id, $user_id, $version_id=TC_ALL_VERSIONS, $action='',
 		// get assigned REQs
 		$arrReqs[] = getReq4Tc($this->db,$tc_id);
 
-  	// custom fields
-    $cf_smarty=null;
-    if( $gui_cfg->enable_custom_fields ) 
-    {
+		// custom fields
+		$cf_smarty=null;
+		if( $gui_cfg->enable_custom_fields ) 
+		{
 		  $cf_smarty[] = $this->html_table_of_custom_field_values($tc_id);
-    }
-    $smarty->assign('cf',$cf_smarty);	
+		}
+		$smarty->assign('cf',$cf_smarty);	
  	}
-
+	$users = getAllUsers($this->db,null,'id');
+	
 	$smarty->assign('tcase_cfg',$tcase_cfg);
 	$smarty->assign('action',$action);
+	$smarty->assign('users',$users);
 	$smarty->assign('sqlResult',$msg_result);
 	$smarty->assign('can_edit',$can_edit);
 	$smarty->assign('can_delete_testcase',$can_edit);
@@ -642,7 +644,6 @@ function copy_to($id,$parent_id,$user_id,
 }
 	
 	
-/* 20060323 - franciscom */
 function create_new_version($id,$user_id)
 {
   // get a new id
@@ -654,11 +655,10 @@ function create_new_version($id,$user_id)
     
   $ret['id'] = $tcversion_id;
   $ret['msg'] = 'ok';
-  return ($ret);
+  return $ret;
 }
 
 
-/* 20060323 - franciscom */
 function get_last_version_info($id)
 {
 	$sql = "SELECT MAX(version) AS version FROM tcversions,nodes_hierarchy WHERE ".
@@ -679,11 +679,8 @@ function get_last_version_info($id)
 	return $tcInfo;
 }
 
-
-/* 20060323 - franciscom	*/ 
 function copy_tcversion($from_tcversion_id,$to_tcversion_id,$as_version_number,$user_id)
 {
-
     $now = $this->db->db_now();
 		$sql="INSERT INTO tcversions (id,version,author_id,creation_ts,
 		                              summary,steps,expected_results,importance)
@@ -694,8 +691,7 @@ function copy_tcversion($from_tcversion_id,$to_tcversion_id,$as_version_number,$
           WHERE id={$from_tcversion_id} ";
     $result = $this->db->exec_query($sql);
 }	
-	
-// 20060313 - franciscom
+
 function get_by_id_bulk($id,$version_id=TC_ALL_VERSIONS, $get_active=0, $get_open=0)
 {
 	$where_clause="";
@@ -706,17 +702,16 @@ function get_by_id_bulk($id,$version_id=TC_ALL_VERSIONS, $get_active=0, $get_ope
 	
 	if( is_array($id) )
 	{
-		  $tcid_list = implode(",",$id);
-			$where_clause = " WHERE nodes_hierarchy.parent_id IN ($tcid_list) ";
-			$where_clause_names = " WHERE nodes_hierarchy.id IN ($tcid_list) ";
+		$tcid_list = implode(",",$id);
+		$where_clause = " WHERE nodes_hierarchy.parent_id IN ($tcid_list) ";
+		$where_clause_names = " WHERE nodes_hierarchy.id IN ($tcid_list) ";
 	}
 	else
 	{
-			$where_clause = " WHERE nodes_hierarchy.parent_id = {$id} ";
-			$where_clause_names = " WHERE nodes_hierarchy.id = {$id} ";
+		$where_clause = " WHERE nodes_hierarchy.parent_id = {$id} ";
+		$where_clause_names = " WHERE nodes_hierarchy.id = {$id} ";
 	}
 	
-  // 20060312 - franciscom
 	$sql = " SELECT nodes_hierarchy.parent_id AS testcase_id, 
 	                tcversions.*, users.first AS author_first_name, users.last AS author_last_name,
 	                '' AS updater_first_name, '' AS updater_last_name
@@ -1095,7 +1090,8 @@ function get_executions($id,$version_id,$tplan_id,$build_id,$exec_id_order='DESC
   $sql="SELECT	NHB.name,NHA.parent_id AS testcase_id, tcversions.*, 
 		    users.login AS tester_login,
 		    users.first AS tester_first_name, 
-		    users.last AS tester_last_name, 
+		    users.last AS tester_last_name,
+			users.id AS tester_id, 
 		    e.id AS execution_id, e.status, 
 		    e.notes AS execution_notes, e.execution_ts 
 	      FROM nodes_hierarchy NHA
@@ -1197,7 +1193,8 @@ function get_last_execution($id,$version_id,$tplan_id,$build_id,$get_no_executio
         tcversions.*, 
 		    users.login AS tester_login,
 		    users.first AS tester_first_name, 
-		    users.last AS tester_last_name, 
+		    users.last AS tester_last_name,
+			users.id AS tester_id, 
 		    e.notes AS execution_notes, e.execution_ts, e.build_id,
 		    builds.name AS build_name 
 	      FROM nodes_hierarchy NHA
@@ -1327,7 +1324,6 @@ function get_linked_cfields_at_design($id,$parent_id=null,$show_on_execution=nul
 	$cf_map = $this->cfield_mgr->get_linked_cfields_at_design($tproject_id,$enabled,
 	                                                          $show_on_execution,'testcase',$id);
 	
-	// echo "<pre>debug 20070302 \$cf_map" . __FUNCTION__ . " --- "; print_r($cf_map); echo "</pre>";
 	return $cf_map;
 }
 
@@ -1363,7 +1359,6 @@ function html_table_of_custom_field_inputs($id,$parent_id=null,$scope='design',$
 	
 	if(!is_null($cf_map))
 	{
-	  // echo "<pre>debug 20070302 \$cf_map" . __FUNCTION__ . " --- "; print_r($cf_map); echo "</pre>";
 		$cf_smarty = "<table>";
 		foreach($cf_map as $cf_id => $cf_info)
 		{
@@ -1413,7 +1408,6 @@ function html_table_of_custom_field_values($id,$scope='design',$show_on_executio
     
 	if(!is_null($cf_map))
 	{
-	  // echo "<pre>debug 20070302 \$cf_map" . __FUNCTION__ . " --- "; print_r($cf_map); echo "</pre>";
 		foreach($cf_map as $cf_id => $cf_info)
 		{
 			// if user has assigned a value, then node_id is not null

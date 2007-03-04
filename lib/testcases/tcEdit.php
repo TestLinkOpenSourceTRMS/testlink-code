@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.55 $
- * @modified $Date: 2007/03/03 08:39:15 $  by $Author: franciscom $
+ * @version $Revision: 1.56 $
+ * @modified $Date: 2007/03/04 00:03:20 $  by $Author: schlundus $
  * This page manages all the editing of test cases.
  *
  * 20070302 - franciscom - BUGID
@@ -171,7 +171,6 @@ if($edit_tc)
     $cf_smarty = '';
     if($gui_cfg->enable_custom_fields) 
     {
-		  //echo "<pre>debug 20070302 \$cf_smarty" . __FUNCTION__ . " --- "; print_r($cf_smarty); echo "</pre>";
 		  $cf_smarty = $tcase_mgr->html_table_of_custom_field_inputs($tcase_id);
     }
     $smarty->assign('cf',$cf_smarty);	

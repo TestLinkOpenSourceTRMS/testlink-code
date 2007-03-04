@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: firstLogin.php,v $
  *
- * @version $Revision: 1.14 $
- * @modified $Date: 2007/02/04 20:18:32 $ $Author: schlundus $
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2007/03/04 00:03:19 $ $Author: schlundus $
  *
  * @author Asiel Brumfield
  * @author Martin Havlat 
@@ -29,12 +29,16 @@ $email = isset($_POST['email']) ? $_POST['email'] : null;
 $message = lang_get('your_info_please');
 
 $op = doDBConnect($db);
-if (!$op['status'])
+if (!config_get('user_self_signup'))
 {
+	$msg = lang_get('error_self_signup_disabled');
+
 	$smarty = new TLSmarty();
 	$smarty->assign('title', lang_get('fatal_page_title'));
-	$smarty->assign('msg', $op['dbms_msg']);
-	$smarty->display('fatal_error.tpl');
+	$smarty->assign('content', $msg);
+	$smarty->assign('link_to_op', "login.php");
+	$smarty->assign('hint_text', lang_get('link_back_to_login'));
+	$smarty->display('workAreaSimple.tpl');
 	exit();
 }
 

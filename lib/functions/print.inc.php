@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: print.inc.php,v $
- * @version $Revision: 1.23 $
- * @modified $Date: 2007/02/10 16:46:00 $ by $Author: schlundus $
+ * @version $Revision: 1.24 $
+ * @modified $Date: 2007/03/04 00:03:19 $ by $Author: schlundus $
  *
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
@@ -14,23 +14,6 @@
  * 1. remove of some magic numbers
  * 
  */
-/** 
-@parameter $userID
-@return string First + Last name 
-*/
-function getAuthor(&$db,$userID)
-{
-    $sql = "SELECT first,last,login FROM users WHERE id=" . $userID;
-    $result = $db->exec_query($sql);
-    $myrow = $db->fetch_array($result);
-    
-    $ret_val = $myrow['first'] . ' ' . $myrow['last'];
-    if (strlen(trim($ret_val)) == 0 )
-    {
-    	$ret_val = $myrow['login'];
-    }	
-    return $ret_val; 
-}
 
 /** 
  * print HTML header 
@@ -56,7 +39,9 @@ function printFirstPage(&$db,$title, $prodName, $prodNotes, $userID)
 {
 	$g_date_format = config_get('date_format');
 	$prodName = htmlspecialchars($prodName);
-	$author = htmlspecialchars(getAuthor($db,$userID));
+	
+	$author = htmlspecialchars(getUserName($db,$userID));
+		
 	$title = htmlspecialchars($title);
 	
 	$output = '<div>';

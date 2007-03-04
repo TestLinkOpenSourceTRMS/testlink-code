@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.104 $
- * @modified $Date: 2007/03/01 16:10:11 $ by $Author: franciscom $
+ * @version $Revision: 1.105 $
+ * @modified $Date: 2007/03/04 00:03:19 $ by $Author: schlundus $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink 
@@ -239,10 +239,10 @@ $g_show_realname = FALSE;
 
 // used by function format_username()
 // example: user ux555, real name= John Cook
-// 'name_surname'          -> John Cook
-// 'name_surname_login'    -> John Cook [ux555]
-//$g_username_format='name_surname_login';
-$g_username_format = 'name_surname';
+// '%first% %last%'          -> John Cook
+// '%last%, %first%'          -> John Cook
+// '%first% %last% %login%'    -> John Cook [ux555]
+$g_username_format = '%first% %last% [%login%]';
 
 /** characters used to surround the role description in the user interface */
 define('ROLE_SEP_START','[');

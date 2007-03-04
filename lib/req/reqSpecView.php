@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqSpecView.php,v $
- * @version $Revision: 1.31 $
- * @modified $Date: 2007/01/25 20:02:23 $ by $Author: schlundus $
+ * @version $Revision: 1.32 $
+ * @modified $Date: 2007/03/04 00:03:19 $ by $Author: schlundus $
  * @author Martin Havlat
  * 
  * Screen to view existing requirements within a req. specification.
@@ -25,7 +25,7 @@ require_once(dirname("__FILE__") . "/../functions/configCheck.php");
 testlinkInitPage($db);
 
 
-$js_msg=null;
+$js_msg = null;
 $sqlResult = null;
 $action = null;
 $sqlItem = 'SRS';
@@ -52,10 +52,8 @@ $login_name = isset($_SESSION['user']) ? $_SESSION['user'] : null;
 $do_export = isset($_REQUEST['exportAll']) ? 1 : 0;
 $exportType = isset($_REQUEST['exportType']) ? $_REQUEST['exportType'] : null;
 
-$do_create_tc_from_req=isset($_REQUEST['create_tc_from_req']) ? 1 : 0;
-$do_delete_req=isset($_REQUEST['req_select_delete']) ? 1 : 0;
-
-
+$do_create_tc_from_req = isset($_REQUEST['create_tc_from_req']) ? 1 : 0;
+$do_delete_req = isset($_REQUEST['req_select_delete']) ? 1 : 0;
 
 $arrCov = null;
 
@@ -114,9 +112,6 @@ elseif (isset($_REQUEST['editReq']))
     $attach = checkForRepositoryDir($repository['path']);
   }
   // -----------------------------------------------------------
-
-
-	
 	$bGetReqs = FALSE;
 }
 elseif (isset($_REQUEST['updateReq']))
@@ -163,19 +158,19 @@ elseif ($do_create_tc_from_req || $do_delete_req )
 		elseif ($do_create_tc_from_req) 
 		{
 			  $sqlResult = createTcFromRequirement($db,$tproject,$arrIdReq,$tprojectID, $idSRS, $userID);
-			  $action = 'create';
-			  $sqlItem = 'test case(s)';
+			  $action = 'do_add';
+			  $sqlItem = 'testcases';
 		}
 	} 
 	else 
 	{
 	    if($do_create_tc_from_req)
 	    {
-			$js_msg=lang_get('cant_create_tc_from_req_nothing_sel');
+			$js_msg = lang_get('cant_create_tc_from_req_nothing_sel');
 	    }
 	    if($do_delete_req)
 	    {
-			$js_msg=lang_get('cant_delete_req_nothing_sel');
+			$js_msg = lang_get('cant_delete_req_nothing_sel');
 	    }
 	}
 }
@@ -186,11 +181,11 @@ if ($bGetReqs)
 
 // collect existing document data
 $arrSpec = $tproject->getReqSpec($tprojectID,$idSRS);
-$arrSpec[0]['author'] = trim(getUserName($db,$arrSpec[0]['author_id']));
-$arrSpec[0]['modifier'] = trim(getUserName($db,$arrSpec[0]['modifier_id']));
+$arrSpec[0]['author'] = getUserName($db,$arrSpec[0]['author_id']);
+$arrSpec[0]['modifier'] = getUserName($db,$arrSpec[0]['modifier_id']);
 
 $sql = "SELECT * FROM req_specs WHERE id={$idSRS}";
-$srs_title=$db->fetchFirstRowSingleColumn($sql,'title');
+$srs_title = $db->fetchFirstRowSingleColumn($sql,'title');
 
 $smarty->assign('srs_title', $srs_title);
 $smarty->assign('attach', $attach);

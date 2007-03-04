@@ -1,9 +1,7 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView.tpl,v 1.24 2007/02/07 09:24:43 franciscom Exp $
+$Id: tcView.tpl,v 1.25 2007/03/04 00:03:19 schlundus Exp $
 Purpose: smarty template - view test case in test specification
-
-20060425 - franciscom - can manage multiple test cases
 *}
 
 {include file="inc_head.tpl" openHead='yes'}
@@ -40,6 +38,7 @@ Purpose: smarty template - view test case in test specification
 		         args_activate_deactivate='bnt_activate'
 		         args_cf=$cf[idx] 
 		         args_tcase_cfg=$tcase_cfg
+		         args_users=$users
 		         }
 		
 		{assign var="tcID" value=$testcase_curr_version[idx][0].testcase_id}
@@ -76,8 +75,8 @@ Purpose: smarty template - view test case in test specification
                        args_can_delete_version=$can_delete_version
                        args_show_version="no" 
                        args_show_title="no"
-                       
-           		         args_cf=$cf[idx] 
+                       args_users=$users
+                       args_cf=$cf[idx] 
                        }
   	         </div>
   	         <br />

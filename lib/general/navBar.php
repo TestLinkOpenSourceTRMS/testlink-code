@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: navBar.php,v $
  *
- * @version $Revision: 1.20 $
- * @modified $Date: 2007/01/20 18:45:39 $
+ * @version $Revision: 1.21 $
+ * @modified $Date: 2007/03/04 00:03:19 $
  *
  * This file manages the navigation bar. 
 **/
@@ -50,7 +50,7 @@ if (defined('LOGO_NAVBAR') )
 	
 $smarty->assign('logo', $logo_img);
 $smarty->assign('view_tc_rights',has_rights($db,"mgt_view_tc"));
-$smarty->assign('user', $_SESSION['user'] . ' [' . $roleName . ']');
+$smarty->assign('user', $_SESSION['userdisplayname'] . ' [' . $roleName . ']');
 $smarty->assign('testprojectRole',$testprojectRole);
 $smarty->assign('rightViewSpec', has_rights($db,"mgt_view_tc"));
 $smarty->assign('rightExecute', has_rights($db,"testplan_execute"));

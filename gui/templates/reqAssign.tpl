@@ -17,7 +17,6 @@ Purpose: smarty template - assign REQ to one test case
 var please_select_a_req="{lang_get s='please_select_a_req'}";
 {literal}
 
-/* 20070102 - franciscom */
 function check_action_precondition(form_id,action)
 {
  if( checkbox_count_checked(form_id) <= 0) 
@@ -47,7 +46,7 @@ function check_action_precondition(form_id,action)
 <div class="workBack">
 <h1>{lang_get s='req_title_assign'}</h1>
 
-{include file="inc_update.tpl" result=$sqlResult action=$action item="Requirement"}
+{include file="inc_update.tpl" result=$sqlResult action=$action item="requirement"}
 
 {if $arrReqSpec eq "" }
 

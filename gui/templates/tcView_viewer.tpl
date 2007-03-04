@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.19 2007/02/23 23:26:23 schlundus Exp $
+$Id: tcView_viewer.tpl,v 1.20 2007/03/04 00:03:19 schlundus Exp $
 viewer for test case in test specification
 
 20061230 - franciscom - an experiment to make simple management
@@ -17,7 +17,9 @@ viewer for test case in test specification
   {assign var="active_status_op_enabled" value=0}
   {assign var="has_been_executed" value=0}
   {lang_get s='can_not_edit_tc' var="warning_edit_msg"}
-
+  {assign var="author_userinfo" value=$args_users[$args_testcase.author_id]}
+  {assign var="updater_userinfo" value=$args_users[$args_testcase.updater_id]}
+   
   {if $args_status_quo eq null or 
       $args_status_quo[$args_testcase.id].executed eq null}
       
@@ -190,15 +192,14 @@ viewer for test case in test specification
   <tr class="time_stamp_creation">
   <td colspan="2">
       {lang_get s='title_created'}&nbsp;{localize_timestamp ts=$args_testcase.creation_ts }&nbsp;
-			{lang_get s='by'}&nbsp;{$args_testcase.author_first_name|escape}&nbsp;{$args_testcase.author_last_name|escape}
+      		{lang_get s='by'}&nbsp;{$author_userinfo.fullname|escape}
   </td>
   </tr>
   {if $args_testcase.updater_last_name ne "" || $args_testcase.updater_first_name ne ""}
     <tr class="time_stamp_creation">
     <td colspan="2">
     {lang_get s='title_last_mod'}&nbsp;{localize_timestamp ts=$args_testcase.modification_ts}
-		  &nbsp;{lang_get s='by'}&nbsp;{$args_testcase.updater_first_name|escape}
-		                       &nbsp;{$args_testcase.updater_last_name|escape}
+		  &nbsp;{lang_get s='by'}&nbsp;{$updater_userinfo.fullname|escape}
     </td>
     </tr>
   {/if}

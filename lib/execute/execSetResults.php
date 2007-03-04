@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.56 $
- * @modified $Date: 2007/02/22 18:41:00 $ $Author: franciscom $
+ * @version $Revision: 1.57 $
+ * @modified $Date: 2007/03/04 00:03:19 $ $Author: schlundus $
  *
  * 20070222 - franciscom - BUGID 647
  * 20070211 - franciscom - added execution delete logic
@@ -280,7 +280,7 @@ $smarty->assign('bc_view_status',
 $smarty->assign('can_delete_execution',$exec_cfg->can_delete_execution);
 $smarty->assign('default_status',config_get('tc_status_for_ui_default'));
 
-
+$smarty->assign('alluserInfo',getAllUsers($db,null,'id'));
 $smarty->assign('tcAttachments',$tcAttachments);
 $smarty->assign('attachments',$attachmentInfos);
 $smarty->assign('tSuiteAttachments',$tSuiteAttachments);

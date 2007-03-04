@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.62 $ $Author: franciscom $
- * @modified $Date: 2007/02/13 13:04:10 $
+ * @version $Revision: 1.63 $ $Author: schlundus $
+ * @modified $Date: 2007/03/04 00:03:19 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -376,6 +376,10 @@ function localize_dateOrTimeStamp($params,&$smarty,$what,$value)
 	return $retVal;
 }
 
+function format_username_smarty($param,&$smarty)
+{
+	return format_username($param['info']);
+}
 
 /*
 check the existence of every element of $akeys2check, in the hash.

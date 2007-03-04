@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: users.inc.php,v $
  *
- * @version $Revision: 1.38 $
- * @modified $Date: 2007/01/10 10:41:47 $ $Author: franciscom $
+ * @version $Revision: 1.39 $
+ * @modified $Date: 2007/03/04 00:03:19 $ $Author: schlundus $
  *
  * Functions for usermanagement
  *
@@ -252,6 +252,13 @@ function setUserSession(&$db,$user, $id, $roleID, $email, $locale = null, $activ
 		$_SESSION['user'] = $user; 
 
 	$_SESSION['userID']	= $id;
+	
+	$uInfo = getUserById($db,$id);
+	$_SESSION['userdisplayname'] = $user;
+	if ($uInfo)
+		$_SESSION['userdisplayname'] = $uInfo[0]['fullname'];
+	
+	
 	$_SESSION['email'] = $email; 
 	
 	if (!is_null($roleID))
@@ -284,28 +291,6 @@ function setUserSession(&$db,$user, $id, $roleID, $email, $locale = null, $activ
 	$_SESSION['s_lastAttachmentList'] = null;
 	
 	return 1;
-}
-
-
-/**
- * Function-Documentation
- *
- * @param type $db [ref] documentation
- * @param type $userID documentation
- * @param type $prodID documentation
- * @return type documentation
- *
- * BUGID 239 - TestPlan are filtered by Product ID
- * 20060102 - scs - ADOdb changes
- **/
-function DEPRECATED_deleteUsersTestPlanRights(&$db,$userID,$prodID)
-{
-	$sql = " DELETE FROM testplans_rights
-	         WHERE userid = " . $userID .
-	       " AND projid IN (SELECT id FROM testplans WHERE prodid = " . $prodID . ")";
-	      
-	$result = $db->exec_query($sql);
-	return $result ? 1 : 0;
 }
 
 /**
@@ -367,10 +352,7 @@ function getAllUsers(&$db,$whereClause = null,$column = null, $order_by=null)
 	{
 		while($user = $db->fetch_array($result))
 		{
-			if($show_realname)
-			{
-				$user['fullname'] = format_username($user);
-			}	
+			$user['fullname'] = format_username($user);
 			if (!is_null($column))
 				$users[$user[$column]] = $user;
 			else 
@@ -438,14 +420,10 @@ function getUserName(&$db,$id_user)
 	$username = '';
 	if(intval($id_user) > 0 )
 	{
-	  $username = lang_get('Unknown');
-  }
-  
-	if ($id_user)
-	{
-		$sql = "SELECT login, first, last FROM users WHERE id=" . $id_user;
-		$row = $db->fetchFirstRow($sql); 
-		$username = format_username($row);
+		$username = lang_get('Unknown');
+		$uInfo = getUserById($db,$id_user);
+		if ($uInfo) 
+			$username = $uInfo[0]['fullname'];
 	}
 	return $username;
 }
@@ -460,20 +438,21 @@ function getUserName(&$db,$id_user)
  **/
 function format_username($hash)
 {
+	$show_realname  = config_get('show_realname');
+	if (!$show_realname)
+		return $hash['login'];
+	 
 	$username_format = config_get('username_format');
-	$username = $hash['first'] . " " . $hash['last'];
 	
-	switch($username_format)
+	$keys = array_keys($hash);
+	$values = array_values($hash);
+	for($i = 0;$i < sizeof($keys);$i++)
 	{
-		case "name_surname_login":
-			$username .= " [" . $hash['login'] . "]";
-			break;	
-		case "name_surname":
-			default:
-			break;	
+		$keys[$i] = "%".$keys[$i]."%";
 	}
+	$username_format = str_replace($keys,$values,$username_format);
 	
-	return $username;
+	return $username_format;
 }
 
 function checkLogin(&$db,$login)
@@ -498,8 +477,6 @@ function checkLogin(&$db,$login)
 
 function get_users_for_html_options(&$db,$whereClause = null,$add_blank_option=false)
 {
-	global $g_show_realname;
-	
 	$users_map = null;
 	$users = getAllUsers($db,$whereClause,'id');
   
@@ -508,11 +485,7 @@ function get_users_for_html_options(&$db,$whereClause = null,$add_blank_option=f
 	
 	foreach($users as $key => $value)
 	{
-		if ($g_show_realname)
-			$label = $value['fullname'];
-		else
-			$label = $value['login'];
-		$users_map[$key] = $label;
+		$users_map[$key] = $value['fullname'];
 	}
 	return($users_map);
 }
@@ -528,8 +501,6 @@ function get_users_for_html_options(&$db,$whereClause = null,$add_blank_option=f
 */
 function get_all_users_roles(&$db,$order_by=null)
 {
-	$show_realname = config_get('show_realname');
-	
 	$sql = " SELECT users.id,login,password,first,last,email, " .
 	       "        roles.description AS role_description,locale,".
 	       " login AS fullname, active " .
@@ -543,11 +514,8 @@ function get_all_users_roles(&$db,$order_by=null)
 	{
 		while($user = $db->fetch_array($result))
 		{
-			if($show_realname)
-			{
-				$user['fullname'] = format_username($user);
-			}	
-  		$users[] = $user;
+			$user['fullname'] = format_username($user);
+	  		$users[] = $user;
 		}	
 	}
 	

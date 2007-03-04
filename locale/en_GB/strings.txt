@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.156 $
- * @modified $Date: 2007/03/03 08:39:37 $ $Author: franciscom $
+ * @version $Revision: 1.157 $
+ * @modified $Date: 2007/03/04 00:03:20 $ $Author: schlundus $
  *
  * @author Francisco Mancardi
  *
@@ -28,6 +28,9 @@ $TLS_Role = "Role";
 $TLS_Keyword = "Keyword";
 $TLS_Milestone = "Milestone";
 $TLS_testsuite_created = "Test Suite created";
+$TLS_requirement = "Requirement";
+$TLS_assigned = "assigned";
+$TLS_unassigned = "unassigned";
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////7
 // firstLogin.php
@@ -1147,7 +1150,7 @@ $TLS_testplan_msg_delete_confirm = "Are you sure you want to delete the complete
 $TLS_testplan_th_delete = "Delete";
 $TLS_testplan_title_list = "List of existing Test Plans";
 $TLS_testplan_txt_empty_list = "There are no Test Plans defined! Create one to allow test execution functionality";
-
+$TLS_alt_active_testplan = "Active testplan";
 
 
 // gui/templates/mainPage_left.tpl

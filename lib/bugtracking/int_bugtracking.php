@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: int_bugtracking.php,v $
  *
- * @version $Revision: 1.12 $
- * @modified $Date: 2006/10/23 20:11:28 $
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2007/03/05 07:08:33 $
  *
  * @author Andreas Morsing
  *
@@ -16,6 +16,11 @@
  * For supporting a bug tracking system this class has to be extended
  * All bug tracking customization should be done in a sub class of this
  * class . for an example look at the bugzilla.cfg.php and mantis.cfg.php
+ *
+ *
+ * 20070304 - franciscom
+ * 1. added new method checkBugID_existence()
+ *
  *
 **/
 //Add new bugtracking interfaces here
@@ -239,6 +244,7 @@ class bugtrackingInterface
 	{
 		return (intval($id) > 0);
 	}	
+	
 	/**
 	 * default implementation for generating a link to the bugtracking page for viewing 
 	 * the bug with the given id in a new page
@@ -276,6 +282,22 @@ class bugtrackingInterface
 		
 		return $link;
 	}
+	
+	/**
+	* checks is bug id is present on BTS
+	* 
+	* @return bool 
+	**/
+	function checkBugID_existence($id)
+	{
+	  $status_ok=1;    
+  	return $status_ok;
+	}	
+	
+	
+	
+	
+	
 }	
 				
 //DONT TOUCH ANYTHING BELOW THIS NOTICE!				

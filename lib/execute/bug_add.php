@@ -5,9 +5,14 @@
  *
  * Filename $RCSfile: bug_add.php,v $
  *
- * @version $Revision: 1.2 $
- * @modified $Date: 2006/10/05 19:18:21 $ by $Author: schlundus $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2007/03/05 07:08:33 $ by $Author: franciscom $
  *
+ *
+ * rev :
+ *      20070304 - franciscom - added new check, if bug id does not exist
+ *                              on Bug Tracking System (BTS), we will not
+ *                              add on TestLink.
  * 
 **/
 require_once('../../config.inc.php');
@@ -21,14 +26,15 @@ $msg = "";
 
 if(!is_null($bug_id) && strlen($bug_id) > 0)
 {
+	$msg = lang_get("error_wrong_BugID_format");
 	if ($g_bugInterface->checkBugID($bug_id))
 	{
-		write_execution_bug($db,$exec_id, $bug_id);
-		$msg = lang_get("bug_added");
-	}
-	else
-	{
-		$msg = lang_get("error_wrong_BugID_format");
+	  $msg = lang_get("error_bug_does_not_exist_on_bts");
+    if ($g_bugInterface->checkBugID_existence($bug_id))
+    { 	  
+		  write_execution_bug($db,$exec_id, $bug_id);
+		  $msg = lang_get("bug_added");
+    }
 	}
 }
 

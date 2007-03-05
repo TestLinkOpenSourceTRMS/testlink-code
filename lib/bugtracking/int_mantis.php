@@ -4,13 +4,18 @@
  *
  * Filename $RCSfile: int_mantis.php,v $
  *
- * @version $Revision: 1.10 $
- * @modified $Date: 2007/03/03 08:35:41 $ $Author: franciscom $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2007/03/05 07:08:33 $ $Author: franciscom $
  *
  * @author Andreas Morsing
  *
  * Constants used throughout TestLink are defined within this file
  * they should be changed for your environment
+ *
+ * 20070304 - franciscom - 
+ * 1. added an specialized version of checkBugID
+ * 2. added new method checkBugID_existence()
+ *
  *
  * 20070302 - BUGID 
  * Problems on getBugSummaryString($id), when DB is MS SQL
@@ -135,5 +140,44 @@ class mantisInterface extends bugtrackingInterface
 		}
 		return $summary;
 	}
+
+  /**
+	 * checks a bug id for validity  
+	 * 
+	 * @return bool returns true if the bugid has the right format, false else
+	 **/
+	function checkBugID($id)
+	{
+	  $status_ok=1;	
+	  $ereg_forbidden_chars='[a-zA-Z,$-+]';
+ 		if (eregi($ereg_forbidden_chars, $id))
+		{
+			$status_ok=0;	
+		} 	
+    else 
+    {
+      $status_ok=(intval($id) > 0);	
+    }
+		return $status_ok;
+	}	
+
+  /**
+	 * checks is bug id is present on BTS
+	 * 
+	 * @return bool 
+	 **/
+	function checkBugID_existence($id)
+	{
+	  $status_ok=0;	
+		$query = "SELECT status FROM mantis_bug_table WHERE id='" . $id."'";
+		$result = $this->m_dbConnection->exec_query($query);
+		if ($result && ($this->m_dbConnection->num_rows($result) == 1) )
+		{
+      $status_ok=1;    
+    }
+		return $status_ok;
+	}	
+	
+
 }
 ?>

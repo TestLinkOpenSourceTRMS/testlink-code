@@ -1,6 +1,6 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: mainPage_right.tpl,v 1.2 2007/02/22 23:22:10 kevinlevy Exp $     
+ $Id: mainPage_right.tpl,v 1.3 2007/03/05 18:06:58 schlundus Exp $     
  Purpose: smarty template - main page / site map                 
                                                                  
  rev :                                                 
@@ -120,47 +120,39 @@
   {/if}
 
   {* ----------------------------------------------------------------------------------------- *}
-	{if $testplan_planning == "yes" or $testplan_creating == "yes"}
+	{if $testplan_planning == "yes" or $testplan_creating == "yes" or $tp_user_role_assignment == "yes" or $testplan_create_build == "yes"}
 		<div class="module-grey">
     <div>
     <div>
     <div>
     <h3>{lang_get s='title_test_plan_mgmt'}</h3>
-		<p>
+	{if $testplan_creating == "yes"}
 		<img alt="arrow" class="arrow" src="{$smarty.const.TL_THEME_IMG_DIR}/arrow_org.gif" />
-	   		<a href="lib/plan/planView.php">{lang_get s='href_plan_management'}</a><br />
+   		<a href="lib/plan/planView.php">{lang_get s='href_plan_management'}</a>
+	{/if}
 		<!-- KL 20070222 - Milestones and Priority are currently not supported in 1.7
-		
-		{if $countPlans > 0}
-	        
+		{if $countPlans > 0 and $testplan_planning == "yes"}
 	        <br />
-	        
-			<img alt="arrow" class="arrow" src="{$smarty.const.TL_THEME_IMG_DIR}/arrow_org.gif" />
+	    	<img alt="arrow" class="arrow" src="{$smarty.const.TL_THEME_IMG_DIR}/arrow_org.gif" />
 	       	<a href="lib/plan/planMilestones.php">{lang_get s='href_plan_mstones'}</a>
-
-      <br />
+			<br />
 			<img alt="arrow" class="arrow" src="{$smarty.const.TL_THEME_IMG_DIR}/arrow_org.gif" />
 	       	<a href="lib/plan/planPriority.php">{lang_get s='href_plan_define_priority'}</a>
-	       	
-   	{/if}
-   	-->
-	  </p>
-	{/if}
+		{/if}
+	   	-->
 	{if $tp_user_role_assignment == "yes" && $countPlans > 0}
-	<p>
+			<br />
 			<img alt="arrow" class="arrow" src="{$smarty.const.TL_THEME_IMG_DIR}/arrow_org.gif" />
     	    <a href="lib/usermanagement/usersassign.php?feature=testplan&amp;featureID={$sessionTestPlanID}">{lang_get s='href_assign_user_roles'}</a>
-			<br />
-	</p>
 	{/if}
 	{if $testplan_create_build == "yes" and $countPlans > 0}
-	<p>
+		<br />
 		<img alt="arrow" class="arrow" src="{$smarty.const.TL_THEME_IMG_DIR}/arrow_org.gif" />
        	<a href="lib/plan/buildView.php">{lang_get s='href_build_new'}</a>
-    </p>
-	{/if} {* testplan_create_build *}
+    {/if} {* testplan_create_build *}
 	  </div>
     </div>
     </div>
     </div>
+    {/if}
 </div>

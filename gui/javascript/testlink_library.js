@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/ 
 // This script is distributed under the GNU General Public License 2 or later. 
 //
-// $Id: testlink_library.js,v 1.32 2007/03/05 07:07:28 franciscom Exp $ 
+// $Id: testlink_library.js,v 1.33 2007/03/05 18:06:58 schlundus Exp $ 
 //
 // Javascript functions commonly used through the GUI
 // This library is automatically loaded with inc_header.tpl
@@ -283,7 +283,6 @@ function attachmentDlg_onSubmit()
 
 function confirm_and_submit(msg,form_id,field_id,field_value,action_field_id,action_field_value)
 {
-  
 	if (confirm(msg))
 	{
 		var f = document.getElementById(form_id);
@@ -396,14 +395,6 @@ function dialog_onUnload(odialog)
 	odialog.refLocation = null;
 }
 
-/*
-  function: deleteBug_onClick
-
-  args :
-  
-  returns: 
-
-*/
 function deleteBug_onClick(execution_id,bug_id,warning_msg)
 {
 	if (confirm(warning_msg))

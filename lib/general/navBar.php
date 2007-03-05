@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: navBar.php,v $
  *
- * @version $Revision: 1.21 $
- * @modified $Date: 2007/03/04 00:03:19 $
+ * @version $Revision: 1.22 $
+ * @modified $Date: 2007/03/05 18:06:58 $
  *
  * This file manages the navigation bar. 
 **/
@@ -20,8 +20,7 @@ $tpID = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : null;
 if ($curr_tproject_id)
 	getAccessibleTestPlans($db,$curr_tproject_id,1,$tpID);
 	
-	
-	
+
 $roles = getAllRoles($db);
 $testprojectRole = null;
 if ($curr_tproject_id && isset($_SESSION['testprojectRoles'][$curr_tproject_id]))
@@ -50,7 +49,7 @@ if (defined('LOGO_NAVBAR') )
 	
 $smarty->assign('logo', $logo_img);
 $smarty->assign('view_tc_rights',has_rights($db,"mgt_view_tc"));
-$smarty->assign('user', $_SESSION['userdisplayname'] . ' [' . $roleName . ']');
+$smarty->assign('user', $_SESSION['userdisplayname'] . ' '.lang_get('Role').'::[' . $roleName . ']');
 $smarty->assign('testprojectRole',$testprojectRole);
 $smarty->assign('rightViewSpec', has_rights($db,"mgt_view_tc"));
 $smarty->assign('rightExecute', has_rights($db,"testplan_execute"));

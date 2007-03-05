@@ -1,6 +1,6 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: mainPage_left.tpl,v 1.3 2007/02/27 15:37:26 franciscom Exp $     
+ $Id: mainPage_left.tpl,v 1.4 2007/03/05 18:06:58 schlundus Exp $     
  Purpose: smarty template - main page / site map                 
                                                                  
  rev :                                                 
@@ -47,7 +47,6 @@
     <div>
     <div>
         <h3>{lang_get s='title_requirements'}</h3>
-		<p>
 		<img alt="arrow" class="arrow" src="{$smarty.const.TL_THEME_IMG_DIR}/arrow_org.gif" />
    		<a href="lib/req/reqSpecList.php">{lang_get s='href_req_spec'}</a>
 		{if $opt_requirements == TRUE && $modify_req_rights == "yes"}
@@ -55,8 +54,6 @@
 			<img alt="arrow" class="arrow" src="{$smarty.const.TL_THEME_IMG_DIR}/arrow_org.gif" />
        		<a href="lib/general/frmWorkArea.php?feature=assignReqs">{lang_get s='href_req_assign'}</a>
        	{/if}
-        </p>
-
     </div>
     </div>
     </div>
@@ -74,7 +71,6 @@
     <div>
     <div>
         <h3>{lang_get s='title_keywords'}</h3>
-		<p>
 		{if $modify_keys_rights == "yes"}
 			<img alt="arrow" class="arrow" src="{$smarty.const.TL_THEME_IMG_DIR}/arrow_org.gif" />
 	        <a href="lib/keywords/keywordsView.php">{lang_get s='href_keywords_manage'}</a>
@@ -86,8 +82,6 @@
 	        <a href="lib/keywords/keywordsView.php">{lang_get s='href_keywords_view'}</a>
 	        <br />
 		{/if} {* modify_keys_rights *}
-    </p>
-
     </div>
     </div>
     </div>
@@ -103,7 +97,6 @@
     <div>
     <div>
     <h3>{lang_get s='title_product_mgmt'}</h3>
-		<p>
 	  {if $modify_product_rights == "yes"}
 		    <img alt="arrow" class="arrow" src="{$smarty.const.TL_THEME_IMG_DIR}/arrow_org.gif" />
         <a href="lib/project/projectedit.php?show_create_screen">{lang_get s='href_create_product'}</a>
@@ -133,13 +126,11 @@
     <div>
     <div>
         <h3>{lang_get s='title_user_mgmt'}</h3>
-		<p>
 		<img alt="arrow" class="arrow" src="{$smarty.const.TL_THEME_IMG_DIR}/arrow_org.gif" />
         <a href="lib/usermanagement/usersedit.php">{lang_get s='href_user_management'}</a>
         <br />
 		<img alt="arrow" class="arrow" src="{$smarty.const.TL_THEME_IMG_DIR}/arrow_org.gif" />
         <a href="lib/usermanagement/rolesview.php">{lang_get s='href_roles_management'}</a>
-        </p>
     </div>
     </div>
     </div>
@@ -151,22 +142,17 @@
   {* ---------------------------------------------------------------------------------------- *}
 	{* Custom field management                            *}
   {if $sessionProductID}
-   	{if $cfield_view == "yes" || $cfield_management == "yes"}
+   	{if $cfield_management == "yes"}
    	    <div class="module-grey">
         <div>
         <div>
         <div>
         <h3>{lang_get s='title_cfields_mgmt'}</h3>
-
 	      {if $cfield_management == "yes"}
-  	        <p>
-		        <img alt="arrow" class="arrow" src="{$smarty.const.TL_THEME_IMG_DIR}/arrow_org.gif" />
+  		        <img alt="arrow" class="arrow" src="{$smarty.const.TL_THEME_IMG_DIR}/arrow_org.gif" />
             <a href="lib/cfields/cfields_view.php">{lang_get s='href_cfields_management'}</a>
-        {/if}     
-        <br />
-	
-        {if $cfield_management == "yes"}
-		        <img alt="arrow" class="arrow" src="{$smarty.const.TL_THEME_IMG_DIR}/arrow_org.gif" />
+	        <br />
+	         <img alt="arrow" class="arrow" src="{$smarty.const.TL_THEME_IMG_DIR}/arrow_org.gif" />
             <a href="lib/cfields/cfields_tproject_assign.php">{lang_get s='href_cfields_tproject_assign'}</a>
         {/if}
         </div>

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.157 $
- * @modified $Date: 2007/03/04 00:03:20 $ $Author: schlundus $
+ * @version $Revision: 1.158 $
+ * @modified $Date: 2007/03/05 07:26:25 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
@@ -135,8 +135,8 @@ $TLS_warning_empty_testsuite_name = "Please give a name to Test Suite";
 $TLS_btn_add_bug = "Add bug";
 $TLS_bug_id = "Bug id";
 $TLS_button_enter_bug = "Create new bug";
+$TLS_link_bts_create_bug="Access to Bug Tracking System ";
 $TLS_title_bug_add = "Add bug";
-
 
 
 // gui/templates/bug_delete.tpl
@@ -499,6 +499,7 @@ $TLS_trep_ts = "Test Suite";
 // gui/templates/inc_show_bug_table.tpl
 $TLS_build = "Build";
 $TLS_caption_bugtable = "Relevant bugs";
+$TLS_delete_bug="delete bug";
 $TLS_del_bug_warning_msg = "Really delete this bug?";
 
 
@@ -1199,7 +1200,8 @@ $TLS_title_test_plan_mgmt = "Test Plan Management";
 
 // lib/execute/bug_add.php
 $TLS_bug_added = "Bug added";
-$TLS_error_wrong_BugID_format = "Wrong BugID format!";
+$TLS_error_bug_does_not_exist_on_bts="Bug ID does not exist on BTS!";
+$TLS_error_wrong_BugID_format = "Wrong Bug ID format!";
 
 
 

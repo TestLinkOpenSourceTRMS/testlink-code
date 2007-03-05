@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.63 $ $Author: schlundus $
- * @modified $Date: 2007/03/04 00:03:19 $
+ * @version $Revision: 1.64 $ $Author: franciscom $
+ * @modified $Date: 2007/03/05 18:47:36 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -381,37 +381,6 @@ function format_username_smarty($param,&$smarty)
 	return format_username($param['info']);
 }
 
-/*
-check the existence of every element of $akeys2check, in the hash.
-For every key not found a call to tlog() is done. 
-
-@param associative array: $hash
-@param array: $akeys2check
-@param string: [$msg] append to key name to use as tlog message
-                      
-
-@returns 1: all keys can be found
-         0: at least one key not found  
-*/
-function DEPR_check_hash_keys($hash, $akeys2check, $msg = '')
-{
-	$status = 1;
-	if (sizeof($akeys2check))
-	{
-		$tlog_msg = $msg . " is not defined";
-		foreach($akeys2check as $key)
-		{
-			if (!isset($hash[$key])) 
-			{
-				$status = 0;
-				tlog( $key . $tlog_msg);
-			}
-		}
-	}
-	
-	return $status;
-}
-
 /**
  * Turn a hash into a number valued array
  *
@@ -429,7 +398,6 @@ function hash2array($hash, $bStripInput = false)
 }
 
 /**
- * Turn a hash into a number valued array
  *
  * @param string $str2check
  * @param string  $ereg_forbidden_chars: regular expression

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: navBar.php,v $
  *
- * @version $Revision: 1.22 $
- * @modified $Date: 2007/03/05 18:06:58 $
+ * @version $Revision: 1.23 $
+ * @modified $Date: 2007/03/05 18:45:31 $ $Author: franciscom $
  *
  * This file manages the navigation bar. 
 **/

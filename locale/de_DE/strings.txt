@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.49 $
- * @modified $Date: 2007/03/06 20:19:36 $
+ * @version $Revision: 1.50 $
+ * @modified $Date: 2007/03/06 20:55:14 $
  *
  * @author Andreas Morsing
  * @author Fabian Woelk
@@ -84,17 +84,17 @@ $TLS_your_first_login = "Willkommen bei TestLink! Sie haben jetzt Gast-Zugang. B
 
 
 // planPriority.php
-$TLS_high_priority="Hoch";
-$TLS_low_priority="Niedrig";
-$TLS_medium_priority="Mittel";
+$TLS_high_priority = "Hoch";
+$TLS_low_priority = "Niedrig";
+$TLS_medium_priority = "Mittel";
 
-$TLS_high_risk="Hoch";
-$TLS_low_risk="Niedrig";
-$TLS_medium_risk="Mittel";
+$TLS_high_risk = "Hoch";
+$TLS_low_risk = "Niedrig";
+$TLS_medium_risk = "Mittel";
 
-$TLS_high_importance="Hoch";
-$TLS_low_importance="Niedrig";
-$TLS_medium_importance="Mittel";
+$TLS_high_importance = "Hoch";
+$TLS_low_importance = "Niedrig";
+$TLS_medium_importance = "Mittel";
 
 
 // tcEdit.php
@@ -121,7 +121,7 @@ $TLS_title_delete_attachment = "Anhang löschen";
 // gui/templates/containerDelete.tpl
 $TLS_btn_yes_del_comp = "Komponente löschen?";
 $TLS_container_title_testsuite = $TLS_test_suite;
-$TLS_linked_but_not_executed="Verknüpft mit einem oder mehreren Test Plänen, aber noch nicht ausgeführt";
+$TLS_linked_but_not_executed = "Verknüpft mit einem oder mehreren Test Plänen, aber noch nicht ausgeführt";
 $TLS_question_del = "Löschen?";
 $TLS_th_link_exec_status = "Verknüpfung- und Ausführungs-Status";
 
@@ -139,8 +139,8 @@ $TLS_warning_empty_testsuite_name = "Sie müssen der Test Suite einen Namen geben
 $TLS_btn_add_bug = "Bug hinzufügen";
 $TLS_bug_id = "Bug ID";
 $TLS_button_enter_bug = "Bug hinzufügen";
+$TLS_link_bts_create_bug = "Access to Bug Tracking System ";
 $TLS_title_bug_add = "Neuen Bug eingeben";
-
 
 
 // gui/templates/bug_delete.tpl

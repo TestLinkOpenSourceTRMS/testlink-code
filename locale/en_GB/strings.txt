@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.158 $
- * @modified $Date: 2007/03/05 07:26:25 $ $Author: franciscom $
+ * @version $Revision: 1.159 $
+ * @modified $Date: 2007/03/06 20:55:14 $ $Author: schlundus $
  *
  * @author Francisco Mancardi
  *
@@ -135,7 +135,7 @@ $TLS_warning_empty_testsuite_name = "Please give a name to Test Suite";
 $TLS_btn_add_bug = "Add bug";
 $TLS_bug_id = "Bug id";
 $TLS_button_enter_bug = "Create new bug";
-$TLS_link_bts_create_bug="Access to Bug Tracking System ";
+$TLS_link_bts_create_bug = "Access to Bug Tracking System ";
 $TLS_title_bug_add = "Add bug";
 
 
@@ -250,7 +250,7 @@ $TLS_filter_owner = "Assigned to";
 $TLS_filter_result = "Result";
 $TLS_filter_tcID = "Filter: Test Case ID";
 $TLS_keyword = "Keyword";
-$TLS_test_status_all_status="All";
+$TLS_test_status_all_status = "All";
 
 
 // gui/templates/mainPage.tpl
@@ -1622,15 +1622,15 @@ $TLS_error_role_deletion = "The role couldn't be deleted!";
 
 
 // lib/usermanagement/usersassign.php
-$TLS_no_test_projects="There are no Test Projects defined";
-$TLS_no_test_plans="There are no Test Plans defined for this Test Project";
-$TLS_test_project_user_roles_updated="User Roles updated";
-$TLS_test_plan_user_roles_updated="User Roles updated";
+$TLS_no_test_projects = "There are no Test Projects defined";
+$TLS_no_test_plans = "There are no Test Plans defined for this Test Project";
+$TLS_test_project_user_roles_updated = "User Roles updated";
+$TLS_test_plan_user_roles_updated = "User Roles updated";
 
 
 // lib/usermanagement/usersedit.php
-$TLS_user_created="User %s was successfully created";
-$TLS_user_deleted="User %s was successfully deleted";
+$TLS_user_created = "User %s was successfully created";
+$TLS_user_deleted = "User %s was successfully deleted";
 $TLS_user_not_added = "The user wasn't added!";
 
 

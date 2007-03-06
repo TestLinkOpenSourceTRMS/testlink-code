@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.48 $
- * @modified $Date: 2007/02/27 19:56:24 $
+ * @version $Revision: 1.49 $
+ * @modified $Date: 2007/03/06 20:19:36 $
  *
  * @author Andreas Morsing
  * @author Fabian Woelk
@@ -28,8 +28,9 @@ $TLS_Role = "Rolle";
 $TLS_Keyword = "Stichwort";
 $TLS_Milestone = "Meilenstein";
 $TLS_testsuite_created = "Test Suite erstellt";
-
-
+$TLS_requirement = "Anforderung";
+$TLS_assigned = "zugewiesen";
+$TLS_unassigned = "nicht zugewiesen";
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////7
 // firstLogin.php
@@ -94,6 +95,13 @@ $TLS_medium_risk="Mittel";
 $TLS_high_importance="Hoch";
 $TLS_low_importance="Niedrig";
 $TLS_medium_importance="Mittel";
+
+
+// tcEdit.php
+$TLS_tc_created = "Testfall %s wurde erfolgreich erstellt.";
+$TLS_tc_deleted = "Testfall %s wurde erfolgreich erstellt.";
+$TLS_tc_updated = "Testfall %s wurde erfolgreich erstellt.";
+$TLS_tc_update_failed = "Aktuallisierung von Testfall %s fehlgeschlagen!";
 
 
 // gui/templates/attachment404.tpl
@@ -211,13 +219,13 @@ $TLS_btn_add = "Hinzufügen";
 $TLS_btn_delete = "Löschen";
 $TLS_btn_ok = "Ok";
 $TLS_custom_field = "Benutzerdefiniertes Feld";
-$TLS_enable_on_design = "Verfügbar während <br>Test-Spezifikation";
+$TLS_enable_on_design = "Verfügbar während <br>Test-Definition";
 $TLS_enable_on_exec = "Verfügbar während <br>Test-Ausführung";
 $TLS_label = "Beschriftung";
 $TLS_name = "Name";
 $TLS_popup_delete_custom_field = "Sind Sie sicher, dass Sie das benutzerdefinierte Feld löschen wollen?";
 $TLS_possible_values = "Mögliche Werte";
-$TLS_show_on_design = "Anzeigen während <br>Test-Spezifikation";
+$TLS_show_on_design = "Anzeigen während <br>Test-Definition";
 $TLS_show_on_exec = "Anzeigen während <br>Test-Ausführung";
 $TLS_testcase = $TLS_test_case;
 $TLS_title_cfields_mgmt = "Benutzerdefinierte Felder";
@@ -543,8 +551,6 @@ $TLS_th_rolename = "Rollenname";
 $TLS_th_tp_rights = "Test Plan Rechte";
 $TLS_th_user_rights = "Benutzerrechte";
 $TLS_title_user_mgmt = "Benutzerverwaltung";
-$TLS_user_created = "Benutzer %s wurde erfolgreich erstellt.";
-$TLS_user_deleted = "Benutzer %s wurde erfolgreich gelöscht.";
 $TLS_warning_modify_role = "Wollen Sie diese Rolle wirklich modifizieren?";
 
 
@@ -724,7 +730,7 @@ $TLS_product_role = "Test Projekt Rolle";
 $TLS_title_edit_personal_data = "Persönliche Einstellungen ändern";
 $TLS_title_execute = "Ausführen";
 $TLS_title_results = "Resultate";
-$TLS_title_specification = "Spezifikation";
+$TLS_title_specification = "Definition";
 
 
 
@@ -957,7 +963,7 @@ $TLS_title_met_of_build = "Build Metriken";
 $TLS_info_test_results = "Es sind nur die letzten Ergebnisse aufgeführt. Z.Bsp. Testfall wird nicht angezeigt, wenn das Testergebnis für einen späteren Build einen anderen Status hat (Ausnahme 'nicht durchgeführt').";
 $TLS_th_bugs = "Bugs";
 $TLS_th_date = "Datum";
-$TLS_th_run_by = "Getestet durch";
+$TLS_th_run_by = "Getestet von";
 
 
 
@@ -982,7 +988,7 @@ $TLS_select_owner_header = "Besitzer wählen";
 $TLS_select_report_format_header = "Reportformat auswählen";
 $TLS_submit_query = "Anfrage abschicken";
 $TLS_test_plan_header = "Test Plan: ";
-
+$TLS_query_metrics_report = "Abfrage Metriken Report";
 
 
 // gui/templates/resultsMoreBuilds_report.tpl
@@ -1052,7 +1058,7 @@ $TLS_title_change_tc_order = "Neuordnen der Testfall-Reihenfolge";
 $TLS_button_refresh = "Aktualisieren";
 $TLS_button_update_tree = "Menü aktualisieren";
 $TLS_do_auto_update = "Menü nach jeder Änderung neu laden";
-$TLS_no_tc_spec_av = "Keine Test-Spezifikation verfügbar!";
+$TLS_no_tc_spec_av = "Keine Test-Definition verfügbar!";
 
 
 
@@ -1148,6 +1154,7 @@ $TLS_testplan_msg_delete_confirm = "Sind Sie sicher, dass Sie den Test Plan wirk
 $TLS_testplan_th_delete = "Löschen";
 $TLS_testplan_title_list = "Liste der vorhanden Test Plans";
 $TLS_testplan_txt_empty_list = "Es sind keine Test Plans vorhanden! Erstellen Sie einen, um die Testausführungsfunktionalitäten freizuschalten";
+$TLS_alt_active_testplan = "aktiver Test Plan";
 
 
 // gui/templates/mainPage_left.tpl
@@ -1183,7 +1190,7 @@ $TLS_href_plan_management = "Test Pläne verwalten";
 $TLS_href_plan_mstones = "Meilensteine verwalten";
 $TLS_href_print_tc_suite = "Test Plan drucken";
 $TLS_href_remove_test_case = "Testfälle abtrennen";
-$TLS_href_rep_and_metrics = "Test Reports";
+$TLS_href_rep_and_metrics = "Test Resultate";
 $TLS_href_tc_exec_assignment = "Testfälle an Benutzer zuweisen";
 $TLS_href_upd_mod_tc = "Testfälle aktuallisieren";
 $TLS_msg_no_rights_for_tp = "- nicht verfügbar (Sie haben keine Berechtigung für einen Test Plan)";
@@ -1476,7 +1483,7 @@ $TLS_opt_show_doc_header = "Zeige Dokumentkopf";
 $TLS_opt_show_tc_body = "Zeige Testfall Inhalt";
 $TLS_opt_show_tc_summary = "Zeige Testfall Zusammenfassung";
 $TLS_opt_show_toc = "Zeige Inhaltsverzeichnis";
-$TLS_title_tc_print_navigator = "Navigator - Test Spezifikation drucken";
+$TLS_title_tc_print_navigator = "Navigator - Test Definition drucken";
 $TLS_title_tp_print_navigator = "Navigator - Test Plan drucken";
 
 
@@ -1499,7 +1506,7 @@ $TLS_test_project_update_failed = "Das Aktualisieren des Test Projekts %s schlug
 
 // lib/results/charts.php
 $TLS_maani_copyright = "Copyright © 2003-2007, maani.us";
-$TLS_graphical_reports = "Grafische Reports";
+$TLS_graphical_reports = "Grafische Resultate";
 $TLS_overall_metrics = "Gesamtmetriken";
 $TLS_results_by_keyword = "Resultate nach Stichwort";
 $TLS_results_by_tester = "Resultate nach Tester";
@@ -1531,14 +1538,14 @@ $TLS_title_test_report_all_builds = "Test Report: Resultate der Testfälle für al
 
 
 // lib/results/resultsAllBuilds.php
-$TLS_title_metrics_x_build = " - Test Resultate Metriken pro Build";
+$TLS_title_metrics_x_build = " - Test Resultate & Metriken pro Build";
 
 
 
 // lib/results/resultsByStatus.php
 $TLS_list_of_blocked = "Liste der blockierten Testfälle";
 $TLS_list_of_failed = "Liste der fehlgeschlagenen Testfälle";
-$TLS_list_of_not_run = "Liste der nicht ausgeführten Run Testfälle";
+$TLS_list_of_not_run = "Liste der nicht ausgeführten Testfälle";
 
 
 
@@ -1599,7 +1606,6 @@ $TLS_title_tsuite_export_all = "Alle Test Suiten exportieren";
 // lib/testcases/containerEdit.php
 $TLS_delete = "Löschen";
 $TLS_delete_notice = "Warnung: Alle verknüpften Ergebnisse der Ausführung werden gelöscht!";
-$TLS_testsuite_created = "Test Suite erstellt.";
 $TLS_warning_empty_com_name = "Bitte einen Name für diese Test Suite angeben!";
 
 
@@ -1616,9 +1622,16 @@ $TLS_title_del_tc = "Testfall löschen";
 // lib/usermanagement/rolesview.php
 $TLS_error_role_deletion = "Die Rolle konnte nicht gelöscht werden!";
 
+// lib/usermanagement/usersassign.php
+$TLS_no_test_projects = "Es sind keine Test Projekte definiert.";
+$TLS_no_test_plans = "Für dieses test Projekt sind keine Test Pläne vorhanden.";
+$TLS_test_project_user_roles_updated = "Rolle aktuallisiert.";
+$TLS_test_plan_user_roles_updated = "Rolle aktuallisiert.";
 
 
 // lib/usermanagement/usersedit.php
+$TLS_user_created = "Benutzer %s wurde erfolgreich erstellt.";
+$TLS_user_deleted = "Benutzer %s wurde erfolgreich erstellt.";
 $TLS_user_not_added = "Der Benutzer konnte nicht hinzugefügt werden!";
 
 

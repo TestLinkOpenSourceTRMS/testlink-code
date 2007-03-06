@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testsuite.class.php,v $
- * @version $Revision: 1.27 $
- * @modified $Date: 2007/02/22 20:43:20 $ - $Author: schlundus $
+ * @version $Revision: 1.28 $
+ * @modified $Date: 2007/03/06 20:19:36 $ - $Author: schlundus $
  * @author franciscom
  *
  * 20070204 - franciscom - fixed minor GUI bug on html_table_of_custom_field_inputs()
@@ -296,7 +296,6 @@ function viewer_edit_new(&$smarty,$amy_keys, $oFCK, $action, $parent_id,
 	$smarty->assign('level', 'testsuite');
 	$smarty->assign('name',$name);
 	$smarty->assign('container_data',$the_data);
-	
 	$smarty->display($the_tpl);
 }
 

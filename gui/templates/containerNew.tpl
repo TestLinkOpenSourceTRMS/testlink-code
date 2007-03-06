@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: containerNew.tpl,v 1.16 2007/02/20 18:48:50 franciscom Exp $
+$Id: containerNew.tpl,v 1.17 2007/03/06 20:19:35 schlundus Exp $
 Purpose: smarty template - create containers
 
 20070214 - franciscom -
@@ -42,7 +42,7 @@ function validateForm(f)
 
 </head>
 
-<body onLoad="{$opt_cfg->js_ot_name}.init(document.forms[0])">
+<body onLoad="{$opt_cfg->js_ot_name}.init(document.forms[0]);focusInputField('name')">
 {config_load file="input_dimensions.conf" section="containerEdit"} {* Constant definitions *}
 
 <h1>{$parent_info.description}{$smarty.const.TITLE_SEP}{$parent_info.name|escape}</h1>
@@ -64,26 +64,26 @@ function validateForm(f)
 	<div style="font-weight: bold;">
 		<div style="float: right;">
 		  {* BUGID 628: Name edit – Invalid action parameter/other behaviours if “Enter” pressed. *}
-      <input type="hidden" name="add_testsuite" id="add_testsuite">
+      		<input type="hidden" name="add_testsuite" id="add_testsuite" />
 			<input type="submit" name="add_testsuite_button" value="{lang_get s='btn_create_testsuite'}" />
 		</div>	
 		{include file="inc_testsuite_viewer_rw.tpl"}
 
    {* Custom fields *}
    {if $cf neq ""}
-     <p>
+     <br />
      <div class="custom_field_container">
      {$cf}
      </div>
    {/if}
    
-   <p>
+  	 <br />
    <div>
    <a href={$gsmarty_href_keywordsView}>{lang_get s='tc_keywords'}</a>
 	 {include file="opt_transfer.inc.tpl" option_transfer=$opt_cfg}
 	 </div>
 
-</form>
 </div>
+</form>
 </body>
 </html>

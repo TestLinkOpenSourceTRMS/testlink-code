@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: containerEdit.tpl,v 1.16 2007/01/04 15:27:58 franciscom Exp $
+$Id: containerEdit.tpl,v 1.17 2007/03/06 20:19:35 schlundus Exp $
 Purpose: smarty template - edit test specification: containers 
 
 20061230 - franciscom - added custom field management
@@ -40,7 +40,7 @@ function validateForm(f)
 
 </head>
 
-<body onLoad="{$opt_cfg->js_ot_name}.init(document.forms[0])">
+<body onLoad="{$opt_cfg->js_ot_name}.init(document.forms[0]);focusInputField('name')">
 {config_load file="input_dimensions.conf" section="containerEdit"} {* Constant definitions *}
 <h1>{lang_get s=$level}{$smarty.const.TITLE_SEP}{$name|escape}</h1> 
 

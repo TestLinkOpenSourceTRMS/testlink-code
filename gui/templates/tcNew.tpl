@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcNew.tpl,v 1.22 2007/03/03 08:39:03 franciscom Exp $
+$Id: tcNew.tpl,v 1.23 2007/03/06 20:19:35 schlundus Exp $
 Purpose: smarty template - create new testcase
 
 20070214 - franciscom -
@@ -47,7 +47,7 @@ function validateForm(f)
 
 </head>
 
-<body onLoad="{$opt_cfg->js_ot_name}.init(document.forms[0])">
+<body onLoad="{$opt_cfg->js_ot_name}.init(document.forms[0]);focusInputField('testcase_name')">
 {config_load file="input_dimensions.conf" section="tcNew"} {* Constant definitions *}
 
 <h1>{$parent_info.description}{$smarty.const.TITLE_SEP}{$parent_info.name|escape}</h1>

@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/ 
 // This script is distributed under the GNU General Public License 2 or later. 
 //
-// $Id: testlink_library.js,v 1.33 2007/03/05 18:06:58 schlundus Exp $ 
+// $Id: testlink_library.js,v 1.34 2007/03/06 20:19:35 schlundus Exp $ 
 //
 // Javascript functions commonly used through the GUI
 // This library is automatically loaded with inc_header.tpl
@@ -14,7 +14,16 @@
 // 20061223 - franciscom - added open_show_notes_window()
 // 20060603 - franciscom - added confirm_and_submit()
 //
-
+function focusInputField(id,bSelect)
+{
+	var f = document.getElementById(id);
+	if (f)
+	{
+		f.focus();
+		if (bSelect)
+			f.select();
+	}
+}
 // help popup
 function open_popup(page) 
 {
@@ -67,14 +76,6 @@ function SP()
 }
 
 
-/*
-  function: 
-
-  args :
-  
-  returns: 
-
-*/
 function EP(id)
 {
   // get checkboxes status

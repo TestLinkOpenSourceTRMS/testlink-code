@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * @version $Revision: 1.60 $
- * @modified $Date: 2007/02/22 20:43:21 $ by $Author: schlundus $
+ * @version $Revision: 1.61 $
+ * @modified $Date: 2007/03/06 20:19:36 $ by $Author: schlundus $
  * @author Martin Havlat
  *
  * 
@@ -48,8 +48,8 @@ $rl_html_name = $opt_cfg->js_ot_name . "_newRight";
 $assigned_keyword_list = isset($_REQUEST[$rl_html_name])? $_REQUEST[$rl_html_name] : "";
 // --------------------------------------------------------------------------------------------
 
-$gui_cfg=config_get('gui');
-$spec_cfg=config_get('spec_cfg');
+$gui_cfg = config_get('gui');
+$spec_cfg = config_get('spec_cfg');
  
 $smarty = new TLSmarty();
 
@@ -149,7 +149,7 @@ if($get_c_data)
 if($action == 'edit_testsuite' || $action == 'new_testsuite')
 {
 	keywords_opt_transf_cfg($opt_cfg, $assigned_keyword_list); 
-  $smarty->assign('opt_cfg', $opt_cfg);
+	$smarty->assign('opt_cfg', $opt_cfg);
 	$tsuite_mgr->viewer_edit_new($smarty,$amy_keys, $oFCK, $action,$my_containerID, $my_testsuiteID);
 }
 else if($action == 'add_testsuite')
@@ -175,10 +175,10 @@ else if($action == 'add_testsuite')
 
       if( $gui_cfg->enable_custom_fields )
       {
-        $ENABLED=1;
-        $NO_FILTER_SHOW_ON_EXEC=null;
-        $cfield_mgr= new cfield_mgr($db);
-        $cf_map=$cfield_mgr->get_linked_cfields_at_design($my_tprojectID,$ENABLED,$NO_FILTER_SHOW_ON_EXEC,'testsuite') ;
+        $ENABLED = 1;
+        $NO_FILTER_SHOW_ON_EXEC = null;
+        $cfield_mgr = new cfield_mgr($db);
+        $cf_map = $cfield_mgr->get_linked_cfields_at_design($my_tprojectID,$ENABLED,$NO_FILTER_SHOW_ON_EXEC,'testsuite') ;
         $cfield_mgr->design_values_to_db($_REQUEST,$ret['id'],$cf_map);
       }  
 		}                             

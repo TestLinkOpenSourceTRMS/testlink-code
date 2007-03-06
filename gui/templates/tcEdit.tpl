@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: tcEdit.tpl,v 1.16 2007/02/27 19:56:24 schlundus Exp $ *}
+{* $Id: tcEdit.tpl,v 1.17 2007/03/06 20:19:35 schlundus Exp $ *}
 {* Purpose: smarty template - edit test specification: test case *}
 {include file="inc_head.tpl" openHead='yes' jsValidate="yes"}
 <script language="JavaScript" src="gui/javascript/OptionTransfer.js" type="text/javascript"></script>
@@ -34,7 +34,7 @@ function validateForm(f)
 
 </head>
 
-<body onLoad="{$opt_cfg->js_ot_name}.init(document.forms[0])">
+<body onLoad="{$opt_cfg->js_ot_name}.init(document.forms[0]);focusInputField('testcase_name')">
 {config_load file="input_dimensions.conf" section="tcNew"}
 <h1>{lang_get s='test_case'}{$smarty.const.TITLE_SEP}{$tc.name|escape}</h1> 
 

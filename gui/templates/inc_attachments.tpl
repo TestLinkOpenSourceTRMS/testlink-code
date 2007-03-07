@@ -1,6 +1,6 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: inc_attachments.tpl,v 1.10 2007/01/26 19:17:48 franciscom Exp $
+$Id: inc_attachments.tpl,v 1.11 2007/03/07 17:57:46 franciscom Exp $
 Generic attachment management 
 
 Input:
@@ -13,8 +13,7 @@ Input:
 Smarty global variables:
 $gsmarty_attachments
 
-20060823 - franciscom - added warning messagge if attachment not possible
-                        due to directory problems
+20070307 - franciscom - BUGID 722
 
 *}
 {literal}
@@ -69,7 +68,10 @@ var warning_delete_attachment = "{lang_get s='warning_delete_attachment'}";
 		<td><a href="lib/attachments/attachmentdownload.php?id={$info.id}" target="_blank" class="bold">
 		{$my_link}</a> - <span class="italic">{$info.file_name|escape} ({$info.file_size|escape} bytes, {$info.file_type|escape}) {localize_date d=$info.date_added|escape}</span>
 		{if !$downloadOnly}
-		<a href="javascript:deleteAttachment_onClick({$info.id});"><img style="border:none" alt="{lang_get s='alt_delete_build'}" src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png"/></a>
+		<a href="javascript:deleteAttachment_onClick({$info.id});">
+		<img style="border:none" alt="{lang_get s='alt_delete_attachment'}" 
+		                         title="{lang_get s='alt_delete_attachment'}" 
+		                         src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png"/></a>
 		{/if}
 		</td>
 	</tr>

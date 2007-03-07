@@ -4,21 +4,11 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.57 $
- * @modified $Date: 2007/03/04 00:03:19 $ $Author: schlundus $
+ * @version $Revision: 1.58 $
+ * @modified $Date: 2007/03/07 08:12:01 $ $Author: franciscom $
  *
+ * 20070306 - franciscom - BUGID 705
  * 20070222 - franciscom - BUGID 647
- * 20070211 - franciscom - added execution delete logic
- *
- * 20070105 - franciscom - refactoring
- *
- * 20070104 - franciscom - 
- * 1. solved bug in custom fields for test suites
- *    I was always displaying the custom fields of
- *    the top test suite clicked.
- *
- * 2. start of test case custom field management
- *
  *
 **/
 require_once('../../config.inc.php');
@@ -111,8 +101,9 @@ if( is_null($filter_status) || $filter_status == $tc_status['not_run'])
   $get_mode=GET_ALSO_NOT_EXECUTED;
 }
 
+// 20070306 - franciscom - BUGID 705
 $linked_tcversions = $tplan_mgr->get_linked_tcversions($tplan_id,$tc_id,$keyword_id,$get_mode,
-                                                       $filter_assigned_to,$filter_status);
+                                                       $filter_assigned_to,$filter_status,$build_id);
 $tcase_id = 0;
 
 // -------------------------------------------------

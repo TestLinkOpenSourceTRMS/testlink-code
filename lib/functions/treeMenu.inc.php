@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: treeMenu.inc.php,v $
  *
- * @version $Revision: 1.38 $
- * @modified $Date: 2007/02/19 07:30:20 $ by $Author: franciscom $
+ * @version $Revision: 1.39 $
+ * @modified $Date: 2007/03/07 08:12:01 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * 	This file generates tree menu for test specification and test execution.
@@ -15,15 +15,7 @@
  * 
  * Revisions:
  *
- * 20051011 - MHT - minor refactorization, header update
- * 20051118 - scs - testplanname was not filtered (JS-Error in certain cases)
- * 20060304 - franciscom - changes on invokeMenu()
- * 20060305 - franciscom - towards TL 1.7
- * 20060503 - franciscom - moved here generateExecTree()
- * 20060924 - franciscom - added get_nodes_testcount()
- *                         changes to prepareNode() in order to use it in get_nodes_testcount
- *
- * 20061105 - franciscom - interface changes to prepareNode()
+ *       20070306 - franciscom - BUGID 705 
  *
  **/
 require_once(dirname(__FILE__)."/../../config.inc.php");
@@ -534,14 +526,14 @@ function jtree_renderTestSpecTreeNodeOnClose($current,$nodeDesc)
 *            and changes how the URL's are build.
 * 
 */
-function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,$tplan_name,$build_id,
+function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
+                          $tplan_name,$build_id,
                           $getArguments, $keyword_id = 0,$tc_id = 0, $bHideTCs = false,
 			                    $assignedTo = 0, $status = null)
 {
 	$menustring = null;
 	$any_exec_status=null;
-  
-  
+
 	$tplan_mgr = new testplan($db);
 	$tproject_mgr = new testproject($db);
 	
@@ -553,9 +545,12 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,$
 	$test_spec = $tree_manager->get_subtree($tproject_id,array('testplan'=>'exclude me'),
 	                                                     array('testcase'=>'exclude my children'),
 	                                                     null,null,RECURSIVE_MODE);
-	                                                     
-	$tp_tcs = $tplan_mgr->get_linked_tcversions($tplan_id,$tc_id,$keyword_id,null,ANY_OWNER,$status);
-
+	                               
+  // 20070306 - franciscom - BUGID 705   
+	$tp_tcs = $tplan_mgr->get_linked_tcversions($tplan_id,$tc_id,$keyword_id,
+	                                            null,$assignedTo,$status,$build_id);
+     
+     
 	if (is_null($tp_tcs))
 		$tp_tcs = array();
 	
@@ -592,7 +587,7 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,$
 
 
 /*
-  function: 
+  function: renderExecTreeNode 
 
   args :
   

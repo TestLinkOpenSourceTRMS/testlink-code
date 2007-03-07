@@ -1,7 +1,7 @@
 <?php
 /* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: installUtils.php,v 1.21 2007/03/03 08:37:05 franciscom Exp $ 
+$Id: installUtils.php,v 1.22 2007/03/07 17:42:17 franciscom Exp $ 
 
 20070302 - franciscom - changed PHP minimun required versions
 
@@ -63,7 +63,7 @@ return $aFileSets;
 // | Authors: Jo�o Prado Maia <jpm@mysql.com>                             |
 // +----------------------------------------------------------------------+
 //
-// @(#) $Id: installUtils.php,v 1.21 2007/03/03 08:37:05 franciscom Exp $
+// @(#) $Id: installUtils.php,v 1.22 2007/03/07 17:42:17 franciscom Exp $
 //
 
 // a foolish wrapper - 20051231 - fm
@@ -340,7 +340,7 @@ return($ret);
 */
 function check_php_version($info_location="./info/")
 {
-$min_ver = "5.2.0";
+$min_ver = "5.0.0";
 $ver_not_tested="";
 
 

@@ -1,6 +1,6 @@
 {* 
 Testlink: smarty template - 
-$Id: usersedit.tpl,v 1.10 2007/02/28 08:02:26 franciscom Exp $ 
+$Id: usersedit.tpl,v 1.11 2007/03/10 22:56:59 schlundus Exp $ 
 *}
 {* 
 
@@ -67,7 +67,7 @@ function validateForm(f)
 <div class="tabMenu">
 {if $mgt_users == "yes"}
   {if $userData neq null}
-	  <span class="selected">{lang_get s='menu_view_users'}</span> 
+	  <span class="selected">{lang_get s='menu_edit_user'}</span> 
 	{else}
 	  <span class="selected">{lang_get s='menu_new_user'}</span> 
 	{/if}
@@ -142,10 +142,9 @@ function validateForm(f)
 		<tr>
 			<th>{lang_get s='th_role'}:</th>
 			<td>
-			  {* 20070114 - franciscom *}
-  	    {assign var=selected_role value=$userData.role_id}
+		  	   {assign var=selected_role value=$userData.role_id}
 			  {if $userData.role_id eq 0}
-          {assign var=selected_role value=$smarty.const.TL_DEFAULT_ROLEID}	  
+        	  {assign var=selected_role value=$smarty.const.TL_DEFAULT_ROLEID}	  
 			  {/if}
 				<select name="rights_id"> 
 				{html_options options=$optRights 

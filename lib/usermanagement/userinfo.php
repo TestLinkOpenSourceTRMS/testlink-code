@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: userinfo.php,v $
 *
-* @version $Revision: 1.4 $
-* @modified $Date: 2006/10/23 20:11:28 $
+* @version $Revision: 1.5 $
+* @modified $Date: 2007/03/10 22:57:00 $
 * 
 * Displays the users' information and allows users to change 
 * their passwords and user info.
@@ -33,11 +33,16 @@ $external_password_mgmt = ('LDAP' == $login_method )? 1 : 0;
 
 $updateResult = null;
 if ($bEdit)
-	$updateResult = userUpdate($db,$id,$first,$last,$email,null,null,$locale);
+{
+	if (!strlen($email))
+		$updateResult = lang_get('empty_email_address');
+	else
+		$updateResult = userUpdate($db,$id,$first,$last,$email,null,null,$locale);
+}
 else if ($bChangePwd)
 	$updateResult = updateUserPassword($db,$id,$old,$new);
 
-$userResult ='';
+$userResult = '';
 existLogin($db,$userName, $userResult);
 
 $smarty = new TLSmarty();

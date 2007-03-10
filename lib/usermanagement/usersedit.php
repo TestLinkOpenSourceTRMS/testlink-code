@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: usersedit.php,v $
 *
-* @version $Revision: 1.11 $
-* @modified $Date: 2007/02/24 08:20:29 $
+* @version $Revision: 1.12 $
+* @modified $Date: 2007/03/10 22:57:00 $
 * 
 * Allows editing a user
 */
@@ -14,7 +14,6 @@ require_once('../../config.inc.php');
 require_once('testproject.class.php');
 require_once('users.inc.php');
 testlinkInitPage($db);
-
 
 $args = init_args($_GET,$_POST);
 $user_id = $args->user_id;
@@ -24,7 +23,7 @@ $sqlResult = null;
 $action = null;
 $update_title_bar = 0;
 $reload = 0;
-$user_feedback='';
+$user_feedback = '';
 
 $login_method = config_get('login_method');
 $external_password_mgmt = ('LDAP' == $login_method )? 1 : 0;
@@ -35,6 +34,10 @@ if ($args->do_update)
 	if ($args->user_id == 0)
 	{
 		$sqlResult = checkLogin($db,$args->login);
+		if (!strlen($args->email))
+			$sqlResult = lang_get('empty_email_address');
+		if (!strlen($args->password))
+			$sqlResult = lang_get('warning_empty_pwd');
 		if ($sqlResult =='ok')
 		{
 			$args->user_id = userInsert($db,$args->login, $args->password, $args->first, $args->last,  
@@ -48,7 +51,10 @@ if ($args->do_update)
 	}
 	else
 	{
-		$sqlResult = userUpdate($db,$args->user_id,$args->first,$args->last,
+		if (!strlen($args->email))
+			$sqlResult = lang_get('empty_email_address');
+		else	
+			$sqlResult = userUpdate($db,$args->user_id,$args->first,$args->last,
 	                        $args->email,null,$args->rights_id,$args->locale,$args->user_is_active);
 		$action = "updated";							
 		$user_id = $args->user_id;
@@ -89,7 +95,11 @@ $smarty->assign('mgt_users',has_rights($db,"mgt_users"));
 $smarty->assign('role_management',has_rights($db,"role_management"));
 $smarty->assign('tp_user_role_assignment', has_rights($db,"mgt_users") ? "yes" : has_rights($db,"user_role_assignment"));
 $smarty->assign('tproject_user_role_assignment', has_rights($db,"mgt_users") ? "yes" : has_rights($db,"user_role_assignment",null,-1));
-$smarty->assign('optRights', getAllRoles($db));
+
+$roles = getAllRoles($db);
+unset($roles[TL_ROLES_UNDEFINED]);
+
+$smarty->assign('optRights',$roles);
 $smarty->assign('userData', $userResult);
 $smarty->assign('result',$sqlResult);
 $smarty->assign('action',$action);

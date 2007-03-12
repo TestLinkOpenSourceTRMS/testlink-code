@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: print.inc.php,v $
- * @version $Revision: 1.24 $
- * @modified $Date: 2007/03/04 00:03:19 $ by $Author: schlundus $
+ * @version $Revision: 1.25 $
+ * @modified $Date: 2007/03/12 21:46:17 $ by $Author: schlundus $
  *
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
@@ -92,14 +92,14 @@ function printFirstPage(&$db,$title, $prodName, $prodNotes, $userID)
 
 function renderTestSpecTreeForPrinting(&$db,&$printingOptions,&$node,$tocPrefix,$tcCnt,$level)
 {
-  $tree_mgr=New tree($db);
-  $map_id_descr=array_flip($tree_mgr->get_available_node_types());
+  $tree_mgr = new tree($db);
+  $map_id_descr = array_flip($tree_mgr->get_available_node_types());
   
 	$code = null;
 	$bCloseTOC = 0;	
 	if (isset($node['node_type_id']))
 	{
-	  $verbose_node_type=$map_id_descr[$node['node_type_id']];
+	  	$verbose_node_type = $map_id_descr[$node['node_type_id']];
 		switch($verbose_node_type)
 		{
 			case 'testproject':
@@ -165,21 +165,20 @@ function renderTestCaseForPrinting(&$db,&$printingOptions,&$node,$level)
 	
 	if ($printingOptions['body'] || $printingOptions['summary'])
 	{
-		if (isset($node['tcversion_id']))
-		{	
-			$tc = new testcase($db);
-			$tcInfo = $tc->get_by_id($id,$node['tcversion_id']);
-			if ($tcInfo)
-				$tcInfo = $tcInfo[0];
-			unset($tc);			
+		$tc = new testcase($db);
+		$versionID = isset($node['tcversion_id']) ? $node['tcversion_id'] : TC_LATEST_VERSION; 
+		$tcInfo = $tc->get_by_id($id,$versionID);
+		if ($tcInfo)
+		{
+			$tcInfo = $tcInfo[0];
 			$code .= "<tr><td><u>".lang_get('summary')."</u>: " .  $tcInfo['summary'] . "</td></tr>";
-		 	if ($printingOptions['body']) 
-		 	{
+			if ($printingOptions['body']) 
+			{
 			   	$code .= "<tr><td><u>".lang_get('steps')."</u>:<br />" .  $tcInfo['steps'] . "</td></tr>";
 			   	$code .= "<tr><td><u>".lang_get('expected_results')."</u>:<br />" .  $tcInfo['expected_results'] . "</td></tr>";
-		 	}
-			unset($tc);
+			}
 		}
+		unset($tc);
 	}
   	$code .= "</table></div>";
 	

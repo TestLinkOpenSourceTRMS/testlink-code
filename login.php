@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: login.php,v $
  *
- * @version $Revision: 1.20 $
- * @modified $Date: 2007/03/01 16:10:11 $ by $Author: franciscom $
+ * @version $Revision: 1.21 $
+ * @modified $Date: 2007/03/12 21:46:16 $ by $Author: schlundus $
  * @author Martin Havlat
  * 
  * Login management
@@ -67,7 +67,7 @@ switch($note)
 		break;
 
 	case 'sessionExists':
-		$message = lang_get('login_msg_session_exists1') . ' <a href="logout.php">' . 
+		$message = lang_get('login_msg_session_exists1') . ' <a style="color:black;" href="logout.php">' . 
 				   lang_get('logout_link') . '</a>' . lang_get('login_msg_session_exists2');
 		break;
 	default:

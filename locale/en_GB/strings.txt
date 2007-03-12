@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.162 $
- * @modified $Date: 2007/03/10 22:57:00 $ $Author: schlundus $
+ * @version $Revision: 1.163 $
+ * @modified $Date: 2007/03/12 07:11:26 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
@@ -1524,6 +1524,7 @@ $TLS_req_import_finished = "The import is finished!";
 
 // lib/req/reqSpecView.php
 $TLS_cant_create_tc_from_req_nothing_sel = "Please select a requirement!";
+$TLS_req_created = "Requirement %s was successfully created";
 
 
 

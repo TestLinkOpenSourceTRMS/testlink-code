@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: requirements.inc.php,v $
- * @version $Revision: 1.46 $
- * @modified $Date: 2007/01/31 14:19:44 $ by $Author: franciscom $
+ * @version $Revision: 1.47 $
+ * @modified $Date: 2007/03/12 07:11:51 $ by $Author: franciscom $
  *
  * @author Martin Havlat <havlat@users.sourceforge.net>
  * 
@@ -13,18 +13,7 @@
  *
  * Revisions:
  *
- * 20061223 - franciscom - fixed bugs on getReqByReqdocId()
- * 20051002 - francisco mancardi - Changes in createTcFromRequirement()
- * 20050906 - francisco mancardi - reduce global coupling 
- * 20050901 - Martin Havlat - updated metrics/results related functions 
- * 20050830 - francisco mancardi - changes in printSRS()
- * 20050829 - Martin Havlat - updated function headers 
- * 20050825 - Martin Havlat - updated global header;
- * 20051025 - MHT - corrected introduced bug with insert TC (Bug 197)
- * 20061009 - franciscom - added getReqByReqdocId()
- * 20061014 - franciscom - added check_syntax* functions()
- * 20070104 - franciscom - getOptionReqSpec()
- *
+ * 20070310 - franciscom - changed return type createRequirement()
  */
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -458,18 +447,18 @@ function check_req_basic_data(&$db,$title,$reqdoc_id,$srs_id,$id=null)
 function createRequirement(&$db,$reqdoc_id,$title, $scope, $srs_id, $user_id, 
                            $status = TL_REQ_STATUS_VALID, $type = TL_REQ_STATUS_NOT_TESTABLE)
 {
-	$result = 'ok';
+  
+	$result['status_ok']=1;
+	$result['msg'] = 'ok';
+	
 	$db_now = $db->db_now();
 	$field_size=config_get('field_size');
 
 	$reqdoc_id=trim_and_limit($reqdoc_id,$field_size->req_docid);
 	$title=trim_and_limit($title,$field_size->req_title);
 		
-	// 20061223 - franciscom	
-	// 20070131 - added srs_id
-	//
-	$chk=check_req_basic_data($db,$title,$reqdoc_id,$srs_id);
-	if($chk['status_ok'])
+	$result=check_req_basic_data($db,$title,$reqdoc_id,$srs_id);
+	if($result['status_ok'])
 	{
 		$sql = "INSERT INTO requirements (srs_id, req_doc_id, title, scope, status, type, author_id, creation_ts)" .
 				   " VALUES (" . $srs_id . ",'" . $db->prepare_string($reqdoc_id) .  
@@ -478,11 +467,14 @@ function createRequirement(&$db,$reqdoc_id,$title, $scope, $srs_id, $user_id,
 				   "'," . $db->prepare_string($user_id) . ", {$db_now})";
 
 		if (!$db->exec_query($sql))
-		 	$result = lang_get('error_inserting_req');
+		{
+		  $result['status_ok'] = 0;
+		 	$result['msg'] = lang_get('error_inserting_req');
+		} 	
 	}
 	else
 	{
-	  $result=$chk['msg']; 
+	  $result=$chk; 
 	}
 	 
 	return($result); 
@@ -523,7 +515,6 @@ function updateRequirement(&$db,$id, $reqdoc_id,$title, $scope, $user_id,
 	$reqdoc_id=trim_and_limit($reqdoc_id,$field_size->req_docid);
 	$title=trim_and_limit($title,$field_size->req_title);
 
-  // 20070131 - franciscom - interface changes
   $chk=check_req_basic_data($db,$title,$reqdoc_id,$srs_id,$id);
  
 	if($chk['status_ok'] || $skip_controls)
@@ -946,7 +937,7 @@ function executeImportedReqs(&$db,$arrImportSource, $map_cur_reqdoc_id,
 				$status = createRequirement ($db, $docID, $title, $scope, $idSRS, $userID,
 				                             TL_REQ_STATUS_VALID, TL_REQ_STATUS_NOT_TESTABLE);
 			}
-			$arrImport[] = array($docID,$title, $status);
+			$arrImport[] = array($docID,$title, $status['msg']);
 		}
 	}
 	

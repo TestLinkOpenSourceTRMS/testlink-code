@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqSpecView.php,v $
- * @version $Revision: 1.32 $
- * @modified $Date: 2007/03/04 00:03:19 $ by $Author: schlundus $
+ * @version $Revision: 1.33 $
+ * @modified $Date: 2007/03/12 07:11:51 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Screen to view existing requirements within a req. specification.
@@ -24,7 +24,7 @@ require_once("../../third_party/fckeditor/fckeditor.php");
 require_once(dirname("__FILE__") . "/../functions/configCheck.php");
 testlinkInitPage($db);
 
-
+$user_feedback='';
 $js_msg = null;
 $sqlResult = null;
 $action = null;
@@ -72,17 +72,22 @@ if(isset($_REQUEST['createReq']))
 {
 	if ($bCreate)
 	{
-		$sqlResult = createRequirement($db,$reqDocId,$title, $scope, $idSRS, $userID, 
-			                             $reqStatus, $reqType);
+	  
+		$status = createRequirement($db,$reqDocId,$title, $scope, $idSRS, $userID, 
+			                                 $reqStatus, $reqType);
+		$user_feedback = $status['msg'];	                                 
+		if( $user_feedback == 'ok' )
+		{
+		  $user_feedback=sprintf(lang_get('req_created'), $reqDocId);  
+		}
 	}
-	$action = 'create';
 	$scope = '';
 	$template = 'reqCreate.tpl';
 	$bGetReqs = FALSE;
 } 
 elseif (isset($_REQUEST['editReq']))
 {
-  	$srs = get_srs_by_id($db,$idSRS);
+  $srs = get_srs_by_id($db,$idSRS);
 	$smarty->assign('srs_title',$srs[$idSRS]['title']);	
 
 	$idReq = intval($_REQUEST['editReq']);
@@ -187,6 +192,7 @@ $arrSpec[0]['modifier'] = getUserName($db,$arrSpec[0]['modifier_id']);
 $sql = "SELECT * FROM req_specs WHERE id={$idSRS}";
 $srs_title = $db->fetchFirstRowSingleColumn($sql,'title');
 
+$smarty->assign('user_feedback', $user_feedback);
 $smarty->assign('srs_title', $srs_title);
 $smarty->assign('attach', $attach);
 $smarty->assign('arrSpec', $arrSpec);

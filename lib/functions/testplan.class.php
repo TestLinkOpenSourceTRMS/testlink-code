@@ -2,11 +2,12 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.28 $
- * @modified $Date: 2007/03/07 08:12:01 $ $Author: franciscom $
+ * @version $Revision: 1.29 $
+ * @modified $Date: 2007/03/12 07:11:51 $ $Author: franciscom $
  * @author franciscom
  *
  * rev :
+ *       20070310 - franciscom - BUGID 731
  *       20070306 - franciscom - 
  *       BUGID 705 - changes in get_linked_tcversions()
  *
@@ -623,10 +624,10 @@ function copy_user_roles($id,$new_tplan_id)
   }
 }
 
-// 20070204 - franciscom
 // $id: source testplan id
 // $new_tplan_id: destination
 //
+// 20070310 - BUGID 731
 function copy_priorities($id,$new_tplan_id)
 {
   $sql="SELECT * FROM priorities WHERE testplan_id={$id} ";
@@ -635,10 +636,9 @@ function copy_priorities($id,$new_tplan_id)
   {
     foreach($rs as $pr)
     {
-      $sql="INSERT priorities (risk_importance,priority,risk,importance,testplan_id) " .
-           " VALUES ('" . $pr['risk_importance'] ."'," .
-           "'" . $pr['priority'] . "','" . $pr['risk'] . "','" . $pr['importance'] . "'" . 
-           ",{$new_tplan_id})";
+      $sql="INSERT priorities (priority,risk,importance,testplan_id) " .
+           " VALUES ('" . $pr['priority'] . "','" . $pr['risk'] . "','" . 
+           $pr['importance'] . "',{$new_tplan_id})";
 
       $this->db->exec_query($sql);     
     }

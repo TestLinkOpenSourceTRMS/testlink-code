@@ -1,6 +1,11 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: attachmentupload.tpl,v 1.6 2007/02/23 07:52:43 franciscom Exp $ *}
-{* Purpose: smarty template - the template for the attachment upload dialog *}
+{* $Id: attachmentupload.tpl,v 1.7 2007/03/12 07:08:40 franciscom Exp $ *}
+{* Purpose: smarty template - template for attachment upload dialog 
+
+   rev :
+         20070310 - BUGID 732 
+
+*}
 {include file="inc_head.tpl"}
 
 <body onunload="attachmentDlg_onUnload()" onload="attachmentDlg_onLoad()">
@@ -8,7 +13,8 @@
 
 <h1>{lang_get s='title_upload_attachment'}</h1>
 {if $bUploaded == 1}
-	<div class='info'>{lang_get s='import_was_ok'}</div>
+	{lang_get s='attachment_upload_ok' var=user_feedback}
+  {include file="inc_update.tpl" user_feedback=$user_feedback}
 {/if}
 
 <div class="workBack">

@@ -1,7 +1,7 @@
 <?php
 /* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: installUtils.php,v 1.22 2007/03/07 17:42:17 franciscom Exp $ 
+$Id: installUtils.php,v 1.23 2007/03/12 07:05:19 franciscom Exp $ 
 
 20070302 - franciscom - changed PHP minimun required versions
 
@@ -63,7 +63,7 @@ return $aFileSets;
 // | Authors: Jo�o Prado Maia <jpm@mysql.com>                             |
 // +----------------------------------------------------------------------+
 //
-// @(#) $Id: installUtils.php,v 1.22 2007/03/07 17:42:17 franciscom Exp $
+// @(#) $Id: installUtils.php,v 1.23 2007/03/12 07:05:19 franciscom Exp $
 //
 
 // a foolish wrapper - 20051231 - fm
@@ -743,7 +743,8 @@ $stmt = "GRANT SELECT, UPDATE, DELETE, INSERT ON " .
         "`" . $dbhandler->prepare_string($db_name) . "`" . ".* TO " . 
         "'" . $dbhandler->prepare_string($login) . "'";
         
-if (strlen(trim($the_host)) != 0)
+// 20070310 - $the_host -> $db_host        
+if (strlen(trim($db_host)) != 0)
 {
   $stmt .= "@" . "'" . $dbhandler->prepare_string($db_host) . "'";
 }         
@@ -766,7 +767,10 @@ else
   // Then I've decide to grant always access from localhost
   // to avoid this kind of problem.
   // I hope this is not a security hole.
-  if( strcasecmp('localhost',$the_host) != 0)
+  //
+  //
+  // 20070310 - $the_host -> $db_host        
+  if( strcasecmp('localhost',$db_host) != 0)
   {
     // 20060514 - franciscom - missing 
     $stmt = "GRANT SELECT, UPDATE, DELETE, INSERT ON " . 
@@ -881,10 +885,26 @@ return ($op);
 }
 
 
+/*
+  function: 
+
+  args :
+  
+  returns: 
+
+*/
 function _mssql_make_user_with_grants($db,$the_host,$db_name,$login,$passwd)
 {
 }
 
+/*
+  function: 
+
+  args :
+  
+  returns: 
+
+*/
 function _mssql_assign_grants($db,$the_host,$db_name,$login,$passwd)
 {
 }

@@ -1,5 +1,5 @@
 {* Testlink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: inc_head.tpl,v 1.8 2007/02/05 07:59:58 franciscom Exp $ *}
+{* $Id: inc_head.tpl,v 1.9 2007/03/12 07:04:49 franciscom Exp $ *}
 {* Purpose: smarty template - HTML Common Header *}
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
      "DTD/xhtml1-transitional.dtd">
@@ -26,7 +26,7 @@
 	{if $smarty.const.TL_TESTPROJECT_COLORING eq 'background'}
 	  <style type="text/css"> body {ldelim}background: {$testprojectColor};{rdelim}</style>
 	{/if}
-	<style media="print" type="text/css">@import "gui/css/tl_print.css";</style>
+	<style media="print" type="text/css">@import "{$smarty.const.TL_PRINT_CSS}";</style>
 	<script type="text/javascript" src="gui/javascript/testlink_library.js" language="javascript"></script>
 {if $jsValidate == "yes"} 
 	<script type="text/javascript" src="gui/javascript/validate.js" language="javascript"></script>

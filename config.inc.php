@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.105 $
- * @modified $Date: 2007/03/04 00:03:19 $ by $Author: schlundus $
+ * @version $Revision: 1.106 $
+ * @modified $Date: 2007/03/12 07:09:46 $ by $Author: franciscom $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink 
@@ -184,8 +184,12 @@ define('TL_THEME_CSS_DIR','gui/themes/theme_m1/css/');
 define('TL_TESTLINK_CSS',TL_THEME_CSS_DIR . 'testlink.css');
 define('TL_LOGIN_CSS', TL_TESTLINK_CSS);
 
+define('TL_PRINT_CSS',TL_THEME_CSS_DIR . 'tl_print.css');
+
+
 //define('TL_JOMLA_1_CSS', '');
 define('TL_JOMLA_1_CSS', TL_THEME_CSS_DIR . 'jos_template_css.css');
+
 
 // path to IMAGE directory - DO NOT ADD FINAL /
 //define('TL_THEME_IMG_DIR','gui/themes/theme_m0/images');

@@ -2,7 +2,7 @@
 /**
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/ 
 *
-*  @version 	$Id: printData.php,v 1.28 2007/02/26 08:01:45 franciscom Exp $
+*  @version 	$Id: printData.php,v 1.29 2007/03/14 20:00:07 schlundus Exp $
 *  @author 	Martin Havlat
 * 
 * Shows the data that will be printed.
@@ -34,7 +34,7 @@ $printingOptions = array
 foreach($printingOptions as $opt => $val)
 {
 	$printingOptions[$opt] = (isset($_GET[$opt]) && ($_GET[$opt] == 'y'));
-}						 
+}					
 
 $tck_map = null;
 $map_node_tccount=array();
@@ -45,7 +45,8 @@ $tree_manager = &$tproject_mgr->tree_manager;
 $test_spec = $tree_manager->get_subtree($dataID,array('testplan'=>'exclude me'),
                                            array('testcase'=>'exclude my children'),null,null,true);
 $tree = null;
-$code = null;										   
+$code = null;					
+				   
 if ($type == 'testproject')
 {
 	$tree = &$test_spec;
@@ -74,12 +75,13 @@ if ($level == 'testproject')
 	
 	$hash_descr_id = $tree_manager->get_available_node_types();
 	$hash_id_descr = array_flip($hash_descr_id);
-	
 	$tree = &$test_spec;
 	$tree['name'] = $tproject_name;
 	$tree['id'] = $tproject_id;
 	$tree['node_type_id'] = 1;
 
+	if (!$tp_tcs)
+		$tree['childNodes'] = null;
 	$testcase_count = prepareNode($db,$tree,$hash_id_descr,$map_node_tccount,$tck_map,$tp_tcs,SHOW_TESTCASES);
 	$printingOptions['title'] = $tproject_name;
 	

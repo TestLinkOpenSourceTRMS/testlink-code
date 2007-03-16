@@ -6,8 +6,8 @@
  * Scope: Import keywords page
  *
  * Filename $RCSfile: keywordsimport.php,v $
- * @version $Revision: 1.10 $
- * @modified $Date: 2007/02/19 07:30:20 $ by $Author: franciscom $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2007/03/16 20:09:48 $ by $Author: schlundus $
  *
  * Revisions:
  * 20070210 - franciscom - added checks: user has choosen a file
@@ -38,52 +38,47 @@ $file_check = array('status_ok' => 1, 'msg' => 'ok');
 // check the uploaded file
 if( $bUpload )
 {
-  if ( ($source != 'none') && ($source != ''))
-  { 
-  		$file_check = check_valid_ftype($_FILES['uploadedFile'],$importType);
-  		if($file_check['status_ok'])
-  		{
-      	// store the file
-      	if (move_uploaded_file($source, $dest))
-      	{
-      		switch($importType)
-      		{
-      			case 'CSV':
-      				$pfn = "importKeywordDataFromCSV";
-      				break;
-      			case 'XML':
-  					  $pcheck_fn  = "check_xml_keywords";
-      				$pfn = "importKeywordDataFromXML";
-      				break;
-      		}
-      		
-      		// "light" format check
-    			if ($pcheck_fn)
-  				{
-  					$file_check = $pcheck_fn($dest,$bRecursive);
-  					if($file_check['status_ok'])
-  					{
-          		if ($pfn)
-          		{
-          			$keywordData = $pfn($dest);
-          			$tproject = new testproject($db);
-          			$sqlResult = $tproject->addKeywords($testproject_id,$keywordData);
-          			header("Location: keywordsView.php");
-          			exit();		
-          		}
-  					}
-  				} //if ($pcheck_fn)
-      	} // move_uploaded_file
-    	} // file_check
+	if (($source != 'none') && ($source != ''))
+	{ 
+		$file_check = check_valid_ftype($_FILES['uploadedFile'],$importType);
+		if($file_check['status_ok'])
+		{
+			// store the file
+			if (move_uploaded_file($source, $dest))
+			{
+				switch($importType)
+				{
+					case 'CSV':
+						$pfn = "importKeywordDataFromCSV";
+						break;
+					case 'XML':
+						$pcheck_fn  = "check_xml_keywords";
+						$pfn = "importKeywordDataFromXML";
+						break;
+				}
+				// optional "light" format check 
+				if ($pcheck_fn)
+				{
+					$file_check = $pcheck_fn($dest);
+				}
+				if($file_check['status_ok'] && $pfn)
+				{
+					$keywordData = $pfn($dest);
+					$tproject = new testproject($db);
+					$sqlResult = $tproject->addKeywords($testproject_id,$keywordData);
+					header("Location: keywordsView.php");
+					exit();		
+				}
+			} // move_uploaded_file
+		} // file_check
   } 
   else
   {
-    $file_check=array('status_ok' => 0, 'msg' => lang_get('please_choose_keywords_file'));
+		$file_check = array('status_ok' => 0, 'msg' => lang_get('please_choose_keywords_file'));
   }	
 } // $bUpload
 
-					
-// render GUI					
+			
 $smarty = new TLSmarty();
 
 $smarty->assign('import_type_selected',$importType);
@@ -94,64 +89,32 @@ $smarty->assign('tproject_name', $tproject_name);
 $smarty->assign('tproject_id', $testproject_id);
 $smarty->assign('importLimitKB',TL_IMPORT_LIMIT / 1024);
 $smarty->display('keywordsimport.tpl');
-?>
 
-
-
-<?php
-/*
-  function: check_valid_ftype()
-
-  args :
-  
-  returns: 
-
-*/
 function check_valid_ftype($upload_info,$import_type)
 {
 	$ret = array();
 	$ret['status_ok'] = 0;
-	$ret['msg']='ok';
+	$ret['msg'] = lang_get('file_is_not_ok_for_import_type');
+	
+	$mime_import_types = null;      
+	$mime_import_types['text/plain'] = array('CSV' => 'csv');
+	$mime_import_types['application/octet-stream'] = array('CSV' => 'csv');
+	$mime_import_types['text/xml']= array('XML' => 'xml');
 
+	$uploadType = $upload_info['type']; 
+	$ext = isset($mime_import_types[$uploadType][$import_type]) ? $mime_import_types[$uploadType][$import_type] : null;
 	
-	$mime_types = array();
-	$import_type = strtoupper($import_type);
-	
-	$mime_types['check_ext']=array('application/octet-stream' => 'csv');                        
-                            
-  $mime_import_types['text/plain']=array('CSV' => 'CSV');
-  $mime_import_types['application/octet-stream']=array('CSV' => 'CSV');
-  $mime_import_types['text/xml']=array('XML' => 'XML');
- 
-	if(isset($mime_import_types[$upload_info['type']])) 
+	if(!is_null($ext))
 	{
-		if(isset($mime_import_types[$upload_info['type']][$import_type]))
+		$path_parts = pathinfo($upload_info['name']);
+		if(strtolower($path_parts['extension']) == $ext)
 		{
 			$ret['status_ok'] = 1;
-			if( isset($mime_types['check_ext'][$upload_info['type']]))
-			{
-				$path_parts = pathinfo($upload_info['name']);
-				if($path_parts['extension'] != $mime_types['check_ext'][$upload_info['type']])
-				{
-					$status_ok = 0;    
-					$ret['msg'] = lang_get('file_is_not_text');
-				}
-			}
+			$ret['msg'] = 'ok';
 		}
-		else
-		{
-			$ret['msg'] = lang_get('file_is_not_ok_for_import_type');
-		}	
 	}
-	else
-	{
-		$ret['msg']=lang_get('file_is_not_ok_for_import_type');
-	}	
 	return $ret;
 }
-
-
-
 /*
   function: 
 
@@ -160,21 +123,19 @@ function check_valid_ftype($upload_info,$import_type)
 */
 function check_xml_keywords($fileName)
 {
-	$dom = domxml_open_file($fileName);
 	$file_check = array('status_ok' => 0, 'msg' => 'dom_ko');    		  
-	
+
+	$dom = domxml_open_file($fileName);
 	if ($dom)
 	{
 		$file_check = array('status_ok' => 1, 'msg' => 'ok');    		  
 		$root = $dom->document_element();
 		if($root->tagname != 'keywords')
 		{
-			$file_check=array('status_ok' => 0, 'msg' => lang_get('wrong_xml_keywords_file'));
+			$file_check = array('status_ok' => 0, 'msg' => lang_get('wrong_xml_keywords_file'));
 		}
 	}
 	return $file_check;
 }
-
-
-
 ?>
+	

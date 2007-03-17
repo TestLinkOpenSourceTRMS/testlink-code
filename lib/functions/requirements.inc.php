@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: requirements.inc.php,v $
- * @version $Revision: 1.47 $
- * @modified $Date: 2007/03/12 07:11:51 $ by $Author: franciscom $
+ * @version $Revision: 1.48 $
+ * @modified $Date: 2007/03/17 21:13:56 $ by $Author: schlundus $
  *
  * @author Martin Havlat <havlat@users.sourceforge.net>
  * 
@@ -1151,7 +1151,7 @@ function exportReqDataToCSV($reqData)
 }
 
 
-function getReqCoverage($reqs,$execMap,$coveredReqs)
+function getReqCoverage($reqs,$execMap,&$coveredReqs)
 {
 	$arrCoverage = array(
 						"passed" => array(),

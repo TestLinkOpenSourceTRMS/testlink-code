@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsAllBuilds.php,v 1.14 2007/01/15 08:31:51 franciscom Exp $ 
+* $Id: resultsAllBuilds.php,v 1.15 2007/03/17 22:24:28 schlundus Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * 
@@ -28,6 +28,8 @@ $i = 0;
 if ($arrDataBuilds != null) {
   while ($buildId = key($arrDataBuilds)) {
    $arr = $arrDataBuilds[$buildId];
+   //% not run := 100 - percentage completed
+   $arr[9] = 100 - $arr[9]; 
    $arrData[$i] = $arr;
    $i++;
    next($arrDataBuilds);

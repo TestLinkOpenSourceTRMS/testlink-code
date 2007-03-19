@@ -1,35 +1,14 @@
 <?php
 /*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: migrate_16_to_17.php,v 1.16 2007/02/13 13:04:10 franciscom Exp $ 
+$Id: migrate_16_to_17.php,v 1.17 2007/03/19 15:55:45 franciscom Exp $ 
 
-20070210 - franciscom - Second try to solve keyword-tc assignment migration bug
-20070208 - franciscom - trying to solve keyword-tc assignment migration bug
-20070204 - franciscom - changes in prules migration
-20070131 - franciscom - removed truncate of db_version table
-
-20070130 - jbarchibald - 
-added code to update inactive testplans in migrate_test_plans()
-
-20070120 - franciscom - feedback improvements
-
-20070119 - franciscom -
-fixed bug in  migrate_tc_specs()
-                      
-20070113 - franciscom -                      
-fixed migration of results.
-
-20070103 - franciscom -
-added missing processing of keyword-tc links
-
-20061208 - franciscom -
-changes after test with a big (10000 test cases) database.
-1. using abs() on tcorder (on 1.6.x negative order was ok, but on 1.7 not)
-2. using flush to improve user feeedback
+20070317 - franciscom - BUGID 738
 
 */
 
-require_once( dirname(__FILE__). '/../../lib/functions/database.class.php' );
+require_once(dirname(__FILE__) . "/../../config.inc.php");
+require_once(dirname(__FILE__) . '/../../lib/functions/database.class.php' );
 require_once(dirname(__FILE__) . "/../../lib/functions/common.php");
 require_once(dirname(__FILE__) . "/../../lib/functions/assignment_mgr.class.php");
 require_once("../installUtils.php");
@@ -269,7 +248,6 @@ if(!is_null($users))
 echo "</div><p>";
 // -----------------------------------------------------------------------------------
 
-
 // -----------------------------------------------------------------------------------
 $msg=$tcspecs_msg;
 $hhmmss=date("H:i:s");
@@ -443,16 +421,9 @@ $hhmmss=date("H:i:s");
 echo "<a onclick=\"return DetailController.toggle('details-user_tpa')\" href=\"tplan/\">
 <img src='../img/icon-foldout.gif' align='top' title='show/hide'>Users - Test plan assignments: {$msg_click_to_show} {$hhmmss}</a>";
 echo '<div class="detail-container" id="details-user_tpa" style="display: none;">';
-$sql="SELECT * from projrights ORDER BY userid";
-$user_tplans=$source_db->fetchRowsIntoMap($sql,'userid');
-if(is_null($user_tplans)) 
-{
-		echo "<span class='notok'>There are no Users - Test plan assignments to be migrated!</span></b>";
-}
-else
-{
-  migrate_tesplan_assignments($source_db,$target_db,$user_tplans,$old_new);
-}
+
+// 20070317 - BUGID 738
+migrate_tesplan_assignments($source_db,$target_db,$old_new);
 echo "</div><p>";
 
 $hhmmss=date("H:i:s");
@@ -1197,13 +1168,17 @@ function migrate_tplan_contents(&$source_db,&$target_db,&$tplan_elems,&$tc_tcver
   args :
   
   returns: 
-
+  
+  rev :
+        20070317 - franciscom - BUGID 738
 */
-function migrate_tesplan_assignments(&$source_db,&$target_db,&$user_tplans,&$old_new)
+function migrate_tesplan_assignments(&$source_db,&$target_db,&$old_new)
 {
   define('NO_RIGHTS',3);
 
+  
   $counter=0;
+   
    
   $sql="SELECT * FROM user";
   $users=$source_db->fetchRowsIntoMap($sql,'id');
@@ -1211,15 +1186,22 @@ function migrate_tesplan_assignments(&$source_db,&$target_db,&$user_tplans,&$old
   $sql="SELECT * FROM project ORDER BY ID";
   $tplans=$source_db->fetchRowsIntoMap($sql,'id');
 
+  // 20070317 - franciscom - BUGID 738
+  $sql="SELECT * from projrights ORDER BY userid";
+  $user_tplans=$source_db->fetchMapRowsIntoMap($sql,'userid','projid');
+  $do_check = !is_null($user_tplans);
+  
+  
   foreach($tplans as $item_id => $idata)
   {
-    $tplan_id=$old_new['tplan'][intval($item_id)];
+    $old_tplan_id=intval($item_id);
+    $tplan_id=$old_new['tplan'][$old_tplan_id];
     foreach($users as $user_id => $udata)
     {
       // user id still exists ?
       if( isset($users[$user_id]) )
       {
-        if( isset($user_tplans[$user_id]) )
+        if( $do_check && isset($user_tplans[$user_id][$old_tplan_id]) )
         {
            $user_role=$users[$user_id]['rightsid'];
         }
@@ -1525,7 +1507,6 @@ function extract_kw_tc_links($source_db,$target_db,$tc_specs)
       }
     }  
   }
-  //echo "<pre>debug 20070210 " . __FUNCTION__ . " --- "; print_r($map_prod_kw_tc); echo "</pre>";
   return($map_prod_kw_tc);
 }
 

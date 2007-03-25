@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: charts.php,v $
- * @version $Revision: 1.10 $
- * @modified $Date: 2007/03/25 20:07:19 $  $Author: schlundus $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2007/03/25 20:11:59 $  $Author: schlundus $
  * @author kevin
  *
  *
@@ -20,7 +20,7 @@ $charts = array(
 	lang_get('overall_metrics') => InsertChart("{$pathToCharts}/charts.swf", "{$pathToCharts}/charts_library", "{$pathToScripts}/overallPieChart.php", 400, 250 ),
 	lang_get('results_by_keyword') => InsertChart("{$pathToCharts}/charts.swf","{$pathToCharts}/charts_library", "{$pathToScripts}/keywordBarChart.php", 800, 600 ),
 	lang_get('results_by_tester') => InsertChart("{$pathToCharts}/charts.swf", "{$pathToCharts}/charts_library","{$pathToScripts}/ownerBarChart.php", 800, 600),
-	lang_get('results_top_level_suites') => InsertChart("{$pathToCharts}/charts/charts.swf", "{$pathToCharts}/charts_library", "{$pathToScripts}/topLevelSuitesBarChart.php", 800, 600),  
+	lang_get('results_top_level_suites') => InsertChart("{$pathToCharts}/charts.swf", "{$pathToCharts}/charts_library", "{$pathToScripts}/topLevelSuitesBarChart.php", 800, 600),  
 );
                  
 $smarty = new TLSmarty();

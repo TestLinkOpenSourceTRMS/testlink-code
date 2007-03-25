@@ -2,36 +2,29 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: charts.php,v $
- * @version $Revision: 1.9 $
- * @modified $Date: 2007/02/28 07:41:39 $  $Author: kevinlevy $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2007/03/25 20:07:19 $  $Author: schlundus $
  * @author kevin
  *
  *
 **/
 require_once('../../config.inc.php');
 require_once('../functions/common.php');
+require_once('../../third_party/charts/charts.php');
 testlinkInitPage($db);
 $testPlanName = $_SESSION['testPlanName']; 
 
-echo "<h2>",$_SESSION['testPlanName']," ",lang_get('graphical_reports'),"</h2><h6>",lang_get('maani_copyright'),"</h6>";
-echo "<h3>",$_SESSION['testPlanName']," ",lang_get('overall_metrics'),"</h3>";
-	
-
-//include charts.php to access the InsertChart function
-include "../../third_party/charts/charts.php";
-echo InsertChart ( "../../third_party/charts/charts.swf", 
-                   "../../third_party/charts/charts_library", "overallPieChart.php", 400, 250 );
-
-echo "<h3>",$_SESSION['testPlanName']," ",lang_get('results_by_keyword'),"</h3>";
-
-echo InsertChart ( "../../third_party/charts/charts.swf", 
-                   "../../third_party/charts/charts_library", "keywordBarChart.php", 800, 600 );
-
-echo "<h3>",$_SESSION['testPlanName']," ",lang_get('results_by_tester'),"</h3>";
-echo InsertChart ( "../../third_party/charts/charts.swf", "../../third_party/charts/charts_library", 
-                   "ownerBarChart.php", 800, 600);
-
-echo "<h3>",$_SESSION['testPlanName']," ",lang_get('results_top_level_suites'),"</h3>";
-echo InsertChart ( "../../third_party/charts/charts.swf", "../../third_party/charts/charts_library", 
-                   "topLevelSuitesBarChart.php", 800, 600);
+$pathToCharts = "third_party/charts";
+$pathToScripts = "lib/results";
+$charts = array(
+	lang_get('overall_metrics') => InsertChart("{$pathToCharts}/charts.swf", "{$pathToCharts}/charts_library", "{$pathToScripts}/overallPieChart.php", 400, 250 ),
+	lang_get('results_by_keyword') => InsertChart("{$pathToCharts}/charts.swf","{$pathToCharts}/charts_library", "{$pathToScripts}/keywordBarChart.php", 800, 600 ),
+	lang_get('results_by_tester') => InsertChart("{$pathToCharts}/charts.swf", "{$pathToCharts}/charts_library","{$pathToScripts}/ownerBarChart.php", 800, 600),
+	lang_get('results_top_level_suites') => InsertChart("{$pathToCharts}/charts/charts.swf", "{$pathToCharts}/charts_library", "{$pathToScripts}/topLevelSuitesBarChart.php", 800, 600),  
+);
+                 
+$smarty = new TLSmarty();
+$smarty->assign("tpname",$testPlanName);
+$smarty->assign("charts",$charts);
+$smarty->display("charts.tpl");	                   
 ?>

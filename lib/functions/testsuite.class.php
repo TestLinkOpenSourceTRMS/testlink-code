@@ -2,9 +2,12 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testsuite.class.php,v $
- * @version $Revision: 1.28 $
- * @modified $Date: 2007/03/06 20:19:36 $ - $Author: schlundus $
+ * @version $Revision: 1.29 $
+ * @modified $Date: 2007/03/26 08:24:58 $ - $Author: franciscom $
  * @author franciscom
+ *
+ * 20070324 - franciscom - create() interface changes
+ *                         get_by_id()changes in result set
  *
  * 20070204 - franciscom - fixed minor GUI bug on html_table_of_custom_field_inputs()
  *
@@ -41,18 +44,36 @@ function testsuite(&$db)
 	$this->cfield_mgr=new cfield_mgr($this->db);
 }
 
-//
-// 20061119 - franciscom
-// get default order in tree using config_get()
-//
-// 20060309 - franciscom
+
+/*
+  function: 
+
+  args :
+        $parent_id
+        $name
+        $details
+        [$check_duplicate_name]
+        [$action_on_duplicate_name]
+        [$order]
+  
+  returns:   hash	
+                  $ret['status_ok'] -> 0/1
+                  $ret['msg']
+                  $ret['id']        -> when status_ok=1, id of the new element
+
+
+*/
+
 //
 // returns hash with:	$ret['status_ok'] -> 0/1
 //                    $ret['msg']
 //                    $ret['id']        -> when status_ok=1, id of the new element
 //
 //                  
-function create($parent_id,$name,$details,
+// rev :
+//      20070324 - BUGID 710
+//
+function create($parent_id,$name,$details,$order=null,
                 $check_duplicate_name=0,
                 $action_on_duplicate_name='allow_repeat')
 {
@@ -62,7 +83,17 @@ function create($parent_id,$name,$details,
   
     
 	$prefix_name_for_copy = config_get('prefix_name_for_copy');
-	$order_cfg = config_get('tree_node_ordering');
+	
+	
+	if( is_null($order) )
+	{
+	  $order_cfg = config_get('tree_node_ordering');
+	  $node_order = $order_cfg->default_testsuite_order;
+	}
+	else
+	{
+	  $node_order = $order;
+	}
 	
 	$name = trim($name);
 	$ret = array('status_ok' => 1, 'id' => 0, 'msg' => 'ok');
@@ -101,7 +132,7 @@ function create($parent_id,$name,$details,
 	{
 		// get a new id
 		$tsuite_id = $this->tree_manager->new_node($parent_id,$this->my_node_type,
-		                                           $name,$order_cfg->default_testsuite_order);
+		                                           $name,$node_order);
 		$sql = "INSERT INTO testsuites (id,details) " .
 				   "VALUES ({$tsuite_id},'" . $this->db->prepare_string($details) . "')";
 		             
@@ -152,13 +183,22 @@ function get_by_name($name)
 }
 
 /*
-get info for one test suite
+  function: get_by_id
+            get info for one test suite
+
+  args :
+  
+  returns: 
+  
+  rev :
+        20070324 - added node_order in result set
+
 */
 function get_by_id($id)
 {
-	$sql = " SELECT testsuites.*, nodes_hierarchy.name,nodes_hierarchy.node_type_id 
-	         FROM testsuites,nodes_hierarchy 
-	         WHERE testsuites.id = nodes_hierarchy.id
+	$sql = " SELECT testsuites.*, NH.name, NH.node_type_id, NH.node_order
+	         FROM testsuites,nodes_hierarchy NH 
+	         WHERE testsuites.id = NH.id
 	         AND testsuites.id = {$id}";
   $recordset = $this->db->get_recordset($sql);
   return($recordset ? $recordset[0] : null);
@@ -307,41 +347,47 @@ function viewer_edit_new(&$smarty,$amy_keys, $oFCK, $action, $parent_id,
   
   returns: 
 
+  rev :
+       20070324 - BUGID 710
+                  BUGID XXX
 */
 function copy_to($id, $parent_id, $user_id,
                  $check_duplicate_name = 0,
-				 $action_on_duplicate_name = 'allow_repeat',
-				 $copyKeywords = 0
-				 )
+				         $action_on_duplicate_name = 'allow_repeat',
+				         $copyKeywords = 0 )
 {
 	$tcase_mgr = new testcase($this->db);
 	
 	$tsuite_info = $this->get_by_id($id);
 	$ret = $this->create($parent_id,$tsuite_info['name'],$tsuite_info['details'],
-						$check_duplicate_name,$action_on_duplicate_name);
+	                     $tsuite_info['node_order'], 
+						           $check_duplicate_name,$action_on_duplicate_name);
 	
 	$new_tsuite_id = $ret['id'];
 	
 	$subtree = $this->tree_manager->get_subtree($id,array('testplan' => 'exclude_me'),
-													array('testcase' => 'exclude_my_children'));
+													                    array('testcase' => 'exclude_my_children'));
 	
 	if (!is_null($subtree))
 	{
-		$the_parent_id = $new_tsuite_id;	
+	  $parent_decode=array();
+    $parent_decode[$id]=$new_tsuite_id;
+		
 		foreach($subtree as $the_key => $elem)
 		{
-			if( $elem['parent_id'] == $id )
-				$the_parent_id = $new_tsuite_id;	
-			
+		  $the_parent_id=$parent_decode[$elem['parent_id']];
 			switch ($elem['node_type_id'])
 			{
 				case $this->node_types_descr_id['testcase']:
 					$tcase_mgr->copy_to($elem['id'],$the_parent_id,$user_id,$copyKeywords);
 					break;
+					
 				case $this->node_types_descr_id['testsuite']:
 					$tsuite_info = $this->get_by_id($elem['id']);
-					$ret = $this->create($the_parent_id,$tsuite_info['name'],$tsuite_info['details']);      
-					$the_parent_id = $ret['id'];
+					$ret = $this->create($the_parent_id,$tsuite_info['name'],
+					                     $tsuite_info['details'],$tsuite_info['node_order']);      
+				  
+			    $parent_decode[$elem['id']]=$ret['id'];
 					break;
 			}
 		}
@@ -498,6 +544,15 @@ function addKeyword($id,$kw_id)
 	return ($this->db->exec_query($sql) ? 1 : 0);
 }
 
+
+/*
+  function: addKeywords
+
+  args :
+  
+  returns: 
+
+*/
 function addKeywords($id,$kw_ids)
 {
 	$status = 1;
@@ -510,6 +565,14 @@ function addKeywords($id,$kw_ids)
 }
 
 
+/*
+  function: deleteKeywords
+
+  args :
+  
+  returns: 
+
+*/
 function deleteKeywords($id,$kw_id = null)
 {
 	$sql = " DELETE FROM object_keywords WHERE fk_id = {$id} ";
@@ -520,6 +583,14 @@ function deleteKeywords($id,$kw_id = null)
 	return($this->db->exec_query($sql));
 }
 
+/*
+  function: exportTestSuiteDataToXML
+
+  args :
+  
+  returns: 
+
+*/
 function exportTestSuiteDataToXML($container_id,$optExport = array())
 {
 	$xmlTC = null;
@@ -568,6 +639,15 @@ function exportTestSuiteDataToXML($container_id,$optExport = array())
 // -------------------------------------------------------------------------------
 // Custom field related methods
 // -------------------------------------------------------------------------------
+
+/*
+  function: get_spec_cfields
+
+  args :
+  
+  returns: 
+
+*/
 function get_spec_cfields($id) 
 {
   $sql="SELECT CF.*,CFTP.display_order " .

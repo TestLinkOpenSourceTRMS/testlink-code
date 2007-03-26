@@ -3,12 +3,12 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * @version $Revision: 1.61 $
- * @modified $Date: 2007/03/06 20:19:36 $ by $Author: schlundus $
+ * @version $Revision: 1.62 $
+ * @modified $Date: 2007/03/26 08:24:58 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * 
- *
+ * 20070324 - franciscom - interface changes on tsuite_mgr->create()
  * 20070218 - franciscom - added $g_spec_cfg->automatic_tree_refresh to the
  *                         refresh tree logic
  *
@@ -154,14 +154,21 @@ if($action == 'edit_testsuite' || $action == 'new_testsuite')
 }
 else if($action == 'add_testsuite')
 {
+  
+  $check_names_for_duplicates = config_get('check_names_for_duplicates');
+  $action_on_duplicate_name = config_get('action_on_duplicate_name');
+  $order_cfg = config_get('tree_node_ordering');
+
+
 	keywords_opt_transf_cfg($opt_cfg, ""); 
 	$smarty->assign('opt_cfg', $opt_cfg);
 	if ($name_ok)
 	{
 		$msg = 'ok';
 		$ret =$tsuite_mgr->create($my_containerID,$c_data['container_name'],$c_data['details'],
-								              $g_check_names_for_duplicates,
-								              $g_action_on_duplicate_name);
+                              $order_cfg->default_testsuite_order,	
+								              $check_names_for_duplicates,
+								              $action_on_duplicate_name);
 		if($ret['status_ok'])
 		{
 		  $user_feedback=lang_get('testsuite_created');

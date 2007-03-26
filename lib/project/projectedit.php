@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: projectedit.php,v $
  *
- * @version $Revision: 1.7 $
- * @modified $Date: 2007/02/22 08:22:39 $ $Author: franciscom $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2007/03/26 08:24:58 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -14,6 +14,7 @@
  * 
  * @todo Verify dependency before delete testplan 
  *
+ * 20070324 - franciscom - BUGID
  * 20070221 - franciscom - BUGID 652
  * 20070206 - franciscom - BUGID 617
  * 20051211 - fm - poor workaround for the delete loop - BUGID 180 Unable to delete Product
@@ -31,6 +32,10 @@ $session_tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojec
 
 $user_feedback ='';
 $updateResult = null;
+
+// Important: 
+// if != 'no' refresh of navbar frame is done
+//
 $action = 'no';
 $show_prod_attributes = 'yes';
 
@@ -92,6 +97,8 @@ switch($args->do)
 				$user_feedback = sprintf(lang_get('error_product_name_duplicate'),$args->tproject_name);
 			}
 		}
+		// 20070324 - BUGID
+		$action="do_create";
 		break;
 		
 	case 'do_edit':

@@ -5,9 +5,9 @@
  *
  * Filename $RCSfile: tcImport.php,v $
  * Filename $RCSfile: tcImport.php,v $
- * @version $Revision: 1.21 $
+ * @version $Revision: 1.22 $
  *
- * @modified $Date: 2007/02/12 08:08:42 $ by $Author: franciscom $
+ * @modified $Date: 2007/03/26 08:19:49 $ by $Author: franciscom $
 */
 require('../../config.inc.php');
 require_once('common.php');
@@ -15,7 +15,7 @@ require_once('import.inc.php');
 require_once('csv.inc.php');
 require_once('xml.inc.php');
 
-if (version_compare(PHP_VERSION,'5','>=')&&extension_loaded('xsl'))
+if (version_compare(PHP_VERSION,'5','>='))
 {
   require_once(dirname(__FILE__) . '/../../third_party/domxml-php4-to-php5.php');
 }

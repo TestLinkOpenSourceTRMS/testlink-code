@@ -2,7 +2,7 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: listTestCases.php,v 1.19 2007/02/20 18:48:50 franciscom Exp $
+* 	@version 	$Id: listTestCases.php,v 1.20 2007/03/26 20:24:20 schlundus Exp $
 * 	@author 	Martin Havlat
 * 
 * 	This page generates tree menu with test specification. It builds the
@@ -11,27 +11,22 @@
 *
 *   20070217 - franciscom - added test suite filter
 */
-require('../../config.inc.php');
+require_once('../../config.inc.php');
 require_once("common.php");
 require_once("treeMenu.inc.php");
 testlinkInitPage($db);
 
-
-// 20070217 - franciscom
 $spec_cfg = config_get('spec_cfg');
 
 $feature = isset($_REQUEST['feature']) ? $_REQUEST['feature'] : null;
 $tproject_id   = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 $tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : 'xxx';
 
-$do_refresh_on_action=manage_tcspec($_REQUEST,$_SESSION,
+$do_refresh_on_action = manage_tcspec($_REQUEST,$_SESSION,
                                     'tcspec_refresh_on_action','hidden_tcspec_refresh_on_action',
                                     $spec_cfg->automatic_tree_refresh);
 
-$_SESSION['tcspec_refresh_on_action']=$do_refresh_on_action;
-
-
-
+$_SESSION['tcspec_refresh_on_action'] = $do_refresh_on_action;
 
 $tsuites_to_show = isset($_REQUEST['tsuites_to_show']) ? $_REQUEST['tsuites_to_show'] : 0;
 $title = lang_get('title_navigator'). ' - ' . lang_get('title_test_spec');
@@ -57,15 +52,15 @@ else
 }
 
 
-$draw_filter=$spec_cfg->show_tsuite_filter;
-$exclude_branches=null;
-$tsuites_combo=null;
-if( $spec_cfg->show_tsuite_filter )
+$draw_filter = $spec_cfg->show_tsuite_filter;
+$exclude_branches = null;
+$tsuites_combo = null;
+if($spec_cfg->show_tsuite_filter)
 {
-  $mappy=tsuite_filter_mgmt($db,$tproject_id,$tsuites_to_show);
-  $exclude_branches=$mappy['exclude_branches'];
-  $tsuites_combo=$mappy['html_options'];
-  $draw_filter=$mappy['draw_filter'];
+	$mappy = tsuite_filter_mgmt($db,$tproject_id,$tsuites_to_show);
+	$exclude_branches = $mappy['exclude_branches'];
+	$tsuites_combo = $mappy['html_options'];
+	$draw_filter = $mappy['draw_filter'];
 }
 $treeString = generateTestSpecTree($db,$tproject_id, $tproject_name,
                                    $workPath,SHOW_TESTCASES,DO_ON_TESTCASE_CLICK,
@@ -74,29 +69,20 @@ $treeString = generateTestSpecTree($db,$tproject_id, $tproject_name,
 
 $tree = null;
 if (strlen($treeString))
-	$tree = invokeMenu($treeString);
+	$tree = invokeMenu($treeString,"",null);
 		
 $smarty = new TLSmarty();
 
-// 20070219 - franciscom
 $smarty->assign('tcspec_refresh_on_action',$do_refresh_on_action);
-
-
-// 20070217 - franciscom
 $smarty->assign('tsuites_combo',$tsuites_combo);
 $smarty->assign('tsuite_choice',$tsuites_to_show);
-
 $smarty->assign('draw_filter',$draw_filter) ;
-
-
 $smarty->assign('treeKind', TL_TREE_KIND);
 $smarty->assign('tree', $tree);
 $smarty->assign('treeHeader', $title);
 $smarty->assign('menuUrl',$workPath);
 $smarty->display('tcTree.tpl');
-?>
 
-<?php
 /*
   function: tsuite_filter_mgmt
 
@@ -108,7 +94,7 @@ $smarty->display('tcTree.tpl');
 */
 function tsuite_filter_mgmt(&$db,$tproject_id,$tsuites_to_show)
 {
-  $tproject_mgr=New testproject($db);
+  $tproject_mgr = New testproject($db);
 
   $ret=array('draw_filter' => 0,
              'html_options' => array(0 =>''),
@@ -137,18 +123,8 @@ function tsuite_filter_mgmt(&$db,$tproject_id,$tsuites_to_show)
   return($ret);
 }
 
-
-/*
-  function: 
-
-  args :
-  
-  returns: 
-
-*/
 function manage_tcspec($hash_REQUEST,$hash_SESSION,$key2check,$hidden_name,$default)
 {
-    
     if (isset($hash_REQUEST[$hidden_name]))
     {
       $do_refresh = "no";
@@ -167,5 +143,4 @@ function manage_tcspec($hash_REQUEST,$hash_SESSION,$key2check,$hidden_name,$defa
     }
     return $do_refresh;
 }
-
 ?>

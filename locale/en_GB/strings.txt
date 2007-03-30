@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.163 $
- * @modified $Date: 2007/03/12 07:11:26 $ $Author: franciscom $
+ * @version $Revision: 1.164 $
+ * @modified $Date: 2007/03/30 20:28:24 $ $Author: schlundus $
  *
  * @author Francisco Mancardi
  *
@@ -294,7 +294,7 @@ $TLS_title_req_import_check_input = "Check import data";
 
 // gui/templates/inc_attachments.tpl
 $TLS_alt_delete_build = "Click here to delete this build";
-$TLS_alt_delete_attachment = "Click here to delete this attachtment";
+$TLS_alt_delete_attachment = "Click here to delete this attachment";
 $TLS_attached_files = "Attached files";
 $TLS_attachment_feature_disabled = "attachment disabled";
 $TLS_button_upload = "Upload";

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: requirements.inc.php,v $
- * @version $Revision: 1.48 $
- * @modified $Date: 2007/03/17 21:13:56 $ by $Author: schlundus $
+ * @version $Revision: 1.49 $
+ * @modified $Date: 2007/03/30 20:28:24 $ by $Author: schlundus $
  *
  * @author Martin Havlat <havlat@users.sourceforge.net>
  * 
@@ -1057,12 +1057,15 @@ function importReqDataFromCSV($fileName)
 	
 	// 20061015 - franciscom
 	// adjust value length to field length to avoid problems during inset
-	foreach($reqData as $key => $value)
+	if ($reqData)
 	{
-     foreach($field_length as $fkey => $len)
-	   {
-       $reqData[$key][$fkey]=trim_and_limit($reqData[$key][$fkey],$len); 	      
-	   }
+		foreach($reqData as $key => $value)
+		{
+	     foreach($field_length as $fkey => $len)
+		   {
+	       $reqData[$key][$fkey]=trim_and_limit($reqData[$key][$fkey],$len); 	      
+		   }
+		}
 	}
 	return $reqData;
 }

@@ -1,6 +1,5 @@
 <?php
-include "../../third_party/charts/charts.php";
-
+require_once("../../third_party/charts/charts.php");
 require_once('../functions/results.class.php');
 require_once('../functions/testplan.class.php');
 
@@ -12,9 +11,6 @@ $builds_to_query = 'a';
 $suitesSelected = 'all';
 $re = new results($db, $tp, $suitesSelected, $builds_to_query);
 
-/** 
-* SUITES REPORT 
-*/
 $topLevelSuites = $re->getTopLevelSuites();
 $mapOfAggregate = $re->getAggregateMap();
 $arrDataSuite = null;
@@ -44,38 +40,33 @@ $namesOfOwnersArray = array();
 $namesOfOwnersArray[0] = "";
 
 $passArray = array();
-$passArray[0] = "pass";
+$passArray[0] = lang_get($g_tc_status_verbose_labels["passed"]);
 
 $failArray = array();
-$failArray[0] = "fail";
+$failArray[0] = lang_get($g_tc_status_verbose_labels["failed"]);
 
 $blockedArray = array();
-$blockedArray[0] = "blocked";
+$blockedArray[0] = lang_get($g_tc_status_verbose_labels["blocked"]);
 
 $notRunArray = array();
-$notRunArray[0] = "not run";
+$notRunArray[0] = lang_get($g_tc_status_verbose_labels["not_run"]);
 
 for ($i = 0 ; $i < sizeOf($arrDataSuite); $i++) {
 	$ownerArr = $arrDataSuite[$i];
 	$namesOfOwnersArray[$i + 1] = $ownerArr[0];
-	// $total = $keywordArr[1];
 	$passArray[$i + 1] = $ownerArr[2];
 	$failArray[$i + 1] = $ownerArr[3];
 	$blockedArray[$i + 1] = $ownerArr[4];
 	$notRunArray[$i + 1] = $ownerArr[5];
-	// $percentComplete = $ownerArr[6];
 }
 
 $chart[ 'chart_data' ] = array ($namesOfOwnersArray, $passArray,$failArray, $blockedArray,$notRunArray);
 
-/**
-END NEW STUFF
-*/
 $chart[ 'axis_value' ] = array ( 'font'=>"arial", 'bold'=>true, 'size'=>10, 'color'=>"000000", 'alpha'=>50, 'steps'=>6, 'prefix'=>"", 'suffix'=>"", 'decimals'=>0, 'separator'=>"", 'show_min'=>true );
 $chart[ 'chart_border' ] = array ( 'color'=>"000000", 'top_thickness'=>0, 'bottom_thickness'=>3, 'left_thickness'=>0, 'right_thickness'=>0 );
 $chart[ 'chart_grid_h' ] = array ( 'alpha'=>20, 'color'=>"000000", 'thickness'=>1, 'type'=>"solid" );
 $chart[ 'chart_grid_v' ] = array ( 'alpha'=>20, 'color'=>"000000", 'thickness'=>1, 'type'=>"dashed" );
-$chart[ 'chart_rect' ] = array ( 'x'=>125, 'y'=>65, 'width'=>500, 'height'=>400, 'positive_color'=>"ffffff", 'negative_color'=>"000000", 'positive_alpha'=>75, 'negative_alpha'=>15 );
+$chart[ 'chart_rect' ] = array ( 'x'=>125, 'y'=>75, 'width'=>500, 'height'=>400, 'positive_color'=>"ffffff", 'negative_color'=>"000000", 'positive_alpha'=>75, 'negative_alpha'=>15 );
 $chart[ 'chart_transition' ] = array ( 'type'=>"drop", 'delay'=>0, 'duration'=>2, 'order'=>"series" );
 $chart[ 'chart_type' ] = "stacked column"; 
 $chart[ 'axis_category' ] = array ('orientation'=>"diagonal_down");

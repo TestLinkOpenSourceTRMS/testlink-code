@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: const.inc.php,v $
  *
- * @version $Revision: 1.20 $
- * @modified $Date: 2007/02/28 22:07:10 $ by $Author: havlat $
+ * @version $Revision: 1.21 $
+ * @modified $Date: 2007/04/02 07:02:59 $ by $Author: franciscom $
  * @author Martin Havlát
  *
  * SCOPE:
@@ -40,6 +40,10 @@ define('TL_TEMP_PATH', TL_ABS_PATH . 'gui'.DS.'templates_c'.DS);
 /* Release MUST BE changed at the release day */
 define('TL_VERSION', '1.7.0 - RC1'); 
 define('TL_BACKGROUND_DEFAULT', "#9BD"); // default color
+
+// planAddTC_m1-tpl
+define('TL_STYLE_FOR_ADDED_TC', "background-color:yellow;");
+
 
 define('TL_COOKIE_KEEPTIME', (time()+60*60*24*30)); // 30 days
 
@@ -232,7 +236,7 @@ define("TL_ROLES_NONE",3);
 define("TL_ROLES_NONE_DESC","<no rights>");
 define("TL_ROLES_UNDEFINED",0);
 define("TL_ROLES_UNDEFINED_DESC","<inherited>");
-define("TL_DEFAULT_ROLEID",TL_ROLES_GUEST);
+define("TL_DEFAULT_ROLEID",7);
 
 // used on User Interface whiel showing roles
 define("TL_ROLES_OPEN_CHAR","[");

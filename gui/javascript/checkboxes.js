@@ -1,5 +1,5 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/ 
-// $Id: checkboxes.js,v 1.5 2007/01/26 08:10:33 franciscom Exp $ 
+// $Id: checkboxes.js,v 1.6 2007/04/02 07:15:28 franciscom Exp $ 
 //
 //
 // rev :
@@ -210,3 +210,40 @@ function checkbox_get_checked(oid)
 }
 
 
+/*
+  function:  cs_all_checkbox_in_div
+             Change Status of all checkboxes with a id prefix
+             on a div.
+
+  args :
+        div_id: id of the div container of checkboxs
+ 
+        cb_id_prefix: checkbox id prefix
+        
+        memory_id: id of hidden input used to hold old check value.
+        
+  
+        
+  returns:  - 
+
+*/
+function cs_all_checkbox_in_div(div_id, cb_id_prefix,memory_id)
+{
+	var inputs = document.getElementById(div_id).getElementsByTagName('input');
+	var memory = document.getElementById(memory_id);
+		
+	for(var idx = 0; idx < inputs.length; idx++)
+	{
+		var elemType = inputs[idx].type;		
+		
+		if(inputs[idx].type == "checkbox" && 
+		  (inputs[idx].id.indexOf(cb_id_prefix)==0) )
+		{
+      // inputs[idx].checked = status;
+      
+      inputs[idx].checked = (memory.value == "1") ? false : true;
+		}	
+	} // for
+	
+	memory.value = (memory.value == "1") ? "0" : "1";
+}

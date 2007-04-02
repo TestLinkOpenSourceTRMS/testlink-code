@@ -1,8 +1,10 @@
 /* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: testlink.css,v 1.5 2007/03/12 07:05:10 franciscom Exp $ 
+$Id: testlink.css,v 1.6 2007/04/02 07:14:46 franciscom Exp $ 
 Purpose: main css - theme m1
 
+20070401 - franciscom -  added padding to:
+                        .login_warning_message, .warning_message 
 20070311 - franciscom - corrected path to navbar.gif
 20070224 - franciscom - added div.user_feedback
                   
@@ -482,15 +484,16 @@ div.exec_history {
 	font-weight:    bold;
 }
 
-/* 20070204 - franciscom */
 .warning_message {
 background-color:#059;
-color:white; 
+color:white;
+padding:4px;
 }
 
 .login_warning_message {
 background-color:#059;
 color:white; 
+padding:4px;
 }
 
 

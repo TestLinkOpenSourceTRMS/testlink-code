@@ -1,19 +1,33 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: login.tpl,v 1.9 2007/03/01 16:10:12 franciscom Exp $
+$Id: login.tpl,v 1.10 2007/04/02 08:12:10 franciscom Exp $
 Purpose: smarty template - login page 
 
+20070401 - franciscom - new rounding engine
 20070301 - franciscom - BUGID 695 (fawel contribute)
 *}
 {include file="inc_head.tpl" title="TestLink - Login" openHead='yes'}
-<script language="JavaScript" src="gui/javascript/rounded.js" type="text/javascript"></script>
+
+<script language="JavaScript" src="{$basehref}gui/niftycube/niftycube.js" type="text/javascript"></script>
+{literal}
+<script type="text/javascript">
+window.onload=function(){
+ Nifty("div#login_div","big");
+ Nifty("div.warning_message","normal");
+ Nifty("div.login_warning_message","normal");
+ document.forms[0].elements[0].focus();
+}
+</script>
+{/literal}
+
+
 </head>
 
-<body onload="document.forms[0].elements[0].focus()">
+<body>
 
 {config_load file="input_dimensions.conf" section="login"} {* Constant definitions *}
 <div class="title">{$login_logo}<br />TestLink {$tlVersion|escape}</div>
-<div class="forms">
+<div class="forms" id="login_div">
 
 	<form method="post" action="index.php">
 	  <div class="login_warning_message" style="text-align:center;">{$note}</div>
@@ -43,9 +57,5 @@ Purpose: smarty template - login page
 	{/if}
 
 </div>
-<script type="text/javascript">
-Rounded('warning_message', 8, 8);
-</script>
-
 </body>
 </html>

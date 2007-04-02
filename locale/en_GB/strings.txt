@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.164 $
- * @modified $Date: 2007/03/30 20:28:24 $ $Author: schlundus $
+ * @version $Revision: 1.165 $
+ * @modified $Date: 2007/04/02 08:19:06 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
@@ -738,12 +738,14 @@ $TLS_title_specification = "Specification";
 
 
 // gui/templates/planAddTC_m1.tpl
+$TLS_add_tc = "Add";
 $TLS_add_remove_selected_tc_hint = "Operation will be applied to ALL Test suites";
 $TLS_btn_add_remove_selected_tc = "Add / Remove selected";
 $TLS_btn_add_selected_tc = "Add selected";
 $TLS_btn_check = "Check";
 $TLS_btn_uncheck = "Uncheck";
 $TLS_check_uncheck_tc = "All Test Cases in the Test Suite.";
+$TLS_check_uncheck_all_checkboxes="check/uncheck all";
 $TLS_has_been_executed = "has been executed";
 $TLS_inactive_testcase = "inactive";
 $TLS_no_testcase_available = "No Test Case available";

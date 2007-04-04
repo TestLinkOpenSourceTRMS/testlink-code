@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: int_jira.php,v $
  *
- * @version $Revision: 1.6 $
- * @modified $Date: 2007/04/04 12:33:50 $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2007/04/04 17:00:44 $
  *
  * @author (contributor) jbarchibald@gmail.com
  *
@@ -141,7 +141,7 @@ class jiraInterface extends bugtrackingInterface
 	function checkBugID($id)
 	{
 	  $status_ok=1;	
-    if(strlen(trim()) == 0 )
+    if(strlen(trim($id)) == 0 )
     {
       $status_ok=0;	
     }

@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.20 2007/03/04 00:03:19 schlundus Exp $
+$Id: tcView_viewer.tpl,v 1.21 2007/04/04 19:20:49 schlundus Exp $
 viewer for test case in test specification
 
 20061230 - franciscom - an experiment to make simple management
@@ -10,16 +10,15 @@ viewer for test case in test specification
 {if $args_show_title == "yes"}
 <h1>{lang_get s='title_test_case'} {$args_testcase.name|escape} </h1>
 {/if}
-
+	{assign var="author_userinfo" value=$args_users[$args_testcase.author_id]}
+ 	{assign var="updater_userinfo" value=$args_users[$args_testcase.updater_id]}
+  
 {if $args_can_edit == "yes" }
 
   {assign var="edit_enabled" value=0}
   {assign var="active_status_op_enabled" value=0}
   {assign var="has_been_executed" value=0}
   {lang_get s='can_not_edit_tc' var="warning_edit_msg"}
-  {assign var="author_userinfo" value=$args_users[$args_testcase.author_id]}
-  {assign var="updater_userinfo" value=$args_users[$args_testcase.updater_id]}
-   
   {if $args_status_quo eq null or 
       $args_status_quo[$args_testcase.id].executed eq null}
       

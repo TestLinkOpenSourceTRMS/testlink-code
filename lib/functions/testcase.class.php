@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.52 $
- * @modified $Date: 2007/03/04 00:03:19 $ $Author: schlundus $
+ * @version $Revision: 1.53 $
+ * @modified $Date: 2007/04/04 19:20:49 $ $Author: schlundus $
  * @author franciscom
  *
  *
@@ -245,9 +245,9 @@ function show(&$smarty,$id, $user_id, $version_id=TC_ALL_VERSIONS, $action='',
               $msg_result='', $refresh_tree='yes')
 {
   
-  $gui_cfg = config_get('gui');
+	$gui_cfg = config_get('gui');
 	$the_tpl = config_get('tpl');
-  $tcase_cfg = config_get('testcase_cfg');
+	$tcase_cfg = config_get('testcase_cfg');
 
 	$arrReqs = null;
 	$can_edit = has_rights($this->db,"mgt_modify_tc");
@@ -302,7 +302,6 @@ function show(&$smarty,$id, $user_id, $version_id=TC_ALL_VERSIONS, $action='',
 		$smarty->assign('cf',$cf_smarty);	
  	}
 	$users = getAllUsers($this->db,null,'id');
-	
 	$smarty->assign('tcase_cfg',$tcase_cfg);
 	$smarty->assign('action',$action);
 	$smarty->assign('users',$users);

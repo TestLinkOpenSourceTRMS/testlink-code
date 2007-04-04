@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: requirements.inc.php,v $
- * @version $Revision: 1.49 $
- * @modified $Date: 2007/03/30 20:28:24 $ by $Author: schlundus $
+ * @version $Revision: 1.50 $
+ * @modified $Date: 2007/04/04 19:54:49 $ by $Author: schlundus $
  *
  * @author Martin Havlat <havlat@users.sourceforge.net>
  * 
@@ -16,14 +16,6 @@
  * 20070310 - franciscom - changed return type createRequirement()
  */
 ////////////////////////////////////////////////////////////////////////////////
-
-if (version_compare(PHP_VERSION,'5','>=')&&extension_loaded('xsl'))
-{
-  require_once(dirname(__FILE__) . '/../../third_party/domxml-php4-to-php5.php');
-}
-
-
-
 
 $arrReqStatus = array(TL_REQ_STATUS_VALID => lang_get('req_state_valid'), 
 					            TL_REQ_STATUS_NOT_TESTABLE => lang_get('req_state_not_testable')

@@ -5,22 +5,15 @@
  *
  * Filename $RCSfile: tcImport.php,v $
  * Filename $RCSfile: tcImport.php,v $
- * @version $Revision: 1.22 $
+ * @version $Revision: 1.23 $
  *
- * @modified $Date: 2007/03/26 08:19:49 $ by $Author: franciscom $
+ * @modified $Date: 2007/04/04 19:54:49 $ by $Author: schlundus $
 */
 require('../../config.inc.php');
 require_once('common.php');
 require_once('import.inc.php');
 require_once('csv.inc.php');
 require_once('xml.inc.php');
-
-if (version_compare(PHP_VERSION,'5','>='))
-{
-  require_once(dirname(__FILE__) . '/../../third_party/domxml-php4-to-php5.php');
-}
-
-
 testlinkInitPage($db);
 
 $importType = isset($_POST['importType']) ? $_POST['importType'] : null;

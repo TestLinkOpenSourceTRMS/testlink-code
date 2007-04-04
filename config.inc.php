@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.106 $
- * @modified $Date: 2007/03/12 07:09:46 $ by $Author: franciscom $
+ * @version $Revision: 1.107 $
+ * @modified $Date: 2007/04/04 19:54:49 $ by $Author: schlundus $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink 
@@ -36,7 +36,9 @@ ini_set('include_path',ini_get('include_path') . ";" . '.' .
 /** Include database consts (the file is generated automatically by TL installer) */ 
 require_once('config_db.inc.php');
 
-
+/** load the php4 to php5 domxml wrapper if the php5 is used and the domxml extension is not loaded **/
+if (version_compare(PHP_VERSION,'5','>=') && !extension_loaded("domxml"))
+	require_once(dirname(__FILE__) . '/third_party/domxml-php4-to-php5.php');
 
 // ----------------------------------------------------------------------------
 /** [LOCALIZATION] */

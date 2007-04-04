@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: keywordsexport.php,v $
  *
- * @version $Revision: 1.8 $
- * @modified $Date: 2006/10/09 10:27:00 $ by $Author: franciscom $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2007/04/04 19:54:49 $ by $Author: schlundus $
  *
  * This page this allows users to export keywords. 
  *
@@ -23,7 +23,6 @@ $exportType = isset($_REQUEST['exportType']) ? $_REQUEST['exportType'] : null;
 
 $testproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 $testprojectName = $_SESSION['testprojectName'];
-
 if ($bExport || !is_null($exportType) )
 {
 	$tproject = new testproject($db);

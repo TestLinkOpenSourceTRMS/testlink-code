@@ -4,16 +4,21 @@
  *
  * Filename $RCSfile: int_jira.php,v $
  *
- * @version $Revision: 1.5 $
- * @modified $Date: 2005/12/29 20:59:00 $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2007/04/04 12:33:50 $
  *
  * @author (contributor) jbarchibald@gmail.com
  *
  * Constants used throughout TestLink are defined within this file
  * they should be changed for your environment
  *
- * 20051202 - scs - added returning null in some cases
- * 20051229 - scs - added ADOdb support
+ * 20070403 - franciscom - 
+ * 1. added an specialized version of checkBugID
+ *
+ *
+ *
+ *
+ *
 **/
 /** Interface name */
 define('BUG_INTERFACE_CLASSNAME',"jiraInterface");
@@ -126,5 +131,31 @@ class jiraInterface extends bugtrackingInterface
 		}
 		return $summary;
 	}
+	
+	
+  /**
+	 * checks a bug id for validity  
+	 * 
+	 * @return bool returns true if the bugid has the right format, false else
+	 **/
+	function checkBugID($id)
+	{
+	  $status_ok=1;	
+    if(strlen(trim()) == 0 )
+    {
+      $status_ok=0;	
+    }
+	  
+	  if( $status_ok )
+	  {
+	    $ereg_forbidden_chars='[!|£%&/()=?]';
+
+ 		  if (eregi($ereg_forbidden_chars, $id))
+		  {
+			  $status_ok=0;	
+		  } 	
+	  }
+		return $status_ok;
+	}	
 }
 ?>

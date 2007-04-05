@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: login.tpl,v 1.10 2007/04/02 08:12:10 franciscom Exp $
+$Id: login.tpl,v 1.11 2007/04/05 20:03:52 schlundus Exp $
 Purpose: smarty template - login page 
 
 20070401 - franciscom - new rounding engine
@@ -53,7 +53,7 @@ window.onload=function(){
 	{include file="inc_copyrightnotice.tpl"}
 
 	{if $securityNotes}
-    {include file="inc_msg_from_array.tpl" array_of_msg=$securityNotes arg_css_class="warning_message"}
+    	{include file="inc_msg_from_array.tpl" array_of_msg=$securityNotes arg_css_class="warning_message"}
 	{/if}
 
 </div>

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: login.php,v $
  *
- * @version $Revision: 1.21 $
- * @modified $Date: 2007/03/12 21:46:16 $ by $Author: schlundus $
+ * @version $Revision: 1.22 $
+ * @modified $Date: 2007/04/05 20:03:52 $ by $Author: schlundus $
  * @author Martin Havlat
  * 
  * Login management
@@ -35,7 +35,6 @@ if (!$op['status'])
 }
 
 
-
 $_GET = strings_stripSlashes($_GET);
 $note = isset($_GET['note']) ? $_GET['note'] : null;
 
@@ -44,28 +43,22 @@ $message = lang_get('please_login');
 switch($note)
 {
 	case 'expired':
-	  if( !isset($_SESSION) )
-	  { 
-		  session_start();
-		}
+		if(!isset($_SESSION))
+			session_start();
 		session_unset();
 		session_destroy();
 		// 20070110 - MHT - removed note because it confuses in some cases 	
 		// $message = lang_get('session_expired');
 		break;
-
 	case 'wrong':
 		$message = lang_get('bad_user_passwd');
 		break;
-
 	case 'first':
 		$message = lang_get('your_first_login');
 		break;
-
 	case 'lost':
 		$message = lang_get('passwd_lost');
 		break;
-
 	case 'sessionExists':
 		$message = lang_get('login_msg_session_exists1') . ' <a style="color:black;" href="logout.php">' . 
 				   lang_get('logout_link') . '</a>' . lang_get('login_msg_session_exists2');
@@ -77,10 +70,8 @@ switch($note)
 $securityNotes = getSecurityNotes($db);
 
 $smarty = new TLSmarty();
-
 // 20070301 - BUGID 695
 $smarty->assign('g_user_self_signup', config_get('user_self_signup'));
-
 $smarty->assign('login_logo', LOGO_LOGIN_PAGE);
 $smarty->assign('securityNotes',$securityNotes);
 $smarty->assign('note',$message);

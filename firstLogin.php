@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: firstLogin.php,v $
  *
- * @version $Revision: 1.15 $
- * @modified $Date: 2007/03/04 00:03:19 $ $Author: schlundus $
+ * @version $Revision: 1.16 $
+ * @modified $Date: 2007/04/05 20:03:52 $ $Author: schlundus $
  *
  * @author Asiel Brumfield
  * @author Martin Havlat 
@@ -49,24 +49,21 @@ if($bEditUser)
 	                           'last'  => lang_get('empty_last_name'),
 	                           'email' => lang_get('empty_email_address'),
 	                           'password' => lang_get('warning_empty_pwd'),
+							   'loginName' => lang_get('warning_empty_login'),
 							   );
-
-	$empty_fm = control_empty_fields( $_POST, $fields_not_empty );
-	$passwordCompare = strcmp($password,$password2);
-	$user_ok = user_is_name_valid($login);
-
-	if($user_ok === FALSE)
-	{
-		$message = lang_get('invalid_user_name') . "<br />" . 
-		           lang_get('valid_user_name_format');
-	}	
-	else if (count($empty_fm))
+	$empty_fm = control_empty_fields($_POST, $fields_not_empty);
+	if (count($empty_fm))
 	{
 		$message = lang_get('user_cant_be_created_because');
 		foreach ($empty_fm as $key_f => $value_m)
 			$message .= "<br />" . $value_m;
 	}
-	else if($passwordCompare)
+	else if(!user_is_name_valid($login))
+	{
+		$message = lang_get('invalid_user_name') . "<br />" . 
+		           lang_get('valid_user_name_format');
+	}	
+	else if(strcmp($password,$password2))
 		$message = lang_get('passwd_dont_match');
 	else
 	{

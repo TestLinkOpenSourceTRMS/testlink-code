@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: lostPassword.php,v $
  *
- * @version $Revision: 1.16 $
- * @modified $Date: 2006/10/17 20:17:53 $ $Author: schlundus $
+ * @version $Revision: 1.17 $
+ * @modified $Date: 2007/04/05 20:03:52 $ $Author: schlundus $
  *
 **/
 require_once('config.inc.php');
@@ -30,15 +30,12 @@ if ($op['status'] == 0)
 $message = lang_get('your_info_for_passwd');
 if (strlen($login))
 {
+	$userInfo = null;
 	if(!existLogin($db,$login,$userInfo))
-	{
 		$message = lang_get('bad_user');
-	}	
 	else
 	{
 		$emailAddress = $userInfo['email'];
-		$userID = $userInfo['id'];
-		
 		if (strlen($emailAddress))
 		{
 			// because pwds are now hashed we cannot simply resend 
@@ -53,6 +50,7 @@ if (strlen($login))
 			
 			if ($mail_op->status_ok)
 			{
+				$userID = $userInfo['id'];
 				if (setUserPassword($db,$userID,$newPassword))
 				{
 					redirect(TL_BASE_HREF ."login.php?note=lost");

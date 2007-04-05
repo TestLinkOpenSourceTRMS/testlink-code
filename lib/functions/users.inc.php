@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: users.inc.php,v $
  *
- * @version $Revision: 1.39 $
- * @modified $Date: 2007/03/04 00:03:19 $ $Author: schlundus $
+ * @version $Revision: 1.40 $
+ * @modified $Date: 2007/04/05 20:03:52 $ $Author: schlundus $
  *
  * Functions for usermanagement
  *
@@ -82,7 +82,7 @@ function existLogin(&$db,$login, &$r_user_data)
  *  
  */
 function userInsert(&$db,$login, $password, $first, $last, $email, 
-                    $role_id=TL_DEFAULT_ROLEID, $locale = TL_DEFAULT_LOCALE, $active=1)
+                    $role_id = TL_DEFAULT_ROLEID, $locale = TL_DEFAULT_LOCALE, $active = 1)
 {
 	$password = md5($password);
 	$sql= "INSERT INTO users (login,password,first,last,email,role_id,locale,active) 
@@ -93,15 +93,13 @@ function userInsert(&$db,$login, $password, $first, $last, $email,
 			   $db->prepare_string($locale). "'," . $active . ")";
 	$result = $db->exec_query($sql);
 	
-	// 20060511 - franciscom
-	$new_user_id=0;
-	if( $result )
+	$new_user_id = 0;
+	if($result)
 	{
-
-	  $new_user_id=$db->insert_id('users');
+		$new_user_id = $db->insert_id('users');
 	}
 	
-	return($new_user_id);
+	return $new_user_id;
 }
 
 /**

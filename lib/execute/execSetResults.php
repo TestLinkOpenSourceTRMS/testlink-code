@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.58 $
- * @modified $Date: 2007/03/07 08:12:01 $ $Author: franciscom $
+ * @version $Revision: 1.59 $
+ * @modified $Date: 2007/04/06 06:40:11 $ $Author: franciscom $
  *
  * 20070306 - franciscom - BUGID 705
  * 20070222 - franciscom - BUGID 647
@@ -135,6 +135,12 @@ if(!is_null($linked_tcversions))
   		}
   		$smarty->assign('design_time_cf',$cf_smarty);
   		$smarty->assign('execution_time_cf',$cfexec_smarty);	
+
+      // 20070405 - BUGID 766
+      $tc_info=$tree_mgr->get_node_hierachy_info($tcase_id);
+		    $tSuiteAttachments[$tc_info['parent_id']] = getAttachmentInfos($db,$tc_info['parent_id'],
+		                                                                   'nodes_hierarchy',true,1);
+
     }
     else
     {
@@ -423,8 +429,8 @@ function smarty_assign_tsuite_info(&$smarty,&$request_hash, &$db,$tcase_id)
     $smarty->assign('tsd_div_id_list',implode(",",$a_ts));
     $smarty->assign('tsd_hidden_id_list',implode(",",$a_tsvw));
     $smarty->assign('tsd_val_for_hidden_list',implode(",",$a_tsval));
-  
-	$smarty->assign('ts_cf_smarty',$ts_cf_smarty);
+ 
+	  $smarty->assign('ts_cf_smarty',$ts_cf_smarty);
   }
 
 }  

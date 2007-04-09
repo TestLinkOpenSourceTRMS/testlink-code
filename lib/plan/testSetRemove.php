@@ -1,10 +1,14 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: testSetRemove.php,v 1.19 2007/02/26 08:01:44 franciscom Exp $ 
+ * @version $Id: testSetRemove.php,v 1.20 2007/04/09 08:02:02 franciscom Exp $ 
  * 
  * Remove Test Cases from Test Plan
  * 
+ * 20070408 - franciscom - refactoring to use planAddTC_m1.tpl, 
+ *                         wrapped by planRemoveTC_m1.tpl
+ *
+ *
  * 20070124 - franciscom
  * use show_help.php to apply css configuration to help pages
  *
@@ -30,7 +34,7 @@ $id = isset($_REQUEST['id']) ? $_REQUEST['id'] : null;
 $version_id = isset($_REQUEST['version_id']) ? $_REQUEST['version_id'] : 0;
 $level = isset($_REQUEST['level']) ? $_REQUEST['level'] : null;
 $keyword_id = isset($_REQUEST['keyword_id']) ? $_REQUEST['keyword_id'] : 0;
-$do_remove = isset($_POST['remove_tc']) ? 1 : 0;
+$do_remove = isset($_POST['do_action']) ? 1 : 0;
 $user_feedback='';
 
 $resultString = null;
@@ -39,7 +43,7 @@ $arrData = array();
 // ---------------------------------------------------------------------------------------
 if($do_remove)
 {
-  $a_tc = isset($_POST['achecked_tc']) ? $_POST['achecked_tc'] : null;
+  $a_tc = isset($_POST['remove_checked_tc']) ? $_POST['remove_checked_tc'] : null;
   if(!is_null($a_tc))
   {
       // remove without warning

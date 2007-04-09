@@ -1,8 +1,11 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planAddTC_m1.tpl,v 1.11 2007/04/02 08:20:20 franciscom Exp $
+$Id: planAddTC_m1.tpl,v 1.12 2007/04/09 08:03:32 franciscom Exp $
 Purpose: smarty template - generate a list of TC for adding to Test Plan 
 
+20070408 - franciscom - full_control=1 -> add/remove operations available
+                        full_control=0 -> only remove operation available
+                        
 20070402 - franciscom - BUGID 765
 20070224 - franciscom - BUGID 600
 
@@ -20,14 +23,18 @@ added logic to manage active/inactive tcversions
 
 
 {if $has_tc }
-
 <form name='addTcForm' method='post'>
    <h1>
-    {if $has_linked_items eq 0} 
-		   {lang_get s='title_add_test_to_plan'}
+    {if $full_control eq 1}
+      {if $has_linked_items eq 0} 
+  		   {lang_get s='title_add_test_to_plan'}
+      {else}
+  		   {lang_get s='title_add_remove_test_to_plan'}
+      {/if}     
     {else}
-		   {lang_get s='title_add_remove_test_to_plan'}
-    {/if}     
+  	   {lang_get s='title_remove_test_from_plan'}
+    {/if}    
+    
     </h1>
     {include file="inc_update.tpl" result=$sqlResult}
 
@@ -58,44 +65,57 @@ added logic to manage active/inactive tcversions
             value="0" />
             
      {* ------------------------------------------------------------------------- *}      
-     {if $ts.testcase_qty gt 0 }
+     {if ($full_control && $ts.testcase_qty gt 0) || $ts.linked_testcase_qty gt 0 }
         
         <table cellspacing="0" style="font-size:small;" width="100%">
           <tr style="background-color:blue;font-weight:bold;color:white">
+
 			     <td width="5px" align="center">
+              {if $full_control}
 			         <img src="{$smarty.const.TL_THEME_IMG_DIR}/toggle_all.gif"
 			              onclick='cs_all_checkbox_in_div("{$div_id}","{$add_cb}","add_value_{$ts_id}");'
                     title="{lang_get s='check_uncheck_all_checkboxes'}">
+    			    {else}
+    			     &nbsp;
+		    	    {/if}
 			     </td>
+			     
 			     <td class="tcase_id_cell">{lang_get s='th_id'}</td> 
 			     <td>{lang_get s='th_test_case'}</td>
 			     <td>{lang_get s='version'}</td>
            {if $ts.linked_testcase_qty gt 0 }
-            <td>&nbsp;</td>
+				    <td>&nbsp;</td>
 				    <td>
 				    <img src="{$smarty.const.TL_THEME_IMG_DIR}/toggle_all.gif" 
                  onclick='cs_all_checkbox_in_div("{$div_id}","{$rm_cb}","rm_value_{$ts_id}");'
                  title="{lang_get s='check_uncheck_all_checkboxes'}">
-				    {lang_get s='remove_tc'}</td>
+				    {lang_get s='remove_tc'}
+				    </td>
            {/if}
           </tr>   
           
           {foreach from=$ts.testcases item=tcase}
             {if $tcase.tcversions_qty neq 0}  
             
+   				    {if $full_control || $tcase.linked_version_id ne 0 }
     			    <tr {if $tcase.linked_version_id ne 0} 
     			        style="{$smarty.const.TL_STYLE_FOR_ADDED_TC}" {/if}>
     			      <td width="20px">
-    				    {if $tcase.tcversions_qty eq 0 || $tcase.linked_version_id ne 0 }
-    				       &nbsp;&nbsp;
+    				
+    				    {if $full_control}
+      				    {if $tcase.tcversions_qty eq 0 || $tcase.linked_version_id ne 0 }
+      				       &nbsp;&nbsp;
+      				    {else}
+      				      <input type='checkbox' 
+      				             name='{$add_cb}[{$tcase.id}]' 
+      				             id='{$add_cb}{$tcase.id}' 
+      				             value='{$tcase.id}'> 
+      				    {/if}
+      				    
+      				    <input type='hidden' name='a_tcid[{$tcase.id}]' value='{$tcase.id}' />
     				    {else}
-    				      <input type='checkbox' 
-    				             name='{$add_cb}[{$tcase.id}]' 
-    				             id='{$add_cb}{$tcase.id}' 
-    				             value='{$tcase.id}'> 
+    				      &nbsp;&nbsp;
     				    {/if}
-    				    
-    				    <input type='hidden' name='a_tcid[{$tcase.id}]' value='{$tcase.id}' />
     			      </td>
     			      
     			      <td>
@@ -139,6 +159,7 @@ added logic to manage active/inactive tcversions
  
               </tr>
             {/if}  {* $tcase.tcversions_qty *}
+           {/if} 
   	      {/foreach}
       
         </table>
@@ -152,10 +173,14 @@ added logic to manage active/inactive tcversions
 
   <div class="workBack"    
       <br /><input type='submit' name='do_action' style="padding-right: 20px;"
-		     {if $has_linked_items eq 0}
-	      	   value='{lang_get s='btn_add_selected_tc'}'
+         {if $full_control}
+  		     {if $has_linked_items eq 0}
+  	      	   value='{lang_get s='btn_add_selected_tc'}'
+  		     {else}
+               value='{lang_get s='btn_add_remove_selected_tc'}' 
+  		     {/if}
 		     {else}
-             value='{lang_get s='btn_add_remove_selected_tc'}' 
+               value='{lang_get s='btn_remove_selected_tc'}' 
 		     {/if}
          />
    </div>
@@ -164,6 +189,14 @@ added logic to manage active/inactive tcversions
 
 {else}
 	<h2>{lang_get s='no_testcase_available'}</h2>
+{/if}
+
+{* 
+ refresh is useful when operating in full_control=0 => just remove,
+ because tree is test plan tree.
+*}
+{if $refreshTree}
+   {include file="inc_refreshTree.tpl"}
 {/if}
 
 </body>

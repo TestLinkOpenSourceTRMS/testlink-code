@@ -1,7 +1,7 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: tc_exec_assignment.php,v 1.6 2007/01/26 08:13:47 franciscom Exp $ 
+ * @version $Id: tc_exec_assignment.php,v 1.7 2007/04/09 08:02:02 franciscom Exp $ 
  * 
  * 20070124 - franciscom
  * use show_help.php to apply css configuration to help pages
@@ -104,7 +104,6 @@ $map_node_tccount = get_testplan_nodes_testcount($db,$tproject_id, $tproject_nam
 switch($level)
 {
 	case 'testcase':
-		$out = null;
 		// build the data need to call gen_spec_view
 		$my_path = $tree_mgr->get_path($id);
 		$idx_ts = count($my_path) - 1;
@@ -120,10 +119,18 @@ switch($level)
 		$linked_items[$id]['user_id'] = $p3[$version_id]['user_id'];
 		$linked_items[$id]['feature_id'] = $p3[$version_id]['feature_id'];
 		
-		$out = gen_spec_view($db,'testplan',$tplan_id,$tsuite_data['id'],$tsuite_data['name'],
-							$linked_items,$map_node_tccount,
-							$keyword_id,FILTER_BY_TC_OFF,WRITE_BUTTON_ONLY_IF_LINKED);
+		$my_out = gen_spec_view($db,'testplan',$tplan_id,$tsuite_data['id'],$tsuite_data['name'],
+				    		            $linked_items,$map_node_tccount,
+							              $keyword_id,FILTER_BY_TC_OFF,WRITE_BUTTON_ONLY_IF_LINKED);
+							           
+    // index 0 conatins data for the parent test suite of this test case, 
+    // other elements are not needed.
+		$out=array();
+		$out['spec_view'][0]=$my_out['spec_view'][0];
+		// $out['spec_view'][0]['next_level']=0;
+		$out['num_tc']=1;
 		break;
+
 
 	case 'testsuite':
 		$tsuite_data = $tsuite_mgr->get_by_id($id);
@@ -131,7 +138,19 @@ switch($level)
                          $tplan_mgr->get_linked_tcversions($tplan_id,FILTER_BY_TC_OFF,$keyword_id),
                          $map_node_tccount,
                          $keyword_id,FILTER_BY_TC_OFF,WRITE_BUTTON_ONLY_IF_LINKED);
-		break;
+                         
+    
+    // 20070408 - for new gui
+    // $spec_view=$out['spec_view'];
+    // $qta_loops=count($spec_view)-1;
+    // $out['spec_view'][$qta_loops]['next_level']=0;  
+    // for($idx=0; $idx < $qta_loops; $idx++)
+    // {
+    //   $out['spec_view'][$idx]['next_level']=$out['spec_view'][$idx+1]['level'];  
+    // }
+ break;
+		
+		
 	default:
 		// show instructions
 		//redirect( $_SESSION['basehref'] . $g_rpath['instructions'].'/tc_exec_assignment.html');

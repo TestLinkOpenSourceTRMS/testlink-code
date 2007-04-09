@@ -1,9 +1,10 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tc_exec_assignment.tpl,v 1.3 2007/01/26 08:25:40 franciscom Exp $
+$Id: tc_exec_assignment.tpl,v 1.4 2007/04/09 08:03:32 franciscom Exp $
 generate the list of TC that can be removed from a Test Plan 
 
 rev :
+     20070407 - franciscom - gui refactoring
      20070120 - franciscom - BUGID 530
 *}
 
@@ -17,69 +18,77 @@ rev :
 
 {if $has_tc }
 
-<form name='removeTcForm' method='post'>
-<div style="padding-right: 20px; float: right;">
-	<input type='submit' name='assign_tc' value='{lang_get s='btn_update_selected_tc'}' />
-</div>
 
 {include file="inc_update.tpl" result=$sqlResult refresh="yes"}
 {if $key ne ''}
 	<div style="margin-left: 20px; font-size: smaller;"><p>{lang_get s='note_keyword_filter'} '{$key|escape}'</p></div>
 {/if}
 
+{* prefix for checkbox name ADD*}   
+{assign var="add_cb" value="achecked_tc"}
+ 
+  
+<form id='tc_exec_assignment' name='tc_exec_assignment' method='post'>
 
-<div class="workBack">
-	{section name=tsuite_idx loop=$arrData}
-	<div id="div_{$arrData[tsuite_idx].testsuite.id}" style="margin:0px 0px 0px {$arrData[tsuite_idx].level}0px;">
-	    <h3>{$arrData[tsuite_idx].testsuite.name|escape}</h3>
+{* 20070406 *}
+<div class="workBack" style="height: 450px; overflow-y: auto;">
+	
+	{foreach from=$arrData item=ts}
+	  {assign var="ts_id" value=$ts.testsuite.id}
+	  {assign var="div_id" value=div_$ts_id}
+	  
+	  <div id="{$div_id}" style="margin:0px 0px 0px {$ts.level}0px;">
+	    <h3>{$ts.testsuite.name|escape}</h3>
 
-    	{if $arrData[tsuite_idx].write_buttons eq 'yes'}
-      	<p>
-      	<input type='button' name='{$arrData[tsuite_idx].testsuite.name|escape}_check' 
-      	       onclick='javascript: box("div_{$arrData[tsuite_idx].testsuite.id}", true)' 
-      	       value='{lang_get s='btn_check'}' />
-      	<input type='button' name='{$arrData[tsuite_idx].testsuite.name|escape}_uncheck' 
-      	       onclick='javascript: box("div_{$arrData[tsuite_idx].testsuite.id}", false)' 
-      	       value='{lang_get s='btn_uncheck'}' />
-  			<b> {lang_get s='check_uncheck_tc'}</b>
-  			</p>
+     {* used as memory for the check/uncheck all checkbox javascript logic *}
+     <input type="hidden" name="add_value_{$ts_id}"  id="add_value_{$ts_id}"  value="0" />
+
+    	{if $ts.write_buttons eq 'yes'}
   			<p>
   			{lang_get s="user_bulk_assignment"}
   			
-  			{assign var=xdx value=$arrData[tsuite_idx].testsuite.id}
   			{* Bulk Tester Object ID (BTOID)*}
-  			{assign var=btoid value=bulk_tester_div_$xdx}
-  			<select name="bulk_tester_div[{$xdx}]"  id="{$btoid}">
+  			{assign var=btoid value=bulk_tester_div_$ts_id}
+  			
+  			<select name="bulk_tester_div[{$ts_id}]"  id="{$btoid}">
       		{html_options options=$users selected=0}
       	</select>
-      	<input type='button' name='{$arrData[tsuite_idx].testsuite.name|escape}_mua' 
-      	      onclick='javascript: set_combo_if_checkbox("div_{$arrData[tsuite_idx].testsuite.id}",
+      	<input type='button' name='{$ts.testsuite.name|escape}_mua' 
+      	      onclick='javascript: set_combo_if_checkbox("{$div_id}",
       	                                                 "tester_for_tcid_",
       	                                                 document.getElementById("{$btoid}").value)' 
       	       value='{lang_get s='btn_do'}' />
   			<p>
               	
-      {/if}
+      
 
-      {if $arrData[tsuite_idx].testcase_qty gt 0 }
+      {if $ts.testcase_qty gt 0 }
           <table cellspacing="0" style="font-size:small;" width="100%">
-           <tr style="background-color:blue;font-weight:bold;">
-          	<td>&nbsp;</td>
-          	<td>&nbsp;</td>
+           <tr style="background-color:blue;font-weight:bold;color:white">
+			     <td width="5px" align="center">
+			         <img src="{$smarty.const.TL_THEME_IMG_DIR}/toggle_all.gif"
+			              onclick='cs_all_checkbox_in_div("{$div_id}","{$add_cb}_","add_value_{$ts_id}");'
+                    title="{lang_get s='check_uncheck_all_checkboxes'}">
+			     </td>
+          	<td class="tcase_id_cell">{lang_get s='th_id'}</td> 
+            <td>{lang_get s='th_test_case'}</td>
           	<td align="center">&nbsp;&nbsp;{lang_get s='version'}</td>
           	<td align="center">&nbsp;&nbsp;{lang_get s='user'}</td>
           </tr>
-          {foreach from=$arrData[tsuite_idx].testcases item=tcase }
+          {foreach from=$ts.testcases item=tcase }
           	{if $tcase.linked_version_id ne 0}
            	  <input type="hidden" name="a_tcid[{$tcase.id}]" value="{$tcase.linked_version_id}">
      				  <input type="hidden" name="has_prev_assignment[{$tcase.id}]" value="{$tcase.user_id}"}>
      				  <input type="hidden" name="feature_id[{$tcase.id}]" value="{$tcase.feature_id}"}>
           	  <tr>
             	  <td>
-        				  <input type="checkbox" name="achecked_tc[{$tcase.id}]" 
-        				                         id="achecked_tc_{$tcase.id}"  
-        				                         value="{$tcase.linked_version_id}">
+        				  <input type="checkbox"  name='{$add_cb}[{$tcase.id}]' 
+    				                              id='{$add_cb}_{$tcase.id}' 
+        				                          value="{$tcase.linked_version_id}">
        				  </td>
+            	  <td>
+            	  {$tcase.id}
+                </td>
             	  <td>
             	  {$tcase.name|escape}
                 </td>
@@ -98,10 +107,17 @@ rev :
     			{/foreach}
           </table>
       {/if}
+    
+    {/if} {* write buttons*}
     </div>
-	{/section}
+	{/foreach}
 
 </div>
+
+<div class="workBack">    
+	<input type='submit' name='assign_tc' value='{lang_get s='btn_update_selected_tc'}' />
+</div>
+
 </form>
 
 {else}

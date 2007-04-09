@@ -1,6 +1,6 @@
 <?php
 ////////////////////////////////////////////////////////////////////////////////
-// @version $Id: planAddTC.php,v 1.29 2007/02/19 14:03:42 schlundus Exp $
+// @version $Id: planAddTC.php,v 1.30 2007/04/09 08:02:02 franciscom Exp $
 // File:     planAddTC.php
 // Author:   Chad Rosen
 // Purpose:  link/unlink test cases to a test plan
@@ -58,7 +58,7 @@ else
 
 if(isset($_POST['do_action']))
 {
-	// Remember checkboxes exists only when checked
+	// Remember:  checkboxes exist only if are checked
 	if(isset($_POST['achecked_tc']))
 	{
 		  $atc =$_POST['achecked_tc'];
@@ -85,10 +85,13 @@ if(isset($_POST['do_action']))
 
 if($do_display)
 {
+  // full_control, controls the operations planAddTC_m1.tpl will allow
+  // 1 => add/remove
+  // 0 => just remove
+  $smarty->assign('full_control', 1); // 1 => 
   $smarty->assign('has_tc', ($out['num_tc'] > 0 ? 1 : 0));
 	$smarty->assign('arrData', $out['spec_view']);
 	$smarty->assign('has_linked_items',$out['has_linked_items']);
-	
 	$smarty->display('planAddTC_m1.tpl');
 }
 ?>

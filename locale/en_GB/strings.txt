@@ -4,14 +4,16 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.165 $
- * @modified $Date: 2007/04/02 08:19:06 $ $Author: franciscom $
+ * @version $Revision: 1.166 $
+ * @modified $Date: 2007/04/13 20:25:35 $ $Author: schlundus $
  *
  * @author Francisco Mancardi
  *
  * 20070206 - franciscom - BUGID 618 - \n on JS messages
  *
 **/
+//If this file is coded in UTF-8 then enable the following line
+//$TLS_STRINGFILE_CHARSET = "UTF-8";
 
 // General - Leave it here in this way can be reused !!!
 $TLS_asc = "ascending";

@@ -22,6 +22,7 @@ $g_lang_overrides = array();
 
 function lang_get( $p_string, $p_lang = null )
 {
+	global $TLS_STRINGFILE_CHARSET;
 	$t_lang = $p_lang;
 
 	if (null === $p_lang)
@@ -30,11 +31,10 @@ function lang_get( $p_string, $p_lang = null )
 		$t_lang = TL_DEFAULT_LOCALE;
 
 	lang_ensure_loaded( $t_lang );
-
 	global $g_lang_strings;
 	$the_str = isset($g_lang_strings[$t_lang][$p_string]) ? $g_lang_strings[$t_lang][$p_string] : "LOCALIZE: " .$p_string;
-		
-	if (TL_TPL_CHARSET == 'UTF-8')	
+	
+	if (TL_TPL_CHARSET == 'UTF-8' && $TLS_STRINGFILE_CHARSET != "UTF-8")
 		return utf8_encode($the_str);
 	else
 		return $the_str;
@@ -83,7 +83,7 @@ function lang_get_smarty($params, &$smarty)
 # to be used by lang_get
 function lang_load( $p_lang ) {
 	global $g_lang_strings, $g_active_language;
-
+	global $TLS_STRINGFILE_CHARSET;
 	$g_active_language  = $p_lang;
 	if ( isset( $g_lang_strings[ $p_lang ] ) ) {
 		return;
@@ -107,7 +107,6 @@ function lang_load( $p_lang ) {
 	//if ( file_exists( $t_custom_strings ) ) {
 	//	require( $t_custom_strings ); # this may be loaded multiple times, once per language
 	//}
-
 	$t_vars = get_defined_vars();
 
 	foreach ( array_keys( $t_vars ) as $t_var ) {

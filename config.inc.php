@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.107 $
- * @modified $Date: 2007/04/04 19:54:49 $ by $Author: schlundus $
+ * @version $Revision: 1.108 $
+ * @modified $Date: 2007/04/15 10:53:11 $ by $Author: franciscom $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink 
@@ -15,6 +15,7 @@
  *
  * Revisions:
  *
+ *           20070415 - franciscom -  added config for drag and drop feature
  *           20070301 - franciscom - 
  *           BUGID 695 - $g_user_self_signup (fawel contribute)
  *
@@ -25,6 +26,15 @@
 /** [INITIALIZATION] - DO NOT CHANGE THE SECTION */
 /** The root dir for the testlink installation with trailing slash */
 define('TL_ABS_PATH', dirname(__FILE__) . DIRECTORY_SEPARATOR);
+
+define('DS', DIRECTORY_SEPARATOR);
+
+/** set the delimeter properly for the include_path */
+define('DELIM', (PHP_OS == "WIN32" || PHP_OS == "WINNT") ? ';' : ':');
+
+/** Dir for temporary files and compiled templates */
+define('TL_TEMP_PATH', TL_ABS_PATH . 'gui'.DS.'templates_c'.DS);
+
 
 /** Include constants */
 require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'cfg' . DIRECTORY_SEPARATOR.'const.inc.php');
@@ -40,8 +50,16 @@ require_once('config_db.inc.php');
 if (version_compare(PHP_VERSION,'5','>=') && !extension_loaded("domxml"))
 	require_once(dirname(__FILE__) . '/third_party/domxml-php4-to-php5.php');
 
+
+
+
 // ----------------------------------------------------------------------------
 /** [LOCALIZATION] */
+
+define('TL_LOCALE_PATH',TL_ABS_PATH . 'locale/');
+define('TL_HELP_RPATH','gui/help/');
+define('TL_INSTRUCTIONS_RPATH','gui/help/');
+
 
 // Your first/suggested choice for default locale.
 // This must be one of $g_locales (see cfg/const.inc.php).
@@ -191,6 +209,13 @@ define('TL_PRINT_CSS',TL_THEME_CSS_DIR . 'tl_print.css');
 
 //define('TL_JOMLA_1_CSS', '');
 define('TL_JOMLA_1_CSS', TL_THEME_CSS_DIR . 'jos_template_css.css');
+
+// needed for drap and drop feature
+define('TL_DRAG_DROP_DIR', 'gui/drag_and_drop/');
+define('TL_DRAG_DROP_JS_DIR', TL_DRAG_DROP_DIR. 'js/');
+define('TL_DRAG_DROP_FOLDER_CSS', TL_DRAG_DROP_DIR . 'css/drag-drop-folder-tree.css');
+define('TL_DRAG_DROP_CONTEXT_MENU_CSS', TL_DRAG_DROP_DIR . 'css/context-menu.css');
+
 
 
 // path to IMAGE directory - DO NOT ADD FINAL /

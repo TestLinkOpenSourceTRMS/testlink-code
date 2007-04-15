@@ -1,12 +1,13 @@
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.10 2007/02/05 08:06:54 franciscom Exp $
+-- $Id: testlink_create_tables.sql,v 1.11 2007/04/15 10:55:57 franciscom Exp $
 --
 -- SQL script - create db tables for TL on Postgres   
 -- 
 --
 -- 
 -- Rev :
+--       20070414 - franciscom - table requirements: added field node_order 
 --       20070204 - franciscom - changes in tables priorities, risk_assignments 
 --       20070131 - franciscom - requirements -> req_doc_id(32), 
 --
@@ -291,6 +292,7 @@ CREATE TABLE "requirements" (  "id" BIGSERIAL NOT NULL ,
   "scope" TEXT NULL DEFAULT NULL,
   "status" CHAR(1) NOT NULL DEFAULT 'V',
   "type" CHAR(1) NULL DEFAULT NULL,
+  "node_order" BIGINT NOT NULL DEFAULT 0,
   "author_id" BIGINT NULL DEFAULT NULL,
   "creation_ts" TIMESTAMP NOT NULL DEFAULT now(),
   "modifier_id" BIGINT NULL DEFAULT NULL,

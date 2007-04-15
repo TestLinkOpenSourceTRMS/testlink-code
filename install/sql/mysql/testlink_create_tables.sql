@@ -1,11 +1,12 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
 # This script is distributed under the GNU General Public License 2 or later.
-# $Id: testlink_create_tables.sql,v 1.15 2007/02/05 08:06:54 franciscom Exp $
+# $Id: testlink_create_tables.sql,v 1.16 2007/04/15 10:55:57 franciscom Exp $
 # SQL script - create db tables for TL   
 #
 # default rights & admin account are created via testlink_create_default_data.sql
 #
 # Rev :
+#       20070414 - franciscom - table requirements: added field node_order 
 #       20070204 - franciscom - changes in tables priorities, risk_assignments 
 #
 #       20070131 - franciscom - requirements -> req_doc_id(32), 
@@ -174,6 +175,7 @@ CREATE TABLE `requirements` (
   `scope` text,
   `status` char(1) NOT NULL default 'V',
   `type` char(1) default NULL,
+  `node_order` int(10) unsigned NOT NULL default '0',
   `author_id` int(10) unsigned default NULL,
   `creation_ts` datetime NOT NULL default '0000-00-00 00:00:00',
   `modifier_id` int(10) unsigned default NULL,

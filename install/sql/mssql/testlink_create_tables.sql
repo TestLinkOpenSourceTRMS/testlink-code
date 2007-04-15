@@ -1,12 +1,13 @@
 --  -----------------------------------------------------------------------------------
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.12 2007/03/01 08:08:49 franciscom Exp $
+-- $Id: testlink_create_tables.sql,v 1.13 2007/04/15 10:55:57 franciscom Exp $
 --
 -- SQL script - create db tables for TL
 -- Database Type: Microsoft SQL Server
 -- 
 -- Rev :
+--       20070414 - franciscom - table requirements: added field node_order 
 --
 --       20070228 - franciscom -  BUGID 697 - priority table
 --       20070228 - franciscom -  BUGID 697 - builds table
@@ -557,6 +558,7 @@ CREATE TABLE [dbo].[requirements](
 	[scope] [ntext] COLLATE Latin1_General_CI_AS NULL,
 	[status] [nchar](1) COLLATE Latin1_General_CI_AS NOT NULL CONSTRAINT [DF_requirements_status]  DEFAULT (N'n'),
 	[type] [nchar](1) COLLATE Latin1_General_CI_AS NULL,
+  [node_order] [int] NOT NULL DEFAULT ((1)),
 	[author_id] [int] NULL,
 	[creation_ts] [datetime] NULL CONSTRAINT [DF_requirements_creation_ts]  DEFAULT (getdate()),
 	[modifier_id] [int] NULL,

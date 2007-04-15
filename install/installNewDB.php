@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: installNewDB.php,v 1.28 2007/02/17 09:16:38 franciscom Exp $ */
+/* $Id: installNewDB.php,v 1.29 2007/04/15 10:55:57 franciscom Exp $ */
 /*
 Parts of this file has been taken from:
 Etomite Content Management System
@@ -8,15 +8,11 @@ Copyright 2003, 2004 Alexander Andrew Butter
 */
 
 /*
+20070414 - franciscom - added 1.7.0 RC 2
 20070216 - franciscom - added dropping of all tables if DB exists
-
 20070204 - franciscom - added 1.7.0 Beta 5
-
 20070131 - franciscom - added 1.7.0 Beta 4
-
-20070121 - franciscom -
-upgrade code for 1.7 Beta
-
+20070121 - franciscom - upgrade code for 1.7 Beta
 20060523 - franciscom - adding postgres support
 */
 
@@ -268,26 +264,29 @@ if($create)
 	}
 }
 
-// 20050806 - fm
 // in upgrade mode we detect the lenght of user password field
 // to identify a version with uncrypted passwords
 if ($inst_type == "upgrade" )
 {
   $my_ado=$db->get_dbmgr_object();
-  $the_cols=$my_ado->MetaColumns('user');
-  $pwd_field_len =$the_cols['PASSWORD']->max_length;
-  if ( $pwd_field_len == LEN_PWD_TL_1_0_4 )
+  $user_table=$my_ado->MetaTables('TABLES',false,'user');
+  
+  if( count($user_table) == 1 )
   {
-    $update_pwd=1;
-    echo "<br>You are trying to upgrade from a TL pre 1.5" .
-         "<br>this kind of upgrade is NOT AVAILABLE"; 	
-    close_html_and_exit();          
+    $the_cols=$my_ado->MetaColumns('user');
+    $pwd_field_len =$the_cols['PASSWORD']->max_length;
+    if ( $pwd_field_len == LEN_PWD_TL_1_0_4 )
+    {
+      $update_pwd=1;
+      echo "<br>You are trying to upgrade from a TL pre 1.5" .
+           "<br>this kind of upgrade is NOT AVAILABLE"; 	
+      close_html_and_exit();          
+    }
   }
 }
 // ------------------------------------------------------------------------------------------------
 
 // ------------------------------------------------------------------------------------------------
-// 20050908 - fm
 if ( $inst_type == "upgrade") 
 {
     $a_sql_upd_dir=array();
@@ -320,15 +319,22 @@ if ( $inst_type == "upgrade")
       	$a_sql_upd_dir[] = "sql/alter_tables/1.7/{$db_type}/beta_3/";
       	$a_sql_upd_dir[] = "sql/alter_tables/1.7/{$db_type}/beta_4/";
       	$a_sql_upd_dir[] = "sql/alter_tables/1.7/{$db_type}/beta_5/";
+      	$a_sql_upd_dir[] = "sql/alter_tables/1.7/{$db_type}/rc_2/";
       	break;
 
       	case '1.7.0 Beta 3':
       	$a_sql_upd_dir[] = "sql/alter_tables/1.7/{$db_type}/beta_4/";
       	$a_sql_upd_dir[] = "sql/alter_tables/1.7/{$db_type}/beta_5/";
+      	$a_sql_upd_dir[] = "sql/alter_tables/1.7/{$db_type}/rc_2/";
       	break;
       	
       	case '1.7.0 Beta 4':
       	$a_sql_upd_dir[] = "sql/alter_tables/1.7/{$db_type}/beta_5/";
+      	$a_sql_upd_dir[] = "sql/alter_tables/1.7/{$db_type}/rc_2/";
+      	break;
+
+      	case '1.7.0 Beta 5':
+      	$a_sql_upd_dir[] = "sql/alter_tables/1.7/{$db_type}/rc_2/";
       	break;
       	
         default:
@@ -340,7 +346,7 @@ if ( $inst_type == "upgrade")
         {
           echo "<br>Sorry but I don't know how to upgrade from your schema version: " . $schema_version . "<br>";
         }
-        echo "Please contact Test Link develpment Team<br>";
+        echo "Please contact Test Link development Team<br>";
         echo "<br>bye!";
         close_html_and_exit();          
         break;  
@@ -369,31 +375,9 @@ if ( $inst_type == "upgrade")
 // if @ in tl_db_login (username) -> get the hostname using splitting, and use it
 //                                   during user creation on db. 
 //
-// 20060523 - franciscom
 $db->close();
 $db=null;
-
-// 20051217 - fm
 $user_host = explode('@',$tl_db_login);
-
-
-/*
-$system_schema = new database($db_type);
-
-// 20060514 - franciscom
-switch ($db_type)
-{
-    case 'mysql';
-    @$conn_res = $system_schema->connect(NO_DSN, $db_server, $db_admin_name, $db_admin_pass, 'mysql'); 
-    break;
-    
-    case 'postgres';
-    // 20060523 - franciscom
-    @$conn_res = $system_schema->connect(NO_DSN, $db_server, $db_admin_name, $db_admin_pass,$db_name); 
-    //@$conn_res = $system_schema->connect(NO_DSN, $db_server, $tl_db_login, $tl_db_passwd); 
-    break;
-}
-*/
 
 $msg = create_user_for_db($db_type,$db_name, $db_server, $db_admin_name, $db_admin_pass, 
                           $tl_db_login, $tl_db_passwd);
@@ -408,11 +392,6 @@ else
 {
 		echo "<span class='ok'>OK! ($msg) </span>";
 }
-
-/*
-$system_schema->close();
-$system_schema=null;
-*/
 // ------------------------------------------------------------------------------------------------
 
 // Schema Operations (CREATE, ALTER, ecc).

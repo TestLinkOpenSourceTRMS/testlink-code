@@ -1,5 +1,5 @@
 --  TestLink Open Source Project - http://testlink.sourceforge.net/
---  $Id: testlink_create_default_data.sql,v 1.8 2007/02/05 08:06:54 franciscom Exp $
+--  $Id: testlink_create_default_data.sql,v 1.9 2007/04/15 10:55:57 franciscom Exp $
 --  SQL script - create default data (rights & admin account)
 --
 --  20070126 - franciscom - add new rights to admin role
@@ -136,4 +136,4 @@ INSERT INTO "assignment_types" ("id","fk_table","description") VALUES (2,'tcvers
 --
 -- Dumping data for table db_version
 --
-INSERT INTO "db_version" ("version","upgrade_ts") VALUES ('1.7.0 Beta 5','2007-02-04 23:00:00');
+INSERT INTO "db_version" ("version","upgrade_ts") VALUES ('1.7.0 RC 2','2007-02-04 23:00:00');

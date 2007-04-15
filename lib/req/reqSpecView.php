@@ -4,13 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqSpecView.php,v $
- * @version $Revision: 1.33 $
- * @modified $Date: 2007/03/12 07:11:51 $ by $Author: franciscom $
+ * @version $Revision: 1.34 $
+ * @modified $Date: 2007/04/15 10:59:44 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Screen to view existing requirements within a req. specification.
  * 
- * 20061014 - franciscom - added srs title
+ * 20070415 - franciscom - added reorder feature
+ *
 **/
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -54,6 +55,9 @@ $exportType = isset($_REQUEST['exportType']) ? $_REQUEST['exportType'] : null;
 
 $do_create_tc_from_req = isset($_REQUEST['create_tc_from_req']) ? 1 : 0;
 $do_delete_req = isset($_REQUEST['req_select_delete']) ? 1 : 0;
+
+$reorder = isset($_REQUEST['req_reorder']) ? 1 : 0;
+$do_req_reorder = isset($_REQUEST['do_req_reorder']) ? 1 : 0;
 
 $arrCov = null;
 
@@ -171,27 +175,42 @@ elseif ($do_create_tc_from_req || $do_delete_req )
 	{
 	    if($do_create_tc_from_req)
 	    {
-			$js_msg = lang_get('cant_create_tc_from_req_nothing_sel');
+		  	$js_msg = lang_get('cant_create_tc_from_req_nothing_sel');
 	    }
 	    if($do_delete_req)
 	    {
-			$js_msg = lang_get('cant_delete_req_nothing_sel');
+	  		$js_msg = lang_get('cant_delete_req_nothing_sel');
 	    }
 	}
 }
+elseif( $reorder )
+{
+  $bGetReqs=TRUE;
+  $template = 'req_spec_order.tpl';
+}
+elseif( $do_req_reorder )
+{
+  $nodes_order = isset($_REQUEST['nodes_order']) ? $_REQUEST['nodes_order'] : null;
+  $nodes_in_order=transform_nodes_order($nodes_order);
+  
+  set_req_order($db,$idSRS,$nodes_in_order);
+
+}
+
 
 // collect existing reqs for the SRS
 if ($bGetReqs)
 	$arrReq = getRequirements($db,$idSRS);
 
+
 // collect existing document data
 $arrSpec = $tproject->getReqSpec($tprojectID,$idSRS);
 $arrSpec[0]['author'] = getUserName($db,$arrSpec[0]['author_id']);
 $arrSpec[0]['modifier'] = getUserName($db,$arrSpec[0]['modifier_id']);
+$srs_title = $arrSpec[0]['title'];
 
-$sql = "SELECT * FROM req_specs WHERE id={$idSRS}";
-$srs_title = $db->fetchFirstRowSingleColumn($sql,'title');
 
+$smarty->assign('idSRS', $idSRS);
 $smarty->assign('user_feedback', $user_feedback);
 $smarty->assign('srs_title', $srs_title);
 $smarty->assign('attach', $attach);
@@ -251,4 +270,23 @@ $smarty->assign('js_msg',$js_msg);
 $smarty->assign('exportTypes',$exportTypes);
 $smarty->assign('scope',$of->CreateHTML());
 $smarty->display($template);
+?>
+
+<?php
+// nodes_order format:  NODE_ID-?,NODE_ID-?
+// 2-0,10-0,3-0
+//                      
+function transform_nodes_order($nodes_order)
+{
+  $fa=explode(',',$nodes_order);
+  
+  foreach($fa as $key => $value)
+  {
+    // $value= X-Y
+    $fb=explode('-',$value);
+    $nodes_id[]=$fb[0];
+  }
+  
+  return $nodes_id;
+}	
 ?>

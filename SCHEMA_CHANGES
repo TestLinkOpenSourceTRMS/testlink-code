@@ -1,17 +1,21 @@
-Schema Changes on TL 1.7 Beta 
+Schema Changes on TL 1.7.0  
 
-TL 1.7 Beta 5 - 20070204
+TL 1.7.0 RC 2 - 20070414
+table: requirements
+       added node_order field
+
+TL 1.7.0 Beta 5 - 20070204
 table: priorities
 table: risk_assignment
        
 
-TL 1.7 Beta 4 - 20070131
+TL 1.7.0 Beta 4 - 20070131
 table: requirements
        field req_doc_id size increased to 32
        index changed UNIQUE KEY req_doc_id ("srs_id","req_doc_id")
 
 
-TL 1.7 Beta 3 - 20070121
+TL 1.7.0 Beta 3 - 20070121
 table: builds
        added active and open columns
        see sql scripts for details

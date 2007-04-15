@@ -1,5 +1,5 @@
 {* Testlink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: inc_head.tpl,v 1.9 2007/03/12 07:04:49 franciscom Exp $ *}
+{* $Id: inc_head.tpl,v 1.10 2007/04/15 10:57:40 franciscom Exp $ *}
 {* Purpose: smarty template - HTML Common Header *}
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
      "DTD/xhtml1-transitional.dtd">
@@ -17,19 +17,15 @@
 	<style media="all" type="text/css">@import "{$css}";</style>
 	
 	{if $smarty.const.TL_JOMLA_1_CSS neq ''}
-  	<style media="all" type="text/css">@import "{$smarty.const.TL_JOMLA_1_CSS}";</style>
+  	<style media="all" type="text/css">@import "{$basehref}{$smarty.const.TL_JOMLA_1_CSS}";</style>
 	{/if}
-	{*
-	http://localhost/w3/tl/tl-head-20070127/gui/themes/theme_m1/css/jos_template_css.css";</style>
-  *}
-  
 	{if $smarty.const.TL_TESTPROJECT_COLORING eq 'background'}
 	  <style type="text/css"> body {ldelim}background: {$testprojectColor};{rdelim}</style>
 	{/if}
-	<style media="print" type="text/css">@import "{$smarty.const.TL_PRINT_CSS}";</style>
-	<script type="text/javascript" src="gui/javascript/testlink_library.js" language="javascript"></script>
+	<style media="print" type="text/css">@import "{$basehref}{$smarty.const.TL_PRINT_CSS}";</style>
+	<script type="text/javascript" src="{$basehref}gui/javascript/testlink_library.js" language="javascript"></script>
 {if $jsValidate == "yes"} 
-	<script type="text/javascript" src="gui/javascript/validate.js" language="javascript"></script>
+	<script type="text/javascript" src="{$basehref}gui/javascript/validate.js" language="javascript"></script>
 {/if}
 {if $jsTree == "yes"} {* 'no' is default defined in config *}
 	{include file="inc_jsTree.tpl"}

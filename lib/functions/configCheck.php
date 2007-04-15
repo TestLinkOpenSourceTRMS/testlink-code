@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: configCheck.php,v ${file_name} $
  *
- * @version $Revision: 1.10 $
- * @modified $Date: 2007/02/05 08:01:12 ${date} ${time} $ by $Author: franciscom $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2007/04/15 10:59:44 ${date} ${time} $ by $Author: franciscom $
  *
  * @author Martin Havlat
  * 
@@ -216,7 +216,14 @@ function checkForBTSconnection()
 }
 
 
-// 20060429 - franciscom
+/*
+  function: checkForRepositoryDir
+
+  args :
+  
+  returns: 
+
+*/
 function checkForRepositoryDir($the_dir)
 {
 	clearstatcache();
@@ -288,6 +295,8 @@ function checkForRepositoryDir($the_dir)
 */
 function check_schema_version($db)
 {
+  $last_version='1.7.0 RC 2';
+  
   $sql = "SELECT * FROM db_version ORDER BY upgrade_ts DESC LIMIT 1";
   $res = $db->exec_query($sql);  
 
@@ -299,12 +308,13 @@ function check_schema_version($db)
    	case '1.7.0 Beta 2':
     case '1.7.0 Beta 3':
     case '1.7.0 Beta 4':
-   	     $msg="You need to upgrade your Testlink Database to 1.7.0 Beta 5 - <br>" .
+    case '1.7.0 Beta 5':
+   	     $msg="You need to upgrade your Testlink Database to {$last_version} - <br>" .
    	          '<a href="SCHEMA_CHANGES" style="color: white"> click here to see the Schema changes </a><br>' .
    	          '<a href="./install/index.php" style="color: white">click here access install and upgrade page </a><br>';
    	     break;
 
-    case '1.7.0 Beta 5':
+    case $last_version:
    	     $msg="";
    	     break;
          

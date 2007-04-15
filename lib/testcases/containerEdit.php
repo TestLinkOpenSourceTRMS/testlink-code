@@ -3,12 +3,12 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * @version $Revision: 1.62 $
- * @modified $Date: 2007/03/26 08:24:58 $ by $Author: franciscom $
+ * @version $Revision: 1.63 $
+ * @modified $Date: 2007/04/15 10:59:44 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * 
- * 20070324 - franciscom - interface changes on tsuite_mgr->create()
+ *
  * 20070218 - franciscom - added $g_spec_cfg->automatic_tree_refresh to the
  *                         refresh tree logic
  *
@@ -36,6 +36,10 @@ if(is_null($my_containerID))
 $objectID = isset($_REQUEST['objectID']) ? intval($_REQUEST['objectID']) : null;
 $tsuite_name = isset($_REQUEST['testsuiteName']) ? strings_stripSlashes($_REQUEST['testsuiteName']) : null;
 
+// 20070311 - franciscom
+$nodes_order = isset($_REQUEST['nodes_order']) ? $_REQUEST['nodes_order'] : null;
+
+
 $bSure = (isset($_REQUEST['sure']) && ($_REQUEST['sure'] == 'yes'));
 $bRefreshTree = false;
 
@@ -58,7 +62,8 @@ $a_keys['testsuite'] = array('details');
 $a_tpl = array( 'move_testsuite_viewer' => 'containerMove.tpl',
                 /* 'add_testsuite' => 'containerNew.tpl', */
                 'delete_testsuite' => 'containerDelete.tpl',
-                'reorder_testsuites' => 'containerOrder.tpl',
+                /* 'reorder_testsuites' => 'drag-drop-folder-tree.html',*/
+                'reorder_testsuites' => 'containerOrderDnD.tpl',  /* DnD -> Drag and Drop */ 
                 'updateTCorder' => 'containerView.tpl',
 				); 
 
@@ -154,21 +159,14 @@ if($action == 'edit_testsuite' || $action == 'new_testsuite')
 }
 else if($action == 'add_testsuite')
 {
-  
-  $check_names_for_duplicates = config_get('check_names_for_duplicates');
-  $action_on_duplicate_name = config_get('action_on_duplicate_name');
-  $order_cfg = config_get('tree_node_ordering');
-
-
 	keywords_opt_transf_cfg($opt_cfg, ""); 
 	$smarty->assign('opt_cfg', $opt_cfg);
 	if ($name_ok)
 	{
 		$msg = 'ok';
 		$ret =$tsuite_mgr->create($my_containerID,$c_data['container_name'],$c_data['details'],
-                              $order_cfg->default_testsuite_order,	
-								              $check_names_for_duplicates,
-								              $action_on_duplicate_name);
+								              $g_check_names_for_duplicates,
+								              $g_action_on_duplicate_name);
 		if($ret['status_ok'])
 		{
 		  $user_feedback=lang_get('testsuite_created');
@@ -323,7 +321,8 @@ else if($action == 'reorder_testsuites')
 else if($action == 'do_testsuite_reorder')
 {
 	$generalResult = 'ok';
-	$tree_mgr->change_order_bulk($_POST['id'],$_POST['order']);
+  $nodes_in_order=transform_nodes_order($nodes_order);
+	$tree_mgr->change_order_bulk_new($nodes_in_order);
 	if( $my_containerID == $my_tprojectID )
 	{
 	  $tproject_mgr->show($smarty,$my_containerID,$generalResult);
@@ -440,6 +439,26 @@ function build_del_testsuite_warning_msg(&$tree_mgr,&$tcase_mgr,&$testcases,$tsu
   }
   return($msg);
 } // end function
+
+
+
+// nodes_order format:  NODE_ID-?,NODE_ID-?
+// 2-0,10-0,3-0
+//                      
+function transform_nodes_order($nodes_order)
+{
+  $fa=explode(',',$nodes_order);
+  
+  foreach($fa as $key => $value)
+  {
+    // $value= X-Y
+    $fb=explode('-',$value);
+    $nodes_id[]=$fb[0];
+  }
+  
+  return $nodes_id;
+}	
+
 
 ?>
 

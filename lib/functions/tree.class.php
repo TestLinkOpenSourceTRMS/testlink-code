@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: tree.class.php,v $
  *
- * @version $Revision: 1.27 $
- * @modified $Date: 2007/02/19 07:30:20 $ by $Author: franciscom $
+ * @version $Revision: 1.28 $
+ * @modified $Date: 2007/04/15 10:59:44 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * 20061203 - franciscom - removing error due to undefined var in change_order_bulk()
@@ -317,6 +317,30 @@ function change_order_bulk($hash_node_id, $hash_node_order)
   
 	return $result;
 }
+
+
+/*
+  function: 
+
+  args :
+         $nodes: array with nodes id. node order = node position on array
+    
+  
+  returns: 
+
+*/
+function change_order_bulk_new($nodes) 
+{
+	foreach($nodes as $order => $node_id)
+	{
+		$order = abs(intval($order));
+		$node_id = intval($node_id);
+	  $sql = "UPDATE {$this->obj_table} SET node_order = {$order}
+	      	    WHERE id = {$node_id}";
+	  $result = $this->db->exec_query($sql);
+	}
+}
+
 
 
 

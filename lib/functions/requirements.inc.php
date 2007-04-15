@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: requirements.inc.php,v $
- * @version $Revision: 1.50 $
- * @modified $Date: 2007/04/04 19:54:49 $ by $Author: schlundus $
+ * @version $Revision: 1.51 $
+ * @modified $Date: 2007/04/15 10:59:44 $ by $Author: franciscom $
  *
  * @author Martin Havlat <havlat@users.sourceforge.net>
  * 
@@ -151,7 +151,8 @@ function getOptionReqSpec(&$db,$testproject_id,$get_not_empty=0)
  */
 function getRequirements(&$db,$srs_id, $range = 'all', $testcase_id = null)
 {
-  $order_by=" ORDER BY req_doc_id,title";
+  // 20070327 - franciscom - node_order 
+  $order_by=" ORDER BY node_order,req_doc_id,title";
 	if ($range == 'all')
 	{
 		$sql = "SELECT * FROM requirements " .
@@ -1332,4 +1333,27 @@ function get_srs_by_id(&$db,$srs_id)
 	$output = $db->fetchRowsIntoMap($sql,'id');
 	return($output);
 }
+
+/*
+  function: 
+
+  args :
+          $nodes: array with req_id in order
+  returns: 
+
+*/
+function set_req_order(&$db,$srs_id,$nodes)
+{
+
+	foreach($nodes as $order => $node_id)
+	{
+		$order = abs(intval($order));
+		$node_id = intval($node_id);
+	  $sql = "UPDATE requirements SET node_order = {$order}
+	      	    WHERE id = {$node_id}";
+	  $result = $db->exec_query($sql);
+	}
+
+}
+
 ?>

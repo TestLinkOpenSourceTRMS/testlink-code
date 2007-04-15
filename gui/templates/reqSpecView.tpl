@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecView.tpl,v 1.27 2007/03/04 00:03:19 schlundus Exp $ *}
+{* $Id: reqSpecView.tpl,v 1.28 2007/04/15 10:57:40 franciscom Exp $ *}
 {* 
    Purpose: smarty template - view a requirement specification
    Author: Martin Havlat 
@@ -17,17 +17,33 @@ var warning_delete_requirements = "{lang_get s='warning_delete_requirements'}";
 var please_select_a_req="{lang_get s='cant_delete_req_nothing_sel'}";
 {literal}
 
+
+/*
+  function: check_action_precondition
+
+  args :
+  
+  returns: 
+
+*/
 function check_action_precondition(form_id,action)
 {
  if( checkbox_count_checked(form_id) > 0) 
  {
-    if( action=='delete')
+    switch(action)
     {
+      case 'delete':
       return confirm(warning_delete_requirements);
-    }
-    if( action=='create')
-    {
+      break;
+    
+      case 'create':
       return true;
+      break;
+      
+      default:
+      return true;
+      break
+    
     }
  }
  else
@@ -178,6 +194,10 @@ function check_action_precondition(form_id,action)
               
        <input type="submit" name="req_select_delete" value="{lang_get s='req_select_delete'}"
               onclick="return check_action_precondition('frmReqList','delete');"/>
+              
+       <input type="submit" name="req_reorder" value="{lang_get s='req_reorder'}">
+
+              
       </div>
      {/if}
      {* ------------------------------------------------------------------------------------------ *}

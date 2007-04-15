@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: const.inc.php,v $
  *
- * @version $Revision: 1.21 $
- * @modified $Date: 2007/04/02 07:02:59 $ by $Author: franciscom $
+ * @version $Revision: 1.22 $
+ * @modified $Date: 2007/04/15 10:57:11 $ by $Author: franciscom $
  * @author Martin Havlát
  *
  * SCOPE:
@@ -23,22 +23,11 @@
 // ----------------------------------------------------------------------------
 /** [GLOBAL] */
 
-/** Directory separator */
-define('DS', DIRECTORY_SEPARATOR);
-
-/** set the delimeter properly for the include_path */
-define('DELIM', (PHP_OS == "WIN32" || PHP_OS == "WINNT") ? ';' : ':');
-
-/** The temporary dir for temporary files */
-define('TL_TEMP_PATH', TL_ABS_PATH . 'gui'.DS.'templates_c'.DS);
-
-
-
 // ----------------------------------------------------------------------------
 /** [GUI] */
 
 /* Release MUST BE changed at the release day */
-define('TL_VERSION', '1.7.0 - RC1'); 
+define('TL_VERSION', '1.7.0 RC 2'); 
 define('TL_BACKGROUND_DEFAULT', "#9BD"); // default color
 
 // planAddTC_m1-tpl
@@ -46,11 +35,6 @@ define('TL_STYLE_FOR_ADDED_TC', "background-color:yellow;");
 
 
 define('TL_COOKIE_KEEPTIME', (time()+60*60*24*30)); // 30 days
-
-/* Some defines for I18N,L10N, don't touch */
-define('TL_LOCALE_PATH',TL_ABS_PATH . 'locale/');
-define('TL_HELP_RPATH','gui/help/');
-define('TL_INSTRUCTIONS_RPATH','gui/help/');
 
 // Configurable templates this can help if you want to use a non standard template.
 // i.e. you want to develop a new one without loosing the original template.

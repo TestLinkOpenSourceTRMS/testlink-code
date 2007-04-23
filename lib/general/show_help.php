@@ -4,14 +4,14 @@
  *
  * Filename $RCSfile: show_help.php,v $
  *
- * @version $Revision: 1.1 $
- * @modified $Date: 2007/01/24 08:08:17 $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2007/04/23 17:05:00 $  $Author: franciscom $
  *
- * This file manages the navigation bar. 
+ * manage launch of help pages.
 **/
 require('../../config.inc.php');
-// require_once("common.php");
-//testlinkInitPage($db);
+require_once("common.php");
+testlinkInitPage($db);    // start session, need to get right basehref
 
 $smarty = new TLSmarty();
 $td=TL_ABS_PATH . TL_HELP_RPATH . $_REQUEST['locale'];

@@ -9,12 +9,17 @@
 <meta name="robots" content="NOFOLLOW" />
 <title>TestLink Instructions</title>
 <style media="all" type="text/css">
-@import "../../{$smarty.const.TL_THEME_CSS_DIR}testlink.css";
+@import "{$basehref}{$smarty.const.TL_THEME_CSS_DIR}testlink.css";
 </style>
-<script type="text/javascript" src="../../javascript/testlink_library.js">
+
+<script>
+// need due to global coupling in open_help_window()
+var fRoot='{$basehref}';
+</script>
+
+<script type="text/javascript" src="{$basehref}gui/javascript/testlink_library.js">
 </script>
 </head>
-
 <body>
 <div class="workBack">
 <h1>Test Case Edit and Archive</h1>
@@ -22,11 +27,11 @@
 <h2>Purpose:</h2>
 
 <p>The <span class="help" onclick=
-"javascript:open_popup('./glosary.html#testspec');">Test
+"javascript:open_help_window('glosary','{$locale}');">Test
 Specification</span> is a place where a user can view and edit all of the
 existing <span class="help" 
-onclick="javascript:open_popup('./glosary.html#product');">Test project</span>, test suite,and <span class="help" 
-onclick="javascript:open_popup('./glosary.html#testcase');">Test case</span> information.
+onclick="javascript:open_help_window('glosary','{$locale}');">Test project</span>, test suite,and <span class="help" 
+onclick="javascript:open_help_window('glosary','{$locale}');">Test case</span> information.
 A user can look at a different versions of test cases. </p>
 
 <h2>Get Started:</h2>
@@ -39,7 +44,7 @@ A user can look at a different versions of test cases. </p>
 <li>Navigate via the tree view on the left side and edit data.</li>
 
 <li>Assign your created Test Specification to <span class="help" onclick=
-"javascript:open_popup('./glosary.html#testplan');">Test Plan</span> when
+"javascript:open_help_window('glosary','{$locale}');">Test Plan</span> when
 Test cases are ready.</li>
 </ol>
 

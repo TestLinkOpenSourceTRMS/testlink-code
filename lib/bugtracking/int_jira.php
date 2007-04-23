@@ -4,13 +4,22 @@
  *
  * Filename $RCSfile: int_jira.php,v $
  *
- * @version $Revision: 1.7 $
- * @modified $Date: 2007/04/04 17:00:44 $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2007/04/23 17:00:00 $
  *
  * @author (contributor) jbarchibald@gmail.com
  *
  * Constants used throughout TestLink are defined within this file
  * they should be changed for your environment
+ *
+ * 20070421 - franciscom - BUGID 805
+ * Seems similar to old problem with mantis interface when using MS SQL,
+ * but this time with PostgreSQL.
+ * Problems on getBugSummaryString($id), fetch_array() does not returns numeric indexes, 
+ * then only choice is accessing my field name (IMHO better)
+ *
+ * Removed also DBNAME on Queries because causes problems.
+ * 
  *
  * 20070403 - franciscom - 
  * 1. added an specialized version of checkBugID
@@ -61,7 +70,7 @@ class jiraInterface extends bugtrackingInterface
 			return false;
 
 		$status = false;
-		$query = "SELECT issuestatus FROM {$this->m_dbName}.jiraissue WHERE pkey='$id'";
+		$query = "SELECT issuestatus FROM jiraissue WHERE pkey='$id'";
 		$result = $this->m_dbConnection->exec_query($query);
 		if ($result)
 		{
@@ -119,13 +128,13 @@ class jiraInterface extends bugtrackingInterface
 			return false;
 
 		$status = null;
-		$query = "SELECT summary FROM {$this->m_dbName}.jiraissue WHERE pkey='$id'";
+		$query = "SELECT summary FROM jiraissue WHERE pkey='$id'";
 		$result = $this->m_dbConnection->exec_query($query);
 		if ($result)
 		{
 			$summary = $this->m_dbConnection->fetch_array($result);
 			if ($summary)
-				$summary = $summary[0];
+				$summary = $summary['summary'];
 			else
 				$summary = null;
 		}

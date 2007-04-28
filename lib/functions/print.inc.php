@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: print.inc.php,v $
- * @version $Revision: 1.25 $
- * @modified $Date: 2007/03/12 21:46:17 $ by $Author: schlundus $
+ * @version $Revision: 1.26 $
+ * @modified $Date: 2007/04/28 17:47:48 $ by $Author: schlundus $
  *
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
@@ -53,23 +53,21 @@ function printFirstPage(&$db,$title, $prodName, $prodNotes, $userID)
 	{
 		$output .= '<br /><center><table class="company">';
 
-  	if (TL_DOC_COMPANY != '' )
-  	{
-		  $output .= '<tr><td id="company_name">'. htmlspecialchars(TL_DOC_COMPANY) ."</td></tr>";
+	  	if (TL_DOC_COMPANY != '' )
+	  	{
+			$output .= '<tr><td id="company_name">'. htmlspecialchars(TL_DOC_COMPANY) ."</td></tr>";
 		}
 		$output .= '<tr><td/></tr>'; 
-	  
-  	if (TL_DOC_COMPANY_LOGO != '' )
-	  {
-	    $output .= '<tr><td id="company_logo">'. 
-	               str_replace('%BASE_HREF%',$_SESSION['basehref'],TL_DOC_COMPANY_LOGO) ."</td></tr>";
-	  }
+		  
+	  	if (TL_DOC_COMPANY_LOGO != '' )
+		{
+			$output .= '<tr><td id="company_logo">'. 
+		    		str_replace('%BASE_HREF%',$_SESSION['basehref'],TL_DOC_COMPANY_LOGO) ."</td></tr>";
+		}
 		$output .= "</table></center>\n";
 	}
 	
 	$output .= "</div>\n";
-
-
 
 	$output .= '<h1 id="doctitle">'.$title."</h1>\n";
 	$output .= '<div id="summary">' .
@@ -171,7 +169,8 @@ function renderTestCaseForPrinting(&$db,&$printingOptions,&$node,$level)
 		if ($tcInfo)
 		{
 			$tcInfo = $tcInfo[0];
-			$code .= "<tr><td><u>".lang_get('summary')."</u>: " .  $tcInfo['summary'] . "</td></tr>";
+			if ($printingOptions['summary'])
+				$code .= "<tr><td><u>".lang_get('summary')."</u>: " .  $tcInfo['summary'] . "</td></tr>";
 			if ($printingOptions['body']) 
 			{
 			   	$code .= "<tr><td><u>".lang_get('steps')."</u>:<br />" .  $tcInfo['steps'] . "</td></tr>";

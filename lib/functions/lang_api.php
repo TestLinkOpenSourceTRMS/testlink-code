@@ -1,4 +1,15 @@
 <?php
+/** TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ * 
+ * @filesource $RCSfile: lang_api.php,v $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2007/05/02 07:24:12 $ - $Author: franciscom $
+ *
+ * rev :
+ *       20070501 - franciscom - enabled logic to manage a custom_strings.txt file
+ *       
+*/
+
 # Mantis - a php based bugtracking system
 # Copyright (C) 2000 - 2002  Kenzaburo Ito - kenito@300baud.org
 # Copyright (C) 2002 - 2004  Mantis Team   - mantisbt-dev@lists.sourceforge.net
@@ -19,7 +30,11 @@ $g_lang_overrides = array();
 #  This function will return one of (in order of preference):
 #    1. The string in the current user's preferred language (if defined)
 #    2. The string in English
-
+#
+# rev: 
+#      20070501 - franciscom - added TL_LOCALIZE_TAG in order to 
+#                              improve label management for custom fields
+#
 function lang_get( $p_string, $p_lang = null )
 {
 	global $TLS_STRINGFILE_CHARSET;
@@ -32,7 +47,7 @@ function lang_get( $p_string, $p_lang = null )
 
 	lang_ensure_loaded( $t_lang );
 	global $g_lang_strings;
-	$the_str = isset($g_lang_strings[$t_lang][$p_string]) ? $g_lang_strings[$t_lang][$p_string] : "LOCALIZE: " .$p_string;
+	$the_str = isset($g_lang_strings[$t_lang][$p_string]) ? $g_lang_strings[$t_lang][$p_string] : TL_LOCALIZE_TAG .$p_string;
 	
 	if (TL_TPL_CHARSET == 'UTF-8' && $TLS_STRINGFILE_CHARSET != "UTF-8")
 		return utf8_encode($the_str);
@@ -103,10 +118,12 @@ function lang_load( $p_lang ) {
 	}
 	# Allow overriding strings declared in the language file.
 	# custom_strings_inc.php can use $g_active_language
-	//$t_custom_strings = dirname ( dirname( __FILE__ ) ) . DIRECTORY_SEPARATOR . 'custom_strings_inc.php';
-	//if ( file_exists( $t_custom_strings ) ) {
-	//	require( $t_custom_strings ); # this may be loaded multiple times, once per language
-	//}
+	#
+	# 20070501 - franciscom
+	$t_custom_strings = $t_lang_dir . 'custom_strings.txt';
+	if ( file_exists( $t_custom_strings ) ) {
+	     require_once( $t_custom_strings ); 
+	}
 	$t_vars = get_defined_vars();
 
 	foreach ( array_keys( $t_vars ) as $t_var ) {

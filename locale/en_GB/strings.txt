@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.166 $
- * @modified $Date: 2007/04/13 20:25:35 $ $Author: schlundus $
+ * @version $Revision: 1.167 $
+ * @modified $Date: 2007/05/02 07:29:46 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
@@ -261,6 +261,11 @@ $TLS_th_name = "Name";
 $TLS_th_perc_completed = "Completed [%]";
 $TLS_title_your_tp_metrics = "Your Test Plan Metrics";
 
+
+// gui/templates/newest_tcversions.tpl
+$TLS_linked_version = "Linked version";
+$TLS_newest_version = "Newest available active version";
+$TLS_title_newest_tcversions = "Newest versions of linked Test Cases";
 
 
 // gui/templates/emailSent.tpl
@@ -1188,6 +1193,7 @@ $TLS_filter_tp_by_product = "Filter Test Plans by Test Project";
 $TLS_href_add_test_case = "Add Test Case(s)";
 $TLS_href_build_new = "Build Management";
 $TLS_href_execute_test = "Execute Tests";
+$TLS_href_newest_tcversions = "Show Test Cases newest versions";
 $TLS_href_plan_assign_priority = "Assign priorities";
 $TLS_href_plan_define_priority = "Define priority rules";
 $TLS_href_plan_management = "Test Plan Management";

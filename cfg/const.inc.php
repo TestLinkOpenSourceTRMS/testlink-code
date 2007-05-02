@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: const.inc.php,v $
  *
- * @version $Revision: 1.22 $
- * @modified $Date: 2007/04/15 10:57:11 $ by $Author: franciscom $
+ * @version $Revision: 1.23 $
+ * @modified $Date: 2007/05/02 07:28:12 $ by $Author: franciscom $
  * @author Martin Havlát
  *
  * SCOPE:
@@ -67,6 +67,15 @@ define( 'ERROR_LDAP_BIND_FAILED',				1404 );
 
 // ----------------------------------------------------------------------------
 /** [LOCALIZATION] */
+
+// String that will used as prefix, to generate an string when a label to be localized
+// is passed to lang_get() to be translated, by the label is not present in the strings
+// file.
+// The resulting string will be:  TL_LOCALIZE_TAG . label
+// Example:
+//         want to translate "Hello" -> LOCALIZE: Hello
+//
+define('TL_LOCALIZE_TAG',"LOCALIZE: ");
 
 // These are the supported locales.
 // This array will be used to create combo box at user interface.

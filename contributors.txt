@@ -16,7 +16,8 @@ Other developers:
 Other Contributors (code, ideas, testing..):
 * Tools R Us
 * Oscar Castroviejo (trackplus interface)
-
+* Seweryn Plywaczyk (text area custom field)  
+ 
 Localization
 * French
 	grdscarabe@grdscarabe.net

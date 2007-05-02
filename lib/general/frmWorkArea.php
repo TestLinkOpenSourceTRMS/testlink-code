@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: frmWorkArea.php,v $
  *
- * @version $Revision: 1.18 $
- * @modified $Date: 2007/02/26 08:01:44 $ by $Author: franciscom $
+ * @version $Revision: 1.19 $
+ * @modified $Date: 2007/05/02 07:28:31 $ by $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -34,12 +34,16 @@ $aa_tfp = array(
             'keywordsAssign' => 'lib/testcases/listTestCases.php?feature=keywordsAssign',
             'testSetAdd'    => 'lib/plan/planAddTCNavigator.php',
             'testSetRemove' => 'lib/plan/testSetNavigator.php?feature=removeTC',
+            'show_ve' => 'lib/plan/testSetNavigator.php?feature=show_ve',  // 20070411
+            'newest_tcversions' => '../../lib/plan/newest_tcversions.php',  // 20070411
             'printTestSet'  => 'lib/print/selectData.php?type=testSet',
             'priority'           => 'lib/plan/testSetNavigator.php?feature=plan_risk_assignment',
             'tc_exec_assignment' => 'lib/plan/testSetNavigator.php?feature=tc_exec_assignment',
             'executeTest' => 'lib/execute/execNavigator.php',
             'showMetrics' => 'lib/results/resultsNavigator.php',
             'planAssignTesters' => 'lib/plan/planTestersNavigator.php');
+
+$full_screen = array('newest_tcversions' => 1);
 
 /** feature to display */
 $showFeature = isset($_GET['feature']) ? $_GET['feature'] : null;
@@ -75,13 +79,18 @@ if (in_array($showFeature,array('executeTest','showMetrics')))
 /// </enhancement>
 $smarty = new TLSmarty();
 
-/** default width of left pane */
-// 20050828 - fm
-$smarty->assign('treewidth', TL_FRMWORKAREA_LEFT_FRAME_WIDTH);
-$smarty->assign('treeframe', $aa_tfp[$showFeature]);
-$smarty->assign('workframe', "lib/general/show_help.php?help=$showFeature&locale={$_SESSION['locale']}");
+if( isset($full_screen[$showFeature]) )
+{
+  redirect($aa_tfp[$showFeature]);
+}
+else
+{
+  $smarty->assign('treewidth', TL_FRMWORKAREA_LEFT_FRAME_WIDTH);
+  $smarty->assign('treeframe', $aa_tfp[$showFeature]);
+  $smarty->assign('workframe', "lib/general/show_help.php?help=$showFeature&locale={$_SESSION['locale']}");
+  $smarty->display('frmInner.tpl');
 
-$smarty->display('frmInner.tpl');
+}
 
 
 /** 

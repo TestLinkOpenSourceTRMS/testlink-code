@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.17 $
- * @modified $Date: 2007/02/28 08:03:07 $ $Author: franciscom $
+ * @version $Revision: 1.18 $
+ * @modified $Date: 2007/05/02 07:28:41 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
@@ -677,7 +677,7 @@ $TLS_exec_status = "Stato";
 $TLS_execution_history = "Storia delle esecuzioni";
 $TLS_img_title_bug_mgmt = "Gestione BUG";
 $TLS_img_title_delete_execution= "Cancella esecuzione";
-$TLS_just_last_execution_for_this_build = "Last execu
+$TLS_just_last_execution_for_this_build = "Solo ultima esecuzione per questo build";
 $TLS_no_data_available = "Dati non disponibili";
 $TLS_set_all_tc_to = "Imposta tutto allo stato ";
 $TLS_show_hide = "Mostra / Nascondi";

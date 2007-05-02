@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.108 $
- * @modified $Date: 2007/04/15 10:53:11 $ by $Author: franciscom $
+ * @version $Revision: 1.109 $
+ * @modified $Date: 2007/05/02 07:23:26 $ by $Author: franciscom $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink 
@@ -14,6 +14,8 @@
  *-----------------------------------------------------------------------------
  *
  * Revisions:
+ *           20070429 - franciscom - added contribution by Seweryn Plywaczyk
+ *                                   text area custom field
  *
  *           20070415 - franciscom -  added config for drag and drop feature
  *           20070301 - franciscom - 
@@ -260,7 +262,7 @@ TRUE -> user can enable/disable test plan filter by
 FALSE -> user can do nothing, no changes at UI.
          Test Plan always filtered by product
 */
-$g_ui_show_check_filter_tp_by_testproject = TRUE;
+$g_ui_show_check_filter_tp_by_testproject = FALSE;
 
 // Display name and surename in all user lists 
 // $g_show_realname=TRUE; -> use the function format_username()
@@ -510,7 +512,8 @@ $g_gui->custom_fields->sizes = array(
 	'float'  => 10,
 	'email'  => 50,
 	'list'   => 1,
-	'multiselection list' => 5
+	'multiselection list' => 5,
+	'text area' => array('cols' => 40, 'rows' => 6)
 );
 
 

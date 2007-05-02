@@ -2,9 +2,13 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: cfield_mgr.class.php,v $
- * @version $Revision: 1.11 $
- * @modified $Date: 2007/03/04 00:03:19 $  $Author: schlundus $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2007/05/02 07:25:11 $  $Author: franciscom $
  * @author franciscom
+ *
+ * 20070501 - franciscom - limiting length of values while writting to db.
+ * 20070429 - franciscom - added text area custom field
+ *                         code contributed by Seweryn Plywaczyk  
  *
  * 20070227 - franciscom - BUGID 677
  * 20070110 - franciscom - solved bug set_active()
@@ -14,8 +18,6 @@
  * 2. refactoring - design_values_to_db()
  *                  execution_values_to_db()
  *                         
- * 20061225 - franciscom - 
- *
 **/
 
 class cfield_mgr
@@ -42,7 +44,8 @@ class cfield_mgr
                                    5=>'checkbox',
                                    6=>'list',
                                    7=>'multiselection list',
-                                   8=>'date');
+                                   8=>'date',
+								                   20=>'text area');
      
      
   // only the types listed here can have custom fields
@@ -51,7 +54,6 @@ class cfield_mgr
 	//                        'testcase',
 	//                        'testplan');
   //
-  // 20070113 - franciscom
 	var $node_types = array('testsuite',
 	                        'testplan',
 	                        'testcase');
@@ -64,7 +66,19 @@ class cfield_mgr
   var $name_prefix='custom_field_';
     
   var $sizes = null;
-    
+
+  // must be equal to the lenght of:
+  // value column on cfield_*_values tables
+  // default_value column on custom_fields table    
+  // 0 -> no limit
+  var $max_length_value=255;
+  
+  
+  // must be equal to the lenght of:
+  // possible_values column on custom_fields table
+  // 0 -> no limit
+  var $max_length_possible_values=255;
+  
   /*
     function: cfield_mgr
               class constructor
@@ -204,8 +218,7 @@ class cfield_mgr
          " AND   CF.enable_on_design={$enabled} " .
          $additional_filter .
          " ORDER BY display_order ";
-    
-    
+
     $map = $this->db->fetchRowsIntoMap($sql,'id');     
     return($map);                                 
   }
@@ -233,6 +246,10 @@ class cfield_mgr
 	{
     $WINDOW_SIZE_MULTILIST=5;
     $DEFAULT_SIZE=50;
+    
+    // for text area custom field  40 x 6 -> 240 chars <= 255 chars table field size
+    $DEFAULT_COLS = 40;
+    $DEFAULT_ROWS = 6;
     
 		$str_out='';
 		$t_id = $p_field_def['id'];
@@ -322,9 +339,23 @@ class cfield_mgr
 			  }
 			  $str_out .= ' value="' . $t_custom_field_value .'"></input>';
 			  break ;
-
+			  
+      case 'text area':
+        $cols = intval($this->sizes['text area']['cols']);
+        $rows = intval($this->sizes['text area']['rows']);
+			  if($cols <= 0)
+        {
+           $cols = $DEFAULT_COLS;
+        }
+        if($rows <= 0)
+        {
+          $rows = $DEFAULT_ROWS;
+        }
   		
-  		break;
+			  $str_out .= '<textarea name="' . $input_name . '" ' .
+			              'cols="' . $cols . '" rows="' . $rows . '">' .
+			              "{$t_custom_field_value}</textarea>";            
+  	  break;
 
 
   	}		
@@ -356,6 +387,7 @@ class cfield_mgr
                               
           
     rev:
+         20070501 - franciscom - limiting lenght of value before writting
          20070105 - franciscom - added $cf_map
          20070104 - franciscom - need to manage multiselection in a different way      
   */
@@ -378,6 +410,12 @@ class cfield_mgr
     		 			 " WHERE field_id={$field_id} AND	node_id={$node_id}";
   
         $result = $this->db->exec_query($sql);
+        
+        if( $this->max_length_value > 0 && strlen($value) > $this->max_length_value)
+        {
+           $value = substr($value,0,$this->max_length_value);   
+        } 
+        
         if($this->db->num_rows( $result ) > 0 ) 
         {
           
@@ -836,6 +874,13 @@ class cfield_mgr
 					return date( config_get( 'short_date_format'), $t_custom_field_value) ;
 				}
 				break ;
+				
+		  case 'text area':
+        if ($t_custom_field_value != null) 
+				{
+					return nl2br($t_custom_field_value);
+				}
+        break;
 	
 			default:
 				return($t_custom_field_value);
@@ -954,8 +999,7 @@ class cfield_mgr
                             when has been deselected by user.
         
     rev:
-        20070105 - franciscom - added $cf_map
-   
+        20070501 - franciscom - limiting lenght of value before writting
   */
   function execution_values_to_db($hash,$node_id,$execution_id,$testplan_id,$cf_map=null)
   {                                  
@@ -971,6 +1015,11 @@ class cfield_mgr
       foreach($cfield as $field_id => $type_and_value)
       {
         $value = $type_and_value['cf_value'];
+        
+        if( $this->max_length_value > 0 && strlen($value) > $this->max_length_value)
+        {
+           $value = substr($value,0,$this->max_length_value);   
+        } 
         
         # Remark got from Mantis code:
   		  # Always store the value, even if it's the dafault value

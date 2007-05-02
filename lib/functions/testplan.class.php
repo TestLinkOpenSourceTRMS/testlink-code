@@ -2,11 +2,14 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.29 $
- * @modified $Date: 2007/03/12 07:11:51 $ $Author: franciscom $
+ * @version $Revision: 1.30 $
+ * @modified $Date: 2007/05/02 07:26:02 $ $Author: franciscom $
  * @author franciscom
  *
  * rev :
+ *       20070501 - franciscom - added localization of custom field labels
+ *                               added use of htmlspecialchars() on labels
+ *       20070425 - franciscom - added get_linked_and_newest_tcversions() 
  *       20070310 - franciscom - BUGID 731
  *       20070306 - franciscom - 
  *       BUGID 705 - changes in get_linked_tcversions()
@@ -379,6 +382,58 @@ function get_linked_tcversions($id,$tcase_id=null,$keyword_id=0,$executed=null,
 }
 
 
+/*
+  function: get_linked_and_last_tcversions
+            returns for every test case in a test plan
+            the tc version linked and the newest available version 
+
+  args :
+  
+  returns: 
+
+  20070425 - franciscom
+  
+*/
+function get_linked_and_newest_tcversions($id,$tcase_id=null)
+{
+  $tc_id_filter = " ";
+	if (!is_null($tcase_id) )
+	{
+	   if( is_array($tcase_id) )
+	   {
+        // ??? implement as in ?	
+	   }
+	   else if ($tcase_id > 0 )
+	   {
+	      $tc_id_filter = " AND NHA.parent_id = {$tcase_id} ";
+	   }
+	}
+	$sql = " SELECT MAX(NHB.id) AS newest_tcversion_id, " .
+	       "        NHA.parent_id AS tc_id, NHC.name, " .
+	       "        T.tcversion_id AS tcversion_id," .
+	       "        TCVA.version AS version" .
+	       " FROM nodes_hierarchy NHA " .
+	       " JOIN nodes_hierarchy NHB ON NHA.parent_id = NHB.parent_id " .
+	       " JOIN nodes_hierarchy NHC ON NHA.parent_id = NHC.id " .
+	       " JOIN testplan_tcversions T ON NHA.id = T.tcversion_id " .
+	       " JOIN tcversions TCVA ON T.tcversion_id = TCVA.id " .
+	       " JOIN tcversions TCVB ON NHB.id = TCVB.id AND TCVB.active=1 " .
+	       " WHERE T.testplan_id={$id} AND NHB.id > NHA.id" . $tc_id_filter .
+	       " GROUP BY NHA.parent_id, NHC.name, tcversion_id, TCVA.version  ";
+
+	$sql2 = " SELECT SUBQ.name, SUBQ.newest_tcversion_id, SUBQ.tc_id, " .
+	        " SUBQ.tcversion_id, SUBQ.version, " .
+	        " TCV.version AS newest_version" .
+	        " FROM tcversions TCV, ( $sql ) AS SUBQ" .
+	        " WHERE SUBQ.newest_tcversion_id = TCV.id ";
+   
+   
+
+	$sql2 .= " ORDER BY SUBQ.tc_id";
+	$recordset = $this->db->fetchRowsIntoMap($sql2,'tc_id');
+
+	return $recordset;
+}
 
 
 
@@ -978,13 +1033,14 @@ function html_table_of_custom_field_inputs($id,$parent_id=null,$scope='design')
   {
     foreach($cf_map as $cf_id => $cf_info)
     {
-      $cf_smarty .= '<tr><td class="labelHolder">' . $cf_info['label'] . "</td><td>" .
+      // 20070501 - franciscom
+      $label=str_replace(TL_LOCALIZE_TAG,'',lang_get($cf_info['label']));
+      $cf_smarty .= '<tr><td class="labelHolder">' . htmlspecialchars($label) . "</td><td>" .
                     $this->cfield_mgr->string_custom_field_input($cf_info) .
                     "</td></tr>\n";
     } //foreach($cf_map
   }
-  
-  // 20070214 - franciscom
+
   if($cf_smarty != '')
   {
     $cf_smarty = "<table>" . $cf_smarty . "</table>";
@@ -1026,7 +1082,9 @@ function html_table_of_custom_field_values($id,$scope='design',$show_on_executio
       // if user has assigned a value, then node_id is not null
       if($cf_info['node_id'])
       {
-        $cf_smarty .= '<tr><td class="labelHolder">' . $cf_info['label'] . "</td><td>" .
+        // 20070501 - franciscom
+        $label=str_replace(TL_LOCALIZE_TAG,'',lang_get($cf_info['label']));
+        $cf_smarty .= '<tr><td class="labelHolder">' . htmlspecialchars($label) . "</td><td>" .
                       $this->cfield_mgr->string_custom_field_value($cf_info,$id) .
                       "</td></tr>\n";
       }

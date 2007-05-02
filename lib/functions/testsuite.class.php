@@ -2,9 +2,12 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testsuite.class.php,v $
- * @version $Revision: 1.29 $
- * @modified $Date: 2007/03/26 08:24:58 $ - $Author: franciscom $
+ * @version $Revision: 1.30 $
+ * @modified $Date: 2007/05/02 07:26:02 $ - $Author: franciscom $
  * @author franciscom
+ *
+ * 20070501 - franciscom - added localization of custom field labels
+ *                         added use of htmlspecialchars() on labels
  *
  * 20070324 - franciscom - create() interface changes
  *                         get_by_id()changes in result set
@@ -753,13 +756,14 @@ function html_table_of_custom_field_inputs($id,$parent_id=null,$scope='design')
   {
     foreach($cf_map as $cf_id => $cf_info)
     {
-      $cf_smarty .= '<tr><td class="labelHolder">' . $cf_info['label'] . "</td><td>" .
+      // 20070501 - franciscom 
+      $label=str_replace(TL_LOCALIZE_TAG,'',lang_get($cf_info['label']));
+      $cf_smarty .= '<tr><td class="labelHolder">' . htmlspecialchars($label) . "</td><td>" .
                     $this->cfield_mgr->string_custom_field_input($cf_info) .
                     "</td></tr>\n";
     } //foreach($cf_map
   }
   
-  // 20070204 - franciscom
   if( strlen(trim($cf_smarty)) > 0 )
   {
     $cf_smarty = "<table>" . $cf_smarty . "</table>";
@@ -803,7 +807,9 @@ function html_table_of_custom_field_values($id,$scope='design',$show_on_executio
       // if user has assigned a value, then node_id is not null
       if($cf_info['node_id'])
       {
-        $cf_smarty .= '<tr><td class="labelHolder">' . $cf_info['label'] . "</td><td>" .
+        // 20070501 - franciscom
+        $label=str_replace(TL_LOCALIZE_TAG,'',lang_get($cf_info['label']));
+        $cf_smarty .= '<tr><td class="labelHolder">' . htmlspecialchars($label) . "</td><td>" .
                       $this->cfield_mgr->string_custom_field_value($cf_info,$id) .
                       "</td></tr>\n";
       }

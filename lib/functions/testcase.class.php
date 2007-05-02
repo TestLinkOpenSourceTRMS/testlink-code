@@ -2,10 +2,11 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.53 $
- * @modified $Date: 2007/04/04 19:20:49 $ $Author: schlundus $
+ * @version $Revision: 1.54 $
+ * @modified $Date: 2007/05/02 07:26:02 $ $Author: franciscom $
  * @author franciscom
  *
+ * 20070501 - franciscom - added localization of custom field labels
  *
  * 20070302 - franciscom - fixed bug on get_linked_cfields_at_design()
  * 20070222 - franciscom - minor fix html_table_of_custom_field_values()
@@ -1361,7 +1362,10 @@ function html_table_of_custom_field_inputs($id,$parent_id=null,$scope='design',$
 		$cf_smarty = "<table>";
 		foreach($cf_map as $cf_id => $cf_info)
 		{
-			$cf_smarty .= '<tr><td class="labelHolder">' . htmlspecialchars($cf_info['label']) . ":</td><td>" .
+      // 20070501 - franciscom
+      $label=str_replace(TL_LOCALIZE_TAG,'',lang_get($cf_info['label']));
+
+			$cf_smarty .= '<tr><td class="labelHolder">' . htmlspecialchars($label) . ":</td><td>" .
 				$this->cfield_mgr->string_custom_field_input($cf_info,$name_suffix) .
 						"</td></tr>\n";
 		}
@@ -1412,14 +1416,16 @@ function html_table_of_custom_field_values($id,$scope='design',$show_on_executio
 			// if user has assigned a value, then node_id is not null
 			if($cf_info['node_id'])
 			{
+	      // 20070501 - franciscom
+        $label=str_replace(TL_LOCALIZE_TAG,'',lang_get($cf_info['label']));
+
 				$cf_smarty .= '<tr><td class="labelHolder">' . 
-								htmlspecialchars($cf_info['label']) . ":</td><td>" .
+								htmlspecialchars($label) . ":</td><td>" .
 								$this->cfield_mgr->string_custom_field_value($cf_info,$id) .
 								"</td></tr>\n";
 			}
 		}
 		
-		// 20070222 - francisco.mancardi@gruppotesi.com
 		if(strlen(trim($cf_smarty)) > 0)
 		{
 		  $cf_smarty = "<table>" . $cf_smarty . "</table>";

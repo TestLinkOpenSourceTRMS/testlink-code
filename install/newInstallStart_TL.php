@@ -1,6 +1,6 @@
 <?php 
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: newInstallStart_TL.php,v 1.16 2007/03/03 08:37:05 franciscom Exp $ */
+/* $Id: newInstallStart_TL.php,v 1.17 2007/05/02 07:29:28 franciscom Exp $ */
 
 // 20070302 - franciscom - changed link for help
 //
@@ -29,13 +29,9 @@ $inst_type = $_GET['installationType'];
 
 $main_title = "Testlink Setup";
 $explain_msg = '<p>' . $main_title . 
-               ' has carried out a number of checks ' .
+               ' will carry out a number of checks ' .
                " to see if everything's ready to start the setup. </br>";
-
 $the_msg = '<p><b>' . $main_title . '</b></p>' . $explain_msg;
-
-
-
 ?>
 
 <body>
@@ -47,11 +43,29 @@ $the_msg = '<p><b>' . $main_title . '</b></p>' . $explain_msg;
   <tr class="fancyRow2">
     <td colspan="2" class="border-top-bottom smallText" align="right">&nbsp;</td>
   </tr>
+  <tr>
+ 
   <tr align="left" valign="top">
-    <td colspan="2"><table width="100%"  border="0" cellspacing="0" cellpadding="1">
+
+    <td colspan="2">
+    <table width="100%"  border="0" cellspacing="0" cellpadding="1">
+      <tr align="left" valign="top">
+    <td> <img src="./img/dot.gif" alt="" style="margin-top: 1px;" />
+		<b>Important Notice</b><br>
+ 			 Testlink can not be installed (using this installer) on a database/schema used by another 
+			 application, because part of the installation process consist on dropping all tables 
+			 present on the database/schema, if you use an existing database/schema, WITHOUT ASKING YOU.<br>
+    </td>
+    </tr>
+    <tr class="fancyRow2">
+    <td colspan="2" class="border-top-bottom smallText" align="right">&nbsp;</td>
+    </tr>
+    
+        
       <tr align="left" valign="top">
         <td class="pad" id="content" colspan="2">
 
+	
 <?php
 echo $the_msg;
 
@@ -177,7 +191,6 @@ exit;
           echo ewigth($inst_type); 
          ?>
 
-					
 					
 					Database Configuration <p />
 					

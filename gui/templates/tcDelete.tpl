@@ -1,9 +1,13 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcDelete.tpl,v 1.14 2007/02/20 18:48:50 franciscom Exp $
+$Id: tcDelete.tpl,v 1.15 2007/05/03 06:59:23 franciscom Exp $
 Purpose: smarty template - delete test case in test specification
 
-rev : 20070213 - franciscom - BUGID 0000629: Test Case/Suite - Delete confirmation without Cancel or No option
+rev : 
+      20070502 - franciscom - solved problems on delete due to name of local variable
+                              equal to name of variable assigned on php page.
+                              
+      20070213 - franciscom - BUGID 0000629: Test Case/Suite - Delete confirmation without Cancel or No option
 
 *}
 
@@ -25,7 +29,7 @@ rev : 20070213 - franciscom - BUGID 0000629: Test Case/Suite - Delete confirmati
     <th>{lang_get s='th_version'}</th>
     <th>{lang_get s='th_linked_to_tplan'}</th> 
     <th>{lang_get s='th_executed'}</th> 
-  	{foreach key=tcversion_id item=on_tplan_status from=$exec_status_quo}
+  	{foreach key=testcase_version_id item=on_tplan_status from=$exec_status_quo}
       {foreach key=tplan_id item=status from=$on_tplan_status}
       <tr>
       <td align="right">{$status.version}</td>

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqSpecView.php,v $
- * @version $Revision: 1.34 $
- * @modified $Date: 2007/04/15 10:59:44 $ by $Author: franciscom $
+ * @version $Revision: 1.35 $
+ * @modified $Date: 2007/05/03 20:44:29 $ by $Author: schlundus $
  * @author Martin Havlat
  * 
  * Screen to view existing requirements within a req. specification.
@@ -80,9 +80,9 @@ if(isset($_REQUEST['createReq']))
 		$status = createRequirement($db,$reqDocId,$title, $scope, $idSRS, $userID, 
 			                                 $reqStatus, $reqType);
 		$user_feedback = $status['msg'];	                                 
-		if( $user_feedback == 'ok' )
+		if($user_feedback == 'ok')
 		{
-		  $user_feedback=sprintf(lang_get('req_created'), $reqDocId);  
+			$user_feedback = sprintf(lang_get('req_created'), $reqDocId);  
 		}
 	}
 	$scope = '';
@@ -190,13 +190,11 @@ elseif( $reorder )
 }
 elseif( $do_req_reorder )
 {
-  $nodes_order = isset($_REQUEST['nodes_order']) ? $_REQUEST['nodes_order'] : null;
-  $nodes_in_order=transform_nodes_order($nodes_order);
-  
-  set_req_order($db,$idSRS,$nodes_in_order);
-
+	$nodes_order = isset($_REQUEST['nodes_order']) ? $_REQUEST['nodes_order'] : null;
+	$nodes_in_order = transform_nodes_order($nodes_order);
+	
+	set_req_order($db,$idSRS,$nodes_in_order);
 }
-
 
 // collect existing reqs for the SRS
 if ($bGetReqs)
@@ -232,9 +230,7 @@ else if ($action && $action != 'create')
 	$of->Value=$arrSpec[0]['scope'];
 }
 
-// 20061008 - franciscom
-//export to csv doors is not support
-global $g_reqImportTypes;
+// 20061008 - franciscom  - export to csv doors is not support
 $exportTypes = $g_reqImportTypes;
 unset($exportTypes['csv_doors']);
 
@@ -270,21 +266,19 @@ $smarty->assign('js_msg',$js_msg);
 $smarty->assign('exportTypes',$exportTypes);
 $smarty->assign('scope',$of->CreateHTML());
 $smarty->display($template);
-?>
 
-<?php
 // nodes_order format:  NODE_ID-?,NODE_ID-?
 // 2-0,10-0,3-0
 //                      
 function transform_nodes_order($nodes_order)
 {
-  $fa=explode(',',$nodes_order);
+  $fa = explode(',',$nodes_order);
   
   foreach($fa as $key => $value)
   {
-    // $value= X-Y
-    $fb=explode('-',$value);
-    $nodes_id[]=$fb[0];
+	// $value= X-Y
+	$fb = explode('-',$value);
+	$nodes_id[] = $fb[0];
   }
   
   return $nodes_id;

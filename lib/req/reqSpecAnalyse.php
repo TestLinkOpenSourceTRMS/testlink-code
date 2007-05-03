@@ -4,22 +4,15 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqSpecAnalyse.php,v $
- * @version $Revision: 1.8 $
- * @modified $Date: 2006/10/11 07:00:39 $ by $Author: franciscom $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2007/05/03 20:44:29 $ by $Author: schlundus $
  * @author Martin Havlat
  * 
  * Analyse coverage of a req. specification.
- * 
- * revision:
- * 20050901 - MHT - removed TestPlan related data; file header update
  */
-////////////////////////////////////////////////////////////////////////////////
-
 require_once("../../config.inc.php");
 require_once("common.php");
 require_once('requirements.inc.php');
-
-// init page 
 testlinkInitPage($db);
 
 $idSRS = isset($_GET['idSRS']) ? strings_stripSlashes($_GET['idSRS']) : null;
@@ -29,7 +22,8 @@ $tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 
 $arrReqSpec = getOptionReqSpec($db,$tproject_id);
 
 //get first ReqSpec if not defined
-if (!$idSRS && count($arrReqSpec)) {
+if (!$idSRS && count($arrReqSpec))
+{
 	reset($arrReqSpec);
 	$idSRS = key($arrReqSpec);
 	tLog('Set a first available SRS ID: ' . $idSRS);

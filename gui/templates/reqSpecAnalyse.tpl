@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecAnalyse.tpl,v 1.14 2007/01/25 14:12:53 franciscom Exp $ *}
+{* $Id: reqSpecAnalyse.tpl,v 1.15 2007/05/03 20:44:26 schlundus Exp $ *}
 {* Purpose: smarty template - Analyse REQ coverage *}
 {include file="inc_head.tpl"}
 
@@ -32,8 +32,10 @@
 {* METRICS *}
 <table class="invisible">
 <tr><td>{lang_get s='req_total_count'}</td><td>{$arrMetrics.expectedTotal}</td></tr>
+<tr><td>{lang_get s='req_title_in_tl'}</td><td>{$arrMetrics.total}</td></tr>
 <tr><td>{lang_get s='req_title_covered'}</td><td>{$arrMetrics.covered}</td></tr>
-<tr><td>{lang_get s='req_title_uncovered'}</td><td>{$arrMetrics.uncovered}</td></tr>
+<tr><td>{lang_get s='req_title_uncovered'}</td><td>{$arrMetrics.total-$arrMetrics.covered}</td></tr>
+<tr><td>{lang_get s='req_title_not_in_tl'}</td><td>{$arrMetrics.uncovered}</td></tr>
 <tr><td>{lang_get s='req_title_nottestable'}</td><td>{$arrMetrics.notTestable}</td></tr>
 </table>
 

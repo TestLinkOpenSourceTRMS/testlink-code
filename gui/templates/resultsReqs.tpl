@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsReqs.tpl,v 1.8 2007/02/28 07:54:12 kevinlevy Exp $
+$Id: resultsReqs.tpl,v 1.9 2007/05/03 20:44:26 schlundus Exp $
 Purpose: report REQ coverage 
 Author Martin Havlat 
 
@@ -35,11 +35,12 @@ Author Martin Havlat
 {* METRICS *}
 <table class="invisible">
 <tr><td>{lang_get s='req_total_count'}</td><td>{$arrMetrics.expectedTotal}</td></tr>
-<tr><td>{lang_get s='req_title_covered'}</td><td>{$arrMetrics.coveredByTestPlan}</td></tr>
-<tr><td>{lang_get s='req_title_uncovered'}</td><td>{$arrMetrics.uncoveredByTestPlan}</td></tr>
+<tr><td>{lang_get s='req_title_in_tl'}</td><td>{$arrMetrics.total}</td></tr>
+<tr><td>{lang_get s='req_title_covered'}</td><td>{$arrMetrics.covered}</td></tr>
+<tr><td>{lang_get s='req_title_uncovered'}</td><td>{$arrMetrics.total-$arrMetrics.covered}</td></tr>
+<tr><td>{lang_get s='req_title_not_in_tl'}</td><td>{$arrMetrics.uncovered}</td></tr>
 <tr><td>{lang_get s='req_title_nottestable'}</td><td>{$arrMetrics.notTestable}</td></tr>
 </table>
-
 </div>
 
 
@@ -135,7 +136,11 @@ Author Martin Havlat
 	<tr>
 		<td><span class="bold"><a href="lib/req/reqSpecView.php?editReq={$arrCoverage.not_run[row].id}&idSRS={$selectedReqSpec}">
 			{$arrCoverage.not_run[row].title|escape}</a></span></td>
-		<td>{$arrCoverage.not_run[row].tcList}</td>
+		<td>{assign var=tcList value=$arrCoverage.not_run[row].tcList}
+			{section name=idx loop=$tcList}
+				ID: {$tcList[idx].tcID} {$tcList[idx].title} <br/>
+			{/section} 
+		</td>
 	</tr>
 {if $smarty.section.row.last}
 </table>

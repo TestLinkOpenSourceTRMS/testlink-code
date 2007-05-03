@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.167 $
- * @modified $Date: 2007/05/02 07:29:46 $ $Author: franciscom $
+ * @version $Revision: 1.168 $
+ * @modified $Date: 2007/05/03 20:44:32 $ $Author: schlundus $
  *
  * @author Francisco Mancardi
  *
@@ -438,9 +438,11 @@ $TLS_none = "None";
 $TLS_req = "Requirement";
 $TLS_req_spec_change = "Change Requirements Specification to";
 $TLS_req_title_analyse = "Analyse Requirements Specification ";
-$TLS_req_title_covered = "Covered Requirements";
+$TLS_req_title_covered = "Requirements present with Test Case";
+$TLS_req_title_in_tl = "Requirements within TestLink";
 $TLS_req_title_nottestable = "Not testable Requirements";
-$TLS_req_title_uncovered = "Uncovered Requirements";
+$TLS_req_title_uncovered = "Requirements present without Test Case";
+$TLS_req_title_not_in_tl = "Requirements not present in TestLink";
 $TLS_req_total_count = "Total count of requirements";
 $TLS_testcases = "Test Cases";
 

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: const.inc.php,v $
  *
- * @version $Revision: 1.23 $
- * @modified $Date: 2007/05/02 07:28:12 $ by $Author: franciscom $
+ * @version $Revision: 1.24 $
+ * @modified $Date: 2007/05/04 13:43:29 $ by $Author: franciscom $
  * @author Martin Havlát
  *
  * SCOPE:
@@ -229,7 +229,13 @@ define("TL_ROLES_NONE",3);
 define("TL_ROLES_NONE_DESC","<no rights>");
 define("TL_ROLES_UNDEFINED",0);
 define("TL_ROLES_UNDEFINED_DESC","<inherited>");
-define("TL_DEFAULT_ROLEID",7);
+
+// Configuring here you can change the default role for new users 
+// created from the login page.
+define("TL_DEFAULT_ROLEID",TL_ROLES_GUEST);
+
+// Example: default role will be TESTER, see roles table
+// define("TL_DEFAULT_ROLEID",7);
 
 // used on User Interface whiel showing roles
 define("TL_ROLES_OPEN_CHAR","[");

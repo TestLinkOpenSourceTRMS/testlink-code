@@ -80,7 +80,7 @@ function check_action_precondition(form_id,action)
     		<td><span class="bold">{$arrAssignedReq[row].req_doc_id|escape}</span></td>
     		<td><span class="bold"><a href="lib/req/reqSpecView.php?editReq={$arrAssignedReq[row].id}&amp;idSRS={$selectedReqSpec}">
     			{$arrAssignedReq[row].title|escape}</a></span></td>
-    		<td>{$arrAssignedReq[row].scope|truncate:30}</td>
+    		<td>{$arrAssignedReq[row].scope|strip_tags|strip|truncate:30}</td>
     	</tr>
     	{sectionelse}
     	<tr><td></td><td><span class="bold">{lang_get s='req_msg_norequirement'}</span></td></tr>
@@ -117,7 +117,7 @@ function check_action_precondition(form_id,action)
       		<td><span class="bold">{$arrUnassignedReq[row2].req_doc_id|escape}</span></td>
       		<td><span class="bold"><a href="lib/req/reqSpecView.php?editReq={$arrUnassignedReq[row2].id}&amp;idSRS={$selectedReqSpec}">
       			{$arrUnassignedReq[row2].title|escape}</a></span></td>
-      		<td>{$arrUnassignedReq[row2].scope|truncate:30}</td>
+      		<td>{$arrUnassignedReq[row2].scope|strip_tags|strip|truncate:30}</td>
       	</tr>
       	{sectionelse}
       	<tr><td></td><td><span class="bold">{lang_get s='req_msg_norequirement66'}</span></td></tr>

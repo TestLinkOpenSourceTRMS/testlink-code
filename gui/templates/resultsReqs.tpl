@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsReqs.tpl,v 1.9 2007/05/03 20:44:26 schlundus Exp $
+$Id: resultsReqs.tpl,v 1.10 2007/05/05 19:54:19 schlundus Exp $
 Purpose: report REQ coverage 
 Author Martin Havlat 
 
@@ -58,7 +58,11 @@ Author Martin Havlat
 	<tr>
 		<td><span class="bold"><a href="lib/req/reqSpecView.php?editReq={$arrCoverage.passed[row].id}&idSRS={$selectedReqSpec}">
 			{$arrCoverage.passed[row].title|escape}</a></span></td>
-		<td>{$arrCoverage.passed[row].tcList}</td>
+		<td>{assign var=tcList value=$arrCoverage.passed[row].tcList}
+			{section name=idx loop=$tcList}
+				<a href="lib/testcases/archiveData.php?id={$tcList[idx].tcID|escape}&amp;edit=testcase&allow_edit=0">{$tcList[idx].tcID}</a> {$tcList[idx].title} <br/>
+			{/section} 
+		</td>
 	</tr>
 {if $smarty.section.row.last}
 </table>
@@ -84,7 +88,11 @@ Author Martin Havlat
 	<tr>
 		<td><span class="bold"><a href="lib/req/reqSpecView.php?editReq={$arrCoverage.failed[row].id}&idSRS={$selectedReqSpec}">
 			{$arrCoverage.failed[row].title|escape}</a></span></td>
-		<td>{$arrCoverage.failed[row].tcList}</td>
+		<td>{assign var=tcList value=$arrCoverage.failed[row].tcList}
+			{section name=idx loop=$tcList}
+				<a href="lib/testcases/archiveData.php?id={$tcList[idx].tcID|escape}&amp;edit=testcase&allow_edit=0">{$tcList[idx].tcID}</a> {$tcList[idx].title} <br/>
+			{/section} 
+		</td>
 	</tr>
 {if $smarty.section.row.last}
 </table>
@@ -110,7 +118,11 @@ Author Martin Havlat
 	<tr>
 		<td><span class="bold"><a href="lib/req/reqSpecView.php?editReq={$arrCoverage.blocked[row].id}&idSRS={$selectedReqSpec}">
 			{$arrCoverage.blocked[row].title|escape}</a></span></td>
-		<td>{$arrCoverage.blocked[row].tcList}</td>
+		<td>{assign var=tcList value=$arrCoverage.blocked[row].tcList}
+			{section name=idx loop=$tcList}
+				<a href="lib/testcases/archiveData.php?id={$tcList[idx].tcID|escape}&amp;edit=testcase&allow_edit=0">{$tcList[idx].tcID}</a> {$tcList[idx].title} <br/>
+			{/section} 
+		</td>
 	</tr>
 {if $smarty.section.row.last}
 </table>

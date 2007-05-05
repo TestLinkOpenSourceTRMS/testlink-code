@@ -1,6 +1,6 @@
 --  -----------------------------------------------------------------------------------
 --  TestLink Open Source Project - http://testlink.sourceforge.net/
---  $Id: testlink_create_default_data.sql,v 1.7 2007/01/26 19:18:39 franciscom Exp $
+--  $Id: testlink_create_default_data.sql,v 1.8 2007/05/05 18:53:04 schlundus Exp $
 --  SQL script - create default data (rights & admin account)
 --  
 --  Database Type: Microsoft SQL Server
@@ -60,6 +60,9 @@ INSERT INTO rights (id,description) VALUES (13,'mgt_users'             );
 INSERT INTO rights (id,description) VALUES (14,'role_management'       );
 INSERT INTO rights (id,description) VALUES (15,'user_role_assignment'  );
 INSERT INTO rights (id,description) VALUES (16,'mgt_testplan_create'	);
+INSERT INTO rights (id,description) VALUES (17,'cfield_view');
+INSERT INTO rights (id,description) VALUES (18,'cfield_management');
+INSERT INTO rights (id,description) VALUES (19,'testplan_user_role_assignment'  );
 SET IDENTITY_INSERT rights OFF
 
 

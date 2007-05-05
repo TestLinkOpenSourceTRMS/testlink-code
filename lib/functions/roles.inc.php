@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
  * @filesource $RCSfile: roles.inc.php,v $
- * @version $Revision: 1.19 $
- * @modified $Date: 2007/03/05 18:06:58 $ by $Author: schlundus $
+ * @version $Revision: 1.20 $
+ * @modified $Date: 2007/05/05 18:53:05 $ by $Author: schlundus $
  * @author Martin Havlat, Chad Rosen
  * 
  * This script provides the get_rights and has_rights functions for
@@ -44,7 +44,7 @@ $g_rights_tp = array (	"testplan_execute" => lang_get('desc_testplan_execute'),
 						"testplan_create_build" => lang_get('desc_testplan_create_build'),
 						"testplan_metrics" => lang_get('desc_testplan_metrics'),
 						"testplan_planning" => lang_get('desc_testplan_planning'),
-						"user_role_assignment" => lang_get('desc_user_role_assignment'),
+						"testplan_user_role_assignment" => lang_get('desc_user_role_assignment'),
 					);
 
 					

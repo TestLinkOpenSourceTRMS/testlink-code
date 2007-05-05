@@ -1,5 +1,5 @@
 --  TestLink Open Source Project - http://testlink.sourceforge.net/
---  $Id: testlink_create_default_data.sql,v 1.9 2007/04/15 10:55:57 franciscom Exp $
+--  $Id: testlink_create_default_data.sql,v 1.10 2007/05/05 18:53:05 schlundus Exp $
 --  SQL script - create default data (rights & admin account)
 --
 --  20070126 - franciscom - add new rights to admin role
@@ -54,6 +54,7 @@ INSERT INTO rights (id,description) VALUES (15,'user_role_assignment'  );
 INSERT INTO rights (id,description) VALUES (16,'mgt_testplan_create');
 INSERT INTO rights (id,description) VALUES (17,'cfield_view');
 INSERT INTO rights (id,description) VALUES (18,'cfield_management');
+INSERT INTO rights (id,description) VALUES (19,'testplan_user_role_assignment'  );
 
 
 --  Rights for Administrator (admin role)

@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/ 
 // This script is distributed under the GNU General Public License 2 or later. 
 //
-// $Id: testlink_library.js,v 1.34 2007/03/06 20:19:35 schlundus Exp $ 
+// $Id: testlink_library.js,v 1.35 2007/05/05 18:11:44 schlundus Exp $ 
 //
 // Javascript functions commonly used through the GUI
 // This library is automatically loaded with inc_header.tpl
@@ -321,7 +321,7 @@ function confirm_and_submit(msg,form_id,field_id,field_value,action_field_id,act
 function tree_getPrintPreferences()
 {
 	var params = [];
-	var fields = ['header','summary','toc','body','tcspec_refresh_on_action'];
+	var fields = ['header','summary','toc','body','passfail','tcspec_refresh_on_action'];
 	for (var i= 0;i < fields.length;i++)
 	{
 		var v = tree_getCheckBox(fields[i]);

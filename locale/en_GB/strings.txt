@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.168 $
- * @modified $Date: 2007/05/03 20:44:32 $ $Author: schlundus $
+ * @version $Revision: 1.169 $
+ * @modified $Date: 2007/05/05 18:11:44 $ $Author: schlundus $
  *
  * @author Francisco Mancardi
  *
@@ -1334,7 +1334,8 @@ $TLS_test_results_submitted = "Test Results submitted.";
 $TLS_author = "Author";
 $TLS_printed_by_TestLink_on = "Printed by TestLink on";
 $TLS_title_toc = "Table Of Contents";
-
+$TLS_passfail = "Pass / Fail";
+$TLS_testnotes = "Test Notes";
 
 
 // lib/functions/testcase.class.php
@@ -1496,6 +1497,7 @@ $TLS_opt_show_doc_header = "Show Document Header";
 $TLS_opt_show_tc_body = "Show Test Case Body";
 $TLS_opt_show_tc_summary = "Show Test Case Summary";
 $TLS_opt_show_toc = "Show Table of Contents";
+$TLS_opt_show_passfail = "Show Pass/Fail and Notes";
 $TLS_title_tc_print_navigator = "Navigator - Print Test Specification";
 $TLS_title_tp_print_navigator = "Navigator - Print Test Plan ";
 

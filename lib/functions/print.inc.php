@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: print.inc.php,v $
- * @version $Revision: 1.26 $
- * @modified $Date: 2007/04/28 17:47:48 $ by $Author: schlundus $
+ * @version $Revision: 1.27 $
+ * @modified $Date: 2007/05/05 18:11:44 $ by $Author: schlundus $
  *
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
@@ -158,7 +158,7 @@ function renderTestCaseForPrinting(&$db,&$printingOptions,&$node,$level)
 		$code .= "<a name='tc" . $id . "'></a>";
 	}
  	$code .= "<div class=\"tc\"><table class=\"tc\" width=\"90%\">";
- 	$code .= "<tr><th>".lang_get('test_case')." " . $id . ": " . 
+ 	$code .= "<tr><th colspan=\"2\">".lang_get('test_case')." " . $id . ": " . 
  	            $name . "</th></tr>";
 	
 	if ($printingOptions['body'] || $printingOptions['summary'])
@@ -170,16 +170,21 @@ function renderTestCaseForPrinting(&$db,&$printingOptions,&$node,$level)
 		{
 			$tcInfo = $tcInfo[0];
 			if ($printingOptions['summary'])
-				$code .= "<tr><td><u>".lang_get('summary')."</u>: " .  $tcInfo['summary'] . "</td></tr>";
+				$code .= "<tr><td colspan=\"2\"><u>".lang_get('summary')."</u>: " .  $tcInfo['summary'] . "</td></tr>";
 			if ($printingOptions['body']) 
 			{
-			   	$code .= "<tr><td><u>".lang_get('steps')."</u>:<br />" .  $tcInfo['steps'] . "</td></tr>";
-			   	$code .= "<tr><td><u>".lang_get('expected_results')."</u>:<br />" .  $tcInfo['expected_results'] . "</td></tr>";
+			   	$code .= "<tr><td colspan=\"2\"><u>".lang_get('steps')."</u>:<br />" .  $tcInfo['steps'] . "</td></tr>";
+			   	$code .= "<tr><td colspan=\"2\"><u>".lang_get('expected_results')."</u>:<br />" .  $tcInfo['expected_results'] . "</td></tr>";
+			}
+			if ($printingOptions['passfail'])
+			{
+				$code .= "<tr><td width=\"20%\" valign=\"top\"><u>".lang_get('passfail')."</u>:</td><td><u>".
+				lang_get('testnotes')."</u>:<br /><br /><br /></td></tr>";
 			}
 		}
 		unset($tc);
 	}
-  	$code .= "</table></div>";
+	$code .= "</table></div>";
 	
 	return $code;
 }

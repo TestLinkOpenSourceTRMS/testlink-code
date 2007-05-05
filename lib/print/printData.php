@@ -2,7 +2,7 @@
 /**
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/ 
 *
-*  @version 	$Id: printData.php,v 1.29 2007/03/14 20:00:07 schlundus Exp $
+*  @version 	$Id: printData.php,v 1.30 2007/05/05 18:11:44 schlundus Exp $
 *  @author 	Martin Havlat
 * 
 * Shows the data that will be printed.
@@ -30,6 +30,7 @@ $printingOptions = array
 						  'body' => 0,
 						  'summary' => 0,
 						  'header' => 0,
+						  'passfail' => 0, 
 						 );
 foreach($printingOptions as $opt => $val)
 {

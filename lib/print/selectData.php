@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* @version 	$Id: selectData.php,v 1.14 2007/01/26 21:01:24 schlundus Exp $
+* @version 	$Id: selectData.php,v 1.15 2007/05/05 18:11:44 schlundus Exp $
 * @author 	Martin Havlat
 * 
 * 	Navigator for print/export functionality. 
@@ -34,6 +34,7 @@ $arrCheckboxes = array(
 	array( 'value' => 'body', 'description' => lang_get('opt_show_tc_body'), 'checked' => 'n'),
 	array( 'value' => 'summary', 'description' => lang_get('opt_show_tc_summary'), 'checked' => 'n'),
 	array( 'value' => 'toc', 'description' => lang_get('opt_show_toc'), 'checked' => 'n'),
+	array( 'value' => 'passfail', 'description' => lang_get('opt_show_passfail'), 'checked' => 'n'),
 );
 
 //process setting for print
@@ -43,6 +44,7 @@ if(isset($_POST['setPrefs']))
   	if(isset($_POST['body'])) $arrCheckboxes[1]['checked'] = 'y';
   	if(isset($_POST['summary'])) $arrCheckboxes[2]['checked'] = 'y';
   	if(isset($_POST['toc'])) $arrCheckboxes[3]['checked'] = 'y';
+	if(isset($_POST['passfail'])) $arrCheckboxes[4]['checked'] = 'y';
 }
 
 if(isset($_POST['format']) && $_POST['format'] == 'msword') 

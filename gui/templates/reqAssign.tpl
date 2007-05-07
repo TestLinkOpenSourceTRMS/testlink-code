@@ -19,12 +19,12 @@ var please_select_a_req="{lang_get s='please_select_a_req'}";
 
 function check_action_precondition(form_id,action)
 {
- if( checkbox_count_checked(form_id) <= 0) 
- {
-    confirm(please_select_a_req);
-    return false; 
- }
- return true;  
+	if(checkbox_count_checked(form_id) <= 0) 
+	{
+		alert(please_select_a_req);
+		return false; 
+	}
+	return true;  
 }
 </script>
 {/literal}
@@ -102,7 +102,7 @@ function check_action_precondition(form_id,action)
     {if $arrUnassignedReq ne ""}
       <div class="workBack">
       <h2>{lang_get s='req_title_unassigned'}</h2>
-      <form id="reqList" method="post">
+      <form id="reqList2" method="post">
       <input type="hidden" name="idSRS" value="{$selectedReqSpec}" />
       <table class="simple">
       	<tr>
@@ -125,7 +125,7 @@ function check_action_precondition(form_id,action)
       </table>
       <div class="groupBtn">
       	<input type="submit" name="assign" value="{lang_get s='btn_assign'}"
-     		       onclick="return check_action_precondition('reqList','assign');"/>
+     		       onclick="return check_action_precondition('reqList2','assign');"/>
       </div>
       </form>
       </div>

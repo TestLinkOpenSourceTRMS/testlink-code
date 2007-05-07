@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: requirements.inc.php,v $
- * @version $Revision: 1.52 $
- * @modified $Date: 2007/05/03 20:44:26 $ by $Author: schlundus $
+ * @version $Revision: 1.53 $
+ * @modified $Date: 2007/05/07 20:03:05 $ by $Author: schlundus $
  *
  * @author Martin Havlat <havlat@users.sourceforge.net>
  * 
@@ -372,52 +372,48 @@ function getReq4Tc(&$db,$testcase_id, $srs_id = 'all')
  * rev :
  *       20070131 - franciscom - interface changes - added srs_id
  **/
-function check_req_basic_data(&$db,$title,$reqdoc_id,$srs_id,$id=null)
+function check_req_basic_data(&$db,$title,$reqdoc_id,$srs_id,$id = null)
 {
-  // 20070131 - franciscom
-  $req_cfg=config_get('req_cfg');
-  
-  $ret['status_ok']=1;
-  $ret['msg']='';
-  
+	$req_cfg = config_get('req_cfg');
+	
+	$ret['status_ok'] = 1;
+	$ret['msg'] = '';
+	
 	if (!strlen($title))
 	{
-	  $ret['status_ok']=0;
+		$ret['status_ok'] = 0;
 		$ret['msg'] = lang_get("warning_empty_req_title");
 	}
 	
 	if (!strlen($reqdoc_id))
 	{
-		$ret['status_ok']=0;
+		$ret['status_ok'] = 0;
 		$ret['msg'] .=  "<br>" . lang_get("warning_empty_reqdoc_id");
 	}
 	
 	if($ret['status_ok'])
 	{
-	  $ret['msg']='ok';
-  
-    // 20070131 - franciscom
-    if( $req_cfg->reqdoc_id->is_system_wide)
-    {
-      // req doc id MUST BE unique inside the whole DB
-      $rs=getReqByReqdocId($db,$reqdoc_id);
-    }
-    else
-    {   
-      // req doc id MUST BE unique inside an SRS
-      $rs=getReqByReqdocIdAndSRS($db,$reqdoc_id,$srs_id);
-    }
-      
-    // 20070131 - franciscom
-    //
-    if( !is_null($rs) && (is_null($id) || !isset($rs[$id])) )
-    {
-    	  $ret['msg']=lang_get("warning_duplicate_reqdoc_id");
-        $ret['status_ok']=0;  		  
-    }
-    
- } 
-	return($ret);
+		$ret['msg'] = 'ok';
+		
+		if($req_cfg->reqdoc_id->is_system_wide)
+		{
+			// req doc id MUST BE unique inside the whole DB
+			$rs = getReqByReqdocId($db,$reqdoc_id);
+		}
+		else
+		{   
+			// req doc id MUST BE unique inside an SRS
+			$rs = getReqByReqdocIdAndSRS($db,$reqdoc_id,$srs_id);
+		}
+		
+		if(!is_null($rs) && (is_null($id) || !isset($rs[$id])))
+		{
+			$ret['msg'] = lang_get("warning_duplicate_reqdoc_id");
+			$ret['status_ok'] = 0;  		  
+		}
+	} 
+	
+	return $ret;
 }
 
 /** 
@@ -441,18 +437,18 @@ function createRequirement(&$db,$reqdoc_id,$title, $scope, $srs_id, $user_id,
                            $status = TL_REQ_STATUS_VALID, $type = TL_REQ_STATUS_NOT_TESTABLE)
 {
   
-	$result['status_ok']=1;
+	$result['status_ok'] = 1;
 	$result['msg'] = 'ok';
 	
-	$db_now = $db->db_now();
-	$field_size=config_get('field_size');
+	$field_size = config_get('field_size');
 
-	$reqdoc_id=trim_and_limit($reqdoc_id,$field_size->req_docid);
-	$title=trim_and_limit($title,$field_size->req_title);
+	$reqdoc_id = trim_and_limit($reqdoc_id,$field_size->req_docid);
+	$title = trim_and_limit($title,$field_size->req_title);
 		
-	$result=check_req_basic_data($db,$title,$reqdoc_id,$srs_id);
+	$result = check_req_basic_data($db,$title,$reqdoc_id,$srs_id);
 	if($result['status_ok'])
 	{
+		$db_now = $db->db_now();
 		$sql = "INSERT INTO requirements (srs_id, req_doc_id, title, scope, status, type, author_id, creation_ts)" .
 				   " VALUES (" . $srs_id . ",'" . $db->prepare_string($reqdoc_id) .  
 				   "','" . $db->prepare_string($title) . "','" . $db->prepare_string($scope) . 
@@ -461,16 +457,12 @@ function createRequirement(&$db,$reqdoc_id,$title, $scope, $srs_id, $user_id,
 
 		if (!$db->exec_query($sql))
 		{
-		  $result['status_ok'] = 0;
+			$result['status_ok'] = 0;
 		 	$result['msg'] = lang_get('error_inserting_req');
 		} 	
 	}
-	else
-	{
-	  $result=$chk; 
-	}
-	 
-	return($result); 
+	
+	return $result; 
 }
 
 

@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsReqs.tpl,v 1.10 2007/05/05 19:54:19 schlundus Exp $
+$Id: resultsReqs.tpl,v 1.11 2007/05/07 20:03:01 schlundus Exp $
 Purpose: report REQ coverage 
 Author Martin Havlat 
 
@@ -150,7 +150,7 @@ Author Martin Havlat
 			{$arrCoverage.not_run[row].title|escape}</a></span></td>
 		<td>{assign var=tcList value=$arrCoverage.not_run[row].tcList}
 			{section name=idx loop=$tcList}
-				ID: {$tcList[idx].tcID} {$tcList[idx].title} <br/>
+				<a href="lib/testcases/archiveData.php?id={$tcList[idx].tcID|escape}&amp;edit=testcase&allow_edit=0">{$tcList[idx].tcID}</a> {$tcList[idx].title} <br/>
 			{/section} 
 		</td>
 	</tr>

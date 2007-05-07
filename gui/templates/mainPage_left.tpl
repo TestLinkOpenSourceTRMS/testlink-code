@@ -1,6 +1,6 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: mainPage_left.tpl,v 1.4 2007/03/05 18:06:58 schlundus Exp $     
+ $Id: mainPage_left.tpl,v 1.5 2007/05/07 21:00:56 schlundus Exp $     
  Purpose: smarty template - main page / site map                 
                                                                  
  rev :                                                 
@@ -41,15 +41,17 @@
 
   {* ---------------------------------------------------------------------------------------- *}
 	{*   requirements   *}
-	{if $sessionProductID && $opt_requirements == TRUE && $view_req_rights == "yes"}
+	{if $sessionProductID && $opt_requirements == TRUE}
   	<div class="module-grey">
     <div>
     <div>
     <div>
         <h3>{lang_get s='title_requirements'}</h3>
-		<img alt="arrow" class="arrow" src="{$smarty.const.TL_THEME_IMG_DIR}/arrow_org.gif" />
-   		<a href="lib/req/reqSpecList.php">{lang_get s='href_req_spec'}</a>
-		{if $opt_requirements == TRUE && $modify_req_rights == "yes"}
+        {if $view_req_rights == "yes"}
+			<img alt="arrow" class="arrow" src="{$smarty.const.TL_THEME_IMG_DIR}/arrow_org.gif" />
+	   		<a href="lib/req/reqSpecList.php">{lang_get s='href_req_spec'}</a>
+	   	{/if}
+		{if $modify_req_rights == "yes"}
 			<br />
 			<img alt="arrow" class="arrow" src="{$smarty.const.TL_THEME_IMG_DIR}/arrow_org.gif" />
        		<a href="lib/general/frmWorkArea.php?feature=assignReqs">{lang_get s='href_req_assign'}</a>

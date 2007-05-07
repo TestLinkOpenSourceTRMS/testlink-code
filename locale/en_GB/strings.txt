@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.169 $
- * @modified $Date: 2007/05/05 18:11:44 $ $Author: schlundus $
+ * @version $Revision: 1.170 $
+ * @modified $Date: 2007/05/07 20:30:00 $ $Author: schlundus $
  *
  * @author Francisco Mancardi
  *
@@ -414,8 +414,9 @@ $TLS_req_select_create_tc = "Create Test Cases";
 $TLS_req_select_delete = "Delete requirements";
 $TLS_req_title_list = "List of requirements";
 $TLS_req_total = "Total req.";
+$TLS_req_reorder = "Reorder requirements";
 $TLS_warning_delete_requirements = "Are you sure to delete the selected requirements?";
-
+$TLS_title_change_req_order = "Change requirements order";
 
 
 // gui/templates/inc_copyrightnotice.tpl

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.51 $
- * @modified $Date: 2007/03/30 20:28:24 $
+ * @version $Revision: 1.52 $
+ * @modified $Date: 2007/05/08 19:16:50 $
  *
  * @author Andreas Morsing
  * @author Fabian Woelk
@@ -266,6 +266,11 @@ $TLS_th_perc_completed = "Vollständig [%]";
 $TLS_title_your_tp_metrics = "Ihre Testplan Metriken";
 
 
+// gui/templates/newest_tcversions.tpl
+$TLS_linked_version = "Verbundene Version";
+$TLS_newest_version = "Neuste verfügbare aktive Version";
+$TLS_title_newest_tcversions = "Neuste Versionen der verbundenen Testfälle";
+
 
 // gui/templates/emailSent.tpl
 $TLS_send_test_report = "- Sende Testreport";
@@ -413,9 +418,9 @@ $TLS_req_select_create_tc = "Testfälle erstellen";
 $TLS_req_select_delete = "Anforderungen löschen";
 $TLS_req_title_list = "Liste der Anforderungen";
 $TLS_req_total = "Gesamtanzahl Anf.";
+$TLS_req_reorder = "Anforderungen umordnen";
 $TLS_warning_delete_requirements = "Sind Sie sicher, dass Sie die ausgewählte Anforderung wirklich löschen wollen?";
-
-
+$TLS_title_change_req_order = "Reihenfolge der Anforderungen ändern";
 
 // gui/templates/inc_copyrightnotice.tpl
 $TLS_gnu_gpl = "GNU GPL";
@@ -437,11 +442,13 @@ $TLS_none = "Keine";
 $TLS_req = "Anforderung";
 $TLS_req_spec_change = "Ändere die Anforderungsspezifikation nach";
 $TLS_req_title_analyse = "Analysiere die Anforderungsspezifikation ";
-$TLS_req_title_covered = "Erfüllte Anforderungen";
+$TLS_req_title_covered = "Anforderungen abgedeckt durch Testfälle";
+$TLS_req_title_in_tl = "Anforderungen innerhalb TestLink";
 $TLS_req_title_nottestable = "Nicht testbare Anforderungen";
-$TLS_req_title_uncovered = "Unerfüllte Anforderungen";
+$TLS_req_title_uncovered = "Nicht durch Testfälle abdeckte Anforderungen";
 $TLS_req_total_count = "Gesamtanzahl der Anforderungen";
 $TLS_testcases = "Testfälle";
+$TLS_req_title_not_in_tl = "Nicht in TestLink vorhandene Anforderungen";
 
 
 
@@ -744,12 +751,14 @@ $TLS_title_specification = "Definition";
 
 
 // gui/templates/planAddTC_m1.tpl
+$TLS_add_tc = "Hinzufügen";
 $TLS_add_remove_selected_tc_hint = "Operation will be applied to ALL Testsuites";
 $TLS_btn_add_remove_selected_tc = "Hinzufügen / Entfernen der ausgewählte Testfälle";
 $TLS_btn_add_selected_tc = "Ausgewählte TestCase(s) hinzufügen";
 $TLS_btn_check = "Markieren";
 $TLS_btn_uncheck = "Markierung aufheben";
 $TLS_check_uncheck_tc = "Testfälle der Kategorie.";
+$TLS_check_uncheck_all_checkboxes="Alle markieren / demarkieren";
 $TLS_has_been_executed = "wurde ausgeführt";
 $TLS_inactive_testcase = "inaktiv";
 $TLS_no_testcase_available = "Kein Testfall verfügbar";
@@ -828,8 +837,8 @@ $TLS_color = "Farbe";
 $TLS_enable_requirements = "Anforderungen einschalten";
 $TLS_info_failed_loc_prod = "Das Projekt konnte nicht gefunden werden!";
 $TLS_notes = "Verwandte Notizen";
+// Warning!!! - if JS string you must use \\n to get \n                                       
 $TLS_popup_product_delete = "Achtung! Diese Aktion löscht unwiderrufbar alle Testprojekt-relevanten Date (inklusive Testresultat, Pläne, etc.). Sie können das Testprojekt auch deaktivieren anstatt ziu löschen!.\\n Empfehlung: Führen Sie ein Backup ihrer Datenbank durch.\\nSind Sie sicher, dass Sie das Testprojekt löschen wollen?";
-
 
 
 
@@ -1189,6 +1198,7 @@ $TLS_filter_tp_by_product = "Test Pläne nach Testprojekt filtern";
 $TLS_href_add_test_case = "Testfälle zuordnen";
 $TLS_href_build_new = "Builds verwalten";
 $TLS_href_execute_test = "Test ausführen";
+$TLS_href_newest_tcversions = "Zeige neuste Versionen der Testfälle";
 $TLS_href_plan_assign_priority = "Prioritäten zuweisen";
 $TLS_href_plan_define_priority = "Prioritäten definieren";
 $TLS_href_plan_management = "Test Pläne verwalten";
@@ -1203,7 +1213,6 @@ $TLS_testplan_role = "TestPlan Rollen";
 $TLS_title_test_case_suite = "Testplan Inhalt";
 $TLS_title_test_execution = "Test Ausführung";
 $TLS_title_test_plan_mgmt = "Testplan Verwaltung";
-
 
 
 // lib/execute/bug_add.php

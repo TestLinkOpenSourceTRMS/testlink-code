@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: const.inc.php,v $
  *
- * @version $Revision: 1.24 $
- * @modified $Date: 2007/05/04 13:43:29 $ by $Author: franciscom $
+ * @version $Revision: 1.25 $
+ * @modified $Date: 2007/05/09 06:56:30 $ by $Author: franciscom $
  * @author Martin Havlát
  *
  * SCOPE:
@@ -237,13 +237,8 @@ define("TL_DEFAULT_ROLEID",TL_ROLES_GUEST);
 // Example: default role will be TESTER, see roles table
 // define("TL_DEFAULT_ROLEID",7);
 
-// used on User Interface whiel showing roles
-define("TL_ROLES_OPEN_CHAR","[");
-define("TL_ROLES_CLOSE_CHAR","]");
-
 // used to mark up inactive objects (test projects, etc)
 define("TL_INACTIVE_MARKUP","* ");
-
 
 // used on user management page to give different colour 
 // to different roles.

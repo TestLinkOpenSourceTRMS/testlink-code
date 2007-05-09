@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: int_bugtracking.php,v $
  *
- * @version $Revision: 1.13 $
- * @modified $Date: 2007/03/05 07:08:33 $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2007/05/09 06:56:49 $
  *
  * @author Andreas Morsing
  *
@@ -18,6 +18,7 @@
  * class . for an example look at the bugzilla.cfg.php and mantis.cfg.php
  *
  *
+ * 20070505 - franciscom - TL_INTERFACE_BUGS -> $g_interface_bugs
  * 20070304 - franciscom
  * 1. added new method checkBugID_existence()
  *
@@ -26,7 +27,7 @@
 //Add new bugtracking interfaces here
 //Please use only lowercase file names!
 //This holds the configuration file names for the bugtracking interfaces
-//located in the cfg diectory
+//located in the cfg directory
 require_once(TL_ABS_PATH. "/lib/functions/database.class.php");
 
 $configFiles = array(
@@ -303,10 +304,13 @@ class bugtrackingInterface
 //DONT TOUCH ANYTHING BELOW THIS NOTICE!				
 $g_bugInterfaceOn = false;
 $g_bugInterface = null;
-if (isset($configFiles[TL_INTERFACE_BUGS]))
+
+global $g_interface_bugs;
+
+if (isset($configFiles[$g_interface_bugs]))
 {
-	require_once(TL_ABS_PATH . 'cfg/'. $configFiles[TL_INTERFACE_BUGS]);
-	require_once(TL_ABS_PATH . 'lib/bugtracking/'. $interfaceFiles[TL_INTERFACE_BUGS]);
+	require_once(TL_ABS_PATH . 'cfg/'. $configFiles[$g_interface_bugs]);
+	require_once(TL_ABS_PATH . 'lib/bugtracking/'. $interfaceFiles[$g_interface_bugs]);
 	$g_bugInterfaceName = BUG_INTERFACE_CLASSNAME;
 	$g_bugInterface = new $g_bugInterfaceName();
 	if ($g_bugInterface)

@@ -4,14 +4,15 @@
  *
  * Filename $RCSfile: tlsmarty.inc.php,v $
  *
- * @version $Revision: 1.22 $
- * @modified $Date: 2007/03/04 00:03:19 $ $Author: schlundus $
+ * @version $Revision: 1.23 $
+ * @modified $Date: 2007/05/09 06:56:49 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
  * TLSmarty class implementation used in all templates
  *
  * 
+ * 20070218 - franciscom - g_interface_bugs
  * 20070218 - franciscom - gsmarty_spec_cfg
  * 20070214 - franciscom - gsmarty_tc_status_verbose_labels
  * 20061223 - franciscom - added g_gui
@@ -33,6 +34,7 @@ class TLSmarty extends Smarty
 		global $g_locales;
 		global $g_gui;
 		global $g_spec_cfg;
+		global $g_interface_bugs;
 
 
 	  $this->Smarty();
@@ -52,6 +54,7 @@ class TLSmarty extends Smarty
 		$my_locale = isset($_SESSION['locale']) ? $_SESSION['locale'] : TL_DEFAULT_LOCALE;
 		$basehref = isset($_SESSION['basehref']) ? $_SESSION['basehref'] : TL_BASE_HREF;
 
+    
 		$this->assign('basehref', $basehref);
 		$this->assign('helphref', $basehref . 'gui/help/' . $my_locale . "/");
 		$this->assign('css', $basehref . TL_TESTLINK_CSS);
@@ -64,6 +67,9 @@ class TLSmarty extends Smarty
 
 
 		$this->assign('g_bugInterfaceOn', $g_bugInterfaceOn);
+		$this->assign('gsmarty_interface_bugs',$g_interface_bugs);
+
+		
 		$this->assign('gsmarty_attachments',$g_attachments);
 		
 		$this->assign('gsmarty_gui',$g_gui);
@@ -104,9 +110,9 @@ class TLSmarty extends Smarty
 
 
     // Registered functions
-	$this->register_function("lang_get", "lang_get_smarty");
-	$this->register_function("localize_date", "localize_date_smarty");
-	$this->register_function("localize_timestamp", "localize_timestamp_smarty");
+	  $this->register_function("lang_get", "lang_get_smarty");
+	  $this->register_function("localize_date", "localize_date_smarty");
+	  $this->register_function("localize_timestamp", "localize_timestamp_smarty");
     $this->register_function("localize_tc_status","translate_tc_status_smarty");
     $this->register_function("format_username","format_username_smarty");
 		

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: mainPage.php,v $
  *
- * @version $Revision: 1.26 $ $Author: franciscom $
- * @modified $Date: 2007/02/27 15:35:55 $
+ * @version $Revision: 1.27 $ $Author: franciscom $
+ * @modified $Date: 2007/05/09 06:56:49 $
  *
  * @author Martin Havlat
  * 
@@ -17,7 +17,7 @@
  * There is also some javascript that handles the form information.
  *
  * rev :
- *       20070227 - franciscom - minor refactoring
+ *       20070509 - franciscom - improving test plan availabilty checking
  *
 **/
 require_once('../../config.inc.php');
@@ -28,6 +28,8 @@ require_once('users.inc.php');
 
 testlinkInitPage($db,TRUE);
 $smarty = new TLSmarty;
+
+$tproject_mgr = New testproject($db);
 
 $testprojectID = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
 
@@ -86,22 +88,34 @@ $_SESSION['filter_tp_by_product'] = $filter_tp_by_product;
 $smarty->assign('filter_tp_by_product',$filter_tp_by_product);
 
 // ----- Test Plan Section ----------------------------------  
+$num_active_tplans =0;
+$active_tplans = $tproject_mgr->get_all_testplans($testprojectID,0,ACTIVE);
+if( !is_null($active_tplans) )
+{
+  $num_active_tplans = count($active_tplans);
+}
+
+
 // get Test Plans available for the user 
 $arrPlans = getAccessibleTestPlans($db,$testprojectID,$filter_tp_by_product);
 $testPlanID = isset($_SESSION['testPlanId']) ? intval($_SESSION['testPlanId']) : 0;
 
 $roles = getAllRoles($db);
 $testPlanRole = null;
+$role_separator=config_get('role_separator');
+
 if ($testPlanID && isset($_SESSION['testPlanRoles'][$testPlanID]))
 {
 	$idx = $_SESSION['testPlanRoles'][$testPlanID]['role_id'];
-	$testPlanRole = ROLE_SEP_START . $roles[$idx] . ROLE_SEP_END;
+	$testPlanRole = $role_separator->open . $roles[$idx] . $role_separator->close;
 }
 $securityNotes = getSecurityNotes($db);
 
 $smarty->assign('securityNotes',$securityNotes);
 $smarty->assign('arrPlans', $arrPlans);
 $smarty->assign('countPlans', count($arrPlans));
+$smarty->assign('num_active_tplans', $num_active_tplans);
+
 
 //can the user test
 $smarty->assign('testplan_execute', has_rights($db,"testplan_execute"));

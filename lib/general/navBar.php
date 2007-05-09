@@ -4,15 +4,23 @@
  *
  * Filename $RCSfile: navBar.php,v $
  *
- * @version $Revision: 1.23 $
- * @modified $Date: 2007/03/05 18:45:31 $ $Author: franciscom $
+ * @version $Revision: 1.24 $
+ * @modified $Date: 2007/05/09 06:56:49 $ $Author: franciscom $
  *
  * This file manages the navigation bar. 
+ *
+ * rev :
+ *       20070505 - franciscom - use of role_separator configuration
+ *
 **/
 require('../../config.inc.php');
 require_once("common.php");
 require_once("plan.core.inc.php");
+require_once("testproject.class.php");
+
 testlinkInitPage($db,true);
+
+$role_separator=config_get('role_separator');
 
 $arr_tprojects = getAccessibleProducts($db);
 $curr_tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
@@ -24,8 +32,11 @@ if ($curr_tproject_id)
 $roles = getAllRoles($db);
 $testprojectRole = null;
 if ($curr_tproject_id && isset($_SESSION['testprojectRoles'][$curr_tproject_id]))
-	$testprojectRole = TL_ROLES_OPEN_CHAR . 
-	                   $roles[$_SESSION['testprojectRoles'][$curr_tproject_id]['role_id']] . TL_ROLES_CLOSE_CHAR;
+{
+	$testprojectRole = $role_separator->open . 
+	                   $roles[$_SESSION['testprojectRoles'][$curr_tproject_id]['role_id']] . 
+	                   $role_separator->close;
+}	                   
 $roleName = $roles[$_SESSION['roleId']];
 
 $countPlans = getNumberOfAccessibleTestPlans($db,$curr_tproject_id, $_SESSION['filter_tp_by_product'],null);
@@ -46,16 +57,20 @@ if (isset($_GET['testproject']))
 $logo_img = '';
 if (defined('LOGO_NAVBAR') )
 	$logo_img = LOGO_NAVBAR;
+
 	
 $smarty->assign('logo', $logo_img);
 $smarty->assign('view_tc_rights',has_rights($db,"mgt_view_tc"));
-$smarty->assign('user', $_SESSION['userdisplayname'] . ' '.lang_get('Role').'::[' . $roleName . ']');
+$smarty->assign('user', $_SESSION['userdisplayname'] . ' '. 
+                        lang_get('Role'). " :: {$role_separator->open} $roleName {$role_separator->close}");
 $smarty->assign('testprojectRole',$testprojectRole);
 $smarty->assign('rightViewSpec', has_rights($db,"mgt_view_tc"));
 $smarty->assign('rightExecute', has_rights($db,"testplan_execute"));
 $smarty->assign('rightMetrics', has_rights($db,"testplan_metrics"));
 $smarty->assign('rightUserAdmin', has_rights($db,"mgt_users"));
+
 $smarty->assign('countPlans', $countPlans);
+
 $smarty->assign('arrayProducts', $arr_tprojects);
 $smarty->assign('currentProduct', $curr_tproject_id);
 $smarty->assign('updateMainPage', $updateMainPage); 

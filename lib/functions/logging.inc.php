@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: logging.inc.php,v $
  *
- * @version $Revision: 1.10 $
- * @modified $Date: 2007/01/22 08:31:13 $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2007/05/09 06:56:49 $
  *
  * @author Martin Havlat
  *
@@ -106,9 +106,10 @@ function tLog ($message, $level = 'DEBUG')
  **/
 function tlGetLogFileName()
 {
+  global $g_log_path; 
 	$uID = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
 		
-	return TL_LOG_PATH.DIRECTORY_SEPARATOR.'userlog'.$uID.".log";
+	return $g_log_path . DIRECTORY_SEPARATOR . 'userlog' . $uID . ".log";
 }
 /**
 * You can empty the log at any time with:

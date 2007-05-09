@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.32 $
- * @modified $Date: 2007/02/22 08:22:39 $  $Author: franciscom $
+ * @version $Revision: 1.33 $
+ * @modified $Date: 2007/05/09 06:56:49 $  $Author: franciscom $
  * @author franciscom
  *
  * 20070219 - franciscom - fixed bug on get_first_level_test_suites()
@@ -707,8 +707,23 @@ function get_keywords_tcases($testproject_id, $keyword_id=0)
 } //end function
 
 
-// 
-// 20060603 - franciscom
+/*
+  function: get_all_testplans
+
+  args : $testproject_id
+  
+         [$get_tp_without_tproject_id]
+         used just for backward compatibility (TL 1.5)
+         default: 0 -> 1.6 and up behaviour
+  
+         [$plan_status]
+         default: null -> no filter on test plan status
+                  1 -> active test plans
+                  0 -> inactive test plans
+         
+  returns: 
+
+*/
 function get_all_testplans($testproject_id,$get_tp_without_tproject_id=0,$plan_status=null)
 {
 	$sql = " SELECT nodes_hierarchy.id, nodes_hierarchy.name, 

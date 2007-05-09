@@ -1,14 +1,18 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: mainPage_right.tpl,v 1.4 2007/05/02 07:27:12 franciscom Exp $     
+ $Id: mainPage_right.tpl,v 1.5 2007/05/09 06:56:39 franciscom Exp $     
  Purpose: smarty template - main page / site map                 
                                                                  
- rev :                                                 
+ rev :
+       20070508 - franciscom - milestones re-enabled                                                 
+                               improving test plan messaging 
 *}
 
 {* Right Column                             *}
 <div class="vertical_menu" style="float: right">
 	{*** Begin Test Project section ***}
+	
+	{if $num_active_tplans > 0}
 	<div class="testproject_title">
  {lang_get s='help' var='common_prefix'}
  {lang_get s='test_plan' var="xx_alt"}
@@ -16,8 +20,7 @@
  {include file="inc_help.tpl" help="testPlan" locale=$locale 
           alt="$text_hint" title="$text_hint"  style="float: right;vertical-align: top;"}
 
-
-
+    
  	  <form name="testplanForm" action="lib/general/mainPage.php">
       {if $show_filter_tp_by_product }
       	<input type="hidden" name="filter_tp_by_product_hidden" value="0" /> 
@@ -28,11 +31,11 @@
                onclick="this.form.submit();" />
       
 			  {lang_get s='filter_tp_by_product'}
-			  <br /><br />	
+			  <br />	
 		  {/if}  	                     	 
         
-		{lang_get s='title_test_plan'}
     {if $countPlans > 0}
+		{lang_get s='title_test_plan'}
 				<select name="testplan" onchange="this.form.submit();" style="width:100%;">
 				{section name=tPlan loop=$arrPlans}
 					<option value="{$arrPlans[tPlan].id}" 
@@ -46,16 +49,19 @@
 					<br />{lang_get s='testplan_role'} {$testPlanRole|escape}
 				{/if}
 		{else}
-			{lang_get s='msg_no_rights_for_tp'}
+      {if $num_active_tplans > 0}
+			  {lang_get s='msg_no_rights_for_tp'}
+			{/if}  
 		{/if}
 	 </form>
 	</div>
+  {/if}
+	<br />
   {* ------------------------------------------------------------------------------------------ *}
   
   
 	{* ------------------------------------------------------------------------------------------ *}
   {if $countPlans > 0}
-    <p>
   	<div class="module-grey">
     <div>
     <div>
@@ -136,16 +142,6 @@
 		<img alt="arrow" class="arrow" src="{$smarty.const.TL_THEME_IMG_DIR}/arrow_org.gif" />
    		<a href="lib/plan/planView.php">{lang_get s='href_plan_management'}</a>
 	{/if}
-		<!-- KL 20070222 - Milestones and Priority are currently not supported in 1.7
-		{if $countPlans > 0 and $testplan_planning == "yes"}
-	        <br />
-	    	<img alt="arrow" class="arrow" src="{$smarty.const.TL_THEME_IMG_DIR}/arrow_org.gif" />
-	       	<a href="lib/plan/planMilestones.php">{lang_get s='href_plan_mstones'}</a>
-			<br />
-			<img alt="arrow" class="arrow" src="{$smarty.const.TL_THEME_IMG_DIR}/arrow_org.gif" />
-	       	<a href="lib/plan/planPriority.php">{lang_get s='href_plan_define_priority'}</a>
-		{/if}
-	   	-->
 	{if $tp_user_role_assignment == "yes" && $countPlans > 0}
 			<br />
 			<img alt="arrow" class="arrow" src="{$smarty.const.TL_THEME_IMG_DIR}/arrow_org.gif" />
@@ -156,6 +152,18 @@
 		<img alt="arrow" class="arrow" src="{$smarty.const.TL_THEME_IMG_DIR}/arrow_org.gif" />
        	<a href="lib/plan/buildView.php">{lang_get s='href_build_new'}</a>
     {/if} {* testplan_create_build *}
+		{if $countPlans > 0 and $testplan_planning == "yes"}
+	        <br />
+	    	<img alt="arrow" class="arrow" src="{$smarty.const.TL_THEME_IMG_DIR}/arrow_org.gif" />
+	       	<a href="lib/plan/planMilestones.php">{lang_get s='href_plan_mstones'}</a>
+			<br />
+ 		<!-- KL 20070222 - Priority are currently not supported in 1.7
+			<img alt="arrow" class="arrow" src="{$smarty.const.TL_THEME_IMG_DIR}/arrow_org.gif" />
+	       	<a href="lib/plan/planPriority.php">{lang_get s='href_plan_define_priority'}</a>
+	   	-->
+		{/if}
+    
+    
 	  </div>
     </div>
     </div>

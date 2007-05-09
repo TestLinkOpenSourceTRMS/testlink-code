@@ -5,15 +5,24 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.109 $
- * @modified $Date: 2007/05/02 07:23:26 $ by $Author: franciscom $
+ * @version $Revision: 1.110 $
+ * @modified $Date: 2007/05/09 06:55:27 $ by $Author: franciscom $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink 
- * are defined within this file they should be changed for your environment
+ * are defined within this file.
+ * To adapt it to your environment you can made changes here (not recomended)
+ * or create custom_config.inc.php and reassign there the configuration
+ * variables you want change.
  *-----------------------------------------------------------------------------
  *
  * Revisions:
+ *           20070505 - franciscom - following mantis bug tracking style, if file
+ *                                   custom_config.inc.php exists, il will be included
+ *                                   allowing users to customize TL configurations
+ *                                   managed using global variables, without need
+ *                                   of changing this file.
+ *                                   
  *           20070429 - franciscom - added contribution by Seweryn Plywaczyk
  *                                   text area custom field
  *
@@ -28,36 +37,32 @@
 /** [INITIALIZATION] - DO NOT CHANGE THE SECTION */
 /** The root dir for the testlink installation with trailing slash */
 define('TL_ABS_PATH', dirname(__FILE__) . DIRECTORY_SEPARATOR);
-
 define('DS', DIRECTORY_SEPARATOR);
 
-/** set the delimeter properly for the include_path */
-define('DELIM', (PHP_OS == "WIN32" || PHP_OS == "WINNT") ? ';' : ':');
-
 /** Dir for temporary files and compiled templates */
-define('TL_TEMP_PATH', TL_ABS_PATH . 'gui'.DS.'templates_c'.DS);
-
+define('TL_TEMP_PATH', TL_ABS_PATH . 'gui' . DS . 'templates_c' . DS);
 
 /** Include constants */
-require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'cfg' . DIRECTORY_SEPARATOR.'const.inc.php');
+require_once(dirname(__FILE__) . DS . 'cfg' . DS . 'const.inc.php');
 
 /** Setting up the global include path for testlink */
-ini_set('include_path',ini_get('include_path') . ";" . '.' . 
-                       DELIM . TL_ABS_PATH . 'lib' . DS . 'functions' . DS . DELIM);
+ini_set('include_path',ini_get('include_path') . PATH_SEPARATOR . 
+        '.' . PATH_SEPARATOR . TL_ABS_PATH . 'lib' . DS . 'functions' . DS);
 
 /** Include database consts (the file is generated automatically by TL installer) */ 
 require_once('config_db.inc.php');
+
+/** Functions for check request status */
+require_once('configCheck.php');
+
 
 /** load the php4 to php5 domxml wrapper if the php5 is used and the domxml extension is not loaded **/
 if (version_compare(PHP_VERSION,'5','>=') && !extension_loaded("domxml"))
 	require_once(dirname(__FILE__) . '/third_party/domxml-php4-to-php5.php');
 
 
-
-
 // ----------------------------------------------------------------------------
 /** [LOCALIZATION] */
-
 define('TL_LOCALE_PATH',TL_ABS_PATH . 'locale/');
 define('TL_HELP_RPATH','gui/help/');
 define('TL_INSTRUCTIONS_RPATH','gui/help/');
@@ -67,26 +72,8 @@ define('TL_INSTRUCTIONS_RPATH','gui/help/');
 // This must be one of $g_locales (see cfg/const.inc.php).
 // An attempt will be done to stablish the default locale 
 // automatically using $_SERVER['HTTP_ACCEPT_LANGUAGE']
+$g_default_language = 'en_GB'; 
 
-$language = 'en_GB'; // default
-
-$serverLanguage = false;
-// check for !== false because getenv() returns false on error
-if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE']))
-	$serverLanguage = getenv($_SERVER['HTTP_ACCEPT_LANGUAGE']);
-	
-if(false !== $serverLanguage)
-{
-	if (array_key_exists($serverLanguage,$g_locales))
-		$language = $serverLanguage;
-}
-define ('TL_DEFAULT_LOCALE', $language);
-
-/** include support for localization */
-require_once("lang_api.php");
-
-/** Functions for check request status */
-require_once('configCheck.php');
 
 /** root of testlink directory location seen through the web server */
 /*  20070106 - franciscom - this statement it's not 100% right      
@@ -121,24 +108,17 @@ define('DB_SUPPORTS_UTF8', TRUE);
 // ISO-8859-1 is there for backward compatability
 $g_defaultCharset =  DB_SUPPORTS_UTF8  ? 'UTF-8' : 'ISO-8859-1';
 define('TL_TPL_CHARSET', $g_defaultCharset);
-define('TL_XMLEXPORT_HEADER', "<?xml version=\"1.0\" encoding=\"".TL_TPL_CHARSET."\"?>\n");
+define('TL_XMLEXPORT_HEADER', "<?xml version=\"1.0\" encoding=\"" . TL_TPL_CHARSET . "\"?>\n");
 
 
 
 // ----------------------------------------------------------------------------
 /** [LOGGING] */
-  
-/** @see logging.inc.php for more 
- * change path for testlink logs. For example "/tmp" instead of TL_TEMP_PATH */
-define('TL_LOG_PATH', TL_TEMP_PATH );
+/** @see logging.inc.php for more information */
+$g_log_path=TL_TEMP_PATH;
 
 /** Default level of logging (NONE, ERROR, INFO, DEBUG, EXTENDED) */
-// added check to avoid notice message in the migration pages
-if(!defined('TL_LOG_LEVEL_DEFAULT'))
-{
-	define('TL_LOG_LEVEL_DEFAULT', 'NONE');
-}
-
+$g_log_level='NONE';
 
 // ----------------------------------------------------------------------------
 /** [Bug Tracking systems] */
@@ -152,9 +132,7 @@ if(!defined('TL_LOG_LEVEL_DEFAULT'))
 * JIRA      : edit configuration in TL_ABS_PATH/cfg/jira.cfg.php
 * TRACKPLUS : edit configuration in TL_ABS_PATH/cfg/trackplus.cfg.php
 */
-define('TL_INTERFACE_BUGS', 'NO');
-
-
+$g_interface_bugs='NO';
 
 // ----------------------------------------------------------------------------
 /** [authentication] */                 
@@ -199,17 +177,10 @@ define('TL_IMPORT_ROW_MAX', '10000'); // in chars
 define('TL_FRMWORKAREA_LEFT_FRAME_WIDTH', "30%"); 
 
 /** CSS themes - modify if you create own*/
-//define('TL_THEME_CSS_DIR','gui/themes/theme_m0/css/');
-//
 define('TL_THEME_CSS_DIR','gui/themes/theme_m1/css/');
-
 define('TL_TESTLINK_CSS',TL_THEME_CSS_DIR . 'testlink.css');
 define('TL_LOGIN_CSS', TL_TESTLINK_CSS);
-
 define('TL_PRINT_CSS',TL_THEME_CSS_DIR . 'tl_print.css');
-
-
-//define('TL_JOMLA_1_CSS', '');
 define('TL_JOMLA_1_CSS', TL_THEME_CSS_DIR . 'jos_template_css.css');
 
 // needed for drap and drop feature
@@ -219,18 +190,16 @@ define('TL_DRAG_DROP_FOLDER_CSS', TL_DRAG_DROP_DIR . 'css/drag-drop-folder-tree.
 define('TL_DRAG_DROP_CONTEXT_MENU_CSS', TL_DRAG_DROP_DIR . 'css/context-menu.css');
 
 
-
 // path to IMAGE directory - DO NOT ADD FINAL /
-//define('TL_THEME_IMG_DIR','gui/themes/theme_m0/images');
 define('TL_THEME_IMG_DIR','gui/themes/theme_m1/images');
 
-// logo for login page, if not defined nothing happens
-define('LOGO_LOGIN_PAGE',
-       '<img alt="TestLink" title="TestLink" src="' . TL_THEME_IMG_DIR . '/company_logo.png" />');
+// logo for login page
+$g_logo_login_page='<img alt="TestLink" title="TestLink" src="' . 
+                    TL_THEME_IMG_DIR . '/company_logo.png" />';
 
 // logo for navbar page
-define('LOGO_NAVBAR',
-       '<img alt="TestLink" title="TestLink" src="' . TL_THEME_IMG_DIR . '/company_logo.png" />');
+$g_logo_navbar= '<img alt="TestLink" title="TestLink" src="' . 
+                 TL_THEME_IMG_DIR . '/company_logo.png" />';
 
 // use when componing an title using several strings
 define('TITLE_SEP',' : ');
@@ -251,8 +220,6 @@ define('TL_TESTPROJECT_COLORING','none');
  * refer to fckeditor configuration file 
  **/
 $g_fckeditor_toolbar = "TL_Medium_2";
-
-
 
 /* 
 TRUE -> user can enable/disable test plan filter by 
@@ -278,8 +245,8 @@ $g_show_realname = FALSE;
 $g_username_format = '%first% %last% [%login%]';
 
 /** characters used to surround the role description in the user interface */
-define('ROLE_SEP_START','[');
-define('ROLE_SEP_END',']');
+$g_role_separator->open='[';
+$g_role_separator->close=']';
 
 /** true => icon edit will be added into <a href> as indication an edit features */
 $g_gui->show_icon_edit=false;
@@ -382,17 +349,6 @@ $g_attachments->access_icon='<img src="' . TL_THEME_IMG_DIR . '/new_f2_16.png" s
 $g_attachments->access_string="[*]";
 
 
-// used to disable the attachment feature if there are problems with repository path
-$g_attachments->disabled_msg = "";
-if($g_repositoryType == TL_REPOSITORY_TYPE_FS)
-{
-  $ret = checkForRepositoryDir($g_repositoryPath);
-  if(!$ret['status_ok'])
-  {
-	  $g_attachments->enabled = FALSE;
-	  $g_attachments->disabled_msg = $ret['msg'];
-  }
-}
 
 
 // ----------------------------------------------------------------------------
@@ -579,8 +535,6 @@ $g_exec_cfg->att_model = $att_model_m2;   //defined in const.inc.php
 $g_exec_cfg->can_delete_execution=0;
 
 
-
-
 /** [Test case specification] */
 
 // 'horizontal' ->  step and results on the same row
@@ -599,14 +553,6 @@ $g_spec_cfg->show_tsuite_filter=1;
 // 0 -> tree will not be updated, user can update it manually.
 //
 $g_spec_cfg->automatic_tree_refresh=1;
-if( $g_spec_cfg->automatic_tree_refresh)
-{
-  define('REFRESH_SPEC_TREE','yes');
-}
-else
-{
-  define('REFRESH_SPEC_TREE','no');
-}
 
 //
 // [LOGIN]
@@ -616,16 +562,64 @@ else
 // FALSE => disallow
 //
 $g_user_self_signup = TRUE; 
-
-
 // ----- End of Config ------------------------------------------------
-/** Include important libraries */
+
+// --------------------------------------------------------------------
+$custom_config_file = TL_ABS_PATH . 'custom_config.inc.php';
+clearstatcache();
+if ( file_exists( $custom_config_file ) ) 
+{
+  require_once( $custom_config_file ); 
+}
+
+define('REFRESH_SPEC_TREE',$g_spec_cfg->automatic_tree_refresh ? 'yes' : 'no');
+
+
+// added check to avoid notice message in the migration pages
+if(!defined('TL_LOG_LEVEL_DEFAULT'))
+{
+	define('TL_LOG_LEVEL_DEFAULT', $g_log_level);
+}
+
+/** Support for localization */
+$serverLanguage = false;
+// check for !== false because getenv() returns false on error
+if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE']))
+	$serverLanguage = getenv($_SERVER['HTTP_ACCEPT_LANGUAGE']);
+	
+if(false !== $serverLanguage)
+{
+	if (array_key_exists($serverLanguage,$g_locales))
+		$g_default_language = $serverLanguage;
+}
+
+define ('TL_DEFAULT_LOCALE', $g_default_language);
+require_once("lang_api.php");
+
+// used to disable the attachment feature if there are problems with repository path
+$g_attachments->disabled_msg = "";
+if($g_repositoryType == TL_REPOSITORY_TYPE_FS)
+{
+  $ret = checkForRepositoryDir($g_repositoryPath);
+  if(!$ret['status_ok'])
+  {
+	  $g_attachments->enabled = FALSE;
+	  $g_attachments->disabled_msg = $ret['msg'];
+  }
+}
+
+// logo for login page, if not defined nothing happens
+define('LOGO_LOGIN_PAGE',$g_logo_login_page);
+
+// logo for navbar page
+define('LOGO_NAVBAR',$g_logo_navbar);
 
 /** Bug tracking include */
 $g_bugInterfaceOn = false;
 $g_bugInterface = null;
-if (TL_INTERFACE_BUGS != 'NO')
+if ($g_interface_bugs != 'NO')
   require_once(TL_ABS_PATH . 'lib/bugtracking/int_bugtracking.php');
+// --------------------------------------------------------------------
 
 
 /** Testlink Smarty class sets up the default smarty settings for testlink */

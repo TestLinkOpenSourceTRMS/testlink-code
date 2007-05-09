@@ -5,13 +5,13 @@
  *
  * Filename $RCSfile: cfields_tproject_assign.php,v $
  *
- * @version $Revision: 1.2 $
- * @modified $Date: 2007/01/06 15:16:26 $ by $Author: franciscom $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2007/05/09 06:56:06 $ by $Author: franciscom $
  *
  * 20070105 - franciscom - added reorder feature
 **/
-require_once("../../config.inc.php");
-require_once("../functions/common.php");
+require_once(dirname(__FILE__) . "/../../config.inc.php");
+require_once("common.php");
 testlinkInitPage($db);
 
 $testproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;

@@ -5,11 +5,11 @@
  *
  * Filename $RCSfile: cfields_view.php,v $
  *
- * @version $Revision: 1.3 $
- * @modified $Date: 2007/01/29 08:13:32 $ by $Author: franciscom $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2007/05/09 06:56:06 $ by $Author: franciscom $
 **/
-require_once("../../config.inc.php");
-require_once("../functions/common.php");
+require_once(dirname(__FILE__) . "/../../config.inc.php");
+require_once("common.php");
 testlinkInitPage($db);
 
 $sqlResult = null;

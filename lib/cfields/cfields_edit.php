@@ -5,16 +5,16 @@
  *
  * Filename $RCSfile: cfields_edit.php,v $
  *
- * @version $Revision: 1.4 $
- * @modified $Date: 2007/01/29 08:13:32 $ by $Author: franciscom $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2007/05/09 06:56:06 $ by $Author: franciscom $
  *
  *
  * rev :
  *      to avoid potential problems with HTML dom:  action -> do_action
  *           
 **/
-require_once("../../config.inc.php");
-require_once("../functions/common.php");
+require_once(dirname(__FILE__) . "/../../config.inc.php");
+require_once("common.php");
 testlinkInitPage($db);
 
 $do_action = isset($_REQUEST['do_action']) ? $_REQUEST['do_action']:null;

@@ -1,13 +1,16 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/ 
 // This script is distributed under the GNU General Public License 2 or later. 
 //
-// $Id: testlink_library.js,v 1.35 2007/05/05 18:11:44 schlundus Exp $ 
+// $Id: testlink_library.js,v 1.36 2007/05/10 07:04:54 franciscom Exp $ 
 //
 // Javascript functions commonly used through the GUI
 // This library is automatically loaded with inc_header.tpl
 //
 // DO NOT ADD FUNCTIONS FOR ONE USING
 //
+// 20070509 - franciscom - changes in tree_getPrintPreferences()
+//                         to support new options (Contribution)
+// 
 // 20070220 - franciscom - changes in ET(), and tree_getPrintPreferences()
 // 20070129 - franciscom - changes in SP() 
 // 20070107 - franciscom - subtle bug deleteUser_onClick()
@@ -315,14 +318,17 @@ function confirm_and_submit(msg,form_id,field_id,field_value,action_field_id,act
   returns: 
 
   rev  :
-        20070218 - franciscom - added tcspec_refresh_on_action
-                                useful on test case specification edit NOT Printing
+         20070509 - franciscom - added 'author'
+         20070218 - franciscom - added tcspec_refresh_on_action
+                                 useful on test case specification edit NOT Printing
 */
 function tree_getPrintPreferences()
 {
 	var params = [];
-	var fields = ['header','summary','toc','body','passfail','tcspec_refresh_on_action'];
-	for (var i= 0;i < fields.length;i++)
+	var fields = ['header','summary','toc','body','passfail',
+	              'tcspec_refresh_on_action','author'];
+
+  for (var i= 0;i < fields.length;i++)
 	{
 		var v = tree_getCheckBox(fields[i]);
 		if (v)

@@ -3,12 +3,15 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: print.inc.php,v $
- * @version $Revision: 1.27 $
- * @modified $Date: 2007/05/05 18:11:44 $ by $Author: schlundus $
+ * @version $Revision: 1.28 $
+ * @modified $Date: 2007/05/10 07:06:24 $ by $Author: franciscom $
  *
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
  * Functions for support printing of documents. 
+ *
+ * 20070509 - franciscom 
+ * changes in renderTestSpecTreeForPrinting() interface
  *
  * 20070106 - franciscom
  * 1. remove of some magic numbers
@@ -88,7 +91,21 @@ function printFirstPage(&$db,$title, $prodName, $prodNotes, $userID)
 }
 
 
-function renderTestSpecTreeForPrinting(&$db,&$printingOptions,&$node,$tocPrefix,$tcCnt,$level)
+/*
+  function: renderTestSpecTreeForPrinting
+
+  args :
+  
+        [$tplan_id]
+        
+  returns: 
+  
+  rev :
+       20070509 - franciscom - added $tplan_id in order to refactor and
+                               add contribution BUGID 
+
+*/
+function renderTestSpecTreeForPrinting(&$db,&$printingOptions,&$node,$tocPrefix,$tcCnt,$level,$tplan_id=0)
 {
   $tree_mgr = new tree($db);
   $map_id_descr = array_flip($tree_mgr->get_available_node_types());
@@ -112,7 +129,7 @@ function renderTestSpecTreeForPrinting(&$db,&$printingOptions,&$node,$tocPrefix,
 				break;
 			
 			case 'testcase':
-				$code .= renderTestCaseForPrinting($db,$printingOptions,$node,$level);
+				$code .= renderTestCaseForPrinting($db,$printingOptions,$node,$level,$tplan_id);
 				break;
 		}
 	}
@@ -145,30 +162,57 @@ function renderTestSpecTreeForPrinting(&$db,&$printingOptions,&$node,$tocPrefix,
 	return $code;
 }
 
-function renderTestCaseForPrinting(&$db,&$printingOptions,&$node,$level) 
+/*
+  function: 
+
+  args :
+  
+  returns: 
+
+  rev :
+       20070509 - franciscom - added Contribution
+       
+*/
+function renderTestCaseForPrinting(&$db,&$printingOptions,&$node,$level,$tplan_id=0) 
 {
  	$id = $node['id'];
 	$name = htmlspecialchars($node['name']);
 	
 	$code = null;
+  $tc_mgr = null;
+  $tcInfo=null;
+  
+  $versionID = isset($node['tcversion_id']) ? $node['tcversion_id'] : TC_LATEST_VERSION; 
+		
+	if( $printingOptions['body'] || $printingOptions['summary'] || 
+	    $printingOptions['author'] )
+	{
+		$tc_mgr = new testcase($db);
+    $tcInfo = $tc_mgr->get_by_id($id,$versionID);
+
+	  if ($tcInfo)
+		{
+	    $tcInfo=$tcInfo[0];
+	  }
+	
+	}    
+
+	
 	if ($printingOptions['toc']) 
 	{
-	  	$printingOptions['tocCode']  .= '<p style="padding-left: '.(15*$level).'px;"><a href="#tc' . $id . '">' . 
-	  	                 $name . '</a></p>';
+	  $printingOptions['tocCode']  .= '<p style="padding-left: '.(15*$level).'px;"><a href="#tc' . $id . '">' . 
+	   	                 $name . '</a></p>';
 		$code .= "<a name='tc" . $id . "'></a>";
 	}
  	$code .= "<div class=\"tc\"><table class=\"tc\" width=\"90%\">";
  	$code .= "<tr><th colspan=\"2\">".lang_get('test_case')." " . $id . ": " . 
  	            $name . "</th></tr>";
 	
-	if ($printingOptions['body'] || $printingOptions['summary'])
+
+  if ($printingOptions['body'] || $printingOptions['summary'])
 	{
-		$tc = new testcase($db);
-		$versionID = isset($node['tcversion_id']) ? $node['tcversion_id'] : TC_LATEST_VERSION; 
-		$tcInfo = $tc->get_by_id($id,$versionID);
 		if ($tcInfo)
 		{
-			$tcInfo = $tcInfo[0];
 			if ($printingOptions['summary'])
 				$code .= "<tr><td colspan=\"2\"><u>".lang_get('summary')."</u>: " .  $tcInfo['summary'] . "</td></tr>";
 			if ($printingOptions['body']) 
@@ -182,9 +226,21 @@ function renderTestCaseForPrinting(&$db,&$printingOptions,&$node,$level)
 				lang_get('testnotes')."</u>:<br /><br /><br /></td></tr>";
 			}
 		}
-		unset($tc);
 	}
+
+  if ($printingOptions['author'])
+  {    
+     $authorName = getUserName($db, $tcInfo['author_id']);
+     $code .= '<tr><td colspan="2"><b>' . lang_get("author") . " </b>" . $authorName . "</td></tr>";
+  }
+
 	$code .= "</table></div>";
+
+  if( !is_null($tc_mgr) )
+	{
+	  unset($tc_mgr);
+	}
+	
 	
 	return $code;
 }

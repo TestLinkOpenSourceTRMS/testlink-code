@@ -2,14 +2,13 @@
 /**
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/ 
 *
-*  @version 	$Id: printData.php,v 1.30 2007/05/05 18:11:44 schlundus Exp $
+*  @version 	$Id: printData.php,v 1.31 2007/05/10 07:05:17 franciscom Exp $
 *  @author 	Martin Havlat
 * 
 * Shows the data that will be printed.
 *
-* 20070225 - franciscom - removed duplicate constant definition
-*
-* 20061112 - franciscom - prepareNode() interface changes
+* rev :
+*      20070509 - franciscom - added Contribution BUGID
 *
 */
 require('../../config.inc.php');
@@ -25,13 +24,12 @@ $tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 
 $tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : 'xxx';
 $tplan_id = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0;
 
-$printingOptions = array 
-						( 'toc' => 0,
-						  'body' => 0,
-						  'summary' => 0,
-						  'header' => 0,
-						  'passfail' => 0, 
-						 );
+// Important Notice:
+// Elements in this array must be updated if $arrCheckboxes, in selectData.php is changed.
+//
+// 20070509 - Contribution - BUGID - 
+$printingOptions = array ( 'toc' => 0,'body' => 0,'summary' => 0,'header' => 0,
+						               'passfail' => 0, 'author' => 0);
 foreach($printingOptions as $opt => $val)
 {
 	$printingOptions[$opt] = (isset($_GET[$opt]) && ($_GET[$opt] == 'y'));
@@ -47,7 +45,7 @@ $test_spec = $tree_manager->get_subtree($dataID,array('testplan'=>'exclude me'),
                                            array('testcase'=>'exclude my children'),null,null,true);
 $tree = null;
 $code = null;					
-				   
+				 
 if ($type == 'testproject')
 {
 	$tree = &$test_spec;

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: configCheck.php,v ${file_name} $
  *
- * @version $Revision: 1.11 $
- * @modified $Date: 2007/04/15 10:59:44 ${date} ${time} $ by $Author: franciscom $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2007/05/10 19:55:43 ${date} ${time} $ by $Author: schlundus $
  *
  * @author Martin Havlat
  * 
@@ -295,34 +295,36 @@ function checkForRepositoryDir($the_dir)
 */
 function check_schema_version($db)
 {
-  $last_version='1.7.0 RC 2';
-  
-  $sql = "SELECT * FROM db_version ORDER BY upgrade_ts DESC LIMIT 1";
-  $res = $db->exec_query($sql);  
+	$last_version = '1.7.0 RC 2';
+	
+	$sql = "SELECT * FROM db_version ORDER BY upgrade_ts DESC";
+	$res = $db->exec_query($sql,1);  
+	if (!$res)
+		return $msg = "Failed to get Schema version from DB";
+		
+	$myrow = $db->fetch_array($res);
+	$msg = "";
+	switch (trim($myrow['version']))
+	{
+		case '1.7.0 Alpha':
+		case '1.7.0 Beta 1':
+		case '1.7.0 Beta 2':
+		case '1.7.0 Beta 3':
+		case '1.7.0 Beta 4':
+		case '1.7.0 Beta 5':
+			$msg = "You need to upgrade your Testlink Database to {$last_version} - <br>" .
+				'<a href="SCHEMA_CHANGES" style="color: white"> click here to see the Schema changes </a><br>' .
+				'<a href="./install/index.php" style="color: white">click here access install and upgrade page </a><br>';
+			break;
 
-  $myrow = $db->fetch_array($res);
-  switch (trim($myrow['version']))
-  {
-    case '1.7.0 Alpha':
-   	case '1.7.0 Beta 1':
-   	case '1.7.0 Beta 2':
-    case '1.7.0 Beta 3':
-    case '1.7.0 Beta 4':
-    case '1.7.0 Beta 5':
-   	     $msg="You need to upgrade your Testlink Database to {$last_version} - <br>" .
-   	          '<a href="SCHEMA_CHANGES" style="color: white"> click here to see the Schema changes </a><br>' .
-   	          '<a href="./install/index.php" style="color: white">click here access install and upgrade page </a><br>';
-   	     break;
-
-    case $last_version:
-   	     $msg="";
-   	     break;
-         
-    default:
-   	     $msg="Unknown Schema version, please upgrade your Testlink Database to 1.7 Beta 3";
-   	     break;
-  }
-  return ($msg);
+		case $last_version:
+			break;
+		
+		default:
+			$msg = "Unknown Schema version, please upgrade your Testlink Database to 1.7 Beta 3";
+			break;
+		}
+	return $msg;
 }
 
 ?>

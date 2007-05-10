@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: print.inc.php,v $
- * @version $Revision: 1.28 $
- * @modified $Date: 2007/05/10 07:06:24 $ by $Author: franciscom $
+ * @version $Revision: 1.29 $
+ * @modified $Date: 2007/05/10 19:55:43 $ by $Author: schlundus $
  *
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
@@ -180,7 +180,7 @@ function renderTestCaseForPrinting(&$db,&$printingOptions,&$node,$level,$tplan_i
 	
 	$code = null;
   $tc_mgr = null;
-  $tcInfo=null;
+  $tcInfo = null;
   
   $versionID = isset($node['tcversion_id']) ? $node['tcversion_id'] : TC_LATEST_VERSION; 
 		

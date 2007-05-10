@@ -1,7 +1,7 @@
 --  -----------------------------------------------------------------------------------
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.13 2007/04/15 10:55:57 franciscom Exp $
+-- $Id: testlink_create_tables.sql,v 1.14 2007/05/10 19:55:42 schlundus Exp $
 --
 -- SQL script - create db tables for TL
 -- Database Type: Microsoft SQL Server
@@ -77,53 +77,45 @@ if ( ((@@microsoftversion / power(2, 24) = 8) and (@@microsoftversion & 0xffff >
  end
 USE [testlink]
 GO
-
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-IF NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[dbo].[cfield_design_values]') AND OBJECTPROPERTY(id, N'IsUserTable') = 1)
+IF NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[dbo].[assignment_status]') AND OBJECTPROPERTY(id, N'IsUserTable') = 1)
 BEGIN
-CREATE TABLE [dbo].[cfield_design_values](
-	[field_id] [int] NOT NULL,
-	[node_id] [int] NOT NULL CONSTRAINT [DF_cfield_design_values_node_id]  DEFAULT ((0)),
-	[value] [nvarchar](255) COLLATE Latin1_General_CI_AS NOT NULL CONSTRAINT [DF_cfield_design_values_value]  DEFAULT ((0)),
- CONSTRAINT [PK_cfield_design_values] PRIMARY KEY CLUSTERED 
+CREATE TABLE [dbo].[assignment_status](
+	[id] [int] IDENTITY(1,1) NOT NULL,
+	[description] [nvarchar](100) COLLATE Latin1_General_CI_AS NOT NULL CONSTRAINT [DF_assignment_status_description]  DEFAULT (N'unknown'),
+ CONSTRAINT [PK_assignment_status] PRIMARY KEY CLUSTERED 
 (
-	[field_id] ASC,
-	[node_id] ASC
+	[id] ASC
 ) ON [PRIMARY]
 ) ON [PRIMARY]
 END
-GO
-
-IF NOT EXISTS (SELECT * FROM dbo.sysindexes WHERE id = OBJECT_ID(N'[dbo].[cfield_design_values]') AND name = N'dx_cfield_design_values')
-CREATE NONCLUSTERED INDEX [dx_cfield_design_values] ON [dbo].[cfield_design_values] 
-(
-	[node_id] ASC
-) ON [PRIMARY]
 GO
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-IF NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[dbo].[cfield_execution_values]') AND OBJECTPROPERTY(id, N'IsUserTable') = 1)
+IF NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[dbo].[cfield_node_types]') AND OBJECTPROPERTY(id, N'IsUserTable') = 1)
 BEGIN
-CREATE TABLE [dbo].[cfield_execution_values](
-	[field_id] [int] NOT NULL CONSTRAINT [DF_cfield_execution_values_field_id]  DEFAULT ((0)),
-	[execution_id] [int] NOT NULL CONSTRAINT [DF_cfield_execution_values_execution_id]  DEFAULT ((0)),
-	[testplan_id] [int] NOT NULL CONSTRAINT [DF_cfield_execution_values_testplan_id]  DEFAULT ((0)),
-	[tcversion_id] [int] NOT NULL CONSTRAINT [DF_cfield_execution_values_tcversion_id]  DEFAULT ((0)),
-	[value] [nvarchar](255) COLLATE Latin1_General_CI_AS NOT NULL,
- CONSTRAINT [PK_cfield_execution_values] PRIMARY KEY CLUSTERED 
+CREATE TABLE [dbo].[cfield_node_types](
+	[field_id] [int] NOT NULL CONSTRAINT [DF_cfield_node_types_field_id]  DEFAULT ((0)),
+	[node_type_id] [int] NOT NULL CONSTRAINT [DF_cfield_node_types_node_type_id]  DEFAULT ((0)),
+ CONSTRAINT [PK_cfield_node_types] PRIMARY KEY CLUSTERED 
 (
 	[field_id] ASC,
-	[execution_id] ASC,
-	[testplan_id] ASC,
-	[tcversion_id] ASC
+	[node_type_id] ASC
 ) ON [PRIMARY]
 ) ON [PRIMARY]
 END
+GO
+
+IF NOT EXISTS (SELECT * FROM dbo.sysindexes WHERE id = OBJECT_ID(N'[dbo].[cfield_node_types]') AND name = N'idx_custom_fields_assign')
+CREATE NONCLUSTERED INDEX [idx_custom_fields_assign] ON [dbo].[cfield_node_types] 
+(
+	[node_type_id] ASC
+) ON [PRIMARY]
 GO
 SET ANSI_NULLS ON
 GO
@@ -143,6 +135,27 @@ CREATE TABLE [dbo].[testplan_tcversions](
 (
 	[tcversion_id] ASC,
 	[testplan_id] ASC
+) ON [PRIMARY]
+) ON [PRIMARY]
+END
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[dbo].[cfield_testprojects]') AND OBJECTPROPERTY(id, N'IsUserTable') = 1)
+BEGIN
+CREATE TABLE [dbo].[cfield_testprojects](
+	[field_id] [int] NOT NULL CONSTRAINT [DF_cfield_testprojects_field_id]  DEFAULT ((0)),
+	[testproject_id] [int] NOT NULL CONSTRAINT [DF_cfield_testprojects_testproject_id]  DEFAULT ((0)),
+	[display_order] [smallint] NOT NULL CONSTRAINT [DF_cfield_testprojects_display_order]  DEFAULT ((1)),
+	[active] [tinyint] NOT NULL CONSTRAINT [DF_cfield_testprojects_active]  DEFAULT ((1)),
+	[required_on_design] [tinyint] NOT NULL CONSTRAINT [DF_cfield_testprojects_required_on_design]  DEFAULT ((0)),
+	[required_on_execution] [tinyint] NOT NULL CONSTRAINT [DF_cfield_testprojects_required_on_execution]  DEFAULT ((0)),
+ CONSTRAINT [PK_cfield_testprojects] PRIMARY KEY CLUSTERED 
+(
+	[field_id] ASC,
+	[testproject_id] ASC
 ) ON [PRIMARY]
 ) ON [PRIMARY]
 END
@@ -176,6 +189,40 @@ CREATE TABLE [dbo].[object_keywords](
 ) ON [PRIMARY]
 ) ON [PRIMARY]
 END
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+IF NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[dbo].[custom_fields]') AND OBJECTPROPERTY(id, N'IsUserTable') = 1)
+BEGIN
+CREATE TABLE [dbo].[custom_fields](
+	[id] [int] IDENTITY(1,1) NOT NULL,
+	[name] [nchar](64) COLLATE Latin1_General_CI_AS NOT NULL,
+	[label] [nchar](64) COLLATE Latin1_General_CI_AS NOT NULL,
+	[type] [smallint] NOT NULL,
+	[possible_values] [nchar](255) COLLATE Latin1_General_CI_AS NOT NULL,
+	[default_value] [nchar](255) COLLATE Latin1_General_CI_AS NOT NULL,
+	[valid_regexp] [nchar](255) COLLATE Latin1_General_CI_AS NOT NULL,
+	[length_min] [int] NOT NULL,
+	[length_max] [int] NOT NULL,
+	[show_on_design] [tinyint] NOT NULL CONSTRAINT [DF_custom_fields_show_on_design]  DEFAULT ((1)),
+	[enable_on_design] [tinyint] NOT NULL CONSTRAINT [DF_custom_fields_enable_on_design]  DEFAULT ((1)),
+	[show_on_execution] [tinyint] NOT NULL CONSTRAINT [DF_custom_fields_show_on_execution]  DEFAULT ((1)),
+	[enable_on_execution] [tinyint] NOT NULL CONSTRAINT [DF_custom_fields_enable_on_execution]  DEFAULT ((1)),
+ CONSTRAINT [PK_custom_fields] PRIMARY KEY CLUSTERED 
+(
+	[id] ASC
+) ON [PRIMARY]
+) ON [PRIMARY]
+END
+GO
+
+IF NOT EXISTS (SELECT * FROM dbo.sysindexes WHERE id = OBJECT_ID(N'[dbo].[custom_fields]') AND name = N'IX_custom_fields_name')
+CREATE UNIQUE NONCLUSTERED INDEX [IX_custom_fields_name] ON [dbo].[custom_fields] 
+(
+	[name] ASC
+) ON [PRIMARY]
 GO
 SET ANSI_NULLS ON
 GO
@@ -227,15 +274,22 @@ CREATE TABLE [dbo].[user_assignments](
 	[feature_id] [int] NOT NULL CONSTRAINT [DF_user_assignments_feature_id]  DEFAULT ((0)),
 	[user_id] [int] NULL,
 	[deadline_ts] [datetime] NULL,
-	[assigner_id] [int] NULL default ((0)),
+	[assigner_id] [int] NULL DEFAULT ((0)),
 	[creation_ts] [datetime] NOT NULL,
-	[status] [int] NULL default ((1)),
+	[status] [int] NULL DEFAULT ((1)),
  CONSTRAINT [PK_user_assignments] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
 ) ON [PRIMARY]
 ) ON [PRIMARY]
 END
+GO
+
+IF NOT EXISTS (SELECT * FROM dbo.sysindexes WHERE id = OBJECT_ID(N'[dbo].[user_assignments]') AND name = N'IX_user_assignments')
+CREATE NONCLUSTERED INDEX [IX_user_assignments] ON [dbo].[user_assignments] 
+(
+	[feature_id] ASC
+) ON [PRIMARY]
 GO
 SET ANSI_NULLS ON
 GO
@@ -314,8 +368,8 @@ CREATE TABLE [dbo].[builds](
 	[testplan_id] [int] NOT NULL CONSTRAINT [DF_builds_testplan_id]  DEFAULT ((0)),
 	[name] [nvarchar](100) COLLATE Latin1_General_CI_AS NOT NULL CONSTRAINT [DF_builds_name]  DEFAULT (N'undefined'),
 	[notes] [ntext] COLLATE Latin1_General_CI_AS NULL,
-  [active] [tinyint] NOT NULL CONSTRAINT [DF_builds_active]  DEFAULT ((1)),
-	[open] [tinyint] NOT NULL CONSTRAINT [DF_builds_open]  DEFAULT ((1)),	
+	[active] [tinyint] NOT NULL CONSTRAINT [DF_builds_active]  DEFAULT ((1)),
+	[open] [tinyint] NOT NULL CONSTRAINT [DF_builds_open]  DEFAULT ((1)),
  CONSTRAINT [PK_builds] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
@@ -345,24 +399,24 @@ GO
 IF NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[dbo].[priorities]') AND OBJECTPROPERTY(id, N'IsUserTable') = 1)
 BEGIN
 CREATE TABLE [dbo].[priorities](
-    [id] [int] IDENTITY(1,1) NOT NULL,
-    [testplan_id] [int] NOT NULL CONSTRAINT [DF_priorities_testplan_id] DEFAULT ((0)),
-    [risk] [nchar](1) COLLATE Latin1_General_CI_AS NOT NULL,
-    [importance] [nchar](1) COLLATE Latin1_General_CI_AS NOT NULL,
-    [priority] [nchar](1) COLLATE Latin1_General_CI_AS NOT NULL CONSTRAINT [DF_priorities_priority] DEFAULT (N'b'),	
+	[id] [int] IDENTITY(1,1) NOT NULL,
+	[testplan_id] [int] NOT NULL CONSTRAINT [DF_priorities_testplan_id]  DEFAULT ((0)),
+	[risk] [nchar](1) COLLATE Latin1_General_CI_AS NOT NULL,
+	[importance] [nchar](1) COLLATE Latin1_General_CI_AS NOT NULL,
+	[priority] [nchar](1) COLLATE Latin1_General_CI_AS NOT NULL CONSTRAINT [DF_priorities_priority]  DEFAULT (N'b'),
  CONSTRAINT [PK_priorities] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
+) ON [PRIMARY],
+ CONSTRAINT [IX_testplan_id] UNIQUE NONCLUSTERED 
+(
+	[testplan_id] ASC,
+	[risk] ASC,
+	[importance] ASC,
+	[priority] ASC
 ) ON [PRIMARY]
 ) ON [PRIMARY]
 END
-GO
-
-IF NOT EXISTS (SELECT * FROM dbo.sysindexes WHERE id = OBJECT_ID(N'[dbo].[priorities]') AND name = N'IX_testplan_id')
-CREATE NONCLUSTERED INDEX [IX_testplan_id] ON [dbo].[priorities] 
-(
-	[testplan_id] ASC
-) ON [PRIMARY]
 GO
 SET ANSI_NULLS ON
 GO
@@ -558,7 +612,7 @@ CREATE TABLE [dbo].[requirements](
 	[scope] [ntext] COLLATE Latin1_General_CI_AS NULL,
 	[status] [nchar](1) COLLATE Latin1_General_CI_AS NOT NULL CONSTRAINT [DF_requirements_status]  DEFAULT (N'n'),
 	[type] [nchar](1) COLLATE Latin1_General_CI_AS NULL,
-  [node_order] [int] NOT NULL DEFAULT ((1)),
+	[node_order] [int] NOT NULL DEFAULT ((1)),
 	[author_id] [int] NULL,
 	[creation_ts] [datetime] NULL CONSTRAINT [DF_requirements_creation_ts]  DEFAULT (getdate()),
 	[modifier_id] [int] NULL,
@@ -569,6 +623,14 @@ CREATE TABLE [dbo].[requirements](
 ) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 END
+GO
+
+IF NOT EXISTS (SELECT * FROM dbo.sysindexes WHERE id = OBJECT_ID(N'[dbo].[requirements]') AND name = N'IX_requirements')
+CREATE NONCLUSTERED INDEX [IX_requirements] ON [dbo].[requirements] 
+(
+	[srs_id] ASC,
+	[status] ASC
+) ON [PRIMARY]
 GO
 SET ANSI_NULLS ON
 GO
@@ -779,6 +841,31 @@ SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
+IF NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[dbo].[cfield_design_values]') AND OBJECTPROPERTY(id, N'IsUserTable') = 1)
+BEGIN
+CREATE TABLE [dbo].[cfield_design_values](
+	[field_id] [int] NOT NULL,
+	[node_id] [int] NOT NULL CONSTRAINT [DF_cfield_design_values_node_id]  DEFAULT ((0)),
+	[value] [nvarchar](255) COLLATE Latin1_General_CI_AS NOT NULL CONSTRAINT [DF_cfield_design_values_value]  DEFAULT ((0)),
+ CONSTRAINT [PK_cfield_design_values] PRIMARY KEY CLUSTERED 
+(
+	[field_id] ASC,
+	[node_id] ASC
+) ON [PRIMARY]
+) ON [PRIMARY]
+END
+GO
+
+IF NOT EXISTS (SELECT * FROM dbo.sysindexes WHERE id = OBJECT_ID(N'[dbo].[cfield_design_values]') AND name = N'dx_cfield_design_values')
+CREATE NONCLUSTERED INDEX [dx_cfield_design_values] ON [dbo].[cfield_design_values] 
+(
+	[node_id] ASC
+) ON [PRIMARY]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
 IF NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[dbo].[assignment_types]') AND OBJECTPROPERTY(id, N'IsUserTable') = 1)
 BEGIN
 CREATE TABLE [dbo].[assignment_types](
@@ -796,55 +883,20 @@ SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-IF NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[dbo].[assignment_status]') AND OBJECTPROPERTY(id, N'IsUserTable') = 1)
+IF NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[dbo].[cfield_execution_values]') AND OBJECTPROPERTY(id, N'IsUserTable') = 1)
 BEGIN
-CREATE TABLE [dbo].[assignment_status](
-	[id] [int] IDENTITY(1,1) NOT NULL,
-	[description] [nvarchar](100) COLLATE Latin1_General_CI_AS NOT NULL CONSTRAINT [DF_assignment_status_description]  DEFAULT (N'unknown'),
- CONSTRAINT [PK_assignment_status] PRIMARY KEY CLUSTERED 
-(
-	[id] ASC
-) ON [PRIMARY]
-) ON [PRIMARY]
-END
-GO
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-IF NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[dbo].[cfield_node_types]') AND OBJECTPROPERTY(id, N'IsUserTable') = 1)
-BEGIN
-CREATE TABLE [dbo].[cfield_node_types](
-	[field_id] [int] NOT NULL CONSTRAINT [DF_cfield_node_types_field_id]  DEFAULT ((0)),
-	[node_type_id] [int] NOT NULL CONSTRAINT [DF_cfield_node_types_node_type_id]  DEFAULT ((0)),
- CONSTRAINT [PK_cfield_node_types] PRIMARY KEY CLUSTERED 
+CREATE TABLE [dbo].[cfield_execution_values](
+	[field_id] [int] NOT NULL CONSTRAINT [DF_cfield_execution_values_field_id]  DEFAULT ((0)),
+	[execution_id] [int] NOT NULL CONSTRAINT [DF_cfield_execution_values_execution_id]  DEFAULT ((0)),
+	[testplan_id] [int] NOT NULL CONSTRAINT [DF_cfield_execution_values_testplan_id]  DEFAULT ((0)),
+	[tcversion_id] [int] NOT NULL CONSTRAINT [DF_cfield_execution_values_tcversion_id]  DEFAULT ((0)),
+	[value] [nvarchar](255) COLLATE Latin1_General_CI_AS NOT NULL,
+ CONSTRAINT [PK_cfield_execution_values] PRIMARY KEY CLUSTERED 
 (
 	[field_id] ASC,
-	[node_type_id] ASC
-) ON [PRIMARY]
-) ON [PRIMARY]
-END
-GO
-
-IF NOT EXISTS (SELECT * FROM dbo.sysindexes WHERE id = OBJECT_ID(N'[dbo].[cfield_node_types]') AND name = N'idx_custom_fields_assign')
-CREATE NONCLUSTERED INDEX [idx_custom_fields_assign] ON [dbo].[cfield_node_types] 
-(
-	[node_type_id] ASC
-) ON [PRIMARY]
-GO
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-IF NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[dbo].[cfield_testprojects]') AND OBJECTPROPERTY(id, N'IsUserTable') = 1)
-BEGIN
-CREATE TABLE [dbo].[cfield_testprojects](
-	[field_id] [int] NOT NULL CONSTRAINT [DF_cfield_testprojects_field_id]  DEFAULT ((0)),
-	[testproject_id] [int] NOT NULL CONSTRAINT [DF_cfield_testprojects_testproject_id]  DEFAULT ((0)),
- CONSTRAINT [PK_cfield_testprojects] PRIMARY KEY CLUSTERED 
-(
-	[field_id] ASC,
-	[testproject_id] ASC
+	[execution_id] ASC,
+	[testplan_id] ASC,
+	[tcversion_id] ASC
 ) ON [PRIMARY]
 ) ON [PRIMARY]
 END

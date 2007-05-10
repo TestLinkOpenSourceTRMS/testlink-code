@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * @version $Revision: 1.63 $
- * @modified $Date: 2007/04/15 10:59:44 $ by $Author: franciscom $
+ * @version $Revision: 1.64 $
+ * @modified $Date: 2007/05/10 07:07:54 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * 
@@ -15,10 +15,10 @@
  * xxxxxxxx - Added the Test Project as the FIRST Container where is possible to copy
 */
 require_once("../../config.inc.php");
-require_once("../functions/common.php");
+require_once("common.php");
+require_once("opt_transfer.php");
 require_once("../../third_party/fckeditor/fckeditor.php");
-require_once("../../lib/plan/plan.inc.php");
-require_once("../functions/opt_transfer.php");
+//require_once("../../lib/plan/plan.inc.php");
 testlinkInitPage($db);
 
 $tree_mgr = new tree($db);

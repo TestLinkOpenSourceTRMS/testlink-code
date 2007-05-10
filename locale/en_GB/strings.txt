@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.171 $
- * @modified $Date: 2007/05/09 06:57:02 $ $Author: franciscom $
+ * @version $Revision: 1.172 $
+ * @modified $Date: 2007/05/10 07:08:05 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
@@ -1498,6 +1498,7 @@ $TLS_opt_show_doc_header = "Show Document Header";
 $TLS_opt_show_tc_body = "Show Test Case Body";
 $TLS_opt_show_tc_summary = "Show Test Case Summary";
 $TLS_opt_show_toc = "Show Table of Contents";
+$TLS_opt_show_tc_author = "Show Test Case Author";
 $TLS_opt_show_passfail = "Show Pass/Fail and Notes";
 $TLS_title_tc_print_navigator = "Navigator - Print Test Specification";
 $TLS_title_tp_print_navigator = "Navigator - Print Test Plan ";

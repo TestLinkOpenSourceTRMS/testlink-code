@@ -1,16 +1,16 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: tc_exec_assignment.php,v 1.7 2007/04/09 08:02:02 franciscom Exp $ 
+ * @version $Id: tc_exec_assignment.php,v 1.8 2007/05/10 07:07:15 franciscom Exp $ 
  * 
  * 20070124 - franciscom
  * use show_help.php to apply css configuration to help pages
  */         
 require_once(dirname(__FILE__)."/../../config.inc.php");
-require_once(dirname(__FILE__)."/../functions/common.php");
-require_once(dirname(__FILE__)."/../functions/assignment_mgr.class.php");
-require_once(dirname(__FILE__)."/../functions/treeMenu.inc.php");
-require_once("plan.inc.php");
+require_once("common.php");
+require_once("assignment_mgr.class.php");
+require_once("treeMenu.inc.php");
+// require_once("plan.inc.php");
 
 testlinkInitPage($db);
 

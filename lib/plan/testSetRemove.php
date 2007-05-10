@@ -1,7 +1,7 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: testSetRemove.php,v 1.20 2007/04/09 08:02:02 franciscom Exp $ 
+ * @version $Id: testSetRemove.php,v 1.21 2007/05/10 07:07:15 franciscom Exp $ 
  * 
  * Remove Test Cases from Test Plan
  * 
@@ -14,8 +14,8 @@
  *
  */         
 require('../../config.inc.php');
-require_once("../functions/common.php");
-require_once("plan.inc.php");
+require_once("common.php");
+//require_once("plan.inc.php");
 
 testlinkInitPage($db);
 

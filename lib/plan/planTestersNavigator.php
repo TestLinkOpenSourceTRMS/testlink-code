@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: planTestersNavigator.php,v 1.7 2006/02/15 08:49:20 franciscom Exp $ 
+* $Id: planTestersNavigator.php,v 1.8 2007/05/10 07:07:15 franciscom Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * 
@@ -13,7 +13,7 @@ require_once('../../config.inc.php');
 require_once('common.php');
 require_once('users.inc.php');
 require_once('plan.inc.php');
-require_once("../../lib/functions/lang_api.php");
+require_once("lang_api.php");
 testlinkInitPage($db);
 
 // 20051120 - fm

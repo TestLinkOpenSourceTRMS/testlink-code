@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: buildNew.php,v $
  *
- * @version $Revision: 1.32 $
- * @modified $Date: 2007/02/14 17:52:30 $ $Author: franciscom $
+ * @version $Revision: 1.33 $
+ * @modified $Date: 2007/05/10 07:07:15 $ $Author: franciscom $
  *
  * rev :
  *       20070122 - franciscom - use build_mgr methods
@@ -15,9 +15,8 @@
  *
 */
 require('../../config.inc.php');
-require_once("../functions/common.php");
-require_once("plan.inc.php");
-require_once("../functions/builds.inc.php");
+require_once("common.php");
+require_once("builds.inc.php");
 require_once("../../third_party/fckeditor/fckeditor.php");
 
 testlinkInitPage($db);

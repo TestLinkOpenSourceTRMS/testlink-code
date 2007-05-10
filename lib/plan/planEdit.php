@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: planEdit.php,v $
  *
- * @version $Revision: 1.27 $
- * @modified $Date: 2007/02/05 08:34:22 $ by $Author: franciscom $
+ * @version $Revision: 1.28 $
+ * @modified $Date: 2007/05/10 07:07:15 $ by $Author: franciscom $
  *
  * Purpose:  ability to edit and delete test plans
  *-------------------------------------------------------------------------
@@ -14,9 +14,8 @@
  *
  */
 require('../../config.inc.php');
-require_once("../functions/common.php");
-require_once("plan.inc.php");
-require_once('../functions/testplan.class.php'); // 
+require_once("common.php");
+require_once('testplan.class.php');
 testlinkInitPage($db);
 
 $smarty = new TLSmarty();

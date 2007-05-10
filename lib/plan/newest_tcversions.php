@@ -1,12 +1,11 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: newest_tcversions.php,v 1.1 2007/05/02 07:30:30 franciscom Exp $ 
+ * @version $Id: newest_tcversions.php,v 1.2 2007/05/10 07:07:15 franciscom Exp $ 
  * 
  */         
 require('../../config.inc.php');
-require_once("../functions/common.php");
-require_once("plan.inc.php");
+require_once("common.php");
 
 testlinkInitPage($db);
 

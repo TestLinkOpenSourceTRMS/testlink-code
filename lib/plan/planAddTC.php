@@ -1,6 +1,6 @@
 <?php
 ////////////////////////////////////////////////////////////////////////////////
-// @version $Id: planAddTC.php,v 1.30 2007/04/09 08:02:02 franciscom Exp $
+// @version $Id: planAddTC.php,v 1.31 2007/05/10 07:07:15 franciscom Exp $
 // File:     planAddTC.php
 // Author:   Chad Rosen
 // Purpose:  link/unlink test cases to a test plan
@@ -11,9 +11,9 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 require('../../config.inc.php');
-require_once("../functions/common.php");
-require_once("../keywords/keywords.inc.php");
-require_once("plan.inc.php");
+require_once("common.php");
+require_once("keywords.inc.php");
+//require_once("plan.inc.php");
 testlinkInitPage($db);
 
 $tree_mgr = new tree($db); 

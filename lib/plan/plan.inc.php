@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: plan.inc.php,v $
- * @version $Revision: 1.44 $
- * @modified $Date: 2007/02/05 08:34:22 $ $Author: franciscom $
+ * @version $Revision: 1.45 $
+ * @modified $Date: 2007/05/10 07:07:15 $ $Author: franciscom $
  * @author 	Martin Havlat
  *
  * Functions for management: 
@@ -19,111 +19,6 @@
 /** include core functions for collect information about Test Plans */
 require_once("plan.core.inc.php"); 
 
-
-/**
- * Update priority and owner of test suite/category
- *
- */
-function updateSuiteAttributes(&$db,$_INPUT)
-{
-	$sql = "UPDATE category SET importance ='" . $_INPUT['importance'] . "', risk ='" .  
-			   $_INPUT['risk'] . "', owner='" . $_INPUT['owner'] . "' " .
-			   " WHERE id=" . $_INPUT['id'];
-	$result = $db->exec_query($sql);
-	
-	return $result ? 'ok' : '';
-}
-
-/**
- * Get actual priority and owner of test suite/category
- *
- * @param 	string 	identification number 
- * @return 	array	list of parameters
- *
- * 20050914 - fm - using name and CATorder from mgtcategory 
- */
-function getTP_category_info(&$db,$catID)
-{
-	$output = array();
-	$sql = " SELECT category.id, mgtcategory.name, importance, risk, owner " .
-	       " FROM category, mgtcategory " .
-	       " WHERE category.mgtcatid = mgtcategory.id " .
-	       " AND category.id =" . $catID . " ORDER BY mgtcategory.CATorder";
-	       
-	      
-	$result = $db->exec_query($sql);
-	if ($result)
-	{
-		while($row = $db->fetch_array($result))
-		{ 
-			$output[] = $row;		
-		}
-	}
-	return $output;
-}
-
-// 20050809 - fm
-// changes must be made due to active field type changed to boolean
-function updateTestPlan(&$db,$id,$name,$notes,$p_active)
-{
-	// 20050810 - fm	
-	$active = to_boolean($p_active);
-	
-	// 20050809 - fm 	
-	$sql = "UPDATE testplans SET active='" . $active . "', name='" . $db->prepare_string($name) . "', notes='" . 
-			$db->prepare_string($notes). "' WHERE id=" . $id;
-	$result = $db->exec_query($sql);
-	
-	return $result ? 1 : 0;
-}
-
-function deleteTestPlan(&$db,$id)
-{
-	$sql = "DELETE FROM testplans WHERE id=" . $id;
-	$result = $db->exec_query($sql);
-
-	return $result ? 1 : 0;
-}
-
-function deleteTestPlanComponents(&$db,$id)
-{
-	$sql = "DELETE FROM component WHERE projid=" . $id;
-	$result = $db->exec_query($sql);
-
-	return $result ? 1 : 0;
-}
-
-/*
-20050915 - fm - refactoring mgtcomponent
-*/
-function getTestPlanComponents(&$db,$tpID)
-{
-	$sql = " SELECT component.id AS compid , mgtcomponent.name,component.projid, mgtcompid " .
-	       " FROM component, mgtcomponent " .
-	       " WHERE component.mgtcompid = mgtcomponent.id " .
-	       " AND projid=" . $tpID;
-	$result = $db->exec_query($sql);
-
-	$cInfo = null;
-	while ($row = $db->fetch_array($result)) 
-	{
-		$cInfo[] = $row;
-	}
-	return $cInfo;
-}
-
-// 20051001 - fm - refactoring
-function getTestPlanComponentIDs(&$db,$id)
-{
-	$comIDs = array();
-	$cInfo = getTestPlanComponents($db,$id);
-	$num_comp = sizeof($cInfo);
-	for($i = 0 ; $i < $num_comp ;$i++)
-	{
-		$comIDs[] = $cInfo[$i][0];
-	}
-	return $comIDs;
-}
 
 /*
   20051001 - fm - refactoring

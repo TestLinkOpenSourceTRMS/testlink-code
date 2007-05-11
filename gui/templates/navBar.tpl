@@ -1,6 +1,6 @@
 {* 
 	Testlink Open Source Project - http://testlink.sourceforge.net/ 
-	$Id: navBar.tpl,v 1.18 2007/04/02 08:13:00 franciscom Exp $ 
+	$Id: navBar.tpl,v 1.19 2007/05/11 20:29:19 schlundus Exp $ 
 	Purpose: smarty template - title bar + menu 
 	
 	rev :
@@ -22,12 +22,15 @@
 		<form name="productForm" action="lib/general/navBar.php" method="get"> 
 		<span style="font-size: 80%">{lang_get s='product'} </span>
 		<select class="menu_combo" name="testproject" onchange="this.form.submit();">
-      {foreach key=tp_id item=tp_name from=$arrayProducts}
+      	{foreach key=tp_id item=tp_name from=$arrayProducts}
   		  <option value="{$tp_id}" title="{$tp_name|escape}"
   		    {if $tp_id == $currentProduct} selected="selected" {/if}>
   		    {$tp_name|truncate:#TESTPROJECT_TRUNCATE_SIZE#|escape}</option>
   		{/foreach}
 		</select>
+		{if $countProjects == 1}
+			<input type="button" value="{lang_get s='btn_ok'}" onclick="this.form.submit();"/>
+		{/if}
 		</form>
 	</div>
 	{/if}

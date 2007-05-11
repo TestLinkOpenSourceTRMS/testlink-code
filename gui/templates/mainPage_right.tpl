@@ -1,6 +1,6 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: mainPage_right.tpl,v 1.5 2007/05/09 06:56:39 franciscom Exp $     
+ $Id: mainPage_right.tpl,v 1.6 2007/05/11 20:29:19 schlundus Exp $     
  Purpose: smarty template - main page / site map                 
                                                                  
  rev :
@@ -36,22 +36,25 @@
         
     {if $countPlans > 0}
 		{lang_get s='title_test_plan'}
-				<select name="testplan" onchange="this.form.submit();" style="width:100%;">
-				{section name=tPlan loop=$arrPlans}
-					<option value="{$arrPlans[tPlan].id}" 
-					        {$arrPlans[tPlan].selected}
-					        title="{$arrPlans[tPlan].name|escape}">
-					        {$arrPlans[tPlan].name|truncate:#TESTPLAN_TRUNCATE_SIZE#|escape}
-					</option>
-				{/section}
-				</select>
-				{if $testPlanRole neq null}
-					<br />{lang_get s='testplan_role'} {$testPlanRole|escape}
-				{/if}
-		{else}
-      {if $num_active_tplans > 0}
-			  {lang_get s='msg_no_rights_for_tp'}
-			{/if}  
+		<select style="display:inline"  name="testplan" onchange="this.form.submit();" style="width:100%;">
+			{section name=tPlan loop=$arrPlans}
+				<option value="{$arrPlans[tPlan].id}" 
+				        {$arrPlans[tPlan].selected}
+				        title="{$arrPlans[tPlan].name|escape}">
+				        {$arrPlans[tPlan].name|truncate:#TESTPLAN_TRUNCATE_SIZE#|escape}
+				</option>
+			{/section}
+			</select>
+		{if $countPlans == 1}
+			<input type="button" onclick="this.form.submit();" value="{lang_get s='ok'}"/>
+		{/if}
+		{if $testPlanRole neq null}
+			<br />{lang_get s='testplan_role'} {$testPlanRole|escape}
+		{/if}
+	{else}
+    {if $num_active_tplans > 0}
+		{lang_get s='msg_no_rights_for_tp'}
+	{/if}  
 		{/if}
 	 </form>
 	</div>

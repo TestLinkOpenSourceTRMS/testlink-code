@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: searchData.php,v 1.20 2006/06/30 18:41:25 schlundus Exp $
+ * $Id: searchData.php,v 1.21 2007/05/11 20:29:19 schlundus Exp $
  * Purpose:  This page presents the search results. 
  *
  * 20060427 - franciscom - added include tescase class
@@ -87,12 +87,14 @@ if ($tproject)
 			
 		if ($filter)
 			$sql .= implode("",$filter);
+		$map = $db->fetchRowsIntoMap($sql,'testcase_id');			
 	}
-	$map = $db->fetchRowsIntoMap($sql,'testcase_id');
+	
 }
 $smarty = new TLSmarty();
 if(count($map))
 {
+	$attachments = null;
 	foreach($map as $id => $dd)
 	{
 		$attachments[$id] = getAttachmentInfos($db,$id,'nodes_hierarchy',true,1);

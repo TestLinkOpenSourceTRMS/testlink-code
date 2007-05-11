@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: navBar.php,v $
  *
- * @version $Revision: 1.24 $
- * @modified $Date: 2007/05/09 06:56:49 $ $Author: franciscom $
+ * @version $Revision: 1.25 $
+ * @modified $Date: 2007/05/11 20:29:19 $ $Author: schlundus $
  *
  * This file manages the navigation bar. 
  *
@@ -20,11 +20,11 @@ require_once("testproject.class.php");
 
 testlinkInitPage($db,true);
 
-$role_separator=config_get('role_separator');
-
+$role_separator = config_get('role_separator');
 $arr_tprojects = getAccessibleProducts($db);
-$curr_tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+
 $tpID = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : null;
+$curr_tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 if ($curr_tproject_id)
 	getAccessibleTestPlans($db,$curr_tproject_id,1,$tpID);
 	
@@ -70,7 +70,7 @@ $smarty->assign('rightMetrics', has_rights($db,"testplan_metrics"));
 $smarty->assign('rightUserAdmin', has_rights($db,"mgt_users"));
 
 $smarty->assign('countPlans', $countPlans);
-
+$smarty->assign('countProjects',sizeof($arr_tprojects));
 $smarty->assign('arrayProducts', $arr_tprojects);
 $smarty->assign('currentProduct', $curr_tproject_id);
 $smarty->assign('updateMainPage', $updateMainPage); 

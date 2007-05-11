@@ -1,6 +1,6 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: mainPage_left.tpl,v 1.5 2007/05/07 21:00:56 schlundus Exp $     
+ $Id: mainPage_left.tpl,v 1.6 2007/05/11 20:29:19 schlundus Exp $     
  Purpose: smarty template - main page / site map                 
                                                                  
  rev :                                                 
@@ -41,7 +41,7 @@
 
   {* ---------------------------------------------------------------------------------------- *}
 	{*   requirements   *}
-	{if $sessionProductID && $opt_requirements == TRUE}
+	{if $sessionProductID && $opt_requirements == TRUE && ($view_req_rights == "yes" || $modify_req_rights == "yes")}
   	<div class="module-grey">
     <div>
     <div>

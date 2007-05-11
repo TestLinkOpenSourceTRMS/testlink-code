@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: users.inc.php,v $
  *
- * @version $Revision: 1.40 $
- * @modified $Date: 2007/04/05 20:03:52 $ $Author: schlundus $
+ * @version $Revision: 1.41 $
+ * @modified $Date: 2007/05/11 21:05:23 $ $Author: schlundus $
  *
  * Functions for usermanagement
  *
@@ -279,12 +279,24 @@ function setUserSession(&$db,$user, $id, $roleID, $email, $locale = null, $activ
 	
 	$_SESSION['testprojectRoles'] = $usertestprojectRoles; 
 	$_SESSION['testPlanRoles'] = $userTestPlanRoles; 
-	
+	$_SESSION['testprojectID'] = null;
 	// 20051208 - JBA - added to set the lastProduct the user has selected before logging off.
     $cookedProduct = 'lastProductForUser'. $id;
-    if (isset($_COOKIE[$cookedProduct])) {
-    	$_SESSION['testprojectID'] = $_COOKIE[$cookedProduct];
-    	tLog('Cookie: lastProductForUser='.$_SESSION['testprojectID']);
+    if (isset($_COOKIE[$cookedProduct]))
+	{
+		$arrProducts = getAccessibleProducts($db);
+		if ($arrProducts[$cookedProduct])
+    	{
+			$_SESSION['testprojectID'] = $_COOKIE[$cookedProduct];
+    		tLog('Cookie: lastProductForUser='.$_SESSION['testprojectID']);
+    	}
+    	else 
+    	{
+    		$tpID = null;
+    		if (sizeof($arrProducts))
+    			$tpID = key($arrProducts);
+    		$_SESSION['testprojectID'] = $tpID;
+		}
     }
 	$_SESSION['s_lastAttachmentList'] = null;
 	

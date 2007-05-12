@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: users.inc.php,v $
  *
- * @version $Revision: 1.41 $
- * @modified $Date: 2007/05/11 21:05:23 $ $Author: schlundus $
+ * @version $Revision: 1.42 $
+ * @modified $Date: 2007/05/12 21:20:49 $ $Author: schlundus $
  *
  * Functions for usermanagement
  *
@@ -285,7 +285,7 @@ function setUserSession(&$db,$user, $id, $roleID, $email, $locale = null, $activ
     if (isset($_COOKIE[$cookedProduct]))
 	{
 		$arrProducts = getAccessibleProducts($db);
-		if ($arrProducts[$cookedProduct])
+		if (isset($arrProducts[$cookedProduct]) && $arrProducts[$cookedProduct])
     	{
 			$_SESSION['testprojectID'] = $_COOKIE[$cookedProduct];
     		tLog('Cookie: lastProductForUser='.$_SESSION['testprojectID']);

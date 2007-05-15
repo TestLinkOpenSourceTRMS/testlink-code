@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.172 $
- * @modified $Date: 2007/05/10 07:08:05 $ $Author: franciscom $
+ * @version $Revision: 1.173 $
+ * @modified $Date: 2007/05/15 13:57:22 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
@@ -480,8 +480,10 @@ $TLS_trep_kw = "Keyword";
 
 
 // gui/templates/inc_res_by_owner.tpl
-$TLS_title_res_by_owner = "Results by Owner";
+$TLS_title_res_by_owner = "Results by Tester";
 $TLS_trep_owner = "Tester";
+$TLS_title_res_by_tester = "Results by Tester";
+$TLS_trep_tester = "Tester";
 
 
 

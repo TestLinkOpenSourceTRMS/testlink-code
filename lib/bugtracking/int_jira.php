@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: int_jira.php,v $
  *
- * @version $Revision: 1.8 $
- * @modified $Date: 2007/04/23 17:00:00 $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2007/05/15 13:56:59 $ $Author: franciscom $
  *
  * @author (contributor) jbarchibald@gmail.com
  *

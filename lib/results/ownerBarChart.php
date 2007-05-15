@@ -1,4 +1,10 @@
 <?php
+/** 
+* TestLink Open Source Project - http://testlink.sourceforge.net/ 
+* $Id: ownerBarChart.php,v 1.4 2007/05/15 13:56:59 franciscom Exp $ 
+*
+* @author	Kevin Levy
+*/
 require_once("../../third_party/charts/charts.php");
 require_once('../functions/results.class.php');
 require_once('../functions/testplan.class.php');

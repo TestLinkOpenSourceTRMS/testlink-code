@@ -2,7 +2,7 @@
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
- * @version $Id: resultsNavigator.php,v 1.26 2007/02/22 06:57:00 kevinlevy Exp $ 
+ * @version $Id: resultsNavigator.php,v 1.27 2007/05/15 13:56:59 franciscom Exp $ 
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
  * This page list View of Test Results and Metrics.
@@ -16,14 +16,19 @@ require_once('common.php');
 require_once('builds.inc.php');
 testlinkInitPage($db);
 
+$tc_status_map=config_get('tc_status');
+
 // there is list of available results and metrics view
 $arrData = array(
 	array('name' => lang_get('link_report_general_tp_metrics'), 'href' => 'resultsGeneral.php?report_type='), 
 	array('name' => lang_get('link_report_overall_build'), 'href' => 'resultsAllBuilds.php?report_type='), 
-    array('name' => lang_get('link_report_metrics_more_builds'), 'href' => 'resultsMoreBuilds.php?report_type='), 
-	array('name' => lang_get('link_report_failed'), 'href' => 'resultsByStatus.php?type=f&amp;report_type='),
-	array('name' => lang_get('link_report_blocked_tcs'), 'href' => 'resultsByStatus.php?type=b&amp;report_type='),
-	array('name' => lang_get('link_report_not_run'), 'href' => 'resultsByStatus.php?type=n&amp;report_type='),	
+  array('name' => lang_get('link_report_metrics_more_builds'), 'href' => 'resultsMoreBuilds.php?report_type='), 
+	array('name' => lang_get('link_report_failed'), 
+	                'href' => "resultsByStatus.php?type={$tc_status_map['failed']}&amp;report_type="),
+	array('name' => lang_get('link_report_blocked_tcs'), 
+	                'href' => "resultsByStatus.php?type={$tc_status_map['blocked']}&amp;report_type="),
+	array('name' => lang_get('link_report_not_run'), 
+	                'href' => "resultsByStatus.php?type={$tc_status_map['not_run']}&amp;report_type="),	
 	array('name' => lang_get('link_report_test'), 'href' => 'resultsTC.php?report_type='),
 	array('name' => lang_get('link_charts'), 'href' => 'charts.php?report_type=')
 );

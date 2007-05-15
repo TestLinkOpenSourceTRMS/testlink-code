@@ -1,8 +1,10 @@
 <?php
-/*
- * Created on Jan 13, 2007 by Kevin Levy
- *
- */
+/** 
+* TestLink Open Source Project - http://testlink.sourceforge.net/ 
+* $Id: displayMgr.php,v 1.6 2007/05/15 13:56:59 franciscom Exp $ 
+*
+* @author	Kevin Levy
+*/
  // has the sendMail() method
 require_once('info.inc.php');
 

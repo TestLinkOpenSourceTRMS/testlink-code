@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: charts.php,v $
- * @version $Revision: 1.11 $
- * @modified $Date: 2007/03/25 20:11:59 $  $Author: schlundus $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2007/05/15 13:56:59 $  $Author: franciscom $
  * @author kevin
  *
  *
@@ -16,11 +16,19 @@ $testPlanName = $_SESSION['testPlanName'];
 
 $pathToCharts = "third_party/charts";
 $pathToScripts = "lib/results";
+$charts_swf= $pathToCharts . "/charts.swf";
+$charts_library= $pathToCharts . "/charts_library";
+
+
 $charts = array(
-	lang_get('overall_metrics') => InsertChart("{$pathToCharts}/charts.swf", "{$pathToCharts}/charts_library", "{$pathToScripts}/overallPieChart.php", 400, 250 ),
-	lang_get('results_by_keyword') => InsertChart("{$pathToCharts}/charts.swf","{$pathToCharts}/charts_library", "{$pathToScripts}/keywordBarChart.php", 800, 600 ),
-	lang_get('results_by_tester') => InsertChart("{$pathToCharts}/charts.swf", "{$pathToCharts}/charts_library","{$pathToScripts}/ownerBarChart.php", 800, 600),
-	lang_get('results_top_level_suites') => InsertChart("{$pathToCharts}/charts.swf", "{$pathToCharts}/charts_library", "{$pathToScripts}/topLevelSuitesBarChart.php", 800, 600),  
+	lang_get('overall_metrics') => InsertChart($charts_swf,$charts_library, 
+	                                           "{$pathToScripts}/overallPieChart.php", 400, 250 ),
+	lang_get('results_by_keyword') => InsertChart($charts_swf,$charts_library,
+	                                              "{$pathToScripts}/keywordBarChart.php", 800, 600 ),
+	lang_get('results_by_tester') => InsertChart($charts_swf,$charts_library,
+	                                             "{$pathToScripts}/ownerBarChart.php", 800, 600),
+	lang_get('results_top_level_suites') => InsertChart($charts_swf,$charts_library,
+	                                                    "{$pathToScripts}/topLevelSuitesBarChart.php", 800, 600),  
 );
                  
 $smarty = new TLSmarty();

@@ -1,4 +1,10 @@
 <?php
+/** 
+* TestLink Open Source Project - http://testlink.sourceforge.net/ 
+* $Id: overallPieChart.php,v 1.3 2007/05/15 13:56:59 franciscom Exp $ 
+*
+* @author	Kevin Levy
+*/
 require_once('../functions/results.class.php');
 require_once('../functions/testplan.class.php');
 require_once("../../third_party/charts/charts.php");

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: int_bugtracking.php,v $
  *
- * @version $Revision: 1.14 $
- * @modified $Date: 2007/05/09 06:56:49 $
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2007/05/15 13:56:59 $ $Author: franciscom $
  *
  * @author Andreas Morsing
  *

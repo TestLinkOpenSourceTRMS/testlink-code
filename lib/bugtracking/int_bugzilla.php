@@ -4,10 +4,11 @@
  *
  * Filename $RCSfile: int_bugzilla.php,v $
  *
- * @version $Revision: 1.10 $
- * @modified $Date: 2006/11/02 21:47:12 $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2007/05/15 13:56:59 $ $Author: franciscom $
  *
- * @author Arjen van Summeren - 20051010 - inserted function getBugSummary($id) again, corrected getBugStatusString($id)
+ * @author Arjen van Summeren - 20051010 - inserted function getBugSummary($id) again, 
+ *                                         corrected getBugStatusString($id)
  * @author Raphael Bosshard - 20051010 - inserted function getBugSummary($id) again
  * @author Francisco Mancardi - 20050916 - refactoring
  *

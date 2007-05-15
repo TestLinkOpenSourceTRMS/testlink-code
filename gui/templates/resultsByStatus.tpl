@@ -1,10 +1,7 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsByStatus.tpl,v 1.5 2006/10/13 20:06:14 schlundus Exp $
+$Id: resultsByStatus.tpl,v 1.6 2007/05/15 13:56:38 franciscom Exp $
 Purpose: show Test Results and Metrics 
-
-20051004 - fm - added print button
-20051204 - mht - removed obsolete print button
 *}
 {include file="inc_head.tpl"}
 
@@ -17,11 +14,13 @@ Purpose: show Test Results and Metrics
 		<tr>
 			<th>{lang_get s='th_test_suite'}</th>
 			<th>{lang_get s='th_title'}</th>
-			<th>{lang_get s='th_build'}</th>
-			<th>{lang_get s='th_run_by'}</th>
-			<th>{lang_get s='th_date'}</th>
-			<th>{lang_get s='th_notes'}</th>
-			<th>{lang_get s='th_bugs'}</th>
+      {if $type != $gsmarty_tc_status.not_run}
+			  <th>{lang_get s='th_build'}</th>
+			  <th>{lang_get s='th_run_by'}</th>
+			  <th>{lang_get s='th_date'}</th>
+ 			  <th>{lang_get s='th_notes'}</th>
+				<th>{lang_get s='th_bugs'}</th>
+			{/if}
 		</tr>
 		{section name=Row loop=$arrData}
 		<tr>

@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: resultsNavigator.tpl,v 1.11 2007/02/24 19:51:02 kevinlevy Exp $ *}
+{* $Id: resultsNavigator.tpl,v 1.12 2007/05/15 13:56:38 franciscom Exp $ *}
 {* Purpose: smarty template - show Test Results and Metrics *}
 {* Revisions:
    20070113 - franciscom - use of smarty config file
@@ -24,15 +24,14 @@ function reportPrint(){
 </div>
 
 <p>
-<!-- {section name=Row loop=$arrDataB} -->
-	<a href="lib/results/{$arrDataB[Row].href}?build={$selectedBuild}&amp;report_type={$selectedReportType|escape}" 
+<a href="lib/results/{$arrDataB[Row].href}?build={$selectedBuild}&amp;report_type={$selectedReportType|escape}" 
 	   target="workframe">{$arrDataB[Row].name}</a><br />
 
-<!-- {/section} -->
-<!--  
-</p>
-<p>
--->
+{*
+{assign var="my_build_name" value=$arrBuilds[$selectedBuild]}
+{$my_build_name}
+*}
+
 {section name=Row loop=$arrData}
 	<a href="lib/results/{$arrData[Row].href}{$selectedReportType}" target="workframe">{$arrData[Row].name}</a><br />
 {/section}

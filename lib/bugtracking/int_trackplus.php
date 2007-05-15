@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: int_trackplus.php,v $
  *
- * @version $Revision: 1.1 $
- * @modified $Date: 2006/08/17 19:32:35 $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2007/05/15 13:56:59 $ $Author: franciscom $
  *
  * @author Oscar Castroviejo - 20060405 - TRA de GFI
  * email: ocastroviejo@gfi.es

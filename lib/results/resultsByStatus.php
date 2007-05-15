@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsByStatus.php,v 1.40 2007/02/28 07:04:06 kevinlevy Exp $ 
+* $Id: resultsByStatus.php,v 1.41 2007/05/15 13:56:59 franciscom Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -14,11 +14,10 @@
 * 20061126 - KL - upgrade to 1.7
 */
 require('../../config.inc.php');
-require_once('../functions/common.php');
-//require_once('../functions/exec.inc.php');
-require_once("../../lib/functions/results.class.php");
+require_once('common.php');
+require_once("results.class.php");
 require_once('displayMgr.php');
-require_once('../functions/users.inc.php');
+require_once('users.inc.php');
 
 testlinkInitPage($db);
 
@@ -84,7 +83,10 @@ if (is_array($mapOfLastResult)) {
 		if (array_key_exists($tester_id, $arrOwners)) {
 		   $testerName = $arrOwners[$tester_id];
 		}
-		$arrData[$arrDataIndex] = array($suiteName,$testTitle,htmlspecialchars($buildName),htmlspecialchars($testerName),htmlspecialchars($execution_ts),htmlspecialchars($notes),$bugString);
+		$arrData[$arrDataIndex] = array($suiteName,$testTitle,htmlspecialchars($buildName),
+		                                htmlspecialchars($testerName),
+		                                htmlspecialchars($execution_ts),
+		                                htmlspecialchars($notes),$bugString);
 		$arrDataIndex++;
 		next($mapOfLastResult[$suiteId]);
 	}
@@ -92,52 +94,16 @@ if (is_array($mapOfLastResult)) {
   } // end while
 } // end if
 
-/**  ****************************************************************************
-KL - 20061029 - I will review this code and use some logic and thoughts that Andreas has added herer
-but for now I will use the same code I am using for the other reports to consolidate development
-$tp = new testplan($db);
 
-$arrData = array();
-$dummy = null;
+$smarty = new TLSmarty;
+$smarty->assign('title', $_SESSION['testPlanName'] . " " . $title);
+$smarty->assign('arrBuilds', $arrBuilds); 
+$smarty->assign('arrData', $arrData);
+$smarty->assign('type', $type);
+displayReport('resultsByStatus', $smarty, $report_type);
+?>
 
-$tcs = $tp->get_linked_tcversions($tpID,null,0,1);
-$maxBuildID = $tp->get_max_build_id($tpID);
-
-if ($tcs && $maxBuildID)
-{
-	foreach($tcs as $tcID => $tcInfo)
-	{
-		$tcMgr = new testcase($db); 
-		$exec = $tcMgr->get_last_execution($tcID,$tcInfo['tcversion_id'],$tpID,$maxBuildID,0);
-		if (!$exec)
-			$exec = $tcMgr->get_last_execution($tcID,$tcInfo['tcversion_id'],$tpID,null,0);
-		
-		if ($exec)
-		{
-			$e = current($exec);
-			if ($e['status'] != $type)
-				continue;
-			
-			$localizedTS = localize_dateOrTimeStamp(null,$dummy,'timestamp_format',$e['execution_ts']);
-			$ts = new testsuite($db);
-			$tsData = $ts->get_by_id($e['tsuite_id']);
-			$testTitle = getTCLink($bCanExecute,$tcID,$tcInfo['tcversion_id'],$e['name'],$e['build_id']);
-			$arrData[] = 	array(
-									htmlspecialchars($tsData['name']),
-									$testTitle, 
-									htmlspecialchars($e['build_name']),
-									htmlspecialchars(format_username(array('first' => $e['tester_first_name'],
-														  'last' => $e['tester_last_name'], 
-														  'login' => $e['tester_login']))), 
-									htmlspecialchars($localizedTS), 
-									htmlspecialchars($e['execution_notes']),
-									buildBugString($db,$e['execution_id']),
-								);	
-		}
-	}
-}
-*/
-
+<?php
 /**
 * builds bug information for execution id
 * written by Andreas, being implemented again by KL
@@ -181,12 +147,4 @@ function getTCLink($rights, $tcID,$tcversionID, $title, $buildID)
 		
 	return $testTitle;
 }
-
-$smarty = new TLSmarty;
-$smarty->assign('title', $_SESSION['testPlanName'] . " " . $title);
-//$smarty->assign('title', $title);
-$smarty->assign('arrBuilds', $arrBuilds); 
-$smarty->assign('arrData', $arrData);
-
-displayReport('resultsByStatus', $smarty, $report_type);
 ?>

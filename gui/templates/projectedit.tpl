@@ -1,9 +1,13 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: projectedit.tpl,v 1.12 2007/02/22 08:22:39 franciscom Exp $
+$Id: projectedit.tpl,v 1.13 2007/05/15 17:25:06 franciscom Exp $
 Purpose: smarty template - Edit existing product 
 
 rev:
+    20070515 - franciscom
+    BUGID 0000854: Test project cannot be deleted if name contains a ' (single quote)
+    added escape type to escape modifier on onclick javascript event
+    
     20070214 - franciscom 
     BUGID 628: Name edit – Invalid action parameter/other behaviours if “Enter” pressed. 
 
@@ -132,7 +136,7 @@ function validateForm(f)
 				<input type="submit" name="activateProduct" value="{lang_get s='btn_activate'}" />
 				{/if}
 				<input type="button" name="do_delete" value="{lang_get s='btn_del'}" 
-					onclick="javascript:; if (confirm('{lang_get s="popup_product_delete"}{$name|escape}?'))
+					onclick="javascript:; if (confirm('{lang_get s="popup_product_delete"}{$name|escape:"javascript"}?'))
 					{ldelim}location.href=fRoot+'lib/project/projectedit.php?do_delete=&amp;id={$id}&amp;name={$name|escape:"url"}';
 					{rdelim};" />
 			{/if}

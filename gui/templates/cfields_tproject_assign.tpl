@@ -1,7 +1,10 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: cfields_tproject_assign.tpl,v 1.3 2007/01/06 15:14:35 franciscom Exp $
+$Id: cfields_tproject_assign.tpl,v 1.4 2007/05/15 17:02:20 franciscom Exp $
 Purpose: management Custom fields assignment to a test project
+
+rev :
+     20070515 - franciscom - BUGID 0000852 
 
 *}
 {include file="inc_head.tpl"}
@@ -31,7 +34,7 @@ Purpose: management Custom fields assignment to a test project
       	{foreach key=cf_id item=cf from=$my_cf}
       	<tr>
       		<td><input type="checkbox" name="cfield[{$cf.id}]" /></td>
-   		   	<td class="bold"><a href="lib/cfields/cfields_edit.php?action=edit&id={$cf.id}"
+   		   	<td class="bold"><a href="lib/cfields/cfields_edit.php?do_action=edit&cfield_id={$cf.id}"
    		   	                    title="{lang_get s='manage_cfield'}">{$cf.name|escape}</a></td>
       		<td class="bold">{$cf.label|escape}</span></td>
       		<td><input type="text" name="display_order[{$cf.id}]" 

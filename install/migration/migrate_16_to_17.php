@@ -1,17 +1,23 @@
 <?php
 /*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: migrate_16_to_17.php,v 1.17 2007/03/19 15:55:45 franciscom Exp $ 
+$Id: migrate_16_to_17.php,v 1.18 2007/05/16 09:51:21 franciscom Exp $ 
+
+20070515 - franciscom - 
+improved controls on source db version
 
 20070317 - franciscom - BUGID 738
 
 */
-
 require_once(dirname(__FILE__) . "/../../config.inc.php");
 require_once(dirname(__FILE__) . '/../../lib/functions/database.class.php' );
 require_once(dirname(__FILE__) . "/../../lib/functions/common.php");
 require_once(dirname(__FILE__) . "/../../lib/functions/assignment_mgr.class.php");
 require_once("../installUtils.php");
+
+define('ADODB_ERROR_LOG_TYPE',3); 
+define('ADODB_ERROR_LOG_DEST','C:/errors.log'); 
+require_once(dirname(__FILE__) . '/../../third_party/adodb/adodb-errorhandler.inc.php'); 
 
 
 // over this qty, the process will take a lot of time
@@ -138,8 +144,6 @@ $a_sql[]="TRUNCATE TABLE cfield_design_values";
 $a_sql[]="TRUNCATE TABLE cfield_execution_values";
 $a_sql[]="TRUNCATE TABLE custom_fields";
 
-// 20070131 - franciscom - seems wrong
-//$a_sql[]="TRUNCATE TABLE db_version";
 $a_sql[]="TRUNCATE TABLE executions";
 $a_sql[]="TRUNCATE TABLE execution_bugs";
 
@@ -152,10 +156,7 @@ $a_sql[]="TRUNCATE TABLE req_coverage";
 $a_sql[]="TRUNCATE TABLE req_specs";
 $a_sql[]="TRUNCATE TABLE requirements";
 
-// $a_sql[]="TRUNCATE TABLE rights";
 $a_sql[]="TRUNCATE TABLE risk_assignments";
-//$a_sql[]="TRUNCATE TABLE role_rights";
-//$a_sql[]="TRUNCATE TABLE roles";
 
 $a_sql[]="TRUNCATE TABLE testprojects";
 $a_sql[]="TRUNCATE TABLE testsuites";
@@ -168,6 +169,50 @@ $a_sql[]="TRUNCATE TABLE users";
 $a_sql[]="TRUNCATE TABLE user_assignments";
 $a_sql[]="TRUNCATE TABLE user_testproject_roles";
 $a_sql[]="TRUNCATE TABLE user_testplan_roles";
+
+
+// -------------------------------------------------------------------------------
+// 20070515 - franciscom 
+// Give warning to user if version of source db is not ok to be migrated
+// $my_ado=$source_db->get_dbmgr_object();
+// $the_version_table=$my_ado->MetaTables('TABLES',false,'db_version');
+// if( count($the_version_table) == 0 )
+// {
+//    echo "<br>You are trying to migrate from a TestLink pre 1.6.x" .
+//         "<br>this kind of upgrade is NOT AVAILABLE"; 	
+//          close_html_and_exit();          
+// }
+// 
+// $the_cols=$my_ado->MetaColumns('db_version');
+// 
+// // why I'm using upper case? because ado returns upper case.
+// if(isset($the_cols['UPGRADE_TS']) )
+// {
+//   echo "<br>You are trying to migrate from a TestLink version 1.7 or greater" .
+//        "<br>this kind of upgrade is NOT AVAILABLE"; 	
+//   close_html_and_exit();          
+// }
+// 
+// if(isset($the_cols['UPGRADE_DATE']) )
+// {
+//   $sql=" SELECT * from db_version ORDER by upgrade_date DESC";
+//   $version_arr=$source_db->get_recordset($sql);
+// 
+//   $version=trim($version_arr[0]['version']);
+//   if( $version !== '1.6.2' )
+//   {
+//      echo "<br>You are trying to migrate from TestLink version {$version} " .
+//           "<br>this kind of upgrade is NOT AVAILABLE"; 	
+//            close_html_and_exit();          
+//   }
+// }
+// else
+// {
+//   echo "<br>Structure of your db_version table seems not OK" .
+//        "<br>we are unable to continue"; 	
+//   close_html_and_exit();          
+// }
+// // -------------------------------------------------------------------------------     
 
 
 echo '<span>Truncating tables in Testlink 1.7 (target) database. - ' .
@@ -903,10 +948,10 @@ $tree_mgr=New tree($target_db);
 
 foreach($items as $prod_id => $pd)
 {
-  $old_new['product'][$prod_id]=$tproject_mgr->create($pd['name'],
-                                                     $pd['color'],
-                                                     $pd['option_reqs'],
-                                                     EMPTY_NOTES,$pd['active']);
+  $old_new['product'][$prod_id]=@$tproject_mgr->create($pd['name'],
+                                                       $pd['color'],
+                                                       $pd['option_reqs'],
+                                                       EMPTY_NOTES,$pd['active']);
 
 
   echo "<pre><font color='blue'>Product {$pd['name']} has became a test project!</font></pre>";

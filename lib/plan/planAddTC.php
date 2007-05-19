@@ -1,8 +1,7 @@
 <?php
 ////////////////////////////////////////////////////////////////////////////////
-// @version $Id: planAddTC.php,v 1.31 2007/05/10 07:07:15 franciscom Exp $
+// @version $Id: planAddTC.php,v 1.32 2007/05/19 19:30:21 schlundus Exp $
 // File:     planAddTC.php
-// Author:   Chad Rosen
 // Purpose:  link/unlink test cases to a test plan
 //
 //
@@ -11,9 +10,8 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 require('../../config.inc.php');
-require_once("common.php");
-require_once("keywords.inc.php");
-//require_once("plan.inc.php");
+require_once(dirname(__FILE__)."/../functions/common.php");
+require_once(dirname(__FILE__)."/../keywords/keywords.inc.php");
 testlinkInitPage($db);
 
 $tree_mgr = new tree($db); 
@@ -85,11 +83,11 @@ if(isset($_POST['do_action']))
 
 if($do_display)
 {
-  // full_control, controls the operations planAddTC_m1.tpl will allow
-  // 1 => add/remove
-  // 0 => just remove
-  $smarty->assign('full_control', 1); // 1 => 
-  $smarty->assign('has_tc', ($out['num_tc'] > 0 ? 1 : 0));
+	// full_control, controls the operations planAddTC_m1.tpl will allow
+	// 1 => add/remove
+	// 0 => just remove
+	$smarty->assign('full_control', 1); // 1 => 
+	$smarty->assign('has_tc', ($out['num_tc'] > 0 ? 1 : 0));
 	$smarty->assign('arrData', $out['spec_view']);
 	$smarty->assign('has_linked_items',$out['has_linked_items']);
 	$smarty->display('planAddTC_m1.tpl');

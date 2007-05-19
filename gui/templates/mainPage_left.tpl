@@ -1,6 +1,6 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: mainPage_left.tpl,v 1.6 2007/05/11 20:29:19 schlundus Exp $     
+ $Id: mainPage_left.tpl,v 1.7 2007/05/19 19:20:15 schlundus Exp $     
  Purpose: smarty template - main page / site map                 
                                                                  
  rev :                                                 
@@ -31,7 +31,6 @@
   			<img alt="arrow" class="arrow" src="{$smarty.const.TL_THEME_IMG_DIR}/arrow_org.gif" />
           	<a href="{$launcher}?feature=printTc">{lang_get s='href_print_tc'}</a>
   		 {/if}
-      </p>
     </div>
     </div>
     </div>

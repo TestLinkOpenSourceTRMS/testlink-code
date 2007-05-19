@@ -1,6 +1,6 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: mainPage_right.tpl,v 1.6 2007/05/11 20:29:19 schlundus Exp $     
+ $Id: mainPage_right.tpl,v 1.7 2007/05/19 19:20:15 schlundus Exp $     
  Purpose: smarty template - main page / site map                 
                                                                  
  rev :
@@ -36,7 +36,7 @@
         
     {if $countPlans > 0}
 		{lang_get s='title_test_plan'}
-		<select style="display:inline"  name="testplan" onchange="this.form.submit();" style="width:100%;">
+		<select style="display:inline;width:100%;"  name="testplan" onchange="this.form.submit();">
 			{section name=tPlan loop=$arrPlans}
 				<option value="{$arrPlans[tPlan].id}" 
 				        {$arrPlans[tPlan].selected}

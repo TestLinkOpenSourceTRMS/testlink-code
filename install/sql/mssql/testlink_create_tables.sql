@@ -1,12 +1,15 @@
 --  -----------------------------------------------------------------------------------
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.14 2007/05/10 19:55:42 schlundus Exp $
+-- $Id: testlink_create_tables.sql,v 1.15 2007/05/21 06:42:01 franciscom Exp $
 --
 -- SQL script - create db tables for TL
 -- Database Type: Microsoft SQL Server
 -- 
 -- Rev :
+--      20070519 - franciscom - milestones table date -> target_date, because
+--                              date is reserved word for Oracle
+--
 --       20070414 - franciscom - table requirements: added field node_order 
 --
 --       20070228 - franciscom -  BUGID 697 - priority table
@@ -459,7 +462,7 @@ BEGIN
 CREATE TABLE [dbo].[milestones](
 	[id] [int] IDENTITY(1,1) NOT NULL,
 	[testplan_id] [int] NOT NULL CONSTRAINT [DF_milestones_testplan_id]  DEFAULT ((0)),
-	[date] [datetime] NOT NULL,
+	[target_date] [datetime] NOT NULL,
 	[A] [tinyint] NOT NULL CONSTRAINT [DF_milestones_A]  DEFAULT ((0)),
 	[B] [tinyint] NOT NULL CONSTRAINT [DF_milestones_B]  DEFAULT ((0)),
 	[C] [tinyint] NOT NULL CONSTRAINT [DF_milestones_C]  DEFAULT ((0)),

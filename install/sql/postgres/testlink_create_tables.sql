@@ -1,12 +1,15 @@
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.11 2007/04/15 10:55:57 franciscom Exp $
+-- $Id: testlink_create_tables.sql,v 1.12 2007/05/21 06:42:01 franciscom Exp $
 --
 -- SQL script - create db tables for TL on Postgres   
 -- 
 --
 -- 
 -- Rev :
+--      20070519 - franciscom - milestones table date -> target_date, because
+--                              date is reserved word for Oracle
+--
 --       20070414 - franciscom - table requirements: added field node_order 
 --       20070204 - franciscom - changes in tables priorities, risk_assignments 
 --       20070131 - franciscom - requirements -> req_doc_id(32), 
@@ -197,7 +200,7 @@ CREATE INDEX "keywords_keyword" ON "keywords" ("keyword");
 --
 CREATE TABLE "milestones" (  "id" BIGSERIAL NOT NULL ,
   "testplan_id" BIGINT NOT NULL DEFAULT '0',
-  "date" DATE NOT NULL ,
+  "target_date" DATE NOT NULL ,
   "a" SMALLINT NOT NULL DEFAULT '0',
   "b" SMALLINT NOT NULL DEFAULT '0',
   "c" SMALLINT NOT NULL DEFAULT '0',

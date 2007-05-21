@@ -1,11 +1,14 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
 # This script is distributed under the GNU General Public License 2 or later.
-# $Id: testlink_create_tables.sql,v 1.16 2007/04/15 10:55:57 franciscom Exp $
+# $Id: testlink_create_tables.sql,v 1.17 2007/05/21 06:41:05 franciscom Exp $
 # SQL script - create db tables for TL   
 #
 # default rights & admin account are created via testlink_create_default_data.sql
 #
 # Rev :
+#       20070519 - franciscom - milestones table date -> target_date, because
+#                               date is reserved word for Oracle
+#
 #       20070414 - franciscom - table requirements: added field node_order 
 #       20070204 - franciscom - changes in tables priorities, risk_assignments 
 #
@@ -107,7 +110,7 @@ CREATE TABLE `keywords` (
 CREATE TABLE `milestones` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `testplan_id` int(10) unsigned NOT NULL default '0',
-  `date` date NOT NULL default '0000-00-00',
+  `target_date` date NOT NULL default '0000-00-00',
   `A` tinyint(3) unsigned NOT NULL default '0',
   `B` tinyint(3) unsigned NOT NULL default '0',
   `C` tinyint(3) unsigned NOT NULL default '0',

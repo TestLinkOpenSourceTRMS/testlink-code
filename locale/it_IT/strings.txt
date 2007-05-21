@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.18 $
- * @modified $Date: 2007/05/02 07:28:41 $ $Author: franciscom $
+ * @version $Revision: 1.19 $
+ * @modified $Date: 2007/05/21 06:40:24 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
@@ -789,7 +789,7 @@ $TLS_btn_edit_milestone = "Modifica";
 $TLS_btn_new_milestone = "Crea";
 $TLS_info_milestones_date = "Le Milestone devono essere create con data odierna o successiva";
 $TLS_no_milestones = "Nessuna milestone definita per questo Test Plan!";
-$TLS_th_date_format = "Data (AAAA-MM-GG)";
+$TLS_th_date_format = "Data Obiettivo";
 $TLS_th_perc_a_prio = "% Priorità A";
 $TLS_th_perc_b_prio = "% Priorità B";
 $TLS_th_perc_c_prio = "% Priorità C";

@@ -6,21 +6,19 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8 
- * @modified $Date: 2007/02/22 16:23:27 $ by $Author: kevinlevy $
+ * @modified $Date: 2007/05/21 06:44:17 $ by $Author: franciscom $
  *
  *-------------------------------------------------------------------------
  * Revisions:
+ * 20070505 - franciscom - removing timer.php
  * 20070219 - kevinlevy - nearing completion for 1.7 release
  * 20061113 - franciscom - changes to preparenode() interface
  * 20060829 - kevinlevy - development in progress
 **/
-
+require_once("../../config.inc.php");
+require_once('common.php');
 require_once('treeMenu.inc.php');
-/**
-* used for bug string lookup
-*/
-require_once('exec.inc.php');
-require_once('../results/timer.php');
+require_once('exec.inc.php'); // used for bug string lookup
 
 /**
 * @author kevinlevy
@@ -41,7 +39,9 @@ class results
 	private $db = null;
 	private $tp = null;
 	private $testPlanID = -1;
-	private	$prodID = -1;
+	private	$tprojectID = -1;
+	
+	private $map_tc_status;
   
 	/**
 	* KL - 20061225 - creating map specifically for owner and keyword
@@ -160,14 +160,17 @@ class results
 	* if keyword = 0, search by keyword would not be performed
 	* @author kevinlevy
 	*/ 
-	public function results(&$db, &$tp, $suitesSelected = 'all', $builds_to_query = -1, $lastResult = 'a', $keywordId = 0, $owner = null)
+	public function results(&$db, &$tp, $suitesSelected = 'all', 
+	                        $builds_to_query = -1, $lastResult = 'a', 
+	                        $keywordId = 0, $owner = null)
 	{
 		$this->db = $db;	
-    	$this->tp = $tp;    
-    	$this->suitesSelected = $suitesSelected;  	
-    	$this->prodID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-    	$this->testPlanID = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0 ;
-		$this->tplanName = isset($_SESSION['testPlanName']) ? $_SESSION['testPlanName'] : null;
+    $this->tp = $tp;  
+    $this->map_tc_status=config_get('tc_status');  
+    $this->suitesSelected = $suitesSelected;  	
+    $this->tprojectID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+    $this->testPlanID = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0 ;
+		$this->tplanName  = isset($_SESSION['testPlanName']) ? $_SESSION['testPlanName'] : null;
 
 		// build suiteStructure and flatArray
 		$this->suiteStructure = $this->generateExecTree($keywordId, $owner);
@@ -180,7 +183,7 @@ class results
 			// we should NOT build executions map with cases that are just pass/failed/or blocked.
 			// we should always populate the executions map with all results 
 			// and then programmatically figure out the last result
-			// if you just query the executions table for those rows with status = 'p'
+			// if you just query the executions table for those rows with status = $this->map_tc_status['passed']
 			// that is not the way to determine last result
 		
 			$this->executionsMap = $this->buildExecutionsMap($builds_to_query, 'a', $keywordId, $owner);    
@@ -254,13 +257,13 @@ class results
 			$totalBlocked =0;
 			$totalNotRun =0;
 			while ($testcaseId = key($arrResults)) {
-				if ($arrResults[$testcaseId] == 'p') {
+				if ($arrResults[$testcaseId] == $this->map_tc_status['passed']) {
 					$totalPass++;
 				}
-				elseif($arrResults[$testcaseId] == 'f') {
+				elseif($arrResults[$testcaseId] == $this->map_tc_status['failed']) {
 					$totalFail++;
 				}
-				elseif($arrResults[$testcaseId] == 'b') {
+				elseif($arrResults[$testcaseId] == $this->map_tc_status['blocked']) {
 					$totalBlocked++;
 				}
 				next($arrResults);
@@ -271,7 +274,8 @@ class results
 				$percentCompleted = (($totalCases - $totalNotRun) / $totalCases) * 100;
 			}
 			$percentCompleted = number_format($percentCompleted,2);		
-			$rArray = array($keywordIdNamePairs[$keywordId], $totalCases, $totalPass, $totalFail, $totalBlocked, $totalNotRun, $percentCompleted);
+			$rArray = array($keywordIdNamePairs[$keywordId], $totalCases, $totalPass, 
+			                $totalFail, $totalBlocked, $totalNotRun, $percentCompleted);
 			$rValue[$keywordId] = $rArray;
 			next($keywordResults);
 		} // end $keywordId while
@@ -299,13 +303,13 @@ class results
 			$totalBlocked =0;
 			$totalNotRun =0;
 			while ($testcaseId = key($arrResults)) {
-				if ($arrResults[$testcaseId] == 'p') {
+				if ($arrResults[$testcaseId] == $this->map_tc_status['passed']) {
 					$totalPass++;
 				}
-				elseif($arrResults[$testcaseId] == 'f') {
+				elseif($arrResults[$testcaseId] == $this->map_tc_status['failed']) {
 					$totalFail++;
 				}
-				elseif($arrResults[$testcaseId] == 'b') {
+				elseif($arrResults[$testcaseId] == $this->map_tc_status['blocked']) {
 					$totalBlocked++;
 				}
 				next($arrResults);
@@ -356,13 +360,13 @@ class results
 			$totalBlocked =0;
 			$totalNotRun =0;
 			while ($testcaseId = key($arrResults)) {
-				if ($arrResults[$testcaseId] == 'p') {
+				if ($arrResults[$testcaseId] == $this->map_tc_status['passed']) {
 					$totalPass++;
 				}
-				elseif($arrResults[$testcaseId] == 'f') {
+				elseif($arrResults[$testcaseId] == $this->map_tc_status['failed']) {
 					$totalFail++;
 				}
-				elseif($arrResults[$testcaseId] == 'b') {
+				elseif($arrResults[$testcaseId] == $this->map_tc_status['blocked']) {
 					$totalBlocked++;
 				}
 				next($arrResults);
@@ -603,16 +607,16 @@ class results
 				$totalNotRun = 0;  		
 				while ($testcase_id = key ($mapOfLastResult[$suiteId])) {
 					$currentResult =  $mapOfLastResult[$suiteId][$testcase_id]['result'];
-					if ($currentResult == 'p'){
+					if ($currentResult == $this->map_tc_status['passed']){
 						$totalPass++;
 					} 	
-					elseif($currentResult == 'f'){
+					elseif($currentResult == $this->map_tc_status['failed']){
 						$totalFailed++;
 					} 	
-					elseif($currentResult == 'b'){
+					elseif($currentResult == $this->map_tc_status['blocked']){
 						$totalBlocked++;
 					} 	
-					elseif($currentResult == 'n'){
+					elseif($currentResult == $this->map_tc_status['not_run']){
 						$totalNotRun++;
 					}  			
 					$this->mapOfSuiteSummary[$suiteId] =  array('total' => $totalCasesInSuite, 
@@ -804,14 +808,14 @@ class results
 			$executionExists = true;
 			if ($tcversion_id != $executed){
 				$executionExists = false;
-				if (($lastResult == 'a') || ($lastResult == 'n')) {
+				if (($lastResult == 'a') || ($lastResult == $this->map_tc_status['not_run'])) {
 					// Initialize information on testcaseID to be "not run"
 					$infoToSave = array('testcaseID' => $testcaseID, 
 					'tcversion_id' => $tcversion_id, 
 					'build_id' => '', 
 					'tester_id' => '', 
 					'execution_ts' => '', 
-					'status' => 'n', 
+					'status' => $this->map_tc_status['not_run'], 
 					'executions_id' => '',
 					'notes' => '', 
 					'name' => $name,
@@ -826,7 +830,8 @@ class results
 				// to include multiple test plan ids	
 				$sql = "SELECT * FROM executions " .
 				   "WHERE tcversion_id = $executed AND testplan_id = $_SESSION[testPlanId] ";			   
-				if (($lastResult == 'p') || ($lastResult == 'f') || ($lastResult == 'b')){
+				if (($lastResult == $this->map_tc_status['passed']) || ($lastResult == $this->map_tc_status['failed']) || 
+				    ($lastResult == $this->map_tc_status['blocked'])){
 					$sql .= " AND status = '" . $lastResult . "' ";
 				}
 				if (($builds_to_query != -1) && ($builds_to_query != 'a')) { 
@@ -858,21 +863,21 @@ class results
 									'bugString' => $bugString,									
 									'assigner_id' => $info['assigner_id'],
 									'feature_id' => $info['feature_id']);
-						if ($lastResult != 'n') {
+						if ($lastResult != $this->map_tc_status['not_run']) {
 							array_push($currentSuite, $infoToSave);
 						}
 						next($execQuery);
 					} // end while		
 				} // end if($execQuery)
 				// HANDLE scenario where execution does not exist		          
-				elseif (($lastResult == 'a') || ($lastResult == 'n')) {
+				elseif (($lastResult == 'a') || ($lastResult == $this->map_tc_status['not_run'])) {
 					$infoToSave = array('testcaseID' => $testcaseID, 
 					'tcversion_id' => $tcversion_id, 
 					'build_id' => '', 
 					'tester_id' => '', 
 					'execution_ts' => '', 
 					'executions_id' => '',
-					'status' => 'n',
+					'status' => $this->map_tc_status['not_run'],
 					'name' => $name, 
 					'notes' => '',
 					'assigner_id' => $info['assigner_id'],
@@ -971,7 +976,7 @@ class results
 		$tcase_node_type = $tree_manager->node_descr_id['testcase'];
 		$hash_descr_id = $tree_manager->get_available_node_types();
 		$hash_id_descr = array_flip($hash_descr_id);
-		$test_spec = $tree_manager->get_subtree($this->prodID,array('testplan'=>'exclude me'),
+		$test_spec = $tree_manager->get_subtree($this->tprojectID,array('testplan'=>'exclude me'),
 	                                                     array('testcase'=>'exclude my children'),null,null,true);
 
 		// KL - 20061111 - I do not forsee having to pass a specific test case id into this method
@@ -982,13 +987,13 @@ class results
 			$tp_tcs = array();
 		}
 		$test_spec['name'] = $this->tplanName;
-		$test_spec['id'] = $this->prodID;
+		$test_spec['id'] = $this->tprojectID;
 		$test_spec['node_type_id'] = $hash_descr_id['testproject'];
 		$suiteStructure = null;
 		if($test_spec) {
 			$tck_map = null;
 			if($keyword_id) {
-				$tck_map = $tproject_mgr->get_keywords_tcases($this->prodID,$keyword_id);
+				$tck_map = $tproject_mgr->get_keywords_tcases($this->tprojectID,$keyword_id);
 			}	
 			// testcase_count is required to skip components which don't have cases in the plan
 			$count = array();
@@ -1023,7 +1028,7 @@ class results
 				$nodeDesc = $hash_id_descr[$current['node_type_id']];
 				$id = $current['id'];
 				$parentId = $current['parent_id'];
-				if (($parentId == $this->prodID) && ($this->suitesSelected != 'all')) {
+				if (($parentId == $this->tprojectID) && ($this->suitesSelected != 'all')) {
 					if (!in_array($id, $this->suitesSelected)){
 						// skip processing of this top level suite
 						continue;

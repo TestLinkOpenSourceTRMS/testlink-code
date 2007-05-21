@@ -1,8 +1,11 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: execSetResults.tpl,v 1.44 2007/03/04 00:03:19 schlundus Exp $
+$Id: execSetResults.tpl,v 1.45 2007/05/21 06:39:38 franciscom Exp $
 Purpose: smarty template - show tests to add results
 Revisions:
+          20070519 - franciscom - 
+          BUGID 856: Guest user can execute test case
+          
           20070211 - franciscom - addede delete logic
           20070205 - franciscom - display test plan custom fields.
           20070125 - franciscom - management of closed build
@@ -42,7 +45,12 @@ var msg="{lang_get s='warning_delete_execution'}";
 
 {* show echo about update if applicable *}
 {$updated}
+
 {assign var="input_enabled_disabled" value="disabled"}
+{assign var="att_download_only" value=true}
+{assign var="enable_custom_fields" value=false}
+{assign var="draw_submit_button" value=false}
+ 	
  	
 <div id="main_content" class="workBack">
 
@@ -82,8 +90,6 @@ var msg="{lang_get s='warning_delete_execution'}";
 {$build_notes}
 </div>
 
-{assign var="att_download_only" value=true}
-{assign var="enable_custom_fields" value=false}
 
 
 <form method="post" id="execSetResults" name="execSetResults" >
@@ -115,6 +121,8 @@ var msg="{lang_get s='warning_delete_execution'}";
         {assign var="input_enabled_disabled" value=""}
         {assign var="att_download_only" value=false}
         {assign var="enable_custom_fields" value=true}
+        {assign var="draw_submit_button" value=true}
+
 
         <div class="show_hide_title">
         <img src="{$smarty.const.TL_THEME_IMG_DIR}/icon-foldout.gif" border="0" alt="{lang_get s='show_hide'}" 
@@ -405,7 +413,8 @@ var msg="{lang_get s='warning_delete_execution'}";
 		</table>
 
 
-  	{if $edit_test_results eq "yes"}
+    {* 20070519 - franciscom *}
+  	{if $rightsEdit == "yes" and $edit_test_results eq "yes"}
   		<table border="0" width="100%">
   		<tr>
   			<td rowspan="2" align="center">
@@ -415,8 +424,7 @@ var msg="{lang_get s='warning_delete_execution'}";
   			</td>
   			<td valign="top" style="width:30%">			
     				{* status of test *}
-  
-    				<div class="title" style="text-align: center;">{lang_get s='test_exec_result'}</div>
+      			<div class="title" style="text-align: center;">{lang_get s='test_exec_result'}</div>
     				
     				<div class="resultBox">
   
@@ -428,7 +436,8 @@ var msg="{lang_get s='warning_delete_execution'}";
     							{/if} />{lang_get s=$locale_status}<br />
     					 {/foreach}		
     					<br />		
-    		 			<input type='submit' name='save_results[{$tcversion_id}]' 
+    		 			<input type="submit" name="save_results[{$tcversion_id}]" 
+    		 			       {$input_enabled_disabled}
     		 			       value="{lang_get s='btn_save_tc_exec_results'}" />
     				</div>
     			</td>

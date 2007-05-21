@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.9 $
- * @modified $Date: 2005/12/09 11:22:44 $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2007/05/21 06:40:23 $
  *
  * @author jorgesf@jsf.jazztel.es
  *
@@ -366,7 +366,7 @@ $TLS_btn_upd_milestone = "Actualizar";
 $TLS_info_milestones_date = "Los hitos se deben crear para hoy o fechas posteriores";
 $TLS_menu_add = "Crear";
 $TLS_no_milestones = "¡Disculpe, no hay hitos definidos para esta Plantilla de Test!";
-$TLS_th_date_format = "Fecha (YYYY-MM-DD)";
+$TLS_th_date_format = "Fecha Objetivo";
 $TLS_th_perc_a_prio = "% Prioridad A";
 $TLS_th_perc_b_prio = "% Prioridad B";
 $TLS_th_perc_c_prio = "% Prioridad C";

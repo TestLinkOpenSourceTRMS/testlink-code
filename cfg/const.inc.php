@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: const.inc.php,v $
  *
- * @version $Revision: 1.25 $
- * @modified $Date: 2007/05/09 06:56:30 $ by $Author: franciscom $
+ * @version $Revision: 1.26 $
+ * @modified $Date: 2007/05/21 06:39:27 $ by $Author: franciscom $
  * @author Martin Havlát
  *
  * SCOPE:
@@ -15,7 +15,9 @@
  * There should be changed for your environment
  * 
  *-------------------------------------------------------------------
- * Revisions:
+ * Revisions: 
+ *           20070519 - franciscom
+ *           $g_locales_html_select_date_field_order
  *
  *-------------------------------------------------------------------
 **/
@@ -130,6 +132,22 @@ $g_locales_timestamp_format = array(
 	'pt_BR' => "%d/%m/%Y %H:%M:%S",
 	'zh_CN' => "%Y��%m��%d�� %Hʱ%M��%S��"
 ); 
+
+// for smarty html_select_date custom function
+$g_locales_html_select_date_field_order = array(
+	'en_GB' => "dmY",
+	'en_US' => "mdY",
+	'it_IT' => "dmY",
+	'es_AR' => "dmY",
+	'es_ES' => "dmY",
+	'de_DE' => "dmY",
+	'pl_PL' => "dmY",
+	'fr_FR' => "dmY",
+	'pt_BR' => "dmY",
+	'zh_CN' => "Ymd"
+); 
+
+
 
 // -------------------------------------------------------------------
 /** ATTACHMENTS */
@@ -321,5 +339,9 @@ define('NO_KEYWORD_ID_TO_FILTER',0);
 define('RECURSIVE_MODE',TRUE);
 define('NO_NODE_TYPE_TO_FILTER',null);
 define('ANY_OWNER',null);
+
+define('ALL_BUILDS','a');
+define('ALL_TEST_SUITES','all');
+
 // -------------------------------------------------------------------
 ?>

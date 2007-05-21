@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: resultsBugs.tpl,v 1.11 2007/02/12 06:11:53 kevinlevy Exp $ *}
+{* $Id: resultsBugs.tpl,v 1.12 2007/05/21 06:39:38 franciscom Exp $ *}
 {* Purpose: smarty template - show Test Results and Metrics *}
 {* Revisions:
 20051204 - mht - removed obsolete print button
@@ -36,6 +36,8 @@
 	</tr>
 {/section}
 </table>
+
+{lang_get s="generated_by_TestLink_on"} {$smarty.now|date_format:$smarty.const.TL_TIMESTAMP_FORMAT}
 </div>
 
 </body>

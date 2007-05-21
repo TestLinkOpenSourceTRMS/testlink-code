@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.110 $
- * @modified $Date: 2007/05/09 06:55:27 $ by $Author: franciscom $
+ * @version $Revision: 1.111 $
+ * @modified $Date: 2007/05/21 06:39:27 $ by $Author: franciscom $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink 
@@ -594,6 +594,14 @@ if(false !== $serverLanguage)
 }
 
 define ('TL_DEFAULT_LOCALE', $g_default_language);
+
+// 20070519 - franciscom
+define ('TL_HTML_SELECT_DATE_FIELD_ORDER',
+        $g_locales_html_select_date_field_order[TL_DEFAULT_LOCALE]);
+
+define ('TL_DATE_FORMAT', $g_locales_date_format[TL_DEFAULT_LOCALE]);
+define ('TL_TIMESTAMP_FORMAT', $g_locales_timestamp_format[TL_DEFAULT_LOCALE]);
+
 require_once("lang_api.php");
 
 // used to disable the attachment feature if there are problems with repository path

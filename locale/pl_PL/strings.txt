@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.1 $
- * @modified $Date: 2007/01/02 12:46:27 $ by $Author: havlat $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2007/05/21 06:40:24 $ by $Author: franciscom $
  *
  * @author Micha&#322; Wujas
  *
@@ -435,7 +435,7 @@ $TLS_btn_upd_milestone = "Aktualizuj";
 $TLS_info_milestones_date = "Krok milowy musi zosta&#263; utworzony z dat&#261; dzisiejsz&#261; lub p&oacute;&#378;niejsz&#261;";
 $TLS_menu_add = "Utw&oacute;rz";
 $TLS_no_milestones = "Brak krok&oacute;w milowych dla tego Zestawu Test&oacute;w!";
-$TLS_th_date_format = "Data (rok-miesi&#261;c-dzie&#324;)";
+$TLS_th_date_format = "Data";
 $TLS_th_perc_a_prio = "% Priorytet A";
 $TLS_th_perc_b_prio = "% Priorytet B";
 $TLS_th_perc_c_prio = "% Priorytet C";

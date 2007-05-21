@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsAllBuilds.php,v 1.15 2007/03/17 22:24:28 schlundus Exp $ 
+* $Id: resultsAllBuilds.php,v 1.16 2007/05/21 06:44:17 franciscom Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * 
@@ -37,8 +37,13 @@ if ($arrDataBuilds != null) {
 }
 $smarty = new TLSmarty;
 $smarty->assign('tcs_css', $g_tc_status_css);
-$smarty->assign('title', $_SESSION['testPlanName'] . lang_get('title_metrics_x_build'));
+// $smarty->assign('title', $_SESSION['testPlanName'] . lang_get('title_metrics_x_build'));
+$smarty->assign('title', lang_get('title_metrics_x_build'));
+$smarty->assign('tproject_name', $_SESSION['testprojectName'] );
+$smarty->assign('tplan_name', $_SESSION['testPlanName'] );
+
 $smarty->assign('arrData', $arrData);
+
 
 $report_type = isset($_GET['report_type']) ? intval($_GET['report_type']) : null;
 displayReport('resultsAllBuilds', $smarty, $report_type);

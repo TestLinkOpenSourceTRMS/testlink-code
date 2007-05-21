@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: resultsTC.tpl,v 1.7 2007/02/23 01:00:36 kevinlevy Exp $ *}
+{* $Id: resultsTC.tpl,v 1.8 2007/05/21 06:39:38 franciscom Exp $ *}
 {* Purpose: smarty template - show Test Results and Metrics *}
 {* Revisions:
 20051204 - mht - removed obsolete print button
@@ -20,7 +20,9 @@
 {/if}
 
 <div class="workBack">
-? = {lang_get s='trep_not_run'}
+{lang_get s="testproject"} {$tproject_name}<br>
+{lang_get s="testplan"} {$tplan_name|escape}<br>
+
 <table class="simple" style="width: 100%; text-align: center; margin-left: 0px;">
 	<tr>
 		<th>{lang_get s='title_test_suite_name'}</th>
@@ -38,6 +40,8 @@
 	</tr>
 {/section}
 </table>
+
+{lang_get s="generated_by_TestLink_on"} {$smarty.now|date_format:$smarty.const.TL_TIMESTAMP_FORMAT}
 </div>
 
 </body>

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.3 $
- * @modified $Date: 2006/12/29 19:32:10 $by $Author: schlundus $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2007/05/21 06:40:24 $by $Author: franciscom $
  * @author GrdScarabe
  *
  * French translation
@@ -376,7 +376,7 @@ $TLS_btn_upd_milestone = "Mettre &agrave; jour";
 $TLS_info_milestones_date = "Les &eacute;v&egrave;nements doivent &ecirc;tre cr&eacute; &agrave; la date courante ou post&eacute;rieure";
 $TLS_menu_add = "Cr&eacute;er";
 $TLS_no_milestones = "Il n'y a pas d'&eacute;v&egrave;nement pour ce Plan de Tests!";
-$TLS_th_date_format = "Date (YYYY-MM-DD)";
+$TLS_th_date_format = "Target Date";
 $TLS_th_perc_a_prio = "% Priorit&eacute; A";
 $TLS_th_perc_b_prio = "% Priorit&eacute; B";
 $TLS_th_perc_c_prio = "% Priorit&eacute; C";

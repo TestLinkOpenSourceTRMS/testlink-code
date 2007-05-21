@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsGeneral.tpl,v 1.8 2007/05/15 13:56:38 franciscom Exp $
+$Id: resultsGeneral.tpl,v 1.9 2007/05/21 06:39:38 franciscom Exp $
 Purpose: smarty template - show Test Results and Metrics
 Revisions:
 20051004 - fm - added print button
@@ -19,6 +19,8 @@ Revisions:
 {include file="inc_res_by_comp.tpl"}
 {include file="inc_res_by_owner.tpl"}
 {include file="inc_res_by_keyw.tpl"}
+
+{lang_get s="generated_by_TestLink_on"} {$smarty.now|date_format:$smarty.const.TL_TIMESTAMP_FORMAT}
 </div>
 
 </body>

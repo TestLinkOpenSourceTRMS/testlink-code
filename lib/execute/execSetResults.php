@@ -4,9 +4,10 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.59 $
- * @modified $Date: 2007/04/06 06:40:11 $ $Author: franciscom $
+ * @version $Revision: 1.60 $
+ * @modified $Date: 2007/05/21 06:44:17 $ $Author: franciscom $
  *
+ * 20070519 - franciscom - BUGID 856
  * 20070306 - franciscom - BUGID 705
  * 20070222 - franciscom - BUGID 647
  *
@@ -35,6 +36,9 @@ $tree_mgr = new tree($db);
 $tplan_mgr = new testplan($db);
 $tcase_mgr = new testcase($db);
 $build_mgr = new build_mgr($db);
+
+$can_exec=(has_rights($db,"testplan_execute")=="yes"?1:0);
+
 
 $testdata = array();
 $ts_cf_smarty = '';
@@ -130,8 +134,14 @@ if(!is_null($linked_tcversions))
   		if($gui_cfg->enable_custom_fields)
   		{
   			$cf_smarty[$id] = $tcase_mgr->html_table_of_custom_field_values($id,'design',$SHOW_ON_EXECUTION);
-  			$cfexec_smarty[$id] = $tcase_mgr->html_table_of_custom_field_inputs($id,$PID_NOT_NEEDED,
-  			                                                                    'execution',"_{$id}");
+  			
+        // BUGID 856: Guest user can execute test case
+  			if($can_exec)
+  			{
+  			   $cfexec_smarty[$id] = $tcase_mgr->html_table_of_custom_field_inputs($id,$PID_NOT_NEEDED,
+  			                                                                       'execution',"_{$id}");
+  			}
+
   		}
   		$smarty->assign('design_time_cf',$cf_smarty);
   		$smarty->assign('execution_time_cf',$cfexec_smarty);	
@@ -168,9 +178,14 @@ if(!is_null($linked_tcversions))
 			     {
 							$cf_smarty[$item['tc_id']] = $tcase_mgr->html_table_of_custom_field_values($item['tc_id'],
 							                                                                        'design',$SHOW_ON_EXECUTION);
+							                                                                        
+             // BUGID 856: Guest user can execute test case
+      			 if($can_exec)
+  			     {
 							$cfexec_smarty[$item['tc_id']] = $tcase_mgr->html_table_of_custom_field_inputs($item['tc_id'],
 							                                                            $PID_NOT_NEEDED,'execution',
 							                                                            "_".$item['tc_id']);
+             }
 			     }
 			     $smarty->assign('design_time_cf',$cf_smarty);	
 			     $smarty->assign('execution_time_cf',$cfexec_smarty);	

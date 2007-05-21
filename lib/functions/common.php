@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.64 $ $Author: franciscom $
- * @modified $Date: 2007/03/05 18:47:36 $
+ * @version $Revision: 1.65 $ $Author: franciscom $
+ * @modified $Date: 2007/05/21 06:44:17 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -886,6 +886,20 @@ function my_array_intersect_keys($array1,$array2)
 		} 	
 	}	
 	return($aresult);	
+}
+
+/*
+  function: 
+            for performance timing
+  args :
+  
+  returns: 
+
+*/
+function microtime_float()
+{
+   list($usec, $sec) = explode(" ", microtime());
+   return ((float)$usec + (float)$sec);
 }
 
 ?>

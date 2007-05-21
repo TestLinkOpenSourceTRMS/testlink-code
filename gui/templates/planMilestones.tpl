@@ -1,9 +1,69 @@
-{* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: planMilestones.tpl,v 1.5 2007/01/26 19:17:48 franciscom Exp $ *}
-{* Purpose: smarty template - edit milestones *}
-{include file="inc_head.tpl"}
+{* 
+TestLink Open Source Project - http://testlink.sourceforge.net/ 
+$Id: planMilestones.tpl,v 1.6 2007/05/21 06:39:38 franciscom Exp $ 
+Purpose: smarty template - edit milestones 
+
+rev :
+     20070519 - franciscom - added delete confirmation
+                             added js checkings
+*}
+
+{include file="inc_head.tpl" jsValidate="yes" openhead="yes"}
+
+<script type="text/javascript">
+var warning_empty_milestone_name  = "{lang_get s='warning_empty_milestone_name'}";
+
+/*
+  function: delete_confirmation
+
+  args : delUrl: url to call if user press OK
+         elem_name: name of element to be deleted, used
+                    to build warning message
+  
+  returns: -
+
+*/
+function delete_confirmation(delUrl,elem_name) {ldelim}
+  var msg='{lang_get s='popup_delete_milestones'|escape:"javascript"}';
+  msg=msg.replace('%NAME%',elem_name);
+	if (confirm(msg)){ldelim}
+		window.location = delUrl;
+	{rdelim}
+{rdelim}
+
+{literal}
+/*
+  function: validateForm
+            validate form inputs, doing several checks like:
+            - fields that can not be empty
+            
+            if some check fails:
+            1. an alert message is displayed
+            2. background color of offending field is changed.
+
+  args : f: form object
+  
+  returns: true  -> all checks ok
+           false -> when a check fails
+*/
+
+function validateForm(f)
+{
+  if (isWhitespace(f.milestone_name.value)) 
+  {
+      alert(warning_empty_milestone_name);
+      selectField(f, 'milestone_name');
+      return false;
+  }
+}
+</script>
+{/literal}
+
+</head>
 
 <body>
+{assign var="cfg_section" value=$smarty.template|replace:".tpl":"" }
+{config_load file="input_dimensions.conf" section=$cfg_section}
 
 <h1>{lang_get s='title_milestones'} {$tpName|escape}</h1>
 
@@ -17,37 +77,49 @@
 	<div>
 	<h2>{lang_get s='title_new_milestone'}</h2>
 	<p class="italic">{lang_get s='info_milestones_date'}</p>
-	<form method="post" action="lib/plan/planMilestones.php">
+	<form method="post" action="lib/plan/planMilestones.php"
+	      name="milestone_mgr" onSubmit="javascript:return validateForm(this);">
 	<input type="hidden" name="id" value="{$mileStone.id|escape}"/>
 	<table class="common" width="45%">
 		<tr>
 			<td>{lang_get s='th_name'}:</td>
 			<td>
-				<input type="text" name="name" maxlength="100" value="{$mileStone.title|escape}"/>
+				<input type="text" name="milestone_name" size="{#MILESTONE_NAME_SIZE#}" 
+        	  	 maxlength="{#MILESTONE_NAME_MAXLEN#}"  value="{$mileStone.name|escape}"/>
+	      {include file="error_icon.tpl" field="milestone_name"}
 			</td>
 		</tr>
 		<tr>
 			<td>{lang_get s='th_date_format'}:</td>
 			<td>
-				<input type="text" name="date" maxlength="10" value="{$mileStone.date|escape}"/>
+      {if $mileStone neq null}
+        {assign var="selected_date" value=$mileStone.target_date}
+      {/if} 
+      {html_select_date time=$selected_date
+       month_format='%m' start_year="-1" end_year="+1"
+       field_order=$smarty.const.TL_HTML_SELECT_DATE_FIELD_ORDER}
 			</td>
 		</tr>
+
 		<tr>
 			<td>{lang_get s='th_perc_a_prio'}:</td>
 			<td>
-				<input type="text" name="A" maxlength="3" value="{$mileStone.apriority|escape}"/>
+				<input type="text" name="A" size="{#PRIORITY_SIZE#}"
+				       maxlength="{#PRIORITY_MAXLEN#}" value="{$mileStone.A|escape}"/>
 			</td>
 		</tr>
 		<tr>
 			<td>{lang_get s='th_perc_b_prio'}:</td>
 			<td>
-				<input type="text" name="B" maxlength="3" value="{$mileStone.bpriority|escape}"/>
+				<input type="text" name="B" size="{#PRIORITY_SIZE#}"
+				       maxlength="{#PRIORITY_MAXLEN#}" value="{$mileStone.B|escape}"/>
 			</td>
 		</tr>
 		<tr>
 			<td>{lang_get s='th_perc_c_prio'}:</td>
 			<td>
-				<input type="text" name="C" maxlength="3" value="{$mileStone.cpriority|escape}"/>
+				<input type="text" name="C" size="{#PRIORITY_SIZE#}"
+				       maxlength="{#PRIORITY_MAXLEN#}" value="{$mileStone.C|escape}"/>
 			</td>
 		</tr>
 	</table>
@@ -81,23 +153,28 @@
 					{section name=Row loop=$arrMilestone}
 						<tr>
 							<td>
-								<a href="lib/plan/planMilestones.php?id={$arrMilestone[Row].id}">{$arrMilestone[Row].title|escape}</a>
+								<a href="lib/plan/planMilestones.php?id={$arrMilestone[Row].id}">{$arrMilestone[Row].name|escape}</a>
 							</td>
 							<td>
-								{$arrMilestone[Row].date|escape}
+								{$arrMilestone[Row].target_date|date_format:$smarty.const.TL_DATE_FORMAT}
 							</td>
 							<td>
-								{$arrMilestone[Row].apriority|escape}
+								{$arrMilestone[Row].A|escape}
 							</td>
 							<td>
-								{$arrMilestone[Row].bpriority|escape}
+								{$arrMilestone[Row].B|escape}
 							</td>
 							<td>
-								{$arrMilestone[Row].cpriority|escape}
+								{$arrMilestone[Row].C|escape}
 							</td>
 							<td>
-								<a href="lib/plan/planMilestones.php?delete=1&amp;id={$arrMilestone[Row].id}">
-								<img style="border:none" alt="{lang_get s='alt_delete_milestone'}" src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png"/>
+								<a href="javascript:delete_confirmation(
+								                    fRoot+'lib/plan/planMilestones.php?delete=1&amp;id={$arrMilestone[Row].id}',
+								                    '{$arrMilestone[Row].name}');">
+								<img style="border:none" 
+								     title="{lang_get s='alt_delete_milestone'}" 
+								     alt="{lang_get s='alt_delete_milestone'}" 
+								     src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png"/>
 								</a>
 							</td>
 						</tr>

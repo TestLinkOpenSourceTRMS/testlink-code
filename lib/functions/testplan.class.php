@@ -2,11 +2,16 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.30 $
- * @modified $Date: 2007/05/02 07:26:02 $ $Author: franciscom $
+ * @version $Revision: 1.31 $
+ * @modified $Date: 2007/05/21 06:44:17 $ $Author: franciscom $
  * @author franciscom
  *
  * rev :
+ *       20070519 - franciscom - added Class milestone_mgr
+ *
+ *       copy_milestones()- changed date to target_date, because date 
+ *                          is an Oracle reverved word.
+ *
  *       20070501 - franciscom - added localization of custom field labels
  *                               added use of htmlspecialchars() on labels
  *       20070425 - franciscom - added get_linked_and_newest_tcversions() 
@@ -638,6 +643,9 @@ function copy_linked_tcversions($id,$new_tplan_id)
 // $id: source testplan id
 // $new_tplan_id: destination
 //
+// rev : 20070519 - franciscom
+//       changed date to target_date, because date is an Oracle reverved word.
+//
 function copy_milestones($id,$new_tplan_id)
 {
   $sql="SELECT * FROM milestones WHERE testplan_id={$id} ";
@@ -647,15 +655,32 @@ function copy_milestones($id,$new_tplan_id)
   {
     foreach($rs as $mstone)
     {
-      $sql="INSERT milestones (name,A,B,C,date,testplan_id) " .
+      $sql="INSERT milestones (name,A,B,C,target_date,testplan_id) " .
            "VALUES ('" . $this->db->prepare_string($mstone['name']) ."'," .
            $mstone['A'] . "," . $mstone['B'] . "," . $mstone['C'] . "," . 
-           "'" . $mstone['date'] . "',{$new_tplan_id})";
+           "'" . $mstone['target_date'] . "',{$new_tplan_id})";
            
       $this->db->exec_query($sql);     
     }
   }
 }
+
+/*
+  function: 
+
+  args :
+  
+  returns: 
+
+*/
+function get_milestones($id)
+{
+  $sql="SELECT * FROM milestones WHERE testplan_id={$id} ORDER BY target_date";
+  $rs=$this->db->get_recordset($sql);
+  return $rs;
+}
+
+
 
 
 // $id: source testplan id
@@ -1363,5 +1388,145 @@ class build_mgr
   }
 
 } // end class build_mgr
+
+
+// ##################################################################################
+// 
+// Milestone Manager Class
+//
+// ##################################################################################
+class milestone_mgr
+{
+	var $db;
+	
+  /*
+   function: 
+
+   args :
+  
+   returns: 
+
+  */
+	function milestone_mgr(&$db)
+	{
+		$this->db = &$db;	
+	}
+
+
+  /*
+    function: create()
+  
+    args :
+            $tplan_id
+            $name
+            $target_date
+            $A: percentage
+            $B: percentage
+            $C: percentage
+    
+    returns: 
+  
+  */
+  function create($tplan_id,$name,$date,$A,$B,$C)
+  {
+    $new_milestone_id=0;
+  	$sql = "INSERT INTO milestones (testplan_id,name,target_date,A,B,C) " .
+  	       " VALUES (" . $tplan_id . ",'" . 
+  	       $this->db->prepare_string($name) . "','" . 
+  	       $this->db->prepare_string($date) . "'," . $A . "," .  $B . "," . $C . ")";
+  	$result = $this->db->exec_query($sql);
+  	
+  	if ($result)
+    {
+    		$new_milestone_id = $this->db->insert_id('milestones');
+    }
+    	
+    return $new_milestone_id;
+  }
+
+  /*
+    function: update
+  
+    args :
+          $id
+          $name
+          $notes
+          [$active]: default: 1 
+          [$open]: default: 1 
+          
+          
+    
+    returns: 
+  
+    rev :
+  */
+  function update($id,$name,$date,$A,$B,$C)
+  {
+	  $sql = "UPDATE milestones SET name='" . $this->db->prepare_string($name) . "', " .
+	         " target_date='" . $this->db->prepare_string($date) . "', " . 
+	         " A=" . $A . ", B=" . $B . ", C=" . $C . " WHERE id=" . $id;
+	  $result = $this->db->exec_query($sql);
+	  return $result ? 1 : 0;
+  }
+
+
+
+  /*
+    function: delete
+  
+    args :
+          $id
+         
+    
+    returns: 
+  
+  */
+  function delete($id)
+  {
+  	$sql = "DELETE FROM milestones WHERE id=" . $id;
+  	$result=$this->db->exec_query($sql);
+  	return $result ? 1 : 0;
+  }
+
+
+  /*
+    function: get_by_id
+  
+    args :
+          $id
+         
+    
+    returns: 
+  
+    rev :
+  */
+  function get_by_id($id)
+  {
+  	$sql = "SELECT * FROM milestones WHERE id = {$id}";
+  	$myrow = $this->db->fetchRowsIntoMap($sql,'id');
+  	return $myrow;
+  }
+
+
+  /*
+    function: get_all_by_testplan
+  
+    args :
+          $id
+         
+    
+    returns: 
+  
+    rev :
+  */
+  function get_all_by_testplan($tplan_id)
+  {
+    $sql="SELECT * FROM milestones WHERE testplan_id={$tplan_id} ORDER BY target_date";
+    $rs=$this->db->get_recordset($sql);
+    return $rs;
+  } 
+
+
+} // end class milestone_mgr
 
 ?>

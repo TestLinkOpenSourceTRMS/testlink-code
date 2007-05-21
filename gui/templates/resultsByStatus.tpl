@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsByStatus.tpl,v 1.6 2007/05/15 13:56:38 franciscom Exp $
+$Id: resultsByStatus.tpl,v 1.7 2007/05/21 06:39:38 franciscom Exp $
 Purpose: show Test Results and Metrics 
 *}
 {include file="inc_head.tpl"}
@@ -31,6 +31,8 @@ Purpose: show Test Results and Metrics
 		{/section}
 	</table>
 	<p class="italic">{lang_get s='info_test_results'}</p>
+	
+{lang_get s="generated_by_TestLink_on"} {$smarty.now|date_format:$smarty.const.TL_TIMESTAMP_FORMAT}
 </div>
 </body>
 </html>

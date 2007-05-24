@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.31 $
- * @modified $Date: 2007/05/21 06:44:17 $ $Author: franciscom $
+ * @version $Revision: 1.32 $
+ * @modified $Date: 2007/05/24 19:49:42 $ $Author: schlundus $
  * @author franciscom
  *
  * rev :
@@ -839,11 +839,20 @@ function get_builds_for_html_options($id,$active=null,$open=null)
 
   rev :
 */
-function get_max_build_id($id)
+function get_max_build_id($id,$active = null,$open = null)
 {
 	$sql = " SELECT MAX(builds.id) AS maxbuildid
 	         FROM builds WHERE builds.testplan_id = {$id}";
-	
+	         
+ 	if(!is_null($active))
+ 	{
+ 	   $sql .= " AND active = " . intval($active) . " ";   
+ 	}
+ 	if( !is_null($open) )
+ 	{
+ 	   $sql .= " AND open = " . intval($open) . " ";   
+ 	}
+ 	
 	$recordset = $this->db->get_recordset($sql);
 	$maxBuildID = 0;
 	if ($recordset)

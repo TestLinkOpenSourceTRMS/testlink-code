@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: resultsGeneral.php,v $
- * @version $Revision: 1.30 $
- * @modified $Date: 2007/05/21 06:44:17 $ by $Author: franciscom $
+ * @version $Revision: 1.31 $
+ * @modified $Date: 2007/05/24 19:49:43 $ by $Author: schlundus $
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
  * This page show Test Results over all Builds.
@@ -22,9 +22,6 @@
 require('../../config.inc.php');
 require_once('common.php');
 require_once('builds.inc.php');
-
-// require_once('../functions/results.class.php');
-// require_once('../functions/testplan.class.php');
 require_once('results.class.php');
 require_once('testplan.class.php');
 require_once('displayMgr.php');

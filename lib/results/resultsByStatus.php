@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsByStatus.php,v 1.41 2007/05/15 13:56:59 franciscom Exp $ 
+* $Id: resultsByStatus.php,v 1.42 2007/05/24 19:49:43 schlundus Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -48,6 +48,7 @@ $builds = 'a';
 
 $tp = new testplan($db);
 $arrBuilds = $tp->get_builds($tpID); 
+$lastBuildID = $tp->get_max_build_id($tpID,1,1);
 $results = new results($db, $tp, $SUITES_SELECTED, $builds, $type);
 $mapOfLastResult = $results->getMapOfLastResult();
 $arrOwners = get_users_for_html_options($db, ALL_USERS_FILTER, !ADD_BLANK_OPTION);
@@ -63,6 +64,11 @@ if (is_array($mapOfLastResult)) {
 		if ($lastBuildIdExecuted) {
 			$currentBuildInfo = $arrBuilds[$lastBuildIdExecuted];
 		}
+		else if ($type == $g_tc_status['not_run'])
+		{
+			$lastBuildIdExecuted = $lastBuildID;
+		}
+		
 		$buildName = $currentBuildInfo['name'];
 		$notes = $mapOfLastResult[$suiteId][$tcId]['notes'];
 		$execution_ts = $mapOfLastResult[$suiteId][$tcId]['execution_ts'];

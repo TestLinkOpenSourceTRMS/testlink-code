@@ -1,6 +1,6 @@
 /* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: testlink.css,v 1.6 2007/04/02 07:14:46 franciscom Exp $ 
+$Id: testlink.css,v 1.7 2007/05/24 06:49:27 franciscom Exp $ 
 Purpose: main css - theme m1
 
 20070401 - franciscom -  added padding to:
@@ -651,4 +651,14 @@ table.srs_view td {
 	margin:			5px 0px 0px 0px;
 }
 
+/* 20070523 */
+div.menu_bubble {
+  background:#c8dce8;
+  padding:2px;
+}
+
+div.menu_bubble h3{
+  margin: 0px 0px 8px 8px;
+  /* border-bottom: 1px solid #005498; */
+}  
 /* ----------------------------------------------------------------------------- */

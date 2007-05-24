@@ -1,9 +1,10 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: mainPage.tpl,v 1.33 2007/02/05 08:33:39 franciscom Exp $     
+ $Id: mainPage.tpl,v 1.34 2007/05/24 06:49:18 franciscom Exp $     
  Purpose: smarty template - main page / site map                 
                                                                  
  rev :                                                 
+       20070523 - franciscom - nifty corners
        20070113 - franciscom - truncate on test plan name combo box
        20060908 - franciscom - removed assign risk and ownership
                                added define priority
@@ -14,7 +15,15 @@
        
 *}
 {include file="inc_head.tpl" popup="yes" openHead="yes"}
-{* <script language="JavaScript" src="gui/javascript/rounded.js" type="text/javascript"></script> *}
+<script language="JavaScript" src="{$basehref}gui/niftycube/niftycube.js" type="text/javascript"></script>
+{literal}
+<script type="text/javascript">
+window.onload=function(){
+ Nifty("div.menu_bubble");
+}
+</script>
+{/literal}
+
 </head>
 
 <body>

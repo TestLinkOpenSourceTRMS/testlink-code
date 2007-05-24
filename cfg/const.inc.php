@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: const.inc.php,v $
  *
- * @version $Revision: 1.26 $
- * @modified $Date: 2007/05/21 06:39:27 $ by $Author: franciscom $
+ * @version $Revision: 1.27 $
+ * @modified $Date: 2007/05/24 06:49:08 $ by $Author: franciscom $
  * @author Martin Havlát
  *
  * SCOPE:
@@ -16,6 +16,9 @@
  * 
  *-------------------------------------------------------------------
  * Revisions: 
+ *           20070523 - franciscom
+ *           MENU_ITEM_OPEN, MENU_ITEM_CLOSE
+ *
  *           20070519 - franciscom
  *           $g_locales_html_select_date_field_order
  *
@@ -276,6 +279,16 @@ $g_role_colour = array (
 
 
 $g_tc_risks = array('L1', 'L2', 'L3','M1', 'M2', 'M3','H1', 'H2', 'H3');
+
+
+// [Main page]
+define('MENU_ITEM_OPEN','<div class="module-grey"><div><div><div>');
+define('MENU_ITEM_CLOSE','</div></div></div></div>');
+
+// using niftycorners
+//define('MENU_ITEM_OPEN','<div class="menu_bubble">');
+//define('MENU_ITEM_CLOSE','</div><p>');
+
 
 // 
 // [FUNCTION MAGIC NUMBERS] [DON'T BOTHER ABOUT]

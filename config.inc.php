@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.111 $
- * @modified $Date: 2007/05/21 06:39:27 $ by $Author: franciscom $
+ * @version $Revision: 1.112 $
+ * @modified $Date: 2007/05/24 06:49:08 $ by $Author: franciscom $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink 
@@ -17,6 +17,7 @@
  *-----------------------------------------------------------------------------
  *
  * Revisions:
+ *           20070523 - franciscom - $g_main_menu_item_bullet_img
  *           20070505 - franciscom - following mantis bug tracking style, if file
  *                                   custom_config.inc.php exists, il will be included
  *                                   allowing users to customize TL configurations
@@ -200,6 +201,9 @@ $g_logo_login_page='<img alt="TestLink" title="TestLink" src="' .
 // logo for navbar page
 $g_logo_navbar= '<img alt="TestLink" title="TestLink" src="' . 
                  TL_THEME_IMG_DIR . '/company_logo.png" />';
+
+// image for main menu item bullet (just filename)
+$g_main_menu_item_bullet_img='arrow_org.gif';
 
 // use when componing an title using several strings
 define('TITLE_SEP',' : ');
@@ -572,8 +576,9 @@ if ( file_exists( $custom_config_file ) )
   require_once( $custom_config_file ); 
 }
 
-define('REFRESH_SPEC_TREE',$g_spec_cfg->automatic_tree_refresh ? 'yes' : 'no');
+define('TL_ITEM_BULLET_IMG', TL_THEME_IMG_DIR . "/" .$g_main_menu_item_bullet_img);
 
+define('REFRESH_SPEC_TREE',$g_spec_cfg->automatic_tree_refresh ? 'yes' : 'no');
 
 // added check to avoid notice message in the migration pages
 if(!defined('TL_LOG_LEVEL_DEFAULT'))

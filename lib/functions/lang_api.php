@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: lang_api.php,v $
- * @version $Revision: 1.5 $
- * @modified $Date: 2007/05/02 07:24:12 $ - $Author: franciscom $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2007/05/25 20:44:12 $ - $Author: schlundus $
  *
  * rev :
  *       20070501 - franciscom - enabled logic to manage a custom_strings.txt file
@@ -49,10 +49,9 @@ function lang_get( $p_string, $p_lang = null )
 	global $g_lang_strings;
 	$the_str = isset($g_lang_strings[$t_lang][$p_string]) ? $g_lang_strings[$t_lang][$p_string] : TL_LOCALIZE_TAG .$p_string;
 	
-	if (TL_TPL_CHARSET == 'UTF-8' && $TLS_STRINGFILE_CHARSET != "UTF-8")
-		return utf8_encode($the_str);
-	else
-		return $the_str;
+	if (!isset($TLS_STRINGFILE_CHARSET))
+		$TLS_STRINGFILE_CHARSET = "ISO-8859-1";
+	return iconv($TLS_STRINGFILE_CHARSET,TL_TPL_CHARSET,$the_str);
 }
 
 /* 

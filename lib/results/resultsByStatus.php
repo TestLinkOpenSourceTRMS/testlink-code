@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsByStatus.php,v 1.42 2007/05/24 19:49:43 schlundus Exp $ 
+* $Id: resultsByStatus.php,v 1.43 2007/05/25 20:44:13 schlundus Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -43,13 +43,12 @@ else
 
 $SUITES_SELECTED = "all";
 
-// TO-DO : KL define constants and verify localization is not necessary
 $builds = 'a';
 
 $tp = new testplan($db);
 $arrBuilds = $tp->get_builds($tpID); 
 $lastBuildID = $tp->get_max_build_id($tpID,1,1);
-$results = new results($db, $tp, $SUITES_SELECTED, $builds, $type);
+$results = new results($db, $tp, $SUITES_SELECTED, $builds);
 $mapOfLastResult = $results->getMapOfLastResult();
 $arrOwners = get_users_for_html_options($db, ALL_USERS_FILTER, !ADD_BLANK_OPTION);
 $arrDataIndex = 0;
@@ -57,42 +56,45 @@ $arrData = null;
 if (is_array($mapOfLastResult)) {
   while ($suiteId = key($mapOfLastResult)){
    while($tcId = key($mapOfLastResult[$suiteId])){
-		$lastBuildIdExecuted = null;
 		$lastBuildIdExecuted = $mapOfLastResult[$suiteId][$tcId]['buildIdLastExecuted'];
-		$buildName = null;
-		$currentBuildInfo = null;
-		if ($lastBuildIdExecuted) {
-			$currentBuildInfo = $arrBuilds[$lastBuildIdExecuted];
-		}
-		else if ($type == $g_tc_status['not_run'])
+		$result = $mapOfLastResult[$suiteId][$tcId]['result'];
+		if ($result == $type)
 		{
-			$lastBuildIdExecuted = $lastBuildID;
-		}
-		
-		$buildName = $currentBuildInfo['name'];
-		$notes = $mapOfLastResult[$suiteId][$tcId]['notes'];
-		$execution_ts = $mapOfLastResult[$suiteId][$tcId]['execution_ts'];
-		$suiteName = $mapOfLastResult[$suiteId][$tcId]['suiteName'];
-		$name = $mapOfLastResult[$suiteId][$tcId]['name'];		
-		$tester_id = $mapOfLastResult[$suiteId][$tcId]['tester_id'];
-		$executions_id = $mapOfLastResult[$suiteId][$tcId]['executions_id'];
-		$tcversion_id = $mapOfLastResult[$suiteId][$tcId]['tcversion_id'];		
-		$localizedTS = '';
-		if ($execution_ts != null) {
-		   $localizedTS = localize_dateOrTimeStamp(null,$dummy,'timestamp_format',$execution_ts);
-		}
-		$bugString = buildBugString($db, $executions_id);
-        $bCanExecute = has_rights($db,"tp_execute");
-		$testTitle = getTCLink($bCanExecute,$tcId,$tcversion_id,$name,$lastBuildIdExecuted);
-		// $tcId . ":" . htmlspecialchars($name)
-        $testerName = '';
-		if (array_key_exists($tester_id, $arrOwners)) {
-		   $testerName = $arrOwners[$tester_id];
-		}
-		$arrData[$arrDataIndex] = array($suiteName,$testTitle,htmlspecialchars($buildName),
-		                                htmlspecialchars($testerName),
-		                                htmlspecialchars($execution_ts),
-		                                htmlspecialchars($notes),$bugString);
+				
+			$currentBuildInfo = null;
+			if ($lastBuildIdExecuted) {
+				$currentBuildInfo = $arrBuilds[$lastBuildIdExecuted];
+			}
+			else if ($type == $g_tc_status['not_run'])
+			{
+				$lastBuildIdExecuted = $lastBuildID;
+			}
+			
+			$buildName = $currentBuildInfo['name'];
+			$notes = $mapOfLastResult[$suiteId][$tcId]['notes'];
+			$execution_ts = $mapOfLastResult[$suiteId][$tcId]['execution_ts'];
+			$suiteName = $mapOfLastResult[$suiteId][$tcId]['suiteName'];
+			$name = $mapOfLastResult[$suiteId][$tcId]['name'];		
+			$tester_id = $mapOfLastResult[$suiteId][$tcId]['tester_id'];
+			$executions_id = $mapOfLastResult[$suiteId][$tcId]['executions_id'];
+			$tcversion_id = $mapOfLastResult[$suiteId][$tcId]['tcversion_id'];		
+			$localizedTS = '';
+			if ($execution_ts != null) {
+			   $localizedTS = localize_dateOrTimeStamp(null,$dummy,'timestamp_format',$execution_ts);
+			}
+			$bugString = buildBugString($db, $executions_id);
+	        $bCanExecute = has_rights($db,"tp_execute");
+			$testTitle = getTCLink($bCanExecute,$tcId,$tcversion_id,$name,$lastBuildIdExecuted);
+			// $tcId . ":" . htmlspecialchars($name)
+	        $testerName = '';
+			if (array_key_exists($tester_id, $arrOwners)) {
+			   $testerName = $arrOwners[$tester_id];
+			}
+			$arrData[$arrDataIndex] = array($suiteName,$testTitle,htmlspecialchars($buildName),
+			                                htmlspecialchars($testerName),
+			                                htmlspecialchars($execution_ts),
+			                                htmlspecialchars($notes),$bugString);
+		}			                                
 		$arrDataIndex++;
 		next($mapOfLastResult[$suiteId]);
 	}

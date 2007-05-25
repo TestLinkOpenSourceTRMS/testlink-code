@@ -4,14 +4,14 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.1 $
- * @modified $Date: 2005/11/16 03:54:27 $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2007/05/25 20:44:13 $
  *
  * @author Yoyo Wang
 **/
 
 // add by wangyy, global setting
-$TLS_charset	= "gb2312";
+$TLS_STRINGFILE_CHARSET	= "gb2312";
 $TLS_from_email_name = "Testlink 管理员";
 $TLS_default_component_name = "由需求自动创建的组件";
 $TLS_default_category_name = "待定";

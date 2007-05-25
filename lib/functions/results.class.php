@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8 
- * @modified $Date: 2007/05/21 06:44:17 $ by $Author: franciscom $
+ * @modified $Date: 2007/05/25 20:44:12 $ by $Author: schlundus $
  *
  *-------------------------------------------------------------------------
  * Revisions:
@@ -491,106 +491,60 @@ class results
 	*/ 	
 	private function addLastResultToMap($suiteId, $testcase_id, $buildNumber, $result, $tcversion_id, 
                               $execution_ts, $notes, $suiteName, $executions_id, $name, $tester_id, $feature_id, $assigner_id = -1, $lastResultToTrack){
-		if ($buildNumber) {
+		if ($buildNumber)
 			$this->mapOfLastResultByBuild[$buildNumber][$testcase_id] = $result;
-		}
 	
-		$sql = "select user_id from user_assignments where feature_id = "  . $feature_id ;
+		$sql = "SELECT user_id FROM user_assignments WHERE feature_id = "  . $feature_id ;
 		$owner_row =  $this->db->fetchFirstRow($sql,'testcase_id', 1);
 		$owner_id = $owner_row['user_id'];
-		if ($owner_id == '') {
+		if ($owner_id == '')
 			$owner_id = -1;
-		}
+		
 		$associatedKeywords = null;
-		if ($this->keywordData != null) {
-			if (array_key_exists($testcase_id, $this->keywordData)) {
-				$associatedKeywords = $this->keywordData[$testcase_id];
-			}
-		}
-	
+		if ($this->keywordData != null && array_key_exists($testcase_id, $this->keywordData))
+			$associatedKeywords = $this->keywordData[$testcase_id];
+
+		$bInsert = false;
+		$bClean = false;
 		// handle case where suite has already been added to mapOfLastResult						  
-		if ($this->mapOfLastResult && array_key_exists($suiteId, $this->mapOfLastResult)) {
+		if ($this->mapOfLastResult && array_key_exists($suiteId, $this->mapOfLastResult)) 
+		{
 			// handle case where both suite and test case have been added to elmapOfLastResult
-			if (array_key_exists($testcase_id, $this->mapOfLastResult[$suiteId])) {
-				// print "test case already in mapOfLastResult <BR>";
-				$buildInMap = $this->mapOfCaseResults[$testcase_id]['buildNumber'];	
-				if ($buildInMap < $buildNumber) {				
-					// print "build in map less than current build number <BR>";
-					if (($lastResultToTrack == 'a') || ($lastResultToTrack == $result)) {	
-						// owner assignments
-						$this->mapOfLastResultByOwner[$owner_id][$testcase_id] = $result;
-						// keyword assignments
-						for ($i=0 ; $i < sizeof($associatedKeywords); $i++){
-							$this->mapOfLastResultByKeyword[$associatedKeywords[$i]][$testcase_id] = $result;
-						}
-						// mapOfLastResult assignments
-						$this->mapOfLastResult[$suiteId][$testcase_id] = null;
-						$this->mapOfLastResult[$suiteId][$testcase_id] = array("buildIdLastExecuted" => $buildNumber, 
-				                                                       "result" => $result, 
-																	   "tcversion_id" => $tcversion_id, 
-				                                                       "execution_ts" => $execution_ts, 
-																	   "notes" => $notes, 
-				                                                       "suiteName" => $suiteName, 
-				                                                       "executions_id" => $executions_id, 
-				                                                       "name" => $name, 
-																	   "tester_id" => $tester_id);
-					} // end if -- $lastResultToTrack logic
-					// cancel previous result for this build
-					else {
-						//print "cancel out previous result! <BR>";
-						// owner assignments
-						unset($this->mapOfLastResultByOwner[$owner_id][$testcase_id]);
-						// keyword assignments
-						for ($i=0 ; $i < sizeof($associatedKeywords); $i++){
-							unset($this->mapOfLastResultByKeyword[$associatedKeywords[$i]][$testcase_id]);
-						} // end for
-						unset($this->mapOfLastResult[$suiteId][$testcase_id]);
-					} // end else
-				} // end if -- $buildInMap < $buildNumber 
-			} // end array_key_exists if
-			// handle case where suite is in mapOfLastResult but test case has not been added
-			else {
-				if (($lastResultToTrack == 'a') || ($lastResultToTrack == $result)) {
-					// owner assignments
-					$this->mapOfLastResultByOwner[$owner_id][$testcase_id] = $result;
-					// keyword assignments
-					for ($i=0 ; $i < sizeof($associatedKeywords); $i++){
-						$this->mapOfLastResultByKeyword[$associatedKeywords[$i]][$testcase_id] = $result;
-					}
-					// mapOfLastResult assignment
-					$this->mapOfLastResult[$suiteId][$testcase_id] = array("buildIdLastExecuted" => $buildNumber, 
-			                                                        "result" => $result, 
-																	"tcversion_id" => $tcversion_id, 
-			                                                        "execution_ts" => $execution_ts, 
-																	"notes" => $notes, 
-			                                                        "suiteName" => $suiteName, 
-			                                                        "executions_id" => $executions_id, 
-			                                                        "name" => $name, 
-																	"tester_id" => $tester_id);
-				} // end if -- last result logic
-			} // end else	
-		} // end if
-		// handle case where suite has not been added to mapOfLastResult
-		else {
-			if (($lastResultToTrack == 'a') || ($lastResultToTrack == $result)) {
-				// owner assignments
-				$this->mapOfLastResultByOwner[$owner_id][$testcase_id] = $result;	
-				// keyword assignments
-				for ($i=0 ; $i < sizeof($associatedKeywords); $i++){
-					$this->mapOfLastResultByKeyword[$associatedKeywords[$i]][$testcase_id] = $result;
-				}
-				// mapOfLastResult assignments
-				$this->mapOfLastResult[$suiteId][$testcase_id] = array("buildIdLastExecuted" => $buildNumber, 
-  		                                                       "result" => $result, 
-															   "tcversion_id" => $tcversion_id, 
-  		                                                       "execution_ts" => $execution_ts, 
-															   "notes" => $notes, 
-  		                                                       "suiteName" => $suiteName, 
-  		                                                       "executions_id" => $executions_id, 
-  		                                                       "name" => $name, 
-															   "tester_id" => $tester_id);  		
-			} // end if -- last result logic
-		} // end else  	
+			if (array_key_exists($testcase_id, $this->mapOfLastResult[$suiteId])) 
+			{
+				$buildInMap = $this->mapOfCaseResults[$testcase_id]['buildNumber'];
+				$execIDInMap = $this->mapOfCaseResults[$testcase_id]['execID'];
+				if (($buildInMap < $buildNumber) || ($buildInMap == $buildNumber && $execIDInMap < $executions_id))
+					$bInsert = true;
+			}
+			else // handle case where suite is in mapOfLastResult but test case has not been added 
+				$bInsert = true;
+		}
+		else // handle case where suite has not been added to mapOfLastResult
+			$bInsert = true;
+		
+		if ($bInsert)
+		{
+			// owner assignments
+			$this->mapOfLastResultByOwner[$owner_id][$testcase_id] = $result;	
+			// keyword assignments
+			for ($i = 0;$i < sizeof($associatedKeywords); $i++)
+			{
+				$this->mapOfLastResultByKeyword[$associatedKeywords[$i]][$testcase_id] = $result;
+			}
+			$this->mapOfCaseResults[$testcase_id]['buildNumber'] = $buildNumber;
+			$this->mapOfCaseResults[$testcase_id]['execID'] = $executions_id;
+			// mapOfLastResult assignments
+			$this->mapOfLastResult[$suiteId][$testcase_id] = array("buildIdLastExecuted" => $buildNumber, 
+	                                                       "result" => $result, 
+														   "tcversion_id" => $tcversion_id, 
+	                                                       "execution_ts" => $execution_ts, 
+														   "notes" => $notes, 
+	                                                       "suiteName" => $suiteName, 
+	                                                       "executions_id" => $executions_id, 
+	                                                       "name" => $name, 
+														   "tester_id" => $tester_id);  			
+		}	
 	} // end function
   
 	/**

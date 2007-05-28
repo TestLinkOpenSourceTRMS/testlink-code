@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: cfield_mgr.class.php,v $
- * @version $Revision: 1.12 $
- * @modified $Date: 2007/05/02 07:25:11 $  $Author: franciscom $
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2007/05/28 06:44:27 $  $Author: franciscom $
  * @author franciscom
  *
  * 20070501 - franciscom - limiting length of values while writting to db.
@@ -19,7 +19,7 @@
  *                  execution_values_to_db()
  *                         
 **/
-
+require_once(dirname(__FILE__) . './date_api.php');
 class cfield_mgr
 {
 	var $db;
@@ -46,7 +46,19 @@ class cfield_mgr
                                    7=>'multiselection list',
                                    8=>'date',
 								                   20=>'text area');
-     
+
+  // for what type of CF possible_values need 
+  // to be manage at GUI level
+  var $possible_values_cfg = array('string' => 0,
+                                   'numeric'=> 0,
+                                   'float'=> 0,
+                                   'email'=> 0,
+                                   'checkbox' => 1,
+                                   'list' => 1,
+                                   'multiselection list' => 1,
+                                   'date' => 0,
+								                   'text area' => 0);
+    
      
   // only the types listed here can have custom fields
 	//var $node_types = array('testproject',
@@ -58,6 +70,13 @@ class cfield_mgr
 	                        'testplan',
 	                        'testcase');
   
+
+  // Need to manage user interface, when creating Custom Fields
+  // For certain type of nodes, enable_on_exec has nosense
+	var $enable_on_exec_cfg = array('testsuite' => 0,
+	                                'testplan'  => 0,
+	                                'testcase'  => 1);
+
   
   
   // the name of html input will have the following format
@@ -121,6 +140,7 @@ class cfield_mgr
     returns: hash with node types id, that can have custom fields.
              key:   short description (node_types.description)
              value: node_type_id      (node_types.id)
+
   */
 	function get_allowed_nodes() 
 	{
@@ -132,6 +152,58 @@ class cfield_mgr
     }
     return($allowed_nodes);
   }
+
+
+
+  /*
+    function: get_enabled_on_exec_cfg
+    
+    returns: hash with node types id, that can have custom fields with enabled_on_exec.
+             key  : node_type_id      (node_types.id)
+             value: 1 -> enable on exec can be configured by user
+             
+             
+  */
+	function get_enable_on_exec_cfg() 
+	{
+    $enabled_mgmt=array();
+    $tl_node_types=$this->tree_manager->get_available_node_types();
+    
+    foreach($this->node_types as $verbose_type)
+    {
+      $type_id=$tl_node_types[$verbose_type];
+      if( isset($this->enable_on_exec_cfg[$verbose_type]) )
+      {
+        $enabled_mgmt[$type_id]=$this->enable_on_exec_cfg[$verbose_type];
+      }
+    }
+    return($enabled_mgmt);
+  }
+
+  /*
+    function: get_possible_values_cfg
+    
+    returns: hash 
+             key  : cf_type_id      (see $custom_field_types)
+             value: 1 -> possible values can be managed on UI.
+             
+             
+  */
+  function get_possible_values_cfg() 
+	{
+    $pv_cfg=array();
+    $custom_field_types_id=array_flip($this->custom_field_types);
+       
+    foreach($this->possible_values_cfg as $verbose_cf_type => $use_on_ui)
+    {
+      $cf_type_id=$custom_field_types_id[$verbose_cf_type];
+      $pv_cfg[$cf_type_id]=$use_on_ui;
+    }
+    return($pv_cfg);
+  }
+
+
+
 
   /*
     function: get_linked_cfields_at_design
@@ -174,6 +246,9 @@ class cfield_mgr
                          
 
     rev :
+          20070526 - franciscom
+          changed order by clause
+          
           20070101 - franciscom
           1. added filter on cfield_testprojects.active=1
           2. added new argument $show_on_execution
@@ -207,6 +282,7 @@ class cfield_mgr
      $additional_filter .= " AND CF.show_on_execution=1 ";     
     }
     
+    // 20070526 - added CF.id to order by
     $sql="SELECT CF.*,CFTP.display_order" .
          $additional_values .
          " FROM custom_fields CF " .
@@ -217,7 +293,7 @@ class cfield_mgr
          " AND   CF.show_on_design=1     " . 
          " AND   CF.enable_on_design={$enabled} " .
          $additional_filter .
-         " ORDER BY display_order ";
+         " ORDER BY display_order,CF.id ";
 
     $map = $this->db->fetchRowsIntoMap($sql,'id');     
     return($map);                                 
@@ -356,7 +432,12 @@ class cfield_mgr
 			              'cols="' . $cols . '" rows="' . $rows . '">' .
 			              "{$t_custom_field_value}</textarea>";            
   	  break;
-
+     
+      case 'date':
+      $str_out .=create_date_selection_set($input_name, 
+                                           config_get('date_format'), 
+                                           $t_custom_field_value, false, true) ;
+      break;
 
   	}		
     return ($str_out);	
@@ -387,17 +468,26 @@ class cfield_mgr
                               
           
     rev:
+         20070525 - franciscom - added [hash_type], to reuse this method on
+                                 class testcase method copy_cfields_design_values()
          20070501 - franciscom - limiting lenght of value before writting
          20070105 - franciscom - added $cf_map
          20070104 - franciscom - need to manage multiselection in a different way      
   */
-  function design_values_to_db($hash,$node_id,$cf_map=null)
+  function design_values_to_db($hash,$node_id,$cf_map=null,$hash_type=null)
   {                                  
     if( is_null($hash) && is_null($cf_map) )
     {
        return;
     }
-    $cfield=$this->_build_cfield($hash,$cf_map);
+    if( is_null($hash_type) )
+    {
+      $cfield=$this->_build_cfield($hash,$cf_map);
+    }
+    else
+    {
+      $cfield=$hash;
+    }
     
     if( !is_null($cfield) )
     {
@@ -871,7 +961,7 @@ class cfield_mgr
 			case 'date':
 				if ($t_custom_field_value != null) 
 				{
-					return date( config_get( 'short_date_format'), $t_custom_field_value) ;
+					return date( config_get( 'date_format'), $t_custom_field_value) ;
 				}
 				break ;
 				
@@ -927,6 +1017,8 @@ class cfield_mgr
                          
 
     rev :
+          20070526 - franciscom
+          changed order by clause
              
           
   */
@@ -955,7 +1047,7 @@ class cfield_mgr
                           " AND CFEV.testplan_id={$testplan_id} ";
     }
     
-    
+    // 20070526 - added CF.id to order by
     $sql="SELECT CF.*,CFTP.display_order" .
          $additional_values .
          " FROM custom_fields CF " .
@@ -965,7 +1057,7 @@ class cfield_mgr
          " AND   CFTP.active=1     " . 
          " AND   CF.enable_on_execution={$enabled} " .
          " AND   CF.show_on_execution=1 " .
-         " ORDER BY display_order ";
+         " ORDER BY display_order,CF.id ";
     
     $map = $this->db->fetchRowsIntoMap($sql,'id');     
     return($map);                                 
@@ -1155,6 +1247,24 @@ class cfield_mgr
     }
  } // function end
   
-  
+
+ 
+ # code from mantis helper_api.php
+ # --------------------
+ # returns a tab index value and increments it by one.  This is used to give sequential tab index on 
+ # a form.
+ function helper_get_tab_index_value() {
+	 static $tab_index = 0;
+	 return ++$tab_index;
+ }
+
+ # --------------------
+ # returns a tab index and increments internal state by 1.  This is used to give sequential tab index on
+ # a form.  For example, this function returns: tabindex="1"
+ function helper_get_tab_index() {
+	 return 'tabindex="' . helper_get_tab_index_value() . '"';
+ }
+
+
 } // end class
 ?>

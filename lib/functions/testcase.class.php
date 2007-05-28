@@ -2,10 +2,11 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.54 $
- * @modified $Date: 2007/05/02 07:26:02 $ $Author: franciscom $
+ * @version $Revision: 1.55 $
+ * @modified $Date: 2007/05/28 06:44:49 $ $Author: franciscom $
  * @author franciscom
  *
+ * 20070525 - franciscom - copy_cfields_design_values()
  * 20070501 - franciscom - added localization of custom field labels
  *
  * 20070302 - franciscom - fixed bug on get_linked_cfields_at_design()
@@ -638,6 +639,8 @@ function copy_to($id,$parent_id,$user_id,
 			{
 				$this->copyKeywordsTo($id,$new_tc['id']);
 			}
+			$this->copy_cfields_design_values($id,$new_tc['id']);
+
 		}
 	}
 	return($new_tc);
@@ -1467,6 +1470,33 @@ function get_linked_cfields_at_execution($id,$parent_id=null,$show_on_execution=
 	$cf_map = $this->cfield_mgr->get_linked_cfields_at_execution($tproject_id,$enabled,'testcase',
 	                                                         $id,$execution_id,$testplan_id);
 	return($cf_map);
+}
+
+
+/*
+  function: copy_cfields_design_values
+            
+            
+  args: 
+  returns: 
+*/
+function copy_cfields_design_values($from_id,$to_id)                                         
+{
+  // Get all cfields linked to any testcase of this test project
+  // with the values presents for $from_id, testcase we are using as
+  // source for our copy
+  $cfmap_from=$this->get_linked_cfields_at_design($from_id);
+
+  $cfield=null;
+  if( !is_null($cfmap_from) )
+  {
+    foreach($cfmap_from as $key => $value)
+    {
+      $cfield[$key]=array("type_id"  => $value['type'],
+                          "cf_value" => $value['value']);
+    }
+  }
+  $this->cfield_mgr->design_values_to_db($cfield,$to_id,null,'tcase_copy_cfields');
 }
 
 } // end class

@@ -1,6 +1,6 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: usersview.tpl,v 1.14 2007/02/28 08:02:26 franciscom Exp $
+$Id: usersview.tpl,v 1.15 2007/05/28 06:42:10 franciscom Exp $
 
 Purpose: smarty template - users overview
 
@@ -53,7 +53,7 @@ var warning_delete_user = "{lang_get s='warning_delete_user'}";
 
 	<table class="simple" width="95%">
 		<tr>
-			<th {if $user_order_by == 'order_by_login'}style="background-color: white;"{/if}>
+			<th {if $user_order_by == 'order_by_login'}style="background-color: #c8dce8;color: black;"{/if}>
 			    {lang_get s='th_login'}
 			    <img src="{$smarty.const.TL_THEME_IMG_DIR}/order_{$order_by_login_dir}.gif" 
 			         title="{lang_get s='order_by_login'} {lang_get s=$order_by_login_dir}"
@@ -66,7 +66,7 @@ var warning_delete_user = "{lang_get s='warning_delete_user'}";
 			<th>{lang_get s='th_last_name'}</th>
 			<th>{lang_get s='th_email'}</th>
 			
-			<th {if $user_order_by == 'order_by_role'}style="background-color: white;"{/if}>
+			<th {if $user_order_by == 'order_by_role'}style="background-color: #c8dce8;color: black;"{/if}>
 			    {lang_get s='th_role'}
     			<img src="{$smarty.const.TL_THEME_IMG_DIR}/order_{$order_by_role_dir}.gif" 
     			     title="{lang_get s='order_by_role_descr'} {lang_get s=$order_by_role_dir}"

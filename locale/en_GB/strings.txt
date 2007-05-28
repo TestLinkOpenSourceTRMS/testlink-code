@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.174 $
- * @modified $Date: 2007/05/21 06:40:22 $ $Author: franciscom $
+ * @version $Revision: 1.175 $
+ * @modified $Date: 2007/05/28 06:41:32 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
@@ -237,7 +237,7 @@ $TLS_warning_empty_cfield_name = "Please enter the name of this custom field.";
 // gui/templates/inc_update.tpl
 $TLS_info_failed_db_upd = "Failed to update database!";
 $TLS_info_failed_db_upd_details = "Failed to update database! - details:";
-$TLS_invalid_query = "Error:";
+$TLS_invalid_query = "Error";
 $TLS_warning = "Warning!!";
 $TLS_was_success = " was successfully ";
 
@@ -281,7 +281,7 @@ $TLS_btn_back2srs = "Back to Req. Specification";
 $TLS_btn_import = "Import";
 $TLS_btn_upload_file = "Upload file";
 $TLS_check_req_file_structure = "Please check the file format, seems is not possible get any requirement";
-$TLS_local_file = "File:";
+$TLS_local_file = "File";
 $TLS_max_size_cvs_file1 = "Max. size of the file is";
 $TLS_max_size_cvs_file2 = "kB";
 $TLS_req_import_check_note = "Please verify possible conflicts, set an appropriate solution and then start import process.";
@@ -290,9 +290,9 @@ $TLS_req_import_option_double = "Add a new one with the same title";
 $TLS_req_import_option_header = "Set conflict solution";
 $TLS_req_import_option_overwrite = "Update an existing one";
 $TLS_req_import_option_skip = "Skip import of doubled requirements";
-$TLS_req_import_type = "Type:";
+$TLS_req_import_type = "Type";
 $TLS_req_msg_norequirement = "No requirement";
-$TLS_required_cvs_format = "The required file format:";
+$TLS_required_cvs_format = "The required file format";
 $TLS_title_choose_file_type = "Choose file type";
 $TLS_title_choose_local_file = "Choose a Local File to Upload";
 $TLS_title_req_import = "Import requirements";
@@ -370,7 +370,8 @@ $TLS_title_last_mod = "Last modified on ";
 $TLS_active = "Active";
 $TLS_enter_build = "Title";
 $TLS_enter_build_notes = "Description";
-$TLS_msg_build = "Notes: Each build is related to the active Test Plan. Description should include: list of delivered packages, approvals, status,etc.";
+$TLS_msg_build = "Notes: Each build is related to the active Test Plan. " .
+                 "Description should include: list of delivered packages, approvals, status,etc.";
 $TLS_open = "Open";
 $TLS_test_plan = "Test Plan";
 $TLS_title_build_2 = "Build management";
@@ -544,10 +545,10 @@ $TLS_btn_create_role = "Create";
 $TLS_btn_edit_role = "Edit";
 $TLS_caption_define_role = "Define role";
 $TLS_caption_possible_affected_users = "Possibly affected users";
-$TLS_enter_role_notes = "Enter role description";
+$TLS_enter_role_notes = "Role description";
 $TLS_menu_assign_product_roles = "Assign Test Project roles";
 $TLS_menu_assign_testplan_roles = "Assign test plan roles";
-$TLS_menu_define_roles = "Define roles";
+$TLS_menu_define_roles = "New role";
 $TLS_menu_mod_user = "Modify User";
 $TLS_menu_new_user = "New User";
 $TLS_menu_edit_user = "Edit User";
@@ -558,8 +559,8 @@ $TLS_th_kw_rights = "Keyword rights";
 $TLS_th_mgttc_rights = "Test Case management rights";
 $TLS_th_product_rights = "Test Project rights";
 $TLS_th_req_rights = "Requirement rights";
-$TLS_th_rights = "Permissions";
-$TLS_th_rolename = "Rolename";
+$TLS_th_rights = "Rights";
+$TLS_th_rolename = "Role name";
 $TLS_th_tp_rights = "Test Plan rights";
 $TLS_th_user_rights = "User rights";
 $TLS_title_user_mgmt = "User Administration";
@@ -609,7 +610,7 @@ $TLS_title_keyword_import_to = "Import keywords to";
 
 // gui/templates/keywordsexport.tpl
 $TLS_btn_export = "Export";
-$TLS_title_req_import_to = "Import requirements to document:";
+$TLS_title_req_import_to = "Import requirements to document";
 
 
 
@@ -647,20 +648,20 @@ $TLS_warning_delete_user = "Really delete the selected user?";
 
 // gui/templates/login.tpl
 $TLS_btn_login = "Login";
-$TLS_login_name = "Login Name:";
+$TLS_login_name = "Login Name";
 $TLS_lost_password_q = "Lost Password?";
 $TLS_new_user_q = "New User?";
-$TLS_password = "Password:";
+$TLS_password = "Password";
 
 
 
 // gui/templates/loginFirst.tpl
 $TLS_btn_add_user_data = "Add User Data";
-$TLS_e_mail = "E-mail address (needed for sending a new password):";
-$TLS_first_name = "First name:";
-$TLS_last_name = "Last name:";
+$TLS_e_mail = "E-mail address (needed for sending a new password)";
+$TLS_first_name = "First name";
+$TLS_last_name = "Last name";
 $TLS_link_back_to_login = "Back to login";
-$TLS_password_again = "Repeat password:";
+$TLS_password_again = "Repeat password";
 $TLS_password_mgmt_is_external = "Password management is external";
 
 
@@ -711,7 +712,7 @@ $TLS_tc_not_tested_yet = "Not Tested Yet";
 $TLS_test_cases_cannot_be_executed = "Test cases can not be executed";
 $TLS_test_exec_by = "Tested by";
 $TLS_test_exec_expected_r = "Expected Results";
-$TLS_test_exec_last_run_date = "Most recent Run:";
+$TLS_test_exec_last_run_date = "Most recent Run";
 $TLS_test_exec_notes = "Notes / Description";
 $TLS_test_exec_on_build = "on Build";
 $TLS_test_exec_result = "Result";
@@ -722,7 +723,7 @@ $TLS_test_status_not_run = "Not Run";
 $TLS_th_test_case_id = "ID ";
 $TLS_th_testsuite = "Testsuite";
 $TLS_title_t_r_on_build = "Test Results on Build";
-$TLS_title_t_r_owner = " Assigned to:";
+$TLS_title_t_r_owner = " Assigned to";
 $TLS_title_test_case = "Test Case";
 $TLS_version = "Version";
 
@@ -795,7 +796,7 @@ $TLS_testplan_th_name = "Name";
 $TLS_testplan_th_notes = "Description";
 $TLS_testplan_title_create = "Create a new Test plan";
 $TLS_testplan_title_edit = "Edit the Test plan";
-$TLS_testplan_title_for_project = "for Test Project: ";
+$TLS_testplan_title_for_project = "for Test Project ";
 $TLS_testplan_title_tp_management = "Test Plan Management";
 $TLS_testplan_txt_notes = "Test plan should be clearly defined task(s) with a timeframe and a content. " .
                           "It could contain a testing activity for a new version of product " .
@@ -867,7 +868,9 @@ $TLS_req_msg_norequirement66 = "No requirement";
 $TLS_req_title_assign = "Assign Requirements to Test Case";
 $TLS_req_title_assigned = "Assigned Requirements";
 $TLS_req_title_unassigned = "Available Requirements";
-$TLS_warning_req_tc_assignment_impossible = "You <b>can't do</b> the assignment due to one of these causes:<br><ul><li>There are no Requirement Specification defined</li><li>The Requirement Specifications are empty</ul></li></ul>";
+$TLS_warning_req_tc_assignment_impossible = "You <b>can't do</b> the assignment due to one of these causes:" .
+                                            "<br><ul><li>There are no Requirement Specification defined</li>" .
+                                            "<li>The Requirement Specifications are empty</ul></li></ul>";
 
 
 
@@ -973,8 +976,8 @@ $TLS_th_tc_total = "TC Total";
 
 
 // gui/templates/resultsBugs.tpl
-$TLS_date = "Date:";
-$TLS_printed_by = "Printed by:";
+$TLS_date = "Date";
+$TLS_printed_by = "Printed by";
 $TLS_title_test_case_bugs = "Test case bugs";
 $TLS_title_test_case_timestamp = "Test Case timestamp";
 $TLS_title_test_case_title = "Test Title";
@@ -1017,7 +1020,7 @@ $TLS_select_last_result_header = "Select Last Result";
 $TLS_select_owner_header = "Select Owner";
 $TLS_select_report_format_header = "Select Report Format";
 $TLS_submit_query = "Submit Query";
-$TLS_test_plan_header = "Test Plan: ";
+$TLS_test_plan_header = "Test Plan ";
 $TLS_query_metrics_report = "Query Metrics Report";
 
 // gui/templates/resultsMoreBuilds_report.tpl
@@ -1125,7 +1128,7 @@ $TLS_btn_change = "Change";
 $TLS_caption_assign_testplan_user_roles = "Assign test plan roles to users";
 $TLS_caption_assign_testproject_user_roles = "Assign Test Project user roles";
 $TLS_menu_assign_testproject_roles = "Assign Test Project roles";
-$TLS_th_roles = "Roles";
+$TLS_th_roles = "Role";
 $TLS_title_assign_roles = "Assign roles";
 
 
@@ -1401,7 +1404,7 @@ $TLS_sec_note_remove_install_dir = "Install directory should be removed!";
 
 // lib/general/frmWorkArea.php
 $TLS_create_a_build = "Create a new build";
-$TLS_no_build_warning_part1 = "There are no Builds created for this Test Plan: ";
+$TLS_no_build_warning_part1 = "There are no Builds created for this Test Plan ";
 $TLS_no_build_warning_part2 = "Please create it first or ask your administrator.";
 
 
@@ -1469,8 +1472,8 @@ $TLS_opt_imp_medium = "Medium";
 
 
 // lib/plan/planTestersEdit.php
-$TLS_title_assign_tp = "Assign Test Plans to the user: ";
-$TLS_title_assign_users = "Assign Users to the Test Plan: ";
+$TLS_title_assign_tp = "Assign Test Plans to the user ";
+$TLS_title_assign_users = "Assign Users to the Test Plan ";
 
 
 
@@ -1564,7 +1567,7 @@ $TLS_req_created = "Requirement %s was successfully created";
 
 // lib/req/reqTcAssign.php
 $TLS_req_msg_noselect = "Nothing selected";
-$TLS_req_msg_notupdated_coverage = "Coverage was not updated for Requirements: ";
+$TLS_req_msg_notupdated_coverage = "Coverage was not updated for Requirements ";
 
 
 

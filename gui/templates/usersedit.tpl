@@ -1,6 +1,6 @@
 {* 
 Testlink: smarty template - 
-$Id: usersedit.tpl,v 1.11 2007/03/10 22:56:59 schlundus Exp $ 
+$Id: usersedit.tpl,v 1.12 2007/05/28 06:41:58 franciscom Exp $ 
 *}
 {* 
 
@@ -122,7 +122,7 @@ function validateForm(f)
 
 		{if $userData eq null}
 		     <tr>
-			     <th>{lang_get s='th_password'}:</th>
+			     <th>{lang_get s='th_password'}</th>
 			    {if $external_password_mgmt eq 0 }
 		        <td><input type="password" name="password" 
 		                   size="{#PASSWD_SIZE#}" 
@@ -140,7 +140,7 @@ function validateForm(f)
 			           size="{#EMAIL_SIZE#}" maxlength="{#EMAIL_MAXLEN#}" /></td>
 		</tr>
 		<tr>
-			<th>{lang_get s='th_role'}:</th>
+			<th>{lang_get s='th_role'}</th>
 			<td>
 		  	   {assign var=selected_role value=$userData.role_id}
 			  {if $userData.role_id eq 0}

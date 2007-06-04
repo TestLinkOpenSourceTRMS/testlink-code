@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: product.core.inc.php,v $
- * @version $Revision: 1.10 $
- * @modified $Date: 2007/01/20 18:45:39 $  $Author: franciscom $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2007/06/04 17:30:09 $  $Author: franciscom $
  * @author Martin Havlat
  *
  * Core Functions for Product management (get data)
@@ -13,15 +13,6 @@
  * removed "dead code"
  * added TL_INACTIVE_MARKUP
  */
-
-function getAllProductsBut(&$db,$id,&$products)
-{
-	$sql = "SELECT id, name FROM testprojects WHERE id !=" . $id;
-	$products = selectData($db,$sql);
-
-	return (!empty($products)) ? 1 : 0;
-}	
-
 /** get option list of products; all for admin and active for others 
 
 rev :

@@ -1,8 +1,12 @@
 {* 
 Testlink: smarty template - 
-$Id: cfields_edit.tpl,v 1.6 2007/01/29 08:13:32 franciscom Exp $ 
+$Id: cfields_edit.tpl,v 1.7 2007/06/04 17:27:40 franciscom Exp $ 
 
 rev :
+
+     20070526 - franciscom - added javascript logic to improve
+                             cf enable attr management
+                             
      20070128 - franciscom - variable name changes
 *}
 {include file="inc_head.tpl" jsValidate="yes"}
@@ -10,11 +14,26 @@ rev :
 <body>
 {config_load file="input_dimensions.conf" section="cfields_edit"} {* Constant definitions *}
 
+
 {literal}
 <script type="text/javascript">
 {/literal}
 var warning_empty_cfield_name = "{lang_get s='warning_empty_cfield_name'}";
 var warning_empty_cfield_label = "{lang_get s='warning_empty_cfield_label'}";
+
+var js_enable_on_exec_cfg = new Array();
+{foreach key=node_type item=cfg_def from=$enable_on_exec_cfg}
+  js_enable_on_exec_cfg[{$node_type}]={$cfg_def};
+{/foreach}
+
+
+var js_possible_values_cfg = new Array();
+{foreach key=cf_type item=cfg_def from=$possible_values_cfg}
+  js_possible_values_cfg[{$cf_type}]={$cfg_def};
+{/foreach}
+
+
+
 {literal}
 function validateForm(f)
 {
@@ -32,6 +51,74 @@ function validateForm(f)
       return false;
   }
   return true;
+}
+
+/*
+  function: configure_cf_attr
+            depending of node type, custom fields attributes
+            will be set to disable, is its value is nonsense
+            for node type choosen by user.
+  
+  args : id_nodetype: id of html input used to choose node type
+                      to which apply custom field
+                      
+         id_exec : id of html input used to configure custom field 
+                   attribute "enable on execution"             
+                   
+         id_exec_container : id of html container 
+                             where input for "enable on execution"
+                             lives. Used to manage visibility.
+  
+  returns: 
+
+*/
+function configure_cf_attr(cfg,id_nodetype,id_exec,id_exec_container)
+{
+  o_nodetype=document.getElementById(id_nodetype);
+  o_exec=document.getElementById(id_exec);
+  o_exec_container=document.getElementById(id_exec_container);
+  
+  if( cfg[o_nodetype.value] == 0 )
+  {
+    o_exec.value=0;
+    o_exec.disabled='disabled';
+    o_exec_container.style.display='none';
+  }
+  else
+  {
+    o_exec.disabled='';
+    o_exec_container.style.display='';
+  }
+}
+
+/*
+  function: cfg_possible_values_display
+            depending of Custom Field type, Possible Values attribute
+            will be displayed or not.
+  
+  args : cf_type: id of custom field type, choosen by user.
+                      
+         id_possible_values_container : id of html container 
+                                        where input for possible values
+                                        lives. Used to manage visibility.
+  
+  returns: 
+
+*/
+function cfg_possible_values_display(cfg,id_cftype,id_possible_values_container)
+{
+  
+  o_cftype=document.getElementById(id_cftype);
+  o_container=document.getElementById(id_possible_values_container);
+
+  if( cfg[o_cftype.value] == 0 )
+  {
+    o_container.style.display='none';
+  }
+  else
+  {
+    o_container.style.display='';
+  }
 }
 </script>
 {/literal}
@@ -99,20 +186,30 @@ function validateForm(f)
 			    <input type="hidden" id="hidden_cf_type" 
 			           value={$cf.type} name="cf_type"> 
 			  {else}
-  				<select id="combo_cf_type" name="cf_type"> 
+  				<select onchange="cfg_possible_values_display(js_possible_values_cfg,
+  				                                              'combo_cf_type',
+  				                                              'possible_values');"
+  				        id="combo_cf_type" 
+  				        name="cf_type"> 
 	  			{html_options options=$cf_types selected=$cf.type}
 		  		</select>
 		  	{/if}	
 			</td>
 		</tr>
 
-		<tr>
+    {if $show_possible_values }
+      {assign var="display_style" value=""}
+    {else}
+      {assign var="display_style" value="none"}
+		{/if}
+		<tr id="possible_values" style="display:{$display_style};">
 			<th>{lang_get s='possible_values'}</th>
 			<td>
-				<input type="text" name="cf_possible_values"
+				<input type="text" id="cf_possible_values"
+				                   name="cf_possible_values"
 		                       size="{#CFIELD_POSSIBLE_VALUES_SIZE#}" 
 		                       maxlength="{#CFIELD_POSSIBLE_VALUES_MAXLEN#}" 
-				        value="{$cf.possible_values}"> 
+				                   value="{$cf.possible_values}"> 
 			</td>
 		</tr>
 
@@ -133,6 +230,12 @@ function validateForm(f)
 			</td>
 		</tr>
 
+    {if $disabled_cf_enable_on_execution}
+      {assign var="display_style" value="none"}
+    {else}
+      {assign var="display_style" value=""}
+    {/if}
+    
 		<tr>
 			<th>{lang_get s='show_on_exec'}</th>
 			<td>
@@ -141,10 +244,12 @@ function validateForm(f)
 				</select>
 			</td>
 		</tr>
-		<tr>
+		<tr id="cf_enable_on_execution_container" style="display:{$display_style};">
 			<th>{lang_get s='enable_on_exec'}</th>
 			<td>
-				<select name="cf_enable_on_execution"> 
+				<select id="cf_enable_on_execution" 
+				        name="cf_enable_on_execution"
+				        {$disabled_cf_enable_on_execution}> 
 				{html_options options=$gsmarty_option_yes_no selected=$cf.enable_on_execution}
 				</select>
 			</td>
@@ -153,13 +258,18 @@ function validateForm(f)
 		<tr>
 			<th>{lang_get s='available_on'}</th>
 			<td>
-			  {if $is_used}
+			  {if $is_used} {* Type CAN NOT BE CHANGED *}
 			    {assign var="idx" value=$cf.node_type_id}
 			    {$cf_allowed_nodes.$idx}
 			    <input type="hidden" id="hidden_cf_node_type_id" 
 			           value={$cf.node_type_id} name="cf_node_type_id"> 
 			  {else}
-  				<select id="combo_cf_node_type_id" name="cf_node_type_id"> 
+  				<select onchange="configure_cf_attr(js_enable_on_exec_cfg,
+  				                                    'combo_cf_node_type_id',
+  				                                    'cf_enable_on_execution',
+  				                                    'cf_enable_on_execution_container');"
+  				        id="combo_cf_node_type_id" 
+  				        name="cf_node_type_id"> 
   				{html_options options=$cf_allowed_nodes selected=$cf.node_type_id}
   				</select>
 				{/if}

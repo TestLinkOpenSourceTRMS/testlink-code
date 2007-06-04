@@ -2,9 +2,15 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testsuite.class.php,v $
- * @version $Revision: 1.30 $
- * @modified $Date: 2007/05/02 07:26:02 $ - $Author: franciscom $
+ * @version $Revision: 1.31 $
+ * @modified $Date: 2007/06/04 17:29:11 $ - $Author: franciscom $
  * @author franciscom
+ *
+ * 20070602 - franciscom - added attachment copy on copy_to() method
+ *                         using testcase copy_attachment() method.
+ *                         added delete attachments. 
+ *                         added remove of custom field values 
+ *                         (design) when removing test suite.
  *
  * 20070501 - franciscom - added localization of custom field labels
  *                         added use of htmlspecialchars() on labels
@@ -367,6 +373,7 @@ function copy_to($id, $parent_id, $user_id,
 						           $check_duplicate_name,$action_on_duplicate_name);
 	
 	$new_tsuite_id = $ret['id'];
+  $tcase_mgr->copy_attachments($id,$new_tsuite_id);
 	
 	$subtree = $this->tree_manager->get_subtree($id,array('testplan' => 'exclude_me'),
 													                    array('testcase' => 'exclude_my_children'));
@@ -391,6 +398,7 @@ function copy_to($id, $parent_id, $user_id,
 					                     $tsuite_info['details'],$tsuite_info['node_order']);      
 				  
 			    $parent_decode[$elem['id']]=$ret['id'];
+		      $tcase_mgr->copy_attachments($elem['id'],$ret['id']);
 					break;
 			}
 		}
@@ -441,6 +449,9 @@ function get_testcases_deep($id,$bIdsOnly = false)
   
   returns: 
 
+  rev :
+       20070602 - franciscom
+       added delete attachments
 */
 function delete_deep($id)
 {
@@ -459,7 +470,6 @@ function delete_deep($id)
 
     // -------------------------------------------------------------------
     // First delete dependent objects
-    //
     if (!is_null($testcases))
 	  {
 	    foreach($testcases as $the_key => $elem)
@@ -475,6 +485,12 @@ function delete_deep($id)
 	  foreach($subtree as $the_key => $elem)
 	  {
       $node_list[]= $elem['id'];
+      
+      // 20070602 - franciscom
+      $tcase_mgr->delete_attachments($elem['id']);
+      $this->cfield_mgr->remove_all_design_values_from_node($elem['id']);
+
+      $this->deleteKeywords($elem['id']);
 	  }
     $tsuites_id_list=implode(",",$node_list);    
 	
@@ -818,6 +834,8 @@ function html_table_of_custom_field_values($id,$scope='design',$show_on_executio
   $cf_smarty = "<table>" . $cf_smarty . "</table>";
   return($cf_smarty);
 } // function end
+
+
 
 } // end class
 

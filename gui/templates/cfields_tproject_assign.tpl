@@ -1,13 +1,16 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: cfields_tproject_assign.tpl,v 1.4 2007/05/15 17:02:20 franciscom Exp $
+$Id: cfields_tproject_assign.tpl,v 1.5 2007/06/04 17:27:40 franciscom Exp $
 Purpose: management Custom fields assignment to a test project
 
 rev :
+     20070527 - franciscom - added check/uncheck all logic
      20070515 - franciscom - BUGID 0000852 
 
 *}
-{include file="inc_head.tpl"}
+{include file="inc_head.tpl" openHead="yes"}
+{include file="inc_jsCheckboxes.tpl"}
+</head>
 
 <body>
 {assign var="cfg_section" value=$smarty.template|replace:".tpl":"" }
@@ -23,17 +26,25 @@ rev :
   <div class="workBack">
     <h2>{lang_get s='title_assigned_cfields'}</h2>
     <form id="cf_assignment" method="post">
+      <div id="assigned_cf"> 
+ 	    {* used as memory for the check/uncheck all checkbox javascript logic *}
+       <input type="hidden" name="memory_assigned_cf"  
+                            id="memory_assigned_cf"  value="0" />
       <table class="simple">
       	<tr>
-      		<th style="width: 10px;"></th>
-      		<th>{lang_get s="name"}</th>
-      		<th>{lang_get s="label"}</th>
-      		<th style="width: 10px;">{lang_get s="display_order"}</th>
-      		<th style="width: 10px;">{lang_get s="cfields_active"}</th>
+      		<th align="center"  style="width: 5px;background-color:#005498;"> 
+      		    <img src="{$smarty.const.TL_THEME_IMG_DIR}/toggle_all.gif"
+      		             onclick='cs_all_checkbox_in_div("assigned_cf","assigned_cfield","memory_assigned_cf");'
+      		             title="{lang_get s='check_uncheck_all_checkboxes'}">
+      		</th>
+      		<th width="40%">{lang_get s="name"}</th>
+      		<th width="40%">{lang_get s="label"}</th>
+      		<th width="15%">{lang_get s="display_order"}</th>
+      		<th width="5%">{lang_get s="cfields_active"}</th>
       	</tr>
       	{foreach key=cf_id item=cf from=$my_cf}
       	<tr>
-      		<td><input type="checkbox" name="cfield[{$cf.id}]" /></td>
+      		<td><input type="checkbox" id="assigned_cfield{$cf.id}" name="cfield[{$cf.id}]" /></td>
    		   	<td class="bold"><a href="lib/cfields/cfields_edit.php?do_action=edit&cfield_id={$cf.id}"
    		   	                    title="{lang_get s='manage_cfield'}">{$cf.name|escape}</a></td>
       		<td class="bold">{$cf.label|escape}</span></td>
@@ -48,6 +59,7 @@ rev :
       	</tr>
       	{/foreach}
       </table>
+    	</div>
     	<div class="groupBtn">
     		<input type="submit" name="unassign" value="{lang_get s='btn_unassign'}" />
     		<input type="submit" name="active_mgmt" value="{lang_get s='btn_cfields_active_mgmt'}" />
@@ -62,20 +74,30 @@ rev :
   <div class="workBack">
     <h2>{lang_get s='title_available_cfields'}</h2>
     <form id="cf_assignment" method="post">
+      <div id="free_cf"> 
+ 	    {* used as memory for the check/uncheck all checkbox javascript logic *}
+       <input type="hidden" name="memory_free_cf"  
+                            id="memory_free_cf"  value="0" />
+
       <table class="simple" style="width: 50%;">
       	<tr>
-      		<th style="width: 10px;"></th>
+      		<th align="center"  style="width: 5px;background-color:#005498;"> 
+      		    <img src="{$smarty.const.TL_THEME_IMG_DIR}/toggle_all.gif"
+      		             onclick='cs_all_checkbox_in_div("free_cf","free_cfield","memory_free_cf");'
+      		             title="{lang_get s='check_uncheck_all_checkboxes'}">
+      		</th>
       		<th>{lang_get s="name"}</th>
       		<th>{lang_get s="label"}</th>
       	</tr>
       	{foreach key=cf_id item=cf from=$other_cf}
       	<tr>
-      		<td><input type="checkbox" name="cfield[{$cf.id}]" /></td>
+      		<td><input type="checkbox" id="free_cfield{$cf.id}" name="cfield[{$cf.id}]" /></td>
       		<td class="bold">{$cf.name|escape}</td>
       		<td class="bold">{$cf.label|escape}</span></td>
       	</tr>
       	{/foreach}
       </table>
+    	</div>
     	<div class="groupBtn">
     		<input type="submit" name="assign" value="{lang_get s='btn_assign'}" />
     	</div>

@@ -2,10 +2,17 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.55 $
- * @modified $Date: 2007/05/28 06:44:49 $ $Author: franciscom $
+ * @version $Revision: 1.56 $
+ * @modified $Date: 2007/06/04 17:28:32 $ $Author: franciscom $
  * @author franciscom
  *
+ *                         
+ * 20070602 - franciscom - added attachment copy on copy_to() method.
+ *                         added attachment delete.
+ *                         added remove of custom field values 
+ *                         (design and execution) when removing 
+ *                         test case or test case version.
+ *   
  * 20070525 - franciscom - copy_cfields_design_values()
  * 20070501 - franciscom - added localization of custom field labels
  *
@@ -25,7 +32,7 @@
  */
 require_once( dirname(__FILE__) . '/requirements.inc.php' );
 require_once( dirname(__FILE__) . '/assignment_mgr.class.php' );
-
+require_once( dirname(__FILE__) . '/attachments.inc.php' );
 
 $g_tcImportTypes = array( 
 							 "XML" => "XML",
@@ -506,6 +513,9 @@ function get_linked_versions($id,$exec_status="ALL",$active_status='ALL')
 	links to test plans
 	tcversions
 	nodes from hierarchy
+	
+	rev:
+	     20070602 - franciscom - delete attachments
 */
 function _blind_delete($id,$version_id=TC_ALL_VERSIONS,$children=null)
 {
@@ -516,19 +526,17 @@ function _blind_delete($id,$version_id=TC_ALL_VERSIONS,$children=null)
 	    $sql[]="DELETE FROM testcase_keywords WHERE testcase_id = {$id}";
 	    $sql[]="DELETE FROM req_coverage WHERE testcase_id = {$id}";
 	
-	    //$sql[]="DELETE FROM testplan_tcversions 
-	    //        WHERE tcversion_id IN (SELECT nodes_hierarchy.id 
-	    //                               FROM nodes_hierarchy WHERE nodes_hierarchy.parent_id = {$id})";
-      //$sql[]="DELETE FROM tcversions 
-      //        WHERE tcversions.id IN (SELECT nodes_hierarchy.id 
-      //                                FROM nodes_hierarchy WHERE nodes_hierarchy.parent_id = {$id})";
-
 	    $children_list=implode(',',$children);
 	    $sql[]="DELETE FROM testplan_tcversions " . 
 	           " WHERE tcversion_id IN ({$children_list})";
 
       $sql[]="DELETE FROM tcversions " .
 	           " WHERE id IN ({$children_list})";
+                                      
+                                      
+      // 20070602 - franciscom
+      $this->delete_attachments($id);                                      
+      $this->cfield_mgr->remove_all_design_values_from_node($id);
                                       
       $item_id = $id;
     }
@@ -554,29 +562,26 @@ function _blind_delete($id,$version_id=TC_ALL_VERSIONS,$children=null)
 Delete the following info:
 	bugs
 	executions
+  cfield_execution_values
 */
 function _execution_delete($id,$version_id=TC_ALL_VERSIONS,$children=null)
 {
 	  $sql = array();
 		if( $version_id	== TC_ALL_VERSIONS )
 		{ 
-    	//	$sql[]="DELETE FROM execution_bugs 
-      //    		  WHERE execution_id IN (SELECT id FROM executions 
-      //        		                     WHERE tcversion_id IN (SELECT nodes_hierarchy.id 
-      //            		                                        FROM nodes_hierarchy 
-      //                		                                    WHERE nodes_hierarchy.parent_id = {$id}))";
-      //
-    	//$sql[]="DELETE FROM executions 
-      //		    WHERE tcversion_id IN (SELECT id 
-      //    		                       FROM nodes_hierarchy WHERE nodes_hierarchy.parent_id = {$id})";
-      
 	    $children_list=implode(',',$children);
     	$sql[]="DELETE FROM execution_bugs 
         		  WHERE execution_id IN (SELECT id FROM executions 
             		                     WHERE tcversion_id IN ({$children_list}))";
+             
+      // 20070603 - franciscom       
+      $sql[]="DELETE FROM cfield_execution_values " .
+      		   " WHERE tcversion_id IN ({$children_list})";
                     		                                   
       $sql[]="DELETE FROM executions " .
       		   " WHERE tcversion_id IN ({$children_list})";
+      		   
+      		   
     }
     else
     {
@@ -584,9 +589,14 @@ function _execution_delete($id,$version_id=TC_ALL_VERSIONS,$children=null)
         	  	  WHERE execution_id IN (SELECT id FROM executions 
               		                     WHERE tcversion_id = {$version_id})";
     	
+        // 20070603 - franciscom       
+        $sql[]="DELETE FROM cfield_execution_values " .
+        		   " WHERE tcversion_id = {$version_id}";
+
     		$sql[]="DELETE FROM executions " .
         		   " WHERE tcversion_id = {$version_id}";
     }
+    
     foreach ($sql as $the_stm)
     {
     		$result = $this->db->exec_query($the_stm);
@@ -641,6 +651,9 @@ function copy_to($id,$parent_id,$user_id,
 			}
 			$this->copy_cfields_design_values($id,$new_tc['id']);
 
+
+      // 20070602 - franciscom
+      $this->copy_attachments($id,$new_tc['id']);
 		}
 	}
 	return($new_tc);
@@ -662,6 +675,15 @@ function create_new_version($id,$user_id)
 }
 
 
+
+/*
+  function: get_last_version_info
+
+  args : $id: test case id
+  
+  returns: map
+
+*/
 function get_last_version_info($id)
 {
 	$sql = "SELECT MAX(version) AS version FROM tcversions,nodes_hierarchy WHERE ".
@@ -682,6 +704,15 @@ function get_last_version_info($id)
 	return $tcInfo;
 }
 
+
+/*
+  function: copy_tcversion
+
+  args :
+  
+  returns: 
+
+*/
 function copy_tcversion($from_tcversion_id,$to_tcversion_id,$as_version_number,$user_id)
 {
     $now = $this->db->db_now();
@@ -695,6 +726,15 @@ function copy_tcversion($from_tcversion_id,$to_tcversion_id,$as_version_number,$
     $result = $this->db->exec_query($sql);
 }	
 
+
+/*
+  function: get_by_id_bulk
+
+  args :
+  
+  returns: 
+
+*/
 function get_by_id_bulk($id,$version_id=TC_ALL_VERSIONS, $get_active=0, $get_open=0)
 {
 	$where_clause="";
@@ -960,6 +1000,14 @@ function get_exec_status($id)
 // -------------------------------------------------------------------------------
 //                            Keyword related methods	
 // -------------------------------------------------------------------------------
+/*
+  function: getKeywords
+
+  args :
+  
+  returns: 
+
+*/
 function getKeywords($tcID,$kwID = null)
 {
 	$sql = "SELECT keyword_id,keywords.keyword,keywords.notes 
@@ -974,6 +1022,14 @@ function getKeywords($tcID,$kwID = null)
 	return $tcKeywords;
 } 
 
+/*
+  function: get_keywords_map
+
+  args :
+  
+  returns: 
+
+*/
 function get_keywords_map($id,$order_by_clause='')
 {
 	$sql = "SELECT keyword_id,keywords.keyword 
@@ -1115,7 +1171,14 @@ function get_executions($id,$version_id,$tplan_id,$build_id,$exec_id_order='DESC
 
 
 
-/* 20060330 - franciscom */
+/*
+  function: get_last_execution
+
+  args :
+  
+  returns: 
+
+*/
 function get_last_execution($id,$version_id,$tplan_id,$build_id,$get_no_executions=0)
 {
 	
@@ -1217,7 +1280,14 @@ function get_last_execution($id,$version_id,$tplan_id,$build_id,$get_no_executio
 }
 
 
+/*
+  function: exportTestCaseDataToXML
 
+  args :
+  
+  returns: 
+
+*/
 function exportTestCaseDataToXML($tcase_id,$tcversion_id,$bNoXMLHeader = false,$optExport = array())
 {
 	$tc_data = $this->get_by_id($tcase_id,$tcversion_id);
@@ -1281,6 +1351,15 @@ function get_version_exec_assignment($tcversion_id,$tplan_id)
 	return $recordset;
 }
 
+
+/*
+  function: update_active_status
+
+  args :
+  
+  returns: 
+
+*/
 function update_active_status($id,$tcversion_id,$active_status)
 {
 	// test case version
@@ -1290,6 +1369,78 @@ function update_active_status($id,$tcversion_id,$active_status)
 	$result = $this->db->exec_query($sql);
 	
 	return $result ? 1: 0;
+}
+
+
+/*
+  function: 
+
+  args :
+  
+  returns: 
+
+*/
+function copy_attachments($source_id,$target_id)
+{
+  $table_name='nodes_hierarchy';
+  $f_parts=null;
+  $destFPath=null;
+  $mangled_fname='';
+  $status_ok=false;
+  $repo_type=config_get('repositoryType');
+  $repo_path=config_get('repositoryPath') .  DIRECTORY_SEPARATOR;
+  
+  $attachments=getAttachmentInfos($this->db,$source_id,$table_name);  
+  echo "<pre>debug 20070602 " . __FUNCTION__ . " --- "; print_r($attachments); echo "</pre>";
+  if( count($attachments) > 0 )
+  {
+    foreach($attachments as $key => $value)
+    {
+       $file_contents=null;
+       $f_parts=explode(DIRECTORY_SEPARATOR,$value['file_path']);
+       $mangled_fname=$f_parts[count($f_parts)-1];
+	     if ($repo_type == TL_REPOSITORY_TYPE_FS)
+	     {
+		    $destFPath = buildRepositoryFilePath($mangled_fname,$table_name,$target_id);
+		    $status_ok = copy($repo_path . $value['file_path'],$destFPath);
+	     }
+       else
+       {
+         $file_contents = getAttachmentContentFromDB($this->db,$value['id']);
+		     $status_ok = sizeof($file_contents);
+       }
+       if($status_ok)
+       {
+        insertAttachment($this->db,$target_id,$table_name,$value['file_name'],$destFPath,
+                         $file_contents,$value['file_type'],$value['file_size'],$value['title']);        
+       }
+    }
+	}
+}
+
+/*
+  function: 
+
+  args :
+  
+  returns: 
+
+*/
+function delete_attachments($id)
+{
+  $table_name='nodes_hierarchy';
+  $attachments=getAttachmentInfos($this->db,$id,$table_name);  
+  if( count($attachments) > 0 )
+  {
+    $my_attachment_dir=buildRepositoryFolderFor($table_name,$id);
+    $my_attachment_dir .= DIRECTORY_SEPARATOR;
+    
+    foreach($attachments as $key => $value)
+    {
+      deleteAttachment($this->db,$value['id']); 
+    }
+    rmdir($my_attachment_dir);
+	} 
 }
 
 

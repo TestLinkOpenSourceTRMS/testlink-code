@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: cfields_edit.php,v $
  *
- * @version $Revision: 1.5 $
- * @modified $Date: 2007/05/09 06:56:06 $ by $Author: franciscom $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2007/06/04 17:26:46 $ by $Author: franciscom $
  *
  *
  * rev :
@@ -22,8 +22,13 @@ $cfield_id = isset($_REQUEST['cfield_id']) ? $_REQUEST['cfield_id']:0;
 $cf_is_used = 0;
 $result_msg = null;
 $cf = '';  
-	
+$disabled_cf_enable_on_execution="";
+
 $cfield_mgr = new cfield_mgr($db);
+
+$enable_on_exec_cfg=$cfield_mgr->get_enable_on_exec_cfg();
+$possible_values_cfg=$cfield_mgr->get_possible_values_cfg();
+
 
 $allowed_nodes = $cfield_mgr->get_allowed_nodes();
 $cf_allowed_nodes = array();
@@ -99,12 +104,26 @@ switch ($do_action)
 
 $smarty = new TLSmarty();
 
+if(!$enable_on_exec_cfg[$cf['node_type_id']])
+{
+  $disabled_cf_enable_on_execution=' disabled="disabled" ';
+}
+$show_possible_values=$possible_values_cfg[$cf['type']];
+
+
 $smarty->assign('result',$result_msg);
 $smarty->assign('user_action',$do_action);
 $smarty->assign('cf_types',$cfield_mgr->get_available_types());
 $smarty->assign('cf_allowed_nodes',$cf_allowed_nodes);
 $smarty->assign('is_used',$cf_is_used);
 $smarty->assign('cf',$cf);
+$smarty->assign('disabled_cf_enable_on_execution', $disabled_cf_enable_on_execution);
+$smarty->assign('show_possible_values', $show_possible_values);
+
+
+$smarty->assign('enable_on_exec_cfg', $enable_on_exec_cfg);
+$smarty->assign('possible_values_cfg', $possible_values_cfg);
+
 $smarty->display('cfields_edit.tpl');
 ?>
 
@@ -120,6 +139,9 @@ $smarty->display('cfields_edit.tpl');
 */
 function request2cf($hash)
 {
+  $missing_keys=array('enable_on_execution' => 0,
+                      'possible_values' => ' ' );
+
 	$cf_prefix = 'cf_';
 	$len_cfp = strlen($cf_prefix);
 	$start_pos = $len_cfp;
@@ -132,6 +154,15 @@ function request2cf($hash)
 			$cf[$dummy]=$value;
 		}
 	} 
+	
+	foreach($missing_keys as $key => $value)
+	{
+	  if( !isset($cf[$key]) )
+	  {
+	    $cf[$key]=$value;
+	  }
+	}
+
 	return $cf;
 }
 ?>

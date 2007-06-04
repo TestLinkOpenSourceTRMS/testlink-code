@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: cfield_mgr.class.php,v $
- * @version $Revision: 1.13 $
- * @modified $Date: 2007/05/28 06:44:27 $  $Author: franciscom $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2007/06/04 17:26:07 $  $Author: franciscom $
  * @author franciscom
  *
  * 20070501 - franciscom - limiting length of values while writting to db.
@@ -961,7 +961,10 @@ class cfield_mgr
 			case 'date':
 				if ($t_custom_field_value != null) 
 				{
-					return date( config_get( 'date_format'), $t_custom_field_value) ;
+				  // must remove %
+				  $t_date_format=str_replace("%","",config_get( 'date_format'));
+				  $xdate=date( $t_date_format, $t_custom_field_value);
+					return  $xdate;
 				}
 				break ;
 				
@@ -1155,7 +1158,11 @@ class cfield_mgr
   */
   function _build_cfield($hash,$cf_map)
   {
-    
+    // carved in the stone
+    $html_date_input_suffix = array('day' => true, 
+                                    'month' => true,
+                                    'year' => true);
+        
     $cf_prefix=$this->name_prefix;
     $len_cfp=strlen($cf_prefix);
     $cftype_pos=2;
@@ -1167,6 +1174,7 @@ class cfield_mgr
     {
       foreach($cf_map as $key => $value)
       {
+        echo "cf_map -> KEY " .$key ."<br>";
         $cfield[$key]=array("type_id"  => $value['type'],
                             "cf_value" => '');
       }
@@ -1181,9 +1189,35 @@ class cfield_mgr
       {
         if( strncmp($key,$cf_prefix,$len_cfp) == 0 )
         {
+          // When using Custom Fields on Test Spec: 
+          // key has this format (for every type except date )
+          // custom_field_0_10 for every type except for type date.
+          //
+          // For date custom fields:
+          // custom_field_8_10_day, custom_field_8_10_month, custom_field_8_10_year
+          //
+          // After explode()
+          // Position 2: CF type
+          // Position 3: CF id
+          // Position 4: only available for date CF, is date part indicator 
+          //
+          // When using Custom Fields on Execution, another piece is added (TC id)
+          // then for a date CF, date part indicator is Position 5, instead of 4
+          //
           $dummy=explode('_',$key);
+          $last_idx=count($dummy)-1;
+          $the_value=$value;
+          if( isset($html_date_input_suffix[$dummy[$last_idx]]) )
+          {
+            $the_value=array();
+            if( isset($cfield[$dummy[$cfid_pos]]) )  
+            {
+              $the_value=$cfield[$dummy[$cfid_pos]]['cf_value'];
+            }
+            $the_value[$dummy[$last_idx]]=$value;
+          }
           $cfield[$dummy[$cfid_pos]]=array("type_id"  => $dummy[$cftype_pos],
-                                           "cf_value" => $value);
+                                           "cf_value" => $the_value);
         }
       }
     } //if( !is_null($hash) )
@@ -1209,6 +1243,18 @@ class cfield_mgr
             }
             $cfield[$field_id]['cf_value']=$value;
           break;        
+
+          case 'date':
+            if (($value['year'] == 0) || ($value['month'] == 0) || ($value['day'] == 0)) 
+            {
+              $cfield[$field_id]['cf_value']='';
+            }
+            else
+            {
+              $cfield[$field_id]['cf_value']=strtotime($value['year'] . "-" . 
+                                                       $value['month'] . "-" . $value['day']);
+            }
+          break;
           
           default:
             $cfield[$field_id]['cf_value']=$value;

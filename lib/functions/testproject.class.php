@@ -2,10 +2,11 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.33 $
- * @modified $Date: 2007/05/09 06:56:49 $  $Author: franciscom $
+ * @version $Revision: 1.34 $
+ * @modified $Date: 2007/06/04 17:29:11 $  $Author: franciscom $
  * @author franciscom
  *
+ * 20070603 - franciscom - added delete()
  * 20070219 - franciscom - fixed bug on get_first_level_test_suites()
  * 20070128 - franciscom - added check_tplan_name_existence()
  * 20061010 - franciscom - added get_srs_by_title()
@@ -18,11 +19,13 @@ class testproject
 {
 	var $db;
 	var $tree_manager;
+  var $cfield_mgr;
 
 	function testproject(&$db)
 	{
 		$this->db = &$db;	
 		$this->tree_manager = new tree($this->db);
+		$this->cfield_mgr=new cfield_mgr($this->db);
 	}
 
 /** 
@@ -637,20 +640,191 @@ function count_testcases($id)
   	} 
   	return($ret);
   }
+/* END REQUIREMENT RELATED */
+// ----------------------------------------------------------------------------------------
 
 
+/*
+  function: delete
 
+  args :
+  
+  returns: 
 
-
-	/* END REQUIREMENT RELATED */
-
-
-/* 20060402 - franciscom */
-function delete()
+*/
+function delete($id,&$error)
 {
+	$error = ''; //clear error string
 	
+	$a_sql = array();
+	$tp = new testproject($db);
+	$kwMap = $this->get_keywords_map($id);
+	if ($kwMap)
+	{
+		$kwIDs = implode(",",array_keys($kwMap));
+		
+		$a_sql[] = array("DELETE FROM testcase_keywords  WHERE keyword_id IN ({$kwIDs})",
+							       'info_tc_keywords_delete_fails');
+		$a_sql[] = array("DELETE FROM object_keywords  WHERE keyword_id IN ({$kwIDs})",
+							       'info_object_keywords_delete_fails');					 
+		$a_sql[] = array("DELETE FROM keywords WHERE testproject_id=" .$id,
+							       'info_keywords_delete_fails');
+	}	
+
+  // -------------------------------------------------------------------------------
+	$sql = "SELECT id FROM req_specs WHERE testproject_id=" . $id;
+	$srsIDs = $this->db->fetchColumnsIntoArray($sql,"id");
+	if ($srsIDs)
+	{
+		$srsIDs = implode(",",$srsIDs);
+		$sql = "SELECT id FROM requirements WHERE srs_id IN ({$srsIDs})";
+		$reqIDs = $this->db->fetchColumnsIntoArray($sql,"id");
+		if ($reqIDs)
+		{
+			$reqIDs = implode(",",$reqIDs);
+			$a_sql[] = array (
+							 "DELETE FROM req_coverage WHERE req_id IN ({$reqIDs})",
+							 'info_req_coverage_delete_fails',
+							 );
+			$a_sql[] = array (
+							 "DELETE FROM requirements WHERE id IN ({$reqIDs})",
+							 'info_requirements_delete_fails',
+							 );
+		}
+		$a_sql[] = array (
+						 "DELETE FROM req_specs WHERE id IN ({$srsIDs})",
+						 'info_req_specs_delete_fails',
+						 );
+	}
+	// -------------------------------------------------------------------------------
 	
+	$a_sql[] = array(
+			"UPDATE users SET default_testproject_id = NULL WHERE default_testproject_id = {$id}",
+			 'info_resetting_default_project_fails',
+	);
 	
+	$a_sql[] = array(
+			"DELETE FROM user_testproject_roles WHERE testproject_id = {$id}",
+			 'info_deleting_project_roles_fails',
+	);
+	$tpIDs = $this->get_all_testplans($id);
+	if ($tpIDs)
+	{
+		$tpIDs = implode(",",array_keys($tpIDs));
+		$a_sql[] = array(
+			"DELETE FROM user_testplan_roles WHERE testplan_id IN  ({$tpIDs})",
+			 'info_deleting_testplan_roles_fails',
+		);
+		$a_sql[] = array(
+			"DELETE FROM testplan_tcversions WHERE testplan_id IN ({$tpIDs})",
+			 'info_deleting_testplan_tcversions_fails',
+		);
+
+		$a_sql[] = array(
+			"DELETE FROM risk_assignments WHERE testplan_id IN ({$tpIDs})",
+			 'info_deleting_testplan_risk_assignments_fails',
+		);
+		
+		$a_sql[] = array(
+			"DELETE FROM priorities WHERE testplan_id IN ({$tpIDs})",
+			 'info_deleting_testplan_risk_assignments_fails',
+		);
+		
+		$a_sql[] = array(
+			"DELETE FROM milestones WHERE testplan_id IN ({$tpIDs})",
+			 'info_deleting_testplan_milestones_fails',
+		);
+		
+		$sql = "SELECT id FROM executions WHERE testplan_id IN ({$tpIDs})";
+		$execIDs = $this->db->fetchColumnsIntoArray($sql,"id");
+		if ($execIDs)
+		{
+			$execIDs = implode(",",$execIDs);
+		
+			$a_sql[] = array(
+			"DELETE FROM execution_bugs WHERE execution_id IN ({$execIDs})",
+			 'info_deleting_execution_bugs_fails',
+				);
+		}
+			 
+		$a_sql[] = array(
+			"DELETE FROM builds WHERE testplan_id IN ({$tpIDs})",
+			 'info_deleting_builds_fails',
+		);
+
+		$a_sql[] = array(
+			"DELETE FROM executions WHERE testplan_id IN ({$tpIDs})",
+			 'info_deleting_execution_fails',
+		); 
+	}
+		
+	$test_spec = $this->tree_manager->get_subtree($id);
+	if(count($test_spec))
+	{
+		$ids = array("nodes_hierarchy" => array());
+		foreach($test_spec as $elem)
+		{
+			$eID = $elem['id'];
+			$table = $elem['node_table'];
+			$ids[$table][] = $eID;
+			$ids["nodes_hierarchy"][] = $eID;
+		}
+		
+		foreach($ids as $tableName => $fkIDs)
+		{
+			$fkIDs = implode(",",$fkIDs);
+			
+			if ($tableName != "testcases")
+			{
+				$a_sql[] = array(
+					"DELETE FROM {$tableName} WHERE id IN ({$fkIDs})",
+					 "info_deleting_{$tableName}_fails",
+					);
+			}
+		}
+	}			
+	//MISSING DEPENDENT DATA:
+	/*
+	* ATTACHMENTS
+	* CUSTOM FIELDS
+	*/
+		
+	// delete all nested data over array $a_sql
+	foreach ($a_sql as $oneSQL)
+	{
+		if (empty($error))
+		{
+			$sql = $oneSQL[0];
+			$result = $this->db->exec_query($sql);	
+			if (!$result)
+				$error .= lang_get($oneSQL[1]);
+		}
+	}	
+	
+	// ---------------------------------------------------------------------------------------
+	// delete product itself and items directly related to it like:
+	// custom fields assignments
+	// custom fields values ( right now we are not using custom fields on test projects)
+	// attachments
+	if (empty($error))
+	{
+    // 20070603 - franciscom
+    $sql="DELETE FROM cfield_testprojects WHERE testproject_id = {$id} ";
+    $this->db->exec_query($sql);     
+
+		$sql = "DELETE FROM testprojects WHERE id = {$id}";
+		$result = $this->db->exec_query($sql);
+		if ($result)
+		{
+			$tproject_id_on_session = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : $id;
+			if ($id == $tproject_id_on_session)
+				setSessionTestProject(null);
+		}
+		else
+			$error .= lang_get('info_product_delete_fails');
+	}
+
+	return empty($error) ? 1 : 0;
 }
 
 
@@ -822,19 +996,50 @@ function get_first_level_test_suites($tproject_id,$mode='simple')
 	return($fl);
 }
 
+/*
+  function: get_by_user_role
 
+  args : $user_id
+         $role_id
+  
+  returns: 
 
+*/
+function get_by_user_role($user_id,$role_id)
+{
+	$test_projects = array();
+	$sql =  " SELECT nodes_hierarchy.id,nodes_hierarchy.name,active " .
+ 	        " FROM nodes_hierarchy " .
+ 	        " JOIN testprojects ON nodes_hierarchy.id=testprojects.id " .
+	        " LEFT OUTER JOIN user_testproject_roles " .
+		      " ON testprojects.id = user_testproject_roles.testproject_id " .
+		      " AND  user_testproject_roles.user_id = {$user_id} WHERE ";
+		 	      
+	if ($role_id != TL_ROLES_NONE)
+		$sql .=  "(role_id IS NULL OR role_id != " . TL_ROLES_NONE . ")";
+	else
+		$sql .=  "(role_id IS NOT NULL AND role_id != " . TL_ROLES_NONE . ")";
+	
+	
+	if (has_rights($this->db,'mgt_modify_product') != 'yes')
+		$sql .= " AND active=1 ";
 
-
-
-
-
-
-
-
-
-
-
+	$sql .= " ORDER BY name";
+	
+	$arrTemp = $this->db->fetchRowsIntoMap($sql,'id');
+	if (sizeof($arrTemp))
+	{
+		foreach($arrTemp as $id => $row)
+		{
+			$noteActive = '';
+			if (!$row['active'])
+				$noteActive = TL_INACTIVE_MARKUP;
+			$test_projects[$id] = $noteActive . $row['name'];
+		}
+	}
+	
+	return $test_projects;
+}
 
 
 // -------------------------------------------------------------------------------

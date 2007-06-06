@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: usersassign.php,v $
 *
-* @version $Revision: 1.10 $
-* @modified $Date: 2007/02/28 08:04:58 $ $Author: franciscom $
+* @version $Revision: 1.11 $
+* @modified $Date: 2007/06/06 19:18:06 $ $Author: schlundus $
 * 
 * Allows assigning users roles to testplans or testprojects
 *
@@ -32,18 +32,17 @@ $roles_updated='';
 $testPlans = null;
 $bTestproject = false;
 $bTestPlan = false;
-$featureID = isset($_REQUEST['featureID']) ? $_REQUEST['featureID'] : 0;
 
 if ($feature == "testproject")
 {
-  $roles_updated=lang_get("test_project_user_roles_updated");
-	$no_features=lang_get("no_test_projects");
+	$roles_updated = lang_get("test_project_user_roles_updated");
+	$no_features = lang_get("no_test_projects");
 	$bTestproject = true;
 }
 else if ($feature == "testplan")
 {
-  $roles_updated=lang_get("test_plan_user_roles_updated");
-  $no_features=lang_get("no_test_plans");
+	$roles_updated = lang_get("test_plan_user_roles_updated");
+	$no_features = lang_get("no_test_plans");
 	$bTestPlan = true;
 }
 
@@ -108,10 +107,19 @@ else if($bTestPlan)
 	//if nothing special was selected, use the one in the session or the first
 	if (!$featureID)
 	{
-		if ($tpID)
-			$featureID = $tpID;
-		else if (sizeof($features))
-			$featureID = $features[0]['id'];
+		if (sizeof($features))
+		{
+			if ($tpID)
+			{
+				for($i = 0;$i < sizeof($features);$i++)
+				{
+					if ($tpID == $features[$i]['id'])
+						$featureID = $tpID;
+				}
+			}
+			if (!$featureID)
+				$featureID = $features[0]['id'];
+		}
 	}
 	$userFeatureRoles = getTestPlanUserRoles($db,$featureID);
 }

@@ -5,10 +5,10 @@
  *
  * Filename $RCSfile: execNavigator.php,v $
  *
- * @version $Revision: 1.34 $
- * @modified $Date: 2007/02/12 08:02:42 $ by $Author: franciscom $
+ * @version $Revision: 1.35 $
+ * @modified $Date: 2007/06/07 09:45:03 $ by $Author: franciscom $
  *
- *
+ * 20070607 - franciscom - BUGID 887 - problem with builds
  * 20070212 - franciscom - name changes on html inputs
  *
  * 20070123 - franciscom - 
@@ -43,7 +43,8 @@ $tplan_mgr = new testplan($db);
 $optBuild = $tplan_mgr->get_builds_for_html_options($tplan_id,ACTIVE);
 $optResultSelected = isset($_POST['filter_status']) ? $_POST['filter_status'] : 'all';
 
-$maxBuildID = $tplan_mgr->get_max_build_id($tplan_id);
+// 20070607 - franciscom - BUGID 887
+$maxBuildID = $tplan_mgr->get_max_build_id($tplan_id,GET_ACTIVE_BUILD, GET_OPEN_BUILD);
 $optBuildSelected = isset($_POST['build_id']) ? $_POST['build_id'] : $maxBuildID;
 if (!$optBuildSelected && sizeof($optBuild))
 	$optBuildSelected = key($optBuild);

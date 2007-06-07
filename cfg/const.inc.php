@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: const.inc.php,v $
  *
- * @version $Revision: 1.27 $
- * @modified $Date: 2007/05/24 06:49:08 $ by $Author: franciscom $
+ * @version $Revision: 1.28 $
+ * @modified $Date: 2007/06/07 09:52:11 $ by $Author: franciscom $
  * @author Martin Havlát
  *
  * SCOPE:
@@ -16,6 +16,11 @@
  * 
  *-------------------------------------------------------------------
  * Revisions: 
+ *           20070607 - franciscom 
+ *           to solve BUGID: 887
+ *           GET_ACTIVE_BUILD, GET_INACTIVE_BUILD
+ *           GET_OPEN_BUILD,GET_CLOSED_BUILD
+ *
  *           20070523 - franciscom
  *           MENU_ITEM_OPEN, MENU_ITEM_CLOSE
  *
@@ -282,12 +287,12 @@ $g_tc_risks = array('L1', 'L2', 'L3','M1', 'M2', 'M3','H1', 'H2', 'H3');
 
 
 // [Main page]
-define('MENU_ITEM_OPEN','<div class="module-grey"><div><div><div>');
-define('MENU_ITEM_CLOSE','</div></div></div></div>');
+// define('MENU_ITEM_OPEN','<div class="module-grey"><div><div><div>');
+// define('MENU_ITEM_CLOSE','</div></div></div></div>');
 
 // using niftycorners
-//define('MENU_ITEM_OPEN','<div class="menu_bubble">');
-//define('MENU_ITEM_CLOSE','</div><p>');
+define('MENU_ITEM_OPEN','<div class="menu_bubble">');
+define('MENU_ITEM_CLOSE','</div><p>');
 
 
 // 
@@ -355,6 +360,12 @@ define('ANY_OWNER',null);
 
 define('ALL_BUILDS','a');
 define('ALL_TEST_SUITES','all');
+
+define('GET_ACTIVE_BUILD',1);
+define('GET_INACTIVE_BUILD',0);
+define('GET_OPEN_BUILD',1);
+define('GET_CLOSED_BUILD',0);
+
 
 // -------------------------------------------------------------------
 ?>

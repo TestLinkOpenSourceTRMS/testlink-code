@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * @version $Revision: 1.64 $
- * @modified $Date: 2007/05/10 07:07:54 $ by $Author: franciscom $
+ * @version $Revision: 1.65 $
+ * @modified $Date: 2007/06/07 07:06:56 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * 
@@ -35,6 +35,8 @@ if(is_null($my_containerID))
 }
 $objectID = isset($_REQUEST['objectID']) ? intval($_REQUEST['objectID']) : null;
 $tsuite_name = isset($_REQUEST['testsuiteName']) ? strings_stripSlashes($_REQUEST['testsuiteName']) : null;
+
+echo "<pre>debug 20070605 " . __FUNCTION__ . " --- "; print_r($_REQUEST); echo "</pre>";
 
 // 20070311 - franciscom
 $nodes_order = isset($_REQUEST['nodes_order']) ? $_REQUEST['nodes_order'] : null;
@@ -321,7 +323,7 @@ else if($action == 'reorder_testsuites')
 else if($action == 'do_testsuite_reorder')
 {
 	$generalResult = 'ok';
-  $nodes_in_order=transform_nodes_order($nodes_order);
+  $nodes_in_order=transform_nodes_order($nodes_order,$my_containerID);
 	$tree_mgr->change_order_bulk_new($nodes_in_order);
 	if( $my_containerID == $my_tprojectID )
 	{
@@ -445,7 +447,7 @@ function build_del_testsuite_warning_msg(&$tree_mgr,&$tcase_mgr,&$testcases,$tsu
 // nodes_order format:  NODE_ID-?,NODE_ID-?
 // 2-0,10-0,3-0
 //                      
-function transform_nodes_order($nodes_order)
+function transform_nodes_order($nodes_order,$node_to_exclude=null)
 {
   $fa=explode(',',$nodes_order);
   
@@ -453,7 +455,12 @@ function transform_nodes_order($nodes_order)
   {
     // $value= X-Y
     $fb=explode('-',$value);
-    $nodes_id[]=$fb[0];
+    
+    // BUGID
+    if( is_null($node_to_exclude) || $fb[0] != $node_to_exclude)
+    {
+     $nodes_id[]=$fb[0];
+    } 
   }
   
   return $nodes_id;

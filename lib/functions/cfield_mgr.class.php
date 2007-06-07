@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: cfield_mgr.class.php,v $
- * @version $Revision: 1.14 $
- * @modified $Date: 2007/06/04 17:26:07 $  $Author: franciscom $
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2007/06/07 14:13:20 $  $Author: asielb $
  * @author franciscom
  *
  * 20070501 - franciscom - limiting length of values while writting to db.
@@ -19,7 +19,7 @@
  *                  execution_values_to_db()
  *                         
 **/
-require_once(dirname(__FILE__) . './date_api.php');
+require_once(dirname(__FILE__) . '/date_api.php');
 class cfield_mgr
 {
 	var $db;

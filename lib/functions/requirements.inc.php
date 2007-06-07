@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: requirements.inc.php,v $
- * @version $Revision: 1.53 $
- * @modified $Date: 2007/05/07 20:03:05 $ by $Author: schlundus $
+ * @version $Revision: 1.54 $
+ * @modified $Date: 2007/06/07 08:20:02 $ by $Author: schlundus $
  *
  * @author Martin Havlat <havlat@users.sourceforge.net>
  * 
@@ -1163,7 +1163,7 @@ function getReqCoverage($reqs,$execMap,&$coveredReqs)
 				$coveredReqs[$id] = 1;
 			for($i = 0;$i < sizeof($tc);$i++)
 			{
-				$tcInfo = $tc[0];	
+				$tcInfo = $tc[$i];	
 				if (!$i)
 					$req['title'] = $tcInfo['title'];
 				$execTc = $tcInfo['testcase_id'];

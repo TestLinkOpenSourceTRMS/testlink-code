@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * @version $Revision: 1.65 $
- * @modified $Date: 2007/06/07 07:06:56 $ by $Author: franciscom $
+ * @version $Revision: 1.66 $
+ * @modified $Date: 2007/06/07 08:20:02 $ by $Author: schlundus $
  * @author Martin Havlat
  *
  * 
@@ -35,8 +35,6 @@ if(is_null($my_containerID))
 }
 $objectID = isset($_REQUEST['objectID']) ? intval($_REQUEST['objectID']) : null;
 $tsuite_name = isset($_REQUEST['testsuiteName']) ? strings_stripSlashes($_REQUEST['testsuiteName']) : null;
-
-echo "<pre>debug 20070605 " . __FUNCTION__ . " --- "; print_r($_REQUEST); echo "</pre>";
 
 // 20070311 - franciscom
 $nodes_order = isset($_REQUEST['nodes_order']) ? $_REQUEST['nodes_order'] : null;

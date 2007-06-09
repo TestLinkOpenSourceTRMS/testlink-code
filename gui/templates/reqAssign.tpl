@@ -93,9 +93,9 @@ function check_action_precondition(form_id,action)
     		       onclick="return check_action_precondition('reqList','unassign');"/>
     	</div>
     {/if}
+  </form>
   {/if}
   
-  </form>
   </div>
   
   

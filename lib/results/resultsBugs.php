@@ -68,8 +68,14 @@ if ($lastResultMap) {
 			$allBugLinksString = implode("", $allBugLinks);
 			//$allTimeStampsString = implode("<BR>", $allTimeStamps);
 			array_push($rowArray, $allBugLinksString);
-			$arrData[$indexOfArrData] = $rowArray;
-			$indexOfArrData++;	
+			
+			// KL - 20070610
+			$onlyShowTCsWithBugs = true;
+			if (($allBugLinksString) && ($onlyShowTCsWithBugs)) {
+				$arrData[$indexOfArrData] = $rowArray;
+				$indexOfArrData++;
+			}
+				
 			next($currentSuiteInfo);		
 		}  // end while
 		next($lastResultMap);

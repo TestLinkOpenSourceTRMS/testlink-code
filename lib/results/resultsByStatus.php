@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsByStatus.php,v 1.43 2007/05/25 20:44:13 schlundus Exp $ 
+* $Id: resultsByStatus.php,v 1.44 2007/06/10 21:09:37 kevinlevy Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -60,7 +60,6 @@ if (is_array($mapOfLastResult)) {
 		$result = $mapOfLastResult[$suiteId][$tcId]['result'];
 		if ($result == $type)
 		{
-				
 			$currentBuildInfo = null;
 			if ($lastBuildIdExecuted) {
 				$currentBuildInfo = $arrBuilds[$lastBuildIdExecuted];
@@ -94,14 +93,14 @@ if (is_array($mapOfLastResult)) {
 			                                htmlspecialchars($testerName),
 			                                htmlspecialchars($execution_ts),
 			                                htmlspecialchars($notes),$bugString);
-		}			                                
-		$arrDataIndex++;
+            // KL - 20070610 - only increment this var if we added to arrData
+		    $arrDataIndex++;
+		}
 		next($mapOfLastResult[$suiteId]);
 	}
 	next($mapOfLastResult);
   } // end while
 } // end if
-
 
 $smarty = new TLSmarty;
 $smarty->assign('title', $_SESSION['testPlanName'] . " " . $title);

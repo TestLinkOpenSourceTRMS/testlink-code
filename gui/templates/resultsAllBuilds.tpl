@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: resultsAllBuilds.tpl,v 1.6 2007/05/21 06:39:38 franciscom Exp $ *}
+{* $Id: resultsAllBuilds.tpl,v 1.7 2007/06/10 20:04:04 kevinlevy Exp $ *}
 {* Purpose: smarty template - show Test Results and Metrics *}
 {* Revisions:
 20070114 - franciscom - used class to set colors
@@ -13,8 +13,8 @@
 
 
 <div class="workBack">
-{lang_get s="testproject"} {$tproject_name}<br>
-{lang_get s="testplan"} {$tplan_name|escape}<br>
+{lang_get s="testproject"}{':'} <font style="color:black; font-weight:bold; text-decoration: underline;">{$tproject_name}</font><br>
+{lang_get s="testplan"}{':'} <font style="color:black; font-weight:bold; text-decoration:underline;">{$tplan_name|escape}</font><br>
 
 <table class="simple" style="width: 90%; text-align: center;">
 	<tr>

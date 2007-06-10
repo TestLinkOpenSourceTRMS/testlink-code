@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: resultsMoreBuilds_report.tpl,v 1.29 2007/02/23 06:26:13 kevinlevy Exp $
+$Id: resultsMoreBuilds_report.tpl,v 1.30 2007/06/10 19:58:42 kevinlevy Exp $
 @author Francisco Mancardi - fm - start solving BUGID 97/98
 20051022 - scs - removed ' in component id values
 20051121 - scs - added escaping of tpname
@@ -61,7 +61,7 @@ $Id: resultsMoreBuilds_report.tpl,v 1.29 2007/02/23 06:26:13 kevinlevy Exp $
 		</tr>
 	</table>		
 	
-	<table class="simple" style="width: 100%; text-align: center; margin-left: 0px;" border="2">
+	<table class="simple" style="color: blue; width: 100%; text-align: center; margin-left: 0px;" border="2">
 		<tr>
 			<th>{lang_get s="th_total_cases"}</th>
 			<th>{lang_get s="th_total_pass"}</th>
@@ -134,7 +134,7 @@ $Id: resultsMoreBuilds_report.tpl,v 1.29 2007/02/23 06:26:13 kevinlevy Exp $
 				which are not in the plan -->
 			<h2>{$suiteNameText}</h2>			
 
-			<table class="simple" style="width: 100%; text-align: center; margin-left: 0px;" border="2">
+			<table class="simple" style="color:blue; width: 100%; text-align: center; margin-left: 0px;" border="2">
 				<tr>
 					<th>{lang_get s="th_total_cases"}</th>
 					<th>{lang_get s="th_total_pass"}</th>
@@ -183,7 +183,15 @@ $Id: resultsMoreBuilds_report.tpl,v 1.29 2007/02/23 06:26:13 kevinlevy Exp $
 							<td>{$mapUsers[$inst.tester_id]|escape}</td>
 
 							<td>{$inst.execution_ts|escape} </td>
+							{if $gsmarty_tc_status_css[$inst.status] == 'passed' }
+							<td style="color: green; font-weight: bold;">{$gsmarty_tc_status_css[$inst.status]|escape}</td>
+							{elseif $gsmarty_tc_status_css[$inst.status] == 'failed'}
+							<td style="color: red; font-weight: bold;">{$gsmarty_tc_status_css[$inst.status]|escape}</td>
+							{elseif $gsmarty_tc_status_css[$inst.status] == 'blocked'}
+							<td style="color: blue; font-weight: bold;">{$gsmarty_tc_status_css[$inst.status]|escape}</td>
+							{elseif $gsmarty_tc_status_css[$inst.status] == 'not run'}
 							<td>{$gsmarty_tc_status_css[$inst.status]|escape}</td>
+							{/if}
 							<td>{$inst.notes|escape}&nbsp;</td> 
 							<td>{$inst.bugString}&nbsp;</td> 
 						</tr>

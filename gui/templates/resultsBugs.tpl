@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: resultsBugs.tpl,v 1.12 2007/05/21 06:39:38 franciscom Exp $ *}
+{* $Id: resultsBugs.tpl,v 1.13 2007/06/10 22:13:16 kevinlevy Exp $ *}
 {* Purpose: smarty template - show Test Results and Metrics *}
 {* Revisions:
 20051204 - mht - removed obsolete print button
@@ -20,6 +20,23 @@
 {/if}
 
 <div class="workBack">
+
+<table class="simple" style="width: 100%; text-align: center; margin-left: 0px;">
+     <tr>
+         <th>{lang_get s='Open'}</th>
+         <th>{lang_get s='Resolved'}</th>
+         <th>{lang_get s='Total'}</th>
+         <th>{lang_get s='TCs_with_Bugs'}</th>
+     </tr>
+     
+     <tr>
+         <td>{$totalOpenBugs}</td>
+         <td>{$totalResolvedBugs}</td>
+         <td>{$totalBugs}</td>
+         <td>{$totalCasesWithBugs}</td>
+     </tr>
+</table>
+
 <table class="simple" style="width: 100%; text-align: center; margin-left: 0px;">
 	<tr>
 		<th>{lang_get s='title_test_suite_name'}</th>

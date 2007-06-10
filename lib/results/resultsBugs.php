@@ -87,16 +87,23 @@ $totalResolvedBugs = count($resolvedBugs);
 $totalBugs = $totalOpenBugs + $totalResolvedBugs;
 $totalCasesWithBugs = count($arrData);
 
+/**
 print "total open bugs = $totalOpenBugs <BR>";
 print "total resolved bugs = $totalResolvedBugs <BR>";
 print "total bugs = $totalBugs <BR>";
 print "total test cases with bugs = $totalCasesWithBugs <BR>";
-
+*/
 
 $smarty = new TLSmarty;
 $smarty->assign('title', $_SESSION['testPlanName'] . " " . lang_get('link_report_total_bugs'));
 $smarty->assign('arrData', $arrData);
 $smarty->assign('arrBuilds', $arrBuilds);
+
+$smarty->assign('totalOpenBugs', $totalOpenBugs);
+$smarty->assign('totalResolvedBugs', $totalResolvedBugs);
+$smarty->assign('totalBugs', $totalBugs);
+$smarty->assign('totalCasesWithBugs', $totalCasesWithBugs);
+
 $smarty->display('resultsBugs.tpl');
 
 function registerBug($bugID, $bugInfo, &$openBugsArray, &$resolvedBugsArray){

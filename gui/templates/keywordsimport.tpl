@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: keywordsimport.tpl,v 1.5 2007/02/12 08:08:15 franciscom Exp $ *}
+{* $Id: keywordsimport.tpl,v 1.6 2007/06/11 06:35:21 franciscom Exp $ *}
 {* Purpose: smarty template - keyword import initial page *}
 {* revisions:
    20051231 - scs - fixed incorrect cancel button link
@@ -10,25 +10,33 @@
 <h1>{lang_get s='testproject'}{$smarty.const.TITLE_SEP}{$tproject_name|escape}</h1>
 
 <div class="workBack">
-<h1>{lang_get s='title_keyword_import_to'}</h1>
+<h1>{lang_get s='title_keyword_import'}</h1>
 
-<form method="post" enctype="multipart/form-data" action="{$SCRIPT_NAME}">
-
-	<h2>{lang_get s='title_choose_file_type'}</h2>
-	<p>{lang_get s='req_import_type'}
-	<select name="importType">
-		{html_options options=$importTypes selected=$import_type_selected}
-	</select>
-	</p>
-	<p>	{lang_get s='required_cvs_format'}<br />
+	<p class="hint">	
+	  {lang_get s='supported_file_formats'}<br/>
 		{foreach key=k item=i from=$keywordFormatStrings}
 			{$k} : {$i}<br />
 		{/foreach}
+		</i>
 	</p>
 
-	<h2>{lang_get s='title_choose_local_file'}</h2>
-	<p>{lang_get s='local_file'} <input type="file" name="uploadedFile" size="30" /></p>
-	<p>{lang_get s='max_size_cvs_file1'} {$importLimitKB} {lang_get s='max_size_cvs_file2'}</p>
+<form method="post" enctype="multipart/form-data" action="{$SCRIPT_NAME}">
+
+  <table>
+  
+	<tr><td>{lang_get s='import_file_type'}</td>
+	<td>
+	<select name="importType">
+		{html_options options=$importTypes selected=$import_type_selected}
+	</select>
+	</td>
+	</tr>
+  <tr>
+  <td>{lang_get s='keywords_file'}</td> <td><input type="file" name="uploadedFile" size="30" /></td>
+  </tr>
+  <tr><td>{lang_get s='max_file_size_is'} {$importLimitKB} {lang_get s='max_size_cvs_file2'}</td></tr>
+	</table>
+	<p>
 	
 	<div class="groupBtn">
 		<input type="hidden" name="tproject_id" value="{$tproject_id}" />

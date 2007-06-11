@@ -6,10 +6,11 @@
  * Scope: Import keywords page
  *
  * Filename $RCSfile: keywordsimport.php,v $
- * @version $Revision: 1.11 $
- * @modified $Date: 2007/03/16 20:09:48 $ by $Author: schlundus $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2007/06/11 06:34:41 $ by $Author: franciscom $
  *
  * Revisions:
+ *
  * 20070210 - franciscom - added checks: user has choosen a file
  *                                       the file format seems ok
  *
@@ -89,9 +90,27 @@ $smarty->assign('tproject_name', $tproject_name);
 $smarty->assign('tproject_id', $testproject_id);
 $smarty->assign('importLimitKB',TL_IMPORT_LIMIT / 1024);
 $smarty->display('keywordsimport.tpl');
+?>
 
+<?php
+/*
+  function: check_valid_ftype
+            check if file format is ok, for import type choosed
+            
+  args : 
+        $import_type: 'CVS', 'XML'
+        
+  returns: 
+          map with keys -> status_ok, msg
+  rev :
+       added application/x-download, 
+       after testing that an keyword exported CVS file can not be imported
+       due to wrong type.
+
+*/
 function check_valid_ftype($upload_info,$import_type)
 {
+  
 	$ret = array();
 	$ret['status_ok'] = 0;
 	$ret['msg'] = lang_get('file_is_not_ok_for_import_type');
@@ -99,7 +118,10 @@ function check_valid_ftype($upload_info,$import_type)
 	$mime_import_types = null;      
 	$mime_import_types['text/plain'] = array('CSV' => 'csv');
 	$mime_import_types['application/octet-stream'] = array('CSV' => 'csv');
+  $mime_import_types['application/x-download'] = array('CSV' => 'csv');
+
 	$mime_import_types['text/xml']= array('XML' => 'xml');
+
 
 	$uploadType = $upload_info['type']; 
 	$ext = isset($mime_import_types[$uploadType][$import_type]) ? $mime_import_types[$uploadType][$import_type] : null;
@@ -115,6 +137,7 @@ function check_valid_ftype($upload_info,$import_type)
 	}
 	return $ret;
 }
+
 /*
   function: 
 

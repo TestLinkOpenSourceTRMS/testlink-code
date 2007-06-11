@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.175 $
- * @modified $Date: 2007/05/28 06:41:32 $ $Author: franciscom $
+ * @version $Revision: 1.176 $
+ * @modified $Date: 2007/06/11 06:34:02 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
@@ -34,6 +34,10 @@ $TLS_testsuite_created = "Test Suite created";
 $TLS_requirement = "Requirement";
 $TLS_assigned = "assigned";
 $TLS_unassigned = "unassigned";
+$TLS_import_file_type = "Import file type";
+$TLS_max_file_size_is = "Max. file size ";
+$TLS_supported_file_formats = "Supported file formats";
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////7
 // firstLogin.php
@@ -58,6 +62,7 @@ $TLS_main_page_title = "TestLink ::: Main Page";
 
 // keywordsimport.php
 $TLS_please_choose_keywords_file = "Please choose the file to upload";
+$TLS_keywords_file = "Keywords file";
 
 // lostPassword.php
 $TLS_bad_user = "User not found, please try again";
@@ -605,6 +610,7 @@ $TLS_title_imp_tc_data = "Import TestCase data";
 
 // gui/templates/keywordsimport.tpl
 $TLS_title_keyword_import_to = "Import keywords to";
+$TLS_title_keyword_import = "Import keywords";
 
 
 

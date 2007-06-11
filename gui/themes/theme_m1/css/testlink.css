@@ -1,6 +1,6 @@
 /* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: testlink.css,v 1.7 2007/05/24 06:49:27 franciscom Exp $ 
+$Id: testlink.css,v 1.8 2007/06/11 06:34:54 franciscom Exp $ 
 Purpose: main css - theme m1
 
 20070401 - franciscom -  added padding to:
@@ -290,6 +290,7 @@ span.unselected a, span.unselected a:visited {
 * "invisible" - no borders
 */
 
+/* Common */
 table.common {
 	background:     #EEE;
 	border: 		1px solid black;
@@ -314,6 +315,7 @@ table.common caption, table.smallGrey caption {
 	font-weight:    bold;
 }
 
+/* Simple */
 table.simple {
 	background:     #EEE;
 	border: 		thin solid black;
@@ -353,7 +355,7 @@ table.invisible {
 }
 
 
-/* 20060402 - franciscom */
+/* Execution History */
 table.exec_history {
 	background:     #EEE;
 	border: 		thin solid black;
@@ -362,7 +364,6 @@ table.exec_history {
 	width:			95%;
 }
 
-/* 20060402 - franciscom */
 table.exec_history th {
 	background:     #CCC;
 	border-bottom:	1px solid black;
@@ -661,4 +662,16 @@ div.menu_bubble h3{
   margin: 0px 0px 8px 8px;
   /* border-bottom: 1px solid #005498; */
 }  
+
+
+td.clickable_icon
+{
+  width: 5px;
+  text-align: center;
+}
+
+.hint
+{
+	font-style: 	italic;
+}
 /* ----------------------------------------------------------------------------- */

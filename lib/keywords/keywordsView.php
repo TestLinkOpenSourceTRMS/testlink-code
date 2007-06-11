@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: keywordsView.php,v $
  *
- * @version $Revision: 1.15 $
- * @modified $Date: 2007/02/23 23:26:23 $ by $Author: schlundus $
+ * @version $Revision: 1.16 $
+ * @modified $Date: 2007/06/11 06:35:33 $ by $Author: franciscom $
  *
  * allows users to manage keywords. 
  *
@@ -15,9 +15,9 @@
  *
 **/
 require_once("../../config.inc.php");
-require_once("../functions/common.php");
-require_once("../functions/csv.inc.php");
-require_once("../functions/xml.inc.php");
+require_once("common.php");
+require_once("csv.inc.php");
+require_once("xml.inc.php");
 require_once("keywords.inc.php");
 testlinkInitPage($db);
 

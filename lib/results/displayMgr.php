@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: displayMgr.php,v 1.6 2007/05/15 13:56:59 franciscom Exp $ 
+* $Id: displayMgr.php,v 1.7 2007/06/12 07:24:26 kevinlevy Exp $ 
 *
 * @author	Kevin Levy
 */
@@ -78,7 +78,9 @@ function displayReport($template_file, &$smarty, $report_type, $buildName = null
 
 function sendXlsHeader()
 {
-        header("Content-Disposition: inline; filename=testReport.xls");
+		$timeStamp = date('Y-m-d'); // . "-" . time();
+		$filename = "testReport-" . $timeStamp . ".xls"; 
+        header("Content-Disposition: attachment; filename=$filename");
         header("Content-Description: PHP Generated Data");
         header("Content-type: application/vnd.ms-excel; name='My_Excel'");
         flush();

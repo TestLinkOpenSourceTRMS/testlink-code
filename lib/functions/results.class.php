@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8 
- * @modified $Date: 2007/05/25 20:44:12 $ by $Author: schlundus $
+ * @modified $Date: 2007/06/12 06:43:24 $ by $Author: kevinlevy $
  *
  *-------------------------------------------------------------------------
  * Revisions:
@@ -799,8 +799,9 @@ class results
 						$notSureA = $execQuery[$executions_id];
 						$exec_row = $notSureA[0];
 						$testplan_id = $exec_row['testplan_id'];
-						// TO-DO use localizedTS
-						//$localizedTS = localize_dateOrTimeStamp(null,$dummy,'timestamp_format',$execution_ts);
+						$execution_ts = $exec_row['execution_ts'];
+						$dummy = null;
+						$localizedTS = localize_dateOrTimeStamp(null, $dummy, 'timestamp_format',$execution_ts);
 						// TO-DO - fix bugString call when bug database is not configured
 						$bugString = $this->buildBugString($this->db, $executions_id);
 						// TO-DO - only add bugString if it's needed - build logic into results contructor
@@ -809,7 +810,7 @@ class results
 									'tcversion_id' => $tcversion_id, 
 									'build_id' => $exec_row['build_id'], 
 									'tester_id' => $exec_row['tester_id'], 
-									'execution_ts' => $exec_row['execution_ts'], 
+									'execution_ts' => $localizedTS, 
 									'status' => $exec_row['status'], 
 									'notes' => $exec_row['notes'], 
 									'executions_id' => $executions_id, 

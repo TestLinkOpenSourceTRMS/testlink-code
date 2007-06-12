@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsByStatus.php,v 1.44 2007/06/10 21:09:37 kevinlevy Exp $ 
+* $Id: resultsByStatus.php,v 1.45 2007/06/12 06:38:34 kevinlevy Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -91,8 +91,8 @@ if (is_array($mapOfLastResult)) {
 			}
 			$arrData[$arrDataIndex] = array($suiteName,$testTitle,htmlspecialchars($buildName),
 			                                htmlspecialchars($testerName),
-			                                htmlspecialchars($execution_ts),
-			                                htmlspecialchars($notes),$bugString);
+			                                htmlspecialchars($localizedTS),
+											htmlspecialchars($notes),$bugString);
             // KL - 20070610 - only increment this var if we added to arrData
 		    $arrDataIndex++;
 		}

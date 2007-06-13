@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsMoreBuilds_query_form.tpl,v 1.40 2007/06/13 18:44:24 kevinlevy Exp $
+$Id: resultsMoreBuilds_query_form.tpl,v 1.41 2007/06/13 18:51:55 kevinlevy Exp $
 @author Francisco Mancardi - fm - start solving BUGID 97/98
 20051022 - scs - removed ' in component id values
 20051121 - scs - added escaping of tpname
@@ -59,10 +59,7 @@ $Id: resultsMoreBuilds_query_form.tpl,v 1.40 2007/06/13 18:44:24 kevinlevy Exp $
 			</td>
 		</tr>
 		
-		<tr>
-			<th>{lang_get s='enter_start_time'}</th>
-			<th>{lang_get s='enter_end_time'}</th>
-		</tr>
+		
 		<!-- 
 		
 		KL - 06132006 - I will add this functionality in post 1.7 RC3.
@@ -71,7 +68,10 @@ $Id: resultsMoreBuilds_query_form.tpl,v 1.40 2007/06/13 18:44:24 kevinlevy Exp $
 		  mysql> select execution_ts from executions where execution_ts > '2007-06-01 00:0
 0:00';
 
-
+		<tr>
+			<th>{lang_get s='enter_start_time'}</th>
+			<th>{lang_get s='enter_end_time'}</th>
+		</tr>
 		<tr>
 			<td>
 			     <table>

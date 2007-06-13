@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsMoreBuilds_query_form.tpl,v 1.39 2007/02/28 07:42:31 kevinlevy Exp $
+$Id: resultsMoreBuilds_query_form.tpl,v 1.40 2007/06/13 18:44:24 kevinlevy Exp $
 @author Francisco Mancardi - fm - start solving BUGID 97/98
 20051022 - scs - removed ' in component id values
 20051121 - scs - added escaping of tpname
@@ -58,7 +58,39 @@ $Id: resultsMoreBuilds_query_form.tpl,v 1.39 2007/02/28 07:42:31 kevinlevy Exp $
 				</select>
 			</td>
 		</tr>
+		
+		<tr>
+			<th>{lang_get s='enter_start_time'}</th>
+			<th>{lang_get s='enter_end_time'}</th>
+		</tr>
+		<!-- 
+		
+		KL - 06132006 - I will add this functionality in post 1.7 RC3.
+		
+		support query by time in execution table :
+		  mysql> select execution_ts from executions where execution_ts > '2007-06-01 00:0
+0:00';
 
+
+		<tr>
+			<td>
+			     <table>
+			     <tr><td>year</td><td> <input type="text" size="4" maxlength="4" name="start_year" value="2007"/></td></tr>
+			     <tr><td>month</td><td><input type="text" size="2" maxlength="2"name="start_month" value="01"/></td></tr>
+			     <tr><td>day</td><td><input type="text" size="2" maxlength="2"name="start_day" value="01"/></td></tr>
+			     <tr><td>hour</td><td><input type="text" size="2" maxlength="2"name="start_hour" value="00"/></td></tr>
+				</table>
+			</td>
+			<td>
+			     <table>
+			     <tr><td>year</td><td> <input type="text" size="4" maxlength="4" name="end_year" value="2007"/></td></tr>
+			     <tr><td>month</td><td><input type="text" size="2" maxlength="2" name="end_month" value="01"/></td></tr>
+			     <tr><td>day</td><td><input type="text" size="2" maxlength="2" name="end_day" value="01"/></td></tr>
+			     <tr><td>hour</td><td><input type="text"  size="2" maxlength="2"name="end_hour" value="00"/></td></tr>
+				</table>
+			</td>
+		</tr>
+-->
 <!-- KL - 20070220 - commented out until fixed
 	    <tr>
 			<th>{lang_get s='select_last_result_header'} </th>

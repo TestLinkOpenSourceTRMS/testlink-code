@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: users.inc.php,v $
  *
- * @version $Revision: 1.42 $
- * @modified $Date: 2007/05/12 21:20:49 $ $Author: schlundus $
+ * @version $Revision: 1.43 $
+ * @modified $Date: 2007/06/18 08:02:27 $ $Author: franciscom $
  *
  * Functions for usermanagement
  *
@@ -17,6 +17,7 @@
  * 20060511 - franciscom - changes in userInsert()
  * 20070104 - franciscom - changes in getUserName()
  * 20070106 - franciscom - getAllUsers() - new argument order_by
+ * 20070617 - franciscom - using new config param in user_is_name_valid()
 **/
 require_once("common.php");
 
@@ -382,10 +383,11 @@ function getAllUsers(&$db,$whereClause = null,$column = null, $order_by=null)
  * @return type documentation
  *
  * 20051112 - scs - small cosmetic changes, added trimming, corrected wrong login 
- * 				   maxlength check
+ * 				          maxlength check
  **/
 function user_is_name_valid($p_username)
 {
+  $user_login_valid_regex=config_get('user_login_valid_regex');
  	$user_ok = true;
 	
 	$p_username = trim($p_username);
@@ -395,12 +397,7 @@ function user_is_name_valid($p_username)
 	{
 		$user_ok = false;
 	}
-    # The regular expression to use when validating new user login names
-	# The default regular expression allows a-z, A-z, 0-9, as well as space and
-	#  underscore.  If you change this, you may want to update the
-	#  ERROR_USER_NAME_INVALID string in the language files to explain
-	#  the rules you are using on your site
-	$user_login_valid_regex = '/^[\w \-]+$/';
+
 	# Only allow a basic set of characters
 	if (!preg_match($user_login_valid_regex, $p_username))
 	{
@@ -467,21 +464,21 @@ function format_username($hash)
 
 function checkLogin(&$db,$login)
 {
-	$sqlResult = lang_get("login_must_not_be_empty");
+	$message = lang_get("login_must_not_be_empty");
 	if (strlen($login))
 	{
 		if (user_is_name_valid($login))
 		{
 			$userInfo = null;
 			if (existLogin($db,$login,$userInfo))
-				$sqlResult = lang_get('duplicate_login');
+				$message = lang_get('duplicate_login');
 			else
-				$sqlResult = 'ok';
+				$message = 'ok';
 		}
 		else
-			$sqlResult = $message = lang_get('invalid_user_name') . "\n" . lang_get('valid_user_name_format');
+			$message = lang_get('invalid_user_name') . "\n" . lang_get('valid_user_name_format');
 	}		
-	return $sqlResult;
+	return $message;
 }
 
 

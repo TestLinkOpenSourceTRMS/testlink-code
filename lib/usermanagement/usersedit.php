@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: usersedit.php,v $
 *
-* @version $Revision: 1.12 $
-* @modified $Date: 2007/03/10 22:57:00 $
+* @version $Revision: 1.13 $
+* @modified $Date: 2007/06/18 08:03:45 $
 * 
 * Allows editing a user
 */
@@ -33,7 +33,7 @@ if ($args->do_update)
 {
 	if ($args->user_id == 0)
 	{
-		$sqlResult = checkLogin($db,$args->login);
+		$user_feedback = nl2br(checkLogin($db,$args->login));
 		if (!strlen($args->email))
 			$sqlResult = lang_get('empty_email_address');
 		if (!strlen($args->password))
@@ -47,7 +47,7 @@ if ($args->do_update)
 			else
 			  $user_feedback=sprintf(lang_get('user_created'),$args->login);	
 		}		
-		$action = "do_add";
+		// $action = "do_add";
 	}
 	else
 	{

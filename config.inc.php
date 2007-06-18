@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.112 $
- * @modified $Date: 2007/05/24 06:49:08 $ by $Author: franciscom $
+ * @version $Revision: 1.113 $
+ * @modified $Date: 2007/06/18 07:58:33 $ by $Author: franciscom $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink 
@@ -17,6 +17,7 @@
  *-----------------------------------------------------------------------------
  *
  * Revisions:
+ *           20070523 - franciscom - $g_user_login_valid_regex
  *           20070523 - franciscom - $g_main_menu_item_bullet_img
  *           20070505 - franciscom - following mantis bug tracking style, if file
  *                                   custom_config.inc.php exists, il will be included
@@ -203,7 +204,8 @@ $g_logo_navbar= '<img alt="TestLink" title="TestLink" src="' .
                  TL_THEME_IMG_DIR . '/company_logo.png" />';
 
 // image for main menu item bullet (just filename)
-$g_main_menu_item_bullet_img='arrow_org.gif';
+// $g_main_menu_item_bullet_img='arrow_org.gif';
+$g_main_menu_item_bullet_img='slide_gripper.gif';
 
 // use when componing an title using several strings
 define('TITLE_SEP',' : ');
@@ -441,6 +443,17 @@ regexp used to check for chars not allowed in:
 test project, test suite and testcase names.
 */
 $g_ereg_forbidden = "[|]";
+
+
+// Get from MANTIS Bugtracking system
+// Regular expression to use when validating new user login names
+// This default regular expression: '/^[\w \-]+$/'
+// allows a-z, A-z, 0-9, as well as space and underscore.  
+// IMPORTANT: If you change this, you may want to update the
+//            $TLS_valid_user_name_format 
+//            string in the language files to explain the rules you are using on your site
+//
+$g_user_login_valid_regex='/^[\w \-]+$/';
 
 /** Allow/disallow to have Test Plans without dependency to Test Project.
  * TRUE  => allow Test Plan over all Test Projects (TL 1.5 compatibility)

@@ -4,15 +4,14 @@
  *
  * Filename $RCSfile: exec.inc.php,v $
  *
- * @version $Revision: 1.36 $
- * @modified $Date: 2007/02/22 08:23:24 $ $Author: franciscom $
+ * @version $Revision: 1.37 $
+ * @modified $Date: 2007/06/18 08:03:10 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
  * Functions for execution feature (add test results) 
  *
  *
- * 20051118  - scs - FIXED: missing localization for test_Results_submitted
  * 20051119  - scs - added fix for 227
  * 20060311 - kl - some modifications to SQL queries dealing with 1.7
  *                 builds table in order to comply with new 1.7 schema
@@ -23,12 +22,11 @@
  *
  * 20070105 - franciscom - interface changes write_execution()
  * 20070222 - franciscom - BUGID 645 createResultsMenu()
- *
+ * 20070617 - franciscom - BUGID     insert_id() problems for Postgres and Oracle?
  *
 **/
-require_once('../functions/common.php');
+require_once('common.php');
 
-define('GET_BUG_SUMMARY',true);
 
 /**
  * Function just grabs number of builds
@@ -39,7 +37,6 @@ define('GET_BUG_SUMMARY',true);
  */  
 function buildsNumber(&$db,$tpID=0)
 {
-	// 20050929 - fm - seems sometimes we receive no tpID
 	$sql = "SELECT count(*) AS num_builds FROM builds WHERE builds.testplan_id = " . $tpID;
 	$buildCount=0;
 	if ($tpID)
@@ -470,8 +467,11 @@ function write_execution(&$db,$user_id, $exec_data,$tproject_id,$tplan_id,$build
 				     "(build_id,tester_id,status,testplan_id,tcversion_id,execution_ts,notes)".
 				     " VALUES ( {$build_id}, {$user_id}, '{$exec_data['status'][$tcversion_id]}',".
 				     "{$tplan_id}, {$tcversion_id},{$db_now},'{$my_notes}')";
-			$db->exec_query($sql);  	     
-			$execution_id=$db->insert_id();
+			$db->exec_query($sql);  	
+			
+			// 20070617 - franciscom - BUGID : at least for Postgres DBMS table name is needed. 
+			//    
+			$execution_id=$db->insert_id('executions');
 			
       if( $has_custom_fields )
       {

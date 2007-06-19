@@ -2,11 +2,12 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.56 $
- * @modified $Date: 2007/06/04 17:28:32 $ $Author: franciscom $
+ * @version $Revision: 1.57 $
+ * @modified $Date: 2007/06/19 17:32:28 $ $Author: franciscom $
  * @author franciscom
  *
- *                         
+ *
+ * 20070617 - franciscom - added include of users.inc.php                         
  * 20070602 - franciscom - added attachment copy on copy_to() method.
  *                         added attachment delete.
  *                         added remove of custom field values 
@@ -33,6 +34,7 @@
 require_once( dirname(__FILE__) . '/requirements.inc.php' );
 require_once( dirname(__FILE__) . '/assignment_mgr.class.php' );
 require_once( dirname(__FILE__) . '/attachments.inc.php' );
+require_once( dirname(__FILE__) . '/users.inc.php' );
 
 $g_tcImportTypes = array( 
 							 "XML" => "XML",
@@ -1391,7 +1393,6 @@ function copy_attachments($source_id,$target_id)
   $repo_path=config_get('repositoryPath') .  DIRECTORY_SEPARATOR;
   
   $attachments=getAttachmentInfos($this->db,$source_id,$table_name);  
-  echo "<pre>debug 20070602 " . __FUNCTION__ . " --- "; print_r($attachments); echo "</pre>";
   if( count($attachments) > 0 )
   {
     foreach($attachments as $key => $value)

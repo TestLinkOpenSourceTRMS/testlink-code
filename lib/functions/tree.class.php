@@ -5,10 +5,11 @@
  *
  * Filename $RCSfile: tree.class.php,v $
  *
- * @version $Revision: 1.28 $
- * @modified $Date: 2007/04/15 10:59:44 $ by $Author: franciscom $
+ * @version $Revision: 1.29 $
+ * @modified $Date: 2007/06/20 16:30:54 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
+ * 20070620 - franciscom - BUGID 903
  * 20061203 - franciscom - removing error due to undefined var in change_order_bulk()
  * 20061119 - franciscom - change_order_bulk() added abs() to order.
  * 20061008 - franciscom - ORDER BY node_order -> ORDER BY node_order,id
@@ -107,26 +108,46 @@ class tree
 		return $this->db->fetch_array($result);
 	}
 
+  /*
+    function: get_subtree_list()
+
+    args : $node_id: root of subtree
+    
+    returns: list (string with nodes_id, using ',' as list separator).
+
+  */
 	function get_subtree_list($node_id)
 	{
+    $nodes=array();
+  	$this->_get_subtree_list($node_id,$nodes);
+  	$node_list=implode(',',$nodes);
+    return($node_list);
+  }
+  
+  
+  /*
+    function: _get_subtree_list()
+
+    args : $node_id: root of subtree
+    
+    returns: array with nodes_id
+
+  */
+	function _get_subtree_list($node_id,&$node_list)
+	{
 		$sql = "SELECT * from {$this->obj_table} WHERE parent_id = {$node_id}";
-		$node_list = '';  
 		$result = $this->db->exec_query($sql);
 		
 		if (!$result || !$this->db->num_rows($result))
-			return null;
+			return;
 		
 		while($row = $this->db->fetch_array($result))
 		{
-			$node_list .= $row['id'];
-			
-			$xx_list = $this->get_subtree_list($row['id']);	
-		
-			if(!is_null($xx_list))
-				$node_list .= "," . $xx_list;
+			$node_list[] = $row['id'];
+			$this->_get_subtree_list($row['id'],$node_list);	
 		}
-		return $node_list;
 	}
+
 
 	function delete_subtree($node_id)
 	{

@@ -2,10 +2,11 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.34 $
- * @modified $Date: 2007/06/04 17:29:11 $  $Author: franciscom $
+ * @version $Revision: 1.35 $
+ * @modified $Date: 2007/06/20 16:15:34 $  $Author: franciscom $
  * @author franciscom
  *
+ * 20070620 - franciscom - BUGID 914  fixed delete() (no delete from nodes_hierarchy)
  * 20070603 - franciscom - added delete()
  * 20070219 - franciscom - fixed bug on get_first_level_test_suites()
  * 20070128 - franciscom - added check_tplan_name_existence()
@@ -654,6 +655,7 @@ function count_testcases($id)
 */
 function delete($id,&$error)
 {
+
 	$error = ''; //clear error string
 	
 	$a_sql = array();
@@ -813,6 +815,7 @@ function delete($id,&$error)
     $this->db->exec_query($sql);     
 
 		$sql = "DELETE FROM testprojects WHERE id = {$id}";
+	
 		$result = $this->db->exec_query($sql);
 		if ($result)
 		{
@@ -824,11 +827,26 @@ function delete($id,&$error)
 			$error .= lang_get('info_product_delete_fails');
 	}
 
+  // 20070620 - franciscom - 
+  // missing
+  if (empty($error))
+	{
+    $sql="DELETE FROM nodes_hierarchy WHERE id = {$id} ";
+    $this->db->exec_query($sql);     
+  }
 	return empty($error) ? 1 : 0;
 }
 
 
-// 20060409 - franciscom
+  /*
+    function: 
+
+    args :
+    
+    returns: 
+
+  */
+
 function get_keywords_map($testproject_id)
 {
 		$map_keywords = null;

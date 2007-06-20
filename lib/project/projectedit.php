@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: projectedit.php,v $
  *
- * @version $Revision: 1.8 $
- * @modified $Date: 2007/03/26 08:24:58 $ $Author: franciscom $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2007/06/20 16:14:55 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -14,7 +14,7 @@
  * 
  * @todo Verify dependency before delete testplan 
  *
- * 20070324 - franciscom - BUGID
+ * 20070620 - franciscom - BUGID 914 
  * 20070221 - franciscom - BUGID 652
  * 20070206 - franciscom - BUGID 617
  * 20051211 - fm - poor workaround for the delete loop - BUGID 180 Unable to delete Product
@@ -59,7 +59,7 @@ switch($args->do)
 	case 'do_delete':
 		$show_prod_attributes = 'no';
 		$error = null;
-		if (deleteProduct($db,$args->id,$error))
+		if ($tproject->delete($args->id,$error))
 		{
 		  $user_feedback = sprintf(lang_get('test_project_deleted'),$args->tproject_name);
 			$tlog_msg .= " was deleted.";

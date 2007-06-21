@@ -2,10 +2,11 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: cfield_mgr.class.php,v $
- * @version $Revision: 1.15 $
- * @modified $Date: 2007/06/07 14:13:20 $  $Author: asielb $
+ * @version $Revision: 1.16 $
+ * @modified $Date: 2007/06/21 15:35:42 $  $Author: franciscom $
  * @author franciscom
  *
+ * 20070617 - franciscom - BUGID     insert_id() problems for Postgres and Oracle?
  * 20070501 - franciscom - limiting length of values while writting to db.
  * 20070429 - franciscom - added text area custom field
  *                         code contributed by Seweryn Plywaczyk  
@@ -812,7 +813,8 @@ class cfield_mgr
 
    	if ($result)
   	{
-  	  $field_id=$this->db->insert_id();
+  	  // 20070617 - franciscom - at least for Postgres DBMS table name is needed. 
+  	  $field_id=$this->db->insert_id('custom_fields');
   	  
       $sql="INSERT INTO cfield_node_types " .
            " (field_id,node_type_id) " .
@@ -1174,7 +1176,6 @@ class cfield_mgr
     {
       foreach($cf_map as $key => $value)
       {
-        echo "cf_map -> KEY " .$key ."<br>";
         $cfield[$key]=array("type_id"  => $value['type'],
                             "cf_value" => '');
       }

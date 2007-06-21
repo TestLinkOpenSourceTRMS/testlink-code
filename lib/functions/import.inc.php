@@ -1,6 +1,6 @@
 <?php
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: import.inc.php,v 1.15 2006/02/15 08:49:19 franciscom Exp $
+* $Id: import.inc.php,v 1.16 2007/06/21 15:35:15 franciscom Exp $
 * 
 * @author Martin Havlat
 *
@@ -15,7 +15,6 @@
 */
 require_once("../../config.inc.php");
 require_once("../functions/common.php");
-require_once("../testcases/archive.inc.php");
 require_once("../keywords/keywords.inc.php");
 
 /**

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: requirements.inc.php,v $
- * @version $Revision: 1.54 $
- * @modified $Date: 2007/06/07 08:20:02 $ by $Author: schlundus $
+ * @version $Revision: 1.55 $
+ * @modified $Date: 2007/06/21 15:35:28 $ by $Author: franciscom $
  *
  * @author Martin Havlat <havlat@users.sourceforge.net>
  * 
@@ -13,6 +13,7 @@
  *
  * Revisions:
  *
+ * 20070617 - franciscom - removed include of deprecated file
  * 20070310 - franciscom - changed return type createRequirement()
  */
 ////////////////////////////////////////////////////////////////////////////////
@@ -33,7 +34,7 @@ $g_reqFormatStrings = array (
 							); 		
 
 require_once(dirname(__FILE__) . "/print.inc.php");
-require_once(dirname(__FILE__) . "/../testcases/archive.inc.php");
+
 
 
 /** 

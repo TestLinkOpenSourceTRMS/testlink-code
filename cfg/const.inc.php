@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: const.inc.php,v $
  *
- * @version $Revision: 1.28 $
- * @modified $Date: 2007/06/07 09:52:11 $ by $Author: franciscom $
+ * @version $Revision: 1.29 $
+ * @modified $Date: 2007/06/21 15:39:00 $ by $Author: franciscom $
  * @author Martin Havlát
  *
  * SCOPE:
@@ -366,6 +366,9 @@ define('GET_INACTIVE_BUILD',0);
 define('GET_OPEN_BUILD',1);
 define('GET_CLOSED_BUILD',0);
 
+
+// bug_interface->buildViewBugLink()
+define('GET_BUG_SUMMARY',true);
 
 // -------------------------------------------------------------------
 ?>

@@ -3,11 +3,12 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: reqTcAssign.php,v $
- * @version $Revision: 1.12 $
- * @modified $Date: 2007/06/09 19:36:23 $  $Author: schlundus $
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2007/06/21 15:36:32 $  $Author: franciscom $
  * 
  * @author Martin Havlat
  *
+ * 20070617 - franciscom - refactoring
  * 20070124 - franciscom
  * use show_help.php to apply css configuration to help pages
  *
@@ -35,21 +36,24 @@ $doUnassign = isset($_POST['unassign']);
 $tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 
 $tmpResult = null;
+
 // add or remove dependencies TC - REQ
 if ($doAssign || $doUnassign)
 {
-	$arrIdReq = array_keys($_POST); // obtain names(id) of REQs
-	array_shift($arrIdReq);	// remove idSRS
-	array_pop($arrIdReq);	// remove submit button
+  $req_ids=array_keys($_REQUEST['req_id']);
 	
-	if (count($arrIdReq))
+	$pfn="unassignTc2Req";
+	if ($doAssign)
 	{
-		foreach ($arrIdReq as $idOneReq)
+	  $pfn="assignTc2Req";
+	}
+	
+	if (count($req_ids))
+	{
+		foreach ($req_ids as $idOneReq)
 		{
-			if ($doAssign)
-				$result = assignTc2Req($db,$tc_id, $idOneReq);
-			else if ($doUnassign)
-				$result = unassignTc2Req($db,$tc_id, $idOneReq);
+			$result = $pfn($db,$tc_id, $idOneReq);
+
 			if (!$result)
 				$tmpResult .= $idOneReq . ', ';
 		}
@@ -70,8 +74,6 @@ if ($doAssign || $doUnassign)
 // redirect if a user doesn't choose test case 
 if ($edit == 'testproject' || $edit == 'testsuite')
 {
-  
-	// redirect($_SESSION['basehref'] . $g_rpath['help'] . '/assignReqs.html');
  	redirect($_SESSION['basehref'] . "/lib/general/show_help.php?help=assignReqs&locale={$_SESSION['locale']}");
 	exit();
 } 

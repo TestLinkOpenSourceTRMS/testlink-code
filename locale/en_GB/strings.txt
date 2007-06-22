@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.178 $
- * @modified $Date: 2007/06/22 05:29:07 $ $Author: kevinlevy $
+ * @version $Revision: 1.179 $
+ * @modified $Date: 2007/06/22 05:54:07 $ $Author: kevinlevy $
  *
  * @author Francisco Mancardi
  *
@@ -212,7 +212,7 @@ $TLS_btn_new_com = "New Test Suite";
 $TLS_btn_new_tc = "Create Test Case(s)";
 $TLS_btn_reorder_cat = "Reorder children";
 $TLS_edit_testproject_basic_data = "Edit Test Project basic data";
-$TLS_th_notes = "Description";
+$TLS_th_notes = "Notes";
 $TLS_th_product_name = "Test Project Name";
 
 

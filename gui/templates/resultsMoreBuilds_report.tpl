@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: resultsMoreBuilds_report.tpl,v 1.34 2007/06/22 05:12:03 kevinlevy Exp $
+$Id: resultsMoreBuilds_report.tpl,v 1.35 2007/06/22 05:12:29 kevinlevy Exp $
 @author Francisco Mancardi - fm - start solving BUGID 97/98
 20051022 - scs - removed ' in component id values
 20051121 - scs - added escaping of tpname
@@ -77,7 +77,7 @@ $Id: resultsMoreBuilds_report.tpl,v 1.34 2007/06/22 05:12:03 kevinlevy Exp $
 				<td>{$executor}</td>
 				<td>{$search_notes_string}</td>
 		 	{/if}
-		 
+		 	
 		</tr>
 	</table>		
 	

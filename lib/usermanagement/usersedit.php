@@ -5,9 +5,11 @@
 *
 * Filename $RCSfile: usersedit.php,v $
 *
-* @version $Revision: 1.13 $
-* @modified $Date: 2007/06/18 08:03:45 $
+* @version $Revision: 1.14 $
+* @modified $Date: 2007/06/22 17:01:59 $ $Author: franciscom $
 * 
+* rev :  BUGID 918
+*
 * Allows editing a user
 */
 require_once('../../config.inc.php');
@@ -33,11 +35,13 @@ if ($args->do_update)
 {
 	if ($args->user_id == 0)
 	{
-		$user_feedback = nl2br(checkLogin($db,$args->login));
+		$sqlResult=checkLogin($db,$args->login);
 		if (!strlen($args->email))
-			$sqlResult = lang_get('empty_email_address');
+		    $sqlResult = lang_get('empty_email_address');
+
 		if (!strlen($args->password))
-			$sqlResult = lang_get('warning_empty_pwd');
+		    $sqlResult = lang_get('warning_empty_pwd');
+
 		if ($sqlResult =='ok')
 		{
 			$args->user_id = userInsert($db,$args->login, $args->password, $args->first, $args->last,  
@@ -46,8 +50,11 @@ if ($args->do_update)
 				$sqlResult = lang_get('user_not_added');
 			else
 			  $user_feedback=sprintf(lang_get('user_created'),$args->login);	
-		}		
-		// $action = "do_add";
+		}	
+		else
+		{	
+		  $user_feedback = nl2br($sqlResult);
+		}
 	}
 	else
 	{

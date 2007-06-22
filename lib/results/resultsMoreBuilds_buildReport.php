@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsMoreBuilds_buildReport.php,v 1.43 2007/06/22 00:26:41 kevinlevy Exp $ 
+* $Id: resultsMoreBuilds_buildReport.php,v 1.44 2007/06/22 04:19:06 kevinlevy Exp $ 
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 * 
@@ -42,6 +42,7 @@ elseif ($lastStatus == "Any"){
 }
 
 $ownerSelected = isset($_REQUEST['owner']) ? $_REQUEST['owner'] : null;
+$executorSelected = isset($_REQUEST['executor']) ? $_REQUEST['executor'] : null;
 $buildsSelected = isset($_REQUEST['build']) ? $_REQUEST['build'] : array();
 $componentsSelected = isset($_REQUEST['component']) ? $_REQUEST['component'] : array();
 $componentIds = null;
@@ -69,6 +70,8 @@ $endMonth = isset($_REQUEST['end_month']) ? $_REQUEST['end_month'] : "00";
 $endDay = isset($_REQUEST['end_day']) ? $_REQUEST['end_day'] : "00";
 $endHour = isset($_REQUEST['end_hour']) ? $_REQUEST['end_hour'] : "00";
 
+$search_notes_string = isset($_REQUEST['search_notes_string']) ? $_REQUEST['search_notes_string'] : null;
+
 $startTime = $startYear . "-" . $startMonth . "-" . $startDay . " " . $startHour. ":00:00";
 $endTime = $endYear . "-" . $endMonth . "-" . $endDay . " " . "$endHour" . ":00:00";
 
@@ -81,7 +84,7 @@ if (sizeof($buildsSelected)) {
 
 $tp = new testplan($db);
 
-$re = new results($db, $tp, $componentIds, $buildsToQuery, $statusForClass, $keywordSelected, $ownerSelected, $startTime, $endTime);
+$re = new results($db, $tp, $componentIds, $buildsToQuery, $statusForClass, $keywordSelected, $ownerSelected, $startTime, $endTime, $executorSelected, $search_notes_string);
 $suiteList = $re->getSuiteList();
 $flatArray = $re->getFlatArray();
 $mapOfSuiteSummary =  $re->getAggregateMap();

@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8 
- * @modified $Date: 2007/06/22 00:27:09 $ by $Author: kevinlevy $
+ * @modified $Date: 2007/06/22 04:24:58 $ by $Author: kevinlevy $
  *
  *-------------------------------------------------------------------------
  * Revisions:
@@ -163,7 +163,8 @@ class results
 	public function results(&$db, &$tp, $suitesSelected = 'all', 
 	                        $builds_to_query = -1, $lastResult = 'a', 
 	                        $keywordId = 0, $owner = null, 
-							$startTime = "0000-00-00 00:00:00", $endTime = "9999-01-01 00:00:00")
+							$startTime = "0000-00-00 00:00:00", $endTime = "9999-01-01 00:00:00",
+							$executor = null, $search_notes_string = null)
 	{
 		$this->db = $db;	
 							
@@ -188,7 +189,7 @@ class results
 			// if you just query the executions table for those rows with status = $this->map_tc_status['passed']
 			// that is not the way to determine last result
 		
-			$this->executionsMap = $this->buildExecutionsMap($builds_to_query, 'a', $keywordId, $owner, $startTime, $endTime);    
+			$this->executionsMap = $this->buildExecutionsMap($builds_to_query, 'a', $keywordId, $owner, $startTime, $endTime, $executor, $search_notes_string);    
 		
 			// get keyword id -> keyword name pairs used in this test plan
 			$arrKeywords = $tp->get_keywords_map($this->testPlanID); 	
@@ -742,7 +743,7 @@ class results
 	* testsuite_id_1_array = []
 	* all test cases are included, even cases that have not been executed yet
 	*/
-	private function buildExecutionsMap($builds_to_query, $lastResult = 'a', $keyword = 0, $owner = null, $startTime, $endTime){
+	private function buildExecutionsMap($builds_to_query, $lastResult = 'a', $keyword = 0, $owner = null, $startTime, $endTime, $executor, $search_notes_string){
 		// first make sure we initialize the executionsMap
 		// otherwise duplicate executions will be added to suites
 		$executionsMap = null;
@@ -794,6 +795,13 @@ class results
 				if (($builds_to_query != -1) && ($builds_to_query != 'a')) { 
 					$sql .= " AND build_id IN ($builds_to_query) ";
 				}	
+				if ($executor != null) {
+				    $sql .= " AND tester_id = $executor ";
+				}
+				if ($search_notes_string != null) {
+				    $sql .= " AND notes LIKE '%" . $search_notes_string ."%' ";
+				}
+				
 				$execQuery = $this->db->fetchArrayRowsIntoMap($sql,'id');
 				if ($execQuery)
 				{

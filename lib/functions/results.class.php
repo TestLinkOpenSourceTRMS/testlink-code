@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8 
- * @modified $Date: 2007/06/12 06:43:24 $ by $Author: kevinlevy $
+ * @modified $Date: 2007/06/22 00:27:09 $ by $Author: kevinlevy $
  *
  *-------------------------------------------------------------------------
  * Revisions:
@@ -162,9 +162,11 @@ class results
 	*/ 
 	public function results(&$db, &$tp, $suitesSelected = 'all', 
 	                        $builds_to_query = -1, $lastResult = 'a', 
-	                        $keywordId = 0, $owner = null)
+	                        $keywordId = 0, $owner = null, 
+							$startTime = "0000-00-00 00:00:00", $endTime = "9999-01-01 00:00:00")
 	{
 		$this->db = $db;	
+							
     $this->tp = $tp;  
     $this->map_tc_status=config_get('tc_status');  
     $this->suitesSelected = $suitesSelected;  	
@@ -186,7 +188,7 @@ class results
 			// if you just query the executions table for those rows with status = $this->map_tc_status['passed']
 			// that is not the way to determine last result
 		
-			$this->executionsMap = $this->buildExecutionsMap($builds_to_query, 'a', $keywordId, $owner);    
+			$this->executionsMap = $this->buildExecutionsMap($builds_to_query, 'a', $keywordId, $owner, $startTime, $endTime);    
 		
 			// get keyword id -> keyword name pairs used in this test plan
 			$arrKeywords = $tp->get_keywords_map($this->testPlanID); 	
@@ -740,7 +742,7 @@ class results
 	* testsuite_id_1_array = []
 	* all test cases are included, even cases that have not been executed yet
 	*/
-	private function buildExecutionsMap($builds_to_query, $lastResult = 'a', $keyword = 0, $owner = null){
+	private function buildExecutionsMap($builds_to_query, $lastResult = 'a', $keyword = 0, $owner = null, $startTime, $endTime){
 		// first make sure we initialize the executionsMap
 		// otherwise duplicate executions will be added to suites
 		$executionsMap = null;
@@ -783,7 +785,8 @@ class results
 				// over multiple test plans - by modifying this select statement slightly
 				// to include multiple test plan ids	
 				$sql = "SELECT * FROM executions " .
-				   "WHERE tcversion_id = $executed AND testplan_id = $_SESSION[testPlanId] ";			   
+				   "WHERE tcversion_id = $executed AND testplan_id = $_SESSION[testPlanId] AND 
+				    execution_ts > '$startTime' and execution_ts < '$endTime' ";			   
 				if (($lastResult == $this->map_tc_status['passed']) || ($lastResult == $this->map_tc_status['failed']) || 
 				    ($lastResult == $this->map_tc_status['blocked'])){
 					$sql .= " AND status = '" . $lastResult . "' ";

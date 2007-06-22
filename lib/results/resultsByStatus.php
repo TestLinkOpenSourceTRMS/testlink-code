@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsByStatus.php,v 1.45 2007/06/12 06:38:34 kevinlevy Exp $ 
+* $Id: resultsByStatus.php,v 1.46 2007/06/22 00:26:51 kevinlevy Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -70,6 +70,7 @@ if (is_array($mapOfLastResult)) {
 			}
 			
 			$buildName = $currentBuildInfo['name'];
+			
 			$notes = $mapOfLastResult[$suiteId][$tcId]['notes'];
 			$execution_ts = $mapOfLastResult[$suiteId][$tcId]['execution_ts'];
 			$suiteName = $mapOfLastResult[$suiteId][$tcId]['suiteName'];

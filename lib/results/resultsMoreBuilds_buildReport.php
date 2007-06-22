@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsMoreBuilds_buildReport.php,v 1.42 2007/01/27 09:53:46 franciscom Exp $ 
+* $Id: resultsMoreBuilds_buildReport.php,v 1.43 2007/06/22 00:26:41 kevinlevy Exp $ 
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 * 
@@ -58,6 +58,20 @@ $keywordSelected = isset($_REQUEST['keyword']) ? $_REQUEST['keyword'] : 0;
 $tpID = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0;
 $prodID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 $tpName = isset($_SESSION['testPlanName']) ? $_SESSION['testPlanName'] : '';
+
+$startYear = isset($_REQUEST['start_year']) ? $_REQUEST['start_year'] : "0000";
+$startMonth = isset($_REQUEST['start_month']) ? $_REQUEST['start_month'] : "00";
+$startDay = isset($_REQUEST['start_day']) ? $_REQUEST['start_day'] : "00";
+$startHour = isset($_REQUEST['start_hour']) ? $_REQUEST['start_hour'] : "00";
+
+$endYear = isset($_REQUEST['end_year']) ? $_REQUEST['end_year'] : "9999";
+$endMonth = isset($_REQUEST['end_month']) ? $_REQUEST['end_month'] : "00";
+$endDay = isset($_REQUEST['end_day']) ? $_REQUEST['end_day'] : "00";
+$endHour = isset($_REQUEST['end_hour']) ? $_REQUEST['end_hour'] : "00";
+
+$startTime = $startYear . "-" . $startMonth . "-" . $startDay . " " . $startHour. ":00:00";
+$endTime = $endYear . "-" . $endMonth . "-" . $endDay . " " . "$endHour" . ":00:00";
+
 $xls = ($format == 'EXCEL') ? true : false;
 $buildsToQuery = -1;
 
@@ -66,7 +80,8 @@ if (sizeof($buildsSelected)) {
 }
 
 $tp = new testplan($db);
-$re = new results($db, $tp, $componentIds, $buildsToQuery, $statusForClass, $keywordSelected, $ownerSelected);
+
+$re = new results($db, $tp, $componentIds, $buildsToQuery, $statusForClass, $keywordSelected, $ownerSelected, $startTime, $endTime);
 $suiteList = $re->getSuiteList();
 $flatArray = $re->getFlatArray();
 $mapOfSuiteSummary =  $re->getAggregateMap();
@@ -85,6 +100,8 @@ $smarty->assign('componentsSelected', $componentNames);
 $smarty->assign('lastStatus', $lastStatus);
 $smarty->assign('buildsSelected', $buildsSelected);
 $smarty->assign('keywordsSelected', $keywordSelected);
+$smarty->assign('startTime', $startTime);
+$smarty->assign('endTime', $endTime);
 
 if ($ownerSelected) {
 $smarty->assign('ownerSelected', $arrOwners[$ownerSelected]);

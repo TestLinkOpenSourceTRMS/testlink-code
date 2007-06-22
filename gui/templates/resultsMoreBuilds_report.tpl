@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: resultsMoreBuilds_report.tpl,v 1.30 2007/06/10 19:58:42 kevinlevy Exp $
+$Id: resultsMoreBuilds_report.tpl,v 1.31 2007/06/22 00:27:35 kevinlevy Exp $
 @author Francisco Mancardi - fm - start solving BUGID 97/98
 20051022 - scs - removed ' in component id values
 20051121 - scs - added escaping of tpname
@@ -26,6 +26,12 @@ $Id: resultsMoreBuilds_report.tpl,v 1.30 2007/06/10 19:58:42 kevinlevy Exp $
 			<th>{lang_get s="th_owner"}</th>
 <!--			<th>{lang_get s="th_report_format"}</th> -->
 			<th>{lang_get s="th_last_result"}</th>
+			
+			<!-- KL - 20070621 - functionality for query by start and end time
+			<th>{lang_get s="th_start_time"}</th>
+			<th>{lang_get s="th_end_time"}</th>
+			-->
+			
 		</tr> 
 		<tr>
 			<td>
@@ -52,12 +58,13 @@ $Id: resultsMoreBuilds_report.tpl,v 1.30 2007/06/10 19:58:42 kevinlevy Exp $
 			<td>
 				{$ownerSelected}&nbsp;
 			</td>
-			<!--
-			<td>
-				html only
-			</td>
-			-->
+
 			<td>{$lastStatus|escape}</td>
+			
+			<!-- KL - 20070621 - functionality for query by start and end time
+			<td>{$startTime}</td>
+			<td>{$endTime}</td>
+			-->
 		</tr>
 	</table>		
 	
@@ -177,11 +184,8 @@ $Id: resultsMoreBuilds_report.tpl,v 1.30 2007/06/10 19:58:42 kevinlevy Exp $
 						{assign var=inst value=$suiteList[$suiteId][$executionInstance]}
 						<tr>
 							<td>{$inst.testcaseID}: {$inst.name|escape} </td>
-							<td>{$mapBuilds[$inst.build_id]|escape}</td>
-
- 
+							<td>{$mapBuilds[$inst.build_id]|escape}</td> 
 							<td>{$mapUsers[$inst.tester_id]|escape}</td>
-
 							<td>{$inst.execution_ts|escape} </td>
 							{if $gsmarty_tc_status_css[$inst.status] == 'passed' }
 							<td style="color: green; font-weight: bold;">{$gsmarty_tc_status_css[$inst.status]|escape}</td>
@@ -194,8 +198,7 @@ $Id: resultsMoreBuilds_report.tpl,v 1.30 2007/06/10 19:58:42 kevinlevy Exp $
 							{/if}
 							<td>{$inst.notes|escape}&nbsp;</td> 
 							<td>{$inst.bugString}&nbsp;</td> 
-						</tr>
-					
+						</tr>					
 					{/foreach}					
 					</table>
 				{/if}

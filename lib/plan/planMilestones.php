@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: planMilestones.php,v $
  *
- * @version $Revision: 1.11 $
- * @modified $Date: 2007/05/21 06:43:32 $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2007/06/22 17:12:35 $
  */
 require_once('../../config.inc.php');
 require_once("../functions/common.php");
@@ -28,8 +28,6 @@ if( !is_null($date_year) && !is_null($date_month) && !is_null($date_day) )
 {
   $date= $date_year . "-" . $date_month . "-" . $date_day;
 }
-echo "<pre>debug 20070519 " . __FUNCTION__ . " --- "; print_r($date); echo "</pre>";
-
 $A = isset($_POST['A']) ? $_POST['A'] : 0;
 $B = isset($_POST['B']) ? $_POST['B'] : 0;
 $C = isset($_POST['C']) ? $_POST['C'] : 0;
@@ -88,8 +86,6 @@ else if($newMileStone || $bUpdate)
 }
 
 $mileStones = $milestone_mgr->get_all_by_testplan($idPlan);
-
-echo "<pre>debug 20070519 " . __FUNCTION__ . " --- "; print_r($mileStones); echo "</pre>";
 
 $smarty = new TLSmarty();
 $smarty->assign('sqlResult', $sqlResult);

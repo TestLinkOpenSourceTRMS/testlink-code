@@ -1,6 +1,6 @@
 <?php
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
- *$Id: resultsMoreBuilds.inc.php,v 1.51 2007/01/22 08:31:13 franciscom Exp $ 
+ *$Id: resultsMoreBuilds.inc.php,v 1.52 2007/06/22 17:11:55 franciscom Exp $ 
  * 
  * @author Kevin Levy
  *
@@ -312,9 +312,6 @@ function createResultsForCategory($categoryId, $keyword, $build_id_set, $lastRes
       $tcID = $myrowTC[5];
       $status = $myrowTC[3];
       $build = $myrowTC[0];
-      // debug - kl - 10022005 
-      // delete this line (this only print 13)
-      // print "xx tcID = $tcID, status = $status, build = $build <BR>"; 
       $tcBuildInfo[$tcID][$build] = $myrowTC;
       if ($status == $notRunStatus || isset($tcStatusInfo[$tcID]))
 			continue;
@@ -327,9 +324,6 @@ function createResultsForCategory($categoryId, $keyword, $build_id_set, $lastRes
   $testCaseTables = '';
   foreach ($tcInfo as $tcID => $myrow)
     {
-      // debug - kl - 10022005 
-      // print "where last result is set - tcStatusInfo[tcID] = $tcStatusInfo[$tcID] <BR>";
-      
       // if results is not set, set to n
       $lastResult = isset($tcStatusInfo[$tcID]) ? $tcStatusInfo[$tcID] : 'n';
       
@@ -337,16 +331,10 @@ function createResultsForCategory($categoryId, $keyword, $build_id_set, $lastRes
 
       // kl - 09252005 - I don't think $results is being populated correctly
       
-      // debug - kl - 20051002
-      // print "tcid = $myrow[0] <BR>";
-
       $testCaseData = createResultsForTestCase($myrow[0], $myrow, $arrAllBuilds, $results, $lastResult);
       $testCaseInfoToPrint = $testCaseData[0];
       $summaryOfTestCaseInfo = $testCaseData[1];
 
-      // debug - kl - 20051002
-      // lastResult is being printed incorrectly here
-      // print "lastResult = $lastResult <BR>";
 
       if ($lastResult == $g_tc_status['passed']){
 	$totalLastResultPassesForCategory++;

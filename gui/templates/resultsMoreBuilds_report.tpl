@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: resultsMoreBuilds_report.tpl,v 1.36 2007/06/22 05:14:51 kevinlevy Exp $
+$Id: resultsMoreBuilds_report.tpl,v 1.37 2007/06/22 05:19:20 kevinlevy Exp $
 @author Francisco Mancardi - fm - start solving BUGID 97/98
 20051022 - scs - removed ' in component id values
 20051121 - scs - added escaping of tpname
@@ -74,7 +74,7 @@ $Id: resultsMoreBuilds_report.tpl,v 1.36 2007/06/22 05:14:51 kevinlevy Exp $
 				<td>{$endTime}</td>
 			
 				<!-- KL - 20070621 - functionality for query by executor and search in notes field -->
-				<td>{$executor}</td>
+				<td>{$executorSelected}</td>
 				<td>{$search_notes_string}</td>
 		 	{/if}
 		 	

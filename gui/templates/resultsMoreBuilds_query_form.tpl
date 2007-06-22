@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsMoreBuilds_query_form.tpl,v 1.42 2007/06/22 00:27:26 kevinlevy Exp $
+$Id: resultsMoreBuilds_query_form.tpl,v 1.43 2007/06/22 04:31:10 kevinlevy Exp $
 @author Francisco Mancardi - fm - start solving BUGID 97/98
 20051022 - scs - removed ' in component id values
 20051121 - scs - added escaping of tpname
@@ -41,16 +41,14 @@ $Id: resultsMoreBuilds_query_form.tpl,v 1.42 2007/06/22 00:27:26 kevinlevy Exp $
 		</tr>
 		<tr>
 			<td>
-				   	<select name="keyword" size="10" >
-
-						{foreach key=keyword_id item=keyword_name from=$arrKeywords}
-							<option value="{$keyword_id}" >{$arrKeywords[$keyword_id]|escape}</option>
-						{/foreach}
-					</select>
+				<select name="keyword" size="10" >
+					{foreach key=keyword_id item=keyword_name from=$arrKeywords}
+						<option value="{$keyword_id}" >{$arrKeywords[$keyword_id]|escape}</option>
+					{/foreach}
+				</select>
 			</td>
 			<td>
 				<select name="owner" size="5">
-
 					{foreach key=owner item=ownerid from=$arrOwners}
 						{* by default the owner should be the current user *}
 						<option value="{$owner}">{$ownerid|escape}</option>
@@ -58,7 +56,6 @@ $Id: resultsMoreBuilds_query_form.tpl,v 1.42 2007/06/22 00:27:26 kevinlevy Exp $
 				</select>
 			</td>
 		</tr>
-		
 		
 		<!-- 
 		KL - 06132006 - Functionality to allow query by start and end time		
@@ -85,10 +82,29 @@ $Id: resultsMoreBuilds_query_form.tpl,v 1.42 2007/06/22 00:27:26 kevinlevy Exp $
 				</table>
 			</td>
 		</tr>
-		
 		-->
+		<!-- 
+		KL - 06132006 - Functionality to allow query by executor or grep the notes field
 
-
+		<tr>
+			<th>{lang_get s='search_in_notes'}</th>
+			<th>{lang_get s='executor'}</th>
+		</tr>
+		
+		<tr>
+			<td>
+				<input type="text" name="search_notes_string"/>
+			</td>
+			<td>
+				<select name="executor" size="5">
+					{foreach key=executor item=executorid from=$arrOwners}
+						{* by default the owner should be the current user *}
+						<option value="{$executor}">{$executorid|escape}</option>
+					{/foreach}
+				</select>
+			</td>
+		</tr>
+		-->
 <!-- KL - 20070220 - commented out until fixed
 	    <tr>
 			<th>{lang_get s='select_last_result_header'} </th>

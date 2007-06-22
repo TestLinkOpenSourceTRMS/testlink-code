@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: resultsMoreBuilds_report.tpl,v 1.35 2007/06/22 05:12:29 kevinlevy Exp $
+$Id: resultsMoreBuilds_report.tpl,v 1.36 2007/06/22 05:14:51 kevinlevy Exp $
 @author Francisco Mancardi - fm - start solving BUGID 97/98
 20051022 - scs - removed ' in component id values
 20051121 - scs - added escaping of tpname
@@ -68,7 +68,7 @@ $Id: resultsMoreBuilds_report.tpl,v 1.35 2007/06/22 05:12:29 kevinlevy Exp $
 
 			<td>{$lastStatus|escape}</td>
 			
-			{if}
+			{if $show_untested_code == 'true'}
 				<!-- KL - 20070621 - functionality for query by start and end time -->
 				<td>{$startTime}</td>
 				<td>{$endTime}</td>

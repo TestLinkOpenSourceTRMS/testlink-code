@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsMoreBuilds_query_form.tpl,v 1.45 2007/06/22 05:33:27 kevinlevy Exp $
+$Id: resultsMoreBuilds_query_form.tpl,v 1.46 2007/06/22 05:38:29 kevinlevy Exp $
 @author Francisco Mancardi - fm - start solving BUGID 97/98
 20051022 - scs - removed ' in component id values
 20051121 - scs - added escaping of tpname
@@ -77,7 +77,7 @@ $Id: resultsMoreBuilds_query_form.tpl,v 1.45 2007/06/22 05:33:27 kevinlevy Exp $
 			</td>
 			<td>
 			    <table class="simple" style="width: 100%; text-align: center; margin-left: 0px;">
-				     <tr><td>{lang_get s='year'}</td><td> <input type="text" size="4" maxlength="4" name="end_year" value="2010"/></td></tr>
+				     <tr><td>{lang_get s='year'}</td><td> <input type="text" size="4" maxlength="4" name="end_year" value="3000"/></td></tr>
 				     <tr><td>{lang_get s='month'}</td><td><input type="text" size="2" maxlength="2" name="end_month" value="01"/></td></tr>
 				     <tr><td>{lang_get s='day'}</td><td><input type="text" size="2" maxlength="2" name="end_day" value="01"/></td></tr>
 				     <tr><td>{lang_get s='hour'}</td><td><input type="text"  size="2" maxlength="2"name="end_hour" value="00"/></td></tr>

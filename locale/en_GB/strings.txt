@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.177 $
- * @modified $Date: 2007/06/18 07:57:57 $ $Author: franciscom $
+ * @version $Revision: 1.178 $
+ * @modified $Date: 2007/06/22 05:29:07 $ $Author: kevinlevy $
  *
  * @author Francisco Mancardi
  *
@@ -1028,6 +1028,14 @@ $TLS_select_report_format_header = "Select Report Format";
 $TLS_submit_query = "Submit Query";
 $TLS_test_plan_header = "Test Plan ";
 $TLS_query_metrics_report = "Query Metrics Report";
+$TLS_enter_start_time = "Enter Start Time";
+$TLS_enter_end_time = "Enter End Time";
+$TLS_year = "year";
+$TLS_month = "month";
+$TLS_day = "day";
+$TLS_hour = "hour";
+$TLS_search_in_notes = "search for string in notes";
+$TLS_executor = "executed by";
 
 // gui/templates/resultsMoreBuilds_report.tpl
 $TLS_caption_show_collapse = "Show / Collapse";
@@ -1046,8 +1054,10 @@ $TLS_th_total_cases = "#Test Cases";
 $TLS_th_total_fail = "#failed";
 $TLS_th_total_not_run = "#not run";
 $TLS_th_total_pass = "#passed";
-
-
+$TLS_th_start_time = "Start Time";
+$TLS_th_end_time = "End Time";
+$TLS_th_executor = "Executed By";
+$TLS_th_search_notes_string = "notes search string";
 
 // gui/templates/resultsReqs.tpl
 $TLS_req_title_blocked = "Blocked Requirements";

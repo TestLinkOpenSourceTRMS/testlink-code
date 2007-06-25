@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: resultsGeneral.php,v $
- * @version $Revision: 1.31 $
- * @modified $Date: 2007/05/24 19:49:43 $ by $Author: schlundus $
+ * @version $Revision: 1.32 $
+ * @modified $Date: 2007/06/25 06:23:45 $ by $Author: franciscom $
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
  * This page show Test Results over all Builds.
@@ -101,12 +101,9 @@ if ($arrDataOwner != null) {
    }
 }
 
-/**
-* SMARTY ASSIGNMENTS
-*/ 
-
 $smarty = new TLSmarty;
-$smarty->assign('tpName', $_SESSION['testPlanName']);
+$smarty->assign('tproject_name', $_SESSION['testprojectName'] );
+$smarty->assign('tplan_name', $_SESSION['testPlanName'] );
 $smarty->assign('arrDataPriority', $arrDataPriority);
 $smarty->assign('arrDataSuite', $arrDataSuite);
 $smarty->assign('arrDataOwner', $arrDataOwner2);

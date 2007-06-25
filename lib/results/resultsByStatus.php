@@ -1,17 +1,14 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsByStatus.php,v 1.46 2007/06/22 00:26:51 kevinlevy Exp $ 
+* $Id: resultsByStatus.php,v 1.47 2007/06/25 06:23:45 franciscom Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
-* @author 	Chad Rosen
-* @author     KL
+* @author Chad Rosen
+* @author KL
 * 
-* This page show Test Results over all Builds.
 *
-* @author 20050919 - fm - refactoring cat/comp name
-* 20050901 - scs - added fix for Mantis 81
-* 20061126 - KL - upgrade to 1.7
+* rev : 20070623 - franciscom - BUGID 911
 */
 require('../../config.inc.php');
 require_once('common.php');
@@ -20,6 +17,7 @@ require_once('displayMgr.php');
 require_once('users.inc.php');
 
 testlinkInitPage($db);
+$dummy=null;
 
 $tpID = isset($_SESSION['testPlanId']) ?  $_SESSION['testPlanId'] : 0;
 $type = isset($_GET['type']) ? $_GET['type'] : 'n';
@@ -39,7 +37,6 @@ else
 	tlog('wrong value of GET type');
 	exit();
 }
-
 
 $SUITES_SELECTED = "all";
 
@@ -72,16 +69,21 @@ if (is_array($mapOfLastResult)) {
 			$buildName = $currentBuildInfo['name'];
 			
 			$notes = $mapOfLastResult[$suiteId][$tcId]['notes'];
-			$execution_ts = $mapOfLastResult[$suiteId][$tcId]['execution_ts'];
 			$suiteName = $mapOfLastResult[$suiteId][$tcId]['suiteName'];
 			$name = $mapOfLastResult[$suiteId][$tcId]['name'];		
 			$tester_id = $mapOfLastResult[$suiteId][$tcId]['tester_id'];
 			$executions_id = $mapOfLastResult[$suiteId][$tcId]['executions_id'];
 			$tcversion_id = $mapOfLastResult[$suiteId][$tcId]['tcversion_id'];		
+			
+			// ------------------------------------------------------------------------------------
+			// 20070623 - BUGID 911 - no need to localize, is already localized
+			$execution_ts = $mapOfLastResult[$suiteId][$tcId]['execution_ts'];
 			$localizedTS = '';
 			if ($execution_ts != null) {
-			   $localizedTS = localize_dateOrTimeStamp(null,$dummy,'timestamp_format',$execution_ts);
+			   $localizedTS = $execution_ts;
 			}
+			// ------------------------------------------------------------------------------------
+			
 			$bugString = buildBugString($db, $executions_id);
 	        $bCanExecute = has_rights($db,"tp_execute");
 			$testTitle = getTCLink($bCanExecute,$tcId,$tcversion_id,$name,$lastBuildIdExecuted);
@@ -104,7 +106,9 @@ if (is_array($mapOfLastResult)) {
 } // end if
 
 $smarty = new TLSmarty;
-$smarty->assign('title', $_SESSION['testPlanName'] . " " . $title);
+$smarty->assign('tproject_name', $_SESSION['testprojectName'] );
+$smarty->assign('tplan_name', $_SESSION['testPlanName'] );
+$smarty->assign('title', $title);
 $smarty->assign('arrBuilds', $arrBuilds); 
 $smarty->assign('arrData', $arrData);
 $smarty->assign('type', $type);

@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: charts.php,v $
- * @version $Revision: 1.13 $
- * @modified $Date: 2007/06/10 19:03:48 $  $Author: kevinlevy $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2007/06/25 06:23:45 $  $Author: franciscom $
  * @author kevin
  *
  *
@@ -33,7 +33,9 @@ $charts = array(
 );
                  
 $smarty = new TLSmarty();
-$smarty->assign("tpname",$testPlanName);
+$smarty->assign("tplan_name",$testPlanName);
+$smarty->assign('tproject_name', $_SESSION['testprojectName'] );
+
 $smarty->assign("charts",$charts);
 $smarty->display("charts.tpl");	                   
 ?>

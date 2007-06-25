@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsMoreBuilds_buildReport.php,v 1.46 2007/06/22 04:56:49 kevinlevy Exp $ 
+* $Id: resultsMoreBuilds_buildReport.php,v 1.47 2007/06/25 06:23:45 franciscom Exp $ 
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 * 
@@ -57,8 +57,8 @@ for ($id = 0; $id < sizeOf($componentsSelected); $id++)
 
 $keywordSelected = isset($_REQUEST['keyword']) ? $_REQUEST['keyword'] : 0;
 $tpID = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0;
-$prodID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-$tpName = isset($_SESSION['testPlanName']) ? $_SESSION['testPlanName'] : '';
+$tplan_name = isset($_SESSION['testPlanName']) ? $_SESSION['testPlanName'] : '';
+$tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : '';
 
 $startYear = isset($_REQUEST['start_year']) ? $_REQUEST['start_year'] : "0000";
 $startMonth = isset($_REQUEST['start_month']) ? $_REQUEST['start_month'] : "00";
@@ -84,7 +84,9 @@ if (sizeof($buildsSelected)) {
 
 $tp = new testplan($db);
 
-$re = new results($db, $tp, $componentIds, $buildsToQuery, $statusForClass, $keywordSelected, $ownerSelected, $startTime, $endTime, $executorSelected, $search_notes_string);
+$re = new results($db, $tp, $componentIds, $buildsToQuery, $statusForClass, 
+                  $keywordSelected, $ownerSelected, $startTime, $endTime, 
+                  $executorSelected, $search_notes_string);
 $suiteList = $re->getSuiteList();
 $flatArray = $re->getFlatArray();
 $mapOfSuiteSummary =  $re->getAggregateMap();
@@ -94,6 +96,8 @@ $arrBuilds = $tp->get_builds($tpID);
 $mapBuilds = $tp->get_builds_for_html_options($tpID);
 
 $arrOwners = get_users_for_html_options($db, ALL_USERS_FILTER, !ADD_BLANK_OPTION);
+
+
 $smarty = new TLSmarty();
 $smarty->assign('arrBuilds', $arrBuilds);
 $smarty->assign('mapBuilds', $mapBuilds);
@@ -117,9 +121,10 @@ if ($search_notes_string) {
 }
 
 $smarty->assign('show_untested_code', $g_untested_reports);
-
 $smarty->assign('totals', $totals);
-$smarty->assign('testPlanName',$tpName);
+$smarty->assign('tplan_name',$tplan_name);
+$smarty->assign('tproject_name',$tproject_name);
+
 $smarty->assign('testplanid', $tpID);
 $smarty->assign('arrBuilds', $arrBuilds); 
 $smarty->assign('suiteList', $suiteList);

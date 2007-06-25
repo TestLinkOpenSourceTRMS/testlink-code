@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8 
- * @modified $Date: 2007/06/22 04:24:58 $ by $Author: kevinlevy $
+ * @modified $Date: 2007/06/25 06:22:29 $ by $Author: franciscom $
  *
  *-------------------------------------------------------------------------
  * Revisions:
@@ -493,7 +493,8 @@ class results
 	* @return void
 	*/ 	
 	private function addLastResultToMap($suiteId, $testcase_id, $buildNumber, $result, $tcversion_id, 
-                              $execution_ts, $notes, $suiteName, $executions_id, $name, $tester_id, $feature_id, $assigner_id = -1, $lastResultToTrack){
+                              $execution_ts, $notes, $suiteName, $executions_id, $name, 
+                              $tester_id, $feature_id, $assigner_id = -1, $lastResultToTrack){
 		if ($buildNumber)
 			$this->mapOfLastResultByBuild[$buildNumber][$testcase_id] = $result;
 	

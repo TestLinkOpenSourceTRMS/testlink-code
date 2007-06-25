@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.114 $
- * @modified $Date: 2007/06/22 05:01:45 $ by $Author: kevinlevy $
+ * @version $Revision: 1.115 $
+ * @modified $Date: 2007/06/25 06:20:21 $ by $Author: franciscom $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink 
@@ -206,12 +206,6 @@ $g_logo_navbar= '<img alt="TestLink" title="TestLink" src="' .
 // image for main menu item bullet (just filename)
 // $g_main_menu_item_bullet_img='arrow_org.gif';
 $g_main_menu_item_bullet_img='slide_gripper.gif';
-
-// use when componing an title using several strings
-define('TITLE_SEP',' : ');
-define('TITLE_SEP_TYPE2',' >> ');
-define('TITLE_SEP_TYPE3',' - ');
-
 
 // 'background'  -> standard behaviour for 1.6.x you can have a different
 //                  background colour for every test project.
@@ -589,6 +583,12 @@ if ( file_exists( $custom_config_file ) )
   require_once( $custom_config_file ); 
 }
 
+
+// use when componing an title using several strings
+define('TITLE_SEP',$g_title_sep);
+define('TITLE_SEP_TYPE2',$g_title_sep_type2);
+define('TITLE_SEP_TYPE3',$g_title_sep_type3);
+
 define('TL_ITEM_BULLET_IMG', TL_THEME_IMG_DIR . "/" .$g_main_menu_item_bullet_img);
 
 define('REFRESH_SPEC_TREE',$g_spec_cfg->automatic_tree_refresh ? 'yes' : 'no');
@@ -612,14 +612,6 @@ if(false !== $serverLanguage)
 }
 
 define ('TL_DEFAULT_LOCALE', $g_default_language);
-
-// 20070519 - franciscom
-define ('TL_HTML_SELECT_DATE_FIELD_ORDER',
-        $g_locales_html_select_date_field_order[TL_DEFAULT_LOCALE]);
-
-define ('TL_DATE_FORMAT', $g_locales_date_format[TL_DEFAULT_LOCALE]);
-define ('TL_TIMESTAMP_FORMAT', $g_locales_timestamp_format[TL_DEFAULT_LOCALE]);
-
 require_once("lang_api.php");
 
 // used to disable the attachment feature if there are problems with repository path

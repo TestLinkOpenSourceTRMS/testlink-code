@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.65 $ $Author: franciscom $
- * @modified $Date: 2007/05/21 06:44:17 $
+ * @version $Revision: 1.66 $ $Author: franciscom $
+ * @modified $Date: 2007/06/25 06:24:02 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -17,6 +17,7 @@
  * email, userID, productID, productName, testplan (use rather testPlanID),
  * testPlanID, testPlanName
  *
+ * 20070623 - franciscom - improved info in header of localize_dateOrTimeStamp()
  * 20070104 - franciscom - gen_spec_view() warning message removed
  *
  **/ 
@@ -361,21 +362,52 @@ function localize_date_smarty($params, &$smarty)
 	return localize_dateOrTimeStamp($params,$smarty,'date_format',$params['d']);
 }
 
+/*
+  function: 
+
+  args :
+  
+  returns: 
+
+*/
 function localize_timestamp_smarty($params, &$smarty)
 {
 	return localize_dateOrTimeStamp($params,$smarty,'timestamp_format',$params['ts']);
 }
 
+/*
+  function: 
+
+  args :
+         $params: used only if you call this from an smarty template
+                  or a wrapper in an smarty function.
+                  
+         $smarty: when not used in an smarty template, pass NULL.
+         $what: give info about what kind of value is contained in value.
+                possible values: timestamp_format
+                                 date_format
+         $value: must be a date or time stamp in ISO format 
+  
+  returns: 
+
+*/
 function localize_dateOrTimeStamp($params,&$smarty,$what,$value)
 {
 	$format = config_get($what);
-
 	$retVal = strftime($format, strtotime($value));	
 	if(isset($params['var']))
 		$smarty->assign($params['var'],$retVal);
 	return $retVal;
 }
 
+/*
+  function: 
+
+  args :
+  
+  returns: 
+
+*/
 function format_username_smarty($param,&$smarty)
 {
 	return format_username($param['info']);
@@ -489,6 +521,15 @@ function upd_session_tplan_tproject(&$db,$hash_user_sel)
 	setSessionTestPlan($tplan_data);
 }
 
+
+/*
+  function: 
+
+  args :
+  
+  returns: 
+
+*/
 function set_dt_formats()
 {
 	global $g_date_format;

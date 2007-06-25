@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: resultsMoreBuilds_report.tpl,v 1.37 2007/06/22 05:19:20 kevinlevy Exp $
+$Id: resultsMoreBuilds_report.tpl,v 1.38 2007/06/25 06:21:29 franciscom Exp $
 @author Francisco Mancardi - fm - start solving BUGID 97/98
 20051022 - scs - removed ' in component id values
 20051121 - scs - added escaping of tpname
@@ -16,7 +16,11 @@ $Id: resultsMoreBuilds_report.tpl,v 1.37 2007/06/22 05:19:20 kevinlevy Exp $
 		</script>
 </head>
 <body>
-	<h2>{lang_get s="caption_user_selected_query_parameters"} :</h2>
+<h1> {lang_get s='query_metrics_report'}</h1>
+{include file="inc_result_tproject_tplan.tpl" 
+         arg_tproject_name=$tproject_name arg_tplan_name=$tplan_name}	
+
+	<h2>{lang_get s="caption_user_selected_query_parameters"}</h2>
 	<table class="simple" style="width: 100%; text-align: center; margin-left: 0px;" border="2">
 		<tr>
 			<th>{lang_get s="th_test_plan"}</th>
@@ -24,17 +28,14 @@ $Id: resultsMoreBuilds_report.tpl,v 1.37 2007/06/22 05:19:20 kevinlevy Exp $
 			<th>{lang_get s="th_test_suites"}</th> 
 			<th>{lang_get s="th_keyword"}</th>
 			<th>{lang_get s="th_owner"}</th>
-<!--			<th>{lang_get s="th_report_format"}</th> -->
 			<th>{lang_get s="th_last_result"}</th>
 			
-			<!-- KL - 20070621 - functionality for query by start and end time
-			-->
+			<!-- KL - 20070621 - functionality for query by start and end time -->
 			{if $show_untested_code == 'true'}
 				<th>{lang_get s="th_start_time"}</th>
 				<th>{lang_get s="th_end_time"}</th>
 			
-			<!-- KL - 20070621 - functionality for query by executor and search_notes_string
-			-->
+			<!-- KL - 20070621 - functionality for query by executor and search_notes_string	-->
 				<th>{lang_get s="th_executor"}</th>
 				<th>{lang_get s="th_search_notes_string"}</th>
 			{/if}
@@ -42,7 +43,7 @@ $Id: resultsMoreBuilds_report.tpl,v 1.37 2007/06/22 05:19:20 kevinlevy Exp $
 		</tr> 
 		<tr>
 			<td>
-				{$testPlanName|escape}
+				{$tplan_name|escape}
 			</td>
 			<td>
 				{foreach key=buildrow item=array from=$buildsSelected}

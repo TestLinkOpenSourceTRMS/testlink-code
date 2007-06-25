@@ -1,9 +1,10 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planMilestones.tpl,v 1.6 2007/05/21 06:39:38 franciscom Exp $ 
+$Id: planMilestones.tpl,v 1.7 2007/06/25 06:21:29 franciscom Exp $ 
 Purpose: smarty template - edit milestones 
 
 rev :
+     20070624 - franciscom - changed access to defined for gsmarty_ vars
      20070519 - franciscom - added delete confirmation
                              added js checkings
 *}
@@ -97,7 +98,7 @@ function validateForm(f)
       {/if} 
       {html_select_date time=$selected_date
        month_format='%m' start_year="-1" end_year="+1"
-       field_order=$smarty.const.TL_HTML_SELECT_DATE_FIELD_ORDER}
+       field_order=$gsmarty_html_select_date_field_order}
 			</td>
 		</tr>
 
@@ -156,7 +157,7 @@ function validateForm(f)
 								<a href="lib/plan/planMilestones.php?id={$arrMilestone[Row].id}">{$arrMilestone[Row].name|escape}</a>
 							</td>
 							<td>
-								{$arrMilestone[Row].target_date|date_format:$smarty.const.TL_DATE_FORMAT}
+								{$arrMilestone[Row].target_date|date_format:$gsmarty_date_format}
 							</td>
 							<td>
 								{$arrMilestone[Row].A|escape}

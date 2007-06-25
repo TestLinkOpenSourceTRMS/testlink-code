@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: resultsTC.tpl,v 1.9 2007/06/10 20:02:47 kevinlevy Exp $ *}
+{* $Id: resultsTC.tpl,v 1.10 2007/06/25 06:21:29 franciscom Exp $ *}
 {* Purpose: smarty template - show Test Results and Metrics *}
 {* Revisions:
 20051204 - mht - removed obsolete print button
@@ -20,12 +20,8 @@
 {/if}
 
 <div class="workBack">
-{* {lang_get s="testproject"} {$tproject_name}</font><br>
-{lang_get s="testplan"} {$tplan_name|escape}</font><br> *}
-
-{* comments out above 2 lines,improve readability for results inspection. 2007-05-31 *jacky *} 
-{lang_get s="testproject"}{':'} <font style="color:black; font-weight:bold; text-decoration: underline;">{$tproject_name}</font><br>
-{lang_get s="testplan"}{':'} <font style="color:black; font-weight:bold; text-decoration:underline;">{$tplan_name|escape}</font><br>
+{include file="inc_result_tproject_tplan.tpl" 
+         arg_tproject_name=$tproject_name arg_tplan_name=$tplan_name}	
 
 <table class="simple" style="width: 100%; text-align: center; margin-left: 0px;">
 	<tr>
@@ -60,7 +56,7 @@
 {/section}
 </table>
 
-{lang_get s="generated_by_TestLink_on"} {$smarty.now|date_format:$smarty.const.TL_TIMESTAMP_FORMAT}
+{lang_get s="generated_by_TestLink_on"} {$smarty.now|date_format:$gsmarty_timestamp_format}
 </div>
 
 </body>

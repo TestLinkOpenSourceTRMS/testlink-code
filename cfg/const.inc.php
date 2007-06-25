@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: const.inc.php,v $
  *
- * @version $Revision: 1.29 $
- * @modified $Date: 2007/06/21 15:39:00 $ by $Author: franciscom $
+ * @version $Revision: 1.30 $
+ * @modified $Date: 2007/06/25 06:23:04 $ by $Author: franciscom $
  * @author Martin Havlát
  *
  * SCOPE:
@@ -16,6 +16,7 @@
  * 
  *-------------------------------------------------------------------
  * Revisions: 
+ *           20070624 - franciscom - $g_title_sep*
  *           20070607 - franciscom 
  *           to solve BUGID: 887
  *           GET_ACTIVE_BUILD, GET_INACTIVE_BUILD
@@ -284,6 +285,12 @@ $g_role_colour = array (
 
 
 $g_tc_risks = array('L1', 'L2', 'L3','M1', 'M2', 'M3','H1', 'H2', 'H3');
+
+
+// use when componing an title using several strings
+$g_title_sep=' : ';
+$g_title_sep_type2=' >> ';
+$g_title_sep_type3=' - ';
 
 
 // [Main page]

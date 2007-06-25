@@ -4,14 +4,17 @@
  *
  * Filename $RCSfile: tlsmarty.inc.php,v $
  *
- * @version $Revision: 1.23 $
- * @modified $Date: 2007/05/09 06:56:49 $ $Author: franciscom $
+ * @version $Revision: 1.24 $
+ * @modified $Date: 2007/06/25 06:23:14 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
  * TLSmarty class implementation used in all templates
  *
  * 
+ * 20070624 - franciscom - g_locales_html_select_date_field_order
+ *                         g_locales_date_format
+ *                         g_locales_timestamp_format
  * 20070218 - franciscom - g_interface_bugs
  * 20070218 - franciscom - gsmarty_spec_cfg
  * 20070214 - franciscom - gsmarty_tc_status_verbose_labels
@@ -35,6 +38,10 @@ class TLSmarty extends Smarty
 		global $g_gui;
 		global $g_spec_cfg;
 		global $g_interface_bugs;
+    global $g_locales_html_select_date_field_order;
+    global $g_locales_date_format;
+    global $g_locales_timestamp_format;
+
 
 
 	  $this->Smarty();
@@ -107,6 +114,10 @@ class TLSmarty extends Smarty
 				          ' title="' . lang_get('menu_manage_keywords') . '"'); 
 
 
+    $this->assign('gsmarty_html_select_date_field_order',
+                   $g_locales_html_select_date_field_order[$my_locale]);
+    $this->assign('gsmarty_date_format',$g_locales_date_format[$my_locale]);
+    $this->assign('gsmarty_timestamp_format',$g_locales_timestamp_format[$my_locale]);
 
 
     // Registered functions

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.180 $
- * @modified $Date: 2007/06/25 06:19:41 $ $Author: franciscom $
+ * @version $Revision: 1.181 $
+ * @modified $Date: 2007/06/26 06:17:44 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
@@ -47,7 +47,8 @@ $TLS_empty_first_name = " You can't use an empty First Name!";
 $TLS_empty_last_name = " You can't use an empty Last Name!";
 $TLS_fatal_page_title = "TestLink ::: Fatal Error";
 $TLS_invalid_user_name = "Login/User name is  not valid. Please select another one.";
-$TLS_passwd_dont_match = "The two passwords entered did not match. Note that passwords are case sensitive. Please try again.";
+$TLS_passwd_dont_match = "The two passwords entered did not match. Note that passwords are case sensitive. " .
+                         "Please try again.";
 $TLS_user_cant_be_created_because = "Your account can't be created because:";
 $TLS_user_name_exists = "Login/User name is already in use, please select another one.";
 $TLS_valid_user_name_format = "Login/User name can only contain letters, numbers, spaces, hyphens and underscores.";
@@ -67,7 +68,8 @@ $TLS_keywords_file = "Keywords file";
 // lostPassword.php
 $TLS_bad_user = "User not found, please try again";
 $TLS_contact_admin = "<br>If you have any further problems please contact your administrator.";
-$TLS_mail_empty_address = "You don't have specified an email address in your user profile!  Please contact your TestLink administrator about resetting your password!";
+$TLS_mail_empty_address = "You don't have specified an email address in your user profile! " .
+                          " Please contact your TestLink administrator about resetting your password!";
 $TLS_mail_passwd_subject = "Your new TestLink password.";
 $TLS_mail_problems = "Errors in mail setup, please contact your administrator.";
 $TLS_page_title_lost_passwd = "TestLink - Lost password";
@@ -81,7 +83,10 @@ $TLS_bad_user_passwd = "Try again! Wrong login name or password!";
 $TLS_login_msg_session_exists1 = "There is still a valid login for your browser. Please use ";
 $TLS_login_msg_session_exists2 = " at first if you would like to renew your session.";
 $TLS_logout_link = "Logout";
-$TLS_passwd_lost = "Your password has been sent to the email account you specified during your user creation. Please check your mailbox. If you have other problems please contact your TestLink administrator.";
+$TLS_passwd_lost = "Your password has been sent to the email account you specified during " .
+                   "your user creation. Please check your mailbox. " .
+                   "If you have other problems please contact your TestLink administrator.";
+$TLS_password_reseted="New password has been sent via mail";
 $TLS_please_login = "Please log in ...";
 $TLS_session_expired = "Your session has expired! Please login again.";
 $TLS_your_first_login = "Welcome to TestLink! You have guest access now. Please login ...";
@@ -1150,12 +1155,12 @@ $TLS_title_assign_roles = "Assign roles";
 
 
 // gui/templates/usersedit.tpl
+$TLS_button_reset_password = "Reset password";
 $TLS_caption_user_details = "User details";
 $TLS_th_password = "Password";
 $TLS_warning_empty_first_name = "Please enter a name";
 $TLS_warning_empty_last_name = "Please enter a surname";
 $TLS_warning_empty_login = "Please enter a login";
-
 
 
 // gui/templates/attachmentupload.tpl

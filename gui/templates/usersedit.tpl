@@ -1,6 +1,6 @@
 {* 
 Testlink: smarty template - 
-$Id: usersedit.tpl,v 1.12 2007/05/28 06:41:58 franciscom Exp $ 
+$Id: usersedit.tpl,v 1.13 2007/06/26 06:18:26 franciscom Exp $ 
 *}
 {* 
 
@@ -25,9 +25,11 @@ var warning_enter_less1 = "{lang_get s='warning_enter_less1'}";
 var warning_enter_at_least1 = "{lang_get s='warning_enter_at_least1'}";
 var warning_enter_at_least2 = "{lang_get s='warning_enter_at_least2'}";
 var warning_enter_less2 = "{lang_get s='warning_enter_less2'}";
+var warning_empty_email = "{lang_get s='empty_email_address'}";
+
 
 {literal}
-function validateForm(f)
+function validateForm(f,check_password)
 {
   if (isWhitespace(f.login.value)) 
   {
@@ -49,6 +51,24 @@ function validateForm(f)
       selectField(f, 'last');
       return false;
   }
+  
+  if( check_password )
+  {
+    if (isWhitespace(f.password.value)) 
+    {
+        alert(warning_empty_pwd);
+        selectField(f, 'password');
+        return false;
+    }
+  }
+
+  if (isWhitespace(f.email.value)) 
+  {
+      alert(warning_empty_email);
+      selectField(f, 'email');
+      return false;
+  }
+
   return true;
 }
 </script>
@@ -62,6 +82,21 @@ function validateForm(f)
 {config_load file="input_dimensions.conf" section='login'}
 
 <h1>{lang_get s='title_user_mgmt'} - {lang_get s='title_account_settings'} </h1>
+
+{* This check allows us to understand if we are creating a new user *}
+{assign var="user_id" value=''}
+{assign var="user_login" value=''}
+{assign var="check_password" value=1}
+{if $external_password_mgmt eq 1 }
+  {assign var="check_password" value=0}
+{/if}
+
+{if $userData neq null}
+  {assign var="check_password" value=0}
+  {assign var="user_id" value=$userData.id}
+  {assign var="user_login" value=$userData.login}
+{/if}
+
 
 {***** TABS *****}
 <div class="tabMenu">
@@ -91,10 +126,10 @@ function validateForm(f)
 
 <h2>{lang_get s='caption_user_details'}</h2>
 <form method="post" action="lib/usermanagement/usersedit.php" 
-      name="useredit" onSubmit="javascript:return validateForm(this);">
+      name="useredit" onSubmit="javascript:return validateForm(this,{$check_password});">
       
-	<input type="hidden" name="user_id" value="{$userData.id}" />
-	<input type="hidden" name="user_login" value="{$userData.login}" />
+	<input type="hidden" id="user_id" name="user_id" value="{$user_id}" />
+	<input type="hidden" id="user_login" name="user_login" value="{$user_login}" />
 	<table class="common">
 		<tr>
 			<th>{lang_get s='th_login'}</th>
@@ -124,9 +159,12 @@ function validateForm(f)
 		     <tr>
 			     <th>{lang_get s='th_password'}</th>
 			    {if $external_password_mgmt eq 0 }
-		        <td><input type="password" name="password" 
+		        <td><input type="password" id="password" name="password" 
 		                   size="{#PASSWD_SIZE#}" 
-		                   maxlength="{#PASSWD_SIZE#}" /></td>
+		                   maxlength="{#PASSWD_SIZE#}" />
+		            {include file="error_icon.tpl" field="password"}       
+		        </td>
+ 			          
 		      {else}      
             <td>{lang_get s='password_mgmt_is_external'}</td>
 		      {/if}      
@@ -136,8 +174,10 @@ function validateForm(f)
    
 		<tr>
 			<th>{lang_get s='th_email'}</th>
-			<td><input type="text" name="email" value="{$userData.email|escape}" 
-			           size="{#EMAIL_SIZE#}" maxlength="{#EMAIL_MAXLEN#}" /></td>
+			<td><input type="text" id="email" name="email" value="{$userData.email|escape}" 
+			           size="{#EMAIL_SIZE#}" maxlength="{#EMAIL_MAXLEN#}" />
+          {include file="error_icon.tpl" field="email"}       
+			</td>
 		</tr>
 		<tr>
 			<th>{lang_get s='th_role'}</th>
@@ -185,11 +225,22 @@ function validateForm(f)
 	{else}
 		<input type="submit" name="do_update" value="{lang_get s='btn_add'}" />
 	{/if}
+	
 		<input type="button" name="cancel" value="{lang_get s='btn_cancel'}" 
 			onclick="javascript: location.href=fRoot+'lib/usermanagement/usersview.php';" />
 
 	</div>
 </form>
+
+{if $userData neq null}
+<form method="post" action="lib/usermanagement/usersedit.php" 
+      name="user_reset_password">
+  	<input type="hidden" id="user_id" name="user_id" value="{$user_id}" />
+		<input type="submit" id="do_reset_password" name="do_reset_password" 
+		       value="{lang_get s='button_reset_password'}" />
+</form>
+{/if}
+
 <hr />
 
 </div>

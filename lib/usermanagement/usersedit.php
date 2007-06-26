@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: usersedit.php,v $
 *
-* @version $Revision: 1.14 $
-* @modified $Date: 2007/06/22 17:01:59 $ $Author: franciscom $
+* @version $Revision: 1.15 $
+* @modified $Date: 2007/06/26 06:18:35 $ $Author: franciscom $
 * 
 * rev :  BUGID 918
 *
@@ -15,6 +15,7 @@
 require_once('../../config.inc.php');
 require_once('testproject.class.php');
 require_once('users.inc.php');
+require_once('email_api.php');
 testlinkInitPage($db);
 
 $args = init_args($_GET,$_POST);
@@ -62,7 +63,7 @@ if ($args->do_update)
 			$sqlResult = lang_get('empty_email_address');
 		else	
 			$sqlResult = userUpdate($db,$args->user_id,$args->first,$args->last,
-	                        $args->email,null,$args->rights_id,$args->locale,$args->user_is_active);
+	                            $args->email,null,$args->rights_id,$args->locale,$args->user_is_active);
 		$action = "updated";							
 		$user_id = $args->user_id;
 		
@@ -84,6 +85,23 @@ if ($args->do_update)
 		}
 	}
 }
+
+if ($args->do_reset_password)
+{
+  $user_feedback='';
+  $op = reset_password($db,$user_id);
+  
+  if( $op->status_ok )
+  {
+    $user_feedback=lang_get('password_reseted');  
+  }
+  else
+  {
+    $user_feedback=$op->msg;
+  }
+  
+}
+
 
 $userResult = null;
 
@@ -110,9 +128,12 @@ $smarty->assign('optRights',$roles);
 $smarty->assign('userData', $userResult);
 $smarty->assign('result',$sqlResult);
 $smarty->assign('action',$action);
+$smarty->assign('user_feedback',$user_feedback);
+
 $smarty->display('usersedit.tpl');
+?>
 
-
+<?php
 // -------------------------------------------------------------------------------------------------
 /*
   function: 
@@ -149,7 +170,7 @@ function init_args($get_hash, $post_hash)
 		$args->$value = isset($post_hash[$value]) ? $post_hash[$value] : null;
 	}
  
-	$bool_keys = array('user_is_active','do_update');
+	$bool_keys = array('user_is_active','do_update','do_reset_password');
 	foreach ($bool_keys as $value)
 	{
 		$args->$value = isset($post_hash[$value]) ? 1 : 0;

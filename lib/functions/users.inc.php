@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: users.inc.php,v $
  *
- * @version $Revision: 1.43 $
- * @modified $Date: 2007/06/18 08:02:27 $ $Author: franciscom $
+ * @version $Revision: 1.44 $
+ * @modified $Date: 2007/06/26 06:18:35 $ $Author: franciscom $
  *
  * Functions for usermanagement
  *
@@ -530,5 +530,31 @@ function get_all_users_roles(&$db,$order_by=null)
 }
 
 
+/*
+  function: 
+
+  args :
+  
+  returns: 
+
+*/
+function reset_password(&$db,$user_id)
+{
+
+$newPassword = md5(uniqid(rand(),1));
+
+$user = getUserById($db,$user_id);
+$email=$user[0]['email'];
+
+$msgBody = lang_get('your_password_is') . $newPassword .  lang_get('contact_admin');  
+$mail_op = @email_send(config_get('from_email'), $email,  
+                       lang_get('mail_passwd_subject'), $msgBody);
+
+if ($mail_op->status_ok)
+{
+	setUserPassword($db,$user_id,$newPassword);
+}
+return($mail_op);
+} 
 
 ?>

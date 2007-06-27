@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: resultsNavigator.tpl,v 1.12 2007/05/15 13:56:38 franciscom Exp $ *}
+{* $Id: resultsNavigator.tpl,v 1.13 2007/06/27 03:33:56 kevinlevy Exp $ *}
 {* Purpose: smarty template - show Test Results and Metrics *}
 {* Revisions:
    20070113 - franciscom - use of smarty config file
@@ -40,35 +40,25 @@ function reportPrint(){
 </div>
 
 <div>
-<form method="get">
-
-
 
 <form method="get">
 	<table>
-	<tr><td>
-		{lang_get s='title_active_build'}
-	</td></tr>
-	<tr><td>
-	<select name="build" onchange="this.form.submit();">
-		{html_options options=$arrBuilds selected=$selectedBuild}
-	</select>
-	</td></tr>
-	<tr><td>
-	{lang_get s='title_report_type'}
-	</td></tr>
-	<tr><td>
-	<select name="report_type" onchange="this.form.submit();">
-		{html_options options=$arrReportTypes selected=$selectedReportType}
-	</select>
-	</td></tr>
-	<!--
-	<tr>
-		<td>
-		{lang_get s="note_email_sent_t"}
-		</td>
-	</tr>
-	-->
+		<tr><td>
+			{lang_get s='title_active_build'}
+		</td></tr>
+		<tr><td>
+			<select name="build" onchange="this.form.submit();">
+				{html_options options=$arrBuilds selected=$selectedBuild}
+			</select>
+		</td></tr>
+		<tr><td>
+			{lang_get s='title_report_type'}
+		</td></tr>
+		<tr><td>
+			<select name="report_type" onchange="this.form.submit();">
+				{html_options options=$arrReportTypes selected=$selectedReportType}
+			</select>
+		</td></tr>
 	</table>
 </form>
 </div>

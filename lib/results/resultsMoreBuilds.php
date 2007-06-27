@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsMoreBuilds.php,v 1.50 2007/06/25 06:23:45 franciscom Exp $ 
+* $Id: resultsMoreBuilds.php,v 1.51 2007/06/27 05:57:54 kevinlevy Exp $ 
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 * 
@@ -43,7 +43,6 @@ $smarty->assign('arrBuilds', $arrBuilds);
 $smarty->assign('arrKeywords', $arrKeywords);
 $smarty->assign('arrComponents', $arrComponents);
 $smarty->assign('arrOwners', $arrOwners);
-$smarty->assign('show_untested_code', $g_untested_reports);
 
 $report_type = isset($_GET['report_type']) ? intval($_GET['report_type']) : null;
 if (!isset($_GET['report_type']))

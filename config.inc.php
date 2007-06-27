@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.115 $
- * @modified $Date: 2007/06/25 06:20:21 $ by $Author: franciscom $
+ * @version $Revision: 1.116 $
+ * @modified $Date: 2007/06/27 05:56:12 $ by $Author: kevinlevy $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink 
@@ -651,17 +651,6 @@ require_once('logging.inc.php');
 require_once(TL_ABS_PATH . 'lib/functions/roles.inc.php');
 require_once(TL_ABS_PATH . 'cfg/userrightmatrix.php');
 
-/** KL - 20070621 - untested feature for query metrics report
-* no documentation
-* not thoroughly tested for 1.7 RC3 release 
-* allows user to query executions by start time, end time, executor, and
-* search on string in notes field entered at execution
-*
-*
-* Possibly for querying by custom field reports but most likely
-* that will be in for 1.8
-*/
-$g_untested_reports = false;
 
 // ----- END OF FILE --------------------------------------------------
 ?>

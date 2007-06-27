@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8 
- * @modified $Date: 2007/06/25 06:22:29 $ by $Author: franciscom $
+ * @modified $Date: 2007/06/27 04:10:08 $ by $Author: kevinlevy $
  *
  *-------------------------------------------------------------------------
  * Revisions:
@@ -164,15 +164,14 @@ class results
 	                        $builds_to_query = -1, $lastResult = 'a', 
 	                        $keywordId = 0, $owner = null, 
 							$startTime = "0000-00-00 00:00:00", $endTime = "9999-01-01 00:00:00",
-							$executor = null, $search_notes_string = null)
+							$executor = null, $search_notes_string = null, $linkExecutionBuild = null)
 	{
 		$this->db = $db;	
-							
-    $this->tp = $tp;  
-    $this->map_tc_status=config_get('tc_status');  
-    $this->suitesSelected = $suitesSelected;  	
-    $this->tprojectID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-    $this->testPlanID = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0 ;
+	    $this->tp = $tp;  
+        $this->map_tc_status=config_get('tc_status');  
+        $this->suitesSelected = $suitesSelected;  	
+        $this->tprojectID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+        $this->testPlanID = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0 ;
 		$this->tplanName  = isset($_SESSION['testPlanName']) ? $_SESSION['testPlanName'] : null;
 
 		// build suiteStructure and flatArray
@@ -189,7 +188,7 @@ class results
 			// if you just query the executions table for those rows with status = $this->map_tc_status['passed']
 			// that is not the way to determine last result
 		
-			$this->executionsMap = $this->buildExecutionsMap($builds_to_query, 'a', $keywordId, $owner, $startTime, $endTime, $executor, $search_notes_string);    
+			$this->executionsMap = $this->buildExecutionsMap($builds_to_query, 'a', $keywordId, $owner, $startTime, $endTime, $executor, $search_notes_string, $linkExecutionBuild);    
 		
 			// get keyword id -> keyword name pairs used in this test plan
 			$arrKeywords = $tp->get_keywords_map($this->testPlanID); 	
@@ -744,10 +743,14 @@ class results
 	* testsuite_id_1_array = []
 	* all test cases are included, even cases that have not been executed yet
 	*/
-	private function buildExecutionsMap($builds_to_query, $lastResult = 'a', $keyword = 0, $owner = null, $startTime, $endTime, $executor, $search_notes_string){
+	private function buildExecutionsMap($builds_to_query, $lastResult = 'a', $keyword = 0, $owner = null, $startTime, $endTime, $executor, $search_notes_string, $executeLinkBuild){
 		// first make sure we initialize the executionsMap
 		// otherwise duplicate executions will be added to suites
 		$executionsMap = null;
+		
+		// for execution link
+		$bCanExecute = has_rights($this->db,"tp_execute");
+		
 		while ($testcaseID = key($this->linked_tcversions)){
 			$info = $this->linked_tcversions[$testcaseID]; 
 			$testsuite_id = $info['testsuite_id'];
@@ -764,6 +767,9 @@ class results
 			$name = $results['name'];
 			$executed = $info['executed'];
 			$executionExists = true;
+			// KL - 20070625 - set link to execute test case
+			$executeLink = $this->getTCLink($bCanExecute,$testcaseID,$tcversion_id,$name,$executeLinkBuild);
+			
 			if ($tcversion_id != $executed){
 				$executionExists = false;
 				if (($lastResult == 'a') || ($lastResult == $this->map_tc_status['not_run'])) {
@@ -778,7 +784,8 @@ class results
 					'notes' => '', 
 					'name' => $name,
 					'assigner_id' => $info['assigner_id'],
-					'feature_id' => $info['feature_id']);
+					'feature_id' => $info['feature_id'],
+					'execute_link' => $executeLink);
 					array_push($currentSuite, $infoToSave);			
 				}	  
 			}
@@ -814,10 +821,8 @@ class results
 						$execution_ts = $exec_row['execution_ts'];
 						$dummy = null;
 						$localizedTS = localize_dateOrTimeStamp(null, $dummy, 'timestamp_format',$execution_ts);
-						// TO-DO - fix bugString call when bug database is not configured
 						$bugString = $this->buildBugString($this->db, $executions_id);
-						// TO-DO - only add bugString if it's needed - build logic into results contructor
-						// to pass this request in	
+								
 						$infoToSave = array('testcaseID' => $testcaseID, 
 									'tcversion_id' => $tcversion_id, 
 									'build_id' => $exec_row['build_id'], 
@@ -829,7 +834,8 @@ class results
 									'name' => $name, 
 									'bugString' => $bugString,									
 									'assigner_id' => $info['assigner_id'],
-									'feature_id' => $info['feature_id']);
+									'feature_id' => $info['feature_id'],
+									'execute_link' => $executeLink);
 						if ($lastResult != $this->map_tc_status['not_run']) {
 							array_push($currentSuite, $infoToSave);
 						}
@@ -848,7 +854,8 @@ class results
 					'name' => $name, 
 					'notes' => '',
 					'assigner_id' => $info['assigner_id'],
-					'feature_id' => $info['feature_id']);
+					'feature_id' => $info['feature_id'],
+					'execute_link' => $executeLink);
 					array_push($currentSuite, $infoToSave);			
 				} 
 			} // end if($executionExists)
@@ -1035,5 +1042,21 @@ class results
 		} // end if
 		return $currentNode;
 	} //end function
+	
+	/**
+	* Function returns number of Test Cases in the Test Plan
+	* @return string Link of Test ID + Title 
+	*/
+	function getTCLink($rights, $tcID,$tcversionID, $title, $buildID)
+	{
+		$title = htmlspecialchars($title);
+		$suffix = $tcID . ":&nbsp;<b>" . $title. "</b></a>";
+	
+		$testTitle = '<a href="lib/execute/execSetResults.php?level=testcase&build_id='
+				 . $buildID . '&id=' . $tcID.'&version_id='.$tcversionID.'">';
+		$testTitle .= $suffix;
+		
+	return $testTitle;
+	}	
 } // end class result
 ?>

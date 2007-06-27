@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: resultsMoreBuilds_report.tpl,v 1.38 2007/06/25 06:21:29 franciscom Exp $
+$Id: resultsMoreBuilds_report.tpl,v 1.39 2007/06/27 05:38:37 kevinlevy Exp $
 @author Francisco Mancardi - fm - start solving BUGID 97/98
 20051022 - scs - removed ' in component id values
 20051121 - scs - added escaping of tpname
@@ -16,10 +16,11 @@ $Id: resultsMoreBuilds_report.tpl,v 1.38 2007/06/25 06:21:29 franciscom Exp $
 		</script>
 </head>
 <body>
+
 <h1> {lang_get s='query_metrics_report'}</h1>
 {include file="inc_result_tproject_tplan.tpl" 
          arg_tproject_name=$tproject_name arg_tplan_name=$tplan_name}	
-
+{if $show_query_params}
 	<h2>{lang_get s="caption_user_selected_query_parameters"}</h2>
 	<table class="simple" style="width: 100%; text-align: center; margin-left: 0px;" border="2">
 		<tr>
@@ -81,7 +82,8 @@ $Id: resultsMoreBuilds_report.tpl,v 1.38 2007/06/25 06:21:29 franciscom Exp $
 		 	
 		</tr>
 	</table>		
-	
+{/if}
+{if $show_totals}
 	<table class="simple" style="color: blue; width: 100%; text-align: center; margin-left: 0px;" border="2">
 		<tr>
 			<th>{lang_get s="th_total_cases"}</th>
@@ -98,7 +100,20 @@ $Id: resultsMoreBuilds_report.tpl,v 1.38 2007/06/25 06:21:29 franciscom Exp $
 			<td>{$totals.notRun}</td>
 		</tr>
 	</table>		
-
+{/if}
+	{if !$show_summaries}
+		<table class="simple" style="color:blue; width: 100%; text-align: center; margin-left: 0px;" border="2">
+			<tr>
+				<th>{lang_get s='th_test_case_id'}</th>
+				<th>{lang_get s='th_build'}</th>
+				<th>{lang_get s='th_tester_id'}</th>
+				<th>{lang_get s='th_execution_ts'}</th>
+				<th>{lang_get s='th_status'}</th>
+				<th>{lang_get s='th_notes'}</th>
+				<th>{lang_get s='th_bugs'}</th>
+			</tr> 
+	
+	{/if}	
 <!-- KL - 20061021 - comment out until I can figure out how to fix
 	<a href="javascript:showOrCollapseAll()">{lang_get s='show_hide_all'}</a>
 
@@ -125,8 +140,9 @@ $Id: resultsMoreBuilds_report.tpl,v 1.38 2007/06/25 06:21:29 franciscom Exp $
 				-->		
 			{elseif ($depthChange gt 0) && ($mapOfSuiteSummary[$currentSuiteId])}
 				{section name="loopOutDivs" loop="$flatArray" max="$depthChange"}
-				<div class="workBack">
-
+				{if $show_summaries}
+					<div class="workBack">
+				{/if}
 				<!-- KL - 20061021 - comment out until I can figure out how to fix
 				<h2 onClick="plusMinus_onClick(this);">
 				<img class="minus" src="{$smarty.const.TL_THEME_IMG_DIR}/minus.gif" />
@@ -153,6 +169,8 @@ $Id: resultsMoreBuilds_report.tpl,v 1.38 2007/06/25 06:21:29 franciscom Exp $
 			<!-- KL 20061021 - Only display title of category if it has test cases in the test plan -->
 			<!-- not a total fix - I need to adjust results.class.php to not pass suite names in
 				which are not in the plan -->
+			
+			{if $show_summaries}
 			<h2>{$suiteNameText}</h2>			
 
 			<table class="simple" style="color:blue; width: 100%; text-align: center; margin-left: 0px;" border="2">
@@ -171,20 +189,26 @@ $Id: resultsMoreBuilds_report.tpl,v 1.38 2007/06/25 06:21:29 franciscom Exp $
 					<td>{$mapOfSuiteSummary[$currentSuiteId].notRun}</td>
 				</tr>
 			</table>		
+			{/if}
 			{else}
 				<!-- 
 				{lang_get s='not_yet_executed'}
 				-->
-				</div>
+				{if $show_summaries}
+					</div>
+				{/if}
 			{/if}	
-			{foreach key=suiteId item=array from=$suiteList}
+	{foreach key=suiteId item=array from=$suiteList}
 				{* probably can be done better. If suiteId in $suiteList matches the current 
 				suite id - print that suite's information *}
 				{if ($suiteId == $currentSuiteId)}
 				{* test to make sure there are test cases to diplay before
 				   print table and headers *}
 				{if $suiteList[$suiteId]}
-					<table class="simple" style="width: 100%; text-align: center; margin-left: 0px;" border="2">
+					{if $show_summaries}
+						<table class="simple" style="width: 100%; text-align: center; margin-left: 0px;" border="2">
+					{/if}
+					{if $show_summaries}
 					<tr>
 						<th>{lang_get s='th_test_case_id'}</th>
 						<th>{lang_get s='th_build'}</th>
@@ -194,32 +218,68 @@ $Id: resultsMoreBuilds_report.tpl,v 1.38 2007/06/25 06:21:29 franciscom Exp $
 						<th>{lang_get s='th_notes'}</th>
 						<th>{lang_get s='th_bugs'}</th>
 					</tr> 
+					{/if}
 					{foreach key=executionInstance item=array from=$suiteList[$suiteId]}
 						{assign var=inst value=$suiteList[$suiteId][$executionInstance]}
+						{if $displayUnexecutedRows && $inst.status == 'n'}
 						<tr>
-							<td>{$inst.testcaseID}: {$inst.name|escape} </td>
+						<!--	<td>{$inst.testcaseID}: {$inst.name|escape} </td> -->
+							<td>{$inst.execute_link}</td>
+							<td></td> 
+							<td></td>
+							<td></td>
+							<td style="color: grey; font-weight: bold;">{lang_get s='test_status_not_run'}</td>
+							<td></td> 
+							<td></td> 
+						</tr>
+						{elseif $displayPassedRows && $inst.status == 'p'}
+							<tr>
+						<!--	<td>{$inst.testcaseID}: {$inst.name|escape} </td> -->
+							<td>{$inst.execute_link}</td>
 							<td>{$mapBuilds[$inst.build_id]|escape}</td> 
 							<td>{$mapUsers[$inst.tester_id]|escape}</td>
 							<td>{$inst.execution_ts|escape} </td>
-							{if $gsmarty_tc_status_css[$inst.status] == 'passed' }
 							<td style="color: green; font-weight: bold;">{$gsmarty_tc_status_css[$inst.status]|escape}</td>
-							{elseif $gsmarty_tc_status_css[$inst.status] == 'failed'}
-							<td style="color: red; font-weight: bold;">{$gsmarty_tc_status_css[$inst.status]|escape}</td>
-							{elseif $gsmarty_tc_status_css[$inst.status] == 'blocked'}
-							<td style="color: blue; font-weight: bold;">{$gsmarty_tc_status_css[$inst.status]|escape}</td>
-							{elseif $gsmarty_tc_status_css[$inst.status] == 'not run'}
-							<td>{$gsmarty_tc_status_css[$inst.status]|escape}</td>
-							{/if}
 							<td>{$inst.notes|escape}&nbsp;</td> 
 							<td>{$inst.bugString}&nbsp;</td> 
-						</tr>					
-					{/foreach}					
-					</table>
+						</tr>
+						{elseif $displayFailedRows && $inst.status == 'f'}
+							<tr>
+							<!--
+							<td>{$inst.testcaseID}: {$inst.name|escape} </td> -->
+							<td>{$inst.execute_link}</td>
+							<td>{$mapBuilds[$inst.build_id]|escape}</td> 
+							<td>{$mapUsers[$inst.tester_id]|escape}</td>
+							<td>{$inst.execution_ts|escape} </td>
+							<td style="color: red; font-weight: bold;">{$gsmarty_tc_status_css[$inst.status]|escape}</td>
+							<td>{$inst.notes|escape}&nbsp;</td> 
+							<td>{$inst.bugString}&nbsp;</td> 
+						</tr>
+						{elseif $displayBlockedRows && $inst.status == 'b'}
+							<tr>
+							<!--
+							<td>{$inst.testcaseID}: {$inst.name|escape} </td> -->
+							<td>{$inst.execute_link}</td>
+							<td>{$mapBuilds[$inst.build_id]|escape}</td> 
+							<td>{$mapUsers[$inst.tester_id]|escape}</td>
+							<td>{$inst.execution_ts|escape} </td>
+							<td style="color: blue; font-weight: bold;">{$gsmarty_tc_status_css[$inst.status]|escape}</td>
+							<td>{$inst.notes|escape}&nbsp;</td> 
+							<td>{$inst.bugString}&nbsp;</td> 
+						</tr>
+						{/if}				
+					{/foreach}	
+					{if $show_summaries}				
+						</table>
+					{/if}
 				{/if}
 				{/if}
-
 			{/foreach}											
 		{/if}
 	{/foreach}
+	
+		{if !$show_summaries}
+			</table>
+		{/if}
 </body>
 </html>

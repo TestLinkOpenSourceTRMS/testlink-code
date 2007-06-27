@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsMoreBuilds_buildReport.php,v 1.48 2007/06/27 05:44:07 kevinlevy Exp $ 
+* $Id: resultsMoreBuilds_buildReport.php,v 1.49 2007/06/27 06:08:21 kevinlevy Exp $ 
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 * 
@@ -132,7 +132,6 @@ if ($search_notes_string) {
 	$smarty->assign('search_notes_string', $search_notes_string);
 }
 
-$smarty->assign('show_untested_code', $g_untested_reports);
 
 $smarty->assign('totals', $totals);
 $smarty->assign('tplan_name',$tplan_name);

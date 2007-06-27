@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsMoreBuilds_buildReport.php,v 1.47 2007/06/25 06:23:45 franciscom Exp $ 
+* $Id: resultsMoreBuilds_buildReport.php,v 1.48 2007/06/27 05:44:07 kevinlevy Exp $ 
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 * 
@@ -19,28 +19,38 @@ require_once('displayMgr.php');
 testlinkInitPage($db);
 
 $format = isset($_REQUEST['format']) ? $_REQUEST['format'] : 'HTML';
-$lastStatus = isset($_REQUEST['lastStatus']) ? $_REQUEST['lastStatus'] : null;
+$lastStatus = isset($_REQUEST['lastStatus']) ? $_REQUEST['lastStatus'] : array();
 
 // statusForClass is used for results.class.php
 // lastStatus is used to be displayed 
 $statusForClass = 'a';
-// TO-DO localize parameters passed from form
-if ($lastStatus == "Passed"){
-  $statusForClass = 'p';
- }
-elseif ($lastStatus == "Failed"){
-   $statusForClass = 'f';
-}
-elseif ($lastStatus == "Blocked"){
- $statusForClass = 'b';
-}
-elseif ($lastStatus == "Not Run"){
-  $statusForClass = 'n';
-}
-elseif ($lastStatus == "Any"){
-  $statusForClass = 'a';
-}
 
+$displayUnexecutedRows = false;
+$displayBlockedRows = false;
+$displayPassedRows = false;
+$displayFailedRows = false;
+
+$display_suite_summaries = isset($_REQUEST['display_suite_summaries']) ? $_REQUEST['display_suite_summaries'] : true;
+$display_totals = isset($_REQUEST['display_totals']) ? $_REQUEST['display_totals'] : true;
+$display_query_params = isset($_REQUEST['display_query_params']) ? $_REQUEST['display_query_params'] : true;
+
+
+for ($i = 0; $i < sizeOf($lastStatus); $i++)
+{
+	if ($lastStatus[$i] == "p"){
+		$displayPassedRows = true;
+	}
+	elseif ($lastStatus[$i] == "f"){
+			$displayFailedRows = true;
+	}
+	elseif ($lastStatus[$i] == "b"){
+ 		$displayBlockedRows = true;
+	}
+	elseif ($lastStatus[$i] == "n"){
+ 		$displayUnexecutedRows = true;
+	}
+}
+						
 $ownerSelected = isset($_REQUEST['owner']) ? $_REQUEST['owner'] : null;
 $executorSelected = isset($_REQUEST['executor']) ? $_REQUEST['executor'] : null;
 $buildsSelected = isset($_REQUEST['build']) ? $_REQUEST['build'] : array();
@@ -57,7 +67,10 @@ for ($id = 0; $id < sizeOf($componentsSelected); $id++)
 
 $keywordSelected = isset($_REQUEST['keyword']) ? $_REQUEST['keyword'] : 0;
 $tpID = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0;
+//$prodID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 $tplan_name = isset($_SESSION['testPlanName']) ? $_SESSION['testPlanName'] : '';
+
+//$tpName = isset($_SESSION['testPlanName']) ? $_SESSION['testPlanName'] : '';
 $tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : '';
 
 $startYear = isset($_REQUEST['start_year']) ? $_REQUEST['start_year'] : "0000";
@@ -84,9 +97,10 @@ if (sizeof($buildsSelected)) {
 
 $tp = new testplan($db);
 
-$re = new results($db, $tp, $componentIds, $buildsToQuery, $statusForClass, 
-                  $keywordSelected, $ownerSelected, $startTime, $endTime, 
-                  $executorSelected, $search_notes_string);
+// KL - 20070625 - used for execution links
+$execution_link_build = isset($_GET['build']) ? intval($_GET['build']) : null;
+
+$re = new results($db, $tp, $componentIds, $buildsToQuery, $statusForClass, $keywordSelected, $ownerSelected, $startTime, $endTime, $executorSelected, $search_notes_string, $execution_link_build);
 $suiteList = $re->getSuiteList();
 $flatArray = $re->getFlatArray();
 $mapOfSuiteSummary =  $re->getAggregateMap();
@@ -96,8 +110,6 @@ $arrBuilds = $tp->get_builds($tpID);
 $mapBuilds = $tp->get_builds_for_html_options($tpID);
 
 $arrOwners = get_users_for_html_options($db, ALL_USERS_FILTER, !ADD_BLANK_OPTION);
-
-
 $smarty = new TLSmarty();
 $smarty->assign('arrBuilds', $arrBuilds);
 $smarty->assign('mapBuilds', $mapBuilds);
@@ -121,17 +133,25 @@ if ($search_notes_string) {
 }
 
 $smarty->assign('show_untested_code', $g_untested_reports);
+
 $smarty->assign('totals', $totals);
 $smarty->assign('tplan_name',$tplan_name);
 $smarty->assign('tproject_name',$tproject_name);
-
 $smarty->assign('testplanid', $tpID);
 $smarty->assign('arrBuilds', $arrBuilds); 
 $smarty->assign('suiteList', $suiteList);
 $smarty->assign('flatArray', $flatArray);
 $smarty->assign('mapOfSuiteSummary', $mapOfSuiteSummary);
+$smarty->assign('displayUnexecutedRows', $displayUnexecutedRows);
+$smarty->assign('displayBlockedRows', $displayBlockedRows);
+$smarty->assign('displayPassedRows', $displayPassedRows);
+$smarty->assign('displayFailedRows', $displayFailedRows);
+$smarty->assign('show_summaries', $display_suite_summaries);
+$smarty->assign('show_totals', $display_totals);
+$smarty->assign('show_query_params', $display_query_params);
 
 $report_type = isset($_GET['report_type']) ? intval($_GET['report_type']) : null;
+
 $smarty->assign('report_type', $report_type);
 if (!isset($_GET['report_type']))
 {

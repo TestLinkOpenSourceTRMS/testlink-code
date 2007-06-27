@@ -5,13 +5,14 @@
  *
  * Filename $RCSfile: firstLogin.php,v $
  *
- * @version $Revision: 1.16 $
- * @modified $Date: 2007/04/05 20:03:52 $ $Author: schlundus $
+ * @version $Revision: 1.17 $
+ * @modified $Date: 2007/06/27 05:53:43 $ $Author: franciscom $
  *
  * @author Asiel Brumfield
  * @author Martin Havlat 
  *
- * Anybody can have Guest rights to browse TL
+ * rev :
+ *       20070626 - franciscom - added missing LDAP code
 **/
 require_once('config.inc.php');
 require_once('common.php');
@@ -27,6 +28,11 @@ $last = isset($_POST['last']) ? $_POST['last'] : null;
 $email = isset($_POST['email']) ? $_POST['email'] : null;
 
 $message = lang_get('your_info_please');
+
+// 20070626 - franciscom
+$login_method = config_get('login_method');
+$external_password_mgmt = ('LDAP' == $login_method )? 1 : 0;
+
 
 $op = doDBConnect($db);
 if (!config_get('user_self_signup'))
@@ -48,9 +54,12 @@ if($bEditUser)
 	$fields_not_empty = array ('first' => lang_get('empty_first_name'),
 	                           'last'  => lang_get('empty_last_name'),
 	                           'email' => lang_get('empty_email_address'),
-	                           'password' => lang_get('warning_empty_pwd'),
-							   'loginName' => lang_get('warning_empty_login'),
-							   );
+							               'loginName' => lang_get('warning_empty_login'));
+  if( !$external_password_mgmt )
+  {
+    $fields_not_empty['password'] = lang_get('warning_empty_pwd');
+  }			
+  				              
 	$empty_fm = control_empty_fields($_POST, $fields_not_empty);
 	if (count($empty_fm))
 	{
@@ -84,7 +93,9 @@ if($bEditUser)
 	}
 }
 
+
 $smarty = new TLSmarty();
+$smarty->assign('external_password_mgmt',$external_password_mgmt);
 $smarty->assign('login', $login);
 $smarty->assign('firstName', $first);
 $smarty->assign('lastName', $last);

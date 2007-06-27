@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: login.php,v $
  *
- * @version $Revision: 1.22 $
- * @modified $Date: 2007/04/05 20:03:52 $ by $Author: schlundus $
+ * @version $Revision: 1.23 $
+ * @modified $Date: 2007/06/27 05:53:43 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Login management
@@ -69,12 +69,23 @@ switch($note)
 
 $securityNotes = getSecurityNotes($db);
 
+$login_method = config_get('login_method');
+$ldap_password_mgmt = ('LDAP' == $login_method )? 1 : 0;
+$login_disabled=0;
+if($ldap_password_mgmt && !extension_loaded("ldap") )
+{
+   $login_disabled=1;  
+}
+
+
 $smarty = new TLSmarty();
+
 // 20070301 - BUGID 695
 $smarty->assign('g_user_self_signup', config_get('user_self_signup'));
 $smarty->assign('login_logo', LOGO_LOGIN_PAGE);
 $smarty->assign('securityNotes',$securityNotes);
 $smarty->assign('note',$message);
 $smarty->assign('css', TL_BASE_HREF . TL_LOGIN_CSS);
+$smarty->assign('login_disabled', $login_disabled);
 $smarty->display('login.tpl');
 ?>

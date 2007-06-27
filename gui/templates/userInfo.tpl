@@ -1,5 +1,5 @@
 {* Testlink: smarty template - Edit own account *}
-{* $Id: userInfo.tpl,v 1.6 2006/10/20 18:31:35 schlundus Exp $ *}
+{* $Id: userInfo.tpl,v 1.7 2007/06/27 05:53:43 franciscom Exp $ *}
 {* 
 *}
 {include file="inc_head.tpl" jsValidate="yes"}
@@ -69,10 +69,8 @@ function valAllText(form)
 </form>
 <hr />
 
-
-<h2>{lang_get s='title_change_your_passwd'}</h2>
-
 {if $external_password_mgmt eq 0 }
+<h2>{lang_get s='title_change_your_passwd'}</h2>
 <form name="changePass" method="post" action="lib/usermanagement/userinfo.php" 
 	onsubmit="return validatePassword(document.changePass);">
 	<input type="hidden" name="id" value="{$userData.id}" />

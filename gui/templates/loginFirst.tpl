@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: loginFirst.tpl,v 1.8 2007/04/02 08:12:10 franciscom Exp $
+$Id: loginFirst.tpl,v 1.9 2007/06/27 05:53:43 franciscom Exp $
 Purpose: smarty template - first login
 *}
 
@@ -22,7 +22,6 @@ window.onload=function(){
 <body>
 
 {config_load file="input_dimensions.conf" section="login"} {* Constant definitions *}
-
 <div class="title">{$login_logo}<br />TestLink {$tlVersion|escape}</div>
 <div class="forms" id="login_div">
 <div class="warning_message" style="text-align:center;">{$message}</div>

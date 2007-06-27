@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: usersedit.php,v $
 *
-* @version $Revision: 1.15 $
-* @modified $Date: 2007/06/26 06:18:35 $ $Author: franciscom $
+* @version $Revision: 1.16 $
+* @modified $Date: 2007/06/27 05:53:43 $ $Author: franciscom $
 * 
 * rev :  BUGID 918
 *
@@ -28,6 +28,7 @@ $update_title_bar = 0;
 $reload = 0;
 $user_feedback = '';
 
+
 $login_method = config_get('login_method');
 $external_password_mgmt = ('LDAP' == $login_method )? 1 : 0;
 
@@ -40,9 +41,11 @@ if ($args->do_update)
 		if (!strlen($args->email))
 		    $sqlResult = lang_get('empty_email_address');
 
-		if (!strlen($args->password))
+    if( !$external_password_mgmt && !strlen($args->password))
+    {
 		    $sqlResult = lang_get('warning_empty_pwd');
-
+    }
+    
 		if ($sqlResult =='ok')
 		{
 			$args->user_id = userInsert($db,$args->login, $args->password, $args->first, $args->last,  

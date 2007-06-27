@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.181 $
- * @modified $Date: 2007/06/26 06:17:44 $ $Author: franciscom $
+ * @version $Revision: 1.182 $
+ * @modified $Date: 2007/06/27 05:53:44 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
@@ -1138,8 +1138,8 @@ $TLS_title_account_settings = "Account Settings";
 $TLS_title_change_your_passwd = "Change your password";
 $TLS_warning_different_pwd = "Please re-enter your new password. Added values were different.";
 $TLS_warning_empty_pwd = "The password must not be empty!";
-$TLS_your_password_is_external = "Your password is external";
-
+$TLS_your_password_is_external = "Your password is managed by an external system.<br>".
+                                 "You can not change it using TestLink.";
 
 
 // gui/templates/usersassign.tpl
@@ -1418,6 +1418,10 @@ $TLS_but_directory_is_not_writable = "The directory is not writable!";
 $TLS_directory_is_writable = "The directory is writable";
 $TLS_does_not_exist = "does not exist";
 $TLS_exists = "exists";
+$TLS_ldap_extension_not_loaded="Login method is configured as LDAP<br>" .
+                               "but PHP LDAP extension is not loaded => " .
+                               "You will not be able to login.<br>".
+                               "Please contact your TestLink administrator";
 $TLS_sec_note_admin_default_pwd = "You should change the default password for the 'admin' account!";
 $TLS_sec_note_remove_install_dir = "Install directory should be removed!";
 

@@ -5,13 +5,14 @@
  *
  * Filename $RCSfile: configCheck.php,v ${file_name} $
  *
- * @version $Revision: 1.12 $
- * @modified $Date: 2007/05/10 19:55:43 ${date} ${time} $ by $Author: schlundus $
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2007/06/27 05:53:43 ${date} ${time} $ by $Author: franciscom $
  *
  * @author Martin Havlat
  * 
  * Check configuration functions
  *
+ * 20070626 - franciscom - getSecurityNotes() - added LDAP checks
  * 20060429 - franciscom - added checkForRepositoryDir()
  * 20060103 - scs - ADOdb changes
  **/
@@ -111,7 +112,6 @@ function checkConfiguration()
  **/
 function checkForInstallDir()
 {
-	// 20050823
 	$installer_dir = TL_ABS_PATH. DS . "install"  . DS;
 	clearstatcache();
 	$bPresent = false;
@@ -148,21 +148,40 @@ function checkForAdminDefaultPwd(&$db)
  *
  * @version 1.0
  * @author Andreas Morsing 
- *  
+ *
+ * rev :
+ *      20070626 - franciscom - added LDAP checks  
  **/
 function getSecurityNotes(&$db)
 {
   $repository['type']=config_get('repositoryType');
   $repository['path']=config_get('repositoryPath');
   
+  $login_method = config_get('login_method');
+  $ldap_password_mgmt = ('LDAP' == $login_method )? 1 : 0;
+
 
 	$securityNotes = null;
 	if (checkForInstallDir())
 		$securityNotes[] = lang_get("sec_note_remove_install_dir");
 
-	if (checkForAdminDefaultPwd($db))
-		$securityNotes[] = lang_get("sec_note_admin_default_pwd");
-
+  if($ldap_password_mgmt)
+  {
+    // check is LDAP extension is loaded
+    if( !extension_loaded("ldap") )
+    {
+      $securityNotes[] = lang_get("ldap_extension_not_loaded");
+    }  
+  }
+  else
+  {
+	  if(checkForAdminDefaultPwd($db))
+	  {
+		  $securityNotes[] = lang_get("sec_note_admin_default_pwd");
+		}    
+  }
+  
+  
 	// 20060413 - franciscom
 	if (!checkForBTSconnection())
 	{

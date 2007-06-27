@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: login.tpl,v 1.11 2007/04/05 20:03:52 schlundus Exp $
+$Id: login.tpl,v 1.12 2007/06/27 05:53:43 franciscom Exp $
 Purpose: smarty template - login page 
 
 20070401 - franciscom - new rounding engine
@@ -30,15 +30,17 @@ window.onload=function(){
 <div class="forms" id="login_div">
 
 	<form method="post" action="index.php">
-	  <div class="login_warning_message" style="text-align:center;">{$note}</div>
-		
-		<p class="label">{lang_get s='login_name'}<br />
-		<input type="text" name="login" size="{#LOGIN_SIZE#}" maxlength="{#LOGIN_MAXLEN#}" /></p>
-		
-		<p class="label">{lang_get s='password'}<br />
-		<input type="password" name="password" size="{#PASSWD_SIZE#}" maxlength="{#PASSWD_SIZE#}" /></p>
-		
-		<input type="submit" name="submit" value="{lang_get s='btn_login'}" />
+    {if $login_disabled eq 0}		
+  	  <div class="login_warning_message" style="text-align:center;">{$note}</div>
+
+  		<p class="label">{lang_get s='login_name'}<br />
+  		<input type="text" name="login" size="{#LOGIN_SIZE#}" maxlength="{#LOGIN_MAXLEN#}" /></p>
+  		
+  		<p class="label">{lang_get s='password'}<br />
+  		<input type="password" name="password" size="{#PASSWD_SIZE#}" maxlength="{#PASSWD_SIZE#}" /></p>
+  		
+  		<input type="submit" name="submit" value="{lang_get s='btn_login'}" />
+		{/if}
 	</form>
 	
 	<p>

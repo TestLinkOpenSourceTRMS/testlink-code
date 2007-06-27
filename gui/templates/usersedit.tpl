@@ -1,9 +1,11 @@
 {* 
 Testlink: smarty template - 
-$Id: usersedit.tpl,v 1.13 2007/06/26 06:18:26 franciscom Exp $ 
+$Id: usersedit.tpl,v 1.14 2007/06/27 05:53:43 franciscom Exp $ 
 *}
 {* 
 
+20070626 - franciscom - disable reset password feature, if password management
+                        is done for an external system.
 20070223 - franciscom - BUGID
  
 20070114 - franciscom - 
@@ -11,7 +13,6 @@ $Id: usersedit.tpl,v 1.13 2007/06/26 06:18:26 franciscom Exp $
 	2. improved management of default role id
 *}
 {include file="inc_head.tpl" jsValidate="yes" openhead="yes"}
-
 {literal}
 <script type="text/javascript">
 {/literal}
@@ -157,19 +158,16 @@ function validateForm(f,check_password)
 
 		{if $userData eq null}
 		     <tr>
-			     <th>{lang_get s='th_password'}</th>
 			    {if $external_password_mgmt eq 0 }
+ 			      <th>{lang_get s='th_password'}</th>
 		        <td><input type="password" id="password" name="password" 
 		                   size="{#PASSWD_SIZE#}" 
 		                   maxlength="{#PASSWD_SIZE#}" />
 		            {include file="error_icon.tpl" field="password"}       
 		        </td>
- 			          
-		      {else}      
-            <td>{lang_get s='password_mgmt_is_external'}</td>
 		      {/if}      
 		     </tr>
-   {/if}
+    {/if}
    
    
 		<tr>
@@ -217,6 +215,11 @@ function validateForm(f,check_password)
 			  <input type="checkbox"  name="user_is_active" {if $userData.active eq 1} checked {/if} />
 			</td>
 		</tr>
+
+    {if $external_password_mgmt eq 1 }
+      <td>{lang_get s='password_mgmt_is_external'}</td>    
+    {/if}
+
 	</table>
 	
 	<div class="groupBtn">	
@@ -231,8 +234,8 @@ function validateForm(f,check_password)
 
 	</div>
 </form>
-
-{if $userData neq null}
+    
+{if $userData neq null and $external_password_mgmt eq 0}
 <form method="post" action="lib/usermanagement/usersedit.php" 
       name="user_reset_password">
   	<input type="hidden" id="user_id" name="user_id" value="{$user_id}" />

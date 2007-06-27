@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsMoreBuilds_query_form.tpl,v 1.47 2007/06/25 06:21:29 franciscom Exp $
+$Id: resultsMoreBuilds_query_form.tpl,v 1.48 2007/06/27 03:56:21 kevinlevy Exp $
 @author Francisco Mancardi - fm - start solving BUGID 97/98
 20051022 - scs - removed ' in component id values
 20051121 - scs - added escaping of tpname
@@ -89,51 +89,72 @@ $Id: resultsMoreBuilds_query_form.tpl,v 1.47 2007/06/25 06:21:29 franciscom Exp 
 		</tr>
 		{/if}
 		<!-- 
-		KL - 06132006 - Functionality to allow query by executor or grep the notes field
+		KL - 20070627 -Functionality to allow query by executor or grep the notes field
+		     Allows user to change what data / results are displayed in report 
 		-->
 		{if $show_untested_code == 'true'}
 			<tr>
 				<th>{lang_get s='search_in_notes'}</th>
 				<th>{lang_get s='executor'}</th>
 			</tr>
+			<tr>
+				<td>
+					<input type="text" name="search_notes_string"/>
+				</td>
+				<td>
+					<select name="executor" size="5">
+						{foreach key=executor item=executorid from=$arrOwners}
+							{* by default the owner should be the current user *}
+							<option value="{$executor}">{$executorid|escape}</option>
+						{/foreach}
+					</select>
+				</td>
+			</tr>
+			    <tr>
+				<th>{lang_get s='select_last_result_header'}</th>
+				<th>{lang_get s='display_suite_summaries'}</th>
+			</tr>
+			<tr>
+				<td>
+					<select name="lastStatus[]" size="4" multiple="multiple">
+						<option selected="selected" value="p">{lang_get s='last_status_passed'}</option>
+						<option selected="selected" value="f">{lang_get s='last_status_failed'}</option>
+						<option selected="selected" value="b">{lang_get s='last_status_blocked'}</option>
+						<option selected="selected" value="n">{lang_get s='last_status_not_run'}</option>
+					</select>
+				</td>
+				<td>
+					<select name="display_suite_summaries" size="2">
+						<option value="1">{lang_get s='true'}</option>
+						<option value="0" selected="selected">{lang_get s='false'}</option>
+					</select>
+				</td>
+			</tr>
 		
-		<tr>
-			<td>
-				<input type="text" name="search_notes_string"/>
-			</td>
-			<td>
-				<select name="executor" size="5">
-					{foreach key=executor item=executorid from=$arrOwners}
-						{* by default the owner should be the current user *}
-						<option value="{$executor}">{$executorid|escape}</option>
-					{/foreach}
-				</select>
-			</td>
-		</tr>
+		    <tr>
+				<th>{lang_get s='display_query_params'} </th>
+				<th>{lang_get s='display_totals'}</th>
+			</tr>
+			<tr>
+				<td>
+					<select name="display_query_params" size="2">
+						<option value="1">{lang_get s='true'}</option>
+						<option value="0" selected="selected">{lang_get s='false'}</option>
+					</select>
+				</td>
+				<td>
+					<select name="display_totals" size="2">
+						<option value="1">{lang_get s='true'}</option>
+						<option value="0" selected="selected">{lang_get s='false'}</option>
+					</select>
+				</td>
+			</tr>
 		{/if}
-<!-- KL - 20070220 - commented out until fixed
-	    <tr>
-			<th>{lang_get s='select_last_result_header'} </th>
-		</tr>
-		<tr>
-
-			<td>
-				<select name="lastStatus" size="5">
-					<option selected="selected">{lang_get s='last_status_any'}</option>
-					<option>{lang_get s='last_status_passed'}</option>
-					<option>{lang_get s='last_status_failed'}</option>
-					<option>{lang_get s='last_status_blocked'}</option>
-					<option>{lang_get s='last_status_not_run'}</option>
-				</select>
-			</td>
-		</tr>
--->
 		<tr>
 			<td colspan="2">
 				<input type="submit" value="{lang_get s='submit_query'}"/>
 			</td>
 		</tr>
-	</tr>
 </table>
 </form>
 </div>

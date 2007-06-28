@@ -2,7 +2,7 @@
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
- * @version $Id: resultsNavigator.php,v 1.28 2007/06/27 03:25:23 kevinlevy Exp $ 
+ * @version $Id: resultsNavigator.php,v 1.29 2007/06/28 06:21:11 kevinlevy Exp $ 
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
  * This page list View of Test Results and Metrics.
@@ -22,7 +22,7 @@ $tc_status_map=config_get('tc_status');
 $arrData = array(
 	array('name' => lang_get('link_report_general_tp_metrics'), 'href' => 'resultsGeneral.php?report_type='), 
 	array('name' => lang_get('link_report_overall_build'), 'href' => 'resultsAllBuilds.php?report_type='), 
-	array('name' => lang_get('link_report_metrics_more_builds'), 'href' => 'resultsMoreBuilds.php?report_type='), 
+  array('name' => lang_get('link_report_metrics_more_builds'), 'href' => 'resultsMoreBuilds.php?report_type='), 
 	array('name' => lang_get('link_report_failed'), 
 	                'href' => "resultsByStatus.php?type={$tc_status_map['failed']}&amp;report_type="),
 	array('name' => lang_get('link_report_blocked_tcs'), 
@@ -79,9 +79,6 @@ else
 print "$email_to, $email_subject <BR>";
 */
 
-$tp = new testplan($db);
-$selectedBuild = $tp->get_max_build_id($_SESSION['testPlanId'],1,1);
-
 $smarty = new TLSmarty;
 $smarty->assign('title', 'Navigator - Results');
 $smarty->assign('arrData', $arrData);
@@ -90,7 +87,6 @@ $smarty->assign('arrBuilds', $arrBuilds);
 $smarty->assign('selectedBuild', $selectedBuild);
 $smarty->assign('selectedReportType', $selectedReportType);
 $smarty->assign('arrReportTypes', $arrReportTypes);
-$smarty->assign('selectedBuild', $selectedBuild);
 //$smarty->assign('email_to', $email_to);
 $smarty->display('resultsNavigator.tpl');
 ?>

@@ -2,7 +2,7 @@
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
- * @version $Id: resultsNavigator.php,v 1.29 2007/06/28 06:21:11 kevinlevy Exp $ 
+ * @version $Id: resultsNavigator.php,v 1.30 2007/06/28 06:31:31 kevinlevy Exp $ 
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
  * This page list View of Test Results and Metrics.
@@ -51,6 +51,7 @@ $arrDataB = array(
 );
 
 $arrBuilds = getBuilds($db,$_SESSION['testPlanId'], " ORDER BY builds.name ");
+$arrBuilds = array_reverse($arrBuilds, true);
 
 if (isset($_GET['build']))
 	$selectedBuild = intval($_GET['build']);

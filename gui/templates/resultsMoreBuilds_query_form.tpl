@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsMoreBuilds_query_form.tpl,v 1.49 2007/06/27 05:51:02 kevinlevy Exp $
+$Id: resultsMoreBuilds_query_form.tpl,v 1.50 2007/06/28 06:12:17 kevinlevy Exp $
 @author Francisco Mancardi - fm - start solving BUGID 97/98
 20051022 - scs - removed ' in component id values
 20051121 - scs - added escaping of tpname
@@ -14,7 +14,7 @@ $Id: resultsMoreBuilds_query_form.tpl,v 1.49 2007/06/27 05:51:02 kevinlevy Exp $
 {include file="inc_result_tproject_tplan.tpl" 
          arg_tproject_name=$tproject_name arg_tplan_name=$tplan_name}	
 
-<form action="lib/results/resultsMoreBuilds_buildReport.php?report_type={$report_type}" method="POST">
+<form action="lib/results/resultsMoreBuilds_buildReport.php?build={$build}&amp;report_type={$report_type}" method="POST">
 	<table class="simple" style="width: 100%; text-align: center; margin-left: 0px;">
 		<tr>
 			<th>{lang_get s='select_builds_header'}</th>

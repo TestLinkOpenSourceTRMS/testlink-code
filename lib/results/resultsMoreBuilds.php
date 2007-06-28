@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsMoreBuilds.php,v 1.51 2007/06/27 05:57:54 kevinlevy Exp $ 
+* $Id: resultsMoreBuilds.php,v 1.52 2007/06/28 06:04:35 kevinlevy Exp $ 
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 * 
@@ -50,6 +50,9 @@ if (!isset($_GET['report_type']))
 	tlog('$_GET["report_type"] is not defined');
 	exit();
 }
+$build = isset($_GET['build']) ? intval($_GET['build']) : null;
+print "build = $build <BR>";
+$smarty->assign('build', $build);
 $smarty->assign('report_type', $report_type);
 $smarty->display('resultsMoreBuilds_query_form.tpl');
 ?>

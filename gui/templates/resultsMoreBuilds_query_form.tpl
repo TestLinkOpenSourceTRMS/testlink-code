@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsMoreBuilds_query_form.tpl,v 1.50 2007/06/28 06:12:17 kevinlevy Exp $
+$Id: resultsMoreBuilds_query_form.tpl,v 1.51 2007/07/01 11:23:07 kevinlevy Exp $
 @author Francisco Mancardi - fm - start solving BUGID 97/98
 20051022 - scs - removed ' in component id values
 20051121 - scs - added escaping of tpname
@@ -63,7 +63,7 @@ $Id: resultsMoreBuilds_query_form.tpl,v 1.50 2007/06/28 06:12:17 kevinlevy Exp $
 		<!-- 
 		KL - 06132006 - Functionality to allow query by start and end time		
 		-->
-		{if $show_untested_code == 'true'}
+<!--		{if $show_untested_code == 'true'} -->
 		
 		<tr>
 			<th>{lang_get s='enter_start_time'}</th>
@@ -87,7 +87,7 @@ $Id: resultsMoreBuilds_query_form.tpl,v 1.50 2007/06/28 06:12:17 kevinlevy Exp $
 				</table>
 			</td>
 		</tr>
-		{/if}
+<!--		{/if} -->
 		<!-- 
 		KL - 20070627 -Functionality to allow query by executor or grep the notes field
 		     Allows user to change what data / results are displayed in report 

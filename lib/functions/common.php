@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.66 $ $Author: franciscom $
- * @modified $Date: 2007/06/25 06:24:02 $
+ * @version $Revision: 1.67 $ $Author: franciscom $
+ * @modified $Date: 2007/07/06 06:19:56 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -17,6 +17,7 @@
  * email, userID, productID, productName, testplan (use rather testPlanID),
  * testPlanID, testPlanName
  *
+ * 20070705 - franciscom - init_labels()
  * 20070623 - franciscom - improved info in header of localize_dateOrTimeStamp()
  * 20070104 - franciscom - gen_spec_view() warning message removed
  *
@@ -941,6 +942,27 @@ function microtime_float()
 {
    list($usec, $sec) = explode(" ", microtime());
    return ((float)$usec + (float)$sec);
+}
+
+
+/*
+  function: init_labels
+
+  args : map key=a code
+             value: string_to_translate, that can be found in strings.txt
+             
+  
+  returns: map key=a code
+               value: lang_get(string_to_translate)
+
+*/
+function init_labels($map_code_label)
+{
+	foreach($map_code_label as $key => $label)
+	{
+		$map_code_label[$key] = lang_get($label);
+	}
+	return $map_code_label;
 }
 
 ?>

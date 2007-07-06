@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.4 $
- * @modified $Date: 2007/05/21 06:40:24 $by $Author: franciscom $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2007/07/06 06:21:50 $by $Author: franciscom $
  * @author GrdScarabe
  *
  * French translation
@@ -534,7 +534,7 @@ $TLS_title_imp_cvs = "Importer les informations CSV";
 
 // gui/templates/tcMove.tpl
 $TLS_btn_mv = "D&eacute;placer";
-$TLS_choose_cat = "Choisir une cat&eacute;gorie";
+$TLS_choose_container = "Choisir une cat&eacute;gorie";
 $TLS_inst_move = "D&eacute;placer un Cas de Tests vers une cat&eacute;gorie diff&eacute;rente (&agrave; l'int&eacute;rieur du m&ecirc;me composant).";
 $TLS_title_mv_cp_tc = "D&eacute;placer/Copier le Cas de Tests";
 

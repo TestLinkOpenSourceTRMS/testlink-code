@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.10 $
- * @modified $Date: 2007/06/27 05:53:44 $ $Author: franciscom $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2007/07/06 06:21:49 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
@@ -646,7 +646,7 @@ $TLS_password_mgmt_is_external = "Password management is external";
 
 // gui/templates/tcMove.tpl
 $TLS_btn_mv = "Move";
-$TLS_choose_cat = "Choose Test Suite";
+$TLS_choose_container = "Choose Test Suite";
 $TLS_inst_move = "Move this Test Case to a different Test Suite (within the same Test Suite).";
 $TLS_title_mv_cp_tc = "Move/Copy Test Case";
 

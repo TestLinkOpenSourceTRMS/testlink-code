@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.7 $
- * @modified $Date: 2007/05/21 06:40:23 $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2007/07/06 06:21:50 $
  *
  * @author jorgesf@jsf.jazztel.es
  *
@@ -522,7 +522,7 @@ $TLS_title_imp_cvs = "Importar datos CVS";
 
 // gui/templates/tcMove.tpl
 $TLS_btn_mv = "Mover";
-$TLS_choose_cat = "Escoger categoría";
+$TLS_choose_container = "Escoger categoría";
 $TLS_inst_move = "Mover este Caso de Test a una categoría diferente (dentro del mismo componente).";
 $TLS_title_mv_cp_tc = "Mover/Copiar Caso de Test";
 

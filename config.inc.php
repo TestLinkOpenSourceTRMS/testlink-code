@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.116 $
- * @modified $Date: 2007/06/27 05:56:12 $ by $Author: kevinlevy $
+ * @version $Revision: 1.117 $
+ * @modified $Date: 2007/07/06 06:19:31 $ by $Author: franciscom $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink 
@@ -582,6 +582,7 @@ if ( file_exists( $custom_config_file ) )
 {
   require_once( $custom_config_file ); 
 }
+
 
 
 // use when componing an title using several strings

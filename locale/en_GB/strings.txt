@@ -4,11 +4,12 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.183 $
- * @modified $Date: 2007/06/27 06:05:25 $ $Author: kevinlevy $
+ * @version $Revision: 1.184 $
+ * @modified $Date: 2007/07/06 06:20:47 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
+ * 20070705 - franciscom -
  * 20070520 - franciscom - milestones
  * 20070206 - franciscom - BUGID 618 - \n on JS messages
  *
@@ -107,10 +108,14 @@ $TLS_medium_importance = "Medium";
 
 
 // tcEdit.php
+$TLS_tc_copied = "Test Case %s was succesfully copied to <br> Test Suite %s";
 $TLS_tc_created = "Test Case %s was succesfully created";
 $TLS_tc_deleted = "Test Case %s was succesfully deleted";
 $TLS_tc_updated = "Test Case %s was succesfully updated";
+$TLS_tc_new_version = "Test Case Version %d was succesfully created";
+$TLS_tc_updated = "Test Case %s was succesfully updated";
 $TLS_tc_update_failed = "Update of Test Case %s failed!";
+$TLS_tc_version_deleted = "Test Case %s version %d was succesfully deleted";
 
 
 // gui/templates/attachment404.tpl
@@ -161,7 +166,9 @@ $TLS_title_delete_bug = "Delete bug";
 $TLS_btn_cp = "Copy";
 $TLS_btn_move = "Move";
 $TLS_choose_target = "Choose a target";
-$TLS_cont_move_first = "Move this";
+$TLS_cont_copy_first = "Copy";
+$TLS_cont_copy_second = "to Any";
+$TLS_cont_move_first = "Move";
 $TLS_cont_move_second = "to a different";
 $TLS_copy_keywords = "Copy keywords";
 $TLS_defined_exclam = "defined !";
@@ -679,8 +686,10 @@ $TLS_password_mgmt_is_external = "Password management is external";
 
 // gui/templates/tcMove.tpl
 $TLS_btn_mv = "Move";
-$TLS_choose_cat = "Choose Test Suite";
-$TLS_inst_move = "Move this Test Case to a different Test Suite (within the same Test Suite).";
+$TLS_choose_container = "Choose Test Suite";
+$TLS_inst_copy = "Copy Test Case to any Test Suite.";
+$TLS_inst_move = "Move Test Case to a different Test Suite.";
+$TLS_inst_copy_move_warning="Important: You can only choose Test Suites belonging to this Test Project.";
 $TLS_title_mv_cp_tc = "Move/Copy Test Case";
 
 
@@ -699,6 +708,7 @@ $TLS_no_records_found = "Your search delivered no results!";
 // gui/templates/execSetResults.tpl
 $TLS_alt_attachment_mgmt = "attachments";
 $TLS_alt_notes = "notes";
+$TLS_assigned_to = "Assigned to";
 $TLS_attachment_mgmt = "attachments";
 $TLS_btn_history_off = "Show only last execution";
 $TLS_btn_history_on = "Show complete execution history";
@@ -713,14 +723,17 @@ $TLS_details = "Details";
 $TLS_exec_notes = "Notes";
 $TLS_exec_status = "Status";
 $TLS_execution_history = "Execution history";
+$TLS_has_no_assignment = "No tester assigned";
 $TLS_img_title_bug_mgmt = "Bug management";
 $TLS_img_title_delete_execution= "Delete execution";
 $TLS_just_last_execution_for_this_build = "Last execution for this build";
 $TLS_no_data_available = "No data available";
+$TLS_only_test_cases_assigned_to="Only Test Cases assigned to";
 $TLS_set_all_tc_to = "Set all to status ";
 $TLS_show_hide = "Show / hide";
 $TLS_tc_not_tested_yet = "Not Tested Yet";
 $TLS_test_cases_cannot_be_executed = "Test cases can not be executed";
+$TLS_testcase_version_is_inactive_on_exec="This version is inactive => Can not be executed";
 $TLS_test_exec_by = "Tested by";
 $TLS_test_exec_expected_r = "Expected Results";
 $TLS_test_exec_last_run_date = "Most recent Run";

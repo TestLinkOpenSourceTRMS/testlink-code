@@ -6,8 +6,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.3 $
- * @modified $Date: 2007/05/21 06:40:25 $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2007/07/06 06:21:50 $
  * based on ..\en_GB\strings.txt
  *
  * @author Leonardo Molinari
@@ -521,7 +521,7 @@ $TLS_title_imp_cvs = "Importar dados do CVS";
 
 // gui/templates/tcMove.tpl
 $TLS_btn_mv = "Mover";
-$TLS_choose_cat = "Escolher a categoria";
+$TLS_choose_container = "Escolher a categoria";
 $TLS_inst_move = "Mover este caso de teste para uma diferente categoria (dentro de um mesmo componente).";
 $TLS_title_mv_cp_tc = "Mover/Copiar caso de teste";
 

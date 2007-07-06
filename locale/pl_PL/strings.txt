@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.2 $
- * @modified $Date: 2007/05/21 06:40:24 $ by $Author: franciscom $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2007/07/06 06:21:50 $ by $Author: franciscom $
  *
  * @author Micha&#322; Wujas
  *
@@ -698,7 +698,7 @@ $TLS_title_imp_cvs = "Importuj dane w formacie CVS";
 
 // gui/templates/tcMove.tpl
 $TLS_btn_mv = "Przenie&#347;";
-$TLS_choose_cat = "Wybierz kategori&#281;";
+$TLS_choose_container = "Wybierz kategori&#281;";
 $TLS_inst_move = "Przenie&#347; wybrany przypadek testowy do innej kategorii ( w obr&#281;bie danej kategorii)";
 $TLS_title_mv_cp_tc = "Przenie&#347;/Kopiuj przypadek testowy";
 

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.117 $
- * @modified $Date: 2007/07/06 06:19:31 $ by $Author: franciscom $
+ * @version $Revision: 1.118 $
+ * @modified $Date: 2007/07/06 06:27:46 $ by $Author: franciscom $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink 
@@ -17,6 +17,9 @@
  *-----------------------------------------------------------------------------
  *
  * Revisions:
+ *           20070706 - franciscom - $g_exec_cfg->view_mode->tester
+ *                                   $g_exec_cfg->exec_mode->tester
+ *
  *           20070523 - franciscom - $g_user_login_valid_regex
  *           20070523 - franciscom - $g_main_menu_item_bullet_img
  *           20070505 - franciscom - following mantis bug tracking style, if file
@@ -145,7 +148,6 @@ $g_interface_bugs='NO';
  */ 
 $g_login_method				= 'MD5';
 
-/** LDAP authentication must be only defined for $g_login_method = 'LDAP'*/
 // LDAP authentication are developed by mantis project (www.mantisbt.org)
 // Example: 
 //	$g_ldap_bind_dn			= 'my_bind_user';
@@ -564,6 +566,27 @@ $g_spec_cfg->show_tsuite_filter=1;
 // 0 -> tree will not be updated, user can update it manually.
 //
 $g_spec_cfg->automatic_tree_refresh=1;
+
+// Filter Test cases a user with tester role can VIEW depending on
+// test execution assignment.
+// all: all test cases.
+// assigned_to_me: test cases assigned to logged user.
+// assigned_to_me_or_free: test cases assigned to logged user or not assigned
+//
+// Important: 
+//            this setting has effects and precedence over 
+//            $g_exec_cfg->restrictions->tester->exec_mode.
+//
+$g_exec_cfg->view_mode->tester='assigned_to_me';
+
+// Filter Test cases a user with tester role can EXECUTE depending on
+// test execution assignment.
+// all: all test cases.
+// assigned_to_me: test cases assigned to logged user.
+// assigned_to_me_or_free: test cases assigned to logged user or not assigned
+$g_exec_cfg->exec_mode->tester='assigned_to_me';
+
+
 
 //
 // [LOGIN]

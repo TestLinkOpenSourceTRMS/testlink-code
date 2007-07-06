@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: requirements.inc.php,v $
- * @version $Revision: 1.55 $
- * @modified $Date: 2007/06/21 15:35:28 $ by $Author: franciscom $
+ * @version $Revision: 1.56 $
+ * @modified $Date: 2007/07/06 06:20:25 $ by $Author: franciscom $
  *
  * @author Martin Havlat <havlat@users.sourceforge.net>
  * 
@@ -13,14 +13,18 @@
  *
  * Revisions:
  *
+ * 20070705 - franciscom - improved management of arrReqStatus
  * 20070617 - franciscom - removed include of deprecated file
  * 20070310 - franciscom - changed return type createRequirement()
  */
 ////////////////////////////////////////////////////////////////////////////////
 
-$arrReqStatus = array(TL_REQ_STATUS_VALID => lang_get('req_state_valid'), 
-					            TL_REQ_STATUS_NOT_TESTABLE => lang_get('req_state_not_testable')
-					           );
+
+require_once("print.inc.php");
+
+// 20070705 - franciscom
+$arrReqStatus = init_labels(config_get('req_status'));
+
 
 $g_reqImportTypes = array( "csv" => "CSV",
 							             "csv_doors" => "CSV (Doors)",
@@ -32,9 +36,6 @@ $g_reqFormatStrings = array (
 							"csv_doors" => lang_get('req_import_format_description2'),
 							"XML" => lang_get('the_format_req_xml_import')
 							); 		
-
-require_once(dirname(__FILE__) . "/print.inc.php");
-
 
 
 /** 

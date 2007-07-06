@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView.tpl,v 1.25 2007/03/04 00:03:19 schlundus Exp $
+$Id: tcView.tpl,v 1.26 2007/07/06 06:28:34 franciscom Exp $
 Purpose: smarty template - view test case in test specification
 *}
 
@@ -11,7 +11,8 @@ Purpose: smarty template - view test case in test specification
 <body onLoad="viewElement(document.getElementById('other_versions'),false)">
 
 <div class="workBack">
-{include file="inc_update.tpl" result=$sqlResult action=$action item="test_case" refresh=$refresh_tree}
+{include file="inc_update.tpl" result=$sqlResult action=$action item="test_case" 
+         user_feedback=$user_feedback refresh=$refresh_tree}
 
 {if $testcase_curr_version}
 {section name=idx loop=$testcase_curr_version}

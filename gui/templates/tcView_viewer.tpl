@@ -1,8 +1,9 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.21 2007/04/04 19:20:49 schlundus Exp $
+$Id: tcView_viewer.tpl,v 1.22 2007/07/06 06:28:34 franciscom Exp $
 viewer for test case in test specification
 
+20070628 - franciscom - active_status_op_enabled always true
 20061230 - franciscom - an experiment to make simple management
                         of frequent used href
 *}
@@ -16,14 +17,16 @@ viewer for test case in test specification
 {if $args_can_edit == "yes" }
 
   {assign var="edit_enabled" value=0}
-  {assign var="active_status_op_enabled" value=0}
+  {* 20070628 - franciscom
+     Seems logical you can disable some you have executed before*}
+  {assign var="active_status_op_enabled" value=1}
   {assign var="has_been_executed" value=0}
   {lang_get s='can_not_edit_tc' var="warning_edit_msg"}
   {if $args_status_quo eq null or 
       $args_status_quo[$args_testcase.id].executed eq null}
       
       {assign var="edit_enabled" value=1}
-      {assign var="active_status_op_enabled" value=1}    
+      {* {assign var="active_status_op_enabled" value=1}  *}
       {assign var="warning_edit_msg" value=""}
   
   {else} 

@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: execSetResults.tpl,v 1.45 2007/05/21 06:39:38 franciscom Exp $
+$Id: execSetResults.tpl,v 1.46 2007/07/06 06:28:34 franciscom Exp $
 Purpose: smarty template - show tests to add results
 Revisions:
           20070519 - franciscom - 
@@ -39,7 +39,9 @@ var msg="{lang_get s='warning_delete_execution'}";
  
 	{lang_get s='title_t_r_on_build'} {$build_name|escape} 
 	
-	{if $ownerDisplayName != ""}{lang_get s='title_t_r_owner'} ( {$ownerDisplayName|escape} ) {/if}
+	{if $ownerDisplayName != ""}
+	  {$smarty.const.TITLE_SEP_TYPE3}{lang_get s='only_test_cases_assigned_to'}{$smarty.const.TITLE_SEP}{$ownerDisplayName|escape}  
+	{/if}
 </h1>
 
 
@@ -116,7 +118,7 @@ var msg="{lang_get s='warning_delete_execution'}";
   {if $map_last_exec eq ""}
      <div class="warning_message" style="text-align:center"> {lang_get s='no_data_available'}</div>
   {else}
-      {* $edit_test_results = "no" if build is closed  *}
+      {* $edit_test_results = "no",  if build is closed  *}
       {if $rightsEdit == "yes" and $edit_test_results == "yes"}
         {assign var="input_enabled_disabled" value=""}
         {assign var="att_download_only" value=false}
@@ -160,7 +162,6 @@ var msg="{lang_get s='warning_delete_execution'}";
 	{/if}
 
   	{foreach item=tc_exec from=$map_last_exec}
-	
 	  {assign var="tcversion_id" value=$tc_exec.id}
 		<input type='hidden' name='tc_version[{$tcversion_id}]' value='{$tc_exec.testcase_id}' />
 		<input type='hidden' id="tsdetails_view_status_{$tc_exec.testcase_id}" 
@@ -201,7 +202,12 @@ var msg="{lang_get s='warning_delete_execution'}";
   
 
 		<h1>{lang_get s='title_test_case'} {lang_get s='th_test_case_id'}{$tc_exec.testcase_id} :: {lang_get s='version'}: {$tc_exec.version}<br />
-		    {$tc_exec.name|escape}
+		    {$tc_exec.name|escape}<br>
+		    {if $tc_exec.assigned_user eq ''}
+		      {lang_get s='has_no_assignment'}
+		    {else}  
+          {lang_get s='assigned_to'}{$smarty.const.TITLE_SEP}{$tc_exec.assigned_user|escape}
+        {/if}  
     </h1>
 
 		<div id="execution_history" class="exec_history">
@@ -375,7 +381,7 @@ var msg="{lang_get s='warning_delete_execution'}";
 		</tr>
 		
     {* ------------------------------------------------------------------------------------- *}
-    {if $enable_custom_field}
+    {if $enable_custom_field and $tc_exec.active eq 1}
   	  {if $execution_time_cf[$tc_exec.testcase_id]}
   	 		<tr>
   				<td colspan="2">
@@ -414,7 +420,33 @@ var msg="{lang_get s='warning_delete_execution'}";
 
 
     {* 20070519 - franciscom *}
-  	{if $rightsEdit == "yes" and $edit_test_results eq "yes"}
+    {* ----------------------------------------------------------------------------------- *}
+    {if $rightsEdit == "yes" and $edit_test_results eq "yes" and $tc_exec.active eq 1}
+      {assign var="can_exec" value=1}
+      
+      {* --------------------------------------------------------------------------------- *}
+      {if $exec_mode neq 'all'}
+        {assign var="can_exec" value=0}
+    	
+    	  {if $exec_mode eq 'assigned_to_me'} 
+    	      {if $tc_exec.assigned_user_id eq $tester_id}
+    	        {assign var="can_exec" value=1}
+    	      {/if} 
+    	  {/if}
+  
+    	  {if $exec_mode eq 'assigned_to_me_or_free'} 
+    	      {if $tc_exec.assigned_user_id eq $tester_id || $tc_exec.assigned_user_id eq ''}
+    	        {assign var="can_exec" value=1}
+    	      {/if} 
+        {/if}
+      {/if}
+      {* --------------------------------------------------------------------------------- *}
+      
+  	{/if}
+    {* ----------------------------------------------------------------------------------- *}
+
+  	
+  	{if $can_exec}
   		<table border="0" width="100%">
   		<tr>
   			<td rowspan="2" align="center">
@@ -444,6 +476,11 @@ var msg="{lang_get s='warning_delete_execution'}";
     		</tr>
   		</table>
 	 {/if}
+ 	 {if $tc_exec.active eq 0}
+ 	  <h1><center>{lang_get s='testcase_version_is_inactive_on_exec'}</center></h1>
+ 	 {/if}
+  
+  
   
 	<hr />
 	</div>

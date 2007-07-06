@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: containerMove.tpl,v 1.9 2007/01/02 13:42:05 franciscom Exp $ *}
+{* $Id: containerMove.tpl,v 1.10 2007/07/06 06:28:34 franciscom Exp $ *}
 {* Purpose: smarty template - form for move/copy container in test specification 
 
 20050825 - fm - moveCopy -> containerID
@@ -14,7 +14,8 @@
 	{assign var='parent' value='container'}
 {/if}
 <body>
-<h1>{lang_get s=$level}{$smarty.const.TITLE_SEP}{$object_name|escape} </h1>
+{lang_get s=$level var=level_translated}
+<h1>{$level_translated}{$smarty.const.TITLE_SEP}{$object_name|escape} </h1>
 
 <div class="workBack">
 <h1>{lang_get s='title_move_cp'}</h1>
@@ -23,7 +24,10 @@
 	{lang_get s='sorry_further'} {$parent}s {lang_get s='defined_exclam'} 
 {else}
 	<form method="post" action="lib/testcases/containerEdit.php?objectID={$objectID|escape}">
-		<p>{lang_get s='cont_move_first'} {$level|escape} {lang_get s='cont_move_second'} {$parent|escape}.</p>
+		<p>
+		{lang_get s='cont_move_first'} {$level_translated} {lang_get s='cont_move_second'} {$parent|escape}.<br>
+		{lang_get s='cont_copy_first'} {$level_translated} {lang_get s='cont_copy_second'} {$parent|escape}.
+		</p>
 		<p>{lang_get s='choose_target'} {$parent|escape}:
 			<select name="containerID">
 				{html_options options=$arraySelect}

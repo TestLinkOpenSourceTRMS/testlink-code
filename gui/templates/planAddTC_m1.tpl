@@ -1,8 +1,11 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planAddTC_m1.tpl,v 1.12 2007/04/09 08:03:32 franciscom Exp $
+$Id: planAddTC_m1.tpl,v 1.13 2007/07/06 06:28:34 franciscom Exp $
 Purpose: smarty template - generate a list of TC for adding to Test Plan 
 
+20070630 - franciscom - now tcversions linked to test plan, but set inactive
+                        are displayed.
+                         
 20070408 - franciscom - full_control=1 -> add/remove operations available
                         full_control=0 -> only remove operation available
                         
@@ -95,15 +98,27 @@ added logic to manage active/inactive tcversions
           </tr>   
           
           {foreach from=$ts.testcases item=tcase}
-            {if $tcase.tcversions_qty neq 0}  
             
+            {assign var='is_active' value=0}
+            {if $tcase.linked_version_id neq 0 }
+               {if $tcase.tcversions_active_status[$tcase.linked_version_id] eq 1}             
+                 {assign var='is_active' value=1}
+               {/if}
+            {else}
+               {if $tcase.tcversions_qty neq 0}
+                 {assign var='is_active' value=1}
+               {/if}
+            {/if}      
+
+
+            {if $is_active || $tcase.linked_version_id ne 0 }  
    				    {if $full_control || $tcase.linked_version_id ne 0 }
     			    <tr {if $tcase.linked_version_id ne 0} 
     			        style="{$smarty.const.TL_STYLE_FOR_ADDED_TC}" {/if}>
     			      <td width="20px">
     				
     				    {if $full_control}
-      				    {if $tcase.tcversions_qty eq 0 || $tcase.linked_version_id ne 0 }
+      				    {if $is_active eq 0 || $tcase.linked_version_id ne 0 }
       				       &nbsp;&nbsp;
       				    {else}
       				      <input type='checkbox' 
@@ -126,16 +141,10 @@ added logic to manage active/inactive tcversions
     			      </td>
     			      
                 <td>
-         				{if $tcase.tcversions_qty eq 0}
-                  {lang_get s='inactive_testcase'}              
-                {else}
          				  <select name="tcversion_for_tcid[{$tcase.id}]"
       			          {if $tcase.linked_version_id ne 0} disabled	{/if}>
          				      {html_options options=$tcase.tcversions selected=$tcase.linked_version_id}
          				  </select>
-    				    
-    				    {/if}
-    				    
                 </td>
         
                 {* ------------------------------------------------------------------------- *}      
@@ -153,6 +162,9 @@ added logic to manage active/inactive tcversions
                      {if $tcase.executed eq 'yes'}
                             &nbsp;&nbsp;&nbsp;{lang_get s='has_been_executed'}
                      {/if}    
+                     {if $is_active eq 0}
+                           &nbsp;&nbsp;&nbsp;{lang_get s='inactive_testcase'}
+                     {/if}
           				</td>
                 {/if}
                 {* ------------------------------------------------------------------------- *}      

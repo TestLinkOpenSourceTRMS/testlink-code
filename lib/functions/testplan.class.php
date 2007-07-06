@@ -2,11 +2,16 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.32 $
- * @modified $Date: 2007/05/24 19:49:42 $ $Author: schlundus $
+ * @version $Revision: 1.33 $
+ * @modified $Date: 2007/07/06 06:33:51 $ $Author: franciscom $
  * @author franciscom
  *
  * rev :
+ *       20070630 - franciscom - get_linked_tcversions(), added active column
+ *                               in output recordset.
+ *
+ *                               html_table_of_custom_field_values() 
+ *
  *       20070519 - franciscom - added Class milestone_mgr
  *
  *       copy_milestones()- changed date to target_date, because date 
@@ -275,6 +280,7 @@ function link_tcversions($id,&$items_to_link)
                           tcversion_id if has executions 
 
  rev :
+       20070630 - franciscom - added active tcversion status in output recorset
        20070306 - franciscom - BUGID 705
 
 */
@@ -357,7 +363,7 @@ function get_linked_tcversions($id,$tcase_id=null,$keyword_id=0,$executed=null,
 	//
 	$sql = " SELECT NHB.parent_id AS testsuite_id, " .
 	     "        NHA.parent_id AS tc_id," .
-	     "        T.tcversion_id AS tcversion_id, T.id AS feature_id," .
+	     "        T.tcversion_id AS tcversion_id, T.id AS feature_id,TCV.active," .
 	     "        E.id AS exec_id, " .
 	     "        E.tcversion_id AS executed, E.testplan_id AS exec_on_tplan, " .
 	     "        UA.user_id,UA.type,UA.status,UA.assigner_id, " .
@@ -365,6 +371,7 @@ function get_linked_tcversions($id,$tcase_id=null,$keyword_id=0,$executed=null,
 	     " FROM nodes_hierarchy NHA " .
 	     " JOIN nodes_hierarchy NHB ON NHA.parent_id = NHB.id " .
 	     " JOIN testplan_tcversions T ON NHA.id = T.tcversion_id " .
+	     " JOIN tcversions TCV ON NHA.id = TCV.id " .
 	     " {$executions_join} " .
 	     " {$keywords_join} " .
 	     " LEFT OUTER JOIN user_assignments UA ON UA.feature_id = T.id " . 
@@ -1001,6 +1008,7 @@ function get_linked_cfields_at_design($id,$parent_id=null,$show_on_execution=nul
 
   $cf_map=$this->cfield_mgr->get_linked_cfields_at_design($tproject_id,$enabled,
                                                           $show_on_execution,'testplan',$id);
+  
   return($cf_map);
 }
 
@@ -1075,6 +1083,7 @@ function html_table_of_custom_field_inputs($id,$parent_id=null,$scope='design')
     } //foreach($cf_map
   }
 
+
   if($cf_smarty != '')
   {
     $cf_smarty = "<table>" . $cf_smarty . "</table>";
@@ -1093,7 +1102,10 @@ function html_table_of_custom_field_inputs($id,$parent_id=null,$scope='design')
                               0 or null -> don't filter
   
   returns: html string
-  
+
+  rev :
+       20070701 - franciscom - fixed return string when there are no custom fields.
+         
 */
 function html_table_of_custom_field_values($id,$scope='design',$show_on_execution=null) 
 {
@@ -1124,7 +1136,11 @@ function html_table_of_custom_field_values($id,$scope='design',$show_on_executio
       }
     }
   }
-  $cf_smarty = "<table>" . $cf_smarty . "</table>";
+
+  if($cf_smarty != '')
+  {
+    $cf_smarty = "<table>" . $cf_smarty . "</table>";
+  }  
   return($cf_smarty);
 } // function end
 

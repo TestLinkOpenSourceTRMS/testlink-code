@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.60 $
- * @modified $Date: 2007/05/21 06:44:17 $ $Author: franciscom $
+ * @version $Revision: 1.61 $
+ * @modified $Date: 2007/07/06 06:33:51 $ $Author: franciscom $
  *
  * 20070519 - franciscom - BUGID 856
  * 20070306 - franciscom - BUGID 705
@@ -15,8 +15,8 @@
 require_once('../../config.inc.php');
 require_once('common.php');
 require_once('exec.inc.php');
-require_once("../../lib/functions/builds.inc.php");
-require_once("../../lib/functions/attachments.inc.php");
+require_once("builds.inc.php");
+require_once("attachments.inc.php");
 
 testlinkInitPage($db);
 
@@ -36,6 +36,19 @@ $tree_mgr = new tree($db);
 $tplan_mgr = new testplan($db);
 $tcase_mgr = new testcase($db);
 $build_mgr = new build_mgr($db);
+
+$tproject_id = $_SESSION['testprojectID'];
+$tplan_id = $_SESSION['testPlanId'];
+$user_id = $_SESSION['userID'];
+
+$effective_role=get_effective_role($db,$user_id,$tproject_id,$tplan_id);
+$all_roles = getAllRoles($db);
+$exec_mode='all';
+if( $all_roles[$effective_role] == 'tester' )
+{
+  $exec_cfg = config_get('exec_cfg');
+  $exec_mode=$exec_cfg->exec_mode->tester;
+}
 
 $can_exec=(has_rights($db,"testplan_execute")=="yes"?1:0);
 
@@ -74,8 +87,6 @@ if ($filter_assigned_to)
 	$ownerDisplayName = getUserName($db,$filter_assigned_to);
 
 
-$tplan_id = $_SESSION['testPlanId'];
-$user_id = $_SESSION['userID'];
 $the_builds = $tplan_mgr->get_builds_for_html_options($tplan_id);
 $build_name = isset($the_builds[$build_id]) ? $the_builds[$build_id] : '';
 
@@ -116,6 +127,7 @@ $testplan_cf=$tplan_mgr->html_table_of_custom_field_values($tplan_id,'execution'
 $testproject_id=$rs['parent_id'];
 $smarty->assign('tplan_notes',$rs['notes']);
 $smarty->assign('tplan_cf',$testplan_cf);
+
 
 if(!is_null($linked_tcversions))
 {
@@ -218,10 +230,6 @@ if(!is_null($linked_tcversions))
     }
     // --------------------------------------------------------------------------------------------
     
-    
-    
-    
-    
     $map_last_exec_any_build = null;
     if( $exec_cfg->show_last_exec_any_build )
     {
@@ -265,6 +273,23 @@ if(!is_null($linked_tcversions))
 }
 
 
+// tester assignment 
+if( !is_null($map_last_exec) )
+{
+  foreach($map_last_exec as $version_id => $value)
+  {
+    $map_last_exec[$version_id]['assigned_user']='';
+    $map_last_exec[$version_id]['assigned_user_id']=0;
+    $p3 = $tcase_mgr->get_version_exec_assignment($version_id,$tplan_id);
+    if(intval($p3[$version_id]['user_id']) > 0 )
+    {
+      $user_data=getUserById($db,$p3[$version_id]['user_id']);
+      $map_last_exec[$version_id]['assigned_user']=format_username($user_data[0]);  
+      $map_last_exec[$version_id]['assigned_user_id']=$p3[$version_id]['user_id'];
+    }  
+  }
+}
+
 
 $smarty->assign('other_exec_cfexec',$cfexec_val_smarty);
 $smarty->assign('bugs_for_exec',$bugs);
@@ -276,6 +301,9 @@ $editTestResult = ($rs['open']==1) ? "yes" : "no";
 $smarty->assign('edit_test_results', $editTestResult);
 // -------------------------------------------------------
 
+$smarty->assign('exec_mode', $exec_mode);
+
+
 // 20070105 - franciscom - refactoring
 smarty_assign_tsuite_info($smarty,$_REQUEST,$db,$tcase_id);
 
@@ -286,8 +314,6 @@ $smarty->assign('bn_view_status',
                 isset($_POST['bn_view_status']) ? $_POST['bn_view_status']:0);
 $smarty->assign('bc_view_status',
                 isset($_POST['bc_view_status']) ? $_POST['bc_view_status']:0);
-
-
 
 $smarty->assign('can_delete_execution',$exec_cfg->can_delete_execution);
 $smarty->assign('default_status',config_get('tc_status_for_ui_default'));
@@ -313,6 +339,7 @@ $smarty->assign('ownerDisplayName', $ownerDisplayName);
 $smarty->assign('updated', $submitResult);
 $smarty->assign('g_bugInterface', $g_bugInterface);
 
+$smarty->assign('tester_id',$user_id);
 
 $smarty->display($g_tpl['execSetResults']);
 ?>

@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
  * @filesource $RCSfile: roles.inc.php,v $
- * @version $Revision: 1.21 $
- * @modified $Date: 2007/06/06 19:18:05 $ by $Author: schlundus $
+ * @version $Revision: 1.22 $
+ * @modified $Date: 2007/07/06 06:33:51 $ by $Author: franciscom $
  * @author Martin Havlat, Chad Rosen
  * 
  * This script provides the get_rights and has_rights functions for
@@ -33,6 +33,8 @@
  * testplan_planning, testplan_create_build, testplan_assign_rights - Test Leader plans/prepares a testing
  * mgt_modify_product, mgt_users - just Admin edits Products and Users
  *
+ *
+ * rev : 20070702 - franciscom - new get_effective_role()
  */
 require_once( dirname(__FILE__). '/lang_api.php' );
 
@@ -662,5 +664,38 @@ function checkForRights($rights,$roleQuestion,$bAND = 1)
 		$ret = (in_array($roleQuestion,$rights) ? 'yes' : null);
 	
 	return $ret;
+}
+
+/*
+  function: get_effective_role()
+
+  args : $user_id
+         $tproject_id
+         $tplan_id
+         
+  
+  returns: effetive_role in context ($tproject_id,$tplan_id)
+
+*/
+function get_effective_role(&$db,$user_id,$tproject_id,$tplan_id)
+{
+  $user_info = getUserById($db,$user_id);
+  $default_role = $user_info[0]['role_id'];
+  $tprojects_role = getUserProductRoles($db,$user_id);
+  $tplans_role = getUserTestPlanRoles($db,$user_id);
+
+  if( !is_null($tplans_role) && isset($tplans_role[$tplan_id]))
+  {
+    $effective_role=$tplans_role[$tplan_id]['role_id'];  
+  }
+  else if( !is_null($tprojects_role) && isset($tprojects_role[$tproject_id]))
+  {
+     $effective_role=$tprojects_role[$tproject_id]['role_id'];  
+  }
+  else
+  {
+    $effective_role=$default_role;
+  }
+  return $effective_role;
 }
 ?>

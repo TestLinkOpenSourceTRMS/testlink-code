@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: users.inc.php,v $
  *
- * @version $Revision: 1.44 $
- * @modified $Date: 2007/06/26 06:18:35 $ $Author: franciscom $
+ * @version $Revision: 1.45 $
+ * @modified $Date: 2007/07/06 06:33:51 $ $Author: franciscom $
  *
  * Functions for usermanagement
  *

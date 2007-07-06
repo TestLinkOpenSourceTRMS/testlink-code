@@ -1,6 +1,6 @@
 <?php
 ////////////////////////////////////////////////////////////////////////////////
-// @version $Id: planAddTC.php,v 1.32 2007/05/19 19:30:21 schlundus Exp $
+// @version $Id: planAddTC.php,v 1.33 2007/07/06 06:33:51 franciscom Exp $
 // File:     planAddTC.php
 // Purpose:  link/unlink test cases to a test plan
 //
@@ -39,18 +39,17 @@ if($_GET['edit'] == 'testsuite')
 
     $tsuite_data=$tsuite_mgr->get_by_id($object_id);
 
-    // 20061112 - franciscom
     $tplan_linked_tcversions=$tplan_mgr->get_linked_tcversions($tplan_id,DONT_FILTER_BY_TCASE_ID,
                                                                $keyword_id,ANY_EXEC_STATUS,ANY_OWNER);
 
     $out = gen_spec_view($db,'testproject',$tproject_id,$object_id,$tsuite_data['name'],
                          $tplan_linked_tcversions,$map_node_tccount,$keyword_id,DONT_FILTER_BY_TCASE_ID);
                        
+    //echo "<pre>debug 20070630 \$out" . __FUNCTION__ . " --- "; print_r($out); echo "</pre>";
     $do_display = 1;  
 }
 else
 {
-	//redirect($_SESSION['basehref'] . $g_rpath['help'].'/planAddTC.html');
 	redirect($_SESSION['basehref'] . "/lib/general/show_help.php?help=planAddTC&locale={$_SESSION['locale']}");
 }
 
@@ -86,7 +85,7 @@ if($do_display)
 	// full_control, controls the operations planAddTC_m1.tpl will allow
 	// 1 => add/remove
 	// 0 => just remove
-	$smarty->assign('full_control', 1); // 1 => 
+	$smarty->assign('full_control', 1); 
 	$smarty->assign('has_tc', ($out['num_tc'] > 0 ? 1 : 0));
 	$smarty->assign('arrData', $out['spec_view']);
 	$smarty->assign('has_linked_items',$out['has_linked_items']);

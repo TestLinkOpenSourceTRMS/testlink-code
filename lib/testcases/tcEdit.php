@@ -4,10 +4,11 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.56 $
- * @modified $Date: 2007/03/04 00:03:20 $  by $Author: schlundus $
+ * @version $Revision: 1.57 $
+ * @modified $Date: 2007/07/06 06:33:51 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
+ * 20070701 - franciscom - feedback improvement on new version operation
  * 20070302 - franciscom - BUGID
  * 20070220 - franciscom - automatic tree refresh management
  * 20070218 - franciscom - added $g_spec_cfg->automatic_tree_refresh to the
@@ -16,11 +17,11 @@
  *
 **/
 require_once("../../config.inc.php");
-require_once("../functions/common.php");
+require_once("common.php");
 require_once('archive.inc.php');
 require_once('../keywords/keywords.inc.php');
 require_once("../../third_party/fckeditor/fckeditor.php");
-require_once("../functions/opt_transfer.php");
+require_once("opt_transfer.php");
 testlinkInitPage($db);
 
 $gui_cfg = config_get('gui');
@@ -336,6 +337,7 @@ else if($delete_tc_version)
 }
 else if($do_delete)
 {
+  $user_feedback='';
 	$msg='';
 	$action_result='deleted';
 	$verbose_result='ok';
@@ -346,17 +348,23 @@ else if($do_delete)
 		$action_result='';
 		$verbose_result=$db->error_msg();
 	}
+	else
+	{
+	  $user_feedback=sprintf(lang_get('tc_deleted'),$tcinfo[0]['name']);
+	}
 	
 	$the_title = lang_get('title_del_tc') . $tcinfo[0]['name'];
-	
-  	$refresh_tree=$spec_cfg->automatic_tree_refresh ? "yes" : "no";
+  $refresh_tree=$spec_cfg->automatic_tree_refresh ? "yes" : "no";
 	
 	if( $tcversion_id != TC_ALL_VERSIONS )
 	{
 		$the_title .= " " . lang_get('version') . " " . $tcinfo[0]['version'];
 		$refresh_tree="no";
+	  $user_feedback=sprintf(lang_get('tc_version_deleted'),$tcinfo[0]['name'],$tcinfo[0]['version']);
 	}
+  
 	$smarty->assign('title', $the_title);
+	$smarty->assign('user_feedback', $user_feedback);
 	$smarty->assign('sqlResult', $verbose_result);
 	$smarty->assign('testcase_id', $tcase_id);
 	$smarty->assign('delete_message', $msg);
@@ -372,14 +380,23 @@ else if($move_copy_tc)
 	$the_tc_node = $tree_mgr->get_node_hierachy_info($tcase_id);
 	$tc_parent_id = $the_tc_node['parent_id'];
 	$the_tree = $tree_mgr->get_subtree($tproject_id, array("testplan"=>"exclude me",
-	                                             "testcase"=>"exclude me"));
+	                                                       "testcase"=>"exclude me"));
 	$the_xx = $tproject_mgr->gen_combo_test_suites($tproject_id);
 	$the_xx[$the_tc_node['parent_id']] .= ' (' . lang_get('current') . ')'; 
 	$tc_info = $tcase_mgr->get_by_id($tcase_id);
 
+  $container_qty=count($the_xx);
+  $move_enabled=1;
+  if( $container_qty == 1 )
+  {
+     // move operation is nonsense
+     $move_enabled=0;  
+  }
+
 	$smarty->assign('old_container', $the_tc_node['parent_id']); // original container
 	$smarty->assign('array_container', $the_xx);
 	$smarty->assign('testcase_id', $tcase_id);
+  $smarty->assign('move_enabled',$move_enabled);
 	$smarty->assign('name', $tc_info[0]['name']);
 	$smarty->display('tcMove.tpl');
 // move test case to another category
@@ -392,29 +409,49 @@ else if($do_move)
 }
 else if($do_copy)
 {
+  $user_feedback=''; 
 	$msg = '';
 	$action_result = 'copied';
 	$result = $tcase_mgr->copy_to($tcase_id,$new_container_id,$userID,TC_COPY_KEYWORDS,
 	                              config_get('check_names_for_duplicates'),'block');
 	$msg = $result['msg'];
+ 
+  if($result['msg'] == "ok" )
+  {
+    $ts_sep=config_get('testsuite_sep');
+    $tc_info=$tcase_mgr->get_by_id($tcase_id);
+    $container_info=$tree_mgr->get_node_hierachy_info($new_container_id);
+    $container_path=$tree_mgr->get_path($new_container_id);
+    $path='';
+    foreach($container_path as $key => $value)
+    {
+      $path .= $value['name'] . $ts_sep;
+    }
+    $path=trim($path,$ts_sep);
+    $user_feedback=sprintf(lang_get('tc_copied'),$tc_info[0]['name'],$path);
+  }	
 	$smarty->assign('refreshTree',$do_refresh);
 	
 	$do_refresh_yes_no=$do_refresh?"yes":"no";
 	$tcase_mgr->show($smarty,$tcase_id, $userID,$tcversion_id,
-	                 $action_result,$msg,$do_refresh_yes_no);
+	                 $action_result,$msg,$do_refresh_yes_no,$user_feedback);
 }
 else if($do_create_new_version)
 {
+  $user_feedback=''; 
 	$show_newTC_form = 0;
 	$action_result = "do_update";
 	$msg = lang_get('error_tc_add');
 	$op = $tcase_mgr->create_new_version($tcase_id,$userID);
 	if ($op['msg'] == "ok")
+	{
+	  $user_feedback=sprintf(lang_get('tc_new_version'),$op['version']);
 		$msg = 'ok';
+	}
 	
 	define('DONT_REFRESH','no');
 	$tcase_mgr->show($smarty,$tcase_id, $userID, TC_ALL_VERSIONS, 
-	                            $action_result,$msg,DONT_REFRESH);
+	                            $action_result,$msg,DONT_REFRESH,$user_feedback);
 }
 else if($do_activate_this || $do_deactivate_this)
 {

@@ -2,11 +2,12 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.57 $
- * @modified $Date: 2007/06/19 17:32:28 $ $Author: franciscom $
+ * @version $Revision: 1.58 $
+ * @modified $Date: 2007/07/06 06:33:51 $ $Author: franciscom $
  * @author franciscom
  *
  *
+ * 20070701 - franciscom - create_new_version(), changes in return map.
  * 20070617 - franciscom - added include of users.inc.php                         
  * 20070602 - franciscom - added attachment copy on copy_to() method.
  *                         added attachment delete.
@@ -253,7 +254,7 @@ function get_all()
 //                         can accept an array of id
 //
 function show(&$smarty,$id, $user_id, $version_id=TC_ALL_VERSIONS, $action='', 
-              $msg_result='', $refresh_tree='yes')
+              $msg_result='', $refresh_tree='yes', $user_feedback='')
 {
   
 	$gui_cfg = config_get('gui');
@@ -313,6 +314,8 @@ function show(&$smarty,$id, $user_id, $version_id=TC_ALL_VERSIONS, $action='',
 		$smarty->assign('cf',$cf_smarty);	
  	}
 	$users = getAllUsers($this->db,null,'id');
+	
+	$smarty->assign('user_feedback',$user_feedback);
 	$smarty->assign('tcase_cfg',$tcase_cfg);
 	$smarty->assign('action',$action);
 	$smarty->assign('users',$users);
@@ -661,7 +664,21 @@ function copy_to($id,$parent_id,$user_id,
 	return($new_tc);
 }
 	
-	
+
+/*
+  function: create_new_version()
+            create a new test case version, doing a copy of last test case version.
+
+  args : $id: testcase id
+         $user_id: who is doing this operation.
+  
+  returns: 
+          map:  id: node id of created tcversion
+                version: version number (i.e. 5)
+                msg
+
+  rev : 20070701 - franciscom - added version key on return map.
+*/
 function create_new_version($id,$user_id)
 {
   // get a new id
@@ -672,6 +689,7 @@ function create_new_version($id,$user_id)
   $this->copy_tcversion($last_version_info['id'],$tcversion_id,$last_version_info['version']+1,$user_id);
     
   $ret['id'] = $tcversion_id;
+  $ret['version'] = $last_version_info['version']+1;
   $ret['msg'] = 'ok';
   return $ret;
 }

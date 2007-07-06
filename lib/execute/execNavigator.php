@@ -5,9 +5,10 @@
  *
  * Filename $RCSfile: execNavigator.php,v $
  *
- * @version $Revision: 1.35 $
- * @modified $Date: 2007/06/07 09:45:03 $ by $Author: franciscom $
+ * @version $Revision: 1.36 $
+ * @modified $Date: 2007/07/06 06:33:51 $ by $Author: franciscom $
  *
+ * 20070630 - franciscom - set default value for filter_assigned_to
  * 20070607 - franciscom - BUGID 887 - problem with builds
  * 20070212 - franciscom - name changes on html inputs
  *
@@ -27,15 +28,48 @@ require_once('exec.inc.php');
 require_once('builds.inc.php');
 testlinkInitPage($db);
 
+$tproject_id = $_SESSION['testprojectID'];
+$user_id = $_SESSION['userID'];
+$tplan_id   = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0;
+$tplan_name = isset($_SESSION['testPlanName']) ? $_SESSION['testPlanName'] : 'null';
+
+ 
 $treeColored = (isset($_POST['colored']) && ($_POST['colored'] == 'result')) ? 'selected="selected"' : null;
-$filter_assigned_to = isset($_POST['filter_assigned_to']) ? intval($_POST['filter_assigned_to']) : 0;             
+
+// 20070630 - franciscom - defaults to user logged. 
+$filter_assigned_to = isset($_POST['filter_assigned_to']) ? intval($_POST['filter_assigned_to']) : $user_id;             
 
 $tc_id = isset($_POST['tcID']) ? intval($_POST['tcID']) : null;
 $keyword_id = isset($_POST['keyword_id']) ? $_POST['keyword_id'] : 0;             
 
-$tplan_id   = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0;
-$tplan_name = isset($_SESSION['testPlanName']) ? $_SESSION['testPlanName'] : 'null';
 $tplan_mgr = new testplan($db);
+
+$effective_role=get_effective_role($db,$user_id,$tproject_id,$tplan_id);
+$all_roles = getAllRoles($db);
+$exec_view_mode='all';
+
+if( $all_roles[$effective_role] == 'tester' )
+{
+  $exec_cfg = config_get('exec_cfg');
+  $exec_view_mode=$exec_cfg->view_mode->tester;
+}
+
+$disable_filter_assigned_to=false;
+$assigned_to_user='';
+switch ($exec_view_mode)
+{
+   case 'all':
+   break;
+   
+   case 'assigned_to_me':
+   $filter_assigned_to=$user_id;
+   $user_info = getUserById($db,$user_id);
+   $assigned_to_user=format_username($user_info[0]);
+   $disable_filter_assigned_to=true;
+   break;
+}
+
+
 
 // 20070123 - franciscom - 
 // only active builds no matter user role
@@ -114,6 +148,10 @@ $testCaseID = null;
 $users = get_users_for_html_options($db,null,true);
 
 $smarty = new TLSmarty();
+
+$smarty->assign('disable_filter_assigned_to',$disable_filter_assigned_to);
+$smarty->assign('assigned_to_user',$assigned_to_user);
+
 $smarty->assign('src_workframe',$src_workframe);
 $smarty->assign('tplan_name',$tplan_name);
 $smarty->assign('users',$users);

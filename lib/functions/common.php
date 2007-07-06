@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.67 $ $Author: franciscom $
- * @modified $Date: 2007/07/06 06:19:56 $
+ * @version $Revision: 1.68 $ $Author: franciscom $
+ * @modified $Date: 2007/07/06 06:35:46 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -18,6 +18,7 @@
  * testPlanID, testPlanName
  *
  * 20070705 - franciscom - init_labels()
+ *                         gen_spec_view(), changes on process of inactive versions
  * 20070623 - franciscom - improved info in header of localize_dateOrTimeStamp()
  * 20070104 - franciscom - gen_spec_view() warning message removed
  *
@@ -696,6 +697,11 @@ returns: array where every element is an associative array with the following
        if the root element of the spec_view, has 0 test => then the default
        structure is returned ( $result = array('spec_view'=>array(), 'num_tc' => 0))
 
+20070630 - franciscom
+added new logic to include in for inactive test cases, testcase version id.
+This is needed to show testcases linked to testplans, but after be linked to
+test plan, has been set to inactive on test project.
+
 20061105 - franciscom
 added new data on output: [tcversions_qty] 
                           used in the logic to filter out inactive tcversions,
@@ -794,6 +800,10 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
 				$out[$parent_idx]['testcases'][$tc_id] = array('id' => $tc_id,
 				                  'name' => $current['name']);
 				$out[$parent_idx]['testcases'][$tc_id]['tcversions'] = array();
+				
+				// 20070630 - franciscom
+				$out[$parent_idx]['testcases'][$tc_id]['tcversions_active_status'] = array();
+				
 				$out[$parent_idx]['testcases'][$tc_id]['tcversions_qty'] = 0;
 				             
 				$out[$parent_idx]['testcases'][$tc_id]['linked_version_id'] = 0;
@@ -861,7 +871,9 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
 	  $result['has_linked_items'] = 0;
     if(count($a_tcid))
     {
-  		$tcase_set = $tcase_mgr->get_by_id($a_tcid,TC_ALL_VERSIONS,'ACTIVE');
+      // 20070630 - francisco.mancardi@gruppotesi.com
+  		// $tcase_set = $tcase_mgr->get_by_id($a_tcid,TC_ALL_VERSIONS,'ACTIVE');
+  		$tcase_set = $tcase_mgr->get_by_id($a_tcid,TC_ALL_VERSIONS);
   		
   		$result['num_tc']=0;
   		$pivot_id=-1;
@@ -877,12 +889,21 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
   		  }
   		  
   			$parent_idx = $a_tsuite_idx[$tc_id];
+  		
+        // --------------------------------------------------------------------------
+        // 20070630 - franciscom
+        if($the_tc['active'] == 1)
+        {       
+          // 20070630 - franciscom 
   			$out[$parent_idx]['testcases'][$tc_id]['tcversions'][$the_tc['id']] = $the_tc['version'];
+  				$out[$parent_idx]['testcases'][$tc_id]['tcversions_active_status'][$the_tc['id']] = 1;
             
 			if (isset($out[$parent_idx]['testcases'][$tc_id]['tcversions_qty']))  
 				$out[$parent_idx]['testcases'][$tc_id]['tcversions_qty']++;
 			else
 				$out[$parent_idx]['testcases'][$tc_id]['tcversions_qty'] = 1;
+        }
+        // --------------------------------------------------------------------------
               
   			if(!is_null($linked_items))
   			{
@@ -891,6 +912,12 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
   					if(($the_item['tc_id'] == $the_tc['testcase_id']) &&
   						($the_item['tcversion_id'] == $the_tc['id']) )
   					{
+  					  // 20070630 - franciscom
+       				if( !isset($out[$parent_idx]['testcases'][$tc_id]['tcversions'][$the_tc['id']]) )
+       				{
+        				$out[$parent_idx]['testcases'][$tc_id]['tcversions'][$the_tc['id']] = $the_tc['version'];
+  	    			  $out[$parent_idx]['testcases'][$tc_id]['tcversions_active_status'][$the_tc['id']] = 0;
+  					  }
   						$out[$parent_idx]['testcases'][$tc_id]['linked_version_id'] = $the_item['tcversion_id'];
   						$out[$parent_idx]['write_buttons'] = 'yes';
   						$out[$parent_idx]['linked_testcase_qty']++;

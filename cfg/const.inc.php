@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: const.inc.php,v $
  *
- * @version $Revision: 1.32 $
- * @modified $Date: 2007/07/05 17:06:18 $ by $Author: franciscom $
+ * @version $Revision: 1.33 $
+ * @modified $Date: 2007/07/06 06:19:11 $ by $Author: franciscom $
  * @author Martin Havlát
  *
  * SCOPE:
@@ -16,6 +16,7 @@
  * 
  *-------------------------------------------------------------------
  * Revisions: 
+ *           20070705 - franciscom - config of $g_req_status.
  *           20070624 - franciscom - $g_title_sep*
  *           20070607 - franciscom 
  *           to solve BUGID: 887
@@ -305,6 +306,15 @@ define('MENU_ITEM_OPEN','<div class="menu_bubble">');
 define('MENU_ITEM_CLOSE','</div><p>');
 
 
+
+// moved from requirements.inc.php
+define('TL_REQ_STATUS_VALID', 'V');
+define('TL_REQ_STATUS_NOT_TESTABLE', 'N');
+
+$g_req_status=array(TL_REQ_STATUS_VALID => 'req_state_valid', 
+					          TL_REQ_STATUS_NOT_TESTABLE => 'req_state_not_testable');
+
+
 // 
 // [FUNCTION MAGIC NUMBERS] [DON'T BOTHER ABOUT]
 // used in several functions instead of MAGIC NUMBERS - Don't change 
@@ -339,9 +349,6 @@ define('FILTER_BY_TC_OFF',null);
 define('ALL_USERS_FILTER',null); 
 define('ADD_BLANK_OPTION',true); 
 
-// moved from requirements.inc.php
-define('TL_REQ_STATUS_VALID', 'V');
-define('TL_REQ_STATUS_NOT_TESTABLE', 'N');
 
 
 define('DO_LANG_GET',1);

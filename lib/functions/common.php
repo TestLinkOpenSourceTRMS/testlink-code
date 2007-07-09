@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.68 $ $Author: franciscom $
- * @modified $Date: 2007/07/06 06:35:46 $
+ * @version $Revision: 1.69 $ $Author: franciscom $
+ * @modified $Date: 2007/07/09 08:06:30 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -17,6 +17,7 @@
  * email, userID, productID, productName, testplan (use rather testPlanID),
  * testPlanID, testPlanName
  *
+ * 20070707 - franciscom - BUGID 921 - changes to gen_spec_view()
  * 20070705 - franciscom - init_labels()
  *                         gen_spec_view(), changes on process of inactive versions
  * 20070623 - franciscom - improved info in header of localize_dateOrTimeStamp()
@@ -53,8 +54,7 @@ $db = 0;
 function doDBConnect(&$db)
 {
 	$result = array('status' => 1, 
-					'dbms_msg' => 'ok'
-					);
+					        'dbms_msg' => 'ok');
 	$db = new database(DB_TYPE);
 	$result = $db->connect(DSN, DB_HOST, DB_USER, DB_PASS, DB_NAME);
 
@@ -663,7 +663,25 @@ arguments:
                           And indicates the type of id (testproject/testplan) 
                           contained in the argument tobj_id.
 
+         tobj_id
+         
          id: node id
+
+         name:
+         linked_items
+         map_node_tccount,
+                            
+         [keyword_id] default 0
+         [tcase_id] default null,
+			   [write_button_only_if_linked] default 0
+
+
+         [do_prune]: default 0. 
+                     Useful when working on spec_view_type='testplan'.
+                     1 -> will return only linked tcversion
+                     0 -> returns all test cases specs. 
+                     
+         
          
 
 returns: array where every element is an associative array with the following
@@ -697,6 +715,9 @@ returns: array where every element is an associative array with the following
        if the root element of the spec_view, has 0 test => then the default
        structure is returned ( $result = array('spec_view'=>array(), 'num_tc' => 0))
 
+
+20070707 - franciscom - BUGID 921 - problems with display order in execution screen
+
 20070630 - franciscom
 added new logic to include in for inactive test cases, testcase version id.
 This is needed to show testcases linked to testplans, but after be linked to
@@ -715,7 +736,7 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
                             $tobj_id,$id,$name,&$linked_items,
                             $map_node_tccount,
                             $keyword_id = 0,$tcase_id = null,
-							              $write_button_only_if_linked = 0)
+							              $write_button_only_if_linked = 0,$do_prune=0)
 {
 	$write_status = 'yes';
 	if($write_button_only_if_linked)
@@ -723,6 +744,9 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
 	
 	//  20070104 - franciscom - added 'has_linked_items' => 0, to remove a warning message.
 	$result = array('spec_view'=>array(), 'num_tc' => 0, 'has_linked_items' => 0);
+	
+	// echo "<pre>debug 20070707 QW" . __FUNCTION__ . " --- "; print_r(count($result['spec_view'])); echo "</pre>";
+	
 	$out = array(); 
 	$a_tcid = array();
 	
@@ -735,7 +759,8 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
 	$test_spec = $tree_manager->get_subtree($id,array('testplan'=>'exclude me'),
                                               array('testcase'=>'exclude my_children'));
 	     
-	// filters
+	// ---------------------------------------------------------------------------------------------
+  // filters
 	if($keyword_id)
 	{
 	    switch ($spec_view_type)
@@ -757,7 +782,9 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
 			   $test_spec[$key]=null;            
 	    }
 	}
+  // ---------------------------------------------------------------------------------------------
   
+	// ---------------------------------------------------------------------------------------------
 	if(!is_null($tcase_id))
 	{
 		// filter the test_spec
@@ -767,7 +794,8 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
 				$test_spec[$key]=null;            
 		}
 	}
-  
+  // ---------------------------------------------------------------------------------------------
+    
     $idx = 0;
     $a_tcid = array();
     $a_tsuite_idx = array();
@@ -780,74 +808,74 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
   	$out[$idx]['level'] = 1;
 
     $idx++;
-                                
   	if(count($test_spec))
   	{
-		$pivot = $test_spec[0];
-		$the_level = 2;
-		$level = array();
-
-		foreach ($test_spec as $current)
-		{
-			if(is_null($current))
-				continue;
-			if($hash_id_descr[$current['node_type_id']] == "testcase")
-			{
-				$tc_id = $current['id'];
-				$parent_idx = $hash_id_pos[$current['parent_id']];
-				$a_tsuite_idx[$tc_id] = $parent_idx;
-				
-				$out[$parent_idx]['testcases'][$tc_id] = array('id' => $tc_id,
-				                  'name' => $current['name']);
-				$out[$parent_idx]['testcases'][$tc_id]['tcversions'] = array();
-				
-				// 20070630 - franciscom
-				$out[$parent_idx]['testcases'][$tc_id]['tcversions_active_status'] = array();
-				
-				$out[$parent_idx]['testcases'][$tc_id]['tcversions_qty'] = 0;
-				             
-				$out[$parent_idx]['testcases'][$tc_id]['linked_version_id'] = 0;
-				$out[$parent_idx]['testcases'][$tc_id]['executed'] = 'no';
-				
-				$out[$parent_idx]['write_buttons'] = $write_status;
-				$out[$parent_idx]['testcase_qty']++;
-				$out[$parent_idx]['linked_testcase_qty'] = 0;
-				
-				// useful for tc_exec_assignment.php          
-				$out[$parent_idx]['testcases'][$tc_id]['user_id'] = 0;
-				$out[$parent_idx]['testcases'][$tc_id]['feature_id'] = 0;
-				
-				$a_tcid[] = $current['id'];
-			}
-			else
-			{
-				if($pivot['parent_id'] != $current['parent_id'])
-				{
-					if ($pivot['id'] == $current['parent_id'])
-					{
-						$the_level++;
-						$level[$current['parent_id']] = $the_level;
-					}
-					else 
-						$the_level = $level[$current['parent_id']];
-				}
-	            
-	            $out[$idx]['testsuite']=array('id' => $current['id'],
-	     			                            'name' => $current['name']);
-				$out[$idx]['testcases'] = array();
-				$out[$idx]['testcase_qty'] = 0;
-				$out[$idx]['linked_testcase_qty'] = 0;
-				$out[$idx]['level'] = $the_level;
-				$out[$idx]['write_buttons'] = 'no';
-				$hash_id_pos[$current['id']] = $idx;
-				$idx++;
-				    
-				// update pivot.
-				$level[$current['parent_id']] = $the_level;
-				$pivot = $current;
-		    }
-		}
-	}
+  		$pivot = $test_spec[0];
+  		$the_level = 2;
+  		$level = array();
+  
+  		foreach ($test_spec as $current)
+  		{
+  			if(is_null($current))
+  				continue;
+  				
+  			if($hash_id_descr[$current['node_type_id']] == "testcase")
+  			{
+  				$tc_id = $current['id'];
+  				$parent_idx = $hash_id_pos[$current['parent_id']];
+  				$a_tsuite_idx[$tc_id] = $parent_idx;
+  				
+  				$out[$parent_idx]['testcases'][$tc_id] = array('id' => $tc_id,
+  				                  'name' => $current['name']);
+  				$out[$parent_idx]['testcases'][$tc_id]['tcversions'] = array();
+  				
+  				// 20070630 - franciscom
+  				$out[$parent_idx]['testcases'][$tc_id]['tcversions_active_status'] = array();
+  				
+  				$out[$parent_idx]['testcases'][$tc_id]['tcversions_qty'] = 0;
+  				             
+  				$out[$parent_idx]['testcases'][$tc_id]['linked_version_id'] = 0;
+  				$out[$parent_idx]['testcases'][$tc_id]['executed'] = 'no';
+  				
+  				$out[$parent_idx]['write_buttons'] = $write_status;
+  				$out[$parent_idx]['testcase_qty']++;
+  				$out[$parent_idx]['linked_testcase_qty'] = 0;
+  				
+  				// useful for tc_exec_assignment.php          
+  				$out[$parent_idx]['testcases'][$tc_id]['user_id'] = 0;
+  				$out[$parent_idx]['testcases'][$tc_id]['feature_id'] = 0;
+  				
+  				$a_tcid[] = $current['id'];
+  			}
+  			else
+  			{
+  				if($pivot['parent_id'] != $current['parent_id'])
+  				{
+  					if ($pivot['id'] == $current['parent_id'])
+  					{
+  						$the_level++;
+  						$level[$current['parent_id']] = $the_level;
+  					}
+  					else 
+  						$the_level = $level[$current['parent_id']];
+  				}
+  	            
+  	            $out[$idx]['testsuite']=array('id' => $current['id'],
+  	     			                            'name' => $current['name']);
+  				$out[$idx]['testcases'] = array();
+  				$out[$idx]['testcase_qty'] = 0;
+  				$out[$idx]['linked_testcase_qty'] = 0;
+  				$out[$idx]['level'] = $the_level;
+  				$out[$idx]['write_buttons'] = 'no';
+  				$hash_id_pos[$current['id']] = $idx;
+  				$idx++;
+  				    
+  				// update pivot.
+  				$level[$current['parent_id']] = $the_level;
+  				$pivot = $current;
+  		    }
+  		} // foreach
+	} // count($test_spec))
 
 	if(!is_null($map_node_tccount))
 	{
@@ -862,12 +890,9 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
 	}
 	
 	
-	// 20061030 - franciscom
-	// internal bug
+  // and now ???
 	if( !is_null($out[0]) )
 	{
-	  // 20061105 - franciscom
-	  // $result['num_tc'] = count($a_tcid);
 	  $result['has_linked_items'] = 0;
     if(count($a_tcid))
     {
@@ -895,16 +920,17 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
         if($the_tc['active'] == 1)
         {       
           // 20070630 - franciscom 
-  			$out[$parent_idx]['testcases'][$tc_id]['tcversions'][$the_tc['id']] = $the_tc['version'];
+    			$out[$parent_idx]['testcases'][$tc_id]['tcversions'][$the_tc['id']] = $the_tc['version'];
   				$out[$parent_idx]['testcases'][$tc_id]['tcversions_active_status'][$the_tc['id']] = 1;
             
-			if (isset($out[$parent_idx]['testcases'][$tc_id]['tcversions_qty']))  
-				$out[$parent_idx]['testcases'][$tc_id]['tcversions_qty']++;
-			else
-				$out[$parent_idx]['testcases'][$tc_id]['tcversions_qty'] = 1;
+		    	if (isset($out[$parent_idx]['testcases'][$tc_id]['tcversions_qty']))  
+				     $out[$parent_idx]['testcases'][$tc_id]['tcversions_qty']++;
+			    else
+				     $out[$parent_idx]['testcases'][$tc_id]['tcversions_qty'] = 1;
         }
         // --------------------------------------------------------------------------
               
+        // --------------------------------------------------------------------------
   			if(!is_null($linked_items))
   			{
   				foreach($linked_items as $the_item)
@@ -934,12 +960,45 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
   						break;
   					}
   				}
-  			}    
+  			} 
   		} //foreach($tcase_set
   	} 
   	$result['spec_view'] = $out;
   	
 	} // !is_null($out[0])
+	
+	// --------------------------------------------------------------------------------------------
+	// 20070707 - franciscom - BUGID 921
+	if( count($result['spec_view']) > 0 && $do_prune)
+	{                                                
+	  foreach($result['spec_view'] as $key => $value)
+	  {
+	    if( isset($value['linked_testcase_qty']) && $value['linked_testcase_qty']== 0)
+	    {
+	        unset($result['spec_view'][$key]);
+	    } 
+	  }
+	  
+    foreach($result['spec_view'] as $key => $value) 
+    {
+      if( !is_null($value) )
+      {
+         if( isset($value['testcases']) && count($value['testcases']) > 0 )
+         {
+           foreach($value['testcases'] as $skey => $svalue)
+           {
+             if( $svalue['linked_version_id'] == 0)
+             {
+               unset($result['spec_view'][$key]['testcases'][$skey]);
+             }
+           }
+         } 
+         
+      } // is_null($value)
+    }
+	}
+	// --------------------------------------------------------------------------------------------
+
 	return $result;
 }
 

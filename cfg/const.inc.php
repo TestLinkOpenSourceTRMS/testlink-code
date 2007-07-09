@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: const.inc.php,v $
  *
- * @version $Revision: 1.33 $
- * @modified $Date: 2007/07/06 06:19:11 $ by $Author: franciscom $
+ * @version $Revision: 1.34 $
+ * @modified $Date: 2007/07/09 08:05:50 $ by $Author: franciscom $
  * @author Martin Havlát
  *
  * SCOPE:
@@ -386,6 +386,9 @@ define('GET_CLOSED_BUILD',0);
 
 // bug_interface->buildViewBugLink()
 define('GET_BUG_SUMMARY',true);
+
+// gen_spec_view()
+define('DO_PRUNE',1);
 
 // -------------------------------------------------------------------
 ?>

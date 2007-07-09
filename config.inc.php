@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.118 $
- * @modified $Date: 2007/07/06 06:27:46 $ by $Author: franciscom $
+ * @version $Revision: 1.119 $
+ * @modified $Date: 2007/07/09 08:05:08 $ by $Author: franciscom $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink 
@@ -17,6 +17,7 @@
  *-----------------------------------------------------------------------------
  *
  * Revisions:
+ *           20070706 - franciscom - $g_exec_cfg->user_filter_default
  *           20070706 - franciscom - $g_exec_cfg->view_mode->tester
  *                                   $g_exec_cfg->exec_mode->tester
  *
@@ -586,6 +587,10 @@ $g_exec_cfg->view_mode->tester='assigned_to_me';
 // assigned_to_me_or_free: test cases assigned to logged user or not assigned
 $g_exec_cfg->exec_mode->tester='assigned_to_me';
 
+
+// logged_user -> combo will be set to logged user
+// none        -> no filter applied by default 
+$g_exec_cfg->user_filter_default='logged_user';
 
 
 //

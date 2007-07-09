@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: execSetResults.tpl,v 1.46 2007/07/06 06:28:34 franciscom Exp $
+$Id: execSetResults.tpl,v 1.47 2007/07/09 08:17:22 franciscom Exp $
 Purpose: smarty template - show tests to add results
 Revisions:
           20070519 - franciscom - 
@@ -52,8 +52,7 @@ var msg="{lang_get s='warning_delete_execution'}";
 {assign var="att_download_only" value=true}
 {assign var="enable_custom_fields" value=false}
 {assign var="draw_submit_button" value=false}
- 	
- 	
+
 <div id="main_content" class="workBack">
 
   {if $edit_test_results eq "no"}
@@ -417,26 +416,26 @@ var msg="{lang_get s='warning_delete_execution'}";
 			</td>
 		</tr>
 		</table>
-
-
-    {* 20070519 - franciscom *}
     {* ----------------------------------------------------------------------------------- *}
+    {* 20070708 - franciscom *}
+    {assign var="can_execute" value=0}
+   
     {if $rightsEdit == "yes" and $edit_test_results eq "yes" and $tc_exec.active eq 1}
-      {assign var="can_exec" value=1}
-      
+   
+      {assign var="can_execute" value=1}
       {* --------------------------------------------------------------------------------- *}
       {if $exec_mode neq 'all'}
-        {assign var="can_exec" value=0}
+        {assign var="can_execute" value=0}
     	
     	  {if $exec_mode eq 'assigned_to_me'} 
     	      {if $tc_exec.assigned_user_id eq $tester_id}
-    	        {assign var="can_exec" value=1}
+    	        {assign var="can_execute" value=1}
     	      {/if} 
     	  {/if}
   
     	  {if $exec_mode eq 'assigned_to_me_or_free'} 
     	      {if $tc_exec.assigned_user_id eq $tester_id || $tc_exec.assigned_user_id eq ''}
-    	        {assign var="can_exec" value=1}
+    	        {assign var="can_execute" value=1}
     	      {/if} 
         {/if}
       {/if}
@@ -446,7 +445,7 @@ var msg="{lang_get s='warning_delete_execution'}";
     {* ----------------------------------------------------------------------------------- *}
 
   	
-  	{if $can_exec}
+  	{if $can_execute}
   		<table border="0" width="100%">
   		<tr>
   			<td rowspan="2" align="center">

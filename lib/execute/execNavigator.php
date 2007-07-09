@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: execNavigator.php,v $
  *
- * @version $Revision: 1.36 $
- * @modified $Date: 2007/07/06 06:33:51 $ by $Author: franciscom $
+ * @version $Revision: 1.37 $
+ * @modified $Date: 2007/07/09 08:13:07 $ by $Author: franciscom $
  *
  * 20070630 - franciscom - set default value for filter_assigned_to
  * 20070607 - franciscom - BUGID 887 - problem with builds
@@ -33,11 +33,26 @@ $user_id = $_SESSION['userID'];
 $tplan_id   = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0;
 $tplan_name = isset($_SESSION['testPlanName']) ? $_SESSION['testPlanName'] : 'null';
 
- 
 $treeColored = (isset($_POST['colored']) && ($_POST['colored'] == 'result')) ? 'selected="selected"' : null;
 
-// 20070630 - franciscom - defaults to user logged. 
-$filter_assigned_to = isset($_POST['filter_assigned_to']) ? intval($_POST['filter_assigned_to']) : $user_id;             
+$exec_cfg = config_get('exec_cfg');
+
+switch($exec_cfg->user_filter_default)
+{
+   case 'logged_user':
+   $user_filter_default=$user_id;
+   break;  
+
+   case 'none':
+   $user_filter_default=0;
+   break;  
+   
+   default:
+   $user_filter_default=0;
+   break;  
+}
+
+$filter_assigned_to = isset($_POST['filter_assigned_to']) ? intval($_POST['filter_assigned_to']) : $user_filter_default;             
 
 $tc_id = isset($_POST['tcID']) ? intval($_POST['tcID']) : null;
 $keyword_id = isset($_POST['keyword_id']) ? $_POST['keyword_id'] : 0;             
@@ -50,7 +65,6 @@ $exec_view_mode='all';
 
 if( $all_roles[$effective_role] == 'tester' )
 {
-  $exec_cfg = config_get('exec_cfg');
   $exec_view_mode=$exec_cfg->view_mode->tester;
 }
 

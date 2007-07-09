@@ -4,9 +4,10 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.61 $
- * @modified $Date: 2007/07/06 06:33:51 $ $Author: franciscom $
+ * @version $Revision: 1.62 $
+ * @modified $Date: 2007/07/09 08:13:07 $ $Author: franciscom $
  *
+ * 20070707 - franciscom - BUGID 921
  * 20070519 - franciscom - BUGID 856
  * 20070306 - franciscom - BUGID 705
  * 20070222 - franciscom - BUGID 647
@@ -19,6 +20,7 @@ require_once("builds.inc.php");
 require_once("attachments.inc.php");
 
 testlinkInitPage($db);
+$tcversion_id=null;
 
 $smarty = new TLSmarty();
 
@@ -160,18 +162,38 @@ if(!is_null($linked_tcversions))
 
       // 20070405 - BUGID 766
       $tc_info=$tree_mgr->get_node_hierachy_info($tcase_id);
-		    $tSuiteAttachments[$tc_info['parent_id']] = getAttachmentInfos($db,$tc_info['parent_id'],
-		                                                                   'nodes_hierarchy',true,1);
+	    $tSuiteAttachments[$tc_info['parent_id']] = getAttachmentInfos($db,$tc_info['parent_id'],
+		                                                                 'nodes_hierarchy',true,1);
 
     }
     else
     {
+      // ---------------------------------------------------------------------------------
+      // 20070708 - franciscom
+      $tsuite_mgr=new testsuite($db); 
+		  $tsuite_data = $tsuite_mgr->get_by_id($id);
+		  $out = gen_spec_view($db,'testplan',$tplan_id,$id,$tsuite_data['name'],
+                           $linked_tcversions,
+                           null,
+                           $keyword_id,FILTER_BY_TC_OFF,WRITE_BUTTON_ONLY_IF_LINKED,DO_PRUNE);
+      $tcase_id = array();
+    	$tcversion_id = array();
+      foreach($out['spec_view'] as $key => $value)
+      {
+         if( count($value['testcases']) > 0 )
+         {
+           foreach($value['testcases'] as $xkey => $xvalue)
+           {
+             $tcase_id[]=$xkey;
+             $tcversion_id[]=$xvalue['linked_version_id'];
+           }  
+         }
+      }
+      // ---------------------------------------------------------------------------------
+
 		  // Get the path for every test case, grouping test cases that
 		  // have same parent.
-    	$tcase_id = array();
-    	$tcversion_id = array();
 		  $idx = 0;
-		  
     	foreach($linked_tcversions as $item)
     	{
     		$path_f = $tree_mgr->get_path($item['tc_id'],null,'full');
@@ -181,8 +203,6 @@ if(!is_null($linked_tcversions))
     			{
 					 // Can be added because is present in the branch the user wants to view
 					 // ID of branch starting node is in $id
-					 $tcase_id[] = $item['tc_id'];
-					 $tcversion_id[] = $item['tcversion_id'];
 					 $tcAttachments[$item['tc_id']] = getAttachmentInfos($db,$item['tc_id'],'nodes_hierarchy',true,1);
 
 		       // --------------------------------------------------------------------------------------
@@ -289,6 +309,20 @@ if( !is_null($map_last_exec) )
     }  
   }
 }
+
+// --------------------------------------------------------------------
+// Reorder executions to mantaing correct visualization order.
+$dummy=array();
+if( is_array($tcversion_id) )
+{
+  foreach($tcversion_id as $key => $value)
+  {
+     $dummy[$key]=$map_last_exec[$value];    
+  }
+  $map_last_exec=null;
+  $map_last_exec=$dummy;
+}
+// --------------------------------------------------------------------
 
 
 $smarty->assign('other_exec_cfexec',$cfexec_val_smarty);

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: requirements.inc.php,v $
- * @version $Revision: 1.56 $
- * @modified $Date: 2007/07/06 06:20:25 $ by $Author: franciscom $
+ * @version $Revision: 1.57 $
+ * @modified $Date: 2007/07/10 11:08:10 $ by $Author: franciscom $
  *
  * @author Martin Havlat <havlat@users.sourceforge.net>
  * 
@@ -13,6 +13,7 @@
  *
  * Revisions:
  *
+ * 20070710 - franciscom - BUGID 939
  * 20070705 - franciscom - improved management of arrReqStatus
  * 20070617 - franciscom - removed include of deprecated file
  * 20070310 - franciscom - changed return type createRequirement()
@@ -754,9 +755,10 @@ function createTcFromRequirement(&$db,&$tproject,$mixIdReq, $testproject_id, $sr
 	// find container with the following characteristics:
 	// 1. testproject_id is its father
 	// 2. has the searched name
-	          
+	
+	// 20070710 - franciscom - BUGID 939          
 	$sql="SELECT id FROM nodes_hierarchy NH " .
-	     " WHERE name='" . $auto_testsuite_name . "' " .
+	     " WHERE name='" . $db->prepare_string($auto_testsuite_name) . "' " .
 	     " AND parent_id=" . $testproject_id . " " .
 	     " AND node_type_id=" . $node_descr_type['testsuite'];
 	             

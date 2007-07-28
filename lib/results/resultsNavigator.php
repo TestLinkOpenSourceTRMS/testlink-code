@@ -2,7 +2,7 @@
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
- * @version $Id: resultsNavigator.php,v 1.30 2007/06/28 06:31:31 kevinlevy Exp $ 
+ * @version $Id: resultsNavigator.php,v 1.31 2007/07/28 23:22:31 kevinlevy Exp $ 
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
  * This page list View of Test Results and Metrics.
@@ -30,7 +30,9 @@ $arrData = array(
 	array('name' => lang_get('link_report_not_run'), 
 	                'href' => "resultsByStatus.php?type={$tc_status_map['not_run']}&amp;report_type="),	
 	array('name' => lang_get('link_report_test'), 'href' => 'resultsTC.php?report_type='),
-	array('name' => lang_get('link_charts'), 'href' => 'charts.php?report_type=')
+	array('name' => lang_get('link_charts'), 'href' => 'charts.php?report_type='),
+	array('name' => lang_get('link_results_import'), 'href' => 'resultsImport.php?report_type='),
+	array('name' => lang_get('time_charts'), 'href' => 'timeCharts.php?report_type=')
 );
 
 // $arrReportTypes = array('normal', 'MS Excel', 'HTML email', 'text email', 'PDF');

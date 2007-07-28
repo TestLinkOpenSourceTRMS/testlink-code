@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8 
- * @modified $Date: 2007/06/27 04:10:08 $ by $Author: kevinlevy $
+ * @modified $Date: 2007/07/28 23:32:23 $ by $Author: kevinlevy $
  *
  *-------------------------------------------------------------------------
  * Revisions:
@@ -164,7 +164,8 @@ class results
 	                        $builds_to_query = -1, $lastResult = 'a', 
 	                        $keywordId = 0, $owner = null, 
 							$startTime = "0000-00-00 00:00:00", $endTime = "9999-01-01 00:00:00",
-							$executor = null, $search_notes_string = null, $linkExecutionBuild = null)
+							$executor = null, $search_notes_string = null, $linkExecutionBuild = null,
+							&$suiteStructure = null, &$flatArray = null, &$linked_tcversions = null)
 	{
 		$this->db = $db;	
 	    $this->tp = $tp;  
@@ -173,10 +174,17 @@ class results
         $this->tprojectID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
         $this->testPlanID = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0 ;
 		$this->tplanName  = isset($_SESSION['testPlanName']) ? $_SESSION['testPlanName'] : null;
-
+        $this->suiteStructure = $suiteStructure;
+		$this->flatArray = $flatArray;
+		$this->linked_tcversions = $linked_tcversions;
+        //  print "results class constructor <BR>";
 		// build suiteStructure and flatArray
-		$this->suiteStructure = $this->generateExecTree($keywordId, $owner);
-	
+		if (($this->suiteStructure == null) && ($this->flatArray == null) && ($this->linked_tcversions == null)){
+	      //  print "suite structure is being created <BR>";
+		    $this->suiteStructure = $this->generateExecTree($keywordId, $owner);
+		}
+		
+	    //print "builds to query = $builds_to_query <BR>";
 		// KL - if no builds are specified, no need to execute the following block of code
 		if ($builds_to_query != -1) {
 			// retrieve results from executions table
@@ -187,7 +195,6 @@ class results
 			// and then programmatically figure out the last result
 			// if you just query the executions table for those rows with status = $this->map_tc_status['passed']
 			// that is not the way to determine last result
-		
 			$this->executionsMap = $this->buildExecutionsMap($builds_to_query, 'a', $keywordId, $owner, $startTime, $endTime, $executor, $search_notes_string, $linkExecutionBuild);    
 		
 			// get keyword id -> keyword name pairs used in this test plan
@@ -437,6 +444,10 @@ class results
 	*/
 	public function getSuiteStructure(){
 		return $this->suiteStructure;
+	}
+	
+	public function getLinkedTCVersions(){
+	    return $this->linked_tcversions;
 	}
 	
 	/**
@@ -930,6 +941,8 @@ class results
 	* KL took this code from menuTree.inc.php.
 	* Builds both $this->flatArray and $this->suiteStructure
 	* 
+	* initializes linked_tcversions object
+	*
 	* Builds a multi-dimentional array which represents the tree structure.
 	* Specifically an array is returned in the following pattern 
 	* every 3rd index is null if suite does not contain other suites

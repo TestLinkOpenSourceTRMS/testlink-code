@@ -21,11 +21,31 @@ Purpose: smarty template - manage import of test cases and test suites
 		{html_options options=$importTypes}
 	</select>
 	</p>
+	
+	<p>
+		XML File Must be in the following format: <BR>
+		&#60;results&#62; <BR>
+			&#60;testcase id="100"&#62; <BR>
+				&#60;result&#62;p|f|b&#60;/result&#62; <BR>
+				&#60;notes&#62;some notes about your execution &#60;/notes&#62; <BR>
+			&#60;/testcase&#62; <BR>
+						&#60;testcase id="200"&#62; <BR>
+				&#60;result&#62;p|f|b&#60;/result&#62; <BR>
+				&#60;notes&#62;some notes about your execution &#60;/notes&#62; <BR>
+			&#60;/testcase&#62; <BR>
+						&#60;testcase id="150"&#62; <BR>
+				&#60;result&#62;p|f|b&#60;/result&#62; <BR>
+				&#60;notes&#62;some notes about your execution &#60;/notes&#62; <BR>
+			&#60;/testcase&#62; <BR>
+		&#60;/results&#62; <BR>
+	</p>
+	<!--
 	<p>	{lang_get s='required_cvs_format'}<br />
 		{foreach key=k item=i from=$tcFormatStrings}
 			{$k} : {$i}<br />
 		{/foreach}
 	</p>
+	-->
 
 	<h2>{lang_get s='title_choose_local_file'}</h2>
 	<p>{lang_get s='local_file'} <input type="file" name="uploadedFile" 

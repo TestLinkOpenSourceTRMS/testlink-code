@@ -23,7 +23,7 @@ Purpose: smarty template - manage import of test cases and test suites
 	</p>
 	
 	<p>
-		XML File Must be in the following format: <BR>
+		{lang_get s='results_import_format'}<BR>
 		&#60;results&#62; <BR>
 			&#60;testcase id="100"&#62; <BR>
 				&#60;result&#62;p&#60;/result&#62; <BR>

@@ -136,14 +136,30 @@ function saveImportedResultData(&$db,$resultData,&$tplan_id,$container_id,$userI
 		$tc = $resultData[$i];
 		$id = $tc['id'];
 		$result = $tc['result'];
-		
-		// TO-DO test result must be p,f, or n
-		
+		$result_is_acceptable = false;
+
+		if ($result == 'p') {
+			$result_is_acceptable = true;
+		}
+		else if ($result == 'b') {
+			$result_is_acceptable = true;		
+		}
+		else if ($result == 'f') {
+			$result_is_acceptable = true;
+		}
+				
 		$notes = $tc['notes'];
 		$message = null;
 		$linked_cases = $tplan_mgr->get_linked_tcversions($tplan_id, $id);
 		$info_on_case = $linked_cases[$id];
-		if ($linked_cases) {
+		
+		if (!$linked_cases){
+			$message = "test case $id not found in test plan - no data inserted for this case";
+		}
+		else if (!$result_is_acceptable) {
+			$message = "test case $id had an invalid result - no data inserted for this case";
+		} 
+		else {
 			$tcversion_id = $info_on_case['tcversion_id'];
 			$message = "test case $id is in the test plan, tcversion_id = $tcversion_id ";
            $notes = $db->prepare_string(trim($notes));		
@@ -153,10 +169,7 @@ function saveImportedResultData(&$db,$resultData,&$tplan_id,$container_id,$userI
 	    $db->exec_query($sql); 
 
 		}
-		else {
-			$message = "test case $id not found in test plan - no data inserted";
-		}
-	
+		
 		$resultMap[] = array($id, $message);
 	}
 	return $resultMap;

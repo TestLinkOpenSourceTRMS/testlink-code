@@ -26,16 +26,16 @@ Purpose: smarty template - manage import of test cases and test suites
 		XML File Must be in the following format: <BR>
 		&#60;results&#62; <BR>
 			&#60;testcase id="100"&#62; <BR>
-				&#60;result&#62;p|f|b&#60;/result&#62; <BR>
-				&#60;notes&#62;some notes about your execution &#60;/notes&#62; <BR>
+				&#60;result&#62;p&#60;/result&#62; <BR>
+				&#60;notes&#62;functionality works great &#60;/notes&#62; <BR>
 			&#60;/testcase&#62; <BR>
 						&#60;testcase id="200"&#62; <BR>
-				&#60;result&#62;p|f|b&#60;/result&#62; <BR>
-				&#60;notes&#62;some notes about your execution &#60;/notes&#62; <BR>
+				&#60;result&#62;f&#60;/result&#62; <BR>
+				&#60;notes&#62;this case failed due to error &#60;/notes&#62; <BR>
 			&#60;/testcase&#62; <BR>
 						&#60;testcase id="150"&#62; <BR>
-				&#60;result&#62;p|f|b&#60;/result&#62; <BR>
-				&#60;notes&#62;some notes about your execution &#60;/notes&#62; <BR>
+				&#60;result&#62;b&#60;/result&#62; <BR>
+				&#60;notes&#62;this test case is blocked&#60;/notes&#62; <BR>
 			&#60;/testcase&#62; <BR>
 		&#60;/results&#62; <BR>
 	</p>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<requirements>	
+  <requirement>
+   <docid><![CDATA[ENG-0001]]></docid>
+   <title><![CDATA[Terrestrial Propulsor]]></title>
+   <description><![CDATA[]]></description>
+  </requirement>
+	<requirement>
+	  <docid><![CDATA[ENG-0002]]></docid>
+	  <title><![CDATA[Main Deflector]]></title>
+	  <description><![CDATA[<p>Main deflector bla, bla, bla.</p>]]></description>
+	</requirement>
+</requirements>

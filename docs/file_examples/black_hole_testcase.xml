@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testcases>	
+  <testcase name="Black hole test">
+    <summary>
+      <![CDATA[<p>This procedure must be done once a week, with this safety device disabled:</p>
+      <ol>
+      <li>X45HH</li>
+      <li>YY89-000-JI</li>
+      </ol>]]>
+    </summary>
+    <steps>
+      <![CDATA[
+      <p>Preset bias to 0</p>
+      <p>Enable <strong>long range</strong> communications control</p>
+      <p>Simulate black hole interference</p>]]>
+    </steps>
+    <expectedresults>
+      <![CDATA[
+<table width="200" cellspacing="1" cellpadding="1" border="1">
+    <caption>Main Results</caption>
+    <tbody>
+        <tr>
+            <td>Spin value</td>
+            <td>9.9</td>
+        </tr>
+        <tr>
+            <td>Opposite Angle</td>
+            <td>18 rad</td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+        </tr>
+    </tbody>
+</table>
+]]></expectedresults>
+  <keywords>	
+    <keyword name="Moon rocks">
+      <notes><![CDATA[Moon rocks keyword notes]]></notes>
+    </keyword>
+  </keywords>
+  </testcase>
+</testcases>

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.119 $
- * @modified $Date: 2007/07/09 08:05:08 $ by $Author: franciscom $
+ * @version $Revision: 1.120 $
+ * @modified $Date: 2007/08/09 05:43:45 $ by $Author: franciscom $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink 
@@ -263,9 +263,12 @@ $g_gui->show_icon_edit=false;
  * TREE MENU 
  *	Definition of tree menu component: dTree, jTree or phplayersmenu.
  *	jTree has the best performance but others have a better functionality  
- *	@varstatic string TL_TREE_KIND = [LAYERSMENU, DTREE, JTREE]
+ *	[LAYERSMENU, DTREE, JTREE]
  */
-define('TL_TREE_KIND', 'LAYERSMENU');
+
+// can be redefined using custom_config.inc.php
+$g_tree_type='LAYERSMENU';
+ 
 
 // When creating an node in the tree, you can choose if:
 //
@@ -612,6 +615,8 @@ if ( file_exists( $custom_config_file ) )
 }
 
 
+// 20070808
+define('TL_TREE_KIND', $g_tree_type);
 
 // use when componing an title using several strings
 define('TITLE_SEP',$g_title_sep);

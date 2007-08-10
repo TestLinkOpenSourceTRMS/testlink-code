@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: login.tpl,v 1.12 2007/06/27 05:53:43 franciscom Exp $
+$Id: login.tpl,v 1.13 2007/08/10 06:57:45 franciscom Exp $
 Purpose: smarty template - login page 
 
 20070401 - franciscom - new rounding engine
@@ -48,8 +48,11 @@ window.onload=function(){
 	{if $g_user_self_signup eq true}
 	  <a href="firstLogin.php">{lang_get s='new_user_q'}</a><br />
 	{/if}
+	
+	{if $login_disabled eq 0}		
 	<a href="lostPassword.php">{lang_get s='lost_password_q'}</a>
 	</p>
+	{/if}
 
 	
 	{include file="inc_copyrightnotice.tpl"}

@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: login.tpl,v 1.13 2007/08/10 06:57:45 franciscom Exp $
+$Id: login.tpl,v 1.14 2007/08/10 16:41:50 franciscom Exp $
 Purpose: smarty template - login page 
 
 20070401 - franciscom - new rounding engine
@@ -49,7 +49,8 @@ window.onload=function(){
 	  <a href="firstLogin.php">{lang_get s='new_user_q'}</a><br />
 	{/if}
 	
-	{if $login_disabled eq 0}		
+	{* the configured authentication method don't allow users to reset his/her password *}		
+	{if $login_disabled eq 1}
 	<a href="lostPassword.php">{lang_get s='lost_password_q'}</a>
 	</p>
 	{/if}

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.54 $
- * @modified $Date: 2007/07/06 06:21:49 $
+ * @version $Revision: 1.55 $
+ * @modified $Date: 2007/08/18 14:13:00 $ $Author: franciscom $
  *
  * @author Andreas Morsing
  * @author Fabian Woelk
@@ -33,6 +33,16 @@ $TLS_testsuite_created = "Testsuite erstellt";
 $TLS_requirement = "Anforderung";
 $TLS_assigned = "zugewiesen";
 $TLS_unassigned = "nicht zugewiesen";
+
+$TLS_test_status_all = "Alle";
+$TLS_test_status_any = "Alle";
+$TLS_test_status_not_run = "nicht getestet";
+$TLS_test_status_blocked = "Blockiert";
+$TLS_test_status_failed = "Fehlgeschlagen";
+$TLS_test_status_passed = "OK";
+$TLS_test_status_not_available="Not Available";
+$TLS_test_status_unknown="Unknown";
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////7
 // firstLogin.php
@@ -256,7 +266,7 @@ $TLS_filter_owner = "Filter: Besitzer";
 $TLS_filter_result = "Filter: Resultat";
 $TLS_filter_tcID = "Filter: Testfall ID";
 $TLS_keyword = "Stichwort";
-$TLS_test_status_all_status = "Alle";
+$TLS_test_status_all_status = $TLS_test_status_all;
 
 
 // gui/templates/mainPage.tpl
@@ -563,6 +573,7 @@ $TLS_th_rolename = "Rollenname";
 $TLS_th_tp_rights = "Testplan Rechte";
 $TLS_th_user_rights = "Benutzerrechte";
 $TLS_title_user_mgmt = "Benutzerverwaltung";
+$TLS_warning_empty_role_name="Please give a name to Role";
 $TLS_warning_modify_role = "Wollen Sie diese Rolle wirklich modifizieren?";
 
 
@@ -718,7 +729,6 @@ $TLS_test_exec_result = "Resultat";
 $TLS_test_exec_steps = "Schritte";
 $TLS_test_exec_summary = "Zusammenfassung";
 $TLS_test_plan_notes = "Testplan Notizen";
-$TLS_test_status_not_run = "nicht getestet";
 $TLS_th_test_case_id = "ID ";
 $TLS_th_testsuite = "Testsuite";
 $TLS_title_t_r_on_build = "Testresultate des Build";
@@ -950,9 +960,6 @@ $TLS_title_req_export_to = "Anforderungen exportieren";
 
 
 // gui/templates/resultsAllBuilds.tpl
-$TLS_test_status_blocked = "Blockiert";
-$TLS_test_status_failed = "Fehlgeschlagen";
-$TLS_test_status_passed = "OK";
 $TLS_th_build = "Build";
 $TLS_th_tc_total = "Anzahl Testfälle";
 

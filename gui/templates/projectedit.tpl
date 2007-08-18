@@ -1,9 +1,13 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: projectedit.tpl,v 1.13 2007/05/15 17:25:06 franciscom Exp $
+$Id: projectedit.tpl,v 1.14 2007/08/18 14:08:26 franciscom Exp $
 Purpose: smarty template - Edit existing product 
 
 rev:
+    20070725 - franciscom
+    refactoring: if test project qty == 0 -> do not display the edit/delete tab
+                 remove query string from url, to avoid redirect to home page.
+     
     20070515 - franciscom
     BUGID 0000854: Test project cannot be deleted if name contains a ' (single quote)
     added escape type to escape modifier on onclick javascript event
@@ -50,7 +54,9 @@ function validateForm(f)
 	<span class="selected">{lang_get s='btn_edit_del'}</span>
 	{else}
 	<span class="selected">{lang_get s='btn_create'}</span> 
-	<span class="unselected"><a href="lib/project/projectedit.php">{lang_get s='btn_edit_del'}</a></span>
+	   {if $enable_edit_feature neq 0}
+	     <span class="unselected"><a href="lib/project/projectedit.php">{lang_get s='btn_edit_del'}</a></span> 
+	   {/if}  
 	{/if}
 
 </div>
@@ -159,11 +165,15 @@ function validateForm(f)
 	{* this renews menu bar after change *}
 	{if $action == 'delete'}
 	<script type="text/javascript">
+	alert('A1' + top.location);
 	top.location = top.location;
 	</script>
 	{else}
 	<script type="text/javascript">
-	parent.titlebar.location.reload();
+  // remove query string to avoid reload of home page,
+  // instead of reload only navbar
+  var href_pieces=parent.titlebar.location.href.split('?');
+	parent.titlebar.location=href_pieces[0];
 	</script>
 	{/if}
 {/if}

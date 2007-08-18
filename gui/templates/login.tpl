@@ -1,8 +1,9 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: login.tpl,v 1.14 2007/08/10 16:41:50 franciscom Exp $
+$Id: login.tpl,v 1.15 2007/08/18 14:08:26 franciscom Exp $
 Purpose: smarty template - login page 
 
+20070818 - franciscom - BUGID xxxx
 20070401 - franciscom - new rounding engine
 20070301 - franciscom - BUGID 695 (fawel contribute)
 *}
@@ -49,8 +50,9 @@ window.onload=function(){
 	  <a href="firstLogin.php">{lang_get s='new_user_q'}</a><br />
 	{/if}
 	
-	{* the configured authentication method don't allow users to reset his/her password *}		
-	{if $login_disabled eq 1}
+	{* BUGID xxxx
+	   the configured authentication method don't allow users to reset his/her password *}		
+	{if $external_password_mgmt eq 0}
 	<a href="lostPassword.php">{lang_get s='lost_password_q'}</a>
 	</p>
 	{/if}

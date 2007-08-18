@@ -1,10 +1,13 @@
 --  TestLink Open Source Project - http://testlink.sourceforge.net/
---  $Id: testlink_create_default_data.sql,v 1.10 2007/05/05 18:53:05 schlundus Exp $
+--  $Id: testlink_create_default_data.sql,v 1.11 2007/08/18 14:09:27 franciscom Exp $
 --  SQL script - create default data (rights & admin account)
 --
---  20070126 - franciscom - add new rights to admin role
---  20070116 - franciscom - added missing assignment values
---  20070113 - franciscom - new node_types
+--  Database Type: Postgres 
+--
+--  20070724 - franciscom - BUGID 950 
+--             removed right with id=19
+--             renamed right with id=5 
+--             updated db version- due to changes in milestone table
 --
 --  --------------------------------------------------------
 
@@ -40,7 +43,7 @@ INSERT INTO rights (id,description) VALUES (1 ,'testplan_execute'      );
 INSERT INTO rights (id,description) VALUES (2 ,'testplan_create_build' );
 INSERT INTO rights (id,description) VALUES (3 ,'testplan_metrics'      );
 INSERT INTO rights (id,description) VALUES (4 ,'testplan_planning'     );
-INSERT INTO rights (id,description) VALUES (5 ,'testplan_assign_rights');
+INSERT INTO rights (id,description) VALUES (5 ,'testplan_user_role_assignment'  );
 INSERT INTO rights (id,description) VALUES (6 ,'mgt_view_tc'           );
 INSERT INTO rights (id,description) VALUES (7 ,'mgt_modify_tc'         );
 INSERT INTO rights (id,description) VALUES (8 ,'mgt_view_key'          );
@@ -54,7 +57,6 @@ INSERT INTO rights (id,description) VALUES (15,'user_role_assignment'  );
 INSERT INTO rights (id,description) VALUES (16,'mgt_testplan_create');
 INSERT INTO rights (id,description) VALUES (17,'cfield_view');
 INSERT INTO rights (id,description) VALUES (18,'cfield_management');
-INSERT INTO rights (id,description) VALUES (19,'testplan_user_role_assignment'  );
 
 
 --  Rights for Administrator (admin role)
@@ -137,4 +139,4 @@ INSERT INTO "assignment_types" ("id","fk_table","description") VALUES (2,'tcvers
 --
 -- Dumping data for table db_version
 --
-INSERT INTO "db_version" ("version","upgrade_ts") VALUES ('1.7.0 RC 2','2007-02-04 23:00:00');
+INSERT INTO "db_version" ("version","upgrade_ts") VALUES ('1.7.0 RC 3','2007-07-01 23:00:00');

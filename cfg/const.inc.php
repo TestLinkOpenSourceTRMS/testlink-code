@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: const.inc.php,v $
  *
- * @version $Revision: 1.34 $
- * @modified $Date: 2007/07/09 08:05:50 $ by $Author: franciscom $
+ * @version $Revision: 1.35 $
+ * @modified $Date: 2007/08/18 14:08:02 $ by $Author: franciscom $
  * @author Martin Havlát
  *
  * SCOPE:
@@ -189,8 +189,30 @@ $att_model_m2->show_upload_column = true;
 // -------------------------------------------------------------------
 /** [MISC] */
 
-// These are the possible Test Case statuses
-// See also $g_tc_status_for_ui
+/** [Test Case Status] */
+
+// $g_tc_status
+// $g_tc_status_css
+// $g_tc_status_verbose_labels
+// $g_tc_status_for_ui
+//
+//
+// These are the possible Test Case statuses.
+//
+// Localisation Note:
+// IMPORTANT:
+//           Do not do localisation here, i.e do not change "passed"
+//           with the corresponding word in you national language.
+//           These strings ARE NOT USED at User interface level.
+//
+//           Labels showed to users will be created using lang_get()
+//           function, getting key from:
+//                                      $g_tc_status_verbose_labels
+//           example:
+//                   lang_get($g_tc_status_verbose_labels["passed"]);
+//
+//           If you add new statuses, please use custom_strings.txt to add your
+//           localized strings
 //
 $g_tc_status = array (
 	"failed"        => 'f',
@@ -205,6 +227,22 @@ $g_tc_status = array (
 // Please if you add an status you need to add a corresponding CSS Class
 // in the CSS files (see the gui directory)
 $g_tc_status_css = array_flip($g_tc_status);
+
+
+// Used to get localized string to show to users
+// key: status
+// value: id to use with lang_get() to get the string, from strings.txt
+//        or custom_strings.txt
+//
+$g_tc_status_verbose_labels = array(
+  "all"      => "test_status_all_status",
+	"not_run"  => "test_status_not_run",
+	"passed"   => "test_status_passed",
+	"failed"   => "test_status_failed",
+	"blocked"  => "test_status_blocked",
+	"not_available" => "test_status_not_available",
+	"unknown"       => "test_status_unknown"
+);
 
 
 // Used to generate radio and buttons at user interface level.
@@ -230,25 +268,7 @@ $g_tc_status_for_ui = array(
 // radio button selected by default
 $g_tc_status_for_ui_default="blocked";
 
-
-
-/*
-$g_tc_status_for_ui = array(
-	"not_run" => "test_status_not_run",
-	"not_available" => "test_status_not_available",
-	"passed"  => "test_status_passed",
-	"failed"  => "test_status_failed",
-	"blocked" => "test_status_blocked"
-);
-*/
-
-$g_tc_status_verbose_labels = array(
-  "all"      => "test_status_all_status",
-	"not_run"  => "test_status_not_run",
-	"passed"   => "test_status_passed",
-	"failed"   => "test_status_failed",
-	"blocked"  => "test_status_blocked"
-);
+// -------------------------------------------------------------------------------
 
 
 

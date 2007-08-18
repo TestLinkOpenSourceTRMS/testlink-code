@@ -5,13 +5,14 @@
  *
  * Filename $RCSfile: login.php,v $
  *
- * @version $Revision: 1.23 $
- * @modified $Date: 2007/06/27 05:53:43 $ by $Author: franciscom $
+ * @version $Revision: 1.24 $
+ * @modified $Date: 2007/08/18 14:08:03 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Login management
  *
  * rev :
+ *       20070818 - franciscom - BUGID xxxx (di LDAP) 
  *       20070301 - franciscom - BUGID 695 (fawel contribute)
  *
  **/
@@ -87,5 +88,7 @@ $smarty->assign('securityNotes',$securityNotes);
 $smarty->assign('note',$message);
 $smarty->assign('css', TL_BASE_HREF . TL_LOGIN_CSS);
 $smarty->assign('login_disabled', $login_disabled);
+$smarty->assign('external_password_mgmt', $ldap_password_mgmt); // BUGID xxxx
+
 $smarty->display('login.tpl');
 ?>

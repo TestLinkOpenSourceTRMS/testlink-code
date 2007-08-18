@@ -1,7 +1,7 @@
 <?php
 /*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: migrate_16_to_17.php,v 1.18 2007/05/16 09:51:21 franciscom Exp $ 
+$Id: migrate_16_to_17.php,v 1.19 2007/08/18 14:08:58 franciscom Exp $ 
 
 20070515 - franciscom - 
 improved controls on source db version
@@ -1309,6 +1309,9 @@ function migrate_prules(&$source_db,&$target_db,&$prules,&$old_new)
   
   returns: 
 
+  rev :
+       20070818 - franciscom
+       date -> target_date
 */
 function migrate_milestones(&$source_db,&$target_db,&$ms,&$old_new)
 {
@@ -1318,7 +1321,7 @@ function migrate_milestones(&$source_db,&$target_db,&$ms,&$old_new)
   {
     $tplan_id=$old_new['tplan'][intval($item_id)];
     $sql="INSERT INTO milestones " .
-         "(testplan_id,date,A,B,C,name) " .
+         "(testplan_id,target_date,A,B,C,name) " .
          "VALUES({$tplan_id},'" . $idata['date'] . "'," .
          intval($idata['A']) . "," . 
          intval($idata['B']) . "," .

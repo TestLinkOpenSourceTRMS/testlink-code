@@ -5,13 +5,14 @@
  *
  * Filename $RCSfile: configCheck.php,v ${file_name} $
  *
- * @version $Revision: 1.13 $
- * @modified $Date: 2007/06/27 05:53:43 ${date} ${time} $ by $Author: franciscom $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2007/08/18 14:09:46 ${date} ${time} $ by $Author: franciscom $
  *
  * @author Martin Havlat
  * 
  * Check configuration functions
  *
+ * 20070725 - franciscom - check_schema_version() - added control for db schema 1.7.0 RC 3
  * 20070626 - franciscom - getSecurityNotes() - added LDAP checks
  * 20060429 - franciscom - added checkForRepositoryDir()
  * 20060103 - scs - ADOdb changes
@@ -314,7 +315,7 @@ function checkForRepositoryDir($the_dir)
 */
 function check_schema_version($db)
 {
-	$last_version = '1.7.0 RC 2';
+	$last_version = '1.7.0 RC 3';
 	
 	$sql = "SELECT * FROM db_version ORDER BY upgrade_ts DESC";
 	$res = $db->exec_query($sql,1);  
@@ -331,6 +332,7 @@ function check_schema_version($db)
 		case '1.7.0 Beta 3':
 		case '1.7.0 Beta 4':
 		case '1.7.0 Beta 5':
+		case '1.7.0 RC 2':
 			$msg = "You need to upgrade your Testlink Database to {$last_version} - <br>" .
 				'<a href="SCHEMA_CHANGES" style="color: white"> click here to see the Schema changes </a><br>' .
 				'<a href="./install/index.php" style="color: white">click here access install and upgrade page </a><br>';

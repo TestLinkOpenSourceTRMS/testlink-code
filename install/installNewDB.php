@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: installNewDB.php,v 1.29 2007/04/15 10:55:57 franciscom Exp $ */
+/* $Id: installNewDB.php,v 1.30 2007/08/18 14:08:03 franciscom Exp $ */
 /*
 Parts of this file has been taken from:
 Etomite Content Management System
@@ -8,6 +8,7 @@ Copyright 2003, 2004 Alexander Andrew Butter
 */
 
 /*
+20070725 - franciscom - added 1.7.0 RC 3
 20070414 - franciscom - added 1.7.0 RC 2
 20070216 - franciscom - added dropping of all tables if DB exists
 20070204 - franciscom - added 1.7.0 Beta 5
@@ -320,21 +321,35 @@ if ( $inst_type == "upgrade")
       	$a_sql_upd_dir[] = "sql/alter_tables/1.7/{$db_type}/beta_4/";
       	$a_sql_upd_dir[] = "sql/alter_tables/1.7/{$db_type}/beta_5/";
       	$a_sql_upd_dir[] = "sql/alter_tables/1.7/{$db_type}/rc_2/";
+      	$a_sql_upd_dir[] = "sql/alter_tables/1.7/{$db_type}/rc_3/";
       	break;
 
       	case '1.7.0 Beta 3':
       	$a_sql_upd_dir[] = "sql/alter_tables/1.7/{$db_type}/beta_4/";
       	$a_sql_upd_dir[] = "sql/alter_tables/1.7/{$db_type}/beta_5/";
       	$a_sql_upd_dir[] = "sql/alter_tables/1.7/{$db_type}/rc_2/";
+      	$a_sql_upd_dir[] = "sql/alter_tables/1.7/{$db_type}/rc_3/";
       	break;
       	
       	case '1.7.0 Beta 4':
       	$a_sql_upd_dir[] = "sql/alter_tables/1.7/{$db_type}/beta_5/";
       	$a_sql_upd_dir[] = "sql/alter_tables/1.7/{$db_type}/rc_2/";
+      	$a_sql_upd_dir[] = "sql/alter_tables/1.7/{$db_type}/rc_3/";
       	break;
 
       	case '1.7.0 Beta 5':
       	$a_sql_upd_dir[] = "sql/alter_tables/1.7/{$db_type}/rc_2/";
+      	$a_sql_upd_dir[] = "sql/alter_tables/1.7/{$db_type}/rc_3/";
+      	break;
+      	
+      	case '1.7.0 RC 2':
+      	$a_sql_upd_dir[] = "sql/alter_tables/1.7/{$db_type}/rc_3/";
+      	break;
+      	
+      	case '1.7.0 RC 3':
+      	echo "<br>Your DB Schema is the last available, then you don't need to do any upgrade.";
+        echo "<br>bye!";
+        close_html_and_exit();          
       	break;
       	
         default:

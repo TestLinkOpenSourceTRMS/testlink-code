@@ -1,17 +1,39 @@
-{* smarty template - view all keywords of product; ver. 1.0 *}
-{* $Id: rolesedit.tpl,v 1.9 2007/02/28 08:02:26 franciscom Exp $ *}
-{* Purpose: smarty template - create/edit user role *}
-{include file="inc_head.tpl"}
+{* 
+TestLink Open Source Project - http://testlink.sourceforge.net/
+$Id: rolesedit.tpl,v 1.10 2007/08/18 14:08:26 franciscom Exp $
+Purpose: smarty template - create/edit user role 
 
-<body>
+rev :
+     20070725 - franciscom
+     - added js check on role name
+     - use of input_dimensions.conf
+*}
 
+{include file="inc_head.tpl" openHead="yes" jsValidate="yes"}
 {literal}
 <script type="text/javascript">
 {/literal}
 var warning_modify_role = "{lang_get s='warning_modify_role'}";
+var warning_empty_role_name = "{lang_get s='warning_empty_role_name'}";
 {literal}
+function validateForm(f)
+{
+  if (isWhitespace(f.rolename.value)) 
+  {
+      alert(warning_empty_role_name);
+      selectField(f, 'rolename');
+      return false;
+  }
+  return true;
+}
 </script>
 {/literal}
+</head>
+
+
+<body>
+{assign var="cfg_section" value=$smarty.template|replace:".tpl":"" }
+{config_load file="input_dimensions.conf" section=$cfg_section}
 
 <h1>{lang_get s='title_user_mgmt'} - {lang_get s='caption_define_role'}</h1>
 
@@ -38,9 +60,11 @@ var warning_modify_role = "{lang_get s='warning_modify_role'}";
 {* Create Form *}
 <div class="workBack">
 
-	<form name="addKey" 
+	<form name="rolesedit" id="rolesedit" 
 		method="post" action="lib/usermanagement/rolesedit.php" 
-	{if $role_management != "yes"}
+	{if $role_management == "yes"}
+	  onSubmit="javascript:return validateForm(this);"	
+	{else}	
 		onsubmit="return false" 
 	{/if}
 	>
@@ -48,8 +72,10 @@ var warning_modify_role = "{lang_get s='warning_modify_role'}";
 	<table class="common">
 		<tr><th>{lang_get s='th_rolename'}</th></tr>
 		<tr><td>
-			<input type="text" name="rolename" size="30" maxlength="100" value="{$role.role|escape}"/>
-		</td></tr>
+			   <input type="text" name="rolename" 
+			          size="{#ROLENAME_SIZE#}" maxlength="{#ROLENAME_MAXLEN#}" value="{$role.role|escape}"/>
+ 				 {include file="error_icon.tpl" field="rolename"}
+		    </td></tr>
 		<tr><th>{lang_get s='th_rights'}</th></tr>
 		<tr>
 			<td>
@@ -68,25 +94,16 @@ var warning_modify_role = "{lang_get s='warning_modify_role'}";
 						{/foreach}
 						</fieldset>
 					</td>
-					<td>&nbsp;</td>
-				</tr>
-				<tr>
 					<td>
-						<fieldset><legend >{lang_get s='th_product_rights'}</legend>
-						{foreach from=$pRights item=id key=k}
+						<fieldset><legend >{lang_get s='th_req_rights'}</legend>
+						{foreach from=$reqRights item=id key=k}
 						<input type="checkbox" name="{$k}" {$roleRights[$k]} />{$id}<br />
 						{/foreach}
 						</fieldset>
 					</td>
-					<td><fieldset><legend >{lang_get s='th_kw_rights'}</legend>
-							{foreach from=$kwRights item=id key=k}
-							<input type="checkbox" name="{$k}" {$roleRights[$k]} />{$id}<br />
-							{/foreach}
-						</fieldset>
-					</td>
 					<td>
-						<fieldset><legend >{lang_get s='th_req_rights'}</legend>
-						{foreach from=$reqRights item=id key=k}
+						<fieldset><legend >{lang_get s='th_product_rights'}</legend>
+						{foreach from=$pRights item=id key=k}
 						<input type="checkbox" name="{$k}" {$roleRights[$k]} />{$id}<br />
 						{/foreach}
 						</fieldset>
@@ -95,6 +112,12 @@ var warning_modify_role = "{lang_get s='warning_modify_role'}";
 				<tr>
 					<td><fieldset><legend >{lang_get s='th_user_rights'}</legend>
 							{foreach from=$uRights item=id key=k}
+							<input type="checkbox" name="{$k}" {$roleRights[$k]} />{$id}<br />
+							{/foreach}
+						</fieldset>
+					</td>
+					<td><fieldset><legend >{lang_get s='th_kw_rights'}</legend>
+							{foreach from=$kwRights item=id key=k}
 							<input type="checkbox" name="{$k}" {$roleRights[$k]} />{$id}<br />
 							{/foreach}
 						</fieldset>

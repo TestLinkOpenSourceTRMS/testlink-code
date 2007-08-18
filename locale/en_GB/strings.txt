@@ -4,11 +4,12 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.185 $
- * @modified $Date: 2007/07/29 19:52:05 $ $Author: kevinlevy $
+ * @version $Revision: 1.186 $
+ * @modified $Date: 2007/08/18 14:13:46 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
+ * 20070818 - franciscom
  * 20070705 - franciscom -
  * 20070520 - franciscom - milestones
  * 20070206 - franciscom - BUGID 618 - \n on JS messages
@@ -38,6 +39,15 @@ $TLS_unassigned = "unassigned";
 $TLS_import_file_type = "Import file type";
 $TLS_max_file_size_is = "Max. file size ";
 $TLS_supported_file_formats = "Supported file formats";
+
+$TLS_test_status_all = "All";
+$TLS_test_status_any = "All";
+$TLS_test_status_not_run = "Not Run";
+$TLS_test_status_blocked = "Blocked";
+$TLS_test_status_failed = "Failed";
+$TLS_test_status_passed = "Passed";
+$TLS_test_status_not_available="Not Available";
+$TLS_test_status_unknown="Unknown";
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////7
@@ -261,7 +271,7 @@ $TLS_was_success = " was successfully ";
 
 
 // gui/templates/execNavigator.tpl
-$TLS_TestPlan = "Test Plan";
+$TLS_TestPlan = $TLS_testplan;
 $TLS_btn_apply_filter = "Apply filter";
 $TLS_btn_update_menu = "Update menu";
 $TLS_caption_nav_filter_settings = "Navigation Filter & Settings";
@@ -270,7 +280,7 @@ $TLS_filter_owner = "Assigned to";
 $TLS_filter_result = "Result";
 $TLS_filter_tcID = "Filter: Test Case ID";
 $TLS_keyword = "Keyword";
-$TLS_test_status_all_status = "All";
+$TLS_test_status_all_status = $TLS_test_status_all;
 
 
 // gui/templates/mainPage.tpl
@@ -390,7 +400,6 @@ $TLS_enter_build_notes = "Description";
 $TLS_msg_build = "Notes: Each build is related to the active Test Plan. " .
                  "Description should include: list of delivered packages, approvals, status,etc.";
 $TLS_open = "Open";
-$TLS_test_plan = "Test Plan";
 $TLS_title_build_2 = "Build management";
 $TLS_title_build_create = "Create a new Build";
 $TLS_title_build_update = "Update Build";
@@ -482,12 +491,12 @@ $TLS_last_edit = "Last edit by";
 
 // gui/templates/inc_res_by_comp.tpl
 $TLS_title_res_by_top_level_suites = "Results by top level Test Suites";
-$TLS_trep_blocked = "Blocked";
+$TLS_trep_blocked = $TLS_test_status_blocked;
 $TLS_trep_comp = "Test Suite";
 $TLS_trep_comp_perc = "Completed [%]";
-$TLS_trep_failed = "Failed";
-$TLS_trep_not_run = "Not run";
-$TLS_trep_passed = "Passed";
+$TLS_trep_failed = $TLS_test_status_failed;
+$TLS_trep_not_run = $TLS_test_status_not_run;
+$TLS_trep_passed = $TLS_test_status_passed;
 $TLS_trep_total = "Total";
 
 
@@ -571,16 +580,17 @@ $TLS_menu_new_user = "New User";
 $TLS_menu_edit_user = "Edit User";
 $TLS_menu_view_users = "View Users";
 $TLS_menu_view_roles = "View roles";
-$TLS_th_cf_rights = "Custom field rights";
-$TLS_th_kw_rights = "Keyword rights";
-$TLS_th_mgttc_rights = "Test Case management rights";
-$TLS_th_product_rights = "Test Project rights";
-$TLS_th_req_rights = "Requirement rights";
+$TLS_th_cf_rights = "Custom field";
+$TLS_th_kw_rights = "Keyword";
+$TLS_th_mgttc_rights = "Test Case management";
+$TLS_th_product_rights = "Test Project";
+$TLS_th_req_rights = "Requirement";
 $TLS_th_rights = "Rights";
 $TLS_th_rolename = "Role name";
-$TLS_th_tp_rights = "Test Plan rights";
-$TLS_th_user_rights = "User rights";
+$TLS_th_tp_rights = "Test Plan";
+$TLS_th_user_rights = "User";
 $TLS_title_user_mgmt = "User Administration";
+$TLS_warning_empty_role_name="Please give a name to Role";
 $TLS_warning_modify_role = "Really modify the role?";
 
 
@@ -743,9 +753,8 @@ $TLS_test_exec_result = "Result";
 $TLS_test_exec_steps = "Steps";
 $TLS_test_exec_summary = "Summary";
 $TLS_test_plan_notes = "Test plan notes";
-$TLS_test_status_not_run = "Not Run";
 $TLS_th_test_case_id = "ID ";
-$TLS_th_testsuite = "Testsuite";
+$TLS_th_testsuite = $TLS_test_suite;
 $TLS_title_t_r_on_build = "Test Results on Build";
 $TLS_title_t_r_owner = " Assigned to";
 $TLS_title_test_case = "Test Case";
@@ -755,7 +764,6 @@ $TLS_version = "Version";
 
 // gui/templates/inc_testsuite_viewer_ro.tpl
 $TLS_keywords = "Keywords";
-$TLS_test_suite = "Test Suite";
 
 
 
@@ -991,9 +999,6 @@ $TLS_title_req_export_to = "Export requirement";
 
 
 // gui/templates/resultsAllBuilds.tpl
-$TLS_test_status_blocked = "Blocked";
-$TLS_test_status_failed = "Failed";
-$TLS_test_status_passed = "Passed";
 $TLS_th_build = "Build";
 $TLS_th_tc_total = "TC Total";
 
@@ -1033,10 +1038,10 @@ $TLS_title_gen_test_rep = "General Test Plan Metrics";
 $TLS_excel_format = "MS Excel";
 $TLS_html_format = "HTML";
 $TLS_last_status_any = "Any";
-$TLS_last_status_blocked = "Blocked";
-$TLS_last_status_failed = "Failed";
-$TLS_last_status_not_run = "Not Run";
-$TLS_last_status_passed = "Passed";
+$TLS_last_status_blocked = $TLS_test_status_blocked;
+$TLS_last_status_failed = $TLS_test_status_failed;
+$TLS_last_status_not_run = $TLS_test_status_not_run;
+$TLS_last_status_passed = $TLS_test_status_passed;
 $TLS_select_builds_header = "Select Build(s)";
 $TLS_select_components_header = "Select Test Suite(s)";
 $TLS_select_keyword_header = "Select Keyword";
@@ -1044,7 +1049,7 @@ $TLS_select_last_result_header = "Show Executions of Status";
 $TLS_select_owner_header = "Select Owner";
 $TLS_select_report_format_header = "Select Report Format";
 $TLS_submit_query = "Submit Query";
-$TLS_test_plan_header = "Test Plan ";
+$TLS_test_plan_header = $TLS_testplan;
 $TLS_query_metrics_report = "Query Metrics Report";
 $TLS_enter_start_time = "Enter Start Time";
 $TLS_enter_end_time = "Enter End Time";
@@ -1064,14 +1069,14 @@ $TLS_th_builds = "Build(s)";
 $TLS_th_execution_ts = "Time";
 $TLS_th_last_result = "Last result";
 $TLS_th_report_format = "Report type";
-$TLS_th_test_plan = "Test plan";
+$TLS_th_test_plan = $TLS_testplan;
 $TLS_th_test_suites = "Suite(s)";
 $TLS_th_tester_id = "Tester";
-$TLS_th_total_block = "#blocked ";
+$TLS_th_total_block = "#" . $TLS_test_status_blocked;
 $TLS_th_total_cases = "#Test Cases";
-$TLS_th_total_fail = "#failed";
-$TLS_th_total_not_run = "#not run";
-$TLS_th_total_pass = "#passed";
+$TLS_th_total_fail = "#" . $TLS_test_status_failed;
+$TLS_th_total_not_run = "#" . $TLS_test_status_not_run;
+$TLS_th_total_pass = "#" . $TLS_test_status_passed;
 $TLS_th_start_time = "Start Time";
 $TLS_th_end_time = "End Time";
 $TLS_th_executor = "Executed By";
@@ -1088,7 +1093,7 @@ $TLS_req_title_failed = "Failed Requirements";
 $TLS_req_title_notrun = "Unexecuted Requirements";
 $TLS_req_title_passed = "Passed Requirements";
 $TLS_title_result_req_testplan = "Test Results based on Requirements Specification";
-$TLS_title_test_plan = "Test Plan";
+$TLS_title_test_plan = $TLS_testplan;
 
 
 
@@ -1317,16 +1322,16 @@ $TLS_case_not_run_warning = "Test Case Not Run";
 $TLS_category_header = "Test Suite =";
 $TLS_daterun = "Date Run";
 $TLS_last_status = "Last Status";
-$TLS_number_blocked = "# Blocked";
+$TLS_number_blocked = "# " . $TLS_test_status_blocked;
 $TLS_number_cases = "# Cases";
 $TLS_number_executions = "# Test Cases Run";
-$TLS_number_failed = "# Failed";
-$TLS_number_not_run = "# Not Run";
-$TLS_number_passed = "# Passed";
+$TLS_number_failed = "# " . $TLS_test_status_failed;
+$TLS_number_not_run = "# " . $TLS_test_status_blocked;
+$TLS_number_passed = "# " . $TLS_test_status_passed;
 $TLS_owner = "Tester";
-$TLS_owner_header = "Tester =";
+$TLS_owner_header = $TLS_owner. " =";
 $TLS_runby = "Run By";
-$TLS_test_plan_name = "Test Plan";
+$TLS_test_plan_name = $TLS_testplan;
 
 
 

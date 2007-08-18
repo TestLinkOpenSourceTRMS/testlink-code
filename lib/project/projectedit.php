@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: projectedit.php,v $
  *
- * @version $Revision: 1.9 $
- * @modified $Date: 2007/06/20 16:14:55 $ $Author: franciscom $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2007/08/18 14:09:46 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -14,6 +14,9 @@
  * 
  * @todo Verify dependency before delete testplan 
  *
+ * 20070725 - franciscom - refactoring to control display of edit/delete tab
+ *                         when there are 0 test projects on system.
+ * 
  * 20070620 - franciscom - BUGID 914 
  * 20070221 - franciscom - BUGID 652
  * 20070206 - franciscom - BUGID 617
@@ -29,6 +32,7 @@ require_once("../../third_party/fckeditor/fckeditor.php");
 testlinkInitPage($db,true);
 
 $session_tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+$enable_edit_feature = $session_tproject_id ? 1 : 0;
 
 $user_feedback ='';
 $updateResult = null;
@@ -183,6 +187,7 @@ $smarty->assign('action', $action);
 $smarty->assign('sqlResult', $updateResult);
 $smarty->assign('name', $args->tproject_name);
 $smarty->assign('show_prod_attributes', $show_prod_attributes);
+$smarty->assign('enable_edit_feature',$enable_edit_feature);
 $smarty->assign('notes', $of->CreateHTML());
 $smarty->display('projectedit.tpl');
 ?>

@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
  * @filesource $RCSfile: roles.inc.php,v $
- * @version $Revision: 1.22 $
- * @modified $Date: 2007/07/06 06:33:51 $ by $Author: franciscom $
+ * @version $Revision: 1.23 $
+ * @modified $Date: 2007/08/20 06:41:29 $ by $Author: franciscom $
  * @author Martin Havlat, Chad Rosen
  * 
  * This script provides the get_rights and has_rights functions for
@@ -34,7 +34,10 @@
  * mgt_modify_product, mgt_users - just Admin edits Products and Users
  *
  *
- * rev : 20070702 - franciscom - new get_effective_role()
+ * rev : 20070819 - franciscom - 
+ *       added get_tplan_effective_role(), get_tproject_effective_role()
+ *       20070818 - franciscom - changes in getRoles()
+ *       20070702 - franciscom - new get_effective_role()
  */
 require_once( dirname(__FILE__). '/lang_api.php' );
 
@@ -170,7 +173,7 @@ function getTestPlanUserRoles(&$db,$testPlanID)
  * @param int $userID the user id
  * @return array assoc map with keys taken from the testproject_id column
  **/
-function getUserProductRoles(&$db,$userID)
+function getUserTestProjectRoles(&$db,$userID)
 {
 	$query = "SELECT testproject_id,role_id FROM user_testproject_roles WHERE user_id = {$userID}";
 	$roles = $db->fetchRowsIntoMap($query,'testproject_id');
@@ -199,12 +202,13 @@ function getUserTestPlanRoles(&$db,$userID)
  * Gets all testproject related role assignments
  *
  * @param object $db [ref] the db-object
- * @param int $productID documentation
+ * @param int $tproject_id 
  * @return array assoc array with keys take from the user_id column
  **/
-function getProductUserRoles(&$db,$productID)
+function getTestProjectUserRoles(&$db,$tproject_id)
 {
-	$query = "SELECT user_id,role_id FROM user_testproject_roles WHERE testproject_id = {$productID}";
+	$query = "SELECT user_id,role_id FROM user_testproject_roles " .
+	         "WHERE testproject_id = {$tproject_id}";
 	$roles = $db->fetchRowsIntoMap($query,'user_id');
 	
 	return $roles;
@@ -217,7 +221,7 @@ function getProductUserRoles(&$db,$productID)
  * @param int $userID the user id
  * @return int 1 on success, false else
  **/
-function deleteUserProductRoles(&$db,$userID)
+function deleteUserTestProjectRoles(&$db,$userID)
 {
 	$query = "DELETE FROM user_testproject_roles WHERE user_id = {$userID}";
 	return ($db->exec_query($query) ? 1 : 0);
@@ -227,12 +231,12 @@ function deleteUserProductRoles(&$db,$userID)
  * Deletes all testproject related role assignments for a given testproject
  *
  * @param object $db [ref] the db-object
- * @param int $productID the product id
+ * @param int $tproject_id
  * @return int 1 on success, false else
  **/
-function deleteProductUserRoles(&$db,$productID)
+function deleteTestProjectUserRoles(&$db,$tproject_id)
 {
-	$query = "DELETE FROM user_testproject_roles WHERE testproject_id = {$productID}";
+	$query = "DELETE FROM user_testproject_roles WHERE testproject_id = {$tproject_id}";
 	return ($db->exec_query($query) ? 1 : 0);
 }
 
@@ -269,13 +273,14 @@ function insertUserTestPlanRole(&$db,$userID,$testPlanID,$roleID)
  *
  * @param object $db [ref] the db-object
  * @param int $userID the id of the user
- * @param int $testPlanID the testproject id 
+ * @param int $tproject_id 
  * @param int $roleID the role id
  * @return int returns 1 on success, 0 else
  **/
-function insertUserTestProjectRole(&$db,$userID,$productID,$roleID)
+function insertUserTestProjectRole(&$db,$userID,$tproject_id,$roleID)
 {
-	$query = "INSERT INTO user_testproject_roles (user_id,testproject_id,role_id) VALUES ({$userID},{$productID},{$roleID})";
+	$query = " INSERT INTO user_testproject_roles " .
+	         " (user_id,testproject_id,role_id) VALUES ({$userID},{$tproject_id},{$roleID})";
 	return ($db->exec_query($query) ? 1 : 0);
 }
 
@@ -338,10 +343,24 @@ function getUsersWithTestPlanRole(&$db,$roleID)
  **/
 function getAllUsersWithRole(&$db,$roleID)
 {
-	$affectedGlobalUsers = getUsersWithGlobalRole($db,$roleID);
-	$affectedTestPlanUsers = getUsersWithTestPlanRole($db,$roleID);
-	$affectedProductUsers = getUsersWithTestProjectRole($db,$roleID);
-	$affectedUsers = @array_unique(@array_merge($affectedGlobalUsers,$affectedTestPlanUsers,$affectedProductUsers));
+	$global_users = getUsersWithGlobalRole($db,$roleID);
+	$tplan_users = getUsersWithTestPlanRole($db,$roleID);
+	$tproject_users = getUsersWithTestProjectRole($db,$roleID);
+	
+	if( is_null($global_users) )
+  {
+    $global_users=array();
+  }
+	if( is_null($tplan_users) )
+  {
+    $tplan_users=array();
+  }
+	if( is_null($tproject_users) )
+  {
+    $tproject_users=array();
+  }
+	
+	$affectedUsers = array_unique(array_merge($global_users,$tplan_users,$tproject_users));
 	if (!$affectedUsers)
 		$affectedUsers = null;
 	
@@ -405,35 +424,41 @@ function updateRole(&$db,$roleID,$roleName,$rights,$notes)
 
 
 /**
- * Resets all assigned roles with a certain roleid to the <No rights>-role
+ * Resets all assigned roles with a certain role_id to another role_id
  *
  * @param object $db [ref] the db-object
  * @param int $id the role id
  * @return int returns 1 on success, 0 else
+ *
+ * rev: 20070819 - refactoring
  **/
-function resetUserRoles(&$db,$id)
+function resetUserRoles(&$db,$id,$role_id)
 {
-	$query = "UPDATE users SET role_id = ".TL_ROLES_NONE." WHERE role_id = {$id}";
-	$result = ($db->exec_query($query) ? true : false);
-
-	$query = "UPDATE user_testproject_roles SET role_id = ".TL_ROLES_NONE." WHERE role_id = {$id}";
-	$result = $result && ($db->exec_query($query) ? true : false);
+  $tables = array('users','user_testproject_roles','user_testplan_roles');
+  $result=true;
+  
+  foreach($tables as $the_table)
+  {
+    $query = "UPDATE {$the_table} SET role_id = {$role_id} WHERE role_id = {$id}";
+ 	  $result = $result && ($db->exec_query($query) ? true : false);
 	
-	$query = "UPDATE user_testplan_roles SET role_id = ".TL_ROLES_NONE." WHERE role_id = {$id}";
-	$result = $result && ($db->exec_query($query) ? true : false);
-	
+  }
 	return ($result ? 1 : 0);
 }
 						
 /**
- * returns all roles from the db with the assigned rights, the db-non-existing
- * NONE roles is also added
+ * returns all roles from the db with the assigned rights. 
  *
  * @param object $db [ref] the db-object
  * @return array assoc-array of the following form
  * 				 roles[role_id] => array ('id' => role_id,
  * 										  'role' => role_description,
  * 										  'rights' => comma-separated list of rights
+ *
+ * rev:
+ *      20070818 - franciscom - get description from db for TL_ROLES_NONE
+ *                              instead of using a php constant
+ *
  **/
 function getRoles(&$db)
 {
@@ -445,9 +470,19 @@ function getRoles(&$db)
 	$result = $db->exec_query($sql);
 	if ($result)
 	{
+	  // ---------------------------------------------------
+	  // get description from db for TL_ROLES_NONE
+	  $sql = " SELECT id,description" .
+	         " FROM roles" .
+	         " WHERE id=" . TL_ROLES_NONE;
+
+    $mm=$db->fetchRowsIntoMap($sql,'id');	
+    $descr=$mm[TL_ROLES_NONE]['description'];
+    // ---------------------------------------------------
+    
 		$roles[TL_ROLES_NONE] = array('id' => TL_ROLES_NONE,
-									  'role' => TL_ROLES_NONE_DESC,
-									  'rights' => '',
+									                'role' => $descr,
+									                'rights' => '',
 									  );
 		while($row = $db->fetch_array($result))
 		{
@@ -483,11 +518,17 @@ function getRoles(&$db)
  * @return array returns assoc-array in the form of 
  * 				 roles[role_id] => role_description
  **/
-function getAllRoles(&$db)
+function getAllRoles(&$db,$add_inherited=1)
 {
-	$roles  = $db->fetchColumnsIntoMap("SELECT id,description FROM roles",'id','description');
-	$roles[TL_ROLES_UNDEFINED] = TL_ROLES_UNDEFINED_DESC;
+  
+	$inherited_role_descr=lang_get('inherited_role');
 	
+	$roles  = $db->fetchColumnsIntoMap("SELECT id,description FROM roles",'id','description');
+
+	if($add_inherited)
+	{
+	  $roles[TL_ROLES_INHERITED] = $inherited_role_descr;
+	}
 	return $roles;
 }
 
@@ -561,7 +602,7 @@ function has_rights(&$db,$roleQuestion,$tprojectID = null,$tplanID = null)
 		$s_allRoles = getRoles($db);
 	if (is_null($s_userProductRoles))
 	{
-		$s_userProductRoles = getUserProductRoles($db,$_SESSION['userID']);
+		$s_userProductRoles = getUserTestProjectRoles($db,$_SESSION['userID']);
 		$_SESSION['testprojectRoles'] = $s_userProductRoles;
 	}
 	if (is_null($s_userTestPlanRoles))
@@ -617,6 +658,13 @@ function has_rights(&$db,$roleQuestion,$tprojectID = null,$tplanID = null)
 	return checkForRights($allRights,$roleQuestion);
 }
 
+/*
+  function: 
+
+  args :
+   
+  returns: 
+*/
 function propagateRights($fromRights,$propRights,&$toRights)
 {
 	//the mgt_users right isn't product-related so this right is inherited from
@@ -681,7 +729,7 @@ function get_effective_role(&$db,$user_id,$tproject_id,$tplan_id)
 {
   $user_info = getUserById($db,$user_id);
   $default_role = $user_info[0]['role_id'];
-  $tprojects_role = getUserProductRoles($db,$user_id);
+  $tprojects_role = getUserTestProjectRoles($db,$user_id);
   $tplans_role = getUserTestPlanRoles($db,$user_id);
 
   if( !is_null($tplans_role) && isset($tplans_role[$tplan_id]))
@@ -696,6 +744,139 @@ function get_effective_role(&$db,$user_id,$tproject_id,$tplan_id)
   {
     $effective_role=$default_role;
   }
+  return $effective_role;
+}
+
+/*
+  function: get_tproject_effective_role()
+            Get info about user(s) role at test project level,
+            with indication about the nature of role: inherited or assigned.
+             
+            To get a user role we consider a 3 layer model:
+            
+            layer 1 - user           <--- uplayer
+            layer 2 - test project   <--- in this fuction we are interested in this level.
+            layer 3 - test plan
+            
+            
+  
+  args : $tproject_id
+         [$user_id]
+  
+  returns: map with effetive_role in context ($tproject_id)
+           key: user_id 
+           value: map with keys:
+                  login                (from users table - useful for debug)
+                  user_role_id         (from users table - useful for debug)
+                  uplayer_role_id      (always = user_role_id)
+                  uplayer_is_inherited
+                  effective_role_id  user role for test project
+                  is_inherited
+  
+
+*/
+function get_tproject_effective_role(&$db,$tproject_id,$user_id=null)
+{
+  $effective_role=array();
+  $map_index='id';
+  $filter=null;
+  if( !is_null($user_id) )
+  {
+    $filter=" WHERE id";
+    if( is_array($user_id) )
+    {
+      $filter .= " IN (" . implode(',',$user_id) . ") ";
+    }
+    else
+    {
+      $filter .= "={$user_id} ";    
+    }
+  }
+  $user_info=getAllUsers($db,$filter,$map_index);
+
+ 
+  foreach($user_info as $key => $row)
+  {
+    $effective_role[$row['id']]=array('login' => $row['login'],
+                                      'user_role_id' => $row['role_id'],
+                                      'uplayer_role_id' => $row['role_id'],
+                                      'uplayer_is_inherited' => 0,
+                                      'effective_role_id' => $row['role_id'],
+                                      'is_inherited' => 1);
+  }  
+  $tproject_users_role = getTestProjectUserRoles($db,$tproject_id);
+  
+  if( !is_null($tproject_users_role) )
+  {
+     foreach($effective_role as $user_id => $row)
+     {
+       if( isset($tproject_users_role[$user_id]) )
+       {
+         $effective_role[$user_id]['is_inherited']=0;
+         $effective_role[$user_id]['effective_role_id']=$tproject_users_role[$user_id]['role_id'];  
+       }
+     }  
+  }
+
+  return $effective_role;
+}
+
+
+/*
+  function: get_tplan_effective_role()
+            Get info about user(s) role at test plan level,
+            with indication about the nature of role: inherited or assigned.
+
+            To get a user role we consider a 3 layer model:
+            
+            layer 1 - user
+            layer 2 - test project   <--- uplayer
+            layer 3 - test plan      <--- in this fuction we are interested in this level.
+             
+  
+  args : $tplan_id
+         $tproject_id
+         [$user_id]
+  
+  returns: map with effetive_role in context ($tplan_id)
+           key: user_id 
+           value: map with keys:
+                  login                (from users table - useful for debug)
+                  user_role_id         (from users table - useful for debug)
+                  uplayer_role_id      user role for test project
+                  uplayer_is_inherited 1 -> uplayer role is inherited 
+                                       0 -> uplayer role is written in table
+                                       
+                  effective_role_id    user role for test plan
+                  is_inherited       
+  
+
+*/
+function get_tplan_effective_role(&$db,$tplan_id,$tproject_id,$user_id=null)
+{
+  $effective_role=array();
+  $effective_role=get_tproject_effective_role($db,$tproject_id,$user_id);   
+
+  foreach($effective_role as $user_id => $row)
+  {
+    $effective_role[$user_id]['uplayer_role_id']=$effective_role[$user_id]['effective_role_id'];
+    $effective_role[$user_id]['uplayer_is_inherited']=$effective_role[$user_id]['is_inherited'];
+    $effective_role[$user_id]['is_inherited']=1;
+  }
+  
+  $tplan_users_role = getTestPlanUserRoles($db,$tplan_id);
+  if( !is_null($tplan_users_role) )
+  {
+    foreach($effective_role as $user_id => $row)
+    {
+      if( isset($tplan_users_role[$user_id]) )
+      {
+        $effective_role[$user_id]['is_inherited']=0;
+        $effective_role[$user_id]['effective_role_id']=$tplan_users_role[$user_id]['role_id'];  
+      }
+    }  
+  }
+
   return $effective_role;
 }
 ?>

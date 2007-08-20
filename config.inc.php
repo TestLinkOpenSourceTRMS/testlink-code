@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.120 $
- * @modified $Date: 2007/08/09 05:43:45 $ by $Author: franciscom $
+ * @version $Revision: 1.121 $
+ * @modified $Date: 2007/08/20 06:41:01 $ by $Author: franciscom $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink 
@@ -17,6 +17,7 @@
  *-----------------------------------------------------------------------------
  *
  * Revisions:
+ *           20070819 - franciscom - $g_default_roleid
  *           20070706 - franciscom - $g_exec_cfg->user_filter_default
  *           20070706 - franciscom - $g_exec_cfg->view_mode->tester
  *                                   $g_exec_cfg->exec_mode->tester
@@ -607,6 +608,8 @@ $g_user_self_signup = TRUE;
 // ----- End of Config ------------------------------------------------
 
 // --------------------------------------------------------------------
+// DO NOT CHANGE NOTHING BELOW
+// --------------------------------------------------------------------
 $custom_config_file = TL_ABS_PATH . 'custom_config.inc.php';
 clearstatcache();
 if ( file_exists( $custom_config_file ) ) 
@@ -614,8 +617,6 @@ if ( file_exists( $custom_config_file ) )
   require_once( $custom_config_file ); 
 }
 
-
-// 20070808
 define('TL_TREE_KIND', $g_tree_type);
 
 // use when componing an title using several strings
@@ -624,8 +625,9 @@ define('TITLE_SEP_TYPE2',$g_title_sep_type2);
 define('TITLE_SEP_TYPE3',$g_title_sep_type3);
 
 define('TL_ITEM_BULLET_IMG', TL_THEME_IMG_DIR . "/" .$g_main_menu_item_bullet_img);
-
 define('REFRESH_SPEC_TREE',$g_spec_cfg->automatic_tree_refresh ? 'yes' : 'no');
+
+define("TL_DEFAULT_ROLEID",$g_default_roleid);
 
 // added check to avoid notice message in the migration pages
 if(!defined('TL_LOG_LEVEL_DEFAULT'))

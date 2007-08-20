@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: rolesview.php,v $
  *
- * @version $Revision: 1.7 $
- * @modified $Date: 2006/10/23 20:11:28 $ by $Author: schlundus $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2007/08/20 06:41:30 $ by $Author: franciscom $
 **/
 require_once("../../config.inc.php");
 require_once("../functions/common.php");
@@ -22,38 +22,43 @@ $userID = $_SESSION['userID'];
 $sqlResult = null;
 $affectedUsers = null;
 $allUsers = getAllUsers($db,null,'id');
+$role_id_replacement=config_get('role_replace_for_deleted_roles');
 
 if ($bDelete && $id)
 {
 	$sqlResult = "ok";
 	//get all users which are affected by deleting the role if the user hasn't 
 	//confirmed the deletion
+
 	if (!$bConfirmed)
 		$affectedUsers = getAllUsersWithRole($db,$id);
+	
 	if (!sizeof($affectedUsers))
 	{
 		if (!deleteRole($db,$id))
 			$sqlResult = lang_get("error_role_deletion");
 		else
 		{
-			//reset all affected users by replacing the deleted role with the
-			//<no rights> role
-			resetUserRoles($db,$id);
+			//reset all affected users by replacing the deleted role with 
+			// configured role
+			resetUserRoles($db,$id,$role_id_replacement);
 		}
 	}
 	else
 		$sqlResult = null;
 }
 $roles = getRoles($db);
+
+
 if ($bDelete && $id)
 {
 	//reload the roles of the current user
-	$_SESSION['testprojectRoles'] = getUserProductRoles($db,$userID);
+	$_SESSION['testprojectRoles'] = getUserTestProjectRoles($db,$userID);
 	$_SESSION['testPlanRoles'] = getUserTestPlanRoles($db,$userID);
 	if ($_SESSION['roleId'] == $id)
 	{
-		$_SESSION['roleId'] = TL_ROLES_NONE;
-		$_SESSION['role'] = $roles[TL_ROLES_NONE]['role'];
+		$_SESSION['roleId'] = TL_ROLES_NO_RIGHTS;
+		$_SESSION['role'] = $roles[TL_ROLES_NO_RIGHTS]['role'];
 	}
 }
 
@@ -67,5 +72,6 @@ $smarty->assign('id',$id);
 $smarty->assign('sqlResult',$sqlResult);
 $smarty->assign('allUsers',$allUsers);
 $smarty->assign('affectedUsers',$affectedUsers);
+$smarty->assign('role_id_replacement',$role_id_replacement);
 $smarty->display('rolesview.tpl');
 ?>

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.3 $
- * @modified $Date: 2007/07/06 06:21:50 $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2007/08/20 06:41:56 $
  *
  * @author Yoyo Wang
 **/
@@ -18,6 +18,11 @@ $TLS_default_category_name = "待定";
 $TLS_objective_for_category = "从需求生成的分类/用例";
 $TLS_scope_for_component = "从需求生成的组件/分类/用例";
 
+$TLS_inherited_role="<inherited>";
+$TLS_th_roles_testplan = "Test Plan Role";
+$TLS_th_roles_testproject = "Test Project Role";
+$TLS_th_role_description = "Description";
+$TLS_warning_delete_role = "Really delete this role?";
 
 // firstLogin.php
 $TLS_cant_create_user = "很抱歉无法为您创建登陆帐号。请与管理员联系！";

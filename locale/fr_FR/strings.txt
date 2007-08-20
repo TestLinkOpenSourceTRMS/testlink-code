@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.5 $
- * @modified $Date: 2007/07/06 06:21:50 $by $Author: franciscom $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2007/08/20 06:41:55 $by $Author: franciscom $
  * @author GrdScarabe
  *
  * French translation
@@ -14,6 +14,28 @@
  * 20060117 - Alexandre Da Costa alexandre.da-costa_at_iseo.fr
  * 20061129 - Thomas Courbon: added missing localisations for testlink 1.6.2
 **/
+
+
+$TLS_test_status_all = "All";
+$TLS_test_status_any = "All";
+$TLS_test_status_not_run = "Non execut&eacute;";
+$TLS_test_status_blocked = "Bloqu&eacute;";
+$TLS_test_status_failed = "Echec";
+$TLS_test_status_passed = "Succ&egrave;s";
+$TLS_test_status_not_available="Not Available";
+$TLS_test_status_unknown="Unknown";
+
+$TLS_test_status_all_status=$TLS_test_status_all;
+
+$TLS_warning_empty_role_name="Please give a name to Role";
+
+$TLS_inherited_role="<inherited>";
+
+$TLS_th_roles_testplan = "Test Plan Role";
+$TLS_th_roles_testproject = "Test Project Role";
+$TLS_th_role_description = "Description";
+$TLS_warning_delete_role = "Really delete this role?";
+
 
 // firstLogin.php
 $TLS_cant_create_user	= "D&eacute;sol&eacute; mais votre compte ne peut &ecirc;tre cr&eacute;&eacute;. Veuillez pr&eacute;venir votre administrateur de ce probl&egrave;me.";
@@ -224,10 +246,6 @@ $TLS_test_exec_on_build = "pour la Version";
 $TLS_test_exec_result = "R&eacute;sultat";
 $TLS_test_exec_steps = "Etapes";
 $TLS_test_exec_summary = "R&eacute;sum&eacute;";
-$TLS_test_status_blocked = "Bloqu&eacute;";
-$TLS_test_status_failed = "Echec";
-$TLS_test_status_not_run = "Non execut&eacute;";
-$TLS_test_status_passed = "Succ&egrave;s";
 $TLS_th_test_case_id = "ID ";
 $TLS_title_t_r_on_build = "R&eacute;sultat du test pour la Version";
 $TLS_title_t_r_owner = "Propri&eacute;taire:";

@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: product.inc.php,v $
- * @version $Revision: 1.18 $
- * @modified $Date: 2006/10/21 20:24:36 $
+ * @version $Revision: 1.19 $
+ * @modified $Date: 2007/08/20 06:41:29 $
  * @author Martin Havlat
  *
  * Functions for Product management (create,update,delete)
@@ -23,7 +23,7 @@ require_once('product.core.inc.php');
  */
 // MHT 20050630 added to delete all nested data
 /** @todo the function are not able to delete test plan data from another product (i.e. test case suite) */
-function deleteProduct(&$db,$id, &$error)
+function DEPRECATED_deleteProduct(&$db,$id, &$error)
 {
 	$error = ''; //clear error string
 	

@@ -6,12 +6,32 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.4 $
- * @modified $Date: 2007/07/06 06:21:50 $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2007/08/20 06:41:56 $
  * based on ..\en_GB\strings.txt
  *
  * @author Leonardo Molinari
 **/
+
+$TLS_test_status_all = "All";
+$TLS_test_status_any = "All";
+$TLS_test_status_not_run = "Não executado";
+$TLS_test_status_blocked = "Bloqueado";
+$TLS_test_status_failed = "Com Falha";
+$TLS_test_status_passed = "Passado / Verificado";
+$TLS_test_status_not_available="Not Available";
+$TLS_test_status_unknown="Unknown";
+
+$TLS_test_status_all_status=$TLS_test_status_all;
+
+$TLS_warning_empty_role_name="Please give a name to Role";
+
+$TLS_inherited_role="<inherited>";
+$TLS_th_roles_testplan = "Test Plan Role";
+$TLS_th_roles_testproject = "Test Project Role";
+$TLS_th_role_description = "Description";
+$TLS_warning_delete_role = "Really delete this role?";
+
 
 // firstLogin.php
 $TLS_cant_create_user = " Desculpe, mas o seu login não pode ser criado. Por favor contacte o seu administrador sobre este assunto !";
@@ -218,10 +238,6 @@ $TLS_test_exec_on_build = "no Build / Distribuição";
 $TLS_test_exec_result = "Resultados";
 $TLS_test_exec_steps = "Passos";
 $TLS_test_exec_summary = "Sumário";
-$TLS_test_status_blocked = "Bloqueado";
-$TLS_test_status_failed = "Com Falha";
-$TLS_test_status_not_run = "Não executado";
-$TLS_test_status_passed = "Passado / Verificado";
 $TLS_th_test_case_id = "ID ";
 $TLS_title_t_r_on_build = "Resultados de Teste no Build/Distribuição";
 $TLS_title_t_r_owner = "Proprietário:";

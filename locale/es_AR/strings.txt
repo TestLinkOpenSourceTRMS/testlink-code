@@ -4,12 +4,34 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.11 $
- * @modified $Date: 2007/07/06 06:21:50 $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2007/08/20 06:41:55 $ $Author: franciscom $
  *
  * @author jorgesf@jsf.jazztel.es
  *
 **/
+
+
+$TLS_test_status_all = "Todos";
+$TLS_test_status_any = "Cualquiera";
+$TLS_test_status_not_run = "No probado";
+$TLS_test_status_blocked = "Bloqueado";
+$TLS_test_status_failed = "KO";
+$TLS_test_status_passed = "Verificado";
+$TLS_test_status_not_available="No disponible";
+$TLS_test_status_unknown="Desconocido";
+
+$TLS_test_status_all_status=$TLS_test_status_all;
+
+$TLS_warning_empty_role_name="Por favor indicar un nombre para el rol";
+
+$TLS_inherited_role="<heredado>";
+
+$TLS_th_roles_testplan = "Rol en Test Plan";
+$TLS_th_roles_testproject = "Rol en Test Project";
+$TLS_th_role_description = "Descripción";
+$TLS_warning_delete_role = "Confirma la eliminación del rol?";
+
 
 // firstLogin.php
 $TLS_cant_create_user = "Lo siento pero no se ha podido crear su conexión. ¡Por favor, contacte con su administrador!";
@@ -220,10 +242,6 @@ $TLS_test_exec_on_build = "en Distribución";
 $TLS_test_exec_result = "Resultados";
 $TLS_test_exec_steps = "Pasos a seguir";
 $TLS_test_exec_summary = "Sumario";
-$TLS_test_status_blocked = "Bloqueado";
-$TLS_test_status_failed = "Fallido";
-$TLS_test_status_not_run = "No probado";
-$TLS_test_status_passed = "Verificado";
 $TLS_th_test_case_id = "ID ";
 $TLS_title_t_r_on_build = "Resultados de Test en la Distribución";
 $TLS_title_t_r_owner = "propietario:";

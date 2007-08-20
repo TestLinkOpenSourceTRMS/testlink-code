@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  * 
  * @filesource $RCSfile: doAuthorize.php,v $
- * @version $Revision: 1.14 $
- * @modified $Date: 2007/01/31 23:18:25 $ by $Author: jbarchibald $
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2007/08/20 06:41:29 $ by $Author: franciscom $
  * @author Chad Rosen, Martin Havlat
  *
  * This file handles the initial login and creates all user session variables.
@@ -62,16 +62,17 @@ function doAuthorize(&$db,$login,$pwd)
 			}
 			else
 			{ 
-                // 20070131 - jbarchibald
-                $_SESSION['filter_tp_by_product'] = 1;
-				$userProductRoles = getUserProductRoles($db,$userInfo['id']);
+        // 20070131 - jbarchibald
+        $_SESSION['filter_tp_by_product'] = 1;
+				$userProductRoles = getUserTestProjectRoles($db,$userInfo['id']);
 				$userTestPlanRoles = getUserTestPlanRoles($db,$userInfo['id']);
-			    //Setting user's session information
-			    // MHT 200507 move session update to function
-			    setUserSession($db,$userInfo['login'], $userInfo['id'], 
-			    		$userInfo['role_id'], $userInfo['email'], 
-			    		$userInfo['locale'],null,$userProductRoles,$userTestPlanRoles);
-		    	$bSuccess = true;
+			  
+			  //Setting user's session information
+			  // MHT 200507 move session update to function
+			  setUserSession($db,$userInfo['login'], $userInfo['id'], 
+			  $userInfo['role_id'], $userInfo['email'], 
+			  $userInfo['locale'],null,$userProductRoles,$userTestPlanRoles);
+		    $bSuccess = true;
 			}
 		}
 		else

@@ -2,26 +2,49 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: product.core.inc.php,v $
- * @version $Revision: 1.11 $
- * @modified $Date: 2007/06/04 17:30:09 $  $Author: franciscom $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2007/08/20 06:41:29 $  $Author: franciscom $
  * @author Martin Havlat
  *
  * Core Functions for Product management (get data)
  * To edit product see ./product.inc.php
  * 
- * 20070120 - franciscom 
- * removed "dead code"
- * added TL_INACTIVE_MARKUP
+ * rev :
+ *       20070819 - franciscom
+ *       getAccessibleProducts(), added doc header and new arg
+ *
+ *       20070120 - franciscom 
+ *       removed "dead code"
+ *       added TL_INACTIVE_MARKUP
  */
+ 
 /** get option list of products; all for admin and active for others 
 
+args:
+      db: database handler
+      [output_type]: choose the output data structure.
+                     possible values: map, map_of_map
+                     map: key -> test project id
+                          value -> test project name
+                            
+                     map_of_map: key -> test project id
+                                 value -> array ('name' => test project name,
+                                                 'active' => active status)
+                                                 
+                     array_of_map: value -> array ('id' => test project id
+                                                   'name' => test project name,
+                                                   'active' => active status)
+                                                 
+                     
+                     default: map
 rev :
+     20070725 - franciscom - added output_type
      20060312 - franciscom - add nodes_hierarchy on join
      
 */
-function getAccessibleProducts(&$db)
+function getAccessibleProducts(&$db,$output_type='map')
 {
-	$arrProducts = array();
+	$items = array();
 	
 	$userID = $_SESSION['userID'];
 	$sql =  " SELECT nodes_hierarchy.id,nodes_hierarchy.name,active
@@ -46,15 +69,36 @@ function getAccessibleProducts(&$db)
 	
 	if (sizeof($arrTemp))
 	{
-		foreach($arrTemp as $id => $row)
-		{
-			$noteActive = '';
-			if (!$row['active'])
-				$noteActive = TL_INACTIVE_MARKUP;
-			$arrProducts[$id] = $noteActive . $row['name'];
-		}
+    switch ($output_type)
+	  {
+	     case 'map':
+		   foreach($arrTemp as $id => $row)
+		   {
+			   $noteActive = '';
+			   if (!$row['active'])
+				   $noteActive = TL_INACTIVE_MARKUP;
+			   $items[$id] = $noteActive . $row['name'];
+		   }
+		   break;
+		   
+	     case 'map_of_map':
+		   foreach($arrTemp as $id => $row)
+		   {
+			   $items[$id] = array( 'name' => $row['name'],
+			                        'active' => $row['active']);
+		   }
+		   
+		   case 'array_of_map':
+		   foreach($arrTemp as $id => $row)
+		   {
+			   $items[] = array( 'id' => $id,
+			                     'name' => $row['name'],
+			                     'active' => $row['active']);
+		   }
+		   break;
+	  }
 	}
-	
-	return $arrProducts;
+
+	return $items;
 }
 ?>

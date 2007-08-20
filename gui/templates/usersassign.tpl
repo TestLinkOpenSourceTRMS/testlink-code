@@ -1,33 +1,39 @@
 {* 
 Testlink: smarty template - 
-$Id: usersassign.tpl,v 1.8 2007/02/28 08:02:26 franciscom Exp $ 
+$Id: usersassign.tpl,v 1.9 2007/08/20 06:41:11 franciscom Exp $ 
+
+rev:
+    20070818 - franciscom
+    added logic to display effective role for test project and test plan
+    given user info about inheritenance.
+    
 *}
 {include file="inc_head.tpl" jsValidate="yes"}
 
 <body>
 
 <h1>{lang_get s='title_user_mgmt'} - {lang_get s='title_assign_roles'}</h1>
-
+{assign var="umgmt" value="lib/usermanagement"}
 {* tabs *}
 <div class="tabMenu">
 {if $mgt_users == "yes"}
-	<span class="unselected"><a href="lib/usermanagement/usersedit.php">{lang_get s='menu_new_user'}</a></span> 
-	<span class="unselected"><a href="lib/usermanagement/usersview.php">{lang_get s='menu_view_users'}</a></span>
+	<span class="unselected"><a href="{$umgmt}/usersedit.php">{lang_get s='menu_new_user'}</a></span> 
+	<span class="unselected"><a href="{$umgmt}/usersview.php">{lang_get s='menu_view_users'}</a></span>
 {/if}
 {if $role_management == "yes"}
-	<span class="unselected"><a href="lib/usermanagement/rolesedit.php">{lang_get s='menu_define_roles'}</a></span> 
+	<span class="unselected"><a href="{$umgmt}/rolesedit.php">{lang_get s='menu_define_roles'}</a></span> 
 {/if}
-	<span class="unselected"><a href="lib/usermanagement/rolesview.php">{lang_get s='menu_view_roles'}</a></span>
+	<span class="unselected"><a href="{$umgmt}/rolesview.php">{lang_get s='menu_view_roles'}</a></span>
 	{if $feature == 'testproject'}
 		{if $tp_user_role_assignment == "yes"}
 			<span class="selected">{lang_get s='menu_assign_testproject_roles'}</span> 
 		{/if}
 		{if $tproject_user_role_assignment == "yes"}
-			<span class="unselected"><a href="lib/usermanagement/usersassign.php?feature=testplan">{lang_get s='menu_assign_testplan_roles'}</a></span>
+			<span class="unselected"><a href="{$umgmt}/usersassign.php?feature=testplan">{lang_get s='menu_assign_testplan_roles'}</a></span>
 		{/if}
 	{else}
 		{if $tp_user_role_assignment == "yes"}
-			<span class="unselected"><a href="lib/usermanagement/usersassign.php?feature=testproject">{lang_get s='menu_assign_testproject_roles'}</a></span>
+			<span class="unselected"><a href="{$umgmt}/usersassign.php?feature=testproject">{lang_get s='menu_assign_testproject_roles'}</a></span>
 		{/if}
 		{if $tproject_user_role_assignment == "yes"}
 			<span class="selected">{lang_get s='menu_assign_testplan_roles'}</span> 
@@ -44,60 +50,77 @@ $Id: usersassign.tpl,v 1.8 2007/02/28 08:02:26 franciscom Exp $
 {* 20070227 - franciscom
    Because this page can be reloaded due to a test project change done by
    user on navBar.tpl, if method of form below is post we don't get
-   during refresh feature, and then we have a bad refresh on page gettin a bug.
+   during refresh feature, and then we have a bad refresh on page getting a bug.
 *}
 {if $features neq ''}
-  <form method="get" action="lib/usermanagement/usersassign.php">
+  <form method="get" action="{$umgmt}/usersassign.php">
   	<input type="hidden" name="featureID" value="{$featureID}" />
   	<input type="hidden" name="feature" value="{$feature}" />
-    
-    
-    	<p>
+    	<div>
+    	<table border='0'>
     	{if $feature == 'testproject'}
-    		{lang_get s='caption_assign_testproject_user_roles'} - {lang_get s='TestProject'}
-    		<select id="featureSel">
-    		{foreach from=$features key=id item=f}
-    		<option value="{$id}" 
-    		{if $featureID == $id}
-    			selected="selected" 
-    		{/if}
-    		>{$f|escape}</option>
-    		{/foreach}
-    		</select>
+    		<tr><td class="labelHolder">{lang_get s='TestProject'}</td><td>&nbsp;<td>
     	{else}
-    		{lang_get s='caption_assign_testplan_user_roles'} - {lang_get s='TestPlan'}
-    		<select id="featureSel">
-    		{foreach from=$features item=f}
-    		<option value="{$f.id}" 
-    		{if $featureID == $f.id}
-    			selected="selected" 
-    		{/if}
-    		>{$f.name|escape}</option>
-    		{/foreach}
-    		</select>
+    		<tr><td class="labelHolder">{lang_get s='TestProject'}{$smarty.const.TITLE_SEP}</td><td>{$tproject_name}</td><tr>
+    		<tr><td class="labelHolder">{lang_get s='TestPlan'}</td>
     	{/if}
-    	<input type="button" value="{lang_get s='btn_change'}" onclick="changeFeature('{$feature}');"/>
+    	<td>
+        <select id="featureSel" onchange="changeFeature('{$feature}')">
+    	   {foreach from=$features item=f}
+    	     <option value="{$f.id}" {if $featureID == $f.id} selected="selected" {/if}>
+    	     {$f.name|escape}</option>
+    	     {if $featureID == $f.id}
+    	        {assign var="my_feature_name" value=$f.name}
+    	     {/if}
+    	   {/foreach}
+    	   </select>
+    	</td>
     	
-    	</p>
-    
+      <td>
+    	<input type="button" value="{lang_get s='btn_change'}" onclick="changeFeature('{$feature}');"/>
+    	</td>
+   		</tr>
+  		</table>
+    	</div>
+      <p></p>
     	<table class="common" width="75%">
     	<tr>
     		<th>{lang_get s='User'}</th>
-    		<th>{lang_get s='th_roles'}</th>
+    		<th>{lang_get s=th_roles_$feature} ({$my_feature_name|escape})</th>
     	</tr>
     	{foreach from=$userData item=user}
     	<tr>
     		<td>{$user.fullname|escape}</td>
     		<td>
     			{assign var=uID value=$user.id}
-    			<select name="userRole[{$uID}]"> 
-    			{if $userFeatureRoles[$uID].role_id neq null}
-    				{html_options options=$optRights selected=$userFeatureRoles[$uID].role_id}
-    			{else}
-    				{html_options options=$optRights selected=0}
-    			{/if}
-    				{$userFeatureRoles[pID]}
-    			</select>
+          {* --------------------------------------------------------------------- *}
+          {* get role name to add to inherited in order to give 
+             better information to user
+          *}
+          {if $userFeatureRoles[$uID].is_inherited == 1 }
+            {assign var="ikx" value=$userFeatureRoles[$uID].effective_role_id }
+          {else}
+            {assign var="ikx" value=$userFeatureRoles[$uID].uplayer_role_id }
+          {/if}
+          {assign var="inherited_role_name" value=$optRights[$ikx] }
+          {* --------------------------------------------------------------------- *}
+         
+		     <select name="userRole[{$uID}]" id="userRole[{$uID}]">
+		      {foreach key=role_id item=role_description from=$optRights}
+		        <option value="{$role_id}"
+		          {if ($userFeatureRoles[$uID].effective_role_id == $role_id && 
+		               $userFeatureRoles[$uID].is_inherited==0) || 
+		               ($role_id == $smarty.const.TL_ROLES_INHERITED && 
+		                $userFeatureRoles[$uID].is_inherited==1) }
+		            selected="selected" {/if}  >
+                {$role_description|escape}
+                {if $role_id == $smarty.const.TL_ROLES_INHERITED}
+                  {$inherited_role_name|escape} 
+                {/if}
+		        </option>
+		      {/foreach}
+      	 </select>
+
     		</td>
     	</tr>
     	{/foreach}

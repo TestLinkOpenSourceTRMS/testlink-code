@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/ 
 // This script is distributed under the GNU General Public License 2 or later. 
 //
-// $Id: testlink_library.js,v 1.36 2007/05/10 07:04:54 franciscom Exp $ 
+// $Id: testlink_library.js,v 1.37 2007/08/20 06:41:11 franciscom Exp $ 
 //
 // Javascript functions commonly used through the GUI
 // This library is automatically loaded with inc_header.tpl
@@ -17,6 +17,14 @@
 // 20061223 - franciscom - added open_show_notes_window()
 // 20060603 - franciscom - added confirm_and_submit()
 //
+/*
+  function: focusInputField
+
+  args :
+  
+  returns: 
+
+*/
 function focusInputField(id,bSelect)
 {
 	var f = document.getElementById(id);
@@ -27,7 +35,16 @@ function focusInputField(id,bSelect)
 			f.select();
 	}
 }
-// help popup
+
+
+/*
+  function: open_popup
+
+  args :
+  
+  returns: 
+
+*/
 function open_popup(page) 
 {
 	window.open(page, "_blank", "left=350,top=50,screenX=350,screenY=50,fullscreen=no,resizable=yes,toolbar=no,status=no,menubar=no,scrollbars=yes,directories=no,location=no,width=400,height=650")
@@ -285,6 +302,14 @@ function attachmentDlg_onSubmit()
 }
 
 
+/*
+  function: confirm_and_submit
+
+  args :
+  
+  returns: 
+
+*/
 function confirm_and_submit(msg,form_id,field_id,field_value,action_field_id,action_field_value)
 {
 	if (confirm(msg))
@@ -433,14 +458,48 @@ function planRemoveTC(warning_msg)
 	
 	return true;
 }
+
+/*
+  function: open_show_notes_window
+
+  args :
+  
+  returns: 
+
+*/
 function open_show_notes_window(exec_id)
 {
 	window.open(fRoot+"lib/execute/show_exec_notes.php?exec_id="+exec_id,
 	            "execution_notes","width=510,height=270,resizable=yes,dependent=yes");
 }
 
+/*
+  function: open_help_window
+
+  args :
+  
+  returns: 
+
+*/
 function open_help_window(help_page,locale)
 {
 	window.open(fRoot+"lib/general/show_help.php?help="+help_page+"&locale="+locale,"_blank", "left=350,top=50,screenX=350,screenY=50,fullscreen=no,resizable=yes,toolbar=no,status=no,menubar=no,scrollbars=yes,directories=no,location=no,width=400,height=650")
+}
+
+
+/*
+  function: open_help_window
+
+  args :
+  
+  returns: 
+
+*/
+function deleteRole_onClick(role_id,msg)
+{
+	if (confirm(msg))
+	{
+		location = fRoot+"lib/usermanagement/rolesview.php?deleterole=1&id="+role_id;
+  }
 }
 

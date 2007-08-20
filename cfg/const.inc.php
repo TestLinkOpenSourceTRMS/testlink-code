@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: const.inc.php,v $
  *
- * @version $Revision: 1.35 $
- * @modified $Date: 2007/08/18 14:08:02 $ by $Author: franciscom $
+ * @version $Revision: 1.36 $
+ * @modified $Date: 2007/08/20 06:41:01 $ by $Author: franciscom $
  * @author Martin Havlát
  *
  * SCOPE:
@@ -16,6 +16,7 @@
  * 
  *-------------------------------------------------------------------
  * Revisions: 
+ *           20070818 - franciscom - $g_default_roleid
  *           20070705 - franciscom - config of $g_req_status.
  *           20070624 - franciscom - $g_title_sep*
  *           20070607 - franciscom 
@@ -271,19 +272,31 @@ $g_tc_status_for_ui_default="blocked";
 // -------------------------------------------------------------------------------
 
 
-
+/** [Roles] */
 define("TL_ROLES_GUEST",5);
 define("TL_ROLES_NONE",3);
-define("TL_ROLES_NONE_DESC","<no rights>");
+define("TL_ROLES_NO_RIGHTS",3);
+
 define("TL_ROLES_UNDEFINED",0);
-define("TL_ROLES_UNDEFINED_DESC","<inherited>");
+define("TL_ROLES_INHERITED",0);
 
-// Configuring here you can change the default role for new users 
-// created from the login page.
-define("TL_DEFAULT_ROLEID",TL_ROLES_GUEST);
+// Roles with id > to this role can be deleted from user interface
+define("TL_LAST_SYSTEM_ROLE",9);
 
-// Example: default role will be TESTER, see roles table
-// define("TL_DEFAULT_ROLEID",7);
+
+// you can change the default role used for new users:
+// - created from the login page.
+// - created using user management features
+//
+// use custom_config.inc.php instead of doing changes here
+$g_default_roleid=TL_ROLES_GUEST;
+
+// when a role is deleted, a new role must be assigned to all users
+// having role to be deleted
+// A right choice seems to be using $g_default_roleid.
+// You can change this adding a config line in custom_config.inc.php
+$g_role_replace_for_deleted_roles=$g_default_roleid;
+
 
 // used to mark up inactive objects (test projects, etc)
 define("TL_INACTIVE_MARKUP","* ");
@@ -410,5 +423,7 @@ define('GET_BUG_SUMMARY',true);
 // gen_spec_view()
 define('DO_PRUNE',1);
 
+// getAllRoles()
+define('EXCLUDE_UNDEFINED_ROLE',0);
 // -------------------------------------------------------------------
 ?>

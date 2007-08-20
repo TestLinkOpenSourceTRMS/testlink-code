@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.186 $
- * @modified $Date: 2007/08/18 14:13:46 $ $Author: franciscom $
+ * @version $Revision: 1.187 $
+ * @modified $Date: 2007/08/20 06:41:55 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
@@ -570,7 +570,7 @@ $TLS_title_execution_notes = "Execution notes";
 $TLS_btn_create_role = "Create";
 $TLS_btn_edit_role = "Edit";
 $TLS_caption_define_role = "Define role";
-$TLS_caption_possible_affected_users = "Possibly affected users";
+$TLS_caption_possible_affected_users = "Possibly affected users by role delete operation";
 $TLS_enter_role_notes = "Role description";
 $TLS_menu_assign_product_roles = "Assign Test Project roles";
 $TLS_menu_assign_testplan_roles = "Assign test plan roles";
@@ -1175,6 +1175,8 @@ $TLS_caption_assign_testplan_user_roles = "Assign test plan roles to users";
 $TLS_caption_assign_testproject_user_roles = "Assign Test Project user roles";
 $TLS_menu_assign_testproject_roles = "Assign Test Project roles";
 $TLS_th_roles = "Role";
+$TLS_th_roles_testplan = "Test Plan Role";
+$TLS_th_roles_testproject = "Test Project Role";
 $TLS_title_assign_roles = "Assign roles";
 
 
@@ -1202,9 +1204,12 @@ $TLS_N_A = "N/A";
 $TLS_alt_delete_role = "Delete role";
 $TLS_alt_edit_role = "Edit role";
 $TLS_btn_confirm_delete = "Delete";
+$TLS_delete_role = "Delete role";
 $TLS_no_roles = "No roles";
+$TLS_th_role_description = "Description";
 $TLS_title_roles = "Available roles";
-$TLS_warning_users_will_be_reset = "The affected users will be resetted to guest role!";
+$TLS_warning_delete_role = "Really delete this role?";
+$TLS_warning_users_will_be_reset = "Affected users will get role:";
 
 
 
@@ -1355,6 +1360,7 @@ $TLS_desc_user_role_assignment = "Role assignment";
 $TLS_error_duplicate_rolename = "There's already a role with that name!";
 $TLS_error_role_no_rights = "You cannot save roles without any rights!";
 $TLS_error_role_no_rolename = "You must enter a name for the role!";
+$TLS_inherited_role="<inherited>";
 $TLS_mgt_testplan_create = "Test Plan create/edit";
 
 

@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: projectedit.tpl,v 1.14 2007/08/18 14:08:26 franciscom Exp $
+$Id: projectedit.tpl,v 1.15 2007/08/20 06:41:11 franciscom Exp $
 Purpose: smarty template - Edit existing product 
 
 rev:
@@ -165,7 +165,7 @@ function validateForm(f)
 	{* this renews menu bar after change *}
 	{if $action == 'delete'}
 	<script type="text/javascript">
-	alert('A1' + top.location);
+	// alert(' projectedit.tpl ' + top.location);
 	top.location = top.location;
 	</script>
 	{else}

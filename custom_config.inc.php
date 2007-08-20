@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: custom_config.inc.php,v $
  *
- * @version $Revision: 1.1 $
- * @modified $Date: 2007/07/09 07:55:17 $ by $Author: franciscom $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2007/08/20 06:41:01 $ by $Author: franciscom $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink 
@@ -19,5 +19,6 @@
  *             cfg\const.inc.php
  *-----------------------------------------------------------------------------
 */
+$g_default_roleid=7;
 
 ?>

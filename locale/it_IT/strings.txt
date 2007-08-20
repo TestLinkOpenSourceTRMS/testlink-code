@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.20 $
- * @modified $Date: 2007/07/06 06:21:50 $ $Author: franciscom $
+ * @version $Revision: 1.21 $
+ * @modified $Date: 2007/08/20 06:41:55 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
@@ -28,6 +28,18 @@ $TLS_Role = "Ruolo";
 $TLS_Keyword = "Parola chiave";
 $TLS_Milestone = "Milestone";
 $TLS_testsuite_created = "Test Suite creato";
+
+$TLS_test_status_all="Tutti";
+$TLS_test_status_any="Qualsiasi";
+$TLS_test_status_not_run = "Non eseguito";
+$TLS_test_status_blocked = "Bloccato";
+$TLS_test_status_failed = "Fallito";
+$TLS_test_status_passed = "Corretto";
+$TLS_test_status_not_available="Non disponibile";
+$TLS_test_status_unknown="Sconosciuto";
+
+
+
 
 /////////////////////////////////////////////////////////
 // firstLogin.php
@@ -537,6 +549,7 @@ $TLS_th_rolename = "Nome ruolo";
 $TLS_th_tp_rights = "Permessi sui Test Plan";
 $TLS_th_user_rights = "Permessi Utente";
 $TLS_title_user_mgmt = "Amministrazione Utenti";
+$TLS_warning_empty_role_name="Assegnare un nome al ruolo";
 $TLS_warning_modify_role = "Sei eicuro di voler modificare il ruolo?";
 
 
@@ -692,7 +705,6 @@ $TLS_test_exec_result = "Risultato";
 $TLS_test_exec_steps = "Steps";
 $TLS_test_exec_summary = "Sommario";
 $TLS_test_plan_notes = "Note Test plan";
-$TLS_test_status_not_run = "Non eseguito";
 $TLS_th_test_case_id = "ID ";
 $TLS_th_testsuite = "Testsuite";
 $TLS_title_t_r_on_build = "Test Results su Build";
@@ -923,9 +935,6 @@ $TLS_title_req_export_to = "Esporta requisito";
 
 
 // gui/templates/resultsAllBuilds.tpl
-$TLS_test_status_blocked = "Bloccato";
-$TLS_test_status_failed = "Fallito";
-$TLS_test_status_passed = "Corretto";
 $TLS_th_build = "Build";
 $TLS_th_tc_total = "Totale TC";
 
@@ -1083,6 +1092,8 @@ $TLS_caption_assign_testplan_user_roles = "Assegna ruoli nel Test Plan agli uten
 $TLS_caption_assign_testproject_user_roles = "Assegna ruoli nel Test Project agli utenti";
 $TLS_menu_assign_testproject_roles = "Assegna ruoli nel Test Project";
 $TLS_th_roles = "Ruoli";
+$TLS_th_roles_testplan = "Ruolo in Test Plan";
+$TLS_th_roles_testproject = "Ruoli in Test Project";
 $TLS_title_assign_roles = "Assegna ruoli";
 
 
@@ -1110,8 +1121,10 @@ $TLS_alt_delete_role = "elimina ruolo";
 $TLS_alt_edit_role = "Modifica ruolo";
 $TLS_btn_confirm_delete = "Elimina";
 $TLS_no_roles = "Nessun ruolo";
+$TLS_th_role_description = "Descrizione";
 $TLS_title_roles = "Ruoli disponibili";
-$TLS_warning_users_will_be_reset = "Agli utenti con tale ruolo sarà assegnato il ruolo guest!";
+$TLS_warning_delete_role = Sei sicuro di voler eliminare questo ruolo?
+$TLS_warning_users_will_be_reset = "Agli utenti con tale ruolo sarà assegnato il ruolo:";
 
 
 
@@ -1260,6 +1273,7 @@ $TLS_desc_user_role_assignment = "Assegnazione Ruoli";
 $TLS_error_duplicate_rolename = "C'è già un ruolo con questo nome!";
 $TLS_error_role_no_rights = "Non puoi salvare ruoli senza permessi!";
 $TLS_error_role_no_rolename = "Devi inserire un nome per il ruolo!";
+$TLS_inherited_role="<inherited>";
 $TLS_mgt_testplan_create = "Creazione/Modifica Test Plan";
 
 

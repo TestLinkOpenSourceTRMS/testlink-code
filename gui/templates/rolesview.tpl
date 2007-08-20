@@ -1,12 +1,13 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: rolesview.tpl,v 1.14 2007/02/28 08:02:26 franciscom Exp $ 
+$Id: rolesview.tpl,v 1.15 2007/08/20 06:41:11 franciscom Exp $ 
 Purpose: smarty template - View defined roles 
 
 *}
 {include file="inc_head.tpl"}
 
 <body>
+{lang_get s='warning_delete_role' var="warning_msg" }
 
 <h1>{lang_get s='title_user_mgmt'} - {lang_get s='title_roles'}</h1>
 
@@ -34,6 +35,9 @@ Purpose: smarty template - View defined roles
 
 <div class="workBack">
 {if $affectedUsers neq null}
+  {* show user list of users having role he/she want to delete *}
+  <h1>{lang_get s='delete_role'} {$roles[$id].role|escape}</h1>
+  
 	<table class="common" style="width:50%">
 	<caption>{lang_get s='caption_possible_affected_users'}</caption>
 	{foreach from=$affectedUsers item=i}
@@ -42,10 +46,12 @@ Purpose: smarty template - View defined roles
 	</tr>
 	{/foreach}
 	</table>
-	<p>{lang_get s='warning_users_will_be_reset'}</p>
+	<div class="legend_container">{lang_get s='warning_users_will_be_reset'} {$roles[$role_id_replacement].role|escape}</div><br>
 	<div class="groupBtn">	
-		<input type="submit" name="confirmed" value="{lang_get s='btn_confirm_delete'}" onclick="location='lib/usermanagement/rolesview.php?confirmed=1&amp;deleterole=1&amp;id={$id}'"/>
-		<input type="submit" value="{lang_get s='btn_cancel'}" onclick="location='lib/usermanagement/rolesview.php'" />
+		<input type="submit" name="confirmed" value="{lang_get s='btn_confirm_delete'}" 
+		       onclick="location='lib/usermanagement/rolesview.php?confirmed=1&amp;deleterole=1&amp;id={$id}'"/>
+		<input type="submit" value="{lang_get s='btn_cancel'}" 
+		       onclick="location='lib/usermanagement/rolesview.php'" />
 	</div>
 {else}
 	{if $roles eq ''}
@@ -55,7 +61,7 @@ Purpose: smarty template - View defined roles
 		<table class="common" width="50%">
 			<tr>
 				<th width="30%">{lang_get s='th_roles'}</th>
-				<th>{lang_get s='th_notes'}</th>
+				<th>{lang_get s='th_role_description'}</th>
 				<th>{lang_get s='th_delete'}</th>
 			</tr>
 			{foreach from=$roles item=role}
@@ -75,8 +81,9 @@ Purpose: smarty template - View defined roles
 					{$role.notes}
 				</td>
 				<td>
-				{if $role.id > 9}
-					<a href="lib/usermanagement/rolesview.php?deleterole=1&amp;id={$role.id}">
+				{if $role.id > $smarty.const.TL_LAST_SYSTEM_ROLE}
+					{* <a href="lib/usermanagement/rolesview.php?deleterole=1&amp;id={$role.id}"> *}
+					<a href="javascript:deleteRole_onClick({$role.id},'{$warning_msg}')">
 					<img style="border:none" alt="{lang_get s='alt_delete_role'}"
 					     title="{lang_get s='alt_delete_role'}"
 					     src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png"/>

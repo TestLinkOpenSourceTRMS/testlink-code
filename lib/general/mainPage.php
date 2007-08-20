@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: mainPage.php,v $
  *
- * @version $Revision: 1.27 $ $Author: franciscom $
- * @modified $Date: 2007/05/09 06:56:49 $
+ * @version $Revision: 1.28 $ $Author: franciscom $
+ * @modified $Date: 2007/08/20 06:41:30 $
  *
  * @author Martin Havlat
  * 
@@ -17,6 +17,7 @@
  * There is also some javascript that handles the form information.
  *
  * rev :
+ *       20070725 - franciscom - refactoring of rights checking 
  *       20070509 - franciscom - improving test plan availabilty checking
  *
 **/
@@ -111,27 +112,24 @@ if ($testPlanID && isset($_SESSION['testPlanRoles'][$testPlanID]))
 }
 $securityNotes = getSecurityNotes($db);
 
+
+$rights2check=array('testplan_execute','testplan_create_build',
+                    'testplan_metrics','testplan_planning',
+                    'cfield_view', 'cfield_management');
+                        
+foreach($rights2check as $key => $the_right)
+{
+  $smarty->assign($the_right, has_rights($db,$the_right));
+}                         
+$smarty->assign('testplan_creating', has_rights($db,"mgt_testplan_create"));
+$smarty->assign('tp_user_role_assignment', has_rights($db,"user_role_assignment"));
+$smarty->assign('tproject_user_role_assignment', has_rights($db,"user_role_assignment",null,-1));
+$smarty->assign('usermanagement_rights',has_rights($db,"mgt_users"));
+
 $smarty->assign('securityNotes',$securityNotes);
 $smarty->assign('arrPlans', $arrPlans);
 $smarty->assign('countPlans', count($arrPlans));
 $smarty->assign('num_active_tplans', $num_active_tplans);
-
-
-//can the user test
-$smarty->assign('testplan_execute', has_rights($db,"testplan_execute"));
-//can the user create build
-$smarty->assign('testplan_create_build', has_rights($db,"testplan_create_build"));
-//can the user view metrics
-$smarty->assign('testplan_metrics', has_rights($db,"testplan_metrics"));
-
-//can the user manage Test Plan
-$smarty->assign('testplan_planning', has_rights($db,"testplan_planning"));
-$smarty->assign('testplan_creating', has_rights($db,"mgt_testplan_create"));
-$smarty->assign('tp_user_role_assignment', has_rights($db,"user_role_assignment"));
-$smarty->assign('tproject_user_role_assignment', has_rights($db,"user_role_assignment",null,-1));
-$smarty->assign('cfield_view', has_rights($db,"cfield_view"));
-$smarty->assign('cfield_management', has_rights($db,"cfield_management"));
-$smarty->assign('usermanagement_rights',has_rights($db,"mgt_users"));
 $smarty->assign('launcher','lib/general/frmWorkArea.php');
 $smarty->assign('show_filter_tp_by_product',$g_ui_show_check_filter_tp_by_testproject);
 $smarty->assign('sessionProductID',$testprojectID);	

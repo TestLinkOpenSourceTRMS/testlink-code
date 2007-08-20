@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.55 $
- * @modified $Date: 2007/08/18 14:13:00 $ $Author: franciscom $
+ * @version $Revision: 1.56 $
+ * @modified $Date: 2007/08/20 06:41:55 $ $Author: franciscom $
  *
  * @author Andreas Morsing
  * @author Fabian Woelk
@@ -1118,6 +1118,8 @@ $TLS_caption_assign_testplan_user_roles = "Testplan Benutzerrollen zuweisen";
 $TLS_caption_assign_testproject_user_roles = "Testprojekt Benutzerrollen zuweisen";
 $TLS_menu_assign_testproject_roles = "Testprojekt Benutzerrollen zuweisen";
 $TLS_th_roles = "Rollen";
+$TLS_th_roles_testplan = "Test Plan Role";
+$TLS_th_roles_testproject = "Test Project Role";
 $TLS_title_assign_roles = "Rollen zuweisen";
 
 
@@ -1145,7 +1147,9 @@ $TLS_alt_delete_role = "Rolle löschen";
 $TLS_alt_edit_role = "Rolle editieren";
 $TLS_btn_confirm_delete = "Löschen bestätigen";
 $TLS_no_roles = "Keine Rollen vorhanden";
+$TLS_th_role_description = "Description";
 $TLS_title_roles = "Rollen";
+$TLS_warning_delete_role = "Really delete this role?";
 $TLS_warning_users_will_be_reset = "Achtung: Die Benutzer werden zurückgesetzt!";
 
 
@@ -1296,6 +1300,7 @@ $TLS_desc_user_role_assignment = "Darf Benutzerrollen zuweisen";
 $TLS_error_duplicate_rolename = "Dieser Name wurde schon für eine Rolle vergeben, wählen Sie bitte einen anderen aus!";
 $TLS_error_role_no_rights = "Sie können keine Rolle ohne Rechte abspeichern!";
 $TLS_error_role_no_rolename = "Sie müssen der Rolle einen Namen vergeben!";
+$TLS_inherited_role="<inherited>";
 $TLS_mgt_testplan_create = "Erstellen von Testplänen";
 
 

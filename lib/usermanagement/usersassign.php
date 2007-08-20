@@ -5,12 +5,16 @@
 *
 * Filename $RCSfile: usersassign.php,v $
 *
-* @version $Revision: 1.11 $
-* @modified $Date: 2007/06/06 19:18:06 $ $Author: schlundus $
+* @version $Revision: 1.12 $
+* @modified $Date: 2007/08/20 06:41:30 $ $Author: franciscom $
 * 
 * Allows assigning users roles to testplans or testprojects
 *
 * rev :
+*      20070819 - franciscom - 
+*      refactoring of delete and insert calls
+*      new functions to generate $userFeatureRoles
+*
 *      20070227 - franciscom - refatoring to solve refresh problem
 *                              when changing test project on navBar
 */
@@ -22,6 +26,8 @@ $feature = isset($_REQUEST['feature']) ? $_REQUEST['feature'] : null;
 $featureID = isset($_REQUEST['featureID']) ? intval($_REQUEST['featureID']) : 0;
 
 $testprojectID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+$testprojectName = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : null;
+
 $tpID = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0;
 $userID = $_SESSION['userID'];
 
@@ -32,40 +38,36 @@ $roles_updated='';
 $testPlans = null;
 $bTestproject = false;
 $bTestPlan = false;
+$pfn = null;
+$bUpdate = isset($_REQUEST['do_update']) ? 1 : 0;
+
 
 if ($feature == "testproject")
 {
 	$roles_updated = lang_get("test_project_user_roles_updated");
 	$no_features = lang_get("no_test_projects");
 	$bTestproject = true;
+  $pfn = array( 'delete' => 'deleteTestProjectUserRoles',
+                'add'    => 'insertUserTestProjectRole'); 
 }
 else if ($feature == "testplan")
 {
 	$roles_updated = lang_get("test_plan_user_roles_updated");
 	$no_features = lang_get("no_test_plans");
 	$bTestPlan = true;
+  $pfn = array( 'delete' => 'deleteTestPlanUserRoles',
+                'add'    => 'insertUserTestPlanRole'); 
 }
-
-$bUpdate = isset($_REQUEST['do_update']) ? 1 : 0;
 
 if ($featureID && $bUpdate)
 {
 	$map_userid_roleid = $_REQUEST['userRole'];
-	
-	if ($bTestproject)
-		deleteProductUserRoles($db,$featureID);			
-		
-	else if ($bTestPlan)
-		deleteTestPlanUserRoles($db,$featureID);					
-	
+	$pfn['delete']($db,$featureID);			
 	foreach($map_userid_roleid as $user_id => $role_id)
 	{
 		if ($role_id)
 		{
-			if ($bTestproject)
-				insertUserTestProjectRole($db,$user_id,$featureID,$role_id);
-			else if ($bTestPlan)
-				insertUserTestPlanRole($db,$user_id,$featureID,$role_id);
+			$pfn['add']($db,$user_id,$featureID,$role_id);
 		}
 	}
 	$user_feedback=$roles_updated; 
@@ -76,18 +78,37 @@ $userFeatureRoles = null;
 $features = null;
 if ($bTestproject)
 {
-	$features = getAccessibleProducts($db);
+	$features = getAccessibleProducts($db,'array_of_map');
+
+  // If have no a test project ID, try to figure out which test project to show
+  // Try with session info, if failed go to first test project available. 
 	if (!$featureID)
 	{
 		if ($testprojectID)
+		{
 			$featureID = $testprojectID;
+			// $feature_name = $testprojectName;
+		}	
 		else if (sizeof($features))
 		{
-			$k = key($features);
-			$featureID = $k;
+			$featureID = $features[0]['id'];
+			// $feature_name = $features[0]['name'];
 		}
 	}
-	$userFeatureRoles = getProductUserRoles($db,$featureID);
+	// else
+	// {
+	//   foreach($features as $key => $value)
+	//   {
+	//     if( $value['id'] == $featureID)
+	//     { 
+	//       $feature_name = $value['name'];    
+	//       break;
+	//     }  
+	//   }
+	// }
+	
+  $userFeatureRoles=get_tproject_effective_role($db,$featureID);
+
 }
 else if($bTestPlan)
 {
@@ -121,7 +142,8 @@ else if($bTestPlan)
 				$featureID = $features[0]['id'];
 		}
 	}
-	$userFeatureRoles = getTestPlanUserRoles($db,$featureID);
+	
+	$userFeatureRoles=get_tplan_effective_role($db,$featureID,$testprojectID);
 }
 $roleList = getAllRoles($db);
 
@@ -142,9 +164,12 @@ $smarty->assign('tp_user_role_assignment',
 $smarty->assign('tproject_user_role_assignment', 
                 $can_manage_users ? "yes" : has_rights($db,"user_role_assignment",null,-1));
                 
+$smarty->assign('tproject_name',$testprojectName);
 $smarty->assign('optRights', $roleList);
 $smarty->assign('userData', $userData);
 $smarty->assign('userFeatureRoles',$userFeatureRoles);
+
+// $smarty->assign('feature_name',$feature_name);
 $smarty->assign('featureID',$featureID);
 $smarty->assign('feature',$feature);
 $smarty->assign('features',$features);

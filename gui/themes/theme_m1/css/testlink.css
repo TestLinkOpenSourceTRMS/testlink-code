@@ -1,6 +1,6 @@
 /* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: testlink.css,v 1.8 2007/06/11 06:34:54 franciscom Exp $ 
+$Id: testlink.css,v 1.9 2007/08/20 06:41:20 franciscom Exp $ 
 Purpose: main css - theme m1
 
 20070401 - franciscom -  added padding to:
@@ -125,9 +125,9 @@ div.pagetitle {
 /* background for working area (tables and forms) */
 div.workBack {
 	text-align: 	left;
-	margin: 		3px;
+	margin: 		3px 3px 3px 3px;
 	background: 	#CDE;
-	padding: 		5px; 
+	padding: 		5px 5px 5px 5px; 
 	border-style:	groove;
 	border-width:	thin;
 	FONT-FAMILY: 'Trebuchet MS', Verdana, Arial, sans-serif;

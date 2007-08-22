@@ -3,19 +3,25 @@
  * TestLink Open Source Project - @link http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: plan.core.inc.php,v $
- * @version $Revision: 1.34 $
- * @modified $Date: 2006/08/17 19:29:59 $ $Author: schlundus $
+ * @version $Revision: 1.35 $
+ * @modified $Date: 2007/08/22 15:15:32 $ $Author: franciscom $
  *  
  * 
  * @author 	Martin Havlat
  *
- * Collect Test Plan information
- * @todo common.php includes related function getUserTestPlan (move it here)
  *
- *
+ * rev:
+ *      20070821 - franciscom - BUGID: 951
 **/
 
-/* 20060312 - franciscom - add nodes_hierarchy on join */
+/*
+  function: 
+
+  args :
+  
+  returns: 
+
+*/
 function getAccessibleTestPlans(&$db,$testproject_id,$filter_by_product=0,$tpID = null)
 {
 	$show_tp_without_prodid = config_get('show_tp_without_prodid');
@@ -33,19 +39,41 @@ function getAccessibleTestPlans(&$db,$testproject_id,$filter_by_product=0,$tpID 
 	
 	$bGlobalNo = ($_SESSION['roleId'] == TL_ROLES_NONE);
 	$bProductNo = 0;
-	if (isset($_SESSION['productRoles'][$testproject_id]['role_id']))
-		$bProductNo = ($_SESSION['productRoles'][$testproject_id]['role_id'] == TL_ROLES_NONE); 
+	// BUGID: 951 - wrong key to access session info
+	$analyse_global_role=1;
+	if (isset($_SESSION['testprojectRoles'][$testproject_id]['role_id']))
+	{
+		$bProductNo = ($_SESSION['testprojectRoles'][$testproject_id]['role_id'] == TL_ROLES_NONE); 
+	  $analyse_global_role=0;	
+	}
 	
-	if ($bProductNo || $bGlobalNo)
-		$query .= "(role_id IS NOT NULL AND role_id != ".TL_ROLES_NONE.")";
-	else
-		$query .= "(role_id IS NULL OR role_id != ".TL_ROLES_NONE.")";
+	// echo "<pre>debug 20070821 " . __FUNCTION__ . " --- "; print_r($_SESSION['testprojectRoles']); echo "</pre>";
+	// echo "<pre>debug 20070821 " . __FUNCTION__ . " --- "; print_r($bProductNo); echo "</pre>";
+	// echo "<pre>debug 20070821 \$bGlobalNo" . __FUNCTION__ . " --- "; print_r($bGlobalNo); echo "</pre>";
 	
+  if( $bProductNo || ($analyse_global_role && $bGlobalNo))
+  {
+    $query .= "(role_id IS NOT NULL AND role_id != ".TL_ROLES_NONE.")";
+  }	
+  else
+  {
+    $query .= "(role_id IS NULL OR role_id != ".TL_ROLES_NONE.")";
+  }
+   
+	// if ($bProductNo || $bGlobalNo)
+	// 	$query .= "(role_id IS NOT NULL AND role_id != ".TL_ROLES_NONE.")";
+	// else
+	// 	$query .= "(role_id IS NULL OR role_id != ".TL_ROLES_NONE.")";
+	                                                                                            
 	if (!is_null($tpID))
 		$query .= " AND nodes_hierarchy.id = {$tpID}";
 		
 	$query .= " ORDER BY name";
+
+
 	$testPlans = $db->get_recordset($query);
+	
+	//echo "<pre>debug 20070821 " . __FUNCTION__ . " --- "; print_r($testPlans); echo "</pre>";
 	
 	$arrPlans = null;
 	for($i = 0;$i < sizeof($testPlans);$i++)

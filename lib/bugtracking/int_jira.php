@@ -4,13 +4,16 @@
  *
  * Filename $RCSfile: int_jira.php,v $
  *
- * @version $Revision: 1.9 $
- * @modified $Date: 2007/05/15 13:56:59 $ $Author: franciscom $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2007/08/24 16:46:54 $ $Author: franciscom $
  *
  * @author (contributor) jbarchibald@gmail.com
  *
  * Constants used throughout TestLink are defined within this file
  * they should be changed for your environment
+ *
+ * 20070818 - franciscom - BUGID 973 - Patch by hseffler
+ *
  *
  * 20070421 - franciscom - BUGID 805
  * Seems similar to old problem with mantis interface when using MS SQL,
@@ -23,10 +26,6 @@
  *
  * 20070403 - franciscom - 
  * 1. added an specialized version of checkBugID
- *
- *
- *
- *
  *
 **/
 /** Interface name */
@@ -70,7 +69,13 @@ class jiraInterface extends bugtrackingInterface
 			return false;
 
 		$status = false;
-		$query = "SELECT issuestatus FROM jiraissue WHERE pkey='$id'";
+		
+		// 20070818 - francisco.mancardi@gruppotesi.com
+		// $query = "SELECT issuestatus FROM jiraissue WHERE pkey='$id'";
+		$query = "SELECT s.pname as issuestatus " .
+		         "FROM issuestatus s, jiraissue i " .
+		         "WHERE i.pkey='$id' AND i.issuestatus = s.ID";
+		
 		$result = $this->m_dbConnection->exec_query($query);
 		if ($result)
 		{
@@ -94,25 +99,28 @@ class jiraInterface extends bugtrackingInterface
 	 * @return string returns the status (in a readable form) of the given bug if the bug
 	 * 		was found, else false
 	 *
+	 * rev: 
+	 *      20070818 - franciscom - BUGID
 	 **/
 	function getBugStatusString($id)
 	{
 		$status = $this->getBugStatus($id);
 		
 		$str = htmlspecialchars($id);
+		
 		//if the bug wasn't found the status is null and we simply display the bugID
 		if ($status !== false)
 		{
-			//the status values depends on your mantis configuration at config_inc.php in $g_status_enum_string, 
-			//below is the default:
-			//'1"Open,3:InProgress,4:Re-Opened,5:resolved,6:closed'
-			//strike through all bugs that have a resolved or closed status.. 
-			if ($status == 5 || $status == 6)
-				$str = "<del>" . $id . "</del>";
+      $str = $str . " - " . $status;
+      if (strcasecmp($status, 'closed') == 0 || strcasecmp($status, 'resolved') == 0 )
+      {
+        $str = "<del>" . $str . "</del>";
+      }  
 		}
 		else
+		{
 			$status	= null;
-			
+		}	
 		return $str;
 	}
 	/**

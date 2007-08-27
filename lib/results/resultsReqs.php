@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: resultsReqs.php,v $
- * @version $Revision: 1.8 $
- * @modified $Date: 2007/02/28 07:56:09 $ by $Author: kevinlevy $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2007/08/27 06:37:44 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Report requirement based results
@@ -54,6 +54,8 @@ if(!is_null($idSRS))
 }
 
 $smarty = new TLSmarty();
+$smarty->assign('tproject_name', $_SESSION['testprojectName'] );
+$smarty->assign('tplan_name', $_SESSION['testPlanName'] );
 $smarty->assign('arrMetrics', $arrMetrics);
 $smarty->assign('arrCoverage', $arrCoverage);
 $smarty->assign('arrReqSpec', $arrReqSpec);

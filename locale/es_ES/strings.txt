@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.9 $
- * @modified $Date: 2007/08/20 06:41:55 $ $Author: franciscom $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2007/08/27 06:37:57 $ $Author: franciscom $
  *
  * @author jorgesf@jsf.jazztel.es
  *
@@ -450,6 +450,16 @@ $TLS_th_tc_total = "CT Totales";
 
 
 // gui/templates/resultsBugs.tpl
+$TLS_bugs_open="Abiertos";
+$TLS_bugs_resolved="Resueltos";
+$TLS_bugs_total="total";
+$TLS_date = "Fecha";
+$TLS_printed_by = "Impreso por";
+$TLS_tcs_with_bugs="Test Cases with bugs";
+$TLS_title_test_case_bugs = "Test case bugs";
+$TLS_title_test_case_timestamp = "Test Case timestamp";
+$TLS_title_test_case_title = "Test Title";
+$TLS_title_test_suite_name = "Test Suite name";
 $TLS_th_bugs = "Bugs";
 $TLS_th_title = "Título";
 $TLS_title_bugs_report = " - Informe de Bugs ";
@@ -795,7 +805,8 @@ $TLS_create = "creado";
 // gui/templates/navBar.tpl
 $TLS_home = "Inicio";
 $TLS_link_logout = "Desconectar";
-$TLS_product = "Producto";
+$TLS_product = "Test Project";
+$TLS_search_testcase = "Buscar";
 $TLS_title_documentation = "Documentación (externa)";
 $TLS_title_execute = "Ejecutar";
 $TLS_title_results = "Resultados";

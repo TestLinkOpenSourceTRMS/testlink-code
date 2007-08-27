@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.21 $
- * @modified $Date: 2007/08/20 06:41:55 $ $Author: franciscom $
+ * @version $Revision: 1.22 $
+ * @modified $Date: 2007/08/27 06:37:57 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
@@ -725,6 +725,7 @@ $TLS_home = "Home";
 $TLS_link_logout = "Logout";
 $TLS_product = "Test Project";
 $TLS_product_role = "Ruolo nel Test Project";
+$TLS_search_testcase = "Trova";
 $TLS_title_edit_personal_data = "Personale";
 $TLS_title_execute = "Esegui";
 $TLS_title_results = "Risultati";
@@ -941,8 +942,12 @@ $TLS_th_tc_total = "Totale TC";
 
 
 // gui/templates/resultsBugs.tpl
-$TLS_date = "Data:";
+$TLS_bugs_open="Aperti";
+$TLS_bugs_resolved="Risolti";
+$TLS_bugs_total="totale";
+$TLS_date = "Data";
 $TLS_printed_by = "Stampato da:";
+$TLS_tcs_with_bugs="Test con bugs";
 $TLS_title_test_case_bugs = "Bug Test case";
 $TLS_title_test_case_timestamp = "Data/Ota Test Case";
 $TLS_title_test_case_title = "Titolo Test";

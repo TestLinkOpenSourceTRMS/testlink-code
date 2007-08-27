@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: const.inc.php,v $
  *
- * @version $Revision: 1.36 $
- * @modified $Date: 2007/08/20 06:41:01 $ by $Author: franciscom $
+ * @version $Revision: 1.37 $
+ * @modified $Date: 2007/08/27 06:36:40 $ by $Author: franciscom $
  * @author Martin Havlát
  *
  * SCOPE:
@@ -16,6 +16,7 @@
  * 
  *-------------------------------------------------------------------
  * Revisions: 
+ *           20070822 - franciscom - localisation ru_RU
  *           20070818 - franciscom - $g_default_roleid
  *           20070705 - franciscom - config of $g_req_status.
  *           20070624 - franciscom - $g_title_sep*
@@ -108,7 +109,8 @@ $g_locales = array(
 	'pl_PL' => 'Polski',
 	'pt_BR' => 'Portuguese (Brazil)',
 	'es_AR' => 'Spanish (Argentine)',
-	'es_ES' => 'Spanish'
+	'es_ES' => 'Spanish',
+	'ru_RU' => 'Russian'
 );
 
 // see strftime() in PHP manual
@@ -128,6 +130,7 @@ $g_locales_date_format = array(
 	'pl_PL' => "%d.%m.%Y",
 	'fr_FR' => "%d/%m/%Y",
 	'pt_BR' => "%d/%m/%Y",
+	'ru_RU' => "%d/%m/%Y",
 	'zh_CN' => "%Y��%m��%d��"
 ); 
 
@@ -141,6 +144,7 @@ $g_locales_timestamp_format = array(
 	'pl_PL' => "%d.%m.%Y %H:%M:%S",
 	'fr_FR' => "%d/%m/%Y %H:%M:%S",
 	'pt_BR' => "%d/%m/%Y %H:%M:%S",
+	'ru_RU' => "%d/%m/%Y %H:%M:%S",
 	'zh_CN' => "%Y��%m��%d�� %Hʱ%M��%S��"
 ); 
 
@@ -155,6 +159,7 @@ $g_locales_html_select_date_field_order = array(
 	'pl_PL' => "dmY",
 	'fr_FR' => "dmY",
 	'pt_BR' => "dmY",
+	'ru_RU' => "dmY",
 	'zh_CN' => "Ymd"
 ); 
 

@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: keywordsView.tpl,v 1.14 2007/02/23 23:26:22 schlundus Exp $
+$Id: keywordsView.tpl,v 1.15 2007/08/27 06:37:30 franciscom Exp $
 Purpose: smarty template - View all keywords 
 
 20070102 - franciscom
@@ -75,7 +75,7 @@ var warning_delete_keyword="{lang_get s='warning_delete_keyword'}";
   	{if $keywordID == 0}
   		<input type="submit" name="newKey" value="{lang_get s='btn_create_keyword'}" />
   	{else}
-  		<input type="submit" name="editKey" value="{lang_get s='btn_update'}" />
+  		<input type="submit" name="editKey" value="{lang_get s='btn_save'}" />
   	{/if}
   	</div>
   	</form>
@@ -108,7 +108,7 @@ var warning_delete_keyword="{lang_get s='warning_delete_keyword'}";
 			</td>
 			<td>{$arrKeywords[myKeyword].notes|escape|nl2br}</td>
 			{if $rightsKey ne ""}
-			<td>
+			<td class="clickable_icon">
 				<a href="lib/keywords/keywordsView.php?deleteKey=1&amp;id={$arrKeywords[myKeyword].id}"
 				   onclick="return confirm(warning_delete_keyword);">
 				<img style="border:none" title="{lang_get s='alt_delete_keyword'}"

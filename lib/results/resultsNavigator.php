@@ -2,7 +2,7 @@
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
- * @version $Id: resultsNavigator.php,v 1.32 2007/07/29 00:21:51 kevinlevy Exp $ 
+ * @version $Id: resultsNavigator.php,v 1.33 2007/08/27 06:37:44 franciscom Exp $ 
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
  * This page list View of Test Results and Metrics.
@@ -10,6 +10,8 @@
  * @todo Reload all workarea if build is changed 
  * @todo xls ouput should be general over all builds
  *
+ * rev :
+ *      20070826 - franciscom - disable resultsImport
  */
 require('../../config.inc.php');
 require_once('common.php');
@@ -30,8 +32,10 @@ $arrData = array(
 	array('name' => lang_get('link_report_not_run'), 
 	                'href' => "resultsByStatus.php?type={$tc_status_map['not_run']}&amp;report_type="),	
 	array('name' => lang_get('link_report_test'), 'href' => 'resultsTC.php?report_type='),
-	array('name' => lang_get('link_charts'), 'href' => 'charts.php?report_type='),
-	array('name' => lang_get('link_results_import'), 'href' => 'resultsImport.php?report_type='));
+	array('name' => lang_get('link_charts'), 'href' => 'charts.php?report_type='));
+	
+	// 20070826 - has problems
+	// array('name' => lang_get('link_results_import'), 'href' => 'resultsImport.php?report_type='));
 	
 	// not ready yet
 	// array('name' => lang_get('time_charts'), 'href' => 'timeCharts.php?report_type=')
@@ -45,7 +49,7 @@ if ($g_bugInterfaceOn)
 
 if ($_SESSION['testprojectOptReqs'] && has_rights($db,"mgt_view_req"))
 {
-	$arrData[] = array('name' => lang_get('link_report_reqs_coverage'), 'href' => 'resultsReqs.php?report_type=');
+	  $arrData[] = array('name' => lang_get('link_report_reqs_coverage'), 'href' => 'resultsReqs.php?report_type=');
 }
 
 // this results are related to selected build

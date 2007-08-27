@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.6 $
- * @modified $Date: 2007/08/20 06:41:55 $by $Author: franciscom $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2007/08/27 06:37:57 $by $Author: franciscom $
  * @author GrdScarabe
  *
  * French translation
@@ -464,6 +464,16 @@ $TLS_th_build = "Version";
 $TLS_th_tc_total = "Nombre total de Cas";
 
 // gui/templates/resultsBugs.tpl
+$TLS_bugs_open="Open";
+$TLS_bugs_resolved="Resolved";
+$TLS_bugs_total="total";
+$TLS_date = "Date";
+$TLS_printed_by = "Printed by";
+$TLS_tcs_with_bugs="Test Cases with bugs";
+$TLS_title_test_case_bugs = "Test case bugs";
+$TLS_title_test_case_timestamp = "Test Case timestamp";
+$TLS_title_test_case_title = "Test Title";
+$TLS_title_test_suite_name = "Test Suite name";
 $TLS_th_bugs = "Bugs";
 $TLS_th_title = "Titre";
 $TLS_title_bugs_report = " - Rapport de bug ";
@@ -816,6 +826,8 @@ $TLS_create = "cr&eacute;&eacute;";
 $TLS_home		= "Accueil";
 $TLS_link_logout	= "Se d&eacute;connecter";
 $TLS_product		= "Produit";
+$TLS_product_role = "Test Project role ";
+$TLS_search_testcase = "Trouver";
 $TLS_title_documentation = "Doc. (lien externe)";
 $TLS_title_execute	= "Ex&eacute;cuter";
 $TLS_title_results	= "R&eacute;sultats";

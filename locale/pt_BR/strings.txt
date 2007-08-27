@@ -6,8 +6,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.5 $
- * @modified $Date: 2007/08/20 06:41:56 $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2007/08/27 06:37:57 $
  * based on ..\en_GB\strings.txt
  *
  * @author Leonardo Molinari
@@ -448,6 +448,17 @@ $TLS_th_tc_total = "Totais de CT";
 
 
 // gui/templates/resultsBugs.tpl
+$TLS_bugs_open="Open";
+$TLS_bugs_resolved="Resolved";
+$TLS_bugs_total="total";
+$TLS_date = "Date";
+$TLS_printed_by = "Printed by";
+$TLS_tcs_with_bugs="Test Cases with bugs";
+$TLS_title_test_case_bugs = "Test case bugs";
+$TLS_title_test_case_timestamp = "Test Case timestamp";
+$TLS_title_test_case_title = "Test Title";
+$TLS_title_test_suite_name = "Test Suite name";
+
 $TLS_th_bugs = "Bugs";
 $TLS_th_title = "Título";
 $TLS_title_bugs_report = " - Relatório de Bugs ";
@@ -797,6 +808,8 @@ $TLS_create = "criado";
 $TLS_home = "Home";
 $TLS_link_logout = "Saída";
 $TLS_product = "Produto";
+$TLS_product_role = "Test Project role ";
+$TLS_search_testcase = "Encontrar";
 $TLS_title_documentation = "Documentação (externa)";
 $TLS_title_execute = "Executar";
 $TLS_title_results = "Resultados";

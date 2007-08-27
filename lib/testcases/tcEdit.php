@@ -4,9 +4,12 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.57 $
- * @modified $Date: 2007/07/06 06:33:51 $  by $Author: franciscom $
+ * @version $Revision: 1.58 $
+ * @modified $Date: 2007/08/27 06:37:44 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
+ *
+ * 20070826 - franciscom - is automatic tree refresh is disable,
+ *                         do not refresh if test case changes during update
  *
  * 20070701 - franciscom - feedback improvement on new version operation
  * 20070302 - franciscom - BUGID
@@ -182,7 +185,8 @@ if($edit_tc)
 } 
 else if($do_update)
 {
-	$refresh_tree='no';
+	//$refresh_tree='no';
+	$refresh_tree=$do_refresh?"yes":"no";
 	if($name_ok)
 	{
 		$msg = 'ok';
@@ -196,11 +200,11 @@ else if($do_update)
 		{
 			$status_ok=1;
 			
-			if((strcmp($tc_old[0]['name'],$name) != 0)  && $spec_cfg->automatic_tree_refresh)
-	    	{
-				// only refresh menu tree is name changed
-	  	  		$refresh_tree='yes';
-			}	
+			// if((strcmp($tc_old[0]['name'],$name) != 0)  && $spec_cfg->automatic_tree_refresh)
+	    // {
+			// 	// only refresh menu tree is name changed
+	  	//   		$refresh_tree='yes';
+			// }	
 		}
 		else
 		{

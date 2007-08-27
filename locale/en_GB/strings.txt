@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.187 $
- * @modified $Date: 2007/08/20 06:41:55 $ $Author: franciscom $
+ * @version $Revision: 1.188 $
+ * @modified $Date: 2007/08/27 06:39:47 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
@@ -278,7 +278,7 @@ $TLS_caption_nav_filter_settings = "Navigation Filter & Settings";
 $TLS_current_build = "Current build";
 $TLS_filter_owner = "Assigned to";
 $TLS_filter_result = "Result";
-$TLS_filter_tcID = "Filter: Test Case ID";
+$TLS_filter_tcID = "Test Case ID";
 $TLS_keyword = "Keyword";
 $TLS_test_status_all_status = $TLS_test_status_all;
 
@@ -726,7 +726,7 @@ $TLS_btn_save_all_tests_results = "Save all executions";
 $TLS_btn_save_tc_exec_results = "Save execution";
 $TLS_bug_mgmt = "BUG management";
 $TLS_build_is_closed = "Build is closed";
-$TLS_builds_notes = "Build's description";
+$TLS_builds_notes = "Build description";
 $TLS_bulk_tc_status_management = "Bulk TC status management";
 $TLS_date_time_run = "Date";
 $TLS_details = "Details";
@@ -772,6 +772,7 @@ $TLS_home = "Home";
 $TLS_link_logout = "Logout";
 $TLS_product = "Test Project";
 $TLS_product_role = "Test Project role ";
+$TLS_search_testcase = "Search";
 $TLS_title_edit_personal_data = "Personal";
 $TLS_title_execute = "Execute";
 $TLS_title_results = "Results";
@@ -1005,8 +1006,12 @@ $TLS_th_tc_total = "TC Total";
 
 
 // gui/templates/resultsBugs.tpl
+$TLS_bugs_open="Open";
+$TLS_bugs_resolved="Resolved";
+$TLS_bugs_total="total";
 $TLS_date = "Date";
 $TLS_printed_by = "Printed by";
+$TLS_tcs_with_bugs="Test Cases with bugs";
 $TLS_title_test_case_bugs = "Test case bugs";
 $TLS_title_test_case_timestamp = "Test Case timestamp";
 $TLS_title_test_case_title = "Test Title";
@@ -1088,6 +1093,7 @@ $TLS_display_query_params  = "Display Query Parameters";
 $TLS_display_totals = "Display Totals";
 
 // gui/templates/resultsReqs.tpl
+$TLS_no_srs_defined="No Requirements Specification available for this Test Project";
 $TLS_req_title_blocked = "Blocked Requirements";
 $TLS_req_title_failed = "Failed Requirements";
 $TLS_req_title_notrun = "Unexecuted Requirements";

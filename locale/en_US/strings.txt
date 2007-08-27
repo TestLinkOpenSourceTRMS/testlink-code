@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.14 $
- * @modified $Date: 2007/08/24 18:45:50 $ $Author: jbarchibald $
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2007/08/27 06:40:04 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
@@ -694,7 +694,7 @@ $TLS_btn_save_all_tests_results = "Save all executions";
 $TLS_btn_save_tc_exec_results = "Save execution";
 $TLS_bug_mgmt = "BUG management";
 $TLS_build_is_closed = "Build is closed";
-$TLS_builds_notes = "Build's description";
+$TLS_builds_notes = "Build description";
 $TLS_bulk_tc_status_management = "Bulk TC status management";
 $TLS_date_time_run = "Date";
 $TLS_details = "Details";
@@ -738,6 +738,7 @@ $TLS_home = "Home";
 $TLS_link_logout = "Logout";
 $TLS_product = "Test Project";
 $TLS_product_role = "Test Project role";
+$TLS_search_testcase = "Search";
 $TLS_title_edit_personal_data = "Personal";
 $TLS_title_execute = "Execute";
 $TLS_title_results = "Results";
@@ -954,8 +955,12 @@ $TLS_th_tc_total = "TC Total";
 
 
 // gui/templates/resultsBugs.tpl
-$TLS_date = "Date:";
+$TLS_bugs_open="Open";
+$TLS_bugs_resolved="Resolved";
+$TLS_bugs_total="total";
+$TLS_date = "Date";
 $TLS_printed_by = "Printed by:";
+$TLS_tcs_with_bugs="Test Cases with bugs";
 $TLS_title_test_case_bugs = "Test case bugs";
 $TLS_title_test_case_timestamp = "Test Case timestamp";
 $TLS_title_test_case_title = "Test Title";

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.56 $
- * @modified $Date: 2007/08/20 06:41:55 $ $Author: franciscom $
+ * @version $Revision: 1.57 $
+ * @modified $Date: 2007/08/27 06:37:07 $ $Author: franciscom $
  *
  * @author Andreas Morsing
  * @author Fabian Woelk
@@ -749,6 +749,7 @@ $TLS_home = "Home";
 $TLS_link_logout = "Abmelden";
 $TLS_product = "Testprojekt";
 $TLS_product_role = "Testprojekt Rolle";
+$TLS_search_testcase = "Suchen";
 $TLS_title_edit_personal_data = "Persönliche Einstellungen ändern";
 $TLS_title_execute = "Ausführen";
 $TLS_title_results = "Resultate";
@@ -966,8 +967,12 @@ $TLS_th_tc_total = "Anzahl Testfälle";
 
 
 // gui/templates/resultsBugs.tpl
+$TLS_bugs_open="Open";
+$TLS_bugs_resolved="Resolved";
+$TLS_bugs_total="total";
 $TLS_date = "Datum:";
 $TLS_printed_by = "Ausgedruckt durch:";
+$TLS_tcs_with_bugs="Test Cases with bugs";
 $TLS_title_test_case_bugs = "Testfall Bugs";
 $TLS_title_test_case_timestamp = "Testfall Zeitstempel";
 $TLS_title_test_case_title = "Testfall Titel";

@@ -1,7 +1,9 @@
 /* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: testlink.css,v 1.9 2007/08/20 06:41:20 franciscom Exp $ 
+$Id: testlink.css,v 1.10 2007/08/27 06:35:31 franciscom Exp $ 
 Purpose: main css - theme m1
+
+20070826 - franciscom - exec_tc_title, split of div.test_exec and table.test_exec
 
 20070401 - franciscom -  added padding to:
                         .login_warning_message, .warning_message 
@@ -475,6 +477,7 @@ div.not_run {
 	text-align: center;
 }
 
+/* 20070826 - franciscom */
 div.exec_history {
 	background:		white;
 	padding: 		0px 3px 0px 3px;
@@ -548,12 +551,14 @@ div.show_hide_title {
 	font-weight : bold;
 }
 
+/* 20070826 - added padding to allow good effect with Nifty */
 div.exec_history_title {
 	font-weight : bold;
+	padding: 		2px;
 }
 
 div.notes{
-	background: 	#FFC;
+	background: 	whitesmoke;
 	border: 		1px solid black;
 	color: 			black;
 	margin: 		1px;
@@ -569,13 +574,21 @@ td.tcase_id_cell{
 	width: 25px;
 }
 
-div.test_exec,table.test_exec {
+div.test_exec {
 	background: 	#FFC;
 	border: 		thin dashed black;
 	color: 			black;
 	padding: 		12px;
 	width: 100%;
 }
+
+table.test_exec {
+	background: 	#FFC;
+	color: 			black;
+	padding: 		12px;
+	width: 100%;
+}
+
 
 /* 
 20061112 - franciscom - to manage status
@@ -668,10 +681,33 @@ td.clickable_icon
 {
   width: 5px;
   text-align: center;
+  vertical-align: center;
 }
 
 .hint
 {
 	font-style: 	italic;
 }
+
+.exec_tc_title {
+	background:		#059;
+	color:			white;
+	margin-bottom:	4px;
+	padding: 		3px;
+	text-align: 	left;
+}
+
+.exec_additional_info{
+	background-color: 	whitesmoke; // whitesmoke, #FFC
+	color: 			black;
+	margin: 		0px 0px 10px 0px;
+	padding: 		0px 0px 0px 10px;
+	width: 98%;
+}
+
+.exec_testsuite_details {
+  border: thin solid black;
+  padding: 5px;
+}
+
 /* ----------------------------------------------------------------------------- */

@@ -1,6 +1,6 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: inc_attachments.tpl,v 1.11 2007/03/07 17:57:46 franciscom Exp $
+$Id: inc_attachments.tpl,v 1.12 2007/08/27 06:37:30 franciscom Exp $
 Generic attachment management 
 
 Input:
@@ -13,6 +13,7 @@ Input:
 Smarty global variables:
 $gsmarty_attachments
 
+20070826 - franciscom - added inheritStyle
 20070307 - franciscom - BUGID 722
 
 *}
@@ -31,6 +32,7 @@ var warning_delete_attachment = "{lang_get s='warning_delete_attachment'}";
 {assign var="downloadOnly"  value=$downloadOnly|default:false}
 {assign var="tableClassName"  value=$tableClassName|default:"simple"}
 {assign var="tableStyles"  value=$tableStyles|default:"font-size:12px"}
+{assign var="inheritStyle"  value=$inheritStyle|default:0}
 {* -------------------------------------------------------------------------------------- *}
 
 {if $gsmarty_attachments->enabled eq FALSE}
@@ -42,7 +44,7 @@ var warning_delete_attachment = "{lang_get s='warning_delete_attachment'}";
 
 {if $gsmarty_attachments->enabled && ($attachmentInfos neq "" || $my_show_upload_btn) }
 
-<table class="{$tableClassName}" style="{$tableStyles}">
+<table class="{$tableClassName}" {if $inheritStyle == 0}style="{$tableStyles}" {/if}>
 
  	{if $my_show_title}
 	<tr>
@@ -65,11 +67,11 @@ var warning_delete_attachment = "{lang_get s='warning_delete_attachment'}";
 	{/if}
   
   	<tr>
-		<td><a href="lib/attachments/attachmentdownload.php?id={$info.id}" target="_blank" class="bold">
+		<td style="vertical-align:middle;"><a href="lib/attachments/attachmentdownload.php?id={$info.id}" target="_blank" class="bold">
 		{$my_link}</a> - <span class="italic">{$info.file_name|escape} ({$info.file_size|escape} bytes, {$info.file_type|escape}) {localize_date d=$info.date_added|escape}</span>
 		{if !$downloadOnly}
 		<a href="javascript:deleteAttachment_onClick({$info.id});">
-		<img style="border:none" alt="{lang_get s='alt_delete_attachment'}" 
+		<img style="border:none;" alt="{lang_get s='alt_delete_attachment'}" 
 		                         title="{lang_get s='alt_delete_attachment'}" 
 		                         src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png"/></a>
 		{/if}

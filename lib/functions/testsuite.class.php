@@ -2,10 +2,11 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testsuite.class.php,v $
- * @version $Revision: 1.31 $
- * @modified $Date: 2007/06/04 17:29:11 $ - $Author: franciscom $
+ * @version $Revision: 1.32 $
+ * @modified $Date: 2007/08/27 06:37:44 $ - $Author: franciscom $
  * @author franciscom
  *
+ * 20070826 - franciscom - minor fix html_table_of_custom_field_values()
  * 20070602 - franciscom - added attachment copy on copy_to() method
  *                         using testcase copy_attachment() method.
  *                         added delete attachments. 
@@ -831,7 +832,12 @@ function html_table_of_custom_field_values($id,$scope='design',$show_on_executio
       }
     }
   }
-  $cf_smarty = "<table>" . $cf_smarty . "</table>";
+  
+  // 20070826 - to avoid returning empty table
+  if( strlen(trim($cf_smarty)) > 0 )
+  {
+    $cf_smarty = "<table>" . $cf_smarty . "</table>";
+  }
   return($cf_smarty);
 } // function end
 

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.1 $
- * @modified $Date: 2007/08/23 08:59:04 $ $Author: franciscom $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2007/08/27 06:37:57 $ $Author: franciscom $
  *
  * @author Vadim Ivanchenko
  *
@@ -1150,6 +1150,8 @@ $TLS_link_logout = "Выход";
 $TLS_product = "Продукт";
 //ORIG: $TLS_product_role = "Test Project role";
 $TLS_product_role = "Уровень доступа к продукту";
+// $TLS_search_testcase = "Search";
+$TLS_search_testcase = "Искать";
 //ORIG: $TLS_title_edit_personal_data = "Personal";
 $TLS_title_edit_personal_data = "Мои данные";
 //ORIG: $TLS_title_execute = "Execute";
@@ -1499,10 +1501,14 @@ $TLS_th_tc_total = "Всего тестов";
 
 
 // gui/templates/resultsBugs.tpl
+$TLS_bugs_open="Open";
+$TLS_bugs_resolved="Resolved";
+$TLS_bugs_total="total";
 //ORIG: $TLS_date = "Date:";
 $TLS_date = "Дата:";
 //ORIG: $TLS_printed_by = "Printed by:";
 $TLS_printed_by = "Отпечатано:";
+$TLS_tcs_with_bugs="Test Cases with bugs";
 //ORIG: $TLS_title_test_case_bugs = "Test case bugs";
 $TLS_title_test_case_bugs = "Баги, обнаруженные при прогоне";
 //ORIG: $TLS_title_test_case_timestamp = "Test Case timestamp";

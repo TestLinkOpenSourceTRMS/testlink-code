@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execNavigator.tpl,v 1.15 2007/07/06 06:28:34 franciscom Exp $ *}
+{* $Id: execNavigator.tpl,v 1.16 2007/08/27 06:37:30 franciscom Exp $ *}
 {* Purpose: smarty template - show test set tree *}
 {* 
 rev :
@@ -18,7 +18,7 @@ rev :
 
 {* $filterForm *}
 <div style="margin: 3px;">
-<form method="post" onchange="document.tree.style.display = 'hidden';">
+<form method="post">
 
 	<table class="smallGrey" width="100%">
 		<caption>

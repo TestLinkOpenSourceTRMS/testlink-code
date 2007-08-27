@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.62 $
- * @modified $Date: 2007/07/09 08:13:07 $ $Author: franciscom $
+ * @version $Revision: 1.63 $
+ * @modified $Date: 2007/08/27 06:37:44 $ $Author: franciscom $
  *
  * 20070707 - franciscom - BUGID 921
  * 20070519 - franciscom - BUGID 856
@@ -496,12 +496,14 @@ function smarty_assign_tsuite_info(&$smarty,&$request_hash, &$db,$tcase_id)
         $tsuite_id = $elem['tsuite_id'];
         $tc_id = $elem['tc_id'];
         if(!isset($cached_cf[$tsuite_id]))
+        {
            $cached_cf[$tsuite_id] = $tsuite_mgr->html_table_of_custom_field_values($tsuite_id);
-
+        }
         $ts_cf_smarty[$tc_id] = $cached_cf[$tsuite_id];
       }
    
     }
+   
     $smarty->assign('tsd_div_id_list',implode(",",$a_ts));
     $smarty->assign('tsd_hidden_id_list',implode(",",$a_tsvw));
     $smarty->assign('tsd_val_for_hidden_list',implode(",",$a_tsval));

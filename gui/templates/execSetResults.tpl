@@ -1,8 +1,9 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: execSetResults.tpl,v 1.47 2007/07/09 08:17:22 franciscom Exp $
+$Id: execSetResults.tpl,v 1.48 2007/08/27 06:37:30 franciscom Exp $
 Purpose: smarty template - show tests to add results
 Revisions:
+          20070826 - franciscom - added some niftycube effects
           20070519 - franciscom - 
           BUGID 856: Guest user can execute test case
           
@@ -12,10 +13,17 @@ Revisions:
           20070104 - franciscom - custom field management for test cases
           20070101 - franciscom - custom field management for test suite div
 *}	
+{assign var="cfg_section" value=$smarty.template|replace:".tpl":"" }
+{config_load file="input_dimensions.conf" section=$cfg_section}
 
 {include file="inc_head.tpl" popup='yes' openHead='yes'}
 <script language="JavaScript" src="gui/javascript/radio_utils.js" type="text/javascript"></script>
 <script language="JavaScript" src="gui/javascript/expandAndCollapseFunctions.js" type="text/javascript"></script>
+
+{if #ROUND_EXEC_HISTORY# || #ROUND_TC_TITLE# || #ROUND_TC_SPEC#}
+  {assign var="round_enabled" value=1}
+  <script language="JavaScript" src="{$basehref}gui/niftycube/niftycube.js" type="text/javascript"></script>
+{/if}
 
 <script language="JavaScript">
 var msg="{lang_get s='warning_delete_execution'}";
@@ -23,13 +31,15 @@ var msg="{lang_get s='warning_delete_execution'}";
 
 </head>
 
-
-
 <body onLoad="show_hide('tplan_notes','tpn_view_status',{$tpn_view_status});
               show_hide('build_notes','bn_view_status',{$bn_view_status});
               show_hide('bulk_controls','bc_view_status',{$bc_view_status});
               multiple_show_hide('{$tsd_div_id_list}','{$tsd_hidden_id_list}',
-                                 '{$tsd_val_for_hidden_list}');">
+                                 '{$tsd_val_for_hidden_list}');
+              {if $round_enabled}Nifty('div.exec_additional_info');{/if}  
+              {if #ROUND_TC_SPEC# }Nifty('div.exec_test_spec');{/if}                                 
+              {if #ROUND_EXEC_HISTORY# }Nifty('div.exec_history');{/if}
+              {if #ROUND_TC_TITLE# }Nifty('div.exec_tc_title');{/if}"> 
 
 <h1>	
  {lang_get s='help' var='common_prefix'}
@@ -70,7 +80,7 @@ var msg="{lang_get s='warning_delete_execution'}";
                             document.getElementById('tplan_notes').style.display=='none')" />
     {lang_get s='test_plan_notes'}
   </div>
-  <div id="tplan_notes"  class="notes" style="background: #CDE;">
+  <div id="tplan_notes" class="exec_additional_info">
   {$tplan_notes}
   {if $tplan_cf neq ''}
      <div class="custom_field_container">
@@ -78,7 +88,6 @@ var msg="{lang_get s='warning_delete_execution'}";
      </div>
   {/if}
   </div>
-  <p>
   
 <div class="show_hide_title">
 <img src="{$smarty.const.TL_THEME_IMG_DIR}/icon-foldout.gif" border="0" alt="{lang_get s='show_hide'}" 
@@ -87,7 +96,7 @@ var msg="{lang_get s='warning_delete_execution'}";
                         document.getElementById('build_notes').style.display=='none')" />
 {lang_get s='builds_notes'}
 </div>
-<div id="build_notes" class="notes">
+<div id="build_notes" class="exec_additional_info">
 {$build_notes}
 </div>
 
@@ -176,38 +185,48 @@ var msg="{lang_get s='warning_delete_execution'}";
 		{lang_get s='th_testsuite'} {$tsuite_info[$tc_exec.testcase_id].tsuite_name|escape}
 		</div>
 
-		<div id="tsdetails_{$tc_exec.testcase_id}" name="tsdetails_{$tc_exec.testcase_id}" class="notes">
+		<div id="tsdetails_{$tc_exec.testcase_id}" name="tsdetails_{$tc_exec.testcase_id}" 
+		     class="exec_additional_info">
 
-      <fieldset><legend class="legend_container">{lang_get s='details'}</legend>
+      <br>
+      <div class="exec_testsuite_details" style="width:95%;">
+      <span class="legend_container">{lang_get s='details'}</span><br>
 		  {$tsuite_info[$tc_exec.testcase_id].details}
-		  </fieldset>
+		  </div>
 		  
 		  {* 20070104 - franciscom *}
 		  {if $ts_cf_smarty[$tc_exec.testcase_id] neq ''}
 		    <p>
-		    <div class="custom_field_container">
-        {$ts_cf_smarty[$tc_exec.testcase_id]}
+		    <div class="custom_field_container" style="border-color:black;width:95%;">
+         {$ts_cf_smarty[$tc_exec.testcase_id]}
         </div>
 		  {/if}
 		  
   		{if $tSuiteAttachments[$tc_exec.tsuite_id] neq null}
-  		<p>
-		  {include file="inc_attachments.tpl" tableName="nodes_hierarchy" downloadOnly=true 
-			      	 attachmentInfos=$tSuiteAttachments[$tc_exec.tsuite_id] 
-			      	 tableClassName="bordered"
-				       tableStyles="background-color:#ffffcc;width:100%" }
-	  {/if}
+  		  <p>
+           <script language="JavaScript">
+           var msg="{lang_get s='warning_delete_execution'}";
+           </script>
+  		  
+		    {include file="inc_attachments.tpl" tableName="nodes_hierarchy" downloadOnly=true 
+			        	 attachmentInfos=$tSuiteAttachments[$tc_exec.tsuite_id] 
+			        	 inheritStyle=1
+			        	 tableClassName="none"
+				         tableStyles="background-color:#ffffcc;width:100%" }
+	    {/if}
+	    <p>
     </div>
   
 
-		<h1>{lang_get s='title_test_case'} {lang_get s='th_test_case_id'}{$tc_exec.testcase_id} :: {lang_get s='version'}: {$tc_exec.version}<br />
+		<div class="exec_tc_title">
+		{lang_get s='title_test_case'} {lang_get s='th_test_case_id'}{$tc_exec.testcase_id} :: {lang_get s='version'}: {$tc_exec.version}<br />
 		    {$tc_exec.name|escape}<br>
 		    {if $tc_exec.assigned_user eq ''}
 		      {lang_get s='has_no_assignment'}
 		    {else}  
           {lang_get s='assigned_to'}{$smarty.const.TITLE_SEP}{$tc_exec.assigned_user|escape}
         {/if}  
-    </h1>
+    </div>
 
 		<div id="execution_history" class="exec_history">
   		<div class="exec_history_title">
@@ -363,6 +382,7 @@ var msg="{lang_get s='warning_delete_execution'}";
   <p>
   <div>
    
+    <div class="exec_test_spec">
 		<table class="test_exec">
 		<tr>
 			<td colspan="2" class="title">{lang_get s='test_exec_summary'}</td>
@@ -416,6 +436,8 @@ var msg="{lang_get s='warning_delete_execution'}";
 			</td>
 		</tr>
 		</table>
+		</div>
+		
     {* ----------------------------------------------------------------------------------- *}
     {* 20070708 - franciscom *}
     {assign var="can_execute" value=0}

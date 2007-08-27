@@ -8,8 +8,8 @@
 */
 
 require('../../config.inc.php');
-require_once('../functions/results.class.php');
-require_once("../../lib/functions/lang_api.php");
+require_once('results.class.php');
+require_once("lang_api.php");
 require_once('displayMgr.php');
 
 $openBugs = array();
@@ -95,7 +95,9 @@ print "total test cases with bugs = $totalCasesWithBugs <BR>";
 */
 
 $smarty = new TLSmarty;
-$smarty->assign('title', $_SESSION['testPlanName'] . " " . lang_get('link_report_total_bugs'));
+$smarty->assign('tproject_name', $_SESSION['testprojectName'] );
+$smarty->assign('tplan_name', $_SESSION['testPlanName'] );
+$smarty->assign('title', lang_get('link_report_total_bugs'));
 $smarty->assign('arrData', $arrData);
 $smarty->assign('arrBuilds', $arrBuilds);
 
@@ -105,7 +107,10 @@ $smarty->assign('totalBugs', $totalBugs);
 $smarty->assign('totalCasesWithBugs', $totalCasesWithBugs);
 
 $smarty->display('resultsBugs.tpl');
+?>
 
+
+<?php
 function registerBug($bugID, $bugInfo, &$openBugsArray, &$resolvedBugsArray){
    $linkString = $bugInfo[link_to_bts];
    $position = strpos($linkString,"<del>");

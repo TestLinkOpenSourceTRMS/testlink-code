@@ -1,6 +1,6 @@
 {* 
 	Testlink Open Source Project - http://testlink.sourceforge.net/ 
-	$Id: navBar.tpl,v 1.20 2007/05/19 19:20:15 schlundus Exp $ 
+	$Id: navBar.tpl,v 1.21 2007/08/27 06:37:31 franciscom Exp $ 
 	Purpose: smarty template - title bar + menu 
 	
 	rev :
@@ -64,9 +64,14 @@
    	<a href='lib/usermanagement/userinfo.php' target="mainframe" accesskey="i" 
       		tabindex="5">{lang_get s='title_edit_personal_data'}</a> |
 	{if $currentTProjectID && $rightViewSpec == "yes"}
-		<form style="display:inline" target="mainframe" name="searchTC" action="lib/testcases/archiveData.php" method="get"> 
+		<form style="display:inline" target="mainframe" name="searchTC" id="searchTC"
+		      action="lib/testcases/archiveData.php" method="get"> 
 		<span style="font-size: 80%">{lang_get s='th_tcid'}: </span>
-		<input style="font-size: 80%; width: 50px;" type="text" name="id" value="" /> | 
+		<input style="font-size: 80%; width: 50px;" type="text" 
+		       title="{lang_get s='search_testcase'}" name="id" value="" /> 
+		<img src="{$smarty.const.TL_THEME_IMG_DIR}/magnifier.png" 
+		     title="{lang_get s='search_testcase'}"
+		     onclick="document.getElementById('searchTC').submit()"> | 
 		<input type="hidden" name="edit" value="testcase"/>
 		<input type="hidden" name="allow_edit" value="0"/>
 		</form>

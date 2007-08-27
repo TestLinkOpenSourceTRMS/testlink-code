@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: containerOrderDnD.tpl,v 1.1 2007/04/15 10:58:30 franciscom Exp $ 
+$Id: containerOrderDnD.tpl,v 1.2 2007/08/27 06:37:30 franciscom Exp $ 
 Purpose: smarty template - reorder container contents using JS Drag and drop
 
 rev :
@@ -84,7 +84,7 @@ function saveMyTree_byForm()
 			<input type="button" id="btn_do_testsuite_reorder" 
 			       name="btn_do_testsuite_reorder" 
 			       onclick='saveMyTree_byForm();'
-			       value="{lang_get s='btn_upd'}" />
+			       value="{lang_get s='btn_save'}" />
 		       
 			<input type="button" name="goback" 
 		                     onclick='javascript:history.go(-1);'

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.4 $
- * @modified $Date: 2007/08/20 06:41:56 $ by $Author: franciscom $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2007/08/27 06:37:57 $ by $Author: franciscom $
  *
  * @author Micha&#322; Wujas
  *
@@ -414,6 +414,8 @@ $TLS_title_navigator = "Nawigator";
 $TLS_home = "Start";
 $TLS_link_logout = "Wyloguj";
 $TLS_product = "Produkt";
+$TLS_product_role = "Test Project role ";
+$TLS_search_testcase = "Szukaj";
 $TLS_th_tcid = "Przypadek Testowy ID";
 $TLS_title_documentation = "Dokumentacja";
 $TLS_title_edit_personal_data = "Panel u&#380;ytkownika";
@@ -627,6 +629,16 @@ $TLS_th_tc_total = "Ilo&#347;&#263; test&oacute;w";
 
 
 // gui/templates/resultsBugs.tpl
+$TLS_bugs_open="Open";
+$TLS_bugs_resolved="Resolved";
+$TLS_bugs_total="total";
+$TLS_date = "Date";
+$TLS_printed_by = "Printed by";
+$TLS_tcs_with_bugs="Test Cases with bugs";
+$TLS_title_test_case_bugs = "Test case bugs";
+$TLS_title_test_case_timestamp = "Test Case timestamp";
+$TLS_title_test_case_title = "Test Title";
+$TLS_title_test_suite_name = "Test Suite name";
 $TLS_th_bugs = "B&#322;&#281;dy";
 $TLS_th_title = "Tytu&#322;";
 $TLS_title_bugs_report = " - Raport b&#322;&#281;d&oacute;w ";

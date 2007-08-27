@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: mainPage.php,v $
  *
- * @version $Revision: 1.28 $ $Author: franciscom $
- * @modified $Date: 2007/08/20 06:41:30 $
+ * @version $Revision: 1.29 $ $Author: franciscom $
+ * @modified $Date: 2007/08/27 06:37:44 $
  *
  * @author Martin Havlat
  * 
@@ -43,7 +43,7 @@ if ($can_manage_tprojects && !isset($_SESSION['testprojectID']))
 }
 // ----------------------------------------------------------------------
 
-// ----- Product Section ----------------------------------  
+// ----- Test Project Section ----------------------------------  
 if(has_rights($db,"mgt_view_tc"))
 { 
   	//user can view tcs 
@@ -91,6 +91,7 @@ $smarty->assign('filter_tp_by_product',$filter_tp_by_product);
 // ----- Test Plan Section ----------------------------------  
 $num_active_tplans =0;
 $active_tplans = $tproject_mgr->get_all_testplans($testprojectID,0,ACTIVE);
+
 if( !is_null($active_tplans) )
 {
   $num_active_tplans = count($active_tplans);
@@ -99,6 +100,7 @@ if( !is_null($active_tplans) )
 
 // get Test Plans available for the user 
 $arrPlans = getAccessibleTestPlans($db,$testprojectID,$filter_tp_by_product);
+
 $testPlanID = isset($_SESSION['testPlanId']) ? intval($_SESSION['testPlanId']) : 0;
 
 $roles = getAllRoles($db);

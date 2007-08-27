@@ -6,10 +6,11 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8 
- * @modified $Date: 2007/07/28 23:32:23 $ by $Author: kevinlevy $
+ * @modified $Date: 2007/08/27 06:37:44 $ by $Author: franciscom $
  *
  *-------------------------------------------------------------------------
  * Revisions:
+ * 20070825 - franciscom - added node_order in buildExecutionsMap()
  * 20070505 - franciscom - removing timer.php
  * 20070219 - kevinlevy - nearing completion for 1.7 release
  * 20061113 - franciscom - changes to preparenode() interface
@@ -501,10 +502,15 @@ class results
 	* currently it does not account for user expliting marking a case "not run".
 	*
 	* @return void
+	*
+	* rev :
+	*      20070825 - franciscom - added node_order
+	*
 	*/ 	
 	private function addLastResultToMap($suiteId, $testcase_id, $buildNumber, $result, $tcversion_id, 
-                              $execution_ts, $notes, $suiteName, $executions_id, $name, 
-                              $tester_id, $feature_id, $assigner_id = -1, $lastResultToTrack){
+                                      $execution_ts, $notes, $suiteName, $executions_id, $name, 
+                                      $tester_id, $feature_id, $assigner_id = -1, 
+                                      $lastResultToTrack){
 		if ($buildNumber)
 			$this->mapOfLastResultByBuild[$buildNumber][$testcase_id] = $result;
 	
@@ -551,13 +557,13 @@ class results
 			// mapOfLastResult assignments
 			$this->mapOfLastResult[$suiteId][$testcase_id] = array("buildIdLastExecuted" => $buildNumber, 
 	                                                       "result" => $result, 
-														   "tcversion_id" => $tcversion_id, 
+												 		                             "tcversion_id" => $tcversion_id, 
 	                                                       "execution_ts" => $execution_ts, 
-														   "notes" => $notes, 
+														                             "notes" => $notes, 
 	                                                       "suiteName" => $suiteName, 
 	                                                       "executions_id" => $executions_id, 
-	                                                       "name" => $name, 
-														   "tester_id" => $tester_id);  			
+	                                                       "name" => $name,
+														                             "tester_id" => $tester_id);  			
 		}	
 	} // end function
   
@@ -720,7 +726,9 @@ class results
 	*/
 	private function createMapOfLastResult(&$suiteStructure, &$executionsMap, $lastResult){  
 		$suiteName = null;
-		for ($i = 0; $i < count($suiteStructure); $i++){  		
+		$totalSuites=count($suiteStructure);
+		
+		for ($i = 0; $i < $totalSuites; $i++){  		
 			if (($i % $this->ITEM_PATTERN_IN_SUITE_STRUCTURE) == $this->NAME_IN_SUITE_STRUCTURE) {
 				$suiteName = $suiteStructure[$i];		
 			} 
@@ -728,12 +736,12 @@ class results
 				$suiteId = $suiteStructure[$i];
 				$totalCases = isset($executionsMap[$suiteId]) ? count($executionsMap[$suiteId]) : 0;  	
 				for ($j = 0 ; $j < $totalCases; $j++) {
-					$currentExecution = $executionsMap[$suiteId][$j];
-					$this->addLastResultToMap($suiteId, $currentExecution['testcaseID'], $currentExecution['build_id'], 
-					$currentExecution['status'], $currentExecution['tcversion_id'], $currentExecution['execution_ts'], 
-					$currentExecution['notes'], $suiteName, $currentExecution['executions_id'], 
-					$currentExecution['name'], $currentExecution['tester_id'], $currentExecution['feature_id'], 
-					$currentExecution['assigner_id'], $lastResult); 
+					$cexec = $executionsMap[$suiteId][$j];
+					$this->addLastResultToMap($suiteId, $cexec['testcaseID'], $cexec['build_id'], 
+					                          $cexec['status'], $cexec['tcversion_id'], $cexec['execution_ts'], 
+					                          $cexec['notes'], $suiteName, $cexec['executions_id'], 
+					                          $cexec['name'], $cexec['tester_id'], $cexec['feature_id'], 
+					                          $cexec['assigner_id'], $lastResult); 
 				} 
 	  		}  
 			elseif (($i % $this->ITEM_PATTERN_IN_SUITE_STRUCTURE) ==  $this->ARRAY_IN_SUITE_STRUCTURE){
@@ -753,8 +761,13 @@ class results
 	* 
 	* testsuite_id_1_array = []
 	* all test cases are included, even cases that have not been executed yet
+	*
+	* rev :
+	*      added node_order
 	*/
-	private function buildExecutionsMap($builds_to_query, $lastResult = 'a', $keyword = 0, $owner = null, $startTime, $endTime, $executor, $search_notes_string, $executeLinkBuild){
+	private function buildExecutionsMap($builds_to_query, $lastResult = 'a', $keyword = 0, 
+	                                    $owner = null, $startTime, $endTime, $executor, 
+	                                    $search_notes_string, $executeLinkBuild){
 		// first make sure we initialize the executionsMap
 		// otherwise duplicate executions will be added to suites
 		$executionsMap = null;
@@ -773,9 +786,14 @@ class results
 				$currentSuite = $executionsMap[$testsuite_id];
 			}
 			$tcversion_id = $info['tcversion_id'];
-			$sql = "select name from nodes_hierarchy where id = $testcaseID ";
+			
+			// 20070825 - want node order
+		  $sql = "select name from nodes_hierarchy where id = $testcaseID ";
+			//$sql = "SELECT name,node_order FROM nodes_hierarchy WHERE id = $testcaseID ";
 			$results = $this->db->fetchFirstRow($sql);
 			$name = $results['name'];
+      // $node_order = $results['node_order'];
+       			
 			$executed = $info['executed'];
 			$executionExists = true;
 			// KL - 20070625 - set link to execute test case
@@ -787,6 +805,7 @@ class results
 					// Initialize information on testcaseID to be "not run"
 					$infoToSave = array('testcaseID' => $testcaseID, 
 					'tcversion_id' => $tcversion_id, 
+					// 'node_order' => $node_order, 
 					'build_id' => '', 
 					'tester_id' => '', 
 					'execution_ts' => '', 
@@ -836,13 +855,14 @@ class results
 								
 						$infoToSave = array('testcaseID' => $testcaseID, 
 									'tcversion_id' => $tcversion_id, 
+									// 'node_order' => $node_order,
 									'build_id' => $exec_row['build_id'], 
 									'tester_id' => $exec_row['tester_id'], 
 									'execution_ts' => $localizedTS, 
 									'status' => $exec_row['status'], 
 									'notes' => $exec_row['notes'], 
 									'executions_id' => $executions_id, 
-									'name' => $name, 
+									'name' => $name,
 									'bugString' => $bugString,									
 									'assigner_id' => $info['assigner_id'],
 									'feature_id' => $info['feature_id'],
@@ -857,6 +877,7 @@ class results
 				elseif (($lastResult == 'a') || ($lastResult == $this->map_tc_status['not_run'])) {
 					$infoToSave = array('testcaseID' => $testcaseID, 
 					'tcversion_id' => $tcversion_id, 
+					// 'node_order' => $node_order,
 					'build_id' => '', 
 					'tester_id' => '', 
 					'execution_ts' => '', 

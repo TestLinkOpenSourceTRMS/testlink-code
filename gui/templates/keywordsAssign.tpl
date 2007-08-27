@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: keywordsAssign.tpl,v 1.9 2007/01/06 15:14:35 franciscom Exp $
+$Id: keywordsAssign.tpl,v 1.10 2007/08/27 06:37:30 franciscom Exp $
 Purpose: smarty template - assign keywords to one or more test cases
 Andreas Morsing : changed action to updated 
 
@@ -47,7 +47,7 @@ var {$opt_cfg->js_ot_name} = new OptionTransfer("{$opt_cfg->from->name}","{$opt_
     	<form method="post" action="lib/keywords/keywordsAssign.php?id={$data}&amp;edit={$level}">
       {include file="opt_transfer.inc.tpl" option_transfer=$opt_cfg}
 	    <br />
-    	<input type="submit" name="assign{$level}" value="{lang_get s='btn_assign'}" />
+    	<input type="submit" name="assign{$level}" value="{lang_get s='btn_save'}" />
     	</form>
     </div>
   {else}

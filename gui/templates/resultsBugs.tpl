@@ -1,8 +1,8 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: resultsBugs.tpl,v 1.14 2007/06/25 06:21:29 franciscom Exp $ *}
+{* $Id: resultsBugs.tpl,v 1.15 2007/08/27 06:37:31 franciscom Exp $ *}
 {* Purpose: smarty template - show Test Results and Metrics *}
 {* Revisions:
-20051204 - mht - removed obsolete print button
+   20070826 - franciscom - localization
 *}
 {include file="inc_head.tpl"}
 
@@ -20,13 +20,15 @@
 {/if}
 
 <div class="workBack">
+{include file="inc_result_tproject_tplan.tpl" 
+         arg_tproject_name=$tproject_name arg_tplan_name=$tplan_name}	
 
 <table class="simple" style="width: 100%; text-align: center; margin-left: 0px;">
      <tr>
-         <th>{lang_get s='Open'}</th>
-         <th>{lang_get s='Resolved'}</th>
-         <th>{lang_get s='Total'}</th>
-         <th>{lang_get s='TCs_with_Bugs'}</th>
+         <th>{lang_get s='bugs_open'}</th>
+         <th>{lang_get s='bugs_resolved'}</th>
+         <th>{lang_get s='bugs_total'}</th>
+         <th>{lang_get s='tcs_with_bugs'}</th>
      </tr>
      
      <tr>

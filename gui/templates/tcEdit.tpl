@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: tcEdit.tpl,v 1.17 2007/03/06 20:19:35 schlundus Exp $ *}
+{* $Id: tcEdit.tpl,v 1.18 2007/08/27 06:37:31 franciscom Exp $ *}
 {* Purpose: smarty template - edit test specification: test case *}
 {include file="inc_head.tpl" openHead='yes' jsValidate="yes"}
 <script language="JavaScript" src="gui/javascript/OptionTransfer.js" type="text/javascript"></script>
@@ -37,7 +37,6 @@ function validateForm(f)
 <body onLoad="{$opt_cfg->js_ot_name}.init(document.forms[0]);focusInputField('testcase_name')">
 {config_load file="input_dimensions.conf" section="tcNew"}
 <h1>{lang_get s='test_case'}{$smarty.const.TITLE_SEP}{$tc.name|escape}</h1> 
-
 <div class="workBack" style="width:97%;">
 <h1>{lang_get s='title_edit_tc'}{$smarty.const.TITLE_SEP_TYPE3}{lang_get s='version'} {$tc.version}</h1> 
 
@@ -55,14 +54,14 @@ function validateForm(f)
 	
 
 	<div style="margin-right:5px;float: right;">
-		<input id="do_update" type="submit" name="do_update" value="{lang_get s='btn_update'}" />
+		<input id="do_update" type="submit" name="do_update" value="{lang_get s='btn_save'}" />
 	</div>	
 
 	{include file="tcEdit_New_viewer.tpl"}
     
     <br />
 	<div style="margin-right:5px;float: right;">
-		<input id="do_update_bottom" type="submit" name="do_update" value="{lang_get s='btn_update'}"/>
+		<input id="do_update_bottom" type="submit" name="do_update" value="{lang_get s='btn_save'}"/>
 	</div>	
 	<br/>
 </form>

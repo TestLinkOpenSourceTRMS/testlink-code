@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsTC.php,v 1.28 2007/05/21 06:44:17 franciscom Exp $ 
+* $Id: resultsTC.php,v 1.29 2007/08/27 06:37:44 franciscom Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -52,10 +52,14 @@ $not_run_label=lang_get('test_status_not_run');
 if ($lastResultMap != null) {
 	while($suiteId = key($lastResultMap)) {
 		$currentSuiteInfo = $lastResultMap[$suiteId];
+		
 		while ($testCaseId = key($currentSuiteInfo)){
+			
 			$currentTestCaseInfo = $currentSuiteInfo[$testCaseId];
 			$suiteName = $currentTestCaseInfo['suiteName'];
 			$name = $currentTestCaseInfo['name'];		
+			
+			
 			$rowArray = array($suiteName, $testCaseId . ":" . $name);
 			$suiteExecutions = $executionsMap[$suiteId];		
 			
@@ -77,13 +81,17 @@ if ($lastResultMap != null) {
 				array_push($rowArray, $resultsForBuild);
 				//next($arrBuilds);
 			} // end for loop
+			
 			$arrData[$indexOfArrData] = $rowArray;
-			$indexOfArrData++;
+  		$indexOfArrData++;
+
+			
 			next($currentSuiteInfo);		
 		} // end while
 		next($lastResultMap);
 	} // end while
 } // end if
+
 
 $smarty = new TLSmarty;
 // $smarty->assign('title', $_SESSION['testPlanName'] .  " " . lang_get('title_test_report_all_builds'));

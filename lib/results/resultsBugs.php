@@ -1,11 +1,17 @@
 <?php
 /** 
-* TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* @author kevinlevy
-* 20061127 - kl - upgrading to 1.7
-* 20070610 - kl - added logic to calculate total bugs
-*
-*/
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later. 
+ *  
+ * @filesource $RCSfile: resultsBugs.php,v $
+ * @version $Revision: 1.25 $
+ * @modified $Date: 2007/08/28 11:30:11 $ by $Author: franciscom $
+ * @author kevinlevy
+ * 
+ * rev :
+ *      20070827 - franciscom - BUGID 994
+ */
+
 
 require('../../config.inc.php');
 require_once('results.class.php');
@@ -112,7 +118,7 @@ $smarty->display('resultsBugs.tpl');
 
 <?php
 function registerBug($bugID, $bugInfo, &$openBugsArray, &$resolvedBugsArray){
-   $linkString = $bugInfo[link_to_bts];
+   $linkString = $bugInfo['link_to_bts'];
    $position = strpos($linkString,"<del>");
    $position2 = strpos($linkString,"</del>");
    if ((!$position)&&(!$position2)) {

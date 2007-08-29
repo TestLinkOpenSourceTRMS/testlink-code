@@ -1,11 +1,14 @@
 {* 
 Testlink: smarty template - 
-$Id: usersassign.tpl,v 1.9 2007/08/20 06:41:11 franciscom Exp $ 
+$Id: usersassign.tpl,v 1.10 2007/08/29 17:20:52 jbarchibald Exp $ 
 
 rev:
     20070818 - franciscom
     added logic to display effective role for test project and test plan
     given user info about inheritenance.
+
+    20070829 - jbarchibald
+      -  bug 1000  - Testplan User Role Assignments
     
 *}
 {include file="inc_head.tpl" jsValidate="yes"}
@@ -25,17 +28,17 @@ rev:
 {/if}
 	<span class="unselected"><a href="{$umgmt}/rolesview.php">{lang_get s='menu_view_roles'}</a></span>
 	{if $feature == 'testproject'}
-		{if $tp_user_role_assignment == "yes"}
+		{if $tproject_user_role_assignment == "yes"}
 			<span class="selected">{lang_get s='menu_assign_testproject_roles'}</span> 
 		{/if}
-		{if $tproject_user_role_assignment == "yes"}
+		{if $tp_user_role_assignment == "yes"}
 			<span class="unselected"><a href="{$umgmt}/usersassign.php?feature=testplan">{lang_get s='menu_assign_testplan_roles'}</a></span>
 		{/if}
 	{else}
-		{if $tp_user_role_assignment == "yes"}
+		{if $tproject_user_role_assignment == "yes"}
 			<span class="unselected"><a href="{$umgmt}/usersassign.php?feature=testproject">{lang_get s='menu_assign_testproject_roles'}</a></span>
 		{/if}
-		{if $tproject_user_role_assignment == "yes"}
+		{if $tp_user_role_assignment == "yes"}
 			<span class="selected">{lang_get s='menu_assign_testplan_roles'}</span> 
 		{/if}
 	{/if}

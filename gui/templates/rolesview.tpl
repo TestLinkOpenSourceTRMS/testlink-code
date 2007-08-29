@@ -1,7 +1,11 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: rolesview.tpl,v 1.15 2007/08/20 06:41:11 franciscom Exp $ 
+$Id: rolesview.tpl,v 1.16 2007/08/29 17:20:52 jbarchibald Exp $ 
 Purpose: smarty template - View defined roles 
+
+rev :
+     20070829 - jbarchibald
+      -  bug 1000  - Testplan User Role Assignments
 
 *}
 {include file="inc_head.tpl"}
@@ -21,10 +25,10 @@ Purpose: smarty template - View defined roles
 	<span class="unselected"><a href="lib/usermanagement/rolesedit.php">{lang_get s='menu_define_roles'}</a></span> 
 {/if}
 	<span class="selected">{lang_get s='menu_view_roles'}</span>
-{if $tp_user_role_assignment == "yes"}
-	<span class="unselected"><a href="lib/usermanagement/usersassign.php?feature=testproject">{lang_get s='menu_assign_product_roles'}</a></span> 
-{/if}
 {if $tproject_user_role_assignment == "yes"}
+	<span class="unselected"><a href="lib/usermanagement/usersassign.php?feature=testproject">{lang_get s='menu_assign_testproject_roles'}</a></span> 
+{/if}
+{if $tp_user_role_assignment == "yes"}
 	<span class="unselected"><a href="lib/usermanagement/usersassign.php?feature=testplan">{lang_get s='menu_assign_testplan_roles'}</a></span>
 {/if}
 </div>

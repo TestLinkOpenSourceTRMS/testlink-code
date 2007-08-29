@@ -1,6 +1,6 @@
 {* 
 Testlink: smarty template - 
-$Id: usersedit.tpl,v 1.14 2007/06/27 05:53:43 franciscom Exp $ 
+$Id: usersedit.tpl,v 1.15 2007/08/29 17:20:52 jbarchibald Exp $ 
 *}
 {* 
 
@@ -11,6 +11,9 @@ $Id: usersedit.tpl,v 1.14 2007/06/27 05:53:43 franciscom Exp $
 20070114 - franciscom - 
 	1. using smarty config file
 	2. improved management of default role id
+
+20070829 - jbarchibald
+      -  bug 1000  - Testplan User Role Assignments
 *}
 {include file="inc_head.tpl" jsValidate="yes" openhead="yes"}
 {literal}
@@ -113,10 +116,10 @@ function validateForm(f,check_password)
 	<span class="unselected"><a href="lib/usermanagement/rolesedit.php">{lang_get s='menu_define_roles'}</a></span> 
 {/if}	
 	<span class="unselected"><a href="lib/usermanagement/rolesview.php">{lang_get s='menu_view_roles'}</a></span> 
-{if $tp_user_role_assignment == "yes"}
-	<span class="unselected"><a href="lib/usermanagement/usersassign.php?feature=testproject">{lang_get s='menu_assign_product_roles'}</a></span> 
-{/if}	
 {if $tproject_user_role_assignment == "yes"}
+	<span class="unselected"><a href="lib/usermanagement/usersassign.php?feature=testproject">{lang_get s='menu_assign_testproject_roles'}</a></span> 
+{/if}	
+{if $tp_user_role_assignment == "yes"}
 	<span class="unselected"><a href="lib/usermanagement/usersassign.php?feature=testplan">{lang_get s='menu_assign_testplan_roles'}</a></span>
 {/if}
 </div>
@@ -167,7 +170,7 @@ function validateForm(f,check_password)
 		        </td>
 		      {/if}      
 		     </tr>
-    {/if}
+   {/if}
    
    
 		<tr>

@@ -5,8 +5,10 @@
  *
  * Filename $RCSfile: rolesedit.php,v $
  *
- * @version $Revision: 1.8 $
- * @modified $Date: 2007/02/03 22:41:04 $ by $Author: schlundus $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2007/08/29 17:21:02 $ by $Author: jbarchibald $
+ *
+ *  20070829 - jbarchibald - fix bug 1000 - Testplan role assignments
  *
 **/
 require_once("../../config.inc.php");
@@ -92,7 +94,7 @@ $smarty = new TLSmarty();
 $smarty->assign('role',$role);
 $smarty->assign('role_management',has_rights($db,"role_management"));
 $smarty->assign('mgt_users',has_rights($db,"mgt_users"));
-$smarty->assign('tp_user_role_assignment', has_rights($db,"mgt_users") ? "yes" : has_rights($db,"user_role_assignment"));
+$smarty->assign('tp_user_role_assignment', has_rights($db,"mgt_users") ? "yes" : has_rights($db,"testplan_user_role_assignment"));
 $smarty->assign('tproject_user_role_assignment', has_rights($db,"mgt_users") ? "yes" : has_rights($db,"user_role_assignment",null,-1));
 $smarty->assign('tpRights',$g_rights_tp);
 $smarty->assign('tcRights',$g_rights_mgttc);

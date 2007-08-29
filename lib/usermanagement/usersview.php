@@ -5,12 +5,13 @@
  *
  * Filename $RCSfile: usersview.php,v $
  *
- * @version $Revision: 1.8 $
- * @modified $Date: 2007/02/24 08:20:29 $ -  $Author: franciscom $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2007/08/29 17:21:02 $ -  $Author: jbarchibald $
  *
  * This page shows all users
  * 
  * 20070106 - franciscom - added order by login and order by role
+ * 20070829 - jbarchibald - fix bug 1000 - Testplan role assignments
 **/
 include('../../config.inc.php');
 require_once("users.inc.php");
@@ -78,7 +79,7 @@ $smarty->assign('role_colour',config_get('role_colour'));
 
 $smarty->assign('mgt_users',has_rights($db,"mgt_users"));
 $smarty->assign('role_management',has_rights($db,"role_management"));
-$smarty->assign('tp_user_role_assignment', has_rights($db,"mgt_users") ? "yes" : has_rights($db,"user_role_assignment"));
+$smarty->assign('tp_user_role_assignment', has_rights($db,"mgt_users") ? "yes" : has_rights($db,"testplan_user_role_assignment"));
 $smarty->assign('tproject_user_role_assignment', has_rights($db,"mgt_users") ? "yes" : has_rights($db,"user_role_assignment",null,-1));
 $smarty->assign('update_title_bar',0);
 $smarty->assign('reload',0);

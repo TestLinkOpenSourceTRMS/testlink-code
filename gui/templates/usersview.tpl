@@ -1,12 +1,14 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: usersview.tpl,v 1.15 2007/05/28 06:42:10 franciscom Exp $
+$Id: usersview.tpl,v 1.16 2007/08/29 17:20:53 jbarchibald Exp $
 
 Purpose: smarty template - users overview
 
 rev :
      20070120 - franciscom - role_colour management improved
      20070106 - franciscom - added order by login and order by role
+     20070829 - jbarchibald
+      - bug 1000  - Testplan User Role Assignments
 *}
 {include file="inc_head.tpl"}
 
@@ -32,10 +34,10 @@ var warning_delete_user = "{lang_get s='warning_delete_user'}";
 	<span class="unselected"><a href="lib/usermanagement/rolesedit.php">{lang_get s='menu_define_roles'}</a></span> 
 {/if}
 	<span class="unselected"><a href="lib/usermanagement/rolesview.php">{lang_get s='menu_view_roles'}</a></span> 
-{if $tp_user_role_assignment == "yes"}
-	<span class="unselected"><a href="lib/usermanagement/usersassign.php?feature=testproject">{lang_get s='menu_assign_product_roles'}</a></span> 
-{/if}	
 {if $tproject_user_role_assignment == "yes"}
+	<span class="unselected"><a href="lib/usermanagement/usersassign.php?feature=testproject">{lang_get s='menu_assign_testproject_roles'}</a></span> 
+{/if}	
+{if $tp_user_role_assignment == "yes"}
 	<span class="unselected"><a href="lib/usermanagement/usersassign.php?feature=testplan">{lang_get s='menu_assign_testplan_roles'}</a></span>
 {/if}
 </div>

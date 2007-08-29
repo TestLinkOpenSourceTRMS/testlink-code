@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: usersassign.php,v $
 *
-* @version $Revision: 1.12 $
-* @modified $Date: 2007/08/20 06:41:30 $ $Author: franciscom $
+* @version $Revision: 1.13 $
+* @modified $Date: 2007/08/29 17:21:02 $ $Author: jbarchibald $
 * 
 * Allows assigning users roles to testplans or testprojects
 *
@@ -17,6 +17,8 @@
 *
 *      20070227 - franciscom - refatoring to solve refresh problem
 *                              when changing test project on navBar
+*
+*      20070829 - jbarchibald - fix bug 1000 - Testplan role assignments
 */
 require_once('../../config.inc.php');
 require_once('users.inc.php');
@@ -160,7 +162,7 @@ $smarty->assign('user_feedback',$user_feedback);
 $smarty->assign('mgt_users',$can_manage_users);
 $smarty->assign('role_management',has_rights($db,"role_management"));
 $smarty->assign('tp_user_role_assignment', 
-                $can_manage_users ? "yes" : has_rights($db,"user_role_assignment"));
+                $can_manage_users ? "yes" : has_rights($db,"testplan_user_role_assignment"));
 $smarty->assign('tproject_user_role_assignment', 
                 $can_manage_users ? "yes" : has_rights($db,"user_role_assignment",null,-1));
                 

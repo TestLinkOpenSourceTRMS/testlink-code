@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: mainPage.php,v $
  *
- * @version $Revision: 1.29 $ $Author: franciscom $
- * @modified $Date: 2007/08/27 06:37:44 $
+ * @version $Revision: 1.30 $ $Author: jbarchibald $
+ * @modified $Date: 2007/08/29 17:21:02 $
  *
  * @author Martin Havlat
  * 
@@ -19,6 +19,7 @@
  * rev :
  *       20070725 - franciscom - refactoring of rights checking 
  *       20070509 - franciscom - improving test plan availabilty checking
+ *       20070829 - jbarchibald - fix bug 1000 - Testplan role assignments
  *
 **/
 require_once('../../config.inc.php');
@@ -124,7 +125,7 @@ foreach($rights2check as $key => $the_right)
   $smarty->assign($the_right, has_rights($db,$the_right));
 }                         
 $smarty->assign('testplan_creating', has_rights($db,"mgt_testplan_create"));
-$smarty->assign('tp_user_role_assignment', has_rights($db,"user_role_assignment"));
+$smarty->assign('tp_user_role_assignment', has_rights($db,"testplan_user_role_assignment"));
 $smarty->assign('tproject_user_role_assignment', has_rights($db,"user_role_assignment",null,-1));
 $smarty->assign('usermanagement_rights',has_rights($db,"mgt_users"));
 

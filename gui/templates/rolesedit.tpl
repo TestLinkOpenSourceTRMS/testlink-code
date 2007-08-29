@@ -1,12 +1,15 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: rolesedit.tpl,v 1.10 2007/08/18 14:08:26 franciscom Exp $
+$Id: rolesedit.tpl,v 1.11 2007/08/29 17:20:52 jbarchibald Exp $
 Purpose: smarty template - create/edit user role 
 
 rev :
      20070725 - franciscom
      - added js check on role name
      - use of input_dimensions.conf
+
+     20070829 - jbarchibald
+      -  bug 1000  - Testplan User Role Assignments
 *}
 
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes"}
@@ -46,10 +49,10 @@ function validateForm(f)
 	<span class="selected">{lang_get s='menu_define_roles'}</span> 
 {/if}
 	<span class="unselected"><a href="lib/usermanagement/rolesview.php">{lang_get s='menu_view_roles'}</a></span>
-{if $tp_user_role_assignment == "yes"}
-	<span class="unselected"><a href="lib/usermanagement/usersassign.php?feature=testproject">{lang_get s='menu_assign_product_roles'}</a></span> 
-{/if}
 {if $tproject_user_role_assignment == "yes"}
+	<span class="unselected"><a href="lib/usermanagement/usersassign.php?feature=testproject">{lang_get s='menu_assign_testproject_roles'}</a></span> 
+{/if}
+{if $tp_user_role_assignment == "yes"}
 	<span class="unselected"><a href="lib/usermanagement/usersassign.php?feature=testplan">{lang_get s='menu_assign_testplan_roles'}</a></span>
 {/if}
 </div>

@@ -1,8 +1,9 @@
 <?php
 /*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: migrate_16_to_17_functions.php,v 1.1 2007/08/24 22:53:37 asielb Exp $
+ * $Id: migrate_16_to_17_functions.php,v 1.2 2007/08/29 15:47:20 jbarchibald Exp $
  *
+ * 20070829 - jbarchibald - fixed bug 1010, results Migration
  */
 
 // -----------------------------------   Auxiliary Functions -------------------------
@@ -598,7 +599,9 @@ function migrate_results(&$source_db,&$target_db,&$tmp_table_name,&$builds,&$use
   // how many records are we going to tackle at a time
   // with basic benchmarking roughly 500 seemed to be slightly faster
   $step_amt=500;
-  $results_count = $migrator->get_tmp_table_count("tp");
+
+  // 20070829 - jbarchibald - bug#1010
+  $results_count = $migrator->get_tmp_table_count("results");
 
 	echo "Quantity of results to migrate: $results_count<br>";
   // Make sure we have enough memory to do what we are about to do

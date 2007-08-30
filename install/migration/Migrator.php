@@ -1,9 +1,8 @@
 <?php
 /*
- * Created on Aug 8, 2007
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * $Id: Migrator.php,v 1.2 2007/08/30 19:13:34 asielb Exp $
  *
- * To change the template for this generated file go to
- * Window - Preferences - PHPeclipse - PHP - Code Templates
  */
 
 require_once("migrate_16_to_17_functions.php");

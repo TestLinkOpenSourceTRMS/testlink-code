@@ -1,10 +1,18 @@
+TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ 
+Filename $RCSfile: contributors.txt,v $
+ 
+$Revision: 1.7 $
+$Date: 2007/08/31 06:32:57 $ by $Author: franciscom $
+-------------------------------------------------------------------------
+ 
+ 
 People who have contributed to TestLink
----------------------------------------
-
+-------------------------------------------------------------------------
 Original developer of TestLink 1.0
 * Chad Rosen
 
-Project lead since TestLink >= 1.5:
+Project lead TestLink 1.5:
 * Martin Havlat
 * Francisco Mancardi
 * Andreas Morsing
@@ -12,6 +20,17 @@ Project lead since TestLink >= 1.5:
 
 Other developers:
 * Kevin Levy
+
+TestLink 1.7 main development Team:
+* Martin Havlat
+* Francisco Mancardi
+* Andreas Morsing
+* Kevin Levy
+
+Testlink web infrastructure
+* Forum      - Martin Havlat
+* Mantis BTS - Asiel Brumfield
+
 
 Other Contributors (code, ideas, testing..):
 * Tools R Us
@@ -32,3 +51,11 @@ Localization
 * Italian
   Walter Giaquinto/Alessandro Lia	
   bruno.busco@gmail.com
+
+* Russian
+
+* Japanese
+
+* Polish
+
+-------------------------------------------------------------------------

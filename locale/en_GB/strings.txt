@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.188 $
- * @modified $Date: 2007/08/27 06:39:47 $ $Author: franciscom $
+ * @version $Revision: 1.189 $
+ * @modified $Date: 2007/08/31 06:36:59 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
@@ -91,8 +91,8 @@ $TLS_your_password_is = "Your new TestLink password is: <br>";
 
 // login.php
 $TLS_bad_user_passwd = "Try again! Wrong login name or password!";
-$TLS_login_msg_session_exists1 = "There is still a valid login for your browser. Please use ";
-$TLS_login_msg_session_exists2 = " at first if you would like to renew your session.";
+$TLS_login_msg_session_exists1 = "There is still a valid login for your browser. <br> Please use this link >>> ";
+$TLS_login_msg_session_exists2 = " <<< at first if you would like to renew your session.";
 $TLS_logout_link = "Logout";
 $TLS_passwd_lost = "Your password has been sent to the email account you specified during " .
                    "your user creation. Please check your mailbox. " .

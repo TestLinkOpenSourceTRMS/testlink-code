@@ -5,13 +5,14 @@
  *
  * Filename $RCSfile: login.php,v $
  *
- * @version $Revision: 1.24 $
- * @modified $Date: 2007/08/18 14:08:03 $ by $Author: franciscom $
+ * @version $Revision: 1.25 $
+ * @modified $Date: 2007/08/31 06:34:51 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Login management
  *
  * rev :
+ *       20070831 - franciscom - color change to make more visible Logout link
  *       20070818 - franciscom - BUGID xxxx (di LDAP) 
  *       20070301 - franciscom - BUGID 695 (fawel contribute)
  *
@@ -20,8 +21,8 @@ require_once('lib/functions/configCheck.php');
 checkConfiguration();
 
 require('config.inc.php');
-require_once('lib/functions/common.php');
-require_once('lib/functions/users.inc.php');
+require_once('common.php');
+require_once('users.inc.php');
 
 tLog('Login page requested by ' . $_SERVER['REMOTE_ADDR'], 'INFO');
 $op = doDBConnect($db);
@@ -61,8 +62,8 @@ switch($note)
 		$message = lang_get('passwd_lost');
 		break;
 	case 'sessionExists':
-		$message = lang_get('login_msg_session_exists1') . ' <a style="color:black;" href="logout.php">' . 
-				   lang_get('logout_link') . '</a>' . lang_get('login_msg_session_exists2');
+		$message = lang_get('login_msg_session_exists1') . ' <a style="color:white;" href="logout.php">' . 
+ 				       lang_get('logout_link') . '</a>' . lang_get('login_msg_session_exists2');
 		break;
 	default:
 		break;

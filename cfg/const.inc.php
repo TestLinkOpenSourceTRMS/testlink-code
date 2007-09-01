@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: const.inc.php,v $
  *
- * @version $Revision: 1.37 $
- * @modified $Date: 2007/08/27 06:36:40 $ by $Author: franciscom $
+ * @version $Revision: 1.38 $
+ * @modified $Date: 2007/09/01 08:22:30 $ by $Author: franciscom $
  * @author Martin Havlát
  *
  * SCOPE:
@@ -110,7 +110,8 @@ $g_locales = array(
 	'pt_BR' => 'Portuguese (Brazil)',
 	'es_AR' => 'Spanish (Argentine)',
 	'es_ES' => 'Spanish',
-	'ru_RU' => 'Russian'
+	'ru_RU' => 'Russian',
+	'jp_JP' => 'Japanese'
 );
 
 // see strftime() in PHP manual
@@ -131,7 +132,8 @@ $g_locales_date_format = array(
 	'fr_FR' => "%d/%m/%Y",
 	'pt_BR' => "%d/%m/%Y",
 	'ru_RU' => "%d/%m/%Y",
-	'zh_CN' => "%Y��%m��%d��"
+	'zh_CN' => "%Y��%m��%d��",
+	'jp_JP' => "%Y/%m/%d"
 ); 
 
 $g_locales_timestamp_format = array(
@@ -145,7 +147,8 @@ $g_locales_timestamp_format = array(
 	'fr_FR' => "%d/%m/%Y %H:%M:%S",
 	'pt_BR' => "%d/%m/%Y %H:%M:%S",
 	'ru_RU' => "%d/%m/%Y %H:%M:%S",
-	'zh_CN' => "%Y��%m��%d�� %Hʱ%M��%S��"
+	'zh_CN' => "%Y��%m��%d�� %Hʱ%M��%S��",
+	'jp_JP' => "%Y/%m/%d %H:%M:%S"
 ); 
 
 // for smarty html_select_date custom function
@@ -160,7 +163,8 @@ $g_locales_html_select_date_field_order = array(
 	'fr_FR' => "dmY",
 	'pt_BR' => "dmY",
 	'ru_RU' => "dmY",
-	'zh_CN' => "Ymd"
+	'zh_CN' => "Ymd",
+	'jp_JP' => "Ymd"
 ); 
 
 

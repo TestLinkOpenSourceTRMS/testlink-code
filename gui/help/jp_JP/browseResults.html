@@ -1,0 +1,61 @@
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta http-equiv="Content-language" content="en" />
+	<meta name="author" content="Martin Havlat" />
+	<meta name="copyright" content="GNU" />
+	<meta name="robots" content="NOFOLLOW" />
+	<title>TestLink Instructions</title>
+	<style media="all" type="text/css">@import "../../{$smarty.const.TL_THEME_CSS_DIR}testlink.css";</style>
+</head>
+
+<body>
+
+<div class="workBack">
+
+<h1>Overview of available Test Reports and Metrics</h1>
+
+<h2>Metrics of active Build</h2> 
+<p>This page displays the results of testing against the selected build.</p>
+
+<h2>General Test Plan Metrics</h2>
+<p>This page displays the entire status of the project across all builds.<br />
+
+This means that if a test case passes in build 1 and then fails in build 2 
+it will be counted as a failure on this page. </p>
+
+
+<h2>The Overall Build Status</h2>
+<p>This page displays overall project status for each build.</p> 
+
+<h2>Query Metrics</h2>
+<p>Display Results based on builds, owners, keywords, and last result</p>
+
+<h2>Test Report</h2>
+<p>This page displays each test case and its result against every build.<br />
+Excel export is available.</p>
+
+<h2>Blocked Test Cases</h2>
+<p>This page will show a rollup of all of the currently blocked test cases.<br />
+EX: A test case will show up if it passed in build 1 and then was blocked in build 2<br />
+
+EX: If a test case is blocked in build 1 and then passes in build 2 it will not show up</p>
+
+<h2>Failed Test Cases</h2>
+<p>This page is the same as the blocked page but for failed test cases</p>
+
+<h2>Total Bugs For Each Test Case</h2>
+<p>This page displays every test case in a project and all of the bugs that 
+were filed against it</p>
+
+<h2>Send results via e-mail</h2>
+<p>This page allows users to email the results of an entire project or 
+a particular build to anyone they'd like</p> 
+
+</div>
+
+</body>
+</html>

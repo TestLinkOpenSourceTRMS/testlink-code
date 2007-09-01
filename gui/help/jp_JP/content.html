@@ -1,0 +1,61 @@
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+	<!--
+	20070421 - franciscom - using basehref smarty var to build right URLs 
+	BUGID 93 - 20050910 - fm
+	--->
+
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta http-equiv="Content-language" content="en" />
+	<meta name="author" content="Martin Havlat" />
+	<meta name="copyright" content="GNU" />
+	<meta name="robots" content="NOFOLLOW" />
+	<title>TestLink Help: Content</title>
+ 	<link rel="stylesheet" type="text/css" href="{$basehref}{$smarty.const.TL_THEME_CSS_DIR}tl_docs.css" />
+</head>
+
+<body>
+{assign var="dummy" value="lib/general/show_help.php?locale=$locale&help="}
+{assign var="help_launcher" value="$basehref$dummy"}
+
+<h1>Help Content</h1>
+
+<div id="menu">
+  <a href="javascript: window.close();" class="tlButton">Close</a>  
+  <a href="javascript: history.back();" class="tlButton">Back</a>  
+</div>
+
+<ul>
+	<li><a href="{$help_launcher}glosary">Glosary of Terms</a></li>
+	<li><a href="{$help_launcher}testproject">Test Project</a></li>
+	<li><a href="{$help_launcher}metrics">Results and Metrics</a></li>
+	<li><a href="{$help_launcher}shortcuts">Shortcuts</a></li>
+	<li><a href="{$help_launcher}execMain">Test Execution</a></li>
+	<li><a href="{$help_launcher}execFilter">Test Execution - Filter</a></li>
+	<li><a href="{$help_launcher}printFilter">Test Specification Filter</a></li>
+	<li><a href="{$help_launcher}testPlan">Test Plan</a></li>
+	<li><a href="{$help_launcher}userRights">User rights</a></li>
+</ul>
+
+
+<h1>Instruction pages</h1>
+
+<ul>
+	<li><a href="{$help_launcher}keywordsAssign">Keyword assignment</a></li>
+	<li><a href="{$help_launcher}executeTest">Test Execution</a></li>
+	<li><a href="{$help_launcher}planTesters">Test Plan - Add Testers</a></li>
+	<li><a href="{$help_launcher}planAddTC">Test Plan - Add Test Cases to Suite</a></li>
+	<li><a href="{$help_launcher}planOwnerAndPriority">Test Plan - Priority</a></li>
+	<li><a href="{$help_launcher}testSetRemove">Test Plan - Remove Test Cases from Suite</a></li>
+	<li><a href="{$help_launcher}planOwnerAndPriority">Test Plan - Ownership</a></li>
+	<li><a href="{$help_launcher}browseResults">Test Reports and Metrics</a></li>
+	<li><a href="{$help_launcher}tcEdit">Test Specification - Edit</a></li>
+	<li><a href="{$help_launcher}tcPrint">Test Specification - Print</a></li>
+	<li><a href="{$help_launcher}tcSearch">Test Specification - Search</a></li>
+</ul>
+
+</body>
+</html>

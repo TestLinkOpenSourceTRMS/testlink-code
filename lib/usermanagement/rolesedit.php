@@ -5,17 +5,26 @@
  *
  * Filename $RCSfile: rolesedit.php,v $
  *
- * @version $Revision: 1.9 $
- * @modified $Date: 2007/08/29 17:21:02 $ by $Author: jbarchibald $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2007/09/01 14:05:34 $ by $Author: franciscom $
  *
- *  20070829 - jbarchibald - fix bug 1000 - Testplan role assignments
+ * 20070901 - franciscom - BUGID 1016 
+ * 20070829 - jbarchibald - BUGID 1000 - Testplan role assignments
  *
 **/
 require_once("../../config.inc.php");
-require_once("../functions/users.inc.php");
-require_once("../functions/common.php");
+require_once("common.php");
+require_once("users.inc.php");
 require_once("../../third_party/fckeditor/fckeditor.php");
 testlinkInitPage($db);
+
+// 20070901 - BUGID 1016
+// lang_get() is used inside roles.inc.php to translate user right descriptionm and needs $_SESSION info.
+// If no _SESSION info is found, then default locale is used.
+// We need to be sure _SESSION info exists before using lang_get(); in any module.
+//
+init_global_rights_maps();
+
 
 $_POST = strings_stripSlashes($_POST);
 $id = isset($_GET['id']) ? $_GET['id'] : 0;
@@ -89,6 +98,8 @@ if (sizeof($roles) && $id)
 		$of->Value = isset($role['notes']) ? $role['notes'] : '';
 	}
 }
+
+echo "<pre>debug 20070901 \$g_rights_tp" . __FUNCTION__ . " --- "; print_r($g_rights_tp); echo "</pre>";
 
 $smarty = new TLSmarty();
 $smarty->assign('role',$role);

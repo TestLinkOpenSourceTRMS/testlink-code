@@ -5,16 +5,21 @@
  *
  * Filename $RCSfile: rolesview.php,v $
  *
- * @version $Revision: 1.9 $
- * @modified $Date: 2007/08/29 17:21:02 $ by $Author: jbarchibald $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2007/09/01 14:05:34 $ by $Author: franciscom $
  *
- *  20070829 - jbarchibald - fix bug 1000 - Testplan role assignments
+ *  20070901 - franciscom - BUGID
+ *  20070829 - jbarchibald - BUGID 1000 - Testplan role assignments
 **/
 require_once("../../config.inc.php");
-require_once("../functions/common.php");
-require_once("../functions/users.inc.php");
-require_once("../functions/roles.inc.php");
+require_once("common.php");
+require_once("users.inc.php");
+require_once("roles.inc.php");
 testlinkInitPage($db);
+
+// 20070901 - franciscom@gruppotesi.com -BUGID 1016
+init_global_rights_maps();
+
 
 $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 $bDelete = isset($_GET['deleterole']) ? 1 : 0;

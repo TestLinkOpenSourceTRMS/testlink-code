@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
  * @filesource $RCSfile: roles.inc.php,v $
- * @version $Revision: 1.23 $
- * @modified $Date: 2007/08/20 06:41:29 $ by $Author: franciscom $
+ * @version $Revision: 1.24 $
+ * @modified $Date: 2007/09/01 14:05:34 $ by $Author: franciscom $
  * @author Martin Havlat, Chad Rosen
  * 
  * This script provides the get_rights and has_rights functions for
@@ -34,17 +34,57 @@
  * mgt_modify_product, mgt_users - just Admin edits Products and Users
  *
  *
- * rev : 20070819 - franciscom - 
+ * rev : 20070901 - franciscom - BUGID 1016
+ *
+ *       20070819 - franciscom - 
  *       added get_tplan_effective_role(), get_tproject_effective_role()
  *       20070818 - franciscom - changes in getRoles()
  *       20070702 - franciscom - new get_effective_role()
  */
+ 
 require_once( dirname(__FILE__). '/lang_api.php' );
 
+// 
+// This can seems weird but we have this problem:
+//
+// lang_get() is used to translate user rights description and needs $_SESSION info.
+// If no _SESSION info is found, then default locale is used.
+// We need to be sure _SESSION info exists before using lang_get(); in any module.
+//  
+// Then we need to explicitily init this globals to get right localization.
+// With previous implementation we always get localization on TL DEFAULT LOCALE
+//
+init_global_rights_maps();
 
+
+/*
+  function: init_global_rights_maps
+            init global map with user rights and user rights description localized.
+            
+
+  args :
+  
+  returns: 
+
+*/
+
+function init_global_rights_maps()
+{
 // Important:
 // Every array, defines a section in the define role page
 //
+global $g_rights_tp;
+global $g_rights_mgttc;
+global $g_rights_kw;
+global $g_rights_req;
+global $g_rights_product;
+global $g_rights_cf;
+global $g_rights_users_global;
+global $g_rights_users;
+global $g_propRights_global;
+global $g_propRights_product;
+
+
 $g_rights_tp = array (	"testplan_execute" => lang_get('desc_testplan_execute'),
 						"testplan_create_build" => lang_get('desc_testplan_create_build'),
 						"testplan_metrics" => lang_get('desc_testplan_metrics'),
@@ -90,6 +130,12 @@ $g_rights_users = $g_rights_users_global;
 						
 $g_propRights_global = array_merge($g_rights_users_global,$g_rights_product);
 $g_propRights_product = array_merge($g_propRights_global,$g_rights_mgttc,$g_rights_kw,$g_rights_req);
+}
+
+						
+						
+						
+						
 						
 /**
  * Fetches all rights

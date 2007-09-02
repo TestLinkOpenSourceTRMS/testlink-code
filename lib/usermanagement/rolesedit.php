@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: rolesedit.php,v $
  *
- * @version $Revision: 1.10 $
- * @modified $Date: 2007/09/01 14:05:34 $ by $Author: franciscom $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2007/09/02 18:05:55 $ by $Author: schlundus $
  *
  * 20070901 - franciscom - BUGID 1016 
  * 20070829 - jbarchibald - BUGID 1000 - Testplan role assignments
@@ -98,8 +98,6 @@ if (sizeof($roles) && $id)
 		$of->Value = isset($role['notes']) ? $role['notes'] : '';
 	}
 }
-
-echo "<pre>debug 20070901 \$g_rights_tp" . __FUNCTION__ . " --- "; print_r($g_rights_tp); echo "</pre>";
 
 $smarty = new TLSmarty();
 $smarty->assign('role',$role);

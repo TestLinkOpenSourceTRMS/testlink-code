@@ -6,8 +6,8 @@
  * Scope: Import keywords page
  *
  * Filename $RCSfile: keywordsimport.php,v $
- * @version $Revision: 1.12 $
- * @modified $Date: 2007/06/11 06:34:41 $ by $Author: franciscom $
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2007/09/02 18:05:55 $ by $Author: schlundus $
  *
  * Revisions:
  *
@@ -118,7 +118,7 @@ function check_valid_ftype($upload_info,$import_type)
 	$mime_import_types = null;      
 	$mime_import_types['text/plain'] = array('CSV' => 'csv');
 	$mime_import_types['application/octet-stream'] = array('CSV' => 'csv');
-  $mime_import_types['application/x-download'] = array('CSV' => 'csv');
+	$mime_import_types['application/x-download'] = array('CSV' => 'csv');
 
 	$mime_import_types['text/xml']= array('XML' => 'xml');
 

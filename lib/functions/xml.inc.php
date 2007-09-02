@@ -41,9 +41,7 @@ function getNodeContent(&$node,$tag)
 	$nodes = $node->get_elements_by_tagname($tag);
 	if ($nodes)
 	{
-		$tnode = $nodes[0]->first_child();
-		if ($tnode)
-			return $tnode->node_value();
+		return $nodes[0]->get_content();
 	}
 	return null;
 }

@@ -1,19 +1,18 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: resultsMoreBuilds_report.tpl,v 1.39 2007/06/27 05:38:37 kevinlevy Exp $
-@author Francisco Mancardi - fm - start solving BUGID 97/98
-20051022 - scs - removed ' in component id values
-20051121 - scs - added escaping of tpname
-20051203 - scs - added missing apo in lang_get
+$Id: resultsMoreBuilds_report.tpl,v 1.40 2007/09/03 17:08:26 franciscom Exp $
+
+rev :
+     20070902 - franciscom - refactoring
 *}
-	{include file="inc_head.tpl" openHead='yes'} 
-		<script language="JavaScript" src="gui/javascript/expandAndCollapseFunctions.js" type="text/javascript"></script>
-		<script language="JavaScript" type="text/javascript">
+{include file="inc_head.tpl" openHead='yes'} 
+<script language="JavaScript" src="gui/javascript/expandAndCollapseFunctions.js" type="text/javascript"></script>
+<script language="JavaScript" type="text/javascript">
 		var bAllShown = false;
 		var g_progress = null;
 		var g_pCount = 0;
 		progress();
-		</script>
+</script>
 </head>
 <body>
 
@@ -28,19 +27,12 @@ $Id: resultsMoreBuilds_report.tpl,v 1.39 2007/06/27 05:38:37 kevinlevy Exp $
 			<th>{lang_get s="th_builds"}</th>
 			<th>{lang_get s="th_test_suites"}</th> 
 			<th>{lang_get s="th_keyword"}</th>
-			<th>{lang_get s="th_owner"}</th>
+			<th>{lang_get s="assigned_to"}</th>
 			<th>{lang_get s="th_last_result"}</th>
-			
-			<!-- KL - 20070621 - functionality for query by start and end time -->
-			{if $show_untested_code == 'true'}
-				<th>{lang_get s="th_start_time"}</th>
-				<th>{lang_get s="th_end_time"}</th>
-			
-			<!-- KL - 20070621 - functionality for query by executor and search_notes_string	-->
-				<th>{lang_get s="th_executor"}</th>
-				<th>{lang_get s="th_search_notes_string"}</th>
-			{/if}
-			
+			<th>{lang_get s="th_start_time"}</th>
+			<th>{lang_get s="th_end_time"}</th>
+			<th>{lang_get s="th_executor"}</th>
+			<th>{lang_get s="th_search_notes_string"}</th>
 		</tr> 
 		<tr>
 			<td>
@@ -53,8 +45,8 @@ $Id: resultsMoreBuilds_report.tpl,v 1.39 2007/06/27 05:38:37 kevinlevy Exp $
 				{/foreach}
 			</td>
 			<td>
-				{foreach key=x item=array from=$componentsSelected}
-						{$componentsSelected[$x]|escape} <br />
+				{foreach key=x item=array from=$testsuitesSelected}
+						{$testsuitesSelected[$x]|escape} <br />
 				{/foreach}
 			</td> 
 			<td>
@@ -65,21 +57,30 @@ $Id: resultsMoreBuilds_report.tpl,v 1.39 2007/06/27 05:38:37 kevinlevy Exp $
 			</td>
 			
 			<td>
-				{$ownerSelected}&nbsp;
+			  {if $ownerSelected == ''}
+			    {lang_get s="any"|escape}
+			  {else}
+				  {$ownerSelected|escape}
+				{/if}
+				&nbsp;
 			</td>
+      <td>
+				{foreach key=idx item=status_localized from=$lastStatus}
+						{$status_localized|escape} <br />
+				{/foreach}
+      </td>
 
-			<td>{$lastStatus|escape}</td>
-			
-			{if $show_untested_code == 'true'}
-				<!-- KL - 20070621 - functionality for query by start and end time -->
-				<td>{$startTime}</td>
-				<td>{$endTime}</td>
-			
-				<!-- KL - 20070621 - functionality for query by executor and search in notes field -->
-				<td>{$executorSelected}</td>
-				<td>{$search_notes_string}</td>
-		 	{/if}
-		 	
+			<td>{$startTime}</td>
+			<td>{$endTime}</td>
+			<td>
+			  {if $executorSelected == ''}
+			    {lang_get s="any"|escape}
+			  {else}
+				  {$executorSelected|escape}
+				{/if}
+				&nbsp;
+			</td>
+			<td>{$search_notes_string}</td>
 		</tr>
 	</table>		
 {/if}

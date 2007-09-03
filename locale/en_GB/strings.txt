@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.190 $
- * @modified $Date: 2007/09/02 18:05:56 $ $Author: schlundus $
+ * @version $Revision: 1.191 $
+ * @modified $Date: 2007/09/03 17:11:54 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
@@ -20,9 +20,11 @@
 
 // General - Leave it here in this way can be reused !!!
 $TLS_asc = "ascending";
+$TLS_any = "any";
 $TLS_btn_no = "No";
 $TLS_create = "Create";
 $TLS_desc = "descending";
+$TLS_hour = "Hour";
 $TLS_test_case = "Test Case";
 $TLS_testcase = $TLS_test_case;
 $TLS_test_plan = "Test Plan";
@@ -1048,16 +1050,16 @@ $TLS_last_status_failed = $TLS_test_status_failed;
 $TLS_last_status_not_run = $TLS_test_status_not_run;
 $TLS_last_status_passed = $TLS_test_status_passed;
 $TLS_select_builds_header = "Select Build(s)";
-$TLS_select_components_header = "Select Test Suite(s)";
+$TLS_select_components_header = "Top level Test Suite(s)";
 $TLS_select_keyword_header = "Select Keyword";
 $TLS_select_last_result_header = "Show Executions of Status";
-$TLS_select_owner_header = "Select Owner";
+$TLS_select_owner_header = "Assigned to";
 $TLS_select_report_format_header = "Select Report Format";
 $TLS_submit_query = "Submit Query";
 $TLS_test_plan_header = $TLS_testplan;
 $TLS_query_metrics_report = "Query Metrics Report";
-$TLS_enter_start_time = "Enter Start Time";
-$TLS_enter_end_time = "Enter End Time";
+$TLS_enter_start_time = "Start Time";
+$TLS_enter_end_time = "End Time";
 $TLS_year = "year";
 $TLS_month = "month";
 $TLS_day = "day";

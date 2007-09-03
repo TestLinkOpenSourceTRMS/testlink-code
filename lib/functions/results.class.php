@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8 
- * @modified $Date: 2007/08/27 06:37:44 $ by $Author: franciscom $
+ * @modified $Date: 2007/09/03 17:09:16 $ by $Author: franciscom $
  *
  *-------------------------------------------------------------------------
  * Revisions:
@@ -164,28 +164,26 @@ class results
 	public function results(&$db, &$tp, $suitesSelected = 'all', 
 	                        $builds_to_query = -1, $lastResult = 'a', 
 	                        $keywordId = 0, $owner = null, 
-							$startTime = "0000-00-00 00:00:00", $endTime = "9999-01-01 00:00:00",
-							$executor = null, $search_notes_string = null, $linkExecutionBuild = null,
-							&$suiteStructure = null, &$flatArray = null, &$linked_tcversions = null)
+							            $startTime = "0000-00-00 00:00:00", $endTime = "9999-01-01 00:00:00",
+							            $executor = null, $search_notes_string = null, $linkExecutionBuild = null,
+							            &$suiteStructure = null, &$flatArray = null, &$linked_tcversions = null)
 	{
 		$this->db = $db;	
-	    $this->tp = $tp;  
-        $this->map_tc_status=config_get('tc_status');  
-        $this->suitesSelected = $suitesSelected;  	
-        $this->tprojectID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-        $this->testPlanID = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0 ;
+	  $this->tp = $tp;  
+    $this->map_tc_status=config_get('tc_status');  
+    $this->suitesSelected = $suitesSelected;  	
+    $this->tprojectID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+    $this->testPlanID = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0 ;
 		$this->tplanName  = isset($_SESSION['testPlanName']) ? $_SESSION['testPlanName'] : null;
-        $this->suiteStructure = $suiteStructure;
+    $this->suiteStructure = $suiteStructure;
 		$this->flatArray = $flatArray;
 		$this->linked_tcversions = $linked_tcversions;
-        //  print "results class constructor <BR>";
+
 		// build suiteStructure and flatArray
 		if (($this->suiteStructure == null) && ($this->flatArray == null) && ($this->linked_tcversions == null)){
-	      //  print "suite structure is being created <BR>";
 		    $this->suiteStructure = $this->generateExecTree($keywordId, $owner);
 		}
 		
-	    //print "builds to query = $builds_to_query <BR>";
 		// KL - if no builds are specified, no need to execute the following block of code
 		if ($builds_to_query != -1) {
 			// retrieve results from executions table
@@ -196,10 +194,13 @@ class results
 			// and then programmatically figure out the last result
 			// if you just query the executions table for those rows with status = $this->map_tc_status['passed']
 			// that is not the way to determine last result
-			$this->executionsMap = $this->buildExecutionsMap($builds_to_query, 'a', $keywordId, $owner, $startTime, $endTime, $executor, $search_notes_string, $linkExecutionBuild);    
+			$this->executionsMap = $this->buildExecutionsMap($builds_to_query, 'a', $keywordId, 
+			                                                 $owner, $startTime, $endTime, $executor, 
+			                                                 $search_notes_string, $linkExecutionBuild);    
 		
 			// get keyword id -> keyword name pairs used in this test plan
 			$arrKeywords = $tp->get_keywords_map($this->testPlanID); 	
+			
 			// get owner id -> owner name pairs used in this test plan
 			$arrOwners = get_users_for_html_options($db, null, false);
 		
@@ -239,7 +240,8 @@ class results
 			$this->totalsForPlan = $this->createTotalsForPlan($this->suiteStructure, $this->mapOfSuiteSummary);
 
 			// must be done after totalsForPlan is performed because the total # of cases is needed
-			$this->aggregateBuildResults = $this->tallyBuildResults($this->mapOfLastResultByBuild, $arrBuilds, $this->totalsForPlan);
+			$this->aggregateBuildResults = $this->tallyBuildResults($this->mapOfLastResultByBuild, 
+			                                                        $arrBuilds, $this->totalsForPlan);
 		} // end if block
 	} // end results constructor
 
@@ -787,12 +789,9 @@ class results
 			}
 			$tcversion_id = $info['tcversion_id'];
 			
-			// 20070825 - want node order
 		  $sql = "select name from nodes_hierarchy where id = $testcaseID ";
-			//$sql = "SELECT name,node_order FROM nodes_hierarchy WHERE id = $testcaseID ";
 			$results = $this->db->fetchFirstRow($sql);
 			$name = $results['name'];
-      // $node_order = $results['node_order'];
        			
 			$executed = $info['executed'];
 			$executionExists = true;
@@ -805,7 +804,6 @@ class results
 					// Initialize information on testcaseID to be "not run"
 					$infoToSave = array('testcaseID' => $testcaseID, 
 					'tcversion_id' => $tcversion_id, 
-					// 'node_order' => $node_order, 
 					'build_id' => '', 
 					'tester_id' => '', 
 					'execution_ts' => '', 
@@ -819,13 +817,15 @@ class results
 					array_push($currentSuite, $infoToSave);			
 				}	  
 			}
+
 			if ($executionExists) {
 				// TO-DO - this is where we can include the searching of results
 				// over multiple test plans - by modifying this select statement slightly
 				// to include multiple test plan ids	
 				$sql = "SELECT * FROM executions " .
-				   "WHERE tcversion_id = $executed AND testplan_id = $_SESSION[testPlanId] AND 
-				    execution_ts > '$startTime' and execution_ts < '$endTime' ";			   
+				       "WHERE tcversion_id = $executed AND testplan_id = $_SESSION[testPlanId] AND 
+				        execution_ts > '$startTime' and execution_ts < '$endTime' ";			   
+				        
 				if (($lastResult == $this->map_tc_status['passed']) || ($lastResult == $this->map_tc_status['failed']) || 
 				    ($lastResult == $this->map_tc_status['blocked'])){
 					$sql .= " AND status = '" . $lastResult . "' ";

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.22 $
- * @modified $Date: 2007/08/27 06:37:57 $ $Author: franciscom $
+ * @version $Revision: 1.23 $
+ * @modified $Date: 2007/09/03 17:11:54 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
@@ -18,6 +18,7 @@ $TLS_asc = "crescente";
 $TLS_btn_no = "No";
 $TLS_create = "Crea";
 $TLS_desc = "decrescente";
+$TLS_hour = "Ora";
 $TLS_test_case = "Test Case";
 $TLS_testcase = $TLS_test_case;
 $TLS_test_plan = "Test Plan";
@@ -1128,7 +1129,7 @@ $TLS_btn_confirm_delete = "Elimina";
 $TLS_no_roles = "Nessun ruolo";
 $TLS_th_role_description = "Descrizione";
 $TLS_title_roles = "Ruoli disponibili";
-$TLS_warning_delete_role = Sei sicuro di voler eliminare questo ruolo?
+$TLS_warning_delete_role = "Sei sicuro di voler eliminare questo ruolo?";
 $TLS_warning_users_will_be_reset = "Agli utenti con tale ruolo sarà assegnato il ruolo:";
 
 

@@ -1,92 +1,95 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsMoreBuilds_buildReport.php,v 1.49 2007/06/27 06:08:21 kevinlevy Exp $ 
+* $Id: resultsMoreBuilds_buildReport.php,v 1.50 2007/09/03 17:09:16 franciscom Exp $ 
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 * 
 * This page will forward the user to a form where they can select
 * the builds they would like to query results against.
 *
-* @author Francisco Mancardi - 20050912 - remove unused code
-* @author Kevin Levy - 20060603 - starting 1.7 changes
+* rev :
+*      20070901 - franciscom - refactoring
+* 
 **/
 require('../../config.inc.php');
 require_once('common.php');
-require_once('../functions/results.class.php');
-require_once('../functions/users.inc.php');
+require_once('results.class.php');
+require_once('users.inc.php');
 require_once('displayMgr.php');
 testlinkInitPage($db);
 
-$format = isset($_REQUEST['format']) ? $_REQUEST['format'] : 'HTML';
-$lastStatus = isset($_REQUEST['lastStatus']) ? $_REQUEST['lastStatus'] : array();
+
+$reports_cfg=config_get('reports_cfg');
+$tc_status_verbose_code=config_get('tc_status');   
+$tc_status_verbose_labels=config_get('tc_status_verbose_labels');   
+
 
 // statusForClass is used for results.class.php
 // lastStatus is used to be displayed 
 $statusForClass = 'a';
 
-$displayUnexecutedRows = false;
-$displayBlockedRows = false;
-$displayPassedRows = false;
-$displayFailedRows = false;
 
+$format = isset($_REQUEST['format']) ? $_REQUEST['format'] : 'HTML';
 $display_suite_summaries = isset($_REQUEST['display_suite_summaries']) ? $_REQUEST['display_suite_summaries'] : true;
 $display_totals = isset($_REQUEST['display_totals']) ? $_REQUEST['display_totals'] : true;
 $display_query_params = isset($_REQUEST['display_query_params']) ? $_REQUEST['display_query_params'] : true;
+$lastStatus = isset($_REQUEST['lastStatus']) ? $_REQUEST['lastStatus'] : array();
 
+// Config to manage versobe and code status
+$tc_status_code_verbose=array_flip($tc_status_verbose_code);
 
-for ($i = 0; $i < sizeOf($lastStatus); $i++)
+// same key that tcstatus_verbose_code
+$displayTCRows=array();
+$lastStatus_localized=array();
+foreach($reports_cfg->tc_status as $verbose => $label)
 {
-	if ($lastStatus[$i] == "p"){
-		$displayPassedRows = true;
-	}
-	elseif ($lastStatus[$i] == "f"){
-			$displayFailedRows = true;
-	}
-	elseif ($lastStatus[$i] == "b"){
- 		$displayBlockedRows = true;
-	}
-	elseif ($lastStatus[$i] == "n"){
- 		$displayUnexecutedRows = true;
-	}
+  $displayTCRows[$verbose]=false;
 }
-						
-$ownerSelected = isset($_REQUEST['owner']) ? $_REQUEST['owner'] : null;
-$executorSelected = isset($_REQUEST['executor']) ? $_REQUEST['executor'] : null;
-$buildsSelected = isset($_REQUEST['build']) ? $_REQUEST['build'] : array();
-$componentsSelected = isset($_REQUEST['component']) ? $_REQUEST['component'] : array();
-$componentIds = null;
-$componentNames = null;
 
-for ($id = 0; $id < sizeOf($componentsSelected); $id++)
+foreach($lastStatus	as $key => $status_code)
 {
-	list($suiteId, $suiteName) = split("\,", $componentsSelected[$id], 2);
-	$componentIds[$id] = $suiteId;
-	$componentNames[$id] = $suiteName;	
-}
+   $verbose=$tc_status_code_verbose[$status_code];
+   $displayTCRows[$verbose]=true;
+   $lastStatus_localized[]=lang_get($tc_status_verbose_labels[$verbose]);
+}	
+// -------------------------------------------------------------------------------------------
 
 $keywordSelected = isset($_REQUEST['keyword']) ? $_REQUEST['keyword'] : 0;
 $tpID = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0;
-//$prodID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 $tplan_name = isset($_SESSION['testPlanName']) ? $_SESSION['testPlanName'] : '';
-
-//$tpName = isset($_SESSION['testPlanName']) ? $_SESSION['testPlanName'] : '';
 $tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : '';
+						
+						
+$ownerSelected = (isset($_REQUEST['owner']) && $_REQUEST['owner'] > 0 ) ? $_REQUEST['owner'] : null;
+$executorSelected = (isset($_REQUEST['executor']) && $_REQUEST['executor'] > 0) ? $_REQUEST['executor'] : null;
 
-$startYear = isset($_REQUEST['start_year']) ? $_REQUEST['start_year'] : "0000";
-$startMonth = isset($_REQUEST['start_month']) ? $_REQUEST['start_month'] : "00";
-$startDay = isset($_REQUEST['start_day']) ? $_REQUEST['start_day'] : "00";
-$startHour = isset($_REQUEST['start_hour']) ? $_REQUEST['start_hour'] : "00";
-
-$endYear = isset($_REQUEST['end_year']) ? $_REQUEST['end_year'] : "9999";
-$endMonth = isset($_REQUEST['end_month']) ? $_REQUEST['end_month'] : "00";
-$endDay = isset($_REQUEST['end_day']) ? $_REQUEST['end_day'] : "00";
-$endHour = isset($_REQUEST['end_hour']) ? $_REQUEST['end_hour'] : "00";
-
+$buildsSelected = isset($_REQUEST['build']) ? $_REQUEST['build'] : array();
+$testsuitesSelected = isset($_REQUEST['testsuite']) ? $_REQUEST['testsuite'] : array();
 $search_notes_string = isset($_REQUEST['search_notes_string']) ? $_REQUEST['search_notes_string'] : null;
 
-$startTime = $startYear . "-" . $startMonth . "-" . $startDay . " " . $startHour. ":00:00";
-$endTime = $endYear . "-" . $endMonth . "-" . $endDay . " " . "$endHour" . ":00:00";
+$testsuiteIds = null;
+$testsuiteNames = null;
+
+$tsuites_qty=sizeOf($testsuitesSelected);
+for ($id = 0; $id < $tsuites_qty ; $id++)
+{
+	list($suiteId, $suiteName) = split("\,", $testsuitesSelected[$id], 2);
+	$testsuiteIds[$id] = $suiteId;
+	$testsuiteNames[$id] = $suiteName;	
+}
+
+
+$date_range=get_date_range($_REQUEST);
+$startDate = $date_range->start->date;
+$startTime = $date_range->start->time;
+$startHour = $date_range->start->hour;
+
+$endDate = $date_range->end->date;
+$endTime = $date_range->end->time;
+$endHour = $date_range->end->hour;
+
+
 
 $xls = ($format == 'EXCEL') ? true : false;
 $buildsToQuery = -1;
@@ -100,7 +103,10 @@ $tp = new testplan($db);
 // KL - 20070625 - used for execution links
 $execution_link_build = isset($_GET['build']) ? intval($_GET['build']) : null;
 
-$re = new results($db, $tp, $componentIds, $buildsToQuery, $statusForClass, $keywordSelected, $ownerSelected, $startTime, $endTime, $executorSelected, $search_notes_string, $execution_link_build);
+$re = new results($db, $tp, $testsuiteIds, $buildsToQuery, $statusForClass, 
+                  $keywordSelected, $ownerSelected, $startTime, $endTime, $executorSelected, 
+                  $search_notes_string, $execution_link_build);
+                  
 $suiteList = $re->getSuiteList();
 $flatArray = $re->getFlatArray();
 $mapOfSuiteSummary =  $re->getAggregateMap();
@@ -110,13 +116,23 @@ $arrBuilds = $tp->get_builds($tpID);
 $mapBuilds = $tp->get_builds_for_html_options($tpID);
 
 $arrOwners = get_users_for_html_options($db, ALL_USERS_FILTER, !ADD_BLANK_OPTION);
+
+
 $smarty = new TLSmarty();
+// $smarty->assign('selected_start_date', $startDate);
+// $smarty->assign('selected_start_time', $startHour);
+// $smarty->assign('selected_end_date', $endDate);
+// $smarty->assign('selected_end_time', $endHour);
+
 $smarty->assign('arrBuilds', $arrBuilds);
 $smarty->assign('mapBuilds', $mapBuilds);
 $smarty->assign('mapUsers',$arrOwners);
+
 $smarty->assign('arrKeywords', $arrKeywords);
-$smarty->assign('componentsSelected', $componentNames);
-$smarty->assign('lastStatus', $lastStatus);
+$smarty->assign('keyword_qty', count($arrKeywords));
+
+$smarty->assign('testsuitesSelected', $testsuiteNames);
+$smarty->assign('lastStatus', $lastStatus_localized);
 $smarty->assign('buildsSelected', $buildsSelected);
 $smarty->assign('keywordsSelected', $keywordSelected);
 $smarty->assign('startTime', $startTime);
@@ -141,10 +157,12 @@ $smarty->assign('arrBuilds', $arrBuilds);
 $smarty->assign('suiteList', $suiteList);
 $smarty->assign('flatArray', $flatArray);
 $smarty->assign('mapOfSuiteSummary', $mapOfSuiteSummary);
-$smarty->assign('displayUnexecutedRows', $displayUnexecutedRows);
-$smarty->assign('displayBlockedRows', $displayBlockedRows);
-$smarty->assign('displayPassedRows', $displayPassedRows);
-$smarty->assign('displayFailedRows', $displayFailedRows);
+
+$smarty->assign('displayUnexecutedRows', $displayTCRows['not_run']);
+$smarty->assign('displayBlockedRows', $displayTCRows['blocked']);
+$smarty->assign('displayPassedRows', $displayTCRows['passed']);
+$smarty->assign('displayFailedRows', $displayTCRows['failed']);
+
 $smarty->assign('show_summaries', $display_suite_summaries);
 $smarty->assign('show_totals', $display_totals);
 $smarty->assign('show_query_params', $display_query_params);
@@ -159,5 +177,33 @@ if (!isset($_GET['report_type']))
 }
 
 displayReport('resultsMoreBuilds_report', $smarty, $report_type);
+?>
 
+
+<?php
+function get_date_range($hash)
+{
+ 
+$date_range->start->day=isset($hash['start_Day']) ? $hash['start_Day'] : "01";
+$date_range->start->month=isset($hash['start_Month']) ? $hash['start_Month'] : "01";
+$date_range->start->year=isset($hash['start_Year']) ? $hash['start_Year'] : "2000";
+$date_range->start->hour=isset($hash['start_Hour']) ? $hash['start_Hour'] : "00";
+
+$mm=sprintf("%02d",$date_range->start->month);
+$dd=sprintf("%02d",$date_range->start->day);
+$date_range->start->date=$date_range->start->year . "-" . $mm . "-" . $dd;
+$date_range->start->time=$date_range->start->date . " " . $date_range->start->hour . ":00:00";
+
+$date_range->end->day=isset($hash['end_Day']) ? $hash['end_Day'] : "01";
+$date_range->end->month=isset($hash['end_Month']) ? $hash['end_Month'] : "01";
+$date_range->end->year=isset($hash['end_Year']) ? $hash['end_Year'] : "2050";
+$date_range->end->hour=isset($hash['end_Hour']) ? $hash['end_Hour'] : "00";
+
+$mm=sprintf("%02d",$date_range->end->month);
+$dd=sprintf("%02d",$date_range->end->day);
+$date_range->end->date=$date_range->end->year . "-" . $mm . "-" . $dd;
+$date_range->end->time=$date_range->end->date . " " . $date_range->end->hour . ":00:00";
+
+return $date_range;
+}
 ?>

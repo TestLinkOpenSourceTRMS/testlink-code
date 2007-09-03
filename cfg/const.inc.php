@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: const.inc.php,v $
  *
- * @version $Revision: 1.38 $
- * @modified $Date: 2007/09/01 08:22:30 $ by $Author: franciscom $
+ * @version $Revision: 1.39 $
+ * @modified $Date: 2007/09/03 17:08:17 $ by $Author: franciscom $
  * @author Martin Havlát
  *
  * SCOPE:
@@ -16,6 +16,10 @@
  * 
  *-------------------------------------------------------------------
  * Revisions: 
+ *         
+ *           20070902 - franciscom - localisation jp_JP
+ *                                   $g_reports_cfg
+ *
  *           20070822 - franciscom - localisation ru_RU
  *           20070818 - franciscom - $g_default_roleid
  *           20070705 - franciscom - config of $g_req_status.
@@ -277,6 +281,27 @@ $g_tc_status_for_ui = array(
 
 // radio button selected by default
 $g_tc_status_for_ui_default="blocked";
+
+// -------------------------------------------------------------------------------
+
+/** [Reports] */
+
+
+// Status to use on reports.
+// Attention: 
+// 1. report generation must be changed to manage new statuses
+// 2. Display order = order in array
+//
+$g_reports_cfg->tc_status = array(
+    "passed"  => "test_status_passed",
+    "failed"  => "test_status_failed",
+    "blocked" => "test_status_blocked",
+    "not_run" => "test_status_not_run"
+);
+
+// Offset in seconds, to substract from current date to create start date on
+// reports that have start / end dates
+$g_reports_cfg->start_date_offset=(7*24*60*60); // one week
 
 // -------------------------------------------------------------------------------
 

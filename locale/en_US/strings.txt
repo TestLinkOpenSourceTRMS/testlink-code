@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.16 $
- * @modified $Date: 2007/09/02 18:05:57 $ $Author: schlundus $
+ * @version $Revision: 1.17 $
+ * @modified $Date: 2007/09/03 17:11:54 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
@@ -17,6 +17,7 @@ $TLS_asc = "ascending";
 $TLS_btn_no = "No";
 $TLS_create = "Create";
 $TLS_desc = "descending";
+$TLS_hour = "Hour";
 $TLS_test_case = "Test Case";
 $TLS_testcase = $TLS_test_case;
 $TLS_test_plan = "Test Plan";

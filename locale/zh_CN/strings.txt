@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.4 $
- * @modified $Date: 2007/08/20 06:41:56 $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2007/09/04 06:14:54 $
  *
  * @author Yoyo Wang
 **/
@@ -23,6 +23,29 @@ $TLS_th_roles_testplan = "Test Plan Role";
 $TLS_th_roles_testproject = "Test Project Role";
 $TLS_th_role_description = "Description";
 $TLS_warning_delete_role = "Really delete this role?";
+
+// lib/functions/roles.inc.php
+$TLS_desc_cfield_management = "Custom field management";
+$TLS_desc_cfield_view = "Custom field view (read only access)";
+$TLS_desc_mgt_modify_key = "Keyword management";
+$TLS_desc_mgt_modify_product = "Test Project management";
+$TLS_desc_mgt_modify_req = "Requirement management";
+$TLS_desc_mgt_modify_tc = "Test Case create/edit";
+$TLS_desc_mgt_modify_users = "User management";
+$TLS_desc_mgt_view_key = "Keyword view (read only access)";
+$TLS_desc_mgt_view_req = "Requirement view (read only access)";
+$TLS_desc_mgt_view_tc = "Test Case view (read only access)";
+$TLS_desc_role_management = "Role management";
+$TLS_desc_testplan_create_build = "Build create/edit";
+$TLS_desc_testplan_execute = "Test Plan execute";
+$TLS_desc_testplan_metrics = "Test Plan metrics";
+$TLS_desc_testplan_planning = "Test Plan planning";
+$TLS_desc_user_role_assignment = "Role assignment";
+$TLS_error_duplicate_rolename = "There's already a role with that name!";
+$TLS_error_role_no_rights = "You cannot save roles without any rights!";
+$TLS_error_role_no_rolename = "You must enter a name for the role!";
+$TLS_inherited_role="<inherited>";
+$TLS_mgt_testplan_create = "Test Plan create/edit";
 
 // firstLogin.php
 $TLS_cant_create_user = "很抱歉无法为您创建登陆帐号。请与管理员联系！";

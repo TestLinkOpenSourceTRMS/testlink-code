@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: const.inc.php,v $
  *
- * @version $Revision: 1.39 $
- * @modified $Date: 2007/09/03 17:08:17 $ by $Author: franciscom $
+ * @version $Revision: 1.40 $
+ * @modified $Date: 2007/09/05 06:03:51 $ by $Author: franciscom $
  * @author Martin Havlát
  *
  * SCOPE:
@@ -16,7 +16,7 @@
  * 
  *-------------------------------------------------------------------
  * Revisions: 
- *         
+ *           20070905 - franciscom - version updated
  *           20070902 - franciscom - localisation jp_JP
  *                                   $g_reports_cfg
  *
@@ -45,7 +45,7 @@
 /** [GUI] */
 
 /* Release MUST BE changed at the release day */
-define('TL_VERSION', '1.7.0 RC 3'); 
+define('TL_VERSION', '1.7.0'); 
 define('TL_BACKGROUND_DEFAULT', "#9BD"); // default color
 
 // planAddTC_m1-tpl

@@ -1,9 +1,11 @@
-{* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: containerMove.tpl,v 1.10 2007/07/06 06:28:34 franciscom Exp $ *}
-{* Purpose: smarty template - form for move/copy container in test specification 
+{* 
+TestLink Open Source Project - http://testlink.sourceforge.net/ 
+$Id: containerMove.tpl,v 1.11 2007/09/05 06:04:43 franciscom Exp $
+Purpose: smarty template - form for move/copy container in test specification 
 
-20050825 - fm - moveCopy -> containerID
-20051013 - am - fix for 115
+rev :
+     20070904 - franciscom - BUGID 1019
+     removed checkbox copy nested data
 *}
 {include file="inc_head.tpl"}
 {if $level == 'category'}
@@ -33,10 +35,7 @@
 				{html_options options=$arraySelect}
 			</select>
 		</p>
-		<p>
-			<input type="checkbox" name="nested" checked="checked" value="yes" />
-			{lang_get s='include_nested'}
-		</p>
+	
 		<p>
 			<input type="checkbox" name="copyKeywords" checked="checked" value="1" />
 			{lang_get s='copy_keywords'}

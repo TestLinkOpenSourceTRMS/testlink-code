@@ -4,7 +4,7 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  *
  * @author Francisco Mancardi
  *
@@ -30,7 +30,7 @@
  * Sadahiko Hantani, Shinichi Sugiyama,  Toshiyuki Kawanishi,
  * Yasuhiko Okada,   Yoichi Kunihiro,    Yoshihiro Yoshimura
  *
- * @modified $Date: 2007/09/01 08:34:20 $ $Author: franciscom $
+ * @modified $Date: 2007/09/05 06:02:48 $ $Author: franciscom $
  *-------------------------------------------------------------------
 **/
 //If this file is coded in UTF-8 then enable the following line
@@ -1334,6 +1334,10 @@ $TLS_error_ldap_user_not_found = "LDAPユーザが存在しません";
 // lib/functions/product.inc.php
 $TLS_info_product_delete_fails = "テストプロジェクトの削除中にエラーが発生しました";
 
+// lib/results/resultsImport.php
+$TLS_import_results_tc_not_found= "test case %s not found in test plan - no data inserted for this case";
+$TLS_import_results_invalid_result= "test case %s had an invalid result - no data inserted for this case";
+$TLS_import_results_tc_exists = "test case %s is in the test plan, tcversion_id = %s ";
 
 
 // lib/functions/results.inc.php

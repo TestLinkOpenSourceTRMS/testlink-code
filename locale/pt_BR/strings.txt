@@ -6,8 +6,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.7 $
- * @modified $Date: 2007/09/04 06:14:53 $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2007/09/05 06:02:48 $
  * based on ..\en_GB\strings.txt
  *
  * @author Leonardo Molinari
@@ -999,6 +999,10 @@ $TLS_email_sent_message = "Seu e-mail foi enviado";
 // lib/functions/product.inc.php
 $TLS_info_product_delete_fails = "Um erro ocorreu enquanto o produto foi deletado";
 
+// lib/results/resultsImport.php
+$TLS_import_results_tc_not_found= "test case %s not found in test plan - no data inserted for this case";
+$TLS_import_results_invalid_result= "test case %s had an invalid result - no data inserted for this case";
+$TLS_import_results_tc_exists = "test case %s is in the test plan, tcversion_id = %s ";
 
 
 // lib/functions/results.inc.php

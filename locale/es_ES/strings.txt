@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.11 $
- * @modified $Date: 2007/09/04 06:14:52 $ $Author: franciscom $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2007/09/05 06:02:48 $ $Author: franciscom $
  *
  * @author jorgesf@jsf.jazztel.es
  *
@@ -940,6 +940,10 @@ $TLS_email_sent_message = "Se ha enviado el correo electrónico";
 // lib/functions/product.inc.php
 $TLS_info_product_delete_fails = "Ha ocurrido un error mientras se eliminaba el producto";
 
+// lib/results/resultsImport.php
+$TLS_import_results_tc_not_found= "test case %s not found in test plan - no data inserted for this case";
+$TLS_import_results_invalid_result= "test case %s had an invalid result - no data inserted for this case";
+$TLS_import_results_tc_exists = "test case %s is in the test plan, tcversion_id = %s ";
 
 
 // lib/functions/results.inc.php

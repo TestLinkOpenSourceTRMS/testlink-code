@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.59 $
- * @modified $Date: 2007/09/03 17:11:53 $ $Author: franciscom $
+ * @version $Revision: 1.60 $
+ * @modified $Date: 2007/09/05 06:02:45 $ $Author: franciscom $
  *
  * @author Andreas Morsing
  * @author Fabian Woelk
@@ -1276,6 +1276,10 @@ $TLS_error_ldap_user_not_found = "LDAP Benutzer konnte nicht gefunden werden";
 // lib/functions/product.inc.php
 $TLS_info_product_delete_fails = "Beim Löschen des Testprojektes trat ein Fehler auf";
 
+// lib/results/resultsImport.php
+$TLS_import_results_tc_not_found= "test case %s not found in test plan - no data inserted for this case";
+$TLS_import_results_invalid_result= "test case %s had an invalid result - no data inserted for this case";
+$TLS_import_results_tc_exists = "test case %s is in the test plan, tcversion_id = %s ";
 
 
 // lib/functions/results.inc.php

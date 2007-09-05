@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.6 $
- * @modified $Date: 2007/09/04 06:14:53 $ by $Author: franciscom $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2007/09/05 06:02:48 $ by $Author: franciscom $
  *
  * @author Micha&#322; Wujas
  *
@@ -1203,6 +1203,10 @@ $TLS_printed_by_TestLink_on = "Wydrukowany przez TestLink ";
 // lib/functions/product.inc.php
 $TLS_info_product_delete_fails = "Wyst&#261;pi&#322; b&#322;&#261;d podczas usuwania tego produktu";
 
+// lib/results/resultsImport.php
+$TLS_import_results_tc_not_found= "test case %s not found in test plan - no data inserted for this case";
+$TLS_import_results_invalid_result= "test case %s had an invalid result - no data inserted for this case";
+$TLS_import_results_tc_exists = "test case %s is in the test plan, tcversion_id = %s ";
 
 
 // lib/functions/requirements.inc.php

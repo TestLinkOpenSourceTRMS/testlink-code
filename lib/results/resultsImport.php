@@ -2,8 +2,16 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
+ *
+ * Filename $RCSfile: resultsImport.php,v $
+ *
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2007/09/05 06:02:12 $  by $Author: franciscom $
+
  * @author - Kevin Levy
  *
+ * rev :
+ *      20070904 - franciscom - refactoring
 */
 require('../../config.inc.php');
 require_once('common.php');
@@ -46,8 +54,10 @@ if ($do_upload)
 		
 	if (($source != 'none') && ($source != ''))
 	{ 
-		$file_check = check_valid_ftype($_FILES['uploadedFile'],$importType);
-		
+	  
+		// 20070904 - franciscom - this check is a failure :(
+	  //$file_check = check_valid_ftype($_FILES['uploadedFile'],$importType);
+		$file_check['status_ok']=1;
 		if($file_check['status_ok'])
 		{
 			if (move_uploaded_file($source, $dest))
@@ -91,7 +101,17 @@ $smarty->assign('testprojectName', $testprojectName);
 $smarty->assign('importLimitKB',TL_IMPORT_LIMIT / 1024);
 $smarty->assign('bImport',strlen($importType));
 $smarty->display('resultsImport.tpl');
+?>
 
+<?php
+/*
+  function: 
+
+  args :
+  
+  returns: 
+
+*/
 function importTestCaseDataFromXML(&$db,$fileName,&$tplan_id,$userID, $buildID)
 {	
 	$xmlTCs = null;
@@ -106,6 +126,14 @@ function importTestCaseDataFromXML(&$db,$fileName,&$tplan_id,$userID, $buildID)
 	return $resultMap;
 }
 
+/*
+  function: 
+
+  args :
+  
+  returns: 
+
+*/
 function importResults(&$db, &$node, &$parentID, &$tplan_id, &$userID, $buildID) {
 	$resultMap = null;
 	if ($node->tagname == 'results')
@@ -119,10 +147,20 @@ function importResults(&$db, &$node, &$parentID, &$tplan_id, &$userID, $buildID)
 	return $resultMap;
 }
 
+/*
+  function: 
+
+  args :
+  
+  returns: 
+
+*/
 function saveImportedResultData(&$db,$resultData,&$tplan_id,$container_id,$userID,$buildID)
 {
 	if (!$resultData)
 		return;
+	
+	$tc_status=config_get('tc_status');
 	
 	$resultMap = array();
 	$tplan_mgr = null;
@@ -138,15 +176,11 @@ function saveImportedResultData(&$db,$resultData,&$tplan_id,$container_id,$userI
 		$result = $tc['result'];
 		$result_is_acceptable = false;
 
-		if ($result == 'p') {
+		if ($result == $tc_status['passed'] || $result == $tc_status['blocked'] ||
+		    $result == $tc_status['failed']) { 
 			$result_is_acceptable = true;
 		}
-		else if ($result == 'b') {
-			$result_is_acceptable = true;		
-		}
-		else if ($result == 'f') {
-			$result_is_acceptable = true;
-		}
+
 				
 		$notes = $tc['notes'];
 		$message = null;
@@ -154,20 +188,20 @@ function saveImportedResultData(&$db,$resultData,&$tplan_id,$container_id,$userI
 		$info_on_case = $linked_cases[$id];
 		
 		if (!$linked_cases){
-			$message = "test case $id not found in test plan - no data inserted for this case";
-		}
+			$message = sprintf(lang_get('import_results_tc_not_found'),$id);
+  	}
 		else if (!$result_is_acceptable) {
-			$message = "test case $id had an invalid result - no data inserted for this case";
+			$message = sprintf(lang_get('import_results_invalid_result'),$id);
 		} 
 		else {
 			$tcversion_id = $info_on_case['tcversion_id'];
-			$message = "test case $id is in the test plan, tcversion_id = $tcversion_id ";
-           $notes = $db->prepare_string(trim($notes));		
-		   $db_now = $db->db_now();
-		   $sql="INSERT INTO executions (build_id,tester_id,status,testplan_id,tcversion_id,execution_ts,notes)
+			$message = sprintf(lang_get('import_results_tc_exists'),$id,$tcversion_id);
+			
+      $notes = $db->prepare_string(trim($notes));		
+		  $db_now = $db->db_now();
+		  $sql="INSERT INTO executions (build_id,tester_id,status,testplan_id,tcversion_id,execution_ts,notes)
 	      	  VALUES ({$buildID}, {$userID},'{$result}',{$tplan_id}, {$tcversion_id},{$db_now},'{$notes}')";
 	    $db->exec_query($sql); 
-
 		}
 		
 		$resultMap[] = array($id, $message);
@@ -175,6 +209,14 @@ function saveImportedResultData(&$db,$resultData,&$tplan_id,$container_id,$userI
 	return $resultMap;
 }
 
+/*
+  function: 
+
+  args :
+  
+  returns: 
+
+*/
 function importTCsFromXML($xmlTCs)
 {
 	$tcs = null;

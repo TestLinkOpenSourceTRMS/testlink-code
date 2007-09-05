@@ -1,10 +1,11 @@
 <!DOCTYPE html 
      PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
      "DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<!-- Japanese Translated by Testing Engineer's Forum (TEF) in Japan, Working Group of TestLink Japanese Translation Project -->
+<html xmlns="http://www.w3.org/1999/xhtml" lang="jp">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-	<meta http-equiv="Content-language" content="en" />
+	<meta http-equiv="Content-language" content="jp" />
 	<meta name="author" content="Martin Havlat" />
 	<meta name="copyright" content="GNU" />
 	<meta name="robots" content="NOFOLLOW" />
@@ -16,105 +17,107 @@
 
 <div class="workBack">
 
-<h1>Results / Test Reports and Metrics Overview</h1>
-<h1>controls</h1>
-<h2>1. Active Build</h2> 
-The only report which is effected by the "Active Build" control is the "Metrics of Active Build" report.
+<h1>結果/テストレポートとメトリクスの概要</h1>
+<h1>レポートのコントロール</h1>
+<h2>1. アクティブビルドの選択</h2> 
+"アクティブビルド"というコントロールにより、
+レポートを表示する対象となるビルドを選択することができます。
 
-<h2>2. Report format</h2>
-All test reports (except charts) can be generated in 3 ways :
-<li>1.normal - report is displayed in web page</li>
-<li>2.MS Excel - report exported to Microsoft Excel</li>
-<li>3.HTML Email - report is emailed to user's email address</li>
+<h2>2. レポートフォーマット</h2>
+(チャートを除く)全てのテストレポートは以下の３種類の方法で表示することができます:
+<li>1. normal - Webページにレポートが表示</li>
+<li>2. MS Excel - Microsoft Excel用にレポートをエクスポート</li>
+<li>3. HTML email - ユーザのアドレスにEメールでレポートを送信</li>
 
-<h1>reports</h1>
-
-There are currently 10 seperate reports to choose from, their purpose and function are explained below.
-<h3>1)Metrics of Active Build</h3>
-<p>This report shows the detailed results for a particular build defined by the "Active Build" control.  It only takes into account executions performed on the selected build.
-The following tables are displayed: <BR>
-<h2>Results by top level Test Suites</h2>
-<p>Lists the results of each top level suite. Total cases, passed, failed, blocked, not run, 	and percent completed are listed. A "completed" test case is one that has been marked 	pass, fail, or block.  Results for top level suites include all children suites.</p>
-<h2>Results by Test Suite</h2>
-<p>Lists metrics for all suites in test plan, not just top level suites.</p>
-<h2>Results By Keyword</h2>
-<p>Lists all keywords that are assigned to cases in the current test plan, and the results associated with them.</p>
+<h1>レポート</h1>
+現在のTestLinkのバージョンでは、10種類のレポートを表示することができます。
+各レポートの目的と機能を以下で説明します。
+<h3>1)アクティブなビルドのレポート</h3>
+<p>このレポートは"アクティブビルド"コントロールで選択したビルドについての詳細なテスト結果を表示します。選択したビルドの結果のみを表示します。
+以下の表を表示します:<BR>
+<h2>トップレベルのテストスイートの結果</h2>
+<p>トップレベルのスイートの結果を一覧表示します。成功、失敗、ブロック、未実行のテストケースの合計、そして完了率を表示します。
+"完了した"テストケースとは、成功、失敗、ブロックの結果となったテストケースのことです。トップレベルスイートの結果には全ての子スイートの結果を含みます。</p>
+<h2>テストスイートごとの結果</h2>
+<p>トップレベルスイートだけでなく、全てのスイートの結果を表示します。</p>
+<h2>キーワードごとの結果</h2>
+<p>現在のテスト計画のテストケースに割り当てられているキーワードを全て表示します。またそのキーワードに関連するテストケースを表示します。</p>
 </p>
 
-<h3>2)General Test Plan Metrics</h3>
-<p>This page shows you only the most current status of a test plan by test suite, owner, and keyword. The most "current status" is determined by the most recent build test cases were executed on.  For instance, if a test case was executed over multiple builds, only the latest result is taken into account.</p> 
+<h3>2)一般的なテスト計画のメトリクス</h3>
+<p>このページでは、テストスイート、オーナー、キーワードごとのテスト計画の最新のステータスを表示します。"最新のテスト結果"とは、最後に実行したビルドに関するテストケースの結果を示しています。例えば、複数のビルドにわたってあるテストケースを実行した場合は、最新の結果のみが反映されます。</p> 
 	
-"Last Test Result" is a concept used in many reports, and is determined as follows : 
-<li>1)The order in which builds are added to a Test Plan determines which build is most recent. The results from the most recent build will take precendence over older builds. For example, if you mark a test as "fail" in build 1, and mark it as "pass" in build 2, it's latest result will be "pass".</li>
-<li>2)If a test case is executed mulitple times on the same build, the most recent execution will take precedence.  For example, if build 3 is released to your team and tester 1 marks it as "pass" at 2PM, and tester 2 marks it as "fail" at 3PM - it will appear as "fail".</li>
-<li>3)Test cases listed as "not run" against a build are not taken into account. For example, if you mark a case as "pass" in build 1, and don't execute it in build 2, it's last result will be considered as "pass".</li>
+"最新のテスト結果"は多くのレポートで使用される概念で、以下のように決められます: 
+<li>1)テスト計画に追加された順番によって、ビルドの新旧が決まります。ビルドの最新のビルドの結果は古いビルドの結果よりも優先されます。例えば、ビルド1で"失敗"したテストケースでも、ビルド2で"成功"していれば、最新の結果は"成功"となります。</li>
+<li>2)あるテストケースが同じビルド内で複数回実行された場合は、最新の実行結果が優先されます。例えば、ビルド3のリリース後、テスター1よって午後2時に"成功"したテストケースでも、テスター2によって午後3時に"失敗"と記録されれれば、最新の結果は"失敗"となります。</li>
+<li>3)未実行のビルドがある場合は、そのテストケースの結果にはそのビルドは影響しません。例えば、ビルド1で"成功"したテストケースが、テスト2で"未実行"だった場合は、最新の結果は"成功"となります。</li>
 <BR/>
-The following tables are displayed :
+以下の表が表示されます:
 <BR/>
-	<h2>Results by top level Test Suites</h2>
-	<p>Lists the results of each top level suite. Total cases, passed, failed, blocked, not run, and percent completed are listed. A "completed" test case is one that has been marked pass, fail, or block.  Results for top level suites include all children suites.</p>
-	<h2>Results By Keyword</h2>
-	<p>Lists all keywords that are assigned to cases in the current test plan, and the results 	associated with them.</p>
-	<h2>Results by owner</h2>
-	<p>Lists each owner that has test cases assigned to them in the current test plan.  Test 	cases which are not assigned are tallied under the "unassigned" heading.</p> 
+	<h2>最上位のテストスイートごとの結果</h2>
+	<p>各最上位スイートの結果が一覧表示されます。成功、失敗、ブロック、未実行のテストケースの合計、そして完了率を表示します。"完了した"テストケースとは、成功、失敗、ブロックの結果となったテストケースのことです。トップレベルスイートの結果には全ての子スイートの結果を含みます。</p>
+	<h2>キーワードごとの結果</h2>
+	<p>現在のテスト計画のテストケースに割り当てられているキーワードを全て表示します。またそのキーワードに関連するテストケースを表示します。</p>
+	<h2>オーナーごとの結果</h2>
+	<p>現在のテスト計画の中で、各オーナーに割り当てたれたテストの結果を一覧表示します。未割り当てのテストケースは、"未割り当て"という見出しのもとに集計されます。</p> 
 
-<h3>3.)The Overall Build Status</h3>
-<p>Lists the execution results for every build. For each build, the total test cases, total pass, % pass, total fail, % fail, blocked, % blocked, not run, %not run.  If a test case has been executed twice on the same build, the most recent execution will be taken into account.
+<h3>3.)総合的なビルドのステータス</h3>
+<p>全ビルドの実行結果を一覧表示します。各ビルドのテストケースの合計数、成功数、成功率、失敗数、失敗率、ブロック数、ブロック率、未実行数、未実行率を表示します。もし、同一ビルドでテストケースが複数回実行されている場合は、最新のテスト結果が考慮されます。
 </p>
-<h3>4.)Query Metrics</h3>
-<p>This report consists of a query form page, and a query results page which contains the queried data.
-<h2>Query Form Page:</h2>
+<h3>4.)クエリーのメトリクス</h3>
+<p>このレポートはクエリー入力ページと、クエリーデータを含むクエリー出力ページから構成されます。
+<h2>クエリー入力ページ:</h2>
 <p>
-User is presented with a query page with 4 controls. Each control is set to a default which maximizes the number of test cases and builds the query should be performed against. Altering the controls allows the user to filter the results and generate specific reports for specific owner, keyword, suite, and build combinations.  
+4種類のコントロールでクエリーを形成することができます。デフォルトでは、最も多くのテストケースとビルドを選択するように各コントロールが設定されています。コントロールを変更することにより、指定したオーナー、キーワード、テストスイート、ビルドの組み合わせによって、レポートに表示される結果をフィルタリングすることができます。
 </p>
-<h2>keyword</h2>
-<p>0->1 keywords can be selected. By default - no keyword is selected. If a keyword is not selected, then all test cases will be considered regardless of keyword assignments. Keywords are assigned in the test specification or Keyword Management pages.  Keywords assigned to test cases span all test plans, and span across all versions of a test case.  If you are interested in the results for a specific keyword you would alter this control.
+<h2>キーワード</h2>
+<p>0個または1個のキーワードを選択することができます。デフォルトでは、キーワードは選択されていません。キーワードが選択されていない場合は、キーワード割り当てに関係なく、全てのテストケースに関する結果を表示します。キーワードはテスト仕様のページもしくは、キーワード管理のページで割り当てることができます。キーワードは、全テスト計画の全バージョンのテストケースにわたって割り当てることができます。特定のキーワードが割り当てられているテストケースの結果に興味がある場合は、このコントロールにキーワードを設定してください。
 </p>
-<h2>owner</h2>
-<p>0->1 owners can be selected. By default - no owner is selected.  If an owner is not selected, then all test cases will be considered regardless of owner assignment.  Currently there is no functionality to search for "unassigned" test cases.  Ownership is assigned through the "Assign Test Case execution" page, and is done on a per test plan basis.  If you are interested in the work done by a specific tester you would alter this control.
+<h2>オーナー</h2>
+<p>0人または1人のオーナーを選択することができます。デフォルトではオーナーは選択されていません。 オーナーが選択されていない場合は、オーナーの割り当てに関係なく、全てのテストケースに関する結果を表示します。"未割り当て"のテストケースは検索できません。オーナーシップは、"テスト実行の割り当て"のページで割り当てることができ、テスト計画ごとに割り当てられます。特定のテスターが実行したテストケースの結果に興味がある場合は、このコントロールにオーナーを設定してください。
 </p>
-<h2>top level suite</h2>
-<p>0-> n top level suites can be selected. By default - all suites are selected.  Only suites that are selected will be queried for result metrics.  If you are only intested in the results for a specific suite you would alter this control.
+<h2>トップレベルテストスイート</h2>
+<p>0個からn個のトップレベルテストスイートを選択することができます。デフォルトでは全てのテストスイートが選択されています。選択したテストスイートの結果のみが、クエリーのメトリクスに反映されます。特定のテストスイートの結果に興味がある場合は、このコントロールを操作してください。
 </p>
-<h2>Builds</h2>
+<h2>ビルド</h2>
 <p>
-1->n builds can be selected.  By default - all builds are selected.  Only executions performed on builds you select will be taken into account when producing metrics.  For example - if you wanted to see how many test cases were executed on the last 3 builds - you would alter this control. 
-Keyword, owner, and top level suite selections will dictate the number of test cases from your test plan are used to computate per suite and per test plan metrics.  For example, if you select owner = "Greg", Keyword="Priority 1", and all available test suites - only Priority 1 test cases assigned to Greg will be considered. The "# of Test Cases" totals you will see on the report will be influenced by these 3 controls.
-Build selections will influence if a case is considered "pass", "fail", "blocked", or "not run".  Please refer to "Last Test Result" rules as they appear above.
+1個からn個のビルドを選択することができます。デフォルトでは全てのビルドが選択されています。選択したビルドでの実行結果のみを使用してメトリクスが計算されます。例えば、最後の3回のビルドで、いくつのテストケースを実行したかを調べたい場合は、このコントロールを操作してください。
+キーワード、オーナー、トップレベルテストスイートを選択することで、テスト計画ごと、テストスイートごとのメトリクスの計算に使用するテストケースの数を変化させることができます。例えば、オーナー="Greg"、キーワード="優先度1"と全テストスイートを選択した場合は、Gregに割り当てられた優先度1のテストケースのみが計算に使用されます。レポートの"テストケース数"の合計は、これら3種類のコントロールによって決められます。
+ビルドの選択は、"成功"、"失敗"、"ブロック"、"未実行"の数に影響します。先に説明した、"最新のテスト結果"のルールを参照してください。
 </p>
-Press the "submit" button to proceed with the query and display the output page.
+"クエリーを送信"ボタンをクリックすると、クエリー出力ページが表示されます。
 </p>
-<h2>Query Report Page:</h2>
-The report page will display: <br/>
-<li>1.the query parameters used to create report</li>
-<li>2. totals for the entire test plan</li>
-<li>3.a per suite breakdown of totals (sum / pass / fail / blocked / not run) and all executions performed on that suite.  If a test case has been executed more than once on multiple builds - all executions will be displayed that were recorded against the selected builds. However, the summary for that suite will only include the "Last Test Result" for the selected builds.</li>
+<h2>クエリ出力ページ:</h2>
+ページには以下のレポートが表示されます: <br/>
+<li>1. レポートを作成するために使用したクエリーパラメータ</li>
+<li>2. テスト計画内の合計</li>
+<li>3. スイートごとの全実行結果の合計 (総テストケース数 / 成功 / 失敗 / ブロック / 未実行)。もし、あるテストケースを複数のビルドで複数回実行した場合、選択したビルドに関連する全ての実行結果を表示します。しかし、テストスイートの実行結果の概要には、選択したビルドに対する"最新のテスト結果"のみが反映されます。</li>
 
-<h3>5-7.)Blocked, Failed, and  Not Run Test Case Reports</h3>
+<h3>5-7.)ブロック、失敗、未実行のテストケースのレポート</h3>
 <p>
-These reports show all of the currently blocked, failing, or not run test cases.  "Last test Result" logic (which is described above under General Test Plan Metrics) is again employed to determine if a test case should be considered blocked, failed, or not run.  Blocked and failed test case reports will display the associated bugs if the user is using an integrated bug tracking system.
+これらのレポートは、ブロック、失敗、未実行の全テストケースを表示します。"最新のテスト結果"のルール（一般的なテスト計画のメトリクスの項で説明しました）によって、テストケースがブロック、失敗、未実行に該当するかどうかを判定します。TestLinkとバグトラッキングシステムを統合して使用している場合は、ブロックと失敗のレポートに関連するバグが表示されます。
 </p>
-<h3>8.)Test Report</h3>
+<h3>8.)テストレポート</h3>
 <p>
-View status of every test case on every build. If a test case was executed multiple times on the same build - the most recent execution result will be used.  In this report, "?" signifies a test case that was not run on a build. It is recommened to export this report to Excel format for easier browsing if a large data set is being used.
+全ビルドの全テストケースのステータスを表示します。同一ビルド内でテストケースが複数回実行された場合は、最新の結果が表示されます。このレポートでは、"?" マークを未実行のテストケースを表わすために使用します。大量のデータを使用している場合は、ブラウジングが簡単なExcel形式で出力することをお勧めします。
 </p>
-<h3>9.)Charts</h3>
+<h3>9.)チャート</h3>
 <p>
-This report page requires your browser have a flash plugin. It uses flash technology provided by http://www.maani.us to display results in a graphical format. "Last test Result" logic is used for all 4 charts that you will see.  The graphs are animated to help the user visualize the metrics from the current test plan.
+このレポートページを表示するためにはflashプラグインが必要です。グラフィカルに結果を表示するために http://www.maani.us が提供している flash 技術を使用しています。4種類のチャートに表示される結果は、"最新のテスト結果"のルールに従って計算されます。グラフのアニメーションは、ユーザが現在のテスト計画のメトリクスを把握するための手助けとなるでしょう。
 </p>
-The four charts provide are :
+以下の4種類のチャートが表示されます:
 
-<h2>1.Pie chart of overall pass / fail / blocked / and not run test cases</h2>
-<h2>2.Bar chart of Results by Keyword</h2>
-<h2>3.Bar chart of Results By Owner</h2>
-<h2>4.Bar chart of Results By Top Level Suite</h2>
+<h2>1. 成功 / 失敗 / ブロック / 未実行のテストケースを表わす円グラフ</h2>
+<h2>2. キーワードごとの結果を表わす棒グラフ</h2>
+<h2>3. オーナーごとの結果を表わす棒グラフ</h2>
+<h2>4. トップレベルスイートごとの結果を表わす棒グラフ</h2>
 <p>
-The bars in the bar charts are colored such that the user can identify the approximate number of pass, fail, blocked, and not run cases.
+棒グラフは、成功、失敗、ブロック、未実行のテストケース数を近似的に示しています。
 </p>
 
-<h3>10.)Total Bugs For Each Test Case</h3>
+<h3>10.)各テストケースのバグの合計</h3>
 <p>
-This report shows each test case with all of the bugs filed against it for the entire project. This report is only available if a Bug Tracking System is connected.
+このレポートは、テストプロジェクト内のバグが発見されたテストケースを表示します。このレポートはバグトラキングシステムが接続されている場合のみ表示されます。
 </p>
 
 

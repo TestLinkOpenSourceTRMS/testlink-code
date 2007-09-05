@@ -1,10 +1,11 @@
 <!DOCTYPE html 
      PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
      "DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!-- Japanese Translated by Testing Engineer's Forum (TEF) in Japan, Working Group of TestLink Japanese Translation Project -->
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="jp" lang="jp">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-	<meta http-equiv="Content-language" content="en" />
+	<meta http-equiv="Content-language" content="jp" />
 	<meta http-equiv="expires" content="-1" />
 	<meta http-equiv="pragma" content="no-cache" />
 	<meta name="author" content="Martin Havlat" />
@@ -17,26 +18,28 @@
 
 <div class="workBack">
 
-<h1>Assign Requirements to Test Case</h1>
+<h1>テストケースを要件に割り当てる</h1>
 
-<h2>Purpose:</h2>
-<p>This feature allows to set relations between requirements 
-and test cases. A designer could define relations 0..n to 0..n. I.e. One test case
-could be assigned to none, one or more test cases and vice versa.</p>
+<h2>目的:</h2>
+<p>ここでの要点は、要件とテストケースの関連付けにあります。テスト設計者は0:nと0:nなどの関連付けを定義することができます。
+すなわち、要件は複数のテストケースに関連付けたり、関連付けないことが可能です。
+テストケースも複数の要件に関連付けたり、関連付けないことが可能です。
+</p>
 
-<h2>Get Started:</h2>
+<h2>やってみましょう！:</h2>
 <ol>
-	<li>Choose an Test Case in tree at the left. The combo box with list of Requirements 
-	Specifications is shown at the top of workarea.</li>
-	<li>Choose a Requirements Specification. TestLink automatically reload the page.</li>
-	<li>A middle block of workarea lists all requirements (from choosen Specification), which 
-	are connected with the test case. Bottom block 'Available Requirements' lists all 
-	requirements which have not relation
-	to the current test case. A designer could mark requirements which are covered by this 
-	test case and then click the button 'Assign'. These new assigned test case are shown in 
-	the middle block 'Assigned Requirements'.</li>
+	<li>左ブロックのツリー構造からテストケースを選択してください。
+        要件仕様書リストのコンボボックスがワークエリアの上部に表示されます。 
+	</li>
+	<li>要件仕様を選択してください。
+         TestLink は自動でページの再読み込みを行います。
+        </li>
+	<li>ワークエリアの中央のブロックに選択した仕様書より、テストケースと関係付けられたすべての要件がリストされます。
+         下のブロックには現在のテストケースと関連付けられていないすべての要件の中から「使用可能な要件」がリストされます。
+        このテストケースを選択し、「割り当て」ボタンをクリックすることにより、テスト設計者は要件に印をつけることができます。
+        新規に割り当てされたテストケースは中央のブロックの「割り当てられた要件」に表示されます。
+        </li>
 </ol>
-
 </div>
 
 </body>

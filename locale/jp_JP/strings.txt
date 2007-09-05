@@ -4,10 +4,12 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  *
  * @author Francisco Mancardi
  *
+ * 20070903 - franciscom -
+ * 20070831 - franciscom -
  * 20070827 - franciscom -
  * 20070818 - franciscom -
  * 20070705 - franciscom -
@@ -24,13 +26,17 @@
  * http://www38.atwiki.jp/testlink/
  * http://sourceforge.jp/projects/testlinkjp/
  *
- * Core member:
- * Atsushi Nagta,    AZMA Daisuke,       Lumina Nishihara,
- * Marino Suda,      Masahide Katsumata, Masami Ichikawa,
- * Sadahiko Hantani, Shinichi Sugiyama,  Toshiyuki Kawanishi,
- * Yasuhiko Okada,   Yoichi Kunihiro,    Yoshihiro Yoshimura
+ * Adviser:
+ * Yasuharu NISHI
  *
- * @modified $Date: 2007/09/05 06:02:48 $ $Author: franciscom $
+ * Core member:
+ * Atsushi Nagata,  AZMA Daisuke,        Lumina Nishihara,
+ * Marino Suda,     Masahide Katsumata,  Masami Ichikawa,
+ * Masataka Yoneta, Sadahiko Hantani,    Shinichi Sugiyama,
+ * Shizuka Ban,     Toshinori Sawaguchi, Toshiyuki Kawanishi,
+ * Yasuhiko Okada,  Yoichi Kunihiro,     Yoshihiro Yoshimura
+ *
+ * @modified $Date: 2007/09/05 17:14:57 $ $Author: franciscom $
  *-------------------------------------------------------------------
 **/
 //If this file is coded in UTF-8 then enable the following line
@@ -38,9 +44,11 @@ $TLS_STRINGFILE_CHARSET = "UTF-8";
 
 // General - Leave it here in this way can be reused !!!
 $TLS_asc = "昇順";
+$TLS_any = "全て";
 $TLS_btn_no = "いいえ";
 $TLS_create = "作成";
 $TLS_desc = "降順";
+$TLS_hour = "時";
 $TLS_test_case = "テストケース";
 $TLS_testcase = $TLS_test_case;
 $TLS_test_plan = "テスト計画";
@@ -586,7 +594,7 @@ $TLS_title_execution_notes = "実行の注意";
 
 // gui/templates/rolesedit.tpl
 $TLS_btn_create_role = "作成";
-$TLS_btn_edit_role = "編集";
+$TLS_btn_edit_role = "保存";
 $TLS_caption_define_role = "役割の定義";
 $TLS_caption_possible_affected_users = "影響を受けるユーザ";
 $TLS_enter_role_notes = "役割の説明";
@@ -1066,10 +1074,10 @@ $TLS_last_status_failed = $TLS_test_status_failed;
 $TLS_last_status_not_run = $TLS_test_status_not_run;
 $TLS_last_status_passed = $TLS_test_status_passed;
 $TLS_select_builds_header = "ビルド選択";
-$TLS_select_components_header = "テストスイート選択";
+$TLS_select_components_header = "最上位のテストスイート";
 $TLS_select_keyword_header = "キーワード選択";
 $TLS_select_last_result_header = "実行結果表示";
-$TLS_select_owner_header = "オーナー選択";
+$TLS_select_owner_header = "割り当て";
 $TLS_select_report_format_header = "レポートフォーマット選択";
 $TLS_submit_query = "クエリー送信";
 $TLS_test_plan_header = "テスト計画";
@@ -1334,10 +1342,6 @@ $TLS_error_ldap_user_not_found = "LDAPユーザが存在しません";
 // lib/functions/product.inc.php
 $TLS_info_product_delete_fails = "テストプロジェクトの削除中にエラーが発生しました";
 
-// lib/results/resultsImport.php
-$TLS_import_results_tc_not_found= "test case %s not found in test plan - no data inserted for this case";
-$TLS_import_results_invalid_result= "test case %s had an invalid result - no data inserted for this case";
-$TLS_import_results_tc_exists = "test case %s is in the test plan, tcversion_id = %s ";
 
 
 // lib/functions/results.inc.php
@@ -1601,7 +1605,7 @@ $TLS_warning_duplicate_tplan_name = "このテスト計画名は既に使用さ�
 // lib/print/selectData.php
 $TLS_opt_show_doc_header = "表題を表示";
 $TLS_opt_show_tc_body = "本文を表示";
-$TLS_opt_show_tc_summary = "テストケースの要約を表示";
+$TLS_opt_show_tc_summary = "テストケースの概要を表示";
 $TLS_opt_show_toc = "目次を表示";
 $TLS_opt_show_tc_author = "テストケース作者を表示";
 $TLS_opt_show_passfail = "合格/失敗とメモを表示";

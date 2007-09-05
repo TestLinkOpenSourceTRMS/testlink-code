@@ -1,10 +1,11 @@
 <!DOCTYPE html 
      PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
      "DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<!-- Japanese Translated by Testing Engineer's Forum (TEF) in Japan, Working Group of TestLink Japanese Translation Project -->
+<html xmlns="http://www.w3.org/1999/xhtml" lang="jp">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-	<meta http-equiv="Content-language" content="en" />
+	<meta http-equiv="Content-language" content="jp" />
 	<meta name="author" content="Martin Havlat" />
 	<meta name="copyright" content="GNU" />
 	<meta name="robots" content="NOFOLLOW" />
@@ -12,42 +13,33 @@
 <link rel="stylesheet" type="text/css" href="../../{$smarty.const.TL_THEME_CSS_DIR}tl_docs.css" />
 </head>
 <body>
-<h1>Filtering Test Case Printing</h1>
+<h1>テスト詳細印刷</h1>
 
-<div id="menu">
-  <a href="javascript: window.close();" class="tlButton">Close</a>  
-  <a href="javascript: history.back();" class="tlButton">Back</a>  
-  <a href="content.html" class="tlButton">Content</a>  
-</div>
+<h2>目的:</h2>
 
-<p>This table allows the user to filter test cases before they are viewed. If
-selected (checked) the data will be shown. In order to change the data
-presented, check or uncheck, click on "Filter", and select the desired data
-level from the tree.</p>
+<p>この機能はテストスイートまたはテストプロジェクト / テスト計画全体の
+テストケースをユーザに印刷させます。</p>
 
-<h2>Document Header</h2>
-<p>Users can filter out Document Header information. Document Header information
-includes: Introduction, Scope, References, Test Methodology, and Test
-Limitations.</p>
+<h2>やってみましょう！</h2>
 
-<h2>Test Case Body</h2>
-<p>Users can filter out Test Case Body information. Test Case Body information
-includes: Summary, Steps, Expected Results, and Keywords.</p>
+<ol>
+<li>
+<p>参照したいすべての該当するテストケースのコンポーネント、カテゴリ、
+またはテストケースをクリックします。<br />
+<i>例えば、カテゴリテストケースを参照したい場合はカテゴリをクリックしてください。</i></p>
+</li>
 
-<h2>Test Case Summary</h2>
-<p>Users can filter out Test Case Summary information from the Test Case Title,
-however, they cannot filter out Test Case Summary information from the Test
-Case Body. Test Case Summary has only been partially separated from Test Case
-Body in order to support viewing Titles with a brief Summary and the absence of
-Steps, Expected Results, and Keywords. If a user decides to view Test Case
-Body, Test Case Summary will always be included.</p>
+<li>
+<p>ナビゲーションシートの「プリントオプション」テーブルにて印刷したいデータの範囲と
+フォーマットを指定します。
+<span class="help" 
+onclick="javascript:open_popup('./printFilter.html');">ヘルプ</span>に
+に詳しい情報がありますので参照してください。</p>
+</li>
 
-<h2>Table of Content</h2>
-<p>TestLink inserts list of all titles with internal hypertext links if checked.</p>
-
-<h2>Output format</h2>
-<p>There are two possibilities: HTML and MS Word. Browser calls MS word component 
-in second case.</p>
+<li><p>実際にテストケースを印刷するためにブラウザの印刷機能を使用してください。<br />
+ <i>注意: 右側のフレームのみ印刷されます。</i></p></li>
+</ol>
 
 
 </body>

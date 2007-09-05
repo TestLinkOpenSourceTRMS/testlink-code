@@ -1,10 +1,11 @@
 <!DOCTYPE html 
      PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
      "DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!-- Japanese Translated by Testing Engineer's Forum (TEF) in Japan, Working Group of TestLink Japanese Translation Project -->
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="jp" lang="jp">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-	<meta http-equiv="Content-language" content="en" />
+	<meta http-equiv="Content-language" content="jp" />
 	<meta http-equiv="expires" content="-1" />
 	<meta http-equiv="pragma" content="no-cache" />
 	<meta name="author" content="Martin Havlat" />
@@ -17,20 +18,40 @@
 
 <div class="workBack">
 
-<h1>Assign Testers to Test Plan</h1>
+<h1>テストケース印刷のフィルタリング</h1>
 
-<h2>Purpose:</h2>
-<p>This page allows users to define the list of approved users for each test plan.
-These users will able to modify data within the Test Plan.</p>
+<div id="menu">
+  <a href="javascript: window.close();" class="tlButton">閉じる</a>  
+  <a href="javascript: history.back();" class="tlButton">戻る</a>  
+  <a href="content.html" class="tlButton">Help 目次</a>  
+</div>
 
-<h2>Get Started:</h2>
-<ol>
-	<li>Choose to either manage rights by users or projects.</li>
-	<li>Clicking on a user will allow you to select all of the Test Plan 
-	that the user is able to see.</li>
-	<li>Selecting a test Plan allows you to select all of the users 
-	that are a part of that Test Plan.</li>
-</ol>
+<p>印刷オプションは、テスト仕様を表示する前に表示する項目を選択することができます。選択した（チェックした）項目が表示されます。
+データ表示を変更するためにチェックまたはチェックを外す、「フィルタ」をクリックする、選択することにより
+ツリーより要求するデータレベルが表示されます。</p>
+
+<h2>ドキュメント ヘッダ</h2>
+<p>ドキュメントヘッダ情報を取り除くことができます。
+ドキュメントヘッダ情報には、前置き、スコープ、リファランス, テスト方法論、テスト条件が含まれます。</p>
+
+<h2>テストケース本体</h2>
+<p>テストケース本体の情報を取り除くことができます。
+テストケース本体の情報は要約、ステップ、予想結果、キーワードを含みます。
+</p>
+
+<h2>テストケース要約</h2>
+<p>テストケースの表題からテストケース要約の情報を取り除くことができます。
+しかしながら、テストケース要約の情報はテストケース本体からは取り除くことはできません。
+テストケース要約はテストケース本体から表題の簡単な要約と
+ステップ、予想結果、キーワードの不足を見えるように補助するために部分的に分割しています。
+テストケース本体を見るときは必ずテストケース要約は含まれます。
+</p>
+
+<h2>コンテンツテーブル</h2>
+<p>TestLinkはチェックした場合。すべての内部的なハイパーテキストの表題リストを挿入しています。</p>
+
+<h2>出力フォーマット</h2>
+<p>HTMLとMS Wordの2種類が可能です。ブラウザが2次的にMS Wordコンポーネントを立ち上げます。</p>
 
 </div>
 

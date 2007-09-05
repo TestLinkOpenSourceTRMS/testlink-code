@@ -1,7 +1,8 @@
 <!DOCTYPE html 
      PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
      "DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<!-- Japanese Translated by Testing Engineer's Forum (TEF) in Japan, Working Group of TestLink Japanese Translation Project -->
+<html xmlns="http://www.w3.org/1999/xhtml" lang="jp">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 	<meta http-equiv="pragma" content="no-cache" />
@@ -14,7 +15,7 @@
 
 <body>
 
-<h1>Test Filtering</h1>
+<h1>テストのフィルタリング</h1>
 
 <div id="menu">
   <a href="javascript: window.close();" class="tlButton">Close</a>  
@@ -22,50 +23,58 @@
   <a href="content.html" class="tlButton">Content</a>  
 </div>
 
-<h2>Scope</h2>
-<p>This table allows the user to filter test cases before they are executed.</p>
+<h2>スコープ</h2>
+<p>テストフィルタリングテーブルを使用することで、
+ユーザは実行するテストケースをフィルタリングすることも出来ます。</p>
 
-<h2>Assigned to</h2>
+<h2>割り当て</h2>
 
-<p>Users can filter test cases by their assignee.<br /> 
+<p>テストケースに割り当てられたユーザごとにテストケースをフィルタリングすることができます。<br /> 
 
-<h2>Keyword</h2>
+<h2>キーワード</h2>
 
-<p>Users can filter test cases by keyword. Keywords are set either using the 
-Create/Edit/Delete Test Cases or by the Assign Keywords To Multiple Cases. 
-Keywords can only be created, edited, or deleted by leads but may be assigned 
-to test cases by testers.</p> 
+<p>キーワードごとにテストケースをフィルタリングすることもできます。
+キーワードは
+テストケースの作成/編集/削除時、または、
+キーワード割り当て時に、複数のテストケースに対して使用することが出来ます。
+キーワードはテストリーダーのみが作成、編集、削除を行うことができませんが、
+テスターでもキーワードをテストケースに割り当てることができます。</p> 
 
-<h2>Build</h2>
+<h2>ビルド</h2>
 
-<p>Users can filter test cases by builds. Builds are the basic component for 
-how test cases are tracked. Each test case may be run once and only once per build. 
+<p>ビルドごとにフィルターをかけることもできます。
+テストケースの記録を追うための最も基本的な要素がビルドです。
+各テストケースは、テストプロジェクトの中で一回のみ、
+または、各ビルドごとに一回実行されます。
 
-<br />Builds can be created by leads using the Create New Build page.</p>
+<br />新規ビルドの作成のページで新規ビルドを作成することができます。</p>
 
 
-<h2>Result</h2>
+<h2>結果</h2>
 
-<p>Users can filter test cases by results. Results are what happened to that test 
-case during a particular build. Test cases can pass, fail, be blocked, or not be run.</p>
+<p>テストの結果ごとにフィルターをかけることもできます。
+テスト結果は、あるビルドでテストケースの実行中に何があったかを表しています。
+テストケースの実行の結果として、成功、失敗、ブロック、未実行のいずれかのステータスが与えられます。</p>
 
-<h2>Most Current Result</h2>
+<h2>最新結果</h2>
 
-<p>By default or if the "most current" checkbox is unchecked, the tree will be sorted 
-by the build that is chosen from the dropdown box. In this state the tree will display 
-the test cases status. 
+<p>デフォルトの設定、または、「最新」チェックボックスがチェックされていない場合、
+テストケースのツリーはドロップダウン・ボックスで選択されたビルドによってソートされます。
+この状態では、選択したビルドでのテストケースの実行結果が表示されます。
 
-<br />Example: User selects build 2 from the dropdown box and doesn't check the "most 
-current" checkbox. All test cases will be shown with their status from build 2. 
-So, if test case 1 passed in build 2 it will be colored green.
+<br />例: ドロップダウン・ボックスで「ビルド2」を選択し、
+「最新」チェックボックスのチェックをはずしたとします。
+全てのテストケースはビルド2での実行結果に従って表示されます。
+つまり、「テストケース1」がビルド2で成功していれば、成功を示す緑色になります。
 
-<br />If the user decideds to check the "most current" checkbox the tree will be 
-colored by the test cases most recent result.
+<br />「最新」チェックボックスをチェックした場合は、
+テストケースのツリーが最新の状態に従って表示されます。
 
-<br />Ex: User selects build 2 from the dropdown box and this time checks 
-the "most current" checkbox. All test cases will be shown with most current 
-status. So, if test case 1 passed in build 3, even though the user has also selected 
-build 2, it will be colored green.</p>
+<br />例: ドロップダウン・ボックスで「ビルド2」を選択し、
+「最新」チェックボックスをチェックしたとします。
+全てのテストケースは最新の実行結果に従って表示されます。
+つまり、「テストケース1」がビルド3で成功していれば、
+たとえビルド2でそのテストケースが選択されていなかったとしても緑色になります。</p>
 
 
 </body>

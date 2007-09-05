@@ -6,8 +6,8 @@
  * Scope: Import keywords page
  *
  * Filename $RCSfile: keywordsimport.php,v $
- * @version $Revision: 1.13 $
- * @modified $Date: 2007/09/02 18:05:55 $ by $Author: schlundus $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2007/09/05 06:05:36 $ by $Author: franciscom $
  *
  * Revisions:
  *
@@ -41,7 +41,10 @@ if( $bUpload )
 {
 	if (($source != 'none') && ($source != ''))
 	{ 
-		$file_check = check_valid_ftype($_FILES['uploadedFile'],$importType);
+	  // 20070904 - this test was a pain
+		// $file_check = check_valid_ftype($_FILES['uploadedFile'],$importType);
+		//
+		$file_check['status_ok']=1;
 		if($file_check['status_ok'])
 		{
 			// store the file

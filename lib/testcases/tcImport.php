@@ -5,9 +5,9 @@
  *
  * Filename $RCSfile: tcImport.php,v $
  * Filename $RCSfile: tcImport.php,v $
- * @version $Revision: 1.23 $
+ * @version $Revision: 1.24 $
  *
- * @modified $Date: 2007/04/04 19:54:49 $ by $Author: schlundus $
+ * @modified $Date: 2007/09/05 06:05:36 $ by $Author: franciscom $
 */
 require('../../config.inc.php');
 require_once('common.php');
@@ -56,7 +56,9 @@ if ($do_upload)
 	$source = isset($_FILES['uploadedFile']['tmp_name']) ? $_FILES['uploadedFile']['tmp_name'] : null;
 	if (($source != 'none') && ($source != ''))
 	{ 
-		$file_check = check_valid_ftype($_FILES['uploadedFile'],$importType);
+	  // 20070904 - franciscom - this check is a failure :(
+		// $file_check = check_valid_ftype($_FILES['uploadedFile'],$importType);
+		$file_check['status_ok']=1;
 		if($file_check['status_ok'])
 		{
 			if (move_uploaded_file($source, $dest))

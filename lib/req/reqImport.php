@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqImport.php,v $
- * @version $Revision: 1.16 $
- * @modified $Date: 2007/03/30 20:28:24 $ by $Author: schlundus $
+ * @version $Revision: 1.17 $
+ * @modified $Date: 2007/09/05 06:05:36 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Import requirements to a specification. 
@@ -47,7 +47,9 @@ if ($bUpload)
 
 	if (($source != 'none') && ($source != '' ))
 	{ 
-	  $file_check=check_valid_ftype($_FILES['uploadedFile'],$importType);
+	  // 20070904 - franciscom - this check is a failure :(
+	  // $file_check=check_valid_ftype($_FILES['uploadedFile'],$importType);
+    $file_check['status_ok']=1;
     if( $file_check['status_ok'] )
     {
   		if (move_uploaded_file($source, $fileName))

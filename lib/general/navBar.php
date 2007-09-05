@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: navBar.php,v $
  *
- * @version $Revision: 1.25 $
- * @modified $Date: 2007/05/11 20:29:19 $ $Author: schlundus $
+ * @version $Revision: 1.26 $
+ * @modified $Date: 2007/09/05 18:00:08 $ $Author: asielb $
  *
  * This file manages the navigation bar. 
  *
@@ -13,7 +13,7 @@
  *       20070505 - franciscom - use of role_separator configuration
  *
 **/
-require('../../config.inc.php');
+require_once('../../config.inc.php');
 require_once("common.php");
 require_once("plan.core.inc.php");
 require_once("testproject.class.php");

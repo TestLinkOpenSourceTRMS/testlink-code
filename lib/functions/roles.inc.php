@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
  * @filesource $RCSfile: roles.inc.php,v $
- * @version $Revision: 1.24 $
- * @modified $Date: 2007/09/01 14:05:34 $ by $Author: franciscom $
+ * @version $Revision: 1.25 $
+ * @modified $Date: 2007/09/05 19:54:55 $ by $Author: asielb $
  * @author Martin Havlat, Chad Rosen
  * 
  * This script provides the get_rights and has_rights functions for
@@ -573,7 +573,7 @@ function getAllRoles(&$db,$add_inherited=1)
 
 	if($add_inherited)
 	{
-	  $roles[TL_ROLES_INHERITED] = $inherited_role_descr;
+	  $roles['TL_ROLES_INHERITED'] = $inherited_role_descr;
 	}
 	return $roles;
 }

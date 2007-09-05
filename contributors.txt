@@ -2,8 +2,8 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
  
 Filename $RCSfile: contributors.txt,v $
  
-$Revision: 1.7 $
-$Date: 2007/08/31 06:32:57 $ by $Author: franciscom $
+$Revision: 1.8 $
+$Date: 2007/09/05 06:01:42 $ by $Author: franciscom $
 -------------------------------------------------------------------------
  
  
@@ -55,7 +55,18 @@ Localization
 * Russian
 
 * Japanese
+  Testing Engineer's Forum (TEF) in Japan
+  Working Group of TestLink Japanese Translation Project
+ 
+  http://blues.se.uec.ac.jp/swtest/forum.html
+  http://www38.atwiki.jp/testlink/
+  http://sourceforge.jp/projects/testlinkjp/
+ 
+  Core member:
+  Atsushi Nagta,    AZMA Daisuke,       Lumina Nishihara,
+  Marino Suda,      Masahide Katsumata, Masami Ichikawa,
+  Sadahiko Hantani, Shinichi Sugiyama,  Toshiyuki Kawanishi,
+  Yasuhiko Okada,   Yoichi Kunihiro,    Yoshihiro Yoshimura
 
 * Polish
-
 -------------------------------------------------------------------------

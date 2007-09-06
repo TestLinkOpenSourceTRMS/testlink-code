@@ -3,10 +3,30 @@
    Changelog for TestLink
 ***************************************************************
 
-TestLink was developed by TestLink community:
-http://www.teamst.org/index.php?option=com_content&task=view&id=12&Itemid=31
 
-Testlink 1.7.x - 1.7.0 RC 3
+Testlink 1.7.0 final
+============================
+- 0000992: [Database MySQL] Migration of large data sets does not complete (fman)
+- 0001019: [Test Specification] Copying Test Suite and unchecking "including nested data (copy only)" still copies nested data. (fman)
+- 0001018: [User Interface General] Not found magnifier.png (fman)
+- 0000943: [User Interface General] Wrong label in New Role screen (schlundus)
+- 0000956: [General] Bug in XML import (schlundus)
+- 0000994: [Reports, Metrics, Export and Print] without "'" (fman)
+- 0000973: [Integration with Other Systems] Show actual issuestatus for jira (patch included) (fman)
+- 0000989: [Reports, Metrics, Export and Print] Testcases in testreport are ordered by ascending IDs and not by the user-defined rearrangement (fman)
+- 0000961: [User Management] Improve information about <inherited> roles, on Test Project and Test plan Assign Role (fman)
+- 0000977: [User Management] Automatic refreshing of the userroles after changing testproject / testplan in usermanagement (fman)
+- 0000950: [User Management] trouble with changing user roles (fman)
+- 0000951: [User Management] Inherit testplan user role from testproject user role (fman)
+- 0000974: [User Interface General] "Lost password?" link isn't hidden when LDAP is used for authentication (fman)
+- 0000939: [Requirements Coverage] Getting an SQL syntax error if you use apostrophe in requirement spec title and try to create test cases. (fman)
+- 0000932: [Test Execute] Improvements on test active/inactive management (fman)
+- 0000927: [Test Execute] should display who test is assigned to when executing tests (fman)
+- 0000922: [Test Execute] Usability issue: When user presses 'execute tests' - filter tests to present only tests assigned to them by default (fman)
+- 0000935: [Test Execute] Configure test cases access according to assigned user, only for TESTERS (fman)
+- 0000921: [Test Execute] when executing tests, tests aren't presented in same order in execution pane as they are in navigation tree (fman)
+
+Testlink 1.7.0 RC 3
 ===========================
 - 0000924: [User Management] Administrator can have the option to reset user password (fman)
 - 0000809: [Test Plan (milestones, test assign)] Create a new test plan from existing Test Plan cause Notiec Warning (fman)
@@ -63,7 +83,6 @@ Testlink 1.7.x - 1.7.0 RC 3
 - 0000812: [Reports, Metrics, Export and Print] Summary is printed independent on whether summary checkbox is checked or not. (schlundus)
 - 0000805: [Integration with Other Systems] int_jira.php getBugSummary() uses incorrect key (fman)
 - 0000804: [Integration with Other Systems] DB connection fails if db uses public schema (fman)
-
 
 Testlink 1.7.0 RC 2
 ===========================

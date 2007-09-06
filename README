@@ -1,5 +1,5 @@
 ===============================================================
-    TestLink 1.7.0 - Readme
+    TestLink 1.7 - Readme
 ===============================================================
 
 1. Introduction
@@ -13,22 +13,58 @@
     
     TestLink is a GPL licensed open source project. All of the source code 
     behind TestLink is freely available for download via SourceForge 
-    at http://www.sourceforge.net.If you are interested in contributing 
+    at http://www.sourceforge.net If you are interested in contributing 
     to the TestLink effort feel free to contact us.
 
 
-2. Installation and System Requirements
+2. Release notes
 ===============================================================
- 
+
+This is final and stable release and we recommend to update from older version.
+
+New features within 1.7:
+  # Test Case history/ versioning
+  # Unlimited structure of Test Specification
+  # Support for other databases (SQL standard, generalized DB interdace)
+  # Improved user management (editable)
+  # Attachments
+  # Revision of Standard terminology
+  # Enhanced reports
+  # XML import/export
+  # Custom fields for Test Cases
+
+
+3. Installation and System Requirements
+===============================================================
+
+- reliable webserver (Apache is recommended)
+- PHP5 (5.2 is recommended)
+- MySQL 4.1 (and higher) or MS-SQL
     
 
-3. Release notes
+4. Contributors
 ===============================================================
- 
 
+* Francisco Mancardi - Project lead, core developer
+* Martin Havlat - Project lead, builds, infrastructure, core developer
+* Andreas Morsing - Core developer, German localization
+* Kevin Levy - Core developer
+* Asiel Brumfield - Infrastructure, developer
+* Prem Kumar Aparanji - Developer
+* Jason B. Archibald - Developer
+* Chad Rosen - Originator of the project (TL 1.0.x)
 
-4. Known problems
-===============================================================
+* Tools R Us - contributing company
+* Oscar Castroviejo - contributor (trackplus interface)
+* Seweryn Plywaczyk - contributor (text area custom field)  
+* weeBaldFella  - contributor 
+  
+* grdscarabe@grdscarabe.net and Alexandre Da Costa - French localization
+* Walter Giaquinto/Alessandro Lia	and  bruno.busco@gmail.com - Italian localization
+* Toshiyuki Kawansihi and http://sourceforge.jp/projects/testlinkjp/ - Japanese localization
+* Leonardo Molinari - Portuguese localization
+* jorgesf@jsf.jazztel.es - Spanish localization
+
    
 
 5. Bug Reports and Feedback

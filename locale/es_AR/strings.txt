@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.15 $
- * @modified $Date: 2007/09/05 06:02:48 $ $Author: franciscom $
+ * @version $Revision: 1.16 $
+ * @modified $Date: 2007/09/07 13:33:15 $ $Author: franciscom $
  *
  * @author jorgesf@jsf.jazztel.es
  *
@@ -54,6 +54,25 @@ $TLS_error_role_no_rights = "You cannot save roles without any rights!";
 $TLS_error_role_no_rolename = "You must enter a name for the role!";
 $TLS_inherited_role="<inherited>";
 $TLS_mgt_testplan_create = "Test Plan create/edit";
+
+
+$TLS_menu_define_roles = "New role";
+$TLS_menu_view_users = "View Users";
+$TLS_menu_view_roles = "View roles";
+$TLS_menu_assign_testproject_roles = "Assign Test Project roles";
+$TLS_menu_assign_testplan_roles = "Assign test plan roles";
+$TLS_th_rolename = "Role name";
+$TLS_enter_role_notes = "Role description";
+$TLS_th_tp_rights = "Test Plan";
+$TLS_th_mgttc_rights = "Test Case management";
+$TLS_th_req_rights = "Requirement";
+$TLS_th_product_rights = "Test Project";
+$TLS_th_user_rights = "User";
+$TLS_th_kw_rights = "Keyword";
+$TLS_th_cf_rights = "Custom field";
+
+
+
 
 // firstLogin.php
 $TLS_cant_create_user = "Lo siento pero no se ha podido crear su conexión. ¡Por favor, contacte con su administrador!";

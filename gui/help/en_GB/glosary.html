@@ -48,16 +48,15 @@ understanding the testing terminology. Italic text explains TestLink usage.</p>
 	<li><a name="fault"></a><b>Fault</b> (= Bug)
 		A manifestation of an <a href="#error">Error</a> in software. 
 		A Fault, if encountered may cause a <a href="#failure">Failure</a>.</li>
-	<li><a name="path"></a><b>Path</b>
-		A sequence of executable statements of a <a href="#component">component</a>, 
-		from an entry point to an exit point.</li>
+	<li><a name="steps"></a><b>Steps</b> (= Test Scenario, Input)
+		A sequence of executable actions from an entry point to an exit point.</li>
 	<li><a name="testproject"></a><b>Test Project</b>
 		<span class="italic">Test Project is top structure in TestLink Data. All
 		data (except users) are related to active Test Project.</span></li>
 	<li><a name="testcasesuite"></a><b>Test case suite</b> 
 		A collection of one or more <a href="#testcase">test cases </a>
 		for the software under test.<span class="italic">TestLink uses this term
-		for set of Test Cases which are available for execution within Test Plan.
+		for organization of Test Cases within Test Specification and Test Plan.
 		</span></li>
 	<li><a name="testcoverage"></a><b>Test Coverage</b>
 		The degree, expressed as a percentage, to which a specified 
@@ -78,17 +77,16 @@ understanding the testing terminology. Italic text explains TestLink usage.</p>
 	<li><a name="testspec"></a><b>Test Specification</b>
 		For each <a href="#testcase">test case</a>, the 
 		<a href="#coverageitem">coverage item</a>, the initial state of 
-		the software under test, the <a href="#Input">Steps (input)</a>, and 
+		the software under test, the <a href="#steps">Steps</a>, and 
 		the <a href="#expectedresults">Expected results</a>.</li>
 	<li><a name="testing"></a><b>Testing</b> 
 		The process of exercising software to verify that it satisfies specified 
 		requirements and to detect <a href="#error">error</a>s.</li>
 	<li><a name="testcase"></a><b>Test case</b>
-		A set of <a href="#Input">input</a>s, execution preconditions, 
+		A set of <a href="#steps">steps</a>, execution preconditions, 
 		and <a href="#expectedresults">Expected results</a>	developed for 
 		a particular objective, such as to exercise a particular program 
-		<a href="#path">Path </a>or to verify compliance with a specific 
-		requirement.</li>
+		scenario or to verify compliance with a specific requirement.</li>
 </ul>
 
 </body>

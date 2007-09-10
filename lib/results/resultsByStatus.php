@@ -1,14 +1,17 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsByStatus.php,v 1.47 2007/06/25 06:23:45 franciscom Exp $ 
+* $Id: resultsByStatus.php,v 1.48 2007/09/10 12:25:11 franciscom Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author Chad Rosen
 * @author KL
 * 
 *
-* rev : 20070623 - franciscom - BUGID 911
+* rev : 
+*       20070908 - franciscom - change column qty on arrData is status not_run
+*                               to have nice html table
+*       20070623 - franciscom - BUGID 911
 */
 require('../../config.inc.php');
 require_once('common.php');
@@ -92,10 +95,20 @@ if (is_array($mapOfLastResult)) {
 			if (array_key_exists($tester_id, $arrOwners)) {
 			   $testerName = $arrOwners[$tester_id];
 			}
-			$arrData[$arrDataIndex] = array($suiteName,$testTitle,htmlspecialchars($buildName),
-			                                htmlspecialchars($testerName),
-			                                htmlspecialchars($localizedTS),
-											htmlspecialchars($notes),$bugString);
+			
+			// 20070908 - franciscom - to avoid bad presentation on smarty
+			if($type == $g_tc_status['not_run'])
+			{
+      	$arrData[$arrDataIndex] = array($suiteName,$testTitle);
+      }
+      else
+      {
+      	$arrData[$arrDataIndex] = array($suiteName,$testTitle,htmlspecialchars($buildName),
+			                                  htmlspecialchars($testerName),
+			                                  htmlspecialchars($localizedTS),
+ 						  					                htmlspecialchars($notes),$bugString);
+      }
+      
             // KL - 20070610 - only increment this var if we added to arrData
 		    $arrDataIndex++;
 		}
@@ -104,6 +117,8 @@ if (is_array($mapOfLastResult)) {
 	next($mapOfLastResult);
   } // end while
 } // end if
+
+
 
 $smarty = new TLSmarty;
 $smarty->assign('tproject_name', $_SESSION['testprojectName'] );

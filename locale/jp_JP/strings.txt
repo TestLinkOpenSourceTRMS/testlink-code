@@ -4,7 +4,7 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  *
  * @author Francisco Mancardi
  *
@@ -37,7 +37,7 @@
  * Shizuka Ban,     Toshinori Sawaguchi, Toshiyuki Kawanishi,
  * Yasuhiko Okada,  Yoichi Kunihiro,     Yoshihiro Yoshimura
  *
- * @modified $Date: 2007/09/06 06:28:59 $ $Author: franciscom $
+ * @modified $Date: 2007/09/10 07:34:32 $ $Author: franciscom $
  *-------------------------------------------------------------------
 **/
 //If this file is coded in UTF-8 then enable the following line
@@ -316,6 +316,12 @@ $TLS_th_name = "名前";
 $TLS_th_perc_completed = "完了率 [%]";
 $TLS_title_your_tp_metrics = "あなたのテスト計画メトリクス";
 
+// gui/templates/metrics_dashbord.tpl
+$TLS_th_total_tc="Test Case number";
+$TLS_th_active_tc="Active Test Cases";
+$TLS_th_executed_tc="Executed Test Cases";
+$TLS_th_executed_vs_active="Executed/Active [%]";
+$TLS_th_executed_vs_total="Executed/Total [%]";
 
 // gui/templates/newest_tcversions.tpl
 $TLS_linked_version = "リンクされているバージョン";
@@ -625,6 +631,7 @@ $TLS_warning_modify_role = "本当に役割を修正しますか？";
 // gui/templates/tcSearchForm.tpl
 $TLS_btn_find = "発見";
 $TLS_caption_search_form = "テストケースの検索";
+$TLS_custom_field_value ="Custom Field Value";
 $TLS_not_applied = "適用しない";
 $TLS_th_tcid = "テストケースID";
 $TLS_th_tcversion = "バージョン";
@@ -1301,6 +1308,7 @@ $TLS_filter_tp_by_product = "テスト計画をテストプロジェクトでフ
 $TLS_href_add_test_case = "テストケースの追加";
 $TLS_href_build_new = "ビルドの管理";
 $TLS_href_execute_test = "テストの実行";
+$TLS_href_metrics_dashboard = "Metrics dashboard";
 $TLS_href_newest_tcversions = "最新バージョンのテストを表示";
 $TLS_href_plan_assign_priority = "優先度の割り当て";
 $TLS_href_plan_define_priority = "優先度のルールを定義";

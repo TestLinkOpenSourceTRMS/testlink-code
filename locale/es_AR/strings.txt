@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.16 $
- * @modified $Date: 2007/09/07 13:33:15 $ $Author: franciscom $
+ * @version $Revision: 1.17 $
+ * @modified $Date: 2007/09/10 07:34:31 $ $Author: franciscom $
  *
  * @author jorgesf@jsf.jazztel.es
  *
@@ -72,6 +72,7 @@ $TLS_th_kw_rights = "Keyword";
 $TLS_th_cf_rights = "Custom field";
 
 
+$TLS_href_metrics_dashboard = "Metrics dashboard";
 
 
 // firstLogin.php
@@ -619,6 +620,7 @@ $TLS_title_change_tc_order = "Cambiar el orden de los Casos de Test de esta Cate
 // gui/templates/tcSearchForm.tpl
 $TLS_btn_find = "Encontrar";
 $TLS_caption_search_form = "Buscar Casos de Test";
+$TLS_custom_field_value ="Custom Field Value";
 $TLS_keyword = "Palabra Clave";
 $TLS_not_applied = "No se ha aplicado";
 $TLS_th_tcid = "ID del Caso de Test";
@@ -777,6 +779,12 @@ $TLS_title_test_spec = "Especificaciones de Test";
 $TLS_title_testlink_site_map = "TestLink - Escritorio";
 $TLS_title_your_tp_metrics = "Sus métricas de Plantillas de Test";
 
+// gui/templates/metrics_dashbord.tpl
+$TLS_th_total_tc="Test Case number";
+$TLS_th_active_tc="Active Test Cases";
+$TLS_th_executed_tc="Executed Test Cases";
+$TLS_th_executed_vs_active="Executed/Active [%]";
+$TLS_th_executed_vs_total="Executed/Total [%]";
 
 
 // gui/templates/inc_res_by_comp.tpl

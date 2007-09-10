@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.8 $
- * @modified $Date: 2007/09/07 13:39:58 $ by $Author: franciscom $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2007/09/10 07:34:32 $ by $Author: franciscom $
  *
  * @author Micha&#322; Wujas
  *
@@ -74,6 +74,7 @@ $TLS_th_product_rights = "Test Project";
 $TLS_th_user_rights = "User";
 $TLS_th_kw_rights = "Keyword";
 $TLS_th_cf_rights = "Custom field";
+$TLS_href_metrics_dashboard = "Metrics dashboard";
 
 
 // gui/templates/inc_copyrightnotice.tpl
@@ -300,6 +301,12 @@ $TLS_title_test_spec = "Specyfikacja test&oacute;w";
 $TLS_title_testlink_site_map = "Pulpit";
 $TLS_title_your_tp_metrics = "Metryki twojego Zestawu Testowego";
 
+// gui/templates/metrics_dashbord.tpl
+$TLS_th_total_tc="Test Case number";
+$TLS_th_active_tc="Active Test Cases";
+$TLS_th_executed_tc="Executed Test Cases";
+$TLS_th_executed_vs_active="Executed/Active [%]";
+$TLS_th_executed_vs_total="Executed/Total [%]";
 
 
 // gui/templates/inc_res_by_comp.tpl
@@ -792,6 +799,7 @@ $TLS_title_change_tc_order = "Zmie&#324; kolejno&#347;&#263; test&oacute;w dla t
 // gui/templates/tcSearchForm.tpl
 $TLS_btn_find = "Znajd&#378;";
 $TLS_caption_search_form = "Wyszukuj testy";
+$TLS_custom_field_value ="Custom Field Value";
 $TLS_keyword = "S&#322;owa kluczowe";
 $TLS_not_applied = "Nie stosowane";
 $TLS_title_search_tcs = "Szukaj";

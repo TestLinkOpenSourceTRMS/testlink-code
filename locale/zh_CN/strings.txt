@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.7 $
- * @modified $Date: 2007/09/07 13:39:59 $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2007/09/10 07:34:32 $
  *
  * @author Yoyo Wang
 **/
@@ -62,6 +62,7 @@ $TLS_th_user_rights = "User";
 $TLS_th_kw_rights = "Keyword";
 $TLS_th_cf_rights = "Custom field";
 
+$TLS_href_metrics_dashboard = "Metrics dashboard";
 
 // firstLogin.php
 $TLS_cant_create_user = "很抱歉无法为您创建登陆帐号。请与管理员联系！";
@@ -605,6 +606,7 @@ $TLS_title_change_tc_order = "修改分类中的测试用例顺序。";
 // gui/templates/tcSearchForm.tpl
 $TLS_btn_find = "查找";
 $TLS_caption_search_form = "搜索测试用例";
+$TLS_custom_field_value ="Custom Field Value";
 $TLS_keyword = "关键字";
 $TLS_not_applied = "不指定";
 $TLS_th_tcid = "测试用例标识";
@@ -767,6 +769,12 @@ $TLS_title_test_spec = "测试规范";
 $TLS_title_testlink_site_map = "TestLink - 工作台";
 $TLS_title_your_tp_metrics = "你的测试计划度量";
 
+// gui/templates/metrics_dashbord.tpl
+$TLS_th_total_tc="Test Case number";
+$TLS_th_active_tc="Active Test Cases";
+$TLS_th_executed_tc="Executed Test Cases";
+$TLS_th_executed_vs_active="Executed/Active [%]";
+$TLS_th_executed_vs_total="Executed/Total [%]";
 
 
 // gui/templates/inc_res_by_comp.tpl

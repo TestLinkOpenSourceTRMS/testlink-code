@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.18 $
- * @modified $Date: 2007/09/05 06:02:47 $ $Author: franciscom $
+ * @version $Revision: 1.19 $
+ * @modified $Date: 2007/09/10 07:34:31 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
@@ -264,6 +264,13 @@ $TLS_th_my_perc_completed = "My completed [%]";
 $TLS_th_name = "Name";
 $TLS_th_perc_completed = "Completed [%]";
 $TLS_title_your_tp_metrics = "Your Test Plan Metrics";
+
+// gui/templates/metrics_dashbord.tpl
+$TLS_th_total_tc="Test Case number";
+$TLS_th_active_tc="Active Test Cases";
+$TLS_th_executed_tc="Executed Test Cases";
+$TLS_th_executed_vs_active="Executed/Active [%]";
+$TLS_th_executed_vs_total="Executed/Total [%]";
 
 
 // gui/templates/newest_tcversions.tpl
@@ -571,6 +578,7 @@ $TLS_warning_modify_role = "Really modify the role?";
 // gui/templates/tcSearchForm.tpl
 $TLS_btn_find = "Find";
 $TLS_caption_search_form = "Search Test Cases";
+$TLS_custom_field_value ="Custom Field Value";
 $TLS_not_applied = "Not applied";
 $TLS_th_tcid = "Test Case ID";
 $TLS_th_tcversion = "Version";
@@ -1208,6 +1216,7 @@ $TLS_filter_tp_by_product = "Filter Test Plans by Test Project";
 $TLS_href_add_test_case = "Add Test Case(s)";
 $TLS_href_build_new = "Build Management";
 $TLS_href_execute_test = "Execute Tests";
+$TLS_href_metrics_dashboard = "Metrics dashboard";
 $TLS_href_plan_assign_priority = "Assign priorities";
 $TLS_href_plan_define_priority = "Define priority rules";
 $TLS_href_plan_management = "Test Plan Management";

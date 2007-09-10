@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.3 $
- * @modified $Date: 2007/09/05 06:02:48 $ $Author: franciscom $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2007/09/10 07:34:32 $ $Author: franciscom $
  *
  * @author Vadim Ivanchenko
  *
@@ -404,6 +404,12 @@ $TLS_th_perc_completed = "План выполнен на [%]";
 //ORIG: $TLS_title_your_tp_metrics = "Your Test Plan Metrics";
 $TLS_title_your_tp_metrics = "Показатели выполнения тест-плана";
 
+// gui/templates/metrics_dashbord.tpl
+$TLS_th_total_tc="Test Case number";
+$TLS_th_active_tc="Active Test Cases";
+$TLS_th_executed_tc="Executed Test Cases";
+$TLS_th_executed_vs_active="Executed/Active [%]";
+$TLS_th_executed_vs_total="Executed/Total [%]";
 
 
 // gui/templates/emailSent.tpl
@@ -876,6 +882,7 @@ $TLS_warning_modify_role = "Изменить уровни доступа?";
 $TLS_btn_find = "Искать";
 //ORIG: $TLS_caption_search_form = "Search Test Cases";
 $TLS_caption_search_form = "Искать тесты";
+$TLS_custom_field_value ="Custom Field Value";
 //ORIG: $TLS_not_applied = "Not applied";
 $TLS_not_applied = "Не применимо";
 //ORIG: $TLS_th_tcid = "Test Case ID";
@@ -1888,6 +1895,7 @@ $TLS_href_add_test_case = "Добавить тест к плану";
 $TLS_href_build_new = "Редактировать версию (сборку)";
 //ORIG: $TLS_href_execute_test = "Execute Tests";
 $TLS_href_execute_test = "Прогнать тесты";
+$TLS_href_metrics_dashboard = "Metrics dashboard";
 //ORIG: $TLS_href_plan_assign_priority = "Assign priorities";
 $TLS_href_plan_assign_priority = "Assign priorities";
 //ORIG: $TLS_href_plan_define_priority = "Define priority rules";

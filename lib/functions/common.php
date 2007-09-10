@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.69 $ $Author: franciscom $
- * @modified $Date: 2007/07/09 08:06:30 $
+ * @version $Revision: 1.70 $ $Author: franciscom $
+ * @modified $Date: 2007/09/10 12:31:08 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -461,6 +461,8 @@ function check_string($str2check, $ereg_forbidden_chars)
 // Calling getUserProdTestPlans() instead of getUserTestPlans()
 //         to add ptoduct filtering of TP
 //
+// rev :
+//      20070906 - franciscom - getAccessibleTestPlans() interface changes
 function upd_session_tplan_tproject(&$db,$hash_user_sel)
 {
 	$tproject = new testproject($db);
@@ -507,7 +509,8 @@ function upd_session_tplan_tproject(&$db,$hash_user_sel)
 		$tplan_id = $user_sel["tplan_id"];
 
 	//check if the specific combination of testprojectid and testplanid is valid
-	$tplan_data = getAccessibleTestPlans($db,$tproject_id,$filter_tp_by_product,$tplan_id);
+	$tplan_data = getAccessibleTestPlans($db,$tproject_id,
+	                                     $_SESSION['userID'],$filter_tp_by_product,$tplan_id);
 	if(!is_null($tplan_data))
 	{ 
 		$tplan_data = $tplan_data[0];
@@ -516,7 +519,7 @@ function upd_session_tplan_tproject(&$db,$hash_user_sel)
 	}
   
 	//get the first accessible TestPlan
-	$tplan_data = getAccessibleTestPlans($db,$tproject_id,$filter_tp_by_product,null);
+	$tplan_data = getAccessibleTestPlans($db,$tproject_id,$_SESSION['userID'],$filter_tp_by_product,null);
 	if(!is_null($tplan_data))
 		$tplan_data = $tplan_data[0];
 		

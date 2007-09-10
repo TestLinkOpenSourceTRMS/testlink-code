@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: navBar.php,v $
  *
- * @version $Revision: 1.26 $
- * @modified $Date: 2007/09/05 18:00:08 $ $Author: asielb $
+ * @version $Revision: 1.27 $
+ * @modified $Date: 2007/09/10 12:35:01 $ $Author: franciscom $
  *
  * This file manages the navigation bar. 
  *
@@ -26,7 +26,7 @@ $arr_tprojects = getAccessibleProducts($db);
 $tpID = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : null;
 $curr_tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 if ($curr_tproject_id)
-	getAccessibleTestPlans($db,$curr_tproject_id,1,$tpID);
+	getAccessibleTestPlans($db,$curr_tproject_id,$_SESSION['userID'],1,$tpID);
 	
 
 $roles = getAllRoles($db);

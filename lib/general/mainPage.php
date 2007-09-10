@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: mainPage.php,v $
  *
- * @version $Revision: 1.30 $ $Author: jbarchibald $
- * @modified $Date: 2007/08/29 17:21:02 $
+ * @version $Revision: 1.31 $ $Author: franciscom $
+ * @modified $Date: 2007/09/10 12:32:40 $
  *
  * @author Martin Havlat
  * 
@@ -100,7 +100,8 @@ if( !is_null($active_tplans) )
 
 
 // get Test Plans available for the user 
-$arrPlans = getAccessibleTestPlans($db,$testprojectID,$filter_tp_by_product);
+// 20070906 - interface changes
+$arrPlans = getAccessibleTestPlans($db,$testprojectID,$_SESSION['userID'],$filter_tp_by_product);
 
 $testPlanID = isset($_SESSION['testPlanId']) ? intval($_SESSION['testPlanId']) : 0;
 
@@ -124,6 +125,9 @@ foreach($rights2check as $key => $the_right)
 {
   $smarty->assign($the_right, has_rights($db,$the_right));
 }                         
+
+$smarty->assign('metrics_dashboard_url','lib/results/metrics_dashboard.php');
+
 $smarty->assign('testplan_creating', has_rights($db,"mgt_testplan_create"));
 $smarty->assign('tp_user_role_assignment', has_rights($db,"testplan_user_role_assignment"));
 $smarty->assign('tproject_user_role_assignment', has_rights($db,"user_role_assignment",null,-1));

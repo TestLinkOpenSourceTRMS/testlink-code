@@ -1,6 +1,6 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: mainPage_right.tpl,v 1.8 2007/05/24 06:49:18 franciscom Exp $     
+ $Id: mainPage_right.tpl,v 1.9 2007/09/10 12:28:22 franciscom Exp $     
  Purpose: smarty template - main page / site map                 
                                                                  
  rev :
@@ -83,6 +83,9 @@
 			<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
 	        <a href="{$launcher}?feature=showMetrics">{lang_get s='href_rep_and_metrics'}</a>
 		{/if} {* testplan_metrics *}
+ 	  <br />
+ 		<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
+	       <a href="{$metrics_dashboard_url}">{lang_get s='href_metrics_dashboard'}</a>
 	  </p>
     {$smarty.const.MENU_ITEM_CLOSE}
 	

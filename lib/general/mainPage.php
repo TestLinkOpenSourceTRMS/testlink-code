@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: mainPage.php,v $
  *
- * @version $Revision: 1.31 $ $Author: franciscom $
- * @modified $Date: 2007/09/10 12:32:40 $
+ * @version $Revision: 1.32 $ $Author: franciscom $
+ * @modified $Date: 2007/09/11 06:31:49 $
  *
  * @author Martin Havlat
  * 
@@ -69,12 +69,12 @@ $smarty->assign('modify_product_rights', $can_manage_tprojects);
 
 // ----- Test Statistics Section --------------------------
 // only print the metrics table if it is enabled
-$smarty->assign('metricsEnabled', MAIN_PAGE_METRICS_ENABLED);
-if(MAIN_PAGE_METRICS_ENABLED == "TRUE")
-{
-	require_once('myTPInfo.php');
-    $smarty->assign('myTPdata', printMyTPData($db));
-}
+// $smarty->assign('metricsEnabled', MAIN_PAGE_METRICS_ENABLED);
+// if(MAIN_PAGE_METRICS_ENABLED == "TRUE")
+// {
+// 	require_once('myTPInfo.php');
+//   $smarty->assign('myTPdata', printMyTPData($db));
+// }
 
 $filter_tp_by_product = 1;
 if(isset($_REQUEST['filter_tp_by_product']))

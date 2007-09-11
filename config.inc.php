@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.121 $
- * @modified $Date: 2007/08/20 06:41:01 $ by $Author: franciscom $
+ * @version $Revision: 1.122 $
+ * @modified $Date: 2007/09/11 06:31:36 $ by $Author: franciscom $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink 
@@ -17,6 +17,7 @@
  *-----------------------------------------------------------------------------
  *
  * Revisions:
+ *           20070910 - franciscom - removed MAIN_PAGE_METRICS_ENABLED
  *           20070819 - franciscom - $g_default_roleid
  *           20070706 - franciscom - $g_exec_cfg->user_filter_default
  *           20070706 - franciscom - $g_exec_cfg->view_mode->tester
@@ -167,9 +168,6 @@ $g_ldap_bind_passwd	= ''; // Left empty if you LDAP server allows anonymous bind
 
 // ----------------------------------------------------------------------------
 /** [GUI] */
-
-// TRUE : metrics table displayed on the main page.
-define('MAIN_PAGE_METRICS_ENABLED', 'FALSE');
 
 /** some maxima related to importing stuff in TL */
 // Maximum uploadfile size 

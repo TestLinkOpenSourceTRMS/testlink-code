@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: buildView.tpl,v 1.2 2007/02/10 16:46:00 schlundus Exp $
+$Id: buildView.tpl,v 1.3 2007/09/11 06:31:49 franciscom Exp $
 
 Purpose: smarty template - Show existing builds
 
@@ -40,15 +40,15 @@ function validateForm(f)
 
 {* ------------------------------------------------------------------------------------------- *}
 <div id="existing_builds">
-  <h2>{lang_get s='title_build_list'}</h2>
+  {* <h2>{lang_get s='title_build_list'}</h2> *}
   {if $the_builds ne ""}
   	<table class="simple" style="width:80%">
   		<tr>
   			<th>{lang_get s='th_title'}</th>
   			<th>{lang_get s='th_description'}</th>
-  			<th style="width: 30px;">{lang_get s='th_active'}</th>
-  			<th style="width: 30px;">{lang_get s='th_open'}</th>
-  			<th style="width: 60px;">{lang_get s='th_delete'}</th>
+  			<th>{lang_get s='th_active'}</th>
+  			<th>{lang_get s='th_open'}</th>
+  			<th>{lang_get s='th_delete'}</th>
   		</tr>
   		{foreach item=build from=$the_builds}
   			<tr>
@@ -63,7 +63,8 @@ function validateForm(f)
   					  </a>   
   				</td>
   				<td>{$build.notes|truncate:#BUILD_NOTES_TRUNCATE_LEN#}</td>
-  				<td align="center">{if $build.active eq 1} 
+  				<td class="clickable_icon">
+  				   {if $build.active eq 1} 
   				     <img style="border:none" 
   				            title="{lang_get s='alt_active_build'}" 
   				            alt="{lang_get s='alt_active_build'}" 
@@ -72,7 +73,8 @@ function validateForm(f)
   				    &nbsp;        
   				    {/if}
   				</td>
-  				<td align="center">{if $build.open eq 1} 
+  				<td class="clickable_icon">
+  				   {if $build.open eq 1} 
   				     <img style="border:none" 
   				            title="{lang_get s='alt_open_build'}" 
   				            alt="{lang_get s='alt_open_build'}" 
@@ -81,7 +83,8 @@ function validateForm(f)
   				    &nbsp;        
   				    {/if}
   				</td>
-  				<td align="center"><a href="javascript:deleteBuild_onClick({$build.id},'{$warning_msg}')">
+  				<td class="clickable_icon">
+  				  <a href="javascript:deleteBuild_onClick({$build.id},'{$warning_msg}')">
   				       <img style="border:none" 
   				            title="{lang_get s='alt_delete_build'}" 
   				            alt="{lang_get s='alt_delete_build'}" 

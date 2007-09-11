@@ -1,9 +1,11 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planView.tpl,v 1.2 2007/02/10 16:46:00 schlundus Exp $ 
+$Id: planView.tpl,v 1.3 2007/09/11 06:31:49 franciscom Exp $ 
 Purpose: smarty template - edit / delete Test Plan 
 Revisions:
 *}
+{assign var="cfg_section" value=$smarty.template|replace:".tpl":"" }
+{config_load file="input_dimensions.conf" section=$cfg_section}
 {include file="inc_head.tpl"}
 
 <body>
@@ -28,13 +30,13 @@ function delete_confirmation(delUrl) {ldelim}
 	{lang_get s='testplan_txt_empty_list'}
 
 {else}
-	<h2>{lang_get s='testplan_title_list'}</h2>
+	{* <h2>{lang_get s='testplan_title_list'}</h2> *}
 	<table class="simple" width="95%">
 		<tr>
 			<th>{lang_get s='testplan_th_name'}</th>
 			<th>{lang_get s='testplan_th_notes'}</th>
-			<th style="width: 60px;">{lang_get s='testplan_th_active'}</th>
-			<th style="width: 60px;">{lang_get s='testplan_th_delete'}</th>
+			<th>{lang_get s='testplan_th_active'}</th>
+			<th>{lang_get s='testplan_th_delete'}</th>
 		</tr>
 		{foreach item=testplan from=$tplans}
 		<tr>
@@ -48,9 +50,9 @@ function delete_confirmation(delUrl) {ldelim}
  				  </a>
 			</td>
 			<td>
-				{$testplan.notes|strip_tags|strip|truncate:100}
+				{$testplan.notes|strip_tags|strip|truncate:#TESTPLAN_NOTES_TRUNCATE#}
 			</td>
-			<td>
+			<td class="clickable_icon">
 				{if $testplan.active eq 1} 
   					<img style="border:none" 
   				            title="{lang_get s='alt_active_testplan'}" 
@@ -60,9 +62,9 @@ function delete_confirmation(delUrl) {ldelim}
   					&nbsp;        
   				{/if}
 			</td>
-			<td>
+			<td class="clickable_icon">
 				<a href="javascript:delete_confirmation(fRoot+'lib/plan/planEdit.php?do_action=do_delete&amp;tplan_id={$testplan.id}');">
-				  <img style="border:none" title="{lang_get s='testplan_alt_delete_tp'}" 
+				  <img style="border:none" 
 				       alt="{lang_get s='testplan_alt_delete_tp'}"
 					   title="{lang_get s='testplan_alt_delete_tp'}" 
 				       src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png"/></a>

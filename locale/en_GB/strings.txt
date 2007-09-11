@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.193 $
- * @modified $Date: 2007/09/10 07:34:31 $ $Author: franciscom $
+ * @version $Revision: 1.194 $
+ * @modified $Date: 2007/09/11 06:31:49 $ $Author: franciscom $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -680,7 +680,7 @@ $TLS_alt_edit_user = "Edit user";
 $TLS_order_by_login = "Order by login";
 $TLS_order_by_role_descr = "Order by role description";
 $TLS_th_active = "Active";
-$TLS_th_delete = "Delete?";
+$TLS_th_delete = "Delete";
 $TLS_th_email = "Email";
 $TLS_th_first_name = "First Name";
 $TLS_th_last_name = "Last  Name";

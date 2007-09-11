@@ -1,6 +1,6 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: mainPage.tpl,v 1.34 2007/05/24 06:49:18 franciscom Exp $     
+ $Id: mainPage.tpl,v 1.35 2007/09/11 06:31:49 franciscom Exp $     
  Purpose: smarty template - main page / site map                 
                                                                  
  rev :                                                 
@@ -38,29 +38,6 @@ window.onload=function(){
 
 {*   left column                 *}
 {include file="mainPage_left.tpl"}
-
-{*      ** middle table ************}
-{if $metricsEnabled == 'TRUE'}
-    <div style="width: 45%; padding: 5px">
-	    <table class="mainTable" style="width: 100%">
-		<tr>
-			<td colspan="3"><h2>{lang_get s='title_your_tp_metrics'}</h2></td>
-		</tr>
-		<tr>
-			<th>{lang_get s='th_name'}</th>
-			<th>{lang_get s='th_perc_completed'}</th>
-			<th>{lang_get s='th_my_perc_completed'}</th>
-		</tr>
-	       {$myTPdata}
-	    </table>
-    </div>
-{/if}
-
-{*
-<script type="text/javascript">
-Rounded('vertical_menu', 8, 8);
-</script>
-*}
 
 </body>
 </html>

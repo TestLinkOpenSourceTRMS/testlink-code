@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.14 $
- * @modified $Date: 2007/09/10 07:34:31 $ $Author: franciscom $
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2007/09/12 06:25:24 $ $Author: franciscom $
  *
  * @author jorgesf@jsf.jazztel.es
  *
@@ -111,6 +111,18 @@ $TLS_page_title_lost_passwd = "TestLink - Contraseña perdida";
 $TLS_your_info_for_passwd = "Introduzca correctamente la información de su usuario para que se le pueda enviar su nueva contraseña por correo";
 $TLS_your_password_is = "Su nueva contraseña de Testlink es: <br>";
 
+// resultsNavigator.php
+$TLS_title_nav_results="Reports and Metrics";
+
+// tcEdit.php
+$TLS_tc_copied = "Test Case %s was succesfully copied to <br> Test Suite %s";
+$TLS_tc_created = "Test Case %s was succesfully created";
+$TLS_tc_deleted = "Test Case %s was succesfully deleted";
+$TLS_tc_updated = "Test Case %s was succesfully updated";
+$TLS_tc_new_version = "Test Case Version %d was succesfully created";
+$TLS_tc_updated = "Test Case %s was succesfully updated";
+$TLS_tc_update_failed = "Update of Test Case %s failed!";
+$TLS_tc_version_deleted = "Test Case %s version %d was succesfully deleted";
 
 
 // gui/templates/adminProductEdit.tpl
@@ -1239,6 +1251,9 @@ $TLS_case_return_by_query_header = "Test Cases Return By Query";
 $TLS_descr_indiv = "Individual test cases which match specified \"Owner\", \"Keyword\", \"Component(s)\", \"Last Status\" and \"Builds Selected\" query parameters.";
 $TLS_show_hide_all = "Show/Hide All";
 $TLS_results_by_component_header = "Results By Component";
+$TLS_display_suite_summaries = "Display Suite Summaries";
+$TLS_display_query_params  = "Display Query Parameters";
+$TLS_display_totals = "Display Totals";
 
 // lib/functions/resultsMoreBuilds.inc.php
 //$TLS_resultsMoreBuilds_inc

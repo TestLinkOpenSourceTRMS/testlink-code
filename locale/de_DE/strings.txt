@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.61 $
- * @modified $Date: 2007/09/10 07:34:30 $ $Author: franciscom $
+ * @version $Revision: 1.62 $
+ * @modified $Date: 2007/09/12 06:25:22 $ $Author: franciscom $
  *
  * @author Andreas Morsing
  * @author Fabian Woelk
@@ -109,6 +109,8 @@ $TLS_high_importance = "Hoch";
 $TLS_low_importance = "Niedrig";
 $TLS_medium_importance = "Mittel";
 
+// resultsNavigator.php
+$TLS_title_nav_results="Reports and Metrics";
 
 // tcEdit.php
 $TLS_tc_created = "Testfall %s wurde erfolgreich erstellt.";

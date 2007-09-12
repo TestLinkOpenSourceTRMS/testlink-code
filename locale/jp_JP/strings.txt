@@ -4,7 +4,7 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  *
  * @author Francisco Mancardi
  *
@@ -37,7 +37,7 @@
  * Shizuka Ban,     Toshinori Sawaguchi, Toshiyuki Kawanishi,
  * Yasuhiko Okada,  Yoichi Kunihiro,     Yoshihiro Yoshimura
  *
- * @modified $Date: 2007/09/10 07:34:32 $ $Author: franciscom $
+ * @modified $Date: 2007/09/12 06:25:24 $ $Author: franciscom $
  *-------------------------------------------------------------------
 **/
 //If this file is coded in UTF-8 then enable the following line
@@ -143,6 +143,8 @@ $TLS_high_importance = "高";
 $TLS_low_importance = "低";
 $TLS_medium_importance = "中";
 
+// resultsNavigator.php
+$TLS_title_nav_results="Reports and Metrics";
 
 // tcEdit.php
 $TLS_tc_copied = "成功！テストケース %s は<br>テストスイート %s にコピーされました。";

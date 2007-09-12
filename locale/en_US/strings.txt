@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.19 $
- * @modified $Date: 2007/09/10 07:34:31 $ $Author: franciscom $
+ * @version $Revision: 1.20 $
+ * @modified $Date: 2007/09/12 06:25:23 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
@@ -104,6 +104,19 @@ $TLS_medium_risk = "Medium";
 $TLS_high_importance = "High";
 $TLS_low_importance = "Low";
 $TLS_medium_importance = "Medium";
+
+// resultsNavigator.php
+$TLS_title_nav_results="Reports and Metrics";
+
+// tcEdit.php
+$TLS_tc_copied = "Test Case %s was succesfully copied to <br> Test Suite %s";
+$TLS_tc_created = "Test Case %s was succesfully created";
+$TLS_tc_deleted = "Test Case %s was succesfully deleted";
+$TLS_tc_updated = "Test Case %s was succesfully updated";
+$TLS_tc_new_version = "Test Case Version %d was succesfully created";
+$TLS_tc_updated = "Test Case %s was succesfully updated";
+$TLS_tc_update_failed = "Update of Test Case %s failed!";
+$TLS_tc_version_deleted = "Test Case %s version %d was succesfully deleted";
 
 
 // gui/templates/attachment404.tpl
@@ -1021,6 +1034,9 @@ $TLS_test_plan_header = "Test Plan: ";
 // gui/templates/resultsMoreBuilds_report.tpl
 $TLS_caption_show_collapse = "Show / Collapse";
 $TLS_caption_user_selected_query_parameters = "Query Parameters";
+$TLS_display_suite_summaries = "Display Suite Summaries";
+$TLS_display_query_params  = "Display Query Parameters";
+$TLS_display_totals = "Display Totals";
 $TLS_not_yet_executed = "Not yet executed";
 $TLS_show_hide_all = "Show / Hide All";
 $TLS_th_builds = "Build(s)";

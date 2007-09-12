@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.25 $
- * @modified $Date: 2007/09/10 07:34:32 $ $Author: franciscom $
+ * @version $Revision: 1.26 $
+ * @modified $Date: 2007/09/12 06:25:24 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
@@ -101,6 +101,19 @@ $TLS_medium_risk="Medio";
 $TLS_high_importance="Alta";
 $TLS_low_importance="Bassa";
 $TLS_medium_importance="Media";
+
+// resultsNavigator.php
+$TLS_title_nav_results="Reports and Metrics";
+
+// tcEdit.php
+$TLS_tc_copied = "Test Case %s was succesfully copied to <br> Test Suite %s";
+$TLS_tc_created = "Test Case %s was succesfully created";
+$TLS_tc_deleted = "Test Case %s was succesfully deleted";
+$TLS_tc_updated = "Test Case %s was succesfully updated";
+$TLS_tc_new_version = "Test Case Version %d was succesfully created";
+$TLS_tc_updated = "Test Case %s was succesfully updated";
+$TLS_tc_update_failed = "Update of Test Case %s failed!";
+$TLS_tc_version_deleted = "Test Case %s version %d was succesfully deleted";
 
 
 // gui/templates/attachment404.tpl
@@ -1017,6 +1030,9 @@ $TLS_th_total_cases = "#Test Cases";
 $TLS_th_total_fail = "#falliti";
 $TLS_th_total_not_run = "#non eseguiti";
 $TLS_th_total_pass = "#passati";
+$TLS_display_suite_summaries = "Display Suite Summaries";
+$TLS_display_query_params  = "Display Query Parameters";
+$TLS_display_totals = "Display Totals";
 
 
 

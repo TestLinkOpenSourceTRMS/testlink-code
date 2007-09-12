@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.8 $
- * @modified $Date: 2007/09/10 07:34:32 $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2007/09/12 06:25:25 $
  *
  * @author Yoyo Wang
 **/
@@ -106,6 +106,18 @@ $TLS_page_title_lost_passwd = "TestLink - 忘记口令";
 $TLS_your_info_for_passwd = "输入你的用户信息，以便可以通过电子邮件发送你的新口令。";
 $TLS_your_password_is = "你的TestLink新口令是：<br>";
 
+// resultsNavigator.php
+$TLS_title_nav_results="Reports and Metrics";
+
+// tcEdit.php
+$TLS_tc_copied = "Test Case %s was succesfully copied to <br> Test Suite %s";
+$TLS_tc_created = "Test Case %s was succesfully created";
+$TLS_tc_deleted = "Test Case %s was succesfully deleted";
+$TLS_tc_updated = "Test Case %s was succesfully updated";
+$TLS_tc_new_version = "Test Case Version %d was succesfully created";
+$TLS_tc_updated = "Test Case %s was succesfully updated";
+$TLS_tc_update_failed = "Update of Test Case %s failed!";
+$TLS_tc_version_deleted = "Test Case %s version %d was succesfully deleted";
 
 
 // gui/templates/adminProductEdit.tpl
@@ -925,6 +937,9 @@ $TLS_please_wait = "正在加载全部结果,请稍候...";
 $TLS_query_parameters_header = "选定的查询条件为：";
 $TLS_results_by_component_header = "结果(按组件)";
 $TLS_show_hide_all = "显示/隐藏全部";
+$TLS_display_suite_summaries = "Display Suite Summaries";
+$TLS_display_query_params  = "Display Query Parameters";
+$TLS_display_totals = "Display Totals";
 
 
 

@@ -1,15 +1,15 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: searchData.php,v 1.21 2007/05/11 20:29:19 schlundus Exp $
+ * $Id: searchData.php,v 1.22 2007/09/12 06:24:53 franciscom Exp $
  * Purpose:  This page presents the search results. 
  *
- * 20060427 - franciscom - added include tescase class
- * 20050821 - fm - changes to use template customization (trying to reduce code redundancy)
+ * rev :
+ *       20070908 - franciscom - BUGID
 **/
 require('../../config.inc.php');
-require_once("../functions/common.php");
-require_once("../functions/users.inc.php");
-require_once("../functions/attachments.inc.php");
+require_once("common.php");
+require_once("users.inc.php");
+require_once("attachments.inc.php");
 testlinkInitPage($db);
 
 $_POST = strings_stripSlashes($_POST);
@@ -22,6 +22,12 @@ $keyword_id = isset($_POST['key']) ? intval($_POST['key']) : 0;
 $tc_id = isset($_POST['TCID']) ? intval($_POST['TCID']) : 0;
 $version = isset($_POST['version']) ? intval($_POST['version']) : 0;
 
+// BUGID 
+$custom_field_id = isset($_POST['custom_field_id']) ? intval($_POST['custom_field_id']) : 0;
+$custom_field_value = isset($_POST['custom_field_value']) ? trim($_POST['custom_field_value']) : null;
+
+
+
 $arrTc = null;
 $userID = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
 $tproject = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
@@ -30,10 +36,9 @@ $tproject_mgr = new testproject($db);
 $map = null;
 if ($tproject)
 {
-	$from = array(
-				'by_keyword_id' => ' '
-			);
-    $a_tcid = $tproject_mgr->get_all_testcases_id($tproject);
+	$from = array('by_keyword_id' => ' ', 'by_custom_field' => ' ');
+  
+  $a_tcid = $tproject_mgr->get_all_testcases_id($tproject);
 	$filter = null;
 	if(count($a_tcid))
 	{
@@ -81,8 +86,25 @@ if ($tproject)
         	$filter['by_expected_results'] = " AND expected_results like '%{$expected_results}%' ";	
         }    
 
+        // ------------------------------------------------------------------------------------
+        // BUGID
+        if($custom_field_id > 0)
+        {
+            $custom_field_id = $db->prepare_string($custom_field_id);
+            $custom_field_value = $db->prepare_string($custom_field_value);
+            $from['by_custom_field']= ' ,cfield_design_values CFD'; 
+            $filter['by_custom_field'] = " AND CFD.field_id={$custom_field_id} " .
+				 						                     " AND CFD.node_id=NHA.id " .
+			 							                     " AND CFD.value like '%{$custom_field_value}%' ";
+        }
+        // ------------------------------------------------------------------------------------
+
+
+
+
 		$sql = " SELECT NHA.id AS testcase_id,NHA.name,summary,steps,expected_results,version ".
-			   " FROM nodes_hierarchy NHA, nodes_hierarchy NHB, tcversions {$from['by_keyword_id']}".
+			     " FROM nodes_hierarchy NHA, nodes_hierarchy NHB, tcversions " .
+			     " {$from['by_keyword_id']} {$from['by_custom_field']}".
   			   " WHERE NHA.id = NHB.parent_id AND NHB.id = tcversions.id ";
 			
 		if ($filter)

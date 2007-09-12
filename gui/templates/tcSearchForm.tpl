@@ -1,9 +1,10 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcSearchForm.tpl,v 1.8 2007/09/11 06:31:49 franciscom Exp $
+$Id: tcSearchForm.tpl,v 1.9 2007/09/12 06:24:45 franciscom Exp $
 Purpose: show form for search through test cases in test specification
 
-20060428 - franciscom - added version input
+rev :
+     BUGID 
 *}
 {assign var="cfg_section" value=$smarty.template|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
@@ -55,7 +56,27 @@ Purpose: show form for search through test cases in test specification
 				</select>
 			</td>
 		</tr>
+		<tr>
+      <td>{lang_get s='custom_field'}</td>
+			<td><select name="custom_field_id">
+					<option value="0"></option>
+					{foreach from=$design_cf key=cf_id item=cf}
+						<option value="{$cf_id}">{$cf.name}</option>
+					{/foreach}
+				</select>
+	  </tr>
+	
+	  <tr>
+	   <td>{lang_get s='custom_field_value'}</td>
+     <td>
+			  <input type="text" name="custom_field_value" 
+			         size="{#CFVALUE_SIZE#}" maxlength="{#CFVALUE_MAXLEN#}"/>
+			</td>
+	  </tr>
+	
 	</table>
+	
+	
 	<p style="padding-left: 20px;">
 		<input type="submit" name="submit" value="{lang_get s='btn_find'}" />
 	</p>

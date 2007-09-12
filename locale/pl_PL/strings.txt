@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.9 $
- * @modified $Date: 2007/09/10 07:34:32 $ by $Author: franciscom $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2007/09/12 06:25:24 $ by $Author: franciscom $
  *
  * @author Micha&#322; Wujas
  *
@@ -75,6 +75,19 @@ $TLS_th_user_rights = "User";
 $TLS_th_kw_rights = "Keyword";
 $TLS_th_cf_rights = "Custom field";
 $TLS_href_metrics_dashboard = "Metrics dashboard";
+
+// resultsNavigator.php
+$TLS_title_nav_results="Reports and Metrics";
+
+// tcEdit.php
+$TLS_tc_copied = "Test Case %s was succesfully copied to <br> Test Suite %s";
+$TLS_tc_created = "Test Case %s was succesfully created";
+$TLS_tc_deleted = "Test Case %s was succesfully deleted";
+$TLS_tc_updated = "Test Case %s was succesfully updated";
+$TLS_tc_new_version = "Test Case Version %d was succesfully created";
+$TLS_tc_updated = "Test Case %s was succesfully updated";
+$TLS_tc_update_failed = "Update of Test Case %s failed!";
+$TLS_tc_version_deleted = "Test Case %s version %d was succesfully deleted";
 
 
 // gui/templates/inc_copyrightnotice.tpl
@@ -935,6 +948,9 @@ $TLS_please_wait = "Poczekaj na pe&#322;ne za&#322;adowanie raportu...";
 $TLS_query_parameters_header = "Wybrane parametry zapytania";
 $TLS_results_by_component_header = "Rezultaty wg komponentu";
 $TLS_show_hide_all = "Poka&#380;/Ukryj wszystko";
+$TLS_display_suite_summaries = "Display Suite Summaries";
+$TLS_display_query_params  = "Display Query Parameters";
+$TLS_display_totals = "Display Totals";
 
 
 

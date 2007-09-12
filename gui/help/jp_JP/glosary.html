@@ -24,7 +24,7 @@
 </div>
 
 
-<h2>範囲</h2>
+<h2>スコープ</h2>
 <p>この資料は設計概念を表示しています、 用語と定義は
 テストの専門用語を理解することに役立ちます。 イタリック体の説明はTestLinkの語法です。</p>
 
@@ -49,15 +49,15 @@
 	<li><a name="fault"></a><b>フォールト</b> (= バグ)
 		要求された機能をコンポーネントまたはシステムに果たせなくする、コンポーネントまたはシステム中の不備。
 たとえば不正な命令、データ定義。実行中に欠陥に遭遇した場合、コンポーネントまたはシステムの故障を引き起こす。</li>
-	<li><a name="path"></a><b>パス</b>
-		<a href="#component">コンポーネント</a>やシステムで、開始点から終了点に至る一連のイベント(たとえば、実行命令文)</li>
+	<li><a name="steps"></a><b>ステップ</b> (= テストシナリオ, 入力)
+		開始点から終了点に至る一連のテスト実行のアクション</li>
 	<li><a name="testproject"></a><b>テストプロジェクト</b>
 		<span class="italic">テストプロジェクトはTestLinkデータの一番上位の構造です。
                   すべてのデータ(ユーザ情報を除いて)は活動しているテストプロジェクトに関連付けられます。</span></li>
 	<li><a name="testcasesuite"></a><b>テストケーススイート</b> 
 		対象のコンポーネントまたはシステムのために<a href="#testcase">テストケース</a>
 をまとめたもの。ひとつのテストの事後条件は次のテストの前提条件として利用される。
-<span class="italic">TestLinkではテスト計画中に実行できるテストケースのセットを表す。
+<span class="italic">TestLinkではテスト仕様またはテスト計画でテストケースをまとめるために使用される。
 		</span></li>
 	<li><a name="testcoverage"></a><b>テストカバレッジ</b>
 		指定の網羅条件を<a href="#testcasesuite">テストスイート</a>が実行した度合。パーセンテージで表す。 </li>
@@ -72,13 +72,13 @@
 あらゆるリスクを特定する。これはテスト計画プロセスの記録である。<br/>
 <span class="italic">TestLinkはテスト計画にてユーザの割り当て、ビルド、テストケーススイートを定義できる。</span></li>
 	<li><a name="testspec"></a><b>テスト仕様</b>
-		各々の<a href="#testcase">テストケース</a>、<a href="#coverageitem">カバレッジアイテム</a>、テストにおけるソフトウェアの初期状態, the <a href="#Input">Steps (input)</a>, and 
-		<a href="#expectedresults">予想結果</a>.</li>
+		各々の<a href="#testcase">テストケース</a>、<a href="#coverageitem">カバレッジアイテム</a>、テストにおけるソフトウェアの初期状態、<a href="#steps">ステップ</a>、そして
+		<a href="#expectedresults">予想結果</a>。</li>
 	<li><a name="testing"></a><b>テスト</b> 
 		ひとつ以上のテストケースの組み合わせ</li>
 	<li><a name="testcase"></a><b>テストケース</b>
-		<a href="#Input">入力値</a>、実行前条件値、<a href="#expectedresults">予想結果</a>
-そして実行事後条件の組み合わせで特定のプログラム<a href="#path">パス</a>を用いることや指定された要件の遵守を
+		<a href="#steps">ステップ</a>、実行前条件値、<a href="#expectedresults">予想結果</a>
+そして実行事後条件の組み合わせで、特定のプログラムのシナリオを用いることや指定された要件の遵守を
 検証することのような特定の目的またはテスト条件のために開発されたもの。</li>
 </ul>
 

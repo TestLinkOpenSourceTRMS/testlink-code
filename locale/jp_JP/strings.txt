@@ -4,14 +4,17 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.7 $
+ * N.B.:
+ * Here we are defining GLOBAL variables.
+ * To avoid override of other globals we are using $TLS_ (Test Link String) prefix.
+ * This must be a reserved prefix.
+ *
+ * @version $Revision: 1.8 $
  *
  * @author Francisco Mancardi
  *
- * 20070905 - franciscom -
- * 20070903 - franciscom -
- * 20070831 - franciscom -
- * 20070827 - franciscom -
+ * 20070912 - havlat -
+ * 20070911 - franciscom -
  * 20070818 - franciscom -
  * 20070705 - franciscom -
  * 20070520 - franciscom - milestones
@@ -31,13 +34,14 @@
  * Yasuharu NISHI
  *
  * Core member:
- * Atsushi Nagata,  AZMA Daisuke,        Lumina Nishihara,
- * Marino Suda,     Masahide Katsumata,  Masami Ichikawa,
- * Masataka Yoneta, Sadahiko Hantani,    Shinichi Sugiyama,
- * Shizuka Ban,     Toshinori Sawaguchi, Toshiyuki Kawanishi,
- * Yasuhiko Okada,  Yoichi Kunihiro,     Yoshihiro Yoshimura
+ * Atsushi Nagata,      AZMA Daisuke,        Kunio Murakami,
+ * Lumina Nishihara,    Marino Suda,         Masahide Katsumata,
+ * Masami Ichikawa,     Masataka Yoneta,     Sadahiko Hantani,
+ * Shinichi Sugiyama,   Shinsuke Matsuki,    Shizuka Ban,
+ * Toshinori Sawaguchi, Toshiyuki Kawanishi, Yasuhiko Okada,
+ * Yoichi Kunihiro,     Yoshihiro Yoshimura
  *
- * @modified $Date: 2007/09/12 06:25:24 $ $Author: franciscom $
+ * @modified $Date: 2007/09/12 17:24:18 $ $Author: franciscom $
  *-------------------------------------------------------------------
 **/
 //If this file is coded in UTF-8 then enable the following line
@@ -143,8 +147,6 @@ $TLS_high_importance = "高";
 $TLS_low_importance = "低";
 $TLS_medium_importance = "中";
 
-// resultsNavigator.php
-$TLS_title_nav_results="Reports and Metrics";
 
 // tcEdit.php
 $TLS_tc_copied = "成功！テストケース %s は<br>テストスイート %s にコピーされました。";
@@ -263,7 +265,7 @@ $TLS_btn_new_com = "新規テストスイート";
 $TLS_btn_new_tc = "テストケースを作成";
 $TLS_btn_reorder_cat = "子要素の並び替え";
 $TLS_edit_testproject_basic_data = "テストプロジェクトの基本データを編集";
-$TLS_th_notes = "説明";
+$TLS_th_notes = "備考";
 $TLS_th_product_name = "テストプロジェクト名";
 
 
@@ -318,18 +320,19 @@ $TLS_th_name = "名前";
 $TLS_th_perc_completed = "完了率 [%]";
 $TLS_title_your_tp_metrics = "あなたのテスト計画メトリクス";
 
+
 // gui/templates/metrics_dashbord.tpl
-$TLS_th_total_tc="Test Case number";
-$TLS_th_active_tc="Active Test Cases";
-$TLS_th_executed_tc="Executed Test Cases";
-$TLS_th_executed_vs_active="Executed/Active [%]";
-$TLS_th_executed_vs_total="Executed/Total [%]";
+$TLS_th_total_tc = "総テストケース数";
+$TLS_th_active_tc = "アクティブテストケース";
+$TLS_th_executed_tc = "実行済みテストケース";
+$TLS_th_executed_vs_active = "実行済み/アクティブ [%]";
+$TLS_th_executed_vs_total = "実行済み/総数 [%]";
 
 // gui/templates/newest_tcversions.tpl
 $TLS_linked_version = "リンクされているバージョン";
 $TLS_newest_version = "利用可能な最新の有効バージョン";
 $TLS_title_newest_tcversions = "テストケースにリンクされている最新のバージョン";
-
+$TLS_no_newest_version_of_linked_tcversions = "リンクしているテストケースは全て最新です";
 
 // gui/templates/emailSent.tpl
 $TLS_send_test_report = "- テストレポートの送信";
@@ -431,9 +434,9 @@ $TLS_title_last_mod = "修正 ";
 // gui/templates/buildNew.tpl
 $TLS_active = "アクティブ";
 $TLS_enter_build = "タイトル";
-$TLS_enter_build_notes = "詳細";
-$TLS_msg_build = "注意：有効なテスト計画の各ビルドは関連性を持っています" .
-                 "説明には以下の項目を含めます: 配布パッケージ、承認、ステータスなど";
+$TLS_enter_build_notes = "説明";
+$TLS_msg_build = "注意：各ビルドは有効なテスト計画に関連づけられます。:" .
+                 "説明には以下の項目を含めます: 配布パッケージ、承認、ステータスなど。";
 $TLS_open = "オープン";
 $TLS_title_build_2 = "ビルド管理";
 $TLS_title_build_create = "新規ビルドの作成";
@@ -590,14 +593,14 @@ $TLS_req_list_docs = "要件仕様";
 // gui/templates/tcEdit_New_viewer.tpl
 $TLS_alt_add_tc_name = "テストケース名を入力してください。この項目は必須です。";
 $TLS_expected_results = "期待結果";
-$TLS_steps = "準備";
+$TLS_steps = "ステップ";
 $TLS_summary = "概要";
 $TLS_tc_title = "テストケースタイトル";
 
 
 
 // gui/templates/show_exec_notes.tpl
-$TLS_title_execution_notes = "実行の注意";
+$TLS_title_execution_notes = "実行に関する備考";
 
 
 
@@ -631,9 +634,9 @@ $TLS_warning_modify_role = "本当に役割を修正しますか？";
 
 
 // gui/templates/tcSearchForm.tpl
-$TLS_btn_find = "発見";
+$TLS_btn_find = "検索";
 $TLS_caption_search_form = "テストケースの検索";
-$TLS_custom_field_value ="Custom Field Value";
+$TLS_custom_field_value ="カスタムフィールドの値";
 $TLS_not_applied = "適用しない";
 $TLS_th_tcid = "テストケースID";
 $TLS_th_tcversion = "バージョン";
@@ -699,7 +702,7 @@ $TLS_alt_edit_user = "ユーザの編集";
 $TLS_order_by_login = "ログイン名順";
 $TLS_order_by_role_descr = "役割の説明順";
 $TLS_th_active = "有効";
-$TLS_th_delete = "削除？";
+$TLS_th_delete = "削除";
 $TLS_th_email = "Eメール";
 $TLS_th_first_name = "名";
 $TLS_th_last_name = "姓";
@@ -753,7 +756,7 @@ $TLS_no_records_found = "検索で何もヒットしませんでした!";
 
 // gui/templates/execSetResults.tpl
 $TLS_alt_attachment_mgmt = "添付ファイル";
-$TLS_alt_notes = "説明";
+$TLS_alt_notes = "備考";
 $TLS_assigned_to = "割り当て";
 $TLS_attachment_mgmt = "添付ファイル";
 $TLS_btn_history_off = "最後に実行したものだけ表示";
@@ -766,7 +769,7 @@ $TLS_builds_notes = "ビルドの説明";
 $TLS_bulk_tc_status_management = "テストケース ステータスの一括処理";
 $TLS_date_time_run = "日付";
 $TLS_details = "詳細";
-$TLS_exec_notes = "説明";
+$TLS_exec_notes = "備考";
 $TLS_exec_status = "ステータス";
 $TLS_execution_history = "実行履歴";
 $TLS_has_no_assignment = "テスターが割り当てられていません";
@@ -783,16 +786,16 @@ $TLS_testcase_version_is_inactive_on_exec = "このバージョンはアクテ�
 $TLS_test_exec_by = "テスト実行 by";
 $TLS_test_exec_expected_r = "期待値";
 $TLS_test_exec_last_run_date = "最近の実行";
-$TLS_test_exec_notes = "ノート / 説明";
-$TLS_test_exec_on_build = "on Build";
+$TLS_test_exec_notes = "備考 / 説明";
+$TLS_test_exec_on_build = "ビルド";
 $TLS_test_exec_result = "結果";
 $TLS_test_exec_steps = "ステップ";
 $TLS_test_exec_summary = "要約";
-$TLS_test_plan_notes = "テスト計画の説明";
+$TLS_test_plan_notes = "テスト計画に関する備考";
 $TLS_th_test_case_id = "ID ";
 $TLS_th_testsuite = $TLS_test_suite;
 $TLS_title_t_r_on_build = "ビルドのテスト結果";
-$TLS_title_t_r_owner = " Assigned to";
+$TLS_title_t_r_owner = " 割り当て";
 $TLS_title_test_case = "テストケース";
 $TLS_version = "バージョン";
 
@@ -828,7 +831,7 @@ $TLS_btn_add_selected_tc = "選択したものを追加";
 $TLS_btn_check = "確認済";
 $TLS_btn_uncheck = "未確認";
 $TLS_check_uncheck_tc = "テストスイートの全てのテストケース.";
-$TLS_check_uncheck_all_checkboxes="全て 確認済/未確認";
+$TLS_check_uncheck_all_checkboxes = "全て 確認済/未確認";
 $TLS_has_been_executed = "実行されました";
 $TLS_inactive_testcase = "インアクティブ";
 $TLS_no_testcase_available = "テストケースがありません";
@@ -920,7 +923,7 @@ $TLS_caption_new_product = "テストプロジェクト新規作成";
 $TLS_color = "Color";
 $TLS_enable_requirements = "要件管理機能を使いますか？";
 $TLS_info_failed_loc_prod = "このテストプロジェクトはローカライズに失敗しました";
-$TLS_notes = "関連メモ";
+$TLS_notes = "備考";
 // Warning!!! - if JS string you must use \\n to get \n                                       
 $TLS_popup_product_delete = "警告! この操作は、プロジェクトに関連した全ての" .
                             "データ (テスト結果、テスト計画等)を削除します。" .
@@ -1042,12 +1045,12 @@ $TLS_th_tc_total = "TC 合計";
 
 
 // gui/templates/resultsBugs.tpl
-$TLS_bugs_open="オープン";
-$TLS_bugs_resolved="解決済み";
-$TLS_bugs_total="合計";
+$TLS_bugs_open = "オープン";
+$TLS_bugs_resolved = "解決済み";
+$TLS_bugs_total = "合計";
 $TLS_date = "日付";
 $TLS_printed_by = "印刷 ";
-$TLS_tcs_with_bugs="バグの見つかったテストケース";
+$TLS_tcs_with_bugs = "バグの見つかったテストケース";
 $TLS_title_test_case_bugs = "テストケースのバグ";
 $TLS_title_test_case_timestamp = "テストケースのタイムスタンプ";
 $TLS_title_test_case_title = "テストのタイトル";
@@ -1098,7 +1101,7 @@ $TLS_year = "年";
 $TLS_month = "月";
 $TLS_day = "日";
 $TLS_hour = "時";
-$TLS_search_in_notes = "ノート内の文字列検索";
+$TLS_search_in_notes = "備考文字列内の検索";
 $TLS_executor = "実行者";
 
 // gui/templates/resultsMoreBuilds_report.tpl
@@ -1121,7 +1124,7 @@ $TLS_th_total_pass = "#" . $TLS_test_status_passed;
 $TLS_th_start_time = "開始時刻";
 $TLS_th_end_time = "終了時刻";
 $TLS_th_executor = "実行済 By";
-$TLS_th_search_notes_string = "検索文字列の注意";
+$TLS_th_search_notes_string = "備考文字列内の検索";
 $TLS_true = "true";
 $TLS_false = "false";
 $TLS_display_suite_summaries = "スイートの要約を表示";
@@ -1129,7 +1132,7 @@ $TLS_display_query_params  = "クエリーパラメータを表示";
 $TLS_display_totals = "合計を表示";
 
 // gui/templates/resultsReqs.tpl
-$TLS_no_srs_defined="このテストプロジェクトには要件仕様がありません";
+$TLS_no_srs_defined = "このテストプロジェクトには要件仕様がありません";
 $TLS_req_title_blocked = "ブロックされた要件";
 $TLS_req_title_failed = "失敗した要件";
 $TLS_req_title_notrun = "予想外の結果となった要件";
@@ -1153,7 +1156,7 @@ $TLS_tp_status_for_build = "ビルドに対するテスト計画のステータ�
 
 
 // gui/templates/resultsTC.tpl
-$TLS_generated_by_TestLink_on="TestLink により生成 ";
+$TLS_generated_by_TestLink_on = "TestLink により生成 ";
 
 // gui/templates/resultsImport.tpl
 $TLS_results_import_format = "XML ファイルは以下のフォーマットに従う必要があります: ";
@@ -1310,7 +1313,7 @@ $TLS_filter_tp_by_product = "テスト計画をテストプロジェクトでフ
 $TLS_href_add_test_case = "テストケースの追加";
 $TLS_href_build_new = "ビルドの管理";
 $TLS_href_execute_test = "テストの実行";
-$TLS_href_metrics_dashboard = "Metrics dashboard";
+$TLS_href_metrics_dashboard = "メトリクス・ダッシュボード";
 $TLS_href_newest_tcversions = "最新バージョンのテストを表示";
 $TLS_href_plan_assign_priority = "優先度の割り当て";
 $TLS_href_plan_define_priority = "優先度のルールを定義";
@@ -1331,7 +1334,7 @@ $TLS_title_test_plan_mgmt = "テスト計画の管理";
 
 // lib/execute/bug_add.php
 $TLS_bug_added = "バグが追加されました";
-$TLS_error_bug_does_not_exist_on_bts="バグIDがBTSに存在しません!";
+$TLS_error_bug_does_not_exist_on_bts = "バグIDがBTSに存在しません!";
 $TLS_error_wrong_BugID_format = "バグIDのフォーマットが不正です!";
 
 
@@ -1404,7 +1407,7 @@ $TLS_desc_testplan_create_build = "ビルドの作成／編集";
 $TLS_desc_testplan_execute = "テスト計画の実行";
 $TLS_desc_testplan_metrics = "テスト計画のメトリクス";
 $TLS_desc_testplan_planning = "テスト計画のプランニング";
-$TLS_desc_user_role_assignment = "役割管理";
+$TLS_desc_user_role_assignment = "役割の割り当て";
 $TLS_error_duplicate_rolename = "その名称の役割は既に存在します!";
 $TLS_error_role_no_rights = "権限不足により役割を保存できません!";
 $TLS_error_role_no_rolename = "役割の名称を入力してください!";
@@ -1457,7 +1460,7 @@ $TLS_author = "作者";
 $TLS_printed_by_TestLink_on = "印刷 by TestLink on";
 $TLS_title_toc = "目次";
 $TLS_passfail = "成功 / 失敗";
-$TLS_testnotes = "テストの注意点";
+$TLS_testnotes = "備考";
 
 
 // lib/functions/testcase.class.php
@@ -1497,7 +1500,7 @@ $TLS_but_directory_is_not_writable = "ディレクトリに書き込み権限が
 $TLS_directory_is_writable = "ディレクトリに書き込み権限があります";
 $TLS_does_not_exist = "存在しません";
 $TLS_exists = "存在します";
-$TLS_ldap_extension_not_loaded="ログイン方法がLDAPに指定されていますが<br>" .
+$TLS_ldap_extension_not_loaded = "ログイン方法がLDAPに指定されていますが<br>" .
                                "PHP の LDAP 拡張がロードされていません => " .
                                "あなたはログインすることができないでしょう。<br>".
                                "TestLinkの管理者に連絡してください。";
@@ -1624,7 +1627,7 @@ $TLS_opt_show_tc_body = "本文を表示";
 $TLS_opt_show_tc_summary = "テストケースの概要を表示";
 $TLS_opt_show_toc = "目次を表示";
 $TLS_opt_show_tc_author = "テストケース作者を表示";
-$TLS_opt_show_passfail = "合格/失敗とメモを表示";
+$TLS_opt_show_passfail = "合格/失敗と備考を表示";
 $TLS_title_tc_print_navigator = "ナビゲーター - テスト仕様印刷";
 $TLS_title_tp_print_navigator = "ナビゲーター - テスト計画印刷";
 
@@ -1702,7 +1705,7 @@ $TLS_link_report_blocked_tcs = "ブロックされたテストケース";
 $TLS_link_report_failed = "失敗したテストケース";
 $TLS_link_report_general_tp_metrics = "テスト計画全体のメトリクス";
 $TLS_link_report_metrics_active_build = "アクティブビルドのメトリクス";
-$TLS_link_report_metrics_more_builds = "メトリクスのクエリー";
+$TLS_link_report_metrics_more_builds = "クエリーのメトリクス";
 $TLS_link_report_not_run = "実行されないテストケース";
 $TLS_link_report_overall_build = "全ビルドステータス";
 $TLS_link_report_reqs_coverage = "要件に基づくレポート";

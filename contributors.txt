@@ -2,8 +2,8 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
  
 Filename $RCSfile: contributors.txt,v $
  
-$Revision: 1.9 $
-$Date: 2007/09/12 06:32:28 $ by $Author: franciscom $
+$Revision: 1.10 $
+$Date: 2007/09/12 17:24:18 $ by $Author: franciscom $
 -------------------------------------------------------------------------
  
  
@@ -63,11 +63,16 @@ Localization
   http://www38.atwiki.jp/testlink/
   http://sourceforge.jp/projects/testlinkjp/
  
+  Adviser:
+  Yasuharu NISHI
+  
   Core member:
-  Atsushi Nagta,    AZMA Daisuke,       Lumina Nishihara,
-  Marino Suda,      Masahide Katsumata, Masami Ichikawa,
-  Sadahiko Hantani, Shinichi Sugiyama,  Toshiyuki Kawanishi,
-  Yasuhiko Okada,   Yoichi Kunihiro,    Yoshihiro Yoshimura
+  Atsushi Nagata,      AZMA Daisuke,        Kunio Murakami,
+  Lumina Nishihara,    Marino Suda,         Masahide Katsumata,
+  Masami Ichikawa,     Masataka Yoneta,     Sadahiko Hantani,
+  Shinichi Sugiyama,   Shinsuke Matsuki,    Shizuka Ban,
+  Toshinori Sawaguchi, Toshiyuki Kawanishi, Yasuhiko Okada,
+  Yoichi Kunihiro,     Yoshihiro Yoshimura
 
 * Polish
 -------------------------------------------------------------------------

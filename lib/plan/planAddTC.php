@@ -1,12 +1,14 @@
 <?php
 ////////////////////////////////////////////////////////////////////////////////
-// @version $Id: planAddTC.php,v 1.33 2007/07/06 06:33:51 franciscom Exp $
+// @version $Id: planAddTC.php,v 1.34 2007/09/12 06:28:04 franciscom Exp $
 // File:     planAddTC.php
 // Purpose:  link/unlink test cases to a test plan
 //
 //
-// 20070124 - franciscom
-// use show_help.php to apply css configuration to help pages
+// rev :
+//       20070912 - franciscom - BUGID 905
+//      20070124 - franciscom
+//      use show_help.php to apply css configuration to help pages
 //
 ////////////////////////////////////////////////////////////////////////////////
 require('../../config.inc.php');
@@ -45,7 +47,6 @@ if($_GET['edit'] == 'testsuite')
     $out = gen_spec_view($db,'testproject',$tproject_id,$object_id,$tsuite_data['name'],
                          $tplan_linked_tcversions,$map_node_tccount,$keyword_id,DONT_FILTER_BY_TCASE_ID);
                        
-    //echo "<pre>debug 20070630 \$out" . __FUNCTION__ . " --- "; print_r($out); echo "</pre>";
     $do_display = 1;  
 }
 else
@@ -71,11 +72,14 @@ if(isset($_POST['do_action']))
 		$tplan_mgr->unlink_tcversions($tplan_id,$rtc);      
 	}
 
-    $map_node_tccount = get_testproject_nodes_testcount($db,$tproject_id, $tproject_name,
+  $map_node_tccount = get_testproject_nodes_testcount($db,$tproject_id, $tproject_name,
                                                            $keyword_id);
 	$tsuite_data = $tsuite_mgr->get_by_id($object_id);
+	// BUGID 905
+	$tplan_linked_tcversions=$tplan_mgr->get_linked_tcversions($tplan_id,DONT_FILTER_BY_TCASE_ID,$keyword_id)
+	
 	$out = gen_spec_view($db,'testproject',$tproject_id,$object_id,$tsuite_data['name'],
-                       $tplan_mgr->get_linked_tcversions($tplan_id,DONT_FILTER_BY_TCASE_ID,$keyword_id),
+                       $tplan_linked_tcversions,
                        $map_node_tccount,$keyword_id,DONT_FILTER_BY_TCASE_ID);
   $do_display = 1;
 }

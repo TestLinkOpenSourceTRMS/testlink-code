@@ -1,16 +1,17 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: tc_exec_assignment.php,v 1.9 2007/07/06 06:33:51 franciscom Exp $ 
+ * @version $Id: tc_exec_assignment.php,v 1.10 2007/09/12 17:00:10 franciscom Exp $ 
  * 
- * 20070124 - franciscom
- * use show_help.php to apply css configuration to help pages
+ * rev :
+ *       20070912 - franciscom - BUGID 1041
+ *       20070124 - franciscom
+ *       use show_help.php to apply css configuration to help pages
  */         
 require_once(dirname(__FILE__)."/../../config.inc.php");
 require_once("common.php");
 require_once("assignment_mgr.class.php");
 require_once("treeMenu.inc.php");
-// require_once("plan.inc.php");
 
 testlinkInitPage($db);
 
@@ -134,8 +135,11 @@ switch($level)
 
 	case 'testsuite':
 		$tsuite_data = $tsuite_mgr->get_by_id($id);
+		
+		// BUGID 1041
+		$tplan_linked_tcversions=$tplan_mgr->get_linked_tcversions($tplan_id,FILTER_BY_TC_OFF,$keyword_id);
 		$out = gen_spec_view($db,'testplan',$tplan_id,$id,$tsuite_data['name'],
-                         $tplan_mgr->get_linked_tcversions($tplan_id,FILTER_BY_TC_OFF,$keyword_id),
+                         $tplan_linked_tcversions,
                          $map_node_tccount,
                          $keyword_id,FILTER_BY_TC_OFF,WRITE_BUTTON_ONLY_IF_LINKED);
                          

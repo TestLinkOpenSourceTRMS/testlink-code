@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.195 $
- * @modified $Date: 2007/09/12 06:25:22 $ $Author: franciscom $
+ * @version $Revision: 1.196 $
+ * @modified $Date: 2007/09/12 12:21:07 $ $Author: havlat $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -312,7 +312,7 @@ $TLS_th_executed_vs_total="Executed/Total [%]";
 $TLS_linked_version = "Linked version";
 $TLS_newest_version = "Newest available active version";
 $TLS_title_newest_tcversions = "Newest versions of linked Test Cases";
-
+$TLS_no_newest_version_of_linked_tcversions = "All linked Test Case Versions are Current";
 
 // gui/templates/emailSent.tpl
 $TLS_send_test_report = "- Send Test Report";

@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
  * @filesource $RCSfile: roles.inc.php,v $
- * @version $Revision: 1.25 $
- * @modified $Date: 2007/09/05 19:54:55 $ by $Author: asielb $
+ * @version $Revision: 1.26 $
+ * @modified $Date: 2007/09/12 16:57:18 $ by $Author: franciscom $
  * @author Martin Havlat, Chad Rosen
  * 
  * This script provides the get_rights and has_rights functions for
@@ -34,8 +34,8 @@
  * mgt_modify_product, mgt_users - just Admin edits Products and Users
  *
  *
- * rev : 20070901 - franciscom - BUGID 1016
- *
+ * rev : 20070912 - franciscom - BUGID 1039 - getAllRoles()
+ *       20070901 - franciscom - BUGID 1016
  *       20070819 - franciscom - 
  *       added get_tplan_effective_role(), get_tproject_effective_role()
  *       20070818 - franciscom - changes in getRoles()
@@ -573,7 +573,7 @@ function getAllRoles(&$db,$add_inherited=1)
 
 	if($add_inherited)
 	{
-	  $roles['TL_ROLES_INHERITED'] = $inherited_role_descr;
+	  $roles[TL_ROLES_INHERITED] = $inherited_role_descr;
 	}
 	return $roles;
 }

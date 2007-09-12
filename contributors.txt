@@ -2,8 +2,8 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
  
 Filename $RCSfile: contributors.txt,v $
  
-$Revision: 1.8 $
-$Date: 2007/09/05 06:01:42 $ by $Author: franciscom $
+$Revision: 1.9 $
+$Date: 2007/09/12 06:32:28 $ by $Author: franciscom $
 -------------------------------------------------------------------------
  
  
@@ -37,6 +37,7 @@ Other Contributors (code, ideas, testing..):
 * Oscar Castroviejo (trackplus interface)
 * Seweryn Plywaczyk (text area custom field)  
 * weeBaldFella added 0000827: A new print option to add a pass / fail and testnotes field
+* Jonas Fleer : search test case by custom field on test projects
   
 Localization
 * French

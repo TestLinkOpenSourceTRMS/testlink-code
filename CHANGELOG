@@ -6,6 +6,14 @@
 
 Testlink 1.7.0 final
 ============================
+- 0000768: [Requirements Coverage] importing requirements as csv requires the file to have a .txt extension (azl)
+- 0000626: [Database MySQL] "Fatal error" after enabling 'MAIN_PAGE_METRICS_ENABLED' in config.inc.php (fman)
+- 0001041: [User Interface General] tc_exec_assignment.php throwas an error (fman)
+- 0001039: [User Management] DB problems on assigning test project roles (fman)
+- 0000818: [New Feature] Ability to search for custom fields needs to be added (fman)
+- 0001037: [Integration with Other Systems] custom_config.inc.php includes JIRA as bug db (azl)
+- 0001031: [General] The background of "Results and Metrics"(help file) is white (fman)
+- 0001040: [Test Plan (milestones, test assign)] LOCALIZE: no_newest_version_of_linked_tcversions in "Newest versions of linked Test Cases" page (mhavlat)
 - 0000992: [Database MySQL] Migration of large data sets does not complete (fman)
 - 0001019: [Test Specification] Copying Test Suite and unchecking "including nested data (copy only)" still copies nested data. (fman)
 - 0001018: [User Interface General] Not found magnifier.png (fman)

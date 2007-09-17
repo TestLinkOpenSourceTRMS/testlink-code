@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.13 $
- * @modified $Date: 2007/09/17 06:29:39 $by $Author: franciscom $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2007/09/17 09:42:42 $by $Author: franciscom $
  * @author GrdScarabe
  *
  * French translation
@@ -119,6 +119,9 @@ $TLS_mail_problems	= "Erreurs dans la mise en place du syst&egrave;me d'envoi d'
 $TLS_page_title_lost_passwd = "TestLink - Oublie de mot de passe";
 $TLS_your_info_for_passwd = "Entrez vos informations utilisateurs pour que votre nouveau mot de passe vous soit envoy&eacute;.";
 $TLS_your_password_is	= "Votre nouveau mot de passe TestLink est : <br />";
+
+// newest_tcversions.php
+$TLS_no_linked_tcversions = "no linked Test Case versions";
 
 // resultsGeneral.php 
 $TLS_report_tspec_has_no_tsuites="There are no Test Suites defined for Test ProjectPlan, <br>".

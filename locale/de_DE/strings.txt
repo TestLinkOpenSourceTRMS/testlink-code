@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.63 $
- * @modified $Date: 2007/09/17 06:29:37 $ $Author: franciscom $
+ * @version $Revision: 1.64 $
+ * @modified $Date: 2007/09/17 09:42:41 $ $Author: franciscom $
  *
  * @author Andreas Morsing
  * @author Fabian Woelk
@@ -94,6 +94,8 @@ $TLS_please_login = "Bitte melden Sie sich an...";
 $TLS_session_expired = "Ihre Sitzung ist abgelaufen, bitte melden Sie sich neu an!";
 $TLS_your_first_login = "Willkommen bei TestLink! Sie haben jetzt Gast-Zugang. Bitte melden Sie sich an...";
 
+// newest_tcversions.php
+$TLS_no_linked_tcversions = "no linked Test Case versions";
 
 
 // planPriority.php

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.21 $
- * @modified $Date: 2007/09/17 06:29:38 $ $Author: franciscom $
+ * @version $Revision: 1.22 $
+ * @modified $Date: 2007/09/17 09:42:42 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
@@ -90,6 +90,9 @@ $TLS_passwd_lost = "Your password has been sent to the email account you specifi
 $TLS_please_login = "Please log in ...";
 $TLS_session_expired = "Your session has expired! Please login again.";
 $TLS_your_first_login = "Welcome to TestLink! You have guest access now. Please login ...";
+
+// newest_tcversions.php
+$TLS_no_linked_tcversions = "no linked Test Case versions";
 
 
 // planPriority.php

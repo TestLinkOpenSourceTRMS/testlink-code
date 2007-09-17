@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.11 $
- * @modified $Date: 2007/09/17 06:29:39 $ by $Author: franciscom $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2007/09/17 09:42:42 $ by $Author: franciscom $
  *
  * @author Micha&#322; Wujas
  *
@@ -98,6 +98,10 @@ $TLS_tc_new_version = "Test Case Version %d was succesfully created";
 $TLS_tc_updated = "Test Case %s was succesfully updated";
 $TLS_tc_update_failed = "Update of Test Case %s failed!";
 $TLS_tc_version_deleted = "Test Case %s version %d was succesfully deleted";
+
+
+// newest_tcversions.php
+$TLS_no_linked_tcversions = "no linked Test Case versions";
 
 
 // gui/templates/inc_copyrightnotice.tpl

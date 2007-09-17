@@ -9,7 +9,7 @@
  * To avoid override of other globals we are using $TLS_ (Test Link String) prefix.
  * This must be a reserved prefix.
  *
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  *
  * @author Francisco Mancardi
  *
@@ -41,7 +41,7 @@
  * Toshinori Sawaguchi, Toshiyuki Kawanishi, Yasuhiko Okada,
  * Yoichi Kunihiro,     Yoshihiro Yoshimura
  *
- * @modified $Date: 2007/09/17 06:29:39 $ $Author: franciscom $
+ * @modified $Date: 2007/09/17 09:42:42 $ $Author: franciscom $
  *-------------------------------------------------------------------
 **/
 //If this file is coded in UTF-8 then enable the following line
@@ -132,6 +132,10 @@ $TLS_password_reseted = "新しいパスワードをメールで送信しまし�
 $TLS_please_login = "ログインしてください ...";
 $TLS_session_expired = "セッションの期限が切れています! 再度ログインしてください。";
 $TLS_your_first_login = "ようこそTestLinkへ! あなたはゲストアカウントを使用しています。 ログインしてください ...";
+
+
+// newest_tcversions.php
+$TLS_no_linked_tcversions = "no linked Test Case versions";
 
 
 // planPriority.php

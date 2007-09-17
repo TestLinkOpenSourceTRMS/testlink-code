@@ -6,8 +6,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.12 $
- * @modified $Date: 2007/09/17 06:29:39 $
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2007/09/17 09:42:43 $
  * based on ..\en_GB\strings.txt
  *
  * @author Leonardo Molinari
@@ -113,6 +113,10 @@ $TLS_mail_problems = "Você não tem instalado o corretamente o correio eletrônico
 $TLS_page_title_lost_passwd = "TestLink - Senha Perdida";
 $TLS_your_info_for_passwd = "Entre com a informação do usuário para que sua nova senha enviada por email para você";
 $TLS_your_password_is = "Sua nova senha no TestLink é: <br>";
+
+// newest_tcversions.php
+$TLS_no_linked_tcversions = "no linked Test Case versions";
+
 
 // resultsGeneral.php 
 $TLS_report_tspec_has_no_tsuites="There are no Test Suites defined for Test ProjectPlan, <br>".

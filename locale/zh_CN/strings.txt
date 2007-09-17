@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.10 $
- * @modified $Date: 2007/09/17 06:29:40 $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2007/09/17 09:42:43 $
  *
  * @author Yoyo Wang
 **/
@@ -105,6 +105,9 @@ $TLS_mail_problems = "邮件功能没有正确安装，请与系统管理员联系。";
 $TLS_page_title_lost_passwd = "TestLink - 忘记口令";
 $TLS_your_info_for_passwd = "输入你的用户信息，以便可以通过电子邮件发送你的新口令。";
 $TLS_your_password_is = "你的TestLink新口令是：<br>";
+
+// newest_tcversions.php
+$TLS_no_linked_tcversions = "no linked Test Case versions";
 
 // resultsGeneral.php 
 $TLS_report_tspec_has_no_tsuites="There are no Test Suites defined for Test ProjectPlan, <br>".

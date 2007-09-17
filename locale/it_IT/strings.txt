@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.27 $
- * @modified $Date: 2007/09/17 06:29:39 $ $Author: franciscom $
+ * @version $Revision: 1.28 $
+ * @modified $Date: 2007/09/17 09:42:42 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
@@ -87,6 +87,9 @@ $TLS_passwd_lost = "La password è stata spedita via e-mail.";
 $TLS_please_login = "Per favore eseguire login ...";
 $TLS_session_expired = "Sessione scaduta! Per favore eseguire login.";
 $TLS_your_first_login = "Benvenuto! Sei un visitatore.";
+
+// newest_tcversions.php
+$TLS_no_linked_tcversions = "no linked Test Case versions";
 
 
 // planPriority.php

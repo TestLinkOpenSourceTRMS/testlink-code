@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.16 $
- * @modified $Date: 2007/09/17 06:29:39 $ $Author: franciscom $
+ * @version $Revision: 1.17 $
+ * @modified $Date: 2007/09/17 09:42:42 $ $Author: franciscom $
  *
  * @author jorgesf@jsf.jazztel.es
  *
@@ -111,6 +111,10 @@ $TLS_mail_problems = "No tiene instalado o configurado el correo correctamente. 
 $TLS_page_title_lost_passwd = "TestLink - Contraseña perdida";
 $TLS_your_info_for_passwd = "Introduzca correctamente la información de su usuario para que se le pueda enviar su nueva contraseña por correo";
 $TLS_your_password_is = "Su nueva contraseña de Testlink es: <br>";
+
+// newest_tcversions.php
+$TLS_no_linked_tcversions = "no linked Test Case versions";
+
 
 // resultsGeneral.php 
 $TLS_report_tspec_has_no_tsuites="There are no Test Suites defined for Test ProjectPlan, <br>".

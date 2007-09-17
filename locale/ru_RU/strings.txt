@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.6 $
- * @modified $Date: 2007/09/17 06:29:40 $ $Author: franciscom $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2007/09/17 09:42:43 $ $Author: franciscom $
  *
  * @author Vadim Ivanchenko
  *
@@ -138,6 +138,10 @@ $TLS_high_importance = "High";
 $TLS_low_importance = "Low";
 //ORIG: $TLS_medium_importance = "Medium";
 $TLS_medium_importance = "Medium";
+
+
+// newest_tcversions.php
+$TLS_no_linked_tcversions = "no linked Test Case versions";
 
 // resultsGeneral.php 
 $TLS_report_tspec_has_no_tsuites="There are no Test Suites defined for Test ProjectPlan, <br>".

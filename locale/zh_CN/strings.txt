@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.9 $
- * @modified $Date: 2007/09/12 06:25:25 $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2007/09/17 06:29:40 $
  *
  * @author Yoyo Wang
 **/
@@ -106,8 +106,18 @@ $TLS_page_title_lost_passwd = "TestLink - 忘记口令";
 $TLS_your_info_for_passwd = "输入你的用户信息，以便可以通过电子邮件发送你的新口令。";
 $TLS_your_password_is = "你的TestLink新口令是：<br>";
 
+// resultsGeneral.php 
+$TLS_report_tspec_has_no_tsuites="There are no Test Suites defined for Test ProjectPlan, <br>".
+                                 "then no execution data can exist => no report can be created";
+
 // resultsNavigator.php
 $TLS_title_nav_results="Reports and Metrics";
+$TLS_report_tplan_has_no_build="Test Plan has no build defined, <br>".
+                               "then no execution data can exist => no report can be created";
+
+
+$TLS_report_tplan_has_no_tcases="Test Plan has no Test Cases linked, <br>".
+                                "then no execution data can exist => no report can be created";
 
 // tcEdit.php
 $TLS_tc_copied = "Test Case %s was succesfully copied to <br> Test Suite %s";

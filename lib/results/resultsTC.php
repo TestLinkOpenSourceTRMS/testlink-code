@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsTC.php,v 1.29 2007/08/27 06:37:44 franciscom Exp $ 
+* $Id: resultsTC.php,v 1.30 2007/09/17 06:29:07 franciscom Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -21,13 +21,27 @@ require_once('common.php');
 require_once('results.class.php');
 require_once('displayMgr.php');
 testlinkInitPage($db);
-$tp = new testplan($db);
-$tpID = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0 ;
-$arrBuilds = $tp->get_builds($tpID); 
 
-$arrBuildIds = array_keys($arrBuilds);
 $arrData = array();
-$re = new results($db, $tp, ALL_TEST_SUITES, ALL_BUILDS);
+
+$tplan_mgr = new testplan($db);
+$tproject_mgr = new testproject($db);
+
+$tplan_id=$_REQUEST['tplan_id'];
+$tproject_id=$_SESSION['testprojectID'];
+
+$tplan_info = $tplan_mgr->get_by_id($tplan_id);
+$tproject_info = $tproject_mgr->get_by_id($tproject_id);
+
+$tplan_name = $tplan_info['name'];
+$tproject_name = $tproject_info['name'];
+
+$re = new results($db, $tplan_mgr, $tproject_info, $tplan_info,
+                  ALL_TEST_SUITES,ALL_BUILDS);
+
+$arrBuilds = $tplan_mgr->get_builds($tplan_id); 
+$arrBuildIds = array_keys($arrBuilds);
+
 $executionsMap = $re->getSuiteList();
 
 // lastResultMap provides list of all test cases in plan - data set includes title and suite names
@@ -94,13 +108,12 @@ if ($lastResultMap != null) {
 
 
 $smarty = new TLSmarty;
-// $smarty->assign('title', $_SESSION['testPlanName'] .  " " . lang_get('title_test_report_all_builds'));
 $smarty->assign('title', lang_get('title_test_report_all_builds'));
 $smarty->assign('arrData', $arrData);
 $smarty->assign('arrBuilds', $arrBuilds);
 
-$smarty->assign('tproject_name', $_SESSION['testprojectName'] );
-$smarty->assign('tplan_name', $_SESSION['testPlanName'] );
+$smarty->assign('tproject_name', $tproject_name);
+$smarty->assign('tplan_name', $tplan_name);
 
 $report_type = isset($_GET['report_type']) ? intval($_GET['report_type']) : null;
 if (!isset($_GET['report_type']))

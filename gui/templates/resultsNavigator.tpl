@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: resultsNavigator.tpl,v 1.15 2007/06/28 06:21:30 kevinlevy Exp $ *}
+{* $Id: resultsNavigator.tpl,v 1.16 2007/09/17 06:28:46 franciscom Exp $ *}
 {* Purpose: smarty template - show Test Results and Metrics *}
 {* Revisions:
    20070113 - franciscom - use of smarty config file
@@ -24,44 +24,58 @@ function reportPrint(){
 </div>
 
 <p>
-<a href="lib/results/{$arrDataB[Row].href}?build={$selectedBuild}&amp;report_type={$selectedReportType|escape}" 
+{* Build href menu *}
+{if $do_report.status_ok }
+  <a href="lib/results/{$arrDataB[Row].href}?build={$selectedBuild}&amp;report_type={$selectedReportType|escape}" 
 	   target="workframe">{$arrDataB[Row].name}</a><br />
 
-{*
-{assign var="my_build_name" value=$arrBuilds[$selectedBuild]}
-{$my_build_name}
-*}
-
-{section name=Row loop=$arrData}
-	<a href="lib/results/{$arrData[Row].href}{$selectedReportType}&amp;build={$selectedBuild}" target="workframe">{$arrData[Row].name}</a><br />
-{/section}
+  {section name=Row loop=$arrData}
+	  <a href="lib/results/{$arrData[Row].href}{$selectedReportType}&amp;build={$selectedBuild}&amp;tplan_id={$tplan_id}" 
+	     target="workframe">{$arrData[Row].name}</a><br />
+  {/section}
+{else}
+  {$do_report.msg}
+{/if}
 </p>
-
 </div>
 
 <div>
 <form method="get">
-
-
-
-<form method="get">
 	<table>
 	<tr><td>
-		{lang_get s='title_active_build'}
+	  {lang_get s='test_plan'}
 	</td></tr>
-	<tr><td>
-	<select name="build" onchange="this.form.submit();">
-		{html_options options=$arrBuilds selected=$selectedBuild}
-	</select>
-	</td></tr>
-	<tr><td>
-	{lang_get s='title_report_type'}
-	</td></tr>
-	<tr><td>
-	<select name="report_type" onchange="this.form.submit();">
-		{html_options options=$arrReportTypes selected=$selectedReportType}
-	</select>
-	</td></tr>
+	<tr>
+	  <td>
+	  <select name="tplan_id" onchange="this.form.submit();">
+		{html_options options=$tplans selected=$tplan_id}
+	  </select>
+	 </td>
+	</tr>
+	
+	{if $arrBuilds != '' }
+	<tr>
+	  <td>{lang_get s='title_active_build'}</td>
+  </tr>
+	<tr>
+	  <td><select name="build" onchange="this.form.submit();">
+		    {html_options options=$arrBuilds selected=$selectedBuild}
+	     </select>
+	  </td>
+	</tr>
+	
+	<tr>
+	  <td>{lang_get s='title_report_type'}</td>
+	</tr>
+	<tr>
+	  <td><select name="report_type" onchange="this.form.submit();">
+		    {html_options options=$arrReportTypes selected=$selectedReportType}
+	      </select>
+	  </td>
+	</tr>
+	{/if}
+	
+	
 	<!--
 	<tr>
 		<td>

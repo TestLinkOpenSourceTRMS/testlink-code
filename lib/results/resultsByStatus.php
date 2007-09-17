@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsByStatus.php,v 1.48 2007/09/10 12:25:11 franciscom Exp $ 
+* $Id: resultsByStatus.php,v 1.49 2007/09/17 06:29:07 franciscom Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author Chad Rosen
@@ -22,11 +22,19 @@ require_once('users.inc.php');
 testlinkInitPage($db);
 $dummy=null;
 
-$tpID = isset($_SESSION['testPlanId']) ?  $_SESSION['testPlanId'] : 0;
 $type = isset($_GET['type']) ? $_GET['type'] : 'n';
 $report_type = isset($_GET['report_type']) ? intval($_GET['report_type']) : null;
 
-$tp = new testplan($db);
+$tplan_mgr = new testplan($db);
+$tproject_mgr = new testproject($db);
+
+$tplan_id=$_REQUEST['tplan_id'];
+$tproject_id=$_SESSION['testprojectID'];
+
+$tplan_info = $tplan_mgr->get_by_id($tplan_id);
+$tproject_info = $tproject_mgr->get_by_id($tproject_id);
+
+
 
 if($type == $g_tc_status['failed'])
 	$title = lang_get('list_of_failed');
@@ -34,21 +42,16 @@ else if($type == $g_tc_status['blocked'])
 	$title = lang_get('list_of_blocked');
 else if($type == $g_tc_status['not_run'])
 	$title = lang_get('list_of_not_run');
-
 else
 {
 	tlog('wrong value of GET type');
 	exit();
 }
 
-$SUITES_SELECTED = "all";
+$arrBuilds = $tplan_mgr->get_builds($tplan_id); 
+$lastBuildID = $tplan_mgr->get_max_build_id($tplan_id,1,1);
+$results = new results($db, $tplan_mgr, $tproject_info, $tplan_info, ALL_TEST_SUITES, ALL_BUILDS);
 
-$builds = 'a';
-
-$tp = new testplan($db);
-$arrBuilds = $tp->get_builds($tpID); 
-$lastBuildID = $tp->get_max_build_id($tpID,1,1);
-$results = new results($db, $tp, $SUITES_SELECTED, $builds);
 $mapOfLastResult = $results->getMapOfLastResult();
 $arrOwners = get_users_for_html_options($db, ALL_USERS_FILTER, !ADD_BLANK_OPTION);
 $arrDataIndex = 0;

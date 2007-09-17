@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsSend.php,v 1.15 2007/02/03 22:14:08 schlundus Exp $ 
+* $Id: resultsSend.php,v 1.16 2007/09/17 06:29:07 franciscom Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author	Chad Rosen
@@ -21,19 +21,27 @@ require_once("../../lib/functions/lang_api.php");
 require_once('../functions/results.class.php');
 testlinkInitPage($db);
 
-$tp = new testplan($db);
-$tpID = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0 ;
-$builds = $tp->get_builds($tpID); 
+$tplan_mgr = new testplan($db);
+$tproject_mgr = new testproject($db);
+
+$tplan_id=$_REQUEST['tplan_id'];
+$tproject_id=$_SESSION['testprojectID'];
+
+$tplan_info = $tplan_mgr->get_by_id($tplan_id);
+$tproject_info = $tproject_mgr->get_by_id($tproject_id);
+
+$builds = $tplan_mgr->get_builds($tplan_id); 
+
+
 $builds_two = array();
 for ($i = 0; $i < sizeOf($builds); $i++ ) {
 	$array = $builds[$i];
 	$builds_two[$array['id']] = $array['name'];
 }
 
-$tp = new testplan($db);
-$builds_to_query = -1;
-$suitesSelected = 'all';
-$re = new results($db, $tp, $suitesSelected, $builds_to_query);
+$re = new results($db, $tplan_mgr, $tproject_info, $tplan_info,ALL_TEST_SUITES);
+
+
 $topLevelSuites= $re->getTopLevelSuites();
 $topLevelSuites_two = array();
 if (is_array($topLevelSuites)) {

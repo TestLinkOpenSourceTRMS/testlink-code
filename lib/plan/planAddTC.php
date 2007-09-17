@@ -1,6 +1,6 @@
 <?php
 ////////////////////////////////////////////////////////////////////////////////
-// @version $Id: planAddTC.php,v 1.34 2007/09/12 06:28:04 franciscom Exp $
+// @version $Id: planAddTC.php,v 1.35 2007/09/17 06:29:07 franciscom Exp $
 // File:     planAddTC.php
 // Purpose:  link/unlink test cases to a test plan
 //
@@ -76,7 +76,7 @@ if(isset($_POST['do_action']))
                                                            $keyword_id);
 	$tsuite_data = $tsuite_mgr->get_by_id($object_id);
 	// BUGID 905
-	$tplan_linked_tcversions=$tplan_mgr->get_linked_tcversions($tplan_id,DONT_FILTER_BY_TCASE_ID,$keyword_id)
+	$tplan_linked_tcversions=$tplan_mgr->get_linked_tcversions($tplan_id,DONT_FILTER_BY_TCASE_ID,$keyword_id);
 	
 	$out = gen_spec_view($db,'testproject',$tproject_id,$object_id,$tsuite_data['name'],
                        $tplan_linked_tcversions,

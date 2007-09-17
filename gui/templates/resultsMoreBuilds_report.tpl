@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: resultsMoreBuilds_report.tpl,v 1.40 2007/09/03 17:08:26 franciscom Exp $
+$Id: resultsMoreBuilds_report.tpl,v 1.41 2007/09/17 06:28:46 franciscom Exp $
 
 rev :
      20070902 - franciscom - refactoring
@@ -19,6 +19,7 @@ rev :
 <h1> {lang_get s='query_metrics_report'}</h1>
 {include file="inc_result_tproject_tplan.tpl" 
          arg_tproject_name=$tproject_name arg_tplan_name=$tplan_name}	
+
 {if $show_query_params}
 	<h2>{lang_get s="caption_user_selected_query_parameters"}</h2>
 	<table class="simple" style="width: 100%; text-align: center; margin-left: 0px;" border="2">
@@ -282,5 +283,7 @@ rev :
 		{if !$show_summaries}
 			</table>
 		{/if}
+
+  {lang_get s="generated_by_TestLink_on"} {$smarty.now|date_format:$gsmarty_timestamp_format}
 </body>
 </html>

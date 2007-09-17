@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: resultsBugs.php,v $
- * @version $Revision: 1.25 $
- * @modified $Date: 2007/08/28 11:30:11 $ by $Author: franciscom $
+ * @version $Revision: 1.26 $
+ * @modified $Date: 2007/09/17 06:29:07 $ by $Author: franciscom $
  * @author kevinlevy
  * 
  * rev :
@@ -17,20 +17,31 @@ require('../../config.inc.php');
 require_once('results.class.php');
 require_once("lang_api.php");
 require_once('displayMgr.php');
+testlinkInitPage($db);
 
 $openBugs = array();
 $resolvedBugs = array();
-
-testlinkInitPage($db);
-$tp = new testplan($db);
-$tpID = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0 ;
-$arrBuilds = $tp->get_builds($tpID); 
 $arrData = array();
 
-$suitesSelected = 'all';
-// get results for all builds
-$buildsToQuery = 'a';
-$re = new results($db, $tp, $suitesSelected, $buildsToQuery);
+$tplan_mgr = new testplan($db);
+$tproject_mgr = new testproject($db);
+
+$tplan_id=$_REQUEST['tplan_id'];
+$tproject_id=$_SESSION['testprojectID'];
+
+$tplan_info = $tplan_mgr->get_by_id($tplan_id);
+$tproject_info = $tproject_mgr->get_by_id($tproject_id);
+
+$tplan_name=$tplan_info['name'];
+$tproject_info =$tproject_info['name'];
+
+
+$re = new results($db, $tplan_mgr, $tproject_info, $tplan_info,
+                  ALL_TEST_SUITES,ALL_BUILDS);
+
+$arrBuilds = $tplan_mgr->get_builds($tpID); 
+
+
 $executionsMap = $re->getSuiteList();
 
 // lastResultMap provides list of all test cases in plan - data set includes title and suite names
@@ -93,16 +104,11 @@ $totalResolvedBugs = count($resolvedBugs);
 $totalBugs = $totalOpenBugs + $totalResolvedBugs;
 $totalCasesWithBugs = count($arrData);
 
-/**
-print "total open bugs = $totalOpenBugs <BR>";
-print "total resolved bugs = $totalResolvedBugs <BR>";
-print "total bugs = $totalBugs <BR>";
-print "total test cases with bugs = $totalCasesWithBugs <BR>";
-*/
+
 
 $smarty = new TLSmarty;
-$smarty->assign('tproject_name', $_SESSION['testprojectName'] );
-$smarty->assign('tplan_name', $_SESSION['testPlanName'] );
+$smarty->assign('tproject_name', $tproject_name);
+$smarty->assign('tplan_name', $tplan_name );
 $smarty->assign('title', lang_get('link_report_total_bugs'));
 $smarty->assign('arrData', $arrData);
 $smarty->assign('arrBuilds', $arrBuilds);
@@ -117,7 +123,16 @@ $smarty->display('resultsBugs.tpl');
 
 
 <?php
-function registerBug($bugID, $bugInfo, &$openBugsArray, &$resolvedBugsArray){
+/*
+  function: 
+
+  args :
+  
+  returns: 
+
+*/
+function registerBug($bugID, $bugInfo, &$openBugsArray, &$resolvedBugsArray)
+{
    $linkString = $bugInfo['link_to_bts'];
    $position = strpos($linkString,"<del>");
    $position2 = strpos($linkString,"</del>");
@@ -129,18 +144,45 @@ function registerBug($bugID, $bugInfo, &$openBugsArray, &$resolvedBugsArray){
    } 
 }
 
-function tallyOpenBug($bugID, &$array) {
+/*
+  function: 
+
+  args :
+  
+  returns: 
+
+*/
+function tallyOpenBug($bugID, &$array) 
+{
 	if (!in_array($bugID, $array)) {
 		array_push($array, $bugID);
 	}
 }
 
-function tallyResolvedBug($bugID, &$array) {
+/*
+  function: 
+
+  args :
+  
+  returns: 
+
+*/
+function tallyResolvedBug($bugID, &$array) 
+{
 	if (!in_array($bugID, $array)) {
 		array_push($array, $bugID);
 	}
 }
 
+
+/*
+  function: 
+
+  args :
+  
+  returns: 
+
+*/
 function buildBugString(&$db,$execID,&$openBugsArray,&$resolvedBugsArray)
 {
 	$bugString = null;

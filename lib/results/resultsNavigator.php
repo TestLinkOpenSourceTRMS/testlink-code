@@ -2,15 +2,13 @@
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
- * @version $Id: resultsNavigator.php,v 1.33 2007/08/27 06:37:44 franciscom Exp $ 
+ * @version $Id: resultsNavigator.php,v 1.34 2007/09/17 06:29:07 franciscom Exp $ 
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
- * This page list View of Test Results and Metrics.
- *
- * @todo Reload all workarea if build is changed 
- * @todo xls ouput should be general over all builds
+ * Launcher for Test Results and Metrics.
  *
  * rev :
+ *      20070916 - franciscom - added logic to choose test plan
  *      20070826 - franciscom - disable resultsImport
  */
 require('../../config.inc.php');
@@ -18,15 +16,105 @@ require_once('common.php');
 require_once('builds.inc.php');
 testlinkInitPage($db);
 
-$tc_status_map=config_get('tc_status');
+$tplan_mgr = new testplan($db);
 
-// there is list of available results and metrics view
-$arrData = array(
-	array('name' => lang_get('link_report_general_tp_metrics'), 'href' => 'resultsGeneral.php?report_type='), 
-	array('name' => lang_get('link_report_overall_build'), 'href' => 'resultsAllBuilds.php?report_type='), 
-  array('name' => lang_get('link_report_metrics_more_builds'), 'href' => 'resultsMoreBuilds.php?report_type='), 
+$do_report=array();
+$do_report['status_ok']=1;
+$do_report['msg']='';
+
+$selectedBuild = null;
+$selectedReportType = null;
+
+$arrReportTypes = array('normal', 'MS Excel', 'HTML email');
+
+// function get_href_config(&$db,$bug_interface_on,$req_mgmt_enabled)
+$href_map=get_href_config($db,config_get('bugInterfaceOn'),$_SESSION['testprojectOptReqs']);
+
+$tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+$tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : $_SESSION['testPlanId'];
+
+$tplans=getAccessibleTestPlans($db,$tproject_id,$_SESSION['userID'],1);
+$map_tplans=array();
+foreach($tplans as $key => $value)
+{
+  $map_tplans[$value['id']]=$value['name'];
+}
+
+$arrBuilds = getBuilds($db,$tplan_id, " ORDER BY builds.name ");
+$linked_tcversions=$tplan_mgr->get_linked_tcversions($tplan_id);
+
+// -----------------------------------------------------------------------------
+// Do some checks to understand i reports can be build
+
+// Check if there are linked test cases to the choosen test plan.
+if( is_null($linked_tcversions) || count($linked_tcversions) == 0 )
+{
+   // Test plan without test cases
+   $do_report['status_ok']=0;
+   $do_report['msg']=lang_get('report_tplan_has_no_tcases');       
+}
+
+// Build qty
+if( is_null($arrBuilds) || count($arrBuilds) == 0 )
+{
+   // Test plan without builds can have execution data
+   $do_report['status_ok']=0;
+   $do_report['msg']=lang_get('report_tplan_has_no_build');       
+}
+// -----------------------------------------------------------------------------
+
+
+if($do_report['status_ok'])
+{
+  $arrBuilds = array_reverse($arrBuilds, true);
+
+  if (isset($_GET['build']))
+	  $selectedBuild = intval($_GET['build']);
+  else
+	  $selectedBuild = sizeof($arrBuilds) ? key($arrBuilds) : null;
+
+  if (isset($_GET['report_type']))
+	  $selectedReportType = intval($_GET['report_type']);
+  else
+	  $selectedReportType = sizeof($arrReportTypes) ? key($arrReportTypes) : null;
+}
+
+
+$smarty = new TLSmarty;
+$smarty->assign('do_report', $do_report);
+$smarty->assign('title', lang_get('title_nav_results'));
+$smarty->assign('arrData', $href_map['general_reports']);
+$smarty->assign('arrDataB', $href_map['build_reports']);
+$smarty->assign('arrBuilds', $arrBuilds);
+$smarty->assign('tplans', $map_tplans);
+
+$smarty->assign('selectedBuild', $selectedBuild);
+$smarty->assign('tplan_id', $tplan_id);
+
+$smarty->assign('selectedReportType', $selectedReportType);
+$smarty->assign('arrReportTypes', $arrReportTypes);
+//$smarty->assign('email_to', $email_to);
+$smarty->display('resultsNavigator.tpl');
+?>
+
+
+
+<?php
+function get_href_config(&$db,$bug_interface_on,$req_mgmt_enabled)
+{
+  $tc_status_map=config_get('tc_status');
+  $map_r=array();
+  
+  // there is list of available results and metrics view
+  $arrData = array(
+	array('name' => lang_get('link_report_general_tp_metrics'), 
+	      'href' => 'resultsGeneral.php?report_type='), 
+	array('name' => lang_get('link_report_overall_build'), 
+	      'href' => 'resultsAllBuilds.php?report_type='), 
+  array('name' => lang_get('link_report_metrics_more_builds'), 
+        'href' => 'resultsMoreBuilds.php?report_type='), 
 	array('name' => lang_get('link_report_failed'), 
-	                'href' => "resultsByStatus.php?type={$tc_status_map['failed']}&amp;report_type="),
+        'href' => "resultsByStatus.php?type={$tc_status_map['failed']}&amp;report_type="),
 	array('name' => lang_get('link_report_blocked_tcs'), 
 	                'href' => "resultsByStatus.php?type={$tc_status_map['blocked']}&amp;report_type="),
 	array('name' => lang_get('link_report_not_run'), 
@@ -40,61 +128,28 @@ $arrData = array(
 	// not ready yet
 	// array('name' => lang_get('time_charts'), 'href' => 'timeCharts.php?report_type=')
 
-// $arrReportTypes = array('normal', 'MS Excel', 'HTML email', 'text email', 'PDF');
+  if ($bug_interface_on)
+  {
+	 $arrData[] = array('name' => lang_get('link_report_total_bugs'), 
+	                    'href' => 'resultsBugs.php?report_type=');
+  }
 
-$arrReportTypes = array('normal', 'MS Excel', 'HTML email');
-if ($g_bugInterfaceOn)
-	$arrData[] = array('name' => lang_get('link_report_total_bugs'), 'href' => 'resultsBugs.php?report_type=');
+  // if ($_SESSION['testprojectOptReqs']
+  if ($req_mgmt_enabled && has_rights($db,"mgt_view_req"))
+  {
+	  $arrData[] = array('name' => lang_get('link_report_reqs_coverage'), 
+	                     'href' => 'resultsReqs.php?report_type=');
+  }
 
+  // this results are related to selected build
+  $arrDataB = array(
+	  array('name' => lang_get('link_report_metrics_active_build'), 'href' => 'resultsBuild.php'),
+  );
 
-if ($_SESSION['testprojectOptReqs'] && has_rights($db,"mgt_view_req"))
-{
-	  $arrData[] = array('name' => lang_get('link_report_reqs_coverage'), 'href' => 'resultsReqs.php?report_type=');
-}
-
-// this results are related to selected build
-$arrDataB = array(
-	array('name' => lang_get('link_report_metrics_active_build'), 'href' => 'resultsBuild.php'),
-);
-
-$arrBuilds = getBuilds($db,$_SESSION['testPlanId'], " ORDER BY builds.name ");
-$arrBuilds = array_reverse($arrBuilds, true);
-
-if (isset($_GET['build']))
-	$selectedBuild = intval($_GET['build']);
-else
-	$selectedBuild = sizeof($arrBuilds) ? key($arrBuilds) : null;
-
-if (isset($_GET['report_type']))
-	$selectedReportType = intval($_GET['report_type']);
-else
-	$selectedReportType = sizeof($arrReportTypes) ? key($arrReportTypes) : null;
-
-/** KL - 20070114
-comment out until further notice
-for now, send email to user
-
-if (isset($_POST['email_to']))
-	$email_to = intval($_POST['email_to']);
-else
-	$email_to = $_SESSION['email'];
-
-if (isset($_POST['email_subject']))
-	$email_subject = intval($_POST['email_subject']);
-else
-	$email_subject = "";
-	
-print "$email_to, $email_subject <BR>";
-*/
-
-$smarty = new TLSmarty;
-$smarty->assign('title', 'Navigator - Results');
-$smarty->assign('arrData', $arrData);
-$smarty->assign('arrDataB', $arrDataB);
-$smarty->assign('arrBuilds', $arrBuilds);
-$smarty->assign('selectedBuild', $selectedBuild);
-$smarty->assign('selectedReportType', $selectedReportType);
-$smarty->assign('arrReportTypes', $arrReportTypes);
-//$smarty->assign('email_to', $email_to);
-$smarty->display('resultsNavigator.tpl');
+  
+  $map_r['general_reports']=$arrData;
+  $map_r['build_reports']=$arrDataB;
+  
+  return $map_r;
+}  
 ?>

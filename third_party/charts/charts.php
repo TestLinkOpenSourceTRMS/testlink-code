@@ -10,7 +10,8 @@
 // ------------------------------------------------------------------------
 
 //====================================
-function InsertChart( $flash_file, $library_path, $php_source, $width=400, $height=250, $bg_color="666666", $transparent=false, $license=null ){
+function InsertChart( $flash_file, $library_path, $php_source, 
+                      $width=400, $height=250, $bg_color="666666", $transparent=false, $license=null ){
 	
 	$php_source=urlencode($php_source);
 	$library_path=urlencode($library_path);

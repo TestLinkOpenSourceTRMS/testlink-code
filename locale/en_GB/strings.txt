@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.196 $
- * @modified $Date: 2007/09/12 12:21:07 $ $Author: havlat $
+ * @version $Revision: 1.197 $
+ * @modified $Date: 2007/09/17 06:29:38 $ $Author: franciscom $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -14,6 +14,8 @@
  *
  * @author Francisco Mancardi
  *
+ * English (en_GB) strings
+ * 
  * 20070818 - franciscom
  * 20070705 - franciscom -
  * 20070520 - franciscom - milestones
@@ -124,8 +126,18 @@ $TLS_high_importance = "High";
 $TLS_low_importance = "Low";
 $TLS_medium_importance = "Medium";
 
+// resultsGeneral.php 
+$TLS_report_tspec_has_no_tsuites="There are no Test Suites defined for Test ProjectPlan, <br>".
+                                 "then no execution data can exist => no report can be created";
+
 // resultsNavigator.php
 $TLS_title_nav_results="Reports and Metrics";
+$TLS_report_tplan_has_no_build="Test Plan has no build defined, <br>".
+                               "then no execution data can exist => no report can be created";
+
+
+$TLS_report_tplan_has_no_tcases="Test Plan has no Test Cases linked, <br>".
+                                "then no execution data can exist => no report can be created";
 
 // tcEdit.php
 $TLS_tc_copied = "Test Case %s was succesfully copied to <br> Test Suite %s";

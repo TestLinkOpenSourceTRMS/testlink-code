@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: ownerBarChart.php,v 1.4 2007/05/15 13:56:59 franciscom Exp $ 
+* $Id: ownerBarChart.php,v 1.5 2007/09/17 06:29:07 franciscom Exp $ 
 *
 * @author	Kevin Levy
 */
@@ -10,12 +10,17 @@ require_once('../functions/results.class.php');
 require_once('../functions/testplan.class.php');
 
 testlinkInitPage($db);
-$tpID = $_SESSION['testPlanId']; 
+$tplan_mgr = new testplan($db);
+$tproject_mgr = new testproject($db);
 
-$tp = new testplan($db);
-$builds_to_query = 'a';
-$suitesSelected = 'all';
-$re = new results($db, $tp, $suitesSelected, $builds_to_query);
+$tplan_id=$_REQUEST['tplan_id'];
+$tproject_id=$_SESSION['testprojectID'];
+
+$tplan_info = $tplan_mgr->get_by_id($tplan_id);
+$tproject_info = $tproject_mgr->get_by_id($tproject_id);
+
+$re = new results($db, $tplan_mgr, $tproject_info, $tplan_info,
+                  ALL_TEST_SUITES,ALL_BUILDS);
 
 $arrDataOwner = $re->getAggregateOwnerResults();
 
@@ -55,13 +60,8 @@ for ($i = 0 ; $i < sizeOf($arrDataOwner2); $i++) {
 }
 
 $chart[ 'chart_data' ] = array ($namesOfOwnersArray, $passArray,$failArray, $blockedArray,$notRunArray);
-
 $chart[ 'axis_value' ] = array ( 'font'=>"arial", 'bold'=>true, 'size'=>10, 'color'=>"000000", 'alpha'=>50, 'steps'=>6, 'prefix'=>"", 'suffix'=>"", 'decimals'=>0, 'separator'=>"", 'show_min'=>true );
-
 $chart[ 'chart_border' ] = array ( 'color'=>"000000", 'top_thickness'=>0, 'bottom_thickness'=>3, 'left_thickness'=>0, 'right_thickness'=>0 );
-
-// $chart[ 'chart_data' ] = array ( array ( "", "P1", "P2", "P3" ), array ( "pass", 1, 5, 10), array ( "fail", 1, 5, 10), array ("blocked", 1, 5, 10), array ("not run", 1, 5, 10));
-
 $chart[ 'chart_grid_h' ] = array ( 'alpha'=>20, 'color'=>"000000", 'thickness'=>1, 'type'=>"solid" );
 $chart[ 'chart_grid_v' ] = array ( 'alpha'=>20, 'color'=>"000000", 'thickness'=>1, 'type'=>"dashed" );
 $chart[ 'chart_rect' ] = array ( 'x'=>125, 'y'=>75, 'width'=>500, 'height'=>400, 'positive_color'=>"ffffff", 'negative_color'=>"000000", 'positive_alpha'=>75, 'negative_alpha'=>15 );

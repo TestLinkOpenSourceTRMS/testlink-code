@@ -6,10 +6,14 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8 
- * @modified $Date: 2007/09/03 17:09:16 $ by $Author: franciscom $
+ * @modified $Date: 2007/09/17 06:29:06 $ by $Author: franciscom $
  *
  *-------------------------------------------------------------------------
  * Revisions:
+ *
+ * 20070916 - franciscom - refactoring to remove global coupling
+ *                         changes in constructot interface()
+ *
  * 20070825 - franciscom - added node_order in buildExecutionsMap()
  * 20070505 - franciscom - removing timer.php
  * 20070219 - kevinlevy - nearing completion for 1.7 release
@@ -115,7 +119,8 @@ class results
 	* related to $mapOfAggregate creation
 	* as we navigate up and down tree, $suiteId's are addded and removed from '$aggSuiteList
 	* when totals are added for a suite, we add to all suites listed in $executionsMap
-	* suiteIds are are registered and de-registered from aggSuiteList using functions addToAggSuiteList(), removeFromAggSuiteList() 
+	* suiteIds are are registered and de-registered from aggSuiteList using 
+	* functions addToAggSuiteList(), removeFromAggSuiteList() 
 	*/
 	private $aggSuiteList  = array(); 
  
@@ -160,8 +165,12 @@ class results
 	* most logic in constructor from executing/ executions table from being queried
 	* if keyword = 0, search by keyword would not be performed
 	* @author kevinlevy
+	*
+	* rev :
+	*      20070916 - franciscom - interface changes
 	*/ 
-	public function results(&$db, &$tp, $suitesSelected = 'all', 
+	public function results(&$db, &$tplan_mgr,$tproject_info, $tplan_info, 
+	                        $suitesSelected = 'all', 
 	                        $builds_to_query = -1, $lastResult = 'a', 
 	                        $keywordId = 0, $owner = null, 
 							            $startTime = "0000-00-00 00:00:00", $endTime = "9999-01-01 00:00:00",
@@ -169,12 +178,14 @@ class results
 							            &$suiteStructure = null, &$flatArray = null, &$linked_tcversions = null)
 	{
 		$this->db = $db;	
-	  $this->tp = $tp;  
+	  $this->tp = $tplan_mgr;  
     $this->map_tc_status=config_get('tc_status');  
     $this->suitesSelected = $suitesSelected;  	
-    $this->tprojectID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-    $this->testPlanID = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0 ;
-		$this->tplanName  = isset($_SESSION['testPlanName']) ? $_SESSION['testPlanName'] : null;
+    
+    $this->tprojectID = $tproject_info['id'];
+    $this->testPlanID = $tplan_info['id'];
+		$this->tplanName  = $tplan_info['name'];
+    
     $this->suiteStructure = $suiteStructure;
 		$this->flatArray = $flatArray;
 		$this->linked_tcversions = $linked_tcversions;
@@ -199,13 +210,13 @@ class results
 			                                                 $search_notes_string, $linkExecutionBuild);    
 		
 			// get keyword id -> keyword name pairs used in this test plan
-			$arrKeywords = $tp->get_keywords_map($this->testPlanID); 	
+			$arrKeywords = $tplan_mgr->get_keywords_map($this->testPlanID); 	
 			
 			// get owner id -> owner name pairs used in this test plan
 			$arrOwners = get_users_for_html_options($db, null, false);
 		
 			// get build id -> build name pairs used in this test plan
-			$arrBuilds1 = $tp->get_builds($this->testPlanID); 
+			$arrBuilds1 = $tplan_mgr->get_builds($this->testPlanID); 
 			$arrBuilds = null;
 		
 			while ($key = key($arrBuilds1)){
@@ -765,6 +776,8 @@ class results
 	* all test cases are included, even cases that have not been executed yet
 	*
 	* rev :
+	*      20070916 - franciscom - removed session coupling
+	*
 	*      added node_order
 	*/
 	private function buildExecutionsMap($builds_to_query, $lastResult = 'a', $keyword = 0, 
@@ -823,7 +836,7 @@ class results
 				// over multiple test plans - by modifying this select statement slightly
 				// to include multiple test plan ids	
 				$sql = "SELECT * FROM executions " .
-				       "WHERE tcversion_id = $executed AND testplan_id = $_SESSION[testPlanId] AND 
+				       "WHERE tcversion_id = $executed AND testplan_id = $this->testPlanID AND 
 				        execution_ts > '$startTime' and execution_ts < '$endTime' ";			   
 				        
 				if (($lastResult == $this->map_tc_status['passed']) || ($lastResult == $this->map_tc_status['failed']) || 

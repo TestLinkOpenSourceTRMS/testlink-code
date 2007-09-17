@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: keywordBarChart.php,v 1.5 2007/05/15 13:56:59 franciscom Exp $ 
+* $Id: keywordBarChart.php,v 1.6 2007/09/17 06:29:07 franciscom Exp $ 
 *
 * @author	Kevin Levy
 */
@@ -10,11 +10,19 @@ require_once('../functions/results.class.php');
 require_once('../functions/testplan.class.php');
 
 testlinkInitPage($db);
-$tpID = $_SESSION['testPlanId']; 
-$tp = new testplan($db);
-$builds_to_query = 'a';
-$suitesSelected = 'all';
-$re = new results($db, $tp, $suitesSelected, $builds_to_query);
+
+$tplan_mgr = new testplan($db);
+$tproject_mgr = new testproject($db);
+
+$tplan_id=$_REQUEST['tplan_id'];
+$tproject_id=$_SESSION['testprojectID'];
+
+$tplan_info = $tplan_mgr->get_by_id($tplan_id);
+$tproject_info = $tproject_mgr->get_by_id($tproject_id);
+
+$re = new results($db, $tplan_mgr, $tproject_info, $tplan_info,
+                  ALL_TEST_SUITES,ALL_BUILDS);
+
 
 $arrDataKeys = $re->getAggregateKeywordResults();
 $i = 0;

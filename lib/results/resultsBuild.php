@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsBuild.php,v 1.30 2007/02/23 00:30:15 kevinlevy Exp $ 
+* $Id: resultsBuild.php,v 1.31 2007/09/17 06:29:07 franciscom Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * 
@@ -24,16 +24,24 @@ testlinkInitPage($db);
 $report_type = isset($_GET['report_type']) ? intval($_GET['report_type']) : null;
 $builds_to_query = isset($_GET['build']) ? intval($_GET['build']) : null;
 
-$tpID = $_SESSION['testPlanId']; 
-
 $buildInfo = getBuild_by_id($db,$builds_to_query);
 $buildName = "";
 if ($buildInfo)
 	$buildName = $buildInfo['name'];
 
-$tp = new testplan($db);
-$suitesSelected = 'all';
-$re = new results($db, $tp, $suitesSelected, $builds_to_query);
+$tplan_mgr = new testplan($db);
+$tproject_mgr = new testproject($db);
+
+$tplan_id=$_REQUEST['tplan_id'];
+$tproject_id=$_SESSION['testprojectID'];
+
+$tplan_info = $tplan_mgr->get_by_id($tplan_id);
+$tproject_info = $tproject_mgr->get_by_id($tproject_id);
+
+$re = new results($db, $tplan_mgr, $tproject_info, $tplan_info,
+                  ALL_TEST_SUITES,$builds_to_query);
+
+
 
 /** 
 * TOP LEVEL SUITES REPORT 
@@ -94,7 +102,8 @@ if (is_array($allSuites))
 		
 		$percentCompleted = number_format($percentCompleted,2);
 		// KL - 20070222 - these are not in 1.7 $risk, $importance, $priority,  
-		$arrDataAllSuites[$index] = array($currentSuiteName, $total, $resultArray['pass'], $resultArray['fail'], $resultArray['blocked'], $notRun, $percentCompleted);
+		$arrDataAllSuites[$index] = array($currentSuiteName, $total, $resultArray['pass'], 
+		                                  $resultArray['fail'], $resultArray['blocked'], $notRun, $percentCompleted);
 		$index++;
 		next($allSuites);
 	} 

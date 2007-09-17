@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsMoreBuilds_buildReport.php,v 1.50 2007/09/03 17:09:16 franciscom Exp $ 
+* $Id: resultsMoreBuilds_buildReport.php,v 1.51 2007/09/17 06:29:07 franciscom Exp $ 
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 * 
@@ -18,6 +18,19 @@ require_once('results.class.php');
 require_once('users.inc.php');
 require_once('displayMgr.php');
 testlinkInitPage($db);
+
+
+$tplan_mgr = new testplan($db);
+$tproject_mgr = new testproject($db);
+
+$tplan_id=$_REQUEST['tplan_id'];
+$tproject_id=$_SESSION['testprojectID'];
+
+$tplan_info = $tplan_mgr->get_by_id($tplan_id);
+$tproject_info = $tproject_mgr->get_by_id($tproject_id);
+
+$tplan_name = $tplan_info['name'];
+$tproject_name = $tproject_info['name'];
 
 
 $reports_cfg=config_get('reports_cfg');
@@ -56,9 +69,7 @@ foreach($lastStatus	as $key => $status_code)
 // -------------------------------------------------------------------------------------------
 
 $keywordSelected = isset($_REQUEST['keyword']) ? $_REQUEST['keyword'] : 0;
-$tpID = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0;
-$tplan_name = isset($_SESSION['testPlanName']) ? $_SESSION['testPlanName'] : '';
-$tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : '';
+
 						
 						
 $ownerSelected = (isset($_REQUEST['owner']) && $_REQUEST['owner'] > 0 ) ? $_REQUEST['owner'] : null;
@@ -98,12 +109,11 @@ if (sizeof($buildsSelected)) {
 	$buildsToQuery = implode(",", $buildsSelected);
 }
 
-$tp = new testplan($db);
-
 // KL - 20070625 - used for execution links
 $execution_link_build = isset($_GET['build']) ? intval($_GET['build']) : null;
 
-$re = new results($db, $tp, $testsuiteIds, $buildsToQuery, $statusForClass, 
+$re = new results($db, $tplan_mgr,$tproject_info,$tplan_info, 
+                  $testsuiteIds, $buildsToQuery, $statusForClass, 
                   $keywordSelected, $ownerSelected, $startTime, $endTime, $executorSelected, 
                   $search_notes_string, $execution_link_build);
                   
@@ -111,19 +121,14 @@ $suiteList = $re->getSuiteList();
 $flatArray = $re->getFlatArray();
 $mapOfSuiteSummary =  $re->getAggregateMap();
 $totals = $re->getTotalsForPlan();
-$arrKeywords = $tp->get_keywords_map($tpID); 
-$arrBuilds = $tp->get_builds($tpID); 
-$mapBuilds = $tp->get_builds_for_html_options($tpID);
-
+$arrKeywords = $tplan_mgr->get_keywords_map($tplan_id); 
+$arrBuilds = $tplan_mgr->get_builds($tplan_id); 
+$mapBuilds = $tplan_mgr->get_builds_for_html_options($tplan_id);
 $arrOwners = get_users_for_html_options($db, ALL_USERS_FILTER, !ADD_BLANK_OPTION);
 
 
-$smarty = new TLSmarty();
-// $smarty->assign('selected_start_date', $startDate);
-// $smarty->assign('selected_start_time', $startHour);
-// $smarty->assign('selected_end_date', $endDate);
-// $smarty->assign('selected_end_time', $endHour);
 
+$smarty = new TLSmarty();
 $smarty->assign('arrBuilds', $arrBuilds);
 $smarty->assign('mapBuilds', $mapBuilds);
 $smarty->assign('mapUsers',$arrOwners);
@@ -152,7 +157,7 @@ if ($search_notes_string) {
 $smarty->assign('totals', $totals);
 $smarty->assign('tplan_name',$tplan_name);
 $smarty->assign('tproject_name',$tproject_name);
-$smarty->assign('testplanid', $tpID);
+$smarty->assign('testplanid', $tplan_id);
 $smarty->assign('arrBuilds', $arrBuilds); 
 $smarty->assign('suiteList', $suiteList);
 $smarty->assign('flatArray', $flatArray);

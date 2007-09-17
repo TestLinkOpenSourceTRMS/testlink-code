@@ -1,9 +1,10 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsMoreBuilds_query_form.tpl,v 1.53 2007/09/03 17:08:26 franciscom Exp $
+$Id: resultsMoreBuilds_query_form.tpl,v 1.54 2007/09/17 06:28:46 franciscom Exp $
 @author Francisco Mancardi
 
 rev :
+     20070916 - franciscom - added hidden input to manage test plan id
      20070901 - franciscom - use config file and smarty date and time controls
 
 *}
@@ -36,8 +37,10 @@ rev :
 
 
 
-<form action="lib/results/resultsMoreBuilds_buildReport.php?build={$build}&amp;report_type={$report_type}" method="POST">
+<form action="lib/results/resultsMoreBuilds_buildReport.php?build={$build}&amp;report_type={$report_type}" 
+      method="POST">
 
+  <input type="hidden" id="tplan_id" name="tplan_id" value={$tplan_id}>
   <div>
 	<table class="simple" style="width: 100%; text-align: center; margin-left: 0px;">
 		<tr>

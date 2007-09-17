@@ -9,7 +9,7 @@
  * To avoid override of other globals we are using $TLS_ (Test Link String) prefix.
  * This must be a reserved prefix.
  *
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  *
  * @author Francisco Mancardi
  *
@@ -41,7 +41,7 @@
  * Toshinori Sawaguchi, Toshiyuki Kawanishi, Yasuhiko Okada,
  * Yoichi Kunihiro,     Yoshihiro Yoshimura
  *
- * @modified $Date: 2007/09/12 17:24:18 $ $Author: franciscom $
+ * @modified $Date: 2007/09/17 06:29:39 $ $Author: franciscom $
  *-------------------------------------------------------------------
 **/
 //If this file is coded in UTF-8 then enable the following line
@@ -146,6 +146,20 @@ $TLS_medium_risk = "中";
 $TLS_high_importance = "高";
 $TLS_low_importance = "低";
 $TLS_medium_importance = "中";
+
+
+// resultsGeneral.php 
+$TLS_report_tspec_has_no_tsuites="There are no Test Suites defined for Test ProjectPlan, <br>".
+                                 "then no execution data can exist => no report can be created";
+
+// resultsNavigator.php
+$TLS_title_nav_results="Reports and Metrics";
+$TLS_report_tplan_has_no_build="Test Plan has no build defined, <br>".
+                               "then no execution data can exist => no report can be created";
+
+
+$TLS_report_tplan_has_no_tcases="Test Plan has no Test Cases linked, <br>".
+                                "then no execution data can exist => no report can be created";
 
 
 // tcEdit.php

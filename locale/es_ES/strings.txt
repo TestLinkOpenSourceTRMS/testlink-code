@@ -4,11 +4,12 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.15 $
- * @modified $Date: 2007/09/12 06:25:24 $ $Author: franciscom $
+ * @version $Revision: 1.16 $
+ * @modified $Date: 2007/09/17 06:29:39 $ $Author: franciscom $
  *
  * @author jorgesf@jsf.jazztel.es
  *
+ * Spanish (es_ES) strings
 **/
 
 $TLS_test_status_all = "Todos";
@@ -111,8 +112,18 @@ $TLS_page_title_lost_passwd = "TestLink - Contraseña perdida";
 $TLS_your_info_for_passwd = "Introduzca correctamente la información de su usuario para que se le pueda enviar su nueva contraseña por correo";
 $TLS_your_password_is = "Su nueva contraseña de Testlink es: <br>";
 
+// resultsGeneral.php 
+$TLS_report_tspec_has_no_tsuites="There are no Test Suites defined for Test ProjectPlan, <br>".
+                                 "then no execution data can exist => no report can be created";
+
 // resultsNavigator.php
 $TLS_title_nav_results="Reports and Metrics";
+$TLS_report_tplan_has_no_build="Test Plan has no build defined, <br>".
+                               "then no execution data can exist => no report can be created";
+
+
+$TLS_report_tplan_has_no_tcases="Test Plan has no Test Cases linked, <br>".
+                                "then no execution data can exist => no report can be created";
 
 // tcEdit.php
 $TLS_tc_copied = "Test Case %s was succesfully copied to <br> Test Suite %s";

@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsMoreBuilds.php,v 1.54 2007/09/03 17:09:16 franciscom Exp $ 
+* $Id: resultsMoreBuilds.php,v 1.55 2007/09/17 06:29:07 franciscom Exp $ 
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 * 
@@ -18,30 +18,35 @@ require_once('results.class.php');
 require_once('users.inc.php');
 testlinkInitPage($db);
 
-$tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-$tplan_id = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0 ;
-$tplan_name = isset($_SESSION['testPlanName']) ? $_SESSION['testPlanName'] : null;
-$tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : null;
+$tplan_mgr = new testplan($db);
+$tproject_mgr = new testproject($db);
+
+$tplan_id=$_REQUEST['tplan_id'];
+$tproject_id=$_SESSION['testprojectID'];
+
+$tplan_info = $tplan_mgr->get_by_id($tplan_id);
+$tproject_info = $tproject_mgr->get_by_id($tproject_id);
+
+$tplan_name = $tplan_info['name'];
+$tproject_name = $tproject_info['name'];
 
 
-// $assigned_users = get_users_for_html_options($db, ALL_USERS_FILTER, !ADD_BLANK_OPTION);
 $assigned_users = get_users_for_html_options($db, ALL_USERS_FILTER, ADD_BLANK_OPTION);
 $tc_status_code_label = get_status_for_reports_html_options();
 
-$tp = new testplan($db);
-$builds_to_query = -1;
-$suitesSelected = 'all';
-$re = new results($db, $tp);
+$re = new results($db, $tplan_mgr,$tproject_info,$tplan_info);
 
-$arrKeywords = $tp->get_keywords_map($tplan_id); 
-$arrBuilds = $tp->get_builds($tplan_id); 
+$arrKeywords = $tplan_mgr->get_keywords_map($tplan_id); 
+$arrBuilds = $tplan_mgr->get_builds($tplan_id); 
 $arrTestsuites = $re->getTopLevelSuites();
 
 
 
 $smarty = new TLSmarty();
-$smarty->assign('tproject_name', $_SESSION['testprojectName'] );
-$smarty->assign('tplan_name', $tplan_name );
+
+$smarty->assign('tproject_name', $tproject_name);
+$smarty->assign('tplan_name', $tplan_name);
+$smarty->assign('tplan_id', $tplan_id );
 
 $smarty->assign('arrBuilds', $arrBuilds); 
 $smarty->assign('arrKeywords', $arrKeywords);

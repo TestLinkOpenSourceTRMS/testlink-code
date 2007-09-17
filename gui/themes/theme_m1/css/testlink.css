@@ -1,8 +1,9 @@
 /* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: testlink.css,v 1.10 2007/08/27 06:35:31 franciscom Exp $ 
+$Id: testlink.css,v 1.11 2007/09/17 06:28:54 franciscom Exp $ 
 Purpose: main css - theme m1
 
+20070915 - franciscom - exec_test_spec
 20070826 - franciscom - exec_tc_title, split of div.test_exec and table.test_exec
 
 20070401 - franciscom -  added padding to:
@@ -14,6 +15,11 @@ Purpose: main css - theme m1
                         changes in class names
                         div.menu -> div.menu_bar
                   
+
+IMPORTANT:
+NiftyCube rounding package has problems with I.E. 6 if background color is
+assigned using name (example: white) instead of code (example: #FFF)
+
 */
 
 body {
@@ -479,7 +485,7 @@ div.not_run {
 
 /* 20070826 - franciscom */
 div.exec_history {
-	background:		white;
+	background:		#FFF;
 	padding: 		0px 3px 0px 3px;
 }
 
@@ -581,6 +587,13 @@ div.test_exec {
 	padding: 		12px;
 	width: 100%;
 }
+
+div.exec_test_spec {
+	background: 	#FFC;
+	color: 			black;
+	padding: 		12px;
+}
+
 
 table.test_exec {
 	background: 	#FFC;
@@ -698,7 +711,7 @@ td.clickable_icon
 }
 
 .exec_additional_info{
-	background-color: 	whitesmoke; // whitesmoke, #FFC
+	background-color: 	#F0F4F0; // whitesmoke=F0F4F0, #FFC
 	color: 			black;
 	margin: 		0px 0px 10px 0px;
 	padding: 		0px 0px 0px 10px;

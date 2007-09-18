@@ -9,7 +9,7 @@
  * To avoid override of other globals we are using $TLS_ (Test Link String) prefix.
  * This must be a reserved prefix.
  *
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  *
  * @author Francisco Mancardi
  *
@@ -41,7 +41,7 @@
  * Toshinori Sawaguchi, Toshiyuki Kawanishi, Yasuhiko Okada,
  * Yoichi Kunihiro,     Yoshihiro Yoshimura
  *
- * @modified $Date: 2007/09/17 09:42:42 $ $Author: franciscom $
+ * @modified $Date: 2007/09/18 17:18:36 $ $Author: franciscom $
  *-------------------------------------------------------------------
 **/
 //If this file is coded in UTF-8 then enable the following line
@@ -135,7 +135,7 @@ $TLS_your_first_login = "ようこそTestLinkへ! あなたはゲストアカウ
 
 
 // newest_tcversions.php
-$TLS_no_linked_tcversions = "no linked Test Case versions";
+$TLS_no_linked_tcversions = "関連付けられているテストケースのバージョンがありません";
 
 
 // planPriority.php
@@ -153,17 +153,17 @@ $TLS_medium_importance = "中";
 
 
 // resultsGeneral.php 
-$TLS_report_tspec_has_no_tsuites="There are no Test Suites defined for Test ProjectPlan, <br>".
-                                 "then no execution data can exist => no report can be created";
+$TLS_report_tspec_has_no_tsuites="このテストプロジェクトで定義されたテストスイートはありません。<br>".
+                                 "テスト実行データが存在していない => レポートは作成できません";
 
 // resultsNavigator.php
-$TLS_title_nav_results="Reports and Metrics";
-$TLS_report_tplan_has_no_build="Test Plan has no build defined, <br>".
-                               "then no execution data can exist => no report can be created";
+$TLS_title_nav_results="レポートとメトリクス";
+$TLS_report_tplan_has_no_build="テスト計画にビルドが定義されていません。 <br>".
+                               "テスト実行データが存在していない => レポートは作成できません";
 
 
-$TLS_report_tplan_has_no_tcases="Test Plan has no Test Cases linked, <br>".
-                                "then no execution data can exist => no report can be created";
+$TLS_report_tplan_has_no_tcases="テスト計画にテストケースが関連付けられていません。<br>".
+                                "テスト実行データが存在していない => レポートは作成できません";
 
 
 // tcEdit.php

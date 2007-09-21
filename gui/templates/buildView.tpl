@@ -1,10 +1,11 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: buildView.tpl,v 1.3 2007/09/11 06:31:49 franciscom Exp $
+$Id: buildView.tpl,v 1.4 2007/09/21 06:16:13 franciscom Exp $
 
 Purpose: smarty template - Show existing builds
 
 Rev :
+     20070921 - franciscom - BUGID  - added strip_tags|strip to notes
 *}
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes"}
 
@@ -62,7 +63,7 @@ function validateForm(f)
   					     {/if}    
   					  </a>   
   				</td>
-  				<td>{$build.notes|truncate:#BUILD_NOTES_TRUNCATE_LEN#}</td>
+  				<td>{$build.notes|strip_tags|strip|truncate:#BUILD_NOTES_TRUNCATE_LEN#}</td>
   				<td class="clickable_icon">
   				   {if $build.active eq 1} 
   				     <img style="border:none" 

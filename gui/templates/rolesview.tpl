@@ -1,9 +1,10 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: rolesview.tpl,v 1.16 2007/08/29 17:20:52 jbarchibald Exp $ 
+$Id: rolesview.tpl,v 1.17 2007/09/21 06:14:51 franciscom Exp $ 
 Purpose: smarty template - View defined roles 
 
 rev :
+     20070921 - franciscom - BUGID - added strip_tags|strip to notes 
      20070829 - jbarchibald
       -  bug 1000  - Testplan User Role Assignments
 
@@ -82,7 +83,7 @@ rev :
 					</a>
 				</td>
 				<td>
-					{$role.notes}
+					{$role.notes|strip_tags|strip}
 				</td>
 				<td>
 				{if $role.id > $smarty.const.TL_LAST_SYSTEM_ROLE}

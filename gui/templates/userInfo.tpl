@@ -1,5 +1,5 @@
 {* Testlink: smarty template - Edit own account *}
-{* $Id: userInfo.tpl,v 1.8 2007/09/11 20:11:02 franciscom Exp $ *}
+{* $Id: userInfo.tpl,v 1.9 2007/09/22 19:03:35 schlundus Exp $ *}
 {* 
 *}
 {assign var="cfg_section" value="login" }
@@ -85,11 +85,11 @@ function valAllText(form)
 	<input type="hidden" name="id" value="{$userData.id}" />
 	<table class="common">
 		<tr><th>{lang_get s='th_old_passwd'}</th>
-			<td><input type="password" name="old" maxlength="PASSWD_SIZE" /></td></tr>
+			<td><input type="password" name="old" size="{#PASSWD_SIZE#}" maxlength="{#PASSWD_SIZE#}" /></td></tr>
 		<tr><th>{lang_get s='th_new_passwd'}</th>
-			<td><input type="password" name="new1" maxlength="PASSWD_SIZE" /></td></tr>
+			<td><input type="password" name="new1" size="{#PASSWD_SIZE#}" maxlength="{#PASSWD_SIZE#}" /></td></tr>
 		<tr><th>{lang_get s='th_new_passwd_again'}</th>
-			<td><input type="password" name="new2" maxlength="PASSWD_SIZE" /></td></tr>
+			<td><input type="password" name="new2" size="{#PASSWD_SIZE#}" maxlength="{#PASSWD_SIZE#}" /></td></tr>
 	</table>
 	<div class="groupBtn">	
 		<input type="submit" name="changePasswd" value="{lang_get s='btn_change_passwd'}" />

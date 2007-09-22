@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planAddTC_m1.tpl,v 1.13 2007/07/06 06:28:34 franciscom Exp $
+$Id: planAddTC_m1.tpl,v 1.14 2007/09/22 19:03:35 schlundus Exp $
 Purpose: smarty template - generate a list of TC for adding to Test Plan 
 
 20070630 - franciscom - now tcversions linked to test plan, but set inactive
@@ -17,9 +17,9 @@ added logic to manage active/inactive tcversions
 
 *}
 
-{include file="inc_head.tpl"}
+{include file="inc_head.tpl" openHead="yes"}
 {include file="inc_jsCheckboxes.tpl"}
-
+</head>
 <body>
 <h1>{lang_get s='test_plan'}{$smarty.const.TITLE_SEP}{$testPlanName|escape}
 </h1>
@@ -73,11 +73,11 @@ added logic to manage active/inactive tcversions
         <table cellspacing="0" style="font-size:small;" width="100%">
           <tr style="background-color:blue;font-weight:bold;color:white">
 
-			     <td width="5px" align="center">
+			     <td width="5" align="center">
               {if $full_control}
 			         <img src="{$smarty.const.TL_THEME_IMG_DIR}/toggle_all.gif"
 			              onclick='cs_all_checkbox_in_div("{$div_id}","{$add_cb}","add_value_{$ts_id}");'
-                    title="{lang_get s='check_uncheck_all_checkboxes'}">
+                    title="{lang_get s='check_uncheck_all_checkboxes'}" />
     			    {else}
     			     &nbsp;
 		    	    {/if}
@@ -91,7 +91,7 @@ added logic to manage active/inactive tcversions
 				    <td>
 				    <img src="{$smarty.const.TL_THEME_IMG_DIR}/toggle_all.gif" 
                  onclick='cs_all_checkbox_in_div("{$div_id}","{$rm_cb}","rm_value_{$ts_id}");'
-                 title="{lang_get s='check_uncheck_all_checkboxes'}">
+                 title="{lang_get s='check_uncheck_all_checkboxes'}" />
 				    {lang_get s='remove_tc'}
 				    </td>
            {/if}
@@ -115,7 +115,7 @@ added logic to manage active/inactive tcversions
    				    {if $full_control || $tcase.linked_version_id ne 0 }
     			    <tr {if $tcase.linked_version_id ne 0} 
     			        style="{$smarty.const.TL_STYLE_FOR_ADDED_TC}" {/if}>
-    			      <td width="20px">
+    			      <td width="20">
     				
     				    {if $full_control}
       				    {if $is_active eq 0 || $tcase.linked_version_id ne 0 }
@@ -183,7 +183,7 @@ added logic to manage active/inactive tcversions
 	{/foreach}
 </div>
 
-  <div class="workBack"    
+  <div class="workBack">   
       <br /><input type='submit' name='do_action' style="padding-right: 20px;"
          {if $full_control}
   		     {if $has_linked_items eq 0}

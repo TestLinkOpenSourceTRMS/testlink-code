@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsByStatus.tpl,v 1.8 2007/06/25 06:21:29 franciscom Exp $
+$Id: resultsByStatus.tpl,v 1.9 2007/09/24 08:42:30 franciscom Exp $
 Purpose: show Test Results and Metrics 
 *}
 {include file="inc_head.tpl"}
@@ -15,7 +15,8 @@ Purpose: show Test Results and Metrics
 <table class="simple" style="width: 100%; text-align: left; margin-left: 0px;">
 		<tr>
 			<th>{lang_get s='th_test_suite'}</th>
-			<th>{lang_get s='th_title'}</th>
+			<th>{lang_get s='test_case'}</th>
+      <th>{lang_get s='version'}</th>
       {if $type != $gsmarty_tc_status.not_run}
 			  <th>{lang_get s='th_build'}</th>
 			  <th>{lang_get s='th_run_by'}</th>

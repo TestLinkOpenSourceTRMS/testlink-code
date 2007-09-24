@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8 
- * @modified $Date: 2007/09/17 06:29:06 $ by $Author: franciscom $
+ * @modified $Date: 2007/09/24 08:43:28 $ by $Author: franciscom $
  *
  *-------------------------------------------------------------------------
  * Revisions:
@@ -209,6 +209,7 @@ class results
 			                                                 $owner, $startTime, $endTime, $executor, 
 			                                                 $search_notes_string, $linkExecutionBuild);    
 		
+		  
 			// get keyword id -> keyword name pairs used in this test plan
 			$arrKeywords = $tplan_mgr->get_keywords_map($this->testPlanID); 	
 			
@@ -517,13 +518,28 @@ class results
 	* @return void
 	*
 	* rev :
+	*      20070919 - franciscom - interface changes
 	*      20070825 - franciscom - added node_order
 	*
 	*/ 	
-	private function addLastResultToMap($suiteId, $testcase_id, $buildNumber, $result, $tcversion_id, 
-                                      $execution_ts, $notes, $suiteName, $executions_id, $name, 
-                                      $tester_id, $feature_id, $assigner_id = -1, 
-                                      $lastResultToTrack){
+	private function addLastResultToMap($suiteId, $suiteName, $exec,$lastResultToTrack)
+	{
+		
+    // just to avoid a lot of refactoring
+		$testcase_id=$exec['testcaseID'];
+	  $buildNumber=$exec['build_id'];
+		$result=$exec['status'];
+		$tcversion_id=$exec['tcversion_id'];
+		$version=$exec['version'];
+		$execution_ts=$exec['execution_ts']; 
+    $notes=$exec['notes'];
+    $executions_id=$exec['executions_id'];
+	  $name=$exec['name'];
+	  $tester_id=$exec['tester_id'];
+	  $feature_id=$exec['feature_id']; 
+	  $assigner_id=$exec['assigner_id'];
+	
+		
 		if ($buildNumber)
 			$this->mapOfLastResultByBuild[$buildNumber][$testcase_id] = $result;
 	
@@ -568,9 +584,12 @@ class results
 			$this->mapOfCaseResults[$testcase_id]['buildNumber'] = $buildNumber;
 			$this->mapOfCaseResults[$testcase_id]['execID'] = $executions_id;
 			// mapOfLastResult assignments
+			//
+			// 20070919 - version
 			$this->mapOfLastResult[$suiteId][$testcase_id] = array("buildIdLastExecuted" => $buildNumber, 
 	                                                       "result" => $result, 
 												 		                             "tcversion_id" => $tcversion_id, 
+												 		                             "version" => $version,
 	                                                       "execution_ts" => $execution_ts, 
 														                             "notes" => $notes, 
 	                                                       "suiteName" => $suiteName, 
@@ -736,10 +755,13 @@ class results
   
 	/**
 	* 
+	*
+	* rev :
 	*/
 	private function createMapOfLastResult(&$suiteStructure, &$executionsMap, $lastResult){  
 		$suiteName = null;
 		$totalSuites=count($suiteStructure);
+		
 		
 		for ($i = 0; $i < $totalSuites; $i++){  		
 			if (($i % $this->ITEM_PATTERN_IN_SUITE_STRUCTURE) == $this->NAME_IN_SUITE_STRUCTURE) {
@@ -750,13 +772,9 @@ class results
 				$totalCases = isset($executionsMap[$suiteId]) ? count($executionsMap[$suiteId]) : 0;  	
 				for ($j = 0 ; $j < $totalCases; $j++) {
 					$cexec = $executionsMap[$suiteId][$j];
-					$this->addLastResultToMap($suiteId, $cexec['testcaseID'], $cexec['build_id'], 
-					                          $cexec['status'], $cexec['tcversion_id'], $cexec['execution_ts'], 
-					                          $cexec['notes'], $suiteName, $cexec['executions_id'], 
-					                          $cexec['name'], $cexec['tester_id'], $cexec['feature_id'], 
-					                          $cexec['assigner_id'], $lastResult); 
+					$this->addLastResultToMap($suiteId, $suiteName,$cexec,$lastResult); 
 				} 
-	  		}  
+	  	}  
 			elseif (($i % $this->ITEM_PATTERN_IN_SUITE_STRUCTURE) ==  $this->ARRAY_IN_SUITE_STRUCTURE){
 				if (is_array($suiteStructure[$i])){
 					$childSuite = $suiteStructure[$i];
@@ -793,6 +811,9 @@ class results
 		while ($testcaseID = key($this->linked_tcversions)){
 			$info = $this->linked_tcversions[$testcaseID]; 
 			$testsuite_id = $info['testsuite_id'];
+			$tcversion_id = $info['tcversion_id'];
+			$version = $info['version'];  // 20070917 - franciscom
+
 			$currentSuite = null;
 			if (!$executionsMap || !(array_key_exists($testsuite_id, $executionsMap))){
 				$currentSuite = array();
@@ -800,7 +821,7 @@ class results
 			else {
 				$currentSuite = $executionsMap[$testsuite_id];
 			}
-			$tcversion_id = $info['tcversion_id'];
+			
 			
 		  $sql = "select name from nodes_hierarchy where id = $testcaseID ";
 			$results = $this->db->fetchFirstRow($sql);
@@ -816,7 +837,8 @@ class results
 				if (($lastResult == 'a') || ($lastResult == $this->map_tc_status['not_run'])) {
 					// Initialize information on testcaseID to be "not run"
 					$infoToSave = array('testcaseID' => $testcaseID, 
-					'tcversion_id' => $tcversion_id, 
+					'tcversion_id' => $tcversion_id,
+					'version' => $version, 
 					'build_id' => '', 
 					'tester_id' => '', 
 					'execution_ts' => '', 
@@ -868,7 +890,7 @@ class results
 								
 						$infoToSave = array('testcaseID' => $testcaseID, 
 									'tcversion_id' => $tcversion_id, 
-									// 'node_order' => $node_order,
+							    'version' => $version,
 									'build_id' => $exec_row['build_id'], 
 									'tester_id' => $exec_row['tester_id'], 
 									'execution_ts' => $localizedTS, 
@@ -890,7 +912,7 @@ class results
 				elseif (($lastResult == 'a') || ($lastResult == $this->map_tc_status['not_run'])) {
 					$infoToSave = array('testcaseID' => $testcaseID, 
 					'tcversion_id' => $tcversion_id, 
-					// 'node_order' => $node_order,
+          'version' => $version,
 					'build_id' => '', 
 					'tester_id' => '', 
 					'execution_ts' => '', 

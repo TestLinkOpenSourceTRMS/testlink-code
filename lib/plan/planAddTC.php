@@ -1,6 +1,6 @@
 <?php
 ////////////////////////////////////////////////////////////////////////////////
-// @version $Id: planAddTC.php,v 1.35 2007/09/17 06:29:07 franciscom Exp $
+// @version $Id: planAddTC.php,v 1.36 2007/09/24 08:43:28 franciscom Exp $
 // File:     planAddTC.php
 // Purpose:  link/unlink test cases to a test plan
 //
@@ -20,14 +20,20 @@ $tree_mgr = new tree($db);
 $tsuite_mgr = new testsuite($db); 
 $tplan_mgr = new testplan($db); 
 
-$tplan_id =  $_SESSION['testPlanId'];
+$do_display = 0;
 $tproject_id =  $_SESSION['testprojectID'];
 $tproject_name =  $_SESSION['testprojectName'];
+
+// REQ - BUGID 
+$tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : $_SESSION['testPlanId'];
+$tplan_info = $tplan_mgr->get_by_id($tplan_id);
+$tplan_name = $tplan_info['name'];
+
 
 $keyword_id = isset($_REQUEST['keyword_id']) ? intval($_REQUEST['keyword_id']) : 0;
 $object_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 $smarty = new TLSmarty();
-$smarty->assign('testPlanName', $_SESSION['testPlanName']);
+$smarty->assign('testPlanName', $tplan_name);
 
 define('DONT_FILTER_BY_TCASE_ID',null);
 define('ANY_EXEC_STATUS',null);
@@ -49,7 +55,7 @@ if($_GET['edit'] == 'testsuite')
                        
     $do_display = 1;  
 }
-else
+else if($_GET['edit'] == 'testproject')
 {
 	redirect($_SESSION['basehref'] . "/lib/general/show_help.php?help=planAddTC&locale={$_SESSION['locale']}");
 }

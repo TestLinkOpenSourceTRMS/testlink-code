@@ -1,8 +1,9 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: resultsTC.tpl,v 1.10 2007/06/25 06:21:29 franciscom Exp $ *}
+{* $Id: resultsTC.tpl,v 1.11 2007/09/24 08:42:30 franciscom Exp $ *}
 {* Purpose: smarty template - show Test Results and Metrics *}
 {* Revisions:
-20051204 - mht - removed obsolete print button
+   20070919 - franciscom - BUGID
+   20051204 - mht - removed obsolete print button
 *}
 {include file="inc_head.tpl"}
 
@@ -27,7 +28,8 @@
 	<tr>
 		<th>{lang_get s='title_test_suite_name'}</th>
 		<th>{lang_get s='title_test_case_title'}</th>
-		
+		<th>{lang_get s='version'}</th>
+
 		{foreach key=row item=buildid from=$arrBuilds}
 			<th>{$arrBuilds[$row].name|escape}</th>
 		{/foreach}

@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsByStatus.php,v 1.49 2007/09/17 06:29:07 franciscom Exp $ 
+* $Id: resultsByStatus.php,v 1.50 2007/09/24 08:43:28 franciscom Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author Chad Rosen
@@ -27,13 +27,14 @@ $report_type = isset($_GET['report_type']) ? intval($_GET['report_type']) : null
 
 $tplan_mgr = new testplan($db);
 $tproject_mgr = new testproject($db);
+$tcase_mgr = new testcase($db);
+
 
 $tplan_id=$_REQUEST['tplan_id'];
 $tproject_id=$_SESSION['testprojectID'];
 
 $tplan_info = $tplan_mgr->get_by_id($tplan_id);
 $tproject_info = $tproject_mgr->get_by_id($tproject_id);
-
 
 
 if($type == $g_tc_status['failed'])
@@ -99,17 +100,25 @@ if (is_array($mapOfLastResult)) {
 			   $testerName = $arrOwners[$tester_id];
 			}
 			
+			// 20070917 - franciscom -
+			$tcInfo = $tcase_mgr->get_by_id($tcId,$tcversion_id);
+   		$testVersion = $tcInfo[0]['version'];
+
 			// 20070908 - franciscom - to avoid bad presentation on smarty
 			if($type == $g_tc_status['not_run'])
 			{
-      	$arrData[$arrDataIndex] = array($suiteName,$testTitle);
+      	// $arrData[$arrDataIndex] = array($suiteName,$testTitle,$testVersion);
+      	$arrData[$arrDataIndex] = array($suiteName,$testTitle,$testVersion);
+      	
       }
       else
       {
-      	$arrData[$arrDataIndex] = array($suiteName,$testTitle,htmlspecialchars($buildName),
+      	$arrData[$arrDataIndex] = array($suiteName,$testTitle,$testVersion,
+      	                                htmlspecialchars($buildName),
 			                                  htmlspecialchars($testerName),
 			                                  htmlspecialchars($localizedTS),
- 						  					                htmlspecialchars($notes),$bugString);
+ 						  					                htmlspecialchars($notes),
+ 						  					                $bugString);
       }
       
             // KL - 20070610 - only increment this var if we added to arrData

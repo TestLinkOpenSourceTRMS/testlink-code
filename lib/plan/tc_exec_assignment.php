@@ -1,7 +1,7 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: tc_exec_assignment.php,v 1.10 2007/09/12 17:00:10 franciscom Exp $ 
+ * @version $Id: tc_exec_assignment.php,v 1.11 2007/09/24 08:43:28 franciscom Exp $ 
  * 
  * rev :
  *       20070912 - franciscom - BUGID 1041
@@ -21,11 +21,17 @@ $tplan_mgr = new testplan($db);
 $tcase_mgr = new testcase($db); 
 $assignment_mgr = new assignment_mgr($db); 
 
+echo "<pre>debug 20070923 - \$_REQUEST - " . __FUNCTION__ . " --- "; print_r($_REQUEST); echo "</pre>";
+
+$user_id=$_SESSION['userID'];
+
 $tproject_id = $_SESSION['testprojectID'];
 $tproject_name = $_SESSION['testprojectName'];
 
-$tplan_id = $_SESSION['testPlanId'];
-$tplan_name = $_SESSION['testPlanName'];
+$tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : $_SESSION['testPlanId'];
+$tplan_info = $tplan_mgr->get_by_id($tplan_id);
+$tplan_name = $tplan_info['name'];
+
 
 $id = isset($_REQUEST['id']) ? $_REQUEST['id'] : null;
 $version_id = isset($_REQUEST['version_id']) ? $_REQUEST['version_id'] : 0;
@@ -62,7 +68,7 @@ if($do_action)
            if( $_POST['tester_for_tcid'][$key_tc] > 0 )
            {
               $features2upd[$feature_id]['user_id'] = $_POST['tester_for_tcid'][$key_tc];
-              $features2upd[$feature_id]['assigner_id'] = $_SESSION['userID'];
+              $features2upd[$feature_id]['assigner_id'] = $user_id;
               $features2upd[$feature_id]['type'] = $task_test_execution;
               $features2upd[$feature_id]['status'] = $open;
            } 
@@ -77,7 +83,7 @@ if($do_action)
            $features2ins[$feature_id]['type'] = $task_test_execution;
            $features2ins[$feature_id]['status'] = $open;
            $features2ins[$feature_id]['creation_ts'] = $db_now;
-           $features2ins[$feature_id]['assigner_id'] = $_SESSION['userID'];
+           $features2ins[$feature_id]['assigner_id'] = $user_id;
         }
       }
       

@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsTC.php,v 1.30 2007/09/17 06:29:07 franciscom Exp $ 
+* $Id: resultsTC.php,v 1.31 2007/09/24 08:43:28 franciscom Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -10,8 +10,10 @@
 *
 * @author 20050919 - fm - refactoring
 * 
-* 20070127 - franciscom
-* code to change display of test case status from code to label
+* rev :
+*       20070919 - franciscom - BUGID - contribution
+*       20070127 - franciscom
+*       code to change display of test case status from code to label
 *
 */
 // There may be an issue with test case results which have 
@@ -72,9 +74,9 @@ if ($lastResultMap != null) {
 			$currentTestCaseInfo = $currentSuiteInfo[$testCaseId];
 			$suiteName = $currentTestCaseInfo['suiteName'];
 			$name = $currentTestCaseInfo['name'];		
+			$testCaseVersion = $currentTestCaseInfo['version'];
 			
-			
-			$rowArray = array($suiteName, $testCaseId . ":" . $name);
+			$rowArray = array($suiteName, $testCaseId . ":" . $name, $testCaseVersion);
 			$suiteExecutions = $executionsMap[$suiteId];		
 			
 			// iterate over all builds and lookup results for current test case			

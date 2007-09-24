@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: treeMenu.inc.php,v $
  *
- * @version $Revision: 1.39 $
- * @modified $Date: 2007/03/07 08:12:01 $ by $Author: franciscom $
+ * @version $Revision: 1.40 $
+ * @modified $Date: 2007/09/24 08:43:28 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * 	This file generates tree menu for test specification and test execution.
@@ -116,6 +116,7 @@ function filterString($str)
 /** 
  * generate data for tree menu of Test Specification
  *
+ * 20070922 - franciscom - interface changes added $tplan_id,
  * 20070217 - franciscom - added $exclude_branches
  *
  * 20061105 - franciscom - added $ignore_inactive_testcases
@@ -126,8 +127,8 @@ function filterString($str)
  * exclude_branches: map key=node_id
  *
 */
-function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto, 
-                              $bHideTCs = 0,$tc_action_enabled = 1,
+function generateTestSpecTree(&$db,$tproject_id, $tproject_name,
+                              $linkto,$bHideTCs = 0,$tc_action_enabled = 1,
                               $getArguments = '',$keyword_id = 0,
                               $ignore_inactive_testcases=0,$exclude_branches=null)
 {

@@ -2,11 +2,12 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.34 $
- * @modified $Date: 2007/08/27 06:37:44 $ $Author: franciscom $
+ * @version $Revision: 1.35 $
+ * @modified $Date: 2007/09/24 08:43:28 $ $Author: franciscom $
  * @author franciscom
  *
  * rev :
+ *       20070917 - franciscom - get_linked_tcversions() added version on recordset
  *       20070630 - franciscom - get_linked_tcversions() changed ORDER BY CLAUSE
  *       20070630 - franciscom - get_linked_tcversions(), added active column
  *                               in output recordset.
@@ -364,9 +365,11 @@ function get_linked_tcversions($id,$tcase_id=null,$keyword_id=0,$executed=null,
 	// 20070106 - francisco.mancardi@gruppotesi.com
 	// Postgres does not like Column alias without AS, and (IMHO) he is right
 	//
+	// 20070917 - added version
+	//
 	$sql = " SELECT NHB.parent_id AS testsuite_id, " .
 	     "        NHA.parent_id AS tc_id, NHB.node_order AS z," .
-	     "        T.tcversion_id AS tcversion_id, T.id AS feature_id,TCV.active," .
+	     "        T.tcversion_id AS tcversion_id, T.id AS feature_id,TCV.version AS version, TCV.active," .
 	     "        E.id AS exec_id, " .
 	     "        E.tcversion_id AS executed, E.testplan_id AS exec_on_tplan, " .
 	     "        UA.user_id,UA.type,UA.status,UA.assigner_id, " .

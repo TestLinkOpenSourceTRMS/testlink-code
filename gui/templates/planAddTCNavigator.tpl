@@ -1,20 +1,42 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planAddTCNavigator.tpl,v 1.9 2007/01/26 21:01:23 schlundus Exp $
+$Id: planAddTCNavigator.tpl,v 1.10 2007/09/24 08:42:43 franciscom Exp $
 show test specification tree 
 *}
 
-{include file="inc_head.tpl" jsTree="yes"}
+{include file="inc_head.tpl" jsTree="yes" OpenHead="yes"}
+<script type="text/javascript">
+{literal}
+function pre_submit()
+{
+ document.getElementById('called_url').value=parent.workframe.location;
+ alert(document.getElementById('called_url'));
+ return true;
+}
+</script>
+{/literal}
+</head>
 <body>
 
 <h1>{lang_get s='title_navigator'}</h1>
 <div style="margin: 3px;">
-<form method="post">
+<form method="post" id="planAddTCNavigator" onSubmit="javascript:return pre_submit();">
+  <input type="hidden" id="called_by_me" name="called_by_me" value="1">
+  <input type="hidden" id="called_url" name="called_url" value="">
+
 	<table class="smallGrey" width="100%">
 		<caption>
 			{lang_get s='caption_nav_filter_settings'}
 			{include file="inc_help.tpl" filename="execFilter.html" help="execFilter" locale="$locale"}
 		</caption>
+		<tr>
+			<td>{lang_get s='test_plan'}</td>
+			<td>
+				<select name="tplan_id" onchange="pre_submit();this.form.submit()">
+			    {html_options options=$map_tplans selected=$tplan_id}
+				</select>
+			</td>
+		</tr>
 		<tr>
 			<td>{lang_get s='keyword'}</td>
 			<td>
@@ -37,11 +59,16 @@ show test specification tree
 </div>
 
 {* 20061030 - update the right pane *}
-{if $src_workframe != ''}
 <script type="text/javascript">
+{if $src_workframe != ''}
 	parent.workframe.location='{$src_workframe}';
-</script>
+{else}
+  {if $do_reload}
+	  parent.workframe.location.reload();
+  {/if}
 {/if}
+</script>
+  
 
 
 </body>

@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: planTestersNavigator.php,v 1.8 2007/05/10 07:07:15 franciscom Exp $ 
+* $Id: planTestersNavigator.php,v 1.9 2007/09/24 08:43:28 franciscom Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * 
@@ -15,6 +15,8 @@ require_once('users.inc.php');
 require_once('plan.inc.php');
 require_once("lang_api.php");
 testlinkInitPage($db);
+
+echo "<pre>debug 20070923 - \ planTestersNavigator.php - " . __FUNCTION__ . " --- "; print_r($_REQUEST); echo "</pre>";
 
 // 20051120 - fm
 // The current selected Product

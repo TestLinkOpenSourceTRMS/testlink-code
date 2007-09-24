@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: requirements.inc.php,v $
- * @version $Revision: 1.57 $
- * @modified $Date: 2007/07/10 11:08:10 $ by $Author: franciscom $
+ * @version $Revision: 1.58 $
+ * @modified $Date: 2007/09/24 20:51:45 $ by $Author: schlundus $
  *
  * @author Martin Havlat <havlat@users.sourceforge.net>
  * 
@@ -1181,7 +1181,7 @@ function getReqCoverage($reqs,$execMap,&$coveredReqs)
 				$exec = 'n';
 				if (isset($execMap[$execTc]) && sizeof($execMap[$execTc]))
 				{
-					$execInfo = array_pop($execMap[$execTc]);
+					$execInfo = end($execMap[$execTc]);
 					$exec = isset($execInfo['status']) ? $execInfo['status'] : 'n';
 				}
 				if ($exec == 'p')

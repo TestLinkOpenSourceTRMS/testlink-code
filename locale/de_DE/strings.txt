@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.64 $
- * @modified $Date: 2007/09/17 09:42:41 $ $Author: franciscom $
+ * @version $Revision: 1.65 $
+ * @modified $Date: 2007/09/24 20:51:45 $ $Author: schlundus $
  *
  * @author Andreas Morsing
  * @author Fabian Woelk
@@ -1044,7 +1044,7 @@ $TLS_submit_query = "Anfrage abschicken";
 $TLS_test_plan_header = "Testplan: ";
 $TLS_query_metrics_report = "Abfrage Metriken Report";
 $TLS_enter_start_time = "Startzeit eingeben";
-$TLS_enter_end_time = "Endzeit eingeben";
+$TLS_enter_end_time = "Endezeit eingeben";
 $TLS_year = "Jahr";
 $TLS_month = "Monat";
 $TLS_day = "Tag";
@@ -1070,7 +1070,7 @@ $TLS_th_total_fail = "fehlgeschlagen";
 $TLS_th_total_not_run = "nicht ausgeführt";
 $TLS_th_total_pass = "erfolgreich";
 $TLS_th_start_time = "Startzeit";
-$TLS_th_end_time = "Endzeit";
+$TLS_th_end_time = "Endezeit";
 $TLS_th_executor = "Ausgeführt von";
 $TLS_th_search_notes_string = "Suchbegriff";
 $TLS_true = "wahr";

@@ -2,7 +2,7 @@
 /** 
 *	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* @version $Id: planAddTCNavigator.php,v 1.21 2007/09/24 08:43:28 franciscom Exp $
+* @version $Id: planAddTCNavigator.php,v 1.22 2007/09/24 20:51:45 schlundus Exp $
 *	@author Martin Havlat
 * 
 * 	Navigator for feature: add Test Cases to a Test Case Suite in Test Plan. 
@@ -18,10 +18,7 @@
 require('../../config.inc.php');
 require_once("common.php");
 require_once("treeMenu.inc.php");
-require_once('dBug.php');
 testlinkInitPage($db);
-
-echo "<pre>debug 20070923 - \ - " . __FUNCTION__ . " --- "; print_r($_REQUEST); echo "</pre>";
 
 $src_workframe=null;
 $do_reload=0;

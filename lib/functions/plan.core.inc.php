@@ -3,17 +3,14 @@
  * TestLink Open Source Project - @link http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: plan.core.inc.php,v $
- * @version $Revision: 1.36 $
- * @modified $Date: 2007/09/10 12:31:33 $ $Author: franciscom $
+ * @version $Revision: 1.37 $
+ * @modified $Date: 2007/09/25 17:41:21 $ $Author: asielb $
  *  
  * 
  * @author 	Martin Havlat
  *
  *
  * rev:
- *      20070906 - franciscom - getAccessibleTestPlans() 
- *                              interface changes
- *
  *      20070821 - franciscom - BUGID: 951
 **/
 
@@ -25,21 +22,17 @@
   returns: 
 
 */
-function getAccessibleTestPlans(&$db,$testproject_id,$user_id=0,$filter_by_product=0,$tpID = null)
+function getAccessibleTestPlans(&$db,$testproject_id,$filter_by_product=0,$tpID = null)
 {
 	$show_tp_without_prodid = config_get('show_tp_without_prodid');
 	
-	$my_user_id=$user_id;
-	if( $user_id==0 )
-	{
-	  $my_user_id = $_SESSION['userID'];
-	}
+	$userID = $_SESSION['userID'];
 	
 	$query = "SELECT nodes_hierarchy.id, nodes_hierarchy.name, testplans.active 
 	         FROM nodes_hierarchy 
 	         JOIN testplans ON nodes_hierarchy.id=testplans.id  
 	         LEFT OUTER JOIN user_testplan_roles ON testplans.id = user_testplan_roles.testplan_id 
-	         AND user_testplan_roles.user_id = {$my_user_id} WHERE active=1 AND  ";
+	         AND user_testplan_roles.user_id = {$userID} WHERE active=1 AND  ";
 
 	if ($filter_by_product)
 		$query .= "(testproject_id = {$testproject_id} OR testproject_id = 0) AND ";
@@ -54,6 +47,10 @@ function getAccessibleTestPlans(&$db,$testproject_id,$user_id=0,$filter_by_produ
 	  $analyse_global_role=0;	
 	}
 	
+	// echo "<pre>debug 20070821 " . __FUNCTION__ . " --- "; print_r($_SESSION['testprojectRoles']); echo "</pre>";
+	// echo "<pre>debug 20070821 " . __FUNCTION__ . " --- "; print_r($bProductNo); echo "</pre>";
+	// echo "<pre>debug 20070821 \$bGlobalNo" . __FUNCTION__ . " --- "; print_r($bGlobalNo); echo "</pre>";
+	
   if( $bProductNo || ($analyse_global_role && $bGlobalNo))
   {
     $query .= "(role_id IS NOT NULL AND role_id != ".TL_ROLES_NONE.")";
@@ -63,6 +60,11 @@ function getAccessibleTestPlans(&$db,$testproject_id,$user_id=0,$filter_by_produ
     $query .= "(role_id IS NULL OR role_id != ".TL_ROLES_NONE.")";
   }
    
+	// if ($bProductNo || $bGlobalNo)
+	// 	$query .= "(role_id IS NOT NULL AND role_id != ".TL_ROLES_NONE.")";
+	// else
+	// 	$query .= "(role_id IS NULL OR role_id != ".TL_ROLES_NONE.")";
+	                                                                                            
 	if (!is_null($tpID))
 		$query .= " AND nodes_hierarchy.id = {$tpID}";
 		
@@ -70,7 +72,9 @@ function getAccessibleTestPlans(&$db,$testproject_id,$user_id=0,$filter_by_produ
 
 
 	$testPlans = $db->get_recordset($query);
-
+	
+	//echo "<pre>debug 20070821 " . __FUNCTION__ . " --- "; print_r($testPlans); echo "</pre>";
+	
 	$arrPlans = null;
 	for($i = 0;$i < sizeof($testPlans);$i++)
 	{
@@ -101,10 +105,9 @@ function getAccessibleTestPlans(&$db,$testproject_id,$user_id=0,$filter_by_produ
 /**
  * get count Test Plans available for user and Product
  */
-function getNumberOfAccessibleTestPlans(&$db,$testproject_id, $user_id=0, $filter_by_product=0,$tpID = null)
+function getNumberOfAccessibleTestPlans(&$db,$testproject_id, $filter_by_product=0,$tpID = null)
 {
-  
-	$tpData = getAccessibleTestPlans($db,$testproject_id, $user_id, $filter_by_product,$tpID);
+	$tpData = getAccessibleTestPlans($db,$testproject_id, $filter_by_product,$tpID);
 	return sizeof($tpData);	
 }
 
@@ -309,5 +312,15 @@ function dispCategories(&$db,$idPlan, $keyword, $resultCat)
 	
 	return $arrData;
 }
+
+// 20070911 - asielb
+function getTestPlansWithoutProject(&$db)
+{
+	$query = "select id,name from nodes_hierarchy WHERE id IN(SELECT id FROM testplans
+				WHERE testproject_id=0)";
+	$testPlans = $db->get_recordset($query);
+	return $testPlans;
+}
+
 
 ?>

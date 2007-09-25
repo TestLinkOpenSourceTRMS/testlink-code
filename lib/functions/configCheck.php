@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: configCheck.php,v ${file_name} $
  *
- * @version $Revision: 1.14 $
- * @modified $Date: 2007/08/18 14:09:46 ${date} ${time} $ by $Author: franciscom $
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2007/09/25 17:41:21 ${date} ${time} $ by $Author: asielb $
  *
  * @author Martin Havlat
  * 
@@ -18,6 +18,8 @@
  * 20060103 - scs - ADOdb changes
  **/
 // ---------------------------------------------------------------------------------------------------
+
+require_once('plan.core.inc.php');
 
 /*
   function: 
@@ -207,8 +209,15 @@ function getSecurityNotes(&$db)
   {
     $securityNotes[] = $my_msg;
   }
- 	
-	return $securityNotes;
+  
+  // 20070911 - fixing bug 1021 
+  $my_msg=checkForTestPlansWithoutTestProjects($db);
+  if (strlen(trim($my_msg)) > 0)
+  {	
+	$securityNotes[] = $my_msg;
+  }
+  
+  return $securityNotes;
 }
 
 
@@ -313,7 +322,7 @@ function checkForRepositoryDir($the_dir)
   returns: 
 
 */
-function check_schema_version($db)
+function check_schema_version(&$db)
 {
 	$last_version = '1.7.0 RC 3';
 	
@@ -345,6 +354,32 @@ function check_schema_version($db)
 			$msg = "Unknown Schema version, please upgrade your Testlink Database to 1.7 Beta 3";
 			break;
 		}
+	return $msg;
+}
+
+/**
+ * checks if the install dir is present
+ *
+ * @return msg returns if there are any test plans without a test project 
+ *
+ * @version 1.0
+ * @author Asiel Brumfield 
+ **/
+function checkForTestPlansWithoutTestProjects(&$db)
+{
+	$msg = "";
+	
+	$count = count(getTestPlansWithoutProject($db)); 
+	if($count > 0)
+	{	
+		$msg = "You have Test Plans that are not associated with Test Projects. ";
+		if(isset($_SESSION['basehref']))
+		{		
+			$url = $_SESSION['basehref'] . "/lib/project/fix_tplans.php"; 			
+			$msg .= "<a style=\"color:red\" href=\"{$url}\">Fix This</a>";		
+		}
+		
+	}	
 	return $msg;
 }
 

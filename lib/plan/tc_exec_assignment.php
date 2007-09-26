@@ -1,7 +1,7 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: tc_exec_assignment.php,v 1.11 2007/09/24 08:43:28 franciscom Exp $ 
+ * @version $Id: tc_exec_assignment.php,v 1.12 2007/09/26 06:27:49 franciscom Exp $ 
  * 
  * rev :
  *       20070912 - franciscom - BUGID 1041
@@ -20,8 +20,6 @@ $tsuite_mgr = new testsuite($db);
 $tplan_mgr = new testplan($db); 
 $tcase_mgr = new testcase($db); 
 $assignment_mgr = new assignment_mgr($db); 
-
-echo "<pre>debug 20070923 - \$_REQUEST - " . __FUNCTION__ . " --- "; print_r($_REQUEST); echo "</pre>";
 
 $user_id=$_SESSION['userID'];
 

@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: testSetNavigator.tpl,v 1.6 2007/02/03 22:14:07 schlundus Exp $
+$Id: testSetNavigator.tpl,v 1.7 2007/09/26 06:27:40 franciscom Exp $
 show test specification tree 
 *}
 
@@ -34,6 +34,13 @@ show test specification tree
 <div class="tree" id="tree">
 	{$tree}
 </div>
+
+{* 20070925 *}
+<script type="text/javascript">
+{if $workframe != ''}
+	parent.workframe.location='{$workframe}';
+{/if}
+</script>
 
 </body>
 </html>

@@ -1,26 +1,20 @@
 <?php
 /** 
 *	TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* 	@version $Id: testSetNavigator.php,v 1.22 2007/09/24 08:43:28 franciscom Exp $
+* @version $Id: testSetNavigator.php,v 1.23 2007/09/26 06:27:49 franciscom Exp $
 *	@author Martin Havlat 
 *
 * Used in the remove test case feature
 *
-* 20070204 - franciscom - priority
-* 20070123 - franciscom - define moved to const.inc.php
-* 20070120 - franciscom - fixed init of tplan_id.
-* 20061030 - franciscom
-* added management of $getArguments() - [wrongly forgetted]
+* rev :
+*      20070925 - franciscom - added management of workframe
 */ 	
 require('../../config.inc.php');
 require_once("common.php");
 require_once("treeMenu.inc.php");
 testlinkInitPage($db);
 
-echo "<pre>debug 20070923 - \ testSetNavigator.php - " . __FUNCTION__ . " --- "; print_r($_REQUEST); echo "</pre>";
-
-
-$workPath = null;
+$workframe=null;
 $user_id=$_SESSION['userID'];
 
 $tplan_mgr = new testplan($db);
@@ -68,13 +62,17 @@ if(!is_null($keywords_map))
 $keyword_id = isset($_POST['keyword_id']) ? $_POST['keyword_id'] : 0;
 
 // set feature data
-switch($_GET['feature'])
+$the_feature=$_GET['feature'];
+$help_topic=$_GET['help_topic'];
+switch($the_feature)
 {
   case 'removeTC':
 	$menuUrl = "lib/plan/testSetRemove.php";
 	$title = lang_get('title_test_plan_navigator');
 	$hide_tc = 0;
 	$help_file = "testSetRemove.html";
+	$workframe=$_SESSION['basehref'] . "lib/general/show_help.php" .
+	                                   "?help={$help_topic}&locale={$_SESSION['locale']}";
   break;
   
   case 'plan_risk_assignment':
@@ -113,6 +111,12 @@ $tree = invokeMenu($sMenu);
 
 $smarty = new TLSmarty();  
 
+if(!isset($_POST['filter']))
+{
+  $workframe='';
+}
+
+$smarty->assign('workframe',$workframe);
 $smarty->assign('args',$getArguments);
 $smarty->assign('tplan_id',$tplan_id);
 $smarty->assign('map_tplans',$map_tplans);

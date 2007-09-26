@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planAddTCNavigator.tpl,v 1.10 2007/09/24 08:42:43 franciscom Exp $
+$Id: planAddTCNavigator.tpl,v 1.11 2007/09/26 06:27:40 franciscom Exp $
 show test specification tree 
 *}
 
@@ -10,7 +10,6 @@ show test specification tree
 function pre_submit()
 {
  document.getElementById('called_url').value=parent.workframe.location;
- alert(document.getElementById('called_url'));
  return true;
 }
 </script>

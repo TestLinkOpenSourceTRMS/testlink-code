@@ -2,11 +2,17 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.35 $
- * @modified $Date: 2007/09/24 08:43:28 $ $Author: franciscom $
+ * @version $Revision: 1.36 $
+ * @modified $Date: 2007/09/27 08:13:44 $ $Author: franciscom $
  * @author franciscom
  *
  * rev :
+ *       20070927 - franciscom - BUGID 1069
+ *                               added _natsort_builds() (see natsort info on PHP manual).
+ *                               get_builds() add call to _natsort_builds()
+ *                               get_builds_for_html_options() add call to natsort()
+ *                                                          
+ *
  *       20070917 - franciscom - get_linked_tcversions() added version on recordset
  *       20070630 - franciscom - get_linked_tcversions() changed ORDER BY CLAUSE
  *       20070630 - franciscom - get_linked_tcversions(), added active column
@@ -844,7 +850,15 @@ function get_builds_for_html_options($id,$active=null,$open=null)
   $sql .= " ORDER BY builds.name ASC";
 	         
 	         
-	return $this->db->fetchColumnsIntoMap($sql,'id','name');
+	// BUGID      
+	$recordset=$this->db->fetchColumnsIntoMap($sql,'id','name');
+	if( !is_null($recordset) )
+	{
+	  natsort($recordset);
+	}   
+	
+	return $recordset;
+	
 }
 
 /*
@@ -910,12 +924,43 @@ function get_builds($id,$active=null,$open=null)
  	   $sql .= " AND open=" . intval($open) . " ";   
  	}
 	       
-	$sql .= "  ORDER BY builds.name";
+	$sql .= "  ORDER BY builds.name ASC";
 
 	//$recordset = $this->db->get_recordset($sql);
  	$recordset = $this->db->fetchRowsIntoMap($sql,'id');
+  
+  if( !is_null($recordset) )
+  {
+    $recordset = $this->_natsort_builds($recordset);  
+  }
 
 	return $recordset;
+}
+
+/*
+  function: 
+
+  args :
+  
+  returns: 
+
+*/
+function _natsort_builds($builds_map)
+{
+  // BUGID - sort in natural order (see natsort in PHP manual)
+  foreach($builds_map as $key => $value)
+  {
+    $vk[$value['name']]=$key;
+    $build_names[$key]=$value['name'];  
+  }
+  
+  natsort($build_names);
+  $build_num=count($builds_map);
+  foreach($build_names as $key => $value)
+  {
+    $dummy[$key]=$builds_map[$key];  
+  }
+  return $dummy;
 }
 
 

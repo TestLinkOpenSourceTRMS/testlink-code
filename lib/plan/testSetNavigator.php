@@ -1,7 +1,7 @@
 <?php
 /** 
 *	TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* @version $Id: testSetNavigator.php,v 1.23 2007/09/26 06:27:49 franciscom Exp $
+* @version $Id: testSetNavigator.php,v 1.24 2007/09/29 16:04:23 franciscom Exp $
 *	@author Martin Havlat 
 *
 * Used in the remove test case feature
@@ -63,7 +63,7 @@ $keyword_id = isset($_POST['keyword_id']) ? $_POST['keyword_id'] : 0;
 
 // set feature data
 $the_feature=$_GET['feature'];
-$help_topic=$_GET['help_topic'];
+$help_topic=isset($_GET['help_topic']) ? $_GET['help_topic'] : $the_feature;
 switch($the_feature)
 {
   case 'removeTC':
@@ -71,8 +71,6 @@ switch($the_feature)
 	$title = lang_get('title_test_plan_navigator');
 	$hide_tc = 0;
 	$help_file = "testSetRemove.html";
-	$workframe=$_SESSION['basehref'] . "lib/general/show_help.php" .
-	                                   "?help={$help_topic}&locale={$_SESSION['locale']}";
   break;
   
   case 'plan_risk_assignment':
@@ -96,6 +94,10 @@ switch($the_feature)
 	
 }
 
+
+$workframe=$_SESSION['basehref'] . "lib/general/show_help.php" .
+                                   "?help={$help_topic}&locale={$_SESSION['locale']}";
+
 $getArguments = '&tplan_id=' . $tplan_id;       // 20070922 - franciscom
 if ($keyword_id)
 {
@@ -111,10 +113,11 @@ $tree = invokeMenu($sMenu);
 
 $smarty = new TLSmarty();  
 
-if(!isset($_POST['filter']))
+if( !( isset($_POST['filter']) || isset($_REQUEST['called_by_me'])) )
 {
   $workframe='';
 }
+
 
 $smarty->assign('workframe',$workframe);
 $smarty->assign('args',$getArguments);

@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsByStatus.php,v 1.50 2007/09/24 08:43:28 franciscom Exp $ 
+* $Id: resultsByStatus.php,v 1.51 2007/09/29 16:58:01 franciscom Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author Chad Rosen
@@ -35,6 +35,9 @@ $tproject_id=$_SESSION['testprojectID'];
 
 $tplan_info = $tplan_mgr->get_by_id($tplan_id);
 $tproject_info = $tproject_mgr->get_by_id($tproject_id);
+
+$tplan_name = $tplan_info['name'];
+$tproject_name = $tproject_info['name'];
 
 
 if($type == $g_tc_status['failed'])
@@ -133,8 +136,8 @@ if (is_array($mapOfLastResult)) {
 
 
 $smarty = new TLSmarty;
-$smarty->assign('tproject_name', $_SESSION['testprojectName'] );
-$smarty->assign('tplan_name', $_SESSION['testPlanName'] );
+$smarty->assign('tproject_name', $tproject_name );
+$smarty->assign('tplan_name', $tplan_name );
 $smarty->assign('title', $title);
 $smarty->assign('arrBuilds', $arrBuilds); 
 $smarty->assign('arrData', $arrData);

@@ -1,16 +1,29 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: resultsNavigator.tpl,v 1.16 2007/09/17 06:28:46 franciscom Exp $ *}
+{* $Id: resultsNavigator.tpl,v 1.17 2007/09/29 16:57:43 franciscom Exp $ *}
 {* Purpose: smarty template - show Test Results and Metrics *}
-{* Revisions:
-   20070113 - franciscom - use of smarty config file
+{* Rev :
+        20070929 - franciscom - 
+        20070113 - franciscom - use of smarty config file
 *}
 {include file="inc_head.tpl" openHead="yes"}
-{literal}<script type="text/javascript">
+
+{literal}
+<script type="text/javascript">
 function reportPrint(){
 	parent["workframe"].focus();
 	parent["workframe"].print();
 }
-</script>{/literal}
+
+function pre_submit()
+{
+ document.getElementById('called_url').value=parent.workframe.location;
+ return true;
+}
+</script>
+{/literal}
+</head>
+
+
 </head>
 <body>
 {assign var="cfg_section" value=$smarty.template|replace:".tpl":"" }
@@ -40,14 +53,17 @@ function reportPrint(){
 </div>
 
 <div>
-<form method="get">
+<form method="get" id="resultsNavigator" onSubmit="javascript:return pre_submit();">
+  <input type="hidden" id="called_by_me" name="called_by_me" value="1">
+  <input type="hidden" id="called_url" name="called_url" value="">
+
 	<table>
 	<tr><td>
 	  {lang_get s='test_plan'}
 	</td></tr>
 	<tr>
 	  <td>
-	  <select name="tplan_id" onchange="this.form.submit();">
+	  <select name="tplan_id" onchange="pre_submit();this.form.submit()">
 		{html_options options=$tplans selected=$tplan_id}
 	  </select>
 	 </td>
@@ -58,7 +74,7 @@ function reportPrint(){
 	  <td>{lang_get s='title_active_build'}</td>
   </tr>
 	<tr>
-	  <td><select name="build" onchange="this.form.submit();">
+	  <td><select name="build" onchange="pre_submit();this.form.submit()">
 		    {html_options options=$arrBuilds selected=$selectedBuild}
 	     </select>
 	  </td>
@@ -86,6 +102,13 @@ function reportPrint(){
 	</table>
 </form>
 </div>
+
+{* 20070925 *}
+<script type="text/javascript">
+{if $workframe != ''}
+	parent.workframe.location='{$workframe}';
+{/if}
+</script>
 
 </body>
 </html>

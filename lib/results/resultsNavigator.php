@@ -2,7 +2,7 @@
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
- * @version $Id: resultsNavigator.php,v 1.34 2007/09/17 06:29:07 franciscom Exp $ 
+ * @version $Id: resultsNavigator.php,v 1.35 2007/09/29 16:58:01 franciscom Exp $ 
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
  * Launcher for Test Results and Metrics.
@@ -79,8 +79,39 @@ if($do_report['status_ok'])
 	  $selectedReportType = sizeof($arrReportTypes) ? key($arrReportTypes) : null;
 }
 
+$workframe="";
+
+if ( isset($_REQUEST['called_by_me']) )
+{
+  // Algorithm based on field order on URL call
+  define('IDX_URL',0);
+  define('IDX_QSTRING',1);
+
+  define('IDX_REPORT_TYPE_ON_QSTRING',0);
+  define('IDX_BUILD_ID_ON_QSTRING',1);
+  define('IDX_TPLAN_ID_ON_QSTRING',2);
+  
+  $dummy=explode('?',$_REQUEST['called_url']);
+  $qs=explode('&',$dummy[IDX_QSTRING]);
+  
+  if( $do_report['status_ok'] )
+  {    
+    $workframe = $dummy[IDX_URL] . "?" . 
+                 $qs[IDX_REPORT_TYPE_ON_QSTRING] . "&" . 
+                 $qs[IDX_BUILD_ID_ON_QSTRING] . "&tplan_id={$tplan_id}";
+  }
+  else
+  {
+    $workframe=$_SESSION['basehref'] . "lib/general/show_help.php" .
+                                       "?help=showMetrics&locale={$_SESSION['locale']}";
+  }             
+}
+
+
 
 $smarty = new TLSmarty;
+
+$smarty->assign('workframe', $workframe);
 $smarty->assign('do_report', $do_report);
 $smarty->assign('title', lang_get('title_nav_results'));
 $smarty->assign('arrData', $href_map['general_reports']);

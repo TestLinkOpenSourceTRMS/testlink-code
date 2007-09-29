@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: resultsGeneral.php,v $
- * @version $Revision: 1.33 $
- * @modified $Date: 2007/09/17 06:29:07 $ by $Author: franciscom $
+ * @version $Revision: 1.34 $
+ * @modified $Date: 2007/09/29 16:58:01 $ by $Author: franciscom $
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
  * This page show Test Results over all Builds.
@@ -128,6 +128,7 @@ if( $do_report['status_ok'] )
 } //!is_null()
 
 $smarty = new TLSmarty;
+
 $smarty->assign('do_report', $do_report);
 $smarty->assign('tproject_name', $tproject_name);
 $smarty->assign('tplan_name', $tplan_name);

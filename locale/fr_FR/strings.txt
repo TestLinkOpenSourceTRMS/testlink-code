@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.14 $
- * @modified $Date: 2007/09/17 09:42:42 $by $Author: franciscom $
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2007/09/30 10:23:36 $by $Author: franciscom $
  * @author GrdScarabe
  *
  * French translation
@@ -77,6 +77,9 @@ $TLS_th_kw_rights = "Keyword";
 $TLS_th_cf_rights = "Custom field";
 
 $TLS_href_metrics_dashboard = "Metrics dashboard";
+
+$TLS_show_tcase_spec="Show Test Case specification";
+
 
 // firstLogin.php
 $TLS_cant_create_user	= "D&eacute;sol&eacute; mais votre compte ne peut &ecirc;tre cr&eacute;&eacute;. Veuillez pr&eacute;venir votre administrateur de ce probl&egrave;me.";

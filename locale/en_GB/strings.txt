@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.199 $
- * @modified $Date: 2007/09/24 08:43:40 $ $Author: franciscom $
+ * @version $Revision: 1.200 $
+ * @modified $Date: 2007/09/30 10:23:36 $ $Author: franciscom $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -16,7 +16,8 @@
  *
  * English (en_GB) strings
  * 
- * 20070818 - franciscom
+ * 20070930 - franciscom - show_tcase_spec
+ * 20070818 - franciscom -
  * 20070705 - franciscom -
  * 20070520 - franciscom - milestones
  * 20070206 - franciscom - BUGID 618 - \n on JS messages
@@ -831,6 +832,7 @@ $TLS_inactive_testcase = "inactive";
 $TLS_no_testcase_available = "No Test Case available";
 $TLS_note_keyword_filter = "Test Cases are filtered by keyword";
 $TLS_remove_tc = "Remove";
+$TLS_show_tcase_spec="Show Test Case specification";
 $TLS_th_test_case = "Test Case";
 $TLS_title_add_remove_test_to_plan = "Add/Remove Test Cases to/from Test Plan";
 $TLS_title_add_test_to_plan = "Add Test Cases to Test Plan";

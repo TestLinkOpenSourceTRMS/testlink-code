@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.7 $
- * @modified $Date: 2007/09/17 09:42:43 $ $Author: franciscom $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2007/09/30 10:23:37 $ $Author: franciscom $
  *
  * @author Vadim Ivanchenko
  *
@@ -1224,6 +1224,7 @@ $TLS_no_testcase_available = "Нет доступных тестов";
 $TLS_note_keyword_filter = "Тесты отобраны по ключевому слову";
 //ORIG: $TLS_remove_tc = "Remove";
 $TLS_remove_tc = "Удалить";
+$TLS_show_tcase_spec="Show Test Case specification";
 //ORIG: $TLS_th_test_case = "Test Case";
 $TLS_th_test_case = "Тестовый пример";
 //ORIG: $TLS_title_add_remove_test_to_plan = "Add/Remove Test Case(s) to the Test Plan";

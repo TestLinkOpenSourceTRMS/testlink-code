@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.12 $
- * @modified $Date: 2007/09/17 09:42:42 $ by $Author: franciscom $
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2007/09/30 10:23:37 $ by $Author: franciscom $
  *
  * @author Micha&#322; Wujas
  *
@@ -75,6 +75,9 @@ $TLS_th_user_rights = "User";
 $TLS_th_kw_rights = "Keyword";
 $TLS_th_cf_rights = "Custom field";
 $TLS_href_metrics_dashboard = "Metrics dashboard";
+
+$TLS_show_tcase_spec="Show Test Case specification";
+
 
 // resultsGeneral.php 
 $TLS_report_tspec_has_no_tsuites="There are no Test Suites defined for Test ProjectPlan, <br>".

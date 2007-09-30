@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.11 $
- * @modified $Date: 2007/09/17 09:42:43 $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2007/09/30 10:23:37 $
  *
  * @author Yoyo Wang
 **/
@@ -63,6 +63,7 @@ $TLS_th_kw_rights = "Keyword";
 $TLS_th_cf_rights = "Custom field";
 
 $TLS_href_metrics_dashboard = "Metrics dashboard";
+$TLS_show_tcase_spec="Show Test Case specification";
 
 // firstLogin.php
 $TLS_cant_create_user = "很抱歉无法为您创建登陆帐号。请与管理员联系！";

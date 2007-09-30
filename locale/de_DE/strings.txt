@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.65 $
- * @modified $Date: 2007/09/24 20:51:45 $ $Author: schlundus $
+ * @version $Revision: 1.66 $
+ * @modified $Date: 2007/09/30 10:23:27 $ $Author: franciscom $
  *
  * @author Andreas Morsing
  * @author Fabian Woelk
@@ -801,6 +801,7 @@ $TLS_inactive_testcase = "inaktiv";
 $TLS_no_testcase_available = "Kein Testfall verfügbar";
 $TLS_note_keyword_filter = "Testfälle sind nach Stichworten gefiltert";
 $TLS_remove_tc = "Entfernen";
+$TLS_show_tcase_spec="Show Test Case specification";
 $TLS_th_test_case = "Testfall";
 $TLS_title_add_remove_test_to_plan = "Hinzufügen / Entfernen der Testfälle vom Testplan";
 $TLS_title_add_test_to_plan = "Testfall zum Testplan hinzufügen";

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.20 $
- * @modified $Date: 2007/09/17 09:42:42 $ $Author: franciscom $
+ * @version $Revision: 1.21 $
+ * @modified $Date: 2007/09/30 10:23:36 $ $Author: franciscom $
  *
  * @author jorgesf@jsf.jazztel.es
  *
@@ -74,6 +74,8 @@ $TLS_th_cf_rights = "Custom field";
 
 
 $TLS_href_metrics_dashboard = "Metrics dashboard";
+$TLS_show_tcase_spec="Muestra especifia del Test";
+
 
 // firstLogin.php
 $TLS_cant_create_user = "Lo siento pero no se ha podido crear su conexión. ¡Por favor, contacte con su administrador!";

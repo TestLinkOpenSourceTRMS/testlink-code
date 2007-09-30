@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/ 
 // This script is distributed under the GNU General Public License 2 or later. 
 //
-// $Id: testlink_library.js,v 1.38 2007/09/30 10:17:53 franciscom Exp $ 
+// $Id: testlink_library.js,v 1.39 2007/09/30 10:19:13 franciscom Exp $ 
 //
 // Javascript functions commonly used through the GUI
 // This library is automatically loaded with inc_header.tpl
@@ -148,7 +148,6 @@ function ETS(id)
 function ET(id,v)
 {
   // get checkboxes status
-	alert(fRoot+menuUrl+"?version_id="+v+"&edit=testcase&id="+id+args);
 	var pParams = tree_getPrintPreferences();
 	parent.workframe.location = fRoot+menuUrl+"?version_id="+v+"&edit=testcase&id="+id+args;
 }

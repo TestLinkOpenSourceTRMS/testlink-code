@@ -9,10 +9,11 @@
  * To avoid override of other globals we are using $TLS_ (Test Link String) prefix.
  * This must be a reserved prefix.
  *
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  *
  * @author Francisco Mancardi
  *
+ * 20070930 - franciscom - show_tcase_spec
  * 20070912 - havlat -
  * 20070911 - franciscom -
  * 20070818 - franciscom -
@@ -41,7 +42,7 @@
  * Toshinori Sawaguchi, Toshiyuki Kawanishi, Yasuhiko Okada,
  * Yoichi Kunihiro,     Yoshihiro Yoshimura
  *
- * @modified $Date: 2007/09/18 17:18:36 $ $Author: franciscom $
+ * @modified $Date: 2007/09/30 10:23:37 $ $Author: franciscom $
  *-------------------------------------------------------------------
 **/
 //If this file is coded in UTF-8 then enable the following line
@@ -855,6 +856,7 @@ $TLS_inactive_testcase = "インアクティブ";
 $TLS_no_testcase_available = "テストケースがありません";
 $TLS_note_keyword_filter = "テストケースはキーワードによってフィルターされます";
 $TLS_remove_tc = "削除";
+$TLS_show_tcase_spec="Show Test Case specification";
 $TLS_th_test_case = "テストケース";
 $TLS_title_add_remove_test_to_plan = "テスト計画に/テスト計画から テストケースを追加/削除";
 $TLS_title_add_test_to_plan = "テスト計画にテストケースを追加";

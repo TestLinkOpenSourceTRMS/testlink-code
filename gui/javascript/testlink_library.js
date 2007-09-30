@@ -1,12 +1,28 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/ 
 // This script is distributed under the GNU General Public License 2 or later. 
 //
-// $Id: testlink_library.js,v 1.37 2007/08/20 06:41:11 franciscom Exp $ 
+// $Id: testlink_library.js,v 1.38 2007/09/30 10:17:53 franciscom Exp $ 
 //
 // Javascript functions commonly used through the GUI
 // This library is automatically loaded with inc_header.tpl
 //
 // DO NOT ADD FUNCTIONS FOR ONE USING
+//
+// ----------------------------------------------------------------------------
+//                               Development Notes
+// ----------------------------------------------------------------------------
+//
+// Globals variables:
+// fRoot
+// menuUrl
+// args
+//
+// value to this variables is assigned using different smarty templates,
+// like inc_head.tpl
+//
+// ----------------------------------------------------------------------------
+//
+// 20070930 - franciscom - REQ - BUGID 1078 - openTCaseWindow()
 //
 // 20070509 - franciscom - changes in tree_getPrintPreferences()
 //                         to support new options (Contribution)
@@ -132,6 +148,7 @@ function ETS(id)
 function ET(id,v)
 {
   // get checkboxes status
+	alert(fRoot+menuUrl+"?version_id="+v+"&edit=testcase&id="+id+args);
 	var pParams = tree_getPrintPreferences();
 	parent.workframe.location = fRoot+menuUrl+"?version_id="+v+"&edit=testcase&id="+id+args;
 }
@@ -503,3 +520,22 @@ function deleteRole_onClick(role_id,msg)
   }
 }
 
+
+/*
+  function: 
+
+  args :
+  
+  returns: 
+  
+  rev :
+       20070930 - franciscom - REQ - BUGID 1078
+
+*/
+function openTCaseWindow(tcase_id)
+{                        
+  var feature_url="lib/testcases/archiveData.php";
+  feature_url +="?allow_edit=0&edit=testcase&id="+tcase_id;
+	window.open(fRoot+feature_url,"Test Case Spec",
+	            "width=510,height=300,resizable=yes,scrollbars=yes,dependent=yes");
+}

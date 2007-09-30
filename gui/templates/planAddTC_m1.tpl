@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planAddTC_m1.tpl,v 1.14 2007/09/22 19:03:35 schlundus Exp $
+$Id: planAddTC_m1.tpl,v 1.15 2007/09/30 10:17:53 franciscom Exp $
 Purpose: smarty template - generate a list of TC for adding to Test Plan 
 
 20070630 - franciscom - now tcversions linked to test plan, but set inactive
@@ -26,7 +26,7 @@ added logic to manage active/inactive tcversions
 
 
 {if $has_tc }
-<form name='addTcForm' method='post'>
+<form name='addTcForm' id='addTcForm' method='post'>
    <h1>
     {if $full_control eq 1}
       {if $has_linked_items eq 0} 
@@ -136,8 +136,9 @@ added logic to manage active/inactive tcversions
     			      <td>
     				    {$tcase.id}
     			      </td>
-    			      <td>
-    				    {$tcase.name|escape}
+    			      {* 20070930 - franciscom - REQ - BUGID 1078 *}
+    				    <td title="{lang_get s='show_tcase_spec'}">
+     				     <a href="javascript:openTCaseWindow({$tcase.id})">{$tcase.name|escape}</a>
     			      </td>
     			      
                 <td>

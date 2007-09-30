@@ -1,12 +1,13 @@
 <?php
 ////////////////////////////////////////////////////////////////////////////////
-// @version $Id: planAddTC.php,v 1.36 2007/09/24 08:43:28 franciscom Exp $
+// @version $Id: planAddTC.php,v 1.37 2007/09/30 10:18:32 franciscom Exp $
 // File:     planAddTC.php
 // Purpose:  link/unlink test cases to a test plan
 //
 //
 // rev :
-//       20070912 - franciscom - BUGID 905
+//      20070930 - franciscom - BUGID
+//      20070912 - franciscom - BUGID 905
 //      20070124 - franciscom
 //      use show_help.php to apply css configuration to help pages
 //

@@ -3,11 +3,14 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
- * @version $Id: archiveData.php,v 1.24 2007/02/20 18:48:50 franciscom Exp $
+ * @version $Id: archiveData.php,v 1.25 2007/09/30 10:18:33 franciscom Exp $
  * @author Martin Havlat
  *  
- * This page allows you to show data (test cases, categories, and
- * components. This is refered by tree.
+ * Allows you to show test suites, test cases.
+ * Normally launched from tree navigator.
+ *
+ * rev :
+ *      20070930 - franciscom - REQ - BUGID 1078
  * 
  */
 require_once('../../config.inc.php');
@@ -53,16 +56,21 @@ switch($feature)
 		$smarty->assign('id',$id);
 		$item_mgr = new testcase($db);
 		
-		// 20070220 - franciscom - automatic tree refresh logic
 		$no_msg='';
 		$no_action='';
+		$no_user_feedback='';
+
 		$spec_cfg=config_get('spec_cfg');
 		$do_refresh_yes_no=$spec_cfg->automatic_tree_refresh?"yes":"no";
 		if( isset($_SESSION['tcspec_refresh_on_action']) )
     {
         $do_refresh_yes_no=$_SESSION['tcspec_refresh_on_action'];
     }
-		$item_mgr->show($smarty,$id,$user_id,TC_ALL_VERSIONS,$no_action,$no_msg,$do_refresh_yes_no);
+
+    // 20070930 - franciscom - REQ - BUGID 1078
+    // added two arguments on call.
+		$item_mgr->show($smarty,$id,$user_id,TC_ALL_VERSIONS,
+		                $no_action,$no_msg,$do_refresh_yes_no,$no_user_feedback,!$allow_edit);
 		break;
 
 	default:

@@ -2,10 +2,12 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.58 $
- * @modified $Date: 2007/07/06 06:33:51 $ $Author: franciscom $
+ * @version $Revision: 1.59 $
+ * @modified $Date: 2007/09/30 10:18:32 $ $Author: franciscom $
  * @author franciscom
  *
+ *
+ * 20070930 - franciscom - REQ - BUGID 1078 -> show() interface changes 
  *
  * 20070701 - franciscom - create_new_version(), changes in return map.
  * 20070617 - franciscom - added include of users.inc.php                         
@@ -253,8 +255,33 @@ function get_all()
 // 20060425 - franciscom - added $smarty argument (by reference) 
 //                         can accept an array of id
 //
+//
+/*
+  function: 
+
+  args :
+        $smarty: reference to smarty object (controls viewer).
+        $id: test case id
+        $user_id: user requesting operation
+        [$version_id]: you can work on ONE test case version, or on ALL
+                       default: ALL
+        [$action]
+        [$msg_result]
+        [$refresh_tree]: controls if tree view is refreshed after every operation.
+                         default: yes
+        [$user_feedback]:
+        [$disable_edit]: used to overwrite user rights
+                         default: 0 -> no
+  
+  returns: 
+  
+  rev :
+       20070930 - franciscom - REQ - BUGID 1078 
+       added disable_edit argument
+
+*/
 function show(&$smarty,$id, $user_id, $version_id=TC_ALL_VERSIONS, $action='', 
-              $msg_result='', $refresh_tree='yes', $user_feedback='')
+              $msg_result='', $refresh_tree='yes', $user_feedback='', $disable_edit=0)
 {
   
 	$gui_cfg = config_get('gui');
@@ -262,7 +289,9 @@ function show(&$smarty,$id, $user_id, $version_id=TC_ALL_VERSIONS, $action='',
 	$tcase_cfg = config_get('testcase_cfg');
 
 	$arrReqs = null;
-	$can_edit = has_rights($this->db,"mgt_modify_tc");
+	
+	// 20070930 - franciscom
+	$can_edit = $disable_edit == 0 ? has_rights($this->db,"mgt_modify_tc") : "no";
 
 	if(is_array($id))
 	{

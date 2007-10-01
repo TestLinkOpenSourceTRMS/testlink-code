@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: attachments.inc.php,v $
  *
- * @version $Revision: 1.7 $
- * @modified $Date: 2006/07/28 17:22:04 $ by $Author: schlundus $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2007/10/01 08:12:48 $ by $Author: franciscom $
  *
  * functions related to attachments
  *
@@ -254,10 +254,27 @@ function gzip_writeToFile($dstName,$data)
 	return false;
 }
 
+/*
+  function: 
+
+  args :
+  
+  returns: 
+
+  rev :
+       20070930 - franciscom - using attachment config 
+*/
 function getAttachmentInfos(&$db,$fkid,$tableName,$bStoreListInSession = true,$counter = 0)
 {
-	$query = "SELECT id,title,description,file_name,file_type,file_size,date_added,compression_type,file_path, fk_id,fk_table FROM attachments WHERE fk_id = {$fkid} AND fk_table = '" .
-			 $db->prepare_string($tableName)."' ORDER BY date_added DESC";
+  $attachment_cfg=config_get('attachments');
+  $order_by = $attachment_cfg->order_by;
+  
+	$query = "SELECT id,title,description,file_name,".
+	         " file_type,file_size,date_added,compression_type," .
+	         " file_path, fk_id,fk_table " .
+	         " FROM attachments " .
+	         " WHERE fk_id = {$fkid} AND fk_table = '" . $db->prepare_string($tableName). "' " . $order_by;
+	         
 	$attachmentInfos = $db->get_recordset($query);
 	if ($bStoreListInSession)
 	{
@@ -274,11 +291,26 @@ function getAttachmentInfos(&$db,$fkid,$tableName,$bStoreListInSession = true,$c
 	return $attachmentInfos;
 }
 
+
+/*
+  function: 
+
+  args :
+  
+  returns: 
+
+  rev :
+       20070930 - franciscom - using attachment config 
+*/
 function getAttachmentInfo(&$db,$id)
 {
+  $attachment_cfg=config_get('attachments');
+  $order_by = $attachment_cfg->order_by;
+  
 	$query = "SELECT id,title,description,file_name,file_type,file_size,date_added,".
-			 "compression_type,file_path,fk_id,fk_table FROM attachments WHERE id = {$id} ".
-			 "ORDER BY date_added DESC";
+			     "compression_type,file_path,fk_id,fk_table " .
+			     "FROM attachments WHERE id = {$id} " .  $order_by;
+
 	return $db->fetchFirstRow($query);			 
 }
 

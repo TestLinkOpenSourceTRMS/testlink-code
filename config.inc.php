@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.122 $
- * @modified $Date: 2007/09/11 06:31:36 $ by $Author: franciscom $
+ * @version $Revision: 1.123 $
+ * @modified $Date: 2007/10/01 08:12:47 $ by $Author: franciscom $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink 
@@ -17,6 +17,7 @@
  *-----------------------------------------------------------------------------
  *
  * Revisions:
+ *           20070930 - franciscom - BUGID 1086 - configure order by in attachment
  *           20070910 - franciscom - removed MAIN_PAGE_METRICS_ENABLED
  *           20070819 - franciscom - $g_default_roleid
  *           20070706 - franciscom - $g_exec_cfg->user_filter_default
@@ -353,8 +354,8 @@ $g_attachments->action_on_display_empty_title='show_icon';
 $g_attachments->access_icon='<img src="' . TL_THEME_IMG_DIR . '/new_f2_16.png" style="border:none">';
 $g_attachments->access_string="[*]";
 
-
-
+// Set display order of uploaded files - BUGID 1086
+$g_attachments->order_by=" ORDER BY date_added DESC ";
 
 // ----------------------------------------------------------------------------
 /** [Requirements] */

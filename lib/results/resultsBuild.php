@@ -1,11 +1,11 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsBuild.php,v 1.31 2007/09/17 06:29:07 franciscom Exp $ 
+* $Id: resultsBuild.php,v 1.32 2007/10/01 08:12:48 franciscom Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * 
-* This page show Metrics of one Build.
+* Metrics of one Build.
 *
 * @author Kevin Levy - KL - update to 1.7
 * 
@@ -37,6 +37,7 @@ $tproject_id=$_SESSION['testprojectID'];
 
 $tplan_info = $tplan_mgr->get_by_id($tplan_id);
 $tproject_info = $tproject_mgr->get_by_id($tproject_id);
+$tplan_name = $tplan_info['name'];
 
 $re = new results($db, $tplan_mgr, $tproject_info, $tplan_info,
                   ALL_TEST_SUITES,$builds_to_query);
@@ -152,7 +153,7 @@ if ($arrDataOwner != null)
 * SMARTY ASSIGNMENTS
 */
 $smarty = new TLSmarty;
-$smarty->assign('tpName', $_SESSION['testPlanName']);
+$smarty->assign('tpName', $tplan_name);
 $smarty->assign('buildName', $buildName);
 $smarty->assign('arrDataPriority', $arrDataPriority);
 $smarty->assign('arrDataAllSuites', $arrDataAllSuites);

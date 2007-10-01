@@ -1,11 +1,11 @@
 <?php
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
- *$Id: resultsMoreBuilds.inc.php,v 1.52 2007/06/22 17:11:55 franciscom Exp $ 
+ * $Id: resultsMoreBuilds.inc.php,v 1.53 2007/10/01 08:12:48 franciscom Exp $ 
  * 
  * @author Kevin Levy
  *
- * 20051022 - scs - small cosmetic changes, removed ' in componentid list
- * 20051126 - scs - added escaping of component name and notes
+ * rev :
+ *      20070930 - franciscom - use tplan_mgr
  */
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -18,7 +18,9 @@ require_once("common.php");
  */
 
 function getExecutionsMap(&$db, $idPlan){
-  $sql = "SELECT id, build_id, tester_id, execution_ts, status, testplan_id, tcversion_id, notes FROM executions WHERE testplan_id= $idPlan";
+  $sql = "SELECT id, build_id, tester_id, execution_ts, status, testplan_id, " .
+         " tcversion_id, notes " .
+         " FROM executions WHERE testplan_id= $idPlan";
 
   $column = 'id';
   $mapOfResults = $db->fetchRowsIntoMap($sql, $column);
@@ -106,6 +108,8 @@ function createResultsForTestPlan(&$db,$testPlanName, $testPlanID,
 				  $buildsArray, $keyword, $owner, $lastStatus, $xls, $componentsSelected)
 {
  
+  $tplan_mgr = new testplan($db);
+
   $totalCasesForTestPlan = 0;
   $totalLastResultPassesForTestPlan = 0;
   $totalLastResultFailuresForTestPlan = 0;
@@ -120,7 +124,11 @@ function createResultsForTestPlan(&$db,$testPlanName, $testPlanID,
   $build_name_set = null;
 
   // list of ALL (id, name) pairs for the test plan
-  $arrAllBuilds = getBuilds($db,$testPlanID," ORDER BY builds.name ");
+  // $arrAllBuilds = getBuilds($db,$testPlanID," ORDER BY builds.name ");
+  //
+  // 20070930 
+  $arrAllBuilds = $tplan_mgr->get_builds_for_html_options($testPlanID);
+
 
   for($i = 0;$i < sizeof($buildsArray);$i++)
 	{

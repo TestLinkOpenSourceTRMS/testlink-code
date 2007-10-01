@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.58 $
- * @modified $Date: 2007/08/27 06:37:44 $  by $Author: franciscom $
+ * @version $Revision: 1.59 $
+ * @modified $Date: 2007/10/01 08:12:48 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
  * 20070826 - franciscom - is automatic tree refresh is disable,
@@ -27,6 +27,7 @@ require_once("../../third_party/fckeditor/fckeditor.php");
 require_once("opt_transfer.php");
 testlinkInitPage($db);
 
+$sqlResult="";
 $gui_cfg = config_get('gui');
 $order_cfg = config_get('tree_node_ordering');
 $spec_cfg=config_get('spec_cfg');
@@ -145,11 +146,13 @@ if($do_create || $do_update)
 	if($name_ok && !check_string($name,$g_ereg_forbidden) )
 	{
 		$msg = lang_get('string_contains_bad_chars');
+		$user_feedback=$msg;
 		$name_ok = 0;
 	}
 	if($name_ok && strlen($name) == 0)
 	{
 		$msg = lang_get('warning_empty_tc_title');
+		$user_feedback=$msg;
 		$name_ok = 0;
 	}
 }
@@ -185,7 +188,6 @@ if($edit_tc)
 } 
 else if($do_update)
 {
-	//$refresh_tree='no';
 	$refresh_tree=$do_refresh?"yes":"no";
 	if($name_ok)
 	{

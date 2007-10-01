@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.200 $
- * @modified $Date: 2007/09/30 10:23:36 $ $Author: franciscom $
+ * @version $Revision: 1.201 $
+ * @modified $Date: 2007/10/01 08:12:48 $ $Author: franciscom $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -130,7 +130,7 @@ $TLS_low_importance = "Low";
 $TLS_medium_importance = "Medium";
 
 // resultsGeneral.php 
-$TLS_report_tspec_has_no_tsuites="There are no Test Suites defined for Test ProjectPlan, <br>".
+$TLS_report_tspec_has_no_tsuites="There are no Test Suites defined for Test Project, <br>".
                                  "then no execution data can exist => no report can be created";
 
 // resultsNavigator.php
@@ -1183,7 +1183,7 @@ $TLS_no_tc_spec_av = "No Test Specification available!";
 
 // gui/templates/tc_exec_assignment.tpl
 $TLS_btn_do = "Do";
-$TLS_btn_update_selected_tc = "Update selected Test Case(s)";
+$TLS_btn_update_selected_tc = "Save";
 $TLS_title_tc_exec_assignment = "Assigning Test Case execution tasks for test plan ";
 $TLS_user = "User";
 $TLS_user_bulk_assignment = "Bulk user assignment";

@@ -2,12 +2,13 @@
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
- * @version $Id: resultsNavigator.php,v 1.35 2007/09/29 16:58:01 franciscom Exp $ 
+ * @version $Id: resultsNavigator.php,v 1.36 2007/10/01 08:12:48 franciscom Exp $ 
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
  * Launcher for Test Results and Metrics.
  *
  * rev :
+ *      20070930 - franciscom - 
  *      20070916 - franciscom - added logic to choose test plan
  *      20070826 - franciscom - disable resultsImport
  */
@@ -40,7 +41,7 @@ foreach($tplans as $key => $value)
   $map_tplans[$value['id']]=$value['name'];
 }
 
-$arrBuilds = getBuilds($db,$tplan_id, " ORDER BY builds.name ");
+$the_builds = $tplan_mgr->get_builds_for_html_options($tplan_id);
 $linked_tcversions=$tplan_mgr->get_linked_tcversions($tplan_id);
 
 // -----------------------------------------------------------------------------
@@ -55,7 +56,7 @@ if( is_null($linked_tcversions) || count($linked_tcversions) == 0 )
 }
 
 // Build qty
-if( is_null($arrBuilds) || count($arrBuilds) == 0 )
+if( is_null($the_builds) || count($the_builds) == 0 )
 {
    // Test plan without builds can have execution data
    $do_report['status_ok']=0;
@@ -66,12 +67,12 @@ if( is_null($arrBuilds) || count($arrBuilds) == 0 )
 
 if($do_report['status_ok'])
 {
-  $arrBuilds = array_reverse($arrBuilds, true);
+  // $the_builds = array_reverse($the_builds, true);
 
   if (isset($_GET['build']))
 	  $selectedBuild = intval($_GET['build']);
   else
-	  $selectedBuild = sizeof($arrBuilds) ? key($arrBuilds) : null;
+	  $selectedBuild = sizeof($the_builds) ? key($the_builds) : null;
 
   if (isset($_GET['report_type']))
 	  $selectedReportType = intval($_GET['report_type']);
@@ -116,7 +117,7 @@ $smarty->assign('do_report', $do_report);
 $smarty->assign('title', lang_get('title_nav_results'));
 $smarty->assign('arrData', $href_map['general_reports']);
 $smarty->assign('arrDataB', $href_map['build_reports']);
-$smarty->assign('arrBuilds', $arrBuilds);
+$smarty->assign('arrBuilds', $the_builds);
 $smarty->assign('tplans', $map_tplans);
 
 $smarty->assign('selectedBuild', $selectedBuild);

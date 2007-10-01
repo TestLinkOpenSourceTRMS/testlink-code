@@ -1,9 +1,12 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tc_exec_assignment.tpl,v 1.4 2007/04/09 08:03:32 franciscom Exp $
+$Id: tc_exec_assignment.tpl,v 1.5 2007/10/01 08:12:48 franciscom Exp $
 generate the list of TC that can be removed from a Test Plan 
 
 rev :
+     20070930 - franciscom - BUGID 
+     tcase name href to open window with test case spec.
+     
      20070407 - franciscom - gui refactoring
      20070120 - franciscom - BUGID 530
 *}
@@ -89,8 +92,8 @@ rev :
             	  <td>
             	  {$tcase.id}
                 </td>
-            	  <td>
-            	  {$tcase.name|escape}
+            	  <td title="{lang_get s='show_tcase_spec'}">
+            	    <a href="javascript:openTCaseWindow({$tcase.id})">{$tcase.name|escape}</a>
                 </td>
                 <td align="center">
         				{$tcase.tcversions[$tcase.linked_version_id]}

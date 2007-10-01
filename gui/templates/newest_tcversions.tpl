@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: newest_tcversions.tpl,v 1.1 2007/05/02 07:26:58 franciscom Exp $
+$Id: newest_tcversions.tpl,v 1.2 2007/10/01 08:12:48 franciscom Exp $
 Purpose: smarty template - 
 *}
 
@@ -11,14 +11,31 @@ Purpose: smarty template -
 {assign var="text_hint" value="$common_prefix"}
 
 <body>
-<h1>{lang_get s='test_plan'}{$smarty.const.TITLE_SEP}{$testPlanName|escape}</h1>
+{* <h1>{lang_get s='test_plan'}{$smarty.const.TITLE_SEP}{$testPlanName|escape}</h1> *}
 <h1> {lang_get s='title_newest_tcversions'} 
 {include file="inc_help.tpl" help="newest_tcversions" locale=$locale 
          alt="$text_hint" title="$text_hint"}
 
 
 </h1>
-
+{* onchange="pre_submit();this.form.submit()"> *}
+<form method="post" id="newest_tcversions.tpl">
+  <table>
+  <tr>
+   <td>{lang_get s='testproject'}{$smarty.const.TITLE_SEP}</td>
+   <td>{$tproject_name|escape}</td>
+  </tr>
+  
+  <tr>
+    <td>{lang_get s='test_plan'}</td>
+    <td>
+      <select name="tplan_id" id="tplan_id" onchange="this.form.submit()">  
+         {html_options options=$tplans selected=$tplan_id}
+      </select>
+    </td>
+  </tr>
+  </table>
+</form>
 
 {if $show_details }
   <div class="workBack" style="height: 380px; overflow-y: auto;">

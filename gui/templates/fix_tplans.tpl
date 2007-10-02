@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: fix_tplans.tpl,v 1.1 2007/09/25 17:41:22 asielb Exp $
+$Id: fix_tplans.tpl,v 1.2 2007/10/02 16:30:32 asielb Exp $
 Purpose: assign test plans to a test project - bug 1021
 *}
 
@@ -11,7 +11,7 @@ Purpose: assign test plans to a test project - bug 1021
 
 <p>Listing <span style="color:red">{$count}</span> Test Plans that are currently not associated with a Test Project</p>
 
-<form method="post" action="lib/project/assignTestPlansWithoutTestProject.php"
+<form method="post" action="lib/project/fix_tplans.php"
 
 <table>
 <tr>

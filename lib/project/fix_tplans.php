@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: fix_tplans.php,v $
- * @version $Revision: 1.1 $
- * @modified $Date: 2007/09/25 17:41:21 $  $Author: asielb $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2007/10/02 16:30:32 $  $Author: asielb $
  * @author asielb
  *
  * fixes bug 1021
@@ -20,6 +20,13 @@ $can_manage_tprojects=has_rights($db,'mgt_modify_product');
 // make sure the user has rights to manage test projects
 if ($can_manage_tprojects)
 {
+	function changeTestProjectForTestPlan(&$db, $testPlan, $testProject)
+	{
+		$query = "UPDATE testplans SET testproject_id={$testProject} WHERE id={$testPlan}";
+		$db->exec_query($query);
+		echo "<br />Done changing test project";
+	}
+	
 	if($_POST)
 	{
 		foreach ($_POST as $testPlan => $testProject)
@@ -30,15 +37,8 @@ if ($can_manage_tprojects)
 				changeTestProjectForTestPlan($db, $testPlan, $testProject);
 			}
 		}
-	}
-	
-	function changeTestProjectForTestPlan(&$db, $testPlan, $testProject)
-	{
-		$query = "UPDATE testplans SET testproject_id={$testProject} WHERE id={$testPlan}";
-		$db->exec_query($query);
-		echo "<br />Done changing test project";
-	}
-	
+		echo "<hr>";
+	}	
 	
 	$testPlans = getTestPlansWithoutProject($db);
 	$testPlansCount = count($testPlans);

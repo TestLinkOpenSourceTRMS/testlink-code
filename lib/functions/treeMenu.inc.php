@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: treeMenu.inc.php,v $
  *
- * @version $Revision: 1.40 $
- * @modified $Date: 2007/09/24 08:43:28 $ by $Author: franciscom $
+ * @version $Revision: 1.41 $
+ * @modified $Date: 2007/10/02 21:55:24 $ by $Author: jbarchibald $
  * @author Martin Havlat
  *
  * 	This file generates tree menu for test specification and test execution.
@@ -15,6 +15,7 @@
  * 
  * Revisions:
  *
+ *      20071002 - jbarchibald - BUGID 1051
  *       20070306 - franciscom - BUGID 705 
  *
  **/
@@ -517,7 +518,7 @@ function jtree_renderTestSpecTreeNodeOnClose($current,$nodeDesc)
 * Execution of Test Cases
 * Remove Test cases from test plan
 * 
-*
+* 20071002 - jbarchibald - BUGID 1051 - added cf element to parameter list
 * 20070204 - franciscom - changed $bForPrinting -> $bHideTCs
 *
 * operation: string that can take the following values:
@@ -530,7 +531,7 @@ function jtree_renderTestSpecTreeNodeOnClose($current,$nodeDesc)
 function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
                           $tplan_name,$build_id,
                           $getArguments, $keyword_id = 0,$tc_id = 0, $bHideTCs = false,
-			                    $assignedTo = 0, $status = null)
+			              $assignedTo = 0, $status = null, $cf_hash = null)
 {
 	$menustring = null;
 	$any_exec_status=null;
@@ -546,11 +547,13 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 	$test_spec = $tree_manager->get_subtree($tproject_id,array('testplan'=>'exclude me'),
 	                                                     array('testcase'=>'exclude my children'),
 	                                                     null,null,RECURSIVE_MODE);
-	                               
+
+  // 20071002 - jbarchibald - BUGID 1051
   // 20070306 - franciscom - BUGID 705   
 	$tp_tcs = $tplan_mgr->get_linked_tcversions($tplan_id,$tc_id,$keyword_id,
-	                                            null,$assignedTo,$status,$build_id);
-     
+	                                            null,$assignedTo,$status,$build_id,
+                                                $cf_hash);
+
      
 	if (is_null($tp_tcs))
 		$tp_tcs = array();

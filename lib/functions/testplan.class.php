@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.36 $
- * @modified $Date: 2007/09/27 08:13:44 $ $Author: franciscom $
+ * @version $Revision: 1.37 $
+ * @modified $Date: 2007/10/02 21:55:24 $ $Author: jbarchibald $
  * @author franciscom
  *
  * rev :
@@ -295,7 +295,8 @@ function link_tcversions($id,&$items_to_link)
 
 */
 function get_linked_tcversions($id,$tcase_id=null,$keyword_id=0,$executed=null,
-                               $assigned_to=null,$exec_status=null,$build_id=0)
+                               $assigned_to=null,$exec_status=null,$build_id=0,
+                               $cf_hash = null)
 {
   $tc_status=config_get('tc_status');
   $status_not_run=$tc_status['not_run'];
@@ -407,6 +408,12 @@ function get_linked_tcversions($id,$tcase_id=null,$keyword_id=0,$executed=null,
 	
 	$recordset = $this->db->fetchRowsIntoMap($sql,'tc_id');
   
+   // 20070913 - jbarchibald
+   // here we add functionality to filter out the custom field selections
+    if (!is_null($cf_hash)) {
+        $recordset = $this->filter_cf_selection ($recordset, $cf_hash);
+    }
+
 	return $recordset;
 }
 
@@ -1307,6 +1314,67 @@ function set_priority_rules($tplan_id,$priority_hash)
 			$result = $this->db->exec_query($sql);
 	}
 }
+
+
+  /*
+    function: filter_cf_selection
+  
+    args :
+          $tp_tcs - this comes from get_linked_tcversion
+          $cf_hash [cf_id] = value of cfields to filter by.       
+    
+    returns: array filtered by selected custom fields.
+  
+    rev :
+  */
+    function filter_cf_selection ($tp_tcs, $cf_hash)
+    {
+        $new_tp_tcs = null;
+    
+        foreach ($tp_tcs as $tc_id => $tc_value)
+        {
+            
+            foreach ($cf_hash as $cf_id => $cf_value)
+            {
+                $passed = 0;
+                // there will never be more than one record that has a field_id / node_id combination
+                $sql = "SELECT value FROM cfield_design_values " .
+                        "WHERE field_id = $cf_id " .
+                        "AND node_id = $tc_id ";
+    
+                $result = $this->db->exec_query($sql);
+    			$myrow = $this->db->fetch_array($result);
+
+                // push both to arrays so we can compare 
+                $possibleValues = explode ('|', $myrow['value']);
+                $valuesSelected = explode ('|', $cf_value);
+                
+                // we want to match any selected item from list and checkboxes. 
+                if ( count($valuesSelected) ) {
+                    foreach ($valuesSelected as $vs_id => $vs_value) {
+                        $found = array_search($vs_value, $possibleValues);
+                        if (is_int($found)) {
+                            $passed = 1;
+                        } else {
+                            $passed = 0;
+                            break;
+                        }
+                    }
+                }
+                // if we don't match, fall out of the foreach.
+                // this gives a "and" search for all cf's, if this is removed then it responds
+                // as an "or" search
+                // perhaps this could be parameterized. 
+                if ($passed == 0) {
+                    break;
+                }
+            }
+            if ($passed) {
+                $new_tp_tcs[$tc_id] = $tp_tcs[$tc_id]; 
+            }
+        }
+        return ($new_tp_tcs);
+    }
 
 
 

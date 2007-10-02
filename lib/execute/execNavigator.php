@@ -5,9 +5,10 @@
  *
  * Filename $RCSfile: execNavigator.php,v $
  *
- * @version $Revision: 1.37 $
- * @modified $Date: 2007/07/09 08:13:07 $ by $Author: franciscom $
+ * @version $Revision: 1.38 $
+ * @modified $Date: 2007/10/02 21:55:24 $ by $Author: jbarchibald $
  *
+ * 20070912 - jbarchibald - custom field search BUGID - 1051
  * 20070630 - franciscom - set default value for filter_assigned_to
  * 20070607 - franciscom - BUGID 887 - problem with builds
  * 20070212 - franciscom - name changes on html inputs
@@ -26,7 +27,10 @@ require_once('common.php');
 require_once('treeMenu.inc.php');
 require_once('exec.inc.php');
 require_once('builds.inc.php');
+
 testlinkInitPage($db);
+
+$exec_cfield_mgr = new exec_cfield_mgr($db);
 
 $tproject_id = $_SESSION['testprojectID'];
 $user_id = $_SESSION['userID'];
@@ -35,7 +39,16 @@ $tplan_name = isset($_SESSION['testPlanName']) ? $_SESSION['testPlanName'] : 'nu
 
 $treeColored = (isset($_POST['colored']) && ($_POST['colored'] == 'result')) ? 'selected="selected"' : null;
 
+$gui_cfg = config_get('gui');
 $exec_cfg = config_get('exec_cfg');
+
+// jbarchibald 20070911 - adding custom field filtering
+if($gui_cfg->enable_custom_fields) {
+	$cf_smarty = $exec_cfield_mgr->html_table_of_custom_field_inputs();
+    $cf_selected = $exec_cfield_mgr->get_set_values();
+} else {
+    $cf_selected = null;
+}
 
 switch($exec_cfg->user_filter_default)
 {
@@ -137,15 +150,18 @@ if ($filter_assigned_to)
 	$getArguments .= '&filter_assigned_to='.$filter_assigned_to;
 if ($optResultSelected != 'all')
 	$getArguments .= '&filter_status='.$optResultSelected;
-
+if ($cf_selected)
+	$getArguments .= '&cfields='.serialize($cf_selected);
 
 $optResult = createResultsMenu();
 
 if ($optResultSelected == 'all')
 	$optResultSelected = null;
+
+// 20070914 - jbarchibald - added $cf_selected parameter
 $sMenu = generateExecTree($db,$menuUrl,$tproject_id,$tproject_name,$tplan_id,$tplan_name,
-                          $optBuildSelected,$getArguments,$keyword_id,$tc_id,false,$filter_assigned_to,
-                          $optResultSelected);
+                          $optBuildSelected,$getArguments,$keyword_id,$tc_id,false,
+                          $filter_assigned_to,$optResultSelected,$cf_selected);
 
 // link to load frame named 'workframe' when the update button is pressed
 $src_workframe = null;
@@ -157,12 +173,13 @@ if(isset($_REQUEST['submitOptions']))
 $tree = invokeMenu($sMenu,null,null);
 $tcData = null;
 $testCaseID = null;
-$testCaseID = null;
+
 
 $users = get_users_for_html_options($db,null,true);
 
 $smarty = new TLSmarty();
 
+$smarty->assign('design_time_cf',$cf_smarty); 
 $smarty->assign('disable_filter_assigned_to',$disable_filter_assigned_to);
 $smarty->assign('assigned_to_user',$assigned_to_user);
 

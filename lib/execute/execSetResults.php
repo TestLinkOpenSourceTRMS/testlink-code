@@ -4,9 +4,10 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.63 $
- * @modified $Date: 2007/08/27 06:37:44 $ $Author: franciscom $
+ * @version $Revision: 1.64 $
+ * @modified $Date: 2007/10/02 21:55:24 $ $Author: jbarchibald $
  *
+ * 20071002 - jbarchibald - BUGID 1051
  * 20070707 - franciscom - BUGID 921
  * 20070519 - franciscom - BUGID 856
  * 20070306 - franciscom - BUGID 705
@@ -39,6 +40,9 @@ $tplan_mgr = new testplan($db);
 $tcase_mgr = new testcase($db);
 $build_mgr = new build_mgr($db);
 
+// 20070914 - jbarchibald
+$exec_cfield_mgr = new exec_cfield_mgr($db);
+
 $tproject_id = $_SESSION['testprojectID'];
 $tplan_id = $_SESSION['testPlanId'];
 $user_id = $_SESSION['userID'];
@@ -59,6 +63,9 @@ $testdata = array();
 $ts_cf_smarty = '';
 $submitResult = null;
 
+
+
+
 $_REQUEST = strings_stripSlashes($_REQUEST);
 $id = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0;
 $build_id = isset($_REQUEST['build_id']) ? intval($_REQUEST['build_id']) : 0;
@@ -70,6 +77,9 @@ $filter_status = isset($_REQUEST['filter_status']) ? $_REQUEST['filter_status'] 
 
 $level = isset($_REQUEST['level']) ? $_REQUEST['level'] : '';
 $status = isset($_REQUEST['status']) ? $_REQUEST['status'] : null;
+
+// jbarchibald 20070911 - adding custom field filtering
+$cf_selected = isset($_REQUEST['cfields']) ? unserialize($_REQUEST['cfields']) : null;
 
 
 // 20070211 - franciscom
@@ -119,8 +129,10 @@ if( is_null($filter_status) || $filter_status == $tc_status['not_run'])
 }
 
 // 20070306 - franciscom - BUGID 705
+// 20070914 - jbarchibald - added $cf_selected parameter
 $linked_tcversions = $tplan_mgr->get_linked_tcversions($tplan_id,$tc_id,$keyword_id,$get_mode,
-                                                       $filter_assigned_to,$filter_status,$build_id);
+                                                       $filter_assigned_to,$filter_status,$build_id,$cf_selected);
+
 $tcase_id = 0;
 
 // -------------------------------------------------
@@ -171,8 +183,9 @@ if(!is_null($linked_tcversions))
       // ---------------------------------------------------------------------------------
       // 20070708 - franciscom
       $tsuite_mgr=new testsuite($db); 
-		  $tsuite_data = $tsuite_mgr->get_by_id($id);
-		  $out = gen_spec_view($db,'testplan',$tplan_id,$id,$tsuite_data['name'],
+          $tsuite_data = $tsuite_mgr->get_by_id($id);
+        
+          $out = gen_spec_view($db,'testplan',$tplan_id,$id,$tsuite_data['name'],
                            $linked_tcversions,
                            null,
                            $keyword_id,FILTER_BY_TC_OFF,WRITE_BUTTON_ONLY_IF_LINKED,DO_PRUNE);

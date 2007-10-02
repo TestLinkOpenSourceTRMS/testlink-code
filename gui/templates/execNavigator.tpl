@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execNavigator.tpl,v 1.16 2007/08/27 06:37:30 franciscom Exp $ *}
+{* $Id: execNavigator.tpl,v 1.17 2007/10/02 21:55:19 jbarchibald Exp $ *}
 {* Purpose: smarty template - show test set tree *}
 {* 
 rev :
@@ -61,6 +61,11 @@ rev :
 				{html_options options=$users selected=$filter_assigned_to}
 				</select>
       {/if}
+			</td>
+		</tr>
+        <tr>
+			<td colspan = 2>
+				{$design_time_cf}  	
 			</td>
 		</tr>
 		<tr>

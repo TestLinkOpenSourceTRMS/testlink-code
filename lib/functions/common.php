@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.70 $ $Author: franciscom $
- * @modified $Date: 2007/09/10 12:31:08 $
+ * @version $Revision: 1.71 $ $Author: jbarchibald $
+ * @modified $Date: 2007/10/02 21:55:24 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -17,6 +17,7 @@
  * email, userID, productID, productName, testplan (use rather testPlanID),
  * testPlanID, testPlanName
  *
+ * 20071002 - jbarchibald - BUGID 1051
  * 20070707 - franciscom - BUGID 921 - changes to gen_spec_view()
  * 20070705 - franciscom - init_labels()
  *                         gen_spec_view(), changes on process of inactive versions
@@ -35,6 +36,7 @@ require_once(dirname(__FILE__)."/testsuite.class.php");
 require_once(dirname(__FILE__)."/tree.class.php");
 require_once(dirname(__FILE__)."/treeMenu.inc.php");
 require_once(dirname(__FILE__)."/cfield_mgr.class.php"); // 20061225 - franciscom
+require_once(dirname(__FILE__)."/exec_cfield_mgr.class.php"); // 20070913 - jbarchibald
 require_once("product.core.inc.php");
 require_once("plan.core.inc.php");
 

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.201 $
- * @modified $Date: 2007/10/01 08:12:48 $ $Author: franciscom $
+ * @version $Revision: 1.202 $
+ * @modified $Date: 2007/10/02 20:55:32 $ $Author: asielb $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -50,6 +50,7 @@ $TLS_unassigned = "unassigned";
 $TLS_import_file_type = "Import file type";
 $TLS_max_file_size_is = "Max. file size ";
 $TLS_supported_file_formats = "Supported file formats";
+$TLS_no_permissions_for_action = "You do not have permissions to perform this action! Please contact your administrator.";
 
 $TLS_test_status_all = "All";
 $TLS_test_status_any = "All";

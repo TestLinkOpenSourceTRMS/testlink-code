@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.23 $
- * @modified $Date: 2007/09/30 10:23:36 $ $Author: franciscom $
+ * @version $Revision: 1.24 $
+ * @modified $Date: 2007/10/02 20:55:32 $ $Author: asielb $
  *
  * @author Francisco Mancardi
  *
@@ -34,6 +34,7 @@ $TLS_unassigned = "unassigned";
 $TLS_import_file_type = "Import file type";
 $TLS_max_file_size_is = "Max. file size ";
 $TLS_supported_file_formats = "Supported file formats";
+$TLS_no_permissions_for_action = "You do not have permissions to perform this action! Please contact your administrator.";
 
 $TLS_test_status_all = "All";
 $TLS_test_status_any = "All";

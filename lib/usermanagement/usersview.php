@@ -5,13 +5,14 @@
  *
  * Filename $RCSfile: usersview.php,v $
  *
- * @version $Revision: 1.9 $
- * @modified $Date: 2007/08/29 17:21:02 $ -  $Author: jbarchibald $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2007/10/02 21:04:05 $ -  $Author: asielb $
  *
  * This page shows all users
  * 
  * 20070106 - franciscom - added order by login and order by role
  * 20070829 - jbarchibald - fix bug 1000 - Testplan role assignments
+ * 20071002 - asielb - fix for bug 1093
 **/
 include('../../config.inc.php');
 require_once("users.inc.php");
@@ -86,6 +87,7 @@ $smarty->assign('reload',0);
 $smarty->assign('users',$users);
 $smarty->assign('result',$sqlResult);
 $smarty->assign('action',$action);
+$smarty->assign('base_href', $_SESSION['basehref']);
 $smarty->display($g_tpl['usersview']);
 
 

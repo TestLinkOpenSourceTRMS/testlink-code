@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.35 $
- * @modified $Date: 2007/06/20 16:15:34 $  $Author: franciscom $
+ * @version $Revision: 1.36 $
+ * @modified $Date: 2007/10/02 15:59:26 $  $Author: asielb $
  * @author franciscom
  *
  * 20070620 - franciscom - BUGID 914  fixed delete() (no delete from nodes_hierarchy)
@@ -13,6 +13,7 @@
  * 20061010 - franciscom - added get_srs_by_title()
  * 20060709 - franciscom - changed return type and interface of create()
  * 20060425 - franciscom - changes in show() following Andreas Morsing advice (schlundus)
+ * 20071002 - azl - added ORDER BY to get_all method
  *
 **/
 
@@ -171,7 +172,8 @@ function get_all()
 {
 	$sql = " SELECT testprojects.*, nodes_hierarchy.name ".
 	       " FROM testprojects, nodes_hierarchy ".
-	       " WHERE testprojects.id = nodes_hierarchy.id";
+	       " WHERE testprojects.id = nodes_hierarchy.id ".
+	       " ORDER BY nodes_hierarchy.name";
 	$recordset = $this->db->get_recordset($sql);
 	return $recordset;
 }

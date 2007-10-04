@@ -1,6 +1,6 @@
 {* 
 Testlink: smarty template - 
-$Id: usersassign.tpl,v 1.10 2007/08/29 17:20:52 jbarchibald Exp $ 
+$Id: usersassign.tpl,v 1.11 2007/10/04 20:05:11 asielb Exp $ 
 
 rev:
     20070818 - franciscom
@@ -92,7 +92,7 @@ rev:
     		<th>{lang_get s=th_roles_$feature} ({$my_feature_name|escape})</th>
     	</tr>
     	{foreach from=$userData item=user}
-    	<tr>
+    	<tr bgcolor="{cycle values="#eeeeee,#d0d0d0"}">
     		<td>{$user.fullname|escape}</td>
     		<td>
     			{assign var=uID value=$user.id}

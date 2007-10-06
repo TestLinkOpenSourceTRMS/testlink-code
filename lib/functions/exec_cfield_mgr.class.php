@@ -2,20 +2,23 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: exec_cfield_mgr.class.php,v $
- * @version $Revision: 1.1 $
- * @modified $Date: 2007/10/02 21:55:24 $ $Author: jbarchibald $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2007/10/06 09:32:39 $ $Author: franciscom $
  * @author jbarchibald
  *
  * rev :
-
+ *      20071006 - franciscom - exec_cfield_mgr() interface change 
+ *                              get_linked_cfields() interface change 
+ *                              solved bug on get_linked_cfields() when
+ *                              no custom field is assigned to test project
 */
 
 class exec_cfield_mgr extends cfield_mgr
 {
 	var $db;
-    var $cf_map;
+  var $cf_map;
 
-	function exec_cfield_mgr(&$db)
+	function exec_cfield_mgr(&$db,$tproject_id)
 	{
         // you would think we could inherit the parent $db declaration
         // but it fails to work without this. 
@@ -24,14 +27,14 @@ class exec_cfield_mgr extends cfield_mgr
         // instantiate the parent constructor. 
         parent::cfield_mgr($this->db);
 
-        $this->cf_map = $this->get_linked_cfields();
+        $this->cf_map = $this->get_linked_cfields($tproject_id);
 
 	}
 
      /*
       function: html_table_of_custom_field_inputs
     
-      args: none currently
+      args: -
     
       returns: html string
 
@@ -59,44 +62,49 @@ class exec_cfield_mgr extends cfield_mgr
     /*
       function: get_linked_cfields
       
-      args: none currently
+      args: tproject_id
   
       returns: array 
     
       rev :
+           20071006 - franciscom - interface changed
+                                   
     */
-    function get_linked_cfields()
+    function get_linked_cfields($tproject_id)
     {
     
       $enabled=1;
       $show_on_execution=1;
 
       // this is calling the parent method
-      $cf = $this->get_linked_cfields_at_design($_SESSION['testprojectID'],$enabled,
-                                                              $show_on_execution,'testcase');
+      // 20071006 - $_SESSION['testprojectID']
+      $cf = $this->get_linked_cfields_at_design($tproject_id,$enabled,
+                                                $show_on_execution,'testcase');
 
       // does not make sence to include the text area here.. 
       // need to strip it out of the array.. 
       // make it a parameter if someone really wants to keep it. 
       $custom_field_types_id=array_flip($this->custom_field_types);
 
-      foreach ($cf as $key => $value )
-      { 
-          if ($value['type'] == $custom_field_types_id['text area'] ) {
-              unset($cf[$key]);
-          }
-
-          // untill I figure how to deal with the 3 elements of the date.. we exclude it as well. 
-          if ($value['type'] == $custom_field_types_id['date'] ) {
-              unset($cf[$key]);
-          }
-
-          // Need to debug how this will work as well.. there is always something selected by default.  
-          if ($value['type'] == $custom_field_types_id['list'] ) {
-              unset($cf[$key]);
-          }
-      }
-
+      if( !is_null($cf) and count($cf) > 0 )
+      {
+        foreach ($cf as $key => $value )
+        { 
+            if ($value['type'] == $custom_field_types_id['text area'] ) {
+                unset($cf[$key]);
+            }
+  
+            // untill I figure how to deal with the 3 elements of the date.. we exclude it as well. 
+            if ($value['type'] == $custom_field_types_id['date'] ) {
+                unset($cf[$key]);
+            }
+  
+            // Need to debug how this will work as well.. there is always something selected by default.  
+            if ($value['type'] == $custom_field_types_id['list'] ) {
+                unset($cf[$key]);
+            }
+        }
+      } // if( !is_null($cf) and count($cf) > 0 )
       return($cf);
     }
 

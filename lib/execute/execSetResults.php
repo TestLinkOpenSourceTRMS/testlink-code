@@ -4,9 +4,10 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.64 $
- * @modified $Date: 2007/10/02 21:55:24 $ $Author: jbarchibald $
+ * @version $Revision: 1.65 $
+ * @modified $Date: 2007/10/06 09:33:55 $ $Author: franciscom $
  *
+ * 20071006 - franciscom - changes on exec_cfield_mgr() call
  * 20071002 - jbarchibald - BUGID 1051
  * 20070707 - franciscom - BUGID 921
  * 20070519 - franciscom - BUGID 856
@@ -28,6 +29,10 @@ $smarty = new TLSmarty();
 $PID_NOT_NEEDED = null;
 $SHOW_ON_EXECUTION = 1;
 
+$tproject_id = $_SESSION['testprojectID'];
+$tplan_id = $_SESSION['testPlanId'];
+$user_id = $_SESSION['userID'];
+
 $exec_cfg = config_get('exec_cfg');
 $gui_cfg = config_get('gui');
 $tc_status = config_get('tc_status'); 
@@ -41,11 +46,8 @@ $tcase_mgr = new testcase($db);
 $build_mgr = new build_mgr($db);
 
 // 20070914 - jbarchibald
-$exec_cfield_mgr = new exec_cfield_mgr($db);
+$exec_cfield_mgr = new exec_cfield_mgr($db,$tproject_id);
 
-$tproject_id = $_SESSION['testprojectID'];
-$tplan_id = $_SESSION['testPlanId'];
-$user_id = $_SESSION['userID'];
 
 $effective_role=get_effective_role($db,$user_id,$tproject_id,$tplan_id);
 $all_roles = getAllRoles($db);

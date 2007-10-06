@@ -5,9 +5,11 @@
  *
  * Filename $RCSfile: execNavigator.php,v $
  *
- * @version $Revision: 1.38 $
- * @modified $Date: 2007/10/02 21:55:24 $ by $Author: jbarchibald $
+ * @version $Revision: 1.39 $
+ * @modified $Date: 2007/10/06 09:33:55 $ by $Author: franciscom $
  *
+ * 20071006 - franciscom - changes on exec_cfield_mgr() call
+ * 
  * 20070912 - jbarchibald - custom field search BUGID - 1051
  * 20070630 - franciscom - set default value for filter_assigned_to
  * 20070607 - franciscom - BUGID 887 - problem with builds
@@ -30,14 +32,15 @@ require_once('builds.inc.php');
 
 testlinkInitPage($db);
 
-$exec_cfield_mgr = new exec_cfield_mgr($db);
 
 $tproject_id = $_SESSION['testprojectID'];
 $user_id = $_SESSION['userID'];
 $tplan_id   = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0;
 $tplan_name = isset($_SESSION['testPlanName']) ? $_SESSION['testPlanName'] : 'null';
-
 $treeColored = (isset($_POST['colored']) && ($_POST['colored'] == 'result')) ? 'selected="selected"' : null;
+
+$exec_cfield_mgr = new exec_cfield_mgr($db,$tproject_id);
+
 
 $gui_cfg = config_get('gui');
 $exec_cfg = config_get('exec_cfg');

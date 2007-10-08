@@ -1,21 +1,30 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planView.tpl,v 1.3 2007/09/11 06:31:49 franciscom Exp $ 
+$Id: planView.tpl,v 1.4 2007/10/08 07:25:42 franciscom Exp $ 
 Purpose: smarty template - edit / delete Test Plan 
-Revisions:
+
+Development hint:
+     some variables smarty and javascript are created on the inc_*.tpl files.
+     
+Rev :
+     20071006 - franciscom - added logic to use ext js confirm widget
+     
 *}
 {assign var="cfg_section" value=$smarty.template|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
-{include file="inc_head.tpl"}
+{lang_get s='testplan_alt_delete_tp' var="warning_msg"}
 
-<body>
+{include file="inc_head.tpl" openHead="yes"}
+{include file="inc_del_onclick.tpl"}
+
 <script type="text/javascript">
-function delete_confirmation(delUrl) {ldelim}
-	if (confirm("{lang_get s='testplan_msg_delete_confirm'}")){ldelim}
-		window.location = delUrl;
-	{rdelim}
-{rdelim}
+var o_label ="{lang_get s='testplan'}";
+var del_action=fRoot+'lib/plan/planEdit.php?do_action=do_delete&tplan_id=';
 </script>
+
+</head>
+
+<body {$body_onload}>
 
 <h1>{lang_get s='testplan_title_tp_management'}</h1>
 {if $editResult ne ""}
@@ -63,11 +72,11 @@ function delete_confirmation(delUrl) {ldelim}
   				{/if}
 			</td>
 			<td class="clickable_icon">
-				<a href="javascript:delete_confirmation(fRoot+'lib/plan/planEdit.php?do_action=do_delete&amp;tplan_id={$testplan.id}');">
 				  <img style="border:none" 
 				       alt="{lang_get s='testplan_alt_delete_tp'}"
 					   title="{lang_get s='testplan_alt_delete_tp'}" 
-				       src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png"/></a>
+					   onclick='delete_confirmation({$testplan.id},"{$testplan.name|escape:'javascript'}","{$warning_msg}");'
+				     src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png"/>
 			</td>
 		</tr>
 		{/foreach}

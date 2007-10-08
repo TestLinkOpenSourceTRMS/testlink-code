@@ -1,28 +1,36 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: usersview.tpl,v 1.17 2007/10/02 21:04:05 asielb Exp $
+$Id: usersview.tpl,v 1.18 2007/10/08 07:25:42 franciscom Exp $
 
 Purpose: smarty template - users overview
 
 rev :
+     20071007 - franciscom - delete user refactoring
+     20071002 - azl - BUGID 1093. 
+     20070829 - jbarchibald - BUGID 1000 - Testplan User Role Assignments
+     
      20070120 - franciscom - role_colour management improved
      20070106 - franciscom - added order by login and order by role
-     20070829 - jbarchibald
-      - bug 1000  - Testplan User Role Assignments
 *}
-{include file="inc_head.tpl"}
 
-<body>
+{lang_get s='warning_delete_user' var="warning_msg"}
+
+{include file="inc_head.tpl" openHead="yes"}
+{include file="inc_del_onclick.tpl"}
+
+<script type="text/javascript">
+var o_label ="{lang_get s='user'}";
+var del_action=fRoot+"lib/usermanagement/usersview.php?operation=delete&user=";
+
+var warning_delete_user = "{lang_get s='warning_delete_user'}";
+</script>
+
+</head>
+
+<body {$body_onload}>
+
 {* 20071002 - azl - fix for bug 1093. Don't show this content if user doesn't have permissions *}
 {if $mgt_users == "yes"}
-
-	{literal}
-	<script type="text/javascript">
-	{/literal}
-	var warning_delete_user = "{lang_get s='warning_delete_user'}";
-	{literal}
-	</script>
-	{/literal}
 	
 	<h1>{lang_get s='title_user_mgmt'}</h1>
 	
@@ -112,10 +120,12 @@ rev :
 					{/if}
 				</td>
 				<td>
-					<a href="javascript:deleteUser_onClick({$users[row].id},'{$users[row].login|escape}')">
-					   <img alt="{lang_get s='alt_delete_user'}"
-					        title="{lang_get s='alt_delete_user'}" 
-					        src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png"/></a>
+				  <img style="border:none" 
+               alt="{lang_get s='alt_delete_user'}"
+					     title="{lang_get s='alt_delete_user'}" 
+					     onclick='delete_confirmation({$users[row].id},
+					                                "{$users[row].login|escape:'javascript'}","{$warning_msg}");'
+				       src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png"/>
 				</td>
 			</tr>
 			{/section}

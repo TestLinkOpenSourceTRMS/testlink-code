@@ -1,6 +1,10 @@
-{* Testlink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: inc_head.tpl,v 1.10 2007/04/15 10:57:40 franciscom Exp $ *}
-{* Purpose: smarty template - HTML Common Header *}
+{* 
+Testlink Open Source Project - http://testlink.sourceforge.net/
+$Id: inc_head.tpl,v 1.11 2007/10/08 07:25:41 franciscom Exp $
+Purpose: smarty template - HTML Common Header 
+
+rev :
+*}
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
      "DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">

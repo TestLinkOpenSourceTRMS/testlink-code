@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.202 $
- * @modified $Date: 2007/10/02 20:55:32 $ $Author: asielb $
+ * @version $Revision: 1.203 $
+ * @modified $Date: 2007/10/08 07:37:45 $ $Author: franciscom $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -1017,7 +1017,7 @@ $TLS_title_upd_mod_tc = "Update Modified Test Case(s) in ";
 
 
 // gui/templates/keywordsView.tpl
-$TLS_alt_delete_keyword = "Delete the keyword?";
+$TLS_alt_delete_keyword = "Delete keyword?";
 $TLS_btn_create_keyword = "Create keyword";
 $TLS_btn_edit_keyword = "Edit";
 $TLS_btn_import_keywords = "Import";
@@ -1274,8 +1274,8 @@ $TLS_warning_delete_build = "Do really want to delete this build? All dependant 
 
 
 // gui/templates/planView.tpl
-$TLS_testplan_alt_delete_tp = "Delete the test plan?";
-$TLS_testplan_alt_edit_tp = "Edit the test plan";
+$TLS_testplan_alt_delete_tp = "Delete test plan?";
+$TLS_testplan_alt_edit_tp = "Edit test plan";
 $TLS_testplan_msg_delete_confirm = "Are you sure you want to delete the complete Test Plan? You can use a deactivation via TP Edit link.";
 $TLS_testplan_th_delete = "Delete";
 $TLS_testplan_title_list = "List of existing Test Plans";

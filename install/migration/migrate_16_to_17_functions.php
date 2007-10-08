@@ -1,9 +1,10 @@
 <?php
 /*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: migrate_16_to_17_functions.php,v 1.2 2007/08/29 15:47:20 jbarchibald Exp $
+ * $Id: migrate_16_to_17_functions.php,v 1.3 2007/10/08 21:09:09 asielb Exp $
  *
  * 20070829 - jbarchibald - fixed bug 1010, results Migration
+ * 20071008 - asielb - fixed bug 1110, keywords migration
  */
 
 // -----------------------------------   Auxiliary Functions -------------------------
@@ -237,7 +238,7 @@ function check_memory($tc_count)
   if ($memory_available <= 67108864 && $tc_count > 5000)
   {
   	// should be >= 128M
-  	$new_limit = "256M";
+  	$new_limit = "384M";
   	// attempt to set the memory_limit to $new_limit to avoid problems
   	if (false == ini_set("memory_limit", $new_limit))
   	{
@@ -1063,9 +1064,9 @@ function extract_kw_tc_links($source_db,$target_db,$tmp_table_name,&$migrator)
       			}
     		}
     		++$items_processed;  
-  		}
-  		return $map_prod_kw_tc;
+  		}  		
 	}
+	return $map_prod_kw_tc;
 }
 
 ?>

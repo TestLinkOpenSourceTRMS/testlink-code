@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.123 $
- * @modified $Date: 2007/10/01 08:12:47 $ by $Author: franciscom $
+ * @version $Revision: 1.124 $
+ * @modified $Date: 2007/10/08 07:24:39 $ by $Author: franciscom $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink 
@@ -17,6 +17,7 @@
  *-----------------------------------------------------------------------------
  *
  * Revisions:
+ *           20071006 - franciscom - $g_use_ext_js_library
  *           20070930 - franciscom - BUGID 1086 - configure order by in attachment
  *           20070910 - franciscom - removed MAIN_PAGE_METRICS_ENABLED
  *           20070819 - franciscom - $g_default_roleid
@@ -285,6 +286,10 @@ $g_tree_node_ordering->default_testcase_order=100;
 $g_tree_node_ordering->default_testsuite_order=1;
 
 
+// ----------------------------------------------------------------------------
+/** [GUI: Javascript libraries] */
+/* 1 -> use EXT JS library , GUI widgets */
+$g_use_ext_js_library=1;
 
 // ----------------------------------------------------------------------------
 /** [GENERATED DOCUMENTATION] */
@@ -615,6 +620,8 @@ if ( file_exists( $custom_config_file ) )
 {
   require_once( $custom_config_file ); 
 }
+
+define('USE_EXT_JS_LIBRARY', $g_use_ext_js_library);
 
 define('TL_TREE_KIND', $g_tree_type);
 

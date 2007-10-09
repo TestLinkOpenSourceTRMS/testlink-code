@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.203 $
- * @modified $Date: 2007/10/08 07:37:45 $ $Author: franciscom $
+ * @version $Revision: 1.204 $
+ * @modified $Date: 2007/10/09 21:42:44 $ $Author: havlat $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -420,7 +420,7 @@ $TLS_coverage = "Coverage";
 $TLS_popup_delete_req = "Are you sure you want to delete the requirement?";
 $TLS_req_edit = "Edit Requirement";
 $TLS_req_msg_notestcase = "No connected Test Case";
-$TLS_requirement_spec = "Requirement Specification";
+$TLS_requirement_spec = "Requirement Specification Document";
 $TLS_test_case_id = "ID";
 $TLS_title_created = "Created on";
 $TLS_title_last_mod = "Last modified on ";
@@ -464,18 +464,18 @@ $TLS_comp_scope = "Scope";
 // gui/templates/reqSpecView.tpl
 $TLS_btn_analyse = "Analyse";
 $TLS_btn_check_all = "Check All";
-$TLS_btn_delete_spec = "Delete spec.";
-$TLS_btn_edit_spec = "Edit spec.";
+$TLS_btn_delete_spec = "Delete document";
+$TLS_btn_edit_spec = "Edit document";
 $TLS_btn_export_reqs = "Export requirements";
 $TLS_btn_req_create = "Create New REQ";
-$TLS_btn_spec_list = "List of Spec.";
+$TLS_btn_spec_list = "List of all documents";
 $TLS_btn_uncheck_all = "Uncheck All";
 $TLS_cant_delete_req_nothing_sel = "Please select a requirement!";
-$TLS_popup_sure_delete = "Are you sure you want to delete the requirement specification?";
+$TLS_popup_sure_delete = "Are you sure you want to delete the Requirement Specification document?";
 $TLS_req_select_create_tc = "Create Test Cases";
 $TLS_req_select_delete = "Delete requirements";
 $TLS_req_title_list = "List of requirements";
-$TLS_req_total = "Total req.";
+$TLS_req_total = "Total count of REQs";
 $TLS_req_reorder = "Reorder requirements";
 $TLS_warning_delete_requirements = "Are you sure to delete the selected requirements?";
 $TLS_title_change_req_order = "Change requirements order";
@@ -512,7 +512,7 @@ $TLS_testcases = "Test Cases";
 
 
 // gui/templates/reqSpecCreate.tpl
-$TLS_action_create_srs = "Create requirement specification";
+$TLS_action_create_srs = "Create Requirement Specification document";
 $TLS_testproject = "Test Project";
 
 
@@ -582,7 +582,7 @@ $TLS_del_bug_warning_msg = "Really delete this bug?";
 // gui/templates/reqSpecList.tpl
 $TLS_btn_assign_tc = "Assign Test Case";
 $TLS_no_docs = "No available documents.";
-$TLS_req_list_docs = "Requirement Specifications";
+$TLS_req_list_docs = "Requirement Specification Documents";
 
 
 
@@ -901,9 +901,9 @@ $TLS_warning_empty_milestone_name="Milestone name cannot be empty!";
 
 
 $TLS_th_date_format = "Target Date";
-$TLS_th_perc_a_prio = "% A Priority";
-$TLS_th_perc_b_prio = "% B priority";
-$TLS_th_perc_c_prio = "% C priority";
+$TLS_th_perc_a_prio = "Completed tests with A Priority [0-100%]";
+$TLS_th_perc_b_prio = "Completed tests with B Priority [0-100%]";
+$TLS_th_perc_c_prio = "Completed tests with C Priority [0-100%]";
 $TLS_title_existing_milestones = "Existing Milestones";
 $TLS_title_milestones = "Milestones for Test Plan";
 $TLS_title_new_milestone = "New Milestone";
@@ -938,8 +938,8 @@ $TLS_req_title_assign = "Assign Requirements to Test Case";
 $TLS_req_title_assigned = "Assigned Requirements";
 $TLS_req_title_unassigned = "Available Requirements";
 $TLS_warning_req_tc_assignment_impossible = "You <b>can't do</b> the assignment due to one of these causes:" .
-                                            "<br><ul><li>There are no Requirement Specification defined</li>" .
-                                            "<li>The Requirement Specifications are empty</ul></li></ul>";
+                                            "<br><ul><li>There are no Requirement Specification document defined</li>" .
+                                            "<li>The Requirement Specifications document is empty</ul></li></ul>";
 
 
 
@@ -1296,7 +1296,7 @@ $TLS_href_keywords_manage = "Keyword Management";
 $TLS_href_keywords_view = "View Keywords";
 $TLS_href_print_tc = "Print Test Cases";
 $TLS_href_req_assign = "Assign Requirements";
-$TLS_href_req_spec = "Requirement Specification";
+$TLS_href_req_spec = "Requirement Specification document";
 $TLS_href_roles_management = "Role Management";
 $TLS_href_search_tc = "Search Test Case(s)";
 $TLS_href_user_management = "User Management";
@@ -1414,7 +1414,7 @@ $TLS_mgt_testplan_create = "Test Plan create/edit";
 
 
 // lib/functions/testproject.class.php
-$TLS_error_creating_req_spec = "Error while creating requirement specification";
+$TLS_error_creating_req_spec = "Error while creating Requirement Specification document";
 $TLS_info_product_name_empty = "Empty name is not possible.";
 $TLS_keyword_already_exists = "This keyword already exists";
 $TLS_string_contains_bad_chars = "The string contains bad chars which cannot be used";
@@ -1427,7 +1427,7 @@ $TLS_conflict = "Conflict";
 $TLS_error_deleting_req = "Error while deleting requirements";
 $TLS_error_inserting_req = "Error while inserting requirements";
 $TLS_error_updating_req = "Error while updating requirements";
-$TLS_error_updating_reqspec = "Error while updating requirement specification";
+$TLS_error_updating_reqspec = "Error while updating Requirement Specification document";
 $TLS_file_is_not_xml = "File is not well-formed XML. Cannot be used";
 $TLS_ok = "OK";
 $TLS_req_import_format_description1 = " - CSV type requires three fields for each row: 'req_doc_id','title','description'";

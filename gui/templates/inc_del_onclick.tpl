@@ -1,10 +1,11 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_del_onclick.tpl,v 1.1 2007/10/08 07:25:42 franciscom Exp $
+$Id: inc_del_onclick.tpl,v 1.2 2007/10/09 06:45:36 franciscom Exp $
 Purpose: include files for:
 
 
 rev :
+     20071008 - franciscom - added prototype.js method escapeHTML()
 *}
 {if $smarty.const.USE_EXT_JS_LIBRARY}
   {include file="inc_ext_js.tpl"}
@@ -17,7 +18,7 @@ rev :
    {literal}
   function delete_confirmation(o_id,o_name,msg)
   {
-    Ext.Msg.confirm(o_label + ' ' + o_name , msg,
+    Ext.Msg.confirm(o_label + ' ' + o_name.escapeHTML() , msg,
   			            function(btn, text)
   			            { 
   					         do_action(btn,text,o_id);

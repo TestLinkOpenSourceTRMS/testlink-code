@@ -1,12 +1,13 @@
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.12 2007/05/21 06:42:01 franciscom Exp $
+-- $Id: testlink_create_tables.sql,v 1.13 2007/10/10 06:36:33 franciscom Exp $
 --
 -- SQL script - create db tables for TL on Postgres   
 -- 
 --
 -- 
 -- Rev :
+--      20071010 - franciscom - open -> is_open due to MSSQL reserved word problem
 --      20070519 - franciscom - milestones table date -> target_date, because
 --                              date is reserved word for Oracle
 --
@@ -73,7 +74,7 @@ CREATE TABLE "builds" (  "id" BIGSERIAL NOT NULL ,
   "name" VARCHAR(100) NOT NULL DEFAULT 'undefined',
   "notes" TEXT NULL DEFAULT NULL,
   "active" INT2 NOT NULL DEFAULT '1',
-  "open" INT2 NOT NULL DEFAULT '1',
+  "is_open" INT2 NOT NULL DEFAULT '1',
   PRIMARY KEY ("id"),
   UNIQUE ("testplan_id","name")
 ); 
@@ -365,7 +366,7 @@ CREATE TABLE "tcversions" (  "id" BIGINT NOT NULL DEFAULT '0',
   "updater_id" BIGINT NULL DEFAULT NULL,
   "modification_ts" TIMESTAMP NULL,
   "active" INT2 NOT NULL DEFAULT '1',
-  "open" INT2 NOT NULL DEFAULT '1',
+  "is_open" INT2 NOT NULL DEFAULT '1',
   PRIMARY KEY ("id")
 ); 
 
@@ -398,7 +399,7 @@ CREATE TABLE "testplans" (  "id" BIGINT NOT NULL DEFAULT '0',
   "testproject_id" BIGINT NOT NULL DEFAULT '0',
   "notes" TEXT NULL DEFAULT NULL,
   "active" INT2 NOT NULL DEFAULT '1',
-  "open" INT2 NOT NULL DEFAULT '1',
+  "is_open" INT2 NOT NULL DEFAULT '1',
   PRIMARY KEY ("id")
 ); 
 CREATE INDEX "testplans_testproject_id_active" ON "testplans" ("testproject_id","active");

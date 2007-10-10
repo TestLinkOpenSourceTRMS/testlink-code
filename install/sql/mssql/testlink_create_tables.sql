@@ -1,12 +1,14 @@
 --  -----------------------------------------------------------------------------------
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.15 2007/05/21 06:42:01 franciscom Exp $
+-- $Id: testlink_create_tables.sql,v 1.16 2007/10/10 06:36:32 franciscom Exp $
 --
 -- SQL script - create db tables for TL
 -- Database Type: Microsoft SQL Server
 -- 
 -- Rev :
+--      20071010 - franciscom - ntext,nvarchar,nchar -> text,varchar,char
+--                              open -> is_open
 --      20070519 - franciscom - milestones table date -> target_date, because
 --                              date is reserved word for Oracle
 --
@@ -88,7 +90,7 @@ IF NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[dbo].[assign
 BEGIN
 CREATE TABLE [dbo].[assignment_status](
 	[id] [int] IDENTITY(1,1) NOT NULL,
-	[description] [nvarchar](100) COLLATE Latin1_General_CI_AS NOT NULL CONSTRAINT [DF_assignment_status_description]  DEFAULT (N'unknown'),
+	[description] [varchar](100) COLLATE Latin1_General_CI_AS NOT NULL CONSTRAINT [DF_assignment_status_description]  DEFAULT (N'unknown'),
  CONSTRAINT [PK_assignment_status] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
@@ -170,7 +172,7 @@ GO
 IF NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[dbo].[db_version]') AND OBJECTPROPERTY(id, N'IsUserTable') = 1)
 BEGIN
 CREATE TABLE [dbo].[db_version](
-	[version] [nvarchar](50) COLLATE Latin1_General_CI_AS NOT NULL CONSTRAINT [DF_db_version_version]  DEFAULT (N'unknown'),
+	[version] [varchar](50) COLLATE Latin1_General_CI_AS NOT NULL CONSTRAINT [DF_db_version_version]  DEFAULT (N'unknown'),
 	[upgrade_ts] [datetime] NOT NULL CONSTRAINT [DF_db_version_upgrade_ts]  DEFAULT (getdate())
 ) ON [PRIMARY]
 END
@@ -184,7 +186,7 @@ BEGIN
 CREATE TABLE [dbo].[object_keywords](
 	[id] [int] NOT NULL CONSTRAINT [DF_object_keywords_id]  DEFAULT ((0)),
 	[fk_id] [int] NOT NULL CONSTRAINT [DF_object_keywords_fk_id]  DEFAULT ((0)),
-	[fk_table] [nvarchar](30) COLLATE Latin1_General_CI_AS NOT NULL,
+	[fk_table] [varchar](30) COLLATE Latin1_General_CI_AS NOT NULL,
 	[keyword_id] [int] NOT NULL CONSTRAINT [DF_object_keywords_keyword_id]  DEFAULT ((0)),
  CONSTRAINT [PK_object_keywords] PRIMARY KEY CLUSTERED 
 (
@@ -201,12 +203,12 @@ IF NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[dbo].[custom
 BEGIN
 CREATE TABLE [dbo].[custom_fields](
 	[id] [int] IDENTITY(1,1) NOT NULL,
-	[name] [nchar](64) COLLATE Latin1_General_CI_AS NOT NULL,
-	[label] [nchar](64) COLLATE Latin1_General_CI_AS NOT NULL,
+	[name] [char](64) COLLATE Latin1_General_CI_AS NOT NULL,
+	[label] [char](64) COLLATE Latin1_General_CI_AS NOT NULL,
 	[type] [smallint] NOT NULL,
-	[possible_values] [nchar](255) COLLATE Latin1_General_CI_AS NOT NULL,
-	[default_value] [nchar](255) COLLATE Latin1_General_CI_AS NOT NULL,
-	[valid_regexp] [nchar](255) COLLATE Latin1_General_CI_AS NOT NULL,
+	[possible_values] [char](255) COLLATE Latin1_General_CI_AS NOT NULL,
+	[default_value] [char](255) COLLATE Latin1_General_CI_AS NOT NULL,
+	[valid_regexp] [char](255) COLLATE Latin1_General_CI_AS NOT NULL,
 	[length_min] [int] NOT NULL,
 	[length_max] [int] NOT NULL,
 	[show_on_design] [tinyint] NOT NULL CONSTRAINT [DF_custom_fields_show_on_design]  DEFAULT ((1)),
@@ -235,8 +237,8 @@ IF NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[dbo].[roles]
 BEGIN
 CREATE TABLE [dbo].[roles](
 	[id] [int] IDENTITY(1,1) NOT NULL,
-	[description] [nvarchar](100) COLLATE Latin1_General_CI_AS NOT NULL,
-	[notes] [ntext] COLLATE Latin1_General_CI_AS NULL,
+	[description] [varchar](100) COLLATE Latin1_General_CI_AS NOT NULL,
+	[notes] [text] COLLATE Latin1_General_CI_AS NULL,
  CONSTRAINT [PK_roles] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
@@ -256,7 +258,7 @@ IF NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[dbo].[execut
 BEGIN
 CREATE TABLE [dbo].[execution_bugs](
 	[execution_id] [int] NOT NULL CONSTRAINT [DF_execution_bugs_execution_id]  DEFAULT ((0)),
-	[bug_id] [nvarchar](16) COLLATE Latin1_General_CI_AS NOT NULL CONSTRAINT [DF_execution_bugs_bug_id]  DEFAULT ((0)),
+	[bug_id] [varchar](16) COLLATE Latin1_General_CI_AS NOT NULL CONSTRAINT [DF_execution_bugs_bug_id]  DEFAULT ((0)),
  CONSTRAINT [PK_execution_bugs] PRIMARY KEY CLUSTERED 
 (
 	[execution_id] ASC,
@@ -305,10 +307,10 @@ CREATE TABLE [dbo].[executions](
 	[build_id] [int] NOT NULL CONSTRAINT [DF_executions_build_id]  DEFAULT ((0)),
 	[tester_id] [int] NULL CONSTRAINT [DF_executions_tester_id]  DEFAULT (NULL),
 	[execution_ts] [datetime] NULL CONSTRAINT [DF_executions_execution_ts]  DEFAULT (NULL),
-	[status] [nchar](1) COLLATE Latin1_General_CI_AS NULL CONSTRAINT [DF_executions_status]  DEFAULT (NULL),
+	[status] [char](1) COLLATE Latin1_General_CI_AS NULL CONSTRAINT [DF_executions_status]  DEFAULT (NULL),
 	[testplan_id] [int] NOT NULL CONSTRAINT [DF_executions_testplan_id]  DEFAULT ((0)),
 	[tcversion_id] [int] NOT NULL CONSTRAINT [DF_executions_tcversion_id]  DEFAULT ((0)),
-	[notes] [ntext] COLLATE Latin1_General_CI_AS NULL CONSTRAINT [DF_executions_notes]  DEFAULT (NULL),
+	[notes] [text] COLLATE Latin1_General_CI_AS NULL CONSTRAINT [DF_executions_notes]  DEFAULT (NULL),
  CONSTRAINT [PK_executions] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
@@ -327,7 +329,7 @@ CREATE TABLE [dbo].[risk_assignments](
 	[testplan_id] [int] NOT NULL CONSTRAINT [DF_risk_assignments_testplan_id]  DEFAULT ((0)),
 	[node_id] [int] NOT NULL CONSTRAINT [DF_risk_assignments_node_id]  DEFAULT ((0)),
 	[risk] [int] NOT NULL CONSTRAINT [DF_risk_assignments_risk]  DEFAULT ((2)),
-	[importance] [nchar](1) COLLATE Latin1_General_CI_AS NOT NULL CONSTRAINT [DF_risk_assignments_importance]  DEFAULT (N'M'),
+	[importance] [char](1) COLLATE Latin1_General_CI_AS NOT NULL CONSTRAINT [DF_risk_assignments_importance]  DEFAULT (N'M'),
  CONSTRAINT [PK_risk_assignments] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
@@ -348,7 +350,7 @@ IF NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[dbo].[rights
 BEGIN
 CREATE TABLE [dbo].[rights](
 	[id] [int] IDENTITY(1,1) NOT NULL,
-	[description] [nvarchar](100) COLLATE Latin1_General_CI_AS NOT NULL,
+	[description] [varchar](100) COLLATE Latin1_General_CI_AS NOT NULL,
  CONSTRAINT [PK_rights] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
@@ -369,10 +371,10 @@ BEGIN
 CREATE TABLE [dbo].[builds](
 	[id] [int] IDENTITY(1,1) NOT NULL,
 	[testplan_id] [int] NOT NULL CONSTRAINT [DF_builds_testplan_id]  DEFAULT ((0)),
-	[name] [nvarchar](100) COLLATE Latin1_General_CI_AS NOT NULL CONSTRAINT [DF_builds_name]  DEFAULT (N'undefined'),
-	[notes] [ntext] COLLATE Latin1_General_CI_AS NULL,
+	[name] [varchar](100) COLLATE Latin1_General_CI_AS NOT NULL CONSTRAINT [DF_builds_name]  DEFAULT (N'undefined'),
+	[notes] [text] COLLATE Latin1_General_CI_AS NULL,
 	[active] [tinyint] NOT NULL CONSTRAINT [DF_builds_active]  DEFAULT ((1)),
-	[open] [tinyint] NOT NULL CONSTRAINT [DF_builds_open]  DEFAULT ((1)),
+	[is_open] [tinyint] NOT NULL CONSTRAINT [DF_builds_open]  DEFAULT ((1)),
  CONSTRAINT [PK_builds] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
@@ -404,9 +406,9 @@ BEGIN
 CREATE TABLE [dbo].[priorities](
 	[id] [int] IDENTITY(1,1) NOT NULL,
 	[testplan_id] [int] NOT NULL CONSTRAINT [DF_priorities_testplan_id]  DEFAULT ((0)),
-	[risk] [nchar](1) COLLATE Latin1_General_CI_AS NOT NULL,
-	[importance] [nchar](1) COLLATE Latin1_General_CI_AS NOT NULL,
-	[priority] [nchar](1) COLLATE Latin1_General_CI_AS NOT NULL CONSTRAINT [DF_priorities_priority]  DEFAULT (N'b'),
+	[risk] [char](1) COLLATE Latin1_General_CI_AS NOT NULL,
+	[importance] [char](1) COLLATE Latin1_General_CI_AS NOT NULL,
+	[priority] [char](1) COLLATE Latin1_General_CI_AS NOT NULL CONSTRAINT [DF_priorities_priority]  DEFAULT (N'b'),
  CONSTRAINT [PK_priorities] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
@@ -429,9 +431,9 @@ IF NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[dbo].[keywor
 BEGIN
 CREATE TABLE [dbo].[keywords](
 	[id] [int] IDENTITY(1,1) NOT NULL,
-	[keyword] [nvarchar](100) COLLATE Latin1_General_CI_AS NOT NULL,
+	[keyword] [varchar](100) COLLATE Latin1_General_CI_AS NOT NULL,
 	[testproject_id] [int] NOT NULL CONSTRAINT [DF_keywords_testproject_id]  DEFAULT ((0)),
-	[notes] [ntext] COLLATE Latin1_General_CI_AS NULL,
+	[notes] [text] COLLATE Latin1_General_CI_AS NULL,
  CONSTRAINT [PK_keywords] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
@@ -466,7 +468,7 @@ CREATE TABLE [dbo].[milestones](
 	[A] [tinyint] NOT NULL CONSTRAINT [DF_milestones_A]  DEFAULT ((0)),
 	[B] [tinyint] NOT NULL CONSTRAINT [DF_milestones_B]  DEFAULT ((0)),
 	[C] [tinyint] NOT NULL CONSTRAINT [DF_milestones_C]  DEFAULT ((0)),
-	[name] [nvarchar](100) COLLATE Latin1_General_CI_AS NOT NULL CONSTRAINT [DF_milestones_name]  DEFAULT (N'undefined'),
+	[name] [varchar](100) COLLATE Latin1_General_CI_AS NOT NULL CONSTRAINT [DF_milestones_name]  DEFAULT (N'undefined'),
  CONSTRAINT [PK_Milestones] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
@@ -490,15 +492,15 @@ BEGIN
 CREATE TABLE [dbo].[attachments](
 	[id] [int] IDENTITY(1,1) NOT NULL,
 	[fk_id] [int] NOT NULL CONSTRAINT [DF_attachments_fk_id]  DEFAULT ((0)),
-	[fk_table] [nvarchar](250) COLLATE Latin1_General_CI_AS NULL,
-	[title] [nvarchar](250) COLLATE Latin1_General_CI_AS NULL,
-	[description] [nvarchar](250) COLLATE Latin1_General_CI_AS NULL,
-	[file_name] [nvarchar](250) COLLATE Latin1_General_CI_AS NOT NULL,
-	[file_path] [nvarchar](250) COLLATE Latin1_General_CI_AS NOT NULL,
+	[fk_table] [varchar](250) COLLATE Latin1_General_CI_AS NULL,
+	[title] [varchar](250) COLLATE Latin1_General_CI_AS NULL,
+	[description] [varchar](250) COLLATE Latin1_General_CI_AS NULL,
+	[file_name] [varchar](250) COLLATE Latin1_General_CI_AS NOT NULL,
+	[file_path] [varchar](250) COLLATE Latin1_General_CI_AS NOT NULL,
 	[file_size] [int] NOT NULL CONSTRAINT [DF_attachments_file_size]  DEFAULT ((0)),
-	[file_type] [nvarchar](250) COLLATE Latin1_General_CI_AS NOT NULL,
+	[file_type] [varchar](250) COLLATE Latin1_General_CI_AS NOT NULL,
 	[date_added] [datetime] NOT NULL,
-	[content] [ntext] COLLATE Latin1_General_CI_AS NULL,
+	[content] [text] COLLATE Latin1_General_CI_AS NULL,
 	[compression_type] [int] NOT NULL CONSTRAINT [DF_attachments_compression_type]  DEFAULT ((0)),
  CONSTRAINT [PK_attachments] PRIMARY KEY CLUSTERED 
 (
@@ -515,7 +517,7 @@ IF NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[dbo].[node_t
 BEGIN
 CREATE TABLE [dbo].[node_types](
 	[id] [int] IDENTITY(1,1) NOT NULL,
-	[description] [nvarchar](100) COLLATE Latin1_General_CI_AS NOT NULL CONSTRAINT [DF_node_types_description]  DEFAULT (N'testproject'),
+	[description] [varchar](100) COLLATE Latin1_General_CI_AS NOT NULL CONSTRAINT [DF_node_types_description]  DEFAULT (N'testproject'),
  CONSTRAINT [PK_node_types] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
@@ -531,7 +533,7 @@ IF NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[dbo].[nodes_
 BEGIN
 CREATE TABLE [dbo].[nodes_hierarchy](
 	[id] [int] IDENTITY(1,1) NOT NULL,
-	[name] [nvarchar](100) COLLATE Latin1_General_CI_AS NULL,
+	[name] [varchar](100) COLLATE Latin1_General_CI_AS NULL,
 	[parent_id] [int] NULL,
 	[node_type_id] [int] NOT NULL CONSTRAINT [DF_nodes_hierarchy_node_type_id]  DEFAULT ((1)),
 	[node_order] [int] NULL,
@@ -579,10 +581,10 @@ BEGIN
 CREATE TABLE [dbo].[req_specs](
 	[id] [int] IDENTITY(1,1) NOT NULL,
 	[testproject_id] [int] NOT NULL,
-	[title] [nvarchar](100) COLLATE Latin1_General_CI_AS NOT NULL,
-	[scope] [ntext] COLLATE Latin1_General_CI_AS NULL,
+	[title] [varchar](100) COLLATE Latin1_General_CI_AS NOT NULL,
+	[scope] [text] COLLATE Latin1_General_CI_AS NULL,
 	[total_req] [int] NOT NULL CONSTRAINT [DF_req_specs_total_req]  DEFAULT ((0)),
-	[type] [nchar](1) COLLATE Latin1_General_CI_AS NOT NULL CONSTRAINT [DF_req_specs_type]  DEFAULT (N'n'),
+	[type] [char](1) COLLATE Latin1_General_CI_AS NOT NULL CONSTRAINT [DF_req_specs_type]  DEFAULT (N'n'),
 	[author_id] [int] NULL,
 	[creation_ts] [datetime] NOT NULL CONSTRAINT [DF_req_specs_creation_ts]  DEFAULT (getdate()),
 	[modifier_id] [int] NULL,
@@ -610,11 +612,11 @@ BEGIN
 CREATE TABLE [dbo].[requirements](
 	[id] [int] IDENTITY(1,1) NOT NULL,
 	[srs_id] [int] NOT NULL,
-	[req_doc_id] [nvarchar](32) COLLATE Latin1_General_CI_AS NULL,
-	[title] [nvarchar](100) COLLATE Latin1_General_CI_AS NOT NULL,
-	[scope] [ntext] COLLATE Latin1_General_CI_AS NULL,
-	[status] [nchar](1) COLLATE Latin1_General_CI_AS NOT NULL CONSTRAINT [DF_requirements_status]  DEFAULT (N'n'),
-	[type] [nchar](1) COLLATE Latin1_General_CI_AS NULL,
+	[req_doc_id] [varchar](32) COLLATE Latin1_General_CI_AS NULL,
+	[title] [varchar](100) COLLATE Latin1_General_CI_AS NOT NULL,
+	[scope] [text] COLLATE Latin1_General_CI_AS NULL,
+	[status] [char](1) COLLATE Latin1_General_CI_AS NOT NULL CONSTRAINT [DF_requirements_status]  DEFAULT (N'n'),
+	[type] [char](1) COLLATE Latin1_General_CI_AS NULL,
 	[node_order] [int] NOT NULL DEFAULT ((1)),
 	[author_id] [int] NULL,
 	[creation_ts] [datetime] NULL CONSTRAINT [DF_requirements_creation_ts]  DEFAULT (getdate()),
@@ -685,16 +687,16 @@ BEGIN
 CREATE TABLE [dbo].[tcversions](
 	[id] [int] NOT NULL,
 	[version] [smallint] NOT NULL CONSTRAINT [DF_tcversions_version]  DEFAULT ((1)),
-	[summary] [ntext] COLLATE Latin1_General_CI_AS NULL,
-	[steps] [ntext] COLLATE Latin1_General_CI_AS NULL,
-	[expected_results] [ntext] COLLATE Latin1_General_CI_AS NOT NULL,
-	[importance] [nchar](1) COLLATE Latin1_General_CI_AS NOT NULL CONSTRAINT [DF_tcversions_importance]  DEFAULT (N'M'),
+	[summary] [text] COLLATE Latin1_General_CI_AS NULL,
+	[steps] [text] COLLATE Latin1_General_CI_AS NULL,
+	[expected_results] [text] COLLATE Latin1_General_CI_AS NOT NULL,
+	[importance] [char](1) COLLATE Latin1_General_CI_AS NOT NULL CONSTRAINT [DF_tcversions_importance]  DEFAULT (N'M'),
 	[author_id] [int] NULL,
 	[creation_ts] [datetime] NOT NULL CONSTRAINT [DF_tcversions_creation_ts]  DEFAULT (getdate()),
 	[updater_id] [int] NULL,
 	[modification_ts] [datetime] NULL,
 	[active] [tinyint] NOT NULL CONSTRAINT [DF_tcversions_active]  DEFAULT ((1)),
-	[open] [tinyint] NOT NULL CONSTRAINT [DF_tcversions_open]  DEFAULT ((1)),
+	[is_open] [tinyint] NOT NULL CONSTRAINT [DF_tcversions_open]  DEFAULT ((1)),
  CONSTRAINT [PK_tcversions] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
@@ -711,9 +713,9 @@ BEGIN
 CREATE TABLE [dbo].[testplans](
 	[id] [int] NOT NULL,
 	[testproject_id] [int] NOT NULL CONSTRAINT [DF_testplans_testproject_id]  DEFAULT ((0)),
-	[notes] [ntext] COLLATE Latin1_General_CI_AS NULL,
+	[notes] [text] COLLATE Latin1_General_CI_AS NULL,
 	[active] [tinyint] NOT NULL CONSTRAINT [DF_testplans_active]  DEFAULT ((1)),
-	[open] [tinyint] NOT NULL CONSTRAINT [DF_testplans_open]  DEFAULT ((1)),
+	[is_open] [tinyint] NOT NULL CONSTRAINT [DF_testplans_open]  DEFAULT ((1)),
  CONSTRAINT [PK_testplans] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
@@ -737,8 +739,8 @@ IF NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[dbo].[testpr
 BEGIN
 CREATE TABLE [dbo].[testprojects](
 	[id] [int] NOT NULL,
-	[notes] [ntext] COLLATE Latin1_General_CI_AS NULL,
-	[color] [nvarchar](12) COLLATE Latin1_General_CI_AS NOT NULL CONSTRAINT [DF_testprojects_color]  DEFAULT (N'#9BD'),
+	[notes] [text] COLLATE Latin1_General_CI_AS NULL,
+	[color] [varchar](12) COLLATE Latin1_General_CI_AS NOT NULL CONSTRAINT [DF_testprojects_color]  DEFAULT (N'#9BD'),
 	[active] [tinyint] NOT NULL CONSTRAINT [DF_testprojects_active]  DEFAULT ((1)),
 	[option_reqs] [tinyint] NOT NULL CONSTRAINT [DF_testprojects_option_reqs]  DEFAULT ((0)),
 	[option_priority] [tinyint] NOT NULL CONSTRAINT [DF_testprojects_option_priority]  DEFAULT ((1)),
@@ -765,7 +767,7 @@ IF NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[dbo].[testsu
 BEGIN
 CREATE TABLE [dbo].[testsuites](
 	[id] [int] NOT NULL,
-	[details] [ntext] COLLATE Latin1_General_CI_AS NULL,
+	[details] [text] COLLATE Latin1_General_CI_AS NULL,
  CONSTRAINT [PK_testsuites] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
@@ -817,13 +819,13 @@ IF NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[dbo].[users]
 BEGIN
 CREATE TABLE [dbo].[users](
 	[id] [int] IDENTITY(1,1) NOT NULL,
-	[login] [nvarchar](30) COLLATE Latin1_General_CI_AS NOT NULL,
-	[password] [nvarchar](32) COLLATE Latin1_General_CI_AS NOT NULL,
+	[login] [varchar](30) COLLATE Latin1_General_CI_AS NOT NULL,
+	[password] [varchar](32) COLLATE Latin1_General_CI_AS NOT NULL,
 	[role_id] [int] NOT NULL CONSTRAINT [DF_users_role_id]  DEFAULT ((0)),
-	[email] [nvarchar](100) COLLATE Latin1_General_CI_AS NOT NULL,
-	[first] [nvarchar](30) COLLATE Latin1_General_CI_AS NOT NULL,
-	[last] [nvarchar](30) COLLATE Latin1_General_CI_AS NOT NULL,
-	[locale] [nvarchar](10) COLLATE Latin1_General_CI_AS NOT NULL CONSTRAINT [DF_users_locale]  DEFAULT (N'en_US'),
+	[email] [varchar](100) COLLATE Latin1_General_CI_AS NOT NULL,
+	[first] [varchar](30) COLLATE Latin1_General_CI_AS NOT NULL,
+	[last] [varchar](30) COLLATE Latin1_General_CI_AS NOT NULL,
+	[locale] [varchar](10) COLLATE Latin1_General_CI_AS NOT NULL CONSTRAINT [DF_users_locale]  DEFAULT (N'en_US'),
 	[default_testproject_id] [int] NULL,
 	[active] [tinyint] NOT NULL CONSTRAINT [DF_users_active]  DEFAULT ((1)),
  CONSTRAINT [PK_users] PRIMARY KEY CLUSTERED 
@@ -849,7 +851,7 @@ BEGIN
 CREATE TABLE [dbo].[cfield_design_values](
 	[field_id] [int] NOT NULL,
 	[node_id] [int] NOT NULL CONSTRAINT [DF_cfield_design_values_node_id]  DEFAULT ((0)),
-	[value] [nvarchar](255) COLLATE Latin1_General_CI_AS NOT NULL CONSTRAINT [DF_cfield_design_values_value]  DEFAULT ((0)),
+	[value] [varchar](255) COLLATE Latin1_General_CI_AS NOT NULL CONSTRAINT [DF_cfield_design_values_value]  DEFAULT ((0)),
  CONSTRAINT [PK_cfield_design_values] PRIMARY KEY CLUSTERED 
 (
 	[field_id] ASC,
@@ -873,8 +875,8 @@ IF NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[dbo].[assign
 BEGIN
 CREATE TABLE [dbo].[assignment_types](
 	[id] [int] IDENTITY(1,1) NOT NULL,
-	[fk_table] [nvarchar](30) COLLATE Latin1_General_CI_AS NOT NULL,
-	[description] [nvarchar](100) COLLATE Latin1_General_CI_AS NOT NULL CONSTRAINT [DF_assignment_types_description]  DEFAULT (N'unknown'),
+	[fk_table] [varchar](30) COLLATE Latin1_General_CI_AS NOT NULL,
+	[description] [varchar](100) COLLATE Latin1_General_CI_AS NOT NULL CONSTRAINT [DF_assignment_types_description]  DEFAULT (N'unknown'),
  CONSTRAINT [PK_assignment_types] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
@@ -893,7 +895,7 @@ CREATE TABLE [dbo].[cfield_execution_values](
 	[execution_id] [int] NOT NULL CONSTRAINT [DF_cfield_execution_values_execution_id]  DEFAULT ((0)),
 	[testplan_id] [int] NOT NULL CONSTRAINT [DF_cfield_execution_values_testplan_id]  DEFAULT ((0)),
 	[tcversion_id] [int] NOT NULL CONSTRAINT [DF_cfield_execution_values_tcversion_id]  DEFAULT ((0)),
-	[value] [nvarchar](255) COLLATE Latin1_General_CI_AS NOT NULL,
+	[value] [varchar](255) COLLATE Latin1_General_CI_AS NOT NULL,
  CONSTRAINT [PK_cfield_execution_values] PRIMARY KEY CLUSTERED 
 (
 	[field_id] ASC,

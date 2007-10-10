@@ -1,11 +1,13 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
 # This script is distributed under the GNU General Public License 2 or later.
-# $Id: testlink_create_tables.sql,v 1.17 2007/05/21 06:41:05 franciscom Exp $
+# $Id: testlink_create_tables.sql,v 1.18 2007/10/10 06:36:33 franciscom Exp $
 # SQL script - create db tables for TL   
 #
 # default rights & admin account are created via testlink_create_default_data.sql
 #
 # Rev :
+#       20071010 - franciscom - open -> is_open due to MSSQL reserved word problem
+#
 #       20070519 - franciscom - milestones table date -> target_date, because
 #                               date is reserved word for Oracle
 #
@@ -65,7 +67,7 @@ CREATE TABLE `builds` (
   `name` varchar(100) NOT NULL default 'undefined',
   `notes` text,
   `active` tinyint(1) NOT NULL default '1',
-  `open` tinyint(1) NOT NULL default '1',
+  `is_open` tinyint(1) NOT NULL default '1',
   PRIMARY KEY  (`id`),
   UNIQUE KEY `name` (`testplan_id`,`name`),
   KEY `testplan_id` (`testplan_id`)
@@ -255,7 +257,7 @@ CREATE TABLE `tcversions` (
   `updater_id` int(10) unsigned default NULL,
   `modification_ts` datetime NOT NULL default '0000-00-00 00:00:00',
   `active` tinyint(1) NOT NULL default '1',
-  `open` tinyint(1) NOT NULL default '1',
+  `is_open` tinyint(1) NOT NULL default '1',
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
@@ -274,7 +276,7 @@ CREATE TABLE `testplans` (
   `testproject_id` int(10) unsigned NOT NULL default '0',
   `notes` text,
   `active` tinyint(1) NOT NULL default '1',
-  `open` tinyint(1) NOT NULL default '1',
+  `is_open` tinyint(1) NOT NULL default '1',
   PRIMARY KEY  (`id`),
   KEY `testproject_id_active` (`testproject_id`,`active`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;

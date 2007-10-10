@@ -1,6 +1,6 @@
 --  -----------------------------------------------------------------------------------
 --  TestLink Open Source Project - http://testlink.sourceforge.net/
---  $Id: testlink_create_default_data.sql,v 1.10 2007/08/18 14:09:27 franciscom Exp $
+--  $Id: testlink_create_default_data.sql,v 1.11 2007/10/10 06:36:32 franciscom Exp $
 --  SQL script - create default data (rights & admin account)
 --  
 --  Database Type: Microsoft SQL Server
@@ -150,4 +150,4 @@ SET IDENTITY_INSERT assignment_types OFF
 --
 -- Dumping data for table db_version
 --
-INSERT INTO "db_version" ("version","upgrade_ts") VALUES ('1.7.0 RC 3',GETDATE());
+INSERT INTO "db_version" ("version","upgrade_ts") VALUES ('DB 1.1',GETDATE());

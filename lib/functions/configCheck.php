@@ -5,13 +5,14 @@
  *
  * Filename $RCSfile: configCheck.php,v ${file_name} $
  *
- * @version $Revision: 1.15 $
- * @modified $Date: 2007/09/25 17:41:21 ${date} ${time} $ by $Author: asielb $
+ * @version $Revision: 1.16 $
+ * @modified $Date: 2007/10/10 06:42:52 ${date} ${time} $ by $Author: franciscom $
  *
  * @author Martin Havlat
  * 
  * Check configuration functions
  *
+ * 20071010 - franciscom - 
  * 20070725 - franciscom - check_schema_version() - added control for db schema 1.7.0 RC 3
  * 20070626 - franciscom - getSecurityNotes() - added LDAP checks
  * 20060429 - franciscom - added checkForRepositoryDir()
@@ -324,7 +325,8 @@ function checkForRepositoryDir($the_dir)
 */
 function check_schema_version(&$db)
 {
-	$last_version = '1.7.0 RC 3';
+	$last_version = 'DB 1.1';
+	// 1.7.0 RC 3';
 	
 	$sql = "SELECT * FROM db_version ORDER BY upgrade_ts DESC";
 	$res = $db->exec_query($sql,1);  
@@ -342,6 +344,7 @@ function check_schema_version(&$db)
 		case '1.7.0 Beta 4':
 		case '1.7.0 Beta 5':
 		case '1.7.0 RC 2':
+		case '1.7.0 RC 3':
 			$msg = "You need to upgrade your Testlink Database to {$last_version} - <br>" .
 				'<a href="SCHEMA_CHANGES" style="color: white"> click here to see the Schema changes </a><br>' .
 				'<a href="./install/index.php" style="color: white">click here access install and upgrade page </a><br>';
@@ -351,7 +354,8 @@ function check_schema_version(&$db)
 			break;
 		
 		default:
-			$msg = "Unknown Schema version, please upgrade your Testlink Database to 1.7 Beta 3";
+			$msg = "Unknown Schema version " .  trim($myrow['version']) . 
+			       ", please upgrade your Testlink Database to " . $last_version;
 			break;
 		}
 	return $msg;

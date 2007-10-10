@@ -2,11 +2,12 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.37 $
- * @modified $Date: 2007/10/02 21:55:24 $ $Author: jbarchibald $
+ * @version $Revision: 1.38 $
+ * @modified $Date: 2007/10/10 06:42:52 $ $Author: franciscom $
  * @author franciscom
  *
  * rev :
+ *       20071010 - franciscom - BUGID     MSSQL reserved word problem - open 
  *       20070927 - franciscom - BUGID 1069
  *                               added _natsort_builds() (see natsort info on PHP manual).
  *                               get_builds() add call to _natsort_builds()
@@ -851,7 +852,7 @@ function get_builds_for_html_options($id,$active=null,$open=null)
  	}
  	if( !is_null($open) )
  	{
- 	   $sql .= " AND open=" . intval($open) . " ";   
+ 	   $sql .= " AND is_open=" . intval($open) . " ";   
  	}
       
   $sql .= " ORDER BY builds.name ASC";
@@ -889,7 +890,7 @@ function get_max_build_id($id,$active = null,$open = null)
  	}
  	if( !is_null($open) )
  	{
- 	   $sql .= " AND open = " . intval($open) . " ";   
+ 	   $sql .= " AND is_open = " . intval($open) . " ";   
  	}
  	
 	$recordset = $this->db->get_recordset($sql);
@@ -918,8 +919,8 @@ function get_max_build_id($id,$active = null,$open = null)
 */
 function get_builds($id,$active=null,$open=null)
 {
-	$sql = " SELECT * " . 
-	       "  FROM builds WHERE builds.testplan_id = {$id} " ;
+	$sql = " SELECT id,testplan_id, name, notes, active, is_open AS open " . 
+	       " FROM builds WHERE builds.testplan_id = {$id} " ;
 	       
 	// 20070120 - franciscom
  	if( !is_null($active) )
@@ -928,7 +929,7 @@ function get_builds($id,$active=null,$open=null)
  	}
  	if( !is_null($open) )
  	{
- 	   $sql .= " AND open=" . intval($open) . " ";   
+ 	   $sql .= " AND is_open=" . intval($open) . " ";   
  	}
 	       
 	$sql .= "  ORDER BY builds.name ASC";
@@ -1026,7 +1027,7 @@ function check_build_name_existence($tplan_id,$build_name,$case_sensitive=0)
 */
 function create_build($tplan_id,$name,$notes = '',$active=1,$open=1)
 {
-	$sql = " INSERT INTO builds (testplan_id,name,notes,active,open) " .
+	$sql = " INSERT INTO builds (testplan_id,name,notes,active,is_open) " .
 	       " VALUES ('". $tplan_id . "','" . 
 	                     $this->db->prepare_string($name) . "','" . 
 	                     $this->db->prepare_string($notes) . "'," .
@@ -1428,7 +1429,7 @@ class build_mgr
   */
   function create($tplan_id,$name,$notes = '',$active=1,$open=1)
   {
-  	$sql = " INSERT INTO builds (testplan_id,name,notes,active,open) " .
+  	$sql = " INSERT INTO builds (testplan_id,name,notes,active,is_open) " .
   	       " VALUES ('". $tplan_id . "','" . 
   	                     $this->db->prepare_string($name) . "','" . 
   	                     $this->db->prepare_string($notes) . "'," .
@@ -1474,7 +1475,7 @@ class build_mgr
   	
   	if( !is_null($open) )
   	{
-  	   $sql .=" , open=" . intval($open);  
+  	   $sql .=" , is_open=" . intval($open);  
   	}       
   	
   	       

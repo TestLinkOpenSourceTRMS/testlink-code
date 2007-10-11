@@ -1,6 +1,6 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: usersview.tpl,v 1.18 2007/10/08 07:25:42 franciscom Exp $
+$Id: usersview.tpl,v 1.19 2007/10/11 08:59:15 franciscom Exp $
 
 Purpose: smarty template - users overview
 
@@ -120,7 +120,7 @@ var warning_delete_user = "{lang_get s='warning_delete_user'}";
 					{/if}
 				</td>
 				<td>
-				  <img style="border:none" 
+				  <img style="border:none;cursor: pointer;"  
                alt="{lang_get s='alt_delete_user'}"
 					     title="{lang_get s='alt_delete_user'}" 
 					     onclick='delete_confirmation({$users[row].id},

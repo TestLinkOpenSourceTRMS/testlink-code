@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: buildView.tpl,v 1.5 2007/10/08 07:25:41 franciscom Exp $
+$Id: buildView.tpl,v 1.6 2007/10/11 08:59:15 franciscom Exp $
 
 Purpose: smarty template - Show existing builds
 
@@ -92,7 +92,7 @@ function validateForm(f)
   				    {/if}
   				</td>
   				<td class="clickable_icon">
-				       <img style="border:none" 
+				       <img style="border:none;cursor: pointer;" 
   				            title="{lang_get s='alt_delete_build'}" 
   				            alt="{lang_get s='alt_delete_build'}" 
  					            onclick="delete_confirmation({$build.id},

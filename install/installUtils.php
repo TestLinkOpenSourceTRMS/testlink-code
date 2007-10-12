@@ -1,7 +1,7 @@
 <?php
 /* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: installUtils.php,v 1.23 2007/03/12 07:05:19 franciscom Exp $ 
+$Id: installUtils.php,v 1.24 2007/10/12 08:34:58 franciscom Exp $ 
 
 20070302 - franciscom - changed PHP minimun required versions
 
@@ -63,7 +63,7 @@ return $aFileSets;
 // | Authors: Jo�o Prado Maia <jpm@mysql.com>                             |
 // +----------------------------------------------------------------------+
 //
-// @(#) $Id: installUtils.php,v 1.23 2007/03/12 07:05:19 franciscom Exp $
+// @(#) $Id: installUtils.php,v 1.24 2007/10/12 08:34:58 franciscom Exp $
 //
 
 // a foolish wrapper - 20051231 - fm
@@ -88,6 +88,11 @@ function getUserList(&$db,$db_type)
       $result = $db->exec_query('SELECT DISTINCT usename AS user FROM pg_user');
       break;
    
+      // 20071010 - franciscom
+      case 'mssql':
+      $result=null;
+      break;
+   
    }
    
    $users = array();
@@ -95,7 +100,8 @@ function getUserList(&$db,$db_type)
    // MySQL NOTE:
    // if the user cannot select from the mysql.user table, then return an empty list
    //
-   if (!$result) {
+   if (!$result) 
+   {
        return $users;
    }
    while ($row = $db->fetch_array($result)) 
@@ -148,30 +154,40 @@ if ( count($user_host) > 1 )
   $the_host = trim($user_host[1]);  
 }
 
+$try_create_user=0;
 switch($db_type)
 {
     case 'mssql':
     @$conn_res = $db->connect(NO_DSN, $db_server, $db_admin_name, $db_admin_pass,$db_name); 
+    $msg="For MSSQL, no attempt is made to check for user existence";
     break;
     
     case 'postgres':
     // 20060523 - franciscom
     @$conn_res = $db->connect(NO_DSN, $db_server, $db_admin_name, $db_admin_pass,$db_name); 
+    $try_create_user=1;
     break;
     
     case 'mysql':
-    default:
     @$conn_res = $db->connect(NO_DSN, $db_server, $db_admin_name, $db_admin_pass, 'mysql'); 
+    $try_create_user=1;
+    break;
+
+    default:
+    $try_create_user=0;
     break;
 
 }
 
+if( $try_create_user==1)
+{
+  $user_list = getUserList($db,$db_type);
+  $login_lc = strtolower($login);
+  $msg = "ko - fatal error - can't get db server user list !!!";
+}
 
-$user_list = getUserList($db,$db_type);
-$login_lc = strtolower($login);
-$msg = "ko - fatal error - can't get db server user list !!!";
-
-if (!is_null($user_list) && count($user_list) > 0) 
+// 20071010 - franciscom
+if ($try_create_user==1 && !is_null($user_list) && count($user_list) > 0) 
 {
 
     $user_list = array_map('strtolower', $user_list);
@@ -655,6 +671,13 @@ switch ($dbhandler->db->databaseType)
 	$min_ver = "8";
   $db_verbose="PostGres";
   break;
+
+  // 20071010 - franciscom
+	case 'mssql':
+	$min_ver = "8";
+  $db_verbose="MSSQL";
+  break;
+	
 }
 
 $errors=0;	

@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: installNewDB.php,v 1.30 2007/08/18 14:08:03 franciscom Exp $ */
+/* $Id: installNewDB.php,v 1.31 2007/10/12 08:34:58 franciscom Exp $ */
 /*
 Parts of this file has been taken from:
 Etomite Content Management System
@@ -129,7 +129,13 @@ echo "</b><br />Creating connection to Database Server:<b> ";
 // Connect to DB Server without choosing an specific database
 $db = new database($db_type);
 define('NO_DSN',FALSE);
-@$conn_result = $db->connect(NO_DSN,$db_server, $db_admin_name, $db_admin_pass); 
+
+//echo "<pre>debug 20071010 - \$db_server - " . __FUNCTION__ . " --- "; print_r($db_server); echo "</pre>";
+//echo "<pre>debug 20071010 - \$db_admin_name - " . __FUNCTION__ . " --- "; print_r($db_admin_name); echo "</pre>";
+//echo "<pre>debug 20071010 - \$db_admin_pass - " . __FUNCTION__ . " --- "; print_r($db_admin_pass); echo "</pre>";
+
+$conn_result = $db->connect(NO_DSN,$db_server, $db_admin_name, $db_admin_pass); 
+//echo "<pre>debug 20071010 - \$conn_result - " . __FUNCTION__ . " --- "; print_r($conn_result); echo "</pre>";
 
 
 if( $conn_result['status'] == 0 ) 
@@ -168,7 +174,9 @@ $db=null;
 // ------------------------------------------------------------------------------------------------
 // Connect to the Database (if Succesful -> database exists)
 $db = new database($db_type);
-@$conn_result = $db->connect(NO_DSN,$db_server, $db_admin_name, $db_admin_pass,$db_name); 
+$conn_result = $db->connect(NO_DSN,$db_server, $db_admin_name, $db_admin_pass,$db_name); 
+
+// echo "<pre>debug 20071010 - \$conn_result - " . __FUNCTION__ . " --- "; print_r($conn_result); echo "</pre>";
 
 if( $conn_result['status'] == 0 ) 
 {
@@ -208,7 +216,7 @@ if($create)
 	$db = null;
 	
   $db = New database($db_type);
-  @$conn_result=$db->connect(NO_DSN,$db_server, $db_admin_name, $db_admin_pass);
+  $conn_result=$db->connect(NO_DSN,$db_server, $db_admin_name, $db_admin_pass);
   echo "</b><br />Creating database `" . $db_name . "`:<b> ";
   
   // 20060214 - franciscom - from MySQL Manual
@@ -394,18 +402,22 @@ $db->close();
 $db=null;
 $user_host = explode('@',$tl_db_login);
 
-$msg = create_user_for_db($db_type,$db_name, $db_server, $db_admin_name, $db_admin_pass, 
-                          $tl_db_login, $tl_db_passwd);
-
-echo "</b><br />Creating Testlink DB user `" . $user_host[0] . "`:<b> ";
-if ( strpos($msg,'ok -') === FALSE )
+// 20071010 - franciscom
+if( $db_type != 'mssql')
 {
-		echo "<span class='notok'>Failed!</span></b> - Could not create user: $tl_db_login!";
-		$errors += 1;
-}
-else
-{
-		echo "<span class='ok'>OK! ($msg) </span>";
+  $msg = create_user_for_db($db_type,$db_name, $db_server, $db_admin_name, $db_admin_pass, 
+                            $tl_db_login, $tl_db_passwd);
+  
+  echo "</b><br />Creating Testlink DB user `" . $user_host[0] . "`:<b> ";
+  if ( strpos($msg,'ok -') === FALSE )
+  {
+  		echo "<span class='notok'>Failed!</span></b> - Could not create user: $tl_db_login!";
+  		$errors += 1;
+  }
+  else
+  {
+  		echo "<span class='ok'>OK! ($msg) </span>";
+  }
 }
 // ------------------------------------------------------------------------------------------------
 
@@ -423,6 +435,12 @@ if( !is_null($db) )
 $db = new database($db_type);
 switch($db_type)
 {
+
+    // 20071011 - francisco.mancardi@gruppotesi.com
+    case 'mssql':
+    @$conn_result = $db->connect(NO_DSN, $db_server, $db_admin_name, $db_admin_pass, $db_name); 
+    break;
+
     case 'mysql':
     @$conn_result = $db->connect(NO_DSN, $db_server, $db_admin_name, $db_admin_pass, $db_name); 
     break;
@@ -430,6 +448,8 @@ switch($db_type)
     case 'postgres':
     @$conn_result = $db->connect(NO_DSN, $db_server, $tl_db_login, $tl_db_passwd, $db_name); 
     break;
+    
+    
 }
   
   
@@ -440,11 +460,16 @@ if( $inst_type=='new' && $conn_result['status'] != 0 )
   // Drop tables
   $my_ado=$db->get_dbmgr_object();
   $the_tables =$my_ado->MetaTables('TABLES');  
-  if( count($the_tables) > 0 )
+
+  // echo "<pre>debug 20071010 - \$the_tables - " . __FUNCTION__ . " --- "; print_r($the_tables); echo "</pre>";
+  // echo "<pre>debug 20071010 - \count($the_tables) - " . __FUNCTION__ . " --- "; print_r(count($the_tables)); echo "</pre>";
+  
+  if( count($the_tables) > 0 && isset($the_tables[0]))
   {
     echo "<br>Dropping all existent tables:";
     foreach($the_tables as $table2drop )
     {
+      // echo $table2drop . "<br>";
       $sql="DROP TABLE {$table2drop}";
       $db->exec_query($sql);
     }

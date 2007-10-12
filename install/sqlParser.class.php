@@ -1,10 +1,11 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: sqlParser.class.php,v 1.5 2006/05/24 07:11:59 franciscom Exp $ */
+/* $Id: sqlParser.class.php,v 1.6 2007/10/12 08:34:58 franciscom Exp $ */
 // File: sqlParser.class.php
 //       MySQL Dump Parser
 //
 // Rev :
+//       20071011 - franciscom - MSSQL support
 //       20060523 - franciscom - changes to add postgres support
 //
 //       20060101 - franciscom - Refactoring after added ADODB support
@@ -46,11 +47,18 @@ class SqlParser {
       case 'postgres':
       $cfil = array_filter($contents,array($this,"only_good_sql"));
       break;
+
+      case 'mssql':
+      $cfil = array_filter($contents,array($this,"only_good_sql"));
+      break;
+
     }
     $r2d2 = implode("", $cfil);
     $sql_array = explode(";", $r2d2);
     // ----------------------------------------------------------------
 
+    // echo "<pre>debug 20071011 - \$this->db_conn - " . __FUNCTION__ . " --- "; print_r($this->db_conn); echo "</pre>";
+    
 		$num = 0;
 		foreach($sql_array as $sql_do) {
 
@@ -64,6 +72,10 @@ class SqlParser {
   				$this->sql_errors[] = array("error" => $this->db_conn->error_msg(), "sql" => $sql_do);
   				$this->install_failed = true;
   			}
+  			// else
+  			// {
+  			//   echo "OK!!!";  
+  			// }
 			}
 		}
 	}

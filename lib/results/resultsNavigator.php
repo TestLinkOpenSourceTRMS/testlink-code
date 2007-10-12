@@ -2,7 +2,7 @@
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
- * @version $Id: resultsNavigator.php,v 1.36 2007/10/01 08:12:48 franciscom Exp $ 
+ * @version $Id: resultsNavigator.php,v 1.37 2007/10/12 18:22:21 havlat Exp $ 
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
  * Launcher for Test Results and Metrics.
@@ -23,7 +23,7 @@ $do_report=array();
 $do_report['status_ok']=1;
 $do_report['msg']='';
 
-$selectedBuild = null;
+//$selectedBuild = null;
 $selectedReportType = null;
 
 $arrReportTypes = array('normal', 'MS Excel', 'HTML email');
@@ -69,11 +69,6 @@ if($do_report['status_ok'])
 {
   // $the_builds = array_reverse($the_builds, true);
 
-  if (isset($_GET['build']))
-	  $selectedBuild = intval($_GET['build']);
-  else
-	  $selectedBuild = sizeof($the_builds) ? key($the_builds) : null;
-
   if (isset($_GET['report_type']))
 	  $selectedReportType = intval($_GET['report_type']);
   else
@@ -116,11 +111,10 @@ $smarty->assign('workframe', $workframe);
 $smarty->assign('do_report', $do_report);
 $smarty->assign('title', lang_get('title_nav_results'));
 $smarty->assign('arrData', $href_map['general_reports']);
-$smarty->assign('arrDataB', $href_map['build_reports']);
-$smarty->assign('arrBuilds', $the_builds);
+//$smarty->assign('arrDataB', $href_map['build_reports']);
+//$smarty->assign('arrBuilds', $the_builds);
 $smarty->assign('tplans', $map_tplans);
 
-$smarty->assign('selectedBuild', $selectedBuild);
 $smarty->assign('tplan_id', $tplan_id);
 
 $smarty->assign('selectedReportType', $selectedReportType);

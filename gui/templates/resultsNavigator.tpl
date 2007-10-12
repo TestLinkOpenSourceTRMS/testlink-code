@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: resultsNavigator.tpl,v 1.17 2007/09/29 16:57:43 franciscom Exp $ *}
+{* $Id: resultsNavigator.tpl,v 1.18 2007/10/12 18:21:55 havlat Exp $ *}
 {* Purpose: smarty template - show Test Results and Metrics *}
 {* Rev :
         20070929 - franciscom - 
@@ -31,77 +31,45 @@ function pre_submit()
 
 <h1>{$title|escape}</h1>
 
-<div class="groupBtn">
-	<input type="button" name="print" value="{lang_get s='btn_print'}" 
-	onclick="javascript: reportPrint();" style="margin-left:2px;" />
-</div>
-
-<p>
-{* Build href menu *}
-{if $do_report.status_ok }
-  <a href="lib/results/{$arrDataB[Row].href}?build={$selectedBuild}&amp;report_type={$selectedReportType|escape}" 
-	   target="workframe">{$arrDataB[Row].name}</a><br />
-
-  {section name=Row loop=$arrData}
-	  <a href="lib/results/{$arrData[Row].href}{$selectedReportType}&amp;build={$selectedBuild}&amp;tplan_id={$tplan_id}" 
-	     target="workframe">{$arrData[Row].name}</a><br />
-  {/section}
-{else}
-  {$do_report.msg}
-{/if}
-</p>
-</div>
-
-<div>
+<div style="margin:3px" >
 <form method="get" id="resultsNavigator" onSubmit="javascript:return pre_submit();">
   <input type="hidden" id="called_by_me" name="called_by_me" value="1">
   <input type="hidden" id="called_url" name="called_url" value="">
 
-	<table>
-	<tr><td>
-	  {lang_get s='test_plan'}
-	</td></tr>
-	<tr>
-	  <td>
-	  <select name="tplan_id" onchange="pre_submit();this.form.submit()">
+  <table>
+	<tr><td style="padding-right: 10px">{lang_get s='test_plan'}</td><td>
+	<select name="tplan_id" onchange="pre_submit();this.form.submit()">
 		{html_options options=$tplans selected=$tplan_id}
-	  </select>
-	 </td>
-	</tr>
-	
-	{if $arrBuilds != '' }
-	<tr>
-	  <td>{lang_get s='title_active_build'}</td>
-  </tr>
-	<tr>
-	  <td><select name="build" onchange="pre_submit();this.form.submit()">
-		    {html_options options=$arrBuilds selected=$selectedBuild}
-	     </select>
-	  </td>
-	</tr>
-	
-	<tr>
-	  <td>{lang_get s='title_report_type'}</td>
-	</tr>
-	<tr>
-	  <td><select name="report_type" onchange="this.form.submit();">
+	</select><br />
+	</td></tr>
+	<tr><td style="padding-right: 10px">{lang_get s='title_report_type'}</td><td>
+	<select name="report_type" onchange="this.form.submit();">
 		    {html_options options=$arrReportTypes selected=$selectedReportType}
-	      </select>
-	  </td>
-	</tr>
-	{/if}
+	</select>
+	</td></tr>
+  </table>
 	
-	
-	<!--
-	<tr>
-		<td>
-		{lang_get s="note_email_sent_t"}
-		</td>
-	</tr>
-	-->
-	</table>
 </form>
 </div>
+
+<div style="margin:3px; padding: 15px 0px" >
+{* Build href menu *}
+{if $do_report.status_ok }
+  {section name=Row loop=$arrData}
+	<span><img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
+	  <a href="lib/results/{$arrData[Row].href}{$selectedReportType}&amp;tplan_id={$tplan_id}" 
+	     target="workframe">{$arrData[Row].name}</a></span><br />
+  {/section}
+{else}
+  {$do_report.msg}
+{/if}
+</div>
+
+<div class="groupBtn">
+	<input type="button" name="print" value="{lang_get s='btn_print'}" 
+	onclick="javascript: reportPrint();" style="margin-left:5px;" />
+</div>
+
 
 {* 20070925 *}
 <script type="text/javascript">

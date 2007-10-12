@@ -1,6 +1,6 @@
 --  -----------------------------------------------------------------------------------
 --  TestLink Open Source Project - http://testlink.sourceforge.net/
---  $Id: testlink_create_default_data.sql,v 1.11 2007/10/10 06:36:32 franciscom Exp $
+--  $Id: testlink_create_default_data.sql,v 1.12 2007/10/12 08:34:22 franciscom Exp $
 --  SQL script - create default data (rights & admin account)
 --  
 --  Database Type: Microsoft SQL Server
@@ -12,27 +12,24 @@
 --
 --  -----------------------------------------------------------------------------------
 
+--  Database version
+INSERT INTO db_version (version,upgrade_ts) VALUES ('DB 1.1',GETDATE());
+
 --  admin account 
 --  SECURITY: change password after first login
-USE [testlink]
-
 INSERT INTO users (login,password,role_id,email,first,last,locale,active)
              VALUES ('admin','21232f297a57a5a743894a0e4a801fc3', 8,'', 'Testlink', 'Administrator', 'en_GB',1);
 
-SET IDENTITY_INSERT node_types ON
 
 --  Node types -
+SET IDENTITY_INSERT node_types ON
 INSERT INTO node_types (id,description) VALUES (1, 'testproject');
 INSERT INTO node_types (id,description) VALUES (2, 'testsuite');
 INSERT INTO node_types (id,description) VALUES (3, 'testcase');
 INSERT INTO node_types (id,description) VALUES (4, 'testcase_version');
 INSERT INTO node_types (id,description) VALUES (5, 'testplan');
-
--- 20070113 - franciscom - new node_types
 INSERT INTO node_types (id,description) VALUES (6, 'requirement_spec');
 INSERT INTO node_types (id,description) VALUES (7, 'requirement');
-
-
 SET IDENTITY_INSERT node_types OFF
 
 --  Roles -
@@ -68,6 +65,20 @@ INSERT INTO rights (id,description) VALUES (17,'cfield_view');
 INSERT INTO rights (id,description) VALUES (18,'cfield_management');
 SET IDENTITY_INSERT rights OFF
 
+-- Assignment status
+SET IDENTITY_INSERT assignment_status ON
+INSERT INTO assignment_status (id,description) VALUES(1,'open');
+INSERT INTO assignment_status (id,description) VALUES(2,'closed');
+INSERT INTO assignment_status (id,description) VALUES(3,'completed');
+INSERT INTO assignment_status (id,description) VALUES(4,'todo_urgent');
+INSERT INTO assignment_status (id,description) VALUES(5,'todo');
+SET IDENTITY_INSERT assignment_status OFF
+
+-- Assignment types
+SET IDENTITY_INSERT assignment_types ON
+INSERT INTO assignment_types (id,fk_table,description) VALUES(1,'testplan_tcversions','testcase_execution');
+INSERT INTO assignment_types (id,fk_table,description) VALUES(2,'tcversions','testcase_review');
+SET IDENTITY_INSERT assignment_types OFF
 
 --  Rights for Administrator (admin role)
 INSERT INTO role_rights (role_id,right_id) VALUES (8,1 );
@@ -129,25 +140,4 @@ INSERT INTO role_rights (role_id,right_id) VALUES (9,9 );
 INSERT INTO role_rights (role_id,right_id) VALUES (9,11);
 INSERT INTO role_rights (role_id,right_id) VALUES (9,15);
 INSERT INTO role_rights (role_id,right_id) VALUES (9,16);
-
--- Assignment types
-SET IDENTITY_INSERT assignment_types ON
-INSERT INTO assignment_types (id,fk_table,description) VALUES(1,'testplan_tcversions','testcase_execution');
-INSERT INTO assignment_types (id,fk_table,description) VALUES(2,'tcversions','testcase_review');
-SET IDENTITY_INSERT assignment_types OFF
-
--- Assignment status
-SET IDENTITY_INSERT assignment_status ON
-INSERT INTO assignment_status (id,description) VALUES(1,'open');
-INSERT INTO assignment_status (id,description) VALUES(2,'closed');
-INSERT INTO assignment_status (id,description) VALUES(3,'completed');
-INSERT INTO assignment_status (id,description) VALUES(4,'todo_urgent');
-INSERT INTO assignment_status (id,description) VALUES(5,'todo');
-SET IDENTITY_INSERT assignment_types OFF
-
-
---  Database version
---
--- Dumping data for table db_version
---
-INSERT INTO "db_version" ("version","upgrade_ts") VALUES ('DB 1.1',GETDATE());
+-- 

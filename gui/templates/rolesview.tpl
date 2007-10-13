@@ -1,19 +1,31 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: rolesview.tpl,v 1.17 2007/09/21 06:14:51 franciscom Exp $ 
+$Id: rolesview.tpl,v 1.18 2007/10/13 10:17:44 franciscom Exp $ 
 Purpose: smarty template - View defined roles 
 
 rev :
+     20071013 - franciscom -
      20070921 - franciscom - BUGID - added strip_tags|strip to notes 
      20070829 - jbarchibald
       -  bug 1000  - Testplan User Role Assignments
 
 *}
-{include file="inc_head.tpl"}
-
-<body>
+{assign var="cfg_section" value=$smarty.template|replace:".tpl":"" }
+{config_load file="input_dimensions.conf" section=$cfg_section}
 {lang_get s='warning_delete_role' var="warning_msg" }
 
+{include file="inc_head.tpl" openHead="yes" jsValidate="yes"}
+{include file="inc_del_onclick.tpl"}
+
+<script type="text/javascript">
+/* All this stuff is need for logic contained in inc_del_onclick.tpl */
+var o_label ="{lang_get s='Role'}";
+var del_action=fRoot+'lib/usermanagement/rolesview.php?deleterole=1&id=';
+</script>
+
+</head>
+
+<body {$body_onload}>
 <h1>{lang_get s='title_user_mgmt'} - {lang_get s='title_roles'}</h1>
 
 {* tabs *}
@@ -87,12 +99,12 @@ rev :
 				</td>
 				<td>
 				{if $role.id > $smarty.const.TL_LAST_SYSTEM_ROLE}
-					{* <a href="lib/usermanagement/rolesview.php?deleterole=1&amp;id={$role.id}"> *}
-					<a href="javascript:deleteRole_onClick({$role.id},'{$warning_msg}')">
-					<img style="border:none" alt="{lang_get s='alt_delete_role'}"
-					     title="{lang_get s='alt_delete_role'}"
-					     src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png"/>
-					</a>
+		       <img style="border:none;cursor: pointer;" 
+  				            title="{lang_get s='alt_delete_role'}" 
+  				            alt="{lang_get s='alt_delete_role'}" 
+ 					            onclick="delete_confirmation({$role.id},
+ 					                                         '{$role.name|escape:'javascript'}','{$warning_msg}');"
+  				            src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png"/>
 				{else}
 					{lang_get s='N_A'}
 				{/if}

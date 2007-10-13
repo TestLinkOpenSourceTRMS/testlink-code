@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: tcexport.php,v $
  *
- * @version $Revision: 1.9 $
- * @modified $Date: 2007/02/10 12:15:52 $ by $Author: schlundus $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2007/10/13 10:14:21 $ by $Author: franciscom $
  *
  * test case and test suites export
  *
@@ -34,6 +34,8 @@ $bRecursive = isset($_REQUEST['bRecursive']) ? $_REQUEST['bRecursive'] : false;
 $testproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 $testprojectName = $_SESSION['testprojectName'];
 
+$export_filename=isset($_REQUEST['export_filename']) ? $_REQUEST['export_filename'] : null;
+
 $exporting_just_one_tc = 0;
 $node_id = $container_id;
 $do_it = 1;
@@ -53,7 +55,7 @@ if($bRecursive)
 	{
 		$container_description=lang_get('testproject');
 		$page_title=lang_get('title_tsuite_export_all');
-		$fileName = 'all_testsuites.xml';
+	  $fileName = 'all_testsuites.xml';
 		$check_children=1; 
 		$nothing_todo_msg=lang_get('no_testsuites_to_export');
 	}
@@ -80,6 +82,9 @@ else
 		$nothing_todo_msg = lang_get('no_testcases_to_export');
 	}
 }
+
+$fileName = is_null($export_filename) ? $fileName : $export_filename;
+
 
 if( $check_children )
 {
@@ -136,6 +141,7 @@ if ($bExport)
 
 $smarty = new TLSmarty();
 
+$smarty->assign('export_filename',$fileName);
 $smarty->assign('do_it',$do_it);
 $smarty->assign('nothing_todo_msg',$nothing_todo_msg);
 $smarty->assign('object_name',$node['name']);

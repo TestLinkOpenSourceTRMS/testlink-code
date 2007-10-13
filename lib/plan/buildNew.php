@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: buildNew.php,v $
  *
- * @version $Revision: 1.33 $
- * @modified $Date: 2007/05/10 07:07:15 $ $Author: franciscom $
+ * @version $Revision: 1.34 $
+ * @modified $Date: 2007/10/13 10:16:46 $ $Author: franciscom $
  *
  * rev :
  *       20070122 - franciscom - use build_mgr methods
@@ -57,7 +57,7 @@ switch($args->do_action)
 	$args->build_name = $my_b_info['name'];
 	$of->Value = $my_b_info['notes'];
 	$args->is_active = $my_b_info['active'];
-	$args->is_open = $my_b_info['open'];
+	$args->is_open = $my_b_info['is_open'];
   break;
   
   case 'create':

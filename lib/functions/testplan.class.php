@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.38 $
- * @modified $Date: 2007/10/10 06:42:52 $ $Author: franciscom $
+ * @version $Revision: 1.39 $
+ * @modified $Date: 2007/10/13 10:16:46 $ $Author: franciscom $
  * @author franciscom
  *
  * rev :
@@ -919,7 +919,7 @@ function get_max_build_id($id,$active = null,$open = null)
 */
 function get_builds($id,$active=null,$open=null)
 {
-	$sql = " SELECT id,testplan_id, name, notes, active, is_open AS open " . 
+	$sql = " SELECT id,testplan_id, name, notes, active, is_open " . 
 	       " FROM builds WHERE builds.testplan_id = {$id} " ;
 	       
 	// 20070120 - franciscom

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.65 $
- * @modified $Date: 2007/10/06 09:33:55 $ $Author: franciscom $
+ * @version $Revision: 1.66 $
+ * @modified $Date: 2007/10/13 10:18:41 $ $Author: franciscom $
  *
  * 20071006 - franciscom - changes on exec_cfield_mgr() call
  * 20071002 - jbarchibald - BUGID 1051
@@ -346,7 +346,7 @@ $smarty->assign('bugs_for_exec',$bugs);
 $rs = $build_mgr->get_by_id($build_id);
 $smarty->assign('build_notes',$rs['notes']);
 
-$editTestResult = ($rs['open']==1) ? "yes" : "no";
+$editTestResult = ($rs['is_open']==1) ? "yes" : "no";
 $smarty->assign('edit_test_results', $editTestResult);
 // -------------------------------------------------------
 

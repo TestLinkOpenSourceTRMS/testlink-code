@@ -6,11 +6,12 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8 
- * @modified $Date: 2007/09/24 08:43:28 $ by $Author: franciscom $
+ * @modified $Date: 2007/10/13 16:28:37 $ by $Author: franciscom $
  *
  *-------------------------------------------------------------------------
  * Revisions:
  *
+ * 20071013 - franciscom - changes to fix MSSQL problems
  * 20070916 - franciscom - refactoring to remove global coupling
  *                         changes in constructot interface()
  *
@@ -167,13 +168,17 @@ class results
 	* @author kevinlevy
 	*
 	* rev :
+	*      20071013 - franciscom - changes to fix MSSQL problems
+	*                 $startTime = "0000-00-00 00:00:00" -> null
+  *                 $endTime = "9999-01-01 00:00:00" -> null
+  *
 	*      20070916 - franciscom - interface changes
 	*/ 
 	public function results(&$db, &$tplan_mgr,$tproject_info, $tplan_info, 
 	                        $suitesSelected = 'all', 
 	                        $builds_to_query = -1, $lastResult = 'a', 
 	                        $keywordId = 0, $owner = null, 
-							            $startTime = "0000-00-00 00:00:00", $endTime = "9999-01-01 00:00:00",
+							            $startTime = null, $endTime = null,
 							            $executor = null, $search_notes_string = null, $linkExecutionBuild = null,
 							            &$suiteStructure = null, &$flatArray = null, &$linked_tcversions = null)
 	{
@@ -858,8 +863,20 @@ class results
 				// over multiple test plans - by modifying this select statement slightly
 				// to include multiple test plan ids	
 				$sql = "SELECT * FROM executions " .
-				       "WHERE tcversion_id = $executed AND testplan_id = $this->testPlanID AND 
-				        execution_ts > '$startTime' and execution_ts < '$endTime' ";			   
+				       "WHERE tcversion_id = $executed AND testplan_id = $this->testPlanID " ;
+				
+				// ------------------------------------------------------
+				if( !is_null($startTime) )
+				{
+				  $sql .= " AND execution_ts > '{$startTime}'";
+				}
+				
+				if( !is_null($endTime) )
+				{
+				  $sql .= " AND execution_ts < '{$endTime}' ";			   
+				}
+				// ------------------------------------------------------
+				        
 				        
 				if (($lastResult == $this->map_tc_status['passed']) || ($lastResult == $this->map_tc_status['failed']) || 
 				    ($lastResult == $this->map_tc_status['blocked'])){

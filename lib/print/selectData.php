@@ -1,10 +1,10 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* @version 	$Id: selectData.php,v 1.16 2007/05/10 07:05:17 franciscom Exp $
+* @version 	$Id: selectData.php,v 1.17 2007/10/14 14:39:01 franciscom Exp $
 * @author 	Martin Havlat
 * 
-* 	Navigator for print/export functionality. 
+* Navigator for print/export functionality. 
 *	It builds the javascript tree that allow the user select a required part 
 *	test specification.
 *
@@ -25,10 +25,8 @@ $tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectNam
 
 // parse wrong type
 $type = isset($_GET['type']) ? $_GET['type'] : '';
-if ($type != 'testproject' && $type != 'testSet')
+if ($type != 'testproject' && $type != 'testplan')
 {
-	tLog("Argument GET['type'] has invalid value", 'ERROR');
-	exit();
 }
 
 // default vars
@@ -70,14 +68,16 @@ if(isset($_POST['format']) && $_POST['format'] == 'msword')
 $workPath = 'lib/print/printData.php';
 $args = "&type=" . $type;
 $smarty = new TLSmarty();
+
 // generate tree 
-$HIDE_TCs = 1;
 if ($type == 'testproject')
 {
-	$treeString = generateTestSpecTree($db,$tproject_id, $tproject_name,$workPath, 1, 0,$args);
+  // 20071014 - franciscom 
+	$treeString = generateTestSpecTree($db,$tproject_id, $tproject_name,$workPath,
+	                                   FOR_PRINTING,HIDE_TESTCASES,ACTION_TESTCASE_DISABLE,$args);
 	$smarty->assign('title', lang_get('title_tc_print_navigator'));
 }	
-else if ($type == 'testSet')
+else if ($type == 'testplan')
 {
 	$tp = new testplan($db);
 	$latestBuild = $tp->get_max_build_id($tplan_id);
@@ -85,6 +85,12 @@ else if ($type == 'testSet')
 
 	$smarty->assign('title', lang_get('title_tp_print_navigator'));
 }	
+else
+{
+	tLog("Argument GET['type'] has invalid value", 'ERROR');
+	exit();
+}
+
 $tree = invokeMenu($treeString,null,null);
 $smarty->assign('treeKind', TL_TREE_KIND);
 $smarty->assign('arrCheckboxes', $arrCheckboxes);

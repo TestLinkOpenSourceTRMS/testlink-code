@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/ 
 // This script is distributed under the GNU General Public License 2 or later. 
 //
-// $Id: testlink_library.js,v 1.39 2007/09/30 10:19:13 franciscom Exp $ 
+// $Id: testlink_library.js,v 1.40 2007/10/14 14:38:24 franciscom Exp $ 
 //
 // Javascript functions commonly used through the GUI
 // This library is automatically loaded with inc_header.tpl
@@ -21,6 +21,9 @@
 // like inc_head.tpl
 //
 // ----------------------------------------------------------------------------
+//
+// 20071014 - franciscom - removed deleteRole_onClick(),deleteBuild_onClick()
+//                                 deleteUser_onClick()
 //
 // 20070930 - franciscom - REQ - BUGID 1078 - openTCaseWindow()
 //
@@ -112,15 +115,26 @@ function SP()
 }
 
 
+
+/*
+  function: EP
+            printing of Test Specification
+
+  args :
+  
+  returns: 
+
+*/
 function EP(id)
 {
   // get checkboxes status
 	var pParams = tree_getPrintPreferences();
-	parent.workframe.location = fRoot+menuUrl+"?edit=testproject&id="+id+args+"&"+pParams;
+	parent.workframe.location = fRoot+menuUrl+"?print_scope=test_specification" +
+	                            "&edit=testproject&level=testproject&id="+id+args+"&"+pParams;
 }
 
 /*
-  function: Edit Test Suite
+  function: Edit Test Suite or launch print
 
   args :
   
@@ -133,7 +147,8 @@ function ETS(id)
 {
   // get checkboxes status
 	var pParams = tree_getPrintPreferences();
-	parent.workframe.location = fRoot+menuUrl+"?edit=testsuite&id="+id+args+"&"+pParams;
+	parent.workframe.location = fRoot+menuUrl+"?print_scope=test_specification" +
+	                            "&edit=testsuite&level=testsuite&id="+id+args+"&"+pParams;
 }
 
 
@@ -153,33 +168,87 @@ function ET(id,v)
 }
 
 
+
+
+
+
 /*
-  function: Print Test Suite
+  function: TPROJECT_PTS
+            Test PROJECT Print Test Suite
 
   args :
   
   returns: 
 
 */
-function PTS(id)
+function TPROJECT_PTS(id)
 {
 	var pParams = tree_getPrintPreferences();
-	parent.workframe.location = fRoot+menuUrl+"?level=testsuite&id="+id+args+"&"+pParams;
+	parent.workframe.location = fRoot+menuUrl+"?print_scope=testproject&level=testsuite&id="+id+args+"&"+pParams;
 }
 
 /*
-  function: Print Test Plan (PTP)
+  function: TPROJECT_PTP
+            Test PLAN Print Test Plan
 */
-function PTP(id)
+function TPROJECT_PTP(id)
 {
 	var pParams = tree_getPrintPreferences();
-	parent.workframe.location = fRoot+menuUrl+"?level=testproject&id="+id+args+"&"+pParams;
+	parent.workframe.location = fRoot+menuUrl+"?print_scope=testproject&level=testproject&id="+id+args+"&"+pParams;
 }
 
-function PT(id)
+
+/*
+  function: TPROJECT_PTC
+            Test PLAN Print Test Case
+*/
+function TPROJECT_PTC(id)
 {
-	parent.workframe.location = fRoot+menuUrl+"?level=tc&id="+id+args;
+	parent.workframe.location = fRoot+menuUrl+"?print_scope=testproject&level=tc&id="+id+args;
 }
+
+
+
+
+
+/*
+  function: TPLAN_PTS
+            Test PLAN Print Test Suite
+
+  args :
+  
+  returns: 
+
+*/
+function TPLAN_PTS(id)
+{
+	var pParams = tree_getPrintPreferences();
+	parent.workframe.location = fRoot+menuUrl+"?print_scope=testplan&level=testsuite&id="+id+args+"&"+pParams;
+}
+
+/*
+  function: TPLAN_PTP
+            Test PLAN Print Test Plan
+*/
+function TPLAN_PTP(id)
+{
+	var pParams = tree_getPrintPreferences();
+	parent.workframe.location = fRoot+menuUrl+"?print_scope=testplan&level=testproject&id="+id+args+"&"+pParams;
+}
+
+
+/*
+  function: TPLAN_PTC
+            Test PLAN Print Test Case
+*/
+function TPLAN_PTC(id)
+{
+	parent.workframe.location = fRoot+menuUrl+"?print_scope=testplan&level=tc&id="+id+args;
+}
+
+
+
+
 
 
 //==========================================
@@ -204,29 +273,6 @@ function my_show_div(itm)
 	itm.style.display = "";
 }
 
-// MHT: TODO move it to validate.js
-// 20051007 - am - removed build name
-function deleteBuild_onClick(build_id,msg)
-{
-  confirm_and_submit(msg,'deleteBuildForm',
-                     'build_id',build_id,'do_action','do_delete');
-}
-
-/*
-  function: deleteUser_onClick()
-
-  args :
-  
-  returns: 
-
-  rev :
-        20070107 - franciscom - added fRoot
-*/
-function deleteUser_onClick(userID,userName)
-{
-	if (confirm(warning_delete_user+"\n(" + userName +")"))
-		location = fRoot+"lib/usermanagement/usersview.php?operation=delete&user="+userID;
-}
 
 /**
  * Display a confirmation dlg before modifying roles
@@ -500,23 +546,6 @@ function open_show_notes_window(exec_id)
 function open_help_window(help_page,locale)
 {
 	window.open(fRoot+"lib/general/show_help.php?help="+help_page+"&locale="+locale,"_blank", "left=350,top=50,screenX=350,screenY=50,fullscreen=no,resizable=yes,toolbar=no,status=no,menubar=no,scrollbars=yes,directories=no,location=no,width=400,height=650")
-}
-
-
-/*
-  function: open_help_window
-
-  args :
-  
-  returns: 
-
-*/
-function deleteRole_onClick(role_id,msg)
-{
-	if (confirm(msg))
-	{
-		location = fRoot+"lib/usermanagement/rolesview.php?deleterole=1&id="+role_id;
-  }
 }
 
 

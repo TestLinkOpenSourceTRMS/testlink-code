@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: frmWorkArea.php,v $
  *
- * @version $Revision: 1.20 $
- * @modified $Date: 2007/09/26 06:27:49 $ by $Author: franciscom $
+ * @version $Revision: 1.21 $
+ * @modified $Date: 2007/10/14 14:39:00 $ by $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -36,7 +36,7 @@ $aa_tfp = array(
             'testSetRemove' => 'lib/plan/testSetNavigator.php?feature=removeTC&help_topic=testSetRemove',
             'show_ve' => 'lib/plan/testSetNavigator.php?feature=show_ve',  // 20070411
             'newest_tcversions' => '../../lib/plan/newest_tcversions.php',  // 20070411
-            'printTestSet'  => 'lib/print/selectData.php?type=testSet',
+            'printTestSet'  => 'lib/print/selectData.php?type=testplan',
             'priority'           => 'lib/plan/testSetNavigator.php?feature=plan_risk_assignment',
             'tc_exec_assignment' => 'lib/plan/testSetNavigator.php?feature=tc_exec_assignment',
             'executeTest' => 'lib/execute/execNavigator.php',

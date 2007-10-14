@@ -2,7 +2,7 @@
 /**
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/ 
 *
-*  @version 	$Id: printData.php,v 1.31 2007/05/10 07:05:17 franciscom Exp $
+*  @version 	$Id: printData.php,v 1.32 2007/10/14 14:39:01 franciscom Exp $
 *  @author 	Martin Havlat
 * 
 * Shows the data that will be printed.
@@ -16,13 +16,16 @@ require_once("common.php");
 require_once("print.inc.php");
 testlinkInitPage($db);
 
-$type = isset($_GET['edit']) ?  $_GET['edit'] : null;
+$print_scope = $_REQUEST['print_scope'];
+// $type = isset($_GET['edit']) ?  $_GET['edit'] : null;
+
 $level = isset($_GET['level']) ?  $_GET['level'] : null;
 $format = isset($_GET['format']) ? $_GET['format'] : null;
 $dataID = isset($_GET['id']) ? intval($_GET['id']) : 0;
 $tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 $tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : 'xxx';
 $tplan_id = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0;
+
 
 // Important Notice:
 // Elements in this array must be updated if $arrCheckboxes, in selectData.php is changed.
@@ -38,76 +41,92 @@ foreach($printingOptions as $opt => $val)
 $tck_map = null;
 $map_node_tccount=array();
 
-
 $tproject_mgr = new testproject($db);
 $tree_manager = &$tproject_mgr->tree_manager;
 $test_spec = $tree_manager->get_subtree($dataID,array('testplan'=>'exclude me'),
-                                           array('testcase'=>'exclude my children'),null,null,true);
+                                           array('testcase'=>'exclude my children'),null,null,RECURSIVE_MODE);
+
 $tree = null;
 $code = null;					
-				 
-if ($type == 'testproject')
-{
-	$tree = &$test_spec;
-	$tree['name'] = $tproject_name;
-	$tree['id'] = $tproject_id;
-	$tree['node_type_id'] = 1;
-	$printingOptions['title'] = '';
-}
-else if ($type == 'testsuite')
-{
-	$tsuite = new testsuite($db);
-	$tInfo = $tsuite->get_by_id($dataID);
-	$tInfo['childNodes'] = isset($test_spec['childNodes']) ? $test_spec['childNodes'] : null;
-	
-	//build the testproject node
-	$tree['name'] = $tproject_name;
-	$tree['id'] = $tproject_id;
-	$tree['node_type_id'] = 1;
-	$tree['childNodes'] = array($tInfo);
-	$printingOptions['title'] = isset($tInfo['name']) ? $tInfo['name'] : $tproject_name;
-}
-if ($level == 'testproject')
-{
-	$tplan_mgr = new testplan($db);
-	$tp_tcs = $tplan_mgr->get_linked_tcversions($tplan_id);
-	
-	$hash_descr_id = $tree_manager->get_available_node_types();
-	$hash_id_descr = array_flip($hash_descr_id);
-	$tree = &$test_spec;
-	$tree['name'] = $tproject_name;
-	$tree['id'] = $tproject_id;
-	$tree['node_type_id'] = 1;
 
-	if (!$tp_tcs)
-		$tree['childNodes'] = null;
-	$testcase_count = prepareNode($db,$tree,$hash_id_descr,$map_node_tccount,$tck_map,$tp_tcs,SHOW_TESTCASES);
-	$printingOptions['title'] = $tproject_name;
-	
-}
-else if ($level == 'testsuite')
+switch ($print_scope)
 {
-	$tsuite = new testsuite($db);
-	$tInfo = $tsuite->get_by_id($dataID);
-	$tplan_mgr = new testplan($db);
-	$tp_tcs = $tplan_mgr->get_linked_tcversions($tplan_id);
-	
-	$hash_descr_id = $tree_manager->get_available_node_types();
-	$hash_id_descr = array_flip($hash_descr_id);
-	
-	$tInfo['node_type_id'] = $hash_descr_id['testsuite'];
-	$tInfo['childNodes'] = isset($test_spec['childNodes']) ? $test_spec['childNodes'] : null;
-	$testcase_count = prepareNode($db,$tInfo,$hash_id_descr,$map_node_tccount,$tck_map,$tp_tcs,SHOW_TESTCASES);
-	$printingOptions['title'] = isset($tInfo['name']) ? $tInfo['name'] : $tproject_name;
-	
-	$tree['name'] = $tproject_name;
-	$tree['id'] = $tproject_id;
-	$tree['node_type_id'] = 1;
-	$tree['childNodes'] = array($tInfo);
-}
+  case 'testproject':
+    if ($level == 'testproject')
+    {
+    	$tree = &$test_spec;
+    	$tree['name'] = $tproject_name;
+    	$tree['id'] = $tproject_id;
+    	$tree['node_type_id'] = 1;
+    	$printingOptions['title'] = '';
+    }
+    else if ($level == 'testsuite')
+    {
+    	$tsuite = new testsuite($db);
+    	$tInfo = $tsuite->get_by_id($dataID);
+    	$tInfo['childNodes'] = isset($test_spec['childNodes']) ? $test_spec['childNodes'] : null;
+    	
+    	//build the testproject node
+    	$tree['name'] = $tproject_name;
+    	$tree['id'] = $tproject_id;
+    	$tree['node_type_id'] = 1;
+    	$tree['childNodes'] = array($tInfo);
+    	$printingOptions['title'] = isset($tInfo['name']) ? $tInfo['name'] : $tproject_name;
+    }
+  break;
+  
+  case 'testplan':
+    if ($level == 'testproject')
+    {
+    	$tplan_mgr = new testplan($db);
+    	$tp_tcs = $tplan_mgr->get_linked_tcversions($tplan_id);
+    	
+    	$hash_descr_id = $tree_manager->get_available_node_types();
+    	$hash_id_descr = array_flip($hash_descr_id);
+    	$tree = &$test_spec;
+    	$tree['name'] = $tproject_name;
+    	$tree['id'] = $tproject_id;
+    	$tree['node_type_id'] = 1;
+    
+    	if (!$tp_tcs)
+    	{
+    		$tree['childNodes'] = null;
+    	}
+    	$testcase_count = prepareNode($db,$tree,$hash_id_descr,$map_node_tccount,
+    	                              $tck_map,$tp_tcs,SHOW_TESTCASES);
+    	$printingOptions['title'] = $tproject_name;
+    	
+    }
+    else if ($level == 'testsuite')
+    {
+    	$tsuite = new testsuite($db);
+    	$tInfo = $tsuite->get_by_id($dataID);
+    	$tplan_mgr = new testplan($db);
+    	$tp_tcs = $tplan_mgr->get_linked_tcversions($tplan_id);
+    	
+    	$hash_descr_id = $tree_manager->get_available_node_types();
+    	$hash_id_descr = array_flip($hash_descr_id);
+    	
+    	$tInfo['node_type_id'] = $hash_descr_id['testsuite'];
+    	$tInfo['childNodes'] = isset($test_spec['childNodes']) ? $test_spec['childNodes'] : null;
+    	$testcase_count = prepareNode($db,$tInfo,$hash_id_descr,$map_node_tccount,
+    	                              $tck_map,$tp_tcs,SHOW_TESTCASES);
+    	$printingOptions['title'] = isset($tInfo['name']) ? $tInfo['name'] : $tproject_name;
+    	
+    	$tree['name'] = $tproject_name;
+    	$tree['id'] = $tproject_id;
+    	$tree['node_type_id'] = 1;
+    	$tree['childNodes'] = array($tInfo);
+    }
+  break;
+    
+} // switch  
+
 
 if($tree)
+{
 	$code = renderTestSpecTreeForPrinting($db,$printingOptions,$tree,null,0,1);
+}
 
 // add MS Word header 
 if ($format == 'msword')

@@ -3,19 +3,16 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: print.inc.php,v $
- * @version $Revision: 1.29 $
- * @modified $Date: 2007/05/10 19:55:43 $ by $Author: schlundus $
+ * @version $Revision: 1.30 $
+ * @modified $Date: 2007/10/14 14:39:00 $ by $Author: franciscom $
  *
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
  * Functions for support printing of documents. 
  *
- * 20070509 - franciscom 
- * changes in renderTestSpecTreeForPrinting() interface
- *
- * 20070106 - franciscom
- * 1. remove of some magic numbers
- * 
+ * rev :
+ *      20071014 - franciscom - renderTestCaseForPrinting() added printing of test case version
+ *      20070509 - franciscom - changes in renderTestSpecTreeForPrinting() interface
  */
 
 /** 
@@ -83,9 +80,9 @@ function printFirstPage(&$db,$title, $prodName, $prodNotes, $userID)
 		         strftime($g_date_format, time()) . "</p></div>\n";
 
 	if (TL_DOC_COPYRIGHT != '')
-		$output .= '<div class="pagefooter" id="copyright">'.htmlspecialchars(TL_DOC_COPYRIGHT)."</div>\n";
+		$output .= '<div class="pagefooter" id="copyright">' . htmlspecialchars(TL_DOC_COPYRIGHT)."</div>\n";
 	if (TL_DOC_CONFIDENT != '')
-		$output .= '<div class="pagefooter" id="confidential">'.htmlspecialchars(TL_DOC_CONFIDENT)."</div>\n";
+		$output .= '<div class="pagefooter" id="confidential">' . htmlspecialchars(TL_DOC_CONFIDENT)."</div>\n";
 
 	return $output;
 }
@@ -163,13 +160,14 @@ function renderTestSpecTreeForPrinting(&$db,&$printingOptions,&$node,$tocPrefix,
 }
 
 /*
-  function: 
+  function: renderTestCaseForPrinting 
 
   args :
   
   returns: 
 
   rev :
+       20071014 - franciscom - display test case version
        20070509 - franciscom - added Contribution
        
 */
@@ -177,7 +175,7 @@ function renderTestCaseForPrinting(&$db,&$printingOptions,&$node,$level,$tplan_i
 {
  	$id = $node['id'];
 	$name = htmlspecialchars($node['name']);
-	
+
 	$code = null;
   $tc_mgr = null;
   $tcInfo = null;
@@ -205,8 +203,13 @@ function renderTestCaseForPrinting(&$db,&$printingOptions,&$node,$level,$tplan_i
 		$code .= "<a name='tc" . $id . "'></a>";
 	}
  	$code .= "<div class=\"tc\"><table class=\"tc\" width=\"90%\">";
- 	$code .= "<tr><th colspan=\"2\">".lang_get('test_case')." " . $id . ": " . 
- 	            $name . "</th></tr>";
+ 	$code .= '<tr><th colspan="2">' . lang_get('test_case') . " " . $id . ": " . $name  . "</th></tr>";
+	
+	// To manage print of test specification
+	if( isset($node['version']) )
+	{
+	  $code .= '<tr><th colspan="2">' . lang_get('version') . ' ' . $node['version'] . "</th></tr>";
+	}
 	
 
   if ($printingOptions['body'] || $printingOptions['summary'])

@@ -3,11 +3,12 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
  * @filesource $RCSfile: database.class.php,v $
- * @version $Revision: 1.20 $
- * @modified $Date: 2007/01/02 13:43:41 $ by $Author: franciscom $
+ * @version $Revision: 1.21 $
+ * @modified $Date: 2007/10/14 14:39:54 $ by $Author: franciscom $
  * @author Francisco Mancardi
  * 
  *
+ * 20071010 - franciscom -  build_sql_create_db()
  * 20060708 - franciscom -  changed Connect() to NConnect(), to avoid
  *                          problems due to connection reuse, when
  *                          you wanto to connect to more than one database at once
@@ -82,9 +83,9 @@ class database
 		$result = array('status' => 1, 'dbms_msg' => 'ok');
    	
 		if(  $p_dsn === false ) {
-			$t_result = @$this->db->NConnect($p_hostname, $p_username, $p_password, $p_database_name );
+			$t_result = $this->db->NConnect($p_hostname, $p_username, $p_password, $p_database_name );
 		} else {
-			$t_result = @$this->db->IsConnected();
+			$t_result = $this->db->IsConnected();
 		}
 		
 		if ( $t_result ) {
@@ -100,6 +101,8 @@ class database
 	# execute query, requires connection to be opened
 	function exec_query( $p_query, $p_limit = -1, $p_offset = -1 )
 	{
+	  // echo "<pre>debug 20071011 - \$p_query - " . __FUNCTION__ . " --- "; print_r($p_query); echo "</pre>";
+	  
 		$this->nQuery++;
 		$t_start = $this->microtime_float();
 		
@@ -130,7 +133,9 @@ class database
 		array_push ($this->queries_array, array( $p_query, $t_elapsed, $ec, $emsg ) );
 
 		if ( !$t_result ) {
-			echo $this->error($p_query);
+			echo "ERROR ON exec_query() - database.class.php <br>" . $this->error($p_query) . "<br>";
+      echo "<br> THE MESSAGE :: $message <br>";			
+
 			return false;
 		} else {
 			return $t_result;
@@ -563,7 +568,7 @@ class database
 
 
 
-
+  // 20071010 - franciscom - corrected syntax for mssql
   // 20060523 - franciscom
   function build_sql_create_db($db_name)
   {
@@ -576,8 +581,9 @@ class database
       $sql = 'CREATE DATABASE "' . $this->prepare_string($db_name) . '" ' . "WITH ENCODING='UNICODE' "; 
       break;
  
+      // 20071010 - franciscom
       case 'mssql':
-      $sql = 'CREATE DATABASE "' . $this->prepare_string($db_name) . '" '; 
+      $sql = 'CREATE DATABASE [' . $this->prepare_string($db_name) . '] '; 
       break;
       
       case 'mysql':

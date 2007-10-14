@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: const.inc.php,v $
  *
- * @version $Revision: 1.41 $
- * @modified $Date: 2007/09/26 06:27:30 $ by $Author: franciscom $
+ * @version $Revision: 1.42 $
+ * @modified $Date: 2007/10/14 14:40:52 $ by $Author: franciscom $
  * @author Martin Havlát
  *
  * SCOPE:
@@ -16,6 +16,9 @@
  * 
  *-------------------------------------------------------------------
  * Revisions: 
+ *           20071014 - franciscom -  $g_company_name,$g_company_logo,
+ *                                    $g_copyright,$g_confidential
+ *
  *           20070905 - franciscom - version updated
  *           20070902 - franciscom - localisation jp_JP
  *                                   $g_reports_cfg
@@ -80,6 +83,16 @@ define( 'ERROR_LDAP_SERVER_CONNECT_FAILED',		1401 );
 define( 'ERROR_LDAP_UPDATE_FAILED',				1402 );
 define( 'ERROR_LDAP_USER_NOT_FOUND',			1403 );
 define( 'ERROR_LDAP_BIND_FAILED',				1404 );
+
+
+
+// Leave them empty if you would not to use.
+$g_company_name = 'Testlink Development Team [configure using $g_company_name]';
+$g_company_logo = '<img alt="TestLink logo" title="configure using $g_company_logo" ' .
+                  'src="%BASE_HREF%' . 'gui/themes/theme_m1/images/company_logo.png" />';
+
+$g_copyright='copyright - Testlink Development Team [configure using $g_copyright]';
+$g_confidential='this document is not confidential [configure using $g_confidential]';
 
 
 
@@ -428,10 +441,16 @@ define('GET_ALSO_NOT_EXECUTED',null);
 define('GET_ONLY_EXECUTED','executed');
 
 // generateTestSpecTree()
+define('FOR_PRINTING',1);
+define('NOT_FOR_PRINTING',0);
+
 define('HIDE_TESTCASES',1);
 define('SHOW_TESTCASES',0);
 define('FILTER_INACTIVE_TESTCASES',1);
 define('DO_NOT_FILTER_INACTIVE_TESTCASES',0);
+
+define('ACTION_TESTCASE_DISABLE',0);
+define('IGNORE_INACTIVE_TESTCASES',1);
 
 define('DO_ON_TESTCASE_CLICK',1);
 define('NO_ADDITIONAL_ARGS','');

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.124 $
- * @modified $Date: 2007/10/08 07:24:39 $ by $Author: franciscom $
+ * @version $Revision: 1.125 $
+ * @modified $Date: 2007/10/14 14:40:53 $ by $Author: franciscom $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink 
@@ -295,16 +295,6 @@ $g_use_ext_js_library=1;
 /** [GENERATED DOCUMENTATION] */
 // Constants used in printed documents.
 define('TL_DOC_BASIC_CSS', TL_THEME_CSS_DIR . 'tl_doc_basic.css');
-
-// Leave them empty if you would not to use.
-define('TL_DOC_COMPANY', "Testlink Development Team [configure using TL_DOC_COMPANY]");
-define('TL_DOC_COMPANY_LOGO', 
-       '<img alt="TestLink logo" title="configure using TL_DOC_COMPANY_LOGO" src="%BASE_HREF%' .
-             TL_THEME_IMG_DIR . '/company_logo.png" />');
-define('TL_DOC_COPYRIGHT', 'copyright - Testlink Development Team [configure using TL_DOC_COPYRIGHT]');
-define('TL_DOC_CONFIDENT', 'this document is not confidential [configure using TL_DOC_CONFIDENT]');
-
-
 
 // ----------------------------------------------------------------------------
 /** [ATTACHMENTS] */
@@ -640,6 +630,15 @@ if(!defined('TL_LOG_LEVEL_DEFAULT'))
 {
 	define('TL_LOG_LEVEL_DEFAULT', $g_log_level);
 }
+
+
+// For printing documents
+define('TL_DOC_COMPANY', $g_company_name);
+define('TL_DOC_COMPANY_LOGO', $g_company_logo);
+define('TL_DOC_COPYRIGHT', $g_copyright);
+define('TL_DOC_CONFIDENT', $g_confidential);
+
+
 
 /** Support for localization */
 $serverLanguage = false;

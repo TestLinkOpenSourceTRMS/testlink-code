@@ -2,7 +2,7 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: listTestCases.php,v 1.20 2007/03/26 20:24:20 schlundus Exp $
+* 	@version 	$Id: listTestCases.php,v 1.21 2007/10/14 14:41:44 franciscom Exp $
 * 	@author 	Martin Havlat
 * 
 * 	This page generates tree menu with test specification. It builds the
@@ -63,7 +63,8 @@ if($spec_cfg->show_tsuite_filter)
 	$draw_filter = $mappy['draw_filter'];
 }
 $treeString = generateTestSpecTree($db,$tproject_id, $tproject_name,
-                                   $workPath,SHOW_TESTCASES,DO_ON_TESTCASE_CLICK,
+                                   $workPath,NOT_FOR_PRINTING,
+                                   SHOW_TESTCASES,DO_ON_TESTCASE_CLICK,
                                    NO_ADDITIONAL_ARGS, NO_KEYWORD_ID_TO_FILTER,
                                    DO_NOT_FILTER_INACTIVE_TESTCASES,$exclude_branches);
 

@@ -6,11 +6,12 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8 
- * @modified $Date: 2007/10/13 16:28:37 $ by $Author: franciscom $
+ * @modified $Date: 2007/10/14 14:41:44 $ by $Author: franciscom $
  *
  *-------------------------------------------------------------------------
  * Revisions:
  *
+ * 20071013 - franciscom - changes in prepareNode() call
  * 20071013 - franciscom - changes to fix MSSQL problems
  * 20070916 - franciscom - refactoring to remove global coupling
  *                         changes in constructot interface()
@@ -1057,10 +1058,11 @@ class results
 			}	
 			// testcase_count is required to skip components which don't have cases in the plan
 			$count = array();
-			$bForPrinting = 0;
-			$testcase_count = prepareNode($db,$test_spec,$hash_id_descr,$count,$tck_map,$tp_tcs,$bForPrinting,$owner);
+
+			$testcase_count = prepareNode($db,$test_spec,$hash_id_descr,$count,$tck_map,$tp_tcs,
+			                              HIDE_TESTCASES,$owner);
+
 			$test_spec['testcase_count'] = $testcase_count;	
-			// $menuUrl = "menuUrl";
 			$currentNode = null;
 			$currentNodeIndex = 0;
 			$suiteStructure = $this->processExecTreeNode(1,$test_spec,$hash_id_descr);

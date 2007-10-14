@@ -2,7 +2,7 @@
 /** 
 *	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* @version $Id: planAddTCNavigator.php,v 1.22 2007/09/24 20:51:45 schlundus Exp $
+* @version $Id: planAddTCNavigator.php,v 1.23 2007/10/14 14:41:44 franciscom Exp $
 *	@author Martin Havlat
 * 
 * 	Navigator for feature: add Test Cases to a Test Case Suite in Test Plan. 
@@ -75,12 +75,11 @@ else if ( isset($_REQUEST['called_by_me']) )
 
 
 
-define('ACTION_TESTCASE_DISABLE',0);
-define('IGNORE_INACTIVE_TESTCASES',1);
 
 // added $tplan_id
 $treeString = generateTestSpecTree($db,$tproject_id, $tproject_name,  
-                                   $workPath,HIDE_TESTCASES,ACTION_TESTCASE_DISABLE,
+                                   $workPath,NOT_FOR_PRINTING,
+                                   HIDE_TESTCASES,ACTION_TESTCASE_DISABLE,
                                    $args, $keyword_id,IGNORE_INACTIVE_TESTCASES);
 
 

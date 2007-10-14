@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: tree.class.php,v $
  *
- * @version $Revision: 1.29 $
- * @modified $Date: 2007/06/20 16:30:54 $ by $Author: franciscom $
+ * @version $Revision: 1.30 $
+ * @modified $Date: 2007/10/14 14:41:44 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * 20070620 - franciscom - BUGID 903
@@ -402,7 +402,8 @@ function get_subtree($node_id,$exclude_node_types=null,
 	                                          $exclude_children_of,
 	                                          $exclude_branches);
 
-    return ($the_subtree);
+
+  return ($the_subtree);
 }
 
 
@@ -481,47 +482,46 @@ function _get_subtree_rec($node_id,&$pnode,$and_not_in_clause = '',
     $result = $this->db->exec_query($sql);
     while($row = $this->db->fetch_array($result))
     {
-		$rowID = $row['id'];
-		$nodeTypeID = $row['node_type_id'];
-		$nodeType = $this->node_types[$nodeTypeID];
-		
-		if(!isset($exclude_branches[$rowID]))
-		{  
-			$node_table = $this->node_tables[$nodeType];
-			$node =  array(	   'id' => $rowID,
-                               'parent_id' => $row['parent_id'],
-                               'node_type_id' => $nodeTypeID,
-                               'node_order' => $row['node_order'],
-                               'node_table' => $node_table,
-                               'name' => $row['name'],
-							   'childNodes' => null,
-							   );
-          
-          // Basically we use this because:
-          // 1. Sometimes we don't want the children if the parent is a testcase,
-          //    due to the version management
-          //
-          // 2. Sometime we want to exclude all descendants (branch) of a node.
-          //
-          // [franciscom]: 
-          // I think ( but I have no figures to backup my thoughts) doing this check and 
-          // avoiding the function call is better that passing a condition that will result
-          // in a null result set.
-          //
-          //
-          if(!isset($exclude_children_of[$nodeType]) && 
-              !isset($exclude_branches[$rowID])
-            )
-			{
-				$this->_get_subtree_rec($rowID,$node,
-        	                            $and_not_in_clause,
-        	                            $exclude_children_of,
-        	                            $exclude_branches);	
-         	}
-			
-			$pnode['childNodes'][] = $node;
-		}
-  	}
+  		$rowID = $row['id'];
+  		$nodeTypeID = $row['node_type_id'];
+  		$nodeType = $this->node_types[$nodeTypeID];
+  		
+  		if(!isset($exclude_branches[$rowID]))
+  		{  
+  			$node_table = $this->node_tables[$nodeType];
+  			$node =  array('id' => $rowID,
+                       'parent_id' => $row['parent_id'],
+                       'node_type_id' => $nodeTypeID,
+                       'node_order' => $row['node_order'],
+                       'node_table' => $node_table,
+                       'name' => $row['name'],
+  							       'childNodes' => null);
+            
+        // Basically we use this because:
+        // 1. Sometimes we don't want the children if the parent is a testcase,
+        //    due to the version management
+        //
+        // 2. Sometime we want to exclude all descendants (branch) of a node.
+        //
+        // [franciscom]: 
+        // I think ( but I have no figures to backup my thoughts) doing this check and 
+        // avoiding the function call is better that passing a condition that will result
+        // in a null result set.
+        //
+        //
+        if(!isset($exclude_children_of[$nodeType]) && 
+           !isset($exclude_branches[$rowID]) )
+  			{
+  				$this->_get_subtree_rec($rowID,$node,
+                                  $and_not_in_clause,
+                                  $exclude_children_of,
+                                  $exclude_branches);	
+        }
+  			
+  			$pnode['childNodes'][] = $node;
+  			
+  		} // if(!isset($exclude_branches[$rowID]))
+  	} //while
 }
  
 }// end class

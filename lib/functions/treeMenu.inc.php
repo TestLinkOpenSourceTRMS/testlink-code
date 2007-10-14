@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: treeMenu.inc.php,v $
  *
- * @version $Revision: 1.42 $
- * @modified $Date: 2007/10/14 14:41:44 $ by $Author: franciscom $
+ * @version $Revision: 1.43 $
+ * @modified $Date: 2007/10/14 16:34:44 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * 	This file generates tree menu for test specification and test execution.
@@ -524,7 +524,7 @@ function jtree_renderTestSpecTreeNodeOnOpen($current,$nodeDesc,
 	else if ($nodeDesc == 'testsuite')
 	{
 		// $pfn = 'ETS';
-		$pfn = $bForPrinting ? 'TPROJECT_PTP' : 'ETS';
+		$pfn = $bForPrinting ? 'TPROJECT_PTS' : 'ETS';
 		$label =  $name . " (" . $testcase_count . ")";	
 	}
 	else if ($nodeDesc == 'testcase')

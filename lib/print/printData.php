@@ -2,7 +2,7 @@
 /**
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/ 
 *
-*  @version 	$Id: printData.php,v 1.32 2007/10/14 14:39:01 franciscom Exp $
+*  @version 	$Id: printData.php,v 1.33 2007/10/14 16:34:44 franciscom Exp $
 *  @author 	Martin Havlat
 * 
 * Shows the data that will be printed.
@@ -22,10 +22,11 @@ $print_scope = $_REQUEST['print_scope'];
 $level = isset($_GET['level']) ?  $_GET['level'] : null;
 $format = isset($_GET['format']) ? $_GET['format'] : null;
 $dataID = isset($_GET['id']) ? intval($_GET['id']) : 0;
+
 $tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 $tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : 'xxx';
 $tplan_id = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0;
-
+$user_id = isset($_SESSION['userID']) ? intval($_SESSION['userID']) : null;
 
 // Important Notice:
 // Elements in this array must be updated if $arrCheckboxes, in selectData.php is changed.
@@ -48,6 +49,8 @@ $test_spec = $tree_manager->get_subtree($dataID,array('testplan'=>'exclude me'),
 
 $tree = null;
 $code = null;					
+
+$item_type=$level;
 
 switch ($print_scope)
 {
@@ -125,8 +128,19 @@ switch ($print_scope)
 
 if($tree)
 {
-	$code = renderTestSpecTreeForPrinting($db,$printingOptions,$tree,null,0,1);
+  switch ($print_scope)
+  {
+    case 'testproject':
+  	$code = renderTestSpecTreeForPrinting($db,$tree,$item_type,$printingOptions,null,0,1,$user_id);
+    break;
+  
+    case 'testplan':
+  	$code = renderTestPlanForPrinting($db,$tree,$item_type,
+  	                                  $printingOptions,null,0,1,$user_id,$tplan_id);
+    break;
+  }  
 }
+
 
 // add MS Word header 
 if ($format == 'msword')

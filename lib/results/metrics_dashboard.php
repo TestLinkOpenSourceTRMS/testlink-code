@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: metrics_dashboard.php,v $
  *
- * @version $Revision: 1.1 $
- * @modified $Date: 2007/09/10 12:26:30 $ $Author: franciscom $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2007/10/14 16:34:44 $ $Author: franciscom $
  *
  * @author franciscom
  *
@@ -48,10 +48,6 @@ function getMetrics(&$db,$user_id,$tproject_id)
     $metrics[$tplan_id]['total']=0;
 
   }
-  //echo "<pre>debug 20070908 -\$linked_tcversions-" . __FUNCTION__ . " --- "; print_r($linked_tcversions); echo "</pre>";
-  // $linked_tcversions = $tplan_mgr->get_linked_tcversions($id,$tcase_id=null,$keyword_id=0,$executed=null,
-  //                                   $assigned_to=null,$exec_status=null,$build_id=0)
-  // 
   
   // Get count of executed testcases
   foreach($linked_tcversions as $tplan_id => $tc)

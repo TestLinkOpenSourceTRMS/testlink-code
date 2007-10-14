@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
  * @filesource $RCSfile: database.class.php,v $
- * @version $Revision: 1.21 $
- * @modified $Date: 2007/10/14 14:39:54 $ by $Author: franciscom $
+ * @version $Revision: 1.22 $
+ * @modified $Date: 2007/10/14 16:34:44 $ by $Author: franciscom $
  * @author Francisco Mancardi
  * 
  *
@@ -101,8 +101,6 @@ class database
 	# execute query, requires connection to be opened
 	function exec_query( $p_query, $p_limit = -1, $p_offset = -1 )
 	{
-	  // echo "<pre>debug 20071011 - \$p_query - " . __FUNCTION__ . " --- "; print_r($p_query); echo "</pre>";
-	  
 		$this->nQuery++;
 		$t_start = $this->microtime_float();
 		

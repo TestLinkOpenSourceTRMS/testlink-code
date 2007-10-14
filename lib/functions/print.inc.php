@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: print.inc.php,v $
- * @version $Revision: 1.30 $
- * @modified $Date: 2007/10/14 14:39:00 $ by $Author: franciscom $
+ * @version $Revision: 1.31 $
+ * @modified $Date: 2007/10/14 16:34:44 $ by $Author: franciscom $
  *
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
@@ -35,19 +35,21 @@ function printHeader($title, $base_href, $cssTemplate = TL_DOC_BASIC_CSS)
 /** 
   print HTML - initial page of document 
 */
-function printFirstPage(&$db,$title, $prodName, $prodNotes, $userID)
+function printFirstPage(&$db,$item_type,$title, $tproject_info, $userID,$tplan_info=null)
 {
 	$g_date_format = config_get('date_format');
-	$prodName = htmlspecialchars($prodName);
+	$tproject_name = htmlspecialchars($tproject_info['name']);
+	$tproject_notes = $tproject_info['notes'];
 	
 	$author = htmlspecialchars(getUserName($db,$userID));
-		
 	$title = htmlspecialchars($title);
 	
 	$output = '<div>';
-	$output .= '<div class="groupBtn" style="text-align:right"><input class="notprintable" type="button" name="print" value="'.lang_get('btn_print').'" onclick="javascript: print();" style="margin-left:2px;" /></div>';
+	$output .= '<div class="groupBtn" style="text-align:right">' .
+	           '<input class="notprintable" type="button" name="print" value="' . 
+	           lang_get('btn_print').'" onclick="javascript: print();" style="margin-left:2px;" /></div>';
 
-	$output .= '<div class="pageheader">'. $prodName ."</div>\n";
+	$output .= '<div class="pageheader">'. lang_get('testproject') . ' ' . $tproject_name ."</div>\n";
 	
 	if (TL_DOC_COMPANY != '' ||  TL_DOC_COMPANY_LOGO != '' )
 	{
@@ -69,11 +71,33 @@ function printFirstPage(&$db,$title, $prodName, $prodNotes, $userID)
 	
 	$output .= "</div>\n";
 
-	$output .= '<h1 id="doctitle">'.$title."</h1>\n";
+	$my_title ='';
+	$output .= '<h1 id="doctitle">';
+
+
+  $my_title = lang_get('testproject') . ' ' . $tproject_name;
+  if( $title != '' )
+  {
+    // $my_title = lang_get('testsuite') . ' ' . $title;
+    $my_title = lang_get($item_type) . ' ' . $title;
+ 	}
+
+
+	if( is_null($tplan_info) )
+	{
+	  $output .= lang_get('title_test_spec');
+	}
+	else
+	{
+	  $output .= '<h1 id="doctitle">' . lang_get('testplan') . htmlspecialchars($tplan_info['name']);
+	}
+	$output .= "<br>" . $my_title . "</h1>\n";  
+ 
+	
 	$output .= '<div id="summary">' .
-		         '<p id="prodname">'. lang_get('product').": " . $prodName . "</p>\n";
-	if (strlen($prodNotes))
-		$output .= '<p id="prodnotes">'. $prodNotes . "</p>\n";
+		         '<p id="prodname">'. lang_get('testproject') .": " . $tproject_name . "</p>\n";
+	if (strlen($tproject_notes))
+		$output .= '<p id="prodnotes">'. $tproject_notes . "</p>\n";
 		       
 	$output .= '<p id="author">' . lang_get('author').": " . $author . "</p>\n" .
 		         '<p id="printedby">' . lang_get('printed_by_TestLink_on')." ". 
@@ -102,7 +126,8 @@ function printFirstPage(&$db,$title, $prodName, $prodNotes, $userID)
                                add contribution BUGID 
 
 */
-function renderTestSpecTreeForPrinting(&$db,&$printingOptions,&$node,$tocPrefix,$tcCnt,$level,$tplan_id=0)
+function renderTestSpecTreeForPrinting(&$db,&$node,$item_type,&$printingOptions,
+                                       $tocPrefix,$tcCnt,$level,$user_id,$tplan_id=0)
 {
   $tree_mgr = new tree($db);
   $map_id_descr = array_flip($tree_mgr->get_available_node_types());
@@ -111,22 +136,23 @@ function renderTestSpecTreeForPrinting(&$db,&$printingOptions,&$node,$tocPrefix,
 	$bCloseTOC = 0;	
 	if (isset($node['node_type_id']))
 	{
-	  	$verbose_node_type = $map_id_descr[$node['node_type_id']];
+	  $verbose_node_type = $map_id_descr[$node['node_type_id']];
 		switch($verbose_node_type)
 		{
 			case 'testproject':
-				$code .= renderProjectNodeForPrinting($db,$printingOptions,$printingOptions['title'],$node);
+				$code .= renderProjectNodeForPrinting($db,$node,$printingOptions,$item_type,
+				                                      $printingOptions['title'],$user_id,$tplan_id);
 				break;
 					
 			case 'testsuite':
 				if (!is_null($tocPrefix))
 					$tocPrefix .= ".";
 				$tocPrefix .= $tcCnt;
-				$code .= renderTestSuiteNodeForPrinting($db,$printingOptions,$node,$tocPrefix,$level);
+				$code .= renderTestSuiteNodeForPrinting($db,$node,$printingOptions,$tocPrefix,$level);
 				break;
 			
 			case 'testcase':
-				$code .= renderTestCaseForPrinting($db,$printingOptions,$node,$level,$tplan_id);
+				$code .= renderTestCaseForPrinting($db,$node,$printingOptions,$level,$tplan_id);
 				break;
 		}
 	}
@@ -143,7 +169,8 @@ function renderTestSpecTreeForPrinting(&$db,&$printingOptions,&$node,$tocPrefix,
 			
 			if (isset($current['node_type_id']) && $map_id_descr[$current['node_type_id']] == 'testsuite')
 				$tsCnt++;
-			$code .= renderTestSpecTreeForPrinting($db,$printingOptions,$current,$tocPrefix,$tsCnt,$level+1);
+			$code .= renderTestSpecTreeForPrinting($db,$current,$item_type,$printingOptions,
+			                                       $tocPrefix,$tsCnt,$level+1,$user_id);
 		}
 	}
 	if (isset($node['node_type_id']) && $map_id_descr[$node['node_type_id']] == 'testproject')
@@ -171,7 +198,7 @@ function renderTestSpecTreeForPrinting(&$db,&$printingOptions,&$node,$tocPrefix,
        20070509 - franciscom - added Contribution
        
 */
-function renderTestCaseForPrinting(&$db,&$printingOptions,&$node,$level,$tplan_id=0) 
+function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,$tplan_id=0) 
 {
  	$id = $node['id'];
 	$name = htmlspecialchars($node['name']);
@@ -248,19 +275,31 @@ function renderTestCaseForPrinting(&$db,&$printingOptions,&$node,$level,$tplan_i
 	return $code;
 }
 
-function renderProjectNodeForPrinting(&$db,&$printingOptions,$title,&$node)
+/*
+  function: 
+
+  args :
+  
+  returns: 
+
+*/
+function renderProjectNodeForPrinting(&$db,&$node,&$printingOptions,$item_type,
+                                      $title,$user_id,$tplan_id=0)
 {
-	$stitle = lang_get('title_test_spec');
-	if (strlen($title))
-		$stitle .= " - " . $title;
-	
-	$my_userID = isset($_SESSION['userID']) ? intval($_SESSION['userID']) : null;
 
 	$tproject = new testproject($db);
-	$projectData = $tproject->get_by_id($node['id']);
-	unset($tproject);
-	$code = printHeader($stitle,$_SESSION['basehref']);
-	$code .= printFirstPage($db,$stitle, $projectData['name'], $projectData['notes'], $my_userID);
+	$tproject_info = $tproject->get_by_id($node['id']);
+	$tplan_info = null;
+
+	if( $tplan_id != 0)
+	{
+	  $tplan_mgr = new testplan($db);
+	  $tplan_info = $tplan_mgr->get_by_id($tplan_id);  
+	}
+	
+	
+	$code = printHeader($title,$_SESSION['basehref']);
+	$code .= printFirstPage($db, $item_type, $title, $tproject_info,$user_id,$tplan_info);
 
 	$printingOptions['toc_numbers'][1] = 0;
 	if ($printingOptions['toc'])
@@ -273,7 +312,15 @@ function renderProjectNodeForPrinting(&$db,&$printingOptions,$title,&$node)
 }
 
 
-function renderTestSuiteNodeForPrinting(&$db,&$printingOptions,&$node,$tocPrefix,$level) 
+/*
+  function: 
+
+  args :
+  
+  returns: 
+
+*/
+function renderTestSuiteNodeForPrinting(&$db,&$node,&$printingOptions,$tocPrefix,$level) 
 {
 	$code = null;
 	$name = isset($node['name']) ? htmlspecialchars($node['name']) : '';
@@ -290,10 +337,29 @@ function renderTestSuiteNodeForPrinting(&$db,&$printingOptions,&$node,$tocPrefix
 		$tsuite = new testsuite($db);
 		$tInfo = $tsuite->get_by_id($node['id']);
 		unset($tsuite);
-    	$code .= "<h2>{$tocPrefix}.0 ". lang_get('details'). 
-				 "</h2><div>{$tInfo['details']}</div><br />";
+    $code .= "<h2>{$tocPrefix}.0 " . lang_get('details') . "</h2><div>{$tInfo['details']}</div><br />";
  	}
 	
 	return $code;
+}
+
+
+
+/*
+  function: 
+
+  args :
+  
+  returns: 
+
+*/
+function renderTestPlanForPrinting(&$db,&$node,$item_type,&$printingOptions,
+                                       $tocPrefix,$tcCnt,$level,$user_id,$tplan_id)
+
+{
+  $code =  renderTestSpecTreeForPrinting($db,$node,$item_type,$printingOptions,
+                                         $tocPrefix,$tcCnt,$level,$user_id,$tplan_id);
+  
+  return $code;
 }
 ?>

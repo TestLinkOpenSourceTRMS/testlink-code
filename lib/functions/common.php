@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.71 $ $Author: jbarchibald $
- * @modified $Date: 2007/10/02 21:55:24 $
+ * @version $Revision: 1.72 $ $Author: franciscom $
+ * @modified $Date: 2007/10/14 16:34:44 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -749,8 +749,6 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
 	
 	//  20070104 - franciscom - added 'has_linked_items' => 0, to remove a warning message.
 	$result = array('spec_view'=>array(), 'num_tc' => 0, 'has_linked_items' => 0);
-	
-	// echo "<pre>debug 20070707 QW" . __FUNCTION__ . " --- "; print_r(count($result['spec_view'])); echo "</pre>";
 	
 	$out = array(); 
 	$a_tcid = array();

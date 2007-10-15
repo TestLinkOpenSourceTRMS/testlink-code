@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: print.inc.php,v $
- * @version $Revision: 1.31 $
- * @modified $Date: 2007/10/14 16:34:44 $ by $Author: franciscom $
+ * @version $Revision: 1.32 $
+ * @modified $Date: 2007/10/15 21:52:27 $ by $Author: havlat $
  *
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
@@ -206,22 +206,28 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,$tplan_i
 	$code = null;
   $tc_mgr = null;
   $tcInfo = null;
+  $tcResultInfo = null;
   
   $versionID = isset($node['tcversion_id']) ? $node['tcversion_id'] : TC_LATEST_VERSION; 
 		
 	if( $printingOptions['body'] || $printingOptions['summary'] || 
-	    $printingOptions['author'] )
+	    $printingOptions['author'])
 	{
 		$tc_mgr = new testcase($db);
-    $tcInfo = $tc_mgr->get_by_id($id,$versionID);
+    	$tcInfo = $tc_mgr->get_by_id($id,$versionID);
+//		$tcResultInfo = $tc_mgr->get_last_execution($id, $versionID, $tplan_id, null);   
 
 	  if ($tcInfo)
 		{
 	    $tcInfo=$tcInfo[0];
 	  }
 	
-	}    
-
+	}
+	if($printingOptions['passfail'])
+	{
+		$resultTC['tcid'] = $versionID;		
+		$tcResultInfo = createTestInput(&$db,$resultTC,$build_id, $tplan_id);
+	}
 	
 	if ($printingOptions['toc']) 
 	{
@@ -252,8 +258,12 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,$tplan_i
 			}
 			if ($printingOptions['passfail'])
 			{
-				$code .= "<tr><td width=\"20%\" valign=\"top\"><u>".lang_get('passfail')."</u>:</td><td><u>".
-				lang_get('testnotes')."</u>:<br /><br /><br /></td></tr>";
+				$code .= "<tr><td width=\"20%\" valign=\"top\"><b><u>".lang_get('Result').": ".$tcResultInfo['status']."</u></b></td>" .
+						"<td><u>".lang_get('testnotes')."</u><br /><br /></td></tr>";
+			}
+			if ($tcResultInfo == null)
+			{
+				$code .= "je tam nula";
 			}
 		}
 	}

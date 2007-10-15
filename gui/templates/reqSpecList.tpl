@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecList.tpl,v 1.10 2007/01/25 20:02:23 schlundus Exp $ *}
+{* $Id: reqSpecList.tpl,v 1.11 2007/10/15 22:02:06 havlat Exp $ *}
 {* Purpose: smarty template - create view and create a new req document *}
 {include file="inc_head.tpl"}
 
@@ -40,7 +40,13 @@
     		<td><span class="bold"><a href="lib/req/reqSpecView.php?idSRS={$arrSpec[rowSpec].id}">
     			{$arrSpec[rowSpec].title|escape}</a></span></td>
     		<td>{$arrSpec[rowSpec].scope|strip_tags|strip|truncate:190}</td>
-    		<td>{$arrSpec[rowSpec].total_req|escape}</td>
+    		<td>
+		      {if $arrSpec[rowSpec].total_req eq "0"}
+      			{lang_get s='not_aplicable'}
+      		  {else}
+    			{$arrSpec[rowSpec].total_req|escape}
+		      {/if}
+    		</td>
     	</tr>
     	{sectionelse}
     	<tr><td><span class="bold">{lang_get s='no_docs'}</span></td></tr>

@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecView.tpl,v 1.28 2007/04/15 10:57:40 franciscom Exp $ *}
+{* $Id: reqSpecView.tpl,v 1.29 2007/10/15 22:06:28 havlat Exp $ *}
 {* 
    Purpose: smarty template - view a requirement specification
    Author: Martin Havlat 
@@ -91,10 +91,12 @@ function check_action_precondition(form_id,action)
       	<th>{lang_get s='scope'}</th>
       	<td>{$arrSpec[0].scope}</td>
       </tr>
+      {if $arrSpec[0].total_req neq "0"}
       <tr>
       	<th>{lang_get s='req_total'}</th>
       	<td>{$arrSpec[0].total_req}</td>
       </tr>
+      {/if}
     </table>
     <div class="time_stamp_creation">
         {lang_get s='title_created'}&nbsp;{localize_timestamp ts=$arrSpec[0].creation_ts}&nbsp;

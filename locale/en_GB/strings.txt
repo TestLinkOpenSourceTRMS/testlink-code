@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.204 $
- * @modified $Date: 2007/10/09 21:42:44 $ $Author: havlat $
+ * @version $Revision: 1.205 $
+ * @modified $Date: 2007/10/15 22:00:59 $ $Author: havlat $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -34,6 +34,7 @@ $TLS_btn_no = "No";
 $TLS_create = "Create";
 $TLS_desc = "descending";
 $TLS_hour = "Hour";
+$TLS_not_aplicable = "N/A";
 $TLS_test_case = "Test Case";
 $TLS_testcase = $TLS_test_case;
 $TLS_test_plan = "Test Plan";
@@ -53,7 +54,7 @@ $TLS_supported_file_formats = "Supported file formats";
 $TLS_no_permissions_for_action = "You do not have permissions to perform this action! Please contact your administrator.";
 
 $TLS_test_status_all = "All";
-$TLS_test_status_any = "All";
+$TLS_test_status_any = "Any";
 $TLS_test_status_not_run = "Not Run";
 $TLS_test_status_blocked = "Blocked";
 $TLS_test_status_failed = "Failed";
@@ -475,7 +476,7 @@ $TLS_popup_sure_delete = "Are you sure you want to delete the Requirement Specif
 $TLS_req_select_create_tc = "Create Test Cases";
 $TLS_req_select_delete = "Delete requirements";
 $TLS_req_title_list = "List of requirements";
-$TLS_req_total = "Total count of REQs";
+$TLS_req_total = "Overwritten count of REQs";
 $TLS_req_reorder = "Reorder requirements";
 $TLS_warning_delete_requirements = "Are you sure to delete the selected requirements?";
 $TLS_title_change_req_order = "Change requirements order";
@@ -499,13 +500,13 @@ $TLS_title_edit_level = "Edit";
 $TLS_edit = "Edit";
 $TLS_none = "None";
 $TLS_req = "Requirement";
-$TLS_req_spec_change = "Change Requirements Specification to";
-$TLS_req_title_analyse = "Analyse Requirements Specification ";
-$TLS_req_title_covered = "Requirements present with Test Case";
+$TLS_req_spec_change = "Change Requirements Specification document to";
+$TLS_req_title_analyse = "Analyse Requirements Specification document ";
+$TLS_req_title_covered = "Requirements covered by Test Cases";
 $TLS_req_title_in_tl = "Requirements within TestLink";
 $TLS_req_title_nottestable = "Not testable Requirements";
-$TLS_req_title_uncovered = "Requirements present without Test Case";
-$TLS_req_title_not_in_tl = "Requirements not present in TestLink";
+$TLS_req_title_uncovered = "Requirements uncovered by Test Cases";
+$TLS_req_title_not_in_tl = "Uncovered or not-testable requirements";
 $TLS_req_total_count = "Total count of requirements";
 $TLS_testcases = "Test Cases";
 
@@ -568,6 +569,7 @@ $TLS_trep_ts = "Test Suite";
 
 
 // gui/templates/reqSpecEdit.tpl
+$TLS_req_total_description = "Use this parameter to overwrite real count of requirements within the document. '0' means unused.";
 
 
 

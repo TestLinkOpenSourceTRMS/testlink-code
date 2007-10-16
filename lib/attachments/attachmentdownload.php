@@ -5,10 +5,12 @@
  *
  * Filename $RCSfile: attachmentdownload.php,v $
  *
- * @version $Revision: 1.5 $
- * @modified $Date: 2006/12/29 19:32:10 $ by $Author: schlundus $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2007/10/16 19:42:37 $ by $Author: schlundus $
  *
- * Download dialog
+ * Download the attacxhment by a given id
+ *
+ *  Code check: 2007/11/16 schlundus 
 **/
 @ob_end_clean();
 require_once('../../config.inc.php');
@@ -16,7 +18,8 @@ require_once('../functions/common.php');
 require_once('../functions/attachments.inc.php');
 testlinkInitPage($db);
 
-$id = isset($_GET['id'])? $_GET['id'] : 0;
+//the id (attachments.id) of the attachment to be downloaded
+$id = isset($_GET['id'])? intval($_GET['id']) : 0;
 
 $attachmentInfo = getAttachmentInfo($db,$id);
 if ($attachmentInfo && checkAttachmentID($db,$id,$attachmentInfo))
@@ -25,6 +28,7 @@ if ($attachmentInfo && checkAttachmentID($db,$id,$attachmentInfo))
 		$content = getAttachmentContentFromDB($db,$id);
 	else
 		$content = getAttachmentContentFromFS($db,$id);
+		
 	if (strlen($content))
 	{
 		@ob_end_clean();

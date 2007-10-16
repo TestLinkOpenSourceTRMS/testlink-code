@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: requirements.inc.php,v $
- * @version $Revision: 1.58 $
- * @modified $Date: 2007/09/24 20:51:45 $ by $Author: schlundus $
+ * @version $Revision: 1.59 $
+ * @modified $Date: 2007/10/16 19:42:37 $ by $Author: schlundus $
  *
  * @author Martin Havlat <havlat@users.sourceforge.net>
  * 
@@ -391,7 +391,7 @@ function check_req_basic_data(&$db,$title,$reqdoc_id,$srs_id,$id = null)
 	if (!strlen($reqdoc_id))
 	{
 		$ret['status_ok'] = 0;
-		$ret['msg'] .=  "<br>" . lang_get("warning_empty_reqdoc_id");
+		$ret['msg'] .=  " " . lang_get("warning_empty_reqdoc_id");
 	}
 	
 	if($ret['status_ok'])
@@ -879,8 +879,8 @@ function getReqDataByTitle(&$db,$title,$ignore_case=0)
 function executeImportedReqs(&$db,$arrImportSource, $map_cur_reqdoc_id, 
                              $conflictSolution, $emptyScope, $idSRS, $userID)
 {
-  define('SKIP_CONTROLS',1);
-	$field_size=config_get('field_size');
+	define('SKIP_CONTROLS',1);
+	$field_size = config_get('field_size');
 
 	foreach ($arrImportSource as $data)
 	{
@@ -902,7 +902,7 @@ function executeImportedReqs(&$db,$arrImportSource, $map_cur_reqdoc_id,
 				if ($conflictSolution == 'overwrite')
 				{
 					$row_curr_data = getReqByReqdocId($db,$docID);
-					$req_id=key($row_curr_data);
+					$req_id = key($row_curr_data);
 					$status = updateRequirement($db,$req_id,$docID,$title,$scope,$userID,
 							                            $row_curr_data[$req_id]['status'],
 							                            $row_curr_data[$req_id]['type'],SKIP_CONTROLS);
@@ -1117,7 +1117,7 @@ function doImport(&$db,$userID,$idSRS,$fileName,$importType,$emptyScope,$conflic
 	if (count($arrImportSource))
 	{
 		// $arrReqTitles = getReqTitles($db,$idSRS);
-		$map_cur_reqdoc_id=getReqDocIDs($db,$idSRS);
+		$map_cur_reqdoc_id = getReqDocIDs($db,$idSRS);
 		
 		if ($bImport)
 		{

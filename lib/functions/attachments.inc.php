@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: attachments.inc.php,v $
  *
- * @version $Revision: 1.8 $
- * @modified $Date: 2007/10/01 08:12:48 $ by $Author: franciscom $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2007/10/16 19:42:37 $ by $Author: schlundus $
  *
  * functions related to attachments
  *
@@ -17,10 +17,11 @@
 require_once('common.php');
 
 /**
- * Fetches the contents of a file for storing it into the DB-Repository
+ * Fetches the contents of a file for storing it into the DB-repository
  *
  * @param string $fTmpName the filename of the attachment
- * @param string $destFName a unique file name for temporary usage 
+ * @param string $destFName a unique file name for temporary usage
+ * 
  * @return string the contents of the attachment to be stored into the db
  **/
 function getFileContentsForDBRepository($fTmpName,$destFName)
@@ -54,6 +55,7 @@ function getFileContentsForDBRepository($fTmpName,$destFName)
  *
  * @param string $fTmpName the filename
  * @param string $destFPath [ref] the destination file name
+ *
  * @return bool returns true if the file was uploaded, false else
  **/
 function storeFileInFSRepository($fTmpName,&$destFPath)
@@ -78,17 +80,16 @@ function storeFileInFSRepository($fTmpName,&$destFPath)
  * Inserts the information about an attachment into the db
  *
  * @param object $db [ref] the db-object
- * @param int $id the foreign key id
- * @param string $tableName the tablename to which the $id refers to
+ * @param int $id the foreign key id (attachments.fk_id)
+ * @param string $tableName the tablename to which the $id refers to (attachments.fk_table)
  * @param string $fName the filename
  * @param string $destFPath the file path 
  * @param string $fContents the contents of the file
  * @param string $fType the mime-type of the file
  * @param int $fSize the filesize (uncompressed)
  * @param string $title the title used for the attachment
- * @return int returns 1 if the information was successfully stored, 0 else
  *
- * 20060602 - franciscom - if empty(title) title=filename
+ * @return int returns 1 if the information was successfully stored, 0 else
  *
  **/
 function insertAttachment(&$db,$id,$tableName,$fName,$destFPath,$fContents,$fType,$fSize,$title)
@@ -105,34 +106,25 @@ function insertAttachment(&$db,$id,$tableName,$fName,$destFPath,$fContents,$fTyp
 	//for FS-repository the contents are null
 	$fContents = is_null($fContents) ? 'NULL' : "'".$db->prepare_string($fContents)."'";
 	
-	// 20060602 - franciscom
-	if( strlen(trim($title)) == 0)
+	if(strlen(trim($title)) == 0)
 	{
-	  $cfg = config_get('attachments');
-	  
-	  switch ($cfg->action_on_save_empty_title)
-	  {
-	     case 'use_filename':
-	     $title = $fName;
-	     break;
-	     
-	     default:
-	     break;  
-	  }
+		$cfg = config_get('attachments');
+		switch ($cfg->action_on_save_empty_title)
+		{
+			case 'use_filename':
+				$title = $fName;
+				break;
+			default:
+				break;  
+		}
 	}
 	$title = $db->prepare_string($title);
 	$fType = $db->prepare_string($fType);
 
-  /*
-	$date = date("Y-m-d H:i:s");
-	$query = "INSERT INTO attachments (fk_id,fk_table,file_name,file_path,file_size,file_type,date_added,content,compression_type,title) VALUES " 
-				. "({$id},'{$tableName}','{$fName}',{$destFPath},{$fSize},'{$fType}',
-				          '{$date}',$fContents,$g_repositoryCompressionType,'{$title}')";
-  */
-  $query = "INSERT INTO attachments 
-           (fk_id,fk_table,file_name,file_path,file_size,file_type, date_added,content,compression_type,title) 
-           VALUES ({$id},'{$tableName}','{$fName}',{$destFPath},{$fSize},'{$fType}'," . $db->db_now() . 
-           ",$fContents,$g_repositoryCompressionType,'{$title}')";
+	$query = "INSERT INTO attachments 
+       (fk_id,fk_table,file_name,file_path,file_size,file_type, date_added,content,compression_type,title) 
+        VALUES ({$id},'{$tableName}','{$fName}',{$destFPath},{$fSize},'{$fType}'," . $db->db_now() . 
+       ",$fContents,$g_repositoryCompressionType,'{$title}')";
   
 
 	$result = $db->exec_query($query);					
@@ -144,8 +136,9 @@ function insertAttachment(&$db,$id,$tableName,$fName,$destFPath,$fContents,$fTyp
  * Builds the path for a given filename according to the tablename and id
  *
  * @param string $destFName the fileName
- * @param string $tableName the tablename to which $id referes to
- * @param int $id the foreign key id
+ * @param string $tableName the tablename to which $id referes to (attachments.fk_table)
+ * @param int $id the foreign key id attachments.fk_id)
+ *
  * @return string returns the full path for the file 
  **/
 function buildRepositoryFilePath($destFName,$tableName,$id)
@@ -155,6 +148,16 @@ function buildRepositoryFilePath($destFName,$tableName,$id)
 	
 	return $destFPath;
 }
+
+/**
+ * Builds the repository folder for the attachment
+ *
+ * @param string $tableName the tablename to which $id referes to (attachments.fk_table)
+ * @param int $id the foreign key id attachments.fk_id)
+ * @param bool $mkDir if true then the the directory will be created, else not
+ *
+ * @return string returns the full path for the folder 
+ **/
 function buildRepositoryFolderFor($tableName,$id,$mkDir = false)
 {
 	global $g_repositoryPath;
@@ -169,9 +172,10 @@ function buildRepositoryFolderFor($tableName,$id,$mkDir = false)
 	return $path;
 }
 /**
- * Gets an unique file name to be user for the attachment
+ * Gets an unique file name to be used for the attachment
  *
  * @param string $fExt the file extension
+ *
  * @return string the filename
  **/
 function getUniqueFileName($fExt)
@@ -186,6 +190,7 @@ function getUniqueFileName($fExt)
  *
  * @param string $fName the filename
  * @param string $default a default extension 
+ *
  * @return string returns the extension
  **/
 function getFileExtension($fName,$default)
@@ -203,6 +208,7 @@ function getFileExtension($fName,$default)
  * get the contents of a file 
  *
  * @param string $fName the name of the file to read
+ *
  * @return string the file contents
  **/
 function getFileContents($fName)
@@ -218,10 +224,11 @@ function getFileContents($fName)
 }
 
 /**
- * Compresses a file
+ * Compresses a file (creates a gzipped file)
  *
  * @param string $srcName the source file
  * @param string $dstName the destination file name (the compressed one)
+ *
  * @return bool returns true on success, false else
  **/
 function gzip_compress_file($srcName, $dstName)
@@ -240,6 +247,7 @@ function gzip_compress_file($srcName, $dstName)
  *
  * @param string $dstName the filename
  * @param string $data the contents to be written
+ *
  * @return bool returns true on success, false else
  **/
 function gzip_writeToFile($dstName,$data)
@@ -255,19 +263,22 @@ function gzip_writeToFile($dstName,$data)
 }
 
 /*
-  function: 
-
-  args :
-  
-  returns: 
-
+ * Get infos about the attachments of a given object
+ * 
+ * @param string $fkid the id of the object (attachments.fk_id);
+ * @param string $tablename the name of the table $fkid refers to (attachments.fk_table)
+ * @param bool $bStoreListInSession if true, the attachment list will be stored within the session
+ * @param int $counter if $counter > 0 the attachments are appended to existing attachments within the session
+ *
+ * @return bool returns true on success, false else
+ 
   rev :
        20070930 - franciscom - using attachment config 
 */
 function getAttachmentInfos(&$db,$fkid,$tableName,$bStoreListInSession = true,$counter = 0)
 {
-  $attachment_cfg=config_get('attachments');
-  $order_by = $attachment_cfg->order_by;
+	$attachment_cfg = config_get('attachments');
+	$order_by = $attachment_cfg->order_by;
   
 	$query = "SELECT id,title,description,file_name,".
 	         " file_type,file_size,date_added,compression_type," .
@@ -292,24 +303,24 @@ function getAttachmentInfos(&$db,$fkid,$tableName,$bStoreListInSession = true,$c
 }
 
 
-/*
-  function: 
-
-  args :
-  
-  returns: 
+/**
+ * Gets some common infos about attachments 
+ *
+ * @param string $id the id of the attachment (attachments.id)
+ * 
+ * @return array info about the attachment, if one exists, null if not 
 
   rev :
        20070930 - franciscom - using attachment config 
 */
 function getAttachmentInfo(&$db,$id)
 {
-  $attachment_cfg=config_get('attachments');
-  $order_by = $attachment_cfg->order_by;
+	$attachment_cfg = config_get('attachments');
+	$order_by = $attachment_cfg->order_by;
   
 	$query = "SELECT id,title,description,file_name,file_type,file_size,date_added,".
-			     "compression_type,file_path,fk_id,fk_table " .
-			     "FROM attachments WHERE id = {$id} " .  $order_by;
+			 "compression_type,file_path,fk_id,fk_table " .
+			 "FROM attachments WHERE id = {$id} " .  $order_by;
 
 	return $db->fetchFirstRow($query);			 
 }

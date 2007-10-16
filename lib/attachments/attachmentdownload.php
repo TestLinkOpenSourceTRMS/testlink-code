@@ -5,10 +5,10 @@
  *
  * Filename $RCSfile: attachmentdownload.php,v $
  *
- * @version $Revision: 1.6 $
- * @modified $Date: 2007/10/16 19:42:37 $ by $Author: schlundus $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2007/10/16 19:46:15 $ by $Author: schlundus $
  *
- * Download the attacxhment by a given id
+ * Download the attachment by a given id
  *
  *  Code check: 2007/11/16 schlundus 
 **/
@@ -28,7 +28,6 @@ if ($attachmentInfo && checkAttachmentID($db,$id,$attachmentInfo))
 		$content = getAttachmentContentFromDB($db,$id);
 	else
 		$content = getAttachmentContentFromFS($db,$id);
-		
 	if (strlen($content))
 	{
 		@ob_end_clean();

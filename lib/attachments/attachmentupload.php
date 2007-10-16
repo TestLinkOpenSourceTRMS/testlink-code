@@ -5,27 +5,33 @@
  *
  * Filename $RCSfile: attachmentupload.php,v $
  *
- * @version $Revision: 1.8 $
- * @modified $Date: 2006/12/29 19:32:10 $ by $Author: schlundus $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2007/10/16 19:42:37 $ by $Author: schlundus $
  *
- * Upload dialog
+ * Upload dialog for attachments
+ *
+ *  Code check: 2007/11/16 schlundus
 **/
 require_once('../../config.inc.php');
 require_once('../functions/common.php');
 require_once('../functions/attachments.inc.php');
 testlinkInitPage($db);
 
-
+//the id (attachments.fk_id) of the object, to which the attachment belongs to 
 $id = isset($_GET['id'])? intval($_GET['id']) : 0;
+//the table to which the fk_id refers to (attachments.fk_table) of the attachment 
 $tableName = isset($_GET['tableName'])? $_GET['tableName'] : null;
+
 $bPostBack = sizeof($_POST);
 $bUploaded = false;
 if ($bPostBack > 2)
 {
-  
 	$fInfo  = isset($_FILES['uploadedFile']) ? $_FILES['uploadedFile'] : null;
+	//the title of the attachment (attachments.title) 
 	$title = isset($_POST['title']) ? $_POST['title'] : "";
+	//the id (attachments.fk_id) of the object, to which the attachment belongs to 
 	$id = isset($_POST['id'])? intval($_POST['id']) : 0;
+	//the table to which the fk_id refers to (attachments.fk_table) of the attachment 
 	$tableName = isset($_POST['tableName'])? $_POST['tableName'] : null;
 	if ($fInfo)
 	{

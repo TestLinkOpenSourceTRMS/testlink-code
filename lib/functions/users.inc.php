@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: users.inc.php,v $
  *
- * @version $Revision: 1.46 $
- * @modified $Date: 2007/08/23 21:05:23 $ $Author: jbarchibald $
+ * @version $Revision: 1.47 $
+ * @modified $Date: 2007/10/17 17:38:24 $ $Author: schlundus $
  *
  * Functions for usermanagement
  *
@@ -281,24 +281,24 @@ function setUserSession(&$db,$user, $id, $roleID, $email, $locale = null, $activ
 	$_SESSION['testprojectRoles'] = $usertestprojectRoles; 
 	$_SESSION['testPlanRoles'] = $userTestPlanRoles; 
 	$_SESSION['testprojectID'] = null;
-	// 20051208 - JBA - added to set the lastProduct the user has selected before logging off.
+	$arrProducts = getAccessibleProducts($db);
+	 // 20051208 - JBA - added to set the lastProduct the user has selected before logging off.
     $cookedProduct = 'lastProductForUser'. $id;
     if (isset($_COOKIE[$cookedProduct]))
 	{
-		$arrProducts = getAccessibleProducts($db);
 		if (isset($arrProducts[$_COOKIE[$cookedProduct]]) && $arrProducts[$_COOKIE[$cookedProduct]])
     	{
 			$_SESSION['testprojectID'] = $_COOKIE[$cookedProduct];
     		tLog('Cookie: lastProductForUser='.$_SESSION['testprojectID']);
     	}
-    	else 
-    	{
-    		$tpID = null;
-    		if (sizeof($arrProducts))
-    			$tpID = key($arrProducts);
-    		$_SESSION['testprojectID'] = $tpID;
-		}
-    }
+	}
+	if (!$_SESSION['testprojectID'])
+	{
+    	$tpID = null;
+    	if (sizeof($arrProducts))
+    		$tpID = key($arrProducts);
+   		$_SESSION['testprojectID'] = $tpID;
+	}
 	$_SESSION['s_lastAttachmentList'] = null;
 	
 	return 1;

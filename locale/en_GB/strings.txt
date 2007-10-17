@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.205 $
- * @modified $Date: 2007/10/15 22:00:59 $ $Author: havlat $
+ * @version $Revision: 1.206 $
+ * @modified $Date: 2007/10/17 09:57:37 $ $Author: franciscom $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -33,6 +33,7 @@ $TLS_any = "any";
 $TLS_btn_no = "No";
 $TLS_create = "Create";
 $TLS_desc = "descending";
+$TLS_file_type='File type';
 $TLS_hour = "Hour";
 $TLS_not_aplicable = "N/A";
 $TLS_test_case = "Test Case";
@@ -1258,8 +1259,9 @@ $TLS_warning_users_will_be_reset = "Affected users will get role:";
 
 
 // gui/templates/tcexport.tpl
+$TLS_export_filename = "Export filename";
 $TLS_export_with_keywords = "Export with keywords";
-
+$TLS_warning_empty_filename= "Please give a file name";
 
 
 // gui/templates/buildView.tpl

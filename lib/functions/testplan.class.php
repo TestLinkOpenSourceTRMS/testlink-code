@@ -2,10 +2,14 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.39 $
- * @modified $Date: 2007/10/13 10:16:46 $ $Author: franciscom $
+ * @version $Revision: 1.40 $
+ * @modified $Date: 2007/10/17 12:11:22 $ $Author: franciscom $
  * @author franciscom
  *
+ * Manages test plan operations and related items like Custom fields.
+ *
+ *
+ * 
  * rev :
  *       20071010 - franciscom - BUGID     MSSQL reserved word problem - open 
  *       20070927 - franciscom - BUGID 1069
@@ -236,13 +240,17 @@ function count_testcases($id)
 }
 
 /*
-  function: 
+  function: link_tcversions
+            associates version of different test cases to a test plan.
+            this is the way to populate a test plan
+           
 
   args :
+        $id: test plan id
         $items_to_link: assoc array key=tc_id value=tcversion_id
                         passed by reference for speed
 
-  returns: 
+  returns: -
 
 */
 function link_tcversions($id,&$items_to_link)

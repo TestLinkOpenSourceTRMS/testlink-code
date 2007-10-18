@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.125 $
- * @modified $Date: 2007/10/14 14:40:53 $ by $Author: franciscom $
+ * @version $Revision: 1.126 $
+ * @modified $Date: 2007/10/18 20:06:29 $ by $Author: schlundus $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink 
@@ -188,6 +188,7 @@ define('TL_TESTLINK_CSS',TL_THEME_CSS_DIR . 'testlink.css');
 define('TL_LOGIN_CSS', TL_TESTLINK_CSS);
 define('TL_PRINT_CSS',TL_THEME_CSS_DIR . 'tl_print.css');
 define('TL_JOMLA_1_CSS', TL_THEME_CSS_DIR . 'jos_template_css.css');
+define('TL_TREEMENU_CSS', TL_THEME_CSS_DIR . 'tl_treemenu.css');
 
 // needed for drap and drop feature
 define('TL_DRAG_DROP_DIR', 'gui/drag_and_drop/');

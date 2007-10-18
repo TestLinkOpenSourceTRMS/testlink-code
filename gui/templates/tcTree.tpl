@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: tcTree.tpl,v 1.8 2007/08/27 06:37:31 franciscom Exp $ *}
+{* $Id: tcTree.tpl,v 1.9 2007/10/18 20:06:29 schlundus Exp $ *}
 {* Purpose: smarty template - show test specification tree menu *}
 {*
 	20070217 - franciscom - added test suite filter
@@ -17,7 +17,7 @@
 
 {if $draw_filter}
   <form method="get" id="tree_filter_and_settings"> 
-    <input type="hidden" name="feature" value={$smarty.get.feature}>
+    <input type="hidden" name="feature" value="{$smarty.get.feature}" />
   	<table class="smallGrey" width="100%">
     		<caption>
     			{lang_get s='caption_nav_filter_settings'}

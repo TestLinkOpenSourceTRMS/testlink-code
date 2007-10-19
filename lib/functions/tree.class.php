@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: tree.class.php,v $
  *
- * @version $Revision: 1.30 $
- * @modified $Date: 2007/10/14 14:41:44 $ by $Author: franciscom $
+ * @version $Revision: 1.31 $
+ * @modified $Date: 2007/10/19 06:54:17 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * 20070620 - franciscom - BUGID 903
@@ -39,11 +39,34 @@ class tree
 	var $db;
     var $obj_table = 'nodes_hierarchy';
     
+
+  /*
+    function: tree
+              Class costructor
+              
+    args : db:reference to db object
+    
+    returns: new instance of a tree (manager)
+
+  */
 	function tree(&$db) 
 	{
 		$this->db = &$db;
 		$this->node_descr_id = array_flip($this->node_types);
 	}
+
+  /*
+    function: get_available_node_types
+              get info from node_types table, regarding node types
+              that can be used in a tree. 
+
+    args : -
+    
+    returns: map
+             key: description: single human friendly string describing node type
+             value: numeric code used to identify a node type
+
+  */
 
 	function get_available_node_types() 
 	{
@@ -54,22 +77,38 @@ class tree
 	}
 
 	/*
-		create a new root node in the hierarchy table
-		returns: node_id of the new node created
-	*/
+    function: new_root_node
+              creates a new root node in the hierarchy table.
+              root node is tree starting point.
+
+    args : [name]: node name. default=''
+    
+    returns: node_id of the new node created
+
+  */
+
 	function new_root_node($name = '') 
 	{
 		$this->new_node(null,$this->ROOT_NODE_TYPE_ID,$name,1);
 		return $this->db->insert_id($this->obj_table);
 	}
 
-
 	/*
-	  create a new  node in the hierarchy table
-	  returns: node_id of the new node created
-	  
-	  20060722 - franciscom - interface changes - added [$node_id]
-	*/
+    function: new_node
+              creates a new node in the hierarchy table.
+              root node is tree starting point.
+
+    args : parent_id: node id of new node parent
+           node_type_id: node type
+           [name]: node name. default=''
+           [node_order]= order on tree structure. default=0
+           [node_id]= id to assign to new node, if you don't want
+                      id bein created automatically.
+                      default=0 -> id must be created automatically.
+    
+    returns: node_id of the new node created
+
+  */
 	function new_node($parent_id,$node_type_id,$name='',$node_order=0,$node_id=0) 
 	{
 		$sql = "INSERT INTO {$this->obj_table} " .
@@ -99,7 +138,21 @@ class tree
 	/*
 	get all node hierarchy info from hierarchy table
 	returns: node_id of the new node created
+	
+	
 	*/
+	/*
+    function: get_node_hierachy_info
+              returns the row from nodes_hierarchy table that has
+              node_id as id.
+              
+              get all node hierarchy info from hierarchy table
+
+    args : node_id: node id.
+    
+    returns: array
+
+  */
 	function get_node_hierachy_info($node_id) 
 	{
 		$sql = "SELECT * FROM {$this->obj_table} WHERE id = {$node_id}";
@@ -110,8 +163,11 @@ class tree
 
   /*
     function: get_subtree_list()
-
-    args : $node_id: root of subtree
+              get a string representing a list, where elements are separated
+              by comma, with all nodes in tree starting on node_id.
+              node is can be considered as root of subtree.
+              
+    args : node_id: root of subtree
     
     returns: list (string with nodes_id, using ',' as list separator).
 
@@ -127,8 +183,12 @@ class tree
   
   /*
     function: _get_subtree_list()
+              private function (name start with _), that using recursion
+              get an array with all nodes in tree starting on node_id.
+              node is can be considered as root of subtree.
 
-    args : $node_id: root of subtree
+
+    args : node_id: root of subtree
     
     returns: array with nodes_id
 
@@ -149,6 +209,17 @@ class tree
 	}
 
 
+
+  /*
+    function: delete_subtree
+              delete all element on tree structure that forms a subtree
+              that has as root or starting point node_id.
+
+    args : node_id: root of subtree
+    
+    returns: array with nodes_id
+
+  */
 	function delete_subtree($node_id)
 	{
 		$children = $this->get_subtree_list($node_id);
@@ -162,6 +233,26 @@ class tree
 		$result = $this->db->exec_query($sql);
 	}
 
+
+  /*
+    function: get_path_new
+              get list of nodes to traverse when you want
+              to move form node A (node at level N) to node B (node at level M),
+              where M < N, and remembering that level for root node is the minimun.
+              Attention:
+              This is refactoring of original get_path method.
+
+    args : node_id: start of path
+           [to_node_id]: destination node. default null -> path to tree root.
+           [format]: default 'full' 
+           
+                    full format
+                    
+                    
+    
+    returns: array with nodes_id
+
+  */
 	function get_path_new($node_id,$to_node_id = null,$format = 'full') 
 	{
 		$the_path = array();
@@ -170,6 +261,22 @@ class tree
 		return $the_path;
 	}
 
+  /*
+    function: get_path
+              get list of nodes to traverse when you want
+              to move form node A (node at level N) to node B (node at level M),
+              where M < N, and remembering that level for root node is the minimun.
+
+    args : node_id: start of path
+           [to_node_id]: destination node. default null -> path to tree root.
+           [format]: default 'full' 
+           
+                    full format
+                    
+                    
+    
+    returns: array with nodes_id
+  */
 	function get_path($node_id,$to_node_id = null,$format = 'full') 
 	{
 		// look up the parent of this node
@@ -219,8 +326,23 @@ class tree
 	}
 
 
-// $node is the name of the node we want the path of
-// 20060327 - franciscom
+/*
+  function: _get_path
+            get list of nodes to traverse when you want
+            to move form node A (node at level N) to node B (node at level M),
+            where M < N, and remembering that level for root node is the minimun.
+            This is refactoring of original get_path method.
+
+  args : node_id: start of path
+         [to_node_id]: destination node. default null -> path to tree root.
+         [format]: default 'full' 
+         
+                  full format
+                  
+                  
+  
+  returns: array with nodes_id
+*/
 function _get_path($node_id,&$node_list,$to_node_id=null,$format='full') 
 {
 	
@@ -272,6 +394,18 @@ function _get_path($node_id,&$node_list,$to_node_id=null,$format='full')
  }
 }
 
+
+
+
+/*
+  function: change_parent
+            change node parent, using this method you implement move operation.
+
+  args : node_id: node that needs to changed
+         parent_id: new parent
+  
+  returns: 1 -> operation OK
+*/
 function change_parent($node_id, $parent_id) 
 {
   $sql = "UPDATE nodes_hierarchy SET parent_id = {$parent_id} WHERE id = {$node_id}";
@@ -283,6 +417,29 @@ function change_parent($node_id, $parent_id)
  
 // 20061008 - franciscom - added ID in order by clause
 // 
+/*
+  function: get_children
+            get nodes that have id as parent node.
+            Children can be filtering according to node type.
+            
+  args : id: node 
+         [exclude_node_types]: map 
+                               key: verbose description of node type to exclude.
+                                    see get_available_node_types.
+                               value: anything is ok
+  
+  returns: array of maps that contain children nodes.
+           map structure:
+           id 
+           name
+           parent_id
+           node_type_id
+           node_order
+           node_table
+          
+           
+*/
+
 function get_children($id,$exclude_node_types=null) 
 {
   $sql = " SELECT * from {$this->obj_table}
@@ -299,7 +456,6 @@ function get_children($id,$exclude_node_types=null)
   while ( $row = $this->db->fetch_array($result) )
   {
     // ----------------------------------------------------------------------------
-    // Getting data from the node specific table
     $node_table = $this->node_tables[$this->node_types[$row['node_type_id']]];
 
     if( !isset($exclude_node_types[$this->node_types[$row['node_type_id']]]))

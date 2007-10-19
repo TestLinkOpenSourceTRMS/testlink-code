@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: buildView.tpl,v 1.6 2007/10/11 08:59:15 franciscom Exp $
+$Id: buildView.tpl,v 1.7 2007/10/19 06:56:53 franciscom Exp $
 
 Purpose: smarty template - Show existing builds
 
@@ -16,27 +16,10 @@ Rev :
 {include file="inc_del_onclick.tpl"}
 
 <script type="text/javascript">
-/* All this stuff is need for logic contained in inc_del_onclick.tpl */
+/* All this stuff is needed for logic contained in inc_del_onclick.tpl */
 var o_label ="{lang_get s='build'}";
 var del_action=fRoot+'lib/plan/buildNew.php?do_action=do_delete&build_id=';
 </script>
-
-{literal}
-<script type="text/javascript">
-var warning_empty_build_name = "{lang_get s='warning_empty_build_name'}";
-function validateForm(f)
-{
-  if (isWhitespace(f.build_name.value)) 
-  {
-      alert(warning_empty_build_name);
-      selectField(f, 'build_name');
-      return false;
-  }
-  return true;
-}
-</script>
-{/literal}
-
 </head>
 
 <body {$body_onload}>

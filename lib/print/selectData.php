@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* @version 	$Id: selectData.php,v 1.17 2007/10/14 14:39:01 franciscom Exp $
+* @version 	$Id: selectData.php,v 1.18 2007/10/19 06:57:09 franciscom Exp $
 * @author 	Martin Havlat
 * 
 * Navigator for print/export functionality. 
@@ -23,11 +23,7 @@ $tplan_name = isset($_SESSION['testPlanName']) ? $_SESSION['testPlanName'] : 'xx
 $tproject_id   = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 $tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : '';
 
-// parse wrong type
 $type = isset($_GET['type']) ? $_GET['type'] : '';
-if ($type != 'testproject' && $type != 'testplan')
-{
-}
 
 // default vars
 $arrFormat = array('html' => 'HTML', 'msword' => 'MS Word');
@@ -35,14 +31,20 @@ $arrFormat = array('html' => 'HTML', 'msword' => 'MS Word');
 // Important Notice:
 // If you made add/remove elements from this array, you must update
 // $printingOptions in printData.php
+
+
 $arrCheckboxes = array(
 	array( 'value' => 'header', 'description' => lang_get('opt_show_doc_header'), 'checked' => 'n'),
 	array( 'value' => 'body', 'description' => lang_get('opt_show_tc_body'), 'checked' => 'n'),
 	array( 'value' => 'summary', 'description' => lang_get('opt_show_tc_summary'), 'checked' => 'n'),
 	array( 'value' => 'toc', 'description' => lang_get('opt_show_toc'), 'checked' => 'n'),
-  array( 'value' => 'author',     'description' => lang_get('opt_show_tc_author'),        'checked' => 'n'),
-	array( 'value' => 'passfail', 'description' => lang_get('opt_show_passfail'), 'checked' => 'n'),
+  array( 'value' => 'author',     'description' => lang_get('opt_show_tc_author'),        'checked' => 'n')
 );
+
+if( $type == 'testplan')
+{
+  $arrCheckboxes[]=	array( 'value' => 'passfail', 'description' => lang_get('opt_show_passfail'), 'checked' => 'n');
+}
 
 //process setting for print
 if(isset($_POST['setPrefs']))

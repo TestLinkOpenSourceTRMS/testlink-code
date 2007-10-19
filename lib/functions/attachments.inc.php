@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: attachments.inc.php,v $
  *
- * @version $Revision: 1.9 $
- * @modified $Date: 2007/10/16 19:42:37 $ by $Author: schlundus $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2007/10/19 18:21:19 $ by $Author: schlundus $
  *
  * functions related to attachments
  *
@@ -199,7 +199,7 @@ function getFileExtension($fName,$default)
 	if (isset($fExt['extension']))
 		$fExt = $fExt['extension'];
 	else
-		$fExt  = $default;
+		$fExt = $default;
 		
 	return $fExt;
 }
@@ -265,7 +265,8 @@ function gzip_writeToFile($dstName,$data)
 /*
  * Get infos about the attachments of a given object
  * 
- * @param string $fkid the id of the object (attachments.fk_id);
+ * @param object $db [ref] the db-object
+ * @param int $fkid the id of the object (attachments.fk_id);
  * @param string $tablename the name of the table $fkid refers to (attachments.fk_table)
  * @param bool $bStoreListInSession if true, the attachment list will be stored within the session
  * @param int $counter if $counter > 0 the attachments are appended to existing attachments within the session
@@ -306,7 +307,8 @@ function getAttachmentInfos(&$db,$fkid,$tableName,$bStoreListInSession = true,$c
 /**
  * Gets some common infos about attachments 
  *
- * @param string $id the id of the attachment (attachments.id)
+ * @param object $db [ref] the db-object
+ * @param int $id the id of the attachment (attachments.id)
  * 
  * @return array info about the attachment, if one exists, null if not 
 
@@ -325,6 +327,15 @@ function getAttachmentInfo(&$db,$id)
 	return $db->fetchFirstRow($query);			 
 }
 
+/**
+ * Gets some common infos about attachments 
+ *
+ * @param object $db [ref] the db-object
+ * @param int $id the id of the attachment (attachments.id)
+ * 
+ * @return string returns the contents of the attachment 
+
+*/
 function getAttachmentContentFromDB(&$db,$id)
 {
 	global $g_repositoryCompressionType;

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: configCheck.php,v ${file_name} $
  *
- * @version $Revision: 1.16 $
- * @modified $Date: 2007/10/10 06:42:52 ${date} ${time} $ by $Author: franciscom $
+ * @version $Revision: 1.17 $
+ * @modified $Date: 2007/10/19 18:21:19 ${date} ${time} $ by $Author: schlundus $
  *
  * @author Martin Havlat
  * 
@@ -104,7 +104,25 @@ function checkConfiguration()
 	}
 }
 
-
+/**
+ * checks if needed functions and extensions are defined 
+ *
+ * @param array [ref] msgs will be appended
+ * @return bool returns true if all extension or functions ar present or defined
+ *
+ * @version 1.0
+ * @author Andreas Morsing 
+ **/
+function checkForExtensions(&$msg)
+{
+	$bSuccess = true;
+	
+	
+	if (!function_exists('sdomxml_open_file'))
+		$msg[] = lang_get("error_domxml_missing");
+	
+	return $bSuccess;
+}
 
 /**
  * checks if the install dir is present
@@ -217,6 +235,8 @@ function getSecurityNotes(&$db)
   {	
 	$securityNotes[] = $my_msg;
   }
+  
+  checkForExtensions($securityNotes);
   
   return $securityNotes;
 }

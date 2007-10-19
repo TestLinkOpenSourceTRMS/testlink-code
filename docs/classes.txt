@@ -1,0 +1,7 @@
+Classes relationships
+
+tree.class.php
+Provides functionality to manage a tree of any kind of testlink items.
+Nearly every other class creates a tree manager inside of it.
+Other classes does not extend tree.class.php
+

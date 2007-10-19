@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: installNewDB.php,v 1.31 2007/10/12 08:34:58 franciscom Exp $ */
+/* $Id: installNewDB.php,v 1.32 2007/10/19 06:50:55 franciscom Exp $ */
 /*
 Parts of this file has been taken from:
 Etomite Content Management System
@@ -8,6 +8,7 @@ Copyright 2003, 2004 Alexander Andrew Butter
 */
 
 /*
+20071018 - franciscom - added DB 1.1 
 20070725 - franciscom - added 1.7.0 RC 3
 20070414 - franciscom - added 1.7.0 RC 2
 20070216 - franciscom - added dropping of all tables if DB exists
@@ -310,7 +311,9 @@ if ( $inst_type == "upgrade")
     else
     {
       // try to know what db version is installed
-      $sql = "SELECT * FROM db_version ORDER BY upgrade_ts DESC LIMIT 1";
+      // 20071019 - franciscom - LIMIT does not work on MSSQL
+      // $sql = "SELECT * FROM db_version ORDER BY upgrade_ts DESC LIMIT 1";
+      $sql = "SELECT * FROM db_version ORDER BY upgrade_ts DESC";
       $res = $db->exec_query($sql);  
       if (!$res)
       {
@@ -330,6 +333,7 @@ if ( $inst_type == "upgrade")
       	$a_sql_upd_dir[] = "sql/alter_tables/1.7/{$db_type}/beta_5/";
       	$a_sql_upd_dir[] = "sql/alter_tables/1.7/{$db_type}/rc_2/";
       	$a_sql_upd_dir[] = "sql/alter_tables/1.7/{$db_type}/rc_3/";
+        $a_sql_upd_dir[] = "sql/alter_tables/1.7.1/{$db_type}/";      	
       	break;
 
       	case '1.7.0 Beta 3':
@@ -337,25 +341,33 @@ if ( $inst_type == "upgrade")
       	$a_sql_upd_dir[] = "sql/alter_tables/1.7/{$db_type}/beta_5/";
       	$a_sql_upd_dir[] = "sql/alter_tables/1.7/{$db_type}/rc_2/";
       	$a_sql_upd_dir[] = "sql/alter_tables/1.7/{$db_type}/rc_3/";
+        $a_sql_upd_dir[] = "sql/alter_tables/1.7.1/{$db_type}/";      	
       	break;
       	
       	case '1.7.0 Beta 4':
       	$a_sql_upd_dir[] = "sql/alter_tables/1.7/{$db_type}/beta_5/";
       	$a_sql_upd_dir[] = "sql/alter_tables/1.7/{$db_type}/rc_2/";
       	$a_sql_upd_dir[] = "sql/alter_tables/1.7/{$db_type}/rc_3/";
+        $a_sql_upd_dir[] = "sql/alter_tables/1.7.1/{$db_type}/";      	
       	break;
 
       	case '1.7.0 Beta 5':
       	$a_sql_upd_dir[] = "sql/alter_tables/1.7/{$db_type}/rc_2/";
       	$a_sql_upd_dir[] = "sql/alter_tables/1.7/{$db_type}/rc_3/";
+        $a_sql_upd_dir[] = "sql/alter_tables/1.7.1/{$db_type}/";      	
       	break;
       	
       	case '1.7.0 RC 2':
       	$a_sql_upd_dir[] = "sql/alter_tables/1.7/{$db_type}/rc_3/";
+        $a_sql_upd_dir[] = "sql/alter_tables/1.7.1/{$db_type}/";      	
       	break;
       	
       	case '1.7.0 RC 3':
-      	echo "<br>Your DB Schema is the last available, then you don't need to do any upgrade.";
+        $a_sql_upd_dir[] = "sql/alter_tables/1.7.1/{$db_type}/";      	
+        break;
+      	
+      	case 'DB 1.1':
+      	echo "<br>Your DB Schema {$schema_version} is the last available, then you don't need to do any upgrade.";
         echo "<br>bye!";
         close_html_and_exit();          
       	break;

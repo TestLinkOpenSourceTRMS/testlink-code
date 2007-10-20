@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: print.inc.php,v $
- * @version $Revision: 1.32 $
- * @modified $Date: 2007/10/15 21:52:27 $ by $Author: havlat $
+ * @version $Revision: 1.33 $
+ * @modified $Date: 2007/10/20 16:47:57 $ by $Author: franciscom $
  *
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
@@ -226,7 +226,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,$tplan_i
 	if($printingOptions['passfail'])
 	{
 		$resultTC['tcid'] = $versionID;		
-		$tcResultInfo = createTestInput(&$db,$resultTC,$build_id, $tplan_id);
+		$tcResultInfo = createTestInput($db,$resultTC,$build_id, $tplan_id);
 	}
 	
 	if ($printingOptions['toc']) 

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: tree.class.php,v $
  *
- * @version $Revision: 1.31 $
- * @modified $Date: 2007/10/19 06:54:17 $ by $Author: franciscom $
+ * @version $Revision: 1.32 $
+ * @modified $Date: 2007/10/20 16:47:23 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * 20070620 - franciscom - BUGID 903
@@ -236,21 +236,86 @@ class tree
 
   /*
     function: get_path_new
-              get list of nodes to traverse when you want
-              to move form node A (node at level N) to node B (node at level M),
-              where M < N, and remembering that level for root node is the minimun.
+              get list of nodes to traverse when you want to move 
+              from node A (node at level N) to node B (node at level M),
+              where MUST BE ALLWAYS M < N, and remembering that level for root node is the minimun.
+              This means path on tree backwards (to the upper levels).
+              An array is used to represent list.
+              Last array element contains data regarding Node A, first element (element with index 0) 
+              is data regarding child of node B.
+              What data is returned depends on value of optional argument 'format'.
+              
               Attention:
-              This is refactoring of original get_path method.
+              1 - destination node (node B) will be NOT INCLUDED in result.
+              2 - This is refactoring of original get_path method.
 
     args : node_id: start of path
            [to_node_id]: destination node. default null -> path to tree root.
            [format]: default 'full' 
-           
-                    full format
+                     defines type of elements of result array.
+                     
+                     format='full'
+                     Element is a map with following keys:
+                     id
+                     parent_id
+                     node_type_id
+                     node_order
+                     node_table
+                     name
+                     
+                     Example
+                     Is tree is :
+                                
+                              null 
+                                \
+                               id=1   <--- Tree Root
+                                 |
+                                 + ------+
+                               /   \      \
+                            id=9   id=2   id=8
+                                    \
+                                     id=3
+                                      \
+                                       id=4     
                     
                     
-    
-    returns: array with nodes_id
+                    get_path_new(4), returns:
+                          
+                    (
+                     [0] => Array([id] => 2
+                                  [parent_id] => 1
+                                  [node_type_id] => 2
+                                  [node_order] => 1
+                                  [node_table] => testsuites
+                                  [name] => TS1)
+        
+                     [1] => Array([id] => 3
+                                  [parent_id] => 2
+                                  [node_type_id] => 2
+                                  [node_order] => 1
+                                  [node_table] => testsuites
+                                  [name] => TS2)
+        
+                     [2] => Array([id] => 4
+                                  [parent_id] => 3
+                                  [node_type_id] => 3
+                                  [node_order] => 0
+                                  [node_table] => testcases
+                                  [name] => TC1)
+                    )
+                  
+                    
+                    
+                    format='simple'
+                    every element is a number containing parent id
+                    For the above example result will be:
+                    (
+                     [0] => 1
+                     [1] => 2
+                     [2] => 3
+                    )
+
+    returns: array
 
   */
 	function get_path_new($node_id,$to_node_id = null,$format = 'full') 
@@ -263,17 +328,82 @@ class tree
 
   /*
     function: get_path
-              get list of nodes to traverse when you want
-              to move form node A (node at level N) to node B (node at level M),
-              where M < N, and remembering that level for root node is the minimun.
+              get list of nodes to traverse when you want to move 
+              from node A (node at level N) to node B (node at level M),
+              where MUST BE ALLWAYS M < N, and remembering that level for root node is the minimun.
+              This means path on tree backwards (to the upper levels).
+              An array is used to represent list.
+              Last array element contains data regarding Node A, first element (element with index 0) 
+              is data regarding child of node B.
+              What data is returned depends on value of optional argument 'format'.
+              
+              Attention: destination node (node B) will be NOT INCLUDED in result.
 
     args : node_id: start of path
            [to_node_id]: destination node. default null -> path to tree root.
            [format]: default 'full' 
-           
-                    full format
+                     defines type of elements of result array.
+                     
+                     format='full'
+                     Element is a map with following keys:
+                     id
+                     parent_id
+                     node_type_id
+                     node_order
+                     node_table
+                     name
+                     
+                     Example
+                     Is tree is :
+                                
+                              null 
+                                \
+                               id=1   <--- Tree Root
+                                 |
+                                 + ------+
+                               /   \      \
+                            id=9   id=2   id=8
+                                    \
+                                     id=3
+                                      \
+                                       id=4     
                     
                     
+                    get_path_new(4), returns:
+                          
+                    (
+                     [0] => Array([id] => 2
+                                  [parent_id] => 1
+                                  [node_type_id] => 2
+                                  [node_order] => 1
+                                  [node_table] => testsuites
+                                  [name] => TS1)
+        
+                     [1] => Array([id] => 3
+                                  [parent_id] => 2
+                                  [node_type_id] => 2
+                                  [node_order] => 1
+                                  [node_table] => testsuites
+                                  [name] => TS2)
+        
+                     [2] => Array([id] => 4
+                                  [parent_id] => 3
+                                  [node_type_id] => 3
+                                  [node_order] => 0
+                                  [node_table] => testcases
+                                  [name] => TC1)
+                    )
+                  
+                    
+                    
+                    format='simple'
+                    every element is a number containing parent id
+                    For the above example result will be:
+                    (
+                     [0] => 1
+                     [1] => 2
+                     [2] => 3
+                    )
     
     returns: array with nodes_id
   */
@@ -328,20 +458,13 @@ class tree
 
 /*
   function: _get_path
-            get list of nodes to traverse when you want
-            to move form node A (node at level N) to node B (node at level M),
-            where M < N, and remembering that level for root node is the minimun.
             This is refactoring of original get_path method.
 
   args : node_id: start of path
          [to_node_id]: destination node. default null -> path to tree root.
          [format]: default 'full' 
-         
-                  full format
-                  
-                  
   
-  returns: array with nodes_id
+  returns: array
 */
 function _get_path($node_id,&$node_list,$to_node_id=null,$format='full') 
 {

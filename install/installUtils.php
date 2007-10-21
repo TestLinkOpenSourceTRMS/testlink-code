@@ -1,9 +1,12 @@
 <?php
 /* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: installUtils.php,v 1.24 2007/10/12 08:34:58 franciscom Exp $ 
+$Id: installUtils.php,v 1.25 2007/10/21 16:00:55 franciscom Exp $ 
 
-20070302 - franciscom - changed PHP minimun required versions
+
+rev :
+     20071021 - franciscom - getDirFiles() -> getDirSqlFiles()
+     20070302 - franciscom - changed PHP minimun required versions
 
 */
 
@@ -14,8 +17,10 @@ $Id: installUtils.php,v 1.24 2007/10/12 08:34:58 franciscom Exp $
 // From PHP Manual - User's Notes
 // +----------------------------------------------------------------------+
 //
+// rev:
+//     20071021 - franciscom - get only files with .sql extension
 // 20070131 - franciscom - now returns an array
-function getDirFiles($dirPath, $add_dirpath=0)
+function getDirSqlFiles($dirPath, $add_dirpath=0)
 {
 $aFileSets=array(); 
 $my_dir_path = '';	
@@ -35,7 +40,13 @@ foreach( $dirPath as $the_dir)
       // added is_dir() to exclude dirs
       if ($file != "." && $file != ".." && !is_dir($file))
       {
-          $filesArr[] = $my_dir_path . trim($file);
+         // 20071021 - use only is extension sql
+         $file=trim($file);
+         $path_parts=pathinfo($file);
+         if( $path_parts['extension'] == 'sql' )
+         {   
+           $filesArr[] = $my_dir_path . $file;
+         }  
       }            
       closedir($handle);
   }  
@@ -63,7 +74,7 @@ return $aFileSets;
 // | Authors: Jo�o Prado Maia <jpm@mysql.com>                             |
 // +----------------------------------------------------------------------+
 //
-// @(#) $Id: installUtils.php,v 1.24 2007/10/12 08:34:58 franciscom Exp $
+// @(#) $Id: installUtils.php,v 1.25 2007/10/21 16:00:55 franciscom Exp $
 //
 
 // a foolish wrapper - 20051231 - fm

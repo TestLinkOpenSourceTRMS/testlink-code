@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testsuite.class.php,v $
- * @version $Revision: 1.32 $
- * @modified $Date: 2007/08/27 06:37:44 $ - $Author: franciscom $
+ * @version $Revision: 1.33 $
+ * @modified $Date: 2007/10/21 16:02:11 $ - $Author: franciscom $
  * @author franciscom
  *
  * 20070826 - franciscom - minor fix html_table_of_custom_field_values()
@@ -377,7 +377,7 @@ function copy_to($id, $parent_id, $user_id,
   $tcase_mgr->copy_attachments($id,$new_tsuite_id);
 	
 	$subtree = $this->tree_manager->get_subtree($id,array('testplan' => 'exclude_me'),
-													                    array('testcase' => 'exclude_my_children'));
+													                        array('testcase' => 'exclude_my_children'));
 	
 	if (!is_null($subtree))
 	{
@@ -701,7 +701,7 @@ function get_linked_cfields_at_design($id,$parent_id=null,$show_on_execution=nul
   $enabled=1;
   $tproject_mgr= new testproject($this->db);
   
-  $the_path=$this->tree_manager->get_path_new(!is_null($id) ? $id : $parent_id);
+  $the_path=$this->tree_manager->get_path(!is_null($id) ? $id : $parent_id);
   $path_len=count($the_path);
   $tproject_id=($path_len > 0)? $the_path[$path_len-1]['parent_id'] : $parent_id;
 
@@ -732,7 +732,7 @@ function get_linked_cfields_at_execution($id,$parent_id=null,$show_on_execution=
   $enabled=1;
   $tproject_mgr= new testproject($this->db);
   
-  $the_path=$this->tree_manager->get_path_new(!is_null($id) ? $id : $parent_id);
+  $the_path=$this->tree_manager->get_path(!is_null($id) ? $id : $parent_id);
   $path_len=count($the_path);
   $tproject_id=($path_len > 0)? $the_path[$path_len-1]['parent_id'] : $parent_id;
 

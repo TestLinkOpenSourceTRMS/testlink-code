@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.40 $
- * @modified $Date: 2007/10/17 12:11:22 $ $Author: franciscom $
+ * @version $Revision: 1.41 $
+ * @modified $Date: 2007/10/21 16:02:11 $ $Author: franciscom $
  * @author franciscom
  *
  * Manages test plan operations and related items like Custom fields.
@@ -1074,7 +1074,7 @@ function get_linked_cfields_at_design($id,$parent_id=null,$show_on_execution=nul
 {
   $enabled=1;
   $tproject_mgr= new testproject($this->db);
-  $the_path=$this->tree_manager->get_path_new(!is_null($id) ? $id : $parent_id);
+  $the_path=$this->tree_manager->get_path(!is_null($id) ? $id : $parent_id);
   $path_len=count($the_path);
   $tproject_id=($path_len > 0)? $the_path[$path_len-1]['parent_id'] : $parent_id;
 
@@ -1105,7 +1105,7 @@ function get_linked_cfields_at_execution($id,$parent_id=null,$show_on_execution=
   $enabled=1;
   $tproject_mgr= new testproject($this->db);
   
-  $the_path=$this->tree_manager->get_path_new(!is_null($id) ? $id : $parent_id);
+  $the_path=$this->tree_manager->get_path(!is_null($id) ? $id : $parent_id);
   $path_len=count($the_path);
   $tproject_id=($path_len > 0)? $the_path[$path_len-1]['parent_id'] : $parent_id;
 

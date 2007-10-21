@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: tree.class.php,v $
  *
- * @version $Revision: 1.32 $
- * @modified $Date: 2007/10/20 16:47:23 $ by $Author: franciscom $
+ * @version $Revision: 1.33 $
+ * @modified $Date: 2007/10/21 16:02:11 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * 20070620 - franciscom - BUGID 903
@@ -235,7 +235,7 @@ class tree
 
 
   /*
-    function: get_path_new
+    function: get_path
               get list of nodes to traverse when you want to move 
               from node A (node at level N) to node B (node at level M),
               where MUST BE ALLWAYS M < N, and remembering that level for root node is the minimun.
@@ -279,7 +279,7 @@ class tree
                                        id=4     
                     
                     
-                    get_path_new(4), returns:
+                    get_path(4), returns:
                           
                     (
                      [0] => Array([id] => 2
@@ -318,7 +318,7 @@ class tree
     returns: array
 
   */
-	function get_path_new($node_id,$to_node_id = null,$format = 'full') 
+	function get_path($node_id,$to_node_id = null,$format = 'full') 
 	{
 		$the_path = array();
 		$this->_get_path($node_id,$the_path,$to_node_id,$format); 
@@ -326,141 +326,12 @@ class tree
 		return $the_path;
 	}
 
-  /*
-    function: get_path
-              get list of nodes to traverse when you want to move 
-              from node A (node at level N) to node B (node at level M),
-              where MUST BE ALLWAYS M < N, and remembering that level for root node is the minimun.
-              This means path on tree backwards (to the upper levels).
-              An array is used to represent list.
-              Last array element contains data regarding Node A, first element (element with index 0) 
-              is data regarding child of node B.
-              What data is returned depends on value of optional argument 'format'.
-              
-              Attention: destination node (node B) will be NOT INCLUDED in result.
-
-    args : node_id: start of path
-           [to_node_id]: destination node. default null -> path to tree root.
-           [format]: default 'full' 
-                     defines type of elements of result array.
-                     
-                     format='full'
-                     Element is a map with following keys:
-                     id
-                     parent_id
-                     node_type_id
-                     node_order
-                     node_table
-                     name
-                     
-                     Example
-                     Is tree is :
-                                
-                              null 
-                                \
-                               id=1   <--- Tree Root
-                                 |
-                                 + ------+
-                               /   \      \
-                            id=9   id=2   id=8
-                                    \
-                                     id=3
-                                      \
-                                       id=4     
-                    
-                    
-                    get_path_new(4), returns:
-                          
-                    (
-                     [0] => Array([id] => 2
-                                  [parent_id] => 1
-                                  [node_type_id] => 2
-                                  [node_order] => 1
-                                  [node_table] => testsuites
-                                  [name] => TS1)
-        
-                     [1] => Array([id] => 3
-                                  [parent_id] => 2
-                                  [node_type_id] => 2
-                                  [node_order] => 1
-                                  [node_table] => testsuites
-                                  [name] => TS2)
-        
-                     [2] => Array([id] => 4
-                                  [parent_id] => 3
-                                  [node_type_id] => 3
-                                  [node_order] => 0
-                                  [node_table] => testcases
-                                  [name] => TC1)
-                    )
-                  
-                    
-                    
-                    format='simple'
-                    every element is a number containing parent id
-                    For the above example result will be:
-                    (
-                     [0] => 1
-                     [1] => 2
-                     [2] => 3
-                    )
-    
-    returns: array with nodes_id
-  */
-	function get_path($node_id,$to_node_id = null,$format = 'full') 
-	{
-		// look up the parent of this node
-		$sql = " SELECT * from {$this->obj_table} WHERE id = {$node_id} ";
-	
-		$node_list = array();
-		$result = $this->db->exec_query($sql);
-	
-		if(!$result || !$this->db->num_rows($result))
-		{
-			return null;
-		}
-	
-		while ($row = $this->db->fetch_array($result))
-		{
-			// only continue if this $node isn't the root node
-			// (that's the node with no parent)
-			if ($row['parent_id'] != '' && $row['id'] != $to_node_id) 
-			{
-				// Getting data from the node specific table
-				$node_table = $this->node_tables[$this->node_types[$row['node_type_id']]];
-				
-				// the last part of the path to $node, is the name
-				// of the parent of $node
-				if($format == "full")
-				{
-					$node_list[] = array('id' => $row['id'],
-											'parent_id' => $row['parent_id'],
-											'node_type_id' => $row['node_type_id'],
-											'node_order' => $row['node_order'],
-											'node_table' => $node_table,
-											'name' => $row['name']
-										);
-				}
-				else
-				{
-					$node_list[$row['parent_id']] = $row['parent_id'];
-				}
-		
-				// we should add the path to the parent of this node
-				// to the path
-				$node_list = array_merge($this->get_path($row['parent_id'],$to_node_id,$format), $node_list);
-			}
-		}
-		
-		return $node_list;
-	}
-
-
 /*
   function: _get_path
             This is refactoring of original get_path method.
 
   args : node_id: start of path
+         node_list: passed by reference, to build the result.
          [to_node_id]: destination node. default null -> path to tree root.
          [format]: default 'full' 
   
@@ -509,9 +380,7 @@ function _get_path($node_id,&$node_list,$to_node_id=null,$format='full')
       		$node_list[$row['parent_id']] = $row['parent_id'];
       }
 			
-      // we should add the path to the parent of this node
-      // to the path
-      //$node_list = array_merge($this->get_path($row['parent_id'],$to_node_id,$format), $node_list);
+      // we should add the path to the parent of this node to the path
       $this->_get_path($row['parent_id'],$node_list,$to_node_id,$format);
    }
  }
@@ -595,41 +464,18 @@ function get_children($id,$exclude_node_types=null)
 }
 
  
-/* 20061119 - franciscom - use abs() to avoid problem with negatives */ 
-/* 20060310 - franciscom */
-/* both hash indexed by the same value -> the node_id
-   example:
-   $hash_node_id=array(10=>10, 23=>23, 30=>30);
-   $hash_node_order=array(10=>3, 23=>1, 30=>2);
-*/   
-function change_order_bulk($hash_node_id, $hash_node_order) 
-{
-  $result=null;
-  
-	foreach($hash_node_id as $the_id => $elem)
-	{
-		$order = abs(intval($hash_node_order[$the_id]));
-		$the_id = intval($the_id);
-	  	$sql = "UPDATE {$this->obj_table} SET node_order = {$order}
-	      	    WHERE id = {$the_id}";
-	  	$result = $this->db->exec_query($sql);
-	}
-  
-	return $result;
-}
-
-
 /*
-  function: 
+  function: change_order_bulk
+            change order for all nodes is present in nodes array.
+            Order of node in tree, is set to position node has in nodes array.
 
   args :
-         $nodes: array with nodes id. node order = node position on array
-    
-  
-  returns: 
+         nodes: array where value is node_id. Node order = node position on array
+   
+  returns: -
 
 */
-function change_order_bulk_new($nodes) 
+function change_order_bulk($nodes) 
 {
 	foreach($nodes as $order => $node_id)
 	{
@@ -645,13 +491,87 @@ function change_order_bulk_new($nodes)
 
 
 /*
-  function: 
+  function: get_subtree
+            Giving a node_id, get the nodes that forma s subtree that 
+            has node_id as root or starting point.
+
+            Is possible to exclude:
+            branches that has as staring node, node of certain types.
+            children of some node types.
+            full branches.
+            
 
   args :
-
-        [$and_not_in_clause]: node types to exclude
+        [exclude_node_types]: map/hash. 
+                              default: null -> no exclusion filter will be applied.
+                              Branches starting with nodes of type detailed, will not be
+                              visited => no information will be returned.
+                              key: verbose description of node type to exclude.
+                                   (see get_available_node_types).
+                              value: can be any value, because is not used,anyway is suggested 
+                                     to use 'exclude_me' as value.
+                              
+                              Example:
+                              array('testplan' => 'exclude_me')
+                              Node of type tesplan, will be excluded. 
+                             
+                             
+        
+        [exclude_children_of]: map/hash
+                              default: null -> no exclusion filter will be applied.
+                              When traversing tree if the type of a node child, of node under analisys,
+                              is contained in this map, traversing of branch starting with this child node
+                              will not be done.
+                              key: verbose description of node type to exclude.
+                                   (see get_available_node_types).
+                              value: can be any value, because is not used,anyway is suggested 
+                                     to use 'exclude_my_children' as value.
+                              
+                              Example:        
+                              array('testcase' => 'exclude_my_children')                               
+                              Children of testcase nodes, (tcversion nodes) will be EXCLUDED.         
+        
+        [exclude_branches]: map/hash. 
+                            default: null -> no exclusion filter will be applied.
+                            key: node id.
+                            value: anything is ok.
+                            
+                            When traversing tree branches that have these node is, will
+                            not be visited => no information will be retrieved.
+        
+        
+        [and_not_in_clause]: sql filter to include in sql sentence used to retrieve nodes.
+                             default: null -> no action taken.
+                              
+        [bRecursive]: changes structure of returned structure.
+                      default: false -> a flat array will be generated
+                               true  -> a map with recursive structure will be generated.
+                      
+                      false returns array, every element is a map with following keys:
+                      
+                      id
+                      parent_id
+                      node_type_id
+                      node_order
+                      node_table
+                      name
+                      
+                      
+                      true returns a map, with only one element
+                      key: childNodes.
+                      value: array, that represents a tree branch.
+                             Array elements are maps with following keys:
+                      
+                             id
+                             parent_id
+                             node_type_id
+                             node_order
+                             node_table
+                             name
+                             childNodes -> (array)
+                      
           
-  returns: 
+  returns: array or map
 
 */
 function get_subtree($node_id,$exclude_node_types=null,

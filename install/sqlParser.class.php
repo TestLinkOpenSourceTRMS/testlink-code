@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: sqlParser.class.php,v 1.7 2007/10/12 09:00:15 franciscom Exp $ */
+/* $Id: sqlParser.class.php,v 1.8 2007/10/21 16:00:55 franciscom Exp $ */
 // File: sqlParser.class.php
 //       MySQL Dump Parser
 //
@@ -28,6 +28,14 @@ class SqlParser {
 		$this->db_type   = $db_type;
 	}
 
+
+  /*
+    function: 
+
+    args :
+    
+    returns: 
+  */
 	function process($filename) {
 		
 		// -----------------------------------------------------------------

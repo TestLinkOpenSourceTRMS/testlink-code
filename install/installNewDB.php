@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: installNewDB.php,v 1.32 2007/10/19 06:50:55 franciscom Exp $ */
+/* $Id: installNewDB.php,v 1.33 2007/10/21 16:00:55 franciscom Exp $ */
 /*
 Parts of this file has been taken from:
 Etomite Content Management System
@@ -391,7 +391,7 @@ if ( $inst_type == "upgrade")
     }
 
   //
-  $a_sql_schema = getDirFiles($a_sql_upd_dir,ADD_DIR);
+  $a_sql_schema = getDirSqlFiles($a_sql_upd_dir,ADD_DIR);
 }
 // ------------------------------------------------------------------------------------------------
 

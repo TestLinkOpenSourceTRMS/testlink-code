@@ -1,7 +1,7 @@
 <?php
 /*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: migrate_16_to_17_functions.php,v 1.3 2007/10/08 21:09:09 asielb Exp $
+ * $Id: migrate_16_to_17_functions.php,v 1.4 2007/10/21 16:00:55 franciscom Exp $
  *
  * 20070829 - jbarchibald - fixed bug 1010, results Migration
  * 20071008 - asielb - fixed bug 1110, keywords migration
@@ -405,8 +405,16 @@ foreach($items as $prod_id => $pd)
   // for change_order_bulk($hash_node_id, $hash_node_order) 
   // $hash_node_id=array(10=>10, 23=>23, 30=>30);
   // $hash_node_order=array(10=>3, 23=>1, 30=>2);
-  $hash_node_id=array();
-  $hash_node_order=array();
+  // $hash_node_id=array();
+  // $hash_node_order=array();
+  
+  // 20071021 - francisco.mancardi@gruppotesi.com
+  //
+  // $hash_order_node_order=array(3=>10, 1=>23, 2=>30);
+  // means:  node_id: 10 order:3
+  //         node_id: 23 order:1
+  //         node_id: 30 order:2
+  $hash_order_node_id=array();
 
 
   if( count($comp) > 0 )
@@ -456,8 +464,13 @@ foreach($items as $prod_id => $pd)
 
             if( $cad['CATorder'] != 0 )
             {
-               $hash_node_id[$mgtcat_id]=$mgtcat_id;
-               $hash_node_order[$mgtcat_id]=$cad['CATorder'];
+               // 20071021 - franciscom
+               // $hash_node_id[$mgtcat_id]=$mgtcat_id;
+               // $hash_node_order[$mgtcat_id]=$cad['CATorder'];
+               $node_id=$mgtcat_id;
+               $node_order=$cad['CATorder'];
+               $hash_order_node_id[$node_order]=$node_id;
+
             }
           }  
           // ----------------------------------------------------------------------------------
@@ -465,7 +478,8 @@ foreach($items as $prod_id => $pd)
       }   
     }  
     // 20060725 - franciscom
-    $tree_mgr->change_order_bulk($hash_node_id, $hash_node_order) ;
+    // $tree_mgr->change_order_bulk($hash_node_id, $hash_node_order) ;
+    $tree_mgr->change_order_bulk($hash_order_node_id) ;
   }  
 }
 

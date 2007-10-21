@@ -2,10 +2,11 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.36 $
- * @modified $Date: 2007/10/02 15:59:26 $  $Author: asielb $
+ * @version $Revision: 1.37 $
+ * @modified $Date: 2007/10/21 16:02:11 $  $Author: franciscom $
  * @author franciscom
  *
+ * 20071002 - azl - added ORDER BY to get_all method
  * 20070620 - franciscom - BUGID 914  fixed delete() (no delete from nodes_hierarchy)
  * 20070603 - franciscom - added delete()
  * 20070219 - franciscom - fixed bug on get_first_level_test_suites()
@@ -13,7 +14,6 @@
  * 20061010 - franciscom - added get_srs_by_title()
  * 20060709 - franciscom - changed return type and interface of create()
  * 20060425 - franciscom - changes in show() following Andreas Morsing advice (schlundus)
- * 20071002 - azl - added ORDER BY to get_all method
  *
 **/
 
@@ -149,7 +149,14 @@ function get_by_name($name,$addClause = null)
 }
 
 /*
-get info for one test project
+  function: get_by_id
+            
+
+  args : id: test project
+  
+  returns: null if query fails
+           map with test project info
+
 */
 function get_by_id($id)
 {
@@ -180,14 +187,16 @@ function get_all()
 
 
 /**
- * Function-Documentation
+ * Function: show
+ *           displays smarty template to show test project info 
+ *           to users.
  *
- * @param type $smarty [ref] documentation
- * @param type $id documentation
- * @param type $sqlResult [default = ''] documentation
- * @param type $action [default = 'update'] documentation
- * @param type $modded_item_id [default = 0] documentation
- * @return type documentation
+ * @param type $smarty [ref] smarty object
+ * @param type $id test project
+ * @param type $sqlResult [default = ''] 
+ * @param type $action [default = 'update'] 
+ * @param type $modded_item_id [default = 0] 
+ * @return -
  *
  *
  **/
@@ -219,16 +228,17 @@ function show(&$smarty,$id,$sqlResult='', $action = 'update',$modded_item_id = 0
 
 /*
   function: count_testcases
+            Count testcases without considering active/inactive status. 
 
-  args :
+  args : id: testproject id
   
-  returns: 
+  returns: int: test cases presents on test project. 
 
 */
 function count_testcases($id)
 {
 	$test_spec = $this->tree_manager->get_subtree($id,array('testplan'=>'exclude me'),
-	                                            array('testcase'=>'exclude my children'));
+	                                                  array('testcase'=>'exclude my children'));
   
  	$hash_descr_id = $this->tree_manager->get_available_node_types();
   
@@ -245,9 +255,6 @@ function count_testcases($id)
 }
 
 
-  // 20070204 - removed dead code
-  //
-	// 20060308 - franciscom - added exclude_branches
   /*
     function: gen_combo_test_suites
               create array with test suite names
@@ -255,7 +262,7 @@ function count_testcases($id)
               
               
 
-    args :  $id
+    args :  $id: test project id
             [$exclude_branches]: array with test case id to exclude
                                  useful to exclude myself ($id)
             [$mode]: dotted -> $level number of dot characters are appended to 
@@ -362,9 +369,9 @@ function count_testcases($id)
 	}
 	
 	
-	/* KEYWORDS RELATED */	
+	/* Keywords related methods  */	
 	/**
-	 * Adds a new keyword to the given product
+	 * Adds a new keyword to the given test project
 	 *
 	 * @param int  $testprojectID
 	 * @param string $keyword
@@ -405,14 +412,19 @@ function count_testcases($id)
 	
 	
 	/**
-	 * Function-Documentation
+	 * function: updateKeyword
 	 *
-	 * @param type $testprojectID documentation
-	 * @param type $id documentation
-	 * @param type $keyword documentation
-	 * @param type $notes documentation
+	 *
+	 * @param type $testprojectID 
+	 * @param type $id 
+	 * @param type $keyword 
+	 * @param type $notes 
 	 * 
-	 * @return type documentation
+	 * @return map: keys: msg : verbose indication of what has happened
+	 *                          'ok' is everything fine.
+	 *
+	 *                   status_ok -> 1 -> everyting ok
+	 *
 	 **/
 	function updateKeyword($testprojectID,$id,$keyword,$notes)
 	{
@@ -454,7 +466,10 @@ function count_testcases($id)
 	 * @param string $kw keyword to search for
 	 * @param int    $kwID[default = 0] ignore keyword with this id
 	 *
-	 * @return type
+	 * @return map: keys: msg : verbose indication of what has happened
+	 *                          'ok' is everything fine.
+	 *
+	 *                   keyword_exists -> 1 / 0
 	 *				 				
 	 **/
 	function check_for_keyword_existence($testprojectID, $kw, $kwID = 0)
@@ -479,6 +494,7 @@ function count_testcases($id)
 		
 		return $ret;
 	}
+	
 	/**
 	 * Gets the keywords of the given test project
 	 *
@@ -502,8 +518,8 @@ function count_testcases($id)
 	/**
 	 * Imports the keywords contained in keywordData to the given product
 	 *
-	 * @param type $db [ref] documentation
-	 * @param int $testprojectID the product to which the keywords should be imported
+	 * @param type $db [ref] db object
+	 * @param int $testprojectID  to which the keywords should be imported
 	 * @param array $keywordData an array with keyword information like
 	 * 				 keywordData[$i]['keyword'] => the keyword itself
 	 * 				 keywordData[$i]['notes'] => the notes of keyword
@@ -594,7 +610,19 @@ function count_testcases($id)
 	}
 
 
-  // 20061010 - franciscom
+
+  /*
+    function: get_srs_by_title
+              get srs information using title as access key.
+  
+    args : tesproject_id
+           title: srs title
+           [ignore_case]: control case sensitive search.
+                          default 0 -> case sensivite search
+    
+    returns: 
+  
+  */
   function get_srs_by_title($testproject_id,$title,$ignore_case=0)
   {
   	$output=null;
@@ -616,7 +644,24 @@ function count_testcases($id)
   	return $output;
   }
 
-  // 20061010 - franciscom
+
+
+  /*
+    function: check_srs_title
+              Do checks on srs title, to undertand if can be used.
+              
+              Checks:
+              1. title is empty ?
+              2. does already exist a srs with this title?
+  
+    args : tesproject_id
+           title: srs title
+           [ignore_case]: control case sensitive search.
+                          default 0 -> case sensivite search
+    
+    returns: 
+  
+  */
   function check_srs_title($testproject_id,$title,$ignore_case=0)
   {
     $ret['status_ok']=1;
@@ -649,10 +694,15 @@ function count_testcases($id)
 
 /*
   function: delete
+            delete test project from system, deleting all dependent data:
+            keywords, requirements, custom fields, testsuites, testplans, 
+            testcases, results, testproject related roles,             
 
-  args :
+            
+  args :id: testproject id
+        error [ref]: used to return verbose feedback about operation.
   
-  returns: 
+  returns: -
 
 */
 function delete($id,&$error)
@@ -840,15 +890,18 @@ function delete($id,&$error)
 }
 
 
-  /*
-    function: 
+/*
+  function: get_keywords_map
+            All testproject keywords.
 
-    args :
-    
-    returns: 
+  args :testproject_id
+  
+  
+  returns: map: key: keyword_id
+                value: keyword
+  
 
-  */
-
+*/
 function get_keywords_map($testproject_id)
 {
 		$map_keywords = null;
@@ -859,6 +912,20 @@ function get_keywords_map($testproject_id)
 		return($map_keywords);
 }
 	
+	
+	
+/*
+  function: get_all_testcases_id
+            All testproject testcases node id.
+
+  args :id: testproject id
+  
+  
+  returns: array with testcases node id.
+           null is nothing found
+  
+
+*/
 function get_all_testcases_id($id)
 {
 	$a_tcid = array();
@@ -881,7 +948,24 @@ function get_all_testcases_id($id)
 	return $a_tcid;
 }
 
-// 20060430 - franciscom
+
+
+/*
+  function: get_keywords_tcases
+            testproject keywords (with related testcase node id),
+            that are used on testcases.
+
+  args :testproject_id
+        [keyword_id]= 0 -> no filter
+                      <> 0 -> look only for this keyword
+        
+  
+  
+  returns: map: key: testcase_id
+                value: map with testcase_id,keyword_id,keyword
+  
+
+*/
 function get_keywords_tcases($testproject_id, $keyword_id=0)
 {
     $keyword_filter= '' ;
@@ -949,11 +1033,14 @@ function get_all_testplans($testproject_id,$get_tp_without_tproject_id=0,$plan_s
   function: check_tplan_name_existence
 
   args :
-        $tplan_id     : test plan id. 
+        tproject_id: 
+        tplan_id: 
+        [case_sensitive]: 1-> do case sensitive search
+                          default: 0
   
-  returns: 
+  returns: 1 -> tplan name exists
+  
 
-  rev :
 */
 function check_tplan_name_existence($tproject_id,$tplan_name,$case_sensitive=0)
 {
@@ -983,7 +1070,9 @@ function check_tplan_name_existence($tproject_id,$tplan_name,$case_sensitive=0)
     function: gen_combo_first_level_test_suites
               create array with test suite names
 
-    args :  $id
+    args :  id: testproject_id
+            [mode]
+
     returns: 
             array, every element is a map
             
@@ -1022,7 +1111,7 @@ function get_first_level_test_suites($tproject_id,$mode='simple')
   args : $user_id
          $role_id
   
-  returns: 
+  returns: map
 
 */
 function get_by_user_role($user_id,$role_id)

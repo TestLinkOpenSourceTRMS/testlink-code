@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.37 $
- * @modified $Date: 2007/10/21 16:02:11 $  $Author: franciscom $
+ * @version $Revision: 1.38 $
+ * @modified $Date: 2007/10/22 08:10:59 $  $Author: franciscom $
  * @author franciscom
  *
  * 20071002 - azl - added ORDER BY to get_all method
@@ -258,23 +258,54 @@ function count_testcases($id)
   /*
     function: gen_combo_test_suites
               create array with test suite names
-              test suites are ordered in parent-child way.
-              
-              
+              test suites are ordered in parent-child way, means
+              order on array is creating traversing tree branches, reaching end
+              of branch, and starting again. (recursive algorithim).
+
 
     args :  $id: test project id
             [$exclude_branches]: array with test case id to exclude
                                  useful to exclude myself ($id)
             [$mode]: dotted -> $level number of dot characters are appended to 
                                the left of test suite name to create an indent effect.
-                               every array element is an string.
+                               Level indicates on what tree layer testsuite is positioned.
+                               Example:
+                               
+                                null 
+                                \
+                               id=1   <--- Tree Root = Level 0
+                                 |
+                                 + ------+
+                               /   \      \
+                            id=9   id=2   id=8  <----- Level 1
+                                    \
+                                     id=3       <----- Level 2
+                                      \
+                                       id=4     <----- Level 3
+
+                               
+                               key: testsuite id (= node id on tree).
+                               value: every array element is an string, containing testsuite name.
+
+                               Result example:
+                               
+                                2  .TS1
+                                3 	..TS2
+                                9 	.20071014-16:22:07 TS1
+                               10 	..TS2                               
                                
                                
-                     array  -> every array element is a map with the following keys
+                     array  -> key: testsuite id (= node id on tree).
+                               value: every array element is a map with the following keys
                                'name', 'level'
     
-    returns: 
-            array
+                                2  	array(name => 'TS1',level =>	1)
+                                3   array(name => 'TS2',level =>	2)
+                                9	  array(name => '20071014-16:22:07 TS1',level =>1)
+                               10   array(name =>	'TS2', level 	=> 2)
+    
+    
+    returns: map , structure depens on $mode argument.
 
   */
 	function gen_combo_test_suites($id,$exclude_branches=null,$mode='dotted')
@@ -1105,57 +1136,52 @@ function get_first_level_test_suites($tproject_id,$mode='simple')
 	return($fl);
 }
 
-/*
-  function: get_by_user_role
-
-  args : $user_id
-         $role_id
-  
-  returns: map
-
-*/
-function get_by_user_role($user_id,$role_id)
-{
-	$test_projects = array();
-	$sql =  " SELECT nodes_hierarchy.id,nodes_hierarchy.name,active " .
- 	        " FROM nodes_hierarchy " .
- 	        " JOIN testprojects ON nodes_hierarchy.id=testprojects.id " .
-	        " LEFT OUTER JOIN user_testproject_roles " .
-		      " ON testprojects.id = user_testproject_roles.testproject_id " .
-		      " AND  user_testproject_roles.user_id = {$user_id} WHERE ";
-		 	      
-	if ($role_id != TL_ROLES_NONE)
-		$sql .=  "(role_id IS NULL OR role_id != " . TL_ROLES_NONE . ")";
-	else
-		$sql .=  "(role_id IS NOT NULL AND role_id != " . TL_ROLES_NONE . ")";
-	
-	
-	if (has_rights($this->db,'mgt_modify_product') != 'yes')
-		$sql .= " AND active=1 ";
-
-	$sql .= " ORDER BY name";
-	
-	$arrTemp = $this->db->fetchRowsIntoMap($sql,'id');
-	if (sizeof($arrTemp))
-	{
-		foreach($arrTemp as $id => $row)
-		{
-			$noteActive = '';
-			if (!$row['active'])
-				$noteActive = TL_INACTIVE_MARKUP;
-			$test_projects[$id] = $noteActive . $row['name'];
-		}
-	}
-	
-	return $test_projects;
-}
-
-
 // -------------------------------------------------------------------------------
 // Custom field related methods
 // -------------------------------------------------------------------------------
-// The ids will be sorted based on the sequence number associated with the binding
-function get_linked_custom_fields($id,$node_type=null,$node_id=null) 
+// The 
+/*
+  function: get_linked_custom_fields
+            Get custom fields that has been linked to testproject.
+            Search can be narrowed by:
+            node type 
+            node id
+            
+            Important:
+            custom fields id will be sorted based on the sequence number 
+            that can be specified at User Interface (UI) level, while
+            linking is done.
+            
+  args : id: testproject id
+         [node_type]: default: null -> no filter
+                      verbose string that identifies a node type.
+                      (see tree class, method get_available_node_types).
+                      Example:
+                      You want linked custom fields , but can be used
+                      only on testcase -> 'testcase'.
+                      
+  returns: map.
+           key: custom field id
+           value: map (custom field definition) with following keys
+            
+           id 	(custom field id)
+           name 	
+           label 	
+           type 	
+           possible_values
+           default_value
+           valid_regexp
+           length_min
+           length_max
+           show_on_design
+           enable_on_design
+           show_on_execution
+           enable_on_execution
+           display_order
+
+
+*/
+function get_linked_custom_fields($id,$node_type=null) 
 {
   $additional_table="";
   $additional_join="";
@@ -1175,7 +1201,7 @@ function get_linked_custom_fields($id,$node_type=null,$node_id=null)
        " AND   CFTP.testproject_id={$id} " .
        $additional_join .  
        " ORDER BY display_order";
-     
+
   $map = $this->db->fetchRowsIntoMap($sql,'id');     
   return($map);                                 
 }

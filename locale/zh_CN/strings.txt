@@ -1,127 +1,133 @@
 <?php
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ * Chinese Simplified translation-  yfeng.lee@gmail.com 
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.12 $
- * @modified $Date: 2007/09/30 10:23:37 $
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2007/10/22 12:16:39 $ $Author: franciscom $
+ * @modified $Date: 2007/10/22 12:16:39 $ $Author: franciscom $
  *
- * @author Yoyo Wang
+ * N.B.:
+ * Here we are defining GLOBAL variables.
+ * To avoid override of other globals we are using $TLS_ (Test Link String) prefix.
+ * This must be a reserved prefix.
+ *
+ * @author Francisco Mancardi
+ *
+ * 20070818 - franciscom
+ * 20070705 - franciscom -
+ * 20070520 - franciscom - milestones
+ * 20070206 - franciscom - BUGID 618 - \n on JS messages
+ *
+ *       
 **/
+//If this file is coded in UTF-8 then enable the following line
+$TLS_STRINGFILE_CHARSET = "UTF-8";
 
-// add by wangyy, global setting
-$TLS_STRINGFILE_CHARSET	= "gb2312";
-$TLS_from_email_name = "Testlink ¹ÜÀíÔ±";
-$TLS_default_component_name = "ÓÉĞèÇó×Ô¶¯´´½¨µÄ×é¼ş";
-$TLS_default_category_name = "´ı¶¨";
-$TLS_objective_for_category = "´ÓĞèÇóÉú³ÉµÄ·ÖÀà/ÓÃÀı";
-$TLS_scope_for_component = "´ÓĞèÇóÉú³ÉµÄ×é¼ş/·ÖÀà/ÓÃÀı";
+// General - Leave it here in this way can be reused !!!
+$TLS_asc ="å‡åº";
+$TLS_any = "ä¸é™";
+$TLS_btn_no = "å¦";
+$TLS_create ="åˆ›å»º";
+$TLS_desc ="é™åº";
+$TLS_hour = "å°æ—¶";
+$TLS_test_case ="æµ‹è¯•ç”¨ä¾‹";
+$TLS_testcase =$TLS_test_case;
+$TLS_test_plan ="æµ‹è¯•è®¡åˆ’";
+$TLS_testplan = $TLS_test_plan;
+$TLS_test_suite ="åˆ†ç±»";
+$TLS_SRS = "è½¯ä»¶éœ€æ±‚è§„æ ¼è¯´æ˜ä¹¦";
+$TLS_Role ="è§’è‰²";
+$TLS_Keyword ="å…³é”®å­—";
+$TLS_Milestone ="é‡Œç¨‹ç¢‘";
+$TLS_testsuite_created = "åˆ†ç±»å·²åˆ›å»º";
+$TLS_requirement = "éœ€æ±‚";
+$TLS_assigned ="æŒ‡æ´¾";
+$TLS_unassigned ="å–æ¶ˆæŒ‡æ´¾";
+$TLS_import_file_type = "å¯¼å…¥æ–‡ä»¶ç±»å‹";
+$TLS_max_file_size_is = "æœ€å¤§. æ–‡ä»¶å¤§å° ";
+$TLS_supported_file_formats = "æ”¯æŒçš„æ–‡ä»¶æ ¼å¼";
 
-$TLS_inherited_role="<inherited>";
-$TLS_th_roles_testplan = "Test Plan Role";
-$TLS_th_roles_testproject = "Test Project Role";
-$TLS_th_role_description = "Description";
-$TLS_warning_delete_role = "Really delete this role?";
+$TLS_test_status_all = "æ‰€æœ‰";
+$TLS_test_status_any = "æ‰€æœ‰";
+$TLS_test_status_not_run ="å°šæœªæ‰§è¡Œ";
+$TLS_test_status_blocked ="é”å®š";
+$TLS_test_status_failed ="å¤±è´¥";
+$TLS_test_status_passed ="é€šè¿‡";
+$TLS_test_status_not_available="å°šä¸å¯ç”¨";
+$TLS_test_status_unknown="æœªçŸ¥";
 
-// lib/functions/roles.inc.php
-$TLS_desc_cfield_management = "Custom field management";
-$TLS_desc_cfield_view = "Custom field view (read only access)";
-$TLS_desc_mgt_modify_key = "Keyword management";
-$TLS_desc_mgt_modify_product = "Test Project management";
-$TLS_desc_mgt_modify_req = "Requirement management";
-$TLS_desc_mgt_modify_tc = "Test Case create/edit";
-$TLS_desc_mgt_modify_users = "User management";
-$TLS_desc_mgt_view_key = "Keyword view (read only access)";
-$TLS_desc_mgt_view_req = "Requirement view (read only access)";
-$TLS_desc_mgt_view_tc = "Test Case view (read only access)";
-$TLS_desc_role_management = "Role management";
-$TLS_desc_testplan_create_build = "Build create/edit";
-$TLS_desc_testplan_execute = "Test Plan execute";
-$TLS_desc_testplan_metrics = "Test Plan metrics";
-$TLS_desc_testplan_planning = "Test Plan planning";
-$TLS_desc_user_role_assignment = "Role assignment";
-$TLS_error_duplicate_rolename = "There's already a role with that name!";
-$TLS_error_role_no_rights = "You cannot save roles without any rights!";
-$TLS_error_role_no_rolename = "You must enter a name for the role!";
-$TLS_inherited_role="<inherited>";
-$TLS_mgt_testplan_create = "Test Plan create/edit";
 
-$TLS_menu_define_roles = "New role";
-$TLS_menu_view_users = "View Users";
-$TLS_menu_view_roles = "View roles";
-$TLS_menu_assign_testproject_roles = "Assign Test Project roles";
-$TLS_menu_assign_testplan_roles = "Assign test plan roles";
-$TLS_th_rolename = "Role name";
-$TLS_enter_role_notes = "Role description";
-$TLS_th_tp_rights = "Test Plan";
-$TLS_th_mgttc_rights = "Test Case management";
-$TLS_th_req_rights = "Requirement";
-$TLS_th_product_rights = "Test Project";
-$TLS_th_user_rights = "User";
-$TLS_th_kw_rights = "Keyword";
-$TLS_th_cf_rights = "Custom field";
-
-$TLS_href_metrics_dashboard = "Metrics dashboard";
-$TLS_show_tcase_spec="Show Test Case specification";
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////7
 // firstLogin.php
-$TLS_cant_create_user = "ºÜ±§Ç¸ÎŞ·¨ÎªÄú´´½¨µÇÂ½ÕÊºÅ¡£ÇëÓë¹ÜÀíÔ±ÁªÏµ£¡";
-$TLS_empty_email_address = " µç×ÓÓÊ¼şµØÖ·²»ÄÜÎª¿Õ£¡";
-$TLS_empty_first_name = " Ãû×Ö²»ÄÜÎª¿Õ£¡";
-$TLS_empty_last_name = " ĞÕ²»ÄÜÎª¿Õ£¡";
-$TLS_fatal_page_title = "TestLink ::: ÖÂÃü´íÎó";
-$TLS_invalid_user_name = "ÓÃ»§Ãû´íÎó£¬ÇëÖØĞÂÊäÈë¡£";
-$TLS_passwd_dont_match = "Á½´ÎÊäÈëµÄ¿ÚÁî²»Ò»ÖÂ£¬ÇëËµÃ÷¿ÚÁîÊÇ´óĞ¡Ğ´Ãô¸ĞµÄ¡£ÇëÖØĞÂÊäÈë¡£";
-$TLS_user_cant_be_created_because = "ÄãµÄÕÊºÅÎŞ·¨´´½¨,Ô­ÒòÊÇ£º";
-$TLS_user_name_exists = "ÓÃ»§ÃûÒÑ¾­±»Ê¹ÓÃ,ÇëÑ¡ÔñÆäËüµÄÃû³Æ¡£";
-$TLS_valid_user_name_format = "ÓÃ»§ÃûÖ»ÄÜ°üº¬×ÖÄ¸,Êı×Ö,¿Õ¸ñ,Á¬×Ö·ûºÍÏÂ»®Ïß¡£";
-$TLS_your_info_please = "ÊäÈëÄãµÄÓÃ»§ĞÅÏ¢";
+$TLS_cant_create_user ="å¾ˆæŠ±æ­‰æ— æ³•ä¸ºæ‚¨åˆ›å»ºç™»é™†å¸å·ã€‚è¯·ä¸ç®¡ç†å‘˜è”ç³»ï¼";
+$TLS_empty_email_address =" ç”µå­é‚®ä»¶åœ°å€ä¸èƒ½ä¸ºç©ºï¼";
+$TLS_empty_first_name =" åå­—ä¸èƒ½ä¸ºç©ºï¼";
+$TLS_empty_last_name =" å§“ä¸èƒ½ä¸ºç©ºï¼";
+$TLS_fatal_page_title ="TestLink ::: è‡´å‘½é”™è¯¯";
+$TLS_invalid_user_name ="ç”¨æˆ·åé”™è¯¯ï¼Œè¯·é‡æ–°è¾“å…¥ã€‚";
+$TLS_passwd_dont_match ="ä¸¤æ¬¡è¾“å…¥çš„å¯†ç ä¸ä¸€è‡´ï¼Œè¯·æ³¨æ„ï¼šå¯†ç åŒºåˆ†å¤§å°å†™ã€‚è¯·é‡æ–°è¾“å…¥ã€‚";
+
+$TLS_user_cant_be_created_because ="ä½ çš„å¸å·æ— æ³•åˆ›å»ºï¼ŒåŸå› æ˜¯ï¼š";
+$TLS_user_name_exists ="ç”¨æˆ·åå·²ç»è¢«ä½¿ç”¨,è¯·é€‰æ‹©å…¶å®ƒçš„åç§°ã€‚";
+$TLS_valid_user_name_format ="ç”¨æˆ·ååªèƒ½åŒ…å«å­—æ¯,æ•°å­—,ç©ºæ ¼,è¿å­—ç¬¦å’Œä¸‹åˆ’çº¿ã€‚";
+$TLS_warning_empty_pwd ="å¯†ç ä¸èƒ½ä¸ºç©º!";
+$TLS_your_info_please ="è¾“å…¥ä½ çš„ç”¨æˆ·ä¿¡æ¯";
 
 
 
 // index.php
-$TLS_main_page_title = "TestLink ::: Ö÷Ò³";
+$TLS_main_page_title = "TestLink ::: é¦–é¡µ";
+
+
+// keywordsimport.php
+$TLS_please_choose_keywords_file ="è¯·é€‰æ‹©è¦ä¸Šä¼ çš„æ–‡ä»¶";
+$TLS_keywords_file = "å…³é”®å­—æ–‡ä»¶";
+
+// lostPassword.php
+$TLS_bad_user ="ç”¨æˆ·ä¸å­˜åœ¨ï¼Œè¯·é‡è¯•";
+$TLS_contact_admin = "<br>å¦‚æœä½ æœ‰å…¶ä»–é—®é¢˜ï¼Œè¯·ä¸ç³»ç»Ÿç®¡ç†å‘˜è”ç³»ã€‚";
+$TLS_mail_empty_address ="ä½ æ²¡æœ‰åœ¨ä½ çš„ç”¨æˆ·æ¡£æ¡ˆä¿¡æ¯ä¸­æŒ‡å®šç”µå­é‚®ä»¶åœ°å€ï¼è¯·ä¸TestLinkç³»ç»Ÿç®¡ç†å‘˜è”ç³»ï¼Œé‡æ–°è®¾ç½®ä½ çš„å¯†ç ï¼";
+
+$TLS_mail_passwd_subject ="æ–°çš„TestLinkå¯†ç ";
+$TLS_mail_problems ="é‚®ä»¶åŠŸèƒ½æ²¡æœ‰æ­£ç¡®å®‰è£…ï¼Œè¯·ä¸ç³»ç»Ÿç®¡ç†å‘˜è”ç³»ã€‚";
+$TLS_page_title_lost_passwd ="TestLink - å¿˜è®°å¯†ç ";
+$TLS_your_info_for_passwd = "è¾“å…¥ä½ çš„ç”¨æˆ·ä¿¡æ¯ï¼Œä»¥ä¾¿å¯ä»¥é€šè¿‡ç”µå­é‚®ä»¶ç»™ä½ å‘é€çš„æ–°å¯†ç ã€‚";
+$TLS_your_password_is = "ä½ çš„TestLinkæ–°å¯†ç æ˜¯ï¼š<br>";
 
 
 
 // login.php
-$TLS_bad_user_passwd = "ÖØÊÔ£¡´íÎóµÄÓÃ»§Ãû»ò¿ÚÁî£¡";
-$TLS_login_msg_session_exists1 = "ä¯ÀÀÆ÷ÖĞÒÑ¾­ÓĞÒ»¸öºÏ·¨µÄµÇÂ½ÓÃ»§¡£ÇëÊ¹ÓÃËü¡£";
-$TLS_login_msg_session_exists2 = " Ê×ÏÈ£¬ÄãÊÇ·ñÏëÖØĞÂ½¨Á¢»á»°¡£";
-$TLS_logout_link = "ÍË³ö";
-$TLS_passwd_lost = "ÄãµÄ¿ÚÁîÒÑ¾­·¢ËÍµ½Äã×¢²áÓÃ»§ĞÅÏ¢Ê±Ö¸¶¨µÄµç×ÓÓÊ¼şµØÖ·ÖĞ¡£Çë²é¿´ÄãµÄÓÊÏä¡£Èç¹û»¹ÓĞÆäËüÎÊÌâ£¬ÇëÓëTestLink¹ÜÀíÔ±ÁªÏµ¡£";
-$TLS_please_login = "ÇëµÇÂ½ ...";
-$TLS_session_expired = "ÄãµÄ»á»°ÒÑ¾­³¬Ê±£¡ÇëÖØĞÂµÇÂ½¡£";
-$TLS_your_first_login = "»¶Ó­Ê¹ÓÃ TestLink£¡Äã¾ßÓĞ¿Í»§·ÃÎÊÈ¨ÏŞ¡£ÇëµÇÂ½ ...";
+$TLS_bad_user_passwd ="é‡è¯•ï¼é”™è¯¯çš„ç”¨æˆ·åæˆ–å¯†ç ï¼";
+$TLS_login_msg_session_exists1 = "æµè§ˆå™¨ä¸­å·²ç»å­˜åœ¨ä¸€ä¸ªå·²ç™»é™†ç”¨æˆ·ã€‚ <br>è¯·ä½¿ç”¨å·²ç™»é™†ç”¨æˆ·ã€‚ >>> ";
+$TLS_login_msg_session_exists2 = " <<< æˆ–è€…é€€å‡ºå·²ç™»é™†ç”¨æˆ·å¹¶é‡æ–°ç™»å½•ã€‚";
+$TLS_logout_link ="é€€å‡º";
+$TLS_passwd_lost ="ä½ çš„å¯†ç å·²ç»å‘é€åˆ°ä½ æ³¨å†Œç”¨æˆ·ä¿¡æ¯æ—¶æŒ‡å®šçš„ç”µå­é‚®ä»¶åœ°å€ä¸­ã€‚è¯·æŸ¥çœ‹ä½ çš„é‚®ç®±ã€‚å¦‚æœè¿˜æœ‰å…¶å®ƒé—®é¢˜ï¼Œè¯·ä¸TestLinkç®¡ç†å‘˜è”ç³»ã€‚";
 
 
+$TLS_password_reseted="æ–°çš„å¯†ç å·²ç»é€šè¿‡é‚®ä»¶å‘é€å‡ºå»äº†";
+$TLS_please_login ="è¯·ç™»é™† ...";
+$TLS_session_expired = "ä½ çš„ç™»é™†å·²ç»è¶…æ—¶ï¼è¯·é‡æ–°ç™»é™†ã€‚";
+$TLS_your_first_login = "æ¬¢è¿ä½¿ç”¨ TestLinkï¼ä½ å…·æœ‰è®¿å®¢è®¿é—®æƒé™ã€‚è¯·ç™»é™† ...";
 
-// lostPassword.php
-$TLS_bad_user = "ÓÃ»§²»´æÔÚ£¬ÇëÖØÊÔ";
-$TLS_contact_admin = "<br>Èç¹ûÄãÓĞ½üÒ»²½µÄÎÊÌâ£¬ÇëÓëÏµÍ³¹ÜÀíÔ±ÁªÏµ¡£";
-$TLS_mail_empty_address = "ÄãÃ»ÓĞÔÚÄãµÄÓÃ»§µµ°¸ĞÅÏ¢ÖĞÖ¸¶¨µç×ÓÓÊ¼şµØÖ·£¡ÇëÓëTestLinkÏµÍ³¹ÜÀíÔ±ÁªÏµ£¬ÖØĞÂÉèÖÃÄãµÄ¿ÚÁî£¡";
-$TLS_mail_passwd_subject = "ĞÂµÄTestLink¿ÚÁî";
-$TLS_mail_problems = "ÓÊ¼ş¹¦ÄÜÃ»ÓĞÕıÈ·°²×°£¬ÇëÓëÏµÍ³¹ÜÀíÔ±ÁªÏµ¡£";
-$TLS_page_title_lost_passwd = "TestLink - Íü¼Ç¿ÚÁî";
-$TLS_your_info_for_passwd = "ÊäÈëÄãµÄÓÃ»§ĞÅÏ¢£¬ÒÔ±ã¿ÉÒÔÍ¨¹ıµç×ÓÓÊ¼ş·¢ËÍÄãµÄĞÂ¿ÚÁî¡£";
-$TLS_your_password_is = "ÄãµÄTestLinkĞÂ¿ÚÁîÊÇ£º<br>";
 
-// newest_tcversions.php
-$TLS_no_linked_tcversions = "no linked Test Case versions";
+// planPriority.php
+$TLS_high_priority ="é«˜";
+$TLS_low_priority ="ä½";
+$TLS_medium_priority ="ä¸­ç­‰";
 
-// resultsGeneral.php 
-$TLS_report_tspec_has_no_tsuites="There are no Test Suites defined for Test ProjectPlan, <br>".
-                                 "then no execution data can exist => no report can be created";
+$TLS_high_risk ="é«˜";
+$TLS_low_risk ="ä½";
+$TLS_medium_risk ="ä¸­ç­‰";
+
+$TLS_high_importance ="é«˜";
+$TLS_low_importance ="ä½";
+$TLS_medium_importance ="ä¸­ç­‰";
 
 // resultsNavigator.php
 $TLS_title_nav_results="Reports and Metrics";
-$TLS_report_tplan_has_no_build="Test Plan has no build defined, <br>".
-                               "then no execution data can exist => no report can be created";
-
-
-$TLS_report_tplan_has_no_tcases="Test Plan has no Test Cases linked, <br>".
-                                "then no execution data can exist => no report can be created";
 
 // tcEdit.php
 $TLS_tc_copied = "Test Case %s was succesfully copied to <br> Test Suite %s";
@@ -134,975 +140,1366 @@ $TLS_tc_update_failed = "Update of Test Case %s failed!";
 $TLS_tc_version_deleted = "Test Case %s version %d was succesfully deleted";
 
 
-// gui/templates/adminProductEdit.tpl
-$TLS_btn_activate = "¼¤»î";
-$TLS_btn_create = "´´½¨";
-$TLS_btn_del = "É¾³ı";
-$TLS_btn_edit_del = "±à¼­ / É¾³ı";
-$TLS_btn_inactivate = "½ûÓÃ";
-$TLS_btn_upd = "¸üĞÂ";
-$TLS_caption_edit_product = "±à¼­²úÆ·";
-$TLS_color = "ÑÕÉ«";
-$TLS_enable_requirements = "ÆôÓÃĞèÇó¹¦ÄÜ";
-$TLS_info_failed_loc_prod = "±¾µØ»¯²úÆ·Ê§°Ü";
-$TLS_invalid_query = "ÎŞĞ§µÄ²éÑ¯";
-$TLS_name = "Ãû³Æ";
-$TLS_popup_product_delete = "¾¯¸æ£¡Õâ¸ö²Ù×÷»áÓÀ¾ÃÉ¾³ıÓë²úÆ·Ïà¹ØµÄËùÓĞÊı¾İ£¨°üÀ¨²âÊÔ½á¹û¡¢¼Æ»®µÈ£©¡£ÄãÒ²¿ÉÒÔÊ¹ÓÃ½ûÓÃÀ´´úÌæÉ¾³ı²Ù×÷¡£\\n½¨Òé£ºÊ×ÏÈ±¸·İÊı¾İ¿â¡£\\nÄãÈ·¶¨ÒªÉ¾³ıÕâ¸ö²úÆ·Âğ£¿";
-$TLS_title_product_mgmt = "²úÆ·¹ÜÀí";
+// gui/templates/attachment404.tpl
+$TLS_btn_close ="å…³é—­";
+$TLS_error_attachment_not_found ="é”™è¯¯:æ²¡æœ‰æ‰¾åˆ°é™„ä»¶!";
+$TLS_title_downloading_attachment ="ä¸‹è½½é™„ä»¶";
 
 
 
-// gui/templates/adminProductNew.tpl
-$TLS_alt_pick_up_color = "µã»÷ÕâÀïÑ¡ÔñÑÕÉ«";
-$TLS_caption_new_product = "ĞÂ²úÆ·";
-
-
-
-// gui/templates/adminUserNew.tpl
-$TLS_btn_add = "Ôö¼Ó";
-$TLS_caption_new_user = "ÓÃ»§ĞÅÏ¢";
-$TLS_menu_del_user = "É¾³ıÓÃ»§";
-$TLS_menu_mod_user = "ĞŞ¸ÄÓÃ»§";
-$TLS_menu_new_user = "ĞÂÔöÓÃ»§";
-$TLS_th_email = "µç×ÓÓÊ¼ş";
-$TLS_th_first_name = "Ãû×Ö";
-$TLS_th_last_name = "ĞÕ";
-$TLS_th_locale = "ÓïÑÔ";
-$TLS_th_login = "ÕÊºÅ";
-$TLS_th_password = "¿ÚÁî";
-$TLS_th_rights = "È¨ÏŞ";
-$TLS_title_user_mgmt = "ÓÃ»§¹ÜÀí";
-
-
-
-// gui/templates/adminUsers.tpl
-$TLS_btn_upd_users = "¸üĞÂÓÃ»§";
-$TLS_msg_users_upd = "ÒÑ¾­¸üĞÂÁËÓÃ»§ĞÅÏ¢";
-$TLS_th_result = "½á¹û";
-$TLS_th_role = "½ÇÉ«";
-
-
-
-// gui/templates/adminUsersDelete.tpl
-$TLS_btn_del_user = "É¾³ıÓÃ»§";
-$TLS_confirm_user_del = "ÕæµÄÒªÉ¾³ıÕâ¸öÓÃ»§Âğ£¿";
-
-
-
-// gui/templates/buildNew.tpl
-$TLS_alt_delete_build = "µã»÷ÕâÀïÉ¾³ıÕâ¸ö¹¹½¨";
-$TLS_enter_build = "ÊäÈë¹¹½¨µÄ±êÊ¶";
-$TLS_enter_build_notes = "¹¹½¨µÄËµÃ÷£º";
-$TLS_msg_build = "Ã¿¸ö¹¹½¨½«ÓëÒ»¸ö»î¶¯µÄ²âÊÔ¼Æ»®Ïà¹ØÁª";
-$TLS_no_builds = "¹¹½¨²»´æÔÚÓÚ²âÊÔ¼Æ»®";
-$TLS_th_build_notes = "ËµÃ÷";
-$TLS_th_delete = "ÊÇ·ñÉ¾³ı£¿";
-$TLS_th_existing_builds = "¹¹½¨¹ØÁªµÄ²âÊÔ¼Æ»® ";
-$TLS_title_create_build_for_tp = "´´½¨¹¹½¨²¢¹ØÁªµ½²âÊÔ¼Æ»®";
-$TLS_title_notes = "ËµÃ÷£º";
-$TLS_warning_delete_build = "ÄãÕæµÄÏëÒªÉ¾³ıÕâ¸ö¹¹½¨Âğ£¿ËùÓĞÏà¹ØµÄÊı¾İ¶¼½«±»É¾³ı£¡";
+// gui/templates/attachmentdelete.tpl
+$TLS_deleting_was_ok ="é™„ä»¶å·²åˆ é™¤!";
+$TLS_error_attachment_delete = "åˆ é™¤é™„ä»¶æ—¶å‘ç”Ÿé”™è¯¯!";
+$TLS_title_delete_attachment ="åˆ é™¤é™„ä»¶";
 
 
 
 // gui/templates/containerDelete.tpl
-$TLS_btn_yes_del_cat = "ÊÇµÄ£¬É¾³ı·ÖÀà£¡";
-$TLS_btn_yes_del_comp = "ÊÇµÄ£¬É¾³ı×é¼ş£¡";
-$TLS_gui_error = "ÓÃ»§Í¼ĞÎ½çÃæ´íÎó";
-$TLS_question_del = "ÕæµÄÉ¾³ı";
+$TLS_btn_yes_del_comp ="æ˜¯çš„ï¼Œåˆ é™¤åˆ†ç±»ï¼";
+$TLS_container_title_testsuite =$TLS_test_suite;
+$TLS_linked_but_not_executed="å·²é“¾æ¥åˆ°ä¸€ä¸ªæˆ–å¤šä¸ªæµ‹è¯•è®¡åˆ’, ä½†å°šæœªæ‰§è¡Œ";
+$TLS_question_del ="çœŸçš„åˆ é™¤";
+$TLS_th_link_exec_status ="é“¾æ¥ä¸æ‰§è¡ŒçŠ¶æ€";
 
 
 
-// gui/templates/containerEdit.tpl
-$TLS_btn_update_cat = "¸üĞÂ·ÖÀà";
-$TLS_category = "·ÖÀà";
-$TLS_component = "×é¼ş";
-$TLS_title_edit_level = "±à¼­";
+// gui/templates/containerNew.tpl
+$TLS_btn_create_testsuite ="åˆ›å»ºåˆ†ç±»";
+$TLS_tc_keywords ="å…³é”®å­—";
+$TLS_title_create ="åˆ›å»º";
+$TLS_warning_empty_testsuite_name ="è¯·ç»™åˆ†ç±»å‘½å";
+
+
+
+// gui/templates/bug_add.tpl
+$TLS_btn_add_bug ="æ·»åŠ Bugå…³è”";
+$TLS_bug_id ="Bugç¼–å·";
+$TLS_button_enter_bug ="å½•å…¥æ–°çš„Bug";
+$TLS_link_bts_create_bug = "è®¿é—®Bugç®¡ç†ç³»ç»Ÿ ";
+$TLS_title_bug_add ="å»ºç«‹æµ‹è¯•ç»“æœä¸Bugçš„å…³è”";
+
+
+// gui/templates/bug_delete.tpl
+$TLS_title_delete_bug = "åˆ é™¤Bug";
 
 
 
 // gui/templates/containerMove.tpl
-$TLS_btn_cp = "¸´ÖÆ";
-$TLS_btn_move = "ÒÆ¶¯";
-$TLS_choose_target = "Ñ¡ÔñÄ¿±ê";
-$TLS_cont_move_first = "ÒÆ¶¯Õâ¸ö";
-$TLS_cont_move_second = "µ½ÁíÒ»¸ö";
-$TLS_defined_exclam = "ÒÑ¶¨Òå£¡";
-$TLS_include_nested = "°üº¬Ç¶Ì×Êı¾İ£¨Ö»ÄÜ¸´ÖÆ£©";
-$TLS_sorry_further = "ºÜ±§Ç¸Ã»ÓĞ¸ü¶àµÄ ";
-$TLS_title_move_cp = "ÒÆ¶¯/¸´ÖÆ";
-$TLS_copy_keywords = "¸´ÖÆ¹Ø¼ü×Ö"; // add by wangyy
+$TLS_btn_cp ="å¤åˆ¶";
+$TLS_btn_move ="ç§»åŠ¨";
+$TLS_choose_target ="é€‰æ‹©ç›®æ ‡";
+$TLS_cont_copy_first = "å¤åˆ¶";
+$TLS_cont_copy_second = "åˆ°ä»»æ„";
+$TLS_cont_move_first ="ç§»åŠ¨è¿™ä¸ª";
+$TLS_cont_move_second ="åˆ°å¦ä¸€ä¸ª";
+$TLS_copy_keywords ="å¤åˆ¶å…³é”®å­—";
+$TLS_defined_exclam ="å·²å®šä¹‰ï¼";
+$TLS_include_nested ="åŒ…å«åµŒå¥—æ•°æ®ï¼ˆåªèƒ½å¤åˆ¶ï¼‰";
+$TLS_sorry_further ="å¾ˆæŠ±æ­‰æ²¡æœ‰æ›´å¤šçš„ ";
+$TLS_title_move_cp ="ç§»åŠ¨/å¤åˆ¶";
 
 
-// gui/templates/containerNew.tpl
-$TLS_btn_create_cat = "´´½¨·ÖÀà";
-$TLS_btn_create_comp = "´´½¨×é¼ş";
-$TLS_title_create = "´´½¨";
+
+// gui/templates/reqCreate.tpl
+$TLS_btn_cancel ="å–æ¶ˆ";
+$TLS_btn_create ="åˆ›å»º";
+$TLS_help ="å¸®åŠ©";
+$TLS_req_create ="åˆ›å»ºä¸€ä¸ªæ–°éœ€æ±‚";
+$TLS_req_doc_id ="æ–‡æ¡£æ ‡è¯†";
+$TLS_req_spec ="æµ‹è¯•éœ€æ±‚è§„æ ¼è¯´æ˜ä¹¦";
+$TLS_reqs ="éœ€æ±‚";
+$TLS_scope ="èŒƒå›´";
+$TLS_status ="çŠ¶æ€";
+$TLS_title ="æ ‡é¢˜";
+$TLS_warning_empty_req_title ="éœ€æ±‚æ ‡é¢˜ä¸èƒ½ä¸ºç©º!";
+$TLS_warning_empty_reqdoc_id ="éœ€æ±‚æ–‡æ¡£ç¼–å·ä¸èƒ½ä¸ºç©º!";
 
 
 
 // gui/templates/containerOrder.tpl
-$TLS_no_cat_to_reorder = "ºÜ±§Ç¸£¬·ÖÀà²»´æÔÚ£¬ÎŞ·¨½øĞĞÖØĞÂÅÅĞò";
-$TLS_th_id = "±êÊ¶";
-$TLS_th_order = "Ë³Ğò";
-$TLS_title_change_comp_cat_order = "¸Ä±äÕâ¸ö×é¼şµÄ·ÖÀàË³Ğò";
+$TLS_btn_upd ="æ›´æ–°";
+$TLS_no_nodes_to_reorder ="å¯¹ä¸èµ·æ²¡æœ‰ä¸œè¥¿éœ€è¦é‡æ–°å®‰æ’!";
+$TLS_node ="åç§°";
+$TLS_th_id ="æ ‡è¯†";
+$TLS_th_node_type ="æµ‹è¯•å®ä¾‹ / åˆ†ç±»";
+$TLS_th_order ="é¡ºåº";
+$TLS_title_change_node_order ="æ”¹å˜åˆ†ç±»çš„å…ˆåé¡ºåº";
+$TLS_node_type_dbtable_testsuites=$TLS_test_suite;
+$TLS_node_type_dbtable_testcases=$TLS_testcase;
 
 
 
 // gui/templates/containerView.tpl
-$TLS_alt_del_com = "É¾³ıÕâ¸ö×é¼ş";
-$TLS_alt_edit_com = "ĞŞ¸ÄÕâ¸ö×é¼şµÄÊı¾İºÍ±êÌâ";
-$TLS_alt_move_cp_com = "½«Õâ¸ö×é¼şÒÆ¶¯»ò¸´ÖÆµ½ÁíÒ»¸ö²úÆ·ÖĞ";
-$TLS_btn_del_cat = "É¾³ı";
-$TLS_btn_del_com = "É¾³ı";
-$TLS_btn_edit_cat = "±à¼­";
-$TLS_btn_edit_com = "±à¼­";
-$TLS_btn_import_tc = "µ¼Èë²âÊÔÓÃÀı";
-$TLS_btn_move_cp_cat = "ÒÆ¶¯/¸´ÖÆ";
-$TLS_btn_move_cp_com = "ÒÆ¶¯/¸´ÖÆ";
-$TLS_btn_new_cat = "ĞÂ½¨·ÖÀà";
-$TLS_btn_new_com = "ĞÂ½¨×é¼ş";
-$TLS_btn_new_tc = "´´½¨²âÊÔÓÃÀı";
-$TLS_btn_reorder_cat = "·ÖÀàÖØĞÂÅÅĞò";
-$TLS_btn_reorder_tc = "²âÊÔÓÃÀıÖØĞÂÅÅĞò";
-$TLS_th_product_name = "²úÆ·Ãû³Æ";
+$TLS_alt_del_com ="åˆ é™¤è¿™ä¸ªåˆ†ç±»";
+$TLS_alt_edit_com ="ä¿®æ”¹è¿™ä¸ªåˆ†ç±»çš„æ•°æ®å’Œæ ‡é¢˜";
+$TLS_alt_move_cp_com ="å°†è¿™ä¸ªåˆ†ç±»ç§»åŠ¨æˆ–å¤åˆ¶åˆ°å¦ä¸€ä¸ªäº§å“ä¸­";
+$TLS_btn_del_com ="åˆ é™¤";
+$TLS_btn_edit_com ="ç¼–è¾‘";
+$TLS_btn_export_all_testsuites ="å¯¼å‡ºå…¨éƒ¨åˆ†ç±»";
+$TLS_btn_export_tc ="å¯¼å‡ºæµ‹è¯•ç”¨ä¾‹";
+$TLS_btn_export_testsuite ="å¯¼å‡ºåˆ†ç±»";
+$TLS_btn_import_tc ="å¯¼å…¥æµ‹è¯•ç”¨ä¾‹";
+$TLS_btn_import_testsuite ="å¯¼å…¥åˆ†ç±»";
+$TLS_btn_move_cp_com ="ç§»åŠ¨/å¤åˆ¶";
+$TLS_btn_new_cat ="æ–°å»ºåˆ†ç±»";
+$TLS_btn_new_com ="æ–°å»ºåˆ†ç±»";
+$TLS_btn_new_tc ="åˆ›å»ºæµ‹è¯•ç”¨ä¾‹";
+$TLS_btn_reorder_cat ="åˆ†ç±»é‡æ–°æ’åº";
+$TLS_edit_testproject_basic_data ="ç¼–è¾‘æµ‹è¯•è®¡åˆ’åŸºæœ¬æ•°æ®";
+$TLS_th_notes ="è¯´æ˜";
+$TLS_th_product_name ="äº§å“åç§°";
 
 
 
-// gui/templates/execNavigator.tpl
-$TLS_btn_update_menu = "¸üĞÂ²Ëµ¥";
-$TLS_caption_nav_filter_settings = "µ¼º½ - É¸Ñ¡ºÍÉèÖÃ";
-$TLS_filter_build = "É¸Ñ¡: ¹¹½¨";
-$TLS_filter_keyword = "É¸Ñ¡: ¹Ø¼ü×Ö";
-$TLS_filter_owner = "É¸Ñ¡: ÓµÓĞÕß";
-$TLS_filter_result = "É¸Ñ¡: ½á¹û";
-$TLS_filter_tcID = "É¸Ñ¡: ²âÊÔÓÃÀı±êÊ¶";
-$TLS_opt_all = "²»ÏŞ";
-$TLS_opt_build = "¹¹½¨";
-$TLS_opt_last_result = "ÉÏÒ»´Î½á¹û";
-$TLS_title_tc_suite_navigator = "µ¼º½ - ²âÊÔÓÃÀı¼¯";
-$TLS_tree_colored_to = "²âÊÔÓÃÀıÑÕÉ«ÒÀÕÕ ";
-
-
-
-// gui/templates/execSetResults.tpl
-$TLS_btn_save_tc_exec_results = "±£´æ½á¹û";
-$TLS_button_enter_bug = "Â¼ÈëĞÂÎÊÌâ";
-$TLS_caption_bugtable = "Ïà¹ØÎÊÌâ";
-$TLS_tc_not_tested_yet = "ÉĞÎ´²âÊÔµÄ";
-$TLS_test_exec_bug_report = "ÎÊÌâ±¨¸æ";
-$TLS_test_exec_by = "Ö´ĞĞÈË£º";
-$TLS_test_exec_expected_r = "ÆÚÍûµÄ½á¹û";
-$TLS_test_exec_last_run_date = "×î½üµÄÖ´ĞĞ£º";
-$TLS_test_exec_notes = "ËµÃ÷/ÃèÊö";
-$TLS_test_exec_on_build = "¡ú¹¹½¨";
-$TLS_test_exec_result = "½á¹û";
-$TLS_test_exec_steps = "²½Öè";
-$TLS_test_exec_summary= "ÕªÒª";
-$TLS_test_status_blocked = "Ëø¶¨";
-$TLS_test_status_failed = "Ê§°Ü";
-$TLS_test_status_not_run = "ÉĞÎ´Ö´ĞĞ";
-$TLS_test_status_passed = "Í¨¹ı";
-$TLS_th_test_case_id = "±êÊ¶";
-$TLS_title_t_r_on_build = "²âÊÔ½á¹û¡ú¹¹½¨";
-$TLS_title_t_r_owner = "ÓµÓĞÕß";
-$TLS_title_test_case = "²âÊÔÓÃÀı";
-$TLS_title_t_r_submitted = "²âÊÔ½á¹ûÒÑÌá½»¡£"; // add by wangyy
-
-
-
-// gui/templates/inc_copyrightnotice.tpl
-$TLS_gnu_gpl = "GNU GPL";
-$TLS_lic_home = "Ö÷Ò³";
-$TLS_lic_product = "²úÆ·";
-$TLS_licensed_under = "TestLinkĞí¿ÉĞ­Òé";
+// gui/templates/cfields_edit.tpl
+$TLS_available_on ="å¯åˆ©ç”¨ä¸º";
+$TLS_btn_add ="å¢åŠ ";
+$TLS_btn_delete ="åˆ é™¤";
+$TLS_btn_ok ="åˆ‡æ¢";
+$TLS_custom_field ="è‡ªå®šä¹‰èŒƒå›´";
+$TLS_enable_on_design ="å…è®¸æ“ä½œ <br>æµ‹è¯•è§„æ ¼è¯´æ˜ä¹¦";
+$TLS_enable_on_exec ="å…è®¸æ“ä½œ <br>æµ‹è¯•æŒ‡ä»¤";
+$TLS_label ="æ ‡æ³¨";
+$TLS_name ="åç§°";
+$TLS_popup_delete_custom_field = "ä½ ç¡®å®šè¦åˆ é™¤è‡ªå®šä¹‰å­—æ®µå—ï¼Ÿ";
+$TLS_possible_values ="å¯èƒ½çš„å€¼";
+$TLS_show_on_design ="æ˜¾ç¤ºåœ¨ <br>æµ‹è¯•è§„æ ¼è¯´æ˜ä¹¦";
+$TLS_show_on_exec ="æ˜¾ç¤ºåœ¨ <br>æµ‹è¯•æŒ‡ä»¤";
+$TLS_testcase = $TLS_test_case;
+$TLS_title_cfields_mgmt = "è‡ªå®šä¹‰å­—æ®µ";
+$TLS_type ="ç±»å‹";
+$TLS_warning_empty_cfield_label = "è¯·å½•å…¥è‡ªå®šä¹‰å­—æ®µçš„æ ‡è¯†";
+$TLS_warning_empty_cfield_name = "è¯·å½•å…¥è‡ªå®šä¹‰å­—æ®µçš„åç§°.";
 
 
 
 // gui/templates/inc_update.tpl
-$TLS_Build = "¹¹½¨";
-$TLS_Keyword = "¹Ø¼ü×Ö";
-$TLS_Priority = "ÓÅÏÈ¼¶";
-$TLS_Product = "²úÆ·";
-$TLS_Requirement = "ĞèÇó";
-$TLS_Requirements = "ĞèÇó";
-$TLS_testcase = "²âÊÔÓÃÀı";
-$TLS_TestPlan = "²âÊÔ¼Æ»®";
-$TLS_add = "Ôö¼Ó";
-$TLS_assigned = "±»Ö¸ÅÉ";
-$TLS_delete = "É¾³ı";
-$TLS_info_failed_db_upd = "¸üĞÂÊı¾İ¿âÊ§°Ü£¡";
-$TLS_info_failed_db_upd_details = "¸üĞÂÊı¾İ¿âÊ§°Ü£¡-- ÏêÏ¸ĞÅÏ¢£º";
-$TLS_item = "ÏîÄ¿";
-$TLS_update = "¸üĞÂ";
-$TLS_updated = "¸üĞÂ";
-$TLS_user = "ÓÃ»§";
-$TLS_was_success = " ÒÑ³É¹¦ ";
-
-
-
-// gui/templates/keywordsAssign.tpl
-$TLS_atc_keywords = "ÒÑÖ¸ÅÉµÄ²âÊÔÓÃÀı¹Ø¼ü×Ö:";
-$TLS_btn_assign = "Ö¸ÅÉ";
-$TLS_info_multi_sel = "ËµÃ÷£ºÊ¹ÓÃ CTRL »òÕß SHIFT ¼üºÍÊó±êÒ»Æğ½øĞĞ¶àÑ¡.";
-$TLS_menu_assign_kw_to_tc = "Ö¸ÅÉµ½²âÊÔÓÃÀı";
-$TLS_menu_create = "´´½¨";
-$TLS_menu_edit_del = "±à¼­ / É¾³ı";
-$TLS_menu_view = "²é¿´";
-$TLS_no_keywords = "ºÜ±§Ç¸£¬²âÊÔÓÃÀıµÄ¹Ø¼ü×ÖÃ»ÓĞ¶¨Òå";
-$TLS_none = "ÎŞ";
-$TLS_sel_all_keywords = "Ñ¡ÔñËùÓĞĞèÒªµÄ¹Ø¼ü×Ö£º";
-$TLS_select_keyword_label = "Ñ¡Ôñ¹Ø¼ü×Ö";
-$TLS_title_assign_kw_to_tc = "Îª²âÊÔÓÃÀıÖ¸ÅÉ¹Ø¼ü×Ö";
-$TLS_title_assign_kw_to_tc_in_cat = "Îª·ÖÀàÖĞµÄÃ¿¸ö²âÊÔÓÃÀıÖ¸ÅÉ¹Ø¼ü×Ö";
-$TLS_title_assign_kw_to_tc_in_com = "Îª×é¼şÖĞµÄÃ¿¸ö²âÊÔÓÃÀıÖ¸ÅÉ¹Ø¼ü×Ö";
-$TLS_title_keywords = "¹Ø¼ü×Ö";
-
-
-
-// gui/templates/keywordsEdit.tpl
-$TLS_btn_multi_upd = "ÅúÁ¿¸üĞÂ";
-$TLS_keywords_updated = "¹Ø¼ü×Ö±»¸üĞÂ£¡";
-$TLS_th_delete_q = "ÊÇ·ñÉ¾³ı£¿";
-$TLS_th_keyword = "¹Ø¼ü×Ö";
-$TLS_th_notes = "ËµÃ÷";
-
-
-
-// gui/templates/keywordsNew.tpl
-$TLS_btn_create_keyword = "ĞÂ½¨¹Ø¼ü×Ö";
-$TLS_caption_new_keyword = "ÊäÈëĞÂ¹Ø¼ü×Ö";
-$TLS_warning_enter_at_least1 = "ÇëÖÁÉÙÊäÈë ";
-$TLS_warning_enter_at_least2 = " ¸ö×Ö·û¡£";
-$TLS_warning_enter_less1 = "Çë×î¶àÊäÈë";
-$TLS_warning_enter_less2 = " ¸ö×Ö·û¡£";
-
-
-
-// gui/templates/keywordsView.tpl
-
-
-
-// gui/templates/login.tpl
-$TLS_btn_login = "µÇÂ½";
-$TLS_login_name = "µÇÂ½Ãû£º";
-$TLS_lost_password_q = "Íü¼Ç¿ÚÁî£¿";
-$TLS_new_user_q = "ÊÇĞÂÓÃ»§Âğ£¿";
-$TLS_password = "¿ÚÁî£º";
-$TLS_sec_note_prefix = "TestLink°²È«ÎÊÌâ";
-
-
-
-// gui/templates/loginFirst.tpl
-$TLS_btn_add_user_data = "Ìí¼ÓÓÃ»§ĞÅÏ¢";
-$TLS_e_mail = "µç×ÓÓÊ¼şµØÖ·£¨ÓÃÀ´·¢ËÍÍü¼ÇÁËµÄ¿ÚÁîµÈ£©£º";
-$TLS_first_name = "Ãû×Ö£º";
-$TLS_last_name = "ĞÕ£º";
-$TLS_link_back_to_login = "·µ»ØµÇÂ¼";
-$TLS_password_again = "ÔÙ´ÎÊäÈë¿ÚÁî£º";
-
-
-
-// gui/templates/loginLost.tpl
-$TLS_btn_send = "·¢ËÍ";
-$TLS_href_back = "·µ»Ø";
-
-
-
-// gui/templates/planAddTC.tpl
-$TLS_btn_add_selected_tc = "Ôö¼ÓÑ¡ÔñµÄ²âÊÔÓÃÀı";
-$TLS_btn_check = "È«Ñ¡";
-$TLS_btn_uncheck = "È«¶¼²»Ñ¡";
-$TLS_check_uncheck_tc = "·ÖÀàÖĞµÄ²âÊÔÓÃÀı";
-$TLS_all_tc_in_component = "×é¼şÖĞµÄ²âÊÔÓÃÀı"; // add by wangyy
-$TLS_note_keyword_filter = "ÓÃ¹Ø¼ü×Ö½øĞĞÉ¸Ñ¡µÄ²âÊÔÓÃÀı";
-$TLS_title_add_test_to_plan = "½«²âÊÔÓÃÀıÌí¼Óµ½²âÊÔ¼Æ»®";
-
-
-// gui/templates/planAddTCNavigator.tpl
-$TLS_btn_set_filter = "ÉèÖÃÉ¸Ñ¡Æ÷";
-$TLS_caption_assign_tc_with_kewords = "Ö»°´¹Ø¼ü×ÖÖ¸ÅÉ²âÊÔÓÃÀı";
-$TLS_choose_keyword = "Ñ¡Ôñ¹Ø¼ü×Ö";
-$TLS_opt_none = "ÎŞ";
-$TLS_title_navigator = "µ¼º½";
-
-
-
-// gui/templates/planEdit.tpl
-$TLS_No = "·ñ";
-$TLS_Yes = "ÊÇ";
-$TLS_btn_upd_tp = "¸üĞÂ";
-$TLS_caption_edit_tp = "±à¼­ÒÑÓĞµÄ²âÊÔ¼Æ»®";
-$TLS_no_test_plans = "Ã»ÓĞ¶¨ÒåµÄ²âÊÔ¼Æ»®£¡";
-$TLS_th_active = "»î¶¯µÄ";
-$TLS_th_delete_tp = "É¾³ı";
-$TLS_th_name = "Ãû³Æ";
-$TLS_th_tp_notes = "ËµÃ÷";
-$TLS_title_test_plan = "²âÊÔ¼Æ»®";
-
-
-
-// gui/templates/planMilestoneEdit.tpl
-$TLS_btn_upd_milestone = "¸üĞÂ";
-$TLS_info_milestones_date = "Àï³Ì±®µÄÈÕÆÚ±ØĞë´óÓÚµÈÓÚ½ñÌì";
-$TLS_menu_add = "´´½¨";
-$TLS_no_milestones = "Õâ¸ö²âÊÔ¼Æ»®ÖĞÃ»ÓĞ´´½¨Àï³Ì±®£¡";
-$TLS_th_date_format = "ÈÕÆÚ (YYYY-MM-DD)";
-$TLS_th_perc_a_prio = "% A ÓÅÏÈ¼¶";
-$TLS_th_perc_b_prio = "% B ÓÅÏÈ¼¶";
-$TLS_th_perc_c_prio = "% C ÓÅÏÈ¼¶";
-$TLS_title_existing_milestones = "ÒÑÓĞµÄÀï³Ì±®";
-$TLS_title_milestones = "²âÊÔ¼Æ»®µÄÀï³Ì±®";
-
-
-
-// gui/templates/planMilestonenew.tpl
-$TLS_btn_new_milestone = "´´½¨";
-$TLS_title_new_milestone = "Àï³Ì±®";
-
-
-
-// gui/templates/planNew.tpl
-$TLS_btn_new = "ĞÂ½¨";
-$TLS_caption_new_tp = "ĞÂ½¨²âÊÔ¼Æ»®";
-$TLS_caption_tp_name = "Ãû³Æ";
-$TLS_caption_tp_notes = "ËµÃ÷";
-$TLS_opt_no = "·ñ";
-$TLS_question_create_tp_from = "´ÓÒÑÓĞµÄ²âÊÔ¼Æ»®´´½¨";
-$TLS_question_want_rights = "ÄãÏë¶ÔÕâ¸ö²âÊÔ¼Æ»®ÉèÖÃÈ¨ÏŞÂğ";
-$TLS_say_yes = "ÊÇ";
-
-
-
-// gui/templates/planOwner.tpl
-$TLS_assign_ownership = "ÉèÖÃËùÓĞÈ¨";
-$TLS_def_prio_rules = "¶¨ÒåÓÅÏÈ¼¶¹æÔò";
-$TLS_opt_label_none = "ÎŞ";
-$TLS_th_imp = "ÖØÒªĞÔ";
-$TLS_th_owner = "ÓµÓĞÕß";
-$TLS_th_risk = "·çÏÕ";
-$TLS_th_test_suite = "²âÊÔ¼¯";
-$TLS_title_plan_ownership = "²âÊÔ¼Æ»®ËùÓĞÈ¨";
-
-
-
-// gui/templates/planPriority.tpl
-$TLS_btn_upd_prio = "¸üĞÂ";
-$TLS_menu_assign_ownership = "ÉèÖÃËùÓĞÈ¨";
-$TLS_menu_define_prio = "¶¨ÒåÓÅÏÈ¼¶¹æÔò";
-$TLS_title_priority = "ÎªÕâ¸ö²âÊÔ¼Æ»®¶¨ÒåÓÅÏÈ¼¶¹æÔò";
-$TLS_tr_th_prio_cba = "ÓÅÏÈ¼¶ (C/B/A)";
-$TLS_tr_th_risk = "·çÏÕ/ÖØÒªĞÔ";
-
-
-
-// gui/templates/planTesters.tpl
-$TLS_btn_save = "±£´æ";
-$TLS_btn_uncheck_all = "È«¶¼²»Ñ¡";
-
-
-
-// gui/templates/planTestersNavigator.tpl
-$TLS_opt_test_plans = "²âÊÔ¼Æ»®";
-$TLS_opt_users = "ÓÃ»§";
-$TLS_list_of = "ÁĞ±í"; // add by wangyy
-
-
-
-// gui/templates/resultsAllBuilds.tpl
-$TLS_th_build = "¹¹½¨±êÊ¶";
-$TLS_th_tc_total = "È«²¿²âÊÔÓÃÀı";
-
-
-
-// gui/templates/resultsBugs.tpl
-$TLS_th_bugs = "ÎÊÌâ";
-$TLS_th_title = "±êÌâ";
-$TLS_title_bugs_report = " - ÎÊÌâ±¨¸æ ";
-
-
-
-// gui/templates/resultsBuild.tpl
-$TLS_title_met_of_build = "ÖĞµÄ¶ÈÁ¿½á¹û¡ú¹¹½¨";
-
-
-
-// gui/templates/resultsByStatus.tpl
-$TLS_info_test_results = "ÕâÀïÖ»ÁĞ³ö×îºóÒ»´ÎµÄ²âÊÔ½á¹û¡£Èç¹û×îºó¹¹½¨µÄ²âÊÔ½á¹ûÊÇÁíÍâµÄ×´Ì¬£¨³ı·ÇÉĞÎ´Ö´ĞĞ²âÊÔ£©£¬²âÊÔÓÃÀı½«²»»áÏÔÊ¾¡£";
-$TLS_th_date = "ÈÕÆÚ";
-$TLS_th_run_by = "Ö´ĞĞÈË";
-
-
-
-// gui/templates/resultsGeneral.tpl
-$TLS_title_gen_test_rep = "×ÜÌå²âÊÔ¼Æ»®¶ÈÁ¿";
-
-
-
-// gui/templates/resultsNavigator.tpl
-$TLS_send_results = "·¢ËÍ½á¹û";
-$TLS_title_active_build = "»î¶¯µÄ¹¹½¨";
-$TLS_via_email = "µ½µç×ÓÓÊ¼ş";
-
-
-
-// gui/templates/resultsSend.tpl
-$TLS_btn_send_report = "·¢ËÍ";
-$TLS_check_send_to_me = "¸ø×Ô¼º·¢ËÍÒ»·İ¿½±´";
-$TLS_mail_body = "ÄÚÈİ£º";
-$TLS_mail_report = "±¨¸æ£º";
-$TLS_mail_subject = "Ö÷Ìâ£º";
-$TLS_mail_to = "·¢ËÍ¸ø£º";
-$TLS_send_test_report = "- ·¢ËÍ²âÊÔ±¨¸æ";
-$TLS_status = "×´Ì¬";
-$TLS_status_for_build = "¹¹½¨µÄ×´Ì¬";
-$TLS_tp_status = "×ÜÌå²âÊÔ¼Æ»®×´Ì¬";
-$TLS_tp_status_for_build = "¹¹½¨µÄ²âÊÔ¼Æ»®×´Ì¬";
-
-
-
-// gui/templates/resultsTC.tpl
-$TLS_date = "ÈÕÆÚ£º";
-$TLS_printed_by = "ÓÉTestLink´òÓ¡";
-$TLS_title = "±êÌâ";
-$TLS_title_test_case_suite = "²âÊÔÓÃÀı¼¯";
-$TLS_title_test_case_title = "²âÊÔ±êÌâ";
-
-
-
-// gui/templates/tcDelete.tpl
-$TLS_title_del_tc = "É¾³ı²âÊÔÓÃÀı";  // add by wangyy
-$TLS_btn_yes_iw2del = "ÊÇ, É¾³ı²âÊÔÓÃÀı!";
-$TLS_question_del_tc = "ÕæµÄÒªÉ¾³ı²âÊÔÓÃÀıÂğ?";
-
-
-
-// gui/templates/tcEdit.tpl
-$TLS_alt_add_tc_name = "ÊäÈë²âÊÔÓÃÀıÃû³Æ¡£ÕâÊÇ±ØÌîÏî¡£";
-$TLS_expected_results = "ÆÚÍûµÄ½á¹û";
-$TLS_steps = "²½Öè";
-$TLS_summary= "ÕªÒª";
-$TLS_tc_keywords = "¹Ø¼ü×Ö";
-$TLS_tc_title = "²âÊÔÓÃÀı±êÌâ";
-$TLS_title_edit_tc = "±à¼­²âÊÔÓÃÀı";
-
-
-
-// gui/templates/tcImport.tpl
-$TLS_btn_import_cvs = "µ¼Èë cvs";
-$TLS_btn_upload_file = "ÉÏ´«ÎÄ¼ş";
-$TLS_check_imp_data = "¼ì²éµ¼ÈëµÄÊı¾İ";
-$TLS_cvs_import_ok = "CVSµ¼Èë³É¹¦.";
-$TLS_info_imp_data_line1 = "ËµÃ÷£ºTestLink²»ÄÜÅĞ¶Ïµ¼ÈëµÄÊı¾İÊÇ·ñÒÑ¾­´æÔÚ¡£";
-$TLS_info_imp_data_line2 = "Òò´Ë£¬Èç¹ûÊı¾İµ¼ÈëµÄÊı¾İÒÑ¾­´æÔÚ£¬Äã»áµÃµ½Á½·İ¿½±´¡£";
-$TLS_local_file = "ÎÄ¼ş:";
-$TLS_max_size_cvs_file = "ÎÄ¼ş×î´ó²»³¬¹ı£º";
-$TLS_required_cvs_format = "ÎÄ¼ş¸ñÊ½£º";
-$TLS_title_choose_local_file = "Ñ¡ÔñÒªÉÏ´«µÄ±¾µØÎÄ¼ş";
-$TLS_title_imp_cvs = "µ¼Èë CVS Êı¾İ";
-
-
-
-// gui/templates/tcMove.tpl
-$TLS_btn_mv = "ÒÆ¶¯";
-$TLS_choose_container = "Ñ¡Ôñ·ÖÀà";
-$TLS_inst_move = "½«Õâ¸ö²âÊÔÓÃÀıÒÆ¶¯µ½ÁíÒ»¸ö·ÖÀàÏÂ£¨Í¬Ò»×é¼şÄÚ£©";
-$TLS_title_mv_cp_tc = "ÒÆ¶¯/¸´ÖÆ²âÊÔÓÃÀı";
-
-
-
-// gui/templates/tcNew.tpl
-$TLS_title_new_tc = "´´½¨²âÊÔÓÃÀı";
-
-
-
-// gui/templates/tcPrintNavigator.tpl
-$TLS_btn_set_pref = "ÉèÖÃ";
-$TLS_caption_print_opt = "´òÓ¡Ñ¡Ïî";
-$TLS_tr_td_show_as = "¸ñÊ½";
-
-
-
-// gui/templates/tcReorder.tpl
-$TLS_no_tc_to_reorder = "²âÊÔÓÃÀı²»´æÔÚ£¬ÎŞ·¨ÖØĞÂÅÅĞò¡£";
-$TLS_th_test_case = "²âÊÔÓÃÀı";
-$TLS_title_change_tc_order = "ĞŞ¸Ä·ÖÀàÖĞµÄ²âÊÔÓÃÀıË³Ğò¡£";
-
-
-
-// gui/templates/tcSearchForm.tpl
-$TLS_btn_find = "²éÕÒ";
-$TLS_caption_search_form = "ËÑË÷²âÊÔÓÃÀı";
-$TLS_custom_field_value ="Custom Field Value";
-$TLS_keyword = "¹Ø¼ü×Ö";
-$TLS_not_applied = "²»Ö¸¶¨";
-$TLS_th_tcid = "²âÊÔÓÃÀı±êÊ¶";
-$TLS_title_search_tcs = "ËÑË÷";
-
-
-
-// gui/templates/tcSearchView.tpl
-$TLS_href_test_case = "²âÊÔÓÃÀı";
-$TLS_keywords = "¹Ø¼ü×Ö";
-$TLS_no_records_found = "Ã»ÓĞ²éÑ¯µ½ÈÎºÎ½á¹û";
-$TLS_test_case = "²âÊÔÓÃÀı";
-
-
-
-// gui/templates/tcTree.tpl
-$TLS_button_refresh = "Ë¢ĞÂ";
-$TLS_no_tc_spec_av = "Ã»ÓĞ¿ÉÓÃµÄ²âÊÔ¹æ·¶";
-
-
-
-// gui/templates/tcView.tpl
-$TLS_btn_edit = "±à¼­";
-$TLS_btn_mv_cp = "ÒÆ¶¯/¸´ÖÆ";
-$TLS_by = "Ô´×Ô:";
-$TLS_title_created = "´´½¨ÈÕÆÚ:";
-$TLS_title_last_mod = "×îºóĞŞ¸ÄÈÕÆÚ:";
-$TLS_version = "°æ±¾";
-
-
-
-// gui/templates/userInfo.tpl
-$TLS_btn_change_passwd = "ĞŞ¸Ä¿ÚÁî";
-$TLS_btn_upd_user_data = "¸üĞÂ";
-$TLS_th_new_passwd = "ĞÂ¿ÚÁî";
-$TLS_th_new_passwd_again = "È·ÈÏĞÂ¿ÚÁî";
-$TLS_th_old_passwd = "¾É¿ÚÁî";
-$TLS_title_account_settings = "ÕÊºÅÉèÖÃ";
-$TLS_title_change_your_passwd = "ĞŞ¸ÄÄãµÄ¿ÚÁî";
-$TLS_title_edit_personal_data = "¸öÈËÕÊºÅ";
-$TLS_warning_different_pwd = "ÇëÖØĞÂÊäÈëÄãµÄĞÂ¿ÚÁî¡£ĞÂÊäÈëµÄ¿ÚÁî²»Ò»ÖÂ¡£";
-$TLS_warning_empty_pwd = "¿ÚÁî²»ÔÊĞíÎª¿Õ£¡";
-
-
-
-// gui/templates/planRemoveTC.tpl
-$TLS_btn_remove_entire = "È«²¿ÒÆÈ¥";
-$TLS_no_data_avail = "Ã»ÓĞÓĞĞ§Êı¾İ";
-$TLS_title_remove_tc_from_tp = "ÒÆÈ¥²âÊÔÓÃÀıÓÚ²âÊÔ¼Æ»®£º";
-$TLS_btn_remove_tc = "ÒÆÈ¥²âÊÔÓÃÀı"; // add by wangyy
-
-
-// gui/templates/planUpdateTC.tpl
-$TLS_btn_upd_ck_tc = "¸üĞÂÑ¡ÖĞµÄ²âÊÔÓÃÀı";
-$TLS_info_all_tc_uptodate = "ËùÓĞµÄ²âÊÔÓÃÀıÔÚÉÏÒ»´Î²âÊÔºó¶¼ÊÇÃ»ÓĞ±ä¸ü¡£";
-$TLS_th_category = "·ÖÀà";
-$TLS_th_component = "×é¼ş";
-$TLS_th_id_tc = "[±êÊ¶]²âÊÔÓÃÀı";
-$TLS_th_reason = "¸üĞÂÔ­Òò";
-$TLS_th_spec_version = "¹æÔ¼°æ±¾";
-$TLS_th_status = "×´Ì¬";
-$TLS_th_suite_version = "²âÊÔ¼¯°æ±¾";
-$TLS_th_update = "¸üĞÂ";
-$TLS_title_upd_mod_tc = "¸üĞÂÒÑĞŞ¸ÄµÄ²âÊÔÓÃÀı¡ú²âÊÔ¼Æ»®";
-
-
-
-// gui/templates/reqSpecView.tpl
-$TLS_Author = "×÷Õß";
-$TLS_btn_analyse = "·ÖÎö";
-$TLS_btn_check_all = "È«Ñ¡";
-$TLS_btn_delete_spec = "É¾³ı¹æÔ¼";
-$TLS_btn_edit_spec = "±à¼­¹æÔ¼";
-$TLS_btn_import = "µ¼Èë";
-$TLS_btn_print = "´òÓ¡";
-$TLS_btn_req_create = "´´½¨ĞÂĞèÇó";
-$TLS_btn_spec_list = "¹æÔ¼ÁĞ±í";
-$TLS_checked = "¶ÔÑ¡ÖĞµÄĞèÇó½øĞĞÏÂÁĞ²Ù×÷";
-$TLS_help = "°ïÖú";
-$TLS_last_edit = "×îºó±à¼­ÈË";
-$TLS_popup_sure_delete = "ÄãÈ·¶¨ÒªÉ¾³ıĞèÇó¹æÔ¼Âğ£¿";
-$TLS_req_edit_spec = "±à¼­ĞèÇó¹æÔ¼";
-$TLS_req_msg_norequirement = "Ã»ÓĞĞèÇó";
-$TLS_req_select_create_tc = "´´½¨²âÊÔÓÃÀı";
-$TLS_req_select_delete = "É¾³ıĞèÇó";
-$TLS_req_spec = "ĞèÇó¹æÔ¼";
-$TLS_req_title_list = "ĞèÇóÁĞ±í";
-$TLS_req_total_count = "ĞèÇó×ÜÊı";
-$TLS_scope = "·¶Î§";
-$TLS_req_doc_id = "ÎÄµµ±êÊ¶";
-
-
-// gui/templates/reqCreate.tpl
-$TLS_btn_cancel = "È¡Ïû";
-$TLS_req_create = "´´½¨Ò»¸öĞÂĞèÇó";
-$TLS_reqs = "ĞèÇó";
-// add by wangyy
-$TLS_req_status_valid = "ÓĞĞ§µÄ";
-$TLS_req_status_not_testable = "ÎŞ·¨²âÊÔµÄ";
-
-
-// gui/templates/reqEdit.tpl
-$TLS_btn_delete = "É¾³ı";
-$TLS_popup_delete_req = "ÄãÈ·¶¨ÒªÉ¾³ıÕâ¸öĞèÇóÂğ£¿";
-$TLS_btn_update = "¸üĞÂ";
-$TLS_coverage = "¸²¸ÇÂÊ";
-$TLS_req_edit = "±à¼­ĞèÇó";
-$TLS_req_msg_notestcase = "Ã»ÓĞ¹ØÁªµÄ²âÊÔÓÃÀı";
-
-
-
-// gui/templates/reqSpecEdit.tpl
-$TLS_edit = "±à¼­";
-$TLS_req_total = "ĞèÇó×ÜÊı";
-$TLS_update_data = "¸üĞÂÊı¾İ";
-
-
-
-// gui/templates/reqSpecList.tpl
-$TLS_btn_assign_tc = "Ö¸ÅÉ²âÊÔÓÃÀı";
-$TLS_no_docs = "Ã»ÓĞ¿ÉÓÃµÄÎÄµµ¡£";
-$TLS_req_list_docs = "ÎÄµµÁĞ±í";
-
+$TLS_info_failed_db_upd ="æ›´æ–°æ•°æ®åº“å¤±è´¥ï¼";
+$TLS_info_failed_db_upd_details ="æ›´æ–°æ•°æ®åº“å¤±è´¥ï¼-- è¯¦ç»†ä¿¡æ¯ï¼š";
+$TLS_invalid_query ="æ— æ•ˆçš„æŸ¥è¯¢";
+$TLS_warning = "è­¦å‘Š!!";
+$TLS_was_success =" å·²æˆåŠŸ ";
+
+
+
+// gui/templates/execNavigator.tpl
+$TLS_TestPlan ="æµ‹è¯•è®¡åˆ’";
+$TLS_btn_apply_filter ="åº”ç”¨è¿‡æ»¤å™¨";
+$TLS_btn_update_menu ="æ›´æ–°èœå•";
+$TLS_caption_nav_filter_settings ="å¯¼èˆª - ç­›é€‰ä¸è®¾ç½®";
+$TLS_current_build = "å½“å‰æµ‹è¯•è®¡åˆ’ç‰ˆæœ¬";
+$TLS_filter_owner = "ç­›é€‰ï¼šæŒ‰æŒ‡æ´¾ç»™";
+$TLS_filter_result ="ç­›é€‰: æŒ‰ç»“æœ";
+$TLS_filter_tcID ="ç­›é€‰ï¼šæŒ‰æµ‹è¯•ç”¨ä¾‹æ ‡é¢˜";
+$TLS_keyword ="ç­›é€‰ï¼šæŒ‰å…³é”®å­—";
+$TLS_test_status_all_status ="æ‰€æœ‰";
 
 
 // gui/templates/mainPage.tpl
-$TLS_filter_tp_by_product = "°´²úÆ·É¸Ñ¡²âÊÔ¼Æ»®";
-$TLS_href_add_test_case = "Ôö¼Ó²âÊÔÓÃÀı";
-$TLS_href_assign_risk_own = "ÉèÖÃ·çÏÕºÍËùÓĞÈ¨";
-$TLS_href_browse_tc = "ä¯ÀÀ²âÊÔÓÃÀı";
-$TLS_href_build_new = "¹¹½¨¹ÜÀí";
-$TLS_href_create_product = "´´½¨ĞÂ²úÆ·";
-$TLS_href_edit_product = "±à¼­/É¾³ı²úÆ·";
-$TLS_href_edit_tc = "±à¼­²âÊÔÓÃÀı";
-$TLS_href_execute_test = "Ö´ĞĞ²âÊÔ";
-$TLS_href_import_tc = "µ¼Èë²âÊÔÓÃÀı";
-$TLS_href_keywords_assign = "Ö¸ÅÉ¹Ø¼ü×Ö";
-$TLS_href_keywords_edit = "±à¼­/É¾³ı¹Ø¼ü×Ö";
-$TLS_href_keywords_new = "´´½¨¹Ø¼ü×Ö";
-$TLS_href_keywords_view = "²é¿´¹Ø¼ü×Ö";
-$TLS_href_plan_assign_users = "¶¨ÒåÓÃ»§/²âÊÔ¼Æ»®È¨ÏŞ";
-$TLS_href_plan_edit = "±à¼­/É¾³ı²âÊÔ¼Æ»®";
-$TLS_href_plan_mstones = "±à¼­/É¾³ıÀï³Ì±®";
-$TLS_href_plan_new = "´´½¨²âÊÔ¼Æ»®";
-$TLS_href_print_tc = "´òÓ¡²âÊÔÓÃÀı";
-$TLS_href_print_tc_suite = "´òÓ¡²âÊÔÓÃÀı¼¯";
-$TLS_href_remove_test_case = "ÒÆÈ¥²âÊÔÓÃÀı";
-$TLS_href_rep_and_metrics = "²âÊÔ±¨¸æºÍ¶ÈÁ¿";
-$TLS_href_req_assign = "Ö¸ÅÉĞèÇó";
-$TLS_href_req_spec = "ĞèÇó¹æÔ¼";
-$TLS_href_search_tc = "ËÑË÷²âÊÔÓÃÀı";
-$TLS_href_upd_mod_tc = "¸üĞÂĞŞ¸Ä¹ıµÄ²âÊÔÓÃÀı";
-$TLS_msg_no_rights_for_tp = "- ÎŞĞ§µÄ(ÄãÃ»ÓĞÈ¨ÏŞ·ÃÎÊ²âÊÔ¼Æ»®)";
-$TLS_th_my_perc_completed = "ÒÑÍê³É [%]";
-$TLS_th_perc_completed = "ÒÑÍê³É [%]";
-$TLS_title_requirements = "ĞèÇó";
-$TLS_title_test_execution = "²âÊÔÖ´ĞĞ";
-$TLS_title_test_plan_mgmt = "²âÊÔ¼Æ»®¹ÜÀí";
-$TLS_title_test_spec = "²âÊÔ¹æ·¶";
-$TLS_title_testlink_site_map = "TestLink - ¹¤×÷Ì¨";
-$TLS_title_your_tp_metrics = "ÄãµÄ²âÊÔ¼Æ»®¶ÈÁ¿";
+$TLS_th_my_perc_completed ="å·²å®Œæˆ [%]";
+$TLS_th_name ="åç§°";
+$TLS_th_perc_completed ="å·²å®Œæˆ [%]";
+$TLS_title_your_tp_metrics ="ä½ çš„æµ‹è¯•è®¡åˆ’åº¦é‡";
+
 
 // gui/templates/metrics_dashbord.tpl
-$TLS_th_total_tc="Test Case number";
-$TLS_th_active_tc="Active Test Cases";
-$TLS_th_executed_tc="Executed Test Cases";
-$TLS_th_executed_vs_active="Executed/Active [%]";
-$TLS_th_executed_vs_total="Executed/Total [%]";
+$TLS_th_total_tc="æµ‹è¯•ç”¨ä¾‹æ•°";
+$TLS_th_active_tc="æ´»åŠ¨çš„æµ‹è¯•ç”¨ä¾‹";
+$TLS_th_executed_tc="å·²æ‰§è¡Œçš„æµ‹è¯•ç”¨ä¾‹";
+$TLS_th_executed_vs_active="å·²æ‰§è¡Œ/æ´»åŠ¨çš„ [%]";
+$TLS_th_executed_vs_total="å·²æ‰§è¡Œ/æ€»æ•° [%]";
 
 
-// gui/templates/inc_res_by_comp.tpl
-$TLS_title_res_by_comp = "½á¹û£¨°´×é¼ş£©";
-$TLS_trep_blocked = "Ëø¶¨";
-$TLS_trep_comp = "×é¼ş";
-$TLS_trep_comp_perc = "ÒÑÍê³É [%]";
-$TLS_trep_failed = "Ê§°Ü";
-$TLS_trep_not_run = "ÉĞÎ´Ö´ĞĞ";
-$TLS_trep_passed = "Í¨¹ı";
-$TLS_trep_total = "×ÜÊı";
+// gui/templates/newest_tcversions.tpl
+$TLS_linked_version = "å…³è”çš„ç‰ˆæœ¬";
+$TLS_newest_version = "æœ€æ–°å¯ç”¨çš„æ´»åŠ¨ç‰ˆæœ¬";
+$TLS_title_newest_tcversions = "æœ€æ–°å…³è”çš„æµ‹è¯•ç”¨ä¾‹ç‰ˆæœ¬";
+$TLS_no_newest_version_of_linked_tcversions = "æ‰€æœ‰å…³è”çš„æµ‹è¯•ç”¨ä¾‹ç‰ˆæœ¬éƒ½æ˜¯å½“å‰çš„";
 
-
-
-// gui/templates/inc_res_by_keyw.tpl
-$TLS_title_res_by_kw = "½á¹û£¨°´¹Ø¼ü×Ö£©";
-$TLS_trep_kw = "¹Ø¼ü×Ö";
-
-
-
-// gui/templates/inc_res_by_owner.tpl
-$TLS_title_res_by_owner = "½á¹û£¨°´ÓµÓĞÕß£©";
-$TLS_trep_owner = "ÓµÓĞÕß";
-
-
-
-// gui/templates/inc_res_by_prio.tpl
-$TLS_tit_end_date = "½áÊøÈÕÆÚ";
-$TLS_tit_milestone = "Àï³Ì±®";
-$TLS_title_res_by_prio = "½á¹û£¨°´ÓÅÏÈ¼¶£©";
-$TLS_trep_milestone_goal = "Àï³Ì±®Ä¿±ê [%]";
-$TLS_trep_prio = "ÓÅÏÈ¼¶";
-$TLS_trep_status = "×´Ì¬";
-
-
-
-// gui/templates/inc_res_by_ts.tpl
-$TLS_title_res_by_ts = "½á¹û£¨°´²âÊÔ¼¯£©";
-$TLS_trep_imp = "ÖØÒªĞÔ";
-$TLS_trep_risk = "·çÏÕ";
-$TLS_trep_ts = "²âÊÔ¼¯";
-
-
-
-// gui/templates/reqAssign.tpl
-$TLS_btn_unassign = "È¡ÏûÖ¸ÅÉ";
-$TLS_req = "ĞèÇó";
-$TLS_req_title_assign = "½«ĞèÇóÖ¸ÅÉ¸ø²âÊÔÓÃÀı:";
-$TLS_req_title_assigned = "ÒÑÖ¸ÅÉµÄĞèÇó";
-$TLS_req_title_unassigned = "ÓĞĞ§µÄĞèÇó";
-
-
-
-// gui/templates/reqSpecAnalyse.tpl
-$TLS_req_spec_change = "ÇĞ»»ĞèÇó¹æÔ¼";
-$TLS_req_title_analyse = "·ÖÎöĞèÇó¹æÔ¼";
-$TLS_req_title_covered = "¸²¸ÇµÄĞèÇó";
-$TLS_req_title_nottestable = "ÎŞ·¨²âÊÔµÄĞèÇó";
-$TLS_req_title_uncovered = "Î´¸²¸ÇµÄĞèÇó";
-$TLS_testcases = "²âÊÔÓÃÀı";
-
-
-
-// gui/templates/reqSpecCreate.tpl
-$TLS_create = "´´½¨";
-
-
-
-// gui/templates/navBar.tpl
-$TLS_home = "Ö÷Ò³";
-$TLS_link_logout = "×¢Ïú";
-$TLS_product = "²úÆ·";
-$TLS_title_documentation = "ÓÃ»§ÊÖ²á";
-$TLS_title_execute = "Ö´ĞĞ";
-$TLS_title_results = "½á¹û";
-$TLS_title_specification = "²âÊÔ¹æ·¶";
+// gui/templates/emailSent.tpl
+$TLS_send_test_report ="- å‘é€æµ‹è¯•æŠ¥å‘Š";
 
 
 
 // gui/templates/reqImport.tpl
-$TLS_Result = "½á¹û";
-$TLS_Title = "±êÌâ";
-$TLS_btn_back2srs = "·µ»ØĞèÇó¹æÔ¼";
-$TLS_max_size_cvs_file1 = "ÎÄ¼ş×î´ó²»³¬¹ı";
+$TLS_Result ="ç»“æœ";
+$TLS_Title ="æ ‡é¢˜";
+$TLS_btn_back2srs ="è¿”å›æµ‹è¯•éœ€æ±‚";
+$TLS_btn_import ="å¯¼å…¥";
+$TLS_btn_upload_file ="ä¸Šä¼ æ–‡ä»¶";
+$TLS_check_req_file_structure ="è¯·æ£€æŸ¥æ–‡ä»¶æ ¼å¼ï¼Œçœ‹èµ·æ¥æ˜¯ä¸å¯èƒ½æå–ä»»ä½•éœ€æ±‚";
+$TLS_local_file ="æ–‡ä»¶:";
+$TLS_max_size_cvs_file1 ="æ–‡ä»¶æœ€å¤§ä¸è¶…è¿‡";
 $TLS_max_size_cvs_file2 = "kB";
-$TLS_req_import_check_note = "ÇëÑéÖ¤¿ÉÄÜ´æÔÚµÄ³åÍ»£¬Ñ¡ÔñºÏÊÊµÄ½â¾ö·½°¸£¬È»ºóÔÙ¿ªÊ¼Ö´ĞĞµ¼Èë²Ù×÷¡£";
-$TLS_req_import_dont_empty = "²»Òªµ¼Èë¿ÕµÄÏîÄ¿";
-$TLS_req_import_format_description1 = " - CSV ¸ñÊ½Ã¿ĞĞĞèÒªÁ½¸ö×Ö¶Î£º'title','description'";
-$TLS_req_import_format_description2 = " - CSV ´ÓDOORS µ¼³öĞèÒª±êÌâĞĞ¡£";
-$TLS_req_import_option_double = "Ôö¼ÓÒ»¸öÏàÍ¬±êÌâµÄĞèÇó";
-$TLS_req_import_option_header = "Ö¸¶¨³åÍ»µÄ½â¾ö·½°¸";
-$TLS_req_import_option_overwrite = "¸üĞÂÒÑÓĞµÄĞèÇó";
-$TLS_req_import_option_skip = "Ìø¹ıµ¼ÈëÖØ¸´µÄĞèÇó¡£";
-$TLS_req_import_type = "ÀàĞÍ£º";
-$TLS_title_choose_file_type = "Ñ¡ÔñÎÄ¼şÀàĞÍ";
-$TLS_title_req_import_check_input = "¼ì²âµ¼ÈëÊı¾İ";
-$TLS_title_req_import_to = "ÏòÎÄµµÖĞµ¼ÈëĞèÇó";
+$TLS_req_import_check_note ="è¯·éªŒè¯å¯èƒ½å­˜åœ¨çš„å†²çªï¼Œé€‰æ‹©åˆé€‚çš„è§£å†³æ–¹æ¡ˆï¼Œç„¶åå†å¼€å§‹æ‰§è¡Œå¯¼å…¥æ“ä½œã€‚";
+$TLS_req_import_dont_empty ="ä¸è¦å¯¼å…¥ç©ºçš„é¡¹ç›®";
+$TLS_req_import_option_double ="å¢åŠ ä¸€ä¸ªç›¸åŒæ ‡é¢˜çš„éœ€æ±‚";
+$TLS_req_import_option_header ="æŒ‡å®šå†²çªçš„è§£å†³æ–¹æ¡ˆ";
+$TLS_req_import_option_overwrite ="æ›´æ–°å·²æœ‰çš„éœ€æ±‚";
+$TLS_req_import_option_skip ="è·³è¿‡å¯¼å…¥é‡å¤çš„éœ€æ±‚ã€‚";
+$TLS_req_import_type ="ç±»å‹ï¼š";
+$TLS_req_msg_norequirement ="æ²¡æœ‰éœ€æ±‚";
+$TLS_required_cvs_format ="æ–‡ä»¶æ ¼å¼ï¼š";
+$TLS_title_choose_file_type ="é€‰æ‹©æ–‡ä»¶ç±»å‹";
+$TLS_title_choose_local_file ="é€‰æ‹©è¦ä¸Šä¼ çš„æœ¬åœ°æ–‡ä»¶";
+$TLS_title_req_import ="å¯¼å…¥éœ€æ±‚";
+$TLS_title_req_import_check_input ="æ£€æµ‹å¯¼å…¥æ•°æ®";
+
+
+
+// gui/templates/inc_attachments.tpl
+$TLS_alt_delete_build ="ç‚¹å‡»è¿™é‡Œåˆ é™¤è¿™ä¸ªæµ‹è¯•è®¡åˆ’ç‰ˆæœ¬";
+$TLS_alt_delete_attachment = "ç‚¹å‡»è¿™é‡Œåˆ è¿™ä¸ªé™„ä»¶";
+$TLS_attached_files = "é™„ä»¶";
+$TLS_attachment_feature_disabled ="é™„ä»¶æ— æ•ˆ";
+$TLS_button_upload ="ä¸Šä¼ ";
+$TLS_upload_file_new_file ="æ–°æ–‡ä»¶ä¸Šä¼ ";
+$TLS_warning_delete_attachment ="çœŸçš„è¦åˆ é™¤è¿™ä¸ªé™„ä»¶å—?";
+
+
+
+// gui/templates/resultsNavigator.tpl
+$TLS_btn_print ="æ‰“å°";
+$TLS_note_email_sent_t ="æé†’: ç”µå­é‚®ä»¶æ ¼å¼é€åˆ°äº†ä½¿ç”¨è€…çš„ç”µå­é‚®ä»¶";
+$TLS_send_results ="å‘é€ç»“æœ";
+$TLS_send_to ="åˆ°:";
+$TLS_subject ="ä¸»é¢˜:";
+$TLS_title_active_build ="æ´»åŠ¨çš„æµ‹è¯•è®¡åˆ’ç‰ˆæœ¬";
+$TLS_title_report_type ="æŠ¥è¡¨æ ¼å¼";
+$TLS_via_email ="åˆ°ç”µå­é‚®ä»¶";
+$TLS_link_results_import = "å¯¼å…¥ç»“æœ";
+
+
+// gui/templates/inc_attachments_upload.tpl
+
+
+
+// gui/templates/cfields_view.tpl
+$TLS_btn_cfields_create ="åˆ›å»º";
+$TLS_manage_cfield ="ç®¡ç†è‡ªå®šä¹‰å­—æ®µ";
 
 
 
 // gui/templates/inc_cat_viewer_ro_m0.tpl
-$TLS_cat_scope = "·¶Î§ºÍÄ¿±ê";
-$TLS_configuration = "ÅäÖÃ";
-$TLS_data = "Êı¾İ";
-$TLS_not_defined = "Î´¶¨ÒåµÄ";
-$TLS_tools = "¹¤¾ß";
+$TLS_cat_scope ="èŒƒå›´å’Œç›®æ ‡";
+$TLS_category ="åˆ†ç±»";
+$TLS_configuration ="é…ç½®";
+$TLS_data ="æ•°æ®";
+$TLS_not_defined ="æœªå®šä¹‰çš„";
+$TLS_tools ="å·¥å…·";
 
 
 
 // gui/templates/inc_cat_viewer_rw.tpl
-$TLS_cat_alt_name = "Ôö¼Ó·ÖÀàÃû³Æ¡£ÕâÊÇ±ØÌîÏî";
-$TLS_cat_config = "ÅäÖÃ";
-$TLS_cat_data = "Êı¾İ";
-$TLS_cat_name = "·ÖÀàÃû³Æ";
-$TLS_cat_tools = "¹¤¾ß";
+$TLS_cat_alt_name ="å¢åŠ åˆ†ç±»åç§°ã€‚è¿™æ˜¯å¿…å¡«é¡¹";
+$TLS_cat_config ="é…ç½®";
+$TLS_cat_data ="æ•°æ®";
+$TLS_cat_name ="åˆ†ç±»åç§°";
+$TLS_cat_tools ="å·¥å…·";
+
+
+
+// gui/templates/reqEdit.tpl
+$TLS_btn_update ="æ›´æ–°";
+$TLS_by ="æºè‡ª:";
+$TLS_coverage ="è¦†ç›–ç‡";
+$TLS_popup_delete_req ="ä½ ç¡®å®šè¦åˆ é™¤è¿™ä¸ªéœ€æ±‚å—ï¼Ÿ";
+$TLS_req_edit ="ç¼–è¾‘éœ€æ±‚";
+$TLS_req_msg_notestcase ="æ²¡æœ‰å…³è”çš„æµ‹è¯•ç”¨ä¾‹";
+$TLS_requirement_spec ="éœ€æ±‚è§„æ ¼è¯´æ˜ä¹¦";
+$TLS_test_case_id ="æ ‡è¯†";
+$TLS_title_created ="åˆ›å»ºæ—¥æœŸ:";
+$TLS_title_last_mod ="æœ€åä¿®æ”¹æ—¥æœŸ:";
+
+
+
+// gui/templates/buildNew.tpl
+$TLS_active ="å½“å‰";
+$TLS_enter_build = "æ ‡é¢˜";
+$TLS_enter_build_notes ="ç‰ˆæœ¬è¯´æ˜ï¼š";
+$TLS_msg_build = "æ³¨æ„: æ¯ä¸ªç‰ˆæœ¬å°†ä¸ä¸€ä¸ªæ´»åŠ¨çš„æµ‹è¯•è®¡åˆ’ç›¸å…³è”ã€‚ç‰ˆæœ¬è¯´æ˜åŒ…æ‹¬ï¼šäº¤ä»˜çš„è½¯ä»¶åŒ…åˆ—è¡¨ï¼Œæ‰¹å‡†æ–‡ä»¶ï¼ŒçŠ¶æ€ç­‰ " .
+
+$TLS_open ="æ‰“å¼€";
+$TLS_title_build_2 = "æµ‹è¯•è®¡åˆ’ç‰ˆæœ¬ç®¡ç†";
+$TLS_title_build_create ="åˆ›å»ºæ–°æµ‹è¯•è®¡åˆ’ç‰ˆæœ¬";
+$TLS_title_build_update ="æ›´æ–°æµ‹è¯•è®¡åˆ’ç‰ˆæœ¬";
+$TLS_warning_empty_build_name = "è¯·è¾“å…¥æ–°çš„æµ‹è¯•è®¡åˆ’ç‰ˆæœ¬åç§°!";
 
 
 
 // gui/templates/inc_comp_viewer_ro.tpl
-$TLS_introduction = "½éÉÜ";
-$TLS_limitations = "ÏŞÖÆ";
-$TLS_methodology = "·½·¨ÂÛ";
-$TLS_references = "²Î¿¼";
+$TLS_component ="åˆ†ç±»";
+$TLS_introduction ="ä»‹ç»";
+$TLS_limitations ="é™åˆ¶";
+$TLS_methodology ="æ–¹æ³•è®º";
+$TLS_references ="å‚è€ƒ";
 
 
 
 // gui/templates/inc_comp_viewer_rw.tpl
-$TLS_comp_alt_name = "Ìí¼Ó×é¼şÃû³Æ¡£ÕâÊÇ±ØÌîÏî";
-$TLS_comp_intro = "½éÉÜ";
-$TLS_comp_lim = "ÏŞÖÆ";
-$TLS_comp_method = "·½·¨ÂÛ";
-$TLS_comp_name = "×é¼şÃû³Æ";
-$TLS_comp_ref = "²Î¿¼";
-$TLS_comp_scope = "·¶Î§";
+$TLS_comp_alt_name ="æ·»åŠ åˆ†ç±»åç§°ã€‚è¿™æ˜¯å¿…å¡«é¡¹";
+$TLS_comp_intro ="ä»‹ç»";
+$TLS_comp_lim ="é™åˆ¶";
+$TLS_comp_method ="æ–¹æ³•è®º";
+$TLS_comp_name ="åˆ†ç±»åç§°";
+$TLS_comp_ref ="å‚è€ƒ";
+$TLS_comp_scope ="èŒƒå›´";
 
 
+
+// gui/templates/reqSpecView.tpl
+$TLS_btn_analyse ="åˆ†æ";
+$TLS_btn_check_all ="å…¨é€‰";
+$TLS_btn_delete_spec ="åˆ é™¤è§„çº¦";
+$TLS_btn_edit_spec ="ç¼–è¾‘è§„çº¦";
+$TLS_btn_export_reqs ="å¯¼å‡ºéœ€æ±‚";
+$TLS_btn_req_create ="åˆ›å»ºæ–°çš„æµ‹è¯•éœ€æ±‚";
+$TLS_btn_spec_list ="æ–‡æ¡£åˆ—è¡¨";
+$TLS_btn_uncheck_all ="å…¨éƒ½ä¸é€‰";
+$TLS_cant_delete_req_nothing_sel ="è¯·é€‰æ‹©ä¸€ä¸ªéœ€æ±‚!";
+$TLS_popup_sure_delete ="ä½ ç¡®å®šè¦åˆ é™¤éœ€æ±‚æ–‡æ¡£å—ï¼Ÿ";
+$TLS_req_select_create_tc ="åˆ›å»ºæµ‹è¯•ç”¨ä¾‹";
+$TLS_req_select_delete ="åˆ é™¤éœ€æ±‚";
+$TLS_req_title_list ="éœ€æ±‚åˆ—è¡¨";
+$TLS_req_total ="éœ€æ±‚æ€»æ•°";
+$TLS_req_reorder = "Reorder requirements";
+$TLS_warning_delete_requirements ="ä½ ç¡®å®šè¦åˆ é™¤é€‰ä¸­çš„éœ€æ±‚å—?";
+$TLS_title_change_req_order = "å˜æ›´éœ€æ±‚é¡ºåº";
+
+
+// gui/templates/inc_copyrightnotice.tpl
+$TLS_gnu_gpl ="GNU  General Public License";
+$TLS_lic_home = "é¦–é¡µ";
+$TLS_lic_product ="äº§å“";
+$TLS_licensed_under ="TestLinkè®¸å¯åè®®";
+
+
+
+// gui/templates/containerEdit.tpl
+$TLS_btn_update_testsuite ="æ›´æ–°åˆ†ç±»";
+$TLS_title_edit_level ="ç¼–è¾‘";
+
+
+
+// gui/templates/reqSpecAnalyse.tpl
+$TLS_edit ="ç¼–è¾‘";
+$TLS_none ="æ— ";
+$TLS_req ="éœ€æ±‚";
+$TLS_req_spec_change ="åˆ‡æ¢éœ€æ±‚æ–‡æ¡£";
+$TLS_req_title_analyse ="åˆ†æéœ€æ±‚æ–‡æ¡£";
+$TLS_req_title_covered ="è¦†ç›–çš„éœ€æ±‚";
+$TLS_req_title_in_tl = "å¯ä»¥ç”¨TestLinkç®¡ç†çš„éœ€æ±‚";
+$TLS_req_title_nottestable ="æ— æ³•æµ‹è¯•çš„éœ€æ±‚";
+$TLS_req_title_uncovered ="æœªè¦†ç›–çš„éœ€æ±‚";
+$TLS_req_title_not_in_tl = "ä¸åœ¨Testlinkç®¡ç†çš„éœ€æ±‚";
+$TLS_req_total_count ="éœ€æ±‚æ€»æ•°";
+$TLS_testcases ="æµ‹è¯•ç”¨ä¾‹";
+
+
+
+// gui/templates/reqSpecCreate.tpl
+$TLS_action_create_srs ="åˆ›å»ºæµ‹è¯•éœ€æ±‚è§„æ ¼è¯´æ˜ä¹¦";
+$TLS_testproject ="äº§å“";
+
+
+
+// gui/templates/inc_reqView.tpl
+$TLS_Author ="ä½œè€…";
+$TLS_last_edit ="æœ€åç¼–è¾‘äºº";
+
+
+
+// gui/templates/inc_res_by_comp.tpl
+$TLS_title_res_by_top_level_suites ="æŒ‰é¡¶å±‚åˆ†ç±»çš„ç»Ÿè®¡ç»“æœï¼š";
+$TLS_trep_blocked ="é”å®š";
+$TLS_trep_comp ="åˆ†ç±»";
+$TLS_trep_comp_perc ="å·²å®Œæˆ [%]";
+$TLS_trep_failed = $TLS_test_status_failed;
+$TLS_trep_not_run = $TLS_test_status_not_run;
+$TLS_trep_passed = $TLS_test_status_passed;
+$TLS_trep_total ="æ€»æ•°";
+
+
+
+// gui/templates/inc_res_by_keyw.tpl
+$TLS_title_res_by_kw ="æŒ‰å…³é”®å­—çš„ç»Ÿè®¡ç»“æœï¼š";
+$TLS_trep_kw ="å…³é”®å­—";
+
+
+
+// gui/templates/inc_res_by_owner.tpl
+$TLS_title_res_by_owner ="æŒ‰æµ‹è¯•å‘˜çš„ç»Ÿè®¡ç»“æœï¼š";
+$TLS_trep_owner ="æµ‹è¯•å‘˜";
+$TLS_title_res_by_tester = "æŒ‰æµ‹è¯•å‘˜çš„ç»Ÿè®¡ç»“æœ";
+$TLS_trep_tester = "æµ‹è¯•å‘˜";
+
+
+
+// gui/templates/inc_res_by_prio.tpl
+$TLS_tit_end_date ="ç»“æŸæ—¥æœŸ";
+$TLS_tit_milestone ="é‡Œç¨‹ç¢‘";
+$TLS_title_res_by_prio ="ç»“æœï¼ˆæŒ‰ä¼˜å…ˆçº§ï¼‰";
+$TLS_trep_milestone_goal ="é‡Œç¨‹ç¢‘ç›®æ ‡ [%]";
+$TLS_trep_prio ="ä¼˜å…ˆçº§";
+$TLS_trep_status ="çŠ¶æ€";
+
+
+
+// gui/templates/inc_res_by_ts.tpl
+$TLS_title_res_by_ts ="ç»“æœï¼ˆæŒ‰æµ‹è¯•é›†ï¼‰";
+$TLS_trep_imp ="é‡è¦æ€§";
+$TLS_trep_risk ="é£é™©";
+$TLS_trep_ts ="åˆ†ç±»";
+
+
+
+// gui/templates/reqSpecEdit.tpl
+
+
+
+// gui/templates/inc_show_bug_table.tpl
+$TLS_build ="æµ‹è¯•è®¡åˆ’ç‰ˆæœ¬åç§°";
+$TLS_caption_bugtable = "ç›¸å…³çš„Bug";
+$TLS_delete_bug="delete bug";
+$TLS_del_bug_warning_msg = "çœŸçš„è¦åˆ é™¤è¿™ä¸ªbugå—?";
+
+
+
+// gui/templates/reqSpecList.tpl
+$TLS_btn_assign_tc ="å…³è”æµ‹è¯•éœ€æ±‚ä¸æµ‹è¯•ç”¨ä¾‹";
+$TLS_no_docs ="æ²¡æœ‰å¯ç”¨çš„æ–‡æ¡£ã€‚";
+$TLS_req_list_docs ="æµ‹è¯•éœ€æ±‚è§„æ ¼è¯´æ˜ä¹¦åˆ—è¡¨";
+
+
+
+// gui/templates/tcEdit_New_viewer.tpl
+$TLS_alt_add_tc_name ="è¾“å…¥æµ‹è¯•ç”¨ä¾‹åç§°ã€‚è¿™æ˜¯å¿…å¡«é¡¹ã€‚";
+$TLS_expected_results ="æœŸæœ›çš„ç»“æœ";
+$TLS_steps ="æ­¥éª¤";
+$TLS_summary ="æ‘˜è¦";
+$TLS_tc_title ="æµ‹è¯•ç”¨ä¾‹æ ‡é¢˜";
+
+
+
+// gui/templates/show_exec_notes.tpl
+$TLS_title_execution_notes ="æ‰§è¡Œå¤‡æ³¨";
+
+
+
+// gui/templates/rolesedit.tpl
+$TLS_btn_create_role ="åˆ›å»º";
+$TLS_btn_edit_role = "ä¿å­˜";
+$TLS_caption_define_role ="å®šä¹‰è§’è‰²";
+$TLS_caption_possible_affected_users ="å¯èƒ½å¯¹ä½¿ç”¨è€…çš„å½±å“";
+$TLS_enter_role_notes ="è§’è‰²æè¿°";
+$TLS_menu_assign_product_roles ="äº§å“æƒé™æŒ‡æ´¾";
+$TLS_menu_assign_testplan_roles ="æµ‹è¯•è®¡åˆ’æƒé™æŒ‡æ´¾";
+$TLS_menu_define_roles ="å®šä¹‰è§’è‰²";
+$TLS_menu_mod_user ="ä¿®æ”¹ç”¨æˆ·";
+$TLS_menu_new_user ="æ–°å¢ç”¨æˆ·";
+$TLS_menu_edit_user = "ç¼–è¾‘ç”¨æˆ·";
+$TLS_menu_view_users ="ç”¨æˆ·çª—å£";
+$TLS_menu_view_roles ="è§’è‰²çª—å£";
+$TLS_th_cf_rights ="è‡ªå®šä¹‰å­—æ®µæƒé™";
+$TLS_th_kw_rights ="å…³é”®å­—æƒé™";
+$TLS_th_mgttc_rights ="æµ‹è¯•ç”¨ä¾‹ç®¡ç†æƒé™";
+$TLS_th_product_rights ="äº§å“æƒé™";
+$TLS_th_req_rights ="éœ€æ±‚æƒé™";
+$TLS_th_rights ="æƒé™";
+$TLS_th_rolename ="è§’è‰²åç§°";
+$TLS_th_tp_rights ="æµ‹è¯•è®¡åˆ’æƒé™";
+$TLS_th_user_rights ="ç”¨æˆ·æƒé™";
+$TLS_title_user_mgmt ="ç”¨æˆ·ç®¡ç†";
+$TLS_warning_empty_role_name="è¯·è¾“å…¥è§’è‰²çš„åç§°";
+$TLS_warning_modify_role ="çœŸçš„è¦ä¿®æ”¹è§’è‰²å—?";
+
+
+
+// gui/templates/tcSearchForm.tpl
+$TLS_btn_find ="æŸ¥æ‰¾";
+$TLS_caption_search_form ="æœç´¢æµ‹è¯•ç”¨ä¾‹";
+$TLS_custom_field_value ="è‡ªå®šä¹‰å­—æ®µå€¼";
+$TLS_not_applied ="ä¸æŒ‡å®š";
+$TLS_th_tcid ="æµ‹è¯•ç”¨ä¾‹æ ‡è¯†";
+$TLS_th_tcversion ="ç‰ˆæœ¬";
+$TLS_th_title ="æ ‡é¢˜";
+$TLS_title_search_tcs ="æœç´¢";
+
+
+
+// gui/templates/infoWindow.tpl
+
+
+
+// gui/templates/tcDelete.tpl
+$TLS_btn_yes_iw2del ="æ˜¯, åˆ é™¤æµ‹è¯•ç”¨ä¾‹!";
+$TLS_question_del_tc ="çœŸçš„è¦åˆ é™¤æµ‹è¯•ç”¨ä¾‹å—?";
+$TLS_th_executed ="æ‰§è¡Œ";
+$TLS_th_linked_to_tplan ="è¿æ¥æµ‹è¯•è®¡åˆ’";
+$TLS_th_version ="ç‰ˆæœ¬";
+
+
+
+// gui/templates/tcNew.tpl
+$TLS_title_new_tc ="åˆ›å»ºæµ‹è¯•ç”¨ä¾‹";
+$TLS_warning_empty_tc_title ="è¯·ä¸ºæµ‹è¯•ç”¨ä¾‹æŒ‡å®šæ ‡é¢˜";
+
+
+
+// gui/templates/tcImport.tpl
+$TLS_title_imp_tc_data ="å¯¼å…¥æµ‹è¯•è®¡åˆ’æ•°æ®";
+
+
+
+// gui/templates/keywordsimport.tpl
+$TLS_title_keyword_import_to ="å¯¼å…¥å…³é”®å­—åˆ°";
+$TLS_title_keyword_import = "å¯¼å…¥å…³é”®å­—";
+
+
+
+// gui/templates/keywordsexport.tpl
+$TLS_btn_export ="å¯¼å‡º";
+$TLS_title_req_import_to ="å‘æ–‡æ¡£ä¸­å¯¼å…¥éœ€æ±‚";
+
+
+
+// gui/templates/cfields_tproject_assign.tpl
+$TLS_btn_assign ="æŒ‡æ´¾";
+$TLS_btn_cfields_active_mgmt ="æ›´æ–°ç°å½¹çŠ¶æ€";
+$TLS_btn_cfields_display_order ="å­˜å‚¨æ˜¾ç¤ºå‘½ä»¤";
+$TLS_btn_unassign ="å–æ¶ˆæŒ‡æ´¾";
+$TLS_cfields_active ="å½“å‰";
+$TLS_cfields_tproject_assign ="æŒ‡å®šè‡ªå®šä¹‰èŒƒå›´";
+$TLS_display_order ="æ˜¾ç¤ºå‘½ä»¤";
+$TLS_title_assigned_cfields ="åˆ†é…è‡ªå®šä¹‰å­—æ®µ";
+$TLS_title_available_cfields ="å¯ç”¨åˆ°çš„è‡ªå®šä¹‰å­—æ®µ";
+
+
+
+// gui/templates/usersview.tpl
+$TLS_No ="å¦";
+$TLS_Yes ="æ˜¯";
+$TLS_alt_delete_user ="çœŸçš„è¦åˆ é™¤æ‰€é€‰æ‹©çš„ç”¨æˆ·å—?";
+$TLS_alt_edit_user ="ç¼–è¾‘ç”¨æˆ·";
+$TLS_order_by_login ="æ ¹æ®ç™»å…¥å‘½ä»¤";
+$TLS_order_by_role_descr ="æ ¹æ®è§’è‰²æè¿°å‘½ä»¤";
+$TLS_th_active ="æ´»åŠ¨çš„";
+$TLS_th_delete ="æ˜¯å¦åˆ é™¤ï¼Ÿ";
+$TLS_th_email ="ç”µå­é‚®ä»¶";
+$TLS_th_first_name ="åå­—";
+$TLS_th_last_name ="å§“";
+$TLS_th_locale ="è¯­è¨€";
+$TLS_th_login ="å¸å·";
+$TLS_th_role ="è§’è‰²";
+$TLS_warning_delete_user ="çœŸçš„è¦åˆ é™¤æ‰€é€‰æ‹©çš„ç”¨æˆ·å—?";
+
+
+
+// gui/templates/login.tpl
+$TLS_btn_login ="ç™»é™†";
+$TLS_login_name = "ç”¨æˆ·å";
+$TLS_lost_password_q ="å¿˜è®°å¯†ç ï¼Ÿ";
+$TLS_new_user_q ="æ³¨å†Œæ–°ç”¨æˆ·";
+$TLS_password = "å¯†ç ";
+
+
+
+// gui/templates/loginFirst.tpl
+$TLS_btn_add_user_data ="æ·»åŠ ç”¨æˆ·ä¿¡æ¯";
+$TLS_e_mail ="ç”µå­é‚®ä»¶åœ°å€ï¼ˆç”¨æ¥å‘é€å¿˜è®°äº†çš„å¯†ç ç­‰ï¼‰ï¼š";
+$TLS_first_name ="åå­—ï¼š";
+$TLS_last_name ="å§“ï¼š";
+$TLS_link_back_to_login ="è¿”å›ç™»é™†";
+$TLS_password_again ="å†æ¬¡è¾“å…¥å¯†ç ï¼š";
+$TLS_password_mgmt_is_external ="å¯†ç ç®¡ç†æ˜¯å¤–éƒ¨çš„";
+
+
+
+// gui/templates/tcMove.tpl
+$TLS_btn_mv ="ç§»åŠ¨";
+$TLS_choose_container ="é€‰æ‹©åˆ†ç±»";
+$TLS_inst_copy = "å¤åˆ¶æµ‹è¯•ç”¨ä¾‹åˆ°ä»»æ„åˆ†ç±»";
+$TLS_inst_move ="å°†è¿™ä¸ªæµ‹è¯•ç”¨ä¾‹ç§»åŠ¨åˆ°å¦ä¸€ä¸ªåˆ†ç±»ä¸‹ï¼ˆåŒä¸€åˆ†ç±»å†…ï¼‰";
+$TLS_inst_copy_move_warning="é‡è¦ï¼š ä½ åªèƒ½é€‰æ‹©åˆ†ç±»çš„å±æ€§åˆ°è¿™ä¸ªäº§å“ã€‚";
+$TLS_title_mv_cp_tc ="ç§»åŠ¨/å¤åˆ¶æµ‹è¯•ç”¨ä¾‹";
+
+
+
+// gui/templates/loginLost.tpl
+$TLS_btn_send ="å‘é€";
+$TLS_password_reset ="å¯†ç é‡ç½®";
+
+
+
+// gui/templates/tcView.tpl
+$TLS_no_records_found ="æ²¡æœ‰æŸ¥è¯¢åˆ°ä»»ä½•ç»“æœ";
+
+
+
+// gui/templates/execSetResults.tpl
+$TLS_alt_attachment_mgmt ="é™„ä»¶";
+$TLS_alt_notes ="æ³¨é‡Š";
+$TLS_assigned_to = "Assigned to";
+$TLS_attachment_mgmt ="é™„ä»¶";
+$TLS_btn_history_off ="æ˜¾ç¤ºæœ€è¿‘ä¸€æ¬¡æ‰§è¡Œæƒ…å†µ";
+$TLS_btn_history_on ="æ˜¾ç¤ºå…¨éƒ¨çš„æ‰§è¡Œæƒ…å†µ";
+$TLS_btn_save_all_tests_results ="å­˜å‚¨æ‰€æœ‰çš„æ‰§è¡Œ";
+$TLS_btn_save_tc_exec_results ="ä¿å­˜ç»“æœ";
+$TLS_bug_mgmt ="BUG ç®¡ç†";
+$TLS_build_is_closed ="æµ‹è¯•è®¡åˆ’ç‰ˆæœ¬å·²ç»å…³é—­";
+$TLS_builds_notes ="æè¿°";
+$TLS_bulk_tc_status_management ="æ‰¹é‡è®¾ç½®æµ‹è¯•ç”¨ä¾‹çŠ¶æ€";
+$TLS_date_time_run ="æ—¥æœŸ";
+$TLS_details ="è¯¦ç»†èµ„æ–™";
+$TLS_exec_notes ="æ³¨æ„";
+$TLS_exec_status ="çŠ¶æ€";
+$TLS_execution_history ="æ‰§è¡Œæƒ…å†µ";
+$TLS_has_no_assignment = "æ³¨æ„ï¼šæ­¤ç”¨ä¾‹æœªæŒ‡æ´¾æµ‹è¯•å‘˜æ‰§è¡Œæµ‹è¯•ï¼";
+$TLS_img_title_bug_mgmt ="Bug ç®¡ç†";
+$TLS_img_title_delete_execution="åˆ é™¤æ‰§è¡Œ";
+$TLS_just_last_execution_for_this_build ="å½“å‰æµ‹è¯•è®¡åˆ’ç‰ˆæœ¬çš„æœ€åæ‰§è¡Œæƒ…å†µï¼š";
+$TLS_no_data_available ="æ²¡æœ‰æ•°æ®å¯ç”¨";
+$TLS_only_test_cases_assigned_to="ä»…åˆ—å‡ºè¢«æŒ‡æ´¾åˆ°";
+$TLS_set_all_tc_to ="è®¾å®šæ‰€æœ‰ç”¨ä¾‹ä¸ºçŠ¶æ€ï¼š";
+$TLS_show_hide ="æ˜¾ç¤º/éšè—";
+$TLS_tc_not_tested_yet ="å°šæœªæµ‹è¯•çš„";
+$TLS_test_cases_cannot_be_executed ="æµ‹è¯•å®ä¾‹ä¸èƒ½è¿è¡Œ";
+$TLS_testcase_version_is_inactive_on_exec="æ­¤ç‰ˆæœ¬è¢«ç¦ç”¨ => æ— æ³•æ‰§è¡Œ";
+$TLS_test_exec_by ="æ‰§è¡Œäººï¼š";
+$TLS_test_exec_expected_r ="æœŸæœ›çš„ç»“æœ";
+$TLS_test_exec_last_run_date ="æœ€è¿‘çš„æ‰§è¡Œï¼š";
+$TLS_test_exec_notes ="è¯´æ˜/æè¿°";
+$TLS_test_exec_on_build ="â†’æµ‹è¯•è®¡åˆ’ç‰ˆæœ¬";
+$TLS_test_exec_result ="ç»“æœ";
+$TLS_test_exec_steps ="æ­¥éª¤";
+$TLS_test_exec_summary ="æ‘˜è¦";
+$TLS_test_plan_notes ="æµ‹è¯•è®¡åˆ’æ³¨é‡Š";
+$TLS_th_test_case_id ="æ ‡è¯†";
+$TLS_th_testsuite = $TLS_test_suite;
+$TLS_title_t_r_on_build ="æµ‹è¯•ç»“æœâ†’æµ‹è¯•è®¡åˆ’ç‰ˆæœ¬";
+$TLS_title_t_r_owner = " æŒ‡æ´¾ç»™";
+$TLS_title_test_case ="æµ‹è¯•ç”¨ä¾‹";
+$TLS_version ="ç‰ˆæœ¬";
+
+
+
+// gui/templates/inc_testsuite_viewer_ro.tpl
+$TLS_keywords ="å…³é”®å­—";
+
+
+
+// gui/templates/navBar.tpl
+$TLS_home = "é¦–é¡µ";
+$TLS_link_logout ="æ³¨é”€";
+$TLS_product ="äº§å“";
+$TLS_product_role ="é¡¹ç›®æƒé™";
+$TLS_search_testcase = "Search";
+$TLS_title_edit_personal_data ="ä¸ªäººå¸å·";
+$TLS_title_execute ="æ‰§è¡Œæµ‹è¯•ç”¨ä¾‹";
+$TLS_title_results ="æµ‹è¯•ç»“æœ";
+$TLS_title_specification ="æµ‹è¯•ç”¨ä¾‹ç®¡ç†";
+
+
+
+// gui/templates/inc_testsuite_viewer_rw.tpl
+
+
+
+// gui/templates/planAddTC_m1.tpl
+$TLS_add_tc = "Add";
+$TLS_add_remove_selected_tc_hint ="æ“ä½œå°†ä¼šè¢«é€‚ç”¨äºæ‰€æœ‰çš„æµ‹è¯•ç»„";
+$TLS_btn_add_remove_selected_tc ="å¢åŠ  / ç§»é™¤ é€‰æ‹©";
+$TLS_btn_add_selected_tc ="å¢åŠ é€‰æ‹©çš„æµ‹è¯•ç”¨ä¾‹";
+$TLS_btn_check ="å…¨é€‰";
+$TLS_btn_uncheck ="å…¨éƒ½ä¸é€‰";
+$TLS_check_uncheck_tc = "åˆ†ç±»ä¸­çš„æ‰€æœ‰æµ‹è¯•ç”¨ä¾‹";
+$TLS_check_uncheck_all_checkboxes="check/uncheck all";
+$TLS_has_been_executed ="å·²ç»è¢«è¿è¡Œ";
+$TLS_inactive_testcase ="æ— æ•ˆ";
+$TLS_no_testcase_available ="æ— æµ‹è¯•å®ä¾‹å¯ç”¨";
+$TLS_note_keyword_filter ="ç”¨å…³é”®å­—è¿›è¡Œç­›é€‰çš„æµ‹è¯•ç”¨ä¾‹";
+$TLS_remove_tc ="ç§»é™¤";
+$TLS_th_test_case ="æµ‹è¯•ç”¨ä¾‹";
+$TLS_title_add_remove_test_to_plan ="å¢åŠ /ç§»é™¤ æµ‹è¯•å®ä¾‹åˆ°æµ‹è¯•è®¡åˆ’";
+$TLS_title_add_test_to_plan ="å°†æµ‹è¯•ç”¨ä¾‹æ·»åŠ åˆ°æµ‹è¯•è®¡åˆ’";
+$TLS_warning_add_remove_selected_tc ="è­¦å‘Š! ä½ çœŸçš„è¦ç§»é™¤æµ‹è¯•è®¡åˆ’ä¸­çš„æµ‹è¯•å®ä¾‹å—?";
+
+
+
+// gui/templates/planAddTCNavigator.tpl
+$TLS_title_navigator ="å¯¼èˆª";
+
+
+
+// gui/templates/planPriority.tpl
+$TLS_btn_upd_prio ="æ›´æ–°";
+$TLS_title_priority ="ä¸ºè¿™ä¸ªæµ‹è¯•è®¡åˆ’å®šä¹‰ä¼˜å…ˆçº§è§„åˆ™";
+$TLS_tr_th_importance ="é‡è¦æ€§";
+$TLS_tr_th_prio_cba ="ä¼˜å…ˆçº§ (C/B/A)";
+$TLS_tr_th_risk ="é£é™©/é‡è¦æ€§";
+
+
+
+// gui/templates/planEdit.tpl
+$TLS_btn_testplan_create ="åˆ›å»º";
+$TLS_cancel ="å–æ¶ˆ";
+$TLS_opt_no ="å¦";
+$TLS_testplan_question_create_tp_from ="åœ¨å·²æœ‰çš„æµ‹è¯•è®¡åˆ’åˆ›å»º?";
+$TLS_testplan_th_active ="ä½¿ç”¨ä¸­";
+$TLS_testplan_th_name ="åç§°";
+$TLS_testplan_th_notes ="æè¿°";
+$TLS_testplan_title_create ="åˆ›å»ºä¸€ä¸ªæ–°æµ‹è¯•è®¡åˆ’";
+$TLS_testplan_title_edit ="ç¼–è¾‘è¿™ä¸ªæµ‹è¯•è®¡åˆ’";
+$TLS_testplan_title_for_project ="ä¸º: ";
+$TLS_testplan_title_tp_management ="æµ‹è¯•è®¡åˆ’ç®¡ç†";
+$TLS_testplan_txt_notes ="æµ‹è¯•è®¡åˆ’å¿…é¡»æ˜ç¡®åœ°å®šä¹‰ä»»åŠ¡çš„æ—¶é—´èŒƒå›´å’Œå†…å®¹ã€‚å®ƒåŒ…å«äº§å“æ–°ç‰ˆæœ¬ï¼ˆåŒ…å«çƒ­è¡¥ä¸ï¼‰ï¼ŒåŒæ ·åŒ…æ‹¬å®¢æˆ·ç®€å•çš„éœ€æ±‚å˜æ›´çš„æµ‹è¯•æ´»åŠ¨ã€‚<br />æè¿°å­—æ®µä¾›å¡«å†™æµ‹è¯•è®¡åˆ’å’Œç›¸å…³çš„æ–‡æ¡£çš„é“¾æ¥ã€è¦æµ‹è¯•çš„åŠŸèƒ½åˆ—è¡¨ã€é£é™©ç­‰ç­‰ã€‚<br />ä½ å¯ä»¥ä»åŸæœ‰çš„æµ‹è¯•é¡¹ç›®é‡Œåˆ›å»ºä¸€ä¸ªæ–°çš„æµ‹è¯•è®¡åˆ’. ä»¥ä¸‹å†…å®¹å°†è¢«å¤åˆ¶è¿‡æ¥:æµ‹è¯•è®¡åˆ’ç‰ˆæœ¬ã€æµ‹è¯•ç”¨ä¾‹,é‡ç‚¹ï¼Œé‡Œç¨‹ç¢‘å’Œç”¨æˆ·è§’è‰².<br />æµ‹è¯•è®¡åˆ’å¯ä»¥è¢«ç¦ç”¨;ç¦ç”¨åä¸å…è®¸ç¼–è¾‘å’Œä¿®æ”¹ç»“æœ. åªæœ‰é€šè¿‡æœ¬é¡µé¢å’ŒæŠ¥å‘Šé¡µé¢æ‰èƒ½çœ‹åˆ°è¿™ä¸ªæµ‹è¯•è®¡åˆ’.";
+
+
+
+
+
+
+
+
+
+$TLS_warning_empty_tp_name ="å¿…é¡»ä¸ºæµ‹è¯•è®¡åˆ’æŒ‡å®šåç§°!";
+
+
+
+// gui/templates/planNew.tpl
+$TLS_testplan_btn_edit ="æ›´æ–°";
+$TLS_testplan_btn_new ="åˆ›å»º";
+$TLS_testplan_menu_create ="åˆ›å»º";
+$TLS_testplan_menu_edit ="ç¼–è¾‘";
+$TLS_testplan_menu_list ="åˆ†ç±»";
+
+
+
+// gui/templates/planMilestones.tpl
+$TLS_alt_delete_milestone ="åˆ é™¤è¿™ä¸ªé‡Œç¨‹ç¢‘å—?";
+$TLS_btn_edit_milestone ="ç¼–è¾‘";
+$TLS_btn_new_milestone ="åˆ›å»º";
+$TLS_info_milestones_date ="é‡Œç¨‹ç¢‘çš„æ—¥æœŸå¿…é¡»å¤§äºç­‰äºä»Šå¤©";
+$TLS_no_milestones ="è¿™ä¸ªæµ‹è¯•è®¡åˆ’ä¸­å°šæœªåˆ›å»ºé‡Œç¨‹ç¢‘ï¼";
+$TLS_popup_delete_milestones = "ä½ ç¡®å®šè¦åˆ é™¤é‡Œç¨‹ç¢‘ %NAME% ?";
+$TLS_warning_empty_milestone_name="å¿…é¡»ä¸ºé‡Œç¨‹ç¢‘æŒ‡å®šåç§°!";
+
+
+$TLS_th_date_format ="æ—¥æœŸ";
+$TLS_th_perc_a_prio ="% A ä¼˜å…ˆçº§";
+$TLS_th_perc_b_prio ="% B ä¼˜å…ˆçº§";
+$TLS_th_perc_c_prio ="% C ä¼˜å…ˆçº§";
+$TLS_title_existing_milestones = "å·²å­˜åœ¨çš„é‡Œç¨‹ç¢‘";
+$TLS_title_milestones ="æµ‹è¯•è®¡åˆ’çš„é‡Œç¨‹ç¢‘";
+$TLS_title_new_milestone ="é‡Œç¨‹ç¢‘";
+
+
+
+// gui/templates/projectedit.tpl
+$TLS_btn_activate ="æ¿€æ´»";
+$TLS_btn_del ="åˆ é™¤";
+$TLS_btn_edit_del ="ç¼–è¾‘ / åˆ é™¤";
+$TLS_btn_inactivate ="ç¦ç”¨";
+$TLS_caption_edit_product ="ç¼–è¾‘äº§å“";
+$TLS_caption_new_product ="æ–°äº§å“";
+$TLS_color ="é¢œè‰²";
+$TLS_enable_requirements ="å¯ç”¨éœ€æ±‚åŠŸèƒ½";
+$TLS_info_failed_loc_prod ="æœ¬åœ°åŒ–äº§å“å¤±è´¥";
+$TLS_notes ="äº§å“è¯´æ˜";
+// Warning!!! - if JS string you must use \\n to get \n                                       
+$TLS_popup_product_delete ="è­¦å‘Šï¼è¿™ä¸ªæ“ä½œä¼šæ°¸ä¹…åˆ é™¤ä¸äº§å“ç›¸å…³çš„æ‰€æœ‰æ•°æ®ï¼ˆåŒ…æ‹¬æµ‹è¯•ç»“æœã€è®¡åˆ’ç­‰ï¼‰ã€‚ä½ ä¹Ÿå¯ä»¥ä½¿ç”¨ç¦ç”¨æ¥ä»£æ›¿åˆ é™¤æ“ä½œã€‚\\nå»ºè®®ï¼šé¦–å…ˆå¤‡ä»½æ•°æ®åº“ã€‚\\nä½ ç¡®å®šè¦åˆ é™¤è¿™ä¸ªäº§å“å—ï¼Ÿ";
+
+
+
+
+$TLS_warning_empty_tproject_name ="äº§å“åç§°ä¸èƒ½ä¸ºç©º";
+
+
+
+// gui/templates/reqAssign.tpl
+$TLS_please_select_a_req ="è¯·é€‰æ‹©ä¸€ä¸ªéœ€æ±‚";
+$TLS_req_msg_norequirement66 ="æ²¡æœ‰éœ€æ±‚";
+$TLS_req_title_assign ="å°†éœ€æ±‚å…³è”åˆ°æµ‹è¯•ç”¨ä¾‹:";
+$TLS_req_title_assigned ="å·²æŒ‡æ´¾çš„éœ€æ±‚";
+$TLS_req_title_unassigned ="æœ‰æ•ˆçš„éœ€æ±‚";
+$TLS_warning_req_tc_assignment_impossible ="<b>æ— æ³•</b> å°†éœ€æ±‚å…³è”åˆ°æµ‹è¯•ç”¨ä¾‹ï¼Œæ˜¯ç”±äº:<br><ul><li>è¯´æ˜ä¹¦ä¸Šæ²¡æœ‰æ˜ç¡®çš„è§„å®š </li><li> éœ€æ±‚è¯´æ˜ä¹¦å´æ˜¯ç©º </ul></li></ul>";
+
+
+
+
+
+// gui/templates/tcEdit.tpl
+$TLS_title_edit_tc ="ç¼–è¾‘æµ‹è¯•ç”¨ä¾‹";
+$TLS_warning_editing_executed_tc ="è­¦å‘Š!:è¿™ä¸ªæµ‹è¯•ç”¨ä¾‹å·²ç»æ‰§è¡Œ";
+
+
+
+// gui/templates/planOwner.tpl
+$TLS_assign_ownership ="è®¾ç½®æ‰€æœ‰æƒ";
+$TLS_def_prio_rules ="å®šä¹‰ä¼˜å…ˆçº§è§„åˆ™";
+$TLS_opt_label_none ="æ— ";
+$TLS_th_imp ="é‡è¦æ€§";
+$TLS_th_owner = "æµ‹è¯•å‘˜";
+$TLS_th_risk ="é£é™©";
+$TLS_th_test_suite ="åˆ†ç±»";
+$TLS_title_plan_ownership ="æµ‹è¯•è®¡åˆ’æ‰€æœ‰æƒ";
+
+
+
+// gui/templates/tcView_viewer.tpl
+$TLS_activate_this_tcversion ="æ¿€æ´»è¿™ä¸ªç‰ˆæœ¬";
+$TLS_Requirements ="éœ€æ±‚";
+$TLS_btn_del_this_version ="åˆ é™¤è¿™ä¸ªç‰ˆæœ¬";
+$TLS_btn_edit ="ç¼–è¾‘";
+$TLS_btn_mv_cp ="ç§»åŠ¨/å¤åˆ¶";
+$TLS_btn_new_version ="åˆ›å»ºä¸€ä¸ªæ–°çš„ç‰ˆæœ¬";
+$TLS_can_not_edit_tc ="ä½ æ— æ³•ç¼–è¾‘è¿™ä¸ªç‰ˆæœ¬,å› ä¸ºå®ƒå·²ç»åœ¨æ‰§è¡Œ ";
+$TLS_deactivate_this_tcversion ="ç¦ç”¨è¿™ä¸ªç‰ˆæœ¬";
+$TLS_tcversion_is_inactive_msg ="è¿™ä¸ªç‰ˆæœ¬æ˜¯æ— æ•ˆçš„ => å°†æ— æ³•è¢«åˆ—å…¥æµ‹è¯•è®¡åˆ’";
+
+
+
+// gui/templates/planRemoveTC_m1.tpl
+$TLS_btn_remove_selected_tc ="ç§»é™¤é€‰ä¸­çš„æµ‹è¯•ç”¨ä¾‹";
+$TLS_remove_ok ="ç§»é™¤æˆåŠŸ";
+$TLS_title_remove_test_from_plan ="ç§»é™¤æ¥è‡ªæµ‹è¯•è®¡åˆ’çš„æµ‹è¯•ç”¨ä¾‹";
+
+
+
+// gui/templates/planTesters.tpl
+$TLS_btn_save ="ä¿å­˜";
+
+
+
+// gui/templates/keywordsAssign.tpl
+$TLS_keyword_assignment_empty_tsuite ="è¯·å…ˆåœ¨æ²¡æœ‰è®¾ç½®æµ‹è¯•ç”¨ä¾‹ä¹‹å‰æŒ‡æ´¾å…³é”®å­—æ˜¯ä¸å¯èƒ½çš„";
+$TLS_menu_assign_kw_to_tc ="æŒ‡æ´¾åˆ°æµ‹è¯•ç”¨ä¾‹";
+$TLS_menu_manage_keywords ="å…³é”®å­—ç®¡ç†";
+$TLS_title_keywords ="å…³é”®å­—";
+
+
+
+// gui/templates/planTestersNavigator.tpl
+$TLS_label_list_of ="åˆ—å‡º";
+$TLS_opt_test_plans ="æµ‹è¯•è®¡åˆ’";
+$TLS_opt_users ="ç”¨æˆ·";
+
+
+
+// gui/templates/planUpdateTC.tpl
+$TLS_btn_upd_ck_tc ="æ›´æ–°é€‰ä¸­çš„æµ‹è¯•ç”¨ä¾‹";
+$TLS_info_all_tc_uptodate ="æ‰€æœ‰çš„æµ‹è¯•ç”¨ä¾‹åœ¨ä¸Šä¸€æ¬¡æµ‹è¯•åéƒ½æ˜¯æ²¡æœ‰å˜æ›´ã€‚";
+$TLS_th_category ="åˆ†ç±»";
+$TLS_th_component ="åˆ†ç±»";
+$TLS_th_id_tc ="[æ ‡è¯†]æµ‹è¯•ç”¨ä¾‹";
+$TLS_th_reason ="æ›´æ–°åŸå› ";
+$TLS_th_spec_version ="æ–‡æ¡£ç‰ˆæœ¬";
+$TLS_th_status ="çŠ¶æ€";
+$TLS_th_suite_version ="æµ‹è¯•é›†ç‰ˆæœ¬";
+$TLS_th_update ="æ›´æ–°";
+$TLS_title_upd_mod_tc ="æ›´æ–°å·²ä¿®æ”¹çš„æµ‹è¯•ç”¨ä¾‹â†’æµ‹è¯•è®¡åˆ’";
+
+
+
+// gui/templates/keywordsView.tpl
+$TLS_alt_delete_keyword ="åˆ é™¤å…³é”®å­—?";
+$TLS_btn_create_keyword ="æ–°å»ºå…³é”®å­—";
+$TLS_btn_edit_keyword ="ç¼–è¾‘";
+$TLS_btn_import_keywords ="å¯¼å…¥";
+$TLS_th_keyword ="å…³é”®å­—";
+$TLS_warning_delete_keyword ="ä½ ç¡®å®šä½ æƒ³è¦åˆ é™¤å…³é”®å­—å—?";
+$TLS_warning_enter_at_least1 ="è¯·è‡³å°‘è¾“å…¥ ";
+$TLS_warning_enter_at_least2 =" ä¸ªå­—ç¬¦ã€‚";
+$TLS_warning_enter_less1 ="è¯·æœ€å¤šè¾“å…¥";
+$TLS_warning_enter_less2 =" ä¸ªå­—ç¬¦ã€‚";
+
+
+
+// gui/templates/reqexport.tpl
+$TLS_title_req_export_to ="å¯¼å‡ºéœ€æ±‚";
+
+
+
+// gui/templates/resultsAllBuilds.tpl
+$TLS_th_build ="æµ‹è¯•è®¡åˆ’ç‰ˆæœ¬åç§°";
+$TLS_th_tc_total ="å…¨éƒ¨æµ‹è¯•ç”¨ä¾‹";
+
+
+
+// gui/templates/resultsBugs.tpl
+$TLS_bugs_open="Open";
+$TLS_bugs_resolved="Resolved";
+$TLS_bugs_total="total";
+$TLS_date ="æ—¥æœŸï¼š";
+$TLS_printed_by = "æ‰“å°ï¼š";
+$TLS_tcs_with_bugs="Test Cases with bugs";
+$TLS_title_test_case_bugs ="æµ‹è¯•å®ä¾‹é—®é¢˜";
+$TLS_title_test_case_timestamp ="æµ‹è¯•å®ä¾‹æ—¶é—´ä¿¡æ¯";
+$TLS_title_test_case_title ="æµ‹è¯•ç”¨ä¾‹æ ‡é¢˜";
+$TLS_title_test_suite_name ="åˆ†ç±»åç§°";
+
+
+
+// gui/templates/resultsBuild.tpl
+$TLS_title_met_of_build ="ä¸­çš„åº¦é‡ç»“æœâ†’æµ‹è¯•è®¡åˆ’ç‰ˆæœ¬";
+
+
+
+// gui/templates/resultsByStatus.tpl
+$TLS_info_test_results ="è¿™é‡Œåªåˆ—å‡ºæœ€åä¸€æ¬¡çš„æµ‹è¯•ç»“æœã€‚å¦‚æœæœ€åæµ‹è¯•è®¡åˆ’ç‰ˆæœ¬çš„æµ‹è¯•ç»“æœæ˜¯å¦å¤–çš„çŠ¶æ€ï¼ˆé™¤éå°šæœªæ‰§è¡Œæµ‹è¯•ï¼‰ï¼Œæµ‹è¯•ç”¨ä¾‹å°†ä¸ä¼šæ˜¾ç¤ºã€‚";
+
+
+$TLS_th_bugs ="é—®é¢˜";
+$TLS_th_date ="æ—¥æœŸ";
+$TLS_th_run_by ="æ‰§è¡Œäºº";
+
+
+
+// gui/templates/resultsGeneral.tpl
+$TLS_title_gen_test_rep ="æ€»ä½“æµ‹è¯•è®¡åˆ’åº¦é‡";
+
+
+
+// gui/templates/resultsMoreBuilds_query_form.tpl
+$TLS_excel_format = "MS Excel";
+$TLS_html_format = "HTML";
+$TLS_last_status_any ="ä¸é™";
+$TLS_last_status_blocked = $TLS_test_status_blocked;
+$TLS_last_status_failed = $TLS_test_status_failed;
+$TLS_last_status_not_run = $TLS_test_status_not_run;
+$TLS_last_status_passed = $TLS_test_status_passed;
+$TLS_select_builds_header ="é€‰æ‹©æµ‹è¯•è®¡åˆ’ç‰ˆæœ¬";
+$TLS_select_components_header ="é€‰æ‹©åˆ†ç±»";
+$TLS_select_keyword_header ="é€‰æ‹©å…³é”®å­—";
+$TLS_select_last_result_header ="é€‰æ‹©æœ€è¿‘çš„ç»“æœ";
+$TLS_select_owner_header ="é€‰æ‹©æµ‹è¯•å‘˜";
+$TLS_select_report_format_header ="é€‰æ‹©æŠ¥å‘Šæ ¼å¼";
+$TLS_submit_query ="æäº¤æŸ¥è¯¢";
+$TLS_test_plan_header = $TLS_testplan;
+$TLS_query_metrics_report ="æŸ¥è¯¢åº¦é‡æŠ¥è¡¨";
+$TLS_enter_start_time = "å¼€å§‹æ—¶é—´";
+$TLS_enter_end_time = "ç»“æŸæ—¶é—´";
+$TLS_year = "å¹´";
+$TLS_month = "æœˆ";
+$TLS_day = "æ—¥";
+$TLS_hour = "æ—¶";
+$TLS_search_in_notes = "æœç´¢æ³¨é‡Šä¸­çš„å­—ç¬¦ä¸²";
+$TLS_executor = "æ‰§è¡Œäººï¼š";
+
+// gui/templates/resultsMoreBuilds_report.tpl
+$TLS_caption_show_collapse ="æ˜¾ç¤º/ å‹ç¼©";
+$TLS_caption_user_selected_query_parameters ="æŸ¥è¯¢å˜é‡";
+$TLS_not_yet_executed ="å°šæœªæ‰§è¡Œ";
+$TLS_show_hide_all ="æ˜¾ç¤º/éšè—å…¨éƒ¨";
+$TLS_th_builds ="ç¼–è¯‘/å»ºç«‹";
+$TLS_th_execution_ts ="æ—¶é—´";
+$TLS_th_last_result ="æœ€è¿‘ä¸€æ¬¡ç»“æœ";
+$TLS_th_report_format ="æŠ¥å‘Šç±»å‹";
+$TLS_th_test_plan = $TLS_testplan;
+$TLS_th_test_suites ="åˆ†ç±»";
+$TLS_th_tester_id ="æµ‹è¯•å‘˜";
+$TLS_th_total_block = "#" . $TLS_test_status_blocked;
+$TLS_th_total_cases ="#æµ‹è¯•å®ä¾‹";
+$TLS_th_total_fail = "#" . $TLS_test_status_failed;
+$TLS_th_total_not_run = "#" . $TLS_test_status_not_run;
+$TLS_th_total_pass = "#" . $TLS_test_status_passed;
+$TLS_th_start_time = "å¼€å§‹æ—¶é—´";
+$TLS_th_end_time = "ç»“æŸæ—¶é—´";
+$TLS_th_executor = "æ‰§è¡Œäººï¼š";
+$TLS_th_search_notes_string = "æ³¨é‡Šçš„æœç´¢å­—ç¬¦ä¸²";
+$TLS_true = "true";
+$TLS_false = "false";
+$TLS_display_suite_summaries = "æ˜¾ç¤ºåˆ†ç±»æ‘˜è¦";
+$TLS_display_query_params  = "æ˜¾ç¤ºæŸ¥è¯¢å‚æ•°";
+$TLS_display_totals = "æ˜¾ç¤ºæ€»è®¡";
+
+// gui/templates/resultsReqs.tpl
+$TLS_no_srs_defined="è¿™ä¸ªäº§å“æ²¡æœ‰å¯ç”¨çš„æµ‹è¯•éœ€æ±‚è§„æ ¼è¯´æ˜ä¹¦";
+$TLS_req_title_blocked ="é”å®šçš„éœ€æ±‚";
+$TLS_req_title_failed ="é”™è¯¯çš„éœ€æ±‚";
+$TLS_req_title_notrun ="å°šæœªæ‰§è¡Œçš„éœ€æ±‚";
+$TLS_req_title_passed ="é€šè¿‡çš„éœ€æ±‚";
+$TLS_title_result_req_testplan ="åŸºäºéœ€æ±‚è§„çº¦çš„æµ‹è¯•ç»“æœ";
+$TLS_title_test_plan ="æµ‹è¯•è®¡åˆ’";
+
+
+
+// gui/templates/resultsSend.tpl
+$TLS_btn_send_report ="å‘é€";
+$TLS_check_send_to_me ="ç»™è‡ªå·±å‘é€ä¸€ä»½æ‹·è´";
+$TLS_mail_body ="å†…å®¹ï¼š";
+$TLS_mail_report ="æŠ¥å‘Šï¼š";
+$TLS_mail_subject ="ä¸»é¢˜ï¼š";
+$TLS_mail_to ="å‘é€ç»™ï¼š";
+$TLS_status_for_build ="æµ‹è¯•è®¡åˆ’ç‰ˆæœ¬çš„çŠ¶æ€";
+$TLS_tp_status ="æ€»ä½“æµ‹è¯•è®¡åˆ’çŠ¶æ€";
+$TLS_tp_status_for_build ="æµ‹è¯•è®¡åˆ’ç‰ˆæœ¬çš„æµ‹è¯•è®¡åˆ’çŠ¶æ€";
+
+
+
+// gui/templates/resultsTC.tpl
+$TLS_generated_by_TestLink_on="æŠ¥è¡¨ç”±TestLinkç”Ÿæˆäº ";
+
+// gui/templates/resultsImport.tpl
+$TLS_results_import_format = "XML æ–‡ä»¶æ ¼å¼å¿…é¡»ä¸ºä»¥ä¸‹æ ¼å¼ï¼š ";
 
 // gui/templates/tcEdit_m2.tpl
 
 
 
-// gui/templates/resultsMoreBuilds_report.tpl
-$TLS_case_return_by_query_header = "²éÑ¯µ½µÄ²âÊÔÓÃÀı";
-$TLS_descr_indiv = "Æ¥Åä\"ÓµÓĞÕß\", \"¹Ø¼ü×Ö\", \"×é¼ş\", \"×î½ü×´Ì¬\" ºÍ \"ËùÑ¡¹¹½¨\" ²éÑ¯Ìõ¼şµÄ²âÊÔÓÃÀı¡£";
-$TLS_descr_res_totals = "Æ¥ÅäÖ¸¶¨\"ÓµÓĞÕß\", \"¹Ø¼ü×Ö\", \"×é¼ş\", ºÍ \"ËùÑ¡¹¹½¨\"µÈÌõ¼şµÄ²âÊÔÓÃÀıµÄÈ«²¿½á¹û¡£ \"×î½ü×´Ì¬\" ²ÎÊıÃ»ÓĞ¿¼ÂÇ";
-$TLS_overall_status = "×ÜÌå×´Ì¬";
-$TLS_please_wait = "ÕıÔÚ¼ÓÔØÈ«²¿½á¹û,ÇëÉÔºò...";
-$TLS_query_parameters_header = "Ñ¡¶¨µÄ²éÑ¯Ìõ¼şÎª£º";
-$TLS_results_by_component_header = "½á¹û(°´×é¼ş)";
-$TLS_show_hide_all = "ÏÔÊ¾/Òş²ØÈ«²¿";
-$TLS_display_suite_summaries = "Display Suite Summaries";
-$TLS_display_query_params  = "Display Query Parameters";
-$TLS_display_totals = "Display Totals";
+// gui/templates/tcPrintNavigator.tpl
+$TLS_caption_print_opt ="æ‰“å°é€‰é¡¹";
+$TLS_tr_td_show_as ="è¾“å‡ºæ ¼å¼";
 
 
 
-// gui/templates/resultsMoreBuilds_query_form.tpl
-$TLS_do_not_query_by_keyword = "²»ÏŞ";
-$TLS_do_not_query_by_owner = "²»ÏŞ";
-$TLS_excel_format = "MS Excel";
-$TLS_html_format = "HTML";
-$TLS_last_status_any = "²»ÏŞ";
-$TLS_last_status_blocked = "Ëø¶¨";
-$TLS_last_status_failed = "Ê§°Ü";
-$TLS_last_status_not_run = "ÉĞÎ´Ö´ĞĞ";
-$TLS_last_status_passed = "Í¨¹ı";
-$TLS_select_builds_header = "Ñ¡Ôñ¹¹½¨";
-$TLS_select_keyword_header = "Ñ¡Ôñ¹Ø¼ü×Ö";
-$TLS_select_last_result_header = "Ñ¡Ôñ×î½üµÄ½á¹û";
-$TLS_select_owner_header = "Ñ¡ÔñÓµÓĞÕß";
-$TLS_select_report_format_header = "Ñ¡Ôñ±¨¸æ¸ñÊ½";
-$TLS_submit_query = "Ìá½»²éÑ¯";
-$TLS_test_plan_header = "²âÊÔ¼Æ»® : ";
-$TLS_select_components_header = "Ñ¡Ôñ×é¼ş";
-
-
-// gui/templates/resultsReqs.tpl
-$TLS_req_title_blocked = "Ëø¶¨µÄĞèÇó";
-$TLS_req_title_failed = "´íÎóµÄĞèÇó";
-$TLS_req_title_notrun = "ÉĞÎ´Ö´ĞĞµÄĞèÇó";
-$TLS_req_title_passed = "Í¨¹ıµÄĞèÇó";
-$TLS_title_result_req_testplan = "»ùÓÚĞèÇó¹æÔ¼µÄ²âÊÔ½á¹û";
+// gui/templates/tcReorder.tpl
+$TLS_no_tc_to_reorder ="æµ‹è¯•ç”¨ä¾‹ä¸å­˜åœ¨ï¼Œæ— æ³•é‡æ–°æ’åºã€‚";
+$TLS_title_change_tc_order ="ä¿®æ”¹åˆ†ç±»ä¸­çš„æµ‹è¯•ç”¨ä¾‹é¡ºåºã€‚";
 
 
 
-// gui/templates/inc_reqView.tpl
+// gui/templates/tcTree.tpl
+$TLS_button_refresh ="åˆ·æ–°";
+$TLS_button_update_tree ="æ›´æ–°åˆ†ç±»æ ‘";
+$TLS_do_auto_update ="è‡ªåŠ¨æ›´æ–°åˆ†ç±»æ ‘";
+$TLS_no_tc_spec_av ="æ²¡æœ‰å¯ç”¨çš„æµ‹è¯•ç”¨ä¾‹";
 
 
 
-// gui/templates/infoWindow.tpl
-$TLS_btn_close = "¹Ø±Õ";
+// gui/templates/tc_exec_assignment.tpl
+$TLS_btn_do ="æ‰§è¡Œ";
+$TLS_btn_update_selected_tc ="æ›´æ–°é€‰æ‹©æµ‹è¯•å®ä¾‹";
+$TLS_title_tc_exec_assignment ="æµ‹è¯•ç”¨ä¾‹ï¼šä¸‹è¾¾æµ‹è¯•ä»»åŠ¡";
+$TLS_user ="ç”¨æˆ·";
+$TLS_user_bulk_assignment ="æ‰¹é‡è®¾ç½®æµ‹è¯•ç”¨ä¾‹çš„æµ‹è¯•å‘˜";
 
 
 
-// gui/templates/inc_print_button.tpl
+// gui/templates/testSetNavigator.tpl
 
 
 
-// lib/admin/adminProductEdit.php
-$TLS_info_no_more_prods = "Ã»ÓĞ¸ü¶àµÄ²úÆ·¡£";
-$TLS_info_product_activated = "²úÆ·ÒÑ¾­±»¼¤»î¡£";
-$TLS_info_product_inactivated = "²úÆ·ÒÑ¾­±»½ûÓÃ¡£";
-$TLS_info_product_name_empty = "²»³äĞíÃû³ÆÎª¿Õ¡£";
-$TLS_info_product_not_deleted_check_log = "²úÆ·Ã»ÓĞ±»É¾³ı¡£Çë²é¿´TestLinkµÄÈÕÖ¾¡£";
-$TLS_info_product_was_deleted = "²úÆ·±»³É¹¦µØÉ¾³ı";
-$TLS_string_contains_bad_chars = "°üº¬´íÎóµÄ×Ö·û";
+// gui/templates/userInfo.tpl
+$TLS_btn_change_passwd ="ä¿®æ”¹å¯†ç ";
+$TLS_btn_upd_user_data ="æ›´æ–°";
+$TLS_th_new_passwd ="æ–°å¯†ç ";
+$TLS_th_new_passwd_again ="ç¡®è®¤æ–°å¯†ç ";
+$TLS_th_old_passwd ="æ—§å¯†ç ";
+$TLS_title_account_settings ="å¸å·è®¾ç½®";
+$TLS_title_change_your_passwd ="ä¿®æ”¹ä½ çš„å¯†ç ";
+$TLS_warning_different_pwd ="è¯·é‡æ–°è¾“å…¥ä½ çš„æ–°å¯†ç ã€‚æ–°è¾“å…¥çš„å¯†ç ä¸ä¸€è‡´ã€‚";
+$TLS_warning_empty_pwd = "The password must not be empty!";
+$TLS_your_password_is_external = "æ‚¨çš„å¯†ç ç”±å¤–éƒ¨ç³»ç»Ÿç®¡ç†ã€‚<br>æ‚¨æ— æ³•é€šè¿‡Testlinkè¿›è¡Œä¿®æ”¹";
 
 
 
-// lib/admin/adminProductNew.php
-$TLS_refer_to_log = " Çë²é¿´TestLinkµÄÈÕÖ¾À´»ñÈ¡¸ü¶àµÄĞÅÏ¢¡£";
+// gui/templates/usersassign.tpl
+$TLS_TestProject ="äº§å“ï¼š";
+$TLS_User ="ç”¨æˆ·";
+$TLS_btn_change ="åˆ‡æ¢";
+$TLS_caption_assign_testplan_user_roles ="æŒ‡æ´¾æµ‹è¯•è®¡åˆ’è§’è‰²ç»™ç”¨æˆ· ";
+$TLS_caption_assign_testproject_user_roles ="æŒ‡æ´¾äº§å“ç”¨æˆ·æƒé™";
+$TLS_menu_assign_testproject_roles ="äº§å“æƒé™æŒ‡æ´¾";
+$TLS_th_roles ="è§’è‰²";
+$TLS_th_roles_testplan = "æµ‹è¯•è®¡åˆ’è§’è‰²";
+$TLS_th_roles_testproject = "äº§å“è§’è‰²";
+$TLS_title_assign_roles ="åˆ†é…è§’è‰²";
 
 
 
-// lib/admin/adminUserNew.php
-$TLS_duplicate_login = "¸ÃÓÃ»§ÒÑ¾­´æÔÚ£¡";
-$TLS_empty_login_no = "ÓÃ»§µÇÂ½Ãû²»ÄÜÎª¿Õ";
-$TLS_user_not_added = "ÎŞ·¨Ôö¼ÓÓÃ»§£¡";
+// gui/templates/usersedit.tpl
+$TLS_button_reset_password = "Reset password";
+$TLS_caption_user_details ="ç”¨æˆ·è¯¦ç»†èµ„æ–™";
+$TLS_th_password ="å£ä»¤";
+$TLS_warning_empty_first_name ="è¯·è¾“å…¥ä¸€ä¸ªåå­—";
+$TLS_warning_empty_last_name ="è¯·è¾“å…¥ä¸€ä¸ªå§“";
+$TLS_warning_empty_login ="è¯·è¾“å…¥ä¸€ä¸ªæ³¨å†Œ";
+
+
+// gui/templates/attachmentupload.tpl
+$TLS_attachment_upload_ok="æ–‡ä»¶å·²ä¸Šä¼ ";
+$TLS_enter_attachment_title ="è¿›å…¥é™„ä»¶æ ‡é¢˜";
+$TLS_import_was_ok ="å¯¼å…¥æˆåŠŸ";
+$TLS_max_size_cvs_file ="æ–‡ä»¶æœ€å¤§ä¸è¶…è¿‡ï¼š";
+$TLS_title_upload_attachment ="ä¸Šä¼ é™„ä»¶";
 
 
 
-// lib/admin/adminUsers.php
-$TLS_login_must_not_be_empty = "ÓÃ»§µÇÂ½Ãû²»ÄÜÎª¿Õ£¡";
+// gui/templates/rolesview.tpl
+$TLS_N_A = "N/A";
+$TLS_alt_delete_role ="åˆ é™¤è§’è‰²";
+$TLS_alt_edit_role ="ç¼–è¾‘è§’è‰²";
+$TLS_btn_confirm_delete ="åˆ é™¤";
+$TLS_delete_role = "åˆ é™¤è§’è‰²";
+$TLS_no_roles ="æ²¡æœ‰è§’è‰²";
+$TLS_th_role_description = "è§’è‰²æè¿°";
+$TLS_title_roles ="å¯ç”¨çš„è§’è‰²";
+$TLS_warning_delete_role = "çœŸçš„è¦åˆ é™¤è¿™ä¸ªè§’è‰²å—ï¼Ÿ";
+$TLS_warning_users_will_be_reset ="å—å½±å“çš„ç”¨æˆ·å°†è¢«é‡ç½®è®¿å®¢è§’è‰²!";
 
 
 
-// lib/functions/info.inc.php
-$TLS_email_sent_message = "ÄãµÄÓÊ¼şÒÑ±»·¢ËÍ";
+// gui/templates/tcexport.tpl
+$TLS_export_with_keywords ="å¯¼å‡ºå…³é”®å­—";
+
+
+
+// gui/templates/buildView.tpl
+$TLS_alt_active_build ="æœ‰æ•ˆæµ‹è¯•è®¡åˆ’ç‰ˆæœ¬";
+$TLS_alt_edit_build ="ç‚¹å‡»è¿™é‡Œæ¥ç¼–è¾‘è¿™ä¸ªæµ‹è¯•è®¡åˆ’ç‰ˆæœ¬";
+$TLS_alt_open_build ="æ‰“å¼€æµ‹è¯•è®¡åˆ’ç‰ˆæœ¬";
+$TLS_btn_build_create ="åˆ›å»º";
+$TLS_no_builds ="æœ¬æµ‹è¯•è®¡åˆ’çš„æµ‹è¯•è®¡åˆ’ç‰ˆæœ¬å°šæœªåˆ›å»º";
+$TLS_th_description ="è¯´æ˜";
+$TLS_th_open ="æ‰“å¼€";
+$TLS_title_build_list ="åˆ—å‡ºç°æœ‰çš„æµ‹è¯•è®¡åˆ’ç‰ˆæœ¬";
+$TLS_warning_delete_build ="ä½ çœŸçš„æƒ³è¦åˆ é™¤è¿™ä¸ªæµ‹è¯•è®¡åˆ’ç‰ˆæœ¬å—ï¼Ÿæ‰€æœ‰ç›¸å…³çš„æ•°æ®éƒ½å°†è¢«åˆ é™¤ï¼";
+
+
+
+// gui/templates/planView.tpl
+$TLS_testplan_alt_delete_tp ="åˆ é™¤æµ‹è¯•è®¡åˆ’?";
+$TLS_testplan_alt_edit_tp ="ç¼–è¾‘æµ‹è¯•è®¡åˆ’";
+$TLS_testplan_msg_delete_confirm ="ä½ çœŸçš„è¦åˆ é™¤æµ‹è¯•è®¡åˆ’å—? å»ºè®®ï¼šä¸è¦ä½¿ç”¨åˆ é™¤åŠŸèƒ½è€Œæ˜¯é€šè¿‡æµ‹è¯•è®¡åˆ’çš„ç¼–è¾‘åŠŸèƒ½ç¦ç”¨è¿™ä¸ªæµ‹è¯•è®¡åˆ’.";
+$TLS_testplan_th_delete ="åˆ é™¤";
+$TLS_testplan_title_list ="åˆ—å‡ºç°æœ‰çš„æµ‹è¯•è®¡åˆ’";
+$TLS_testplan_txt_empty_list ="æ²¡æœ‰å®šä¹‰æµ‹è¯•è®¡åˆ’!ä½¿ç”¨æµ‹è¯•æ‰§è¡ŒåŠŸèƒ½å¿…é¡»å…ˆåˆ›å»ºä¸€ä¸ªæµ‹è¯•è®¡åˆ’";
+$TLS_alt_active_testplan = "æ¿€æ´»æµ‹è¯•è®¡åˆ’";
+
+
+// gui/templates/mainPage_left.tpl
+$TLS_href_assign_user_roles ="æŒ‡æ´¾ç”¨æˆ·è§’è‰²";
+$TLS_href_browse_tc ="æµè§ˆæµ‹è¯•ç”¨ä¾‹";
+$TLS_href_cfields_management ="è‡ªå®šä¹‰å­—æ®µç®¡ç†";
+$TLS_href_cfields_tproject_assign ="åˆ†é…è‡ªå®šä¹‰å­—æ®µ";
+$TLS_href_create_product ="åˆ›å»ºæ–°äº§å“";
+$TLS_href_edit_product ="ç¼–è¾‘/åˆ é™¤äº§å“";
+$TLS_href_edit_tc ="æµ‹è¯•ç”¨ä¾‹ç®¡ç†";
+$TLS_href_keywords_assign ="æŒ‡æ´¾å…³é”®å­—";
+$TLS_href_keywords_manage ="å…³é”®å­—ç®¡ç†";
+$TLS_href_keywords_view ="æŸ¥çœ‹å…³é”®å­—";
+$TLS_href_print_tc ="æ‰“å°æµ‹è¯•è§„æ ¼è¯´æ˜ä¹¦";
+$TLS_href_req_assign ="å…³è”æµ‹è¯•éœ€æ±‚ä¸æµ‹è¯•ç”¨ä¾‹";
+$TLS_href_req_spec ="è½¯ä»¶æµ‹è¯•éœ€æ±‚è§„æ ¼è¯´æ˜ä¹¦";
+$TLS_href_roles_management ="è§’è‰²ç®¡ç†";
+$TLS_href_search_tc ="æœç´¢æµ‹è¯•ç”¨ä¾‹";
+$TLS_href_user_management ="ç”¨æˆ·ç®¡ç†";
+$TLS_title_requirements ="æµ‹è¯•éœ€æ±‚ï¼æµ‹è¯•ç”¨ä¾‹";
+$TLS_title_test_spec ="æµ‹è¯•è§„æ ¼è¯´æ˜ä¹¦";
+$TLS_title_product_mgmt ="äº§å“ç®¡ç†";
+
+
+// gui/templates/mainPage_right.tpl
+$TLS_filter_tp_by_product ="æŒ‰äº§å“ç­›é€‰æµ‹è¯•è®¡åˆ’";
+$TLS_href_add_test_case ="æ·»åŠ æµ‹è¯•ç”¨ä¾‹åˆ°æµ‹è¯•è®¡åˆ’ä¸­";
+$TLS_href_build_new ="æµ‹è¯•è®¡åˆ’ç‰ˆæœ¬ç®¡ç†";
+$TLS_href_execute_test ="æ‰§è¡Œæµ‹è¯•";
+$TLS_href_metrics_dashboard = "ä»ªè¡¨ç›˜";
+$TLS_href_newest_tcversions = "æŸ¥çœ‹æœ€æ–°ç‰ˆæœ¬çš„æµ‹è¯•ç”¨ä¾‹";
+$TLS_href_plan_assign_priority ="åˆ†é…ä¼˜å…ˆçº§";
+$TLS_href_plan_define_priority ="åˆ¤å®š/è§„å®šä¼˜å…ˆè§„åˆ™";
+$TLS_href_plan_management ="æµ‹è¯•è®¡åˆ’ç®¡ç†";
+$TLS_href_plan_mstones ="ç¼–è¾‘/åˆ é™¤é‡Œç¨‹ç¢‘";
+$TLS_href_print_tc_suite ="æ‰“å°æµ‹è¯•è§„æ ¼è¯´æ˜ä¹¦";
+$TLS_href_remove_test_case ="ä»æµ‹è¯•è®¡åˆ’ä¸­ç§»å»æµ‹è¯•ç”¨ä¾‹";
+$TLS_href_rep_and_metrics ="æµ‹è¯•æŠ¥å‘Šå’Œåº¦é‡";
+$TLS_href_tc_exec_assignment ="ç»™æµ‹è¯•ç”¨ä¾‹æŒ‡å®šæµ‹è¯•å‘˜";
+$TLS_href_upd_mod_tc ="æ›´æ–°ä¿®æ”¹è¿‡çš„æµ‹è¯•ç”¨ä¾‹";
+$TLS_msg_no_rights_for_tp ="- æ— æ•ˆçš„(ä½ æ²¡æœ‰æƒé™è®¿é—®æµ‹è¯•è®¡åˆ’)";
+$TLS_testplan_role = "Test Plan role ";
+$TLS_title_test_case_suite ="æµ‹è¯•è®¡åˆ’ï¼æµ‹è¯•ç”¨ä¾‹";
+$TLS_title_test_execution ="æµ‹è¯•æ‰§è¡Œ";
+$TLS_title_test_plan_mgmt ="æµ‹è¯•è®¡åˆ’ç®¡ç†";
+
+
+
+// lib/execute/bug_add.php
+$TLS_bug_added ="Bug å¢åŠ ";
+$TLS_error_bug_does_not_exist_on_bts="Bugç®¡ç†ç³»ç»Ÿä¸Šä¸å­˜åœ¨è¯¥Bug IDï¼";
+$TLS_error_wrong_BugID_format ="BugID æ ¼å¼å‡ºé”™!";
+
+
+
+// lib/execute/bug_delete.php
+$TLS_bugdeleting_was_ok ="Bugåˆ é™¤æˆåŠŸ!";
+
+
+
+// lib/functions/doAuthorize.php
+$TLS_error_ldap_auth_failed ="LDAP èº«ä»½éªŒè¯å¤±è´¥";
+$TLS_error_ldap_bind_failed ="LDAPç»‘å®šå¤±è´¥";
+$TLS_error_ldap_server_connect_failed =" LDAPè¿æ¥æœåŠ¡å™¨å¤±è´¥";
+$TLS_error_ldap_update_failed ="æ›´æ–° LDAP å¤±è´¥";
+$TLS_error_ldap_user_not_found ="LDAP ç”¨æˆ·æ‰¾ä¸åˆ°";
 
 
 
 // lib/functions/product.inc.php
-$TLS_info_product_delete_fails = "É¾³ı²úÆ·Ê±³öÏÖ´íÎó";
+$TLS_info_product_delete_fails ="åˆ é™¤é¡¹ç›®æ—¶å‡ºç°é”™è¯¯";
+
 
 // lib/results/resultsImport.php
-$TLS_import_results_tc_not_found= "test case %s not found in test plan - no data inserted for this case";
-$TLS_import_results_invalid_result= "test case %s had an invalid result - no data inserted for this case";
-$TLS_import_results_tc_exists = "test case %s is in the test plan, tcversion_id = %s ";
+$TLS_import_results_tc_not_found= "æµ‹è¯•ç”¨ä¾‹ %s æ— æ³•åœ¨äº§å“ä¸­æ‰¾åˆ° - æ²¡æœ‰ä¸ºè¯¥æµ‹è¯•ç”¨ä¾‹æ’å…¥ä»»ä½•æ•°æ®";
+$TLS_import_results_invalid_result= "æµ‹è¯•ç”¨ä¾‹ %s å­˜åœ¨ä¸€ä¸ªä¸åˆæ³•çš„ç»“æœ - æ²¡æœ‰ä¸ºè¯¥æµ‹è¯•ç”¨ä¾‹æ’å…¥ä»»ä½•æ•°æ®";
+$TLS_import_results_tc_exists = "æµ‹è¯•ç”¨ä¾‹ %s å­˜åœ¨äºäº§å“ä¸­, tcversion_id = %s ";
 
 
 // lib/functions/results.inc.php
-$TLS_trep_failing = "Ê§°Ü";
-$TLS_trep_passing = "Í¨¹ı";
-$TLS_trep_status_for_build = "¹¹½¨×´Ì¬";
-$TLS_trep_status_for_ts = "²âÊÔ¼¯×´Ì¬";
+$TLS_trep_failing ="å¤±è´¥";
+$TLS_trep_passing ="é€šè¿‡";
+$TLS_trep_status_for_build ="æµ‹è¯•è®¡åˆ’ç‰ˆæœ¬çŠ¶æ€";
+$TLS_trep_status_for_ts ="æµ‹è¯•é›†çŠ¶æ€";
+$TLS_unassigned = "æœªæŒ‡æ´¾";
+
+
+// lib/functions/resultsMoreBuilds.inc.php
+$TLS_bugs ="å…³è”çš„Bug";
+$TLS_builds_selected ="æµ‹è¯•è®¡åˆ’ç‰ˆæœ¬åç§°";
+$TLS_case_not_run_warning ="æµ‹è¯•ç”¨ä¾‹å°šæœªæ‰§è¡Œ";
+$TLS_category_header ="åˆ†ç±»= ";
+$TLS_daterun ="æ‰§è¡Œæ—¶é—´";
+$TLS_last_status ="æœ€è¿‘çŠ¶æ€";
+$TLS_number_blocked ="# é”å®šçš„æ•°é‡";
+$TLS_number_cases ="# ç”¨ä¾‹æ•°é‡";
+$TLS_number_executions ="# æ‰§è¡Œæµ‹è¯•ç”¨ä¾‹æ€»æ•°";
+$TLS_number_failed ="# å¤±è´¥çš„æ•°é‡";
+$TLS_number_not_run ="# å°šæœªæ‰§è¡Œçš„æ•°é‡";
+$TLS_number_passed ="# é€šè¿‡çš„æ•°é‡";
+$TLS_owner ="æµ‹è¯•å‘˜";
+$TLS_owner_header = $TLS_owner. " =";
+$TLS_runby ="æ‰§è¡Œäºº";
+$TLS_test_plan_name = $TLS_testplan;
 
 
 
-// lib/functions/users.inc.php
-$TLS_Unknown = "Î´Öª";
+// lib/functions/roles.inc.php
+$TLS_desc_cfield_management ="è‡ªå®šä¹‰å­—æ®µç®¡ç†";
+$TLS_desc_cfield_view ="è‡ªå®šä¹‰å­—æ®µçª—å£ (åªè¯»)";
+$TLS_desc_mgt_modify_key ="å…³é”®å­—ç®¡ç†";
+$TLS_desc_mgt_modify_product ="äº§å“ç®¡ç†";
+$TLS_desc_mgt_modify_req ="æµ‹è¯•éœ€æ±‚ç®¡ç†";
+$TLS_desc_mgt_modify_tc ="åˆ›å»º/ç¼–è¾‘æµ‹è¯•ç”¨ä¾‹";
+$TLS_desc_mgt_modify_users ="ç”¨æˆ·ç®¡ç†";
+$TLS_desc_mgt_view_key ="æŸ¥çœ‹å…³é”®å­—(åªè¯»)";
+$TLS_desc_mgt_view_req ="æŸ¥çœ‹æµ‹è¯•éœ€æ±‚(åªè¯»)";
+$TLS_desc_mgt_view_tc ="æŸ¥çœ‹æµ‹è¯•ç”¨ä¾‹(åªè¯»)";
+$TLS_desc_role_management ="è§’è‰²ç®¡ç†";
+$TLS_desc_testplan_create_build ="åˆ›å»º/ç¼–è¾‘æµ‹è¯•è®¡åˆ’ç‰ˆæœ¬";
+$TLS_desc_testplan_execute ="æ‰§è¡Œæµ‹è¯•è®¡åˆ’";
+$TLS_desc_testplan_metrics ="æŸ¥çœ‹æµ‹è¯•è®¡åˆ’";
+$TLS_desc_testplan_planning ="å¢ã€åˆ ã€æ”¹æµ‹è¯•è®¡åˆ’ï¼ŒæŒ‡æ´¾é£é™©ã€æ‰€æœ‰æƒï¼Œç¼–è¾‘æµ‹è¯•ç”¨ä¾‹é›†)";
+$TLS_desc_user_role_assignment ="åˆ†é…è§’è‰²";
+$TLS_error_duplicate_rolename ="å·²ç»å­˜åœ¨åŒåçš„è§’è‰²!";
+$TLS_error_role_no_rights ="ä½ ä¸èƒ½ä¿å­˜æ²¡æœ‰ä»»ä½•æƒé™çš„è§’è‰²!";
+$TLS_error_role_no_rolename ="ä½ å¿…é¡»è¾“å…¥è§’è‰²çš„åç§°!";
+$TLS_inherited_role="<inherited>";
+$TLS_mgt_testplan_create ="åˆ›å»º/ç¼–è¾‘æµ‹è¯•è®¡åˆ’";
+
+
+
+// lib/functions/testproject.class.php
+$TLS_error_creating_req_spec ="å½“æ­£åœ¨åˆ›å»ºéœ€æ±‚è¯´æ˜ä¹¦æ—¶å‘ç”Ÿå¼‚å¸¸";
+$TLS_info_product_name_empty ="ä¸å……è®¸åç§°ä¸ºç©ºã€‚";
+$TLS_keyword_already_exists ="å…³é”®å­—å·²ç»å­˜åœ¨";
+$TLS_string_contains_bad_chars ="åŒ…å«é”™è¯¯çš„å­—ç¬¦";
+$TLS_warning_duplicate_req_title ="éœ€æ±‚æ ‡é¢˜å·²å­˜åœ¨!";
 
 
 
 // lib/functions/requirements.inc.php
-$TLS_verify_requirement = "ÑéÖ¤ĞèÇó"; // add by wangyy
+$TLS_conflict ="å†²çª";
+$TLS_error_deleting_req ="å½“æ­£åœ¨åˆ é™¤éœ€æ±‚æ—¶å‘ç”Ÿå¼‚å¸¸";
+$TLS_error_inserting_req ="å½“æ­£åœ¨æ’å…¥éœ€æ±‚æ—¶å‘ç”Ÿå¼‚å¸¸";
+$TLS_error_updating_req ="å½“æ­£åœ¨æ›´æ–°éœ€æ±‚æ—¶å‘ç”Ÿå¼‚å¸¸";
+$TLS_error_updating_reqspec ="å½“æ­£åœ¨æ›´æ–°éœ€æ±‚è¯´æ˜ä¹¦æ—¶å‘ç”Ÿå¼‚å¸¸";
+$TLS_file_is_not_xml ="æ–‡ä»¶æ ¼å¼ä¸æ˜¯æ­£ç¡®çš„XMLæ ¼å¼.æ— æ³•ä½¿ç”¨";
+$TLS_ok ="åˆ‡æ¢";
+$TLS_req_import_format_description1 =" - CSV æ ¼å¼æ¯è¡Œéœ€è¦ä¸¤ä¸ªå­—æ®µï¼š'title','description'";
+$TLS_req_import_format_description2 =" - CSV ä»DOORS å¯¼å‡ºéœ€è¦æ ‡é¢˜è¡Œã€‚";
+$TLS_req_import_result_overwritten ="ç»“æœå·²ç»è¢«è¦†ç›–ï¼";
+$TLS_req_import_result_skipped ="ç»“æœè¢«è·³è¿‡ï¼";
+$TLS_req_state_not_testable ="ä¸å¯æµ‹è¯•";
+$TLS_req_state_valid ="åˆæ³•";
+$TLS_the_format_req_xml_import ="å‚è§å¯¼å‡ºåçš„XMLæ–‡ä»¶";
+$TLS_warning_duplicate_reqdoc_id ="å¤åˆ¶æ–‡ä»¶ID";
+
+
+
+// lib/functions/testsuite.class.php
+$TLS_component_name_already_exists ="åˆ†ç±»åç§°å·²ç»å­˜åœ¨";
+$TLS_testsuite ="åˆ†ç±»";
+
+
+
+// lib/functions/exec.inc.php
+$TLS_test_results_submitted ="æäº¤æµ‹è¯•ç»“æœ.";
+
+
+
+// lib/functions/print.inc.php
+$TLS_author ="ä½œè€…";
+$TLS_printed_by_TestLink_on ="æ‰“å°æ—¥æœŸï¼š ";
+$TLS_title_toc ="ç›®å½•";
+$TLS_passfail = "é€šè¿‡ / å¤±è´¥";
+$TLS_testnotes = "æ‰§è¡Œå¤‡æ³¨";
+
+
+// lib/functions/testcase.class.php
+$TLS_testcase_name_already_exists ="å·²ç»å­˜åœ¨ç›¸åŒæ ‡é¢˜çš„æµ‹è¯•ç”¨ä¾‹!";
+$TLS_the_format_tc_xml_import = "";
+
+
+
+// lib/functions/info.inc.php
+$TLS_email_sent_message ="ä½ çš„é‚®ä»¶å·²è¢«å‘é€";
+
+
+
+// lib/functions/users.inc.php
+$TLS_Unknown ="æœªçŸ¥";
+$TLS_duplicate_login ="è¯¥ç”¨æˆ·å·²ç»å­˜åœ¨ï¼";
+$TLS_login_must_not_be_empty ="ç”¨æˆ·ç™»é™†åä¸èƒ½ä¸ºç©ºï¼";
+$TLS_wrong_old_password ="æ—§å¯†ç æœ‰è¯¯";
+
+
+
+// lib/functions/email_api.php
+$TLS_stmp_host_unconfigured ="SMTP ä¸»æœºé…ç½®ä¸æ­£ç¡®!";
+
+
+
+// lib/functions/common.php
+
 
 
 // lib/functions/configCheck.php
-$TLS_sec_note_admin_default_pwd = "Ó¦¸ÃĞŞ¸ÄÏµÍ³¹ÜÀíÔ±µÄÈ±Ê¡¿ÚÁî£¡";
-$TLS_sec_note_remove_install_dir = "Ó¦¸ÃÉ¾³ı°²×°Ä¿Â¼£¡";
-
-
-
-// lib/functions/requirementsImport.inc.php
-$TLS_conflict = "³åÍ»";
-$TLS_ok = "OK";
-$TLS_req_import_result_added = "½á¹ûÒÑ¾­±»Ôö¼Ó£¡";
-$TLS_req_import_result_overwritten = "½á¹ûÒÑ¾­±»¸²¸Ç£¡";
-$TLS_req_import_result_skipped = "½á¹û±»Ìø¹ı£¡";
-
-
-
-// lib/functions/resultsMoreBuilds.inc.php
-$TLS_bugs = "¹ØÁªµÄÎÊÌâ";
-$TLS_build = "¹¹½¨±êÊ¶";
-$TLS_builds_selected = "¹¹½¨±êÊ¶";
-$TLS_case_not_run_warning = "²âÊÔÓÃÀıÉĞÎ´Ö´ĞĞ";
-$TLS_category_header = "·ÖÀà= ";
-$TLS_daterun = "Ö´ĞĞÊ±¼ä";
-$TLS_last_status = "×î½ü×´Ì¬";
-$TLS_notes = "¹ØÁªµÄËµÃ÷";
-$TLS_number_blocked = "# Ëø¶¨µÄÊıÁ¿";
-$TLS_number_cases = "# ÓÃÀıÊıÁ¿";
-$TLS_number_executions = "# Ö´ĞĞ²âÊÔÓÃÀı×ÜÊı";
-$TLS_number_failed = "# Ê§°ÜµÄÊıÁ¿";
-$TLS_number_not_run = "# ÉĞÎ´Ö´ĞĞµÄÊıÁ¿";
-$TLS_number_passed = "# Í¨¹ıµÄÊıÁ¿";
-$TLS_owner = "ÓµÓĞÕß";
-$TLS_owner_header = "ÓµÓĞÕß= ";
-$TLS_runby = "Ö´ĞĞÈË";
-$TLS_test_plan_name = "²âÊÔ¼Æ»®";
+$TLS_attachments_dir ="é™„ä»¶ç›®å½•:";
+$TLS_bts_connection_problems ="è¿æ¥BUGç®¡ç†ç³»ç»Ÿå¤±è´¥:<br>
+                                è¯·æ£€æŸ¥é…ç½®.<br>
+                                æ³¨æ„è¿™ä¸ªé”™è¯¯å¦‚æœä¸è§£å†³å°†ä¼šå½±å“Testlinkçš„æ€§èƒ½ã€‚";
+$TLS_but_directory_is_not_writable ="è¿™ä¸ªç›®å½•ä¸å¯å†™!";
+$TLS_directory_is_writable ="å¯å†™çš„ç›®å½•";
+$TLS_does_not_exist ="ä¸å­˜åœ¨";
+$TLS_exists ="å­˜åœ¨";
+$TLS_ldap_extension_not_loaded="ä½¿ç”¨ LDAP æ–¹æ³•éªŒè¯ç™»å½•<br>" .
+                               "ä½† PHP LDAP æ‰©å±•æœªåŠ è½½ => " .
+                               "æ— æ³•ç™»å½•.<br>".
+                               "è¯·è”ç³»TestLinkç®¡ç†å‘˜";
+$TLS_sec_note_admin_default_pwd ="åº”è¯¥ä¿®æ”¹ç³»ç»Ÿç®¡ç†å‘˜çš„ç¼ºçœå£ä»¤ï¼";
+$TLS_sec_note_remove_install_dir ="åº”è¯¥åˆ é™¤å®‰è£…ç›®å½•ï¼";
 
 
 
 // lib/general/frmWorkArea.php
-$TLS_no_build_warning_part1 = "Ã»ÓĞÎªÕâ¸ö²âÊÔ¼Æ»®´´½¨¹¹½¨¡£";
-$TLS_no_build_warning_part2 = "ÇëÏÈ´´½¨Ëü»òÕÒÏµÍ³¹ÜÀíÔ±½â¾ö¡£";
+$TLS_create_a_build ="åˆ›å»ºä¸€ä¸ªæ–°çš„æµ‹è¯•è®¡åˆ’ç‰ˆæœ¬";
+$TLS_no_build_warning_part1 ="è¿˜æ²¡æœ‰ä¸ºè¿™ä¸ªæµ‹è¯•è®¡åˆ’åˆ›å»ºæµ‹è¯•è®¡åˆ’ç‰ˆæœ¬ã€‚";
+$TLS_no_build_warning_part2 ="è¯·å…ˆåˆ›å»ºå®ƒæˆ–æ‰¾ç³»ç»Ÿç®¡ç†å‘˜è§£å†³ã€‚";
 
 
 
 // lib/general/myTPInfo.php
-$TLS_no_testplans_available = "ÎŞ·¨»ñµÃ²âÊÔ¼Æ»®";
+$TLS_no_testplans_available ="æ— æ³•è·å¾—æµ‹è¯•è®¡åˆ’";
 
 
 
@@ -1111,177 +1508,203 @@ $TLS_no_testplans_available = "ÎŞ·¨»ñµÃ²âÊÔ¼Æ»®";
 
 
 // lib/keywords/keywords.inc.php
-$TLS_empty_keyword_no = "¹Ø¼ü×Ö²»ÄÜÎª¿Õ£¡";
-$TLS_keyword_already_exists = "¹Ø¼ü×ÖÒÑ¾­´æÔÚ";
-$TLS_kw_delete_fails = "É¾³ı¹Ø¼ü×ÖÊ§°Ü!";
-$TLS_kw_deleted = "±»É¾³ı";
-$TLS_kw_invalid_chars = "¸üĞÂÊ§°Ü£º¹Ø¼ü×ÖÖĞ²»ÄÜ°üº¬¶ººÅºÍÒıºÅ";
-$TLS_kw_update_fails = "¸üĞÂÊ§°Ü";
-$TLS_kw_updated = "¸üĞÂ";
-$TLS_tc_kw_update_fails1 = "²âÊÔÓÃÀı";
-$TLS_tc_kw_update_fails2 = "Ê§°Ü";
+$TLS_empty_keyword_no ="å…³é”®å­—ä¸èƒ½ä¸ºç©ºï¼";
+$TLS_keywords_char_not_allowed ="å…³é”®å­—ä¸­ä¸èƒ½åŒ…å«é€—å·å’Œå¼•å·ï¼";
+$TLS_tc_kw_update_fails1 ="æµ‹è¯•ç”¨ä¾‹";
+$TLS_tc_kw_update_fails2 ="å¤±è´¥";
+$TLS_the_format_keyword_csv_import ="å…³é”®å­—;æ³¨é‡Š";
+$TLS_the_format_keyword_xml_import = "&lt;keywords>&lt;keyword name=\"name\">Notes&lt;/keyword>&lt;/keywords>";
 
 
 
-// lib/keywords/keywordsNew.php
-$TLS_keywords_char_not_allowed = "¹Ø¼ü×ÖÖĞ²»ÄÜ°üº¬¶ººÅºÍÒıºÅ£¡";
+// lib/keywords/keywordsView.php
+$TLS_kw_delete_fails ="åˆ é™¤å…³é”®å­—å¤±è´¥!";
+$TLS_kw_update_fails ="æ›´æ–°å¤±è´¥";
+
+
+
+// lib/keywords/keywordsAssign.php
+$TLS_assigned_kword ="åˆ†é…å…³é”®å­—";
+$TLS_available_kword ="æœ‰ç”¨çš„å…³é”®å­—";
 
 
 
 // lib/plan/buildNew.php
-$TLS_cannot_add_build = "ÎŞ·¨Ôö¼Ó¹¹½¨";
-$TLS_cannot_delete_build = "ÎŞ·¨É¾³ı¹¹½¨";
-$TLS_cannot_update_build = "ÎŞ·¨¸üĞÂ¹¹½¨";
-$TLS_invalid_build_id = "Ê¹ÓÃÁË´íÎóµÄ¹¹½¨±êÊ¶";
-$TLS_warning_duplicate_build = "¹¹½¨±êÊ¶ÒÑ´æÔÚ";
+$TLS_cannot_add_build ="æ— æ³•å¢åŠ æµ‹è¯•è®¡åˆ’ç‰ˆæœ¬";
+$TLS_cannot_delete_build ="æ— æ³•åˆ é™¤æµ‹è¯•è®¡åˆ’ç‰ˆæœ¬";
+$TLS_cannot_update_build ="æ— æ³•æ›´æ–°æµ‹è¯•è®¡åˆ’ç‰ˆæœ¬";
+$TLS_warning_duplicate_build ="æµ‹è¯•è®¡åˆ’ç‰ˆæœ¬çš„åç§°å·²å­˜åœ¨";
 
 
 
-// lib/plan/planEdit.php
-$TLS_delete_tp_bugs_failed1 = "ÕıÔÚÉ¾³ıÎÊÌâ¡ú²âÊÔ¼Æ»®'";
-$TLS_delete_tp_bugs_failed2 = "' Ê§°Ü";
-$TLS_delete_tp_builds_failed1 = "ÕıÔÚÉ¾³ı¹¹½¨¡ú²âÊÔ¼Æ»®'";
-$TLS_delete_tp_builds_failed2 = "' Ê§°Ü";
-$TLS_delete_tp_comp_failed1 = "ÕıÔÚÉ¾³ı×é¼ş¡ú²âÊÔ¼Æ»®'";
-$TLS_delete_tp_comp_failed2 = "' Ê§°Ü";
-$TLS_delete_tp_data_failed1 = "ÕıÔÚÉ¾³ıÊı¾İ¡ú²âÊÔ¼Æ»®'";
-$TLS_delete_tp_data_failed2 = "' Ê§°Ü";
-$TLS_delete_tp_failed1 = "ÕıÔÚÉ¾³ı²âÊÔ¼Æ»®'";
-$TLS_delete_tp_failed2 = "' Ê§°Ü";
-$TLS_delete_tp_milestones_failed1 = "ÕıÔÚÉ¾³ıÀï³Ì±®¡ú²âÊÔ¼Æ»®'";
-$TLS_delete_tp_milestones_failed2 = "' Ê§°Ü";
-$TLS_delete_tp_priority_failed1 = "ÕıÔÚÉ¾³ıÓÅÏÈ¼¶¡ú²âÊÔ¼Æ»®'";
-$TLS_delete_tp_priority_failed2 = "' Ê§°Ü";
-$TLS_delete_tp_results_failed1 = "ÕıÔÚÉ¾³ı½á¹û¡ú²âÊÔ¼Æ»®'";
-$TLS_delete_tp_results_failed2 = "' Ê§°Ü";
-$TLS_delete_tp_rights_failed1 = "ÕıÔÚÉ¾³ıÈ¨ÏŞ¡ú²âÊÔ¼Æ»®'";
-$TLS_delete_tp_rights_failed2 = "' Ê§°Ü";
-$TLS_delete_tp_succeeded1 = "²âÊÔ¼Æ»® '";
-$TLS_delete_tp_succeeded2 = "' ÒÑ¾­±»É¾³ı";
-$TLS_update_tp_failed1 = "²âÊÔ¼Æ»®'";
-$TLS_update_tp_failed2 = "' ¸üĞÂÊ§°Ü";
-$TLS_update_tp_succeeded1 = "²âÊÔ¼Æ»® '";
-$TLS_update_tp_succeeded2 = "' ÒÑ¾­±»¸üĞÂ";
+// lib/plan/plan.inc.php
+//$TLS_warning_empty_milestone_name = "è¯·è¾“å…¥é‡Œç¨‹ç¢‘çš„åç§°ï¼";
+$TLS_warning_enter_valid_date ="å¿…é¡»è¾“å…¥ä¸€ä¸ªæœ‰æ•ˆæ—¥æœŸ";
+$TLS_warning_invalid_percentage_value ="ç™¾åˆ†æ¯”çš„èŒƒå›´å¿…é¡»åœ¨0åˆ°100ä¹‹é—´";
+$TLS_warning_milestone_date ="é‡Œç¨‹ç¢‘çš„æ—¥æœŸå¿…é¡»å¤§äºç­‰äºä»Šå¤©";
+$TLS_warning_percentage_value_higher_than_100 ="æ‰€æœ‰ç™¾åˆ†æ¯”çš„å€¼ä¸èƒ½é«˜äº100";
 
 
 
 // lib/plan/planMilestones.php
-$TLS_warning_empty_milestone_name = "±ØĞëÎªÀï³Ì±®Ö¸¶¨Ãû³Æ!";
-$TLS_warning_enter_valid_date = "±ØĞëÊäÈëÒ»¸öÓĞĞ§ÈÕÆÚ";
-$TLS_warning_milestone_add_failed = "ÎŞ·¨Ôö¼ÓÀï³Ì±®£¡";
-$TLS_warning_milestone_date = "Àï³Ì±®µÄÈÕÆÚ±ØĞë´óÓÚµÈÓÚ½ñÌì";
+$TLS_milestone_delete_fails ="è¿™ä¸ªé‡Œç¨‹ç¢‘ä¸èƒ½è¢«åˆ é™¤!";
+$TLS_warning_milestone_add_failed ="æ— æ³•å¢åŠ é‡Œç¨‹ç¢‘ï¼";
+$TLS_warning_milestone_update_failed ="è¿™ä¸ªé‡Œç¨‹ç¢‘ä¸èƒ½è¢«æ›´æ–°!";
 
 
 
-// lib/plan/planNew.php
-$TLS_warning_empty_tp_name = "±ØĞëÎª²âÊÔ¼Æ»®Ö¸¶¨Ãû³Æ!";
+// lib/plan/planOwner.php
+$TLS_opt_imp_high ="é«˜";
+$TLS_opt_imp_low ="ä½";
+$TLS_opt_imp_medium ="ä¸­ç­‰";
 
 
 
 // lib/plan/planTestersEdit.php
-$TLS_title_assign_tp = "½«²âÊÔ¼Æ»®Ö¸ÅÉ¸øÓÃ»§£º";
-$TLS_title_assign_users = "½«ÓÃ»§Ö¸ÅÉµ½²âÊÔ¼Æ»®: ";
+$TLS_title_assign_tp ="å°†æµ‹è¯•è®¡åˆ’æŒ‡æ´¾ç»™ç”¨æˆ·ï¼š";
+$TLS_title_assign_users ="å°†ç”¨æˆ·æŒ‡æ´¾åˆ°æµ‹è¯•è®¡åˆ’: ";
+
+
+
+// lib/plan/planTestersNavigator.php
+$TLS_nav_test_plan ="å¯¼èˆª - æµ‹è¯•è®¡åˆ’";
+$TLS_nav_users ="å¯¼èˆª - ç”¨æˆ·";
+
+
+
+// lib/plan/planUpdateTC.php
+$TLS_category_has_changed ="åˆ†ç±»å·²ç»å‘ç”Ÿå˜åŒ–";
+$TLS_component_has_changed ="åˆ†ç±»å·²æ›´æ”¹";
+$TLS_deleted ="åˆ é™¤";
+$TLS_different_versions ="ä¸åŒç‰ˆæœ¬";
+$TLS_plan_update_no_tc_updated ="æ²¡æœ‰æµ‹è¯•ç”¨ä¾‹è¢«æ›´æ–°";
+$TLS_planupdate_tc_deleted1 ="æµ‹è¯•ç”¨ä¾‹";
+$TLS_planupdate_tc_deleted2 ="å·²ç»è¢«åˆ é™¤ã€‚";
+$TLS_planupdate_tc_updated1 ="æµ‹è¯•ç”¨ä¾‹";
+$TLS_planupdate_tc_updated2 ="å·²ç»è¢«æ›´æ–°ã€‚";
+$TLS_tcorder_has_changed ="æµ‹è¯•ç”¨ä¾‹çš„é¡ºåºå·²ç»æ”¹å˜";
+$TLS_updated ="æ›´æ–°";
 
 
 
 // lib/plan/testSetNavigator.php
-$TLS_title_test_plan_navigator = "²âÊÔ¼Æ»®µ¼º½±êÌâ";
-
-
+$TLS_title_test_plan_navigator ="æµ‹è¯•è®¡åˆ’å¯¼èˆªæ ‡é¢˜";
 
 // lib/plan/testSetRemove.php
-$TLS_category_removed_part1 = "·ÖÀà";
-$TLS_category_removed_part2 = "ÒÑ¾­±»ÒÆÈ¥¡£";
-$TLS_component_removed_part1 = "×é¼ş";
-$TLS_component_removed_part2 = "ÒÑ¾­±»ÒÆÈ¥¡£";
-$TLS_test_case_removed_part1 = "²âÊÔÓÃÀı";
-$TLS_test_case_removed_part2 = "ÒÑ¾­±»ÒÆÈ¥¡£"; // add by wangyy
+$TLS_tcase_removed_from_tplan="ä»æµ‹è¯•è®¡åˆ’ä¸­ç§»é™¤ä¸€ä¸ªæµ‹è¯•ç”¨ä¾‹";
+$TLS_multiple_tcase_removed_from_tplan="ä»æµ‹è¯•è®¡åˆ’ä¸­ç§»é™¤å¤šä¸ªæµ‹è¯•ç”¨ä¾‹";
 
 
-// lib/plan/planUpdateTC.php
-$TLS_category_has_changed = "·ÖÀàÒÑ¾­·¢Éú±ä»¯";
-$TLS_different_versions = "²»Í¬°æ±¾";
-$TLS_plan_update_no_tc_updated = "Ã»ÓĞ²âÊÔÓÃÀı±»¸üĞÂ";
-$TLS_planupdate_tc_updated = "ÒÑ¸üĞÂ"; // add by wangyy
-$TLS_planupdate_tc_deleted = "ÒÑÉ¾³ı"; // add by wangyy
-$TLS_planupdate_tc_deleted1 = "²âÊÔÓÃÀı";
-$TLS_planupdate_tc_deleted2 = "ÒÑ¾­±»É¾³ı¡£";
-$TLS_planupdate_tc_updated1 = "²âÊÔÓÃÀı";
-$TLS_planupdate_tc_updated2 = "ÒÑ¾­±»¸üĞÂ¡£";
-
-
-
-// lib/print/printData.php
-$TLS_categories = "·ÖÀà";
-$TLS_no_test_case = "Ã»ÓĞ²âÊÔÓÃÀı";
-$TLS_setup_and_config = "°²×°ºÍÅäÖÃ";
-$TLS_test_case_suite = "²âÊÔÓÃÀı¼¯";
-$TLS_test_cases = "²âÊÔÓÃÀı";
-$TLS_test_data = "²âÊÔÊı¾İ";
-$TLS_title_toc = "ÄÚÈİÁĞ±í";
+// lib/plan/planEdit.php
+$TLS_testplan_created_ok ="åˆ›å»ºæµ‹è¯•è®¡åˆ’";
+$TLS_update_tp_failed1 ="æµ‹è¯•è®¡åˆ’'";
+$TLS_update_tp_failed2 ="' æ›´æ–°å¤±è´¥";
+$TLS_warning_duplicate_tplan_name ="è¿™ä¸ªæµ‹è¯•è®¡åˆ’çš„åç§°å·²ç»å­˜åœ¨. è¯·æ›´æ¢å¦ä¸€ä¸ªåç§°!";
 
 
 
 // lib/print/selectData.php
-$TLS_opt_show_doc_header = "ÏÔÊ¾ÎÄµµÊôĞÔĞÅÏ¢";
-$TLS_opt_show_tc_body = "ÏÔÊ¾²âÊÔÓÃÀıÄÚÈİ";
-$TLS_opt_show_tc_summary = "ÏÔÊ¾²âÊÔÓÃÀıÕªÒª";
-$TLS_opt_show_toc = "ÏÔÊ¾ÄÚÈİÁĞ±í";
-$TLS_title_tc_print_navigator = "µ¼º½ - ´òÓ¡²âÊÔ¹æ·¶";
-$TLS_title_tp_print_navigator = "µ¼º½ - ´òÓ¡²âÊÔ¼Æ»®";
+$TLS_opt_show_doc_header ="åŒ…å«æ–‡æ¡£å±æ€§ä¿¡æ¯";
+$TLS_opt_show_tc_body ="åŒ…å«æµ‹è¯•ç”¨ä¾‹å†…å®¹";
+$TLS_opt_show_tc_summary ="åŒ…å«æµ‹è¯•ç”¨ä¾‹æ‘˜è¦";
+$TLS_opt_show_toc ="ç”Ÿæˆç›®å½•";
+$TLS_opt_show_tc_author = "åŒ…å«æµ‹è¯•ç”¨ä¾‹ä½œè€…";
+$TLS_opt_show_passfail = "åŒ…å«é€šè¿‡/å¤±è´¥ä»¥åŠæ‰§è¡Œå¤‡æ³¨";
+$TLS_title_tc_print_navigator ="å¯¼èˆª - æ‰“å°æµ‹è¯•è§„æ ¼è¯´æ˜ä¹¦";
+$TLS_title_tp_print_navigator ="å¯¼èˆª - æ‰“å°æµ‹è¯•è®¡åˆ’";
+
+
+
+// lib/project/projectedit.php
+$TLS_error_product_name_duplicate ="è¿™ä¸ªäº§å“çš„åç§°å·²ç»å­˜åœ¨. <br>è¯·ä½¿ç”¨å…¶ä»–åç§°";
+$TLS_info_no_more_prods ="æ²¡æœ‰æ›´å¤šçš„äº§å“ã€‚";
+$TLS_info_product_activated ="äº§å“%så·²ç»è¢«æ¿€æ´»ã€‚";
+$TLS_info_product_inactivated ="äº§å“%så·²ç»è¢«ç¦ç”¨ã€‚";
+$TLS_info_product_not_deleted_check_log ="äº§å“%sæ²¡æœ‰è¢«åˆ é™¤ã€‚è¯·æŸ¥çœ‹TestLinkçš„æ—¥å¿—ã€‚";
+$TLS_info_product_was_deleted ="äº§å“%sè¢«æˆåŠŸåœ°åˆ é™¤";
+$TLS_refer_to_log =" è¯·æŸ¥çœ‹TestLinkçš„æ—¥å¿—æ¥è·å–æ›´å¤šçš„ä¿¡æ¯ã€‚";
+$TLS_test_project_activated ="äº§å“%sæˆåŠŸåœ°è¢«æ¿€æ´»äº†";
+$TLS_test_project_created ="äº§å“%sæˆåŠŸåœ°è¢«åˆ›å»ºäº†";
+$TLS_test_project_deleted ="äº§å“%sæˆåŠŸåœ°è¢«åˆ é™¤äº†";
+$TLS_test_project_inactivated ="äº§å“%sæˆåŠŸåœ°è¢«ç¦æ­¢äº†";
+$TLS_test_project_updated = "äº§å“%sæˆåŠŸåœ°è¢«æ›´æ–°äº†";
+$TLS_test_project_update_failed = "äº§å“%sæ›´æ–°æ—¶å‡ºé”™!";
+
+
+// lib/results/charts.php
+$TLS_maani_copyright ="";
+$TLS_graphical_reports ="å›¾å½¢æŠ¥è¡¨";
+$TLS_overall_metrics ="æ€»ä½“æµ‹è¯•ç»“æœé¥¼å›¾";
+$TLS_results_by_keyword ="æŒ‰å…³é”®å­—çš„æµ‹è¯•ç»“æœå›¾";
+$TLS_results_by_tester ="å„æµ‹è¯•äººå‘˜æµ‹è¯•ç»“æœå›¾";
+$TLS_results_top_level_suites = "é¡¶çº§åˆ†ç±»çš„æµ‹è¯•ç»“æœ";
+
+
+// lib/req/reqImport.php
+$TLS_file_is_not_ok_for_import_type = "å¯¼å…¥æ–‡ä»¶ä¸æ‰€é€‰å¯¼å…¥ç±»å‹ä¸å…¼å®¹";
+$TLS_file_is_not_text = "å¯¼å…¥æ–‡ä»¶ä¸æ˜¯æ–‡ä½“æ–‡ä»¶ï¼Œæ— æ³•ä½¿ç”¨";
+$TLS_please_choose_req_file = "è¯·é€‰æ‹©ä¸Šä¼ æ–‡ä»¶";
+$TLS_req_import_finished = "å¯¼å…¥å®Œæˆï¼";
+
+
+
+// lib/req/reqSpecView.php
+$TLS_cant_create_tc_from_req_nothing_sel = "è¯·é€‰æ‹©ä¸€ä¸ªæµ‹è¯•éœ€æ±‚ï¼";
+$TLS_req_created = "æµ‹è¯•éœ€æ±‚ %s æˆåŠŸåˆ›å»º";
+
+
+
+// lib/req/reqTcAssign.php
+$TLS_req_msg_noselect = "å•¥éƒ½æ²¡é€‰";
+$TLS_req_msg_notupdated_coverage = "éœ€æ±‚è¦†ç›–ç‡æœªæ›´æ–°";
+
+
+
+// lib/results/resultsBugs.php
+$TLS_title_test_report_all_builds = "æµ‹è¯•æŠ¥å‘Š: æ‰€æœ‰çš„æµ‹è¯•è®¡åˆ’ç‰ˆæœ¬çš„æµ‹è¯•ç”¨ä¾‹æ‰§è¡Œç»“æœ";
 
 
 
 // lib/results/resultsAllBuilds.php
-$TLS_title_metrics_x_build = " - Ã¿¸ö¹¹½¨µÄ²âÊÔ½á¹û¶ÈÁ¿";
+$TLS_title_metrics_x_build = "å…¨éƒ¨çš„æµ‹è¯•è®¡åˆ’ç‰ˆæœ¬çŠ¶æ€";
 
 
 
 // lib/results/resultsByStatus.php
-$TLS_list_of_blocked = "Ëø¶¨µÄ²âÊÔÓÃÀıÁĞ±í";
-$TLS_list_of_failed = "Ê§°ÜµÄ²âÊÔÓÃÀıÁĞ±í";
-
-
-
-// lib/results/resultsNavigator.php
-$TLS_link_report_blocked_tcs = "Ëø¶¨µÄ²âÊÔÓÃÀı";
-$TLS_link_report_excel = "&#8195;&#8594; µ¼³öExcel";
-$TLS_link_report_failed = "Ê§°ÜµÄ²âÊÔÓÃÀı";
-$TLS_link_report_general_tp_metrics = "×ÜÌå²âÊÔ¼Æ»®¶ÈÁ¿";
-$TLS_link_report_metrics_active_build = "»î¶¯¹¹½¨µÄ¶ÈÁ¿";
-$TLS_link_report_metrics_more_builds = "²éÑ¯¶ÈÁ¿";
-$TLS_link_report_overall_build = "È«²¿¹¹½¨µÄ×´Ì¬";
-$TLS_link_report_reqs_coverage = "»ùÓÚĞèÇóµÄ±¨¸æ";
-$TLS_link_report_test = "²âÊÔ±¨¸æ";
-$TLS_link_report_total_bugs = "Ã¿¸ö²âÊÔÓÃÀıµÄÈ«²¿ÎÊÌâ";
-$TLS_link_report_result_navigator = "µ¼º½ - ²âÊÔ½á¹û";
-
-
-// lib/results/resultsSend.php
-$TLS_send_to_empty_email_warning = "ºÜ±§Ç¸ÎŞ·¨·¢ËÍÓÊ¼ş£¬ÇëÊäÈëÓĞĞ§µÄÓÊ¼şµØÖ·¡£";
-$TLS_warning_create_build_first = "±ØĞëÊ×ÏÈ´´½¨¹¹½¨»òµ¼ÈëÊı¾İ¡£";
+$TLS_list_of_blocked = "æ‰§è¡Œé˜»å¡çš„ç”¨ä¾‹";
+$TLS_list_of_failed = "æ‰§è¡Œå¤±è´¥çš„ç”¨ä¾‹";
+$TLS_list_of_not_run = "å°šæœªæ‰§è¡Œçš„ç”¨ä¾‹";
 
 
 
 // lib/results/resultsTC.php
-$TLS_title_test_report_all_builds = "²âÊÔ±¨¸æ£ºËùÓĞ¹¹½¨µÄ²âÊÔÓÃÀıµÄ²âÊÔ½á¹û";
 
 
 
-// lib/results/resultsMoreBuilds_buildReport.php
+// lib/results/resultsNavigator.php
+$TLS_link_charts="å›¾è¡¨";
+$TLS_link_report_blocked_tcs = "æ‰§è¡Œé˜»å¡çš„ç”¨ä¾‹åˆ—è¡¨";
+$TLS_link_report_failed = "æ‰§è¡Œå¤±è´¥çš„ç”¨ä¾‹åˆ—è¡¨";
+$TLS_link_report_general_tp_metrics = "å¸¸è§„æµ‹è¯•è®¡åˆ’åº¦é‡";
+$TLS_link_report_metrics_active_build = "æ´»åŠ¨çš„æµ‹è¯•è®¡åˆ’ç‰ˆæœ¬åº¦é‡";
+$TLS_link_report_metrics_more_builds = "æŸ¥è¯¢åº¦é‡";
+$TLS_link_report_not_run="å°šæœªæ‰§è¡Œçš„ç”¨ä¾‹åˆ—è¡¨";
+$TLS_link_report_overall_build = "å…¨éƒ¨æµ‹è¯•è®¡åˆ’ç‰ˆæœ¬çš„çŠ¶æ€";
+$TLS_link_report_reqs_coverage = "éœ€æ±‚è¦†ç›–ç‡æŠ¥å‘Š";
+$TLS_link_report_test = "æµ‹è¯•æŠ¥å‘Š";
+$TLS_link_report_total_bugs = "æ¯ä¸ªæµ‹è¯•ç”¨ä¾‹çš„Bugæ€»æ•°ï¼š";
+
+
+// lib/results/resultsSend.php
+$TLS_send_to_empty_email_warning = "æŠ±æ­‰ï¼ŒEmailåœ°å€ä¸èƒ½ä¸ºç©ºï¼Œè¯·è¾“å…¥æ­£ç¡®çš„åœ°å€ã€‚";
+$TLS_warning_create_build_first = "æ‚¨å¿…é¡»å…ˆåˆ›å»ºæµ‹è¯•è®¡åˆ’ç‰ˆæœ¬æˆ–è€…å…ˆå¯¼å…¥æ•°æ®ã€‚";
+
+// lib/results/displayMgr.php
+$TLS_error_sendreport_no_email_credentials = "æ­¤ç”¨æˆ·æœªæŒ‡å®šEmailåœ°å€ï¼Œè¯·å¡«å†™â€œä¸ªäººå¸å·â€ä¸­çš„ç”µå­é‚®ä»¶å­—æ®µ";
 
 
 
 // lib/testcases/archive.inc.php
-$TLS_component_name_already_exists = "×é¼şÃû³ÆÒÑ¾­´æÔÚ";
-
-
-
-// lib/testcases/containerEdit.php
-$TLS_error_cat_add = "ÎŞ·¨Ôö¼Ó·ÖÀà!";
-$TLS_error_update_catorder = "ÎŞ·¨¸üĞÂ·ÖÀàµÄË³Ğò";
-$TLS_warning_empty_cat_name = "ÇëÎª·ÖÀàÖ¸¶¨Ãû³Æ";
-$TLS_warning_empty_com_name = "ÇëÎª×é¼şÖ¸¶¨Ãû³Æ";
 
 
 
@@ -1289,30 +1712,69 @@ $TLS_warning_empty_com_name = "ÇëÎª×é¼şÖ¸¶¨Ãû³Æ";
 
 
 
-// lib/testcases/tcEdit.php
-$TLS_current = "Ã»ÓĞ±ä¸üµÄ";
-$TLS_error_tc_add = "Ôö¼Ó²âÊÔÓÃÀıÀï·¢Éú´íÎó";
-$TLS_warning_empty_tc_title = "ÇëÎª²âÊÔÓÃÀıÖ¸¶¨±êÌâ";
-
-
-
 // lib/testcases/tcImport.php
-$TLS_the_format = "×é¼ş1,·ÖÀà1,'²âÊÔÓÃÀı1','ÕªÒª','²½Öè','½á¹û','¼ü1','¼ü2','¼ü...'";
-$TLS_the_format_by_cat = "'²âÊÔÓÃÀı1','ÕªÒª','²½Öè','½á¹û','¼ü1','¼ü2','¼ü...'";
+$TLS_please_choose_file_to_import = "è¯·é€‰æ‹©å¯¼å…¥æ–‡ä»¶";
+$TLS_title_tc_import_to = "å¯¼å…¥æµ‹è¯•ç”¨ä¾‹";
+$TLS_title_tsuite_import_to = "å¯¼å…¥åˆ†ç±»";
+$TLS_wrong_xml_tcase_file = "xmlæµ‹è¯•ç”¨ä¾‹æ–‡ä»¶æ ¼å¼é”™è¯¯";
+$TLS_wrong_xml_tsuite_file = "xmlåˆ†ç±»æ–‡ä»¶æ ¼å¼é”™è¯¯";
 
 
 
-// lib/req/reqSpecView.php
-$TLS_req_msg_noselect = "Ã»Ñ¡ÖĞÄ¿±ê";
+// lib/testcases/tcexport.php
+$TLS_no_testcases_to_export = "æ²¡æœ‰æµ‹è¯•ç”¨ä¾‹å¯ä»¥å¯¼å‡º";
+$TLS_no_testsuites_to_export = "æ²¡æœ‰åˆ†ç±»å¯ä»¥å¯¼å‡º";
+$TLS_title_tc_export = "å¯¼å‡ºæµ‹è¯•ç”¨ä¾‹";
+$TLS_title_tc_export_all = "å¯¼å‡ºæ‰€æœ‰æµ‹è¯•ç”¨ä¾‹";
+$TLS_title_tsuite_export = "å¯¼å‡ºåˆ†ç±»";
+$TLS_title_tsuite_export_all = "å¯¼å‡ºæ‰€æœ‰åˆ†ç±»";
 
 
 
-// lib/req/reqTcAssign.php
-$TLS_req_msg_notupdated_coverage = "Ã»ÓĞÎªĞèÇó¸üĞÂ¸²¸ÇÂÊ";
+// lib/testcases/containerEdit.php
+$TLS_delete = "åˆ é™¤";
+$TLS_delete_notice = "Warning: æ‰€æœ‰çš„ç›¸å…³æµ‹è¯•ç»“æœéƒ½å°†è¢«åˆ é™¤";
+$TLS_warning_empty_com_name = "è¯·è¾“å…¥åˆ†ç±»å";
 
 
 
-// lib/req/reqImport.php
-$TLS_req_import_finished = "µ¼Èë½áÊø";
+// lib/testcases/tcEdit.php
+$TLS_current = "å½“å‰";
+$TLS_delete_linked = "å…³è”çš„æµ‹è¯•è®¡åˆ’å°†è¢«åˆ é™¤";
+$TLS_delete_linked_and_exec = "å…³è”çš„æµ‹è¯•è®¡åˆ’ä»¥åŠç›¸å…³çš„æ‰§è¡Œä¿¡æ¯éƒ½å°†è¢«åˆ é™¤";
+$TLS_error_tc_add = "æ·»åŠ æµ‹è¯•ç”¨ä¾‹æ—¶å‘ç”Ÿä¸€ä¸ªé”™è¯¯";
+$TLS_title_del_tc = "åˆ é™¤æµ‹è¯•ç”¨ä¾‹";
 
+
+
+// lib/usermanagement/rolesview.php
+$TLS_error_role_deletion = "æ— æ³•åˆ é™¤è§’è‰²ï¼";
+
+
+// lib/usermanagement/usersassign.php
+$TLS_no_test_projects = "å°šæœªå®šä¹‰äº§å“";
+$TLS_no_test_plans = "æœ¬äº§å“å°šæœªå®šä¹‰æµ‹è¯•è®¡åˆ’";
+$TLS_test_project_user_roles_updated = "ç”¨æˆ·è§’è‰²å·²æ›´æ–°";
+$TLS_test_plan_user_roles_updated = "ç”¨æˆ·è§’è‰²å·²æ·»åŠ ";
+
+
+// lib/usermanagement/usersedit.php
+$TLS_user_created = "ç”¨æˆ· %s å·²æˆåŠŸåˆ›å»º";
+$TLS_user_deleted = "ç”¨æˆ· %s å·²æˆåŠŸåˆ é™¤";
+$TLS_user_not_added = "æ— æ³•æ·»åŠ ç”¨æˆ·ï¼";
+
+
+
+// lib/usermanagement/rolesedit.php
+$TLS_error_role_creation = "æ— æ³•åˆ›å»ºè§’è‰²ï¼";
+$TLS_error_role_update = "æ— æ³•æ›´æ–°è§’è‰²ï¼";
+
+
+
+// lib/cfields/cfields_edit.php
+$TLS_cf_name_exists = "å·²å­˜åœ¨åŒåçš„è‡ªå®šä¹‰å­—æ®µã€‚è¯·ä½¿ç”¨å…¶ä»–çš„åç§°";
+$TLS_error_creating_cf = "è‡ªå®šä¹‰å­—æ®µæ— æ³•åˆ›å»ºï¼";
+$TLS_do_update = "å·²æ›´æ–°";
+$TLS_do_delete = "å·²åˆ é™¤";
+$TLS_do_add = "å·²æ·»åŠ ";
 ?>

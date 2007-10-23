@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: testproject.class.test.php,v $
  *
- * @version $Revision: 1.2 $
- * @modified $Date: 2007/10/22 08:11:16 $ by $Author: franciscom $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2007/10/23 16:37:40 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * 
@@ -26,11 +26,11 @@ $tproject_mgr=new testproject($db);
 new dBug($tproject_mgr);
 
 // getKeywords($testproject_id,$keywordID = null)
-// echo "<pre> testproject - getKeywords(\$testproject_id,\$keywordID = null)";echo "</pre>";
-// $tproject_id=1;
-// echo "<pre>               get_keywords_map($tproject_id)";echo "</pre>";
-// $keywords_map=$tproject_mgr->get_keywords_map($tproject_id);
-// new dBug($keywords_map);
+$tproject_id=1;
+echo "<pre> testproject - getKeywords(\$testproject_id,\$keywordID = null)";echo "</pre>";
+echo "<pre>               getKeywords($tproject_id)";echo "</pre>";
+$keywords=$tproject_mgr->getKeywords($tproject_id);
+new dBug($keywords);
 
 
 echo "<pre> testproject - get_keywords_map(\$testproject_id)";echo "</pre>";
@@ -62,10 +62,29 @@ $combo_test_suites=$tproject_mgr->gen_combo_test_suites($tproject_id,null,'array
 new dBug($combo_test_suites);
 
 
+echo "<pre> testproject - getReqSpec(\$testproject_id, \$id = null)";echo "</pre>";
+echo "<pre>               getReqSpec($tproject_id)";echo "</pre>";
+$requirement_spec=$tproject_mgr->getReqSpec($tproject_id);
+new dBug($requirement_spec);
+
+$srs_id=2;
+echo "<pre>               getReqSpec(\$tproject_id,\$srs_id)";echo "</pre>";
+echo "<pre>               getReqSpec($tproject_id,$srs_id)";echo "</pre>";
+$requirement_spec=$tproject_mgr->getReqSpec($tproject_id,$srs_id);
+new dBug($requirement_spec);
+
+
+$srs_title='SRS2';
+echo "<pre> testproject - get_srs_by_title(\$testproject_id,\$title,\$ignore_case=0)";echo "</pre>";
+echo "<pre>               get_srs_by_title($tproject_id,$srs_title)";echo "</pre>";
+$srs_by_title=$tproject_mgr->get_srs_by_title($tproject_id,$srs_title);
+new dBug($srs_by_title);
+
+// function get_srs_by_title($testproject_id,$title,$ignore_case=0)
+
+
 
 /*
-function getKeywords($testproject_id,$keywordID = null)
-function addKeywords($testprojectID,$keywordData)
 function getReqSpec($testproject_id, $id = null)
 function createReqSpec($testproject_id,$title, $scope, $countReq,$user_id,$type = 'n')
 function get_srs_by_title($testproject_id,$title,$ignore_case=0)

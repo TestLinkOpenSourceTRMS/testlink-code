@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.38 $
- * @modified $Date: 2007/10/22 08:10:59 $  $Author: franciscom $
+ * @version $Revision: 1.39 $
+ * @modified $Date: 2007/10/23 16:44:01 $  $Author: franciscom $
  * @author franciscom
  *
  * 20071002 - azl - added ORDER BY to get_all method
@@ -531,7 +531,11 @@ function count_testcases($id)
 	 *
 	 * @param int $tprojectID the test project id
 	 * @param int $keywordID [default = null] the optional keyword id
-	 * @return array returns the keyword information
+	 * @return array, every elemen is map with following structure:
+	 *
+	 *                id
+	 *                keyword
+	 *                notes
 	 **/
 	function getKeywords($testproject_id,$keywordID = null)
 	{
@@ -583,10 +587,23 @@ function count_testcases($id)
 	 * collect information about current list of Requirements Specification
 	 *  
 	 * @param numeric $testproject_id
-	 * @param string $set optional id of the requirement specification
-	 
-	 * @return assoc_array list of SRS
-	 * 
+	 * @param string  $id optional id of the requirement specification
+	 *
+	 * @return null if no srs exits, or no srs exists for id
+	 *         array, where each element is a map with SRS data.
+	 *         
+	 *         map keys:
+   *         id
+   *         testproject_id
+   *         title
+   *         scope 	
+   *         total_req
+   *         type
+   *         author_id
+   *         creation_ts
+   *         modifier_id
+   *         modification_ts
+	 *
 	 * @author Martin Havlat 
 	 **/
 	function getReqSpec($testproject_id, $id = null)
@@ -651,8 +668,19 @@ function count_testcases($id)
            [ignore_case]: control case sensitive search.
                           default 0 -> case sensivite search
     
-    returns: 
-  
+    returns: map.
+             key: srs id
+             value: srs info,  map with folowing keys:
+                    id
+                    testproject_id
+                    title
+                    scope 	
+                    total_req
+                    type
+                    author_id
+                    creation_ts
+                    modifier_id
+                    modification_ts
   */
   function get_srs_by_title($testproject_id,$title,$ignore_case=0)
   {

@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.60 $
- * @modified $Date: 2007/10/21 16:02:11 $ $Author: franciscom $
+ * @version $Revision: 1.61 $
+ * @modified $Date: 2007/10/23 16:44:01 $ $Author: franciscom $
  * @author franciscom
  *
  *
@@ -406,11 +406,23 @@ function update($id,$tcversion_id,$name,$summary,$steps,
 }
 
 /*
-	Need to check for every version of this test case:
-	1. is linked to one of more test plans ?
-	2. if anwser is yes then, need to check if has been executed => has records on executions table
-	   
-	2. if linked but never executed
+  function: check_link_and_exec_status
+            Fore every version of testcase (id), do following checks:
+            
+	          1. testcase is linked to one of more test plans ?
+	          2. if anwser is yes then,check if has been executed => has records on executions table
+
+  args : id: testcase id
+  
+  returns: string with following values:
+           no_links: testcase is not linked to any testplan
+           linked_but_not_executed: testcase is linked at least to a testplan
+                                    but has not been executed.
+                                    
+           linked_and_executed: testcase is linked at least to a testplan and 
+                                has been executed => has records on executions table.
+                                    
+  
 */
 function check_link_and_exec_status($id)
 {
@@ -471,19 +483,48 @@ function delete($id,$version_id = TC_ALL_VERSIONS)
 	20061020 - franciscom - changed return type
 	                        added test plan name in return data
 */
+/*
+  function: get_linked_versions
+            For a test case get information about versions linked to testplans.
+            Filters can be applied on:
+                                      execution status
+                                      active status
+            
+  args : id: testcase id
+         [exec_status]: default: ALL, range: ALL,EXECUTED,NOT_EXECUTED
+         [active_status]: default: ALL, range: ALL,ACTIVE,INACTIVE
+  
+    returns: map.
+           key: version id
+           value: map with following structure:
+                  key: testplan id
+                  value: map with following structure:
+                  
+                  testcase_id
+                  tcversion_id
+                  id -> tcversion_id (node id)
+                  version
+                  summary
+                  steps
+                  expected_results
+                  importance
+                  author_id
+                  creation_ts
+                  updater_id
+                  modification_ts
+                  active
+                  is_open
+                  testplan_id
+                  tplan_name
+*/
 function get_linked_versions($id,$exec_status="ALL",$active_status='ALL')
 {
-	// exec_status = ALL,EXECUTED,NOT_EXECUTED
-	//
-	// active_status = ALL,ACTIVE,INACTIVE
-	//
   $active_filter='';
   $active_status=strtoupper($active_status);
 	if($active_status !='ALL')
 	{
 	  $active_filter=' AND tcversions.active=' . $active_status=='ACTIVE' ? 1 : 0;
   }
-	// --------------------------------------------------------------------
 	
 	switch ($exec_status)
 	{
@@ -637,7 +678,13 @@ function _execution_delete($id,$version_id=TC_ALL_VERSIONS,$children=null)
     }
 }
 
+
 /*
+  function: get_testproject
+            Given a testcase id get node id of testproject to which testcase belongs.
+  args :id: testcase id
+  
+  returns: testproject id
 
 */
 function get_testproject($id)
@@ -727,10 +774,24 @@ function create_new_version($id,$user_id)
 
 /*
   function: get_last_version_info
-
-  args : $id: test case id
+            Get information about last version (greater number) of a testcase.
+            
+  args : id: testcase id
   
-  returns: map
+  returns: map with following keys:
+  
+	  			 id -> tcversion_id
+				   version 
+				   summary
+				   steps
+				   expected_results
+				   importance
+				   author_id
+				   creation_ts
+				   updater_id
+				   modification_ts
+				   active
+				   is_open
 
 */
 function get_last_version_info($id)
@@ -871,18 +932,28 @@ function get_by_id_bulk($id,$version_id=TC_ALL_VERSIONS, $get_active=0, $get_ope
 }
 
 
-// 20070105 - added tc_order in the result
-//
-// 20061104 - interface changes
-//
-// id: testcase id
-// [version_id]: default TC_ALL_VERSIONS => all versions
-// [active_status]: default 'ALL', range: 'ALL','ACTIVE','INACTIVE'
-//                  has effect for the following version_id values:
-//                  TC_ALL_VERSIONS,TC_LAST_VERSION, version_id is NOT an array 
-//  
-// [open_status]: default 'ALL'
-//
+
+
+/*
+  function: get_by_id
+
+  args : id: can be a single testcase id or an array od testcase id.
+
+         [version_id]: default TC_ALL_VERSIONS => all versions
+                       can be an array.
+                       Useful to retrieve only a subset of versions.
+                       
+         [active_status]: default 'ALL', range: 'ALL','ACTIVE','INACTIVE'
+                          has effect for the following version_id values:
+                          TC_ALL_VERSIONS,TC_LAST_VERSION, version_id is NOT an array 
+  
+         [open_status]: default 'ALL'
+                        currently not used.
+  
+  returns: array when every element has following keys:
+  
+
+*/
 function get_by_id($id,$version_id = TC_ALL_VERSIONS, $active_status='ALL',$open_status='ALL')
 {
 	$tcid_list = '';
@@ -943,42 +1014,53 @@ function get_by_id($id,$version_id = TC_ALL_VERSIONS, $active_status='ALL',$open
 	return ($recordset ? $recordset : null);
 }
 
-//
-// args:
-//       id: test case id
-//       [tcversion_id]: can be a single value or an array
-//
-// returns a recorset with the following fields
-//
-// tcversion_id, linked , executed
-//
-// linked field: will take the following values
-//               if $testplan_id == null
-//                  NULL if the tc version is not linked to ANY TEST PLAN
-//                  tcversion_id if linked
-// 
-//               if $testplan_id != null
-//                  NULL if the tc version is not linked to $testplan_id
-//
-//
-// executed field: will take the following values
-//               if $testplan_id == null
-//                 NULL if the tc version has not been executed in ANY TEST PLAN
-//                 tcversion_id if has executions 
-//
-//               if $testplan_id != null
-//                 NULL if the tc version has not been executed in $testplan_id
-//
-//
-//
-// rev :
-//      20061030 - franciscom
-//      added optional argument testplan_id
-// 
-//      20060430 - franciscom 
-//      added new argument 
-//
-//      20060326 - franciscom
+
+/*
+  function: get_versions_status_quo
+            Get linked and executed status quo.
+            No info specific to testplan items where testacase can be linked to
+            is returned.
+            
+ 
+  args : id: test case id
+         [tcversion_id]: default: null -> get info about all versions.
+                         can be a single value or an array.
+                         
+                         
+         [testplan_id]: default: null -> all testplans where testcase is linked,
+                                         are analised to generate results.
+                                         
+                        when not null, filter for testplan_id, to analise for
+                        generating results.
+         
+         
+
+  returns: map.
+           key: tcversion_id.
+           value: map with the following keys:
+
+           tcversion_id, linked , executed
+           
+           linked field: will take the following values
+                         if $testplan_id == null
+                            NULL if the tc version is not linked to ANY TEST PLAN
+                            tcversion_id if linked
+           
+                         if $testplan_id != null
+                            NULL if the tc version is not linked to $testplan_id
+           
+           
+           executed field: will take the following values
+                           if $testplan_id == null
+                              NULL if the tc version has not been executed in ANY TEST PLAN
+                              tcversion_id if has executions. 
+           
+                           if $testplan_id != null
+                              NULL if the tc version has not been executed in $testplan_id
+
+rev :
+
+*/
 function get_versions_status_quo($id, $tcversion_id=null, $testplan_id=null)
 {
     $testplan_filter='';
@@ -1013,17 +1095,35 @@ function get_versions_status_quo($id, $tcversion_id=null, $testplan_id=null)
 		      WHERE  NH.parent_id = {$id} {$tcversion_filter}"; 
 
 		$recordset = $this->db->fetchRowsIntoMap($sql,'tcversion_id');
-		//$recordset = $this->db->fetchArrayRowsIntoMap($sql,'tcversion_id');
   	return($recordset);
 }
-// -------------------------------------------------------------------------------
 
 
-// 20061030 - franciscom
-// 1. bug on LEFT JOIN condition
-// 2. added order by
-//
-// 20061020 
+
+/*
+  function: get_exec_status
+            Get information about executed and linked status in
+            every testplan, testcase is linked to.
+
+  args :id : testcase id
+  
+  returns: map
+           key: tcversion_id
+           value: map:
+                  key: testplan_id
+                  value: map with following keys:
+                  
+                  tcase_id
+ 				          tcversion_id
+  			          version
+  			          testplan_id
+  				        tplan_name
+  				        linked         if linked to  testplan -> tcversion_id
+				          executed       if executed in testplan -> tcversion_id
+				          exec_on_tplan  if executed in testplan -> testplan_id
+				          
+
+*/
 function get_exec_status($id)
 {
 		$sql="SELECT NH.parent_id AS tcase_id, NH.id AS tcversion_id,

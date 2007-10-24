@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: assignment_mgr.class.php,v $
  *
- * @version $Revision: 1.3 $
- * @modified $Date: 2006/10/24 20:35:01 $ by $Author: schlundus $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2007/10/24 15:57:23 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for assignment activities
@@ -46,7 +46,8 @@ class assignment_mgr
 		return $hash_types;
 	}
 
-	 // $id can be an scalar or an array
+	// $feature_id can be an scalar or an array
+	 
 	function delete_by_feature_id($feature_id) 
 	{
 	    if( is_array($feature_id) )

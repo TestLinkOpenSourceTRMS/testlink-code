@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.61 $
- * @modified $Date: 2007/10/23 16:44:01 $ $Author: franciscom $
+ * @version $Revision: 1.62 $
+ * @modified $Date: 2007/10/24 15:57:10 $ $Author: franciscom $
  * @author franciscom
  *
  *
@@ -1246,14 +1246,54 @@ function deleteKeywords($tcID,$kwID = null)
 //                            END Keyword related methods	
 // -------------------------------------------------------------------------------
 
-
 /*
-20060528 - franciscom - interface changes 
+  function: get_executions
+            get information about all execution for a testcase version, on a testplan
+            on a build. Execution results are ordered by execution timestamp.
+            
+            Is possible to filter certain executions
+            Is possible to choose Ascending/Descending order of results. (order by exec timestamp).
+            
+
+  args : id: testcase (node id) - can be single value or array.
+         version_id: tcversion id (node id) - can be single value or array.
+         tplan_id: testplan id
+         build_id:
+         [exec_id_order] default: 'DESC' - range: ASC,DESC
+         [exec_to_exclude]: default: null -> no filter
+                            can be single value or array, this exec id will be EXCLUDED.
+
+  
+  returns: map
+           key: tcversion id
+           value: array where every element is a map with following keys
+
+                  name: testcase name
+                  testcase_id 	
+                  id: tcversion_id
+                  version 
+                  summary: testcase spec. summary
+                  steps: testcase spec. steps
+                  expected_results: testcase spec. expected results
+                  importance 
+                  author_id: tcversion author
+                  creation_ts: timestamp of creation
+                  updater_id: last updater of specification
+                  modification_ts:
+                  active: tcversion active status
+                  is_open: tcversion open status
+                  tester_login
+                  tester_first_name
+                  tester_last_name
+                  tester_id
+                  execution_id
+                  status: execution status
+                  execution_notes
+                  execution_ts
 
 */
 function get_executions($id,$version_id,$tplan_id,$build_id,$exec_id_order='DESC',$exec_to_exclude=null)
 {
-	
 	// --------------------------------------------------------------------
 	if( is_array($id) )
 	{
@@ -1325,7 +1365,34 @@ function get_executions($id,$version_id,$tplan_id,$build_id,$exec_id_order='DESC
 
   args :
   
-  returns: 
+  returns: map:
+           key: tcversion_id
+           value: map with following keys:
+            			execution_id
+            			status: execution status
+            			name: testcase name
+            			testcase_id
+            			tsuite_id: parent testsuite of testcase (node id)
+            			id: tcversion id (node id)
+            			version
+                  summary: testcase spec. summary
+                  steps: testcase spec. steps
+                  expected_results: testcase spec. expected results
+            			importance
+                  author_id: tcversion author
+                  creation_ts: timestamp of creation
+                  updater_id: last updater of specification.
+            			modification_ts
+                  active: tcversion active status
+                  is_open: tcversion open status
+            			tester_login
+            			tester_first_name
+            			tester_last_name
+            			tester_id
+            			execution_notes
+            			execution_ts
+            			build_id
+            			build_name
 
 */
 function get_last_execution($id,$version_id,$tplan_id,$build_id,$get_no_executions=0)
@@ -1470,20 +1537,45 @@ function exportTestCaseDataToXML($tcase_id,$tcversion_id,$bNoXMLHeader = false,$
 	return $xmlTC;
 }
 
-// args:
-//       id: test case id
-//       [tcversion_id]: can be a single value or an array
-//
-// returns a recorset with the following fields
-//
-// tcversion_id, linked 
-//
-// linked field: will take the following values
-//               NULL if the tc version is not linked to any test plan
-//               tcversion_id if linked 
-//
-//
-//
+
+/*
+  function: get_version_exec_assignment
+            get information about user that has been assigned 
+            test case version for execution on a testplan
+
+  args : tcversion_id: test case version id
+         tplan_id
+  
+
+  
+  returns: map
+           key: tcversion_id
+           value: map with following keys:
+ 				          tcversion_id
+				          feature_id: identifies row on table testplan_tcversions.
+				                      
+				          
+				          user_id:  user that has reponsibility to execute this tcversion_id.
+				                    null/empty string is nodoby has been assigned
+				                    
+				          type    type of assignment. 
+				                  1 -> testcase_execution.
+				                  See assignment_types tables for updated information
+				                  about other types of assignemt available.
+				                  
+				          status  assignment status
+				                  See assignment_status tables for updated information.
+				                  1 -> open
+                          2 -> closed
+                          3 -> completed
+                          4 -> todo_urgent
+                          5 -> todo
+			                  
+				          assigner_id: who has assigned execution to user_id.
+				          
+           
+
+*/
 function get_version_exec_assignment($tcversion_id,$tplan_id)
 {
 	$sql = "SELECT T.tcversion_id AS tcversion_id,T.id AS feature_id," .
@@ -1504,9 +1596,12 @@ function get_version_exec_assignment($tcversion_id,$tplan_id)
 /*
   function: update_active_status
 
-  args :
+  args : id: testcase id
+         tcversion_id
+         active_status: 1 -> active / 0 -> inactive
   
-  returns: 
+  returns: 1 -> everything ok.
+           0 -> some error
 
 */
 function update_active_status($id,$tcversion_id,$active_status)
@@ -1522,11 +1617,13 @@ function update_active_status($id,$tcversion_id,$active_status)
 
 
 /*
-  function: 
+  function: copy_attachments
+            Copy attachments from source testcase to target testcase
 
-  args :
+  args : source_id
+         target_id
   
-  returns: 
+  returns: -
 
 */
 function copy_attachments($source_id,$target_id)
@@ -1567,11 +1664,11 @@ function copy_attachments($source_id,$target_id)
 }
 
 /*
-  function: 
+  function: delete_attachments
 
-  args :
+  args : testcase id
   
-  returns: 
+  returns: - 
 
 */
 function delete_attachments($id)
@@ -1598,16 +1695,54 @@ function delete_attachments($id)
 
 /*
   function: get_linked_cfields_at_design
+            Get all linked custom fields that must be available at design time.
+            Remember that custom fields are defined at system wide level, and
+            has to be linked to a testproject, in order to be used.
             
             
-  args: $id
-        [$parent_id]
-        [$show_on_execution]: default: null
-                              1 -> filter on field show_on_execution=1
-                              0 or null -> don't filter
+  args: id: testcase id
+        [parent_id]: node id of parent testsuite of testcase.
+                     need to undertad to which testproject the testcase belongs.
+                     this information is vital, to get the linked custom fields.
+                     Presence /absence of this value changes starting point
+                     on procedure to build tree path to get testproject id.
+                     
+                     null -> use testcase_id as starting point.
+                     !is_null -> use this value as starting point.        
+                             
+        [show_on_execution]: default: null
+                             1 -> filter on field show_on_execution=1
+                                  include ONLY custom fields that can be viewed
+                                  while user is execution testcases.
+                                  
+                             0 or null -> don't filter
         
         
-  returns: hash
+  returns: map/hash
+           key: custom field id
+           value: map with custom field definition and value assigned for choosen testcase, 
+                  with following keys:
+  
+            			id: custom field id
+            			name
+            			label
+            			type: custom field type
+            			possible_values: for custom field
+            			default_value
+            			valid_regexp
+            			length_min
+            			length_max
+            			show_on_design
+            			enable_on_design
+            			show_on_execution
+            			enable_on_execution
+            			display_order
+            			value: value assigned to custom field for this testcase
+            			       null if for this testcase custom field was never edited.
+            			       
+            			node_id: testcase id
+            			         null if for this testcase, custom field was never edited.
+   
   
   rev :
        20070302 - check for $id not null, is not enough, need to check is > 0
@@ -1631,11 +1766,24 @@ function get_linked_cfields_at_design($id,$parent_id=null,$show_on_execution=nul
 
 /*
   function: html_table_of_custom_field_inputs
+            Return html code, implementing a table with custom fields labels
+            and html inputs, for choosen testcase.
+            Used to manage user actions on custom fields values.
             
             
   args: $id
-        [$parent_id]
-        [$scope]: 'design','execution'
+        [parent_id]: node id of parent testsuite of testcase.
+                     need to undertad to which testproject the testcase belongs.
+                     this information is vital, to get the linked custom fields.
+                     Presence /absence of this value changes starting point
+                     on procedure to build tree path to get testproject id.
+                     
+                     null -> use testcase_id as starting point.
+                     !is_null -> use this value as starting point.        
+
+        [$scope]: 'design' -> use custom fields that can be used at design time (specification)
+                  'execution' -> use custom fields that can be used at execution time.
+        
         [$name_suffix]: must start with '_' (underscore).
                         Used when we display in a page several items
                         (example during test case execution, several test cases)
@@ -1681,16 +1829,25 @@ function html_table_of_custom_field_inputs($id,$parent_id=null,$scope='design',$
 
 /*
   function: html_table_of_custom_field_values
+            Return html code, implementing a table with custom fields labels
+            and custom fields values, for choosen testcase.
+            You can think of this function as some sort of read only version
+            of html_table_of_custom_field_inputs.
             
             
   args: $id
-        [$scope]: 'design','execution'
+        [$scope]: 'design' -> use custom fields that can be used at design time (specification)
+                  'execution' -> use custom fields that can be used at execution time.
+
         [$show_on_execution]: default: null
                               1 -> filter on field show_on_execution=1
                               0 or null -> don't filter
   
-        [$execution_id]
-        [$testplan_id]
+        [$execution_id]: null -> get values for all executions availables for testcase
+                         !is_null -> only get values or this execution_id
+                    
+        [$testplan_id]: null -> get values for any tesplan to with testcase is linked
+                        !is_null -> get values only for this testplan.
 
   returns: html string
   
@@ -1708,7 +1865,7 @@ function html_table_of_custom_field_values($id,$scope='design',$show_on_executio
 	else 
 	{
 		$cf_map = $this->get_linked_cfields_at_execution($id,$PID_NO_NEEDED,$show_on_execution,
-		$execution_id,$testplan_id);
+		                                                 $execution_id,$testplan_id);
 	}
     
 	if(!is_null($cf_map))

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: testcase.class.test.php,v $
  *
- * @version $Revision: 1.1 $
- * @modified $Date: 2007/10/23 16:43:20 $ by $Author: franciscom $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2007/10/24 15:54:48 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * With this page you can launch a set of available methods, to understand
@@ -89,6 +89,54 @@ echo "<pre>               get_keywords_map($tcase_id)";echo "</pre>";
 $keywords_map=$tcase_mgr->get_keywords_map($tcase_id);
 new dBug($keywords_map);
 
+
+$tcase_id=4;
+$version_id=5;
+$tplan_id=8;
+$build_id=1;
+echo "<pre> testcase - get_executions(\$id,\$version_id,\$tplan_id,\$build_id,<br>
+                                      \$exec_id_order='DESC',\$exec_to_exclude=null)";echo "</pre>";
+
+echo "<pre>            get_executions($tcase_id,$version_id,$tplan_id,$build_id)";echo "</pre>";
+$executions=$tcase_mgr->get_executions($tcase_id,$version_id,$tplan_id,$build_id);
+new dBug($executions);
+
+
+echo "<pre> testcase - get_last_execution(\$id,\$version_id,\$tplan_id,\$build_id,\$get_no_executions=0)";echo "</pre>";
+echo "<pre>            get_last_execution($tcase_id,$version_id,$tplan_id,$build_id)";echo "</pre>";
+$last_execution=$tcase_mgr->get_last_execution($tcase_id,$version_id,$tplan_id,$build_id);
+new dBug($last_execution);
+
+
+
+
+$tcversion_id=5;
+$tplan_id=8;
+echo "<pre> testcase - get_version_exec_assignment(\$tcversion_id,\$tplan_id)";echo "</pre>";
+echo "<pre>            get_version_exec_assignment($tcversion_id,$tplan_id)";echo "</pre>";
+$version_exec_assignment=$tcase_mgr->get_version_exec_assignment($tcversion_id,$tplan_id);
+new dBug($version_exec_assignment);
+
+
+echo "<pre> testcase - get_linked_cfields_at_design(\$id,\$parent_id=null,\$show_on_execution=null)";echo "</pre>";
+echo "<pre>            get_linked_cfields_at_design($testcase_id)";echo "</pre>";
+$linked_cfields_at_design=$tcase_mgr->get_linked_cfields_at_design($tcase_id);
+new dBug($linked_cfields_at_design);
+
+
+echo "<pre> testcase - html_table_of_custom_field_inputs(\$id,\$parent_id=null,\$scope='design',\$name_suffix='')";echo "</pre>";
+echo "<pre>            html_table_of_custom_field_inputs($tcase_id)";echo "</pre>";
+$table_of_custom_field_inputs=$tcase_mgr->html_table_of_custom_field_values($tcase_id);
+echo "<pre><form>"; echo $table_of_custom_field_inputs; echo "</form></pre>";
+
+
+echo "<pre> testcase - html_table_of_custom_field_values(\$id,\$scope='design',<br>
+                                                         \$show_on_execution=null,<br>
+                                                         \$execution_id=null,\$testplan_id=null) ";echo "</pre>";
+                                                         
+echo "<pre> testcase - html_table_of_custom_field_values($tcase_id)";echo "</pre>";
+$table_of_custom_field_values=$tcase_mgr->html_table_of_custom_field_values($tcase_id); 
+echo "<pre><xmp>"; echo $table_of_custom_field_values; echo "</xmp></pre>";
 
 
 

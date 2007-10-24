@@ -1,7 +1,7 @@
 <?php
 /** 
 *	TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* @version $Id: testSetNavigator.php,v 1.24 2007/09/29 16:04:23 franciscom Exp $
+* @version $Id: testSetNavigator.php,v 1.25 2007/10/24 19:55:21 schlundus Exp $
 *	@author Martin Havlat 
 *
 * Used in the remove test case feature
@@ -109,7 +109,7 @@ $sMenu = generateExecTree($db,$menuUrl,$tproject_id,$tproject_name,$tplan_id,$tp
                           FILTER_BY_BUILD_OFF,$getArguments,$keyword_id,FILTER_BY_TC_OFF,
                           $hide_tc);
 
-$tree = invokeMenu($sMenu);
+$tree = invokeMenu($sMenu,'',null);
 
 $smarty = new TLSmarty();  
 

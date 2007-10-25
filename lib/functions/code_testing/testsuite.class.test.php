@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: testsuite.class.test.php,v $
  *
- * @version $Revision: 1.1 $
- * @modified $Date: 2007/10/25 13:06:30 $ by $Author: franciscom $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2007/10/25 15:16:57 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * With this page you can launch a set of available methods, to understand
@@ -36,6 +36,25 @@ echo "<pre> testsuite - get_by_id(\$id)";echo "</pre>";
 echo "<pre>             get_by_id($tsuite_id)";echo "</pre>";
 $tsuite_info=$tsuite_mgr->get_by_id($tsuite_id);
 new dBug($tsuite_info);
+
+$tsuite_name=$tsuite_info['name'];
+
+
+echo "<pre> testsuite - get_by_name(\$name)";echo "</pre>";
+echo "<pre>             get_by_name($tsuite_name)";echo "</pre>";
+$tsuite_info=$tsuite_mgr->get_by_name($tsuite_name);
+new dBug($tsuite_info);
+
+echo "<pre> testsuite - get_testcases_deep(\$id,\$bIdsOnly=0)";echo "</pre>";
+echo "<pre>             get_testcases_deep($tsuite_id)";echo "</pre>";
+$testcases_deep=$tsuite_mgr->get_testcases_deep($tsuite_id);
+new dBug($testcases_deep);
+
+define("GET_ONLY_TESTCASE_ID",1);
+echo "<pre>             get_testcases_deep(\$tsuite_id,GET_ONLY_TESTCASE_ID)";echo "</pre>";
+$testcases_deep=$tsuite_mgr->get_testcases_deep($tsuite_id,GET_ONLY_TESTCASE_ID);
+new dBug($testcases_deep);
+
 
 /*
 

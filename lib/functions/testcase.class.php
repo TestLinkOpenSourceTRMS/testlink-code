@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.62 $
- * @modified $Date: 2007/10/24 15:57:10 $ $Author: franciscom $
+ * @version $Revision: 1.63 $
+ * @modified $Date: 2007/10/25 15:23:28 $ $Author: franciscom $
  * @author franciscom
  *
  *
@@ -238,7 +238,7 @@ function get_by_name($name)
 /*
 get array of info for every test case
 without any kind of filter.
-Every array element contains an assoc array with test suite info
+Every array element contains an assoc array with testcase info
 
 */
 function get_all()
@@ -252,12 +252,8 @@ function get_all()
 }
 
 
-// 20060425 - franciscom - added $smarty argument (by reference) 
-//                         can accept an array of id
-//
-//
 /*
-  function: 
+  function: show
 
   args :
         $smarty: reference to smarty object (controls viewer).
@@ -477,12 +473,6 @@ function delete($id,$version_id = TC_ALL_VERSIONS)
 	return 1;
 }
 
-/*
-	get for one tc all versions that are linked to test plans
-	
-	20061020 - franciscom - changed return type
-	                        added test plan name in return data
-*/
 /*
   function: get_linked_versions
             For a test case get information about versions linked to testplans.
@@ -1903,10 +1893,33 @@ function html_table_of_custom_field_values($id,$scope='design',$show_on_executio
         [$show_on_execution]: default: null
                               1 -> filter on field show_on_execution=1
                               0 or null -> don't filter
-        [$execution_id]
-        [$testplan_id]
+
+        [$execution_id]: null -> get values for all executions availables for testcase
+                         !is_null -> only get values or this execution_id
+                    
+        [$testplan_id]: null -> get values for any tesplan to with testcase is linked
+                        !is_null -> get values only for this testplan.
         
   returns: hash
+           key: custom field id
+           value: map with custom field definition, with keys:
+
+				          id: custom field id
+          				name
+          				label
+          				type
+          				possible_values
+          				default_value
+          				valid_regexp
+          				length_min
+          				length_max
+          				show_on_design
+          				enable_on_design
+          				show_on_execution
+          				enable_on_execution
+          				display_order  
+
+
 */
 function get_linked_cfields_at_execution($id,$parent_id=null,$show_on_execution=null,
                                          $execution_id=null,$testplan_id=null) 
@@ -1931,10 +1944,15 @@ function get_linked_cfields_at_execution($id,$parent_id=null,$show_on_execution=
 
 /*
   function: copy_cfields_design_values
+            Get all cfields linked to any testcase of this testproject
+            with the values presents for $from_id, testcase we are using as
+            source for our copy.
             
-            
-  args: 
-  returns: 
+  args: from_id: source testcase id 
+        to_id: target testcase id
+  
+  returns: - 
+  
 */
 function copy_cfields_design_values($from_id,$to_id)                                         
 {

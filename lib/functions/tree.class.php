@@ -5,10 +5,11 @@
  *
  * Filename $RCSfile: tree.class.php,v $
  *
- * @version $Revision: 1.33 $
- * @modified $Date: 2007/10/21 16:02:11 $ by $Author: franciscom $
+ * @version $Revision: 1.34 $
+ * @modified $Date: 2007/10/25 15:23:28 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
+ * 20071024 - franciscom - DTREE bug
  * 20070620 - franciscom - BUGID 903
  * 20061203 - franciscom - removing error due to undefined var in change_order_bulk()
  * 20061119 - franciscom - change_order_bulk() added abs() to order.

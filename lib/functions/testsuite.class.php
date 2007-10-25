@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testsuite.class.php,v $
- * @version $Revision: 1.34 $
- * @modified $Date: 2007/10/25 15:21:35 $ - $Author: franciscom $
+ * @version $Revision: 1.35 $
+ * @modified $Date: 2007/10/25 15:44:49 $ - $Author: franciscom $
  * @author franciscom
  *
  * 20070826 - franciscom - minor fix html_table_of_custom_field_values()
@@ -571,10 +571,22 @@ function delete_deep($id)
 
 /*
   function: getKeywords
+            Get keyword assigned to a testsuite.
+            Uses table object_keywords.
+            
+            Attention:
+            probably write on obejct_keywords has not been implemented yet,
+            then right now thie method can be useless.
+             
 
-  args :
+	args:	id: testsuite id
+        kw_id: [default = null] the optional keyword id
   
-  returns: 
+  returns: null if nothing found.
+           array, every elemen is map with following structure:
+	         id
+	         keyword
+	         notes
   
   rev : 
         20070116 - franciscom - BUGID 543
@@ -594,6 +606,28 @@ function getKeywords($id,$kw_id = null)
 	return($map_keywords);
 } 
 
+
+/*
+  function: get_keywords_map
+            All keywords for a choosen testsuite
+
+            Attention:
+            probably write on obejct_keywords has not been implemented yet,
+            then right now thie method can be useless.
+
+
+  args :id: testsuite id
+        [order_by_clause]: default: '' -> no order choosen
+                           must be an string with complete clause, i.e.
+                           'ORDER BY keyword'
+
+  
+  
+  returns: map: key: keyword_id
+                value: keyword
+  
+
+*/
 function get_keywords_map($id,$order_by_clause='')
 {
 	$sql = "SELECT keyword_id,keywords.keyword 
@@ -720,27 +754,6 @@ function exportTestSuiteDataToXML($container_id,$optExport = array())
 // -------------------------------------------------------------------------------
 // Custom field related methods
 // -------------------------------------------------------------------------------
-
-/*
-  function: get_spec_cfields
-
-  args :
-  
-  returns: 
-
-*/
-function get_spec_cfields($id) 
-{
-  $sql="SELECT CF.*,CFTP.display_order " .
-       " FROM custom_fields CF, cfield_testprojects CFTP " .
-       $additional_table .  
-       " WHERE CF.id=CFTP.field_id " .
-       " AND   CFTP.testproject_id={$id} " .
-       $additional_join .  
-       " ORDER BY display_order";
-
-}
-
 /*
   function: get_linked_cfields_at_design
             

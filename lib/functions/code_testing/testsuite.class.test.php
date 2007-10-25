@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: testsuite.class.test.php,v $
  *
- * @version $Revision: 1.2 $
- * @modified $Date: 2007/10/25 15:16:57 $ by $Author: franciscom $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2007/10/25 15:44:53 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * With this page you can launch a set of available methods, to understand
@@ -56,6 +56,20 @@ $testcases_deep=$tsuite_mgr->get_testcases_deep($tsuite_id,GET_ONLY_TESTCASE_ID)
 new dBug($testcases_deep);
 
 
+echo "<pre> testsuite - getKeywords(\$tcID,\$kwID = null)";echo "</pre>";
+echo "<pre>            getKeywords($tsuite_id)";echo "</pre>";
+$keywords=$tsuite_mgr->getKeywords($tsuite_id);
+new dBug($keywords);
+
+
+echo "<pre> testsuite - get_keywords_map(\$id,\$order_by_clause='')";echo "</pre>";
+$tsuite_id=4;
+echo "<pre>               get_keywords_map($tsuite_id)";echo "</pre>";
+$keywords_map=$tsuite_mgr->get_keywords_map($tsuite_id);
+new dBug($keywords_map);
+
+
+
 /*
 
 $set_of_tsuite_id=array(4,6);
@@ -89,29 +103,7 @@ $last_version_info=$tsuite_mgr->get_last_version_info($tsuite_id);
 new dBug($last_version_info);
 
 
-echo "<pre> testsuite - get_versions_status_quo(\$id,\$tcversion_id=null, \$testplan_id=null)";
-echo "<pre>            get_versions_status_quo($tsuite_id)";
-$status_quo=$tsuite_mgr->get_versions_status_quo($tsuite_id);
-new dBug($status_quo);
 
-
-echo "<pre> testsuite - get_exec_status(\$id)";
-echo "<pre>            get_exec_status($tsuite_id)";
-$testcase_exec_status=$tsuite_mgr->get_exec_status($tsuite_id);
-new dBug($testcase_exec_status);
-
-
-echo "<pre> testsuite - getKeywords(\$tcID,\$kwID = null)";echo "</pre>";
-echo "<pre>            getKeywords($tsuite_id)";echo "</pre>";
-$keywords=$tsuite_mgr->getKeywords($tsuite_id);
-new dBug($keywords);
-
-
-echo "<pre> testsuite - get_keywords_map(\$id,\$order_by_clause='')";echo "</pre>";
-$tsuite_id=4;
-echo "<pre>               get_keywords_map($tsuite_id)";echo "</pre>";
-$keywords_map=$tsuite_mgr->get_keywords_map($tsuite_id);
-new dBug($keywords_map);
 
 
 $tsuite_id=4;
@@ -174,31 +166,7 @@ $table_of_custom_field_values=$tsuite_mgr->html_table_of_custom_field_values($ts
 echo "<pre><xmp>"; echo $table_of_custom_field_values; echo "</xmp></pre>";
 
 /*
-
-function testsuite(&$db)
-function create($parent_id,$name,$details,$order=null,
-function update($id, $name, $details)
-function get_by_name($name)
-function get_by_id($id)
-function get_all()
-function show(&$smarty,$id, $sqlResult = '', $action = 'update',$modded_item_id = 0)
-function viewer_edit_new(&$smarty,$amy_keys, $oFCK, $action, $parent_id, 
-function copy_to($id, $parent_id, $user_id,
-function get_testcases_deep($id,$bIdsOnly = false)
-function delete_deep($id)
-function getKeywords($id,$kw_id = null)
-function get_keywords_map($id,$order_by_clause='')
-function addKeyword($id,$kw_id)
-function addKeywords($id,$kw_ids)
-function deleteKeywords($id,$kw_id = null)
-function exportTestSuiteDataToXML($container_id,$optExport = array())
 function get_spec_cfields($id) 
-function get_linked_cfields_at_design($id,$parent_id=null,$show_on_execution=null) 
-function get_linked_cfields_at_execution($id,$parent_id=null,$show_on_execution=null) 
-function html_table_of_custom_field_inputs($id,$parent_id=null,$scope='design') 
-function html_table_of_custom_field_values($id,$scope='design',$show_on_execution=null) 
-
-
 */
 
 

@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.63 $
- * @modified $Date: 2007/10/25 15:23:28 $ $Author: franciscom $
+ * @version $Revision: 1.64 $
+ * @modified $Date: 2007/10/25 15:44:49 $ $Author: franciscom $
  * @author franciscom
  *
  *
@@ -1164,9 +1164,16 @@ function getKeywords($tcID,$kwID = null)
 /*
   function: get_keywords_map
 
-  args :
+  args: id: testcase id
+        [order_by_clause]: default: '' -> no order choosen
+                           must be an string with complete clause, i.e.
+                           'ORDER BY keyword'
+                           
   
-  returns: 
+  returns: map with keywords information
+           key: keyword id
+           value: map with following keys.
+           
 
 */
 function get_keywords_map($id,$order_by_clause='')

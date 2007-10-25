@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: testcase.class.test.php,v $
  *
- * @version $Revision: 1.2 $
- * @modified $Date: 2007/10/24 15:54:48 $ by $Author: franciscom $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2007/10/25 13:05:33 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * With this page you can launch a set of available methods, to understand
@@ -119,15 +119,25 @@ new dBug($version_exec_assignment);
 
 
 echo "<pre> testcase - get_linked_cfields_at_design(\$id,\$parent_id=null,\$show_on_execution=null)";echo "</pre>";
-echo "<pre>            get_linked_cfields_at_design($testcase_id)";echo "</pre>";
+echo "<pre>            get_linked_cfields_at_design($tcase_id)";echo "</pre>";
 $linked_cfields_at_design=$tcase_mgr->get_linked_cfields_at_design($tcase_id);
 new dBug($linked_cfields_at_design);
 
 
+
+echo "<pre> testcase - get_linked_cfields_at_execution(\$id,\$parent_id=null,<br>
+                                                       \$show_on_execution=null,<br>
+                                                       \$execution_id=null,\$testplan_id=null)";echo "</pre>"; 
+echo "<pre>            get_linked_cfields_at_execution($tcase_id)";echo "</pre>";
+$linked_cfields_at_execution=$tcase_mgr->get_linked_cfields_at_execution($tcase_id);
+new dBug($linked_cfields_at_execution);
+
+
+
 echo "<pre> testcase - html_table_of_custom_field_inputs(\$id,\$parent_id=null,\$scope='design',\$name_suffix='')";echo "</pre>";
 echo "<pre>            html_table_of_custom_field_inputs($tcase_id)";echo "</pre>";
-$table_of_custom_field_inputs=$tcase_mgr->html_table_of_custom_field_values($tcase_id);
-echo "<pre><form>"; echo $table_of_custom_field_inputs; echo "</form></pre>";
+$table_of_custom_field_inputs=$tcase_mgr->html_table_of_custom_field_inputs($tcase_id);
+echo "<pre>"; echo $table_of_custom_field_inputs; echo "</pre>";
 
 
 echo "<pre> testcase - html_table_of_custom_field_values(\$id,\$scope='design',<br>
@@ -137,6 +147,8 @@ echo "<pre> testcase - html_table_of_custom_field_values(\$id,\$scope='design',<
 echo "<pre> testcase - html_table_of_custom_field_values($tcase_id)";echo "</pre>";
 $table_of_custom_field_values=$tcase_mgr->html_table_of_custom_field_values($tcase_id); 
 echo "<pre><xmp>"; echo $table_of_custom_field_values; echo "</xmp></pre>";
+
+
 
 
 

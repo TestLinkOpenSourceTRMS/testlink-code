@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testsuite.class.php,v $
- * @version $Revision: 1.33 $
- * @modified $Date: 2007/10/21 16:02:11 $ - $Author: franciscom $
+ * @version $Revision: 1.34 $
+ * @modified $Date: 2007/10/25 15:21:35 $ - $Author: franciscom $
  * @author franciscom
  *
  * 20070826 - franciscom - minor fix html_table_of_custom_field_values()
@@ -72,17 +72,10 @@ function testsuite(&$db)
                   $ret['id']        -> when status_ok=1, id of the new element
 
 
-*/
+  rev :
+       20070324 - BUGID 710
 
-//
-// returns hash with:	$ret['status_ok'] -> 0/1
-//                    $ret['msg']
-//                    $ret['id']        -> when status_ok=1, id of the new element
-//
-//                  
-// rev :
-//      20070324 - BUGID 710
-//
+*/
 function create($parent_id,$name,$details,$order=null,
                 $check_duplicate_name=0,
                 $action_on_duplicate_name='allow_repeat')
@@ -180,7 +173,19 @@ function update($id, $name, $details)
 	return $ret;
 }
 
+                    
+/*
+  function: get_by_name
 
+  args : name: testsuite name
+  
+  returns: array where every element is a map with following keys:
+           
+           id: 	testsuite id (node id)
+           details
+           name: testsuite name
+
+*/
 function get_by_name($name)
 {
 	$sql = " SELECT testsuites.*, nodes_hierarchy.name " .
@@ -196,9 +201,14 @@ function get_by_name($name)
   function: get_by_id
             get info for one test suite
 
-  args :
+  args : id: testsuite id
   
-  returns: 
+  returns: map with following keys:
+           
+           id: 	testsuite id (node id)
+           details
+           name: testsuite name
+  
   
   rev :
         20070324 - added node_order in result set
@@ -216,9 +226,13 @@ function get_by_id($id)
 
 
 /*
-get array of info for every test suite
-without any kind of filter.
-Every array element contains an assoc array with test suite info
+  function: get_all()
+            get array of info for every test suite without any kind of filter.
+            Every array element contains an assoc array with test suite info
+
+  args : -
+  
+  returns: array 
 
 */
 function get_all()
@@ -234,12 +248,13 @@ function get_all()
 /**
  * show()
  *
- * @param type $smarty [reference]
- * @param type $id 
- * @param type $sqlResult [default = '']
- * @param type $action [default = 'update']
- * @param type $modded_item_id [default = 0]
- * @return type documentation
+ * args:  smarty [reference]
+ *        id 
+ *        sqlResult [default = '']
+ *        action [default = 'update']
+ *        modded_item_id [default = 0]
+ * 
+ * returns: -
  *
  **/
 function show(&$smarty,$id, $sqlResult = '', $action = 'update',$modded_item_id = 0)
@@ -274,7 +289,7 @@ function show(&$smarty,$id, $sqlResult = '', $action = 'update',$modded_item_id 
 	
 	$smarty->assign('attachmentInfos',$attachments);
 	$smarty->assign('id',$id);
-  	$smarty->assign('page_title',lang_get('testsuite'));
+  $smarty->assign('page_title',lang_get('testsuite'));
 	$smarty->assign('cf',$cf_smarty);
 	$smarty->assign('keywords_map',$keywords_map);
 	$smarty->assign('moddedItem',$modded_item);
@@ -285,10 +300,26 @@ function show(&$smarty,$id, $sqlResult = '', $action = 'update',$modded_item_id 
 }
 
 
-// 20070204 - franciscom
-// 20061231 - franciscom
-// 20061230 - franciscom - custom field management
-// 20060805 - franciscom - added new argument smarty reference
+/*
+  function: viewer_edit_new
+            Implements user interface (UI) for edit testuite and 
+            new/create testsuite operations.
+            
+
+  args : smarty [reference]
+         amy_keys
+         oFCK: rich editor object (today is FCK editor)
+         action
+         parent_id: testsuite parent id on tree.
+         [id]
+         [result_msg]: default: null
+                       used to give information to user
+                       
+         [user_feedback]: default: null              
+                          used to give information to user
+  returns: -
+
+*/
 function viewer_edit_new(&$smarty,$amy_keys, $oFCK, $action, $parent_id, 
                          $id=null, $result_msg=null, $user_feedback=null)
 {
@@ -352,14 +383,28 @@ function viewer_edit_new(&$smarty,$amy_keys, $oFCK, $action, $parent_id,
 
 /*
   function: copy_to
+            deep copy one testsuite to another parent (testsuite or testproject).
+            
 
-  args :
+  args : id: testsuite id (source or copy)
+         parent_id:
+         user_id: who is requesting copy operation
+         [check_duplicate_name]: default: 0 -> do not check
+                                          1 -> check for duplicate when doing copy
+                                               What to do if duplicate exists, is controlled
+                                               by action_on_duplicate_name argument.
+                                               
+         [action_on_duplicate_name argument]: default: 'allow_repeat'.
+                                              Used when check_duplicate_name=1.
+                                              Specifies how to react if duplicate name exists.
+                                              
+                                               
+                                               
   
-  returns: 
+  returns: - 
 
   rev :
        20070324 - BUGID 710
-                  BUGID XXX
 */
 function copy_to($id, $parent_id, $user_id,
                  $check_duplicate_name = 0,
@@ -410,11 +455,27 @@ function copy_to($id, $parent_id, $user_id,
 /*
   function: get_testcases_deep
             get all test cases in the test suite and all children test suites
-            no info about tcversions is returned
+            no info about tcversions is returned.
 
-  args :
+  args : id: testsuite id
+         [bIdsOnly]: default false
+                     Structure of elements in returned array, changes according to
+                     this argument:
+          
+                     bIdsOnly=true
+                     Array that contains ONLY testcase id, no other info.
+                     
+                     bIdsOnly=false
+                     Array where each element is a map with following keys.
+                     
+                     id: testcase id
+                     parent_id: testcase parent (a test suite id).
+                     node_type_id: type id, for a testcase node
+                     node_order
+                     node_table: node table, for a testcase.
+                     name: testcase name
   
-  returns: 
+  returns: array
 
 */
 function get_testcases_deep($id,$bIdsOnly = false)

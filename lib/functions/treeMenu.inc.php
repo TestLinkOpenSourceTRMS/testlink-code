@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: treeMenu.inc.php,v $
  *
- * @version $Revision: 1.43 $
- * @modified $Date: 2007/10/14 16:34:44 $ by $Author: franciscom $
+ * @version $Revision: 1.44 $
+ * @modified $Date: 2007/10/25 15:17:44 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * 	This file generates tree menu for test specification and test execution.
@@ -14,6 +14,9 @@
  * 	and JTREE. Used type is defined in config.inc.php.
  * 
  * Rev :
+ *
+ *      20071024 - franciscom - DTREE bug
+ *
  *      20071014 - franciscom - generateTestSpecTree() interface changes
  *                              minor change in prepareNode.
  *
@@ -78,8 +81,11 @@ function invokeMenu($menustring, $highLight = "",$target = "workframe")
 		$data = "<script type='text/javascript'>\n<!--\n";
 		$data .= "tlTree = new dTree('tlTree');\n";
 		$data .= "tlTree.config.inOrder = true;\n";
-		if ($target)
-			$data .= "tlTree.config.target = 'workframe';\n";
+		
+		// 20071024 - franciscom
+		// if ($target)
+		//	$data .= "tlTree.config.target = 'workframe';\n";
+			
 		$data .= $menustring;
 		$data .= "document.write(tlTree);\n";
 		$data .= "//-->\n</script>\n";

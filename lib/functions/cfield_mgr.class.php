@@ -2,9 +2,14 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: cfield_mgr.class.php,v $
- * @version $Revision: 1.16 $
- * @modified $Date: 2007/06/21 15:35:42 $  $Author: franciscom $
+ * @version $Revision: 1.17 $
+ * @modified $Date: 2007/10/27 16:41:05 $  $Author: franciscom $
  * @author franciscom
+ *
+ * 20071027 - franciscom - using Mantis (a php based bugtracking system)
+ *                         logic, to improve custom field management
+ *                         adding support for url on string custom fields.
+ *
  *
  * 20070617 - franciscom - BUGID     insert_id() problems for Postgres and Oracle?
  * 20070501 - franciscom - limiting length of values while writting to db.
@@ -21,32 +26,22 @@
  *                         
 **/
 require_once(dirname(__FILE__) . '/date_api.php');
+require_once(dirname(__FILE__) . '/string_api.php');
 class cfield_mgr
 {
 	var $db;
 	var $tree_manager;
 	
 	// I'm using the same codes used by Mantis
-  // var $custom_field_types = array(0=>'string',
-  //                                 1=>'numeric',
-  //                                 2=>'float',
-  //                                 3=>'enum',
-  //                                 4=>'email',
-  //                                 5=>'checkbox',
-  //                                 6=>'list',
-  //                                 7=>'multiselection list',
-  //                                 8=>'date',
-  //                                 20=>'text area');
-  //
-   var $custom_field_types = array(0=>'string',
-                                   1=>'numeric',
-                                   2=>'float',
-                                   4=>'email',
-                                   5=>'checkbox',
-                                   6=>'list',
-                                   7=>'multiselection list',
-                                   8=>'date',
-								                   20=>'text area');
+  var $custom_field_types = array(0=>'string',
+                                  1=>'numeric',
+                                  2=>'float',
+                                  4=>'email',
+                                  5=>'checkbox',
+                                  6=>'list',
+                                  7=>'multiselection list',
+                                  8=>'date',
+							                   20=>'text area');
 
   // for what type of CF possible_values need 
   // to be manage at GUI level
@@ -316,10 +311,13 @@ class cfield_mgr
     returns:          
     
     rev :
+         20071006 - francisco.mancardi@gruppotesi.com
+         Added field_size argument
+         
          20070104 - franciscom - added 'multiselection list'
               
   */
-	function string_custom_field_input($p_field_def,$name_suffix='')
+	function string_custom_field_input($p_field_def,$name_suffix='',$field_size=0)
 	{
     $WINDOW_SIZE_MULTILIST=5;
     $DEFAULT_SIZE=50;
@@ -338,13 +336,20 @@ class cfield_mgr
 		  $t_custom_field_value = $p_field_def['value'];   
 		}
     
-		$t_custom_field_value = htmlspecialchars( $t_custom_field_value );
 
     $verbose_type=$this->custom_field_types[$t_type];
+  	$t_custom_field_value = htmlspecialchars( $t_custom_field_value );
     
     // 20070105 - franciscom
     $input_name="{$this->name_prefix}{$t_type}_{$t_id}{$name_suffix}";
     $size = isset($this->sizes[$verbose_type]) ? intval($this->sizes[$verbose_type]) : 0;
+    
+    // 20071006 - franciscom
+    if( $field_size > 0)
+    {
+      $size=$field_size;
+    }
+    
 		switch ($verbose_type) 
 		{
   		case 'list':
@@ -718,7 +723,7 @@ class cfield_mgr
       $node2del=null;
       foreach($node_list as $node_id)
       {
-        $the_path=$this->tree_manager->get_path_new($node_id);
+        $the_path=$this->tree_manager->get_path($node_id);
         if( !is_null($the_path) )
         {
           $root=array_pop($the_path);
@@ -978,7 +983,11 @@ class cfield_mgr
         break;
 	
 			default:
-				return($t_custom_field_value);
+			  // 20071027 - franciscom
+			  // This code manages URLs
+				return string_display_links( $t_custom_field_value );
+
+				// return($t_custom_field_value);
 		}
 	}
 

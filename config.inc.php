@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.126 $
- * @modified $Date: 2007/10/18 20:06:29 $ by $Author: schlundus $
+ * @version $Revision: 1.127 $
+ * @modified $Date: 2007/10/27 16:41:49 $ by $Author: franciscom $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink 
@@ -486,6 +486,24 @@ $g_gui->custom_fields->sizes = array(
 );
 
 
+// Taken from Mantis
+// Set this flag to automatically convert www URLs and
+// email adresses into clickable links
+$g_html_make_links = ON;
+
+// These are the valid html tags for multi-line fields (e.g. description)
+// do NOT include href or img tags here
+// do NOT include tags that have parameters (eg. <font face="arial">)
+$g_html_valid_tags = 'p, li, ul, ol, br, pre, i, b, u, em';
+
+// These are the valid html tags for single line fields (e.g. issue summary).
+// do NOT include href or img tags here
+// do NOT include tags that have parameters (eg. <font face="arial">)
+$g_html_valid_tags_single_line = 'i, b, u, em';
+
+
+
+
 /** [Risk, Priority, Importance] */
 // item_id => item_label (must be defined in strings.txt file)
 $g_risk=array( '1' => 'high_risk',
@@ -590,6 +608,9 @@ $g_exec_cfg->exec_mode->tester='assigned_to_me';
 // logged_user -> combo will be set to logged user
 // none        -> no filter applied by default 
 $g_exec_cfg->user_filter_default='logged_user';
+
+
+
 
 
 //

@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.72 $ $Author: franciscom $
- * @modified $Date: 2007/10/14 16:34:44 $
+ * @version $Revision: 1.73 $ $Author: franciscom $
+ * @modified $Date: 2007/10/27 16:40:35 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -17,6 +17,9 @@
  * email, userID, productID, productName, testplan (use rather testPlanID),
  * testPlanID, testPlanName
  *
+ * 20071027 - franciscom - added ini_get_bool() from mantis code, needed to user
+ *                         string_api.php, also from Mantis.
+ * 
  * 20071002 - jbarchibald - BUGID 1051
  * 20070707 - franciscom - BUGID 921 - changes to gen_spec_view()
  * 20070705 - franciscom - init_labels()
@@ -1054,4 +1057,31 @@ function init_labels($map_code_label)
 	return $map_code_label;
 }
 
+
+// From Mantis
+// Get the named php ini variable but return it as a bool
+function ini_get_bool( $p_name ) {
+	$result = ini_get( $p_name );
+
+	if ( is_string( $result ) ) {
+		switch ( $result ) {
+			case 'off':
+			case 'false':
+			case 'no':
+			case 'none':
+			case '':
+			case '0':
+				return false;
+				break;
+			case 'on':
+			case 'true':
+			case 'yes':
+			case '1':
+				return true;
+				break;
+		}
+	} else {
+		return (bool)$result;
+	}
+}
 ?>

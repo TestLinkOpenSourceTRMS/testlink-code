@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: const.inc.php,v $
  *
- * @version $Revision: 1.42 $
- * @modified $Date: 2007/10/14 14:40:52 $ by $Author: franciscom $
+ * @version $Revision: 1.43 $
+ * @modified $Date: 2007/10/27 16:38:55 $ by $Author: franciscom $
  * @author Martin Havlát
  *
  * SCOPE:
@@ -397,6 +397,11 @@ $g_req_status=array(TL_REQ_STATUS_VALID => 'req_state_valid',
 
 // 
 // [FUNCTION MAGIC NUMBERS] [DON'T BOTHER ABOUT]
+
+// From Mantis
+define( 'ON',	1 );
+define( 'OFF',	0 );
+
 // used in several functions instead of MAGIC NUMBERS - Don't change 
 define('ALL_PRODUCTS',0);
 define('TP_ALL_STATUS',null);

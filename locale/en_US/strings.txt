@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.24 $
- * @modified $Date: 2007/10/02 20:55:32 $ $Author: asielb $
+ * @version $Revision: 1.25 $
+ * @modified $Date: 2007/10/29 20:51:39 $ $Author: asielb $
  *
  * @author Francisco Mancardi
  *
@@ -1720,4 +1720,15 @@ $TLS_error_creating_cf = "The custom field couldn't be created!";
 $TLS_do_update = "updated";
 $TLS_do_delete = "deleted";
 $TLS_do_add = "added";
+
+
+
+// lib/project/fix_tplans.php
+$TLS_list_inactive_tplans1 = "Listing ";
+$TLS_list_inactive_tplans2 = "Active Test Plans that are currently not associated with a Test Project";
+$TLS_assoc_test_project = "Associated Test Project";
+$TLS_btn_fix_tplans = "Update";
+$TLS_fix_tplans_no_rights = "You do not have rights to manage test projects<br />Please contact your administrator";
+$TLS_no_tplans_to_fix = "You currently have no Test Plans that are not associated with a Test Project - That's Good!";
+
 ?>

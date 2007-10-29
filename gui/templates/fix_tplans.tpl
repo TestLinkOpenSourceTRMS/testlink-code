@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: fix_tplans.tpl,v 1.2 2007/10/02 16:30:32 asielb Exp $
+$Id: fix_tplans.tpl,v 1.3 2007/10/29 21:00:26 asielb Exp $
 Purpose: assign test plans to a test project - bug 1021
 *}
 
@@ -9,17 +9,18 @@ Purpose: assign test plans to a test project - bug 1021
 
 {if $count > 0}
 
-<p>Listing <span style="color:red">{$count}</span> Test Plans that are currently not associated with a Test Project</p>
+ 
+<p>{lang_get s='list_inactive_tplans1'} <span style="color:red">{$count}</span> {lang_get s='list_inactive_tplans2'}</p>
 
 <form method="post" action="lib/project/fix_tplans.php"
 
 <table>
 <tr>
 	<th>
-		Test Plan
+		{lang_get s='test_plan'}
 	</th>
 	<th>
-		Associated Test Project
+		{lang_get s='assoc_test_project'}
 	</th>
 </tr>
 {foreach from=$testPlans item=testPlan}			
@@ -43,7 +44,7 @@ Purpose: assign test plans to a test project - bug 1021
 </form>
 
 {else}
-	<p>You currently have no Test Plans that are not associated with a Test Project - That's Good!</p>
+	<p>{lang_get s='no_tplans_to_fix'}</p>
 
 {/if}
 </body>

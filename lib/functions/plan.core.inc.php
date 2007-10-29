@@ -3,8 +3,8 @@
  * TestLink Open Source Project - @link http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: plan.core.inc.php,v $
- * @version $Revision: 1.38 $
- * @modified $Date: 2007/09/27 08:11:10 $ $Author: franciscom $
+ * @version $Revision: 1.39 $
+ * @modified $Date: 2007/10/29 21:00:26 $ $Author: asielb $
  *  
  * 
  * @author 	Martin Havlat
@@ -313,11 +313,12 @@ function dispCategories(&$db,$idPlan, $keyword, $resultCat)
 	return $arrData;
 }
 
-// 20070911 - asielb
+// 20070911 - azl
+// 20071029 - azl - modified to only get active test plans bug # 1148
 function getTestPlansWithoutProject(&$db)
 {
 	$query = "select id,name from nodes_hierarchy WHERE id IN(SELECT id FROM testplans
-				WHERE testproject_id=0)";
+				WHERE testproject_id=0 and ACTIVE=1)";
 	$testPlans = $db->get_recordset($query);
 	return $testPlans;
 }

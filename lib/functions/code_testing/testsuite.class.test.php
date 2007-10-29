@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: testsuite.class.test.php,v $
  *
- * @version $Revision: 1.3 $
- * @modified $Date: 2007/10/25 15:44:53 $ by $Author: franciscom $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2007/10/29 14:03:58 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * With this page you can launch a set of available methods, to understand
@@ -164,11 +164,4 @@ echo "<pre> testsuite - html_table_of_custom_field_values(\$id,\$scope='design',
 echo "<pre> testsuite - html_table_of_custom_field_values($tsuite_id)";echo "</pre>";
 $table_of_custom_field_values=$tsuite_mgr->html_table_of_custom_field_values($tsuite_id); 
 echo "<pre><xmp>"; echo $table_of_custom_field_values; echo "</xmp></pre>";
-
-/*
-function get_spec_cfields($id) 
-*/
-
-
-
 ?>

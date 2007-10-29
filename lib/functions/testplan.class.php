@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.41 $
- * @modified $Date: 2007/10/21 16:02:11 $ $Author: franciscom $
+ * @version $Revision: 1.42 $
+ * @modified $Date: 2007/10/29 14:06:40 $ $Author: franciscom $
  * @author franciscom
  *
  * Manages test plan operations and related items like Custom fields.
@@ -57,7 +57,7 @@ class testplan
 	var $db;
 	var $tree_manager;
 	var $assignment_mgr;
-  var $cfield_mgr;      // 20070127 - franciscom
+  var $cfield_mgr;
 
 
 	var $assignment_types;
@@ -65,9 +65,10 @@ class testplan
 
 
   /*
-   function: 
+   function: testplan
+             constructor
 
-   args :
+   args: db [reference] db object
   
    returns: 
 
@@ -81,17 +82,20 @@ class testplan
 		$this->assignment_types=$this->assignment_mgr->get_available_types(); 
 		$this->assignment_status=$this->assignment_mgr->get_available_status();
 	
-	  // 20070127 	
   	$this->cfield_mgr=new cfield_mgr($this->db);
 	}
 
 
 /*
-  function: 
+  function: create
+            creates a tesplan on Database, for a testproject.
 
-  args :
+  args: name: testplan name
+        notes: testplan notes
+        testproject_id: testplan parent.
   
-  returns: 
+  returns: id: if everything ok -> id of new testplan (node id).
+               if problems -> 0.
 
 */
 function create($name,$notes,$testproject_id)
@@ -114,11 +118,15 @@ function create($name,$notes,$testproject_id)
 
 
 /*
-  function: 
+  function: update testplan information
 
-  args :
+  args: id: testplan id
+        name:
+        notes:
+        is_active: active status
   
-  returns: 
+  returns: 1 -> ok
+           0 -> ko 
 
 */
 function update($id,$name,$notes,$is_active)
@@ -160,11 +168,23 @@ function update($id,$name,$notes,$is_active)
 
 
 /*
-  function: 
-
-  args :
-  
-  returns: 
+  function: get_by_name
+            get information about a testplan using name as access key.
+            Search can be narrowed, givin a testproject id as filter criteria.
+            
+  args: name: testplan name
+        [tproject_id]: default:0 -> system wide search i.e. inside all testprojects
+        
+  returns: if nothing found -> null
+           if found -> array where every element is a map with following keys:
+                       id: testplan id
+                       notes: 	
+                       active: active status
+                       is_open: open status
+                       name: testplan name
+                       testproject_id
+           
+   
 
 */
 function get_by_name($name,$tproject_id = 0)
@@ -184,11 +204,19 @@ function get_by_name($name,$tproject_id = 0)
 }
 
 /*
-  function: 
+  function: get_by_id 
 
-  args :
+  args : id: testplan id
   
-  returns: 
+  returns: map with following keys:
+           id: testplan id 
+           name: testplan name
+           notes: testplan notes
+           testproject_id
+           active
+           is_open
+           parent_id
+
 
 */
 function get_by_id($id)
@@ -203,9 +231,22 @@ function get_by_id($id)
 
 
 /*
-get array of info for every test plan, without considering Test Project
-without any kind of filter.
-Every array element contains an assoc array
+  function: get_all 
+            get array of info for every test plan, 
+            without considering Test Project and any other kind of filter.
+            Every array element contains an assoc array
+
+
+  args : -
+  
+  returns: array, every element is a  map with following keys:
+           id: testplan id 
+           name: testplan name
+           notes: testplan notes
+           testproject_id
+           active
+           is_open
+           parent_id
 */
 function get_all()
 {
@@ -219,11 +260,12 @@ function get_all()
 
 
 /*
-  function: 
+  function: count_testcases
+            get number of testcases linked to a testplan      
 
-  args :
+  args: id: testplan id
   
-  returns: 
+  returns: number
 
 */
 function count_testcases($id)
@@ -267,7 +309,8 @@ function link_tcversions($id,&$items_to_link)
 
 
 /*
-  function: 
+  function: get_linked_tcversions
+            get information about testcases linked to a testplan.
 
   args :
          id: testplan id
@@ -281,7 +324,7 @@ function link_tcversions($id,&$items_to_link)
                                      get only executed tcversions
 
          [assigned_to]: default NULL => do not filter by user assign.
-                        numeric      => filter
+                        numeric      => filter by user id
 
          [exec_status]: default NULL => do not filter by execution status
                         character    => filter by execution status=character
@@ -289,16 +332,22 @@ function link_tcversions($id,&$items_to_link)
          [build_id]: default 0 => do not filter by build id
                      numeric   => filter by build id
   
+         [cf_hash]: default null => do not filter by Custom Fields values
+         
   
-  returns: 
-
-          executed field: will take the following values
-                          NULL if the tc version has not been executed in THIS test plan
-                          tcversion_id if has executions 
+  returns: map
+           key: testcase id
+           value: map with following keys:
+           
+           
+           
+           Notice:
+           executed field: will take the following values
+                           NULL if the tc version has not been executed in THIS test plan
+                           tcversion_id if has executions 
 
  rev :
      	 20070825 - franciscom - added NHB.node_order on ORDER BY
-
        20070630 - franciscom - added active tcversion status in output recorset
        20070306 - franciscom - BUGID 705
 
@@ -420,7 +469,7 @@ function get_linked_tcversions($id,$tcase_id=null,$keyword_id=0,$executed=null,
    // 20070913 - jbarchibald
    // here we add functionality to filter out the custom field selections
     if (!is_null($cf_hash)) {
-        $recordset = $this->filter_cf_selection ($recordset, $cf_hash);
+        $recordset = $this->filter_cf_selection($recordset, $cf_hash);
     }
 
 	return $recordset;
@@ -913,13 +962,24 @@ function get_max_build_id($id,$active = null,$open = null)
 
 /*
   function: get_builds
+            get info about builds defined for a testlan.
+            Build can be filtered by active and open status.
 
   args :
-        $id     : test plan id. 
+        id: test plan id. 
         [active]: default:null -> all, 1 -> active, 0 -> inactive BUILDS
-        [open]  : default:null -> all, 1 -> open  , 0 -> closed/completed BUILDS
+        [open]: default:null -> all, 1 -> open  , 0 -> closed/completed BUILDS
   
-  returns: 
+  returns: map, where elements are ordered by build name, using variant of nasort php function.
+           key: build id
+           value: map with following keys
+                  id: build id 
+                  name: build name
+                  notes: build notes
+                  active: build active status
+                  is_open: build open status
+                  testplan_id
+
 
   rev :
         20070120 - franciscom
@@ -930,7 +990,6 @@ function get_builds($id,$active=null,$open=null)
 	$sql = " SELECT id,testplan_id, name, notes, active, is_open " . 
 	       " FROM builds WHERE builds.testplan_id = {$id} " ;
 	       
-	// 20070120 - franciscom
  	if( !is_null($active) )
  	{
  	   $sql .= " AND active=" . intval($active) . " ";   
@@ -942,7 +1001,6 @@ function get_builds($id,$active=null,$open=null)
 	       
 	$sql .= "  ORDER BY builds.name ASC";
 
-	//$recordset = $this->db->get_recordset($sql);
  	$recordset = $this->db->fetchRowsIntoMap($sql,'id');
   
   if( !is_null($recordset) )
@@ -1528,12 +1586,17 @@ class build_mgr
 
   /*
     function: get_by_id
+              get information about a build
   
-    args :
-          $id
+    args : id: build id
          
-    
-    returns: 
+    returns: map with following keys
+             id: build id 
+             name: build name
+             notes: build notes
+             active: build active status
+             is_open: build open status
+             testplan_id
   
     rev :
   */
@@ -1668,9 +1731,9 @@ class milestone_mgr
 
   /*
     function: get_all_by_testplan
-  
+              get info about all milestones defined for a testlan
     args :
-          $id
+          tplan_id
          
     
     returns: 

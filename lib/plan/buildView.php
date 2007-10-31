@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: buildView.php,v $
  *
- * @version $Revision: 1.2 $
- * @modified $Date: 2007/05/10 07:07:15 $ $Author: franciscom $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2007/10/31 21:56:29 $ $Author: asielb $
  *
  * rev :
  *       20070122 - franciscom - use build_mgr methods
@@ -33,6 +33,7 @@ $the_builds = $tplan_mgr->get_builds($tplan_id);
 
 $smarty = new TLSmarty();
 $smarty->assign('tplan_name', $tplan_name);
+$smarty->assign('tplan_id', $tplan_id);
 $smarty->assign('the_builds', $the_builds);
 $smarty->display('buildView.tpl');
 ?>

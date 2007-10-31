@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execNavigator.tpl,v 1.17 2007/10/02 21:55:19 jbarchibald Exp $ *}
+{* $Id: execNavigator.tpl,v 1.18 2007/10/31 17:26:05 asielb Exp $ *}
 {* Purpose: smarty template - show test set tree *}
 {* 
 rev :
@@ -14,7 +14,7 @@ rev :
 {assign var="cfg_section" value=$smarty.template|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
-<h1>{lang_get s='TestPlan'} {$tplan_name|escape}</h1> 
+<h1>{lang_get s='TestPlan'} {$tplan_id|escape} {$tplan_name|escape}</h1> 
 
 {* $filterForm *}
 <div style="margin: 3px;">

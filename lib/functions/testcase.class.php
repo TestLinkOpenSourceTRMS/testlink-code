@@ -2,10 +2,12 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.64 $
- * @modified $Date: 2007/10/25 15:44:49 $ $Author: franciscom $
+ * @version $Revision: 1.65 $
+ * @modified $Date: 2007/11/01 22:02:07 $ $Author: franciscom $
  * @author franciscom
  *
+ *
+ * 20071101 - franciscom - import_file_types, export_file_types
  *
  * 20070930 - franciscom - REQ - BUGID 1078 -> show() interface changes 
  *
@@ -39,13 +41,10 @@ require_once( dirname(__FILE__) . '/assignment_mgr.class.php' );
 require_once( dirname(__FILE__) . '/attachments.inc.php' );
 require_once( dirname(__FILE__) . '/users.inc.php' );
 
-$g_tcImportTypes = array( 
-							 "XML" => "XML",
-							 );
 
-$g_tcFormatStrings = array (
-							"XML" => lang_get('the_format_tc_xml_import')
-							); 
+// $g_tcImportTypes = array("XML" => "XML", "XLS" => "XLS" );
+// $g_tcExportTypes = array("XML" => "XML","XLS" => "XLS" );
+$g_tcFormatStrings = array ("XML" => lang_get('the_format_tc_xml_import')); 
 							
 define("TC_ALL_VERSIONS",0);
 define("TC_LATEST_VERSION",-1);
@@ -68,6 +67,10 @@ class testcase
 
   var $cfield_mgr;
 
+  var $import_file_types = array("XML" => "XML", "XLS" => "XLS" );
+  var $export_file_types = array("XML" => "XML");
+  
+
 	function testcase(&$db)
 	{
 		$this->db = &$db;	
@@ -82,6 +85,41 @@ class testcase
 		
 		$this->cfield_mgr=new cfield_mgr($this->db);
 	}
+
+
+  /*
+    function: get_export_file_types
+              getter
+
+    args: -
+    
+    returns: map  
+             key: export file type code
+             value: export file type verbose description 
+
+  */
+	function get_export_file_types()
+	{
+     return $this->export_file_types;
+  }
+
+  /*
+    function: get_impor_file_types
+              getter
+
+    args: -
+    
+    returns: map  
+             key: import file type code
+             value: import file type verbose description 
+
+  */
+	function get_import_file_types()
+	{
+     return $this->import_file_types;
+  }
+
+
 
 
 // 20061008 - franciscom - added

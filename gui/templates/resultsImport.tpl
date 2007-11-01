@@ -15,41 +15,22 @@ Purpose: smarty template - manage import of test cases and test suites
 
 {if $resultMap eq null}
 <form method="post" enctype="multipart/form-data" action="{$SCRIPT_NAME}">
-	<h2>{lang_get s='title_choose_file_type'}</h2>
-	<p>{lang_get s='req_import_type'}
-	<select name="importType">
-		{html_options options=$importTypes}
-	</select>
-	</p>
-	
-	<p>
-		{lang_get s='results_import_format'}<BR>
-		&#60;results&#62; <BR>
-			&#60;testcase id="100"&#62; <BR>
-				&#60;result&#62;p&#60;/result&#62; <BR>
-				&#60;notes&#62;functionality works great &#60;/notes&#62; <BR>
-			&#60;/testcase&#62; <BR>
-						&#60;testcase id="200"&#62; <BR>
-				&#60;result&#62;f&#60;/result&#62; <BR>
-				&#60;notes&#62;this case failed due to error &#60;/notes&#62; <BR>
-			&#60;/testcase&#62; <BR>
-						&#60;testcase id="150"&#62; <BR>
-				&#60;result&#62;b&#60;/result&#62; <BR>
-				&#60;notes&#62;this test case is blocked&#60;/notes&#62; <BR>
-			&#60;/testcase&#62; <BR>
-		&#60;/results&#62; <BR>
-	</p>
-	<!--
-	<p>	{lang_get s='required_cvs_format'}<br />
-		{foreach key=k item=i from=$tcFormatStrings}
-			{$k} : {$i}<br />
-		{/foreach}
-	</p>
-	-->
-
-	<h2>{lang_get s='title_choose_local_file'}</h2>
-	<p>{lang_get s='local_file'} <input type="file" name="uploadedFile" 
-	                                    size="{#FILENAME_SIZE#}" maxlength="{#FILENAME_MAXLEN#}"/></p>
+  <table>
+  <tr>
+  	<td>{lang_get s='file_type'}</td>
+    <td><select name="importType">
+		      {html_options options=$importTypes}
+	      </select>
+      	<a href={$basehref}{$smarty.const.PARTIAL_URL_TL_FILE_FORMATS_DOCUMENT}>{lang_get s="view_file_format_doc"}</a>
+	  </td>
+  </tr>
+  	
+	<tr>
+	 <td>{lang_get s='local_file'}</td> 
+	 <td><input type="file" name="uploadedFile" 
+	                        size="{#FILENAME_SIZE#}" maxlength="{#FILENAME_MAXLEN#}"/></td>
+  </tr>                              
+	</table>
 	<p>{lang_get s='max_size_cvs_file1'} {$importLimitKB} {lang_get s='max_size_cvs_file2'}</p>
 	
 	<div class="groupBtn">

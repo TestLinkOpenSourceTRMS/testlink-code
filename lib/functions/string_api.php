@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: string_api.php,v $
- * @version $Revision: 1.1 $
- * @modified $Date: 2007/10/27 16:39:34 $  $Author: franciscom $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2007/11/01 20:39:54 $  $Author: asielb $
  * @author franciscom
  *
 **/
@@ -162,23 +162,27 @@
 
 	# --------------------
 	# Prepare a string for plain text display in email
-	function string_email( $p_string ) {
-		$p_string = string_strip_hrefs( $p_string );
-
-		return $p_string;
-	}
+// azl - bug fix 1161 - This same function already exists in email_api.php 
+// 		and causes a name collision if uncommented
+//	function string_email( $p_string ) {
+//		$p_string = string_strip_hrefs( $p_string );
+//
+//		return $p_string;
+//	}
 
 	# --------------------
 	# Prepare a string for plain text display in email and add URLs for bug
 	#  links and cvs links
-	function string_email_links( $p_string ) {
-		$p_string = string_email( $p_string );
-		$p_string = string_process_bug_link( $p_string, false );
-		$p_string = string_process_bugnote_link( $p_string, false );
-		$p_string = string_process_cvs_link( $p_string, false );
-
-		return $p_string;
-	}
+// azl - bug fix 1161 - This same function already exists in email_api.php 
+// 		and causes a name collision if uncommented	
+//	function string_email_links( $p_string ) {
+//		$p_string = string_email( $p_string );
+//		$p_string = string_process_bug_link( $p_string, false );
+//		$p_string = string_process_bugnote_link( $p_string, false );
+//		$p_string = string_process_cvs_link( $p_string, false );
+//
+//		return $p_string;
+//	}
 
 
 
@@ -419,19 +423,21 @@
 
 	# --------------------
 	# Detect href anchors in the string and replace them with URLs and email addresses
-	function string_strip_hrefs( $p_string ) {
-		# First grab mailto: hrefs.  We don't care whether the URL is actually
-		# correct - just that it's inside an href attribute.
-		$p_string = preg_replace( '/<a\s[^\>]*href="mailto:([^\"]+)"[^\>]*>[^\<]*<\/a>/si',
-								'\1',
-								$p_string);
-
-		# Then grab any other href
-		$p_string = preg_replace( '/<a\s[^\>]*href="([^\"]+)"[^\>]*>[^\<]*<\/a>/si',
-								'\1',
-								$p_string);
-		return $p_string;
-	}
+// azl - bug fix 1161 - This same function already exists in email_api.php 
+// 		and causes a name collision if uncommented
+//	function string_strip_hrefs( $p_string ) {
+//		# First grab mailto: hrefs.  We don't care whether the URL is actually
+//		# correct - just that it's inside an href attribute.
+//		$p_string = preg_replace( '/<a\s[^\>]*href="mailto:([^\"]+)"[^\>]*>[^\<]*<\/a>/si',
+//								'\1',
+//								$p_string);
+//
+//		# Then grab any other href
+//		$p_string = preg_replace( '/<a\s[^\>]*href="([^\"]+)"[^\>]*>[^\<]*<\/a>/si',
+//								'\1',
+//								$p_string);
+//		return $p_string;
+//	}
 
 	# --------------------
 	# This function looks for text with htmlentities

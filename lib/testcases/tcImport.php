@@ -5,15 +5,17 @@
  *
  * Filename $RCSfile: tcImport.php,v $
  * Filename $RCSfile: tcImport.php,v $
- * @version $Revision: 1.24 $
+ * @version $Revision: 1.25 $
  *
- * @modified $Date: 2007/09/05 06:05:36 $ by $Author: franciscom $
+ * @modified $Date: 2007/11/01 22:00:50 $ by $Author: franciscom $
 */
 require('../../config.inc.php');
 require_once('common.php');
 require_once('import.inc.php');
 require_once('csv.inc.php');
 require_once('xml.inc.php');
+require_once('../../third_party/phpexcel/reader.php');
+
 testlinkInitPage($db);
 
 $importType = isset($_POST['importType']) ? $_POST['importType'] : null;
@@ -29,7 +31,16 @@ $userID = $_SESSION['userID'];
 $tproject_id = $_SESSION['testprojectID'];
 $testprojectName = $_SESSION['testprojectName'];
 
-$dest = TL_TEMP_PATH . session_id()."-importtcs.csv";
+$dest_common = TL_TEMP_PATH . session_id(). "-importtcs";
+$dest_files=array('XML' => $dest_common . ".csv",
+                  'XLS' => $dest_common . ".xls");
+
+$dest=$dest_files['XML'];
+if( !is_null($importType) )
+{                  
+  $dest=$dest_files[$importType];
+}
+
 $file_check = array('status_ok' => 1, 'msg' => 'ok');
 
 $import_title = lang_get('title_tc_import_to');
@@ -69,21 +80,29 @@ if ($do_upload)
 					$pcheck_fn  = "check_xml_tc_tsuite";
 					$pimport_fn = "importTestCaseDataFromXML";
 					break;
+
+					case 'XLS':
+					$pcheck_fn=null;
+					$pimport_fn="importTestCaseDataFromSpreadsheet";
+					break;
 				}
-				if ($pcheck_fn)
+
+				$file_check['status_ok']=1;
+        if( !is_null($pcheck_fn) )
+        {
+          $file_check = $pcheck_fn($dest,$bRecursive);
+        }				  
+				if($file_check['status_ok'])
 				{
-					$file_check = $pcheck_fn($dest,$bRecursive);
-					if($file_check['status_ok'])
+					if ($pimport_fn)
 					{
-						if ($pimport_fn)
-						{
-							$resultMap = $pimport_fn($db,$dest,$container_id,$tproject_id,
-											$userID,$bRecursive,$bIntoProject);
-						}
+						$resultMap = $pimport_fn($db,$dest,$container_id,$tproject_id,
+										                 $userID,$bRecursive,$bIntoProject);
 					}
-				}
-			}
-		}
+				} // if($file_check['status_ok'])
+				
+			} // if (move_uploaded_file($source, $dest))
+		} // if($file_check['status_ok'])
 	}
 	else
 	{
@@ -92,13 +111,27 @@ if ($do_upload)
 	}
 }
 
+if( $bRecursive )
+{
+  // we are importing a testsuite
+  $obj_mgr = new testsuite($db);
+}
+else
+{
+  $obj_mgr = new testcase($db);
+}
+$import_file_types=$obj_mgr->get_import_file_types();
+
+
+
+
 $smarty = new TLSmarty();
 $smarty->assign('import_title',$import_title);  
 $smarty->assign('file_check',$file_check);  
 $smarty->assign('bRecursive',$bRecursive); 
 $smarty->assign('resultMap',$resultMap); 
 $smarty->assign('tcFormatStrings',$g_tcFormatStrings);
-$smarty->assign('importTypes',$g_tcImportTypes);
+$smarty->assign('importTypes',$import_file_types);
 $smarty->assign('testprojectName', $testprojectName);
 $smarty->assign('containerID', $container_id);
 $smarty->assign('container_name', $container_name);
@@ -108,7 +141,20 @@ $smarty->assign('importLimitKB',TL_IMPORT_LIMIT / 1024);
 $smarty->assign('bImport',strlen($importType));
 $smarty->display('tcImport.tpl');
 
-function importTestCaseDataFromXML(&$db,$fileName,$parentID,$tproject_id,$userID,$bRecursive,$importIntoProject = 0)
+?>
+
+<?php
+
+/*
+  function: importTestCaseDataFromXML
+
+  args :
+  
+  returns: 
+
+*/
+function importTestCaseDataFromXML(&$db,$fileName,$parentID,$tproject_id,
+                                   $userID,$bRecursive,$importIntoProject = 0)
 {
 	$xmlTCs = null;
 	$resultMap  = null;
@@ -135,6 +181,15 @@ function importTestCaseDataFromXML(&$db,$fileName,$parentID,$tproject_id,$userID
 	return $resultMap;
 }
 
+
+/*
+  function: importTestCases
+
+  args :
+  
+  returns: 
+
+*/
 function importTestCases(&$db,&$node,$parentID,$tproject_id,$userID,$kwMap)
 {
 	$resultMap = null;
@@ -148,6 +203,14 @@ function importTestCases(&$db,&$node,$parentID,$tproject_id,$userID,$kwMap)
 	return $resultMap;
 }
 
+/*
+  function: importTestSuite
+
+  args :
+  
+  returns: 
+
+*/
 function importTestSuite(&$db,&$node,$parentID,$tproject_id,$userID,$kwMap,$importIntoProject = 0)
 {
 	$resultMap = null;
@@ -171,9 +234,9 @@ function importTestSuite(&$db,&$node,$parentID,$tproject_id,$userID,$kwMap,$impo
 			$tsID = $parentID;
 
 		$cNodes = $node->child_nodes();	
-		for($i = 0;$i < sizeof($cNodes);$i++)
+		for($idx = 0; $idx < sizeof($cNodes); $idx++)
 		{
-			$cNode = $cNodes[$i];
+			$cNode = $cNodes[$idx];
 			if ($cNode->node_type() != XML_ELEMENT_NODE)
 				continue;
 			$tagName = $cNode->tagname();
@@ -204,7 +267,14 @@ function importTestSuite(&$db,&$node,$parentID,$tproject_id,$userID,$kwMap,$impo
 	}
 }
 
+/*
+  function: saveImportedTCData
 
+  args :
+  
+  returns: 
+
+*/
 function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,$userID,$kwMap)
 {
 	if (!$tcData)
@@ -218,9 +288,9 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,$userID,$kwM
 		$tcase_mgr = new testcase($db);
 		$tproject = new testproject($db);
 	}
-	for($i = 0; $i <$tc_qty ;$i++)
+	for($idx = 0; $idx <$tc_qty ; $idx++)
 	{
-		$tc = $tcData[$i];
+		$tc = $tcData[$idx];
 		
 		$summary = $tc['summary'];
 		$expected_results = $tc['expectedresults'];
@@ -238,28 +308,46 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,$userID,$kwM
 	return $resultMap;
 }
 
+
+/*
+  function: buildKeywordList
+
+  args :
+  
+  returns: 
+
+*/
 function buildKeywordList($kwMap,$keywords,$bList = false)
 {
 	$kwIDs = array();
-	for($j = 0;$j < sizeof($keywords);$j++)
+	for($jdx = 0;$jdx < sizeof($keywords); $jdx++)
 	{
-		$kwIDs[] = $kwMap[$keywords[$j]['keyword']];
+		$kwIDs[] = $kwMap[$keywords[$jdx]['keyword']];
 	}
 	if ($bList)
 		$kwIDs = implode(",",$kwIDs);
 	return $kwIDs;
 }
 
+
+/*
+  function: importTCsFromXML
+
+  args :
+  
+  returns: 
+
+*/
 function importTCsFromXML($xmlTCs)
 {
 	$tcs = null;
 	if (!$xmlTCs)
 		return $tcs;
 		
-	$j = 0;
-	for($i = 0;$i < sizeof($xmlTCs);$i++)
+	$jdx = 0;
+	for($idx = 0; $idx < sizeof($xmlTCs); $idx++)
 	{
-		$xmlTC = $xmlTCs[$i];
+		$xmlTC = $xmlTCs[$idx];
 		if ($xmlTC->node_type() != XML_ELEMENT_NODE)
 			continue;
 		$tc = importTCFromXML($xmlTC);
@@ -268,7 +356,7 @@ function importTCsFromXML($xmlTCs)
 			$keywords = importKeywordsFromXML($xmlTC->get_elements_by_tagname("keyword"));
 			if ($keywords)
 				$tc['keywords'] = $keywords;
-			$tcs[$j++] = $tc;
+			$tcs[$jdx++] = $tc;
 		}
 	}
 	return $tcs;
@@ -371,4 +459,120 @@ function check_xml_tc_tsuite($fileName,$bRecursive)
 	}
 	return $file_check;
 }
+
+
+// *****************************************************************************************
+// Contributed code - lightbulb
+// *****************************************************************************************
+/*
+  function: importTestCaseDataFromSpreadsheet
+            convert a XLS file to XML, and call importTestCaseDataFromXML() to do import.
+
+  args: db [reference]: db object
+        fileName: XLS file name
+        parentID: testcases parent node (container)
+        tproject_id: testproject where to import testcases 
+        userID: who is doing import.
+        bRecursive: 1 -> recursive, used when importing testsuites
+        [importIntoProject]: default 0
+        
+  
+  returns: map 
+
+  rev:
+      Original code by lightbulb.
+      Refactoring by franciscom
+*/
+function importTestCaseDataFromSpreadsheet(&$db,$fileName,$parentID,$tproject_id,
+                                           $userID,$bRecursive,$importIntoProject = 0)
+{
+	$xmlTCs = null;
+	$resultMap  = null;
+	$xml_filename=$fileName . '.xml';
+	create_xml_tcspec_from_xls($fileName,$xml_filename);
+	$resultMap=importTestCaseDataFromXML($db,$xml_filename,$parentID,$tproject_id,$userID,
+	                                     $bRecursive,$importIntoProject);
+	
+	unlink($fileName);
+	//unlink($xml_filename);
+	
+	return $resultMap;
+}
+
+
+
+
+/*
+  function: create_xml_tcspec_from_xls
+            Using an XSL file, that contains testcase specifications
+            creates an XML testlink test specification file.
+            
+            XLS format:
+            Column       Description
+              1          test case name
+              2          summary
+              3          steps
+              4          expectedresults
+              
+            First row contains header:  name,summary,steps,expectedresults
+            and must be skipped.
+            
+            
+            
+  args: xls_filename
+        xml_filename
+        
+  
+  returns: 
+
+*/
+function create_xml_tcspec_from_xls($xls_filename,$xml_filename) 
+{
+  define('FIRTS_DATA_ROW',2);
+  define('IDX_COL_NAME',1);
+  define('IDX_COL_SUMMARY',2);
+  define('IDX_COL_STEPS',3);
+  define('IDX_COL_EXPRESULTS',4);
+  
+  
+  
+  $xls_handle = new Spreadsheet_Excel_Reader(); 
+  
+  $xls_handle->setOutputEncoding('CP1251'); 
+  $xls_handle->read($xls_filename);
+  $xls_rows = $xls_handle->sheets[0]['cells'];
+  $xls_row_qty=sizeof($xls_rows);
+  
+  if( $xls_row_qty <= FIRTS_DATA_ROW )
+  {
+     return;  // >>>----> bye!
+  }
+  
+  // OK, go ahead
+  $xmlFileHandle = fopen($xml_filename, 'w') or die("can't open file");
+  fwrite($xmlFileHandle,"<testcases>\n");
+
+  for($idx=FIRTS_DATA_ROW; $idx <= $xls_row_qty; $idx++ )
+  {                       
+    $name=htmlspecialchars($xls_rows[$idx][IDX_COL_NAME]);
+    fwrite($xmlFileHandle,"<testcase name=" . '"' . $name. '"'.">\n");
+    
+    $summary=htmlspecialchars($xls_rows[$idx][IDX_COL_SUMMARY]);
+    fwrite($xmlFileHandle,"<summary>" . $xls_rows[$idx][IDX_COL_SUMMARY] . "</summary>\n");
+    
+    $steps=str_replace('…',"...",$xls_rows[$idx][IDX_COL_STEPS]);
+    $steps=htmlspecialchars($xls_rows[$idx][IDX_COL_STEPS]);
+    fwrite($xmlFileHandle,"<steps>".$steps."</steps>\n");
+    
+    $expresults=str_replace('…',"...",$xls_rows[$idx][IDX_COL_EXPRESULTS]);
+    $expresults=htmlspecialchars($xls_rows[$idx][IDX_COL_EXPRESULTS]);
+    fwrite($xmlFileHandle,"<expectedresults>".$expresults."</expectedresults>\n");
+    
+    fwrite($xmlFileHandle,"</testcase>\n");
+  }
+  fwrite($xmlFileHandle,"</testcases>\n");
+  fclose($xmlFileHandle);
+}
+
+
 ?>

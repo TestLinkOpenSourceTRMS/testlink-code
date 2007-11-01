@@ -2,10 +2,12 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testsuite.class.php,v $
- * @version $Revision: 1.35 $
- * @modified $Date: 2007/10/25 15:44:49 $ - $Author: franciscom $
+ * @version $Revision: 1.36 $
+ * @modified $Date: 2007/11/01 22:01:31 $ - $Author: franciscom $
  * @author franciscom
  *
+ * 20071101 - franciscom - import_file_types, export_file_types
+ * 
  * 20070826 - franciscom - minor fix html_table_of_custom_field_values()
  * 20070602 - franciscom - added attachment copy on copy_to() method
  *                         using testcase copy_attachment() method.
@@ -42,17 +44,56 @@ class testsuite
 	var $my_node_type;
   var $cfield_mgr;
 
-function testsuite(&$db)
-{
-	$this->db = &$db;	
+  var $import_file_types = array("XML" => "XML");
+  var $export_file_types = array("XML" => "XML");
+
+
+  function testsuite(&$db)
+  {
+	  $this->db = &$db;	
 	
-	$this->tree_manager =  new tree($this->db);
-	$this->node_types_descr_id=$this->tree_manager->get_available_node_types();
-	$this->node_types_id_descr=array_flip($this->node_types_descr_id);
-	$this->my_node_type=$this->node_types_descr_id['testsuite'];
+	  $this->tree_manager =  new tree($this->db);
+	  $this->node_types_descr_id=$this->tree_manager->get_available_node_types();
+	  $this->node_types_id_descr=array_flip($this->node_types_descr_id);
+	  $this->my_node_type=$this->node_types_descr_id['testsuite'];
 	
-	$this->cfield_mgr=new cfield_mgr($this->db);
-}
+	  $this->cfield_mgr=new cfield_mgr($this->db);
+  }
+
+  /*
+    function: get_export_file_types
+              getter
+
+    args: -
+    
+    returns: map  
+             key: export file type code
+             value: export file type verbose description 
+
+  */
+	function get_export_file_types()
+	{
+     return $this->export_file_types;
+  }
+
+  /*
+    function: get_impor_file_types
+              getter
+
+    args: -
+    
+    returns: map  
+             key: import file type code
+             value: import file type verbose description 
+
+  */
+	function get_import_file_types()
+	{
+     return $this->import_file_types;
+  }
+
+
+
 
 
 /*

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: const.inc.php,v $
  *
- * @version $Revision: 1.43 $
- * @modified $Date: 2007/10/27 16:38:55 $ by $Author: franciscom $
+ * @version $Revision: 1.44 $
+ * @modified $Date: 2007/11/01 21:56:36 $ by $Author: franciscom $
  * @author Martin Havlát
  *
  * SCOPE:
@@ -393,6 +393,10 @@ define('TL_REQ_STATUS_NOT_TESTABLE', 'N');
 
 $g_req_status=array(TL_REQ_STATUS_VALID => 'req_state_valid', 
 					          TL_REQ_STATUS_NOT_TESTABLE => 'req_state_not_testable');
+
+
+// 20071101 - franciscom
+define( 'PARTIAL_URL_TL_FILE_FORMATS_DOCUMENT',	'docs/tl-file-formats.pdf');
 
 
 // 

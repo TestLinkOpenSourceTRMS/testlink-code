@@ -1,16 +1,17 @@
-<?
+<?php
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: resultsImport.php,v $
  *
- * @version $Revision: 1.3 $
- * @modified $Date: 2007/09/05 06:02:12 $  by $Author: franciscom $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2007/11/01 22:06:05 $  by $Author: franciscom $
 
  * @author - Kevin Levy
  *
  * rev :
+ *      20071101 - franciscom - added manish contribution
  *      20070904 - franciscom - refactoring
 */
 require('../../config.inc.php');
@@ -22,6 +23,14 @@ testlinkInitPage($db);
 
 $importType = isset($_POST['importType']) ? $_POST['importType'] : null;
 $buildID = isset($_GET['build']) ? intval($_GET['build']) : null;
+
+$ref = $_SERVER['HTTP_REFERER'];
+$url_array = split('[?=&]',$ref);
+
+if( in_array('build_id',$url_array) ) {
+	$buildIdIndex = array_search('build_id',$url_array) + 1;
+	$buildID = $url_array[$buildIdIndex];
+}
 
 if ($buildID == null) {
 	$buildID = isset($_POST['build']) ? intval($_POST['build']) : null;
@@ -54,9 +63,6 @@ if ($do_upload)
 		
 	if (($source != 'none') && ($source != ''))
 	{ 
-	  
-		// 20070904 - franciscom - this check is a failure :(
-	  //$file_check = check_valid_ftype($_FILES['uploadedFile'],$importType);
 		$file_check['status_ok']=1;
 		if($file_check['status_ok'])
 		{
@@ -90,13 +96,15 @@ if ($do_upload)
 	}
 }
 
+$import_file_types = array("XML" => "XML");
+
+
 $smarty = new TLSmarty();
 $smarty->assign('import_title',$import_title);  
 $smarty->assign('buildID', $buildID);
 $smarty->assign('file_check',$file_check);  
 $smarty->assign('resultMap',$resultMap); 
-$smarty->assign('tcFormatStrings',$g_tcFormatStrings);
-$smarty->assign('importTypes',$g_tcImportTypes);
+$smarty->assign('importTypes',$import_file_types);
 $smarty->assign('testprojectName', $testprojectName);
 $smarty->assign('importLimitKB',TL_IMPORT_LIMIT / 1024);
 $smarty->assign('bImport',strlen($importType));
@@ -173,6 +181,13 @@ function saveImportedResultData(&$db,$resultData,&$tplan_id,$container_id,$userI
 	{
 		$tc = $resultData[$i];
 		$id = $tc['id'];
+		if(!$id){
+			$tcname = $tc['name'];
+			$query = "SELECT nodes.id from nodes_hierarchy nodes WHERE nodes.name = '{$tcname}'";
+			$result = $db->exec_query($query);
+			$id = $db->db_result($result);
+			error_log("Id is:- ".$id);
+		}
 		$result = $tc['result'];
 		$result_is_acceptable = false;
 
@@ -255,6 +270,10 @@ function importTCFromXML(&$xmlTC)
 	$tc = null;
 	
 	$tc['id'] = $xmlTC->get_attribute("id");
+	if(!$tc['id']) {
+		$tc['name'] = $xmlTC->get_attribute("name");
+	}
+	
 	$tc['result'] = trim(getNodeContent($xmlTC,"result"));
 	$tc['notes'] = trim(getNodeContent($xmlTC,"notes"));
 	$tc['customField1'] = trim(getNodeContent($xmlTC,"customField1"));

@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: tcexport.tpl,v 1.7 2007/10/13 10:14:02 franciscom Exp $ *}
+{* $Id: tcexport.tpl,v 1.8 2007/11/01 22:06:05 franciscom Exp $ *}
 {* Purpose: smarty template - keyword export initial page *}
 {* rev:
        20071013 - franciscom - file name management
@@ -56,6 +56,7 @@ function validateForm(f)
   	<select name="exportType">
   		{html_options options=$exportTypes}
   	</select>
+	  <a href={$basehref}{$smarty.const.PARTIAL_URL_TL_FILE_FORMATS_DOCUMENT}>{lang_get s="view_file_format_doc"}</a>
   	</td>
   	</tr>
     <tr>

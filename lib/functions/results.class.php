@@ -6,11 +6,12 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8 
- * @modified $Date: 2007/10/14 14:41:44 $ by $Author: franciscom $
+ * @modified $Date: 2007/11/01 22:04:29 $ by $Author: franciscom $
  *
  *-------------------------------------------------------------------------
  * Revisions:
  *
+ * 20071101 - franciscom - import_file_types, export_file_types
  * 20071013 - franciscom - changes in prepareNode() call
  * 20071013 - franciscom - changes to fix MSSQL problems
  * 20070916 - franciscom - refactoring to remove global coupling
@@ -161,6 +162,11 @@ class results
 	* map of buildsIds to Array (total, passed, failed, blocked, notRun) 
 	*/
 	private $aggregateBuildResults = null;
+
+
+  var $import_file_types = array("XML" => "XML");
+  var $export_file_types = array("XML" => "XML");
+
     
 	/**
 	* $builds_to_query = 'a' will query all build, $builds_to_query = -1 will prevent
@@ -262,6 +268,51 @@ class results
 			                                                        $arrBuilds, $this->totalsForPlan);
 		} // end if block
 	} // end results constructor
+
+
+  /*
+    function: get_export_file_types
+              getter
+
+    args: -
+    
+    returns: map  
+             key: export file type code
+             value: export file type verbose description 
+
+  */
+	function get_export_file_types()
+	{
+     return $this->export_file_types;
+  }
+
+  /*
+    function: get_impor_file_types
+              getter
+
+    args: -
+    
+    returns: map  
+             key: import file type code
+             value: import file type verbose description 
+
+  */
+	function get_import_file_types()
+	{
+     return $this->import_file_types;
+  }
+
+
+
+
+
+
+
+
+
+
+
+
 
 	/**
 	* tallyKeywordResults(parameter1, parameter2)

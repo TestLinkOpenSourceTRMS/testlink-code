@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: tcexport.php,v $
  *
- * @version $Revision: 1.10 $
- * @modified $Date: 2007/10/13 10:14:21 $ by $Author: franciscom $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2007/11/01 22:01:01 $ by $Author: franciscom $
  *
  * test case and test suites export
  *
@@ -139,6 +139,18 @@ if ($bExport)
 	}
 }
 
+if( $bRecursive )
+{
+  // we are importing a testsuite
+  $obj_mgr = new testsuite($db);
+}
+else
+{
+  $obj_mgr = new testcase($db);
+}
+$export_file_types=$obj_mgr->get_export_file_types();
+
+
 $smarty = new TLSmarty();
 
 $smarty->assign('export_filename',$fileName);
@@ -153,6 +165,6 @@ $smarty->assign('bRecursive',$bRecursive ? 1 : 0);
 $smarty->assign('tcVersionID', $tcversion_id);
 $smarty->assign('containerID', $container_id);
 $smarty->assign('container_description', $container_description);
-$smarty->assign('exportTypes',$g_tcImportTypes);
+$smarty->assign('exportTypes',$export_file_types);
 $smarty->display('tcexport.tpl');
 ?>

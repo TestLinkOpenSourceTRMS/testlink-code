@@ -1,17 +1,18 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: execSetResults.tpl,v 1.48 2007/08/27 06:37:30 franciscom Exp $
+$Id: execSetResults.tpl,v 1.49 2007/11/01 22:06:05 franciscom Exp $
 Purpose: smarty template - show tests to add results
-Revisions:
-          20070826 - franciscom - added some niftycube effects
-          20070519 - franciscom - 
-          BUGID 856: Guest user can execute test case
-          
-          20070211 - franciscom - addede delete logic
-          20070205 - franciscom - display test plan custom fields.
-          20070125 - franciscom - management of closed build
-          20070104 - franciscom - custom field management for test cases
-          20070101 - franciscom - custom field management for test suite div
+Rev:
+    20071101 - franciscom - added test automation code
+    20070826 - franciscom - added some niftycube effects
+    20070519 - franciscom - 
+    BUGID 856: Guest user can execute test case
+    
+    20070211 - franciscom - addede delete logic
+    20070205 - franciscom - display test plan custom fields.
+    20070125 - franciscom - management of closed build
+    20070104 - franciscom - custom field management for test cases
+    20070101 - franciscom - custom field management for test suite div
 *}	
 {assign var="cfg_section" value=$smarty.template|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
@@ -27,6 +28,7 @@ Revisions:
 
 <script language="JavaScript">
 var msg="{lang_get s='warning_delete_execution'}";
+var import_xml_results="{lang_get s='import_xml_results'}";
 </script>
 
 </head>
@@ -162,6 +164,11 @@ var msg="{lang_get s='warning_delete_execution'}";
     		  <input type="submit" id="toggle_history_on_off" 
     		         name="{$history_status_btn_name}" 
     		         value="{lang_get s=$history_status_btn_name}" />
+    		  <input type="button" id="pop_up_import_button" name="import_xml_button" 
+    		         value="{lang_get s='import_xml_results'}" 
+    		         onclick="javascript: openImportResult(import_xml_results);" />
+		      <input type="submit" id="execute_cases" name="execute_cases" 
+		             value="{lang_get s='execute_and_save_results'}"/>
     		  <input type="hidden" id="history_on" 
     		         name="history_on" value="{$history_on}" />
       </div>

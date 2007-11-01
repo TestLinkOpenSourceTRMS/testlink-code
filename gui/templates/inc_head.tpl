@@ -1,6 +1,6 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_head.tpl,v 1.11 2007/10/08 07:25:41 franciscom Exp $
+$Id: inc_head.tpl,v 1.12 2007/11/01 22:03:55 franciscom Exp $
 Purpose: smarty template - HTML Common Header 
 
 rev :
@@ -28,6 +28,8 @@ rev :
 	{/if}
 	<style media="print" type="text/css">@import "{$basehref}{$smarty.const.TL_PRINT_CSS}";</style>
 	<script type="text/javascript" src="{$basehref}gui/javascript/testlink_library.js" language="javascript"></script>
+	<script type="text/javascript" src="{$basehref}gui/javascript/test_automation.js" language="javascript"></script>
+
 {if $jsValidate == "yes"} 
 	<script type="text/javascript" src="{$basehref}gui/javascript/validate.js" language="javascript"></script>
 {/if}

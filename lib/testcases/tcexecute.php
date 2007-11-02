@@ -4,7 +4,7 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: tcexecute.php,v $
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  *
  * Handles testcase execution through AJAX calls. 
  * Testcases are executed on a remote server, and the response 
@@ -19,7 +19,7 @@
  *                 Precede 'tc_' for custom fields assigned to testcase level.
  * 
  *
- * @modified $Date: 2007/11/02 09:38:29 $ by $Author: franciscom $
+ * @modified $Date: 2007/11/02 13:09:22 $ by $Author: franciscom $
 */
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -138,8 +138,11 @@ function remote_exec_testcase_set(&$db,$parent_id,$msg)
 	}
 	if($executionResults){
 		foreach($executionResults as $key => $value){
+		  
+		  $node_info=$tree_manager->get_node_hierachy_info($key);
+		  
 			$xmlResponse .= '<tr><th colspan="2">' . lang_get('tcexec_results_for') .
-			                $tree_manager->isValidNode($key) . "</th></tr>";
+			                $node_info['name'] . "</th></tr>";
 			$serverTest = 1;
 			foreach($value as $_key => $_value){
 				if($_value != -1){

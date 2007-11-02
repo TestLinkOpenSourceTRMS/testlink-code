@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.22 2007/07/06 06:28:34 franciscom Exp $
+$Id: tcView_viewer.tpl,v 1.23 2007/11/02 13:09:09 franciscom Exp $
 viewer for test case in test specification
 
 20070628 - franciscom - active_status_op_enabled always true
@@ -84,13 +84,23 @@ viewer for test case in test specification
    <input type="submit" name="do_create_new_version"   value="{lang_get s='btn_new_version'}" />
 	
 	</form>
-	<form method="post" action="lib/testcases/tcexport.php">
+	<form method="post" action="lib/testcases/tcexport.php" name="tcexport">
 		<br/>
 		<input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
 		<input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />
 		<input type="submit" name="export_tc"   value="{lang_get s='btn_export'}" />
+		{* 20071102 - franciscom *}
+		{* 
+		<input type="button" name="tstButton" value="{lang_get s='btn_execute_automatic_testcase'}" 
+		       onclick="javascript: startExecution({$args_testcase.testcase_id},'testcase');" />
+		*}       
 	</form>
 
+	{* 20071102 - franciscom *}
+	{*
+	<div id="inProgress"></div>
+  *}
+  
   {if $warning_edit_msg neq ""}
     <p><div class="warning_message" align="center">{$warning_edit_msg}</div>
   {/if}
@@ -100,6 +110,7 @@ viewer for test case in test specification
   {if $args_testcase.active eq 0}
     <p><div class="warning_message" align="center">{lang_get s='tcversion_is_inactive_msg'}</div>
   {/if}
+	<div id="executionResults"></div>
 
 	<table width="95%" class="simple" border="0">
     {if $args_show_title == "yes"}

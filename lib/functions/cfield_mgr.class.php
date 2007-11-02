@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: cfield_mgr.class.php,v $
- * @version $Revision: 1.18 $
- * @modified $Date: 2007/11/02 09:37:18 $  $Author: franciscom $
+ * @version $Revision: 1.19 $
+ * @modified $Date: 2007/11/02 13:09:22 $  $Author: franciscom $
  * @author franciscom
  *
  * 20071102 - franciscom - BUGID - Feature 
@@ -1345,7 +1345,13 @@ function getXMLServerParams($node_id){
   if( !is_null($node_info) )
   {
 		$prefix = "";
+		$ret = array( 'xml_server_host' => null,
+				        	'xml_server_port' => null,
+					        'xml_server_path' => null);
+
 		$node_info=$this->tree_manager->get_node_hierachy_info($node_id); 
+
+
 		if( $node_info['node_type_id'] == $node_type['testcase'])
 		{
 			$prefix = "tc_";
@@ -1360,16 +1366,21 @@ function getXMLServerParams($node_id){
 
 		// $server_info = $this->db->fetchColumnsIntoMap($query,0,1);
 		$server_info = $this->db->fetchRowsIntoMap($sql,'name');
-    
-		if( 
-		    ( (isset($server_info[$srv_cfg->host]) && $server_info[$srv_cfg->host] != "") &&
-		      (isset($server_info[$srv_cfg->port]) && $server_info[$srv_cfg->port] != "") ) || 
-		    (isset($server_info[$srv_cfg->path]) && $server_info[$srv_cfg->path] != "") 
-		  )
+    $server_cfg_is_ok=0;
+    $server_use_host_port=0;
+    $server_use_path=0;
+
+    if( (isset($server_info[$srv_cfg->host]) && $server_info[$srv_cfg->host] != "") &&
+		    (isset($server_info[$srv_cfg->port]) && $server_info[$srv_cfg->port] != "") )
 		{
-			$ret = array( 'xml_server_host' => $server_info[$srv_cfg->host],
-					        	'xml_server_port' => $server_info[$srv_cfg->port],
-						        'xml_server_path' => $server_info[$srv_cfg->path]);
+		    $server_cfg_is_ok=1;
+			  $ret['xml_server_host'] = $server_info[$srv_cfg->host];
+			  $ret['xml_server_port'] = $server_info[$srv_cfg->port];
+		}    
+		else if (isset($server_info[$srv_cfg->path]) && $server_info[$srv_cfg->path] != "") 
+		{ 
+		    $server_cfg_is_ok=1;
+			  $ret['xml_server_path'] = $server_info[$srv_cfg->path];
 		}
 		else
 		{

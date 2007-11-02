@@ -1,9 +1,11 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: containerView.tpl,v 1.37 2007/03/05 07:07:29 franciscom Exp $ *}
+{* $Id: containerView.tpl,v 1.38 2007/11/02 13:09:08 franciscom Exp $ *}
 {* 
 Purpose: smarty template - view test specification containers 
 
 rev :
+      20071102 - franciscom - added contribution
+      
       20070216 - franciscom
       moved parameters from GET to hidden
 *}
@@ -30,6 +32,12 @@ rev :
 			  <input type="submit" name="reorder_testsuites" value="{lang_get s='btn_reorder_cat'}" />
 			  <input type="button" onclick="location='{$basehref}lib/testcases/tcImport.php?bIntoProject=1&bRecursive=1&containerID={$container_data.id}'" value="{lang_get s='btn_import_testsuite'}" />  
 			 <input type="button" onclick="location='{$basehref}lib/testcases/tcexport.php?bRecursive=1&containerID={$container_data.id}'" value="{lang_get s='btn_export_all_testsuites'}" />  			  
+			 
+			 {* 20071102 - franciscom *}
+			 {*
+			 <input type="button" name="execButton" value="{lang_get s='btn_execute_automatic_testcases'}" 
+			        onclick="javascript: startExecution({$container_data.id},'testproject');" />
+			 *}       
 			</form>
 		</div>
 	{/if}
@@ -56,7 +64,12 @@ rev :
 		</tr>
 		
 	</table>
-
+	{* 20071102 - franciscom *}
+	{*
+	<div id="inProgress"></div>
+	<div id="executionResults"></div>
+  *}
+   
 	{include file="inc_attachments.tpl" id=$id tableName="nodes_hierarchy" downloadOnly=$bDownloadOnly}
 {elseif $level == 'testsuite'}
 
@@ -95,8 +108,19 @@ rev :
 			<input type="submit" id="create_tc" name="create_tc" value="{lang_get s='btn_new_tc'}" />  
 			<input type="button" onclick="location='{$basehref}lib/testcases/tcImport.php?containerID={$container_data.id}'" value="{lang_get s='btn_import_tc'}" />  
 			<input type="button" onclick="location='{$basehref}lib/testcases/tcexport.php?containerID={$container_data.id}'" value="{lang_get s='btn_export_tc'}" />  
+
+		  {* 20071102 - franciscom *}
+		  {*
+			<input type="button" name="execButton" value="{lang_get s='btn_execute_automatic_testcases'}" 
+			       onclick="javascript: startExecution({$container_data.id},'testsuite');" />
+			*}       
 		</form>
 		</div>
+		{* 20071102 - franciscom *}
+		{*
+		<div id="inProgress"></div><BR>
+		<div id="executionResults"></div>
+		*}
 	{/if}
 
 	{include file="inc_testsuite_viewer_ro.tpl"}

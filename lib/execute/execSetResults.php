@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.67 $
- * @modified $Date: 2007/11/02 09:37:18 $ $Author: franciscom $
+ * @version $Revision: 1.68 $
+ * @modified $Date: 2007/11/02 13:09:22 $ $Author: franciscom $
  *
  * 20071006 - franciscom - changes on exec_cfield_mgr() call
  * 20071002 - jbarchibald - BUGID 1051
@@ -142,7 +142,22 @@ if($do_exec == 1)
 	$tc_versions = isset($_REQUEST['tc_version']) ? $_REQUEST['tc_version'] : null;
 	if( !is_null($tc_versions) && count($tc_versions) > 0)
 	{
-	   do_remote_execution($db,$tc_versions);
+	   $status_and_notes=do_remote_execution($db,$tc_versions);
+	   
+	   // Need to be added to $_REQUEST, because we are using $_REQUEST as input
+	   // for the function responsible of writing exec results. write_execution()
+	   $status_map=$status_and_notes['status'];
+	   $notes_map=$status_and_notes['notes'];
+	   
+	   if( count($status_map) > 0 )
+	   {
+	      foreach($status_map as $key => $value)
+	      {
+	        $_REQUEST['status'][$key]=$value;  
+	        $_REQUEST['notes'][$key]=$notes_map[$key];  
+	      } 
+	   }
+	   
 	}
 }	
 // -----------------------------------------------------------
@@ -614,8 +629,12 @@ function do_remote_execution(&$db,$tc_versions)
   $tree_mgr = new tree($db);
   $cfield_mgr = new cfield_mgr($db);
   
+	$ret=array();
+  $ret["status"]=array();
+	$ret["notes"]=array();
 
 	$executionResults = array();
+
 	$myResult = array();
 	foreach($tc_versions as $version_id => $tcase_id)
 	{
@@ -634,9 +653,9 @@ function do_remote_execution(&$db,$tc_versions)
 				    $my_result != $tc_status['blocked']){
 					$my_result = $tc_status['blocked'];
 				}
-				// why ???? - 20071102 - franciscom
-				// $_REQUEST["status"][$version_id] = $myResult;
-				// $_REQUEST["notes"][$version_id] = $my_notes;
+				// 
+				$ret["status"][$version_id] = $myResult;
+				$ret["notes"][$version_id] = $my_notes;
 				//
 				$sql = "INSERT INTO executions (build_id,tester_id,status,testplan_id,tcversion_id,execution_ts,notes) ".
 				       "VALUES ({$build_id},{$user_id},'{$my_result}',{$tplan_id},{$version_id},{$db_now},'{$my_notes}')";
@@ -645,5 +664,7 @@ function do_remote_execution(&$db,$tc_versions)
 		}
 
 	} //foreach($tc_versions as $version_id => $tcase_id)
+	
+	return $ret;
 } //function end
 ?>																																

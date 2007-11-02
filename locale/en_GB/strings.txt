@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.210 $
- * @modified $Date: 2007/11/02 09:38:31 $ $Author: franciscom $
+ * @version $Revision: 1.211 $
+ * @modified $Date: 2007/11/02 13:09:37 $ $Author: franciscom $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -261,6 +261,7 @@ $TLS_alt_edit_com = "Modify this Test Suite data and title";
 $TLS_alt_move_cp_com = "Move or copy this Test Suite to another Test Project";
 $TLS_btn_del_com = "Delete";
 $TLS_btn_edit_com = "Edit";
+$TLS_btn_execute_automatic_testcases="Execute All Automatic Test Cases";
 $TLS_btn_export_all_testsuites = "Export All Test Suites";
 $TLS_btn_export_tc = "Export Test Case(s)";
 $TLS_btn_export_testsuite = "Export Test Suite";
@@ -982,6 +983,7 @@ $TLS_activate_this_tcversion = "Activate this version";
 $TLS_Requirements = "Requirements";
 $TLS_btn_del_this_version = "Delete this version";
 $TLS_btn_edit = "Edit";
+$TLS_btn_execute_automatic_testcase="Execute automatic test case";
 $TLS_btn_mv_cp = "Move / Copy";
 $TLS_btn_new_version = "Create a new version";
 $TLS_can_not_edit_tc = "You can not edit this version because it has been executed";

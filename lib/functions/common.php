@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.74 $ $Author: franciscom $
- * @modified $Date: 2007/11/02 09:37:18 $
+ * @version $Revision: 1.75 $ $Author: franciscom $
+ * @modified $Date: 2007/11/02 13:09:22 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -1137,8 +1137,8 @@ function executeTestCase($testcase_id,$tree_manager,$cfield_manager){
   	// (-1 for executions results, and fault code and error message for message.
   	$xmlrpc_client = new xmlrpc_client($server_path,$server_host,$server_port);
   
-  	//Get testcase name
-  	$testcase_name = $tree_manager->isValidNode($testcase_id);
+  	$tc_info = $tree_manager->get_node_hierachy_info($testcase_id);
+  	$testcase_name = $tc_info['name'];
   	
   	//Create XML-RPC Objects to pass on to the the servers
   	$myVar1 = new xmlrpcval($testcase_name,'string');

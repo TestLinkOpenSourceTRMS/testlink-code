@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.209 $
- * @modified $Date: 2007/11/01 21:57:45 $ $Author: franciscom $
+ * @version $Revision: 1.210 $
+ * @modified $Date: 2007/11/02 09:38:31 $ $Author: franciscom $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -16,6 +16,7 @@
  *
  * English (en_GB) strings
  * 
+ * 20071102 - franciscom - tcexecute strings
  * 20071101 - franciscom - view_file_format_doc
  * 20070930 - franciscom - show_tcase_spec
  * 20070818 - franciscom -
@@ -156,6 +157,14 @@ $TLS_tc_updated = "Test Case %s was succesfully updated";
 $TLS_tc_update_failed = "Update of Test Case %s failed!";
 $TLS_tc_version_deleted = "Test Case %s version %d was succesfully deleted";
 
+
+// tcexecute.php
+$TLS_check_test_automation_server="Please Check Server Settings";
+$TLS_result_after_exec=" Results after execution: ";
+$TLS_service_not_supported="This service is not supported";
+$TLS_tcexec_notes="Notes:";
+$TLS_tcexec_result="Result:";
+$TLS_tcexec_results_for="Result for:";
 
 // gui/templates/attachment404.tpl
 $TLS_btn_close = "Close";
@@ -1494,7 +1503,9 @@ $TLS_stmp_host_unconfigured = "SMTP host not properly configured!";
 
 
 // lib/functions/common.php
-
+$TLS_test_automation_exec_ok=" Execution Successful!";
+$TLS_test_automation_server_conn_failure=" Could not connect to HTTP server.";
+$TLS_XMLRPC_error_number="XML-RPC Fault number:- ";
 
 
 // lib/functions/configCheck.php

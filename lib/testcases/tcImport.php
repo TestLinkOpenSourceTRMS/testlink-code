@@ -5,9 +5,9 @@
  *
  * Filename $RCSfile: tcImport.php,v $
  * Filename $RCSfile: tcImport.php,v $
- * @version $Revision: 1.25 $
+ * @version $Revision: 1.26 $
  *
- * @modified $Date: 2007/11/01 22:00:50 $ by $Author: franciscom $
+ * @modified $Date: 2007/11/02 09:37:18 $ by $Author: franciscom $
 */
 require('../../config.inc.php');
 require_once('common.php');
@@ -494,7 +494,7 @@ function importTestCaseDataFromSpreadsheet(&$db,$fileName,$parentID,$tproject_id
 	                                     $bRecursive,$importIntoProject);
 	
 	unlink($fileName);
-	//unlink($xml_filename);
+	unlink($xml_filename);
 	
 	return $resultMap;
 }

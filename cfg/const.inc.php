@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: const.inc.php,v $
  *
- * @version $Revision: 1.44 $
- * @modified $Date: 2007/11/01 21:56:36 $ by $Author: franciscom $
+ * @version $Revision: 1.45 $
+ * @modified $Date: 2007/11/02 09:36:23 $ by $Author: franciscom $
  * @author Martin Havlát
  *
  * SCOPE:
@@ -487,5 +487,11 @@ define('DO_PRUNE',1);
 
 // getAllRoles()
 define('EXCLUDE_UNDEFINED_ROLE',0);
+
+
+// executeTestCase()
+define('AUTOMATION_RESULT_KO', -1);
+define('AUTOMATION_NOTES_KO', -1);
+
 // -------------------------------------------------------------------
 ?>

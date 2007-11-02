@@ -2,9 +2,12 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: cfield_mgr.class.php,v $
- * @version $Revision: 1.17 $
- * @modified $Date: 2007/10/27 16:41:05 $  $Author: franciscom $
+ * @version $Revision: 1.18 $
+ * @modified $Date: 2007/11/02 09:37:18 $  $Author: franciscom $
  * @author franciscom
+ *
+ * 20071102 - franciscom - BUGID - Feature 
+ *            addition and refactoring of contributed code
  *
  * 20071027 - franciscom - using Mantis (a php based bugtracking system)
  *                         logic, to improve custom field management
@@ -1320,6 +1323,65 @@ class cfield_mgr
  function helper_get_tab_index() {
 	 return 'tabindex="' . helper_get_tab_index_value() . '"';
  }
+
+
+
+/**
+* function: getXMLServerParams
+* @note Retrieves the XML Server Parameters specified through custom fields.
+* @param: $node_id, <b>Accepts current node id from nodes hierarchy level</b>
+* @return: An array of config params if found, else returns null
+*
+* rev:
+*     20071102 - franciscom - refactoring
+*     200710xx - creation - Swanand
+**/
+function getXMLServerParams($node_id){
+
+  $node_type=$this->tree_manager->get_available_node_types();
+	$node_info=$this->tree_manager->get_node_hierachy_info($node_id); 
+  $ret=null;
+  
+  if( !is_null($node_info) )
+  {
+		$prefix = "";
+		$node_info=$this->tree_manager->get_node_hierachy_info($node_id); 
+		if( $node_info['node_type_id'] == $node_type['testcase'])
+		{
+			$prefix = "tc_";
+		}
+		$srv_cfg->host=$prefix . "server_host";
+		$srv_cfg->port=$prefix . "server_port";
+		$srv_cfg->path=$prefix . "server_path";
+		
+		$sql = "SELECT cf.name, cfdv.value " .
+		       "FROM cfield_design_values cfdv,custom_fields cf " .
+		       "WHERE cfdv.field_id = cf.id AND cfdv.node_id = {$node_id}";
+
+		// $server_info = $this->db->fetchColumnsIntoMap($query,0,1);
+		$server_info = $this->db->fetchRowsIntoMap($sql,'name');
+    
+		if( 
+		    ( (isset($server_info[$srv_cfg->host]) && $server_info[$srv_cfg->host] != "") &&
+		      (isset($server_info[$srv_cfg->port]) && $server_info[$srv_cfg->port] != "") ) || 
+		    (isset($server_info[$srv_cfg->path]) && $server_info[$srv_cfg->path] != "") 
+		  )
+		{
+			$ret = array( 'xml_server_host' => $server_info[$srv_cfg->host],
+					        	'xml_server_port' => $server_info[$srv_cfg->port],
+						        'xml_server_path' => $server_info[$srv_cfg->path]);
+		}
+		else
+		{
+			if($node_info['parent_id'] != "")
+			{
+				 $ret=$this->getXMLServerParams($node_info['parent_id']);
+			}
+		}
+	} // if( !is_null($node_info) )
+	
+  return $ret;
+} //function end
 
 
 } // end class

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.66 $
- * @modified $Date: 2007/10/13 10:18:41 $ $Author: franciscom $
+ * @version $Revision: 1.67 $
+ * @modified $Date: 2007/11/02 09:37:18 $ $Author: franciscom $
  *
  * 20071006 - franciscom - changes on exec_cfield_mgr() call
  * 20071002 - jbarchibald - BUGID 1051
@@ -69,6 +69,7 @@ $submitResult = null;
 
 
 $_REQUEST = strings_stripSlashes($_REQUEST);
+$do_exec = isset($_REQUEST['execute_cases']) ? 1 : 0;
 $id = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0;
 $build_id = isset($_REQUEST['build_id']) ? intval($_REQUEST['build_id']) : 0;
 $tc_id = isset($_REQUEST['tc_id']) ? intval($_REQUEST['tc_id']) : null;
@@ -129,6 +130,26 @@ if( is_null($filter_status) || $filter_status == $tc_status['not_run'])
 {
   $get_mode=GET_ALSO_NOT_EXECUTED;
 }
+
+// ---------------------------------------------------------
+// Testplan executions and result archiving. Checks whether execute cases button was clicked
+//
+
+if($do_exec == 1)
+{
+	/** @note Retrive testcase ids in an array */
+	$tc_versions = array();
+	$tc_versions = isset($_REQUEST['tc_version']) ? $_REQUEST['tc_version'] : null;
+	if( !is_null($tc_versions) && count($tc_versions) > 0)
+	{
+	   do_remote_execution($db,$tc_versions);
+	}
+}	
+// -----------------------------------------------------------
+
+
+
+
 
 // 20070306 - franciscom - BUGID 705
 // 20070914 - jbarchibald - added $cf_selected parameter
@@ -576,5 +597,53 @@ function exec_additional_info(&$db,&$tcase_mgr,$other_execs,$tplan_id)
                'cfexec_values' => $cfexec_values);      
                
   return $info;
-}
+} //function end
+
+
+/*
+  function: 
+
+  args :
+  
+  returns: 
+
+*/
+function do_remote_execution(&$db,$tc_versions)
+{
+  $tc_status = config_get('tc_status');
+  $tree_mgr = new tree($db);
+  $cfield_mgr = new cfield_mgr($db);
+  
+
+	$executionResults = array();
+	$myResult = array();
+	foreach($tc_versions as $version_id => $tcase_id)
+	{
+		// RPC call
+		$executionResults[$tcase_id] =  executeTestCase($tcase_id,$tree_mgr,$cfield_mgr);
+		if($executionResults){
+			$myResult = $executionResults[$tcase_id]['result'];
+			$myNotes = $executionResults[$tcase_id]['notes'];
+			if ($myResult != -1 and $myNotes != -1) {
+				$db_now = $db->db_now();
+				$my_notes = $db->prepare_string(trim($myNotes));
+				$my_result = strtolower($myResult);
+				$my_result = $my_result{0};
+				if( $my_result != $tc_status['passed'] && 
+				    $my_result != $tc_status['failed'] && 
+				    $my_result != $tc_status['blocked']){
+					$my_result = $tc_status['blocked'];
+				}
+				// why ???? - 20071102 - franciscom
+				// $_REQUEST["status"][$version_id] = $myResult;
+				// $_REQUEST["notes"][$version_id] = $my_notes;
+				//
+				$sql = "INSERT INTO executions (build_id,tester_id,status,testplan_id,tcversion_id,execution_ts,notes) ".
+				       "VALUES ({$build_id},{$user_id},'{$my_result}',{$tplan_id},{$version_id},{$db_now},'{$my_notes}')";
+				$db->exec_query($sql);
+			}
+		}
+
+	} //foreach($tc_versions as $version_id => $tcase_id)
+} //function end
 ?>																																

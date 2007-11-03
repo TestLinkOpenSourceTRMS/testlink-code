@@ -1,10 +1,13 @@
 <?php
 /*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: migrate_16_to_17_functions.php,v 1.4 2007/10/21 16:00:55 franciscom Exp $
+ * $Id: migrate_16_to_17_functions.php,v 1.5 2007/11/03 12:31:55 franciscom Exp $
  *
- * 20070829 - jbarchibald - fixed bug 1010, results Migration
- * 20071008 - asielb - fixed bug 1110, keywords migration
+ * rev :
+ *      20071103 - franciscom - BUGID 771 - utf-8 issue - contributed by eagleas
+ *
+ *      20071008 - asielb - fixed bug 1110, keywords migration
+ *      20070829 - jbarchibald - fixed bug 1010, results Migration
  */
 
 // -----------------------------------   Auxiliary Functions -------------------------
@@ -55,6 +58,10 @@ else
   } 
   else 
   {
+    // 20071103 - BUGID 771 eagleas
+    $db->exec_query("SET CHARACTER SET utf8;");
+    $db->exec_query("SET collation_connection = 'utf8_general_ci';");
+
   	echo "<span class='ok'>OK!</span><p />";
   }
 }

@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: buildNew.tpl,v 1.21 2007/02/14 17:54:30 franciscom Exp $
+$Id: buildNew.tpl,v 1.22 2007/11/03 23:57:46 havlat Exp $
 
 Purpose: smarty template - Add new build and show existing
 
@@ -40,7 +40,7 @@ function validateForm(f)
 
 <div class="workBack">
 {include file="inc_update.tpl" user_feedback=$user_feedback 
-         result=$sqlResult item="build" name=$name}
+         result=$sqlResult item="build"}
 
 <div> {* new build form *}
 	{if $build_name ne ""}

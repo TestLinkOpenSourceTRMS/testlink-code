@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: buildView.tpl,v 1.8 2007/10/31 21:56:29 asielb Exp $
+$Id: buildView.tpl,v 1.9 2007/11/03 23:57:46 havlat Exp $
 
 Purpose: smarty template - Show existing builds
 
@@ -27,7 +27,7 @@ var del_action=fRoot+'lib/plan/buildNew.php?do_action=do_delete&build_id=';
 <h1>{lang_get s='title_build_2'}{$smarty.const.TITLE_SEP_TYPE3}{lang_get s='test_plan'} {$tplan_id|escape}{$smarty.const.TITLE_SEP}{$tplan_name|escape}</h1>
 
 <div class="workBack">
-{include file="inc_update.tpl" result=$sqlResult item="build" name=$name}
+{include file="inc_update.tpl" result=$sqlResult item="build"}
 
 {* ------------------------------------------------------------------------------------------- *}
 <div id="existing_builds">
@@ -96,6 +96,8 @@ var del_action=fRoot+'lib/plan/buildNew.php?do_action=do_delete&build_id=';
       <input type="submit" name="create_build" value="{lang_get s='btn_build_create'}" />
     </form>
   </div>
+
+	<p>{lang_get s='builds_description'}</p>
 
 </div>
 

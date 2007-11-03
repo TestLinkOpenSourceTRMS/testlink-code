@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.212 $
- * @modified $Date: 2007/11/03 07:37:18 $ $Author: franciscom $
+ * @version $Revision: 1.213 $
+ * @modified $Date: 2007/11/03 17:45:54 $ $Author: franciscom $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -774,6 +774,7 @@ $TLS_alt_notes = "notes";
 $TLS_assigned_to = "Assigned to";
 $TLS_attachment_mgmt = "attachments";
 $TLS_btn_history_off = "Show only last execution";
+$TLS_btn_history_off_any_build = "Show only last execution (any Build)";
 $TLS_btn_history_on = "Show complete execution history";
 $TLS_btn_save_all_tests_results = "Save all executions";
 $TLS_btn_save_tc_exec_results = "Save execution";
@@ -784,6 +785,8 @@ $TLS_bulk_tc_status_management = "Bulk TC status management";
 $TLS_date_time_run = "Date";
 $TLS_details = "Details";
 $TLS_execute_and_save_results ="Execute and Save Results";
+$TLS_exec_any_build="(any build)";
+$TLS_exec_current_build="(current build)";
 $TLS_exec_notes = "Notes";
 $TLS_exec_status = "Status";
 $TLS_execution_history = "Execution history";
@@ -791,7 +794,8 @@ $TLS_has_no_assignment = "No tester assigned";
 $TLS_img_title_bug_mgmt = "Bug management";
 $TLS_img_title_delete_execution= "Delete execution";
 $TLS_import_xml_results="Import XML Results";
-$TLS_just_last_execution_for_this_build = "Last execution for this build";
+$TLS_just_last_execution_for_this_build = "Last execution for build";
+$TLS_last_execution = "Last execution";
 $TLS_no_data_available = "No data available";
 $TLS_only_test_cases_assigned_to="Only Test Cases assigned to";
 $TLS_set_all_tc_to = "Set all to status ";

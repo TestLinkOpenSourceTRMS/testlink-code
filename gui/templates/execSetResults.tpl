@@ -1,8 +1,9 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: execSetResults.tpl,v 1.49 2007/11/01 22:06:05 franciscom Exp $
+$Id: execSetResults.tpl,v 1.50 2007/11/03 17:45:20 franciscom Exp $
 Purpose: smarty template - show tests to add results
 Rev:
+    20071103 - franciscom - BUGID 700
     20071101 - franciscom - added test automation code
     20070826 - franciscom - added some niftycube effects
     20070519 - franciscom - 
@@ -167,8 +168,11 @@ var import_xml_results="{lang_get s='import_xml_results'}";
     		  <input type="button" id="pop_up_import_button" name="import_xml_button" 
     		         value="{lang_get s='import_xml_results'}" 
     		         onclick="javascript: openImportResult(import_xml_results);" />
+		      
+		      {if $test_automation_enabled}
 		      <input type="submit" id="execute_cases" name="execute_cases" 
 		             value="{lang_get s='execute_and_save_results'}"/>
+		      {/if}       
     		  <input type="hidden" id="history_on" 
     		         name="history_on" value="{$history_on}" />
       </div>
@@ -235,38 +239,67 @@ var import_xml_results="{lang_get s='import_xml_results'}";
         {/if}  
     </div>
 
+ 		{if $show_last_exec_any_build}
+   		{assign var="abs_last_exec" value=$map_last_exec_any_build.$tcversion_id}
+ 		  {assign var="the_build" value=$abs_last_exec.build_name|escape}
+ 		  {assign var="show_current_build" value=1}
+ 		{else}
+ 		  {assign var="the_build" value=$build_name|escape}
+ 		  {assign var="show_current_build" value=0}
+    {/if}
+
 		<div id="execution_history" class="exec_history">
   		<div class="exec_history_title">
   		{if $history_on}
-  		    {lang_get s='execution_history'}
+  		    {lang_get s='execution_history'} {$smarty.const.TITLE_SEP_TYPE3} 
+  		    {lang_get s='build'} {$smarty.const.TITLE_SEP} {$build_name|escape}
   		{else}
-  			  {lang_get s='just_last_execution_for_this_build'}
+  			  {lang_get s='last_execution'} 
+  			  {if $show_current_build} {lang_get s='exec_any_build'} {/if}
+  			  {$smarty.const.TITLE_SEP_TYPE3} {lang_get s='build'} 
+  			  {$smarty.const.TITLE_SEP} {$the_build}
   		{/if}
   		</div>
 
 		{* The very last execution for any build of this test plan *}
-		{if $show_last_exec_any_build}
-    		{assign var="abs_last_exec" value=$map_last_exec_any_build.$tcversion_id}
+		{if $show_last_exec_any_build && $history_on==0}
         {if $abs_last_exec.status != '' and $abs_last_exec.status != $gsmarty_tc_status.not_run}			
-			     {assign var="status_code" value=$abs_last_exec.status}
+			    {assign var="status_code" value=$abs_last_exec.status}
     
-   			<div class="{$gsmarty_tc_status_css.$status_code}">
-   			{lang_get s='test_exec_last_run_date'} {localize_timestamp ts=$abs_last_exec.execution_ts}
-   			{lang_get s='test_exec_by'} {$alluserInfo[$abs_last_exec.tester_id].fullname|escape} 
-   			{lang_get s='test_exec_on_build'} {$abs_last_exec.build_name|escape}: 			
-   			{localize_tc_status s=$status_code}
-   			</div>
-		{else}
-    		<div class="not_run">{lang_get s='test_status_not_run'}</div>
-    			{lang_get s='tc_not_tested_yet'}
-   		{/if}
+     			<div class="{$gsmarty_tc_status_css.$status_code}">
+     			{lang_get s='date_time_run'} {$smarty.const.TITLE_SEP} {localize_timestamp ts=$abs_last_exec.execution_ts}
+     			{$smarty.const.TITLE_SEP_TYPE3}
+     			{lang_get s='test_exec_by'} {$smarty.const.TITLE_SEP} {$alluserInfo[$abs_last_exec.tester_id].fullname|escape} 
+     			{$smarty.const.TITLE_SEP_TYPE3}
+     			{lang_get s='build'}{$smarty.const.TITLE_SEP} {$abs_last_exec.build_name|escape} 			
+     			{$smarty.const.TITLE_SEP_TYPE3}
+     			{lang_get s='exec_status'} {$smarty.const.TITLE_SEP} {localize_tc_status s=$status_code}
+     			</div>
+  		    
+  		  {else}
+    		   <div class="not_run">{lang_get s='test_status_not_run'}</div>
+    			   {lang_get s='tc_not_tested_yet'}
+   		  {/if}
     {/if}
 
     {* -------------------------------------------------------------------------------------------------- *}
     {if $other_exec.$tcversion_id}
+    
+      {if $history_on == 0 && $show_current_build}
+   		   <div class="exec_history_title">
+  			    {lang_get s='last_execution'} {lang_get s='exec_current_build'} 
+  			    {$smarty.const.TITLE_SEP_TYPE3} {lang_get s='build'} 
+  			    {$smarty.const.TITLE_SEP} {$build_name|escape}
+  			 </div>   
+		  {/if}
+    
 		  <table cellspacing="0" class="exec_history">
 			 <tr>
 				<th style="text-align:left">{lang_get s='date_time_run'}</th>
+        {* 20071103 - BUGID 700 *}
+				{if $history_on == 0 }
+				  <th style="text-align:left">{lang_get s='build'}</th>
+				{/if}  
 				<th style="text-align:left">{lang_get s='test_exec_by'}</th>
 				<th style="text-align:left">{lang_get s='exec_status'}</th>
 				<th style="text-align:center" >
@@ -283,7 +316,6 @@ var import_xml_results="{lang_get s='import_xml_results'}";
           {assign var="my_colspan" value=$my_colspan+1}
         {/if}
         
-        {* 20070211 - franciscom *}
 				{if $can_delete_execution}
           <th style="text-align:left">{lang_get s='delete'}</th>
           {assign var="my_colspan" value=$my_colspan+1}
@@ -298,6 +330,11 @@ var import_xml_results="{lang_get s='import_xml_results'}";
 
    			<tr style="border-top:1px solid black">
   				<td>{localize_timestamp ts=$tc_old_exec.execution_ts}</td>
+  				
+				  {if $history_on == 0 }
+  				<td>{$tc_old_exec.build_name|escape}</td>
+  				{/if}
+  				
   				<td>{$alluserInfo[$tc_old_exec.tester_id].fullname|escape}</td> 
   				<td class="{$gsmarty_tc_status_css.$tc_status_code}">
   				    {localize_tc_status s=$tc_old_exec.status}

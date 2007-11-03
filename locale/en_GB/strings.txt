@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.213 $
- * @modified $Date: 2007/11/03 17:45:54 $ $Author: franciscom $
+ * @version $Revision: 1.214 $
+ * @modified $Date: 2007/11/03 23:49:56 $ $Author: havlat $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -1297,6 +1297,8 @@ $TLS_th_description = "Description";
 $TLS_th_open = "Open";
 $TLS_title_build_list = "List of existing builds";
 $TLS_warning_delete_build = "Do really want to delete this build? All dependant data (test results) will also be deleted!";
+$TLS_builds_description = "Each build is identified via title. It has two attributes:<br /> Active / Inactive – defines whether the build is available for TestLink functionality. Inactive build is not listed in both execution and reports pages.
+<br /> Opened / Closed – defines if Test Results can be modified for the build.";
 
 
 

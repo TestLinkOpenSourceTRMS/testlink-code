@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsTC.php,v 1.31 2007/09/24 08:43:28 franciscom Exp $ 
+* $Id: resultsTC.php,v 1.32 2007/11/03 23:36:23 havlat Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -41,7 +41,7 @@ $tproject_name = $tproject_info['name'];
 $re = new results($db, $tplan_mgr, $tproject_info, $tplan_info,
                   ALL_TEST_SUITES,ALL_BUILDS);
 
-$arrBuilds = $tplan_mgr->get_builds($tplan_id); 
+$arrBuilds = $tplan_mgr->get_builds($tplan_id, 1); //MHT: active builds only
 $arrBuildIds = array_keys($arrBuilds);
 
 $executionsMap = $re->getSuiteList();

@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsMoreBuilds.php,v 1.55 2007/09/17 06:29:07 franciscom Exp $ 
+* $Id: resultsMoreBuilds.php,v 1.56 2007/11/03 23:36:23 havlat Exp $ 
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 * 
@@ -37,7 +37,7 @@ $tc_status_code_label = get_status_for_reports_html_options();
 $re = new results($db, $tplan_mgr,$tproject_info,$tplan_info);
 
 $arrKeywords = $tplan_mgr->get_keywords_map($tplan_id); 
-$arrBuilds = $tplan_mgr->get_builds($tplan_id); 
+$arrBuilds = $tplan_mgr->get_builds($tplan_id, 1); //MHT: active builds only
 $arrTestsuites = $re->getTopLevelSuites();
 
 

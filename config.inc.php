@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.127 $
- * @modified $Date: 2007/10/27 16:41:49 $ by $Author: franciscom $
+ * @version $Revision: 1.128 $
+ * @modified $Date: 2007/11/03 17:46:27 $ by $Author: franciscom $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink 
@@ -17,6 +17,7 @@
  *-----------------------------------------------------------------------------
  *
  * Revisions:
+ *           20071103 - franciscom - $g_exec_cfg->enable_test_automation
  *           20071006 - franciscom - $g_use_ext_js_library
  *           20070930 - franciscom - BUGID 1086 - configure order by in attachment
  *           20070910 - franciscom - removed MAIN_PAGE_METRICS_ENABLED
@@ -565,6 +566,12 @@ $g_exec_cfg->att_model = $att_model_m2;   //defined in const.inc.php
 // 0 -> User can not.  [STANDARD BEHAVIOUR]
 $g_exec_cfg->can_delete_execution=0;
 
+
+// 1 -> enable XML-RPC calls to external test automation server
+//      new buttons will be displayed on execution pages
+//
+// 0 -> disable
+$g_exec_cfg->enable_test_automation=0;
 
 /** [Test case specification] */
 

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.66 $
- * @modified $Date: 2007/09/30 10:23:27 $ $Author: franciscom $
+ * @version $Revision: 1.67 $
+ * @modified $Date: 2007/11/03 07:37:18 $ $Author: franciscom $
  *
  * @author Andreas Morsing
  * @author Fabian Woelk
@@ -13,6 +13,12 @@
  * German strings
  *
 **/
+//If this file is coded in UTF-8 then enable the following line
+//$TLS_STRINGFILE_CHARSET = "UTF-8";
+
+// BUGID 1133 - needed by email_api
+$TLS_charset='utf-8';
+
 // General - Leave it here in this way can be reused !!!
 $TLS_asc = "aufsteigend";
 $TLS_btn_no = "Nein";

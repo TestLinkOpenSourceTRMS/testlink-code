@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.13 $
- * @modified $Date: 2007/09/30 10:23:37 $ by $Author: franciscom $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2007/11/03 07:37:19 $ by $Author: franciscom $
  *
  * @author Micha&#322; Wujas
  *
@@ -17,6 +17,11 @@
  * 4. Word 'build'. Any idea how to translate it ?
  **/
 
+//If this file is coded in UTF-8 then enable the following line
+//$TLS_STRINGFILE_CHARSET = "UTF-8";
+
+// BUGID 1133 - needed by email_api
+$TLS_charset='utf-8';
 
 $TLS_test_status_all = "All";
 $TLS_test_status_any = "All";

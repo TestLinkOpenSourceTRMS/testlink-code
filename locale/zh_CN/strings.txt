@@ -5,9 +5,9 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.13 $
- * @modified $Date: 2007/10/22 12:16:39 $ $Author: franciscom $
- * @modified $Date: 2007/10/22 12:16:39 $ $Author: franciscom $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2007/11/03 07:37:20 $ $Author: franciscom $
+ * @modified $Date: 2007/11/03 07:37:20 $ $Author: franciscom $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -25,6 +25,9 @@
 **/
 //If this file is coded in UTF-8 then enable the following line
 $TLS_STRINGFILE_CHARSET = "UTF-8";
+
+// BUGID 1133 - needed by email_api
+$TLS_charset='utf-8';
 
 // General - Leave it here in this way can be reused !!!
 $TLS_asc ="升序";

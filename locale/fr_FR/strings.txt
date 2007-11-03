@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.15 $
- * @modified $Date: 2007/09/30 10:23:36 $by $Author: franciscom $
+ * @version $Revision: 1.16 $
+ * @modified $Date: 2007/11/03 07:37:19 $by $Author: franciscom $
  * @author GrdScarabe
  *
  * French translation
@@ -14,6 +14,11 @@
  * 20060117 - Alexandre Da Costa alexandre.da-costa_at_iseo.fr
  * 20061129 - Thomas Courbon: added missing localisations for testlink 1.6.2
 **/
+//If this file is coded in UTF-8 then enable the following line
+//$TLS_STRINGFILE_CHARSET = "UTF-8";
+
+// BUGID 1133 - needed by email_api
+$TLS_charset='utf-8';
 
 
 $TLS_test_status_all = "All";

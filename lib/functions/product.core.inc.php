@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: product.core.inc.php,v $
- * @version $Revision: 1.12 $
- * @modified $Date: 2007/08/20 06:41:29 $  $Author: franciscom $
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2007/11/04 11:14:41 $  $Author: franciscom $
  * @author Martin Havlat
  *
  * Core Functions for Product management (get data)
@@ -18,10 +18,13 @@
  *       added TL_INACTIVE_MARKUP
  */
  
-/** get option list of products; all for admin and active for others 
+/** 
+get option list of products; all for admin and active for others 
 
 args:
       db: database handler
+      user_id
+      role_id
       [output_type]: choose the output data structure.
                      possible values: map, map_of_map
                      map: key -> test project id
@@ -37,24 +40,27 @@ args:
                                                  
                      
                      default: map
+     [order_by]: default: ORDER BY name
+                     
 rev :
+     20071104 - franciscom - added user_id,role_id to remove global coupling
+                             added order_by (BUGID 498)
      20070725 - franciscom - added output_type
      20060312 - franciscom - add nodes_hierarchy on join
      
 */
-function getAccessibleProducts(&$db,$output_type='map')
+/*
+function getAccessibleProducts(&$db,$user_id,$role_id,$output_type='map',$order_by=" ORDER BY name ")
 {
 	$items = array();
-	
-	$userID = $_SESSION['userID'];
 	$sql =  " SELECT nodes_hierarchy.id,nodes_hierarchy.name,active
  	          FROM nodes_hierarchy 
  	          JOIN testprojects ON nodes_hierarchy.id=testprojects.id  
 	          LEFT OUTER JOIN user_testproject_roles 
 		        ON testprojects.id = user_testproject_roles.testproject_id AND  
-		 	      user_testproject_roles.user_ID = {$userID} WHERE ";
+		 	      user_testproject_roles.user_ID = {$user_id} WHERE ";
 		 	      
-	if ($_SESSION['roleId'] != TL_ROLES_NONE)
+	if ($role_id != TL_ROLES_NONE)
 		$sql .=  "(role_id IS NULL OR role_id != ".TL_ROLES_NONE.")";
 	else
 		$sql .=  "(role_id IS NOT NULL AND role_id != ".TL_ROLES_NONE.")";
@@ -63,7 +69,7 @@ function getAccessibleProducts(&$db,$output_type='map')
 	if (has_rights($db,'mgt_modify_product') != 'yes')
 		$sql .= " AND active=1 ";
 
-	$sql .= " ORDER BY name";
+	$sql .= $order_by;
 	
 	$arrTemp = $db->fetchRowsIntoMap($sql,'id');
 	
@@ -101,4 +107,5 @@ function getAccessibleProducts(&$db,$output_type='map')
 
 	return $items;
 }
+*/
 ?>

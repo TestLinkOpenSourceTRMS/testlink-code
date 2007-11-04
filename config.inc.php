@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.128 $
- * @modified $Date: 2007/11/03 17:46:27 $ by $Author: franciscom $
+ * @version $Revision: 1.129 $
+ * @modified $Date: 2007/11/04 11:11:19 $ by $Author: franciscom $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink 
@@ -17,7 +17,8 @@
  *-----------------------------------------------------------------------------
  *
  * Revisions:
- *           20071103 - franciscom - $g_exec_cfg->enable_test_automation
+ *           20071104 - franciscom - $g_exec_cfg->enable_test_automation
+ *                                   $g_gui->tprojects_combo_order_by (BUGID 498)
  *           20071006 - franciscom - $g_use_ext_js_library
  *           20070930 - franciscom - BUGID 1086 - configure order by in attachment
  *           20070910 - franciscom - removed MAIN_PAGE_METRICS_ENABLED
@@ -257,6 +258,10 @@ $g_role_separator->close=']';
 /** true => icon edit will be added into <a href> as indication an edit features */
 $g_gui->show_icon_edit=false;
 
+// Order to use when building a testproject combobox
+// 'ORDER BY name'
+// 'ORDER_BY id DESC' -> similar effect to order last created firts
+$g_gui->tprojects_combo_order_by='ORDER BY id DESC';
 
 
 // ----------------------------------------------------------------------------

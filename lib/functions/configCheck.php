@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: configCheck.php,v ${file_name} $
  *
- * @version $Revision: 1.17 $
- * @modified $Date: 2007/10/19 18:21:19 ${date} ${time} $ by $Author: schlundus $
+ * @version $Revision: 1.18 $
+ * @modified $Date: 2007/11/04 11:13:20 ${date} ${time} $ by $Author: franciscom $
  *
  * @author Martin Havlat
  * 
@@ -118,7 +118,7 @@ function checkForExtensions(&$msg)
 	$bSuccess = true;
 	
 	
-	if (!function_exists('sdomxml_open_file'))
+	if (!function_exists('domxml_open_file'))
 		$msg[] = lang_get("error_domxml_missing");
 	
 	return $bSuccess;

@@ -2,9 +2,12 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.39 $
- * @modified $Date: 2007/10/23 16:44:01 $  $Author: franciscom $
+ * @version $Revision: 1.40 $
+ * @modified $Date: 2007/11/04 11:11:34 $  $Author: franciscom $
  * @author franciscom
+ *
+ * 20071104 - franciscom - get_accessible_for_user
+ *                         added optional arg to get_all()
  *
  * 20071002 - azl - added ORDER BY to get_all method
  * 20070620 - franciscom - BUGID 914  fixed delete() (no delete from nodes_hierarchy)
@@ -170,20 +173,134 @@ function get_by_id($id)
 
 
 /*
-get array of info for every test project
-without any kind of filter.
-Every array element contains an assoc array with test project info
+ function: get_all
+           get array of info for every test project
+           without any kind of filter.
+           Every array element contains an assoc array with test project info
+
+args:[order_by]: default " ORDER BY nodes_hierarchy.name " -> testproject name
+
+rev:
+    20071104 - franciscom - added order_by
 
 */
-function get_all()
+function get_all($order_by=" ORDER BY nodes_hierarchy.name ")
 {
 	$sql = " SELECT testprojects.*, nodes_hierarchy.name ".
 	       " FROM testprojects, nodes_hierarchy ".
-	       " WHERE testprojects.id = nodes_hierarchy.id ".
-	       " ORDER BY nodes_hierarchy.name";
+	       " WHERE testprojects.id = nodes_hierarchy.id ";
+	if( !is_null($order_by) )
+	{
+	  $sql .= $order_by;  
+	}
 	$recordset = $this->db->get_recordset($sql);
 	return $recordset;
 }
+
+/** 
+function: get_accessible_for_user
+          get list of testprojects, considering user roles.
+          Remember that user has:
+          1. one default role, assigned when user was created
+          2. a different role can be assigned for every testproject.
+          
+          For users roles that has not rigth to modify testprojects
+          only active testprojects are returned.
+
+args:
+      user_id
+      role_id
+      [output_type]: choose the output data structure.
+                     possible values: map, map_of_map
+                     map: key -> test project id
+                          value -> test project name
+                            
+                     map_of_map: key -> test project id
+                                 value -> array ('name' => test project name,
+                                                 'active' => active status)
+                                                 
+                     array_of_map: value -> array ('id' => test project id
+                                                   'name' => test project name,
+                                                   'active' => active status)
+                                                 
+                     
+                     default: map
+     [order_by]: default: ORDER BY name
+                     
+rev :
+     20071104 - franciscom - added user_id,role_id to remove global coupling
+                             added order_by (BUGID 498)
+     20070725 - franciscom - added output_type
+     20060312 - franciscom - add nodes_hierarchy on join
+     
+*/
+function get_accessible_for_user($user_id,$output_type='map',$order_by=" ORDER BY name ")
+{
+	$items = array();
+	
+  // Get default role
+  $sql = " SELECT id,role_id FROM users where id={$user_id}";
+  $user_info = $this->db->get_recordset($sql);
+	$role_id=$user_info[0]['role_id'];
+	
+	
+	$sql =  " SELECT nodes_hierarchy.id,nodes_hierarchy.name,active
+ 	          FROM nodes_hierarchy 
+ 	          JOIN testprojects ON nodes_hierarchy.id=testprojects.id  
+	          LEFT OUTER JOIN user_testproject_roles 
+		        ON testprojects.id = user_testproject_roles.testproject_id AND  
+		 	      user_testproject_roles.user_ID = {$user_id} WHERE ";
+		 	      
+	if ($role_id != TL_ROLES_NONE)
+		$sql .=  "(role_id IS NULL OR role_id != ".TL_ROLES_NONE.")";
+	else
+		$sql .=  "(role_id IS NOT NULL AND role_id != ".TL_ROLES_NONE.")";
+	
+	
+	if (has_rights($this->db,'mgt_modify_product') != 'yes')
+		$sql .= " AND active=1 ";
+
+	$sql .= $order_by;
+	
+	$arrTemp = $this->db->fetchRowsIntoMap($sql,'id');
+	
+	if (sizeof($arrTemp))
+	{
+    switch ($output_type)
+	  {
+	     case 'map':
+		   foreach($arrTemp as $id => $row)
+		   {
+			   $noteActive = '';
+			   if (!$row['active'])
+				   $noteActive = TL_INACTIVE_MARKUP;
+			   $items[$id] = $noteActive . $row['name'];
+		   }
+		   break;
+		   
+	     case 'map_of_map':
+		   foreach($arrTemp as $id => $row)
+		   {
+			   $items[$id] = array( 'name' => $row['name'],
+			                        'active' => $row['active']);
+		   }
+		   
+		   case 'array_of_map':
+		   foreach($arrTemp as $id => $row)
+		   {
+			   $items[] = array( 'id' => $id,
+			                     'name' => $row['name'],
+			                     'active' => $row['active']);
+		   }
+		   break;
+	  }
+	}
+
+	return $items;
+}
+
+
+
 
 
 /**

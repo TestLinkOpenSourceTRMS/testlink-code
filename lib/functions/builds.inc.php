@@ -1,6 +1,6 @@
 <?php
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: builds.inc.php,v 1.22 2007/01/20 18:45:39 franciscom Exp $
+* $Id: builds.inc.php,v 1.23 2007/11/04 00:03:44 havlat Exp $
 * 
 * @author Martin Havlat
 *
@@ -34,7 +34,7 @@ function getBuilds(&$db,$idPlan, $order_by="ORDER BY builds.id DESC",$active=nul
  	}
  	if( !is_null($open) )
  	{
- 	   $sql .= " AND open=" . intval($open) . " ";   
+ 	   $sql .= " AND is_open=" . intval($open) . " ";   
  	}
  		
  	

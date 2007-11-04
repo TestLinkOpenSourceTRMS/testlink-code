@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: navBar.php,v $
  *
- * @version $Revision: 1.27 $
- * @modified $Date: 2007/09/10 12:35:01 $ $Author: franciscom $
+ * @version $Revision: 1.28 $
+ * @modified $Date: 2007/11/04 11:16:29 $ $Author: franciscom $
  *
  * This file manages the navigation bar. 
  *
@@ -20,16 +20,29 @@ require_once("testproject.class.php");
 
 testlinkInitPage($db,true);
 
-$role_separator = config_get('role_separator');
-$arr_tprojects = getAccessibleProducts($db);
+$tproject_mgr = new testproject($db);
 
 $tpID = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : null;
 $curr_tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+$user_id=$_SESSION['userID'];
+$role_id=$_SESSION['roleID'];
+
+
+$gui_cfg=config_get('gui');
+$order_by=$gui_cfg->tprojects_combo_order_by;
+$role_separator = config_get('role_separator');
+// $arr_tprojects = getAccessibleProducts($db,$user_id, $role_id, 'map', $order_by);
+
+$arr_tprojects = $tproject_mgr->get_accessible_for_user($user_id,'map', $order_by);
+
+
 if ($curr_tproject_id)
-	getAccessibleTestPlans($db,$curr_tproject_id,$_SESSION['userID'],1,$tpID);
+	getAccessibleTestPlans($db,$curr_tproject_id,$user_id,1,$tpID);
 	
 
 $roles = getAllRoles($db);
+$roleName = $roles[$role_id];
+
 $testprojectRole = null;
 if ($curr_tproject_id && isset($_SESSION['testprojectRoles'][$curr_tproject_id]))
 {
@@ -37,7 +50,6 @@ if ($curr_tproject_id && isset($_SESSION['testprojectRoles'][$curr_tproject_id])
 	                   $roles[$_SESSION['testprojectRoles'][$curr_tproject_id]['role_id']] . 
 	                   $role_separator->close;
 }	                   
-$roleName = $roles[$_SESSION['roleId']];
 
 $countPlans = getNumberOfAccessibleTestPlans($db,$curr_tproject_id, $_SESSION['filter_tp_by_product'],null);
 $smarty = new TLSmarty();

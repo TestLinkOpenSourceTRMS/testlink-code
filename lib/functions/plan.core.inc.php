@@ -3,8 +3,8 @@
  * TestLink Open Source Project - @link http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: plan.core.inc.php,v $
- * @version $Revision: 1.39 $
- * @modified $Date: 2007/10/29 21:00:26 $ $Author: asielb $
+ * @version $Revision: 1.40 $
+ * @modified $Date: 2007/11/04 11:16:29 $ $Author: franciscom $
  *  
  * 
  * @author 	Martin Havlat
@@ -47,7 +47,7 @@ function getAccessibleTestPlans(&$db,$testproject_id,$user_id=0,$filter_by_produ
 	if ($filter_by_product)
 		$query .= "(testproject_id = {$testproject_id} OR testproject_id = 0) AND ";
 	
-	$bGlobalNo = ($_SESSION['roleId'] == TL_ROLES_NONE);
+	$bGlobalNo = ($_SESSION['roleID'] == TL_ROLES_NONE);
 	$bProductNo = 0;
 	// BUGID: 951 - wrong key to access session info
 	$analyse_global_role=1;

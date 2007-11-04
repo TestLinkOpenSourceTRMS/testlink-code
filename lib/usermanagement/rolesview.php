@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: rolesview.php,v $
  *
- * @version $Revision: 1.10 $
- * @modified $Date: 2007/09/01 14:05:34 $ by $Author: franciscom $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2007/11/04 11:16:29 $ by $Author: franciscom $
  *
  *  20070901 - franciscom - BUGID
  *  20070829 - jbarchibald - BUGID 1000 - Testplan role assignments
@@ -62,9 +62,9 @@ if ($bDelete && $id)
 	//reload the roles of the current user
 	$_SESSION['testprojectRoles'] = getUserTestProjectRoles($db,$userID);
 	$_SESSION['testPlanRoles'] = getUserTestPlanRoles($db,$userID);
-	if ($_SESSION['roleId'] == $id)
+	if ($_SESSION['roleID'] == $id)
 	{
-		$_SESSION['roleId'] = TL_ROLES_NO_RIGHTS;
+		$_SESSION['roleID'] = TL_ROLES_NO_RIGHTS;
 		$_SESSION['role'] = $roles[TL_ROLES_NO_RIGHTS]['role'];
 	}
 }

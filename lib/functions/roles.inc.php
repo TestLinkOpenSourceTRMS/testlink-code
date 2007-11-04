@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
  * @filesource $RCSfile: roles.inc.php,v $
- * @version $Revision: 1.26 $
- * @modified $Date: 2007/09/12 16:57:18 $ by $Author: franciscom $
+ * @version $Revision: 1.27 $
+ * @modified $Date: 2007/11/04 11:16:29 $ by $Author: franciscom $
  * @author Martin Havlat, Chad Rosen
  * 
  * This script provides the get_rights and has_rights functions for
@@ -656,7 +656,7 @@ function has_rights(&$db,$roleQuestion,$tprojectID = null,$tplanID = null)
 		$s_userTestPlanRoles = getUserTestPlanRoles($db,$_SESSION['userID']);
 		$_SESSION['testPlanRoles'] = $s_userTestPlanRoles;
 	}
-	$globalRoleID = $_SESSION['roleId'];
+	$globalRoleID = $_SESSION['roleID'];
 	$globalRights = isset($s_allRoles[$globalRoleID]['rights']) ? $s_allRoles[$globalRoleID]['rights'] : '';
 	$globalRights = explode(",",$globalRights);
 	

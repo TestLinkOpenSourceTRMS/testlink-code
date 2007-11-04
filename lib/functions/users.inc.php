@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: users.inc.php,v $
  *
- * @version $Revision: 1.47 $
- * @modified $Date: 2007/10/17 17:38:24 $ $Author: schlundus $
+ * @version $Revision: 1.48 $
+ * @modified $Date: 2007/11/04 11:16:29 $ $Author: franciscom $
  *
  * Functions for usermanagement
  *
@@ -231,8 +231,8 @@ function userUpdate(&$db,$userID, $first, $last, $email ,
  * set session data after modification or authorization
  *
  * @param type $db [ref] documentation
- * @param type $user documentation
- * @param type $id documentation
+ * @param type $user 
+ * @param type $id 
  * @param type $roleID documentation
  * @param type $email documentation
  * @param type $locale [default = null] documentation
@@ -262,7 +262,7 @@ function setUserSession(&$db,$user, $id, $roleID, $email, $locale = null, $activ
 	
 	if (!is_null($roleID))
 	{
-		$_SESSION['roleId'] = intval($roleID); 
+		$_SESSION['roleID'] = intval($roleID); 
 		$sql = "SELECT description FROM roles WHERE id = " . $roleID;
 		$result = $db->exec_query($sql);
 		if ($result)
@@ -281,7 +281,14 @@ function setUserSession(&$db,$user, $id, $roleID, $email, $locale = null, $activ
 	$_SESSION['testprojectRoles'] = $usertestprojectRoles; 
 	$_SESSION['testPlanRoles'] = $userTestPlanRoles; 
 	$_SESSION['testprojectID'] = null;
-	$arrProducts = getAccessibleProducts($db);
+	
+	// 20071103 - franciscom
+  $tproject_mgr = new testproject($db);
+
+  $gui_cfg=config_get('gui');
+  $order_by=$gui_cfg->tprojects_combo_order_by;
+	$arrProducts = $tproject_mgr->get_accessible_for_user($id,'map',$order_by);
+	
 	 // 20051208 - JBA - added to set the lastProduct the user has selected before logging off.
     $cookedProduct = 'lastProductForUser'. $id;
     if (isset($_COOKIE[$cookedProduct]))

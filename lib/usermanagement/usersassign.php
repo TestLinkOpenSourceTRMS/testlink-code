@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: usersassign.php,v $
 *
-* @version $Revision: 1.13 $
-* @modified $Date: 2007/08/29 17:21:02 $ $Author: jbarchibald $
+* @version $Revision: 1.14 $
+* @modified $Date: 2007/11/04 11:16:29 $ $Author: franciscom $
 * 
 * Allows assigning users roles to testplans or testprojects
 *
@@ -29,9 +29,9 @@ $featureID = isset($_REQUEST['featureID']) ? intval($_REQUEST['featureID']) : 0;
 
 $testprojectID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 $testprojectName = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : null;
-
 $tpID = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0;
 $userID = $_SESSION['userID'];
+$role_id = $_SESSION['roleID'];
 
 $user_feedback='';
 $no_features='';
@@ -80,7 +80,12 @@ $userFeatureRoles = null;
 $features = null;
 if ($bTestproject)
 {
-	$features = getAccessibleProducts($db,'array_of_map');
+  // 20071103 - franciscom
+  $tproject_mgr = new testproject($db);
+
+  $gui_cfg=config_get('gui');
+  $order_by=$gui_cfg->tprojects_combo_order_by;
+	$features = $tproject_mgr->get_accessible_for_user($userID,'array_of_map',$order_by);
 
   // If have no a test project ID, try to figure out which test project to show
   // Try with session info, if failed go to first test project available. 

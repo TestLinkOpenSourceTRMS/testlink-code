@@ -1,4 +1,15 @@
 <?php
+/** TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ * 
+ * @filesource $RCSfile: email_api.php,v $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2007/11/05 07:28:29 $  $Author: franciscom $
+ * @author franciscom
+ *
+ * rev:
+ *     
+ *
+**/
 
 # --------------------------------------------------------
 # This piece of sowftare is based on work belonging to:
@@ -9,13 +20,14 @@
 # Copyright (C) 2002 - 2004  Mantis Team   - mantisbt-dev@lists.sourceforge.net
 # This program is distributed under the terms and conditions of the GPL
 # See the README and LICENSE files for details
-
+#
 
 define( 'PHPMAILER_PATH', dirname(__FILE__). '/../../third_party/phpmailer' . DIRECTORY_SEPARATOR );
 require_once( PHPMAILER_PATH . 'class.phpmailer.php' );
 
 require_once( 'lang_api.php' );
 require_once( 'common.php');
+require_once( 'string_api.php');
 
 
 # reusable object of class SMTP
@@ -225,45 +237,4 @@ function email_append_domain( $p_email ) {
 
 	return $p_email;
 }
-
-
-
-# --------------------
-# Prepare a string for plain text display in email
-function string_email( $p_string ) {
-	$p_string = string_strip_hrefs( $p_string );
-
-	return $p_string;
-}
-
-# --------------------
-# Detect href anchors in the string and replace them with URLs and email addresses
-function string_strip_hrefs( $p_string ) {
-	# First grab mailto: hrefs.  We don't care whether the URL is actually
-	# correct - just that it's inside an href attribute.
-	$p_string = preg_replace( '/<a\s[^\>]*href="mailto:([^\"]+)"[^\>]*>[^\<]*<\/a>/si',
-							'\1',
-							$p_string);
-
-	# Then grab any other href
-	$p_string = preg_replace( '/<a\s[^\>]*href="([^\"]+)"[^\>]*>[^\<]*<\/a>/si',
-							'\1',
-							$p_string);
-	return $p_string;
-}
-
-# --------------------
-# Prepare a string for plain text display in email and add URLs for bug
-#  links and cvs links
-function string_email_links( $p_string ) {
-	$p_string = string_email( $p_string );
-	//$p_string = string_process_bug_link( $p_string, false );
-	//$p_string = string_process_bugnote_link( $p_string, false );
-	//$p_string = string_process_cvs_link( $p_string, false );
-
-	return $p_string;
-}
-
-
-
 ?>

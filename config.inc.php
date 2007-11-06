@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.129 $
- * @modified $Date: 2007/11/04 11:11:19 $ by $Author: franciscom $
+ * @version $Revision: 1.130 $
+ * @modified $Date: 2007/11/06 15:07:24 $ by $Author: franciscom $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink 
@@ -17,6 +17,8 @@
  *-----------------------------------------------------------------------------
  *
  * Revisions:
+ *           20071106 - franciscom - BUGID 1165 - $g_testcase_template
+ *
  *           20071104 - franciscom - $g_exec_cfg->enable_test_automation
  *                                   $g_gui->tprojects_combo_order_by (BUGID 498)
  *           20071006 - franciscom - $g_use_ext_js_library
@@ -260,8 +262,9 @@ $g_gui->show_icon_edit=false;
 
 // Order to use when building a testproject combobox
 // 'ORDER BY name'
-// 'ORDER_BY id DESC' -> similar effect to order last created firts
-$g_gui->tprojects_combo_order_by='ORDER BY id DESC';
+// 'ORDER_BY BY nodes_hierarchy.id DESC' -> similar effect to order last created firts
+// 
+$g_gui->tprojects_combo_order_by='ORDER BY nodes_hierarchy.id DESC';
 
 
 // ----------------------------------------------------------------------------
@@ -622,7 +625,40 @@ $g_exec_cfg->exec_mode->tester='assigned_to_me';
 $g_exec_cfg->user_filter_default='logged_user';
 
 
+// 20071105 - franciscom
+// Important
+// object members has SAME NAME that FCK editor objects.
+// the logic present on tcEdit.php is dependent of this rule.
+// 
+// summary
+// steps
+// expected_results
+//
+// every member contains an object with following members:
+// type
+// value
+// 
+// Possible values for type member: 
+// string: value of value member is assigned to FCK object
+// string_id: value member is used in a lang_get() call, and return value 
+//            is assigned to FCK object.
+//            Configure string_id on custom_strings.txt            
+//
+// file: value member is used as file name.
+//       file is readed and it's contains assigned to FCK object
+//
+// any other value for type, results on '' assigned to FCK object
+//        
+//
+$g_testcase_template->summary->type='none';
+$g_testcase_template->summary->value='';
 
+
+$g_testcase_template->steps->type='none';
+$g_testcase_template->steps->value='';
+
+$g_testcase_template->expected_results->type='none';
+$g_testcase_template->expected_results->value='';
 
 
 //

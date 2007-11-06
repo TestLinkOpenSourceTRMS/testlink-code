@@ -4,10 +4,11 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.59 $
- * @modified $Date: 2007/10/01 08:12:48 $  by $Author: franciscom $
+ * @version $Revision: 1.60 $
+ * @modified $Date: 2007/11/06 15:07:42 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
+ * 20071106 - BUGID 1165 
  * 20070826 - franciscom - is automatic tree refresh is disable,
  *                         do not refresh if test case changes during update
  *
@@ -32,6 +33,11 @@ $gui_cfg = config_get('gui');
 $order_cfg = config_get('tree_node_ordering');
 $spec_cfg=config_get('spec_cfg');
 
+// 20071105 - franciscom
+$tcase_template_cfg=config_get('testcase_template');
+
+
+
 $do_refresh=$spec_cfg->automatic_tree_refresh;
 if( isset($_SESSION['tcspec_refresh_on_action']) )
 {
@@ -53,6 +59,7 @@ foreach ($a_ofck as $key)
 $testproject_id = $_SESSION['testprojectID'];
 $userID = $_SESSION['userID'];
 $show_newTC_form = 0;
+
 $smarty = new TLSmarty();
 
 $container_id = isset($_REQUEST['containerID']) ? intval($_REQUEST['containerID']) : 0;
@@ -228,7 +235,7 @@ else if($do_update)
 else if($create_tc)
 {
 	$show_newTC_form = 1;
-	
+
 	$opt_cfg->to->map=array();
 	keywords_opt_transf_cfg($opt_cfg, $assigned_keywords_list); 
 	$smarty->assign('opt_cfg', $opt_cfg);
@@ -236,7 +243,7 @@ else if($create_tc)
 else if($do_create)
 {
 	$show_newTC_form = 1;
-	
+
 	if ($name_ok)
 	{
    	define('AUTOMATIC_ID',0);
@@ -477,19 +484,37 @@ else
 if ($show_newTC_form)
 {
 	$smarty->assign('containerID', $container_id);
-	
-	foreach ($a_ofck as $key)
-	{
-		// Warning:
-		// the data assignment will work while the keys in $the_data are identical
-		// to the keys used on $oFCK.
-		$of = &$oFCK[$key];
-		$of->Value = "";
-		$smarty->assign($key, $of->CreateHTML());
-	}
 
-  // ------------------------------------------------------------------------------------------------------
-  // 20070302 - franciscom
+  // ------------------------------------------------------------------------
+  // 20071106 - BUGID 1165
+  foreach ($a_ofck as $key)
+  {
+    switch($tcase_template_cfg->$key->type)
+    {
+      case 'string':
+    	$the_value = $tcase_template_cfg->$key->value;
+      break;
+      
+      case 'string_id':
+    	$the_value = lang_get($tcase_template_cfg->$key->value);
+      break;
+      
+      
+      case 'file':
+    	$the_value = read_file($tcase_template_cfg->$key->value);
+      break;
+      
+      default:
+      $the_value = '';
+      break;
+    }
+    $of = &$oFCK[$key];
+    $of->Value = $the_value;
+    $smarty->assign($key, $of->CreateHTML());
+  } // foreach ($a_ofck as $key)
+  // ------------------------------------------------------------------------
+
+
   $cf_smarty = '';
   if($gui_cfg->enable_custom_fields) 
   {
@@ -499,5 +524,33 @@ if ($show_newTC_form)
 	// ------------------------------------------------------------------------------------------------------
 	
 	$smarty->display($g_tpl['tcNew']);
+}
+?>
+
+
+<?php
+/*
+  function: read_file
+
+  args: file_name 
+  
+  returns: if file exist and can be read -> file contents
+           else error message
+
+*/
+function read_file($file_name)
+{
+	$fContents = null;
+	@$fd = fopen($file_name,"rb");
+	if ($fd)
+	{
+		$fContents = fread($fd,filesize($file_name));
+		fclose($fd);
+	}
+	else
+	{
+	  $fContents= lang_get('problems_trying_to_access_template') . " {$file_name} ";  
+	}
+	return $fContents;
 }
 ?>

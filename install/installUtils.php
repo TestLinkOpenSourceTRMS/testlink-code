@@ -1,7 +1,7 @@
 <?php
 /* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: installUtils.php,v 1.25 2007/10/21 16:00:55 franciscom Exp $ 
+$Id: installUtils.php,v 1.26 2007/11/06 15:08:41 franciscom Exp $ 
 
 
 rev :
@@ -64,6 +64,7 @@ return $aFileSets;
 
 
 
+// Code taken from:
 //
 // +----------------------------------------------------------------------+
 // | Eventum - Issue Tracking System                                      |
@@ -74,10 +75,16 @@ return $aFileSets;
 // | Authors: Jo�o Prado Maia <jpm@mysql.com>                             |
 // +----------------------------------------------------------------------+
 //
-// @(#) $Id: installUtils.php,v 1.25 2007/10/21 16:00:55 franciscom Exp $
 //
 
-// a foolish wrapper - 20051231 - fm
+/*
+  function: getTableList
+            a foolish wrapper - 20051231 - fm
+  args :
+  
+  returns: map or null
+
+*/
 function getTableList($db)
 {
     $my_ado = $db->get_dbmgr_object();
@@ -86,6 +93,21 @@ function getTableList($db)
 }
 
 
+
+/*
+  function: getUserList
+
+  args:
+  
+  returns: map or null
+  
+  rev :
+       20071104 - franciscom
+       added code for mssql
+       added trim() to avoid problems with mssql,
+       while creating values for return map.
+
+*/
 function getUserList(&$db,$db_type)
 {
    $users=null;
@@ -99,9 +121,43 @@ function getUserList(&$db,$db_type)
       $result = $db->exec_query('SELECT DISTINCT usename AS user FROM pg_user');
       break;
    
-      // 20071010 - franciscom
       case 'mssql':
-      $result=null;
+      // info about running store procedures, get form adodb manuals
+      // Important:
+      // From ADODB manual - Prepare() documentation
+      //
+      // Returns an array containing the original sql statement in the first array element; 
+      // the remaining elements of the array are driver dependent.
+      //
+      // 20071104 - franciscom
+      // Looking into adodb-mssql.inc.php, you will note that array[1] 
+      // is a mssql stm object.
+      // This info is very important, to use mssql_free_statement()
+      //
+      $stmt = $db->db->PrepareSP('SP_HELPLOGINS'); # note that the parameter name does not have @ in front!
+      $result=$db->db->Execute($stmt); 
+      
+      // Very important:
+      // Info from PHP Manual notes
+      // mssql_free_statement()
+      //
+      // mitch at 1800radiator dot kom (23-Mar-2005 06:02)
+      // Maybe it's unique to my FreeTDS configuration, but if I don't call mssql_free_statement() 
+      // after every stored procedure (i.e. mssql_init, mssql_bind, mssql_execute, mssql_fetch_array), 
+      // all subsequent stored procedures on the same database connection will fail.
+      // I only mention it because this man-page deprecates the use of mssql_free_statement(), 
+      // saying it's only there for run-time memory concerns.  
+      // At least in my case, it's also a crucial step in the process of running a stored procedure.  
+      // If anyone else has problems running multiple stored procedures on the same connection, 
+      // I hope this helps them out.
+      //
+      // franciscom - 20071104
+      // Without this was not possible to call other functions that use store procedures,
+      // because I've got:
+      // a) wrong results
+      // b) mssql_init() errors
+      //
+      mssql_free_statement($stmt[1]);
       break;
    
    }
@@ -115,9 +171,21 @@ function getUserList(&$db,$db_type)
    {
        return $users;
    }
+   if( $db_type == 'mssql' )
+   {
+     while (!$result->EOF) 
+     { 
+       $row = $result->GetRowAssoc();
+       $users[] = trim($row['LOGINNAME']);
+       $result->MoveNext(); 
+     } 
+   }
+   else
+   {
    while ($row = $db->fetch_array($result)) 
    {
-       $users[] = $row['user'];
+       $users[] = trim($row['user']);
+     }
    }
    return($users);
 }
@@ -151,11 +219,8 @@ if @ in login ->  get the hostname using splitting, and use it
 function create_user_for_db($db_type,$db_name,$db_server, $db_admin_name, $db_admin_pass,
                             $login, $passwd)
 {
-
-// 20060523 - franciscom
 $db = new database($db_type);
 
-// 20050910 - fm
 $user_host = explode('@',$login);
 $the_host = 'localhost';
 
@@ -171,10 +236,10 @@ switch($db_type)
     case 'mssql':
     @$conn_res = $db->connect(NO_DSN, $db_server, $db_admin_name, $db_admin_pass,$db_name); 
     $msg="For MSSQL, no attempt is made to check for user existence";
+    $try_create_user=1;
     break;
     
     case 'postgres':
-    // 20060523 - franciscom
     @$conn_res = $db->connect(NO_DSN, $db_server, $db_admin_name, $db_admin_pass,$db_name); 
     $try_create_user=1;
     break;
@@ -197,12 +262,12 @@ if( $try_create_user==1)
   $msg = "ko - fatal error - can't get db server user list !!!";
 }
 
-// 20071010 - franciscom
 if ($try_create_user==1 && !is_null($user_list) && count($user_list) > 0) 
 {
 
     $user_list = array_map('strtolower', $user_list);
-    if (!in_array($login_lc, $user_list)) 
+    $user_exists=in_array($login_lc, $user_list);
+    if (!$user_exists) 
     {
     	$msg = '';
     	switch($db_type)
@@ -210,6 +275,7 @@ if ($try_create_user==1 && !is_null($user_list) && count($user_list) > 0)
         
         case 'mssql':
         $op = _mssql_make_user_with_grants($db,$the_host,$db_name,$login,$passwd);
+        _mssql_set_passwd($db,$login,$passwd);
         break;
 
         case 'postgres':
@@ -254,7 +320,6 @@ if ($try_create_user==1 && !is_null($user_list) && count($user_list) > 0)
     
 }
 
-// 20060523 - franciscom
 if( !is_null($db) )
 {
     $db->close();
@@ -310,7 +375,6 @@ $msg_ok = "<span class='ok'>OK!</span>";
 $msg_check_dir_existence = "</b><br />Checking if <span class='mono'>PLACE_HOLDER</span> directory exists:<b> ";
 $msg_check_dir_is_w = "</b><br />Checking if <span class='mono'>PLACE_HOLDER</span> directory is writable:<b> ";
 
-// 20060729 - franciscom
 $awtc = array('../gui/templates_c');
 if(!is_null($dirs_to_check) )
 {
@@ -839,7 +903,14 @@ return ($op);
 }
 
 
+/*
+  function: _postgres_make_user_with_grants
 
+  args :
+  
+  returns: 
+
+*/
 function _postgres_make_user_with_grants(&$db,$db_host,$db_name,$login,$passwd)
 {
 $op->status_ok=true;
@@ -860,7 +931,14 @@ return($op);
 }  // function end
 
 
+/*
+  function: _postgres_make_user
 
+  args :
+  
+  returns: 
+
+*/
 function _postgres_make_user(&$db,$db_host,$db_name,$login,$passwd)
 {
 $op->status_ok=true;  
@@ -876,6 +954,15 @@ return ($op);
 }
 
 
+
+/*
+  function: _postgres_assign_grants
+
+  args :
+  
+  returns: 
+
+*/
 function _postgres_assign_grants(&$db,$db_host,$db_name,$login,$passwd)
 {
 $op->status_ok=true;  
@@ -920,7 +1007,7 @@ return ($op);
 
 
 /*
-  function: 
+  function: _mssql_make_user_with_grants 
 
   args :
   
@@ -929,7 +1016,231 @@ return ($op);
 */
 function _mssql_make_user_with_grants($db,$the_host,$db_name,$login,$passwd)
 {
+  _mssql_make_user($db,$the_host,$db_name,$login,$passwd);
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
+  $op->status_ok=true;
+  $op->msg = 'ok - new user';     
+
+  // Check if has been created, because I'm not able to get return code.
+  $user_list=getUserList($db,'mssql');
+  $user_list=array_map('strtolower', $user_list);
+  $user_exists=in_array(trim($login), $user_list);
+  if( !$user_exists )
+  {
+    $op->status_ok=false;  
+    $op->msg = "ko - " . $db->error_msg();
+  }
+  else
+  {
+    _mssql_assign_grants($db,$the_host,$db_name,$login,$passwd);  
 }
+  return $op;
+  
+} // function end
+  
+  
+function _mssql_make_user($db,$the_host,$db_name,$login,$passwd)
+{
+
+// Transact-SQL Reference                                                                                                                                                                                                                                                                                                                                                                                                                                           
+//                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
+// sp_addlogin                                                                                                                                                                                                                                                                                                                                                                                                                                                       
+//   New Information - SQL Server 2000 SP3.                                                                                                                                                                                                                                                                                                                                                                                                                          
+//                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
+// Creates a new Microsoft® SQL Server™ login that allows a user 
+// to connect to an instance of SQL Server using SQL Server Authentication.                                                                                                                                                                                                                                                                                                                            
+//                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
+// Security Note  When possible, use Windows Authentication.                                                                                                                                                                                                                                                                                                                                                                                                         
+//                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
+// Syntax                                                                                                                                                                                                                                                                                                                                                                                                                                                            
+// sp_addlogin [ @loginame = ] 'login'                                                                                                                                                                                                                                                                                                                                                                                                                               
+//     [ , [ @passwd = ] 'password' ]                                                                                                                                                                                                                                                                                                                                                                                                                                
+//     [ , [ @defdb = ] 'database' ]                                                                                                                                                                                                                                                                                                                                                                                                                                 
+//     [ , [ @deflanguage = ] 'language' ]                                                                                                                                                                                                                                                                                                                                                                                                                           
+//     [ , [ @sid = ] sid ]                                                                                                                                                                                                                                                                                                                                                                                                                                          
+//     [ , [ @encryptopt = ] 'encryption_option' ]                                                                                                                                                                                                                                                                                                                                                                                                                   
+//                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
+// Arguments                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+// [@loginame =] 'login'                                                                                                                                                                                                                                                                                                                                                                                                                                             
+// Is the name of the login. login is sysname, with no default.                                                                                                                                                                                                                                                                                                                                                                                                      
+//                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
+// [@passwd =] 'password'                                                                                                                                                                                                                                                                                                                                                                                                                                            
+// Is the login password. password is sysname, with a default of NULL. 
+// After sp_addlogin has been executed, the password is encrypted and stored in the system tables.                                                                                                                                                                                                                                                                                               
+//                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
+// [@defdb =] 'database'                                                                                                                                                                                                                                                                                                                                                                                                                                             
+// Is the default database of the login (the database the login is connected to after logging in). 
+// database is sysname, with a default of master.                                                                                                                                                                                                                                                                                                                    
+//                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
+// [@deflanguage =] 'language'                                                                                                                                                                                                                                                                                                                                                                                                                                       
+// Is the default language assigned when a user logs on to SQL Server. 
+// language is sysname, with a default of NULL. 
+// If language is not specified, language is set to the server's current default language 
+// (defined by the sp_configure configuration variable default language). 
+// Changing the server's default language does not change the default language for existing logins. 
+// language remains the same as the default language used when the login was added.  
+//                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
+// [@sid =] sid                                                                                                                                                                                                                                                                                                                                                                                                                                                      
+// Is the security identification number (SID). sid is varbinary(16), with a default of NULL. 
+// If sid is NULL, the system generates a SID for the new login.  
+// Despite the use of a varbinary data type, values other than NULL must be 
+// exactly 16 bytes in length, and must not already exist. 
+// SID is useful, for example, when you are scripting or moving SQL Server logins 
+// from one server to another and you want the logins to have the same SID between servers.
+//                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
+// [@encryptopt =] 'encryption_option'                                                                                                                                                                                                                                                                                                                                                                                                                               
+// Specifies whether the password is encrypted when stored in the system tables. 
+// encryption_option is varchar(20), and can be one of these values.                                                                                                                                                                                                                                                                                                                   
+//                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
+// Value Description                                                                                                                                                                                                                                                                                                                                                                                                                                                 
+// NULL The password is encrypted. This is the default.                                                                                                                                                                                                                                                                                                                                                                                                              
+// skip_encryption The password is already encrypted. 
+// SQL Server should store the value without re-encrypting it.                                                                                                                                                                                                                                                                                                                                                    
+// skip_encryption_old The supplied password was encrypted by a previous version of SQL Server.  
+// SQL Server should store the value without re-encrypting it. 
+// This option is provided for upgrade purposes only.                                                                                                                                                                                                                                                      
+//                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
+//                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
+// Return Code Values                                                                                                                                                                                                                                                                                                                                                                                                                                                
+// 0 (success) or 1 (failure)                                                                                                                                                                                                                                                                                                                                                                                                                                        
+//                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
+// Permissions                                                                                                                                                                                                                                                                                                                                                                                                                                                       
+// Only members of the sysadmin and securityadmin fixed server roles can execute sp_addlogin.                                                                                                                                                                                                                                                                                                                                                                        
+//                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
+// Examples                                                                                                                                                                                                                                                                                                                                                                                                                                                          
+// A. Create a login ID with master default database                                                                                                                                                                                                                                                                                                                                                                                                                 
+// This example creates an SQL Server login for the user Victoria, without specifying a default database.                                                                                                                                                                                                                                                                                                                                                            
+//                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
+// EXEC sp_addlogin 'Victoria', 'B1r12-36'                                                                                                                                                                                                                                                                                                                                                                                                                           
+//                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
+// B. Create a login ID and default database                                                                                                                                                                                                                                                                                                                                                                                                                         
+// This example creates a SQL Server login for the user Albert, with a password of "B1r12-36" 
+// and a default database of corporate.                                                                                                                                                                                                                                                                                                                                   
+//                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
+// EXEC sp_addlogin 'Albert', 'B1r12-36', 'corporate'                                                                                                                                                                                                                                                                                                                                                                                                                
+//                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
+// C. Create a login ID with a different default language                                                                                                                                                                                                                                                                                                                                                                                                            
+// This example creates an SQL Server login for the user Claire Picard, with a password of "B1r12-36", 
+// a default database of public_db, and a default language of French.                                                                                                                                                                                                                                                                                            
+//                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
+// EXEC sp_addlogin 'Claire Picard', 'B1r12-36', 'public_db', 'french'                                                                                                                                                                                                                                                                                                                                                                                               
+//                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
+// D. Create a login ID with a specific SID                                                                                                                                                                                                                                                                                                                                                                                                                          
+// This example creates an SQL Server login for the user Michael, with a password of "B1r12-36," 
+// a default database of pubs, a default language of us_english, 
+// and an SID of 0x0123456789ABCDEF0123456789ABCDEF.                                                                                                                                                                                                                                                     
+//                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
+// EXEC sp_addlogin 'Michael', 'B1r12-36', 'pubs', 'us_english', 0x0123456789ABCDEF0123456789ABCDEF                                                                                                                                                                                                                                                                                                                                                                  
+//                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
+// E. Create a login ID and do not encrypt the password                                                                                                                                                                                                                                                                                                                                                                                                              
+// This example creates an SQL Server login for the user Margaret with a password of "B1r12-36" on Server1, 
+// extracts the encrypted password, and then adds the login for the user Margaret to Server2 using 
+// the previously encrypted password but does not further encrypt the password. 
+// User Margaret can then log on to Server2 using the password Rose.                                                                                                           
+  
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
+  $op->status_ok=true;
+  $op->msg = 'ok - new user';     
+
+  //sp_addlogin [ @loginame = ] 'login'                                                                                                                                                                                                                                                                                                                                                                                                                               
+  //  [ , [ @passwd = ] 'password' ]                                                                                                                                                                                                                                                                                                                                                                                                                                
+  //  [ , [ @defdb = ] 'database' ]                                                                                                                                                                                                                                                                                                                                                                                                                                 
+  //  [ , [ @deflanguage = ] 'language' ]                                                                                                                                                                                                                                                                                                                                                                                                                           
+  //  [ , [ @sid = ] sid ]                                                                                                                                                                                                                                                                                                                                                                                                                                          
+  //  [ , [ @encryptopt = ] 'encryption_option' ]                                                                                                                                                                                                                                                                                                                                                                                                                   
+  //
+  // Important:
+  // From ADODB manual - Prepare() documentation
+  //
+  // Returns an array containing the original sql statement in the first array element; 
+  // the remaining elements of the array are driver dependent.
+  //
+  // 20071104 - franciscom
+  // Looking into adodb-mssql.inc.php, you will note that array[1] 
+  // is a mssql stm object.
+  // This info is very important, to use mssql_free_statement()
+  //
+  
+  $sid=null;
+  $encryptopt=null;
+  
+  $stmt = $db->db->PrepareSP('SP_ADDLOGIN');
+  $db->db->InParameter($stmt,$login,'loginame');
+  // $db->db->InParameter($stmt,$passwd,'passwd');
+  $db->db->InParameter($stmt,$db_name,'defdb');
+  // $db->db->InParameter($stmt,$sid,'sid'); 
+  // $db->db->InParameter($stmt,$encryptopt,'encryptopt');
+    
+  $db->db->OutParameter($stmt,$retval,'RETVAL');
+  $result=$db->db->Execute($stmt); 
+  
+  // Very important:
+  // Info from PHP Manual notes
+  // mssql_free_statement()
+  //
+  // mitch at 1800radiator dot kom (23-Mar-2005 06:02)
+  // Maybe it's unique to my FreeTDS configuration, but if I don't call mssql_free_statement() 
+  // after every stored procedure (i.e. mssql_init, mssql_bind, mssql_execute, mssql_fetch_array), 
+  // all subsequent stored procedures on the same database connection will fail.
+  // I only mention it because this man-page deprecates the use of mssql_free_statement(), 
+  // saying it's only there for run-time memory concerns.  
+  // At least in my case, it's also a crucial step in the process of running a stored procedure.  
+  // If anyone else has problems running multiple stored procedures on the same connection, 
+  // I hope this helps them out.
+  //
+  // franciscom - 20071104
+  // Without this was not possible to call other functions that use store procedures,
+  // because I've got:
+  // a) wrong results
+  // b) mssql_init() errors
+  //
+  mssql_free_statement($stmt[1]);
+  
+  // I've problems trying to set password,
+  // then I will use as workaround setting a NULL password
+  // and after do a password change.
+  $passwd_null=NULL;
+  $stmt = $db->db->PrepareSP('SP_PASSWORD');
+  $db->db->InParameter($stmt,$login,'loginame');
+  $db->db->InParameter($stmt,$passwd_null,'old');
+  $db->db->InParameter($stmt,$passwd,'new');
+  $result=$db->db->Execute($stmt); 
+  mssql_free_statement($stmt[1]);
+    
+  
+} // function end
+
+
+/*
+  function: _mssql_assign_grants
+  
+  args :
+  
+  returns: 
+  
+*/
+function _mssql_assign_grants($db,$the_host,$db_name,$login,$passwd)
+{ 
+
+  // $stmt = $db->db->PrepareSP('SP_GRANTDBACCESS');
+  // $db->db->InParameter($stmt,$login,'loginame');
+  // $result=$db->db->Execute($stmt); 
+  // mssql_free_statement($stmt[1]);
+  // 
+  $db_role='db_owner';
+  $stmt = $db->db->PrepareSP('SP_ADDUSER');
+  $db->db->InParameter($stmt,$login,'loginame');
+  $db->db->InParameter($stmt,$login,'name_in_db');
+  $db->db->InParameter($stmt,$db_role,'grpname');
+  $result=$db->db->Execute($stmt); 
+  mssql_free_statement($stmt[1]);
+  
+  
+  $op->status_ok=true;  
+  $op->msg = 'ok - grant assignment';     
+  
+  return $op;
+} // function end
 
 /*
   function: 
@@ -939,9 +1250,23 @@ function _mssql_make_user_with_grants($db,$the_host,$db_name,$login,$passwd)
   returns: 
 
 */
-function _mssql_assign_grants($db,$the_host,$db_name,$login,$passwd)
+function _mssql_set_passwd($db,$login,$passwd)
 {
-}
+  // $passwd_null=NULL;
+  //$stmt = $db->db->PrepareSP('SP_PASSWORD');
+  //$db->db->InParameter($stmt,$login,'loginame');
+  //$db->db->InParameter($stmt,$passwd,'old');
+  //$db->db->InParameter($stmt,$passwd,'new');
+  //$result=$db->db->Execute($stmt);
+  // 
+  //// echo "<pre>debug 20071104 - \ - " . __FUNCTION__ . " --- "; print_r($result); echo "</pre>";
+  //mssql_free_statement($stmt[1]);
+  
+  //$sql="EXEC SP_PASSWORD '{$passwd}','{$passwd}',{$login}";
+  $sql="EXEC SP_PASSWORD NULL,'{$passwd}',{$login}";
+  $db->exec_query($sql);
+  
 
+} // function end
 
 ?>

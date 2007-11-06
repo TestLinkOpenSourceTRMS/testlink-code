@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: installNewDB.php,v 1.33 2007/10/21 16:00:55 franciscom Exp $ */
+/* $Id: installNewDB.php,v 1.34 2007/11/06 15:08:41 franciscom Exp $ */
 /*
 Parts of this file has been taken from:
 Etomite Content Management System
@@ -415,21 +415,18 @@ $db=null;
 $user_host = explode('@',$tl_db_login);
 
 // 20071010 - franciscom
-if( $db_type != 'mssql')
-{
-  $msg = create_user_for_db($db_type,$db_name, $db_server, $db_admin_name, $db_admin_pass, 
-                            $tl_db_login, $tl_db_passwd);
+$msg = create_user_for_db($db_type,$db_name, $db_server, $db_admin_name, $db_admin_pass, 
+                          $tl_db_login, $tl_db_passwd);
   
-  echo "</b><br />Creating Testlink DB user `" . $user_host[0] . "`:<b> ";
-  if ( strpos($msg,'ok -') === FALSE )
-  {
-  		echo "<span class='notok'>Failed!</span></b> - Could not create user: $tl_db_login!";
-  		$errors += 1;
-  }
-  else
-  {
-  		echo "<span class='ok'>OK! ($msg) </span>";
-  }
+echo "</b><br />Creating Testlink DB user `" . $user_host[0] . "`:<b> ";
+if ( strpos($msg,'ok -') === FALSE )
+{
+	echo "<span class='notok'>Failed!</span></b> - Could not create user: $tl_db_login!";
+	$errors += 1;
+}
+else
+{
+  echo "<span class='ok'>OK! ($msg) </span>";
 }
 // ------------------------------------------------------------------------------------------------
 

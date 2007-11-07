@@ -1,7 +1,7 @@
 <?php
 /* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: installUtils.php,v 1.26 2007/11/06 15:08:41 franciscom Exp $ 
+$Id: installUtils.php,v 1.27 2007/11/07 11:28:02 franciscom Exp $ 
 
 
 rev :
@@ -795,18 +795,21 @@ return ($ret);
 
 
 // 20060428 - franciscom
-function check_db_loaded_extension()
+// 20071107
+function check_db_loaded_extension($db_type)
 {
 $msg_ko = "<span class='notok'>Failed!</span>";
 $msg_ok = '<span class="ok">OK!</span>';
 $tt=array_flip(get_loaded_extensions());
 
+echo "<pre>debug 20071107 - \ - " . __FUNCTION__ . " --- "; print_r($tt); echo "</pre>";
+
 $errors=0;	
 $final_msg = "</b><br/>Checking PHP DB extensions<b> ";
 
-if( !isset($tt['mysql']) )
+if( !isset($tt[$db_type]) )
 {
-	$final_msg .= "<span class='notok'>Warning!: Your PHP installation don't have the MySQL extension - " .
+	$final_msg .= "<span class='notok'>Warning!: Your PHP installation don't have the {$db_type} extension - " .
 	              "without it is IMPOSSIBLE to use Testlink.</span>";
 	$final_msg .= $msg_ko;
 	$errors += 1;

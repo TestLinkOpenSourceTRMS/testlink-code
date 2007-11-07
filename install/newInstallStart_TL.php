@@ -1,6 +1,6 @@
 <?php 
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: newInstallStart_TL.php,v 1.17 2007/05/02 07:29:28 franciscom Exp $ */
+/* $Id: newInstallStart_TL.php,v 1.18 2007/11/07 11:28:02 franciscom Exp $ */
 
 // 20070302 - franciscom - changed link for help
 //
@@ -79,9 +79,10 @@ $check = check_php_settings();
 $errors += $check['errors'];
 echo $check['msg'];
 
-$check = check_db_loaded_extension();
-$errors += $check['errors'];
-echo $check['msg'];
+// 20071107 - franciscom
+// $check = check_db_loaded_extension();
+// $errors += $check['errors'];
+// echo $check['msg'];
 
 
 $check = check_session();
@@ -200,7 +201,7 @@ exit;
 					<select id="databasetype" name="databasetype">
 						<option value="mysql" selected>MySQL</option>
 						<option value="postgres" >Postgres 8.0/8.1</option>
-						<option value="mssql" >Microsoft SQL Server (not tested)</option>
+						<option value="mssql" >Microsoft SQL Server (2000/2005)</option>
 					</select>	
 					<br />
 					

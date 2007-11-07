@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: installNewDB.php,v 1.34 2007/11/06 15:08:41 franciscom Exp $ */
+/* $Id: installNewDB.php,v 1.35 2007/11/07 11:28:02 franciscom Exp $ */
 /*
 Parts of this file has been taken from:
 Etomite Content Management System
@@ -110,6 +110,15 @@ if(!isset($_POST['licenseOK']) || empty($_POST['licenseOK']))
 	echo "You need to agree to the license before proceeding with the setup!";
 	close_html_and_exit();
 }	
+
+$check = check_db_loaded_extension($db_type);
+if( $check['errors'] > 0 )
+{
+   echo $check['msg'];
+   close_html_and_exit();
+}
+
+
 ?>
 TestLink setup will now attempt to setup the database:<br />
 

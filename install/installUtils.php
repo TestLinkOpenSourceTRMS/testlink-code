@@ -1,7 +1,7 @@
 <?php
 /* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: installUtils.php,v 1.27 2007/11/07 11:28:02 franciscom Exp $ 
+$Id: installUtils.php,v 1.28 2007/11/07 17:57:17 franciscom Exp $ 
 
 
 rev :
@@ -801,8 +801,6 @@ function check_db_loaded_extension($db_type)
 $msg_ko = "<span class='notok'>Failed!</span>";
 $msg_ok = '<span class="ok">OK!</span>';
 $tt=array_flip(get_loaded_extensions());
-
-echo "<pre>debug 20071107 - \ - " . __FUNCTION__ . " --- "; print_r($tt); echo "</pre>";
 
 $errors=0;	
 $final_msg = "</b><br/>Checking PHP DB extensions<b> ";

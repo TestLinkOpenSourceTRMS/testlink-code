@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqImport.php,v $
- * @version $Revision: 1.17 $
- * @modified $Date: 2007/09/05 06:05:36 $ by $Author: franciscom $
+ * @version $Revision: 1.18 $
+ * @modified $Date: 2007/11/07 07:33:25 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Import requirements to a specification. 
@@ -21,6 +21,8 @@ require_once("common.php");
 require_once('requirements.inc.php');
 require_once('xml.inc.php');
 require_once('csv.inc.php');
+require_once('requirement_spec_mgr.class.php');
+
 testlinkInitPage($db);
 
 $idSRS = isset($_REQUEST['idSRS']) ? strings_stripSlashes($_REQUEST['idSRS']) : null;
@@ -76,12 +78,17 @@ else if ($bExecuteImport)
 
 $arrSpec = $tproject->getReqSpec($tprojectID,$idSRS);
 
+$req_spec_mgr = new requirement_spec_mgr($db);
+$import_types=$req_spec_mgr->get_import_file_types();
+
 $smarty = new TLSmarty;
+
+
 
 $smarty->assign('file_check',$file_check);  
 $smarty->assign('try_upload',$bUpload);
 $smarty->assign('reqFormatStrings',$g_reqFormatStrings);
-$smarty->assign('importTypes',$g_reqImportTypes);
+$smarty->assign('importTypes',$import_types);
 $smarty->assign('reqSpec', $arrSpec[0]);
 $smarty->assign('arrImport', $arrImport);
 $smarty->assign('importResult', $importResult);

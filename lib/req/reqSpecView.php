@@ -4,13 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqSpecView.php,v $
- * @version $Revision: 1.35 $
- * @modified $Date: 2007/05/03 20:44:29 $ by $Author: schlundus $
+ * @version $Revision: 1.36 $
+ * @modified $Date: 2007/11/07 07:33:25 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Screen to view existing requirements within a req. specification.
  * 
- * 20070415 - franciscom - added reorder feature
+ * rev: 20070415 - franciscom - custom field manager
+ *      20070415 - franciscom - added reorder feature
  *
 **/
 require_once("../../config.inc.php");
@@ -18,13 +19,17 @@ require_once("common.php");
 require_once("users.inc.php");
 require_once('requirements.inc.php');
 require_once('attachments.inc.php');
-require_once("../functions/csv.inc.php");
-require_once("../functions/xml.inc.php");
+require_once("csv.inc.php");
+require_once("xml.inc.php");
+require_once('requirement_spec_mgr.class.php');
 
 require_once("../../third_party/fckeditor/fckeditor.php");
 require_once(dirname("__FILE__") . "/../functions/configCheck.php");
 testlinkInitPage($db);
 
+$req_spec_mgr=new requirement_spec_mgr($db);
+
+$get_cfield_values=0;
 $user_feedback='';
 $js_msg = null;
 $sqlResult = null;
@@ -70,13 +75,12 @@ $of->ToolbarSet = $g_fckeditor_toolbar;;
 
 $attach['status_ok']=true;
 $attach['msg']='';
- 
-// create a new spec.
+
+// create a new requirement.
 if(isset($_REQUEST['createReq']))
 {
 	if ($bCreate)
 	{
-	  
 		$status = createRequirement($db,$reqDocId,$title, $scope, $idSRS, $userID, 
 			                                 $reqStatus, $reqType);
 		$user_feedback = $status['msg'];	                                 
@@ -138,11 +142,24 @@ elseif (isset($_REQUEST['deleteReq']))
 elseif (isset($_REQUEST['editSRS']))
 {
 	$template = 'reqSpecEdit.tpl';
+	
+	// get custom fields
+	$cf_smarty = $req_spec_mgr->html_table_of_custom_field_inputs($idSRS);
+	$smarty->assign('cf',$cf_smarty);
 	$action = "editSRS";
 }
 elseif (isset($_REQUEST['updateSRS']))
 {
-	$sqlResult = updateReqSpec($db,$idSRS,$title,$scope,$countReq,$userID);
+	$ret=$req_spec_mgr->update($idSRS,$title,$scope,$countReq,$userID);
+	$sqlResult=$ret['msg'];
+	$get_cfield_values=1;
+	
+	if( $ret['status_ok'] )
+	{
+    $cf_map = $req_spec_mgr->get_linked_cfields($idSRS);
+    $req_spec_mgr->values_to_db($_REQUEST,$idSRS,$cf_map);
+	} 
+
 	$action = 'do_update';
 }
 elseif ($do_create_tc_from_req || $do_delete_req )
@@ -192,8 +209,21 @@ elseif( $do_req_reorder )
 {
 	$nodes_order = isset($_REQUEST['nodes_order']) ? $_REQUEST['nodes_order'] : null;
 	$nodes_in_order = transform_nodes_order($nodes_order);
-	
 	set_req_order($db,$idSRS,$nodes_in_order);
+	$get_cfield_values=1;
+}
+else
+{
+  $get_cfield_values=1;
+}
+
+// 20071106 - franciscom
+if( $get_cfield_values )
+{
+	// get custom fields
+  $req_spec_mgr=new requirement_spec_mgr($db);
+	$cf_smarty = $req_spec_mgr->html_table_of_custom_field_values($idSRS);
+	$smarty->assign('cf',$cf_smarty);
 }
 
 // collect existing reqs for the SRS
@@ -231,8 +261,9 @@ else if ($action && $action != 'create')
 }
 
 // 20061008 - franciscom  - export to csv doors is not support
-$exportTypes = $g_reqImportTypes;
-unset($exportTypes['csv_doors']);
+
+$req_spec_mgr = new requirement_spec_mgr($db);
+$export_types=$req_spec_mgr->get_export_file_types();
 
 if($do_export)
 {
@@ -263,7 +294,7 @@ if($do_export)
 // ----------------------------------------------------------
 
 $smarty->assign('js_msg',$js_msg);
-$smarty->assign('exportTypes',$exportTypes);
+$smarty->assign('exportTypes',$export_types);
 $smarty->assign('scope',$of->CreateHTML());
 $smarty->display($template);
 

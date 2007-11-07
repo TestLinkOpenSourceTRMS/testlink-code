@@ -5,17 +5,19 @@
  *
  * Filename $RCSfile: reqexport.php,v $
  *
- * @version $Revision: 1.1 $
- * @modified $Date: 2006/04/08 19:53:56 $ by $Author: schlundus $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2007/11/07 07:33:25 $ by $Author: franciscom $
  *
  * This page this allows users to export requirements. 
  *
 **/
 require_once("../../config.inc.php");
-require_once("../functions/csv.inc.php");
-require_once("../functions/xml.inc.php");
-require_once("../functions/common.php");
-require_once("../functions/requirements.inc.php");
+require_once("csv.inc.php");
+require_once("xml.inc.php");
+require_once("common.php");
+require_once("requirements.inc.php");
+require_once('requirement_spec_mgr.class.php');
+
 testlinkInitPage($db);
 
 $bExport = isset($_POST['export']) ? $_POST['export'] : null;
@@ -47,12 +49,12 @@ if ($bExport)
 	}
 }
 
-//export to csv doors is not support
-$exportTypes = $g_reqImportTypes;
-unset($exportTypes['csv_doors']);
+$req_spec_mgr = new requirement_spec_mgr($db);
+$export_types=$req_spec_mgr->get_export_file_types();
+
 
 $smarty = new TLSmarty();
 $smarty->assign('idSRS', $idSRS);
-$smarty->assign('importTypes',$exportTypes);
+$smarty->assign('importTypes',$export_types);
 $smarty->display('reqexport.tpl');
 ?>

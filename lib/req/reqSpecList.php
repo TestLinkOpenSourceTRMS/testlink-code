@@ -3,20 +3,27 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: reqSpecList.php,v $
- * @version $Revision: 1.14 $
- * @modified $Date: 2007/01/25 20:02:23 $
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2007/11/07 07:33:25 $
  * 
  * @author Martin Havlat
  * 
- * Screen to view existing and create a new req. specification.
+ * View existing and create a new req. specification.
  * 
- * @author Francisco Mancardi - 20050906 - reduce global coupling, fckeditor
+ * rev : 20071106 - franciscom - custom field management
+ * 
  */
 require_once("../../config.inc.php");
 require_once("common.php");
 require_once('requirements.inc.php');
+require_once('requirement_spec_mgr.class.php');
+
 require_once("../../third_party/fckeditor/fckeditor.php");
 testlinkInitPage($db);
+
+// echo "<pre>debug 20071106 - \ - " . __FUNCTION__ . " --- "; print_r($_REQUEST); echo "</pre>";
+
+// reqSpecList.php?createForm
 
 $sqlResult = null;
 $action = null;
@@ -39,20 +46,43 @@ $tprojectName = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName
 $userID = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
 
 $tproject = new testproject($db);
+$smarty = new TLSmarty();
 
 if($bCreate)
 {
-	$sqlResult = $tproject->createReqSpec($tprojectID,$title,$scope,$countReq,$userID);
+  // Create on DB
+	$ret = $tproject->createReqSpec($tprojectID,$title,$scope,$countReq,$userID);
+	
+	$sqlResult=$ret['msg'];
+	if( $ret['status_ok'])
+	{
+	  $req_spec_mgr=new requirement_spec_mgr($db);
+    $cf_map = $req_spec_mgr->get_linked_cfields(null,$tprojectID) ;
+    $req_spec_mgr->cfield_mgr->design_values_to_db($_REQUEST,$ret['id'],$cf_map);
+	}
 	$action = 'do_add';
+
+
 } 
 else if($bDelete)
 {
-	$sqlResult = deleteReqSpec($db,$idSRS);
+	
+	// $sqlResult = deleteReqSpec($db,$idSRS);
+
+  $req_spec_mgr=new requirement_spec_mgr($db);
+	$sqlResult = 'ok';
+	$req_spec_mgr->delete($idSRS);
 	$action = 'do_delete';
 } 
 else if($bCreateForm)
 {
+  // Show create form
+  $req_spec_mgr=new requirement_spec_mgr($db);
 	$template = 'reqSpecCreate.tpl';
+	
+	// get custom fields
+	$cf_smarty = $req_spec_mgr->html_table_of_custom_field_inputs(null,$tprojectID);
+  $smarty->assign('cf', $cf_smarty);
 } 
 
 $arrSpec = $tproject->getReqSpec($tprojectID);
@@ -67,7 +97,6 @@ if($scope)
 else if ($action && ($action != 'do_add'))
 	$of->Value = $arrSpec[0]['scope'];
 
-$smarty = new TLSmarty();
 $smarty->assign('arrSpec', $arrSpec);
 $smarty->assign('arrSpecCount', count($arrSpec));
 $smarty->assign('sqlResult', $sqlResult);

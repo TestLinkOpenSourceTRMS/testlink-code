@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: tree.class.php,v $
  *
- * @version $Revision: 1.34 $
- * @modified $Date: 2007/10/25 15:23:28 $ by $Author: franciscom $
+ * @version $Revision: 1.35 $
+ * @modified $Date: 2007/11/07 07:33:59 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * 20071024 - franciscom - DTREE bug
@@ -23,14 +23,19 @@
 class tree 
 {
 	// configurable values - pseudoconstants
-	var $node_types = array( 1 => 'testproject','testsuite','testcase','tcversion','testplan');
+	var $node_types = array( 1 => 'testproject','testsuite',
+	                              'testcase','tcversion','testplan',
+	                              'requirement_spec','requirement');
+	                              
 	var $node_descr_id = array();
 	
 	var $node_tables = array('testproject' => 'testprojects',
                            'testsuite'   => 'testsuites',
                            'testplan'    => 'testplans',
                            'testcase'    => 'testcases',
-                           'tcversion'   => 'tcversions');
+                           'tcversion'   => 'tcversions',
+                           'requirement_spec' =>'req_specs',
+                           'requirement' =>'requirements'  );
  
   
   

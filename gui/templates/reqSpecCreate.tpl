@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecCreate.tpl,v 1.10 2007/01/25 20:02:23 schlundus Exp $ *}
+{* $Id: reqSpecCreate.tpl,v 1.11 2007/11/07 07:36:19 franciscom Exp $ *}
 {* Purpose: smarty template - create a new req document *}
 {include file="inc_head.tpl"}
 
@@ -38,6 +38,10 @@
 		<td><input type="text" name="countReq" size="5" maxlength="5" 
 			value="0" /></td>
 	</tr>
+
+  {if $cf != ''}
+  {$cf}
+  {/if}
 </table>
 <div class="groupBtn">
 	<input type="submit" name="createSRS" value="{lang_get s='btn_create'}" />

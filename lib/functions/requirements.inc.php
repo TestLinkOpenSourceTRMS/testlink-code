@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: requirements.inc.php,v $
- * @version $Revision: 1.59 $
- * @modified $Date: 2007/10/16 19:42:37 $ by $Author: schlundus $
+ * @version $Revision: 1.60 $
+ * @modified $Date: 2007/11/07 07:33:02 $ by $Author: franciscom $
  *
  * @author Martin Havlat <havlat@users.sourceforge.net>
  * 
@@ -37,78 +37,6 @@ $g_reqFormatStrings = array (
 							"csv_doors" => lang_get('req_import_format_description2'),
 							"XML" => lang_get('the_format_req_xml_import')
 							); 		
-
-
-/** 
- * update System Requirements Specification
- *  
- * @param integer $id
- * @param string $title
- * @param string $scope
- * @param string $countReq
- * @param integer $user_id
- * @param string $type
- * @return string result
- * 
- * @author Martin Havlat 
- *
- * rev :
- *      20070101 - franciscom - use of db_now()
- */
-function updateReqSpec(&$db,$id, $title, $scope, $countReq, $user_id, 
-                            $type = TL_REQ_STATUS_NOT_TESTABLE)
-{
-	$result = 'ok';
-  $title=trim_and_limit($title);
-    	
-	if (checkRequirementTitle($title,$result))
-	{
-	  $db_now = $db->db_now();
-		$sql = "UPDATE req_specs SET title='" . $db->prepare_string($title) . 
-				"', scope='" . $db->prepare_string($scope) . "', type='" . $db->prepare_string($type) .
-				"', total_req ='" . $db->prepare_string($countReq) . "', modifier_id='" . 
-				$db->prepare_string($user_id) . "', modification_ts={$db_now} WHERE id=" . $id;
-		if (!$db->exec_query($sql))
-			$result = lang_get('error_updating_reqspec');
-	}
-	
-	return $result; 
-}
-
-/** 
- * delete System Requirement Specification
- *  
- * @param integer $srs_id
- * @return string result comment
- * 
- * @author Martin Havlat 
- **/
-function deleteReqSpec(&$db,$srs_id)
-{
-	// delete requirements and coverage
-	$arrReq = getRequirements($db,$srs_id);
-	if (sizeof($arrReq))
-	{
-		foreach ($arrReq as $oneReq)
-		{
-			$result = deleteRequirement($db,$oneReq['id']);
-		}
-	}
-		
-	// delete specification itself
-	$sql = "DELETE FROM req_specs WHERE id=" . $srs_id;
-	$result = $db->exec_query($sql); 
-	if($result)
-	{
-		$result = 'ok';
-	}
-	else
-	{
-		$result = 'The DELETE SRS request fails.';
-		tLog('SQL: ' . $sql . ' fails: ' . $db->error_msg(), 'ERROR');
-	}
-	return $result; 
-}
 
 
 /** 

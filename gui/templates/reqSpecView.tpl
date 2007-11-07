@@ -1,14 +1,25 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecView.tpl,v 1.29 2007/10/15 22:06:28 havlat Exp $ *}
+{* $Id: reqSpecView.tpl,v 1.30 2007/11/07 07:36:19 franciscom Exp $ *}
 {* 
    Purpose: smarty template - view a requirement specification
    Author: Martin Havlat 
 
-20070102 - franciscom - added javascript validation of checked requirements 
+   rev: 20071106 - franciscom - added ext js library
+        20070102 - franciscom - added javascript validation of checked requirements 
 *}
 
 {include file="inc_head.tpl" openHead="yes"}
 {include file="inc_jsCheckboxes.tpl"}
+{include file="inc_del_onclick.tpl"}
+{lang_get s='warning_delete_requirements' var="warning_msg" }
+
+<script type="text/javascript">
+/* All this stuff is needed for logic contained in inc_del_onclick.tpl */
+var o_label ="{lang_get s='requirement_spec'}";
+var del_action=fRoot+'lib/req/reqSpecList.php?deleteSRS=1&idSRS=';
+</script>
+
+
 
 {literal}
 <script type="text/javascript">
@@ -97,6 +108,11 @@ function check_action_precondition(form_id,action)
       	<td>{$arrSpec[0].total_req}</td>
       </tr>
       {/if}
+
+      {if $cf!=''}
+        {$cf}
+      {/if}
+
     </table>
     <div class="time_stamp_creation">
         {lang_get s='title_created'}&nbsp;{localize_timestamp ts=$arrSpec[0].creation_ts}&nbsp;
@@ -117,9 +133,9 @@ function check_action_precondition(form_id,action)
     	{if $modify_req_rights == "yes"}
     	<input type="submit" name="editSRS" value="{lang_get s='btn_edit_spec'}" />
     	<input type="button" name="deleteSRS" value="{lang_get s='btn_delete_spec'}"
-    		onclick="javascript:; 
-    		if (confirm('{lang_get s="popup_sure_delete"}')){ldelim} 
-    		location.href=fRoot+'lib/req/reqSpecList.php?deleteSRS=1&amp;idSRS={$arrSpec[0].id}';{rdelim};"/>
+    	       onclick="delete_confirmation({$arrSpec[0].id},
+ 					                                 '{$arrSpec[0].title|escape:'javascript'}',
+ 					                                 '{$warning_msg}');"	/>
     	{/if}
     	<input type="button" name="printSRS" value="{lang_get s='btn_print'}"
     		onclick="javascript: window.open('{$basehref}lib/req/reqSpecPrint.php?idSRS={$arrSpec[0].id}', 

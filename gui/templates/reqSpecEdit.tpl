@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqSpecEdit.tpl,v 1.9 2007/10/15 22:06:28 havlat Exp $
+$Id: reqSpecEdit.tpl,v 1.10 2007/11/07 07:36:19 franciscom Exp $
 Purpose: smarty template - edit a req specification
 
 20070101 - franciscom - use of config_load
@@ -42,6 +42,9 @@ Purpose: smarty template - edit a req specification
 		<td><input type="text" name="countReq" size="5" maxlength="5" 
 			value="{$arrSpec[0].total_req}" /> <i>{lang_get s='req_total_description'}</i></td>
 	</tr>
+	{if $cf!=''}
+	  {$cf}
+	{/if}
 </table>
 
 <div class="groupBtn">

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: buildNew.php,v $
  *
- * @version $Revision: 1.34 $
- * @modified $Date: 2007/10/13 10:16:46 $ $Author: franciscom $
+ * @version $Revision: 1.35 $
+ * @modified $Date: 2007/11/07 20:57:11 $ $Author: schlundus $
  *
  * rev :
  *       20070122 - franciscom - use build_mgr methods
@@ -162,7 +162,7 @@ switch($args->do_action)
    case "do_delete":
    case "do_update":
         $the_builds = $tplan_mgr->get_builds($args->tplan_id);
-        $template= is_null($template) ? 'buildView.tpl' : $template;
+        $template = is_null($template) ? 'buildView.tpl' : $template;
         $smarty->assign('the_builds',$the_builds);
         $smarty->display($template);
    break; 
@@ -170,7 +170,7 @@ switch($args->do_action)
 
    case "edit":
    case "create":
-        $template= is_null($template) ? 'buildNew.tpl' : $template;
+        $template = is_null($template) ? 'buildNew.tpl' : $template;
         $smarty->assign('the_builds',$the_builds);
       	$smarty->assign('build_id',$args->build_id);
       	$smarty->assign('build_name', $args->build_name);

@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: buildView.tpl,v 1.9 2007/11/03 23:57:46 havlat Exp $
+$Id: buildView.tpl,v 1.10 2007/11/07 20:57:11 schlundus Exp $
 
 Purpose: smarty template - Show existing builds
 
@@ -65,7 +65,7 @@ var del_action=fRoot+'lib/plan/buildNew.php?do_action=do_delete&build_id=';
   				    {/if}
   				</td>
   				<td class="clickable_icon">
-  				   {if $build.open eq 1} 
+  				   {if $build.is_open eq 1} 
   				     <img style="border:none" 
   				            title="{lang_get s='alt_open_build'}" 
   				            alt="{lang_get s='alt_open_build'}" 

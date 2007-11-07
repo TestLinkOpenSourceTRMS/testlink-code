@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: projectedit.php,v $
  *
- * @version $Revision: 1.10 $
- * @modified $Date: 2007/08/18 14:09:46 $ $Author: franciscom $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2007/11/07 19:53:42 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -26,7 +26,6 @@
 **/
 include('../../config.inc.php');
 require_once('common.php');
-require_once('product.inc.php');
 require_once('testproject.class.php');
 require_once("../../third_party/fckeditor/fckeditor.php");
 testlinkInitPage($db,true);

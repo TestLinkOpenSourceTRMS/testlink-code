@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.75 $ $Author: franciscom $
- * @modified $Date: 2007/11/02 13:09:22 $
+ * @version $Revision: 1.76 $ $Author: franciscom $
+ * @modified $Date: 2007/11/07 19:53:27 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -47,7 +47,6 @@ require_once(dirname(__FILE__) . "../../../third_party/phpxmlrpc/lib/xmlrpcs.inc
 require_once(dirname(__FILE__) . "../../../third_party/phpxmlrpc/lib/xmlrpc_wrappers.inc");
 
 
-require_once("product.core.inc.php");
 require_once("plan.core.inc.php");
 
 /** $db is a global used throughout the code when accessing the db. */

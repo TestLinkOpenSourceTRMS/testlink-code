@@ -2,8 +2,8 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
  
 Filename $RCSfile: contributors.txt,v $
  
-$Revision: 1.12 $
-$Date: 2007/11/04 11:12:14 $ by $Author: franciscom $
+$Revision: 1.13 $
+$Date: 2007/11/08 18:02:21 $ by $Author: franciscom $
 -------------------------------------------------------------------------
  
  
@@ -38,7 +38,8 @@ Other Contributors (code, ideas, testing..):
 * Seweryn Plywaczyk (text area custom field)  
 * weeBaldFella added 0000827: A new print option to add a pass / fail and testnotes field
 * Jonas Fleer : search test case by custom field on test projects
-* Abhishek Kulkarni (lightbulb): import test cases from XLS file
+* Abhishek Kulkarni (lightbulb - Lightbulb Technology Services Pvt. Ltd.): import test cases from XLS file
+
   
 Localization
 * French

@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecView.tpl,v 1.30 2007/11/07 07:36:19 franciscom Exp $ *}
+{* $Id: reqSpecView.tpl,v 1.31 2007/11/09 21:42:52 franciscom Exp $ *}
 {* 
    Purpose: smarty template - view a requirement specification
    Author: Martin Havlat 
@@ -176,17 +176,32 @@ function check_action_precondition(form_id,action)
     	</select>
     
      {* ------------------------------------------------------------------------------------------ *} 
+     <div id="req_div"  style="margin:0px 0px 0px 0px;">
+        {* used as memory for the check/uncheck all checkbox javascript logic *}
+        <input type="hidden" name="toogle_req"  id="toogle_req"  value="0" />
+     
+
      <table class="simple">
     	 <tr>
-    		{if $modify_req_rights == "yes"}<th style="width: 15px;"></th>{/if}
+    		{if $modify_req_rights == "yes"}
+    		<th style="width: 15px;">
+    						    <img src="{$smarty.const.TL_THEME_IMG_DIR}/toggle_all.gif" 
+                         onclick='cs_all_checkbox_in_div("req_div","req_id_cbox","toogle_req");'
+                 title="{lang_get s='check_uncheck_all_checkboxes'}" /></th>
+        {/if}
+    		
     		<th>{lang_get s="req_doc_id"}</th>
     		<th>{lang_get s="title"}</th>
     		<th>{lang_get s="scope"}</th>
     	 </tr>
     	{section name=row loop=$arrReq}
+
+
     	<tr>
     	  {* 20060110 - fm - managing checkboxes as array and added value *}
-    		{if $modify_req_rights == "yes"}<td><input type="checkbox" name="req_id_cbox[{$arrReq[row].id}]" 
+    		{if $modify_req_rights == "yes"}
+    		<td><input type="checkbox" id="req_id_cbox{$arrReq[row].id}"
+    		           name="req_id_cbox[{$arrReq[row].id}]" 
     		                                           value="{$arrReq[row].id}"/></td>{/if}
     		<td><span class="bold">{$arrReq[row].req_doc_id|escape}</span></td>
     		<td><span class="bold"><a href="lib/req/reqSpecView.php?editReq={$arrReq[row].id}&amp;idSRS={$arrSpec[0].id}">
@@ -197,16 +212,12 @@ function check_action_precondition(form_id,action)
     	<tr><td></td><td><span class="bold">{lang_get s='req_msg_norequirement'}</span></td></tr>
     	{/section}
      </table>
+     </div>
      {* ------------------------------------------------------------------------------------------ *}
     
      {* ------------------------------------------------------------------------------------------ *}
      {if $modify_req_rights == "yes"}
       <div class="groupBtn">
-      	<input type="button" name="checkAll" value="{lang_get s='btn_check_all'}" 
-      		onclick="javascript: box('frmReqList', true);" />
-      	<input type="button" name="clearAll" value="{lang_get s='btn_uncheck_all'}" 
-      		onclick="javascript: box('frmReqList', false);" />
-      
        <input type="submit" name="create_tc_from_req" value="{lang_get s='req_select_create_tc'}" 
               onclick="return check_action_precondition('frmReqList','create');"/>
               

@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqCreate.tpl,v 1.10 2007/01/25 14:13:26 franciscom Exp $
+$Id: reqCreate.tpl,v 1.11 2007/11/09 21:42:52 franciscom Exp $
 Purpose: smarty template - create / edit a req  
 *}
 
@@ -82,6 +82,19 @@ function validateForm(f)
   			{html_options options=$selectReqStatus selected=$arrReq.status}
   		</select></td>
   	</tr>
+  	
+  	{if $cf != ''}
+  	  <tr class="time_stamp_creation">
+       <td colspan="2">&nbsp; </td>
+    	</tr>
+
+  	<tr>
+  	  <td colspan="2">
+  	  {$cf}
+  	  </td>
+  	</tr>
+  	{/if}
+  	
   </table>
   
 <div class="groupBtn">

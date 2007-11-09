@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqEdit.tpl,v 1.17 2007/01/25 14:13:26 franciscom Exp $ *}
+{* $Id: reqEdit.tpl,v 1.18 2007/11/09 21:42:52 franciscom Exp $ *}
 {* Purpose: smarty template - create / edit a req *}
 {* Author: Martin Havlat *}
 {* Revisions:
@@ -91,9 +91,19 @@
 			{/section}
 		</td>
 	</tr>
+
   <tr class="time_stamp_creation">
     <td colspan="2">&nbsp; </td>
 	</tr>
+	
+		{if $cf != ''}
+    <tr> 
+      <td colspan="2">
+  	  {$cf}
+  	 </td>
+  	</tr>  
+  	{/if}
+  
   <tr class="time_stamp_creation">
     <td colspan="2">
     {lang_get s='title_created'}&nbsp;{localize_timestamp ts=$arrReq.creation_ts}&nbsp;

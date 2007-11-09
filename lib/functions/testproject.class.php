@@ -2,10 +2,11 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.40 $
- * @modified $Date: 2007/11/04 11:11:34 $  $Author: franciscom $
+ * @version $Revision: 1.41 $
+ * @modified $Date: 2007/11/09 08:18:14 $  $Author: franciscom $
  * @author franciscom
  *
+ * 20071106 - franciscom - createReqSpec() - changed return type
  * 20071104 - franciscom - get_accessible_for_user
  *                         added optional arg to get_all()
  *
@@ -700,6 +701,43 @@ function count_testcases($id)
 	/* END KEYWORDS RELATED */	
 	
 	/* REQUIREMENTS RELATED */
+  /** 
+   * get list of all SRS for a test project
+   * 
+   * 
+   * @return associated array List of titles according to IDs
+   * 
+   * @author Martin Havlat 
+   *
+   * rev :
+   *      20070104 - franciscom - added [$get_not_empy]
+   **/
+  function getOptionReqSpec($tproject_id,$get_not_empty=0)
+  {
+    $additional_table='';
+    $additional_join='';
+    if( $get_not_empty )
+    {
+  		$additional_table=", requirements REQ ";
+  		$additional_join=" AND SRS.id = REQ.srs_id ";
+  	}
+    $sql = " SELECT SRS.id,SRS.title " .
+           " FROM req_specs SRS " . $additional_table .
+           " WHERE testproject_id={$tproject_id} " .
+           $additional_join . 
+  		     " ORDER BY title";
+  	return $this->db->fetchColumnsIntoMap($sql,'id','title');
+  } // function end
+
+
+
+
+
+
+
+
+
+
 	/** 
 	 * collect information about current list of Requirements Specification
 	 *  
@@ -745,12 +783,20 @@ function count_testcases($id)
 	 * @param numeric $user_id
 	 * @param string $type
 	 * 
-	 * @author Martin Havlat 
+	 * @author Martin Havlat
+	 *
+	 * rev: 20071106 - franciscom - changed return type
 	 */
 	function createReqSpec($testproject_id,$title, $scope, $countReq,$user_id,$type = 'n')
 	{
 	  $ignore_case=1;
-		$result = 'ok';
+
+		$result=array();
+		
+    $result['status_ok'] = 0;
+		$result['msg'] = 'ko';
+		$result['id'] = 0;
+		
     $title=trim($title);
   	
     $chk=$this->check_srs_title($testproject_id,$title,$ignore_case);
@@ -764,12 +810,18 @@ function count_testcases($id)
 					
 			if (!$this->db->exec_query($sql))
 			{
-				$result = lang_get('error_creating_req_spec');
+				$result['msg']=lang_get('error_creating_req_spec');
 			}	
+			else
+			{
+			  $result['id']=$this->db->insert_id('req_specs');
+        $result['status_ok'] = 1;
+		    $result['msg'] = 'ok';
+			}
 		}
 		else
 		{
-		  $result=$chk['msg'];
+		  $result['msg']=$chk['msg'];
 		}
 		return $result; 
 	}
@@ -824,7 +876,7 @@ function count_testcases($id)
 
   /*
     function: check_srs_title
-              Do checks on srs title, to undertand if can be used.
+              Do checks on srs title, to understand if can be used.
               
               Checks:
               1. title is empty ?

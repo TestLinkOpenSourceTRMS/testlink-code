@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: attachmentupload.tpl,v 1.7 2007/03/12 07:08:40 franciscom Exp $ *}
+{* $Id: attachmentupload.tpl,v 1.8 2007/11/09 20:04:57 schlundus Exp $ *}
 {* Purpose: smarty template - template for attachment upload dialog 
 
    rev :
@@ -40,6 +40,9 @@
 	<p>
 		{lang_get s='max_size_cvs_file'}: {$import_limit} Bytes
 	</p>
+	{if $msg neq ''}
+		<p class="bold" style="color:red">{$msg}</p>
+	{/if}
 </div>
 
 </body>

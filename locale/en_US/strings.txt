@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.26 $
- * @modified $Date: 2007/11/03 07:37:19 $ $Author: franciscom $
+ * @version $Revision: 1.27 $
+ * @modified $Date: 2007/11/09 20:03:38 $ $Author: schlundus $
  *
  * @author Francisco Mancardi
  *
@@ -1181,7 +1181,9 @@ $TLS_enter_attachment_title = "Enter title for the attachment";
 $TLS_import_was_ok = "The import was ok";
 $TLS_max_size_cvs_file = "Max. size of the file is";
 $TLS_title_upload_attachment = "Upload attachment";
-
+$TLS_error_file_size_larger_than_maximum_size_check_php_ini = "The size of the file is larger than the configured maximum value in your php.ini!";
+$TLS_error_file_size_larger_than_maximum_size = "The size of the file is larger than the configured maximum value of TestLink!"; 
+$TLS_error_file_upload = "The file couldn't be uploaded!";
 
 
 // gui/templates/rolesview.tpl

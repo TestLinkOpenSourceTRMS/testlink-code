@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: attachmentupload.php,v $
  *
- * @version $Revision: 1.9 $
- * @modified $Date: 2007/10/16 19:42:37 $ by $Author: schlundus $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2007/11/09 20:04:10 $ by $Author: schlundus $
  *
  * Upload dialog for attachments
  *
@@ -24,6 +24,7 @@ $tableName = isset($_GET['tableName'])? $_GET['tableName'] : null;
 
 $bPostBack = sizeof($_POST);
 $bUploaded = false;
+$msg = null;
 if ($bPostBack > 2)
 {
 	$fInfo  = isset($_FILES['uploadedFile']) ? $_FILES['uploadedFile'] : null;
@@ -35,7 +36,6 @@ if ($bPostBack > 2)
 	$tableName = isset($_POST['tableName'])? $_POST['tableName'] : null;
 	if ($fInfo)
 	{
-		$error = isset($fInfo['error']) ? $fInfo['error'] : 0;
 		$fName = isset($fInfo['name']) ? $fInfo['name'] : null;
 		$fSize = isset($fInfo['size']) ? $fInfo['size'] : 0;
 		$fType = isset($fInfo['type']) ? $fInfo['type'] : '';
@@ -59,6 +59,9 @@ if ($bPostBack > 2)
 			}
 			@unlink($fTmpName);			
 		}
+		else
+			$msg  = getFileUploadErrorMessage($fInfo);
+		
 		if ($bUploaded)
 			$bUploaded = insertAttachment($db,$id,$tableName,$fName,$destFPath,$fContents,$fType,$fSize,$title);
 	}
@@ -70,5 +73,6 @@ $smarty->assign('id',$id);
 $smarty->assign('tableName',$tableName);
 $smarty->assign('bUploaded',$bUploaded);
 $smarty->assign('bPostBack',$bPostBack);
+$smarty->assign('msg',$msg);
 $smarty->display('attachmentupload.tpl');
 ?>

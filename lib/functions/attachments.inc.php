@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: attachments.inc.php,v $
  *
- * @version $Revision: 1.10 $
- * @modified $Date: 2007/10/19 18:21:19 $ by $Author: schlundus $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2007/11/09 20:04:10 $ by $Author: schlundus $
  *
  * functions related to attachments
  *
@@ -361,6 +361,15 @@ function getAttachmentContentFromDB(&$db,$id)
 	return $content;
 }
 
+/**
+ * uncompresses arbitrary gzipped content  
+ *
+ * @param string content the compressed content
+ * @param int $fileSize the original size of the uncompressed content
+ * 
+ * @return string returns the uncompressed contents on success or null on error 
+
+*/
 function gzip_uncompress_content($content,$fileSize)
 {
 	global $g_repositoryPath;
@@ -478,5 +487,24 @@ function deleteAttachmentsFor(&$db,$id,$tableName)
 		}
 	}
 	return $bSuccess;
+}
+
+function getFileUploadErrorMessage($fInfo)
+{
+	$msg = null;
+	switch($fInfo['error'])
+	{
+		case UPLOAD_ERR_INI_SIZE:
+			$msg = lang_get('file_size_larger_than_maximum_size_check_php_ini!');
+			break;
+		case UPLOAD_ERR_FORM_SIZE:
+			$msg = lang_get('file_size_larger_than_maximum_size!');
+			break;
+		case UPLOAD_ERR_PARTIAL:
+		case UPLOAD_ERR_NO_FILE:
+			$msg = lang_get('file_upload_error');
+			break;
+	}
+	return $msg;
 }
 ?>

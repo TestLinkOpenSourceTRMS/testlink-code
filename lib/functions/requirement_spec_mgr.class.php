@@ -1,12 +1,12 @@
-<?php
+#<?php
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: requirement_spec_mgr.class.php,v $
  *
- * @version $Revision: 1.2 $
- * @modified $Date: 2007/11/09 08:19:46 $ by $Author: franciscom $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2007/11/09 20:04:10 $ by $Author: schlundus $
  * @author Francisco Mancardi
  *
  * Manager for requirement specification (requirement container)

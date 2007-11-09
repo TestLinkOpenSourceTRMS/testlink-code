@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.76 $ $Author: franciscom $
- * @modified $Date: 2007/11/07 19:53:27 $
+ * @version $Revision: 1.77 $ $Author: franciscom $
+ * @modified $Date: 2007/11/09 08:17:48 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -1165,5 +1165,62 @@ function executeTestCase($testcase_id,$tree_manager,$cfield_manager){
 
 	return $ret;
 } // function end
+
+
+// MHT: I'm not able find a simple SQL (subquery is not supported 
+// in MySQL 4.0.x); probably temporary table should be used instead of the next
+function array_diff_byId ($arrAll, $arrPart)
+{
+	// solve empty arrays
+	if (!count($arrAll) || is_null($arrAll))
+	{
+		return(null);
+	}
+	if (!count($arrPart) || is_null($arrPart)) 
+	{
+		return $arrAll;
+	}
+
+	$arrTemp = array();
+	$arrTemp2 = array();
+
+	// converts to associated arrays
+	foreach ($arrAll as $penny) {
+		$arrTemp[$penny['id']] = $penny;
+	}
+	foreach ($arrPart as $penny) {
+		$arrTemp2[$penny['id']] = $penny;
+	}
+	
+	// exec diff
+	$arrTemp3 = array_diff_assoc($arrTemp, $arrTemp2);
+	
+	$arrTemp4 = null;
+	// convert to numbered array
+	foreach ($arrTemp3 as $penny) {
+		$arrTemp4[] = $penny;
+	}
+	return $arrTemp4;
+}
+
+
+/** 
+ * trim string and limit to N chars
+ * @param string
+ * @param int [len]: how many chars return
+ *
+ * @return string trimmed string
+ *
+ * @author Francisco Mancardi - 20050905 - refactoring
+ *
+ */
+function trim_and_limit($s, $len=100)
+{
+  $s=trim($s);
+	if (strlen($s) > $len ) {
+		$s = substr($s, 0, $len);
+	}
+	return($s);
+}
 
 ?>

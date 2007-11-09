@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_spec_mgr.class.php,v $
  *
- * @version $Revision: 1.1 $
- * @modified $Date: 2007/11/07 07:32:51 $ by $Author: franciscom $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2007/11/09 08:19:46 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirement specification (requirement container)
@@ -19,6 +19,7 @@ class requirement_spec_mgr
 	var $db;
 	var $tree_manager;
   var $cfield_mgr;
+  var $object_table="req_specs";
 
   var $import_file_types = array("csv" => "CSV",
                                  "csv_doors" => "CSV (Doors)", 
@@ -39,7 +40,7 @@ class requirement_spec_mgr
 	{
 		$this->db = &$db;
 	  $this->tree_manager =  new tree($this->db);
-		$this->cfield_mgr=new cfield_mgr($this->db);
+		$this->cfield_mgr = new cfield_mgr($this->db);
 	}
 
   /*
@@ -76,6 +77,57 @@ class requirement_spec_mgr
 
 
   /*
+    function: 
+
+    args :
+    
+    returns: 
+
+  */
+	function create($tproject_id,$title, $scope, $countReq,$user_id,$type = 'n')
+	{
+	  $ignore_case=1;
+
+		$result=array();
+		
+    $result['status_ok'] = 0;
+		$result['msg'] = 'ko';
+		$result['id'] = 0;
+		
+    $title=trim($title);
+  	
+    $chk=$this->check_title($title,$tproject_id,$ignore_case);
+		if ($chk['status_ok'])
+		{
+			$sql = "INSERT INTO {$this->object_table} (testproject_id, title, scope, type, total_req, author_id, creation_ts)
+					    VALUES (" . $tproject_id . ",'" . $this->db->prepare_string($title) . "','" . 
+					                $this->db->prepare_string($scope) .  "','" . $this->db->prepare_string($type) . "','" . 
+					                $this->db->prepare_string($countReq) . "'," .
+					                $user_id . ", " . $this->db->db_now() . ")";
+					
+			if (!$this->db->exec_query($sql))
+			{
+				$result['msg']=lang_get('error_creating_req_spec');
+			}	
+			else
+			{
+			  $result['id']=$this->db->insert_id($this->object_table);
+        $result['status_ok'] = 1;
+		    $result['msg'] = 'ok';
+			}
+		}
+		else
+		{
+		  $result['msg']=$chk['msg'];
+		}
+		return $result; 
+	}
+
+
+
+
+
+  /*
     function: get_by_id
               
   
@@ -87,10 +139,143 @@ class requirement_spec_mgr
   */
   function get_by_id($id)
   {
-  	$sql = " SELECT * FROM req_specs WHERE id = {$id}";
+  	$sql = " SELECT * FROM {$this->object_table} WHERE id = {$id}";
   	$recordset = $this->db->get_recordset($sql);
   	return ($recordset ? $recordset[0] : null);
   }
+
+
+
+/**
+ * get analyse based on requirements and test specification
+ * 
+ * @param integer $srs_id
+ * @return array Coverage in three internal arrays: covered, uncovered, nottestable REQ
+ * @author martin havlat
+ */
+function get_coverage($id)
+{
+  $req_mgr = new requirement_mgr($this->db);
+  
+  $order_by=" ORDER BY req_doc_id,title";
+	$output = array( 'covered' => array(), 'uncovered' => array(), 
+					         'nottestable' => array()	);
+	
+	// get requirements
+	$sql_common = "SELECT id,title,req_doc_id " .
+	              " FROM requirements WHERE srs_id={$id}";
+	$sql = $sql_common . " AND status='" . VALID_REQ . "' {$order_by}";
+	$arrReq = $this->db->get_recordset($sql);
+
+	// get not-testable requirements
+	$sql = $sql_common . " AND status='" . NON_TESTABLE_REQ . "' {$order_by}";
+	$output['nottestable'] = $this->db->get_recordset($sql);
+	
+	// get coverage
+	if (sizeof($arrReq))
+	{
+		foreach ($arrReq as $req) 
+		{
+			// collect TC for REQ
+			$arrCoverage = $req_mgr->get_coverage($req['id']);
+	
+			if (count($arrCoverage) > 0) {
+				// add information about coverage
+				$req['coverage'] = $arrCoverage;
+				$output['covered'][] = $req;
+			} else {
+				$output['uncovered'][] = $req;
+			}
+		}
+	}	
+	return $output;
+}
+
+
+/**
+ * get requirement coverage metrics
+ * 
+ * @param integer $srs_id
+ * @return array results
+ * @author havlatm
+ */
+function get_metrics($id)
+{
+	$output = array();
+	
+	// get nottestable REQs
+	$sql = "SELECT count(*) AS cnt " .
+	       " FROM requirements WHERE srs_id={$id} " . 
+			   " AND status='" . TL_REQ_STATUS_NOT_TESTABLE . "'";
+			   
+	$output['notTestable'] = $this->db->fetchFirstRowSingleColumn($sql,'cnt');
+
+	$sql = "SELECT count(*) AS cnt FROM requirements WHERE srs_id={$id}";
+	$output['total'] = $this->db->fetchFirstRowSingleColumn($sql,'cnt');
+
+	$sql = "SELECT total_req FROM {$this->object_table} WHERE id={$id}";
+	$output['expectedTotal'] = $this->db->fetchFirstRowSingleColumn($sql,'total_req');
+	
+	if ($output['expectedTotal'] == 0)
+	{
+		$output['expectedTotal'] = $output['total'];
+	}
+	
+	$sql = "SELECT DISTINCT requirements.id FROM requirements, req_coverage " .
+	       " WHERE requirements.srs_id={$id}" .
+				 " AND requirements.srs_id=req_coverage.req_id";
+	$result = $this->db->exec_query($sql);
+	if (!empty($result))
+	{
+		$output['covered'] = $this->db->num_rows($result);
+	}
+
+	$output['uncovered'] = $output['expectedTotal'] - $output['covered'] - $output['notTestable'];
+
+	return $output;
+}
+
+
+
+
+
+
+
+	/** 
+	 * collect information about current list of Requirements Specification
+	 *  
+	 * @param numeric $testproject_id
+	 * @param string  $id optional id of the requirement specification
+	 *
+	 * @return null if no srs exits, or no srs exists for id
+	 *         array, where each element is a map with SRS data.
+	 *         
+	 *         map keys:
+   *         id
+   *         testproject_id
+   *         title
+   *         scope 	
+   *         total_req
+   *         type
+   *         author_id
+   *         creation_ts
+   *         modifier_id
+   *         modification_ts
+	 *
+	 * @author Martin Havlat 
+	 **/
+	function get_all_in_testproject($tproject_id,$order_by=" ORDER BY title")
+	{
+		$sql = "SELECT * FROM {$this->object_table} WHERE testproject_id={$tproject_id}";
+		if (!is_null($order_by))
+		{
+  		$sql .= "  ORDER BY title";
+	  }
+		return $this->db->get_recordset($sql);
+	}
+
+
+
 
 
   /*
@@ -110,7 +295,7 @@ class requirement_spec_mgr
     $title=trim_and_limit($title);
     	
 	  $db_now = $this->db->db_now();
-		$sql = " UPDATE req_specs SET title='" . $this->db->prepare_string($title) . "', " .
+		$sql = " UPDATE {$this->object_table} SET title='" . $this->db->prepare_string($title) . "', " .
 		       " scope='" . $this->db->prepare_string($scope) . "', " .
 		       " type='" . $this->db->prepare_string($type) . "', " .
 		       " total_req ='" . $this->db->prepare_string($countReq) . "', " .
@@ -154,11 +339,11 @@ class requirement_spec_mgr
   	  $this->cfield_mgr->remove_all_design_values_from_node($the_reqs);
     }
   	
-  	$sql="DELETE FROM requirements WHERE srs_id={$id}";
+  	$sql="DELETE FROM requirements WHERE id={$id}";
   	$this->db->exec_query($sql); 
   		
   	// delete specification itself
-  	$sql = "DELETE FROM req_specs WHERE id={$id}";
+  	$sql = "DELETE FROM {$this->object_table} WHERE id={$id}";
   	$result = $this->db->exec_query($sql); 
   	if($result)
   	{
@@ -181,12 +366,136 @@ class requirement_spec_mgr
     returns: 
 
   */
-  function get_requirements($id,$order_by=" ORDER BY node_order,req_doc_id,title")
-  {
-		$sql = "SELECT * FROM requirements WHERE srs_id={$id}"; 
+function get_requirements($id, $range = 'all', $testcase_id = null,
+                          $order_by=" ORDER BY node_order,req_doc_id,title")
+{
+	
+	switch($range)
+	{
+	  case 'all';
+	  $sql = "SELECT * FROM requirements  WHERE srs_id={$id}"; 
+	  break;
+	  
+	  
+	  case 'assigned':
+		$sql = "SELECT requirements.* " .
+		       " FROM requirements,req_coverage " .
+		       " WHERE srs_id={$id} " . 
+		       " AND req_coverage.req_id=requirements.id " .
+		       " AND req_coverage.testcase_id={$testcase_id}";
+	  break;
+	}
+	if( !is_null($order_by) )
+	{
 	  $sql .= $order_by;
-	  return $this->db->fetchRowsIntoMap($sql,'id');
   }
+	return $this->db->get_recordset($sql);
+}
+
+
+
+  /*
+    function: get_by_title
+              get req spec information using title as access key.
+  
+    args : title: req spec title
+           [tproject_id]
+           [ignore_case]: control case sensitive search.
+                          default 0 -> case sensivite search
+    
+    returns: map.
+             key: srs id
+             value: srs info,  map with folowing keys:
+                    id
+                    testproject_id
+                    title
+                    scope 	
+                    total_req
+                    type
+                    author_id
+                    creation_ts
+                    modifier_id
+                    modification_ts
+  */
+  function get_by_title($title,$tproject_id=null,$ignore_case=0)
+  {
+  	$output=null;
+  	$title=trim($title);
+
+    $the_title=$this->db->prepare_string($title);
+      	
+  	$sql = "SELECT * FROM {$this->object_table} ";
+  	
+  	if($ignore_case)
+  	{
+  	  $sql .= " WHERE UPPER(title)='" . strtoupper($the_title) . "'";
+  	}
+  	else
+  	{
+  	   $sql .= " WHERE title='{$the_title}'";
+  	}       
+  	if( !is_null($tproject_id) )
+  	{
+  	  $sql .= " AND testproject_id={$tproject_id}";
+		}
+		$output = $this->db->fetchRowsIntoMap($sql,'id');
+
+  	return $output;
+  }
+
+  /*
+    function: check_title
+              Do checks on req spec title, to understand if can be used.
+              
+              Checks:
+              1. title is empty ?
+              2. does already exist a req spec with this title?
+  
+    args : title: req spec title
+           [tproject_id]: default null -> do check for tile uniqueness
+                                          system wide.
+                          valid id: only inside testproject with this id.
+                                          
+           [ignore_case]: control case sensitive search.
+                          default 0 -> case sensivite search
+    
+    returns: 
+  
+  */
+  function check_title($title,$tproject_id=null,$ignore_case=0)
+  {
+    $ret['status_ok']=1;
+    $ret['msg']='';
+    
+    $title=trim($title);
+  	
+  	if (!strlen($title))
+  	{
+  	  $ret['status_ok']=0;
+  		$ret['msg'] = lang_get("warning_empty_req_title");
+  	}
+  	
+  	if($ret['status_ok'])
+  	{
+  	  $ret['msg']='ok';
+      $rs=$this->get_by_title($title,$tproject_id,$ignore_case);
+
+      if( !is_null($rs) )
+      {
+  		  $ret['msg']=lang_get("warning_duplicate_req_title");
+        $ret['status_ok']=0;  		  
+  	  }
+  	} 
+  	return($ret);
+  } //function end
+
+
+
+
+
+
+
+
 
 
 // ---------------------------------------------------------------------------------------

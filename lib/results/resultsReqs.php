@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: resultsReqs.php,v $
- * @version $Revision: 1.9 $
- * @modified $Date: 2007/08/27 06:37:44 $ by $Author: franciscom $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2007/11/09 08:19:57 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Report requirement based results
@@ -17,15 +17,20 @@
 require_once("../../config.inc.php");
 require_once("common.php");
 require_once('requirements.inc.php');
+require_once('requirement_spec_mgr.class.php');
+
 
 testlinkInitPage($db);
 
 $idSRS = isset($_GET['idSRS']) ? strings_stripSlashes($_GET['idSRS']) : null;
-$prodID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+$tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 $tpID = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0;
 
+$tproject_mgr=new testproject($db);
+$req_spec_mgr = new requirement_spec_mgr($db); 
+
 //get list of available Req Specification
-$arrReqSpec = getOptionReqSpec($db,$prodID);
+$arrReqSpec = $tproject_mgr->getOptionReqSpec($tproject_id);
 
 //set the first ReqSpec if not defined via $_GET
 if (!$idSRS && count($arrReqSpec))
@@ -39,13 +44,16 @@ $arrCoverage = null;
 $arrMetrics =  null;
 if(!is_null($idSRS))
 {
-	$tp = new testplan($db);
-	$tcs = $tp->get_linked_tcversions($tpID,null,0,1);
+	$tplan_mgr = new testplan($db);
+	$tcs = $tplan_mgr->get_linked_tcversions($tpID,null,0,1);
 	
-	$sql = "SELECT id,testcase_id,title,status FROM requirements LEFT OUTER JOIN req_coverage ON requirements.id = req_coverage.req_id WHERE status = 'v' AND srs_id = {$idSRS}"; 
+	$sql = " SELECT id,testcase_id,title,status " .
+	       " FROM requirements LEFT OUTER JOIN req_coverage " .
+	       " ON requirements.id = req_coverage.req_id WHERE status = 'v' AND srs_id = {$idSRS}"; 
+	       
 	$reqs = $db->fetchRowsIntoMap($sql,'id',1);
 	$execMap = getLastExecutions($db,$tcs,$tpID);
-	$arrMetrics = getReqMetrics_general($db,$idSRS);
+	$arrMetrics = $req_spec_mgr->get_metrics($idSRS);
 	$coveredReqs = 0;
 	$arrCoverage = getReqCoverage($reqs,$execMap,$coveredReqs);
 

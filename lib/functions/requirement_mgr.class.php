@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.1 $
- * @modified $Date: 2007/11/09 08:17:16 $ by $Author: franciscom $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2007/11/09 21:45:21 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
@@ -51,7 +51,10 @@ class requirement_mgr
   */
   function get_by_id($id)
   {
-  	$sql = " SELECT * FROM {$this->object_table} WHERE id = {$id}";
+  	$sql = " SELECT REQ.*, REQ_SPEC.testproject_id, REQ_SPEC.title AS req_spec_title " .
+  	       " FROM {$this->object_table} REQ, {$this->requirement_spec_table} REQ_SPEC" . 
+  	       " WHERE REQ.srs_id = REQ_SPEC.id " .
+  	       " AND REQ.id = {$id}";
   	$recordset = $this->db->get_recordset($sql);
   	return ($recordset ? $recordset[0] : null);
   }
@@ -69,8 +72,8 @@ class requirement_mgr
   {
   
 	  $result['id'] = 0;
-	  $result['status_ok'] = 1;
-	  $result['msg'] = 'ok';
+	  $result['status_ok'] = 0;
+	  $result['msg'] = 'ko';
 	
 	  $field_size = config_get('field_size');
 
@@ -81,7 +84,8 @@ class requirement_mgr
 	  if($result['status_ok'])
 	  {
 		  $db_now = $this->db->db_now();
-		  $sql = "INSERT INTO requirements (srs_id, req_doc_id, title, scope, status, type, author_id, creation_ts)" .
+		  $sql = " INSERT INTO {$this->object_table} " .
+		         " (srs_id, req_doc_id, title, scope, status, type, author_id, creation_ts)" .
 			  	   " VALUES (" . $srs_id . ",'" . $this->db->prepare_string($reqdoc_id) . "','" . 
 			  	    $this->db->prepare_string($title) . "','" . $this->db->prepare_string($scope) . "','" . 
 			  	    $this->db->prepare_string($status) . "','" . $this->db->prepare_string($type) . "',"  .
@@ -89,9 +93,14 @@ class requirement_mgr
 
 		  if (!$this->db->exec_query($sql))
 		  {
-			  $result['status_ok'] = 0;
 		 	  $result['msg'] = lang_get('error_inserting_req');
 		  } 	
+		  else
+		  {
+			  $result['id']=$this->db->insert_id($this->object_table);
+  	    $result['status_ok'] = 1;
+	      $result['msg'] = 'ok';
+		  }
 	  }
 	  return $result; 
   } // function end
@@ -595,24 +604,14 @@ function get_linked_cfields($id,$parent_id=null)
 	if (!is_null($id) && $id > 0)
 	{
     $req_info = $this->get_by_id($id);
-    echo "<pre>debug 20071106 - \$req_info - " . __FUNCTION__ . " --- "; print_r($req_info); echo "</pre>";
-    
-	  $req_spec_info = parent::get_by_id($id); 
-	  $tproject_id = $req_spec_info['testproject_id'];
+	  $tproject_id = $req_info['testproject_id'];
 	} 
 	else
 	{
 	  $tproject_id = $parent_id;
 	}
-
-
-
-	
-	$the_path = $this->tree_manager->get_path( (!is_null($id) && $id > 0) ? $id : $parent_id);
-	$path_len = count($the_path);
-	$tproject_id = ($path_len > 0)? $the_path[$path_len-1]['parent_id'] : $parent_id;
-	
-	$cf_map = $this->cfield_mgr->get_linked_cfields_at_design($tproject_id,$enabled,null,'requirement',$id);
+	$cf_map = $this->cfield_mgr->get_linked_cfields_at_design($tproject_id,$enabled,null,
+	                                                          'requirement',$id);
 	
 	return $cf_map;
 }
@@ -734,6 +733,38 @@ function html_table_of_custom_field_values($id)
 	}
 	return $cf_smarty;
 } // function end
+
+
+  /*
+    function: values_to_db
+              write values of custom fields.
+              
+    args: $hash: 
+          key: custom_field_<field_type_id>_<cfield_id>. 
+               Example custom_field_0_67 -> 0=> string field
+          
+          $node_id:           
+          
+          [$cf_map]:  hash -> all the custom fields linked and enabled
+                              that are applicable to the node type of $node_id.
+                              
+                              For the keys not present in $hash, we will write
+                              an appropriate value according to custom field
+                              type.
+                              
+                              This is needed because when trying to udpate
+                              with hash being $_REQUEST, $_POST or $_GET
+                              some kind of custom fields (checkbox, list, multiple list)
+                              when has been deselected by user.
+                              
+          
+    rev:
+  */
+  function values_to_db($hash,$node_id,$cf_map=null,$hash_type=null)
+  {
+    $this->cfield_mgr->design_values_to_db($hash,$node_id,$cf_map,$hash_type);
+  }
+
 
 } // class end
 ?>

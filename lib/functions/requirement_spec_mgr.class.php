@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_spec_mgr.class.php,v $
  *
- * @version $Revision: 1.3 $
- * @modified $Date: 2007/11/09 20:04:10 $ by $Author: schlundus $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2007/11/09 21:46:49 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirement specification (requirement container)
@@ -99,11 +99,13 @@ class requirement_spec_mgr
     $chk=$this->check_title($title,$tproject_id,$ignore_case);
 		if ($chk['status_ok'])
 		{
-			$sql = "INSERT INTO {$this->object_table} (testproject_id, title, scope, type, total_req, author_id, creation_ts)
-					    VALUES (" . $tproject_id . ",'" . $this->db->prepare_string($title) . "','" . 
-					                $this->db->prepare_string($scope) .  "','" . $this->db->prepare_string($type) . "','" . 
-					                $this->db->prepare_string($countReq) . "'," .
-					                $user_id . ", " . $this->db->db_now() . ")";
+			$sql = "INSERT INTO {$this->object_table} " .
+			       " (testproject_id, title, scope, type, total_req, author_id, creation_ts) " .
+					   " VALUES (" . $tproject_id . ",'" . $this->db->prepare_string($title) . "','" . 
+					                 $this->db->prepare_string($scope) .  "','" . 
+					                 $this->db->prepare_string($type) . "','" . 
+					                 $this->db->prepare_string($countReq) . "'," .
+					                 $user_id . ", " . $this->db->db_now() . ")";
 					
 			if (!$this->db->exec_query($sql))
 			{

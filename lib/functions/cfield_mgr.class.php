@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: cfield_mgr.class.php,v $
- * @version $Revision: 1.19 $
- * @modified $Date: 2007/11/02 13:09:22 $  $Author: franciscom $
+ * @version $Revision: 1.20 $
+ * @modified $Date: 2007/11/09 21:44:43 $  $Author: franciscom $
  * @author franciscom
  *
  * 20071102 - franciscom - BUGID - Feature 
@@ -67,15 +67,28 @@ class cfield_mgr
   //
 	var $node_types = array('testsuite',
 	                        'testplan',
-	                        'testcase');
+	                        'testcase',
+	                        'requirement_spec',
+	                        'requirement');
   
 
   // Need to manage user interface, when creating Custom Fields
+  
+  // For certain type of nodes, enable_on_exec has nosense
+	var $enable_on_spec_cfg = array('testsuite' => 1,
+	                                'testplan'  => 1,
+	                                'testcase'  => 1,
+	                                'requirement_spec' => 0,
+	                                'requirement' => 0 );
+
   // For certain type of nodes, enable_on_exec has nosense
 	var $enable_on_exec_cfg = array('testsuite' => 0,
 	                                'testplan'  => 0,
-	                                'testcase'  => 1);
+	                                'testcase'  => 1,
+	                                'requirement_spec' => 0,
+	                                'requirement' => 0 );
 
+  
   
   
   // the name of html input will have the following format

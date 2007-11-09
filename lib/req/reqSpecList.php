@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: reqSpecList.php,v $
- * @version $Revision: 1.16 $
- * @modified $Date: 2007/11/09 08:19:09 $
+ * @version $Revision: 1.17 $
+ * @modified $Date: 2007/11/09 21:48:53 $
  * 
  * @author Martin Havlat
  * 
@@ -58,7 +58,8 @@ if($bCreate)
 	if( $ret['status_ok'])
 	{
     $cf_map = $req_spec_mgr->get_linked_cfields(null,$tprojectID) ;
-    $req_spec_mgr->cfield_mgr->design_values_to_db($_REQUEST,$ret['id'],$cf_map);
+    // $req_spec_mgr->cfield_mgr->design_values_to_db($_REQUEST,$ret['id'],$cf_map);
+    $req_spec_mgr->values_to_db($_REQUEST,$ret['id'],$cf_map);
 	}
 	$action = 'do_add';
 

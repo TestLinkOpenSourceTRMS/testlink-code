@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqSpecView.php,v $
- * @version $Revision: 1.37 $
- * @modified $Date: 2007/11/09 08:19:09 $ by $Author: franciscom $
+ * @version $Revision: 1.38 $
+ * @modified $Date: 2007/11/09 21:48:53 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Screen to view existing requirements within a req. specification.
@@ -31,8 +31,10 @@ testlinkInitPage($db);
 $req_spec_mgr=new requirement_spec_mgr($db);
 $req_mgr=new requirement_mgr($db);
 
+$get_cfield_values=array();
+$get_cfield_values['req_spec']=0;
+$get_cfield_values['req']=0;
 
-$get_cfield_values=0;
 $user_feedback='';
 $js_msg = null;
 $sqlResult = null;
@@ -82,17 +84,23 @@ $attach['msg']='';
 // create a new requirement.
 if(isset($_REQUEST['createReq']))
 {
+	$cf_smarty = $req_mgr->html_table_of_custom_field_inputs(null,$tprojectID);
+	$smarty->assign('cf',$cf_smarty);
 	if ($bCreate)
 	{
-		$status = $req_mgr->create($idSRS,$reqDocId,$title, $scope,$userID,$reqStatus, $reqType);
+		$ret = $req_mgr->create($idSRS,$reqDocId,$title, $scope,$userID,$reqStatus, $reqType);
 		
-		$user_feedback = $status['msg'];	                                 
-		if($user_feedback == 'ok')
+		$user_feedback = $ret['msg'];	                                 
+		if($ret['status_ok'])
 		{
 			$user_feedback = sprintf(lang_get('req_created'), $reqDocId);  
+	    
+	    $cf_map = $req_mgr->get_linked_cfields(null,$tprojectID) ;
+      $req_mgr->values_to_db($_REQUEST,$ret['id'],$cf_map);
 		}
 	}
-	$scope = '';
+
+  $scope = '';
 	$template = 'reqCreate.tpl';
 	$bGetReqs = FALSE;
 } 
@@ -117,6 +125,10 @@ elseif (isset($_REQUEST['editReq']))
 	$action = 'editReq';
 	$template = 'reqEdit.tpl';
 
+	// get custom fields
+	$cf_smarty = $req_mgr->html_table_of_custom_field_inputs($idReq);
+	$smarty->assign('cf',$cf_smarty);
+
 
 	$smarty->assign('id',$idReq);	
 	$smarty->assign('tableName','requirements');	
@@ -137,6 +149,10 @@ elseif (isset($_REQUEST['updateReq']))
 {
 	$sqlResult = $req_mgr->update($idReq,trim($reqDocId),$title, 
 	                              $scope, $userID, $reqStatus, $reqType);
+	                              
+  $cf_map = $req_mgr->get_linked_cfields(null,$tprojectID) ;
+  $req_mgr->values_to_db($_REQUEST,$idReq,$cf_map);
+	                              
 	$action = 'update';
 	$sqlItem = 'Requirement';
 }
@@ -158,7 +174,7 @@ elseif (isset($_REQUEST['updateSRS']))
 {
 	$ret=$req_spec_mgr->update($idSRS,$title,$scope,$countReq,$userID);
 	$sqlResult=$ret['msg'];
-	$get_cfield_values=1;
+	$get_cfield_values['req_spec']=1;
 	
 	if( $ret['status_ok'] )
 	{
@@ -216,20 +232,21 @@ elseif( $do_req_reorder )
 	$nodes_order = isset($_REQUEST['nodes_order']) ? $_REQUEST['nodes_order'] : null;
 	$nodes_in_order = transform_nodes_order($nodes_order);
 	$req_mgr->set_order($nodes_in_order);
-	$get_cfield_values=1;
+	$get_cfield_values['req_spec']=1;
 }
 else
 {
-  $get_cfield_values=1;
+  $get_cfield_values['req_spec']=1;
 }
 
 // 20071106 - franciscom
-if( $get_cfield_values )
+if( $get_cfield_values['req_spec'] )
 {
 	// get custom fields
 	$cf_smarty = $req_spec_mgr->html_table_of_custom_field_values($idSRS);
 	$smarty->assign('cf',$cf_smarty);
 }
+
 
 // collect existing reqs for the SRS
 if ($bGetReqs)

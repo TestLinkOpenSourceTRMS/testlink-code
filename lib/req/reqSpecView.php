@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqSpecView.php,v $
- * @version $Revision: 1.36 $
- * @modified $Date: 2007/11/07 07:33:25 $ by $Author: franciscom $
+ * @version $Revision: 1.37 $
+ * @modified $Date: 2007/11/09 08:19:09 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Screen to view existing requirements within a req. specification.
@@ -22,12 +22,15 @@ require_once('attachments.inc.php');
 require_once("csv.inc.php");
 require_once("xml.inc.php");
 require_once('requirement_spec_mgr.class.php');
+require_once('requirement_mgr.class.php');
 
 require_once("../../third_party/fckeditor/fckeditor.php");
 require_once(dirname("__FILE__") . "/../functions/configCheck.php");
 testlinkInitPage($db);
 
 $req_spec_mgr=new requirement_spec_mgr($db);
+$req_mgr=new requirement_mgr($db);
+
 
 $get_cfield_values=0;
 $user_feedback='';
@@ -81,8 +84,8 @@ if(isset($_REQUEST['createReq']))
 {
 	if ($bCreate)
 	{
-		$status = createRequirement($db,$reqDocId,$title, $scope, $idSRS, $userID, 
-			                                 $reqStatus, $reqType);
+		$status = $req_mgr->create($idSRS,$reqDocId,$title, $scope,$userID,$reqStatus, $reqType);
+		
 		$user_feedback = $status['msg'];	                                 
 		if($user_feedback == 'ok')
 		{
@@ -95,16 +98,19 @@ if(isset($_REQUEST['createReq']))
 } 
 elseif (isset($_REQUEST['editReq']))
 {
-  $srs = get_srs_by_id($db,$idSRS);
-	$smarty->assign('srs_title',$srs[$idSRS]['title']);	
+  $srs = $req_spec_mgr->get_by_id($idSRS);
+  
+	$smarty->assign('srs_title',$srs['title']);	
 
 	$idReq = intval($_REQUEST['editReq']);
-	$arrReq = getReqData($db,$idReq);
+	$arrReq = $req_mgr->get_by_id($idReq);
 	if ($arrReq)
 	{
 		$arrReq['author'] = getUserName($db,$arrReq['author_id']);
 		$arrReq['modifier'] = getUserName($db,$arrReq['modifier_id']);
-		$arrReq['coverage'] = getTc4Req($db,$idReq);
+		// $arrReq['coverage'] = $req_mgr->Tc4Req($db,$idReq);
+		$arrReq['coverage'] = $req_mgr->get_relationships($idReq);
+		
 		$reqDocId = $arrReq['req_doc_id'];
 		$scope = $arrReq['scope']; 
 	}
@@ -129,14 +135,14 @@ elseif (isset($_REQUEST['editReq']))
 }
 elseif (isset($_REQUEST['updateReq']))
 {
-	$sqlResult = updateRequirement($db,$idReq,trim($reqDocId),$title, 
-	                               $scope, $userID, $reqStatus, $reqType);
+	$sqlResult = $req_mgr->update($idReq,trim($reqDocId),$title, 
+	                              $scope, $userID, $reqStatus, $reqType);
 	$action = 'update';
 	$sqlItem = 'Requirement';
 }
 elseif (isset($_REQUEST['deleteReq']))
 {
-	$sqlResult = deleteRequirement($db,$idReq);
+	$sqlResult = $req_mgr->delete($idReq);
 	$action = 'delete';
 }
 elseif (isset($_REQUEST['editSRS']))
@@ -171,7 +177,7 @@ elseif ($do_create_tc_from_req || $do_delete_req )
 		{
 			foreach ($arrIdReq as $idReq) {
 				tLog("Delete requirement id=" . $idReq);
-				$tmpResult = deleteRequirement($db,$idReq);
+				$tmpResult = $req_mgr->delete($idReq);
 				if ($tmpResult != 'ok') {
 					$sqlResult .= $tmpResult . '<br />';
 				}
@@ -183,7 +189,7 @@ elseif ($do_create_tc_from_req || $do_delete_req )
 		} 
 		elseif ($do_create_tc_from_req) 
 		{
-			  $sqlResult = createTcFromRequirement($db,$tproject,$arrIdReq,$tprojectID, $idSRS, $userID);
+			  $sqlResult = $req_mgr->create_tc_from_requirement($arrIdReq,$idSRS,$userID);
 			  $action = 'do_add';
 			  $sqlItem = 'testcases';
 		}
@@ -209,7 +215,7 @@ elseif( $do_req_reorder )
 {
 	$nodes_order = isset($_REQUEST['nodes_order']) ? $_REQUEST['nodes_order'] : null;
 	$nodes_in_order = transform_nodes_order($nodes_order);
-	set_req_order($db,$idSRS,$nodes_in_order);
+	$req_mgr->set_order($nodes_in_order);
 	$get_cfield_values=1;
 }
 else
@@ -221,15 +227,15 @@ else
 if( $get_cfield_values )
 {
 	// get custom fields
-  $req_spec_mgr=new requirement_spec_mgr($db);
 	$cf_smarty = $req_spec_mgr->html_table_of_custom_field_values($idSRS);
 	$smarty->assign('cf',$cf_smarty);
 }
 
 // collect existing reqs for the SRS
 if ($bGetReqs)
-	$arrReq = getRequirements($db,$idSRS);
-
+{
+	$arrReq = $req_spec_mgr->get_requirements($idSRS);
+}
 
 // collect existing document data
 $arrSpec = $tproject->getReqSpec($tprojectID,$idSRS);
@@ -260,14 +266,11 @@ else if ($action && $action != 'create')
 	$of->Value=$arrSpec[0]['scope'];
 }
 
-// 20061008 - franciscom  - export to csv doors is not support
-
-$req_spec_mgr = new requirement_spec_mgr($db);
 $export_types=$req_spec_mgr->get_export_file_types();
 
 if($do_export)
 {
-	$reqData = getRequirements($db,$idSRS);
+	$reqData = $req_spec_mgr->get_requirements($idSRS);
 	$pfn = null;
 	switch(strtoupper($exportType))
 	{

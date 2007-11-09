@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqSpecAnalyse.php,v $
- * @version $Revision: 1.9 $
- * @modified $Date: 2007/05/03 20:44:29 $ by $Author: schlundus $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2007/11/09 08:19:09 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Analyse coverage of a req. specification.
@@ -13,13 +13,21 @@
 require_once("../../config.inc.php");
 require_once("common.php");
 require_once('requirements.inc.php');
+require_once('requirement_spec_mgr.class.php');
+require_once('requirement_mgr.class.php');
+
 testlinkInitPage($db);
+
+
 
 $idSRS = isset($_GET['idSRS']) ? strings_stripSlashes($_GET['idSRS']) : null;
 $tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+                                               
+$tproject_mgr = new testproject($db);                                                
+$req_spec_mgr = new requirement_spec_mgr($db); 
 
 //get list of ReqSpec
-$arrReqSpec = getOptionReqSpec($db,$tproject_id);
+$arrReqSpec = $tproject_mgr->getOptionReqSpec($tproject_id);
 
 //get first ReqSpec if not defined
 if (!$idSRS && count($arrReqSpec))
@@ -30,8 +38,8 @@ if (!$idSRS && count($arrReqSpec))
 }
 
 // collect REQ data
-$arrCoverage = getReqCoverage_general($db,$idSRS);
-$arrMetrics = getReqMetrics_general($db,$idSRS);
+$arrCoverage = $req_spec_mgr->get_coverage($idSRS);
+$arrMetrics = $req_spec_mgr->get_metrics($idSRS);
 
 $smarty = new TLSmarty;
 $smarty->assign('arrMetrics', $arrMetrics);

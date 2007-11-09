@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: reqTcAssign.php,v $
- * @version $Revision: 1.13 $
- * @modified $Date: 2007/06/21 15:36:32 $  $Author: franciscom $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2007/11/09 08:19:09 $  $Author: franciscom $
  * 
  * @author Martin Havlat
  *
@@ -16,7 +16,13 @@
 require_once("../../config.inc.php");
 require_once("common.php");
 require_once('requirements.inc.php');
+require_once('requirement_spec_mgr.class.php');
+
 testlinkInitPage($db);
+
+$tproject_mgr=new testproject($db);
+$req_spec_mgr=new requirement_spec_mgr($db);
+
 
 $action = null;
 $sqlResult = null;
@@ -81,7 +87,7 @@ else if($edit == 'testcase')
 {
 	//get list of ReqSpec (not_empty)
 	$get_not_empty=1;
-	$arrReqSpec = getOptionReqSpec($db,$tproject_id,$get_not_empty);
+	$arrReqSpec = $tproject_mgr->getOptionReqSpec($tproject_id,$get_not_empty);
 
   $SRS_qty=count($arrReqSpec);
   
@@ -103,8 +109,8 @@ else if($edit == 'testcase')
   		
   		if ($idReqSpec)
   		{
-  			$arrAssignedReq = getRequirements($db,$idReqSpec, 'assigned', $tc_id);
-  			$arrAllReq = getRequirements($db,$idReqSpec);
+  			$arrAssignedReq = $req_spec_mgr->get_requirements($db,$idReqSpec, 'assigned', $tc_id);
+  			$arrAllReq = $req_spec_mgr->get_requirements($db,$idReqSpec);
   			$arrUnassignedReq = array_diff_byId($arrAllReq, $arrAssignedReq);
   		}
   	}

@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: reqSpecList.php,v $
- * @version $Revision: 1.15 $
- * @modified $Date: 2007/11/07 07:33:25 $
+ * @version $Revision: 1.16 $
+ * @modified $Date: 2007/11/09 08:19:09 $
  * 
  * @author Martin Havlat
  * 
@@ -45,18 +45,18 @@ $tprojectID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0
 $tprojectName = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : "";
 $userID = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
 
-$tproject = new testproject($db);
+//$tproject = new testproject($db);
+$req_spec_mgr = new requirement_spec_mgr($db);
 $smarty = new TLSmarty();
 
 if($bCreate)
 {
-  // Create on DB
-	$ret = $tproject->createReqSpec($tprojectID,$title,$scope,$countReq,$userID);
+  // Create Requiremet Specification on DB
+	$ret = $req_spec_mgr->create($tprojectID,$title,$scope,$countReq,$userID);
 	
 	$sqlResult=$ret['msg'];
 	if( $ret['status_ok'])
 	{
-	  $req_spec_mgr=new requirement_spec_mgr($db);
     $cf_map = $req_spec_mgr->get_linked_cfields(null,$tprojectID) ;
     $req_spec_mgr->cfield_mgr->design_values_to_db($_REQUEST,$ret['id'],$cf_map);
 	}
@@ -68,8 +68,6 @@ else if($bDelete)
 {
 	
 	// $sqlResult = deleteReqSpec($db,$idSRS);
-
-  $req_spec_mgr=new requirement_spec_mgr($db);
 	$sqlResult = 'ok';
 	$req_spec_mgr->delete($idSRS);
 	$action = 'do_delete';
@@ -77,7 +75,6 @@ else if($bDelete)
 else if($bCreateForm)
 {
   // Show create form
-  $req_spec_mgr=new requirement_spec_mgr($db);
 	$template = 'reqSpecCreate.tpl';
 	
 	// get custom fields
@@ -85,7 +82,9 @@ else if($bCreateForm)
   $smarty->assign('cf', $cf_smarty);
 } 
 
-$arrSpec = $tproject->getReqSpec($tprojectID);
+// $arrSpec = $tproject->getReqSpec($tprojectID);
+$arrSpec = $req_spec_mgr->get_all_in_testproject($tprojectID);
+
 
 $of = new fckeditor('scope') ;
 $of->BasePath = $_SESSION['basehref'] . 'third_party/fckeditor/';

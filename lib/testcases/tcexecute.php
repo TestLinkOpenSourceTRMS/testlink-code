@@ -4,7 +4,7 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: tcexecute.php,v $
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  *
  * Handles testcase execution through AJAX calls. 
  * Testcases are executed on a remote server, and the response 
@@ -19,13 +19,12 @@
  *                 Precede 'tc_' for custom fields assigned to testcase level.
  * 
  *
- * @modified $Date: 2007/11/02 13:09:22 $ by $Author: franciscom $
+ * @modified $Date: 2007/11/10 08:11:42 $ by $Author: franciscom $
 */
 require_once("../../config.inc.php");
 require_once("common.php");
 require_once("csv.inc.php");
 require_once("xml.inc.php");
-include_once('archive.inc.php');
 require_once("../keywords/keywords.inc.php");
 require_once("../../third_party/phpxmlrpc/lib/xmlrpc.inc");
 require_once("../../third_party/phpxmlrpc/lib/xmlrpcs.inc");

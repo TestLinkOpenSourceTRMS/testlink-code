@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqView.php,v $
- * @version $Revision: 1.9 $
- * @modified $Date: 2007/01/25 20:02:24 $ by $Author: schlundus $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2007/11/10 08:11:28 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Screen to view content of requirement.
@@ -13,17 +13,22 @@
 require_once('../../config.inc.php');
 require_once('common.php');
 require_once('requirements.inc.php');
+require_once('requirement_mgr.class.php');
 require_once('users.inc.php');
 testlinkInitPage($db);
 
+$req_mgr=new requirement_mgr($db);
 $idReq = isset($_GET['idReq']) ? strings_stripSlashes($_GET['idReq']) : null;
 
-$arrReq = getReqData($db,$idReq);
+$arrReq = $req_mgr->get_by_id($idReq);
 $arrReq['author'] = getUserName($db,$arrReq['author_id']);
 $arrReq['modifier'] = getUserName($db,$arrReq['modifier_id']);
-$arrReq['coverage'] = getTc4Req($db,$idReq);
+$arrReq['coverage'] = $req_mgr->get_coverage($idReq);
+
+$cf_smarty=$req_mgr->html_table_of_custom_field_values($idReq);
 
 $smarty = new TLSmarty();
+$smarty->assign('cf',$cf_smarty);
 $smarty->assign('title', $arrReq['title']);
 $smarty->assign('arrReq', $arrReq);
 $smarty->assign('internalTemplate', 'inc_reqView.tpl');

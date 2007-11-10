@@ -1,12 +1,12 @@
-#<?php
+<?php
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: requirement_spec_mgr.class.php,v $
  *
- * @version $Revision: 1.4 $
- * @modified $Date: 2007/11/09 21:46:49 $ by $Author: franciscom $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2007/11/10 08:10:35 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirement specification (requirement container)
@@ -371,7 +371,7 @@ function get_metrics($id)
 function get_requirements($id, $range = 'all', $testcase_id = null,
                           $order_by=" ORDER BY node_order,req_doc_id,title")
 {
-	
+  $sql='';	
 	switch($range)
 	{
 	  case 'all';

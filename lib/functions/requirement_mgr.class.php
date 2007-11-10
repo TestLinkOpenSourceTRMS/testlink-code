@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.2 $
- * @modified $Date: 2007/11/09 21:45:21 $ by $Author: franciscom $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2007/11/10 08:10:34 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
@@ -203,7 +203,7 @@ function get_coverage($id)
 	        FROM nodes_hierarchy, req_coverage
 			    WHERE req_coverage.testcase_id = nodes_hierarchy.id
 			    AND  req_coverage.req_id={$id}"; 
-	return selectData($db,$sql);
+	return $this->db->get_recordset($sql);
 }
 
 
@@ -487,6 +487,28 @@ function get_relationships($req_id)
 }
 
 
+/*
+  function: 
+
+  args :
+  
+  returns: 
+
+*/
+function get_all_for_tcase($testcase_id, $srs_id = 'all')
+{
+	$sql = " SELECT requirements.id,requirements.title FROM requirements, req_coverage " .
+			   " WHERE req_coverage.testcase_id=" . $testcase_id . 
+			   " AND req_coverage.req_id=requirements.id";
+			
+	// if only for one specification is required
+	if ($srs_id != 'all') {
+		$sql .= " AND requirements.srs_id=" . $srs_id;
+	}
+
+	return $db->get_recordset($sql);
+}
+
 
 
 
@@ -686,18 +708,6 @@ function html_table_of_custom_field_inputs($id,$parent_id=null,$name_suffix='')
             
             
   args: $id
-        [$scope]: 'design' -> use custom fields that can be used at design time (specification)
-                  'execution' -> use custom fields that can be used at execution time.
-
-        [$show_on_execution]: default: null
-                              1 -> filter on field show_on_execution=1
-                              0 or null -> don't filter
-  
-        [$execution_id]: null -> get values for all executions availables for testcase
-                         !is_null -> only get values or this execution_id
-                    
-        [$testplan_id]: null -> get values for any tesplan to with testcase is linked
-                        !is_null -> get values only for this testplan.
 
   returns: html string
   

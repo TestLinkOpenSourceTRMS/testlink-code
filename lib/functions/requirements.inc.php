@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: requirements.inc.php,v $
- * @version $Revision: 1.61 $
- * @modified $Date: 2007/11/09 08:16:29 $ by $Author: franciscom $
+ * @version $Revision: 1.62 $
+ * @modified $Date: 2007/11/10 08:10:35 $ by $Author: franciscom $
  *
  * @author Martin Havlat <havlat@users.sourceforge.net>
  * 
@@ -22,6 +22,8 @@
 
 
 require_once("print.inc.php");
+require_once("requirement_spec_mgr.class.php");
+require_once("requirement_mgr.class.php");
 
 // 20070705 - franciscom
 $arrReqStatus = init_labels(config_get('req_status'));
@@ -31,42 +33,6 @@ $g_reqFormatStrings = array (
 							"csv_doors" => lang_get('req_import_format_description2'),
 							"XML" => lang_get('the_format_req_xml_import')
 							); 		
-
-
-
-/** collect coverage of Requirement 
- * @param string $req_id ID of req.
- * @return assoc_array list of test cases [id, title]
- */
-function getTc4Req(&$db,$req_id)
-{
-	$sql = "SELECT nodes_hierarchy.id,nodes_hierarchy.name 
-	        FROM nodes_hierarchy, req_coverage
-			    WHERE req_coverage.testcase_id = nodes_hierarchy.id
-			    AND  req_coverage.req_id={$req_id}"; 
-return selectData($db,$sql);
-}
-
-
-/** 
- * collect coverage of TC
- *  
- * @param string $testcase_id ID of req.
- * @param string SRS ID (optional)
- * @return assoc_array list of test cases [id, title]
- */
-function getReq4Tc(&$db,$testcase_id, $srs_id = 'all')
-{
-	$sql = "SELECT requirements.id,requirements.title FROM requirements, req_coverage " .
-			"WHERE req_coverage.testcase_id=" . $testcase_id . 
-			" AND req_coverage.req_id=requirements.id";
-	// if only for one specification is required
-	if ($srs_id != 'all') {
-		$sql .= " AND requirements.srs_id=" . $srs_id;
-	}
-
-	return $db->get_recordset($sql);
-}
 
 /** 
  * print Requirement Specification 
@@ -110,7 +76,7 @@ function printSRS(&$db,&$tproject,$srs_id, $prodName, $testproject_id, $user_id,
  **/
 function printRequirements(&$db,$srs_id)
 {
-	$arrReq = getRequirements($db,$srs_id);
+	$arrReq = $req_spec_mgr->get_requirements($srs_id);
 	
 	$output = "<h2>" . lang_get('reqs') . "</h2>\n<div>\n";
 	if (count($arrReq))
@@ -157,6 +123,7 @@ function exportReqDataToXML($reqData)
 function executeImportedReqs(&$db,$arrImportSource, $map_cur_reqdoc_id, 
                              $conflictSolution, $emptyScope, $idSRS, $userID)
 {
+	$req_mgr = new requirement_mgr($db);
 	define('SKIP_CONTROLS',1);
 	$field_size = config_get('field_size');
 
@@ -181,9 +148,9 @@ function executeImportedReqs(&$db,$arrImportSource, $map_cur_reqdoc_id,
 				{
 					$row_curr_data = getReqByReqdocId($db,$docID);
 					$req_id = key($row_curr_data);
-					$status = updateRequirement($db,$req_id,$docID,$title,$scope,$userID,
-							                            $row_curr_data[$req_id]['status'],
-							                            $row_curr_data[$req_id]['type'],SKIP_CONTROLS);
+					$status = $req_mgr->update($req_id,$docID,$title,$scope,$userID,
+							                       $row_curr_data[$req_id]['status'],
+							                       $row_curr_data[$req_id]['type'],SKIP_CONTROLS);
 							                            
 					if ($status == 'ok') {
 						$status = lang_get('req_import_result_overwritten');
@@ -201,8 +168,8 @@ function executeImportedReqs(&$db,$arrImportSource, $map_cur_reqdoc_id,
 
 			} else {
 				// no conflict - just add requirement
-				$status = createRequirement ($db, $docID, $title, $scope, $idSRS, $userID,
-				                             TL_REQ_STATUS_VALID, TL_REQ_STATUS_NOT_TESTABLE);
+				$status = $req_mgr->create($idSRS,$docID, $title, $scope,  $userID,
+				                           TL_REQ_STATUS_VALID, TL_REQ_STATUS_NOT_TESTABLE);
 			}
 			$arrImport[] = array($docID,$title, $status['msg']);
 		}
@@ -239,29 +206,12 @@ function compareImportedReqs($arrImportSource, $map_cur_reqdoc_id)
 	return $arrImport;
 }
 
-/** get Titles of existing requirements */
-function getReqTitles(&$db,$idSRS)
-{
-	// collect existing req titles in the SRS
-	$arrCurrentReq = getRequirements($db,$idSRS);
-	$arrReqTitles = null;
-	if (count($arrCurrentReq))
-	{ 
-		// only if some reqs exist
-		foreach ($arrCurrentReq as $data)
-		{
-			$arrReqTitles[$data['id']] = $data['title'];
-		}
-	}
-	
-	return $arrReqTitles;
-}
-
-
 // 20061014 - franciscom
 function getReqDocIDs(&$db,$srs_id)
 {
-	$arrCurrentReq = getRequirements($db,$srs_id);
+  $req_spec_mgr= new requirement_spec_mgr($db);
+
+	$arrCurrentReq = $req_spec_mgr->get_requirements($srs_id);
 	$result = null;
 	if (count($arrCurrentReq))
 	{ 
@@ -387,6 +337,14 @@ function importReqDataFromXML($fileName)
 }
 
 
+/*
+  function: 
+
+  args :
+  
+  returns: 
+
+*/
 function doImport(&$db,$userID,$idSRS,$fileName,$importType,$emptyScope,$conflictSolution,$bImport)
 {
 	$arrImportSource = loadImportedReq($fileName, $importType);

@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: reqTcAssign.php,v $
- * @version $Revision: 1.14 $
- * @modified $Date: 2007/11/09 08:19:09 $  $Author: franciscom $
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2007/11/10 08:11:28 $  $Author: franciscom $
  * 
  * @author Martin Havlat
  *
@@ -17,11 +17,13 @@ require_once("../../config.inc.php");
 require_once("common.php");
 require_once('requirements.inc.php');
 require_once('requirement_spec_mgr.class.php');
+require_once('requirement_mgr.class.php');
 
 testlinkInitPage($db);
 
 $tproject_mgr=new testproject($db);
 $req_spec_mgr=new requirement_spec_mgr($db);
+$req_mgr=new requirement_mgr($db);
 
 
 $action = null;
@@ -48,17 +50,19 @@ if ($doAssign || $doUnassign)
 {
   $req_ids=array_keys($_REQUEST['req_id']);
 	
-	$pfn="unassignTc2Req";
+	//$pfn="unassignTc2Req";
+	$pfn="unassign_from_tcase";
 	if ($doAssign)
 	{
-	  $pfn="assignTc2Req";
+	  // $pfn="assignTc2Req";
+	  $pfn="assign_to_tcase";
 	}
 	
 	if (count($req_ids))
 	{
 		foreach ($req_ids as $idOneReq)
 		{
-			$result = $pfn($db,$tc_id, $idOneReq);
+			$result = $req_mgr->$pfn($idOneReq,$tc_id);
 
 			if (!$result)
 				$tmpResult .= $idOneReq . ', ';
@@ -109,8 +113,8 @@ else if($edit == 'testcase')
   		
   		if ($idReqSpec)
   		{
-  			$arrAssignedReq = $req_spec_mgr->get_requirements($db,$idReqSpec, 'assigned', $tc_id);
-  			$arrAllReq = $req_spec_mgr->get_requirements($db,$idReqSpec);
+  			$arrAssignedReq = $req_spec_mgr->get_requirements($idReqSpec, 'assigned', $tc_id);
+  			$arrAllReq = $req_spec_mgr->get_requirements($idReqSpec);
   			$arrUnassignedReq = array_diff_byId($arrAllReq, $arrAssignedReq);
   		}
   	}

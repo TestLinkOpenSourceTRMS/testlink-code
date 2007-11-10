@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.65 $
- * @modified $Date: 2007/11/01 22:02:07 $ $Author: franciscom $
+ * @version $Revision: 1.66 $
+ * @modified $Date: 2007/11/10 08:10:35 $ $Author: franciscom $
  * @author franciscom
  *
  *
@@ -36,7 +36,7 @@
  *
  *
  */
-require_once( dirname(__FILE__) . '/requirements.inc.php' );
+require_once( dirname(__FILE__) . '/requirement_mgr.class.php' );
 require_once( dirname(__FILE__) . '/assignment_mgr.class.php' );
 require_once( dirname(__FILE__) . '/attachments.inc.php' );
 require_once( dirname(__FILE__) . '/users.inc.php' );
@@ -318,6 +318,7 @@ function show(&$smarty,$id, $user_id, $version_id=TC_ALL_VERSIONS, $action='',
               $msg_result='', $refresh_tree='yes', $user_feedback='', $disable_edit=0)
 {
   
+  $req_mgr = new requirement_mgr($this->db);
 	$gui_cfg = config_get('gui');
 	$the_tpl = config_get('tpl');
 	$tcase_cfg = config_get('testcase_cfg');
@@ -366,7 +367,8 @@ function show(&$smarty,$id, $user_id, $version_id=TC_ALL_VERSIONS, $action='',
 		}
 		
 		// get assigned REQs
-		$arrReqs[] = getReq4Tc($this->db,$tc_id);
+		// $arrReqs[] = $req_mgr->getReq4Tc($this->db,$tc_id);
+    $arrReqs[] = $req_mgr->get_all_for_tcase($tc_id);
 
 		// custom fields
 		$cf_smarty=null;
@@ -705,6 +707,8 @@ function _execution_delete($id,$version_id=TC_ALL_VERSIONS,$children=null)
     		$result = $this->db->exec_query($the_stm);
     }
 }
+
+
 
 
 /*

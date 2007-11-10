@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: const.inc.php,v $
  *
- * @version $Revision: 1.45 $
- * @modified $Date: 2007/11/02 09:36:23 $ by $Author: franciscom $
+ * @version $Revision: 1.46 $
+ * @modified $Date: 2007/11/10 02:54:27 $ by $Author: havlat $
  * @author Martin Havlát
  *
  * SCOPE:
@@ -312,9 +312,73 @@ $g_reports_cfg->tc_status = array(
     "not_run" => "test_status_not_run"
 );
 
+$g_reports_cfg->formats = array('normal', 'MS Excel', 'HTML email');
+
 // Offset in seconds, to substract from current date to create start date on
 // reports that have start / end dates
 $g_reports_cfg->start_date_offset=(7*24*60*60); // one week
+
+/** 
+ * @VAR $g_reports_list['report_identifier'] 
+ * definition of default set of reports
+ * title - title string identifier
+ * url - http path (without testPlanId and format)
+ * enabled - availability
+ * 	1. all (everytime),
+ * 	2. bts (if bug tracker is connected only), 
+ * 	3. req (if project has available requirements only)
+ */
+$g_reports_list['metrics_tp_general'] = array( 
+	'title' => 'link_report_general_tp_metrics',
+	'url' => 'lib/results/resultsGeneral.php',
+	'enabled' => 'all'
+);
+$g_reports_list['metrics_tp_builds'] = array( 
+	'title' => 'link_report_overall_build',
+	'url' => 'lib/results/resultsAllBuilds.php',
+	'enabled' => 'all'
+);
+$g_reports_list['results_custom_query'] = array( 
+	'title' => 'link_report_metrics_more_builds',
+	'url' => 'lib/results/resultsMoreBuilds.php',
+	'enabled' => 'all'
+);
+$g_reports_list['list_tc_failed'] = array( 
+	'title' => 'link_report_failed',
+	'url' => 'lib/results/resultsByStatus.php?type='.$g_tc_status['failed'],
+	'enabled' => 'all'
+);
+$g_reports_list['list_tc_blocked'] = array( 
+	'title' => 'link_report_blocked_tcs',
+	'url' => 'lib/results/resultsByStatus.php?type='.$g_tc_status['blocked'],
+	'enabled' => 'all'
+);
+$g_reports_list['list_tc_norun'] = array( 
+	'title' => 'link_report_not_run',
+	'url' => 'lib/results/resultsByStatus.php?type='.$g_tc_status['not_run'],
+	'enabled' => 'all'
+);
+$g_reports_list['results_matrix'] = array( 
+	'title' => 'link_report_test',
+	'url' => 'lib/results/resultsTC.php',
+	'enabled' => 'all'
+);
+$g_reports_list['charts_basic'] = array( 
+	'title' => 'link_charts',
+	'url' => 'lib/results/charts.php',
+	'enabled' => 'all'
+);
+$g_reports_list['results_requirements'] = array( 
+	'title' => 'link_report_reqs_coverage',
+	'url' => 'lib/results/resultsReqs.php',
+	'enabled' => 'req'
+);
+$g_reports_list['list_problems'] = array( 
+	'title' => 'link_report_total_bugs',
+	'url' => 'lib/results/resultsBugs.php',
+	'enabled' => 'bts'
+);
+
 
 // -------------------------------------------------------------------------------
 

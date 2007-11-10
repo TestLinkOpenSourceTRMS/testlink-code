@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: resultsNavigator.tpl,v 1.18 2007/10/12 18:21:55 havlat Exp $ *}
+{* $Id: resultsNavigator.tpl,v 1.19 2007/11/10 02:52:38 havlat Exp $ *}
 {* Purpose: smarty template - show Test Results and Metrics *}
 {* Rev :
         20070929 - franciscom - 
@@ -29,7 +29,7 @@ function pre_submit()
 {assign var="cfg_section" value=$smarty.template|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
-<h1>{$title|escape}</h1>
+<h1>{lang_get s='title_nav_results'}</h1>
 
 <div style="margin:3px" >
 <form method="get" id="resultsNavigator" onSubmit="javascript:return pre_submit();">
@@ -57,7 +57,7 @@ function pre_submit()
 {if $do_report.status_ok }
   {section name=Row loop=$arrData}
 	<span><img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
-	  <a href="lib/results/{$arrData[Row].href}{$selectedReportType}&amp;tplan_id={$tplan_id}" 
+	  <a href="{$arrData[Row].href}report_type={$selectedReportType}&amp;tplan_id={$tplan_id}" 
 	     target="workframe">{$arrData[Row].name}</a></span><br />
   {/section}
 {else}

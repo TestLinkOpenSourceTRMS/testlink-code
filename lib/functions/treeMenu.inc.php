@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: treeMenu.inc.php,v $
  *
- * @version $Revision: 1.44 $
- * @modified $Date: 2007/10/25 15:17:44 $ by $Author: franciscom $
+ * @version $Revision: 1.45 $
+ * @modified $Date: 2007/11/11 15:30:55 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * 	This file generates tree menu for test specification and test execution.
@@ -156,10 +156,10 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,
 	$hash_descr_id = $tree_manager->get_available_node_types();
 	$hash_id_descr = array_flip($hash_descr_id);
 	
-	// 20070217
-	$test_spec = $tree_manager->get_subtree($tproject_id,array('testplan'=>'exclude me'),
-												                  array('testcase'=>'exclude my children'),
-												                  $exclude_branches,NO_NODE_TYPE_TO_FILTER,RECURSIVE_MODE);
+	// 20071111 - franciscom
+	$test_spec = $tproject_mgr->get_subtree($tproject_id,RECURSIVE_MODE,
+												                  $exclude_branches,NO_NODE_TYPE_TO_FILTER);
+												                  
 	$test_spec['name'] = $tproject_name;
 	$test_spec['id'] = $tproject_id;
 	$test_spec['node_type_id'] = 1;
@@ -595,9 +595,9 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 	$hash_descr_id = $tree_manager->get_available_node_types();
 	$hash_id_descr = array_flip($hash_descr_id);
 
-	$test_spec = $tree_manager->get_subtree($tproject_id,array('testplan'=>'exclude me'),
-	                                                     array('testcase'=>'exclude my children'),
-	                                                     null,null,RECURSIVE_MODE);
+  // 20071111 - franciscom
+	$test_spec = $tproject_mgr->get_subtree($tproject_id,RECURSIVE_MODE);
+
 
   // 20071002 - jbarchibald - BUGID 1051
   // 20070306 - franciscom - BUGID 705   
@@ -851,10 +851,11 @@ function get_testproject_nodes_testcount(&$db,$tproject_id, $tproject_name,$keyw
 	$hash_descr_id = $tree_manager->get_available_node_types();
 	$hash_id_descr = array_flip($hash_descr_id);
 	
-	
-	$test_spec = $tree_manager->get_subtree($tproject_id,array('testplan'=>'exclude me'),
-												                               array('testcase'=>'exclude my children'),
-												                               null,null,RECURSIVE_MODE);
+
+  // 20071111 - franciscom	
+	$test_spec = $tproject_mgr->get_subtree($tproject_id,RECURSIVE_MODE);
+
+
 	$test_spec['name'] = $tproject_name;
 	$test_spec['id'] = $tproject_id;
 	$test_spec['node_type_id'] = 1;
@@ -897,9 +898,11 @@ function get_testplan_nodes_testcount(&$db,$tproject_id, $tproject_name,
 	$hash_descr_id = $tree_manager->get_available_node_types();
 	$hash_id_descr = array_flip($hash_descr_id);
 
-	$test_spec = $tree_manager->get_subtree($tproject_id,array('testplan'=>'exclude me'),
-	                                                     array('testcase'=>'exclude my children'),
-	                                                     null,null,RECURSIVE_MODE);
+  // 20071111 - franciscom
+	$test_spec = $tproject_mgr->get_subtree($tproject_id,RECURSIVE_MODE);
+	
+	
+
 	$tp_tcs = $tplan_mgr->get_linked_tcversions($tplan_id,0,$keyword_id);
 	if (is_null($tp_tcs))
 		$tp_tcs = array();

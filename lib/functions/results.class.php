@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8 
- * @modified $Date: 2007/11/01 22:04:29 $ by $Author: franciscom $
+ * @modified $Date: 2007/11/11 15:30:54 $ by $Author: franciscom $
  *
  *-------------------------------------------------------------------------
  * Revisions:
@@ -1082,15 +1082,28 @@ class results
 	*
 	*/
 	private function generateExecTree($keyword_id = 0, $owner = null) {
+	  
+	  $RECURSIVE_MODE=true;
 		$tplan_mgr = $this->tp;
 		$tproject_mgr = new testproject($this->db);	
 		$tree_manager = $tplan_mgr->tree_manager;
 		$tcase_node_type = $tree_manager->node_descr_id['testcase'];
 		$hash_descr_id = $tree_manager->get_available_node_types();
 		$hash_id_descr = array_flip($hash_descr_id);
-		$test_spec = $tree_manager->get_subtree($this->tprojectID,array('testplan'=>'exclude me'),
-	                                                     array('testcase'=>'exclude my children'),null,null,true);
-
+		
+		// 20071111 - franciscom
+		// $test_spec = $tree_manager->get_subtree($this->tprojectID,
+		//                                         array('testplan'=>'exclude me',
+		//                                               'requirement_spec'=>'exclude me',
+		//                                               'requirement'=>'exclude me'),
+	  //                                         array('testcase'=>'exclude my children',
+	  //                                               'requirement_spec'=>'exclude my children'),
+	  //                                               null,null,true);
+       
+		$test_spec = $tproject_mgr->get_subtree($this->tprojectID,$RECURSIVE_MODE);
+      
+       
+       
 		// KL - 20061111 - I do not forsee having to pass a specific test case id into this method
 		$DEFAULT_VALUE_FOR_TC_ID = 0;
 		$tp_tcs = $tplan_mgr->get_linked_tcversions($this->testPlanID,$DEFAULT_VALUE_FOR_TC_ID,$keyword_id, null, $owner);

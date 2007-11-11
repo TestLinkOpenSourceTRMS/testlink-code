@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_spec_mgr.class.php,v $
  *
- * @version $Revision: 1.5 $
- * @modified $Date: 2007/11/10 08:10:35 $ by $Author: franciscom $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2007/11/11 15:30:54 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirement specification (requirement container)
@@ -17,15 +17,17 @@
 class requirement_spec_mgr
 {
 	var $db;
-	var $tree_manager;
   var $cfield_mgr;
+  
   var $object_table="req_specs";
+  var $requirements_table="requirements";
 
   var $import_file_types = array("csv" => "CSV",
                                  "csv_doors" => "CSV (Doors)", 
                                  "XML" => "XML");
                                  
   var $export_file_types = array("XML" => "XML");
+  var $my_node_type;
 
   /*
     function: requirement_spec_mgr
@@ -39,8 +41,13 @@ class requirement_spec_mgr
 	function requirement_spec_mgr(&$db) 
 	{
 		$this->db = &$db;
-	  $this->tree_manager =  new tree($this->db);
 		$this->cfield_mgr = new cfield_mgr($this->db);
+
+	  $tree_mgr =  new tree($this->db);
+	  $node_types_descr_id=$tree_mgr->get_available_node_types();
+	  $node_types_id_descr=array_flip($node_types_descr_id);
+	  $this->my_node_type=$node_types_descr_id['requirement_spec'];
+
 	}
 
   /*
@@ -77,11 +84,21 @@ class requirement_spec_mgr
 
 
   /*
-    function: 
+    function: create
 
     args :
+          tproject_id:  requirement spec parent
+          title
+          scope
+          countReq
+          user_id: requirement spec author
+          type: 
     
-    returns: 
+    returns: map with following keys:
+             status_ok -> 1/0
+             msg -> some simple message, useful when status_ok ==0
+             id -> id of requirement specification
+           
 
   */
 	function create($tproject_id,$title, $scope, $countReq,$user_id,$type = 'n')
@@ -99,9 +116,15 @@ class requirement_spec_mgr
     $chk=$this->check_title($title,$tproject_id,$ignore_case);
 		if ($chk['status_ok'])
 		{
+      $tree_mgr =  new tree($this->db);
+		  $parent_id=$tproject_id;
+		  $name=$title;
+		  $req_spec_id = $tree_mgr->new_node($parent_id,$this->my_node_type,$name);
+		  
 			$sql = "INSERT INTO {$this->object_table} " .
-			       " (testproject_id, title, scope, type, total_req, author_id, creation_ts) " .
-					   " VALUES (" . $tproject_id . ",'" . $this->db->prepare_string($title) . "','" . 
+			       " (id, testproject_id, title, scope, type, total_req, author_id, creation_ts) " .
+					   " VALUES (" . $req_spec_id . "," .
+					                 $tproject_id . ",'" . $this->db->prepare_string($title) . "','" . 
 					                 $this->db->prepare_string($scope) .  "','" . 
 					                 $this->db->prepare_string($type) . "','" . 
 					                 $this->db->prepare_string($countReq) . "'," .
@@ -133,10 +156,10 @@ class requirement_spec_mgr
     function: get_by_id
               
   
-    args : id: test project
+    args : id: requirement spec id
     
     returns: null if query fails
-             map with test project info
+             map with requirement spec info
   
   */
   function get_by_id($id)
@@ -165,7 +188,7 @@ function get_coverage($id)
 	
 	// get requirements
 	$sql_common = "SELECT id,title,req_doc_id " .
-	              " FROM requirements WHERE srs_id={$id}";
+	              " FROM {$this->requirements_table} WHERE srs_id={$id}";
 	$sql = $sql_common . " AND status='" . VALID_REQ . "' {$order_by}";
 	$arrReq = $this->db->get_recordset($sql);
 
@@ -207,12 +230,12 @@ function get_metrics($id)
 	
 	// get nottestable REQs
 	$sql = "SELECT count(*) AS cnt " .
-	       " FROM requirements WHERE srs_id={$id} " . 
+	       " FROM {$this->requirements_table} WHERE srs_id={$id} " . 
 			   " AND status='" . TL_REQ_STATUS_NOT_TESTABLE . "'";
 			   
 	$output['notTestable'] = $this->db->fetchFirstRowSingleColumn($sql,'cnt');
 
-	$sql = "SELECT count(*) AS cnt FROM requirements WHERE srs_id={$id}";
+	$sql = "SELECT count(*) AS cnt FROM {$this->requirements_table} WHERE srs_id={$id}";
 	$output['total'] = $this->db->fetchFirstRowSingleColumn($sql,'cnt');
 
 	$sql = "SELECT total_req FROM {$this->object_table} WHERE id={$id}";
@@ -223,7 +246,8 @@ function get_metrics($id)
 		$output['expectedTotal'] = $output['total'];
 	}
 	
-	$sql = "SELECT DISTINCT requirements.id FROM requirements, req_coverage " .
+	$sql = " SELECT DISTINCT requirements.id " . 
+	       " FROM {$this->requirements_table} requirements, req_coverage " .
 	       " WHERE requirements.srs_id={$id}" .
 				 " AND requirements.srs_id=req_coverage.req_id";
 	$result = $this->db->exec_query($sql);
@@ -243,29 +267,29 @@ function get_metrics($id)
 
 
 
-	/** 
-	 * collect information about current list of Requirements Specification
-	 *  
-	 * @param numeric $testproject_id
-	 * @param string  $id optional id of the requirement specification
-	 *
-	 * @return null if no srs exits, or no srs exists for id
-	 *         array, where each element is a map with SRS data.
-	 *         
-	 *         map keys:
-   *         id
-   *         testproject_id
-   *         title
-   *         scope 	
-   *         total_req
-   *         type
-   *         author_id
-   *         creation_ts
-   *         modifier_id
-   *         modification_ts
-	 *
-	 * @author Martin Havlat 
-	 **/
+  /*
+    function: get_all_in_testproject
+              get info about all req spec defined for a testproject
+              
+  
+    args: tproject_id
+          [order_by]
+    
+    returns: null if no srs exits, or no srs exists for id
+	           array, where each element is a map with req spec data.
+	           
+	           map keys:
+             id
+             testproject_id
+             title
+             scope 	
+             total_req
+             type
+             author_id
+             creation_ts
+             modifier_id
+             modification_ts
+  */
 	function get_all_in_testproject($tproject_id,$order_by=" ORDER BY title")
 	{
 		$sql = "SELECT * FROM {$this->object_table} WHERE testproject_id={$tproject_id}";
@@ -283,9 +307,16 @@ function get_metrics($id)
   /*
     function: update
 
-    args:
+    args: id
+          title
+          scope
+          countReq
+          user_id, 
+          [type]
     
-    returns: 
+    returns: map with following keys:
+             status_ok -> 1/0
+             msg -> some simple message, useful when status_ok ==0
 
   */
   function update($id,$title, $scope, $countReq, $user_id, 
@@ -324,25 +355,31 @@ function get_metrics($id)
 
     args: id: requirement spec id
     
-    returns: 
+    returns: message string
+             ok if everything is ok
 
   */
   function delete($id)
   {
-   
+    $tree_mgr =  new tree($this->db);
+    $req_mgr = new requirement_mgr($this->db);
+    
     // Delete Custom fields
     $this->cfield_mgr->remove_all_design_values_from_node($id);
     
-  	// delete requirements and coverage
+  	// delete requirements with all related data
+  	// coverage, attachments, custom fields, etc
   	$requirements_info = $this->get_requirements($id);
     if( !is_null($requirements_info) )
     {  	
   	  $the_reqs=array_keys($requirements_info);
-  	  $this->cfield_mgr->remove_all_design_values_from_node($the_reqs);
+  	  $req_mgr->delete($the_reqs);
+  	  
+  	  //$this->cfield_mgr->remove_all_design_values_from_node($the_reqs);
     }
   	
-  	$sql="DELETE FROM requirements WHERE id={$id}";
-  	$this->db->exec_query($sql); 
+  	// Delete tree structure (from node_hierarchy)
+    $tree_mgr->delete_subtree($id);
   		
   	// delete specification itself
   	$sql = "DELETE FROM {$this->object_table} WHERE id={$id}";
@@ -361,11 +398,17 @@ function get_metrics($id)
 
 
   /*
-    function: 
+    function: get_requirements
+              get requirements contained in a requirement spec
+              
 
-    args :
+    args: id: req spec id
+          [range]: default 'all'
+          [testcase_id]: default null
+                         if !is_null, is used as filter
+          [order_by]               
     
-    returns: 
+    returns: array of rows
 
   */
 function get_requirements($id, $range = 'all', $testcase_id = null,
@@ -406,7 +449,7 @@ function get_requirements($id, $range = 'all', $testcase_id = null,
                           default 0 -> case sensivite search
     
     returns: map.
-             key: srs id
+             key: req spec id
              value: srs info,  map with folowing keys:
                     id
                     testproject_id
@@ -494,12 +537,6 @@ function get_requirements($id, $range = 'all', $testcase_id = null,
 
 
 
-
-
-
-
-
-
 // ---------------------------------------------------------------------------------------
 // Custom field related functions
 // ---------------------------------------------------------------------------------------
@@ -523,7 +560,7 @@ function get_requirements($id, $range = 'all', $testcase_id = null,
                              
   returns: map/hash
            key: custom field id
-           value: map with custom field definition and value assigned for choosen testcase, 
+           value: map with custom field definition and value assigned for choosen req spec, 
                   with following keys:
   
             			id: custom field id
@@ -540,11 +577,11 @@ function get_requirements($id, $range = 'all', $testcase_id = null,
             			show_on_execution
             			enable_on_execution
             			display_order
-            			value: value assigned to custom field for this testcase
-            			       null if for this testcase custom field was never edited.
+            			value: value assigned to custom field for this req spec
+            			       null if for this  req spec custom field was never edited.
             			       
-            			node_id: testcase id
-            			         null if for this testcase, custom field was never edited.
+            			node_id:  req spec id
+            			         null if for this  req spec, custom field was never edited.
    
   
   rev :
@@ -573,23 +610,17 @@ function get_linked_cfields($id,$parent_id=null)
 /*
   function: html_table_of_custom_field_inputs
             Return html code, implementing a table with custom fields labels
-            and html inputs, for choosen testcase.
+            and html inputs, for choosen req spec.
             Used to manage user actions on custom fields values.
             
             
   args: $id
-        [parent_id]: node id of parent testsuite of testcase.
-                     need to undertad to which testproject the testcase belongs.
+        [parent_id]: node id of testproject (req spec parent).
                      this information is vital, to get the linked custom fields.
-                     Presence /absence of this value changes starting point
-                     on procedure to build tree path to get testproject id.
                      
-                     null -> use testcase_id as starting point.
+                     null -> use id as starting point.
                      !is_null -> use this value as starting point.        
 
-        [$scope]: 'design' -> use custom fields that can be used at design time (specification)
-                  'execution' -> use custom fields that can be used at execution time.
-        
         [$name_suffix]: must start with '_' (underscore).
                         Used when we display in a page several items
                         (example during test case execution, several test cases)
@@ -628,24 +659,12 @@ function html_table_of_custom_field_inputs($id,$parent_id=null,$name_suffix='')
 /*
   function: html_table_of_custom_field_values
             Return html code, implementing a table with custom fields labels
-            and custom fields values, for choosen testcase.
+            and custom fields values, for choosen req spec.
             You can think of this function as some sort of read only version
             of html_table_of_custom_field_inputs.
             
             
   args: $id
-        [$scope]: 'design' -> use custom fields that can be used at design time (specification)
-                  'execution' -> use custom fields that can be used at execution time.
-
-        [$show_on_execution]: default: null
-                              1 -> filter on field show_on_execution=1
-                              0 or null -> don't filter
-  
-        [$execution_id]: null -> get values for all executions availables for testcase
-                         !is_null -> only get values or this execution_id
-                    
-        [$testplan_id]: null -> get values for any tesplan to with testcase is linked
-                        !is_null -> get values only for this testplan.
 
   returns: html string
   
@@ -683,15 +702,15 @@ function html_table_of_custom_field_values($id)
 
   /*
     function: values_to_db
-              write values of custom fields.
+              write values of custom fields to db
               
-    args: $hash: 
+    args: hash: 
           key: custom_field_<field_type_id>_<cfield_id>. 
                Example custom_field_0_67 -> 0=> string field
           
-          $node_id:           
+          node_id: req spec id
           
-          [$cf_map]:  hash -> all the custom fields linked and enabled
+          [cf_map]:  hash -> all the custom fields linked and enabled
                               that are applicable to the node type of $node_id.
                               
                               For the keys not present in $hash, we will write
@@ -703,6 +722,7 @@ function html_table_of_custom_field_values($id)
                               some kind of custom fields (checkbox, list, multiple list)
                               when has been deselected by user.
                               
+         [hash_type]
           
     rev:
   */

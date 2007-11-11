@@ -2,7 +2,7 @@
 /**
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/ 
 *
-*  @version 	$Id: printData.php,v 1.33 2007/10/14 16:34:44 franciscom Exp $
+*  @version 	$Id: printData.php,v 1.34 2007/11/11 15:30:55 franciscom Exp $
 *  @author 	Martin Havlat
 * 
 * Shows the data that will be printed.
@@ -44,8 +44,15 @@ $map_node_tccount=array();
 
 $tproject_mgr = new testproject($db);
 $tree_manager = &$tproject_mgr->tree_manager;
-$test_spec = $tree_manager->get_subtree($dataID,array('testplan'=>'exclude me'),
-                                           array('testcase'=>'exclude my children'),null,null,RECURSIVE_MODE);
+
+// 20071111 - franciscom
+$test_spec = $tree_manager->get_subtree($dataID,
+	                                      array('testplan'=>'exclude me',
+	                                              'requirement_spec'=>'exclude me',
+	                                              'requirement'=>'exclude me'),
+												                array('testcase'=>'exclude my children',
+												                        'requirement_spec'=> 'exclude my children'),
+                                        null,null,RECURSIVE_MODE);
 
 $tree = null;
 $code = null;					

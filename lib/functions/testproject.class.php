@@ -2,10 +2,11 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.41 $
- * @modified $Date: 2007/11/09 08:18:14 $  $Author: franciscom $
+ * @version $Revision: 1.42 $
+ * @modified $Date: 2007/11/11 15:30:55 $  $Author: franciscom $
  * @author franciscom
  *
+ * 20071111 - franciscom - new method get_subtree();
  * 20071106 - franciscom - createReqSpec() - changed return type
  * 20071104 - franciscom - get_accessible_for_user
  *                         added optional arg to get_all()
@@ -27,6 +28,25 @@ class testproject
 	var $tree_manager;
   var $cfield_mgr;
 
+  // Node Types (NT)
+  var $nt2exclude=array('testplan' => 'exclude_me',
+	                      'requirement_spec'=> 'exclude_me',
+	                      'requirement'=> 'exclude_me');
+													                        
+
+  var $nt2exclude_children=array('testcase' => 'exclude_my_children',
+													       'requirement_spec'=> 'exclude_my_children');
+
+
+  /*
+    function: testproject
+              Constructor
+
+    args:
+    
+    returns: 
+
+  */
 	function testproject(&$db)
 	{
 		$this->db = &$db;	
@@ -301,6 +321,35 @@ function get_accessible_for_user($user_id,$output_type='map',$order_by=" ORDER B
 }
 
 
+/*
+  function: get_subtree
+            Get subtree that has choosen testproject as root.
+            Only nodes of type: 
+            testsuite and testcase are explored and retrieved.
+
+  args: id: testsuite id
+        [recursive_mode]: default false
+        
+  
+  returns: map
+           see tree->get_subtree() for details.
+
+*/
+function get_subtree($id,$recursive_mode=false,$exclude_branches=null, $and_not_in_clause='')
+{
+  $exclude_branches=null; 
+  $and_not_in_clause='';
+  
+	$subtree = $this->tree_manager->get_subtree($id,$this->nt2exclude,
+	                                                $this->nt2exclude_children,
+	                                                $exclude_branches,
+	                                                $and_not_in_clause,
+	                                                $recursive_mode);
+  return $subtree;
+}
+
+
+
 
 
 
@@ -355,9 +404,9 @@ function show(&$smarty,$id,$sqlResult='', $action = 'update',$modded_item_id = 0
 */
 function count_testcases($id)
 {
-	$test_spec = $this->tree_manager->get_subtree($id,array('testplan'=>'exclude me'),
-	                                                  array('testcase'=>'exclude my children'));
-  
+  // 20071111 - franciscom
+	$test_spec = $this->get_subtree($id);
+	
  	$hash_descr_id = $this->tree_manager->get_available_node_types();
   
  	$qty = 0;
@@ -428,11 +477,11 @@ function count_testcases($id)
   */
 	function gen_combo_test_suites($id,$exclude_branches=null,$mode='dotted')
 	{
+	  $NO_RECURSIVE_MODE=false;
 		$aa = array(); 
 	
-		$test_spec = $this->tree_manager->get_subtree($id, array("testplan"=>"exclude me","testcase"=>"exclude me"),
-	                                                     array('testcase'=>'exclude my children PLEASE'),
-	                                                     $exclude_branches);
+	  // 20071111 - franciscom
+		$test_spec = $this->get_subtree($id,$NO_RECURSIVE_MODE,$exclude_branches);
 	  
 		$hash_descr_id = $this->tree_manager->get_available_node_types();
 		$hash_id_descr = array_flip($hash_descr_id);
@@ -1157,9 +1206,9 @@ function get_keywords_map($testproject_id)
 function get_all_testcases_id($id)
 {
 	$a_tcid = array();
-	$test_spec = $this->tree_manager->get_subtree($id,
-					array('testplan'=>'exclude me'),
-	         		array('testcase'=>'exclude my children'));
+	
+	// 20071111 - franciscom
+	$test_spec = $this->get_subtree($id);
 	
 	$hash_descr_id = $this->tree_manager->get_available_node_types();
 	if(count($test_spec))
@@ -1311,7 +1360,10 @@ function check_tplan_name_existence($tproject_id,$tplan_name,$case_sensitive=0)
 */
 function get_first_level_test_suites($tproject_id,$mode='simple')
 {
-  $fl=$this->tree_manager->get_children($tproject_id, array('testplan' => 'exclude_me'));
+  // 20071111 - franciscom
+  $fl=$this->tree_manager->get_children($tproject_id, 
+                                        array('testplan' => 'exclude_me',
+                                              'requirement_spec' => 'exclude_me' ));
 
   switch ($mode)
   {

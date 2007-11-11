@@ -5,10 +5,11 @@
  *
  * Filename $RCSfile: tree.class.php,v $
  *
- * @version $Revision: 1.35 $
- * @modified $Date: 2007/11/07 07:33:59 $ by $Author: franciscom $
+ * @version $Revision: 1.36 $
+ * @modified $Date: 2007/11/11 15:30:55 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
+ * 20071110 - franciscom - solved (auto)bug when refactoring get_path
  * 20071024 - franciscom - DTREE bug
  * 20070620 - franciscom - BUGID 903
  * 20061203 - franciscom - removing error due to undefined var in change_order_bulk()
@@ -329,12 +330,19 @@ class tree
 		$the_path = array();
 		$this->_get_path($node_id,$the_path,$to_node_id,$format); 
 		
+		if( !is_null($the_path) && count($the_path) > 0 )
+		{
+		  $the_path=array_reverse($the_path);  
+		}
 		return $the_path;
 	}
+
 
 /*
   function: _get_path
             This is refactoring of original get_path method.
+            Attention:
+            returns node in inverse order, that was done for original get_path
 
   args : node_id: start of path
          node_list: passed by reference, to build the result.

@@ -2,10 +2,11 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testsuite.class.php,v $
- * @version $Revision: 1.36 $
- * @modified $Date: 2007/11/01 22:01:31 $ - $Author: franciscom $
+ * @version $Revision: 1.37 $
+ * @modified $Date: 2007/11/11 15:30:55 $ - $Author: franciscom $
  * @author franciscom
  *
+ * 20071111 - franciscom - new method get_subtree();
  * 20071101 - franciscom - import_file_types, export_file_types
  * 
  * 20070826 - franciscom - minor fix html_table_of_custom_field_values()
@@ -46,8 +47,26 @@ class testsuite
 
   var $import_file_types = array("XML" => "XML");
   var $export_file_types = array("XML" => "XML");
+ 
+  // Node Types (NT)
+  var $nt2exclude=array('testplan' => 'exclude_me',
+	                      'requirement_spec'=> 'exclude_me',
+	                      'requirement'=> 'exclude_me');
+													                        
+
+  var $nt2exclude_children=array('testcase' => 'exclude_my_children',
+													       'requirement_spec'=> 'exclude_my_children');
 
 
+  /*
+    function: testsuite
+              constructor
+
+    args:
+    
+    returns: 
+
+  */
   function testsuite(&$db)
   {
 	  $this->db = &$db;	
@@ -462,8 +481,8 @@ function copy_to($id, $parent_id, $user_id,
 	$new_tsuite_id = $ret['id'];
   $tcase_mgr->copy_attachments($id,$new_tsuite_id);
 	
-	$subtree = $this->tree_manager->get_subtree($id,array('testplan' => 'exclude_me'),
-													                        array('testcase' => 'exclude_my_children'));
+	// 20071111 - franciscom
+	$subtree = $this->tree_manager->get_subtree($id);
 	
 	if (!is_null($subtree))
 	{
@@ -494,6 +513,35 @@ function copy_to($id, $parent_id, $user_id,
 
 
 /*
+  function: get_subtree
+            Get subtree that has choosen testsuite as root.
+            Only nodes of type: 
+            testsuite and testcase are explored and retrieved.
+
+  args: id: testsuite id
+        [recursive_mode]: default false
+        
+  
+  returns: map
+           see tree->get_subtree() for details.
+
+*/
+function get_subtree($id,$recursive_mode=false)
+{
+  $exclude_branches=null; 
+  $and_not_in_clause='';
+  
+	$subtree = $this->tree_manager->get_subtree($id,$this->nt2exclude,
+	                                                $this->nt2exclude_children,
+	                                                $exclude_branches,
+	                                                $and_not_in_clause,
+	                                                $recursive_mode);
+  return $subtree;
+}
+
+
+
+/*
   function: get_testcases_deep
             get all test cases in the test suite and all children test suites
             no info about tcversions is returned.
@@ -521,9 +569,9 @@ function copy_to($id, $parent_id, $user_id,
 */
 function get_testcases_deep($id,$bIdsOnly = false)
 {
-	$subtree = $this->tree_manager->get_subtree($id,
-												array('testplan' => 'exclude_me'),
-	             								array('testcase' => 'exclude_my_children'));
+  // 20071111 - franciscom 
+	$subtree = $this->get_subtree($id);
+	             					      
 	$testcases = null;
 	if(!is_null($subtree))
 	{
@@ -559,10 +607,10 @@ function get_testcases_deep($id,$bIdsOnly = false)
 function delete_deep($id)
 {
   $tcase_mgr = New testcase($this->db);
-
 	$tsuite_info = $this->get_by_id($id);
-  $subtree = $this->tree_manager->get_subtree($id,array('testplan' => 'exclude_me', 'testcase' => 'exclude_me'),
-                                                  array('testcase' => 'exclude_my_children'));
+	
+	// 20071111 - franciscom
+  $subtree = $this->tree_manager->get_subtree($id);
 	
 	// add me, to delete me 
 	$subtree[]=array('id' => $id);
@@ -570,7 +618,6 @@ function delete_deep($id)
 
   if (!is_null($subtree))
 	{
-
     // -------------------------------------------------------------------
     // First delete dependent objects
     if (!is_null($testcases))
@@ -749,6 +796,8 @@ function deleteKeywords($id,$kw_id = null)
 */
 function exportTestSuiteDataToXML($container_id,$optExport = array())
 {
+  $USE_RECURSIVE_MODE=true;
+   
 	$xmlTC = null;
 	$bRecursive = @$optExport['RECURSIVE'];
 	if ($bRecursive)
@@ -766,8 +815,9 @@ function exportTestSuiteDataToXML($container_id,$optExport = array())
 	else
 		$xmlTC = "<testcases>";
 
-	$test_spec = $this->tree_manager->get_subtree($container_id,array('testplan'=>'exclude me'),
-												 array('testcase'=>'exclude my children'),null,null,true);
+  // 20071111 - franciscom
+	$test_spec = $this->get_subtree($container_id,$USE_RECURSIVE_MODE);
+
 	$childNodes = @$test_spec['childNodes'];
 	for($i = 0;$i < sizeof($childNodes);$i++)
 	{

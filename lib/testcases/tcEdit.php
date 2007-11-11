@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.60 $
- * @modified $Date: 2007/11/06 15:07:42 $  by $Author: franciscom $
+ * @version $Revision: 1.61 $
+ * @modified $Date: 2007/11/11 15:30:56 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
  * 20071106 - BUGID 1165 
@@ -22,7 +22,6 @@
 **/
 require_once("../../config.inc.php");
 require_once("common.php");
-require_once('archive.inc.php');
 require_once('../keywords/keywords.inc.php');
 require_once("../../third_party/fckeditor/fckeditor.php");
 require_once("opt_transfer.php");
@@ -392,9 +391,14 @@ else if($move_copy_tc)
 	$tproject_id = $tcase_mgr->get_testproject($tcase_id);
 	$the_tc_node = $tree_mgr->get_node_hierachy_info($tcase_id);
 	$tc_parent_id = $the_tc_node['parent_id'];
+	
+	// 20071111 - franciscom
 	$the_tree = $tree_mgr->get_subtree($tproject_id, array("testplan"=>"exclude me",
+	                                                       "requirement_spec"=>"exclude me",
+	                                                       "requirement"=>"exclude me",
 	                                                       "testcase"=>"exclude me"));
 	$the_xx = $tproject_mgr->gen_combo_test_suites($tproject_id);
+
 	$the_xx[$the_tc_node['parent_id']] .= ' (' . lang_get('current') . ')'; 
 	$tc_info = $tcase_mgr->get_by_id($tcase_id);
 

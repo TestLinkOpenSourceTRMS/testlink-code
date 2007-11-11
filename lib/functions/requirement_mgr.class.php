@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.3 $
- * @modified $Date: 2007/11/10 08:10:34 $ by $Author: franciscom $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2007/11/11 15:30:54 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
@@ -15,13 +15,18 @@
  *
  * 20060908 - franciscom - 
 */
-//class requirement_mgr extends requirement_spec_mgr
 class requirement_mgr
 {
 	var $db;
   var $cfield_mgr;
+
   var $object_table='requirements';
   var $requirement_spec_table='req_specs';
+  var $req_coverage_table="req_coverage";
+  var $nodes_hierarchy_table="nodes_hierarchy";
+
+  var $my_node_type;
+
   
   /*
     function: requirement_mgr
@@ -36,6 +41,11 @@ class requirement_mgr
 	{
 		$this->db = &$db;
 		$this->cfield_mgr=new cfield_mgr($this->db);
+
+	  $tree_mgr =  new tree($this->db);
+	  $node_types_descr_id=$tree_mgr->get_available_node_types();
+	  $node_types_id_descr=array_flip($node_types_descr_id);
+	  $this->my_node_type=$node_types_descr_id['requirement'];
 	}
 
 
@@ -43,10 +53,10 @@ class requirement_mgr
     function: get_by_id
               
   
-    args : id: test project
+    args: id: requirement id
     
     returns: null if query fails
-             map with test project info
+             map with requirement info
   
   */
   function get_by_id($id)
@@ -60,11 +70,21 @@ class requirement_mgr
   }
 
   /*
-    function: 
+    function: create
 
-    args :
+    args: srs_id: req spec id, parent of requirement to be created
+          reqdoc_id
+          title
+          scope
+          user_id: author
+          [status]
+          [type]
     
-    returns: 
+    returns: map with following keys:
+             status_ok -> 1/0
+             msg -> some simple message, useful when status_ok ==0
+             id -> id of new requirement.
+
 
   */
   function create($srs_id,$reqdoc_id,$title, $scope,  $user_id, 
@@ -83,10 +103,17 @@ class requirement_mgr
 	  $result = $this->check_basic_data($srs_id,$title,$reqdoc_id);
 	  if($result['status_ok'])
 	  {
+	    
+      $tree_mgr=New tree($this->db);
+
+ 		  $parent_id=$srs_id;
+		  $name=$title;
+		  $req_id = $tree_mgr->new_node($parent_id,$this->my_node_type,$name);
+
 		  $db_now = $this->db->db_now();
 		  $sql = " INSERT INTO {$this->object_table} " .
-		         " (srs_id, req_doc_id, title, scope, status, type, author_id, creation_ts)" .
-			  	   " VALUES (" . $srs_id . ",'" . $this->db->prepare_string($reqdoc_id) . "','" . 
+		         " (id, srs_id, req_doc_id, title, scope, status, type, author_id, creation_ts)" .
+			  	   " VALUES ({$req_id}, {$srs_id},'" . $this->db->prepare_string($reqdoc_id) . "','" . 
 			  	    $this->db->prepare_string($title) . "','" . $this->db->prepare_string($scope) . "','" . 
 			  	    $this->db->prepare_string($status) . "','" . $this->db->prepare_string($type) . "',"  .
 			  	    "{$user_id}, {$db_now})";
@@ -107,454 +134,521 @@ class requirement_mgr
 
 
   /*
-    function: 
-
-    args :
+    function: update
     
-    returns: 
+
+    args: id: requirement id
+          reqdoc_id
+          title
+          scope
+          user_id: author
+          status
+          type
+          [skip_controls]
+    
+    
+    returns: message string
 
   */
 
-function update($id,$reqdoc_id,$title, $scope, $user_id, $status, $type,$skip_controls=0)
-{
-	$result = 'ok';
-	$db_now = $this->db->db_now();
-	$field_size=config_get('field_size');
+  function update($id,$reqdoc_id,$title, $scope, $user_id, $status, $type,$skip_controls=0)
+  {
+	  $result = 'ok';
+	  $db_now = $this->db->db_now();
+	  $field_size=config_get('field_size');
 	
-	// get SRSid, needed to do controls
-	$rs=$this->get_by_id($id);
-  $srs_id=$rs['srs_id'];
-	
-	$reqdoc_id=trim_and_limit($reqdoc_id,$field_size->req_docid);
-	$title=trim_and_limit($title,$field_size->req_title);
+	  // get SRSid, needed to do controls
+	  $rs=$this->get_by_id($id);
+    $srs_id=$rs['srs_id'];
+	  
+	  $reqdoc_id=trim_and_limit($reqdoc_id,$field_size->req_docid);
+	  $title=trim_and_limit($title,$field_size->req_title);
+    
+    $chk=$this->check_basic_data($srs_id,$title,$reqdoc_id,$id);
+    
+	  if($chk['status_ok'] || $skip_controls)
+	  {
+	  	$sql = "UPDATE requirements SET title='" . $this->db->prepare_string($title) . "', " .
+	  	       " scope='" . $this->db->prepare_string($scope) . "', " .
+	  	       " status='" . $this->db->prepare_string($status) . "', " .
+	  	       " type='" . $this->db->prepare_string($type) . "', " .
+	  	       " modifier_id={$user_id}, req_doc_id='" . $this->db->prepare_string($reqdoc_id) . "', " .
+	  	       " modification_ts={$db_now}  WHERE id={$id}";
+	  		
+	  	if (!$this->db->exec_query($sql))
+	  	 	$result = lang_get('error_updating_req');
+	  }
+	  else
+	  {
+	    $result=$chk['msg']; 
+	  }
+	  
+	  return $result; 
+  } //function end
 
-  $chk=$this->check_basic_data($srs_id,$title,$reqdoc_id,$id);
- 
-	if($chk['status_ok'] || $skip_controls)
-	{
-		$sql = "UPDATE requirements SET title='" . $this->db->prepare_string($title) . "', " .
-		       " scope='" . $this->db->prepare_string($scope) . "', " .
-		       " status='" . $this->db->prepare_string($status) . "', " .
-		       " type='" . $this->db->prepare_string($type) . "', " .
-		       " modifier_id={$user_id}, req_doc_id='" . $this->db->prepare_string($reqdoc_id) . "', " .
-		       " modification_ts={$db_now}  WHERE id={$id}";
-			
-		if (!$this->db->exec_query($sql))
-		 	$result = lang_get('error_updating_req');
-	}
-	else
-	{
-	  $result=$chk['msg']; 
-	}
-	
-	return $result; 
-}
 
-/*
-  function: 
 
-  args :
-  
-  returns: 
-
-*/
-function delete($id)
-{
-	
-	// Custom Fields
-	
-	// delete dependencies with test specification
-	$sql = "DELETE FROM req_coverage WHERE req_id=" . $id;
-	$result = $this->db->exec_query($sql); 
+  /*
+    function: delete
+              Requirement
+              Requirement link to testcases
+              Requirement custom fields values
+              Attachments
 
   
-	if ($result)
-	{
-		$result = deleteAttachmentsFor($this->db,$id,"requirements");
+    args: id: can be one id, or an array of id
+    
+    returns: 
+  
+  */
+  function delete($id)
+  {
+  	$where_clause_coverage='';
+  	$where_clause_this='';
+  	
+  	if( is_array($id) )
+  	{
+  	  $id_list = implode(',',$id);
+     	$where_clause_coverage=" WHERE req_id IN ({$id_list})";
+  	  $where_clause_this=" WHERE id IN ({$id_list})";
+  	}
+    else
+    {
+      $where_clause_coverage=" WHERE req_id = {$id}";
+  	  $where_clause_this=" WHERE id={$id}";
+    }
+
+    // Delete Custom fields
+    $this->cfield_mgr->remove_all_design_values_from_node($id);
+
+  	// delete dependencies with test specification
+  	$sql = "DELETE FROM {$this->req_coverage_table} " . $where_clause_coverage;
+  	$result = $this->db->exec_query($sql); 
+  
+    
+  	if ($result)
+  	{
+  	  if( is_array($id) )
+  	  {
+  	    $the_ids=$id;
+  		}
+      else
+      {
+        $the_ids=array($id);
+      }
+
+      foreach( $the_ids as $key => $value)
+      {
+  		  $result = deleteAttachmentsFor($this->db,$value,"requirements");
+  		}
+    }
+
+  	if ($result)
+  	{
+  		$sql = "DELETE FROM {$this->nodes_hierarchy_table} " . $where_clause_this;
+  		$result = $this->db->exec_query($sql); 
+  	}
+  
+  	if ($result)
+  	{
+  		$sql = "DELETE FROM {$this->object_table} " . $where_clause_this;
+  		$result = $this->db->exec_query($sql); 
+  	}
+  
+  	if (!$result)
+  		$result = lang_get('error_deleting_req');
+  	else
+  		$result = 'ok';
+  		
+  	return $result; 
   }
 
-	if ($result)
-	{
-		$sql = "DELETE FROM {$this->object_table} WHERE id={$id}";
-		$result = $this->db->exec_query($sql); 
-	}
-
-	if (!$result)
-		$result = lang_get('error_deleting_req');
-	else
-		$result = 'ok';
-		
-	return $result; 
-}
 
 
 
 
 
 
+  /** collect coverage of Requirement 
+   * @param string $req_id ID of req.
+   * @return assoc_array list of test cases [id, title]
+   */
+  function get_coverage($id)
+  {
+  	$sql = " SELECT nodes_hierarchy.id,nodes_hierarchy.name " .
+  	       " FROM {$this->nodes_hierarchy_table} nodes_hierarchy, " .
+  	       "      {$this->req_coverage_table} req_coverage " .
+  			   " WHERE req_coverage.testcase_id = nodes_hierarchy.id " .
+  			   " AND  req_coverage.req_id={$id}"; 
+  	return $this->db->get_recordset($sql);
+  }
 
-/** collect coverage of Requirement 
- * @param string $req_id ID of req.
- * @return assoc_array list of test cases [id, title]
- */
-function get_coverage($id)
-{
-	$sql = "SELECT nodes_hierarchy.id,nodes_hierarchy.name 
-	        FROM nodes_hierarchy, req_coverage
-			    WHERE req_coverage.testcase_id = nodes_hierarchy.id
-			    AND  req_coverage.req_id={$id}"; 
-	return $this->db->get_recordset($sql);
-}
+
+
+  /*
+    function: check_basic_data
+              do checks on title and reqdoc id, for a requirement
+              
+    args: srs_id: req spec id (req parent)
+          title
+          reqdoc_id
+          [id]: default null
+          
+    
+    returns: map
+             keys: status_ok
+                   msg
+
+  */
+  function check_basic_data($srs_id,$title,$reqdoc_id,$id = null)
+  {
+  	$req_cfg = config_get('req_cfg');
+  	
+  	$my_srs_id=$srs_id;
+  	
+  	$ret['status_ok'] = 1;
+  	$ret['msg'] = '';
+  	
+  	if (!strlen($title))
+  	{
+  		$ret['status_ok'] = 0;
+  		$ret['msg'] = lang_get("warning_empty_req_title");
+  	}
+  	
+  	if (!strlen($reqdoc_id))
+  	{
+  		$ret['status_ok'] = 0;
+  		$ret['msg'] .=  " " . lang_get("warning_empty_reqdoc_id");
+  	}
+  	
+  	if($ret['status_ok'])
+  	{
+  		$ret['msg'] = 'ok';
+  		
+  		if($req_cfg->reqdoc_id->is_system_wide)
+  		{
+  			// req doc id MUST BE unique inside the whole DB
+        $my_srs_id=null;
+  		}
+  		$rs = $this->get_by_docid($reqdoc_id,$my_srs_id);
+  
+  		
+  		if(!is_null($rs) && (is_null($id) || !isset($rs[$id])))
+  		{
+  			$ret['msg'] = lang_get("warning_duplicate_reqdoc_id");
+  			$ret['status_ok'] = 0;  		  
+  		}
+  	} 
+  	
+  	return $ret;
+  }
 
 
 
+  /*
+    function: get_by_docid
+  
+    args:
+    
+    returns: 
+  
+  */
+  function get_by_docid($reqdoc_id,$srs_id=null)
+  {
+  	$sql = "SELECT * FROM {$this->object_table} " .
+  	       " WHERE req_doc_id='" . $this->db->prepare_string($reqdoc_id) . "'";
+  
+    if( !is_null($srs_id) )
+    {
+      $sql .=	 " AND srs_id={$srs_id}";
+    }
+  
+  	return($this->db->fetchRowsIntoMap($sql,'id'));
+  }
+  
+  /*
+    function: get_by_title
+  
+    args:
+    
+    returns: 
+  
+  */
+  function get_by_title($title,$ignore_case=0)
+  {
+  	$output = array();
+  	$sql = "SELECT * FROM {$this->object_table} ";
+  
+    $the_title=$this->db->prepare_string($title);	
+  	
+  	if($ignore_case)
+  	{
+  	  $sql .= " WHERE UPPER(title)='" . strupper($the_title) . "'";
+  	}
+  	else
+  	{
+  	   $sql .= " WHERE title='{$the_title}'";
+  	}       
+  	       
+  	$result = $this->db->exec_query($sql);
+  	if (!empty($result)) {
+  		$output = $this->db->fetch_array($result);
+  	}
+  	
+  	return $output;
+  } // function end
+
+
+
+  /*
+    function: create_tc_from_requirement
+              create testcases using requirements as input
+              
+  
+    args:
+    
+    returns: 
+  
+  */
+  function create_tc_from_requirement($mixIdReq,$srs_id, $user_id)
+  {
+    $tcase_mgr = new testcase($this->db);
+    $tree_mgr=New tree($this->db);
+    
+   	define('DEFAULT_TC_ORDER',0);
+    define('AUTOMATIC_ID',0);
+    define('NO_KEYWORDS','');
+    
+  	$g_req_cfg = config_get('req_cfg');
+  	$g_field_size = config_get('field_size');
+  	$auto_testsuite_name = $g_req_cfg->default_testsuite_name;
+    $node_descr_type=$tree_mgr->get_available_node_types();
+    $empty_steps='';
+    $empty_results='';
+  
+    
+  	$output = null;
+  	if (is_array($mixIdReq)) {
+  		$arrIdReq = $mixIdReq;
+  	} else {
+  		$arrIdReq = array($mixIdReq);
+  	}
+  	if ( $g_req_cfg->use_req_spec_as_testsuite_name )
+  	{
+  	  // SRS Title
+     	$sql = " SELECT * FROM {$this->requirement_spec_table} WHERE id = {$srs_id}";
+    	$arrSpec = $this->db->get_recordset($sql);
+  	  $testproject_id=$arrSpec[0]['testproject_id'];
+  	  $auto_testsuite_name = substr($arrSpec[0]['title'],0,$g_field_size->testsuite_name);
+  	}
+  	
+  	// find container with the following characteristics:
+  	// 1. testproject_id is its father
+  	// 2. has the searched name
+  	$sql="SELECT id FROM {$this->nodes_hierarchy_table} NH " .
+  	     " WHERE name='" . $this->db->prepare_string($auto_testsuite_name) . "' " .
+  	     " AND parent_id=" . $testproject_id . " " .
+  	     " AND node_type_id=" . $node_descr_type['testsuite'];
+  	             
+  	          
+  	$result = $this->db->exec_query($sql);
+    if ($this->db->num_rows($result) == 1) {
+  		$row = $this->db->fetch_array($result);
+  		$tsuite_id = $row['id'];
+  	}
+  	else {
+  		// not found -> create
+  		tLog('test suite:' . $auto_testsuite_name . ' was not found.');
+      $tsuite_mgr=New testsuite($this->db);
+      $new_tsuite=$tsuite_mgr->create($testproject_id,$auto_testsuite_name,$g_req_cfg->testsuite_details);
+      $tsuite_id=$new_tsuite['id'];
+  	}
+  
+  	//create TC
+  	foreach ($arrIdReq as $execIdReq) 
+  	{
+  		$reqData = $this->get_by_id($execIdReq);
+  
+  	  $tcase=$tcase_mgr->create($tsuite_id,$reqData['title'],
+  	                            $g_req_cfg->testcase_summary_prefix . $reqData['scope'] , 
+  	                            $empty_steps,$empty_results,$user_id,NO_KEYWORDS,
+  	                            DEFAULT_TC_ORDER,AUTOMATIC_ID,
+  		                          config_get('check_names_for_duplicates'),
+  		                          config_get('action_on_duplicate_name'));
+  
+  		// create coverage dependency
+  		if (!$this->assign_to_tcase($reqData['id'],$tcase['id']) ) {
+  			$output = 'Test case: ' . $reqData['title'] . "was not created </br>";
+  		}
+  	}
+  
+  	return (!$output) ? 'ok' : $output;
+  }
+  
+  
+  /*
+    function: assign_to_tcase 
+              assign requirement to test case
+              
+    args: req_id
+          testcase_id
+    
+    returns: 1/0
+  
+  */
+  function assign_to_tcase($req_id,$testcase_id)
+  {
+  	$output = 0;
+  	
+  	if ($testcase_id && $req_id)
+  	{
+  		$sql = " SELECT COUNT(*) AS num_cov FROM {$this->req_coverage_table} " .
+  		       " WHERE req_id={$req_id}  AND testcase_id={$testcase_id}";
+  		$result = $this->db->exec_query($sql);
+  
+      $row = $this->db->fetch_array($result);
+  		if ($row['num_cov'] == 0)
+  		{
+  			// create coverage dependency
+  			$sql = "INSERT INTO {$this->req_coverage_table} (req_id,testcase_id) " .
+  			       "VALUES ({$req_id},{$testcase_id})";
+  			             
+  			$result = $this->db->exec_query($sql);
+  			if ($this->db->affected_rows() == 1)
+  			{
+  				$output = 1;
+  			}
+  		}
+  		else
+  		{
+  			$output = 1;
+  		}
+  	}
+  
+  	return $output;
+  }
+  
+  /*
+    function: unassign_from_tcase
+  
+    args: req_id
+          testcase_id
+    
+    returns: 
+  
+  */
+  function unassign_from_tcase($req_id,$testcase_id)
+  {
+  	$output = 0;
+  	$sql = " DELETE FROM {$this->req_coverage_table} " .
+  	       " WHERE req_id={$req_id} " .
+  	       " AND testcase_id={$testcase_id}";
+  	             
+  	$result = $this->db->exec_query($sqlReqCov);
+  
+  	if ($this->db->affected_rows() == 1)
+  	{
+  		$output = 1;
+  	}
+  	return $output;
+  }
+  
+
+  /*
+    function: get_relationships
+  
+    args :
+    
+    returns: 
+  
+  */
+  function get_relationships($req_id)
+  {
+  	$sql = " SELECT nodes_hierarchy.id,nodes_hierarchy.name " .
+  	       " FROM {$this->nodes_hierarchy_table} nodes_hierarchy, " .
+  	       "      {$this->req_coverage_table} req_coverage " .
+  			   " WHERE req_coverage.testcase_id = nodes_hierarchy.id " .
+  			   " AND  req_coverage.req_id={$req_id}"; 
+  			    
+  	return ($this->db->get_recordset($sql));	
+  }
+  
+  
+  /*
+    function: get_all_for_tcase
+              get all requirements assigned to a test case
+              A filter can be applied to do search on all req spec,
+              or only on one.
+              
+  
+    args: testcase_id
+          [srs_id]: default 'all'
+    
+    returns: 
+  
+  */
+  function get_all_for_tcase($testcase_id, $srs_id = 'all')
+  {
+  	$sql = " SELECT requirements.id,requirements.title " .
+  	       " FROM {$this->object_table} requirements, " .
+  	       "      {$this->req_coverage_table} req_coverage" .
+  			   " WHERE req_coverage.testcase_id=" . $testcase_id . 
+  			   " AND req_coverage.req_id=requirements.id";
+  			
+  	// if only for one specification is required
+  	if ($srs_id != 'all') {
+  		$sql .= " AND requirements.srs_id=" . $srs_id;
+  	}
+  
+  	return $this->db->get_recordset($sql);
+  }
+  
 
 
 
   /*
     function: 
-
+  
     args :
     
     returns: 
-
+  
   */
-function check_basic_data($srs_id,$title,$reqdoc_id,$id = null)
-{
-	$req_cfg = config_get('req_cfg');
-	
-	$my_srs_id=$srs_id;
-	
-	$ret['status_ok'] = 1;
-	$ret['msg'] = '';
-	
-	if (!strlen($title))
-	{
-		$ret['status_ok'] = 0;
-		$ret['msg'] = lang_get("warning_empty_req_title");
-	}
-	
-	if (!strlen($reqdoc_id))
-	{
-		$ret['status_ok'] = 0;
-		$ret['msg'] .=  " " . lang_get("warning_empty_reqdoc_id");
-	}
-	
-	if($ret['status_ok'])
-	{
-		$ret['msg'] = 'ok';
-		
-		if($req_cfg->reqdoc_id->is_system_wide)
-		{
-			// req doc id MUST BE unique inside the whole DB
-      $my_srs_id=null;
-		}
-		$rs = $this->get_by_docid($reqdoc_id,$my_srs_id);
-
-		
-		if(!is_null($rs) && (is_null($id) || !isset($rs[$id])))
-		{
-			$ret['msg'] = lang_get("warning_duplicate_reqdoc_id");
-			$ret['status_ok'] = 0;  		  
-		}
-	} 
-	
-	return $ret;
-}
-
-
-
-/*
-  function: get_by_docid
-
-  args:
-  
-  returns: 
-
-*/
-function get_by_docid($reqdoc_id,$srs_id=null)
-{
-	$sql = "SELECT * FROM requirements " .
-	       " WHERE req_doc_id='" . $this->db->prepare_string($reqdoc_id) . "'";
-
-  if( !is_null($srs_id) )
+  function check_title($title)
   {
-    $sql .=	 " AND srs_id={$srs_id}";
+    $ret=array('status_ok' => 1, 'msg' => 'ok');
+     
+  	if (strlen($title) == 0)
+  	{
+  	  $ret['status_ok']=0;
+  		$ret['msg'] = lang_get("warning_empty_req_title");
+    }
+    		
+  	return $ret;
   }
-
-	return($this->db->fetchRowsIntoMap($sql,'id'));
-}
-
-/*
-  function: get_by_title
-
-  args:
   
-  returns: 
-
-*/
-function get_by_title($title,$ignore_case=0)
-{
-	$output = array();
-	$sql = "SELECT * FROM {$this->object_table} ";
-
-  $the_title=$this->db->prepare_string($title);	
-	
-	if($ignore_case)
-	{
-	  $sql .= " WHERE UPPER(title)='" . strupper($the_title) . "'";
-	}
-	else
-	{
-	   $sql .= " WHERE title='{$the_title}'";
-	}       
-	       
-	$result = $this->db->exec_query($sql);
-	if (!empty($result)) {
-		$output = $this->db->fetch_array($result);
-	}
-	
-	return $output;
-} // function end
-
-
-
-/*
-  function: 
-
-  args :
+  /*
+    function: 
   
-  returns: 
-
-*/
-function create_tc_from_requirement($mixIdReq,$srs_id, $user_id)
-{
-  $tcase_mgr = new testcase($this->db);
-  $tree_mgr=New tree($this->db);
+    args :
+            $nodes: array with req_id in order
+    returns: 
   
- 	define('DEFAULT_TC_ORDER',0);
-  define('AUTOMATIC_ID',0);
-  define('NO_KEYWORDS','');
+  */
+  function set_order($map_id_order)
+  {
   
-	$g_req_cfg = config_get('req_cfg');
-	$g_field_size = config_get('field_size');
-	$auto_testsuite_name = $g_req_cfg->default_testsuite_name;
-  $node_descr_type=$tree_mgr->get_available_node_types();
-  $empty_steps='';
-  $empty_results='';
-
+  	foreach($map_id_order as $order => $node_id)
+  	{
+  		$order = abs(intval($order));
+  		$node_id = intval($node_id);
+  	  $sql = " UPDATE {$this->object_table} " .
+  	         " SET node_order = {$order} WHERE id = {$node_id}";
+  	  $result = $this->db->exec_query($sql);
+  	}
   
-	$output = null;
-	if (is_array($mixIdReq)) {
-		$arrIdReq = $mixIdReq;
-	} else {
-		$arrIdReq = array($mixIdReq);
-	}
-	if ( $g_req_cfg->use_req_spec_as_testsuite_name )
-	{
-	  // SRS Title
-   	$sql = " SELECT * FROM {$this->requirement_spec_table} WHERE id = {$srs_id}";
-  	$arrSpec = $this->db->get_recordset($sql);
-	  $testproject_id=$arrSpec[0]['testproject_id'];
-	  $auto_testsuite_name = substr($arrSpec[0]['title'],0,$g_field_size->testsuite_name);
-	}
-	
-	// find container with the following characteristics:
-	// 1. testproject_id is its father
-	// 2. has the searched name
-	$sql="SELECT id FROM nodes_hierarchy NH " .
-	     " WHERE name='" . $this->db->prepare_string($auto_testsuite_name) . "' " .
-	     " AND parent_id=" . $testproject_id . " " .
-	     " AND node_type_id=" . $node_descr_type['testsuite'];
-	             
-	          
-	$result = $this->db->exec_query($sql);
-  if ($this->db->num_rows($result) == 1) {
-		$row = $this->db->fetch_array($result);
-		$tsuite_id = $row['id'];
-	}
-	else {
-		// not found -> create
-		tLog('test suite:' . $auto_testsuite_name . ' was not found.');
-    $tsuite_mgr=New testsuite($this->db);
-    $new_tsuite=$tsuite_mgr->create($testproject_id,$auto_testsuite_name,$g_req_cfg->testsuite_details);
-    $tsuite_id=$new_tsuite['id'];
-	}
-
-	//create TC
-	foreach ($arrIdReq as $execIdReq) 
-	{
-		$reqData = $this->get_by_id($execIdReq);
-
-	  $tcase=$tcase_mgr->create($tsuite_id,$reqData['title'],
-	                            $g_req_cfg->testcase_summary_prefix . $reqData['scope'] , 
-	                            $empty_steps,$empty_results,$user_id,NO_KEYWORDS,
-	                            DEFAULT_TC_ORDER,AUTOMATIC_ID,
-		                          config_get('check_names_for_duplicates'),
-		                          config_get('action_on_duplicate_name'));
-
-		// create coverage dependency
-		if (!$this->assign_to_tcase($reqData['id'],$tcase['id']) ) {
-			$output = 'Test case: ' . $reqData['title'] . "was not created </br>";
-		}
-	}
-
-	return (!$output) ? 'ok' : $output;
-}
-
-
-/*
-  function: 
-
-  args :
-  
-  returns: 
-
-*/
-function assign_to_tcase($req_id,$testcase_id)
-{
-	$output = 0;
-	
-	if ($testcase_id && $req_id)
-	{
-		$sql = " SELECT COUNT(*) AS num_cov FROM req_coverage " .
-		       " WHERE req_id={$req_id}  AND testcase_id={$testcase_id}";
-		$result = $this->db->exec_query($sql);
-
-    $row = $this->db->fetch_array($result);
-		if ($row['num_cov'] == 0)
-		{
-			// create coverage dependency
-			$sql = "INSERT INTO req_coverage (req_id,testcase_id) " .
-			       "VALUES ({$req_id},{$testcase_id})";
-			             
-			$result = $this->db->exec_query($sql);
-			if ($this->db->affected_rows() == 1)
-			{
-				$output = 1;
-			}
-		}
-		else
-		{
-			$output = 1;
-		}
-	}
-
-	return $output;
-}
-
-/*
-  function: 
-
-  args :
-  
-  returns: 
-
-*/
-function unassign_from_tcase($req_id,$testcase_id)
-{
-	$output = 0;
-	$sql = " DELETE FROM req_coverage " .
-	       " WHERE req_id={$req_id} " .
-	       " AND testcase_id={$testcase_id}";
-	             
-	$result = $this->db->exec_query($sqlReqCov);
-
-	if ($this->db->affected_rows() == 1)
-	{
-		$output = 1;
-	}
-	return $output;
-}
-
-
-/*
-  function: 
-
-  args :
-  
-  returns: 
-
-*/
-function get_relationships($req_id)
-{
-	$sql = " SELECT nodes_hierarchy.id,nodes_hierarchy.name " .
-	       " FROM nodes_hierarchy, req_coverage " .
-			   " WHERE req_coverage.testcase_id = nodes_hierarchy.id " .
-			   " AND  req_coverage.req_id={$req_id}"; 
-			    
-	return ($this->db->get_recordset($sql));	
-}
-
-
-/*
-  function: 
-
-  args :
-  
-  returns: 
-
-*/
-function get_all_for_tcase($testcase_id, $srs_id = 'all')
-{
-	$sql = " SELECT requirements.id,requirements.title FROM requirements, req_coverage " .
-			   " WHERE req_coverage.testcase_id=" . $testcase_id . 
-			   " AND req_coverage.req_id=requirements.id";
-			
-	// if only for one specification is required
-	if ($srs_id != 'all') {
-		$sql .= " AND requirements.srs_id=" . $srs_id;
-	}
-
-	return $db->get_recordset($sql);
-}
-
-
-
-
-/*
-  function: 
-
-  args :
-  
-  returns: 
-
-*/
-function check_title($title)
-{
-  $ret=array('status_ok' => 1, 'msg' => 'ok');
-   
-	if (strlen($title) == 0)
-	{
-	  $ret['status_ok']=0;
-		$ret['msg'] = lang_get("warning_empty_req_title");
   }
-  		
-	return $ret;
-}
-
-/*
-  function: 
-
-  args :
-          $nodes: array with req_id in order
-  returns: 
-
-*/
-function set_order($map_id_order)
-{
-
-	foreach($map_id_order as $order => $node_id)
-	{
-		$order = abs(intval($order));
-		$node_id = intval($node_id);
-	  $sql = " UPDATE {$this->object_table} " .
-	         " SET node_order = {$order} WHERE id = {$node_id}";
-	  $result = $this->db->exec_query($sql);
-	}
-
-}
-
+  
 
 
 
@@ -571,27 +665,16 @@ function set_order($map_id_order)
             has to be linked to a testproject, in order to be used.
             
             
-  args: id: testcase id
-        [parent_id]: node id of parent testsuite of testcase.
-                     need to undertad to which testproject the testcase belongs.
+  args: id: requirement id
+        [parent_id]: 
                      this information is vital, to get the linked custom fields.
-                     Presence /absence of this value changes starting point
-                     on procedure to build tree path to get testproject id.
-                     
-                     null -> use testcase_id as starting point.
-                     !is_null -> use this value as starting point.        
+                     null -> use requirement_id as starting point.
+                     !is_null -> use this value as testproject id
                              
-        [show_on_execution]: default: null
-                             1 -> filter on field show_on_execution=1
-                                  include ONLY custom fields that can be viewed
-                                  while user is execution testcases.
-                                  
-                             0 or null -> don't filter
-        
         
   returns: map/hash
            key: custom field id
-           value: map with custom field definition and value assigned for choosen testcase, 
+           value: map with custom field definition and value assigned for choosen requirement, 
                   with following keys:
   
             			id: custom field id
@@ -608,11 +691,11 @@ function set_order($map_id_order)
             			show_on_execution
             			enable_on_execution
             			display_order
-            			value: value assigned to custom field for this testcase
-            			       null if for this testcase custom field was never edited.
+            			value: value assigned to custom field for this requirement
+            			       null if for this requirement custom field was never edited.
             			       
-            			node_id: testcase id
-            			         null if for this testcase, custom field was never edited.
+            			node_id: requirement id
+            			         null if for this requirement, custom field was never edited.
    
   
   rev :
@@ -642,22 +725,16 @@ function get_linked_cfields($id,$parent_id=null)
 /*
   function: html_table_of_custom_field_inputs
             Return html code, implementing a table with custom fields labels
-            and html inputs, for choosen testcase.
+            and html inputs, for choosen requirement.
             Used to manage user actions on custom fields values.
             
             
   args: $id
-        [parent_id]: node id of parent testsuite of testcase.
-                     need to undertad to which testproject the testcase belongs.
+        [parent_id]: need to undertad to which testproject the requirement belongs.
                      this information is vital, to get the linked custom fields.
-                     Presence /absence of this value changes starting point
-                     on procedure to build tree path to get testproject id.
-                     
-                     null -> use testcase_id as starting point.
+                     null -> use requirement_id as starting point.
                      !is_null -> use this value as starting point.        
 
-        [$scope]: 'design' -> use custom fields that can be used at design time (specification)
-                  'execution' -> use custom fields that can be used at execution time.
         
         [$name_suffix]: must start with '_' (underscore).
                         Used when we display in a page several items
@@ -693,16 +770,10 @@ function html_table_of_custom_field_inputs($id,$parent_id=null,$name_suffix='')
 }
 
 
-
-
-
-
-
-
 /*
   function: html_table_of_custom_field_values
             Return html code, implementing a table with custom fields labels
-            and custom fields values, for choosen testcase.
+            and custom fields values, for choosen requirement.
             You can think of this function as some sort of read only version
             of html_table_of_custom_field_inputs.
             

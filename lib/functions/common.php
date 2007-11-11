@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.77 $ $Author: franciscom $
- * @modified $Date: 2007/11/09 08:17:48 $
+ * @version $Revision: 1.78 $ $Author: franciscom $
+ * @modified $Date: 2007/11/11 15:30:54 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -764,12 +764,14 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
 	
 	$tcase_mgr = new testcase($db); 
 	$tree_manager = new tree($db);
+	$tproject_mgr = new testproject($db);
+	
 	$hash_descr_id = $tree_manager->get_available_node_types();
 	$tcase_node_type = $hash_descr_id['testcase'];
 	$hash_id_descr = array_flip($hash_descr_id);
 
-	$test_spec = $tree_manager->get_subtree($id,array('testplan'=>'exclude me'),
-                                              array('testcase'=>'exclude my_children'));
+  // 20071111 - franciscom 
+	$test_spec = $tproject_mgr->get_subtree($id);
 	     
 	// ---------------------------------------------------------------------------------------------
   // filters

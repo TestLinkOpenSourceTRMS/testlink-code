@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * @version $Revision: 1.66 $
- * @modified $Date: 2007/06/07 08:20:02 $ by $Author: schlundus $
+ * @version $Revision: 1.67 $
+ * @modified $Date: 2007/11/11 15:30:56 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * 
@@ -298,7 +298,10 @@ else if($action == 'move_testsuite_viewer')
 else if($action == 'reorder_testsuites')
 {
 	$object_id = is_null($my_testsuiteID) ? $my_containerID : $my_testsuiteID;
-	$children = $tree_mgr->get_children($object_id, array("testplan" => "exclude_me"));	
+	
+	// 20071111 - franciscom
+	$children = $tree_mgr->get_children($object_id, array("testplan" => "exclude_me",
+	                                                      "requirement_spec"  => "exclude_me"));	
   $object_info = $tree_mgr->get_node_hierachy_info($object_id);
   $object_name = $object_info['name'];
 
@@ -322,7 +325,8 @@ else if($action == 'do_testsuite_reorder')
 {
 	$generalResult = 'ok';
   $nodes_in_order=transform_nodes_order($nodes_order,$my_containerID);
-	$tree_mgr->change_order_bulk_new($nodes_in_order);
+	// $tree_mgr->change_order_bulk_new($nodes_in_order);
+	$tree_mgr->change_order_bulk($nodes_in_order);
 	if( $my_containerID == $my_tprojectID )
 	{
 	  $tproject_mgr->show($smarty,$my_containerID,$generalResult);

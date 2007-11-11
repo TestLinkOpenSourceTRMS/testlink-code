@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: tcexport.php,v $
  *
- * @version $Revision: 1.11 $
- * @modified $Date: 2007/11/01 22:01:01 $ by $Author: franciscom $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2007/11/11 15:30:56 $ by $Author: franciscom $
  *
  * test case and test suites export
  *
@@ -90,7 +90,12 @@ if( $check_children )
 {
 	// Check if there is something to export
 	$tree_mgr = new tree($db);
-	$children=$tree_mgr->get_children($node_id, array("testplan" => "exclude_me"));	
+	
+	// 20071111 - franciscom
+	$children=$tree_mgr->get_children($node_id, 
+	                                  array("testplan" => "exclude_me",
+	                                        "requirement_spec" => "exclude_me",
+	                                        "requirement" => "exclude_me"));	
 	if(count($children)==0)
 		$do_it = 0 ;
 	else

@@ -6,7 +6,7 @@
  * Filename $RCSfile: reports.class.php,v $
  * @author Martin Havlát
  * @version $Revision: 1.8 
- * @modified $Date: 2007/11/10 02:52:38 $ by $Author: havlat $
+ * @modified $Date: 2007/11/11 23:18:15 $ by $Author: havlat $
  *
  * Scope:
  * This class is encapsulates most functionality necessary to query the database
@@ -46,7 +46,7 @@ class reports
     $this->testPlanID = $tplanId;
 //		$this->tplanName  = $tplan_info['name'];
     
-	} // end report constructor
+	} // end constructor
 
 
 	/** 
@@ -88,6 +88,39 @@ class reports
 		return $arrItems;
 	}
 
+
+/** 
+ * get count of builds
+ * @param $active - boolean - query open builds [0,1] optional
+ * @param $open - boolean - query active builds [0,1] optional
+ * @return count || null
+ */ 
+public function get_count_builds($active=1, $open=null)
+{
+	$sql = " SELECT COUNT(*) FROM builds WHERE builds.testplan_id = {$this->testPlanID} ";
+	       
+ 	if( !is_null($active) )
+ 	{
+ 	   $sql .= " AND active=" . intval($active) . " ";   
+ 	}
+ 	if( !is_null($open) )
+ 	{
+ 	   $sql .= " AND is_open=" . intval($open) . " ";   
+ 	}
+      
+	return $this->db->fetchOneValue($sql);
+}
+
+
+/** 
+ * get count of builds
+ * @return count || null
+ */ 
+public function get_count_testcase4testplan()
+{
+	$sql = " SELECT COUNT(*) FROM testplan_tcversions WHERE testplan_id = {$this->testPlanID} ";
+	return $this->db->fetchOneValue($sql);
+}
 		
 } // end class result
 ?>

@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: resultsNavigator.tpl,v 1.19 2007/11/10 02:52:38 havlat Exp $ *}
+{* $Id: resultsNavigator.tpl,v 1.20 2007/11/11 23:17:31 havlat Exp $ *}
 {* Purpose: smarty template - show Test Results and Metrics *}
 {* Rev :
         20070929 - franciscom - 
@@ -31,8 +31,18 @@ function pre_submit()
 
 <h1>{lang_get s='title_nav_results'}</h1>
 
-<div style="margin:3px" >
 <form method="get" id="resultsNavigator" onSubmit="javascript:return pre_submit();">
+<div class="menu_bar">
+	<span style="float: right;">{lang_get s='title_report_type'}
+	<select name="report_type" onchange="this.form.submit();">
+		    {html_options options=$arrReportTypes selected=$selectedReportType}
+	</select></span>
+
+	<span><input type="button" name="print" value="{lang_get s='btn_print'}" 
+	onclick="javascript: reportPrint();" style="margin-left:5px;" /></span>
+</div>
+
+<div style="margin:3px" >
   <input type="hidden" id="called_by_me" name="called_by_me" value="1">
   <input type="hidden" id="called_url" name="called_url" value="">
 
@@ -42,15 +52,12 @@ function pre_submit()
 		{html_options options=$tplans selected=$tplan_id}
 	</select><br />
 	</td></tr>
-	<tr><td style="padding-right: 10px">{lang_get s='title_report_type'}</td><td>
-	<select name="report_type" onchange="this.form.submit();">
-		    {html_options options=$arrReportTypes selected=$selectedReportType}
-	</select>
+	<tr><td style="padding-right: 10px"></td><td>
 	</td></tr>
   </table>
 	
-</form>
 </div>
+</form>
 
 <div style="margin:3px; padding: 15px 0px" >
 {* Build href menu *}
@@ -65,10 +72,6 @@ function pre_submit()
 {/if}
 </div>
 
-<div class="groupBtn">
-	<input type="button" name="print" value="{lang_get s='btn_print'}" 
-	onclick="javascript: reportPrint();" style="margin-left:5px;" />
-</div>
 
 
 {* 20070925 *}

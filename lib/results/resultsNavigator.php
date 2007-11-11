@@ -2,20 +2,18 @@
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
- * @version $Id: resultsNavigator.php,v 1.38 2007/11/10 02:52:38 havlat Exp $ 
+ * @version $Id: resultsNavigator.php,v 1.39 2007/11/11 23:18:15 havlat Exp $ 
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
  * Scope: Launcher for Test Results and Metrics.
  *
  * rev :
- *      20071109 - havlatm - move data to config + refactorization; removed obsolete build list
- * 							 move functin into class  
+ *      20071109,11 - havlatm - move data to config + refactorization; removed obsolete build list
+ * 							 move functions into class  
  *      20070930 - franciscom - 
  *      20070916 - franciscom - added logic to choose test plan
  *      20070826 - franciscom - disable resultsImport
  * 
- * TODO: 
- * 		get_builds_for_html_options() ==> reports->get_count_builds() 
  **/
  
  
@@ -24,12 +22,14 @@ require_once('common.php');
 require_once('builds.inc.php');
 require_once('reports.class.php');
 testlinkInitPage($db);
+tLog('resultsNavigator.php called');
 
 
 $do_report=array();
 $do_report['status_ok']=1;
 $do_report['msg']='';
 $selectedReportType = null;
+$workframe="";
 
 $tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 $tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : $_SESSION['testPlanId'];
@@ -38,24 +38,14 @@ $btsEnabled = config_get('bugInterfaceOn');
 $tplan_mgr = new testplan($db);
 $reports_magic = new reports($db, $tplan_id);
 
-// create a list or reports
-$href_map = $reports_magic->get_list_reports($btsEnabled ,$_SESSION['testprojectOptReqs']);
-
-
-$tplans = getAccessibleTestPlans($db,$tproject_id,$_SESSION['userID'],1);
-$map_tplans=array();
-foreach($tplans as $key => $value)
-{
-  $map_tplans[$value['id']]=$value['name'];
-}
-
 
 // -----------------------------------------------------------------------------
-// Do some checks to understand i reports can be build
+// Do some checks to understand if reports make sense
 
 // Check if there are linked test cases to the choosen test plan.
-$linked_tcversions=$tplan_mgr->get_linked_tcversions($tplan_id);
-if( is_null($linked_tcversions) || count($linked_tcversions) == 0 )
+$tc4tp_count = $reports_magic->get_count_testcase4testplan();
+tLog('TC in TP count = ' . $tc4tp_count);
+if( $tc4tp_count == 0)
 {
    // Test plan without test cases
    $do_report['status_ok']=0;
@@ -63,27 +53,38 @@ if( is_null($linked_tcversions) || count($linked_tcversions) == 0 )
 }
 
 // Build qty
-$the_builds = $tplan_mgr->get_builds_for_html_options($tplan_id);
-if( is_null($the_builds) || count($the_builds) == 0 )
+$build_count = $reports_magic->get_count_builds();
+tLog('Active Builds count = ' . $build_count);
+if( $build_count == 0)
 {
    // Test plan without builds can have execution data
    $do_report['status_ok']=0;
    $do_report['msg']=lang_get('report_tplan_has_no_build');       
 }
-// -----------------------------------------------------------------------------
 
+// -----------------------------------------------------------------------------
+// get navigation data
 
 if($do_report['status_ok'])
 {
-  if (isset($_GET['report_type']))
+  	if (isset($_GET['report_type']))
 	  $selectedReportType = intval($_GET['report_type']);
-  else
+  	else
 	  $selectedReportType = sizeof($g_reports_cfg->formats) ? key($g_reports_cfg->formats) : null;
+
+	// create a list or reports
+	$href_map = $reports_magic->get_list_reports($btsEnabled ,$_SESSION['testprojectOptReqs']);
+
+	$tplans = getAccessibleTestPlans($db,$tproject_id,$_SESSION['userID'],1);
+	$map_tplans=array();
+	foreach($tplans as $key => $value)
+	{
+  		$map_tplans[$value['id']]=$value['name'];
+	}
 }
 
-$workframe="";
 
-// get data from navigator reload
+/* MHT: I removed this because it's not working properly'
 if ( isset($_REQUEST['called_by_me']) )
 {
   // Algorithm based on field order on URL call
@@ -109,7 +110,9 @@ if ( isset($_REQUEST['called_by_me']) )
                                        "?help=showMetrics&locale={$_SESSION['locale']}";
   }             
 }
-
+*/
+    $workframe=$_SESSION['basehref'] . "lib/general/show_help.php" .
+                                       "?help=showMetrics&locale={$_SESSION['locale']}";
 
 
 $smarty = new TLSmarty;

@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
  * @filesource $RCSfile: database.class.php,v $
- * @version $Revision: 1.22 $
- * @modified $Date: 2007/10/14 16:34:44 $ by $Author: franciscom $
+ * @version $Revision: 1.23 $
+ * @modified $Date: 2007/11/11 21:57:11 $ by $Author: havlat $
  * @author Francisco Mancardi
  * 
  *
@@ -420,6 +420,21 @@ class database
 			$row = $this->fetch_array($result);
 		
 		return $row;
+	}
+
+
+	/**
+	 * Get one value (no array)
+	 * for example: SELECT COUNT(*) FROM table 
+	 *
+	 * @param string $query the query to be executed
+	 * @return string of one value || null
+	 **/
+	public function fetchOneValue($query)
+	{
+		$row = $this->fetchFirstRow($query);
+		
+		return $row[0];
 	}
 	
 	

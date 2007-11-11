@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: inc_reqView.tpl,v 1.2 2007/08/27 19:07:10 jbarchibald Exp $ *}
+{* $Id: inc_reqView.tpl,v 1.3 2007/11/11 15:33:50 franciscom Exp $ *}
 {* Purpose: smarty include template - show requirement *}
 {* Author: Martin Havlat *}
 {* Revisions: 
@@ -22,6 +22,9 @@
 		{/section}
 	</div>
     </p>
+  {if $cf != ''}
+    {$cf}
+  {/if}
 	<p>{lang_get s="Author"}: {$arrReq.author} [{localize_date d=$arrReq.creation_ts}]</p>
 	{if $arrReq.modifier <> ''}
 	<p>{lang_get s="last_edit"}: {$arrReq.modifier} [{localize_date d=$arrReq.modification_ts}]</p>

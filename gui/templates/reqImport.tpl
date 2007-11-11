@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: reqImport.tpl,v 1.9 2007/01/02 13:42:06 franciscom Exp $
+$Id: reqImport.tpl,v 1.10 2007/11/11 15:33:50 franciscom Exp $
 Purpose: smarty template - requirements import initial page
 Author: Martin Havlat 
 
@@ -105,20 +105,21 @@ rev:
   
   {* first screen *}
   <form method="post" enctype="multipart/form-data" action="{$SCRIPT_NAME}?idSRS={$reqSpec.id}">
-  	<h2>{lang_get s='title_choose_file_type'}</h2>
-  	<p>{lang_get s='req_import_type'}
-  	<select name="importType">
-  		{html_options options=$importTypes selected=$importType}
-  	</select>
-  	</p>
-  	<p>	{lang_get s='required_cvs_format'}<br />
-  		{foreach key=k item=i from=$reqFormatStrings}
-  			{$k} : {$i}<br />
-  		{/foreach}
-  	</p>
-  
-  	<h2>{lang_get s='title_choose_local_file'}</h2>
-  	<p>{lang_get s='local_file'} <input type="file" name="uploadedFile" size="30" /></p>
+
+    <table>
+    <tr>
+    <td> {lang_get s='file_type'} </td>
+    <td> <select name="importType">
+         {html_options options=$importTypes}
+   	     </select>
+    	   <a href={$basehref}{$smarty.const.PARTIAL_URL_TL_FILE_FORMATS_DOCUMENT}>{lang_get s="view_file_format_doc"}</a>
+    </td>
+    </tr>
+    	<tr><td>{lang_get s='local_file'} </td>
+	    <td><input type="file" name="uploadedFile" 
+	                           size="{#FILENAME_SIZE#}" maxlength="{#FILENAME_MAXLEN#}"/></td>
+  	</tr>
+  </table>
   	<p>{lang_get s='max_size_cvs_file1'} {$importLimitKB} {lang_get s='max_size_cvs_file2'}</p>
   	
   	<div class="groupBtn">

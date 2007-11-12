@@ -1,29 +1,24 @@
 ﻿/*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
  * Copyright (C) 2003-2007 Frederico Caldeira Knabben
- * 
+ *
  * == BEGIN LICENSE ==
- * 
+ *
  * Licensed under the terms of any of the following licenses at your
  * choice:
- * 
+ *
  *  - GNU General Public License Version 2 or later (the "GPL")
  *    http://www.gnu.org/licenses/gpl.html
- * 
+ *
  *  - GNU Lesser General Public License Version 2.1 or later (the "LGPL")
  *    http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  *  - Mozilla Public License Version 1.1 or later (the "MPL")
  *    http://www.mozilla.org/MPL/MPL-1.1.html
- * 
+ *
  * == END LICENSE ==
- * 
- * File Name: ca.js
- * 	Catalan language file.
- * 
- * File Authors:
- * 		Jordi Cerdan (nan@myp.ad)
- * 		Marc Folch (mcus21@gmail.com)
+ *
+ * Catalan language file.
  */
 
 var FCKLang =
@@ -227,15 +222,15 @@ DlgLnkTargetTab		: "Destí",
 DlgLnkType			: "Tipus d'enllaç",
 DlgLnkTypeURL		: "URL",
 DlgLnkTypeAnchor	: "Àncora en aquesta pàgina",
-DlgLnkTypeEMail		: "E-Mail",
+DlgLnkTypeEMail		: "Correu electrònic",
 DlgLnkProto			: "Protocol",
 DlgLnkProtoOther	: "<altra>",
 DlgLnkURL			: "URL",
 DlgLnkAnchorSel		: "Selecciona una àncora",
 DlgLnkAnchorByName	: "Per nom d'àncora",
 DlgLnkAnchorById	: "Per Id d'element",
-DlgLnkNoAnchors		: "<No hi ha àncores disponibles en aquest document>",		//REVIEW : Change < and > with ( and )
-DlgLnkEMail			: "Adreça d'E-Mail",
+DlgLnkNoAnchors		: "(No hi ha àncores disponibles en aquest document)",		//REVIEW : Change < and > with ( and )
+DlgLnkEMail			: "Adreça de correu electrònic",
 DlgLnkEMailSubject	: "Assumpte del missatge",
 DlgLnkEMailBody		: "Cos del missatge",
 DlgLnkUpload		: "Puja",
@@ -265,7 +260,7 @@ DlgLnkPopLeft		: "Posició esquerra",
 DlgLnkPopTop		: "Posició dalt",
 
 DlnLnkMsgNoUrl		: "Si us plau, escrigui l'enllaç URL",
-DlnLnkMsgNoEMail	: "Si us plau, escrigui l'adreça e-mail",
+DlnLnkMsgNoEMail	: "Si us plau, escrigui l'adreça correu electrònic",
 DlnLnkMsgNoAnchor	: "Si us plau, escrigui l'àncora",
 DlnLnkMsgInvPopName	: "El nom de la finestra emergent ha de començar amb una lletra i no pot tenir espais",
 
@@ -285,7 +280,7 @@ DlgSpecialCharTitle	: "Selecciona el caràcter especial",
 DlgTableTitle		: "Propietats de la taula",
 DlgTableRows		: "Files",
 DlgTableColumns		: "Columnes",
-DlgTableBorder		: "Tamany vora",
+DlgTableBorder		: "Mida vora",
 DlgTableAlign		: "Alineació",
 DlgTableAlignNotSet	: "<No Definit>",
 DlgTableAlignLeft	: "Esquerra",
@@ -336,20 +331,20 @@ DlgFindNotFoundMsg	: "El text especificat no s'ha trobat.",
 DlgReplaceTitle			: "Reemplaça",
 DlgReplaceFindLbl		: "Cerca:",
 DlgReplaceReplaceLbl	: "Remplaça amb:",
-DlgReplaceCaseChk		: "Sensible a majúscules",
+DlgReplaceCaseChk		: "Distingeix majúscules/minúscules",
 DlgReplaceReplaceBtn	: "Reemplaça",
-DlgReplaceReplAllBtn	: "Reemplaça'ls tots",
-DlgReplaceWordChk		: "Cerca paraula completa",
+DlgReplaceReplAllBtn	: "Reemplaça-ho tot",
+DlgReplaceWordChk		: "Només paraules completes",
 
 // Paste Operations / Dialog
-PasteErrorPaste	: "La seguretat del vostre navegador no permet executar automàticament les operacions d'enganxat. Si us plau, utilitzeu el teclat (Ctrl+V).",
 PasteErrorCut	: "La seguretat del vostre navegador no permet executar automàticament les operacions de retallar. Si us plau, utilitzeu el teclat (Ctrl+X).",
 PasteErrorCopy	: "La seguretat del vostre navegador no permet executar automàticament les operacions de copiar. Si us plau, utilitzeu el teclat (Ctrl+C).",
 
-PasteAsText		: "Enganxa com a text sense format",
+PasteAsText		: "Enganxa com a text no formatat",
 PasteFromWord	: "Enganxa com a Word",
 
 DlgPasteMsg2	: "Si us plau, enganxeu dins del següent camp utilitzant el teclat (<STRONG>Ctrl+V</STRONG>) i premeu <STRONG>OK</STRONG>.",
+DlgPasteSec		: "A causa de la configuració de seguretat del vostre navegador, l'editor no pot accedir al porta-retalls directament. Enganxeu-ho un altre cop en aquesta finestra.",
 DlgPasteIgnoreFont		: "Ignora definicions de font",
 DlgPasteRemoveStyles	: "Elimina definicions d'estil",
 DlgPasteCleanBox		: "Neteja camp",
@@ -403,7 +398,7 @@ DlgFormMethod	: "Mètode",
 // Select Field Dialog
 DlgSelectName		: "Nom",
 DlgSelectValue		: "Valor",
-DlgSelectSize		: "Tamany",
+DlgSelectSize		: "Mida",
 DlgSelectLines		: "Línies",
 DlgSelectChkMulti	: "Permet múltiples seleccions",
 DlgSelectOpAvail	: "Opcions disponibles",
@@ -455,10 +450,10 @@ DlgDocColorsTab		: "Colors i marges",
 DlgDocMetaTab		: "Dades Meta",
 
 DlgDocPageTitle		: "Títol de la pàgina",
-DlgDocLangDir		: "Direcció llenguatge",
+DlgDocLangDir		: "Direcció idioma",
 DlgDocLangDirLTR	: "Esquerra a dreta (LTR)",
 DlgDocLangDirRTL	: "Dreta a esquerra (RTL)",
-DlgDocLangCode		: "Codi de llenguatge",
+DlgDocLangCode		: "Codi d'idioma",
 DlgDocCharSet		: "Codificació de conjunt de caràcters",
 DlgDocCharSetCE		: "Centreeuropeu",
 DlgDocCharSetCT		: "Xinès tradicional (Big5)",
@@ -472,7 +467,7 @@ DlgDocCharSetWE		: "Europeu occidental",
 DlgDocCharSetOther	: "Una altra codificació de caràcters",
 
 DlgDocDocType		: "Capçalera de tipus de document",
-DlgDocDocTypeOther	: "Altra Capçalera de tipus de document",
+DlgDocDocTypeOther	: "Un altra capçalera de tipus de document",
 DlgDocIncXHTML		: "Incloure declaracions XHTML",
 DlgDocBgColor		: "Color de fons",
 DlgDocBgImage		: "URL de la imatge de fons",

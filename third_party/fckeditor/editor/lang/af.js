@@ -1,28 +1,24 @@
 ﻿/*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
  * Copyright (C) 2003-2007 Frederico Caldeira Knabben
- * 
+ *
  * == BEGIN LICENSE ==
- * 
+ *
  * Licensed under the terms of any of the following licenses at your
  * choice:
- * 
+ *
  *  - GNU General Public License Version 2 or later (the "GPL")
  *    http://www.gnu.org/licenses/gpl.html
- * 
+ *
  *  - GNU Lesser General Public License Version 2.1 or later (the "LGPL")
  *    http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  *  - Mozilla Public License Version 1.1 or later (the "MPL")
  *    http://www.mozilla.org/MPL/MPL-1.1.html
- * 
+ *
  * == END LICENSE ==
- * 
- * File Name: af.js
- * 	Afrikaans language file.
- * 
- * File Authors:
- * 		Willem Petrus Botha (w@adesso.za.net)
+ *
+ * Afrikaans language file.
  */
 
 var FCKLang =
@@ -341,7 +337,6 @@ DlgReplaceReplAllBtn	: "Vervang alles",
 DlgReplaceWordChk		: "Vergelyk komplete woord",
 
 // Paste Operations / Dialog
-PasteErrorPaste	: "U browser se sekuriteit instelling behinder die byvoeg aksie. Gebruik asseblief die sleutel kombenasie(Ctrl+V).",
 PasteErrorCut	: "U browser se sekuriteit instelling behinder die uitsny aksie. Gebruik asseblief die sleutel kombenasie(Ctrl+X).",
 PasteErrorCopy	: "U browser se sekuriteit instelling behinder die kopieerings aksie. Gebruik asseblief die sleutel kombenasie(Ctrl+C).",
 
@@ -349,6 +344,7 @@ PasteAsText		: "Voeg slegs karakters by",
 PasteFromWord	: "Byvoeging uit Word",
 
 DlgPasteMsg2	: "Voeg asseblief die inhoud in die gegewe box by met sleutel kombenasie(<STRONG>Ctrl+V</STRONG>) en druk <STRONG>OK</STRONG>.",
+DlgPasteSec		: "Because of your browser security settings, the editor is not able to access your clipboard data directly. You are required to paste it again in this window.",	//MISSING
 DlgPasteIgnoreFont		: "Ignoreer karakter soort defenisies",
 DlgPasteRemoveStyles	: "Verweider Styl defenisies",
 DlgPasteCleanBox		: "Maak Box Skoon",

@@ -1,37 +1,33 @@
 ﻿<!--
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
  * Copyright (C) 2003-2007 Frederico Caldeira Knabben
- * 
+ *
  * == BEGIN LICENSE ==
- * 
+ *
  * Licensed under the terms of any of the following licenses at your
  * choice:
- * 
+ *
  *  - GNU General Public License Version 2 or later (the "GPL")
  *    http://www.gnu.org/licenses/gpl.html
- * 
+ *
  *  - GNU Lesser General Public License Version 2.1 or later (the "LGPL")
  *    http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  *  - Mozilla Public License Version 1.1 or later (the "MPL")
  *    http://www.mozilla.org/MPL/MPL-1.1.html
- * 
+ *
  * == END LICENSE ==
- * 
- * File Name: class_upload.asp
- * 	These are the classes used to handle ASP upload without using third
- * 	part components (OCX/DLL).
- * 
- * File Authors:
- * 		NetRube (netrube@126.com)
+ *
+ * These are the classes used to handle ASP upload without using third
+ * part components (OCX/DLL).
 -->
 <%
 '**********************************************
 ' File:		NetRube_Upload.asp
-' Version:	NetRube Upload Class Version 2.1 Build 20050228
+' Version:	NetRube Upload Class Version 2.3 Build 20070528
 ' Author:	NetRube
 ' Email:	NetRube@126.com
-' Date:		02/28/2005
+' Date:		05/28/2007
 ' Comments:	The code for the Upload.
 '			This can free usage, but please
 '			not to delete this copyright information.
@@ -39,10 +35,10 @@
 '			Please send out a duplicate to me.
 '**********************************************
 ' 文件名:	NetRube_Upload.asp
-' 版本:		NetRube Upload Class Version 2.1 Build 20050228
+' 版本:		NetRube Upload Class Version 2.3 Build 20070528
 ' 作者:		NetRube(网络乡巴佬)
 ' 电子邮件:	NetRube@126.com
-' 日期:		2005年02月28日
+' 日期:		2007年05月28日
 ' 声明:		文件上传类
 '			本上传类可以自由使用，但请保留此版权声明信息
 '			如果您对本上传类进行修改增强，
@@ -81,7 +77,7 @@ Class NetRube_Upload
 	End Sub
 	
 	Public Property Get Version
-		Version = "NetRube Upload Class Version 1.0 Build 20041218"
+		Version = "NetRube Upload Class Version 2.3 Build 20070528"
 	End Property
 
 	Public Property Get ErrNum
@@ -119,7 +115,30 @@ Class NetRube_Upload
 			Exit Sub
 		End If
 		
-		oSourceData.Write Request.BinaryRead(nTotalSize)
+		'Thankful long(yrl031715@163.com)
+		'Fix upload large file.
+		'**********************************************
+		' 修正作者：long
+		' 联系邮件: yrl031715@163.com
+		' 修正时间：2007年5月6日
+		' 修正说明：由于iis6的Content-Length 头信息中包含的请求长度超过了 AspMaxRequestEntityAllowed 的值（默认200K）, IIS 将返回一个 403 错误信息.
+		'          直接导致在iis6下调试FCKeditor上传功能时，一旦文件超过200K,上传文件时文件管理器失去响应，受此影响，文件的快速上传功能也存在在缺陷。
+		'          在参考 宝玉 的 Asp无组件上传带进度条 演示程序后作出如下修改，以修正在iis6下的错误。
+
+		Dim nTotalBytes, nPartBytes, ReadBytes
+		ReadBytes = 0
+		nTotalBytes = Request.TotalBytes
+		'循环分块读取
+		Do While ReadBytes < nTotalBytes
+			'分块读取
+			nPartBytes = 64 * 1024 '分成每块64k
+			If nPartBytes + ReadBytes > nTotalBytes Then 
+				nPartBytes = nTotalBytes - ReadBytes
+			End If
+			oSourceData.Write Request.BinaryRead(nPartBytes)
+			ReadBytes = ReadBytes + nPartBytes
+		Loop
+		'**********************************************
 		oSourceData.Position = 0
 		
 		Dim oTotalData, oFormStream, sFormHeader, sFormName, bCrLf, nBoundLen, nFormStart, nFormEnd, nPosStart, nPosEnd, sBoundary
@@ -171,7 +190,7 @@ Class NetRube_Upload
 					.Type	= 1
 					.Mode	= 3
 					.Open
-					oSourceData.Position = nPosEnd
+					oSourceData.Position = nFormEnd
 					oSourceData.CopyTo oFormStream, nFormStart - nFormEnd - 2
 					.Position	= 0
 					.Type		= 2
@@ -235,4 +254,4 @@ End Class
 Class NetRube_FileInfo
 	Dim FormName, ClientPath, Path, Name, Ext, Content, Size, MIME, Start
 End Class
-%>
+%>

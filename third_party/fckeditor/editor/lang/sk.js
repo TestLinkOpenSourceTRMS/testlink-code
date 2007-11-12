@@ -1,29 +1,24 @@
 ﻿/*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
  * Copyright (C) 2003-2007 Frederico Caldeira Knabben
- * 
+ *
  * == BEGIN LICENSE ==
- * 
+ *
  * Licensed under the terms of any of the following licenses at your
  * choice:
- * 
+ *
  *  - GNU General Public License Version 2 or later (the "GPL")
  *    http://www.gnu.org/licenses/gpl.html
- * 
+ *
  *  - GNU Lesser General Public License Version 2.1 or later (the "LGPL")
  *    http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  *  - Mozilla Public License Version 1.1 or later (the "MPL")
  *    http://www.mozilla.org/MPL/MPL-1.1.html
- * 
+ *
  * == END LICENSE ==
- * 
- * File Name: sk.js
- * 	Slovak language file.
- * 
- * File Authors:
- * 		Samuel Szabo (samuel@nanete.sk)
- * 		Jozef Gaal (runcms.mayday.sk)
+ *
+ * Slovak language file.
  */
 
 var FCKLang =
@@ -342,7 +337,6 @@ DlgReplaceReplAllBtn	: "Nahradiť všetko",
 DlgReplaceWordChk		: "Len celé slová",
 
 // Paste Operations / Dialog
-PasteErrorPaste	: "Bezpečnostné nastavenie Vášho prehliadača nedovoľujú editoru spustiť funkciu pre vloženie textu zo schránky. Prosím vložte text zo schránky pomocou klávesnice (Ctrl+V).",
 PasteErrorCut	: "Bezpečnostné nastavenie Vášho prehliadača nedovoľujú editoru spustiť funkciu pre vystrihnutie zvoleného textu do schránky. Prosím vystrihnite zvolený text do schránky pomocou klávesnice (Ctrl+X).",
 PasteErrorCopy	: "Bezpečnostné nastavenie Vášho prehliadača nedovoľujú editoru spustiť funkciu pre kopírovanie zvoleného textu do schránky. Prosím skopírujte zvolený text do schránky pomocou klávesnice (Ctrl+C).",
 
@@ -350,6 +344,7 @@ PasteAsText		: "Vložiť ako čistý text",
 PasteFromWord	: "Vložiť text z Wordu",
 
 DlgPasteMsg2	: "Prosím vložte nasledovný rámček použitím klávesnice (<STRONG>Ctrl+V</STRONG>) a stlačte <STRONG>OK</STRONG>.",
+DlgPasteSec		: "Because of your browser security settings, the editor is not able to access your clipboard data directly. You are required to paste it again in this window.",	//MISSING
 DlgPasteIgnoreFont		: "Ignorovať nastavenia typu písma",
 DlgPasteRemoveStyles	: "Odstrániť formátovanie",
 DlgPasteCleanBox		: "Vyčistiť schránku",

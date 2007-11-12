@@ -20,20 +20,16 @@ choice:
 
 == END LICENSE ==
 
-File Name: connector.py
-	Connector for Python.
-	
-	Tested With:
-	Standard:
-		Python 2.3.3
-	Zope:
-		Zope Version: (Zope 2.8.1-final, python 2.3.5, linux2)
-		Python Version: 2.3.5 (#4, Mar 10 2005, 01:40:25) 
-			[GCC 3.3.3 20040412 (Red Hat Linux 3.3.3-7)]
-		System Platform: linux2 
+Connector for Python.
 
-File Authors:
-		Andrew Liu (andrew@liuholdings.com)
+Tested With:
+Standard:
+	Python 2.3.3
+Zope:
+	Zope Version: (Zope 2.8.1-final, python 2.3.5, linux2)
+	Python Version: 2.3.5 (#4, Mar 10 2005, 01:40:25)
+		[GCC 3.3.3 20040412 (Red Hat Linux 3.3.3-7)]
+	System Platform: linux2
 """
 
 """
@@ -41,7 +37,7 @@ Author Notes (04 December 2005):
 This module has gone through quite a few phases of change.  Obviously,
 I am only supporting that part of the code that I use.  Initially
 I had the upload directory as a part of zope (ie. uploading files
-directly into Zope), before realising that there were too many 
+directly into Zope), before realising that there were too many
 complex intricacies within Zope to deal with.  Zope is one ugly piece
 of code.  So I decided to complement Zope by an Apache server (which
 I had running anyway, and doing nothing).  So I mapped all uploads
@@ -50,7 +46,7 @@ All the FCKeditor uploading occurred this way, and I didn't have to
 stuff around with fiddling with Zope objects and the like (which are
 terribly complex and something you don't want to do - trust me).
 
-Maybe a Zope expert can touch up the Zope components.  In the end, 
+Maybe a Zope expert can touch up the Zope components.  In the end,
 I had FCKeditor loaded in Zope (probably a bad idea as well), and
 I replaced the connector.py with an alias to a server module.
 Right now, all Zope components will simple remain as is because
@@ -140,7 +136,7 @@ The connector class
 class FCKeditorConnector(object):
 	# Configuration for FCKEditor
 	# can point to another server here, if linked correctly
-	#WEB_HOST = "http://127.0.0.1/" 
+	#WEB_HOST = "http://127.0.0.1/"
 	WEB_HOST = ""
 	SERVER_DIR = "/var/www/html/"
 
@@ -181,10 +177,10 @@ class FCKeditorConnector(object):
 				"Media": None
 				}
 		self.deniedExtensions = {
-				"File": [ "html","htm","php","php2","php3","php4","php5","phtml","pwml","inc","asp","aspx","ascx","jsp","cfm","cfc","pl","bat","exe","com","dll","vbs","js","reg","cgi","htaccess","asis" ],
-				"Image": [ "html","htm","php","php2","php3","php4","php5","phtml","pwml","inc","asp","aspx","ascx","jsp","cfm","cfc","pl","bat","exe","com","dll","vbs","js","reg","cgi","htaccess","asis" ],
-				"Flash": [ "html","htm","php","php2","php3","php4","php5","phtml","pwml","inc","asp","aspx","ascx","jsp","cfm","cfc","pl","bat","exe","com","dll","vbs","js","reg","cgi","htaccess","asis" ],
-				"Media": [ "html","htm","php","php2","php3","php4","php5","phtml","pwml","inc","asp","aspx","ascx","jsp","cfm","cfc","pl","bat","exe","com","dll","vbs","js","reg","cgi","htaccess","asis" ]
+				"File": [ "html","htm","php","php2","php3","php4","php5","phtml","pwml","inc","asp","aspx","ascx","jsp","cfm","cfc","pl","bat","exe","com","dll","vbs","js","reg","cgi","htaccess","asis","sh","shtml","shtm","phtm" ],
+				"Image": [ "html","htm","php","php2","php3","php4","php5","phtml","pwml","inc","asp","aspx","ascx","jsp","cfm","cfc","pl","bat","exe","com","dll","vbs","js","reg","cgi","htaccess","asis","sh","shtml","shtm","phtm" ],
+				"Flash": [ "html","htm","php","php2","php3","php4","php5","phtml","pwml","inc","asp","aspx","ascx","jsp","cfm","cfc","pl","bat","exe","com","dll","vbs","js","reg","cgi","htaccess","asis","sh","shtml","shtm","phtm" ],
+				"Media": [ "html","htm","php","php2","php3","php4","php5","phtml","pwml","inc","asp","aspx","ascx","jsp","cfm","cfc","pl","bat","exe","com","dll","vbs","js","reg","cgi","htaccess","asis","sh","shtml","shtm","phtm" ]
 				}
 
 	"""
@@ -280,11 +276,11 @@ class FCKeditorConnector(object):
 		index = fileName.rindex(".") + 1
 		fileExtension = fileName[index:]
 		return fileExtension
-		
+
 	def getParentFolder(self, folderPath):
 		parentFolderPath = self.parentFolderRe.sub('', folderPath)
 		return parentFolderPath
-	
+
 	"""
 	serverMapFolder
 
@@ -338,7 +334,7 @@ class FCKeditorConnector(object):
 	"""
 	def getRootPath(self):
 		return self.rootPath
-		
+
 	"""
 	setXmlHeaders
 
@@ -387,7 +383,7 @@ class FCKeditorConnector(object):
 				self.convertToXmlAttribute(currentFolder),
 				self.convertToXmlAttribute(
 					self.getWebUrlFromPath(
-						resourceType, 
+						resourceType,
 						currentFolder
 						)
 					),
@@ -457,7 +453,7 @@ class FCKeditorConnector(object):
 		# Close the folders node
 		s += """</Folders>"""
 		return s
-		
+
 	"""
 	getFoldersAndFiles
 
@@ -513,7 +509,7 @@ class FCKeditorConnector(object):
 		# Close the files node
 		s += """</Files>"""
 		return s
-		
+
 	def findZopeFolder(self, resourceType, folderName):
 		# returns the context of the resource / folder
 		zopeFolder = self.getZopeUploadContext()
@@ -564,7 +560,7 @@ class FCKeditorConnector(object):
 		if self.request.has_key("NewFolderName"):
 			newFolder = self.request.get("NewFolderName", None)
 			currentFolderPath = self.serverMapFolder(
-					resourceType, 
+					resourceType,
 					currentFolder
 					)
 			try:
@@ -629,7 +625,7 @@ class FCKeditorConnector(object):
 				count = 1
 			self.zopeFileUpload(resourceType, currentFolder, count)
 		return
-		
+
 	def nonZopeFileUpload(self, resourceType, currentFolder):
 		errorNo = 0
 		errorMsg = ""
@@ -664,7 +660,7 @@ class FCKeditorConnector(object):
 					# Upload to operating system
 					# Map the virtual path to the local server path
 					currentFolderPath = self.serverMapFolder(
-							resourceType, 
+							resourceType,
 							currentFolder
 							)
 					i = 0
@@ -700,7 +696,7 @@ class FCKeditorConnector(object):
 		else:
 			newFileName = "No File"
 			errorNo = 202
-	
+
 		string = """
 <script type="text/javascript">
 window.parent.frames["frmUpload"].OnUploadCompleted(%s,"%s");
@@ -719,11 +715,11 @@ window.parent.frames["frmUpload"].OnUploadCompleted(%s,"%s");
 				return self.sendError(1, "This connector is disabled.  Please check the connector configurations and try again")
 			# Make sure we have valid inputs
 			if not(
-					(self.request.has_key("Command")) and 
-					(self.request.has_key("Type")) and 
+					(self.request.has_key("Command")) and
+					(self.request.has_key("Type")) and
 					(self.request.has_key("CurrentFolder"))
 					):
-				return 
+				return
 			# Get command
 			command = self.request.get("Command", None)
 			# Get resource type
@@ -758,7 +754,7 @@ window.parent.frames["frmUpload"].OnUploadCompleted(%s,"%s");
 		except Exception, e:
 			s = "ERROR: %s" % e
 		return s
-			
+
 # Running from command line
 if __name__ == '__main__':
 	# To test the output, uncomment the standard headers
@@ -767,8 +763,8 @@ if __name__ == '__main__':
 	print getFCKeditorConnector()
 
 """
-Running from zope, you will need to modify this connector. 
-If you have uploaded the FCKeditor into Zope (like me), you need to 
+Running from zope, you will need to modify this connector.
+If you have uploaded the FCKeditor into Zope (like me), you need to
 move this connector out of Zope, and replace the "connector" with an
 alias as below.  The key to it is to pass the Zope context in, as
 we then have a like to the Zope context.
@@ -785,5 +781,5 @@ we then have a like to the Zope context.
 import Products.connector as connector
 return connector.getFCKeditorConnector(context=context).run()
 """
-			
-	
+
+

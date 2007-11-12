@@ -1,29 +1,24 @@
 ﻿/*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
  * Copyright (C) 2003-2007 Frederico Caldeira Knabben
- * 
+ *
  * == BEGIN LICENSE ==
- * 
+ *
  * Licensed under the terms of any of the following licenses at your
  * choice:
- * 
+ *
  *  - GNU General Public License Version 2 or later (the "GPL")
  *    http://www.gnu.org/licenses/gpl.html
- * 
+ *
  *  - GNU Lesser General Public License Version 2.1 or later (the "LGPL")
  *    http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  *  - Mozilla Public License Version 1.1 or later (the "MPL")
  *    http://www.mozilla.org/MPL/MPL-1.1.html
- * 
+ *
  * == END LICENSE ==
- * 
- * File Name: bn.js
- * 	Bengali/Bangla language file.
- * 
- * File Authors:
- * 		Richard Walledge (darkdoctrine@hotmail.com)
- * 		S M Mahbub Murshed (udvranto@yahoo.com)
+ *
+ * Bengali/Bangla language file.
  */
 
 var FCKLang =
@@ -342,7 +337,6 @@ DlgReplaceReplAllBtn	: "সব বদলে দাও",
 DlgReplaceWordChk		: "পুরা শব্দ মেলাও",
 
 // Paste Operations / Dialog
-PasteErrorPaste	: "আপনার ব্রাউজারের সুরক্ষা সেটিংস এডিটরকে অটোমেটিক পেস্ট করার অনুমতি দেয়নি। দয়া করে এই কাজের জন্য কিবোর্ড ব্যবহার করুন (Ctrl+V)।",
 PasteErrorCut	: "আপনার ব্রাউজারের সুরক্ষা সেটিংস এডিটরকে অটোমেটিক কাট করার অনুমতি দেয়নি। দয়া করে এই কাজের জন্য কিবোর্ড ব্যবহার করুন (Ctrl+X)।",
 PasteErrorCopy	: "আপনার ব্রাউজারের সুরক্ষা সেটিংস এডিটরকে অটোমেটিক কপি করার অনুমতি দেয়নি। দয়া করে এই কাজের জন্য কিবোর্ড ব্যবহার করুন (Ctrl+C)।",
 
@@ -350,6 +344,7 @@ PasteAsText		: "সাদা টেক্সট হিসেবে পেস্�
 PasteFromWord	: "ওয়ার্ড থেকে পেস্ট কর",
 
 DlgPasteMsg2	: "অনুগ্রহ করে নীচের বাক্সে কিবোর্ড ব্যবহার করে (<STRONG>Ctrl+V</STRONG>) পেস্ট করুন এবং <STRONG>OK</STRONG> চাপ দিন",
+DlgPasteSec		: "Because of your browser security settings, the editor is not able to access your clipboard data directly. You are required to paste it again in this window.",	//MISSING
 DlgPasteIgnoreFont		: "ফন্ট ফেস ডেফিনেশন ইগনোর করুন",
 DlgPasteRemoveStyles	: "স্টাইল ডেফিনেশন সরিয়ে দিন",
 DlgPasteCleanBox		: "বাক্স পরিষ্কার করুন",

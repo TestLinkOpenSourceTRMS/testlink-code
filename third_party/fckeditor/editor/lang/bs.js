@@ -1,28 +1,24 @@
 ﻿/*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
  * Copyright (C) 2003-2007 Frederico Caldeira Knabben
- * 
+ *
  * == BEGIN LICENSE ==
- * 
+ *
  * Licensed under the terms of any of the following licenses at your
  * choice:
- * 
+ *
  *  - GNU General Public License Version 2 or later (the "GPL")
  *    http://www.gnu.org/licenses/gpl.html
- * 
+ *
  *  - GNU Lesser General Public License Version 2.1 or later (the "LGPL")
  *    http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  *  - Mozilla Public License Version 1.1 or later (the "MPL")
  *    http://www.mozilla.org/MPL/MPL-1.1.html
- * 
+ *
  * == END LICENSE ==
- * 
- * File Name: bs.js
- * 	Bosnian language file.
- * 
- * File Authors:
- * 		Muris Trax (www.elektronika.ba)
+ *
+ * Bosnian language file.
  */
 
 var FCKLang =
@@ -341,7 +337,6 @@ DlgReplaceReplAllBtn	: "Zamjeni sve",
 DlgReplaceWordChk		: "Uporeðuj samo cijelu rijeè",
 
 // Paste Operations / Dialog
-PasteErrorPaste	: "Sigurnosne postavke vašeg pretraživaèa ne dozvoljavaju operacije automatskog lijepljenja. Molimo koristite kraticu na tastaturi (Ctrl+V).",
 PasteErrorCut	: "Sigurnosne postavke vašeg pretraživaèa ne dozvoljavaju operacije automatskog rezanja. Molimo koristite kraticu na tastaturi (Ctrl+X).",
 PasteErrorCopy	: "Sigurnosne postavke Vašeg pretraživaèa ne dozvoljavaju operacije automatskog kopiranja. Molimo koristite kraticu na tastaturi (Ctrl+C).",
 
@@ -349,6 +344,7 @@ PasteAsText		: "Zalijepi kao obièan tekst",
 PasteFromWord	: "Zalijepi iz Word-a",
 
 DlgPasteMsg2	: "Please paste inside the following box using the keyboard (<strong>Ctrl+V</strong>) and hit <strong>OK</strong>.",	//MISSING
+DlgPasteSec		: "Because of your browser security settings, the editor is not able to access your clipboard data directly. You are required to paste it again in this window.",	//MISSING
 DlgPasteIgnoreFont		: "Ignore Font Face definitions",	//MISSING
 DlgPasteRemoveStyles	: "Remove Styles definitions",	//MISSING
 DlgPasteCleanBox		: "Clean Up Box",	//MISSING

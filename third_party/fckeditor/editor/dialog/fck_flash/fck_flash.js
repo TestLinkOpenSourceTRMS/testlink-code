@@ -1,28 +1,24 @@
 ﻿/*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
  * Copyright (C) 2003-2007 Frederico Caldeira Knabben
- * 
+ *
  * == BEGIN LICENSE ==
- * 
+ *
  * Licensed under the terms of any of the following licenses at your
  * choice:
- * 
+ *
  *  - GNU General Public License Version 2 or later (the "GPL")
  *    http://www.gnu.org/licenses/gpl.html
- * 
+ *
  *  - GNU Lesser General Public License Version 2.1 or later (the "LGPL")
  *    http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  *  - Mozilla Public License Version 1.1 or later (the "MPL")
  *    http://www.mozilla.org/MPL/MPL-1.1.html
- * 
+ *
  * == END LICENSE ==
- * 
- * File Name: fck_flash.js
- * 	Scripts related to the Flash dialog window (see fck_flash.html).
- * 
- * File Authors:
- * 		Frederico Caldeira Knabben (www.fckeditor.net)
+ *
+ * Scripts related to the Flash dialog window (see fck_flash.html).
  */
 
 var oEditor		= window.parent.InnerDialogLoaded() ;
@@ -86,8 +82,6 @@ function LoadSelection()
 {
 	if ( ! oEmbed ) return ;
 
-	var sUrl = GetAttribute( oEmbed, 'src', '' ) ;
-
 	GetE('txtUrl').value    = GetAttribute( oEmbed, 'src', '' ) ;
 	GetE('txtWidth').value  = GetAttribute( oEmbed, 'width', '' ) ;
 	GetE('txtHeight').value = GetAttribute( oEmbed, 'height', '' ) ;
@@ -98,7 +92,7 @@ function LoadSelection()
 	GetE('chkLoop').checked		= GetAttribute( oEmbed, 'loop', 'true' ) == 'true' ;
 	GetE('chkMenu').checked		= GetAttribute( oEmbed, 'menu', 'true' ) == 'true' ;
 	GetE('cmbScale').value		= GetAttribute( oEmbed, 'scale', '' ).toLowerCase() ;
-	
+
 	GetE('txtAttTitle').value		= oEmbed.title ;
 
 	if ( oEditor.FCKBrowserInfo.IsIE )
@@ -109,7 +103,7 @@ function LoadSelection()
 	else
 	{
 		GetE('txtAttClasses').value = oEmbed.getAttribute('class',2) || '' ;
-		GetE('txtAttStyle').value = oEmbed.getAttribute('style',2) ;
+		GetE('txtAttStyle').value = oEmbed.getAttribute('style',2) || '' ;
 	}
 
 	UpdatePreview() ;
@@ -134,7 +128,7 @@ function Ok()
 		oFakeImage  = null ;
 	}
 	UpdateEmbed( oEmbed ) ;
-	
+
 	if ( !oFakeImage )
 	{
 		oFakeImage	= oEditor.FCKDocumentProcessor_CreateFakeImage( 'FCK__Flash', oEmbed ) ;
@@ -143,7 +137,7 @@ function Ok()
 	}
 	else
 		oEditor.FCKUndo.SaveUndoStep() ;
-	
+
 	oEditor.FCKFlashProcessor.RefreshView( oFakeImage, oEmbed ) ;
 
 	return true ;
@@ -154,15 +148,15 @@ function UpdateEmbed( e )
 	SetAttribute( e, 'type'			, 'application/x-shockwave-flash' ) ;
 	SetAttribute( e, 'pluginspage'	, 'http://www.macromedia.com/go/getflashplayer' ) ;
 
-	e.src = GetE('txtUrl').value ;
+	SetAttribute( e, 'src', GetE('txtUrl').value ) ;
 	SetAttribute( e, "width" , GetE('txtWidth').value ) ;
 	SetAttribute( e, "height", GetE('txtHeight').value ) ;
-	
+
 	// Advances Attributes
 
 	SetAttribute( e, 'id'	, GetE('txtAttId').value ) ;
 	SetAttribute( e, 'scale', GetE('cmbScale').value ) ;
-	
+
 	SetAttribute( e, 'play', GetE('chkAutoPlay').checked ? 'true' : 'false' ) ;
 	SetAttribute( e, 'loop', GetE('chkLoop').checked ? 'true' : 'false' ) ;
 	SetAttribute( e, 'menu', GetE('chkMenu').checked ? 'true' : 'false' ) ;
@@ -186,7 +180,7 @@ var ePreview ;
 function SetPreviewElement( previewEl )
 {
 	ePreview = previewEl ;
-	
+
 	if ( GetE('txtUrl').value.length > 0 )
 		UpdatePreview() ;
 }
@@ -195,7 +189,7 @@ function UpdatePreview()
 {
 	if ( !ePreview )
 		return ;
-		
+
 	while ( ePreview.firstChild )
 		ePreview.removeChild( ePreview.firstChild ) ;
 
@@ -205,12 +199,12 @@ function UpdatePreview()
 	{
 		var oDoc	= ePreview.ownerDocument || ePreview.document ;
 		var e		= oDoc.createElement( 'EMBED' ) ;
-		
-		e.src		= GetE('txtUrl').value ;
-		e.type		= 'application/x-shockwave-flash' ;
-		e.width		= '100%' ;
-		e.height	= '100%' ;
-		
+
+		SetAttribute( e, 'src', GetE('txtUrl').value ) ;
+		SetAttribute( e, 'type', 'application/x-shockwave-flash' ) ;
+		SetAttribute( e, 'width', '100%' ) ;
+		SetAttribute( e, 'height', '100%' ) ;
+
 		ePreview.appendChild( e ) ;
 	}
 }
@@ -225,11 +219,11 @@ function BrowseServer()
 function SetUrl( url, width, height )
 {
 	GetE('txtUrl').value = url ;
-	
+
 	if ( width )
 		GetE('txtWidth').value = width ;
-		
-	if ( height ) 
+
+	if ( height )
 		GetE('txtHeight').value = height ;
 
 	UpdatePreview() ;
@@ -274,19 +268,19 @@ var oUploadDeniedExtRegex	= new RegExp( FCKConfig.FlashUploadDeniedExtensions, '
 function CheckUpload()
 {
 	var sFile = GetE('txtUploadFile').value ;
-	
+
 	if ( sFile.length == 0 )
 	{
 		alert( 'Please select a file to upload' ) ;
 		return false ;
 	}
-	
+
 	if ( ( FCKConfig.FlashUploadAllowedExtensions.length > 0 && !oUploadAllowedExtRegex.test( sFile ) ) ||
 		( FCKConfig.FlashUploadDeniedExtensions.length > 0 && oUploadDeniedExtRegex.test( sFile ) ) )
 	{
 		OnUploadCompleted( 202 ) ;
 		return false ;
 	}
-	
+
 	return true ;
 }

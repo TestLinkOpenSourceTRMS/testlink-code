@@ -1,29 +1,24 @@
 ﻿/*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
  * Copyright (C) 2003-2007 Frederico Caldeira Knabben
- * 
+ *
  * == BEGIN LICENSE ==
- * 
+ *
  * Licensed under the terms of any of the following licenses at your
  * choice:
- * 
+ *
  *  - GNU General Public License Version 2 or later (the "GPL")
  *    http://www.gnu.org/licenses/gpl.html
- * 
+ *
  *  - GNU Lesser General Public License Version 2.1 or later (the "LGPL")
  *    http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  *  - Mozilla Public License Version 1.1 or later (the "MPL")
  *    http://www.mozilla.org/MPL/MPL-1.1.html
- * 
+ *
  * == END LICENSE ==
- * 
- * File Name: fa.js
- * 	Persian language file.
- * 
- * File Authors:
- * 		Hamed Taj-Abadi (hamed@ranginkaman.com)
- * 		Pooyan Mahdavi (pooyanmx -@- gmail -.- com)
+ *
+ * Persian language file.
  */
 
 var FCKLang =
@@ -144,7 +139,7 @@ FontFormats			: "نرمال;فرمت‌شده;آدرس;سرنویس 1;سرنوی
 // Alerts and Messages
 ProcessingXHTML		: "پردازش XHTML. لطفا صبر کنید...",
 Done				: "انجام شد",
-PasteWordConfirm	: "کپی شده است. آیا می‌خواهید قبل از چسباندن آن را پاک‌سازی کنید؟ Word متنی که می‌خواهید بچسبانید به نظر می‌رسد از",
+PasteWordConfirm	: "متنی که می‌خواهید بچسبانید به نظر می‌رسد از Word کپی شده است. آیا می‌خواهید قبل از چسباندن آن را پاک‌سازی کنید؟",
 NotCompatiblePaste	: "این فرمان برای مرورگر Internet Explorer از نگارش 5.5 یا بالاتر در دسترس است. آیا می‌خواهید بدون پاک‌سازی، متن را بچسبانید؟",
 UnknownToolbarItem	: "فقرهٴ نوارابزار ناشناخته \"%1\"",
 UnknownCommand		: "نام دستور ناشناخته \"%1\"",
@@ -234,7 +229,7 @@ DlgLnkURL			: "URL",
 DlgLnkAnchorSel		: "یک لنگر برگزینید",
 DlgLnkAnchorByName	: "با نام لنگر",
 DlgLnkAnchorById	: "با شناسهٴ المان",
-DlgLnkNoAnchors		: "<در این سند لنگری دردسترس نیست>",		//REVIEW : Change < and > with ( and )
+DlgLnkNoAnchors		: "(در این سند لنگری دردسترس نیست)",		//REVIEW : Change < and > with ( and )
 DlgLnkEMail			: "نشانی پست الکترونیکی",
 DlgLnkEMailSubject	: "موضوع پیام",
 DlgLnkEMailBody		: "متن پیام",
@@ -251,7 +246,7 @@ DlgLnkTargetTop		: "بالاترین پنجره (_top)",
 DlgLnkTargetFrameName	: "نام فریم مقصد",
 DlgLnkPopWinName	: "نام پنجرهٴ پاپاپ",
 DlgLnkPopWinFeat	: "ویژگیهای پنجرهٴ پاپاپ",
-DlgLnkPopResize		: "قابل تغیر اندازه",
+DlgLnkPopResize		: "قابل تغییر اندازه",
 DlgLnkPopLocation	: "نوار موقعیت",
 DlgLnkPopMenu		: "نوار منو",
 DlgLnkPopScroll		: "میله‌های پیمایش",
@@ -342,7 +337,6 @@ DlgReplaceReplAllBtn	: "جایگزینی همهٴ یافته‌ها",
 DlgReplaceWordChk		: "همسانی با واژهٴ کامل",
 
 // Paste Operations / Dialog
-PasteErrorPaste	: "تنظیمات امنیتی مرورگر شما اجازه نمی‌دهد که ویرایشگر به طور خودکار عملکردهای چسباندن را انجام دهد. لطفا با دکمه‌های صفحه‌کلید این کار را انجام دهید (Ctrl+V).",
 PasteErrorCut	: "تنظیمات امنیتی مرورگر شما اجازه نمی‌دهد که ویرایشگر به طور خودکار عملکردهای برش را انجام دهد. لطفا با دکمه‌های صفحه‌کلید این کار را انجام دهید (Ctrl+X).",
 PasteErrorCopy	: "تنظیمات امنیتی مرورگر شما اجازه نمی‌دهد که ویرایشگر به طور خودکار عملکردهای کپی‌کردن را انجام دهد. لطفا با دکمه‌های صفحه‌کلید این کار را انجام دهید (Ctrl+C).",
 
@@ -350,6 +344,7 @@ PasteAsText		: "چسباندن به عنوان متن ِساده",
 PasteFromWord	: "چسباندن از Word",
 
 DlgPasteMsg2	: "لطفا متن را با کلیدهای (<STRONG>Ctrl+V</STRONG>) در این جعبهٴ متنی بچسبانید و <STRONG>پذیرش</STRONG> را بزنید.",
+DlgPasteSec		: "به خاطر تنظیمات امنیتی مرورگر شما، ویرایشگر نمی‌تواند دسترسی مستقیم به داده‌های clipboard داشته باشد. شما باید دوباره آنرا در این پنجره بچسبانید.",
 DlgPasteIgnoreFont		: "چشم‌پوشی از تعاریف نوع قلم",
 DlgPasteRemoveStyles	: "چشم‌پوشی از تعاریف سبک (style)",
 DlgPasteCleanBox		: "پاک‌کردن ناحیه",
@@ -367,8 +362,8 @@ DlgAnchorName		: "نام لنگر",
 DlgAnchorErrorName	: "لطفا نام لنگر را بنویسید",
 
 // Speller Pages Dialog
-DlgSpellNotInDic		: "در واژه‌نامه موجود نیست",
-DlgSpellChangeTo		: "تغیر به",
+DlgSpellNotInDic		: "در واژه‌نامه یافت نشد",
+DlgSpellChangeTo		: "تغییر به",
 DlgSpellBtnIgnore		: "چشم‌پوشی",
 DlgSpellBtnIgnoreAll	: "چشم‌پوشی همه",
 DlgSpellBtnReplace		: "جایگزینی",
@@ -377,9 +372,9 @@ DlgSpellBtnUndo			: "واچینش",
 DlgSpellNoSuggestions	: "- پیشنهادی نیست -",
 DlgSpellProgress		: "بررسی املا در حال انجام...",
 DlgSpellNoMispell		: "بررسی املا انجام شد. هیچ غلط‌املائی یافت نشد",
-DlgSpellNoChanges		: "بررسی املا انجام شد. هیچ واژه‌ای تغیر نیافت",
-DlgSpellOneChange		: "بررسی املا انجام شد. یک واژه تغیر یافت",
-DlgSpellManyChanges		: "بررسی املا انجام شد. %1 واژه تغیر یافت",
+DlgSpellNoChanges		: "بررسی املا انجام شد. هیچ واژه‌ای تغییر نیافت",
+DlgSpellOneChange		: "بررسی املا انجام شد. یک واژه تغییر یافت",
+DlgSpellManyChanges		: "بررسی املا انجام شد. %1 واژه تغییر یافت",
 
 IeSpellDownload			: "بررسی‌کنندهٴ املا نصب نشده است. آیا می‌خواهید آن را هم‌اکنون دریافت کنید؟",
 
@@ -397,7 +392,7 @@ DlgCheckboxSelected	: "برگزیده",
 
 // Form Dialog
 DlgFormName		: "نام",
-DlgFormAction	: "اقدام",
+DlgFormAction	: "رویداد",
 DlgFormMethod	: "متد",
 
 // Select Field Dialog
@@ -406,15 +401,15 @@ DlgSelectValue		: "مقدار",
 DlgSelectSize		: "اندازه",
 DlgSelectLines		: "خطوط",
 DlgSelectChkMulti	: "گزینش چندگانه فراهم باشد",
-DlgSelectOpAvail	: "گزینه‌های موجود",
+DlgSelectOpAvail	: "گزینه‌های دردسترس",
 DlgSelectOpText		: "متن",
 DlgSelectOpValue	: "مقدار",
-DlgSelectBtnAdd		: "اضافه",
+DlgSelectBtnAdd		: "افزودن",
 DlgSelectBtnModify	: "ویرایش",
 DlgSelectBtnUp		: "بالا",
 DlgSelectBtnDown	: "پائین",
 DlgSelectBtnSetValue : "تنظیم به عنوان مقدار ِبرگزیده",
-DlgSelectBtnDelete	: "حذف",
+DlgSelectBtnDelete	: "پاک‌کردن",
 
 // Textarea Dialog
 DlgTextareaName	: "نام",

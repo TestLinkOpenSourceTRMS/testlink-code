@@ -1,30 +1,24 @@
 ﻿/*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
  * Copyright (C) 2003-2007 Frederico Caldeira Knabben
- * 
+ *
  * == BEGIN LICENSE ==
- * 
+ *
  * Licensed under the terms of any of the following licenses at your
  * choice:
- * 
+ *
  *  - GNU General Public License Version 2 or later (the "GPL")
  *    http://www.gnu.org/licenses/gpl.html
- * 
+ *
  *  - GNU Lesser General Public License Version 2.1 or later (the "LGPL")
  *    http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  *  - Mozilla Public License Version 1.1 or later (the "MPL")
  *    http://www.mozilla.org/MPL/MPL-1.1.html
- * 
+ *
  * == END LICENSE ==
- * 
- * File Name: pt-br.js
- * 	Brazilian Portuguese language file.
- * 
- * File Authors:
- * 		Carlos Alberto Tomatis Loth (carlos.loth@conectait.com.br)
- * 		GibaPhp (www.xoopstotal.com.br)
- * 		Francisco Ernesto Teixeira (fco_ernesto@yahoo.com.br)
+ *
+ * Brazilian Portuguese language file.
  */
 
 var FCKLang =
@@ -343,7 +337,6 @@ DlgReplaceReplAllBtn	: "Substituir Tudo",
 DlgReplaceWordChk		: "Coincidir a palavra inteira",
 
 // Paste Operations / Dialog
-PasteErrorPaste	: "As configurações de segurança do seu navegador não permitem que o editor execute operações de colar automaticamente. Por favor, utilize o teclado para colar (Ctrl+V).",
 PasteErrorCut	: "As configurações de segurança do seu navegador não permitem que o editor execute operações de recortar automaticamente. Por favor, utilize o teclado para recortar (Ctrl+X).",
 PasteErrorCopy	: "As configurações de segurança do seu navegador não permitem que o editor execute operações de copiar automaticamente. Por favor, utilize o teclado para copiar (Ctrl+C).",
 
@@ -351,6 +344,7 @@ PasteAsText		: "Colar como Texto sem Formatação",
 PasteFromWord	: "Colar do Word",
 
 DlgPasteMsg2	: "Transfira o link usado no box usando o teclado com (<STRONG>Ctrl+V</STRONG>) e <STRONG>OK</STRONG>.",
+DlgPasteSec		: "Because of your browser security settings, the editor is not able to access your clipboard data directly. You are required to paste it again in this window.",	//MISSING
 DlgPasteIgnoreFont		: "Ignorar definições de fonte",
 DlgPasteRemoveStyles	: "Remove definições de estilo",
 DlgPasteCleanBox		: "Limpar Box",

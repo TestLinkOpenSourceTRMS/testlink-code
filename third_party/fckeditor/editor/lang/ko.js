@@ -1,29 +1,24 @@
 ﻿/*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
  * Copyright (C) 2003-2007 Frederico Caldeira Knabben
- * 
+ *
  * == BEGIN LICENSE ==
- * 
+ *
  * Licensed under the terms of any of the following licenses at your
  * choice:
- * 
+ *
  *  - GNU General Public License Version 2 or later (the "GPL")
  *    http://www.gnu.org/licenses/gpl.html
- * 
+ *
  *  - GNU Lesser General Public License Version 2.1 or later (the "LGPL")
  *    http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  *  - Mozilla Public License Version 1.1 or later (the "MPL")
  *    http://www.mozilla.org/MPL/MPL-1.1.html
- * 
+ *
  * == END LICENSE ==
- * 
- * File Name: ko.js
- * 	Korean language file.
- * 
- * File Authors:
- * 		Taehwan Kwag (thkwag@nate.com)
- * 		Hyung-chae, Kim (chaeya@gmail.com)
+ *
+ * Korean language file.
  */
 
 var FCKLang =
@@ -342,7 +337,6 @@ DlgReplaceReplAllBtn	: "모두 바꾸기",
 DlgReplaceWordChk		: "온전한 단어",
 
 // Paste Operations / Dialog
-PasteErrorPaste	: "브라우저의 보안설정때문에 붙여넣기 기능을 실행할 수 없습니다. 키보드 명령을 사용하십시요. (Ctrl+V).",
 PasteErrorCut	: "브라우저의 보안설정때문에 잘라내기 기능을 실행할 수 없습니다. 키보드 명령을 사용하십시요. (Ctrl+X).",
 PasteErrorCopy	: "브라우저의 보안설정때문에 복사하기 기능을 실행할 수 없습니다. 키보드 명령을 사용하십시요.  (Ctrl+C).",
 
@@ -350,6 +344,7 @@ PasteAsText		: "텍스트로 붙여넣기",
 PasteFromWord	: "MS Word 형식에서 붙여넣기",
 
 DlgPasteMsg2	: "키보드의 (<STRONG>Ctrl+V</STRONG>) 를 이용해서 상자안에 붙여넣고 <STRONG>OK</STRONG> 를 누르세요.",
+DlgPasteSec		: "Because of your browser security settings, the editor is not able to access your clipboard data directly. You are required to paste it again in this window.",	//MISSING
 DlgPasteIgnoreFont		: "폰트 설정 무시",
 DlgPasteRemoveStyles	: "스타일 정의 제거",
 DlgPasteCleanBox		: "글상자 제거",

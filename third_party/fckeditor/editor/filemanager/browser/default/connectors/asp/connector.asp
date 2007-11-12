@@ -6,28 +6,24 @@ Response.Buffer = True
 <!--
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
  * Copyright (C) 2003-2007 Frederico Caldeira Knabben
- * 
+ *
  * == BEGIN LICENSE ==
- * 
+ *
  * Licensed under the terms of any of the following licenses at your
  * choice:
- * 
+ *
  *  - GNU General Public License Version 2 or later (the "GPL")
  *    http://www.gnu.org/licenses/gpl.html
- * 
+ *
  *  - GNU Lesser General Public License Version 2.1 or later (the "LGPL")
  *    http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  *  - Mozilla Public License Version 1.1 or later (the "MPL")
  *    http://www.mozilla.org/MPL/MPL-1.1.html
- * 
+ *
  * == END LICENSE ==
- * 
- * File Name: connector.asp
- * 	This is the File Manager Connector for ASP.
- * 
- * File Authors:
- * 		Frederico Caldeira Knabben (www.fckeditor.net)
+ *
+ * This is the File Manager Connector for ASP.
 -->
 <!--#include file="config.asp"-->
 <!--#include file="util.asp"-->
@@ -66,14 +62,14 @@ DoResponse
 
 Sub DoResponse()
 	Dim sCommand, sResourceType, sCurrentFolder
-	
+
 	' Get the main request information.
 	sCommand = Request.QueryString("Command")
 	If ( sCommand = "" ) Then Exit Sub
 
 	sResourceType = Request.QueryString("Type")
 	If ( sResourceType = "" ) Then Exit Sub
-	
+
 	sCurrentFolder = Request.QueryString("CurrentFolder")
 	If ( sCurrentFolder = "" ) Then Exit Sub
 
@@ -87,7 +83,7 @@ Sub DoResponse()
 	' Check for invalid folder paths (..)
 	If ( InStr( 1, sCurrentFolder, ".." ) <> 0 OR InStr( 1, sResourceType, ".." ) <> 0 ) Then
 		SendError 102, ""
-	End If 
+	End If
 
 	' File Upload doesn't have to Return XML, so it must be intercepted before anything.
 	If ( sCommand = "FileUpload" ) Then
@@ -96,7 +92,7 @@ Sub DoResponse()
 	End If
 
 	SetXmlHeaders
-	
+
 	CreateXmlHeader sCommand, sResourceType, sCurrentFolder
 
 	' Execute the required command.
@@ -120,9 +116,9 @@ Function IsAllowedType( resourceType )
 	oRE.IgnoreCase	= True
 	oRE.Global		= True
 	oRE.Pattern		= "^(File|Image|Flash|Media)$"
-	
+
 	IsAllowedType = oRE.Test( resourceType )
-	
+
 	Set oRE	= Nothing
 End Function
 %>

@@ -2,29 +2,24 @@
 <!--
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
  * Copyright (C) 2003-2007 Frederico Caldeira Knabben
- * 
+ *
  * == BEGIN LICENSE ==
- * 
+ *
  * Licensed under the terms of any of the following licenses at your
  * choice:
- * 
+ *
  *  - GNU General Public License Version 2 or later (the "GPL")
  *    http://www.gnu.org/licenses/gpl.html
- * 
+ *
  *  - GNU Lesser General Public License Version 2.1 or later (the "LGPL")
  *    http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  *  - Mozilla Public License Version 1.1 or later (the "MPL")
  *    http://www.mozilla.org/MPL/MPL-1.1.html
- * 
+ *
  * == END LICENSE ==
- * 
- * File Name: fck_anchor.html
- * 	Anchor dialog window.
- * 
- * File Authors:
- * 		Frederico Caldeira Knabben (www.fckeditor.net)
- * 		Alfonso Martinez de Lizarrondo - Uritec (alfonso at uritec dot net)
+ *
+ * Anchor dialog window.
 -->
 <html>
 	<head>
@@ -86,7 +81,7 @@ function Ok()
 	if ( sNewName.length == 0 )
 	{
 		// Remove the anchor if the user leaves the name blank
-		if ( oAnchor )	
+		if ( oAnchor )
 		{
 			RemoveAnchor() ;
 			return true ;
@@ -95,9 +90,9 @@ function Ok()
 		alert( oEditor.FCKLang.DlgAnchorErrorName ) ;
 		return false ;
 	}
-	
+
 	oEditor.FCKUndo.SaveUndoStep() ;
-	
+
 	if ( oAnchor )	// Modifying an existent anchor.
 	{
 		ReadjustLinksToAnchor( oAnchor.name, sNewName );
@@ -115,39 +110,48 @@ function Ok()
 	}
 
 	// Create a new anchor preserving the current selection
-	oAnchor = oEditor.FCK.CreateLink( '#' ) ;
-	if ( !oAnchor )
+	var aNewAnchors = oEditor.FCK.CreateLink( '#' ) ;
+
+	if ( aNewAnchors.length == 0 )
 	{
 		// Nothing was selected, so now just create a normal A
-		oAnchor = oEditor.FCK.CreateElement( 'a' ) ; 
+		aNewAnchors.push( oEditor.FCK.CreateElement( 'a' ) ) ;
 	}
 	else
 	{
 		// Remove the fake href
-		oAnchor.removeAttribute( 'href' ) ; 
+		for ( var i = 0 ; i < aNewAnchors.length ; i++ )
+			aNewAnchors[i].removeAttribute( 'href' ) ;
 	}
-	// Set the name
-	oAnchor.name = sNewName ;
 
-	// IE does require special processing to show the Anchor's image
-	// Opera doesn't allow to select empty anchors
-	if ( FCKBrowserInfo.IsIE || FCKBrowserInfo.IsOpera )
+	// More than one anchors may have been created, so interact through all of them (see #220).
+	for ( var i = 0 ; i < aNewAnchors.length ; i++ )
 	{
-		if ( oAnchor.innerHTML != '' )
-		{
-			if ( FCKBrowserInfo.IsIE )
-				oAnchor.className += ' FCK__AnchorC' ;
-		}
-		else
-		{
-			// Create a fake image for both IE and Opera
-			var oImg = oEditor.FCKDocumentProcessor_CreateFakeImage( 'FCK__Anchor', oAnchor.cloneNode(true) ) ;
-			oImg.setAttribute( '_fckanchor', 'true', 0 ) ;
-			
-			oAnchor.parentNode.insertBefore( oImg, oAnchor ) ;
-			oAnchor.parentNode.removeChild( oAnchor ) ;
-		}
+		oAnchor = aNewAnchors[i] ;
 
+		// Set the name
+		oAnchor.name = sNewName ;
+
+		// IE does require special processing to show the Anchor's image
+		// Opera doesn't allow to select empty anchors
+		if ( FCKBrowserInfo.IsIE || FCKBrowserInfo.IsOpera )
+		{
+			if ( oAnchor.innerHTML != '' )
+			{
+				if ( FCKBrowserInfo.IsIE )
+					oAnchor.className += ' FCK__AnchorC' ;
+			}
+			else
+			{
+				// Create a fake image for both IE and Opera
+				var oImg = oEditor.FCKDocumentProcessor_CreateFakeImage( 'FCK__Anchor', oAnchor.cloneNode(true) ) ;
+				oImg.setAttribute( '_fckanchor', 'true', 0 ) ;
+
+				oAnchor.parentNode.insertBefore( oImg, oAnchor ) ;
+				oAnchor.parentNode.removeChild( oAnchor ) ;
+			}
+
+		}
 	}
 
 	return true ;
@@ -187,7 +191,7 @@ function RemoveAnchor()
 function ReadjustLinksToAnchor( sCurrent, sNew )
 {
 	var oDoc = FCK.EditorDocument ;
-	
+
 	var aLinks = oDoc.getElementsByTagName( 'A' ) ;
 
 	var sReference = '#' + sCurrent ;

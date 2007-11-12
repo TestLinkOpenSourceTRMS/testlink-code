@@ -2,45 +2,41 @@
 /*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
  * Copyright (C) 2003-2007 Frederico Caldeira Knabben
- * 
+ *
  * == BEGIN LICENSE ==
- * 
+ *
  * Licensed under the terms of any of the following licenses at your
  * choice:
- * 
+ *
  *  - GNU General Public License Version 2 or later (the "GPL")
  *    http://www.gnu.org/licenses/gpl.html
- * 
+ *
  *  - GNU Lesser General Public License Version 2.1 or later (the "LGPL")
  *    http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  *  - Mozilla Public License Version 1.1 or later (the "MPL")
  *    http://www.mozilla.org/MPL/MPL-1.1.html
- * 
+ *
  * == END LICENSE ==
- * 
- * File Name: connector.lasso
- * 	This is the File Manager Connector for Lasso.
- * 
- * File Authors:
- * 		Jason Huck (jason.huck@corefive.com)
+ *
+ * This is the File Manager Connector for Lasso.
  */
 
-    /*.....................................................................     
-    Include global configuration. See config.lasso for details.                                                                           
-    */                                                                          
+    /*.....................................................................
+    Include global configuration. See config.lasso for details.
+    */
 	include('config.lasso');
 
-		
-    /*.....................................................................     
-    Translate current date/time to GMT for custom header.                                                                          
-    */                                                                          
+
+    /*.....................................................................
+    Translate current date/time to GMT for custom header.
+    */
 	var('headerDate') = date_localtogmt(date)->format('%a, %d %b %Y %T GMT');
 
 
-    /*.....................................................................     
-    Convert query string parameters to variables and initialize output.                                                                           
-    */                                                                          
+    /*.....................................................................
+    Convert query string parameters to variables and initialize output.
+    */
 	var(
 		'Command'		=	action_param('Command'),
 		'Type'			=	action_param('Type'),
@@ -60,40 +56,40 @@
 	);
 
 
-    /*.....................................................................     
-    Calculate the path to the current folder.                                                                           
-    */                                                                          
+    /*.....................................................................
+    Calculate the path to the current folder.
+    */
 	$ServerPath == '' ? $ServerPath = $config->find('UserFilesPath');
-		
-	var('currentFolderURL' = $ServerPath 
+
+	var('currentFolderURL' = $ServerPath
 		+ $config->find('Subdirectories')->find(action_param('Type'))
 		+ action_param('CurrentFolder')
 	);
 
 
-    /*.....................................................................     
+    /*.....................................................................
     Build the appropriate response per the 'Command' parameter. Wrap the
-    entire process in an inline for file tag permissions.                                                                         
-    */                                                                          
+    entire process in an inline for file tag permissions.
+    */
 	inline($connection);
-		select($Command);	
-            /*.............................................................     
-            List all subdirectories in the 'Current Folder' directory.                                                                   
-            */                                                                  
+		select($Command);
+            /*.............................................................
+            List all subdirectories in the 'Current Folder' directory.
+            */
 			case('GetFolders');
 				$commandData += '\t<Folders>\n';
-			
+
 				iterate(file_listdirectory($currentFolderURL), local('this'));
 					#this->endswith('/') ? $commandData += '\t\t<Folder name="' + #this->removetrailing('/')& + '" />\n';
 				/iterate;
-				
+
 				$commandData += '\t</Folders>\n';
 
 
-            /*.............................................................     
+            /*.............................................................
             List both files and folders in the 'Current Folder' directory.
-            Include the file sizes in kilobytes.                                                                   
-            */                                                                  				
+            Include the file sizes in kilobytes.
+            */
 			case('GetFoldersAndFiles');
 				iterate(file_listdirectory($currentFolderURL), local('this'));
 					if(#this->endswith('/'));
@@ -101,26 +97,26 @@
 					else;
 						local('size') = file_getsize($currentFolderURL + #this) / 1024;
 						$files += '\t\t<File name="' + #this + '" size="' + #size + '" />\n';
-					/if;					
+					/if;
 				/iterate;
 
 				$folders += '\t</Folders>\n';
 				$files += '\t</Files>\n';
-				
+
 				$commandData += $folders + $files;
 
 
-            /*.............................................................     
-            Create a directory 'NewFolderName' within the 'Current Folder.'                                                                 
-            */                                                                  				
+            /*.............................................................
+            Create a directory 'NewFolderName' within the 'Current Folder.'
+            */
 			case('CreateFolder');
-				var('newFolder' = $currentFolderURL + $NewFolderName + '/');			
-				file_create($newFolder);			
-				
-				
-                /*.........................................................     
-                Map Lasso's file error codes to FCKEditor's error codes.                                                              
-                */                                                              				
+				var('newFolder' = $currentFolderURL + $NewFolderName + '/');
+				file_create($newFolder);
+
+
+                /*.........................................................
+                Map Lasso's file error codes to FCKEditor's error codes.
+                */
 				select(file_currenterror( -errorcode));
 					case(0);
 						$errorNumber = 0;
@@ -135,62 +131,62 @@
 					case;
 						$errorNumber = 110;
 				/select;
-				
+
 				$commandData += '<Error number="' + $errorNumber + '" />\n';
 
 
-            /*.............................................................     
-            Process an uploaded file.                                                                  
-            */                                                                  				
-			case('FileUpload');		
-                /*.........................................................     
-                This is the only command that returns an HTML response.                                                              
-                */                                                              			
+            /*.............................................................
+            Process an uploaded file.
+            */
+			case('FileUpload');
+                /*.........................................................
+                This is the only command that returns an HTML response.
+                */
 				$responseType = 'html';
-				
-				
-                /*.........................................................     
-                Was a file actually uploaded?                                                              
-                */                                                              
+
+
+                /*.........................................................
+                Was a file actually uploaded?
+                */
 				file_uploads->size ? $NewFile = file_uploads->get(1) | $uploadResult = '202';
-								
+
 				if($uploadResult == '0');
-                    /*.....................................................     
+                    /*.....................................................
                     Split the file's extension from the filename in order
                     to follow the API's naming convention for duplicate
-                    files. (Test.txt, Test(1).txt, Test(2).txt, etc.)                                                          
-                    */                                                          
-					$NewFileName = $NewFile->find('OrigName');													
+                    files. (Test.txt, Test(1).txt, Test(2).txt, etc.)
+                    */
+					$NewFileName = $NewFile->find('OrigName');
 					$OrigFilePath = $currentFolderURL + $NewFileName;
 					$NewFilePath = $OrigFilePath;
-					local('fileExtension') = '.' + $NewFile->find('OrigExtension');					
+					local('fileExtension') = '.' + $NewFile->find('OrigExtension');
 					local('shortFileName') = $NewFileName->removetrailing(#fileExtension)&;
 
 
-                    /*.....................................................     
-                    Make sure the file extension is allowed.                                                          
-                    */                                                          
+                    /*.....................................................
+                    Make sure the file extension is allowed.
+                    */
 					if($config->find('DeniedExtensions')->find($Type) >> $NewFile->find('OrigExtension'));
 						$uploadResult = '202';
 					else;
-                        /*.................................................     
-                        Rename the target path until it is unique.                                                    
-                        */                                                      										
+                        /*.................................................
+                        Rename the target path until it is unique.
+                        */
 						while(file_exists($NewFilePath));
 							$NewFilePath = $currentFolderURL + #shortFileName + '(' + loop_count + ')' + #fileExtension;
 						/while;
-						
-						
-                        /*.................................................     
-                        Copy the uploaded file to its final location.                                                     
-                        */                                                      
+
+
+                        /*.................................................
+                        Copy the uploaded file to its final location.
+                        */
 						file_copy($NewFile->find('path'), $NewFilePath);
 
 
-                        /*.................................................     
+                        /*.................................................
                         Set the error code for the response. Note whether
-                        the file had to be renamed.                                                      
-                        */                                                      						
+                        the file had to be renamed.
+                        */
 						select(file_currenterror( -errorcode));
 							case(0);
 								$OrigFilePath != $NewFilePath ? $uploadResult = '201, \'' + $NewFilePath->split('/')->last + '\'';
@@ -201,9 +197,9 @@
 				/if;
 
 
-                /*.........................................................     
-                Set the HTML response.                                                               
-                */                                                              				
+                /*.........................................................
+                Set the HTML response.
+                */
 				$__html_reply__ = '\
 <script type="text/javascript">
 	window.parent.frames[\'frmUpload\'].OnUploadCompleted(' + $uploadResult + ');
@@ -213,9 +209,9 @@
 	/inline;
 
 
-    /*.....................................................................     
-    Send a custom header for xml responses.                                                                          
-    */                                                                          
+    /*.....................................................................
+    Send a custom header for xml responses.
+    */
 	if($responseType == 'xml');
 		header;
 ]
@@ -233,15 +229,15 @@ Content-Type: text/xml; charset=utf-8
 		/header;
 
 
-        /*.................................................................     
-        Set the content type encoding for Lasso.                                                                      
-        */                                                                      
+        /*.................................................................
+        Set the content type encoding for Lasso.
+        */
 		content_type('text/xml; charset=utf-8');
 
 
-        /*.................................................................     
-        Wrap the response as XML and output.                                                                      
-        */                                                                      
+        /*.................................................................
+        Wrap the response as XML and output.
+        */
 		$__html_reply__ = '\
 <?xml version="1.0" encoding="utf-8" ?>
 <Connector command="' + $Command + '" resourceType="' + $Type + '">
@@ -250,4 +246,4 @@ Content-Type: text/xml; charset=utf-8
 </Connector>
 		';
 	/if;
-]	
+]

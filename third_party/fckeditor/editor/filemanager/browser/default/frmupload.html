@@ -2,28 +2,24 @@
 <!--
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
  * Copyright (C) 2003-2007 Frederico Caldeira Knabben
- * 
+ *
  * == BEGIN LICENSE ==
- * 
+ *
  * Licensed under the terms of any of the following licenses at your
  * choice:
- * 
+ *
  *  - GNU General Public License Version 2 or later (the "GPL")
  *    http://www.gnu.org/licenses/gpl.html
- * 
+ *
  *  - GNU Lesser General Public License Version 2.1 or later (the "LGPL")
  *    http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  *  - Mozilla Public License Version 1.1 or later (the "MPL")
  *    http://www.mozilla.org/MPL/MPL-1.1.html
- * 
+ *
  * == END LICENSE ==
- * 
- * File Name: frmupload.html
- * 	Page used to upload new files in the current folder.
- * 
- * File Authors:
- * 		Frederico Caldeira Knabben (www.fckeditor.net)
+ *
+ * Page used to upload new files in the current folder.
 -->
 <html xmlns="http://www.w3.org/1999/xhtml">
 	<head>
@@ -36,7 +32,7 @@ function SetCurrentFolder( resourceType, folderPath )
 	var sUrl = oConnector.ConnectorUrl + 'Command=FileUpload' ;
 	sUrl += '&Type=' + resourceType ;
 	sUrl += '&CurrentFolder=' + encodeURIComponent( folderPath ) ;
-	
+
 	document.getElementById('frmUpload').action = sUrl ;
 }
 
@@ -51,7 +47,7 @@ function OnSubmit()
 	// Set the interface elements.
 	document.getElementById('eUploadMessage').innerHTML = 'Upload a new file in this folder (Upload in progress, please wait...)' ;
 	document.getElementById('btnUpload').disabled = true ;
-	
+
 	return true ;
 }
 
@@ -59,17 +55,17 @@ function OnUploadCompleted( errorNumber, data )
 {
 	// Reset the Upload Worker Frame.
 	window.parent.frames['frmUploadWorker'].location = 'javascript:void(0)' ;
-	
+
 	// Reset the upload form (On IE we must do a little trick to avout problems).
 	if ( document.all )
 		document.getElementById('NewFile').outerHTML = '<input id="NewFile" name="NewFile" style="WIDTH: 100%" type="file">' ;
 	else
 		document.getElementById('frmUpload').reset() ;
-	
+
 	// Reset the interface elements.
 	document.getElementById('eUploadMessage').innerHTML = 'Upload a new file in this folder' ;
 	document.getElementById('btnUpload').disabled = false ;
-	
+
 	switch ( errorNumber )
 	{
 		case 0 :

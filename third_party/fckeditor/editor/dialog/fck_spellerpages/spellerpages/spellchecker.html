@@ -26,8 +26,8 @@ function init_spell( spellerWindow ) {
 function encodeForPost( str ) {
 	var s = new String( str );
 	s = encodeURIComponent( s );
-	// additionally encode single quotes to evade any PHP 
-	// magic_quotes_gpc setting (it inserts escape characters and 
+	// additionally encode single quotes to evade any PHP
+	// magic_quotes_gpc setting (it inserts escape characters and
 	// therefore skews the btye positions of misspelled words)
 	return s.replace( /\'/g, '%27' );
 }

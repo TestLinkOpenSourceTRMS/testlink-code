@@ -1,28 +1,24 @@
 ﻿/*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
  * Copyright (C) 2003-2007 Frederico Caldeira Knabben
- * 
+ *
  * == BEGIN LICENSE ==
- * 
+ *
  * Licensed under the terms of any of the following licenses at your
  * choice:
- * 
+ *
  *  - GNU General Public License Version 2 or later (the "GPL")
  *    http://www.gnu.org/licenses/gpl.html
- * 
+ *
  *  - GNU Lesser General Public License Version 2.1 or later (the "LGPL")
  *    http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  *  - Mozilla Public License Version 1.1 or later (the "MPL")
  *    http://www.mozilla.org/MPL/MPL-1.1.html
- * 
+ *
  * == END LICENSE ==
- * 
- * File Name: ja.js
- * 	Japanese language file.
- * 
- * File Authors:
- * 		Takashi Yamaguchi (jack@omakase.net)
+ *
+ * Japanese language file.
  */
 
 var FCKLang =
@@ -341,7 +337,6 @@ DlgReplaceReplAllBtn	: "すべて置換え",
 DlgReplaceWordChk		: "単語単位で一致",
 
 // Paste Operations / Dialog
-PasteErrorPaste	: "ブラウザーのセキュリティ設定によりエディタの貼り付け操作が自動で実行することができません。実行するには手動でキーボードの(Ctrl+V)を使用してください。",
 PasteErrorCut	: "ブラウザーのセキュリティ設定によりエディタの切り取り操作が自動で実行することができません。実行するには手動でキーボードの(Ctrl+X)を使用してください。",
 PasteErrorCopy	: "ブラウザーのセキュリティ設定によりエディタのコピー操作が自動で実行することができません。実行するには手動でキーボードの(Ctrl+C)を使用してください。",
 
@@ -349,6 +344,7 @@ PasteAsText		: "プレーンテキスト貼り付け",
 PasteFromWord	: "ワード文章から貼り付け",
 
 DlgPasteMsg2	: "キーボード(<STRONG>Ctrl+V</STRONG>)を使用して、次の入力エリア内で貼って、<STRONG>OK</STRONG>を押してください。",
+DlgPasteSec		: "Because of your browser security settings, the editor is not able to access your clipboard data directly. You are required to paste it again in this window.",	//MISSING
 DlgPasteIgnoreFont		: "FontタグのFace属性を無視します。",
 DlgPasteRemoveStyles	: "スタイル定義を削除します。",
 DlgPasteCleanBox		: "入力エリアクリア",

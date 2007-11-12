@@ -14,8 +14,8 @@
 						(
 							( iCode >= 48 && iCode <= 57 )		// Numbers
 							|| (iCode >= 37 && iCode <= 40)		// Arrows
-							|| iCode == 8											// Backspace
-							|| iCode == 46										// Delete
+							|| iCode == 8						// Backspace
+							|| iCode == 46						// Delete
 						) ;
 
 					return bAccepted ;

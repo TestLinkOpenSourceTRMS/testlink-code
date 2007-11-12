@@ -1,28 +1,24 @@
 #####
 #  FCKeditor - The text editor for Internet - http://www.fckeditor.net
 #  Copyright (C) 2003-2007 Frederico Caldeira Knabben
-#  
+#
 #  == BEGIN LICENSE ==
-#  
+#
 #  Licensed under the terms of any of the following licenses at your
 #  choice:
-#  
+#
 #   - GNU General Public License Version 2 or later (the "GPL")
 #     http://www.gnu.org/licenses/gpl.html
-#  
+#
 #   - GNU Lesser General Public License Version 2.1 or later (the "LGPL")
 #     http://www.gnu.org/licenses/lgpl.html
-#  
+#
 #   - Mozilla Public License Version 1.1 or later (the "MPL")
 #     http://www.mozilla.org/MPL/MPL-1.1.html
-#  
+#
 #  == END LICENSE ==
-#  
-#  File Name: basexml.pl
-#  	This is the File Manager Connector for Perl.
-#  
-#  File Authors:
-#  		Takashi Yamaguchi (jack@omakase.net)
+#
+#  This is the File Manager Connector for Perl.
 #####
 
 sub CreateXmlHeader
@@ -58,9 +54,9 @@ _HTML_HEAD_
 
 	# Create the XML document header
 	print '<?xml version="1.0" encoding="utf-8" ?>' ;
-	
+
 	print '<Connector><Error number="' . $number . '" text="' . &specialchar_cnv( $text ) . '" /></Connector>' ;
-	
+
 	exit ;
 }
 

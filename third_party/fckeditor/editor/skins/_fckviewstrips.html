@@ -2,29 +2,24 @@
 <!--
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
  * Copyright (C) 2003-2007 Frederico Caldeira Knabben
- * 
+ *
  * == BEGIN LICENSE ==
- * 
+ *
  * Licensed under the terms of any of the following licenses at your
  * choice:
- * 
+ *
  *  - GNU General Public License Version 2 or later (the "GPL")
  *    http://www.gnu.org/licenses/gpl.html
- * 
+ *
  *  - GNU Lesser General Public License Version 2.1 or later (the "LGPL")
  *    http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  *  - Mozilla Public License Version 1.1 or later (the "MPL")
  *    http://www.mozilla.org/MPL/MPL-1.1.html
- * 
+ *
  * == END LICENSE ==
- * 
- * File Name: _fckviewstrips.html
- * 	Useful page that enumerates all icons in the skins strips.
- * 
- * File Authors:
- * 		Frederico Caldeira Knabben (www.fckeditor.net)
- * 		Alfonso Martinez de Lizarrondo - Uritec (alfonso at uritec dot net)
+ *
+ * Useful page that enumerates all icons in the skins strips.
 -->
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -68,9 +63,9 @@ function Img_OnLoad()
 {
 	if ( iMaxHeight < this.height )
 		iMaxHeight = this.height ;
-	
+
 	iTotalStrips-- ;
-	
+
 	if ( iTotalStrips == 0 )
 		LoadIcons( iMaxHeight / 16 ) ;
 }
@@ -82,10 +77,10 @@ function LoadIcons( total )
 	for ( var i = 0 ; i < total ; i++ )
 	{
 		var eRow = xIconsTable.insertRow(-1) ;
-		
+
 		var eCell = eRow.insertCell(-1) ;
 		eCell.innerHTML = i + 1 ;
-		
+
 		eCell = eRow.insertCell(-1) ;
 		eCell.align = 'center' ;
 		eCell.style.border = '#dcdcdc 1px solid' ;

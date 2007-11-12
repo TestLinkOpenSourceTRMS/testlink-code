@@ -1,29 +1,24 @@
 ﻿/*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
  * Copyright (C) 2003-2007 Frederico Caldeira Knabben
- * 
+ *
  * == BEGIN LICENSE ==
- * 
+ *
  * Licensed under the terms of any of the following licenses at your
  * choice:
- * 
+ *
  *  - GNU General Public License Version 2 or later (the "GPL")
  *    http://www.gnu.org/licenses/gpl.html
- * 
+ *
  *  - GNU Lesser General Public License Version 2.1 or later (the "LGPL")
  *    http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  *  - Mozilla Public License Version 1.1 or later (the "MPL")
  *    http://www.mozilla.org/MPL/MPL-1.1.html
- * 
+ *
  * == END LICENSE ==
- * 
- * File Name: tr.js
- * 	Turkish language file.
- * 
- * File Authors:
- * 		Bogac Guven (bogacmx@yahoo.com)
- * 		Burak Gürsoy (burak@cpan.org)
+ *
+ * Turkish language file.
  */
 
 var FCKLang =
@@ -342,7 +337,6 @@ DlgReplaceReplAllBtn	: "Tümünü Değiştir",
 DlgReplaceWordChk		: "Kelimenin tamamı uysun",
 
 // Paste Operations / Dialog
-PasteErrorPaste	: "Gezgin yazılımınızın güvenlik ayarları düzenleyicinin otomatik yapıştırma işlemine izin vermiyor. İşlem için (Ctrl+V) tuşlarını kullanın.",
 PasteErrorCut	: "Gezgin yazılımınızın güvenlik ayarları düzenleyicinin otomatik kesme işlemine izin vermiyor. İşlem için (Ctrl+X) tuşlarını kullanın.",
 PasteErrorCopy	: "Gezgin yazılımınızın güvenlik ayarları düzenleyicinin otomatik kopyalama işlemine izin vermiyor. İşlem için (Ctrl+C) tuşlarını kullanın.",
 
@@ -350,6 +344,7 @@ PasteAsText		: "Düz Metin Olarak Yapıştır",
 PasteFromWord	: "Word'den yapıştır",
 
 DlgPasteMsg2	: "Lütfen aşağıdaki kutunun içine yapıştırın. (<STRONG>Ctrl+V</STRONG>) ve <STRONG>Tamam</STRONG> butonunu tıklayın.",
+DlgPasteSec		: "Because of your browser security settings, the editor is not able to access your clipboard data directly. You are required to paste it again in this window.",	//MISSING
 DlgPasteIgnoreFont		: "Yazı Tipi tanımlarını yoksay",
 DlgPasteRemoveStyles	: "Biçem Tanımlarını çıkar",
 DlgPasteCleanBox		: "Temizlik Kutusu",

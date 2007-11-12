@@ -2,29 +2,24 @@
 <!--
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
  * Copyright (C) 2003-2007 Frederico Caldeira Knabben
- * 
+ *
  * == BEGIN LICENSE ==
- * 
+ *
  * Licensed under the terms of any of the following licenses at your
  * choice:
- * 
+ *
  *  - GNU General Public License Version 2 or later (the "GPL")
  *    http://www.gnu.org/licenses/gpl.html
- * 
+ *
  *  - GNU Lesser General Public License Version 2.1 or later (the "LGPL")
  *    http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  *  - Mozilla Public License Version 1.1 or later (the "MPL")
  *    http://www.mozilla.org/MPL/MPL-1.1.html
- * 
+ *
  * == END LICENSE ==
- * 
- * File Name: fck_replace.html
- * 	"Replace" dialog box window.
- * 
- * File Authors:
- * 		Frederico Caldeira Knabben (www.fckeditor.net)
- * 		Abdul-Aziz A. Al-Oraij (aziz.oraij.com)
+ *
+ * "Replace" dialog box window.
 -->
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -47,8 +42,8 @@ function OnLoad()
 
 function btnStat(frm)
 {
-	document.getElementById('btnReplace').disabled = 
-		document.getElementById('btnReplaceAll').disabled = 
+	document.getElementById('btnReplace').disabled =
+		document.getElementById('btnReplaceAll').disabled =
 			( document.getElementById('txtFind').value.length == 0 ) ;
 }
 
@@ -73,7 +68,7 @@ function ReplaceTextNodes( parentNode, regex, replaceValue, replaceAll, hasFound
 		if ( ! replaceAll && hasFound )
 			return true ;
 	}
-	
+
 	return hasFound ;
 }
 
@@ -87,7 +82,7 @@ function GetRegexExpr()
 	return sExpr ;
 }
 
-function GetCase() 
+function GetCase()
 {
 	return ( document.getElementById('chkCase').checked ? '' : 'i' ) ;
 }

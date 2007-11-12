@@ -1,28 +1,24 @@
 ﻿/*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
  * Copyright (C) 2003-2007 Frederico Caldeira Knabben
- * 
+ *
  * == BEGIN LICENSE ==
- * 
+ *
  * Licensed under the terms of any of the following licenses at your
  * choice:
- * 
+ *
  *  - GNU General Public License Version 2 or later (the "GPL")
  *    http://www.gnu.org/licenses/gpl.html
- * 
+ *
  *  - GNU Lesser General Public License Version 2.1 or later (the "LGPL")
  *    http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  *  - Mozilla Public License Version 1.1 or later (the "MPL")
  *    http://www.mozilla.org/MPL/MPL-1.1.html
- * 
+ *
  * == END LICENSE ==
- * 
- * File Name: no.js
- * 	Norwegian language file.
- * 
- * File Authors:
- * 		Martin Kronstad (www.siteman.no) (martin.kronstad@gmail.com)
+ *
+ * Norwegian language file.
  */
 
 var FCKLang =
@@ -43,7 +39,7 @@ Paste				: "Lim inn",
 PasteText			: "Lim inn som ren tekst",
 PasteWord			: "Lim inn fra Word",
 Print				: "Skriv ut",
-SelectAll			: "Velg alle",
+SelectAll			: "Merk alt",
 RemoveFormat		: "Fjern format",
 InsertLinkLbl		: "Lenke",
 InsertLink			: "Sett inn/Rediger lenke",
@@ -341,7 +337,6 @@ DlgReplaceReplAllBtn	: "Erstatt alle",
 DlgReplaceWordChk		: "Finn hele ordet",
 
 // Paste Operations / Dialog
-PasteErrorPaste	: "Din nettlesers sikkerhetsinstillinger tillater ikke automatisk innliming av tekst. Vennligst brukt snareveien (Ctrl+V).",
 PasteErrorCut	: "Din nettlesers sikkerhetsinstillinger tillater ikke automatisk klipping av tekst. Vennligst brukt snareveien (Ctrl+X).",
 PasteErrorCopy	: "Din nettlesers sikkerhetsinstillinger tillater ikke automatisk kopiering av tekst. Vennligst brukt snareveien (Ctrl+C).",
 
@@ -349,6 +344,7 @@ PasteAsText		: "Lim inn som ren tekst",
 PasteFromWord	: "Lim inn fra word",
 
 DlgPasteMsg2	: "Vennligst lim inn i den følgende boksen med tastaturet (<STRONG>Ctrl+V</STRONG>) og trykk <STRONG>OK</STRONG>.",
+DlgPasteSec		: "Because of your browser security settings, the editor is not able to access your clipboard data directly. You are required to paste it again in this window.",	//MISSING
 DlgPasteIgnoreFont		: "Fjern skrifttyper",
 DlgPasteRemoveStyles	: "Fjern stildefinisjoner",
 DlgPasteCleanBox		: "Tøm boksen",
@@ -504,5 +500,5 @@ DlgAboutAboutTab	: "Om",
 DlgAboutBrowserInfoTab	: "Nettleserinfo",
 DlgAboutLicenseTab	: "Lisens",
 DlgAboutVersion		: "versjon",
-DlgAboutInfo		: "Oversatt av Siteman AS<br /><a target=\"_blank\" href=\"http://www.siteman.no\">www.siteman.no</a><br /><br />For mer informasjon gå til"
+DlgAboutInfo		: "For further information go to"	//MISSING
 };

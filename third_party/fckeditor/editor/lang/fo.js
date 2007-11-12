@@ -1,28 +1,24 @@
 ﻿/*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
  * Copyright (C) 2003-2007 Frederico Caldeira Knabben
- * 
+ *
  * == BEGIN LICENSE ==
- * 
+ *
  * Licensed under the terms of any of the following licenses at your
  * choice:
- * 
+ *
  *  - GNU General Public License Version 2 or later (the "GPL")
  *    http://www.gnu.org/licenses/gpl.html
- * 
+ *
  *  - GNU Lesser General Public License Version 2.1 or later (the "LGPL")
  *    http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  *  - Mozilla Public License Version 1.1 or later (the "MPL")
  *    http://www.mozilla.org/MPL/MPL-1.1.html
- * 
+ *
  * == END LICENSE ==
- * 
- * File Name: fo.js
- * 	Faroese language file.
- * 
- * File Authors:
- * 		Jón Jallur Gaasedal (jon@faroenet.fo)
+ *
+ * Faroese language file.
  */
 
 var FCKLang =
@@ -341,7 +337,6 @@ DlgReplaceReplAllBtn	: "Yvirskriva alt",
 DlgReplaceWordChk		: "Bert heil orð",
 
 // Paste Operations / Dialog
-PasteErrorPaste	: "Trygdaruppseting alnótskagans forðar tekstviðgeranum í at seta tekstin inn. Vinarliga nýt knappaborðið til at seta tekstin inn (CTRL+V).",
 PasteErrorCut	: "Trygdaruppseting alnótskagans forðar tekstviðgeranum í at kvetta tekstin. vinarliga nýt knappaborðið til at kvetta tekstin (CTRL+X).",
 PasteErrorCopy	: "Trygdaruppseting alnótskagans forðar tekstviðgeranum í at avrita tekstin. Vinarliga nýt knappaborðið til at avrita tekstin (CTRL+C).",
 
@@ -349,6 +344,7 @@ PasteAsText		: "Innrita som reinan tekst",
 PasteFromWord	: "Innrita fra Word",
 
 DlgPasteMsg2	: "Vinarliga koyr tekstin í hendan rútin við knappaborðinum (<strong>CTRL+V</strong>) og klikk á <strong>Góðtak</strong>.",
+DlgPasteSec		: "Because of your browser security settings, the editor is not able to access your clipboard data directly. You are required to paste it again in this window.",	//MISSING
 DlgPasteIgnoreFont		: "Forfjóna Font definitiónirnar",
 DlgPasteRemoveStyles	: "Strika Styles definitiónir",
 DlgPasteCleanBox		: "Reinskanarkassi",

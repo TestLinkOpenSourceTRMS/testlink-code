@@ -1,28 +1,24 @@
 ﻿/*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
  * Copyright (C) 2003-2007 Frederico Caldeira Knabben
- * 
+ *
  * == BEGIN LICENSE ==
- * 
+ *
  * Licensed under the terms of any of the following licenses at your
  * choice:
- * 
+ *
  *  - GNU General Public License Version 2 or later (the "GPL")
  *    http://www.gnu.org/licenses/gpl.html
- * 
+ *
  *  - GNU Lesser General Public License Version 2.1 or later (the "LGPL")
  *    http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  *  - Mozilla Public License Version 1.1 or later (the "MPL")
  *    http://www.mozilla.org/MPL/MPL-1.1.html
- * 
+ *
  * == END LICENSE ==
- * 
- * File Name: pt.js
- * 	Portuguese language file.
- * 
- * File Authors:
- * 		Francisco Pereira (fjpereira@netcabo.pt)
+ *
+ * Portuguese language file.
  */
 
 var FCKLang =
@@ -341,7 +337,6 @@ DlgReplaceReplAllBtn	: "Substituir Tudo",
 DlgReplaceWordChk		: "Coincidir com toda a palavra",
 
 // Paste Operations / Dialog
-PasteErrorPaste	: "A configuração de segurança do navegador não permite a execução automática de operações de colar. Por favor use o teclado (Ctrl+V).",
 PasteErrorCut	: "A configuração de segurança do navegador não permite a execução automática de operações de cortar. Por favor use o teclado (Ctrl+X).",
 PasteErrorCopy	: "A configuração de segurança do navegador não permite a execução automática de operações de copiar. Por favor use o teclado (Ctrl+C).",
 
@@ -349,6 +344,7 @@ PasteAsText		: "Colar como Texto Simples",
 PasteFromWord	: "Colar do Word",
 
 DlgPasteMsg2	: "Por favor, cole dentro da seguinte caixa usando o teclado (<STRONG>Ctrl+V</STRONG>) e prima <STRONG>OK</STRONG>.",
+DlgPasteSec		: "Because of your browser security settings, the editor is not able to access your clipboard data directly. You are required to paste it again in this window.",	//MISSING
 DlgPasteIgnoreFont		: "Ignorar da definições do Tipo de Letra ",
 DlgPasteRemoveStyles	: "Remover as definições de Estilos",
 DlgPasteCleanBox		: "Caixa de Limpeza",

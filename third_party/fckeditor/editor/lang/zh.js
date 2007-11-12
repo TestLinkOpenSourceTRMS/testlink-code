@@ -1,28 +1,24 @@
 ﻿/*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
  * Copyright (C) 2003-2007 Frederico Caldeira Knabben
- * 
+ *
  * == BEGIN LICENSE ==
- * 
+ *
  * Licensed under the terms of any of the following licenses at your
  * choice:
- * 
+ *
  *  - GNU General Public License Version 2 or later (the "GPL")
  *    http://www.gnu.org/licenses/gpl.html
- * 
+ *
  *  - GNU Lesser General Public License Version 2.1 or later (the "LGPL")
  *    http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  *  - Mozilla Public License Version 1.1 or later (the "MPL")
  *    http://www.mozilla.org/MPL/MPL-1.1.html
- * 
+ *
  * == END LICENSE ==
- * 
- * File Name: zh.js
- * 	Chinese Traditional language file.
- * 
- * File Authors:
- * 		Zak Fong (zakfong@yahoo.com.tw)
+ *
+ * Chinese Traditional language file.
  */
 
 var FCKLang =
@@ -341,7 +337,6 @@ DlgReplaceReplAllBtn	: "全部取代",
 DlgReplaceWordChk		: "全字相符",
 
 // Paste Operations / Dialog
-PasteErrorPaste	: "瀏覽器的安全性設定不允許編輯器自動執行貼上動作。請使用快捷鍵 (Ctrl+V) 貼上。",
 PasteErrorCut	: "瀏覽器的安全性設定不允許編輯器自動執行剪下動作。請使用快捷鍵 (Ctrl+X) 剪下。",
 PasteErrorCopy	: "瀏覽器的安全性設定不允許編輯器自動執行複製動作。請使用快捷鍵 (Ctrl+C) 複製。",
 
@@ -349,6 +344,7 @@ PasteAsText		: "貼為純文字格式",
 PasteFromWord	: "自 Word 貼上",
 
 DlgPasteMsg2	: "請使用快捷鍵 (<strong>Ctrl+V</strong>) 貼到下方區域中並按下 <strong>確定</strong>",
+DlgPasteSec		: "Because of your browser security settings, the editor is not able to access your clipboard data directly. You are required to paste it again in this window.",	//MISSING
 DlgPasteIgnoreFont		: "移除字型設定",
 DlgPasteRemoveStyles	: "移除樣式設定",
 DlgPasteCleanBox		: "清除文字區域",

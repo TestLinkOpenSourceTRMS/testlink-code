@@ -1,28 +1,24 @@
 ﻿/*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
  * Copyright (C) 2003-2007 Frederico Caldeira Knabben
- * 
+ *
  * == BEGIN LICENSE ==
- * 
+ *
  * Licensed under the terms of any of the following licenses at your
  * choice:
- * 
+ *
  *  - GNU General Public License Version 2 or later (the "GPL")
  *    http://www.gnu.org/licenses/gpl.html
- * 
+ *
  *  - GNU Lesser General Public License Version 2.1 or later (the "LGPL")
  *    http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  *  - Mozilla Public License Version 1.1 or later (the "MPL")
  *    http://www.mozilla.org/MPL/MPL-1.1.html
- * 
+ *
  * == END LICENSE ==
- * 
- * File Name: km.js
- * 	Khmer language file.
- * 
- * File Authors:
- * 		Chay Sengtha (sengtha@e-khmer.com - http://translate.e-khmer.net)
+ *
+ * Khmer language file.
  */
 
 var FCKLang =
@@ -341,7 +337,6 @@ DlgReplaceReplAllBtn	: "ជំនួសទាំងអស់",
 DlgReplaceWordChk		: "ត្រូវពាក្យទាំងអស់",
 
 // Paste Operations / Dialog
-PasteErrorPaste	: "Your browser security settings don't permit the editor to automatically execute pasting operations. Please use the keyboard for that (Ctrl+V).",	//MISSING
 PasteErrorCut	: "ការកំណត់សុវត្ថភាពរបស់កម្មវិធីរុករករបស់លោកអ្នក នេះ​មិនអាចធ្វើកម្មវិធីតាក់តែងអត្ថបទ កាត់អត្ថបទយកដោយស្វ័យប្រវត្តបានឡើយ ។ សូមប្រើប្រាស់បន្សំ ឃីដូចនេះ  (Ctrl+X) ។",
 PasteErrorCopy	: "ការកំណត់សុវត្ថភាពរបស់កម្មវិធីរុករករបស់លោកអ្នក នេះ​មិនអាចធ្វើកម្មវិធីតាក់តែងអត្ថបទ ចំលងអត្ថបទយកដោយស្វ័យប្រវត្តបានឡើយ ។ សូមប្រើប្រាស់បន្សំ ឃីដូចនេះ (Ctrl+C)។",
 
@@ -349,6 +344,7 @@ PasteAsText		: "ចំលងដាក់អត្ថបទធម្មតា",
 PasteFromWord	: "ចំលងពាក្យពីកម្មវិធី Word",
 
 DlgPasteMsg2	: "សូមចំលងអត្ថបទទៅដាក់ក្នុងប្រអប់ដូចខាងក្រោមដោយប្រើប្រាស់ ឃី ​(<STRONG>Ctrl+V</STRONG>) ហើយចុច <STRONG>OK</STRONG> ។",
+DlgPasteSec		: "Because of your browser security settings, the editor is not able to access your clipboard data directly. You are required to paste it again in this window.",	//MISSING
 DlgPasteIgnoreFont		: "មិនគិតអំពីប្រភេទពុម្ភអក្សរ",
 DlgPasteRemoveStyles	: "លប់ម៉ូត",
 DlgPasteCleanBox		: "លប់អត្ថបទចេញពីប្រអប់",

@@ -1,28 +1,24 @@
 ﻿/*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
  * Copyright (C) 2003-2007 Frederico Caldeira Knabben
- * 
+ *
  * == BEGIN LICENSE ==
- * 
+ *
  * Licensed under the terms of any of the following licenses at your
  * choice:
- * 
+ *
  *  - GNU General Public License Version 2 or later (the "GPL")
  *    http://www.gnu.org/licenses/gpl.html
- * 
+ *
  *  - GNU Lesser General Public License Version 2.1 or later (the "LGPL")
  *    http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  *  - Mozilla Public License Version 1.1 or later (the "MPL")
  *    http://www.mozilla.org/MPL/MPL-1.1.html
- * 
+ *
  * == END LICENSE ==
- * 
- * File Name: uk.js
- * 	Ukrainian language file.
- * 
- * File Authors:
- * 		Alexander Pervak (pervak@gmail.com)
+ *
+ * Ukrainian language file.
  */
 
 var FCKLang =
@@ -138,7 +134,7 @@ SelectionFieldProp	: "Властивості списку",
 TextareaProp		: "Властивості текстової області",
 FormProp			: "Властивості форми",
 
-FontFormats			: "Нормальний;Форматований;Адреса;Заголовок 1;Заголовок 2;Заголовок 3;Заголовок 4;Заголовок 5;Заголовок 6",		//REVIEW : Check _getfontformat.html
+FontFormats			: "Нормальний;Форматований;Адреса;Заголовок 1;Заголовок 2;Заголовок 3;Заголовок 4;Заголовок 5;Заголовок 6;Нормальний (DIV)",		//REVIEW : Check _getfontformat.html
 
 // Alerts and Messages
 ProcessingXHTML		: "Обробка XHTML. Зачекайте, будь ласка...",
@@ -341,7 +337,6 @@ DlgReplaceReplAllBtn	: "Замінити все",
 DlgReplaceWordChk		: "Збіг цілих слів",
 
 // Paste Operations / Dialog
-PasteErrorPaste	: "Настройки безпеки вашого браузера не дозволяють редактору автоматично виконувати операції вставки. Будь ласка, використовуйте клавіатуру для цього (Ctrl+V).",
 PasteErrorCut	: "Настройки безпеки вашого браузера не дозволяють редактору автоматично виконувати операції вирізування. Будь ласка, використовуйте клавіатуру для цього (Ctrl+X).",
 PasteErrorCopy	: "Настройки безпеки вашого браузера не дозволяють редактору автоматично виконувати операції копіювання. Будь ласка, використовуйте клавіатуру для цього (Ctrl+C).",
 
@@ -349,6 +344,7 @@ PasteAsText		: "Вставити тільки текст",
 PasteFromWord	: "Вставити з Word",
 
 DlgPasteMsg2	: "Будь-ласка, вставте з буфера обміну в цю область, користуючись комбінацією клавіш (<STRONG>Ctrl+V</STRONG>) та натисніть <STRONG>OK</STRONG>.",
+DlgPasteSec		: "Редактор не може отримати прямий доступ до буферу обміну у зв'язку з налаштуваннями вашого браузера. Вам потрібно вставити інформацію повторно в це вікно.",
 DlgPasteIgnoreFont		: "Ігнорувати налаштування шрифтів",
 DlgPasteRemoveStyles	: "Видалити налаштування стилів",
 DlgPasteCleanBox		: "Очистити область",

@@ -1,28 +1,24 @@
 ﻿/*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
  * Copyright (C) 2003-2007 Frederico Caldeira Knabben
- * 
+ *
  * == BEGIN LICENSE ==
- * 
+ *
  * Licensed under the terms of any of the following licenses at your
  * choice:
- * 
+ *
  *  - GNU General Public License Version 2 or later (the "GPL")
  *    http://www.gnu.org/licenses/gpl.html
- * 
+ *
  *  - GNU Lesser General Public License Version 2.1 or later (the "LGPL")
  *    http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  *  - Mozilla Public License Version 1.1 or later (the "MPL")
  *    http://www.mozilla.org/MPL/MPL-1.1.html
- * 
+ *
  * == END LICENSE ==
- * 
- * File Name: it.js
- * 	Italian language file.
- * 
- * File Authors:
- * 		Simone Chiaretta (simone@piyosailing.com)
+ *
+ * Italian language file.
  */
 
 var FCKLang =
@@ -341,7 +337,6 @@ DlgReplaceReplAllBtn	: "Sostituisci tutto",
 DlgReplaceWordChk		: "Solo parole intere",
 
 // Paste Operations / Dialog
-PasteErrorPaste	: "Le impostazioni di sicurezza del browser non permettono di incollare automaticamente il testo. Usa la tastiera (Ctrl+V).",
 PasteErrorCut	: "Le impostazioni di sicurezza del browser non permettono di tagliare automaticamente il testo. Usa la tastiera (Ctrl+X).",
 PasteErrorCopy	: "Le impostazioni di sicurezza del browser non permettono di copiare automaticamente il testo. Usa la tastiera (Ctrl+C).",
 
@@ -349,6 +344,7 @@ PasteAsText		: "Incolla come testo semplice",
 PasteFromWord	: "Incolla da Word",
 
 DlgPasteMsg2	: "Incolla il testo all'interno dell'area sottostante usando la scorciatoia di tastiere (<STRONG>Ctrl+V</STRONG>) e premi <STRONG>OK</STRONG>.",
+DlgPasteSec		: "Because of your browser security settings, the editor is not able to access your clipboard data directly. You are required to paste it again in this window.",	//MISSING
 DlgPasteIgnoreFont		: "Ignora le definizioni di Font",
 DlgPasteRemoveStyles	: "Rimuovi le definizioni di Stile",
 DlgPasteCleanBox		: "Svuota area di testo",

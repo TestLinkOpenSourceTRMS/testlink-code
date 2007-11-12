@@ -2,28 +2,24 @@
 <!--
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
  * Copyright (C) 2003-2007 Frederico Caldeira Knabben
- * 
+ *
  * == BEGIN LICENSE ==
- * 
+ *
  * Licensed under the terms of any of the following licenses at your
  * choice:
- * 
+ *
  *  - GNU General Public License Version 2 or later (the "GPL")
  *    http://www.gnu.org/licenses/gpl.html
- * 
+ *
  *  - GNU Lesser General Public License Version 2.1 or later (the "LGPL")
  *    http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  *  - Mozilla Public License Version 1.1 or later (the "MPL")
  *    http://www.mozilla.org/MPL/MPL-1.1.html
- * 
+ *
  * == END LICENSE ==
- * 
- * File Name: frmresourceslist.html
- * 	This page shows all resources available in a folder in the File Browser.
- * 
- * File Authors:
- * 		Frederico Caldeira Knabben (www.fckeditor.net)
+ *
+ * This page shows all resources available in a folder in the File Browser.
 -->
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -48,8 +44,8 @@ oListManager.GetFolderRowHtml = function( folderName, folderPath )
 				sLink +
 				'<img alt="" src="images/Folder.gif" width="16" height="16" border="0"></a>' +
 			'</td><td nowrap colspan="2">&nbsp;' +
-				sLink + 
-				folderName + 
+				sLink +
+				folderName +
 				'</a>' +
 		'</td></tr>' ;
 }
@@ -64,14 +60,14 @@ oListManager.GetFileRowHtml = function( fileName, fileUrl, fileSize )
 
 	return '<tr>' +
 			'<td width="16">' +
-				sLink + 
+				sLink +
 				'<img alt="" src="images/icons/' + sIcon + '.gif" width="16" height="16" border="0"></a>' +
 			'</td><td>&nbsp;' +
-				sLink + 
-				fileName + 
+				sLink +
+				fileName +
 				'</a>' +
 			'</td><td align="right" nowrap>&nbsp;' +
-				fileSize + 
+				fileSize +
 				' KB' +
 		'</td></tr>' ;
 }
@@ -84,7 +80,7 @@ function OpenFolder( folderPath )
 
 function OpenFile( fileUrl )
 {
-	window.top.opener.SetUrl( fileUrl ) ;
+	window.top.opener.SetUrl( encodeURI( fileUrl ) ) ;
 	window.top.close() ;
 	window.top.opener.focus() ;
 }
@@ -111,7 +107,7 @@ function GetFoldersAndFilesCallBack( fckXml )
 	var oFolderNode = fckXml.SelectSingleNode( 'Connector/CurrentFolder' ) ;
 	if ( oFolderNode == null )
 	{
-		alert( 'The server didn\'t reply with a proper XML file\r\nCheck your configuration.' ) ;
+		alert( 'The server didn\'t reply with a proper XML data. Please check your configuration.' ) ;
 		return ;
 	}
 	var sCurrentFolderPath	= oFolderNode.attributes.getNamedItem('path').value ;
@@ -121,7 +117,7 @@ function GetFoldersAndFilesCallBack( fckXml )
 
 	var oHtml = new StringBuilder( '<table id="tableFiles" cellspacing="1" cellpadding="0" width="100%" border="0">' ) ;
 
-	// Add the Folders.	
+	// Add the Folders.
 	var oNodes ;
 	oNodes = fckXml.SelectNodes( 'Connector/Folders/Folder' ) ;
 	for ( var i = 0 ; i < oNodes.length ; i++ )
@@ -130,7 +126,7 @@ function GetFoldersAndFilesCallBack( fckXml )
 		oHtml.Append( oListManager.GetFolderRowHtml( sFolderName, sCurrentFolderPath + sFolderName + "/" ) ) ;
 	}
 
-	// Add the Files.	
+	// Add the Files.
 	oNodes = fckXml.SelectNodes( 'Connector/Files/File' ) ;
 	for ( var j = 0 ; j < oNodes.length ; j++ )
 	{
@@ -141,12 +137,12 @@ function GetFoldersAndFilesCallBack( fckXml )
 		// Get the optional "url" attribute. If not available, build the url.
 		var oFileUrlAtt = oNodes[j].attributes.getNamedItem('url') ;
 		var sFileUrl = oFileUrlAtt != null ? oFileUrlAtt.value : sCurrentFolderUrl + sFileName ;
-		
+
 		oHtml.Append( oListManager.GetFileRowHtml( sFileName, sFileUrl, sFileSize ) ) ;
 	}
 
 	oHtml.Append( '<\/table>' ) ;
-	
+
 	document.body.innerHTML = oHtml.ToString() ;
 
 //	window.top.document.title = 'Finished processing in ' + ( ( ( new Date() ) - dTimer ) / 1000 ) + ' seconds' ;

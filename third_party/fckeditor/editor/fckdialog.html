@@ -2,28 +2,24 @@
 <!--
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
  * Copyright (C) 2003-2007 Frederico Caldeira Knabben
- * 
+ *
  * == BEGIN LICENSE ==
- * 
+ *
  * Licensed under the terms of any of the following licenses at your
  * choice:
- * 
+ *
  *  - GNU General Public License Version 2 or later (the "GPL")
  *    http://www.gnu.org/licenses/gpl.html
- * 
+ *
  *  - GNU Lesser General Public License Version 2.1 or later (the "LGPL")
  *    http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  *  - Mozilla Public License Version 1.1 or later (the "MPL")
  *    http://www.mozilla.org/MPL/MPL-1.1.html
- * 
+ *
  * == END LICENSE ==
- * 
- * File Name: fckdialog.html
- * 	This page is used by all dialog box as the container.
- * 
- * File Authors:
- * 		Frederico Caldeira Knabben (www.fckeditor.net)
+ *
+ * This page is used by all dialog box as the container.
 -->
 <html xmlns="http://www.w3.org/1999/xhtml">
 	<head>
@@ -215,7 +211,7 @@ function SetOnKeyDown( targetDocument )
 		{
 			case 13 :		// ENTER
 				var oTarget = e.srcElement || e.target ;
-				if ( oTarget.tagName == 'TEXTAREA' ) 
+				if ( oTarget.tagName == 'TEXTAREA' )
 					return true ;
 				Ok() ;
 				return false ;
@@ -315,8 +311,9 @@ document.write( sTitle ) ;
 						<tr>
 							<td width="100%">&nbsp;</td>
 							<td nowrap="nowrap">
-								<input id="btnOk" style="VISIBILITY: hidden; WIDTH: 100px" type="button" value="Ok" class="Button"
-									onclick="Ok();" fckLang="DlgBtnOK" />&nbsp; <input type="button" value="Cancel" class="Button" onclick="Cancel();" fckLang="DlgBtnCancel" />
+								<input id="btnOk" style="VISIBILITY: hidden;" type="button" value="Ok" class="Button" onclick="Ok();" fckLang="DlgBtnOK" />
+								&nbsp; 
+								<input id="btnCancel" type="button" value="Cancel" class="Button" onclick="Cancel();" fckLang="DlgBtnCancel" />
 							</td>
 						</tr>
 					</table>

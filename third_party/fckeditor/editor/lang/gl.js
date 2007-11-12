@@ -1,28 +1,24 @@
 ﻿/*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
  * Copyright (C) 2003-2007 Frederico Caldeira Knabben
- * 
+ *
  * == BEGIN LICENSE ==
- * 
+ *
  * Licensed under the terms of any of the following licenses at your
  * choice:
- * 
+ *
  *  - GNU General Public License Version 2 or later (the "GPL")
  *    http://www.gnu.org/licenses/gpl.html
- * 
+ *
  *  - GNU Lesser General Public License Version 2.1 or later (the "LGPL")
  *    http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  *  - Mozilla Public License Version 1.1 or later (the "MPL")
  *    http://www.mozilla.org/MPL/MPL-1.1.html
- * 
+ *
  * == END LICENSE ==
- * 
- * File Name: gl.js
- * 	Galician language file.
- * 
- * File Authors:
- * 		Fernando Riveiro Lopez
+ *
+ * Galician language file.
  */
 
 var FCKLang =
@@ -341,7 +337,6 @@ DlgReplaceReplAllBtn	: "Substitiur Todo",
 DlgReplaceWordChk		: "Coincidir con toda a palabra",
 
 // Paste Operations / Dialog
-PasteErrorPaste	: "Os axustes de seguridade do seu navegador non permiten que o editor realice automáticamente as tarefas de pegado. Por favor, use o teclado para iso (Ctrl+V).",
 PasteErrorCut	: "Os axustes de seguridade do seu navegador non permiten que o editor realice automáticamente as tarefas de corte. Por favor, use o teclado para iso (Ctrl+X).",
 PasteErrorCopy	: "Os axustes de seguridade do seu navegador non permiten que o editor realice automáticamente as tarefas de copia. Por favor, use o teclado para iso (Ctrl+C).",
 
@@ -349,6 +344,7 @@ PasteAsText		: "Pegar como texto plano",
 PasteFromWord	: "Pegar dende Word",
 
 DlgPasteMsg2	: "Por favor, pegue dentro do seguinte cadro usando o teclado (<STRONG>Ctrl+V</STRONG>) e pulse <STRONG>OK</STRONG>.",
+DlgPasteSec		: "Because of your browser security settings, the editor is not able to access your clipboard data directly. You are required to paste it again in this window.",	//MISSING
 DlgPasteIgnoreFont		: "Ignorar as definicións de Tipografía",
 DlgPasteRemoveStyles	: "Eliminar as definicións de Estilos",
 DlgPasteCleanBox		: "Limpar o Cadro",

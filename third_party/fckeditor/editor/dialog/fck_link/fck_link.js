@@ -1,37 +1,31 @@
 ﻿/*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
  * Copyright (C) 2003-2007 Frederico Caldeira Knabben
- * 
+ *
  * == BEGIN LICENSE ==
- * 
+ *
  * Licensed under the terms of any of the following licenses at your
  * choice:
- * 
+ *
  *  - GNU General Public License Version 2 or later (the "GPL")
  *    http://www.gnu.org/licenses/gpl.html
- * 
+ *
  *  - GNU Lesser General Public License Version 2.1 or later (the "LGPL")
  *    http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  *  - Mozilla Public License Version 1.1 or later (the "MPL")
  *    http://www.mozilla.org/MPL/MPL-1.1.html
- * 
+ *
  * == END LICENSE ==
- * 
- * File Name: fck_link.js
- * 	Scripts related to the Link dialog window (see fck_link.html).
- * 
- * File Authors:
- * 		Frederico Caldeira Knabben (www.fckeditor.net)
- * 		Dominik Pesch ?dom? (empty selection patch) (d.pesch@11com7.de)
- * 		Alfonso Martinez de Lizarrondo - Uritec (alfonso at uritec dot net)
+ *
+ * Scripts related to the Link dialog window (see fck_link.html).
  */
 
 var oEditor		= window.parent.InnerDialogLoaded() ;
 var FCK			= oEditor.FCK ;
 var FCKLang		= oEditor.FCKLang ;
 var FCKConfig	= oEditor.FCKConfig ;
-var FCKRegexLib			= oEditor.FCKRegexLib ;
+var FCKRegexLib	= oEditor.FCKRegexLib ;
 
 //#### Dialog Tabs
 
@@ -61,28 +55,20 @@ function OnDialogTabChange( tabCode )
 //#### Regular Expressions library.
 var oRegex = new Object() ;
 
-oRegex.UriProtocol = new RegExp('') ;
-oRegex.UriProtocol.compile( '^(((http|https|ftp|news):\/\/)|mailto:)', 'gi' ) ;
+oRegex.UriProtocol = /^(((http|https|ftp|news):\/\/)|mailto:)/gi ;
 
-oRegex.UrlOnChangeProtocol = new RegExp('') ;
-oRegex.UrlOnChangeProtocol.compile( '^(http|https|ftp|news)://(?=.)', 'gi' ) ;
+oRegex.UrlOnChangeProtocol = /^(http|https|ftp|news):\/\/(?=.)/gi ;
 
-oRegex.UrlOnChangeTestOther = new RegExp('') ;
-//oRegex.UrlOnChangeTestOther.compile( '^(javascript:|#|/)', 'gi' ) ;
-oRegex.UrlOnChangeTestOther.compile( '^((javascript:)|[#/\.])', 'gi' ) ; 
+oRegex.UrlOnChangeTestOther = /^((javascript:)|[#\/\.])/gi ;
 
-oRegex.ReserveTarget = new RegExp('') ;
-oRegex.ReserveTarget.compile( '^_(blank|self|top|parent)$', 'i' ) ;
+oRegex.ReserveTarget = /^_(blank|self|top|parent)$/i ;
 
-oRegex.PopupUri = new RegExp('') ;
-oRegex.PopupUri.compile( "^javascript:void\\(\\s*window.open\\(\\s*'([^']+)'\\s*,\\s*(?:'([^']*)'|null)\\s*,\\s*'([^']*)'\\s*\\)\\s*\\)\\s*$" ) ;
+oRegex.PopupUri = /^javascript:void\(\s*window.open\(\s*'([^']+)'\s*,\s*(?:'([^']*)'|null)\s*,\s*'([^']*)'\s*\)\s*\)\s*$/ ;
 
-// Accesible popups
-oRegex.OnClickPopup = new RegExp('') ;
-oRegex.OnClickPopup.compile( "^\\s*onClick=\"\\s*window.open\\(\\s*this\\.href\\s*,\\s*(?:'([^']*)'|null)\\s*,\\s*'([^']*)'\\s*\\)\\s*;\\s*return\\s*false;*\\s*\"$" ) ;
+// Accessible popups
+oRegex.OnClickPopup = /^\s*on[cC]lick="\s*window.open\(\s*this\.href\s*,\s*(?:'([^']*)'|null)\s*,\s*'([^']*)'\s*\)\s*;\s*return\s*false;*\s*"$/ ;
 
-oRegex.PopupFeatures = new RegExp('') ;
-oRegex.PopupFeatures.compile( '(?:^|,)([^=]+)=(\\d+|yes|no)', 'gi' ) ;
+oRegex.PopupFeatures = /(?:^|,)([^=]+)=(\d+|yes|no)/gi ;
 
 //#### Parser Functions
 
@@ -165,6 +151,9 @@ window.onload = function()
 	if ( FCKConfig.LinkUpload )
 		GetE('frmUpload').action = FCKConfig.LinkUploadURL ;
 
+	// Set the default target (from configuration).
+	SetDefaultTarget() ;
+
 	// Activate the "OK" button.
 	window.parent.SetOkButton( true ) ;
 }
@@ -173,7 +162,7 @@ var bHasAnchors ;
 
 function LoadAnchorNamesAndIds()
 {
-	// Since version 2.0, the anchors are replaced in the DOM by IMGs so the user see the icon 
+	// Since version 2.0, the anchors are replaced in the DOM by IMGs so the user see the icon
 	// to edit them. So, we must look for that images now.
 	var aAnchors = new Array() ;
 	var i ;
@@ -191,7 +180,7 @@ function LoadAnchorNamesAndIds()
 		if ( oLinks[i].name && ( oLinks[i].name.length > 0 ) )
 			aAnchors[ aAnchors.length ] = oLinks[i] ;
 	}
-	
+
 	var aIds = oEditor.FCKTools.GetAllChildrenIds( oEditor.FCK.EditorDocument.body ) ;
 
 	bHasAnchors = ( aAnchors.length > 0 || aIds.length > 0 ) ;
@@ -235,7 +224,7 @@ function LoadSelection()
 
 	// Accesible popups, the popup data is in the onclick attribute
 	if ( !oPopupMatch ) {
-		var onclick = oLink.getAttribute( 'onClick_fckprotectedatt' ) ;
+		var onclick = oLink.getAttribute( 'onclick_fckprotectedatt' ) ;
 		oPopupMatch = oRegex.OnClickPopup.exec( onclick ) ;
 		if( oPopupMatch )
 		{
@@ -513,16 +502,13 @@ function Ok()
 			break ;
 	}
 
-	// No link selected, so try to create one.
-	if ( !oLink )
-		oLink = oEditor.FCK.CreateLink( sUri ) ;
-	
-	if ( oLink )
-		sInnerHtml = oLink.innerHTML ;		// Save the innerHTML (IE changes it if it is like an URL).
-	else
-	{
-		// If no selection, use the uri as the link text (by dom, 2006-05-26)
+	// If no link is selected, create a new one (it may result in more than one link creation - #220).
+	var aLinks = oLink ? [ oLink ] : oEditor.FCK.CreateLink( sUri ) ;
 
+	// If no selection, no links are created, so use the uri as the link text (by dom, 2006-05-26)
+	var aHasSelection = ( aLinks.length > 0 ) ;
+	if ( !aHasSelection )
+	{
 		sInnerHtml = sUri;
 
 		// Built a better text for empty links.
@@ -548,66 +534,77 @@ function Ok()
 		}
 
 		// Create a new (empty) anchor.
-		oLink = oEditor.FCK.CreateElement( 'a' ) ;
+		aLinks = [ oEditor.FCK.CreateElement( 'a' ) ] ;
 	}
 
 	oEditor.FCKUndo.SaveUndoStep() ;
 
-	oLink.href = sUri ;
-	SetAttribute( oLink, '_fcksavedurl', sUri ) ;
+	for ( var i = 0 ; i < aLinks.length ; i++ )
+	{
+		oLink = aLinks[i] ;
 
-	// Accesible popups
-	if( GetE('cmbTarget').value == 'popup' ) 
-	{
-		SetAttribute( oLink, 'onClick_fckprotectedatt', " onClick=\"" + BuildOnClickPopup() + "\"") ;
-	} 
-	else 
-	{
-		// Check if the previous onclick was for a popup:
-		// In that case remove the onclick handler.
-		var onclick = oLink.getAttribute( 'onClick_fckprotectedatt' ) ;
-		if( oRegex.OnClickPopup.test( onclick ) )
-			SetAttribute( oLink, 'onClick_fckprotectedatt', '' ) ;
+		if ( aHasSelection )
+			sInnerHtml = oLink.innerHTML ;		// Save the innerHTML (IE changes it if it is like an URL).
+
+		oLink.href = sUri ;
+		SetAttribute( oLink, '_fcksavedurl', sUri ) ;
+
+		// Accesible popups
+		if( GetE('cmbTarget').value == 'popup' )
+		{
+			SetAttribute( oLink, 'onclick_fckprotectedatt', " onclick=\"" + BuildOnClickPopup() + "\"") ;
+		}
+		else
+		{
+			// Check if the previous onclick was for a popup:
+			// In that case remove the onclick handler.
+			var onclick = oLink.getAttribute( 'onclick_fckprotectedatt' ) ;
+			if( oRegex.OnClickPopup.test( onclick ) )
+				SetAttribute( oLink, 'onclick_fckprotectedatt', '' ) ;
+		}
+
+		oLink.innerHTML = sInnerHtml ;		// Set (or restore) the innerHTML
+
+		// Target
+		if( GetE('cmbTarget').value != 'popup' )
+			SetAttribute( oLink, 'target', GetE('txtTargetFrame').value ) ;
+		else
+			SetAttribute( oLink, 'target', null ) ;
+
+		// Let's set the "id" only for the first link to avoid duplication.
+		if ( i == 0 )
+			SetAttribute( oLink, 'id', GetE('txtAttId').value ) ;
+
+		// Advances Attributes
+		SetAttribute( oLink, 'name'		, GetE('txtAttName').value ) ;
+		SetAttribute( oLink, 'dir'		, GetE('cmbAttLangDir').value ) ;
+		SetAttribute( oLink, 'lang'		, GetE('txtAttLangCode').value ) ;
+		SetAttribute( oLink, 'accesskey', GetE('txtAttAccessKey').value ) ;
+		SetAttribute( oLink, 'tabindex'	, ( GetE('txtAttTabIndex').value > 0 ? GetE('txtAttTabIndex').value : null ) ) ;
+		SetAttribute( oLink, 'title'	, GetE('txtAttTitle').value ) ;
+		SetAttribute( oLink, 'type'		, GetE('txtAttContentType').value ) ;
+		SetAttribute( oLink, 'charset'	, GetE('txtAttCharSet').value ) ;
+
+		if ( oEditor.FCKBrowserInfo.IsIE )
+		{
+			var sClass = GetE('txtAttClasses').value ;
+			// If it's also an anchor add an internal class
+			if ( GetE('txtAttName').value.length != 0 )
+				sClass += ' FCK__AnchorC' ;
+			SetAttribute( oLink, 'className', sClass ) ;
+
+			oLink.style.cssText = GetE('txtAttStyle').value ;
+		}
+		else
+		{
+			SetAttribute( oLink, 'class', GetE('txtAttClasses').value ) ;
+			SetAttribute( oLink, 'style', GetE('txtAttStyle').value ) ;
+		}
 	}
 
-	oLink.innerHTML = sInnerHtml ;		// Set (or restore) the innerHTML
+	// Select the (first) link.
+	oEditor.FCKSelection.SelectNode( aLinks[0] );
 
-	// Target
-	if( GetE('cmbTarget').value != 'popup' )
-		SetAttribute( oLink, 'target', GetE('txtTargetFrame').value ) ;
-	else
-		SetAttribute( oLink, 'target', null ) ;
-
-	// Advances Attributes
-	SetAttribute( oLink, 'id'		, GetE('txtAttId').value ) ;
-	SetAttribute( oLink, 'name'		, GetE('txtAttName').value ) ;		
-	SetAttribute( oLink, 'dir'		, GetE('cmbAttLangDir').value ) ;
-	SetAttribute( oLink, 'lang'		, GetE('txtAttLangCode').value ) ;
-	SetAttribute( oLink, 'accesskey', GetE('txtAttAccessKey').value ) ;
-	SetAttribute( oLink, 'tabindex'	, ( GetE('txtAttTabIndex').value > 0 ? GetE('txtAttTabIndex').value : null ) ) ;
-	SetAttribute( oLink, 'title'	, GetE('txtAttTitle').value ) ;
-	SetAttribute( oLink, 'type'		, GetE('txtAttContentType').value ) ;
-	SetAttribute( oLink, 'charset'	, GetE('txtAttCharSet').value ) ;
-
-	if ( oEditor.FCKBrowserInfo.IsIE )
-	{
-		var sClass = GetE('txtAttClasses').value ;
-		// If it's also an anchor add an internal class
-		if ( GetE('txtAttName').value.length != 0 )
-			sClass += ' FCK__AnchorC' ;
-		SetAttribute( oLink, 'className', sClass ) ;
-
-		oLink.style.cssText = GetE('txtAttStyle').value ;
-	}
-	else
-	{
-		SetAttribute( oLink, 'class', GetE('txtAttClasses').value ) ;
-		SetAttribute( oLink, 'style', GetE('txtAttStyle').value ) ;
-	}
-
-	// Select the link.
-	oEditor.FCKSelection.SelectNode(oLink);
-	
 	return true ;
 }
 
@@ -660,19 +657,42 @@ var oUploadDeniedExtRegex	= new RegExp( FCKConfig.LinkUploadDeniedExtensions, 'i
 function CheckUpload()
 {
 	var sFile = GetE('txtUploadFile').value ;
-	
+
 	if ( sFile.length == 0 )
 	{
 		alert( 'Please select a file to upload' ) ;
 		return false ;
 	}
-	
+
 	if ( ( FCKConfig.LinkUploadAllowedExtensions.length > 0 && !oUploadAllowedExtRegex.test( sFile ) ) ||
 		( FCKConfig.LinkUploadDeniedExtensions.length > 0 && oUploadDeniedExtRegex.test( sFile ) ) )
 	{
 		OnUploadCompleted( 202 ) ;
 		return false ;
 	}
-	
+
 	return true ;
+}
+
+function SetDefaultTarget()
+{
+	var target = FCKConfig.DefaultLinkTarget + '' ;
+	
+	if ( oLink || target.length == 0 )
+		return ;
+
+	switch ( target )
+	{
+		case '_blank' :
+		case '_self' :
+		case '_parent' :
+		case '_top' :
+			GetE('cmbTarget').value = target ;
+			break ;
+		default :
+			GetE('cmbTarget').value = 'frame' ;
+			break ;
+	}
+	
+	GetE('txtTargetFrame').value = target ;
 }

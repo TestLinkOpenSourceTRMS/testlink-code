@@ -1,29 +1,25 @@
 ﻿<!--
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
  * Copyright (C) 2003-2007 Frederico Caldeira Knabben
- * 
+ *
  * == BEGIN LICENSE ==
- * 
+ *
  * Licensed under the terms of any of the following licenses at your
  * choice:
- * 
+ *
  *  - GNU General Public License Version 2 or later (the "GPL")
  *    http://www.gnu.org/licenses/gpl.html
- * 
+ *
  *  - GNU Lesser General Public License Version 2.1 or later (the "LGPL")
  *    http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  *  - Mozilla Public License Version 1.1 or later (the "MPL")
  *    http://www.mozilla.org/MPL/MPL-1.1.html
- * 
+ *
  * == END LICENSE ==
- * 
- * File Name: commands.asp
- * 	This file include the functions that handle the Command requests
- * 	in the ASP Connector.
- * 
- * File Authors:
- * 		Frederico Caldeira Knabben (www.fckeditor.net)
+ *
+ * This file include the functions that handle the Command requests
+ * in the ASP Connector.
 -->
 <%
 Sub GetFolders( resourceType, currentFolder )
@@ -42,9 +38,9 @@ Sub GetFolders( resourceType, currentFolder )
 	For Each oFolder in oFolders
 		Response.Write "<Folder name=""" & ConvertToXmlAttribute( oFolder.name ) & """ />"
 	Next
-	
+
 	Set oFSO = Nothing
-	
+
 	' Close the "Folders" node.
 	Response.Write "</Folders>"
 End Sub
@@ -59,28 +55,28 @@ Sub GetFoldersAndFiles( resourceType, currentFolder )
 	Set oCurrentFolder = oFSO.GetFolder( sServerDir )
 	Set oFolders	= oCurrentFolder.SubFolders
 	Set oFiles		= oCurrentFolder.Files
-	
+
 	' Open the "Folders" node.
 	Response.Write "<Folders>"
-	
+
 	For Each oFolder in oFolders
 		Response.Write "<Folder name=""" & ConvertToXmlAttribute( oFolder.name ) & """ />"
 	Next
-	
+
 	' Close the "Folders" node.
 	Response.Write "</Folders>"
-		
+
 	' Open the "Files" node.
 	Response.Write "<Files>"
-	
+
 	For Each oFile in oFiles
 		Dim iFileSize
 		iFileSize = Round( oFile.size / 1024 )
 		If ( iFileSize < 1 AND oFile.size <> 0 ) Then iFileSize = 1
-		
+
 		Response.Write "<File name=""" & ConvertToXmlAttribute( oFile.name ) & """ size=""" & iFileSize & """ />"
 	Next
-	
+
 	' Close the "Files" node.
 	Response.Write "</Files>"
 End Sub
@@ -97,17 +93,17 @@ Sub CreateFolder( resourceType, currentFolder )
 		' Map the virtual path to the local server path of the current folder.
 		Dim sServerDir
 		sServerDir = ServerMapFolder( resourceType, currentFolder & "/" & sNewFolderName )
-		
+
 		On Error Resume Next
 
 		CreateServerFolder sServerDir
-		
+
 		Dim iErrNumber, sErrDescription
 		iErrNumber		= err.number
 		sErrDescription	= err.Description
-		
+
 		On Error Goto 0
-		
+
 		Select Case iErrNumber
 			Case 0
 				sErrorNumber = "0"
@@ -136,7 +132,7 @@ Sub FileUpload( resourceType, currentFolder )
 
 	Dim sErrorNumber
 	sErrorNumber = "0"
-	
+
 	Dim sFileName, sOriginalFileName, sExtension
 	sFileName = ""
 
@@ -149,7 +145,7 @@ Sub FileUpload( resourceType, currentFolder )
 
 		Dim oFSO
 		Set oFSO = Server.CreateObject( "Scripting.FileSystemObject" )
-	
+
 		' Get the uploaded file name.
 		sFileName	= oUploader.File( "NewFile" ).Name
 		sExtension	= oUploader.File( "NewFile" ).Ext

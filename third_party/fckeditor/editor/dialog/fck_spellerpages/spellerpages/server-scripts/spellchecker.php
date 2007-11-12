@@ -7,7 +7,7 @@ $aspell_prog	= '"C:\Program Files\Aspell\bin\aspell.exe"';	// by FredCK (for Win
 //$aspell_prog	= 'aspell';										// by FredCK (for Linux)
 
 $lang			= 'en_US';
-$aspell_opts	= "-a --lang=$lang --encoding=utf-8 -H";		// by FredCK
+$aspell_opts	= "-a --lang=$lang --encoding=utf-8 -H --rem-sgml-check=alt";		// by FredCK
 
 $tempfiledir	= "./";
 

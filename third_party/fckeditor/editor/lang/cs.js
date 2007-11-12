@@ -1,30 +1,24 @@
 ﻿/*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
  * Copyright (C) 2003-2007 Frederico Caldeira Knabben
- * 
+ *
  * == BEGIN LICENSE ==
- * 
+ *
  * Licensed under the terms of any of the following licenses at your
  * choice:
- * 
+ *
  *  - GNU General Public License Version 2 or later (the "GPL")
  *    http://www.gnu.org/licenses/gpl.html
- * 
+ *
  *  - GNU Lesser General Public License Version 2.1 or later (the "LGPL")
  *    http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  *  - Mozilla Public License Version 1.1 or later (the "MPL")
  *    http://www.mozilla.org/MPL/MPL-1.1.html
- * 
+ *
  * == END LICENSE ==
- * 
- * File Name: cs.js
- * 	Czech language file.
- * 
- * File Authors:
- * 		David Horák (david.horak@email.cz)
- * 		Petr Plavjaník (plavjanik@gmail.com)
- * 		Dave MacBlack (davemacblack@users.sourceforge.net)
+ *
+ * Czech language file.
  */
 
 var FCKLang =
@@ -268,7 +262,7 @@ DlgLnkPopTop		: "Horní okraj",
 DlnLnkMsgNoUrl		: "Zadejte prosím URL odkazu",
 DlnLnkMsgNoEMail	: "Zadejte prosím e-mailovou adresu",
 DlnLnkMsgNoAnchor	: "Vyberte prosím kotvu",
-DlnLnkMsgInvPopName	: "The popup name must begin with an alphabetic character and must not contain spaces",	//MISSING
+DlnLnkMsgInvPopName	: "Název vyskakovacího okna musí začínat písmenem a nesmí obsahovat mezery",
 
 // Color Dialog
 DlgColorTitle		: "Výběr barvy",
@@ -343,7 +337,6 @@ DlgReplaceReplAllBtn	: "Nahradit vše",
 DlgReplaceWordChk		: "Pouze celá slova",
 
 // Paste Operations / Dialog
-PasteErrorPaste	: "Bezpečnostní nastavení Vašeho prohlížeče nedovolují editoru spustit funkci pro vložení textu ze schránky. Prosím vložte text ze schránky pomocí klávesnice (Ctrl+V).",
 PasteErrorCut	: "Bezpečnostní nastavení Vašeho prohlížeče nedovolují editoru spustit funkci pro vyjmutí zvoleného textu do schránky. Prosím vyjměte zvolený text do schránky pomocí klávesnice (Ctrl+X).",
 PasteErrorCopy	: "Bezpečnostní nastavení Vašeho prohlížeče nedovolují editoru spustit funkci pro kopírování zvoleného textu do schránky. Prosím zkopírujte zvolený text do schránky pomocí klávesnice (Ctrl+C).",
 
@@ -351,6 +344,7 @@ PasteAsText		: "Vložit jako čistý text",
 PasteFromWord	: "Vložit text z Wordu",
 
 DlgPasteMsg2	: "Do následujícího pole vložte požadovaný obsah pomocí klávesnice (<STRONG>Ctrl+V</STRONG>) a stiskněte <STRONG>OK</STRONG>.",
+DlgPasteSec		: "Because of your browser security settings, the editor is not able to access your clipboard data directly. You are required to paste it again in this window.",	//MISSING
 DlgPasteIgnoreFont		: "Ignorovat písmo",
 DlgPasteRemoveStyles	: "Odstranit styly",
 DlgPasteCleanBox		: "Vyčistit",
@@ -387,9 +381,9 @@ IeSpellDownload			: "Kontrola pravopisu není nainstalována. Chcete ji nyní st
 // Button Dialog
 DlgButtonText		: "Popisek",
 DlgButtonType		: "Typ",
-DlgButtonTypeBtn	: "Button",	//MISSING
-DlgButtonTypeSbm	: "Submit",	//MISSING
-DlgButtonTypeRst	: "Reset",	//MISSING
+DlgButtonTypeBtn	: "Tlačítko",
+DlgButtonTypeSbm	: "Odeslat",
+DlgButtonTypeRst	: "Obnovit",
 
 // Checkbox and Radio Button Dialogs
 DlgCheckboxName		: "Název",
@@ -461,15 +455,15 @@ DlgDocLangDirLTR	: "Zleva do prava ",
 DlgDocLangDirRTL	: "Zprava doleva",
 DlgDocLangCode		: "Kód jazyku",
 DlgDocCharSet		: "Znaková sada",
-DlgDocCharSetCE		: "Central European",	//MISSING
-DlgDocCharSetCT		: "Chinese Traditional (Big5)",	//MISSING
-DlgDocCharSetCR		: "Cyrillic",	//MISSING
-DlgDocCharSetGR		: "Greek",	//MISSING
-DlgDocCharSetJP		: "Japanese",	//MISSING
-DlgDocCharSetKR		: "Korean",	//MISSING
-DlgDocCharSetTR		: "Turkish",	//MISSING
-DlgDocCharSetUN		: "Unicode (UTF-8)",	//MISSING
-DlgDocCharSetWE		: "Western European",	//MISSING
+DlgDocCharSetCE		: "Středoevropské jazyky",
+DlgDocCharSetCT		: "Tradiční čínština (Big5)",
+DlgDocCharSetCR		: "Cyrilice",
+DlgDocCharSetGR		: "Řečtina",
+DlgDocCharSetJP		: "Japonština",
+DlgDocCharSetKR		: "Korejština",
+DlgDocCharSetTR		: "Turečtina",
+DlgDocCharSetUN		: "Unicode (UTF-8)",
+DlgDocCharSetWE		: "Západoevropské jazyky",
 DlgDocCharSetOther	: "Další znaková sada",
 
 DlgDocDocType		: "Typ dokumentu",
@@ -499,7 +493,7 @@ DlgTemplatesTitle	: "Šablony obsahu",
 DlgTemplatesSelMsg	: "Prosím zvolte šablonu pro otevření v editoru<br>(aktuální obsah editoru bude ztracen):",
 DlgTemplatesLoading	: "Nahrávám přeheld šablon. Prosím čekejte...",
 DlgTemplatesNoTpl	: "(Není definována žádná šablona)",
-DlgTemplatesReplace	: "Replace actual contents",	//MISSING
+DlgTemplatesReplace	: "Nahradit aktuální obsah",
 
 // About Dialog
 DlgAboutAboutTab	: "O aplikaci",

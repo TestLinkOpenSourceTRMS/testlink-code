@@ -1,5 +1,5 @@
 <cfsilent>
-<!--- 
+<!---
 This code uses a CF User Defined Function and should work in CF version 5.0
 and up without alteration.
 
@@ -8,17 +8,17 @@ to see if the use of <CFEXECUTE> is allowed. In most cases ISP will not allow
 the use of that tag for security reasons. Clients would be able to access each
 others files in certain cases.
 --->
- 
-<!--- 
+
+<!---
 The following variables values must reflect your installation needs.
 --->
-<cfset apsell_dir	= "c:\aspell\bin">
+<cfset apsell_dir	= "C:\Program Files\Aspell\bin">
 
 <cfset lang			= "en_US">
-<cfset aspell_opts	= "-a --lang=#lang# --encoding=utf-8 -H">
+<cfset aspell_opts	= "-a --lang=#lang# --encoding=utf-8 -H --rem-sgml-check=alt">
 
 <!--- Be sure the temporary folder exists --->
-<cfset tempFolder	= "c:\aspell\temp">
+<cfset tempFolder	= "C:\Windows\Temp">
 <cfset tempfile		= "spell_#randrange(1,10000)#">
 
 <cfset spellercss	= "../spellerStyle.css">
@@ -36,7 +36,7 @@ The following variables values must reflect your installation needs.
 <!--- Takes care of those pesky smart quotes from MS apps, replaces them with regular quotes --->
 <cfparam name="url.checktext" default="">
 <cfparam name="form.checktext" default="#url.checktext#">
-<cfset submitted_text = replacelist(form.checktext,"%u201C,%u201D","%22,%22")> 
+<cfset submitted_text = replacelist(form.checktext,"%u201C,%u201D","%22,%22")>
 
 <!--- submitted_text now is ready for processing --->
 
@@ -70,7 +70,7 @@ If your using the new version of mx 6.1 you can  use the following cfexecute tag
 
 
 <cfsavecontent variable="food">
-<cfexecute name="C:\WINDOWS\SYSTEM32\cmd.exe" arguments="/c type #tempFolder#\#tempfile#.txt | #apsell_dir#\aspell #aspell_opts#" timeout="100"></cfexecute>
+<cfexecute name="C:\WINDOWS\SYSTEM32\cmd.exe" arguments='/c type #tempFolder#\#tempfile#.txt | "#apsell_dir#\aspell" #aspell_opts#' timeout="100"></cfexecute>
 </cfsavecontent>
 
 
@@ -118,13 +118,13 @@ If your using the new version of mx 6.1 you can  use the following cfexecute tag
       <cfset word_cnt = "0">
       <cfset texts.words = ListAppend(texts.words, "words[#input_cnt#] = [];", "#crlf#")>
       <cfset texts.words = ListAppend(texts.words, "suggs[#input_cnt#] = [];", "#crlf#")>
-		</cfif>			
+		</cfif>
 	</cfif>
 	<cfset cnt = cnt + 1>
 </cfloop>
 
 <cfif texts.words IS "">
-  <cfset texts.abort = "alert('Spell check complete.\n\nNo misspellings found.');#chrlf#top.window.close();">
+  <cfset texts.abort = "alert('Spell check complete.\n\nNo misspellings found.');#crlf#top.window.close();">
 </cfif>
 
 </cfsilent><cfoutput><cfcontent type="text/html"><html>

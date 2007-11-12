@@ -1,28 +1,24 @@
 ﻿/*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
  * Copyright (C) 2003-2007 Frederico Caldeira Knabben
- * 
+ *
  * == BEGIN LICENSE ==
- * 
+ *
  * Licensed under the terms of any of the following licenses at your
  * choice:
- * 
+ *
  *  - GNU General Public License Version 2 or later (the "GPL")
  *    http://www.gnu.org/licenses/gpl.html
- * 
+ *
  *  - GNU Lesser General Public License Version 2.1 or later (the "LGPL")
  *    http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  *  - Mozilla Public License Version 1.1 or later (the "MPL")
  *    http://www.mozilla.org/MPL/MPL-1.1.html
- * 
+ *
  * == END LICENSE ==
- * 
- * File Name: sr.js
- * 	Serbian (Cyrillic) language file.
- * 
- * File Authors:
- * 		Zoran Subić (zoran@tf.zr.ac.yu)
+ *
+ * Serbian (Cyrillic) language file.
  */
 
 var FCKLang =
@@ -341,7 +337,6 @@ DlgReplaceReplAllBtn	: "Замени све",
 DlgReplaceWordChk		: "Упореди целе речи",
 
 // Paste Operations / Dialog
-PasteErrorPaste	: "Сигурносна подешавања Вашег претраживача не дозвољавају операције аутоматског лепљења текста. Молимо Вас да користите пречицу са тастатуре (Ctrl+V).",
 PasteErrorCut	: "Сигурносна подешавања Вашег претраживача не дозвољавају операције аутоматског исецања текста. Молимо Вас да користите пречицу са тастатуре (Ctrl+X).",
 PasteErrorCopy	: "Сигурносна подешавања Вашег претраживача не дозвољавају операције аутоматског копирања текста. Молимо Вас да користите пречицу са тастатуре (Ctrl+C).",
 
@@ -349,6 +344,7 @@ PasteAsText		: "Залепи као чист текст",
 PasteFromWord	: "Залепи из Worda",
 
 DlgPasteMsg2	: "Молимо Вас да залепите унутар доње површине користећи тастатурну пречицу (<STRONG>Ctrl+V</STRONG>) и да притиснете <STRONG>OK</STRONG>.",
+DlgPasteSec		: "Because of your browser security settings, the editor is not able to access your clipboard data directly. You are required to paste it again in this window.",	//MISSING
 DlgPasteIgnoreFont		: "Игнориши Font Face дефиниције",
 DlgPasteRemoveStyles	: "Уклони дефиниције стилова",
 DlgPasteCleanBox		: "Обриши све",

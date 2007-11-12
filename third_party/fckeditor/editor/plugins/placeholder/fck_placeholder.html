@@ -2,28 +2,24 @@
 <!--
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
  * Copyright (C) 2003-2007 Frederico Caldeira Knabben
- * 
+ *
  * == BEGIN LICENSE ==
- * 
+ *
  * Licensed under the terms of any of the following licenses at your
  * choice:
- * 
+ *
  *  - GNU General Public License Version 2 or later (the "GPL")
  *    http://www.gnu.org/licenses/gpl.html
- * 
+ *
  *  - GNU Lesser General Public License Version 2.1 or later (the "LGPL")
  *    http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  *  - Mozilla Public License Version 1.1 or later (the "MPL")
  *    http://www.mozilla.org/MPL/MPL-1.1.html
- * 
+ *
  * == END LICENSE ==
- * 
- * File Name: fck_placeholder.html
- * 	Placeholder Plugin.
- * 
- * File Authors:
- * 		Frederico Caldeira Knabben (www.fckeditor.net)
+ *
+ * Placeholder Plugin.
 -->
 <html>
 	<head>
@@ -40,11 +36,11 @@ window.onload = function ()
 {
 	// First of all, translate the dialog box texts
 	oEditor.FCKLanguageManager.TranslatePage( document ) ;
-	
+
 	LoadSelected() ;
-	
+
 	// Show the "Ok" button.
-	window.parent.SetOkButton( true ) ;	
+	window.parent.SetOkButton( true ) ;
 }
 
 var eSelected = oEditor.FCKSelection.GetSelectedElement() ;
@@ -63,7 +59,7 @@ function LoadSelected()
 function Ok()
 {
 	var sValue = document.getElementById('txtName').value ;
-	
+
 	if ( eSelected && eSelected._fckplaceholder == sValue )
 		return true ;
 
@@ -72,7 +68,7 @@ function Ok()
 		alert( FCKLang.PlaceholderErrNoName ) ;
 		return false ;
 	}
-	
+
 	if ( FCKPlaceholders.Exist( sValue ) )
 	{
 		alert( FCKLang.PlaceholderErrNameInUse ) ;

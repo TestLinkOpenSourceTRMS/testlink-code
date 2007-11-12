@@ -1,29 +1,24 @@
 ﻿/*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
  * Copyright (C) 2003-2007 Frederico Caldeira Knabben
- * 
+ *
  * == BEGIN LICENSE ==
- * 
+ *
  * Licensed under the terms of any of the following licenses at your
  * choice:
- * 
+ *
  *  - GNU General Public License Version 2 or later (the "GPL")
  *    http://www.gnu.org/licenses/gpl.html
- * 
+ *
  *  - GNU Lesser General Public License Version 2.1 or later (the "LGPL")
  *    http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  *  - Mozilla Public License Version 1.1 or later (the "MPL")
  *    http://www.mozilla.org/MPL/MPL-1.1.html
- * 
+ *
  * == END LICENSE ==
- * 
- * File Name: lv.js
- * 	Latvian language file.
- * 
- * File Authors:
- * 		Jānis Kļaviņš (janis@4id.lv)
- * 		Slowmo (slowmo@inbox.lv)
+ *
+ * Latvian language file.
  */
 
 var FCKLang =
@@ -342,7 +337,6 @@ DlgReplaceReplAllBtn	: "Aizvietot visu",
 DlgReplaceWordChk		: "Jāsakrīt pilnībā",
 
 // Paste Operations / Dialog
-PasteErrorPaste	: "Jūsu pārlūkprogrammas drošības iestatījumi nepieļauj editoram automātiski veikt ievietošanas darbību. Lūdzu, izmantojiet (Ctrl+V), lai veiktu šo darbību.",
 PasteErrorCut	: "Jūsu pārlūkprogrammas drošības iestatījumi nepieļauj editoram automātiski veikt izgriešanas darbību.  Lūdzu, izmantojiet (Ctrl+X, lai veiktu šo darbību.",
 PasteErrorCopy	: "Jūsu pārlūkprogrammas drošības iestatījumi nepieļauj editoram automātiski veikt kopēšanas darbību.  Lūdzu, izmantojiet (Ctrl+C), lai veiktu šo darbību.",
 
@@ -350,6 +344,7 @@ PasteAsText		: "Ievietot kā vienkāršu tekstu",
 PasteFromWord	: "Ievietot no Worda",
 
 DlgPasteMsg2	: "Lūdzu, ievietojiet tekstu šajā laukumā, izmantojot klaviatūru (<STRONG>Ctrl+V</STRONG>) un apstipriniet ar <STRONG>Darīts!</STRONG>.",
+DlgPasteSec		: "Because of your browser security settings, the editor is not able to access your clipboard data directly. You are required to paste it again in this window.",	//MISSING
 DlgPasteIgnoreFont		: "Ignorēt iepriekš norādītos fontus",
 DlgPasteRemoveStyles	: "Noņemt norādītos stilus",
 DlgPasteCleanBox		: "Apstrādāt laukuma saturu",

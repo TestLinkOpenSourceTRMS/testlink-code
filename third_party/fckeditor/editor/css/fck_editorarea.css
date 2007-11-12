@@ -1,34 +1,29 @@
 /*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
  * Copyright (C) 2003-2007 Frederico Caldeira Knabben
- * 
+ *
  * == BEGIN LICENSE ==
- * 
+ *
  * Licensed under the terms of any of the following licenses at your
  * choice:
- * 
+ *
  *  - GNU General Public License Version 2 or later (the "GPL")
  *    http://www.gnu.org/licenses/gpl.html
- * 
+ *
  *  - GNU Lesser General Public License Version 2.1 or later (the "LGPL")
  *    http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  *  - Mozilla Public License Version 1.1 or later (the "MPL")
  *    http://www.mozilla.org/MPL/MPL-1.1.html
- * 
+ *
  * == END LICENSE ==
- * 
- * File Name: fck_editorarea.css
- * 	This is the default CSS file used by the editor area. It defines the
- * 	initial font of the editor and background color.
- * 
- * 	A user can configure the editor to use another CSS file. Just change
- * 	the value of the FCKConfig.EditorAreaCSS key in the configuration
- * 	file.
- * 
- * File Authors:
- * 		Frederico Caldeira Knabben (www.fckeditor.net)
- * 		Alfonso Martinez de Lizarrondo - Uritec (alfonso at uritec dot net)
+ *
+ * This is the default CSS file used by the editor area. It defines the
+ * initial font of the editor and background color.
+ *
+ * A user can configure the editor to use another CSS file. Just change
+ * the value of the FCKConfig.EditorAreaCSS key in the configuration
+ * file.
  */
 
 /*
@@ -54,8 +49,8 @@ a[href]
 	color: #0000FF !important;	/* For Firefox... mark as important, otherwise it becomes black */
 }
 
-/* 
-	Just uncomment the following block if you want to avoid spaces between 
+/*
+	Just uncomment the following block if you want to avoid spaces between
 	paragraphs. Remember to apply the same style in your output front end page.
 */
 

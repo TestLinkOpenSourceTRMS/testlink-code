@@ -1,31 +1,26 @@
-#!/usr/bin/env perl 
+#!/usr/bin/env perl
 
 #####
 #  FCKeditor - The text editor for Internet - http://www.fckeditor.net
 #  Copyright (C) 2003-2007 Frederico Caldeira Knabben
-#  
+#
 #  == BEGIN LICENSE ==
-#  
+#
 #  Licensed under the terms of any of the following licenses at your
 #  choice:
-#  
+#
 #   - GNU General Public License Version 2 or later (the "GPL")
 #     http://www.gnu.org/licenses/gpl.html
-#  
+#
 #   - GNU Lesser General Public License Version 2.1 or later (the "LGPL")
 #     http://www.gnu.org/licenses/lgpl.html
-#  
+#
 #   - Mozilla Public License Version 1.1 or later (the "MPL")
 #     http://www.mozilla.org/MPL/MPL-1.1.html
-#  
+#
 #  == END LICENSE ==
-#  
-#  File Name: connector.cgi
-#  	This is the File Manager Connector for Perl.
-#  
-#  File Authors:
-#  		Takashi Yamaguchi (jack@omakase.net)
-#  		Frederico Caldeira Knabben (www.fckeditor.net)
+#
+#  This is the File Manager Connector for Perl.
 #####
 
 ##
@@ -104,7 +99,7 @@ sub DoResponse
 	if(!($sCurrentFolder =~ /^\//)) {
 		$sCurrentFolder = '/' . $sCurrentFolder;
 	}
-	
+
 	# Check for invalid folder paths (..)
 	if ( $sCurrentFolder =~ /\.\./ ) {
 		SendError( 102, "" ) ;
@@ -125,7 +120,7 @@ Expires: Thu, 01 Dec 1994 16:00:00 GMT
 _HTML_HEAD_
 
 	&CreateXmlHeader($sCommand,$sResourceType,$sCurrentFolder);
-	
+
 	# Execute the required command.
 	if($sCommand eq 'GetFolders') {
 		&GetFolders($sResourceType,$sCurrentFolder);
@@ -134,9 +129,9 @@ _HTML_HEAD_
 	} elsif($sCommand eq 'CreateFolder') {
 		&CreateFolder($sResourceType,$sCurrentFolder);
 	}
-	
+
 	&CreateXmlFooter();
-	
+
 	exit ;
 }
 

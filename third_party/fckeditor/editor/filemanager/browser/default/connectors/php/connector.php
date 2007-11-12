@@ -1,29 +1,25 @@
-<?php 
+<?php
 /*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
  * Copyright (C) 2003-2007 Frederico Caldeira Knabben
- * 
+ *
  * == BEGIN LICENSE ==
- * 
+ *
  * Licensed under the terms of any of the following licenses at your
  * choice:
- * 
+ *
  *  - GNU General Public License Version 2 or later (the "GPL")
  *    http://www.gnu.org/licenses/gpl.html
- * 
+ *
  *  - GNU Lesser General Public License Version 2.1 or later (the "LGPL")
  *    http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  *  - Mozilla Public License Version 1.1 or later (the "MPL")
  *    http://www.mozilla.org/MPL/MPL-1.1.html
- * 
+ *
  * == END LICENSE ==
- * 
- * File Name: connector.php
- * 	This is the File Manager Connector for PHP.
- * 
- * File Authors:
- * 		Frederico Caldeira Knabben (www.fckeditor.net)
+ *
+ * This is the File Manager Connector for PHP.
  */
 
 ob_start() ;
@@ -50,7 +46,7 @@ else
 if ( ! ereg( '/$', $GLOBALS["UserFilesPath"] ) )
 	$GLOBALS["UserFilesPath"] .= '/' ;
 
-if ( strlen( $Config['UserFilesAbsolutePath'] ) > 0 ) 
+if ( strlen( $Config['UserFilesAbsolutePath'] ) > 0 )
 {
 	$GLOBALS["UserFilesDirectory"] = $Config['UserFilesAbsolutePath'] ;
 
@@ -82,7 +78,7 @@ function DoResponse()
 	// Check the current folder syntax (must begin and start with a slash).
 	if ( ! ereg( '/$', $sCurrentFolder ) ) $sCurrentFolder .= '/' ;
 	if ( strpos( $sCurrentFolder, '/' ) !== 0 ) $sCurrentFolder = '/' . $sCurrentFolder ;
-	
+
 	// Check for invalid folder paths (..)
 	if ( strpos( $sCurrentFolder, '..' ) )
 		SendError( 102, "" ) ;

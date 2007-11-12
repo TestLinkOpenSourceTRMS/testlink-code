@@ -1,29 +1,24 @@
 ﻿/*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
  * Copyright (C) 2003-2007 Frederico Caldeira Knabben
- * 
+ *
  * == BEGIN LICENSE ==
- * 
+ *
  * Licensed under the terms of any of the following licenses at your
  * choice:
- * 
+ *
  *  - GNU General Public License Version 2 or later (the "GPL")
  *    http://www.gnu.org/licenses/gpl.html
- * 
+ *
  *  - GNU Lesser General Public License Version 2.1 or later (the "LGPL")
  *    http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  *  - Mozilla Public License Version 1.1 or later (the "MPL")
  *    http://www.mozilla.org/MPL/MPL-1.1.html
- * 
+ *
  * == END LICENSE ==
- * 
- * File Name: hu.js
- * 	Hungarian language file.
- * 
- * File Authors:
- * 		Varga Zsolt (meridian@netteszt.hu)
- * 		Géza Szűcs (flextor@flextor.hu)
+ *
+ * Hungarian language file.
  */
 
 var FCKLang =
@@ -342,7 +337,6 @@ DlgReplaceReplAllBtn	: "Az összes cseréje",
 DlgReplaceWordChk		: "csak ha ez a teljes szó",
 
 // Paste Operations / Dialog
-PasteErrorPaste	: "A böngésző biztonsági beállításai nem engedélyezik a szerkesztőnek, hogy végrehajtsa a beillesztés műveletet. Használja az alábbi billentyűkombinációt (Ctrl+V).",
 PasteErrorCut	: "A böngésző biztonsági beállításai nem engedélyezik a szerkesztőnek, hogy végrehajtsa a kivágás műveletet. Használja az alábbi billentyűkombinációt (Ctrl+X).",
 PasteErrorCopy	: "A böngésző biztonsági beállításai nem engedélyezik a szerkesztőnek, hogy végrehajtsa a másolás műveletet. Használja az alábbi billentyűkombinációt (Ctrl+X).",
 
@@ -350,6 +344,7 @@ PasteAsText		: "Beillesztés formázatlan szövegként",
 PasteFromWord	: "Beillesztés Word-ből",
 
 DlgPasteMsg2	: "Másolja be az alábbi mezőbe a <STRONG>Ctrl+V</STRONG> billentyűk lenyomásával, majd nyomjon <STRONG>Rendben</STRONG>-t.",
+DlgPasteSec		: "Because of your browser security settings, the editor is not able to access your clipboard data directly. You are required to paste it again in this window.",	//MISSING
 DlgPasteIgnoreFont		: "Betű formázások megszüntetése",
 DlgPasteRemoveStyles	: "Stílusok eltávolítása",
 DlgPasteCleanBox		: "Törlés",

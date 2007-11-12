@@ -1,28 +1,24 @@
 ﻿/*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
  * Copyright (C) 2003-2007 Frederico Caldeira Knabben
- * 
+ *
  * == BEGIN LICENSE ==
- * 
+ *
  * Licensed under the terms of any of the following licenses at your
  * choice:
- * 
+ *
  *  - GNU General Public License Version 2 or later (the "GPL")
  *    http://www.gnu.org/licenses/gpl.html
- * 
+ *
  *  - GNU Lesser General Public License Version 2.1 or later (the "LGPL")
  *    http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  *  - Mozilla Public License Version 1.1 or later (the "MPL")
  *    http://www.mozilla.org/MPL/MPL-1.1.html
- * 
+ *
  * == END LICENSE ==
- * 
- * File Name: ru.js
- * 	Russian language file.
- * 
- * File Authors:
- * 		Andrey Grebnev (andrey.grebnev@blandware.com)
+ *
+ * Russian language file.
  */
 
 var FCKLang =
@@ -341,7 +337,6 @@ DlgReplaceReplAllBtn	: "Заменить все",
 DlgReplaceWordChk		: "Совпадение целых слов",
 
 // Paste Operations / Dialog
-PasteErrorPaste	: "Настройки безопасности вашего браузера не позволяют редактору автоматически выполнять операции вставки. Пожалуйста используйте клавиатуру для этого (Ctrl+V).",
 PasteErrorCut	: "Настройки безопасности вашего браузера не позволяют редактору автоматически выполнять операции вырезания. Пожалуйста используйте клавиатуру для этого (Ctrl+X).",
 PasteErrorCopy	: "Настройки безопасности вашего браузера не позволяют редактору автоматически выполнять операции копирования. Пожалуйста используйте клавиатуру для этого (Ctrl+C).",
 
@@ -349,6 +344,7 @@ PasteAsText		: "Вставить только текст",
 PasteFromWord	: "Вставить из Word",
 
 DlgPasteMsg2	: "Пожалуйста вставьте текст в прямоугольник используя сочетание клавиш (<STRONG>Ctrl+V</STRONG>) и нажмите <STRONG>OK</STRONG>.",
+DlgPasteSec		: "Because of your browser security settings, the editor is not able to access your clipboard data directly. You are required to paste it again in this window.",	//MISSING
 DlgPasteIgnoreFont		: "Игнорировать определения гарнитуры",
 DlgPasteRemoveStyles	: "Убрать определения стилей",
 DlgPasteCleanBox		: "Очистить",

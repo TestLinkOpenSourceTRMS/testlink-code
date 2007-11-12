@@ -1,29 +1,24 @@
 ﻿/*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
  * Copyright (C) 2003-2007 Frederico Caldeira Knabben
- * 
+ *
  * == BEGIN LICENSE ==
- * 
+ *
  * Licensed under the terms of any of the following licenses at your
  * choice:
- * 
+ *
  *  - GNU General Public License Version 2 or later (the "GPL")
  *    http://www.gnu.org/licenses/gpl.html
- * 
+ *
  *  - GNU Lesser General Public License Version 2.1 or later (the "LGPL")
  *    http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  *  - Mozilla Public License Version 1.1 or later (the "MPL")
  *    http://www.mozilla.org/MPL/MPL-1.1.html
- * 
+ *
  * == END LICENSE ==
- * 
- * File Name: ro.js
- * 	Romanian language file.
- * 
- * File Authors:
- * 		Adrian Nicoara (nicoara@users.sourceforge.net)
- * 		Ionut Traian Popa
+ *
+ * Romanian language file.
  */
 
 var FCKLang =
@@ -342,7 +337,6 @@ DlgReplaceReplAllBtn	: "Înlocuieşte tot",
 DlgReplaceWordChk		: "Doar cuvintele întregi",
 
 // Paste Operations / Dialog
-PasteErrorPaste	: "Setările de securitate ale navigatorului (browser) pe care îl folosiţi nu permit editorului să execute automat operaţiunea de adăugare. Vă rugăm folosiţi tastatura (Ctrl+V).",
 PasteErrorCut	: "Setările de securitate ale navigatorului (browser) pe care îl folosiţi nu permit editorului să execute automat operaţiunea de tăiere. Vă rugăm folosiţi tastatura (Ctrl+X).",
 PasteErrorCopy	: "Setările de securitate ale navigatorului (browser) pe care îl folosiţi nu permit editorului să execute automat operaţiunea de copiere. Vă rugăm folosiţi tastatura (Ctrl+C).",
 
@@ -350,6 +344,7 @@ PasteAsText		: "Adaugă ca text simplu (Plain Text)",
 PasteFromWord	: "Adaugă din Word",
 
 DlgPasteMsg2	: "Vă rugăm adăugaţi în căsuţa următoare folosind tastatura (<STRONG>Ctrl+V</STRONG>) şi apăsaţi <STRONG>OK</STRONG>.",
+DlgPasteSec		: "Because of your browser security settings, the editor is not able to access your clipboard data directly. You are required to paste it again in this window.",	//MISSING
 DlgPasteIgnoreFont		: "Ignoră definiţiile Font Face",
 DlgPasteRemoveStyles	: "Şterge definiţiile stilurilor",
 DlgPasteCleanBox		: "Şterge căsuţa",

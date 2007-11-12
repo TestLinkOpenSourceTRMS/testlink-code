@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.130 $
- * @modified $Date: 2007/11/06 15:07:24 $ by $Author: franciscom $
+ * @version $Revision: 1.131 $
+ * @modified $Date: 2007/11/12 09:51:07 $ by $Author: franciscom $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink 
@@ -17,6 +17,7 @@
  *-----------------------------------------------------------------------------
  *
  * Revisions:
+ *           20071112 - franciscom - config changes due to upgrade of Smarty
  *           20071106 - franciscom - BUGID 1165 - $g_testcase_template
  *
  *           20071104 - franciscom - $g_exec_cfg->enable_test_automation
@@ -752,7 +753,7 @@ if ($g_interface_bugs != 'NO')
 
 
 /** Testlink Smarty class sets up the default smarty settings for testlink */
-require_once(TL_ABS_PATH . 'third_party/smarty/Smarty.class.php'); 
+require_once(TL_ABS_PATH . 'third_party/smarty/libs/Smarty.class.php'); 
 require_once(TL_ABS_PATH . 'lib/general/tlsmarty.inc.php'); 
 
 /** logging functions */

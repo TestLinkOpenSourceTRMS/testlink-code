@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: treeMenu.inc.php,v $
  *
- * @version $Revision: 1.46 $
- * @modified $Date: 2007/11/11 18:52:23 $ by $Author: franciscom $
+ * @version $Revision: 1.47 $
+ * @modified $Date: 2007/11/12 07:29:23 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * 	This file generates tree menu for test specification and test execution.
@@ -806,11 +806,17 @@ function renderExecTreeNode($level,&$node,&$tcase_node,$getArguments,$hash_id_de
   args :
   
   returns: 
+  
+  rev: 20071112 - interface changes - added $tcase_node
+      
 
 */
-function layersmenu_renderExecTreeNodeOnOpen($node,$nodeDesc,$linkto,$getArguments,$level,
+function layersmenu_renderExecTreeNodeOnOpen($node,$nodeDesc,$tcase_node,$linkto,$getArguments,$level,
                                              $tc_action_enabled,$bForPrinting)
 {
+  $status_descr_code=config_get('tc_status');
+  $status_code_descr=array_flip($status_descr_code);
+
 	$pfn = "ST";
 	$name = filterString($node['name']);
 	$label = $name;
@@ -819,27 +825,54 @@ function layersmenu_renderExecTreeNodeOnOpen($node,$nodeDesc,$linkto,$getArgumen
 	$dots  = str_repeat('.',$level);
 	
 	$testcase_count = isset($node['testcase_count']) ? $node['testcase_count'] : 0;
-	
+	$create_counters=0;
 	$versionID = 0;
 	if ($nodeDesc == 'testproject')
 	{
 		$pfn = $bForPrinting ? 'TPLAN_PTP' : 'SP';
-		$label = $name . " ({$testcase_count})";
+    $create_counters=1;
 		$dots = ".";
 	}
 	else if($nodeDesc == "testcase") 
 	{
+  	$status_code = $tcase_node[$node['id']]['exec_status'];
+  	$status_descr=$status_code_descr[$status_code];
+
 		if (!$tc_action_enabled)
 			$pfn = "void";
+
 		$icon = "gnome-starthere-mini.png";
-		$label = "<b>{$node['id']}</b>: {$name}";
+		$label = '<span class="' . $status_descr . '">'. 
+		         "<b>{$node['id']}</b>: {$name}"  . "</span>";;
 		$versionID = $node['tcversion_id'];
 	}		   
 	else if ($nodeDesc == "testsuite")
 	{
-		$label = $name . " ({$testcase_count})";
 		$pfn = $bForPrinting ? 'TPLAN_PTS' : 'STS';
+		$create_counters=1;
 	}	
+	
+  if($create_counters)
+  {
+		$label = $name ." (" . $testcase_count . ")";
+
+		// Created counters info
+		$keys2display=array('not_run' => 'not_run' ,'passed' => 'passed',
+		                    'failed' =>'failed' ,'blocked' =>'blocked');
+		$add_html='';
+		foreach($keys2display as $key => $value)
+		{
+      if( isset($node[$key]) )
+      {
+		    $add_html .='<span class="' . $key . '">' . $node[$key] . "</span>,";
+		  }
+		}
+	  $add_html = "(" . rtrim($add_html,",") . ")"; 
+		$label .= $add_html; 
+  }
+
+	
+	
 
 	$myLinkTo = $linkto."?level={$nodeDesc}&id={$node['id']}".$versionID.$getArguments;
 	if ($buildLinkTo)

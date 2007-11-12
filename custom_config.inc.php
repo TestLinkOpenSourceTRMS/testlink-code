@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: custom_config.inc.php,v $
  *
- * @version $Revision: 1.4 $
- * @modified $Date: 2007/09/11 20:28:01 $ by $Author: asielb $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2007/11/12 07:45:54 $ by $Author: franciscom $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink 
@@ -19,7 +19,4 @@
  *             cfg\const.inc.php
  *-----------------------------------------------------------------------------
 */
-$g_default_roleid=7;
-$g_tree_type='JTREE';
-
 ?>

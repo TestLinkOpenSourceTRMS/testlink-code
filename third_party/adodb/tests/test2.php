@@ -4,7 +4,7 @@
 
 	include_once('../adodb.inc.php');
 
-	$db = &ADONewConnection("ado_access");
+	$db = ADONewConnection("ado_access");
 	$db->debug=1;
 	$access = 'd:\inetpub\wwwroot\php\NWIND.MDB';
 	$myDSN =  'PROVIDER=Microsoft.Jet.OLEDB.4.0;'

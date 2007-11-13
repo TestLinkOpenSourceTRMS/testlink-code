@@ -8,7 +8,7 @@ $ADODB_INCLUDED_CSV = 1;
 
 /* 
 
-  V4.68 25 Nov 2005  (c) 2000-2005 John Lim (jlim@natsoft.com.my). All rights reserved.
+  V5.02 24 Sept 2007   (c) 2000-2007 John Lim (jlim#natsoft.com.my). All rights reserved.
   Released under both BSD license and Lesser GPL library license. 
   Whenever there is any discrepancy between the two licenses, 
   the BSD license will take precedence. See License.txt. 
@@ -54,7 +54,7 @@ $ADODB_INCLUDED_CSV = 1;
 		$line = "====1,$tt,$sql\n";
 		
 		if ($rs->databaseType == 'array') {
-			$rows =& $rs->_array;
+			$rows = $rs->_array;
 		} else {
 			$rows = array();
 			while (!$rs->EOF) {	
@@ -64,7 +64,7 @@ $ADODB_INCLUDED_CSV = 1;
 		}
 		
 		for($i=0; $i < $max; $i++) {
-			$o =& $rs->FetchField($i);
+			$o = $rs->FetchField($i);
 			$flds[] = $o;
 		}
 	
@@ -90,7 +90,7 @@ $ADODB_INCLUDED_CSV = 1;
 *			error occurred in sql INSERT/UPDATE/DELETE, 
 *			empty recordset is returned
 */
-	function &csv2rs($url,&$err,$timeout=0, $rsclass='ADORecordSet_array')
+	function csv2rs($url,&$err,$timeout=0, $rsclass='ADORecordSet_array')
 	{
 		$false = false;
 		$err = false;

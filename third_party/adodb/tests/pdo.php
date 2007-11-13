@@ -2,38 +2,50 @@
 error_reporting(E_ALL);
 include('../adodb.inc.php');
 
+echo "<pre>";
 try {
 	echo "New Connection\n";
-	$DB = NewADOConnection('pdo');
-	echo "Connect\n";
-	
-	$u = ''; $p = '';
-	/*
-	$connstr = 'odbc:nwind';
-	
-	$connstr = 'oci:';
-	$u = 'scott';
-	$p = 'natsoft';
 	
 	
-	$connstr ="sqlite:d:\inetpub\adodb\sqlite.db";
-	*/
+	$dsn = 'pdo_mysql://root:@localhost/northwind?persist';
 	
-	$connstr = "mysql:dbname=northwind";
-	$u = 'root';
+	if (!empty($dsn)) {
+		$DB = NewADOConnection($dsn) || die("CONNECT FAILED");
+		$connstr = $dsn;
+	} else {
 	
-	$connstr = "pgsql:dbname=test";
-	$u = 'tester';
-	$p = 'test';
+		$DB = NewADOConnection('pdo');
+		
+		echo "Connect\n";
+		
+		$u = ''; $p = '';
+		/*
+		$connstr = 'odbc:nwind';
+		
+		$connstr = 'oci:';
+		$u = 'scott';
+		$p = 'natsoft';
+		
+		
+		$connstr ="sqlite:d:\inetpub\adodb\sqlite.db";
+		*/
+		
+		$connstr = "mysql:dbname=northwind";
+		$u = 'root';
+		
+		$connstr = "pgsql:dbname=test";
+		$u = 'tester';
+		$p = 'test';
+		
+		$DB->Connect($connstr,$u,$p) || die("CONNECT FAILED");
 	
-	$DB->Connect($connstr,$u,$p) || die("CONNECT FAILED");
+	}
 	
-	
-	echo "$connstr: Execute\n";
+	echo "connection string=$connstr\n Execute\n";
 	
 	//$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	$rs = $DB->Execute("select * from ADOXYZ where id<3");
-	echo "*** e=".$DB->ErrorNo() . " ".($DB->ErrorMsg())."\n";
+	if  ($DB->ErrorNo()) echo "*** errno=".$DB->ErrorNo() . " ".($DB->ErrorMsg())."\n";
 	
 	
 	//print_r(get_class_methods($DB->_stmt));

@@ -1,6 +1,6 @@
 <?php
 /*
-  V4.68 25 Nov 2005  (c) 2000-2005 John Lim (jlim@natsoft.com.my). All rights reserved.
+  V5.02 24 Sept 2007   (c) 2000-2007 John Lim (jlim#natsoft.com.my). All rights reserved.
   Released under both BSD license and Lesser GPL library license. 
   Whenever there is any discrepancy between the two licenses, 
   the BSD license will take precedence.
@@ -9,6 +9,10 @@
   
   Contributed by Interakt Online. Thx Cristian MARIN cristic#interaktonline.com
 */
+
+
+require_once ADODB_DIR."/drivers/adodb-sybase.inc.php";
+
 class ADODB_sybase_ase extends ADODB_sybase {
  	var $databaseType = "sybase_ase";
 	
@@ -21,7 +25,7 @@ class ADODB_sybase_ase extends ADODB_sybase {
 	}
 	
 	// split the Views, Tables and procedures.
-	function &MetaTables($ttype=false,$showSchema=false,$mask=false)
+	function MetaTables($ttype=false,$showSchema=false,$mask=false)
 	{
 		$false = false;
 		if ($this->metaTablesSQL) {
@@ -39,7 +43,7 @@ class ADODB_sybase_ase extends ADODB_sybase {
 			if ($rs === false || !method_exists($rs, 'GetArray')){
 					return $false;
 			}
-			$arr =& $rs->GetArray();
+			$arr = $rs->GetArray();
 
 			$arr2 = array();
 			foreach($arr as $key=>$value){
@@ -67,7 +71,7 @@ class ADODB_sybase_ase extends ADODB_sybase {
 	}
 
 	// fix a bug which prevent the metaColumns query to be executed for Sybase ASE
-	function &MetaColumns($table,$upper=false) 
+	function MetaColumns($table,$upper=false) 
 	{
 		$false = false;
 		if (!empty($this->metaColumnsSQL)) {
@@ -77,7 +81,7 @@ class ADODB_sybase_ase extends ADODB_sybase {
 
 			$retarr = array();
 			while (!$rs->EOF) {
-				$fld =& new ADOFieldObject();
+				$fld = new ADOFieldObject();
 				$fld->name = $rs->Fields('field_name');
 				$fld->type = $rs->Fields('type');
 				$fld->max_length = $rs->Fields('width');

@@ -1,6 +1,6 @@
 <?php
 /* 
-V4.68 25 Nov 2005  (c) 2000-2005 John Lim (jlim@natsoft.com.my). All rights reserved.
+V5.02 24 Sept 2007   (c) 2000-2007 John Lim (jlim#natsoft.com.my). All rights reserved.
   Released under both BSD license and Lesser GPL library license. 
   Whenever there is any discrepancy between the two licenses, 
   the BSD license will take precedence. See License.txt. 
@@ -16,7 +16,7 @@ V4.68 25 Nov 2005  (c) 2000-2005 John Lim (jlim@natsoft.com.my). All rights rese
   
 */
 
-if (!defined(ADODB_DIR)) include_once(dirname(__FILE__).'/adodb.inc.php');
+if (!defined('ADODB_DIR')) include_once(dirname(__FILE__).'/adodb.inc.php');
 include_once(ADODB_DIR.'/tohtml.inc.php');
 
 define( 'ADODB_OPT_HIGH', 2);
@@ -62,16 +62,28 @@ function adodb_microtime()
 }
 
 /* sql code timing */
-function& adodb_log_sql(&$conn,$sql,$inputarr)
+function adodb_log_sql(&$connx,$sql,$inputarr)
 {
-	
     $perf_table = adodb_perf::table();
-	$conn->fnExecute = false;
+	$connx->fnExecute = false;
 	$t0 = microtime();
-	$rs =& $conn->Execute($sql,$inputarr);
+	$rs = $connx->Execute($sql,$inputarr);
 	$t1 = microtime();
 
-	if (!empty($conn->_logsql)) {
+	if (!empty($connx->_logsql) && (empty($connx->_logsqlErrors) || !$rs)) {
+	global $ADODB_LOG_CONN;
+	
+		if (!empty($ADODB_LOG_CONN)) {
+			$conn = $ADODB_LOG_CONN;
+			if ($conn->databaseType != $connx->databaseType)
+				$prefix = '/*dbx='.$connx->databaseType .'*/ ';
+			else
+				$prefix = '';
+		} else {
+			$conn = $connx;
+			$prefix = '';
+		}
+		
 		$conn->_logsql = false; // disable logsql error simulation
 		$dbT = $conn->databaseType;
 		
@@ -84,8 +96,8 @@ function& adodb_log_sql(&$conn,$sql,$inputarr)
 		$time = $a1 - $a0;
 	
 		if (!$rs) {
-			$errM = $conn->ErrorMsg();
-			$errN = $conn->ErrorNo();
+			$errM = $connx->ErrorMsg();
+			$errN = $connx->ErrorNo();
 			$conn->lastInsID = 0;
 			$tracer = substr('ERROR: '.htmlspecialchars($errM),0,250);
 		} else {
@@ -126,6 +138,7 @@ function& adodb_log_sql(&$conn,$sql,$inputarr)
 		}
 		
 		if (is_array($sql)) $sql = $sql[0];
+		if ($prefix) $sql = $prefix.$sql;
 		$arr = array('b'=>strlen($sql).'.'.crc32($sql),
 					'c'=>substr($sql,0,3900), 'd'=>$params,'e'=>$tracer,'f'=>adodb_round($time,6));
 		//var_dump($arr);
@@ -136,7 +149,7 @@ function& adodb_log_sql(&$conn,$sql,$inputarr)
 		if (empty($d)) $d = date("'Y-m-d H:i:s'");
 		if ($conn->dataProvider == 'oci8' && $dbT != 'oci8po') {
 			$isql = "insert into $perf_table values($d,:b,:c,:d,:e,:f)";
-		} else if ($dbT == 'odbc_mssql' || $dbT == 'informix' || $dbT == 'odbtp') {
+		} else if ($dbT == 'odbc_mssql' || $dbT == 'informix' || strncmp($dbT,'odbtp',4)==0) {
 			$timer = $arr['f'];
 			if ($dbT == 'informix') $sql2 = substr($sql2,0,230);
 
@@ -149,9 +162,9 @@ function& adodb_log_sql(&$conn,$sql,$inputarr)
 			if ($dbT == 'informix') $isql = str_replace(chr(10),' ',$isql);
 			$arr = false;
 		} else {
+			if ($dbT == 'db2') $arr['f'] = (float) $arr['f'];
 			$isql = "insert into $perf_table (created,sql0,sql1,params,tracer,timer) values( $d,?,?,?,?,?)";
 		}
-
 		$ok = $conn->Execute($isql,$arr);
 		$conn->debug = $saved;
 		
@@ -160,7 +173,7 @@ function& adodb_log_sql(&$conn,$sql,$inputarr)
 		} else {
 			$err2 = $conn->ErrorMsg();
 			$conn->_logsql = true; // enable logsql error simulation
-			$perf =& NewPerfMonitor($conn);
+			$perf = NewPerfMonitor($conn);
 			if ($perf) {
 				if ($perf->CreateLogTable()) $ok = $conn->Execute($isql,$arr);
 			} else {
@@ -177,10 +190,10 @@ function& adodb_log_sql(&$conn,$sql,$inputarr)
 				$conn->_logsql = false;
 			}
 		}
-		$conn->_errorMsg = $errM;
-		$conn->_errorCode = $errN;
+		$connx->_errorMsg = $errM;
+		$connx->_errorCode = $errN;
 	} 
-	$conn->fnExecute = 'adodb_log_sql';
+	$connx->fnExecute = 'adodb_log_sql';
 	return $rs;
 }
 
@@ -214,7 +227,7 @@ class adodb_perf {
 	var $maxLength = 2000;
 	
     // Sets the tablename to be used            
-    function table($newtable = false)
+    static function table($newtable = false)
     {
         static $_table;
 
@@ -395,7 +408,7 @@ Committed_AS:   348732 kB
 		$saveE = $this->conn->fnExecute;
 		$this->conn->fnExecute = false;
         $perf_table = adodb_perf::table();
-		$rs =& $this->conn->SelectLimit("select distinct count(*),sql1,tracer as error_msg from $perf_table where tracer like 'ERROR:%' group by sql1,tracer order by 1 desc",$numsql);//,$numsql);
+		$rs = $this->conn->SelectLimit("select distinct count(*),sql1,tracer as error_msg from $perf_table where tracer like 'ERROR:%' group by sql1,tracer order by 1 desc",$numsql);//,$numsql);
 		$this->conn->fnExecute = $saveE;
 		if ($rs) {
 			$s .= rs2html($rs,false,false,false,false);
@@ -429,7 +442,7 @@ Committed_AS:   348732 kB
 			$ADODB_FETCH_MODE = ADODB_FETCH_NUM;
 			if ($this->conn->fetchMode !== false) $savem = $this->conn->SetFetchMode(false);
 			//$this->conn->debug=1;
-			$rs =& $this->conn->SelectLimit(
+			$rs = $this->conn->SelectLimit(
 			"select avg(timer) as avg_timer,$sql1,count(*),max(timer) as max_timer,min(timer) as min_timer
 				from $perf_table
 				where {$this->conn->upperCase}({$this->conn->substr}(sql0,1,5)) not in ('DROP ','INSER','COMMI','CREAT')
@@ -508,7 +521,7 @@ Committed_AS:   348732 kB
 			$ADODB_FETCH_MODE = ADODB_FETCH_NUM;
 			if ($this->conn->fetchMode !== false) $savem = $this->conn->SetFetchMode(false);
 			
-			$rs =& $this->conn->SelectLimit(
+			$rs = $this->conn->SelectLimit(
 			"select sum(timer) as total,$sql1,count(*),max(timer) as max_timer,min(timer) as min_timer
 				from $perf_table
 				where {$this->conn->upperCase}({$this->conn->substr}(sql0,1,5))  not in ('DROP ','INSER','COMMI','CREAT')
@@ -557,7 +570,7 @@ Committed_AS:   348732 kB
 	/*
 		Raw function returning array of poll paramters
 	*/
-	function &PollParameters()
+	function PollParameters()
 	{
 		$arr[0] = (float)$this->DBParameter('data cache hit ratio');
 		$arr[1] = (float)$this->DBParameter('data reads');
@@ -588,7 +601,7 @@ Committed_AS:   348732 kB
 			
 			$rs = $this->conn->Execute($sql1);
 			
-			if (isset($savem)) $this->SetFetchMode($savem);
+			if (isset($savem)) $this->conn->SetFetchMode($savem);
 			$ADODB_FETCH_MODE = $save;
 			if ($rs) {
 				while (!$rs->EOF) {
@@ -627,6 +640,11 @@ Committed_AS:   348732 kB
 		else return '';
 	}
 	
+	function clearsql()
+	{
+		$perf_table = adodb_perf::table();
+		$this->conn->Execute("delete from $perf_table where created<".$this->conn->sysTimeStamp);
+	}
 	/***********************************************************************************************/
 	//                                    HIGH LEVEL UI FUNCTIONS
 	/***********************************************************************************************/
@@ -634,6 +652,7 @@ Committed_AS:   348732 kB
 	
 	function UI($pollsecs=5)
 	{
+	global $ADODB_LOG_CONN;
 	
     $perf_table = adodb_perf::table();
 	$conn = $this->conn;
@@ -646,7 +665,7 @@ Committed_AS:   348732 kB
 	$savelog = $this->conn->LogSQL(false);	
 	$info = $conn->ServerInfo();
 	if (isset($_GET['clearsql'])) {
-		$this->conn->Execute("delete from $perf_table");
+		$this->clearsql();
 	}
 	$this->conn->LogSQL($savelog);
 	
@@ -689,9 +708,11 @@ Committed_AS:   348732 kB
 	 	switch ($do) {
 		default:
 		case 'stats':
+			if (empty($ADODB_LOG_CONN))
+				echo "<p>&nbsp; <a href=\"?do=viewsql&clearsql=1\">Clear SQL Log</a><br>";
 			echo $this->HealthCheck();
 			//$this->conn->debug=1;
-			echo $this->CheckMemory();
+			echo $this->CheckMemory();		
 			break;
 		case 'poll':
 			echo "<iframe width=720 height=80% 
@@ -730,13 +751,13 @@ Committed_AS:   348732 kB
 		//$this->conn->debug=1;
 		if ($secs <= 1) $secs = 1;
 		echo "Accumulating statistics, every $secs seconds...\n";flush();
-		$arro =& $this->PollParameters();
+		$arro = $this->PollParameters();
 		$cnt = 0;
 		set_time_limit(0);
 		sleep($secs);
 		while (1) {
 
-			$arr =& $this->PollParameters();
+			$arr = $this->PollParameters();
 			
 			$hits   = sprintf('%2.2f',$arr[0]);
 			$reads  = sprintf('%12.4f',($arr[1]-$arro[1])/$secs);
@@ -860,8 +881,10 @@ Committed_AS:   348732 kB
 	{
 		if (!$this->createTableSQL) return false;
 		
+		$table = $this->table();
+		$sql = str_replace('adodb_logsql',$table,$this->createTableSQL);
 		$savelog = $this->conn->LogSQL(false);
-		$ok = $this->conn->Execute($this->createTableSQL);
+		$ok = $this->conn->Execute($sql);
 		$this->conn->LogSQL($savelog);
 		return ($ok) ? true : false;
 	}
@@ -949,7 +972,7 @@ Committed_AS:   348732 kB
 		return $arr;
 	}
 	
-	function undomq(&$m) 
+	function undomq($m) 
 	{
 	if (get_magic_quotes_gpc()) {
 		// undo the damage

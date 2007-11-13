@@ -2,7 +2,7 @@
 <body bgcolor=white>
 <?php
 /** 
- * V4.50 6 July 2004  (c) 2001-2002 John Lim (jlim@natsoft.com.my). All rights reserved.
+ * V4.50 6 July 2004  (c) 2001-2002 John Lim (jlim#natsoft.com.my). All rights reserved.
  * Released under both BSD license and Lesser GPL library license. 
   Whenever there is any discrepancy between the two licenses, 
   the BSD license will take precedence. 
@@ -12,10 +12,14 @@
  
  // documentation on usage is at http://php.weblogs.com/adodb_csv
  
+ echo PHP_VERSION,'<br>';
+ var_dump(parse_url('odbc_mssql://userserver/'));
+ die();
+ 
 include('../adodb.inc.php');
 include('../tohtml.inc.php');
 
- function &send2server($url,$sql)
+ function send2server($url,$sql)
  {
 	$url .= '?sql='.urlencode($sql);
 	print "<p>$url</p>";

@@ -1,7 +1,7 @@
 <?php
 /*
 
-  V4.68 25 Nov 2005  (c) 2000-2005 John Lim (jlim@natsoft.com.my). All rights reserved.
+  V4.81 3 May 2006  (c) 2000-2007 John Lim (jlim#natsoft.com.my). All rights reserved.
   Released under both BSD license and Lesser GPL library license. 
   Whenever there is any discrepancy between the two licenses, 
   the BSD license will take precedence.
@@ -13,7 +13,7 @@
 error_reporting(E_ALL);
 include_once('../adodb.inc.php');
 
-foreach(array('sapdb','sybase','mysqlt','access','oci8','postgres','odbc_mssql','odbc','db2','firebird','informix') as $dbType) {
+foreach(array('sapdb','sybase','mysql','access','oci8po','postgres','odbc_mssql','odbc','db2','firebird','informix') as $dbType) {
 	echo "<h3>$dbType</h3><p>";
 	$db = NewADOConnection($dbType);
 	$dict = NewDataDictionary($db);
@@ -21,7 +21,7 @@ foreach(array('sapdb','sybase','mysqlt','access','oci8','postgres','odbc_mssql',
 	if (!$dict) continue;
 	$dict->debug = 1;
 	
-	$opts = array('REPLACE','mysql' => 'TYPE=INNODB', 'oci8' => 'TABLESPACE USERS');
+	$opts = array('REPLACE','mysql' => 'ENGINE=INNODB', 'oci8' => 'TABLESPACE USERS');
 	
 /*	$flds = array(
 		array('id',	'I',								
@@ -47,11 +47,11 @@ foreach(array('sapdb','sybase','mysqlt','access','oci8','postgres','odbc_mssql',
 	
 	$flds = "
 ID            I           AUTO KEY,
-FIRSTNAME     VARCHAR(30) DEFAULT 'Joan',
-LASTNAME      VARCHAR(28) DEFAULT 'Chen' key,
+FIRSTNAME     VARCHAR(30) DEFAULT 'Joan' INDEX idx_name,
+LASTNAME      VARCHAR(28) DEFAULT 'Chen' key INDEX idx_name,
 averylonglongfieldname X(1024) DEFAULT 'test',
 price         N(7.2)  DEFAULT '0.00',
-MYDATE        D      DEFDATE,
+MYDATE        D      DEFDATE INDEX idx_date,
 BIGFELLOW     X      NOTNULL,
 TS            T      DEFTIMESTAMP";
 
@@ -62,7 +62,7 @@ TS            T      DEFTIMESTAMP";
 	$sqli = ($dict->CreateTableSQL('testtable',$flds, $opts));
 	$sqla = array_merge($sqla,$sqli);
 	
-	$sqli = $dict->CreateIndexSQL('idx','testtable','firstname,lastname',array('BITMAP','FULLTEXT','CLUSTERED','HASH'));
+	$sqli = $dict->CreateIndexSQL('idx','testtable','price,firstname,lastname',array('BITMAP','FULLTEXT','CLUSTERED','HASH'));
 	$sqla = array_merge($sqla,$sqli);
 	$sqli = $dict->CreateIndexSQL('idx2','testtable','price,lastname');//,array('BITMAP','FULLTEXT','CLUSTERED'));
 	$sqla = array_merge($sqla,$sqli);

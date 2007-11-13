@@ -1,6 +1,6 @@
 <?php
 /** 
- * @version V4.68 25 Nov 2005 (c) 2000-2005 John Lim (jlim@natsoft.com.my). All rights reserved.
+ * @version V5.02 24 Sept 2007  (c) 2000-2007 John Lim (jlim#natsoft.com.my). All rights reserved.
  * Released under both BSD license and Lesser GPL library license. 
   Whenever there is any discrepancy between the two licenses, 
   the BSD license will take precedence. 
@@ -78,7 +78,7 @@ global $ADODB_Last_PEAR_Error;
 * Returns last PEAR_Error object. This error might be for an error that
 * occured several sql statements ago.
 */
-function &ADODB_PEAR_Error()
+function ADODB_PEAR_Error()
 {
 global $ADODB_Last_PEAR_Error;
 

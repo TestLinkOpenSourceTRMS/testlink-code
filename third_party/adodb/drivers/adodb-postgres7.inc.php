@@ -1,6 +1,6 @@
 <?php
 /*
- V4.68 25 Nov 2005  (c) 2000-2005 John Lim (jlim#natsoft.com.my). All rights reserved.
+ V5.02 24 Sept 2007   (c) 2000-2007 John Lim (jlim#natsoft.com.my). All rights reserved.
   Released under both BSD license and Lesser GPL library license. 
   Whenever there is any discrepancy between the two licenses, 
   the BSD license will take precedence.
@@ -34,14 +34,14 @@ class ADODB_postgres7 extends ADODB_postgres64 {
 	
 	// the following should be compat with postgresql 7.2, 
 	// which makes obsolete the LIMIT limit,offset syntax
-	 function &SelectLimit($sql,$nrows=-1,$offset=-1,$inputarr=false,$secs2cache=0) 
+	 function SelectLimit($sql,$nrows=-1,$offset=-1,$inputarr=false,$secs2cache=0) 
 	 {
 		 $offsetStr = ($offset >= 0) ? " OFFSET ".((integer)$offset) : '';
 		 $limitStr  = ($nrows >= 0)  ? " LIMIT ".((integer)$nrows) : '';
 		 if ($secs2cache)
-		  	$rs =& $this->CacheExecute($secs2cache,$sql."$limitStr$offsetStr",$inputarr);
+		  	$rs = $this->CacheExecute($secs2cache,$sql."$limitStr$offsetStr",$inputarr);
 		 else
-		  	$rs =& $this->Execute($sql."$limitStr$offsetStr",$inputarr);
+		  	$rs = $this->Execute($sql."$limitStr$offsetStr",$inputarr);
 		
 		return $rs;
 	 }
@@ -55,6 +55,7 @@ class ADODB_postgres7 extends ADODB_postgres64 {
 		return $sql;
 	}
  	*/
+
 
 	// from  Edward Jaramilla, improved version - works on pg 7.4
 	function MetaForeignKeys($table, $owner=false, $upper=false)
@@ -71,23 +72,23 @@ class ADODB_postgres7 extends ADODB_postgres64 {
 		ORDER BY
 			t.tgrelid';
 		
-		$rs =& $this->Execute($sql);
+		$rs = $this->Execute($sql);
 		
-		if ($rs && !$rs->EOF) {
-			$arr =& $rs->GetArray();
-			$a = array();
-			foreach($arr as $v)
-			{
-				$data = explode(chr(0), $v['args']);
-				if ($upper) {
-					$a[strtoupper($data[2])][] = strtoupper($data[4].'='.$data[5]);
-				} else {
-				$a[$data[2]][] = $data[4].'='.$data[5];
-				}
+		if (!$rs || $rs->EOF) return false;
+		
+		$arr = $rs->GetArray();
+		$a = array();
+		foreach($arr as $v) {
+			$data = explode(chr(0), $v['args']);
+			$size = count($data)-1; //-1 because the last node is empty
+			for($i = 4; $i < $size; $i++) {
+				if ($upper) 
+					$a[strtoupper($data[2])][] = strtoupper($data[$i].'='.$data[++$i]);
+				else 
+					$a[$data[2]][] = $data[$i].'='.$data[++$i];
 			}
-			return $a;
 		}
-		return false;
+		return $a;
 	}
 
 	function _query($sql,$inputarr)
@@ -96,6 +97,7 @@ class ADODB_postgres7 extends ADODB_postgres64 {
 			// We don't have native support for parameterized queries, so let's emulate it at the parent
 			return ADODB_postgres64::_query($sql, $inputarr);
 		}
+		$this->_errorMsg = false;
 		// -- added Cristiano da Cunha Duarte
 		if ($inputarr) {
 			$sqlarr = explode('?',trim($sql));

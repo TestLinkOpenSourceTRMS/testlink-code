@@ -2,7 +2,7 @@
 <body>
 <?php
 /* 
-V4.68 25 Nov 2005  (c) 2000-2005 John Lim (jlim@natsoft.com.my). All rights reserved.
+V4.80 8 Mar 2006  (c) 2000-2007 John Lim (jlim#natsoft.com.my). All rights reserved.
   Released under both BSD license and Lesser GPL library license. 
   Whenever there is any discrepancy between the two licenses, 
   the BSD license will take precedence. 
@@ -25,7 +25,7 @@ if (0) {
 		$db->Execute('insert into ATABLE (id,ablob) values('.$num.',empty_blob())');
 		$db->UpdateBlob('ATABLE', 'ablob', $varHoldingBlob, 'id='.$num, 'BLOB');
 		
-		$rs = &$db->Execute('select * from atable');
+		$rs = $db->Execute('select * from atable');
 		
 		if (!$rs) die("Empty RS");
 		if ($rs->EOF) die("EOF RS");
@@ -33,7 +33,7 @@ if (0) {
 	}
 	$stmt = $db->Prepare('select * from adoxyz where id=?');
 	for ($i = 1; $i <= 10; $i++) {
-	$rs = &$db->Execute(
+	$rs = $db->Execute(
 		$stmt,
 		array($i));
 			
@@ -48,7 +48,7 @@ if (1) {
 	$db->debug = true;
 	$db->Execute("delete from emp where ename='John'");
 	print $db->Affected_Rows().'<BR>';
-	$stmt = &$db->Prepare('insert into emp (empno, ename) values (:empno, :ename)');
+	$stmt = $db->Prepare('insert into emp (empno, ename) values (:empno, :ename)');
 	$rs = $db->Execute($stmt,array('empno'=>4321,'ename'=>'John'));
 	// prepare not quite ready for prime time
 	//$rs = $db->Execute($stmt,array('empno'=>3775,'ename'=>'John'));
@@ -73,7 +73,7 @@ if (0) {
 	$db = ADONewConnection('odbc_oracle');
 	if (!$db->PConnect('local_oracle','scott','tiger')) die('fail connect');
 	$db->debug = true;
-	$rs = &$db->Execute(
+	$rs = $db->Execute(
 		'select * from adoxyz where firstname=? and trim(lastname)=?',
 		array('first'=>'Caroline','last'=>'Miranda'));
 	if (!$rs) die("Empty RS");

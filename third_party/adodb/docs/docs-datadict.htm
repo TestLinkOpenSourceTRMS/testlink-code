@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
-  <title>ADODB Data Dictionary Manual</title>
+  <title>ADOdb Data Dictionary Manual</title>
   <meta http-equiv="Content-Type"
  content="text/html; charset=iso-8859-1">
   <style type="text/css">
@@ -20,7 +20,7 @@
 </head>
 <body style="background-color: rgb(255, 255, 255);">
 <h2>ADOdb Data Dictionary Library for PHP</h2>
-<p>V4.68 25 Nov 2005 (c) 2000-2005 John Lim (<a
+<p>V5.02 24 Sept 2007  (c) 2000-2007 John Lim (<a
  href="mailto:jlim#natsoft.com.my">jlim#natsoft.com.my</a>).<br>
 AXMLS (c) 2004 ars Cognita, Inc</p>
 <p><font size="1">This software is dual licensed using BSD-Style and
@@ -48,11 +48,30 @@ generic ODBC.
  color="#006600"># We have a portable declarative data dictionary format in ADOdb, similar to SQL.<br>  # Field types use 1 character codes, and fields are separated by commas.<br>  # The following example creates three fields: "col1", "col2" and "col3":</font><br>  $flds = " <br>  <font
  color="#663300"><strong> col1 C(32) NOTNULL DEFAULT 'abc',<br>   col2 I  DEFAULT 0,<br>   col3 N(12.2)</strong></font><br>  ";<br><br>  <font
  color="#006600"># We demonstrate creating tables and indexes</font><br>  $sqlarray = $dict-&gt;<strong>CreateTableSQL</strong>($tabname, $flds, $taboptarray);<br>  $dict-&gt;<strong>ExecuteSQLArray</strong>($sqlarray);<br><br>  $idxflds = 'co11, col2';<br>  $sqlarray = $dict-&gt;<strong>CreateIndexSQL</strong>($idxname, $tabname, $idxflds);<br>  $dict-&gt;<strong>ExecuteSQLArray</strong>($sqlarray);<br></pre>
+<h3>More Complex Table Sample</h3>
+<p>
+The following string will create a table with a primary key event_id and multiple indexes, including one compound index idx_ev1. The ability to define indexes using the INDEX keyword was added in ADOdb 4.94 by Gaetano Giunta.
+<pre>
+$flds = "
+  event_id I(11) NOTNULL AUTOINCREMENT PRIMARY,
+  event_type I(4) NOTNULL  <b>INDEX idx_evt</b>,
+  event_start_date T DEFAULT NULL <b>INDEX id_esd</b>,
+  event_end_date T DEFAULT '0000-00-00 00:00:00' <b>INDEX id_eted</b>,
+  event_parent I(11) UNSIGNED NOTNULL DEFAULT 0 <b>INDEX id_evp</b>,
+  event_owner I(11) DEFAULT 0 <b>INDEX idx_ev1</b>,
+  event_project I(11) DEFAULT 0 <b>INDEX idx_ev1</b>,
+  event_times_recuring I(11) UNSIGNED NOTNULL DEFAULT 0,
+  event_icon C(20) DEFAULT 'obj/event',
+  event_description X
+";
+$sqlarray = $db-><b>CreateTableSQL</b>($tablename, $flds);
+$dict-><b>ExecuteSQLArray</b>($sqlarray);
+</pre>
 <h3>Class Factory</h3>
 <h4>NewDataDictionary($connection, $drivername=false)</h4>
 <p>Creates a new data dictionary object. You pass a database connection object in $connection. The $connection does not have to be actually connected to the database. Some database connection objects are generic (eg. odbtp and odbc). Since 4.53, you can tell ADOdb  the actual database with $drivername. E.g.</p>
 <pre>
-$db =& NewADOConnection('odbtp');
+$db = NewADOConnection('odbtp');
 $datadict = NewDataDictionary($db, 'mssql'); # force mssql
 </pre>
 <h3>Class Functions</h3>
@@ -84,7 +103,7 @@ represented as a string to avoid any rounding errors.</p>
 <pre>  AUTO            For autoincrement number. Emulated with triggers if not available.<br>                  Sets NOTNULL also.<br>  AUTOINCREMENT   Same as auto.<br>  KEY             Primary key field. Sets NOTNULL also. Compound keys are supported.<br>  PRIMARY         Same as KEY.<br>  DEF             Synonym for DEFAULT for lazy typists.<br>  DEFAULT         The default value. Character strings are auto-quoted unless<br>                  the string begins and ends with spaces, eg ' SYSDATE '.<br>  NOTNULL         If field is not null.<br>  DEFDATE         Set default value to call function to get today's date.<br>  DEFTIMESTAMP    Set default to call function to get today's datetime.<br>  NOQUOTE         Prevents autoquoting of default string values.<br>  CONSTRAINTS     Additional constraints defined at the end of the field<br>                  definition.<br></pre>
 <p>The Data Dictonary accepts two formats, the older array
 specification:</p>
-<pre>  $flds = array(<br>    array('COLNAME',   'DECIMAL', '8.4', 'DEFAULT' =&gt; 0, 'NOTNULL'),<br>    array('id',        'I'      , 'AUTO'),<br>    array('`MY DATE`', 'D'      , 'DEFDATE'),<br>    array('NAME',      'C'      , '32', 'CONSTRAINTS' =&gt; 'FOREIGN KEY REFERENCES reftable')<br>  );<br></pre>
+<pre>  $flds = array(<br>    array('COLNAME',   'DECIMAL', '8.4', 'DEFAULT' =gt; 0, 'NOTNULL'),<br>    array('id',        'I'      , 'AUTO'),<br>    array('`MY DATE`', 'D'      , 'DEFDATE'),<br>    array('NAME',      'C'      , '32', 'CONSTRAINTS' =gt; 'FOREIGN KEY REFERENCES reftable')<br>  );<br></pre>
 <p>Or the simpler declarative format:</p>
 <pre>  $flds = "<font color="#660000"><strong><br>    COLNAME DECIMAL(8.4) DEFAULT 0 NOTNULL,<br>    id I AUTO,<br>    `MY DATE` D DEFDATE,<br>    NAME C(32) CONSTRAINTS 'FOREIGN KEY REFERENCES reftable'</strong></font><br>  ";<br></pre>
 <p>Note that if you have special characters in the field name (e.g. My
@@ -110,11 +129,11 @@ of the database type as the array key. In the following example, <em>create
 the table as ISAM with MySQL, and store the table in the "users"
 tablespace if using Oracle</em>. And because we specified REPLACE, drop
 the table first.</p>
-<pre>  $taboptarray = array('mysql' =&gt; 'TYPE=ISAM', 'oci8' =&gt; 'tablespace users', 'REPLACE');</pre>
+<pre>  $taboptarray = array('mysql' =gt; 'TYPE=ISAM', 'oci8' =gt; 'tablespace users', 'REPLACE');</pre>
 <p><a name=foreignkey></a>You can also define foreign key constraints. The following is syntax
 for postgresql:
 </p>
-<pre>  $taboptarray = array('constraints' =&gt; ', FOREIGN KEY (col1) REFERENCES reftable (refcol)');</pre>
+<pre>  $taboptarray = array('constraints' =gt; ', FOREIGN KEY (col1) REFERENCES reftable (refcol)');</pre>
 <h4>function DropTableSQL($tabname)</h4>
 <p>Returns the SQL to drop the specified table.</p>
 <h4>function ChangeTableSQL($tabname, $flds)</h4>
@@ -145,10 +164,10 @@ information can be embedded in the array. Other options include:</p>
 <p>Drop 1 or more columns.</p>
 <h4>function SetSchema($schema)</h4>
 <p>Set the schema.</p>
-<h4>function &amp;MetaTables()</h4>
-<h4>function &amp;MetaColumns($tab, $upper=true, $schema=false)</h4>
-<h4>function &amp;MetaPrimaryKeys($tab,$owner=false,$intkey=false)</h4>
-<h4>function &amp;MetaIndexes($table, $primary = false, $owner = false)</h4>
+<h4>function MetaTables()</h4>
+<h4>function MetaColumns($tab, $upper=true, $schema=false)</h4>
+<h4>function MetaPrimaryKeys($tab,$owner=false,$intkey=false)</h4>
+<h4>function MetaIndexes($table, $primary = false, $owner = false)</h4>
 <p>These functions are wrappers for the corresponding functions in the
 connection object. However, the table names will be autoquoted by the
 TableName function (see below) before being passed to the connection
@@ -241,7 +260,11 @@ define for your own use.</p>
 <p>Now that we've defined an XML schema, you need to know how to apply
 it to your database. Here's a simple PHP script that shows how to load
 the schema.</p>
-<pre class="listing"><pre>&lt;?PHP<br>/* You must tell the script where to find the ADOdb and<br> * the AXMLS libraries.<br> */<br>require( "path_to_adodb/adodb.inc.php");<br>require( "path_to_adodb/adodb-xmlschema.inc.php" );<br><br>/* Configuration information. Define the schema filename,<br> * RDBMS platform (see the ADODB documentation for valid<br> * platform names), and database connection information here.<br> */<br>$schemaFile = 'example.xml';<br>$platform = 'mysql';<br>$dbHost = 'localhost';<br>$dbName = 'database';<br>$dbUser = 'username';<br>$dbPassword = 'password';<br><br>/* Start by creating a normal ADODB connection.<br> */<br>$db = ADONewConnection( $platform );<br>$db-&gt;Connect( $dbHost, $dbUser, $dbPassword, $dbName );<br><br>/* Use the database connection to create a new adoSchema object.<br> */<br>$schema = new adoSchema( $db );<br><br>/* Call ParseSchema() to build SQL from the XML schema file.<br> * Then call ExecuteSchema() to apply the resulting SQL to <br> * the database.<br> */<br>$sql = $schema-&gt;ParseSchema( $schemaFile );<br>$result = $schema-&gt;ExecuteSchema();<br>?&gt;<br></pre></pre>
+<pre class="listing"><pre>&lt;?PHP<br>/* You must tell the script where to find the ADOdb and<br> * the AXMLS libraries.<br> */
+require( "path_to_adodb/adodb.inc.php");
+require( "path_to_adodb/adodb-xmlschema.inc.php" ); # or adodb-xmlschema03.inc.php
+
+/* Configuration information. Define the schema filename,<br> * RDBMS platform (see the ADODB documentation for valid<br> * platform names), and database connection information here.<br> */<br>$schemaFile = 'example.xml';<br>$platform = 'mysql';<br>$dbHost = 'localhost';<br>$dbName = 'database';<br>$dbUser = 'username';<br>$dbPassword = 'password';<br><br>/* Start by creating a normal ADODB connection.<br> */<br>$db = ADONewConnection( $platform );<br>$db-&gt;Connect( $dbHost, $dbUser, $dbPassword, $dbName );<br><br>/* Use the database connection to create a new adoSchema object.<br> */<br>$schema = new adoSchema( $db );<br><br>/* Call ParseSchema() to build SQL from the XML schema file.<br> * Then call ExecuteSchema() to apply the resulting SQL to <br> * the database.<br> */<br>$sql = $schema-&gt;ParseSchema( $schemaFile );<br>$result = $schema-&gt;ExecuteSchema();<br>?&gt;<br></pre></pre>
 <p>Let's look at each part of the example in turn. After you manually
 create the database, there are three steps required to load (or
 upgrade) your schema.</p>
@@ -251,11 +274,11 @@ here should be those required to connect to your database.</p>
 <p>Second, create the adoSchema object that load and manipulate your
 schema. You must pass an ADOdb database connection object in order to
 create the adoSchema object.</p>
-<pre class="listing"><pre>$schema = new adoSchema( $db );<br></pre></pre>
+<pre class="listing">$schema = new adoSchema( $db );<br></pre>
 <p>Third, call ParseSchema() to parse the schema and then
 ExecuteSchema() to apply it to the database. You must pass
 ParseSchema() the path and filename of your schema file.</p>
-<pre class="listing"><pre><br>$schema-&gt;ParseSchema( $schemaFile ); <br>$schema-&gt;ExecuteSchema(); <br></pre></pre>
+<pre class="listing">$schema-&gt;ParseSchema( $schemaFile ); <br>$schema-&gt;ExecuteSchema();</pre>
 <p>Execute the above code and then log into your database. If you've
 done all this right, you should see your tables, indexes, and SQL.</p>
 <p>You can find the source files for this tutorial in the examples
@@ -263,7 +286,34 @@ directory as tutorial_shema.xml and tutorial.php. See the class
 documentation for a more detailed description of the adoSchema methods,
 including methods and schema elements that are not described in this
 tutorial.</p>
+<h3>XML Schema Version 3</h3>
+<p>In March 2006, we added adodb-xmlschema03.inc.php to the release, which supports version 3 of XML Schema. 
+The adodb-xmlschema.inc.php remains the same as previous releases, and supports version 2 of XML Schema. 
+Version 3 provides some enhancements:
+
+<ul>
+     <li> Support for updating table data during an upgrade.
+     <li> Support for platform-specific table options and platform negation.
+     <li> Support for unsigned fields.
+     <li> Fixed opt and constraint support
+     <li> Many other fixes such as OPT tag, which allows you to set optional platform settings:
+</ul>
+
+<p>Example usage:
+<pre>&lt;?xml version="1.0"?>
+<b>&lt;schema version="0.3"></b>
+ &lt;table name="ats_kb">
+  &lt;descr>ATS KnowledgeBase&lt;/descr>
+  &lt;opt platform="mysql">TYPE=INNODB&lt;/opt>
+  &lt;field name="recid" type="I"/>
+  &lt;field name="organization_code" type="I4"/> 
+  &lt;field name="sub_code" type="C" size="20"/>
+  etc...
+</pre>
+<p>To use it, change your code to include adodb-xmlschema03.inc.php.
+
 <h3>Upgrading</h3>
+<p>
 If your schema version is older, than XSLT is used to transform the
 schema to the newest version. This means that if you are using an older
 XML schema format, you need to have the XSLT extension installed.

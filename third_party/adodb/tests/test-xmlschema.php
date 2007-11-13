@@ -4,11 +4,11 @@
 
 error_reporting(E_ALL);
 include_once( "../adodb.inc.php" );
-include_once( "../adodb-xmlschema.inc.php" );
+include_once( "../adodb-xmlschema03.inc.php" );
 
 // To build the schema, start by creating a normal ADOdb connection:
 $db = ADONewConnection( 'mysql' );
-$db->Connect( 'localhost', 'root', '', 'schematest' );
+$db->Connect( 'localhost', 'root', '', 'test' ) || die('fail connect1');
 
 // To create a schema object and build the query array.
 $schema = new adoSchema( $db );
@@ -22,7 +22,7 @@ print "<b>SQL to build xmlschema.xml</b>:\n<pre>";
 // Build the SQL array
 $sql = $schema->ParseSchema( "xmlschema.xml" );
 
-print_r( $sql );
+var_dump( $sql );
 print "</pre>\n";
 
 // Execute the SQL on the database

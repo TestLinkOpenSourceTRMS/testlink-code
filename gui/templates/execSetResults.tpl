@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: execSetResults.tpl,v 1.50 2007/11/03 17:45:20 franciscom Exp $
+$Id: execSetResults.tpl,v 1.51 2007/11/14 07:36:36 franciscom Exp $
 Purpose: smarty template - show tests to add results
 Rev:
     20071103 - franciscom - BUGID 700
@@ -251,8 +251,11 @@ var import_xml_results="{lang_get s='import_xml_results'}";
 		<div id="execution_history" class="exec_history">
   		<div class="exec_history_title">
   		{if $history_on}
-  		    {lang_get s='execution_history'} {$smarty.const.TITLE_SEP_TYPE3} 
-  		    {lang_get s='build'} {$smarty.const.TITLE_SEP} {$build_name|escape}
+  		    {lang_get s='execution_history'} {$smarty.const.TITLE_SEP_TYPE3}
+  		    
+  		    {if !$show_history_all_builds} 
+  		      {lang_get s='build'} {$smarty.const.TITLE_SEP} {$build_name|escape}
+  		    {/if}  
   		{else}
   			  {lang_get s='last_execution'} 
   			  {if $show_current_build} {lang_get s='exec_any_build'} {/if}
@@ -297,7 +300,7 @@ var import_xml_results="{lang_get s='import_xml_results'}";
 			 <tr>
 				<th style="text-align:left">{lang_get s='date_time_run'}</th>
         {* 20071103 - BUGID 700 *}
-				{if $history_on == 0 }
+				{if $history_on == 0 || $show_history_all_builds}
 				  <th style="text-align:left">{lang_get s='build'}</th>
 				{/if}  
 				<th style="text-align:left">{lang_get s='test_exec_by'}</th>
@@ -331,8 +334,11 @@ var import_xml_results="{lang_get s='import_xml_results'}";
    			<tr style="border-top:1px solid black">
   				<td>{localize_timestamp ts=$tc_old_exec.execution_ts}</td>
   				
-				  {if $history_on == 0 }
-  				<td>{$tc_old_exec.build_name|escape}</td>
+				  {if $history_on == 0 || $show_history_all_builds}
+  				<td>{if !$tc_old_exec.build_is_open}
+  				    <img src="{$smarty.const.TL_THEME_IMG_DIR}/lock.png" title="{lang_get s='closed_build'}">{/if}
+  				    {$tc_old_exec.build_name|escape}
+  				</td>
   				{/if}
   				
   				<td>{$alluserInfo[$tc_old_exec.tester_id].fullname|escape}</td> 
@@ -350,7 +356,7 @@ var import_xml_results="{lang_get s='import_xml_results'}";
           	{/if}		         
           </td>
             
-          {if $att_model->show_upload_column && !$att_download_only}
+          {if $att_model->show_upload_column && !$att_download_only && $tc_old_exec.build_is_open}
       			  <td align="center"><a href="javascript:openFileUploadWindow({$tc_old_exec.execution_id},'executions')">
       			    <img src="{$smarty.const.TL_THEME_IMG_DIR}/upload_16.png" title="{lang_get s='alt_attachment_mgmt'}"
       			         alt="{lang_get s='alt_attachment_mgmt'}" 

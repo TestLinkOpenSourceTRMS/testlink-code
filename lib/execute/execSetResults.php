@@ -4,9 +4,10 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.68 $
- * @modified $Date: 2007/11/02 13:09:22 $ $Author: franciscom $
+ * @version $Revision: 1.69 $
+ * @modified $Date: 2007/11/14 07:36:36 $ $Author: franciscom $
  *
+ * 20071113 - franciscom - added contribution History for all builds.
  * 20071006 - franciscom - changes on exec_cfield_mgr() call
  * 20071002 - jbarchibald - BUGID 1051
  * 20070707 - franciscom - BUGID 921
@@ -313,7 +314,13 @@ if(!is_null($linked_tcversions))
     $attachmentInfos = null;
     if($history_on)
     {
-        $other_execs = $tcase_mgr->get_executions($tcase_id,$tcversion_id,$tplan_id,$build_id,$exec_id_order);
+      // 20071113 - Contribution
+      $build_id_filter=$build_id;
+      if($exec_cfg->show_history_all_builds )
+      {
+        $build_id_filter=ANY_BUILD;
+      }  
+      $other_execs = $tcase_mgr->get_executions($tcase_id,$tcversion_id,$tplan_id,$build_id_filter,$exec_id_order);
     }    
     else
     {
@@ -417,6 +424,7 @@ $smarty->assign('history_on',$history_on);
 $smarty->assign('history_status_btn_name',$history_status_btn_name);
 $smarty->assign('att_model',$exec_cfg->att_model);
 $smarty->assign('show_last_exec_any_build', $exec_cfg->show_last_exec_any_build);
+$smarty->assign('show_history_all_builds', $exec_cfg->show_history_all_builds);
 $smarty->assign('map_last_exec_any_build', $map_last_exec_any_build);
 $smarty->assign('build_name', $build_name);
 $smarty->assign('owner', $filter_assigned_to);

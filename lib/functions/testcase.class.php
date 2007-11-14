@@ -2,11 +2,12 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.66 $
- * @modified $Date: 2007/11/10 08:10:35 $ $Author: franciscom $
+ * @version $Revision: 1.67 $
+ * @modified $Date: 2007/11/14 07:36:36 $ $Author: franciscom $
  * @author franciscom
  *
  *
+ * 20071113 - franciscom - added contribution on get_executions()
  * 20071101 - franciscom - import_file_types, export_file_types
  *
  * 20070930 - franciscom - REQ - BUGID 1078 -> show() interface changes 
@@ -1297,7 +1298,7 @@ function deleteKeywords($tcID,$kwID = null)
   args : id: testcase (node id) - can be single value or array.
          version_id: tcversion id (node id) - can be single value or array.
          tplan_id: testplan id
-         build_id:
+         build_id: if null -> do not filter by build_id
          [exec_id_order] default: 'DESC' - range: ASC,DESC
          [exec_to_exclude]: default: null -> no filter
                             can be single value or array, this exec id will be EXCLUDED.
@@ -1329,10 +1330,23 @@ function deleteKeywords($tcID,$kwID = null)
                   status: execution status
                   execution_notes
                   execution_ts
+                  build_id
+                  build_name
+                  build_is_active
+                  build_is_open
 
 */
 function get_executions($id,$version_id,$tplan_id,$build_id,$exec_id_order='DESC',$exec_to_exclude=null)
 {
+  // Contribution
+  // Can get execution for any build
+	$build_id_filter='';		
+	if ( !is_null($build_id) )
+	{
+		$build_id_filter=" AND e.build_id = {$build_id} ";
+	}
+
+  
 	// --------------------------------------------------------------------
 	if( is_array($id) )
 	{
@@ -1374,19 +1388,23 @@ function get_executions($id,$version_id,$tplan_id,$build_id,$exec_id_order='DESC
 			}
 	}
   // --------------------------------------------------------------------	
+  // 20071113 - franciscom - added JOIN builds b ON e.build_id=b.id
+  //
   $sql="SELECT	NHB.name,NHA.parent_id AS testcase_id, tcversions.*, 
 		    users.login AS tester_login,
 		    users.first AS tester_first_name, 
 		    users.last AS tester_last_name,
-			users.id AS tester_id, 
+			  users.id AS tester_id, 
 		    e.id AS execution_id, e.status, 
-		    e.notes AS execution_notes, e.execution_ts 
+		    e.notes AS execution_notes, e.execution_ts, e.build_id AS build_id,
+		    b.name AS build_name, b.active AS build_is_active, b.is_open AS build_is_open
 	      FROM nodes_hierarchy NHA
         JOIN nodes_hierarchy NHB ON NHA.parent_id = NHB.id 
         JOIN tcversions ON NHA.id = tcversions.id 
         JOIN executions e ON NHA.id = e.tcversion_id  
                                      AND e.testplan_id = {$tplan_id}
-                                     AND e.build_id = {$build_id} 
+                                     {$build_id_filter}
+        JOIN builds b ON e.build_id=b.id
         LEFT OUTER JOIN users ON e.tester_id = users.id 
         $where_clause 
         ORDER BY NHA.node_order ASC, NHA.parent_id ASC, execution_id {$exec_id_order}";

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.215 $
- * @modified $Date: 2007/11/09 20:03:38 $ $Author: schlundus $
+ * @version $Revision: 1.216 $
+ * @modified $Date: 2007/11/14 07:36:36 $ $Author: franciscom $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -782,6 +782,7 @@ $TLS_bug_mgmt = "BUG management";
 $TLS_build_is_closed = "Build is closed";
 $TLS_builds_notes = "Build description";
 $TLS_bulk_tc_status_management = "Bulk TC status management";
+$TLS_closed_build="close build. no operation can be done";
 $TLS_date_time_run = "Date";
 $TLS_details = "Details";
 $TLS_execute_and_save_results ="Execute and Save Results";

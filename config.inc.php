@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.131 $
- * @modified $Date: 2007/11/12 09:51:07 $ by $Author: franciscom $
+ * @version $Revision: 1.132 $
+ * @modified $Date: 2007/11/14 07:36:35 $ by $Author: franciscom $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink 
@@ -17,6 +17,7 @@
  *-----------------------------------------------------------------------------
  *
  * Revisions:
+ *           20071113 - franciscom - $g_exec_cfg->show_history_all_builds
  *           20071112 - franciscom - config changes due to upgrade of Smarty
  *           20071106 - franciscom - BUGID 1165 - $g_testcase_template
  *
@@ -561,6 +562,12 @@ $g_exec_cfg->history_on=FALSE;
 //           will be displayed
 // FALSE -> only last result on current build.  [STANDARD BEHAVIOUR]
 $g_exec_cfg->show_last_exec_any_build=FALSE;
+
+
+// TRUE  ->  History for all builds will be shown
+// FALSE ->  Only history of the current build will be shown  [STANDARD BEHAVIOUR]
+$g_exec_cfg->show_history_all_builds=FALSE;
+
 
 
 // different models for the attachments management on execution page

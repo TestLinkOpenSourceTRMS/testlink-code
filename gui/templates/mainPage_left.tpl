@@ -1,6 +1,6 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: mainPage_left.tpl,v 1.8 2007/05/24 06:49:18 franciscom Exp $     
+ $Id: mainPage_left.tpl,v 1.9 2007/11/19 20:59:15 franciscom Exp $     
  Purpose: smarty template - main page / site map                 
                                                                  
  rev :                                                 
@@ -38,9 +38,15 @@
 	{if $sessionProductID && $opt_requirements == TRUE && ($view_req_rights == "yes" || $modify_req_rights == "yes")}
     {$smarty.const.MENU_ITEM_OPEN}
         <h3>{lang_get s='title_requirements'}</h3>
-        {if $view_req_rights == "yes"}
+      {if $view_req_rights == "yes"}
   		<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
 	   		<a href="lib/req/reqSpecList.php">{lang_get s='href_req_spec'}</a>
+      <br>
+  		<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
+	   		{*<a href="lib/req/reqSpecListTree.php">{lang_get s='href_req_spec_tree'}</a> *}
+        <a href="{$launcher}?feature=reqSpecMgmt">{lang_get s='href_req_spec_tree'}</a>
+
+
 	   	{/if}
 		{if $modify_req_rights == "yes"}
 			<br />

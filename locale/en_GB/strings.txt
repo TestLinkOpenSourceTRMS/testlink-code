@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.216 $
- * @modified $Date: 2007/11/14 07:36:36 $ $Author: franciscom $
+ * @version $Revision: 1.217 $
+ * @modified $Date: 2007/11/19 21:04:47 $ $Author: franciscom $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -36,6 +36,7 @@ $TLS_charset='utf-8';
 $TLS_asc = "ascending";
 $TLS_any = "any";
 $TLS_btn_no = "No";
+$TLS_btn_save = "Save";
 $TLS_create = "Create";
 $TLS_desc = "descending";
 $TLS_file_type='File type';
@@ -57,7 +58,8 @@ $TLS_unassigned = "unassigned";
 $TLS_import_file_type = "Import file type";
 $TLS_max_file_size_is = "Max. file size ";
 $TLS_supported_file_formats = "Supported file formats";
-$TLS_no_permissions_for_action = "You do not have permissions to perform this action! Please contact your administrator.";
+$TLS_no_permissions_for_action = "You do not have permissions to perform this action!" .
+                                 " Please contact your administrator.";
 
 $TLS_test_status_all = "All";
 $TLS_test_status_any = "Any";
@@ -1008,7 +1010,7 @@ $TLS_title_remove_test_from_plan = "Remove tc from test plan";
 
 
 // gui/templates/planTesters.tpl
-$TLS_btn_save = "Save";
+// $TLS_btn_save = "Save";
 
 
 
@@ -1835,5 +1837,16 @@ $TLS_assoc_test_project = "Associated Test Project";
 $TLS_btn_fix_tplans = "Update";
 $TLS_fix_tplans_no_rights = "You do not have rights to manage test projects<br />Please contact your administrator";
 $TLS_no_tplans_to_fix = "You currently have no Test Plans that are not associated with a Test Project - That's Good!";
+
+
+// lib/project/project_req_spec_mgmt.tpl
+$TLS_btn_new_req_spec = "New Requirement Specification";
+$TLS_btn_reorder_req_spec = "Reorder Requirement Specifications";
+
+// reqSpecEdit.php
+$TLS_delete_req_spec = "Delete Requirement Specification";
+$TLS_req_spec_deleted = "Requirement Specification: %s was succesfully deleted";
+
+$TLS_title_req_spec="Requirement Specifications";
 
 ?>

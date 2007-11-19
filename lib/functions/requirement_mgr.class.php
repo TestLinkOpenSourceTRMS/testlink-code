@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.4 $
- * @modified $Date: 2007/11/11 15:30:54 $ by $Author: franciscom $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2007/11/19 21:06:23 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
@@ -95,6 +95,7 @@ class requirement_mgr
 	  $result['status_ok'] = 0;
 	  $result['msg'] = 'ko';
 	
+	  echo "<pre>debug 20071117 - \$type - " . __FUNCTION__ . " --- "; print_r($type); echo "</pre>";
 	  $field_size = config_get('field_size');
 
 	  $reqdoc_id = trim_and_limit($reqdoc_id,$field_size->req_docid);
@@ -117,6 +118,8 @@ class requirement_mgr
 			  	    $this->db->prepare_string($title) . "','" . $this->db->prepare_string($scope) . "','" . 
 			  	    $this->db->prepare_string($status) . "','" . $this->db->prepare_string($type) . "',"  .
 			  	    "{$user_id}, {$db_now})";
+
+  echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
 
 		  if (!$this->db->exec_query($sql))
 		  {

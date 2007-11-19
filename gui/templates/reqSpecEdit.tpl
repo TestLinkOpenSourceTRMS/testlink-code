@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqSpecEdit.tpl,v 1.10 2007/11/07 07:36:19 franciscom Exp $
+$Id: reqSpecEdit.tpl,v 1.11 2007/11/19 20:58:40 franciscom Exp $
 Purpose: smarty template - edit a req specification
 
 20070101 - franciscom - use of config_load
@@ -24,8 +24,7 @@ Purpose: smarty template - edit a req specification
 <h1>{lang_get s='edit'}</h1>
 
 <div style="margin: 0px 20px;">
-<form name="formSRSCreate" method="post" 
-	action="lib/req/reqSpecView.php?idSRS={$arrSpec[0].id}">
+<form name="formSRSCreate" method="post" action="lib/req/reqSpecView.php?idSRS={$arrSpec[0].id}">
  <table class="common" style="width: 90%">
 	<tr>
 		<th width="120px">{lang_get s='title'}</th>

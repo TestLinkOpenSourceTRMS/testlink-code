@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/ 
 // This script is distributed under the GNU General Public License 2 or later. 
 //
-// $Id: testlink_library.js,v 1.40 2007/10/14 14:38:24 franciscom Exp $ 
+// $Id: testlink_library.js,v 1.41 2007/11/19 21:03:15 franciscom Exp $ 
 //
 // Javascript functions commonly used through the GUI
 // This library is automatically loaded with inc_header.tpl
@@ -22,6 +22,7 @@
 //
 // ----------------------------------------------------------------------------
 //
+// 20071118 - franciscom - requirement functions added.
 // 20071014 - franciscom - removed deleteRole_onClick(),deleteBuild_onClick()
 //                                 deleteUser_onClick()
 //
@@ -127,10 +128,15 @@ function SP()
 */
 function EP(id)
 {
+  var _FUNCTION_NAME_="EP";
+  
   // get checkboxes status
 	var pParams = tree_getPrintPreferences();
-	parent.workframe.location = fRoot+menuUrl+"?print_scope=test_specification" +
-	                            "&edit=testproject&level=testproject&id="+id+args+"&"+pParams;
+	var action_url=fRoot+menuUrl+"?print_scope=test_specification" + "&edit=testproject" + 
+	               "&level=testproject&id="+id+args+"&"+pParams;
+	
+  //alert(_FUNCTION_NAME_ + " " +action_url);
+	parent.workframe.location = action_url;
 }
 
 /*
@@ -146,9 +152,14 @@ function EP(id)
 function ETS(id)
 {
   // get checkboxes status
+	var _FUNCTION_NAME_="ETS";
 	var pParams = tree_getPrintPreferences();
-	parent.workframe.location = fRoot+menuUrl+"?print_scope=test_specification" +
-	                            "&edit=testsuite&level=testsuite&id="+id+args+"&"+pParams;
+	var action_url=fRoot+menuUrl+"?print_scope=test_specification" +
+	               "&edit=testsuite&level=testsuite&id="+id+args+"&"+pParams;
+	
+	//alert(_FUNCTION_NAME_ + " " +action_url);
+	parent.workframe.location = action_url;
+	
 }
 
 
@@ -567,3 +578,69 @@ function openTCaseWindow(tcase_id)
 	window.open(fRoot+feature_url,"Test Case Spec",
 	            "width=510,height=300,resizable=yes,scrollbars=yes,dependent=yes");
 }
+
+
+
+
+/*
+  function: TPROJECT_REQ_SPEC_MGMT
+            launcher for Testproject REQuirement SPECifications ManaGeMenT
+
+  args:
+  
+  returns: 
+
+*/
+function TPROJECT_REQ_SPEC_MGMT(id)
+{
+	var _FUNCTION_NAME_="TPROJECT_REQ_SPEC_MGMT";
+	var pParams = tree_getPrintPreferences();
+  var action_url = fRoot+"lib/project/project_req_spec_mgmt.php"+"?id="+id+args+"&"+pParams;
+  
+  //alert(_FUNCTION_NAME_ + " " +action_url);
+	parent.workframe.location = action_url;
+	
+}
+
+
+/*
+  function: REQ_SPEC_MGMT
+            launcher for REQuirement SPECification ManaGeMenT
+
+  args:
+  
+  returns: 
+
+*/
+function REQ_SPEC_MGMT(id)
+{
+	var _FUNCTION_NAME_="REQ_SPEC_MGMT";
+	var pParams = tree_getPrintPreferences();
+  var action_url = fRoot+req_spec_manager_url+"?item=req_spec&req_spec_id="+id+args+"&"+pParams;
+  
+  //alert(_FUNCTION_NAME_ + " " +action_url);
+	parent.workframe.location = action_url;
+	
+}
+
+/*
+  function: REQ_MGMT
+            launcher for REQuirement ManaGeMenT
+
+  args:
+  
+  returns: 
+
+*/
+function REQ_MGMT(id)
+{
+	var _FUNCTION_NAME_="REQ_MGMT";
+	var pParams = tree_getPrintPreferences();
+  var action_url = fRoot+req_manager_url+"?item=requirement&requirement_id="+id+args+"&"+pParams;
+  
+  //alert(_FUNCTION_NAME_ + " " +action_url);
+	parent.workframe.location = action_url;
+	
+}
+
+

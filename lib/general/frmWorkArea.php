@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: frmWorkArea.php,v $
  *
- * @version $Revision: 1.21 $
- * @modified $Date: 2007/10/14 14:39:00 $ by $Author: franciscom $
+ * @version $Revision: 1.22 $
+ * @modified $Date: 2007/11/19 21:04:13 $ by $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -18,14 +18,23 @@ require_once('../../config.inc.php');
 require_once("common.php");
 testlinkInitPage($db);
 
-/// <enhancement version="???" date="2005-04-09" author="fm" >
-/// Changes a lot of if/else for configuration
-/// </enhancement>
-// Associative Array TreeFramePath 
+// --------------------------------------------------------------------------------------
+// Important Notes for Developers
+// --------------------------------------------------------------------------------------
+//
+// if key found in this map, at User Interface level, screen will be divided 
+// vertically in two frames.
+// Normally on left will exists a tree menu. 
+// On right frame an html named $key.html will be launched.
+// Example:
+//         if key = printTc, an html page printTc.html must exists on help directory
+//
+// (aa_tfp -> Associative Array TreeFramePath)
 // key  : feature
 // value: page to lauch
 //
-// 20060908 - franciscom - added tc_exec_assignment
+$req_cfg=config_get('req_cfg');
+
 $aa_tfp = array( 
             'editTc' => 'lib/testcases/listTestCases.php?feature=edit_tc',
             'assignReqs' => 'lib/testcases/listTestCases.php?feature=assignReqs',
@@ -37,11 +46,12 @@ $aa_tfp = array(
             'show_ve' => 'lib/plan/testSetNavigator.php?feature=show_ve',  // 20070411
             'newest_tcversions' => '../../lib/plan/newest_tcversions.php',  // 20070411
             'printTestSet'  => 'lib/print/selectData.php?type=testplan',
-            'priority'           => 'lib/plan/testSetNavigator.php?feature=plan_risk_assignment',
+            'priority' => 'lib/plan/testSetNavigator.php?feature=plan_risk_assignment',
             'tc_exec_assignment' => 'lib/plan/testSetNavigator.php?feature=tc_exec_assignment',
             'executeTest' => 'lib/execute/execNavigator.php',
             'showMetrics' => 'lib/results/resultsNavigator.php',
-            'planAssignTesters' => 'lib/plan/planTestersNavigator.php');
+            'planAssignTesters' => 'lib/plan/planTestersNavigator.php',
+            'reqSpecMgmt' => $req_cfg->module . 'reqSpecListTree.php');
 
 $full_screen = array('newest_tcversions' => 1);
 

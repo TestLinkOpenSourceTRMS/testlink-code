@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqCreate.tpl,v 1.11 2007/11/09 21:42:52 franciscom Exp $
+$Id: reqCreate.tpl,v 1.12 2007/11/19 20:57:40 franciscom Exp $
 Purpose: smarty template - create / edit a req  
 *}
 
@@ -54,7 +54,7 @@ function validateForm(f)
 {include file="inc_update.tpl" result=$sqlResult item="Requirement" name=$name action=$action}
 <h1>{lang_get s='req_create'}</h1>
 
-<form name="formReqCreate" method="post" 
+<form name="reqEdit" id="reqEdit" method="post" 
       action="lib/req/reqSpecView.php?idSRS={$arrSpec[0].id}"
       onSubmit="javascript:return validateForm(this);">
   <table class="common" style="width: 90%">

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.132 $
- * @modified $Date: 2007/11/14 07:36:35 $ by $Author: franciscom $
+ * @version $Revision: 1.133 $
+ * @modified $Date: 2007/11/19 20:59:46 $ by $Author: franciscom $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink 
@@ -386,7 +386,7 @@ $g_req_cfg->testcase_summary_prefix = "<b>Test Case generated from Requirement</
 //
 $g_req_cfg->reqdoc_id->is_system_wide=false;
 
-
+$g_req_cfg->module='lib/requirements/';
 
 // Used to force the max len of this field, during the automatic creation
 // of requirements
@@ -744,6 +744,9 @@ if($g_repositoryType == TL_REPOSITORY_TYPE_FS)
 	  $g_attachments->disabled_msg = $ret['msg'];
   }
 }
+
+// 20071118 - francisco.mancardi@gruppotesi.com
+define('REQ_MODULE',$g_req_cfg->module);
 
 // logo for login page, if not defined nothing happens
 define('LOGO_LOGIN_PAGE',$g_logo_login_page);

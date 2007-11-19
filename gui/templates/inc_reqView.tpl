@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: inc_reqView.tpl,v 1.3 2007/11/11 15:33:50 franciscom Exp $ *}
+{* $Id: inc_reqView.tpl,v 1.4 2007/11/19 21:07:36 franciscom Exp $ *}
 {* Purpose: smarty include template - show requirement *}
 {* Author: Martin Havlat *}
 {* Revisions: 
@@ -8,7 +8,7 @@
                             - and a few other field name fixes. 
 
     *}
-
+  
 	<p><span class="bold">{lang_get s='title'}</span> &nbsp; {$arrReq.title|escape}</p>
 	<p class="bold">{lang_get s='scope'}</p>
 	<div>{$arrReq.scope}</div>

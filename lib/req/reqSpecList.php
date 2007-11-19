@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: reqSpecList.php,v $
- * @version $Revision: 1.17 $
- * @modified $Date: 2007/11/09 21:48:53 $
+ * @version $Revision: 1.18 $
+ * @modified $Date: 2007/11/19 21:08:14 $
  * 
  * @author Martin Havlat
  * 
@@ -15,15 +15,12 @@
  */
 require_once("../../config.inc.php");
 require_once("common.php");
+require_once("req_tree_menu.php");
 require_once('requirements.inc.php');
 require_once('requirement_spec_mgr.class.php');
 
 require_once("../../third_party/fckeditor/fckeditor.php");
 testlinkInitPage($db);
-
-// echo "<pre>debug 20071106 - \ - " . __FUNCTION__ . " --- "; print_r($_REQUEST); echo "</pre>";
-
-// reqSpecList.php?createForm
 
 $sqlResult = null;
 $action = null;
@@ -44,6 +41,12 @@ $bCreateForm = isset($_GET['createForm']);
 $tprojectID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 $tprojectName = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : "";
 $userID = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
+
+// ----------------------------------------------------
+$tree_as_string=gen_req_tree_menu($db,$tprojectID, $tprojectName);
+$tree = invokeMenu($tree_as_string,"",null);
+
+// echo "<pre>debug 20071118 - \ - " . __FUNCTION__ . " --- "; print_r($tree_as_string); echo "</pre>";
 
 //$tproject = new testproject($db);
 $req_spec_mgr = new requirement_spec_mgr($db);
@@ -96,6 +99,9 @@ if($scope)
 	$of->Value = $scope;
 else if ($action && ($action != 'do_add'))
 	$of->Value = $arrSpec[0]['scope'];
+
+$smarty->assign('tree', $tree);
+$smarty->assign('treeKind', TL_TREE_KIND);
 
 $smarty->assign('arrSpec', $arrSpec);
 $smarty->assign('arrSpecCount', count($arrSpec));

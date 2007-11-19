@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: const.inc.php,v $
  *
- * @version $Revision: 1.46 $
- * @modified $Date: 2007/11/10 02:54:27 $ by $Author: havlat $
+ * @version $Revision: 1.47 $
+ * @modified $Date: 2007/11/19 21:07:22 $ by $Author: franciscom $
  * @author Martin Havlát
  *
  * SCOPE:
@@ -454,6 +454,12 @@ define('MENU_ITEM_CLOSE','</div><p>');
 // moved from requirements.inc.php
 define('TL_REQ_STATUS_VALID', 'V');
 define('TL_REQ_STATUS_NOT_TESTABLE', 'N');
+
+// 20071117 - franciscom
+// need ask Martin what are possible types
+define('TL_REQ_TYPE_1', 'V');
+define('TL_REQ_TYPE_2', 'N');
+
 
 $g_req_status=array(TL_REQ_STATUS_VALID => 'req_state_valid', 
 					          TL_REQ_STATUS_NOT_TESTABLE => 'req_state_not_testable');

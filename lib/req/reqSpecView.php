@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqSpecView.php,v $
- * @version $Revision: 1.38 $
- * @modified $Date: 2007/11/09 21:48:53 $ by $Author: franciscom $
+ * @version $Revision: 1.39 $
+ * @modified $Date: 2007/11/19 21:08:14 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Screen to view existing requirements within a req. specification.
@@ -51,8 +51,8 @@ $title = isset($_REQUEST['title']) ? trim($_REQUEST['title']) : null;
 $idSRS = isset($_REQUEST['idSRS']) ? $_REQUEST['idSRS'] : null;
 $idReq = isset($_REQUEST['idReq']) ? $_REQUEST['idReq'] : null;
 $scope = isset($_REQUEST['scope']) ? $_REQUEST['scope'] : null;
-$reqStatus = isset($_REQUEST['reqStatus']) ? $_REQUEST['reqStatus'] : null;
-$reqType = isset($_REQUEST['reqType']) ? $_REQUEST['reqType'] : null;
+$reqStatus = isset($_REQUEST['reqStatus']) ? $_REQUEST['reqStatus'] : TL_REQ_STATUS_VALIS;
+$reqType = isset($_REQUEST['reqType']) ? $_REQUEST['reqType'] : TL_REQ_TYPE_1;
 $countReq = isset($_REQUEST['countReq']) ? intval($_REQUEST['countReq']) : 0;
 $bCreate = isset($_REQUEST['create']) ? intval($_REQUEST['create']) : 0;
 
@@ -68,6 +68,8 @@ $do_delete_req = isset($_REQUEST['req_select_delete']) ? 1 : 0;
 
 $reorder = isset($_REQUEST['req_reorder']) ? 1 : 0;
 $do_req_reorder = isset($_REQUEST['do_req_reorder']) ? 1 : 0;
+
+echo "<pre>debug 20071117 - \ - " . __FUNCTION__ . " --- "; print_r($_REQUEST); echo "</pre>";
 
 $arrCov = null;
 
@@ -89,14 +91,13 @@ if(isset($_REQUEST['createReq']))
 	if ($bCreate)
 	{
 		$ret = $req_mgr->create($idSRS,$reqDocId,$title, $scope,$userID,$reqStatus, $reqType);
-		
 		$user_feedback = $ret['msg'];	                                 
 		if($ret['status_ok'])
 		{
 			$user_feedback = sprintf(lang_get('req_created'), $reqDocId);  
 	    
 	    $cf_map = $req_mgr->get_linked_cfields(null,$tprojectID) ;
-      $req_mgr->values_to_db($_REQUEST,$ret['id'],$cf_map);
+      //$req_mgr->values_to_db($_REQUEST,$ret['id'],$cf_map);
 		}
 	}
 

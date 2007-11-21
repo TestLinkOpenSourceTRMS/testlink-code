@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecView.tpl,v 1.1 2007/11/19 21:01:05 franciscom Exp $ *}
+{* $Id: reqSpecView.tpl,v 1.2 2007/11/21 13:10:20 franciscom Exp $ *}
 {* 
    Purpose: smarty template - view a requirement specification
    Author: Martin Havlat 
@@ -7,6 +7,9 @@
    rev: 20071106 - franciscom - added ext js library
         20070102 - franciscom - added javascript validation of checked requirements 
 *}
+
+{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
+{config_load file="input_dimensions.conf" section=$cfg_section}
 
 {include file="inc_head.tpl" openHead="yes"}
 {include file="inc_jsCheckboxes.tpl"}
@@ -16,6 +19,9 @@
 {assign var="req_module" value=$smarty.const.REQ_MODULE}
 {assign var="url_args" value="reqEdit.php?do_action=create&req_spec_id="}
 {assign var="req_edit_url" value="$basehref$req_module$url_args$req_spec_id"}
+
+{assign var="url_args" value="reqImport.php?req_spec_id="}
+{assign var="req_import_url"  value="$basehref$req_module$url_args$req_spec_id"}
 
 
 <script type="text/javascript">
@@ -73,11 +79,6 @@ function check_action_precondition(form_id,action)
 </head>
 
 <body>
-
-
-{assign var="cfg_section" value=$smarty.template|replace:".tpl":"" }
-{config_load file="input_dimensions.conf" section=$cfg_section}
-
 <h1>
  {lang_get s='help' var='common_prefix'}
  {lang_get s='req_spec' var="xx_alt"}
@@ -147,18 +148,31 @@ function check_action_precondition(form_id,action)
     	       onclick="delete_confirmation({$req_spec.id},
  					                                 '{$req_spec.title|escape:'javascript'}',
  					                                 '{$warning_msg}');"	/>
-    	
-    	<input type="button" name="create_req" 
-    	       value="{lang_get s='btn_req_create'}"
- 			       onclick="location='{$req_edit_url}'" />  
-    	
-    	{/if}
-    	
+
+
     	<input type="button" name="print_req_spec" value="{lang_get s='btn_print'}"
     		onclick="javascript: window.open('{$basehref}lib/req/reqSpecPrint.php?req_spec_id={$req_spec.id}', 
     		        '_blank','left=100,top=50,fullscreen=no,resizable=yes,toolbar=no,status=no,menubar=no,scrollbars=yes,directories=no,location=no,width=600,height=650');" />
     	<input type="button" name="analyse" value="{lang_get s='btn_analyse'}"
-    		onclick="javascript: location.href=fRoot+'lib/req/reqSpecAnalyse.php?req_spec_id={$req_spec.id}';" />
+    		onclick="javascript: location.href=fRoot+{$smarty.const.REQ_MODULE}'reqSpecAnalyse.php?req_spec_id={$req_spec.id}';" />
+    	{/if}
+
+    	
+    	{if $modify_req_rights == "yes"}
+    	<br />
+    	&nbsp;
+    	<br />
+    	<input type="button" name="create_req" 
+    	       value="{lang_get s='btn_req_create'}"
+ 			       onclick="location='{$req_edit_url}'" />  
+    	
+    	
+  	  <input type="button" name="importReq" value="{lang_get s='btn_import'}"
+  		       onclick="location='{$req_import_url}'" />
+
+     	<input type="submit" name="exportAll" value="{lang_get s='btn_export_reqs'}"> 
+    	{/if}
+    	
     		
     		
     </form>

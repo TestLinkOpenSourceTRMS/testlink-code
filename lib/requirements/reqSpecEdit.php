@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: reqSpecEdit.php,v $
- * @version $Revision: 1.1 $
- * @modified $Date: 2007/11/19 21:02:56 $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2007/11/22 07:34:37 $
  * 
  * @author Martin Havlat
  * 
@@ -28,7 +28,7 @@ $title = null;
 $scope = null;
 
 $_REQUEST = strings_stripSlashes($_REQUEST);
-$title = isset($_REQUEST['title']) ? $_REQUEST['title'] : null;
+$title = isset($_REQUEST['req_spec_title']) ? $_REQUEST['req_spec_title'] : null;
 $scope = isset($_REQUEST['scope']) ? $_REQUEST['scope'] : null;
 $countReq = isset($_REQUEST['countReq']) ? intval($_REQUEST['countReq']) : 0;
 $req_spec_id = isset($_REQUEST['req_spec_id']) ? intval($_REQUEST['req_spec_id']) : null;

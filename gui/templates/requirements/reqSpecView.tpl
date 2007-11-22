@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecView.tpl,v 1.2 2007/11/21 13:10:20 franciscom Exp $ *}
+{* $Id: reqSpecView.tpl,v 1.3 2007/11/22 07:33:04 franciscom Exp $ *}
 {* 
    Purpose: smarty template - view a requirement specification
    Author: Martin Havlat 
@@ -23,6 +23,8 @@
 {assign var="url_args" value="reqImport.php?req_spec_id="}
 {assign var="req_import_url"  value="$basehref$req_module$url_args$req_spec_id"}
 
+{assign var="url_args" value="reqExport.php?req_spec_id="}
+{assign var="req_export_url"  value="$basehref$req_module$url_args$req_spec_id"}
 
 <script type="text/javascript">
 /* All this stuff is needed for logic contained in inc_del_onclick.tpl */
@@ -170,7 +172,9 @@ function check_action_precondition(form_id,action)
   	  <input type="button" name="importReq" value="{lang_get s='btn_import'}"
   		       onclick="location='{$req_import_url}'" />
 
-     	<input type="submit" name="exportAll" value="{lang_get s='btn_export_reqs'}"> 
+    	<input type="button" name="exportReq" value="{lang_get s='btn_export_reqs'}"
+  		       onclick="location='{$req_export_url}'" />
+
     	{/if}
     	
     		

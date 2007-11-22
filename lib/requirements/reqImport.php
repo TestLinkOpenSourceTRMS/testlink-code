@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqImport.php,v $
- * @version $Revision: 1.1 $
- * @modified $Date: 2007/11/19 21:02:56 $ by $Author: franciscom $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2007/11/22 07:34:37 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Import requirements to a specification. 
@@ -25,19 +25,22 @@ require_once('requirement_spec_mgr.class.php');
 
 testlinkInitPage($db);
 
-$idSRS = isset($_REQUEST['idSRS']) ? strings_stripSlashes($_REQUEST['idSRS']) : null;
+$template_dir="requirements/";
+
+// echo "<pre>debug 20071121 - \ - " . __FUNCTION__ . " --- "; print_r($_REQUEST); echo "</pre>";
+
+$req_spec_id = isset($_REQUEST['req_spec_id']) ? strings_stripSlashes($_REQUEST['req_spec_id']) : null;
 $importType = isset($_REQUEST['importType']) ? strings_stripSlashes($_REQUEST['importType']) : null;
 $emptyScope = isset($_REQUEST['noEmpty']) ? strings_stripSlashes($_REQUEST['noEmpty']) : null;
 $conflictSolution = isset($_REQUEST['conflicts']) ? strings_stripSlashes($_REQUEST['conflicts']) : null;
 $bUpload = isset($_REQUEST['UploadFile']) ? 1 : 0;
-$bExecuteImport = isset($_POST['executeImport']);
+$bExecuteImport = isset($_REQUEST['executeImport']);
 
-$tprojectID = $_SESSION['testprojectID'];
-$userID = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
+$tproject_id = $_SESSION['testprojectID'];
+$user_id = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
 
 $fileName = TL_TEMP_PATH . "importReq-".session_id().".csv";
 
-$tproject = new testproject($db);
 $importResult = null;
 $arrImport = null;
 $file_check=array('status_ok' => 1, 'msg' => 'ok');
@@ -59,7 +62,7 @@ if ($bUpload)
   		   $file_check = check_syntax($fileName,$importType);
   		   if($file_check['status_ok'])
   		   {
-  			     $arrImport = doImport($db,$userID,$idSRS,$fileName,
+  			     $arrImport = doImport($db,$user_id,$req_spec_id,$fileName,
 			                             $importType,$emptyScope,$conflictSolution,false);
 			   }
 			}
@@ -72,13 +75,12 @@ if ($bUpload)
 }
 else if ($bExecuteImport)
 {
-	$arrImport = doImport($db,$userID,$idSRS,$fileName,$importType,$emptyScope,$conflictSolution,true);
+	$arrImport = doImport($db,$user_id,$req_spec_id,$fileName,$importType,$emptyScope,$conflictSolution,true);
 	$importResult = lang_get('req_import_finished');
 }
 
-$arrSpec = $tproject->getReqSpec($tprojectID,$idSRS);
-
 $req_spec_mgr = new requirement_spec_mgr($db);
+$req_spec = $req_spec_mgr->get_by_id($req_spec_id);
 $import_types=$req_spec_mgr->get_import_file_types();
 
 $smarty = new TLSmarty;
@@ -89,15 +91,19 @@ $smarty->assign('file_check',$file_check);
 $smarty->assign('try_upload',$bUpload);
 $smarty->assign('reqFormatStrings',$g_reqFormatStrings);
 $smarty->assign('importTypes',$import_types);
-$smarty->assign('reqSpec', $arrSpec[0]);
+$smarty->assign('req_spec_id', $req_spec_id);
+$smarty->assign('reqSpec', $req_spec);
 $smarty->assign('arrImport', $arrImport);
 $smarty->assign('importResult', $importResult);
 $smarty->assign('importType', $importType);
 $smarty->assign('uploadedFile', $fileName);
 $smarty->assign('importLimit', TL_IMPORT_LIMIT);
 $smarty->assign('importLimitKB', round(strval(TL_IMPORT_LIMIT) / 1024));
-$smarty->display('reqImport.tpl');
+$smarty->display($template_dir . 'reqImport.tpl');
+?>
 
+
+<?php
 function check_valid_ftype($upload_info,$import_type)
 {
 	$ret = array();

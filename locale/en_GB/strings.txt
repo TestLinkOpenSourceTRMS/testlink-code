@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.218 $
- * @modified $Date: 2007/11/20 20:00:02 $ $Author: asielb $
+ * @version $Revision: 1.219 $
+ * @modified $Date: 2007/11/22 07:33:48 $ $Author: franciscom $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -1059,7 +1059,7 @@ $TLS_warning_enter_less2 = " chars.";
 
 
 // gui/templates/reqexport.tpl
-$TLS_title_req_export_to = "Export requirement";
+$TLS_title_req_export = "Export requirements";
 
 
 
@@ -1848,6 +1848,7 @@ $TLS_delete_req_spec = "Delete Requirement Specification";
 $TLS_req_spec_deleted = "Requirement Specification: %s was succesfully deleted";
 
 $TLS_title_req_spec="Requirement Specifications";
+$TLS_warning_empty_req_spec_title = "Requirement Specification title cannot be empty!";
 
 
 

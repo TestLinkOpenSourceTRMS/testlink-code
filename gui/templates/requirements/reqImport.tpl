@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: reqImport.tpl,v 1.1 2007/11/21 13:10:20 franciscom Exp $
+$Id: reqImport.tpl,v 1.2 2007/11/22 07:32:56 franciscom Exp $
 Purpose: smarty template - requirements import initial page
 Author: Martin Havlat 
 
@@ -15,7 +15,7 @@ rev:
 {include file="inc_head.tpl"}
 
 {assign var="req_module" value=$smarty.const.REQ_MODULE}
-{assign var="url_args" value="reqEdit.php?do_action=create&req_spec_id="}
+{assign var="url_args" value="reqSpecView.php?req_spec_id="}
 {assign var="req_spec_view_url" value="$basehref$req_module$url_args$req_spec_id"}
 
 <body>
@@ -58,8 +58,6 @@ rev:
   
   		<p>{lang_get s='req_import_option_header'}
   		<select name="conflicts">
-  		  {* 20061015 - franciscom - not allowed anymore*}
-  			{* <option value ="double">{lang_get s='req_import_option_double'}</option> *}
   			<option value ="skip">{lang_get s='req_import_option_skip'}</option>
   			<option value ="overwrite" selected="selected">{lang_get s='req_import_option_overwrite'}</option>
   		</select></p>
@@ -73,7 +71,7 @@ rev:
   		<div class="groupBtn">
   			<input type='submit' name='executeImport' value="{lang_get s='btn_import'}" />
   			<input type="button" name="cancel" value="{lang_get s='btn_cancel'}" 
-  				onclick="javascript: location.href=fRoot+'lib/req/reqSpecView.php?req_spec_id={$reqSpec.id}';" />
+  				onclick="javascript: location.href='{$req_spec_view_url}';" />
   		</div>
   	</form>
   	</div>

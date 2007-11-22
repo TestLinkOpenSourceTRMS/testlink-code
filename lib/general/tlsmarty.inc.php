@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tlsmarty.inc.php,v $
  *
- * @version $Revision: 1.24 $
- * @modified $Date: 2007/06/25 06:23:14 $ $Author: franciscom $
+ * @version $Revision: 1.25 $
+ * @modified $Date: 2007/11/22 07:45:25 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -126,6 +126,8 @@ class TLSmarty extends Smarty
 	  $this->register_function("localize_timestamp", "localize_timestamp_smarty");
     $this->register_function("localize_tc_status","translate_tc_status_smarty");
     $this->register_function("format_username","format_username_smarty");
+    
+    $this->register_modifier("basename","basename");
 		
 	}
 }

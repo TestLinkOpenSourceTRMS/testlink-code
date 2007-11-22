@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqEdit.php,v $
- * @version $Revision: 1.1 $
- * @modified $Date: 2007/11/19 21:02:56 $ by $Author: franciscom $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2007/11/22 07:40:29 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Screen to view existing requirements within a req. specification.
@@ -50,7 +50,7 @@ $req_spec_id = isset($_REQUEST['req_spec_id']) ? $_REQUEST['req_spec_id'] : null
 
 
 $reqDocId = isset($_REQUEST['reqDocId']) ? trim($_REQUEST['reqDocId']) : null;
-$title = isset($_REQUEST['title']) ? trim($_REQUEST['title']) : null;
+$title = isset($_REQUEST['req_title']) ? trim($_REQUEST['req_title']) : null;
 
 $scope = isset($_REQUEST['scope']) ? $_REQUEST['scope'] : null;
 $reqStatus = isset($_REQUEST['reqStatus']) ? $_REQUEST['reqStatus'] : TL_REQ_STATUS_VALID;

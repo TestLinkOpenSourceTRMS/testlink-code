@@ -1,7 +1,7 @@
 <?php
 /**
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: bugzilla.cfg.php,v 1.5 2006/10/23 20:11:28 schlundus Exp $ 
+* $Id: bugzilla.cfg.php,v 1.6 2007/11/23 16:49:29 franciscom Exp $ 
 * 
 * Currently the only bug tracking system is bugzilla. 
 * TestLink uses bugzilla to check if displayed bugs resolved, verified, 
@@ -10,18 +10,23 @@
 */
 
 //Set the bug tracking system Interface
-/** The DB host to use when connecting to the Bugzilla db */
-define('BUG_TRACK_DB_HOST', '<bugzilladbhost>');
-/** The name of the database that contains the Bugzilla tables */
-define('BUG_TRACK_DB_NAME', '<bugzilladbname>');
-/** The DB type being used by Bugzilla */
-define('BUG_TRACK_DB_USER', '<bugzilladbuser>');
-/** The DB password to use for connecting to the Bugzilla db */
-define('BUG_TRACK_DB_PASS', '<bugzilladbpass>');
-/** The DB type to use for connecting to the bugtracking db */
-define('BUG_TRACK_DB_TYPE', 'mysql');
+/** DB host to use when connecting to the Bugzilla db */
+define('BUG_TRACK_DB_HOST', '[CONFIGURE_BUG_TRACK_DB_HOST]');
+
+/** name of the database that contains the Bugzilla tables */
+define('BUG_TRACK_DB_NAME', '[CONFIGURE_BUG_TRACK_DB_NAME]');
+
+/** DB type used for the bugtracking db */
+define('BUG_TRACK_DB_TYPE',[CONFIGURE_BUG_TRACK_DB_TYPE]);
+
+/** DB user and password to use for connecting to the Bugzilla db */
+define('BUG_TRACK_DB_USER', 'CONFIGURE_BUG_TRACK_DB_USER]');
+define('BUG_TRACK_DB_PASS', '[CONFIGURE_BUG_TRACK_DB_USER_PASS]');
+
+
 /** link of the web server */
-define('BUG_TRACK_HREF', "http://<bugzillaserver>/bugzilla/show_bug.cgi?id="); 
+define('BUG_TRACK_HREF', "http://[bugzillaserver]/bugzilla/show_bug.cgi?id="); 
+
 /** link to the bugtracking system, for entering new bugs */
-define('BUG_TRACK_ENTER_BUG_HREF',"http://<bugzillaserver>/bugzilla/");
+define('BUG_TRACK_ENTER_BUG_HREF',"http://[bugzillaserver]/bugzilla/");
 ?>

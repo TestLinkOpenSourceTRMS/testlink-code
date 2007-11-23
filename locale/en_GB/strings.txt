@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.219 $
- * @modified $Date: 2007/11/22 07:33:48 $ $Author: franciscom $
+ * @version $Revision: 1.220 $
+ * @modified $Date: 2007/11/23 08:07:34 $ $Author: franciscom $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -855,6 +855,9 @@ $TLS_btn_check = "Check";
 $TLS_btn_uncheck = "Uncheck";
 $TLS_check_uncheck_tc = "All Test Cases in the Test Suite.";
 $TLS_check_uncheck_all_checkboxes="check/uncheck all";
+$TLS_check_uncheck_all_checkboxes_for_add="check/uncheck all (for add)";
+$TLS_check_uncheck_all_checkboxes_for_rm="check/uncheck all (for remove)";
+
 $TLS_has_been_executed = "has been executed";
 $TLS_inactive_testcase = "inactive";
 $TLS_no_testcase_available = "No Test Case available";

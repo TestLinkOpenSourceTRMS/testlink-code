@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planAddTC_m1.tpl,v 1.15 2007/09/30 10:17:53 franciscom Exp $
+$Id: planAddTC_m1.tpl,v 1.16 2007/11/23 08:07:09 franciscom Exp $
 Purpose: smarty template - generate a list of TC for adding to Test Plan 
 
 20070630 - franciscom - now tcversions linked to test plan, but set inactive
@@ -53,14 +53,29 @@ added logic to manage active/inactive tcversions
   {assign var="add_cb" value="achecked_tc"} 
   {assign var="rm_cb" value="remove_checked_tc"}
   
+  
+  {assign var="item_number" value=0}
+  <input type="hidden" name="add_all_value"  id="add_all_value"  value="0" />
+  <input type="hidden" name="rm_all_value"  id="rm_all_value" value="0" />
+  
 	{foreach from=$arrData item=ts}
+	  {assign var="item_number" value=$item_number+1}
+	
 	  {assign var="ts_id" value=$ts.testsuite.id}
 	  {assign var="div_id" value=div_$ts_id}
 	  
 	
 	<div id="{$div_id}"  style="margin:0px 0px 0px {$ts.level}0px;">
-	    <h3>{$ts.testsuite.name|escape}</h3>
- 
+	    <h3>{$ts.testsuite.name|escape} 
+	        {if $item_number ==1}
+	          <br><input type="button" value="{lang_get s='check_uncheck_all_checkboxes_for_add'}"
+	                 onclick="cs_all_checkbox_in_div('addTcForm','{$add_cb}','add_all_value');">
+	    
+	          <input type="button" value="{lang_get s='check_uncheck_all_checkboxes_for_rm'}"
+	                 onclick="cs_all_checkbox_in_div('addTcForm','{$rm_cb}','rm_all_value');">
+	        {/if}
+	    </h3> 
+   
      {* used as memory for the check/uncheck all checkbox javascript logic *}
      <input type="hidden" name="add_value_{$ts_id}"  id="add_value_{$ts_id}"  
             value="0" />

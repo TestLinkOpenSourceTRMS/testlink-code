@@ -5,25 +5,11 @@
  *
  * Filename $RCSfile: req_tree_menu.php,v $
  *
- * @version $Revision: 1.1 $
- * @modified $Date: 2007/11/19 21:05:49 $ by $Author: franciscom $
- * @author Martin Havlat
- *
- * 	This file generates tree menu for test specification and test execution.
- * 	Three kinds of menu component are supported: LAYERSMENU (default), DTREE,
- * 	and JTREE. Used type is defined in config.inc.php.
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2007/11/25 18:56:52 $ by $Author: franciscom $
  * 
  * Rev :
- *      20071111 - franciscom - added contribution to show number of
- *                              testcases with different exec status on DTREE
- *      
- *      20071024 - franciscom - DTREE bug
- *
- *      20071014 - franciscom - generateTestSpecTree() interface changes
- *                              minor change in prepareNode.
- *
- *      20071002 - jbarchibald - BUGID 1051
- *      20070306 - franciscom - BUGID 705 
+ *      20071125 - franciscom - added dtree_render_req_node_open
  *
  **/
 require_once(dirname(__FILE__)."/../../config.inc.php");
@@ -212,88 +198,23 @@ function prepare_req_node(&$db,&$node,&$decoding_info,&$map_node_req_count,$stat
 }
 
 /*
-function generateTestSpecTree(&$db,$tproject_id, $tproject_name,
-                              $linkto,$bForPrinting=0,$bHideTCs = 0,
-                              $tc_action_enabled = 1,
-                              $getArguments = '',$keyword_id = 0,
-                              $ignore_inactive_testcases=0,$exclude_branches=null)
-{
-	$menustring = null;
+  function: 
 
-	$tproject_mgr = new testproject($db);
-	$tree_manager = &$tproject_mgr->tree_manager;
+  args :
+  
+  returns: 
 
-
-	$tcase_node_type = $tree_manager->node_descr_id['testcase'];
-	$hash_descr_id = $tree_manager->get_available_node_types();
-	$hash_id_descr = array_flip($hash_descr_id);
-  $status_descr_code=config_get('tc_status');
-  $status_code_descr=array_flip($status_descr_code);
-
-  //
-  $decoding_hash=array('node_id_descr' => $hash_id_descr,
-                       'status_descr_code' =>  $status_descr_code,
-                       'status_code_descr' =>  $status_code_descr);
-	
-	
-	
-	// 20071111 - franciscom
-	$test_spec = $tproject_mgr->get_subtree($tproject_id,RECURSIVE_MODE,
-												                  $exclude_branches,NO_NODE_TYPE_TO_FILTER);
-												                  
-	$test_spec['name'] = $tproject_name;
-	$test_spec['id'] = $tproject_id;
-	$test_spec['node_type_id'] = 1;
-	
-	$map_node_tccount=array();
-	$tplan_tcs=null;
-	
-	DEFINE('DONT_FILTER_BY_TESTER',0);
-	DEFINE('DONT_FILTER_BY_EXEC_STATUS',null);
-	
-	if($test_spec)
-	{
-		$tck_map = null;  // means no filter
-		if($keyword_id)
-		{
-			$tck_map = $tproject_mgr->get_keywords_tcases($tproject_id,$keyword_id);
-			if( is_null($tck_map) )
-			{
-			  $tck_map=array();  // means filter everything
-			}
-		}
-		// $testcase_count = prepareNode($db,$test_spec,$hash_id_descr,$map_node_tccount,
-		$testcase_counters = prepareNode($db,$test_spec,$decoding_hash,$map_node_tccount,
-		                                 $tck_map,$tplan_tcs,$bHideTCs,
-		                                 DONT_FILTER_BY_TESTER,DONT_FILTER_BY_EXEC_STATUS,
-		                                $ignore_inactive_testcases);
-
-		
-		// $test_spec['testcase_count'] = $testcase_count;
-		foreach($testcase_counters as $key => $value)
-		{
-		  $test_spec[$key]=$testcase_counters[$key];
-		}
-		
-		$menustring = renderTreeNode(1,$test_spec,$getArguments,$hash_id_descr,
-		                             $tc_action_enabled,$linkto,$bForPrinting);
-	}
-	return $menustring;
-}
 */
-
-
-
-function render_req_tree_node($level,&$node,$getArguments,$hash_id_descr)
+function render_req_tree_node($level,&$node,$getArguments,$hash_id_descr,$show_node_id=0)
 {
 	$node_type = $hash_id_descr[$node['node_type_id']];
 
 	if (TL_TREE_KIND == 'JTREE')
-		$menustring = jtree_render_req_node_open($node,$node_type);
+		$menustring = jtree_render_req_node_open($node,$node_type,$show_node_id);
 	else if (TL_TREE_KIND == 'DTREE')
-		$menustring = dtree_render_req_node_open($node,$node_type,$getArguments);
+		$menustring = dtree_render_req_node_open($node,$node_type,$getArguments,$show_node_id);
 	else 
-		$menustring = layersmenu_render_req_node_open($node,$node_type,$linkto,$getArguments,$level);
+		$menustring = layersmenu_render_req_node_open($node,$node_type,$linkto,$getArguments,$level,$show_node_id);
 		
 	if (isset($node['childNodes']) && $node['childNodes'])
 	{
@@ -305,7 +226,7 @@ function render_req_tree_node($level,&$node,$getArguments,$hash_id_descr)
 			if(is_null($current))
 				continue;
 			
-			$menustring .= render_req_tree_node($level+1,$current,$getArguments,$hash_id_descr);
+			$menustring .= render_req_tree_node($level+1,$current,$getArguments,$hash_id_descr,$show_node_id);
 		}
 	}
 	if (TL_TREE_KIND == 'JTREE')
@@ -323,7 +244,7 @@ function render_req_tree_node($level,&$node,$getArguments,$hash_id_descr)
   returns: 
 
 */
-function jtree_render_req_node_open($node,$node_type)
+function jtree_render_req_node_open($node,$node_type,$show_node_id=0)
 {
 	$menustring = "['";
 	$name = filterString($node['name']);
@@ -345,7 +266,12 @@ function jtree_render_req_node_open($node,$node_type)
 
 	  case 'requirement':
 	  $pfn = "REQ_MGMT";
-		$label = "<b>" . $node['id'] . "</b>: ".$name;
+	  
+	  $label = $name;
+	  if($show_node_id)
+	  {
+		  $label = "<b>" . $node['id'] . "</b>: " . $label;
+	  }
 	  break;
   } // switch	
   
@@ -362,6 +288,52 @@ function jtree_render_req_node_close($node,$node_type)
 	return $menustring;
 }
 
+/*
+  function: 
+
+  args :
+  
+  returns: 
+
+*/
+function dtree_render_req_node_open($node,$node_type,$getArguments,$show_node_id)
+{
+	$dtreeCounter = $node['id'];
+
+	$parent_id = isset($node['parent_id']) ? $node['parent_id'] : -1;
+	$name = filterString($node['name']);
+	$item_count = isset($node['requirement_count']) ? $node['requirement_count'] : 0;	
+
+  switch($node_type)
+  {
+	  case 'testproject':
+		$pfn = 'TPROJECT_REQ_SPEC_MGMT';
+		$label =  $name . " (" . $item_count . ")";
+	  break;
+
+	  case 'requirement_spec':
+		$pfn = 'REQ_SPEC_MGMT';
+		$label =  $name . " (" . $item_count . ")";
+	  break;
+
+	  case 'requirement':
+	  $pfn = "REQ_MGMT";
+	  
+	  $label = $name;
+	  if($show_node_id)
+	  {
+		  $label = "<b>" . $node['id'] . "</b>: " . $label;
+	  }
+	  break;
+  } // switch	
+
+	$myLinkTo = "javascript:{$pfn}({$node['id']})";
+	$menustring = "tlTree.add(" . $dtreeCounter . ",{$parent_id},'" ;
+	$menustring .= $label. "','{$myLinkTo}');\n";
+				   
+	return $menustring;				   
+	
+}
 
 ?>
 

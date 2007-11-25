@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planAddTC_m1.tpl,v 1.16 2007/11/23 08:07:09 franciscom Exp $
+$Id: planAddTC_m1.tpl,v 1.17 2007/11/25 18:57:30 franciscom Exp $
 Purpose: smarty template - generate a list of TC for adding to Test Plan 
 
 20070630 - franciscom - now tcversions linked to test plan, but set inactive
@@ -68,11 +68,26 @@ added logic to manage active/inactive tcversions
 	<div id="{$div_id}"  style="margin:0px 0px 0px {$ts.level}0px;">
 	    <h3>{$ts.testsuite.name|escape} 
 	        {if $item_number ==1}
-	          <br><input type="button" value="{lang_get s='check_uncheck_all_checkboxes_for_add'}"
-	                 onclick="cs_all_checkbox_in_div('addTcForm','{$add_cb}','add_all_value');">
-	    
-	          <input type="button" value="{lang_get s='check_uncheck_all_checkboxes_for_rm'}"
-	                 onclick="cs_all_checkbox_in_div('addTcForm','{$rm_cb}','rm_all_value');">
+	          <br>
+            <table cellspacing="0" style="font-size:small;background-color:blue;font-weight:bold;color:white" 
+                   width="100%">
+            <tr>
+            <td align="center">
+	          <img src="{$smarty.const.TL_THEME_IMG_DIR}/toggle_all.gif" border="0" 
+	               alt="{lang_get s='check_uncheck_all_checkboxes_for_add'}" 
+                 title="{lang_get s='check_uncheck_all_checkboxes_for_add'}" 
+                 onclick="cs_all_checkbox_in_div('addTcForm','{$add_cb}','add_all_value');">
+            {lang_get s='add'}
+            </td>
+            <td align="center">
+	          <img src="{$smarty.const.TL_THEME_IMG_DIR}/toggle_all.gif" border="0" 
+	               alt="{lang_get s='check_uncheck_all_checkboxes_for_rm'}" 
+                 title="{lang_get s='check_uncheck_all_checkboxes_for_rm'}" 
+                 onclick="cs_all_checkbox_in_div('addTcForm','{$rm_cb}','rm_all_value');">
+            {lang_get s='remove'}
+            </td>
+            </tr>
+            </table>
 	        {/if}
 	    </h3> 
    

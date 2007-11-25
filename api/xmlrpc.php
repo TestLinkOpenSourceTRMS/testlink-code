@@ -1,7 +1,7 @@
 <?php
 /*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: xmlrpc.php,v 1.1 2007/11/19 21:53:52 asielb Exp $
+ * $Id: xmlrpc.php,v 1.2 2007/11/25 18:56:18 franciscom Exp $
  */
  
 /**
@@ -259,7 +259,7 @@ class TestlinkXMLRPCServer extends IXR_Server
     {
     	if(!$this->_isTPIDPresent())
     	{
-    		$this->errors[] = new IXR_Error(NO_TPID, NO_TPID_STR);
+    		$this->errors[] = new IXR_Error(NO_TPLANID, NO_TPLANID_STR);
     		return false;
     	}
     	else
@@ -270,7 +270,7 @@ class TestlinkXMLRPCServer extends IXR_Server
         	$result = $this->dbObj->fetchFirstRowSingleColumn($query, "id");         	
         	if(null == $result)
         	{
-        		$this->errors[] = new IXR_Error(INVALID_TPID, INVALID_TPID_STR);
+        		$this->errors[] = new IXR_Error(INVALID_TPLANID, INVALID_TPLANID_STR);
         		return false;        		
         	}
 			// tpid exists and its valid
@@ -331,7 +331,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 				$setBuildResult = $this->_setBuildIDFromTPID();
 				if(false == $setBuildResult)
 				{
-					$this->errors[] = new IXR_Error(NO_BUILD_FOR_TPID, NO_BUILD_FOR_TPID_STR);
+					$this->errors[] = new IXR_Error(NO_BUILD_FOR_TPLANID, NO_BUILD_FOR_TPLANID_STR);
 					return false;
 				}
 			}
@@ -560,7 +560,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 	    	$versionResult = $this->dbObj->fetchFirstRowSingleColumn($versionQuery, "tcversion_id");			      	
 	    	if(null == $versionResult)
 	    	{
-	    		$this->errors[] = new IXR_Error(TCID_NOT_IN_TPID, TCID_NOT_IN_TPID_STR);
+	    		$this->errors[] = new IXR_Error(TCID_NOT_IN_TPLANID, TCID_NOT_IN_TPLANID_STR);
 	    		return false;        		
 	    	}
 	    	else

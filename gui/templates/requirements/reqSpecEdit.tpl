@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqSpecEdit.tpl,v 1.2 2007/11/21 13:10:20 franciscom Exp $
+$Id: reqSpecEdit.tpl,v 1.3 2007/11/25 18:57:47 franciscom Exp $
 Purpose: smarty template - create a new req document 
 
 rev: 20071120 - franciscom - added ext js alert message box
@@ -41,15 +41,17 @@ function validateForm(f)
  {assign var="text_hint" value="$common_prefix: $xx_alt"}
  {include file="inc_help.tpl" help="requirementsCoverage" locale=$locale 
           alt="$text_hint" title="$text_hint"  style="float: right;"}
-	{lang_get s='req_spec'}{$smarty.const.TITLE_SEP_TYPE3}
-	{lang_get s='testproject'}{$smarty.const.TITLE_SEP}{$productName|escape} 
+ {$main_descr|escape} 
 </h1>
 
 {if $modify_req_rights == "yes"}
   <div class="workBack">
-    {if $page_descr != ''}
-    <h1>{$page_descr}</h1>
+    {if $action_descr != ''}
+    <h1>{$action_descr|escape}</h1>
+    <br />
     {/if}
+    
+    {include file="inc_update.tpl" user_feedback=$user_feedback}
     	
     <form name="reqSpecEdit" id="reqSpecEdit" method="post" onSubmit="javascript:return validateForm(this);">
     <input type="hidden" name="req_spec_id" value="{$req_spec_id}">
@@ -64,6 +66,7 @@ function validateForm(f)
   				{include file="error_icon.tpl" field="req_spec_title"}
    </div>
    </p>
+   <br />
    <p>
 	 <div class="labelHolder">
 		<label for="scope">{lang_get s='scope'}</label>
@@ -72,20 +75,23 @@ function validateForm(f)
 		{$scope}
    </div>
    </p>
+   <br />
    <p>
-   <div class="labelHolder"><label for="countReq">{lang_get s='req_total'}</label></div> 
-	 <div>
+   <div class="labelHolder"><label for="countReq">{lang_get s='req_total'}</label>
 	 <input type="text" name="countReq" 
 		      size="{#REQ_COUNTER_SIZE#}" maxlength="{#REQ_COUNTER_MAXLEN#}" 
 			    value="{$total_req_counter}" />
 	 </div>
    </p>
-   <p>
-   {if $cf != ''}
-   {$cf}
+     <br />
+   {* Custom fields *}
+   {if $cf neq ""}
+     <div class="custom_field_container">
+     {$cf}
+     </div>
+     <br />
    {/if}
-   </p>
-
+   
 <div class="groupBtn">
 	<input type="hidden" name="do_action" value="">
 	<input type="submit" name="createSRS" value="{$submit_button_label}" 

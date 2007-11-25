@@ -1,5 +1,5 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/ 
-// $Id: checkboxes.js,v 1.6 2007/04/02 07:15:28 franciscom Exp $ 
+// $Id: checkboxes.js,v 1.7 2007/11/25 18:57:12 franciscom Exp $ 
 //
 //
 // rev :
@@ -70,12 +70,17 @@ function uncheckAll(ml)
 */
 function checkOrUncheckAll(ml,bCheck)
 {
-	var ml = document.myform;
-	var len = ml.elements.length;
+	// var ml = document.myform;
+	var my_form=document.getElementById(ml);
 	
-	for (var i = 0; i < len; i++)
+	alert(ml);
+	alert(my_form);
+	
+	var len = my_form.elements.length;
+	
+	for (var idx = 0; idx < len; idx++)
 	{
-		var e = ml.elements[i];
+		var e = my_form.elements[idx];
 		if (e.type == "checkbox")
 			e.checked = bCheck;
 	}

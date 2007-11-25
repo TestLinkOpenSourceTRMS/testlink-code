@@ -1,7 +1,7 @@
 <?php
 /*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: TestlinkXMLRPCServerErrors.php,v 1.1 2007/11/19 21:53:52 asielb Exp $
+ * $Id: TestlinkXMLRPCServerErrors.php,v 1.2 2007/11/25 18:56:18 franciscom Exp $
  */
 
 /** 
@@ -37,8 +37,8 @@ define('NO_DEV_KEY_STR', lang_get('API_NO_DEV_KEY'));
 define('NO_TCID', 110);
 define('NO_TCID_STR', lang_get('API_NO_TCID'));
 
-define('NO_TPID', 120);
-define('NO_TPID_STR', lang_get('API_NO_TPID'));
+define('NO_TPLANID', 120);
+define('NO_TPLANID_STR', lang_get('API_NO_TPLANID'));
 
 define('NO_BUILDID', 130);
 define('NO_BUILDID_STR', lang_get('API_NO_BUILDID'));
@@ -58,14 +58,14 @@ define('INVALID_AUTH_STR', lang_get('API_INVALID_AUTH'));
 /**
  * 3000 level - Test Plan errors
  */
-define('INVALID_TPID', 3000);
-define('INVALID_TPID_STR', lang_get('API_INVALID_TPID'));
-define('TPID_NOT_INTEGER', 3010);
-define('TPID_NOT_INTEGER_STR', lang_get('API_TPID_NOT_INTEGER'));
-define('NO_BUILD_FOR_TPID', 3020);
-define('NO_BUILD_FOR_TPID_STR', lang_get('API_NO_BUILD_FOR_TPID'));
-define('TCID_NOT_IN_TPID', 3030);
-define('TCID_NOT_IN_TPID_STR', lang_get('API_TCID_NOT_IN_TPID'));
+define('INVALID_TPLANID', 3000);
+define('INVALID_TPLANID_STR', lang_get('API_INVALID_TPLANID'));
+define('TPLANID_NOT_INTEGER', 3010);
+define('TPLANID_NOT_INTEGER_STR', lang_get('API_TPID_NOT_INTEGER'));
+define('NO_BUILD_FOR_TPLANID', 3020);
+define('NO_BUILD_FOR_TPLANID_STR', lang_get('API_NO_BUILD_FOR_TPLANID'));
+define('TCID_NOT_IN_TPLANID', 3030);
+define('TCID_NOT_IN_TPLANID_STR', lang_get('API_TCID_NOT_IN_TPLANID'));
 
 /**
  * 4000 level - Build errors

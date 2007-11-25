@@ -1,6 +1,21 @@
 {* 
 Testlink: smarty template - 
-$Id: cfields_edit.tpl,v 1.7 2007/06/04 17:27:40 franciscom Exp $ 
+$Id: cfields_edit.tpl,v 1.8 2007/11/25 18:57:30 franciscom Exp $ 
+
+
+Important Development note:
+Input names:
+            cf_show_on_design
+            cf_show_on_execution
+            cf_enable_on_design
+            cf_enable_on_execution
+
+can not be changed, becuase there is logic on cfields_edit.php
+that dependens on these names.
+As you can see these names are build adding 'cf_' prefix to name
+of columns present on custom fields tables.
+This is done to simplify logic.
+
 
 rev :
 
@@ -9,22 +24,57 @@ rev :
                              
      20070128 - franciscom - variable name changes
 *}
+{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
+{config_load file="input_dimensions.conf" section=$cfg_section}
+
 {include file="inc_head.tpl" jsValidate="yes"}
 
 <body>
-{config_load file="input_dimensions.conf" section="cfields_edit"} {* Constant definitions *}
-
-
 {literal}
 <script type="text/javascript">
 {/literal}
 var warning_empty_cfield_name = "{lang_get s='warning_empty_cfield_name'}";
 var warning_empty_cfield_label = "{lang_get s='warning_empty_cfield_label'}";
 
-var js_enable_on_exec_cfg = new Array();
-{foreach key=node_type item=cfg_def from=$enable_on_exec_cfg}
-  js_enable_on_exec_cfg[{$node_type}]={$cfg_def};
+// -------------------------------------------------------------------------------
+// To manage hide/show combo logic, depending of node type
+var js_enable_on_cfg = new Array();
+var js_show_on_cfg = new Array();
+
+// DOM Object ID (oid)
+js_enable_on_cfg['oid_prefix'] = new Array();
+js_enable_on_cfg['oid_prefix']['combobox'] = 'cf_enable_on_';
+js_enable_on_cfg['oid_prefix']['container'] = 'container_cf_enable_on_';
+
+// will containg show (1 /0 ) info for every node type
+js_enable_on_cfg['execution'] = new Array();
+js_enable_on_cfg['design'] = new Array();
+
+// DOM Object ID (oid)
+js_show_on_cfg['oid_prefix'] = new Array();
+js_show_on_cfg['oid_prefix']['combobox'] = 'cf_show_on_';
+js_show_on_cfg['oid_prefix']['container'] = 'container_cf_show_on_';
+
+// will containg show (1 /0 ) info for every node type
+js_show_on_cfg['execution'] = new Array();
+js_show_on_cfg['design'] = new Array();
+
+{foreach key=node_type item=cfg_def from=$enable_on_cfg.execution}
+  js_enable_on_cfg['execution'][{$node_type}]={$cfg_def};
 {/foreach}
+
+{foreach key=node_type item=cfg_def from=$enable_on_cfg.design}
+  js_enable_on_cfg['design'][{$node_type}]={$cfg_def};
+{/foreach}
+
+{foreach key=node_type item=cfg_def from=$show_on_cfg.execution}
+  js_show_on_cfg['execution'][{$node_type}]={$cfg_def};
+{/foreach}
+
+{foreach key=node_type item=cfg_def from=$show_on_cfg.design}
+  js_show_on_cfg['design'][{$node_type}]={$cfg_def};
+{/foreach}
+// -------------------------------------------------------------------------------
 
 
 var js_possible_values_cfg = new Array();
@@ -59,37 +109,90 @@ function validateForm(f)
             will be set to disable, is its value is nonsense
             for node type choosen by user.
   
-  args : id_nodetype: id of html input used to choose node type
+  args : 
+         id_nodetype: id of html input used to choose node type
                       to which apply custom field
                       
-         id_exec : id of html input used to configure custom field 
-                   attribute "enable on execution"             
-                   
-         id_exec_container : id of html container 
-                             where input for "enable on execution"
-                             lives. Used to manage visibility.
   
-  returns: 
+  returns: - 
 
 */
-function configure_cf_attr(cfg,id_nodetype,id_exec,id_exec_container)
+function configure_cf_attr(id_nodetype,enable_on_cfg,show_on_cfg)
 {
-  o_nodetype=document.getElementById(id_nodetype);
-  o_exec=document.getElementById(id_exec);
-  o_exec_container=document.getElementById(id_exec_container);
+  var o_nodetype=document.getElementById(id_nodetype);
+  var o_enable=new Array();
+  var o_enable_container=new Array();
+  var o_display=new Array();
+  var o_display_container=new Array();
   
-  if( cfg[o_nodetype.value] == 0 )
+  
+  var oid;
+  var keys2loop=new Array();
+  var idx;
+  var key;
+  
+  keys2loop[0]='execution';
+  keys2loop[1]='design';
+    
+  // ------------------------------------------------------------
+  // Enable on
+  // ------------------------------------------------------------
+  for(idx=0;idx < keys2loop.length; idx++)
   {
-    o_exec.value=0;
-    o_exec.disabled='disabled';
-    o_exec_container.style.display='none';
+    key=keys2loop[idx];
+    oid=enable_on_cfg['oid_prefix']['combobox']+key;
+    o_enable[key]=document.getElementById(oid);
+
+    oid=enable_on_cfg['oid_prefix']['container']+key;
+    o_enable_container[key]=document.getElementById(oid);
+
+    if( enable_on_cfg[key][o_nodetype.value] == 0 )
+    {
+      // 20071124 - need to understand if can not set to 0
+      o_enable[key].value=0;
+      o_enable[key].disabled='disabled';
+      o_enable_container[key].style.display='none';
+    }
+    else
+    {
+      o_enable[key].disabled='';
+      o_enable_container[key].style.display='';
+    }
   }
-  else
+  // ------------------------------------------------------------
+  
+  // ------------------------------------------------------------
+  // Display on
+  // ------------------------------------------------------------
+  for(idx=0;idx < keys2loop.length; idx++)
   {
-    o_exec.disabled='';
-    o_exec_container.style.display='';
+    key=keys2loop[idx];
+    oid=show_on_cfg['oid_prefix']['combobox']+key;
+    o_display[key]=document.getElementById(oid);
+
+    oid=show_on_cfg['oid_prefix']['container']+key;
+    o_display_container[key]=document.getElementById(oid);
+
+    if( show_on_cfg[key][o_nodetype.value] == 0 )
+    {
+      // 20071124 - need to understand if can not set to 0
+      o_display[key].value=0;
+      o_display[key].disabled='disabled';
+      o_display_container[key].style.display='none';
+    }
+    else
+    {
+      o_display[key].disabled='';
+      o_display_container[key].style.display='';
+    }
   }
-}
+  // ------------------------------------------------------------
+  
+  
+  
+} // configure_cf_attr
+
+
 
 /*
   function: cfg_possible_values_display
@@ -213,47 +316,79 @@ function cfg_possible_values_display(cfg,id_cftype,id_possible_values_container)
 			</td>
 		</tr>
 
-		<tr>
+    {* ------------------------------------------------------------------------------- *}
+    {*   Design   *}
+    {if $disabled_cf_show_on.design}
+      {assign var="display_style" value="none"}
+    {else}
+      {assign var="display_style" value=""}
+    {/if}
+		
+		<tr id="container_cf_show_on_design" style="display:{$display_style};">
 			<th>{lang_get s='show_on_design'}</th>
 			<td>
-				<select name="cf_show_on_design"> 
+				<select id="cf_show_on_design"
+				        name="cf_show_on_design"
+			        	{$disabled_cf_show_on.design} > 
 				{html_options options=$gsmarty_option_yes_no selected=$cf.show_on_design}
 				</select>
 			</td>
 		</tr>
-		<tr>
+		
+		
+		{if $disabled_cf_enable_on.design}
+      {assign var="display_style" value="none"}
+    {else}
+      {assign var="display_style" value=""}
+    {/if}
+		<tr	id="container_cf_enable_on_design" style="display:{$display_style};">
 			<th>{lang_get s='enable_on_design'}</th>
 			<td>
-				<select name="cf_enable_on_design"> 
+				<select name="cf_enable_on_design"
+				        id="cf_enable_on_design"
+				        {$disabled_cf_enable_on.design}> 
 				{html_options options=$gsmarty_option_yes_no selected=$cf.enable_on_design}
 				</select>
 			</td>
 		</tr>
+    {* ------------------------------------------------------------------------------- *}
 
-    {if $disabled_cf_enable_on_execution}
+
+    {* ------------------------------------------------------------------------------- *}
+    {*   Execution  *}
+    {if $disabled_cf_show_on.execution}
       {assign var="display_style" value="none"}
     {else}
       {assign var="display_style" value=""}
     {/if}
     
-		<tr>
+		<tr id="container_cf_show_on_execution" style="display:{$display_style};">
 			<th>{lang_get s='show_on_exec'}</th>
 			<td>
-				<select name="cf_show_on_execution"> 
+				<select id="cf_show_on_execution"  name="cf_show_on_execution" 
+				        {$disabled_cf_show_on.execution}> 
 				{html_options options=$gsmarty_option_yes_no selected=$cf.show_on_execution}
 				</select>
 			</td>
 		</tr>
-		<tr id="cf_enable_on_execution_container" style="display:{$display_style};">
+		
+		{if $disabled_cf_enable_on.execution}
+      {assign var="display_style" value="none"}
+    {else}
+      {assign var="display_style" value=""}
+    {/if}
+		<tr id="container_cf_enable_on_execution" style="display:{$display_style};">
 			<th>{lang_get s='enable_on_exec'}</th>
 			<td>
 				<select id="cf_enable_on_execution" 
 				        name="cf_enable_on_execution"
-				        {$disabled_cf_enable_on_execution}> 
+				        {$disabled_cf_enable_on.execution}> 
 				{html_options options=$gsmarty_option_yes_no selected=$cf.enable_on_execution}
 				</select>
 			</td>
 		</tr>
+    {* ------------------------------------------------------------------------------- *}
+
 
 		<tr>
 			<th>{lang_get s='available_on'}</th>
@@ -264,10 +399,9 @@ function cfg_possible_values_display(cfg,id_cftype,id_possible_values_container)
 			    <input type="hidden" id="hidden_cf_node_type_id" 
 			           value={$cf.node_type_id} name="cf_node_type_id"> 
 			  {else}
-  				<select onchange="configure_cf_attr(js_enable_on_exec_cfg,
-  				                                    'combo_cf_node_type_id',
-  				                                    'cf_enable_on_execution',
-  				                                    'cf_enable_on_execution_container');"
+  				<select onchange="configure_cf_attr('combo_cf_node_type_id',
+  				                                    js_enable_on_cfg,
+  				                                    js_show_on_cfg);"
   				        id="combo_cf_node_type_id" 
   				        name="cf_node_type_id"> 
   				{html_options options=$cf_allowed_nodes selected=$cf.node_type_id}

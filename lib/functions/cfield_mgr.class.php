@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: cfield_mgr.class.php,v $
- * @version $Revision: 1.20 $
- * @modified $Date: 2007/11/09 21:44:43 $  $Author: franciscom $
+ * @version $Revision: 1.21 $
+ * @modified $Date: 2007/11/25 18:56:52 $  $Author: franciscom $
  * @author franciscom
  *
  * 20071102 - franciscom - BUGID - Feature 
@@ -72,25 +72,31 @@ class cfield_mgr
 	                        'requirement');
   
 
-  // Need to manage user interface, when creating Custom Fields
-  
-  // For certain type of nodes, enable_on_exec has nosense
-	var $enable_on_spec_cfg = array('testsuite' => 1,
-	                                'testplan'  => 1,
-	                                'testcase'  => 1,
-	                                'requirement_spec' => 0,
-	                                'requirement' => 0 );
+  // Needed to manage user interface, when creating Custom Fields
+  // 0 => combo will not displayed 
+  var $enable_on_cfg=array('execution' => array('testsuite' => 0,
+	                                              'testplan'  => 0,
+	                                              'testcase'  => 1,
+	                                              'requirement_spec' => 0,
+	                                              'requirement' => 0),
+                           'design' => array('testsuite' => 1,
+	                                           'testplan'  => 1,
+	                                           'testcase'  => 1,
+	                                           'requirement_spec' => 0,
+	                                           'requirement' => 0));
 
-  // For certain type of nodes, enable_on_exec has nosense
-	var $enable_on_exec_cfg = array('testsuite' => 0,
-	                                'testplan'  => 0,
-	                                'testcase'  => 1,
-	                                'requirement_spec' => 0,
-	                                'requirement' => 0 );
-
-  
-  
-  
+  // 0 => combo will not displayed 
+  var $show_on_cfg=array('execution'=>array('testsuite' => 1,
+	                                          'testplan'  => 1,
+	                                          'testcase'  => 1,
+	                                          'requirement_spec' => 0,
+	                                          'requirement' => 0 ),
+                         'design' => array('testsuite' => 1,
+	                                         'testplan'  => 1,
+	                                         'testcase'  => 1,
+	                                         'requirement_spec' => 0,
+	                                         'requirement' => 0 ));
+ 
   // the name of html input will have the following format
   // <name_prefix>_<custom_field_type_id>_<progressive>
   //
@@ -168,7 +174,7 @@ class cfield_mgr
 
 
   /*
-    function: get_enabled_on_exec_cfg
+    function: get_enable_on_cfg
     
     returns: hash with node types id, that can have custom fields with enabled_on_exec.
              key  : node_type_id      (node_types.id)
@@ -176,7 +182,35 @@ class cfield_mgr
              
              
   */
-	function get_enable_on_exec_cfg() 
+	function get_enable_on_cfg($ui_mode) 
+	{
+	  $mgmt_cfg=array();
+    $mgmt_cfg=$this->_get_ui_mgtm_cfg_for_node_type($this->enable_on_cfg[$ui_mode]);   
+    return($mgmt_cfg);
+  }
+
+  
+	function get_show_on_cfg($ui_mode) 
+	{
+	  $mgmt_cfg=array();
+  	$mgmt_cfg=$this->_get_ui_mgtm_cfg_for_node_type($this->show_on_cfg[$ui_mode]); 
+    return($mgmt_cfg);
+  }
+
+
+
+
+  /*
+    function: _get_ui_mgtm_cfg_for_node_type
+              utility method
+    
+    returns: hash with node types id, that can have custom fields with enabled_on_exec.
+             key  : node_type_id      (node_types.id)
+             value: 1 -> enable on exec can be configured by user
+             
+             
+  */
+	function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg) 
 	{
     $enabled_mgmt=array();
     $tl_node_types=$this->tree_manager->get_available_node_types();
@@ -184,13 +218,15 @@ class cfield_mgr
     foreach($this->node_types as $verbose_type)
     {
       $type_id=$tl_node_types[$verbose_type];
-      if( isset($this->enable_on_exec_cfg[$verbose_type]) )
+      if( isset($map_node_id_cfg[$verbose_type]) )
       {
-        $enabled_mgmt[$type_id]=$this->enable_on_exec_cfg[$verbose_type];
+        $enabled_mgmt[$type_id]=$map_node_id_cfg[$verbose_type];
       }
     }
     return($enabled_mgmt);
   }
+
+
 
   /*
     function: get_possible_values_cfg

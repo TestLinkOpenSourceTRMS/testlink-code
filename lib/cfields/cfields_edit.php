@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: cfields_edit.php,v $
  *
- * @version $Revision: 1.6 $
- * @modified $Date: 2007/06/04 17:26:46 $ by $Author: franciscom $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2007/11/25 18:59:40 $ by $Author: franciscom $
  *
  *
  * rev :
@@ -22,13 +22,20 @@ $cfield_id = isset($_REQUEST['cfield_id']) ? $_REQUEST['cfield_id']:0;
 $cf_is_used = 0;
 $result_msg = null;
 $cf = '';  
-$disabled_cf_enable_on_execution="";
+
+$disabled_cf_enable_on=array('execution' => '', 'design' => '');
+$disabled_cf_show_on=array('execution' => '', 'design' => '');
+
 
 $cfield_mgr = new cfield_mgr($db);
+$keys2loop=array('execution','design');
+foreach( $keys2loop as $ui_mode)
+{
+  $enable_on_cfg[$ui_mode]=$cfield_mgr->get_enable_on_cfg($ui_mode);
+  $show_on_cfg[$ui_mode]=$cfield_mgr->get_show_on_cfg($ui_mode);
+}
 
-$enable_on_exec_cfg=$cfield_mgr->get_enable_on_exec_cfg();
 $possible_values_cfg=$cfield_mgr->get_possible_values_cfg();
-
 
 $allowed_nodes = $cfield_mgr->get_allowed_nodes();
 $cf_allowed_nodes = array();
@@ -104,12 +111,26 @@ switch ($do_action)
 
 $smarty = new TLSmarty();
 
-if(!$enable_on_exec_cfg[$cf['node_type_id']])
-{
-  $disabled_cf_enable_on_execution=' disabled="disabled" ';
-}
-$show_possible_values=$possible_values_cfg[$cf['type']];
+// --------------------------------------------------------------
+// To control combo display
 
+foreach( $keys2loop as $ui_mode)
+{
+  if(!$enable_on_cfg[$ui_mode][$cf['node_type_id']])
+  {
+   $disabled_cf_enable_on[$ui_mode]=' disabled="disabled" ';
+  }   
+   
+  if(!$show_on_cfg[$ui_mode][$cf['node_type_id']])
+  {
+   $disabled_cf_show_on[$ui_mode]=' disabled="disabled" ';
+  }   
+}
+// --------------------------------------------------------------
+
+
+
+$show_possible_values=$possible_values_cfg[$cf['type']];
 
 $smarty->assign('result',$result_msg);
 $smarty->assign('user_action',$do_action);
@@ -117,11 +138,15 @@ $smarty->assign('cf_types',$cfield_mgr->get_available_types());
 $smarty->assign('cf_allowed_nodes',$cf_allowed_nodes);
 $smarty->assign('is_used',$cf_is_used);
 $smarty->assign('cf',$cf);
-$smarty->assign('disabled_cf_enable_on_execution', $disabled_cf_enable_on_execution);
+
+$smarty->assign('disabled_cf_enable_on', $disabled_cf_enable_on);
+$smarty->assign('disabled_cf_show_on', $disabled_cf_show_on);
 $smarty->assign('show_possible_values', $show_possible_values);
 
 
-$smarty->assign('enable_on_exec_cfg', $enable_on_exec_cfg);
+$smarty->assign('enable_on_cfg', $enable_on_cfg);
+$smarty->assign('show_on_cfg', $show_on_cfg);
+
 $smarty->assign('possible_values_cfg', $possible_values_cfg);
 
 $smarty->display('cfields_edit.tpl');
@@ -130,16 +155,36 @@ $smarty->display('cfields_edit.tpl');
 
 <?php
 /*
-  function: 
+  function: request2cf
+            scan a hash looking for a keys with 'cf_' prefix,
+            because this keys represents fields of Custom Fields
+            tables.
+            Is used to get values filled by user on a HTML form.
+            This requirement dictated how html inputs must be named.
+            If notation is not followed logic will fail.
 
-  args :
+  args: hash
   
-  returns: 
+  returns: hash only with related to custom fields, where 
+           (keys,values) are the original with 'cf_' prefix, but 
+           in this new hash prefix on key is removed.
 
 */
 function request2cf($hash)
 {
-  $missing_keys=array('enable_on_execution' => 0,
+  // design and execution has sense for node types regarding testing
+  // testplan,testsuite,testcase, but no sense for requirements.
+  //
+  // Missing keys are combos that will be disabled and not show at UI.
+  // For req spec and req, no combo is showed.
+  // To avoid problems (need to be checked), my choice is set to 1
+  // *_on_design keys, that right now will not present only for
+  // req spec and requirements.
+  // 
+  $missing_keys=array('show_on_design' => 1,
+                      'enable_on_design' => 1,
+                      'show_on_execution' => 0,
+                      'enable_on_execution' => 0,
                       'possible_values' => ' ' );
 
 	$cf_prefix = 'cf_';

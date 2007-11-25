@@ -1,32 +1,94 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: reqView.tpl,v 1.1 2007/11/19 21:01:05 franciscom Exp $
+$Id: reqView.tpl,v 1.2 2007/11/25 18:57:47 franciscom Exp $
 *}
-{include file="inc_head.tpl" openHead="yes"}
+{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
+{config_load file="input_dimensions.conf" section=$cfg_section}
+
+{lang_get s='delete_confirm_question' var="warning_msg" }
+
+{* 
+{assign var="lf"  value="<br>"}
+{assign var="item"  value=$req.title|escape}
+{assign var="warning_msg"  value=$warning_msg$lf$item}
+*}
+
+{include file="inc_head.tpl" openHead="yes" jsValidate="yes"}
+{include file="inc_del_onclick.tpl"}
+
+<script type="text/javascript">
+/* All this stuff is needed for logic contained in inc_del_onclick.tpl */
+var o_label ="{lang_get s='req'}";
+var del_action=fRoot+'{$smarty.const.REQ_MODULE}reqEdit.php?do_action=do_delete&requirement_id=';
+</script>
 </head>
 
 <body>
 <div class="workBack">
-	<p><span class="bold">{lang_get s='title'}</span> &nbsp; {$req.title|escape}</p>
-	<p class="bold">{lang_get s='scope'}</p>
-	<div>{$req.scope}</div>
-	<p><span class="bold">{lang_get s='status'}</span> &nbsp; {$selectReqStatus[$req.status]}</p>
-	<p class="bold">{lang_get s='coverage'}
-	<div>
-		{section name=row loop=$req.coverage}
-			<span>{$req.coverage[row].name}</span><br />
-		{sectionelse}
+<h1> {$main_descr|escape}</h1>
+
+<table class="simple" style="width: 90%">
+	<tr>
+		<th>{lang_get s='req'}{$smarty.const.TITLE_SEP}{$req.title|escape}</th>
+	</tr>
+  <tr>
+  <td>{lang_get s='req_doc_id'}{$smarty.const.TITLE_SEP}{$req.req_doc_id}</td>
+  </tr>
+
+  <tr>
+		<td>
+			<fieldset><legend class="legend_container">{lang_get s='scope'}</legend>
+			{$req.scope}
+			</fieldset>
+		</td>
+  </tr>
+  <tr>
+  <td>{lang_get s='status'}{$smarty.const.TITLE_SEP}{$selectReqStatus[$req.status]}</td>
+  </tr>
+  <tr>
+		<td>
+			<fieldset><legend class="legend_container">{lang_get s='coverage'}</legend>
+					  {section name=row loop=$req.coverage}
+			  <span>{$req.coverage[row].name}</span><br />
+		   {sectionelse}
 			<span>{lang_get s='req_msg_notestcase'}</span>
-		{/section}
-	</div>
-    </p>
-  {if $cf != ''}
-    {$cf}
+		  {/section}
+
+			</fieldset>
+		</td>
+  </tr>
+	<tr>
+		<td>&nbsp;</td>
+	</tr>
+	
+	<tr>
+	  <td>
+  	{$cf}
+  	</td>
+	</tr>
+
+  <tr class="time_stamp_creation">
+  <td colspan="2">
+      {lang_get s='title_created'}&nbsp;{localize_timestamp ts=$req.creation_ts }&nbsp;
+      		{lang_get s='by'}&nbsp;{$req.author|escape}
+  </td>
+  </tr>
+  {if $req.modifier ne ""}
+    <tr class="time_stamp_creation">
+    <td colspan="2">
+    {lang_get s='title_last_mod'}&nbsp;{localize_timestamp ts=$req.modification_ts}
+		  &nbsp;{lang_get s='by'}&nbsp;{$req.modifier|escape}
+    </td>
+    </tr>
   {/if}
-	<p>{lang_get s="Author"}: {$req.author} [{localize_date d=$req.creation_ts}]</p>
-	{if $req.modifier <> ''}
-	<p>{lang_get s="last_edit"}: {$req.modifier} [{localize_date d=$req.modification_ts}]</p>
-	{/if}
+</table>
+
+{if $modify_req_rights neq 'yes'}
+	{assign var="bDownloadOnly" value=true}
+{/if}
+{include file="inc_attachments.tpl" id=$req.id  tableName="requirements"
+         attachmentInfos=$attachments  downloadOnly=$bDownloadOnly}
+
 
 
 
@@ -43,8 +105,8 @@ $Id: reqView.tpl,v 1.1 2007/11/19 21:01:05 franciscom Exp $
     	
     	
     	<input type="button" name="delete_req" value="{lang_get s='btn_delete'}"
-    	       onclick="delete_confirmation({$req_spec.id},
- 					                                 '{$req_spec.title|escape:'javascript'}',
+    	       onclick="delete_confirmation({$req.id},
+ 					                                 '{$req.title|escape:'javascript'}',
  					                                 '{$warning_msg}');"	/>
     	{/if}
     </form>

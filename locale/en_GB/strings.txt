@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.221 $
- * @modified $Date: 2007/11/25 19:00:25 $ $Author: franciscom $
+ * @version $Revision: 1.222 $
+ * @modified $Date: 2007/11/26 22:20:18 $ $Author: havlat $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -19,8 +19,6 @@
  * 20071102 - franciscom - tcexecute strings
  * 20071101 - franciscom - view_file_format_doc
  * 20070930 - franciscom - show_tcase_spec
- * 20070818 - franciscom -
- * 20070705 - franciscom -
  * 20070520 - franciscom - milestones
  * 20070206 - franciscom - BUGID 618 - \n on JS messages
  *
@@ -30,48 +28,77 @@
 //$TLS_STRINGFILE_CHARSET = "UTF-8";
 
 // BUGID 1133 - needed by email_api
-$TLS_charset='utf-8';
+$TLS_charset		= 'utf-8';
 
-// General - Leave it here in this way can be reused !!!
-$TLS_add = "add";
-$TLS_asc = "ascending";
-$TLS_any = "any";
-$TLS_btn_no = "No";
-$TLS_btn_save = "Save";
-$TLS_create = "Create";
-$TLS_desc = "descending";
-$TLS_delete_confirm_question = "are your sure you want to delete?";
-$TLS_file_type='File type';
-$TLS_hour = "Hour";
-$TLS_not_aplicable = "N/A";
-$TLS_remove = "remove";
-$TLS_test_case = "Test Case";
-$TLS_testcase = $TLS_test_case;
-$TLS_test_plan = "Test Plan";
-$TLS_testplan = $TLS_test_plan;
-$TLS_test_suite = "Test Suite";
-$TLS_SRS = "SRS";
-$TLS_Role = "Role";
-$TLS_Keyword = "Keyword";
-$TLS_Milestone = "Milestone";
+// General terms - Leave it here in this way can be reused !!!
+$TLS_asc 			= "ascending";
+$TLS_any 			= "any";
+$TLS_assigned 		= "assigned";
+$TLS_unassigned 	= "unassigned";
+$TLS_desc 			= "descending";
+$TLS_delete_confirm_question = "Are your sure you want to delete?";
+$TLS_file_type		= 'File type';
+$TLS_help 			= "Help";
+$TLS_hour 			= "Hour";
+$TLS_Milestone 		= "Milestone";
+$TLS_not_aplicable 	= "N/A";
+$TLS_requirement 	= "Requirement";
+$TLS_reqs 			= "Requirements";
+$TLS_req_spec 		= "Requirements Specification Document";
+$TLS_SRS 			= "SRS";
+$TLS_Role 			= "Role";
+$TLS_scope 			= "Scope";
+$TLS_status 		= "Status";
+$TLS_Keyword 		= "Keyword";
+$TLS_test_case 		= "Test Case";
+$TLS_testcase 		= $TLS_test_case;
+$TLS_test_plan 		= "Test Plan";
+$TLS_testplan 		= $TLS_test_plan;
+$TLS_test_suite 	= "Test Suite";
 $TLS_testsuite_created = "Test Suite created";
-$TLS_requirement = "Requirement";
-$TLS_assigned = "assigned";
-$TLS_unassigned = "unassigned";
+$TLS_title 			= "Title";
+
 $TLS_import_file_type = "Import file type";
 $TLS_max_file_size_is = "Max. file size ";
 $TLS_supported_file_formats = "Supported file formats";
 $TLS_no_permissions_for_action = "You do not have permissions to perform this action!" .
                                  " Please contact your administrator.";
 
-$TLS_test_status_all = "All";
-$TLS_test_status_any = "Any";
-$TLS_test_status_not_run = "Not Run";
-$TLS_test_status_blocked = "Blocked";
-$TLS_test_status_failed = "Failed";
-$TLS_test_status_passed = "Passed";
-$TLS_test_status_not_available="Not Available";
-$TLS_test_status_unknown="Unknown";
+
+// Actions  - Leave it here in this way can be reused !!!
+$TLS_add 			= "add";
+$TLS_create 		= "create";
+$TLS_remove 		= "remove";
+
+
+// Buttons (one word) - Leave it here in this way can be reused !!!
+$TLS_btn_add 		= "Add";
+$TLS_btn_assign 	= "Assign";
+$TLS_btn_cancel 	= "Cancel";
+$TLS_btn_close 		= "Close";
+$TLS_btn_cp 		= "Copy";
+$TLS_btn_create 	= "Create";
+$TLS_btn_delete 	= "Delete"; 
+$TLS_btn_edit	 	= "Edit";
+$TLS_btn_find 		= "Find";
+$TLS_btn_import 	= "Import";
+$TLS_btn_move 		= "Move";
+$TLS_btn_no 		= "No";
+$TLS_btn_ok 		= "Ok";
+$TLS_btn_save 		= "Save";
+$TLS_btn_unassign 	= "Unassign";
+$TLS_btn_update 	= "Update";
+$TLS_btn_upd 		= $TLS_btn_update;
+
+// Status
+$TLS_test_status_all 		= "All";
+$TLS_test_status_any 		= "Any";
+$TLS_test_status_not_run 	= "Not Run";
+$TLS_test_status_blocked 	= "Blocked";
+$TLS_test_status_failed 	= "Failed";
+$TLS_test_status_passed 	= "Passed";
+$TLS_test_status_not_available = "Not Available";
+$TLS_test_status_unknown	= "Unknown";
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////7
@@ -175,7 +202,6 @@ $TLS_tcexec_result="Result:";
 $TLS_tcexec_results_for="Result for:";
 
 // gui/templates/attachment404.tpl
-$TLS_btn_close = "Close";
 $TLS_error_attachment_not_found = "Error: Attachment not found!";
 $TLS_title_downloading_attachment = "Downloading attachment";
 
@@ -219,8 +245,6 @@ $TLS_title_delete_bug = "Delete bug";
 
 
 // gui/templates/containerMove.tpl
-$TLS_btn_cp = "Copy";
-$TLS_btn_move = "Move";
 $TLS_choose_target = "Choose a target";
 $TLS_cont_copy_first = "Copy";
 $TLS_cont_copy_second = "to Any";
@@ -235,23 +259,14 @@ $TLS_title_move_cp = "Move/Copy";
 
 
 // gui/templates/reqCreate.tpl
-$TLS_btn_cancel = "Cancel";
-$TLS_btn_create = "Create";
-$TLS_help = "Help";
 $TLS_req_create = "Create requirement";
 $TLS_req_doc_id = "Document ID";
-$TLS_req_spec = "Requirements Specification";
-$TLS_reqs = "Requirements";
-$TLS_scope = "Scope";
-$TLS_status = "Status";
-$TLS_title = "Title";
 $TLS_warning_empty_req_title = "Requirement title cannot be empty!";
 $TLS_warning_empty_reqdoc_id = "Requirement document id cannot be empty!";
 
 
 
 // gui/templates/containerOrder.tpl
-$TLS_btn_upd = "Update";
 $TLS_no_nodes_to_reorder = "I'm sorry there is nothing to reorder!";
 $TLS_node = "Name";
 $TLS_th_id = "ID";
@@ -267,8 +282,6 @@ $TLS_node_type_dbtable_testcases=$TLS_testcase;
 $TLS_alt_del_com = "Delete this Test Suite";
 $TLS_alt_edit_com = "Modify this Test Suite data and title";
 $TLS_alt_move_cp_com = "Move or copy this Test Suite to another Test Project";
-$TLS_btn_del_com = "Delete";
-$TLS_btn_edit_com = "Edit";
 $TLS_btn_execute_automatic_testcases="Execute All Automatic Test Cases";
 $TLS_btn_export_all_testsuites = "Export All Test Suites";
 $TLS_btn_export_tc = "Export Test Case(s)";
@@ -288,9 +301,6 @@ $TLS_th_product_name = "Test Project Name";
 
 // gui/templates/cfields_edit.tpl
 $TLS_available_on = "Available for";
-$TLS_btn_add = "Add";
-$TLS_btn_delete = "Delete"; 
-$TLS_btn_ok = "Ok";
 $TLS_custom_field = "Custom field";
 $TLS_enable_on_design = "Enable on <br>test specification";
 $TLS_enable_on_exec = "Enable on <br>test execution";
@@ -358,9 +368,7 @@ $TLS_send_test_report = "- Send Test Report";
 
 // gui/templates/reqImport.tpl
 $TLS_Result = "Result";
-$TLS_Title = "Title";
 $TLS_btn_back2srs = "Back to Req. Specification";
-$TLS_btn_import = "Import";
 $TLS_btn_upload_file = "Upload file";
 $TLS_check_req_file_structure = "Please check the file format, seems is not possible get any requirement";
 $TLS_local_file = "File";
@@ -435,7 +443,6 @@ $TLS_cat_tools = "Tools";
 
 
 // gui/templates/reqEdit.tpl
-$TLS_btn_update = "Update";
 $TLS_by = "by";
 $TLS_coverage = "Coverage";
 $TLS_popup_delete_req = "Are you sure you want to delete the requirement?";
@@ -652,7 +659,6 @@ $TLS_warning_modify_role = "Really modify the role?";
 
 
 // gui/templates/tcSearchForm.tpl
-$TLS_btn_find = "Find";
 $TLS_caption_search_form = "Search Test Cases";
 $TLS_custom_field_value ="Custom Field Value";
 $TLS_not_applied = "Not applied";
@@ -701,10 +707,8 @@ $TLS_title_req_import_to = "Import requirements to document";
 
 
 // gui/templates/cfields_tproject_assign.tpl
-$TLS_btn_assign = "Assign";
 $TLS_btn_cfields_active_mgmt = "Update active status";
 $TLS_btn_cfields_display_order = "Save display order";
-$TLS_btn_unassign = "Unassign";
 $TLS_cfields_active = "Active";
 $TLS_cfields_tproject_assign = "Assign custom fields";
 $TLS_display_order = "Display order";

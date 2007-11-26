@@ -1,0 +1,5 @@
+Docs can be generated following these steps
+
+1. Edit the paths in the ini file to match those on your system
+2. Copy ini file to the users dir of your phpdoc install
+3. Run php phpdoc -c testlinkapi-makedocs.ini

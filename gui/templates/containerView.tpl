@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: containerView.tpl,v 1.38 2007/11/02 13:09:08 franciscom Exp $ *}
+{* $Id: containerView.tpl,v 1.39 2007/11/26 22:19:10 havlat Exp $ *}
 {* 
 Purpose: smarty template - view test specification containers 
 
@@ -79,9 +79,9 @@ rev :
 		  <input type="hidden" name="testsuiteID" value="{$container_data.id}">
 			<input type="hidden" name="testsuiteName" value="{$container_data.name|escape}" />
 
-			<input type="submit" name="edit_testsuite" value="{lang_get s='btn_edit_com'}"
+			<input type="submit" name="edit_testsuite" value="{lang_get s='btn_edit'}"
 				     alt="{lang_get s='alt_edit_com'}" />
-			<input type="submit" name="delete_testsuite" value="{lang_get s='btn_del_com'}" 
+			<input type="submit" name="delete_testsuite" value="{lang_get s='btn_delete'}" 
 				     alt="{lang_get s='alt_del_com'}" />
 			<input type="submit" name="move_testsuite_viewer" value="{lang_get s='btn_move_cp_com'}" 
 				     alt="{lang_get s='alt_move_cp_com'}" />

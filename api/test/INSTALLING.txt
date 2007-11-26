@@ -1,3 +1,0 @@
-To run the tests you need to install phpunit
-
-See: http://www.phpunit.de/pocket_guide/3.2/en/installation.html

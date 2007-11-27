@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.5 $
- * @modified $Date: 2007/11/19 21:06:23 $ by $Author: franciscom $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2007/11/27 09:24:59 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
@@ -156,7 +156,9 @@ class requirement_mgr
 
   function update($id,$reqdoc_id,$title, $scope, $user_id, $status, $type,$skip_controls=0)
   {
-	  $result = 'ok';
+ 	  $result['status_ok'] = 1;
+	  $result['msg'] = 'ok';
+
 	  $db_now = $this->db->db_now();
 	  $field_size=config_get('field_size');
 	
@@ -178,15 +180,31 @@ class requirement_mgr
 	  	       " modifier_id={$user_id}, req_doc_id='" . $this->db->prepare_string($reqdoc_id) . "', " .
 	  	       " modification_ts={$db_now}  WHERE id={$id}";
 	  		
-	  	if (!$this->db->exec_query($sql))
-	  	 	$result = lang_get('error_updating_req');
-	  }
+	  	if ($this->db->exec_query($sql))
+	  	{
+        // need to update node on tree
+  		  $sql = " UPDATE {$this->nodes_hierarchy_table} " .
+  		         " SET name='" . $this->db->prepare_string($title) . "'" .
+  		         " WHERE id={$id}";
+  		
+  		  if (!$this->db->exec_query($sql))
+  		  {
+  			  $result['msg']=lang_get('error_updating_req');
+    	    $result['status_ok'] = 0;
+    	  }  
+	  	}
+      else 
+	  	{	  
+	  	   $result['status_ok']=0;
+	  	   $result['msg'] = lang_get('error_updating_req');
+	    }  // else 
+    } // 	  if($chk['status_ok'] || $skip_controls)
 	  else
 	  {
-	    $result=$chk['msg']; 
+	    $result['msg']=$chk['msg']; 
 	  }
 	  
-	  return $result; 
+	  return $result['msg']; 
   } //function end
 
 

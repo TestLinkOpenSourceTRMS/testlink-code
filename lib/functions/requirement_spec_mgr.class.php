@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_spec_mgr.class.php,v $
  *
- * @version $Revision: 1.6 $
- * @modified $Date: 2007/11/11 15:30:54 $ by $Author: franciscom $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2007/11/27 09:24:59 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirement specification (requirement container)
@@ -21,6 +21,7 @@ class requirement_spec_mgr
   
   var $object_table="req_specs";
   var $requirements_table="requirements";
+  var $nodes_hierarchy_table="nodes_hierarchy";
 
   var $import_file_types = array("csv" => "CSV",
                                  "csv_doors" => "CSV (Doors)", 
@@ -292,10 +293,14 @@ function get_metrics($id)
   */
 	function get_all_in_testproject($tproject_id,$order_by=" ORDER BY title")
 	{
-		$sql = "SELECT * FROM {$this->object_table} WHERE testproject_id={$tproject_id}";
+		$sql = "SELECT REQ_SPEC.*, NH.node_order " .
+		       " FROM {$this->object_table} REQ_SPEC, {$this->nodes_hierarchy_table} NH " .
+		       " WHERE NH.id=REQ_SPEC.id" . 
+		       " AND testproject_id={$tproject_id}";
+		
 		if (!is_null($order_by))
 		{
-  		$sql .= "  ORDER BY title";
+  		$sql .= $order_by;
 	  }
 		return $this->db->get_recordset($sql);
 	}
@@ -334,12 +339,27 @@ function get_metrics($id)
 		       " total_req ='" . $this->db->prepare_string($countReq) . "', " .
 		       " modifier_id={$user_id},modification_ts={$db_now} WHERE id={$id}";
 		       
+		       
+		       
 		if (!$this->db->exec_query($sql))
 		{
 			$result['msg']=lang_get('error_updating_reqspec');
   	  $result['status_ok'] = 0;
 	  }
-	  
+
+    if( $result['status_ok'] )
+    {	  
+  	  // need to update node on tree
+  		$sql = " UPDATE {$this->nodes_hierarchy_table} " .
+  		       " SET name='" . $this->db->prepare_string($title) . "'" .
+  		       " WHERE id={$id}";
+  		
+  		if (!$this->db->exec_query($sql))
+  		{
+  			$result['msg']=lang_get('error_updating_reqspec');
+    	  $result['status_ok'] = 0;
+  	  }
+	  }
 	  return $result; 
   }
 

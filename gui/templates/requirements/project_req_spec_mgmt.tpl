@@ -1,7 +1,15 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: project_req_spec_mgmt.tpl,v 1.1 2007/11/19 21:01:05 franciscom Exp $
+$Id: project_req_spec_mgmt.tpl,v 1.2 2007/11/27 07:47:13 franciscom Exp $
 *}
+
+{assign var="req_module" value=$smarty.const.REQ_MODULE}
+{assign var="url_args" value="reqSpecEdit.php?do_action=create&tproject_id="}
+{assign var="req_spec_new_url" value="$basehref$req_module$url_args$$tproject_id"}
+
+{assign var="url_args" value="reqSpecEdit.php?do_action=reorder&tproject_id="}
+{assign var="req_spec_reorder_url" value="$basehref$req_module$url_args$$tproject_id"}
+
 {include file="inc_head.tpl"}
 
 <body>
@@ -14,8 +22,11 @@ $Id: project_req_spec_mgmt.tpl,v 1.1 2007/11/19 21:01:05 franciscom Exp $
 		<form method="post">
 			<input type="button" id="new_req_spec" name="new_req_spec" 
 			       value="{lang_get s='btn_new_req_spec'}" 
-			       onclick="location='{$basehref}{$smarty.const.REQ_MODULE}reqSpecEdit.php?tproject_id={$tproject_id}&do_action=create'" />  
-		  <input type="submit" name="reorder_req_spec" value="{lang_get s='btn_reorder_req_spec'}" />
+			       onclick="location='{$req_spec_new_url}'" />  
+
+		  <input type="button" id="reorder_req_spec" name="reorder_req_spec" 
+		         value="{lang_get s='btn_reorder_req_spec'}" 
+		         onclick="location='{$req_spec_reorder_url}'" />  
 		</form>
 	</div>
 {* {/if} *}
@@ -23,5 +34,9 @@ $Id: project_req_spec_mgmt.tpl,v 1.1 2007/11/19 21:01:05 franciscom Exp $
 {if $refreshTree}
    {include file="inc_refreshTree.tpl"}
 {/if}
+
+{*
+	 onclick="location='{$basehref}{$smarty.const.REQ_MODULE}reqSpecEdit.php?tproject_id={$tproject_id}&do_action=create'" />  
+*}
 </body>
 </html>

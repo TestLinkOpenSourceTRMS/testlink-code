@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: reqSpecEdit.php,v $
- * @version $Revision: 1.3 $
- * @modified $Date: 2007/11/25 18:59:40 $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2007/11/27 07:47:50 $
  * 
  * @author Martin Havlat
  * 
@@ -127,6 +127,22 @@ switch($args->do_action)
   $smarty->assign('refresh_tree','yes');
   $smarty->assign('result','ok');
   break;
+
+
+  case "reorder":
+  $template = $template_dir .  'reqSpecReorder.tpl';
+  $order_by=' ORDER BY NH.node_order,REQ_SPEC.id ';
+  $all_req_spec=$req_spec_mgr->get_all_in_testproject($args->tproject_id,$order_by);
+  echo "<pre>debug 20071126 - \ - " . __FUNCTION__ . " --- "; print_r($all_req_spec); echo "</pre>";
+  $smarty->assign('tproject_id', $args->tproject_id);
+  $smarty->assign('tproject_name', $args->tproject_name);
+  $smarty->assign('arrReqSpecs', $all_req_spec);
+  break;
+
+  case "do_reorder":
+
+  break;
+
 
     
 }

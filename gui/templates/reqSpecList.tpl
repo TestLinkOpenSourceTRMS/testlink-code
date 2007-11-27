@@ -1,20 +1,9 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecList.tpl,v 1.12 2007/11/19 20:58:40 franciscom Exp $ *}
+{* $Id: reqSpecList.tpl,v 1.13 2007/11/27 07:46:53 franciscom Exp $ *}
 {* Purpose: smarty template - create view and create a new req document *}
 {include file="inc_head.tpl" jsTree="yes"}
 
 <body>
-
-sono un albero
-<div class="tree" id="tree">
-{if $tree eq ''}
-  {lang_get s='no_tc_spec_av'}
-{/if}
-{$tree}
-<br />
-</div>
-
-
 
 <h1> 
  {lang_get s='help' var='common_prefix'}

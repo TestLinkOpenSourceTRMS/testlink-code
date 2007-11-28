@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: project_req_spec_mgmt.tpl,v 1.2 2007/11/27 07:47:13 franciscom Exp $
+$Id: project_req_spec_mgmt.tpl,v 1.3 2007/11/28 08:15:24 franciscom Exp $
 *}
 
 {assign var="req_module" value=$smarty.const.REQ_MODULE}
@@ -31,12 +31,8 @@ $Id: project_req_spec_mgmt.tpl,v 1.2 2007/11/27 07:47:13 franciscom Exp $
 	</div>
 {* {/if} *}
 </div>
-{if $refreshTree}
+{if $refresh_tree}
    {include file="inc_refreshTree.tpl"}
 {/if}
-
-{*
-	 onclick="location='{$basehref}{$smarty.const.REQ_MODULE}reqSpecEdit.php?tproject_id={$tproject_id}&do_action=create'" />  
-*}
 </body>
 </html>

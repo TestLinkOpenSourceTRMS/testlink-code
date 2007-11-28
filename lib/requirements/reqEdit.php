@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqEdit.php,v $
- * @version $Revision: 1.3 $
- * @modified $Date: 2007/11/25 18:59:40 $ by $Author: franciscom $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2007/11/28 08:14:49 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Screen to view existing requirements within a req. specification.
@@ -143,9 +143,31 @@ switch($args->do_action)
   $smarty->assign('result','ok');
   break;
   
-    
-    
-}
+  case "reorder":
+  $template = $template_dir .  'reqReorder.tpl';
+  $req_spec=$req_spec_mgr->get_by_id($args->req_spec_id);
+  $all_reqs=$req_spec_mgr->get_requirements($args->req_spec_id);
+  $smarty->assign('req_spec_id', $args->req_spec_id);
+  $smarty->assign('req_spec_name', $req_spec['title']);
+  $smarty->assign('arrReqs', $all_reqs);
+  break;
+
+  case "do_reorder":
+  $template = $template_dir .  'reqSpecView.tpl';
+  $nodes_in_order = transform_nodes_order($args->nodes_order);
+
+  // need to remove first element, is req_spec_id
+  $args->req_spec_id=array_shift($nodes_in_order);
+	$req_mgr->set_order($nodes_in_order);
+
+  $req_spec=$req_spec_mgr->get_by_id($args->req_spec_id);
+  $req_spec['author'] = trim(getUserName($db,$req_spec['author_id']));
+  $req_spec['modifier'] = trim(getUserName($db,$req_spec['modifier_id']));
+
+  $smarty->assign('req_spec', $req_spec);
+  $smarty->assign('refresh_tree', 'yes');
+  break;
+} // switch
 
 $smarty->assign('cf',$cf_smarty);
 $smarty->assign('action_descr',$action_descr);
@@ -192,6 +214,7 @@ function init_args()
   $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
   $args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : "";
   $args->user_id = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
+  $args->nodes_order = isset($_REQUEST['nodes_order']) ? $_REQUEST['nodes_order'] : null;
   
   return $args;
 }

@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_btn_ReqSpecView.tpl,v 1.1 2007/11/25 18:58:43 franciscom Exp $
+$Id: inc_btn_ReqSpecView.tpl,v 1.2 2007/11/28 08:15:45 franciscom Exp $
 *}
 
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
@@ -45,6 +45,9 @@ $Id: inc_btn_ReqSpecView.tpl,v 1.1 2007/11/25 18:58:43 franciscom Exp $
   	<input type="button" name="exportReq" value="{lang_get s='btn_export_reqs'}"
 		       onclick="location='{$req_export_url}'" />
 
+
+  	<input type="button" name="reorderReq" value="{lang_get s='req_reorder'}"
+		       onclick="location='{$req_reorder_url}'" />
   	{/if}
   </form>
 </div>

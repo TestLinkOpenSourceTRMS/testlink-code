@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecView.tpl,v 1.4 2007/11/25 18:57:47 franciscom Exp $ *}
+{* $Id: reqSpecView.tpl,v 1.5 2007/11/28 08:15:10 franciscom Exp $ *}
 {* 
    Purpose: smarty template - view a requirement specification
    Author: Martin Havlat 
@@ -20,6 +20,10 @@
 
 {assign var="url_args" value="reqImport.php?req_spec_id="}
 {assign var="req_import_url"  value="$basehref$req_module$url_args$req_spec_id"}
+
+{assign var="url_args" value="reqEdit.php?do_action=reorder&req_spec_id="}
+{assign var="req_reorder_url"  value="$basehref$req_module$url_args$req_spec_id"}
+
 
 {lang_get s='delete_confirm_question' var="warning_msg" }
 
@@ -99,5 +103,8 @@ var del_action=fRoot+'{$smarty.const.REQ_MODULE}reqSpecEdit.php?do_action=do_del
          attachmentInfos=$attachments  downloadOnly=$bDownloadOnly}
 
 </div>
+{if $refresh_tree}
+   {include file="inc_refreshTree.tpl"}
+{/if}
 </body>
 </html>

@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: reqSpecEdit.php,v $
- * @version $Revision: 1.4 $
- * @modified $Date: 2007/11/27 07:47:50 $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2007/11/28 08:14:49 $
  * 
  * @author Martin Havlat
  * 
@@ -133,14 +133,19 @@ switch($args->do_action)
   $template = $template_dir .  'reqSpecReorder.tpl';
   $order_by=' ORDER BY NH.node_order,REQ_SPEC.id ';
   $all_req_spec=$req_spec_mgr->get_all_in_testproject($args->tproject_id,$order_by);
-  echo "<pre>debug 20071126 - \ - " . __FUNCTION__ . " --- "; print_r($all_req_spec); echo "</pre>";
   $smarty->assign('tproject_id', $args->tproject_id);
   $smarty->assign('tproject_name', $args->tproject_name);
   $smarty->assign('arrReqSpecs', $all_req_spec);
   break;
 
   case "do_reorder":
+  $nodes_in_order = transform_nodes_order($args->nodes_order);
 
+  // need to remove first element, is testproject
+  array_shift($nodes_in_order);
+	$req_spec_mgr->set_order($nodes_in_order);
+  $template = $template_dir .  'project_req_spec_mgmt.tpl';
+  $smarty->assign('refresh_tree', 'yes');
   break;
 
 
@@ -180,7 +185,8 @@ function init_args()
   $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
   $args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : "";
   $args->user_id = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
-  
+  $args->nodes_order = isset($_REQUEST['nodes_order']) ? $_REQUEST['nodes_order'] : null;
+
   return $args;
 }
 

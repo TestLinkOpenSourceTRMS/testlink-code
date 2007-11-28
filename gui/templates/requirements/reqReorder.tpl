@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqSpecReorder.tpl,v 1.2 2007/11/28 08:15:24 franciscom Exp $
+$Id: reqReorder.tpl,v 1.1 2007/11/28 08:15:41 franciscom Exp $
 *}
 
 {assign var="req_module" value=$smarty.const.REQ_MODULE}
@@ -9,7 +9,7 @@ $Id: reqSpecReorder.tpl,v 1.2 2007/11/28 08:15:24 franciscom Exp $
 {lang_get s="drag_and_drop_to_reorder" var="hint_drag_and_drop"}
 
 {assign var="req_module" value=$smarty.const.REQ_MODULE}
-{assign var="url_args" value="reqSpecEdit.php?do_action=do_reorder"}
+{assign var="url_args" value="reqEdit.php?do_action=do_reorder"}
 {assign var="action_url" value="$basehref$req_module$url_args"}
 
 {assign var="tree_id" value="req_tree"}
@@ -19,21 +19,21 @@ $Id: reqSpecReorder.tpl,v 1.2 2007/11/28 08:15:24 franciscom Exp $
 
 
 <body onload="init_drag_and_drop('{$basehref}','{$tree_id}');">
-<h1>{lang_get s="testproject"}{$smarty.const.TITLE_SEP}{$tproject_name|escape}</h1>
+<h1>{lang_get s="req_spec"}{$smarty.const.TITLE_SEP}{$req_spec_name|escape}</h1>
 
 <div class="workBack">
-<h1>{lang_get s='title_change_req_spec_order'}</h1>
+<h1>{lang_get s='title_change_req_order'}</h1>
 
 <div>	
  	<ul id="{$tree_id}" class="dhtmlgoodies_tree">
-		<li id="{$tproject_id}" noDrag="true" noSiblings="true" noDelete="true" noRename="true">
-		    <a href="dummy#" onclick="return false;">{$tproject_name|escape}</a>
+		<li id="{$req_spec_id}" noDrag="true" noSiblings="true" noDelete="true" noRename="true">
+		    <a href="dummy#" onclick="return false;">{$req_spec_name|escape}</a>
     <ul>
-		{section name=idx loop=$arrReqSpecs}
-			<li id="{$arrReqSpecs[idx].id}" isLeaf="true" 
+		{section name=idx loop=$arrReqs}
+			<li id="{$arrReqs[idx].id}" isLeaf="true" 
 			    noRename="true" noDelete="true" noChildren="true">
   				<a href="dummy#" onclick="return false;" title="{$hint_drag_and_drop}">
- 					  {$arrReqSpecs[idx].title|escape}</a></li>
+ 					  {$arrReqs[idx].title|escape}</a></li>
 		{/section}
     </ul>
    </li>

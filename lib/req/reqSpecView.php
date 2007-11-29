@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqSpecView.php,v $
- * @version $Revision: 1.39 $
- * @modified $Date: 2007/11/19 21:08:14 $ by $Author: franciscom $
+ * @version $Revision: 1.40 $
+ * @modified $Date: 2007/11/29 07:59:15 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Screen to view existing requirements within a req. specification.
@@ -322,17 +322,17 @@ $smarty->display($template);
 // nodes_order format:  NODE_ID-?,NODE_ID-?
 // 2-0,10-0,3-0
 //                      
-function transform_nodes_order($nodes_order)
-{
-  $fa = explode(',',$nodes_order);
-  
-  foreach($fa as $key => $value)
-  {
-	// $value= X-Y
-	$fb = explode('-',$value);
-	$nodes_id[] = $fb[0];
-  }
-  
-  return $nodes_id;
-}	
+//function transform_nodes_order($nodes_order)
+//{
+//  $fa = explode(',',$nodes_order);
+//  
+//  foreach($fa as $key => $value)
+//  {
+//	// $value= X-Y
+//	$fb = explode('-',$value);
+//	$nodes_id[] = $fb[0];
+//  }
+//  
+//  return $nodes_id;
+//}	
 ?>

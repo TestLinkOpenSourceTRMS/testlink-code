@@ -2,11 +2,12 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.67 $
- * @modified $Date: 2007/11/14 07:36:36 $ $Author: franciscom $
+ * @version $Revision: 1.68 $
+ * @modified $Date: 2007/11/29 07:59:14 $ $Author: franciscom $
  * @author franciscom
  *
  *
+ * 20071128 - franciscom - create_tcase_only() added key on ret struct
  * 20071113 - franciscom - added contribution on get_executions()
  * 20071101 - franciscom - import_file_types, export_file_types
  *
@@ -176,6 +177,12 @@ function create($parent_id,$name,$summary,$steps,
            0 -> the id will be assigned by dbms
            x -> this will be the id 
                 Warning: no check is done before insert => can got error.
+
+return:
+       $ret['id']
+       $ret['status_ok']
+       $ret['msg'] = 'ok';
+	     $ret['new_name']
 */
 function create_tcase_only($parent_id,$name,$order=TC_DEFAULT_ORDER,$id=TC_AUTOMATIC_ID,
                            $check_duplicate_name=0,
@@ -184,6 +191,8 @@ function create_tcase_only($parent_id,$name,$order=TC_DEFAULT_ORDER,$id=TC_AUTOM
   $ret['id'] = -1;
   $ret['status_ok'] = 1;
   $ret['msg'] = 'ok';
+	$ret['new_name'] = '';
+
 		
  	if ($check_duplicate_name)
 	{
@@ -206,8 +215,8 @@ function create_tcase_only($parent_id,$name,$order=TC_DEFAULT_ORDER,$id=TC_AUTOM
 				$ret['status_ok'] = 1;      
 				if ($action_on_duplicate_name == 'generate_new')
 				{ 
-					$ret['status_ok'] = 1;      
 					$name = config_get('prefix_name_for_copy') . " " . $name ;      
+					$ret['new_name'] = $name;
 				}
 			}
 		}       

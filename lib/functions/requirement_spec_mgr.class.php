@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_spec_mgr.class.php,v $
  *
- * @version $Revision: 1.7 $
- * @modified $Date: 2007/11/27 09:24:59 $ by $Author: franciscom $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2007/11/29 07:59:14 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirement specification (requirement container)
@@ -21,6 +21,7 @@ class requirement_spec_mgr
   
   var $object_table="req_specs";
   var $requirements_table="requirements";
+  var $req_coverage_table='req_coverage';
   var $nodes_hierarchy_table="nodes_hierarchy";
 
   var $import_file_types = array("csv" => "CSV",
@@ -248,7 +249,7 @@ function get_metrics($id)
 	}
 	
 	$sql = " SELECT DISTINCT requirements.id " . 
-	       " FROM {$this->requirements_table} requirements, req_coverage " .
+	       " FROM {$this->requirements_table} requirements, {$this->req_coverage_table} req_coverage " .
 	       " WHERE requirements.srs_id={$id}" .
 				 " AND requirements.srs_id=req_coverage.req_id";
 	$result = $this->db->exec_query($sql);
@@ -432,19 +433,20 @@ function get_metrics($id)
 
   */
 function get_requirements($id, $range = 'all', $testcase_id = null,
-                          $order_by=" ORDER BY node_order,req_doc_id,title")
+                          $order_by=" ORDER BY node_order,title,req_doc_id")
 {
   $sql='';	
 	switch($range)
 	{
 	  case 'all';
-	  $sql = "SELECT * FROM requirements  WHERE srs_id={$id}"; 
+	  $sql = " SELECT * FROM {$this->requirements_table} requirements " .
+	         " WHERE srs_id={$id}"; 
 	  break;
 	  
 	  
 	  case 'assigned':
 		$sql = "SELECT requirements.* " .
-		       " FROM requirements,req_coverage " .
+		       " FROM {$this->requirements_table} requirements,{$this->req_coverage_table} req_coverage " .
 		       " WHERE srs_id={$id} " . 
 		       " AND req_coverage.req_id=requirements.id " .
 		       " AND req_coverage.testcase_id={$testcase_id}";
@@ -553,6 +555,28 @@ function get_requirements($id, $range = 'all', $testcase_id = null,
   	} 
   	return($ret);
   } //function end
+
+
+  /*
+    function: 
+  
+    args :
+            $nodes: array with req_spec in order
+    returns: 
+  
+  */
+  function set_order($map_id_order)
+  {
+   	foreach($map_id_order as $order => $node_id)
+  	{
+  		$order = abs(intval($order));
+  		$node_id = intval($node_id);
+  	  $sql = " UPDATE {$this->nodes_hierarchy_table} " .
+  	         " SET node_order = {$order} WHERE id = {$node_id}";
+  	  $result = $this->db->exec_query($sql);
+  	}
+  
+  } // set_order($map_id_order)
 
 
 

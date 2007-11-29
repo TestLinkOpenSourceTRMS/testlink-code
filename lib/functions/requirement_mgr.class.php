@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.6 $
- * @modified $Date: 2007/11/27 09:24:59 $ by $Author: franciscom $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2007/11/29 07:59:14 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
@@ -476,6 +476,8 @@ class requirement_mgr
     if ($this->db->num_rows($result) == 1) {
   		$row = $this->db->fetch_array($result);
   		$tsuite_id = $row['id'];
+      $output[]=sprintf(lang_get('created_on_testsuite'), $auto_testsuite_name);  
+  
   	}
   	else {
   		// not found -> create
@@ -483,7 +485,8 @@ class requirement_mgr
       $tsuite_mgr=New testsuite($this->db);
       $new_tsuite=$tsuite_mgr->create($testproject_id,$auto_testsuite_name,$g_req_cfg->testsuite_details);
       $tsuite_id=$new_tsuite['id'];
-  	}
+      $output[]=sprintf(lang_get('testsuite_name_created'), $auto_testsuite_name);  
+   	}
   
   	//create TC
   	foreach ($arrIdReq as $execIdReq) 
@@ -497,13 +500,20 @@ class requirement_mgr
   		                          config_get('check_names_for_duplicates'),
   		                          config_get('action_on_duplicate_name'));
   
+      $tcase_name=$tcase['new_name'];
+      if( $tcase_name == '' )
+      {
+        $tcase_name=$reqData['title'];
+      }
+      $output[]=sprintf(lang_get('tc_created'), $tcase_name);  
+  
   		// create coverage dependency
   		if (!$this->assign_to_tcase($reqData['id'],$tcase['id']) ) {
   			$output = 'Test case: ' . $reqData['title'] . "was not created </br>";
   		}
   	}
   
-  	return (!$output) ? 'ok' : $output;
+  	return $output;
   }
   
   
@@ -664,6 +674,10 @@ class requirement_mgr
   		$order = abs(intval($order));
   		$node_id = intval($node_id);
   	  $sql = " UPDATE {$this->object_table} " .
+  	         " SET node_order = {$order} WHERE id = {$node_id}";
+  	  $result = $this->db->exec_query($sql);
+
+  	  $sql = " UPDATE {$this->nodes_hierarchy_table} " .
   	         " SET node_order = {$order} WHERE id = {$node_id}";
   	  $result = $this->db->exec_query($sql);
   	}

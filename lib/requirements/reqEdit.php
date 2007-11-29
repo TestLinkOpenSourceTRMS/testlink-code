@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqEdit.php,v $
- * @version $Revision: 1.4 $
- * @modified $Date: 2007/11/28 08:14:49 $ by $Author: franciscom $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2007/11/29 07:59:15 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Screen to view existing requirements within a req. specification.
@@ -167,6 +167,26 @@ switch($args->do_action)
   $smarty->assign('req_spec', $req_spec);
   $smarty->assign('refresh_tree', 'yes');
   break;
+
+  case "create_tcases":
+  case "do_create_tcases":
+  $template = $template_dir .  'reqCreateTestCases.tpl';
+  $req_spec=$req_spec_mgr->get_by_id($args->req_spec_id);
+  $main_descr=lang_get('req_spec') . TITLE_SEP . $req_spec['title'];
+
+  $all_reqs=$req_spec_mgr->get_requirements($args->req_spec_id);
+  $smarty->assign('req_spec_id', $args->req_spec_id);
+  $smarty->assign('req_spec_name', $req_spec['title']);
+  $smarty->assign('arrReqs', $all_reqs);
+  
+  if( $args->do_action=='do_create_tcases')
+  {
+    $feedback=$req_mgr->create_tc_from_requirement($args->arrReqIds,$args->req_spec_id,$args->user_id);  
+    $smarty->assign('array_of_msg', $feedback);
+  }
+  break;
+
+
 } // switch
 
 $smarty->assign('cf',$cf_smarty);
@@ -202,6 +222,9 @@ function init_args()
   $args->reqStatus = isset($_REQUEST['reqStatus']) ? $_REQUEST['reqStatus'] : TL_REQ_STATUS_VALID;
   $args->reqType = isset($_REQUEST['reqType']) ? $_REQUEST['reqType'] : TL_REQ_TYPE_1;
   $args->countReq = isset($_REQUEST['countReq']) ? intval($_REQUEST['countReq']) : 0;
+
+	$args->arrReqIds = isset($_POST['req_id_cbox']) ? $_POST['req_id_cbox'] : null;
+
 
   $args->do_action = isset($_REQUEST['do_action']) ? $_REQUEST['do_action']:null;
   $args->do_export = isset($_REQUEST['exportAll']) ? 1 : 0;

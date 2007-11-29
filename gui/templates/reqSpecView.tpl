@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecView.tpl,v 1.31 2007/11/09 21:42:52 franciscom Exp $ *}
+{* $Id: reqSpecView.tpl,v 1.32 2007/11/29 07:59:00 franciscom Exp $ *}
 {* 
    Purpose: smarty template - view a requirement specification
    Author: Martin Havlat 
@@ -37,7 +37,7 @@ var please_select_a_req="{lang_get s='cant_delete_req_nothing_sel'}";
   returns: 
 
 */
-function check_action_precondition(form_id,action)
+function check_action_precondition(form_id,action,msg)
 {
  if( checkbox_count_checked(form_id) > 0) 
  {
@@ -59,7 +59,7 @@ function check_action_precondition(form_id,action)
  }
  else
  {
-    confirm(please_select_a_req);
+    confirm(msg);
     return false; 
  }  
 }
@@ -219,14 +219,12 @@ function check_action_precondition(form_id,action)
      {if $modify_req_rights == "yes"}
       <div class="groupBtn">
        <input type="submit" name="create_tc_from_req" value="{lang_get s='req_select_create_tc'}" 
-              onclick="return check_action_precondition('frmReqList','create');"/>
+              onclick="return check_action_precondition('frmReqList','create','{$check_msg}');"/>
               
        <input type="submit" name="req_select_delete" value="{lang_get s='req_select_delete'}"
               onclick="return check_action_precondition('frmReqList','delete');"/>
               
        <input type="submit" name="req_reorder" value="{lang_get s='req_reorder'}">
-
-              
       </div>
      {/if}
      {* ------------------------------------------------------------------------------------------ *}

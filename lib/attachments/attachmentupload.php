@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: attachmentupload.php,v $
  *
- * @version $Revision: 1.10 $
- * @modified $Date: 2007/11/09 20:04:10 $ by $Author: schlundus $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2007/11/29 07:59:14 $ by $Author: franciscom $
  *
  * Upload dialog for attachments
  *
@@ -16,6 +16,8 @@ require_once('../../config.inc.php');
 require_once('../functions/common.php');
 require_once('../functions/attachments.inc.php');
 testlinkInitPage($db);
+
+echo "<pre>debug 20071125 - \ - " . __FUNCTION__ . " --- "; print_r($_REQUEST); echo "</pre>";
 
 //the id (attachments.fk_id) of the object, to which the attachment belongs to 
 $id = isset($_GET['id'])? intval($_GET['id']) : 0;

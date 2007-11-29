@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.79 $ $Author: franciscom $
- * @modified $Date: 2007/11/22 07:43:21 $
+ * @version $Revision: 1.80 $ $Author: franciscom $
+ * @modified $Date: 2007/11/29 07:59:14 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -1226,4 +1226,21 @@ function trim_and_limit($s, $len=100)
 	return($s);
 }
 
+// 
+// nodes_order format:  NODE_ID-?,NODE_ID-?
+// 2-0,10-0,3-0
+//                      
+function transform_nodes_order($nodes_order)
+{
+  $fa = explode(',',$nodes_order);
+  
+  foreach($fa as $key => $value)
+  {
+	// $value= X-Y
+	$fb = explode('-',$value);
+	$nodes_id[] = $fb[0];
+  }
+  
+  return $nodes_id;
+}	
 ?>

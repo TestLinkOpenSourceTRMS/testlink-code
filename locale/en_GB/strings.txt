@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.222 $
- * @modified $Date: 2007/11/26 22:20:18 $ $Author: havlat $
+ * @version $Revision: 1.223 $
+ * @modified $Date: 2007/11/29 08:21:40 $ $Author: franciscom $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -1870,7 +1870,11 @@ $TLS_edit_req="Edit Requirement";
 $TLS_req_created = "Requirement: %s was succesfully created";
 $TLS_req_deleted = "Requirement: %s was succesfully deleted";
 
+// reqSpecReorder.tpl
+$TLS_title_change_req_spec_order="Change Requirement Specifications order";
 
+// requirement_mgr
+$TLS_created_on_testsuite="Test Cases will be created on Test Suite %s";
 
 // api/TestlinkXMLRPCServerErrors.php
 $TLS_API_INVALID_AUTH = "Can not authenticate client: invalid developer key";

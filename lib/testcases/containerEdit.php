@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * @version $Revision: 1.67 $
- * @modified $Date: 2007/11/11 15:30:56 $ by $Author: franciscom $
+ * @version $Revision: 1.68 $
+ * @modified $Date: 2007/11/30 18:02:46 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * 
@@ -443,31 +443,6 @@ function build_del_testsuite_warning_msg(&$tree_mgr,&$tcase_mgr,&$testcases,$tsu
   }
   return($msg);
 } // end function
-
-
-
-// nodes_order format:  NODE_ID-?,NODE_ID-?
-// 2-0,10-0,3-0
-//                      
-function transform_nodes_order($nodes_order,$node_to_exclude=null)
-{
-  $fa=explode(',',$nodes_order);
-  
-  foreach($fa as $key => $value)
-  {
-    // $value= X-Y
-    $fb=explode('-',$value);
-    
-    // BUGID
-    if( is_null($node_to_exclude) || $fb[0] != $node_to_exclude)
-    {
-     $nodes_id[]=$fb[0];
-    } 
-  }
-  
-  return $nodes_id;
-}	
-
 
 ?>
 

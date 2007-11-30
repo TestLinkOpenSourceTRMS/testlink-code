@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.80 $ $Author: franciscom $
- * @modified $Date: 2007/11/29 07:59:14 $
+ * @version $Revision: 1.81 $ $Author: franciscom $
+ * @modified $Date: 2007/11/30 18:05:36 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -225,6 +225,14 @@ function testlinkInitPage(&$db,$initProduct = FALSE, $bDontCheckSession = false)
 		doInitSelection($db) or die("Could not set session variables");
 }
 
+/*
+  function: 
+
+  args :
+  
+  returns: 
+
+*/
 function checkUserRights(&$db)
 {
 	//bypassed as long roles and rights aren't fully defined
@@ -1230,7 +1238,7 @@ function trim_and_limit($s, $len=100)
 // nodes_order format:  NODE_ID-?,NODE_ID-?
 // 2-0,10-0,3-0
 //                      
-function transform_nodes_order($nodes_order)
+function transform_nodes_order($nodes_order,$node_to_exclude=null)
 {
   $fa = explode(',',$nodes_order);
   
@@ -1238,9 +1246,15 @@ function transform_nodes_order($nodes_order)
   {
 	// $value= X-Y
 	$fb = explode('-',$value);
-	$nodes_id[] = $fb[0];
+
+	if( is_null($node_to_exclude) || $fb[0] != $node_to_exclude)
+  {
+     $nodes_id[]=$fb[0];
+  } 
   }
   
   return $nodes_id;
 }	
+
+
 ?>

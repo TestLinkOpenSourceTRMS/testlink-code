@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.133 $
- * @modified $Date: 2007/11/19 20:59:46 $ by $Author: franciscom $
+ * @version $Revision: 1.134 $
+ * @modified $Date: 2007/11/30 07:53:59 $ by $Author: franciscom $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink 
@@ -17,6 +17,7 @@
  *-----------------------------------------------------------------------------
  *
  * Revisions:
+ *           20071130 - franciscom - $g_gui->webeditor (work in progress)
  *           20071113 - franciscom - $g_exec_cfg->show_history_all_builds
  *           20071112 - franciscom - config changes due to upgrade of Smarty
  *           20071106 - franciscom - BUGID 1165 - $g_testcase_template
@@ -268,6 +269,12 @@ $g_gui->show_icon_edit=false;
 // 
 $g_gui->tprojects_combo_order_by='ORDER BY nodes_hierarchy.id DESC';
 
+
+// 20071130 - franciscom 
+// 'fckeditor'
+// 'none' -> use plan html textarea input field
+//
+$g_gui->webeditor='fckeditor';
 
 // ----------------------------------------------------------------------------
 /** [GUI: TREE] */

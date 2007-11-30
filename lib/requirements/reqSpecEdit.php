@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: reqSpecEdit.php,v $
- * @version $Revision: 1.6 $
- * @modified $Date: 2007/11/29 18:01:52 $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2007/11/30 07:55:22 $
  * 
  * @author Martin Havlat
  * 
@@ -18,8 +18,10 @@ require_once("common.php");
 require_once("req_tree_menu.php");
 require_once('requirements.inc.php');
 require_once('requirement_spec_mgr.class.php');
+require_once("web_editor.php");
 
-require_once("../../third_party/fckeditor/fckeditor.php");
+
+
 testlinkInitPage($db);
 
 $sqlResult = null;
@@ -152,9 +154,11 @@ switch($args->do_action)
     
 }
 
-$of = new fckeditor('scope') ;
-$of->BasePath = $_SESSION['basehref'] . 'third_party/fckeditor/';
-$of->ToolbarSet=$g_fckeditor_toolbar;;
+//$of = new fckeditor('scope') ;
+//$of->BasePath = $_SESSION['basehref'] . 'third_party/fckeditor/';
+//$of->ToolbarSet=$g_fckeditor_toolbar;;
+
+$of=web_editor('scope',$_SESSION['basehref']) ;
 
 $of->Value="";
 if($args->scope)
@@ -189,4 +193,8 @@ function init_args()
 
   return $args;
 }
+
+
+
 ?>
+

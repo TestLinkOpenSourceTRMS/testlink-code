@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.69 $
- * @modified $Date: 2007/11/14 07:36:36 $ $Author: franciscom $
+ * @version $Revision: 1.70 $
+ * @modified $Date: 2007/12/02 15:44:18 $ $Author: schlundus $
  *
  * 20071113 - franciscom - added contribution History for all builds.
  * 20071006 - franciscom - changes on exec_cfield_mgr() call
@@ -181,7 +181,7 @@ $testproject_id=$rs['parent_id'];
 $smarty->assign('tplan_notes',$rs['notes']);
 $smarty->assign('tplan_cf',$testplan_cf);
 
-
+$attachmentRepository = tlAttachmentRepository::create($db);
 if(!is_null($linked_tcversions))
 {
 	  $items_to_exec = array();
@@ -194,7 +194,7 @@ if(!is_null($linked_tcversions))
   		$items_to_exec[$id] = $linked_tcversions[$id]['tcversion_id'];    
   		$tcase_id = $id;
   		$tcversion_id = $linked_tcversions[$id]['tcversion_id'];
-  		$tcAttachments[$id] = getAttachmentInfos($db,$id,'nodes_hierarchy',1);
+  		$tcAttachments[$id] = getAttachmentInfos($attachmentRepository,$id,'nodes_hierarchy',1);
    
   		if($gui_cfg->enable_custom_fields)
   		{
@@ -213,7 +213,7 @@ if(!is_null($linked_tcversions))
 
       // 20070405 - BUGID 766
       $tc_info=$tree_mgr->get_node_hierachy_info($tcase_id);
-	    $tSuiteAttachments[$tc_info['parent_id']] = getAttachmentInfos($db,$tc_info['parent_id'],
+	    $tSuiteAttachments[$tc_info['parent_id']] = getAttachmentInfos($attachmentRepository,$tc_info['parent_id'],
 		                                                                 'nodes_hierarchy',true,1);
 
     }
@@ -255,7 +255,7 @@ if(!is_null($linked_tcversions))
     			{
 					 // Can be added because is present in the branch the user wants to view
 					 // ID of branch starting node is in $id
-					 $tcAttachments[$item['tc_id']] = getAttachmentInfos($db,$item['tc_id'],'nodes_hierarchy',true,1);
+					 $tcAttachments[$item['tc_id']] = getAttachmentInfos($attachmentRepository,$item['tc_id'],'nodes_hierarchy',true,1);
 
 		       // --------------------------------------------------------------------------------------
 			     if($gui_cfg->enable_custom_fields)
@@ -277,7 +277,7 @@ if(!is_null($linked_tcversions))
     			} // if( $path_elem['parent_id'] == $id )
     			
 				  if($path_elem['node_table'] == 'testsuites' && !isset($tSuiteAttachments[$path_elem['id']]))
-					   $tSuiteAttachments[$path_elem['id']] = getAttachmentInfos($db,$path_elem['id'],'nodes_hierarchy',true,1);
+					   $tSuiteAttachments[$path_elem['id']] = getAttachmentInfos($attachmentRepository,$path_elem['id'],'nodes_hierarchy',true,1);
 					   
 			  } //foreach($path_f as $key => $path_elem) 
     	} // foreach($linked_tcversions as $item)
@@ -342,7 +342,7 @@ if(!is_null($linked_tcversions))
     // Get attachment,bugs, etc
     if(!is_null($other_execs))
     {
-      $other_info=exec_additional_info($db,$tcase_mgr,$other_execs,$tplan_id);
+      $other_info=exec_additional_info($db,$attachmentRepository,$tcase_mgr,$other_execs,$tplan_id);
  			$attachmentInfos=$other_info['attachment'];
       $bugs=$other_info['bugs'];
       $cfexec_val_smarty=$other_info['cfexec_values'];
@@ -582,7 +582,7 @@ function smarty_assign_tsuite_info(&$smarty,&$request_hash, &$db,$tcase_id)
   returns: 
 
 */
-function exec_additional_info(&$db,&$tcase_mgr,$other_execs,$tplan_id)
+function exec_additional_info(&$db,$attachmentRepository,&$tcase_mgr,$other_execs,$tplan_id)
 {
   $bugInterfaceOn = config_get('bugInterfaceOn');
   $bugInterface = config_get('bugInterface');
@@ -597,7 +597,7 @@ function exec_additional_info(&$db,&$tcase_mgr,$other_execs,$tplan_id)
   	{
   		$exec_id = $execInfo[$idx]['execution_id'];
   		
-  		$aInfo = getAttachmentInfos($db,$exec_id,'executions',true,1);
+  		$aInfo = getAttachmentInfos($attachmentRepository,$exec_id,'executions',true,1);
   		if ($aInfo)
   			$attachmentInfos[$exec_id] = $aInfo;
   		

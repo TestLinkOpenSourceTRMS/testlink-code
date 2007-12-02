@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.42 $
- * @modified $Date: 2007/11/11 15:30:55 $  $Author: franciscom $
+ * @version $Revision: 1.43 $
+ * @modified $Date: 2007/12/02 15:44:18 $  $Author: schlundus $
  * @author franciscom
  *
  * 20071111 - franciscom - new method get_subtree();
@@ -21,8 +21,9 @@
  * 20060425 - franciscom - changes in show() following Andreas Morsing advice (schlundus)
  *
 **/
+require_once( dirname(__FILE__) . '/attachments.inc.php' );
 
-class testproject
+class testproject  extends tlObjectWithAttachments
 {
 	var $db;
 	var $tree_manager;
@@ -52,6 +53,8 @@ class testproject
 		$this->db = &$db;	
 		$this->tree_manager = new tree($this->db);
 		$this->cfield_mgr=new cfield_mgr($this->db);
+		
+		tlObjectWithAttachments::__construct($this->db,'nodes_hierarchy');
 	}
 
 /** 
@@ -1116,9 +1119,10 @@ function delete($id,&$error)
 	}			
 	//MISSING DEPENDENT DATA:
 	/*
-	* ATTACHMENTS
 	* CUSTOM FIELDS
 	*/
+
+	$this->deleteAttachments($id);
 		
 	// delete all nested data over array $a_sql
 	foreach ($a_sql as $oneSQL)

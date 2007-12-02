@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: req_tree_menu.php,v $
  *
- * @version $Revision: 1.2 $
- * @modified $Date: 2007/11/25 18:56:52 $ by $Author: franciscom $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2007/12/02 15:44:18 $ by $Author: schlundus $
  * 
  * Rev :
  *      20071125 - franciscom - added dtree_render_req_node_open
@@ -14,7 +14,8 @@
  **/
 require_once(dirname(__FILE__)."/../../config.inc.php");
 
-
+//@FMAN: here are functions missing for LAYERSMENU ! 
+/*
 if (TL_TREE_KIND == 'LAYERSMENU') 
 {
 	define('TL_MENU_PATH', TL_ABS_PATH . 'third_party' . DS .'phplayersmenu' . DS);
@@ -25,7 +26,7 @@ if (TL_TREE_KIND == 'LAYERSMENU')
 	require_once TL_MENU_LIB_PATH . 'layersmenu-common.inc.php';
 	require_once TL_MENU_LIB_PATH . 'treemenu.inc.php';
 }
-
+*/
 
 /** 
  * generate data for tree menu of Test Specification

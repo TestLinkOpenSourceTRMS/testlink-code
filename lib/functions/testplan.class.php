@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.42 $
- * @modified $Date: 2007/10/29 14:06:40 $ $Author: franciscom $
+ * @version $Revision: 1.43 $
+ * @modified $Date: 2007/12/02 15:44:18 $ $Author: schlundus $
  * @author franciscom
  *
  * Manages test plan operations and related items like Custom fields.
@@ -54,6 +54,7 @@ require_once( dirname(__FILE__) . '/attachments.inc.php' );
 
 class testplan
 {
+	var $attachmentRepository;
 	var $db;
 	var $tree_manager;
 	var $assignment_mgr;
@@ -82,7 +83,8 @@ class testplan
 		$this->assignment_types=$this->assignment_mgr->get_available_types(); 
 		$this->assignment_status=$this->assignment_mgr->get_available_status();
 	
-  	$this->cfield_mgr=new cfield_mgr($this->db);
+		$this->attachmentRepository = tlAttachmentRepository::create($db);
+  		$this->cfield_mgr=new cfield_mgr($this->db);
 	}
 
 
@@ -858,7 +860,7 @@ function delete($id)
   {
     foreach($rs as $elem)
     {
-       deleteAttachment($this->db,$elem['id']);
+       	$this->attachmentRepository->deleteAttachment($elem['id']);
     }  
   }
   

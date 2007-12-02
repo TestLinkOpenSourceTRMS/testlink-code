@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.68 $
- * @modified $Date: 2007/11/29 07:59:14 $ $Author: franciscom $
+ * @version $Revision: 1.69 $
+ * @modified $Date: 2007/12/02 15:44:18 $ $Author: schlundus $
  * @author franciscom
  *
  *
@@ -54,9 +54,8 @@ define("TC_DEFAULT_ORDER",0);
 define("TC_AUTOMATIC_ID",0);
 define("TC_COPY_KEYWORDS",0);
 
-class testcase
+class testcase extends tlObjectWithAttachments
 {
-
 	var $db;
 	var $tree_manager;
 	var $node_types_descr_id;
@@ -85,7 +84,9 @@ class testcase
 		$this->assignment_types=$this->assignment_mgr->get_available_types(); 
 		$this->assignment_status=$this->assignment_mgr->get_available_status();
 		
-		$this->cfield_mgr=new cfield_mgr($this->db);
+		$this->cfield_mgr = new cfield_mgr($this->db);
+		
+		tlObjectWithAttachments::__construct($this->db,"nodes_hierarchy");
 	}
 
 
@@ -650,7 +651,7 @@ function _blind_delete($id,$version_id=TC_ALL_VERSIONS,$children=null)
                                       
                                       
       // 20070602 - franciscom
-      $this->delete_attachments($id);                                      
+      $this->deleteAttachments($id);                                      
       $this->cfield_mgr->remove_all_design_values_from_node($id);
                                       
       $item_id = $id;
@@ -1692,9 +1693,10 @@ function update_active_status($id,$tcversion_id,$active_status)
   returns: -
 
 */
+//SCHLUNDUS: copy attachments should be repository functionality
 function copy_attachments($source_id,$target_id)
 {
-  $table_name='nodes_hierarchy';
+  $table_name = $this->attachmentTableName;
   $f_parts=null;
   $destFPath=null;
   $mangled_fname='';
@@ -1702,58 +1704,34 @@ function copy_attachments($source_id,$target_id)
   $repo_type=config_get('repositoryType');
   $repo_path=config_get('repositoryPath') .  DIRECTORY_SEPARATOR;
   
-  $attachments=getAttachmentInfos($this->db,$source_id,$table_name);  
-  if( count($attachments) > 0 )
+  $attachments = $this->getAttachmentInfos($source_id);  
+  if(count($attachments) > 0)
   {
-    foreach($attachments as $key => $value)
-    {
-       $file_contents=null;
-       $f_parts=explode(DIRECTORY_SEPARATOR,$value['file_path']);
-       $mangled_fname=$f_parts[count($f_parts)-1];
-	     if ($repo_type == TL_REPOSITORY_TYPE_FS)
-	     {
-		    $destFPath = buildRepositoryFilePath($mangled_fname,$table_name,$target_id);
-		    $status_ok = copy($repo_path . $value['file_path'],$destFPath);
-	     }
-       else
-       {
-         $file_contents = getAttachmentContentFromDB($this->db,$value['id']);
-		     $status_ok = sizeof($file_contents);
-       }
-       if($status_ok)
-       {
-        insertAttachment($this->db,$target_id,$table_name,$value['file_name'],$destFPath,
-                         $file_contents,$value['file_type'],$value['file_size'],$value['title']);        
-       }
-    }
+		foreach($attachments as $key => $value)
+		{
+			$file_contents = null;
+			$f_parts = explode(DIRECTORY_SEPARATOR,$value['file_path']);
+			$mangled_fname = $f_parts[count($f_parts)-1];
+				
+			if ($repo_type == TL_REPOSITORY_TYPE_FS)
+			{
+				$destFPath = $this->m_attachmentRepository->buildRepositoryFilePath($mangled_fname,$table_name,$target_id);
+				$status_ok = copy($repo_path . $value['file_path'],$destFPath);
+			}
+			else
+			{
+				$file_contents = $this->m_attachmentRepository->getAttachmentContentFromDB($value['id']);
+				$status_ok = sizeof($file_contents);
+			}
+			if($status_ok)
+			{
+				$attachment = new tlAttachment();
+				$attachment->create($target_id,$table_name,$value['file_name'],$destFPath,$file_contents,$value['file_type'],$value['file_size'],$value['title']);
+				$attachment->writeToDb($db);
+			}
+		}
 	}
 }
-
-/*
-  function: delete_attachments
-
-  args : testcase id
-  
-  returns: - 
-
-*/
-function delete_attachments($id)
-{
-  $table_name='nodes_hierarchy';
-  $attachments=getAttachmentInfos($this->db,$id,$table_name);  
-  if( count($attachments) > 0 )
-  {
-    $my_attachment_dir=buildRepositoryFolderFor($table_name,$id);
-    $my_attachment_dir .= DIRECTORY_SEPARATOR;
-    
-    foreach($attachments as $key => $value)
-    {
-      deleteAttachment($this->db,$value['id']); 
-    }
-    rmdir($my_attachment_dir);
-	} 
-}
-
 
 // ---------------------------------------------------------------------------------------
 // Custom field related functions

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqSpecView.php,v $
- * @version $Revision: 1.2 $
- * @modified $Date: 2007/11/25 18:59:40 $ by $Author: franciscom $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2007/12/02 15:44:19 $ by $Author: schlundus $
  * @author Martin Havlat
  * 
  * Screen to view existing requirements within a req. specification.
@@ -51,7 +51,8 @@ $req_spec['author'] = getUserName($db,$req_spec['author_id']);
 $req_spec['modifier'] = getUserName($db,$req_spec['modifier_id']);
 
 $cf_smarty = $req_spec_mgr->html_table_of_custom_field_values($req_spec_id,$tproject_id);
-$attachments = getAttachmentInfos($db,$req_spec_id,'req_spec');
+$attachmentRepository = tlAttachmentRepository::create($db);
+$attachments = getAttachmentInfos($attachmentRepository,$req_spec_id,'req_spec');
 
 
 $smarty = new TLSmarty();

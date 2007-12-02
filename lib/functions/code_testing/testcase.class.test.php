@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: testcase.class.test.php,v $
  *
- * @version $Revision: 1.3 $
- * @modified $Date: 2007/10/25 13:05:33 $ by $Author: franciscom $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2007/12/02 15:44:18 $ by $Author: schlundus $
  * @author Francisco Mancardi
  *
  * With this page you can launch a set of available methods, to understand
@@ -185,7 +185,7 @@ function exportTestCaseDataToXML($tcase_id,$tcversion_id,$bNoXMLHeader = false,$
 function get_version_exec_assignment($tcversion_id,$tplan_id)
 function update_active_status($id,$tcversion_id,$active_status)
 function copy_attachments($source_id,$target_id)
-function delete_attachments($id)
+function deleteAttachments($id)
 function get_linked_cfields_at_design($id,$parent_id=null,$show_on_execution=null) 
 function html_table_of_custom_field_inputs($id,$parent_id=null,$scope='design',$name_suffix='') 
 function html_table_of_custom_field_values($id,$scope='design',$show_on_execution=null,

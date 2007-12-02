@@ -5,10 +5,10 @@
  *
  * Filename $RCSfile: attachmentdownload.php,v $
  *
- * @version $Revision: 1.7 $
- * @modified $Date: 2007/10/16 19:46:15 $ by $Author: schlundus $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2007/12/02 15:44:18 $ by $Author: schlundus $
  *
- * Download the attachment by a given id
+ * Downloads the attachment by a given id
  *
  *  Code check: 2007/11/16 schlundus 
 **/
@@ -21,23 +21,24 @@ testlinkInitPage($db);
 //the id (attachments.id) of the attachment to be downloaded
 $id = isset($_GET['id'])? intval($_GET['id']) : 0;
 
-$attachmentInfo = getAttachmentInfo($db,$id);
-if ($attachmentInfo && checkAttachmentID($db,$id,$attachmentInfo))
+if ($id)
 {
-	if (is_null($attachmentInfo['file_path']))
-		$content = getAttachmentContentFromDB($db,$id);
-	else
-		$content = getAttachmentContentFromFS($db,$id);
-	if (strlen($content))
+	$attachmentRepository = tlAttachmentRepository::create($db);
+	$attachmentInfo = $attachmentRepository->getAttachmentInfo($id);
+	if ($attachmentInfo && checkAttachmentID($db,$id,$attachmentInfo))
 	{
-		@ob_end_clean();
-		header('Pragma: no-cache');
-		header('Content-Type: '.$attachmentInfo['file_type']);
-		header('Content-Length: '.$attachmentInfo['file_size']);
-		header("Content-Disposition: attachment; filename=\"{$attachmentInfo['file_name']}\"");
-		header("Content-Description: Download Data");
-		echo $content;
-		exit();
+		$content = $attachmentRepository->getAttachmentContent($id,$attachmentInfo);
+		if (strlen($content))
+		{
+			@ob_end_clean();
+			header('Pragma: no-cache');
+			header('Content-Type: '.$attachmentInfo['file_type']);
+			header('Content-Length: '.$attachmentInfo['file_size']);
+			header("Content-Disposition: attachment; filename=\"{$attachmentInfo['file_name']}\"");
+			header("Content-Description: Download Data");
+			echo $content;
+			exit();
+		}
 	}
 }
 $smarty = new TLSmarty();

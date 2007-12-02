@@ -2,15 +2,16 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testsuite.class.php,v $
- * @version $Revision: 1.37 $
- * @modified $Date: 2007/11/11 15:30:55 $ - $Author: franciscom $
+ * @version $Revision: 1.38 $
+ * @modified $Date: 2007/12/02 15:44:18 $ - $Author: schlundus $
  * @author franciscom
  *
  * 20071111 - franciscom - new method get_subtree();
  * 20071101 - franciscom - import_file_types, export_file_types
  * 
  * 20070826 - franciscom - minor fix html_table_of_custom_field_values()
- * 20070602 - franciscom - added attachment copy on copy_to() method
+ * 20070602 - franciscom - added 
+ nt copy on copy_to() method
  *                         using testcase copy_attachment() method.
  *                         added delete attachments. 
  *                         added remove of custom field values 
@@ -35,8 +36,9 @@
  * 20060425 - franciscom - changes in show() following Andreas Morsing advice (schlundus)
  *
  */
+require_once( dirname(__FILE__) . '/attachments.inc.php');
 
-class testsuite
+class testsuite extends tlObjectWithAttachments
 {
 	var $db;
 	var $tree_manager;
@@ -69,14 +71,16 @@ class testsuite
   */
   function testsuite(&$db)
   {
-	  $this->db = &$db;	
+	$this->db = &$db;	
 	
-	  $this->tree_manager =  new tree($this->db);
-	  $this->node_types_descr_id=$this->tree_manager->get_available_node_types();
-	  $this->node_types_id_descr=array_flip($this->node_types_descr_id);
-	  $this->my_node_type=$this->node_types_descr_id['testsuite'];
+	$this->tree_manager =  new tree($this->db);
+	$this->node_types_descr_id=$this->tree_manager->get_available_node_types();
+	$this->node_types_id_descr=array_flip($this->node_types_descr_id);
+	$this->my_node_type=$this->node_types_descr_id['testsuite'];
 	
-	  $this->cfield_mgr=new cfield_mgr($this->db);
+	$this->cfield_mgr=new cfield_mgr($this->db);
+	
+	tlObjectWithAttachments::__construct($this->db,'nodes_hierarchy');
   }
 
   /*
@@ -345,11 +349,12 @@ function show(&$smarty,$id, $sqlResult = '', $action = 'update',$modded_item_id 
 	}
   
 	$keywords_map = $this->get_keywords_map($id,' ORDER BY KEYWORD ASC ');
-	$attachments = getAttachmentInfos($this->db,$id,'nodes_hierarchy');
+	$attachmentInfos = $this->getAttachmentInfos($id);
+	storeAttachmentsInSession($attachmentInfos);
 	
-	$smarty->assign('attachmentInfos',$attachments);
+	$smarty->assign('attachmentInfos',$attachmentInfos);
 	$smarty->assign('id',$id);
-  $smarty->assign('page_title',lang_get('testsuite'));
+  	$smarty->assign('page_title',lang_get('testsuite'));
 	$smarty->assign('cf',$cf_smarty);
 	$smarty->assign('keywords_map',$keywords_map);
 	$smarty->assign('moddedItem',$modded_item);
@@ -637,7 +642,7 @@ function delete_deep($id)
       $node_list[]= $elem['id'];
       
       // 20070602 - franciscom
-      $tcase_mgr->delete_attachments($elem['id']);
+      $tcase_mgr->deleteAttachments($elem['id']);
       $this->cfield_mgr->remove_all_design_values_from_node($elem['id']);
 
       $this->deleteKeywords($elem['id']);

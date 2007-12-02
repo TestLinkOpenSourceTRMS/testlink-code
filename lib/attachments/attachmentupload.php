@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: attachmentupload.php,v $
  *
- * @version $Revision: 1.11 $
- * @modified $Date: 2007/11/29 07:59:14 $ by $Author: franciscom $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2007/12/02 15:44:18 $ by $Author: schlundus $
  *
  * Upload dialog for attachments
  *
@@ -16,8 +16,6 @@ require_once('../../config.inc.php');
 require_once('../functions/common.php');
 require_once('../functions/attachments.inc.php');
 testlinkInitPage($db);
-
-echo "<pre>debug 20071125 - \ - " . __FUNCTION__ . " --- "; print_r($_REQUEST); echo "</pre>";
 
 //the id (attachments.fk_id) of the object, to which the attachment belongs to 
 $id = isset($_GET['id'])? intval($_GET['id']) : 0;
@@ -38,34 +36,15 @@ if ($bPostBack > 2)
 	$tableName = isset($_POST['tableName'])? $_POST['tableName'] : null;
 	if ($fInfo)
 	{
-		$fName = isset($fInfo['name']) ? $fInfo['name'] : null;
 		$fSize = isset($fInfo['size']) ? $fInfo['size'] : 0;
-		$fType = isset($fInfo['type']) ? $fInfo['type'] : '';
 		$fTmpName = isset($fInfo['tmp_name']) ? $fInfo['tmp_name'] : '';
-		$fContents = null;
 		if ($fSize && strlen($fTmpName))
 		{
-			$fExt = getFileExtension(isset($fInfo['name']) ? ($fInfo['name']) : '',"bin");
-			$destFPath = null;
-			$destFName = getUniqueFileName($fExt);
-			
-			if ($g_repositoryType == TL_REPOSITORY_TYPE_FS)
-			{
-				$destFPath = buildRepositoryFilePath($destFName,$tableName,$id);
-				$bUploaded = storeFileInFSRepository($fTmpName,$destFPath);
-			}
-			else
-			{
-				$fContents = getFileContentsForDBRepository($fTmpName,$destFName);
-				$bUploaded = sizeof($fContents);
-			}
-			@unlink($fTmpName);			
+			$attachmentRepository = tlAttachmentRepository::create($db);
+			$bUploaded = $attachmentRepository->insertAttachment($id,$tableName,$title,$fInfo);
 		}
 		else
 			$msg  = getFileUploadErrorMessage($fInfo);
-		
-		if ($bUploaded)
-			$bUploaded = insertAttachment($db,$id,$tableName,$fName,$destFPath,$fContents,$fType,$fSize,$title);
 	}
 }
 

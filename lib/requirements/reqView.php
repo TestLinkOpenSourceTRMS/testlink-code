@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqView.php,v $
- * @version $Revision: 1.2 $
- * @modified $Date: 2007/11/25 18:59:40 $ by $Author: franciscom $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2007/12/02 15:44:19 $ by $Author: schlundus $
  * @author Martin Havlat
  * 
  * Screen to view content of requirement.
@@ -31,7 +31,8 @@ $req['modifier'] = trim(getUserName($db,$req['modifier_id']));
 $req['coverage'] = $req_mgr->get_coverage($req_id);
 
 $cf_smarty=$req_mgr->html_table_of_custom_field_values($req_id);
-$attachments = getAttachmentInfos($db,$req_id,'requirements');
+$attachmentRepository = tlAttachmentRepository::create($db);
+$attachments = getAttachmentInfos($attachmentRepository,$req_id,'requirements');
 
 $smarty = new TLSmarty();
 

@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: searchData.php,v 1.22 2007/09/12 06:24:53 franciscom Exp $
+ * $Id: searchData.php,v 1.23 2007/12/02 15:44:19 schlundus Exp $
  * Purpose:  This page presents the search results. 
  *
  * rev :
@@ -116,10 +116,11 @@ if ($tproject)
 $smarty = new TLSmarty();
 if(count($map))
 {
+	$attachmentRepository = tlAttachmentRepository::create($db);
 	$attachments = null;
 	foreach($map as $id => $dd)
 	{
-		$attachments[$id] = getAttachmentInfos($db,$id,'nodes_hierarchy',true,1);
+		$attachments[$id] = getAttachmentInfos($attachmentRepository,$id,'nodes_hierarchy',true,1);
 	}
 	$smarty->assign('attachments',$attachments);
 	$tcase_mgr = new testcase($db);   

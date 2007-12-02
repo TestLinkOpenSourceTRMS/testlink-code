@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.81 $ $Author: franciscom $
- * @modified $Date: 2007/11/30 18:05:36 $
+ * @version $Revision: 1.82 $ $Author: schlundus $
+ * @modified $Date: 2007/12/02 15:44:18 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -225,14 +225,6 @@ function testlinkInitPage(&$db,$initProduct = FALSE, $bDontCheckSession = false)
 		doInitSelection($db) or die("Could not set session variables");
 }
 
-/*
-  function: 
-
-  args :
-  
-  returns: 
-
-*/
 function checkUserRights(&$db)
 {
 	//bypassed as long roles and rights aren't fully defined
@@ -1255,6 +1247,29 @@ function transform_nodes_order($nodes_order,$node_to_exclude=null)
   
   return $nodes_id;
 }	
-
-
+/*
+*	Checks $_FILES for errors while uploading
+*
+*	 @param array $fInfo an array used by uploading files ($_FILES)
+* 	
+*	returns string containing  an error message (if any)
+*/
+function getFileUploadErrorMessage($fInfo)
+{
+	$msg = null;
+	switch($fInfo['error'])
+	{
+		case UPLOAD_ERR_INI_SIZE:
+			$msg = lang_get('file_size_larger_than_maximum_size_check_php_ini!');
+			break;
+		case UPLOAD_ERR_FORM_SIZE:
+			$msg = lang_get('file_size_larger_than_maximum_size!');
+			break;
+		case UPLOAD_ERR_PARTIAL:
+		case UPLOAD_ERR_NO_FILE:
+			$msg = lang_get('file_upload_error');
+			break;
+	}
+	return $msg;
+}
 ?>

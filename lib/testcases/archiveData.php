@@ -3,7 +3,7 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
- * @version $Id: archiveData.php,v 1.25 2007/09/30 10:18:33 franciscom Exp $
+ * @version $Id: archiveData.php,v 1.26 2007/12/02 15:44:19 schlundus Exp $
  * @author Martin Havlat
  *  
  * Allows you to show test suites, test cases.
@@ -24,17 +24,18 @@ $feature = isset($_GET['edit']) ? $_GET['edit'] : null;
 $id = isset($_GET['id']) ? intval($_GET['id']) : null;
 $allow_edit = isset($_GET['allow_edit']) ? intval($_GET['allow_edit']) : 1;
 
+$attachmentRepository = tlAttachmentRepository::create($db); 
 // load data and show template
 $smarty = new TLSmarty();
 $smarty->assign('page_title',lang_get('container_title_' . $feature));
 switch($feature)
 {
 	case 'testproject':
-		$attachments = getAttachmentInfos($db,$id,'nodes_hierarchy');
-		$smarty->assign('attachmentInfos',$attachments);
 		$smarty->assign('id',$id);
 		$item_mgr = new testproject($db);
-    $item_mgr->show($smarty,$id);
+		$attachments = $item_mgr->getAttachmentInfos($id);
+		$smarty->assign('attachmentInfos',$attachments);
+		$item_mgr->show($smarty,$id);
 		break;
 
 	case 'testsuite':
@@ -43,19 +44,19 @@ switch($feature)
     //
     $_SESSION['tcspec_refresh_on_action']=isset($_REQUEST['tcspec_refresh_on_action'])? "yes":"no";
 
-		$attachments = getAttachmentInfos($db,$id,'nodes_hierarchy');
-		$smarty->assign('attachmentInfos',$attachments);
 		$smarty->assign('id',$id);
 		$item_mgr = new testsuite($db);
+		$attachments = $item_mgr->getAttachmentInfos($id);
+		$smarty->assign('attachmentInfos',$attachments);
 		$item_mgr->show($smarty,$id);
 		break;
 
 	case 'testcase':
-		$attachments[$id] = getAttachmentInfos($db,$id,'nodes_hierarchy');
-		$smarty->assign('attachments',$attachments);
 		$smarty->assign('id',$id);
 		$item_mgr = new testcase($db);
-		
+		$attachments[$id] = $item_mgr->getAttachmentInfos($id);
+		$smarty->assign('attachments',$attachments);
+				
 		$no_msg='';
 		$no_action='';
 		$no_user_feedback='';

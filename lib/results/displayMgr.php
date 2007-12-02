@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: displayMgr.php,v 1.7 2007/06/12 07:24:26 kevinlevy Exp $ 
+* $Id: displayMgr.php,v 1.8 2007/12/02 17:08:16 franciscom Exp $ 
 *
 * @author	Kevin Levy
 */
@@ -46,20 +46,6 @@ function displayReport($template_file, &$smarty, $report_type, $buildName = null
 	}
 	// text email report
 	else if ($report_type == '3'){
-		/**
-		$template_file = $template_file . "_text.tpl";
-		$text_report = $smarty->fetch($template_file);
-		$emailIsHtml = false;
-		$send_cc_to_myself = false;
-		$subjectOfMail = $_SESSION['testPlanName'] . ": " . $template_file . " " . $buildName;
-		
-		$emailFrom = $_SESSION['email'];
-		$emailTo = $_SESSION['email'];
-		if (!$emailTo) {
-			print "email for this user is not specified, please edit email credentials in \"Personal\" tab. <BR>";
-		}
-		$message = sendMail($emailFrom, $emailTo, $subjectOfMail, $text_report, $send_cc_to_myself, $emailIsHtml);
-		*/
 		$message = "text email messages not implemented <BR>";
 		$smarty = new TLSmarty();
 		$smarty->assign('message', $message);
@@ -76,6 +62,14 @@ function displayReport($template_file, &$smarty, $report_type, $buildName = null
 } //end function
 
 
+/*
+  function: 
+
+  args:
+  
+  returns: 
+
+*/
 function sendXlsHeader()
 {
 		$timeStamp = date('Y-m-d'); // . "-" . time();

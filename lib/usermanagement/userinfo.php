@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: userinfo.php,v $
 *
-* @version $Revision: 1.5 $
-* @modified $Date: 2007/03/10 22:57:00 $
+* @version $Revision: 1.6 $
+* @modified $Date: 2007/12/02 17:19:21 $
 * 
 * Displays the users' information and allows users to change 
 * their passwords and user info.
@@ -14,6 +14,8 @@
 require_once('../../config.inc.php');
 require_once('users.inc.php');
 testlinkInitPage($db);
+
+$template_dir='usermanagement/';
 
 $_POST = strings_stripSlashes($_POST);
 $id = isset($_POST['id']) ? intval($_POST['id']) : 0;
@@ -50,5 +52,5 @@ $smarty->assign('external_password_mgmt', $external_password_mgmt);
 $smarty->assign('userData', $userResult);
 $smarty->assign('updateResult', $updateResult);
 $smarty->assign('update_title_bar', $bEdit);
-$smarty->display('userInfo.tpl');
+$smarty->display($template_dir . 'userInfo.tpl');
 ?>

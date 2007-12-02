@@ -1,29 +1,24 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: reqView.tpl,v 1.2 2007/11/25 18:57:47 franciscom Exp $
+$Id: reqView.tpl,v 1.3 2007/12/02 17:24:45 franciscom Exp $
 *}
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
-{lang_get s='delete_confirm_question' var="warning_msg" }
-
-{* 
-{assign var="lf"  value="<br>"}
-{assign var="item"  value=$req.title|escape}
-{assign var="warning_msg"  value=$warning_msg$lf$item}
-*}
+{lang_get s='warning_delete_requirement' var="warning_msg" }
+{lang_get s='delete' var="del_msgbox_title" }
 
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes"}
 {include file="inc_del_onclick.tpl"}
 
 <script type="text/javascript">
 /* All this stuff is needed for logic contained in inc_del_onclick.tpl */
-var o_label ="{lang_get s='req'}";
 var del_action=fRoot+'{$smarty.const.REQ_MODULE}reqEdit.php?do_action=do_delete&requirement_id=';
 </script>
 </head>
 
-<body>
+<body {$body_onload}>
+
 <div class="workBack">
 <h1> {$main_descr|escape}</h1>
 
@@ -105,9 +100,8 @@ var del_action=fRoot+'{$smarty.const.REQ_MODULE}reqEdit.php?do_action=do_delete&
     	
     	
     	<input type="button" name="delete_req" value="{lang_get s='btn_delete'}"
-    	       onclick="delete_confirmation({$req.id},
- 					                                 '{$req.title|escape:'javascript'}',
- 					                                 '{$warning_msg}');"	/>
+    	       onclick="delete_confirmation({$req.id},'{$req.title|escape:'javascript'}',
+ 					                                '{$del_msgbox_title}', '{$warning_msg}');"	/>
     	{/if}
     </form>
   </div>

@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsSend.php,v 1.16 2007/09/17 06:29:07 franciscom Exp $ 
+* $Id: resultsSend.php,v 1.17 2007/12/02 17:08:16 franciscom Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author	Chad Rosen
@@ -20,6 +20,8 @@ require_once('info.inc.php');
 require_once("../../lib/functions/lang_api.php");
 require_once('../functions/results.class.php');
 testlinkInitPage($db);
+
+$template_dir='results/';
 
 $tplan_mgr = new testplan($db);
 $tproject_mgr = new testproject($db);
@@ -166,5 +168,5 @@ $smarty->assign('tpName', $_SESSION['testPlanName']);
 $smarty->assign('message', $message);
 $smarty->assign('suites', $topLevelSuites_two);
 $smarty->assign('builds', $builds_two);
-$smarty->display('resultsSend.tpl');
+$smarty->display($template_dir .'resultsSend.tpl');
 ?>

@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * @version $Revision: 1.68 $
- * @modified $Date: 2007/11/30 18:02:46 $ by $Author: franciscom $
+ * @version $Revision: 1.69 $
+ * @modified $Date: 2007/12/02 17:23:19 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * 
@@ -17,14 +17,16 @@
 require_once("../../config.inc.php");
 require_once("common.php");
 require_once("opt_transfer.php");
-require_once("../../third_party/fckeditor/fckeditor.php");
-//require_once("../../lib/plan/plan.inc.php");
+require_once("web_editor.php");
+
 testlinkInitPage($db);
 
 $tree_mgr = new tree($db);
 $tproject_mgr = new testproject($db);
 $tsuite_mgr = new testsuite($db);
 $tcase_mgr = new testcase($db);
+
+$template_dir='testcases/';
 
 $my_tprojectID = $_SESSION['testprojectID'];
 $my_testsuiteID = isset($_REQUEST['testsuiteID']) ? intval($_REQUEST['testsuiteID']) : null;
@@ -121,17 +123,12 @@ if($init_opt_transfer)
     }
 }
 
-// --------------------------------------------------------------------
-// create  fckedit objects
-//
+// create  web editor objects
 $amy_keys = $a_keys[$level];
-$oFCK = array();
+$oWebEditor = array();
 foreach ($amy_keys as $key)
 {
-	$oFCK[$key] = new FCKeditor($key) ;
-	$of = &$oFCK[$key];
-	$of->BasePath = $_SESSION['basehref'] . 'third_party/fckeditor/';
-	$of->ToolbarSet=$g_fckeditor_toolbar;;
+	$oWebEditor[$key] = web_editor($key,$_SESSION['basehref']);
 }
 
 if($get_c_data)
@@ -155,7 +152,8 @@ if($action == 'edit_testsuite' || $action == 'new_testsuite')
 {
 	keywords_opt_transf_cfg($opt_cfg, $assigned_keyword_list); 
 	$smarty->assign('opt_cfg', $opt_cfg);
-	$tsuite_mgr->viewer_edit_new($smarty,$amy_keys, $oFCK, $action,$my_containerID, $my_testsuiteID);
+	$tsuite_mgr->viewer_edit_new($smarty,$template_dir,$amy_keys, 
+	                             $oWebEditor, $action,$my_containerID, $my_testsuiteID);
 }
 else if($action == 'add_testsuite')
 {
@@ -199,13 +197,13 @@ else if($action == 'add_testsuite')
 	{
 		// Warning:
 		// the data assignment will work while the keys in $the_data are identical
-		// to the keys used on $oFCK.
-		$of = &$oFCK[$key];
+		// to the keys used on $oWebEditor.
+		$of = &$oWebEditor[$key];
 		$smarty->assign($key, $of->CreateHTML());
 	}
 	
 	// 20061231 - franciscom
-	$tsuite_mgr->viewer_edit_new($smarty,$amy_keys, $oFCK, $action,
+	$tsuite_mgr->viewer_edit_new($smarty,$template_dir,$amy_keys, $oWebEditor, $action,
 	                             $my_containerID, null,$msg,$user_feedback);
 	
 	
@@ -238,7 +236,7 @@ else if($action == 'update_testsuite')
 	  	     $msg = $db->error_msg(); 
 	  	}	
 	}	
-	$tsuite_mgr->show($smarty,$my_testsuiteID,'ok');
+	$tsuite_mgr->show($smarty,$template_dir,$my_testsuiteID,'ok');
 }
 else if ($action == 'delete_testsuite')
 {
@@ -329,18 +327,18 @@ else if($action == 'do_testsuite_reorder')
 	$tree_mgr->change_order_bulk($nodes_in_order);
 	if( $my_containerID == $my_tprojectID )
 	{
-	  $tproject_mgr->show($smarty,$my_containerID,$generalResult);
+	  $tproject_mgr->show($smarty,$template_dir,$my_containerID,$generalResult);
 	}
 	else
 	{
-	  $tsuite_mgr->show($smarty,$my_containerID,$generalResult);
+	  $tsuite_mgr->show($smarty,$template_dir,$my_containerID,$generalResult);
 	}
 }
 else if($action == 'do_move')
 {
 	$tree_mgr->change_parent($objectID,$my_containerID);  
 	
-	$tproject_mgr->show($smarty,$my_tprojectID,'ok');
+	$tproject_mgr->show($smarty,$template_dir,$my_tprojectID,'ok');
 }	
 else if($action == 'do_copy')
 {
@@ -350,7 +348,7 @@ else if($action == 'do_copy')
 	                     config_get('check_names_for_duplicates'),
 	                     config_get('action_on_duplicate_name'),$copyKeywords);
 	
-	$tsuite_mgr->show($smarty,$objectID,'ok');
+	$tsuite_mgr->show($smarty,$template_dir,$objectID,'ok');
 }	
 else 
 {
@@ -360,7 +358,7 @@ else
 if ($the_tpl)
 {
   	$smarty->assign('refreshTree',$bRefreshTree && $spec_cfg->automatic_tree_refresh);
-	$smarty->display($the_tpl);
+	$smarty->display($template_dir . $the_tpl);
 } 
 
 

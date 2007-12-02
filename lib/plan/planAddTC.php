@@ -1,6 +1,6 @@
 <?php
 ////////////////////////////////////////////////////////////////////////////////
-// @version $Id: planAddTC.php,v 1.37 2007/09/30 10:18:32 franciscom Exp $
+// @version $Id: planAddTC.php,v 1.38 2007/12/02 17:16:02 franciscom Exp $
 // File:     planAddTC.php
 // Purpose:  link/unlink test cases to a test plan
 //
@@ -20,6 +20,8 @@ testlinkInitPage($db);
 $tree_mgr = new tree($db); 
 $tsuite_mgr = new testsuite($db); 
 $tplan_mgr = new testplan($db); 
+
+$template_dir='plan/';
 
 $do_display = 0;
 $tproject_id =  $_SESSION['testprojectID'];
@@ -100,6 +102,6 @@ if($do_display)
 	$smarty->assign('has_tc', ($out['num_tc'] > 0 ? 1 : 0));
 	$smarty->assign('arrData', $out['spec_view']);
 	$smarty->assign('has_linked_items',$out['has_linked_items']);
-	$smarty->display('planAddTC_m1.tpl');
+	$smarty->display($template_dir .  'planAddTC_m1.tpl');
 }
 ?>

@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: usersedit.php,v $
 *
-* @version $Revision: 1.17 $
-* @modified $Date: 2007/08/29 17:21:02 $ $Author: jbarchibald $
+* @version $Revision: 1.18 $
+* @modified $Date: 2007/12/02 17:19:21 $ $Author: franciscom $
 * 
 * rev :  BUGID 918
 *
@@ -18,6 +18,8 @@ require_once('../../config.inc.php');
 require_once('testproject.class.php');
 require_once('users.inc.php');
 require_once('email_api.php');
+
+$template_dir='usermanagement/';
 testlinkInitPage($db);
 
 $args = init_args($_GET,$_POST);
@@ -135,7 +137,7 @@ $smarty->assign('result',$sqlResult);
 $smarty->assign('action',$action);
 $smarty->assign('user_feedback',$user_feedback);
 
-$smarty->display('usersedit.tpl');
+$smarty->display($template_dir . 'usersedit.tpl');
 ?>
 
 <?php

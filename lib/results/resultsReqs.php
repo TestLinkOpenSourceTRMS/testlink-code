@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: resultsReqs.php,v $
- * @version $Revision: 1.10 $
- * @modified $Date: 2007/11/09 08:19:57 $ by $Author: franciscom $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2007/12/02 17:08:16 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Report requirement based results
@@ -21,6 +21,8 @@ require_once('requirement_spec_mgr.class.php');
 
 
 testlinkInitPage($db);
+
+$template_dir='results/';
 
 $idSRS = isset($_GET['idSRS']) ? strings_stripSlashes($_GET['idSRS']) : null;
 $tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
@@ -69,5 +71,5 @@ $smarty->assign('arrCoverage', $arrCoverage);
 $smarty->assign('arrReqSpec', $arrReqSpec);
 $smarty->assign('selectedReqSpec', $idSRS);
 $smarty->assign('tpName', $_SESSION['testPlanName']);
-$smarty->display('resultsReqs.tpl');
+$smarty->display($template_dir .'resultsReqs.tpl');
 ?>

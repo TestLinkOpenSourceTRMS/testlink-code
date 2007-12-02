@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.70 $
- * @modified $Date: 2007/12/02 15:44:18 $ $Author: schlundus $
+ * @version $Revision: 1.71 $
+ * @modified $Date: 2007/12/02 17:30:14 $ $Author: franciscom $
  *
  * 20071113 - franciscom - added contribution History for all builds.
  * 20071006 - franciscom - changes on exec_cfield_mgr() call
@@ -23,6 +23,8 @@ require_once("builds.inc.php");
 require_once("attachments.inc.php");
 
 testlinkInitPage($db);
+
+$template_dir='execute/';
 $tcversion_id=null;
 
 $smarty = new TLSmarty();
@@ -434,7 +436,7 @@ $smarty->assign('g_bugInterface', $g_bugInterface);
 
 $smarty->assign('tester_id',$user_id);
 
-$smarty->display($g_tpl['execSetResults']);
+$smarty->display($template_dir . $g_tpl['execSetResults']);
 ?>
 
 

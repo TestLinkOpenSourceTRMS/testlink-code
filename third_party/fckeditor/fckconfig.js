@@ -240,4 +240,8 @@ FCKConfig.ToolbarSets["TL_Medium_2"] = [
 	'/',
 	['FontName','FontSize','TextColor','BGColor']
 ] ;
+FCKConfig.ToolbarSets["TL_simple"] = [
+	['Cut','Copy','Paste']
+] ;
+
 /* ----------------------------------------------------------------------------------- */

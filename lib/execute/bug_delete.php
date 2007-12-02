@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: bug_delete.php,v $
  *
- * @version $Revision: 1.2 $
- * @modified $Date: 2006/10/05 19:18:21 $ by $Author: schlundus $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2007/12/02 17:11:18 $ by $Author: franciscom $
  *
  * Deletes a bug
 **/
@@ -14,6 +14,8 @@ require_once('../../config.inc.php');
 require_once('../functions/common.php');
 require_once('exec.inc.php');
 testlinkInitPage($db);
+
+$template_dir='execute/';
 
 define('JUST_DELETE',TRUE);
 $exec_id = isset($_REQUEST['exec_id'])? intval($_REQUEST['exec_id']) : 0;
@@ -27,5 +29,5 @@ if ($exec_id > 0 && !is_null($bug_id) && strlen($bug_id) > 0)
 
 $smarty = new TLSmarty();
 $smarty->assign('msg',$msg);
-$smarty->display('bug_delete.tpl');
+$smarty->display($template_dir . 'bug_delete.tpl');
 ?>

@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsTC.php,v 1.32 2007/11/03 23:36:23 havlat Exp $ 
+* $Id: resultsTC.php,v 1.33 2007/12/02 17:08:16 franciscom Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -23,6 +23,8 @@ require_once('common.php');
 require_once('results.class.php');
 require_once('displayMgr.php');
 testlinkInitPage($db);
+
+$template_dir='results/';
 
 $arrData = array();
 
@@ -123,5 +125,5 @@ if (!isset($_GET['report_type']))
 	tlog('$_GET["report_type"] is not defined');
 	exit();
 }
-displayReport('resultsTC', $smarty, $report_type);
+displayReport($template_dir . 'resultsTC', $smarty, $report_type);
 ?>

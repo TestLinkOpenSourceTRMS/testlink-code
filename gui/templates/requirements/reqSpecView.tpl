@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecView.tpl,v 1.6 2007/11/29 07:59:00 franciscom Exp $ *}
+{* $Id: reqSpecView.tpl,v 1.7 2007/12/02 17:24:45 franciscom Exp $ *}
 {* 
    Purpose: smarty template - view a requirement specification
    Author: Martin Havlat 
@@ -28,7 +28,9 @@
 {assign var="req_create_tc_url"  value="$basehref$req_module$url_args$req_spec_id"}
 
 
-{lang_get s='delete_confirm_question' var="warning_msg" }
+{* used on inc_btn_reqSpecView.tpl *}
+{lang_get s='warning_delete_req_spec' var="warning_msg" }
+{lang_get s='delete' var="del_msgbox_title" }
 
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes"}
 {include file="inc_del_onclick.tpl"}
@@ -38,11 +40,10 @@
 var o_label ="{lang_get s='requirement_spec'}";
 var del_action=fRoot+'{$smarty.const.REQ_MODULE}reqSpecEdit.php?do_action=do_delete&req_spec_id=';
 </script>
-
 </head>
 
 
-<body>
+<body {$body_onload}>
 
 <div class="workBack">
 <h1> 

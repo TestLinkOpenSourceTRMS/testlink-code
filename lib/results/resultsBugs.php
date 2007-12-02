@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: resultsBugs.php,v $
- * @version $Revision: 1.26 $
- * @modified $Date: 2007/09/17 06:29:07 $ by $Author: franciscom $
+ * @version $Revision: 1.27 $
+ * @modified $Date: 2007/12/02 17:08:16 $ by $Author: franciscom $
  * @author kevinlevy
  * 
  * rev :
@@ -18,6 +18,8 @@ require_once('results.class.php');
 require_once("lang_api.php");
 require_once('displayMgr.php');
 testlinkInitPage($db);
+
+$template_dir='results/';
 
 $openBugs = array();
 $resolvedBugs = array();
@@ -118,7 +120,7 @@ $smarty->assign('totalResolvedBugs', $totalResolvedBugs);
 $smarty->assign('totalBugs', $totalBugs);
 $smarty->assign('totalCasesWithBugs', $totalCasesWithBugs);
 
-$smarty->display('resultsBugs.tpl');
+$smarty->display($template_dir .'resultsBugs.tpl');
 ?>
 
 

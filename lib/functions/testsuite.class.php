@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testsuite.class.php,v $
- * @version $Revision: 1.38 $
- * @modified $Date: 2007/12/02 15:44:18 $ - $Author: schlundus $
+ * @version $Revision: 1.39 $
+ * @modified $Date: 2007/12/02 17:18:08 $ - $Author: franciscom $
  * @author franciscom
  *
  * 20071111 - franciscom - new method get_subtree();
@@ -321,7 +321,7 @@ function get_all()
  * returns: -
  *
  **/
-function show(&$smarty,$id, $sqlResult = '', $action = 'update',$modded_item_id = 0)
+function show(&$smarty,$template_dir, $id, $sqlResult = '', $action = 'update',$modded_item_id = 0)
 {
 	$gui_cfg = config_get('gui');
 	$cf_smarty = '';
@@ -361,7 +361,7 @@ function show(&$smarty,$id, $sqlResult = '', $action = 'update',$modded_item_id 
 	$smarty->assign('level', 'testsuite');
 	$smarty->assign('container_data', $item);
 	$smarty->assign('sqlResult',$sqlResult);
-	$smarty->display('containerView.tpl');
+	$smarty->display($template_dir . 'containerView.tpl');
 }
 
 
@@ -373,7 +373,7 @@ function show(&$smarty,$id, $sqlResult = '', $action = 'update',$modded_item_id 
 
   args : smarty [reference]
          amy_keys
-         oFCK: rich editor object (today is FCK editor)
+         oWebEditor: rich editor object (today is FCK editor)
          action
          parent_id: testsuite parent id on tree.
          [id]
@@ -384,8 +384,10 @@ function show(&$smarty,$id, $sqlResult = '', $action = 'update',$modded_item_id 
                           used to give information to user
   returns: -
 
+  rev :
+       20071202 - franciscom - interface changes -> template_dir
 */
-function viewer_edit_new(&$smarty,$amy_keys, $oFCK, $action, $parent_id, 
+function viewer_edit_new(&$smarty,$template_dir,$amy_keys, $oWebEditor, $action, $parent_id, 
                          $id=null, $result_msg=null, $user_feedback=null)
 {
   $gui_cfg=config_get('gui');
@@ -427,13 +429,13 @@ function viewer_edit_new(&$smarty,$amy_keys, $oFCK, $action, $parent_id,
   $smarty->assign('cf',$cf_smarty);	
   // ----------------------------------------------------------------------
 	
-	// fckeditor 
+	// webeditor 
 	foreach ($amy_keys as $key)
 	{
 		// Warning:
 		// the data assignment will work while the keys in $the_data are identical
-		// to the keys used on $oFCK.
-		$of = &$oFCK[$key];
+		// to the keys used on $oWebEditor.
+		$of = &$oWebEditor[$key];
 		$of->Value = isset($the_data[$key]) ? $the_data[$key] : null;
 		$smarty->assign($key, $of->CreateHTML());
 	}
@@ -442,7 +444,7 @@ function viewer_edit_new(&$smarty,$amy_keys, $oFCK, $action, $parent_id,
 	$smarty->assign('level', 'testsuite');
 	$smarty->assign('name',$name);
 	$smarty->assign('container_data',$the_data);
-	$smarty->display($the_tpl);
+	$smarty->display($template_dir . $the_tpl);
 }
 
 

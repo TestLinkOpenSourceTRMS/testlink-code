@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8 
- * @modified $Date: 2007/11/11 15:30:54 $ by $Author: franciscom $
+ * @modified $Date: 2007/12/02 17:07:27 $ by $Author: franciscom $
  *
  *-------------------------------------------------------------------------
  * Revisions:
@@ -1090,6 +1090,17 @@ class results
 		$tcase_node_type = $tree_manager->node_descr_id['testcase'];
 		$hash_descr_id = $tree_manager->get_available_node_types();
 		$hash_id_descr = array_flip($hash_descr_id);
+    
+    // 20071202 - franciscom
+    $status_descr_code=config_get('tc_status');
+    $status_code_descr=array_flip($status_descr_code);
+
+    $decoding_hash=array('node_id_descr' => $hash_id_descr,
+                         'status_descr_code' =>  $status_descr_code,
+                         'status_code_descr' =>  $status_code_descr);
+
+		
+		
 		
 		// 20071111 - franciscom
 		// $test_spec = $tree_manager->get_subtree($this->tprojectID,
@@ -1123,7 +1134,7 @@ class results
 			// testcase_count is required to skip components which don't have cases in the plan
 			$count = array();
 
-			$testcase_count = prepareNode($db,$test_spec,$hash_id_descr,$count,$tck_map,$tp_tcs,
+			$testcase_count = prepareNode($db,$test_spec,$decoding_hash,$count,$tck_map,$tp_tcs,
 			                              HIDE_TESTCASES,$owner);
 
 			$test_spec['testcase_count'] = $testcase_count;	

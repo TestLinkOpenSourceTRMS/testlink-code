@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqEdit.php,v $
- * @version $Revision: 1.5 $
- * @modified $Date: 2007/11/29 07:59:15 $ by $Author: franciscom $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2007/12/02 17:29:20 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Screen to view existing requirements within a req. specification.
@@ -23,9 +23,9 @@ require_once("csv.inc.php");
 require_once("xml.inc.php");
 require_once('requirement_spec_mgr.class.php');
 require_once('requirement_mgr.class.php');
-
-require_once("../../third_party/fckeditor/fckeditor.php");
+require_once("web_editor.php");
 require_once("configCheck.php");
+
 testlinkInitPage($db);
 
 $req_spec_mgr=new requirement_spec_mgr($db);
@@ -52,10 +52,6 @@ $args=init_args();
 
 $tproject = new testproject($db);
 $smarty = new TLSmarty();
-
-$of = new fckeditor('scope') ;
-$of->BasePath = $_SESSION['basehref'] . 'third_party/fckeditor/';
-$of->ToolbarSet = $g_fckeditor_toolbar;;
 
 switch($args->do_action)
 {
@@ -200,6 +196,7 @@ $smarty->assign('name',$args->title);
 $smarty->assign('selectReqStatus', $arrReqStatus);
 $smarty->assign('modify_req_rights', has_rights($db,"mgt_modify_req")); 
 
+$of=web_editor('scope',$_SESSION['basehref']) ;
 $of->Value="";
 if (!is_null($args->scope))
 {
@@ -212,6 +209,14 @@ $smarty->display($template);
 
 
 <?php
+/*
+  function: 
+
+  args:
+  
+  returns: 
+
+*/
 function init_args()
 {
   $args->req_id = isset($_REQUEST['requirement_id']) ? $_REQUEST['requirement_id'] : null;

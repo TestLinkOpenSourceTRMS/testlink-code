@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: reqSpecEdit.php,v $
- * @version $Revision: 1.7 $
- * @modified $Date: 2007/11/30 07:55:22 $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2007/12/02 17:29:10 $
  * 
  * @author Martin Havlat
  * 
@@ -19,8 +19,6 @@ require_once("req_tree_menu.php");
 require_once('requirements.inc.php');
 require_once('requirement_spec_mgr.class.php');
 require_once("web_editor.php");
-
-
 
 testlinkInitPage($db);
 
@@ -149,17 +147,9 @@ switch($args->do_action)
   $template = $template_dir .  'project_req_spec_mgmt.tpl';
   $smarty->assign('refresh_tree', 'yes');
   break;
-
-
-    
 }
 
-//$of = new fckeditor('scope') ;
-//$of->BasePath = $_SESSION['basehref'] . 'third_party/fckeditor/';
-//$of->ToolbarSet=$g_fckeditor_toolbar;;
-
 $of=web_editor('scope',$_SESSION['basehref']) ;
-
 $of->Value="";
 if($args->scope)
 {

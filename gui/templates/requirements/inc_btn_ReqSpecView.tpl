@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_btn_ReqSpecView.tpl,v 1.3 2007/11/29 07:59:00 franciscom Exp $
+$Id: inc_btn_ReqSpecView.tpl,v 1.4 2007/12/02 17:00:33 franciscom Exp $
 *}
 
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
@@ -17,9 +17,8 @@ $Id: inc_btn_ReqSpecView.tpl,v 1.3 2007/11/29 07:59:00 franciscom Exp $
   	
   	
   	<input type="button" name="deleteSRS" value="{lang_get s='btn_delete_spec'}"
-  	       onclick="delete_confirmation({$req_spec.id},
-				                                 '{$req_spec.title|escape:'javascript'}',
-				                                 '{$warning_msg}');"	/>
+  	       onclick="delete_confirmation({$req_spec.id},'{$req_spec.title|escape:'javascript'}',
+                                        '{$del_msgbox_title}','{$warning_msg}');"	/>
 
 
   	<input type="button" name="print_req_spec" value="{lang_get s='btn_print'}"

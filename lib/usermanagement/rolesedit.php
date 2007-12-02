@@ -5,9 +5,11 @@
  *
  * Filename $RCSfile: rolesedit.php,v $
  *
- * @version $Revision: 1.11 $
- * @modified $Date: 2007/09/02 18:05:55 $ by $Author: schlundus $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2007/12/02 17:19:21 $ by $Author: franciscom $
  *
+ *
+ * 20071201 - franciscom - new web editor code
  * 20070901 - franciscom - BUGID 1016 
  * 20070829 - jbarchibald - BUGID 1000 - Testplan role assignments
  *
@@ -15,8 +17,11 @@
 require_once("../../config.inc.php");
 require_once("common.php");
 require_once("users.inc.php");
-require_once("../../third_party/fckeditor/fckeditor.php");
+require_once("web_editor.php");
+
 testlinkInitPage($db);
+
+$template_dir='usermanagement/';
 
 // 20070901 - BUGID 1016
 // lang_get() is used inside roles.inc.php to translate user right descriptionm and needs $_SESSION info.
@@ -30,9 +35,8 @@ $_POST = strings_stripSlashes($_POST);
 $id = isset($_GET['id']) ? $_GET['id'] : 0;
 $postBack = (sizeof($_POST) > 2) ? 1 : 0;
 
-$of = new fckeditor('notes') ;
-$of->BasePath = $_SESSION['basehref'] . 'third_party/fckeditor/';
-$of->ToolbarSet = 'TL_Medium';
+$of=web_editor('notes',$_SESSION['basehref']) ;
+$of->Value = null;
 
 $roleRights = null;
 $sqlResult = null;
@@ -119,5 +123,5 @@ $smarty->assign('affectedUsers',$affectedUsers);
 $smarty->assign('action',$action);
 $smarty->assign('notes', $of->CreateHTML());
 $smarty->assign('noRightsRole',TL_ROLES_NONE);
-$smarty->display('rolesedit.tpl');
+$smarty->display($template_dir . 'rolesedit.tpl');
 ?>

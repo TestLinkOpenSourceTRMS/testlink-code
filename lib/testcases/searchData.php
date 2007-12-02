@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: searchData.php,v 1.23 2007/12/02 15:44:19 schlundus Exp $
+ * $Id: searchData.php,v 1.24 2007/12/02 17:23:19 franciscom Exp $
  * Purpose:  This page presents the search results. 
  *
  * rev :
@@ -11,6 +11,8 @@ require_once("common.php");
 require_once("users.inc.php");
 require_once("attachments.inc.php");
 testlinkInitPage($db);
+
+$template_dir='testcases/';
 
 $_POST = strings_stripSlashes($_POST);
 
@@ -129,6 +131,6 @@ if(count($map))
 else
 {
 	$the_tpl = config_get('tpl');
-	$smarty->display($the_tpl['tcView']);
+	$smarty->display($template_dir . $the_tpl['tcView']);
 }
 ?>

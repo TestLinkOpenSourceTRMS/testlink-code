@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.43 $
- * @modified $Date: 2007/12/02 15:44:18 $  $Author: schlundus $
+ * @version $Revision: 1.44 $
+ * @modified $Date: 2007/12/02 17:19:00 $  $Author: franciscom $
  * @author franciscom
  *
  * 20071111 - franciscom - new method get_subtree();
@@ -370,7 +370,7 @@ function get_subtree($id,$recursive_mode=false,$exclude_branches=null, $and_not_
  *
  *
  **/
-function show(&$smarty,$id,$sqlResult='', $action = 'update',$modded_item_id = 0)
+function show(&$smarty,$template_dir,$id,$sqlResult='', $action = 'update',$modded_item_id = 0)
 {
 	$smarty->assign('modify_tc_rights', has_rights($this->db,"mgt_modify_tc"));
 	$smarty->assign('mgt_modify_product', has_rights($this->db,"mgt_modify_product"));
@@ -392,7 +392,7 @@ function show(&$smarty,$id,$sqlResult='', $action = 'update',$modded_item_id = 0
 	$smarty->assign('level', 'testproject');
 	$smarty->assign('page_title', lang_get('testproject'));
 	$smarty->assign('container_data', $item);
-	$smarty->display('containerView.tpl');
+	$smarty->display($template_dir . 'containerView.tpl');
 }
 
 

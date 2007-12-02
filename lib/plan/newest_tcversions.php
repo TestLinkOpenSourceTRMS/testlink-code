@@ -1,7 +1,7 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: newest_tcversions.php,v 1.3 2007/10/01 08:12:48 franciscom Exp $ 
+ * @version $Id: newest_tcversions.php,v 1.4 2007/12/02 17:16:02 franciscom Exp $ 
  * 
  *
  * rev :
@@ -18,6 +18,7 @@ $tsuite_mgr = new testsuite($db);
 $tplan_mgr = new testplan($db); 
 $tcase_mgr = new testcase($db); 
 
+$template_dir='plan/';
 $user_id=$_SESSION['userID'];
 $tproject_id =  $_SESSION['testprojectID'];
 $tproject_name =  $_SESSION['testprojectName'];
@@ -77,5 +78,5 @@ $smarty->assign('testPlanName', $tplan_name);
 $smarty->assign('tproject_name', $tproject_name);
 
 $smarty->assign('testcases', $tcases);
-$smarty->display('newest_tcversions.tpl');
+$smarty->display($template_dir . 'newest_tcversions.tpl');
 ?>

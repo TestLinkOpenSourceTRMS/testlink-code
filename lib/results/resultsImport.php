@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: resultsImport.php,v $
  *
- * @version $Revision: 1.4 $
- * @modified $Date: 2007/11/01 22:06:05 $  by $Author: franciscom $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2007/12/02 17:08:16 $  by $Author: franciscom $
 
  * @author - Kevin Levy
  *
@@ -20,6 +20,8 @@ require_once('import.inc.php');
 require_once('csv.inc.php');
 require_once('xml.inc.php');
 testlinkInitPage($db);
+
+$template_dir='results/';
 
 $importType = isset($_POST['importType']) ? $_POST['importType'] : null;
 $buildID = isset($_GET['build']) ? intval($_GET['build']) : null;
@@ -108,7 +110,7 @@ $smarty->assign('importTypes',$import_file_types);
 $smarty->assign('testprojectName', $testprojectName);
 $smarty->assign('importLimitKB',TL_IMPORT_LIMIT / 1024);
 $smarty->assign('bImport',strlen($importType));
-$smarty->display('resultsImport.tpl');
+$smarty->display($template_dir .'resultsImport.tpl');
 ?>
 
 <?php

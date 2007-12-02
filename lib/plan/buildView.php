@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: buildView.php,v $
  *
- * @version $Revision: 1.4 $
- * @modified $Date: 2007/11/04 00:05:27 $ $Author: havlat $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2007/12/02 17:16:02 $ $Author: franciscom $
  *
  * rev :
  *       20070122 - franciscom - use build_mgr methods
@@ -17,10 +17,10 @@
 require('../../config.inc.php');
 require_once("common.php");
 require_once("builds.inc.php");
-require_once("../../third_party/fckeditor/fckeditor.php");
 
 testlinkInitPage($db);
 
+$template_dir='plan/';
 $tplan_mgr = new testplan($db);
 $build_mgr = new build_mgr($db);
 
@@ -29,12 +29,10 @@ $tplan_name = $_SESSION['testPlanName'];
 
 $the_builds = $tplan_mgr->get_builds($tplan_id);
 
-
-
 $smarty = new TLSmarty();
 $smarty->assign('user_feedback',null); // disable notice
 $smarty->assign('tplan_name', $tplan_name);
 $smarty->assign('tplan_id', $tplan_id);
 $smarty->assign('the_builds', $the_builds);
-$smarty->display('buildView.tpl');
+$smarty->display($template_dir . 'buildView.tpl');
 ?>

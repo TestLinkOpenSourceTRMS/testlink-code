@@ -1,6 +1,6 @@
 {* 
 Testlink: smarty template - 
-$Id: cfields_edit.tpl,v 1.1 2007/11/27 18:38:56 franciscom Exp $ 
+$Id: cfields_edit.tpl,v 1.2 2007/12/02 17:04:11 franciscom Exp $ 
 
 
 Important Development note:
@@ -10,7 +10,7 @@ Input names:
             cf_enable_on_design
             cf_enable_on_execution
 
-can not be changed, becuase there is logic on cfields_edit.php
+can not be changed, because there is logic on cfields_edit.php
 that dependens on these names.
 As you can see these names are build adding 'cf_' prefix to name
 of columns present on custom fields tables.
@@ -27,9 +27,18 @@ rev :
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
-{include file="inc_head.tpl" jsValidate="yes"}
+{lang_get s='warning_delete_cf' var="warning_msg" }
+{lang_get s='delete' var="del_msgbox_title" }
 
-<body>
+{include file="inc_head.tpl" jsValidate="yes"}
+{include file="inc_del_onclick.tpl"}
+
+<script type="text/javascript">
+/* All this stuff is needed for logic contained in inc_del_onclick.tpl */
+var o_label ="{lang_get s='custom_field'}";
+var del_action=fRoot+'lib/cfields/cfields_edit.php?do_action=do_delete&cfield_id=';
+</script>
+
 {literal}
 <script type="text/javascript">
 {/literal}
@@ -226,6 +235,9 @@ function cfg_possible_values_display(cfg,id_cftype,id_possible_values_container)
 </script>
 {/literal}
 
+</head>
+
+<body {$body_onload}>
 
 <h1>
  {lang_get s='help' var='common_prefix'}
@@ -417,11 +429,26 @@ function cfg_possible_values_display(cfg,id_cftype,id_possible_values_container)
 		<input type="submit" name="do_update" value="{lang_get s='btn_upd'}"
 		       onclick="do_action.value='do_update'"/>
 		       
-		{if is_used eq 0}       
+		{if is_used eq 0} 
+		
+		  {*       
   		<input type="button" name="do_delete" value="{lang_get s='btn_delete'}"
   		       onclick="do_action.value='do_delete';
   		                if (confirm('{lang_get s='popup_delete_custom_field'}'))
   		                {ldelim}cfields_edit.submit();{rdelim};" />
+  		*}                
+  		
+  		{*
+  		{assign var=warning_msg value=$warning_msg|replace:"%s":$cf.name}
+  		*}
+  		warning_msg -> {$warning_msg}
+       
+  		<input type="button" name="do_delete" value="{lang_get s='btn_delete'}"
+  		       onclick="delete_confirmation({$cf.id},'{$cf.name|escape:'javascript'}',
+  		                                    '{$del_msgbox_title}','{$warning_msg}');">
+                
+  		                
+  		                
     {/if}
 		       
 		       

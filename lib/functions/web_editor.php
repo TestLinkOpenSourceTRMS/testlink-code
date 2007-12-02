@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: web_editor.php,v $
- * @version $Revision: 1.1 $ $Author: franciscom $
- * @modified $Date: 2007/11/30 07:51:50 $
+ * @version $Revision: 1.2 $ $Author: franciscom $
+ * @modified $Date: 2007/12/02 17:09:26 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -45,7 +45,7 @@ switch($editor)
   break;  
 
   case 'tinymce':
-  // $of = new no_editor('scope') ;
+  require_once("tinymce.class.php");
   break;  
 }
 
@@ -78,7 +78,7 @@ function web_editor($html_input_id,$base_path)
     break;  
 
     case 'tinymce':
-    // $of = new no_editor($html_input_id) ;
+    $of = new tinymce($html_input_id) ;
     break;  
 
   }

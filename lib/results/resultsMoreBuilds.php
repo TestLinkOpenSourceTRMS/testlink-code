@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsMoreBuilds.php,v 1.56 2007/11/03 23:36:23 havlat Exp $ 
+* $Id: resultsMoreBuilds.php,v 1.57 2007/12/02 17:08:16 franciscom Exp $ 
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 * 
@@ -20,6 +20,8 @@ testlinkInitPage($db);
 
 $tplan_mgr = new testplan($db);
 $tproject_mgr = new testproject($db);
+
+$template_dir='results/';
 
 $tplan_id=$_REQUEST['tplan_id'];
 $tproject_id=$_SESSION['testprojectID'];
@@ -77,7 +79,7 @@ $smarty->assign('selected_start_time', '00:00');
 
 $smarty->assign('status_code_label', $tc_status_code_label);
 
-$smarty->display('resultsMoreBuilds_query_form.tpl');
+$smarty->display($template_dir .'resultsMoreBuilds_query_form.tpl');
 ?>
 
 <?php

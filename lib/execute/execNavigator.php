@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: execNavigator.php,v $
  *
- * @version $Revision: 1.40 $
- * @modified $Date: 2007/10/31 17:26:06 $ by $Author: asielb $
+ * @version $Revision: 1.41 $
+ * @modified $Date: 2007/12/02 17:12:46 $ by $Author: franciscom $
  *
  * 20071006 - franciscom - changes on exec_cfield_mgr() call
  * 
@@ -32,6 +32,7 @@ require_once('builds.inc.php');
 
 testlinkInitPage($db);
 
+$template_dir='execute/';
 
 $tproject_id = $_SESSION['testprojectID'];
 $user_id = $_SESSION['userID'];
@@ -208,5 +209,5 @@ $smarty->assign('tree', $tree);
 $smarty->assign('menuUrl',$menuUrl);
 $smarty->assign('args',$getArguments);
 $smarty->assign('SP_html_help_file',$SP_html_help_file);
-$smarty->display('execNavigator.tpl');
+$smarty->display($template_dir . 'execNavigator.tpl');
 ?>

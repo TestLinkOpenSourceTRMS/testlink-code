@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: show_exec_notes.php,v $
  *
- * @version $Revision: 1.1 $
- * @modified $Date: 2006/12/24 11:47:01 $ by $Author: franciscom $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2007/12/02 17:12:58 $ by $Author: franciscom $
  *
  * Deletes a bug
 **/
@@ -15,8 +15,10 @@ require_once('../functions/common.php');
 require_once('exec.inc.php');
 testlinkInitPage($db);
 
+$template_dir='execute/';
+
 $map=get_execution($db,$_REQUEST['exec_id']);
 $smarty = new TLSmarty();
 $smarty->assign('notes',$map[0]['notes']);
-$smarty->display('show_exec_notes.tpl');
+$smarty->display($template_dir . 'show_exec_notes.tpl');
 ?>

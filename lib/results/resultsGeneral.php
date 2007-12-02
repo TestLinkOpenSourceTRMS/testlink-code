@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: resultsGeneral.php,v $
- * @version $Revision: 1.34 $
- * @modified $Date: 2007/09/29 16:58:01 $ by $Author: franciscom $
+ * @version $Revision: 1.35 $
+ * @modified $Date: 2007/12/02 17:08:16 $ by $Author: franciscom $
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
  * This page show Test Results over all Builds.
@@ -26,6 +26,8 @@ require_once('results.class.php');
 require_once('testplan.class.php');
 require_once('displayMgr.php');
 testlinkInitPage($db);
+
+$template_dir='results/';
 
 $arrDataPriority=array();
 $arrDataSuite=array();
@@ -144,6 +146,6 @@ if (!isset($_GET['report_type']))
 	exit();
 }
 
-displayReport('resultsGeneral', $smarty, $report_type);
+displayReport($template_dir . 'resultsGeneral', $smarty, $report_type);
 
 ?>

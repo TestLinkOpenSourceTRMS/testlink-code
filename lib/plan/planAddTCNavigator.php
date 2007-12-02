@@ -2,7 +2,7 @@
 /** 
 *	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* @version $Id: planAddTCNavigator.php,v 1.24 2007/10/24 19:55:21 schlundus Exp $
+* @version $Id: planAddTCNavigator.php,v 1.25 2007/12/02 17:16:02 franciscom Exp $
 *	@author Martin Havlat
 * 
 * 	Navigator for feature: add Test Cases to a Test Case Suite in Test Plan. 
@@ -20,6 +20,7 @@ require_once("common.php");
 require_once("treeMenu.inc.php");
 testlinkInitPage($db);
 
+$template_dir='plan/';
 $src_workframe=null;
 $do_reload=0;
 $keyword_id = isset($_POST['keyword_id']) ? $_POST['keyword_id'] : 0;
@@ -104,5 +105,5 @@ $smarty->assign('menuUrl', $workPath);
 // using inc_head.tpl template.
 $smarty->assign('args', $args);
 
-$smarty->display('planAddTCNavigator.tpl');
+$smarty->display($template_dir . 'planAddTCNavigator.tpl');
 ?>

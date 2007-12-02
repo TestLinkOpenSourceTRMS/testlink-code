@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqSpecView.php,v $
- * @version $Revision: 1.3 $
- * @modified $Date: 2007/12/02 15:44:19 $ by $Author: schlundus $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2007/12/02 17:28:38 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Screen to view existing requirements within a req. specification.
@@ -21,9 +21,8 @@ require_once('requirements.inc.php');
 require_once('attachments.inc.php');
 require_once('requirement_spec_mgr.class.php');
 require_once('requirement_mgr.class.php');
+require_once("configCheck.php");
 
-require_once("../../third_party/fckeditor/fckeditor.php");
-require_once(dirname("__FILE__") . "/../functions/configCheck.php");
 testlinkInitPage($db);
 
 $req_spec_mgr=new requirement_spec_mgr($db);

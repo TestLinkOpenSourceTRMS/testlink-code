@@ -4,10 +4,11 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.61 $
- * @modified $Date: 2007/11/11 15:30:56 $  by $Author: franciscom $
+ * @version $Revision: 1.62 $
+ * @modified $Date: 2007/12/02 17:21:44 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
+ * 20071201 - franciscom - new web editor code
  * 20071106 - BUGID 1165 
  * 20070826 - franciscom - is automatic tree refresh is disable,
  *                         do not refresh if test case changes during update
@@ -23,19 +24,18 @@
 require_once("../../config.inc.php");
 require_once("common.php");
 require_once('../keywords/keywords.inc.php');
-require_once("../../third_party/fckeditor/fckeditor.php");
+require_once("web_editor.php");
 require_once("opt_transfer.php");
 testlinkInitPage($db);
+
+$template_dir='testcases/';
 
 $sqlResult="";
 $gui_cfg = config_get('gui');
 $order_cfg = config_get('tree_node_ordering');
 $spec_cfg=config_get('spec_cfg');
 
-// 20071105 - franciscom
 $tcase_template_cfg=config_get('testcase_template');
-
-
 
 $do_refresh=$spec_cfg->automatic_tree_refresh;
 if( isset($_SESSION['tcspec_refresh_on_action']) )
@@ -44,17 +44,25 @@ if( isset($_SESSION['tcspec_refresh_on_action']) )
 }
 
 // --------------------------------------------------------------------
-// create  fckedit objects
-$a_ofck = array('summary','steps','expected_results');
-$oFCK = array();
-foreach ($a_ofck as $key)
+// create web editor objects
+//
+// When using tinymce or none as web editor, we need to set rows and cols
+// to appropriate values, to avoid an ugly ui.
+// null => use default values defined on editor class file
+//
+// Rows and Cols values are useless for FCKeditor
+//
+//
+$a_oWebEditor_cfg = array('summary' => array('rows'=> null,'cols' => null),
+                          'steps' => array('rows'=> null,'cols' => 38) ,
+                          'expected_results' => array('rows'=> null,'cols' => 38));
+$oWebEditor = array();
+foreach ($a_oWebEditor_cfg as $key => $value)
 {
-	$oFCK[$key] = new fckeditor($key) ;
-	$of = &$oFCK[$key];
-	$of->BasePath = $_SESSION['basehref'] . 'third_party/fckeditor/';
-	$of->ToolbarSet=$g_fckeditor_toolbar;;
+	$oWebEditor[$key] = web_editor($key,$_SESSION['basehref']);
 }
 // --------------------------------------------------------------------
+
 $testproject_id = $_SESSION['testprojectID'];
 $userID = $_SESSION['userID'];
 $show_newTC_form = 0;
@@ -171,14 +179,17 @@ if($edit_tc)
     
   	$tc_data = $tcase_mgr->get_by_id($tcase_id,$tcversion_id);
 
-  	foreach ($a_ofck as $key)
+  	foreach ($a_oWebEditor_cfg as $key => $value)
    	{
   	  	// Warning:
   	  	// the data assignment will work while the keys in $the_data are identical
-  	  	// to the keys used on $oFCK.
-  	  	$of = &$oFCK[$key];
+  	  	// to the keys used on $oWebEditor.
+  	  	$of = &$oWebEditor[$key];
   	  	$of->Value = $tc_data[0][$key];
-  	  	$smarty->assign($key, $of->CreateHTML());
+  	  	
+  	  	$rows=$a_oWebEditor_cfg[$key]['rows'];
+        $cols=$a_oWebEditor_cfg[$key]['cols'];
+  	  	$smarty->assign($key, $of->CreateHTML($rows,$cols));
   	}
 
     $cf_smarty = '';
@@ -190,7 +201,8 @@ if($edit_tc)
    	$smarty->assign('tc', $tc_data[0]);
   	$smarty->assign('opt_cfg', $opt_cfg);
 
-  	$smarty->display($g_tpl['tcEdit']);
+    echo $template_dir . $g_tpl['tcEdit'];
+  	$smarty->display($template_dir . $g_tpl['tcEdit']);
 } 
 else if($do_update)
 {
@@ -229,7 +241,7 @@ else if($do_update)
 		}
 	}	
  	$action_result = 'updated';
-	$tcase_mgr->show($smarty,$tcase_id, $userID, $tcversion_id, $action_result,$msg,$refresh_tree);
+	$tcase_mgr->show($smarty,$template_dir,$tcase_id, $userID, $tcversion_id, $action_result,$msg,$refresh_tree);
 }
 else if($create_tc)
 {
@@ -304,7 +316,7 @@ else if($delete_tc)
 	$smarty->assign('tcversion_id', TC_ALL_VERSIONS);
 	$smarty->assign('delete_message', $msg);
 
-	$smarty->display('tcDelete.tpl');
+	$smarty->display($template_dir . 'tcDelete.tpl');
 }
 else if($delete_tc_version)
 {
@@ -345,7 +357,7 @@ else if($delete_tc_version)
 	$smarty->assign('tcversion_id', $tcversion_id);
 	$smarty->assign('delete_message', $msg);
 	$smarty->assign('exec_status_quo',$sq);
-	$smarty->display('tcDelete.tpl');
+	$smarty->display($template_dir . 'tcDelete.tpl');
 }
 else if($do_delete)
 {
@@ -383,7 +395,7 @@ else if($do_delete)
 	$smarty->assign('action',$action_result);
 	$smarty->assign('refresh_tree',$refresh_tree);
 	
-	$smarty->display('tcDelete.tpl');
+	$smarty->display($template_dir . 'tcDelete.tpl');
 }
 else if($move_copy_tc)
 {
@@ -415,14 +427,14 @@ else if($move_copy_tc)
 	$smarty->assign('testcase_id', $tcase_id);
   $smarty->assign('move_enabled',$move_enabled);
 	$smarty->assign('name', $tc_info[0]['name']);
-	$smarty->display('tcMove.tpl');
+	$smarty->display($template_dir . 'tcMove.tpl');
 // move test case to another category
 }
 else if($do_move)
 {
 	$result = $tree_mgr->change_parent($tcase_id,$new_container_id);
 	$smarty->assign('refreshTree',$do_refresh);
-	$tsuite_mgr->show($smarty,$old_container_id);
+	$tsuite_mgr->show($smarty,$template_dir,$old_container_id);
 }
 else if($do_copy)
 {
@@ -450,7 +462,7 @@ else if($do_copy)
 	$smarty->assign('refreshTree',$do_refresh);
 	
 	$do_refresh_yes_no=$do_refresh?"yes":"no";
-	$tcase_mgr->show($smarty,$tcase_id, $userID,$tcversion_id,
+	$tcase_mgr->show($smarty,$template_dir,$tcase_id, $userID,$tcversion_id,
 	                 $action_result,$msg,$do_refresh_yes_no,$user_feedback);
 }
 else if($do_create_new_version)
@@ -467,8 +479,8 @@ else if($do_create_new_version)
 	}
 	
 	define('DONT_REFRESH','no');
-	$tcase_mgr->show($smarty,$tcase_id, $userID, TC_ALL_VERSIONS, 
-	                            $action_result,$msg,DONT_REFRESH,$user_feedback);
+	$tcase_mgr->show($smarty,$template_dir,$tcase_id, $userID, TC_ALL_VERSIONS, 
+	                 $action_result,$msg,DONT_REFRESH,$user_feedback);
 }
 else if($do_activate_this || $do_deactivate_this)
 {
@@ -477,7 +489,7 @@ else if($do_activate_this || $do_deactivate_this)
 	define('DONT_REFRESH','no');
 
   	$msg = null; 
-	$tcase_mgr->show($smarty,$tcase_id, $userID, TC_ALL_VERSIONS,
+	$tcase_mgr->show($smarty,$template_dir,$tcase_id, $userID, TC_ALL_VERSIONS,
 	                 $action_result,$msg,DONT_REFRESH);
 }
 else
@@ -491,7 +503,7 @@ if ($show_newTC_form)
 
   // ------------------------------------------------------------------------
   // 20071106 - BUGID 1165
-  foreach ($a_ofck as $key)
+  foreach ($a_oWebEditor_cfg as $key => $value)
   {
     switch($tcase_template_cfg->$key->type)
     {
@@ -512,10 +524,16 @@ if ($show_newTC_form)
       $the_value = '';
       break;
     }
-    $of = &$oFCK[$key];
+    $of = &$oWebEditor[$key];
+    $rows=$a_oWebEditor_cfg[$key]['rows'];
+    $cols=$a_oWebEditor_cfg[$key]['cols'];
+    
+    echo "<pre>debug 20071201 - \$a_oWebEditor_cfg[$key] - " . __FUNCTION__ . " --- "; print_r($a_oWebEditor_cfg[$key]); echo "</pre>";
+    
+    
     $of->Value = $the_value;
-    $smarty->assign($key, $of->CreateHTML());
-  } // foreach ($a_ofck as $key)
+    $smarty->assign($key, $of->CreateHTML($rows,$cols));
+  } // foreach ($a_oWebEditor_cfg as $key)
   // ------------------------------------------------------------------------
 
 
@@ -527,7 +545,7 @@ if ($show_newTC_form)
   $smarty->assign('cf',$cf_smarty);	
 	// ------------------------------------------------------------------------------------------------------
 	
-	$smarty->display($g_tpl['tcNew']);
+	$smarty->display($template_dir . $g_tpl['tcNew']);
 }
 ?>
 

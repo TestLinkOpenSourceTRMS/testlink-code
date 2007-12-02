@@ -5,10 +5,11 @@
  *
  * Filename $RCSfile: buildNew.php,v $
  *
- * @version $Revision: 1.35 $
- * @modified $Date: 2007/11/07 20:57:11 $ $Author: schlundus $
+ * @version $Revision: 1.36 $
+ * @modified $Date: 2007/12/02 17:16:02 $ $Author: franciscom $
  *
  * rev :
+ *       20071201 - franciscom - new web editor code
  *       20070122 - franciscom - use build_mgr methods
  *       20070121 - franciscom - active and open management
  *       20061118 - franciscom - added check_build_name_existence()
@@ -17,10 +18,11 @@
 require('../../config.inc.php');
 require_once("common.php");
 require_once("builds.inc.php");
-require_once("../../third_party/fckeditor/fckeditor.php");
+require_once("web_editor.php");
 
 testlinkInitPage($db);
 
+$template_dir='plan/';
 $user_feedback='';
 $template=null;
 $button_name="";
@@ -32,9 +34,7 @@ $build_mgr = new build_mgr($db);
 
 $args = init_args($_REQUEST,$_SESSION);
 
-$of = new fckeditor('notes') ;
-$of->BasePath = $_SESSION['basehref'] . 'third_party/fckeditor/';
-$of->ToolbarSet = 'TL_Medium';
+$of=web_editor('notes',$_SESSION['basehref']);
 $of->Value = null;
 
 $the_builds = $tplan_mgr->get_builds($args->tplan_id);
@@ -164,7 +164,7 @@ switch($args->do_action)
         $the_builds = $tplan_mgr->get_builds($args->tplan_id);
         $template = is_null($template) ? 'buildView.tpl' : $template;
         $smarty->assign('the_builds',$the_builds);
-        $smarty->display($template);
+        $smarty->display($template_dir . $template);
    break; 
 
 
@@ -177,7 +177,7 @@ switch($args->do_action)
       	$smarty->assign('is_active', $args->is_active);
       	$smarty->assign('is_open', $args->is_open);
       	$smarty->assign('notes', $of->CreateHTML());
-        $smarty->display($template);
+        $smarty->display($template_dir . $template);
    break;
    
    default:

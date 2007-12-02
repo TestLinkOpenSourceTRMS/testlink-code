@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.69 $
- * @modified $Date: 2007/12/02 15:44:18 $ $Author: schlundus $
+ * @version $Revision: 1.70 $
+ * @modified $Date: 2007/12/02 17:13:32 $ $Author: franciscom $
  * @author franciscom
  *
  *
@@ -325,7 +325,7 @@ function get_all()
        added disable_edit argument
 
 */
-function show(&$smarty,$id, $user_id, $version_id=TC_ALL_VERSIONS, $action='', 
+function show(&$smarty,$template_dir,$id, $user_id, $version_id=TC_ALL_VERSIONS, $action='', 
               $msg_result='', $refresh_tree='yes', $user_feedback='', $disable_edit=0)
 {
   
@@ -407,7 +407,7 @@ function show(&$smarty,$id, $user_id, $version_id=TC_ALL_VERSIONS, $action='',
 	$smarty->assign('view_req_rights', has_rights($this->db,"mgt_view_req")); 
 	$smarty->assign('opt_requirements', isset($_SESSION['testprojectOptReqs']) ? $_SESSION['testprojectOptReqs'] : null); 	
 	$smarty->assign('keywords_map',$keywords_map);
-	$smarty->display($the_tpl['tcView']);
+	$smarty->display($template_dir . $the_tpl['tcView']);
 }
 
 

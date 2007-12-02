@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: projectedit.php,v $
  *
- * @version $Revision: 1.11 $
- * @modified $Date: 2007/11/07 19:53:42 $ $Author: franciscom $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2007/12/02 17:29:51 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -27,8 +27,10 @@
 include('../../config.inc.php');
 require_once('common.php');
 require_once('testproject.class.php');
-require_once("../../third_party/fckeditor/fckeditor.php");
+require_once("web_editor.php");
 testlinkInitPage($db,true);
+
+$template_dir='project/';
 
 $session_tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 $enable_edit_feature = $session_tproject_id ? 1 : 0;
@@ -48,9 +50,8 @@ $tlog_level = 'INFO';
 $tproject = new testproject($db);
 $args = init_args($tproject, $_REQUEST, $session_tproject_id);
 
-$of = new fckeditor('notes') ;
-$of->BasePath = $_SESSION['basehref'] . 'third_party/fckeditor/';
-$of->ToolbarSet = 'TL_Medium';
+$of=web_editor('notes',$_SESSION['basehref']) ;
+$of->Value = null;
 
 if ($session_tproject_id)
 	$tlog_msg .= $session_tproject_id . ': ' . $_SESSION['testprojectName'];
@@ -188,7 +189,7 @@ $smarty->assign('name', $args->tproject_name);
 $smarty->assign('show_prod_attributes', $show_prod_attributes);
 $smarty->assign('enable_edit_feature',$enable_edit_feature);
 $smarty->assign('notes', $of->CreateHTML());
-$smarty->display('projectedit.tpl');
+$smarty->display($template_dir . 'projectedit.tpl');
 ?>
 
 <?php

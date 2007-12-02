@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.223 $
- * @modified $Date: 2007/11/29 08:21:40 $ $Author: franciscom $
+ * @version $Revision: 1.224 $
+ * @modified $Date: 2007/12/02 17:18:38 $ $Author: franciscom $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -282,6 +282,8 @@ $TLS_node_type_dbtable_testcases=$TLS_testcase;
 $TLS_alt_del_com = "Delete this Test Suite";
 $TLS_alt_edit_com = "Modify this Test Suite data and title";
 $TLS_alt_move_cp_com = "Move or copy this Test Suite to another Test Project";
+$TLS_btn_del_com = "Delete";
+$TLS_btn_edit_com = "Edit";
 $TLS_btn_execute_automatic_testcases="Execute All Automatic Test Cases";
 $TLS_btn_export_all_testsuites = "Export All Test Suites";
 $TLS_btn_export_tc = "Export Test Case(s)";
@@ -506,6 +508,7 @@ $TLS_req_title_list = "List of requirements";
 $TLS_req_total = "Overwritten count of REQs";
 $TLS_req_reorder = "Reorder requirements";
 $TLS_warning_delete_requirements = "Are you sure to delete the selected requirements?";
+$TLS_warning_delete_req_spec = "You are going to delete: %s <br><br> Are you sure?"; 
 $TLS_title_change_req_order = "Change requirements order";
 
 
@@ -548,7 +551,7 @@ $TLS_testproject = "Test Project";
 // gui/templates/inc_reqView.tpl
 $TLS_Author = "Author";
 $TLS_last_edit = "Last edit by";
-
+$TLS_warning_delete_requirement= "You are going to delete: %s <br><br> Are you sure?"; 
 
 
 // gui/templates/inc_res_by_comp.tpl
@@ -732,8 +735,7 @@ $TLS_th_last_name = "Last  Name";
 $TLS_th_locale = "Locale";
 $TLS_th_login = "Login";
 $TLS_th_role = "Role";
-$TLS_warning_delete_user = "Really delete the selected user?";
-
+$TLS_warning_delete_user = "You are going to delete: %s <br><br> Are you sure?"; 
 
 
 // gui/templates/login.tpl
@@ -1290,7 +1292,7 @@ $TLS_delete_role = "Delete role";
 $TLS_no_roles = "No roles";
 $TLS_th_role_description = "Description";
 $TLS_title_roles = "Available roles";
-$TLS_warning_delete_role = "Really delete this role?";
+$TLS_warning_delete_role = "You are going to delete: %s <br><br> Are you sure?"; 
 $TLS_warning_users_will_be_reset = "Affected users will get role:";
 
 
@@ -1310,9 +1312,15 @@ $TLS_no_builds = "No builds are defined within this Test Plan!";
 $TLS_th_description = "Description";
 $TLS_th_open = "Open";
 $TLS_title_build_list = "List of existing builds";
-$TLS_warning_delete_build = "Do really want to delete this build? All dependant data (test results) will also be deleted!";
-$TLS_builds_description = "Each build is identified via title. It has two attributes:<br /> Active / Inactive – defines whether the build is available for TestLink functionality. Inactive build is not listed in both execution and reports pages.
-<br /> Opened / Closed – defines if Test Results can be modified for the build.";
+$TLS_warning_delete_build = "You are going to delete: %s " .
+                            "<br /> <br />All dependant data (test results) will also be deleted." .
+                            "<br /> <br /> Are you sure?";
+                            
+$TLS_builds_description = "Each build is identified via title. It has two attributes:<br /> " .
+                          "Active / Inactive – defines whether the build is available for " .
+                          "TestLink functionality. Inactive build is not listed in both " .
+                          "execution and reports pages." .
+                          "<br /> Opened / Closed – defines if Test Results can be modified for the build.";
 
 
 
@@ -1324,6 +1332,7 @@ $TLS_testplan_th_delete = "Delete";
 $TLS_testplan_title_list = "List of existing Test Plans";
 $TLS_testplan_txt_empty_list = "There are no Test Plans defined! Create one to allow test execution functionality";
 $TLS_alt_active_testplan = "Active testplan";
+$TLS_warning_delete_testplan = "You are going to delete: %s <br><br> Are you sure?"; 
 
 
 // gui/templates/mainPage_left.tpl
@@ -1837,6 +1846,7 @@ $TLS_error_creating_cf = "The custom field couldn't be created!";
 $TLS_do_update = "updated";
 $TLS_do_delete = "deleted";
 $TLS_do_add = "added";
+$TLS_warning_delete_cf = "You are going to delete: %s <br><br> Are you sure?";
 
 
 

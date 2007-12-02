@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: metrics_dashboard.php,v $
  *
- * @version $Revision: 1.2 $
- * @modified $Date: 2007/10/14 16:34:44 $ $Author: franciscom $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2007/12/02 17:08:16 $ $Author: franciscom $
  *
  * @author franciscom
  *
@@ -15,13 +15,15 @@ require('../../config.inc.php');
 require_once('common.php');
 testlinkInitPage($db);
 
+$template_dir='results/';
+
 $tproject_name=$_SESSION['testprojectName'];
 $tplan_metrics=getMetrics($db,$_SESSION['userID'],$_SESSION['testprojectID']);
 
 $smarty = new TLSmarty;
 $smarty->assign('tplan_metrics', $tplan_metrics);
 $smarty->assign('tproject_name', $tproject_name);
-$smarty->display('metrics_dashboard.tpl'); 
+$smarty->display($template_dir .'metrics_dashboard.tpl'); 
 ?>
 
 

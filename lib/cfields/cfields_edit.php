@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: cfields_edit.php,v $
  *
- * @version $Revision: 1.8 $
- * @modified $Date: 2007/11/29 07:59:14 $ by $Author: franciscom $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2007/12/02 17:10:20 $ by $Author: franciscom $
  *
  *
  * rev :
@@ -24,6 +24,7 @@ $cfield_id = isset($_REQUEST['cfield_id']) ? $_REQUEST['cfield_id']:0;
 $cf_is_used = 0;
 $result_msg = null;
 $cf = '';  
+$do_control_combo_display=1;
 
 $disabled_cf_enable_on=array('execution' => '', 'design' => '');
 $disabled_cf_show_on=array('execution' => '', 'design' => '');
@@ -108,6 +109,7 @@ switch ($do_action)
 		$cf = '';  
 		$result_msg = "ok";
 		$cfield_mgr->delete($cfield_id); 
+	  $do_control_combo_display=0;
 		break; 
 }
 
@@ -115,24 +117,28 @@ $smarty = new TLSmarty();
 
 // --------------------------------------------------------------
 // To control combo display
-
-foreach( $keys2loop as $ui_mode)
+if( $do_control_combo_display )
 {
-  if(!$enable_on_cfg[$ui_mode][$cf['node_type_id']])
+  foreach( $keys2loop as $ui_mode)
   {
-   $disabled_cf_enable_on[$ui_mode]=' disabled="disabled" ';
-  }   
-   
-  if(!$show_on_cfg[$ui_mode][$cf['node_type_id']])
-  {
-   $disabled_cf_show_on[$ui_mode]=' disabled="disabled" ';
-  }   
+    if(!$enable_on_cfg[$ui_mode][$cf['node_type_id']])
+    {
+     $disabled_cf_enable_on[$ui_mode]=' disabled="disabled" ';
+    }   
+     
+    if(!$show_on_cfg[$ui_mode][$cf['node_type_id']])
+    {
+     $disabled_cf_show_on[$ui_mode]=' disabled="disabled" ';
+    }   
+  }
+}
+
+$show_possible_values=0;
+if( isset($cf['type']) )
+{
+  $show_possible_values=$possible_values_cfg[$cf['type']];
 }
 // --------------------------------------------------------------
-
-
-
-$show_possible_values=$possible_values_cfg[$cf['type']];
 
 $smarty->assign('result',$result_msg);
 $smarty->assign('user_action',$do_action);

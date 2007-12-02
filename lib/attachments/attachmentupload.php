@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: attachmentupload.php,v $
  *
- * @version $Revision: 1.12 $
- * @modified $Date: 2007/12/02 15:44:18 $ by $Author: schlundus $
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2007/12/02 17:14:46 $ by $Author: franciscom $
  *
  * Upload dialog for attachments
  *
@@ -19,6 +19,7 @@ testlinkInitPage($db);
 
 //the id (attachments.fk_id) of the object, to which the attachment belongs to 
 $id = isset($_GET['id'])? intval($_GET['id']) : 0;
+
 //the table to which the fk_id refers to (attachments.fk_table) of the attachment 
 $tableName = isset($_GET['tableName'])? $_GET['tableName'] : null;
 

@@ -1,7 +1,7 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: tc_exec_assignment.php,v 1.12 2007/09/26 06:27:49 franciscom Exp $ 
+ * @version $Id: tc_exec_assignment.php,v 1.13 2007/12/02 17:16:02 franciscom Exp $ 
  * 
  * rev :
  *       20070912 - franciscom - BUGID 1041
@@ -20,6 +20,8 @@ $tsuite_mgr = new testsuite($db);
 $tplan_mgr = new testplan($db); 
 $tcase_mgr = new testcase($db); 
 $assignment_mgr = new assignment_mgr($db); 
+
+$template_dir='plan/';
 
 $user_id=$_SESSION['userID'];
 
@@ -170,5 +172,5 @@ $smarty->assign('users', $users);
 $smarty->assign('has_tc', ($out['num_tc'] > 0 ? 1:0));
 $smarty->assign('arrData', $out['spec_view']);
 $smarty->assign('testPlanName', $tplan_name);
-$smarty->display('tc_exec_assignment.tpl');
+$smarty->display($template_dir . 'tc_exec_assignment.tpl');
 ?>

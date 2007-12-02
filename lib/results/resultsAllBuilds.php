@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsAllBuilds.php,v 1.17 2007/09/17 06:29:07 franciscom Exp $ 
+* $Id: resultsAllBuilds.php,v 1.18 2007/12/02 17:08:16 franciscom Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * 
@@ -15,6 +15,8 @@ require_once('common.php');
 require_once('../functions/results.class.php');
 require_once('displayMgr.php');
 testlinkInitPage($db);
+
+$template_dir='results/';
 
 $tplan_mgr = new testplan($db);
 $tproject_mgr = new testproject($db);
@@ -74,6 +76,6 @@ $smarty->assign('tplan_name', $tplan_name);
 $smarty->assign('arrData', $arrData);
 
 $report_type = isset($_GET['report_type']) ? intval($_GET['report_type']) : null;
-displayReport('resultsAllBuilds', $smarty, $report_type);
+displayReport($template_dir . 'resultsAllBuilds', $smarty, $report_type);
 
 ?>

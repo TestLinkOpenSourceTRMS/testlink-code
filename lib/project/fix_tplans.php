@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: fix_tplans.php,v $
- * @version $Revision: 1.3 $
- * @modified $Date: 2007/10/29 21:00:26 $  $Author: asielb $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2007/12/02 17:29:51 $  $Author: franciscom $
  * @author asielb
  *
  * fixes bug 1021
@@ -15,8 +15,10 @@ require_once('testproject.class.php');
 require_once('plan.core.inc.php');
 
 testlinkInitPage($db);
+$template_dir='project/';
 
 $can_manage_tprojects=has_rights($db,'mgt_modify_product');
+
 // make sure the user has rights to manage test projects
 if ($can_manage_tprojects)
 {
@@ -50,7 +52,7 @@ if ($can_manage_tprojects)
 	$smarty->assign('testPlans', $testPlans);
 	$smarty->assign('testProjects', $testProjects);
 	$smarty->assign('count', $testPlansCount);
-	$smarty->display('fix_tplans.tpl');
+	$smarty->display($template_dir . 'fix_tplans.tpl');
 }
 else
 {

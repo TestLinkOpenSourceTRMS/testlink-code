@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsBuild.php,v 1.32 2007/10/01 08:12:48 franciscom Exp $ 
+* $Id: resultsBuild.php,v 1.33 2007/12/02 17:08:16 franciscom Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * 
@@ -19,6 +19,8 @@ require_once('../functions/testplan.class.php');
 require_once('displayMgr.php');
 
 testlinkInitPage($db);
+
+$template_dir='results/';
 
 //print "Warning Message - KL - 20061126 - all tables functional except for priority report <BR>";
 $report_type = isset($_GET['report_type']) ? intval($_GET['report_type']) : null;
@@ -159,5 +161,5 @@ $smarty->assign('arrDataPriority', $arrDataPriority);
 $smarty->assign('arrDataAllSuites', $arrDataAllSuites);
 $smarty->assign('arrDataSuite', $arrDataSuite);
 $smarty->assign('arrDataKeys', $arrDataKeys2);
-displayReport('resultsBuild', $smarty, $report_type, $buildName);
+displayReport($template_dir . 'resultsBuild', $smarty, $report_type, $buildName);
 ?>

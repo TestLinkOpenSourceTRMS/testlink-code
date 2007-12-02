@@ -2,7 +2,7 @@
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
- * @version $Id: resultsNavigator.php,v 1.39 2007/11/11 23:18:15 havlat Exp $ 
+ * @version $Id: resultsNavigator.php,v 1.40 2007/12/02 17:08:16 franciscom Exp $ 
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
  * Scope: Launcher for Test Results and Metrics.
@@ -24,6 +24,7 @@ require_once('reports.class.php');
 testlinkInitPage($db);
 tLog('resultsNavigator.php called');
 
+$template_dir='results/';
 
 $do_report=array();
 $do_report['status_ok']=1;
@@ -126,5 +127,5 @@ $smarty->assign('arrReportTypes', $g_reports_cfg->formats);
 $smarty->assign('tplan_id', $tplan_id);
 $smarty->assign('selectedReportType', $selectedReportType);
 
-$smarty->display('resultsNavigator.tpl');
+$smarty->display($template_dir .'resultsNavigator.tpl');
 ?>

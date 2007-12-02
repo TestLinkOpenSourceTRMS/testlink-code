@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: planMilestones.php,v $
  *
- * @version $Revision: 1.12 $
- * @modified $Date: 2007/06/22 17:12:35 $
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2007/12/02 17:16:02 $
  */
 require_once('../../config.inc.php');
 require_once("../functions/common.php");
@@ -13,6 +13,8 @@ require_once("plan.inc.php");
 testlinkInitPage($db);
 
 $milestone_mgr=new milestone_mgr($db);
+
+$template_dir='plan/';
 
 $_POST = strings_stripSlashes($_POST);
 $name = isset($_POST['milestone_name']) ? $_POST['milestone_name'] : '';
@@ -93,7 +95,7 @@ $smarty->assign('tpName', $tpName);
 $smarty->assign('arrMilestone', $mileStones);
 $smarty->assign('mileStone', $mileStone);
 $smarty->assign('action', $action);
-$smarty->display('planMilestones.tpl');
+$smarty->display($template_dir . 'planMilestones.tpl');
 ?>
 
 <?php

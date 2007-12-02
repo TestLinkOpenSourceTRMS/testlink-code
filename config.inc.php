@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.134 $
- * @modified $Date: 2007/11/30 07:53:59 $ by $Author: franciscom $
+ * @version $Revision: 1.135 $
+ * @modified $Date: 2007/12/02 17:04:39 $ by $Author: franciscom $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink 
@@ -271,7 +271,9 @@ $g_gui->tprojects_combo_order_by='ORDER BY nodes_hierarchy.id DESC';
 
 
 // 20071130 - franciscom 
+//
 // 'fckeditor'
+// 'tinymce'
 // 'none' -> use plan html textarea input field
 //
 $g_gui->webeditor='fckeditor';
@@ -752,8 +754,14 @@ if($g_repositoryType == TL_REPOSITORY_TYPE_FS)
   }
 }
 
-// 20071118 - francisco.mancardi@gruppotesi.com
+// 20071130 - franciscom
+// simplifies use on smarty template
+define('WEBEDITOR',$g_gui->webeditor);
+
+// 20071118 - franciscom
 define('REQ_MODULE',$g_req_cfg->module);
+// define('USERMANAGEMENT_MODULE','lib/usermanagement');
+
 
 // logo for login page, if not defined nothing happens
 define('LOGO_LOGIN_PAGE',$g_logo_login_page);

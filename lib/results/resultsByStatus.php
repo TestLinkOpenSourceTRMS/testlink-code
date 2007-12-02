@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsByStatus.php,v 1.51 2007/09/29 16:58:01 franciscom Exp $ 
+* $Id: resultsByStatus.php,v 1.52 2007/12/02 17:08:16 franciscom Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author Chad Rosen
@@ -21,6 +21,8 @@ require_once('users.inc.php');
 
 testlinkInitPage($db);
 $dummy=null;
+$template_dir='results/';
+
 
 $type = isset($_GET['type']) ? $_GET['type'] : 'n';
 $report_type = isset($_GET['report_type']) ? intval($_GET['report_type']) : null;
@@ -142,7 +144,7 @@ $smarty->assign('title', $title);
 $smarty->assign('arrBuilds', $arrBuilds); 
 $smarty->assign('arrData', $arrData);
 $smarty->assign('type', $type);
-displayReport('resultsByStatus', $smarty, $report_type);
+displayReport($template_dir . 'resultsByStatus', $smarty, $report_type);
 ?>
 
 <?php

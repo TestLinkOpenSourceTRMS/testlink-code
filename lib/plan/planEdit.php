@@ -5,19 +5,23 @@
  *
  * Filename $RCSfile: planEdit.php,v $
  *
- * @version $Revision: 1.28 $
- * @modified $Date: 2007/05/10 07:07:15 $ by $Author: franciscom $
+ * @version $Revision: 1.29 $
+ * @modified $Date: 2007/12/02 17:16:02 $ by $Author: franciscom $
  *
  * Purpose:  ability to edit and delete test plans
  *-------------------------------------------------------------------------
- * Revisions:
+ * rev :
+ *       20071201 - franciscom - new web editor code
  *
  */
 require('../../config.inc.php');
 require_once("common.php");
+require_once("web_editor.php");
 require_once('testplan.class.php');
+
 testlinkInitPage($db);
 
+$template_dir='plan/';
 $smarty = new TLSmarty();
 $user_feedback='';
 $template=null;
@@ -35,12 +39,7 @@ $tpName = null;
 $bActive = 0;
 $cf_smarty = '';
 
-
-// 20060101 - fm
-require_once("../../third_party/fckeditor/fckeditor.php");
-$of = new fckeditor('notes') ;
-$of->BasePath = $_SESSION['basehref'] . 'third_party/fckeditor/';
-$of->ToolbarSet = 'TL_Medium';
+$of=web_editor('notes',$_SESSION['basehref']) ;
 $of->Value = null;
 
 // Checks on testplan name, and testplan name<=>testplan id 
@@ -203,7 +202,7 @@ switch($args->do_action)
 
         $template= is_null($template) ? 'planView.tpl' : $template;
         $smarty->assign('tplans',$tplans);
-        $smarty->display($template);
+        $smarty->display($template_dir . $template);
    break; 
 
 
@@ -217,7 +216,7 @@ switch($args->do_action)
       	$smarty->assign('tpActive', $bActive);
       	$smarty->assign('tproject_name', $args->testprojectName);
       	$smarty->assign('notes', $of->CreateHTML());
-        $smarty->display($template);
+        $smarty->display($template_dir . $template);
    break;
    
    default:

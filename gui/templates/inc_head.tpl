@@ -1,9 +1,10 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_head.tpl,v 1.13 2007/11/06 16:20:22 franciscom Exp $
+$Id: inc_head.tpl,v 1.14 2007/12/02 17:24:45 franciscom Exp $
 Purpose: smarty template - HTML Common Header 
 
 rev :
+     20071201 - franciscom - tinymce support
 *}
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
      "DTD/xhtml1-transitional.dtd">
@@ -30,13 +31,15 @@ rev :
 	<style media="print" type="text/css">@import "{$basehref}{$smarty.const.TL_PRINT_CSS}";</style>
 	<script type="text/javascript" src="{$basehref}gui/javascript/testlink_library.js" language="javascript"></script>
 	<script type="text/javascript" src="{$basehref}gui/javascript/test_automation.js" language="javascript"></script>
-
-{if $jsValidate == "yes"} 
-	<script type="text/javascript" src="{$basehref}gui/javascript/validate.js" language="javascript"></script>
-{/if}
-{if $jsTree == "yes"} {* 'no' is default defined in config *}
-	{include file="inc_jsTree.tpl"}
-{/if}
+	
+	
+  {if $jsValidate == "yes"} 
+	  <script type="text/javascript" src="{$basehref}gui/javascript/validate.js" language="javascript"></script>
+  {/if}
+   
+  {if $jsTree == "yes"} {* 'no' is default defined in config *}
+   	{include file="inc_jsTree.tpl"}
+  {/if}
 	<script type="text/javascript" language="javascript">
 	var fRoot = '{$basehref}';
 	var menuUrl = '{$menuUrl}';
@@ -54,8 +57,14 @@ rev :
 	// 20060916 - franciscom
 	// bug management (using logic similar to attachment)
 	var bug_dialog=new bug_dialog();
-  
 	</script> 
+
+  {if $smarty.const.WEBEDITOR eq 'tinymce'}
+    <script type="text/javascript" src="{$basehref}third_party/tinymce/jscripts/tiny_mce/tiny_mce.js" language="javascript" ></script>
+    {include file="inc_tinymce_init.tpl"}
+	{/if}
+
+
 {if $openHead == "no"} {* 'no' is default defined in config *}
 </head>
 {/if}

@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: usersassign.php,v $
 *
-* @version $Revision: 1.14 $
-* @modified $Date: 2007/11/04 11:16:29 $ $Author: franciscom $
+* @version $Revision: 1.15 $
+* @modified $Date: 2007/12/02 17:19:21 $ $Author: franciscom $
 * 
 * Allows assigning users roles to testplans or testprojects
 *
@@ -23,6 +23,8 @@
 require_once('../../config.inc.php');
 require_once('users.inc.php');
 testlinkInitPage($db);
+
+$template_dir='usermanagement/';
 
 $feature = isset($_REQUEST['feature']) ? $_REQUEST['feature'] : null;
 $featureID = isset($_REQUEST['featureID']) ? intval($_REQUEST['featureID']) : 0;
@@ -180,5 +182,5 @@ $smarty->assign('userFeatureRoles',$userFeatureRoles);
 $smarty->assign('featureID',$featureID);
 $smarty->assign('feature',$feature);
 $smarty->assign('features',$features);
-$smarty->display('usersassign.tpl');
+$smarty->display($template_dir . 'usersassign.tpl');
 ?>

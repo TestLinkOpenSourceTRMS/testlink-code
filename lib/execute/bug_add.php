@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: bug_add.php,v $
  *
- * @version $Revision: 1.3 $
- * @modified $Date: 2007/03/05 07:08:33 $ by $Author: franciscom $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2007/12/02 17:11:48 $ by $Author: franciscom $
  *
  *
  * rev :
@@ -19,6 +19,8 @@ require_once('../../config.inc.php');
 require_once('../functions/common.php');
 require_once('exec.inc.php');
 testlinkInitPage($db);
+
+$template_dir='execute/';
 
 $exec_id = isset($_REQUEST['exec_id'])? intval($_REQUEST['exec_id']) : 0;
 $bug_id = isset($_REQUEST['bug_id'])? trim($_REQUEST['bug_id']) : null;
@@ -42,5 +44,5 @@ $smarty = new TLSmarty();
 $smarty->assign('bts_url',$g_bugInterface->getEnterBugURL());
 $smarty->assign('exec_id',$exec_id);
 $smarty->assign('msg',$msg);
-$smarty->display('bug_add.tpl');
+$smarty->display($template_dir . 'bug_add.tpl');
 ?>

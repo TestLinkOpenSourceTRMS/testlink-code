@@ -5,9 +5,9 @@
  *
  * Filename $RCSfile: tcImport.php,v $
  * Filename $RCSfile: tcImport.php,v $
- * @version $Revision: 1.26 $
+ * @version $Revision: 1.27 $
  *
- * @modified $Date: 2007/11/02 09:37:18 $ by $Author: franciscom $
+ * @modified $Date: 2007/12/02 17:23:19 $ by $Author: franciscom $
 */
 require('../../config.inc.php');
 require_once('common.php');
@@ -17,6 +17,8 @@ require_once('xml.inc.php');
 require_once('../../third_party/phpexcel/reader.php');
 
 testlinkInitPage($db);
+
+$template_dir='testcases/';
 
 $importType = isset($_POST['importType']) ? $_POST['importType'] : null;
 $bRecursive = isset($_REQUEST['bRecursive']) ? $_REQUEST['bRecursive'] : 0;
@@ -139,7 +141,7 @@ $smarty->assign('container_description', $container_description);
 $smarty->assign('bIntoProject',$bIntoProject);
 $smarty->assign('importLimitKB',TL_IMPORT_LIMIT / 1024);
 $smarty->assign('bImport',strlen($importType));
-$smarty->display('tcImport.tpl');
+$smarty->display($template_dir . 'tcImport.tpl');
 
 ?>
 

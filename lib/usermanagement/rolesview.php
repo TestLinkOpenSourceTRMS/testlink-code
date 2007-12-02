@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: rolesview.php,v $
  *
- * @version $Revision: 1.11 $
- * @modified $Date: 2007/11/04 11:16:29 $ by $Author: franciscom $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2007/12/02 17:19:21 $ by $Author: franciscom $
  *
  *  20070901 - franciscom - BUGID
  *  20070829 - jbarchibald - BUGID 1000 - Testplan role assignments
@@ -16,6 +16,8 @@ require_once("common.php");
 require_once("users.inc.php");
 require_once("roles.inc.php");
 testlinkInitPage($db);
+
+$template_dir='usermanagement/';
 
 // 20070901 - franciscom@gruppotesi.com -BUGID 1016
 init_global_rights_maps();
@@ -80,5 +82,5 @@ $smarty->assign('sqlResult',$sqlResult);
 $smarty->assign('allUsers',$allUsers);
 $smarty->assign('affectedUsers',$affectedUsers);
 $smarty->assign('role_id_replacement',$role_id_replacement);
-$smarty->display('rolesview.tpl');
+$smarty->display($template_dir . 'rolesview.tpl');
 ?>

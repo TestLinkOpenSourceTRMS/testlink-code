@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: usersview.php,v $
  *
- * @version $Revision: 1.10 $
- * @modified $Date: 2007/10/02 21:04:05 $ -  $Author: asielb $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2007/12/02 17:19:21 $ -  $Author: franciscom $
  *
  * This page shows all users
  * 
@@ -22,6 +22,8 @@ $sqlResult = null;
 $action = null;
 $do_toogle=0;
 $user_feedback='';
+
+$template_dir='usermanagement/';
 
 $operation = isset($_REQUEST['operation']) ? $_REQUEST['operation'] : '';
 $user_order_by = isset($_REQUEST['user_order_by']) ? $_REQUEST['user_order_by'] : 'order_by_login';
@@ -88,7 +90,7 @@ $smarty->assign('users',$users);
 $smarty->assign('result',$sqlResult);
 $smarty->assign('action',$action);
 $smarty->assign('base_href', $_SESSION['basehref']);
-$smarty->display($g_tpl['usersview']);
+$smarty->display($template_dir . $g_tpl['usersview']);
 
 
 /*

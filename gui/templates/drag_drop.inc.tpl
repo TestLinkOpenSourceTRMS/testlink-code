@@ -1,6 +1,6 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: drag_drop.inc.tpl,v 1.1 2007/04/15 10:59:18 franciscom Exp $   
+$Id: drag_drop.inc.tpl,v 1.2 2007/12/02 17:37:26 franciscom Exp $   
 
 Drag & drop CSS and JS pieces.
 
@@ -31,3 +31,49 @@ include order of these JS files is very important:
 <script type="text/javascript" src="{$basehref}{$smarty.const.TL_DRAG_DROP_JS_DIR}ajax.js"></script>
 <script type="text/javascript" src="{$basehref}{$smarty.const.TL_DRAG_DROP_JS_DIR}context-menu.js"></script>
 <script type="text/javascript" src="{$basehref}{$smarty.const.TL_DRAG_DROP_JS_DIR}drag-drop-folder-tree.js"></script>
+
+{literal}
+<script type="text/javascript">
+/*
+  function: 
+
+  args : 
+         basehref: needed to create absolute URL to images
+         tree_id : html of ul used to implement tree with drag and drop 
+  
+  returns: 
+
+*/
+var treeObj;
+
+function init_drag_and_drop(basehref,tree_id)
+{
+	treeObj = new JSDragDropTree(basehref);
+	treeObj.setTreeId(tree_id);
+	treeObj.setMaximumDepth(7);
+	
+	// If you want to show a message when maximum depth is reached, i.e. on drop.
+	treeObj.setMessageMaximumDepthReached('Maximum depth reached'); 
+	treeObj.initTree();
+	treeObj.expandAll();
+}
+
+/*
+  function: dnd_save_tree
+
+  args : 
+  
+  returns: 
+
+*/
+function dnd_save_tree(form_id,order_container_name,elem_name)
+{
+  var f=document.getElementById(form_id);
+	f.elements[order_container_name].value = treeObj.getNodeOrders();
+	f.elements[elem_name].disabled = '';
+	f.elements[elem_name].value = 1;
+	f.submit();		
+
+}
+</script>
+{/literal}

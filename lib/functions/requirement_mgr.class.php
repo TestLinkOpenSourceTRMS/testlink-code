@@ -5,27 +5,24 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.8 $
- * @modified $Date: 2007/12/02 15:44:18 $ by $Author: schlundus $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2007/12/02 16:33:18 $ by $Author: schlundus $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
  * Requirements are children of a requirement specification (requirements container)
- *
- *
- * 20060908 - franciscom - 
 */
 class requirement_mgr extends tlObjectWithAttachments
 {
 	var $db;
-  var $cfield_mgr;
+	var $cfield_mgr;
 
-  var $object_table='requirements';
-  var $requirement_spec_table='req_specs';
-  var $req_coverage_table="req_coverage";
-  var $nodes_hierarchy_table="nodes_hierarchy";
+	var $object_table='requirements';
+	var $requirement_spec_table='req_specs';
+	var $req_coverage_table="req_coverage";
+	var $nodes_hierarchy_table="nodes_hierarchy";
 
-  var $my_node_type;
+	var $my_node_type;
 
   
   /*
@@ -260,10 +257,10 @@ class requirement_mgr extends tlObjectWithAttachments
         $the_ids=array($id);
       }
 
-      foreach( $the_ids as $key => $value)
-      {
-  		  $result = $this->attachmentRepository->deleteAttachmentsFor($value,"requirements");
-  		}
+		foreach($the_ids as $key => $value)
+		{
+			$result = $this->attachmentRepository->deleteAttachmentsFor($value,"requirements");
+		}
     }
 
   	if ($result)

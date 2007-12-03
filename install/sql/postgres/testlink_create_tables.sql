@@ -1,31 +1,32 @@
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.13 2007/10/10 06:36:33 franciscom Exp $
+-- $Id: testlink_create_tables.sql,v 1.14 2007/12/03 08:28:31 franciscom Exp $
 --
 -- SQL script - create db tables for TL on Postgres   
 -- 
 --
 -- 
 -- Rev :
+--      20071202 - franciscom - added tcversions.execution_type
 --      20071010 - franciscom - open -> is_open due to MSSQL reserved word problem
 --      20070519 - franciscom - milestones table date -> target_date, because
 --                              date is reserved word for Oracle
 --
---       20070414 - franciscom - table requirements: added field node_order 
---       20070204 - franciscom - changes in tables priorities, risk_assignments 
---       20070131 - franciscom - requirements -> req_doc_id(32), 
+--      20070414 - franciscom - table requirements: added field node_order 
+--      20070204 - franciscom - changes in tables priorities, risk_assignments 
+--      20070131 - franciscom - requirements -> req_doc_id(32), 
 --
---       20070120 - franciscom - following BUGID 458 ( really a new feature request)
---                               two new fields on builds table
---                               active, open
+--      20070120 - franciscom - following BUGID 458 ( really a new feature request)
+--                              two new fields on builds table
+--                              active, open
 --
---       20070117 - franciscom - create_ts -> creation_ts
+--      20070117 - franciscom - create_ts -> creation_ts
 --
---       20070116 - franciscom - fixed BUGID 545
+--      20070116 - franciscom - fixed BUGID 545
 --
---       20070113 - franciscom - table cfield_testprojects added fields
---                               required_on_design,required_on_execution
---       20060515 - franciscom - creation
+--      20070113 - franciscom - table cfield_testprojects added fields
+--                              required_on_design,required_on_execution
+--      20060515 - franciscom - creation
 --
 
 --
@@ -367,6 +368,7 @@ CREATE TABLE "tcversions" (  "id" BIGINT NOT NULL DEFAULT '0',
   "modification_ts" TIMESTAMP NULL,
   "active" INT2 NOT NULL DEFAULT '1',
   "is_open" INT2 NOT NULL DEFAULT '1',
+  "execution_type" INT2 NOT NULL DEFAULT '1',
   PRIMARY KEY ("id")
 ); 
 

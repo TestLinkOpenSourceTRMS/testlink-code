@@ -1,12 +1,13 @@
 --  -----------------------------------------------------------------------------------
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.17 2007/10/12 08:34:22 franciscom Exp $
+-- $Id: testlink_create_tables.sql,v 1.18 2007/12/03 08:28:31 franciscom Exp $
 --
 -- SQL script - create db tables for TL
 -- Database Type: Microsoft SQL Server
 -- 
 -- Rev :
+--      20071202 - franciscom - added tcversions.execution_type
 --      20071010 - franciscom - ntext,nvarchar,nchar -> text,varchar,char
 --                              open -> is_open
 --      20070519 - franciscom - milestones table date -> target_date, because
@@ -433,6 +434,7 @@ CREATE TABLE [tcversions](
 	[modification_ts] [datetime] NULL,
 	[active] [tinyint] NOT NULL CONSTRAINT [DF_tcversions_active]  DEFAULT ((1)),
 	[is_open] [tinyint] NOT NULL CONSTRAINT [DF_tcversions_open]  DEFAULT ((1)),
+	[execution_type] [tinyint] NOT NULL CONSTRAINT [DF_tcversions_execution_type]  DEFAULT ((1)),
  CONSTRAINT [PK_tcversions] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC

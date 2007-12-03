@@ -1,11 +1,12 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
 # This script is distributed under the GNU General Public License 2 or later.
-# $Id: testlink_create_tables.sql,v 1.18 2007/10/10 06:36:33 franciscom Exp $
+# $Id: testlink_create_tables.sql,v 1.19 2007/12/03 08:28:31 franciscom Exp $
 # SQL script - create db tables for TL   
 #
 # default rights & admin account are created via testlink_create_default_data.sql
 #
 # Rev :
+#       20071202 - franciscom - added tcversions.execution_type
 #       20071010 - franciscom - open -> is_open due to MSSQL reserved word problem
 #
 #       20070519 - franciscom - milestones table date -> target_date, because
@@ -258,6 +259,7 @@ CREATE TABLE `tcversions` (
   `modification_ts` datetime NOT NULL default '0000-00-00 00:00:00',
   `active` tinyint(1) NOT NULL default '1',
   `is_open` tinyint(1) NOT NULL default '1',
+  `execution_type` tinyint(1) NOT NULL default '1' COMMENT '1 -> manual, 2 -> automated',
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 

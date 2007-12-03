@@ -2,10 +2,12 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.71 $
- * @modified $Date: 2007/12/03 08:29:10 $ $Author: franciscom $
+ * @version $Revision: 1.72 $
+ * @modified $Date: 2007/12/03 10:19:28 $ $Author: franciscom $
  * @author franciscom
  *
+ *
+ * 20071203 - franciscom - get_last_execution(), added build_is_active, build_is_open         			
  *
  * 20071128 - franciscom - create_tcase_only() added key on ret struct
  * 20071113 - franciscom - added contribution on get_executions()
@@ -1466,6 +1468,11 @@ function get_executions($id,$version_id,$tplan_id,$build_id,$exec_id_order='DESC
             			execution_ts
             			build_id
             			build_name
+            			build_is_active
+            			build_is_open
+            			
+   rev:
+       added build_is_active, build_is_open         			
 
 */
 function get_last_execution($id,$version_id,$tplan_id,$build_id,$get_no_executions=0)
@@ -1549,9 +1556,9 @@ function get_last_execution($id,$version_id,$tplan_id,$build_id,$get_no_executio
 		    users.login AS tester_login,
 		    users.first AS tester_first_name, 
 		    users.last AS tester_last_name,
-			users.id AS tester_id, 
+			  users.id AS tester_id, 
 		    e.notes AS execution_notes, e.execution_ts, e.build_id,
-		    builds.name AS build_name 
+		    builds.name AS build_name, builds.active AS build_is_active, builds.is_open AS build_is_open 
 	      FROM nodes_hierarchy NHA
         JOIN nodes_hierarchy NHB ON NHA.parent_id = NHB.id 
         JOIN tcversions ON NHA.id = tcversions.id 

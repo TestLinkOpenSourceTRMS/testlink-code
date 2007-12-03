@@ -6,7 +6,7 @@
  * Filename $RCSfile: results.class.php,v $
  *
  * @version $Revision: 1.8 
- * @modified $Date: 2007/12/02 17:07:27 $ by $Author: franciscom $
+ * @modified $Date: 2007/12/03 22:07:13 $ by $Author: havlat $
  *
  *-------------------------------------------------------------------------
  * Revisions:
@@ -943,6 +943,10 @@ class results
 				if ($search_notes_string != null) {
 				    $sql .= " AND notes LIKE '%" . $search_notes_string ."%' ";
 				}
+
+				// mht: fix 966 
+				// mike_h - 20070806 - when ordering executions by the timestamp, the results are represented correctly in the report "Test Report".
+				$sql .= " ORDER BY execution_ts ASC";
 				
 				$execQuery = $this->db->fetchArrayRowsIntoMap($sql,'id');
 				if ($execQuery)

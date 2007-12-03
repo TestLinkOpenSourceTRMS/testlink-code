@@ -1,10 +1,7 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: searchData.php,v 1.24 2007/12/02 17:23:19 franciscom Exp $
+ * $Id: searchData.php,v 1.25 2007/12/03 20:42:27 schlundus Exp $
  * Purpose:  This page presents the search results. 
- *
- * rev :
- *       20070908 - franciscom - BUGID
 **/
 require('../../config.inc.php');
 require_once("common.php");
@@ -12,7 +9,7 @@ require_once("users.inc.php");
 require_once("attachments.inc.php");
 testlinkInitPage($db);
 
-$template_dir='testcases/';
+$template_dir = 'testcases/';
 
 $_POST = strings_stripSlashes($_POST);
 
@@ -28,8 +25,6 @@ $version = isset($_POST['version']) ? intval($_POST['version']) : 0;
 $custom_field_id = isset($_POST['custom_field_id']) ? intval($_POST['custom_field_id']) : 0;
 $custom_field_value = isset($_POST['custom_field_value']) ? trim($_POST['custom_field_value']) : null;
 
-
-
 $arrTc = null;
 $userID = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
 $tproject = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
@@ -40,7 +35,7 @@ if ($tproject)
 {
 	$from = array('by_keyword_id' => ' ', 'by_custom_field' => ' ');
   
-  $a_tcid = $tproject_mgr->get_all_testcases_id($tproject);
+	$a_tcid = $tproject_mgr->get_all_testcases_id($tproject);
 	$filter = null;
 	if(count($a_tcid))
 	{

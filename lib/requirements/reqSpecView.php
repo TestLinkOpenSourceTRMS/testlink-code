@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqSpecView.php,v $
- * @version $Revision: 1.5 $
- * @modified $Date: 2007/12/03 20:42:27 $ by $Author: schlundus $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2007/12/03 20:44:54 $ by $Author: schlundus $
  * @author Martin Havlat
  * 
  * Screen to view existing requirements within a req. specification.
@@ -62,5 +62,3 @@ $smarty->assign('name',$title);
 $smarty->assign('modify_req_rights', has_rights($db,"mgt_modify_req")); 
 $smarty->display($template_dir . $template);
 ?>
-
-

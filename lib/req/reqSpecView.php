@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqSpecView.php,v $
- * @version $Revision: 1.42 $
- * @modified $Date: 2007/12/03 20:42:27 $ by $Author: schlundus $
+ * @version $Revision: 1.43 $
+ * @modified $Date: 2007/12/03 20:44:54 $ by $Author: schlundus $
  * @author Martin Havlat
  * 
  * Screen to view existing requirements within a req. specification.
@@ -78,9 +78,6 @@ $of = new fckeditor('scope') ;
 $of->BasePath = $_SESSION['basehref'] . 'third_party/fckeditor/';
 $of->ToolbarSet = $g_fckeditor_toolbar;;
 
-$attach['status_ok']=true;
-$attach['msg']='';
-
 // create a new requirement.
 if(isset($_REQUEST['createReq']))
 {
@@ -95,7 +92,7 @@ if(isset($_REQUEST['createReq']))
 			$user_feedback = sprintf(lang_get('req_created'), $reqDocId);  
 	    
 	    $cf_map = $req_mgr->get_linked_cfields(null,$tprojectID) ;
-      //$req_mgr->values_to_db($_REQUEST,$ret['id'],$cf_map);
+     	 //$req_mgr->values_to_db($_REQUEST,$ret['id'],$cf_map);
 		}
 	}
 
@@ -105,7 +102,7 @@ if(isset($_REQUEST['createReq']))
 } 
 elseif (isset($_REQUEST['editReq']))
 {
-  $srs = $req_spec_mgr->get_by_id($idSRS);
+	$srs = $req_spec_mgr->get_by_id($idSRS);
   
 	$smarty->assign('srs_title',$srs['title']);	
 
@@ -131,17 +128,8 @@ elseif (isset($_REQUEST['editReq']))
 
 	$smarty->assign('id',$idReq);	
 	$smarty->assign('tableName','requirements');
-	$attachmentRepository = tlAttachmentRepository::create($db);	
-	$attachmentInfos = getAttachmentInfos($attachmentRepository,$idReq,'requirements');
+	$attachmentInfos = getAttachmentInfosFrom($req_mgr,$idReq);
 	$smarty->assign('attachmentInfos',$attachmentInfos);	
-
-  	
-  $repository['type']=config_get('repositoryType');
-  $repository['path']=config_get('repositoryPath');
-  if( $repository['type'] == TL_REPOSITORY_TYPE_FS )
-  {
-    $attach = checkForRepositoryDir($repository['path']);
-  }
   // -----------------------------------------------------------
 	$bGetReqs = FALSE;
 }
@@ -264,7 +252,6 @@ $srs_title = $arrSpec[0]['title'];
 $smarty->assign('idSRS', $idSRS);
 $smarty->assign('user_feedback', $user_feedback);
 $smarty->assign('srs_title', $srs_title);
-$smarty->assign('attach', $attach);
 $smarty->assign('arrSpec', $arrSpec);
 $smarty->assign('arrReq', $arrReq);
 $smarty->assign('arrCov', $arrCov);

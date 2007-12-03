@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqView.php,v $
- * @version $Revision: 1.11 $
- * @modified $Date: 2007/12/03 20:42:27 $ by $Author: schlundus $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2007/12/03 20:44:54 $ by $Author: schlundus $
  * @author Martin Havlat
  * 
  * Screen to view content of requirement.

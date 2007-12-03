@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqEdit.php,v $
- * @version $Revision: 1.6 $
- * @modified $Date: 2007/12/02 17:29:20 $ by $Author: franciscom $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2007/12/03 20:42:27 $ by $Author: schlundus $
  * @author Martin Havlat
  * 
  * Screen to view existing requirements within a req. specification.

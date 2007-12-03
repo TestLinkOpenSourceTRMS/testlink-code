@@ -1,4 +1,16 @@
 <?php
+/**
+ * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ * This script is distributed under the GNU General Public License 2 or later. 
+ *
+ * Filename $RCSfile: attachmentrepository.class.php,v $
+ *
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2007/12/03 20:42:27 $ by $Author: schlundus $
+ * @author Francisco Mancardi
+ *
+*/
+
 require_once( dirname(__FILE__) . '/attachment.class.php' );
 
 class tlAttachmentRepository extends tlObjectWithDB

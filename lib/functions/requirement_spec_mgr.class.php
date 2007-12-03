@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_spec_mgr.class.php,v $
  *
- * @version $Revision: 1.8 $
- * @modified $Date: 2007/11/29 07:59:14 $ by $Author: franciscom $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2007/12/03 20:42:27 $ by $Author: schlundus $
  * @author Francisco Mancardi
  *
  * Manager for requirement specification (requirement container)
@@ -14,7 +14,7 @@
  *
  * 20060908 - franciscom - 
 */
-class requirement_spec_mgr
+class requirement_spec_mgr extends tlObjectWithAttachments
 {
 	var $db;
   var $cfield_mgr;
@@ -45,11 +45,12 @@ class requirement_spec_mgr
 		$this->db = &$db;
 		$this->cfield_mgr = new cfield_mgr($this->db);
 
-	  $tree_mgr =  new tree($this->db);
-	  $node_types_descr_id=$tree_mgr->get_available_node_types();
-	  $node_types_id_descr=array_flip($node_types_descr_id);
-	  $this->my_node_type=$node_types_descr_id['requirement_spec'];
+		$tree_mgr =  new tree($this->db);
+		$node_types_descr_id=$tree_mgr->get_available_node_types();
+		$node_types_id_descr=array_flip($node_types_descr_id);
+		$this->my_node_type=$node_types_descr_id['requirement_spec'];
 
+		tlObjectWithAttachments::__construct($this->db,$this->object_table);
 	}
 
   /*

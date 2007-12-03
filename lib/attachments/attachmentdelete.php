@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: attachmentdelete.php,v $
  *
- * @version $Revision: 1.4 $
- * @modified $Date: 2007/12/02 15:44:18 $ by $Author: schlundus $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2007/12/03 20:42:26 $ by $Author: schlundus $
  *
  * Deletes an attachment by a given id
  * Code check: 2007/11/16 schlundus
@@ -23,7 +23,7 @@ if ($id)
 {
 	$attachmentRepository = tlAttachmentRepository::create($db);
 	$attachmentInfo = $attachmentRepository->getAttachmentInfo($id);
-	if (attachmentInfo && checkAttachmentID($db,$id,$attachmentInfo))
+	if ($attachmentInfo && checkAttachmentID($db,$id,$attachmentInfo))
 		$bDeleted = $attachmentRepository->deleteAttachment($id,$attachmentInfo);
 }
 

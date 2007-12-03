@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqSpecView.php,v $
- * @version $Revision: 1.41 $
- * @modified $Date: 2007/12/02 15:44:18 $ by $Author: schlundus $
+ * @version $Revision: 1.42 $
+ * @modified $Date: 2007/12/03 20:42:27 $ by $Author: schlundus $
  * @author Martin Havlat
  * 
  * Screen to view existing requirements within a req. specification.
@@ -317,21 +317,4 @@ $smarty->assign('js_msg',$js_msg);
 $smarty->assign('exportTypes',$export_types);
 $smarty->assign('scope',$of->CreateHTML());
 $smarty->display($template);
-
-// nodes_order format:  NODE_ID-?,NODE_ID-?
-// 2-0,10-0,3-0
-//                      
-//function transform_nodes_order($nodes_order)
-//{
-//  $fa = explode(',',$nodes_order);
-//  
-//  foreach($fa as $key => $value)
-//  {
-//	// $value= X-Y
-//	$fb = explode('-',$value);
-//	$nodes_id[] = $fb[0];
-//  }
-//  
-//  return $nodes_id;
-//}	
 ?>

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqView.php,v $
- * @version $Revision: 1.10 $
- * @modified $Date: 2007/11/10 08:11:28 $ by $Author: franciscom $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2007/12/03 20:42:27 $ by $Author: schlundus $
  * @author Martin Havlat
  * 
  * Screen to view content of requirement.
@@ -17,8 +17,8 @@ require_once('requirement_mgr.class.php');
 require_once('users.inc.php');
 testlinkInitPage($db);
 
-$req_mgr=new requirement_mgr($db);
-$idReq = isset($_GET['idReq']) ? strings_stripSlashes($_GET['idReq']) : null;
+$req_mgr = new requirement_mgr($db);
+$idReq = isset($_GET['idReq']) ? intval($_GET['idReq']) : null;
 
 $arrReq = $req_mgr->get_by_id($idReq);
 $arrReq['author'] = getUserName($db,$arrReq['author_id']);

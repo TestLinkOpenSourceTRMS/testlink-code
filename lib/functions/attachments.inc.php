@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: attachments.inc.php,v $
  *
- * @version $Revision: 1.12 $
- * @modified $Date: 2007/12/02 15:44:18 $ by $Author: schlundus $
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2007/12/03 20:42:27 $ by $Author: schlundus $
  *
  * functions related to attachments
  *
@@ -30,6 +30,15 @@ require_once( dirname(__FILE__) . '/files.inc.php' );
 function getAttachmentInfos(&$attachmentRepository,$fkid,$fkTableName,$bStoreListInSession = true,$counter = 0)
 {
 	$attachmentInfos = $attachmentRepository->getAttachmentInfosFor($fkid,$fkTableName);
+	if ($bStoreListInSession)
+		storeAttachmentsInSession($attachmentInfos,$counter);
+	
+	return $attachmentInfos;
+}
+
+function getAttachmentInfosFrom(&$object,$fkid,$bStoreListInSession = true,$counter = 0)
+{
+	$attachmentInfos = $object->getAttachmentInfos($fkid);
 	if ($bStoreListInSession)
 		storeAttachmentsInSession($attachmentInfos,$counter);
 	

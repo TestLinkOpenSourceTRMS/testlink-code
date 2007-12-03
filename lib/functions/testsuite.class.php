@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testsuite.class.php,v $
- * @version $Revision: 1.39 $
- * @modified $Date: 2007/12/02 17:18:08 $ - $Author: franciscom $
+ * @version $Revision: 1.40 $
+ * @modified $Date: 2007/12/03 20:42:27 $ - $Author: schlundus $
  * @author franciscom
  *
  * 20071111 - franciscom - new method get_subtree();
@@ -349,8 +349,7 @@ function show(&$smarty,$template_dir, $id, $sqlResult = '', $action = 'update',$
 	}
   
 	$keywords_map = $this->get_keywords_map($id,' ORDER BY KEYWORD ASC ');
-	$attachmentInfos = $this->getAttachmentInfos($id);
-	storeAttachmentsInSession($attachmentInfos);
+	$attachmentInfos = getAttachmentInfosFrom($this,$id);
 	
 	$smarty->assign('attachmentInfos',$attachmentInfos);
 	$smarty->assign('id',$id);

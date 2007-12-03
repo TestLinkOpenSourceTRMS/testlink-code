@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.224 $
- * @modified $Date: 2007/12/02 17:18:38 $ $Author: franciscom $
+ * @version $Revision: 1.225 $
+ * @modified $Date: 2007/12/03 23:11:58 $ $Author: asielb $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -1890,18 +1890,26 @@ $TLS_created_on_testsuite="Test Cases will be created on Test Suite %s";
 $TLS_API_INVALID_AUTH = "Can not authenticate client: invalid developer key";
 $TLS_API_NO_DEV_KEY = "No devKey provided. A valid devKey must be provided!";
 $TLS_API_NO_TCID = "No tcid provided. A valid tcid must be provided!";
-$TLS_API_NO_TPLANID = "No test plan id provided. A valid test plan id must be provided!";
+$TLS_API_NO_TPID = "No tpid provided. A valid tpid must be provided!";
 $TLS_API_NO_TEST_MODE = "A test Mode must be provided!";
 $TLS_API_NO_STATUS = "No status provided. A valid status must be provided!";
+$TLS_API_NO_TESTCASENAME = "No testcasename provided. A testcase name must be provided!";
+$TLS_API_NO_TESTPROJECTID = "No testprojectid provided. A valid test project id must be provided!";
+$TLS_API_NO_TESTSUITEID = "No testsuiteid provided. A valid test suite id must be provided!";
 $TLS_API_INVALID_TCID= "The Test Case ID (tcid) provided does not exist!";
 $TLS_API_INVALID_BUILDID = "The Build ID (buildid) provided does not exist!";
-$TLS_API_INVALID_TPLANID = "The Test Plan ID (tpid) provided does not exist!";
+$TLS_API_INVALID_TPID = "The Test Plan ID (tpid) provided does not exist!";
 $TLS_API_INVALID_STATUS = "The status (status) provided is not valid!";
 $TLS_API_TCID_NOT_INTEGER = "TCID must be an integer!";
-$TLS_API_NO_BUILD_FOR_TPLANID = "No builds exist for the test plan id provided! A build must be created to report results.";
-$TLS_API_BUILDID_NOGUESS = "Guessing is disabled so a build id must be specified!";
-$TLS_API_NO_BUILDID = "No buildid provided. A valid build id must be provided!";
-$TLS_API_TCID_NOT_IN_TPLANID = "The Test Case (test plan id) provided is not associated with the Test Plan (tpid).";
+$TLS_API_TESTCASENAME_NOT_STRING = "testcasename must be a string!";
+$TLS_API_NO_BUILD_FOR_TPID = "No builds exist for the tpid provided! A build must be created to report results.";
+$TLS_API_BUILDID_NOGUESS = "Guessing is disabled so a buildid must be specified!";
+$TLS_API_NO_BUILDID = "No buildid provided. A valid buildid must be provided!";
+$TLS_API_TCID_NOT_IN_TPID = "The Test Case (tpid) provided is not associated with the Test Plan (tpid).";
 $TLS_API_GENERAL_SUCCESS = "Success!";
+$TLS_API_INVALID_TESTPROJECTID = "The Test Project ID (testprojectid) provided does not exist!";
+$TLS_API_INVALID_TESTSUITEID = "The Test Suite ID (testsuiteid) provided does not exist!";
+$TLS_API_NO_TESTCASE_BY_THIS_NAME = "Cannot find matching test case. No testcase exists with the name provided!";
+$TLS_API_NOT_YET_IMPLEMENTED = "This functionality has not been implemented yet!";
 
 ?>

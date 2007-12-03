@@ -1,7 +1,7 @@
 <?php
 /*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: xmlrpc.php,v 1.1 2007/11/26 14:33:32 franciscom Exp $
+ * $Id: xmlrpc.php,v 1.2 2007/12/03 23:04:39 asielb Exp $
  */
  
 /**
@@ -25,11 +25,14 @@
 /** 
  * IXR is the class used for the XML-RPC server 
  */
-require_once(dirname(__FILE__) . "/../third_party/xml-rpc/class-IXR.php");
-require_once("TestlinkXMLRPCServerErrors.php");
-require_once(dirname(__FILE__) . "/../config.inc.php");
-require_once(dirname(__FILE__) . "/../lib/functions/common.php");
+require_once(dirname(__FILE__) . "/../../third_party/xml-rpc/class-IXR.php");
 require_once("api.const.inc.php");
+require_once("APIErrors.php");
+require_once(dirname(__FILE__) . "/../../config.inc.php");
+require_once(dirname(__FILE__) . "/../functions/common.php");
+require_once(dirname(__FILE__) . "/../functions/testproject.class.php");
+require_once(dirname(__FILE__) . "/../functions/testcase.class.php");
+require_once(dirname(__FILE__) . "/../functions/testsuite.class.php");
 
 /**
  * The entry class for serving XML-RPC Requests
@@ -47,7 +50,7 @@ require_once("api.const.inc.php");
  */
 class TestlinkXMLRPCServer extends IXR_Server
 {
-	public static $version = "1.0 Beta";
+	public static $version = "1.0 Beta 2";
 	/**
 	 * The DB object used throughout the class
 	 * 
@@ -73,15 +76,21 @@ class TestlinkXMLRPCServer extends IXR_Server
  	 */
 	public static $devKeyParamName = "devKey";
 	public static $tcidParamName = "tcid";
+	//TODO: fix this to be clear on either test plan or test project (currently testplan)
 	public static $tpidParamName = "tpid";
+	public static $testProjectIDParamName = "testprojectid";
+	public static $testSuiteIDParamName = "testsuiteid";
 	public static $statusParamName = "status";
 	public static $buildidParamName = "buildid";
 	public static $noteParamName = "note";
 	public static $timeStampParamName = "timestamp";
 	public static $guessParamName = "guess";
+	public static $deepParamName = "deep";
 	public static $testModeParamName = "testmode";
 	public static $buildNameParamName = "buildname";
+	public static $buildNotesParamName = "buildnotes";
 	public static $automatedParamName = "automated";
+	public static $testCaseNameParamName = "testcasename";
 	/**#@-*/
 	
 	/**
@@ -96,17 +105,24 @@ class TestlinkXMLRPCServer extends IXR_Server
 	public function __construct()
 	{		
 		$this->dbObj = new database(DB_TYPE);
+		$this->dbObj->db->SetFetchMode(ADODB_FETCH_ASSOC);
 		$this->_connectToDB();
 
 		$this->methods = array(
-			'tl.reportTCResult' 		=> 'this:reportTCResult',
-			'tl.createBuild'			=> 'this:createBuild',
-			'tl.about'					=> 'this:about',
-			'tl.setTestMode'			=> 'this:setTestMode',
+			'tl.reportTCResult' 			=> 'this:reportTCResult',
+			'tl.getProjects'				=> 'this:getProjects',
+			'tl.getProjectTestPlans'		=> 'this:getProjectTestPlans',
+			'tl.createBuild'				=> 'this:createBuild',
+			'tl.getTestSuitesForTestPlan' 	=> 'this:getTestSuitesForTestPlan',
+			'tl.getTestCasesForTestSuite'	=> 'this:getTestCasesForTestSuite',
+			'tl.getTestCaseIDByName'		=> 'this:getTestCaseIDByName',
+			'tl.createTestCase'				=> 'this:createTestCase',
+			'tl.about'						=> 'this:about',
+			'tl.setTestMode'				=> 'this:setTestMode',
 			// ping is an alias for sayHello
-			'tl.ping'					=> 'this:sayHello', 
-			'tl.sayHello' 				=> 'this:sayHello',
-			'tl.repeat'					=> 'this:repeat'
+			'tl.ping'						=> 'this:sayHello', 
+			'tl.sayHello' 					=> 'this:sayHello',
+			'tl.repeat'						=> 'this:repeat'
 		);				
 		
 		$this->IXR_Server($this->methods);		
@@ -198,6 +214,30 @@ class TestlinkXMLRPCServer extends IXR_Server
 			return true;
 		}				
     }
+
+	/**
+	 * Helper method to see if the testcasename provided is valid 
+	 * 
+	 * This is the only method that should be called directly to check the testcasename
+	 * 	
+	 * @return boolean
+	 * @access private
+	 */        
+    protected function checkTestCaseName()
+    {
+    	if(!$this->_isTestCaseNamePresent())
+    	{
+    		$this->errors[] = new IXR_Error(NO_TESTCASENAME, NO_TESTCASENAME_STR);
+    		return false;
+    	}
+    	$testCaseName = $this->args[self::$testCaseNameParamName];
+    	if(!is_string($testCaseName))
+    	{
+    		$this->errors[] = new IXR_Error(TESTCASENAME_NOT_STRING, TESTCASENAME_NOT_STRING_STR);
+    		return false;
+    	}
+    	return true;
+    }
     
 	/**
 	 * Helper method to see if the status provided is valid 
@@ -259,18 +299,18 @@ class TestlinkXMLRPCServer extends IXR_Server
     {
     	if(!$this->_isTPIDPresent())
     	{
-    		$this->errors[] = new IXR_Error(NO_TPLANID, NO_TPLANID_STR);
+    		$this->errors[] = new IXR_Error(NO_TPID, NO_TPID_STR);
     		return false;
     	}
     	else
     	{    		
     		// See if this TPID exists in the db
-			$tpid = mysql_escape_string($this->args[self::$tpidParamName]);
+			$tpid = $this->dbObj->prepare_int($this->args[self::$tpidParamName]);
         	$query = "SELECT id FROM testplans WHERE id={$tpid}";
         	$result = $this->dbObj->fetchFirstRowSingleColumn($query, "id");         	
         	if(null == $result)
         	{
-        		$this->errors[] = new IXR_Error(INVALID_TPLANID, INVALID_TPLANID_STR);
+        		$this->errors[] = new IXR_Error(INVALID_TPID, INVALID_TPID_STR);
         		return false;        		
         	}
 			// tpid exists and its valid
@@ -290,6 +330,74 @@ class TestlinkXMLRPCServer extends IXR_Server
         	}    		    		    	
     	}
     } 
+    
+	/**
+	 * Helper method to see if the TestProjectID provided is valid
+	 * 
+	 * This is the only method that should be called directly to check the TestProjectID
+	 * 	
+	 * @return boolean
+	 * @access private
+	 */    
+    protected function checkTestProjectID()
+    {
+    	if(!$this->_isTestProjectIDPresent())
+    	{
+    		$this->errors[] = new IXR_Error(NO_TESTPROJECTID, NO_TESTPROJECTID_STR);
+    		return false;
+    	}
+    	else
+    	{    		
+    		// See if this Test Project ID exists in the db
+			$testprojectid = $this->dbObj->prepare_int($this->args[self::$testProjectIDParamName]);
+        	$query = "SELECT id FROM testprojects WHERE id={$testprojectid}";
+        	$result = $this->dbObj->fetchFirstRowSingleColumn($query, "id");         	
+        	if(null == $result)
+        	{
+        		$this->errors[] = new IXR_Error(INVALID_TESTPROJECTID, INVALID_TESTPROJECTID_STR);
+        		return false;        		
+        	}
+			// testproject exists and its valid
+        	else
+        	{
+        		return true;
+        	}    		    		    	
+    	}
+    }  
+
+	/**
+	 * Helper method to see if the TestSuiteID provided is valid
+	 * 
+	 * This is the only method that should be called directly to check the TestSuiteID
+	 * 	
+	 * @return boolean
+	 * @access private
+	 */    
+    protected function checkTestSuiteID()
+    {
+    	if(!$this->_isTestSuiteIDPresent())
+    	{
+    		$this->errors[] = new IXR_Error(NO_TESTSUITEID, NO_TESTSUITEID_STR);
+    		return false;
+    	}
+    	else
+    	{    		
+    		// See if this Test Suite ID exists in the db
+			$testsuiteid = $this->dbObj->prepare_int($this->args[self::$testSuiteIDParamName]);
+        	$query = "SELECT id FROM testsuites WHERE id={$testsuiteid}";
+        	$result = $this->dbObj->fetchFirstRowSingleColumn($query, "id");         	
+        	if(null == $result)
+        	{
+        		$this->errors[] = new IXR_Error(INVALID_TESTSUITEID, INVALID_TESTSUITEID_STR);
+        		return false;
+        	}
+			// testsuite exists and its valid
+        	else
+        	{
+        		return true;
+        	}
+    	}
+    }          
 
 	/**
 	 * Helper method to see if the guess is set
@@ -331,23 +439,41 @@ class TestlinkXMLRPCServer extends IXR_Server
 				$setBuildResult = $this->_setBuildIDFromTPID();
 				if(false == $setBuildResult)
 				{
-					$this->errors[] = new IXR_Error(NO_BUILD_FOR_TPLANID, NO_BUILD_FOR_TPLANID_STR);
+					$this->errors[] = new IXR_Error(NO_BUILD_FOR_TPID, NO_BUILD_FOR_TPID_STR);
 					return false;
 				}
 			}
 	   	}
 	   	
 	   	// actually check that the buildID thats set is valid
-	   	$buildID = mysql_escape_string($this->args[self::$buildidParamName]);
+	   	$buildID = $this->dbObj->prepare_int($this->args[self::$buildidParamName]);
         $query = "SELECT id FROM builds WHERE id='{$buildID}'";
         $result = $this->dbObj->fetchFirstRowSingleColumn($query, "id");         	
         return (null == $result ? false : true);
     }
-        
+     
+
+    /**
+	 * Helper method to see if the status provided is valid 
+	 * 	
+	 * @return boolean
+	 * @access private
+	 */  	     
     private function _isStatusValid($status)
     {
     	return(in_array($status, self::$validStatusList));
     }           
+
+    /**
+	 * Helper method to see if a testcasename is given as one of the arguments 
+	 * 	
+	 * @return boolean
+	 * @access private
+	 */          
+	private function _isTestCaseNamePresent()
+	{
+		return (isset($this->args[self::$testCaseNameParamName]) ? true : false);
+	}
 
     /**
 	 * Helper method to see if a timestamp is given as one of the arguments 
@@ -371,6 +497,39 @@ class TestlinkXMLRPCServer extends IXR_Server
     	return (isset($this->args[self::$buildidParamName]) ? true : false);
     }
     
+	/**
+	 * Helper method to see if a buildname is given as one of the arguments 
+	 * 	
+	 * @return boolean
+	 * @access private
+	 */    
+    private function _isBuildNamePresent()
+    {
+    	return (isset($this->args[self::$buildNameParamName]) ? true : false);
+    }
+    
+	/**
+	 * Helper method to see if build notes are given as one of the arguments 
+	 * 	
+	 * @return boolean
+	 * @access private
+	 */    
+    private function _isBuildNotePresent()
+    {
+    	return (isset($this->args[self::$buildNotesParamName]) ? true : false);
+    }
+    
+	/**
+	 * Helper method to see if testsuiteid is given as one of the arguments
+	 * 	
+	 * @return boolean
+	 * @access private
+	 */    
+	private function _isTestSuiteIDPresent()
+	{
+		return (isset($this->args[self::$testSuiteIDParamName]) ? true : false);
+	}    
+    
     /**
 	 * Helper method to see if a note is given as one of the arguments 
 	 * 	
@@ -392,6 +551,17 @@ class TestlinkXMLRPCServer extends IXR_Server
     {    	
     	return (isset($this->args[self::$tpidParamName]) ? true : false);    	
     }
+
+    /**
+	 * Helper method to see if a TestProjectID is given as one of the arguments 
+	 * 	
+	 * @return boolean
+	 * @access private
+	 */    
+    private function _isTestProjectIDPresent()
+    {    	
+    	return (isset($this->args[self::$testProjectIDParamName]) ? true : false);    	
+    }        
     
     /**
 	 * Helper method to see if automated is given as one of the arguments 
@@ -449,6 +619,17 @@ class TestlinkXMLRPCServer extends IXR_Server
     }  
     
 	/**
+	 * Helper method to see if the deep param is given as one of the arguments 
+	 * 	
+	 * @return boolean
+	 * @access private
+	 */
+    private function _isDeepPresent()
+    {
+		return (isset($this->args[self::$deepParamName]) ? true : false);
+    }      
+    
+	/**
 	 * Helper method to see if the status param is given as one of the arguments 
 	 * 	
 	 * @return boolean
@@ -473,7 +654,7 @@ class TestlinkXMLRPCServer extends IXR_Server
     		$this->errors[] = new IXR_Error(TCID_NOT_INTEGER, TCID_NOT_INTEGER_STR);
     		return false;
     	}
-    	$tcid = mysql_escape_string($tcid);
+    	$tcid = $this->dbObj->prepare_int($tcid);
     	// the tcid must be of type 'testcase' and show up in the nodes_hierarchy    	
 		$query = "SELECT nodes_hierarchy.id AS id FROM nodes_hierarchy, node_types " .
 				"WHERE nodes_hierarchy.id={$tcid} AND node_type_id=node_types.id " .
@@ -504,7 +685,7 @@ class TestlinkXMLRPCServer extends IXR_Server
         }
         else
         {        	                		
-        	$devKey = mysql_escape_string($devKey);
+        	$devKey = $this->dbObj->prepare_string($devKey);
         	$query = "SELECT id FROM api_developer_keys WHERE developer_key='{$devKey}'";
         	$result = $this->dbObj->fetchFirstRowSingleColumn($query, "id");         	
         	if(null == $result)
@@ -560,7 +741,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 	    	$versionResult = $this->dbObj->fetchFirstRowSingleColumn($versionQuery, "tcversion_id");			      	
 	    	if(null == $versionResult)
 	    	{
-	    		$this->errors[] = new IXR_Error(TCID_NOT_IN_TPLANID, TCID_NOT_IN_TPLANID_STR);
+	    		$this->errors[] = new IXR_Error(TCID_NOT_IN_TPID, TCID_NOT_IN_TPID_STR);
 	    		return false;        		
 	    	}
 	    	else
@@ -578,7 +759,7 @@ class TestlinkXMLRPCServer extends IXR_Server
     }
 
 	/**
-	 * Run all the necessary checks to see if the request is valid
+	 * Run all the necessary checks to see if the reportTCResult request is valid
 	 *  
 	 * @return boolean
 	 * @access private
@@ -615,6 +796,93 @@ class TestlinkXMLRPCServer extends IXR_Server
 			return true;
 		}
 	}
+	
+	/**
+	 * Run all the necessary checks to see if the createBuild request is valid
+	 *  
+	 * @return boolean
+	 * @access private
+	 */
+	private function _checkCreateBuildRequest()
+	{		
+		if(!$this->authenticate())
+		{
+			return false;
+		}
+		if(!$this->checkTPID())
+		{
+			return false;
+		}		
+		if(!$this->_isBuildNamePresent())
+		{
+			return false;
+		}			
+		else
+		{
+			// Hurray the request is valid!			
+			return true;
+		}
+	}	
+	
+	/**
+	 * Run all the necessary checks to see if the getProjectTestPlans request is valid
+	 *  
+	 * @return boolean
+	 * @access private
+	 */	
+	private function _checkGetProjectTestPlansRequest()
+	{
+		if(!$this->authenticate())
+		{
+			return false;			
+		}
+		if(!$this->checkTestProjectID())
+		{
+			return false;
+		}
+		else
+		{
+			return true;
+		}
+	}
+	
+	/**
+	 * Run all the necessary checks to see if the getTestCaseByName request is valid
+	 *  
+	 * @return boolean
+	 * @access private
+	 */	
+	private function _checkGetTestCaseByIDNameRequest()
+	{
+		if(!$this->authenticate())
+		{
+			return false;			
+		}
+		if(!$this->checkTestCaseName())
+		{
+			return false;
+		}
+		else
+		{
+			return true;
+		}
+	}
+	
+	private function _checkGetTestCasesForTestSuiteRequest()
+	{
+		if(!$this->authenticate())
+		{
+			return false;			
+		}
+		if(!$this->checkTestSuiteID())
+		{
+			return false;
+		}
+		else
+		{
+			return true;
+		}
+	}
 
  	/**
 	 * Gets the latest build by date for a specific test plan 
@@ -625,8 +893,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 */		
 	protected function getLatestBuildForTestPlan($tpid)
 	{     	                		
-    	// TODO: fix to be db independent (not mysql only)
-    	$devKey = mysql_escape_string($tpid);
+    	$devKey = $this->dbObj->prepare_int($tpid);
     	$query = "SELECT max(id) AS id FROM `builds` WHERE testplan_id='$tpid'";
     	$result = $this->dbObj->fetchFirstRowSingleColumn($query, "id");         	
     	if(null == $result)
@@ -669,7 +936,71 @@ class TestlinkXMLRPCServer extends IXR_Server
 		$this->dbObj->exec_query($query);
 		return $this->dbObj->insert_id();		
 	}
+	
+ 	/**
+	 * Adds the build to the database 
+	 *
+	 * @return int
+	 * @access private
+	 */			
+	private function _insertBuildToDB()
+	{		
+		$name = 		$this->args[self::$buildNameParamName];		
+		$testplan_id =	$this->args[self::$tpidParamName];		
+		if($this->_isBuildNotePresent())
+		{			
+			$notes = $this->dbObj->prepare_string($this->args[self::$buildNotesParamName]);
+		}
+		else
+		{
+			$notes = "NULL";
+		}		
+		// TODO: set the active and is_open flags		
+		
+		$query = "INSERT INTO builds (testplan_id, name, notes) " .
+				"VALUES(" .
+				$testplan_id . "," .
+				"'" . $name . "'," .
+				"'" . $notes . "'" . 				
+			")";
+		$this->dbObj->exec_query($query);
+		return $this->dbObj->insert_id();		
+	}	
 
+	/**
+	 * Performs a deep search for test cases within a test suite
+	 * 
+	 * Uses testsuite->get_testcases_deep method
+	 * 
+	 * @param int $testSuiteID
+	 * @return struct
+	 * @access private
+	 */
+	private function _getDeepTestCasesForSuite($testSuiteID)
+	{		
+		$testSuiteObj = new testsuite($this->dbObj);
+		$result = $testSuiteObj->get_testcases_deep($testSuiteID);
+
+		// these are the keys we want (everything but "node_table")
+		$wantedKeysArray = array(
+						"id" => null, 
+						"name" => null, 
+						"parent_id" => null,
+						"node_type_id" => null,
+						"node_order" => null
+					);
+
+		$filteredResult = array();
+		
+		foreach($result as $row)
+		{
+			// perform the filter based on array key comparison					
+			$filteredResult[] = array_intersect_key($row, $wantedKeysArray);			
+		}
+		
+		return $filteredResult;
+	}
+	
 	/**
 	 * Lets you see if the server is up and running
 	 *  
@@ -705,14 +1036,17 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 */	
 	public function about($args)
 	{
+		$this->_setArgs($args);
 		$str = " Testlink API Version: " . self::$version . " written by Asiel Brumfield\n" .
-				"See http://testlink.org/api/ for additional information";  
+				"See http://testlink.org/api/ for additional information";
+		return $str;				
 	}
 	
 	/**
 	 * Creates a new build for a specific test plan
 	 *
 	 * @param struct $args
+	 * @param string $args["devKey"]
 	 * @param int $args["tpid"]
 	 * @param string $args["buildname"];
 	 * @return mixed $resultInfo
@@ -721,34 +1055,207 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 */		
 	public function createBuild($args)
 	{
-		// TODO: Implement 
+		// TODO: look into switching to use $testplan->create_build method
+		$this->_setArgs($args);
+		if($this->_checkCreateBuildRequest($this->args))
+		{
+			$insertID = $this->_insertBuildToDB();			
+			$resultInfo = array();
+			$resultInfo[0]["status"] = true;
+			$resultInfo[0]["id"] = $insertID;	
+			$resultInfo[0]["message"] = GENERAL_SUCCESS_STR;
+			return $resultInfo;	
+		}		
+		else
+		{
+			return $this->errors;			
+		}
 	}
 	
 	/**
-	 * Gets a list of all active projects
-	 *
+	 * Gets a list of all projects
+	 * @param struct $args
+	 * @param string $args["devKey"]
 	 * @return mixed $resultInfo			
 	 * @access public
 	 */		
 	public function getProjects($args)
 	{
-		// TODO: Implement 
+		$this->_setArgs($args);		
+		if($this->authenticate())
+		{
+			$testProjectObj = new testproject($this->dbObj);
+			return $testProjectObj->get_all();	
+		}
+		else
+		{
+			return $this->errors;
+		}
+		
+		// query that only gets active (the testproject method gets everything)
+		//$query = "SELECT nodes_hierarchy.id AS id, nodes_hierarchy.name AS name, testprojects.notes AS " .
+		//		"notes FROM `testprojects`, `nodes_hierarchy`, node_types WHERE " .
+		//		"nodes_hierarchy.node_type_id=node_types.id AND node_types.description='testproject' " .
+		//		"AND testprojects.active=1 AND testprojects.id=nodes_hierarchy.id";		
 	}
 	
 	/**
 	 * Gets a list of test plans within a project
 	 *
 	 * @param struct $args
-	 * @param int $args["projectid"]
+	 * @param string $args["devKey"]
+	 * @param int $args["testprojectid"]
 	 * @return mixed $resultInfo
 	 * 				
 	 * @access public
 	 */		
 	public function getProjectTestPlans($args)
 	{
-		// TODO: Implement 
+		$this->_setArgs($args);
+		// check the tpid
+		if($this->_checkGetProjectTestPlansRequest())
+		{
+			$testProjectObj = new testproject($this->dbObj);
+			$testProjectID = $this->args[self::$testProjectIDParamName];
+			return $testProjectObj->get_all_testplans($testProjectID);	
+		}
+		else
+		{
+			return $this->errors;
+		} 
 	}
 	
+	/**
+	 * List test suites within a test plan
+	 * 
+	 * @param struct $args
+	 * @param string $args["devKey"]
+	 * @param int $args["testplanid"]
+	 * @return mixed $resultInfo
+	 */
+	 public function getTestSuitesForTestPlan($args)
+	 {
+	 	// TODO: Implement
+	 }
+
+	/**
+	 * List test cases within a test suite
+	 * 
+	 * By default test cases that are contained within child suites 
+	 * will be returned. Set the deep flag to false if you only want
+	 * test cases in the test suite provided and no child test cases.
+	 *  
+	 * @param struct $args
+	 * @param string $args["devKey"]
+	 * @param int $args["testsuiteid"]
+	 * @param boolean $args["deep"] - optional (default is true)
+	 * @return mixed $resultInfo
+	 */
+	 public function getTestCasesForTestSuite($args)
+	 {
+		$this->_setArgs($args);
+		if($this->_checkGetTestCasesForTestSuiteRequest())
+		{		
+			$testSuiteID = $this->args[self::$testSuiteIDParamName];
+				
+			if(!$this->_isDeepPresent())
+			{
+				// go deep by default (return test cases in child suites)
+				return $this->_getDeepTestCasesForSuite($testSuiteID);
+			}	
+			// deep has been set
+			else
+			{
+				if(false == $this->args[self::$deepParamName])
+				{					
+					// TODO: add method with this functionality to testsuite.class.php								
+					$query=	"SELECT nodes_hierarchy.*" .
+							"FROM `nodes_hierarchy`,`node_types` " .
+							"WHERE nodes_hierarchy.parent_id={$testSuiteID} AND " .
+							"node_type_id=node_types.id AND " .
+							"node_types.description='testcase' ORDER BY node_order,id";
+
+					$resultMap = $this->dbObj->fetchArrayRowsIntoMap($query, "id");
+					// reformat the result to look just like testsuite->get_testcases_deep() 
+					// with node_table filtered
+					$newResult = array();
+					foreach($resultMap as $result)
+					{
+						foreach($result as $item)
+						{
+							$newResult[] = $item;
+						}
+					}
+					return $newResult;
+				}
+				else
+				{
+					return $this->_getDeepTestCasesForSuite($testSuiteID);
+				}
+			}
+		}
+		else
+		{
+			return $this->errors;
+		}
+	 }
+
+	/**
+	 * Find a test case by its name
+	 * 
+	 * <b>Searching is case sensitive.</b> The test case will only be returned if there is a definite match.
+	 * If possible also pass the string for the test suite name. No results will be returned if there
+	 * are test cases with the same name that match the criteria provided.  
+	 * 
+	 * @param struct $args
+	 * @param string $args["devKey"]
+	 * @param string $args["testcasename"]
+	 * @param string $args["testsuitename"] - optional
+	 * @return mixed $resultInfo
+	 */
+	 public function getTestCaseIDByName($args)
+	 {
+		$this->_setArgs($args);		
+		if($this->_checkGetTestCaseByIDNameRequest())
+		{			
+			$testCaseName = $this->args[self::$testCaseNameParamName];
+			#return "hello $testCaseName";
+	 		$testCaseObj = new testcase($this->dbObj);
+	 		$result = $testCaseObj->get_by_name($testCaseName);
+			if(0 == sizeof($result))
+			{
+				$this->errors[] = new IXR_ERROR(NO_TESTCASE_BY_THIS_NAME, NO_TESTCASE_BY_THIS_NAME_STR);
+				return $this->errors;
+			}
+			else
+			{
+				return $result;
+			}		 			 	
+		}
+		else
+		{
+			return $this->errors;
+		}
+	 }
+	 
+	 /**
+	  * Create a new test case 
+	  */
+	 public function createTestCase($args)
+	 {
+	 	// should be able to use this function in the testcase class
+		//	 	function create_tcase_only($parent_id,$name,$order=TC_DEFAULT_ORDER,$id=TC_AUTOMATIC_ID,
+		//                           $check_duplicate_name=0,
+		//                           $action_on_duplicate_name='generate_new')
+	 }	
+	 
+	 /**
+	  * Update an existing test case
+	  */
+	 public function updateTestCase($args)
+	 {
+	 	// TODO: Implement
+	 } 	 	
 
 	 /**
 	 * Reports a result for a single test case

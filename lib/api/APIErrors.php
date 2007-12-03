@@ -1,7 +1,7 @@
 <?php
 /*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: TestlinkXMLRPCServerErrors.php,v 1.1 2007/11/26 14:33:32 franciscom Exp $
+ * $Id: APIErrors.php,v 1.1 2007/12/03 23:04:40 asielb Exp $
  */
 
 /** 
@@ -15,7 +15,7 @@
  /**
   * general config file gives us lang_get access
   */
-require_once(dirname(__FILE__) . "/../config.inc.php");
+require_once(dirname(__FILE__) . "/../../config.inc.php");
 
 /**#@+
  * Constants
@@ -28,6 +28,8 @@ define('GENERAL_ERROR_CODE', -1);
 define('GENERAL_SUCCESS_CODE', 1);
 define('GENERAL_SUCCESS_STR', lang_get('API_GENERAL_SUCCESS'));
 
+define('NOT_YET_IMPLEMENTED', 50);
+define('NOT_YET_IMPLEMENTED_STR', lang_get('API_NOT_YET_IMPLEMENTED'));
 /**
  * Error codes below 1000 are system level
  */
@@ -37,8 +39,8 @@ define('NO_DEV_KEY_STR', lang_get('API_NO_DEV_KEY'));
 define('NO_TCID', 110);
 define('NO_TCID_STR', lang_get('API_NO_TCID'));
 
-define('NO_TPLANID', 120);
-define('NO_TPLANID_STR', lang_get('API_NO_TPLANID'));
+define('NO_TPID', 120);
+define('NO_TPID_STR', lang_get('API_NO_TPID'));
 
 define('NO_BUILDID', 130);
 define('NO_BUILDID_STR', lang_get('API_NO_BUILDID'));
@@ -49,6 +51,16 @@ define('NO_TEST_MODE_STR', lang_get('API_NO_TEST_MODE'));
 define('NO_STATUS', 150);
 define('NO_STATUS_STR', lang_get('API_NO_STATUS'));
 
+define('NO_TESTPROJECTID', 160);
+define('NO_TESTPROJECTID_STR', lang_get('API_NO_TESTPROJECTID'));
+
+define('NO_TESTCASENAME', 170);
+define('NO_TESTCASENAME_STR', lang_get('API_NO_TESTCASENAME'));
+
+define('NO_TESTSUITEID', 180);
+define('NO_TESTSUITEID_STR', lang_get('API_NO_TESTSUITEID'));
+
+
 /**
  * 2000 level - authentication errors
  */
@@ -58,14 +70,14 @@ define('INVALID_AUTH_STR', lang_get('API_INVALID_AUTH'));
 /**
  * 3000 level - Test Plan errors
  */
-define('INVALID_TPLANID', 3000);
-define('INVALID_TPLANID_STR', lang_get('API_INVALID_TPLANID'));
-define('TPLANID_NOT_INTEGER', 3010);
-define('TPLANID_NOT_INTEGER_STR', lang_get('API_TPID_NOT_INTEGER'));
-define('NO_BUILD_FOR_TPLANID', 3020);
-define('NO_BUILD_FOR_TPLANID_STR', lang_get('API_NO_BUILD_FOR_TPLANID'));
-define('TCID_NOT_IN_TPLANID', 3030);
-define('TCID_NOT_IN_TPLANID_STR', lang_get('API_TCID_NOT_IN_TPLANID'));
+define('INVALID_TPID', 3000);
+define('INVALID_TPID_STR', lang_get('API_INVALID_TPID'));
+define('TPID_NOT_INTEGER', 3010);
+define('TPID_NOT_INTEGER_STR', lang_get('API_TPID_NOT_INTEGER'));
+define('NO_BUILD_FOR_TPID', 3020);
+define('NO_BUILD_FOR_TPID_STR', lang_get('API_NO_BUILD_FOR_TPID'));
+define('TCID_NOT_IN_TPID', 3030);
+define('TCID_NOT_IN_TPID_STR', lang_get('API_TCID_NOT_IN_TPID'));
 
 /**
  * 4000 level - Build errors
@@ -84,11 +96,27 @@ define('INVALID_TCID', 5000);
 define('INVALID_TCID_STR' , lang_get('API_INVALID_TCID'));
 define('TCID_NOT_INTEGER', 5010);
 define('TCID_NOT_INTEGER_STR', lang_get('API_TCID_NOT_INTEGER'));
+define('TESTCASENAME_NOT_STRING', 5020);
+define('TESTCASENAME_NOT_STRING_STR', lang_get('API_TESTCASENAME_NOT_STRING'));
+define('NO_TESTCASE_BY_THIS_NAME', 5030);
+define('NO_TESTCASE_BY_THIS_NAME_STR', lang_get('API_NO_TESTCASE_BY_THIS_NAME'));
 
 /**
  * 6000 level - Status errors
  */
 define('INVALID_STATUS', 6000);
 define('INVALID_STATUS_STR' , lang_get('API_INVALID_STATUS'));
+
+/**
+ * 7000 level - Test Project errors
+ */
+define('INVALID_TESTPROJECTID', 7000);
+define('INVALID_TESTPROJECTID_STR' , lang_get('API_INVALID_TESTPROJECTID'));
+
+/**
+ * 8000 level - Test Suite errors
+ */
+define('INVALID_TESTSUITEID', 8000);
+define('INVALID_TESTSUITEID_STR', lang_get('API_INVALID_TESTSUITEID'));
 
 ?>

@@ -38,6 +38,7 @@
                         <b>Files:</b><br />
         <div class="package">
 				<span style="padding-left: 1em;"><a href="TestlinkAPI/_api.const.inc.php.html">api.const.inc.php</a></span><br />
+			<span style="padding-left: 1em;"><a href="TestlinkAPI/_APIErrors.php.html">APIErrors.php</a></span><br />
 			<span style="padding-left: 1em;"><a href="TestlinkAPI/_sample_clients---php---clientSample.php.html">clientSample.php</a></span><br />
 			<span style="padding-left: 1em;"><a href="TestlinkAPI/_xmlrpc.php.html">xmlrpc.php</a></span><br />
 	  </div>
@@ -57,10 +58,12 @@
 	[ <a href="elementindex_TestlinkAPI.html#c">c</a> ]
 	[ <a href="elementindex_TestlinkAPI.html#d">d</a> ]
 	[ <a href="elementindex_TestlinkAPI.html#g">g</a> ]
+	[ <a href="elementindex_TestlinkAPI.html#i">i</a> ]
 	[ <a href="elementindex_TestlinkAPI.html#n">n</a> ]
 	[ <a href="elementindex_TestlinkAPI.html#r">r</a> ]
 	[ <a href="elementindex_TestlinkAPI.html#s">s</a> ]
 	[ <a href="elementindex_TestlinkAPI.html#t">t</a> ]
+	[ <a href="elementindex_TestlinkAPI.html#u">u</a> ]
 	[ <a href="elementindex_TestlinkAPI.html#v">v</a> ]
 	[ <a href="elementindex_TestlinkAPI.html#x">x</a> ]
 	[ <a href="elementindex_TestlinkAPI.html#_">_</a> ]
@@ -93,6 +96,8 @@
 				<dd>in file xmlrpc.php, method <a href="TestlinkAPI/TestlinkXMLRPCServer.html#methodabout">TestlinkXMLRPCServer::about()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Gives basic information about the API</dd>
 							<dt><b>api.const.inc.php</b></dt>
 				<dd>procedural page <a href="TestlinkAPI/_api.const.inc.php.html">api.const.inc.php</a></dd>
+							<dt><b>APIErrors.php</b></dt>
+				<dd>procedural page <a href="TestlinkAPI/_APIErrors.php.html">APIErrors.php</a></dd>
 							<dt><b>authenticate</b></dt>
 				<dd>in file xmlrpc.php, method <a href="TestlinkAPI/TestlinkXMLRPCServer.html#methodauthenticate">TestlinkXMLRPCServer::authenticate()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;authenticates a user based on the devKey provided</dd>
 					</dl>
@@ -110,6 +115,16 @@
 				<dd>in file xmlrpc.php, variable <a href="TestlinkAPI/TestlinkXMLRPCServer.html#var$buildidParamName">TestlinkXMLRPCServer::$buildidParamName</a><br>&nbsp;&nbsp;&nbsp;&nbsp;string for parameter names are all definied statically</dd>
 							<dt><b>$buildNameParamName</b></dt>
 				<dd>in file xmlrpc.php, variable <a href="TestlinkAPI/TestlinkXMLRPCServer.html#var$buildNameParamName">TestlinkXMLRPCServer::$buildNameParamName</a><br>&nbsp;&nbsp;&nbsp;&nbsp;string for parameter names are all definied statically</dd>
+							<dt><b>$buildNotesParamName</b></dt>
+				<dd>in file xmlrpc.php, variable <a href="TestlinkAPI/TestlinkXMLRPCServer.html#var$buildNotesParamName">TestlinkXMLRPCServer::$buildNotesParamName</a><br>&nbsp;&nbsp;&nbsp;&nbsp;string for parameter names are all definied statically</dd>
+							<dt><b>BUILDID_NOGUESS</b></dt>
+				<dd>in file APIErrors.php, constant <a href="TestlinkAPI/_APIErrors.php.html#defineBUILDID_NOGUESS">BUILDID_NOGUESS</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Constants</dd>
+							<dt><b>BUILDID_NOGUESS_STR</b></dt>
+				<dd>in file APIErrors.php, constant <a href="TestlinkAPI/_APIErrors.php.html#defineBUILDID_NOGUESS_STR">BUILDID_NOGUESS_STR</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Constants</dd>
+							<dt><b>BUILDID_NOT_INTEGER</b></dt>
+				<dd>in file APIErrors.php, constant <a href="TestlinkAPI/_APIErrors.php.html#defineBUILDID_NOT_INTEGER">BUILDID_NOT_INTEGER</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Constants</dd>
+							<dt><b>BUILDID_NOT_INTEGER_STR</b></dt>
+				<dd>in file APIErrors.php, constant <a href="TestlinkAPI/_APIErrors.php.html#defineBUILDID_NOT_INTEGER_STR">BUILDID_NOT_INTEGER_STR</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Constants</dd>
 					</dl>
 	</div>
 	<a name="c"></a>
@@ -129,10 +144,18 @@
 				<dd>in file xmlrpc.php, method <a href="TestlinkAPI/TestlinkXMLRPCServer.html#methodcheckStatus">TestlinkXMLRPCServer::checkStatus()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Helper method to see if the status provided is valid</dd>
 							<dt><b>checkTCID</b></dt>
 				<dd>in file xmlrpc.php, method <a href="TestlinkAPI/TestlinkXMLRPCServer.html#methodcheckTCID">TestlinkXMLRPCServer::checkTCID()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Helper method to see if the tcid provided is valid</dd>
+							<dt><b>checkTestCaseName</b></dt>
+				<dd>in file xmlrpc.php, method <a href="TestlinkAPI/TestlinkXMLRPCServer.html#methodcheckTestCaseName">TestlinkXMLRPCServer::checkTestCaseName()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Helper method to see if the testcasename provided is valid</dd>
+							<dt><b>checkTestProjectID</b></dt>
+				<dd>in file xmlrpc.php, method <a href="TestlinkAPI/TestlinkXMLRPCServer.html#methodcheckTestProjectID">TestlinkXMLRPCServer::checkTestProjectID()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Helper method to see if the TestProjectID provided is valid</dd>
+							<dt><b>checkTestSuiteID</b></dt>
+				<dd>in file xmlrpc.php, method <a href="TestlinkAPI/TestlinkXMLRPCServer.html#methodcheckTestSuiteID">TestlinkXMLRPCServer::checkTestSuiteID()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Helper method to see if the TestSuiteID provided is valid</dd>
 							<dt><b>checkTPID</b></dt>
 				<dd>in file xmlrpc.php, method <a href="TestlinkAPI/TestlinkXMLRPCServer.html#methodcheckTPID">TestlinkXMLRPCServer::checkTPID()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Helper method to see if the TPID provided is valid</dd>
 							<dt><b>createBuild</b></dt>
 				<dd>in file xmlrpc.php, method <a href="TestlinkAPI/TestlinkXMLRPCServer.html#methodcreateBuild">TestlinkXMLRPCServer::createBuild()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Creates a new build for a specific test plan</dd>
+							<dt><b>createTestCase</b></dt>
+				<dd>in file xmlrpc.php, method <a href="TestlinkAPI/TestlinkXMLRPCServer.html#methodcreateTestCase">TestlinkXMLRPCServer::createTestCase()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Create a new test case</dd>
 							<dt><b>clientSample.php</b></dt>
 				<dd>procedural page <a href="TestlinkAPI/_sample_clients---php---clientSample.php.html">clientSample.php</a></dd>
 					</dl>
@@ -146,6 +169,8 @@
 	<div>
 		<h2>d</h2>
 		<dl>
+							<dt><b>$deepParamName</b></dt>
+				<dd>in file xmlrpc.php, variable <a href="TestlinkAPI/TestlinkXMLRPCServer.html#var$deepParamName">TestlinkXMLRPCServer::$deepParamName</a><br>&nbsp;&nbsp;&nbsp;&nbsp;string for parameter names are all definied statically</dd>
 							<dt><b>$devKeyParamName</b></dt>
 				<dd>in file xmlrpc.php, variable <a href="TestlinkAPI/TestlinkXMLRPCServer.html#var$devKeyParamName">TestlinkXMLRPCServer::$devKeyParamName</a><br>&nbsp;&nbsp;&nbsp;&nbsp;string for parameter names are all definied statically</dd>
 							<dt><b>DEV_KEY</b></dt>
@@ -163,12 +188,63 @@
 		<dl>
 							<dt><b>$guessParamName</b></dt>
 				<dd>in file xmlrpc.php, variable <a href="TestlinkAPI/TestlinkXMLRPCServer.html#var$guessParamName">TestlinkXMLRPCServer::$guessParamName</a><br>&nbsp;&nbsp;&nbsp;&nbsp;string for parameter names are all definied statically</dd>
+							<dt><b>GENERAL_ERROR_CODE</b></dt>
+				<dd>in file APIErrors.php, constant <a href="TestlinkAPI/_APIErrors.php.html#defineGENERAL_ERROR_CODE">GENERAL_ERROR_CODE</a><br>&nbsp;&nbsp;&nbsp;&nbsp;a catch all generic error</dd>
+							<dt><b>GENERAL_SUCCESS_CODE</b></dt>
+				<dd>in file APIErrors.php, constant <a href="TestlinkAPI/_APIErrors.php.html#defineGENERAL_SUCCESS_CODE">GENERAL_SUCCESS_CODE</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Constants</dd>
+							<dt><b>GENERAL_SUCCESS_STR</b></dt>
+				<dd>in file APIErrors.php, constant <a href="TestlinkAPI/_APIErrors.php.html#defineGENERAL_SUCCESS_STR">GENERAL_SUCCESS_STR</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Constants</dd>
 							<dt><b>getLatestBuildForTestPlan</b></dt>
 				<dd>in file xmlrpc.php, method <a href="TestlinkAPI/TestlinkXMLRPCServer.html#methodgetLatestBuildForTestPlan">TestlinkXMLRPCServer::getLatestBuildForTestPlan()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Gets the latest build by date for a specific test plan</dd>
 							<dt><b>getProjects</b></dt>
-				<dd>in file xmlrpc.php, method <a href="TestlinkAPI/TestlinkXMLRPCServer.html#methodgetProjects">TestlinkXMLRPCServer::getProjects()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Gets a list of all active projects</dd>
+				<dd>in file xmlrpc.php, method <a href="TestlinkAPI/TestlinkXMLRPCServer.html#methodgetProjects">TestlinkXMLRPCServer::getProjects()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Gets a list of all projects</dd>
 							<dt><b>getProjectTestPlans</b></dt>
 				<dd>in file xmlrpc.php, method <a href="TestlinkAPI/TestlinkXMLRPCServer.html#methodgetProjectTestPlans">TestlinkXMLRPCServer::getProjectTestPlans()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Gets a list of test plans within a project</dd>
+							<dt><b>getTestCaseIDByName</b></dt>
+				<dd>in file xmlrpc.php, method <a href="TestlinkAPI/TestlinkXMLRPCServer.html#methodgetTestCaseIDByName">TestlinkXMLRPCServer::getTestCaseIDByName()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Find a test case by its name</dd>
+							<dt><b>getTestCasesForTestSuite</b></dt>
+				<dd>in file xmlrpc.php, method <a href="TestlinkAPI/TestlinkXMLRPCServer.html#methodgetTestCasesForTestSuite">TestlinkXMLRPCServer::getTestCasesForTestSuite()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;List test cases within a test suite</dd>
+							<dt><b>getTestSuitesForTestPlan</b></dt>
+				<dd>in file xmlrpc.php, method <a href="TestlinkAPI/TestlinkXMLRPCServer.html#methodgetTestSuitesForTestPlan">TestlinkXMLRPCServer::getTestSuitesForTestPlan()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;List test suites within a test plan</dd>
+					</dl>
+	</div>
+	<a name="i"></a>
+	<div class="index-letter-section">
+		<div style="float: left" class="index-letter-title">i</div>
+		<div style="float: right"><a href="#top">[Top]</a></div>
+		<div style="clear: both"></div>
+	</div>
+	<div>
+		<h2>i</h2>
+		<dl>
+							<dt><b>INVALID_AUTH</b></dt>
+				<dd>in file APIErrors.php, constant <a href="TestlinkAPI/_APIErrors.php.html#defineINVALID_AUTH">INVALID_AUTH</a><br>&nbsp;&nbsp;&nbsp;&nbsp;2000 level - authentication errors</dd>
+							<dt><b>INVALID_AUTH_STR</b></dt>
+				<dd>in file APIErrors.php, constant <a href="TestlinkAPI/_APIErrors.php.html#defineINVALID_AUTH_STR">INVALID_AUTH_STR</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Constants</dd>
+							<dt><b>INVALID_BUILDID</b></dt>
+				<dd>in file APIErrors.php, constant <a href="TestlinkAPI/_APIErrors.php.html#defineINVALID_BUILDID">INVALID_BUILDID</a><br>&nbsp;&nbsp;&nbsp;&nbsp;4000 level - Build errors</dd>
+							<dt><b>INVALID_BUILDID_STR</b></dt>
+				<dd>in file APIErrors.php, constant <a href="TestlinkAPI/_APIErrors.php.html#defineINVALID_BUILDID_STR">INVALID_BUILDID_STR</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Constants</dd>
+							<dt><b>INVALID_STATUS</b></dt>
+				<dd>in file APIErrors.php, constant <a href="TestlinkAPI/_APIErrors.php.html#defineINVALID_STATUS">INVALID_STATUS</a><br>&nbsp;&nbsp;&nbsp;&nbsp;6000 level - Status errors</dd>
+							<dt><b>INVALID_STATUS_STR</b></dt>
+				<dd>in file APIErrors.php, constant <a href="TestlinkAPI/_APIErrors.php.html#defineINVALID_STATUS_STR">INVALID_STATUS_STR</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Constants</dd>
+							<dt><b>INVALID_TCID</b></dt>
+				<dd>in file APIErrors.php, constant <a href="TestlinkAPI/_APIErrors.php.html#defineINVALID_TCID">INVALID_TCID</a><br>&nbsp;&nbsp;&nbsp;&nbsp;5000 level - Test Case errors</dd>
+							<dt><b>INVALID_TCID_STR</b></dt>
+				<dd>in file APIErrors.php, constant <a href="TestlinkAPI/_APIErrors.php.html#defineINVALID_TCID_STR">INVALID_TCID_STR</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Constants</dd>
+							<dt><b>INVALID_TESTPROJECTID</b></dt>
+				<dd>in file APIErrors.php, constant <a href="TestlinkAPI/_APIErrors.php.html#defineINVALID_TESTPROJECTID">INVALID_TESTPROJECTID</a><br>&nbsp;&nbsp;&nbsp;&nbsp;7000 level - Test Project errors</dd>
+							<dt><b>INVALID_TESTPROJECTID_STR</b></dt>
+				<dd>in file APIErrors.php, constant <a href="TestlinkAPI/_APIErrors.php.html#defineINVALID_TESTPROJECTID_STR">INVALID_TESTPROJECTID_STR</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Constants</dd>
+							<dt><b>INVALID_TESTSUITEID</b></dt>
+				<dd>in file APIErrors.php, constant <a href="TestlinkAPI/_APIErrors.php.html#defineINVALID_TESTSUITEID">INVALID_TESTSUITEID</a><br>&nbsp;&nbsp;&nbsp;&nbsp;8000 level - Test Suite errors</dd>
+							<dt><b>INVALID_TESTSUITEID_STR</b></dt>
+				<dd>in file APIErrors.php, constant <a href="TestlinkAPI/_APIErrors.php.html#defineINVALID_TESTSUITEID_STR">INVALID_TESTSUITEID_STR</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Constants</dd>
+							<dt><b>INVALID_TPID</b></dt>
+				<dd>in file APIErrors.php, constant <a href="TestlinkAPI/_APIErrors.php.html#defineINVALID_TPID">INVALID_TPID</a><br>&nbsp;&nbsp;&nbsp;&nbsp;3000 level - Test Plan errors</dd>
+							<dt><b>INVALID_TPID_STR</b></dt>
+				<dd>in file APIErrors.php, constant <a href="TestlinkAPI/_APIErrors.php.html#defineINVALID_TPID_STR">INVALID_TPID_STR</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Constants</dd>
 					</dl>
 	</div>
 	<a name="n"></a>
@@ -182,6 +258,54 @@
 		<dl>
 							<dt><b>$noteParamName</b></dt>
 				<dd>in file xmlrpc.php, variable <a href="TestlinkAPI/TestlinkXMLRPCServer.html#var$noteParamName">TestlinkXMLRPCServer::$noteParamName</a><br>&nbsp;&nbsp;&nbsp;&nbsp;string for parameter names are all definied statically</dd>
+							<dt><b>NOT_YET_IMPLEMENTED</b></dt>
+				<dd>in file APIErrors.php, constant <a href="TestlinkAPI/_APIErrors.php.html#defineNOT_YET_IMPLEMENTED">NOT_YET_IMPLEMENTED</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Constants</dd>
+							<dt><b>NOT_YET_IMPLEMENTED_STR</b></dt>
+				<dd>in file APIErrors.php, constant <a href="TestlinkAPI/_APIErrors.php.html#defineNOT_YET_IMPLEMENTED_STR">NOT_YET_IMPLEMENTED_STR</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Constants</dd>
+							<dt><b>NO_BUILDID</b></dt>
+				<dd>in file APIErrors.php, constant <a href="TestlinkAPI/_APIErrors.php.html#defineNO_BUILDID">NO_BUILDID</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Constants</dd>
+							<dt><b>NO_BUILDID_STR</b></dt>
+				<dd>in file APIErrors.php, constant <a href="TestlinkAPI/_APIErrors.php.html#defineNO_BUILDID_STR">NO_BUILDID_STR</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Constants</dd>
+							<dt><b>NO_BUILD_FOR_TPID</b></dt>
+				<dd>in file APIErrors.php, constant <a href="TestlinkAPI/_APIErrors.php.html#defineNO_BUILD_FOR_TPID">NO_BUILD_FOR_TPID</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Constants</dd>
+							<dt><b>NO_BUILD_FOR_TPID_STR</b></dt>
+				<dd>in file APIErrors.php, constant <a href="TestlinkAPI/_APIErrors.php.html#defineNO_BUILD_FOR_TPID_STR">NO_BUILD_FOR_TPID_STR</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Constants</dd>
+							<dt><b>NO_DEV_KEY</b></dt>
+				<dd>in file APIErrors.php, constant <a href="TestlinkAPI/_APIErrors.php.html#defineNO_DEV_KEY">NO_DEV_KEY</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Error codes below 1000 are system level</dd>
+							<dt><b>NO_DEV_KEY_STR</b></dt>
+				<dd>in file APIErrors.php, constant <a href="TestlinkAPI/_APIErrors.php.html#defineNO_DEV_KEY_STR">NO_DEV_KEY_STR</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Constants</dd>
+							<dt><b>NO_STATUS</b></dt>
+				<dd>in file APIErrors.php, constant <a href="TestlinkAPI/_APIErrors.php.html#defineNO_STATUS">NO_STATUS</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Constants</dd>
+							<dt><b>NO_STATUS_STR</b></dt>
+				<dd>in file APIErrors.php, constant <a href="TestlinkAPI/_APIErrors.php.html#defineNO_STATUS_STR">NO_STATUS_STR</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Constants</dd>
+							<dt><b>NO_TCID</b></dt>
+				<dd>in file APIErrors.php, constant <a href="TestlinkAPI/_APIErrors.php.html#defineNO_TCID">NO_TCID</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Constants</dd>
+							<dt><b>NO_TCID_STR</b></dt>
+				<dd>in file APIErrors.php, constant <a href="TestlinkAPI/_APIErrors.php.html#defineNO_TCID_STR">NO_TCID_STR</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Constants</dd>
+							<dt><b>NO_TESTCASENAME</b></dt>
+				<dd>in file APIErrors.php, constant <a href="TestlinkAPI/_APIErrors.php.html#defineNO_TESTCASENAME">NO_TESTCASENAME</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Constants</dd>
+							<dt><b>NO_TESTCASENAME_STR</b></dt>
+				<dd>in file APIErrors.php, constant <a href="TestlinkAPI/_APIErrors.php.html#defineNO_TESTCASENAME_STR">NO_TESTCASENAME_STR</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Constants</dd>
+							<dt><b>NO_TESTCASE_BY_THIS_NAME</b></dt>
+				<dd>in file APIErrors.php, constant <a href="TestlinkAPI/_APIErrors.php.html#defineNO_TESTCASE_BY_THIS_NAME">NO_TESTCASE_BY_THIS_NAME</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Constants</dd>
+							<dt><b>NO_TESTCASE_BY_THIS_NAME_STR</b></dt>
+				<dd>in file APIErrors.php, constant <a href="TestlinkAPI/_APIErrors.php.html#defineNO_TESTCASE_BY_THIS_NAME_STR">NO_TESTCASE_BY_THIS_NAME_STR</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Constants</dd>
+							<dt><b>NO_TESTPROJECTID</b></dt>
+				<dd>in file APIErrors.php, constant <a href="TestlinkAPI/_APIErrors.php.html#defineNO_TESTPROJECTID">NO_TESTPROJECTID</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Constants</dd>
+							<dt><b>NO_TESTPROJECTID_STR</b></dt>
+				<dd>in file APIErrors.php, constant <a href="TestlinkAPI/_APIErrors.php.html#defineNO_TESTPROJECTID_STR">NO_TESTPROJECTID_STR</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Constants</dd>
+							<dt><b>NO_TESTSUITEID</b></dt>
+				<dd>in file APIErrors.php, constant <a href="TestlinkAPI/_APIErrors.php.html#defineNO_TESTSUITEID">NO_TESTSUITEID</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Constants</dd>
+							<dt><b>NO_TESTSUITEID_STR</b></dt>
+				<dd>in file APIErrors.php, constant <a href="TestlinkAPI/_APIErrors.php.html#defineNO_TESTSUITEID_STR">NO_TESTSUITEID_STR</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Constants</dd>
+							<dt><b>NO_TEST_MODE</b></dt>
+				<dd>in file APIErrors.php, constant <a href="TestlinkAPI/_APIErrors.php.html#defineNO_TEST_MODE">NO_TEST_MODE</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Constants</dd>
+							<dt><b>NO_TEST_MODE_STR</b></dt>
+				<dd>in file APIErrors.php, constant <a href="TestlinkAPI/_APIErrors.php.html#defineNO_TEST_MODE_STR">NO_TEST_MODE_STR</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Constants</dd>
+							<dt><b>NO_TPID</b></dt>
+				<dd>in file APIErrors.php, constant <a href="TestlinkAPI/_APIErrors.php.html#defineNO_TPID">NO_TPID</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Constants</dd>
+							<dt><b>NO_TPID_STR</b></dt>
+				<dd>in file APIErrors.php, constant <a href="TestlinkAPI/_APIErrors.php.html#defineNO_TPID_STR">NO_TPID_STR</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Constants</dd>
 					</dl>
 	</div>
 	<a name="r"></a>
@@ -231,12 +355,30 @@
 		<dl>
 							<dt><b>$tcidParamName</b></dt>
 				<dd>in file xmlrpc.php, variable <a href="TestlinkAPI/TestlinkXMLRPCServer.html#var$tcidParamName">TestlinkXMLRPCServer::$tcidParamName</a><br>&nbsp;&nbsp;&nbsp;&nbsp;string for parameter names are all definied statically</dd>
+							<dt><b>$testCaseNameParamName</b></dt>
+				<dd>in file xmlrpc.php, variable <a href="TestlinkAPI/TestlinkXMLRPCServer.html#var$testCaseNameParamName">TestlinkXMLRPCServer::$testCaseNameParamName</a><br>&nbsp;&nbsp;&nbsp;&nbsp;string for parameter names are all definied statically</dd>
 							<dt><b>$testModeParamName</b></dt>
 				<dd>in file xmlrpc.php, variable <a href="TestlinkAPI/TestlinkXMLRPCServer.html#var$testModeParamName">TestlinkXMLRPCServer::$testModeParamName</a><br>&nbsp;&nbsp;&nbsp;&nbsp;string for parameter names are all definied statically</dd>
+							<dt><b>$testProjectIDParamName</b></dt>
+				<dd>in file xmlrpc.php, variable <a href="TestlinkAPI/TestlinkXMLRPCServer.html#var$testProjectIDParamName">TestlinkXMLRPCServer::$testProjectIDParamName</a><br>&nbsp;&nbsp;&nbsp;&nbsp;string for parameter names are all definied statically</dd>
+							<dt><b>$testSuiteIDParamName</b></dt>
+				<dd>in file xmlrpc.php, variable <a href="TestlinkAPI/TestlinkXMLRPCServer.html#var$testSuiteIDParamName">TestlinkXMLRPCServer::$testSuiteIDParamName</a><br>&nbsp;&nbsp;&nbsp;&nbsp;string for parameter names are all definied statically</dd>
 							<dt><b>$timeStampParamName</b></dt>
 				<dd>in file xmlrpc.php, variable <a href="TestlinkAPI/TestlinkXMLRPCServer.html#var$timeStampParamName">TestlinkXMLRPCServer::$timeStampParamName</a><br>&nbsp;&nbsp;&nbsp;&nbsp;string for parameter names are all definied statically</dd>
 							<dt><b>$tpidParamName</b></dt>
 				<dd>in file xmlrpc.php, variable <a href="TestlinkAPI/TestlinkXMLRPCServer.html#var$tpidParamName">TestlinkXMLRPCServer::$tpidParamName</a><br>&nbsp;&nbsp;&nbsp;&nbsp;string for parameter names are all definied statically</dd>
+							<dt><b>TCID_NOT_INTEGER</b></dt>
+				<dd>in file APIErrors.php, constant <a href="TestlinkAPI/_APIErrors.php.html#defineTCID_NOT_INTEGER">TCID_NOT_INTEGER</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Constants</dd>
+							<dt><b>TCID_NOT_INTEGER_STR</b></dt>
+				<dd>in file APIErrors.php, constant <a href="TestlinkAPI/_APIErrors.php.html#defineTCID_NOT_INTEGER_STR">TCID_NOT_INTEGER_STR</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Constants</dd>
+							<dt><b>TCID_NOT_IN_TPID</b></dt>
+				<dd>in file APIErrors.php, constant <a href="TestlinkAPI/_APIErrors.php.html#defineTCID_NOT_IN_TPID">TCID_NOT_IN_TPID</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Constants</dd>
+							<dt><b>TCID_NOT_IN_TPID_STR</b></dt>
+				<dd>in file APIErrors.php, constant <a href="TestlinkAPI/_APIErrors.php.html#defineTCID_NOT_IN_TPID_STR">TCID_NOT_IN_TPID_STR</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Constants</dd>
+							<dt><b>TESTCASENAME_NOT_STRING</b></dt>
+				<dd>in file APIErrors.php, constant <a href="TestlinkAPI/_APIErrors.php.html#defineTESTCASENAME_NOT_STRING">TESTCASENAME_NOT_STRING</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Constants</dd>
+							<dt><b>TESTCASENAME_NOT_STRING_STR</b></dt>
+				<dd>in file APIErrors.php, constant <a href="TestlinkAPI/_APIErrors.php.html#defineTESTCASENAME_NOT_STRING_STR">TESTCASENAME_NOT_STRING_STR</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Constants</dd>
 							<dt><b>TestlinkXMLRPCServer</b></dt>
 				<dd>in file xmlrpc.php, class <a href="TestlinkAPI/TestlinkXMLRPCServer.html">TestlinkXMLRPCServer</a><br>&nbsp;&nbsp;&nbsp;&nbsp;The entry class for serving XML-RPC Requests</dd>
 							<dt><b>TEST_DB_HOST</b></dt>
@@ -251,6 +393,23 @@
 				<dd>in file api.const.inc.php, constant <a href="TestlinkAPI/_api.const.inc.php.html#defineTEST_DB_USER">TEST_DB_USER</a></dd>
 							<dt><b>TEST_DSN</b></dt>
 				<dd>in file api.const.inc.php, constant <a href="TestlinkAPI/_api.const.inc.php.html#defineTEST_DSN">TEST_DSN</a><br>&nbsp;&nbsp;&nbsp;&nbsp;DB Constants used for testing</dd>
+							<dt><b>TPID_NOT_INTEGER</b></dt>
+				<dd>in file APIErrors.php, constant <a href="TestlinkAPI/_APIErrors.php.html#defineTPID_NOT_INTEGER">TPID_NOT_INTEGER</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Constants</dd>
+							<dt><b>TPID_NOT_INTEGER_STR</b></dt>
+				<dd>in file APIErrors.php, constant <a href="TestlinkAPI/_APIErrors.php.html#defineTPID_NOT_INTEGER_STR">TPID_NOT_INTEGER_STR</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Constants</dd>
+					</dl>
+	</div>
+	<a name="u"></a>
+	<div class="index-letter-section">
+		<div style="float: left" class="index-letter-title">u</div>
+		<div style="float: right"><a href="#top">[Top]</a></div>
+		<div style="clear: both"></div>
+	</div>
+	<div>
+		<h2>u</h2>
+		<dl>
+							<dt><b>updateTestCase</b></dt>
+				<dd>in file xmlrpc.php, method <a href="TestlinkAPI/TestlinkXMLRPCServer.html#methodupdateTestCase">TestlinkXMLRPCServer::updateTestCase()</a><br>&nbsp;&nbsp;&nbsp;&nbsp;Update an existing test case</dd>
 					</dl>
 	</div>
 	<a name="v"></a>
@@ -283,7 +442,7 @@
 	</div>
         <div class="credit">
 		    <hr class="separator" />
-		    Documentation generated on Thu, 15 Nov 2007 15:32:43 -0700 by <a href="http://www.phpdoc.org">phpDocumentor 1.4.0a2</a>
+		    Documentation generated on Mon, 03 Dec 2007 14:42:58 -0700 by <a href="http://www.phpdoc.org">phpDocumentor 1.4.0</a>
 	      </div>
       </td></tr></table>
     </td>

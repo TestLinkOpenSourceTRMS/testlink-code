@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 -- 
 -- Host: localhost
--- Generation Time: Nov 07, 2007 at 04:13 PM
+-- Generation Time: Dec 03, 2007 at 01:28 PM
 -- Server version: 5.0.41
 -- PHP Version: 5.2.3
 
@@ -127,14 +127,18 @@ CREATE TABLE `builds` (
   PRIMARY KEY  (`id`),
   UNIQUE KEY `name` (`testplan_id`,`name`),
   KEY `testplan_id` (`testplan_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='Available builds' AUTO_INCREMENT=2 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='Available builds' AUTO_INCREMENT=6 ;
 
 -- 
 -- Dumping data for table `builds`
 -- 
 
 INSERT INTO `builds` (`id`, `testplan_id`, `name`, `notes`, `active`, `is_open`) VALUES 
-(1, 2, 'A build for the test plan', '<p>Have to build some time</p>', 1, 1);
+(1, 2, 'A build for the test plan', '<p>Have to build some time</p>', 1, 1),
+(2, 2, 'Another test build from 12/03/07 13:25:31', 'NULL', 1, 1),
+(3, 2, 'Another notes test build from 12/03/07 13:25:31', 'Some notes from the build created at 12/03/07 13:25:31', 1, 1),
+(4, 2, 'Another test build from 12/03/07 13:27:08', 'NULL', 1, 1),
+(5, 2, 'Another notes test build from 12/03/07 13:27:08', 'Some notes from the build created at 12/03/07 13:27:08', 1, 1);
 
 -- --------------------------------------------------------
 
@@ -287,7 +291,7 @@ CREATE TABLE `executions` (
   PRIMARY KEY  (`id`),
   KEY `testplan_id_tcversion_id` (`testplan_id`,`tcversion_id`),
   KEY `automated` (`automated`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=13 ;
 
 -- 
 -- Dumping data for table `executions`
@@ -295,7 +299,17 @@ CREATE TABLE `executions` (
 
 INSERT INTO `executions` (`id`, `build_id`, `tester_id`, `execution_ts`, `status`, `testplan_id`, `tcversion_id`, `notes`, `automated`) VALUES 
 (1, 1, 1, '2007-11-07 15:00:29', 'f', 2, 8, '', NULL),
-(2, 1, 1, '2007-11-07 15:00:36', 'p', 2, 7, '', NULL);
+(2, 1, 1, '2007-11-07 15:00:36', 'p', 2, 7, '', NULL),
+(3, 1, 1, '2007-12-03 13:25:30', 'b', 2, 8, NULL, 1),
+(4, 1, 1, '2007-12-03 13:25:30', 'p', 2, 8, NULL, 1),
+(5, 1, 1, '2007-12-03 13:25:30', 'f', 2, 8, NULL, 1),
+(6, 1, 1, '2007-12-03 13:25:30', 'p', 2, 8, NULL, 1),
+(7, 1, 1, '2007-12-03 13:25:30', 'f', 2, 8, NULL, 1),
+(8, 3, 1, '2007-12-03 13:27:07', 'b', 2, 8, NULL, 1),
+(9, 3, 1, '2007-12-03 13:27:07', 'p', 2, 8, NULL, 1),
+(10, 3, 1, '2007-12-03 13:27:07', 'f', 2, 8, NULL, 1),
+(11, 3, 1, '2007-12-03 13:27:08', 'p', 2, 8, NULL, 1),
+(12, 1, 1, '2007-12-03 13:27:08', 'f', 2, 8, NULL, 1);
 
 -- --------------------------------------------------------
 
@@ -376,7 +390,7 @@ CREATE TABLE `nodes_hierarchy` (
   `node_order` int(10) unsigned default NULL,
   PRIMARY KEY  (`id`),
   KEY `pid_m_nodeorder` (`parent_id`,`node_order`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=10 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=13 ;
 
 -- 
 -- Dumping data for table `nodes_hierarchy`
@@ -391,7 +405,10 @@ INSERT INTO `nodes_hierarchy` (`id`, `name`, `parent_id`, `node_type_id`, `node_
 (6, 'Another test case', 3, 3, 100),
 (7, '', 6, 4, 0),
 (8, '', 4, 4, 0),
-(9, '', 4, 4, 0);
+(9, '', 4, 4, 0),
+(10, 'child suite 1', 3, 2, 1),
+(11, 'test case in child suite', 10, 3, 100),
+(12, '', 11, 4, 0);
 
 -- --------------------------------------------------------
 
@@ -732,7 +749,8 @@ INSERT INTO `tcversions` (`id`, `version`, `summary`, `steps`, `expected_results
 (5, 1, '<p>This test case should do some stuff</p>', '<p>1. create a tc</p>\r\n<p>2. execute it</p>', '<p>The test should have executed</p>', 'M', 51, '2007-11-01 14:09:36', NULL, '0000-00-00 00:00:00', 1, 1),
 (7, 1, '<p>more things to do</p>', '<p>Wash windows</p>', '<p>The windows should be sparkly clean</p>', 'M', 51, '2007-11-01 14:10:05', NULL, '0000-00-00 00:00:00', 1, 1),
 (8, 2, '<p>This test case should do some stuff. This is a new version.</p>', '<p>1. create a tc</p>\r\n<p>2. execute it</p>\r\n<p>3. do more stuff</p>', '<p>The test should have executed</p>', 'M', 1, '2007-11-07 14:41:46', 1, '2007-11-07 14:42:14', 1, 1),
-(9, 3, '<p>This test case should do some stuff. This is yet another new version.</p>', '<p>1. create a tc</p>\r\n<p>2. execute it</p>\r\n<p>3. do more stuff</p>', '<p>The test should have executed</p>', 'M', 1, '2007-11-07 15:04:03', 1, '2007-11-07 15:04:21', 1, 1);
+(9, 3, '<p>This test case should do some stuff. This is yet another new version.</p>', '<p>1. create a tc</p>\r\n<p>2. execute it</p>\r\n<p>3. do more stuff</p>', '<p>The test should have executed</p>', 'M', 1, '2007-11-07 15:04:03', 1, '2007-11-07 15:04:21', 1, 1),
+(12, 1, '', '', '', 'M', 1, '2007-12-03 13:26:52', NULL, '0000-00-00 00:00:00', 1, 1);
 
 -- --------------------------------------------------------
 
@@ -842,7 +860,8 @@ CREATE TABLE `testsuites` (
 -- 
 
 INSERT INTO `testsuites` (`id`, `details`) VALUES 
-(3, '<p>A suite</p>');
+(3, '<p>A suite</p>'),
+(10, '');
 
 -- --------------------------------------------------------
 

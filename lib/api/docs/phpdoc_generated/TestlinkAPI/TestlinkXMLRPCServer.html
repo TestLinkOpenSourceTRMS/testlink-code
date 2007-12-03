@@ -38,6 +38,7 @@
                         <b>Files:</b><br />
         <div class="package">
 				<span style="padding-left: 1em;"><a href="../TestlinkAPI/_api.const.inc.php.html">api.const.inc.php</a></span><br />
+			<span style="padding-left: 1em;"><a href="../TestlinkAPI/_APIErrors.php.html">APIErrors.php</a></span><br />
 			<span style="padding-left: 1em;"><a href="../TestlinkAPI/_sample_clients---php---clientSample.php.html">clientSample.php</a></span><br />
 			<span style="padding-left: 1em;"><a href="../TestlinkAPI/_xmlrpc.php.html">xmlrpc.php</a></span><br />
 	  </div>
@@ -72,7 +73,7 @@ Source Location: /xmlrpc.php<br /><br />
 </strong></p>
 <span class="description"><p>See examples for additional detail</p></span>
 		<p class="notes">
-			Located in <a class="field" href="_xmlrpc.php.html">/xmlrpc.php</a> [<span class="field">line 48</span>]
+			Located in <a class="field" href="_xmlrpc.php.html">/xmlrpc.php</a> [<span class="field">line 51</span>]
 		</p>
 
 		
@@ -116,12 +117,17 @@ Source Location: /xmlrpc.php<br /><br />
 		  		  <li><a href="../TestlinkAPI/TestlinkXMLRPCServer.html#var$automatedParamName">$automatedParamName</a></li>
 		  		  <li><a href="../TestlinkAPI/TestlinkXMLRPCServer.html#var$buildidParamName">$buildidParamName</a></li>
 		  		  <li><a href="../TestlinkAPI/TestlinkXMLRPCServer.html#var$buildNameParamName">$buildNameParamName</a></li>
+		  		  <li><a href="../TestlinkAPI/TestlinkXMLRPCServer.html#var$buildNotesParamName">$buildNotesParamName</a></li>
+		  		  <li><a href="../TestlinkAPI/TestlinkXMLRPCServer.html#var$deepParamName">$deepParamName</a></li>
 		  		  <li><a href="../TestlinkAPI/TestlinkXMLRPCServer.html#var$devKeyParamName">$devKeyParamName</a></li>
 		  		  <li><a href="../TestlinkAPI/TestlinkXMLRPCServer.html#var$guessParamName">$guessParamName</a></li>
 		  		  <li><a href="../TestlinkAPI/TestlinkXMLRPCServer.html#var$noteParamName">$noteParamName</a></li>
 		  		  <li><a href="../TestlinkAPI/TestlinkXMLRPCServer.html#var$statusParamName">$statusParamName</a></li>
 		  		  <li><a href="../TestlinkAPI/TestlinkXMLRPCServer.html#var$tcidParamName">$tcidParamName</a></li>
+		  		  <li><a href="../TestlinkAPI/TestlinkXMLRPCServer.html#var$testCaseNameParamName">$testCaseNameParamName</a></li>
 		  		  <li><a href="../TestlinkAPI/TestlinkXMLRPCServer.html#var$testModeParamName">$testModeParamName</a></li>
+		  		  <li><a href="../TestlinkAPI/TestlinkXMLRPCServer.html#var$testProjectIDParamName">$testProjectIDParamName</a></li>
+		  		  <li><a href="../TestlinkAPI/TestlinkXMLRPCServer.html#var$testSuiteIDParamName">$testSuiteIDParamName</a></li>
 		  		  <li><a href="../TestlinkAPI/TestlinkXMLRPCServer.html#var$timeStampParamName">$timeStampParamName</a></li>
 		  		  <li><a href="../TestlinkAPI/TestlinkXMLRPCServer.html#var$tpidParamName">$tpidParamName</a></li>
 		  		  <li><a href="../TestlinkAPI/TestlinkXMLRPCServer.html#var$validStatusList">$validStatusList</a></li>
@@ -139,15 +145,23 @@ Source Location: /xmlrpc.php<br /><br />
 		  		  <li><a href="../TestlinkAPI/TestlinkXMLRPCServer.html#methodcheckGuess">checkGuess</a></li>
 		  		  <li><a href="../TestlinkAPI/TestlinkXMLRPCServer.html#methodcheckStatus">checkStatus</a></li>
 		  		  <li><a href="../TestlinkAPI/TestlinkXMLRPCServer.html#methodcheckTCID">checkTCID</a></li>
+		  		  <li><a href="../TestlinkAPI/TestlinkXMLRPCServer.html#methodcheckTestCaseName">checkTestCaseName</a></li>
+		  		  <li><a href="../TestlinkAPI/TestlinkXMLRPCServer.html#methodcheckTestProjectID">checkTestProjectID</a></li>
+		  		  <li><a href="../TestlinkAPI/TestlinkXMLRPCServer.html#methodcheckTestSuiteID">checkTestSuiteID</a></li>
 		  		  <li><a href="../TestlinkAPI/TestlinkXMLRPCServer.html#methodcheckTPID">checkTPID</a></li>
 		  		  <li><a href="../TestlinkAPI/TestlinkXMLRPCServer.html#methodcreateBuild">createBuild</a></li>
+		  		  <li><a href="../TestlinkAPI/TestlinkXMLRPCServer.html#methodcreateTestCase">createTestCase</a></li>
 		  		  <li><a href="../TestlinkAPI/TestlinkXMLRPCServer.html#methodgetLatestBuildForTestPlan">getLatestBuildForTestPlan</a></li>
 		  		  <li><a href="../TestlinkAPI/TestlinkXMLRPCServer.html#methodgetProjects">getProjects</a></li>
 		  		  <li><a href="../TestlinkAPI/TestlinkXMLRPCServer.html#methodgetProjectTestPlans">getProjectTestPlans</a></li>
+		  		  <li><a href="../TestlinkAPI/TestlinkXMLRPCServer.html#methodgetTestCaseIDByName">getTestCaseIDByName</a></li>
+		  		  <li><a href="../TestlinkAPI/TestlinkXMLRPCServer.html#methodgetTestCasesForTestSuite">getTestCasesForTestSuite</a></li>
+		  		  <li><a href="../TestlinkAPI/TestlinkXMLRPCServer.html#methodgetTestSuitesForTestPlan">getTestSuitesForTestPlan</a></li>
 		  		  <li><a href="../TestlinkAPI/TestlinkXMLRPCServer.html#methodrepeat">repeat</a></li>
 		  		  <li><a href="../TestlinkAPI/TestlinkXMLRPCServer.html#methodreportTCResult">reportTCResult</a></li>
 		  		  <li><a href="../TestlinkAPI/TestlinkXMLRPCServer.html#methodsayHello">sayHello</a></li>
 		  		  <li><a href="../TestlinkAPI/TestlinkXMLRPCServer.html#methodsetTestMode">setTestMode</a></li>
+		  		  <li><a href="../TestlinkAPI/TestlinkXMLRPCServer.html#methodupdateTestCase">updateTestCase</a></li>
 		  		</ul>
 		</td>
 		
@@ -187,6 +201,16 @@ Source Location: /xmlrpc.php<br /><br />
 				</div>
 													<div class="var-title">
 					<tr><td class="var-title">static <span class="var-type-summary">mixed</span>&nbsp;&nbsp;</td>
+					<td class="var-title"><a href="#$buildNotesParamName" title="details" class="var-name-summary">$buildNotesParamName</a>&nbsp;&nbsp;</td>
+					<td class="var-summary-description">string for parameter names are all definied statically</td></tr>
+				</div>
+													<div class="var-title">
+					<tr><td class="var-title">static <span class="var-type-summary">mixed</span>&nbsp;&nbsp;</td>
+					<td class="var-title"><a href="#$deepParamName" title="details" class="var-name-summary">$deepParamName</a>&nbsp;&nbsp;</td>
+					<td class="var-summary-description">string for parameter names are all definied statically</td></tr>
+				</div>
+													<div class="var-title">
+					<tr><td class="var-title">static <span class="var-type-summary">mixed</span>&nbsp;&nbsp;</td>
 					<td class="var-title"><a href="#$devKeyParamName" title="details" class="var-name-summary">$devKeyParamName</a>&nbsp;&nbsp;</td>
 					<td class="var-summary-description">string for parameter names are all definied statically</td></tr>
 				</div>
@@ -212,7 +236,22 @@ Source Location: /xmlrpc.php<br /><br />
 				</div>
 													<div class="var-title">
 					<tr><td class="var-title">static <span class="var-type-summary">mixed</span>&nbsp;&nbsp;</td>
+					<td class="var-title"><a href="#$testCaseNameParamName" title="details" class="var-name-summary">$testCaseNameParamName</a>&nbsp;&nbsp;</td>
+					<td class="var-summary-description">string for parameter names are all definied statically</td></tr>
+				</div>
+													<div class="var-title">
+					<tr><td class="var-title">static <span class="var-type-summary">mixed</span>&nbsp;&nbsp;</td>
 					<td class="var-title"><a href="#$testModeParamName" title="details" class="var-name-summary">$testModeParamName</a>&nbsp;&nbsp;</td>
+					<td class="var-summary-description">string for parameter names are all definied statically</td></tr>
+				</div>
+													<div class="var-title">
+					<tr><td class="var-title">static <span class="var-type-summary">mixed</span>&nbsp;&nbsp;</td>
+					<td class="var-title"><a href="#$testProjectIDParamName" title="details" class="var-name-summary">$testProjectIDParamName</a>&nbsp;&nbsp;</td>
+					<td class="var-summary-description">string for parameter names are all definied statically</td></tr>
+				</div>
+													<div class="var-title">
+					<tr><td class="var-title">static <span class="var-type-summary">mixed</span>&nbsp;&nbsp;</td>
+					<td class="var-title"><a href="#$testSuiteIDParamName" title="details" class="var-name-summary">$testSuiteIDParamName</a>&nbsp;&nbsp;</td>
 					<td class="var-summary-description">string for parameter names are all definied statically</td></tr>
 				</div>
 													<div class="var-title">
@@ -235,7 +274,7 @@ Source Location: /xmlrpc.php<br /><br />
 					<td class="var-title"><a href="#$version" title="details" class="var-name-summary">$version</a>&nbsp;&nbsp;</td>
 					<td class="var-summary-description"></td></tr>
 				</div>
-																																																																																											</table>
+																																																																																																																									</table>
 			</div>
 			<br /><div class="top">[ <a href="#top">Top</a> ]</div>
 		</div>
@@ -252,7 +291,7 @@ Source Location: /xmlrpc.php<br /><br />
 		<div class="info-box-body">
 			<div class="method-summary">
 				<table border="0" cellspacing="0" cellpadding="0" class="method-summary">
-																																																																																																																																																<div class="method-definition">
+																																																																																																																																																																																																																<div class="method-definition">
 											<tr><td class="method-definition"><span class="method-result">TestlinkXMLRPCServer</span>&nbsp;&nbsp;</td>
 										<td class="method-definition"><a href="#__construct" title="details" class="method-name">__construct</a>()&nbsp;&nbsp;</td>
 					<td class="method-definition">Constructor sets up the IXR_Server and db connection</td></tr>
@@ -289,6 +328,21 @@ Source Location: /xmlrpc.php<br /><br />
 				</div>
 																<div class="method-definition">
 											<tr><td class="method-definition"><span class="method-result">boolean</span>&nbsp;&nbsp;</td>
+										<td class="method-definition"><a href="#checkTestCaseName" title="details" class="method-name">checkTestCaseName</a>()&nbsp;&nbsp;</td>
+					<td class="method-definition">Helper method to see if the testcasename provided is valid</td></tr>
+				</div>
+																<div class="method-definition">
+											<tr><td class="method-definition"><span class="method-result">boolean</span>&nbsp;&nbsp;</td>
+										<td class="method-definition"><a href="#checkTestProjectID" title="details" class="method-name">checkTestProjectID</a>()&nbsp;&nbsp;</td>
+					<td class="method-definition">Helper method to see if the TestProjectID provided is valid</td></tr>
+				</div>
+																<div class="method-definition">
+											<tr><td class="method-definition"><span class="method-result">boolean</span>&nbsp;&nbsp;</td>
+										<td class="method-definition"><a href="#checkTestSuiteID" title="details" class="method-name">checkTestSuiteID</a>()&nbsp;&nbsp;</td>
+					<td class="method-definition">Helper method to see if the TestSuiteID provided is valid</td></tr>
+				</div>
+																<div class="method-definition">
+											<tr><td class="method-definition"><span class="method-result">boolean</span>&nbsp;&nbsp;</td>
 										<td class="method-definition"><a href="#checkTPID" title="details" class="method-name">checkTPID</a>()&nbsp;&nbsp;</td>
 					<td class="method-definition">Helper method to see if the TPID provided is valid</td></tr>
 				</div>
@@ -298,6 +352,11 @@ Source Location: /xmlrpc.php<br /><br />
 					<td class="method-definition">Creates a new build for a specific test plan</td></tr>
 				</div>
 																<div class="method-definition">
+											<tr><td class="method-definition"><span class="method-result">void</span>&nbsp;&nbsp;</td>
+										<td class="method-definition"><a href="#createTestCase" title="details" class="method-name">createTestCase</a>()&nbsp;&nbsp;</td>
+					<td class="method-definition">Create a new test case</td></tr>
+				</div>
+																<div class="method-definition">
 											<tr><td class="method-definition"><span class="method-result">int</span>&nbsp;&nbsp;</td>
 										<td class="method-definition"><a href="#getLatestBuildForTestPlan" title="details" class="method-name">getLatestBuildForTestPlan</a>()&nbsp;&nbsp;</td>
 					<td class="method-definition">Gets the latest build by date for a specific test plan</td></tr>
@@ -305,12 +364,27 @@ Source Location: /xmlrpc.php<br /><br />
 																<div class="method-definition">
 											<tr><td class="method-definition"><span class="method-result">mixed</span>&nbsp;&nbsp;</td>
 										<td class="method-definition"><a href="#getProjects" title="details" class="method-name">getProjects</a>()&nbsp;&nbsp;</td>
-					<td class="method-definition">Gets a list of all active projects</td></tr>
+					<td class="method-definition">Gets a list of all projects</td></tr>
 				</div>
 																<div class="method-definition">
 											<tr><td class="method-definition"><span class="method-result">mixed</span>&nbsp;&nbsp;</td>
 										<td class="method-definition"><a href="#getProjectTestPlans" title="details" class="method-name">getProjectTestPlans</a>()&nbsp;&nbsp;</td>
 					<td class="method-definition">Gets a list of test plans within a project</td></tr>
+				</div>
+																<div class="method-definition">
+											<tr><td class="method-definition"><span class="method-result">mixed</span>&nbsp;&nbsp;</td>
+										<td class="method-definition"><a href="#getTestCaseIDByName" title="details" class="method-name">getTestCaseIDByName</a>()&nbsp;&nbsp;</td>
+					<td class="method-definition">Find a test case by its name</td></tr>
+				</div>
+																<div class="method-definition">
+											<tr><td class="method-definition"><span class="method-result">mixed</span>&nbsp;&nbsp;</td>
+										<td class="method-definition"><a href="#getTestCasesForTestSuite" title="details" class="method-name">getTestCasesForTestSuite</a>()&nbsp;&nbsp;</td>
+					<td class="method-definition">List test cases within a test suite</td></tr>
+				</div>
+																<div class="method-definition">
+											<tr><td class="method-definition"><span class="method-result">mixed</span>&nbsp;&nbsp;</td>
+										<td class="method-definition"><a href="#getTestSuitesForTestPlan" title="details" class="method-name">getTestSuitesForTestPlan</a>()&nbsp;&nbsp;</td>
+					<td class="method-definition">List test suites within a test plan</td></tr>
 				</div>
 																<div class="method-definition">
 											<tr><td class="method-definition"><span class="method-result">string</span>&nbsp;&nbsp;</td>
@@ -331,6 +405,11 @@ Source Location: /xmlrpc.php<br /><br />
 											<tr><td class="method-definition"><span class="method-result">boolean</span>&nbsp;&nbsp;</td>
 										<td class="method-definition"><a href="#setTestMode" title="details" class="method-name">setTestMode</a>()&nbsp;&nbsp;</td>
 					<td class="method-definition">turn on/off testMode</td></tr>
+				</div>
+																<div class="method-definition">
+											<tr><td class="method-definition"><span class="method-result">void</span>&nbsp;&nbsp;</td>
+										<td class="method-definition"><a href="#updateTestCase" title="details" class="method-name">updateTestCase</a>()&nbsp;&nbsp;</td>
+					<td class="method-definition">Update an existing test case</td></tr>
 				</div>
 												</table>
 			</div>
@@ -354,7 +433,7 @@ Source Location: /xmlrpc.php<br /><br />
 		<span class="var-title">
 			static <span class="var-type">mixed</span>&nbsp;&nbsp;
 			<span class="var-name">$automatedParamName</span>
-			 = <span class="var-default"> &quot;automated&quot;</span>			<span class="smalllinenumber">[line 84]</span>
+			 = <span class="var-default"> &quot;automated&quot;</span>			<span class="smalllinenumber">[line 92]</span>
 		</span>
 	</div>
 
@@ -380,7 +459,7 @@ Source Location: /xmlrpc.php<br /><br />
 		<span class="var-title">
 			static <span class="var-type">mixed</span>&nbsp;&nbsp;
 			<span class="var-name">$buildidParamName</span>
-			 = <span class="var-default"> &quot;buildid&quot;</span>			<span class="smalllinenumber">[line 78]</span>
+			 = <span class="var-default"> &quot;buildid&quot;</span>			<span class="smalllinenumber">[line 84]</span>
 		</span>
 	</div>
 
@@ -406,7 +485,59 @@ Source Location: /xmlrpc.php<br /><br />
 		<span class="var-title">
 			static <span class="var-type">mixed</span>&nbsp;&nbsp;
 			<span class="var-name">$buildNameParamName</span>
-			 = <span class="var-default"> &quot;buildname&quot;</span>			<span class="smalllinenumber">[line 83]</span>
+			 = <span class="var-default"> &quot;buildname&quot;</span>			<span class="smalllinenumber">[line 90]</span>
+		</span>
+	</div>
+
+	<p align="center" class="short-description"><strong>string for parameter names are all definied statically
+</strong></p>
+	<strong>API Tags:</strong><br />
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td class="indent"><strong>Access:</strong>&nbsp;&nbsp;</td><td>public</td>
+  </tr>
+</table>
+<br />
+
+
+	
+		<br />
+	<div class="top">[ <a href="#top">Top</a> ]</div>
+</div>
+<a name="var$buildNotesParamName" id="$buildNotesParamName"><!-- --></A>
+<div class="oddrow">
+
+	<div class="var-header">
+		<span class="var-title">
+			static <span class="var-type">mixed</span>&nbsp;&nbsp;
+			<span class="var-name">$buildNotesParamName</span>
+			 = <span class="var-default"> &quot;buildnotes&quot;</span>			<span class="smalllinenumber">[line 91]</span>
+		</span>
+	</div>
+
+	<p align="center" class="short-description"><strong>string for parameter names are all definied statically
+</strong></p>
+	<strong>API Tags:</strong><br />
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td class="indent"><strong>Access:</strong>&nbsp;&nbsp;</td><td>public</td>
+  </tr>
+</table>
+<br />
+
+
+	
+		<br />
+	<div class="top">[ <a href="#top">Top</a> ]</div>
+</div>
+<a name="var$deepParamName" id="$deepParamName"><!-- --></A>
+<div class="evenrow">
+
+	<div class="var-header">
+		<span class="var-title">
+			static <span class="var-type">mixed</span>&nbsp;&nbsp;
+			<span class="var-name">$deepParamName</span>
+			 = <span class="var-default"> &quot;deep&quot;</span>			<span class="smalllinenumber">[line 88]</span>
 		</span>
 	</div>
 
@@ -432,7 +563,7 @@ Source Location: /xmlrpc.php<br /><br />
 		<span class="var-title">
 			static <span class="var-type">mixed</span>&nbsp;&nbsp;
 			<span class="var-name">$devKeyParamName</span>
-			 = <span class="var-default"> &quot;devKey&quot;</span>			<span class="smalllinenumber">[line 74]</span>
+			 = <span class="var-default"> &quot;devKey&quot;</span>			<span class="smalllinenumber">[line 77]</span>
 		</span>
 	</div>
 
@@ -458,7 +589,7 @@ Source Location: /xmlrpc.php<br /><br />
 		<span class="var-title">
 			static <span class="var-type">mixed</span>&nbsp;&nbsp;
 			<span class="var-name">$guessParamName</span>
-			 = <span class="var-default"> &quot;guess&quot;</span>			<span class="smalllinenumber">[line 81]</span>
+			 = <span class="var-default"> &quot;guess&quot;</span>			<span class="smalllinenumber">[line 87]</span>
 		</span>
 	</div>
 
@@ -484,7 +615,7 @@ Source Location: /xmlrpc.php<br /><br />
 		<span class="var-title">
 			static <span class="var-type">mixed</span>&nbsp;&nbsp;
 			<span class="var-name">$noteParamName</span>
-			 = <span class="var-default"> &quot;note&quot;</span>			<span class="smalllinenumber">[line 79]</span>
+			 = <span class="var-default"> &quot;note&quot;</span>			<span class="smalllinenumber">[line 85]</span>
 		</span>
 	</div>
 
@@ -510,7 +641,7 @@ Source Location: /xmlrpc.php<br /><br />
 		<span class="var-title">
 			static <span class="var-type">mixed</span>&nbsp;&nbsp;
 			<span class="var-name">$statusParamName</span>
-			 = <span class="var-default"> &quot;status&quot;</span>			<span class="smalllinenumber">[line 77]</span>
+			 = <span class="var-default"> &quot;status&quot;</span>			<span class="smalllinenumber">[line 83]</span>
 		</span>
 	</div>
 
@@ -536,7 +667,33 @@ Source Location: /xmlrpc.php<br /><br />
 		<span class="var-title">
 			static <span class="var-type">mixed</span>&nbsp;&nbsp;
 			<span class="var-name">$tcidParamName</span>
-			 = <span class="var-default"> &quot;tcid&quot;</span>			<span class="smalllinenumber">[line 75]</span>
+			 = <span class="var-default"> &quot;tcid&quot;</span>			<span class="smalllinenumber">[line 78]</span>
+		</span>
+	</div>
+
+	<p align="center" class="short-description"><strong>string for parameter names are all definied statically
+</strong></p>
+	<strong>API Tags:</strong><br />
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td class="indent"><strong>Access:</strong>&nbsp;&nbsp;</td><td>public</td>
+  </tr>
+</table>
+<br />
+
+
+	
+		<br />
+	<div class="top">[ <a href="#top">Top</a> ]</div>
+</div>
+<a name="var$testCaseNameParamName" id="$testCaseNameParamName"><!-- --></A>
+<div class="evenrow">
+
+	<div class="var-header">
+		<span class="var-title">
+			static <span class="var-type">mixed</span>&nbsp;&nbsp;
+			<span class="var-name">$testCaseNameParamName</span>
+			 = <span class="var-default"> &quot;testcasename&quot;</span>			<span class="smalllinenumber">[line 93]</span>
 		</span>
 	</div>
 
@@ -556,13 +713,65 @@ Source Location: /xmlrpc.php<br /><br />
 	<div class="top">[ <a href="#top">Top</a> ]</div>
 </div>
 <a name="var$testModeParamName" id="$testModeParamName"><!-- --></A>
-<div class="evenrow">
+<div class="oddrow">
 
 	<div class="var-header">
 		<span class="var-title">
 			static <span class="var-type">mixed</span>&nbsp;&nbsp;
 			<span class="var-name">$testModeParamName</span>
-			 = <span class="var-default"> &quot;testmode&quot;</span>			<span class="smalllinenumber">[line 82]</span>
+			 = <span class="var-default"> &quot;testmode&quot;</span>			<span class="smalllinenumber">[line 89]</span>
+		</span>
+	</div>
+
+	<p align="center" class="short-description"><strong>string for parameter names are all definied statically
+</strong></p>
+	<strong>API Tags:</strong><br />
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td class="indent"><strong>Access:</strong>&nbsp;&nbsp;</td><td>public</td>
+  </tr>
+</table>
+<br />
+
+
+	
+		<br />
+	<div class="top">[ <a href="#top">Top</a> ]</div>
+</div>
+<a name="var$testProjectIDParamName" id="$testProjectIDParamName"><!-- --></A>
+<div class="evenrow">
+
+	<div class="var-header">
+		<span class="var-title">
+			static <span class="var-type">mixed</span>&nbsp;&nbsp;
+			<span class="var-name">$testProjectIDParamName</span>
+			 = <span class="var-default"> &quot;testprojectid&quot;</span>			<span class="smalllinenumber">[line 81]</span>
+		</span>
+	</div>
+
+	<p align="center" class="short-description"><strong>string for parameter names are all definied statically
+</strong></p>
+	<strong>API Tags:</strong><br />
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td class="indent"><strong>Access:</strong>&nbsp;&nbsp;</td><td>public</td>
+  </tr>
+</table>
+<br />
+
+
+	
+		<br />
+	<div class="top">[ <a href="#top">Top</a> ]</div>
+</div>
+<a name="var$testSuiteIDParamName" id="$testSuiteIDParamName"><!-- --></A>
+<div class="oddrow">
+
+	<div class="var-header">
+		<span class="var-title">
+			static <span class="var-type">mixed</span>&nbsp;&nbsp;
+			<span class="var-name">$testSuiteIDParamName</span>
+			 = <span class="var-default"> &quot;testsuiteid&quot;</span>			<span class="smalllinenumber">[line 82]</span>
 		</span>
 	</div>
 
@@ -582,13 +791,13 @@ Source Location: /xmlrpc.php<br /><br />
 	<div class="top">[ <a href="#top">Top</a> ]</div>
 </div>
 <a name="var$timeStampParamName" id="$timeStampParamName"><!-- --></A>
-<div class="oddrow">
+<div class="evenrow">
 
 	<div class="var-header">
 		<span class="var-title">
 			static <span class="var-type">mixed</span>&nbsp;&nbsp;
 			<span class="var-name">$timeStampParamName</span>
-			 = <span class="var-default"> &quot;timestamp&quot;</span>			<span class="smalllinenumber">[line 80]</span>
+			 = <span class="var-default"> &quot;timestamp&quot;</span>			<span class="smalllinenumber">[line 86]</span>
 		</span>
 	</div>
 
@@ -608,13 +817,13 @@ Source Location: /xmlrpc.php<br /><br />
 	<div class="top">[ <a href="#top">Top</a> ]</div>
 </div>
 <a name="var$tpidParamName" id="$tpidParamName"><!-- --></A>
-<div class="evenrow">
+<div class="oddrow">
 
 	<div class="var-header">
 		<span class="var-title">
 			static <span class="var-type">mixed</span>&nbsp;&nbsp;
 			<span class="var-name">$tpidParamName</span>
-			 = <span class="var-default"> &quot;tpid&quot;</span>			<span class="smalllinenumber">[line 76]</span>
+			 = <span class="var-default"> &quot;tpid&quot;</span>			<span class="smalllinenumber">[line 80]</span>
 		</span>
 	</div>
 
@@ -634,13 +843,13 @@ Source Location: /xmlrpc.php<br /><br />
 	<div class="top">[ <a href="#top">Top</a> ]</div>
 </div>
 <a name="var$validStatusList" id="$validStatusList"><!-- --></A>
-<div class="oddrow">
+<div class="evenrow">
 
 	<div class="var-header">
 		<span class="var-title">
 			static <span class="var-type">mixed</span>&nbsp;&nbsp;
 			<span class="var-name">$validStatusList</span>
-			 = <span class="var-default">array(&quot;p&quot;, &quot;f&quot;, &quot;b&quot;)</span>			<span class="smalllinenumber">[line 90]</span>
+			 = <span class="var-default">array(&quot;p&quot;, &quot;f&quot;, &quot;b&quot;)</span>			<span class="smalllinenumber">[line 99]</span>
 		</span>
 	</div>
 
@@ -660,13 +869,13 @@ Source Location: /xmlrpc.php<br /><br />
 	<div class="top">[ <a href="#top">Top</a> ]</div>
 </div>
 <a name="var$version" id="$version"><!-- --></A>
-<div class="evenrow">
+<div class="oddrow">
 
 	<div class="var-header">
 		<span class="var-title">
 			static <span class="var-type">mixed</span>&nbsp;&nbsp;
 			<span class="var-name">$version</span>
-			 = <span class="var-default"> &quot;1.0 Beta&quot;</span>			<span class="smalllinenumber">[line 50]</span>
+			 = <span class="var-default"> &quot;1.0 Beta 2&quot;</span>			<span class="smalllinenumber">[line 53]</span>
 		</span>
 	</div>
 
@@ -698,10 +907,10 @@ Source Location: /xmlrpc.php<br /><br />
 			<a name='method_detail'></a>
 
 <a name="method__construct" id="__construct"><!-- --></a>
-<div class="oddrow">
+<div class="evenrow">
 
 <div class="method-header">
-	<span class="method-title">Constructor __construct</span>&nbsp;&nbsp;<span class="smalllinenumber">[line 96]</span>
+	<span class="method-title">Constructor __construct</span>&nbsp;&nbsp;<span class="smalllinenumber">[line 105]</span>
 </div>
 <br />
 
@@ -731,10 +940,10 @@ Source Location: /xmlrpc.php<br /><br />
 	<div class="top">[ <a href="#top">Top</a> ]</div>
 </div>
 <a name="methodabout" id="about"><!-- --></a>
-<div class="evenrow">
+<div class="oddrow">
 
 <div class="method-header">
-	<span class="method-title">about</span>&nbsp;&nbsp;<span class="smalllinenumber">[line 706]</span>
+	<span class="method-title">about</span>&nbsp;&nbsp;<span class="smalllinenumber">[line 1037]</span>
 </div>
 <br />
 
@@ -776,10 +985,10 @@ $args&nbsp;
 	<div class="top">[ <a href="#top">Top</a> ]</div>
 </div>
 <a name="methodauthenticate" id="authenticate"><!-- --></a>
-<div class="oddrow">
+<div class="evenrow">
 
 <div class="method-header">
-	<span class="method-title">authenticate</span>&nbsp;&nbsp;<span class="smalllinenumber">[line 178]</span>
+	<span class="method-title">authenticate</span>&nbsp;&nbsp;<span class="smalllinenumber">[line 194]</span>
 </div>
 <br />
 
@@ -809,10 +1018,10 @@ $args&nbsp;
 	<div class="top">[ <a href="#top">Top</a> ]</div>
 </div>
 <a name="methodcheckBuildID" id="checkBuildID"><!-- --></a>
-<div class="evenrow">
+<div class="oddrow">
 
 <div class="method-header">
-	<span class="method-title">checkBuildID</span>&nbsp;&nbsp;<span class="smalllinenumber">[line 317]</span>
+	<span class="method-title">checkBuildID</span>&nbsp;&nbsp;<span class="smalllinenumber">[line 425]</span>
 </div>
 <br />
 
@@ -842,10 +1051,10 @@ $args&nbsp;
 	<div class="top">[ <a href="#top">Top</a> ]</div>
 </div>
 <a name="methodcheckGuess" id="checkGuess"><!-- --></a>
-<div class="oddrow">
+<div class="evenrow">
 
 <div class="method-header">
-	<span class="method-title">checkGuess</span>&nbsp;&nbsp;<span class="smalllinenumber">[line 303]</span>
+	<span class="method-title">checkGuess</span>&nbsp;&nbsp;<span class="smalllinenumber">[line 411]</span>
 </div>
 <br />
 
@@ -875,10 +1084,10 @@ $args&nbsp;
 	<div class="top">[ <a href="#top">Top</a> ]</div>
 </div>
 <a name="methodcheckStatus" id="checkStatus"><!-- --></a>
-<div class="evenrow">
+<div class="oddrow">
 
 <div class="method-header">
-	<span class="method-title">checkStatus</span>&nbsp;&nbsp;<span class="smalllinenumber">[line 210]</span>
+	<span class="method-title">checkStatus</span>&nbsp;&nbsp;<span class="smalllinenumber">[line 250]</span>
 </div>
 <br />
 
@@ -908,10 +1117,10 @@ $args&nbsp;
 	<div class="top">[ <a href="#top">Top</a> ]</div>
 </div>
 <a name="methodcheckTCID" id="checkTCID"><!-- --></a>
-<div class="oddrow">
+<div class="evenrow">
 
 <div class="method-header">
-	<span class="method-title">checkTCID</span>&nbsp;&nbsp;<span class="smalllinenumber">[line 234]</span>
+	<span class="method-title">checkTCID</span>&nbsp;&nbsp;<span class="smalllinenumber">[line 274]</span>
 </div>
 <br />
 
@@ -940,11 +1149,110 @@ $args&nbsp;
 		<br />
 	<div class="top">[ <a href="#top">Top</a> ]</div>
 </div>
+<a name="methodcheckTestCaseName" id="checkTestCaseName"><!-- --></a>
+<div class="oddrow">
+
+<div class="method-header">
+	<span class="method-title">checkTestCaseName</span>&nbsp;&nbsp;<span class="smalllinenumber">[line 226]</span>
+</div>
+<br />
+
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code-border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">&nbsp;
+		<code>boolean checkTestCaseName(
+)</code>
+    </td></tr></table>
+    </td></tr></table><br /></div>
+
+	<p align="center" class="short-description"><strong>Helper method to see if the testcasename provided is valid
+</strong></p>
+<span class="description"><p>This is the only method that should be called directly to check the testcasename</p></span>
+	<br />
+	<strong>API Tags:</strong><br />
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td class="indent"><strong>Access:</strong>&nbsp;&nbsp;</td><td>protected</td>
+  </tr>
+</table>
+<br />
+
+
+		
+		<br />
+	<div class="top">[ <a href="#top">Top</a> ]</div>
+</div>
+<a name="methodcheckTestProjectID" id="checkTestProjectID"><!-- --></a>
+<div class="evenrow">
+
+<div class="method-header">
+	<span class="method-title">checkTestProjectID</span>&nbsp;&nbsp;<span class="smalllinenumber">[line 342]</span>
+</div>
+<br />
+
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code-border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">&nbsp;
+		<code>boolean checkTestProjectID(
+)</code>
+    </td></tr></table>
+    </td></tr></table><br /></div>
+
+	<p align="center" class="short-description"><strong>Helper method to see if the TestProjectID provided is valid
+</strong></p>
+<span class="description"><p>This is the only method that should be called directly to check the TestProjectID</p></span>
+	<br />
+	<strong>API Tags:</strong><br />
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td class="indent"><strong>Access:</strong>&nbsp;&nbsp;</td><td>protected</td>
+  </tr>
+</table>
+<br />
+
+
+		
+		<br />
+	<div class="top">[ <a href="#top">Top</a> ]</div>
+</div>
+<a name="methodcheckTestSuiteID" id="checkTestSuiteID"><!-- --></a>
+<div class="oddrow">
+
+<div class="method-header">
+	<span class="method-title">checkTestSuiteID</span>&nbsp;&nbsp;<span class="smalllinenumber">[line 376]</span>
+</div>
+<br />
+
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code-border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">&nbsp;
+		<code>boolean checkTestSuiteID(
+)</code>
+    </td></tr></table>
+    </td></tr></table><br /></div>
+
+	<p align="center" class="short-description"><strong>Helper method to see if the TestSuiteID provided is valid
+</strong></p>
+<span class="description"><p>This is the only method that should be called directly to check the TestSuiteID</p></span>
+	<br />
+	<strong>API Tags:</strong><br />
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td class="indent"><strong>Access:</strong>&nbsp;&nbsp;</td><td>protected</td>
+  </tr>
+</table>
+<br />
+
+
+		
+		<br />
+	<div class="top">[ <a href="#top">Top</a> ]</div>
+</div>
 <a name="methodcheckTPID" id="checkTPID"><!-- --></a>
 <div class="evenrow">
 
 <div class="method-header">
-	<span class="method-title">checkTPID</span>&nbsp;&nbsp;<span class="smalllinenumber">[line 258]</span>
+	<span class="method-title">checkTPID</span>&nbsp;&nbsp;<span class="smalllinenumber">[line 298]</span>
 </div>
 <br />
 
@@ -977,7 +1285,7 @@ $args&nbsp;
 <div class="oddrow">
 
 <div class="method-header">
-	<span class="method-title">createBuild</span>&nbsp;&nbsp;<span class="smalllinenumber">[line 722]</span>
+	<span class="method-title">createBuild</span>&nbsp;&nbsp;<span class="smalllinenumber">[line 1056]</span>
 </div>
 <br />
 
@@ -986,7 +1294,8 @@ $args&nbsp;
     <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">&nbsp;
 		<code>mixed createBuild(
 struct
-$args, int
+$args, string
+$args["devKey"], int
 $args["tpid"], string
 $args["buildname"];&nbsp;
 )</code>
@@ -1002,6 +1311,12 @@ $args["buildname"];&nbsp;
 				<span class="var-type">struct</span>&nbsp;&nbsp;</td>
 				<td>
 				<span class="var-name">$args:&nbsp;</span></td>
+				<td>
+							</td></tr>
+					<tr><td class="indent">
+				<span class="var-type">string</span>&nbsp;&nbsp;</td>
+				<td>
+				<span class="var-name">$args["devKey"]:&nbsp;</span></td>
 				<td>
 							</td></tr>
 					<tr><td class="indent">
@@ -1032,11 +1347,56 @@ $args["buildname"];&nbsp;
 		<br />
 	<div class="top">[ <a href="#top">Top</a> ]</div>
 </div>
-<a name="methodgetLatestBuildForTestPlan" id="getLatestBuildForTestPlan"><!-- --></a>
+<a name="methodcreateTestCase" id="createTestCase"><!-- --></a>
 <div class="evenrow">
 
 <div class="method-header">
-	<span class="method-title">getLatestBuildForTestPlan</span>&nbsp;&nbsp;<span class="smalllinenumber">[line 626]</span>
+	<span class="method-title">createTestCase</span>&nbsp;&nbsp;<span class="smalllinenumber">[line 1244]</span>
+</div>
+<br />
+
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code-border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">&nbsp;
+		<code>void createTestCase(
+
+$args&nbsp;
+)</code>
+    </td></tr></table>
+    </td></tr></table><br /></div>
+
+	<p align="center" class="short-description"><strong>Create a new test case
+</strong></p>
+
+			<strong>Parameters:</strong><br />
+			<table border="0" cellspacing="0" cellpadding="0">
+					<tr><td class="indent">
+				<span class="var-type"></span>&nbsp;&nbsp;</td>
+				<td>
+				<span class="var-name">$args:&nbsp;</span></td>
+				<td>
+							</td></tr>
+				</table>
+
+	<br />
+	<strong>API Tags:</strong><br />
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td class="indent"><strong>Access:</strong>&nbsp;&nbsp;</td><td>public</td>
+  </tr>
+</table>
+<br />
+
+
+		
+		<br />
+	<div class="top">[ <a href="#top">Top</a> ]</div>
+</div>
+<a name="methodgetLatestBuildForTestPlan" id="getLatestBuildForTestPlan"><!-- --></a>
+<div class="oddrow">
+
+<div class="method-header">
+	<span class="method-title">getLatestBuildForTestPlan</span>&nbsp;&nbsp;<span class="smalllinenumber">[line 894]</span>
 </div>
 <br />
 
@@ -1078,10 +1438,10 @@ $tpid&nbsp;
 	<div class="top">[ <a href="#top">Top</a> ]</div>
 </div>
 <a name="methodgetProjects" id="getProjects"><!-- --></a>
-<div class="oddrow">
+<div class="evenrow">
 
 <div class="method-header">
-	<span class="method-title">getProjects</span>&nbsp;&nbsp;<span class="smalllinenumber">[line 733]</span>
+	<span class="method-title">getProjects</span>&nbsp;&nbsp;<span class="smalllinenumber">[line 1082]</span>
 </div>
 <br />
 
@@ -1089,21 +1449,28 @@ $tpid&nbsp;
     <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code-border">
     <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">&nbsp;
 		<code>mixed getProjects(
-
-$args&nbsp;
+struct
+$args, string
+$args["devKey"]&nbsp;
 )</code>
     </td></tr></table>
     </td></tr></table><br /></div>
 
-	<p align="center" class="short-description"><strong>Gets a list of all active projects
+	<p align="center" class="short-description"><strong>Gets a list of all projects
 </strong></p>
 
 			<strong>Parameters:</strong><br />
 			<table border="0" cellspacing="0" cellpadding="0">
 					<tr><td class="indent">
-				<span class="var-type"></span>&nbsp;&nbsp;</td>
+				<span class="var-type">struct</span>&nbsp;&nbsp;</td>
 				<td>
 				<span class="var-name">$args:&nbsp;</span></td>
+				<td>
+							</td></tr>
+					<tr><td class="indent">
+				<span class="var-type">string</span>&nbsp;&nbsp;</td>
+				<td>
+				<span class="var-name">$args["devKey"]:&nbsp;</span></td>
 				<td>
 							</td></tr>
 				</table>
@@ -1123,10 +1490,10 @@ $args&nbsp;
 	<div class="top">[ <a href="#top">Top</a> ]</div>
 </div>
 <a name="methodgetProjectTestPlans" id="getProjectTestPlans"><!-- --></a>
-<div class="evenrow">
+<div class="oddrow">
 
 <div class="method-header">
-	<span class="method-title">getProjectTestPlans</span>&nbsp;&nbsp;<span class="smalllinenumber">[line 747]</span>
+	<span class="method-title">getProjectTestPlans</span>&nbsp;&nbsp;<span class="smalllinenumber">[line 1112]</span>
 </div>
 <br />
 
@@ -1135,8 +1502,9 @@ $args&nbsp;
     <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">&nbsp;
 		<code>mixed getProjectTestPlans(
 struct
-$args, int
-$args["projectid"]&nbsp;
+$args, string
+$args["devKey"], int
+$args["testprojectid"]&nbsp;
 )</code>
     </td></tr></table>
     </td></tr></table><br /></div>
@@ -1153,9 +1521,206 @@ $args["projectid"]&nbsp;
 				<td>
 							</td></tr>
 					<tr><td class="indent">
+				<span class="var-type">string</span>&nbsp;&nbsp;</td>
+				<td>
+				<span class="var-name">$args["devKey"]:&nbsp;</span></td>
+				<td>
+							</td></tr>
+					<tr><td class="indent">
 				<span class="var-type">int</span>&nbsp;&nbsp;</td>
 				<td>
-				<span class="var-name">$args["projectid"]:&nbsp;</span></td>
+				<span class="var-name">$args["testprojectid"]:&nbsp;</span></td>
+				<td>
+							</td></tr>
+				</table>
+
+	<br />
+	<strong>API Tags:</strong><br />
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td class="indent"><strong>Access:</strong>&nbsp;&nbsp;</td><td>public</td>
+  </tr>
+</table>
+<br />
+
+
+		
+		<br />
+	<div class="top">[ <a href="#top">Top</a> ]</div>
+</div>
+<a name="methodgetTestCaseIDByName" id="getTestCaseIDByName"><!-- --></a>
+<div class="evenrow">
+
+<div class="method-header">
+	<span class="method-title">getTestCaseIDByName</span>&nbsp;&nbsp;<span class="smalllinenumber">[line 1216]</span>
+</div>
+<br />
+
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code-border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">&nbsp;
+		<code>mixed getTestCaseIDByName(
+struct
+$args, string
+$args["devKey"], string
+$args["testcasename"], string
+$args["testsuitename"]&nbsp;
+)</code>
+    </td></tr></table>
+    </td></tr></table><br /></div>
+
+	<p align="center" class="short-description"><strong>Find a test case by its name
+</strong></p>
+<span class="description"><p><strong>Searching is case sensitive.</strong> The test case will only be returned if there is a definite match.  If possible also pass the string for the test suite name. No results will be returned if there  are test cases with the same name that match the criteria provided.</p></span>
+			<strong>Parameters:</strong><br />
+			<table border="0" cellspacing="0" cellpadding="0">
+					<tr><td class="indent">
+				<span class="var-type">struct</span>&nbsp;&nbsp;</td>
+				<td>
+				<span class="var-name">$args:&nbsp;</span></td>
+				<td>
+							</td></tr>
+					<tr><td class="indent">
+				<span class="var-type">string</span>&nbsp;&nbsp;</td>
+				<td>
+				<span class="var-name">$args["devKey"]:&nbsp;</span></td>
+				<td>
+							</td></tr>
+					<tr><td class="indent">
+				<span class="var-type">string</span>&nbsp;&nbsp;</td>
+				<td>
+				<span class="var-name">$args["testcasename"]:&nbsp;</span></td>
+				<td>
+							</td></tr>
+					<tr><td class="indent">
+				<span class="var-type">string</span>&nbsp;&nbsp;</td>
+				<td>
+				<span class="var-name">$args["testsuitename"]:&nbsp;</span></td>
+				<td>
+				<span class="var-description"> - optional</span>			</td></tr>
+				</table>
+
+	<br />
+	<strong>API Tags:</strong><br />
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td class="indent"><strong>Access:</strong>&nbsp;&nbsp;</td><td>public</td>
+  </tr>
+</table>
+<br />
+
+
+		
+		<br />
+	<div class="top">[ <a href="#top">Top</a> ]</div>
+</div>
+<a name="methodgetTestCasesForTestSuite" id="getTestCasesForTestSuite"><!-- --></a>
+<div class="oddrow">
+
+<div class="method-header">
+	<span class="method-title">getTestCasesForTestSuite</span>&nbsp;&nbsp;<span class="smalllinenumber">[line 1154]</span>
+</div>
+<br />
+
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code-border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">&nbsp;
+		<code>mixed getTestCasesForTestSuite(
+struct
+$args, string
+$args["devKey"], int
+$args["testsuiteid"], boolean
+$args["deep"]&nbsp;
+)</code>
+    </td></tr></table>
+    </td></tr></table><br /></div>
+
+	<p align="center" class="short-description"><strong>List test cases within a test suite
+</strong></p>
+<span class="description"><p>By default test cases that are contained within child suites  will be returned. Set the deep flag to false if you only want  test cases in the test suite provided and no child test cases.</p></span>
+			<strong>Parameters:</strong><br />
+			<table border="0" cellspacing="0" cellpadding="0">
+					<tr><td class="indent">
+				<span class="var-type">struct</span>&nbsp;&nbsp;</td>
+				<td>
+				<span class="var-name">$args:&nbsp;</span></td>
+				<td>
+							</td></tr>
+					<tr><td class="indent">
+				<span class="var-type">string</span>&nbsp;&nbsp;</td>
+				<td>
+				<span class="var-name">$args["devKey"]:&nbsp;</span></td>
+				<td>
+							</td></tr>
+					<tr><td class="indent">
+				<span class="var-type">int</span>&nbsp;&nbsp;</td>
+				<td>
+				<span class="var-name">$args["testsuiteid"]:&nbsp;</span></td>
+				<td>
+							</td></tr>
+					<tr><td class="indent">
+				<span class="var-type">boolean</span>&nbsp;&nbsp;</td>
+				<td>
+				<span class="var-name">$args["deep"]:&nbsp;</span></td>
+				<td>
+				<span class="var-description"> - optional (default is true)</span>			</td></tr>
+				</table>
+
+	<br />
+	<strong>API Tags:</strong><br />
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td class="indent"><strong>Access:</strong>&nbsp;&nbsp;</td><td>public</td>
+  </tr>
+</table>
+<br />
+
+
+		
+		<br />
+	<div class="top">[ <a href="#top">Top</a> ]</div>
+</div>
+<a name="methodgetTestSuitesForTestPlan" id="getTestSuitesForTestPlan"><!-- --></a>
+<div class="evenrow">
+
+<div class="method-header">
+	<span class="method-title">getTestSuitesForTestPlan</span>&nbsp;&nbsp;<span class="smalllinenumber">[line 1136]</span>
+</div>
+<br />
+
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code-border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">&nbsp;
+		<code>mixed getTestSuitesForTestPlan(
+struct
+$args, string
+$args["devKey"], int
+$args["testplanid"]&nbsp;
+)</code>
+    </td></tr></table>
+    </td></tr></table><br /></div>
+
+	<p align="center" class="short-description"><strong>List test suites within a test plan
+</strong></p>
+
+			<strong>Parameters:</strong><br />
+			<table border="0" cellspacing="0" cellpadding="0">
+					<tr><td class="indent">
+				<span class="var-type">struct</span>&nbsp;&nbsp;</td>
+				<td>
+				<span class="var-name">$args:&nbsp;</span></td>
+				<td>
+							</td></tr>
+					<tr><td class="indent">
+				<span class="var-type">string</span>&nbsp;&nbsp;</td>
+				<td>
+				<span class="var-name">$args["devKey"]:&nbsp;</span></td>
+				<td>
+							</td></tr>
+					<tr><td class="indent">
+				<span class="var-type">int</span>&nbsp;&nbsp;</td>
+				<td>
+				<span class="var-name">$args["testplanid"]:&nbsp;</span></td>
 				<td>
 							</td></tr>
 				</table>
@@ -1178,7 +1743,7 @@ $args["projectid"]&nbsp;
 <div class="oddrow">
 
 <div class="method-header">
-	<span class="method-title">repeat</span>&nbsp;&nbsp;<span class="smalllinenumber">[line 692]</span>
+	<span class="method-title">repeat</span>&nbsp;&nbsp;<span class="smalllinenumber">[line 1023]</span>
 </div>
 <br />
 
@@ -1223,7 +1788,7 @@ $args&nbsp;
 <div class="evenrow">
 
 <div class="method-header">
-	<span class="method-title">reportTCResult</span>&nbsp;&nbsp;<span class="smalllinenumber">[line 777]</span>
+	<span class="method-title">reportTCResult</span>&nbsp;&nbsp;<span class="smalllinenumber">[line 1284]</span>
 </div>
 <br />
 
@@ -1332,7 +1897,7 @@ $args["guess"]&nbsp;
 <div class="oddrow">
 
 <div class="method-header">
-	<span class="method-title">sayHello</span>&nbsp;&nbsp;<span class="smalllinenumber">[line 680]</span>
+	<span class="method-title">sayHello</span>&nbsp;&nbsp;<span class="smalllinenumber">[line 1011]</span>
 </div>
 <br />
 
@@ -1380,7 +1945,7 @@ $args&nbsp;
 <div class="evenrow">
 
 <div class="method-header">
-	<span class="method-title">setTestMode</span>&nbsp;&nbsp;<span class="smalllinenumber">[line 804]</span>
+	<span class="method-title">setTestMode</span>&nbsp;&nbsp;<span class="smalllinenumber">[line 1311]</span>
 </div>
 <br />
 
@@ -1421,13 +1986,58 @@ $args&nbsp;
 		<br />
 	<div class="top">[ <a href="#top">Top</a> ]</div>
 </div>
+<a name="methodupdateTestCase" id="updateTestCase"><!-- --></a>
+<div class="oddrow">
+
+<div class="method-header">
+	<span class="method-title">updateTestCase</span>&nbsp;&nbsp;<span class="smalllinenumber">[line 1255]</span>
+</div>
+<br />
+
+	<div class="function">
+    <table width="90%" border="0" cellspacing="0" cellpadding="1"><tr><td class="code-border">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2"><tr><td class="code">&nbsp;
+		<code>void updateTestCase(
+
+$args&nbsp;
+)</code>
+    </td></tr></table>
+    </td></tr></table><br /></div>
+
+	<p align="center" class="short-description"><strong>Update an existing test case
+</strong></p>
+
+			<strong>Parameters:</strong><br />
+			<table border="0" cellspacing="0" cellpadding="0">
+					<tr><td class="indent">
+				<span class="var-type"></span>&nbsp;&nbsp;</td>
+				<td>
+				<span class="var-name">$args:&nbsp;</span></td>
+				<td>
+							</td></tr>
+				</table>
+
+	<br />
+	<strong>API Tags:</strong><br />
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td class="indent"><strong>Access:</strong>&nbsp;&nbsp;</td><td>public</td>
+  </tr>
+</table>
+<br />
+
+
+		
+		<br />
+	<div class="top">[ <a href="#top">Top</a> ]</div>
+</div>
 		</div>
 	</div>
 
 
         <div class="credit">
 		    <hr class="separator" />
-		    Documentation generated on Thu, 15 Nov 2007 15:32:44 -0700 by <a href="http://www.phpdoc.org">phpDocumentor 1.4.0a2</a>
+		    Documentation generated on Mon, 03 Dec 2007 14:42:59 -0700 by <a href="http://www.phpdoc.org">phpDocumentor 1.4.0</a>
 	      </div>
       </td></tr></table>
     </td>

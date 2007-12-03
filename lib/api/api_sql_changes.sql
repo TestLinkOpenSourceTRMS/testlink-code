@@ -1,8 +1,8 @@
 -- create the api_developer_keys table 
 CREATE TABLE `api_developer_keys` (
-  `id` int(10) NOT NULL auto_increment,
+  `id` int(11) NOT NULL auto_increment,
   `developer_key` varchar(32) NOT NULL,
-  `user_id` int(10) NOT NULL,
+  `user_id` int(11) NOT NULL,
   PRIMARY KEY  (`id`),
   UNIQUE KEY `user_id` (`user_id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='authentication keys for using the api';

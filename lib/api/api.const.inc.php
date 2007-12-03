@@ -1,7 +1,7 @@
 <?php
 /*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: api.const.inc.php,v 1.1 2007/11/26 14:33:32 franciscom Exp $
+ * $Id: api.const.inc.php,v 1.2 2007/12/03 23:04:39 asielb Exp $
  */
  
 /**

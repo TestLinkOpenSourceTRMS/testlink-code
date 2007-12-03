@@ -1,6 +1,6 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: usersview.tpl,v 1.1 2007/12/02 17:03:58 franciscom Exp $
+$Id: usersview.tpl,v 1.2 2007/12/03 08:27:17 franciscom Exp $
 
 Purpose: smarty template - users overview
 
@@ -20,7 +20,6 @@ rev :
 {include file="inc_del_onclick.tpl"}
 
 <script type="text/javascript">
-var o_label ="{lang_get s='user'}";
 var del_action=fRoot+"lib/usermanagement/usersview.php?operation=delete&user=";
 </script>
 </head>

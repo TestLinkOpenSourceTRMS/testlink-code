@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: const.inc.php,v $
  *
- * @version $Revision: 1.47 $
- * @modified $Date: 2007/11/19 21:07:22 $ by $Author: franciscom $
+ * @version $Revision: 1.48 $
+ * @modified $Date: 2007/12/03 08:27:06 $ by $Author: franciscom $
  * @author Martin Havlát
  *
  * SCOPE:
@@ -563,5 +563,8 @@ define('EXCLUDE_UNDEFINED_ROLE',0);
 define('AUTOMATION_RESULT_KO', -1);
 define('AUTOMATION_NOTES_KO', -1);
 
+// testcase.class.php
+define('TESTCASE_EXECUTION_TYPE_MANUAL', 1);
+define('TESTCASE_EXECUTION_TYPE_AUTO', 2);
 // -------------------------------------------------------------------
 ?>

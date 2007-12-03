@@ -3,7 +3,7 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
- * @version $Id: archiveData.php,v 1.26 2007/12/02 15:44:19 schlundus Exp $
+ * @version $Id: archiveData.php,v 1.27 2007/12/03 08:28:52 franciscom Exp $
  * @author Martin Havlat
  *  
  * Allows you to show test suites, test cases.
@@ -18,6 +18,7 @@ require_once('common.php');
 require_once("../functions/attachments.inc.php");
 testlinkInitPage($db);
 
+$template_dir='testcases/';
 
 $user_id = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
 $feature = isset($_GET['edit']) ? $_GET['edit'] : null;
@@ -35,7 +36,7 @@ switch($feature)
 		$item_mgr = new testproject($db);
 		$attachments = $item_mgr->getAttachmentInfos($id);
 		$smarty->assign('attachmentInfos',$attachments);
-		$item_mgr->show($smarty,$id);
+    $item_mgr->show($smarty,$template_dir,$id);
 		break;
 
 	case 'testsuite':
@@ -48,7 +49,7 @@ switch($feature)
 		$item_mgr = new testsuite($db);
 		$attachments = $item_mgr->getAttachmentInfos($id);
 		$smarty->assign('attachmentInfos',$attachments);
-		$item_mgr->show($smarty,$id);
+		$item_mgr->show($smarty,$template_dir,$id);
 		break;
 
 	case 'testcase':
@@ -70,7 +71,7 @@ switch($feature)
 
     // 20070930 - franciscom - REQ - BUGID 1078
     // added two arguments on call.
-		$item_mgr->show($smarty,$id,$user_id,TC_ALL_VERSIONS,
+		$item_mgr->show($smarty,$template_dir,$id,$user_id,TC_ALL_VERSIONS,
 		                $no_action,$no_msg,$do_refresh_yes_no,$no_user_feedback,!$allow_edit);
 		break;
 

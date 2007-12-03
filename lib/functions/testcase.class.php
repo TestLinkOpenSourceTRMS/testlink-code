@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.70 $
- * @modified $Date: 2007/12/02 17:13:32 $ $Author: franciscom $
+ * @version $Revision: 1.71 $
+ * @modified $Date: 2007/12/03 08:29:10 $ $Author: franciscom $
  * @author franciscom
  *
  *
@@ -143,13 +143,14 @@ function create($parent_id,$name,$summary,$steps,
                 $expected_results,$author_id,$keywords_id='',
                 $tc_order=TC_DEFAULT_ORDER,$id=TC_AUTOMATIC_ID,
                 $check_duplicate_name=0,
-                $action_on_duplicate_name='generate_new')
+                $action_on_duplicate_name='generate_new',
+                $execution_type=TESTCASE_EXECUTION_TYPE_MANUAL)
 {
 	$first_version = 1;
 	$status_ok = 1;
 	$ret = $this->create_tcase_only($parent_id,$name,$tc_order,$id,
                                   $check_duplicate_name,
-                                  $action_on_duplicate_name);
+                                  $action_on_duplicate_name,$execution_type);
 	if($ret['msg'] == 'ok')
 	{
 		if(strlen(trim($keywords_id)))
@@ -159,7 +160,7 @@ function create($parent_id,$name,$summary,$steps,
 		}
 	
 		$op = $this->create_tcversion($ret['id'],$first_version,$summary,$steps,
-		$expected_results,$author_id);
+		                              $expected_results,$author_id);
 		                              
 		$ret['msg']=$op['msg'];
 	}
@@ -234,12 +235,17 @@ function create_tcase_only($parent_id,$name,$order=TC_DEFAULT_ORDER,$id=TC_AUTOM
   return $ret;
 }
 
-/* 
-20060726 - franciscom - struct of return array changed, added id
-20060323 - franciscom - interface change added $version
+/*
+  function: 
+
+  args:
+  
+  returns: 
+
 */
 function create_tcversion($id,$version,$summary,$steps,
-                          $expected_results,$author_id)
+                          $expected_results,$author_id,
+                          $execution_type=TESTCASE_EXECUTION_TYPE_MANUAL)
 {
 	// get a new id
 	$tcase_version_id = $this->tree_manager->new_node($id,$this->node_types_descr_id['testcase_version']);

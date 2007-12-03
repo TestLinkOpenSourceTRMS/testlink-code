@@ -1,6 +1,6 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_del_onclick.tpl,v 1.4 2007/12/02 17:23:33 franciscom Exp $
+$Id: inc_del_onclick.tpl,v 1.5 2007/12/03 08:27:17 franciscom Exp $
 Purpose: include files for:
 
 
@@ -20,15 +20,15 @@ rev :
    
   /*
     function: delete_confirmation
-              Attention: uses global coupling to get o_label.
-              
 
     args: o_id: object id, id of object on with do_action will be done.
                 is not a DOM id, but an specific application id.
           
           o_name: name of object, used to to give user feedback.
-          
-          msg: can containg a wild card (%s), that will be replaced
+
+          title: pop up title
+                      
+          msg: can contain a wildcard (%s), that will be replaced
                with o_name.     
     
     returns: 

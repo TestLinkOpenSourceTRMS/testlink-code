@@ -1,6 +1,6 @@
 {* 
 Testlink: smarty template - 
-$Id: cfields_edit.tpl,v 1.2 2007/12/02 17:04:11 franciscom Exp $ 
+$Id: cfields_edit.tpl,v 1.3 2007/12/03 08:27:17 franciscom Exp $ 
 
 
 Important Development note:
@@ -30,12 +30,11 @@ rev :
 {lang_get s='warning_delete_cf' var="warning_msg" }
 {lang_get s='delete' var="del_msgbox_title" }
 
-{include file="inc_head.tpl" jsValidate="yes"}
+{include file="inc_head.tpl" jsValidate="yes" openHead="yes"}
 {include file="inc_del_onclick.tpl"}
 
 <script type="text/javascript">
 /* All this stuff is needed for logic contained in inc_del_onclick.tpl */
-var o_label ="{lang_get s='custom_field'}";
 var del_action=fRoot+'lib/cfields/cfields_edit.php?do_action=do_delete&cfield_id=';
 </script>
 

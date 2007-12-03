@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planView.tpl,v 1.1 2007/12/02 17:03:00 franciscom Exp $ 
+$Id: planView.tpl,v 1.2 2007/12/03 08:27:17 franciscom Exp $ 
 Purpose: smarty template - edit / delete Test Plan 
 
 Development hint:
@@ -20,7 +20,7 @@ Rev :
 {include file="inc_del_onclick.tpl"}
 
 <script type="text/javascript">
-var o_label ="{lang_get s='testplan'}";
+/* All this stuff is needed for logic contained in inc_del_onclick.tpl */
 var del_action=fRoot+'lib/plan/planEdit.php?do_action=do_delete&tplan_id=';
 </script>
 

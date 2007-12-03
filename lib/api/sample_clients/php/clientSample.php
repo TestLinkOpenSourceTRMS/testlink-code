@@ -13,7 +13,8 @@
 require_once dirname(__FILE__) . '/../../../third_party/xml-rpc/class-IXR.php';
 
 // substitute your server URL Here
-define("SERVER_URL", "http://qa/testlink_sandbox/api/xmlrpc.php");
+define("SERVER_URL", "http://qa/testlink_sandbox/lib/api/xmlrpc.php");
+
 // substitute your Dev Key Here
 define("DEV_KEY", "f2a979d533cdd9761434bba60a88e4d8");
 

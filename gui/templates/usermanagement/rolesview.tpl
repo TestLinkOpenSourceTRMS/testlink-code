@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: rolesview.tpl,v 1.1 2007/12/02 17:03:58 franciscom Exp $ 
+$Id: rolesview.tpl,v 1.2 2007/12/03 08:27:17 franciscom Exp $ 
 Purpose: smarty template - View defined roles 
 
 rev :
@@ -21,7 +21,6 @@ rev :
 
 <script type="text/javascript">
 /* All this stuff is need for logic contained in inc_del_onclick.tpl */
-var o_label ="{lang_get s='Role'}";
 var del_action=fRoot+'lib/usermanagement/rolesview.php?deleterole=1&id=';
 </script>
 

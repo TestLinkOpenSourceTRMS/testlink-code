@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.62 $
- * @modified $Date: 2007/12/02 17:21:44 $  by $Author: franciscom $
+ * @version $Revision: 1.63 $
+ * @modified $Date: 2007/12/03 08:28:52 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
  * 20071201 - franciscom - new web editor code
@@ -527,8 +527,6 @@ if ($show_newTC_form)
     $of = &$oWebEditor[$key];
     $rows=$a_oWebEditor_cfg[$key]['rows'];
     $cols=$a_oWebEditor_cfg[$key]['cols'];
-    
-    echo "<pre>debug 20071201 - \$a_oWebEditor_cfg[$key] - " . __FUNCTION__ . " --- "; print_r($a_oWebEditor_cfg[$key]); echo "</pre>";
     
     
     $of->Value = $the_value;

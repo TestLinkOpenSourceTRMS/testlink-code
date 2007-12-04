@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.225 $
- * @modified $Date: 2007/12/03 23:11:58 $ $Author: asielb $
+ * @version $Revision: 1.226 $
+ * @modified $Date: 2007/12/04 09:19:08 $ $Author: franciscom $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -34,12 +34,15 @@ $TLS_charset		= 'utf-8';
 $TLS_asc 			= "ascending";
 $TLS_any 			= "any";
 $TLS_assigned 		= "assigned";
+$TLS_automated 		= "Automated";
+$TLS_automatic 		= "Automatic";
 $TLS_unassigned 	= "unassigned";
 $TLS_desc 			= "descending";
 $TLS_delete_confirm_question = "Are your sure you want to delete?";
 $TLS_file_type		= 'File type';
 $TLS_help 			= "Help";
 $TLS_hour 			= "Hour";
+$TLS_manual 		= "Manual";
 $TLS_Milestone 		= "Milestone";
 $TLS_not_aplicable 	= "N/A";
 $TLS_requirement 	= "Requirement";
@@ -1010,6 +1013,7 @@ $TLS_btn_mv_cp = "Move / Copy";
 $TLS_btn_new_version = "Create a new version";
 $TLS_can_not_edit_tc = "You can not edit this version because it has been executed";
 $TLS_deactivate_this_tcversion = "Deactivate this version";
+$TLS_execution_type='Execution type';
 $TLS_tcversion_is_inactive_msg = "This version is INACTIVE => will be not available to be included in a test plan";
 
 

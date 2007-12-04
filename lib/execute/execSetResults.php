@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.71 $
- * @modified $Date: 2007/12/02 17:30:14 $ $Author: franciscom $
+ * @version $Revision: 1.72 $
+ * @modified $Date: 2007/12/04 09:20:45 $ $Author: franciscom $
  *
  * 20071113 - franciscom - added contribution History for all builds.
  * 20071006 - franciscom - changes on exec_cfield_mgr() call
@@ -420,6 +420,7 @@ $smarty->assign('tSuiteAttachments',$tSuiteAttachments);
 $smarty->assign('id',$id);
 $smarty->assign('rightsEdit', has_rights($db,"testplan_execute"));
 $smarty->assign('map_last_exec', $map_last_exec);
+
 $smarty->assign('other_exec', $other_execs);
 $smarty->assign('show_last_exec_any_build', $exec_cfg->show_last_exec_any_build);
 $smarty->assign('history_on',$history_on);

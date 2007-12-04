@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.135 $
- * @modified $Date: 2007/12/02 17:04:39 $ by $Author: franciscom $
+ * @version $Revision: 1.136 $
+ * @modified $Date: 2007/12/04 09:19:58 $ by $Author: franciscom $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink 
@@ -706,6 +706,8 @@ define('TL_TREE_KIND', $g_tree_type);
 define('TITLE_SEP',$g_title_sep);
 define('TITLE_SEP_TYPE2',$g_title_sep_type2);
 define('TITLE_SEP_TYPE3',$g_title_sep_type3);
+define('TITLE_SEP_TYPE4',$g_title_sep_type4);
+
 
 define('TL_ITEM_BULLET_IMG', TL_THEME_IMG_DIR . "/" .$g_main_menu_item_bullet_img);
 define('REFRESH_SPEC_TREE',$g_spec_cfg->automatic_tree_refresh ? 'yes' : 'no');

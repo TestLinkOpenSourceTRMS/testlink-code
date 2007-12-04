@@ -1,8 +1,9 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.1 2007/12/02 17:03:58 franciscom Exp $
+$Id: tcView_viewer.tpl,v 1.2 2007/12/04 09:20:13 franciscom Exp $
 viewer for test case in test specification
 
+20071204 - franciscom - display execution_type
 20070628 - franciscom - active_status_op_enabled always true
 20061230 - franciscom - an experiment to make simple management
                         of frequent used href
@@ -116,10 +117,13 @@ viewer for test case in test specification
     {if $args_show_title == "yes"}
 		<tr>
 			<th  colspan="2">
-			{lang_get s='th_test_case_id'}{$args_testcase.testcase_id} :: 
+			{lang_get s='th_test_case_id'}{$args_testcase.testcase_id}{$smarty.const.TITLE_SEP_TYPE4} 
 			{lang_get s='title_test_case'} {$args_testcase.name|escape}</th>
 		</tr>
     {/if} 
+    
+    
+    
     
     {if $args_show_version == "yes"}
 		<tr>
@@ -144,6 +148,11 @@ viewer for test case in test specification
 		</tr>
 		<tr>
 			<td colspan="2">&nbsp;</td>
+		</tr>
+    <tr>
+			<td colspan="2"><span class="labelHolder">{lang_get s='execution_type'}</span>
+			                {$smarty.const.TITLE_SEP}
+			                {$execution_types[$args_testcase.execution_type]}</td>
 		</tr>
 
 		<tr> 

@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.72 $
- * @modified $Date: 2007/12/03 10:19:28 $ $Author: franciscom $
+ * @version $Revision: 1.73 $
+ * @modified $Date: 2007/12/04 09:20:45 $ $Author: franciscom $
  * @author franciscom
  *
  *
@@ -72,7 +72,12 @@ class testcase extends tlObjectWithAttachments
 
   var $import_file_types = array("XML" => "XML", "XLS" => "XLS" );
   var $export_file_types = array("XML" => "XML");
+  var $execution_types = array();
   
+  //echo TESTCASE_EXECUTION_TYPE_MANUAL;
+  // var $execution_types = array(TESTCASE_EXECUTION_TYPE_MANUAL => lang_get('manual'),
+  //                              TESTCASE_EXECUTION_TYPE_AUTO => lang_get('automated'));
+
 
 	function testcase(&$db)
 	{
@@ -87,6 +92,10 @@ class testcase extends tlObjectWithAttachments
 		$this->assignment_status=$this->assignment_mgr->get_available_status();
 		
 		$this->cfield_mgr = new cfield_mgr($this->db);
+		
+		$this->execution_types = array(TESTCASE_EXECUTION_TYPE_MANUAL => lang_get('manual'),
+                                   TESTCASE_EXECUTION_TYPE_AUTO => lang_get('automated'));
+
 		
 		tlObjectWithAttachments::__construct($this->db,"nodes_hierarchy");
 	}
@@ -365,6 +374,7 @@ function show(&$smarty,$template_dir,$id, $user_id, $version_id=TC_ALL_VERSIONS,
 	foreach($a_id as $key => $tc_id)
 	{
 		$tc_array = $this->get_by_id($tc_id,$version_id);
+		
 		if (!$tc_array)
 			continue;
 			
@@ -399,6 +409,8 @@ function show(&$smarty,$template_dir,$id, $user_id, $version_id=TC_ALL_VERSIONS,
  	}
 	$users = getAllUsers($this->db,null,'id');
 	
+	
+	$smarty->assign('execution_types',$this->execution_types);
 	$smarty->assign('user_feedback',$user_feedback);
 	$smarty->assign('tcase_cfg',$tcase_cfg);
 	$smarty->assign('action',$action);

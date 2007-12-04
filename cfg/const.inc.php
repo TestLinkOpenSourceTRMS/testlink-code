@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: const.inc.php,v $
  *
- * @version $Revision: 1.48 $
- * @modified $Date: 2007/12/03 08:27:06 $ by $Author: franciscom $
+ * @version $Revision: 1.49 $
+ * @modified $Date: 2007/12/04 09:19:58 $ by $Author: franciscom $
  * @author Martin Havlát
  *
  * SCOPE:
@@ -436,6 +436,8 @@ $g_tc_risks = array('L1', 'L2', 'L3','M1', 'M2', 'M3','H1', 'H2', 'H3');
 $g_title_sep=' : ';
 $g_title_sep_type2=' >> ';
 $g_title_sep_type3=' - ';
+$g_title_sep_type4=' :: ';
+
 
 // used when created a test suite path, concatenating test suite names
 $g_testsuite_sep='/';

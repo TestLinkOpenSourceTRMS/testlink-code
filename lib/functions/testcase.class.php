@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.74 $
- * @modified $Date: 2007/12/05 07:46:25 $ $Author: franciscom $
+ * @version $Revision: 1.75 $
+ * @modified $Date: 2007/12/05 21:25:14 $ $Author: schlundus $
  * @author franciscom
  *
  *
@@ -392,7 +392,6 @@ function show(&$smarty,$template_dir,$id, $user_id, $version_id=TC_ALL_VERSIONS,
 	foreach($a_id as $key => $tc_id)
 	{
 		$tc_array = $this->get_by_id($tc_id,$version_id);
-		
 		if (!$tc_array)
 			continue;
 			
@@ -1624,6 +1623,7 @@ function exportTestCaseDataToXML($tcase_id,$tcversion_id,$bNoXMLHeader = false,$
 		$keywords = $this->getKeywords($tcase_id);
 		if ($keywords);
 		{
+			//SCHLUNDUS: should be refactored
 			$xmlKW = exportKeywordDataToXML($keywords,true);
 			$tc_data[0]['xmlkeywords'] = $xmlKW;
 		}

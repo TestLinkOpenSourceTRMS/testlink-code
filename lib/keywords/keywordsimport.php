@@ -6,25 +6,18 @@
  * Scope: Import keywords page
  *
  * Filename $RCSfile: keywordsimport.php,v $
- * @version $Revision: 1.14 $
- * @modified $Date: 2007/09/05 06:05:36 $ by $Author: franciscom $
- *
- * Revisions:
- *
- * 20070210 - franciscom - added checks: user has choosen a file
- *                                       the file format seems ok
- *
- * 20070102 - MHT - Fixed typo error, updated header
- * 
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2007/12/05 21:25:15 $ by $Author: schlundus $
  */
 require('../../config.inc.php');
+require_once('keyword.class.php');
 require_once('common.php');
-require_once('import.inc.php');
 require_once('csv.inc.php');
 require_once('xml.inc.php');
 testlinkInitPage($db);
 
-$source = isset($_FILES['uploadedFile']['tmp_name']) ? $_FILES['uploadedFile']['tmp_name'] : null;
+$fInfo = isset($_FILES['uploadedFile']) ? $_FILES['uploadedFile'] : null;
+$source = isset($fInfo['tmp_name']) ? $fInfo['tmp_name'] : null;
 $bUpload = isset($_REQUEST['UploadFile']) ? 1 : 0;
 
 $importType = isset($_POST['importType']) ? $_POST['importType'] : null;
@@ -34,134 +27,52 @@ $testproject_id = $_SESSION['testprojectID'];
 $tproject_name = $_SESSION['testprojectName'];
 $dest = TL_TEMP_PATH . session_id()."-importkeywords.".$importType;
 
-$file_check = array('status_ok' => 1, 'msg' => 'ok');
-
-// check the uploaded file
-if( $bUpload )
+$msg = getFileUploadErrorMessage($fInfo);
+if(!$msg && $bUpload)
 {
-	if (($source != 'none') && ($source != ''))
+	if(($source != 'none') && ($source != ''))
 	{ 
-	  // 20070904 - this test was a pain
-		// $file_check = check_valid_ftype($_FILES['uploadedFile'],$importType);
-		//
-		$file_check['status_ok']=1;
-		if($file_check['status_ok'])
+		if (move_uploaded_file($source, $dest))
 		{
-			// store the file
-			if (move_uploaded_file($source, $dest))
+			$pfn = null;
+			switch($importType)
 			{
-				switch($importType)
+				case 'iSerializationToCSV':
+					$pfn = "importKeywordsFromCSV";
+					break;
+				case 'iSerializationToXML':
+					$pfn = "importKeywordsFromXML";
+					break;
+			}
+			if($pfn)
+			{
+				$tproject = new testproject($db);
+				if ($tproject->$pfn($testproject_id,$dest) != OK)
+					$msg = lang_get('wrong_xml_keywords_file'); 
+				else
 				{
-					case 'CSV':
-						$pfn = "importKeywordDataFromCSV";
-						break;
-					case 'XML':
-						$pcheck_fn  = "check_xml_keywords";
-						$pfn = "importKeywordDataFromXML";
-						break;
-				}
-				// optional "light" format check 
-				if ($pcheck_fn)
-				{
-					$file_check = $pcheck_fn($dest);
-				}
-				if($file_check['status_ok'] && $pfn)
-				{
-					$keywordData = $pfn($dest);
-					$tproject = new testproject($db);
-					$sqlResult = $tproject->addKeywords($testproject_id,$keywordData);
 					header("Location: keywordsView.php");
 					exit();		
 				}
-			} // move_uploaded_file
-		} // file_check
-  } 
-  else
-  {
-		$file_check = array('status_ok' => 0, 'msg' => lang_get('please_choose_keywords_file'));
-  }	
-} // $bUpload
+			}
+		}
+	} 
+	else
+		$msg = lang_get('please_choose_keywords_file');
+}
 
+$tlKeyword = new tlKeyword();
+$importTypes = $tlKeyword->getSupportedSerializationInterfaces();
+$formatStrings = $tlKeyword->getSupportedSerializationFormatDescriptions();
 			
 $smarty = new TLSmarty();
-
 $smarty->assign('import_type_selected',$importType);
-$smarty->assign('file_check',$file_check);  
-$smarty->assign('keywordFormatStrings',$g_keywordFormatStrings);
-$smarty->assign('importTypes',$g_keywordImportTypes);
+$smarty->assign('msg',$msg);  
+$smarty->assign('keywordFormatStrings',$formatStrings);
+$smarty->assign('importTypes',$importTypes);
 $smarty->assign('tproject_name', $tproject_name);
 $smarty->assign('tproject_id', $testproject_id);
-$smarty->assign('importLimitKB',TL_IMPORT_LIMIT / 1024);
+$smarty->assign('importLimit',TL_IMPORT_LIMIT);
 $smarty->display('keywordsimport.tpl');
-?>
-
-<?php
-/*
-  function: check_valid_ftype
-            check if file format is ok, for import type choosed
-            
-  args : 
-        $import_type: 'CVS', 'XML'
-        
-  returns: 
-          map with keys -> status_ok, msg
-  rev :
-       added application/x-download, 
-       after testing that an keyword exported CVS file can not be imported
-       due to wrong type.
-
-*/
-function check_valid_ftype($upload_info,$import_type)
-{
-  
-	$ret = array();
-	$ret['status_ok'] = 0;
-	$ret['msg'] = lang_get('file_is_not_ok_for_import_type');
-	
-	$mime_import_types = null;      
-	$mime_import_types['text/plain'] = array('CSV' => 'csv');
-	$mime_import_types['application/octet-stream'] = array('CSV' => 'csv');
-	$mime_import_types['application/x-download'] = array('CSV' => 'csv');
-
-	$mime_import_types['text/xml']= array('XML' => 'xml');
-
-
-	$uploadType = $upload_info['type']; 
-	$ext = isset($mime_import_types[$uploadType][$import_type]) ? $mime_import_types[$uploadType][$import_type] : null;
-	
-	if(!is_null($ext))
-	{
-		$path_parts = pathinfo($upload_info['name']);
-		if(strtolower($path_parts['extension']) == $ext)
-		{
-			$ret['status_ok'] = 1;
-			$ret['msg'] = 'ok';
-		}
-	}
-	return $ret;
-}
-
-/*
-  function: 
-
-           Check if at least the file start seems OK
-
-*/
-function check_xml_keywords($fileName)
-{
-	$file_check = array('status_ok' => 0, 'msg' => 'dom_ko');    		  
-
-	$dom = domxml_open_file($fileName);
-	if ($dom)
-	{
-		$file_check = array('status_ok' => 1, 'msg' => 'ok');    		  
-		$root = $dom->document_element();
-		if($root->tagname != 'keywords')
-		{
-			$file_check = array('status_ok' => 0, 'msg' => lang_get('wrong_xml_keywords_file'));
-		}
-	}
-	return $file_check;
-}
 ?>
 	

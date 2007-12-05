@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: const.inc.php,v $
  *
- * @version $Revision: 1.50 $
- * @modified $Date: 2007/12/05 07:46:52 $ by $Author: franciscom $
+ * @version $Revision: 1.51 $
+ * @modified $Date: 2007/12/05 21:25:14 $ by $Author: schlundus $
  * @author Martin Havlát
  *
  * SCOPE:
@@ -569,13 +569,13 @@ define('AUTOMATION_NOTES_KO', -1);
 define('TESTCASE_EXECUTION_TYPE_MANUAL', 1);
 define('TESTCASE_EXECUTION_TYPE_AUTO', 2);
 
+define('OK',1);
+define('ERROR',0);
+
 define('AUTOMATIC_ID',0);
 define('ENABLED',1);
 define('NO_FILTER_SHOW_ON_EXEC',null);
 define('DONT_REFRESH','no');
 define('DEFAULT_TC_ORDER',0);
-define('NO_KEYWORDS','');
-
-
 // -------------------------------------------------------------------
 ?>

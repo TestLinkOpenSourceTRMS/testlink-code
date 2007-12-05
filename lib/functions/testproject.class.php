@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.44 $
- * @modified $Date: 2007/12/02 17:19:00 $  $Author: franciscom $
+ * @version $Revision: 1.45 $
+ * @modified $Date: 2007/12/05 21:25:14 $  $Author: schlundus $
  * @author franciscom
  *
  * 20071111 - franciscom - new method get_subtree();
@@ -21,9 +21,9 @@
  * 20060425 - franciscom - changes in show() following Andreas Morsing advice (schlundus)
  *
 **/
-require_once( dirname(__FILE__) . '/attachments.inc.php' );
+require_once( dirname(__FILE__) . '/attachments.inc.php');
 
-class testproject  extends tlObjectWithAttachments
+class testproject extends tlObjectWithAttachments
 {
 	var $db;
 	var $tree_manager;
@@ -578,39 +578,13 @@ function count_testcases($id)
 	 * @param string $keyword
 	 * @param string $notes
 	 *
-	 * @return string 'ok' on success, a db error msg else
-	 *
-	 * 20051011 - fm - use of check_for_keyword_existence()
-	 * 20051004 - fm - refactoring
 	 **/
 	function addKeyword($testprojectID,$keyword,$notes)
 	{
-		global $g_allow_duplicate_keywords;
-		
-		$ret = 'ok';
-		$do_action = 1;
-		$my_kw = trim($keyword);
-		if (!$g_allow_duplicate_keywords)
-		{
-			$check = $this->check_for_keyword_existence($testprojectID, $my_kw);
-			$ret = $check['msg'];
-			$do_action = !$check['keyword_exists'];
-		}
-		
-		if ($do_action)
-		{
-			$sql =  " INSERT INTO keywords (keyword,testproject_id,notes) " .
-					" VALUES ('" . $this->db->prepare_string($my_kw) .	"'," . 
-					$testprojectID . ",'" . $this->db->prepare_string($notes) . "')";
-			
-			$result = $this->db->exec_query($sql);
-			if (!$result)
-				$ret = $this->db->error_msg();
-		}
-	  
-		return $ret;
+		$kw = new tlKeyword();
+		$kw->create($testprojectID,$keyword,$notes);
+		return $kw->writeToDB($this->db);
 	}
-	
 	
 	/**
 	 * function: updateKeyword
@@ -621,81 +595,18 @@ function count_testcases($id)
 	 * @param type $keyword 
 	 * @param type $notes 
 	 * 
-	 * @return map: keys: msg : verbose indication of what has happened
-	 *                          'ok' is everything fine.
-	 *
-	 *                   status_ok -> 1 -> everyting ok
-	 *
 	 **/
-	function updateKeyword($testprojectID,$id,$keyword,$notes)
+	function updateKeyword($testprojectID,$keyword,$notes,$id)
 	{
-		global $g_allow_duplicate_keywords;
-		
-		$ret = array("msg" => "ok", 
-					 "status_ok" => 0);
-		$do_action = 1;
-		$my_kw = trim($keyword);
-	
-		if (!$g_allow_duplicate_keywords)
-		{
-			$check = $this->check_for_keyword_existence($testprojectID, $my_kw,$id);
-			$do_action = !$check['keyword_exists'];
-	
-			$ret['msg'] = $check['msg'];
-			$ret['status_ok'] = $do_action;
-		}
-		if ($do_action)
-		{
-			$sql = "UPDATE keywords SET notes='" . $this->db->prepare_string($notes) . "', keyword='" 
-					. $this->db->prepare_string($my_kw) . "' where id=" . $id;
-
-			$result = $this->db->exec_query($sql);
-			if (!$result)
-			{
-				$ret['msg'] = $this->db->error_msg();
-				$ret['status_ok'] = 0;
-			}
-		}
-	
-		return $ret;
+		$kw = new tlKeyword($id);
+		$kw->create($testprojectID,$keyword,$notes);
+		return $kw->writeToDB($this->db);
 	}
 
-	/**
-	 * check_for_keyword_existence
-	 *
-	 * @param int    $testprojectID product ID
-	 * @param string $kw keyword to search for
-	 * @param int    $kwID[default = 0] ignore keyword with this id
-	 *
-	 * @return map: keys: msg : verbose indication of what has happened
-	 *                          'ok' is everything fine.
-	 *
-	 *                   keyword_exists -> 1 / 0
-	 *				 				
-	 **/
-	function check_for_keyword_existence($testprojectID, $kw, $kwID = 0)
+	public function getKeyword($kwID)
 	{
-		$ret = array(
-					 'msg' => 'ok', 
-					 'keyword_exists' => 0
-					 );
-		  
-		$sql = 	" SELECT * FROM keywords " .
-				" WHERE UPPER(keyword) ='" . strtoupper($this->db->prepare_string($kw)).
-			    "' AND testproject_id=" . $testprojectID ;
-		
-		if ($kwID)
-			$sql .= " AND id <> " . $kwID;
-		
-		if ($this->db->fetchFirstRow($sql))
-		{
-			$ret['keyword_exists'] = 1;
-			$ret['msg'] = lang_get('keyword_already_exists');
-		}
-		
-		return $ret;
+		return $this->getKeywordInfo($kwID);
 	}
-	
 	/**
 	 * Gets the keywords of the given test project
 	 *
@@ -709,17 +620,42 @@ function count_testcases($id)
 	 **/
 	function getKeywords($testproject_id,$keywordID = null)
 	{
-		$a_keywords = null;
-		$sql = " SELECT id,keyword,notes FROM keywords " .
-			   " WHERE testproject_id = {$testproject_id}" ;
-		if ($keywordID)
-			$sql .= " AND id = {$keywordID} ";			   
-		$sql .= " ORDER BY keyword ASC";
-		
-		$a_keywords = $this->db->get_recordset($sql);
-		return $a_keywords;
+		$keywords = null;
+		$kwIDs = $this->getKeywordIDsFor($testproject_id);
+		for($i = 0;$i < sizeof($kwIDs);$i++)
+		{
+			$keywords[] = $this->getKeywordInfo($kwIDs[$i]);
+		}
+		return $keywords;
 	}
 	
+	/**
+	 * Deletes the keyword with the given id 
+	 *
+	 * @param int $id the keywordID
+	 *
+	 * @return int returns 1 on success, 0 else
+	 * 
+	 * @todo: should we now increment the tcversion also?
+	 **/
+	function deleteKeyword($id)
+	{
+		$sql = "DELETE FROM testcase_keywords WHERE keyword_id = " . $id;
+		$result = $this->db->exec_query($sql);
+		
+		if ($result)
+		{
+			$sql = "DELETE FROM object_keywords WHERE keyword_id = " . $id;
+			$result = $this->db->exec_query($sql);
+		}
+		if ($result)
+		{
+			$sql = "DELETE FROM keywords WHERE id = " . $id;
+			$result = $this->db->exec_query($sql);
+		}
+			
+		return $result ? true : false;
+	}
 	/**
 	 * Imports the keywords contained in keywordData to the given product
 	 *
@@ -733,6 +669,7 @@ function count_testcases($id)
 	 *
 	 * @author Andreas Morsing <schlundus@web.de>
 	 **/
+	//SCHLUNDUS: todo
 	function addKeywords($testprojectID,$keywordData)
 	{
 		$sqlResults = null;
@@ -749,7 +686,107 @@ function count_testcases($id)
 	
 		return $sqlResults;
 	}
-
+	protected function getKeywordIDsFor($testproject_id)
+	{
+		$query = " SELECT id FROM keywords " .
+			   " WHERE testproject_id = {$testproject_id}" .
+			   " ORDER BY keyword ASC";	  
+		$keywordIDs = $this->m_db->fetchColumnsIntoArray($query,'id');		   
+		
+		return $keywordIDs;
+	}
+	protected function getKeywordInfo($id)
+	{
+		$info = null;
+		$keyword = new tlKeyword($id);
+		if ($keyword->readFromDB($this->m_db))
+			$info = $keyword->getInfo();
+		return $info;
+	}
+	
+	/**
+	 * Exports the given keywords to a XML file
+	 *
+	 *
+	 * @return strings the generated XML Code
+	 **/
+	public function exportKeywordDataToXML($testproject_id,$bNoXMLHeader = false)
+	{
+		//SCHLUNDUS: mayvbe a keywordCollection object should be used instead?
+		$kwIDs = $this->getKeywordIDsFor($testproject_id);
+		$xmlCode = '';
+		if (!$bNoXMLHeader)
+			$xmlCode .= TL_XMLEXPORT_HEADER."\n";
+		$xmlCode .= "<keywords>";
+		for($i = 0;$i < sizeof($kwIDs);$i++)
+		{
+			$keyword = new tlKeyword($kwIDs[$i]);
+			$keyword->readFromDb($this->m_db);
+			$keyword->writeToXML($xmlCode,true);
+		}
+		$xmlCode .= "</keywords>";
+		
+		return $xmlCode;
+	}
+	
+	/**
+	 * Exports the given keywords to CSV
+	 *
+	 * @return string the generated CSV code
+	 **/
+	function exportKeywordDataToCSV($testproject_id,$delim = ';')
+	{
+		//SCHLUNDUS: maybe a keywordCollection object should be used instead?
+		$kwIDs = $this->getKeywordIDsFor($testproject_id);
+		$csv = null;
+		for($i = 0;$i < sizeof($kwIDs);$i++)
+		{
+			$keyword = new tlKeyword($kwIDs[$i]);
+			$keyword->readFromDb($this->m_db);
+			$keyword->writeToCSV($csv,$delim);
+		}
+		return $csv;
+	}
+	
+	function importKeywordsCSV($testproject_id,$fileName,$delim = ';')
+	{
+		//SCHLUNDUS: maybe a keywordCollection object should be used instead?
+		$handle = fopen($fileName,"r"); 
+		if ($handle)
+		{
+			while($data = fgetcsv($handle, TL_IMPORT_ROW_MAX, $delim))
+			{ 
+				$k = new tlKeyword();
+				$k->create($testproject_id,NULL,NULL);
+				if ($k->readFromCSV(implode($delim,$data)) == OK)
+					$k->writeToDB($this->db);
+			}
+			fclose($handle);
+		}
+	}
+	
+	function importKeywordsFromXML($testproject_id,$fileName)
+	{
+		//SCHLUNDUS: maybe a keywordCollection object should be used instead?
+		$xml = simplexml_load_file($fileName);
+		if (!$xml || $xml->getName() != 'keywords')
+			return tlKeyword::KW_E_WRONGFORMAT;
+		if ($xml->keyword)
+		{
+			foreach($xml->keyword as $keyword)
+			{
+				$xmlSnippet = $keyword->asXML();
+				$k = new tlKeyword();
+				$k->create($testproject_id,NULL,NULL);
+				if ($k->readFromXML($xmlSnippet) == OK)
+					$k->writeToDB($this->db);
+				else
+					return tlKeyword::KW_E_WRONGFORMAT;
+			}
+		}
+		return OK;
+	}
+	
 	/* END KEYWORDS RELATED */	
 	
 	/* REQUIREMENTS RELATED */

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: attachmentrepository.class.php,v $
  *
- * @version $Revision: 1.2 $
- * @modified $Date: 2007/12/03 20:42:27 $ by $Author: schlundus $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2007/12/05 21:25:14 $ by $Author: schlundus $
  * @author Francisco Mancardi
  *
 */
@@ -306,10 +306,10 @@ class tlAttachmentRepository extends tlObjectWithDB
 	
 	public function getAttachmentInfo($id)
 	{
-		$attachment = new tlAttachment($id);
 		$info = null;
+		$attachment = new tlAttachment($id);
 		if ($attachment->readFromDB($this->m_db))
-			$info = $attachment->getAttachmentInfo();
+			$info = $attachment->getInfo();
 		
 		return $info;
 	}

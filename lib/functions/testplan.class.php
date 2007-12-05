@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.43 $
- * @modified $Date: 2007/12/02 15:44:18 $ $Author: schlundus $
+ * @version $Revision: 1.44 $
+ * @modified $Date: 2007/12/05 21:25:14 $ $Author: schlundus $
  * @author franciscom
  *
  * Manages test plan operations and related items like Custom fields.
@@ -52,9 +52,8 @@ require_once( dirname(__FILE__). '/tree.class.php' );
 require_once( dirname(__FILE__) . '/assignment_mgr.class.php' );
 require_once( dirname(__FILE__) . '/attachments.inc.php' );
 
-class testplan
+class testplan extends tlObjectWithAttachments
 {
-	var $attachmentRepository;
 	var $db;
 	var $tree_manager;
 	var $assignment_mgr;
@@ -83,8 +82,9 @@ class testplan
 		$this->assignment_types=$this->assignment_mgr->get_available_types(); 
 		$this->assignment_status=$this->assignment_mgr->get_available_status();
 	
-		$this->attachmentRepository = tlAttachmentRepository::create($db);
   		$this->cfield_mgr=new cfield_mgr($this->db);
+		
+		tlObjectWithAttachments::__construct($this->db,'testplans');
 	}
 
 
@@ -852,17 +852,7 @@ function delete($id)
     $this->db->exec_query($sql);  
   }
 
-  // ------------------------------------------------------------------------
-  // attachments need special care
-  $sql="SELECT * FROM attachments WHERE fk_id={$id} AND fk_table='testplans'";
-  $rs=$this->db->get_recordset($sql);  
-  if(!is_null($rs))
-  {
-    foreach($rs as $elem)
-    {
-       	$this->attachmentRepository->deleteAttachment($elem['id']);
-    }  
-  }
+  $this->deleteAttachments($id);
   
   $this->cfield_mgr->remove_all_design_values_from_node($id);
   // ------------------------------------------------------------------------  

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.64 $
- * @modified $Date: 2007/12/05 07:47:09 $  by $Author: franciscom $
+ * @version $Revision: 1.65 $
+ * @modified $Date: 2007/12/05 21:25:15 $  by $Author: schlundus $
  * This page manages all the editing of test cases.
  *
  * 20071201 - franciscom - new web editor code
@@ -23,7 +23,6 @@
 **/
 require_once("../../config.inc.php");
 require_once("common.php");
-require_once('../keywords/keywords.inc.php');
 require_once("web_editor.php");
 require_once("opt_transfer.php");
 testlinkInitPage($db);
@@ -91,6 +90,7 @@ $do_copy   = isset($_POST['do_copy']) ? 1 : 0;
 $do_delete = isset($_POST['do_delete']) ? 1 : 0;
 $do_create_new_version = isset($_POST['do_create_new_version']) ? 1 : 0;
 $do_delete_tc_version = isset($_POST['do_delete_tc_version']) ? 1 : 0;
+
 $do_activate_this = isset($_POST['activate_this_tcversion']) ? 1 : 0;
 $do_deactivate_this = isset($_POST['deactivate_this_tcversion']) ? 1 : 0;
 

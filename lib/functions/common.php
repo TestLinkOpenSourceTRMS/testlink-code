@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.82 $ $Author: schlundus $
- * @modified $Date: 2007/12/02 15:44:18 $
+ * @version $Revision: 1.83 $ $Author: schlundus $
+ * @modified $Date: 2007/12/05 21:25:14 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -1257,18 +1257,21 @@ function transform_nodes_order($nodes_order,$node_to_exclude=null)
 function getFileUploadErrorMessage($fInfo)
 {
 	$msg = null;
-	switch($fInfo['error'])
+	if (isset($fInfo['error']))
 	{
-		case UPLOAD_ERR_INI_SIZE:
-			$msg = lang_get('file_size_larger_than_maximum_size_check_php_ini!');
-			break;
-		case UPLOAD_ERR_FORM_SIZE:
-			$msg = lang_get('file_size_larger_than_maximum_size!');
-			break;
-		case UPLOAD_ERR_PARTIAL:
-		case UPLOAD_ERR_NO_FILE:
-			$msg = lang_get('file_upload_error');
-			break;
+		switch($fInfo['error'])
+		{
+			case UPLOAD_ERR_INI_SIZE:
+				$msg = lang_get('file_size_larger_than_maximum_size_check_php_ini!');
+				break;
+			case UPLOAD_ERR_FORM_SIZE:
+				$msg = lang_get('file_size_larger_than_maximum_size!');
+				break;
+			case UPLOAD_ERR_PARTIAL:
+			case UPLOAD_ERR_NO_FILE:
+				$msg = lang_get('file_upload_error');
+				break;
+		}
 	}
 	return $msg;
 }

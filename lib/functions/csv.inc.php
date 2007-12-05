@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: csv.inc.php,v $
  *
- * @version $Revision: 1.3 $
- * @modified $Date: 2006/10/16 10:36:11 $ by $Author: franciscom $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2007/12/05 21:25:14 $ by $Author: schlundus $
  *
  * functions related to csv export
  *
@@ -103,4 +103,5 @@ function importCSVData($fileName,$destKeys,$delimiter = ';',$num_fields=0,
 	}
 	return $retData;
 }
+
 ?>

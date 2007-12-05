@@ -5,20 +5,14 @@
  *
  * Filename $RCSfile: keywordsView.php,v $
  *
- * @version $Revision: 1.16 $
- * @modified $Date: 2007/06/11 06:35:33 $ by $Author: franciscom $
+ * @version $Revision: 1.17 $
+ * @modified $Date: 2007/12/05 21:25:15 $ by $Author: schlundus $
  *
  * allows users to manage keywords. 
- *
- * 20061007 - franciscom - export logic moved here
- *
- *
-**/
+ */
 require_once("../../config.inc.php");
 require_once("common.php");
-require_once("csv.inc.php");
-require_once("xml.inc.php");
-require_once("keywords.inc.php");
+require_once("keyword.class.php");
 testlinkInitPage($db);
 
 $_REQUEST = strings_stripSlashes($_REQUEST);
@@ -35,17 +29,17 @@ $testproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID']
 $bModifyKeywordRight = has_rights($db,"mgt_modify_key");
 
 $tproject = new testproject($db);
-$sqlResult = null;
+$msg = null;
 $action = null;
 
 //show the details of the keyword to edit
 if ($keywordID && !$bEditKey && !$bDeleteKey)
 {
-	$info = $tproject->getKeywords($testproject_id,$keywordID);
+	$info = $tproject->getKeyword($keywordID);
 	if ($info)
 	{
-		$keyword = $info[0]['keyword'];
-		$notes = $info[0]['notes'];
+		$keyword = $info['keyword'];
+		$notes = $info['notes'];
 	}
 }
 
@@ -54,19 +48,28 @@ if ($bModifyKeywordRight)
 	//insert or update a keyword
 	if ($bEditKey || $bNewKey)
 	{
-		$sqlResult = checkKeywordName($keyword);
-		if (is_null($sqlResult))
+		if ($bNewKey)
+			$result = $tproject->addKeyword($testproject_id,$keyword,$notes);
+		else
+			$result = $tproject->updateKeyword($testproject_id,$keyword,$notes,$keywordID);
+
+		switch($result)
 		{
-			if ($bNewKey)
-				$sqlResult = $tproject->addKeyword($testproject_id,$keyword,$notes);
-			else
-			{
-				$check = $tproject->updateKeyword($testproject_id,$keywordID,$keyword,$notes);
-				if ($check['status_ok'])
-					$sqlResult = 'ok';
-				else
-		   			$sqlResult = lang_get('kw_update_fails') . ': ' . $check['msg'];
-			}
+			case tlKeyword::KW_E_NOTALLOWED:
+				$msg = lang_get('keywords_char_not_allowed'); 
+				break;
+			case tlKeyword::KW_E_EMPTY:
+				$msg = lang_get('empty_keyword_no');
+				break;
+			case tlKeyword::KW_E_DBERROR:
+			case ERROR: 
+				$msg = lang_get('kw_update_fails');
+				break;
+			case tlKeyword::KW_E_DUPLICATE:
+				$msg = lang_get('keyword_already_exists');
+				break;
+			default:
+				$msg = 'ok';
 		}
 		//reset info, after successful updating	
 		$action = $bEditKey ? "updated" : "do_add";
@@ -74,37 +77,32 @@ if ($bModifyKeywordRight)
 	//delete the keyword
 	if ($bDeleteKey)
 	{
-		$sqlResult = 'ok';
-		if (!deleteKeyword($db,$keywordID))
-			$sqlResult = lang_get('kw_delete_fails'). ' : ' . $db->error_msg();
+		$msg = 'ok';
+		if (!$tproject->deleteKeyword($keywordID))
+			$msg = lang_get('kw_delete_fails'). ' : ' . $db->error_msg();
 			
 		$action = 'deleted';	
 	}
-	if ($action && $sqlResult == 'ok')
+	if ($action && $msg == 'ok')
 		$notes = $keyword = $keywordID = null;
 }
-
 if($do_export)
 {
-	$tproject = new testproject($db);
-	$keywords = $tproject->getKeywords($testproject_id);
 	$pfn = null;
-
-	switch(strtoupper($exportType))
+	switch($exportType)
 	{
-		case 'CSV':
- 		  $pfn = "exportKeywordDataToCSV";
-		  $fileName = 'keywords.csv';
+		case 'iSerializationToCSV':
+			$pfn = "exportKeywordDataToCSV";
+			$fileName = 'keywords.csv';
 			break;
-			
-		case 'XML':
+		case 'iSerializationToXML':
 			$pfn = "exportKeywordDataToXML";
 			$fileName = 'keywords.xml';
 			break;
 	}
 	if ($pfn)
 	{
-		$content = $pfn($keywords);
+		$content = $tproject->$pfn($testproject_id);
 		downloadContentsToFile($content,$fileName);
 
 		// why this exit() ?
@@ -113,19 +111,19 @@ if($do_export)
 		exit();
 	}
 }
-
+$tlKeyword = new tlKeyword();
+$exportTypes = $tlKeyword->getSupportedSerializationInterfaces();
 $keywords = $tproject->getKeywords($testproject_id);
 
 $smarty = new TLSmarty();
 $smarty->assign('action',$action);
-$smarty->assign('sqlResult',$sqlResult);
+$smarty->assign('sqlResult',$msg);
 $smarty->assign('rightsKey',$bModifyKeywordRight);
 $smarty->assign('arrKeywords', $keywords);
 $smarty->assign('name',$keyword);
 $smarty->assign('keyword',$keyword);
 $smarty->assign('notes',$notes);
 $smarty->assign('keywordID',$keywordID);
-$smarty->assign('exportTypes',$g_keywordExportTypes);
-
+$smarty->assign('exportTypes',$exportTypes);
 $smarty->display('keywordsView.tpl');
 ?>

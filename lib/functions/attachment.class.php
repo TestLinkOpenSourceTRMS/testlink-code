@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: attachment.class.php,v $
  *
- * @version $Revision: 1.2 $
- * @modified $Date: 2007/12/03 20:42:27 $ by $Author: schlundus $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2007/12/05 21:25:14 $ by $Author: schlundus $
  * @author Francisco Mancardi
  *
 */
@@ -143,7 +143,7 @@ class tlAttachment extends tlDBObject
 		return $info ? true : false;
 	}
 	
-	public function getAttachmentInfo()
+	public function getInfo()
 	{
 		return array(
 			"id" => $this->m_dbID,

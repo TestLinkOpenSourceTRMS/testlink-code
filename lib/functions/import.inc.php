@@ -1,6 +1,6 @@
 <?php
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: import.inc.php,v 1.16 2007/06/21 15:35:15 franciscom Exp $
+* $Id: import.inc.php,v 1.17 2007/12/05 21:25:14 schlundus Exp $
 * 
 * @author Martin Havlat
 *
@@ -15,7 +15,6 @@
 */
 require_once("../../config.inc.php");
 require_once("../functions/common.php");
-require_once("../keywords/keywords.inc.php");
 
 /**
 * Create table to show imported data at first
@@ -82,41 +81,6 @@ function showTcImport($location,$catIDForImport = 0)
 		
 	$overview .= "</table>";
 	return $overview;
-}
-
-
-//20050828 - scs - added optional parameter for the offset in data where the keywords beging
-function buildKeywordListAndInsertKeywords(&$db,$data,$prodID,$slice = 6)
-{
-	//Grabbing the Key information from the excel sheets
-	$keywords = null;
-	$keywords = array_slice($data,$slice);
-
-	//Need to reinitialize the keys variable
-	if (sizeof($keywords))
-	{
-		
-		for($i = 0;$i < sizeof($keywords);$i++)
-		{
-			$prodKeywords = null;
-			$keyword = $keywords[$i];
-			$keyword = str_replace(array('"',','),array("",""),$keyword);
-			$keywords[$i] = $keyword;
-			
-			// 20051004 - fm - interface changes
-			$prodKeywords=getProductKeywords($db,$prodID,$keyword);
-			if (!sizeof($prodKeywords))
-			{
-				addNewKeyword($db,$prodID,$keywords[$i],null);
-			}	
-		}
-		$keywords = implode(",",$keywords).",";
-	}
-	else
-	{
-		$keywords = null;
-	}	
-	return $keywords;
 }
 
 /**

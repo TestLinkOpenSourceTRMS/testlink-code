@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: keywordsAssign.php,v $
  *
- * @version $Revision: 1.24 $
- * @modified $Date: 2007/11/11 15:32:37 $
+ * @version $Revision: 1.25 $
+ * @modified $Date: 2007/12/05 21:25:15 $
  *
  * Purpose:  Assign keywords to set of testcases in tree structure
  *
@@ -20,7 +20,6 @@
 **/
 require_once("../../config.inc.php");
 require_once("../functions/common.php");
-require_once("keywords.inc.php");
 require_once("../functions/opt_transfer.php");
 
 testlinkInitPage($db);

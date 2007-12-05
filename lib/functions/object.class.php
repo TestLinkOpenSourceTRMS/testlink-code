@@ -1,57 +1,42 @@
 <?php
-/**
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * This script is distributed under the GNU General Public License 2 or later. 
- *
- * Filename $RCSfile: object.class.php,v $
- *
- * @version $Revision: 1.2 $
- * @modified $Date: 2007/12/03 20:42:27 $ by $Author: schlundus $
- * @author Francisco Mancardi
- *
-*/
-
-/*
-Any objects which support serialization from or to XML should implement this interface
-*/
-interface iXMLSerialization
-{
-	/*
-		Serializes the objects to XML code (string)
-	*/
-	public function writeToXML(&$xml);
-	/*
-		Serializes the objects from XML code (string)
-	*/
-	public function readFromXML($xml);
-}
-
-/*
-Any objects which support serialization from or to Database should implement this interface
-*/
-interface iDBSerialization
-{
-	/*
-		Serializes the objects to the database connection given by [ref] $db
-	*/
-	public function readFromDB(&$db);
-	/*
-		Serializes the objects from the database connection given by [ref] $db
-	*/
-	public function writeToDB(&$db);
-}
+require_once( dirname(__FILE__) . '/int_serialization.php' );
 /*
 	The base class for all managed TestLink objects
 */
-class tlObject
+class tlObject implements iSerialization
 {	
 	/* the unique object id */
 	protected $m_objectID;
+	protected $m_serializationInterfaces;
+	protected $m_serializationFormatDescriptors;
 	
 	/* standard constructor, set's the object id */
 	public function __construct()
 	{
 		$this->m_objectID = uniqid("tl", true);
+		
+		/* Any supported import/Export Serialization Interfaces must be prefixed with iSerializationTo */
+		$prefix = "iSerializationTo";
+		$prefixLen = strlen($prefix);
+		$o = new ReflectionObject($this);
+		$interfaces = $o->getInterfaces();
+		$this->m_serializationInterfaces = null;
+		$this->m_serializationFormatDescriptors = null;
+		if ($interfaces)
+		{
+			foreach($interfaces as $name => $info)
+			{
+				$iPos = strpos($name,$prefix);
+				if ($iPos === 0)
+				{
+					$format = substr($name,$prefixLen);
+					$this->m_serializationInterfaces[$name] = $format;
+					$pfn = "getFormatDescriptionFor".$format;
+					$this->m_serializationFormatDescriptors[$format] = $this->$pfn();
+				}
+			}
+		}
+		$this->getSupportedSerializationFormatDescriptions();
 	}
 	/* standard destructor */
 	public function __destruct()
@@ -67,6 +52,16 @@ class tlObject
 	/* function used for resetting the object's internal data */
 	protected function _clean()
 	{
+	}
+	/* returns all supported Import/Export Interfaces */
+	function getSupportedSerializationInterfaces()
+	{
+		return $this->m_serializationInterfaces;
+	}
+	/* returns all supported Import/Export Interfaces  Format Descriptors */
+	function getSupportedSerializationFormatDescriptions()
+	{
+		return $this->m_serializationFormatDescriptors;
 	}
 };
 /*
@@ -92,7 +87,7 @@ class tlObjectWithDB extends tlObject
 */
 class tlObjectWithAttachments extends tlObjectWithDB
 {
-	/* the attachemt repository object */
+	/* the attachment repository object */
 	protected $m_attachmentRepository;
 	/* the foreign key table name to store the attachements */
 	protected $m_attachmentTableName;
@@ -126,6 +121,7 @@ class tlObjectWithAttachments extends tlObjectWithDB
 		return $this->m_attachmentRepository->deleteAttachmentsFor($id,$this->m_attachmentTableName);
 	}
 	
+	/* function used for resetting the object's internal data */
 	protected function _clean()
 	{
 		$this->m_attachmentRepository = null;
@@ -137,12 +133,12 @@ abstract class tlDBObject extends tlObject implements iDBSerialization
 {
 	protected $m_dbID;
 	
-	//all function should return a bool success flag
-	function __construct()
+	/* standard constructor */
+	function __construct($dbID = null)
 	{
 		parent::__construct();
 		
-		$this->m_dbID = NULL;
+		$this->m_dbID = $dbID;
 	}
 	public function getDbID()
 	{

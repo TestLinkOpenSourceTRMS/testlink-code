@@ -2,11 +2,12 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.73 $
- * @modified $Date: 2007/12/04 09:20:45 $ $Author: franciscom $
+ * @version $Revision: 1.74 $
+ * @modified $Date: 2007/12/05 07:46:25 $ $Author: franciscom $
  * @author franciscom
  *
  *
+ * 20071204 - franciscom - get_execution_types() 
  * 20071203 - franciscom - get_last_execution(), added build_is_active, build_is_open         			
  *
  * 20071128 - franciscom - create_tcase_only() added key on ret struct
@@ -133,6 +134,22 @@ class testcase extends tlObjectWithAttachments
      return $this->import_file_types;
   }
 
+ /*
+    function: get_execution_types
+              getter
+
+    args: -
+    
+    returns: map  
+             key: execution type code
+             value: execution type verbose description 
+
+  */
+	function get_execution_types()
+	{
+     return $this->execution_types;
+  }
+
 
 
 
@@ -161,7 +178,7 @@ function create($parent_id,$name,$summary,$steps,
 	$status_ok = 1;
 	$ret = $this->create_tcase_only($parent_id,$name,$tc_order,$id,
                                   $check_duplicate_name,
-                                  $action_on_duplicate_name,$execution_type);
+                                  $action_on_duplicate_name);
 	if($ret['msg'] == 'ok')
 	{
 		if(strlen(trim($keywords_id)))
@@ -171,7 +188,7 @@ function create($parent_id,$name,$summary,$steps,
 		}
 	
 		$op = $this->create_tcversion($ret['id'],$first_version,$summary,$steps,
-		                              $expected_results,$author_id);
+		                              $expected_results,$author_id,$execution_type);
 		                              
 		$ret['msg']=$op['msg'];
 	}
@@ -261,11 +278,12 @@ function create_tcversion($id,$version,$summary,$steps,
 	// get a new id
 	$tcase_version_id = $this->tree_manager->new_node($id,$this->node_types_descr_id['testcase_version']);
 	
-	$sql = "INSERT INTO tcversions (id,version,summary,steps,expected_results,author_id,creation_ts)
-  	      VALUES({$tcase_version_id},{$version},'" .  $this->db->prepare_string($summary) . "'," . 
-	  	                           "'" . $this->db->prepare_string($steps) . "'," .
-	  	                           "'" . $this->db->prepare_string($expected_results) . "'," . $author_id . "," .
-                    	  	       $this->db->db_now() . ")";
+	$sql = "INSERT INTO tcversions (id,version,summary,steps," .
+	       " expected_results,author_id,creation_ts,execution_type)" .
+  	     " VALUES({$tcase_version_id},{$version},'" .  $this->db->prepare_string($summary) . "'," . 
+	  	   "'" . $this->db->prepare_string($steps) . "'," .
+	  	   "'" . $this->db->prepare_string($expected_results) . "'," . $author_id . "," .
+               $this->db->db_now() . ", {$execution_type} )";
 	$result = $this->db->exec_query($sql);        
 	$ret['msg']='ok';
 	$ret['id']=$tcase_version_id;
@@ -409,7 +427,6 @@ function show(&$smarty,$template_dir,$id, $user_id, $version_id=TC_ALL_VERSIONS,
  	}
 	$users = getAllUsers($this->db,null,'id');
 	
-	
 	$smarty->assign('execution_types',$this->execution_types);
 	$smarty->assign('user_feedback',$user_feedback);
 	$smarty->assign('tcase_cfg',$tcase_cfg);
@@ -438,7 +455,8 @@ function show(&$smarty,$template_dir,$id, $user_id, $version_id=TC_ALL_VERSIONS,
 //
 // 20060424 - franciscom - interface changes added $keywords_id
 function update($id,$tcversion_id,$name,$summary,$steps,
-                $expected_results,$user_id,$keywords_id='',$tc_order=TC_DEFAULT_ORDER)
+                $expected_results,$user_id,$keywords_id='',
+                $tc_order=TC_DEFAULT_ORDER,$execution_type=TESTCASE_MANUAL)
 {
 	$status_ok = 0;
 	
@@ -452,10 +470,11 @@ function update($id,$tcversion_id,$name,$summary,$steps,
 	{       
 		// test case version
 		$sql = " UPDATE tcversions SET summary='" . $this->db->prepare_string($summary) . "'," .
-				" steps='" . $this->db->prepare_string($steps) . "'," .
-				" expected_results='" . $this->db->prepare_string($expected_results) . "'," .
-				" updater_id={$user_id}, modification_ts = " . $this->db->db_now() .
-				" WHERE tcversions.id = {$tcversion_id}";
+				   " steps='" . $this->db->prepare_string($steps) . "'," .
+				   " expected_results='" . $this->db->prepare_string($expected_results) . "'," .
+				   " updater_id={$user_id}, modification_ts = " . $this->db->db_now() . "," .
+				   " execution_type={$execution_type} " .
+				   " WHERE tcversions.id = {$tcversion_id}";
 		
 		$result = $this->db->exec_query($sql);
 		$status_ok = $result ? 1: 0;
@@ -889,13 +908,14 @@ function get_last_version_info($id)
 function copy_tcversion($from_tcversion_id,$to_tcversion_id,$as_version_number,$user_id)
 {
     $now = $this->db->db_now();
-		$sql="INSERT INTO tcversions (id,version,author_id,creation_ts,
-		                              summary,steps,expected_results,importance)
-          SELECT {$to_tcversion_id} AS id, {$as_version_number} AS version,
-                 {$user_id} AS author_id, {$now} AS creation_ts,
-                 summary,steps,expected_results,importance
-          FROM tcversions 
-          WHERE id={$from_tcversion_id} ";
+		$sql="INSERT INTO tcversions (id,version,author_id,creation_ts," .
+		     "                        summary,steps,expected_results,importance,execution_type) " .
+         " SELECT {$to_tcversion_id} AS id, {$as_version_number} AS version, " .
+         "        {$user_id} AS author_id, {$now} AS creation_ts," .
+         "        summary,steps,expected_results,importance,execution_type " .
+         " FROM tcversions " .
+         " WHERE id={$from_tcversion_id} ";
+         
     $result = $this->db->exec_query($sql);
 }	
 

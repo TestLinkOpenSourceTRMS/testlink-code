@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: resultsReqs.php,v $
- * @version $Revision: 1.11 $
- * @modified $Date: 2007/12/02 17:08:16 $ by $Author: franciscom $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2007/12/05 07:47:09 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Report requirement based results
@@ -49,9 +49,12 @@ if(!is_null($idSRS))
 	$tplan_mgr = new testplan($db);
 	$tcs = $tplan_mgr->get_linked_tcversions($tpID,null,0,1);
 	
-	$sql = " SELECT id,testcase_id,title,status " .
-	       " FROM requirements LEFT OUTER JOIN req_coverage " .
-	       " ON requirements.id = req_coverage.req_id WHERE status = 'v' AND srs_id = {$idSRS}"; 
+	// BUGID 1063
+	$sql = " SELECT REQ.id, req_coverage.testcase_id,title,status, NH.name AS testcase_name " .
+	       " FROM requirements REQ" .
+	       " LEFT OUTER JOIN req_coverage ON REQ.id = req_coverage.req_id " .
+	       " LEFT OUTER JOIN nodes_hierarchy NH ON req_coverage.testcase_id=NH.id " .
+	       " WHERE status = '" . TL_REQ_STATUS_VALID . "' AND srs_id = {$idSRS}"; 
 	       
 	$reqs = $db->fetchRowsIntoMap($sql,'id',1);
 	$execMap = getLastExecutions($db,$tcs,$tpID);
@@ -64,6 +67,15 @@ if(!is_null($idSRS))
 }
 
 $smarty = new TLSmarty();
+
+
+$allow_edit_tc = 0;
+if( has_rights($db,"mgt_modify_tc") == 'yes')
+{ 
+  $allow_edit_tc = 1;
+}
+
+$smarty->assign('allow_edit_tc', $allow_edit_tc);
 $smarty->assign('tproject_name', $_SESSION['testprojectName'] );
 $smarty->assign('tplan_name', $_SESSION['testPlanName'] );
 $smarty->assign('arrMetrics', $arrMetrics);

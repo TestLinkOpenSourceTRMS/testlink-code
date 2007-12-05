@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: requirements.inc.php,v $
- * @version $Revision: 1.62 $
- * @modified $Date: 2007/11/10 08:10:35 $ by $Author: franciscom $
+ * @version $Revision: 1.63 $
+ * @modified $Date: 2007/12/05 07:46:25 $ by $Author: franciscom $
  *
  * @author Martin Havlat <havlat@users.sourceforge.net>
  * 
@@ -407,10 +407,12 @@ function getReqCoverage($reqs,$execMap,&$coveredReqs)
 				if (!$i)
 					$req['title'] = $tcInfo['title'];
 				$execTc = $tcInfo['testcase_id'];
+				
+				// BUGID 1063
 				if ($execTc)
 					$req['tcList'][] = array(
 												"tcID" => $execTc,
-												"title" => $tcInfo['title']
+												"title" => $tcInfo['testcase_name']
 											); 
 				
 				

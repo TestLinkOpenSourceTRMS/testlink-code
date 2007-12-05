@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsReqs.tpl,v 1.1 2007/12/02 17:21:19 franciscom Exp $
+$Id: resultsReqs.tpl,v 1.2 2007/12/05 07:47:00 franciscom Exp $
 Purpose: report REQ coverage 
 Author : Martin Havlat 
 
@@ -76,7 +76,7 @@ Author : Martin Havlat
   			{$arrCoverage.passed[row].title|escape}</a></span></td>
   		<td>{assign var=tcList value=$arrCoverage.passed[row].tcList}
   			{section name=idx loop=$tcList}
-  				<a href="lib/testcases/archiveData.php?id={$tcList[idx].tcID|escape}&amp;edit=testcase&allow_edit=0">{$tcList[idx].tcID}</a> {$tcList[idx].title} <br/>
+  				<a href="lib/testcases/archiveData.php?id={$tcList[idx].tcID|escape}&amp;edit=testcase&allow_edit={$allow_edit_tc}">{$tcList[idx].tcID}</a> {$tcList[idx].title} <br/>
   			{/section} 
   		</td>
   	</tr>
@@ -106,7 +106,7 @@ Author : Martin Havlat
   			{$arrCoverage.failed[row].title|escape}</a></span></td>
   		<td>{assign var=tcList value=$arrCoverage.failed[row].tcList}
   			{section name=idx loop=$tcList}
-  				<a href="lib/testcases/archiveData.php?id={$tcList[idx].tcID|escape}&amp;edit=testcase&allow_edit=0">{$tcList[idx].tcID}</a> {$tcList[idx].title} <br/>
+  				<a href="lib/testcases/archiveData.php?id={$tcList[idx].tcID|escape}&amp;edit=testcase&allow_edit={$allow_edit_tc}">{$tcList[idx].tcID}</a> {$tcList[idx].title} <br/>
   			{/section} 
   		</td>
   	</tr>
@@ -136,7 +136,7 @@ Author : Martin Havlat
   			{$arrCoverage.blocked[row].title|escape}</a></span></td>
   		<td>{assign var=tcList value=$arrCoverage.blocked[row].tcList}
   			{section name=idx loop=$tcList}
-  				<a href="lib/testcases/archiveData.php?id={$tcList[idx].tcID|escape}&amp;edit=testcase&allow_edit=0">{$tcList[idx].tcID}</a> {$tcList[idx].title} <br/>
+  				<a href="lib/testcases/archiveData.php?id={$tcList[idx].tcID|escape}&amp;edit=testcase&allow_edit={$allow_edit_tc}">{$tcList[idx].tcID}</a> {$tcList[idx].title} <br/>
   			{/section} 
   		</td>
   	</tr>
@@ -166,7 +166,7 @@ Author : Martin Havlat
   			{$arrCoverage.not_run[row].title|escape}</a></span></td>
   		<td>{assign var=tcList value=$arrCoverage.not_run[row].tcList}
   			{section name=idx loop=$tcList}
-  				<a href="lib/testcases/archiveData.php?id={$tcList[idx].tcID|escape}&amp;edit=testcase&allow_edit=0">{$tcList[idx].tcID}</a> {$tcList[idx].title} <br/>
+  				<a href="lib/testcases/archiveData.php?id={$tcList[idx].tcID|escape}&amp;edit=testcase&allow_edit={$allow_edit_tc}">{$tcList[idx].tcID}</a> {$tcList[idx].title} <br/>
   			{/section} 
   		</td>
   	</tr>

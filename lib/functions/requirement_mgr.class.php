@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.9 $
- * @modified $Date: 2007/12/02 16:33:18 $ by $Author: schlundus $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2007/12/05 07:46:24 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
@@ -94,7 +94,6 @@ class requirement_mgr extends tlObjectWithAttachments
 	  $result['status_ok'] = 0;
 	  $result['msg'] = 'ko';
 	
-	  echo "<pre>debug 20071117 - \$type - " . __FUNCTION__ . " --- "; print_r($type); echo "</pre>";
 	  $field_size = config_get('field_size');
 
 	  $reqdoc_id = trim_and_limit($reqdoc_id,$field_size->req_docid);
@@ -434,10 +433,6 @@ class requirement_mgr extends tlObjectWithAttachments
   {
     $tcase_mgr = new testcase($this->db);
     $tree_mgr=New tree($this->db);
-    
-   	define('DEFAULT_TC_ORDER',0);
-    define('AUTOMATIC_ID',0);
-    define('NO_KEYWORDS','');
     
   	$g_req_cfg = config_get('req_cfg');
   	$g_field_size = config_get('field_size');

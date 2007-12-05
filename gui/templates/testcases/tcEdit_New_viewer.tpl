@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcEdit_New_viewer.tpl,v 1.2 2007/12/04 09:20:13 franciscom Exp $
+$Id: tcEdit_New_viewer.tpl,v 1.3 2007/12/05 07:47:00 franciscom Exp $
 Purpose: smarty template - create new testcase
 
 20061231 - franciscom - viewer for tcEdit.tpl and tcNew.tpl
@@ -42,8 +42,13 @@ Purpose: smarty template - create new testcase
 			<div>{$expected_results}</div>
 			{$layout3}
 			
-		<div class="labelHolder">{lang_get s='execution_type'}</div>
-		<div></div>
+		<div class="labelHolder">{lang_get s='execution_type'}
+		  <select name="exec_type">
+    	  {html_options options=$execution_types selected=$tc.execution_type}
+    	</select>
+    </div>
+    <br />
+
 	     
 	  {* Custom fields *}
 	   {if $cf neq ""}

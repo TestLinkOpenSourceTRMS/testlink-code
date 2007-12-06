@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testplan.class.php,v $
- * @version $Revision: 1.44 $
- * @modified $Date: 2007/12/05 21:25:14 $ $Author: schlundus $
+ * @version $Revision: 1.45 $
+ * @modified $Date: 2007/12/06 14:54:38 $ $Author: franciscom $
  * @author franciscom
  *
  * Manages test plan operations and related items like Custom fields.
@@ -11,6 +11,9 @@
  *
  * 
  * rev :
+ *       20071205 - franciscom - copy_as() - added reactored code from contribution
+ *                               
+ *
  *       20071010 - franciscom - BUGID     MSSQL reserved word problem - open 
  *       20070927 - franciscom - BUGID 1069
  *                               added _natsort_builds() (see natsort info on PHP manual).
@@ -650,16 +653,51 @@ function get_keywords_tcases($id,$keyword_id=0)
 } // end function
 // -------------------------------------------------------------------------------
 
-// 20060919 - franciscom
-// $id: source testplan id
-// $new_tplan_id: destination
-// $tplan_name  != null => set this as the new name
-// $tproject_id != null => set this as the new testproject for the testplan
-//                         this allow us to copy testplans to differents
-//                         test projects.
-//
-function copy_as($id,$new_tplan_id,$tplan_name=null,$tproject_id=null)
+/*
+  function: copy_as
+            creates a new test plan using an existent one as source.
+            
+             
+
+  args: id: source testplan id
+        new_tplan_id: destination
+        [tplan_name]: default null.  
+                      != null => set this as the new name
+  
+        [tproject_id]: default null. 
+                       != null => set this as the new testproject for the testplan
+                                  this allow us to copy testplans to differents test projects.
+        [copy_options]: default null
+                        null: do a deep copy => copy following test plan child elements:
+                              builds,linked tcversions,milestones,
+                              user_roles,priorities.
+                        != null, a map with keys that controls what child elements to copy
+                                                
+        [tcversion_type]:  default null -> use same version present on source testplan
+                          'lastest' -> for every testcase linked to source testplan
+                                      use lastest available version                            
+  
+  returns: 
+
+*/
+function copy_as($id,$new_tplan_id,$tplan_name=null,
+                 $tproject_id=null,$copy_options=null,$tcversion_type=null)
 {
+  $cp_options = array('copy_tcases' => 1,'copy_priorities' => 1, 
+	                    'copy_milestones' => 1, 'copy_user_roles' => 1, 'copy_builds' => 1);
+
+  $cp_methods = array('copy_tcases' => 'copy_linked_tcversions',
+                      'copy_priorities' => 'copy_priorities', 
+	                    'copy_milestones' => 'copy_milestones', 
+	                    'copy_user_roles' => 'copy_user_roles', 
+	                    'copy_builds' => 'copy_builds');
+  
+    
+  if( !is_null($copy_options) )
+{
+    $cp_options=$copy_options;  
+  }
+  
   // get source testplan general info
   $rs_source=$this->get_by_id($id);
   
@@ -679,12 +717,21 @@ function copy_as($id,$new_tplan_id,$tplan_name=null,$tproject_id=null)
     $this->db->exec_query($sql);
   }  
  
-  $this->copy_builds($id,$new_tplan_id);
-  $this->copy_linked_tcversions($id,$new_tplan_id);
-  $this->copy_milestones($id,$new_tplan_id);
-  //$this->copy_attachments($id,$new_tplan_id);
-  $this->copy_user_roles($id,$new_tplan_id);
-  $this->copy_priorities($id,$new_tplan_id);
+   
+  foreach( $cp_options as $key => $do_copy )
+  {
+    if( $do_copy )
+    {
+      $copy_method=$cp_methods[$key];
+      $this->$copy_method($id,$new_tplan_id,$tcversion_type);
+    }
+  }  
+  // $this->copy_builds($id,$new_tplan_id);
+  // $this->copy_linked_tcversions($id,$new_tplan_id);
+  // $this->copy_milestones($id,$new_tplan_id);
+  // //$this->copy_attachments($id,$new_tplan_id);
+  // $this->copy_user_roles($id,$new_tplan_id);
+  // $this->copy_priorities($id,$new_tplan_id);
 
 } // end function
 
@@ -710,10 +757,19 @@ function copy_builds($id,$new_tplan_id)
 }
 
 
-// $id: source testplan id
-// $new_tplan_id: destination
-//
-function copy_linked_tcversions($id,$new_tplan_id)
+/*
+  function: copy_linked_tcversions
+
+  args: id: source testplan id
+        new_tplan_id: destination
+        [tcversion_type]: default null -> use same version present on source testplan
+                          'lastest' -> for every testcase linked to source testplan
+                                      use lastest available version
+  
+  returns: 
+
+*/
+function copy_linked_tcversions($id,$new_tplan_id,$tcversion_type=null)
 {
   $sql="SELECT * FROM testplan_tcversions WHERE testplan_id={$id} ";
        
@@ -721,22 +777,41 @@ function copy_linked_tcversions($id,$new_tplan_id)
   
   if(!is_null($rs))
   {
+   	$tcase_mgr = new testcase($this->db);
+
     foreach($rs as $elem)
     {
+      $tcversion_id = $elem['tcversion_id'];
+      
+  		if( !is_null($tcversion_type) )
+		  {
+			  $sql="SELECT * FROM nodes_hierarchy WHERE id={$tcversion_id} ";
+			  $rs2=$this->db->get_recordset($sql);
+			  $last_version_info = $tcase_mgr->get_last_version_info($rs2[0]['parent_id']);
+			  $tcversion_id = $last_version_info ? $last_version_info['id'] : $tcversion_id ;
+		  }
+      
       $sql="INSERT INTO testplan_tcversions " .
            "(testplan_id,tcversion_id) " .
-           "VALUES({$new_tplan_id}," . $elem['tcversion_id'] .")";
+           "VALUES({$new_tplan_id},{$tcversion_id})";
       $this->db->exec_query($sql);     
     }
   }
 }
 
-// $id: source testplan id
-// $new_tplan_id: destination
-//
-// rev : 20070519 - franciscom
-//       changed date to target_date, because date is an Oracle reverved word.
-//
+
+/*
+  function: copy_milestones
+
+  args: id: source testplan id
+        new_tplan_id: destination
+  
+  returns: 
+
+  rev : 20070519 - franciscom
+        changed date to target_date, because date is an Oracle reverved word.
+
+*/
 function copy_milestones($id,$new_tplan_id)
 {
   $sql="SELECT * FROM milestones WHERE testplan_id={$id} ";

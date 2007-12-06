@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.45 $
- * @modified $Date: 2007/12/05 21:25:14 $  $Author: schlundus $
+ * @version $Revision: 1.46 $
+ * @modified $Date: 2007/12/06 11:38:08 $  $Author: kmielke $
  * @author franciscom
  *
  * 20071111 - franciscom - new method get_subtree();
@@ -748,7 +748,7 @@ function count_testcases($id)
 		return $csv;
 	}
 	
-	function importKeywordsCSV($testproject_id,$fileName,$delim = ';')
+	function importKeywordsFromCSV($testproject_id,$fileName,$delim = ';')
 	{
 		//SCHLUNDUS: maybe a keywordCollection object should be used instead?
 		$handle = fopen($fileName,"r"); 
@@ -762,9 +762,12 @@ function count_testcases($id)
 					$k->writeToDB($this->db);
 			}
 			fclose($handle);
+			return OK;
+		} else {
+			return ERROR;
 		}
 	}
-	
+
 	function importKeywordsFromXML($testproject_id,$fileName)
 	{
 		//SCHLUNDUS: maybe a keywordCollection object should be used instead?

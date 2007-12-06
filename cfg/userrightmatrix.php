@@ -4,14 +4,15 @@
  *
  * Filename $RCSfile: userrightmatrix.php,v $
  *
- * @version $Revision: 1.12 $
- * @modified $Date: 2006/12/31 16:13:23 $  $Author: franciscom $
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2007/12/06 17:54:46 $  $Author: franciscom $
  *
  * @author Andreas Morsing
  *
  * This page allows configuration of the accessrights needed for
  * executing pages
  *
+ * 20071206 - franciscom - page name changes
  * 20060818 - franciscom - changes due to addition of new rights
  *
  *												 role_management
@@ -76,8 +77,8 @@ $tplan_admin=array("$tplan_admin_url/planupdatetc.php" => array("testplan_planni
        						 "$tplan_admin_url/plantestersnavigator.php" => array("testplan_planning",),														
        						 "$tplan_admin_url/planupdatetc.php" => array("testplan_planning",),														
        						 "$tplan_admin_url/planmilestoneedit.php" => array("testplan_planning",),														
-       						 "$tplan_admin_url/testsetnavigator.php" => array("testplan_planning",),														
-       						 "$tplan_admin_url/testsetremove.php" => array("testplan_planning",));														
+       						 "$tplan_admin_url/plantcnavigator.php" => array("testplan_planning",),														
+       						 "$tplan_admin_url/plantcremove.php" => array("testplan_planning",));														
 
 
 $req_admin=array("$req_admin_url/reqspeclist.php" => array("mgt_view_req",),														

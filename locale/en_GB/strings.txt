@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.226 $
- * @modified $Date: 2007/12/04 09:19:08 $ $Author: franciscom $
+ * @version $Revision: 1.227 $
+ * @modified $Date: 2007/12/06 14:42:04 $ $Author: franciscom $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -921,6 +921,13 @@ $TLS_testplan_txt_notes = "Test plan should be clearly defined task(s) with a ti
                           "'Reporting' and this page.";
 $TLS_warning_empty_tp_name = "You cannot enter Test plan without a name!";
 
+$TLS_testplan_copy_tcases = "Copy Test Cases";
+$TLS_testplan_copy_tcases_latest = "Latest available version";
+$TLS_testplan_copy_tcases_current = "Current linked version";
+$TLS_testplan_copy_builds = "Copy Builds";
+$TLS_testplan_copy_priorities = "Copy Priorities";
+$TLS_testplan_copy_milestones = "Copy Milestones";
+$TLS_testplan_copy_user_roles = "Copy User Roles";
 
 
 // gui/templates/planNew.tpl

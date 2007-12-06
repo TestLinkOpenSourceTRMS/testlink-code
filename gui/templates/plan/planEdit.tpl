@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planEdit.tpl,v 1.1 2007/12/02 17:03:00 franciscom Exp $
+$Id: planEdit.tpl,v 1.2 2007/12/06 14:41:43 franciscom Exp $
 
 Purpose: smarty template - create Test Plan
 Revisions:
@@ -26,6 +26,21 @@ function validateForm(f)
       return false;
   }
   return true;
+}
+
+
+function manage_copy_ctrls(container_id,display_control_value,hide_value)
+{
+ o_container=document.getElementById(container_id);
+
+ if( display_control_value == hide_value )
+ {
+   o_container.style.display='none';
+ }
+ else
+ {
+    o_container.style.display='';
+ }
 }
 </script>
 {/literal}
@@ -72,12 +87,18 @@ function validateForm(f)
 		{if $tplan_id eq 0}
 			<tr><th>{lang_get s='testplan_question_create_tp_from'}</th>
 			<td>
-				<select name="copy">
-				<option value="noCopy">{lang_get s='opt_no'}</option>
+				<select name="copy_from_tplan_id" 
+				        onchange="manage_copy_ctrls('copy_controls',this.value,'0')">
+				<option value="0">{lang_get s='opt_no'}</option>
 				{foreach item=testplan from=$tplans}
 					<option value="{$testplan.id}">{$testplan.name|escape}</option>
 				{/foreach}
 				</select>
+      
+      <div id="copy_controls" style="display:none;">
+      {assign var=this_template_dir value=$smarty.template|dirname}
+      {include file="$this_template_dir/inc_controls_planEdit.tpl"}
+      </div>
 			</td>
 			</tr>
 		{else}

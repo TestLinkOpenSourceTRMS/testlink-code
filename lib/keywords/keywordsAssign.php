@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: keywordsAssign.php,v $
  *
- * @version $Revision: 1.25 $
- * @modified $Date: 2007/12/05 21:25:15 $
+ * @version $Revision: 1.26 $
+ * @modified $Date: 2007/12/07 07:05:37 $
  *
  * Purpose:  Assign keywords to set of testcases in tree structure
  *
@@ -19,8 +19,11 @@
  *
 **/
 require_once("../../config.inc.php");
-require_once("../functions/common.php");
-require_once("../functions/opt_transfer.php");
+require_once("common.php");
+require_once("opt_transfer.php");
+
+
+$template_dir='keywords/';
 
 testlinkInitPage($db);
 
@@ -134,5 +137,5 @@ $smarty->assign('data', $id);
 $smarty->assign('level', $edit);
 $smarty->assign('opt_cfg', $opt_cfg);
 $smarty->assign('keyword_assignment_subtitle',$keyword_assignment_subtitle);
-$smarty->display('keywordsAssign.tpl');
+$smarty->display($template_dir . 'keywordsAssign.tpl');
 ?>

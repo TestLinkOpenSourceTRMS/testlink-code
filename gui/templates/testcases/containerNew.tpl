@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: containerNew.tpl,v 1.1 2007/12/02 17:03:58 franciscom Exp $
+$Id: containerNew.tpl,v 1.2 2007/12/07 07:03:45 franciscom Exp $
 Purpose: smarty template - create containers
 
 20070214 - franciscom -
@@ -67,7 +67,8 @@ function validateForm(f)
       		<input type="hidden" name="add_testsuite" id="add_testsuite" />
 			<input type="submit" name="add_testsuite_button" value="{lang_get s='btn_create_testsuite'}" />
 		</div>	
-		{include file="inc_testsuite_viewer_rw.tpl"}
+		{assign var=this_template_dir value=$smarty.template|dirname}
+	  {include file="$this_template_dir/inc_testsuite_viewer_rw.tpl"}
 
    {* Custom fields *}
    {if $cf neq ""}

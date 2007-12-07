@@ -5,14 +5,17 @@
  *
  * Filename $RCSfile: keywordsView.php,v $
  *
- * @version $Revision: 1.17 $
- * @modified $Date: 2007/12/05 21:25:15 $ by $Author: schlundus $
+ * @version $Revision: 1.18 $
+ * @modified $Date: 2007/12/07 07:05:37 $ by $Author: franciscom $
  *
  * allows users to manage keywords. 
  */
 require_once("../../config.inc.php");
 require_once("common.php");
 require_once("keyword.class.php");
+
+$template_dir='keywords/';
+
 testlinkInitPage($db);
 
 $_REQUEST = strings_stripSlashes($_REQUEST);
@@ -125,5 +128,5 @@ $smarty->assign('keyword',$keyword);
 $smarty->assign('notes',$notes);
 $smarty->assign('keywordID',$keywordID);
 $smarty->assign('exportTypes',$exportTypes);
-$smarty->display('keywordsView.tpl');
+$smarty->display($template_dir . 'keywordsView.tpl');
 ?>

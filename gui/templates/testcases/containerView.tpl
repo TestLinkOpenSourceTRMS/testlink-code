@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: containerView.tpl,v 1.1 2007/12/02 17:03:58 franciscom Exp $ *}
+{* $Id: containerView.tpl,v 1.2 2007/12/07 07:03:45 franciscom Exp $ *}
 {* 
 Purpose: smarty template - view test specification containers 
 
@@ -122,8 +122,8 @@ rev :
 		<div id="executionResults"></div>
 		*}
 	{/if}
-
-	{include file="inc_testsuite_viewer_ro.tpl"}
+  {assign var=this_template_dir value=$smarty.template|dirname}
+	{include file="$this_template_dir/inc_testsuite_viewer_ro.tpl"}
     
 	{if $modify_tc_rights neq 'yes'}
 		{assign var="bDownloadOnly" value=true}

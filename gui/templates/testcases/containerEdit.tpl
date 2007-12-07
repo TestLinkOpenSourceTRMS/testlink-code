@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: containerEdit.tpl,v 1.1 2007/12/02 17:03:58 franciscom Exp $
+$Id: containerEdit.tpl,v 1.2 2007/12/07 07:03:45 franciscom Exp $
 Purpose: smarty template - edit test specification: containers 
 
 20061230 - franciscom - added custom field management
@@ -53,7 +53,9 @@ function validateForm(f)
 		<div style="float: right;">
 			<input type="submit" name="update_testsuite" value="{lang_get s='btn_save'}" />
 		</div>
-   {include file="inc_testsuite_viewer_rw.tpl"}
+	 
+	 {assign var=this_template_dir value=$smarty.template|dirname}
+	 {include file="$this_template_dir/inc_testsuite_viewer_rw.tpl"}
 
    {* Custom fields *}
    {if $cf neq ""}

@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: keywordsView.tpl,v 1.5 2007/12/08 19:06:46 schlundus Exp $
+$Id: keywordsView.tpl,v 1.6 2007/12/08 20:34:13 schlundus Exp $
 Purpose: smarty template - View all keywords 
 
 20070102 - franciscom
@@ -94,12 +94,12 @@ var del_action=fRoot+'lib/keywords/keywordsEdit.php?doAction=do_delete&id=';
 	
 
 		  {if $canManage ne ""}
-		    <input type="button" name="do_import" value="{lang_get s='btn_import_keywords'}" 
+		    <input type="button" name="do_import" value="{lang_get s='btn_import'}" 
 	 	           onclick="location='{$basehref}/lib/keywords/keywordsImport.php'" />
 		  {/if}
 
       {if $keywords neq ''}
-		    <input type="button" name="do_export" value="{lang_get s='btn_export_keywords'}" 
+		    <input type="button" name="do_export" value="{lang_get s='btn_export'}" 
 	 	           onclick="location='{$basehref}/lib/keywords/keywordsExport.php?doAction=export'" />
       {/if}
   	</form>

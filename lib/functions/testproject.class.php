@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.48 $
- * @modified $Date: 2007/12/08 19:15:11 $  $Author: schlundus $
+ * @version $Revision: 1.49 $
+ * @modified $Date: 2007/12/08 20:34:13 $  $Author: schlundus $
  * @author franciscom
  *
  * 20071111 - franciscom - new method get_subtree();
@@ -16,9 +16,6 @@
  * 20070603 - franciscom - added delete()
  * 20070219 - franciscom - fixed bug on get_first_level_test_suites()
  * 20070128 - franciscom - added check_tplan_name_existence()
- * 20061010 - franciscom - added get_srs_by_title()
- * 20060709 - franciscom - changed return type and interface of create()
- * 20060425 - franciscom - changes in show() following Andreas Morsing advice (schlundus)
  *
 **/
 require_once( dirname(__FILE__) . '/attachments.inc.php');
@@ -774,6 +771,25 @@ function count_testcases($id)
 		return OK;
 	}
 	
+	/*
+	*        Returns all testproject keywords 
+	*
+	*	@param  int $testproject_id the ID of the testproject
+	*	@returns: map: key: keyword_id, value: keyword
+	*/
+	function get_keywords_map($testproject_id)
+	{
+		$keywordMap = null;
+		$keywords = $this->getKeywords($testproject_id);
+		if ($keywords)
+		{
+			foreach($keywords as $kw)
+			{
+				$keywordMap[$kw->m_dbID] = $kw->m_name;
+			}
+		}
+		return $keywordMap;
+	}
 	/* END KEYWORDS RELATED */	
 	
 	/* REQUIREMENTS RELATED */
@@ -1175,27 +1191,6 @@ function delete($id,&$error)
 	return empty($error) ? 1 : 0;
 }
 
-
-	/*
-	*        Returns all testproject keywords 
-	*
-	*	@param  int $testproject_id the ID of the testproject
-	*	@returns: map: key: keyword_id, value: keyword
-	*/
-	function get_keywords_map($testproject_id)
-	{
-		$keywordMap = null;
-		$keywords = $this->getKeywords($testproject_id);
-		if ($keywords)
-		{
-			foreach($keywords as $kw)
-			{
-				$keywordMap[$kw->m_dbID] = $kw->m_name;
-			}
-		}
-		return $keywordMap;
-	}
-	
 	
 /*
   function: get_all_testcases_id

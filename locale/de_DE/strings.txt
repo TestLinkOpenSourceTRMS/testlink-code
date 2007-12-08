@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.68 $
- * @modified $Date: 2007/12/08 18:14:50 $ $Author: schlundus $
+ * @version $Revision: 1.69 $
+ * @modified $Date: 2007/12/08 20:34:14 $ $Author: schlundus $
  *
  * @author Andreas Morsing
  * @author Fabian Woelk
@@ -661,7 +661,7 @@ $TLS_title_keyword_import = "Stichworte importieren";
 
 
 // gui/templates/keywordsexport.tpl
-$TLS_btn_export = "Export";
+$TLS_btn_export = "Exportieren";
 $TLS_title_req_import_to = "Anforderungen ins Dokument importieren:";
 
 
@@ -1000,7 +1000,6 @@ $TLS_title_upd_mod_tc = "Aktualisiere geänderte Testfälle in ";
 $TLS_alt_delete_keyword = "Stichwort löschen?";
 $TLS_btn_create_keyword = "Erstellen";
 $TLS_btn_edit_keyword = "Ändern";
-$TLS_btn_import_keywords = "Importieren";
 $TLS_th_keyword = "Stichwort";
 $TLS_warning_delete_keyword = "Sind Sie sicher, dass Sie dieses Stichwort löschen wollen?";
 $TLS_warning_enter_at_least1 = "Bitte geben Sie mindestens ";

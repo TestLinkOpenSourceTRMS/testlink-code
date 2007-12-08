@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: keywordsAssign.php,v $
  *
- * @version $Revision: 1.26 $
- * @modified $Date: 2007/12/07 07:05:37 $
+ * @version $Revision: 1.27 $
+ * @modified $Date: 2007/12/08 20:34:14 $
  *
  * Purpose:  Assign keywords to set of testcases in tree structure
  *
@@ -21,11 +21,9 @@
 require_once("../../config.inc.php");
 require_once("common.php");
 require_once("opt_transfer.php");
-
-
-$template_dir='keywords/';
-
 testlinkInitPage($db);
+
+$template_dir = 'keywords/';
 
 $_REQUEST = strings_stripSlashes($_REQUEST);
 $id = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : null;
@@ -37,14 +35,14 @@ $testproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID']
 
 if ($edit == 'testproject')
 {
-  // We can NOT assign/remove keywords on a whole test project
+	  // We can NOT assign/remove keywords on a whole test project
   	redirect($_SESSION['basehref'] . "/lib/general/show_help.php?help=keywordsAssign&locale={$_SESSION['locale']}");
 	exit();
 }
 
 $smarty = new TLSmarty();
 $result = null;
-$keyword_assignment_subtitle=null;
+$keyword_assignment_subtitle = null;
 $tproject_mgr = new testproject($db);
 $tcase_mgr = new testcase($db);
 
@@ -63,20 +61,19 @@ $right_list = isset($_REQUEST[$rl_html_name])? $_REQUEST[$rl_html_name] : "";
 
 if ($edit == 'testsuite')
 {
-  // We are going to walk all test suites contained
-  // in the selected container, and assign/remove keywords on each test case.
-  //
-  
+	// We are going to walk all test suites contained
+	// in the selected container, and assign/remove keywords on each test case.
+	//
 	$tsuite_mgr = new testsuite($db);
-	$testsuite=$tsuite_mgr->get_by_id($id);
-	$keyword_assignment_subtitle=lang_get('test_suite') . TITLE_SEP . $testsuite['name'];
+	$testsuite = $tsuite_mgr->get_by_id($id);
+	$keyword_assignment_subtitle = lang_get('test_suite') . TITLE_SEP . $testsuite['name'];
 	
 	$tcs = $tsuite_mgr->get_testcases_deep($id,true);
 	$can_do = 0;
 	
 	if (sizeof($tcs))
 	{
-	  $can_do=1;
+		$can_do=1;
 		if ($bAssignTestSuite)
 		{
 			$result = 'ok';

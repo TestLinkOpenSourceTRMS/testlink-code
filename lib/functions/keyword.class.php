@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: keyword.class.php,v $
 * 
-* @version $Id: keyword.class.php,v 1.2 2007/12/08 19:10:19 schlundus Exp $
-* @modified $Date: 2007/12/08 19:10:19 $ by $Author: schlundus $
+* @version $Id: keyword.class.php,v 1.3 2007/12/08 20:34:13 schlundus Exp $
+* @modified $Date: 2007/12/08 20:34:13 $ by $Author: schlundus $
 *
 * Functions for support keywords management. 
 **/
@@ -62,10 +62,10 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
 	//BEGIN interface iDBSerialization
 	public function readFromDB(&$db)
 	{
+		$this->_clean();
 		$query = " SELECT id,keyword,notes,testproject_id FROM keywords " .
 			   " WHERE id = {$this->m_dbID}" ;
 		$info = $db->fetchFirstRow($query);			 
-		$this->_clean();
 		if ($info)
 		{
 			$this->m_name = $info['keyword'];
@@ -209,8 +209,7 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
 		if (!isset($attributes['name']))
 			return self::KW_E_WRONGFORMAT;
 			
-		$name = (string)$attributes['name'];
-		$this->m_name = $name;
+		$this->m_name = (string)$attributes['name'];
 		if ($keyword->notes)
 			$this->m_notes = (string)$keyword->notes[0];
 			
@@ -243,6 +242,5 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
 		return sizeof($data) ? true : false;
 	}
 	//END interface iSerializationToCSV
-	
 }
 ?>

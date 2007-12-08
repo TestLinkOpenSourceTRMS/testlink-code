@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: exec.inc.php,v $
  *
- * @version $Revision: 1.37 $
- * @modified $Date: 2007/06/18 08:03:10 $ $Author: franciscom $
+ * @version $Revision: 1.38 $
+ * @modified $Date: 2007/12/08 20:34:13 $ $Author: schlundus $
  *
  * @author Martin Havlat
  *
@@ -65,7 +65,6 @@ function buildsNumber(&$db,$tpID=0)
 function filterKeyword(&$db,$idPlan)
 {
 		//SQL to grab all of the keywords
-		//schlundus: added DISTINCT
 		$sqlKeyword = "SELECT DISTINCT(keywords) FROM testplans, component, category, testcase WHERE " .
 				"testplans.id = " .  $idPlan . " AND testplans.id = component.projid" .
 				" AND component.id = category.compid AND category.id = testcase.catid ORDER BY keywords";
@@ -104,7 +103,6 @@ function buildKeyWordArray(&$db,$sqlKeyword)
 	$keyArray = null;
 	while ($myrowKeyword = $db->fetch_array($resultKeyword))
 	{
-		//schlundus: csvsplit and merging arrays was too slow, so we simple make a big list of the different keyword lists
 		$keyArray .= $myrowKeyword[0].",";
 	}
 	//removed quotes and separate the list

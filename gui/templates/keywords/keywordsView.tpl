@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: keywordsView.tpl,v 1.1 2007/12/07 07:02:59 franciscom Exp $
+$Id: keywordsView.tpl,v 1.2 2007/12/08 15:41:37 franciscom Exp $
 Purpose: smarty template - View all keywords 
 
 20070102 - franciscom
@@ -16,7 +16,7 @@ Purpose: smarty template - View all keywords
 {include file="inc_head.tpl" jsValidate="yes"}
 
 <body>
-{assign var="cfg_section" value=$smarty.template|replace:".tpl":"" }
+{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 
@@ -35,7 +35,7 @@ var warning_delete_keyword="{lang_get s='warning_delete_keyword'}";
 
 <h1>{lang_get s='title_keywords'}</h1>
 
-{if $rightsKey ne ""}
+{if $canManage ne ""}
 	{* user can modify keywords *}
 	{* tabs *}
 	<div class="tabMenu">
@@ -50,64 +50,29 @@ var warning_delete_keyword="{lang_get s='warning_delete_keyword'}";
 
 
 
-{* -------------------------- Create Form -----------------------------------------------   *}
-{if $rightsKey ne ""}
-  <div class="workBack">
-     {* show SQL result *}
-    {include file="inc_update.tpl" result=$sqlResult item="Keyword" name=$name action="$action"}
-
-  	<form name="addKey" method="post" action="lib/keywords/keywordsView.php" 
-  		    onsubmit="return valTextLength(this.keyword, 100, 1);">
-  	<input type="hidden" name="id" value="{$keywordID}" />
-  	<table class="common">
-  		<tr>
-  			<th>{lang_get s='th_keyword'}</th>
-  			<td><input type="text" name="keyword" 
-  			           size="{#KEYWORD_SIZE#}" maxlength="{#KEYWORD_MAXLEN#}" 
-  				         onblur="this.style.backgroundColor=''" value="{$keyword|escape}"/></td>
-  		</tr>
-  		<tr>
-  			<th>{lang_get s='th_notes'}</th>
-  			<td><textarea name="notes" rows="{#NOTES_ROWS#}" cols="{#NOTES_COLS#}">{$notes|escape}</textarea></td>
-  		</tr>
-  	</table>
-  	<div class="groupBtn">	
-  	{if $keywordID == 0}
-  		<input type="submit" name="newKey" value="{lang_get s='btn_create_keyword'}" />
-  	{else}
-  		<input type="submit" name="editKey" value="{lang_get s='btn_save'}" />
-  	{/if}
-  	</div>
-  	</form>
-  </div>
-{/if}
-{* --------------------------------------------------------------------------------------   *}
-
-
 <div class="workBack">
-
   {if $arrKeywords neq ''}
 	<table class="common" width="70%">
 		<tr>
 			<th width="30%">{lang_get s='th_keyword'}</th>
 			<th>{lang_get s='th_notes'}</th>
-			{if $rightsKey ne ""}
+			{if $canManage ne ""}
 			<th>{lang_get s='th_delete'}</th>
 			{/if}
 		</tr>
 		{section name=myKeyword loop=$arrKeywords}
 		<tr>
 			<td>
-				{if $rightsKey ne ""}
-				<a href="lib/keywords/keywordsView.php?id={$arrKeywords[myKeyword].id}">
+				{if $canManage ne ""}
+				<a href="lib/keywords/keywordsEdit.php?doAction=edit&id={$arrKeywords[myKeyword].id}">
 				{/if}
 				{$arrKeywords[myKeyword].keyword|escape}
-				{if $rightsKey ne ""}
+				{if $canManage ne ""}
 				</a>
 				{/if}
 			</td>
 			<td>{$arrKeywords[myKeyword].notes|escape|nl2br}</td>
-			{if $rightsKey ne ""}
+			{if $canManage ne ""}
 			<td class="clickable_icon">
 				<a href="lib/keywords/keywordsView.php?deleteKey=1&amp;id={$arrKeywords[myKeyword].id}"
 				   onclick="return confirm(warning_delete_keyword);">
@@ -124,19 +89,22 @@ var warning_delete_keyword="{lang_get s='warning_delete_keyword'}";
 
 	<div class="groupBtn">	
 
-  	<form name="export" method="post" action="lib/keywords/keywordsView.php"> 
-		  {if $rightsKey ne ""}
-		    <input type="button" name="importAll" value="{lang_get s='btn_import_keywords'}" 
-	 	           onclick="location='{$basehref}/lib/keywords/keywordsimport.php'" />
+  	<form name="keyword_view" id="keyword_view" method="post" action="lib/keywords/keywordsEdit.php"> 
+  	  <input type="hidden" name="doAction" value="">
+
+		  {if $canManage ne ""}
+  	    <input type="submit" id="create_keyword" name="create_keyword" 
+  	           value="{lang_get s='btn_create_keyword'}" 
+  	           onclick="doAction.value='create'"/>
+
+		    <input type="button" name="do_import" value="{lang_get s='btn_import_keywords'}" 
+	 	           onclick="location='{$basehref}/lib/keywords/keywordsImport.php'" />
 		  {/if}
+
       {if $arrKeywords neq ''}
-    	  <input type="submit" name="exportAll" value="{lang_get s='btn_export'}"> 
-	      <select name="exportType">
-		    {html_options options=$exportTypes}
-	      </select>
+		    <input type="button" name="do_export" value="{lang_get s='btn_import_keywords'}" 
+	 	           onclick="location='{$basehref}/lib/keywords/keywordsImport.php'" />
       {/if}
-
-
   	</form>
 	</div>
 </div>

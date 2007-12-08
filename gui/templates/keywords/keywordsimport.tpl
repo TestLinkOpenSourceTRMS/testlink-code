@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: keywordsimport.tpl,v 1.1 2007/12/07 07:02:59 franciscom Exp $ *}
+{* $Id: keywordsimport.tpl,v 1.2 2007/12/08 15:41:37 franciscom Exp $ *}
 {* Purpose: smarty template - keyword import initial page *}
 {* revisions:
    20051231 - scs - fixed incorrect cancel button link
@@ -11,21 +11,17 @@
 
 <div class="workBack">
 <h1>{lang_get s='title_keyword_import'}</h1>
-<p class="hint">	
-  {lang_get s='supported_file_formats'}<br/>
-	{foreach key=k item=i from=$keywordFormatStrings}
-		{$k|escape} : {$i|escape}<br />
-	{/foreach}
-</p>
 
 <form method="post" enctype="multipart/form-data" action="{$SCRIPT_NAME}">
   <table>
 	<tr>
-		<td>{lang_get s='import_file_type'}</td>
+		<td>{lang_get s='file_type'}</td>
 		<td>
 			<select name="importType">
 				{html_options options=$importTypes selected=$import_type_selected}
 			</select>
+				<a href={$basehref}{$smarty.const.PARTIAL_URL_TL_FILE_FORMATS_DOCUMENT}>{lang_get s="view_file_format_doc"}</a>
+
 		</td>
 	</tr>
 	<tr>

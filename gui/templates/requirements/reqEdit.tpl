@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqEdit.tpl,v 1.4 2007/12/02 17:24:45 franciscom Exp $
+$Id: reqEdit.tpl,v 1.5 2007/12/08 18:10:26 franciscom Exp $
 Purpose: smarty template - create / edit a req  
 *}
 
@@ -8,6 +8,7 @@ Purpose: smarty template - create / edit a req
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes"}
+{include file="inc_del_onclick.tpl"}
 
 {literal}
 <script type="text/javascript">

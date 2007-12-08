@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.227 $
- * @modified $Date: 2007/12/06 14:42:04 $ $Author: franciscom $
+ * @version $Revision: 1.228 $
+ * @modified $Date: 2007/12/08 16:16:41 $ $Author: franciscom $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -1071,9 +1071,10 @@ $TLS_title_upd_mod_tc = "Update Modified Test Case(s) in ";
 $TLS_alt_delete_keyword = "Delete keyword?";
 $TLS_btn_create_keyword = "Create keyword";
 $TLS_btn_edit_keyword = "Edit";
+$TLS_btn_export_keywords = "Export";
 $TLS_btn_import_keywords = "Import";
 $TLS_th_keyword = "Keyword";
-$TLS_warning_delete_keyword = "Are you sure you want to delete the keyword?";
+$TLS_warning_delete_keyword = "You are going to delete: %s <br><br> Are you sure?"; 
 $TLS_warning_enter_at_least1 = "Please enter at least ";
 $TLS_warning_enter_at_least2 = " chars.";
 $TLS_warning_enter_less1 = "Please enter less than";

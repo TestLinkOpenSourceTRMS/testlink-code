@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: keywordsEdit.php,v $
  *
- * @version $Revision: 1.7 $
- * @modified $Date: 2007/12/08 15:41:21 $ by $Author: franciscom $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2007/12/08 16:16:04 $ by $Author: franciscom $
  *
  * allows users to manage keywords. 
  *
@@ -32,11 +32,7 @@ $template='keywordsEdit.tpl';
 $op->status=0;
 $msg='';
 
-// $op->msg='ok';
-
 $args=init_args();
-
-echo "<pre>debug 20071208 - \$args - " . __FUNCTION__ . " --- "; print_r($args); echo "</pre>";
 $canManage = has_rights($db,"mgt_modify_key");
 
 $tprojectMgr = new testproject($db);
@@ -62,6 +58,7 @@ switch ($args->doAction)
   break;
 
   case "do_delete":
+  $op=do_delete($smarty,$args,$tprojectMgr);
   break;
 
 } // switch
@@ -227,6 +224,33 @@ function do_update(&$smarty,&$args,&$tproject_mgr)
 
   return $ret;
 }
+
+
+/*
+  function: do_delete
+            do operations on db
+
+  args :
+  
+  returns: 
+
+*/
+function do_delete(&$smarty,&$args,&$tproject_mgr)
+{
+  $main_descr=lang_get('testproject') . TITLE_SEP . $args->testproject_name;
+  $action_descr=lang_get('edit_keyword');
+
+  $smarty->assign('submit_button_label',lang_get('btn_save'));
+  $smarty->assign('submit_button_action','do_update');
+  $smarty->assign('main_descr',$main_descr);
+  $smarty->assign('action_descr',$action_descr);
+
+  $ret->template='keywordsView.tpl';
+  $ret->status = $tproject_mgr->deleteKeyword($args->keyword_id);
+
+  return $ret;
+}
+
 
 
 

@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: keywordsView.tpl,v 1.2 2007/12/08 15:41:37 franciscom Exp $
+$Id: keywordsView.tpl,v 1.3 2007/12/08 16:16:49 franciscom Exp $
 Purpose: smarty template - View all keywords 
 
 20070102 - franciscom
@@ -15,7 +15,22 @@ Purpose: smarty template - View all keywords
 
 {include file="inc_head.tpl" jsValidate="yes"}
 
-<body>
+
+{lang_get s='warning_delete_keyword' var="warning_msg" }
+{lang_get s='delete' var="del_msgbox_title" }
+
+{include file="inc_head.tpl" jsValidate="yes" openHead="yes"}
+{include file="inc_del_onclick.tpl"}
+
+<script type="text/javascript">
+/* All this stuff is needed for logic contained in inc_del_onclick.tpl */
+var del_action=fRoot+'lib/keywords/keywordsEdit.php?doAction=do_delete&id=';
+</script>
+ 
+
+
+
+<body {$body_onload}>
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
@@ -23,10 +38,6 @@ Purpose: smarty template - View all keywords
 {literal}
 <script type="text/javascript">
 {/literal}
-var warning_enter_less1 = "{lang_get s='warning_enter_less1'}";
-var warning_enter_at_least1 = "{lang_get s='warning_enter_at_least1'}";
-var warning_enter_at_least2 = "{lang_get s='warning_enter_at_least2'}";
-var warning_enter_less2 = "{lang_get s='warning_enter_less2'}";
 var warning_delete_keyword="{lang_get s='warning_delete_keyword'}";
 {literal}
 </script>
@@ -40,11 +51,6 @@ var warning_delete_keyword="{lang_get s='warning_delete_keyword'}";
 	{* tabs *}
 	<div class="tabMenu">
 		<span class="selected">{lang_get s='menu_manage_keywords'}</span> 
-    {if $arrKeywords neq ''}
-       <span class="unselected">
-         <a href="lib/general/frmWorkArea.php?feature=keywordsAssign">{lang_get s='menu_assign_kw_to_tc'}</a>
-       </span>
-    {/if}    
 	</div>
 {/if}
 
@@ -74,11 +80,13 @@ var warning_delete_keyword="{lang_get s='warning_delete_keyword'}";
 			<td>{$arrKeywords[myKeyword].notes|escape|nl2br}</td>
 			{if $canManage ne ""}
 			<td class="clickable_icon">
-				<a href="lib/keywords/keywordsView.php?deleteKey=1&amp;id={$arrKeywords[myKeyword].id}"
-				   onclick="return confirm(warning_delete_keyword);">
-				<img style="border:none" title="{lang_get s='alt_delete_keyword'}"
-				     alt="{lang_get s='alt_delete_keyword'}" src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png"/>
-				</a>
+			  <img style="border:none;cursor: pointer;"
+			       alt="{lang_get s='alt_delete_keyword'}"
+             title="{lang_get s='alt_delete_keyword'}"   
+             src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png"			     
+				     onclick="delete_confirmation({$arrKeywords[myKeyword].id},
+				              '{$arrKeywords[myKeyword].keyword|escape:'javascript'}',     
+				              '{$del_msgbox_title}','{$warning_msg}');" >
 			</td>
 			{/if}
 		</tr>
@@ -97,13 +105,22 @@ var warning_delete_keyword="{lang_get s='warning_delete_keyword'}";
   	           value="{lang_get s='btn_create_keyword'}" 
   	           onclick="doAction.value='create'"/>
 
+		  {/if}
+      {if $arrKeywords neq ''}
+        <input type="button" id="keyword_assign" name="keyword_assign" 
+  	           value="{lang_get s='menu_assign_kw_to_tc'}" 
+  	           onclick="location.href=fRoot+'lib/general/frmWorkArea.php?feature=keywordsAssign';"/>
+      {/if}    
+	
+
+		  {if $canManage ne ""}
 		    <input type="button" name="do_import" value="{lang_get s='btn_import_keywords'}" 
 	 	           onclick="location='{$basehref}/lib/keywords/keywordsImport.php'" />
 		  {/if}
 
       {if $arrKeywords neq ''}
-		    <input type="button" name="do_export" value="{lang_get s='btn_import_keywords'}" 
-	 	           onclick="location='{$basehref}/lib/keywords/keywordsImport.php'" />
+		    <input type="button" name="do_export" value="{lang_get s='btn_export_keywords'}" 
+	 	           onclick="location='{$basehref}/lib/keywords/keywordsExport.php'" />
       {/if}
   	</form>
 	</div>

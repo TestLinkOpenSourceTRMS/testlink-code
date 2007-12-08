@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.47 $
- * @modified $Date: 2007/12/08 15:40:24 $  $Author: franciscom $
+ * @version $Revision: 1.48 $
+ * @modified $Date: 2007/12/08 19:15:11 $  $Author: schlundus $
  * @author franciscom
  *
  * 20071111 - franciscom - new method get_subtree();
@@ -22,6 +22,7 @@
  *
 **/
 require_once( dirname(__FILE__) . '/attachments.inc.php');
+require_once( dirname(__FILE__) . '/keyword.class.php');
 
 class testproject extends tlObjectWithAttachments
 {
@@ -579,39 +580,44 @@ function count_testcases($id)
 	 * @param string $notes
 	 *
 	 **/
-	function addKeyword($testprojectID,$keyword,$notes)
+	public function addKeyword($testprojectID,$keyword,$notes)
 	{
 		$kw = new tlKeyword();
 		$kw->create($testprojectID,$keyword,$notes);
-		return $kw->writeToDB($this->db);
+		return $kw->writeToDB($this->m_db);
 	}
 	
 	/**
-	 * function: updateKeyword
+	 * updates the keyword with the given id
 	 *
 	 *
 	 * @param type $testprojectID 
-	 * @param type $id 
 	 * @param type $keyword 
 	 * @param type $notes 
+	 * @param type $id 
 	 * 
 	 **/
 	function updateKeyword($testprojectID,$id,$keyword,$notes)
 	{
 		$kw = new tlKeyword($id);
 		$kw->create($testprojectID,$keyword,$notes);
-		return $kw->writeToDB($this->db);
+		return $kw->writeToDB($this->m_db);
 	}
 
+	/**
+	 * gets the keyword with the given id
+	 *
+	 *
+	 * @param type $kwid 
+	 * 
+	 **/
 	public function getKeyword($kwID)
 	{
-		$info = null;
-		$keyword = new tlKeyword($kwID);
-		if ($keyword->readFromDB($this->m_db))
-			$info = $keyword->getInfo();
-		return $info;
+		$kw = new tlKeyword($kwID);
+		if ($kw->readFromDB($this->m_db))
+			return $kw;
+		return null;
 	}
-	
 	/**
 	 * Gets the keywords of the given test project
 	 *
@@ -623,7 +629,7 @@ function count_testcases($id)
 	 *                keyword
 	 *                notes
 	 **/
-	function getKeywords($testproject_id,$keywordID = null)
+	public function getKeywords($testproject_id)
 	{
 		$keywords = null;
 		$kwIDs = $this->getKeywordIDsFor($testproject_id);
@@ -645,51 +651,21 @@ function count_testcases($id)
 	 **/
 	function deleteKeyword($id)
 	{
-		$sql = "DELETE FROM testcase_keywords WHERE keyword_id = " . $id;
-		$result = $this->db->exec_query($sql);
-		
-		if ($result)
-		{
-			$sql = "DELETE FROM object_keywords WHERE keyword_id = " . $id;
-			$result = $this->db->exec_query($sql);
-		}
-		if ($result)
-		{
-			$sql = "DELETE FROM keywords WHERE id = " . $id;
-			$result = $this->db->exec_query($sql);
-		}
-			
-		return $result ? true : false;
+		$kw = new tlKeyword($id);
+		return $kw->deleteFromDB($this->m_db);
 	}
-	/**
-	 * Imports the keywords contained in keywordData to the given product
-	 *
-	 * @param type $db [ref] db object
-	 * @param int $testprojectID  to which the keywords should be imported
-	 * @param array $keywordData an array with keyword information like
-	 * 				 keywordData[$i]['keyword'] => the keyword itself
-	 * 				 keywordData[$i]['notes'] => the notes of keyword
-	 *
-	 * @return array returns an array of result msgs
-	 *
-	 * @author Andreas Morsing <schlundus@web.de>
-	 **/
-	//SCHLUNDUS: todo
-	function addKeywords($testprojectID,$keywordData)
+
+	function deleteKeywords($testproject_id)
 	{
-		$sqlResults = null;
-		for($i = 0;$i < sizeof($keywordData);$i++)
+		$result = OK;
+		$kwIDs = $this->getKeywordIDsFor($testproject_id);
+		for($i = 0;$i < sizeof($kwIDs);$i++)
 		{
-			$keyword = $keywordData[$i]['keyword'];
-			$notes = $keywordData[$i]['notes'];
-			$msg = checkKeywordName($keyword);
-			if (!is_null($msg))
-				$sqlResults[] = $msg;
-			else
-				$sqlResults[] = $this->addKeyword($testprojectID,$keyword,$notes);
+			$resultKw = $this->deleteKeyword($kwIDs[$i]);
+			if ($resultKw != OK)
+				$result = $resultKw;
 		}
-	
-		return $sqlResults;
+		return $result;
 	}
 	
 	protected function getKeywordIDsFor($testproject_id)
@@ -702,14 +678,13 @@ function count_testcases($id)
 		return $keywordIDs;
 	}
 	
-	
 	/**
 	 * Exports the given keywords to a XML file
 	 *
 	 *
 	 * @return strings the generated XML Code
 	 **/
-	public function exportKeywordDataToXML($testproject_id,$bNoXMLHeader = false)
+	public function exportKeywordsToXML($testproject_id,$bNoXMLHeader = false)
 	{
 		//SCHLUNDUS: mayvbe a keywordCollection object should be used instead?
 		$kwIDs = $this->getKeywordIDsFor($testproject_id);
@@ -733,7 +708,7 @@ function count_testcases($id)
 	 *
 	 * @return string the generated CSV code
 	 **/
-	function exportKeywordDataToCSV($testproject_id,$delim = ';')
+	function exportKeywordsToCSV($testproject_id,$delim = ';')
 	{
 		//SCHLUNDUS: maybe a keywordCollection object should be used instead?
 		$kwIDs = $this->getKeywordIDsFor($testproject_id);
@@ -758,30 +733,40 @@ function count_testcases($id)
 				$k = new tlKeyword();
 				$k->create($testproject_id,NULL,NULL);
 				if ($k->readFromCSV(implode($delim,$data)) == OK)
-					$k->writeToDB($this->db);
+					$k->writeToDB($this->m_db);
 			}
 			fclose($handle);
 			return OK;
-		} else {
-			return ERROR;
 		}
+		else
+			return ERROR;
 	}
-
-	function importKeywordsFromXML($testproject_id,$fileName)
+	
+	function importKeywordsFromXMLFile($testproject_id,$fileName)
+	{
+		$xml = simplexml_load_file($fileName);
+		return $this->importKeywordsFromSimpleXML($xml);
+	}
+	
+	function importKeywordsFromXML($testproject_id,$xml)
 	{
 		//SCHLUNDUS: maybe a keywordCollection object should be used instead?
-		$xml = simplexml_load_file($fileName);
+		$xml = simplexml_load_string($xml);
+		return $this->importKeywordsFromSimpleXML($testproject_id,$xml);
+	}
+	
+	function importKeywordsFromSimpleXML($testproject_id,$xml)
+	{
 		if (!$xml || $xml->getName() != 'keywords')
 			return tlKeyword::KW_E_WRONGFORMAT;
 		if ($xml->keyword)
 		{
 			foreach($xml->keyword as $keyword)
 			{
-				$xmlSnippet = $keyword->asXML();
 				$k = new tlKeyword();
 				$k->create($testproject_id,NULL,NULL);
-				if ($k->readFromXML($xmlSnippet) == OK)
-					$k->writeToDB($this->db);
+				if ($k->readFromSimpleXML($keyword) == OK)
+					$k->writeToDB($this->m_db);
 				else
 					return tlKeyword::KW_E_WRONGFORMAT;
 			}
@@ -819,13 +804,6 @@ function count_testcases($id)
   		     " ORDER BY title";
   	return $this->db->fetchColumnsIntoMap($sql,'id','title');
   } // function end
-
-
-
-
-
-
-
 
 
 
@@ -1030,20 +1008,8 @@ function delete($id,&$error)
 	$error = ''; //clear error string
 	
 	$a_sql = array();
-	$tp = new testproject($db);
-	$kwMap = $this->get_keywords_map($id);
-	if ($kwMap)
-	{
-		$kwIDs = implode(",",array_keys($kwMap));
-		
-		$a_sql[] = array("DELETE FROM testcase_keywords  WHERE keyword_id IN ({$kwIDs})",
-							       'info_tc_keywords_delete_fails');
-		$a_sql[] = array("DELETE FROM object_keywords  WHERE keyword_id IN ({$kwIDs})",
-							       'info_object_keywords_delete_fails');					 
-		$a_sql[] = array("DELETE FROM keywords WHERE testproject_id=" .$id,
-							       'info_keywords_delete_fails');
-	}	
-
+	
+	$this->deleteKeywords($id);
   // -------------------------------------------------------------------------------
 	$sql = "SELECT id FROM req_specs WHERE testproject_id=" . $id;
 	$srsIDs = $this->db->fetchColumnsIntoArray($sql,"id");
@@ -1210,28 +1176,25 @@ function delete($id,&$error)
 }
 
 
-/*
-  function: get_keywords_map
-            All testproject keywords.
-
-  args :testproject_id
-  
-  
-  returns: map: key: keyword_id
-                value: keyword
-  
-
-*/
-function get_keywords_map($testproject_id)
-{
-		$map_keywords = null;
-		$sql = " SELECT id,keyword FROM keywords " .
-			     " WHERE testproject_id = {$testproject_id}" .
-			     " ORDER BY keyword ASC";
-		$map_keywords = $this->db->fetchColumnsIntoMap($sql,'id','keyword');
-		return($map_keywords);
-}
-	
+	/*
+	*        Returns all testproject keywords 
+	*
+	*	@param  int $testproject_id the ID of the testproject
+	*	@returns: map: key: keyword_id, value: keyword
+	*/
+	function get_keywords_map($testproject_id)
+	{
+		$keywordMap = null;
+		$keywords = $this->getKeywords($testproject_id);
+		if ($keywords)
+		{
+			foreach($keywords as $kw)
+			{
+				$keywordMap[$kw->m_dbID] = $kw->m_name;
+			}
+		}
+		return $keywordMap;
+	}
 	
 	
 /*

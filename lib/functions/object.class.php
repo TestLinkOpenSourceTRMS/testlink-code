@@ -1,12 +1,14 @@
 <?php
 require_once( dirname(__FILE__) . '/int_serialization.php' );
 /*
-	The base class for all managed TestLink objects
+	The base class for all managed TestLink objects, all tl-managed objects should extend this base class
 */
-class tlObject implements iSerialization
+abstract class tlObject implements iSerialization
 {	
 	/* the unique object id */
 	protected $m_objectID;
+		
+	/* supported serialization Interfaces */	
 	protected $m_serializationInterfaces;
 	protected $m_serializationFormatDescriptors;
 	
@@ -50,6 +52,7 @@ class tlObject implements iSerialization
 	}
 	
 	/* function used for resetting the object's internal data */
+	//nothing special at the moment
 	protected function _clean()
 	{
 	}
@@ -67,7 +70,7 @@ class tlObject implements iSerialization
 /*
 	The base class for all managed TestLink objects which need a db connection
 */
-class tlObjectWithDB extends tlObject
+abstract class tlObjectWithDB extends tlObject
 {	
 	/* the db connection to the testlink database */
 	protected $m_db;
@@ -85,7 +88,7 @@ class tlObjectWithDB extends tlObject
 /*
 	The base class for all managed TestLink objects which support attachments
 */
-class tlObjectWithAttachments extends tlObjectWithDB
+abstract class tlObjectWithAttachments extends tlObjectWithDB
 {
 	/* the attachment repository object */
 	protected $m_attachmentRepository;
@@ -131,7 +134,7 @@ class tlObjectWithAttachments extends tlObjectWithDB
 //SCHLUNDUS: not sure about this Object... need to think about it
 abstract class tlDBObject extends tlObject implements iDBSerialization
 {
-	protected $m_dbID;
+	public $m_dbID;
 	
 	/* standard constructor */
 	function __construct($dbID = null)

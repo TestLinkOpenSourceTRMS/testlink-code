@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: keywordsView.tpl,v 1.4 2007/12/08 18:11:12 franciscom Exp $
+$Id: keywordsView.tpl,v 1.5 2007/12/08 19:06:46 schlundus Exp $
 Purpose: smarty template - View all keywords 
 
 20070102 - franciscom
@@ -37,7 +37,7 @@ var del_action=fRoot+'lib/keywords/keywordsEdit.php?doAction=do_delete&id=';
 <h1>{lang_get s='menu_manage_keywords'}</h1>
 
 <div class="workBack">
-  {if $arrKeywords neq ''}
+  {if $keywords neq ''}
 	<table class="simple" style="width:80%">
 		<tr>
 			<th width="30%">{lang_get s='th_keyword'}</th>
@@ -46,26 +46,26 @@ var del_action=fRoot+'lib/keywords/keywordsEdit.php?doAction=do_delete&id=';
 			<th>{lang_get s='th_delete'}</th>
 			{/if}
 		</tr>
-		{section name=myKeyword loop=$arrKeywords}
+		{section name=myKeyword loop=$keywords}
 		<tr>
 			<td>
 				{if $canManage ne ""}
-				<a href="lib/keywords/keywordsEdit.php?doAction=edit&id={$arrKeywords[myKeyword].id}">
+				<a href="lib/keywords/keywordsEdit.php?doAction=edit&id={$keywords[myKeyword]->m_dbID}">
 				{/if}
-				{$arrKeywords[myKeyword].keyword|escape}
+				{$keywords[myKeyword]->m_name|escape}
 				{if $canManage ne ""}
 				</a>
 				{/if}
 			</td>
-			<td>{$arrKeywords[myKeyword].notes|escape|nl2br}</td>
+			<td>{$keywords[myKeyword]->m_notes|escape|nl2br}</td>
 			{if $canManage ne ""}
 			<td class="clickable_icon">
 			  <img style="border:none;cursor: pointer;"
 			       alt="{lang_get s='alt_delete_keyword'}"
              title="{lang_get s='alt_delete_keyword'}"   
              src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png"			     
-				     onclick="delete_confirmation({$arrKeywords[myKeyword].id},
-				              '{$arrKeywords[myKeyword].keyword|escape:'javascript'}',     
+				     onclick="delete_confirmation({$keywords[myKeyword]->m_dbID},
+				              '{$keywords[myKeyword]->m_name|escape:'javascript'}',     
 				              '{$del_msgbox_title}','{$warning_msg}');" >
 			</td>
 			{/if}
@@ -86,7 +86,7 @@ var del_action=fRoot+'lib/keywords/keywordsEdit.php?doAction=do_delete&id=';
   	           onclick="doAction.value='create'"/>
 
 		  {/if}
-      {if $arrKeywords neq ''}
+      {if $keywords neq ''}
         <input type="button" id="keyword_assign" name="keyword_assign" 
   	           value="{lang_get s='menu_assign_kw_to_tc'}" 
   	           onclick="location.href=fRoot+'lib/general/frmWorkArea.php?feature=keywordsAssign';"/>
@@ -98,7 +98,7 @@ var del_action=fRoot+'lib/keywords/keywordsEdit.php?doAction=do_delete&id=';
 	 	           onclick="location='{$basehref}/lib/keywords/keywordsImport.php'" />
 		  {/if}
 
-      {if $arrKeywords neq ''}
+      {if $keywords neq ''}
 		    <input type="button" name="do_export" value="{lang_get s='btn_export_keywords'}" 
 	 	           onclick="location='{$basehref}/lib/keywords/keywordsExport.php?doAction=export'" />
       {/if}

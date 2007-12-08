@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: keywordsExport.php,v $
  *
- * @version $Revision: 1.1 $
- * @modified $Date: 2007/12/08 18:11:52 $ by $Author: franciscom $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2007/12/08 19:10:19 $ by $Author: schlundus $
  *
  * test case and test suites export
  *
@@ -25,7 +25,7 @@ require_once("keyword.class.php");
 
 testlinkInitPage($db);
 
-$template_dir='keywords/';
+$template_dir = 'keywords/';
 
 $args=init_args();
 
@@ -50,12 +50,11 @@ switch ($args->doAction)
   $tprojectMgr = new testproject($db);
   $op=do_export($smarty,$args,$tprojectMgr);
   break;
-
 } // switch
 
 
-$keywordMgr = new tlKeyword();
-$exportTypes=$keywordMgr->getSupportedSerializationInterfaces();
+$keyword = new tlKeyword();
+$exportTypes = $keyword->getSupportedSerializationInterfaces();
 
 $smarty = new TLSmarty();
 
@@ -65,10 +64,7 @@ $smarty->assign('main_descr',$main_descr);
 $smarty->assign('action_descr', $action_descr);
 $smarty->assign('exportTypes',$exportTypes);
 $smarty->display($template_dir . 'keywordsExport.tpl');
-?>
 
-
-<?php
 function init_args()
 {
   $args->doAction = isset($_REQUEST['doAction']) ? $_REQUEST['doAction'] : null;
@@ -114,12 +110,12 @@ function do_export(&$smarty,&$args,&$tproject_mgr)
 	switch($args->exportType)
 	{
 		case 'iSerializationToCSV':
-			$pfn = "exportKeywordDataToCSV";
+			$pfn = "exportKeywordsToCSV";
 			$fileName = 'keywords.csv';
 			break;
 	
 		case 'iSerializationToXML':
-			$pfn = "exportKeywordDataToXML";
+			$pfn = "exportKeywordsToXML";
 			$fileName = 'keywords.xml';
 			break;
 	}

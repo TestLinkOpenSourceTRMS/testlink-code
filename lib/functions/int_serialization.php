@@ -11,6 +11,7 @@ interface iSerialization
 	*/
 	public function getSupportedSerializationFormatDescriptions();
 }
+
 /* All Import/Export Interfaces must be named  like SerializationTo <NAME>*/
 interface iSerializationToCSV 
 {
@@ -43,6 +44,11 @@ interface iSerializationToXML
 	public function readFromXML($xml);
 	
 	/*
+		Serializes the objects from SimpleXML node (string)
+	*/
+	public function readFromSimpleXML($xmlNode);
+	
+	/*
 		Returns a format description
 	*/
 	public function getFormatDescriptionForXML();
@@ -54,12 +60,17 @@ Any objects which support serialization from or to Database should implement thi
 interface iDBSerialization
 {
 	/*
-		Serializes the objects to the database connection given by [ref] $db
+		Serializes the object to the database connection given by [ref] $db
 	*/
 	public function readFromDB(&$db);
 	/*
-		Serializes the objects from the database connection given by [ref] $db
+		Serializes the object from the database connection given by [ref] $db
 	*/
 	public function writeToDB(&$db);
+	
+	/*
+		Deletes the object from the database connection given by [ref] $db
+	*/
+	public function deleteFromDB(&$db);
 }
 ?>

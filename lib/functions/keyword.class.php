@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: keyword.class.php,v $
 * 
-* @version $Id: keyword.class.php,v 1.1 2007/12/05 21:25:14 schlundus Exp $
-* @modified $Date: 2007/12/05 21:25:14 $ by $Author: schlundus $
+* @version $Id: keyword.class.php,v 1.2 2007/12/08 19:10:19 schlundus Exp $
+* @modified $Date: 2007/12/08 19:10:19 $ by $Author: schlundus $
 *
 * Functions for support keywords management. 
 **/
@@ -15,14 +15,14 @@ require_once( dirname(__FILE__) . '/csv.inc.php');
 require_once( dirname(__FILE__) . '/xml.inc.php');
 
 //this class will be later moved to an extra file
-class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML, iSerializationToCSV
+class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML,iSerializationToCSV
 {
 	//the name of the keyword
-	protected $m_name;
+	public $m_name;
 	//the notes for the keyword
-	protected $m_notes;
+	public $m_notes;
 	// the testprojectID the keyword belongs to
-	protected $m_testprojectID;
+	public $m_testprojectID;
 	// config valuze
 	protected $m_allow_duplicate_keywords; 
 	
@@ -72,7 +72,7 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
 			$this->m_notes = $info['notes'];
 			$this->m_testprojectID = $info['testproject_id'];
 		}
-		return $info ? true : false;
+		return $info ? OK : ERROR;
 	}
 	public function writeToDB(&$db)
 	{
@@ -103,6 +103,24 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
 		}
 		return $result;
 	}
+	
+	public function deleteFromDB(&$db)
+	{
+		$sql = "DELETE FROM testcase_keywords WHERE keyword_id = " . $this->m_dbID;
+		$result = $db->exec_query($sql);
+		if ($result)
+		{
+			$sql = "DELETE FROM object_keywords WHERE keyword_id = " . $this->m_dbID;
+			$result = $db->exec_query($sql);
+		}
+		if ($result)
+		{
+			$sql = "DELETE FROM keywords WHERE id = " . $this->m_dbID;
+			$result = $db->exec_query($sql);
+		}
+		return $result ? OK : ERROR;	
+	}
+	
 	//END interface iDBSerialization
 	/* for legacy purposes */
 	public function getInfo()
@@ -176,10 +194,14 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
 	}
 	public function readFromXML($xml)
 	{
+		$keyword = simplexml_load_string($xml);
+		return $this->readFromSimpleXML($keyword);
+	}
+	public function readFromSimpleXML($keyword)
+	{
 		$this->m_name = NULL;
 		$this->m_notes = NULL;
 		
-		$keyword = simplexml_load_string($xml);
 		if (!$keyword || $keyword->getName() != 'keyword')
 			return self::KW_E_WRONGFORMAT;
 			

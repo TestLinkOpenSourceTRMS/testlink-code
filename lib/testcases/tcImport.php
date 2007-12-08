@@ -5,15 +5,16 @@
  *
  * Filename $RCSfile: tcImport.php,v $
  * Filename $RCSfile: tcImport.php,v $
- * @version $Revision: 1.27 $
+ * @version $Revision: 1.28 $
  *
- * @modified $Date: 2007/12/02 17:23:19 $ by $Author: franciscom $
+ * @modified $Date: 2007/12/08 19:10:19 $ by $Author: schlundus $
 */
 require('../../config.inc.php');
 require_once('common.php');
 require_once('import.inc.php');
 require_once('csv.inc.php');
 require_once('xml.inc.php');
+require_once('keyword.class.php');
 require_once('../../third_party/phpexcel/reader.php');
 
 testlinkInitPage($db);
@@ -69,42 +70,28 @@ if ($do_upload)
 	$source = isset($_FILES['uploadedFile']['tmp_name']) ? $_FILES['uploadedFile']['tmp_name'] : null;
 	if (($source != 'none') && ($source != ''))
 	{ 
-	  // 20070904 - franciscom - this check is a failure :(
-		// $file_check = check_valid_ftype($_FILES['uploadedFile'],$importType);
-		$file_check['status_ok']=1;
-		if($file_check['status_ok'])
+		$file_check['status_ok'] = 1;
+		if (move_uploaded_file($source, $dest))
 		{
-			if (move_uploaded_file($source, $dest))
+			switch($importType)
 			{
-				switch($importType)
-				{
-					case 'XML':
-					$pcheck_fn  = "check_xml_tc_tsuite";
+				case 'XML':
+					$pcheck_fn = "check_xml_tc_tsuite";
 					$pimport_fn = "importTestCaseDataFromXML";
 					break;
-
-					case 'XLS':
-					$pcheck_fn=null;
-					$pimport_fn="importTestCaseDataFromSpreadsheet";
+				case 'XLS':
+					$pcheck_fn = null;
+					$pimport_fn = "importTestCaseDataFromSpreadsheet";
 					break;
-				}
-
-				$file_check['status_ok']=1;
-        if( !is_null($pcheck_fn) )
-        {
-          $file_check = $pcheck_fn($dest,$bRecursive);
-        }				  
-				if($file_check['status_ok'])
-				{
-					if ($pimport_fn)
-					{
-						$resultMap = $pimport_fn($db,$dest,$container_id,$tproject_id,
+			}
+	        if(!is_null($pcheck_fn))
+				$file_check = $pcheck_fn($dest,$bRecursive);
+		}
+		if($file_check['status_ok'] && $pimport_fn)
+		{
+			$resultMap = $pimport_fn($db,$dest,$container_id,$tproject_id,
 										                 $userID,$bRecursive,$bIntoProject);
-					}
-				} // if($file_check['status_ok'])
-				
-			} // if (move_uploaded_file($source, $dest))
-		} // if($file_check['status_ok'])
+		}
 	}
 	else
 	{
@@ -113,18 +100,15 @@ if ($do_upload)
 	}
 }
 
-if( $bRecursive )
+if($bRecursive)
 {
-  // we are importing a testsuite
   $obj_mgr = new testsuite($db);
 }
 else
 {
   $obj_mgr = new testcase($db);
 }
-$import_file_types=$obj_mgr->get_import_file_types();
-
-
+$import_file_types = $obj_mgr->get_import_file_types();
 
 
 $smarty = new TLSmarty();
@@ -142,10 +126,6 @@ $smarty->assign('bIntoProject',$bIntoProject);
 $smarty->assign('importLimitKB',TL_IMPORT_LIMIT / 1024);
 $smarty->assign('bImport',strlen($importType));
 $smarty->display($template_dir . 'tcImport.tpl');
-
-?>
-
-<?php
 
 /*
   function: importTestCaseDataFromXML
@@ -166,14 +146,15 @@ function importTestCaseDataFromXML(&$db,$fileName,$parentID,$tproject_id,
 	{
 		$root = $dom->document_element();
 		
-		$keywords = importKeywordsFromXML($root->get_elements_by_tagname("keyword"));
-		$kwMap = null;
-		if ($keywords)
+		$xmlKeywords = $root->get_elements_by_tagname("keywords");
+		if ($xmlKeywords)
 		{
 			$tproject = new testproject($db);
-			$tproject->addKeywords($tproject_id,$keywords);
-			$kwMap = $tproject->get_keywords_map($tproject_id);
-			$kwMap = array_flip($kwMap);
+			if ($tproject->importKeywordsFromXML($tproject_id,$xmlKeywords[0]->dump_node()) == OK)
+			{
+				$kwMap = $tproject->get_keywords_map($tproject_id);
+				$kwMap = array_flip($kwMap);
+			}
 		}
 		if ($bRecursive && $root->tagname == 'testsuite')
 			$resultMap = importTestSuite($db,$root,$parentID,$tproject_id,$userID,$kwMap,$importIntoProject);
@@ -386,52 +367,6 @@ function importTCFromXML(&$xmlTC)
 	
 	return $tc; 		
 }
-
-
-/*
-  function: check_valid_ftype()
-
-  args :
-  
-  returns: 
-
-*/
-function check_valid_ftype($upload_info,$import_type)
-{
-	$ret = array();
-	$ret['status_ok'] = 0;
-	$ret['msg']='ok';
-	
-	$mime_types = array();
-	$import_type = strtoupper($import_type);
-	
-	$mime_import_types['text/xml'] = array('XML' => 'XML');
-	
-	if(isset($mime_import_types[$upload_info['type']])) 
-	{
-		if(isset($mime_import_types[$upload_info['type']][$import_type]))
-		{
-			$ret['status_ok'] = 1;
-			if( isset($mime_types['check_ext'][$upload_info['type']]))
-			{
-				$path_parts = pathinfo($upload_info['name']);
-				if($path_parts['extension'] != $mime_types['check_ext'][$upload_info['type']])
-				{
-					$status_ok = 0;    
-					$ret['msg'] = lang_get('file_is_not_text');
-				}
-			}
-		}
-		else
-			$ret['msg'] = lang_get('file_is_not_ok_for_import_type');
-	}
-	else
-		$ret['msg'] = lang_get('file_is_not_xml');
-	
-	return $ret;
-}
-
-
 /*
   function: 
 
@@ -576,5 +511,40 @@ function create_xml_tcspec_from_xls($xls_filename,$xml_filename)
   fclose($xmlFileHandle);
 }
 
+//SCHLUNDUS will be removed after refactoring
+function importKeywordsFromXML($xmlKeywords)
+{
+	if (!$xmlKeywords)
+		return null;
+		
+	$keywords = null;	
+	$j = 0;
+	for($i = 0;$i < sizeof($xmlKeywords);$i++)
+	{
+		$xmlKeyword = $xmlKeywords[$i];		
+		$keywordData = importKeywordFromXML($xmlKeyword);
+		if ($keywordData)
+			$keywords[$j++] = $keywordData;
+	}
+	return $keywords;
+}
+/**
+ * Imports a single keywords from a XML Element
+ *
+ * @param object $fileName [ref] the XML Element to import from
+ * @return array return null on error or an array of
+ * 				 keyword['keyword'] => the keyword itself
+ * 				 keyword['notes'] => the notes of keyword
+ *
+ **/
+ //SCHLUNDUS will be removed after refactoring
+function importKeywordFromXML(&$xmlKeyword)
+{
+	if (!$xmlKeyword)
+		return null;
+	$keyword['keyword'] = $xmlKeyword->get_attribute("name");
+	$keyword['notes'] = trim(getNodeContent($xmlKeyword,'notes'));
 
+	return $keyword;
+}
 ?>

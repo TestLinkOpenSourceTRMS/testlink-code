@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: attachmentrepository.class.php,v $
  *
- * @version $Revision: 1.3 $
- * @modified $Date: 2007/12/05 21:25:14 $ by $Author: schlundus $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2007/12/08 19:07:40 $ by $Author: schlundus $
  * @author Francisco Mancardi
  *
 */
@@ -194,29 +194,28 @@ class tlAttachmentRepository extends tlObjectWithDB
 		$filePath = $attachmentInfo['file_path'];
 		
 		$destFPath = $this->m_repositoryPath.DS.$filePath;
-		return @unlink($destFPath) ? 1 : 0;
+		return @unlink($destFPath) ? OK : ERROR;
 	}
 
 	protected function deleteAttachmentFromDB($id,$dummy = null)
 	{
-		$query = "DELETE FROM attachments WHERE id = {$id}";
-		return $this->m_db->exec_query($query);
+		$attachment = new tlAttachment($id);
+		return $attachment->deleteFromDB($this->$db);
 	}
-	
-	
+		
 	public function deleteAttachment($id,$attachmentInfo = null)
 	{
+		$bResult = ERROR;
 		if (is_null($attachmentInfo))
 			$attachmentInfo = $this->getAttachmentInfo($id);
-		$bResult = false;
 		if ($attachmentInfo)
 		{	
-			$bResult = true;
+			$bResult = OK;
 			if (strlen($attachmentInfo['file_path']))
 				$bResult = $this->deleteAttachmentFromFS($id,$attachmentInfo);
-			$bResult = $this->deleteAttachmentFromDB($id,$attachmentInfo) && $bResult;
+			$bResult = $this->deleteAttachmentFromDB($id,null) && $bResult;
 		}
-		return $bResult ? 1 : 0;
+		return $bResult ? OK : ERROR;
 	}
 	public function getAttachmentContent($id,$attachmentInfo = null)
 	{

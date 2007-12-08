@@ -2,7 +2,7 @@
 /** 
 *	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* @version $Id: planAddTCNavigator.php,v 1.25 2007/12/02 17:16:02 franciscom Exp $
+* @version $Id: planAddTCNavigator.php,v 1.26 2007/12/08 19:10:19 schlundus Exp $
 *	@author Martin Havlat
 * 
 * 	Navigator for feature: add Test Cases to a Test Case Suite in Test Plan. 
@@ -30,7 +30,7 @@ $user_id=$_SESSION['userID'];
 $tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : $_SESSION['testPlanId'];
 
 $tproject_mgr = new testproject($db);
-$keywords_map = $tproject_mgr->get_keywords_map($tproject_id, " order by keyword "); 
+$keywords_map = $tproject_mgr->get_keywords_map($tproject_id); 
 if(!is_null($keywords_map))
 {
   $keywords_map = array( 0 => '') + $keywords_map;

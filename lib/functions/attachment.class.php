@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: attachment.class.php,v $
  *
- * @version $Revision: 1.3 $
- * @modified $Date: 2007/12/05 21:25:14 $ by $Author: schlundus $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2007/12/08 19:07:40 $ by $Author: schlundus $
  * @author Francisco Mancardi
  *
 */
@@ -115,7 +115,7 @@ class tlAttachment extends tlDBObject
 		$this->m_destFPath = str_replace($this->m_repositoryPath.DS,"",$destFPath);
 		$this->m_title = trim($title);
 		
-		return true;
+		return OK;
 	}
 	public function readFromDB(&$db)
 	{
@@ -140,7 +140,7 @@ class tlAttachment extends tlDBObject
 			$this->m_compressionType = $info['compression_type'];
 		}
 				
-		return $info ? true : false;
+		return $info ? OK : ERROR;
 	}
 	
 	public function getInfo()
@@ -180,7 +180,15 @@ class tlAttachment extends tlDBObject
 		if ($result)
 			$this->m_dbID = $db->insert_id();
 		
-		return $result ? true : false;					
+		return $result ? OK : ERROR;
+	}
+	
+	public function deleteFromDB(&$db)
+	{
+		$query = "DELETE FROM attachments WHERE id = {$this->m_dbID}";
+		$result = $db->exec_query($query);
+		
+		return $result ? OK : ERROR;
 	}
 };
 

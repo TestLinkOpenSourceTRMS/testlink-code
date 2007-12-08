@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: keywordsimport.tpl,v 1.2 2007/12/08 15:41:37 franciscom Exp $ *}
+{* $Id: keywordsImport.tpl,v 1.1 2007/12/08 15:44:36 franciscom Exp $ *}
 {* Purpose: smarty template - keyword import initial page *}
 {* revisions:
    20051231 - scs - fixed incorrect cancel button link

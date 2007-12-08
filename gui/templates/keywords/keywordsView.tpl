@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: keywordsView.tpl,v 1.3 2007/12/08 16:16:49 franciscom Exp $
+$Id: keywordsView.tpl,v 1.4 2007/12/08 18:11:12 franciscom Exp $
 Purpose: smarty template - View all keywords 
 
 20070102 - franciscom
@@ -34,31 +34,11 @@ var del_action=fRoot+'lib/keywords/keywordsEdit.php?doAction=do_delete&id=';
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
-
-{literal}
-<script type="text/javascript">
-{/literal}
-var warning_delete_keyword="{lang_get s='warning_delete_keyword'}";
-{literal}
-</script>
-{/literal}
-
-
-<h1>{lang_get s='title_keywords'}</h1>
-
-{if $canManage ne ""}
-	{* user can modify keywords *}
-	{* tabs *}
-	<div class="tabMenu">
-		<span class="selected">{lang_get s='menu_manage_keywords'}</span> 
-	</div>
-{/if}
-
-
+<h1>{lang_get s='menu_manage_keywords'}</h1>
 
 <div class="workBack">
   {if $arrKeywords neq ''}
-	<table class="common" width="70%">
+	<table class="simple" style="width:80%">
 		<tr>
 			<th width="30%">{lang_get s='th_keyword'}</th>
 			<th>{lang_get s='th_notes'}</th>
@@ -120,7 +100,7 @@ var warning_delete_keyword="{lang_get s='warning_delete_keyword'}";
 
       {if $arrKeywords neq ''}
 		    <input type="button" name="do_export" value="{lang_get s='btn_export_keywords'}" 
-	 	           onclick="location='{$basehref}/lib/keywords/keywordsExport.php'" />
+	 	           onclick="location='{$basehref}/lib/keywords/keywordsExport.php?doAction=export'" />
       {/if}
   	</form>
 	</div>

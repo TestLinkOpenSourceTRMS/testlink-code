@@ -5,13 +5,10 @@
  *
  * Filename $RCSfile: keywordsEdit.php,v $
  *
- * @version $Revision: 1.8 $
- * @modified $Date: 2007/12/08 16:16:04 $ by $Author: franciscom $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2007/12/08 18:11:52 $ by $Author: franciscom $
  *
  * allows users to manage keywords. 
- *
- * 20061007 - franciscom - export logic moved here
- *
  *
  * This is a fully commented model of How I think we need to develop new
  * pages of this kind, and how we need to refactor old pages.
@@ -132,7 +129,7 @@ function create(&$smarty,&$args)
   $ret->template='keywordsEdit.tpl';
   $ret->status=1;
   
-  $main_descr=lang_get('testproject') . TITLE_SEP . $args->testproject_name;
+  $main_descr=lang_get('keyword_management');
   $action_descr=lang_get('create_keyword');
 
   $smarty->assign('submit_button_label',lang_get('btn_save'));
@@ -161,8 +158,8 @@ function edit(&$smarty,&$args,&$tproject_mgr)
   
   $keyword_info = $tproject_mgr->getKeyword($args->keyword_id);
   
-  $main_descr=lang_get('testproject') . TITLE_SEP . $args->testproject_name;
-  $action_descr=lang_get('edit_keyword');
+  $main_descr=lang_get('keyword_management');
+  $action_descr=lang_get('edit_keyword') . TITLE_SEP . $keyword_info['keyword'];
 
 	$args->keyword = $keyword_info['keyword'];
 	$args->notes = $keyword_info['notes'];
@@ -189,6 +186,11 @@ function edit(&$smarty,&$args,&$tproject_mgr)
 */
 function do_create(&$smarty,&$args,&$tproject_mgr)
 {
+  $main_descr=lang_get('keyword_management');
+  $action_descr=lang_get('create_keyword');
+
+  $smarty->assign('main_descr',$main_descr);
+  $smarty->assign('action_descr',$action_descr);
   $smarty->assign('submit_button_label',lang_get('btn_save'));
   $smarty->assign('submit_button_action','do_create');
   
@@ -210,8 +212,10 @@ function do_create(&$smarty,&$args,&$tproject_mgr)
 */
 function do_update(&$smarty,&$args,&$tproject_mgr)
 {
-  $main_descr=lang_get('testproject') . TITLE_SEP . $args->testproject_name;
-  $action_descr=lang_get('edit_keyword');
+
+  $keyword_info = $tproject_mgr->getKeyword($args->keyword_id);
+  $main_descr=lang_get('keyword_management');
+  $action_descr=lang_get('edit_keyword') . TITLE_SEP . $keyword_info['keyword'];
 
   $smarty->assign('submit_button_label',lang_get('btn_save'));
   $smarty->assign('submit_button_action','do_update');

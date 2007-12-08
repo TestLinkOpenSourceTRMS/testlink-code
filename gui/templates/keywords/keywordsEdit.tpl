@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: keywordsEdit.tpl,v 1.1 2007/12/08 15:43:42 franciscom Exp $
+$Id: keywordsEdit.tpl,v 1.2 2007/12/08 18:11:12 franciscom Exp $
 Purpose: smarty template - View all keywords 
 
 20070102 - franciscom
@@ -41,12 +41,12 @@ function validateForm(f)
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
-{$cfg_section}
-
-<h1>{lang_get s='title_keywords'}</h1>
+<h1>{$main_descr|escape}</h1>
 
 {if $canManage ne ""}
   <div class="workBack">
+  
+  <div class="action_descr">{$action_descr|escape}</div><br />
   {include file="inc_update.tpl" user_feedback=$user_feedback }
 
   	<form name="addKey" method="post" action="{$keyword_edit_url}"

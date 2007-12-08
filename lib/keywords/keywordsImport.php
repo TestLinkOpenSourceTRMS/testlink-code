@@ -6,8 +6,8 @@
  * Scope: Import keywords page
  *
  * Filename $RCSfile: keywordsImport.php,v $
- * @version $Revision: 1.1 $
- * @modified $Date: 2007/12/08 16:18:08 $ by $Author: franciscom $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2007/12/08 19:20:13 $ by $Author: schlundus $
  */
 require('../../config.inc.php');
 require_once('keyword.class.php');
@@ -42,9 +42,8 @@ if(!$msg && $bUpload)
 				case 'iSerializationToCSV':
 					$pfn = "importKeywordsFromCSV";
 					break;
-
 				case 'iSerializationToXML':
-					$pfn = "importKeywordsFromXML";
+					$pfn = "importKeywordsFromXMLFile";
 					break;
 			}
 			if($pfn)
@@ -66,10 +65,12 @@ if(!$msg && $bUpload)
 
 $tlKeyword = new tlKeyword();
 $importTypes = $tlKeyword->getSupportedSerializationInterfaces();
+$formatStrings = $tlKeyword->getSupportedSerializationFormatDescriptions();
 			
 $smarty = new TLSmarty();
 $smarty->assign('import_type_selected',$importType);
 $smarty->assign('msg',$msg);  
+$smarty->assign('keywordFormatStrings',$formatStrings);
 $smarty->assign('importTypes',$importTypes);
 $smarty->assign('tproject_name', $tproject_name);
 $smarty->assign('tproject_id', $testproject_id);

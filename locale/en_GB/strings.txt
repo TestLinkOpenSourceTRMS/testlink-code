@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.228 $
- * @modified $Date: 2007/12/08 16:16:41 $ $Author: franciscom $
+ * @version $Revision: 1.229 $
+ * @modified $Date: 2007/12/08 18:13:07 $ $Author: franciscom $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -75,23 +75,24 @@ $TLS_remove 		= "remove";
 
 
 // Buttons (one word) - Leave it here in this way can be reused !!!
-$TLS_btn_add 		= "Add";
-$TLS_btn_assign 	= "Assign";
-$TLS_btn_cancel 	= "Cancel";
-$TLS_btn_close 		= "Close";
-$TLS_btn_cp 		= "Copy";
-$TLS_btn_create 	= "Create";
-$TLS_btn_delete 	= "Delete"; 
-$TLS_btn_edit	 	= "Edit";
-$TLS_btn_find 		= "Find";
-$TLS_btn_import 	= "Import";
-$TLS_btn_move 		= "Move";
-$TLS_btn_no 		= "No";
-$TLS_btn_ok 		= "Ok";
-$TLS_btn_save 		= "Save";
-$TLS_btn_unassign 	= "Unassign";
-$TLS_btn_update 	= "Update";
-$TLS_btn_upd 		= $TLS_btn_update;
+$TLS_btn_add = "Add";
+$TLS_btn_assign	= "Assign";
+$TLS_btn_cancel	= "Cancel";
+$TLS_btn_close = "Close";
+$TLS_btn_cp = "Copy";
+$TLS_btn_create = "Create";
+$TLS_btn_delete = "Delete"; 
+$TLS_btn_edit	= "Edit";
+$TLS_btn_export = "Export";
+$TLS_btn_find = "Find";
+$TLS_btn_import = "Import";
+$TLS_btn_move = "Move";
+$TLS_btn_no = "No";
+$TLS_btn_ok = "Ok";
+$TLS_btn_save = "Save";
+$TLS_btn_unassign = "Unassign";
+$TLS_btn_update = "Update";
+$TLS_btn_upd = $TLS_btn_update;
 
 // Status
 $TLS_test_status_all 		= "All";
@@ -706,8 +707,8 @@ $TLS_title_keyword_import = "Import keywords";
 
 
 
-// gui/templates/keywordsexport.tpl
-$TLS_btn_export = "Export";
+// gui/templates/keywordsExport.tpl
+$TLS_export_keywords="Export keywords";
 $TLS_title_req_import_to = "Import requirements to document";
 
 
@@ -1897,6 +1898,12 @@ $TLS_title_change_req_spec_order="Change Requirement Specifications order";
 
 // requirement_mgr
 $TLS_created_on_testsuite="Test Cases will be created on Test Suite %s";
+
+// keywordsEdit.php
+$TLS_keyword_management="Keyword management";
+$TLS_create_keyword="Create keyword";
+$TLS_edit_keyword="Edit keyword";
+
 
 // api/TestlinkXMLRPCServerErrors.php
 $TLS_API_INVALID_AUTH = "Can not authenticate client: invalid developer key";

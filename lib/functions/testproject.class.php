@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.46 $
- * @modified $Date: 2007/12/06 11:38:08 $  $Author: kmielke $
+ * @version $Revision: 1.47 $
+ * @modified $Date: 2007/12/08 15:40:24 $  $Author: franciscom $
  * @author franciscom
  *
  * 20071111 - franciscom - new method get_subtree();
@@ -596,7 +596,7 @@ function count_testcases($id)
 	 * @param type $notes 
 	 * 
 	 **/
-	function updateKeyword($testprojectID,$keyword,$notes,$id)
+	function updateKeyword($testprojectID,$id,$keyword,$notes)
 	{
 		$kw = new tlKeyword($id);
 		$kw->create($testprojectID,$keyword,$notes);
@@ -605,8 +605,13 @@ function count_testcases($id)
 
 	public function getKeyword($kwID)
 	{
-		return $this->getKeywordInfo($kwID);
+		$info = null;
+		$keyword = new tlKeyword($kwID);
+		if ($keyword->readFromDB($this->m_db))
+			$info = $keyword->getInfo();
+		return $info;
 	}
+	
 	/**
 	 * Gets the keywords of the given test project
 	 *
@@ -624,7 +629,7 @@ function count_testcases($id)
 		$kwIDs = $this->getKeywordIDsFor($testproject_id);
 		for($i = 0;$i < sizeof($kwIDs);$i++)
 		{
-			$keywords[] = $this->getKeywordInfo($kwIDs[$i]);
+			$keywords[] = $this->getKeyword($kwIDs[$i]);
 		}
 		return $keywords;
 	}
@@ -686,6 +691,7 @@ function count_testcases($id)
 	
 		return $sqlResults;
 	}
+	
 	protected function getKeywordIDsFor($testproject_id)
 	{
 		$query = " SELECT id FROM keywords " .
@@ -695,14 +701,7 @@ function count_testcases($id)
 		
 		return $keywordIDs;
 	}
-	protected function getKeywordInfo($id)
-	{
-		$info = null;
-		$keyword = new tlKeyword($id);
-		if ($keyword->readFromDB($this->m_db))
-			$info = $keyword->getInfo();
-		return $info;
-	}
+	
 	
 	/**
 	 * Exports the given keywords to a XML file

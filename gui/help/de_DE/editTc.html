@@ -1,5 +1,3 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-"DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -9,47 +7,48 @@
 <meta name="robots" content="NOFOLLOW" />
 <title>TestLink Instructions</title>
 <style media="all" type="text/css">
-@import "../../{$smarty.const.TL_THEME_CSS_DIR}testlink.css";
+@import "{$basehref}{$smarty.const.TL_THEME_CSS_DIR}testlink.css";
 </style>
-<script type="text/javascript" src="../../javascript/testlink_library.js">
+
+<script>
+// need due to global coupling in open_help_window()
+var fRoot='{$basehref}';
+</script>
+
+<script type="text/javascript" src="{$basehref}gui/javascript/testlink_library.js">
 </script>
 </head>
-
 <body>
 <div class="workBack">
-<h1>Test Case Edit and Archive</h1>
+<h1>Testfaelle bearbeiten und archivieren</h1>
 
-<h2>Purpose:</h2>
+<h2>Ziel:</h2>
 
-<p>The <span class="help" onclick=
-"javascript:open_popup('./glosary.html#testspec');">Test
-Specification</span> is a place where a user can view and edit all of the
-existing <span class="help" 
-onclick="javascript:open_popup('./glosary.html#product');">Product</span>, Component, Category, and <span class="help" 
-onclick="javascript:open_popup('./glosary.html#testcase');">Test case</span> information.
-A user cannot look at a different versions of test cases - the database
-maintains the actual version only. The recommended practice is print the test
-specification when a testing is done.</p>
+<p>In der <span class="help" onclick=
+"javascript:open_help_window('glosary','{$locale}');">Testdefinition</span> kann der Benutzer alle existierenden
+<span class="help" 
+onclick="javascript:open_help_window('glosary','{$locale}');">Testprojekte</span>, Testsuiten und <span class="help" 
+onclick="javascript:open_help_window('glosary','{$locale}');">Testfaelle</span> sich anschauen und bearbeiten.
+Ein Benutzer kann dabei verschiedene Versionen eines Testfalls anschauen. </p>
 
-<h2>Get Started:</h2>
+<h2>Anleitung:</h2>
 
 <ol>
-<li>Select Product name in navigation pane</li>
+<li>Waehle eine Testprojekt im Navigationsbereich aus.</li>
 
-<li>Create a new components, categories and test cases for the product
-(selectable in top right corner).</li>
+<li>Erstelle eine neue Tesuite und neue Testfaelle (das Testprojekt kann in der rechten oberen Ecke ausgewaehlt werden).</li>
 
-<li>Navigate via the tree view on the left side and edit data.</li>
+<li>Navigiere mit dem Baum auf der linken Seite und bearbeiten vorhandene Daten.</li>
 
-<li>Assign your created Test Specification to <span class="help" onclick=
-"javascript:open_popup('./glosary.html#testplan');">Test Plan</span> when
-Test cases are ready.</li>
+<li>Weise die erstellte Testdefinition einem <span class="help" onclick=
+"javascript:open_help_window('glosary','{$locale}');">Testplan</span> zu, wenn die Testdefinition
+fertig ist.</li>
 </ol>
 
-<p>TestLink offers organize test cases into two levels of containers: Component
-and Category. You can describe a content of both containers via five
-descriptive fields. These texts could be printed together with test cases
-then.</p>
+<p>Testlink bietet die Moeglichkeit Testsuiten beliebig zu verschachteln.
+Dabei kann der Inhalt einer Testsuite beschrieben werden.
+Diese Informationen koennen dann zusammen mit den Testdefinitionen ausgedruckt werden.
+</p>
 </div>
 </body>
 </html>

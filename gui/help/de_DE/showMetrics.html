@@ -8,52 +8,148 @@
 	<meta name="author" content="Martin Havlat" />
 	<meta name="copyright" content="GNU" />
 	<meta name="robots" content="NOFOLLOW" />
-	<title>TestLink Instructions</title>
-	<style media="all" type="text/css">@import "../../{$smarty.const.TL_THEME_CSS_DIR}testlink.css";</style>
+	<title>TestLink Anleitung</title>
+ 	<link rel="stylesheet" type="text/css" href="{$basehref}{$smarty.const.TL_THEME_CSS_DIR}tl_docs.css" />
 </head>
 
 <body>
 
 <div class="workBack">
 
-<h1>Overview of available Test Reports and Metrics</h1>
+<h1>Ergebnisse / Test-Berichte und Metriken</h1>
+<h1>controls</h1>
+<h2>1. Aktiver Build</h2> 
+Der einzige Bericht, der vom dem Element "Aktiver Build" betroffen ist, ist "Metriken des aktiven Builds".
 
-<h2>Metrics of active Build</h2> 
-<p>This page displays the results of testing against the selected build.</p>
+<h2>2. Berichts-Format</h2>
+Alle Testberichte (mit Ausnahme der Charts) koennen in drei Formate generiert werden:
+<li>1.Normal - Bericht wird als webseite dargestellt</li>
+<li>2.MS Excel - Bericht wird nach Microsoft Excel exportiert</li>
+<li>3.HTML Email - Bericht wird an die Email-Adresse des Benutzers geschickt</li>
 
-<h2>General Test Plan Metrics</h2>
-<p>This page displays the entire status of the project across all builds.<br />
+<h1>Berichte</h1>
 
-This means that if a test case passes in build 1 and then fails in build 2 
-it will be counted as a failure on this page. </p>
+Es gibt derzeit 10 verschiedene Berichte, deren Ziel und Funktion im Folgenden erklaert werden.
+<h3>1) Metriken des aktiven Build</h3>
+<p>Dieser Bericht zeigt die ausfuehrlichen Resultate fuer einen bestimmten Build, der mit dem Element "Aktiver Build" ausgewaehlt wird.
+Dabei beruecksichtigt er dann nur Ausfuehrungen, die gegen den ausgewaehlten Build gemacht wurden.
+Die folgenden Tabellen werden dargestellt: <BR>
+<h2>Resultate nach den Top-Level-Testsuites</h2>
+<p>Listet die Resultate von jeder Top-Level-Suite auf. Die Gesamtanzahl, Anzahl der erfolgreichen, fehlgeschlagene, blockierten, nicht gelaufenen
+und der Prozentanteil der fertigen Testfaelle werden aufgelistet. Ein Testfall ist "fertig", wenn er als erfolgreich, fehlgeschlagen oder blockiert
+markiert ist. Diese Resultate beinhalten dabei alle darunterhaengenden Testsuiten.</p>
+<h2>Resultate nach Testsuite</h2>
+<p>Listet die Metriken fuer alle Testsuiten in einem Testplan, nicht nur jene der Top-Level-Suiten.</p>
+<h2>Resultate nach Stichwoertern</h2>
+<p>Listet alle Stichwoerter, welche einem Testfall im aktuellen Testplan zugeordnet sind und die Resultate, die damit zusammenhaengen.</p>
+</p>
 
+<h3>2) Testplan Überblick</h3>
+<p>Diese Seite zeigt nur den aktuellsten Stand eines Testplans nach Testsuite, Besitzer und Stichwort aufgeschluesselt. Der aktuellste Status ist
+durch den neuesten Build, gegen den Testfaelle ausgefuehrt wurden, bestimmt. Z.B. wenn ein Testfall gegen verschiedene Builds ausgefuehrt wurde, wird nur
+das letzte Resultat herangezogen.</p> 
 
-<h2>The Overall Build Status</h2>
-<p>This page displays overall project status for each build.</p> 
+Das "Letzte Testresultat" ist Konzept, welches in viele Berichten Verwendung findet, und ist folgendermassen definiert:	
+<li>1) Die Reihenfolge, in der Builds einem Testplan hinzugefuegt wurden, bestimmt, welcher Build der neueste ist. Die Resultate des neuesten Builds haben dabei Vorrang
+vor aelteren Builds. Wenn z.B. ein Testfall in Build 1 fehlschlaegt, in Build 2 aber erfolgreich ist, so ist das "Letzte Testresultat" erfolgreich.</li>
+<li>2) Wird ein Testfall mehrmals gegen den gleichen Build ausgefuehrt, so gilt die neueste Ausfuehrung. D.h. z.B. wenn innerhalb eines Build ein Tester den Test
+als erfolgreich markiert und danach ein Tester diesen als fehlgeschlagen markiert, so wird er insgesamt als fehlgeschlagen angezeigt.</li>
+<li>3) Testfaelle, welche mit "nicht getestet" markiert sind, werden nicht miteinbezogen. D.h. z.B. wenn in Build 1 ein Test erfolgreich war, in Build 2 dieser aber
+nicht ausgefuehrt wurde, so ist das letzte Testresultat "erfolgreich".</li>
+<BR/>
+Die folgenden Tabellen werden dargestellt :
+<BR/>
+<h2>Resultate nach den Top-Level-Testsuites</h2>
+<p>Listet die Resultate von jeder Top-Level-Suite auf. Die Gesamtanzahl, Anzahl der erfolgreichen, fehlgeschlagene, blockierten, nicht gelaufenen
+und der Prozentanteil der fertigen Testfaelle werden aufgelistet. Ein Testfall ist "fertig", wenn er als erfolgreich, fehlgeschlagen oder blockiert
+markiert ist. Diese Resultate beinhalten dabei alle darunterhaengenden Testsuiten.</p>
+<h2>Resultate nach Stichwoertern</h2>
+<p>Listet alle Stichwoerter, welche einem Testfall im aktuellen Testplan zugeordnet sind und die Resultate, die damit zusammenhaengen.</p>
+</p>
+<h2>Resultate nach Besitzer</h2>
+<p>Listet alle Besitzer auf, die einen ihrer Testfaelle im aktuellen Testplan haben. Testfaelle, die niemanden zugewiesen sind, sind unter der ueberschrift
+"unassigned" zu finden.</p> 
 
-<h2>Query Metrics</h2>
-<p>Display Results based on builds, owners, keywords, and last result</p>
+<h3>3.) Der gesamte Build Status</h3>
+<p>Listet die Ausfuehrungs-Ergebnisse fuer jeden Build auf. Fuer jeden Build werden dabei die Gesamtanzahl der Testfaelle und jeweils die Anzahl und der prozentuale Anteil
+der verschiedenen moeglichen Status angezeigt. Wird ein Testfall zweimal ausgefuehrt, wird die letzte Ausfuehrung herangezogen.</p>
+<h3>4.) Abfrage Metriken</h3>
+<p> Dieser Bericht besteht aus eine Abfrage und einer Ergebnis-Seite, welche die Ergebnisse der Abfrage zeigt.
+<h2>Abfrage-Seite:</h2>
+<p>
+Dem Benutzer wird eine Seite mit 4 Elementen angezeigt. Jedes Element hat einen Default-Wert, welches die maximale Anzahl an Testfaellen
+und Builds bestimmt, auf die die Abfrage ausgefuehrt werden soll. Das Anpassen dieser Element erlaubt es dem Benutzer die Ergebnisse zu filtern und
+spezifisch Berichte fuer bestimmte Besitzer, Stichwoerter, Suiten und Build-Kombinationen zu erzeugen.
+</p>
+<h2>Stichwort</h2>
+<p>0 -> 1 Stichwort kann ausgewaehlt werden. Standardmaessig ist kein Stichwort ausgewaehlt. Wenn kein Stichwort ausgewaehlt wurde, werden alle
+Testfaelle herangezogen. Stichwoertern werden in der Testfall-Definition oder auf Verwaltungs-Seiten fuer Stichwoerter zugeordnet. Zugewiesene Stichwoerter
+erstrecken sich ueber alle Testplaene und alle Versionen eines Testfalls. Wenn man an den Ergebnissen fuer ein bestimmtes Stichwort interessiert ist, 
+wuerde man das an diesem Element einstellen.
+</p>
+<h2>Besitzer</h2>
+<p>0 -> 1 Besitzer koennen ausgewaehlt werden. Standardmaessig ist kein Besitzer ausgwaehlt. Wenn kein Besitzer ausgewaehlt wurde, werden alle
+Testfaelle herangezogen. Zurzeit gibt es keine Funktionalitaet um nach "nicht zugewiesenen" Testfaellen zu suchen. Der Besitzer wird
+ueber die Seiten "Testfaelle an Benutzer zuweisen" zugewiesen und dies geschieht fuer jeden Testplan. Wenn man an den Ergebnissen fuer einen bestimmten Tester interessiert ist, 
+wuerde man das an diesem Element einstellen.
+</p>
+<h2>Top-Level-Suite</h2>
+<p>0 -> n Top-Level-Suiten koennen ausgewaehlt werden. Standardmaessig sind alle ausgewaehlt. Nur die ausgewaehlten Suiten werden in der Abfrage beruecksichtigt.
+Wenn man an den Ergebnissen fuer eine bestimmte Suite interessiert ist, wuerde man das an diesem Element einstellen.
+</p>
+<h2>Builds</h2>
+<p>
+1 -> n Builds koennen ausgewaehlt werden. Standardmaessig sind alle Builds ausgewaehlt. Nur die Ausfuehrungen, die gegen die ausgewaehlten Builds, gemacht wurden, werden
+bei den Metriken beruecksichtigt. Wenn man z.B. sehen will, wie viele Testfaelle in den letzten 3 Builds ausgefuehrt wurden, wuerde man das an diesem Element einstellen.
+Die Auswahl von Stichworten, Besitzern und Top-Level-Suiten bestimmen die Anzahl der Testfaelle vom Testplan die dazu benutzt werden, die Metriken pro Suite und
+pro Testplan zu erstellen. D.h. z.B. wenn man als Besitzer "Greg" auswaehlt, als Stichwort "Priority 1" und alle verfuegbaren Testsuiten, dann werden nur die Prio 1 Testfaelle, 
+die Greg zugewiesen wurden, beruecksichtigt. Die Gesamtanzahl der Testfaelle auf dem Bericht wird von diesen 3 Elementen beeinflusst.
+Die Auswahl der Builds beeinflusst, ob ein Testfall als erfolgreich, fehlgeschlagen, blockiert oder nicht getestet gezaehlt wird. Siehe dazu auch weiter oben die 
+Ausfuehrungen ueber das "Letzte Testresultat".
+</p>
+Durch Klicken des "Anfrage abschicken"-Buttons wird die Abfrage ausgefuehrt und das Ergebnis angezeigt.
+</p>
+<h2>Abfrage-Bericht:</h2>
+Die Seite mit dem Bericht sieht folgendermassen aus: <br/>
+<li>1. Die Parameter, die fuer den Bericht benutzt wurden</li>
+<li>2. Gesamtanzahlen fuer den Testplan</li>
+<li>3. Pro Suite eine Gesamtanzahl der Ausfuehrungen nach Status sortiert. Wurde ein Testfall mehrmals auf verschiedenen Builds ausgefuehrt, werden
+alle Ausfuehrungen, die gegen die ausgewaehlten Builds durchgefuehrt wurden, angezeigt. Die Zusammenfassung fuer die Suite allerdings beinhaltet nur das
+"Letzte Testresultat" fuer die ausgewaehlten Builds.</li>
 
-<h2>Test Report</h2>
-<p>This page displays each test case and its result against every build.<br />
-Excel export is available.</p>
+<h3>5-7.) Fehlgeschlagene/Blockierte/Nicht durchgeführte Testfaelle</h3>
+<p>
+Diese Berichte zeigen alle derzeit blockierten, fehlgeschlagenen oder nicht getesteten Testfaelle. Die Logik "Letztes Testresultat (sh. weiter oben) wird auch hier
+angewandt, um zu bestimmen als was der Testfall gezaehlt wird. Die Berichte ueber blockierte oder fehlgeschlagene Testfaelle zeigen dabei auch die verbundenen
+Bugs, wenn man ein Bug Tracking System verwendet wird.
+</p>
+<h3>8.) Testreport</h3>
+<p>
+Zeigt den Status von allen Testfaellen fuer alle Builds. Wurde ein Testfall mehrmals gegen den gleichen Build ausgewuehrt, wird das aktuellste Ergebnis
+gezaehlt. In diesem Bericht wird ein Testfall, der nicht gegen einen bestimmten Build gelaufen ist, mit einem "?" gekennzeichnet. Es wird empfohlen,
+diesen Bericht nach Excel zu exportieren, wenn die Datenmenge sehr gross ist, um ein leichteres Browsen zu ermoeglichen.
+</p>
+<h3>9.) Grafiken</h3>
+<p>
+Fuer diesen Bericht wird ein Flash Plugin benoetigt. Er verwendet Flash Technologie (von http://www.maani.us), um die Ergbnisse in einem graphischen Format anzuzeigen.
+Die Logik des "Letzten Testresultats" wird auf alle 4 Charts angewant. Die Graphen sind animiert, um den dem Benutzer bei der Visualisierung der Metriken des
+aktuellen Testplans zu unterstuetzen.
+</p>
+Folgende 4 Charts gibt es:
 
-<h2>Blocked Test Cases</h2>
-<p>This page will show a rollup of all of the currently blocked test cases.<br />
-EX: A test case will show up if it passed in build 1 and then was blocked in build 2<br />
+<h2>1.Tortendiagramm fuer alle erfolgreichen/fehlgeschlagenen/blockierten/nicht getesteten Testfaelle</h2>
+<h2>2.Balkendiagramm fuer die Resultate gruppiert nach Stichwort</h2>
+<h2>3.Balkendiagramm fuer die Resultate gruppiert nach Besitzern</h2>
+<h2>4.Balkendiagramm fuer die Resultate gruppiert nach Top-Level-Suiten</h2>
+<p>
+Die Balken in den Balkendiagrammen sind farbig markiert, damit der Benutzer die grobe Anzahl der Testfaelle je nach Status sehen kann.
+</p>
 
-EX: If a test case is blocked in build 1 and then passes in build 2 it will not show up</p>
+<h3>10.) Gesamtanzahl Fehler fuer jeden Testfall</h3>
+<p>
+Dieser Bericht zeigt alle Testfaelle mit all seinen Bugs innerhalb des gesamten Projekts. Dieser Bericht ist nur verfuegbar, wenn ein Bug Tracking System angeschlossen ist.
+</p>
 
-<h2>Failed Test Cases</h2>
-<p>This page is the same as the blocked page but for failed test cases</p>
-
-<h2>Total Bugs For Each Test Case</h2>
-<p>This page displays every test case in a project and all of the bugs that 
-were filed against it</p>
-
-<h2>Send results via e-mail</h2>
-<p>This page allows users to email the results of an entire project or 
-a particular build to anyone they'd like</p> 
 
 </div>
 

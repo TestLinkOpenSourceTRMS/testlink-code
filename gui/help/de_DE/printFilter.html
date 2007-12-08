@@ -8,41 +8,49 @@
 	<meta name="author" content="Martin Havlat" />
 	<meta name="copyright" content="GNU" />
 	<meta name="robots" content="NOFOLLOW" />
-<title>TestLink Help: Print Test Cases</title>
+<title>TestLink Hilfe: Testfaelle ausdrucken</title>
 <link rel="stylesheet" type="text/css" href="../../{$smarty.const.TL_THEME_CSS_DIR}tl_docs.css" />
 </head>
 <body>
-<h1>Filtering Test Case Printing</h1>
+<h1>Testfaelle ausdrucken</h1>
 
 {include file="nav.tpl"}
-<p>This table allows the user to filter test cases before they are viewed. If
-selected (checked) the data will be shown. In order to change the data
-presented, check or uncheck, click on "Filter", and select the desired data
-level from the tree.</p>
+<p>Diese Tabelle erlaubt es dem Benutzer Testfaelle zu filtern bevor man sie anschaut. 
+Wenn sie ausgewaehlt werden, werden sie angezeigt. Um die Auswahl der Daten
+zu veraendern, muessen diese (un-)selektiert werden, anschliessend muss auf den 'Filter'-Button gedrueckt werden 
+und das gewuenschte Hierarchielevel im Baum ausgewaehlt werden.
+</p>
 
-<h2>Document Header</h2>
-<p>Users can filter out Document Header information. Document Header information
-includes: Introduction, Scope, References, Test Methodology, and Test
-Limitations.</p>
+<h2>Dokumentkopf</h2>
+<p>Als Benutzer kann man auswaehlen, welche Dokument-Kopf-Informationen man haben moechte.
+Zur Auswahl stehen: Einfuehrung, Umfang, Referenzen, Testmethodik und 
+Testeinschraenkungen.
+</p>
 
-<h2>Test Case Body</h2>
-<p>Users can filter out Test Case Body information. Test Case Body information
-includes: Summary, Steps, Expected Results, and Keywords.</p>
+<h2>Testfall-Inhalt</h2>
+<p>Als Benutzer kann man auswaehlen, welche Testfall-Informationen man haben moechte.
+Zur Auswahl stehen: Zusammenfassung, Schritte, Erwartete Resultate und Stichwoerter
+</p>
 
-<h2>Test Case Summary</h2>
-<p>Users can filter out Test Case Summary information from the Test Case Title,
-however, they cannot filter out Test Case Summary information from the Test
-Case Body. Test Case Summary has only been partially separated from Test Case
-Body in order to support viewing Titles with a brief Summary and the absence of
-Steps, Expected Results, and Keywords. If a user decides to view Test Case
-Body, Test Case Summary will always be included.</p>
+<h2>Testfall-Zusammenfassung</h2>
+<p>
+Als Benutzer kann man auswaehlen, welche Information aus der Testfall-Titelseite ausgefiltert
+werden. Allerdings kann man diese Information nicht aus dem Testfall-Inhalt ausfiltern.
+Die Testfall-Zusammenfassung ist nur teilweise vom Testfall-Inhalt getrennt, um zu erlauben,
+dass man die Titelseite mit einer kurzen Zusammenfassung und ohne die Schritte, Stichwoerter
+und erwarteten Resultate sich anschauen kann. Wenn der Benutzer auswaehlt, sich den Testfall-
+Inhalt anzuschauen, ist die Testfall-Zusammenfassung also immer dabei.
+</p>
 
-<h2>Table of Content</h2>
-<p>TestLink inserts list of all titles with internal hypertext links if checked.</p>
+<h2>Inhaltsverzeichnis</h2>
+<p>TestLink fuegt eine Liste aller Testfall-Titelseiten mit den dazugehoerigen Links hinzu,
+wenn diese Option ausgewaehlt ist.
+</p>
 
-<h2>Output format</h2>
-<p>There are two possibilities: HTML and MS Word. Browser calls MS word component 
-in second case.</p>
+<h2>Ausgabeformat</h2>
+<p>Fuer das Ausgabeformat gibt es zwei Moeglichkeiten: HTML und MS Word. Der Browser
+ruft dabei in letzterem Fall eine MS Work Komponente auf.
+</p>
 
 
 </body>

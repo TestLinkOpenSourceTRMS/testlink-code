@@ -8,57 +8,54 @@
 	<meta name="author" content="Martin Havlat" />
 	<meta name="copyright" content="GNU" />
 	<meta name="robots" content="NOFOLLOW" />
-	<title>TestLink Help: Custom Fields</title>
+	<title>TestLink Hilfe: Benutzerdefinierte Felder</title>
  	<link rel="stylesheet" type="text/css" href="../../{$smarty.const.TL_THEME_CSS_DIR}tl_docs.css" />
 </head>
 
 <body>
-<h1>Custom Fields </h1>
-Info borrowed and adapted from Mantis Bug Tracking System manual
-<h2>Description</h2>
-Following are some facts about the implementation of custom fields:<br>
+<h1>Benutzerdefinierte Felder</h1>
+Die Informationen wurde aus dem Benutzerhandbuch des Mantis Bug-Tracking-Systems uebernommen und angepasst.
+<h2>Beschreibung</h2>
+Im Folgenden einige Hinweise zur Implementation von benutzerdefininierten Feldern:<br>
 <ul>
-<li>Custom fields are defined system wide.</li>
-<li>Custom fields are linked to a type of element (Test Suite, Test Case)</li>
-<li>Custom fields can be linked to multiple Test Projects.</li>
-<li>The sequence of displaying custom fields can be different per Test Project.</li>
-<li>Custom fields can be turned inactive for an specific Test Project.</li>
-<li>Number of custom fields is not restricted.</li>
+<li>Benutzerdefinierte Felder sind systemweit definiert.</li>
+<li>Benutzerdefinierte Felder werden an einen bestimmten Elementtyp gehaengt (z.B. Testsuite, Testfall)</li>
+<li>Benutzerdefinierte Felder koennen in verschiedenen Testprojekten verwendet werden.</li>
+<li>Die Reihenfolge der benutzerdefinierten Feldern kann von Projekt zu Projekt abweichen.</li>
+<li>Benutzerdefinierte Felder koennen fuer bestimmte Projekte auf inaktiv geschaltet werden.</li>
+<li>Es gibt keine Begrenzung fuer die Anzahl der benutzerdefinierten Felder.</li>
 </ul>
 <br>
-The definition of a custom field includes the following logical
-attributes:<br>
+Die Definition eines benutzerdefinierten Feldes enthaelt folgende logische Attribute:<br>
 <ul>
-<li>Custom field name<br>
+<li>Name des Feldes<br>
 </li>
-<li>Caption variable name (eg: This is the value that is
-supplied to lang_get() API , or displayed as-is if not found in language
-file).</li>
-<li>Custom field type (string, numeric, float, enum,
-email)</li>
-<li>Enumeration possible values (eg: RED|YELLOW|BLUE),
-applicable to list, multiselection list and combo types.<br>
-<div class="note">Use the pipe ('|') character to
-separate possible values for an enumeration. One of the possible values
-can be an empty string.</div>
+<li>Name der Beschriftung (z.B.: Dies wird als Wert fuer die API-Funktion lang_get verwendet,
+oder einfach direkt angezeigt, wenn der Wert nicht in der Sprachendatei gefunden wird)</li>
+<li>Typ des Feldes (String, Ganzzahlig, Fliesskommazahl, Aufzaehlung,
+E-Mail-Adresse)</li>
+<li>Die moeglichen Werte der Aufzaehlung (z.B.: ROT|GELB|BLAU),
+die bei normalen Listen, bei Multi-Selektions-Listen und bei Auswahlboxen
+verwendet werden koennen.<br>
+<div class="note">Benutze das Pipe-Symbol ('|') um die einzelnen Aufzaehlungswerte zu trennen.
+Einer der Werte kann dabei ein leerer String sein.</div>
 </li>
-<li>Default value. <b>(NOT IMPLEMENTED YET)</b><br>
+<li>Default-Wert. <b>(NOT IMPLEMENTED YET)</b><br>
 </li>
-<li>Minimum/maximum length for the custom field value
-(use 0 to disable). <b>(NOT IMPLEMENTED YET)</b></li>
-<li>Regular expression to use for validating user input
-(use <a href="http://au.php.net/manual/en/function.ereg.php">ereg()</a>
-syntax). <b>(NOT IMPLEMENTED YET)</b></li>
-<li>All custom fields are currently saved to a field of
-type VARCHAR(255) in the database. <br>
+<li>Minimum/Maximum-Laenge fuer den Feldwert
+(0 fuer keine Begrenzung). <b>(NOT IMPLEMENTED YET)</b></li>
+<li>Ein regulaerer Ausdruck, um die Eingabe zu validieren.
+(benutzer <a href="http://au.php.net/manual/en/function.ereg.php">ereg()</a>
+-Syntax). <b>(NOT IMPLEMENTED YET)</b></li>
+<li>Alle benutzerdefinierten Felder werden derzeit in einem VARCHAR(255)-Feld in der Datenbank gespeichert.<br>
 </li>
-<li>Display on test specification.</li>
-<li>Enable on test specification. User can change the value during Test Case Specification Design <br>
+<li>Anzeige waehrend der Test-Spezifikation.</li>
+<li>Editieren waehrend der Test-Spezifikation. Der Benutzer kann den Wert waehrend des Designs der Test-Spezifikation aendern.<br>
 </li>
-<li>Display on test execution.</li>
-<li>Enable on test execution. User can change the value during Test Case execution<br>
+<li>Anzeige waehrend der Testausfuehrung.</li>
+<li>Editieren waehrend der Testausfuehrung. Der Benutzer kann den Wert waehrend der Test-Ausfuehrung aendern.<br>
 </li>
-<li>Available for. User choose to what kind of item the field belows.<br>
+<li>Verfuegbar fuer. Der Benutzer waehlt aus, zu welcher Elementart das Feld gehoert.<br>
 </li>
 
 

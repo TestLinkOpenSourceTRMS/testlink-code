@@ -7,62 +7,65 @@
 	<meta http-equiv="pragma" content="no-cache" />
 	<meta name="author" content="Martin Havlat" />
 	<meta name="copyright" content="GNU" />
-	<meta name="robots" content="NOFOLLOW" />
-	<title>TestLink Help: Test Filtering</title>
+	<meta name="robots" conthent="NOFOLLOW" />
+	<title>TestLink Hilfe: Filtern von Tests</title>
  	<link rel="stylesheet" type="text/css" href="../../{$smarty.const.TL_THEME_CSS_DIR}tl_docs.css" />
 </head>
 
 <body>
 
-<h1>Test Filtering</h1>
+<h1>Filtern von Tests</h1>
 
 {include file="nav.tpl"}
-<h2>Scope</h2>
-<p>This table allows the user to filter test cases before they are executed.</p>
+<h2>Zweck</h2>
+<p>Mit dieser Tabelle kann ein Benutzer Testfaelle filtern, bevor sie ausgefuehrt werden.
+</p>
 
-<h2>Ownership</h2>
+<h2>Zugewiesen zu</h2>
 
-<p>Users can filter test cases by their owner. Ownership is determined at 
-the category level, is determined by leads, and can be changed at the Assign 
-Risk and Ownership page under metrics.<br /> 
+<p>Benutzer koennen Testfaelle nach den Personen filtern, denen sie zugewiesen sind.<br /> 
 
-<h2>Keyword</h2>
+<h2>Stichwoerter</h2>
 
-<p>Users can filter test cases by keyword. Keywords are set either using the 
-Create/Edit/Delete Test Cases or by the Assign Keywords To Multiple Cases. 
-Keywords can only be created, edited, or deleted by leads but may be assigned 
-to test cases by testers.</p> 
+<p>Benutzer koennen Testfaelle nach Stichwoerten filtern. Stichwoerter koennen entweder beim Anlegen
+bzw. Editieren von Testfaellen zugewiesen werden oder indem man Stichwoerter gleich mehrerern 
+Testfaellen zuweist. Stichwoerter koennen nur durch einen "Lead" angelegt, editiert bzw. geloescht werden.
+Diese einem Testfall zuweisen allerdings kann dann auch ein Tester.
+</p> 
 
 <h2>Build</h2>
 
-<p>Users can filter test cases by builds. Builds are the basic component for 
-how test cases are tracked. Each test case may be run once and only once per build. 
+<p>Benutzer koennen Testfaelle nach dem Build filtern. Builds sind die Basiskomponenten,
+um Testfaelle zu finden. Jeder Testfall darf nur einmal pro Build ausgefuehrt werden.
 
-<br />Builds can be created by leads using the Create New Build page.</p>
+<br />Builds koennen von "Leads" ueber die Seite "Neuen Build erstellen" angelegt werden.</p>
 
 
-<h2>Result</h2>
+<h2>Resultat</h2>
 
-<p>Users can filter test cases by results. Results are what happened to that test 
-case during a particular build. Test cases can pass, fail, be blocked, or not be run.</p>
+<p>Benutzer koennen Testfaelle nach dem Resultat filtern. Resultate sagen aus, wie ein Testfall 
+gegen einen bestimmten Build gelaufen ist. Testfaelle koennen dabei entweder erfolgreich, fehlgeschlagen, 
+blockiert oder nicht getestet sein.
+</p>
 
-<h2>Most Current Result</h2>
+<h2>Letzte Resultat</h2>
 
-<p>By default or if the "most current" checkbox is unchecked, the tree will be sorted 
-by the build that is chosen from the dropdown box. In this state the tree will display 
-the test cases status. 
+<p>Im Normalfall oder wenn das Ankreuzfeld "most current" nicht ausgewaehlt ist, wird der Baum
+nach dem Build sortiert, der in der Auswahlbox ausgewaehlt wurde. In diesem Fall zeigt der Baum
+den Testfallstatus an.
 
-<br />Example: User selects build 2 from the dropdown box and doesn't check the "most 
-current" checkbox. All test cases will be shown with their status from build 2. 
-So, if test case 1 passed in build 2 it will be colored green.
+<br />Beispiel: Der Benutzer waehlt den Build 2 aus der Auswahlbox aus und waehlt nicht
+"most current" aus. Alle Testfaelle werden mit dem jeweiligen Status aus Builds 2 angezeigt.
+Sprich, wenn Testfall 1 gegen Build 2 erfolgreich war, wird er gruen markiert sein.
 
-<br />If the user decideds to check the "most current" checkbox the tree will be 
-colored by the test cases most recent result.
+<br />Wenn der Benutzer allerdings "most current" anhakt, dann wird der Baum je nach letztem Resultat
+eingefaerbt.
 
-<br />Ex: User selects build 2 from the dropdown box and this time checks 
-the "most current" checkbox. All test cases will be shown with most current 
-status. So, if test case 1 passed in build 3, even though the user has also selected 
-build 2, it will be colored green.</p>
+<br />Beispiel: Der Benutzer waehlt den Build 2 aus der Auswahlbox aus und waehlt diesmal
+"most current" aus. Dann werden alle Testfaelle mit ihrem aktuellen Status angezeigt. Das heisst,
+wenn der Testfall 1 gegen den Build 3 erfolgreich war, dann wird er als gruen markiert, auch
+wenn der Benutzer z.B. Build 2 ausgewaehlt hat (und der Testfall gegen diesen z.B. fehlgeschlagen ist).
+</p>
 
 
 </body>

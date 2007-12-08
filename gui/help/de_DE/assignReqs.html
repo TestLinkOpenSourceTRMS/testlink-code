@@ -10,31 +10,35 @@
 	<meta name="author" content="Martin Havlat" />
 	<meta name="copyright" content="GNU" />
 	<meta name="robots" content="NOFOLLOW" />
-	<title>TestLink Instructions</title>
+	<title>TestLink Anleitungen</title>
 	<style media="all" type="text/css">@import "../../{$smarty.const.TL_THEME_CSS_DIR}testlink.css";</style>
 </head>
 <body>
 
 <div class="workBack">
 
-<h1>Assign Requirements to Test Case</h1>
+<h1>Hinzufuegen von Anforderungen zu Testfaellen</h1>
 
-<h2>Purpose:</h2>
-<p>This feature allows to set relations between requirements 
-and test cases. A designer could define relations 0..n to 0..n. I.e. One test case
-could be assigned to none, one or more test cases and vice versa.</p>
+<h2>Ziel:</h2>
+<p>Dieses Feature erlaubt es zwischen Anforderungen und Testfaellen eine Beziehung
+zu erstellen. Man kann dabei eine 0..n-Beziehung herstellen (sowohl in die eine als auch 
+in die andere Richtung), d.h. ein Testfall kann 
+sowohl zu keiner, zu einer als auch zu mehreren Anforderungen verbunden werden. In die
+andere Richtung gilt dies genauso.</p>
 
-<h2>Get Started:</h2>
+<h2>Anleitung:</h2>
 <ol>
-	<li>Choose an Test Case in tree at the left. The combo box with list of Requirements 
-	Specifications is shown at the top of workarea.</li>
-	<li>Choose a Requirements Specification. TestLink automatically reload the page.</li>
-	<li>A middle block of workarea lists all requirements (from choosen Specification), which 
-	are connected with the test case. Bottom block 'Available Requirements' lists all 
-	requirements which have not relation
-	to the current test case. A designer could mark requirements which are covered by this 
-	test case and then click the button 'Assign'. These new assigned test case are shown in 
-	the middle block 'Assigned Requirements'.</li>
+	<li>Waehle einen Testfall im Navigationsbereich auf der linken Seite aus. Im Arbeitsbereich
+	erscheint daraufhin eine Auswahlbox mit den vorhandenen Anforderungen-Definitionen.
+	</li>
+	<li>Waehle eine Anforderungs-Definition aus. TestLink laedt dabei automatisch die Seite neu.
+	</li>
+	<li>In der Mitte des Arbeitsbereichs werden alle Anforderungen aus der Anforderungs-Definition angezeigt,
+	die bereits dem Testfall zugewiesen sind. Im unteren Teil sind alle Anforderungen, die noch keine
+	Zuweisung zum ausgewaehlten Testfall besitzen. Der Testfall-Designer kann noch nicht ausgewaehlte
+	Anforderungen markieren und mit dem Button "Zuweisen" dem Testfall zuweisen. Diese Anforderungen
+	wandern daraufhin in den mittleren Bereich hoch.
+	</li>
 </ol>
 
 </div>

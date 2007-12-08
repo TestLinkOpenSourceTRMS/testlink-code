@@ -8,46 +8,48 @@
 	<meta name="author" content="Martin Havlat" />
 	<meta name="copyright" content="GNU" />
 	<meta name="robots" content="NOFOLLOW" />
-	<title>TestLink Help: User Rights</title>
+	<title>TestLink Hilfe: Benutzerrechte</title>
  	<link rel="stylesheet" type="text/css" href="../../{$smarty.const.TL_THEME_CSS_DIR}tl_docs.css" />
 </head>
 
 <body>
 
-<h1>User Rights</h1>
+<h1>Benutzerrechte</h1>
 
 {include file="nav.tpl"}
-<h2>General</h2>
+<h2>Allgemein</h2>
 
-<p>Users can have different functionality available for browsing and editing.
-There are defined rights collections. Administrator can assign these rights only.<br /> 
-Default right is 'Guest'. This right allow to browse Test Specification and 
-Test Results only (no edit). Anybody can obtain the right 'Guest' via login page.</p>
+<p>Benutzer koennen verschieden Rechte fuer das Anzeigen und Editieren haben.
+Es gibt in TestLink verschiedene vordefinierte Rollen. Diese koennen durch
+einen Administrator vergeben werden. <br/> Die Default-Rolle ist dabei 'Gast'.
+Diese erlaubt es sich die Test-Definitionen und -Ergebnisse anzuschauen.
+Über die Login-Seite kann jeder sich als 'Gast' einloggen.</p>
 
 
-<h2>Default rights description</h2>
+<h2>Rollen-Beschreibungen</h2>
 
-<h3>Guest</h3>
-<p>This right allows to browse Test Specification, Keywords and Test Results
-and edit only personal data.</p>
+<h3>Gast</h3>
+<p>Diese Rolle erlaubt es sich die Testdefinitionen, die Stichwoerter und die Testergebnisse
+anzuschauen. Editiert koennen nur die eigenen persoenlichen Daten.</p>
 
 <h3>Tester</h3>
-<p>This right allows to browse Test Specification, Keywords and Test Results and
-edit Test execution.</p>
+<p>Diese Rolle erlaubt es sich die Testdefinitionen, die Stichwoerter und die Testergebnisse
+anzuschauen. Ausserdem kann die Testausfuehrung editiert werden.</p>
 
 <h3>Test Designer</h3>
-<p>This right allows to edit Test Specification, Keywords and Requirements.</p>
+<p>Diese Rolle erlaubt es Testdefinitione, Stichwoerter und Anforderungen zu editieren.</p>
 
 <h3>Senior Tester</h3>
-<p>This right allows to edit Test Specification, Keywords, Requirements, 
-Test execution and Create Builds.</p>
+<p>Diese Rolle erlaubt es Testdefinitionen, Stichwoerter, Anforderungen, Testausfuehrungen zu 
+editieren und Builds zu erstellen.</p>
 
 <h3>Leader</h3>
-<p>This right allows to edit Test Specification, Keywords, Requirements, 
-Test execution, Test Plan (include priorities, milestone and assignment) and Builds.</p>
+<p>Diese Rolle erlaubt es Testdefinitionen, Stichwoerte, Anforderungen, Testausfuehrungen, Testplaene
+(inkl. Prioritaeten, Meilensteine und Zuweisungen) sowie Builds zu edtieren.</p>
 
-<h3>Admin</h3>
-<p>This right allows all. (Edit Products and Users in adddition.)</p>
+<h3>Administrator</h3>
+<p>Mit dieser Rolle darf man alles tun. (inkl. dem Editieren von Testprojekten
+und Benutzern)</p>
 
 </body>
 </html>

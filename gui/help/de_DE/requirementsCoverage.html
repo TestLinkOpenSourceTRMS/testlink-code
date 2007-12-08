@@ -8,46 +8,54 @@
 	<meta name="author" content="Martin Havlat" />
 	<meta name="copyright" content="GNU" />
 	<meta name="robots" content="NOFOLLOW" />
-	<title>TestLink Help: Test Plan</title>
+	<title>TestLink Hilfe: Testplan</title>
  	<link rel="stylesheet" type="text/css" href="../../{$smarty.const.TL_THEME_CSS_DIR}tl_docs.css" />
 </head>
 
 <body>
 
-<h1>Requirements Coverage</h1>
+<h1>Anforderungsabdeckung</h1>
 
 {include file="nav.tpl"}
-<h2>General</h2>
+<h2>Allgemein</h2>
 
-<p>This feature allows to map a coverage of user or system requirements by
-test cases. Navigate via link "Requirement Specification" in main screen.</p>
+<p>Dieses Feature erlaubt es eine Abdeckung von Benutzer- oder System-Anforderungen
+mit Testfaellen zu erstellen. Mit dem Link 'Anforderungs-Definition' kann man auf die Haupt-Maske
+gelangen.
+</p>
 
-<h2>Requirements Specification</h2>
+<h2>Anforderungsdefinition</h2>
 
-<p>Requirements are grouped by "Requirements Specification" which is related to 
-Product.<br /> TestLink doesn't support versions for both Requirements Specification  
-and Requirements itself. So, version of document should be added after 
-a Specification <b>Title</b>.
-An user can add simple description or notes to <b>Scope</b> field.</p> 
+<p>Anforderungen sind durch die 'Anforderungs-Definition' gruppiert, die mit einem
+Testprojekt verbunden ist. <br /> TestLink unterstuetzt dabei keine Versionierung
+fuer Anforderungen und Anforderungs-Definitionen. Daher sollte die
+Version mit in den <b>Titel</b> aufgenommen werden.
+Ein Benutzer kann auch eine einfache Beschreibung oder Anmerkung in das Feld
+<b>Bereich</b> schreiben.
+</p> 
 
-<p><b><a name="total_count">Total count</a></b> of all Requirements serves for 
-evaluation Req. coverage in case that not all requirements are added to TestLink. 
-The value <b>n/a</b> means that current count of requirements is used
-for metrics.</p> 
-<p><i>E.g. SRS includes 200 requirements but only 50 are added in TestLink. Test 
-coverage is 25% (if all these added requirements will be tested).</i></p>
+<p><b><a name="total_count">Gesamtanzahl</a></b> aller Anforderungen dient dazu
+zu ueberpruefen ob alle Anforderungen Testlink hinzugefuegt wurden. Der Wert
+<b>n/a</b> sagt dabei dass die aktuelle Anzahl von Anforderungen in Metriken
+benutzt wird. 
+<p><i>Zum Beispiel: SRS hat insgesamt 200 Anforderungen, aber nur 50 sind
+in TestLink eingetragen worden. Die Testabdeckung ist damit 25% (wenn alle
+hinzugefuegten Anfoerungen getestet sind).</i></p>
 
-<h2><a name="req">Requirements</a></h2>
+<h2><a name="req">Anforderungen</a></h2>
 
-<p>Click on title of a created Requirements Specification. You can create, edit, delete
-or import requirements for the document. Each requirement has title, scope and status.
-Status should be "Normal" or "Not testable". Not testable requirements are not counted
-to metrics. This parameter should be used for both unimplemented features and 
-wrong designed requirements.</p> 
+<p>Waehle den Titel eine erstellten Anforderungs-Deinition aus. Man kann Anforderungen
+erstellen, editieren, loeschen und importieren. Jede Anforderung hat einen Titel, einen Bereich
+und einen Status. Der Status sollte 'Normal' oder 'Nicht testbar' sein. Nicht testbare
+Anforderungen werden nicht in die Metriken mithineingezaehlt. Dieser Parameter
+sollte sowohl fuer nicht-implementierte Features als auch fuer falsch-designte
+Anforderungen benutzt werden.
+</p> 
 
-<p>You can create new test cases for requirements by using multi action with checked 
-requirements within the specification screen. These Test Cases are created into component and
-category 'TODO'. Title and Scope are copied to these test cases.</p>
+<p>Man kann neue Testfaelle fuer Anforderungen generieren, indem man mehrere Anforderungen
+im Defintions-Dialog auswaehlt. Diese Testfaelle werden in eine Testsuite generiert, deren
+Name in der Konfiguration festgelegt wird <i>(Standard ist: $g_req_cfg->default_testsuite_name = 
+"Test suite created by Requirement - Auto";)</i>. Titel und Bereich werden in den Testfall kopiert.</p>
 
 
 </body>

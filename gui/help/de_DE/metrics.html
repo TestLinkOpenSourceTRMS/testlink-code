@@ -8,50 +8,52 @@
 	<meta name="author" content="Martin Havlat" />
 	<meta name="copyright" content="GNU" />
 	<meta name="robots" content="NOFOLLOW" />
-	<title>TestLink Help: Results and Metrics</title>
- 	<link rel="stylesheet" type="text/css" href="../css/tl_docs.css" />
+	<title>TestLink Help: Testresultate und Metriken</title>
+ 	<link rel="stylesheet" type="text/css" href="{$basehref}{$smarty.const.TL_THEME_CSS_DIR}tl_docs.css" />
 </head>
 
 <body>
 
-<h1>Test Results and Metrics</h1>
+<h1>Testresultate und Metriken</h1>
 
 {include file="nav.tpl"}
-<h2>Scope</h2>
-<p>Show informations about results of testing.</p>
+<h2>Umfang</h2>
+<p>Zeige Testrgebnisse</p>
 
-<h2>Available metrics</h2>
+<h2>Verfuegbare Metriken</h2>
 
-<h2>View Project Status Across All Builds</h2>
-<p>This page displays the entire status of the project across all builds.<br />
-This means that if a test case passes in build 1 and then fails in build 2 it will be counted 
-as a failure on this page.</p>
+<h2>Zeige den Projekt-Status ueber aller Builds</h2>
+<p>Diese Seite zeigt den Gesamtstatus eines Projekts ueber alle Builds.<br />
+Das heisst, wenn ein Testfall in Build 1 durchläuft, allerdings in Build 2 nicht, dann wird er
+auf dieser Seite als Fehler gewertet.
+</p>
 
-<h3>View Status by an Individual Build</h3>
-<p>This page displays the results of testing against the selected build.</p>
+<h3>Zeige den Projekt-Status eines ausgewaehlten Builds</h3>
+<p>Diese Seite zeigt die Testergebnisse gegen einen ausgewaehlten Build.
+</p>
 
-<h3>View The Overall Build Status</h3>
-<p>This page displays overall project status for each build.</p>
+<h3>Zeige die Gesamtuebersicht aller Builds</h3>
+<p>Diese Seite zeigt den Projektstatus einen Builds</p>
 
-<h3>Query Metrics</h3>
-<p>Display Results based on builds, owners, keywords, and last result</p>
+<h3>Abfrage-Metriken</h3>
+<p>Zeigt die Resultate je nach Build, Besitzer, Stichwoerter und letztem Ergebnis</p>
 
-<h3>View Status By Individual Test Cases</h3>
-<p>This page displays each test case and its result against every build.</p>
+<h3>Zeige den Status je nach Testfall</h3>
+<p>Diese Seite zeigt alle Testfaelle und ihre Resultate gegen alle Builds.</p>
 
-<h3>Blocked Test Cases</h3>
-<p>This page will show a rollup of all of the currently blocked test cases.
-<br />Example: A test case will show up if it passed in build 1 and then was blocked in build 2
-<br />Example: If a test case is blocked in build 1 and then passes in build 2 it will not show up</p>
+<h3>Blockierte Testfaelle</h3>
+<p>Diese Seite zeigt eine Übersicht aller derzeit blockierten Testfaelle.
+<br />Beispiel: Ein Testfall wird angezeigt, wenn er erst Build 1 durchlaeuft aber in Build 2 blockiert ist.
+<br />Beispiel: Wenn ein Testfall in Build 1 blockiert ist, in Build 2 aber durchlaeuft wird er hier nicht angezeigt.</p>
 
-<h3>Failed Test Cases</h3>
-<p>This page is the same as the blocked page but for failed test cases</p>
+<h3>Fehlgeschlagene Testfaelle</h3>
+<p>Diese Seite zeigt dasselbe wie die Seite mit den blockierten Testfaellen nur fuer fehlgeschlagene.</p>
 
-<h3>Total Bugs For Each Test Case</h3>
-<p>This page displays every test case in a project and all of the bugs that were filed against it.</p>
+<h3>Alle Bugs eines Testfalls</h3>
+<p>Diese Seite zeigt alle Testfaelle eines Projekts und die jeweiligen Bugs, die aufgrund dieser eroeffnet wurden.</p>
 
-<h3>Email Test Plan Info</h3>
-<p>This page allows users to email the results of an entire project or a particular build to anyone they'd like.</p>
+<h3>Email eines Testplans</h3>
+<p>Auf dieser Seite kann man Benutzern die Ergebnisse eines Projekts oder eines bestimmten Builds per Email schicken.</p>
 
 
 </body>

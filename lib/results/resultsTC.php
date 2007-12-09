@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsTC.php,v 1.33 2007/12/02 17:08:16 franciscom Exp $ 
+* $Id: resultsTC.php,v 1.34 2007/12/09 02:15:19 havlat Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -119,11 +119,11 @@ $smarty->assign('arrBuilds', $arrBuilds);
 $smarty->assign('tproject_name', $tproject_name);
 $smarty->assign('tplan_name', $tplan_name);
 
-$report_type = isset($_GET['report_type']) ? intval($_GET['report_type']) : null;
-if (!isset($_GET['report_type']))
+$format = isset($_GET['format']) ? intval($_GET['format']) : null;
+if (!isset($_GET['format']))
 {
-	tlog('$_GET["report_type"] is not defined');
+	tlog('$_GET["format"] is not defined');
 	exit();
 }
-displayReport($template_dir . 'resultsTC', $smarty, $report_type);
+displayReport($template_dir . 'resultsTC', $smarty, $format);
 ?>

@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* @version 	$Id: selectData.php,v 1.18 2007/10/19 06:57:09 franciscom Exp $
+* @version 	$Id: printDocOptions.php,v 1.1 2007/12/09 02:15:19 havlat Exp $
 * @author 	Martin Havlat
 * 
 * Navigator for print/export functionality. 
@@ -18,11 +18,12 @@ require_once("treeMenu.inc.php");
 require_once("../../lib/functions/lang_api.php");
 testlinkInitPage($db);
 
-$tplan_id   = isset($_SESSION['testPlanId']) ? $_SESSION['testPlanId'] : 0;
 $tplan_name = isset($_SESSION['testPlanName']) ? $_SESSION['testPlanName'] : 'xxx';
 $tproject_id   = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 $tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : '';
 
+$tplan_id   = isset($_GET['tplan_id']) ? $_GET['tplan_id'] : 0;
+$format   = isset($_GET['format']) ? $_GET['format'] : 0;
 $type = isset($_GET['type']) ? $_GET['type'] : '';
 
 // default vars
@@ -67,12 +68,12 @@ if(isset($_POST['format']) && $_POST['format'] == 'msword')
 }
 
 // generate tree for product test specification
-$workPath = 'lib/print/printData.php';
+$workPath = 'lib/results/printDocument.php';
 $args = "&type=" . $type;
 $smarty = new TLSmarty();
 
 // generate tree 
-if ($type == 'testproject')
+if ($type == 'testspec')
 {
   // 20071014 - franciscom 
 	$treeString = generateTestSpecTree($db,$tproject_id, $tproject_name,$workPath,
@@ -103,5 +104,5 @@ $smarty->assign('menuUrl', $workPath);
 $smarty->assign('args', $args);
 $smarty->assign('type', $type);
 $smarty->assign('SP_html_help_file',TL_INSTRUCTIONS_RPATH . $_SESSION['locale'] . "/printTestSet.html");
-$smarty->display('tcPrintNavigator.tpl');
+$smarty->display('results/printDocOptions.tpl');
 ?>

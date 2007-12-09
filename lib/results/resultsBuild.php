@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsBuild.php,v 1.33 2007/12/02 17:08:16 franciscom Exp $ 
+* $Id: resultsBuild.php,v 1.34 2007/12/09 02:15:19 havlat Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * 
@@ -23,7 +23,12 @@ testlinkInitPage($db);
 $template_dir='results/';
 
 //print "Warning Message - KL - 20061126 - all tables functional except for priority report <BR>";
-$report_type = isset($_GET['report_type']) ? intval($_GET['report_type']) : null;
+$format = isset($_GET['format']) ? intval($_GET['format']) : null;
+if (!isset($_GET['format']))
+{
+	tlog('$_GET["format"] is not defined', 'ERROR');
+	exit();
+}
 $builds_to_query = isset($_GET['build']) ? intval($_GET['build']) : null;
 
 $buildInfo = getBuild_by_id($db,$builds_to_query);

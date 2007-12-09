@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsByStatus.php,v 1.52 2007/12/02 17:08:16 franciscom Exp $ 
+* $Id: resultsByStatus.php,v 1.53 2007/12/09 02:15:19 havlat Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author Chad Rosen
@@ -25,7 +25,7 @@ $template_dir='results/';
 
 
 $type = isset($_GET['type']) ? $_GET['type'] : 'n';
-$report_type = isset($_GET['report_type']) ? intval($_GET['report_type']) : null;
+$report_type = isset($_GET['format']) ? intval($_GET['format']) : null;
 
 $tplan_mgr = new testplan($db);
 $tproject_mgr = new testproject($db);

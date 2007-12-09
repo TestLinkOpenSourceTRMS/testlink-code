@@ -6,7 +6,7 @@
  * Filename $RCSfile: reports.class.php,v $
  * @author Martin Havlát
  * @version $Revision: 1.8 
- * @modified $Date: 2007/11/11 23:18:15 $ by $Author: havlat $
+ * @modified $Date: 2007/12/09 02:15:20 $ by $Author: havlat $
  *
  * Scope:
  * This class is encapsulates most functionality necessary to query the database
@@ -24,7 +24,7 @@ require_once('common.php');
 	/**
 	* Functions to create reports and metrics (except query included in class results)
 	*/ 
-class reports
+class tlReports
 {
 	// class references passed in by constructor
 	private $db = null;
@@ -36,7 +36,7 @@ class reports
   
 
 	/** class constructor */    
-	public function reports(&$db, &$tplanId = null)
+	public function tlReports(&$db, &$tplanId = null)
 	{
 		$this->db = $db;	
 //	  $this->tp = $tplan_mgr;  
@@ -53,23 +53,29 @@ class reports
 	 * Function returns array with input for reports navigator
 	 * @return array of array - described for array $g_reports_list in const.inc.php
 	 **/
-	public function get_list_reports($bug_interface_on,$req_mgmt_enabled)
+	public function get_list_reports($bug_interface_on,$req_mgmt_enabled, $format)
 	{
 		global $g_reports_list;
 		$arrItems = array();
 
 		foreach ($g_reports_list as &$reportItem) {
-		
+
+			// check validity of report		
 			if (($reportItem['enabled'] == 'all') || (($reportItem['enabled'] == 'req') && $req_mgmt_enabled) ||
 			(($reportItem['enabled'] == 'bts') && $bug_interface_on)) 
 			{
-				// prepare for $GET params
-				if (stristr($reportItem['url'], "?")) {
-					$reportUrl = $reportItem['url'].'&';
-				} else {
-					$reportUrl = $reportItem['url'].'?';
+				
+				// check format availability
+				if (strpos(",".$reportItem['format'],$format) > 0)
+				{
+					// prepare for $GET params
+					if (stristr($reportItem['url'], "?")) {
+						$reportUrl = $reportItem['url'].'&';
+					} else {
+						$reportUrl = $reportItem['url'].'?';
+					}
+    			   	$arrItems[] = array('name' => lang_get($reportItem['title']), 'href' => $reportUrl);
 				}
-    		   	$arrItems[] = array('name' => lang_get($reportItem['title']), 'href' => $reportUrl);
 			}
 		}
 

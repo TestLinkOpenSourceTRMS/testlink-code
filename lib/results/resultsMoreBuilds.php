@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsMoreBuilds.php,v 1.57 2007/12/02 17:08:16 franciscom Exp $ 
+* $Id: resultsMoreBuilds.php,v 1.58 2007/12/09 02:15:19 havlat Exp $ 
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 * 
@@ -61,15 +61,16 @@ $smarty->assign('testsuite_qty', count($arrTestsuites));
 $smarty->assign('user_qty', count($assigned_users));
 
 
-$report_type = isset($_GET['report_type']) ? intval($_GET['report_type']) : null;
-if (!isset($_GET['report_type']))
+$format = isset($_GET['format']) ? intval($_GET['format']) : null;
+if (!isset($_GET['format']))
 {
-	tlog('$_GET["report_type"] is not defined');
+	tlog('$_GET["format"] is not defined', 'ERROR');
 	exit();
 }
+
 $build = isset($_GET['build']) ? intval($_GET['build']) : null;
 $smarty->assign('build', $build);
-$smarty->assign('report_type', $report_type);
+$smarty->assign('report_type', $format);
 
 // 20070902 - franciscom
 $reports_cfg=config_get('reports_cfg');

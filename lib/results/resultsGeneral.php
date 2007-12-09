@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: resultsGeneral.php,v $
- * @version $Revision: 1.35 $
- * @modified $Date: 2007/12/02 17:08:16 $ by $Author: franciscom $
+ * @version $Revision: 1.36 $
+ * @modified $Date: 2007/12/09 02:15:20 $ by $Author: havlat $
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
  * This page show Test Results over all Builds.
@@ -139,13 +139,13 @@ $smarty->assign('arrDataSuite', $arrDataSuite);
 $smarty->assign('arrDataOwner', $arrDataOwner2);
 $smarty->assign('arrDataKeys', $arrDataKeys2);
 
-$report_type = isset($_GET['report_type']) ? intval($_GET['report_type']) : null;
-if (!isset($_GET['report_type']))
+$format = isset($_GET['format']) ? intval($_GET['format']) : null;
+if (!isset($_GET['format']))
 {
-	tlog('$_GET["report_type"] is not defined');
+	tlog('$_GET["format"] is not defined', 'ERROR');
 	exit();
 }
 
-displayReport($template_dir . 'resultsGeneral', $smarty, $report_type);
+displayReport($template_dir . 'resultsGeneral', $smarty, $format);
 
 ?>

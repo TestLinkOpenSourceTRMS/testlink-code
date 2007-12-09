@@ -2,7 +2,7 @@
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
- * @version $Id: resultsNavigator.php,v 1.40 2007/12/02 17:08:16 franciscom Exp $ 
+ * @version $Id: resultsNavigator.php,v 1.41 2007/12/09 02:15:19 havlat Exp $ 
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
  * Scope: Launcher for Test Results and Metrics.
@@ -37,7 +37,7 @@ $tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : $_SESSION['te
 $btsEnabled = config_get('bugInterfaceOn');
 
 $tplan_mgr = new testplan($db);
-$reports_magic = new reports($db, $tplan_id);
+$reports_magic = new tlReports($db, $tplan_id);
 
 
 // -----------------------------------------------------------------------------
@@ -68,13 +68,13 @@ if( $build_count == 0)
 
 if($do_report['status_ok'])
 {
-  	if (isset($_GET['report_type']))
-	  $selectedReportType = intval($_GET['report_type']);
+  	if (isset($_GET['format']))
+	  $selectedReportType = intval($_GET['format']);
   	else
 	  $selectedReportType = sizeof($g_reports_cfg->formats) ? key($g_reports_cfg->formats) : null;
 
 	// create a list or reports
-	$href_map = $reports_magic->get_list_reports($btsEnabled ,$_SESSION['testprojectOptReqs']);
+	$href_map = $reports_magic->get_list_reports($btsEnabled ,$_SESSION['testprojectOptReqs'], $g_reports_cfg->formats[$selectedReportType]);
 
 	$tplans = getAccessibleTestPlans($db,$tproject_id,$_SESSION['userID'],1);
 	$map_tplans=array();

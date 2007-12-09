@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: frmWorkArea.php,v $
  *
- * @version $Revision: 1.23 $
- * @modified $Date: 2007/12/02 17:29:51 $ by $Author: franciscom $
+ * @version $Revision: 1.24 $
+ * @modified $Date: 2007/12/09 00:28:13 $ by $Author: havlat $
  *
  * @author Martin Havlat
  *
@@ -39,13 +39,13 @@ $aa_tfp = array(
             'editTc' => 'lib/testcases/listTestCases.php?feature=edit_tc',
             'assignReqs' => 'lib/testcases/listTestCases.php?feature=assignReqs',
             'searchTc' => 'lib/testcases/searchForm.php',
-            'printTc' => 'lib/print/selectData.php?type=testproject',
+            'printTestSpec' => 'lib/results/printDocOptions.php?type=testspec',
             'keywordsAssign' => 'lib/testcases/listTestCases.php?feature=keywordsAssign',
             'testSetAdd'    => 'lib/plan/planAddTCNavigator.php',
             'testSetRemove' => 'lib/plan/planTCNavigator.php?feature=removeTC&help_topic=testSetRemove',
             'show_ve' => 'lib/plan/planTCNavigator.php?feature=show_ve',  
             'newest_tcversions' => '../../lib/plan/newest_tcversions.php',
-            'printTestSet'  => 'lib/print/selectData.php?type=testplan',
+//            'printTestSet'  => 'lib/print/selectData.php?type=testplan',
             'priority' => 'lib/plan/planTCNavigator.php?feature=plan_risk_assignment',
             'tc_exec_assignment' => 'lib/plan/planTCNavigator.php?feature=tc_exec_assignment',
             'executeTest' => 'lib/execute/execNavigator.php',

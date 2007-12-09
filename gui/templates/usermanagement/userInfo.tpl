@@ -1,5 +1,5 @@
 {* Testlink: smarty template - Edit own account *}
-{* $Id: userInfo.tpl,v 1.1 2007/12/02 17:03:58 franciscom Exp $ *}
+{* $Id: userInfo.tpl,v 1.2 2007/12/09 12:12:03 schlundus Exp $ *}
 {* 
 *}
 {assign var="cfg_section" value="login" }
@@ -9,14 +9,11 @@
 
 <body>
 
-<h1> {lang_get s='title_account_settings'} </h1>
+<h1>{lang_get s='title_account_settings'}</h1>
 
-{include file="inc_update.tpl" result=$updateResult action="updated" item="user" name=$userData[1]}
-
+{include file="inc_update.tpl" result=$msg action="updated" item="user" name=$user->m_login}
 
 <div class="workBack">
-
-{* <h2>{lang_get s='title_edit_personal_data'}</h2> *}
 
 {literal}
 <script type="text/javascript">
@@ -42,32 +39,32 @@ function valAllText(form)
 {/literal}
 
 <form method="post" action="lib/usermanagement/userinfo.php" onsubmit="return valAllText(this)">
-	<input type="hidden" name="id" value="{$userData.id}" />
+	<input type="hidden" name="id" value="{$user->m_dbID}" />
 	<table class="common">
 		<tr>
 			<th>{lang_get s='th_login'}</th>
-			<td>{$userData.login}</td>
+			<td>{$user->m_login}</td>
 		</tr>
 		<tr>
 			<th>{lang_get s='th_first_name'}</th>
-			<td><input type="text" name="first" value="{$userData.first|escape}" 
+			<td><input type="text" name="first" value="{$user->m_firstName|escape}" 
 			           size="{#NAMES_SIZE#}" maxlength="{#NAMES_MAXLEN#}" /></td>
 		</tr>
 		<tr>
 			<th>{lang_get s='th_last_name'}</th>
-			<td><input type="text" name="last" value="{$userData.last|escape}" 
+			<td><input type="text" name="last" value="{$user->m_lastName|escape}" 
 			           size="{#NAMES_SIZE#}" maxlength="{#NAMES_MAXLEN#}" /></td>
 		</tr>
 		<tr>
 			<th>{lang_get s='th_email'}</th>
-			<td><input type="text" name="email" value="{$userData.email|escape}" 
+			<td><input type="text" name="email" value="{$user->m_emailAddress|escape}" 
 			           size="{#EMAIL_SIZE#}" maxlength="{#EMAIL_MAXLEN#}" /></td>
 		</tr>
 		<tr>
 			<th>{lang_get s='th_locale'}</th>
 			<td>		   
 				<select name="locale">
-				{html_options options=$optLocale selected=$userData.locale}
+				{html_options options=$optLocale selected=$user->m_locale}
 				</select>	
 			</td>
 		</tr>
@@ -79,23 +76,21 @@ function valAllText(form)
 <hr />
 
 {if $external_password_mgmt eq 0 }
-{* <h2>{lang_get s='title_change_your_passwd'}</h2> *}
-<form name="changePass" method="post" action="lib/usermanagement/userinfo.php" 
-	onsubmit="return validatePassword(document.changePass);">
-	<input type="hidden" name="id" value="{$userData.id}" />
-	<table class="common">
-		<tr><th>{lang_get s='th_old_passwd'}</th>
-			<td><input type="password" name="old" size="{#PASSWD_SIZE#}" maxlength="{#PASSWD_SIZE#}" /></td></tr>
-		<tr><th>{lang_get s='th_new_passwd'}</th>
-			<td><input type="password" name="new1" size="{#PASSWD_SIZE#}" maxlength="{#PASSWD_SIZE#}" /></td></tr>
-		<tr><th>{lang_get s='th_new_passwd_again'}</th>
-			<td><input type="password" name="new2" size="{#PASSWD_SIZE#}" maxlength="{#PASSWD_SIZE#}" /></td></tr>
-	</table>
-	<div class="groupBtn">	
-		<input type="submit" name="changePasswd" value="{lang_get s='btn_change_passwd'}" />
-	</div>
-</form>
-
+	<form name="changePass" method="post" action="lib/usermanagement/userinfo.php" 
+		onsubmit="return validatePassword(document.changePass);">
+		<input type="hidden" name="id" value="{$user->m_dbID}" />
+		<table class="common">
+			<tr><th>{lang_get s='th_old_passwd'}</th>
+				<td><input type="password" name="old" size="{#PASSWD_SIZE#}" maxlength="{#PASSWD_SIZE#}" /></td></tr>
+			<tr><th>{lang_get s='th_new_passwd'}</th>
+				<td><input type="password" name="new1" size="{#PASSWD_SIZE#}" maxlength="{#PASSWD_SIZE#}" /></td></tr>
+			<tr><th>{lang_get s='th_new_passwd_again'}</th>
+				<td><input type="password" name="new2" size="{#PASSWD_SIZE#}" maxlength="{#PASSWD_SIZE#}" /></td></tr>
+		</table>
+		<div class="groupBtn">	
+			<input type="submit" name="changePasswd" value="{lang_get s='btn_change_passwd'}" />
+		</div>
+	</form>
 {else}
    <p>{lang_get s='your_password_is_external'}<p>
 {/if}
@@ -105,7 +100,6 @@ function valAllText(form)
 {if $update_title_bar == 1}
 {literal}
 <script type="text/javascript">
-	//parent.mainframe.location = parent.mainframe.location;
 	parent.titlebar.location.reload();
 </script>
 {/literal}

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: keywordsEdit.php,v $
  *
- * @version $Revision: 1.10 $
- * @modified $Date: 2007/12/08 19:10:19 $ by $Author: schlundus $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2007/12/09 12:12:03 $ by $Author: schlundus $
  *
  * allows users to manage keywords. 
  *
@@ -61,7 +61,7 @@ if($op->status == 1)
 }
 else
 {
-	$msg = getErrorMessage($op->status);
+	$msg = getKeywordErrorMessage($op->status);
 }
 
 $keywords = $tprojectMgr->getKeywords($args->testproject_id);
@@ -248,7 +248,7 @@ function do_delete(&$smarty,&$args,&$tproject_mgr)
 	return $ret;
 }
 
-function getErrorMessage($code)
+function getKeywordErrorMessage($code)
 {
 	switch($code)
 	{

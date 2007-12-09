@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: users.inc.php,v $
  *
- * @version $Revision: 1.48 $
- * @modified $Date: 2007/11/04 11:16:29 $ $Author: franciscom $
+ * @version $Revision: 1.49 $
+ * @modified $Date: 2007/12/09 12:12:03 $ $Author: schlundus $
  *
  * Functions for usermanagement
  *
@@ -20,6 +20,198 @@
  * 20070617 - franciscom - using new config param in user_is_name_valid()
 **/
 require_once("common.php");
+
+//SCHLUNDUS: not completed
+class tlUser extends tlDBObject
+{
+	public $m_firstName;
+	public $m_lastName;
+	public $m_emailAddress;
+	public $m_locale;
+	public $m_bActive;
+	public $m_defaultTestprojectID;
+	public $m_globalRole;
+	public $m_login;
+	protected $m_password;
+	
+	protected $m_showRealname;
+	protected $m_usernameFormat;
+	
+	const USER_E_LOGINLENGTH = -1;
+	const USER_E_EMAILLENGTH = -2;
+	const USER_E_NOTALLOWED = -4;
+	const USER_E_DBERROR = -8;
+	const USER_E_FIRSTNAMELENGTH = -16;
+	const USER_E_LASTNAMELENGTH = -32;
+	const USER_E_PWDEMPTY = -64;
+	const USER_E_PWDDONTMATCH = -128;
+	
+	function __construct($dbID = null)
+	{
+		parent::__construct($dbID);
+		$this->m_showRealname = config_get('show_realname');
+		$this->m_usernameFormat = config_get('username_format');
+		$this->m_loginRegExp = config_get('user_login_valid_regex');
+		$this->m_maxLoginLength = 30; 
+	}
+	
+	protected function _clean()
+	{
+		$m_firstName = null;
+		$m_lastName = null;
+		$m_emailAddress = null;
+		$m_locale = null;
+		$m_password = null;
+		$m_bActive = null;
+		$m_defaultTestprojectID = null;
+		$m_globalRole = null;
+		$m_login = null;
+	}
+	/* fills the members  */
+	function create()
+	{
+	}
+	//BEGIN interface iDBSerialization
+	public function readFromDB(&$db)
+	{
+		$this->_clean();
+		$query = "SELECT id,login,password,first,last,email,role_id,locale, login AS fullname, active,default_testproject_id FROM users";
+		$query .= " WHERE id = {$this->m_dbID}";
+
+		$info = $db->fetchFirstRow($query);			 
+		if ($info)
+		{
+			$this->m_firstName = $info['first'];
+			$this->m_lastName = $info['last'];
+			$this->m_login = $info['login'];
+			$this->m_emailAddress = $info['email'];
+			$this->m_globalRole = $info['role_id'];
+			$this->m_locale = $info['locale'];
+			$this->m_password = $info['password'];
+			$this->m_bActive = $info['active'];
+			$this->m_defaultTestprojectID = $info['default_testproject_id'];
+		}
+		return $info ? OK : ERROR;
+	}
+	public function writeToDB(&$db)
+	{
+		$result = $this->checkUserDetails();
+		if ($result == OK)
+		{		
+			if($this->m_dbID)
+			{
+				$query = "UPDATE users " .
+			       "SET first='" . $db->prepare_string($this->m_firstName) . "'" .
+			       ", last='" .  $db->prepare_string($this->m_lastName)    . "'" .
+			       ", email='" . $db->prepare_string($this->m_emailAddress)   . "'" .
+				   ", locale = ". "'" . $db->prepare_string($this->m_locale) . "'" . 
+				   ", password = ". "'" . $db->prepare_string($this->m_password) . "'" ;
+				$query .= " WHERE id=" . $this->m_dbID;
+				$result = $db->exec_query($query);
+			}
+			 $result = $result ? OK : self::USER_E_DBERROR;
+		}
+		return $result;
+	}	
+	public function deleteFromDB(&$db)
+	{
+		$query = "DELETE FROM users WHERE id=" . $this->m_dbID;
+		$result = $db->exec_query($query);
+			
+		return $result ? OK : ERRROR;
+	}
+	
+	public function getDisplayName()
+	{
+		if (!$this->m_showRealname)
+			return $this->m_login;
+
+		$info = null;
+		$keys = array('%first%','%last%','%login%','%email%');
+		$values = array($this->m_firstName, $this->m_lastName,$this->m_login,$this->m_email);
+		
+		$displayName = str_replace($keys,$values,$this->m_usernameFormat);
+	
+		return $displayName;
+	}
+	protected function encryptPassword($pwd)
+	{
+		return md5($pwd);
+	}
+	public function setPassword($pwd)
+	{
+		if (!strlen($pwd))
+			return self::USER_E_PWDEMPTY;
+		$this->m_password = $this->encryptPassword($pwd);
+		return OK;
+	}
+	public function getPassword()
+	{
+		return $this->m_password;
+	}
+	
+	public function comparePassword($pwd)
+	{
+		if ($this->getPassword($pwd) == $this->encryptPassword($pwd))
+			return OK;
+		return self::USER_E_PWDDONTMATCH;		
+	}
+	
+	protected function checkUserDetails()
+	{
+		$result = $this->checkEmailAdress($this->m_emailAddress);
+		if ($result == OK)
+			$result = $this->checkLogin($this->m_login);
+		if ($result == OK)
+			$result = $this->checkFirstName($this->m_firstName);
+		if ($result == OK)
+			$result = $this->checkLastName($this->m_lastName);
+		return $result;
+	}
+	public function checkLogin($login)
+	{
+		$result = OK;
+		$login = trim($login);
+		//simple check for empty login, or login consisting only of whitespaces
+		//The DB field is only 30 characters
+		if (!strlen($login) || (strlen($login) > $this->m_maxLoginLength))
+			$result = self::USER_E_LOGINLENGTH;
+
+		//Only allow a basic set of characters
+		if (!preg_match($this->m_loginRegExp,$login))
+			$result = self::USER_E_NOTALLOWED;
+
+		return $result;
+	}
+	
+	public function checkEmailAdress($email)
+	{
+		$result = OK;
+		$email = trim($email);
+		if (!strlen($email))
+			$result = self::USER_E_EMAILLENGTH;
+			
+		return $result;
+	}
+	public function checkFirstName($first)
+	{
+		$result = OK;
+		$first = trim($first);
+		if (!strlen($first))
+			$result = self::USER_E_FIRSTNAMELENGTH;
+			
+		return $result;
+	}
+	public function checkLastName($last)
+	{
+		$result = OK;
+		$last = trim($last);
+		if (!strlen($last))
+			$result = self::USER_E_LASTNAMELENGTH;
+			
+		return $result;
+	}
+}
 
 if( 'LDAP' == config_get('login_method') )
 {
@@ -564,4 +756,38 @@ if ($mail_op->status_ok)
 return($mail_op);
 } 
 
+function getUserErrorMessage($code)
+{
+	$msg = 'ok';
+	switch($code)
+	{
+		case tlUser::USER_E_LOGINLENGTH:
+			$msg = lang_get('error_user_login_length_error');
+			break;
+		case tlUser::USER_E_EMAILLENGTH:
+			$msg = lang_get('empty_email_address');
+			break;
+		case tlUser::USER_E_NOTALLOWED:
+			$msg = lang_get('user_login_valid_regex');
+			break;
+		case ERROR:
+		case tlUser::USER_E_DBERROR:
+			$msg = lang_get('error_user_not_updated');
+			break;
+		case tlUser::USER_E_FIRSTNAMELENGTH:
+			$msg = lang_get('empty_first_name');
+			break;
+		case tlUser::USER_E_LASTNAMELENGTH:
+			$msg = lang_get('empty_last_name');
+			break;
+		case tlUser::USER_E_PWDEMPTY:
+			$msg = lang_get('warning_empty_pwd');
+			break;
+		case tlUser::USER_E_PWDDONTMATCH:
+			$msg = lang_get('passwd_dont_match');
+			break;
+		default:
+			
+	}
+}
 ?>

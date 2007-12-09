@@ -1,21 +1,11 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: keywordsEdit.tpl,v 1.2 2007/12/08 18:11:12 franciscom Exp $
+$Id: keywordsEdit.tpl,v 1.3 2007/12/09 12:12:02 schlundus Exp $
 Purpose: smarty template - View all keywords 
-
-20070102 - franciscom
-1. Tab assign to test case will be displayed only if at least one keyword exists
-2. add confirmation before deleting
-
-20061007 - franciscom
-1. removed message when no keyword availables (useless IMHO)
-2. Show export/import buttons only is there are keywords
 *}
-
 
 {assign var="url_args" value="lib/keywords/keywordsEdit.php"}
 {assign var="keyword_edit_url" value="$basehref$url_args"}
-
 
 {include file="inc_head.tpl" jsValidate="yes"}
 {literal}

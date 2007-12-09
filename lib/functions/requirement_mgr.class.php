@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.10 $
- * @modified $Date: 2007/12/05 07:46:24 $ by $Author: franciscom $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2007/12/09 17:24:13 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
@@ -117,9 +117,7 @@ class requirement_mgr extends tlObjectWithAttachments
 			  	    $this->db->prepare_string($status) . "','" . $this->db->prepare_string($type) . "',"  .
 			  	    "{$user_id}, {$db_now})";
 
-  echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
-
-		  if (!$this->db->exec_query($sql))
+  	  if (!$this->db->exec_query($sql))
 		  {
 		 	  $result['msg'] = lang_get('error_inserting_req');
 		  } 	

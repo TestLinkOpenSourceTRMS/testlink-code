@@ -2,10 +2,14 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.75 $
- * @modified $Date: 2007/12/05 21:25:14 $ $Author: schlundus $
+ * @version $Revision: 1.76 $
+ * @modified $Date: 2007/12/09 17:24:13 $ $Author: franciscom $
  * @author franciscom
  *
+ *
+ * 20071209 - franciscom - fixed bug - no display of custom fields when editing TC
+ *                                   - no display of custom fields when executing TC 
+ *                         generated due to changes in get_path implementation
  *
  * 20071204 - franciscom - get_execution_types() 
  * 20071203 - franciscom - get_last_execution(), added build_is_active, build_is_open         			
@@ -75,11 +79,6 @@ class testcase extends tlObjectWithAttachments
   var $export_file_types = array("XML" => "XML");
   var $execution_types = array();
   
-  //echo TESTCASE_EXECUTION_TYPE_MANUAL;
-  // var $execution_types = array(TESTCASE_EXECUTION_TYPE_MANUAL => lang_get('manual'),
-  //                              TESTCASE_EXECUTION_TYPE_AUTO => lang_get('automated'));
-
-
 	function testcase(&$db)
 	{
 		$this->db = &$db;	
@@ -1791,7 +1790,7 @@ function copy_attachments($source_id,$target_id)
             
   args: id: testcase id
         [parent_id]: node id of parent testsuite of testcase.
-                     need to undertad to which testproject the testcase belongs.
+                     need to understand to which testproject the testcase belongs.
                      this information is vital, to get the linked custom fields.
                      Presence /absence of this value changes starting point
                      on procedure to build tree path to get testproject id.
@@ -1845,8 +1844,11 @@ function get_linked_cfields_at_design($id,$parent_id=null,$show_on_execution=nul
 	// 20070302 - added $id > 0
 	$the_path = $this->tree_manager->get_path( (!is_null($id) && $id > 0) ? $id : $parent_id);
 	$path_len = count($the_path);
-	$tproject_id = ($path_len > 0)? $the_path[$path_len-1]['parent_id'] : $parent_id;
-	
+
+	// 20071209 - with new get_path implementation this logic is wrong,
+	//            generating errors (no cf displayed) when editing TC 
+	// $tproject_id = ($path_len > 0)? $the_path[$path_len-1]['parent_id'] : $parent_id;
+	$tproject_id = ($path_len > 0)? $the_path[0]['parent_id'] : $parent_id;
 	$cf_map = $this->cfield_mgr->get_linked_cfields_at_design($tproject_id,$enabled,
 	                                                          $show_on_execution,'testcase',$id);
 	
@@ -1889,6 +1891,7 @@ function html_table_of_custom_field_inputs($id,$parent_id=null,$scope='design',$
 	
 	if($scope == 'design')
 	{
+	  echo "id $id - parent_id $parent_id";
 		$cf_map = $this->get_linked_cfields_at_design($id,$parent_id);
 	}
 	else
@@ -2028,8 +2031,11 @@ function get_linked_cfields_at_execution($id,$parent_id=null,$show_on_execution=
 	
 	$the_path=$this->tree_manager->get_path(!is_null($id) ? $id : $parent_id);
 	$path_len = count($the_path);
-	$tproject_id = ($path_len > 0)? $the_path[$path_len-1]['parent_id'] : $parent_id;
 	
+  // 20071209 - with new get_path implementation this logic is wrong,
+	//            generating errors (no cf displayed) when executing TC 
+	// $tproject_id = ($path_len > 0)? $the_path[$path_len-1]['parent_id'] : $parent_id;
+	$tproject_id = ($path_len > 0)? $the_path[0]['parent_id'] : $parent_id;
 	
 	// Warning:
 	// I'm setting node type to test case, but $id is the tcversion_id, because

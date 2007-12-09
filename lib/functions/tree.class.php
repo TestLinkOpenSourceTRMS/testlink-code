@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: tree.class.php,v $
  *
- * @version $Revision: 1.36 $
- * @modified $Date: 2007/11/11 15:30:55 $ by $Author: franciscom $
+ * @version $Revision: 1.37 $
+ * @modified $Date: 2007/12/09 17:24:13 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * 20071110 - franciscom - solved (auto)bug when refactoring get_path
@@ -371,10 +371,8 @@ function _get_path($node_id,&$node_list,$to_node_id=null,$format='full')
    
    // only continue if this $node isn't the root node
    // (that's the node with no parent)
-   
    if ($row['parent_id'] != '' && $row['id'] != $to_node_id) 
    {
-   	  // 20060309 - franciscom
       // Getting data from the node specific table
       $node_table = $this->node_tables[$this->node_types[$row['node_type_id']]];
       

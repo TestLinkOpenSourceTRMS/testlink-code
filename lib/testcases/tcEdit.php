@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.65 $
- * @modified $Date: 2007/12/05 21:25:15 $  by $Author: schlundus $
+ * @version $Revision: 1.66 $
+ * @modified $Date: 2007/12/09 17:27:38 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
  * 20071201 - franciscom - new web editor code
@@ -75,43 +75,28 @@ $rl_html_name = $opt_cfg->js_ot_name . "_newRight";
 $assigned_keywords_list = isset($_REQUEST[$rl_html_name])? $_REQUEST[$rl_html_name] : "";
 
 // manage the forms to collect data
-$edit_tc   = isset($_REQUEST['edit_tc']) ? 1 : 0;
-$delete_tc = isset($_POST['delete_tc']) ? 1 : 0;
-$create_tc = isset($_POST['create_tc']) ? 1 : 0;
-$move_copy_tc = isset($_POST['move_copy_tc']) ? 1 : 0;
 
-$delete_tc_version = isset($_POST['delete_tc_version']) ? 1 : 0;
 
 // really do the operation requested
-$do_create = isset($_POST['do_create']) ? 1 : 0;
-$do_update = isset($_POST['do_update']) ? 1 : 0;
-$do_move   = isset($_POST['do_move']) ? 1 : 0;
-$do_copy   = isset($_POST['do_copy']) ? 1 : 0;
-$do_delete = isset($_POST['do_delete']) ? 1 : 0;
-$do_create_new_version = isset($_POST['do_create_new_version']) ? 1 : 0;
-$do_delete_tc_version = isset($_POST['do_delete_tc_version']) ? 1 : 0;
-
-$do_activate_this = isset($_POST['activate_this_tcversion']) ? 1 : 0;
-$do_deactivate_this = isset($_POST['deactivate_this_tcversion']) ? 1 : 0;
 
 $active_status=0;
 $action_result = "deactivate_this_version";
-if($do_activate_this)
+if($args->do_activate_this)
 {
 	$active_status = 1;
 	$action_result = "activate_this_version";
 }
 
 $login_name = $_SESSION['user'];
-$version = isset($_POST['version']) ? intval($_POST['version']) : 0; 
+$version = isset($_REQUEST['version']) ? intval($_REQUEST['version']) : 0; 
 
 $updatedKeywords = null;
-if (isset($_POST['keywords']))
+if (isset($_REQUEST['keywords']))
 {
-	$updatedKeywords = strings_stripSlashes(implode(",",$_POST['keywords']).",");
+	$updatedKeywords = strings_stripSlashes(implode(",",$_REQUEST['keywords']).",");
 }
 
-$init_opt_transfer = ($create_tc || $edit_tc || $do_create) ? 1 : 0;
+$init_opt_transfer = ($args->create_tc || $args->edit_tc || $args->do_create) ? 1 : 0;
 
 
 $user_feedback='';
@@ -136,7 +121,7 @@ if($init_opt_transfer)
     $opt_cfg->from->map = $tproject_mgr->get_keywords_map($args->testproject_id);
     $opt_cfg->to->lbl=lang_get('assigned_kword');
 }
-if($do_create || $do_update)
+if($args->do_create || $args->do_update)
 {
 	// BUGID 0000086
 	$result = lang_get('warning_empty_tc_title');	
@@ -155,7 +140,7 @@ if($do_create || $do_update)
 }
 
 //If the user has chosen to edit a testcase then show this code
-if($edit_tc)
+if($args->edit_tc)
 {
     $opt_cfg->to->map = $tcase_mgr->get_keywords_map($args->tcase_id," ORDER BY keyword ASC ");
     keywords_opt_transf_cfg($opt_cfg, $assigned_keywords_list); 
@@ -178,6 +163,7 @@ if($edit_tc)
     $cf_smarty = '';
     if($gui_cfg->enable_custom_fields) 
     {
+      echo "WW";
 		  $cf_smarty = $tcase_mgr->html_table_of_custom_field_inputs($args->tcase_id);
     }
     $smarty->assign('cf',$cf_smarty);	
@@ -185,7 +171,7 @@ if($edit_tc)
   	$smarty->assign('opt_cfg', $opt_cfg);
   	$smarty->display($template_dir . $g_tpl['tcEdit']);
 } 
-else if($do_update)
+else if($args->do_update)
 {
 	$refresh_tree=$args->do_refresh?"yes":"no";
 	if($name_ok)
@@ -221,7 +207,7 @@ else if($do_update)
 	$tcase_mgr->show($smarty,$template_dir,$args->tcase_id, $args->user_id, $args->tcversion_id, 
 	                 $action_result,$msg,$refresh_tree);
 }
-else if($create_tc)
+else if($args->create_tc)
 {
 	$show_newTC_form = 1;
 
@@ -229,7 +215,7 @@ else if($create_tc)
 	keywords_opt_transf_cfg($opt_cfg, $assigned_keywords_list); 
 	$smarty->assign('opt_cfg', $opt_cfg);
 }
-else if($do_create)
+else if($args->do_create)
 {
 	$show_newTC_form = 1;
 
@@ -260,7 +246,7 @@ else if($do_create)
 	$smarty->assign('testcase_name', $args->name);
 	$smarty->assign('item', 'testcase');
 }
-else if($delete_tc)
+else if($args->delete_tc)
 {
  	$exec_status = 'ALL';
 	$linked_tcversions = $tcase_mgr->get_linked_versions($args->tcase_id,$exec_status);
@@ -291,7 +277,7 @@ else if($delete_tc)
 
 	$smarty->display($template_dir . 'tcDelete.tpl');
 }
-else if($delete_tc_version)
+else if($args->delete_tc_version)
 {
 	$status_quo_map = $tcase_mgr->get_versions_status_quo($args->tcase_id);
 	$exec_status_quo = $tcase_mgr->get_exec_status($args->tcase_id);
@@ -328,7 +314,7 @@ else if($delete_tc_version)
 	$smarty->assign('exec_status_quo',$sq);
 	$smarty->display($template_dir . 'tcDelete.tpl');
 }
-else if($do_delete)
+else if($args->do_delete)
 {
   $user_feedback='';
 	$msg='';
@@ -366,7 +352,7 @@ else if($do_delete)
 	
 	$smarty->display($template_dir . 'tcDelete.tpl');
 }
-else if($move_copy_tc)
+else if($args->move_copy_tc)
 {
 	// need to get the testproject for the test case
 	$tproject_id = $tcase_mgr->get_testproject($args->tcase_id);
@@ -399,13 +385,13 @@ else if($move_copy_tc)
 	$smarty->display($template_dir . 'tcMove.tpl');
 // move test case to another category
 }
-else if($do_move)
+else if($args->do_move)
 {
 	$result = $tree_mgr->change_parent($args->tcase_id,$args->new_container_id);
 	$smarty->assign('refreshTree',$do_refresh);
 	$tsuite_mgr->show($smarty,$template_dir,$args->old_container_id);
 }
-else if($do_copy)
+else if($args->do_copy)
 {
   $user_feedback=''; 
 	$msg = '';
@@ -434,7 +420,7 @@ else if($do_copy)
 	$tcase_mgr->show($smarty,$template_dir,$args->tcase_id, $args->user_id,$args->tcversion_id,
 	                 $action_result,$msg,$do_refresh_yes_no,$user_feedback);
 }
-else if($do_create_new_version)
+else if($args->do_create_new_version)
 {
   $user_feedback=''; 
 	$show_newTC_form = 0;
@@ -450,7 +436,7 @@ else if($do_create_new_version)
 	$tcase_mgr->show($smarty,$template_dir,$args->tcase_id, $args->user_id, TC_ALL_VERSIONS, 
 	                 $action_result,$msg,DONT_REFRESH,$user_feedback);
 }
-else if($do_activate_this || $do_deactivate_this)
+else if($args->do_activate_this || $args->do_deactivate_this)
 {
  	$msg = null; 
 	$tcase_mgr->update_active_status($args->tcase_id, $args->tcversion_id, $active_status);
@@ -503,6 +489,7 @@ if ($show_newTC_form)
   $cf_smarty = '';
   if($gui_cfg->enable_custom_fields) 
   {
+    echo "<pre>debug 20071209 - \ - " . __FUNCTION__ . " --- "; print_r($args->container_id); echo "</pre>";
 	  $cf_smarty = $tcase_mgr->html_table_of_custom_field_inputs($args->tcase_id,$args->container_id);
   }
   $smarty->assign('cf',$cf_smarty);	
@@ -555,16 +542,35 @@ function init_args($spec_cfg)
   $args->tcase_id = isset($_REQUEST['testcase_id']) ? intval($_REQUEST['testcase_id']) : 0;
   $args->tcversion_id = isset($_REQUEST['tcversion_id']) ? intval($_REQUEST['tcversion_id']) : 0;
 
-  $args->name 		= isset($_POST['testcase_name']) ? strings_stripSlashes($_POST['testcase_name']) : null;
-  $args->summary 	= isset($_POST['summary']) ? strings_stripSlashes($_POST['summary']) : null;
-  $args->steps 		= isset($_POST['steps']) ? strings_stripSlashes($_POST['steps']) : null;
-  $args->expected_results 	= isset($_POST['expected_results']) ? strings_stripSlashes($_POST['expected_results']) : null;
-  $args->new_container_id = isset($_POST['new_container']) ? intval($_POST['new_container']) : 0;
-  $args->old_container_id = isset($_POST['old_container']) ? intval($_POST['old_container']) : 0;
+  $args->name 		= isset($_REQUEST['testcase_name']) ? strings_stripSlashes($_REQUEST['testcase_name']) : null;
+  $args->summary 	= isset($_REQUEST['summary']) ? strings_stripSlashes($_REQUEST['summary']) : null;
+  $args->steps 		= isset($_REQUEST['steps']) ? strings_stripSlashes($_REQUEST['steps']) : null;
+  $args->expected_results 	= isset($_REQUEST['expected_results']) ? strings_stripSlashes($_REQUEST['expected_results']) : null;
+  $args->new_container_id = isset($_REQUEST['new_container']) ? intval($_REQUEST['new_container']) : 0;
+  $args->old_container_id = isset($_REQUEST['old_container']) ? intval($_REQUEST['old_container']) : 0;
 
   $args->has_been_executed=isset($_REQUEST['has_been_executed']) ? intval($_REQUEST['has_been_executed']) : 0;
                                                                                                               
   $args->exec_type=isset($_REQUEST['exec_type']) ? $_REQUEST['exec_type'] : TESTCASE_EXECUTION_TYPE_MANUAL;
+
+
+  $args->edit_tc   = isset($_REQUEST['edit_tc']) ? 1 : 0;
+  $args->delete_tc = isset($_REQUEST['delete_tc']) ? 1 : 0;
+  $args->create_tc = isset($_REQUEST['create_tc']) ? 1 : 0;
+  $args->move_copy_tc = isset($_REQUEST['move_copy_tc']) ? 1 : 0;
+  $args->delete_tc_version = isset($_REQUEST['delete_tc_version']) ? 1 : 0;
+
+
+  $args->do_create = isset($_REQUEST['do_create']) ? 1 : 0;
+  $args->do_update = isset($_REQUEST['do_update']) ? 1 : 0;
+  $args->do_move   = isset($_REQUEST['do_move']) ? 1 : 0;
+  $args->do_copy   = isset($_REQUEST['do_copy']) ? 1 : 0;
+  $args->do_delete = isset($_REQUEST['do_delete']) ? 1 : 0;
+  
+  $args->do_create_new_version = isset($_REQUEST['do_create_new_version']) ? 1 : 0;
+  $args->do_delete_tc_version = isset($_REQUEST['do_delete_tc_version']) ? 1 : 0;
+  $args->do_activate_this = isset($_REQUEST['activate_this_tcversion']) ? 1 : 0;
+  $args->do_deactivate_this = isset($_REQUEST['deactivate_this_tcversion']) ? 1 : 0;
 
 
   // from session

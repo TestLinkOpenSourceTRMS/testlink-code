@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.230 $
- * @modified $Date: 2007/12/09 12:12:04 $ $Author: schlundus $
+ * @version $Revision: 1.231 $
+ * @modified $Date: 2007/12/09 17:24:56 $ $Author: franciscom $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -321,6 +321,9 @@ $TLS_title_cfields_mgmt = "Custom fields";
 $TLS_type = "Type";
 $TLS_warning_empty_cfield_label = "Please enter the label of this custom field.";
 $TLS_warning_empty_cfield_name = "Please enter the name of this custom field.";
+$TLS_warning_is_in_use = "You can neither delete, either change type <br> " .
+                         "because a value has been assigned to this custom field <br>" .
+                         "by user on an test specification or execution ";
 
 
 

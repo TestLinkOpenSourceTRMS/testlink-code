@@ -1,6 +1,6 @@
 {* 
 Testlink: smarty template - 
-$Id: cfields_edit.tpl,v 1.3 2007/12/03 08:27:17 franciscom Exp $ 
+$Id: cfields_edit.tpl,v 1.4 2007/12/09 17:24:50 franciscom Exp $ 
 
 
 Important Development note:
@@ -18,7 +18,9 @@ This is done to simplify logic.
 
 
 rev :
-
+     20071209 - franciscom - added user feedback to explain
+                             why certain changes can not be done.
+                             
      20070526 - franciscom - added javascript logic to improve
                              cf enable attr management
                              
@@ -245,7 +247,11 @@ function cfg_possible_values_display(cfg,id_cftype,id_possible_values_container)
           alt="$text_hint" title="$text_hint"  style="float: right;"}
  {lang_get s='title_cfields_mgmt'} </h1>
 
-{include file="inc_update.tpl" result=$result item="custom_field" action="$user_action" feedback_type="soft"}
+{include file="inc_update.tpl" result=$result item="custom_field" action="$user_action"}
+
+{if $is_used}
+  <div class="user_feedback">{lang_get s="warning_is_in_use"}</div>
+{/if}
 
 <div class="workBack">
 
@@ -428,29 +434,12 @@ function cfg_possible_values_display(cfg,id_cftype,id_possible_values_container)
 		<input type="submit" name="do_update" value="{lang_get s='btn_upd'}"
 		       onclick="do_action.value='do_update'"/>
 		       
-		{if is_used eq 0} 
-		
-		  {*       
-  		<input type="button" name="do_delete" value="{lang_get s='btn_delete'}"
-  		       onclick="do_action.value='do_delete';
-  		                if (confirm('{lang_get s='popup_delete_custom_field'}'))
-  		                {ldelim}cfields_edit.submit();{rdelim};" />
-  		*}                
-  		
-  		{*
-  		{assign var=warning_msg value=$warning_msg|replace:"%s":$cf.name}
-  		*}
-  		warning_msg -> {$warning_msg}
-       
+		{if $is_used eq 0} 
   		<input type="button" name="do_delete" value="{lang_get s='btn_delete'}"
   		       onclick="delete_confirmation({$cf.id},'{$cf.name|escape:'javascript'}',
   		                                    '{$del_msgbox_title}','{$warning_msg}');">
-                
-  		                
-  		                
     {/if}
-		       
-		       
+
 	{else}
 		<input type="submit" name="do_update" value="{lang_get s='btn_add'}" 
 		       onclick="do_action.value='do_add'"/>

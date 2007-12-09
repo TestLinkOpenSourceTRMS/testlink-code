@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: req_tree_menu.php,v $
  *
- * @version $Revision: 1.3 $
- * @modified $Date: 2007/12/02 15:44:18 $ by $Author: schlundus $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2007/12/09 17:24:13 $ by $Author: franciscom $
  * 
  * Rev :
  *      20071125 - franciscom - added dtree_render_req_node_open
@@ -85,16 +85,13 @@ function gen_req_tree_menu(&$db,$tproject_id, $tproject_name)
 	$req_tree['node_type_id'] = $hash_descr_id['testproject'];
   $req_tree['node_type'] = 'testproject';
 	
-	// echo "<pre>debug 20071118 - \ - " . __FUNCTION__ . " --- "; print_r($req_tree); echo "</pre>";
-	
 	$getArguments='';
 	
 	if($req_tree)
 	{
   
   	$req_counters = prepare_req_node($db,$req_tree,$decoding_hash,$map_node_req_count);
-    // echo "<pre>debug 20071118 - \$req_counters - " . __FUNCTION__ . " --- "; print_r($req_counters); echo "</pre>";
-    
+   
 		foreach($req_counters as $key => $value)
 		{
 		  $test_tree[$key]=$value;
@@ -104,11 +101,6 @@ function gen_req_tree_menu(&$db,$tproject_id, $tproject_name)
   
   } // if($req_tree)
 	
-	//$menustring = render_req_tree_node(1,$req_tree,$getArguments,$hash_id_descr,
-	//	                                 $tc_action_enabled,$linkto,$bForPrinting);
-	
-
-  //echo "<pre>debug 20071118 - \ - " . __FUNCTION__ . " --- "; print_r($req_tree); echo "</pre>";		                                 
   return $menustring;
 }
 

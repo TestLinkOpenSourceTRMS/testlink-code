@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: reqSpecEdit.php,v $
- * @version $Revision: 1.8 $
- * @modified $Date: 2007/12/02 17:29:10 $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2007/12/09 17:27:38 $ $Author: franciscom $ 
  * 
  * @author Martin Havlat
  * 

@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: cfield_mgr.class.php,v $
- * @version $Revision: 1.21 $
- * @modified $Date: 2007/11/25 18:56:52 $  $Author: franciscom $
+ * @version $Revision: 1.22 $
+ * @modified $Date: 2007/12/09 17:24:13 $  $Author: franciscom $
  * @author franciscom
  *
  * 20071102 - franciscom - BUGID - Feature 
@@ -34,6 +34,12 @@ class cfield_mgr
 {
 	var $db;
 	var $tree_manager;
+
+  var $cfield_design_values_table="cfield_design_values";
+  var $cfield_node_types_table="cfield_node_types";
+  var $nodes_hierarchy_table="nodes_hierarchy";
+  var $node_types_table="node_types";
+
 	
 	// I'm using the same codes used by Mantis
   var $custom_field_types = array(0=>'string',
@@ -966,6 +972,25 @@ class cfield_mgr
 	  $result=$this->db->exec_query($sql);
 	  return($this->db->num_rows( $result ) > 0 ? 1 : 0);
 	} //function end
+
+  /*
+    function: whoIsUsingMe
+              
+    args: $id: custom field id
+    
+    returns: 
+  */
+	function whoIsUsingMe($id)
+	{
+	  $sql=" SELECT field_id,name ". 
+	       " FROM {$cfield_design_values_table} CFDV, ".
+	       "      {$cfield_node_types_table} CFNT, " .
+	       "      {$nodes_hierarchy_table} NH " .
+	       " WHERE CFDV.field_id=CFNT.field_id " .
+	       " AND NH.id=CFDV.node_id " .
+	       " CFDV.field_id={$id} ";
+	} //function end
+
 
 
 

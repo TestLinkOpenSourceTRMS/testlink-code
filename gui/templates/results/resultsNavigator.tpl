@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: resultsNavigator.tpl,v 1.2 2007/12/09 00:27:49 havlat Exp $ *}
+{* $Id: resultsNavigator.tpl,v 1.3 2007/12/09 02:17:08 havlat Exp $ *}
 {* Purpose: smarty template - show Test Results and Metrics *}
 {* Rev :
         20070929 - franciscom - 
@@ -34,7 +34,7 @@ function pre_submit()
 <form method="get" id="resultsNavigator" onSubmit="javascript:return pre_submit();">
 <div class="menu_bar">
 	<span style="float: right;">{lang_get s='title_report_type'}
-	<select name="report_type" onchange="this.form.submit();">
+	<select name="format" onchange="this.form.submit();">
 		    {html_options options=$arrReportTypes selected=$selectedReportType}
 	</select></span>
 

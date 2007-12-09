@@ -1,6 +1,6 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: mainPage_left.tpl,v 1.10 2007/12/08 15:45:43 franciscom Exp $     
+ $Id: mainPage_left.tpl,v 1.11 2007/12/09 00:27:49 havlat Exp $     
  Purpose: smarty template - main page / site map                 
                                                                  
  rev :                                                 
@@ -27,7 +27,7 @@
   		 {if $modify_tc_rights eq "yes"}
   	        <br />
   		<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
-          	<a href="{$launcher}?feature=printTc">{lang_get s='href_print_tc'}</a>
+          	<a href="{$launcher}?feature=printTestSpec">{lang_get s='href_print_tc'}</a>
   		 {/if}
     {$smarty.const.MENU_ITEM_CLOSE}
   {/if}
@@ -123,6 +123,9 @@
 	        <br />
          		<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
             <a href="lib/cfields/cfields_tproject_assign.php">{lang_get s='href_cfields_tproject_assign'}</a>
+	        <br />
+         		<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
+            <a href="lib/admin/modules.php">{lang_get s='href_admin_modules'}</a>
         {/if}
     {$smarty.const.MENU_ITEM_CLOSE}
     {/if}  

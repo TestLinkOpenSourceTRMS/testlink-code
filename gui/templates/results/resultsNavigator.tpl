@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: resultsNavigator.tpl,v 1.1 2007/12/02 17:21:19 franciscom Exp $ *}
+{* $Id: resultsNavigator.tpl,v 1.2 2007/12/09 00:27:49 havlat Exp $ *}
 {* Purpose: smarty template - show Test Results and Metrics *}
 {* Rev :
         20070929 - franciscom - 
@@ -64,7 +64,7 @@ function pre_submit()
 {if $do_report.status_ok }
   {section name=Row loop=$arrData}
 	<span><img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
-	  <a href="{$arrData[Row].href}report_type={$selectedReportType}&amp;tplan_id={$tplan_id}" 
+	  <a href="{$arrData[Row].href}format={$selectedReportType}&amp;tplan_id={$tplan_id}" 
 	     target="workframe">{$arrData[Row].name}</a></span><br />
   {/section}
 {else}

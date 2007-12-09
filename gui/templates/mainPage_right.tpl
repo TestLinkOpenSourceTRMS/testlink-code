@@ -1,6 +1,6 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: mainPage_right.tpl,v 1.10 2007/09/24 20:51:45 schlundus Exp $     
+ $Id: mainPage_right.tpl,v 1.11 2007/12/09 00:27:49 havlat Exp $     
  Purpose: smarty template - main page / site map                 
                                                                  
  rev :
@@ -72,9 +72,6 @@
 		{if $testplan_execute == "yes" }
 			<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
 	        <a href="{$launcher}?feature=executeTest">{lang_get s='href_execute_test'}</a>
-	        <br />
-      <img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
-	       	<a href="{$launcher}?feature=printTestSet">{lang_get s='href_print_tc_suite'}</a>
 		{/if} {* testplan_execute *}
 
 

@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.49 $
- * @modified $Date: 2007/12/08 20:34:13 $  $Author: schlundus $
+ * @version $Revision: 1.50 $
+ * @modified $Date: 2007/12/10 17:36:18 $  $Author: franciscom $
  * @author franciscom
  *
  * 20071111 - franciscom - new method get_subtree();
@@ -589,9 +589,9 @@ function count_testcases($id)
 	 *
 	 *
 	 * @param type $testprojectID 
+	 * @param type $id 
 	 * @param type $keyword 
 	 * @param type $notes 
-	 * @param type $id 
 	 * 
 	 **/
 	function updateKeyword($testprojectID,$id,$keyword,$notes)

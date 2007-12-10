@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.231 $
- * @modified $Date: 2007/12/09 17:24:56 $ $Author: franciscom $
+ * @version $Revision: 1.232 $
+ * @modified $Date: 2007/12/10 22:59:45 $ $Author: havlat $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -45,6 +45,7 @@ $TLS_hour 			= "Hour";
 $TLS_manual 		= "Manual";
 $TLS_Milestone 		= "Milestone";
 $TLS_not_aplicable 	= "N/A";
+$TLS_none			= "None";
 $TLS_requirement 	= "Requirement";
 $TLS_reqs 			= "Requirements";
 $TLS_req_spec 		= "Requirements Specification Document";
@@ -1689,12 +1690,14 @@ $TLS_warning_duplicate_tplan_name = "There is already a Test Plan with this name
 
 
 // lib/print/selectData.php
-$TLS_opt_show_doc_header = "Show Document Header";
-$TLS_opt_show_tc_body = "Show Test Case Body";
-$TLS_opt_show_tc_summary = "Show Test Case Summary";
-$TLS_opt_show_toc = "Show Table of Contents";
-$TLS_opt_show_tc_author = "Show Test Case Author";
-$TLS_opt_show_passfail = "Show Pass/Fail and Notes";
+$TLS_opt_show_doc_header = "Test Suite texts";
+$TLS_opt_show_tc_body = "Test Case Scenario";
+$TLS_opt_show_tc_summary = "Test Case Summary";
+$TLS_opt_show_toc = "Table of Contents";
+$TLS_opt_show_tc_author = "Test Case Author";
+$TLS_opt_show_passfail = "Test results";
+$TLS_opt_show_tc_reqs = "TC related Requirements";
+$TLS_opt_show_tc_keys = "TC related Keywords";
 $TLS_title_tc_print_navigator = "Navigator - Print Test Specification";
 $TLS_title_tp_print_navigator = "Navigator - Print Test Plan ";
 

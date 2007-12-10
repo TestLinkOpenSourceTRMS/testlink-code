@@ -2,7 +2,7 @@
 /**
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/ 
 *
-*  @version 	$Id: printDocument.php,v 1.1 2007/12/09 02:15:19 havlat Exp $
+*  @version 	$Id: printDocument.php,v 1.2 2007/12/10 22:59:45 havlat Exp $
 *  @author 	Martin Havlat
 * 
 * Shows the data that will be printed.
@@ -32,8 +32,10 @@ $user_id = isset($_SESSION['userID']) ? intval($_SESSION['userID']) : null;
 // Elements in this array must be updated if $arrCheckboxes, in selectData.php is changed.
 //
 // 20070509 - Contribution - BUGID - 
+// 20071209 - MHT"contribution - JMU: requirements and keywords added
 $printingOptions = array ( 'toc' => 0,'body' => 0,'summary' => 0,'header' => 0,
-						               'passfail' => 0, 'author' => 0);
+						               'passfail' => 0, 'author' => 0, 'requirement' => 0, 'keyword' => 0);
+
 foreach($printingOptions as $opt => $val)
 {
 	$printingOptions[$opt] = (isset($_GET[$opt]) && ($_GET[$opt] == 'y'));

@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: print.inc.php,v $
- * @version $Revision: 1.33 $
- * @modified $Date: 2007/10/20 16:47:57 $ by $Author: franciscom $
+ * @version $Revision: 1.34 $
+ * @modified $Date: 2007/12/10 22:59:45 $ by $Author: havlat $
  *
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
@@ -14,6 +14,9 @@
  *      20071014 - franciscom - renderTestCaseForPrinting() added printing of test case version
  *      20070509 - franciscom - changes in renderTestSpecTreeForPrinting() interface
  */
+
+require_once("requirement_mgr.class.php");
+
 
 /** 
  * print HTML header 
@@ -211,7 +214,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,$tplan_i
   $versionID = isset($node['tcversion_id']) ? $node['tcversion_id'] : TC_LATEST_VERSION; 
 		
 	if( $printingOptions['body'] || $printingOptions['summary'] || 
-	    $printingOptions['author'])
+	    $printingOptions['author'] || $printingOptions['keyword'])
 	{
 		$tc_mgr = new testcase($db);
     	$tcInfo = $tc_mgr->get_by_id($id,$versionID);
@@ -235,44 +238,81 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,$tplan_i
 	   	                 $name . '</a></p>';
 		$code .= "<a name='tc" . $id . "'></a>";
 	}
- 	$code .= "<div class=\"tc\"><table class=\"tc\" width=\"90%\">";
+ 	$code .= '<div class="tc"><table class="tc" width="90%">';
  	$code .= '<tr><th colspan="2">' . lang_get('test_case') . " " . $id . ": " . $name  . "</th></tr>";
 	
+
 	// To manage print of test specification
 	if( isset($node['version']) )
 	{
 	  $code .= '<tr><th colspan="2">' . lang_get('version') . ' ' . $node['version'] . "</th></tr>";
 	}
-	
 
-  if ($printingOptions['body'] || $printingOptions['summary'])
+  	if ($printingOptions['author'])
+  	{    
+     	$authorName = getUserName($db, $tcInfo['author_id']);
+     	$code .= '<tr><td colspan="2"><b>' . lang_get("author") . " </b>" . $authorName . "</td></tr>";
+  	}
+
+	if ($printingOptions['passfail'])
 	{
-		if ($tcInfo)
-		{
-			if ($printingOptions['summary'])
-				$code .= "<tr><td colspan=\"2\"><u>".lang_get('summary')."</u>: " .  $tcInfo['summary'] . "</td></tr>";
-			if ($printingOptions['body']) 
-			{
-			   	$code .= "<tr><td colspan=\"2\"><u>".lang_get('steps')."</u>:<br />" .  $tcInfo['steps'] . "</td></tr>";
-			   	$code .= "<tr><td colspan=\"2\"><u>".lang_get('expected_results')."</u>:<br />" .  $tcInfo['expected_results'] . "</td></tr>";
-			}
-			if ($printingOptions['passfail'])
-			{
-				$code .= "<tr><td width=\"20%\" valign=\"top\"><b><u>".lang_get('Result').": ".$tcResultInfo['status']."</u></b></td>" .
-						"<td><u>".lang_get('testnotes')."</u><br /><br /></td></tr>";
-			}
-			if ($tcResultInfo == null)
-			{
-				$code .= "je tam nula";
-			}
-		}
+		$code .= '<tr><td width="20%" valign="top"><b><u>'.lang_get('Result').": ".$tcResultInfo['status']."</u></b></td></tr>" .
+				'<tr><td width="20%" valign="top"><u>'.lang_get('testnotes')."</u><br /></td><td>".$tcResultInfo['note']."</td></tr>";
+	}
+	
+  	if (($printingOptions['body'] || $printingOptions['summary'])) // && (!empty(trim(strip_tags($tcInfo['summary'])))))
+	{
+		$code .= "<tr><td colspan=\"2\"><u>".lang_get('summary')."</u>: " .  $tcInfo['summary'] . "</td></tr>";
 	}
 
-  if ($printingOptions['author'])
-  {    
-     $authorName = getUserName($db, $tcInfo['author_id']);
-     $code .= '<tr><td colspan="2"><b>' . lang_get("author") . " </b>" . $authorName . "</td></tr>";
-  }
+  	if (($printingOptions['body'])) // && (!empty(trim(strip_tags($tcInfo['steps'])))))
+	{
+	   	$code .= "<tr><td colspan=\"2\"><u>".lang_get('steps')."</u>:<br />" .  $tcInfo['steps'] . "</td></tr>";
+	   	$code .= "<tr><td colspan=\"2\"><u>".lang_get('expected_results')."</u>:<br />" .  $tcInfo['expected_results'] . "</td></tr>";
+	}
+
+	// collect REQ for TC
+	// MHT: based on contribution by JMU (1045) 
+	if ($printingOptions['requirement'])
+	{
+		
+		$req_mgr = new requirement_mgr($db);
+		$arrReqs = $req_mgr->get_all_for_tcase($id);
+
+		$code .= '<tr><td width="20%" valign="top"><b><u>'.lang_get('reqs').'</u></b><td>';
+		if (sizeof($arrReqs))
+		{
+			foreach ($arrReqs as $req) 
+			{
+				$code .=  $req['id'] . ":  " . $req['title'] . "<br />";
+			}
+		}
+		else
+		{
+			$code .= lang_get('none');
+		}
+		$code .= "</td></tr>";
+	}
+	// collect keywords for TC
+	// MHT: based on contribution by JMU (1045) 
+	if ($printingOptions['keyword'])
+	{
+		$code .= '<tr><td width="20%" valign="top"><b><u>'.lang_get('keywords').'</u></b><td>';
+
+		$arrKeywords = $tc_mgr->getKeywords($id,null);
+		if (sizeof($arrKeywords))
+		{
+			foreach ($arrKeywords as $kw) 
+			{
+				$code .= $kw['keyword'] . "<br />";
+			}
+		}
+		else
+		{
+			$code .= lang_get('none');
+		}
+		$code .= "</td></tr>";
+	}
 
 	$code .= "</table></div>";
 

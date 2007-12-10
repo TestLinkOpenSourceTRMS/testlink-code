@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/ 
 // This script is distributed under the GNU General Public License 2 or later. 
 //
-// $Id: testlink_library.js,v 1.42 2007/12/02 17:04:27 franciscom Exp $ 
+// $Id: testlink_library.js,v 1.43 2007/12/10 22:59:45 havlat Exp $ 
 //
 // Javascript functions commonly used through the GUI
 // This library is automatically loaded with inc_header.tpl
@@ -425,7 +425,7 @@ function tree_getPrintPreferences()
 {
 	var params = [];
 	var fields = ['header','summary','toc','body','passfail',
-	              'tcspec_refresh_on_action','author'];
+	              'tcspec_refresh_on_action','author','requirement','keyword'];
 
   for (var i= 0;i < fields.length;i++)
 	{

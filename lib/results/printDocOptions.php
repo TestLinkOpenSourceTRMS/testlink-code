@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* @version 	$Id: printDocOptions.php,v 1.1 2007/12/09 02:15:19 havlat Exp $
+* @version 	$Id: printDocOptions.php,v 1.2 2007/12/10 22:59:45 havlat Exp $
 * @author 	Martin Havlat
 * 
 * Navigator for print/export functionality. 
@@ -35,11 +35,13 @@ $arrFormat = array('html' => 'HTML', 'msword' => 'MS Word');
 
 
 $arrCheckboxes = array(
-	array( 'value' => 'header', 'description' => lang_get('opt_show_doc_header'), 'checked' => 'n'),
-	array( 'value' => 'body', 'description' => lang_get('opt_show_tc_body'), 'checked' => 'n'),
-	array( 'value' => 'summary', 'description' => lang_get('opt_show_tc_summary'), 'checked' => 'n'),
 	array( 'value' => 'toc', 'description' => lang_get('opt_show_toc'), 'checked' => 'n'),
-  array( 'value' => 'author',     'description' => lang_get('opt_show_tc_author'),        'checked' => 'n')
+	array( 'value' => 'header', 'description' => lang_get('opt_show_doc_header'), 'checked' => 'n'),
+	array( 'value' => 'summary', 'description' => lang_get('opt_show_tc_summary'), 'checked' => 'y'),
+	array( 'value' => 'body', 'description' => lang_get('opt_show_tc_body'), 'checked' => 'n'),
+  	array( 'value' => 'author',     'description' => lang_get('opt_show_tc_author'), 'checked' => 'n'),
+	array( 'value' => 'requirement', 'description' => lang_get('opt_show_tc_reqs'), 'checked' => 'n'),
+	array( 'value' => 'keyword', 'description' => lang_get('opt_show_tc_keys'), 'checked' => 'n')
 );
 
 if( $type == 'testplan')

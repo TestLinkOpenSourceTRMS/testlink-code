@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: int_bugtracking.php,v $
  *
- * @version $Revision: 1.15 $
- * @modified $Date: 2007/05/15 13:56:59 $ $Author: franciscom $
+ * @version $Revision: 1.16 $
+ * @modified $Date: 2007/12/12 18:22:06 $ $Author: havlat $
  *
  * @author Andreas Morsing
  *
@@ -35,6 +35,7 @@ $configFiles = array(
 					'MANTIS' => 'mantis.cfg.php',
 					'JIRA' => 'jira.cfg.php',
 					'TRACKPLUS' => 'trackplus.cfg.php',
+					'EVENTUM' => 'eventum.cfg.php',
 
 				);
 //This holds the interface defintion file names for the bugtracking interfaces
@@ -44,6 +45,7 @@ $interfaceFiles = array(
 					'MANTIS' => 'int_mantis.php',
 					'JIRA' => 'int_jira.php',
 					'TRACKPLUS' => 'int_trackplus.php',
+					'EVENTUM' => 'int_eventum.php',
 				);
 
 				

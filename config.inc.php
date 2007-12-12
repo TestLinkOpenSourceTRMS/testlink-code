@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.136 $
- * @modified $Date: 2007/12/04 09:19:58 $ by $Author: franciscom $
+ * @version $Revision: 1.137 $
+ * @modified $Date: 2007/12/12 18:20:24 $ by $Author: havlat $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink 
@@ -143,11 +143,13 @@ $g_log_level='NONE';
 * TestLink uses bugtracking systems to check if displayed bugs resolved, verified, 
 * and closed bugs. If they are it will strike through them
 *
+* @var STRING TL_INTERFACE_BUGS = ['NO', 'BUGZILLA', 'MANTIS', 'JIRA','TRACKPLUS', 'EVENTUM']
 * NO        : no bug tracking system integration 
 * BUGZILLA  : edit configuration in TL_ABS_PATH/cfg/bugzilla.cfg.php
 * MANTIS    : edit configuration in TL_ABS_PATH/cfg/mantis.cfg.php
 * JIRA      : edit configuration in TL_ABS_PATH/cfg/jira.cfg.php
 * TRACKPLUS : edit configuration in TL_ABS_PATH/cfg/trackplus.cfg.php
+* EVENTUM : edit configuration in TL_ABS_PATH/cfg/eventum.cfg.php
 */
 $g_interface_bugs='NO';
 

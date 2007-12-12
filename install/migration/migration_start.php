@@ -1,6 +1,6 @@
 <?php 
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: migration_start.php,v 1.3 2007/03/03 08:37:05 franciscom Exp $ */
+/* $Id: migration_start.php,v 1.4 2007/12/12 22:31:17 asielb Exp $ */
 
 // 20060428 - franciscom - added new check  check_db_loaded_extension()
 //
@@ -266,7 +266,7 @@ $check = check_php_settings();
 $errors += $check['errors'];
 echo $check['msg'];
 
-$check = check_db_loaded_extension();
+$check = check_db_loaded_extension('mysql');
 $errors += $check['errors'];
 echo $check['msg'];
 

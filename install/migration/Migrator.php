@@ -1,7 +1,7 @@
 <?php
 /*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: Migrator.php,v 1.2 2007/08/30 19:13:34 asielb Exp $
+ * $Id: Migrator.php,v 1.3 2007/12/12 23:19:23 asielb Exp $
  *
  */
 
@@ -139,9 +139,24 @@ class Migrator
 		// 
 		// 20070807 - asielb - store results in temporary table to avoid requiring 
 		// 		excessive amounts of memory for php
+		// 20071212 - asielb = select only first 100 chars of title fixing bug 1125
 		$tmp_table_name = "tmp_good_testcases";
-		$sql="CREATE TEMPORARY TABLE " . $this->tmp_table_name . " SELECT mtc.*, mc.prodid " .
-		     " FROM mgtproduct mp, mgtcomponent mc, mgtcategory mk,mgttestcase mtc " .
+		$sql="CREATE TEMPORARY TABLE " . $this->tmp_table_name . " " .
+			 "SELECT mtc.id, " .
+			 "LEFT(mtc.title,100)," .
+			 "mtc.steps," .
+			 "mtc.exresult," .
+			 "mtc.keywords," .
+			 "mtc.catid," .
+			 "mtc.version," .
+			 "mtc.summary," .
+			 "mtc.author," .
+			 "mtc.create_date," .
+			 "mtc.reviewer," .
+			 "mtc.modified_date," .
+			 "mtc.TCorder," .
+			 "mc.prodid " .
+		     " FROM mgtproduct mp, mgtcomponent mc, mgtcategory mk, mgttestcase mtc " .
 		     " WHERE mc.prodid=mp.id " .
 		     " AND   mk.compid=mc.id " .
 		     " AND   mtc.catid=mk.id " .

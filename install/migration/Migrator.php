@@ -1,7 +1,7 @@
 <?php
 /*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: Migrator.php,v 1.3 2007/12/12 23:19:23 asielb Exp $
+ * $Id: Migrator.php,v 1.4 2007/12/13 15:36:21 havlat Exp $
  *
  */
 
@@ -560,7 +560,7 @@ class Migrator
 		echo "</div><p>";
 	}
 
-	function requirements_coverage_migration()
+function requirements_coverage_migration()
 	{
 		$hhmmss=date("H:i:s");
 		echo "<a onclick=\"return DetailController.toggle('details-req_coverage')\" href=\"tplan/\">
@@ -570,16 +570,22 @@ class Migrator
 		$sql="SELECT * from req_coverage";
 
 		// 20061203 - franciscom - id (wrong) -> id_req
-		$req_cov=$this->source_db->fetchRowsIntoMap($sql,'id_req');
-		if(is_null($req_cov)) 
+		//$req_cov=$this->source_db->fetchRowsIntoMap($sql,'id_req');   //970 items no duplicate ids
+	
+		// 20071213 - havlatm:   	 0001112: Requirements coverage migration from 1.6.3 to 1.7.0 final
+		$result = $this->source_db->get_recordset($sql);	
+		
+		if(is_null($result))
 		{
 			echo "<span class='notok'>There are no req specs to be migrated!</span></b>";
 		}
 		else
 		{
-			migrate_req_coverage($this->source_db,$this->target_db,$req_cov,$this->old_new);
+			// 20071213 - havlatm:   	 0001112: Requirements coverage migration from 1.6.3 to 1.7.0 final
+			migrate_req_coverage($this->source_db,$this->target_db,$result,$this->old_new);
 		}
 		echo "</div><p>";
 	}
+
 }
 ?>

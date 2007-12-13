@@ -1,7 +1,7 @@
 <?php
 /*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: migrate_16_to_17_functions.php,v 1.5 2007/11/03 12:31:55 franciscom Exp $
+ * $Id: migrate_16_to_17_functions.php,v 1.6 2007/12/13 15:36:21 havlat Exp $
  *
  * rev :
  *      20071103 - franciscom - BUGID 771 - utf-8 issue - contributed by eagleas
@@ -984,25 +984,42 @@ function migrate_req_specs(&$source_db,&$target_db,&$rspec,&$old_new)
 
 /*
   function: 
-
   args :
-  
-  returns: 
+  returns: N/A
 
   rev :
         20060803 - franciscom
+		20071213 - havlatm - Bug 0001112: Requirements coverage migration from 1.6.3 to 1.7.0 final
 */
 function migrate_req_coverage(&$source_db,&$target_db,&$req_cov,&$old_new)
 {
   $req_cov_qty=count($req_cov);
   echo "<pre>Number of relationships: " . $req_cov_qty; echo "</pre>";
-  
-  foreach($req_cov as $req_id => $rdata)
+  $i=0;
+
+  foreach($req_cov as $req_id => $rdata)  
   {
-    $sql="INSERT INTO req_coverage " .
-         "(req_id,testcase_id) " .
-         " VALUES({$rdata['id_req']},{$rdata['id_tc']})";
-    $exec_id=$target_db->exec_query($sql);
+	$reqid=$req_cov[$i]['id_req'];
+	$tcid=$req_cov[$i]['id_tc'];
+
+	$ssql="SELECT COUNT(*) as count FROM req_coverage where req_id= {$reqid} and testcase_id = {$tcid}";
+	$tcreq=$target_db->get_recordset($ssql);
+	 
+	if ( $tcreq[0]['count'] == 0 )
+	 {
+
+		$sql="INSERT INTO req_coverage (req_id,testcase_id) VALUES({$reqid},{$tcid})";
+		$exec_id=$target_db->exec_query($sql);
+
+		echo "<pre><b><u>Requirement id:{$reqid} for testcase id: {$tcid}  MIGRATED</u></b></pre>";	
+	 
+	 }else
+	 {
+		echo "<pre>Requirement id :{$reqid} for testcase id: {$tcid} already existing</pre>";
+	 }
+  
+  $i++;
+
   }
 } // end function
 

@@ -1,7 +1,7 @@
 --  -----------------------------------------------------------------------------------
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.18 2007/12/03 08:28:31 franciscom Exp $
+-- $Id: testlink_create_tables.sql,v 1.19 2007/12/14 20:03:19 schlundus Exp $
 --
 -- SQL script - create db tables for TL
 -- Database Type: Microsoft SQL Server
@@ -85,7 +85,7 @@ CREATE TABLE [cfield_testprojects](
 ) ON [PRIMARY]
 
 CREATE TABLE [object_keywords](
-	[id] [int] NOT NULL CONSTRAINT [DF_object_keywords_id]  DEFAULT ((0)),
+	[id] [int] IDENTITY(1,1) NOT NULL,
 	[fk_id] [int] NOT NULL CONSTRAINT [DF_object_keywords_fk_id]  DEFAULT ((0)),
 	[fk_table] [varchar](30)  NOT NULL,
 	[keyword_id] [int] NOT NULL CONSTRAINT [DF_object_keywords_keyword_id]  DEFAULT ((0)),
@@ -97,18 +97,18 @@ CREATE TABLE [object_keywords](
 
 CREATE TABLE [custom_fields](
 	[id] [int] IDENTITY(1,1) NOT NULL,
-	[name] [char](64)  NOT NULL,
-	[label] [char](64)  NOT NULL,
-	[type] [smallint] NOT NULL,
-	[possible_values] [char](255)  NOT NULL,
-	[default_value] [char](255)  NOT NULL,
-	[valid_regexp] [char](255)  NOT NULL,
-	[length_min] [int] NOT NULL,
-	[length_max] [int] NOT NULL,
+	[name] [char](64)  NOT NULL default '',
+	[label] [char](64)  NOT NULL default '',
+	[type] [smallint] NOT NULL default '',
+	[possible_values] [char](255)  NOT NULL default '',
+	[default_value] [char](255)  NOT NULL default '',
+	[valid_regexp] [char](255)  NOT NULL default '',
+	[length_min] [int] NOT NULL default '',
+	[length_max] [int] NOT NULL default '',
 	[show_on_design] [tinyint] NOT NULL CONSTRAINT [DF_custom_fields_show_on_design]  DEFAULT ((1)),
 	[enable_on_design] [tinyint] NOT NULL CONSTRAINT [DF_custom_fields_enable_on_design]  DEFAULT ((1)),
-	[show_on_execution] [tinyint] NOT NULL CONSTRAINT [DF_custom_fields_show_on_execution]  DEFAULT ((1)),
-	[enable_on_execution] [tinyint] NOT NULL CONSTRAINT [DF_custom_fields_enable_on_execution]  DEFAULT ((1)),
+	[show_on_execution] [tinyint] NOT NULL CONSTRAINT [DF_custom_fields_show_on_execution]  DEFAULT ((0)),
+	[enable_on_execution] [tinyint] NOT NULL CONSTRAINT [DF_custom_fields_enable_on_execution]  DEFAULT ((0)),
  CONSTRAINT [PK_custom_fields] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC

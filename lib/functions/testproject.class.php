@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.50 $
- * @modified $Date: 2007/12/10 17:36:18 $  $Author: franciscom $
+ * @version $Revision: 1.51 $
+ * @modified $Date: 2007/12/14 22:42:51 $  $Author: schlundus $
  * @author franciscom
  *
  * 20071111 - franciscom - new method get_subtree();
@@ -608,12 +608,9 @@ function count_testcases($id)
 	 * @param type $kwid 
 	 * 
 	 **/
-	public function getKeyword($kwID)
+	public function getKeyword($id)
 	{
-		$kw = new tlKeyword($kwID);
-		if ($kw->readFromDB($this->m_db))
-			return $kw;
-		return null;
+		return tlDBObject::createObjectFromDB($this->m_db,$id,"tlKeyword");
 	}
 	/**
 	 * Gets the keywords of the given test project
@@ -628,13 +625,8 @@ function count_testcases($id)
 	 **/
 	public function getKeywords($testproject_id)
 	{
-		$keywords = null;
-		$kwIDs = $this->getKeywordIDsFor($testproject_id);
-		for($i = 0;$i < sizeof($kwIDs);$i++)
-		{
-			$keywords[] = $this->getKeyword($kwIDs[$i]);
-		}
-		return $keywords;
+		$ids = $this->getKeywordIDsFor($testproject_id);
+		return tlDBObject::createObjectsFromDB($this->m_db,$ids,"tlKeyword");
 	}
 	
 	/**
@@ -648,8 +640,7 @@ function count_testcases($id)
 	 **/
 	function deleteKeyword($id)
 	{
-		$kw = new tlKeyword($id);
-		return $kw->deleteFromDB($this->m_db);
+		return tlDBObject::deleteObjectFromDB($this->m_db,$id,"tlKeyword");
 	}
 
 	function deleteKeywords($testproject_id)
@@ -742,7 +733,7 @@ function count_testcases($id)
 	function importKeywordsFromXMLFile($testproject_id,$fileName)
 	{
 		$xml = simplexml_load_file($fileName);
-		return $this->importKeywordsFromSimpleXML($xml);
+		return $this->importKeywordsFromSimpleXML($testproject_id,$xml);
 	}
 	
 	function importKeywordsFromXML($testproject_id,$xml)

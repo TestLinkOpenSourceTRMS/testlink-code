@@ -1,6 +1,6 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: usersview.tpl,v 1.2 2007/12/03 08:27:17 franciscom Exp $
+$Id: usersview.tpl,v 1.3 2007/12/14 22:42:51 schlundus Exp $
 
 Purpose: smarty template - users overview
 
@@ -53,10 +53,10 @@ var del_action=fRoot+"lib/usermanagement/usersview.php?operation=delete&user=";
 	{***** existing users form *****}
 	<div class="workBack">
 		<form method="post" action="lib/usermanagement/usersview.php" name="usersview" id="usersview">
-		<input type="hidden" id="operation" name="operation" value="">
-		<input type="hidden" id="order_by_role_dir" name="order_by_role_dir" value="{$order_by_role_dir}">
-		<input type="hidden" id="order_by_login_dir" name="order_by_login_dir" value="{$order_by_login_dir}">
-		<input type="hidden" id="user_order_by" name="user_order_by" value="{$user_order_by}">
+		<input type="hidden" id="operation" name="operation" value="" />
+		<input type="hidden" id="order_by_role_dir" name="order_by_role_dir" value="{$order_by_role_dir}" />
+		<input type="hidden" id="order_by_login_dir" name="order_by_login_dir" value="{$order_by_login_dir}" />
+		<input type="hidden" id="user_order_by" name="user_order_by" value="{$user_order_by}" />
 	
 	  {include file="inc_update.tpl" result=$result item="user" action="$action" user_feedback=$user_feedback}
 	
@@ -66,9 +66,10 @@ var del_action=fRoot+"lib/usermanagement/usersview.php?operation=delete&user=";
 				    {lang_get s='th_login'}
 				    <img src="{$smarty.const.TL_THEME_IMG_DIR}/order_{$order_by_login_dir}.gif" 
 				         title="{lang_get s='order_by_login'} {lang_get s=$order_by_login_dir}"
+						 alt="{lang_get s='order_by_role_descr'} {lang_get s=$order_by_role_dir}"
 				         onclick="usersview.operation.value='order_by_login';
 				                  usersview.user_order_by.value='order_by_login'; 
-				                  usersview.submit();">
+				                  usersview.submit();" />
 				</th>
 	
 				<th>{lang_get s='th_first_name'}</th>
@@ -79,9 +80,10 @@ var del_action=fRoot+"lib/usermanagement/usersview.php?operation=delete&user=";
 				    {lang_get s='th_role'}
 	    			<img src="{$smarty.const.TL_THEME_IMG_DIR}/order_{$order_by_role_dir}.gif" 
 	    			     title="{lang_get s='order_by_role_descr'} {lang_get s=$order_by_role_dir}"
+						 alt="{lang_get s='order_by_role_descr'} {lang_get s=$order_by_role_dir}"
 	    			     onclick="usersview.operation.value='order_by_role';
 	    			              usersview.user_order_by.value='order_by_role'; 
-	      			            usersview.submit();">
+	      			            usersview.submit();" />
 				</th>
 				
 				<th>{lang_get s='th_locale'}</th>	
@@ -90,37 +92,38 @@ var del_action=fRoot+"lib/usermanagement/usersview.php?operation=delete&user=";
 			</tr>
 			
 			{section name=row loop=$users start=0}
-				{assign var="r_d" value=$users[row].role_description}
-				
-			<tr {if $role_colour[$r_d] neq ''} style="background-color: {$role_colour[$r_d]};" {/if}>
-				<td><a href="lib/usermanagement/usersedit.php?user_id={$users[row].id}"> 
-				    {$users[row].login|escape}
+				{assign var="user" value="$users[row]"}
+				{assign var="userLocale" value=$user->m_locale}
+				{assign var="r_d" value=$user->m_globalRole->m_description}
+
+				<tr {if $role_colour[$r_d] neq ''} style="background-color: {$role_colour[$r_d]};" {/if}>
+				<td><a href="lib/usermanagement/usersedit.php?user_id={$user->m_dbID}"> 
+				    {$user->m_login|escape}
 			      {if $gsmarty_gui->show_icon_edit}
 				      <img title="{lang_get s='alt_edit_user'}" 
 				           alt="{lang_get s='alt_edit_user'}" src="{$smarty.const.TL_THEME_IMG_DIR}/icon_edit.png"/>
 				    {/if}       
 				    </a>
 				</td>
-				<td>{$users[row].first|escape}</td>
-				<td>{$users[row].last|escape}</td>
-				<td>{$users[row].email|escape}</td>
-				<td>{$users[row].role_description|escape}</td>
+				<td>{$user->m_firstName|escape}</td>
+				<td>{$user->m_lastName|escape}</td>
+				<td>{$user->m_emailAddress|escape}</td>
+				<td>{$r_d|escape}</td>
 				<td>
-					{assign var="lc" value="$users[row]"}
-					{$optLocale[$lc.locale]|escape}
+				 {$optLocale[$userLocale]|escape}
 				</td>
 				<td>
-					{if $users[row].active eq 1}
-					{lang_get s='Yes'}
+					{if $user->m_bActive eq 1}
+						{lang_get s='Yes'}
 					{else}
-					{lang_get s='No'}
+						{lang_get s='No'}
 					{/if}
 				</td>
 				<td>
 				  <img style="border:none;cursor: pointer;"  
                alt="{lang_get s='alt_delete_user'}"
 					     title="{lang_get s='alt_delete_user'}" 
-					     onclick="delete_confirmation({$users[row].id},'{$users[row].login|escape:'javascript'}',
+					     onclick="delete_confirmation({$user->m_dbID},'{$user->m_login|escape:'javascript'}',
 					                                  '{$del_msgbox_title}','{$warning_msg}');"
 				       src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png"/>
 				</td>

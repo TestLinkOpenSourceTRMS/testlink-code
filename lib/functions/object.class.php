@@ -151,4 +151,32 @@ abstract class tlDBObject extends tlObject implements iDBSerialization
 	{
 		$this->m_dbID = $id;
 	}
+	static public function createObjectFromDB(&$db,$id,$className)
+	{
+		$item = new $className($id);
+		if ($item->readFromDB($db) == OK)
+			return $item;
+		return null;
+	}
+	static public function createObjectsFromDBbySQL(&$db,$query,$column,$className)
+	{
+		$ids = $db->fetchColumnsIntoArray($query,$column);
+		return self::createObjectsFromDB($db,$ids,$className);
+	}
+	static public function createObjectsFromDB(&$db,$ids,$className)
+	{
+		$items = null;
+		for($i = 0;$i < sizeof($ids);$i++)
+		{
+			$item = self::createObjectFromDB($db,$ids[$i],$className);
+			if ($item)
+				$items[] = $item;
+		}
+		return $items;
+	}
+	static public function deleteObjectFromDB(&$db,$id,$className)
+	{
+		$item = new $className($id);
+		return $item->deleteFromDB($db);
+	}
 }

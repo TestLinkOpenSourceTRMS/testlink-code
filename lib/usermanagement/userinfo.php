@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: userinfo.php,v $
 *
-* @version $Revision: 1.7 $
-* @modified $Date: 2007/12/09 12:12:04 $
+* @version $Revision: 1.8 $
+* @modified $Date: 2007/12/14 22:42:51 $
 * 
 * Displays the users' information and allows users to change 
 * their passwords and user info.
@@ -28,9 +28,6 @@ $new = isset($_POST['new1']) ? $_POST['new1'] : null;
 $bEdit = isset($_POST['editUser']) ? 1 : 0;
 $bChangePwd = isset($_POST['changePasswd']) ? 1 : 0;
 $userID = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0; 
-
-$login_method = config_get('login_method');
-$external_password_mgmt = ('LDAP' == $login_method )? 1 : 0;
 
 $user = new tlUser($userID);
 $user->readFromDB($db);
@@ -57,6 +54,9 @@ if (($bEdit || $bChangePwd) && $updateResult == OK)
 }
 $msg = getUserErrorMessage($updateResult);
 $user->readFromDB($db);
+
+$login_method = config_get('login_method');
+$external_password_mgmt = ('LDAP' == $login_method )? 1 : 0;
 
 $smarty = new TLSmarty();
 $smarty->assign('external_password_mgmt', $external_password_mgmt);

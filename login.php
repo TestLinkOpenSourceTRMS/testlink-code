@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: login.php,v $
  *
- * @version $Revision: 1.25 $
- * @modified $Date: 2007/08/31 06:34:51 $ by $Author: franciscom $
+ * @version $Revision: 1.26 $
+ * @modified $Date: 2007/12/14 22:42:50 $ by $Author: schlundus $
  * @author Martin Havlat
  * 
  * Login management
@@ -36,7 +36,6 @@ if (!$op['status'])
 	exit();
 }
 
-
 $_GET = strings_stripSlashes($_GET);
 $note = isset($_GET['note']) ? $_GET['note'] : null;
 
@@ -63,7 +62,7 @@ switch($note)
 		break;
 	case 'sessionExists':
 		$message = lang_get('login_msg_session_exists1') . ' <a style="color:white;" href="logout.php">' . 
- 				       lang_get('logout_link') . '</a>' . lang_get('login_msg_session_exists2');
+ 				   lang_get('logout_link') . '</a>' . lang_get('login_msg_session_exists2');
 		break;
 	default:
 		break;
@@ -81,15 +80,13 @@ if($ldap_password_mgmt && !extension_loaded("ldap") )
 
 
 $smarty = new TLSmarty();
-
-// 20070301 - BUGID 695
 $smarty->assign('g_user_self_signup', config_get('user_self_signup'));
 $smarty->assign('login_logo', LOGO_LOGIN_PAGE);
 $smarty->assign('securityNotes',$securityNotes);
 $smarty->assign('note',$message);
 $smarty->assign('css', TL_BASE_HREF . TL_LOGIN_CSS);
 $smarty->assign('login_disabled', $login_disabled);
-$smarty->assign('external_password_mgmt', $ldap_password_mgmt); // BUGID xxxx
+$smarty->assign('external_password_mgmt', $ldap_password_mgmt);
 
 $smarty->display('login.tpl');
 ?>

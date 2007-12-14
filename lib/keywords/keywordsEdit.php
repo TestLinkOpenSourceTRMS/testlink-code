@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: keywordsEdit.php,v $
  *
- * @version $Revision: 1.11 $
- * @modified $Date: 2007/12/09 12:12:03 $ by $Author: schlundus $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2007/12/14 22:42:51 $ by $Author: schlundus $
  *
  * allows users to manage keywords. 
  *
@@ -153,7 +153,7 @@ function edit(&$smarty,&$args,&$tproject_mgr)
 	{
 		$args->keyword = $keyword->m_name;
 		$args->notes = $keyword->m_notes;
-		$action_descr .= TITLE_SEP . $keyword_info['keyword'];
+		$action_descr .= TITLE_SEP . $keyword->m_name;
 	}
 	
 	$smarty->assign('submit_button_label',lang_get('btn_save'));

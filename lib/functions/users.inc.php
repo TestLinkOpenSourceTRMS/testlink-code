@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: users.inc.php,v $
  *
- * @version $Revision: 1.49 $
- * @modified $Date: 2007/12/09 12:12:03 $ $Author: schlundus $
+ * @version $Revision: 1.50 $
+ * @modified $Date: 2007/12/14 22:42:51 $ $Author: schlundus $
  *
  * Functions for usermanagement
  *
@@ -31,6 +31,7 @@ class tlUser extends tlDBObject
 	public $m_bActive;
 	public $m_defaultTestprojectID;
 	public $m_globalRole;
+	public $m_globalRoleID;
 	public $m_login;
 	protected $m_password;
 	
@@ -57,15 +58,15 @@ class tlUser extends tlDBObject
 	
 	protected function _clean()
 	{
-		$m_firstName = null;
-		$m_lastName = null;
-		$m_emailAddress = null;
-		$m_locale = null;
-		$m_password = null;
-		$m_bActive = null;
-		$m_defaultTestprojectID = null;
-		$m_globalRole = null;
-		$m_login = null;
+		$this->m_firstName = null;
+		$this->m_lastName = null;
+		$this->m_emailAddress = null;
+		$this->m_locale = null;
+		$this->m_password = null;
+		$this->m_bActive = null;
+		$this->m_defaultTestprojectID = null;
+		$this->m_globalRoleID = null;
+		$this->m_login = null;
 	}
 	/* fills the members  */
 	function create()
@@ -85,7 +86,14 @@ class tlUser extends tlDBObject
 			$this->m_lastName = $info['last'];
 			$this->m_login = $info['login'];
 			$this->m_emailAddress = $info['email'];
-			$this->m_globalRole = $info['role_id'];
+			$this->m_globalRoleID = $info['role_id'];
+			
+			if ($this->m_globalRoleID)
+			{
+				$this->m_globalRole = new tlRole($this->m_globalRoleID);
+				$this->m_globalRole->readFromDB($db);
+			}
+			
 			$this->m_locale = $info['locale'];
 			$this->m_password = $info['password'];
 			$this->m_bActive = $info['active'];
@@ -101,11 +109,11 @@ class tlUser extends tlDBObject
 			if($this->m_dbID)
 			{
 				$query = "UPDATE users " .
-			       "SET first='" . $db->prepare_string($this->m_firstName) . "'" .
-			       ", last='" .  $db->prepare_string($this->m_lastName)    . "'" .
-			       ", email='" . $db->prepare_string($this->m_emailAddress)   . "'" .
-				   ", locale = ". "'" . $db->prepare_string($this->m_locale) . "'" . 
-				   ", password = ". "'" . $db->prepare_string($this->m_password) . "'" ;
+			       "SET first='" . $db->prepare_string(trim($this->m_firstName)) . "'" .
+			       ", last='" .  $db->prepare_string(trim($this->m_lastName))    . "'" .
+			       ", email='" . $db->prepare_string(trim($this->m_emailAddress))   . "'" .
+				   ", locale = ". "'" . $db->prepare_string(trim($this->m_locale)) . "'" . 
+				   ", password = ". "'" . $db->prepare_string(trim($this->m_password)) . "'" ;
 				$query .= " WHERE id=" . $this->m_dbID;
 				$result = $db->exec_query($query);
 			}
@@ -210,6 +218,45 @@ class tlUser extends tlDBObject
 			$result = self::USER_E_LASTNAMELENGTH;
 			
 		return $result;
+	}
+}
+
+class tlRole extends tlDBObject
+{
+	public $m_description;
+	public $m_notes;
+	
+	function __construct($dbID = null)
+	{
+		parent::__construct($dbID);
+	}
+	protected function _clean()
+	{
+		$this->m_description = null;
+		$this->m_notes = null;
+	}
+	//BEGIN interface iDBSerialization
+	public function readFromDB(&$db)
+	{
+		$this->_clean();
+		$query = "SELECT id,description, notes FROM roles";
+		$query .= " WHERE id = {$this->m_dbID}";
+		
+		$info = $db->fetchFirstRow($query);			 
+		if ($info)
+		{
+			$this->m_description = $info['description'];
+			$this->m_notes = $info['notes'];
+		}
+		return $info ? OK : ERROR;
+	}
+	public function writeToDB(&$db)
+	{
+	
+	}
+	public function deleteFromDB(&$db)
+	{
+	
 	}
 }
 
@@ -697,37 +744,14 @@ function get_users_for_html_options(&$db,$whereClause = null,$add_blank_option=f
 }
 
 
-/*
-  function: 
-
-  args :
-  
-  returns: 
-
-*/
-function get_all_users_roles(&$db,$order_by=null)
+function getAllUsersRoles(&$db,$order_by = null)
 {
-	$sql = " SELECT users.id,login,password,first,last,email, " .
-	       "        roles.description AS role_description,locale,".
-	       " login AS fullname, active " .
-	       " FROM users LEFT OUTER JOIN roles ON users.role_id=roles.id ";
-	    
-	$sql .= is_null($order_by) ? " ORDER BY login " : $order_by;
+	$query = "SELECT id FROM users";
+	$query .= is_null($order_by) ? " ORDER BY login " : $order_by;
 	
-	$users = null;
-	$result = $db->exec_query($sql);
-	if ($result)
-	{
-		while($user = $db->fetch_array($result))
-		{
-			$user['fullname'] = format_username($user);
-	  		$users[] = $user;
-		}	
-	}
-	
+	$users = tlDBObject::createObjectsFromDBbySQL($db,$query,"id","tlUser");
 	return $users;
 }
-
 
 /*
   function: 
@@ -739,21 +763,20 @@ function get_all_users_roles(&$db,$order_by=null)
 */
 function reset_password(&$db,$user_id)
 {
+	$newPassword = md5(uniqid(rand(),1));
 
-$newPassword = md5(uniqid(rand(),1));
+	$user = getUserById($db,$user_id);
+	$email=$user[0]['email'];
 
-$user = getUserById($db,$user_id);
-$email=$user[0]['email'];
+	$msgBody = lang_get('your_password_is') . $newPassword .  lang_get('contact_admin');  
+	$mail_op = @email_send(config_get('from_email'), $email,  
+	                       lang_get('mail_passwd_subject'), $msgBody);
 
-$msgBody = lang_get('your_password_is') . $newPassword .  lang_get('contact_admin');  
-$mail_op = @email_send(config_get('from_email'), $email,  
-                       lang_get('mail_passwd_subject'), $msgBody);
-
-if ($mail_op->status_ok)
-{
-	setUserPassword($db,$user_id,$newPassword);
-}
-return($mail_op);
+	if ($mail_op->status_ok)
+	{
+		setUserPassword($db,$user_id,$newPassword);
+	}
+	return($mail_op);
 } 
 
 function getUserErrorMessage($code)

@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: keyword.class.php,v $
 * 
-* @version $Id: keyword.class.php,v 1.3 2007/12/08 20:34:13 schlundus Exp $
-* @modified $Date: 2007/12/08 20:34:13 $ by $Author: schlundus $
+* @version $Id: keyword.class.php,v 1.4 2007/12/14 22:42:51 schlundus Exp $
+* @modified $Date: 2007/12/14 22:42:51 $ by $Author: schlundus $
 *
 * Functions for support keywords management. 
 **/
@@ -81,8 +81,8 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
 			$result = $this->doesKeywordExist($db);
 		if ($result == OK)
 		{
-			$name = $db->prepare_string($this->m_name);
-			$notes = $db->prepare_string($this->m_notes);
+			$name = $db->prepare_string(trim($this->m_name));
+			$notes = $db->prepare_string(trim($this->m_notes));
 
 			if ($this->m_dbID)
 			{

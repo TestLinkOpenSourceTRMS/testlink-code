@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.83 $ $Author: schlundus $
- * @modified $Date: 2007/12/05 21:25:14 $
+ * @version $Revision: 1.84 $ $Author: schlundus $
+ * @modified $Date: 2007/12/14 22:42:51 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -31,6 +31,7 @@
 require_once("database.class.php");
 require_once("roles.inc.php");
 
+require_once(dirname(__FILE__)."/object.class.php");
 /** @TODO use the next include only if it is used -> must be removed*/
 require_once(dirname(__FILE__)."/testproject.class.php");
 require_once(dirname(__FILE__)."/testplan.class.php");

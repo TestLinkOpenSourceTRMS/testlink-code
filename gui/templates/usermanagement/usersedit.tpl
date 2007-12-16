@@ -1,6 +1,6 @@
 {* 
 Testlink: smarty template - 
-$Id: usersedit.tpl,v 1.1 2007/12/02 17:03:58 franciscom Exp $ 
+$Id: usersedit.tpl,v 1.2 2007/12/16 13:03:15 schlundus Exp $ 
 *}
 {* 
 
@@ -18,7 +18,7 @@ $Id: usersedit.tpl,v 1.1 2007/12/02 17:03:58 franciscom Exp $
 
 {config_load file="input_dimensions.conf" section='login'}
 
-{include file="inc_head.tpl" jsValidate="yes" openhead="yes"}
+{include file="inc_head.tpl" jsValidate="yes" openHead="yes"}
 {literal}
 <script type="text/javascript">
 {/literal}
@@ -99,8 +99,8 @@ function validateForm(f,check_password)
 
 {if $userData neq null}
   {assign var="check_password" value=0}
-  {assign var="user_id" value=$userData.id}
-  {assign var="user_login" value=$userData.login}
+  {assign var="user_id" value=$userData->m_dbID}
+  {assign var="user_login" value=$userData->m_login}
 {/if}
 
 
@@ -134,7 +134,7 @@ function validateForm(f,check_password)
 <form method="post" action="lib/usermanagement/usersedit.php" 
       name="useredit" onSubmit="javascript:return validateForm(this,{$check_password});">
       
-	<input type="hidden" id="user_id" name="user_id" value="{$user_id}" />
+	<input type="hidden" name="user_id" value="{$user_id}" />
 	<input type="hidden" id="user_login" name="user_login" value="{$user_login}" />
 	<table class="common">
 		<tr>
@@ -143,19 +143,19 @@ function validateForm(f,check_password)
 			{if $userData neq null}
 				disabled="disabled"
 			{/if}
-			 value="{$userData.login|escape}" />
+			 value="{$userData->m_login|escape}" />
       {include file="error_icon.tpl" field="login"}
 			 </td>
 		</tr>
 		<tr>
 			<th>{lang_get s='th_first_name'}</th>
-			<td><input type="text" name="first" value="{$userData.first|escape}" 
+			<td><input type="text" name="first" value="{$userData->m_firstName|escape}" 
 			     size="{#NAMES_SIZE#}" maxlength="{#NAMES_SIZE#}" />
 			     {include file="error_icon.tpl" field="first"}
 			</td></tr>
 		<tr>
 			<th>{lang_get s='th_last_name'}</th>
-			<td><input type="text" name="last" value="{$userData.last|escape}" 
+			<td><input type="text" name="last" value="{$userData->m_lastName|escape}" 
 			     size="{#NAMES_SIZE#}" maxlength="{#NAMES_SIZE#}" />
  			     {include file="error_icon.tpl" field="last"}
 			     </td>
@@ -177,7 +177,7 @@ function validateForm(f,check_password)
    
 		<tr>
 			<th>{lang_get s='th_email'}</th>
-			<td><input type="text" id="email" name="email" value="{$userData.email|escape}" 
+			<td><input type="text" id="email" name="email" value="{$userData->m_emailAddress|escape}" 
 			           size="{#EMAIL_SIZE#}" maxlength="{#EMAIL_MAXLEN#}" />
           {include file="error_icon.tpl" field="email"}       
 			</td>
@@ -185,8 +185,8 @@ function validateForm(f,check_password)
 		<tr>
 			<th>{lang_get s='th_role'}</th>
 			<td>
-		  	   {assign var=selected_role value=$userData.role_id}
-			  {if $userData.role_id eq 0}
+		  	   {assign var=selected_role value=$userData->m_globalRoleID}
+			  {if $userData->m_globalRoleID eq 0}
         	  {assign var=selected_role value=$smarty.const.TL_DEFAULT_ROLEID}	  
 			  {/if}
 				<select name="rights_id"> 
@@ -203,8 +203,8 @@ function validateForm(f,check_password)
            Very important: the locale member that holds the value of TL_DEFAULT_LOCALE
                            is declared in tlsmarty.inc.php
         *}
-        {assign var=selected_locale value=$userData.locale}
-        {if $userData.locale|count_characters eq 0}
+        {assign var=selected_locale value=$userData->m_locale}
+        {if $userData->m_locale|count_characters eq 0}
            {assign var=selected_locale value=$locale}
         {/if}
 	
@@ -217,7 +217,7 @@ function validateForm(f,check_password)
 		<tr>
 			<th>{lang_get s='th_active'}</th>
 			<td> 
-			  <input type="checkbox"  name="user_is_active" {if $userData.active eq 1} checked {/if} />
+			  <input type="checkbox"  name="user_is_active" {if $userData->m_bActive eq 1} checked {/if} />
 			</td>
 		</tr>
 
@@ -243,7 +243,7 @@ function validateForm(f,check_password)
 {if $userData neq null and $external_password_mgmt eq 0}
 <form method="post" action="lib/usermanagement/usersedit.php" 
       name="user_reset_password">
-  	<input type="hidden" id="user_id" name="user_id" value="{$user_id}" />
+  	<input type="hidden" name="user_id" value="{$user_id}" />
 		<input type="submit" id="do_reset_password" name="do_reset_password" 
 		       value="{lang_get s='button_reset_password'}" />
 </form>

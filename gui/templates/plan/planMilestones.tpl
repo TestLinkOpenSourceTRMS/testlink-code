@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planMilestones.tpl,v 1.1 2007/12/02 17:03:00 franciscom Exp $ 
+$Id: planMilestones.tpl,v 1.2 2007/12/16 13:03:15 schlundus Exp $ 
 Purpose: smarty template - edit milestones 
 
 rev :
@@ -9,7 +9,7 @@ rev :
                              added js checkings
 *}
 
-{include file="inc_head.tpl" jsValidate="yes" openhead="yes"}
+{include file="inc_head.tpl" jsValidate="yes" openHead="yes"}
 
 <script type="text/javascript">
 var warning_empty_milestone_name  = "{lang_get s='warning_empty_milestone_name'}";

@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: usersedit.php,v $
 *
-* @version $Revision: 1.19 $
-* @modified $Date: 2007/12/16 12:20:58 $ $Author: schlundus $
+* @version $Revision: 1.20 $
+* @modified $Date: 2007/12/16 13:03:15 $ $Author: schlundus $
 * 
 * rev :  BUGID 918
 *
@@ -109,14 +109,11 @@ if ($args->do_reset_password)
   
 }
 
-
-$userResult = null;
-
+$user = null;
 if ($user_id)
 {
-	$userResult = getUserById($db,$user_id);
-	if ($userResult)
-		$userResult = $userResult[0];
+	$user = new tlUser($user_id);
+	$user->readFromDB($db);
 }
 	
 $smarty = new TLSmarty();
@@ -132,7 +129,7 @@ $roles = getAllRoles($db);
 unset($roles[TL_ROLES_UNDEFINED]);
 
 $smarty->assign('optRights',$roles);
-$smarty->assign('userData', $userResult);
+$smarty->assign('userData', $user);
 $smarty->assign('result',$sqlResult);
 $smarty->assign('action',$action);
 $smarty->assign('user_feedback',$user_feedback);

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: users.inc.php,v $
  *
- * @version $Revision: 1.50 $
- * @modified $Date: 2007/12/14 22:42:51 $ $Author: schlundus $
+ * @version $Revision: 1.51 $
+ * @modified $Date: 2007/12/16 12:20:58 $ $Author: schlundus $
  *
  * Functions for usermanagement
  *
@@ -21,6 +21,7 @@
 **/
 require_once("common.php");
 
+//SCHLUNDUS: I will cleanup this file step by step
 //SCHLUNDUS: not completed
 class tlUser extends tlDBObject
 {
@@ -340,77 +341,6 @@ function userInsert(&$db,$login, $password, $first, $last, $email,
 	}
 	
 	return $new_user_id;
-}
-
-/**
- * Deletes a user
- *
- * @param type $db [ref] documentation
- * @param type $id documentation
- * @return type documentation
- * 20060224 - franciscom - table name user -> users
- **/
-function userDelete(&$db,$id)
-{
-	$sql = "DELETE FROM users WHERE id=" . $id;
-	$result = $db->exec_query($sql);
-			
-	return $result ? 'ok' : $db->error_msg();
-}
-
-
-
-
-/**
- * Function-Documentation
- *
- * @param type $db [ref] documentation
- * @param type $userID documentation
- * @param type $password documentation
- * @return type documentation
- **/
-function setUserPassword(&$db,$userID,$password)
-{
-	$password = md5($password);
-	$sql = "UPDATE users SET password = '" . $db->prepare_string($password) . "' WHERE id = ".$userID;
-	$result = $db->exec_query($sql); 
-	
-	return $result ? 1 : 0;
-}
-
-/** 
-* Function update user password
-* @param string user ID
-* @param string old password
-* @param string new password
-* @return integer result 
-*/
-function updateUserPassword(&$db,$userID, $oldPswd, $newPswd)
-{
-	// use md5 to encrypt the password string
-	if (getUserPassword($db,$userID) == md5($oldPswd))
-		$updateResult = setUserPassword($db,$userID,$newPswd) ? 'ok' : $db->error_msg();
-	else
-		$updateResult = lang_get('wrong_old_password');
-	
-	return $updateResult;
-}
-
-/**
- * Function-Documentation
- *
- * @param type $db [ref] documentation
- * @param type $userID documentation
- * @return type documentation
- *
- * 20060224 - franciscom - table name user -> users
- **/
-function getUserPassword(&$db,$userID)
-{
-	$sql = "SELECT password FROM users WHERE id=" . $userID;
-	$pwd = $db->fetchFirstRowSingleColumn($sql,"password");
-	
-	return $pwd;
 }
 
 /**
@@ -744,15 +674,6 @@ function get_users_for_html_options(&$db,$whereClause = null,$add_blank_option=f
 }
 
 
-function getAllUsersRoles(&$db,$order_by = null)
-{
-	$query = "SELECT id FROM users";
-	$query .= is_null($order_by) ? " ORDER BY login " : $order_by;
-	
-	$users = tlDBObject::createObjectsFromDBbySQL($db,$query,"id","tlUser");
-	return $users;
-}
-
 /*
   function: 
 
@@ -812,5 +733,14 @@ function getUserErrorMessage($code)
 		default:
 			
 	}
+}
+
+function getAllUsersRoles(&$db,$order_by = null)
+{
+	$query = "SELECT users.id FROM users LEFT OUTER JOIN roles ON users.role_id = roles.id ";
+	$query .= is_null($order_by) ? " ORDER BY login " : $order_by;
+	
+	^$users = tlDBObject::createObjectsFromDBbySQL($db,$query,"id","tlUser");
+	return $users;
 }
 ?>

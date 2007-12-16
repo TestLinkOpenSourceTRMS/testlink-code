@@ -1,6 +1,6 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_head.tpl,v 1.14 2007/12/02 17:24:45 franciscom Exp $
+$Id: inc_head.tpl,v 1.15 2007/12/16 12:20:56 schlundus Exp $
 Purpose: smarty template - HTML Common Header 
 
 rev :
@@ -19,7 +19,7 @@ rev :
 	<meta name="robots" content="NOFOLLOW" />
 	<base href="{$basehref}"/>
 	<title>{$title|default:"TestLink"}</title>
-  <link rel="TL shortcut icon" href="{$basehref}/{$smarty.const.TL_THEME_IMG_DIR}/favicon.ico" />
+	<link rel="TL shortcut icon" href="{$basehref}/{$smarty.const.TL_THEME_IMG_DIR}/favicon.ico" />
 	<style media="all" type="text/css">@import "{$css}";</style>
 	
 	{if $smarty.const.TL_JOMLA_1_CSS neq ''}
@@ -58,7 +58,7 @@ rev :
 	// bug management (using logic similar to attachment)
 	var bug_dialog=new bug_dialog();
 	</script> 
-
+	
   {if $smarty.const.WEBEDITOR eq 'tinymce'}
     <script type="text/javascript" src="{$basehref}third_party/tinymce/jscripts/tiny_mce/tiny_mce.js" language="javascript" ></script>
     {include file="inc_tinymce_init.tpl"}

@@ -5,9 +5,9 @@
  *
  * Filename $RCSfile: tcImport.php,v $
  * Filename $RCSfile: tcImport.php,v $
- * @version $Revision: 1.28 $
+ * @version $Revision: 1.29 $
  *
- * @modified $Date: 2007/12/08 19:10:19 $ by $Author: schlundus $
+ * @modified $Date: 2007/12/16 12:20:58 $ by $Author: schlundus $
 */
 require('../../config.inc.php');
 require_once('common.php');
@@ -147,6 +147,7 @@ function importTestCaseDataFromXML(&$db,$fileName,$parentID,$tproject_id,
 		$root = $dom->document_element();
 		
 		$xmlKeywords = $root->get_elements_by_tagname("keywords");
+		$kwMap = null;
 		if ($xmlKeywords)
 		{
 			$tproject = new testproject($db);

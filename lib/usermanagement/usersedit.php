@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: usersedit.php,v $
 *
-* @version $Revision: 1.18 $
-* @modified $Date: 2007/12/02 17:19:21 $ $Author: franciscom $
+* @version $Revision: 1.19 $
+* @modified $Date: 2007/12/16 12:20:58 $ $Author: schlundus $
 * 
 * rev :  BUGID 918
 *
@@ -136,20 +136,9 @@ $smarty->assign('userData', $userResult);
 $smarty->assign('result',$sqlResult);
 $smarty->assign('action',$action);
 $smarty->assign('user_feedback',$user_feedback);
-
 $smarty->display($template_dir . 'usersedit.tpl');
-?>
 
-<?php
-// -------------------------------------------------------------------------------------------------
-/*
-  function: 
 
-  args :
-  
-  returns: 
-
-*/
 function init_args($get_hash, $post_hash)
 {
 	$post_hash = strings_stripSlashes($post_hash);

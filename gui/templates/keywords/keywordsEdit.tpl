@@ -1,13 +1,12 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: keywordsEdit.tpl,v 1.3 2007/12/09 12:12:02 schlundus Exp $
+$Id: keywordsEdit.tpl,v 1.4 2007/12/16 12:20:58 schlundus Exp $
 Purpose: smarty template - View all keywords 
 *}
-
 {assign var="url_args" value="lib/keywords/keywordsEdit.php"}
 {assign var="keyword_edit_url" value="$basehref$url_args"}
 
-{include file="inc_head.tpl" jsValidate="yes"}
+{include file="inc_head.tpl" jsValidate="yes" openHead="yes"}
 {literal}
 <script type="text/javascript">
 {/literal}
@@ -48,7 +47,7 @@ function validateForm(f)
   			<th>{lang_get s='th_keyword'}</th>
   			<td><input type="text" name="keyword" 
   			           size="{#KEYWORD_SIZE#}" maxlength="{#KEYWORD_MAXLEN#}" 
-  				         value="{$keyword|escape}"/>
+  				         value="{$keyword|escape}" />
 			  		{include file="error_icon.tpl" field="keyword"}
 			  </td>				
   		</tr>
@@ -58,9 +57,9 @@ function validateForm(f)
   		</tr>
   	</table>
   	<div class="groupBtn">	
-  	<input type="hidden" name="doAction" value="">
+  	<input type="hidden" name="doAction" value="" />
     <input type="submit" name="create_req" value="{$submit_button_label}" 
-	         onclick="doAction.value='{$submit_button_action}'"/>
+	         onclick="doAction.value='{$submit_button_action}'" />
   	
   	</div>
   	</form>

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: attachmentdownload.php,v $
  *
- * @version $Revision: 1.8 $
- * @modified $Date: 2007/12/02 15:44:18 $ by $Author: schlundus $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2007/12/16 12:20:58 $ by $Author: schlundus $
  *
  * Downloads the attachment by a given id
  *
@@ -31,7 +31,10 @@ if ($id)
 		if (strlen($content))
 		{
 			@ob_end_clean();
-			header('Pragma: no-cache');
+			header('Pragma: public');
+			header("Cache-Control: ");
+			if (!(isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == "on" && preg_match("/MSIE/",$_SERVER["HTTP_USER_AGENT"])))
+				header('Pragma: no-cache');
 			header('Content-Type: '.$attachmentInfo['file_type']);
 			header('Content-Length: '.$attachmentInfo['file_size']);
 			header("Content-Disposition: attachment; filename=\"{$attachmentInfo['file_name']}\"");
@@ -43,4 +46,3 @@ if ($id)
 }
 $smarty = new TLSmarty();
 $smarty->display('attachment404.tpl');	
-?>

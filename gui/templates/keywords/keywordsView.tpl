@@ -1,35 +1,20 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: keywordsView.tpl,v 1.6 2007/12/08 20:34:13 schlundus Exp $
+$Id: keywordsView.tpl,v 1.7 2007/12/16 12:20:58 schlundus Exp $
 Purpose: smarty template - View all keywords 
-
-20070102 - franciscom
-1. Tab assign to test case will be displayed only if at least one keyword exists
-2. add confirmation before deleting
-
-20061007 - franciscom
-1. removed message when no keyword availables (useless IMHO)
-2. Show export/import buttons only is there are keywords
 *}
-
-
-{include file="inc_head.tpl" jsValidate="yes"}
-
+{include file="inc_head.tpl" jsValidate="yes" openHead="yes"}
+{include file="inc_del_onclick.tpl"}
 
 {lang_get s='warning_delete_keyword' var="warning_msg" }
 {lang_get s='delete' var="del_msgbox_title" }
 
-{include file="inc_head.tpl" jsValidate="yes" openHead="yes"}
-{include file="inc_del_onclick.tpl"}
-
 <script type="text/javascript">
 /* All this stuff is needed for logic contained in inc_del_onclick.tpl */
-var del_action=fRoot+'lib/keywords/keywordsEdit.php?doAction=do_delete&id=';
+var del_action=fRoot+'lib/keywords/keywordsEdit.php?doAction=do_delete&amp;id=';
 </script>
  
-
-
-
+</head>
 <body {$body_onload}>
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
@@ -50,7 +35,7 @@ var del_action=fRoot+'lib/keywords/keywordsEdit.php?doAction=do_delete&id=';
 		<tr>
 			<td>
 				{if $canManage ne ""}
-				<a href="lib/keywords/keywordsEdit.php?doAction=edit&id={$keywords[myKeyword]->m_dbID}">
+				<a href="lib/keywords/keywordsEdit.php?doAction=edit&amp;id={$keywords[myKeyword]->m_dbID}">
 				{/if}
 				{$keywords[myKeyword]->m_name|escape}
 				{if $canManage ne ""}
@@ -66,7 +51,7 @@ var del_action=fRoot+'lib/keywords/keywordsEdit.php?doAction=do_delete&id=';
              src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png"			     
 				     onclick="delete_confirmation({$keywords[myKeyword]->m_dbID},
 				              '{$keywords[myKeyword]->m_name|escape:'javascript'}',     
-				              '{$del_msgbox_title}','{$warning_msg}');" >
+				              '{$del_msgbox_title}','{$warning_msg}');" />
 			</td>
 			{/if}
 		</tr>
@@ -78,7 +63,7 @@ var del_action=fRoot+'lib/keywords/keywordsEdit.php?doAction=do_delete&id=';
 	<div class="groupBtn">	
 
   	<form name="keyword_view" id="keyword_view" method="post" action="lib/keywords/keywordsEdit.php"> 
-  	  <input type="hidden" name="doAction" value="">
+  	  <input type="hidden" name="doAction" value="" />
 
 		  {if $canManage ne ""}
   	    <input type="submit" id="create_keyword" name="create_keyword" 

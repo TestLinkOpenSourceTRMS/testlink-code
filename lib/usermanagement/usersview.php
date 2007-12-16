@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: usersview.php,v $
  *
- * @version $Revision: 1.12 $
- * @modified $Date: 2007/12/14 22:42:51 $ -  $Author: schlundus $
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2007/12/16 12:20:58 $ -  $Author: schlundus $
  *
  * This page shows all users
  */
@@ -18,7 +18,6 @@ $template_dir = 'usermanagement/';
 
 $sqlResult = null;
 $action = null;
-$do_toggle = 0;
 $user_feedback = '';
 
 $operation = isset($_REQUEST['operation']) ? $_REQUEST['operation'] : '';
@@ -27,44 +26,50 @@ $order_by_dir['order_by_role_dir'] = isset($_REQUEST['order_by_role_dir']) ? $_R
 $order_by_dir['order_by_login_dir'] = isset($_REQUEST['order_by_login_dir']) ? $_REQUEST['order_by_login_dir'] : 'asc';
 $user_id = isset($_REQUEST['user']) ? $_REQUEST['user'] : 0;
 
+$orderByType = 'order_by_login';
+$orderByDir = array('order_by_login_dir' => 'asc');
+
 switch($operation)
 {
 	case 'delete':
-		$user_data = getUserByID($db,$user_id);
-		$sqlResult = userDelete($db,$user_id);
-		//if the users deletes itself then logout
-		if ($user_id == $_SESSION['userID'])
+		$user = new tlUser($user_id);
+		$sqlResult = $user->readFromDB($db);
+		if ($sqlResult == OK)
 		{
-			header("Location: ../../logout.php");
-			exit();
+			$userLogin = $user->m_login;
+			$sqlResult = $user->deleteFromDB($db);
+			if ($sqlResult == OK)
+			{
+				//if the users deletes itself then logout
+				if ($user_id == $_SESSION['userID'])
+				{
+					header("Location: ../../logout.php");
+					exit();
+				}
+				$user_feedback = sprintf(lang_get('user_deleted'),$userLogin);
+			}
 		}
-		$user_feedback=sprintf(lang_get('user_deleted'),$user_data[0]['login']);
+		if ($sqlResult != OK)
+			$user_feedback = lang_get('error_user_not_deleted');
 
-		//$action = "deleted";
-		$order_by_clause = get_order_by_clause($user_order_by,$order_by_dir);
-		$do_toggle = 0;
+		$orderByType = $user_order_by;
+		$orderByDir = $order_by_dir;
 		break;
-		
 	case 'order_by_role':
 	case 'order_by_login':
 		$order_by_clause = get_order_by_clause($operation,$order_by_dir);
-		$do_toggle = 1;
+		$orderByType = $operation;
+		$orderByDir = $order_by_dir;
 		$user_order_by = $operation;
+		$the_k = $operation . "_dir";
+		$order_by_dir[$the_k] = $order_by_dir[$the_k] == 'asc' ? 'desc' : 'asc'; 
 		break;
-		
 	default:
-		$order_by_clause = get_order_by_clause('order_by_login',
-												array('order_by_login_dir' => 'asc'));
 		$order_by_dir['order_by_login_dir'] = 'desc';
 		break;
 }
-
+$order_by_clause = get_order_by_clause($orderByType,$orderByDir);
 $users = getAllUsersRoles($db,$order_by_clause);
-if($do_toggle)
-{
-	$the_k = $operation . "_dir";
-	$order_by_dir[$the_k] = $order_by_dir[$the_k] == 'asc' ? 'desc' : 'asc'; 
-}
 
 $smarty = new TLSmarty();
 $smarty->assign('user_feedback',$user_feedback);
@@ -86,8 +91,8 @@ $smarty->display($template_dir . $g_tpl['usersview']);
 
 function toogle_order_by_dir($which_order_by,$order_by_dir_map)
 {
-  $obm[$which_order_by] = $order_by_dir_map[$which_order_by] == 'asc' ? 'desc' : 'asc'; 
-  return $obm;
+	$obm[$which_order_by] = $order_by_dir_map[$which_order_by] == 'asc' ? 'desc' : 'asc'; 
+	return $obm;
 }
 
 function get_order_by_clause($order_by_type,$order_by_dir)
@@ -95,7 +100,7 @@ function get_order_by_clause($order_by_type,$order_by_dir)
 	switch($order_by_type)
 	{
 		case 'order_by_role':
-			$order_by_clause = " ORDER BY role_description " . $order_by_dir['order_by_role_dir'];
+			$order_by_clause = " ORDER BY description " . $order_by_dir['order_by_role_dir'];
 			break;
 		case 'order_by_login':
 			$order_by_clause = " ORDER BY login " . $order_by_dir['order_by_login_dir'];

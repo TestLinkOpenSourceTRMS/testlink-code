@@ -2,8 +2,8 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
  
 Filename $RCSfile: contributors.txt,v $
  
-$Revision: 1.15 $
-$Date: 2007/11/15 11:38:18 $ by $Author: franciscom $
+$Revision: 1.16 $
+$Date: 2007/12/17 00:18:30 $ by $Author: tosikawa $
 -------------------------------------------------------------------------
  
  
@@ -70,12 +70,13 @@ Localization
   Yasuharu NISHI
   
   Core member:
-  Atsushi Nagata,      AZMA Daisuke,        Kunio Murakami,
-  Lumina Nishihara,    Marino Suda,         Masahide Katsumata,
-  Masami Ichikawa,     Masataka Yoneta,     Sadahiko Hantani,
-  Shinichi Sugiyama,   Shinsuke Matsuki,    Shizuka Ban,
-  Toshinori Sawaguchi, Toshiyuki Kawanishi, Yasuhiko Okada,
-  Yoichi Kunihiro,     Yoshihiro Yoshimura
+  Atsushi Nagata,      AZMA Daisuke,      Kaname Mochizuki,
+  Kunio Murakami,      Lumina Nishihara,  Marino Suda,
+  Masahide Katsumata,  Masami Ichikawa,   Masataka Yoneta,
+  Sadahiko Hantani,    Shinichi Sugiyama, Shinsuke Matsuki,
+  Shizuka Ban,         Takahiro Wada,     Toshinori Sawaguchi,
+  Toshiyuki Kawanishi, Yasuhiko Okada,    Yoichi Kunihiro,
+  Yoshihiro Yoshimura, Yukiko Kajino
 
 * Polish
 -------------------------------------------------------------------------

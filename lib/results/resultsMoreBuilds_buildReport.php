@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsMoreBuilds_buildReport.php,v 1.53 2007/12/17 21:31:46 schlundus Exp $ 
+* $Id: resultsMoreBuilds_buildReport.php,v 1.54 2007/12/17 21:56:35 schlundus Exp $ 
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 * 
@@ -108,6 +108,7 @@ $buildsToQuery = -1;
 if (sizeof($buildsSelected)) {
 	$buildsToQuery = implode(",", $buildsSelected);
 }
+
 
 // KL - 20070625 - used for execution links
 $execution_link_build = isset($_GET['build']) ? intval($_GET['build']) : null;

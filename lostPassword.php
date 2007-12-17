@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: lostPassword.php,v $
  *
- * @version $Revision: 1.17 $
- * @modified $Date: 2007/04/05 20:03:52 $ $Author: schlundus $
+ * @version $Revision: 1.18 $
+ * @modified $Date: 2007/12/17 21:31:45 $ $Author: schlundus $
  *
 **/
 require_once('config.inc.php');
@@ -27,48 +27,31 @@ if ($op['status'] == 0)
 	exit();
 }
 
-$message = lang_get('your_info_for_passwd');
+$note = lang_get('your_info_for_passwd');
 if (strlen($login))
 {
 	$userInfo = null;
 	if(!existLogin($db,$login,$userInfo))
-		$message = lang_get('bad_user');
+		$note = lang_get('bad_user');
 	else
 	{
-		$emailAddress = $userInfo['email'];
-		if (strlen($emailAddress))
+		$result = resetPassword($db,$userInfo['id'],$note);
+		if ($result == OK)
 		{
-			// because pwds are now hashed we cannot simply resend 
-			// the password instead we must generate a new one
-			$newPassword = md5(uniqid(rand(),1));
-			
-			//Setup the message body
-			$msgBody = lang_get('your_password_is') . $newPassword .  lang_get('contact_admin');  
-
-      		$mail_op = email_send(config_get('from_email'), $emailAddress,  
-                                lang_get('mail_passwd_subject'), $msgBody);
-			
-			if ($mail_op->status_ok)
-			{
-				$userID = $userInfo['id'];
-				if (setUserPassword($db,$userID,$newPassword))
-				{
-					redirect(TL_BASE_HREF ."login.php?note=lost");
-					exit();
-				}
-			}	
-			else
-				$message = lang_get('mail_problems') . " - " . $mail_op->msg;
+			redirect(TL_BASE_HREF ."login.php?note=lost");
+			exit();
 		}
-		else
-			$message = lang_get('mail_empty_address');
+		else if ($result == tlUser::USER_E_EMAILLENGTH)
+			$note = lang_get('mail_empty_address');
+		else if (!strlen($note))
+			$note = getUserErrorMessage($result);
 	}
 }
 
 $smarty = new TLSmarty();
 $smarty->assign('login_logo', LOGO_LOGIN_PAGE);
 $smarty->assign('css', TL_BASE_HREF . TL_LOGIN_CSS);
-$smarty->assign('note',$message);
+$smarty->assign('note',$note);
 $smarty->assign('page_title',lang_get('page_title_lost_passwd'));
 $smarty->display('loginLost.tpl');
 ?>

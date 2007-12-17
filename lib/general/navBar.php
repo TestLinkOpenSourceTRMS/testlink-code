@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: navBar.php,v $
  *
- * @version $Revision: 1.28 $
- * @modified $Date: 2007/11/04 11:16:29 $ $Author: franciscom $
+ * @version $Revision: 1.29 $
+ * @modified $Date: 2007/12/17 21:31:46 $ $Author: schlundus $
  *
  * This file manages the navigation bar. 
  *
@@ -15,9 +15,6 @@
 **/
 require_once('../../config.inc.php');
 require_once("common.php");
-require_once("plan.core.inc.php");
-require_once("testproject.class.php");
-
 testlinkInitPage($db,true);
 
 $tproject_mgr = new testproject($db);

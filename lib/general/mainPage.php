@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: mainPage.php,v $
  *
- * @version $Revision: 1.32 $ $Author: franciscom $
- * @modified $Date: 2007/09/11 06:31:49 $
+ * @version $Revision: 1.33 $ $Author: schlundus $
+ * @modified $Date: 2007/12/17 21:31:45 $
  *
  * @author Martin Havlat
  * 
@@ -24,14 +24,11 @@
 **/
 require_once('../../config.inc.php');
 require_once('common.php');
-require_once('plan.core.inc.php');
 require_once('configCheck.php');
-require_once('users.inc.php');
-
 testlinkInitPage($db,TRUE);
-$smarty = new TLSmarty;
 
-$tproject_mgr = New testproject($db);
+$smarty = new TLSmarty();
+$tproject_mgr = new testproject($db);
 
 $testprojectID = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
 

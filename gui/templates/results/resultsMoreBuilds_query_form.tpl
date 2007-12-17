@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsMoreBuilds_query_form.tpl,v 1.1 2007/12/02 17:21:18 franciscom Exp $
+$Id: resultsMoreBuilds_query_form.tpl,v 1.2 2007/12/17 21:31:45 schlundus Exp $
 @author Francisco Mancardi
 
 rev :
@@ -37,10 +37,10 @@ rev :
 
 
 
-<form action="lib/results/resultsMoreBuilds_buildReport.php?build={$build}&amp;report_type={$report_type}" 
-      method="POST">
+<form action="lib/results/resultsMoreBuilds_buildReport.php?report_type={$report_type}" 
+      method="post">
 
-  <input type="hidden" id="tplan_id" name="tplan_id" value={$tplan_id}>
+  <input type="hidden" id="tplan_id" name="tplan_id" value="{$tplan_id}" />
   <div>
 	<table class="simple" style="width: 100%; text-align: center; margin-left: 0px;">
 		<tr>
@@ -156,6 +156,8 @@ rev :
 					{foreach key=status_code item=status_label from=$status_code_label}
 						<option selected="selected" value="{$status_code}">{$status_label|escape}</option>
 					{/foreach}
+					</select>
+				</td>
 				<td>&nbsp;</td>
 			</tr>
 

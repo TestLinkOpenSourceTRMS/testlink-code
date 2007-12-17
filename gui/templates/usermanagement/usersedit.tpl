@@ -1,16 +1,6 @@
 {* 
 Testlink: smarty template - 
-$Id: usersedit.tpl,v 1.2 2007/12/16 13:03:15 schlundus Exp $ 
-*}
-{* 
-
-20070626 - franciscom - disable reset password feature, if password management
-                        is done for an external system.
-20070223 - franciscom - BUGID
- 
-20070114 - franciscom - 
-	1. using smarty config file
-	2. improved management of default role id
+$Id: usersedit.tpl,v 1.3 2007/12/17 21:31:45 schlundus Exp $ 
 
 20070829 - jbarchibald
       -  bug 1000  - Testplan User Role Assignments

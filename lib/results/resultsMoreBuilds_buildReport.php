@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsMoreBuilds_buildReport.php,v 1.52 2007/12/02 17:08:16 franciscom Exp $ 
+* $Id: resultsMoreBuilds_buildReport.php,v 1.53 2007/12/17 21:31:46 schlundus Exp $ 
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 * 
@@ -105,7 +105,6 @@ $endHour = $date_range->end->hour;
 
 $xls = ($format == 'EXCEL') ? true : false;
 $buildsToQuery = -1;
-
 if (sizeof($buildsSelected)) {
 	$buildsToQuery = implode(",", $buildsSelected);
 }

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: users.inc.php,v $
  *
- * @version $Revision: 1.52 $
- * @modified $Date: 2007/12/16 13:03:15 $ $Author: schlundus $
+ * @version $Revision: 1.53 $
+ * @modified $Date: 2007/12/17 21:31:45 $ $Author: schlundus $
  *
  * Functions for usermanagement
  *
@@ -114,7 +114,9 @@ class tlUser extends tlDBObject
 			       ", last='" .  $db->prepare_string(trim($this->m_lastName))    . "'" .
 			       ", email='" . $db->prepare_string(trim($this->m_emailAddress))   . "'" .
 				   ", locale = ". "'" . $db->prepare_string(trim($this->m_locale)) . "'" . 
-				   ", password = ". "'" . $db->prepare_string(trim($this->m_password)) . "'" ;
+				   ", password = ". "'" . $db->prepare_string(trim($this->m_password)) . "'" .
+				   ", role_id = ". "'" . $db->prepare_string(trim($this->m_globalRoleID)) . "'" .
+				   ", active = ". "'" . $db->prepare_string(trim($this->m_bActive)) . "'" ;
 				$query .= " WHERE id=" . $this->m_dbID;
 				$result = $db->exec_query($query);
 			}
@@ -341,59 +343,6 @@ function userInsert(&$db,$login, $password, $first, $last, $email,
 	}
 	
 	return $new_user_id;
-}
-
-/**
- * Function update personal data
- *
- * @param type $db [ref] documentation
- * @param type $userID documentation
- * @param type $first documentation
- * @param type $last documentation
- * @param type $email documentation
- * @param type $login [default = null] documentation
- * @param type $role_id [default = null] documentation
- * @param type $locale [default = null] documentation
- * @param type $active [default = null] documentation
- * @return type documentation
- *
- * 20051228 - fm - added active  
- * 20050424 - fm added argument locale
- **/
-function userUpdate(&$db,$userID, $first, $last, $email ,
-                    $login = null, $role_id = null, $locale = null, $active = null)
-{
- 	$sql = "UPDATE users " .
-	       "SET first='" . $db->prepare_string($first) . "'" .
-	       ", last='" .  $db->prepare_string($last)    . "'" .
-	       ", email='" . $db->prepare_string($email)   . "'";
-	
-	if (!is_null($login))
-	{
-		$sql .= ", login = '". $db->prepare_string($login) . "' ";
-	}	
-	if (!is_null($role_id))
-	{
-		$sql .= ", role_id = ". $role_id ;
-	}	
-	if (!is_null($locale))
-	{
-		$sql .= ", locale = ". "'" . $db->prepare_string($locale) . "'" ;
-	}
-	if (!is_null($active))
-	{
-		$sql .= ", active = ". $active;
-	}	
-	
-	$sql .= " WHERE id=" . $userID;
-	$result = $db->exec_query($sql);
-
-	// MHT 200507 - update session data if admin modify yourself
-	if (($userID == $_SESSION['userID']) && $result)
-	{
-		setUserSession($db,$login, $userID, $role_id, $email, $locale);
-	}
-	return $result ? 'ok' : $db->error_msg();
 }
 
 /**
@@ -682,22 +631,38 @@ function get_users_for_html_options(&$db,$whereClause = null,$add_blank_option=f
   returns: 
 
 */
-function reset_password(&$db,$user_id)
+function resetPassword(&$db,$userID,&$errorMsg)
 {
-	$newPassword = md5(uniqid(rand(),1));
-
-	$user = getUserById($db,$user_id);
-	$email=$user[0]['email'];
-
-	$msgBody = lang_get('your_password_is') . $newPassword .  lang_get('contact_admin');  
-	$mail_op = @email_send(config_get('from_email'), $email,  
-	                       lang_get('mail_passwd_subject'), $msgBody);
-
-	if ($mail_op->status_ok)
+	$errorMsg = '';
+	$user = new tlUser($userID);
+	$result = $user->readFromDB($db);
+	if ($result == OK)
 	{
-		setUserPassword($db,$user_id,$newPassword);
+		if (strlen($user->m_emailAddress))
+		{
+			$newPassword = md5(uniqid(rand(),1));
+			$result = $user->setPassword($newPassword);
+			if ($result == OK)
+			{
+				$msgBody = lang_get('your_password_is') . $newPassword . lang_get('contact_admin');  
+				$mail_op = @email_send(config_get('from_email'), $user->m_emailAddress,  
+		                       lang_get('mail_passwd_subject'), $msgBody);
+				if ($mail_op->status_ok)
+					$result = $user->writeToDB($db);
+				else
+				{
+					$result = ERROR;
+					$errorMsg = $mail_op->msg;
+				}
+			}
+		}
+		else
+			$result = tlUser::USER_E_EMAILLENGTH;
 	}
-	return($mail_op);
+	if (!strlen($errorMsg))
+		$errorMsg = getUserErrorMessage($result);
+	
+	return $result;
 } 
 
 function getUserErrorMessage($code)
@@ -731,8 +696,8 @@ function getUserErrorMessage($code)
 			$msg = lang_get('passwd_dont_match');
 			break;
 		default:
-			
 	}
+	return $msg;
 }
 
 function getAllUsersRoles(&$db,$order_by = null)

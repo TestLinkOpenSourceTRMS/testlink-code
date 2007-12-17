@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: usersedit.php,v $
 *
-* @version $Revision: 1.20 $
-* @modified $Date: 2007/12/16 13:03:15 $ $Author: schlundus $
+* @version $Revision: 1.21 $
+* @modified $Date: 2007/12/17 21:31:46 $ $Author: schlundus $
 * 
 * rev :  BUGID 918
 *
@@ -19,7 +19,7 @@ require_once('testproject.class.php');
 require_once('users.inc.php');
 require_once('email_api.php');
 
-$template_dir='usermanagement/';
+$template_dir = 'usermanagement/';
 testlinkInitPage($db);
 
 $args = init_args($_GET,$_POST);
@@ -28,14 +28,10 @@ $sessionUserID = $_SESSION['userID'];
 
 $sqlResult = null;
 $action = null;
-$update_title_bar = 0;
-$reload = 0;
 $user_feedback = '';
-
 
 $login_method = config_get('login_method');
 $external_password_mgmt = ('LDAP' == $login_method )? 1 : 0;
-
 
 if ($args->do_update)
 {
@@ -45,10 +41,8 @@ if ($args->do_update)
 		if (!strlen($args->email))
 		    $sqlResult = lang_get('empty_email_address');
 
-    if( !$external_password_mgmt && !strlen($args->password))
-    {
-		    $sqlResult = lang_get('warning_empty_pwd');
-    }
+		if( !$external_password_mgmt && !strlen($args->password))
+			$sqlResult = lang_get('warning_empty_pwd');
     
 		if ($sqlResult =='ok')
 		{
@@ -66,58 +60,46 @@ if ($args->do_update)
 	}
 	else
 	{
-		if (!strlen($args->email))
-			$sqlResult = lang_get('empty_email_address');
-		else	
-			$sqlResult = userUpdate($db,$args->user_id,$args->first,$args->last,
-	                            $args->email,null,$args->rights_id,$args->locale,$args->user_is_active);
-		$action = "updated";							
-		$user_id = $args->user_id;
-		
-	}
-
-	if ($sqlResult == 'ok' && ($args->user_id == $sessionUserID))
-	{
-		//if the user has no longer the mgt_users right, reload the index.php page,
-		//else we must update the titlebar
-		if (!has_rights($db,'mgt_users'))
-			$reload = 1;
-		else
-			$update_title_bar = 1;
-		
-		if (!$args->user_is_active)
+		$user = new tlUser($args->user_id);
+		$sqlResult = $user->readFromDB($db);
+		if ($sqlResult == OK)
 		{
-			header("Location: ../../logout.php");
-			exit();
+			$user->m_firstName = $args->first;
+			$user->m_lastName = $args->last;
+			$user->m_emailAddress = $args->email;
+			$user->m_locale = $args->locale;
+			$user->m_bActive = $args->user_is_active;
+			$user->m_globalRoleID = $args->rights_id;
+			
+			$sqlResult = $user->writeToDB($db);
+			if ($sqlResult == OK && $sessionUserID == $args->user_id)
+			{
+				setUserSession($db,$user->m_login, $sessionUserID, $user->m_globalRoleID, $user->m_emailAddress, $user->m_locale);
+				if (!$args->user_is_active)
+				{
+					header("Location: ../../logout.php");
+					exit();
+				}
+			}
+			$sqlResult = getUserErrorMessage($sqlResult);
+			$action = "updated";							
 		}
 	}
 }
-
-if ($args->do_reset_password)
+else if ($args->do_reset_password && $user_id)
 {
-  $user_feedback='';
-  $op = reset_password($db,$user_id);
-  
-  if( $op->status_ok )
-  {
-    $user_feedback=lang_get('password_reseted');  
-  }
-  else
-  {
-    $user_feedback=$op->msg;
-  }
-  
+	$result = resetPassword($db,$user_id,$user_feedback);
+	if ($result == OK)
+		$user_feedback = lang_get('password_reseted');  		
 }
-
 $user = null;
 if ($user_id)
 {
 	$user = new tlUser($user_id);
 	$user->readFromDB($db);
-}
-	
-$smarty = new TLSmarty();
+}	
 
+$smarty = new TLSmarty();
 $smarty->assign('user_feedback',$user_feedback);
 $smarty->assign('external_password_mgmt', $external_password_mgmt);
 $smarty->assign('mgt_users',has_rights($db,"mgt_users"));
@@ -132,7 +114,6 @@ $smarty->assign('optRights',$roles);
 $smarty->assign('userData', $user);
 $smarty->assign('result',$sqlResult);
 $smarty->assign('action',$action);
-$smarty->assign('user_feedback',$user_feedback);
 $smarty->display($template_dir . 'usersedit.tpl');
 
 
@@ -147,9 +128,9 @@ function init_args($get_hash, $post_hash)
 	}
 	
 	$intval_keys = array('rights_id' => TL_ROLES_GUEST);
-	if( !isset($get_hash['user_id']) )
+	if(!isset($get_hash['user_id']))
 	{
-	  $intval_keys['user_id']=0; 
+		$intval_keys['user_id'] = 0; 
 	}
 	
 	foreach ($intval_keys as $key => $value)

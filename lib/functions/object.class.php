@@ -1,4 +1,14 @@
 <?php
+/** 
+* TestLink Open Source Project - http://testlink.sourceforge.net/ 
+* This script is distributed under the GNU General Public License 2 or later. 
+*
+* Filename $RCSfile: object.class.php,v $
+* 
+* @version $Id: object.class.php,v 1.6 2007/12/18 19:32:16 franciscom Exp $
+* @modified $Date: 2007/12/18 19:32:16 $ by $Author: franciscom $
+*
+**/
 require_once( dirname(__FILE__) . '/int_serialization.php' );
 /*
 	The base class for all managed TestLink objects, all tl-managed objects should extend this base class

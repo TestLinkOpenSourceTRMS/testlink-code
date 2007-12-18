@@ -1,4 +1,15 @@
 <?php
+/** 
+* TestLink Open Source Project - http://testlink.sourceforge.net/ 
+* This script is distributed under the GNU General Public License 2 or later. 
+*
+* Filename $RCSfile: int_serialization.php,v $
+* 
+* @version $Id: int_serialization.php,v 1.3 2007/12/18 19:32:16 franciscom Exp $
+* @modified $Date: 2007/12/18 19:32:16 $ by $Author: franciscom $
+*
+**/
+
 /* basic serialization interface */
 interface iSerialization
 {

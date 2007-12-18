@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: keywordsEdit.php,v $
  *
- * @version $Revision: 1.12 $
- * @modified $Date: 2007/12/14 22:42:51 $ by $Author: schlundus $
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2007/12/18 19:32:35 $ by $Author: franciscom $
  *
  * allows users to manage keywords. 
  *
@@ -81,7 +81,17 @@ $smarty->assign('notes',$args->notes);
 $smarty->assign('keywordID',$args->keyword_id);
 
 $smarty->display($template_dir . $template);
+?>
 
+<?php
+/*
+  function: 
+
+  args :
+  
+  returns: 
+
+*/
 function init_args()
 {
 	$_REQUEST = strings_stripSlashes($_REQUEST);
@@ -89,10 +99,7 @@ function init_args()
 	$args->doAction = isset($_REQUEST['doAction']) ? $_REQUEST['doAction'] : null;
 
 	$args->keyword_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : null;
-	$args->bDeleteKey = isset($_REQUEST['deleteKey']) ? 1 : 0;
 	$args->keyword = isset($_REQUEST['keyword']) ? $_REQUEST['keyword'] : null;
-	$args->bNewKey = isset($_REQUEST['newKey']) ? 1 : 0;
-	$args->bEditKey = isset($_REQUEST['editKey']) ? 1 : 0;
 	$args->notes = isset($_REQUEST['notes']) ? $_REQUEST['notes'] : null;
 	$args->do_export = isset($_REQUEST['exportAll']) ? 1 : 0;
 	$args->exportType = isset($_REQUEST['exportType']) ? $_REQUEST['exportType'] : null;

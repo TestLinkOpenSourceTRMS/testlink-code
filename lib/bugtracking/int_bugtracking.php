@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: int_bugtracking.php,v $
  *
- * @version $Revision: 1.16 $
- * @modified $Date: 2007/12/12 18:22:06 $ $Author: havlat $
+ * @version $Revision: 1.17 $
+ * @modified $Date: 2007/12/18 09:37:36 $ $Author: tosikawa $
  *
  * @author Andreas Morsing
  *
@@ -36,7 +36,7 @@ $configFiles = array(
 					'JIRA' => 'jira.cfg.php',
 					'TRACKPLUS' => 'trackplus.cfg.php',
 					'EVENTUM' => 'eventum.cfg.php',
-
+					'TRAC' => 'trac.cfg.php',
 				);
 //This holds the interface defintion file names for the bugtracking interfaces
 //located in the lib/bugtracking diectory
@@ -46,6 +46,7 @@ $interfaceFiles = array(
 					'JIRA' => 'int_jira.php',
 					'TRACKPLUS' => 'int_trackplus.php',
 					'EVENTUM' => 'int_eventum.php',
+					'TRAC' => 'int_trac.php',
 				);
 
 				

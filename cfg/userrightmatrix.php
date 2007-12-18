@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: userrightmatrix.php,v $
  *
- * @version $Revision: 1.13 $
- * @modified $Date: 2007/12/06 17:54:46 $  $Author: franciscom $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2007/12/18 17:59:37 $  $Author: franciscom $
  *
  * @author Andreas Morsing
  *
@@ -112,9 +112,9 @@ $print_data=array("$print_url/printdata.php" => null,
 
 
 
-$cf_admin=array("$cf_admin_url/cfields_edit.php" => array("cfield_management",),
-                "$cf_admin_url/cfields_view.php" => array("cfield_view",),
-                "$cf_admin_url/cfields_tproject_assign.php" => array("cfield_management",));
+$cf_admin=array("$cf_admin_url/cfieldsEdit.php" => array("cfield_management",),
+                "$cf_admin_url/cfieldsView.php" => array("cfield_view",),
+                "$cf_admin_url/cfieldsTProjectAssign.php" => array("cfield_management",));
 
 
 // build rigth matrix

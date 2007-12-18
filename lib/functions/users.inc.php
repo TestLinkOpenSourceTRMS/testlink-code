@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: users.inc.php,v $
  *
- * @version $Revision: 1.54 $
- * @modified $Date: 2007/12/18 20:47:19 $ $Author: schlundus $
+ * @version $Revision: 1.55 $
+ * @modified $Date: 2007/12/18 21:07:18 $ $Author: schlundus $
  *
  * Functions for usermanagement
  *
@@ -156,7 +156,6 @@ class tlUser extends tlDBObject
 		if (!$this->m_showRealname)
 			return $this->m_login;
 
-		$info = null;
 		$keys = array('%first%','%last%','%login%','%email%');
 		$values = array($this->m_firstName, $this->m_lastName,$this->m_login,$this->m_email);
 		

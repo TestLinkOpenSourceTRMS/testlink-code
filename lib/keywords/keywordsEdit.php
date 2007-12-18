@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: keywordsEdit.php,v $
  *
- * @version $Revision: 1.13 $
- * @modified $Date: 2007/12/18 19:32:35 $ by $Author: franciscom $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2007/12/18 21:07:18 $ by $Author: schlundus $
  *
  * allows users to manage keywords. 
  *
@@ -81,17 +81,7 @@ $smarty->assign('notes',$args->notes);
 $smarty->assign('keywordID',$args->keyword_id);
 
 $smarty->display($template_dir . $template);
-?>
 
-<?php
-/*
-  function: 
-
-  args :
-  
-  returns: 
-
-*/
 function init_args()
 {
 	$_REQUEST = strings_stripSlashes($_REQUEST);

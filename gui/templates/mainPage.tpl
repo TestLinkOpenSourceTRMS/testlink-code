@@ -1,6 +1,6 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: mainPage.tpl,v 1.35 2007/09/11 06:31:49 franciscom Exp $     
+ $Id: mainPage.tpl,v 1.36 2007/12/18 19:30:02 franciscom Exp $     
  Purpose: smarty template - main page / site map                 
                                                                  
  rev :                                                 
@@ -34,10 +34,10 @@ window.onload=function(){
 {/if}
 
 {* Right Column                  *}
-{include file="mainPage_right.tpl"}
+{include file="mainPageRight.tpl"}
 
 {*   left column                 *}
-{include file="mainPage_left.tpl"}
+{include file="mainPageLeft.tpl"}
 
 </body>
 </html>

@@ -1,6 +1,6 @@
 {* 
 Testlink: smarty template - 
-$Id: cfieldsEdit.tpl,v 1.1 2007/12/18 18:02:05 franciscom Exp $ 
+$Id: cfieldsEdit.tpl,v 1.2 2007/12/18 19:30:02 franciscom Exp $ 
 
 
 Important Development note:
@@ -37,7 +37,7 @@ rev :
 
 <script type="text/javascript">
 /* All this stuff is needed for logic contained in inc_del_onclick.tpl */
-var del_action=fRoot+'lib/cfields/cfields_edit.php?do_action=do_delete&cfield_id=';
+var del_action=fRoot+'lib/cfields/cfieldsEdit.php?do_action=do_delete&cfield_id=';
 </script>
 
 {literal}
@@ -257,7 +257,7 @@ function cfg_possible_values_display(cfg,id_cftype,id_possible_values_container)
 
 
 {if $user_action eq "do_delete"}
-  <form method="post" name="cfields_edit" action="lib/cfields/cfields_view.php">
+  <form method="post" name="cfields_edit" action="lib/cfields/cfieldsView.php">
    <div class="groupBtn">	
 		<input type="submit" name="ok" value="{lang_get s='btn_ok'}"> 
 	 </div>  
@@ -445,7 +445,7 @@ function cfg_possible_values_display(cfg,id_cftype,id_possible_values_container)
 		       onclick="do_action.value='do_add'"/>
 	{/if}
 		<input type="button" name="cancel" value="{lang_get s='btn_cancel'}" 
-			onclick="javascript: location.href=fRoot+'lib/cfields/cfields_view.php';" />
+			onclick="javascript: location.href=fRoot+'lib/cfields/cfieldsView.php';" />
 
 	</div>
 </form>

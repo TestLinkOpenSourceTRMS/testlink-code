@@ -1,6 +1,6 @@
 {* 
 Testlink: smarty template - 
-$Id: cfieldsView.tpl,v 1.1 2007/12/18 18:02:05 franciscom Exp $ 
+$Id: cfieldsView.tpl,v 1.2 2007/12/18 19:30:02 franciscom Exp $ 
 rev :
      20070128 - franciscom - variable name changes
 *}
@@ -30,7 +30,7 @@ rev :
   
    	{foreach key=cf_id item=cf_def from=$cf_map}
    	<tr>
-   	<td class="bold"><a href="lib/cfields/cfields_edit.php?do_action=edit&cfield_id={$cf_def.id}"
+   	<td class="bold"><a href="lib/cfields/cfieldsEdit.php?do_action=edit&cfield_id={$cf_def.id}"
    	                    title="{lang_get s='manage_cfield'}">{$cf_def.name|escape}</a></td>
    	<td>{$cf_def.label|escape}</td>
    	<td>{$cf_types[$cf_def.type]}</td>
@@ -46,7 +46,7 @@ rev :
 {/if} {* $cf_map neq '' *}
   
   <div class="groupBtn">
-    <form method="post" action="lib/cfields/cfields_edit.php?do_action=create">
+    <form method="post" action="lib/cfields/cfieldsEdit.php?do_action=create">
       <input type="submit" name="create_cfield" value="{lang_get s='btn_cfields_create'}" />
     </form>
   </div>

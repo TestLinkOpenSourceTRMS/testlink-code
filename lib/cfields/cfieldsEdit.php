@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: cfieldsEdit.php,v $
  *
- * @version $Revision: 1.1 $
- * @modified $Date: 2007/12/18 18:02:13 $ by $Author: franciscom $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2007/12/18 19:30:25 $ by $Author: franciscom $
  *
  *
  * rev :
@@ -18,6 +18,8 @@ require_once("common.php");
 testlinkInitPage($db);
 
 $template_dir='cfields/';
+$default_template = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']));
+
 
 $do_action = isset($_REQUEST['do_action']) ? $_REQUEST['do_action']:null;
 $cfield_id = isset($_REQUEST['cfield_id']) ? $_REQUEST['cfield_id']:0;
@@ -157,7 +159,7 @@ $smarty->assign('show_on_cfg', $show_on_cfg);
 
 $smarty->assign('possible_values_cfg', $possible_values_cfg);
 
-$smarty->display($template_dir . 'cfields_edit.tpl');
+$smarty->display($template_dir . $default_template);
 ?>
 
 

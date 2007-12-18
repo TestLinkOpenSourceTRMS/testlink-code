@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: cfieldsTprojectAssign.tpl,v 1.1 2007/12/18 18:02:05 franciscom Exp $
+$Id: cfieldsTprojectAssign.tpl,v 1.2 2007/12/18 19:30:02 franciscom Exp $
 Purpose: management Custom fields assignment to a test project
 
 rev :
@@ -21,6 +21,7 @@ rev :
 </h1>
 
 {include file="inc_update.tpl" result=$sqlResult action=$action item="custom_field"}
+
 
 {if $my_cf ne ""}
   <div class="workBack">
@@ -44,8 +45,8 @@ rev :
       	</tr>
       	{foreach key=cf_id item=cf from=$my_cf}
       	<tr>
-      		<td><input type="checkbox" id="assigned_cfield{$cf.id}" name="cfield[{$cf.id}]" /></td>
-   		   	<td class="bold"><a href="lib/cfields/cfields_edit.php?do_action=edit&cfield_id={$cf.id}"
+      		<td class="clickable_icon"><input type="checkbox" id="assigned_cfield{$cf.id}" name="cfield[{$cf.id}]" /></td>
+   		   	<td class="bold"><a href="lib/cfields/cfieldsEdit.php?do_action=edit&cfield_id={$cf.id}"
    		   	                    title="{lang_get s='manage_cfield'}">{$cf.name|escape}</a></td>
       		<td class="bold">{$cf.label|escape}</span></td>
       		<td><input type="text" name="display_order[{$cf.id}]" 
@@ -61,9 +62,18 @@ rev :
       </table>
     	</div>
     	<div class="groupBtn">
-    		<input type="submit" name="unassign" value="{lang_get s='btn_unassign'}" />
-    		<input type="submit" name="active_mgmt" value="{lang_get s='btn_cfields_active_mgmt'}" />
-    		<input type="submit" name="reorder" value="{lang_get s='btn_cfields_display_order'}" />
+        
+        <input type="hidden" name="doAction" value="">
+    	  
+    		<input type="submit" name="doUnassign" value="{lang_get s='btn_unassign'}" 
+    		                     onclick="doAction.value=this.name"/>
+    		                     
+    		<input type="submit" name="doActiveMgmt" value="{lang_get s='btn_cfields_active_mgmt'}"
+    		                     onclick="doAction.value=this.name"/>
+
+    		<input type="submit" name="doReorder" value="{lang_get s='btn_cfields_display_order'}" 
+    		                     onclick="doAction.value=this.name"/>
+    		
     	</div>
     </form>
     </div>
@@ -91,7 +101,7 @@ rev :
       	</tr>
       	{foreach key=cf_id item=cf from=$other_cf}
       	<tr>
-      		<td><input type="checkbox" id="free_cfield{$cf.id}" name="cfield[{$cf.id}]" /></td>
+      		<td class="clickable_icon"> <input type="checkbox" id="free_cfield{$cf.id}" name="cfield[{$cf.id}]" /></td>
       		<td class="bold">{$cf.name|escape}</td>
       		<td class="bold">{$cf.label|escape}</span></td>
       	</tr>
@@ -99,7 +109,9 @@ rev :
       </table>
     	</div>
     	<div class="groupBtn">
-    		<input type="submit" name="assign" value="{lang_get s='btn_assign'}" />
+        <input type="hidden" name="doAction" value="">
+    		<input type="submit" name="doAssign" id=this.name value="{lang_get s='btn_assign'}" 
+    		                     onclick="doAction.value=this.name"/>
     	</div>
     </form>
     </div>

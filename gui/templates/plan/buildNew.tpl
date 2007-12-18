@@ -1,27 +1,31 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: buildNew.tpl,v 1.1 2007/12/02 17:03:00 franciscom Exp $
+$Id: buildNew.tpl,v 1.2 2007/12/18 17:18:00 franciscom Exp $
 
 Purpose: smarty template - Add new build and show existing
 
 Rev :
-
+    20071216 - franciscom
+    user feedback using ext_js
+    
     20070214 - franciscom 
     BUGID 628: Name edit – Invalid action parameter/other behaviours if “Enter” pressed. 
 
 *}
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes"}
+{include file="inc_del_onclick.tpl"}
 
 {literal}
 <script type="text/javascript">
 {/literal}
+var alert_box_title = "{lang_get s='warning'}";
 var warning_empty_build_name = "{lang_get s='warning_empty_build_name'}";
 {literal}
 function validateForm(f)
 {
   if (isWhitespace(f.build_name.value)) 
   {
-      alert(warning_empty_build_name);
+      alert_message(alert_box_title,warning_empty_build_name);
       selectField(f, 'build_name');
       return false;
   }

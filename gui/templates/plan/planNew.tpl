@@ -1,28 +1,26 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planNew.tpl,v 1.1 2007/12/02 17:03:00 franciscom Exp $
+$Id: planNew.tpl,v 1.2 2007/12/18 17:18:00 franciscom Exp $
 
 Purpose: smarty template - create Test Plan
-Revisions:
-
-	20060224 - franciscom - removed the rights check
-	20061109 - mht - update for TL1.7; GUI update
-	20061223 - franciscom - input_dimensions.conf
-	20070102 - franciscom - added javascript validation for testplan_name
-
+Rev:
+    20071216 - franciscom - user feedback using ext_js
 *}
 
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes"}
+{include file="inc_del_onclick.tpl"}
+
 {literal}
 <script type="text/javascript">
 {/literal}
+var alert_box_title = "{lang_get s='warning'}";
 var warning_empty_tp_name = "{lang_get s='warning_empty_tp_name'}";
 {literal}
 function validateForm(f)
 {
   if (isWhitespace(f.testplan_name.value)) 
   {
-      alert(warning_empty_tp_name);
+      alert_message(alert_box_title,warning_empty_tp_name);
       selectField(f, 'testplan_name');
       return false;
   }

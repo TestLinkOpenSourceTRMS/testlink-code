@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planEdit.tpl,v 1.2 2007/12/06 14:41:43 franciscom Exp $
+$Id: planEdit.tpl,v 1.3 2007/12/18 17:18:00 franciscom Exp $
 
 Purpose: smarty template - create Test Plan
 Revisions:
@@ -12,16 +12,18 @@ Bug confirmed on IE
 *}
 
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes"}
+{include file="inc_del_onclick.tpl"}
 {literal}
 <script type="text/javascript">
 {/literal}
+var alert_box_title = "{lang_get s='warning'}";
 var warning_empty_tp_name = "{lang_get s='warning_empty_tp_name'}";
 {literal}
 function validateForm(f)
 {
   if (isWhitespace(f.testplan_name.value)) 
   {
-      alert(warning_empty_tp_name);
+      alert_message(alert_box_title,warning_empty_tp_name);
       selectField(f, 'testplan_name');
       return false;
   }

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  * 
  * @filesource $RCSfile: doAuthorize.php,v $
- * @version $Revision: 1.15 $
- * @modified $Date: 2007/08/20 06:41:29 $ by $Author: franciscom $
+ * @version $Revision: 1.16 $
+ * @modified $Date: 2007/12/18 20:47:19 $ by $Author: schlundus $
  * @author Chad Rosen, Martin Havlat
  *
  * This file handles the initial login and creates all user session variables.
@@ -20,22 +20,14 @@
  *           added bare bones LDAP authentication using mantis code
  *                                  
  *
- *///////////////////////////////////////////////////////////////////////////
-
-
+ */
 require_once("users.inc.php");
 require_once("roles.inc.php");
 
-
 /** authorization function verifies login & password and set user session data */
-//20051118 - scs - login and pwd are stripped two times, replaced POST by 
-//					function params
-//20060102 - scs - ADOdb changes
 function doAuthorize(&$db,$login,$pwd)
 {
-    // 20070131 - jbarchibald - global import not needed. 
-	// global $g_ui_show_check_filter_tp_by_testproject;
-	$bSuccess = false;
+    $bSuccess = false;
 	$sProblem = 'wrong'; // default problem attribute value
 	
 	$_SESSION['locale'] = TL_DEFAULT_LOCALE; 
@@ -45,16 +37,13 @@ function doAuthorize(&$db,$login,$pwd)
 		$login_exists = existLogin($db,$login,$userInfo);
 		tLog("Account exist = " . $login_exists);
 
-    if ($login_exists )
-    {
-       $password_check=auth_does_password_match( $login, $pwd, $userInfo['password']); 
-    }
-    
-		//encrypt the password so it isn't stored plain text in the db
+	    if ($login_exists)
+	    	$password_check = auth_does_password_match($login, $pwd, $userInfo['password']); 
+	    
 		if ($login_exists && $password_check->status_ok && $userInfo['active'])
 		{
 			// 20051007 MHT Solved  0000024 Session confusion 
-			// Disallow two session with one browser
+			// Disallow two sessions within one browser
 			if (isset($_SESSION['user']) && strlen($_SESSION['user']))
 			{
 				$sProblem = 'sessionExists';
@@ -62,24 +51,21 @@ function doAuthorize(&$db,$login,$pwd)
 			}
 			else
 			{ 
-        // 20070131 - jbarchibald
-        $_SESSION['filter_tp_by_product'] = 1;
+				$_SESSION['filter_tp_by_product'] = 1;
 				$userProductRoles = getUserTestProjectRoles($db,$userInfo['id']);
 				$userTestPlanRoles = getUserTestPlanRoles($db,$userInfo['id']);
 			  
-			  //Setting user's session information
-			  // MHT 200507 move session update to function
-			  setUserSession($db,$userInfo['login'], $userInfo['id'], 
-			  $userInfo['role_id'], $userInfo['email'], 
-			  $userInfo['locale'],null,$userProductRoles,$userTestPlanRoles);
-		    $bSuccess = true;
+				//Setting user's session information
+				setUserSession($db,$userInfo['login'], $userInfo['id'], 
+				$userInfo['role_id'], $userInfo['email'], 
+				$userInfo['locale'],null,$userProductRoles,$userTestPlanRoles);
+				$bSuccess = true;
 			}
 		}
 		else
 		{
 			 tLog("Account ".$login." doesn't exist or used wrong password.",'INFO');
 		}
-			
 	}
 	if ($bSuccess)
 	{

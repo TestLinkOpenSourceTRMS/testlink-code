@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: users.inc.php,v $
  *
- * @version $Revision: 1.53 $
- * @modified $Date: 2007/12/17 21:31:45 $ $Author: schlundus $
+ * @version $Revision: 1.54 $
+ * @modified $Date: 2007/12/18 20:47:19 $ $Author: schlundus $
  *
  * Functions for usermanagement
  *
@@ -14,10 +14,8 @@
  * 20051231 - scs - changes due to ADBdb
  * 20060205 - JBA - Remember last product (BTS 221); added by MHT
  * 20060224 - franciscom - changes in session product -> testproject
- * 20060511 - franciscom - changes in userInsert()
  * 20070104 - franciscom - changes in getUserName()
  * 20070106 - franciscom - getAllUsers() - new argument order_by
- * 20070617 - franciscom - using new config param in user_is_name_valid()
 **/
 require_once("common.php");
 
@@ -38,6 +36,8 @@ class tlUser extends tlDBObject
 	
 	protected $m_showRealname;
 	protected $m_usernameFormat;
+	protected $m_loginMethod;
+	protected $m_maxLoginLength;
 	
 	const USER_E_LOGINLENGTH = -1;
 	const USER_E_EMAILLENGTH = -2;
@@ -47,14 +47,21 @@ class tlUser extends tlDBObject
 	const USER_E_LASTNAMELENGTH = -32;
 	const USER_E_PWDEMPTY = -64;
 	const USER_E_PWDDONTMATCH = -128;
+	const USER_E_LOGINALREADYEXISTS = -256;
 	
 	function __construct($dbID = null)
 	{
 		parent::__construct($dbID);
+		
 		$this->m_showRealname = config_get('show_realname');
 		$this->m_usernameFormat = config_get('username_format');
 		$this->m_loginRegExp = config_get('user_login_valid_regex');
 		$this->m_maxLoginLength = 30; 
+		$this->m_loginMethod = config_get('login_method');
+		
+		$this->m_globalRoleID = TL_DEFAULT_ROLEID;
+		$this->m_locale =  TL_DEFAULT_LOCALE;
+		$this->m_bActive = 1;
 	}
 	
 	protected function _clean()
@@ -104,23 +111,35 @@ class tlUser extends tlDBObject
 	}
 	public function writeToDB(&$db)
 	{
-		$result = $this->checkUserDetails();
+		$result = $this->checkDetails($db);
 		if ($result == OK)
 		{		
 			if($this->m_dbID)
 			{
 				$query = "UPDATE users " .
-			       "SET first='" . $db->prepare_string(trim($this->m_firstName)) . "'" .
-			       ", last='" .  $db->prepare_string(trim($this->m_lastName))    . "'" .
-			       ", email='" . $db->prepare_string(trim($this->m_emailAddress))   . "'" .
-				   ", locale = ". "'" . $db->prepare_string(trim($this->m_locale)) . "'" . 
-				   ", password = ". "'" . $db->prepare_string(trim($this->m_password)) . "'" .
-				   ", role_id = ". "'" . $db->prepare_string(trim($this->m_globalRoleID)) . "'" .
-				   ", active = ". "'" . $db->prepare_string(trim($this->m_bActive)) . "'" ;
+			       "SET first='" . $db->prepare_string($this->m_firstName) . "'" .
+			       ", last='" .  $db->prepare_string($this->m_lastName)    . "'" .
+			       ", email='" . $db->prepare_string($this->m_emailAddress)   . "'" .
+				   ", locale = ". "'" . $db->prepare_string($this->m_locale) . "'" . 
+				   ", password = ". "'" . $db->prepare_string($this->m_password) . "'" .
+				   ", role_id = ". "'" . $db->prepare_string($this->m_globalRoleID) . "'" .
+				   ", active = ". "'" . $db->prepare_string($this->m_bActive) . "'" ;
 				$query .= " WHERE id=" . $this->m_dbID;
 				$result = $db->exec_query($query);
 			}
-			 $result = $result ? OK : self::USER_E_DBERROR;
+			else
+			{
+				$query = "INSERT INTO users (login,password,first,last,email,role_id,locale,active) 
+							VALUES ('" . 
+							$db->prepare_string($this->m_login) . "','" . $db->prepare_string($this->m_password) . "','" . 
+							$db->prepare_string($this->m_firstName) . "','" . $db->prepare_string($this->m_lastName) . "','" . 
+							$db->prepare_string($this->m_emailAddress) . "'," . $this->m_globalRoleID. ",'". 
+							$db->prepare_string($this->m_locale). "'," . $this->m_bActive . ")";
+				$result = $db->exec_query($query);
+				if($result)
+					$this->m_dbID = $db->insert_id('users');
+			}
+			$result = $result ? OK : self::USER_E_DBERROR;
 		}
 		return $result;
 	}	
@@ -151,7 +170,7 @@ class tlUser extends tlDBObject
 	}
 	public function setPassword($pwd)
 	{
-		if (!strlen($pwd))
+		if ($this->m_loginMethod == 'MD5' && !strlen($pwd))
 			return self::USER_E_PWDEMPTY;
 		$this->m_password = $this->encryptPassword($pwd);
 		return OK;
@@ -160,7 +179,6 @@ class tlUser extends tlDBObject
 	{
 		return $this->m_password;
 	}
-	
 	public function comparePassword($pwd)
 	{
 		if ($this->getPassword($pwd) == $this->encryptPassword($pwd))
@@ -168,15 +186,25 @@ class tlUser extends tlDBObject
 		return self::USER_E_PWDDONTMATCH;		
 	}
 	
-	protected function checkUserDetails()
+	public function checkDetails(&$db)
 	{
-		$result = $this->checkEmailAdress($this->m_emailAddress);
+		$this->m_firstName = trim($this->m_firstName);
+		$this->m_lastName = trim($this->m_lastName);
+		$this->m_emailAddress = trim($this->m_emailAddress);
+		$this->m_locale = trim($this->m_locale);
+		$this->m_bActive = intval($this->m_bActive);
+		$this->m_login = trim($this->m_login);
+	
+		$result = tlUser::checkEmailAdress($this->m_emailAddress);
 		if ($result == OK)
 			$result = $this->checkLogin($this->m_login);
+		if ($result == OK && !$this->m_dbID)
+			$result = tlUser::doesUserExist($db,$this->m_login) ? self::USER_E_LOGINALREADYEXISTS : OK;
 		if ($result == OK)
-			$result = $this->checkFirstName($this->m_firstName);
+			$result = tlUser::checkFirstName($this->m_firstName);
 		if ($result == OK)
-			$result = $this->checkLastName($this->m_lastName);
+			$result = tlUser::checkLastName($this->m_lastName);
+			
 		return $result;
 	}
 	public function checkLogin($login)
@@ -187,40 +215,29 @@ class tlUser extends tlDBObject
 		//The DB field is only 30 characters
 		if (!strlen($login) || (strlen($login) > $this->m_maxLoginLength))
 			$result = self::USER_E_LOGINLENGTH;
-
-		//Only allow a basic set of characters
-		if (!preg_match($this->m_loginRegExp,$login))
+		else if (!preg_match($this->m_loginRegExp,$login)) //Only allow a basic set of characters
 			$result = self::USER_E_NOTALLOWED;
 
 		return $result;
 	}
+	static public function checkEmailAdress($email)
+	{
+		return is_blank($email) ? self::USER_E_EMAILLENGTH : OK;
+	}
+	static public function checkFirstName($first)
+	{
+		return is_blank($first) ? self::USER_E_FIRSTNAMELENGTH : OK;
+	}
+	static public function checkLastName($last)
+	{
+		return is_blank($last) ? self::USER_E_LASTNAMELENGTH : OK;
+	}
+	static public function doesUserExist(&$db,$login)
+	{
+		$query = " SELECT id FROM users WHERE login='" . $db->prepare_string($login) . "'";
 	
-	public function checkEmailAdress($email)
-	{
-		$result = OK;
-		$email = trim($email);
-		if (!strlen($email))
-			$result = self::USER_E_EMAILLENGTH;
-			
-		return $result;
-	}
-	public function checkFirstName($first)
-	{
-		$result = OK;
-		$first = trim($first);
-		if (!strlen($first))
-			$result = self::USER_E_FIRSTNAMELENGTH;
-			
-		return $result;
-	}
-	public function checkLastName($last)
-	{
-		$result = OK;
-		$last = trim($last);
-		if (!strlen($last))
-			$result = self::USER_E_LASTNAMELENGTH;
-			
-		return $result;
+		$id = $db->fetchFirstRowSingleColumn($query,'id');
+		return $id;
 	}
 }
 
@@ -298,51 +315,6 @@ function existLogin(&$db,$login, &$r_user_data)
 	
 	$r_user_data = $db->fetchFirstRow($sql);
 	return $r_user_data ? 1 : 0;
-}
-
-/**
- * 
- * Function inserts new user to db
- * @param string login
- * @param string password
- * @param string first name
- * @param string last name
- * @param string email
- * @param string role_id  (optional; default is TL_DEFAULT_ROLEID)
- * @param string locale  (optional; locale for the user)
- * @param numeric active (optional; default ACTIVE_USER)
- *
- *
- * return: 
- *        if insert OK -> user id
- *                  KO -> 0
- *
- * 20060511 - franciscom - changed the returns value
- *                         
- *
- * 20051228 - franciscom - active field
- * 20050829 - scs - added param for locale
- *  
- */
-function userInsert(&$db,$login, $password, $first, $last, $email, 
-                    $role_id = TL_DEFAULT_ROLEID, $locale = TL_DEFAULT_LOCALE, $active = 1)
-{
-	$password = md5($password);
-	$sql= "INSERT INTO users (login,password,first,last,email,role_id,locale,active) 
-	       VALUES ('" . 
-			   $db->prepare_string($login) . "','" . $db->prepare_string($password) . "','" . 
-			   $db->prepare_string($first) . "','" . $db->prepare_string($last) . "','" . 
-			   $db->prepare_string($email) . "'," . $role_id . ",'". 
-			   $db->prepare_string($locale). "'," . $active . ")";
-	$result = $db->exec_query($sql);
-	
-	$new_user_id = 0;
-	if($result)
-	{
-		$new_user_id = $db->insert_id('users');
-	}
-	
-	return $new_user_id;
 }
 
 /**
@@ -500,40 +472,6 @@ function getAllUsers(&$db,$whereClause = null,$column = null, $order_by=null)
 }
 
 /**
-* Check if the username is a valid username (does not account for uniqueness) 
-* realname can match
-* Return true if it is, false otherwise
- *
- * @param type $p_username documentation
- * @return type documentation
- *
- * 20051112 - scs - small cosmetic changes, added trimming, corrected wrong login 
- * 				          maxlength check
- **/
-function user_is_name_valid($p_username)
-{
-  $user_login_valid_regex=config_get('user_login_valid_regex');
- 	$user_ok = true;
-	
-	$p_username = trim($p_username);
-	//simple check for empty login, or login consisting only of whitespaces
-	//The DB field is only 30 characters
-	if (!strlen($p_username) || (strlen($p_username) > 30))
-	{
-		$user_ok = false;
-	}
-
-	# Only allow a basic set of characters
-	if (!preg_match($user_login_valid_regex, $p_username))
-	{
-		$user_ok = false;
-	}
-
-	return $user_ok;
-}
-
-
-/**
  * get User Name from ID
  * @param integer $id_user
  * @return string user name
@@ -587,26 +525,6 @@ function format_username($hash)
 	return $username_format;
 }
 
-function checkLogin(&$db,$login)
-{
-	$message = lang_get("login_must_not_be_empty");
-	if (strlen($login))
-	{
-		if (user_is_name_valid($login))
-		{
-			$userInfo = null;
-			if (existLogin($db,$login,$userInfo))
-				$message = lang_get('duplicate_login');
-			else
-				$message = 'ok';
-		}
-		else
-			$message = lang_get('invalid_user_name') . "\n" . lang_get('valid_user_name_format');
-	}		
-	return $message;
-}
-
-
 function get_users_for_html_options(&$db,$whereClause = null,$add_blank_option=false)
 {
 	$users_map = null;
@@ -622,15 +540,6 @@ function get_users_for_html_options(&$db,$whereClause = null,$add_blank_option=f
 	return($users_map);
 }
 
-
-/*
-  function: 
-
-  args :
-  
-  returns: 
-
-*/
 function resetPassword(&$db,$userID,&$errorMsg)
 {
 	$errorMsg = '';
@@ -670,6 +579,8 @@ function getUserErrorMessage($code)
 	$msg = 'ok';
 	switch($code)
 	{
+		case OK:
+			break;
 		case tlUser::USER_E_LOGINLENGTH:
 			$msg = lang_get('error_user_login_length_error');
 			break;
@@ -679,12 +590,11 @@ function getUserErrorMessage($code)
 		case tlUser::USER_E_NOTALLOWED:
 			$msg = lang_get('user_login_valid_regex');
 			break;
-		case ERROR:
-		case tlUser::USER_E_DBERROR:
-			$msg = lang_get('error_user_not_updated');
-			break;
 		case tlUser::USER_E_FIRSTNAMELENGTH:
 			$msg = lang_get('empty_first_name');
+			break;
+		case tlUser::USER_E_LOGINALREADYEXISTS:
+			$msg = lang_get('user_name_exists');
 			break;
 		case tlUser::USER_E_LASTNAMELENGTH:
 			$msg = lang_get('empty_last_name');
@@ -695,7 +605,10 @@ function getUserErrorMessage($code)
 		case tlUser::USER_E_PWDDONTMATCH:
 			$msg = lang_get('passwd_dont_match');
 			break;
+		case ERROR:
+		case tlUser::USER_E_DBERROR:
 		default:
+			$msg = lang_get('error_user_not_updated');
 	}
 	return $msg;
 }

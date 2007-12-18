@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: firstLogin.php,v $
  *
- * @version $Revision: 1.17 $
- * @modified $Date: 2007/06/27 05:53:43 $ $Author: franciscom $
+ * @version $Revision: 1.18 $
+ * @modified $Date: 2007/12/18 20:47:19 $ $Author: schlundus $
  *
  * @author Asiel Brumfield
  * @author Martin Havlat 
@@ -33,7 +33,6 @@ $message = lang_get('your_info_please');
 $login_method = config_get('login_method');
 $external_password_mgmt = ('LDAP' == $login_method )? 1 : 0;
 
-
 $op = doDBConnect($db);
 if (!config_get('user_self_signup'))
 {
@@ -50,49 +49,29 @@ if (!config_get('user_self_signup'))
 
 if($bEditUser)
 {
-	// Fields that can't be empty
-	$fields_not_empty = array ('first' => lang_get('empty_first_name'),
-	                           'last'  => lang_get('empty_last_name'),
-	                           'email' => lang_get('empty_email_address'),
-							               'loginName' => lang_get('warning_empty_login'));
-  if( !$external_password_mgmt )
-  {
-    $fields_not_empty['password'] = lang_get('warning_empty_pwd');
-  }			
-  				              
-	$empty_fm = control_empty_fields($_POST, $fields_not_empty);
-	if (count($empty_fm))
-	{
-		$message = lang_get('user_cant_be_created_because');
-		foreach ($empty_fm as $key_f => $value_m)
-			$message .= "<br />" . $value_m;
-	}
-	else if(!user_is_name_valid($login))
-	{
-		$message = lang_get('invalid_user_name') . "<br />" . 
-		           lang_get('valid_user_name_format');
-	}	
-	else if(strcmp($password,$password2))
+	if(strcmp($password,$password2))
 		$message = lang_get('passwd_dont_match');
 	else
 	{
-		$userData = '';
-		if(existLogin($db,$login,$userData))
-			$message = lang_get('user_name_exists');
-		else
+		$user = new tlUser();	
+		$sqlResult = $user->setPassword($password);
+		if ($sqlResult == OK)
 		{
-			$result = userInsert($db,$login, $password, $first, $last, $email);
-			if ($result)
-			{
-				redirect(TL_BASE_HREF . "login.php?note=first");
-				exit();
-			}
-			else
-				$message = lang_get('cant_create_user');
+			$user->m_login = $login;
+			$user->m_emailAddress = $email;
+			$user->m_firstName = $first;
+			$user->m_lastName = $last;
+			$sqlResult = $user->writeToDB($db);
 		}
+		if ($sqlResult == OK)
+		{
+			redirect(TL_BASE_HREF . "login.php?note=first");
+			exit();
+		}
+		else 
+			$message = getUserErrorMessage($sqlResult);
 	}
 }
-
 
 $smarty = new TLSmarty();
 $smarty->assign('external_password_mgmt',$external_password_mgmt);

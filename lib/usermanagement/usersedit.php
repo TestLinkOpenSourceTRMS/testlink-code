@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: usersedit.php,v $
 *
-* @version $Revision: 1.21 $
-* @modified $Date: 2007/12/17 21:31:46 $ $Author: schlundus $
+* @version $Revision: 1.22 $
+* @modified $Date: 2007/12/18 20:47:19 $ $Author: schlundus $
 * 
 * rev :  BUGID 918
 *
@@ -37,26 +37,24 @@ if ($args->do_update)
 {
 	if ($args->user_id == 0)
 	{
-		$sqlResult=checkLogin($db,$args->login);
-		if (!strlen($args->email))
-		    $sqlResult = lang_get('empty_email_address');
-
-		if( !$external_password_mgmt && !strlen($args->password))
-			$sqlResult = lang_get('warning_empty_pwd');
-    
-		if ($sqlResult =='ok')
+		$user = new tlUser();	
+		$sqlResult = $user->setPassword($args->password);
+		if ($sqlResult == OK)
 		{
-			$args->user_id = userInsert($db,$args->login, $args->password, $args->first, $args->last,  
-			 	                              $args->email, $args->rights_id, $args->locale, $args->user_is_active);
-			if(!$args->user_id)
-				$sqlResult = lang_get('user_not_added');
-			else
-			  $user_feedback=sprintf(lang_get('user_created'),$args->login);	
-		}	
-		else
-		{	
-		  $user_feedback = nl2br($sqlResult);
+			$user->m_login = $args->login;
+			$user->m_emailAddress = $args->email;
+			$user->m_firstName = $args->first;
+			$user->m_lastName = $args->last;
+			$user->m_globalRoleID = $args->rights_id;
+			$user->m_locale = $args->locale;
+			$user->m_bActive = $args->user_is_active;
+			
+			$sqlResult = $user->writeToDB($db);
 		}
+		if ($sqlResult == OK)
+			$user_feedback = sprintf(lang_get('user_created'),$args->login);
+		else 
+			$sqlResult = getUserErrorMessage($sqlResult);
 	}
 	else
 	{

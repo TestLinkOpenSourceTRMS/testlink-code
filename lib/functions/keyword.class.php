@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: keyword.class.php,v $
 * 
-* @version $Id: keyword.class.php,v 1.4 2007/12/14 22:42:51 schlundus Exp $
-* @modified $Date: 2007/12/14 22:42:51 $ by $Author: schlundus $
+* @version $Id: keyword.class.php,v 1.5 2007/12/18 20:47:19 schlundus Exp $
+* @modified $Date: 2007/12/18 20:47:19 $ by $Author: schlundus $
 *
 * Functions for support keywords management. 
 **/
@@ -76,13 +76,11 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
 	}
 	public function writeToDB(&$db)
 	{
-		$result = $this->checkKeywordName();
-		if ($result == OK && !$this->m_allow_duplicate_keywords)
-			$result = $this->doesKeywordExist($db);
+		$result = $this->checkDetails($db);
 		if ($result == OK)
 		{
-			$name = $db->prepare_string(trim($this->m_name));
-			$notes = $db->prepare_string(trim($this->m_notes));
+			$name = $db->prepare_string($this->m_name);
+			$notes = $db->prepare_string($this->m_notes);
 
 			if ($this->m_dbID)
 			{
@@ -97,13 +95,25 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
 				
 				$result = $db->exec_query($query);
 				if ($result)
-					$this->m_dbID = $db->insert_id();
+					$this->m_dbID = $db->insert_id('keywords');
 			}
 			$result = $result ? OK : self::KW_E_DBERROR;
 		}
 		return $result;
 	}
-	
+	public function checkDetails(&$db)
+	{
+		$this->m_name = trim($this->m_name);
+		$this->m_notes = trim($this->m_notes);
+		
+		$result = OK;
+		if (!$this->m_allow_duplicate_keywords)
+			$result = tlKeyword::doesKeywordExist($db,$this->m_name,$this->m_testprojectID,$this->m_dbID);
+		if ($result == OK)
+			$result = tlKeyword::checkKeywordName($this->m_name);
+			
+		return $result;
+	}
 	public function deleteFromDB(&$db)
 	{
 		$sql = "DELETE FROM testcase_keywords WHERE keyword_id = " . $this->m_dbID;
@@ -137,14 +147,14 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
 	 * Checks a keyword against syntactic rules
 	 *
 	 **/
-	protected function checkKeywordName()
+	static public function checkKeywordName($name)
 	{
 		$result = OK;
-		if (strlen($this->m_name))
+		if (strlen($name))
 		{
 			//we shouldnt allow " and , in keywords any longer
 			$dummy = null;
-			if (preg_match("/(\"|,)/",$this->m_name,$dummy))
+			if (preg_match("/(\"|,)/",$name,$dummy))
 				$result = self::KW_E_NOTALLOWED;
 		}
 		else
@@ -155,15 +165,15 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
 	/**
 	 * checks if a keyword already exists in the database
 	 **/
-	protected function doesKeywordExist(&$db)
+	static public function doesKeywordExist(&$db,$name,$tprojectID,$kwID)
 	{
-		$name = $db->prepare_string(strtoupper($this->m_name));
+		$name = $db->prepare_string(strtoupper($name));
 		$query = " SELECT id FROM keywords " .
 				 " WHERE UPPER(keyword) ='" . $name.
-			     "' AND testproject_id = " . $this->m_testprojectID ;
+			     "' AND testproject_id = " . $tprojectID ;
 		
-		if ($this->m_dbID)
-			$query .= " AND id <> " . $this->m_dbID;
+		if ($kwID)
+			$query .= " AND id <> " .$kwID;
 		
 		$result = OK;
 		if ($db->fetchFirstRow($query))

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: mainPage.php,v $
  *
- * @version $Revision: 1.33 $ $Author: schlundus $
- * @modified $Date: 2007/12/17 21:31:45 $
+ * @version $Revision: 1.34 $ $Author: franciscom $
+ * @modified $Date: 2007/12/18 22:07:29 $
  *
  * @author Martin Havlat
  * 
@@ -123,7 +123,7 @@ foreach($rights2check as $key => $the_right)
   $smarty->assign($the_right, has_rights($db,$the_right));
 }                         
 
-$smarty->assign('metrics_dashboard_url','lib/results/metrics_dashboard.php');
+$smarty->assign('metrics_dashboard_url','lib/results/metricsDashboard.php');
 
 $smarty->assign('testplan_creating', has_rights($db,"mgt_testplan_create"));
 $smarty->assign('tp_user_role_assignment', has_rights($db,"testplan_user_role_assignment"));

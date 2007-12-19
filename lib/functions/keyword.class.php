@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: keyword.class.php,v $
 * 
-* @version $Id: keyword.class.php,v 1.6 2007/12/19 18:27:06 schlundus Exp $
-* @modified $Date: 2007/12/19 18:27:06 $ by $Author: schlundus $
+* @version $Id: keyword.class.php,v 1.7 2007/12/19 21:33:40 schlundus Exp $
+* @modified $Date: 2007/12/19 21:33:40 $ by $Author: schlundus $
 *
 * Functions for support keywords management. 
 **/
@@ -33,11 +33,13 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
 	const KW_E_DBERROR = -8;
 	const KW_E_WRONGFORMAT = -16;
 	
-	protected function _clean()
+	protected function _clean($options = self::TLOBJ_O_SEARCH_BY_ID)
 	{
 		$this->name = NULL;
 		$this->notes = NULL;
 		$this->testprojectID = NULL;
+		if (!($options & self::TLOBJ_O_SEARCH_BY_ID))
+			$this->dbID = null;
 	}
 	
 	function __construct($dbID = null)
@@ -60,14 +62,20 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
 		$this->testprojectID = $testprojectID;
 	}
 	//BEGIN interface iDBSerialization
-	public function readFromDB(&$db)
+	public function readFromDB(&$db,$options = self::TLOBJ_O_SEARCH_BY_ID)
 	{
-		$this->_clean();
-		$query = " SELECT id,keyword,notes,testproject_id FROM keywords " .
-			   " WHERE id = {$this->dbID}" ;
+		$this->_clean($options);
+		$query = " SELECT id,keyword,notes,testproject_id FROM keywords ";
+		
+		$clauses = null;
+		if ($options & self::TLOBJ_O_SEARCH_BY_ID)
+			$clauses[] = "id = {$this->dbID}";		
+		if ($clauses)
+			$query .= " WHERE " . implode(" AND ",$clauses);
 		$info = $db->fetchFirstRow($query);			 
 		if ($info)
 		{
+			$this->dbID = $info['id'];
 			$this->name = $info['keyword'];
 			$this->notes = $info['notes'];
 			$this->testprojectID = $info['testproject_id'];
@@ -130,7 +138,10 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
 		}
 		return $result ? OK : ERROR;	
 	}
-	
+	static public function getByID(&$db,$id)
+	{
+		return tlDBObject::createObjectFromDB($db,$id,__CLASS__,tlKeyword::TLOBJ_O_SEARCH_BY_ID);
+	}
 	//END interface iDBSerialization
 	/* for legacy purposes */
 	public function getInfo()

@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
  * @filesource $RCSfile: database.class.php,v $
- * @version $Revision: 1.23 $
- * @modified $Date: 2007/11/11 21:57:11 $ by $Author: havlat $
+ * @version $Revision: 1.24 $
+ * @modified $Date: 2007/12/19 21:33:40 $ by $Author: schlundus $
  * @author Francisco Mancardi
  * 
  *
@@ -433,8 +433,9 @@ class database
 	public function fetchOneValue($query)
 	{
 		$row = $this->fetchFirstRow($query);
-		
-		return $row[0];
+		if ($row)
+			return $row[0];
+		return null;
 	}
 	
 	

@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: object.class.php,v $
 * 
-* @version $Id: object.class.php,v 1.7 2007/12/19 18:27:06 schlundus Exp $
-* @modified $Date: 2007/12/19 18:27:06 $ by $Author: schlundus $
+* @version $Id: object.class.php,v 1.8 2007/12/19 21:33:40 schlundus Exp $
+* @modified $Date: 2007/12/19 21:33:40 $ by $Author: schlundus $
 *
 **/
 require_once( dirname(__FILE__) . '/int_serialization.php' );
@@ -146,6 +146,8 @@ abstract class tlDBObject extends tlObject implements iDBSerialization
 {
 	public $dbID;
 	
+	const TLOBJ_O_SEARCH_BY_ID = 1;
+	
 	/* standard constructor */
 	function __construct($dbID = null)
 	{
@@ -161,10 +163,10 @@ abstract class tlDBObject extends tlObject implements iDBSerialization
 	{
 		$this->dbID = $id;
 	}
-	static public function createObjectFromDB(&$db,$id,$className)
+	static public function createObjectFromDB(&$db,$id,$className,$options = self::TLOBJ_O_SEARCH_BY_ID)
 	{
 		$item = new $className($id);
-		if ($item->readFromDB($db) == OK)
+		if ($item->readFromDB($db,$options) == OK)
 			return $item;
 		return null;
 	}

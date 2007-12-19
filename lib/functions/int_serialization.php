@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: int_serialization.php,v $
 * 
-* @version $Id: int_serialization.php,v 1.3 2007/12/18 19:32:16 franciscom Exp $
-* @modified $Date: 2007/12/18 19:32:16 $ by $Author: franciscom $
+* @version $Id: int_serialization.php,v 1.4 2007/12/19 21:33:40 schlundus Exp $
+* @modified $Date: 2007/12/19 21:33:40 $ by $Author: schlundus $
 *
 **/
 
@@ -83,5 +83,8 @@ interface iDBSerialization
 		Deletes the object from the database connection given by [ref] $db
 	*/
 	public function deleteFromDB(&$db);
+	
+	/* factory function to create an object from [ref] $db */
+	static public function getByID(&$db,$id);
 }
 ?>

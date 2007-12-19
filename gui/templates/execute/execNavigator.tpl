@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execNavigator.tpl,v 1.1 2007/12/02 17:02:26 franciscom Exp $ *}
+{* $Id: execNavigator.tpl,v 1.2 2007/12/19 21:33:40 schlundus Exp $ *}
 {* Purpose: smarty template - show test set tree *}
 {* 
 rev :
@@ -79,16 +79,6 @@ rev :
 <div class="tree" id="tree">
 {$tree}
 </div>
-
-{if $tcIDFound}
-	{literal}
-		<script language="javascript">
-	{/literal}
-		ST({$testCaseID});
-	{literal}
-		</script>
-	{/literal}
-{/if}
 
 {if $src_workframe != ''}
 <script type="text/javascript">

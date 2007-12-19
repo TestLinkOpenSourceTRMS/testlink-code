@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: users.inc.php,v $
  *
- * @version $Revision: 1.57 $
- * @modified $Date: 2007/12/19 20:27:19 $ $Author: schlundus $
+ * @version $Revision: 1.58 $
+ * @modified $Date: 2007/12/19 21:33:40 $ $Author: schlundus $
  *
  * Functions for usermanagement
  *
@@ -52,7 +52,6 @@ class tlUser extends tlDBObject
 	const USER_E_LOGINALREADYEXISTS = -256;
 
 	//search options
-	const USER_O_SEARCH_BYID = 1;
 	const USER_O_SEARCH_BYLOGIN = 2;
 	
 	function __construct($dbID = null)
@@ -70,7 +69,7 @@ class tlUser extends tlDBObject
 		$this->bActive = 1;
 	}
 	
-	protected function _clean($options = self::USER_O_SEARCH_BYID)
+	protected function _clean($options = self::TLOBJ_O_SEARCH_BY_ID)
 	{
 		$this->firstName = null;
 		$this->lastName = null;
@@ -80,7 +79,7 @@ class tlUser extends tlDBObject
 		$this->bActive = null;
 		$this->defaultTestprojectID = null;
 		$this->globalRoleID = null;
-		if (!($options & self::USER_O_SEARCH_BYID))
+		if (!($options & self::TLOBJ_O_SEARCH_BY_ID))
 			$this->dbID = null;
 		if (!($options & self::USER_O_SEARCH_BYLOGIN))
 			$this->login = null;
@@ -91,13 +90,13 @@ class tlUser extends tlDBObject
 	{
 	}
 	//BEGIN interface iDBSerialization
-	public function readFromDB(&$db,$options = self::USER_O_SEARCH_BYID)
+	public function readFromDB(&$db,$options = self::TLOBJ_O_SEARCH_BY_ID)
 	{
 		$this->_clean($options);
 		$query = "SELECT id,login,password,first,last,email,role_id,locale, login AS fullname, active,default_testproject_id FROM users";
 		
 		$clauses = null;
-		if ($options & self::USER_O_SEARCH_BYID)
+		if ($options & self::TLOBJ_O_SEARCH_BY_ID)
 			$clauses[] = "id = {$this->dbID}";		
 		if ($options & self::USER_O_SEARCH_BYLOGIN)
 			$clauses[] = "login = '".$db->prepare_string($this->login)."'";		
@@ -256,13 +255,9 @@ class tlUser extends tlDBObject
 			return $user->dbID;
 		return null;
 	}
-	static public function getUserByID(&$db,$id)
+	static public function getByID(&$db,$id)
 	{
-		$user = new tlUser();
-		$user->dbID = $id;
-		if ($user->readFromDB($db,tlUser::USER_O_SEARCH_BYID) == OK)
-			return $user;
-		return null;
+		return tlDBObject::createObjectFromDB($db,$id,__CLASS__,tlUser::TLOBJ_O_SEARCH_BY_ID);
 	}
 }
 
@@ -275,18 +270,25 @@ class tlRole extends tlDBObject
 	{
 		parent::__construct($dbID);
 	}
-	protected function _clean()
+	protected function _clean($options = self::TLOBJ_O_SEARCH_BY_ID)
 	{
 		$this->description = null;
 		$this->notes = null;
+		if (!($options & self::TLOBJ_O_SEARCH_BY_ID))
+			$this->dbID = null;
 	}
 	//BEGIN interface iDBSerialization
-	public function readFromDB(&$db)
+	public function readFromDB(&$db,$options = self::TLOBJ_O_SEARCH_BY_ID)
 	{
-		$this->_clean();
+		$this->_clean($options);
 		$query = "SELECT id,description, notes FROM roles";
-		$query .= " WHERE id = {$this->dbID}";
 		
+		$clauses = null;
+		if ($options & self::TLOBJ_O_SEARCH_BY_ID)
+			$clauses[] = "id = {$this->dbID}";		
+		if ($clauses)
+			$query .= " WHERE " . implode(" AND ",$clauses);
+			
 		$info = $db->fetchFirstRow($query);			 
 		if ($info)
 		{
@@ -302,6 +304,10 @@ class tlRole extends tlDBObject
 	public function deleteFromDB(&$db)
 	{
 	
+	}
+	static public function getByID(&$db,$id)
+	{
+		return tlDBObject::createObjectFromDB($db,$id,__CLASS__,tlRole::TLOBJ_O_SEARCH_BY_ID);
 	}
 }
 
@@ -322,10 +328,7 @@ if( 'LDAP' == config_get('login_method') )
  * @param type $locale [default = null] documentation
  * @param type $active [default = null] documentation
  * @return type documentation
- *
- * 20051005 - fm - set_dt_formats()
- * 20050701 - create function: update session data if admin modify yourself
- * 20060102 - scs - ADOdb changes
+
  **/
 function setUserSession(&$db,$user, $id, $roleID, $email, $locale = null, $active = null,
                         $usertestprojectRoles = null,$userTestPlanRoles = null)
@@ -335,42 +338,36 @@ function setUserSession(&$db,$user, $id, $roleID, $email, $locale = null, $activ
 		$_SESSION['user'] = $user; 
 
 	$_SESSION['userID']	= $id;
-	
-	$uInfo = getUserById($db,$id);
 	$_SESSION['userdisplayname'] = $user;
-	if ($uInfo)
-		$_SESSION['userdisplayname'] = $uInfo[0]['fullname'];
-	
-	
 	$_SESSION['email'] = $email; 
+	$_SESSION['testprojectRoles'] = $usertestprojectRoles; 
+	$_SESSION['testPlanRoles'] = $userTestPlanRoles; 
+	$_SESSION['testprojectID'] = null;
+	$_SESSION['s_lastAttachmentList'] = null;
+
+	$user = tlUser::getById($db,$id);
+	if ($user)
+		$_SESSION['userdisplayname'] = $user->getDisplayName();
 	
 	if (!is_null($roleID))
 	{
-		$_SESSION['roleID'] = intval($roleID); 
-		$sql = "SELECT description FROM roles WHERE id = " . $roleID;
-		$result = $db->exec_query($sql);
-		if ($result)
-		{
-			$row = $db->fetch_array($result);
-			$_SESSION['role'] = $row['description']; 
-			tLog('setUserSession: $user='.$_SESSION['role']);
-		}
+		$roleID = intval($roleID);
+		$_SESSION['roleID'] = $roleID; 
+		$role = new tlRole($roleID);
+		if ($role->readFromDb($db) == OK)
+			$_SESSION['role'] = $role->description;
+		tLog('setUserSession: $user='.$_SESSION['role']);
 	}
 	if (!is_null($locale))
 	{
 		$_SESSION['locale'] = $locale;
 		set_dt_formats();
 	} 
-	
-	$_SESSION['testprojectRoles'] = $usertestprojectRoles; 
-	$_SESSION['testPlanRoles'] = $userTestPlanRoles; 
-	$_SESSION['testprojectID'] = null;
-	
-	// 20071103 - franciscom
-  $tproject_mgr = new testproject($db);
+		
+	$tproject_mgr = new testproject($db);
 
-  $gui_cfg=config_get('gui');
-  $order_by=$gui_cfg->tprojects_combo_order_by;
+	$gui_cfg = config_get('gui');
+	$order_by = $gui_cfg->tprojects_combo_order_by;
 	$arrProducts = $tproject_mgr->get_accessible_for_user($id,'map',$order_by);
 	
 	 // 20051208 - JBA - added to set the lastProduct the user has selected before logging off.
@@ -390,25 +387,8 @@ function setUserSession(&$db,$user, $id, $roleID, $email, $locale = null, $activ
     		$tpID = key($arrProducts);
    		$_SESSION['testprojectID'] = $tpID;
 	}
-	$_SESSION['s_lastAttachmentList'] = null;
 	
 	return 1;
-}
-
-/**
- * Function-Documentation
- *
- * @param  type $db [ref] ADODB
- * @param  type $id user_id
- * @return null or assoc array with user data
- **/
-function getUserById(&$db,$id)
-{
-	$ret = null;
-	if(!is_null($id) && intval($id) > 0)
-	$ret = getAllUsers($db,"WHERE id=" . $id);
-
-	return $ret;
 }
 
 /**
@@ -479,17 +459,12 @@ function getAllUsers(&$db,$whereClause = null,$column = null, $order_by=null)
  *                         of modifier_id, that before any
  *                         modification is null.
  **/
-function getUserName(&$db,$id_user)
+function getUserName(&$db,$userID)
 {
-	$username = '';
-	if(intval($id_user) > 0 )
-	{
-		$username = lang_get('Unknown');
-		$uInfo = getUserById($db,$id_user);
-		if ($uInfo) 
-			$username = $uInfo[0]['fullname'];
-	}
-	return $username;
+	$user = tlUser::getById($db,$userID);
+	if ($user)
+		return $user->getDisplayName();
+	return '';
 }
 
 

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.73 $
- * @modified $Date: 2007/12/19 20:27:19 $ $Author: schlundus $
+ * @version $Revision: 1.74 $
+ * @modified $Date: 2007/12/19 21:33:40 $ $Author: schlundus $
  *
  * 20071113 - franciscom - added contribution History for all builds.
  * 20071006 - franciscom - changes on exec_cfield_mgr() call
@@ -364,8 +364,9 @@ if( !is_null($map_last_exec) )
 		$userID = intval($p3[$version_id]['user_id']);
 		if($userID)
 		{
-			$user = tlUser::getUserByID($db,$userID);
-			$map_last_exec[$version_id]['assigned_user']= $user->getDisplayName();  
+			$user = tlUser::getByID($db,$userID);
+			if ($user)
+				$map_last_exec[$version_id]['assigned_user']= $user->getDisplayName();  
 			$map_last_exec[$version_id]['assigned_user_id'] = $userID;
 		}  
 	}

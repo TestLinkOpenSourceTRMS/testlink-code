@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: attachment.class.php,v $
  *
- * @version $Revision: 1.5 $
- * @modified $Date: 2007/12/19 18:27:06 $ by $Author: schlundus $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2007/12/19 21:33:40 $ by $Author: schlundus $
  * @author Francisco Mancardi
  *
 */
@@ -42,7 +42,7 @@ class tlAttachment extends tlDBObject
 	protected $repositoryPath;
 	protected $attachmentCfg;
 	
-	protected function _clean()
+	protected function _clean($options = self::TLOBJ_O_SEARCH_BY_ID)
 	{
 		$this->fkID = NULL;
 		$this->fkTableName = NULL;
@@ -54,7 +54,9 @@ class tlAttachment extends tlDBObject
 		$this->fContents = NULL;
 		$this->description = NULL;
 		$this->dateAdded = NULL;
-		$this->dbID = NULL;
+		
+		if (!($options & self::TLOBJ_O_SEARCH_BY_ID))
+			$this->dbID = null;
 	} 
 
 	function __construct($dbID = null)
@@ -117,14 +119,19 @@ class tlAttachment extends tlDBObject
 		
 		return OK;
 	}
-	public function readFromDB(&$db)
+	public function readFromDB(&$db,$options = self::TLOBJ_O_SEARCH_BY_ID)
 	{
+		$this->_clean($options);
 		$query = "SELECT id,title,description,file_name,file_type,file_size,date_added,".
-				"compression_type,file_path,fk_id,fk_table " .
-				"FROM attachments WHERE id = {$this->dbID} ";
-
+				"compression_type,file_path,fk_id,fk_table FROM attachments ";
+				
+		$clauses = null;
+		if ($options & self::TLOBJ_O_SEARCH_BY_ID)
+			$clauses[] = "id = {$this->dbID}";		
+		if ($clauses)
+			$query .= " WHERE " . implode(" AND ",$clauses);
+		
 		$info = $db->fetchFirstRow($query);			 
-		$this->_clean();
 		if ($info)
 		{
 			$this->fkID = $info['fk_id'];
@@ -189,6 +196,11 @@ class tlAttachment extends tlDBObject
 		$result = $db->exec_query($query);
 		
 		return $result ? OK : ERROR;
+	}
+	
+	static public function getByID(&$db,$id)
+	{
+		return tlDBObject::createObjectFromDB($db,$id,__CLASS__,tlAttachment::TLOBJ_O_SEARCH_BY_ID);
 	}
 };
 

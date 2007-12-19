@@ -3,8 +3,8 @@
  * TestLink Open Source Project - @link http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: plan.core.inc.php,v $
- * @version $Revision: 1.40 $
- * @modified $Date: 2007/11/04 11:16:29 $ $Author: franciscom $
+ * @version $Revision: 1.41 $
+ * @modified $Date: 2007/12/19 21:59:30 $ $Author: schlundus $
  *  
  * 
  * @author 	Martin Havlat
@@ -109,47 +109,6 @@ function getNumberOfAccessibleTestPlans(&$db,$testproject_id, $user_id=0, $filte
   
 	$tpData = getAccessibleTestPlans($db,$testproject_id, $user_id, $filter_by_product,$tpID);
 	return sizeof($tpData);	
-}
-
-/**
- * Get list of users
- *
- * 20051222 - fm  - contribution by
- *
- * 20051203 - scs - added param tpID for getting only those user
- * 					which belong to a certain tp
- */
-function getTestPlanUsers(&$db,$tpID)
-{
-	//@todo schlundus: code is not correct
-	/*
-	$show_realname = config_get('show_realname');
-	
-	$sql = " SELECT users.id, login ";
-	if ($show_realname)
-	{
-	  $sql .= " ,first,last ";
-	}
-	$sql .= " FROM users,user_testplan_rights 
-	          WHERE users.id = user_testplan_rights.user_id 
-	          AND user_testplan_rights.testplan_id = {$tpID}";
-             
-	$result = $db->exec_query($sql);
-	if ($result)
-	{
-		$data = null;
-		while($rowUser = $db->fetch_array($result))
-		{
-			$data[$rowUser['id']] = $rowUser['login'];
-			if ($show_realname)
-			{
-			  $data[$rowUser['id']] = format_username($rowUser);
-			}
-		}
-	}
-	return $data;
-	*/
-	return null;
 }
 
 

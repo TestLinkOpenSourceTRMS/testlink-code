@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: config.inc.php,v $
  *
- * @version $Revision: 1.137 $
- * @modified $Date: 2007/12/12 18:20:24 $ by $Author: havlat $
+ * @version $Revision: 1.138 $
+ * @modified $Date: 2007/12/19 21:59:29 $ by $Author: schlundus $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink 
@@ -246,12 +246,11 @@ FALSE -> user can do nothing, no changes at UI.
 $g_ui_show_check_filter_tp_by_testproject = FALSE;
 
 // Display name and surename in all user lists 
-// $g_show_realname=TRUE; -> use the function format_username()
-//                           to display user identification
+// $g_show_realname=TRUE; -> build a human readable displayname
 //                           using $g_username_format
 $g_show_realname = FALSE;
 
-// used by function format_username()
+// used to build a human readable display name for users
 // example: user ux555, real name= John Cook
 // '%first% %last%'          -> John Cook
 // '%last%, %first%'          -> John Cook

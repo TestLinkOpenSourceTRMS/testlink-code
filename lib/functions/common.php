@@ -2,8 +2,8 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * @filesource $RCSfile: common.php,v $
- * @version $Revision: 1.84 $ $Author: schlundus $
- * @modified $Date: 2007/12/14 22:42:51 $
+ * @version $Revision: 1.85 $ $Author: schlundus $
+ * @modified $Date: 2007/12/19 21:59:30 $
  *
  * @author 	Martin Havlat
  * @author 	Chad Rosen
@@ -413,20 +413,6 @@ function localize_dateOrTimeStamp($params,&$smarty,$what,$value)
 		$smarty->assign($params['var'],$retVal);
 	return $retVal;
 }
-
-/*
-  function: 
-
-  args :
-  
-  returns: 
-
-*/
-function format_username_smarty($param,&$smarty)
-{
-	return format_username($param['info']);
-}
-
 
 /**
  * Turn a hash into a number valued array

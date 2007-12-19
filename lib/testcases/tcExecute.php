@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * Filename $RCSfile: tcexecute.php,v $
- * @version $Revision: 1.5 $
+ * Filename $RCSfile: tcExecute.php,v $
+ * @version $Revision: 1.1 $
  *
  * Handles testcase execution through AJAX calls. 
  * Testcases are executed on a remote server, and the response 
@@ -19,7 +19,7 @@
  *                 Precede 'tc_' for custom fields assigned to testcase level.
  * 
  *
- * @modified $Date: 2007/12/05 21:25:15 $ by $Author: schlundus $
+ * @modified $Date: 2007/12/19 18:44:24 $ by $Author: franciscom $
 */
 require_once("../../config.inc.php");
 require_once("common.php");

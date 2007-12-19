@@ -3,10 +3,10 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * Filename $RCSfile: tcexport.php,v $
+ * Filename $RCSfile: tcExport.php,v $
  *
- * @version $Revision: 1.13 $
- * @modified $Date: 2007/12/02 17:23:19 $ by $Author: franciscom $
+ * @version $Revision: 1.1 $
+ * @modified $Date: 2007/12/19 18:45:12 $ by $Author: franciscom $
  *
  * test case and test suites export
  *

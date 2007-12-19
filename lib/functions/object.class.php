@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: object.class.php,v $
 * 
-* @version $Id: object.class.php,v 1.6 2007/12/18 19:32:16 franciscom Exp $
-* @modified $Date: 2007/12/18 19:32:16 $ by $Author: franciscom $
+* @version $Id: object.class.php,v 1.7 2007/12/19 18:27:06 schlundus Exp $
+* @modified $Date: 2007/12/19 18:27:06 $ by $Author: schlundus $
 *
 **/
 require_once( dirname(__FILE__) . '/int_serialization.php' );
@@ -16,24 +16,24 @@ require_once( dirname(__FILE__) . '/int_serialization.php' );
 abstract class tlObject implements iSerialization
 {	
 	/* the unique object id */
-	protected $m_objectID;
+	protected $objectID;
 		
 	/* supported serialization Interfaces */	
-	protected $m_serializationInterfaces;
-	protected $m_serializationFormatDescriptors;
+	protected $serializationInterfaces;
+	protected $serializationFormatDescriptors;
 	
 	/* standard constructor, set's the object id */
 	public function __construct()
 	{
-		$this->m_objectID = uniqid("tl", true);
+		$this->objectID = uniqid("tl", true);
 		
 		/* Any supported import/Export Serialization Interfaces must be prefixed with iSerializationTo */
 		$prefix = "iSerializationTo";
 		$prefixLen = strlen($prefix);
 		$o = new ReflectionObject($this);
 		$interfaces = $o->getInterfaces();
-		$this->m_serializationInterfaces = null;
-		$this->m_serializationFormatDescriptors = null;
+		$this->serializationInterfaces = null;
+		$this->serializationFormatDescriptors = null;
 		if ($interfaces)
 		{
 			foreach($interfaces as $name => $info)
@@ -42,9 +42,9 @@ abstract class tlObject implements iSerialization
 				if ($iPos === 0)
 				{
 					$format = substr($name,$prefixLen);
-					$this->m_serializationInterfaces[$name] = $format;
+					$this->serializationInterfaces[$name] = $format;
 					$pfn = "getFormatDescriptionFor".$format;
-					$this->m_serializationFormatDescriptors[$format] = $this->$pfn();
+					$this->serializationFormatDescriptors[$format] = $this->$pfn();
 				}
 			}
 		}
@@ -69,12 +69,12 @@ abstract class tlObject implements iSerialization
 	/* returns all supported Import/Export Interfaces */
 	function getSupportedSerializationInterfaces()
 	{
-		return $this->m_serializationInterfaces;
+		return $this->serializationInterfaces;
 	}
 	/* returns all supported Import/Export Interfaces  Format Descriptors */
 	function getSupportedSerializationFormatDescriptions()
 	{
-		return $this->m_serializationFormatDescriptors;
+		return $this->serializationFormatDescriptors;
 	}
 };
 /*
@@ -83,7 +83,7 @@ abstract class tlObject implements iSerialization
 abstract class tlObjectWithDB extends tlObject
 {	
 	/* the db connection to the testlink database */
-	protected $m_db;
+	protected $db;
 	
 	/* 
 	*	@param object [ref] $db the database connection
@@ -91,7 +91,7 @@ abstract class tlObjectWithDB extends tlObject
 	function __construct(&$db)
 	{
 		tlObject::__construct();
-		$this->m_db = &$db;
+		$this->db = &$db;
 	}
 }
 
@@ -101,9 +101,9 @@ abstract class tlObjectWithDB extends tlObject
 abstract class tlObjectWithAttachments extends tlObjectWithDB
 {
 	/* the attachment repository object */
-	protected $m_attachmentRepository;
+	protected $attachmentRepository;
 	/* the foreign key table name to store the attachements */
-	protected $m_attachmentTableName;
+	protected $attachmentTableName;
 	
 	/* 
 	*	@param object [ref] $db the database connection
@@ -112,8 +112,8 @@ abstract class tlObjectWithAttachments extends tlObjectWithDB
 	function __construct(&$db,$attachmentTableName)
 	{
 		tlObjectWithDB::__construct($db);
-		$this->m_attachmentRepository = tlAttachmentRepository::create($this->m_db);
-		$this->m_attachmentTableName = $attachmentTableName;
+		$this->attachmentRepository = tlAttachmentRepository::create($this->db);
+		$this->attachmentTableName = $attachmentTableName;
 	}
 	/*
 	*	gets all infos about the attachments of the object specified by $id 	
@@ -122,7 +122,7 @@ abstract class tlObjectWithAttachments extends tlObjectWithDB
 	*/
 	function getAttachmentInfos($id)
 	{
-		return $this->m_attachmentRepository->getAttachmentInfosFor($id,$this->m_attachmentTableName);
+		return $this->attachmentRepository->getAttachmentInfosFor($id,$this->attachmentTableName);
 	}
 	/*
 	*	deletes all attachments of the object specified by $id 	
@@ -131,35 +131,35 @@ abstract class tlObjectWithAttachments extends tlObjectWithDB
 	*/
 	function deleteAttachments($id)
 	{
-		return $this->m_attachmentRepository->deleteAttachmentsFor($id,$this->m_attachmentTableName);
+		return $this->attachmentRepository->deleteAttachmentsFor($id,$this->attachmentTableName);
 	}
 	
 	/* function used for resetting the object's internal data */
 	protected function _clean()
 	{
-		$this->m_attachmentRepository = null;
-		$this->m_attachmentTableName = null;
+		$this->attachmentRepository = null;
+		$this->attachmentTableName = null;
 	}
 }
 //SCHLUNDUS: not sure about this Object... need to think about it
 abstract class tlDBObject extends tlObject implements iDBSerialization
 {
-	public $m_dbID;
+	public $dbID;
 	
 	/* standard constructor */
 	function __construct($dbID = null)
 	{
 		parent::__construct();
 		
-		$this->m_dbID = $dbID;
+		$this->dbID = $dbID;
 	}
 	public function getDbID()
 	{
-		return $m_dbID;
+		return $dbID;
 	}
 	public function setDbID($id)
 	{
-		$this->m_dbID = $id;
+		$this->dbID = $id;
 	}
 	static public function createObjectFromDB(&$db,$id,$className)
 	{

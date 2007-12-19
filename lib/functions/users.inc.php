@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: users.inc.php,v $
  *
- * @version $Revision: 1.55 $
- * @modified $Date: 2007/12/18 21:07:18 $ $Author: schlundus $
+ * @version $Revision: 1.56 $
+ * @modified $Date: 2007/12/19 18:27:06 $ $Author: schlundus $
  *
  * Functions for usermanagement
  *
@@ -23,21 +23,21 @@ require_once("common.php");
 //SCHLUNDUS: not completed
 class tlUser extends tlDBObject
 {
-	public $m_firstName;
-	public $m_lastName;
-	public $m_emailAddress;
-	public $m_locale;
-	public $m_bActive;
-	public $m_defaultTestprojectID;
-	public $m_globalRole;
-	public $m_globalRoleID;
-	public $m_login;
-	protected $m_password;
+	public $firstName;
+	public $lastName;
+	public $emailAddress;
+	public $locale;
+	public $bActive;
+	public $defaultTestprojectID;
+	public $globalRole;
+	public $globalRoleID;
+	public $login;
+	protected $password;
 	
-	protected $m_showRealname;
-	protected $m_usernameFormat;
-	protected $m_loginMethod;
-	protected $m_maxLoginLength;
+	protected $showRealname;
+	protected $usernameFormat;
+	protected $loginMethod;
+	protected $maxLoginLength;
 	
 	const USER_E_LOGINLENGTH = -1;
 	const USER_E_EMAILLENGTH = -2;
@@ -53,28 +53,28 @@ class tlUser extends tlDBObject
 	{
 		parent::__construct($dbID);
 		
-		$this->m_showRealname = config_get('show_realname');
-		$this->m_usernameFormat = config_get('username_format');
-		$this->m_loginRegExp = config_get('user_login_valid_regex');
-		$this->m_maxLoginLength = 30; 
-		$this->m_loginMethod = config_get('login_method');
+		$this->showRealname = config_get('show_realname');
+		$this->usernameFormat = config_get('username_format');
+		$this->loginRegExp = config_get('user_login_valid_regex');
+		$this->maxLoginLength = 30; 
+		$this->loginMethod = config_get('login_method');
 		
-		$this->m_globalRoleID = TL_DEFAULT_ROLEID;
-		$this->m_locale =  TL_DEFAULT_LOCALE;
-		$this->m_bActive = 1;
+		$this->globalRoleID = TL_DEFAULT_ROLEID;
+		$this->locale =  TL_DEFAULT_LOCALE;
+		$this->bActive = 1;
 	}
 	
 	protected function _clean()
 	{
-		$this->m_firstName = null;
-		$this->m_lastName = null;
-		$this->m_emailAddress = null;
-		$this->m_locale = null;
-		$this->m_password = null;
-		$this->m_bActive = null;
-		$this->m_defaultTestprojectID = null;
-		$this->m_globalRoleID = null;
-		$this->m_login = null;
+		$this->firstName = null;
+		$this->lastName = null;
+		$this->emailAddress = null;
+		$this->locale = null;
+		$this->password = null;
+		$this->bActive = null;
+		$this->defaultTestprojectID = null;
+		$this->globalRoleID = null;
+		$this->login = null;
 	}
 	/* fills the members  */
 	function create()
@@ -85,27 +85,27 @@ class tlUser extends tlDBObject
 	{
 		$this->_clean();
 		$query = "SELECT id,login,password,first,last,email,role_id,locale, login AS fullname, active,default_testproject_id FROM users";
-		$query .= " WHERE id = {$this->m_dbID}";
+		$query .= " WHERE id = {$this->dbID}";
 
 		$info = $db->fetchFirstRow($query);			 
 		if ($info)
 		{
-			$this->m_firstName = $info['first'];
-			$this->m_lastName = $info['last'];
-			$this->m_login = $info['login'];
-			$this->m_emailAddress = $info['email'];
-			$this->m_globalRoleID = $info['role_id'];
+			$this->firstName = $info['first'];
+			$this->lastName = $info['last'];
+			$this->login = $info['login'];
+			$this->emailAddress = $info['email'];
+			$this->globalRoleID = $info['role_id'];
 			
-			if ($this->m_globalRoleID)
+			if ($this->globalRoleID)
 			{
-				$this->m_globalRole = new tlRole($this->m_globalRoleID);
-				$this->m_globalRole->readFromDB($db);
+				$this->globalRole = new tlRole($this->globalRoleID);
+				$this->globalRole->readFromDB($db);
 			}
 			
-			$this->m_locale = $info['locale'];
-			$this->m_password = $info['password'];
-			$this->m_bActive = $info['active'];
-			$this->m_defaultTestprojectID = $info['default_testproject_id'];
+			$this->locale = $info['locale'];
+			$this->password = $info['password'];
+			$this->bActive = $info['active'];
+			$this->defaultTestprojectID = $info['default_testproject_id'];
 		}
 		return $info ? OK : ERROR;
 	}
@@ -114,30 +114,30 @@ class tlUser extends tlDBObject
 		$result = $this->checkDetails($db);
 		if ($result == OK)
 		{		
-			if($this->m_dbID)
+			if($this->dbID)
 			{
 				$query = "UPDATE users " .
-			       "SET first='" . $db->prepare_string($this->m_firstName) . "'" .
-			       ", last='" .  $db->prepare_string($this->m_lastName)    . "'" .
-			       ", email='" . $db->prepare_string($this->m_emailAddress)   . "'" .
-				   ", locale = ". "'" . $db->prepare_string($this->m_locale) . "'" . 
-				   ", password = ". "'" . $db->prepare_string($this->m_password) . "'" .
-				   ", role_id = ". "'" . $db->prepare_string($this->m_globalRoleID) . "'" .
-				   ", active = ". "'" . $db->prepare_string($this->m_bActive) . "'" ;
-				$query .= " WHERE id=" . $this->m_dbID;
+			       "SET first='" . $db->prepare_string($this->firstName) . "'" .
+			       ", last='" .  $db->prepare_string($this->lastName)    . "'" .
+			       ", email='" . $db->prepare_string($this->emailAddress)   . "'" .
+				   ", locale = ". "'" . $db->prepare_string($this->locale) . "'" . 
+				   ", password = ". "'" . $db->prepare_string($this->password) . "'" .
+				   ", role_id = ". "'" . $db->prepare_string($this->globalRoleID) . "'" .
+				   ", active = ". "'" . $db->prepare_string($this->bActive) . "'" ;
+				$query .= " WHERE id=" . $this->dbID;
 				$result = $db->exec_query($query);
 			}
 			else
 			{
 				$query = "INSERT INTO users (login,password,first,last,email,role_id,locale,active) 
 							VALUES ('" . 
-							$db->prepare_string($this->m_login) . "','" . $db->prepare_string($this->m_password) . "','" . 
-							$db->prepare_string($this->m_firstName) . "','" . $db->prepare_string($this->m_lastName) . "','" . 
-							$db->prepare_string($this->m_emailAddress) . "'," . $this->m_globalRoleID. ",'". 
-							$db->prepare_string($this->m_locale). "'," . $this->m_bActive . ")";
+							$db->prepare_string($this->login) . "','" . $db->prepare_string($this->password) . "','" . 
+							$db->prepare_string($this->firstName) . "','" . $db->prepare_string($this->lastName) . "','" . 
+							$db->prepare_string($this->emailAddress) . "'," . $this->globalRoleID. ",'". 
+							$db->prepare_string($this->locale). "'," . $this->bActive . ")";
 				$result = $db->exec_query($query);
 				if($result)
-					$this->m_dbID = $db->insert_id('users');
+					$this->dbID = $db->insert_id('users');
 			}
 			$result = $result ? OK : self::USER_E_DBERROR;
 		}
@@ -145,7 +145,7 @@ class tlUser extends tlDBObject
 	}	
 	public function deleteFromDB(&$db)
 	{
-		$query = "DELETE FROM users WHERE id=" . $this->m_dbID;
+		$query = "DELETE FROM users WHERE id=" . $this->dbID;
 		$result = $db->exec_query($query);
 			
 		return $result ? OK : ERRROR;
@@ -153,13 +153,13 @@ class tlUser extends tlDBObject
 	
 	public function getDisplayName()
 	{
-		if (!$this->m_showRealname)
-			return $this->m_login;
+		if (!$this->showRealname)
+			return $this->login;
 
 		$keys = array('%first%','%last%','%login%','%email%');
-		$values = array($this->m_firstName, $this->m_lastName,$this->m_login,$this->m_email);
+		$values = array($this->firstName, $this->lastName,$this->login,$this->email);
 		
-		$displayName = str_replace($keys,$values,$this->m_usernameFormat);
+		$displayName = str_replace($keys,$values,$this->usernameFormat);
 	
 		return $displayName;
 	}
@@ -169,14 +169,14 @@ class tlUser extends tlDBObject
 	}
 	public function setPassword($pwd)
 	{
-		if ($this->m_loginMethod == 'MD5' && !strlen($pwd))
+		if ($this->loginMethod == 'MD5' && !strlen($pwd))
 			return self::USER_E_PWDEMPTY;
-		$this->m_password = $this->encryptPassword($pwd);
+		$this->password = $this->encryptPassword($pwd);
 		return OK;
 	}
 	public function getPassword()
 	{
-		return $this->m_password;
+		return $this->password;
 	}
 	public function comparePassword($pwd)
 	{
@@ -187,22 +187,22 @@ class tlUser extends tlDBObject
 	
 	public function checkDetails(&$db)
 	{
-		$this->m_firstName = trim($this->m_firstName);
-		$this->m_lastName = trim($this->m_lastName);
-		$this->m_emailAddress = trim($this->m_emailAddress);
-		$this->m_locale = trim($this->m_locale);
-		$this->m_bActive = intval($this->m_bActive);
-		$this->m_login = trim($this->m_login);
+		$this->firstName = trim($this->firstName);
+		$this->lastName = trim($this->lastName);
+		$this->emailAddress = trim($this->emailAddress);
+		$this->locale = trim($this->locale);
+		$this->bActive = intval($this->bActive);
+		$this->login = trim($this->login);
 	
-		$result = tlUser::checkEmailAdress($this->m_emailAddress);
+		$result = tlUser::checkEmailAdress($this->emailAddress);
 		if ($result == OK)
-			$result = $this->checkLogin($this->m_login);
-		if ($result == OK && !$this->m_dbID)
-			$result = tlUser::doesUserExist($db,$this->m_login) ? self::USER_E_LOGINALREADYEXISTS : OK;
+			$result = $this->checkLogin($this->login);
+		if ($result == OK && !$this->dbID)
+			$result = tlUser::doesUserExist($db,$this->login) ? self::USER_E_LOGINALREADYEXISTS : OK;
 		if ($result == OK)
-			$result = tlUser::checkFirstName($this->m_firstName);
+			$result = tlUser::checkFirstName($this->firstName);
 		if ($result == OK)
-			$result = tlUser::checkLastName($this->m_lastName);
+			$result = tlUser::checkLastName($this->lastName);
 			
 		return $result;
 	}
@@ -212,9 +212,9 @@ class tlUser extends tlDBObject
 		$login = trim($login);
 		//simple check for empty login, or login consisting only of whitespaces
 		//The DB field is only 30 characters
-		if (!strlen($login) || (strlen($login) > $this->m_maxLoginLength))
+		if (!strlen($login) || (strlen($login) > $this->maxLoginLength))
 			$result = self::USER_E_LOGINLENGTH;
-		else if (!preg_match($this->m_loginRegExp,$login)) //Only allow a basic set of characters
+		else if (!preg_match($this->loginRegExp,$login)) //Only allow a basic set of characters
 			$result = self::USER_E_NOTALLOWED;
 
 		return $result;
@@ -242,8 +242,8 @@ class tlUser extends tlDBObject
 
 class tlRole extends tlDBObject
 {
-	public $m_description;
-	public $m_notes;
+	public $description;
+	public $notes;
 	
 	function __construct($dbID = null)
 	{
@@ -251,21 +251,21 @@ class tlRole extends tlDBObject
 	}
 	protected function _clean()
 	{
-		$this->m_description = null;
-		$this->m_notes = null;
+		$this->description = null;
+		$this->notes = null;
 	}
 	//BEGIN interface iDBSerialization
 	public function readFromDB(&$db)
 	{
 		$this->_clean();
 		$query = "SELECT id,description, notes FROM roles";
-		$query .= " WHERE id = {$this->m_dbID}";
+		$query .= " WHERE id = {$this->dbID}";
 		
 		$info = $db->fetchFirstRow($query);			 
 		if ($info)
 		{
-			$this->m_description = $info['description'];
-			$this->m_notes = $info['notes'];
+			$this->description = $info['description'];
+			$this->notes = $info['notes'];
 		}
 		return $info ? OK : ERROR;
 	}
@@ -546,14 +546,14 @@ function resetPassword(&$db,$userID,&$errorMsg)
 	$result = $user->readFromDB($db);
 	if ($result == OK)
 	{
-		if (strlen($user->m_emailAddress))
+		if (strlen($user->emailAddress))
 		{
 			$newPassword = md5(uniqid(rand(),1));
 			$result = $user->setPassword($newPassword);
 			if ($result == OK)
 			{
 				$msgBody = lang_get('your_password_is') . $newPassword . lang_get('contact_admin');  
-				$mail_op = @email_send(config_get('from_email'), $user->m_emailAddress,  
+				$mail_op = @email_send(config_get('from_email'), $user->emailAddress,  
 		                       lang_get('mail_passwd_subject'), $msgBody);
 				if ($mail_op->status_ok)
 					$result = $user->writeToDB($db);

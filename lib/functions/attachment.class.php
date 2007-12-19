@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: attachment.class.php,v $
  *
- * @version $Revision: 1.4 $
- * @modified $Date: 2007/12/08 19:07:40 $ by $Author: schlundus $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2007/12/19 18:27:06 $ by $Author: schlundus $
  * @author Francisco Mancardi
  *
 */
@@ -28,33 +28,33 @@ class tlAttachment extends tlDBObject
 	 * @param int $fSize the filesize (uncompressed)
 	 * @param string $title the title used for the attachment
 	 */
-	protected $m_fkID;
-	protected $m_fkTableName;
-	protected $m_fName;
-	protected $m_title;
-	protected $m_fType;
-	protected $m_fSize;
-	protected $m_destFPath; 
-	protected $m_fContents;
-	protected $m_compressionType;
-	protected $m_description;
-	protected $m_dateAdded;
-	protected $m_repositoryPath;
-	protected $m_attachmentCfg;
+	protected $fkID;
+	protected $fkTableName;
+	protected $fName;
+	protected $title;
+	protected $fType;
+	protected $fSize;
+	protected $destFPath; 
+	protected $fContents;
+	protected $compressionType;
+	protected $description;
+	protected $dateAdded;
+	protected $repositoryPath;
+	protected $attachmentCfg;
 	
 	protected function _clean()
 	{
-		$this->m_fkID = NULL;
-		$this->m_fkTableName = NULL;
-		$this->m_fName = NULL;
-		$this->m_title = NULL;
-		$this->m_fType = NULL;
-		$this->m_fSize = NULL;
-		$this->m_destFPath = NULL; 
-		$this->m_fContents = NULL;
-		$this->m_description = NULL;
-		$this->m_dateAdded = NULL;
-		$this->m_dbID = NULL;
+		$this->fkID = NULL;
+		$this->fkTableName = NULL;
+		$this->fName = NULL;
+		$this->title = NULL;
+		$this->fType = NULL;
+		$this->fSize = NULL;
+		$this->destFPath = NULL; 
+		$this->fContents = NULL;
+		$this->description = NULL;
+		$this->dateAdded = NULL;
+		$this->dbID = NULL;
 	} 
 
 	function __construct($dbID = null)
@@ -63,9 +63,9 @@ class tlAttachment extends tlDBObject
 
 		global $g_repositoryCompressionType;
 		global $g_repositoryPath;
-		$this->m_compressionType  = $g_repositoryCompressionType;
-		$this->m_repositoryPath = $g_repositoryPath;
-		$this->m_attachmentCfg = config_get('attachments');
+		$this->compressionType  = $g_repositoryCompressionType;
+		$this->repositoryPath = $g_repositoryPath;
+		$this->attachmentCfg = config_get('attachments');
 
 		$this->_clean();
 		$this->setDbID($dbID);
@@ -90,17 +90,17 @@ class tlAttachment extends tlDBObject
 	{
 		$this->_clean();
 		
-		$this->m_fkID = $fkid;
-		$this->m_fkTableName = trim($fkTableName);
-		$this->m_fType = trim($fType);
-		$this->m_fSize = $fSize;
-		$this->m_fName = $fName; 
-		$this->m_destFPath = trim($destFPath); 
-		$this->m_fContents = $fContents;
+		$this->fkID = $fkid;
+		$this->fkTableName = trim($fkTableName);
+		$this->fType = trim($fType);
+		$this->fSize = $fSize;
+		$this->fName = $fName; 
+		$this->destFPath = trim($destFPath); 
+		$this->fContents = $fContents;
 		
 		if(!strlen(trim($title)))
 		{
-			switch($this->m_attachmentCfg->action_on_save_empty_title)
+			switch($this->attachmentCfg->action_on_save_empty_title)
 			{
 				case 'use_filename':
 					$title = $fName;
@@ -112,8 +112,8 @@ class tlAttachment extends tlDBObject
 		}
 		//for FS-repository, the path to the repository itself is cut off, so the path is
 		//					relative to the repository itself
-		$this->m_destFPath = str_replace($this->m_repositoryPath.DS,"",$destFPath);
-		$this->m_title = trim($title);
+		$this->destFPath = str_replace($this->repositoryPath.DS,"",$destFPath);
+		$this->title = trim($title);
 		
 		return OK;
 	}
@@ -121,23 +121,23 @@ class tlAttachment extends tlDBObject
 	{
 		$query = "SELECT id,title,description,file_name,file_type,file_size,date_added,".
 				"compression_type,file_path,fk_id,fk_table " .
-				"FROM attachments WHERE id = {$this->m_dbID} ";
+				"FROM attachments WHERE id = {$this->dbID} ";
 
 		$info = $db->fetchFirstRow($query);			 
 		$this->_clean();
 		if ($info)
 		{
-			$this->m_fkID = $info['fk_id'];
-			$this->m_fkTableName = $info['fk_table'];
-			$this->m_fName = $info['file_name'];
-			$this->m_destFPath = $info['file_path'];
-			$this->m_fType  = $info['file_type'];
-			$this->m_fSize = $info['file_size'];
-			$this->m_dbID =  $info['id'];
-			$this->m_description = $info['description'];
-			$this->m_dateAdded = $info['date_added'];
-			$this->m_title = $info['title'];
-			$this->m_compressionType = $info['compression_type'];
+			$this->fkID = $info['fk_id'];
+			$this->fkTableName = $info['fk_table'];
+			$this->fName = $info['file_name'];
+			$this->destFPath = $info['file_path'];
+			$this->fType  = $info['file_type'];
+			$this->fSize = $info['file_size'];
+			$this->dbID =  $info['id'];
+			$this->description = $info['description'];
+			$this->dateAdded = $info['date_added'];
+			$this->title = $info['title'];
+			$this->compressionType = $info['compression_type'];
 		}
 				
 		return $info ? OK : ERROR;
@@ -146,46 +146,46 @@ class tlAttachment extends tlDBObject
 	public function getInfo()
 	{
 		return array(
-			"id" => $this->m_dbID,
-			"title" => $this->m_title,
-			"description" => $this->m_description,
-			"file_name" => $this->m_fName,
-			"file_type" => $this->m_fType,
-			"file_size" => $this->m_fSize,
-			"date_added" => $this->m_dateAdded,
-			"compression_type" => $this->m_compressionType,
-			"file_path" => $this->m_destFPath,
-			"fk_id" => $this->m_fkID,
-			"fk_table" => $this->m_fkTableName,
+			"id" => $this->dbID,
+			"title" => $this->title,
+			"description" => $this->description,
+			"file_name" => $this->fName,
+			"file_type" => $this->fType,
+			"file_size" => $this->fSize,
+			"date_added" => $this->dateAdded,
+			"compression_type" => $this->compressionType,
+			"file_path" => $this->destFPath,
+			"fk_id" => $this->fkID,
+			"fk_table" => $this->fkTableName,
 		);
 	}
 	
 	public function writeToDB(&$db)
 	{
-		$tableName = $db->prepare_string($this->m_fkTableName);
-		$fName = $db->prepare_string($this->m_fName);
-		$title = $db->prepare_string($this->m_title);
-		$fType = $db->prepare_string($this->m_fType);
+		$tableName = $db->prepare_string($this->fkTableName);
+		$fName = $db->prepare_string($this->fName);
+		$title = $db->prepare_string($this->title);
+		$fType = $db->prepare_string($this->fType);
 		
-		$destFPath = is_null($this->m_destFPath) ? 'NULL' : "'".$db->prepare_string($this->m_destFPath)."'";
+		$destFPath = is_null($this->destFPath) ? 'NULL' : "'".$db->prepare_string($this->destFPath)."'";
 		//for FS-repository the contents are null
-		$fContents = is_null($this->m_fContents) ? 'NULL' : "'".$db->prepare_string($this->m_fContents)."'";
+		$fContents = is_null($this->fContents) ? 'NULL' : "'".$db->prepare_string($this->fContents)."'";
 		
 		$query = "INSERT INTO attachments 
 	       (fk_id,fk_table,file_name,file_path,file_size,file_type, date_added,content,compression_type,title) 
-    	    VALUES ({$this->m_fkID},'{$tableName}','{$fName}',{$destFPath},{$this->m_fSize},'{$this->m_fType}'," . $db->db_now() . 
-       		",$fContents,{$this->m_compressionType},'{$title}')";
+    	    VALUES ({$this->fkID},'{$tableName}','{$fName}',{$destFPath},{$this->fSize},'{$this->fType}'," . $db->db_now() . 
+       		",$fContents,{$this->compressionType},'{$title}')";
 	  
 		$result = $db->exec_query($query);
 		if ($result)
-			$this->m_dbID = $db->insert_id();
+			$this->dbID = $db->insert_id();
 		
 		return $result ? OK : ERROR;
 	}
 	
 	public function deleteFromDB(&$db)
 	{
-		$query = "DELETE FROM attachments WHERE id = {$this->m_dbID}";
+		$query = "DELETE FROM attachments WHERE id = {$this->dbID}";
 		$result = $db->exec_query($query);
 		
 		return $result ? OK : ERROR;

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: keywordsEdit.php,v $
  *
- * @version $Revision: 1.14 $
- * @modified $Date: 2007/12/18 21:07:18 $ by $Author: schlundus $
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2007/12/19 18:27:06 $ by $Author: schlundus $
  *
  * allows users to manage keywords. 
  *
@@ -148,9 +148,9 @@ function edit(&$smarty,&$args,&$tproject_mgr)
 	$keyword = $tproject_mgr->getKeyword($args->keyword_id);
 	if ($keyword)
 	{
-		$args->keyword = $keyword->m_name;
-		$args->notes = $keyword->m_notes;
-		$action_descr .= TITLE_SEP . $keyword->m_name;
+		$args->keyword = $keyword->name;
+		$args->notes = $keyword->notes;
+		$action_descr .= TITLE_SEP . $keyword->name;
 	}
 	
 	$smarty->assign('submit_button_label',lang_get('btn_save'));
@@ -205,7 +205,7 @@ function do_update(&$smarty,&$args,&$tproject_mgr)
 	$action_descr = lang_get('edit_keyword');
 	$keyword = $tproject_mgr->getKeyword($args->keyword_id);
 	if ($keyword)
-		$action_descr .= TITLE_SEP . $keyword->m_name;
+		$action_descr .= TITLE_SEP . $keyword->name;
 
 	$smarty->assign('submit_button_label',lang_get('btn_save'));
 	$smarty->assign('submit_button_action','do_update');

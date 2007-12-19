@@ -1,6 +1,6 @@
 {* 
 Testlink: smarty template - 
-$Id: usersedit.tpl,v 1.3 2007/12/17 21:31:45 schlundus Exp $ 
+$Id: usersedit.tpl,v 1.4 2007/12/19 18:27:06 schlundus Exp $ 
 
 20070829 - jbarchibald
       -  bug 1000  - Testplan User Role Assignments
@@ -89,8 +89,8 @@ function validateForm(f,check_password)
 
 {if $userData neq null}
   {assign var="check_password" value=0}
-  {assign var="user_id" value=$userData->m_dbID}
-  {assign var="user_login" value=$userData->m_login}
+  {assign var="user_id" value=$userData->dbID}
+  {assign var="user_login" value=$userData->login}
 {/if}
 
 
@@ -133,19 +133,19 @@ function validateForm(f,check_password)
 			{if $userData neq null}
 				disabled="disabled"
 			{/if}
-			 value="{$userData->m_login|escape}" />
+			 value="{$userData->login|escape}" />
       {include file="error_icon.tpl" field="login"}
 			 </td>
 		</tr>
 		<tr>
 			<th>{lang_get s='th_first_name'}</th>
-			<td><input type="text" name="first" value="{$userData->m_firstName|escape}" 
+			<td><input type="text" name="first" value="{$userData->firstName|escape}" 
 			     size="{#NAMES_SIZE#}" maxlength="{#NAMES_SIZE#}" />
 			     {include file="error_icon.tpl" field="first"}
 			</td></tr>
 		<tr>
 			<th>{lang_get s='th_last_name'}</th>
-			<td><input type="text" name="last" value="{$userData->m_lastName|escape}" 
+			<td><input type="text" name="last" value="{$userData->lastName|escape}" 
 			     size="{#NAMES_SIZE#}" maxlength="{#NAMES_SIZE#}" />
  			     {include file="error_icon.tpl" field="last"}
 			     </td>
@@ -167,7 +167,7 @@ function validateForm(f,check_password)
    
 		<tr>
 			<th>{lang_get s='th_email'}</th>
-			<td><input type="text" id="email" name="email" value="{$userData->m_emailAddress|escape}" 
+			<td><input type="text" id="email" name="email" value="{$userData->emailAddress|escape}" 
 			           size="{#EMAIL_SIZE#}" maxlength="{#EMAIL_MAXLEN#}" />
           {include file="error_icon.tpl" field="email"}       
 			</td>
@@ -175,8 +175,8 @@ function validateForm(f,check_password)
 		<tr>
 			<th>{lang_get s='th_role'}</th>
 			<td>
-		  	   {assign var=selected_role value=$userData->m_globalRoleID}
-			  {if $userData->m_globalRoleID eq 0}
+		  	   {assign var=selected_role value=$userData->globalRoleID}
+			  {if $userData->globalRoleID eq 0}
         	  {assign var=selected_role value=$smarty.const.TL_DEFAULT_ROLEID}	  
 			  {/if}
 				<select name="rights_id"> 
@@ -193,8 +193,8 @@ function validateForm(f,check_password)
            Very important: the locale member that holds the value of TL_DEFAULT_LOCALE
                            is declared in tlsmarty.inc.php
         *}
-        {assign var=selected_locale value=$userData->m_locale}
-        {if $userData->m_locale|count_characters eq 0}
+        {assign var=selected_locale value=$userData->locale}
+        {if $userData->locale|count_characters eq 0}
            {assign var=selected_locale value=$locale}
         {/if}
 	
@@ -207,7 +207,7 @@ function validateForm(f,check_password)
 		<tr>
 			<th>{lang_get s='th_active'}</th>
 			<td> 
-			  <input type="checkbox"  name="user_is_active" {if $userData->m_bActive eq 1} checked {/if} />
+			  <input type="checkbox"  name="user_is_active" {if $userData->bActive eq 1} checked {/if} />
 			</td>
 		</tr>
 

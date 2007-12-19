@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: attachmentrepository.class.php,v $
  *
- * @version $Revision: 1.4 $
- * @modified $Date: 2007/12/08 19:07:40 $ by $Author: schlundus $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2007/12/19 18:27:06 $ by $Author: schlundus $
  * @author Francisco Mancardi
  *
 */
@@ -18,10 +18,10 @@ class tlAttachmentRepository extends tlObjectWithDB
 	//the one and only attachment repository object
 	private static $s_instance;
 	
-    private $m_repositoryType;
-	private $m_repositoryCompressionType;
-   	protected $m_repositoryPath;
-	protected $m_attachmentCfg;
+    private $repositoryType;
+	private $repositoryCompressionType;
+   	protected $repositoryPath;
+	protected $attachmentCfg;
 
 	
 	function __construct(&$db)
@@ -31,10 +31,10 @@ class tlAttachmentRepository extends tlObjectWithDB
 		global $g_repositoryPath;
 
 		tlObjectWithDB::__construct($db);
-    	$this->m_repositoryType = $g_repositoryType;
-    	$this->m_repositoryCompressionType = $g_repositoryCompressionType;
-		$this->m_repositoryPath = $g_repositoryPath;
-		$this->m_attachmentCfg = config_get('attachments');
+    	$this->repositoryType = $g_repositoryType;
+    	$this->repositoryCompressionType = $g_repositoryCompressionType;
+		$this->repositoryPath = $g_repositoryPath;
+		$this->attachmentCfg = config_get('attachments');
 	}
 	
     public static function create(&$db) 
@@ -72,7 +72,7 @@ class tlAttachmentRepository extends tlObjectWithDB
 		$destFPath = null;
 		$destFName = getUniqueFileName($fExt);
 		
-		if ($this->m_repositoryType == TL_REPOSITORY_TYPE_FS)
+		if ($this->repositoryType == TL_REPOSITORY_TYPE_FS)
 		{
 			$destFPath = $this->buildRepositoryFilePath($destFName,$fkTableName,$fkid);
 			$bUploaded = $this->storeFileInFSRepository($fTmpName,$destFPath);
@@ -87,7 +87,7 @@ class tlAttachmentRepository extends tlObjectWithDB
 		{
 			$attachment = new tlAttachment();
 			$attachment->create($fkid,$fkTableName,$fName,$destFPath,$fContents,$fType,$fSize,$title);
-			$bUploaded = $attachment->writeToDb($this->m_db);
+			$bUploaded = $attachment->writeToDb($this->db);
 		}
 		
 		@unlink($fTmpName);
@@ -123,14 +123,14 @@ class tlAttachmentRepository extends tlObjectWithDB
 	protected function getFileContentsForDBRepository($fTmpName,$destFName)
 	{
 		$tmpGZName = null;
-		switch($this->m_repositoryCompressionType)
+		switch($this->repositoryCompressionType)
 		{
 			case TL_REPOSITORY_COMPRESSIONTYPE_NONE:
 				break;
 			case TL_REPOSITORY_COMPRESSIONTYPE_GZIP:
 				//copy the file into a dummy file in the repository and gz it and 
 				//read the file contents from this new file
-				$tmpGZName = $this->m_repositoryPath.DS.$destFName.".gz";
+				$tmpGZName = $this->repositoryPath.DS.$destFName.".gz";
 				gzip_compress_file($fTmpName, $tmpGZName);
 				$fTmpName = $tmpGZName;
 				break;
@@ -153,7 +153,7 @@ class tlAttachmentRepository extends tlObjectWithDB
 	 **/
 	protected function storeFileInFSRepository($fTmpName,&$destFPath)
 	{
-		switch($this->m_repositoryCompressionType)
+		switch($this->repositoryCompressionType)
 		{
 			case TL_REPOSITORY_COMPRESSIONTYPE_NONE:
 				$bUploaded = move_uploaded_file($fTmpName,$destFPath);
@@ -179,7 +179,7 @@ class tlAttachmentRepository extends tlObjectWithDB
  	//SCHLUNDUS: should be protected
 	public function buildRepositoryFolderFor($tableName,$id,$mkDir = false)
 	{
-		$path = $this->m_repositoryPath.DS.$tableName;
+		$path = $this->repositoryPath.DS.$tableName;
 		if ($mkDir && !file_exists($path))
 			mkdir($path);
 		$path .= DS.$id;
@@ -193,7 +193,7 @@ class tlAttachmentRepository extends tlObjectWithDB
 	{
 		$filePath = $attachmentInfo['file_path'];
 		
-		$destFPath = $this->m_repositoryPath.DS.$filePath;
+		$destFPath = $this->repositoryPath.DS.$filePath;
 		return @unlink($destFPath) ? OK : ERROR;
 	}
 
@@ -235,14 +235,14 @@ class tlAttachmentRepository extends tlObjectWithDB
 	protected function getAttachmentContentFromFS($id)
 	{
 		$query = "SELECT file_size,compression_type,file_path FROM attachments WHERE id = {$id}";
-		$row = $this->m_db->fetchFirstRow($query);
+		$row = $this->db->fetchFirstRow($query);
 		
 		$content = null;
 		if ($row)
 		{
 			$filePath = $row['file_path'];
 			$fileSize = $row['file_size'];
-			$destFPath = $this->m_repositoryPath.DS.$filePath;
+			$destFPath = $this->repositoryPath.DS.$filePath;
 			switch($row['compression_type'])
 			{
 				case TL_REPOSITORY_COMPRESSIONTYPE_NONE:
@@ -267,7 +267,7 @@ class tlAttachmentRepository extends tlObjectWithDB
 	public function getAttachmentContentFromDB($id)
 	{
 		$query = "SELECT content,file_size,compression_type FROM attachments WHERE id = {$id}";
-		$row = $this->m_db->fetchFirstRow($query);
+		$row = $this->db->fetchFirstRow($query);
 		
 		$content = null;
 		if ($row)
@@ -307,7 +307,7 @@ class tlAttachmentRepository extends tlObjectWithDB
 	{
 		$info = null;
 		$attachment = new tlAttachment($id);
-		if ($attachment->readFromDB($this->m_db))
+		if ($attachment->readFromDB($this->db))
 			$info = $attachment->getInfo();
 		
 		return $info;
@@ -326,10 +326,10 @@ class tlAttachmentRepository extends tlObjectWithDB
 	}
 	public function getAttachmentIDsFor($fkid,$fkTableName)
 	{
-		$order_by = $this->m_attachmentCfg->order_by;
+		$order_by = $this->attachmentCfg->order_by;
 	  
-		$query = "SELECT id FROM attachments WHERE fk_id = {$fkid} AND fk_table = '" . $this->m_db->prepare_string($fkTableName). "' " . $order_by;
-		$attachmentIDs = $this->m_db->fetchColumnsIntoArray($query,'id');
+		$query = "SELECT id FROM attachments WHERE fk_id = {$fkid} AND fk_table = '" . $this->db->prepare_string($fkTableName). "' " . $order_by;
+		$attachmentIDs = $this->db->fetchColumnsIntoArray($query,'id');
 		
 		return $attachmentIDs;
 	}

@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.76 $
- * @modified $Date: 2007/12/09 17:24:13 $ $Author: franciscom $
+ * @version $Revision: 1.77 $
+ * @modified $Date: 2007/12/19 18:27:06 $ $Author: schlundus $
  * @author franciscom
  *
  *
@@ -1759,12 +1759,12 @@ function copy_attachments($source_id,$target_id)
 				
 			if ($repo_type == TL_REPOSITORY_TYPE_FS)
 			{
-				$destFPath = $this->m_attachmentRepository->buildRepositoryFilePath($mangled_fname,$table_name,$target_id);
+				$destFPath = $this->attachmentRepository->buildRepositoryFilePath($mangled_fname,$table_name,$target_id);
 				$status_ok = copy($repo_path . $value['file_path'],$destFPath);
 			}
 			else
 			{
-				$file_contents = $this->m_attachmentRepository->getAttachmentContentFromDB($value['id']);
+				$file_contents = $this->attachmentRepository->getAttachmentContentFromDB($value['id']);
 				$status_ok = sizeof($file_contents);
 			}
 			if($status_ok)

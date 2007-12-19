@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: int_eventum.php,v $
  *
- * @version $Revision: 1.2 $
- * @modified $Date: 2007/12/12 18:22:06 $ $Author: havlat $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2007/12/19 18:27:06 $ $Author: schlundus $
  *
  * @author Stefan Stefanov
  *
@@ -19,13 +19,13 @@ define('BUG_INTERFACE_CLASSNAME',"eventumInterface");
 class eventumInterface extends bugtrackingInterface
 {
 	//members to store the bugtracking information
-	var $m_dbHost = BUG_TRACK_DB_HOST;
-	var $m_dbName = BUG_TRACK_DB_NAME;
-	var $m_dbUser = BUG_TRACK_DB_USER;
-	var $m_dbPass = BUG_TRACK_DB_PASS;
-	var $m_dbType = BUG_TRACK_DB_TYPE;
-	var $m_showBugURL = BUG_TRACK_HREF;
-	var $m_enterBugURL = BUG_TRACK_ENTER_BUG_HREF;
+	var $dbHost = BUG_TRACK_DB_HOST;
+	var $dbName = BUG_TRACK_DB_NAME;
+	var $dbUser = BUG_TRACK_DB_USER;
+	var $dbPass = BUG_TRACK_DB_PASS;
+	var $dbType = BUG_TRACK_DB_TYPE;
+	var $showBugURL = BUG_TRACK_HREF;
+	var $enterBugURL = BUG_TRACK_ENTER_BUG_HREF;
 	
 	/**
 	 * Return the URL to the bugtracking page for viewing 
@@ -37,7 +37,7 @@ class eventumInterface extends bugtrackingInterface
 	 **/
 	function buildViewBugURL($id)
 	{
-		return $this->m_showBugURL.urlencode($id);
+		return $this->showBugURL.urlencode($id);
 	}
 	
 	/**
@@ -55,10 +55,10 @@ class eventumInterface extends bugtrackingInterface
 		
 	$query = "SELECT eventum_status.sta_is_closed as status FROM eventum_status INNER JOIN eventum_issue ON eventum_issue.iss_sta_id = eventum_status.sta_id WHERE eventum_issue.iss_id='" . $id."'";
 		
-		$result = $this->m_dbConnection->exec_query($query);
+		$result = $this->dbConnection->exec_query($query);
 		if ($result)
 		{
-			$status = $this->m_dbConnection->fetch_array($result);
+			$status = $this->dbConnection->fetch_array($result);
 			if ($status)
 			{
 				$status = $status['status'];
@@ -114,10 +114,10 @@ class eventumInterface extends bugtrackingInterface
 		$status = null;
 		$query = "SELECT iss_summary as summary FROM eventum_issue WHERE iss_id='".$id."'";
 		
-		$result = $this->m_dbConnection->exec_query($query);
+		$result = $this->dbConnection->exec_query($query);
 		if ($result)
 		{
-			$summary = $this->m_dbConnection->fetch_array($result);
+			$summary = $this->dbConnection->fetch_array($result);
 
 			if ($summary)
 				$summary = $summary['summary'];
@@ -158,8 +158,8 @@ class eventumInterface extends bugtrackingInterface
 	
 		$query = "SELECT eventum_status.sta_title as status FROM eventum_status INNER JOIN eventum_issue ON eventum_issue.iss_sta_id = eventum_status.sta_id WHERE eventum_issue.iss_id='" . $id."'";
 	
-		$result = $this->m_dbConnection->exec_query($query);
-		if ($result && ($this->m_dbConnection->num_rows($result) == 1) )
+		$result = $this->dbConnection->exec_query($query);
+		if ($result && ($this->dbConnection->num_rows($result) == 1) )
 		{
 			$status_ok = 1;    
 		}

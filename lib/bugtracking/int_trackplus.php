@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: int_trackplus.php,v $
  *
- * @version $Revision: 1.2 $
- * @modified $Date: 2007/05/15 13:56:59 $ $Author: franciscom $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2007/12/19 18:27:06 $ $Author: schlundus $
  *
  * @author Oscar Castroviejo - 20060405 - TRA de GFI
  * email: ocastroviejo@gfi.es
@@ -21,13 +21,13 @@ define('BUG_INTERFACE_CLASSNAME',"trackplusInterface");
 class trackplusInterface extends bugtrackingInterface
 {
 	//members to store the bugtracking information
-	var $m_dbHost = BUG_TRACK_DB_HOST;
-	var $m_dbName = BUG_TRACK_DB_NAME;
-	var $m_dbType = BUG_TRACK_DB_TYPE;
-	var $m_dbUser = BUG_TRACK_DB_USER;
-	var $m_dbPass = BUG_TRACK_DB_PASS;
-	var $m_showBugURL = BUG_TRACK_HREF;
-	var $m_enterBugURL = BUG_TRACK_ENTER_BUG_HREF;
+	var $dbHost = BUG_TRACK_DB_HOST;
+	var $dbName = BUG_TRACK_DB_NAME;
+	var $dbType = BUG_TRACK_DB_TYPE;
+	var $dbUser = BUG_TRACK_DB_USER;
+	var $dbPass = BUG_TRACK_DB_PASS;
+	var $showBugURL = BUG_TRACK_HREF;
+	var $enterBugURL = BUG_TRACK_ENTER_BUG_HREF;
 	
 	/**
 	 * Return the URL to the bugtracking page for viewing 
@@ -44,7 +44,7 @@ class trackplusInterface extends bugtrackingInterface
 
 	function buildViewBugURL($id)
 	{
-		return $this->m_showBugURL.$id;		
+		return $this->showBugURL.$id;		
 	}
 
 	
@@ -69,11 +69,11 @@ class trackplusInterface extends bugtrackingInterface
 			return false;
 
 		$status = false;
-		$query = "SELECT STATE FROM {$this->m_dbName}.TWORKITEM WHERE WORKITEMKEY=" . $id;
-		$result = $this->m_dbConnection->exec_query($query);
+		$query = "SELECT STATE FROM {$this->dbName}.TWORKITEM WHERE WORKITEMKEY=" . $id;
+		$result = $this->dbConnection->exec_query($query);
 		if ($result)
 		{
-			$status = $this->m_dbConnection->fetch_array($result);
+			$status = $this->dbConnection->fetch_array($result);
 			if ($status)
 			{
 				$status = $status['status'];
@@ -131,11 +131,11 @@ class trackplusInterface extends bugtrackingInterface
 			return false;
 
 		$status = null;
-		$query = "SELECT PACKAGESYNOPSYS FROM {$this->m_dbName}.TWORKITEM WHERE WORKITEMKEY=" . $id;
-		$result = $this->m_dbConnection->exec_query($query);
+		$query = "SELECT PACKAGESYNOPSYS FROM {$this->dbName}.TWORKITEM WHERE WORKITEMKEY=" . $id;
+		$result = $this->dbConnection->exec_query($query);
 		if ($result)
 		{
-			$summary = $this->m_dbConnection->fetch_array($result);
+			$summary = $this->dbConnection->fetch_array($result);
 			if ($summary)
 				$summary = $summary[0];
 			else

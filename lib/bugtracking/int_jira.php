@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: int_jira.php,v $
  *
- * @version $Revision: 1.10 $
- * @modified $Date: 2007/08/24 16:46:54 $ $Author: franciscom $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2007/12/19 18:27:06 $ $Author: schlundus $
  *
  * @author (contributor) jbarchibald@gmail.com
  *
@@ -34,13 +34,13 @@ define('BUG_INTERFACE_CLASSNAME',"jiraInterface");
 class jiraInterface extends bugtrackingInterface
 {
 	//members to store the bugtracking information
-	var $m_dbHost = BUG_TRACK_DB_HOST;
-	var $m_dbName = BUG_TRACK_DB_NAME;
-	var $m_dbUser = BUG_TRACK_DB_USER;
-	var $m_dbPass = BUG_TRACK_DB_PASS;
-	var $m_dbType = BUG_TRACK_DB_TYPE;
-	var $m_showBugURL = BUG_TRACK_HREF;
-	var $m_enterBugURL = BUG_TRACK_ENTER_BUG_HREF;
+	var $dbHost = BUG_TRACK_DB_HOST;
+	var $dbName = BUG_TRACK_DB_NAME;
+	var $dbUser = BUG_TRACK_DB_USER;
+	var $dbPass = BUG_TRACK_DB_PASS;
+	var $dbType = BUG_TRACK_DB_TYPE;
+	var $showBugURL = BUG_TRACK_HREF;
+	var $enterBugURL = BUG_TRACK_ENTER_BUG_HREF;
 	
 	/**
 	 * Return the URL to the bugtracking page for viewing 
@@ -52,7 +52,7 @@ class jiraInterface extends bugtrackingInterface
 	 **/
 	function buildViewBugURL($id)
 	{
-		return $this->m_showBugURL.$id;		
+		return $this->showBugURL.$id;		
 	}
 	
 	/**
@@ -76,10 +76,10 @@ class jiraInterface extends bugtrackingInterface
 		         "FROM issuestatus s, jiraissue i " .
 		         "WHERE i.pkey='$id' AND i.issuestatus = s.ID";
 		
-		$result = $this->m_dbConnection->exec_query($query);
+		$result = $this->dbConnection->exec_query($query);
 		if ($result)
 		{
-			$status = $this->m_dbConnection->fetch_array($result);
+			$status = $this->dbConnection->fetch_array($result);
 			if ($status)
 			{
 				$status = $status['issuestatus'];
@@ -137,10 +137,10 @@ class jiraInterface extends bugtrackingInterface
 
 		$status = null;
 		$query = "SELECT summary FROM jiraissue WHERE pkey='$id'";
-		$result = $this->m_dbConnection->exec_query($query);
+		$result = $this->dbConnection->exec_query($query);
 		if ($result)
 		{
-			$summary = $this->m_dbConnection->fetch_array($result);
+			$summary = $this->dbConnection->fetch_array($result);
 			if ($summary)
 				$summary = $summary['summary'];
 			else

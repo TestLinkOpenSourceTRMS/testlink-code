@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: usersview.php,v $
  *
- * @version $Revision: 1.13 $
- * @modified $Date: 2007/12/16 12:20:58 $ -  $Author: schlundus $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2007/12/19 18:27:07 $ -  $Author: schlundus $
  *
  * This page shows all users
  */
@@ -36,7 +36,7 @@ switch($operation)
 		$sqlResult = $user->readFromDB($db);
 		if ($sqlResult == OK)
 		{
-			$userLogin = $user->m_login;
+			$userLogin = $user->login;
 			$sqlResult = $user->deleteFromDB($db);
 			if ($sqlResult == OK)
 			{

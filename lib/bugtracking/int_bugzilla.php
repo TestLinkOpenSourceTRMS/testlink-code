@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: int_bugzilla.php,v $
  *
- * @version $Revision: 1.11 $
- * @modified $Date: 2007/05/15 13:56:59 $ $Author: franciscom $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2007/12/19 18:27:06 $ $Author: schlundus $
  *
  * @author Arjen van Summeren - 20051010 - inserted function getBugSummary($id) again, 
  *                                         corrected getBugStatusString($id)
@@ -24,13 +24,13 @@ define('BUG_INTERFACE_CLASSNAME',"bugzillaInterface");
 class bugzillaInterface extends bugtrackingInterface
 {
 	//members to store the bugtracking information
-	var $m_dbHost = BUG_TRACK_DB_HOST;
-	var $m_dbName = BUG_TRACK_DB_NAME;
-	var $m_dbUser = BUG_TRACK_DB_USER;
-	var $m_dbPass = BUG_TRACK_DB_PASS;
-	var $m_dbType = BUG_TRACK_DB_TYPE;
-	var $m_showBugURL = BUG_TRACK_HREF;
-	var $m_enterBugURL = BUG_TRACK_ENTER_BUG_HREF;
+	var $dbHost = BUG_TRACK_DB_HOST;
+	var $dbName = BUG_TRACK_DB_NAME;
+	var $dbUser = BUG_TRACK_DB_USER;
+	var $dbPass = BUG_TRACK_DB_PASS;
+	var $dbType = BUG_TRACK_DB_TYPE;
+	var $showBugURL = BUG_TRACK_HREF;
+	var $enterBugURL = BUG_TRACK_ENTER_BUG_HREF;
 	
 	/**
 	 * Return the URL to the bugtracking page for viewing 
@@ -46,7 +46,7 @@ class bugzillaInterface extends bugtrackingInterface
 	 **/
 	function buildViewBugURL($id)
 	{
-		return $this->m_showBugURL.$id;		
+		return $this->showBugURL.$id;		
 	}
 	
 	/**
@@ -61,11 +61,11 @@ class bugzillaInterface extends bugtrackingInterface
 			return null;
 	
 		$status = null;
-		$query = "SELECT bug_status FROM {$this->m_dbName}.bugs WHERE bug_id='" . $id."'";
-		$result = $this->m_dbConnection->exec_query($query);
+		$query = "SELECT bug_status FROM {$this->dbName}.bugs WHERE bug_id='" . $id."'";
+		$result = $this->dbConnection->exec_query($query);
 		if ($result)
 		{
-			$status = $this->m_dbConnection->fetch_array($result);
+			$status = $this->dbConnection->fetch_array($result);
 			if ($status)
 			{
 				$status = $status['bug_status'];
@@ -94,13 +94,13 @@ class bugzillaInterface extends bugtrackingInterface
     }
     
 		$status = null;
-		$query = "SELECT short_desc FROM {$this->m_dbName}.bugs WHERE bug_id='" . $id."'";
+		$query = "SELECT short_desc FROM {$this->dbName}.bugs WHERE bug_id='" . $id."'";
 		
-		$result = $this->m_dbConnection->exec_query($query);
+		$result = $this->dbConnection->exec_query($query);
 		$summary = null;
 		if ($result)
 		{
-			$summary = $this->m_dbConnection->fetch_array($result);
+			$summary = $this->dbConnection->fetch_array($result);
 			if ($summary)
 			{
 				$summary = $summary[0];

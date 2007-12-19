@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testproject.class.php,v $
- * @version $Revision: 1.51 $
- * @modified $Date: 2007/12/14 22:42:51 $  $Author: schlundus $
+ * @version $Revision: 1.52 $
+ * @modified $Date: 2007/12/19 18:27:06 $  $Author: schlundus $
  * @author franciscom
  *
  * 20071111 - franciscom - new method get_subtree();
@@ -581,7 +581,7 @@ function count_testcases($id)
 	{
 		$kw = new tlKeyword();
 		$kw->create($testprojectID,$keyword,$notes);
-		return $kw->writeToDB($this->m_db);
+		return $kw->writeToDB($this->db);
 	}
 	
 	/**
@@ -598,7 +598,7 @@ function count_testcases($id)
 	{
 		$kw = new tlKeyword($id);
 		$kw->create($testprojectID,$keyword,$notes);
-		return $kw->writeToDB($this->m_db);
+		return $kw->writeToDB($this->db);
 	}
 
 	/**
@@ -610,7 +610,7 @@ function count_testcases($id)
 	 **/
 	public function getKeyword($id)
 	{
-		return tlDBObject::createObjectFromDB($this->m_db,$id,"tlKeyword");
+		return tlDBObject::createObjectFromDB($this->db,$id,"tlKeyword");
 	}
 	/**
 	 * Gets the keywords of the given test project
@@ -626,7 +626,7 @@ function count_testcases($id)
 	public function getKeywords($testproject_id)
 	{
 		$ids = $this->getKeywordIDsFor($testproject_id);
-		return tlDBObject::createObjectsFromDB($this->m_db,$ids,"tlKeyword");
+		return tlDBObject::createObjectsFromDB($this->db,$ids,"tlKeyword");
 	}
 	
 	/**
@@ -640,7 +640,7 @@ function count_testcases($id)
 	 **/
 	function deleteKeyword($id)
 	{
-		return tlDBObject::deleteObjectFromDB($this->m_db,$id,"tlKeyword");
+		return tlDBObject::deleteObjectFromDB($this->db,$id,"tlKeyword");
 	}
 
 	function deleteKeywords($testproject_id)
@@ -661,7 +661,7 @@ function count_testcases($id)
 		$query = " SELECT id FROM keywords " .
 			   " WHERE testproject_id = {$testproject_id}" .
 			   " ORDER BY keyword ASC";	  
-		$keywordIDs = $this->m_db->fetchColumnsIntoArray($query,'id');		   
+		$keywordIDs = $this->db->fetchColumnsIntoArray($query,'id');		   
 		
 		return $keywordIDs;
 	}
@@ -683,7 +683,7 @@ function count_testcases($id)
 		for($i = 0;$i < sizeof($kwIDs);$i++)
 		{
 			$keyword = new tlKeyword($kwIDs[$i]);
-			$keyword->readFromDb($this->m_db);
+			$keyword->readFromDb($this->db);
 			$keyword->writeToXML($xmlCode,true);
 		}
 		$xmlCode .= "</keywords>";
@@ -704,7 +704,7 @@ function count_testcases($id)
 		for($i = 0;$i < sizeof($kwIDs);$i++)
 		{
 			$keyword = new tlKeyword($kwIDs[$i]);
-			$keyword->readFromDb($this->m_db);
+			$keyword->readFromDb($this->db);
 			$keyword->writeToCSV($csv,$delim);
 		}
 		return $csv;
@@ -721,7 +721,7 @@ function count_testcases($id)
 				$k = new tlKeyword();
 				$k->create($testproject_id,NULL,NULL);
 				if ($k->readFromCSV(implode($delim,$data)) == OK)
-					$k->writeToDB($this->m_db);
+					$k->writeToDB($this->db);
 			}
 			fclose($handle);
 			return OK;
@@ -754,7 +754,7 @@ function count_testcases($id)
 				$k = new tlKeyword();
 				$k->create($testproject_id,NULL,NULL);
 				if ($k->readFromSimpleXML($keyword) == OK)
-					$k->writeToDB($this->m_db);
+					$k->writeToDB($this->db);
 				else
 					return tlKeyword::KW_E_WRONGFORMAT;
 			}
@@ -776,7 +776,7 @@ function count_testcases($id)
 		{
 			foreach($keywords as $kw)
 			{
-				$keywordMap[$kw->m_dbID] = $kw->m_name;
+				$keywordMap[$kw->dbID] = $kw->name;
 			}
 		}
 		return $keywordMap;

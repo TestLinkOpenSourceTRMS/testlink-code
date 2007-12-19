@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: userinfo.php,v $
 *
-* @version $Revision: 1.9 $
-* @modified $Date: 2007/12/17 21:31:46 $
+* @version $Revision: 1.10 $
+* @modified $Date: 2007/12/19 18:27:07 $
 * 
 * Displays the users' information and allows users to change 
 * their passwords and user info.
@@ -35,10 +35,10 @@ $user->readFromDB($db);
 $updateResult = OK;
 if ($bEdit)
 {
-	$user->m_firstName = $first;
-	$user->m_lastName = $last;
-	$user->m_emailAddress = $email;
-	$user->m_locale = $locale;
+	$user->firstName = $first;
+	$user->lastName = $last;
+	$user->emailAddress = $email;
+	$user->locale = $locale;
 }
 else if ($bChangePwd)
 {
@@ -50,7 +50,7 @@ if (($bEdit || $bChangePwd) && $updateResult == OK)
 {
 	$updateResult = $user->writeToDB($db);
 	if ($updateResult == OK)
-		setUserSession($db,$user->m_login, $userID, $user->m_globalRoleID, $user->m_emailAddress, $user->m_locale);
+		setUserSession($db,$user->login, $userID, $user->globalRoleID, $user->emailAddress, $user->locale);
 }
 $msg = getUserErrorMessage($updateResult);
 $user->readFromDB($db);

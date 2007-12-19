@@ -1,6 +1,6 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: usersview.tpl,v 1.3 2007/12/14 22:42:51 schlundus Exp $
+$Id: usersview.tpl,v 1.4 2007/12/19 18:27:06 schlundus Exp $
 
 Purpose: smarty template - users overview
 
@@ -93,27 +93,27 @@ var del_action=fRoot+"lib/usermanagement/usersview.php?operation=delete&user=";
 			
 			{section name=row loop=$users start=0}
 				{assign var="user" value="$users[row]"}
-				{assign var="userLocale" value=$user->m_locale}
-				{assign var="r_d" value=$user->m_globalRole->m_description}
+				{assign var="userLocale" value=$user->locale}
+				{assign var="r_d" value=$user->globalRole->description}
 
 				<tr {if $role_colour[$r_d] neq ''} style="background-color: {$role_colour[$r_d]};" {/if}>
-				<td><a href="lib/usermanagement/usersedit.php?user_id={$user->m_dbID}"> 
-				    {$user->m_login|escape}
+				<td><a href="lib/usermanagement/usersedit.php?user_id={$user->dbID}"> 
+				    {$user->login|escape}
 			      {if $gsmarty_gui->show_icon_edit}
 				      <img title="{lang_get s='alt_edit_user'}" 
 				           alt="{lang_get s='alt_edit_user'}" src="{$smarty.const.TL_THEME_IMG_DIR}/icon_edit.png"/>
 				    {/if}       
 				    </a>
 				</td>
-				<td>{$user->m_firstName|escape}</td>
-				<td>{$user->m_lastName|escape}</td>
-				<td>{$user->m_emailAddress|escape}</td>
+				<td>{$user->firstName|escape}</td>
+				<td>{$user->lastName|escape}</td>
+				<td>{$user->emailAddress|escape}</td>
 				<td>{$r_d|escape}</td>
 				<td>
 				 {$optLocale[$userLocale]|escape}
 				</td>
 				<td>
-					{if $user->m_bActive eq 1}
+					{if $user->bActive eq 1}
 						{lang_get s='Yes'}
 					{else}
 						{lang_get s='No'}
@@ -123,7 +123,7 @@ var del_action=fRoot+"lib/usermanagement/usersview.php?operation=delete&user=";
 				  <img style="border:none;cursor: pointer;"  
                alt="{lang_get s='alt_delete_user'}"
 					     title="{lang_get s='alt_delete_user'}" 
-					     onclick="delete_confirmation({$user->m_dbID},'{$user->m_login|escape:'javascript'}',
+					     onclick="delete_confirmation({$user->dbID},'{$user->login|escape:'javascript'}',
 					                                  '{$del_msgbox_title}','{$warning_msg}');"
 				       src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png"/>
 				</td>

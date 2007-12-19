@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: int_mantis.php,v $
  *
- * @version $Revision: 1.11 $
- * @modified $Date: 2007/03/05 07:08:33 $ $Author: franciscom $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2007/12/19 18:27:06 $ $Author: schlundus $
  *
  * @author Andreas Morsing
  *
@@ -31,13 +31,13 @@ define('BUG_INTERFACE_CLASSNAME',"mantisInterface");
 class mantisInterface extends bugtrackingInterface
 {
 	//members to store the bugtracking information
-	var $m_dbHost = BUG_TRACK_DB_HOST;
-	var $m_dbName = BUG_TRACK_DB_NAME;
-	var $m_dbUser = BUG_TRACK_DB_USER;
-	var $m_dbPass = BUG_TRACK_DB_PASS;
-	var $m_dbType = BUG_TRACK_DB_TYPE;
-	var $m_showBugURL = BUG_TRACK_HREF;
-	var $m_enterBugURL = BUG_TRACK_ENTER_BUG_HREF;
+	var $dbHost = BUG_TRACK_DB_HOST;
+	var $dbName = BUG_TRACK_DB_NAME;
+	var $dbUser = BUG_TRACK_DB_USER;
+	var $dbPass = BUG_TRACK_DB_PASS;
+	var $dbType = BUG_TRACK_DB_TYPE;
+	var $showBugURL = BUG_TRACK_HREF;
+	var $enterBugURL = BUG_TRACK_ENTER_BUG_HREF;
 	
 	/**
 	 * Return the URL to the bugtracking page for viewing 
@@ -49,7 +49,7 @@ class mantisInterface extends bugtrackingInterface
 	 **/
 	function buildViewBugURL($id)
 	{
-		return $this->m_showBugURL.urlencode($id);
+		return $this->showBugURL.urlencode($id);
 	}
 	
 	/**
@@ -65,14 +65,14 @@ class mantisInterface extends bugtrackingInterface
 
 		$status = false;
 		
-		// 20070302 - {$this->m_dbName}.mantis_bug_table -> mantis_bug_table
+		// 20070302 - {$this->dbName}.mantis_bug_table -> mantis_bug_table
 		// Problems with MS-SQL
 		$query = "SELECT status FROM mantis_bug_table WHERE id='" . $id."'";
 		
-		$result = $this->m_dbConnection->exec_query($query);
+		$result = $this->dbConnection->exec_query($query);
 		if ($result)
 		{
-			$status = $this->m_dbConnection->fetch_array($result);
+			$status = $this->dbConnection->fetch_array($result);
 			if ($status)
 			{
 				$status = $status['status'];
@@ -122,14 +122,14 @@ class mantisInterface extends bugtrackingInterface
 			return false;
 
 		$status = null;
-		// 20070302 - {$this->m_dbName}.mantis_bug_table -> mantis_bug_table
+		// 20070302 - {$this->dbName}.mantis_bug_table -> mantis_bug_table
 		// Problems with MS-SQL
 		$query = "SELECT summary FROM mantis_bug_table WHERE id='" . $id."'";
 		
-		$result = $this->m_dbConnection->exec_query($query);
+		$result = $this->dbConnection->exec_query($query);
 		if ($result)
 		{
-			$summary = $this->m_dbConnection->fetch_array($result);
+			$summary = $this->dbConnection->fetch_array($result);
 
 			// 20070302 - BUGID - on MS-SQL fetch_array() does not returns numeric indexes, then
 			//                    only choice is accessing my field name (IMHO better)
@@ -170,8 +170,8 @@ class mantisInterface extends bugtrackingInterface
 	{
 	  $status_ok=0;	
 		$query = "SELECT status FROM mantis_bug_table WHERE id='" . $id."'";
-		$result = $this->m_dbConnection->exec_query($query);
-		if ($result && ($this->m_dbConnection->num_rows($result) == 1) )
+		$result = $this->dbConnection->exec_query($query);
+		if ($result && ($this->dbConnection->num_rows($result) == 1) )
 		{
       $status_ok=1;    
     }

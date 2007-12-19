@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcSearchForm.tpl,v 1.2 2007/12/08 19:10:18 schlundus Exp $
+$Id: tcSearchForm.tpl,v 1.3 2007/12/19 18:27:06 schlundus Exp $
 Purpose: show form for search through test cases in test specification
 
 rev :
@@ -51,7 +51,7 @@ rev :
 			<td><select  name="key">
 					<option value="0"></option>
 					{section name=Row loop=$keywords}
-					<option value="{$keywords[Row]->m_dbID}">{$keywords[Row]->m_name|escape}</option>
+					<option value="{$keywords[Row]->dbID}">{$keywords[Row]->name|escape}</option>
 				{/section}
 				</select>
 			</td>

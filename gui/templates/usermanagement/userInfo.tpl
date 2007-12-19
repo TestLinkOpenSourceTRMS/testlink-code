@@ -1,5 +1,5 @@
 {* Testlink: smarty template - Edit own account *}
-{* $Id: userInfo.tpl,v 1.2 2007/12/09 12:12:03 schlundus Exp $ *}
+{* $Id: userInfo.tpl,v 1.3 2007/12/19 18:27:06 schlundus Exp $ *}
 {* 
 *}
 {assign var="cfg_section" value="login" }
@@ -11,7 +11,7 @@
 
 <h1>{lang_get s='title_account_settings'}</h1>
 
-{include file="inc_update.tpl" result=$msg action="updated" item="user" name=$user->m_login}
+{include file="inc_update.tpl" result=$msg action="updated" item="user" name=$user->login}
 
 <div class="workBack">
 
@@ -39,32 +39,32 @@ function valAllText(form)
 {/literal}
 
 <form method="post" action="lib/usermanagement/userinfo.php" onsubmit="return valAllText(this)">
-	<input type="hidden" name="id" value="{$user->m_dbID}" />
+	<input type="hidden" name="id" value="{$user->dbID}" />
 	<table class="common">
 		<tr>
 			<th>{lang_get s='th_login'}</th>
-			<td>{$user->m_login}</td>
+			<td>{$user->login}</td>
 		</tr>
 		<tr>
 			<th>{lang_get s='th_first_name'}</th>
-			<td><input type="text" name="first" value="{$user->m_firstName|escape}" 
+			<td><input type="text" name="first" value="{$user->firstName|escape}" 
 			           size="{#NAMES_SIZE#}" maxlength="{#NAMES_MAXLEN#}" /></td>
 		</tr>
 		<tr>
 			<th>{lang_get s='th_last_name'}</th>
-			<td><input type="text" name="last" value="{$user->m_lastName|escape}" 
+			<td><input type="text" name="last" value="{$user->lastName|escape}" 
 			           size="{#NAMES_SIZE#}" maxlength="{#NAMES_MAXLEN#}" /></td>
 		</tr>
 		<tr>
 			<th>{lang_get s='th_email'}</th>
-			<td><input type="text" name="email" value="{$user->m_emailAddress|escape}" 
+			<td><input type="text" name="email" value="{$user->emailAddress|escape}" 
 			           size="{#EMAIL_SIZE#}" maxlength="{#EMAIL_MAXLEN#}" /></td>
 		</tr>
 		<tr>
 			<th>{lang_get s='th_locale'}</th>
 			<td>		   
 				<select name="locale">
-				{html_options options=$optLocale selected=$user->m_locale}
+				{html_options options=$optLocale selected=$user->locale}
 				</select>	
 			</td>
 		</tr>
@@ -78,7 +78,7 @@ function valAllText(form)
 {if $external_password_mgmt eq 0 }
 	<form name="changePass" method="post" action="lib/usermanagement/userinfo.php" 
 		onsubmit="return validatePassword(document.changePass);">
-		<input type="hidden" name="id" value="{$user->m_dbID}" />
+		<input type="hidden" name="id" value="{$user->dbID}" />
 		<table class="common">
 			<tr><th>{lang_get s='th_old_passwd'}</th>
 				<td><input type="password" name="old" size="{#PASSWD_SIZE#}" maxlength="{#PASSWD_SIZE#}" /></td></tr>

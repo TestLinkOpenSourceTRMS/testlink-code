@@ -13,8 +13,8 @@
  * @link http://trac-hacks.swapoff.org/wiki/XmlRpcPlugin/ "Trac XmlRpcPlugin"
  *
  *
- * @version $Revision: 1.1 $
- * @modified $Date: 2007/12/18 09:37:36 $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2007/12/19 18:27:06 $
  *
  * @author Toshiyuki Kawanishi <tosikawa@users.sourceforge.jp>
  * @author Ichiro Okazaki
@@ -29,14 +29,14 @@ require_once(TL_ABS_PATH . 'third_party/xml-rpc/class-IXR.php');
 
 class tracInterface extends bugtrackingInterface
 {
-    var $m_dbHost = BUG_TRACK_DB_HOST;
-    var $m_enterBugURL = BUG_TRACK_ENTER_BUG_HREF;
+    var $dbHost = BUG_TRACK_DB_HOST;
+    var $enterBugURL = BUG_TRACK_ENTER_BUG_HREF;
     
-    var $m_dbConnection = null;
-    var $m_bConnected = false;
+    var $dbConnection = null;
+    var $bConnected = false;
     
     // Trac Variables
-    var $m_xmlrpcClient = null;
+    var $xmlrpcClient = null;
 
     /**
      * Constructor of bugtrackingInterface
@@ -47,7 +47,7 @@ class tracInterface extends bugtrackingInterface
      **/
     function tracInterface()
     {
-        $this->m_xmlrpcClient = new IXR_Client($this->m_dbHost);
+        $this->xmlrpcClient = new IXR_Client($this->dbHost);
     }
 
     /**
@@ -62,13 +62,13 @@ class tracInterface extends bugtrackingInterface
      **/
     function connect()
     {
-        if ($this->m_xmlrpcClient->query('system.getAPIVersion')) {
-            $this->m_bConnected = true;
+        if ($this->xmlrpcClient->query('system.getAPIVersion')) {
+            $this->bConnected = true;
         }
         else {
-            $this->m_bConnected = false;
+            $this->bConnected = false;
         }
-        return $this->m_bConnected;
+        return $this->bConnected;
     }
 
     /**
@@ -81,7 +81,7 @@ class tracInterface extends bugtrackingInterface
      **/
     function isConnected()
     {
-        return $this->m_bConnected;
+        return $this->bConnected;
     }
 
     /**
@@ -92,7 +92,7 @@ class tracInterface extends bugtrackingInterface
      **/
     function disconnect()
     {
-        $this->m_bConnected = false;
+        $this->bConnected = false;
     }
 
     /**
@@ -109,7 +109,7 @@ class tracInterface extends bugtrackingInterface
      **/
     function buildViewBugURL($id)
     {
-        $ticket_url = $this->m_enterBugURL . "/$id";
+        $ticket_url = $this->enterBugURL . "/$id";
         return $ticket_url;
     }
 
@@ -127,8 +127,8 @@ class tracInterface extends bugtrackingInterface
      **/
     function getBugStatusString($id)
     {
-        if ($this->m_xmlrpcClient->query('ticket.get', $id)) {
-            $xmlrpc_response = $this->m_xmlrpcClient->getResponse();
+        if ($this->xmlrpcClient->query('ticket.get', $id)) {
+            $xmlrpc_response = $this->xmlrpcClient->getResponse();
             $status_string = $xmlrpc_response[3]['status'];
         }
         else
@@ -160,8 +160,8 @@ class tracInterface extends bugtrackingInterface
     {
         $summary_string = "Error: Ticket #$id is not registered in Trac.";
         
-        if ($this->m_xmlrpcClient->query('ticket.get', $id)) {
-            $xmlrpc_response = $this->m_xmlrpcClient->getResponse();
+        if ($this->xmlrpcClient->query('ticket.get', $id)) {
+            $xmlrpc_response = $this->xmlrpcClient->getResponse();
             $summary_string = $xmlrpc_response[3]['summary'];
         }
         

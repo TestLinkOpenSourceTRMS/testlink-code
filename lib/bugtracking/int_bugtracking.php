@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: int_bugtracking.php,v $
  *
- * @version $Revision: 1.17 $
- * @modified $Date: 2007/12/18 09:37:36 $ $Author: tosikawa $
+ * @version $Revision: 1.18 $
+ * @modified $Date: 2007/12/19 18:27:06 $ $Author: schlundus $
  *
  * @author Andreas Morsing
  *
@@ -55,17 +55,17 @@ class bugtrackingInterface
 {
 	//members to store the bugtracking information, these values are
 	//set in the actual subclasses of this class
-	var $m_dbHost = null;
-	var $m_dbName = null;
-	var $m_dbUser = null;
-	var $m_dbPass = null;
-	var $m_dbType = null;
-	var $m_showBugURL = null;
-	var $m_enterBugURL = null;
+	var $dbHost = null;
+	var $dbName = null;
+	var $dbUser = null;
+	var $dbPass = null;
+	var $dbType = null;
+	var $showBugURL = null;
+	var $enterBugURL = null;
 	
 	//private vars don't touch
-	var $m_dbConnection = null;	
-	var $m_bConnected = false;
+	var $dbConnection = null;	
+	var $bConnected = false;
 
 	/*
 	* 
@@ -103,18 +103,18 @@ class bugtrackingInterface
 	 **/
 	function connect()
 	{
-		if (is_null($this->m_dbHost) || is_null($this->m_dbUser))
+		if (is_null($this->dbHost) || is_null($this->dbUser))
 		{
 			return false;
 		}	
-		$this->m_dbConnection = new database($this->m_dbType);
-		$result = $this->m_dbConnection->connect(false, $this->m_dbHost,$this->m_dbUser,$this->m_dbPass, $this->m_dbName);
+		$this->dbConnection = new database($this->dbType);
+		$result = $this->dbConnection->connect(false, $this->dbHost,$this->dbUser,$this->dbPass, $this->dbName);
 		if (!$result['status'])
-			$this->m_dbConnection = null;
+			$this->dbConnection = null;
 			
-		$this->m_bConnected = $result['status'] ? 1 : 0;
+		$this->bConnected = $result['status'] ? 1 : 0;
 
-		return $this->m_bConnected;
+		return $this->bConnected;
 	}
 	/**
 	 * this function simply returns the state of the db connection 
@@ -127,7 +127,7 @@ class bugtrackingInterface
 	 **/
 	function isConnected()
 	{
-		return ($this->m_bConnected && is_object($this->m_dbConnection)) ? 1 : 0;
+		return ($this->bConnected && is_object($this->dbConnection)) ? 1 : 0;
 	}
 	
 	/**
@@ -141,10 +141,10 @@ class bugtrackingInterface
 	{
 		if (isConnected())
 		{
-			$this->m_dbConnection->close();
+			$this->dbConnection->close();
 		}	
-		$this->m_bConnected = false;
-		$this->m_dbConnection = null;
+		$this->bConnected = false;
+		$this->dbConnection = null;
 	}
 	
 	/**
@@ -236,7 +236,7 @@ class bugtrackingInterface
 	 **/
 	function getEnterBugURL()
 	{
-		return $this->m_enterBugURL;
+		return $this->enterBugURL;
 	}
 	
 	/**

@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: usersedit.php,v $
 *
-* @version $Revision: 1.22 $
-* @modified $Date: 2007/12/18 20:47:19 $ $Author: schlundus $
+* @version $Revision: 1.23 $
+* @modified $Date: 2007/12/19 18:27:07 $ $Author: schlundus $
 * 
 * rev :  BUGID 918
 *
@@ -41,13 +41,13 @@ if ($args->do_update)
 		$sqlResult = $user->setPassword($args->password);
 		if ($sqlResult == OK)
 		{
-			$user->m_login = $args->login;
-			$user->m_emailAddress = $args->email;
-			$user->m_firstName = $args->first;
-			$user->m_lastName = $args->last;
-			$user->m_globalRoleID = $args->rights_id;
-			$user->m_locale = $args->locale;
-			$user->m_bActive = $args->user_is_active;
+			$user->login = $args->login;
+			$user->emailAddress = $args->email;
+			$user->firstName = $args->first;
+			$user->lastName = $args->last;
+			$user->globalRoleID = $args->rights_id;
+			$user->locale = $args->locale;
+			$user->bActive = $args->user_is_active;
 			
 			$sqlResult = $user->writeToDB($db);
 		}
@@ -62,17 +62,17 @@ if ($args->do_update)
 		$sqlResult = $user->readFromDB($db);
 		if ($sqlResult == OK)
 		{
-			$user->m_firstName = $args->first;
-			$user->m_lastName = $args->last;
-			$user->m_emailAddress = $args->email;
-			$user->m_locale = $args->locale;
-			$user->m_bActive = $args->user_is_active;
-			$user->m_globalRoleID = $args->rights_id;
+			$user->firstName = $args->first;
+			$user->lastName = $args->last;
+			$user->emailAddress = $args->email;
+			$user->locale = $args->locale;
+			$user->bActive = $args->user_is_active;
+			$user->globalRoleID = $args->rights_id;
 			
 			$sqlResult = $user->writeToDB($db);
 			if ($sqlResult == OK && $sessionUserID == $args->user_id)
 			{
-				setUserSession($db,$user->m_login, $sessionUserID, $user->m_globalRoleID, $user->m_emailAddress, $user->m_locale);
+				setUserSession($db,$user->login, $sessionUserID, $user->globalRoleID, $user->emailAddress, $user->locale);
 				if (!$args->user_is_active)
 				{
 					header("Location: ../../logout.php");

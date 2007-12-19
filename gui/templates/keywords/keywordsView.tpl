@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: keywordsView.tpl,v 1.7 2007/12/16 12:20:58 schlundus Exp $
+$Id: keywordsView.tpl,v 1.8 2007/12/19 18:27:06 schlundus Exp $
 Purpose: smarty template - View all keywords 
 *}
 {include file="inc_head.tpl" jsValidate="yes" openHead="yes"}
@@ -35,22 +35,22 @@ var del_action=fRoot+'lib/keywords/keywordsEdit.php?doAction=do_delete&amp;id=';
 		<tr>
 			<td>
 				{if $canManage ne ""}
-				<a href="lib/keywords/keywordsEdit.php?doAction=edit&amp;id={$keywords[myKeyword]->m_dbID}">
+				<a href="lib/keywords/keywordsEdit.php?doAction=edit&amp;id={$keywords[myKeyword]->dbID}">
 				{/if}
-				{$keywords[myKeyword]->m_name|escape}
+				{$keywords[myKeyword]->name|escape}
 				{if $canManage ne ""}
 				</a>
 				{/if}
 			</td>
-			<td>{$keywords[myKeyword]->m_notes|escape|nl2br}</td>
+			<td>{$keywords[myKeyword]->notes|escape|nl2br}</td>
 			{if $canManage ne ""}
 			<td class="clickable_icon">
 			  <img style="border:none;cursor: pointer;"
 			       alt="{lang_get s='alt_delete_keyword'}"
              title="{lang_get s='alt_delete_keyword'}"   
              src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png"			     
-				     onclick="delete_confirmation({$keywords[myKeyword]->m_dbID},
-				              '{$keywords[myKeyword]->m_name|escape:'javascript'}',     
+				     onclick="delete_confirmation({$keywords[myKeyword]->dbID},
+				              '{$keywords[myKeyword]->name|escape:'javascript'}',     
 				              '{$del_msgbox_title}','{$warning_msg}');" />
 			</td>
 			{/if}

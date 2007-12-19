@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: firstLogin.php,v $
  *
- * @version $Revision: 1.18 $
- * @modified $Date: 2007/12/18 20:47:19 $ $Author: schlundus $
+ * @version $Revision: 1.19 $
+ * @modified $Date: 2007/12/19 18:27:05 $ $Author: schlundus $
  *
  * @author Asiel Brumfield
  * @author Martin Havlat 
@@ -57,10 +57,10 @@ if($bEditUser)
 		$sqlResult = $user->setPassword($password);
 		if ($sqlResult == OK)
 		{
-			$user->m_login = $login;
-			$user->m_emailAddress = $email;
-			$user->m_firstName = $first;
-			$user->m_lastName = $last;
+			$user->login = $login;
+			$user->emailAddress = $email;
+			$user->firstName = $first;
+			$user->lastName = $last;
 			$sqlResult = $user->writeToDB($db);
 		}
 		if ($sqlResult == OK)

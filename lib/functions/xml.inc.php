@@ -1,4 +1,21 @@
 <?php
+/**
+ * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ * @filesource $RCSfile: xml.inc.php,v $
+ * @version $Revision: 1.8 $ $Author: franciscom $
+ * @modified $Date: 2007/12/19 18:01:44 $
+ *
+ *
+ **/ 
+
+/*
+  function: 
+
+  args:
+  
+  returns: 
+
+*/
 function exportDataToXML($items,$rootTpl,$elemTpl,$elemInfo,$bNoXMLHeader = false)
 {
 	if (!$items)
@@ -34,6 +51,15 @@ function exportDataToXML($items,$rootTpl,$elemTpl,$elemInfo,$bNoXMLHeader = fals
 	$result .= str_replace("{{XMLCODE}}",$xmlCode,$rootTpl);
 	return $result;
 }
+
+/*
+  function: 
+
+  args:
+  
+  returns: 
+
+*/
 function getNodeContent(&$node,$tag)
 {
 	if (!$node)

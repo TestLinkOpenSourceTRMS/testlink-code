@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: rolesview.tpl,v 1.2 2007/12/03 08:27:17 franciscom Exp $ 
+$Id: rolesview.tpl,v 1.3 2007/12/19 20:27:19 schlundus Exp $ 
 Purpose: smarty template - View defined roles 
 
 rev :
@@ -64,7 +64,7 @@ var del_action=fRoot+'lib/usermanagement/rolesview.php?deleterole=1&id=';
 	</tr>
 	{/foreach}
 	</table>
-	<div class="legend_container">{lang_get s='warning_users_will_be_reset'} {$roles[$role_id_replacement].role|escape}</div><br>
+	<div class="legend_container">{lang_get s='warning_users_will_be_reset'} {$roles[$role_id_replacement].role|escape}</div><br />
 	<div class="groupBtn">	
 		<input type="submit" name="confirmed" value="{lang_get s='btn_confirm_delete'}" 
 		       onclick="location='lib/usermanagement/rolesview.php?confirmed=1&amp;deleterole=1&amp;id={$id}'"/>

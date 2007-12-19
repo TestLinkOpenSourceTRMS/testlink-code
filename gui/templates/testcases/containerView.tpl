@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: containerView.tpl,v 1.2 2007/12/07 07:03:45 franciscom Exp $ *}
+{* $Id: containerView.tpl,v 1.3 2007/12/19 20:27:19 schlundus Exp $ *}
 {* 
 Purpose: smarty template - view test specification containers 
 
@@ -118,7 +118,7 @@ rev :
 		</div>
 		{* 20071102 - franciscom *}
 		{*
-		<div id="inProgress"></div><BR>
+		<div id="inProgress"></div><br />
 		<div id="executionResults"></div>
 		*}
 	{/if}

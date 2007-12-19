@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: execSetResults.tpl,v 1.1 2007/12/02 17:02:26 franciscom Exp $
+$Id: execSetResults.tpl,v 1.2 2007/12/19 20:27:18 schlundus Exp $
 Purpose: smarty template - show tests to add results
 Rev:
     20071103 - franciscom - BUGID 700
@@ -27,7 +27,7 @@ Rev:
   <script language="JavaScript" src="{$basehref}gui/niftycube/niftycube.js" type="text/javascript"></script>
 {/if}
 
-<script language="JavaScript">
+<script language="JavaScript" type="text/javascript">
 var msg="{lang_get s='warning_delete_execution'}";
 var import_xml_results="{lang_get s='import_xml_results'}";
 </script>
@@ -70,10 +70,10 @@ var import_xml_results="{lang_get s='import_xml_results'}";
 
   {if $edit_test_results eq "no"}
   <div class="warning_message" style="align:center;">
-     {lang_get s="build_is_closed"}<br>
+     {lang_get s="build_is_closed"}<br />
      {lang_get s="test_cases_cannot_be_executed"}
   </div>
-  <p>
+  <br />
   {/if}
   
   <div class="show_hide_title">
@@ -152,7 +152,7 @@ var import_xml_results="{lang_get s='import_xml_results'}";
         	          onclick="javascript:check_all_radios('{$gsmarty_tc_status.$verbose_status}');" />
         	{/foreach}		
           <br />
-          <p>
+          <br />
       		  <input type="submit" id="do_bulk_save" name="do_bulk_save" 
       		         value="{lang_get s='btn_save_all_tests_results'}"/>
         </div>
@@ -199,23 +199,23 @@ var import_xml_results="{lang_get s='import_xml_results'}";
 		<div id="tsdetails_{$tc_exec.testcase_id}" name="tsdetails_{$tc_exec.testcase_id}" 
 		     class="exec_additional_info">
 
-      <br>
+      <br />
       <div class="exec_testsuite_details" style="width:95%;">
-      <span class="legend_container">{lang_get s='details'}</span><br>
+      <span class="legend_container">{lang_get s='details'}</span><br />
 		  {$tsuite_info[$tc_exec.testcase_id].details}
 		  </div>
 		  
 		  {* 20070104 - franciscom *}
 		  {if $ts_cf_smarty[$tc_exec.testcase_id] neq ''}
-		    <p>
+		    <br />
 		    <div class="custom_field_container" style="border-color:black;width:95%;">
          {$ts_cf_smarty[$tc_exec.testcase_id]}
         </div>
 		  {/if}
 		  
   		{if $tSuiteAttachments[$tc_exec.tsuite_id] neq null}
-  		  <p>
-           <script language="JavaScript">
+  		  <br />
+           <script language="JavaScript" type="text/javascript">
            var msg="{lang_get s='warning_delete_execution'}";
            </script>
   		  
@@ -225,13 +225,13 @@ var import_xml_results="{lang_get s='import_xml_results'}";
 			        	 tableClassName="none"
 				         tableStyles="background-color:#ffffcc;width:100%" }
 	    {/if}
-	    <p>
+	    <br />
     </div>
   
 
 		<div class="exec_tc_title">
 		{lang_get s='title_test_case'} {lang_get s='th_test_case_id'}{$tc_exec.testcase_id} :: {lang_get s='version'}: {$tc_exec.version}<br />
-		    {$tc_exec.name|escape}<br>
+		    {$tc_exec.name|escape}<br />
 		    {if $tc_exec.assigned_user eq ''}
 		      {lang_get s='has_no_assignment'}
 		    {else}  
@@ -431,7 +431,7 @@ var import_xml_results="{lang_get s='import_xml_results'}";
 		{/if}
   </div> 
 
-  <p>
+  <br />
   <div>
    
     <div class="exec_test_spec">

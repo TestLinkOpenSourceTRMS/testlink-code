@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecView.tpl,v 1.10 2007/12/05 07:47:00 franciscom Exp $ *}
+{* $Id: reqSpecView.tpl,v 1.11 2007/12/19 20:27:19 schlundus Exp $ *}
 {* 
    Purpose: smarty template - view a requirement specification
    Author: Martin Havlat 
@@ -56,7 +56,7 @@ var del_action=fRoot+'{$smarty.const.REQ_MODULE}reqSpecEdit.php?do_action=do_del
           alt="$text_hint" title="$text_hint"  style="float: right;"}
 	{lang_get s='req_spec'}{$smarty.const.TITLE_SEP}{$req_spec.title|escape}
 </h1>
-<br>
+<br />
 {include file="$buttons_template}
 
 <table class="simple" style="width: 90%">

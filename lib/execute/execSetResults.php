@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.72 $
- * @modified $Date: 2007/12/04 09:20:45 $ $Author: franciscom $
+ * @version $Revision: 1.73 $
+ * @modified $Date: 2007/12/19 20:27:19 $ $Author: schlundus $
  *
  * 20071113 - franciscom - added contribution History for all builds.
  * 20071006 - franciscom - changes on exec_cfield_mgr() call
@@ -356,18 +356,19 @@ if(!is_null($linked_tcversions))
 // tester assignment 
 if( !is_null($map_last_exec) )
 {
-  foreach($map_last_exec as $version_id => $value)
-  {
-    $map_last_exec[$version_id]['assigned_user']='';
-    $map_last_exec[$version_id]['assigned_user_id']=0;
-    $p3 = $tcase_mgr->get_version_exec_assignment($version_id,$tplan_id);
-    if(intval($p3[$version_id]['user_id']) > 0 )
-    {
-      $user_data=getUserById($db,$p3[$version_id]['user_id']);
-      $map_last_exec[$version_id]['assigned_user']=format_username($user_data[0]);  
-      $map_last_exec[$version_id]['assigned_user_id']=$p3[$version_id]['user_id'];
-    }  
-  }
+	foreach($map_last_exec as $version_id => $value)
+	{
+		$map_last_exec[$version_id]['assigned_user'] = '';
+		$map_last_exec[$version_id]['assigned_user_id'] = 0;
+		$p3 = $tcase_mgr->get_version_exec_assignment($version_id,$tplan_id);
+		$userID = intval($p3[$version_id]['user_id']);
+		if($userID)
+		{
+			$user = tlUser::getUserByID($db,$userID);
+			$map_last_exec[$version_id]['assigned_user']= $user->getDisplayName();  
+			$map_last_exec[$version_id]['assigned_user_id'] = $userID;
+		}  
+	}
 }
 
 // --------------------------------------------------------------------

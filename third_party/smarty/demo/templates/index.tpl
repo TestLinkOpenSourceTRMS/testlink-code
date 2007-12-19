@@ -39,9 +39,9 @@ An example of a section loop:
 An example of section looped key values:
 
 {section name=sec1 loop=$contacts}
-	phone: {$contacts[sec1].phone}<br>
-	fax: {$contacts[sec1].fax}<br>
-	cell: {$contacts[sec1].cell}<br>
+	phone: {$contacts[sec1].phone}<br />
+	fax: {$contacts[sec1].fax}<br />
+	cell: {$contacts[sec1].cell}<br />
 {/section}
 <p>
 

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: userrightmatrix.php,v $
  *
- * @version $Revision: 1.14 $
- * @modified $Date: 2007/12/18 17:59:37 $  $Author: franciscom $
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2007/12/19 20:27:18 $  $Author: schlundus $
  *
  * @author Andreas Morsing
  *
@@ -73,8 +73,6 @@ $tplan_admin=array("$tplan_admin_url/planupdatetc.php" => array("testplan_planni
        						 "$tplan_admin_url/plannew.php" => array("testplan_planning",),														
        						 "$tplan_admin_url/planowner.php" => array("testplan_planning",),														
        						 "$tplan_admin_url/planpriority.php" => array("testplan_planning",),														
-       						 "$tplan_admin_url/plantestersedit.php" => array("testplan_planning",),														
-       						 "$tplan_admin_url/plantestersnavigator.php" => array("testplan_planning",),														
        						 "$tplan_admin_url/planupdatetc.php" => array("testplan_planning",),														
        						 "$tplan_admin_url/planmilestoneedit.php" => array("testplan_planning",),														
        						 "$tplan_admin_url/plantcnavigator.php" => array("testplan_planning",),														

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: lostPassword.php,v $
  *
- * @version $Revision: 1.19 $
- * @modified $Date: 2007/12/18 20:47:19 $ $Author: schlundus $
+ * @version $Revision: 1.20 $
+ * @modified $Date: 2007/12/19 20:27:18 $ $Author: schlundus $
  *
 **/
 require_once('config.inc.php');
@@ -30,9 +30,8 @@ if ($op['status'] == 0)
 $note = lang_get('your_info_for_passwd');
 if (strlen($login))
 {
-	$userInfo = null;
 	$userID = tlUser::doesUserExist($db,$login);
-	if(!$userID)
+	if (!$userID)
 		$note = lang_get('bad_user');
 	else
 	{

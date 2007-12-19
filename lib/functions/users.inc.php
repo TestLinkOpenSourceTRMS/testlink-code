@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: users.inc.php,v $
  *
- * @version $Revision: 1.56 $
- * @modified $Date: 2007/12/19 18:27:06 $ $Author: schlundus $
+ * @version $Revision: 1.57 $
+ * @modified $Date: 2007/12/19 20:27:19 $ $Author: schlundus $
  *
  * Functions for usermanagement
  *
@@ -34,11 +34,13 @@ class tlUser extends tlDBObject
 	public $login;
 	protected $password;
 	
+	//configuration options
 	protected $showRealname;
 	protected $usernameFormat;
 	protected $loginMethod;
 	protected $maxLoginLength;
 	
+	//error codes ...
 	const USER_E_LOGINLENGTH = -1;
 	const USER_E_EMAILLENGTH = -2;
 	const USER_E_NOTALLOWED = -4;
@@ -48,6 +50,10 @@ class tlUser extends tlDBObject
 	const USER_E_PWDEMPTY = -64;
 	const USER_E_PWDDONTMATCH = -128;
 	const USER_E_LOGINALREADYEXISTS = -256;
+
+	//search options
+	const USER_O_SEARCH_BYID = 1;
+	const USER_O_SEARCH_BYLOGIN = 2;
 	
 	function __construct($dbID = null)
 	{
@@ -64,7 +70,7 @@ class tlUser extends tlDBObject
 		$this->bActive = 1;
 	}
 	
-	protected function _clean()
+	protected function _clean($options = self::USER_O_SEARCH_BYID)
 	{
 		$this->firstName = null;
 		$this->lastName = null;
@@ -74,22 +80,33 @@ class tlUser extends tlDBObject
 		$this->bActive = null;
 		$this->defaultTestprojectID = null;
 		$this->globalRoleID = null;
-		$this->login = null;
+		if (!($options & self::USER_O_SEARCH_BYID))
+			$this->dbID = null;
+		if (!($options & self::USER_O_SEARCH_BYLOGIN))
+			$this->login = null;
+
 	}
 	/* fills the members  */
 	function create()
 	{
 	}
 	//BEGIN interface iDBSerialization
-	public function readFromDB(&$db)
+	public function readFromDB(&$db,$options = self::USER_O_SEARCH_BYID)
 	{
-		$this->_clean();
+		$this->_clean($options);
 		$query = "SELECT id,login,password,first,last,email,role_id,locale, login AS fullname, active,default_testproject_id FROM users";
-		$query .= " WHERE id = {$this->dbID}";
-
+		
+		$clauses = null;
+		if ($options & self::USER_O_SEARCH_BYID)
+			$clauses[] = "id = {$this->dbID}";		
+		if ($options & self::USER_O_SEARCH_BYLOGIN)
+			$clauses[] = "login = '".$db->prepare_string($this->login)."'";		
+		if ($clauses)
+			$query .= " WHERE " . implode(" AND ",$clauses);
 		$info = $db->fetchFirstRow($query);			 
 		if ($info)
 		{
+			$this->dbID = $info['id'];
 			$this->firstName = $info['first'];
 			$this->lastName = $info['last'];
 			$this->login = $info['login'];
@@ -157,7 +174,7 @@ class tlUser extends tlDBObject
 			return $this->login;
 
 		$keys = array('%first%','%last%','%login%','%email%');
-		$values = array($this->firstName, $this->lastName,$this->login,$this->email);
+		$values = array($this->firstName, $this->lastName,$this->login,$this->emailAddress);
 		
 		$displayName = str_replace($keys,$values,$this->usernameFormat);
 	
@@ -233,10 +250,19 @@ class tlUser extends tlDBObject
 	}
 	static public function doesUserExist(&$db,$login)
 	{
-		$query = " SELECT id FROM users WHERE login='" . $db->prepare_string($login) . "'";
-	
-		$id = $db->fetchFirstRowSingleColumn($query,'id');
-		return $id;
+		$user = new tlUser();
+		$user->login = $login;
+		if ($user->readFromDB($db,tlUser::USER_O_SEARCH_BYLOGIN) == OK)
+			return $user->dbID;
+		return null;
+	}
+	static public function getUserByID(&$db,$id)
+	{
+		$user = new tlUser();
+		$user->dbID = $id;
+		if ($user->readFromDB($db,tlUser::USER_O_SEARCH_BYID) == OK)
+			return $user;
+		return null;
 	}
 }
 
@@ -284,37 +310,6 @@ if( 'LDAP' == config_get('login_method') )
   require_once(dirname(__FILE__) . "/ldap_api.php");
 }
 
-/**
- * Function verifies if login exists
- * @param string login name
- * @param array (passed by reference), to return the user record data
- *        
- *    
- * @return 0: account doesn't exist
- *         1: account exists
- *
- * 20060224 - franciscom - table name user -> users
- * 20051228 - fm - active field
- *
- * 20050528 - fm
- * 1. header docum improved
- * 2. changed function prototype (r_user_data argument)
- * 20060102 - scs - refactored
- * 20060224 - franciscom - removed role_id AS
- */
-function existLogin(&$db,$login, &$r_user_data)
-{
-  
-	$sql = " SELECT password, login, users.id, role_id, " .
-	       "        email, first, last, " .  
-	       "        roles.description AS role, locale, active" .
-	       " FROM users,roles " .
-	       " WHERE users.role_id = roles.id " .
-	       " AND login='" . $db->prepare_string($login) . "'";
-	
-	$r_user_data = $db->fetchFirstRow($sql);
-	return $r_user_data ? 1 : 0;
-}
 
 /**
  * set session data after modification or authorization

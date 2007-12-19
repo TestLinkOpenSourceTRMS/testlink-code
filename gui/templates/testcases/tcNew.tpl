@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcNew.tpl,v 1.1 2007/12/02 17:03:58 franciscom Exp $
+$Id: tcNew.tpl,v 1.2 2007/12/19 20:27:19 schlundus Exp $
 Purpose: smarty template - create new testcase
 
 20070214 - franciscom -
@@ -70,7 +70,7 @@ function validateForm(f)
   {assign var=this_template_dir value=$smarty.template|dirname}
 	{include file="$this_template_dir/tcEdit_New_viewer.tpl"}
 
-  <br>
+  <br />
 	<div style="margin-right:5px;float: right;">
 			<input type="hidden" id="do_create_2"  name="do_create" value="do_create" />
 			<input type="submit" id="do_create_button_2"  name="do_create_button" value="{lang_get s='btn_create'}" />

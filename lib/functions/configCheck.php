@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: configCheck.php,v ${file_name} $
  *
- * @version $Revision: 1.18 $
- * @modified $Date: 2007/11/04 11:13:20 ${date} ${time} $ by $Author: franciscom $
+ * @version $Revision: 1.19 $
+ * @modified $Date: 2007/12/19 20:27:19 ${date} ${time} $ by $Author: schlundus $
  *
  * @author Martin Havlat
  * 
@@ -117,7 +117,6 @@ function checkForExtensions(&$msg)
 {
 	$bSuccess = true;
 	
-	
 	if (!function_exists('domxml_open_file'))
 		$msg[] = lang_get("error_domxml_missing");
 	
@@ -154,11 +153,14 @@ function checkForInstallDir()
  **/
 function checkForAdminDefaultPwd(&$db)
 {
-	$userInfo = null;
 	$bDefaultPwd = false;
-	if (existLogin($db,"admin",$userInfo) && ($userInfo['password'] == md5('admin')))
-		$bDefaultPwd = true;
 	
+	$user = new tlUser();
+	$user->login = "admin";
+	if ($user->readFromDB($db,tlUser::USER_O_SEARCH_BYLOGIN) == OK && 
+		 $user->comparePassword("admin") == OK)
+		$bDefaultPwd = true;
+		
 	return $bDefaultPwd;
 }
 

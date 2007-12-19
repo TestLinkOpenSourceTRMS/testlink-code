@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planAddTC_m1.tpl,v 1.1 2007/12/02 17:03:00 franciscom Exp $
+$Id: planAddTC_m1.tpl,v 1.2 2007/12/19 20:27:18 schlundus Exp $
 Purpose: smarty template - generate a list of TC for adding to Test Plan 
 
 20070630 - franciscom - now tcversions linked to test plan, but set inactive
@@ -68,7 +68,7 @@ added logic to manage active/inactive tcversions
 	<div id="{$div_id}"  style="margin:0px 0px 0px {$ts.level}0px;">
 	    <h3>{$ts.testsuite.name|escape} 
 	        {if $item_number ==1}
-	          <br>
+	          <br />
             <table cellspacing="0" style="font-size:small;background-color:blue;font-weight:bold;color:white" 
                    width="100%">
             <tr>

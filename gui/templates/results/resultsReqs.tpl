@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsReqs.tpl,v 1.2 2007/12/05 07:47:00 franciscom Exp $
+$Id: resultsReqs.tpl,v 1.3 2007/12/19 20:27:19 schlundus Exp $
 Purpose: report REQ coverage 
 Author : Martin Havlat 
 
@@ -23,7 +23,7 @@ Author : Martin Havlat
          arg_tproject_name=$tproject_name arg_tplan_name=$tplan_name}	
 
 {if $arrReqSpec == '' }
-<br>
+<br />
   <div class="user_feedback">{lang_get s='no_srs_defined'}</div>
 {/if}
 

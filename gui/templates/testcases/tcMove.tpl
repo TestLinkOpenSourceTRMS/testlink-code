@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcMove.tpl,v 1.1 2007/12/02 17:03:58 franciscom Exp $ 
+$Id: tcMove.tpl,v 1.2 2007/12/19 20:27:19 schlundus Exp $ 
 Purpose: smarty template - move/copy test case 
 
 20060316 - franciscom - html input names updated
@@ -18,9 +18,9 @@ Purpose: smarty template - move/copy test case
 <form method="post" action="lib/testcases/tcEdit.php?testcase_id={$testcase_id}">
   <p>
   {if $move_enabled }
-	  {lang_get s='inst_move'}<br>
+	  {lang_get s='inst_move'}<br />
   {/if}
-  {lang_get s='inst_copy'}<br>
+  {lang_get s='inst_copy'}<br />
   {lang_get s='inst_copy_move_warning'}
   </p>
   	

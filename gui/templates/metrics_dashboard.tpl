@@ -1,6 +1,6 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: metrics_dashboard.tpl,v 1.1 2007/09/10 12:29:14 franciscom Exp $     
+ $Id: metrics_dashboard.tpl,v 1.2 2007/12/19 20:27:18 schlundus Exp $     
  Purpose: smarty template - main page / site map                 
                                                                  
  rev :                                                   
@@ -36,7 +36,7 @@
   {/foreach}
 
 </table>
-<br>
+<br />
 {lang_get s="generated_by_TestLink_on"} {$smarty.now|date_format:$gsmarty_timestamp_format}
 </div> 
 </body>

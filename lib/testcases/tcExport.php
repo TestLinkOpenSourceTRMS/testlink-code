@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: tcExport.php,v $
  *
- * @version $Revision: 1.1 $
- * @modified $Date: 2007/12/19 18:45:12 $ by $Author: franciscom $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2007/12/20 09:35:05 $ by $Author: franciscom $
  *
  * test case and test suites export
  *
@@ -25,6 +25,7 @@ require_once("../functions/common.php");
 testlinkInitPage($db);
 
 $template_dir='testcases/';
+$default_template = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']));
 
 $bExport = isset($_POST['export']) ? $_POST['export'] : null;
 $bKeywords = isset($_POST['bKeywords']) ? 1 : 0;
@@ -173,5 +174,5 @@ $smarty->assign('tcVersionID', $tcversion_id);
 $smarty->assign('containerID', $container_id);
 $smarty->assign('container_description', $container_description);
 $smarty->assign('exportTypes',$export_file_types);
-$smarty->display($template_dir . 'tcexport.tpl');
+$smarty->display($template_dir . $default_template);
 ?>

@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: userinfo.php,v $
 *
-* @version $Revision: 1.10 $
-* @modified $Date: 2007/12/19 18:27:07 $
+* @version $Revision: 1.11 $
+* @modified $Date: 2007/12/20 09:36:36 $ $Author: franciscom $
 * 
 * Displays the users' information and allows users to change 
 * their passwords and user info.
@@ -17,16 +17,16 @@ testlinkInitPage($db);
 
 $template_dir = 'usermanagement/';
 
-$_POST = strings_stripSlashes($_POST);
-$id = isset($_POST['id']) ? intval($_POST['id']) : 0;
-$first = isset($_POST['first']) ? $_POST['first'] : null;
-$last = isset($_POST['last']) ? $_POST['last'] : null;
-$email = isset($_POST['email']) ? $_POST['email'] : null;
-$locale = isset($_POST['locale']) ? $_POST['locale'] : null;
-$old = isset($_POST['old']) ? $_POST['old'] : null;
-$new = isset($_POST['new1']) ? $_POST['new1'] : null;
-$bEdit = isset($_POST['editUser']) ? 1 : 0;
-$bChangePwd = isset($_POST['changePasswd']) ? 1 : 0;
+$_REQUEST = strings_stripSlashes($_REQUEST);
+$id = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0;
+$first = isset($_REQUEST['first']) ? $_REQUEST['first'] : null;
+$last = isset($_REQUEST['last']) ? $_REQUEST['last'] : null;
+$email = isset($_REQUEST['email']) ? $_REQUEST['email'] : null;
+$locale = isset($_REQUEST['locale']) ? $_REQUEST['locale'] : null;
+$old = isset($_REQUEST['old']) ? $_REQUEST['old'] : null;
+$new = isset($_REQUEST['new1']) ? $_REQUEST['new1'] : null;
+$bEdit = isset($_REQUEST['editUser']) ? 1 : 0;
+$bChangePwd = isset($_REQUEST['changePasswd']) ? 1 : 0;
 $userID = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0; 
 
 $user = new tlUser($userID);

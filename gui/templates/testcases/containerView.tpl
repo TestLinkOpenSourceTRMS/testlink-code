@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: containerView.tpl,v 1.3 2007/12/19 20:27:19 schlundus Exp $ *}
+{* $Id: containerView.tpl,v 1.4 2007/12/20 09:31:49 franciscom Exp $ *}
 {* 
 Purpose: smarty template - view test specification containers 
 
@@ -31,7 +31,7 @@ rev :
 				<input type="submit" name="new_testsuite" value="{lang_get s='btn_new_com'}" />
 			  <input type="submit" name="reorder_testsuites" value="{lang_get s='btn_reorder_cat'}" />
 			  <input type="button" onclick="location='{$basehref}lib/testcases/tcImport.php?bIntoProject=1&bRecursive=1&containerID={$container_data.id}'" value="{lang_get s='btn_import_testsuite'}" />  
-			 <input type="button" onclick="location='{$basehref}lib/testcases/tcexport.php?bRecursive=1&containerID={$container_data.id}'" value="{lang_get s='btn_export_all_testsuites'}" />  			  
+			 <input type="button" onclick="location='{$basehref}lib/testcases/tcExport.php?bRecursive=1&containerID={$container_data.id}'" value="{lang_get s='btn_export_all_testsuites'}" />  			  
 			 
 			 {* 20071102 - franciscom *}
 			 {*
@@ -86,7 +86,7 @@ rev :
 			<input type="submit" name="move_testsuite_viewer" value="{lang_get s='btn_move_cp_com'}" 
 				     alt="{lang_get s='alt_move_cp_com'}" />
 			<input type="submit" name="reorder_testsuites" value="{lang_get s='btn_reorder_cat'}" />
-			<input type="button" onclick="location='{$basehref}lib/testcases/tcexport.php?bRecursive=1&containerID={$container_data.id}'" value="{lang_get s='btn_export_testsuite'}" />  
+			<input type="button" onclick="location='{$basehref}lib/testcases/tcExport.php?bRecursive=1&containerID={$container_data.id}'" value="{lang_get s='btn_export_testsuite'}" />  
 		</form>
 		</div>
 		<br/>	
@@ -107,7 +107,7 @@ rev :
 		  <input type="hidden" name="containerID" value="{$container_data.id}">
 			<input type="submit" id="create_tc" name="create_tc" value="{lang_get s='btn_new_tc'}" />  
 			<input type="button" onclick="location='{$basehref}lib/testcases/tcImport.php?containerID={$container_data.id}'" value="{lang_get s='btn_import_tc'}" />  
-			<input type="button" onclick="location='{$basehref}lib/testcases/tcexport.php?containerID={$container_data.id}'" value="{lang_get s='btn_export_tc'}" />  
+			<input type="button" onclick="location='{$basehref}lib/testcases/tcExport.php?containerID={$container_data.id}'" value="{lang_get s='btn_export_tc'}" />  
 
 		  {* 20071102 - franciscom *}
 		  {*

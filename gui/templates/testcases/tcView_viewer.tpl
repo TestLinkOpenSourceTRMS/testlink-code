@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.2 2007/12/04 09:20:13 franciscom Exp $
+$Id: tcView_viewer.tpl,v 1.3 2007/12/20 09:32:24 franciscom Exp $
 viewer for test case in test specification
 
 20071204 - franciscom - display execution_type
@@ -85,7 +85,7 @@ viewer for test case in test specification
    <input type="submit" name="do_create_new_version"   value="{lang_get s='btn_new_version'}" />
 	
 	</form>
-	<form method="post" action="lib/testcases/tcexport.php" name="tcexport">
+	<form method="post" action="lib/testcases/tcExport.php" name="tcexport">
 		<br/>
 		<input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
 		<input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />

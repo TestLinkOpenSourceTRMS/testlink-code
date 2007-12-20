@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: tcexport.tpl,v 1.1 2007/12/02 17:03:58 franciscom Exp $ *}
+{* $Id: tcexport.tpl,v 1.2 2007/12/20 09:16:31 franciscom Exp $ *}
 {* Purpose: smarty template - keyword export initial page *}
 {* rev:
        20071013 - franciscom - file name management
@@ -37,7 +37,7 @@ function validateForm(f)
 
 {if $do_it eq 1}
   <form method="post" id="export_xml" enctype="multipart/form-data" 
-        action="lib/testcases/tcexport.php"
+        action="lib/testcases/tcExport.php"
         onSubmit="javascript:return validateForm(this);">
   
     <table>

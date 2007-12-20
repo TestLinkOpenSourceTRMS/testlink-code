@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: reqSpecEdit.php,v $
- * @version $Revision: 1.9 $
- * @modified $Date: 2007/12/09 17:27:38 $ $Author: franciscom $ 
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2007/12/20 20:36:36 $ $Author: schlundus $ 
  * 
  * @author Martin Havlat
  * 
@@ -107,11 +107,20 @@ switch($args->do_action)
 
   $cf_smarty = $req_spec_mgr->html_table_of_custom_field_values($args->req_spec_id,$args->tproject_id);
   $req_spec = $req_spec_mgr->get_by_id($args->req_spec_id);
-  $req_spec['author'] = trim(getUserName($db,$req_spec['author_id']));
-  $req_spec['modifier'] = trim(getUserName($db,$req_spec['modifier_id']));
-  $smarty->assign('req_spec_id', $args->req_spec_id);
-  $smarty->assign('req_spec', $req_spec);
-  break;
+  
+	//SCHLUNDUS: refactoring, moving to class needed, identical code to reqEdit.php, reqSpecEdit.php, reqSpecView.php
+	$user = tlUser::getByID($db,$req_spec['author_id']);
+	$req_spec['author'] = null;
+	if ($user)
+		$req_spec['author'] = $user->getDisplayName();
+	$req_spec['modifier'] = null;
+	$user = tlUser::getByID($db,$req_spec['modifier_id']);
+	if ($user)
+		$req_spec['modifier'] = $user->getDisplayName();
+
+	$smarty->assign('req_spec_id', $args->req_spec_id);
+	$smarty->assign('req_spec', $req_spec);
+	break;
 
 
   case "do_delete":

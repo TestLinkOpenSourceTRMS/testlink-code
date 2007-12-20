@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: execSetResults.tpl,v 1.2 2007/12/19 20:27:18 schlundus Exp $
+$Id: execSetResults.tpl,v 1.3 2007/12/20 20:36:35 schlundus Exp $
 Purpose: smarty template - show tests to add results
 Rev:
     20071103 - franciscom - BUGID 700
@@ -272,7 +272,7 @@ var import_xml_results="{lang_get s='import_xml_results'}";
      			<div class="{$gsmarty_tc_status_css.$status_code}">
      			{lang_get s='date_time_run'} {$smarty.const.TITLE_SEP} {localize_timestamp ts=$abs_last_exec.execution_ts}
      			{$smarty.const.TITLE_SEP_TYPE3}
-     			{lang_get s='test_exec_by'} {$smarty.const.TITLE_SEP} {$alluserInfo[$abs_last_exec.tester_id].fullname|escape} 
+     			{lang_get s='test_exec_by'} {$smarty.const.TITLE_SEP} {$alluserInfo[$abs_last_exec.tester_id]->getDisplayName()|escape} 
      			{$smarty.const.TITLE_SEP_TYPE3}
      			{lang_get s='build'}{$smarty.const.TITLE_SEP} {$abs_last_exec.build_name|escape} 			
      			{$smarty.const.TITLE_SEP_TYPE3}
@@ -342,7 +342,7 @@ var import_xml_results="{lang_get s='import_xml_results'}";
   				</td>
   				{/if}
   				
-  				<td>{$alluserInfo[$tc_old_exec.tester_id].fullname|escape}</td> 
+  				<td>{$alluserInfo[$tc_old_exec.tester_id]->getDisplayName()|escape}</td> 
   				<td class="{$gsmarty_tc_status_css.$tc_status_code}">
   				    {localize_tc_status s=$tc_old_exec.status}
   				</td>

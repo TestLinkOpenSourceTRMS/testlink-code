@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: object.class.php,v $
 * 
-* @version $Id: object.class.php,v 1.8 2007/12/19 21:33:40 schlundus Exp $
-* @modified $Date: 2007/12/19 21:33:40 $ by $Author: schlundus $
+* @version $Id: object.class.php,v 1.9 2007/12/20 20:36:35 schlundus Exp $
+* @modified $Date: 2007/12/20 20:36:35 $ by $Author: schlundus $
 *
 **/
 require_once( dirname(__FILE__) . '/int_serialization.php' );
@@ -170,19 +170,25 @@ abstract class tlDBObject extends tlObject implements iDBSerialization
 			return $item;
 		return null;
 	}
-	static public function createObjectsFromDBbySQL(&$db,$query,$column,$className)
+	static public function createObjectsFromDBbySQL(&$db,$query,$column,$className,$bAssoc = false)
 	{
 		$ids = $db->fetchColumnsIntoArray($query,$column);
-		return self::createObjectsFromDB($db,$ids,$className);
+		return self::createObjectsFromDB($db,$ids,$className,$bAssoc);
 	}
-	static public function createObjectsFromDB(&$db,$ids,$className)
+	static public function createObjectsFromDB(&$db,$ids,$className,$bAssoc = false)
 	{
 		$items = null;
 		for($i = 0;$i < sizeof($ids);$i++)
 		{
-			$item = self::createObjectFromDB($db,$ids[$i],$className);
+			$id = $ids[$i];
+			$item = self::createObjectFromDB($db,$id,$className);
 			if ($item)
-				$items[] = $item;
+			{
+				if ($bAssoc)
+					$items[$id] = $item;
+				else
+					$items[] = $item;
+			}
 		}
 		return $items;
 	}

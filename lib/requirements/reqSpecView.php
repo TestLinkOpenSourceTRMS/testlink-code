@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqSpecView.php,v $
- * @version $Revision: 1.6 $
- * @modified $Date: 2007/12/03 20:44:54 $ by $Author: schlundus $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2007/12/20 20:36:36 $ by $Author: schlundus $
  * @author Martin Havlat
  * 
  * Screen to view existing requirements within a req. specification.
@@ -46,8 +46,16 @@ $tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectNam
 
 
 $req_spec = $req_spec_mgr->get_by_id($req_spec_id);
-$req_spec['author'] = getUserName($db,$req_spec['author_id']);
-$req_spec['modifier'] = getUserName($db,$req_spec['modifier_id']);
+//SCHLUNDUS: refactoring, moving to class needed, identical code to reqEdit.php, reqSpecEdit.php, reqSpecView.php
+$user = tlUser::getByID($db,$req_spec['author_id']);
+$req_spec['author'] = null;
+if ($user)
+	$req_spec['author'] = $user->getDisplayName();
+$req_spec['modifier'] = null;
+$user = tlUser::getByID($db,$req_spec['modifier_id']);
+if ($user)
+	$req_spec['modifier'] = $user->getDisplayName();
+
 
 $cf_smarty = $req_spec_mgr->html_table_of_custom_field_values($req_spec_id,$tproject_id);
 $attachments = getAttachmentInfosFrom($req_spec_mgr,$req_spec_id);

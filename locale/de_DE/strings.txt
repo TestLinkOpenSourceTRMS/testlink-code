@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.69 $
- * @modified $Date: 2007/12/08 20:34:14 $ $Author: schlundus $
+ * @version $Revision: 1.70 $
+ * @modified $Date: 2007/12/20 20:36:36 $ $Author: schlundus $
  *
  * @author Andreas Morsing
  * @author Fabian Woelk
@@ -25,7 +25,7 @@ $TLS_any = "alle";
 $TLS_btn_no = "Nein";
 $TLS_create = "Erstellen";
 $TLS_desc = "absteigend";
-$TLS_hour = "Hour";
+$TLS_hour = "Stunden";
 $TLS_not_aplicable = "N/A";
 $TLS_test_case = "Testfall";
 $TLS_testcase = $TLS_test_case;
@@ -1227,9 +1227,9 @@ $TLS_alt_edit_role = "Rolle editieren";
 $TLS_btn_confirm_delete = "Löschen bestätigen";
 $TLS_delete_role = "Rolle löschen";
 $TLS_no_roles = "Keine Rollen vorhanden";
-$TLS_th_role_description = "Description";
+$TLS_th_role_description = "Beschreibung";
 $TLS_title_roles = "Rollen";
-$TLS_warning_delete_role = "Really delete this role?";
+$TLS_warning_delete_role = "Wollen Sie diese Rolle wirklich löschen?";
 $TLS_warning_users_will_be_reset = "Achtung: Die Benutzer werden zurückgesetzt!";
 
 

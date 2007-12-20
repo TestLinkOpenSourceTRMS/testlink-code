@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqView.php,v $
- * @version $Revision: 1.4 $
- * @modified $Date: 2007/12/03 20:42:27 $ by $Author: schlundus $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2007/12/20 20:36:36 $ by $Author: schlundus $
  * @author Martin Havlat
  * 
  * Screen to view content of requirement.
@@ -26,8 +26,16 @@ $req_id = isset($_REQUEST['requirement_id']) ? intval($_REQUEST['requirement_id'
 $req = $req_mgr->get_by_id($req_id);
 $main_descr = lang_get('req') . TITLE_SEP . $req['title'];
 
-$req['author'] = trim(getUserName($db,$req['author_id']));
-$req['modifier'] = trim(getUserName($db,$req['modifier_id']));
+//SCHLUNDUS: refactoring, moving to class needed, identical code to reqEdit.php, reqSpecEdit.php, reqSpecView.php
+$user = tlUser::getByID($db,$req['author_id']);
+$req['author'] = null;
+if ($user)
+	$req['author'] = $user->getDisplayName();
+$req['modifier'] = null;
+$user = tlUser::getByID($db,$req['modifier_id']);
+if ($user)
+	$req['modifier'] = $user->getDisplayName();
+
 $req['coverage'] = $req_mgr->get_coverage($req_id);
 
 $cf_smarty = $req_mgr->html_table_of_custom_field_values($req_id);

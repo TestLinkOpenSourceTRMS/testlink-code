@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
  * @filesource $RCSfile: roles.inc.php,v $
- * @version $Revision: 1.28 $
- * @modified $Date: 2007/12/19 21:33:40 $ by $Author: schlundus $
+ * @version $Revision: 1.29 $
+ * @modified $Date: 2007/12/20 20:36:35 $ by $Author: schlundus $
  * @author Martin Havlat, Chad Rosen
  * 
  * This script provides the get_rights and has_rights functions for
@@ -821,50 +821,47 @@ function get_effective_role(&$db,$user_id,$tproject_id,$tplan_id)
   
 
 */
-function get_tproject_effective_role(&$db,$tproject_id,$user_id=null)
+function get_tproject_effective_role(&$db,$tproject_id,$user_id = null)
 {
-  $effective_role=array();
-  $map_index='id';
-  $filter=null;
-  if( !is_null($user_id) )
-  {
-    $filter=" WHERE id";
-    if( is_array($user_id) )
-    {
-      $filter .= " IN (" . implode(',',$user_id) . ") ";
-    }
-    else
-    {
-      $filter .= "={$user_id} ";    
-    }
-  }
-  $user_info=getAllUsers($db,$filter,$map_index);
-
+	$filter = null;
+	if(!is_null($user_id))
+	{
+		$filter = " WHERE id";
+		if(is_array($user_id))
+			$filter .= " IN (" . implode(',',$user_id) . ") ";
+		else
+			$filter .= " = {$user_id} ";    
+	}
  
-  foreach($user_info as $key => $row)
-  {
-    $effective_role[$row['id']]=array('login' => $row['login'],
-                                      'user_role_id' => $row['role_id'],
-                                      'uplayer_role_id' => $row['role_id'],
-                                      'uplayer_is_inherited' => 0,
-                                      'effective_role_id' => $row['role_id'],
-                                      'is_inherited' => 1);
-  }  
-  $tproject_users_role = getTestProjectUserRoles($db,$tproject_id);
+	$effective_role = array();
+	$users = tlUser::getAll($db,$filter,"id");
+	if ($users)
+	{
+		foreach($users as $id => $user)
+		{
+			$effective_role[$id] = array('login' => $user->login,
+										 'user_role_id' => $user->globalRoleID,
+										 'uplayer_role_id' => $user->globalRoleID,
+										 'uplayer_is_inherited' => 0,
+										 'effective_role_id' => $user->globalRoleID,
+										 'is_inherited' => 1);
+		}  
+	}
+	$tproject_users_role = getTestProjectUserRoles($db,$tproject_id);
   
-  if( !is_null($tproject_users_role) )
-  {
-     foreach($effective_role as $user_id => $row)
-     {
-       if( isset($tproject_users_role[$user_id]) )
-       {
-         $effective_role[$user_id]['is_inherited']=0;
-         $effective_role[$user_id]['effective_role_id']=$tproject_users_role[$user_id]['role_id'];  
-       }
-     }  
-  }
+	if(!is_null($tproject_users_role))
+	{
+		foreach($effective_role as $user_id => $row)
+		{
+			if(isset($tproject_users_role[$user_id]))
+			{
+				$effective_role[$user_id]['is_inherited'] = 0;
+				$effective_role[$user_id]['effective_role_id'] = $tproject_users_role[$user_id]['role_id'];
+			}
+		}  
+	}
 
-  return $effective_role;
+	return $effective_role;
 }
 
 

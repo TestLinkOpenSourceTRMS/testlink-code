@@ -5,10 +5,9 @@
  *
  * Filename $RCSfile: rolesView.php,v $
  *
- * @version $Revision: 1.1 $
- * @modified $Date: 2007/12/20 09:45:38 $ by $Author: franciscom $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2007/12/20 20:36:36 $ by $Author: schlundus $
  *
- *  20070901 - franciscom - BUGID
  *  20070829 - jbarchibald - BUGID 1000 - Testplan role assignments
 **/
 require_once("../../config.inc.php");
@@ -17,12 +16,11 @@ require_once("users.inc.php");
 require_once("roles.inc.php");
 testlinkInitPage($db);
 
-$template_dir='usermanagement/';
+$template_dir = 'usermanagement/';
 $default_template = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']));
 
 // 20070901 - franciscom@gruppotesi.com -BUGID 1016
 init_global_rights_maps();
-
 
 $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 $bDelete = isset($_GET['deleterole']) ? 1 : 0;
@@ -31,8 +29,8 @@ $userID = $_SESSION['userID'];
 
 $sqlResult = null;
 $affectedUsers = null;
-$allUsers = getAllUsers($db,null,'id');
-$role_id_replacement=config_get('role_replace_for_deleted_roles');
+$allUsers = tlUser::getAll($db,null,"id");
+$role_id_replacement = config_get('role_replace_for_deleted_roles');
 
 if ($bDelete && $id)
 {
@@ -49,8 +47,7 @@ if ($bDelete && $id)
 			$sqlResult = lang_get("error_role_deletion");
 		else
 		{
-			//reset all affected users by replacing the deleted role with 
-			// configured role
+			//reset all affected users by replacing the deleted role with configured role
 			resetUserRoles($db,$id,$role_id_replacement);
 		}
 	}
@@ -58,7 +55,6 @@ if ($bDelete && $id)
 		$sqlResult = null;
 }
 $roles = getRoles($db);
-
 
 if ($bDelete && $id)
 {

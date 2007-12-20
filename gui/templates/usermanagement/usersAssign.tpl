@@ -1,6 +1,6 @@
 {* 
 Testlink: smarty template - 
-$Id: usersAssign.tpl,v 1.1 2007/12/20 09:49:16 franciscom Exp $ 
+$Id: usersAssign.tpl,v 1.2 2007/12/20 20:36:35 schlundus Exp $ 
 
 rev:
     20070818 - franciscom
@@ -59,43 +59,42 @@ rev:
   <form method="get" action="{$umgmt}/usersassign.php">
   	<input type="hidden" name="featureID" value="{$featureID}" />
   	<input type="hidden" name="feature" value="{$feature}" />
-    	<div>
+    <div>
     	<table border='0'>
     	{if $feature == 'testproject'}
     		<tr><td class="labelHolder">{lang_get s='TestProject'}</td><td>&nbsp;<td>
     	{else}
     		<tr><td class="labelHolder">{lang_get s='TestProject'}{$smarty.const.TITLE_SEP}</td><td>{$tproject_name}</td><tr>
-    		<tr><td class="labelHolder">{lang_get s='TestPlan'}</td>
+    		<tr>
+				<td class="labelHolder">{lang_get s='TestPlan'}</td>
     	{/if}
-    	<td>
-        <select id="featureSel" onchange="changeFeature('{$feature}')">
-    	   {foreach from=$features item=f}
-    	     <option value="{$f.id}" {if $featureID == $f.id} selected="selected" {/if}>
-    	     {$f.name|escape}</option>
-    	     {if $featureID == $f.id}
-    	        {assign var="my_feature_name" value=$f.name}
-    	     {/if}
-    	   {/foreach}
-    	   </select>
-    	</td>
-    	
-      <td>
-    	<input type="button" value="{lang_get s='btn_change'}" onclick="changeFeature('{$feature}');"/>
-    	</td>
-   		</tr>
-  		</table>
-    	</div>
-      <p></p>
-    	<table class="common" width="75%">
+		    	<td>
+		        <select id="featureSel" onchange="changeFeature('{$feature}')">
+		    	   {foreach from=$features item=f}
+		    	     <option value="{$f.id}" {if $featureID == $f.id} selected="selected" {/if}>
+		    	     {$f.name|escape}</option>
+		    	     {if $featureID == $f.id}
+		    	        {assign var="my_feature_name" value=$f.name}
+		    	     {/if}
+		    	   {/foreach}
+		    	   </select>
+		    	</td>
+				<td>
+					<input type="button" value="{lang_get s='btn_change'}" onclick="changeFeature('{$feature}');"/>
+		    	</td>
+			</tr>
+		</table>
+    </div>
+      <table class="common" width="75%">
     	<tr>
     		<th>{lang_get s='User'}</th>
     		<th>{lang_get s=th_roles_$feature} ({$my_feature_name|escape})</th>
     	</tr>
     	{foreach from=$userData item=user}
     	<tr bgcolor="{cycle values="#eeeeee,#d0d0d0"}">
-    		<td>{$user.fullname|escape}</td>
+    		<td>{$user->getDisplayName()|escape}</td>
     		<td>
-    			{assign var=uID value=$user.id}
+    			{assign var=uID value=$user->dbID}
           {* --------------------------------------------------------------------- *}
           {* get role name to add to inherited in order to give 
              better information to user
@@ -108,7 +107,7 @@ rev:
           {assign var="inherited_role_name" value=$optRights[$ikx] }
           {* --------------------------------------------------------------------- *}
          
-		     <select name="userRole[{$uID}]" id="userRole[{$uID}]">
+		     <select name="userRole[{$uID}]">
 		      {foreach key=role_id item=role_description from=$optRights}
 		        <option value="{$role_id}"
 		          {if ($userFeatureRoles[$uID].effective_role_id == $role_id && 

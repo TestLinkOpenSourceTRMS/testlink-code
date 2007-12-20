@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqEdit.php,v $
- * @version $Revision: 1.7 $
- * @modified $Date: 2007/12/03 20:42:27 $ by $Author: schlundus $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2007/12/20 20:36:36 $ by $Author: schlundus $
  * @author Martin Havlat
  * 
  * Screen to view existing requirements within a req. specification.
@@ -149,20 +149,28 @@ switch($args->do_action)
   break;
 
   case "do_reorder":
-  $template = $template_dir .  'reqSpecView.tpl';
-  $nodes_in_order = transform_nodes_order($args->nodes_order);
+	$template = $template_dir .  'reqSpecView.tpl';
+	$nodes_in_order = transform_nodes_order($args->nodes_order);
 
-  // need to remove first element, is req_spec_id
-  $args->req_spec_id=array_shift($nodes_in_order);
+	// need to remove first element, is req_spec_id
+	$args->req_spec_id=array_shift($nodes_in_order);
 	$req_mgr->set_order($nodes_in_order);
 
-  $req_spec=$req_spec_mgr->get_by_id($args->req_spec_id);
-  $req_spec['author'] = trim(getUserName($db,$req_spec['author_id']));
-  $req_spec['modifier'] = trim(getUserName($db,$req_spec['modifier_id']));
+	$req_spec=$req_spec_mgr->get_by_id($args->req_spec_id);
 
-  $smarty->assign('req_spec', $req_spec);
-  $smarty->assign('refresh_tree', 'yes');
-  break;
+	//SCHLUNDUS: refactoring, moving to class needed, identical code to reqEdit.php, reqSpecEdit.php, reqSpecView.php
+	$user = tlUser::getByID($db,$req_spec['author_id']);
+	$req_spec['author'] = null;
+	if ($user)
+		$req_spec['author'] = $user->getDisplayName();
+	$req_spec['modifier'] = null;
+	$user = tlUser::getByID($db,$req_spec['modifier_id']);
+	if ($user)
+		$req_spec['modifier'] = $user->getDisplayName();
+
+	$smarty->assign('req_spec', $req_spec);
+	$smarty->assign('refresh_tree', 'yes');
+	break;
 
   case "create_tcases":
   case "do_create_tcases":
@@ -205,18 +213,7 @@ if (!is_null($args->scope))
 
 $smarty->assign('scope',$of->CreateHTML());
 $smarty->display($template);
-?>
 
-
-<?php
-/*
-  function: 
-
-  args:
-  
-  returns: 
-
-*/
 function init_args()
 {
   $args->req_id = isset($_REQUEST['requirement_id']) ? $_REQUEST['requirement_id'] : null;

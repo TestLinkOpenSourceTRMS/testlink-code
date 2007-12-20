@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: rolesEdit.tpl,v 1.1 2007/12/20 09:49:16 franciscom Exp $
+$Id: rolesEdit.tpl,v 1.2 2007/12/20 20:36:35 schlundus Exp $
 Purpose: smarty template - create/edit user role 
 
 rev :
@@ -161,7 +161,7 @@ function validateForm(f)
 		<caption>{lang_get s='caption_possible_affected_users'}</caption>
 		{foreach from=$affectedUsers item=i}
 		<tr>
-			<td>{$allUsers[$i].first|escape} {$allUsers[$i].last|escape} [{$allUsers[$i].login|escape}]</td>
+			<td>{$allUsers[$i]->getDisplayName()|escape}</td>
 		</tr>
 		{/foreach}
 		</table>

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqSpecAnalyse.php,v $
- * @version $Revision: 1.1 $
- * @modified $Date: 2007/11/19 21:02:56 $ by $Author: franciscom $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2007/12/20 20:36:36 $ by $Author: schlundus $
  * @author Martin Havlat
  * 
  * Analyse coverage of a req. specification.
@@ -15,10 +15,7 @@ require_once("common.php");
 require_once('requirements.inc.php');
 require_once('requirement_spec_mgr.class.php');
 require_once('requirement_mgr.class.php');
-
 testlinkInitPage($db);
-
-
 
 $idSRS = isset($_GET['idSRS']) ? strings_stripSlashes($_GET['idSRS']) : null;
 $tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
@@ -41,7 +38,7 @@ if (!$idSRS && count($arrReqSpec))
 $arrCoverage = $req_spec_mgr->get_coverage($idSRS);
 $arrMetrics = $req_spec_mgr->get_metrics($idSRS);
 
-$smarty = new TLSmarty;
+$smarty = new TLSmarty();
 $smarty->assign('arrMetrics', $arrMetrics);
 $smarty->assign('arrCoverage', $arrCoverage);
 $smarty->assign('arrReqSpec', $arrReqSpec);

@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: testcase.class.php,v $
- * @version $Revision: 1.77 $
- * @modified $Date: 2007/12/19 18:27:06 $ $Author: schlundus $
+ * @version $Revision: 1.78 $
+ * @modified $Date: 2007/12/20 20:36:35 $ $Author: schlundus $
  * @author franciscom
  *
  *
@@ -423,13 +423,11 @@ function show(&$smarty,$template_dir,$id, $user_id, $version_id=TC_ALL_VERSIONS,
 		}
 		$smarty->assign('cf',$cf_smarty);	
  	}
-	$users = getAllUsers($this->db,null,'id');
-	
 	$smarty->assign('execution_types',$this->execution_types);
 	$smarty->assign('user_feedback',$user_feedback);
 	$smarty->assign('tcase_cfg',$tcase_cfg);
 	$smarty->assign('action',$action);
-	$smarty->assign('users',$users);
+	$smarty->assign('users',tlUser::getAll($this->db,null,'id'));
 	$smarty->assign('sqlResult',$msg_result);
 	$smarty->assign('can_edit',$can_edit);
 	$smarty->assign('can_delete_testcase',$can_edit);

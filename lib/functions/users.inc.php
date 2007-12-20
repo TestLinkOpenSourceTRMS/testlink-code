@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: users.inc.php,v $
  *
- * @version $Revision: 1.58 $
- * @modified $Date: 2007/12/19 21:33:40 $ $Author: schlundus $
+ * @version $Revision: 1.59 $
+ * @modified $Date: 2007/12/20 20:36:35 $ $Author: schlundus $
  *
  * Functions for usermanagement
  *
@@ -14,9 +14,7 @@
  * 20051231 - scs - changes due to ADBdb
  * 20060205 - JBA - Remember last product (BTS 221); added by MHT
  * 20060224 - franciscom - changes in session product -> testproject
- * 20070104 - franciscom - changes in getUserName()
- * 20070106 - franciscom - getAllUsers() - new argument order_by
-**/
+ */
 require_once("common.php");
 
 //SCHLUNDUS: I will cleanup this file step by step
@@ -175,7 +173,7 @@ class tlUser extends tlDBObject
 		$keys = array('%first%','%last%','%login%','%email%');
 		$values = array($this->firstName, $this->lastName,$this->login,$this->emailAddress);
 		
-		$displayName = str_replace($keys,$values,$this->usernameFormat);
+		$displayName = trim(str_replace($keys,$values,$this->usernameFormat));
 	
 		return $displayName;
 	}
@@ -257,7 +255,19 @@ class tlUser extends tlDBObject
 	}
 	static public function getByID(&$db,$id)
 	{
-		return tlDBObject::createObjectFromDB($db,$id,__CLASS__,tlUser::TLOBJ_O_SEARCH_BY_ID);
+		if ($id)
+			return tlDBObject::createObjectFromDB($db,$id,__CLASS__,tlUser::TLOBJ_O_SEARCH_BY_ID);
+		return null;
+	}
+	static public function getAll(&$db,$whereClause = null,$column = null,$orderBy = null)
+	{
+		$query = " SELECT id FROM users";
+		if (!is_null($whereClause))
+			$query .= ' '.$whereClause;
+	
+		$query .= is_null($orderBy) ? " ORDER BY login " : $orderBy;
+	
+		return tlDBObject::createObjectsFromDBbySQL($db,$query,'id',__CLASS__,true);
 	}
 }
 
@@ -309,6 +319,7 @@ class tlRole extends tlDBObject
 	{
 		return tlDBObject::createObjectFromDB($db,$id,__CLASS__,tlRole::TLOBJ_O_SEARCH_BY_ID);
 	}
+	
 }
 
 if( 'LDAP' == config_get('login_method') )
@@ -391,122 +402,20 @@ function setUserSession(&$db,$user, $id, $roleID, $email, $locale = null, $activ
 	return 1;
 }
 
-/**
- * Function-Documentation
- *
- * @param $db [ref]
- * @param $whereClause [default = null]
- * @param $column [default = null]
- *        $column=column name of users table that will be used as key 
- *                in the returned assoc. array
- *
- *        $column=null, the returned array will be a 'classic' array
- *                
- * @param $order_by [default=null, the following order is used " ORDER BY login "]
- * 
- * @return type documentation
- *
- * 20051112 - scs - where clause was added at the wrong place
- * 20060224 - franciscom - table name user -> users
- *                       - removed role_id AS
- * 20060911 - some documentation improvements
- *
- **/
-function getAllUsers(&$db,$whereClause = null,$column = null, $order_by=null)
-{
-	$show_realname = config_get('show_realname');
-	
-	$sql = " SELECT id,login,password,first,last,email,role_id,locale,".
-	       " login AS fullname, active FROM users";
-		     
-		     
-		     
-	if (!is_null($whereClause))
-	{
-		$sql .= ' '.$whereClause;
-	}
-	
-	$sql .= is_null($order_by) ? " ORDER BY login " : $order_by;
-	
-	$users = null;
-	$result = $db->exec_query($sql);
-	if ($result)
-	{
-		while($user = $db->fetch_array($result))
-		{
-			$user['fullname'] = format_username($user);
-			if (!is_null($column))
-				$users[$user[$column]] = $user;
-			else 
-				$users[] = $user;
-		}	
-	}
-	
-	return $users;
-}
-
-/**
- * get User Name from ID
- * @param integer $id_user
- * @return string user name
- * 
- * 20051015 - scs - added check of userId of 0
- * 20060102 - scs - refactored 
- * 20060224 - franciscom - table name user -> users
- * 20070104 - franciscom - refactoring to return unknown user 
- *                         when id_user range invalid.
- *                         Needed to cope with the situation
- *                         of modifier_id, that before any
- *                         modification is null.
- **/
-function getUserName(&$db,$userID)
-{
-	$user = tlUser::getById($db,$userID);
-	if ($user)
-		return $user->getDisplayName();
-	return '';
-}
-
-
-/**
- * Function-Documentation
- *
- * @param type $hash documentation
- * @return type documentation
- *
- **/
-function format_username($hash)
-{
-	$show_realname  = config_get('show_realname');
-	if (!$show_realname)
-		return $hash['login'];
-	 
-	$username_format = config_get('username_format');
-	
-	$keys = array_keys($hash);
-	$values = array_values($hash);
-	for($i = 0;$i < sizeof($keys);$i++)
-	{
-		$keys[$i] = "%".$keys[$i]."%";
-	}
-	$username_format = str_replace($keys,$values,$username_format);
-	
-	return $username_format;
-}
-
 function get_users_for_html_options(&$db,$whereClause = null,$add_blank_option=false)
 {
 	$users_map = null;
-	$users = getAllUsers($db,$whereClause,'id');
-  
-	if(!is_null($users) && $add_blank_option)
-		$users_map[0] = '';
-	
-	foreach($users as $key => $value)
+	$users = tlUser::getAll($db,$whereClause,"id");
+	if ($users)
 	{
-		$users_map[$key] = $value['fullname'];
+		if($add_blank_option)
+			$users_map[0] = '';
+		foreach($users as $id => $user)
+		{
+			$users_map[$id] = $user->getDisplayName();
+		}
 	}
-	return($users_map);
+	return $users_map;
 }
 
 function resetPassword(&$db,$userID,&$errorMsg)

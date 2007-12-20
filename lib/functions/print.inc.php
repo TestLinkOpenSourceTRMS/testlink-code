@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: print.inc.php,v $
- * @version $Revision: 1.34 $
- * @modified $Date: 2007/12/10 22:59:45 $ by $Author: havlat $
+ * @version $Revision: 1.35 $
+ * @modified $Date: 2007/12/20 20:36:35 $ by $Author: schlundus $
  *
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
@@ -44,7 +44,10 @@ function printFirstPage(&$db,$item_type,$title, $tproject_info, $userID,$tplan_i
 	$tproject_name = htmlspecialchars($tproject_info['name']);
 	$tproject_notes = $tproject_info['notes'];
 	
-	$author = htmlspecialchars(getUserName($db,$userID));
+	$author = null;
+	$user = tlUser::getById($db,$userID);
+	if ($user)
+		$author = htmlspecialchars($user->getDisplayName());
 	$title = htmlspecialchars($title);
 	
 	$output = '<div>';
@@ -218,13 +221,8 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,$tplan_i
 	{
 		$tc_mgr = new testcase($db);
     	$tcInfo = $tc_mgr->get_by_id($id,$versionID);
-//		$tcResultInfo = $tc_mgr->get_last_execution($id, $versionID, $tplan_id, null);   
-
-	  if ($tcInfo)
-		{
-	    $tcInfo=$tcInfo[0];
-	  }
-	
+		if ($tcInfo)
+			$tcInfo=$tcInfo[0];
 	}
 	if($printingOptions['passfail'])
 	{
@@ -250,7 +248,10 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,$tplan_i
 
   	if ($printingOptions['author'])
   	{    
-     	$authorName = getUserName($db, $tcInfo['author_id']);
+		$authorName = null;
+		$user = tlUser::getByID($db,$tcInfo['author_id']);
+		if ($user)
+			$authorName = $user->getDisplayName();
      	$code .= '<tr><td colspan="2"><b>' . lang_get("author") . " </b>" . $authorName . "</td></tr>";
   	}
 

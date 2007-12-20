@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execNavigator.tpl,v 1.2 2007/12/19 21:33:40 schlundus Exp $ *}
+{* $Id: execNavigator.tpl,v 1.3 2007/12/20 20:36:35 schlundus Exp $ *}
 {* Purpose: smarty template - show test set tree *}
 {* 
 rev :
@@ -57,10 +57,10 @@ rev :
  			{if $disable_filter_assigned_to}
 			  {$assigned_to_user}
 			{else}
-			  <select name="filter_assigned_to">
-				{html_options options=$users selected=$filter_assigned_to}
+				<select name="filter_assigned_to">
+					{html_options options=$users selected=$filter_assigned_to}
 				</select>
-      {/if}
+			{/if}
 			</td>
 		</tr>
         <tr>

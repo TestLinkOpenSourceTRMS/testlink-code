@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.74 $
- * @modified $Date: 2007/12/19 21:33:40 $ $Author: schlundus $
+ * @version $Revision: 1.75 $
+ * @modified $Date: 2007/12/20 20:36:35 $ $Author: schlundus $
  *
  * 20071113 - franciscom - added contribution History for all builds.
  * 20071006 - franciscom - changes on exec_cfield_mgr() call
@@ -24,52 +24,7 @@ require_once("attachments.inc.php");
 
 testlinkInitPage($db);
 
-$template_dir='execute/';
-$tcversion_id=null;
-
-$smarty = new TLSmarty();
-
-$PID_NOT_NEEDED = null;
-$SHOW_ON_EXECUTION = 1;
-
-$tproject_id = $_SESSION['testprojectID'];
-$tplan_id = $_SESSION['testPlanId'];
-$user_id = $_SESSION['userID'];
-
-$exec_cfg = config_get('exec_cfg');
-$gui_cfg = config_get('gui');
-$tc_status = config_get('tc_status'); 
-
-// BUGID 647
-$smarty->assign('enable_custom_field',$gui_cfg->enable_custom_fields);
-
-$tree_mgr = new tree($db);
-$tplan_mgr = new testplan($db);
-$tcase_mgr = new testcase($db);
-$build_mgr = new build_mgr($db);
-
-// 20070914 - jbarchibald
-$exec_cfield_mgr = new exec_cfield_mgr($db,$tproject_id);
-
-
-$effective_role=get_effective_role($db,$user_id,$tproject_id,$tplan_id);
-$all_roles = getAllRoles($db);
-$exec_mode='all';
-if( $all_roles[$effective_role] == 'tester' )
-{
-  $exec_cfg = config_get('exec_cfg');
-  $exec_mode=$exec_cfg->exec_mode->tester;
-}
-
-$can_exec=(has_rights($db,"testplan_execute")=="yes"?1:0);
-
-
-$testdata = array();
-$ts_cf_smarty = '';
-$submitResult = null;
-
-
-
+$template_dir = 'execute/';
 
 $_REQUEST = strings_stripSlashes($_REQUEST);
 $do_exec = isset($_REQUEST['execute_cases']) ? 1 : 0;
@@ -83,17 +38,50 @@ $filter_status = isset($_REQUEST['filter_status']) ? $_REQUEST['filter_status'] 
 
 $level = isset($_REQUEST['level']) ? $_REQUEST['level'] : '';
 $status = isset($_REQUEST['status']) ? $_REQUEST['status'] : null;
+$do_delete = isset($_REQUEST['do_delete']) ? intval($_REQUEST['do_delete']) : 0;
 
 // jbarchibald 20070911 - adding custom field filtering
 $cf_selected = isset($_REQUEST['cfields']) ? unserialize($_REQUEST['cfields']) : null;
 
+$tproject_id = $_SESSION['testprojectID'];
+$tplan_id = $_SESSION['testPlanId'];
+$user_id = $_SESSION['userID'];
+
+$exec_cfg = config_get('exec_cfg');
+$gui_cfg = config_get('gui');
+$tc_status = config_get('tc_status'); 
+
+
+$tcversion_id = null;
+$PID_NOT_NEEDED = null;
+$SHOW_ON_EXECUTION = 1;
+
+
+$smarty = new TLSmarty();
+$tree_mgr = new tree($db);
+$tplan_mgr = new testplan($db);
+$tcase_mgr = new testcase($db);
+$build_mgr = new build_mgr($db);
+$exec_cfield_mgr = new exec_cfield_mgr($db,$tproject_id);
+
+$effective_role = get_effective_role($db,$user_id,$tproject_id,$tplan_id);
+$all_roles = getAllRoles($db);
+$exec_mode = 'all';
+if( $all_roles[$effective_role] == 'tester' )
+{
+	$exec_cfg = config_get('exec_cfg');
+	$exec_mode = $exec_cfg->exec_mode->tester;
+}
+
+$can_exec = (has_rights($db,"testplan_execute")=="yes"?1:0);
+
+$testdata = array();
+$ts_cf_smarty = '';
+$submitResult = null;
 
 // 20070211 - franciscom
-$do_delete=isset($_REQUEST['do_delete']) ? intval($_REQUEST['do_delete']) : 0;
 if($do_delete)
-{
-  $exec_to_delete =isset($_REQUEST['exec_to_delete']) ? intval($_REQUEST['exec_to_delete']) : 0;
-}
+	$exec_to_delete = isset($_REQUEST['exec_to_delete']) ? intval($_REQUEST['exec_to_delete']) : 0;
 
 if (!strlen($level))
 {
@@ -102,8 +90,11 @@ if (!strlen($level))
 }
 $ownerDisplayName = null;
 if ($filter_assigned_to)
-	$ownerDisplayName = getUserName($db,$filter_assigned_to);
-
+{
+	$user = tlUser::getById($db,$filter_assigned_to);
+	if ($user)
+		$ownerDisplayName = $user->getDisplayName();
+}
 
 $the_builds = $tplan_mgr->get_builds_for_html_options($tplan_id);
 $build_name = isset($the_builds[$build_id]) ? $the_builds[$build_id] : '';
@@ -113,12 +104,10 @@ $_SESSION['history_on'] = $history_on;
 
 $history_status_btn_name = 'btn_history_on';
 if($history_on)
-{
     $history_status_btn_name = 'btn_history_off';
-}
 
-$testplan_cf=null;
-$cfexec_val_smarty= null;
+$testplan_cf = null;
+$cfexec_val_smarty = null;
 $bugs = null;
 $attachmentInfos = null;
 $map_last_exec = null;
@@ -128,11 +117,9 @@ $tcAttachments = null;
 $tSuiteAttachments = null;
 
 
-$get_mode=GET_ONLY_EXECUTED;
-if( is_null($filter_status) || $filter_status == $tc_status['not_run'])
-{
-  $get_mode=GET_ALSO_NOT_EXECUTED;
-}
+$get_mode = GET_ONLY_EXECUTED;
+if(is_null($filter_status) || $filter_status == $tc_status['not_run'])
+	$get_mode = GET_ALSO_NOT_EXECUTED;
 
 // ---------------------------------------------------------
 // Testplan executions and result archiving. Checks whether execute cases button was clicked
@@ -164,9 +151,6 @@ if($do_exec == 1)
 	}
 }	
 // -----------------------------------------------------------
-
-
-
 
 
 // 20070306 - franciscom - BUGID 705
@@ -411,18 +395,17 @@ $smarty->assign('bn_view_status',
 $smarty->assign('bc_view_status',
                 isset($_POST['bc_view_status']) ? $_POST['bc_view_status']:0);
 
+// BUGID 647
+$smarty->assign('enable_custom_field',$gui_cfg->enable_custom_fields);
 $smarty->assign('can_delete_execution',$exec_cfg->can_delete_execution);
 $smarty->assign('default_status',config_get('tc_status_for_ui_default'));
-
-$smarty->assign('alluserInfo',getAllUsers($db,null,'id'));
+$smarty->assign('alluserInfo',tlUser::getAll($db,null,'id'));
 $smarty->assign('tcAttachments',$tcAttachments);
 $smarty->assign('attachments',$attachmentInfos);
 $smarty->assign('tSuiteAttachments',$tSuiteAttachments);
-
 $smarty->assign('id',$id);
 $smarty->assign('rightsEdit', has_rights($db,"testplan_execute"));
 $smarty->assign('map_last_exec', $map_last_exec);
-
 $smarty->assign('other_exec', $other_execs);
 $smarty->assign('show_last_exec_any_build', $exec_cfg->show_last_exec_any_build);
 $smarty->assign('history_on',$history_on);
@@ -436,15 +419,9 @@ $smarty->assign('owner', $filter_assigned_to);
 $smarty->assign('ownerDisplayName', $ownerDisplayName);
 $smarty->assign('updated', $submitResult);
 $smarty->assign('g_bugInterface', $g_bugInterface);
-
 $smarty->assign('tester_id',$user_id);
-
 $smarty->display($template_dir . $g_tpl['execSetResults']);
-?>
 
-
-
-<?php
 /*
   function: 
 
@@ -479,10 +456,6 @@ function manage_history_on($hash_REQUEST,$hash_SESSION,
     }
     return $history_on;
 }
-
-
-
-
 /*
   function: get_ts_name_details
 
@@ -523,7 +496,6 @@ function get_ts_name_details(&$db,$tcase_id)
 	
 	return $rs;
 }
-
 /*
   function: 
 
@@ -652,7 +624,7 @@ function do_remote_execution(&$db,$tc_versions)
 	foreach($tc_versions as $version_id => $tcase_id)
 	{
 		// RPC call
-		$executionResults[$tcase_id] =  executeTestCase($tcase_id,$tree_mgr,$cfield_mgr);
+		$executionResults[$tcase_id] = executeTestCase($tcase_id,$tree_mgr,$cfield_mgr);
 		if($executionResults){
 			$myResult = $executionResults[$tcase_id]['result'];
 			$myNotes = $executionResults[$tcase_id]['notes'];
@@ -676,8 +648,8 @@ function do_remote_execution(&$db,$tc_versions)
 			}
 		}
 
-	} //foreach($tc_versions as $version_id => $tcase_id)
+	}
 	
 	return $ret;
-} //function end
+}
 ?>																																

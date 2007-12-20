@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: rolesEdit.php,v $
  *
- * @version $Revision: 1.1 $
- * @modified $Date: 2007/12/20 09:45:38 $ by $Author: franciscom $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2007/12/20 20:36:36 $ by $Author: schlundus $
  *
  *
  * 20071201 - franciscom - new web editor code
@@ -21,7 +21,7 @@ require_once("web_editor.php");
 
 testlinkInitPage($db);
 
-$template_dir='usermanagement/';
+$template_dir = 'usermanagement/';
 $default_template = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']));
 
 // 20070901 - BUGID 1016
@@ -36,7 +36,7 @@ $_POST = strings_stripSlashes($_POST);
 $id = isset($_GET['id']) ? $_GET['id'] : 0;
 $postBack = (sizeof($_POST) > 2) ? 1 : 0;
 
-$of=web_editor('notes',$_SESSION['basehref']) ;
+$of = web_editor('notes',$_SESSION['basehref']) ;
 $of->Value = null;
 
 $roleRights = null;
@@ -98,7 +98,7 @@ if (sizeof($roles) && $id)
 			$roleRights[$rights[$i]] = "checked=\"checked\"";
 		}
 		//get all users which are affected by changing the role definition
-		$allUsers = getAllUsers($db,null,'id');
+		$allUsers = tlUser::getAll($db,null,"id");
 		$affectedUsers = getAllUsersWithRole($db,$id);
 		$of->Value = isset($role['notes']) ? $role['notes'] : '';
 	}

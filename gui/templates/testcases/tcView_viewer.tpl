@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.3 2007/12/20 09:32:24 franciscom Exp $
+$Id: tcView_viewer.tpl,v 1.4 2007/12/20 20:36:35 schlundus Exp $
 viewer for test case in test specification
 
 20071204 - franciscom - display execution_type
@@ -214,14 +214,14 @@ viewer for test case in test specification
   <tr class="time_stamp_creation">
   <td colspan="2">
       {lang_get s='title_created'}&nbsp;{localize_timestamp ts=$args_testcase.creation_ts }&nbsp;
-      		{lang_get s='by'}&nbsp;{$author_userinfo.fullname|escape}
+      		{lang_get s='by'}&nbsp;{$author_userinfo->getDisplayName()|escape}
   </td>
   </tr>
   {if $args_testcase.updater_last_name ne "" || $args_testcase.updater_first_name ne ""}
     <tr class="time_stamp_creation">
     <td colspan="2">
     {lang_get s='title_last_mod'}&nbsp;{localize_timestamp ts=$args_testcase.modification_ts}
-		  &nbsp;{lang_get s='by'}&nbsp;{$updater_userinfo.fullname|escape}
+		  &nbsp;{lang_get s='by'}&nbsp;{$updater_userinfo->getDisplayName()|escape}
     </td>
     </tr>
   {/if}

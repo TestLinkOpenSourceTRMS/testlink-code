@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: const.inc.php,v $
  *
- * @version $Revision: 1.52 $
- * @modified $Date: 2007/12/09 02:19:51 $ by $Author: havlat $
+ * @version $Revision: 1.53 $
+ * @modified $Date: 2007/12/20 09:57:10 $ by $Author: franciscom $
  * @author Martin Havlát
  *
  * SCOPE:
@@ -68,7 +68,7 @@ $g_tpl = array(
 	'execSetResults' => "execSetResults.tpl",
 	'tcView' 		=> "tcView.tpl",
 	'tcSearchView' 	=> "tcView.tpl",
-	'usersview' 	=> "usersview.tpl"
+	'usersview' 	=> "usersView.tpl"
 );
 
 

@@ -2,10 +2,10 @@
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  *
- * Filename $RCSfile: userrightmatrix.php,v $
+ * Filename $RCSfile: userRightMatrix.php,v $
  *
- * @version $Revision: 1.16 $
- * @modified $Date: 2007/12/19 21:59:29 $  $Author: schlundus $
+ * @version $Revision: 1.1 $
+ * @modified $Date: 2007/12/20 10:00:51 $  $Author: franciscom $
  *
  * @author Andreas Morsing
  *

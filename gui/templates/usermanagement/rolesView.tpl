@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: rolesview.tpl,v 1.3 2007/12/19 20:27:19 schlundus Exp $ 
+$Id: rolesView.tpl,v 1.1 2007/12/20 09:52:16 franciscom Exp $ 
 Purpose: smarty template - View defined roles 
 
 rev :

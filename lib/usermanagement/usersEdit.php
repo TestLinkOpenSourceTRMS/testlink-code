@@ -3,10 +3,10 @@
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
 * This script is distributed under the GNU General Public License 2 or later. 
 *
-* Filename $RCSfile: usersedit.php,v $
+* Filename $RCSfile: usersEdit.php,v $
 *
-* @version $Revision: 1.23 $
-* @modified $Date: 2007/12/19 18:27:07 $ $Author: schlundus $
+* @version $Revision: 1.1 $
+* @modified $Date: 2007/12/20 09:44:44 $ $Author: franciscom $
 * 
 * rev :  BUGID 918
 *
@@ -20,6 +20,8 @@ require_once('users.inc.php');
 require_once('email_api.php');
 
 $template_dir = 'usermanagement/';
+$default_template = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']));
+
 testlinkInitPage($db);
 
 $args = init_args($_GET,$_POST);
@@ -112,9 +114,10 @@ $smarty->assign('optRights',$roles);
 $smarty->assign('userData', $user);
 $smarty->assign('result',$sqlResult);
 $smarty->assign('action',$action);
-$smarty->display($template_dir . 'usersedit.tpl');
+$smarty->display($template_dir . $default_template);
+?>
 
-
+<?php
 function init_args($get_hash, $post_hash)
 {
 	$post_hash = strings_stripSlashes($post_hash);
